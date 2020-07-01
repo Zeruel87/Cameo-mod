@@ -313,15 +313,15 @@ RA2Magnet:
 		Duration: 15
 	Warhead@1Dam: SpreadDamage
 		Spread: 800
-		Damage: 260
+		Damage: 200
 		Versus:
 			Light: 105
 			Heavy: 90
-	Warhead@Magnet: GrantExternalCondition
-		Range: 0c256
-		Duration: 150
+	Warhead@2Con: GrantExternalCondition
 		Condition: Magnet
-		ValidTargets: Vehicle
+		Duration: 20
+		Range: 0c172
+		ValidTargets: Ground, Water, Structure, Wall
 
 RA2MagnetFlash:
 	Inherits: RA2Magnet
@@ -332,7 +332,7 @@ RA2MagnetFlash:
 		Duration: 30
 	Warhead@1Dam: SpreadDamage
 		Spread: 200
-		Damage: 7000
+		Damage: 6000
 
 RA2MagnetAA:
 	Inherits: RA2Magnet
@@ -522,10 +522,10 @@ RA2RadBeamWeapon:
 	ReloadDelay: 100
 	Report: idesat1a.wav
 	Projectile: LaserZap
-		Color: B900FF00
 		Width: 50
-		Duration: 15
-		UsePlayerColor: false
+		Duration: 30
+		Color: 5dff00
+		Blockable: True
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
 		Damage: 12500
@@ -539,7 +539,9 @@ RA2RadBeamWeapon:
 	Warhead@3Eff: CreateEffect
 		Explosions: chemball
 		ImpactSounds: idesat1a.wav
-
+	Warhead@4Res: CreateResource
+		AddsResourceType: Radiation
+		Size: 2,2
 
 ####################################################################################################
 #		Mind Control
@@ -612,12 +614,120 @@ RA2OspreyTarget:
 		Spread: 25
 		Damage: 0
 
+RA2PSIAtomic:
+	ValidTargets: Ground, Air, Trees
+	Report: nukemisl.aud
+	Warhead@1Dam_impact: SpreadDamage
+		Spread: 1c0
+		Damage: 1500
+		Falloff: 1000, 368, 135, 50, 18, 7, 0
+		ValidTargets: Ground, Air, Trees
+		AffectsParent: True
+		Versus:
+			None: 100
+			Wood: 100
+			Light: 60
+			Heavy: 50
+		DamageTypes: Prone50Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@2Eff_impact: CreateEffect
+		Explosions: nuke_explosion
+		ImpactSounds: nukexplo.aud
+		ImpactActors: false
+	Warhead@3Dam_areanukea: SpreadDamage
+		Spread: 2c512
+		Damage: 1000
+		Falloff: 1000, 700, 500, 300, 150, 50, 0
+		Delay: 3
+		ValidTargets: Ground, Air
+		AffectsParent: True
+		Versus:
+			None: 100
+			Wood: 100
+			Light: 60
+			Heavy: 50
+		DamageTypes: Prone50Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@4Res_areanukea: DestroyResource
+		Size: 3
+		Delay: 3
+	Warhead@5Smu_areanukea: LeaveSmudge
+		SmudgeType: Scorch
+		InvalidTargets: Vehicle, Structure, Wall
+		Size: 3
+		Delay: 3
+	Warhead@6Eff_areanukea: CreateEffect
+		ImpactSounds: xplobig4.aud
+		Delay: 3
+		ImpactActors: false
+	Warhead@7Dam_areanukeb: SpreadDamage
+		Spread: 3c768
+		Damage: 250
+		Falloff: 1000, 368, 135, 50, 18, 7, 0
+		Delay: 6
+		ValidTargets: Ground, Air, Trees
+		AffectsParent: True
+		Versus:
+			None: 100
+			Wood: 100
+			Light: 60
+			Heavy: 50
+		DamageTypes: Prone50Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@8Res_areanukeb: DestroyResource
+		Size: 4
+		Delay: 6
+	Warhead@9Smu_areanukeb: LeaveSmudge
+		SmudgeType: Scorch
+		InvalidTargets: Vehicle, Structure, Wall
+		Size: 4
+		Delay: 6
+	Warhead@10Dam_areanukec: SpreadDamage
+		Spread: 5c0
+		Damage: 100
+		Falloff: 1000, 368, 135, 50, 18, 7, 0
+		Delay: 9
+		ValidTargets: Ground, Air, Trees
+		AffectsParent: True
+		Versus:
+			None: 100
+			Wood: 100
+			Light: 60
+			Heavy: 50
+		DamageTypes: Prone50Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@11Res_areanukec: DestroyResource
+		Size: 5
+		Delay: 9
+	Warhead@12Smu_areanukec: LeaveSmudge
+		SmudgeType: Scorch
+		InvalidTargets: Vehicle, Structure, Wall
+		Size: 5
+		Delay: 9
+	Warhead@2Own: ChangeOwner
+		Duration: 800
+		Range: 120c86
+		ValidTargets: Infantry, Vehicle, Water
+		InvalidTargets: Hero
+
 ####################################################################################################
 #		Missiles
 ####################################################################################################
 
-RA2HoverMissile:
+^RA2Missile:
 	Inherits: ^MissileWeapon
+	Report: bpatatta.wav
+	Projectile: Missile
+		Blockable: false
+		Shadow: true
+		ContrailLength: 8
+		ContrailWidth: 13
+		CruiseAltitude: 2200
+		VerticalRateOfTurn: 55
+		HorizontalRateOfTurn: 55
+		Speed: 100
+		RangeLimit: 14c409
+		TerrainHeightAware: true
+		AllowSnapping: true
+
+RA2HoverMissile:
+	Inherits: ^RA2Missile
 	Burst: 2
 	BurstDelays: 5
 	Report: vifvatta.wav
@@ -626,8 +736,13 @@ RA2HoverMissile:
 		Speed: 213
 		Arm: 2
 		Inaccuracy: 128
-		RangeLimit: 7c204
+		RangeLimit: 14c512
 		Image: DRAGON
+		ContrailColor: D8D8FF
+		MinimumLaunchAngle: 255
+		MaximumLaunchAngle: 255
+		MaximumLaunchSpeed: 384
+		MinimumLaunchSpeed: 384
 	Warhead@1Dam: SpreadDamage
 		Damage: 1000
 		Versus:
@@ -651,7 +766,7 @@ RA2HornetMissile2:
 	ValidTargets: TargetbyCarrier
 
 RA2GIRockets:
-	Inherits: ^MissileWeapon
+	Inherits: ^RA2Missile
 	Report: vifvatta.wav
 	Projectile: Missile
 		HorizontalRateOfTurn: 10
@@ -701,7 +816,7 @@ RA2Medusa:
 		Damage: 10000
 
 HarrierMissiles:
-	Inherits: ^MissileWeapon
+	Inherits: ^RA2Missile
 	ReloadDelay: 6
 	Burst: 5
 	Range: 6c0
@@ -730,6 +845,10 @@ RA2MammothTusk:
 		Speed: 341
 		HorizontalRateOfTurn: 15
 		RangeLimit: 9c614
+		MinimumLaunchAngle: 255
+		MaximumLaunchAngle: 255
+		MaximumLaunchSpeed: 384
+		MinimumLaunchSpeed: 384
 	Warhead@1Dam: SpreadDamage
 		Spread: 256
 		Damage: 8000
@@ -933,6 +1052,8 @@ RA2DoublePistols:
 	ValidTargets: Infantry
 	InvalidTargets:Water, Structure, Wall, Husk
 	ReloadDelay: 40
+	Burst: 9
+	BurstDelays: 2
 	Range: 8c0
 	Projectile: Bullet
 		Speed: 5c682
@@ -1242,7 +1363,9 @@ RA2ReactorExplosion:
 
 RA2Terrorist:
 	Inherits: SCUD
-	ReloadDelay: 1
+	ReloadDelay: 300
+	Projectile: Bullet
+		Image: BOMB
 	Range: 1c0
 	MinRange: 0c0
 	-Report:
@@ -1270,3 +1393,25 @@ KirovExplode:
 			Concrete: 50
 	Warhead@2Eff: CreateEffect
 		Explosions: large_napalm
+
+####################################################################################################
+#		Red Alert 2 Addon
+####################################################################################################
+
+RA2MODTrackMG:
+	Inherits: ^RA2MG
+	Burst: 4
+	Range: 5c512
+	Report: vwaratta.wav, vwarattb.wav
+	ValidTargets: Ground, Air
+	Warhead@1Dam: SpreadDamage
+		Damage: 3000
+		ValidTargets: Ground, Air
+		Versus:
+			Heavy: 20
+			Wood: 20
+			Concrete: 10
+
+RA2MODHIFVMG:
+	Inherits: RA2M60
+	Burst: 2
