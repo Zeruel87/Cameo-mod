@@ -568,8 +568,8 @@ TSGTCNSTMUTANT:
 		BuildPaletteOrder: 1000
 		Prerequisites: ~disabled
 		Description: Builds structures
-	ProvidesPrerequisite@factionnod:
-		Prerequisite: mmtsnod
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmmutant
 	RenderSprites:
 		Image: tsgtcnst
 
@@ -680,8 +680,8 @@ TSGTCNSTCABAL:
 		BuildPaletteOrder: 1000
 		Prerequisites: ~disabled
 		Description: Builds structures
-	ProvidesPrerequisite@factionnod:
-		Prerequisite: mmtsnod
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmcabal
 	RenderSprites:
 		Image: tsgtcnst
 
@@ -740,6 +740,8 @@ TSMCVGDI:
 		Image: tsmcv
 	RenderVoxels:
 		Image: tsmcv
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmtsgdi
 
 TSMCVNOD:
 	Inherits: TSMCVGDI
@@ -753,6 +755,8 @@ TSMCVNOD:
 	Transforms:
 		IntoActor: tsgtcnstnod
 	BaseBuilding:
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmtsnod
 
 TSMCVMUTANT:
 	Inherits: TSMCVGDI
@@ -766,6 +770,8 @@ TSMCVMUTANT:
 	Transforms:
 		IntoActor: tsgtcnstmutant
 	BaseBuilding:
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmmutant
 
 TSMCVCABAL:
 	Inherits: TSMCVGDI
@@ -781,6 +787,8 @@ TSMCVCABAL:
 	Voiced:
 		VoiceSet: TSCyborg
 	BaseBuilding:
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmcabal
 
 
 #######################################
@@ -2034,7 +2042,7 @@ tsnttmpl:
 		Type: Vehicle.HunterSeeker
 		ChargeInterval: 2250
 		ReadyAudio: Reinforce
-		BlockedAudio: NoRoom
+		BlockedAudio: 
 		OrderName: HunterSeekerSpawn
 		SupportPowerPaletteOrder: 20
 	Exit@1:
@@ -4976,7 +4984,7 @@ TSSUBTANK:
 		BuildPaletteOrder: 60
 		Prerequisites: tek, ~techlevel.high
 		Queue: Vehicle.TSNod, RAVehicle.TSNod
-		Description: Nod's main battle tank.\nCan deploy to gain extra protection.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Subterranean flame tank.\nIs able to move underground.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks, Aircraft
 	Mobile:
 		Locomotor: subterranean
 		TurnSpeed: 6
@@ -4992,31 +5000,31 @@ TSSUBTANK:
 		RequiresCondition: !submerged
 	Armament@PRIMARY:
 		Weapon: TSFireballLauncher
-		RequiresCondition: !inwater
 	SelectionDecorations:
 	Selectable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithVoxelBody:
+		RequiresCondition: !submerged
 	Targetable:
 		RequiresCondition: !submerged
+	Targetable@UNDERGROUND:
+		TargetTypes: Underground
+		RequiresCondition: submerged
 	AttackFrontal:
-	Cloak:
-		InitialDelay: 40
-		CloakDelay: 30
-		CloakSound: subdril1.aud
-		UncloakSound: subdril1.aud
-		CloakedCondition: submerged
 	Voiced:
 		VoiceSet: TSVehicle
 	DeliversCash:
 		Payload: 350
 	RenderVoxels:
 		Scale: 6.3
-	GrantConditionOnTerrain:
-		Condition: inwater
-		TerrainTypes: Water, River, Rock
+	GrantConditionOnSubterraneanLayer:
+		Condition: submerged
+		SubterraneanTransitionPalette: player
+		SubterraneanTransitionImage: tsdig
+		SubterraneanTransitionSequence: idle
+		SubterraneanTransitionSound: subdril1.aud
 
 TSSAPC:
 	Inherits: ^Tank
@@ -5030,9 +5038,10 @@ TSSAPC:
 		BuildPaletteOrder: 60
 		Prerequisites: anyhq, ~techlevel.medium
 		Queue: Vehicle.TSNod, RAVehicle.TSNod
-		Description: Allies Main Tank.\n Strong vs Vehicles.\n Weak vs Aircraft, Infantry
+		Description: Troop transport that can move\nunderground to avoid detection.\n  Unarmed
 	Mobile:
 		Locomotor: subterranean
+		PauseOnCondition: loading || being-captured
 		TurnSpeed: 5
 		Speed: 71
 	Health:
@@ -5052,6 +5061,12 @@ TSSAPC:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithVoxelBody:
+		RequiresCondition: !submerged
+	Targetable:
+		RequiresCondition: !submerged
+	Targetable@UNDERGROUND:
+		TargetTypes: Underground
+		RequiresCondition: submerged
 	Voiced:
 		VoiceSet: TSVehicle
 	DeliversCash:
@@ -5061,15 +5076,12 @@ TSSAPC:
 		MaxWeight: 5
 		PipCount: 5
 		UnloadTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach
-	Cloak:
-		InitialDelay: 40
-		CloakDelay: 30
-		CloakSound: subdril1.aud
-		UncloakSound: subdril1.aud
-		CloakedCondition: submerged
-	GrantConditionOnTerrain:
-		Condition: inwater
-		TerrainTypes: Water, River, Rock
+	GrantConditionOnSubterraneanLayer:
+		Condition: submerged
+		SubterraneanTransitionPalette: player
+		SubterraneanTransitionImage: tsdig
+		SubterraneanTransitionSequence: idle
+		SubterraneanTransitionSound: subdril1.aud
 
 tsbsub:
 	Inherits: ^BoatUnit
@@ -5567,10 +5579,10 @@ TSDEFENDER:
 		Speed: 50	#113
 	Armament@LASER2:
 		Weapon: TSCoreLaser
-		LocalOffset: 170,-250,510, 170,250,1010
+        LocalOffset: 170,-250,510, 170,250,1010
 	Armament@LASER3:
 		Weapon: TSCoreLaser
-		LocalOffset: 170,250,510, 170,-250,1010
+        LocalOffset: 170,250,510, 170,-250,1010
 	Voiced:
 		VoiceSet: TSCyborg
 	Tooltip:
