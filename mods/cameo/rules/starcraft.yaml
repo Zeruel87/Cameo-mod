@@ -3623,6 +3623,7 @@ SCCARRIER:
 		Speed: 50
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
+		CruiseAltitude: 1c512
 	Health:
 		HP: 54000
 	Armor:
@@ -3631,19 +3632,27 @@ SCCARRIER:
 		Range: 10c0
 		Type: GroundPosition
 	Armament:
-		Weapon: InterceptorCannon
-		LocalOffset: 800,200,0, 800,-200,0, 600,200,0, 600,-200,0, 400,200,0, 400,-200,0, 200,200,0, 200,-200,-0
+		Weapon: InterceptorLauncher
 	AttackAircraft:
 		FacingTolerance: 20
 		AttackType: Hover
 	CarrierMaster:
-		Actors: SCSCOUT, SCSCOUT, SCSCOUT
+		Actors: SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR
 		RearmTicks: 150
 		RespawnTicks: 500
 		InstaRepair: true
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
 		LoadedCondition: hornet-loaded
+	Exit@0:
+		SpawnOffset: 0,0,0
+		Facing: 0
+	Exit@1:
+		SpawnOffset: 0,0,0
+		Facing: 20
+	Exit@2:
+		SpawnOffset: 0,0,0
+		Facing: -20
 	-SpawnActorOnDeath:
 	DeathSounds:
 	SelectionDecorations:
@@ -3654,6 +3663,57 @@ SCCARRIER:
 	Voiced:
 		VoiceSet: SCCarrierVoice
 
+SCINTERCEPTOR:
+	Inherits: ^Plane
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeProtoss
+	Valued:
+		Cost: 50
+	Tooltip:
+		Name: Interceptor
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~techlevel.medium
+		Queue: #Aircraft.Protoss, RAAircraft.Protoss, Aircraft.X_Aircrafts
+		Description: light armored Aircraft.\n  laser againts ground and rockets againts air units.
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 180
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+		VTOL: true
+		CruiseAltitude: 1c256
+	CarrierSlave:
+		LandingDistance: 2c0
+	Health:
+		HP: 10000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 6c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: InterceptorCannon
+		LocalOffset: 200,0,0
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+	Rearmable:
+		RearmActors: sccarrier
+	AmmoPool:
+		Ammo: 8
+		AmmoCondition: ammo
+	DeathSounds:
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: SCCarrierVoice
+	-ActorLostNotification:
+	Interactable:
+	HitShape:
+
 SCARBITER:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -3663,11 +3723,11 @@ SCARBITER:
 		Cost: 2400
 	Tooltip:
 		Name: Arbiter
-	#Buildable:
-	#	BuildPaletteOrder: 30
-	#	Prerequisites: Arbiter Tribunal, ~techlevel.high
-	#	Queue: Aircraft.Protoss, RAAircraft.Protoss, Aircraft.X_Aircrafts
-	#	Description: light armored Aircraft.\n  laser againts ground and rockets againts air units.
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: Arbiter Tribunal, ~techlevel.high
+		Queue: Aircraft.Protoss, RAAircraft.Protoss, Aircraft.X_Aircrafts
+		Description: light armored Aircraft.\n  laser againts ground and rockets againts air units.
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -3696,54 +3756,9 @@ SCARBITER:
 		Amount: -40
 	Voiced:
 		VoiceSet: SCArbiterVoice
-
-SCINTERCEPTOR:
-	Inherits: ^Helicopter
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@explode: ^HeliExplodeProtoss
-	Valued:
-		Cost: 150
-	Tooltip:
-		Name: Interceptor
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: ~techlevel.medium
-		Queue: #Aircraft.Protoss, RAAircraft.Protoss, Aircraft.X_Aircrafts
-		Description: light armored Aircraft.\n  laser againts ground and rockets againts air units.
-	Aircraft:
-		InitialFacing: 224
-		TurnSpeed: 7
-		Speed: 120
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
-	Health:
-		HP: 14000
-	Armor:
-		Type: None
-	RevealsShroud:
-		Range: 6c0
-		Type: GroundPosition
-	Armament@PRIMARY:
-		Weapon: WraithLaser
-		LocalOffset: 400,0,0
-	Armament@SECONDARY1:
-		Weapon: WraithRockets
-		LocalOffset: 400,400,0
-	Armament@SECONDARY2:
-		Weapon: WraithRockets
-		LocalOffset: 400,-400,0
-	AttackAircraft:
-		FacingTolerance: 20
-	-SpawnActorOnDeath:
-	DeathSounds:
-	SelectionDecorations:
-	Selectable:
-		DecorationBounds: 20,20
-	Power:
-		Amount: 0
-	Voiced:
-		VoiceSet: SCCarrierVoice
+	ProximityExternalCondition@StealGen:
+		Range: 7c0
+		Condition: cloak-crate-collected
 
 SCPMCV:
 	Inherits: ^Vehicle
