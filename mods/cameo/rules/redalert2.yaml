@@ -315,6 +315,7 @@ RA2IraqAddon:
 ra2gacnst:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -395,7 +396,7 @@ ra2gacnst:
 		ExitCell: 1,2
 	GrantConditionOnBotOwner:
 		Condition: botra2
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom, thehell
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botra2
 		RequiresCondition: botra2
@@ -436,7 +437,7 @@ ra2gacnst:
 		Amount: -35
 	GrantConditionOnBotOwner:
 		Condition: botra2
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botra2
 		RequiresCondition: botra2
@@ -1487,6 +1488,7 @@ RA2BRIK:
 ra2nacnst:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -1569,7 +1571,7 @@ ra2nacnst:
 		ExitCell: 1,2
 	GrantConditionOnBotOwner:
 		Condition: botra2
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botra2
 		RequiresCondition: botra2
@@ -2211,6 +2213,7 @@ yrngbnkr:
 		PipCount: 6
 		InitialUnits: ra2e2
 		LoadedCondition: bunkerup
+		EjectOnDeath: true
 	WithSpriteBody@Bunkered:
 		Sequence: idle-bunkered
 		RequiresCondition: bunkerup
@@ -2240,6 +2243,7 @@ yrngbnkr.bot:
 		MaxWeight: 6
 		PipCount: 6
 		InitialUnits: ra2e2,ra2e2,ra2e2,ra2e2,ra2flakt,ra2flakt
+		EjectOnDeath: true
 
 yrschd:
 	Inherits: ^Defense
@@ -2570,6 +2574,7 @@ ra2nayard:
 yrnacnst:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -2649,7 +2654,7 @@ yrnacnst:
 		Sequence: idle-normal
 	GrantConditionOnBotOwner:
 		Condition: botra2
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botra2
 		RequiresCondition: botra2
@@ -3562,30 +3567,74 @@ RA2E1:
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles.\n It can be deployed in a turret
 	Mobile:
 		Speed: 50
+		RequireForceMoveCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 8000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
 		Weapon: RA2M60
+		RequiresCondition: !deployed
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RA2vulcan2
+	Armament@DEPLOYED:						##########
+		Name: deployed
+		Weapon: RA2CRM60
 	AttackFrontal:
+		Armaments: primary
+		RequiresCondition: undeployed
+	AttackTurreted@deployed:
+		Armaments: garrisoned
+		Turrets: deploy
+		RequiresCondition: deployed
+	Turreted:
+		Turret: deploy
+		RealignDelay: -1
+		TurnSpeed: 1023
+		InitialFacing: 368
+	WithSpriteTurret@idle:
+		Turret: deploy
+		Sequence: deployed
+		RequiresCondition: deployed && !animate-turret
+	WithSpriteTurret@animated:
+		Turret: deploy
+		Sequence: shoot-deployed
+		RequiresCondition: deployed && animate-turret
+	WithSpriteBody:
+		Sequence: dot
+		Name: dot
+		RequiresCondition: !undeployed
+	GrantConditionOnAttack:
+		Condition: animate-turret
+		RevokeDelay: 10
+		ArmamentNames: garrisoned
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: !deployed
+	WithMakeAnimation:
+		Sequence: deploy
+		BodyNames: dot
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: deployed
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		DeploySounds: igidepa.wav,igidepb.wav
+		UndeploySounds: igidepa.wav,igidepb.wav
+		UndeployOnMove: true
+		RequiresCondition: !parachute
+	TakeCover:
+		RequiresCondition: undeployed
 	Voiced:
 		VoiceSet: GIVoice
-	Transforms:
-		IntoActor: ra2e1dep
-		Offset: 0,0
-		Facing: 2
-		TransformSounds: igidepa.wav,igidepb.wav
-		NoTransformNotification: BuildingCannotPlaceAudio
 	DeliversCash:
 		Payload: 75
 
@@ -3645,30 +3694,73 @@ YRGGI:
 		Description: Anti Tank infantry.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry.\n It can be deployed in a turret
 	Mobile:
 		Speed: 48
+		RequireForceMoveCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 8000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
 		Weapon: GuardianGIMG
+	Armament@DEPLOYED:						##########
+		Name: deployed
+		Weapon: RA2GIRocketsG
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RA2GIRocketsG
 	AttackFrontal:
+		Armaments: primary
+		RequiresCondition: undeployed
+	AttackTurreted@deployed:
+		Armaments: garrisoned
+		Turrets: deploy
+		RequiresCondition: deployed
+	Turreted:
+		Turret: deploy
+		RealignDelay: -1
+		TurnSpeed: 1023
+		InitialFacing: 368
+	WithSpriteTurret@idle:
+		Turret: deploy
+		Sequence: deployed
+		RequiresCondition: deployed && !animate-turret
+	WithSpriteTurret@animated:
+		Turret: deploy
+		Sequence: shoot-deployed
+		RequiresCondition: deployed && animate-turret
+	WithSpriteBody:
+		Sequence: dot
+		Name: dot
+		RequiresCondition: !undeployed
+	GrantConditionOnAttack:
+		Condition: animate-turret
+		RevokeDelay: 10
+		ArmamentNames: garrisoned
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: !deployed
+	WithMakeAnimation:
+		Sequence: deploy
+		BodyNames: dot
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: deployed
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		DeploySounds: iggidea.wav,iggideb.wav,iggidec.wav
+		UndeploySounds: iggidea.wav,iggideb.wav,iggidec.wav
+		UndeployOnMove: true
+		RequiresCondition: !parachute
+	TakeCover:
+		RequiresCondition: undeployed
 	Voiced:
 		VoiceSet: GGIVoice
-	Transforms:
-		IntoActor: yrggidep
-		Offset: 0,0
-		Facing: 2
-		TransformSounds: iggidea.wav,iggideb.wav,iggidec.wav
-		NoTransformNotification: BuildingCannotPlaceAudio
 	DeliversCash:
 		Payload: 150
 
@@ -4156,7 +4248,7 @@ ra2shk:
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 	GrantConditionOnBotOwner:
 		Condition: botra2
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botra2
 		RequiresCondition: botra2
@@ -5316,6 +5408,7 @@ RA2HTK:
 		MaxWeight: 4
 		PipCount: 4
 		LoadingCondition: notmobile
+		EjectOnDeath: true
 	ProductionCostMultiplier@Industrial:
 		Multiplier: 75
 		Prerequisites: yrngindp
@@ -5546,6 +5639,13 @@ ra2dtruck:
 		Weapon: RA2ReactorExplosion
 		EmptyWeapon: RA2ReactorExplosion
 		DamageSource: Killer
+	Chronoshiftable:
+		ExplodeInstead: false
+	KillsSelf:
+		RequiresCondition: triggered
+	DamageMultiplier@IRONCURTAIN:
+		RequiresCondition: invulnerability
+		Modifier: 0
 
 ra2dron:
 	Inherits: DOG
@@ -6207,7 +6307,7 @@ yrhovr:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites:
+		Prerequisites: 
 		Queue: Naval.Yuri, RANaval.Yuri
 		Description: Transports up to 6 units.
 	Mobile:
@@ -7587,6 +7687,7 @@ ra2ctbunk01:
 		MaxWeight: 5
 		PipCount: 5
 		LoadedCondition: bunkerup
+		EjectOnDeath: true
 	WithSpriteBody@Bunkered:
 		Sequence: idle-bunkered
 		RequiresCondition: bunkerup
@@ -7636,6 +7737,7 @@ ra2ctchig01:
 		Types: Infantry
 		MaxWeight: 8
 		PipCount: 8
+		EjectOnDeath: true
 	RangeMultiplier@BigGarrison:
 		Modifier: 120
 
@@ -7650,6 +7752,7 @@ ra2ctchig03:
 		Types: Infantry
 		MaxWeight: 10
 		PipCount: 10
+		EjectOnDeath: true
 
 ra2cteur04:
 	Inherits: ra2ctchig01
@@ -7661,6 +7764,7 @@ ra2cteur04:
 		Types: Infantry
 		MaxWeight: 7
 		PipCount: 7
+		EjectOnDeath: true
 
 ra2ctfarm06:
 	Inherits: ra2ctbunk01
@@ -7672,6 +7776,7 @@ ra2ctfarm06:
 		Types: Infantry
 		MaxWeight: 6
 		PipCount: 6
+		EjectOnDeath: true
 
 ra2ctfrma:
 	Inherits: ra2ctbunk01
@@ -7690,6 +7795,7 @@ ra2ctgas01:
 		Types: Infantry
 		MaxWeight: 7
 		PipCount: 7
+		EjectOnDeath: true
 	Explodes:
 		Weapon: FlametankExplode
 		EmptyWeapon: FlametankExplode
@@ -7733,6 +7839,7 @@ ra2cthse05:
 		Types: Infantry
 		MaxWeight: 3
 		PipCount: 3
+		EjectOnDeath: true
 
 ra2cthse06:
 	Inherits: ra2cthse05
@@ -7752,6 +7859,7 @@ ra2ctind01:
 		Types: Infantry
 		MaxWeight: 15
 		PipCount: 15
+		EjectOnDeath: true
 	Tooltip:
 		Name: Civilian Industrial
 	Building:
@@ -7787,6 +7895,7 @@ ra2ctmiam04:
 		Types: Infantry
 		MaxWeight: 1
 		PipCount: 1
+		EjectOnDeath: true
 
 ra2ctmiam05:
 	Inherits: ra2ctchig01
@@ -7796,6 +7905,7 @@ ra2ctmiam05:
 		Types: Infantry
 		MaxWeight: 10
 		PipCount: 10
+		EjectOnDeath: true
 
 ra2ctmiam06:
 	Inherits: ra2ctmiam05
@@ -7825,6 +7935,7 @@ ra2ctarmy02:
 		Types: Infantry
 		MaxWeight: 2
 		PipCount: 2
+		EjectOnDeath: true
 
 ra2ctarmy03:
 	Inherits: ra2ctarmy02
@@ -7855,6 +7966,7 @@ ra2ctmsc10:
 		Types: Infantry
 		MaxWeight: 7
 		PipCount: 7
+		EjectOnDeath: true
 
 ra2ctnewy01:
 	Inherits: ra2ctchig01
@@ -7864,6 +7976,7 @@ ra2ctnewy01:
 		Types: Infantry
 		MaxWeight: 9
 		PipCount: 9
+		EjectOnDeath: true
 	Tooltip:
 		Name: Skycrapter
 
@@ -7875,6 +7988,7 @@ ra2ctnewy06:
 		Types: Infantry
 		MaxWeight: 11
 		PipCount: 11
+		EjectOnDeath: true
 	Tooltip:
 		Name: Skycrapter
 
@@ -7886,6 +8000,7 @@ ra2ctnewy07:
 		Types: Infantry
 		MaxWeight: 9
 		PipCount: 9
+		EjectOnDeath: true
 	Tooltip:
 		Name: Skycrapter
 
@@ -7897,6 +8012,7 @@ ra2ctnewy08:
 		Types: Infantry
 		MaxWeight: 10
 		PipCount: 10
+		EjectOnDeath: true
 	Tooltip:
 		Name: Skycrapter
 
@@ -7937,6 +8053,7 @@ ra2ctnewy17:
 		Types: Infantry
 		MaxWeight: 7
 		PipCount: 7
+		EjectOnDeath: true
 
 ra2ctnewy18:
 	Inherits: ra2ctnewy17
@@ -7949,6 +8066,7 @@ ra2ctnewy20:
 		Types: Infantry
 		MaxWeight: 10
 		PipCount: 10
+		EjectOnDeath: true
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -8426,6 +8544,7 @@ RA2BUS:
 		Types: Infantry
 		MaxWeight: 12
 		PipCount: 6
+		EjectOnDeath: true
 	Mobile:
 		Speed: 80
 	RenderVoxels:
