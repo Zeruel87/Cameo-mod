@@ -45,7 +45,6 @@ FACT:
 	ProductionQueue@GDIBuilding:
 		Type: Building.GDI
 		DisplayOrder: 0
-		Factions: gdi
 		Group: Building
 		LowPowerModifier: 200
 		ReadyAudio: ConstructionComplete
@@ -57,7 +56,6 @@ FACT:
 	ProductionQueue@NodBuilding:
 		Type: Building.Nod
 		DisplayOrder: 0
-		Factions: nod
 		Group: Building
 		LowPowerModifier: 200
 		ReadyAudio: ConstructionComplete
@@ -69,7 +67,6 @@ FACT:
 	ProductionQueue@GDIDefense:
 		Type: Defence.GDI
 		DisplayOrder: 1
-		Factions: gdi
 		Group: Defence
 		LowPowerModifier: 300
 		ReadyAudio: ConstructionComplete
@@ -81,7 +78,6 @@ FACT:
 	ProductionQueue@NodDefense:
 		Type: Defence.Nod
 		DisplayOrder: 1
-		Factions: nod
 		Group: Defence
 		LowPowerModifier: 300
 		ReadyAudio: ConstructionComplete
@@ -115,6 +111,7 @@ FACT.GDI:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
 	Selectable:
 		Bounds: 72,48
 	Valued:
@@ -217,6 +214,7 @@ FACT.NOD:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
 	Selectable:
 		Bounds: 72,48
 	Valued:
@@ -2519,7 +2517,6 @@ RAFACT:
 	ProductionQueue@AlliesBuilding:
 		Type: Building.Allies
 		DisplayOrder: 0
-		Factions: allies
 		Group: Building
 		LowPowerModifier: 200
 		QueuedAudio: Building
@@ -2527,7 +2524,6 @@ RAFACT:
 	ProductionQueue@SovietBuilding:
 		Type: Building.Soviet
 		DisplayOrder: 0
-		Factions: soviet
 		Group: Building
 		LowPowerModifier: 200
 		QueuedAudio: Building
@@ -2535,7 +2531,6 @@ RAFACT:
 	ProductionQueue@AlliesDefense:
 		Type: Defence.Allies
 		DisplayOrder: 1
-		Factions: allies
 		Group: Defence
 		LowPowerModifier: 300
 		QueuedAudio: Building
@@ -2543,7 +2538,6 @@ RAFACT:
 	ProductionQueue@SovietDefense:
 		Type: Defence.Soviet
 		DisplayOrder: 1
-		Factions: soviet
 		Group: Defence
 		LowPowerModifier: 300
 		QueuedAudio: Building
@@ -2592,6 +2586,7 @@ RAFACT:
 RAFACT.ALLIES:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -2670,6 +2665,7 @@ RAFACT.ALLIES:
 RAFACT.SOVIET:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -3423,7 +3419,7 @@ RA1SYRD:
 		Dimensions: 3,3
 		TerrainTypes: Water
 	RequiresBuildableArea:
-		Adjacent: 8
+		Adjacent: 2
 	-GivesBuildableArea:
 	Health:
 		HP: 100000
@@ -3510,7 +3506,7 @@ RASPEN:
 		Dimensions: 3,3
 		TerrainTypes: Water
 	RequiresBuildableArea:
-		Adjacent: 8
+		Adjacent: 2
 	-GivesBuildableArea:
 	Health:
 		HP: 100000
@@ -3577,6 +3573,7 @@ RASPEN:
 2100HQ.ALPHA:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -3646,7 +3643,7 @@ RASPEN:
 		Amount: 0
 	GrantConditionOnBotOwner:
 		Condition: botalpha
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botalpha
 		RequiresCondition: botalpha
@@ -3691,6 +3688,9 @@ RASPEN:
 	Inherits@POWERMULTIPLIER: ^PowerMultiplier			##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
+	StoresResources:
+		Capacity: 1000
+		PipCount: 5
 
 2100OIL:
 	Inherits: ^BaseBuilding
@@ -3717,16 +3717,20 @@ RASPEN:
 		Amount: 10		#15
 		ShowTicks: False
 		PauseOnCondition: lowpower
+		UseResourceStorage: true
 	CashTrickler@LOWPOWER:
 		Interval: 35	#50
 		Amount: 2
 		ShowTicks: False
 		PauseOnCondition: !lowpower
+		UseResourceStorage: true
 	ProvidesPrerequisite:
 		Prerequisite: 2100OIL
 	-SpawnActorsOnSell:
 	-WithDeathAnimation:
 	-GivesBuildableArea:
+	MustBeDestroyed:
+		RequiredForShortGame: false
 
 2100OILBOT:
 	Inherits: 2100OIL
@@ -4045,7 +4049,7 @@ RASPEN:
 		Type: Heavy
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 9
+		Adjacent: 2
 	LineBuild:
 		Range: 11
 		NodeTypes: Wall2100
@@ -4102,7 +4106,7 @@ RASPEN:
 	BlocksProjectiles:
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 9
+		Adjacent: 2
 	Health:
 		HP: 80000
 	Armor:
@@ -4150,7 +4154,7 @@ RASPEN:
 	BlocksProjectiles:
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 9
+		Adjacent: 2
 	Health:
 		HP: 80000
 	Armor:
@@ -4198,7 +4202,7 @@ RASPEN:
 	BlocksProjectiles:
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 9
+		Adjacent: 2
 	Health:
 		HP: 80000
 	Armor:
@@ -4244,7 +4248,7 @@ RASPEN:
 		Description: Basic defensive structure.\n  Strong vs Infantry\n  Weak vs Tanks
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 10
+		Adjacent: 2
 	Health:
 		HP: 70000
 	RevealsShroud:
@@ -4284,7 +4288,7 @@ RASPEN:
 		Description: Basic defensive structure.\n  Strong vs Infantry\n  Weak vs Tanks
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 10
+		Adjacent: 2
 	Health:
 		HP: 70000
 	RevealsShroud:
@@ -4323,7 +4327,7 @@ RASPEN:
 		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 8
+		Adjacent: 2
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 22,48,0,-12
@@ -4363,7 +4367,7 @@ RASPEN:
 		Description: Anti-Tank base defense.\n  Strong vs Tanks, vehicles\n  Weak vs Infantry
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 8
+		Adjacent: 2
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 22,48,0,-12
@@ -4404,7 +4408,7 @@ RASPEN:
 		Description: Long range defensive structure.
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 8
+		Adjacent: 2
 	Health:
 		HP: 30000
 	Armor:
@@ -4440,7 +4444,7 @@ RASPEN:
 		Description: Long range defensive structure.\n Fires 3x as fast as the Mortar Pit.
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 8
+		Adjacent: 2
 	Health:
 		HP: 30000
 	Armor:
@@ -4479,7 +4483,7 @@ RASPEN:
 	SelectionDecorations:
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 8
+		Adjacent: 2
 	Health:
 		HP: 40000
 	Armor:
@@ -4518,6 +4522,7 @@ RASPEN:
 2100HQ.SCAVENGER:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -4587,7 +4592,7 @@ RASPEN:
 		Amount: 0
 	GrantConditionOnBotOwner:
 		Condition: botalpha
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botalpha
 		RequiresCondition: botalpha
@@ -4633,6 +4638,9 @@ RASPEN:
 		ValidTypes: building							##########
 	CashTrickler:
 		Amount: -1
+	StoresResources:
+		Capacity: 1000
+		PipCount: 5
 
 2100CHOPSHOP:
 	Inherits: ^BaseBuilding
@@ -5023,7 +5031,7 @@ RASPEN:
 		Type: Wood
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 9
+		Adjacent: 2
 	LineBuild:
 		Range: 11
 		NodeTypes: 2100scavwall
@@ -5108,7 +5116,7 @@ RASPEN:
 		SellSounds: cashturn.aud
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 9
+		Adjacent: 2
 	SelectionDecorations:
 	BlocksProjectiles:
 	RenderRangeCircle:
@@ -5167,7 +5175,7 @@ RASPEN:
 		Range: 3c0
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 10
+		Adjacent: 2
 
 2100SCAVRT:
 	Inherits: ^Defense
@@ -5184,7 +5192,7 @@ RASPEN:
 		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 8
+		Adjacent: 2
 	Selectable:
 		Bounds: 24,24
 	SelectionDecorations:
@@ -5224,7 +5232,7 @@ RASPEN:
 		Description: Long range defensive structure.
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 8
+		Adjacent: 2
 	Health:
 		HP: 35000
 	Armor:
@@ -5254,6 +5262,7 @@ CITYMAYOR:
 	Inherits@CPQ: ^CPQCondition
 	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits@MAYORCALL: ^MayorCall
+	Inherits@aicash: ^AIConyardCash
 	AcceptsDeliveredExperience:
 		ValidTypes: building
 	Selectable:
@@ -5327,7 +5336,7 @@ CITYMAYOR:
 		Condition: jammed
 	GrantConditionOnBotOwner:
 		Condition: botcity
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botcity
 		RequiresCondition: botcity
@@ -6352,7 +6361,8 @@ XFACT:
 		-Condition: build-incomplete
 	-RepairableBuilding:
 	-WithBuildingRepairDecoration:
-	-Capturable:
+	Capturable:
+		Types: xfact
 	-Sellable:
 	-Demolishable:
 
@@ -6387,7 +6397,8 @@ XPYLE:
 		-Condition: build-incomplete
 	-RepairableBuilding:
 	-WithBuildingRepairDecoration:
-	-Capturable:
+	Capturable:
+		Types: xfact
 	-Sellable:
 	-Demolishable:
 	-Production@NORMAL:
@@ -6425,7 +6436,8 @@ XWEAP:
 	WithMakeAnimation:
 	-RepairableBuilding:
 	-WithBuildingRepairDecoration:
-	-Capturable:
+	Capturable:
+		Types: xfact
 	-Sellable:
 	-Demolishable:
 	-Production@NORMAL:
@@ -6471,7 +6483,8 @@ XHPAD:
 	WithMakeAnimation:
 	-RepairableBuilding:
 	-WithBuildingRepairDecoration:
-	-Capturable:
+	Capturable:
+		Types: xfact
 	-Sellable:
 	-Demolishable:
 	-Production@NORMAL:
@@ -6540,7 +6553,8 @@ XHOSP:
 		-Condition: build-incomplete
 	-RepairableBuilding:
 	-WithBuildingRepairDecoration:
-	-Capturable:
+	Capturable:
+		Types: xfact
 	-Sellable:
 	-Demolishable:
 
@@ -6606,7 +6620,8 @@ XBIO:
 		-Condition: build-incomplete
 	-RepairableBuilding:
 	-WithBuildingRepairDecoration:
-	-Capturable:
+	Capturable:
+		Types: xfact
 	-Sellable:
 	-Demolishable:
 
