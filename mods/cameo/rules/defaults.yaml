@@ -229,7 +229,7 @@
 		AssaultMoveCondition: assault-move
 
 ^AcceptsCloakCrate:
-	Cloak:
+	Cloak@TDcloak:
 		InitialDelay: 15
 		CloakDelay: 90
 		CloakSound: trans1.aud
@@ -241,6 +241,15 @@
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
+	Cloak@TScloak:
+		InitialDelay: 15
+		CloakDelay: 90
+		CloakSound: cloak5.aud
+		UncloakSound: cloak5.aud
+		PauseOnCondition: cloak-force-disabled
+		RequiresCondition: tscloak
+	ExternalCondition@TSCLOAK:
+		Condition: tscloak
 
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
@@ -250,6 +259,7 @@
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
 	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
+	Inherits@bot: ^BotProductionBoost
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -416,6 +426,7 @@
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
 	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
+	Inherits@bot: ^BotProductionBoost
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -481,6 +492,7 @@
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
 	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
+	Inherits@bot: ^BotProductionBoost
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -831,6 +843,7 @@
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
 	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
+	Inherits@bot: ^BotProductionBoost
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -859,6 +872,7 @@
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
+	Inherits@bot: ^BotProductionBoost
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -965,20 +979,41 @@
 		RequiresCondition: TSNeutronBomb
 	Cloak@CloackGen:
 		InitialDelay: 15
-		CloakDelay: 90
-		CloakSound: trans1.aud
-		UncloakSound: trans1.aud
+		CloakDelay: 90		
+		CloakSound: cloak5.aud
+		UncloakSound: cloak5.aud
 		PauseOnCondition: cloak-force-disabled
-		RequiresCondition: cloak-crate-collected
+		RequiresCondition: tscloak
 	ExternalCondition@CLOAKCloackGen:
-		Condition: cloak-crate-collected
+		Condition: tscloak
 	GrantConditionOnDamageState@UNCLOAKCloackGen:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
 
+^BotProductionBoost:
+	GrantConditionOnBotOwner@brutal:
+		Condition: brutalowner
+		Bots: brutal
+	ProvidesPrerequisite@brutal:
+		Prerequisite: brutalproduce
+		RequiresCondition: brutalowner
+	ProductionTimeMultiplier@brutal:
+		Multiplier: 80
+		Prerequisites: brutalproduce
+	GrantConditionOnBotOwner@hard:
+		Condition: hardowner
+		Bots: hard
+	ProvidesPrerequisite@hard:
+		Prerequisite: hardproduce
+		RequiresCondition: hardowner
+	ProductionTimeMultiplier@hard:
+		Multiplier: 90
+		Prerequisites: hardproduce
+
 ^BaseBuilding:
 	Inherits: ^Building
 	Inherits@2: ^IronCurtainable
+	Inherits@bot: ^BotProductionBoost
 	Building:
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud
@@ -1566,6 +1601,7 @@
 	Inherits@2: ^GainsExperience
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
+	Inherits@bot: ^BotProductionBoost
 	Repairable:
 		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept	##########
 
@@ -2556,3 +2592,29 @@ CPQDEBUGDUMMY:
 		RequiresCondition: primary
 	GivesBuildableArea@forbotindustry:
 		AreaTypes: building, cityi
+
+^AIConyardCash:
+	GrantConditionOnBotOwner@brutal:
+		Condition: brutalcash
+		Bots: brutal
+	CashTrickler@brutal:
+		Interval: 400
+		Amount: 1000
+		ShowTicks: False
+		RequiresCondition: brutalcash
+	GrantConditionOnBotOwner@hard:
+		Condition: hardcash
+		Bots: hard
+	CashTrickler@hard:
+		Interval: 400
+		Amount: 600
+		ShowTicks: False
+		RequiresCondition: hardcash
+	GrantConditionOnBotOwner@medium:
+		Condition: normalcash
+		Bots: medium
+	CashTrickler@medium:
+		Interval: 400
+		Amount: 300
+		ShowTicks: False
+		RequiresCondition: normalcash
