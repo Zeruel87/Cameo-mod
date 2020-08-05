@@ -3564,33 +3564,77 @@ RA2E1:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks
 		Queue: Infantry.AlliesRA2, RAInfantry.AlliesRA2
-		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles.\n It can be deployed in a turret
+		Description: General-purpose infantry.\n  Can deploy for increased firepower
 	Mobile:
 		Speed: 50
+		RequireForceMoveCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 8000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
 		Weapon: RA2M60
+		RequiresCondition: !deployed
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RA2vulcan2
+	Armament@DEPLOYED:						##########
+		Name: deployed
+		Weapon: RA2CRM60
 	AttackFrontal:
+		Armaments: primary
+		RequiresCondition: undeployed
+	AttackTurreted@deployed:
+		Armaments: garrisoned
+		Turrets: deploy
+		RequiresCondition: deployed
+	Turreted:
+		Turret: deploy
+		RealignDelay: -1
+		TurnSpeed: 1023
+		InitialFacing: 368
+	WithSpriteTurret@idle:
+		Turret: deploy
+		Sequence: deployed
+		RequiresCondition: deployed && !animate-turret
+	WithSpriteTurret@animated:
+		Turret: deploy
+		Sequence: shoot-deployed
+		RequiresCondition: deployed && animate-turret
+	WithSpriteBody:
+		Sequence: dot
+		Name: dot
+		RequiresCondition: !undeployed
+	GrantConditionOnAttack:
+		Condition: animate-turret
+		RevokeDelay: 10
+		ArmamentNames: garrisoned
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		Sequence: deploy
+		BodyNames: dot
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: deployed
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		DeploySounds: igidepa.wav,igidepb.wav
+		UndeploySounds: igidepa.wav,igidepb.wav
+		UndeployOnMove: true
+		RequiresCondition: !parachute
+	TakeCover:
+		RequiresCondition: undeployed
 	Voiced:
 		VoiceSet: GIVoice
-	Transforms:
-		IntoActor: ra2e1dep
-		Offset: 0,0
-		Facing: 2
-		TransformSounds: igidepa.wav,igidepb.wav
-		NoTransformNotification: BuildingCannotPlaceAudio
 	DeliversCash:
 		Payload: 75
 
@@ -3647,33 +3691,76 @@ YRGGI:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
 		Queue: Infantry.AlliesRA2, RAInfantry.AlliesRA2
-		Description: Anti Tank infantry.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry.\n It can be deployed in a turret
+		Description: Anti-vehicle infantry.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry.\n Can deploy for extra firepower
 	Mobile:
 		Speed: 48
+		RequireForceMoveCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 8000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
 		Weapon: GuardianGIMG
+	Armament@DEPLOYED:						##########
+		Name: deployed
+		Weapon: RA2GIRocketsG
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RA2GIRocketsG
 	AttackFrontal:
+		Armaments: primary
+		RequiresCondition: undeployed
+	AttackTurreted@deployed:
+		Armaments: garrisoned
+		Turrets: deploy
+		RequiresCondition: deployed
+	Turreted:
+		Turret: deploy
+		RealignDelay: -1
+		TurnSpeed: 1023
+		InitialFacing: 368
+	WithSpriteTurret@idle:
+		Turret: deploy
+		Sequence: deployed
+		RequiresCondition: deployed && !animate-turret
+	WithSpriteTurret@animated:
+		Turret: deploy
+		Sequence: shoot-deployed
+		RequiresCondition: deployed && animate-turret
+	WithSpriteBody:
+		Sequence: dot
+		Name: dot
+		RequiresCondition: !undeployed
+	GrantConditionOnAttack:
+		Condition: animate-turret
+		RevokeDelay: 10
+		ArmamentNames: garrisoned
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		Sequence: deploy
+		BodyNames: dot
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: deployed
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		DeploySounds: iggidea.wav,iggideb.wav,iggidec.wav
+		UndeploySounds: iggidea.wav,iggideb.wav,iggidec.wav
+		UndeployOnMove: true
+		RequiresCondition: !parachute
+	TakeCover:
+		RequiresCondition: undeployed
 	Voiced:
 		VoiceSet: GGIVoice
-	Transforms:
-		IntoActor: yrggidep
-		Offset: 0,0
-		Facing: 2
-		TransformSounds: iggidea.wav,iggideb.wav,iggidec.wav
-		NoTransformNotification: BuildingCannotPlaceAudio
 	DeliversCash:
 		Payload: 150
 
@@ -6297,26 +6384,22 @@ ra2dest:
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: AlliesNavalVoice
-	AmmoPool:
-		Ammo: 49
-		PipCount: 0
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 451
-		Count: 50
-	FreeActor@Hornet1:
-		Actor: ra2asw
-		AllowRespawn: True
-		RequiresCondition: ammo == 0
+	CarrierMaster:
+		Actors: ra2asw
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: true
+		LoadedCondition: osprey-loaded
+		ArmamentName: osprey
 	Armament@GenerateOsprey:
 		Weapon: RA2OspreyTarget
-	Armament@GenerateOsprey2:
-		Weapon: RA2OspreyTarget
+		Name: osprey
 	WithVoxelBody:
-		RequiresCondition: ammo > 0
+		RequiresCondition: osprey-loaded
 	WithVoxelBody@Empy:
 		Sequence: idle-empy
-		RequiresCondition: ammo == 0
+		RequiresCondition: !osprey-loaded
 
 ra2aegis:
 	Inherits: ^BoatUnit
@@ -6667,27 +6750,14 @@ ra2carrier:
 	DeliversCash:
 		Payload: 450
 	WithVoxelBody:
-	AmmoPool:
-		Ammo: 4
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 524
-		Count: 4
-	GrantConditionOnDamageState@NOPLANES:
-		Condition: hornet-force-disabled
-		ValidDamageStates: Critical
-	FreeActor@Hornet1:
-		Actor: ra2hornet
-		AllowRespawn: True
-		RequiresCondition: ammo == 1 && !hornet-force-disabled
-	FreeActor@Hornet3:
-		Actor: ra2hornet
-		AllowRespawn: True
-		RequiresCondition: ammo == 2 && !hornet-force-disabled
-	FreeActor@Hornet2:
-		Actor: ra2hornet
-		AllowRespawn: True
-		RequiresCondition: ammo == 3 && !hornet-force-disabled
+	CarrierMaster:
+		Actors: ra2hornet, ra2hornet, ra2hornet
+		RearmTicks: 150
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		LoadedCondition: hornet-loaded
 	Armament@PRIMARY:
 		Weapon: RA2CarrierTarget
 	Voiced:
@@ -7266,15 +7336,14 @@ ra2hornet:
 	RevealsShroud:
 		Range: 8c0
 		Type: GroundPosition
-	Armament@SECONDARY:
+	Armament@PRIMARY:
 		Weapon: RA2HornetMissile
 		LocalOffset: 427,-171,-213, 427,171,-213
-		PauseOnCondition: ammo == 0
+		PauseOnCondition: !ammo
 	AmmoPool:
 		Ammo: 6
 		PipCount: 1
 		AmmoCondition: ammo
-	WithShadow:
 	-SpawnActorOnDeath:
 	WithMoveAnimation:
 		MoveSequence: move
@@ -7288,21 +7357,17 @@ ra2hornet:
 		FacingTolerance: 20
 		PersistentTargeting: false
 		AttackTurnDelay: 30
-	ReloadAmmoPool:
-		Delay: 60
-		Count: 6
-	KillsSelf:
-		Delay: 440
+	Rearmable:
+		RearmActors: ra2carrier
+	CarrierSlave:
+		LandingDistance: 2c0
 	AutoTarget:
 		InitialStanceAI: AttackAnything
 		InitialStance: AttackAnything
 	-EjectOnDeath:
 
 ra2asw:
-	Inherits: ^RAPlane
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
+	Inherits: ra2hornet
 	Interactable:
 	Valued:
 		Cost: 300
@@ -7323,40 +7388,16 @@ ra2asw:
 		HP: 7000
 	Armor:
 		Type: Light
-	RevealsShroud:
-		Range: 8c0
-		Type: GroundPosition
 	Armament@PRIMARY:
 		Weapon: RA2DepthCharge
 		LocalOffset: 427,-171,-213, 427,171,-213
 		PauseOnCondition: !ammo
-	AmmoPool:
-		Ammo: 6
-		PipCount: 1
-		AmmoCondition: ammo
-	WithShadow:
-	-SpawnActorOnDeath:
-	WithMoveAnimation:
-		MoveSequence: move
-	RenderVoxels:
-		NormalsPalette: ts-normals
-		Scale: 6.0
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: NighthawkVoice
 	AttackAircraft:
 		FacingTolerance: 20
 		PersistentTargeting: false
 		AttackTurnDelay: 30
-	ReloadAmmoPool:
-		Delay: 60
-		Count: 6
-	KillsSelf:
-		Delay: 442
-	AutoTarget:
-		InitialStanceAI: AttackAnything
-		InitialStance: AttackAnything
-	-EjectOnDeath:
+	Rearmable:
+		RearmActors: ra2dest
 	DetectCloaked:
 		Range: 6c0
 		CloakTypes: Underwater

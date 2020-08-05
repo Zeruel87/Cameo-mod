@@ -2915,59 +2915,6 @@ tsntsam:
 	Power:
 		Amount: -30
 
-TSTTNKTURRET:
-	Inherits: ^Defense
-	Inherits@AUTOTARGET: ^AutoTargetGround
-	Inherits@RenderVoxel: ^TSRenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
-	Buildable:
-		Queue: Defence.TSNod, RADefence.TSNod
-		BuildPaletteOrder: 20
-		Prerequisites: vehicleproduction, ~botts
-		Description: Bot
-	Valued:
-		Cost: 800
-	Tooltip:
-		Name: Tick Tank
-	Building:
-		Footprint: x
-		Dimensions: 1,1
-	Health:
-		HP: 70000
-	Armor:
-		Type: Concrete
-	RevealsShroud:
-		Range: 7c0
-	Selectable:
-		Bounds: 24,24
-	Turreted:
-		TurnSpeed: 10
-		InitialFacing: 224
-		Offset: 160,5,3
-	AttackTurreted:
-	Armament@PRIMARY:
-		Weapon: TS90mm
-		LocalOffset: 407,0,362
-		RequiresCondition: !rank-elite
-	Armament@ELITE:
-		Weapon: TS120mmx
-		LocalOffset: 407,0,362
-		RequiresCondition: rank-elite
-	BodyOrientation:
-		QuantizedFacings: 16
-	WithVoxelTurret:
-	WithRangeCircle:
-		Range: 6c0
-	AutoTarget:
-	DetectCloaked:
-		Range: 2c0
-	-WithVoxelBody:
-	Transforms:
-		IntoActor: tsttnk
-		Offset: 0,0
-		Facing: 2
-		NoTransformNotification: BuildingCannotPlaceAudio
-
 TSTTNKTURRET2:
 	Inherits: TSTTNKTURRET
 	Buildable:
@@ -3032,10 +2979,8 @@ tsntpuls:
 		IncomingSpeechNotification: NuclearWarheadApproaching
 		MissileWeapon: TSEmpDeviceExplosion
 		MissileDelay: 11
+		FlightDelay: 20
 		SpawnOffset: 3c0,0,-1c512
-		DisplayBeacon: True
-		BeaconPoster: atomic
-		BeaconPosterPalette: beaconposter
 		DisplayRadarPing: True
 		CameraRange: 10c0
 		ArrowSequence: arrow
@@ -3058,10 +3003,8 @@ tsntpuls:
 		IncomingSpeechNotification: NuclearWarheadApproaching
 		MissileWeapon: TSEmpDeviceExplosion
 		MissileDelay: 11
+		FlightDelay: 20
 		SpawnOffset: 3c0,0,-1c512
-		DisplayBeacon: True
-		BeaconPoster: atomic
-		BeaconPosterPalette: beaconposter
 		DisplayRadarPing: True
 		CameraRange: 10c0
 		ArrowSequence: arrow
@@ -3557,8 +3500,22 @@ TSCYBORG:
 	Armament@PRIMARY:
 		Weapon: TSVulcan3
 	WithInfantryBody:
-		IdleSequences: idle1,idle2,idle3,idle4
-		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2
+		DefaultAttackSequence: attack
+		RequiresCondition: !cydamaged
+	WithInfantryBody@damaged:
+		MoveSequence: crippled-run
+		AttackSequences: crippled-attack
+		StandSequences: crippled-stand
+		RequiresCondition: cydamaged
+	GrantConditionOnDamageState@damaged:
+		Condition: cydamaged
+		ValidDamageStates: Critical
+	SpeedMultiplier@damaged:
+		Modifier: 50
+		RequiresCondition: cydamaged
+	-DamagedByTerrain:
+	-SpawnActorOnDeath:
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -3567,9 +3524,9 @@ TSCYBORG:
 		VoiceSet: TSCyborg
 	Armor:
 		Type: Light
-	SpawnActorOnDeath@HalfCyborg:
-		Actor: TSCYBORG2
-		OwnerType: Victim
+	#SpawnActorOnDeath@HalfCyborg:
+	#	Actor: TSCYBORG2
+	#	OwnerType: Victim
 	-TakeCover:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
@@ -3666,10 +3623,7 @@ TSREAPER2:
 		Image: tsreaper
 
 TSCYC2:
-	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits: TSCYBORG
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -3689,20 +3643,10 @@ TSCYC2:
 		ScanRadius: 4
 	Armament@PRIMARY:
 		Weapon: TSCyCannon
-	WithInfantryBody:
-		IdleSequences: idle1,idle2,idle3,idle4
-		DefaultAttackSequence: shoot
-	Parachutable:
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: infantry							##########
 	Voiced:
 		VoiceSet: TSCyborgCommando
 	Armor:
 		Type: Heavy
-	SpawnActorOnDeath@HalfCyborg:
-		Actor: TSCYC22
-		OwnerType: Victim
 
 TSCYC22:
 	Inherits: ^Soldier
@@ -4878,6 +4822,7 @@ TSTTNK:
 		Locomotor: tracked
 		TurnSpeed: 5
 		Speed: 85
+		RequireForceMoveCondition: deployed
 	Health:
 		HP: 35000
 	Repairable:
@@ -4888,6 +4833,106 @@ TSTTNK:
 		Range: 6c0
 	Turreted:
 		TurnSpeed: 5	#3
+		Turret: deployed
+	Armament@PRIMARY:
+		Weapon: TS90mm
+		LocalOffset: 407,0,362
+		RequiresCondition: !rank-elite
+		MuzzleSequence: muzzle
+	Armament@ELITE:
+		Weapon: TS120mmx
+		LocalOffset: 407,0,362
+		RequiresCondition: rank-elite
+		MuzzleSequence: muzzle
+	Armament@deployed:
+		Name: deployed
+		Turret: deployed
+		Weapon: 90mm
+		LocalOffset: 543,0,362
+		RequiresCondition: !rank-elite
+		MuzzleSequence: muzzle
+	Armament@elitedeployed:
+		Name: deployed
+		Turret: deployed
+		Weapon: TS120mmx
+		LocalOffset: 543,0,362
+		RequiresCondition: rank-elite
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		RequiresCondition: undeployed
+	AttackTurreted@deployed:
+		RequiresCondition: deployed
+		Armaments: deployed
+		Turrets: deployed
+		PauseOnCondition: TSNeutronBomb
+	SelectionDecorations:
+	Selectable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	WithVoxelBody:
+		RequiresCondition: undeployed
+	WithSpriteBody@deployed:
+		RequiresCondition: deployed
+		Sequence: deploy-idle
+	WithVoxelTurret:
+		Turret: deployed
+		RequiresCondition: deployed
+	WithVoxelBarrel:
+		Armament: deployed
+		LocalOffset: 90,0,180
+		RequiresCondition: deployed
+	WithMakeAnimation:
+	GrantConditionOnDeploy:
+		PauseOnCondition: TSNeutronBomb
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: true
+		UndeployOnPickup: true
+		Facing: 160
+		DeploySounds: place2.aud
+		UndeploySounds: place2.aud
+		Voice: Move
+	Voiced:
+		VoiceSet: TSVehicle
+	DeliversCash:
+		Payload: 350
+	#Transforms:
+	#	IntoActor: tsttnkturret
+	#	Offset: 0,0
+	#	Facing: 2
+	#	NoTransformNotification: BuildingCannotPlaceAudio
+
+TSTTNKTURRET:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@RenderVoxel: ^TSRenderVoxel
+	Inherits@EXPERIENCE: ^GainsExperience
+	Buildable:
+		Queue: Defence.TSNod, RADefence.TSNod
+		BuildPaletteOrder: 20
+		Prerequisites: vehicleproduction, ~botts
+		Description: Bot
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Tick Tank
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 70000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 7c0
+	Selectable:
+		Bounds: 24,24
+	Turreted:
+		TurnSpeed: 10
+		InitialFacing: 224
+		Offset: 160,5,3
+	AttackTurreted:
 	Armament@PRIMARY:
 		Weapon: TS90mm
 		LocalOffset: 407,0,362
@@ -4896,21 +4941,17 @@ TSTTNK:
 		Weapon: TS120mmx
 		LocalOffset: 407,0,362
 		RequiresCondition: rank-elite
-	AttackTurreted:
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	WithVoxelBody:
+	BodyOrientation:
+		QuantizedFacings: 16
 	WithVoxelTurret:
-	WithVoxelBarrel:
-	Voiced:
-		VoiceSet: TSVehicle
-	DeliversCash:
-		Payload: 350
+	WithRangeCircle:
+		Range: 6c0
+	AutoTarget:
+	DetectCloaked:
+		Range: 2c0
+	-WithVoxelBody:
 	Transforms:
-		IntoActor: tsttnkturret
+		IntoActor: tsttnk
 		Offset: 0,0
 		Facing: 2
 		NoTransformNotification: BuildingCannotPlaceAudio
