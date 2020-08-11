@@ -6,6 +6,7 @@ SCCOMMANDCENTER:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@aicash: ^AIConyardCash
 	Valued:
 		Cost: 2400
 	Tooltip:
@@ -85,7 +86,7 @@ SCCOMMANDCENTER:
 	-SpawnActorsOnSell:
 	GrantConditionOnBotOwner:
 		Condition: botterran
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botterran
 		RequiresCondition: botterran
@@ -710,6 +711,7 @@ SCNEXUS:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@aicash: ^AIConyardCash
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 74,62
@@ -782,7 +784,7 @@ SCNEXUS:
 		Amount: 100
 	GrantConditionOnBotOwner:
 		Condition: botprotoss
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botprotoss
 		RequiresCondition: botprotoss
@@ -1433,6 +1435,7 @@ SCHATCHERY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@aicash: ^AIConyardCash
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -1519,7 +1522,7 @@ SCHATCHERY:
 		Amount: 100
 	GrantConditionOnBotOwner:
 		Condition: botzerg
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botzerg
 		RequiresCondition: botzerg
@@ -2020,6 +2023,7 @@ SCLAIR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@aicash: ^AIConyardCash
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -2146,6 +2150,7 @@ SCHIVE:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@aicash: ^AIConyardCash
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -2730,6 +2735,7 @@ SCSIEGETANK:
 		Description: armored Tank with slightly longer range then other Tanks.\n can enter Siege Mode for Artillery range attacks with High Splash damage.
 	Mobile:
 		Speed: 60
+		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 47300
 	RevealsShroud:
@@ -2739,23 +2745,51 @@ SCSIEGETANK:
 	Turreted:
 		TurnSpeed: 10
 		Offset: -256,0,256
+		RequiresCondition: undeployed
 	Armament:
 		Weapon: SiegeTankCanon
 		MuzzleSequence: muzzle
 		LocalOffset: 600,0,0
+	Armament@DEPLOYED:
+		Name: deployed
+		Weapon: SiegeTankSiegeCanon
+		LocalOffset: 600,-100,768
+		MuzzleSequence: muzzle
 	AttackTurreted:
+		RequiresCondition: !deployed
+	AttackFrontal@deployed:
+		Armaments: deployed
+		RequiresCondition: deployed
 	WithMuzzleOverlay:
 	WithSpriteTurret:
-	Transforms:
-		IntoActor: scsiegetanksiege
-		Facing: 160
-		TransformSounds: TankSiege.aud
+		RequiresCondition: undeployed
+	WithFacingSpriteBody:
+		RequiresCondition: !deployed
+	WithFacingSpriteBody@deployed:
+		Sequence: deployed
+		RequiresCondition: deployed
+		Name: deployed
+	WithMakeAnimation:
+	#Transforms:
+	#	IntoActor: scsiegetanksiege
+	#	Facing: 160
+	#	TransformSounds: TankSiege.aud
 	Selectable:
 		Bounds: 36,36
 		DecorationBounds: 36,36
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		DeploySounds: TankSiege.aud
+		UndeploySounds: TankSiege.aud
+		UndeployOnMove: true
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: deployed
 	Passenger:
 		Weight: 4
 		PipType: blue
+		RequireForceMoveCondition: !undeployed
 	Voiced:
 		VoiceSet: SCSiegeTankVoice
 
@@ -4198,6 +4232,7 @@ SCLURKER:
 	Mobile:
 		Speed: 90
 		Locomotor: wheeled
+		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 29500
 	Armor:
@@ -4209,14 +4244,51 @@ SCLURKER:
 	HitShape:
 	Power:
 		Amount: -20
-	Transforms:
-		IntoActor: sclurkerburrowed
-		TransformSounds: zluburrw.aud
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: true
+		UndeployOnPickup: true
+		DeploySounds: zluburrw.aud
+		UndeploySounds: zluburrw.aud
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,-180,0
+		RequiresCondition: deployed
+	WithSpriteTurret:
+		Name: deployed
+		Sequence: deploy-idle
+		RequiresCondition: deployed
+	WithSpriteBody:
+		Sequence: dot
+		Name: dot
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: dot
+		Sequence: burrow
+	Armament:
+		Weapon: LurkerSpines
+		RequiresCondition: deployed
+	AttackTurreted:
+		RequiresCondition: deployed
+	-AttackFrontal:
+	Cloak:
+		InitialDelay: 60
+		CloakDelay: 60
+		RequiresCondition: deployed
+	DetectCloaked:
+		Range: 0c0
+	#Transforms:
+	#	IntoActor: sclurkerburrowed
+	#	TransformSounds: zluburrw.aud
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
 	Passenger:
 		Weight: 4
 		PipType: blue
+		RequireForceMoveCondition: !undeployed
 	Voiced:
 		VoiceSet: SCLurkerVoice
 	Inherits@EXT: ^ExternalConditions					##########
