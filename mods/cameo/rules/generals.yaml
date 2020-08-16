@@ -2479,6 +2479,130 @@ chbarracks:
 	Selectable:
 		Bounds: 48,42,0,-5
 
+chgattling:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Gatling Cannon
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: chbarracks, ~techlevel.low
+		Queue: Defence.CHINA, RADefence.CHINA
+		BuildDurationModifier: 40
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 8
+	Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+	Health:
+		HP: 10000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,120
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament@NORMAL:
+		Weapon: CHGattlingTurret
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: CHGattlingTurretAA
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 5c0
+	-RenderDetectionCircle:
+	-SpawnActorsOnSell:
+	AmmoPool:
+		Ammo: 8
+		PipCount: 0
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 50
+		Count: 1
+	ReloadDelayMultiplier@GattlingSpeed:
+		RequiresCondition: !ammo
+		Modifier: 75
+	GrantConditionOnPrerequisite@upchaingun:
+		Condition: gunsupgrade
+		Prerequisites: upchaingun
+	ReloadDelayMultiplier@GattlingSpeed2:
+		RequiresCondition: gunsupgrade
+		Modifier: 50
+	Power:
+		Amount: -10
+
+chbunker:
+	Inherits: ^Defense
+	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: Bunker
+	Building:
+		Footprint: xx xx
+		Dimensions: 2, 2
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: chbarracks, ~techlevel.low
+		Queue: Defence.CHINA, RADefence.CHINA
+		BuildDurationModifier: 40
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	Valued:
+		Cost: 600
+	CustomSellValue:
+		Value: 500
+	Health:
+		HP: 10000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Turreted:
+		TurnSpeed: 255
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	Cargo:
+		Types: Infantry
+		MaxWeight: 5
+		PipCount: 5
+		InitialUnits: che1
+		LoadedCondition: bunkerup
+	WithSpriteBody@Bunkered:
+		Sequence: idle-bunkered
+		RequiresCondition: bunkerup
+		Name: bunkered
+	-SpawnActorsOnSell:
+	AttackGarrisoned:
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PortYaws: 0, 176, 341, 512, 682, 853
+		PortCones: 88, 88, 88, 88, 88, 88
+	RenderRangeCircle:
+		FallbackRange: 6c0
+	Power:
+		Amount: -20
+	DetectCloaked:
+		Range: 6c0
+
 chsupply:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -2592,6 +2716,8 @@ chweap:
 		Prerequisite: chweap
 	ProvidesPrerequisite@vehicleproduction:
 		Prerequisite: vehicleproduction
+	Power:
+		Amount: -40
 
 chpropaganda:
 	Inherits: ^BaseBuilding
@@ -2628,6 +2754,8 @@ chpropaganda:
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite:
 		Prerequisite: chpropaganda
+	Power:
+		Amount: -40
 
 CHE1:
 	Inherits: ^Soldier
@@ -2912,6 +3040,9 @@ charty:
 	GrantConditionOnPrerequisite@upbluefire:
 		Condition: flameupgrade
 		Prerequisites: upbluefire
+	ProducibleWithLevel:
+		Prerequisites: upcharty
+		InitialLevels: 1
 
 choverlord:
 	Inherits: ^Tank
@@ -2978,19 +3109,78 @@ choverlord:
 	SpeedMultiplier@upatomictank:
 		RequiresCondition: upatomictank
 		Modifier: 125
-	Explodes@upatomictank:
-		Weapon: CHAtomicWeapon2
-		EmptyWeapon: CHAtomicWeapon2
-		RequiresCondition: upatomictank
-	Explodes@upatomictank2:
-		Weapon: CHRadiationYellow
-		EmptyWeapon: CHRadiationYellow
-		RequiresCondition: upatomictank
+	-ActorLostNotification:
+	Production:
+		Produces: Overlord.CHINA
+	ProductionQueue:
+		Type: Overlord.CHINA
+		Group: Defence
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		DisplayOrder: 0
+	GrantConditionOnProduction@gattling:
+		Condition: bomb1condition
+		Actors: pscchoverlord1
+	KillsSelf@gattling:
+		RequiresCondition: bomb1condition
+		GrantsCondition: bomb1rebirth
+	SpawnActorOnDeath@gattling:
+		RequiresCondition: bomb1rebirth
+		Actor: choverlord2
+	GrantConditionOnProduction@bunker:
+		Condition: bomb2condition
+		Actors: pscchoverlord2
+	KillsSelf@bunker:
+		RequiresCondition: bomb2condition
+		GrantsCondition: bomb2rebirth
+	SpawnActorOnDeath@bunker:
+		RequiresCondition: bomb2rebirth
+		Actor: choverlord3
+
+pscchoverlord1:
+	Tooltip:
+		Name: Gattling Turret
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Overlord.CHINA
+		Description: Normal Weak Explosive.
+		Prerequisites: chweap
+	Valued:
+		Cost: 1200
+	RenderSprites:
+		Image: glbombtruck
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+
+pscchoverlord2:
+	Tooltip:
+		Name: Bunker
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Overlord.CHINA
+		Description: Toxin Explosive.
+		Prerequisites: chweap
+	Valued:
+		Cost: 1600
+	RenderSprites:
+		Image: glbombtruck
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
 
 choverlord2:
 	Inherits: choverlord
 	Valued:
 		Cost: 3200
+	-Buildable:
 	Tooltip:
 		Name: Gatling Overlord Tank
 	Armament@SECONDARY:
@@ -3013,10 +3203,24 @@ choverlord2:
 	ReloadDelayMultiplier@GattlingSpeed2:
 		RequiresCondition: gunsupgrade
 		Modifier: 90
+	Explodes@upatomictank:
+		Weapon: CHAtomicWeapon2
+		EmptyWeapon: CHAtomicWeapon2
+		RequiresCondition: upatomictank
+	Explodes@upatomictank2:
+		Weapon: CHRadiationYellow
+		EmptyWeapon: CHRadiationYellow
+		RequiresCondition: upatomictank
+	-Production:
+	-ProductionQueue:
+	-GrantConditionOnProduction@gattling:
+	-GrantConditionOnProduction@bunker:
+
 choverlord3:
 	Inherits: choverlord
 	Valued:
 		Cost: 3600
+	-Buildable:
 	Tooltip:
 		Name: Bunker Overlord Tank
 	Armament@SECONDARY:
@@ -3033,6 +3237,18 @@ choverlord3:
 		LocalYaw: -100, 100
 		Recoil: 10
 		MuzzleSequence: muzzle
+	Explodes@upatomictank:
+		Weapon: CHAtomicWeapon2
+		EmptyWeapon: CHAtomicWeapon2
+		RequiresCondition: upatomictank
+	Explodes@upatomictank2:
+		Weapon: CHRadiationYellow
+		EmptyWeapon: CHRadiationYellow
+		RequiresCondition: upatomictank
+	-Production:
+	-ProductionQueue:
+	-GrantConditionOnProduction@gattling:
+	-GrantConditionOnProduction@bunker:
 
 chdragon:
 	Inherits: ^Tank
@@ -3125,12 +3341,6 @@ chgtnk:
 		Recoil: 85
 		RecoilRecovery: 17
 		LocalOffset: 720,50,90, 720,-50,90, 720,50,140, 720,-50,140
-	Armament@1:
-		Weapon: CHGattlingTank
-		Recoil: 85
-		RecoilRecovery: 17
-		LocalOffset: 720,50,140, 720,-50,140, 720,50,90, 720,-50,90
-		MuzzleSequence: muzzle
 	Armament@AA:
 		Weapon: CHGattlingTankAA
 		Recoil: 85
@@ -3160,7 +3370,7 @@ chgtnk:
 		Prerequisites: upchaingun
 	ReloadDelayMultiplier@GattlingSpeed2:
 		RequiresCondition: gunsupgrade
-		Modifier: 75
+		Modifier: 50
 
 chharv:
 	Inherits: RAHARV
@@ -3171,20 +3381,20 @@ chharv:
 		Prerequisites: chsupply
 		Description: Collects Ore and Gems for processing.\n  Unarmed
 	Valued:
-		Cost: 800			#1100
+		Cost: 600			#1100
 	Tooltip:
 		Name: Ore Truck
 		GenericName: Harvester
 	Harvester:
-		Capacity: 10
+		Capacity: 8
 		DeliveryBuildings: chsupply
 	Health:
-		HP: 50000
+		HP: 30000
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 100
-		Locomotor: heavywheeled
+		Speed: 120
+		Locomotor: wheeled
 	RevealsShroud:
 		Range: 4c0
 	WithHarvestAnimation:
@@ -3195,7 +3405,6 @@ chharv:
 	-HarvesterHuskModifier:
 	RenderSprites:
 		Scale: 0.9
-		Image: raharv
 	Voiced:
 		VoiceSet: CHSupplyTruckVoice
 
@@ -3253,6 +3462,70 @@ chcrawl:
 	Voiced:
 		VoiceSet: TroopCrawlerVoice
 
+chnukecann:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Nuke Cannon
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: chpropaganda, ~techlevel.high, upnukecann
+		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
+		Description: Nod's main battle tank.\nCan deploy to gain extra protection.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+	Mobile:
+		Locomotor: tracked
+		TurnSpeed: 2
+		Speed: 71
+	Health:
+		HP: 24000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 9c0
+	Turreted:
+		TurnSpeed: 8	#3
+	Armament@PRIMARY:
+		Weapon: CHNukeCannon
+		LocalOffset: 407,0,362
+	AttackTurreted:
+	SelectionDecorations:
+	Selectable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	WithFacingSpriteBody@Skin1:
+		Sequence: idle2
+		RequiresCondition: ammo == 1
+		Name: body1
+	Voiced:
+		VoiceSet: TSVehicle
+	AmmoPool:
+		Ammo: 1
+		PipCount: 1
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 200
+		Count: 1
+	SpeedMultiplier@DEPLOY:
+		Modifier: 0
+		RequiresCondition: ammo == 0
+	WithFacingSpriteBody@Skin2:
+		Sequence: deploy
+		RequiresCondition: ammo == 0
+		Name: body2
+	WithSpriteTurret@Skin2:
+		RequiresCondition: ammo == 0
+		Sequence: turret
+	ProducibleWithLevel:
+		Prerequisites: upcharty
+		InitialLevels: 1
+
 upredguard:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -3269,6 +3542,40 @@ upredguard:
 		Image: chredtrainingicon
 	ProvidesPrerequisite:
 		Prerequisite: upredguard
+
+upcharty:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: General's Promotion Artillery Training
+	Buildable:
+		BuildPaletteOrder: 200
+		BuildDuration: 1800
+		Queue: Defence.CHINA, RADefence.CHINA
+		Description: The Marauder tank was a medium tank
+		Prerequisites: chcommand, ~!upcharty
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: chartytrainingicon
+	ProvidesPrerequisite:
+		Prerequisite: upcharty
+
+upnukecann:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: General's Promotion Nuke Cannon
+	Buildable:
+		BuildPaletteOrder: 200
+		BuildDuration: 1800
+		Queue: Defence.CHINA, RADefence.CHINA
+		Description: The Marauder tank was a medium tank
+		Prerequisites: chcommand, ~!upnukecann, ~techlevel.high
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: chnukecann
+	ProvidesPrerequisite:
+		Prerequisite: upnukecann
 
 upchaingun:
 	Inherits: ^upgrade.template
@@ -3537,3 +3844,58 @@ USAJEEP.HELLFIRE:
 		Image: USAJEEP
 	Health:
 		HP: 18000
+
+usahook:
+	Inherits: RAHARV
+	Inherits@selection: ^SelectableEconomicUnit
+	Buildable:
+		Queue: Vehicle.CHINA, Vehicle.CHINA
+		BuildPaletteOrder: 10
+		Prerequisites: chsupply
+		Description: Collects Ore and Gems for processing.\n  Unarmed
+	Valued:
+		Cost: 1200			#1100
+	Tooltip:
+		Name: Ore Truck
+		GenericName: Harvester
+	Harvester:
+		Capacity: 8
+		DeliveryBuildings: chsupply
+	Health:
+		HP: 30000
+	Mobile:
+		Speed: 120
+		Locomotor: lcraft
+	Armor:
+		Type: Heavy
+	Mobile:
+	RevealsShroud:
+		Range: 8c0
+		Type: GroundPosition
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	GpsDot:
+		String: Harvester
+	SpawnActorOnDeath:
+		Actor: TRAN.Husk
+	-HarvesterHuskModifier:
+	Voiced:
+		VoiceSet: CHSupplyTruckVoice
+	WithIdleOverlay@ROTOR1AIR:
+		Offset: 597,0,85
+		Sequence: rotor
+	WithIdleOverlay@ROTOR2AIR:
+		Offset: -597,0,171
+		Sequence: rotor2
+	Cargo:
+		Types: Infantry
+		MaxWeight: 8
+		PipCount: 8
+		AfterUnloadDelay: 40
+	Hovers:
+		InitialHeight: 1c0
+		MinHoveringAltitude: 1c43
+	Targetable:
+		TargetTypes: Air
+	WithShadow:
+		Offset: 0,0,-800

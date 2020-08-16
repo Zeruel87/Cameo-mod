@@ -2473,3 +2473,526 @@ UniversalHusk:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
+
+###########################################################################################
+##
+###########################################################################################
+
+BHFACT:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Selectable:
+		Bounds: 72,48
+	Valued:
+		Cost: 3500
+	Tooltip:
+		Name: Construction Yard (Nod)
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 210000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building.BHNod, Defence.BHNod
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.BHNod, RADefence.BHNod
+		RequiresCondition: classicproductionqueues
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: mcv.nod
+		Offset: 1,1
+		Facing: 108
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransformsIntoRepairable:
+		RequiresCondition: factundeploy
+		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept	##########
+		RequiresForceMove: true
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@NodBuilding:
+		Type: Building.BHNod
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@NodDefense:
+		Type: Defence.BHNod
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	ProductionBar@BuildingNod:
+		ProductionType: Building.BHNod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceNod:
+		ProductionType: Defence.BHNod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingNod:
+		ProductionType: RABuilding.BHNod
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceNod:
+		ProductionType: RADefence.BHNod
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Cooldown: 75
+		Range: 14c0
+	WithBuildingBib:
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
+	Buildable:
+		Queue: Building.Nod, RABuilding.Nod
+		BuildPaletteOrder: 1000
+		Prerequisites: ~disabled
+		Description: Builds structures
+	ProvidesPrerequisite@factionnod:
+		Prerequisite: mmbhnod
+
+BHNUKE:
+	Inherits: NUKE
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: fact
+		Queue: Building.BHNod, RABuilding.BHNod
+		BuildDuration: 330
+		Description: Generates power
+
+BHNUK2:
+	Inherits: NUK2
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: anyhq, ~techlevel.medium
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Provides more power, cheaper than the\nstandard Power Plant
+
+BHPROC:
+	Inherits: PROC
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Processes raw Tiberium\ninto useable resources
+	Refinery:
+		DockAngle: 112
+		DockOffset: 0,2
+		IsDragRequired: True
+		DragOffset: -554,512,0
+		DragLength: 12
+		TickRate: 15
+	FreeActor:
+		Actor: HARV
+		SpawnOffset: 1,2
+		Facing: 64
+	RenderSprites:
+		Image: proc
+BHSILO:
+	Inherits: SILO
+	Buildable:
+		BuildPaletteOrder: 35
+		Prerequisites: bhproc
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Stores processed Tiberium
+	RenderSprites:
+		Image: silo
+BHHAND:
+	Inherits: HAND
+	Tooltip:
+		Name: Biolab
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Trains infantry
+	Production@NORMAL:
+		Produces: Infantry.BHNod
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.BHNod
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry.BHNod
+	ProductionBar@INFANTRYNOD:
+		ProductionType: Infantry.BHNod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYNOD:
+		ProductionType: RAInfantry.BHNod
+		RequiresCondition: classicproductionqueues
+
+BHWEAP:
+	Inherits: WEAP
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: bhproc
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Produces vehicles
+	Production@NORMAL:
+		Produces: Vehicle.BHNod
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.BHNod
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Vehicle.BHNod
+	ProductionBar@VEHICLEGDI:
+		ProductionType: Vehicle.BHNod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLEGDI:
+		ProductionType: RAVehicle.BHNod
+		RequiresCondition: classicproductionqueues
+
+HPAD.BHNOD:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Helipad (Nod)
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: bhproc
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Produces, rearms and\nrepairs helicopters
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Production@NORMAL:
+		Produces: Aircraft.BHNod
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.BHNod
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ProductionQueue:
+		Type: Aircraft.BHNod
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AIRCRAFTNOD:
+		ProductionType: Aircraft.BHNod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFTNOD:
+		ProductionType: RAAircraft.BHNod
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -10
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: hpad
+	RenderSprites:
+		Image: hpad
+
+BHHQ:
+	Inherits: HQ
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: bhproc, ~techlevel.medium
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Provides radar and Air Strike support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+	AirstrikePower:
+		UnitType: bhmig
+	SupportPowerChargeBar:
+	RenderSprites:
+		Image: hq
+
+BHMIG:
+	Inherits: A10
+	Tooltip:
+		Name: Black Plane
+	Armament@GUNS:
+		Name: gun
+		Weapon: TSTurretLaserFire
+		LocalOffset: 1024,0,-85
+	Armament@BOMBS:
+		Name: bombs
+		Weapon: BHBombs
+		LocalOffset: 0,-256,-43, 0,256,-43
+
+BHFIX:
+	Inherits: FIX
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: vehicleproduction
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Repairs vehicles
+	RenderSprites:
+		Image: fix
+
+BHEYE:
+	Inherits: EYE
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Advanced Communications Center
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Provides radar and Orbital Ion Cannon support power.\nUnlocks Mammoth Tank and Commando.\nRequires power to operate.
+	RenderSprites:
+		Image: eye
+
+BHTMPL:
+	Inherits: TMPL
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Temple of Nod
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Provides Nuclear Strike support power.\nUnlocks Stealth Tank, Chem. Warrior and Obelisk of Light.\nRequires power to operate.
+	ProvidesPrerequisite@buildingname:
+	RenderSprites:
+		Image: tmpl
+
+BHGUN:
+	Inherits: GUN
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Laser Turret
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: barracks
+		Queue: Defence.BHNod, RADefence.BHNod
+	Armament:
+		Weapon: TSTurretLaserFire
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	Power:
+		Amount: -30
+	RenderSprites:
+		Image: gun
+
+BHSAM:
+	Inherits: SAM
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: hand
+		Queue: Defence.Nod, RADefence.Nod
+	RenderSprites:
+		Image: sam
+
+BHOBLI:
+	Inherits: OBLI
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: bhtmpl, ~techlevel.high
+		Queue: Defence.BHNod, RADefence.BHNod
+	RenderSprites:
+		Image: obli
+
+BHGTWR:
+	Inherits: GTWR
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: barracks
+		Queue: Defence.BHNod, RADefence.BHNod
+	RenderSprites:
+		Image: gtwr
+
+BHCYCL:
+	Inherits: CYCL
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: fact
+		Queue: Defence.BHNod, RADefence.BHNod
+	RenderSprites:
+		Image: cycl
+
+BHBRIK:
+	Inherits: BRIK
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Metal Barrier
+	Buildable:
+		Prerequisites: vehicleproduction
+		Queue: Defence.BHNod, RADefence.BHNod
+		BuildDuration: 600
+		BuildDurationModifier: 40
+		Description: Stops infantry and most tanks.\nBlocks some projectiles.
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+
+BHBIKE:
+	Inherits: BIKE
+	Tooltip:
+		Name: Black Bike
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: bhweap
+		Queue: Vehicle.BHNod, RAVehicle.BHNod, Vehicle.X_Vehicles
+		Description: Fast scout vehicle, armed with\nrockets.\nCan attack Aircraft.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+	Armament:
+		Weapon: BHRedDarts
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+
+BHAPC:
+	Inherits: RNAPC
+	Valued:
+		Cost: 550
+	Tooltip:
+		Name: Nod APC
+	Buildable:
+		Queue: Vehicle.BHNod, RAVehicle.BHNod, Vehicle.X_Vehicles
+		BuildPaletteOrder: 40
+		Prerequisites: vehicleproduction
+	RenderSprites:
+		Image: rnapc
+
+BHLTNK:
+	Inherits: RNLTNK
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Light Tank MKII
+	Buildable:
+		Queue: Vehicle.BHNod, RAVehicle.BHNod, Vehicle.X_Vehicles
+		BuildPaletteOrder: 50
+		Prerequisites: anyhq
+	Mobile:
+		Locomotor: heavywheeled
+		TurnSpeed: 11
+		Speed: 152
+	RenderSprites:
+		Image: rnltnk
+
+BHV2RL:
+	Inherits: V2RL
+	RenderSprites:
+		Image: V2RL
+	Buildable:
+		Queue: Vehicle.BHNod, RAVehicle.BHNod, Vehicle.X_Vehicles
+		BuildPaletteOrder: 70
+		Prerequisites: anyhq
+	-MapEditorData:
+
+BHFTNK:
+	Inherits: RNFTNK
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Flame Tank MKII
+	Buildable:
+		Queue: Vehicle.BHNod, RAVehicle.BHNod, Vehicle.X_Vehicles
+		BuildPaletteOrder: 60
+		Prerequisites: anyhq
+	RenderSprites:
+		Image: rnftnk
+
+BHE3:
+	Inherits: E3
+	Valued:
+		Cost: 450
+	Tooltip:
+		Name: Chemical Rocket Soldier
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks
+		Queue: Infantry.BHNod, RAInfantry.BHNod
+		Description: Same as the Other Rocket Soldier. \n  It Is powerful against every objective\n  It can explode
+	Armament@PRIMARY:							##########
+		Weapon: ChemRockets
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: ChemRocketsG
+	Explodes:
+		Weapon: TiberiumExplosion
+		EmptyWeapon: TiberiumExplosion
+		Chance: 50
+	RenderSprites:
+		Image: e3chem
+
+BHE1:
+	Inherits: E1
+	Valued:
+		Cost: 180
+	Tooltip:
+		Name: Elite Minigunner
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Infantry.BHNod, RAInfantry.BHNod
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 60
+	Armament@PRIMARY:							##########
+		Weapon: BHSuperRifle
+	RenderSprites:
+		Image: e1
+		Scale: 1.2
+	ProducibleWithLevel:
+		Prerequisites: barracks
+		InitialLevels: 1
