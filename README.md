@@ -1,6 +1,6 @@
 Cameo is an OpenRA mod aiming to incorporate content from a wide variety of RTS and other games.
 
-You can download binary releases [here](https://github.com/Zeruel87/Cameo-mod/releases/). However, due to the volume of content added, Cameo is extremely buggy, lacking in features, and crash-prone, so updates vital to mod functionality are frequent. Thus, it is recommended that you clone this repository and build from source instead, so updating can be done with minimal effort through pulling.
+You can download binary releases [here](https://github.com/Zeruel87/Cameo-mod/releases/). However, due to the volume of content added, Cameo is extremely buggy, lacking in properly functioning features, and crash-prone, so updates vital to mod functionality are frequent. Thus, it is recommended that you clone this repository and build from source instead, so updating can be done with minimal effort through pulling.
 
 The key scripts in this SDK are:
 
