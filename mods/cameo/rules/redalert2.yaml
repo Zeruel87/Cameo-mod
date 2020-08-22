@@ -4377,6 +4377,7 @@ YRBRUTE:
 		Payload: 250
 	Cloneable:
 		Types: NormalInfantry
+	-TakeCover:
 
 YRSLAV:
 	Inherits: ^Soldier
@@ -5455,7 +5456,7 @@ RA2V3:
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 		BuildPaletteOrder: 80
 		Prerequisites: anyhq, ~techlevel.medium
-		Description: Long-range rocket artillery.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n Rockets home in onto target
+		Description: Long-range rocket artillery.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n Rockets can be shot down
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -5472,15 +5473,11 @@ RA2V3:
 	RevealsShroud@GAPGEN:
 		Range: 4c0
 	Armament:
-		Weapon: RA2SCUD
-		PauseOnCondition: !ammo
-	AmmoPool:
-		Ammo: 1
-		PipCount: 0
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 240
-		Count: 1
+		Weapon: V3Launch
+	MissileSpawnerMaster:
+		Actors: ra2v3rocket
+		RespawnTicks: 200
+		LoadedCondition: ammo
 	AttackFrontal:
 	SelectionDecorations:
 	Explodes:
@@ -5495,12 +5492,35 @@ RA2V3:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithVoxelBody:
+		RequiresCondition: ammo
+	WithVoxelBody@empty:
+		Sequence: empty
+		RequiresCondition: !ammo
 	DeliversCash:
 		Payload: 450
 	ProductionCostMultiplier@Industrial:
 		Multiplier: 75
 		Prerequisites: yrngindp
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
+
+RA2V3ROCKET:
+	Inherits: ^ShootableMissile
+	Inherits@Voxel: ^RenderVoxel
+	Health:
+		HP: 12000
+	ShootableBallisticMissile:
+		LaunchAngle: 62
+		Speed: 177
+		AirborneCondition: airborne
+		LaunchSounds: vv3latta.wav, vv3lattb.wav
+	LeavesTrails:
+		Image: smokey
+		MovingInterval: 3
+		Type: CenterPosition
+	MissileSpawnerSlave:
+	SpawnedExplodes:
+		Weapon: RA2Scud
+		EmptyWeapon: RA2Scud
 
 RA2TTNK:
 	Inherits: ^Tank
@@ -6636,8 +6656,13 @@ ra2dred:
 	RevealsShroud@GAPGEN:
 		Range: 5c0
 	Armament@AG:
-		Weapon: RA2TwinSCUD
+		Weapon: DreadnoughtLaunch
 		Recoil: 85
+	MissileSpawnerMaster:
+		Actors: ra2dmisl, ra2dmisl
+		SpawnAllAtOnce: true
+		RespawnTicks: 120
+		LoadedCondition: ammo
 	DetectCloaked:
 		Range: 4c0
 		CloakTypes: Underwater
@@ -6651,12 +6676,31 @@ ra2dred:
 	DeliversCash:
 		Payload: 450
 	WithVoxelBody:
+		RequiresCondition: ammo
+	WithVoxelBody@empty:
+		Sequence: empty
+		RequiresCondition: !ammo
 	Voiced:
 		VoiceSet: SovietNavalVoice
 	ProductionCostMultiplier@Industrial:
 		Multiplier: 75
 		Prerequisites: yrngindp
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
+
+ra2dmisl:
+	Inherits: RA2V3ROCKET
+	ShootableBallisticMissile:
+		LaunchAngle: 60
+		Speed: 225
+		LaunchSounds: vdreatta.wav, vdreattb.wav
+	LeavesTrails:
+		Image: smokey
+		MovingInterval: 2
+		Type: CenterPosition
+	MissileSpawnerSlave:
+	SpawnedExplodes:
+		Weapon: DredMissile
+		EmptyWeapon: DredMissile
 
 ra2vlad:
 	Inherits: ra2dred
@@ -6768,16 +6812,23 @@ yrbsub:
 		TurnSpeed: 7
 		Offset: 512,0,0
 	Armament@PRIMARY:
+		Name: secondary
 		Weapon: YRBoomerTorpedo
 		LocalOffset: 208,-24,48, 208,24,48
 		FireDelay: 2
 	Armament@Secondary:
-		Weapon: YRBoomerSCUD
+		Weapon: BoomerLaunch
 		LocalOffset: 208,-24,48, 208,24,48
+	MissileSpawnerMaster:
+		Actors: yrbsubmisl, yrbsubmisl
+		RespawnTicks: 120
+		SpawnAllAtOnce: true
 	Targetable:
 		TargetTypes: Ground, Water, Ship, Submarine, Repair
 		RequiresCondition: !underwater
 	AttackFrontal:
+		FacingTolerance: 2
+		TargetFrozenActors: true
 	RenderDetectionCircle:
 	Selectable:
 		DecorationBounds: 36,36
@@ -6804,6 +6855,21 @@ yrbsub:
 		TargetTypes: Submarine, Underwater
 		RequiresCondition: underwater
 	-ExternalCondition@CLOAK:
+
+yrbsubmisl:
+	Inherits: RA2V3ROCKET
+	ShootableBallisticMissile:
+		LaunchAngle: 90
+		Speed: 255
+		LaunchSounds: vbooat1a.wav
+	LeavesTrails:
+		Image: smokey
+		MovingInterval: 2
+		Type: CenterPosition
+	MissileSpawnerSlave:
+	SpawnedExplodes:
+		Weapon: YRBoomerSCUD
+		EmptyWeapon: YRBoomerSCUD
 
 ####################################################################################################
 #		Red Alert 2 Aircraft
