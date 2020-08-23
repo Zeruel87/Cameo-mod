@@ -9,7 +9,6 @@
 #endregion
 
 using OpenRA.GameRules;
-using OpenRA.Mods.AS.Warheads;
 using OpenRA.Mods.CA.Warheads;
 using OpenRA.Primitives;
 using OpenRA.Traits;
