@@ -18,4 +18,4 @@ To launch Cameo from the development environment you must first compile the mod 
 
 For common questions regarding the OpenRA Mod SDK, please see the [FAQ](https://github.com/OpenRA/OpenRAModSDK/wiki/FAQ).
 
-The OpenRA engine and SDK scripts are made available under the [GPLv3](https://github.com/OpenRA/OpenRA/blob/bleed/COPYING) license, and any executable code developed by a mod and loaded by the engine (i.e. custom mod DLLs, lua scripts) must be released under a compatible license.
+The OpenRA engine and SDK scripts are made available under the [GPLv3](https://github.com/OpenRA/OpenRA/blob/bleed/COPYING) license, and any executable code developed by a mod and loaded by the engine (i.e. custom mod DLLs, lua scripts) must be released under a compatible license. This does not apply to assets such as sounds and graphics, some of which are non-free (see credits for details). Original artwork by mod developers are made available under [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/).

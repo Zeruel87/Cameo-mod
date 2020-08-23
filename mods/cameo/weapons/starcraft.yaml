@@ -235,7 +235,7 @@ InterceptorLauncher:
 InterceptorCannon:
 	ReloadDelay: 40
 	Range: 4c0
-	Burst: 8
+	Burst: 4
 	BurstDelays: 10
 	Report: blastcan.aud
 	ValidTargets: Ground, Air, Water
@@ -248,7 +248,7 @@ InterceptorCannon:
 		ValidTargets: Ground, Air, Water
 		Versus:
 			None: 100
-			Wood: 100
+			Wood: 10
 			Light: 100
 			Heavy: 150
 		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
@@ -257,23 +257,21 @@ LurkerSpines:
 	ReloadDelay: 50
 	Range: 6c0
 	Report: zlrkfir1.aud,zlrkfir2.aud
-	Projectile: AreaBeam
+	Projectile: LinearPulse
 		Speed: 0c256
-		Duration: 3
-		DamageInterval: 1
-		BeyondTargetRange: 2c0
-		Width: 0c256
-		Color: 8B4513
+		Spacing: 420
 	Warhead@1Dam: SpreadDamage
-		Spread: 64
-		Damage: 1000
-		ValidStances: Enemy, Neutral
+		Spread: 426
+		Damage: 3000
+		ValidStances: Enemy, Neutral, Ally
 		Versus:
-			None: 100
-			Wood: 100
+			None: 150
+			Wood: 75
 			Light: 100
-			Heavy: 100
+			Heavy: 200
 		DamageTypes: DefaultDeath
+	Warhead@3Eff: CreateEffect
+		Explosions: sczlspine
 
 MarineMG:
 	Inherits: ^LightMG
@@ -284,7 +282,6 @@ MarineMG:
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
 		Damage: 2000
-		InvalidTargets: Wall
 		ValidTargets: Ground, Water, Air
 		Versus:
 			None: 125	#100
@@ -352,12 +349,13 @@ PhotonCannon:
 	Range: 7c512	#7c0
 	Report: dragbull.aud
 	ValidTargets: Ground, Water, Air
-	Projectile: Missile	#Bullet
+	Projectile: Missile
 		Image: scphotonbullet
 		HorizontalRateOfTurn: 5
 		Speed: 600
 		Jammable: False
 		Blockable: False
+		CloseEnough: 600
 	Warhead@1Dam: SpreadDamage
 		Spread: 256	#128
 		Damage: 5000
@@ -397,7 +395,7 @@ Psi-blades:
 		DamageTypes: DefaultDeath
 
 PsiStorm:
-	ReloadDelay: 720
+	ReloadDelay: 400
 	Range: 6c0
 	Projectile: InstantHit
 	ValidTargets: PsiStorm	#, Ground, Water, Air
@@ -547,17 +545,14 @@ SCVRepair:
 		Color: 8888FF
 	Warhead@1Dam: SpreadDamage
 		Spread: 213
-		Damage: -150
+		Damage: -1000
 		ValidStances: Ally
 		ValidTargets: Repairing, Vehicle, Air
 		DebugOverlayColor: 00FF00
 
 Scarab:
-	Inherits: SCUD
 	ReloadDelay: 80
-	Range: 8c0
-	-MinRange:
-	-Report:
+	Range: 1c512
 	Projectile: Missile	#Bullet
 		Speed: 270
 		Image: scscarab
@@ -578,6 +573,12 @@ Scarab:
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: Crater
 		InvalidTargets: Vehicle, Structure, Wall, Husk, Trees
+
+ScarabLaunch:
+	ReloadDelay: 80
+	Range: 8c0
+	Projectile: InstantHit
+	Warhead@1Dam: TargetDamage
 
 ScourgeExplosion:
 	ValidTargets: Air
@@ -835,3 +836,35 @@ ZerglingClaw:
 		DamageTypes: DefaultDeath
 	Warhead@3Eff: CreateEffect
 		ImpactSounds: zulhit00.aud
+
+# WORKER ATTACKS
+
+^WorkerAttack:
+	Range: 1c512
+	ReloadDelay: 30
+	Warhead@1Dam: SpreadDamage
+		Spread: 64
+		Damage: 2000
+		Versus:
+			None: 125
+			Wood: 25
+			Light: 50
+			Heavy: 25
+		ValidStances: Enemy, Neutral
+		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
+
+SCVAttack:
+	Inherits: ^WorkerAttack
+	ReloadDelay: 20
+	Projectile: LaserZap
+		Color: 8888FF
+
+DroneAttack:
+	Inherits: ^WorkerAttack
+	Projectile: Bullet
+		Speed: 1c682
+
+ProbeAttack:
+	Inherits: ^WorkerAttack
+	Projectile: Bullet
+		Speed: 1c682
