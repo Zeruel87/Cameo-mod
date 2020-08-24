@@ -2709,6 +2709,11 @@ SCSIEGETANK:
 		Weight: 4
 		PipType: blue
 		RequireForceMoveCondition: !undeployed
+	AIDeployNotifier:
+		DeployTrigger: Attack
+		DeployChance: 50
+		DeployTicks: 1000
+		UndeployTicks: 1000
 	Voiced:
 		VoiceSet: SCSiegeTankVoice
 
@@ -3051,6 +3056,7 @@ SCTMCV:
 	-DamagedByTerrain:
 	-Crushable:
 	-TakeCover:
+	-SpawnActorOnDeath:
 	-SpawnActorOnDeath@Mutate:
 
 ^LargeProtoss:
@@ -4222,6 +4228,7 @@ SCULTRALISK:
 SCLURKER:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@zerg: ^LargeZerg
+	Inherits@editorhack: ^DeployableInfantryEditor
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,24
@@ -4256,29 +4263,31 @@ SCLURKER:
 		UndeployOnPickup: true
 		DeploySounds: zluburrw.aud
 		UndeploySounds: zluburrw.aud
-	Turreted:
-		TurnSpeed: 12
-		Offset: 0,-180,0
-		RequiresCondition: deployed
-	WithSpriteTurret:
-		Name: deployed
+	WithSpriteBody@deployed:
 		Sequence: deploy-idle
-		RequiresCondition: deployed
-	WithSpriteBody:
-		Sequence: dot
-		Name: dot
+		Name: deployed
 		RequiresCondition: !undeployed
 	WithInfantryBody:
+		IdleSequences: stand
 		RequiresCondition: undeployed
 	WithMakeAnimation:
-		BodyNames: dot
+		BodyNames: deployed
 		Sequence: burrow
+	WithInfantryBody@Editor:
+		DefaultAttackSequence: stand
 	Armament:
 		Weapon: LurkerSpines
 		RequiresCondition: deployed
-	AttackTurreted:
-		RequiresCondition: deployed
+	Armament@AI:
+		Name: target
+		Weapon: LurkerAITarget
+		RequiresCondition: undeployed && botzerg
+	AttackOmni:
+		Armaments: primary,target
 	-AttackFrontal:
+	GrantConditionOnBotOwner:
+		Condition: botzerg
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	RenderRangeCircle:
 	Cloak:
 		InitialDelay: 60
@@ -4292,6 +4301,10 @@ SCLURKER:
 		Weight: 4
 		PipType: blue
 		RequireForceMoveCondition: !undeployed
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 1000
+		UndeployTicks: 1000
 	Voiced:
 		VoiceSet: SCLurkerVoice
 	Inherits@EXT: ^ExternalConditions					##########

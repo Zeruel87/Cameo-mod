@@ -2,13 +2,6 @@
 # RA2 Defaults
 #######################################
 
-^RA2CarrierTarget:
-	ExternalCondition@TargetbyCarrier:
-		Condition: CarrierTarget
-	Targetable@TargetbyCarrier:
-		TargetTypes: TargetbyCarrier
-		RequiresCondition: CarrierTarget
-
 ^RA2Country.template.allies:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -2006,11 +1999,13 @@ ra2nairon:
 		Range: 5c0
 		RequiresCondition: !lowpower
 	GrantExternalConditionPower@IRONCURTAIN:
+		OrderName: IronCurtain
 		PauseOnCondition: lowpower
 		Icon: invuln
 		ChargeInterval: 3000
 		Description: Invulnerability
 		LongDesc: Makes a group of units invulnerable\nfor 20 seconds.
+		Range: 2
 		Duration: 500
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -2381,14 +2376,14 @@ ra2namisl:
 		Icon: abomb
 		Cursor: nuke
 		ChargeInterval: 9000
-		Description: Atom Bomb
+		Description: Nuclear Missile
 		LongDesc: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
 		EndChargeSpeechNotification: NuclearWeaponAvailable
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		LaunchSpeechNotification: NuclearWeaponLaunched
 		IncomingSpeechNotification: NuclearWarheadApproaching
-		MissileWeapon: atomic
+		MissileWeapon: ra2atomic
 		MissileDelay: 11
 		SpawnOffset: 3c0,0,-1c512
 		DisplayBeacon: True
@@ -2407,14 +2402,14 @@ ra2namisl:
 		Icon: abomb
 		Cursor: nuke
 		ChargeInterval: 9000
-		Description: Atom Bomb
+		Description: Nuclear Missile
 		LongDesc: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
 		EndChargeSpeechNotification: NuclearWeaponAvailable
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		LaunchSpeechNotification: NuclearWeaponLaunched
 		IncomingSpeechNotification: NuclearWarheadApproaching
-		MissileWeapon: atomic
+		MissileWeapon: ra2atomic
 		MissileDelay: 11
 		SpawnOffset: 3c0,0,-1c512
 		DisplayBeacon: True
@@ -3514,6 +3509,7 @@ RA2E1:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
+	Inherits@editorhack: ^DeployableInfantryEditor
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -3591,6 +3587,10 @@ RA2E1:
 		RequiresCondition: !parachute
 	TakeCover:
 		RequiresCondition: undeployed
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+		DeployTrigger: Attack
 	Voiced:
 		VoiceSet: GIVoice
 	DeliversCash:
@@ -3643,6 +3643,7 @@ YRGGI:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
+	Inherits@editorhack: ^DeployableInfantryEditor
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -3719,6 +3720,10 @@ YRGGI:
 		RequiresCondition: !parachute
 	TakeCover:
 		RequiresCondition: undeployed
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+		DeployTrigger: Attack
 	Voiced:
 		VoiceSet: GGIVoice
 	DeliversCash:
@@ -4039,7 +4044,7 @@ RA2DESO:
 		BuildPaletteOrder: 40
 		Prerequisites: barracks, anyhq, ~techlevel.medium, ~RA2Iraq
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
-		Description: Radiological anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles
+		Description: Radiological anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles\n Special Ability: Irradiation (harms all units)
 	Mobile:
 		Speed: 52
 	Health:
@@ -4051,9 +4056,33 @@ RA2DESO:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RA2RadBeamWeapon
+	PeriodicExplosion:
+		Weapon: RA2RadEruptionWeapon
+		RequiresCondition: deployed
+		InitialDelay: 10
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: true
+		Voice: Attack
+		PauseOnCondition: ReaperTrap
+		RequiresCondition: !parachute
 	AttackFrontal:
+		RequiresCondition: undeployed && !ReaperTrap
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: undeployed
+	WithInfantryBody@deployed:
+		StandSequences: deployed
+		DefaultAttackSequence: deployed-fire
+		RequiresCondition: deployed
+	WithSpriteBody:
+		Sequence: dot
+		Name: dot
+		RequiresCondition: !undeployed
+	WithMakeAnimation:
+		Sequence: deploy
+		BodyNames: dot
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -4070,6 +4099,10 @@ RA2DESO:
 		Multiplier: 75
 		Prerequisites: yrngindp
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
+	AIDeployNotifier:
+		DeployTrigger: Attack
+		DeployChance: 50
+	-DamagedByTintedCells@rad:
 
 RA2TERROR:
 	Inherits: ^Soldier
@@ -7248,14 +7281,14 @@ YRDISK:
 	Valued:
 		Cost: 1400
 	Tooltip:
-		Name: Floating Disk
+		Name: Floating Disc
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
 		Prerequisites: yrygtech, ~techlevel.medium
 		Queue: Vehicle.Yuri, RAVehicle.Yuri, Aircraft.X_Aircrafts
-		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+		Description: Flying saucer armed with lasers.\n  Strong vs Buildings
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 255
@@ -7319,7 +7352,7 @@ ra2rock:
 		BuildPaletteOrder: 20
 		Prerequisites: anyhq
 		Queue: Infantry.AlliesRA2, RAInfantry.AlliesRA2, Aircraft.X_Aircrafts
-		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+		Description: Allied flying infantry.\n  Strong vs Aircraft, Buildings, Infantry\n  Weak vs AA
 	Aircraft:
 		TurnSpeed: 7
 		Speed: 186
@@ -7388,10 +7421,6 @@ ra2hornet:
 		Cost: 350
 	Tooltip:
 		Name: Hornet
-	Buildable:
-		BuildPaletteOrder: 20
-		Queue: Aircraft.X_Aircrafts
-		Description: Aircraft Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
 	Aircraft:
 		CruiseAltitude: 2560
 		InitialFacing: 192
@@ -7444,10 +7473,6 @@ ra2asw:
 		Cost: 300
 	Tooltip:
 		Name: Osprey
-	Buildable:
-		BuildPaletteOrder: 20
-		Queue: Aircraft.X_Aircrafts
-		Description: Aircraft Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
 	Aircraft:
 		CruiseAltitude: 1400
 		InitialFacing: 192
