@@ -536,6 +536,7 @@ RA2RadBeamWeapon:
 
 RA2RadEruptionWeapon:
 	ReloadDelay: 40
+	Report: idesat2a.wav
 	Warhead@1Radiation: CreateTintedCells
 		Spread: 1c0
 		Falloff: 100, 85, 60, 45, 30, 15
@@ -549,7 +550,7 @@ RA2RadEruptionWeapon:
 
 RA2MindControl:
 	ReloadDelay: 100
-	Report: iyurat2a.wav
+	Report: iyurat1a.wav
 	Range: 6c0
 	TargetActorCenter: true
 	ValidTargets: MindControl
@@ -594,24 +595,46 @@ RA2OspreyTarget:
 		Damage: 0
 
 RA2PSIAtomic:
-	Inherits: Atomic
-	Warhead@1Dam_impact: SpreadDamage
-		ValidTargets: Structure
-	Warhead@2Eff_impact: CreateEffect #should replace with yuri face sprite
+	Warhead@Yuri_effect: CreateEffect
+		ImpactSounds: spsydom.wav
+		Explosions: yuriface
+		ExplosionPalette: ra2effect
+	Warhead@2Eff_impact: CreateEffect
 		ImpactSounds: iyurat2a.wav
-		Explosions: large_explosion
-	Warhead@3Dam_areanukea: SpreadDamage
+		Explosions: controlwave
+		Delay: 100
+		ExplosionPalette: ra2effect
+	Warhead@1Dam_impact: SpreadDamage
+		Spread: 1c512
+		Damage: 450000
+		Falloff: 100, 80, 66, 50, 33, 16, 5
 		ValidTargets: Structure
-	Warhead@7Dam_areanukeb: SpreadDamage
-		ValidTargets: Structure
-	Warhead@10Dam_areanukec: SpreadDamage
-		ValidTargets: Structure
+		AffectsParent: True
+		DamageTypes: DefaultDeath
+		Delay: 110
+	Warhead@2Smu_areanuke: LeaveSmudge
+		SmudgeType: Scorch
+		InvalidTargets: Vehicle, Structure, Wall
+		Size: 4
+		Delay: 120
+	Warhead@13Shake: ShakeScreen
+		Duration: 20
+		Intensity: 5
+		Multiplier: 1,1
+		Delay: 110
 	Warhead@2Own: ChangeOwner
 		Duration: 800
 		Range: 8c0
 		ValidStances: Neutral, Enemy
 		ValidTargets: Infantry, Vehicle, Water
 		InvalidTargets: Hero
+		Delay: 50
+	Warhead@3Own: GrantExternalCondition
+		Duration: 800
+		Range: 8c0
+		Condition: prevent-mindcontrol
+		InvalidTargets: Hero
+		Delay: 50
 
 ####################################################################################################
 #		Missiles
@@ -790,7 +813,6 @@ RA2SCUD:
 	ReloadDelay: 240
 	Range: 9c0
 	MinRange: 4c0
-	Report: vintatta.wav
 	-Projectile:
 	Projectile: Missile
 		Arm: 0
@@ -1201,8 +1223,8 @@ RA2Mutate:
 		InvalidTargets: Vehicle, Structure, Wall, Husk, Trees, Creep
 		Size: 1
 		Delay: 3
-	Warhead@4Res_area2: CreateEffect #Add explosion and real sound when I have the assets
-		ImpactSounds: ion1.aud
+	Warhead@4Res_area2: CreateEffect
+		ImpactSounds: sgenon.wav
 	Warhead@5Smu_area2: LeaveSmudge
 		SmudgeType: Scorch
 		InvalidTargets: Vehicle, Structure, Wall, Husk, Trees, Creep
@@ -1223,6 +1245,10 @@ RADemotruck:
 
 ReactorNuke:
 	Inherits: MiniNuke
+	Warhead@3Eff_impact: CreateEffect
+		Explosions: ra2nuke
+		ExplosionPalette: ra2effect
+		ImpactSounds: snukexpl.wav
 	Warhead@1Radiation: CreateTintedCells
 		Spread: 1c512
 		Falloff: 100, 66, 33
@@ -1230,6 +1256,7 @@ ReactorNuke:
 		LayerName: ra2radiation
 
 RA2ReactorExplosion:
+	Inherits: ReactorNuke
 	Warhead@1Radiation: CreateTintedCells
 		Spread: 1c512
 		Falloff: 100, 75, 50, 25, 0
@@ -1271,6 +1298,11 @@ KirovExplode:
 
 RA2Atomic:
 	Inherits: Atomic
+	Report: snuklaun.wav
+	Warhead@2Eff_impact: CreateEffect
+		Explosions: ra2nuke
+		ExplosionPalette: ra2effect
+		ImpactSounds: snukexpl.wav
 	Warhead@14Radiation: CreateTintedCells
 		Spread: 2c512
 		Falloff: 100, 85, 60, 45, 30, 15
@@ -1347,12 +1379,12 @@ StormCloud:
 		ValidTargets: Air, Ground, Water
 		Delay: 20
 	Warhead@4Eff: CreateEffect
-		Explosions: large_explosion
-		ExplosionPalette: effect
+		Explosions: wccloud1,wccloud2,wccloud3
+		ExplosionPalette: ra2unit
 		ValidTargets: Ground, Air, Water
 
 LightningBolt:
-	Projectile: TeslaZap
+	Projectile: InstantHit
 	Warhead@1Dam: SpreadDamage
 		Spread: 1c0
 		Damage: 15000	
@@ -1361,7 +1393,9 @@ LightningBolt:
 		ValidTargets: Air, Ground, Water
 		DamageTypes: Prone50Percent, TriggerProne, ElectricityDeath
 	Warhead@4Eff: CreateEffect
-		ImpactSounds: tesla1.aud
+		Explosions: wclbolt1,wclbolt2,wclbolt3
+		ExplosionPalette: ra2effect
+		ImpactSounds: sweastra.wav,sweastrb.wav,sweastrc.wav,sweastrd.wav
 		ValidTargets: Ground, Air, Water
 	Warhead@5Eff: CreateEffect
 		Explosions: large_explosion
