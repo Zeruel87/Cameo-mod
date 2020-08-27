@@ -2,13 +2,6 @@
 # RA2 Defaults
 #######################################
 
-^RA2CarrierTarget:
-	ExternalCondition@TargetbyCarrier:
-		Condition: CarrierTarget
-	Targetable@TargetbyCarrier:
-		TargetTypes: TargetbyCarrier
-		RequiresCondition: CarrierTarget
-
 ^RA2Country.template.allies:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -712,7 +705,7 @@ ra2gaairc:
 		Amount: -40
 	ProvidesPrerequisite@buildingname:
 	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
+		TargetTypes: Ground, C4, Structure, SpyInfiltrate
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi
 	WithIdleOverlay@top:
@@ -994,7 +987,7 @@ ra2gaweat:
 		Queue: Defence.AlliesRA2, RADefence.AlliesRA2
 		BuildPaletteOrder: 120
 		Prerequisites: ra2gatech, ~techlevel.superweapons, ~CountryChoosedAlliesRA2
-		Description: Provides Orbital Ion Cannon support power.\nRequires power to operate.
+		Description: Provides Lightning Storm support power.\nRequires power to operate.
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -1005,42 +998,55 @@ ra2gaweat:
 	Health:
 		HP: 100000
 	Armor:
-		Type: Concrete
+		Type: Wood
 	RevealsShroud:
 		Range: 6c0
-	IonCannonPower:
+	DetonateWeaponPower:
+		OrderName: LightningStorm
 		PauseOnCondition: lowpower
 		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		Icon: ioncannon
-		Cursor: ioncannon
-		ChargeInterval: 6750
-		Description: Ion Cannon
-		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
+		Icon: bolticon
+		Cursor: ability
+		ChargeInterval: 9000
+		ActivationDelay: 50
+		Description: Lightning Storm
+		LongDesc: Creates a lightning storm.\nApplies heavy damage over a large area.
+		Weapon: LightningStorm
+		AirbustAltitude: 5c0
+		AllowMultiple: false
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		SelectTargetSpeechNotification: SelectTarget
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		IncomingSpeechNotification: NuclearWarheadApproaching
 		InsufficientPowerSpeechNotification: InsufficientPower
-		OnFireSound: ion1.aud
 		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral
-		CameraActor: camera.small
-	IonCannonPower@unlimited:
-		AllowMultiple: True
-		Prerequisites: ~techlevel.unlimited
+		DisplayTimerStances: Ally, Neutral, Enemy
+		CameraActor: camera
+		CameraRemoveDelay: 300
+	DetonateWeaponPower@unlimited:
+		OrderName: LightningStorm
 		PauseOnCondition: lowpower
-		Icon: ioncannon
-		Cursor: ioncannon
-		ChargeInterval: 6750
-		Description: Ion Cannon
-		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
+		Prerequisites: ~techlevel.unlimited
+		Icon: bolticon
+		Cursor: ability
+		ChargeInterval: 9000
+		ActivationDelay: 50
+		Description: Lightning Storm
+		LongDesc: Creates a lightning storm.\nApplies heavy damage over a large area.
+		Weapon: LightningStorm
+		AirbustAltitude: 5c0
+		AllowMultiple: true
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		SelectTargetSpeechNotification: SelectTarget
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		IncomingSpeechNotification: NuclearWarheadApproaching
 		InsufficientPowerSpeechNotification: InsufficientPower
-		OnFireSound: ion1.aud
 		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral
-		CameraActor: camera.small
+		DisplayTimerStances: Ally, Neutral, Enemy
+		CameraActor: camera
+		CameraRemoveDelay: 300
 	SupportPowerChargeBar:
 	Power:
 		Amount: -200
@@ -1103,6 +1109,7 @@ ra2gacsph:
 		DisplayRadarPing: True
 		SelectionCursor: ability
 		TargetCursor: ability
+		LaunchSound: schrmov.wav
 	SupportPowerChargeBar:
 	Power:
 		Amount: -200
@@ -1223,7 +1230,7 @@ ra2atesla:
 	Valued:
 		Cost: 1500
 	Tooltip:
-		Name: Prism Cannon
+		Name: Prism Tower
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,60,0,-18
@@ -1809,6 +1816,7 @@ ra2naradr:
 		BeaconPosterPalette: beaconposter
 		DisplayRadarPing: True
 		CameraActor: camera
+		CameraRemoveDelay: 100
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
@@ -1993,11 +2001,13 @@ ra2nairon:
 		Range: 5c0
 		RequiresCondition: !lowpower
 	GrantExternalConditionPower@IRONCURTAIN:
+		OrderName: IronCurtain
 		PauseOnCondition: lowpower
 		Icon: invuln
 		ChargeInterval: 3000
 		Description: Invulnerability
 		LongDesc: Makes a group of units invulnerable\nfor 20 seconds.
+		Range: 2
 		Duration: 500
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -2005,7 +2015,7 @@ ra2nairon:
 		#EndChargeSpeechNotification: IronCurtainReady
 		DisplayRadarPing: True
 		Condition: invulnerability
-		OnFireSound: ironcur9.aud
+		OnFireSound: siroon.wav
 	SupportPowerChargeBar:
 	Power:
 		Amount: -200
@@ -2368,22 +2378,26 @@ ra2namisl:
 		Icon: abomb
 		Cursor: nuke
 		ChargeInterval: 9000
-		Description: Atom Bomb
-		LongDesc: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
+		Description: Nuclear Missile
+		LongDesc: Launches a devastating nuclear missile.\nApplies heavy damage and radiation over\na large area.
 		EndChargeSpeechNotification: NuclearWeaponAvailable
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		LaunchSpeechNotification: NuclearWeaponLaunched
 		IncomingSpeechNotification: NuclearWarheadApproaching
-		MissileWeapon: atomic
-		MissileDelay: 11
+		LaunchSound: snuksire.wav
+		MissileWeapon: ra2atomic
+		MissileDelay: 45
+		MissilePalette: playerra2
+		IsPlayerPalette: true
 		SpawnOffset: 3c0,0,-1c512
 		DisplayBeacon: True
-		BeaconPoster: atomic
+		BeaconPoster: raatomicon
 		BeaconPosterPalette: beaconposter
 		DisplayRadarPing: True
 		DisplayTimerStances: Ally, Neutral, Enemy
 		CameraRange: 10c0
+		CameraRemoveDelay: 150
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
@@ -2394,22 +2408,26 @@ ra2namisl:
 		Icon: abomb
 		Cursor: nuke
 		ChargeInterval: 9000
-		Description: Atom Bomb
-		LongDesc: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
+		Description: Nuclear Missile
+		LongDesc: Launches a devastating nuclear missile.\nApplies heavy damage and radiation over\na large area.
 		EndChargeSpeechNotification: NuclearWeaponAvailable
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		LaunchSpeechNotification: NuclearWeaponLaunched
 		IncomingSpeechNotification: NuclearWarheadApproaching
-		MissileWeapon: atomic
-		MissileDelay: 11
+		LaunchSound: snuksire.wav
+		MissileWeapon: ra2atomic
+		MissileDelay: 45
+		MissilePalette: playerra2
+		IsPlayerPalette: true
 		SpawnOffset: 3c0,0,-1c512
 		DisplayBeacon: True
-		BeaconPoster: atomic
+		BeaconPoster: raatomicon
 		BeaconPosterPalette: beaconposter
 		DisplayRadarPing: True
 		DisplayTimerStances: Ally, Neutral, Enemy
 		CameraRange: 10c0
+		CameraRemoveDelay: 150
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
@@ -2891,7 +2909,7 @@ ra2napsis:
 		BuildPaletteOrder: 70
 		Prerequisites: yryarefn
 		Queue: Building.Yuri, RABuilding.Yuri
-		Description: Provides radar and Spy Plane support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+		Description: Provides radar and Psychic Reveal support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -2911,26 +2929,19 @@ ra2napsis:
 	DetectCloaked:
 		Range: 15c0
 		RequiresCondition: !lowpower
-	AirstrikePower@spyplane:
+	DetonateWeaponPower@spyplane:
 		OrderName: SovietRA2SpyPlane
 		Icon: ra2psirev
 		ChargeInterval: 3750
-		Description: PSI Reaveal
+		Description: Psychic Reveal
 		LongDesc: Reveals an area of the map\nand cloaked enemy units.
 		SelectTargetSpeechNotification: SelectTarget
 		EndChargeSpeechNotification: SpyPlaneReady
-		CameraActor: camera.spyplane
-		CameraRemoveDelay: 150
-		UnitType: yuriinvisibleplane
-		QuantizedFacings: 8
-		DisplayBeacon: true
-		BeaconPoster: racamicon
-		ArrowSequence: arrow
-		ClockSequence: clock
-		CircleSequence: circles
+		ActivationDelay: 20
+		Weapon: psireveal
+		CameraActor: camera.psireveal
+		CameraRemoveDelay: 300
 		LaunchSound: spsyreve.wav
-		UseDirectionalTarget: True
-		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 10
 	SupportPowerChargeBar:
 	Power:
@@ -2944,6 +2955,13 @@ yuriinvisibleplane:
 	Inherits: U2
 	-Contrail@1:
 	-Contrail@2:
+
+camera.psireveal:
+	Inherits: CAMERA
+	DetectCloaked:
+		Range: 10c0
+	RenderSpritesEditorOnly:
+		Image: camera
 
 yryggntc:
 	Inherits: ^BaseBuilding
@@ -2982,24 +3000,25 @@ yryggntc:
 		RequiresCondition: !build-incomplete
 	Power:
 		Amount: -200
-	IonCannonPower@Mutate:
+	DetonateWeaponPower@Mutate:
 		OrderName: GeneticMutator
 		PauseOnCondition: lowpower
 		Prerequisites: ~techlevel.superweapons
 		Icon: ra2mutate
 		Cursor: ioncannon
 		ChargeInterval: 4000
-		Description: Mutation Weapon
+		ActivationDelay: 10
+		Description: Genetic Mutator
 		Weapon: RA2Mutate
-		LongDesc: Initiate an Mutation Weapon strike.\nConvert Infatry in to Brutes.
+		LongDesc: Activate the Genetic Mutator.\nTransforms infantry in a small area into Brutes
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
-		OnFireSound: ion1.aud
 		DisplayRadarPing: True
 		DisplayTimerStances: Ally, Neutral
 		CameraActor: camera.small
+		CameraRemoveDelay: 300
 	SupportPowerChargeBar:
 
 yrngtbnk:
@@ -3245,7 +3264,7 @@ yrygppet:
 		BuildPaletteOrder: 100
 		Prerequisites: yrygtech, ~techlevel.superweapons
 		Queue: Defence.Yuri, RADefence.Yuri
-		Description: Provides Nuclear Strike support power.\nRequires power to operate.
+		Description: Provides Psychic Dominator support power.\nRequires power to operate.
 	Building:
 		Footprint: =x= xxx xxx
 		Dimensions: 3,3
@@ -3260,13 +3279,14 @@ yrygppet:
 	DetectCloaked:
 		Range: 5c0
 		RequiresCondition: !lowpower
-	NukePower@psi:
+	DetonateWeaponPower@psi:
 		OrderName: PsychicDominator
-		PauseOnCondition: lowpower
 		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
+		PauseOnCondition: lowpower
 		Icon: ra2domin
-		Cursor: nuke
+		Cursor: ability
 		ChargeInterval: 9000
+		ActivationDelay: 50
 		Description: Psychic Dominator
 		LongDesc: Unleashes a wave of psychic energy.\n Applies heavy damage over a large area.\n Takes control of units in proximity
 		EndChargeSpeechNotification: NuclearWeaponAvailable
@@ -3274,27 +3294,23 @@ yrygppet:
 		InsufficientPowerSpeechNotification: InsufficientPower
 		LaunchSpeechNotification: NuclearWeaponLaunched
 		IncomingSpeechNotification: NuclearWarheadApproaching
-		MissileWeapon: ra2psiatomic
-		MissileDelay: 11
-		FlightDelay: 80
-		SpawnOffset: 3c0,0,-1c512
-		DisplayBeacon: True
-		BeaconPoster: atomic
-		BeaconPosterPalette: beaconposter
+		Weapon: ra2psiatomic
 		DisplayRadarPing: True
 		DisplayTimerStances: Ally, Neutral, Enemy
-		CameraRange: 10c0
+		CameraActor: camera
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
-	NukePower@psiunlimited:
+		CameraRemoveDelay: 300
+	DetonateWeaponPower@psiunlimited:
 		OrderName: PsychicDominator
 		AllowMultiple: True
 		Prerequisites: ~techlevel.unlimited
 		PauseOnCondition: lowpower
 		Icon: ra2domin
-		Cursor: nuke
+		Cursor: ability
 		ChargeInterval: 9000
+		ActivationDelay: 50
 		Description: Psychic Dominator
 		LongDesc: Unleashes a wave of psychic energy.\n Applies heavy damage over a large area.\n Takes control of units in proximity
 		EndChargeSpeechNotification: NuclearWeaponAvailable
@@ -3302,19 +3318,14 @@ yrygppet:
 		InsufficientPowerSpeechNotification: InsufficientPower
 		LaunchSpeechNotification: NuclearWeaponLaunched
 		IncomingSpeechNotification: NuclearWarheadApproaching
-		MissileWeapon: ra2psiatomic
-		MissileDelay: 11
-		FlightDelay: 80
-		SpawnOffset: 3c0,0,-1c512
-		DisplayBeacon: True
-		BeaconPoster: atomic
-		BeaconPosterPalette: beaconposter
+		Weapon: ra2psiatomic
 		DisplayRadarPing: True
 		DisplayTimerStances: Ally, Neutral, Enemy
-		CameraRange: 10c0
+		CameraActor: camera
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
+		CameraRemoveDelay: 300
 	SupportPowerChargeBar:
 	Power:
 		Amount: -200
@@ -3511,6 +3522,7 @@ RA2E1:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
+	Inherits@editorhack: ^DeployableInfantryEditor
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -3588,6 +3600,10 @@ RA2E1:
 		RequiresCondition: !parachute
 	TakeCover:
 		RequiresCondition: undeployed
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+		DeployTrigger: Attack
 	Voiced:
 		VoiceSet: GIVoice
 	DeliversCash:
@@ -3637,9 +3653,10 @@ RA2CLEG:
 YRGGI:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
+	Inherits@editorhack: ^DeployableInfantryEditor
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -3716,6 +3733,10 @@ YRGGI:
 		RequiresCondition: !parachute
 	TakeCover:
 		RequiresCondition: undeployed
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+		DeployTrigger: Attack
 	Voiced:
 		VoiceSet: GGIVoice
 	DeliversCash:
@@ -4036,7 +4057,7 @@ RA2DESO:
 		BuildPaletteOrder: 40
 		Prerequisites: barracks, anyhq, ~techlevel.medium, ~RA2Iraq
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
-		Description: Radiological anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles
+		Description: Radiological anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles\n Special Ability: Irradiation (harms all units)
 	Mobile:
 		Speed: 52
 	Health:
@@ -4048,9 +4069,33 @@ RA2DESO:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RA2RadBeamWeapon
+	PeriodicExplosion:
+		Weapon: RA2RadEruptionWeapon
+		RequiresCondition: deployed
+		InitialDelay: 10
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: true
+		Voice: Attack
+		PauseOnCondition: ReaperTrap
+		RequiresCondition: !parachute
 	AttackFrontal:
+		RequiresCondition: undeployed && !ReaperTrap
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: undeployed
+	WithInfantryBody@deployed:
+		StandSequences: deployed
+		DefaultAttackSequence: deployed-fire
+		RequiresCondition: deployed
+	WithSpriteBody:
+		Sequence: dot
+		Name: dot
+		RequiresCondition: !undeployed
+	WithMakeAnimation:
+		Sequence: deploy
+		BodyNames: dot
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -4067,6 +4112,10 @@ RA2DESO:
 		Multiplier: 75
 		Prerequisites: yrngindp
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
+	AIDeployNotifier:
+		DeployTrigger: Attack
+		DeployChance: 50
+	-DamagedByTintedCells@rad:
 
 RA2TERROR:
 	Inherits: ^Soldier
@@ -4365,6 +4414,7 @@ YRBRUTE:
 		HP: 20000
 	AutoTarget:
 		ScanRadius: 4
+		InitialStance: AttackAnything
 	Armament@PRIMARY:							##########
 		Weapon: RA2BrutePunch
 	Armament@GARRISONED:						##########
@@ -4649,14 +4699,11 @@ RA2CMIN:
 	Buildable:
 		Prerequisites: ra2garefn
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
-		Description: Allied Harvester with Chrono Technology\n 200% movement speed when fully loaded.
-	Harvester:
-		FullyLoadedSpeed: 200
+		Description: Allied harvester, teleports to refinery.
 	WithVoxelBody:
 	WithDockingAnimation:
-	PortableChrono:
-		ChargeDelay: 200
-		TargetCursor: ability
+	ChronoResourceDelivery:
+		RequiresCondition: !TSNeutronBomb
 	Voiced:
 		VoiceSet: ChronoMinerVoice
 	DeliversCash:
@@ -5631,10 +5678,9 @@ ra2dtruck:
 		Multiplier: 75
 		Prerequisites: yrngindp
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
-	Explodes@Rad:
+	Explodes:
 		Weapon: RA2ReactorExplosion
 		EmptyWeapon: RA2ReactorExplosion
-		DamageSource: Killer
 
 ra2dron:
 	Inherits: DOG
@@ -5679,7 +5725,7 @@ ra2dron:
 	-WithDeathAnimation:
 	-DamagedByTerrain:
 	-SpawnActorOnDeath:
-	-Explodes@RA2Virus:
+	-SpawnActorOnDeath@RA2Virus:
 
 ##############################################
 #   Red Alert 2 Yuri Vehicles
@@ -7081,6 +7127,7 @@ RA2FALC:
 		PauseOnCondition: !ammo
 	AutoTarget:
 		ScanRadius: 5
+		InitialStance: HoldFire
 	AmmoPool:
 		Ammo: 5
 		PipCount: 1
@@ -7247,14 +7294,14 @@ YRDISK:
 	Valued:
 		Cost: 1400
 	Tooltip:
-		Name: Floating Disk
+		Name: Floating Disc
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
 		Prerequisites: yrygtech, ~techlevel.medium
 		Queue: Vehicle.Yuri, RAVehicle.Yuri, Aircraft.X_Aircrafts
-		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+		Description: Flying saucer armed with lasers.\n  Strong vs Buildings
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 255
@@ -7318,7 +7365,7 @@ ra2rock:
 		BuildPaletteOrder: 20
 		Prerequisites: anyhq
 		Queue: Infantry.AlliesRA2, RAInfantry.AlliesRA2, Aircraft.X_Aircrafts
-		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+		Description: Allied flying infantry.\n  Strong vs Aircraft, Buildings, Infantry\n  Weak vs AA
 	Aircraft:
 		TurnSpeed: 7
 		Speed: 186
@@ -7387,10 +7434,6 @@ ra2hornet:
 		Cost: 350
 	Tooltip:
 		Name: Hornet
-	Buildable:
-		BuildPaletteOrder: 20
-		Queue: Aircraft.X_Aircrafts
-		Description: Aircraft Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
 	Aircraft:
 		CruiseAltitude: 2560
 		InitialFacing: 192
@@ -7443,10 +7486,6 @@ ra2asw:
 		Cost: 300
 	Tooltip:
 		Name: Osprey
-	Buildable:
-		BuildPaletteOrder: 20
-		Queue: Aircraft.X_Aircrafts
-		Description: Aircraft Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
 	Aircraft:
 		CruiseAltitude: 1400
 		InitialFacing: 192
@@ -9464,3 +9503,34 @@ RA2MODROBO:
 		Modifier: 999
 	RenderVoxels:
 		Scale: 0.50
+
+RA2TXGASG:
+	Inherits@1: ^ExistsInWorld
+	Inherits@2: ^SpriteActor
+	-UpdatesPlayerStatistics:
+	RenderSprites:
+		Palette: ra2effect
+	Interactable:
+	HiddenUnderFog:
+		AlwaysVisibleStances: None
+		Type: GroundPosition
+	Health:
+		HP: 20
+	HitShape:
+	Aircraft:
+		Repulsable: false
+		CruiseAltitude: 1
+		Speed: 12
+	WithSpriteBody:
+	BodyOrientation:
+		QuantizedFacings: 32
+	Wanders:
+		MinMoveDelay: 20
+		MaxMoveDelay: 40
+	SelfHealing:
+		Step: -1
+		Delay: 30
+		HealIfBelow: 200
+	PeriodicExplosion:
+		Weapon: RA2Cloud
+		InitialDelay: 4

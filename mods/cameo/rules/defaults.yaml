@@ -251,6 +251,18 @@
 	ExternalCondition@TSCLOAK:
 		Condition: tscloak
 
+^VehicleRadiation:
+	DamagedByTintedCells@rad:
+		Damage: 100
+		DamageInterval: 16
+		DamageTypes: DefaultDeath
+		LayerName: ra2radiation
+	DamagedByTintedCells@tib:
+		Damage: 100
+		DamageInterval: 16
+		DamageTypes: TiberiumDeath
+		LayerName: tibradiation
+
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^IronCurtainable
@@ -258,9 +270,9 @@
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
+	Inherits@rad: ^VehicleRadiation
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -307,8 +319,6 @@
 	Targetable@HEALING:								##########
 		RequiresCondition: damaged
 		TargetTypes: Healing
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
 	GrantConditionOnDamageState@DAMAGED:
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
@@ -427,7 +437,6 @@
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Inherits@bot: ^BotProductionBoost
 	Huntable:
 	OwnerLostAction:
@@ -484,8 +493,6 @@
 		Categories: Aircraft
 	SpawnActorOnDeath:
 		RequiresCondition: airborne
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
 
 ^Infantry:
 	Inherits@1: ^ExistsInWorld
@@ -493,7 +500,6 @@
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
 	TemporaryOwnerManager:
@@ -522,8 +528,6 @@
 	Targetable@HEALING:								##########
 		RequiresCondition: !parachute && damaged
 		TargetTypes: Healing
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
 	GrantConditionOnDamageState@DAMAGED:			##########
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
@@ -553,6 +557,16 @@
 		DamageInterval: 16
 		DamageTypes: TiberiumDeath
 		RequiresCondition: !hazmatsuits
+	DamagedByTintedCells@rad:
+		Damage: 1000
+		DamageInterval: 16
+		DamageTypes: DefaultDeath
+		LayerName: ra2radiation
+	DamagedByTintedCells@tib:
+		Damage: 500
+		DamageInterval: 16
+		DamageTypes: TiberiumDeath
+		LayerName: tibradiation
 	GrantConditionOnTerrain@HAZMAT:
 		Condition: ontiberium
 		TerrainTypes: Tiberium, BlueTiberium
@@ -666,10 +680,11 @@
 	SpeedMultiplier@REAPERTRAP:
 		Modifier: 5
 		RequiresCondition: ReaperTrap
-	Explodes@RA2Virus:
-		Weapon: RA2VirusExplode
-		EmptyWeapon: RA2VirusExplode
-		DeathTypes: RA2VirusDeath
+	SpawnActorOnDeath@RA2Virus:
+		Actor: ra2txgasg
+		Probability: 50
+		OwnerType: Killer
+		DeathType: RA2VirusDeath
 
 ^Soldier:
 	Inherits: ^Infantry
@@ -727,7 +742,6 @@
 	Inherits@2: ^SpriteActor
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -785,7 +799,6 @@
 	Inherits@2: ^SpriteActor
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Huntable:
 	Health:
 		HP: 30000
@@ -844,7 +857,6 @@
 	Inherits@2: ^SpriteActor
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Inherits@bot: ^BotProductionBoost
 	Huntable:
 	OwnerLostAction:
@@ -866,16 +878,14 @@
 		IdleBehavior: LeaveMap
 	MapEditorData:
 		Categories: Aircraft
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
 
 ^Ship:
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
+	Inherits@rad: ^VehicleRadiation
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -901,15 +911,12 @@
 	HitShape:
 	MapEditorData:
 		Categories: Naval
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
 
 ^Building:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Inherits@shape: ^1x1Shape
 	Inherits@selection: ^SelectableBuilding
 	Huntable:
@@ -1494,7 +1501,7 @@
 	Selectable:
 		Priority: 3
 	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure
+		TargetTypes: Ground, C4, Structure
 	Building:
 		Dimensions: 1,1
 		Footprint: x
@@ -1534,8 +1541,7 @@
 	Inherits@4: ^SpriteActor
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
+	Inherits@commandodebuff: ^CommandoDebuff
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -1598,8 +1604,6 @@
 	Explodes:
 		Weapon: UnitExplode
 		RequiresCondition: !airborne
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
 
 ^RAPlane:
 	Inherits: ^RANeutralPlane
@@ -1731,7 +1735,7 @@
 	Tooltip:
 		Name: Ammo Box
 	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, NoAutoTarget
+		TargetTypes: Ground, C4, Structure, NoAutoTarget
 	Armor:
 		Type: Light
 	MapEditorData:
@@ -1766,7 +1770,7 @@
 
 ^InfiltratableFake:
 	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
+		TargetTypes: Ground, Structure, C4, SpyInfiltrate
 	InfiltrateForDecoration:
 		Types: SpyInfiltrate
 		RequiresSelection: true
@@ -2580,11 +2584,11 @@ CPQDEBUGDUMMY:
 		Condition: controlled
 		PauseOnCondition: prevent-mindcontrol
 	WithMindControlArc:
-		Color: c71585
-		Transparency: 55
+		UsePlayerColor: true
+		Transparency: 255
 		Offset: 0,0,511
 		Angle: 32
-		Width: 116
+		Width: 256
 	Targetable@MC:
 		TargetTypes: MindControl
 		RequiresCondition: !controlled && !prevent-mindcontrol
@@ -2604,3 +2608,10 @@ CPQDEBUGDUMMY:
 	Targetable@MCStructure:
 		TargetTypes: MindControlStructure
 		RequiresCondition: !controlled && !prevent-mindcontrol
+
+^DeployableInfantryEditor:
+	GrantCondition:
+		Condition: editorhack
+	WithInfantryBody@Editor:
+		DefaultAttackSequence: shoot
+		RequiresCondition: !editorhack
