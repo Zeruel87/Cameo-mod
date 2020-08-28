@@ -159,6 +159,20 @@ TSReaperTrap:
 		Range: 0c172
 		ValidTargets: Infantry
 
+TS105mm:
+	Inherits: ^TSCannon
+	ReloadDelay: 70
+	Burst: 2
+	Projectile: Bullet
+		LaunchAngle: 0
+	Warhead@1Dam: SpreadDamage
+		Spread: 128
+		Damage: 5000
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 75
+			Heavy: 115
 
 ####################################################################################################
 #		Tiberian Sun Energy Weapons
@@ -325,14 +339,14 @@ TSProton:
 
 ^TSLaser:
 	Projectile: LaserZap
-		Width: 72
+		Width: 96
 		Duration: 15
 		ZOffset: 2047
 		Color: FF000080
 		SecondaryBeam: true
-		SecondaryBeamWidth: 180
+		SecondaryBeamWidth: 45
 		SecondaryBeamZOffset: 2047
-		SecondaryBeamColor: FF000040
+		SecondaryBeamColor: FFFFFF
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
 		Damage: 25000
@@ -346,6 +360,19 @@ TSObeliskLaserFire:
 	Warhead@1Dam: SpreadDamage
 		Damage: 25000
 
+DarkObeliskLaser:
+	Inherits: ^TSLaser
+	Report: obelray1.aud
+	Range: 8c0
+	ReloadDelay: 90
+	ValidTargets: Air
+	Projectile: LaserZap
+		Width: 120
+		Color: 43577F
+	Warhead@1Dam: SpreadDamage
+		Damage: 25000
+		ValidTargets: Air
+
 TSTurretLaserFire:
 	Inherits: ^TSLaser
 	ReloadDelay: 40
@@ -354,8 +381,7 @@ TSTurretLaserFire:
 	Projectile: LaserZap
 		Width: 36
 		Duration: 8
-		SecondaryBeamWidth: 144
-		SecondaryBeamColor: FF000030
+		SecondaryBeamWidth: 15
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000
 
@@ -601,7 +627,7 @@ TSFireballLauncher:
 	Range: 4c256
 	Report: flamtnk1.aud
 	Projectile: Bullet
-		Speed: 64
+		Speed: 200
 		TrailImage: fb4
 		Image: fb3
 		Inaccuracy: 384
@@ -918,7 +944,7 @@ TSTacticalMissile:
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 	Warhead@SoundEffect: CreateEffect
 		Explosions: large_explosion
-		ImpactSounds: kaboom1.aud
+		ImpactSounds: expnew19.aud
 		ImpactActors: false
 		ValidTargets: Ground, Water, Air
 	Warhead@Cluster: FireCluster
@@ -945,7 +971,7 @@ TSMissileBomblet:
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: big_napalm
-		ImpactSounds: kaboom22.aud
+		ImpactSounds: expnew09.aud,expnew06.aud
 	Warhead@3Smu: LeaveSmudge
 		SmudgeType: Scorch
 
@@ -959,7 +985,7 @@ TSChemTacticalMissile:
 		DamageTypes: Prone50Percent, TriggerProne, TiberiumDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: large_explosion
-		ImpactSounds: kaboom22.aud
+		ImpactSounds: expnew06.aud
 	Warhead@3Smu: LeaveSmudge
 		SmudgeType: Scorch
 	Warhead@4Res: CreateResource
@@ -978,7 +1004,7 @@ TSHSeekerExplode:
 		DamageTypes: Prone50Percent, TriggerProne, FireDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: big_napalm
-		ImpactSounds: xplobig6.aud
+		ImpactSounds: expnew09.aud,expnew06.aud
 	Warhead@3Smu: LeaveSmudge
 		SmudgeType: Scorch
 
@@ -1111,3 +1137,78 @@ E2Droppod:
 	Inherits: E1Droppod
 	Warhead@6: SpawnActor
 		Actors: TSE2PARA
+
+MutSAPCSpawner:
+	Projectile: InstantExplode
+	InvalidTargets: Water
+	Warhead@1: FireShrapnel
+		Weapon: MutSAPC
+		Amount: 1
+
+MutSAPC:
+	InvalidTargets: Vehicle, Structure
+	Projectile: InstantHit
+	Warhead@1Eff: CreateEffect
+		Image: tsdig
+		Explosions: idle
+		ExplosionPalette: tseffect
+		ImpactSounds: subdril1.aud
+		ValidTargets: Ground, Air, Water
+		ImpactActors: false
+	Warhead@2: SpawnActor
+		Actors: tssapc.mut
+		Range: 3
+		Delay: 10
+
+MutWildlifeSpawner:
+	Projectile: InstantExplode
+	Warhead@1: FireShrapnel
+		Weapon: MutWildlifeSpawner2
+		Amount: 1
+	Warhead@2: FireShrapnel
+		Weapon: MutWildlifeSpawner2
+		Amount: 1
+		Delay: 40
+	Warhead@3: FireShrapnel
+		Weapon: MutWildlifeSpawner2
+		Amount: 1
+		Delay: 80
+	Warhead@4: FireShrapnel
+		Weapon: MutWildlifeSpawner2
+		Amount: 1
+		Delay: 120
+
+
+MutWildlifeSpawner2:
+	Projectile: InstantHit
+	Warhead@1: FireShrapnel
+		Weapon: FloaterSpawner
+		Amount: 1
+	Warhead@2: FireShrapnel
+		Weapon: ViscSpawner
+		Amount: 4
+	Warhead@3: FireShrapnel
+		Weapon: FiendSpawner
+		Amount: 2
+
+FloaterSpawner:
+	Range: 3c0
+	Projectile: InstantHit
+	Warhead@1: CreateEffect
+		Explosions: med_explosion
+		ImpactSounds: expnew16.aud
+		ImpactActors: false
+	Warhead@2: SpawnActor
+		InternalOwner: Creeps
+		OwnerType: InternalName
+		Actors: tsfloater
+
+ViscSpawner:
+	Inherits: FloaterSpawner
+	Warhead@2: SpawnActor
+		Actors: tsvislrg
+
+FiendSpawner:
+	Inherits: FloaterSpawner
+	Warhead@2: SpawnActor
+		Actors: tsdoggiew
