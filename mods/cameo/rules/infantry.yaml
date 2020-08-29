@@ -1108,7 +1108,7 @@ CITYFIREFIGHTER:
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 250
+		Cost: 200
 	Tooltip:
 		Name: Firefighter
 	UpdatesPlayerStatistics:
@@ -1133,7 +1133,7 @@ CITYFIREFIGHTER:
 	TakeCover:
 		ProneOffset: 190,0,-198
 	Voiced:
-		VoiceSet: CivilianMaleVoice
+		VoiceSet: RAGenericVoice
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	Inherits@EXT: ^ExternalConditions					##########
@@ -1146,7 +1146,7 @@ CITYPOLICEOFFICER:
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 150
+		Cost: 100
 	Tooltip:
 		Name: Police Officer
 	UpdatesPlayerStatistics:
@@ -1171,20 +1171,20 @@ CITYPOLICEOFFICER:
 	Crushable:
 		CrushSound: squish2.aud
 	Voiced:
-		VoiceSet: CivilianMaleVoice
+		VoiceSet: RAGenericVoice
 	WithInfantryBody:
-		IdleSequences: idle
+		IdleSequences: stand
 		DefaultAttackSequence: shoot
+	-TakeCover:
 
 CITYARCHITECT:
 	Inherits: ^CITYINFANTRY
 	Buildable:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 40
-		BuildDuration: 160
 		Description: Upgrades a Building by 1 Rank.\n\nAllies power producing buildings can also be upgraded.\n increases the power output by 25% per rank, up to 100% with rank Elite.
 	Valued:
-		Cost: 170
+		Cost: 1200
 	Tooltip:
 		Name: Architect
 	Passenger:
@@ -1197,10 +1197,24 @@ CITYARCHITECT:
 		Speed: 48
 	RevealsShroud:
 		Range: 4c0
-	DeliversExperience:
-		Type: building
+	#DeliversExperience:
+	#	Type: building
 	ProducibleWithLevel:
 		InitialLevels: 1
+	GrantExternalConditionPower@LEVELUP1:
+		OrderName: UpgradeBuilding
+		Icon: architect1
+		AllowMultiple: true
+		Description: Architect
+		LongDesc: Upgrades buildings by 1 rank.
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 600
+		Duration: 0
+		Range: 3
+		DisplayRadarPing: True
+		Condition: city-veteran
+		SupportPowerPaletteOrder: 10
 
 CITYELITEARCHITECT:
 	Inherits: ^CITYINFANTRY
@@ -1208,10 +1222,10 @@ CITYELITEARCHITECT:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 70
 		Prerequisites: Library
-		BuildDuration: 400
 		Description: Upgrades a Building to Rank 4 (Elite).\n\nAllies power producing buildings can also be upgraded.\n increases the power output by 25% per rank, up to 100% with rank Elite.
+		Icon: eliteicon
 	Valued:
-		Cost: 600
+		Cost: 2000
 	Tooltip:
 		Name: Elite Architect
 	Passenger:
@@ -1224,22 +1238,35 @@ CITYELITEARCHITECT:
 		Speed: 48
 	RevealsShroud:
 		Range: 4c0
-	DeliversExperience:
-		Type: building
+	#DeliversExperience:
+	#	Type: building
 	ProducibleWithLevel:
 		InitialLevels: 4
 	RenderSprites:
-		Scale: 1.2
+		Image: cityarchitect
+	GrantExternalConditionPower@LEVELUP1:
+		OrderName: UpgradeBuilding2
+		Icon: architect2
+		AllowMultiple: true
+		Description: Elite Architect
+		LongDesc: Upgrades buildings to Rank 4 (Elite).
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 900
+		Duration: 0
+		Range: 3
+		DisplayRadarPing: True
+		Condition: city-elite
+		SupportPowerPaletteOrder: 10
 
 CITYINSTRUCTOR:
 	Inherits: ^CITYINFANTRY
 	Buildable:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 50
-		BuildDuration: 160
-		Description: Upgrades an Infantry by 1 Rank.
+		Description: Upgrades units by 1 rank.
 	Valued:
-		Cost: 80
+		Cost: 1200
 	Tooltip:
 		Name: Instructor
 	Passenger:
@@ -1252,47 +1279,67 @@ CITYINSTRUCTOR:
 		Speed: 48
 	RevealsShroud:
 		Range: 4c0
-	DeliversExperience:
-		Type: infantry
+	WithInfantryBody:
+		IdleSequences: idle
+		DefaultAttackSequence: repair
+		StandSequences: stand
+	#DeliversExperience:
+	#	Type: infantry
 	ProducibleWithLevel:
 		InitialLevels: 1
+	GrantExternalConditionPower@LEVELUP2:
+		OrderName: UpgradeVeteran
+		Icon: instructor1
+		AllowMultiple: true
+		Description: Instructor
+		LongDesc: Upgrades a group of units by 1 rank.
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 600
+		Duration: 0
+		Range: 2
+		DisplayRadarPing: True
+		Condition: rank-veteran
+		SupportPowerPaletteOrder: 10
 	RenderSprites:
-		Scale: 0.8
 
 CITYELITEINSTRUCTOR:
-	Inherits: ^CITYINFANTRY
+	Inherits: CITYINSTRUCTOR
 	Buildable:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 80
 		Prerequisites: Library
-		BuildDuration: 400
-		Description: Upgrades an Infantry to Rank 4 (Elite).
+		Description: Upgrades units to Rank 4 (Elite).
+		Icon: eliteicon
 	Valued:
-		Cost: 280
+		Cost: 2000
 	Tooltip:
 		Name: Elite Instructor
-	Passenger:
-		PipType: blue
-	Health:
-		HP: 3000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 48
-	RevealsShroud:
-		Range: 4c0
-	DeliversExperience:
-		Type: infantry
 	ProducibleWithLevel:
 		InitialLevels: 4
+	GrantExternalConditionPower@LEVELUP2:
+		OrderName: UpgradeElite
+		Icon: instructor2
+		AllowMultiple: true
+		Description: Elite Instructor
+		LongDesc: Upgrades a group of units to elite rank.
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 900
+		Duration: 0
+		Range: 2
+		DisplayRadarPing: True
+		Condition: rank-elite
+		SupportPowerPaletteOrder: 10
 	RenderSprites:
-		Scale: 0.9
+		Image: cityinstructor
 
 CITYEXPERT:
 	Inherits: ^CITYINFANTRY
 	Buildable:
 		Queue: Vehicle.SimCity, RAVehicle.SimCity
 		BuildPaletteOrder: 50
+		Prerequisites: ~disabled
 		BuildDuration: 160
 		Description: Upgrades a Vehicle by 1 Rank.
 	Valued:
@@ -1309,48 +1356,39 @@ CITYEXPERT:
 		Speed: 48
 	RevealsShroud:
 		Range: 4c0
+	WithInfantryBody:
+		IdleSequences: idle
+		StandSequences: stand
+		DefaultAttackSequence: heal
 	DeliversExperience:
 		Type: vehicle
 	ProducibleWithLevel:
 		InitialLevels: 1
-	RenderSprites:
-		Scale: 0.8
 
 CITYELITEEXPERT:
-	Inherits: ^CITYINFANTRY
+	Inherits: CITYEXPERT
 	Buildable:
 		Queue: Vehicle.SimCity, RAVehicle.SimCity
 		BuildPaletteOrder: 80
-		Prerequisites: Bank
+		Prerequisites: ~disabled #Bank
 		BuildDuration: 400
 		Description: Upgrades a Vehicle to Rank 4 (Elite).
+		Icon: eliteicon
 	Valued:
 		Cost: 1400
 	Tooltip:
 		Name: Elite Expert
-	Passenger:
-		PipType: red
-	Health:
-		HP: 3000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 48
-	RevealsShroud:
-		Range: 4c0
-	DeliversExperience:
-		Type: vehicle
 	ProducibleWithLevel:
 		InitialLevels: 4
 	RenderSprites:
-		Scale: 0.9
+		Image: cityexpert
 
 CITYSWAT:
 	Inherits: ^CITYINFANTRY
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 4000
+		Cost: 2000
 	Tooltip:
 		Name: S.W.A.T.
 	Buildable:

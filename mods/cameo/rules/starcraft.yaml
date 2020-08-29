@@ -137,8 +137,7 @@ SCSUPPLYDEPOT:
 		PipCount: 10
 		Capacity: 1000
 	-SpawnActorsOnSell:
-	Inherits@EXPERIENCE: ^GainsExperience				##########
-	Inherits@POWERMULTIPLIER: ^PowerMultiplier			##########
+	Inherits@POWERMULTIPLIER: ^PowerMultiplier
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 
@@ -784,8 +783,7 @@ SCPYLON:
 	StoresResources:
 		PipCount: 10
 		Capacity: 1000
-	Inherits@EXPERIENCE: ^GainsExperience				##########
-	Inherits@POWERMULTIPLIER: ^PowerMultiplier			##########
+	Inherits@POWERMULTIPLIER: ^PowerMultiplier
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 	-WithDeathAnimation:
@@ -1404,8 +1402,21 @@ SCHATCHERY:
 		Cost: 2000
 	Tooltip:
 		Name: Hatchery
+		RequiresCondition: !lair && !hive
+	Tooltip@2:
+		Name: Lair
+		RequiresCondition: lair && !hive
+	Tooltip@3:
+		Name: Hive
+		RequiresCondition: hive
 	ProvidesPrerequisite:
 		Prerequisite: Hatchery
+	ProvidesPrerequisite@2:
+		Prerequisite: Lair
+		RequiresCondition: lair
+	ProvidesPrerequisite@3:
+		Prerequisite: Hive
+		RequiresCondition: hive
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -1418,10 +1429,10 @@ SCHATCHERY:
 	RevealsShroud:
 		Range: 8c0
 	Production@NORMAL:
-		Produces: Building.Zerg, Defence.Zerg, Infantry.Zerg, Hatchery.Zerg
+		Produces: Building.Zerg, Defence.Zerg, Infantry.Zerg
 		RequiresCondition: !classicproductionqueues
 	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding.Zerg, RADefence.Zerg, RAInfantry.Zerg, Hatchery.Zerg
+		Produces: RABuilding.Zerg, RADefence.Zerg, RAInfantry.Zerg
 		RequiresCondition: classicproductionqueues
 	ProductionQueue@ZergBuilding:
 		Type: Building.Zerg
@@ -1441,7 +1452,7 @@ SCHATCHERY:
 		Group: Infantry
 		LowPowerModifier: 9999
 		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
+		ReadyAudio: UnitReady
 	BaseBuilding:
 	ProductionBar@BuildingZerg:
 		ProductionType: Building.Zerg
@@ -1494,23 +1505,47 @@ SCHATCHERY:
 	ProductionQueue@hatchery:
 		Type: Hatchery.Zerg
 		Group: Defence
+	ProductionQueue@lair:
+		Type: Lair.Zerg
+		Group: Defence
 	GrantConditionOnProduction@lair:
-		Condition: laircondition
+		Condition: lair
 		Actors: psclair
-	KillsSelf@lair:
-		RequiresCondition: laircondition
-		GrantsCondition: lairrebirth
-	SpawnActorOnDeath@lair:
-		RequiresCondition: lairrebirth
-		Actor: sclair
-	SoundOnDamageTransition:
-		-DamagedSounds: xplos.aud
-		-DestroyedSounds: crumble.aud
+	GrantConditionOnProduction@hive:
+		Condition: hive
+		Actors: pschive
+	GrantConditionOnProduction@animationhack:
+		Condition: transition
+		Duration: 1
+		Actors: pschive, psclair
+	PeriodicExplosion:
+		Weapon: Creeptransition
+		RequiresCondition: transition
+	Production@lvl1:
+		Produces: Hatchery.Zerg
+		RequiresCondition: !lair
+	Production@lvl2:
+		Produces: Lair.Zerg
+		RequiresCondition: lair && !hive
+	WithSpriteBody:
+		RequiresCondition: !lair && !hive
+	WithSpriteBody@lair:
+		Sequence: lair
+		Name: lair
+		RequiresCondition: lair && !hive
+	WithSpriteBody@hive:
+		Sequence: hive
+		Name: hive
+		RequiresCondition: hive
+	#KillsSelf@lair:
+	#	RequiresCondition: laircondition
+	#	GrantsCondition: lairrebirth
+	#SpawnActorOnDeath@lair:
+	#	RequiresCondition: lairrebirth
+	#	Actor: sclair
 	Explodes:
 		Weapon: Creeptransition
 		Type: CenterPosition
-	-ShakeOnDeath:
-	-ActorLostNotification:
 	##########
 	GrantConditionOnProduction@botpowerrestriction:
 		Condition: botpowerrestriction
@@ -2032,7 +2067,7 @@ SCLAIR:
 		Group: Infantry
 		LowPowerModifier: 9999
 		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
+		ReadyAudio: UnitReady
 	BaseBuilding:
 	ProductionBar@BuildingZerg:
 		ProductionType: Building.Zerg
@@ -2161,7 +2196,7 @@ SCHIVE:
 		Group: Infantry
 		LowPowerModifier: 9999
 		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
+		ReadyAudio: UnitReady
 	BaseBuilding:
 	ProductionBar@BuildingZerg:
 		ProductionType: Building.Zerg
@@ -3088,7 +3123,7 @@ SCPROBE:
 		Prerequisites: Assimilator
 		BuildDuration: 480
 		Queue: Defence.Protoss, RADefence.Protoss
-		Description: Collects resources.\n Can repair mechanical units and buildings.
+		Description: Collects resources.
 	Mobile:
 		Locomotor: foot
 		TurnSpeed: 255
@@ -3949,7 +3984,7 @@ SCOVERLORD:
 		BuildPaletteOrder: 30
 		BuildDuration: 480
 		Prerequisites:
-		Queue: Infantry.Zerg, RAInfantry.Zerg
+		Queue: Building.Zerg, RABuilding.Zerg
 		Description: Provides supply and stores resources
 	Aircraft:
 		InitialFacing: 224
