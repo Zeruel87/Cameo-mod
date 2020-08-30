@@ -1558,14 +1558,22 @@ SCHATCHERY:
 		RequiresPrerequisites: !Extractor
 
 SCCREEPCOLONY:
-	Inherits: ^BaseBuilding
+	Inherits: ^Defense
 	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
 	Selectable:
 		Bounds: 44,44
 	Valued:
 		Cost: 500
 	Tooltip:
 		Name: Creep Colony
+		RequiresCondition: !sunken && !spore
+	Tooltip@2:
+		Name: Sunken Colony
+		RequiresCondition: sunken
+	Tooltip@3:
+		Name: Spore Colony
+		RequiresCondition: spore
 	ProvidesPrerequisite:
 		Prerequisite: Creep Colony
 	Buildable:
@@ -1580,10 +1588,14 @@ SCCREEPCOLONY:
 		BuildSounds: zchrdy00.aud
 	Health:
 		HP: 60000
+	Armor:
+		Type: Heavy
+		RequiresCondition: sunken || spore
+	DamageMultiplier@evo:
+		Modifier: 60
+		RequiresCondition: sunken || spore
 	RevealsShroud:
 		Range: 9c0
-	GivesBuildableArea:
-		AreaTypes: building, creep colony
 	-WithDeathAnimation:
 	-SpawnActorsOnSell:
 	##########
@@ -1591,35 +1603,55 @@ SCCREEPCOLONY:
 		ExitCell: 0,0
 	Production:
 		Produces: Colony.Zerg
+		RequiresCondition: !sunken && !spore
 	ProductionQueue:
 		Type: Colony.Zerg
 		Group: Defence
 	GrantConditionOnProduction@sunken:
-		Condition: sunkencondition
+		Condition: sunken
 		Actors: pscsunkencolony
-	KillsSelf@sunken:
-		RequiresCondition: sunkencondition
-		GrantsCondition: sunkenrebirth
-	SpawnActorOnDeath@sunken:
-		RequiresCondition: sunkenrebirth
-		Actor: scsunkencolony
 	GrantConditionOnProduction@spore:
-		Condition: sporecondition
+		Condition: spore
 		Actors: pscsporecolony
-	KillsSelf@spore:
-		RequiresCondition: sporecondition
-		GrantsCondition: sporerebirth
-	SpawnActorOnDeath@spore:
-		RequiresCondition: sporerebirth
-		Actor: scsporecolony
-	SoundOnDamageTransition:
-		-DamagedSounds: xplos.aud
-		-DestroyedSounds: crumble.aud
+	WithSpriteBody:
+		RequiresCondition: !sunken && !spore
+	WithSpriteBody@sunken:
+		Sequence: sunken
+		Name: sunken
+		RequiresCondition: sunken
+	WithSpriteBody@spore:
+		Sequence: spore
+		Name: spore
+		RequiresCondition: spore
+	AttackOmni:
+		Armaments: primary, spore
+	WithAttackAnimation:
+		Body: sunken
+		Sequence: shoot
+		RequiresCondition: sunken
+	Armament@sunken:
+		Weapon: Tentacle
+		RequiresCondition: sunken
+	Armament@spore:
+		Name: spore
+		Weapon: Spore
+		RequiresCondition: spore
+	RevealsShroud@upgraded:
+		Range: 9c0
+		RequiresCondition: sunken || spore
+	DetectCloaked@spore:
+		Range: 9c0
+		RequiresCondition: spore
+	GrantConditionOnProduction@animationhack:
+		Condition: transition
+		Duration: 1
+		Actors: pscsporecolony, pscsunkencolony
+	PeriodicExplosion:
+		Weapon: Creeptransition
+		RequiresCondition: transition
 	Explodes:
 		Weapon: Creeptransition
 		Type: CenterPosition
-	-ShakeOnDeath:
-	-ActorLostNotification:
 
 SCEXTRACTOR:
 	Inherits: ^BaseBuilding
@@ -1786,8 +1818,15 @@ SCSPIRE:
 		Cost: 2200
 	Tooltip:
 		Name: Spire
+		RequiresCondition: !spirecondition
+	Tooltip@2:
+		Name: Greater Spire
+		RequiresCondition: spirecondition
 	ProvidesPrerequisite:
 		Prerequisite: Spire
+	ProvidesPrerequisite@2:
+		Prerequisite: Greater Spire
+		RequiresCondition: spirecondition
 	Buildable:
 		BuildPaletteOrder: 80
 		Prerequisites: Lair, ~techlevel.medium
@@ -1809,36 +1848,37 @@ SCSPIRE:
 		AreaTypes: building, spire
 	-WithDeathAnimation:
 	-SpawnActorsOnSell:
-	##########
 	Exit:
 		ExitCell: 0,0
 	Production:
 		Produces: Spire.Zerg
+		RequiresCondition: !spirecondition
 	ProductionQueue@ZergSpire:
 		Type: Spire.Zerg
 		Group: Defence
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
-	BaseBuilding:
 	ProductionBar@ZergSpire:
 		ProductionType: Spire.Zerg
 	GrantConditionOnProduction@spire:
 		Condition: spirecondition
 		Actors: pscgreaterspire
-	KillsSelf@spire:
-		RequiresCondition: spirecondition
-		GrantsCondition: spirerebirth
-	SpawnActorOnDeath@spire:
-		RequiresCondition: spirerebirth
-		Actor: scgreaterspire
-	SoundOnDamageTransition:
-		-DamagedSounds: xplos.aud
-		-DestroyedSounds: crumble.aud
+	GrantConditionOnProduction@animationhack:
+		Condition: transition
+		Actors: pscgreaterspire
+		Duration: 1
+	WithSpriteBody:
+		RequiresCondition: !spirecondition
+	WithSpriteBody@greater:
+		Sequence: greaterspire
+		Name: greaterspire
+		RequiresCondition: spirecondition	
+	PeriodicExplosion:
+		Weapon: Creeptransition
+		RequiresCondition: transition
 	Explodes:
 		Weapon: Creeptransition
 		Type: CenterPosition
-	-ShakeOnDeath:
-	-ActorLostNotification:
 
 SCULTRALISKCAVERN:
 	Inherits: ^BaseBuilding
@@ -4752,7 +4792,7 @@ PSCSUNKENCOLONY:
 	Buildable:
 		BuildPaletteOrder: 20
 		Queue: Colony.Zerg
-		Description: Ground base defense.\n Strong vs. Infantry
+		Description: Ground base defense.
 		Prerequisites: Spawning Pool
 	Valued:
 		Cost: 200
