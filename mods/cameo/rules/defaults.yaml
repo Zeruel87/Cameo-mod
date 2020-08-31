@@ -279,6 +279,7 @@
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@rad: ^VehicleRadiation
+	Inherits@fix: ^Repairable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -293,8 +294,6 @@
 	Targetable:
 		RequiresCondition: !parachute
 		TargetTypes: Ground, Vehicle
-	Repairable:
-		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept,tsgtdept
 	Passenger:
 		CargoType: Vehicle
 	ActorLostNotification:
@@ -448,6 +447,7 @@
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
 	Inherits@bot: ^BotProductionBoost
+	Inherits@fix: ^Repairable
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -463,8 +463,6 @@
 	WithSpriteControlGroupDecoration:
 	Selectable:
 		Bounds: 24,24
-	Repairable:
-		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept,tsgtdept	##########
 	Aircraft:
 		AirborneCondition: airborne
 		CruisingCondition: cruising
@@ -1005,9 +1003,6 @@
 		Condition: TSNeutronBomb
 	WithColoredOverlay@TSNEUTRON:
 		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
-	PowerMultiplier@TSNEUTRON:
-		Modifier: 200
 		RequiresCondition: TSNeutronBomb
 	Cloak@CloackGen:
 		InitialDelay: 15
@@ -1637,8 +1632,7 @@
 	Inherits@bounty: ^GlobalBounty				##########
 	Inherits@commandodebuff: ^CommandoDebuff	##########
 	Inherits@bot: ^BotProductionBoost
-	Repairable:
-		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept,tsgtdept	##########
+	Inherits@fix: ^Repairable
 
 ^RAHelicopter:
 	Inherits: ^RAPlane
@@ -1940,8 +1934,6 @@
 	PowerMultiplier@RANK-4:
 		Modifier: 200
 		RequiresCondition: city-elite
-	Targetable@BotArchitect:
-		TargetTypes: Power
 
 ^DefenseMultiplier:
 	Inherits: ^GainsExperienceCity
@@ -2004,7 +1996,7 @@
 		Interval: 400
 		RequiresCondition: city-veteran == 0 && !lowpower && !city-elite
 	CashTrickler@RANK-1:
-		Amount: 25
+		Amount: 20
 		Interval: 400
 		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
 	CashTrickler@RANK-2:
@@ -2016,7 +2008,7 @@
 		Interval: 400
 		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
 	CashTrickler@RANK-4:
-		Amount: 100
+		Amount: 80
 		Interval: 400
 		RequiresCondition: city-elite && !lowpower
 	CashTricklerMultiplier@COMMERCIAL0:
@@ -2600,6 +2592,13 @@ CPQDEBUGDUMMY:
 	Rearmable:
 		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2
 
+^Repairable:
+	Repairable:
+		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept
+	RepairableNear:
+		RepairActors: scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr
+		CloseEnough: 2c0
+
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
@@ -2663,3 +2662,33 @@ CPQDEBUGDUMMY:
 	WithInfantryBody@Editor:
 		DefaultAttackSequence: shoot
 		RequiresCondition: !editorhack
+
+^Power:
+	Inherits: ^PowerMultiplier
+	Buildable:
+		BuildDurationModifier: 25
+	Targetable@BotArchitect:
+		TargetTypes: Power
+	ProvidesPrerequisite@anypower:
+		Prerequisite: anypower
+
+^PowerPlant:
+	Inherits: ^Power
+	WithColoredOverlay@IDISABLE:
+		Palette: disabled
+		RequiresCondition: disabled
+	GrantCondition@IDISABLE:
+		RequiresCondition: power-outage || TSNeutronBomb
+		Condition: disabled
+	AffectedByPowerOutage:
+		Condition: power-outage
+	InfiltrateForPowerOutage:
+		Types: SpyInfiltrate
+	Targetable@infiltrate:
+		TargetTypes: SpyInfiltrate
+	Power:
+		RequiresCondition: !disabled
+
+^Refinery:
+	Buildable:
+		BuildDurationModifier: 25

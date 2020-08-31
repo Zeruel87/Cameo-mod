@@ -118,14 +118,13 @@ SCCOMMANDCENTER:
 SCSUPPLYDEPOT:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@power: ^Power
 	Valued:
 		Cost: 400
 	Tooltip:
 		Name: Supply Depot
 	ProvidesPrerequisite@supplydepot:
 		Prerequisite: Supply Depot
-	ProvidesPrerequisite@anypower:
-		Prerequisite: anypower
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 480
@@ -145,13 +144,13 @@ SCSUPPLYDEPOT:
 		PipCount: 10
 		Capacity: 1000
 	-SpawnActorsOnSell:
-	Inherits@POWERMULTIPLIER: ^PowerMultiplier
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 
 SCREFINERY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
+	Inherits@ref: ^Refinery
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -764,14 +763,13 @@ SCPYLON:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@power: ^Power
 	Valued:
 		Cost: 400
 	Tooltip:
 		Name: Pylon
 	ProvidesPrerequisite@pylon:
 		Prerequisite: Pylon
-	ProvidesPrerequisite@anypower:
-		Prerequisite: anypower
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 480
@@ -790,7 +788,6 @@ SCPYLON:
 	StoresResources:
 		PipCount: 10
 		Capacity: 1000
-	Inherits@POWERMULTIPLIER: ^PowerMultiplier
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 	-WithDeathAnimation:
@@ -800,6 +797,7 @@ SCASSIMILATOR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@ref: ^Refinery
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -1044,6 +1042,9 @@ SCSHIELDBATTERY:
 		ValidTargets: Infantry, Vehicle
 	RallyPoint:
 	RepairsUnits:
+		ValuePercentage: 0
+		HpPerStep: 500
+		Interval: 12
 	-WithSpriteBody:
 	-GivesBuildableArea:
 	-WithDeathAnimation:
@@ -1669,6 +1670,7 @@ SCCREEPCOLONY:
 SCEXTRACTOR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
+	Inherits@ref: ^Refinery
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -2513,6 +2515,8 @@ SCSCV:
 		Amount: -10
 	Voiced:
 		VoiceSet: SCSCVVoice
+	Targetable@aihack:
+		TargetTypes: SCV
 	Inherits@EXT: ^ExternalConditions
 	WithHarvesterSpriteBody:
 		ImageByFullness: scscv, scscvfull
@@ -2898,7 +2902,7 @@ SCCOMMANDCENTERM:
 	-Hovers@CRUISING:
 	-Voiced:
 	RenderSprites:
-		Image: sccommandcenterlift
+		Image: sccommandcenter
 
 SCBARRACKSM:
 	Inherits: SCCOMMANDCENTERM
@@ -2909,7 +2913,7 @@ SCBARRACKSM:
 	Transforms:
 		IntoActor: scbarracks
 	RenderSprites:
-		Image: scbarrackslift
+		Image: scbarracks
 
 SCENGINEERINGBAYM:
 	Inherits: SCCOMMANDCENTERM
@@ -2920,7 +2924,7 @@ SCENGINEERINGBAYM:
 	Transforms:
 		IntoActor: scengineeringbay
 	RenderSprites:
-		Image: scengineeringbaylift
+		Image: scengineeringbay
 
 SCFACTORYM:
 	Inherits: SCCOMMANDCENTERM
@@ -2931,7 +2935,7 @@ SCFACTORYM:
 	Transforms:
 		IntoActor: scfactory
 	RenderSprites:
-		Image: scfactorylift
+		Image: scfactory
 
 SCSTARPORTM:
 	Inherits: SCCOMMANDCENTERM
@@ -2942,7 +2946,7 @@ SCSTARPORTM:
 	Transforms:
 		IntoActor: scstarport
 	RenderSprites:
-		Image: scstarportlift
+		Image: scstarport
 
 SCSCIENCEFACILITYM:
 	Inherits: SCCOMMANDCENTERM
@@ -2953,7 +2957,7 @@ SCSCIENCEFACILITYM:
 	Transforms:
 		IntoActor: scsciencefacility
 	RenderSprites:
-		Image: scsciencefacilitylift
+		Image: scsciencefacility
 
 SCWRAITH:
 	Inherits: ^Helicopter
@@ -3964,6 +3968,7 @@ SCDRONE:
 	RevealsShroud:
 		Range: 6c0
 	WithDeathAnimation:
+		UseDeathTypeSuffix: false
 	#WithMoveAnimation:
 	AttackFrontal:
 	Armament:
@@ -4035,7 +4040,7 @@ SCOVERLORD:
 		Prerequisite: anypower
 	Buildable:
 		BuildPaletteOrder: 30
-		BuildDuration: 480
+		BuildDurationModifier: 25
 		Prerequisites:
 		Queue: Building.Zerg, RABuilding.Zerg
 		Description: Provides supply and stores resources
@@ -4336,7 +4341,7 @@ SCLURKER:
 		Name: Lurker
 	Buildable:
 		BuildPaletteOrder: 90
-		Prerequisites: Hydralisk Den, Evolution Chamber, ~techlevel.medium
+		Prerequisites: Hydralisk Den, Evolution Chamber, Lair, ~techlevel.medium
 		Queue: Infantry.Zerg, RAInfantry.Zerg
 		Description: Zerg ambush strain.\nNeeds to deploy to attack\n Strong vs. Infantry
 	Mobile:
@@ -4354,6 +4359,9 @@ SCLURKER:
 	HitShape:
 	Power:
 		Amount: -20
+	DamageMultiplier:
+		Modifier: 50
+		RequiresCondition: deployed
 	GrantConditionOnDeploy:
 		DeployedCondition: deployed
 		UndeployedCondition: undeployed
