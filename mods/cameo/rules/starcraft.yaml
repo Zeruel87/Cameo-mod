@@ -15,6 +15,15 @@
 	WithHarvestAnimation:
 	WithDockingAnimation:
 
+^SCUnitProduction:
+	GrantConditionOnPowerState@supply:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	Production@NORMAL:
+		PauseOnCondition: lowpower
+	Production@CLASSICPRODUCTIONQUEUES:
+		PauseOnCondition: lowpower
+
 ####################################################################################################
 #		BUILDING TERRAN
 ####################################################################################################
@@ -63,7 +72,6 @@ SCCOMMANDCENTER:
 		Type: Defence.Terran
 		DisplayOrder: 1
 		Group: Defence
-		LowPowerModifier: 9999
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
 	BaseBuilding:
@@ -183,6 +191,7 @@ SCBARRACKS:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -223,7 +232,6 @@ SCBARRACKS:
 		Type: Infantry.Terran
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -407,6 +415,7 @@ SCFACTORY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 1600
 	Tooltip:
@@ -445,7 +454,6 @@ SCFACTORY:
 		Type: Vehicle.Terran
 		DisplayOrder: 3
 		Group: Vehicle
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -474,6 +482,7 @@ SCSTARPORT:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -511,7 +520,6 @@ SCSTARPORT:
 		Type: Aircraft.Terran
 		DisplayOrder: 4
 		Group: Aircraft
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -709,7 +717,6 @@ SCNEXUS:
 		Type: Defence.Protoss
 		DisplayOrder: 1
 		Group: Defence
-		LowPowerModifier: 9999
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
 	BaseBuilding:
@@ -834,6 +841,7 @@ SCGATEWAY:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -874,7 +882,6 @@ SCGATEWAY:
 		Type: Infantry.Protoss
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -1047,6 +1054,7 @@ SCROBOTICSFACILITY:
 	Inherits@shape: ^2x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@supply: ^SCUnitProduction
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 490,-470,0, 355,512,0, -355,-512,0, -630,512,0
@@ -1090,7 +1098,6 @@ SCROBOTICSFACILITY:
 		Type: Vehicle.Protoss
 		DisplayOrder: 3
 		Group: Vehicle
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -1114,6 +1121,7 @@ SCSTARGATE:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 1800
 	Tooltip:
@@ -1153,7 +1161,6 @@ SCSTARGATE:
 		Type: Aircraft.Protoss
 		DisplayOrder: 4
 		Group: Aircraft
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -1395,6 +1402,7 @@ SCHATCHERY:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
+	Inherits@supply: ^SCUnitProduction
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -1428,11 +1436,17 @@ SCHATCHERY:
 		Type: Wood
 	RevealsShroud:
 		Range: 8c0
+	Production@NORMALBUILDING:
+		Produces: Building.Zerg, Defence.Zerg
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICBUILDING:
+		Produces: RABuilding.Zerg, RADefence.Zerg
+		RequiresCondition: classicproductionqueues
 	Production@NORMAL:
-		Produces: Building.Zerg, Defence.Zerg, Infantry.Zerg
+		Produces: Infantry.Zerg
 		RequiresCondition: !classicproductionqueues
 	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding.Zerg, RADefence.Zerg, RAInfantry.Zerg
+		Produces: RAInfantry.Zerg
 		RequiresCondition: classicproductionqueues
 	ProductionQueue@ZergBuilding:
 		Type: Building.Zerg
@@ -1450,7 +1464,6 @@ SCHATCHERY:
 		Type: Infantry.Zerg
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 9999
 		QueuedAudio: Building
 		ReadyAudio: UnitReady
 	BaseBuilding:

@@ -3,19 +3,19 @@ ProtossHeavy = { "scarchon", "scdragoon", "scdragoon", "scdragoon", "scdragoon",
 CabalSquad = { "tscyborg", "tscyborg", "tscyborg", "tscyborg", "tscyborg", "tscyc2", "tsreaper", "tscyc2", "tsreaper" }
 AlliedSquad = { "2tnk", "2tnk", "1tnk", "1tnk", "rajeep", "raarty" }
 AlliedInf = { "rae1", "rae1", "rae1", "rae1", "rae1", "rae1", "rae3", "rae3" }
-SovietSquad = { "ra2e2", "ra2e2", "ra2e2", "ra2e2", "ra2e2", "ra2e2", "ra2flakt", "ra2flakt", "ra2htk" }
-SovietHeavy = { "ra2apoc", "ra2htnk", "ra2htnk", "ra2v3" }
+SovietSquad = { "ra2e2", "ra2e2", "ra2e2", "ra2e2", "ra2e2", "ra2e2", "ra2flakt", "ra2flakt", "ra2shk" }
+SovietHeavy = { "3tnk", "3tnk", "ftnk", "ltnk", "ltnk", "ltnk", "4tnk" }
 AlphaSquad = { "2100mvw", "2100mvw", "2100rvw", "2100rvw", "2100rvw", "2100mch" }
 AlphaSquadHeavy = { "2100tch", "2100apt", "2100hpt", "2100tch" }
-CitySquad = { "cityfiretruck", "citypolicecar", "citypoliceofficer", "citypoliceofficer", "citypoliceofficer", "cityfirefighter", "cityfirefighter", "cityambulance" }
+CitySquad = { "cityfiretruck", "citypolicecar", "tsdoggie", "tsdoggie", "tsdoggie", "tse3", "tse3", "cityambulance" }
 CitySWAT = { "citypolicecar", "cityswat", "cityswat" }
-JojoChopper = { "yrschp" }
-Kirov = { "ra2zep" }
+JojoChopper = { "scwraith", "scwraith" }
+Kirov = { "scbattlecruiser" }
 Kilgore = { "raheli", "mh60", "mh60" }
-Dred = { "ra2dred" }
+Dred = { "ramsub" }
 Carrier = { "sccarrier" }
 Reavers = { "screaver", "screaver" }
-ShockArmy = { "ra2shk", "ra2shk", "ra2shk", "ra2shk", "ra2ttnk" }
+ShockArmy = { "ra2shk", "ra2shk", "ra2shk", "ra2shk", "ttnk" }
 
 BindActorTriggers = function(a)
 	if a.HasProperty("Hunt") then
@@ -127,12 +127,12 @@ WorldLoaded = function()
 	SendSovietUnits(entry4.Location, ShockArmy, 30)
 	SendCityUnits(entry3.Location, CitySquad, 10)
 	SendCityUnits(entry5.Location, CitySWAT, 10)
-	SendSovietUnits(ChopperEntry.Location, JojoChopper, 30)
+	Send2100Units(ChopperEntry.Location, JojoChopper, 30)
 
 	ShuttleDrop(ShuttleEntry, ReaverDrop)
 	ShuttleDrop(CarrierEntry, ReaverDrop2)
 	Trigger.AfterDelay(DateTime.Seconds(20), function()
-		SendSovietUnits(entry5.Location, Kirov, 50) 
+		Send2100Units(entry5.Location, Kirov, 50) 
 	end)
 	Trigger.AfterDelay(DateTime.Seconds(20), function()
 		SendProtossUnits(CarrierEntry.Location, Carrier, 50) 
