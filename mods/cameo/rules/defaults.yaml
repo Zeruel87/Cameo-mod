@@ -440,29 +440,74 @@
 	GpsDot:
 		String: Ship
 
-^Helicopter:
+^RANeutralPlane: #for actual air units
 	Inherits@1: ^ExistsInWorld
-	Inherits@3: ^SpriteActor
-	Inherits@selection: ^SelectableCombatUnit
+	Inherits@4: ^SpriteActor
 	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
+	Inherits@selection: ^SelectableCombatUnit
+	Inherits@commandodebuff: ^CommandoDebuff
+	Inherits@2: ^GainsExperience
 	Inherits@bot: ^BotProductionBoost
 	Inherits@fix: ^Repairable
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
+	DrawLineToTarget:
+	Armor:
+		Type: Light
+	UpdatesPlayerStatistics:
 	AppearsOnRadar:
 		UseLocation: true
-	Targetable@GROUND:
-		TargetTypes: Ground, Vehicle
-		RequiresCondition: !airborne
-	Targetable@AIRBORNE:
-		TargetTypes: Air
-		RequiresCondition: airborne
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
 		Bounds: 24,24
+	Aircraft:
+		AirborneCondition: airborne
+	Targetable@GROUND:
+		RequiresCondition: !airborne
+		TargetTypes: Ground, Vehicle
+	Targetable@AIRBORNE:
+		RequiresCondition: airborne
+		TargetTypes: Air
+	Targetable@REPAIR:
+		RequiresCondition: !airborne && damaged
+		TargetTypes: Repair, Healing
+	GrantConditionOnDamageState@DAMAGED:
+		Condition: damaged
+		ValidDamageStates: Light, Medium, Heavy, Critical
+	HiddenUnderFog:
+		Type: GroundPosition
+	AttackMove:
+	Guard:
+	Guardable:
+	ProximityCaptor:
+		Types: Plane
+	GpsDot:
+		String: Plane
+	Tooltip:
+		GenericName: Plane
+	WithShadow:
+		Offset: 43, 128, 0
+		ZOffset: -129
+	WithFacingSpriteBody:
+	MustBeDestroyed:
+	Voiced:
+		VoiceSet: VehicleVoice
+	HitShape:
+	MapEditorData:
+		Categories: Aircraft
+	SpawnActorOnDeath:
+		RequiresCondition: airborne
+	Explodes:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	Explodes@2:
+		Weapon: UnitExplode
+		RequiresCondition: !airborne
+
+^Helicopter:
+	Inherits@1: ^RANeutralPlane
 	Aircraft:
 		AirborneCondition: airborne
 		CruisingCondition: cruising
@@ -473,36 +518,37 @@
 		Crushes: crate, infantry
 		InitialFacing: 224
 		CanSlide: True
-	HiddenUnderFog:
-		Type: GroundPosition
-	ActorLostNotification:
-	Explodes:
-		Weapon: HeliExplode
-		EmptyWeapon: HeliExplode
-	AttackMove:
-	DrawLineToTarget:
-	Guard:
-	Guardable:
-	Tooltip:
-		GenericName: Helicopter
-	WithFacingSpriteBody:
-	WithShadow:
-		Offset: 43, 128, 0
-		ZOffset: -129
 	Hovers@CRUISING:
 		RequiresCondition: cruising
-	MustBeDestroyed:
-	Voiced:
-		VoiceSet: VehicleVoice
 	BodyOrientation:
 		UseClassicFacingFudge: True
-	HitShape:
-	MapEditorData:
-		Categories: Aircraft
-	SpawnActorOnDeath:
-		RequiresCondition: airborne
 	GpsDot:
 		String: Helicopter
+
+^RAPlane:
+	Inherits: ^RANeutralPlane
+	EjectOnDeath:
+		PilotActor: E1
+		SuccessRate: 50
+		EjectOnGround: false
+		EjectInAir: true
+		AllowUnsuitableCell: true
+		ChuteSound: chute1.aud
+
+^RAHelicopter:
+	Inherits: ^Helicopter
+	EjectOnDeath:
+		PilotActor: E1
+		SuccessRate: 50
+		EjectOnGround: false
+		EjectInAir: true
+		AllowUnsuitableCell: true
+		ChuteSound: chute1.aud
+
+^HeliExplodeLarge:
+	Explodes:
+		Weapon: LargeHeliExplode
+		EmptyWeapon: LargeHeliExplode
 
 ^Infantry:
 	Inherits@1: ^ExistsInWorld
@@ -868,12 +914,9 @@
 	GpsDot:
 		String: Infantry
 
-^Plane:
+^Plane: #Not for actual air units
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@bot: ^BotProductionBoost
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -1556,104 +1599,6 @@
 	MapEditorData:
 		Categories: Building
 	CommandBarBlacklist:
-
-^RANeutralPlane:
-	Inherits@1: ^ExistsInWorld
-	Inherits@4: ^SpriteActor
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@selection: ^SelectableCombatUnit
-	Inherits@commandodebuff: ^CommandoDebuff
-	Huntable:
-	OwnerLostAction:
-		Action: Kill
-	DrawLineToTarget:
-	Armor:
-		Type: Light
-	UpdatesPlayerStatistics:
-	AppearsOnRadar:
-		UseLocation: true
-	SelectionDecorations:
-	WithSpriteControlGroupDecoration:
-	Selectable:
-		Bounds: 24,24
-	Aircraft:
-		AirborneCondition: airborne
-	Targetable@GROUND:
-		RequiresCondition: !airborne
-		TargetTypes: Ground, Vehicle
-	Targetable@AIRBORNE:
-		RequiresCondition: airborne
-		TargetTypes: Air
-	Targetable@REPAIR:
-		RequiresCondition: !airborne && damaged
-		TargetTypes: Repair
-	GrantConditionOnDamageState@DAMAGED:
-		Condition: damaged
-		ValidDamageStates: Light, Medium, Heavy, Critical
-	HiddenUnderFog:
-		Type: GroundPosition
-	AttackMove:
-	Guard:
-	Guardable:
-	#ActorLostNotification:
-	#	Notification: AirUnitLost
-	ProximityCaptor:
-		Types: Plane
-	EjectOnDeath:
-		PilotActor: E1
-		SuccessRate: 50
-		EjectOnGround: false
-		EjectInAir: true
-		AllowUnsuitableCell: true
-		ChuteSound: chute1.aud
-	GpsDot:
-		String: Plane
-	Tooltip:
-		GenericName: Plane
-	WithShadow:
-		Offset: 43, 128, 0
-		ZOffset: -129
-	WithFacingSpriteBody:
-	MustBeDestroyed:
-	Voiced:
-		VoiceSet: GenericVoice
-	HitShape:
-	MapEditorData:
-		Categories: Aircraft
-	SpawnActorOnDeath:
-		RequiresCondition: airborne
-	Explodes:
-		Weapon: UnitExplode
-		RequiresCondition: !airborne
-
-^RAPlane:
-	Inherits: ^RANeutralPlane
-	Inherits@2: ^GainsExperience
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@bot: ^BotProductionBoost
-	Inherits@fix: ^Repairable
-
-^RAHelicopter:
-	Inherits: ^RAPlane
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Aircraft:
-		CanHover: True
-		CruisingCondition: cruising
-		WaitDistanceFromResupplyBase: 4c0
-		TakeOffOnResupply: true
-		VTOL: true
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
-		Crushes: crate, mine, infantry
-		InitialFacing: 224
-		CanSlide: True
-	GpsDot:
-		String: Helicopter
-	Hovers@CRUISING:
-		RequiresCondition: cruising
-	BodyOrientation:
-		UseClassicFacingFudge: True
 
 ^IronCurtainable:
 	WithColoredOverlay@IRONCURTAIN:
@@ -2687,5 +2632,9 @@ CPQDEBUGDUMMY:
 		RequiresCondition: !disabled
 
 ^Refinery:
+	Buildable:
+		BuildDurationModifier: 25
+
+^ProducesUnits:
 	Buildable:
 		BuildDurationModifier: 25
