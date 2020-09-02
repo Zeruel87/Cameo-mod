@@ -15,6 +15,16 @@
 	WithHarvestAnimation:
 	WithDockingAnimation:
 
+^SCUnitProduction:
+	Inherits@prod: ^ProducesUnits
+	GrantConditionOnPowerState@supply:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	Production@NORMAL:
+		PauseOnCondition: lowpower
+	Production@CLASSICPRODUCTIONQUEUES:
+		PauseOnCondition: lowpower
+
 ####################################################################################################
 #		BUILDING TERRAN
 ####################################################################################################
@@ -63,7 +73,6 @@ SCCOMMANDCENTER:
 		Type: Defence.Terran
 		DisplayOrder: 1
 		Group: Defence
-		LowPowerModifier: 9999
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
 	BaseBuilding:
@@ -110,14 +119,13 @@ SCCOMMANDCENTER:
 SCSUPPLYDEPOT:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@power: ^Power
 	Valued:
 		Cost: 400
 	Tooltip:
 		Name: Supply Depot
 	ProvidesPrerequisite@supplydepot:
 		Prerequisite: Supply Depot
-	ProvidesPrerequisite@anypower:
-		Prerequisite: anypower
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 480
@@ -137,13 +145,13 @@ SCSUPPLYDEPOT:
 		PipCount: 10
 		Capacity: 1000
 	-SpawnActorsOnSell:
-	Inherits@POWERMULTIPLIER: ^PowerMultiplier
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 
 SCREFINERY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
+	Inherits@ref: ^Refinery
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -183,6 +191,7 @@ SCBARRACKS:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -223,7 +232,6 @@ SCBARRACKS:
 		Type: Infantry.Terran
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -407,6 +415,7 @@ SCFACTORY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 1600
 	Tooltip:
@@ -445,7 +454,6 @@ SCFACTORY:
 		Type: Vehicle.Terran
 		DisplayOrder: 3
 		Group: Vehicle
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -474,6 +482,7 @@ SCSTARPORT:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -511,7 +520,6 @@ SCSTARPORT:
 		Type: Aircraft.Terran
 		DisplayOrder: 4
 		Group: Aircraft
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -709,7 +717,6 @@ SCNEXUS:
 		Type: Defence.Protoss
 		DisplayOrder: 1
 		Group: Defence
-		LowPowerModifier: 9999
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
 	BaseBuilding:
@@ -757,14 +764,13 @@ SCPYLON:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@power: ^Power
 	Valued:
 		Cost: 400
 	Tooltip:
 		Name: Pylon
 	ProvidesPrerequisite@pylon:
 		Prerequisite: Pylon
-	ProvidesPrerequisite@anypower:
-		Prerequisite: anypower
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 480
@@ -783,7 +789,6 @@ SCPYLON:
 	StoresResources:
 		PipCount: 10
 		Capacity: 1000
-	Inherits@POWERMULTIPLIER: ^PowerMultiplier
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 	-WithDeathAnimation:
@@ -793,6 +798,7 @@ SCASSIMILATOR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@ref: ^Refinery
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -834,6 +840,7 @@ SCGATEWAY:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -874,7 +881,6 @@ SCGATEWAY:
 		Type: Infantry.Protoss
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -950,7 +956,6 @@ SCPHOTONCANNON:
 	DetectCloaked:
 		Range: 10c0
 	Turreted:
-		TurnSpeed: 10
 		InitialFacing: 0
 		RealignDelay: -1
 	WithEmbeddedTurretSpriteBody:
@@ -1037,6 +1042,9 @@ SCSHIELDBATTERY:
 		ValidTargets: Infantry, Vehicle
 	RallyPoint:
 	RepairsUnits:
+		ValuePercentage: 0
+		HpPerStep: 500
+		Interval: 12
 	-WithSpriteBody:
 	-GivesBuildableArea:
 	-WithDeathAnimation:
@@ -1047,6 +1055,7 @@ SCROBOTICSFACILITY:
 	Inherits@shape: ^2x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@supply: ^SCUnitProduction
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 490,-470,0, 355,512,0, -355,-512,0, -630,512,0
@@ -1090,7 +1099,6 @@ SCROBOTICSFACILITY:
 		Type: Vehicle.Protoss
 		DisplayOrder: 3
 		Group: Vehicle
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -1114,6 +1122,7 @@ SCSTARGATE:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 1800
 	Tooltip:
@@ -1153,7 +1162,6 @@ SCSTARGATE:
 		Type: Aircraft.Protoss
 		DisplayOrder: 4
 		Group: Aircraft
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -1395,6 +1403,7 @@ SCHATCHERY:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
+	Inherits@supply: ^SCUnitProduction
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -1428,11 +1437,17 @@ SCHATCHERY:
 		Type: Wood
 	RevealsShroud:
 		Range: 8c0
+	Production@NORMALBUILDING:
+		Produces: Building.Zerg, Defence.Zerg
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICBUILDING:
+		Produces: RABuilding.Zerg, RADefence.Zerg
+		RequiresCondition: classicproductionqueues
 	Production@NORMAL:
-		Produces: Building.Zerg, Defence.Zerg, Infantry.Zerg
+		Produces: Infantry.Zerg
 		RequiresCondition: !classicproductionqueues
 	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding.Zerg, RADefence.Zerg, RAInfantry.Zerg
+		Produces: RAInfantry.Zerg
 		RequiresCondition: classicproductionqueues
 	ProductionQueue@ZergBuilding:
 		Type: Building.Zerg
@@ -1450,7 +1465,6 @@ SCHATCHERY:
 		Type: Infantry.Zerg
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 9999
 		QueuedAudio: Building
 		ReadyAudio: UnitReady
 	BaseBuilding:
@@ -1558,14 +1572,22 @@ SCHATCHERY:
 		RequiresPrerequisites: !Extractor
 
 SCCREEPCOLONY:
-	Inherits: ^BaseBuilding
+	Inherits: ^Defense
 	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
 	Selectable:
 		Bounds: 44,44
 	Valued:
 		Cost: 500
 	Tooltip:
 		Name: Creep Colony
+		RequiresCondition: !sunken && !spore
+	Tooltip@2:
+		Name: Sunken Colony
+		RequiresCondition: sunken
+	Tooltip@3:
+		Name: Spore Colony
+		RequiresCondition: spore
 	ProvidesPrerequisite:
 		Prerequisite: Creep Colony
 	Buildable:
@@ -1580,10 +1602,14 @@ SCCREEPCOLONY:
 		BuildSounds: zchrdy00.aud
 	Health:
 		HP: 60000
+	Armor:
+		Type: Heavy
+		RequiresCondition: sunken || spore
+	DamageMultiplier@evo:
+		Modifier: 60
+		RequiresCondition: sunken || spore
 	RevealsShroud:
 		Range: 9c0
-	GivesBuildableArea:
-		AreaTypes: building, creep colony
 	-WithDeathAnimation:
 	-SpawnActorsOnSell:
 	##########
@@ -1591,39 +1617,60 @@ SCCREEPCOLONY:
 		ExitCell: 0,0
 	Production:
 		Produces: Colony.Zerg
+		RequiresCondition: !sunken && !spore
 	ProductionQueue:
 		Type: Colony.Zerg
 		Group: Defence
 	GrantConditionOnProduction@sunken:
-		Condition: sunkencondition
+		Condition: sunken
 		Actors: pscsunkencolony
-	KillsSelf@sunken:
-		RequiresCondition: sunkencondition
-		GrantsCondition: sunkenrebirth
-	SpawnActorOnDeath@sunken:
-		RequiresCondition: sunkenrebirth
-		Actor: scsunkencolony
 	GrantConditionOnProduction@spore:
-		Condition: sporecondition
+		Condition: spore
 		Actors: pscsporecolony
-	KillsSelf@spore:
-		RequiresCondition: sporecondition
-		GrantsCondition: sporerebirth
-	SpawnActorOnDeath@spore:
-		RequiresCondition: sporerebirth
-		Actor: scsporecolony
-	SoundOnDamageTransition:
-		-DamagedSounds: xplos.aud
-		-DestroyedSounds: crumble.aud
+	WithSpriteBody:
+		RequiresCondition: !sunken && !spore
+	WithSpriteBody@sunken:
+		Sequence: sunken
+		Name: sunken
+		RequiresCondition: sunken
+	WithSpriteBody@spore:
+		Sequence: spore
+		Name: spore
+		RequiresCondition: spore
+	AttackOmni:
+		Armaments: primary, spore
+	WithAttackAnimation:
+		Body: sunken
+		Sequence: shoot
+		RequiresCondition: sunken
+	Armament@sunken:
+		Weapon: Tentacle
+		RequiresCondition: sunken
+	Armament@spore:
+		Name: spore
+		Weapon: Spore
+		RequiresCondition: spore
+	RevealsShroud@upgraded:
+		Range: 9c0
+		RequiresCondition: sunken || spore
+	DetectCloaked@spore:
+		Range: 9c0
+		RequiresCondition: spore
+	GrantConditionOnProduction@animationhack:
+		Condition: transition
+		Duration: 1
+		Actors: pscsporecolony, pscsunkencolony
+	PeriodicExplosion:
+		Weapon: Creeptransition
+		RequiresCondition: transition
 	Explodes:
 		Weapon: Creeptransition
 		Type: CenterPosition
-	-ShakeOnDeath:
-	-ActorLostNotification:
 
 SCEXTRACTOR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
+	Inherits@ref: ^Refinery
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -1786,8 +1833,15 @@ SCSPIRE:
 		Cost: 2200
 	Tooltip:
 		Name: Spire
+		RequiresCondition: !spirecondition
+	Tooltip@2:
+		Name: Greater Spire
+		RequiresCondition: spirecondition
 	ProvidesPrerequisite:
 		Prerequisite: Spire
+	ProvidesPrerequisite@2:
+		Prerequisite: Greater Spire
+		RequiresCondition: spirecondition
 	Buildable:
 		BuildPaletteOrder: 80
 		Prerequisites: Lair, ~techlevel.medium
@@ -1809,36 +1863,37 @@ SCSPIRE:
 		AreaTypes: building, spire
 	-WithDeathAnimation:
 	-SpawnActorsOnSell:
-	##########
 	Exit:
 		ExitCell: 0,0
 	Production:
 		Produces: Spire.Zerg
+		RequiresCondition: !spirecondition
 	ProductionQueue@ZergSpire:
 		Type: Spire.Zerg
 		Group: Defence
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
-	BaseBuilding:
 	ProductionBar@ZergSpire:
 		ProductionType: Spire.Zerg
 	GrantConditionOnProduction@spire:
 		Condition: spirecondition
 		Actors: pscgreaterspire
-	KillsSelf@spire:
-		RequiresCondition: spirecondition
-		GrantsCondition: spirerebirth
-	SpawnActorOnDeath@spire:
-		RequiresCondition: spirerebirth
-		Actor: scgreaterspire
-	SoundOnDamageTransition:
-		-DamagedSounds: xplos.aud
-		-DestroyedSounds: crumble.aud
+	GrantConditionOnProduction@animationhack:
+		Condition: transition
+		Actors: pscgreaterspire
+		Duration: 1
+	WithSpriteBody:
+		RequiresCondition: !spirecondition
+	WithSpriteBody@greater:
+		Sequence: greaterspire
+		Name: greaterspire
+		RequiresCondition: spirecondition	
+	PeriodicExplosion:
+		Weapon: Creeptransition
+		RequiresCondition: transition
 	Explodes:
 		Weapon: Creeptransition
 		Type: CenterPosition
-	-ShakeOnDeath:
-	-ActorLostNotification:
 
 SCULTRALISKCAVERN:
 	Inherits: ^BaseBuilding
@@ -2415,6 +2470,7 @@ SCSCV:
 	Inherits@harv: ^Harvester
 	Inherits@worker: ^SCWorker
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -2460,6 +2516,9 @@ SCSCV:
 		Amount: -10
 	Voiced:
 		VoiceSet: SCSCVVoice
+	DeathSounds:
+	Targetable@aihack:
+		TargetTypes: SCV
 	Inherits@EXT: ^ExternalConditions
 	WithHarvesterSpriteBody:
 		ImageByFullness: scscv, scscvfull
@@ -2469,6 +2528,7 @@ SCMARINE:
 	Inherits: ^SCTINFANTRY
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -2501,6 +2561,7 @@ SCFIREBAT:
 	Inherits: ^SCTINFANTRY
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -2554,6 +2615,7 @@ SCGHOST:
 	Inherits: ^SCTINFANTRY
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -2596,6 +2658,7 @@ SCGHOST:
 
 SCMEDIC:
 	Inherits: ^SCTINFANTRY
+	Inherits@announce: ^AnnounceOnBuild
 	Buildable:
 		Queue: Infantry.Terran, RAInfantry.Terran, Infantry.X_Infantry
 		BuildPaletteOrder: 40
@@ -2650,6 +2713,7 @@ SCTE6:
 SCVULTURE:
 	Inherits: ^SCTVEHICLE
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 225
 	Tooltip:
@@ -2676,10 +2740,12 @@ SCVULTURE:
 		PipType: blue
 	Voiced:
 		VoiceSet: SCVultureVoice
+	DeathSounds:
 
 SCSIEGETANK:
 	Inherits: ^SCTVEHICLE
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 1050
 	Tooltip:
@@ -2755,10 +2821,12 @@ SCSIEGETANK:
 		UndeployTicks: 1000
 	Voiced:
 		VoiceSet: SCSiegeTankVoice
+	DeathSounds:
 
 SCGOLIATH:
 	Inherits: ^SCTVEHICLE
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -2845,7 +2913,7 @@ SCCOMMANDCENTERM:
 	-Hovers@CRUISING:
 	-Voiced:
 	RenderSprites:
-		Image: sccommandcenterlift
+		Image: sccommandcenter
 
 SCBARRACKSM:
 	Inherits: SCCOMMANDCENTERM
@@ -2856,7 +2924,7 @@ SCBARRACKSM:
 	Transforms:
 		IntoActor: scbarracks
 	RenderSprites:
-		Image: scbarrackslift
+		Image: scbarracks
 
 SCENGINEERINGBAYM:
 	Inherits: SCCOMMANDCENTERM
@@ -2867,7 +2935,7 @@ SCENGINEERINGBAYM:
 	Transforms:
 		IntoActor: scengineeringbay
 	RenderSprites:
-		Image: scengineeringbaylift
+		Image: scengineeringbay
 
 SCFACTORYM:
 	Inherits: SCCOMMANDCENTERM
@@ -2878,7 +2946,7 @@ SCFACTORYM:
 	Transforms:
 		IntoActor: scfactory
 	RenderSprites:
-		Image: scfactorylift
+		Image: scfactory
 
 SCSTARPORTM:
 	Inherits: SCCOMMANDCENTERM
@@ -2889,7 +2957,7 @@ SCSTARPORTM:
 	Transforms:
 		IntoActor: scstarport
 	RenderSprites:
-		Image: scstarportlift
+		Image: scstarport
 
 SCSCIENCEFACILITYM:
 	Inherits: SCCOMMANDCENTERM
@@ -2900,12 +2968,13 @@ SCSCIENCEFACILITYM:
 	Transforms:
 		IntoActor: scsciencefacility
 	RenderSprites:
-		Image: scsciencefacilitylift
+		Image: scsciencefacility
 
 SCWRAITH:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 1050
 	Tooltip:
@@ -2953,9 +3022,11 @@ SCWRAITH:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCWraithVoice
+	DeathSounds:
 
 SCDROPSHIP:
 	Inherits: ^Helicopter
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -2996,11 +3067,14 @@ SCDROPSHIP:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCDropshipVoice
+	DeathSounds:
 
 SCBATTLECRUISER:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeLarge
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -3042,10 +3116,14 @@ SCBATTLECRUISER:
 		Amount: -60
 	Voiced:
 		VoiceSet: SCBattleCruiserVoice
+	DeathSounds:
+	VoiceAnnouncement:
+		ValidStances: Enemy, Neutral, Ally
 
 SCTMCV:
 	Inherits: ^Vehicle
 	Inherits@EXT: ^ExternalConditions
+	Inherits@mcv: ^MCV
 	Valued:
 		Cost: 2000
 	Buildable:
@@ -3072,15 +3150,7 @@ SCTMCV:
 		Facing: 108
 		TransformSounds: constru2.aud, hvydoor1.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
 	SelectionDecorations:
-	WithTextDecoration:
-		Text: MCV
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmterran
 	Voiced:
@@ -3113,6 +3183,7 @@ SCPROBE:
 	Inherits@harv: ^Harvester
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@worker: ^SCWorker
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -3146,6 +3217,7 @@ SCPROBE:
 		Amount: -10
 	Voiced:
 		VoiceSet: SCProbeVoice
+	DeathSounds:
 	Inherits@EXT: ^ExternalConditions					##########
 	WithHarvesterSpriteBody:
 		ImageByFullness: scprobe, scprobefull
@@ -3156,6 +3228,7 @@ SCZEALOT:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -3201,6 +3274,7 @@ SCDRAGOON:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@protoss: ^LargeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,24
@@ -3255,6 +3329,7 @@ SCHIGHTEMPLAR:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -3307,6 +3382,7 @@ SCDARKTEMPLAR:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -3358,6 +3434,7 @@ SCDARKTEMPLAR:
 SCSHUTTLE:
 	Inherits: ^Helicopter
 	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -3392,6 +3469,7 @@ SCSHUTTLE:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCShuttleVoice
+	DeathSounds:
 	-SpawnActorOnDeath:
 
 SCREAVER:
@@ -3399,6 +3477,7 @@ SCREAVER:
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@explode: ^UnitExplodeSmallProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Selectable:
 		DecorationBounds: 28,28
 	Valued:
@@ -3489,6 +3568,7 @@ SCSCARAB:
 SCOBSERVER:
 	Inherits: ^Helicopter
 	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -3549,6 +3629,7 @@ SCARCHON:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@explode: ^UnitExplodeSmallProtoss
 	Inherits@protoss: ^LargeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,24
@@ -3608,6 +3689,7 @@ SCSCOUT:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -3666,6 +3748,7 @@ SCCARRIER:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -3721,6 +3804,8 @@ SCCARRIER:
 		Amount: -60
 	Voiced:
 		VoiceSet: SCCarrierVoice
+	VoiceAnnouncement:
+		ValidStances: Enemy, Neutral, Ally
 
 SCINTERCEPTOR:
 	Inherits: ^Plane
@@ -3774,6 +3859,7 @@ SCARBITER:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 2400
 	Tooltip:
@@ -3820,6 +3906,7 @@ SCARBITER:
 SCPMCV:
 	Inherits: ^Vehicle
 	Inherits@EXT: ^ExternalConditions
+	Inherits@mcv: ^MCV
 	Valued:
 		Cost: 2000
 	Buildable:
@@ -3846,15 +3933,7 @@ SCPMCV:
 		Facing: 108
 		TransformSounds: constru2.aud, hvydoor1.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
 	SelectionDecorations:
-	WithTextDecoration:
-		Text: MCV
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmprotoss
 	Voiced:
@@ -3889,6 +3968,7 @@ SCDRONE:
 	Inherits@harv: ^Harvester
 	Inherits@worker: ^SCWorker
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -3911,6 +3991,7 @@ SCDRONE:
 	RevealsShroud:
 		Range: 6c0
 	WithDeathAnimation:
+		UseDeathTypeSuffix: false
 	#WithMoveAnimation:
 	AttackFrontal:
 	Armament:
@@ -3972,6 +4053,7 @@ SCZERGLING:
 
 SCOVERLORD:
 	Inherits: ^Helicopter
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -3982,7 +4064,7 @@ SCOVERLORD:
 		Prerequisite: anypower
 	Buildable:
 		BuildPaletteOrder: 30
-		BuildDuration: 480
+		BuildDurationModifier: 25
 		Prerequisites:
 		Queue: Building.Zerg, RABuilding.Zerg
 		Description: Provides supply and stores resources
@@ -4032,6 +4114,7 @@ SCHYDRALISK:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@zerg: ^LargeZerg
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 375
 	Tooltip:
@@ -4088,6 +4171,7 @@ SCMUTALISK:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -4133,6 +4217,7 @@ SCMUTALISK:
 SCSCOURGE:
 	Inherits: ^Helicopter
 	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@announce: ^AnnounceOnBuild
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 20,20
@@ -4182,6 +4267,7 @@ SCSCOURGE:
 SCQUEEN:
 	Inherits: ^Helicopter
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -4223,6 +4309,7 @@ SCULTRALISK:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@zerg: ^VeryLargeZerg
+	Inherits@announce: ^AnnounceOnBuild
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,24
@@ -4274,6 +4361,7 @@ SCLURKER:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@zerg: ^LargeZerg
 	Inherits@editorhack: ^DeployableInfantryEditor
+	Inherits@announce: ^AnnounceOnBuild
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,24
@@ -4283,7 +4371,7 @@ SCLURKER:
 		Name: Lurker
 	Buildable:
 		BuildPaletteOrder: 90
-		Prerequisites: Hydralisk Den, Evolution Chamber, ~techlevel.medium
+		Prerequisites: Hydralisk Den, Evolution Chamber, Lair, ~techlevel.medium
 		Queue: Infantry.Zerg, RAInfantry.Zerg
 		Description: Zerg ambush strain.\nNeeds to deploy to attack\n Strong vs. Infantry
 	Mobile:
@@ -4301,6 +4389,9 @@ SCLURKER:
 	HitShape:
 	Power:
 		Amount: -20
+	DamageMultiplier:
+		Modifier: 50
+		RequiresCondition: deployed
 	GrantConditionOnDeploy:
 		DeployedCondition: deployed
 		UndeployedCondition: undeployed
@@ -4358,6 +4449,7 @@ SCGUARDIAN:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -4404,6 +4496,7 @@ SCINFESTEDTERRAN:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@zerg: ^LargeZerg
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -4448,6 +4541,7 @@ SCDEFILER:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 1050
 	Tooltip:
@@ -4575,12 +4669,12 @@ SCKERRIGANZERG:
 
 SCZMCV:
 	Inherits: ^Vehicle
+	Inherits@mcv: ^MCV
 	Inherits@EXT: ^ExternalConditions
 	Valued:
 		Cost: 2000
 	Buildable:
 		Queue: Building.Zerg, RABuilding.Zerg
-		Prerequisites: 
 		BuildPaletteOrder: 10
 		Description: Builds structures and provides radar.
 	Tooltip:
@@ -4602,15 +4696,7 @@ SCZMCV:
 		Facing: 108
 		TransformSounds: constru2.aud, hvydoor1.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
 	SelectionDecorations:
-	WithTextDecoration:
-		Text: MCV
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmzerg
 	Voiced:
@@ -4752,7 +4838,7 @@ PSCSUNKENCOLONY:
 	Buildable:
 		BuildPaletteOrder: 20
 		Queue: Colony.Zerg
-		Description: Ground base defense.\n Strong vs. Infantry
+		Description: Ground base defense.
 		Prerequisites: Spawning Pool
 	Valued:
 		Cost: 200
