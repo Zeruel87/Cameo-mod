@@ -1429,6 +1429,12 @@ SCHATCHERY:
 	ProvidesPrerequisite@3:
 		Prerequisite: Hive
 		RequiresCondition: hive
+	ProvidesPrerequisite@lairlimit:
+		Prerequisite: botlairlimit
+		RequiresCondition: lair && botzerg
+	ProvidesPrerequisite@hivelimit:
+		Prerequisite: bothivelimit
+		RequiresCondition: hive && botzerg
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -1569,12 +1575,6 @@ SCHATCHERY:
 		Sequence: hive
 		Name: hive
 		RequiresCondition: hive
-	#KillsSelf@lair:
-	#	RequiresCondition: laircondition
-	#	GrantsCondition: lairrebirth
-	#SpawnActorOnDeath@lair:
-	#	RequiresCondition: lairrebirth
-	#	Actor: sclair
 	Explodes:
 		Weapon: Creeptransition
 		Type: CenterPosition
@@ -1684,6 +1684,14 @@ SCCREEPCOLONY:
 	Explodes:
 		Weapon: Creeptransition
 		Type: CenterPosition
+
+SCBOTCREEPCOLONY:
+	Inherits: SCCREEPCOLONY
+	RenderSprites:
+		Image: sccreepcolony
+	Buildable:
+		Prerequisites: Extractor, ~botzerg
+		Queue: Defence.Zerg, RADefence.Zerg
 
 SCEXTRACTOR:
 	Inherits: ^BaseBuilding
@@ -1860,6 +1868,9 @@ SCSPIRE:
 	ProvidesPrerequisite@2:
 		Prerequisite: Greater Spire
 		RequiresCondition: spirecondition
+	ProvidesPrerequisite@botlimit:
+		Prerequisite: botspirelimit
+		RequiresCondition: botzerg && spirecondition
 	Buildable:
 		BuildPaletteOrder: 80
 		Prerequisites: Lair, ~techlevel.medium
@@ -4794,9 +4805,9 @@ PSCLAIR:
 		BuildPaletteOrder: 210
 		Queue: Hatchery.Zerg
 		Description: Upgrade to Lair
-		Prerequisites: Spawning Pool
+		Prerequisites: Spawning Pool, ~!botlairlimit
 	Valued:
-		Cost: 1400
+		Cost: 1200
 	RenderSprites:
 		Image: sclair
 	Interactable:
@@ -4809,7 +4820,7 @@ PSCHIVE:
 		BuildPaletteOrder: 220
 		Queue: Lair.Zerg
 		Description: Upgrade to Hive
-		Prerequisites: Lair
+		Prerequisites: Lair, ~!bothivelimit
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -4824,7 +4835,7 @@ PSCGREATERSPIRE:
 		BuildPaletteOrder: 10
 		Queue: Spire.Zerg
 		Description: Unlocks Guardian.
-		Prerequisites: Hive
+		Prerequisites: Hive, ~!botspirelimit
 	Valued:
 		Cost: 1200
 	RenderSprites:
