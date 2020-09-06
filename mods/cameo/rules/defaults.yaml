@@ -120,8 +120,8 @@
 		RequiresCondition: rank-elite
 		Modifier: 50
 	SelfHealing@ELITE:
-		Step: 200
-		Delay: 100
+		PercentageStep: 5
+		Delay: 50
 		HealIfBelow: 100
 		DamageCooldown: 125
 		RequiresCondition: rank-elite
@@ -240,7 +240,7 @@
 		CloakDelay: 90
 		CloakSound: trans1.aud
 		UncloakSound: trans1.aud
-		PauseOnCondition: cloak-force-disabled
+		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: cloak-crate-collected
 	ExternalCondition@CLOAK:
 		Condition: cloak-crate-collected
@@ -252,7 +252,7 @@
 		CloakDelay: 90
 		CloakSound: cloak5.aud
 		UncloakSound: cloak5.aud
-		PauseOnCondition: cloak-force-disabled
+		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: tscloak
 	ExternalCondition@TSCLOAK:
 		Condition: tscloak
@@ -269,6 +269,20 @@
 		DamageTypes: TiberiumDeath
 		LayerName: tibradiation
 
+^UnitDisable:
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
+	ExternalCondition@TSNEUTRON:
+		Condition: TSNeutronBomb
+	WithColoredOverlay@TSNEUTRON:
+		Palette: tsneutron
+		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
+	ExternalCondition@LOCKDOWN:
+		Condition: GhostLockdown
+	ExternalCondition@STASIS:
+		Condition: ArbiterStasis
+
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^IronCurtainable
@@ -280,6 +294,7 @@
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@rad: ^VehicleRadiation
 	Inherits@fix: ^Repairable
+	Inherits@EMP: ^UnitDisable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -287,6 +302,7 @@
 	Mobile:
 		Locomotor: wheeled
 		TurnSpeed: 5
+		PauseOnCondition: disabled
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
@@ -388,17 +404,6 @@
 		RequiresCondition: Magnet
 	Hovers@Magnetron:
 		RequiresCondition: Magnet
-	ExternalCondition@TSNEUTRON:
-		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
-	SpeedMultiplier@TSNEUTRON:
-		Modifier: 2
-		RequiresCondition: TSNeutronBomb
-	ReloadDelayMultiplier@TSNEUTRON:
-		RequiresCondition: TSNeutronBomb
-		Modifier: 200
 	GpsDot:
 		String: Vehicle
 
@@ -416,9 +421,11 @@
 
 ^BoatUnit:
 	Inherits: ^Vehicle
+	Inherits@EMP: ^UnitDisable
 	Mobile:
 		Locomotor: naval
 		TurnSpeed: 5
+		PauseOnCondition: disabled
 	Tooltip:
 		GenericName: Boat
 	DeliversCash:
@@ -449,6 +456,7 @@
 	Inherits@2: ^GainsExperience
 	Inherits@bot: ^BotProductionBoost
 	Inherits@fix: ^Repairable
+	Inherits@EMP: ^UnitDisable
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -473,9 +481,14 @@
 	Targetable@REPAIR:
 		RequiresCondition: !airborne && damaged
 		TargetTypes: Repair, Healing
+	AttackAircraft:
+		PauseOnCondition: disabled
 	GrantConditionOnDamageState@DAMAGED:
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
+	SpeedMultiplier@disable:
+		Modifier: 0
+		RequiresCondition: disabled
 	HiddenUnderFog:
 		Type: GroundPosition
 	AttackMove:
@@ -593,6 +606,7 @@
 	WithDeathAnimation:
 		DeathTypes:
 			DefaultDeath: 1
+			BruteMutate: 1
 			BulletDeath: 1
 			RippedApartDeath: 2
 			SmallExplosionDeath: 3
@@ -714,18 +728,15 @@
 		Sounds: bgrinda.wav
 	Cloneable:
 		Types: NormalInfantry
-	SpawnActorOnDeath@Mutate:
-		Probability: 95
-		Actor: yrbrute
-		OwnerType: InternalName
-		InternalOwner: Creeps
-		DeathType: BruteMutate
-		RequiresLobbyCreeps: true
+	Explodes@Mutate:
+		Weapon: MutateEffect
+		EmptyWeapon: MutateEffect
+		DeathTypes: BruteMutate
 	DeliversCash:
 		Payload: 45
 		Type: GrinderCash
 	CaptureManager:
-	Captures@CAPTURES
+	Captures@CAPTURES:
 		CaptureTypes: ra2garrison
 		ConsumedByCapture: false
 	ExternalCondition@REAPERTRAP:
@@ -734,8 +745,13 @@
 		Palette: reapertrap
 		RequiresCondition: ReaperTrap
 	SpeedMultiplier@REAPERTRAP:
-		Modifier: 5
-		RequiresCondition: ReaperTrap
+		Modifier: 0
+		RequiresCondition: ReaperTrap || ArbiterStasis
+	ExternalCondition@STASIS:
+		Condition: ArbiterStasis
+	WithColoredOverlay@TSNEUTRON:
+		Palette: tsneutron
+		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
 	SpawnActorOnDeath@RA2Virus:
 		Actor: ra2txgasg
 		Probability: 50
@@ -761,6 +777,7 @@
 		IdleSequences: idle1, idle2
 		StandSequences: stand, stand2
 	AttackFrontal:
+		PauseOnCondition: ReaperTrap || ArbiterStasis
 
 ^CivInfantry:
 	Inherits: ^Infantry
@@ -1024,6 +1041,7 @@
 	Tooltip:
 		GenericName: Structure
 	FrozenUnderFog:
+	FrozenUnderFogUpdatedByGps:
 	Demolishable:
 	MapEditorData:
 		Categories: Building
@@ -1042,11 +1060,6 @@
 	DamageMultiplier@CEMENTFACTORY:
 		RequiresCondition: techcementffact
 		Modifier: 85
-	ExternalCondition@TSNEUTRON:
-		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
 	Cloak@CloackGen:
 		InitialDelay: 15
 		CloakDelay: 90
@@ -1085,6 +1098,7 @@
 	Inherits@2: ^IronCurtainable
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllableStructure
+	Inherits@EMP: ^UnitDisable
 	Building:
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud
@@ -1503,21 +1517,13 @@
 		Categories: Defense
 	-CommandBarBlacklist:
 	-AcceptsDeliveredCash:
-	ExternalCondition@TSNEUTRON:
-		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
-	ReloadDelayMultiplier@TSNEUTRON:
-		RequiresCondition: TSNeutronBomb
-		Modifier: 200
 
 ^DisabledOverlay:
 	GrantConditionOnPowerState@LOWPOWER:
 		Condition: lowpower
 		ValidPowerStates: Low, Critical
 	WithColoredOverlay@IDISABLE:
-		RequiresCondition: lowpower
+		RequiresCondition: lowpower || disabled
 		Palette: disabled
 
 ^SelectableCombatUnit:
@@ -1831,7 +1837,7 @@
 		RequiresCondition: city-elite
 		Modifier: 75
 	SelfHealing@ELITE:
-		Step: 200
+		PercentageStep: 200
 		Delay: 100
 		HealIfBelow: 100
 		DamageCooldown: 125
@@ -2527,6 +2533,7 @@ CPQDEBUGDUMMY:
 		RequiresCondition: normalcash
 
 ^Harvester:
+	Inherits@MC: ^MCImmune
 	Harvester:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
 		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, tsntwast, screfinery, scassimilator, scextractor
@@ -2536,6 +2543,8 @@ CPQDEBUGDUMMY:
 ^RearmableAircraft:
 	Rearmable:
 		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2
+	AutoTarget:
+		InitialStance: HoldFire
 
 ^Repairable:
 	Repairable:
@@ -2598,6 +2607,10 @@ CPQDEBUGDUMMY:
 		TargetTypes: MindControlStructure
 		RequiresCondition: !controlled && !prevent-mindcontrol && !invulnerability
 
+^MCImmune:
+	Targetable@MC:
+		TargetTypes: MCImmune
+
 ^DeployableInfantryEditor:
 	GrantCondition:
 		Condition: editorhack
@@ -2618,10 +2631,10 @@ CPQDEBUGDUMMY:
 	Inherits: ^Power
 	WithColoredOverlay@IDISABLE:
 		Palette: disabled
-		RequiresCondition: disabled
+		RequiresCondition: powerdisabled
 	GrantCondition@IDISABLE:
-		RequiresCondition: power-outage || TSNeutronBomb
-		Condition: disabled
+		RequiresCondition: power-outage || disabled
+		Condition: powerdisabled
 	AffectedByPowerOutage:
 		Condition: power-outage
 	InfiltrateForPowerOutage:
@@ -2629,7 +2642,7 @@ CPQDEBUGDUMMY:
 	Targetable@infiltrate:
 		TargetTypes: SpyInfiltrate
 	Power:
-		RequiresCondition: !disabled
+		RequiresCondition: !powerdisabled
 
 ^Refinery:
 	Buildable:
@@ -2653,6 +2666,7 @@ CPQDEBUGDUMMY:
 		ValidStances: Enemy, Neutral, Ally
 
 ^MCV:
+	Inherits@MC: ^MCImmune
 	MustBeDestroyed:
 		RequiredForShortGame: true
 	BaseBuilding:
@@ -2671,6 +2685,8 @@ CPQDEBUGDUMMY:
 		Voice: Move
 	Guard:
 		Voice: Move
+	DeliversCash:
+		Voice: Move
 
 ^AttackFrontalVoice:
 	Inherits: ^AttackVoice
@@ -2681,3 +2697,13 @@ CPQDEBUGDUMMY:
 	Inherits: ^AttackVoice
 	AttackTurreted:
 		Voice: Attack
+
+#EMP disable traits, use depend on which attack trait the unit uses
+
+^FrontalEMP:
+	AttackFrontal:
+		PauseOnCondition: disabled
+
+^TurretEMP:
+	AttackTurreted:
+		PauseOnCondition: disabled

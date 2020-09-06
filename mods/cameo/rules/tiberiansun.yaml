@@ -2643,11 +2643,12 @@ tsntlasr:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@RenderVoxel: ^TSRenderVoxel
 	Inherits@sell: ^TSSpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence.TSNod, RADefence.TSNod, Defence.CABAL, RADefence.CABAL
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
-		Description: Basic base defense.\nRequires power to operate.\n  Strong vs Ground units\n  Weak vs Aircraft
+		Description: Basic base defense.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Valued:
 		Cost: 300
 	Power:
@@ -2670,7 +2671,6 @@ tsntlasr:
 		InitialFacing: 224
 		Offset: 160,5,3
 	AttackTurreted:
-		Voice: Attack
 	Armament:
 		Weapon: TSTurretLaserFire
 	BodyOrientation:
@@ -2687,6 +2687,7 @@ tsgtctwrmg:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@sell: ^TSSpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 350
 	Tooltip:
@@ -2733,6 +2734,7 @@ tsgtctwrrpg:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@sell: ^TSSpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -2776,6 +2778,7 @@ tsgtctwrsam:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@sell: ^TSSpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -2819,6 +2822,7 @@ tsntsam:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@sell: ^TSSpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -2863,6 +2867,7 @@ tsntpuls:
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^2x2Shape
 	Inherits@sell: ^TSSpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
 	Selectable:
 		Bounds: 48,48
 	Buildable:
@@ -2903,7 +2908,7 @@ tsntpuls:
 		LocalYaw: 0,100
 	AttackOrderPower:
 		OrderName: EMPPower
-		PauseOnCondition: TSNeutronBomb || lowpower
+		PauseOnCondition: disabled || lowpower
 		Cursor: attackmove
 		Icon: emp
 		ChargeInterval: 3375
@@ -2951,7 +2956,7 @@ tsntobel:
 		LocalOffset: 0,180,1600
 	AttackCharges:
 		RequiresCondition: !build-incomplete
-		PauseOnCondition: lowpower
+		PauseOnCondition: lowpower || disabled
 		ChargeLevel: 50
 		ChargingCondition: charging
 	AmbientSound:
@@ -3005,7 +3010,7 @@ tsobl2:
 		LocalOffset: 0,0,2000
 	AttackCharges:
 		RequiresCondition: !build-incomplete
-		PauseOnCondition: lowpower
+		PauseOnCondition: lowpower || disabled
 		ChargeLevel: 50
 		ChargingCondition: charging
 	AmbientSound:
@@ -3097,6 +3102,7 @@ TSE1PARA:
 TSMEDIC:
 	Inherits: MEDI
 	Inherits@anim: ^TSInfantry
+	Inherits@vo: ^AttackFrontalVoice
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: barracks
@@ -3125,25 +3131,16 @@ TSENGINEER:
 		VoiceSet: TSEngineer
 	DeliversCash:
 		Payload: 250
-	RenderSprites:
-		Image: tsengineer.gdi
-		FactionImages:
-			gdi: tsengineer.gdi
-			nod: tsengineer.nod
-			tsgdi: tsengineer.gdi
-			tsnod: tsengineer.nod
-			cabal: tsengineer.nod
 
 TSENGINEER2:
 	Inherits: TSENGINEER
+	Inherits@MC: ^MCImmune
 	Buildable:
 		Queue: Infantry.CABAL, RAInfantry.CABAL
 	RenderSprites:
 		Image: tsengineer.nod
 	Voiced:
 		VoiceSet: TSCyborg
-	Valued:
-		Cost: 600
 	-TemporaryOwnerManager:
 
 TSE2:
@@ -3212,9 +3209,10 @@ TSJUMPJET:
 		Name: Jumpjet Infantry
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
+		OverrideActor: tsjumpjet2
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: anyhq, ~techlevel.medium
+		Prerequisites: ~disabled
 		Queue: Infantry.TSGDI, RAInfantry.TSGDI, Infantry.X_Infantry
 		Description: Airborne soldier.\n  Strong vs Infantry\n  Weak vs Aircraft
 	Voiced:
@@ -3302,13 +3300,14 @@ TSJUMPJET2:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: anyhq, ~techlevel.medium, ~botts
+		Prerequisites: anyhq, ~techlevel.medium
 		Queue: Infantry.TSGDI, RAInfantry.TSGDI, Infantry.X_Infantry
 		Description: Airborne soldier.\n  Strong vs Infantry\n  Weak vs Aircraft
 	Aircraft:
 		TurnSpeed: 7
 		Speed: 146
 		RepulsionSpeed: 10
+		IdealSeparation: 512
 		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
 		VTOL: true
 	Health:
@@ -3316,7 +3315,7 @@ TSJUMPJET2:
 	Armor:
 		Type: None
 	RevealsShroud:
-		Range: 3c0
+		Range: 6c0
 		Type: GroundPosition
 	Armament@PRIMARY:
 		Weapon: TSJumpCannon
@@ -3437,6 +3436,7 @@ TSCYBORG:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@MC:  ^MCImmune
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
@@ -3504,7 +3504,8 @@ TSREAPER:
 	Inherits: ^Tank
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@bounty: ^GlobalBounty			##########
+	Inherits@bounty: ^GlobalBounty
+	Inherits@MC:  ^MCImmune
 	Health:
 		HP: 35000
 	Armor:
@@ -4011,6 +4012,7 @@ TSHARV:
 tsldrone:
 	Inherits: ^Tank
 	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@MC:  ^MCImmune
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -4046,6 +4048,7 @@ tsldrone:
 		IntoActor: tsdlimpmk
 		Offset: 0,0
 		Facing: 1
+		PauseOnCondition: disabled
 		NoTransformNotification: BuildingCannotPlaceAudio
 
 tsdlimpmk:
@@ -4092,6 +4095,7 @@ TSMMCH:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -4152,6 +4156,7 @@ TSJUGG:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 950
 	Tooltip:
@@ -4229,6 +4234,7 @@ TSAPC:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -4286,6 +4292,7 @@ TSHVR:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -4334,6 +4341,7 @@ TSSMECH:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -4376,6 +4384,7 @@ TSHMEC:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -4416,6 +4425,7 @@ TSHMEC:
 		Armaments: railgun
 	AttackFollow:
 		Armaments: missiles, aamissiles
+		PauseOnCondition: disabled
 	WithMuzzleOverlay:
 	SelectionDecorations:
 	Selectable:
@@ -4440,6 +4450,7 @@ TSSONIC:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -4487,6 +4498,7 @@ tsaegis:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -4537,6 +4549,7 @@ TSBGGY:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -4581,6 +4594,7 @@ TSBIKE:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -4627,6 +4641,7 @@ TSSTNK:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 1100
 	Tooltip:
@@ -4678,6 +4693,7 @@ TSREPAIR:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -4725,6 +4741,7 @@ TSTTNK:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -4766,7 +4783,7 @@ TSTTNK:
 	Armament@deployed:
 		Name: deployed
 		Turret: deployed
-		Weapon: 90mm
+		Weapon: TS90mm
 		LocalOffset: 543,0,362
 		RequiresCondition: !rank-elite
 		MuzzleSequence: muzzle
@@ -4783,7 +4800,7 @@ TSTTNK:
 		RequiresCondition: deployed
 		Armaments: deployed
 		Turrets: deployed
-		PauseOnCondition: TSNeutronBomb
+		PauseOnCondition: disabled
 	SelectionDecorations:
 	Selectable:
 	Inherits@EXT: ^ExternalConditions					##########
@@ -4805,7 +4822,7 @@ TSTTNK:
 		RequiresCondition: !deployed
 	WithMakeAnimation:
 	GrantConditionOnDeploy:
-		PauseOnCondition: TSNeutronBomb
+		PauseOnCondition: disabled
 		DeployedCondition: deployed
 		UndeployedCondition: undeployed
 		UndeployOnMove: true
@@ -4829,6 +4846,7 @@ TSART2:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 975
 	Tooltip:
@@ -4908,6 +4926,7 @@ TSSUBTANK:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
 	Inherits@sub: ^SubterraneanVoxelVehicle
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -4961,7 +4980,7 @@ TSSAPC:
 		Description: Troop transport that can move\nunderground to avoid detection.\n  Unarmed
 	Mobile:
 		Locomotor: subterranean
-		PauseOnCondition: loading || being-captured
+		PauseOnCondition: loading || being-captured || disabled
 		TurnSpeed: 5
 		Speed: 71
 	Health:
@@ -4996,6 +5015,7 @@ tsbsub:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -5103,6 +5123,7 @@ tssgen:
 		Condition: tscloak
 		EnableSound: cloak5.aud
 		DisableSound: cloak5.aud
+		RequiresCondition: !disabled
 #######################################
 # TS Forgotten Vehicles
 #######################################
@@ -5113,6 +5134,7 @@ TSWINI2:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -5161,6 +5183,7 @@ TSCAR2:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 350
 	Tooltip:
@@ -5209,6 +5232,7 @@ TS1TNK:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 650
 	Tooltip:
@@ -5258,6 +5282,7 @@ TS2TNK:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -5307,6 +5332,7 @@ TS3TNK:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 1150
 	Tooltip:
@@ -5356,6 +5382,7 @@ TSFTNK:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -5394,14 +5421,13 @@ TSFTNK:
 	DeliversCash:
 		Payload: 250
 
-
-
 TS4TNK:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 1700
 	Tooltip:
@@ -5474,12 +5500,16 @@ TSDEFENDER:
 	Inherits@bounty: ^GlobalBounty			##########
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC:  ^MCImmune
+	Inherits@EMP: ^FrontalEMP
 	Health:
 		HP: 1900000
 	Armor:
 		Type: Heavy
 	Valued:
 		Cost: 20000
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle.CABAL, RAVehicle.CABAL, Vehicle.X_All
 		BuildPaletteOrder: 140
@@ -5543,6 +5573,7 @@ TSDEFENDER:
 TSBIKE2:
 	Inherits: TSBIKE
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@MC:  ^MCImmune
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: vehicleproduction
@@ -5560,6 +5591,7 @@ TSBIKE2:
 TSSTNK2:
 	Inherits: TSSTNK
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@MC:  ^MCImmune
 	Buildable:
 		BuildPaletteOrder: 150
 		Prerequisites: tek, ~techlevel.high
@@ -5576,6 +5608,7 @@ TSSTNK2:
 
 TSREPAIR2:
 	Inherits: TSREPAIR
+	Inherits@MC:  ^MCImmune
 	Buildable:
 		Queue: Vehicle.CABAL, RAVehicle.CABAL
 	Voiced:
@@ -5591,6 +5624,7 @@ TSREPAIR2:
 TSTTNK2:
 	Inherits: TSTTNK
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@MC:  ^MCImmune
 	Buildable:
 		Queue: Vehicle.CABAL, RAVehicle.CABAL
 	Voiced:
@@ -5608,6 +5642,7 @@ TSTTNK2:
 TSART2C:
 	Inherits: TSART2
 	Inherits@vo: ^AttackTurretedVoice
+	Inherits@MC:  ^MCImmune
 	Valued:
 		Cost: 1000
 	Buildable:
@@ -5623,6 +5658,7 @@ TSART2C:
 TSSUBTANK2:
 	Inherits: TSSUBTANK
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@MC:  ^MCImmune
 	Buildable:
 		Queue: Vehicle.CABAL, RAVehicle.CABAL
 	Voiced:
@@ -5637,6 +5673,7 @@ TSSUBTANK2:
 
 TSSAPC2:
 	Inherits: TSSAPC
+	Inherits@MC:  ^MCImmune
 	Buildable:
 		Queue: Vehicle.CABAL, RAVehicle.CABAL
 	Voiced:
@@ -5697,7 +5734,7 @@ TSORCA:
 		FacingTolerance: 20
 		PersistentTargeting: false
 		Voice: Attack
-		PauseOnCondition: empdisable
+		PauseOnCondition: disabled
 		AttackType: Hover
 	-WithShadow:
 	WithMoveAnimation:
@@ -5779,7 +5816,7 @@ TSORCAB:
 		Voice: Attack
 		FacingTolerance: 20
 		PersistentTargeting: false
-		PauseOnCondition: empdisable
+		PauseOnCondition: disabled
 	-WithShadow:
 	WithMoveAnimation:
 		MoveSequence: move
@@ -5862,7 +5899,7 @@ TSSCRIN:
 		Voice: Attack
 		FacingTolerance: 20
 		PersistentTargeting: false
-		PauseOnCondition: empdisable
+		PauseOnCondition: disabled
 	-WithShadow:
 	WithMoveAnimation:
 		MoveSequence: move
@@ -5936,7 +5973,7 @@ TSAPACHE:
 		FacingTolerance: 20
 		PersistentTargeting: false
 		Voice: Attack
-		PauseOnCondition: empdisable
+		PauseOnCondition: disabled
 		AttackType: Hover
 	-WithShadow:
 	WithMoveAnimation:
@@ -6026,7 +6063,7 @@ TSHELI:
 		FacingTolerance: 20
 		PersistentTargeting: false
 		Voice: Attack
-		PauseOnCondition: empdisable
+		PauseOnCondition: disabled
 		AttackType: Hover
 	-WithShadow:
 	WithMoveAnimation:
@@ -6112,7 +6149,7 @@ TSHIND:
 		FacingTolerance: 20
 		PersistentTargeting: false
 		Voice: Attack
-		PauseOnCondition: empdisable
+		PauseOnCondition: disabled
 		AttackType: Hover
 	-WithShadow:
 	WithMoveAnimation:

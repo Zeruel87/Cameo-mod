@@ -1244,6 +1244,7 @@ TMPL:
 GUN:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	Selectable:
 		Bounds: 24,24
 	Valued:
@@ -1324,7 +1325,7 @@ SAM:
 		MuzzleSequence: muzzle
 	AttackPopupTurreted:
 		RequiresCondition: !build-incomplete
-		PauseOnCondition: lowpower
+		PauseOnCondition: lowpower || disabled
 	WithMuzzleOverlay:
 	-RenderDetectionCircle:
 	Power:
@@ -1369,7 +1370,7 @@ OBLI:
 		LocalOffset: 0,-85,1280
 	AttackCharges:
 		RequiresCondition: !build-incomplete
-		PauseOnCondition: lowpower
+		PauseOnCondition: lowpower || disabled
 		ChargeLevel: 50
 		ChargingCondition: charging
 	AmbientSound:
@@ -1386,6 +1387,7 @@ OBLI:
 GTWR:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	Selectable:
 		Bounds: 24,24
 	Valued:
@@ -1458,7 +1460,7 @@ ATWR:
 		LocalYaw: -100,100
 	AttackTurreted:
 		RequiresCondition: !build-incomplete
-		PauseOnCondition: lowpower
+		PauseOnCondition: lowpower || disabled
 	BodyOrientation:
 		QuantizedFacings: 8
 	DetectCloaked:
@@ -1672,7 +1674,7 @@ MSLO:
 		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
 		Cursor: nuke
 		Icon: abomb
-		ChargeInterval: 13500
+		ChargeInterval: 9000
 		Description: Atom Bomb
 		LongDesc: Launches a devastating atomic bomb\nat a target location.
 		SelectTargetSpeechNotification: SelectTarget
@@ -1699,7 +1701,7 @@ MSLO:
 		PauseOnCondition: lowpower
 		Cursor: nuke
 		Icon: abomb
-		ChargeInterval: 13500
+		ChargeInterval: 9000
 		Description: Atom Bomb
 		LongDesc: Launches a devastating atomic bomb\nat a target location.
 		SelectTargetSpeechNotification: SelectTarget
@@ -1745,7 +1747,7 @@ GAP:
 		DecorationBounds: 24,48,0,-12
 	SelectionDecorations:
 	WithSpriteBody:
-		PauseOnCondition: lowpower
+		PauseOnCondition: lowpower || disabled
 	Health:
 		HP: 50000
 	Armor:
@@ -1759,7 +1761,7 @@ GAP:
 		HasMinibib: true
 	CreatesShroud:
 		Range: 6c0
-		RequiresCondition: !lowpower
+		RequiresCondition: !lowpower && !disabled
 	RenderShroudCircle:
 	Power:
 		Amount: -60
@@ -1926,7 +1928,7 @@ TSLA:
 		LocalOffset: 0,0,896
 	AttackTesla:
 		RequiresCondition: !build-incomplete
-		PauseOnCondition: lowpower
+		PauseOnCondition: lowpower || disabled
 		ChargeAudio: tslachg2.aud
 		MaxCharges: 3
 		ReloadDelay: 120
@@ -1976,7 +1978,7 @@ AGUN:
 		MuzzleSequence: muzzle
 	AttackTurreted:
 		RequiresCondition: !build-incomplete
-		PauseOnCondition: lowpower
+		PauseOnCondition: lowpower || disabled
 	WithMuzzleOverlay:
 	RenderRangeCircle:
 		RangeCircleType: aa
@@ -2080,6 +2082,7 @@ PBOX:
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
+		PauseOnCondition: disabled
 	RenderRangeCircle:
 		FallbackRange: 6c0
 	Power:
@@ -2139,6 +2142,7 @@ HBOX:
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
+		PauseOnCondition: disabled
 	Power:
 		Amount: -20
 	-MustBeDestroyed:
@@ -2146,6 +2150,7 @@ HBOX:
 RAGUN:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence.Allies, RADefence.Allies
 		BuildPaletteOrder: 70
@@ -2189,6 +2194,7 @@ RAGUN:
 FTUR:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence.Soviet, RADefence.Soviet
 		BuildPaletteOrder: 60
@@ -2275,7 +2281,7 @@ RASAM:
 		MuzzleSequence: muzzle
 	AttackTurreted:
 		RequiresCondition: !build-incomplete
-		PauseOnCondition: lowpower
+		PauseOnCondition: lowpower || disabled
 	WithMuzzleOverlay:
 	RenderRangeCircle:
 		RangeCircleType: aa
@@ -2905,7 +2911,7 @@ RAAFLD:
 		Queue: Building.Soviet, RABuilding.Soviet
 		BuildPaletteOrder: 130
 		Prerequisites: anyhq, ~techlevel.medium,
-		Description: Produces and reloads aircraft.\n  Special Ability: Spy Plane\n  Special Ability: Paratroopers
+		Description: Produces and reloads aircraft.\n  Special Ability: Spy Plane\n  Special Ability: Parabombs
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -2964,26 +2970,27 @@ RAAFLD:
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 60
-	ParatroopersPower@paratroopers:
-		OrderName: SovietParatroopers
-		Icon: paratroopers
-		ChargeInterval: 7500
-		Description: Paratroopers
-		LongDesc: A Badger drops a squad of infantry\nanywhere on the map.
-		DropItems: RARE1,RARE1,RARE1,RARE3,RARE3
-		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+	AirstrikePower@parabombs:
+		OrderName: Parabombs
+		Icon: airstrike
+		ChargeInterval: 6000
+		Description: Parabombs
+		LongDesc: A squad of Badgers drop parachuted\nbombs on your target.
 		SelectTargetSpeechNotification: SelectTarget
-		AllowImpassableCells: false
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		UnitType: badr.bomber
 		QuantizedFacings: 8
-		CameraActor: camera.paradrop
 		DisplayBeacon: true
-		BeaconPoster: rapinficon
+		BeaconPoster: airstrike
+		SquadSize: 3
+		SquadOffset: 1792,1792,0
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
-		SupportPowerPaletteOrder: 50
+		SupportPowerPaletteOrder: 40
 	ProductionBar@AIRCRAFTSOVIET:
 		ProductionType: Aircraft.Soviet
 		RequiresCondition: !classicproductionqueues
@@ -3610,6 +3617,7 @@ RASPEN:
 		Type: Defence.Alpha
 		DisplayOrder: 1
 		Group: Defence
+		LowPowerModifier: 200
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
 	BaseBuilding:
@@ -3676,7 +3684,7 @@ RASPEN:
 	RevealsShroud:
 		Range: 4c0
 	Power:
-		Amount: 40
+		Amount: 80
 	-SpawnActorsOnSell:
 	-WithDeathAnimation:
 	AcceptsDeliveredExperience:							##########
@@ -3706,16 +3714,16 @@ RASPEN:
 	Power:
 		Amount: -10
 	CashTrickler@POWER:
-		Interval: 35	#50
-		Amount: 10		#15
+		Interval: 35
+		Amount: 20
 		ShowTicks: False
-		PauseOnCondition: lowpower
+		PauseOnCondition: lowpower || disabled
 		UseResourceStorage: true
 	CashTrickler@LOWPOWER:
-		Interval: 35	#50
-		Amount: 2
+		Interval: 35
+		Amount: 5
 		ShowTicks: False
-		PauseOnCondition: !lowpower
+		PauseOnCondition: !lowpower || !disabled
 		UseResourceStorage: true
 	ProvidesPrerequisite:
 		Prerequisite: 2100OIL
@@ -3844,6 +3852,7 @@ RASPEN:
 		Type: Infantry.Alpha
 		DisplayOrder: 2
 		Group: Infantry
+		LowPowerModifier: 200
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -3918,6 +3927,7 @@ RASPEN:
 		Type: Vehicle.Alpha
 		DisplayOrder: 3
 		Group: Vehicle
+		LowPowerModifier: 200
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -3985,7 +3995,7 @@ RASPEN:
 		BuildPaletteOrder: 100
 		Prerequisites: 2100RF, ~techlevel.high
 		Queue: Building.Alpha, RABuilding.Alpha
-		Description: Provides Orbital Ion Cannon support power.\nUnlocks higher-tech units and buildings.
+		Description: Provides Laser Satellite support power.\nUnlocks higher-tech units and buildings.
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -4003,8 +4013,8 @@ RASPEN:
 		Icon: ioncannon
 		Cursor: ioncannon
 		ChargeInterval: 6750
-		Description: Ion Cannon
-		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
+		Description: Laser Satellite
+		LongDesc: Initiate a Laser Satellite strike.\nApplies instant damage to a small area.
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		SelectTargetSpeechNotification: SelectTarget
@@ -4019,8 +4029,8 @@ RASPEN:
 		Icon: ioncannon
 		Cursor: ioncannon
 		ChargeInterval: 6750
-		Description: Ion Cannon
-		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
+		Description: Laser Satellite
+		LongDesc: Initiate a Laser Satellite strike.\nApplies instant damage to a small area.
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		SelectTargetSpeechNotification: SelectTarget
@@ -4095,6 +4105,7 @@ RASPEN:
 2100WCL:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	WithWallSpriteBody:
 	Valued:
 		Cost: 625
@@ -4142,6 +4153,7 @@ RASPEN:
 2100WCM:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	WithWallSpriteBody:
 	Valued:
 		Cost: 1000
@@ -4189,6 +4201,7 @@ RASPEN:
 2100WCH:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	WithWallSpriteBody:
 	Valued:
 		Cost: 1250
@@ -4236,6 +4249,7 @@ RASPEN:
 2100MB:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -4277,6 +4291,7 @@ RASPEN:
 2100FB:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -4317,6 +4332,7 @@ RASPEN:
 2100RT:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -4356,6 +4372,7 @@ RASPEN:
 2100TT:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -4396,6 +4413,7 @@ RASPEN:
 2100MP:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 625
 	Tooltip:
@@ -4429,6 +4447,7 @@ RASPEN:
 2100PP:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 1625
 	Tooltip:
@@ -4463,6 +4482,7 @@ RASPEN:
 2100AA:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence.Alpha, RADefence.Alpha
 		BuildPaletteOrder: 110
@@ -4558,6 +4578,7 @@ RASPEN:
 		Type: Defence.Scavenger
 		DisplayOrder: 1
 		Group: Defence
+		LowPowerModifier: 150
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
 	BaseBuilding:
@@ -4624,7 +4645,7 @@ RASPEN:
 	RevealsShroud:
 		Range: 4c0
 	Power:
-		Amount: 35
+		Amount: 50
 	-SpawnActorsOnSell:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
@@ -4683,6 +4704,7 @@ RASPEN:
 		Type: Infantry.Scavenger
 		DisplayOrder: 2
 		Group: Infantry
+		LowPowerModifier: 150
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -4755,7 +4777,7 @@ RASPEN:
 		Type: Vehicle.Scavenger
 		DisplayOrder: 3
 		Group: Vehicle
-		LowPowerModifier: 1
+		LowPowerModifier: 150
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -4812,7 +4834,7 @@ RASPEN:
 		Type: Aircraft.Scavenger
 		DisplayOrder: 4
 		Group: Aircraft
-		LowPowerModifier: 1
+		LowPowerModifier: 150
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -4846,7 +4868,7 @@ RASPEN:
 		SquadSize: 3
 		QuantizedFacings: 8
 		Description: Air Strike
-		LongDesc: Deploy an aerial chaingun strike.\nAttack buildings and infantry along a line.
+		LongDesc: Gun Choppers attack enemies along a line\nwith chainguns.
 		EndChargeSpeechNotification: AirstrikeReady
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -4868,7 +4890,7 @@ RASPEN:
 		OrderName: Scavenger Supply
 		Icon: paratroopers
 		ChargeInterval: 3000
-		Description: Paratroopers
+		Description: Dogfood Truck
 		LongDesc: A Chopper drops a Supply Truck\nanywhere on the map.
 		DropItems: 2100supplytruckarmed, 2100scav
 		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
@@ -4924,7 +4946,7 @@ RASPEN:
 		SquadSize: 3
 		QuantizedFacings: 8
 		Description: Missile Air Strike
-		LongDesc: Deploy an aerial missile strike.\nAttack buildings and infantry along a line.
+		LongDesc: Police Choppers attack enemies along a line\nwith missiles.
 		EndChargeSpeechNotification: AirstrikeReady
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -4947,8 +4969,8 @@ RASPEN:
 		OrderName: Scavenger Supply x3
 		Icon: paratroopers
 		ChargeInterval: 3000
-		Description: Paratroopers
-		LongDesc: A Chopper drops a Supply Truck\nanywhere on the map.
+		Description: Dogfood Convoy
+		LongDesc: Deploy 3 Supply Trucks via Choppers\nanywhere on the map.
 		DropItems: 2100supplytruckarmed,2100scav,2100scav,2100supplytruckarmed, 2100scav,2100scav,2100supplytruckarmed,2100scav,2100scav
 		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
 		SelectTargetSpeechNotification: SelectTarget
@@ -5280,7 +5302,7 @@ CITYMAYOR:
 		Dimensions: 2,2
 		BuildSounds: citybuild.aud
 	Health:
-		HP: 210000
+		HP: 180000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -5479,6 +5501,7 @@ CITYFD:
 	Inherits@FIRECALL: ^FireCall
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCallStructure
 	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@IDISABLE: ^DisabledOverlay
 	Selectable:
 		Bounds: 48,48
 	Valued:
@@ -5501,6 +5524,7 @@ CITYFD:
 	Armor:
 		Type: Wood
 	AttackTurreted:
+		PauseOnCondition: disabled || lowpower
 	Turreted:
 	Armament@PATRIOT:
 		Weapon: PatriotFireTruck
@@ -5564,6 +5588,7 @@ CITYPD:
 	Inherits@POLICECALL: ^PoliceCall
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCallStructure
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@IDISABLE: ^DisabledOverlay
 	Selectable:
 		Bounds: 48,48
 	Valued:
@@ -5586,6 +5611,7 @@ CITYPD:
 	Armor:
 		Type: Wood
 	AttackTurreted:
+		PauseOnCondition: disabled || lowpower
 	Turreted:
 	Armament:
 		Weapon: Taser
@@ -5818,7 +5844,7 @@ CITYAIRPORT:
 		Icon: citygreenbombsicon
 		ChargeInterval: 4500	#5000
 		Description: Tiberium Seeds
-		LongDesc: A Badger drop parachuted\n Green Tiberium seed bombs on your target.\n assistand power, does not do any damage at all!
+		LongDesc: A Badger seeds Tiberium on your target.\n Does no damage
 		SelectTargetSpeechNotification: SelectTarget
 		CameraActor: camera
 		CameraRemoveDelay: 150
@@ -5839,7 +5865,7 @@ CITYAIRPORT:
 		Icon: citybluebombsicon
 		ChargeInterval: 7500
 		Description: Blue Tiberium Seeds
-		LongDesc: A Badger drop parachuted\nBlue Tiberium seed bombs on your target.\n assistand power, does not do any damage at all!
+		LongDesc: A Badger seeds Blue Tiberium on your target.\n Does no damage
 		SelectTargetSpeechNotification: SelectTarget
 		CameraActor: racamera
 		CameraRemoveDelay: 150
@@ -5861,7 +5887,7 @@ CITYAIRPORT:
 		Cursor: nuke
 		ChargeInterval: 9000
 		Description: Mininuke Parabomb
-		LongDesc: A Badgers drops a parachuted Mininuke on your target.
+		LongDesc: A cargo plane drops a parachuted mininuke on your target.\n Can be intercepted
 		EndChargeSpeechNotification: NuclearWeaponAvailable
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -5889,7 +5915,7 @@ CITYAIRPORT:
 		Cursor: nuke
 		ChargeInterval: 9000
 		Description: Mininuke Parabomb
-		LongDesc: A Badgers drops a parachuted Mininuke on your target.
+		LongDesc: A cargo plane drops a parachuted mininuke on your target.\n Can be intercepted
 		EndChargeSpeechNotification: NuclearWeaponAvailable
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -6008,7 +6034,7 @@ CITYFOUNTAIN:
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: citybank
-		Queue: Defence.SimCity, RADefence.SimCity, ~techlevel.medium
+		Queue: Defence.SimCity, RADefence.SimCity
 		Description: Seeds Blue Tiberium in a 2 tile radius twice as fast as a normal tree\n & Provides the Power to seed Blue Tiberium.\n\n Limit: 1
 		BuildLimit: 1
 	Building:
@@ -6024,6 +6050,200 @@ CITYFOUNTAIN:
 		Interval: 55	#110
 		ResourceType: BlueTiberium
 		MaxRange: 2
+
+CITYSTADIUM:
+	Inherits: ^BaseBuilding
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Stadium
+	Buildable:
+		Queue: Building.SimCity, RABuilding.SimCity
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~disabled
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	-SpawnActorsOnSell:
+
+CITYEXPO:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Expo
+	Buildable:
+		Queue: Building.SimCity, RABuilding.SimCity
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~disabled
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	-SpawnActorsOnSell:
+
+CITYSTATION:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Rail Station
+	Buildable:
+		Queue: Building.SimCity, RABuilding.SimCity
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~disabled
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	-SpawnActorsOnSell:
+
+CITYMARIO:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Monument
+	Buildable:
+		Queue: Building.SimCity, RABuilding.SimCity
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~disabled
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	-SpawnActorsOnSell:
+
+CITYCASINO:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Casino
+	Buildable:
+		Queue: Building.SimCity, RABuilding.SimCity
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~disabled
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	-SpawnActorsOnSell:
+
+CITYWINDMILL:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Windmill
+	Buildable:
+		Queue: Building.SimCity, RABuilding.SimCity
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~disabled
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	-SpawnActorsOnSell:
+
+CITYAMUSE:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Amusement Park
+	Buildable:
+		Queue: Building.SimCity, RABuilding.SimCity
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~disabled
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	-SpawnActorsOnSell:
+
+CITYZOO:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Zoo
+	Buildable:
+		Queue: Building.SimCity, RABuilding.SimCity
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~disabled
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	-SpawnActorsOnSell:
 
 CITYBOTR:
 	Inherits: CITYR

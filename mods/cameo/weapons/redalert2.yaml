@@ -555,7 +555,7 @@ RA2MindControl:
 	Range: 6c0
 	TargetActorCenter: true
 	ValidTargets: MindControl
-	InvalidTargets: Hero
+	InvalidTargets: Hero, MCImmune
 	Projectile: InstantHit
 	Warhead@1Dam: TargetDamage
 		Damage: 0
@@ -603,7 +603,7 @@ RA2PSIAtomic:
 	Warhead@2Eff_impact: CreateEffect
 		ImpactSounds: iyurat2a.wav
 		Explosions: controlwave
-		Delay: 100
+		Delay: 40
 		ExplosionPalette: ra2effect
 	Warhead@1Dam_impact: SpreadDamage
 		Spread: 1c512
@@ -612,17 +612,17 @@ RA2PSIAtomic:
 		ValidTargets: Structure
 		AffectsParent: True
 		DamageTypes: DefaultDeath
-		Delay: 110
+		Delay: 50
 	Warhead@2Smu_areanuke: LeaveSmudge
 		SmudgeType: Scorch
 		InvalidTargets: Vehicle, Structure, Wall
 		Size: 4
-		Delay: 120
+		Delay: 60
 	Warhead@13Shake: ShakeScreen
 		Duration: 20
 		Intensity: 5
 		Multiplier: 1,1
-		Delay: 110
+		Delay: 50
 	Warhead@2Own: ChangeOwner
 		Duration: 800
 		Range: 8c0
@@ -852,7 +852,6 @@ YRBoomerSCUD:
 
 YRBoomerTorpedo:
 	Inherits: TorpTube
-	Range: 11c0
 	Report: vbooat2a.wav
 	Projectile: Missile
 		Speed: 200
@@ -1210,16 +1209,31 @@ RA220mmrapid:
 ####################################################################################################
 
 RA2Mutate:
-	Report: sgenon.wav
 	ValidTargets: Ground, Air, Trees
 	Warhead@1Dam_impact: SpreadDamage
-		Range: 0, 1c1, 2c1, 2c512
+		Spread: 4c0
 		Damage: 10000
-		Falloff: 1000, 1000, 250, 100
+		Falloff: 1000, 100
 		ValidTargets: Infantry
 		InvalidTargets: Vehicle, Structure, Wall, Husk
 		AffectsParent: True
 		DamageTypes: Prone50Percent, TriggerProne, BruteMutate
+	Warhead@2eff: CreateEffect
+		ImpactSounds: sgenon.wav
+		ImpactActors: false
+
+MutateEffect:
+	Warhead@1eff: CreateEffect
+		Explosions: mutate
+		ExplosionPalette: playerra2
+		UsePlayerPalette: true
+		AffectsParent: true
+		ImpactActors: false
+	Warhead@2: SpawnActor
+		Actors: yrbrute
+		OwnerType: InternalName
+		InternalOwner: Creeps
+		Delay: 60
 
 RADemotruck:
 	Inherits: SCUD
@@ -1349,6 +1363,10 @@ LightningStorm:
 		Weapon: CloudSpawner
 		Amount: 1
 		Delay: 150
+	Warhead@7: FireShrapnel
+		Weapon: CloudSpawner
+		Amount: 1
+		Delay: 180
 
 CloudSpawner:
 	Projectile: InstantHit
@@ -1381,6 +1399,7 @@ LightningBolt:
 		Damage: 15000	
 		Versus:
 			None: 50
+			Wood: 150
 		ValidTargets: Air, Ground, Water
 		DamageTypes: Prone50Percent, TriggerProne, ElectricityDeath
 	Warhead@4Eff: CreateEffect
