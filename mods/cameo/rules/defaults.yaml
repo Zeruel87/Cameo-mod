@@ -746,7 +746,12 @@
 		RequiresCondition: ReaperTrap
 	SpeedMultiplier@REAPERTRAP:
 		Modifier: 0
-		RequiresCondition: ReaperTrap
+		RequiresCondition: ReaperTrap || ArbiterStasis
+	ExternalCondition@STASIS:
+		Condition: ArbiterStasis
+	WithColoredOverlay@TSNEUTRON:
+		Palette: tsneutron
+		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
 	SpawnActorOnDeath@RA2Virus:
 		Actor: ra2txgasg
 		Probability: 50
@@ -772,7 +777,7 @@
 		IdleSequences: idle1, idle2
 		StandSequences: stand, stand2
 	AttackFrontal:
-		PauseOnCondition: ReaperTrap
+		PauseOnCondition: ReaperTrap || ArbiterStasis
 
 ^CivInfantry:
 	Inherits: ^Infantry
@@ -1055,11 +1060,6 @@
 	DamageMultiplier@CEMENTFACTORY:
 		RequiresCondition: techcementffact
 		Modifier: 85
-	ExternalCondition@TSNEUTRON:
-		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
 	Cloak@CloackGen:
 		InitialDelay: 15
 		CloakDelay: 90
@@ -1098,6 +1098,7 @@
 	Inherits@2: ^IronCurtainable
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllableStructure
+	Inherits@EMP: ^UnitDisable
 	Building:
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud
@@ -1505,7 +1506,6 @@
 ^Defense:
 	Inherits: ^BaseBuilding
 	Inherits@selection: ^SelectableCombatBuilding
-	Inherits@EMP: ^UnitDisable
 	RenderRangeCircle:
 	RenderDetectionCircle:
 	-GivesBuildableArea:
@@ -1523,7 +1523,7 @@
 		Condition: lowpower
 		ValidPowerStates: Low, Critical
 	WithColoredOverlay@IDISABLE:
-		RequiresCondition: lowpower
+		RequiresCondition: lowpower || disabled
 		Palette: disabled
 
 ^SelectableCombatUnit:
@@ -2533,6 +2533,7 @@ CPQDEBUGDUMMY:
 		RequiresCondition: normalcash
 
 ^Harvester:
+	Inherits@MC: ^MCImmune
 	Harvester:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
 		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, tsntwast, screfinery, scassimilator, scextractor
@@ -2542,6 +2543,8 @@ CPQDEBUGDUMMY:
 ^RearmableAircraft:
 	Rearmable:
 		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2
+	AutoTarget:
+		InitialStance: HoldFire
 
 ^Repairable:
 	Repairable:
@@ -2628,10 +2631,10 @@ CPQDEBUGDUMMY:
 	Inherits: ^Power
 	WithColoredOverlay@IDISABLE:
 		Palette: disabled
-		RequiresCondition: disabled
+		RequiresCondition: powerdisabled
 	GrantCondition@IDISABLE:
-		RequiresCondition: power-outage || TSNeutronBomb
-		Condition: disabled
+		RequiresCondition: power-outage || disabled
+		Condition: powerdisabled
 	AffectedByPowerOutage:
 		Condition: power-outage
 	InfiltrateForPowerOutage:
@@ -2639,7 +2642,7 @@ CPQDEBUGDUMMY:
 	Targetable@infiltrate:
 		TargetTypes: SpyInfiltrate
 	Power:
-		RequiresCondition: !disabled
+		RequiresCondition: !powerdisabled
 
 ^Refinery:
 	Buildable:
@@ -2663,6 +2666,7 @@ CPQDEBUGDUMMY:
 		ValidStances: Enemy, Neutral, Ally
 
 ^MCV:
+	Inherits@MC: ^MCImmune
 	MustBeDestroyed:
 		RequiredForShortGame: true
 	BaseBuilding:
