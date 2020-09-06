@@ -240,7 +240,7 @@
 		CloakDelay: 90
 		CloakSound: trans1.aud
 		UncloakSound: trans1.aud
-		PauseOnCondition: cloak-force-disabled
+		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: cloak-crate-collected
 	ExternalCondition@CLOAK:
 		Condition: cloak-crate-collected
@@ -252,7 +252,7 @@
 		CloakDelay: 90
 		CloakSound: cloak5.aud
 		UncloakSound: cloak5.aud
-		PauseOnCondition: cloak-force-disabled
+		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: tscloak
 	ExternalCondition@TSCLOAK:
 		Condition: tscloak
@@ -269,6 +269,20 @@
 		DamageTypes: TiberiumDeath
 		LayerName: tibradiation
 
+^UnitDisable:
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
+	ExternalCondition@TSNEUTRON:
+		Condition: TSNeutronBomb
+	WithColoredOverlay@TSNEUTRON:
+		Palette: tsneutron
+		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
+	ExternalCondition@LOCKDOWN:
+		Condition: GhostLockdown
+	ExternalCondition@STASIS:
+		Condition: ArbiterStasis
+
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^IronCurtainable
@@ -280,6 +294,7 @@
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@rad: ^VehicleRadiation
 	Inherits@fix: ^Repairable
+	Inherits@EMP: ^UnitDisable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -287,6 +302,7 @@
 	Mobile:
 		Locomotor: wheeled
 		TurnSpeed: 5
+		PauseOnCondition: disabled
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
@@ -388,17 +404,6 @@
 		RequiresCondition: Magnet
 	Hovers@Magnetron:
 		RequiresCondition: Magnet
-	ExternalCondition@TSNEUTRON:
-		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
-	SpeedMultiplier@TSNEUTRON:
-		Modifier: 0
-		RequiresCondition: TSNeutronBomb
-	ReloadDelayMultiplier@TSNEUTRON:
-		RequiresCondition: TSNeutronBomb
-		Modifier: 200
 	GpsDot:
 		String: Vehicle
 
@@ -416,9 +421,11 @@
 
 ^BoatUnit:
 	Inherits: ^Vehicle
+	Inherits@EMP: ^UnitDisable
 	Mobile:
 		Locomotor: naval
 		TurnSpeed: 5
+		PauseOnCondition: disabled
 	Tooltip:
 		GenericName: Boat
 	DeliversCash:
@@ -449,6 +456,7 @@
 	Inherits@2: ^GainsExperience
 	Inherits@bot: ^BotProductionBoost
 	Inherits@fix: ^Repairable
+	Inherits@EMP: ^UnitDisable
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -473,17 +481,14 @@
 	Targetable@REPAIR:
 		RequiresCondition: !airborne && damaged
 		TargetTypes: Repair, Healing
+	AttackAircraft:
+		PauseOnCondition: disabled
 	GrantConditionOnDamageState@DAMAGED:
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
-	ExternalCondition@TSNEUTRON:
-		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
-	SpeedMultiplier@TSNEUTRON:
+	SpeedMultiplier@disable:
 		Modifier: 0
-		RequiresCondition: TSNeutronBomb
+		RequiresCondition: disabled
 	HiddenUnderFog:
 		Type: GroundPosition
 	AttackMove:
@@ -731,7 +736,7 @@
 		Payload: 45
 		Type: GrinderCash
 	CaptureManager:
-	Captures@CAPTURES
+	Captures@CAPTURES:
 		CaptureTypes: ra2garrison
 		ConsumedByCapture: false
 	ExternalCondition@REAPERTRAP:
@@ -740,7 +745,7 @@
 		Palette: reapertrap
 		RequiresCondition: ReaperTrap
 	SpeedMultiplier@REAPERTRAP:
-		Modifier: 5
+		Modifier: 0
 		RequiresCondition: ReaperTrap
 	SpawnActorOnDeath@RA2Virus:
 		Actor: ra2txgasg
@@ -767,6 +772,7 @@
 		IdleSequences: idle1, idle2
 		StandSequences: stand, stand2
 	AttackFrontal:
+		PauseOnCondition: ReaperTrap
 
 ^CivInfantry:
 	Inherits: ^Infantry
@@ -1499,6 +1505,7 @@
 ^Defense:
 	Inherits: ^BaseBuilding
 	Inherits@selection: ^SelectableCombatBuilding
+	Inherits@EMP: ^UnitDisable
 	RenderRangeCircle:
 	RenderDetectionCircle:
 	-GivesBuildableArea:
@@ -1510,14 +1517,6 @@
 		Categories: Defense
 	-CommandBarBlacklist:
 	-AcceptsDeliveredCash:
-	ExternalCondition@TSNEUTRON:
-		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
-	ReloadDelayMultiplier@TSNEUTRON:
-		RequiresCondition: TSNeutronBomb
-		Modifier: 200
 
 ^DisabledOverlay:
 	GrantConditionOnPowerState@LOWPOWER:
@@ -2694,3 +2693,13 @@ CPQDEBUGDUMMY:
 	Inherits: ^AttackVoice
 	AttackTurreted:
 		Voice: Attack
+
+#EMP disable traits, use depend on which attack trait the unit uses
+
+^FrontalEMP:
+	AttackFrontal:
+		PauseOnCondition: disabled
+
+^TurretEMP:
+	AttackTurreted:
+		PauseOnCondition: disabled
