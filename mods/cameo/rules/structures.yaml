@@ -5801,7 +5801,7 @@ CITYAIRPORT:
 		BuildPaletteOrder: 90
 		Prerequisites: Fire Department, Police Department, !botcity, ~techlevel.high
 		Queue: Building.SimCity, RABuilding.SimCity
-		Description: Provides various assistant plane powers.
+		Description: Provides airborne support powers.
 	Building:
 		Footprint: xxxx xxxx xxxx xxxx
 		Dimensions: 4,4
@@ -5809,7 +5809,7 @@ CITYAIRPORT:
 	ProvidesPrerequisite:
 		Prerequisite: cityairport
 	Health:
-		HP: 90000
+		HP: 11000
 	RevealsShroud:
 		Range: 4c0
 	SupportPowerChargeBar:
@@ -5844,7 +5844,7 @@ CITYAIRPORT:
 		Icon: citygreenbombsicon
 		ChargeInterval: 4500	#5000
 		Description: Tiberium Seeds
-		LongDesc: A Badger seeds Tiberium on your target.\n Does no damage
+		LongDesc: A cargo plane seeds Tiberium on your target.\n Does no damage
 		SelectTargetSpeechNotification: SelectTarget
 		CameraActor: camera
 		CameraRemoveDelay: 150
@@ -5865,7 +5865,7 @@ CITYAIRPORT:
 		Icon: citybluebombsicon
 		ChargeInterval: 7500
 		Description: Blue Tiberium Seeds
-		LongDesc: A Badger seeds Blue Tiberium on your target.\n Does no damage
+		LongDesc: A cargo plane seeds Blue Tiberium on your target.\n Does no damage
 		SelectTargetSpeechNotification: SelectTarget
 		CameraActor: racamera
 		CameraRemoveDelay: 150
@@ -5934,6 +5934,70 @@ CITYAIRPORT:
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
+	AirstrikePower@casino:
+		Prerequisites: citycasino
+		PauseOnCondition: lowpower
+		Icon: airstrike
+		ChargeInterval: 4500
+		QuantizedFacings: 8
+		Description: Casino Crates
+		LongDesc: Drop 3 Casino Crates at target.\nCan provide massive benefits or penalties.
+		EndChargeSpeechNotification: 
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: 
+		UnitType: casinocratebomber
+		DisplayBeacon: True
+		BeaconPoster: airstrike
+		BeaconPosterPalette: beaconposter
+		DisplayRadarPing: True
+		CameraActor: camera
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 10
+	ParatroopersPower@dino:
+		Prerequisites: cityzoo
+		OrderName: DinoDrop
+		Icon: paratroopers
+		ChargeInterval: 5000
+		Description: Dinosaur Drop
+		LongDesc: A squad of cargo planes drops dinosaurs\nanywhere on the map.
+		DropItems: steg.citydrop, trex.citydrop, tric.citydrop, rapt.citydrop, rapt.citydrop
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		UnitType: C17.Paradrop
+		SquadSize: 3
+		CircleSequence: circles
+	ParatroopersPower@SWAT:
+		Prerequisites: Police Department, Library, Bank
+		OrderName: SWATDrop
+		Icon: paratroopers
+		ChargeInterval: 6000
+		Description: SWAT Drop
+		LongDesc: A squad of cargo planes drops SWAT\nanywhere on the map.
+		DropItems: CITYPOLICECAR, CITYSWAT, CITYSWAT, CITYSWAT, CITYSWAT, CITYSWAT
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		UnitType: C17.Paradrop
+		SquadSize: 3
+		CircleSequence: circles
 
 CITYLIBRARY:
 	Inherits: ^BaseBuilding
@@ -6063,7 +6127,7 @@ CITYSTADIUM:
 	Tooltip:
 		Name: Stadium
 	Buildable:
-		Queue: Building.SimCity, RABuilding.SimCity
+		Queue: Defence.SimCity, RADefence.SimCity
 		BuildPaletteOrder: 80
 		Description: TBA
 		Prerequisites: ~disabled
@@ -6088,7 +6152,7 @@ CITYEXPO:
 	Tooltip:
 		Name: Expo
 	Buildable:
-		Queue: Building.SimCity, RABuilding.SimCity
+		Queue: Defence.SimCity, RADefence.SimCity
 		BuildPaletteOrder: 80
 		Description: TBA
 		Prerequisites: ~disabled
@@ -6114,30 +6178,42 @@ CITYSTATION:
 	Tooltip:
 		Name: Rail Station
 	Buildable:
-		Queue: Building.SimCity, RABuilding.SimCity
+		Queue: Defence.SimCity, RADefence.SimCity
 		BuildPaletteOrder: 80
 		Description: Provides Rail Artillery support power.
-		Prerequisites: Fire Department, Police Department, Industrial, Harbor
+		Prerequisites: Fire Department, Police Department, Industrial, cityharbor
 		BuildLimit: 1
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
 		BuildSounds: citybuild.aud
-	AttackOmni:
+	AttackTurreted:
+		RequiresCondition: ammo
+		OpportunityFire: false
+		PersistentTargeting: false
+		ForceFireIgnoresActors: true
+	Turreted:
 	Armament:
-		Weapon: TSEMPulseCannon
+		Weapon: RailStationArty
 		LocalOffset: 212,0,1768
 		LocalYaw: 0,100
-	AttackOrderPower:
+		ReloadingCondition: reloading
+	AmmoPool:
+		Ammo: 3
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+	AttackOrderPowerCA:
 		OrderName: RailArty
 		PauseOnCondition: disabled || lowpower
 		Cursor: attackmove
 		Icon: emp
-		ChargeInterval: 3375
+		ChargeInterval: 3000
 		Description: Rail Artillery
-		LongDesc: An unseen underground bullet train\nfires a cluster munition at the target.
+		LongDesc: An unseen underground bullet train\nfires heavy artillery at the target.
 		EndChargeSpeechNotification:
 		SelectTargetSpeechNotification:
+	RejectsOrders:
+		Except: Sell
 	Health:
 		HP: 70000
 	RevealsShroud:
@@ -6154,10 +6230,10 @@ CITYMARIO:
 	Tooltip:
 		Name: Monument
 	Buildable:
-		Queue: Building.SimCity, RABuilding.SimCity
+		Queue: Defence.SimCity, RADefence.SimCity
 		BuildPaletteOrder: 80
 		Description: TBA
-		Prerequisites: Fire Department, Police Department, Commercial, Library, Bank, ~techlevel.high
+		Prerequisites: ~disabled, Fire Department, Police Department, Commercial, Library, Bank, ~techlevel.high
 		BuildLimit: 1
 	Building:
 		Footprint: xx xx
@@ -6172,6 +6248,7 @@ CITYMARIO:
 CITYCASINO:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@IDISABLE: ^DisabledOverlay
 	Selectable:
 		Bounds: 48,48
 	Valued:
@@ -6179,10 +6256,10 @@ CITYCASINO:
 	Tooltip:
 		Name: Casino
 	Buildable:
-		Queue: Building.SimCity, RABuilding.SimCity
+		Queue: Defence.SimCity, RADefence.SimCity
 		BuildPaletteOrder: 80
-		Description: TBA
-		Prerequisites: ~disabled
+		Description: Generates revenue\nUnlocks Casino Crate support power at Airport
+		Prerequisites: Library, Commercial, Bank
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -6191,6 +6268,10 @@ CITYCASINO:
 		HP: 70000
 	RevealsShroud:
 		Range: 4c0
+	CashTrickler:
+		Interval: 200
+		Amount: 1000
+	ProvidesPrerequisite@buildingname:
 	-SpawnActorsOnSell:
 
 CITYWINDMILL:
@@ -6203,7 +6284,7 @@ CITYWINDMILL:
 	Tooltip:
 		Name: Windmill
 	Buildable:
-		Queue: Building.SimCity, RABuilding.SimCity
+		Queue: Defence.SimCity, RADefence.SimCity
 		BuildPaletteOrder: 80
 		Description: TBA
 		Prerequisites: ~disabled
@@ -6227,7 +6308,7 @@ CITYAMUSE:
 	Tooltip:
 		Name: Amusement Park
 	Buildable:
-		Queue: Building.SimCity, RABuilding.SimCity
+		Queue: Defence.SimCity, RADefence.SimCity
 		BuildPaletteOrder: 80
 		Description: TBA
 		Prerequisites: ~disabled
@@ -6252,10 +6333,10 @@ CITYZOO:
 	Tooltip:
 		Name: Zoo
 	Buildable:
-		Queue: Building.SimCity, RABuilding.SimCity
+		Queue: Defence.SimCity, RADefence.SimCity
 		BuildPaletteOrder: 80
-		Description: Provides Animal Rampage support power.
-		Prerequisites: Library, Bank, Park
+		Description: Provides Dinosaur Drop support power at Airport.
+		Prerequisites: Library, Bank, citypark
 		BuildLimit: 1
 	Building:
 		Footprint: xx xx
@@ -6263,30 +6344,9 @@ CITYZOO:
 		BuildSounds: citybuild.aud
 	Health:
 		HP: 70000
-	DetonateWeaponPower@wildlife:
-		OrderName: DinoRampage
-		Cursor: ability
-		PauseOnCondition: lowpower
-		Icon: mutwildlife
-		Description: Animal Rampage
-		LongDesc: Spawns numerous ants and dinosaurs\nhostile to everyone.
-		InsufficientPowerSpeechNotification: InsufficientPower
-		IncomingSpeechNotification: EnemyUnitsApproaching
-		SelectTargetSpeechNotification: SelectTarget
-		DisplayTimerStances: Ally, Neutral, Enemy
-		DisplayRadarPing: True
-		ChargeInterval: 9000
-		ActivationDelay: 50
-		Weapon: ZooSpawner
-		CameraActor: camera
-		CameraRemoveDelay: 240
-		DisplayBeacon: True
-		ArrowSequence: arrow
-		ClockSequence: clock
-		CircleSequence: circles
-		BeaconPoster: rapinficon
 	RevealsShroud:
 		Range: 4c0
+	ProvidesPrerequisite@buildingname:
 	-SpawnActorsOnSell:
 
 CITYBOTR:
