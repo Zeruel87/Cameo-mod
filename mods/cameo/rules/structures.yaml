@@ -6067,6 +6067,7 @@ CITYSTADIUM:
 		BuildPaletteOrder: 80
 		Description: TBA
 		Prerequisites: ~disabled
+		BuildLimit: 1
 	Building:
 		Footprint: xxx xxx xxx
 		Dimensions: 3,3
@@ -6091,6 +6092,7 @@ CITYEXPO:
 		BuildPaletteOrder: 80
 		Description: TBA
 		Prerequisites: ~disabled
+		BuildLimit: 1
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -6104,6 +6106,7 @@ CITYEXPO:
 CITYSTATION:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@IDISABLE: ^DisabledOverlay
 	Selectable:
 		Bounds: 48,48
 	Valued:
@@ -6113,12 +6116,28 @@ CITYSTATION:
 	Buildable:
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildPaletteOrder: 80
-		Description: TBA
-		Prerequisites: ~disabled
+		Description: Provides Rail Artillery support power.
+		Prerequisites: Fire Department, Police Department, Industrial, Harbor
+		BuildLimit: 1
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
 		BuildSounds: citybuild.aud
+	AttackOmni:
+	Armament:
+		Weapon: TSEMPulseCannon
+		LocalOffset: 212,0,1768
+		LocalYaw: 0,100
+	AttackOrderPower:
+		OrderName: RailArty
+		PauseOnCondition: disabled || lowpower
+		Cursor: attackmove
+		Icon: emp
+		ChargeInterval: 3375
+		Description: Rail Artillery
+		LongDesc: An unseen underground bullet train\nfires a cluster munition at the target.
+		EndChargeSpeechNotification:
+		SelectTargetSpeechNotification:
 	Health:
 		HP: 70000
 	RevealsShroud:
@@ -6138,7 +6157,8 @@ CITYMARIO:
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildPaletteOrder: 80
 		Description: TBA
-		Prerequisites: ~disabled
+		Prerequisites: Fire Department, Police Department, Commercial, Library, Bank, ~techlevel.high
+		BuildLimit: 1
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -6224,6 +6244,7 @@ CITYAMUSE:
 CITYZOO:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@IDISABLE: ^DisabledOverlay
 	Selectable:
 		Bounds: 48,48
 	Valued:
@@ -6233,14 +6254,37 @@ CITYZOO:
 	Buildable:
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildPaletteOrder: 80
-		Description: TBA
-		Prerequisites: ~disabled
+		Description: Provides Animal Rampage support power.
+		Prerequisites: Library, Bank, Park
+		BuildLimit: 1
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
 		BuildSounds: citybuild.aud
 	Health:
 		HP: 70000
+	DetonateWeaponPower@wildlife:
+		OrderName: DinoRampage
+		Cursor: ability
+		PauseOnCondition: lowpower
+		Icon: mutwildlife
+		Description: Animal Rampage
+		LongDesc: Spawns numerous ants and dinosaurs\nhostile to everyone.
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayTimerStances: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		ChargeInterval: 9000
+		ActivationDelay: 50
+		Weapon: ZooSpawner
+		CameraActor: camera
+		CameraRemoveDelay: 240
+		DisplayBeacon: True
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		BeaconPoster: rapinficon
 	RevealsShroud:
 		Range: 4c0
 	-SpawnActorsOnSell:
