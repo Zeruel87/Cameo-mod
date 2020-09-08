@@ -1962,16 +1962,16 @@ SCDEFILERMOUND:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Valued:
-		Cost: 1400
+		Cost: 1200
 	Tooltip:
 		Name: Defiler Mound
 	ProvidesPrerequisite:
 		Prerequisite: Defiler Mound
-	#Buildable:
-	#	BuildPaletteOrder: 100
-	#	Prerequisites: Hive, ~techlevel.medium
-	#	Queue: Building.Zerg, RABuilding.Zerg
-	#	Description: Unlocks Defiler.
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: Hive, ~techlevel.medium
+		Queue: Building.Zerg, RABuilding.Zerg
+		Description: Unlocks Defiler.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -4583,7 +4583,7 @@ SCINFESTEDTERRAN:
 	Inherits@EXT: ^ExternalConditions
 
 SCDEFILER:
-	Inherits: ^Soldier
+	Inherits: ^LargeZerg
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
@@ -4591,21 +4591,21 @@ SCDEFILER:
 		Cost: 1050
 	Tooltip:
 		Name: Defiler
-	#Buildable:
-	#	BuildPaletteOrder: 120
-	#	Prerequisites: Defiler Mound, ~techlevel.medium
-	#	Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
-	#	Description: cannot be crushed and cannod be poisoned by tiberium.
+	Buildable:
+		BuildPaletteOrder: 120
+		Prerequisites: Defiler Mound, ~techlevel.medium
+		Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
+		Description: Zerg support strain.\nAttack reduces targets' health over time\n Strong vs clustered units\n Special Ability: Dark Swarm
 	Mobile:
 		Speed: 60
 	Health:
-		HP: 18900
+		HP: 19000
 	Armor:
 		Type: Light
 	RevealsShroud:
 		Range: 9c0
 	Armament:
-		Weapon: FirebatF
+		Weapon: DefilerPlague
 		LocalOffset: 341,-120,128
 		FireDelay: 3
 		MuzzleSequence: muzzle
@@ -4615,6 +4615,18 @@ SCDEFILER:
 		DefaultAttackSequence: shoot
 	Power:
 		Amount: -20
+	GrantTimedConditionOnDeploy:
+		DeployedCondition: darkswarm
+		CooldownTicks: 1000
+		DeployedTicks: 1
+		PauseOnCondition: disabled
+	PeriodicExplosion:
+		Weapon: DarkSwarmSpawn
+		RequiresCondition: darkswarm
+	AIDeployNotifier:
+		DeployTrigger: Damage
+		DeployChance: 25
+		UndeployTicks: 0
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
 	Voiced:
@@ -4622,9 +4634,36 @@ SCDEFILER:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
+
+DARKSWARM:
+	Inherits@1: ^ExistsInWorld
+	Inherits@2: ^SpriteActor
+	-UpdatesPlayerStatistics:
+	RenderSprites:
+		PlayerPalette: alpha32
+	Interactable:
+	HiddenUnderFog:
+		AlwaysVisibleStances: None
+		Type: GroundPosition
+	Health:
+		HP: 100
+	HitShape:
+	Aircraft:
+		Repulsable: false
+		CruiseAltitude: 1
+		Speed: 18
+	WithSpriteBody:
+	WithMakeAnimation:
+	BodyOrientation:
+		QuantizedFacings: 32
+	SelfHealing:
+		Step: -1
+		Delay: 10
+		HealIfBelow: 200
+		DamageTypes: DefaultDeath
+	ProximityExternalCondition@ds:
+		Range: 5c0
+		Condition: DarkSwarm
 
 SCBROODLING:
 	Inherits: ^Soldier
