@@ -288,8 +288,7 @@
 	Inherits@2: ^IronCurtainable
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
+	Inherits@bounty: ^GlobalBounty
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@rad: ^VehicleRadiation
@@ -368,6 +367,7 @@
 		Types: vehicle
 		ValidStances: Enemy, Neutral
 	Carryable:
+		LockedCondition: carried
 	SelfHealing@MACHINESHOP:
 		Step: 500
 		Delay: 100
@@ -450,9 +450,9 @@
 ^RANeutralPlane: #for actual air units
 	Inherits@1: ^ExistsInWorld
 	Inherits@4: ^SpriteActor
-	Inherits@bounty: ^GlobalBounty				##########
+	Inherits@bounty: ^GlobalBounty
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@commandodebuff: ^CommandoDebuff
+	Inherits@ext: ^ExternalConditionsAll
 	Inherits@2: ^GainsExperience
 	Inherits@bot: ^BotProductionBoost
 	Inherits@fix: ^Repairable
@@ -567,8 +567,7 @@
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
+	Inherits@bounty: ^GlobalBounty
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
 	TemporaryOwnerManager:
@@ -843,6 +842,7 @@
 	Selectable:
 		Bounds: 24,24
 	Targetable:
+		RequiresCondition: !parachute
 		TargetTypes: Ground, Creep
 	HiddenUnderFog:
 	RenderSprites:
@@ -866,6 +866,25 @@
 	HitShape:
 		Type: Circle
 			Radius: 128
+	Passenger:
+		Weight: 2
+		CargoType: Infantry
+	Parachutable:
+		FallRate: 20
+		KilledOnImpassableTerrain: true
+		GroundCorpseSequence: corpse
+		GroundImpactSound: squishy2.aud
+		WaterImpactSound: splash9.aud
+		WaterCorpseSequence: small_splash
+		ParachutingCondition: parachute
+	WithParachute:
+		ShadowImage: parach-shadow
+		ShadowSequence: idle
+		Image: parach
+		Sequence: idle
+		OpeningSequence: open
+		Offset: 0,0,427
+		RequiresCondition: parachute
 	MapEditorData:
 		Categories: Critter
 	GpsDot:
@@ -995,8 +1014,8 @@
 ^Building:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
+	Inherits@bounty: ^GlobalBounty
+	Inherits@commandodebuff: ^CommandoDebuff
 	Inherits@shape: ^1x1Shape
 	Inherits@selection: ^SelectableBuilding
 	Huntable:
@@ -1494,7 +1513,7 @@
 		GenericName: Crate
 		ShowOwnerRow: false
 	Crate:
-		TerrainTypes: Clear, Rough, Road, Tiberium, BlueTiberium, Beach
+		TerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
 	RenderSprites:
 		Palette: effect
 		Image: crate
@@ -1945,22 +1964,27 @@
 	CashTrickler@RANK-0:
 		Amount: 10
 		Interval: 400
+		UseResourceStorage: true
 		RequiresCondition: city-veteran == 0 && !lowpower && !city-elite
 	CashTrickler@RANK-1:
 		Amount: 20
 		Interval: 400
+		UseResourceStorage: true
 		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
 	CashTrickler@RANK-2:
 		Amount: 40
 		Interval: 400
+		UseResourceStorage: true
 		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
 	CashTrickler@RANK-3:
 		Amount: 60
 		Interval: 400
+		UseResourceStorage: true
 		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
 	CashTrickler@RANK-4:
 		Amount: 80
 		Interval: 400
+		UseResourceStorage: true
 		RequiresCondition: city-elite && !lowpower
 	CashTricklerMultiplier@COMMERCIAL0:
 		Modifier: 120
@@ -2082,7 +2106,24 @@
 		Range: 7c0
 		Condition: PoliceCall
 
+^ExternalConditionsAll:
+	Inherits@commando: ^CommandoDebuff
+	ExternalCondition@SCPlague:
+		Condition: DefilerPlague
+		TotalCap: 1
+	TimedConditionBar@Plague:
+		Color: A40000
+		Condition: DefilerPlague
+	SelfHealing@SCPlague:
+		Step: -500
+		PercentageStep: -1
+		Delay: 10
+		HealIfBelow: 101
+		DamageTypes: DefaultDeath
+		RequiresCondition: DefilerPlague
+
 ^ExternalConditions:
+	Inherits: ^ExternalConditionsAll
 	ExternalCondition@IndustrySpeed0:
 		Condition: IndustrySpeed0
 		TotalCap: 1
@@ -2106,6 +2147,9 @@
 		TotalCap: 1
 	ExternalCondition@CommandoCall:
 		Condition: CommandoCall
+		TotalCap: 1
+	ExternalCondition@DarkSwarm:
+		Condition: DarkSwarm
 		TotalCap: 1
 	SpeedMultiplier@RANK-0:
 		Modifier: 120
@@ -2137,6 +2181,12 @@
 	InaccuracyMultiplier@COMMANDOCALL:
 		Modifier: 50
 		RequiresCondition: CommandoCall
+	DamageMultiplier@DARKSWARM:
+		Modifier: 0
+		RequiresCondition: DarkSwarm
+	FirepowerMultiplier@DARKSWARM:
+		Modifier: 0
+		RequiresCondition: DarkSwarm
 	WithDecoration@IndustrySpeed0:
 		Image: cityspeed
 		Sequence: speed0
