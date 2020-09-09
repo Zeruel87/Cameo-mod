@@ -395,7 +395,7 @@ SonicZap:
 RA2IFVRepair:
 	ReloadDelay: 10
 	Report: vifvrepa.wav
-	Range: 1c512
+	Range: 3c512
 	ValidTargets: Repair
 	Projectile: LaserZap
 		Color: 8888FF
@@ -405,6 +405,10 @@ RA2IFVRepair:
 		ValidStances: Ally
 		ValidTargets: Repair
 		DebugOverlayColor: 00FF00
+	Warhead@2Defuse: DetachDelayedWeapon
+		Types: ivanbomb
+		ValidTargets: ivanattached
+		ValidStances: Ally
 
 RA2TeslaCoilCharge:
 	Inherits: ^TeslaWeapon
@@ -1417,3 +1421,57 @@ LightningBolt:
 
 psireveal:
 	Projectile: InstantHit
+
+IvanAttach:
+	Projectile: InstantHit
+	TargetActorCenter: true
+	ReloadDelay: 30
+	Range: 1c512
+	InvalidTargets: ivanattached
+	Warhead@1: AttachDelayedWeapon
+		Weapon: IvanBomb
+		Type: ivanbomb
+		TriggerTime: 125
+		Range: 0c128
+	Warhead@2: TargetDamage
+
+SEALAttach:
+	ValidTargets: Vehicle
+	Inherits: IvanAttach
+	Warhead@1: AttachDelayedWeapon
+		ValidStances: Enemy, Neutral
+		Weapon: SealBomb
+		TriggerTime: 50
+
+IvanBomb:
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Ground, Air, Water
+		Spread: 0c512
+		Damage: 60000
+		DamageTypes: Prone80Percent, ExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: self_destruct
+		ImpactSounds: kaboom22.aud
+		ValidTargets: Ground, Air, Ship, Trees
+	Warhead@3EffWater: CreateEffect
+		Explosions: large_splash
+		ImpactSounds: splash9.aud
+		ValidTargets: Water, Underwater
+		InvalidTargets: Ship, Structure, Bridge
+
+SealBomb:
+	Inherits: IvanBomb
+	Warhead@1Dam: SpreadDamage
+		Damage: 30000
+
+DefuseKit:
+	Projectile: InstantHit
+	TargetActorCenter: true
+	ReloadDelay: 20
+	Range: 1c512
+	ValidTargets: ivanattached
+	Report: fixit1.aud
+	Warhead@1: DetachDelayedWeapon
+		Types: ivanbomb
+		ValidStances: Ally
+	Warhead@2: TargetDamage
