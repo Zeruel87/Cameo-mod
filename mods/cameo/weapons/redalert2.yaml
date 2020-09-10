@@ -240,7 +240,6 @@ RA28Inch:
 
 RA2Comet:
 	Inherits: Laser
-	ValidTargets: Ground, Water
 	ReloadDelay: 100
 	Range: 9c0
 	Report: vpriatta.wav
@@ -249,7 +248,7 @@ RA2Comet:
 		Duration: 15
 		UsePlayerColor: true
 	Warhead@1Dam: SpreadDamage
-		Spread: 800
+		Spread: 256
 		Damage: 10000
 		Versus:
 			None: 100
@@ -257,11 +256,28 @@ RA2Comet:
 			Heavy: 50
 			Wood: 200
 			Concrete: 200
+	Warhead@3: FireShrapnel
+		Weapon: PrismScatter
+		Amount: 5
+		AimChance: 100
+		AimTargetStances: Enemy, Neutral
+
+PrismScatter:
+	Inherits: RA2Comet
+	Range: 1c512
+	Projectile: LaserZap
+		-HitAnim:
+	Warhead@1Dam: SpreadDamage
+		Damage: 3000
+	-Report:
+	-Warhead@3:
+	Warhead@4Eff: CreateEffect
+		Explosions: small_explosion
 
 RA2DiskLaser:
-	Inherits: RA2Comet
+	Inherits: Laser
 	ReloadDelay: 50
-	Range:7c0
+	Range: 7c0
 	Report: vfloatta.wav
 	ValidTargets: Ground, Water, Air
 	InvalidTargets: Structure
@@ -269,6 +285,10 @@ RA2DiskLaser:
 		Width: 50
 		Duration: 15
 		Color: aa7990
+		SecondaryBeam: true
+		SecondaryBeamWidth: 25
+		SecondaryBeamZOffset: 2047
+		SecondaryBeamColor: FFFFFF80
 		UsePlayerColor: false
 	Warhead@1Dam: SpreadDamage
 		Damage: 2500
@@ -277,14 +297,18 @@ RA2DiskLaser:
 RA2DiskDrain:
 	Inherits: RA2DiskLaser
 	ReloadDelay: 2
-	Range:1c0
+	Range: 1c0
 	Report: vflolo2a.wav, vflolo1a.wav, vflolo3a.wav, vflolo2b.wav
 	-InvalidTargets:
 	Projectile: LaserZap
+		Shape: Cylindrical
 		Width: 200
-		Color: aa7990
+		Color: aa799080
+		SecondaryBeamWidth: 128
 	Warhead@1Dam: SpreadDamage
 		Damage: 200
+		Versus:
+			Wood: 100
 		ValidTargets: Structure
 
 RA2Prism:
@@ -300,6 +324,8 @@ RA2Prism:
 			Heavy: 70
 			Wood: 200
 			Concrete: 200
+	Warhead@3: FireShrapnel
+		Amount: 3
 
 RA2Magnet:
 	Inherits: RA2Comet
@@ -510,14 +536,24 @@ RA2PsychicJab:
 		ValidTargets: Ground, Water
 
 RA2Dronegas:
-	Inherits: Chemspray
-	ReloadDelay: 1
+	ReloadDelay: 120
+	Range: 2c512
+	Report: flamer2.aud
 	ValidTargets: Infantry
-	Range: 2c0
-	InvalidTargets:
-	Warhead@1Dam: SpreadDamage
-		Spread: 256
-		Damage: 1000
+	Projectile: InstantExplode
+	Warhead@1: CreateEffect
+		Explosions: chaosgas
+		ExplosionPalette: ra2effect
+		ImpactActors: false
+	Warhead@2: TargetDamage
+		Range: 2c512
+		ValidTargets: Infantry
+	Warhead@3: GrantExternalCondition
+		Range: 2c512
+		Condition: chaosgas
+		Duration: 320
+		InvalidTargets: Hero, MCImmune
+		ValidTargets: Infantry
 
 RA2RadBeamWeapon:
 	Range: 6c0
@@ -770,11 +806,12 @@ HarrierMissiles:
 
 MigMissiles:
 	Inherits: HarrierMissiles
+	Report: vmigatta.wav
 	Warhead@1Dam: SpreadDamage
 		Spread: 256
-		Damage: 7000
-		Versus:
-			Wood: 50
+		Damage: 12500
+	Warhead@3Eff: CreateEffect
+		Explosions: large_explosion
 
 RA2MammothTusk:
 	Inherits: MammothTusk
@@ -1001,7 +1038,7 @@ RA2TURRETFLAKAA:
 RA2DoublePistols:
 	Report: itanatta.wav, itanattb.wav
 	ValidTargets: Infantry
-	InvalidTargets:Water, Structure, Wall, Husk
+	InvalidTargets: Water, Structure, Wall, Husk
 	ReloadDelay: 40
 	Burst: 9
 	BurstDelays: 2
@@ -1016,6 +1053,8 @@ RA2DoublePistols:
 			Heavy: 10
 		ValidTargets: Infantry
 		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: piff
 
 RA2AWP:
 	Inherits: RA2DoublePistols
@@ -1029,6 +1068,7 @@ RA2AWP:
 		Spread: 42
 		Damage: 12500
 		DamageTypes: BulletDeath
+	-Warhead@2Eff:
 
 RA2AWPG:
 	Inherits: RA2AWP
@@ -1425,7 +1465,7 @@ psireveal:
 IvanAttach:
 	Projectile: InstantHit
 	TargetActorCenter: true
-	ReloadDelay: 30
+	ReloadDelay: 20
 	Range: 1c512
 	InvalidTargets: ivanattached
 	Warhead@1: AttachDelayedWeapon
@@ -1438,10 +1478,17 @@ IvanAttach:
 SEALAttach:
 	ValidTargets: Vehicle
 	Inherits: IvanAttach
+	Range: 3c512
 	Warhead@1: AttachDelayedWeapon
 		ValidStances: Enemy, Neutral
 		Weapon: SealBomb
 		TriggerTime: 50
+
+TanyaAttach:
+	Inherits: SEALAttach
+	Range: 1c512
+	Warhead@1: AttachDelayedWeapon
+		Weapon: TanyaBomb
 
 IvanBomb:
 	Warhead@1Dam: SpreadDamage
@@ -1464,6 +1511,11 @@ SealBomb:
 	Warhead@1Dam: SpreadDamage
 		Damage: 30000
 
+TanyaBomb:
+	Inherits: IvanBomb
+	Warhead@1Dam: SpreadDamage
+		Spread: 0c128
+
 DefuseKit:
 	Projectile: InstantHit
 	TargetActorCenter: true
@@ -1475,3 +1527,37 @@ DefuseKit:
 		Types: ivanbomb
 		ValidStances: Ally
 	Warhead@2: TargetDamage
+
+BorisAKM:
+	Inherits: ^LightMG
+	Report: iboratta.wav, iborattb.wav
+	InvalidTargets: Structure, Bridge, Wall
+	Range: 7c0
+	ReloadDelay: 20
+	Warhead@1Dam: SpreadDamage
+		Spread: 42
+		Damage: 20000
+		Versus:
+			Light: 40
+			Heavy: 20
+		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+		InvalidTargets: Structure, Bridge, Wall
+	Warhead@2Eff: CreateEffect
+		Explosions: piff
+
+MigTarget:
+	ValidTargets: Structure, Bridge, Wall
+	Range: 11c0
+	ReloadDelay: 30
+	Projectile: LaserZap
+		Width: 36
+		Duration: 30
+		SecondaryBeamWidth: 96
+		SecondaryBeamColor: FF000030
+	Warhead@1: TargetDamage
+		ValidTargets: Structure
+	Warhead@2: GrantExternalCondition
+		ValidTargets: Structure
+		Spread: 0c512
+		Duration: 30
+		Condition: BorisFlare

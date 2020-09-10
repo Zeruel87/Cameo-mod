@@ -1807,42 +1807,6 @@ ra2naradr:
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 10
-	ClassicAirstrikePower:
-		Squad:
-			yrbpln:
-				SpawnDelay: 20
-				SpawnOffset: -1536,1024,0
-				TargetOffset: -536,0,0
-			yrbpln:
-				SpawnDelay: 0
-				SpawnOffset: 0,0,0
-				TargetOffset: 0,0,0
-		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons
-		Icon: airstrike
-		ChargeInterval: 4500
-		Description: Precision Air Strike
-		LongDesc: MiG aircraft fire missiles in a precision strike.\nDeals heavy damage to a single target.
-		EndChargeSpeechNotification: AirstrikeReady
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		IncomingSpeechNotification: EnemyPlanesApproaching
-		QuantizedFacings: 8
-		DisplayBeacon: True
-		BeaconPoster: airstrike
-		BeaconPosterPalette: beaconposter
-		DisplayRadarPing: True
-		CameraActor: camera
-		CameraRemoveDelay: 100
-		ArrowSequence: arrow
-		ClockSequence: clock
-		CircleSequence: circles
-		UseDirectionalTarget: True
-		DirectionArrowAnimation: airstrikedirection
-		Strikes: 2
-		CircleDelay: 20
-		OrderName: AirstrikePowerInfoOrder
-		SupportPowerPaletteOrder: 20
 	SupportPowerChargeBar:
 	Power:
 		Amount: -50
@@ -3839,6 +3803,7 @@ RA2TANY:
 	Inherits@anim: ^RA2Infantry
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@MC: ^MCImmune
 	Buildable:
 		Queue: Infantry.AlliesRA2, RAInfantry.AlliesRA2
 		BuildPaletteOrder: 120
@@ -3864,6 +3829,8 @@ RA2TANY:
 		Weapon: RA2DoublePistols
 	Armament@SECONDARY:
 		Weapon: RA2DoublePistols
+	Armament@c4:
+		Weapon: TanyaAttach
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2DoublePistols
@@ -3886,7 +3853,7 @@ RA2SEAL:
 	Inherits: RMBO
 	Inherits@anim: ^RA2Infantry
 	Valued:
-		Cost: 2000
+		Cost: 1200
 	Tooltip:
 		Name: SEAL
 	UpdatesPlayerStatistics:
@@ -3896,7 +3863,7 @@ RA2SEAL:
 		BuildPaletteOrder: 120
 		Prerequisites: ra2gatech, ~techlevel.high
 		BuildDurationModifier: 40
-		Description: Elite sniper infantry unit.\nCan plant timed bombs on vehicles\n Strong vs Infantry, Buildings\n  Weak vs Vehicles
+		Description: Elite infantry unit.\nCan plant timed bombs on vehicles\n Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
 	Armament:
 		Weapon: RA2AWPG
 	Armament@c4:
@@ -3905,11 +3872,6 @@ RA2SEAL:
 		Voice: Attack
 	AttackMove:
 		Voice: Attack
-	VoiceAnnouncement:
-		RequiresCondition: produced
-		Voice: Build
-	Voiced:
-		VoiceSet: CommandoVoice
 	DeliversCash:
 		Payload: 1000
 	Voiced:
@@ -3939,12 +3901,13 @@ YRBORIS:
 	Inherits@anim: ^RA2Infantry
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@MC: ^MCImmune
 	Buildable:
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 		BuildPaletteOrder: 120
 		Prerequisites: ra2natech, ~techlevel.high
 		BuildLimit: 1
-		Description: Elite commando infantry.\nCan detect cloaked units.\nMaximum 1 can be trained.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Destroy Building with C4
+		Description: Elite commando infantry.\nCan detect cloaked units.\nMaximum 1 can be trained.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Airstrike
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -3955,24 +3918,32 @@ YRBORIS:
 		Speed: 71
 	RevealsShroud:
 		Range: 6c0
-	Demolition:
-		DetonationDelay: 45
-		Voice: Demolish
 	Passenger:
 		PipType: Red
 	Armament@PRIMARY:
-		Weapon: Colt45
+		Weapon: BorisAKM
 	Armament@SECONDARY:
-		Weapon: RA2DoublePistols
+		Name: secondary
+		Weapon: MigTarget
 	Armament@GARRISONED:
 		Name: garrisoned
-		Weapon: RA2DoublePistols
+		Weapon: BorisAKM
+	AirstrikeMaster:
+		Actors: yrbpln
+		SquadSize: 1
+		RespawnTicks: 150
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: true
+		SpawnerArmamentName: secondary
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		StandSequences: stand
 	DetectCloaked:
 		CloakTypes: Cloak, Hijacker
+	WithInfantryBody:
+		AttackSequences:
+			secondary: secondary-fire
 	Voiced:
 		VoiceSet: BorisVoice
 	Inherits@EXPERIENCE: ^GainsExperience				##########
@@ -5994,6 +5965,7 @@ YRCAOS:
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@MC: ^MCImmune
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -6002,12 +5974,12 @@ YRCAOS:
 		BuildPaletteOrder: 60
 		Prerequisites: ~techlevel.medium
 		Queue: Vehicle.Yuri, RAVehicle.Yuri
-		Description: Anti-infantry vehicle.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
+		Description: Releases a gas that causes infantry to go\nberserk and attack each other.
 	Mobile:
 		Speed: 120
 		TurnSpeed: 40
 	Health:
-		HP: 12000
+		HP: 18000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -7587,14 +7559,15 @@ yrbpln:
 	Interactable:
 	Tooltip:
 		Name: MIG Bomber
-	Valued:
-		Cost: 2000
+	Health:
+		HP: 30000
+	HitShape:
 	Aircraft:
 		TurnSpeed: 4
 		Speed: 373
 		Repulsable: False
 		RepulsionSpeed: 10
-	AttackBomber:
+	AttackAircraft:
 	Armament:
 		Weapon: MigMissiles
 		LocalOffset: 0,-256,-43, 0,256,-43
@@ -7605,6 +7578,8 @@ yrbpln:
 	Contrail@2:
 		Offset: -640,-171,0
 		TrailLength: 15
+	AirstrikeSlave:
+		LandingDistance: 1c0
 	-MapEditorData:
 	WithVoxelBody:
 

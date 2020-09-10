@@ -579,6 +579,7 @@
 	Inherits@bounty: ^GlobalBounty
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
+	Inherits@berserk: ^Berserkable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -1163,6 +1164,11 @@
 		ReferencePoint: Center
 		Palette: player
 		IsPlayerPalette: True
+	ExternalCondition@Boris:
+		Condition: BorisFlare
+	WithColoredOverlay@Boris:
+		Palette: borisflare
+		RequiresCondition: BorisFlare
 	GpsDot:
 		String: Structure
 
@@ -1701,7 +1707,7 @@
 		GenericName: Destroyed Plane
 	Aircraft:
 	FallsToEarth:
-		Spins: False
+		MaximumSpinSpeed: 0
 		Moves: True
 		Velocity: 86
 		Explosion: UnitExplodePlane
@@ -1809,6 +1815,28 @@
 		RequiresCondition: CommandoDebuff
 		ZOffset: 256
 		ValidStances: Enemy, Neutral, Ally
+
+^CommandoCallable:
+	ExternalCondition@CommandoCall:
+		Condition: CommandoCall
+		TotalCap: 1
+	DamageMultiplier@COMMANDOCALL:
+		Modifier: 90
+		RequiresCondition: CommandoCall
+	SpeedMultiplier@COMMANDOCALL:
+		Modifier: 110
+		RequiresCondition: CommandoCall
+	InaccuracyMultiplier@COMMANDOCALL:
+		Modifier: 50
+		RequiresCondition: CommandoCall
+	WithDecoration@CommandoCall:
+		Image: 2100commandocall
+		Sequence: idle
+		ReferencePoint: Right, Top
+		Offsets:
+			CommandoCall: -6,-2
+		RequiresCondition: CommandoCall
+		ZOffset: 256
 
 ####################################################################################################
 #		PROTOSS
@@ -2115,47 +2143,7 @@
 		Range: 7c0
 		Condition: PoliceCall
 
-^ExternalConditionsAll:
-	Inherits@commando: ^CommandoDebuff
-	ExternalCondition@SCPlague:
-		Condition: DefilerPlague
-		TotalCap: 1
-	TimedConditionBar@Plague:
-		Color: A40000
-		Condition: DefilerPlague
-	WithDecoration@Plague:
-		Image: plagueunit
-		Sequence: overlay
-		ReferencePoint: center, center
-		ZOffset: 2048
-		RequiresCondition: DefilerPlague
-		RequiresSelection: False
-		ValidStances: Ally, Neutral, Enemy
-	SelfHealing@SCPlague:
-		Step: -500
-		PercentageStep: -2
-		Delay: 10
-		HealIfBelow: 101
-		DamageTypes: DefaultDeath
-		RequiresCondition: DefilerPlague
-	DelayedWeaponAttachable@ivan:
-		Type: ivanbomb
-		Condition: ivanbomb
-		ProgressBarColor: FF000080
-	WithDecoration@ivan:
-		Image: mouse2
-		Sequence: c4
-		ReferencePoint: center, center
-		ZOffset: 2048
-		RequiresCondition: ivanbomb
-		RequiresSelection: False
-		ValidStances: Ally, Neutral, Enemy
-	Targetable@ivan:
-		TargetTypes: ivanattached
-		RequiresCondition: ivanbomb
-
-^ExternalConditions:
-	Inherits: ^ExternalConditionsAll
+^IndustrySpeed:
 	ExternalCondition@IndustrySpeed0:
 		Condition: IndustrySpeed0
 		TotalCap: 1
@@ -2170,18 +2158,6 @@
 		TotalCap: 1
 	ExternalCondition@IndustrySpeed4:
 		Condition: IndustrySpeed4
-		TotalCap: 1
-	ExternalCondition@FireCall:
-		Condition: FireCall
-		TotalCap: 1
-	ExternalCondition@PoliceCall:
-		Condition: PoliceCall
-		TotalCap: 1
-	ExternalCondition@CommandoCall:
-		Condition: CommandoCall
-		TotalCap: 1
-	ExternalCondition@DarkSwarm:
-		Condition: DarkSwarm
 		TotalCap: 1
 	SpeedMultiplier@RANK-0:
 		Modifier: 120
@@ -2198,27 +2174,6 @@
 	SpeedMultiplier@RANK-4:
 		Modifier: 104
 		RequiresCondition: IndustrySpeed4
-	DamageMultiplier@FIRECALL:
-		Modifier: 80
-		RequiresCondition: FireCall
-	FirepowerMultiplier@POLICECALL:
-		Modifier: 120
-		RequiresCondition: PoliceCall
-	DamageMultiplier@COMMANDOCALL:
-		Modifier: 90
-		RequiresCondition: CommandoCall
-	SpeedMultiplier@COMMANDOCALL:
-		Modifier: 110
-		RequiresCondition: CommandoCall
-	InaccuracyMultiplier@COMMANDOCALL:
-		Modifier: 50
-		RequiresCondition: CommandoCall
-	DamageMultiplier@DARKSWARM:
-		Modifier: 0
-		RequiresCondition: DarkSwarm
-	FirepowerMultiplier@DARKSWARM:
-		Modifier: 0
-		RequiresCondition: DarkSwarm
 	WithDecoration@IndustrySpeed0:
 		Image: cityspeed
 		Sequence: speed0
@@ -2255,6 +2210,20 @@
 		ZOffset: 256
 		BlinkInterval: 32
 		BlinkPattern: On, Off, Off, Off
+
+^CityCombatCallable:
+	ExternalCondition@FireCall:
+		Condition: FireCall
+		TotalCap: 1
+	ExternalCondition@PoliceCall:
+		Condition: PoliceCall
+		TotalCap: 1
+	DamageMultiplier@FIRECALL:
+		Modifier: 80
+		RequiresCondition: FireCall
+	FirepowerMultiplier@POLICECALL:
+		Modifier: 120
+		RequiresCondition: PoliceCall
 	WithDecoration@FireCall:
 		Image: cityfirecall
 		Sequence: idle
@@ -2271,14 +2240,18 @@
 		ZOffset: 256
 		BlinkInterval: 32
 		BlinkPattern: Off, Off, On, Off
-	WithDecoration@CommandoCall:				##########
-		Image: 2100commandocall
-		Sequence: idle
-		ReferencePoint: Right, Top
-		Offsets:
-			CommandoCall: -6,-2
-		RequiresCondition: CommandoCall
-		ZOffset: 256
+
+^ExternalConditionsAll:
+	Inherits@commando: ^CommandoDebuff
+	Inherits@ivan: ^BombAttachable
+	Inherits@defplague: ^DefilerPlague
+
+^ExternalConditions:
+	Inherits: ^ExternalConditionsAll
+	Inherits@commando: ^CommandoCallable
+	Inherits@darkswarm: ^DarkSwarmable
+	Inherits@industry: ^IndustrySpeed
+	Inherits@police: ^CityCombatCallable
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 
@@ -2710,6 +2683,77 @@ CPQDEBUGDUMMY:
 ^MCImmune:
 	Targetable@MC:
 		TargetTypes: MCImmune
+
+^BombAttachable:
+	DelayedWeaponAttachable@ivan:
+		Type: ivanbomb
+		Condition: ivanbomb
+		ProgressBarColor: FF000080
+	WithDecoration@ivan:
+		Image: mouse2
+		Sequence: c4
+		ReferencePoint: center, center
+		ZOffset: 2048
+		RequiresCondition: ivanbomb
+		RequiresSelection: False
+		ValidStances: Ally, Neutral, Enemy
+	Targetable@ivan:
+		TargetTypes: ivanattached
+		RequiresCondition: ivanbomb
+
+^Berserkable:
+	ExternalCondition@chaos:
+		Condition: chaosgas
+	Berserkable:
+		RequiresCondition: chaosgas
+	RejectsOrders@chaos:
+		RequiresCondition: chaosgas
+	WithColoredOverlay@chaos:
+		Palette: chaos
+		RequiresCondition: chaosgas
+	TimedConditionBar@chaos:
+		Color: 880088
+		Condition: chaosgas
+	FirepowerMultiplier@chaos:
+		Modifier: 150
+		RequiresCondition: chaosgas
+	SpeedMultiplier@chaos:
+		Modifier: 150
+		RequiresCondition: chaosgas
+
+^DarkSwarmable:
+	ExternalCondition@DarkSwarm:
+		Condition: DarkSwarm
+		TotalCap: 1
+	DamageMultiplier@DARKSWARM:
+		Modifier: 0
+		RequiresCondition: DarkSwarm
+	FirepowerMultiplier@DARKSWARM:
+		Modifier: 0
+		RequiresCondition: DarkSwarm
+
+^DefilerPlague:
+	ExternalCondition@SCPlague:
+		Condition: DefilerPlague
+		TotalCap: 1
+	TimedConditionBar@Plague:
+		Color: A40000
+		Condition: DefilerPlague
+	WithDecoration@Plague:
+		Image: plagueunit
+		Sequence: overlay
+		ReferencePoint: center, center
+		ZOffset: 2048
+		RequiresCondition: DefilerPlague
+		RequiresSelection: False
+		ValidStances: Ally, Neutral, Enemy
+	SelfHealing@SCPlague:
+		Step: -500
+		PercentageStep: -2
+		Delay: 10
+		HealIfBelow: 101
+		DamageTypes: DefaultDeath
+		RequiresCondition: DefilerPlague
 
 ^DeployableInfantryEditor:
 	GrantCondition:
