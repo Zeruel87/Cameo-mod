@@ -264,7 +264,7 @@ RA2Comet:
 
 PrismScatter:
 	Inherits: RA2Comet
-	Range: 1c512
+	Range: 2c512
 	Projectile: LaserZap
 		-HitAnim:
 	Warhead@1Dam: SpreadDamage
@@ -300,6 +300,7 @@ RA2DiskDrain:
 	Range: 1c0
 	Report: vflolo2a.wav, vflolo1a.wav, vflolo3a.wav, vflolo2b.wav
 	-InvalidTargets:
+	ValidTargets: Structure
 	Projectile: LaserZap
 		Shape: Cylindrical
 		Width: 200
@@ -328,12 +329,13 @@ RA2Prism:
 		Amount: 3
 
 RA2Magnet:
-	Inherits: RA2Comet
+	Inherits: Laser
 	Range: 7c0
 	ValidTargets: Vehicle, Structure
 	ReloadDelay: 120
 	Report: vmagatta.wav
 	Projectile: LaserZap
+		Shape: Flat
 		Width: 350
 		Duration: 80
 	Warhead@1Dam: SpreadDamage
@@ -373,16 +375,30 @@ RA2MagnetFlashAA:
 		ValidTargets: Air
 
 RA2ChronoTele:
-	Inherits: RA2Magnet
-	ReloadDelay: 300
+	ReloadDelay: 120
 	Range: 5c0
 	Report: ichratta.wav
+	Projectile: InstantHit
+	Warhead@1Dam: TargetDamage
+
+ChronoBeam:
+	ReloadDelay: 5
+	Range: 5c0
+	TargetActorCenter: True
+	ValidTargets: Chronobeamable
 	Projectile: LaserZap
-		Width: 0
-		Duration: 30
-	Warhead@1Dam: SpreadDamage
-		Spread: 25
-		Damage: 990000
+		Width: 75
+		Duration: 15
+		Color: add8e6
+		SecondaryBeam: true
+		SecondaryBeamWidth: 25
+		SecondaryBeamZOffset: 2047
+		SecondaryBeamColor: FFFFFF80
+	Warhead@Damage: WarpDamage
+		Damage: 500
+		Spread: 1
+		DamageTypes: ElectricityDeath
+		ValidTargets: Chronobeamable
 
 SonicZap:
 	ReloadDelay: 180
@@ -450,6 +466,15 @@ RA2TeslaCoilCharge:
 		Range: 0c172
 		ValidTargets: TeslaCoil
 
+RA2PortaTesla:
+	Inherits: PortaTesla
+	ReloadDelay: 60
+	Warhead@1Dam: SpreadDamage
+		Damage: 4500
+		Versus:
+			Wood: 73
+			Heavy: 100
+
 ####################################################################################################
 #		Melee
 ####################################################################################################
@@ -457,7 +482,7 @@ RA2TeslaCoilCharge:
 RA2DroneJump:
 	ValidTargets: Infantry, Vehicle
 	ReloadDelay: 10
-	Range: 3c0
+	Range: 3c512
 	Report: vteratta.wav
 	TargetActorCenter: true
 	Projectile: InstantHit
@@ -467,19 +492,20 @@ RA2DroneJump:
 		DamageTypes: DefaultDeath
 
 RA2BrutePunch:
-	Inherits: Horn2
 	ReloadDelay: 60
 	Report: galiatta.wav, galiattb.wav
-	Range: 1c496
+	Range: 1c768
+	Projectile: InstantHit
 	Warhead@1Dam: SpreadDamage
 		Damage: 10000
 		ValidTargets: Ground
 		Versus:
-			None: 60
+			None: 100
 			Light: 70
 			Heavy: 50
 			Wood: 30
 			Concrete: 20
+		DamageTypes: Prone50Percent, TriggerProne, RippedApartDeath
 
 SquidPunch:
 	Inherits: RA2BrutePunch
@@ -497,9 +523,9 @@ SquidPunch:
 		ValidTargets: Water, Underwater
 
 RA2Shovel:
-	Inherits: Horn2
 	ReloadDelay: 30
-	Range: 1c496
+	Range: 1c512
+	Projectile: InstantHit
 	Warhead@1Dam: SpreadDamage
 		Damage: 250
 		ValidTargets: Ground
@@ -509,6 +535,7 @@ RA2Shovel:
 			Heavy: 25
 			Wood: 75
 			Concrete: 25
+		DamageTypes: DefaultDeath
 
 
 ####################################################################################################
@@ -537,19 +564,18 @@ RA2PsychicJab:
 
 RA2Dronegas:
 	ReloadDelay: 120
-	Range: 2c512
+	Range: 3c0
 	Report: flamer2.aud
-	ValidTargets: Infantry
+	InvalidTargets: Structure
 	Projectile: InstantExplode
 	Warhead@1: CreateEffect
 		Explosions: chaosgas
 		ExplosionPalette: ra2effect
 		ImpactActors: false
-	Warhead@2: TargetDamage
-		Range: 2c512
-		ValidTargets: Infantry
+	Warhead@2: SpreadDamage
+		Range: 3c0
 	Warhead@3: GrantExternalCondition
-		Range: 2c512
+		Range: 3c0
 		Condition: chaosgas
 		Duration: 320
 		InvalidTargets: Hero, MCImmune
@@ -622,26 +648,22 @@ RA2CarrierTarget:
 	Warhead@1Dam: TargetDamage
 
 RA2OspreyTarget:
-	Inherits: RA2ChronoTele
-	ReloadDelay: 445
-	Burst: 50
-	BurstDelays: 0
-	-Report:
-	Range: 6c0
+	ReloadDelay: 30
+	Range: 9c0
 	ValidTargets: Underwater, Submarine
 	Projectile: InstantHit
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: TargetDamage
 		ValidTargets: Underwater, Submarine
-		Spread: 25
-		Damage: 0
 
 RA2PSIAtomic:
 	Warhead@Yuri_effect: CreateEffect
 		ImpactSounds: spsydom.wav
+		ImpactActors: false
 		Explosions: yuriface
 		ExplosionPalette: ra2effect
 	Warhead@2Eff_impact: CreateEffect
 		ImpactSounds: iyurat2a.wav
+		ImpactActors: false
 		Explosions: controlwave
 		Delay: 40
 		ExplosionPalette: ra2effect
@@ -1280,14 +1302,6 @@ MutateEffect:
 		InternalOwner: Creeps
 		Delay: 60
 
-RADemotruck:
-	Inherits: SCUD
-	Inherits@2: Atomic
-	ReloadDelay: 1
-	Range: 1c0
-	MinRange: 0c0
-	-Report:
-
 ####################################################################################################
 #		Explosions
 ####################################################################################################
@@ -1478,7 +1492,7 @@ IvanAttach:
 SEALAttach:
 	ValidTargets: Vehicle
 	Inherits: IvanAttach
-	Range: 3c512
+	Range: 2c512
 	Warhead@1: AttachDelayedWeapon
 		ValidStances: Enemy, Neutral
 		Weapon: SealBomb
