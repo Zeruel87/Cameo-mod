@@ -1236,6 +1236,17 @@ ra2atesla:
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	AutoTargetPriority@ATTACKANYTHING:
+		InvalidTargets: NoAutoTarget, PrismTower
+	Targetable@prism:
+		TargetTypes: PrismTower
+	AutoTargetPriority@charge:
+		RequiresCondition: !assault-move && !attack-move
+		ValidTargets: PrismTower
+	Targetable@PrismTowerChargeable:
+		TargetTypes: PrismTowerChargeable
+		RequiresCondition: !ammo
 	Buildable:
 		Queue: Defence.AlliesRA2, RADefence.AlliesRA2
 		BuildPaletteOrder: 80
@@ -1258,15 +1269,78 @@ ra2atesla:
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
 		Range: 6c0
-	WithTeslaChargeAnimation:
+	WithSpriteBody:
+		Sequence: idle
+		PauseOnCondition: disabled
+		RequiresCondition: !charging
+	WithSpriteBody@charging:
+		Sequence: active
+		Name: bodyactive
+		RequiresCondition: charging
+	GrantCondition@charging:
+		Condition: charging
+		RequiresCondition: !fired && !ammo
 	Armament:
 		Weapon: RA2Prism
 		LocalOffset: 128,0,1280
-	AttackTesla:
+		PauseOnCondition: !ammo && !powercharged 
+	Armament@Charge:
+		Name: secondary
+		Weapon: PrismCharge
+		LocalOffset: 128,0,1280
+		TargetStances: Ally
+		ForceTargetStances: Ally
+		PauseOnCondition: fired && !powercharged
+		RequiresCondition: ammo
+	Turreted:
+		TurnSpeed: 255
+	AttackTurreted:
 		Voice: Attack
-		ReloadDelay: 60
-		ChargeAudio: bpripow.wav
-		PauseOnCondition: lowpower || disabled
+	GrantConditionOnAttack@primary:
+		ArmamentNames: primary
+		Condition: fired
+		MaximumInstances: 1
+		RevokeDelay: 40
+	AmbientSound:
+	 	RequiresCondition: charging
+		SoundFiles: bpripow.wav
+		Interval: 30, 40
+	GrantConditionOnAttack@secondary:
+		ArmamentNames: secondary
+		Condition: fired
+		MaximumInstances: 1
+		RevokeDelay: 40
+	ExternalCondition@POWERCHARGED:
+		Condition: powercharged
+	AmmoPoolCA:
+		Name: primary
+		Ammo: 5
+		PipCount: 0
+		InitialAmmo: 1
+		PipType: Red
+		Armaments: primary, secondary
+		AmmoCondition: ammo
+	ReloadAmmoPoolCA@autocharge:
+		Delay: 25
+		Count: 1
+		ResetOnFire: False
+		RequiresCondition: ammo < 1 && !fired
+		ShowSelectionBar: false
+		SelectionBarColor: 0000ff
+	ReloadAmmoPoolCA@discharge:
+		Delay: 15
+		Count: -1
+		ResetOnFire: False
+		RequiresCondition: ammo > 1
+		ShowSelectionBar: false
+		SelectionBarColor: ff0000
+	ReloadAmmoPoolCA@powercharge:
+		AmmoPool: primary
+		Delay: 1
+		Count: 1
+		RequiresCondition: powercharged
+		ShowSelectionBar: false
+		SelectionBarColor: 00ff00
 	Power:
 		Amount: -75
 	DetectCloaked:
@@ -4933,7 +5007,7 @@ RA2FV:
 		MuzzleSequence: muzzlemg
 		RequiresCondition: ifv-sniper
 	Armament@hero:
-		Weapon: Colt45
+		Weapon: BorisAKM
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlemg
 		RequiresCondition: ifv-hero
@@ -4941,27 +5015,27 @@ RA2FV:
 		Weapon: TTankZap
 		RequiresCondition: ifv-tesla
 	Armament@flak:
-		Weapon: RA2CRFlakGuyGun
+		Weapon: RA2FlakTrackGun
 		RequiresCondition: ifv-flak
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlefl
 	Armament@cannon:
-		Weapon: 70mm
+		Weapon: RA2MirageGun
 		RequiresCondition: ifv-cannon
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlemm
 	Armament@fire:
-		Weapon: Flamer
+		Weapon: BigFlamer
 		RequiresCondition: ifv-fire
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlefa
 	Armament@chem:
-		Weapon: RA2RadBeamWeapon
+		Weapon: IFVRadBeam
 		RequiresCondition: ifv-chem
 	Armament@missile:
 		Weapon: RA2MultiHoverMissile
 		LocalOffset: 768,85,220, 768,-85,220, -100,85,220, -100,-85,220
-		RequiresCondition: ifv-miss || ifv-legion
+		RequiresCondition: ifv-miss
 	###################
 	#	Turret Voxel
 	###################
