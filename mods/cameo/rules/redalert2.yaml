@@ -1343,6 +1343,8 @@ ra2atesla:
 		SelectionBarColor: 00ff00
 	Power:
 		Amount: -75
+	Sellable:
+		-RequiresCondition:
 	DetectCloaked:
 		Range: 6c0
 		RequiresCondition: !lowpower && !disabled
@@ -4979,10 +4981,12 @@ RA2FV:
 			e7: ifv-hero
 			ra2tany: ifv-hero
 			cityswat: ifv-hero
+			yrboris: ifv-hero
+			ra2seal: ifv-hero
 			scghost: ifv-sniper
 			ra2snipe: ifv-sniper
 			yrvirus: ifv-sniper
-			ra2cleg: ifv-legion
+			ra2cleg: ifv-chrono
 	###################
 	#	Armament
 	###################
@@ -5039,16 +5043,16 @@ RA2FV:
 	Armament@chrono:
 		Weapon: IFVChronoBeam
 		LocalOffset: 171,0,255
-		RequiresCondition: ifv-legion
+		RequiresCondition: ifv-chrono
 	Armament@chronosound:
 		Weapon: IFVChronoSound
-		RequiresCondition: ifv-legion
+		RequiresCondition: ifv-chrono
 	###################
 	#	Turret Voxel
 	###################
 	WithVoxelTurret@default:
 		Sequence: turret-missile
-		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss# && !ifv-deso && !ifv-demo && !ifv-chrono
+		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss && !ifv-deso && !ifv-demo && !ifv-chrono
 	WithVoxelTurret@mg:
 		Sequence: turret-mg
 		RequiresCondition: ifv-mg || ifv-sniper || ifv-flak || ifv-hero || ifv-cannon
@@ -5123,7 +5127,7 @@ RA2SREF:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1000
+		Cost: 1200
 	Tooltip:
 		Name: Prism Tank
 	Buildable:
@@ -5170,14 +5174,20 @@ RA2MGTK:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1300
+		Cost: 1000
 	Tooltip:
 		Name: Mirage Tank
+		RequiresCondition: !tree
+	MirageTooltip@Tree:
+		Name: Mirage Tank
+		GenericName: Tree
+		GenericVisibility: Enemy, Neutral
+		RequiresCondition: tree
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: ra2gatech, ~techlevel.high
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
-		Description: Allied stealth tank.\n Strong vs Infantry, Vehicles\n Weak vs Aircraft
+		Description: Tank that disguises while immobile.\n Strong vs Infantry, Vehicles\n Weak vs Aircraft
 	Mobile:
 		Locomotor: tracked
 		Speed: 105
@@ -5196,25 +5206,28 @@ RA2MGTK:
 		Weapon: RA2MirageGun
 		Recoil: 128
 		RecoilRecovery: 26
-	Cloak:
-		InitialDelay: 90
-		CloakDelay: 90
-		CloakSound: trans1.aud
-		UncloakSound: trans1.aud
-		PauseOnCondition: cloak-force-disabled
-	GrantConditionOnDamageState@UNCLOAK:
-		Condition: cloak-force-disabled
-		ValidDamageStates: Critical
+	Mirage:
+		RequiresCondition: !disabled
+		InitialDelay: 25
+		RevealDelay: 25
+		RevealOn: Attack, Move
+		MirageCondition: tree
+		DefaultTargetTypes: t08, t18, t10, t03, t02
+	RenderSprites:
+		Palette: terrain
 	AttackTurreted:
 	SelectionDecorations:
 	AutoTarget:
 		AllowMovement: false
-		InitialStance: HoldFire
 	Selectable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithVoxelBody:
+		RequiresCondition: !tree
+	WithMirageSpriteBody:
+		Name: tree
+		RequiresCondition: tree
 	Voiced:
 		VoiceSet: MirageTankVoice
 	DeliversCash:
