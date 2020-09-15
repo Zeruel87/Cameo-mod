@@ -186,6 +186,8 @@ RA2IraqAddon:
 ^RA2InfantryShadow:
 	RenderSprites:
 		PlayerPalette: ra2unithack
+	WithDeathAnimation:
+		DeathSequencePalette: ra2unithack
 
 ^RA2BuildingShadow:
 	RenderSprites:
@@ -984,6 +986,7 @@ ra2gagap:
 ra2gaweat:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@SW: ^PrimarySuperweapon
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -995,7 +998,7 @@ ra2gaweat:
 	Buildable:
 		Queue: Defence.AlliesRA2, RADefence.AlliesRA2
 		BuildPaletteOrder: 120
-		Prerequisites: ra2gatech, ~techlevel.superweapons, ~CountryChoosedAlliesRA2
+		Prerequisites: ra2gatech, ~techlevel.superweapons, ~CountryChoosedAlliesRA2, !weatherstorm
 		Description: Provides Lightning Storm support power.\nRequires power to operate.
 	Valued:
 		Cost: 2000
@@ -1011,41 +1014,18 @@ ra2gaweat:
 	RevealsShroud:
 		Range: 6c0
 	DetonateWeaponPower:
-		OrderName: LightningStorm
-		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		Icon: bolticon
-		Cursor: ability
-		ChargeInterval: 9000
-		ActivationDelay: 50
-		Description: Lightning Storm
-		LongDesc: Creates a lightning storm.\nApplies heavy damage over a large area.
-		Weapon: LightningStorm
-		AirbustAltitude: 5c0
-		AllowMultiple: false
-		BeginChargeSpeechNotification: IonCannonCharging
-		EndChargeSpeechNotification: IonCannonReady
-		SelectTargetSpeechNotification: SelectTarget
-		LaunchSpeechNotification: NuclearWeaponLaunched
-		IncomingSpeechNotification: NuclearWarheadApproaching
-		InsufficientPowerSpeechNotification: InsufficientPower
-		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral, Enemy
-		CameraActor: camera
-		CameraRemoveDelay: 300
-	DetonateWeaponPower@unlimited:
-		OrderName: LightningStorm
-		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.unlimited
-		Icon: bolticon
-		Cursor: ability
-		ChargeInterval: 9000
-		ActivationDelay: 50
-		Description: Lightning Storm
-		LongDesc: Creates a lightning storm.\nApplies heavy damage over a large area.
-		Weapon: LightningStorm
-		AirbustAltitude: 5c0
 		AllowMultiple: true
+		OrderName: LightningStorm
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: bolticon
+		Cursor: ability
+		ChargeInterval: 9000
+		ActivationDelay: 50
+		Description: Lightning Storm
+		LongDesc: Creates a lightning storm.\nApplies heavy damage over a large area.
+		Weapon: LightningStorm
+		AirbustAltitude: 5c0
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		SelectTargetSpeechNotification: SelectTarget
@@ -1062,6 +1042,8 @@ ra2gaweat:
 	MustBeDestroyed:
 		RequiredForShortGame: false
 	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: weatherstorm
 
 ra2gacsph:
 	Inherits: ^BaseBuilding
@@ -2387,6 +2369,7 @@ ra2naclon:
 ra2namisl:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@SW: ^PrimarySuperweapon
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -2401,7 +2384,7 @@ ra2namisl:
 		Prerequisite: anyhq
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ra2natech, ~techlevel.superweapons, ~CountryChoosedSovietRA2
+		Prerequisites: ra2natech, ~techlevel.superweapons, ~CountryChoosedSovietRA2, !ra2nuke
 		Queue: Defence.SovietRA2, RADefence.SovietRA2
 		Description: Provides Nuclear Strike support power.\nRequires power to operate.
 	Building:
@@ -2419,38 +2402,9 @@ ra2namisl:
 		Range: 5c0
 		RequiresCondition: !lowpower
 	NukePower:
+		AllowMultiple: true
 		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		Icon: abomb
-		Cursor: nuke
-		ChargeInterval: 9000
-		Description: Nuclear Missile
-		LongDesc: Launches a devastating nuclear missile.\nApplies heavy damage and radiation over\na large area.
-		EndChargeSpeechNotification: NuclearWeaponAvailable
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		LaunchSpeechNotification: NuclearWeaponLaunched
-		IncomingSpeechNotification: NuclearWarheadApproaching
-		LaunchSound: snuksire.wav
-		MissileWeapon: ra2atomic
-		MissileDelay: 45
-		MissilePalette: playerra2
-		IsPlayerPalette: true
-		SpawnOffset: 3c0,0,-1c512
-		DisplayBeacon: True
-		BeaconPoster: raatomicon
-		BeaconPosterPalette: beaconposter
-		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral, Enemy
-		CameraRange: 10c0
-		CameraRemoveDelay: 150
-		ArrowSequence: arrow
-		ClockSequence: clock
-		CircleSequence: circles
-	NukePower@unlimited:
-		AllowMultiple: True
-		Prerequisites: ~techlevel.unlimited
-		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
 		Icon: abomb
 		Cursor: nuke
 		ChargeInterval: 9000
@@ -2482,6 +2436,8 @@ ra2namisl:
 	Power:
 		Amount: -200
 	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: ra2nuke
 	RenderSprites:
 		PlayerPalette: player
 
@@ -3298,6 +3254,7 @@ ra2yclon:
 yrygppet:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@SW: ^PrimarySuperweapon
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -3312,7 +3269,7 @@ yrygppet:
 		Prerequisite: yrygppet
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: yrygtech, ~techlevel.superweapons
+		Prerequisites: yrygtech, ~techlevel.superweapons, !psydom
 		Queue: Defence.Yuri, RADefence.Yuri
 		Description: Provides Psychic Dominator support power.\nRequires power to operate.
 	Building:
@@ -3330,32 +3287,9 @@ yrygppet:
 		Range: 5c0
 		RequiresCondition: !lowpower
 	DetonateWeaponPower@psi:
+		AllowMultiple: true
 		OrderName: PsychicDominator
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		PauseOnCondition: lowpower
-		Icon: ra2domin
-		Cursor: ability
-		ChargeInterval: 9000
-		ActivationDelay: 50
-		Description: Psychic Dominator
-		LongDesc: Unleashes a wave of psychic energy.\n Applies heavy damage over a large area.\n Takes control of units in proximity
-		EndChargeSpeechNotification: NuclearWeaponAvailable
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		LaunchSpeechNotification: NuclearWeaponLaunched
-		IncomingSpeechNotification: NuclearWarheadApproaching
-		Weapon: ra2psiatomic
-		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral, Enemy
-		CameraActor: camera
-		ArrowSequence: arrow
-		ClockSequence: clock
-		CircleSequence: circles
-		CameraRemoveDelay: 300
-	DetonateWeaponPower@psiunlimited:
-		OrderName: PsychicDominator
-		AllowMultiple: True
-		Prerequisites: ~techlevel.unlimited
+		Prerequisites: ~techlevel.superweapons
 		PauseOnCondition: lowpower
 		Icon: ra2domin
 		Cursor: ability
@@ -3380,6 +3314,8 @@ yrygppet:
 	Power:
 		Amount: -200
 	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: psydom
 
 yrygtech:
 	Inherits: ^BaseBuilding
@@ -3610,7 +3546,7 @@ RA2E1:
 	AttackTurreted@deployed:
 		Armaments: garrisoned
 		Turrets: deploy
-		PauseOnCondition: ReaperTrap || ArbiterStasis || chronobeamed
+		PauseOnCondition: frozen
 		RequiresCondition: deployed
 		Voice: Attack
 	Turreted:
@@ -3654,7 +3590,7 @@ RA2E1:
 		UndeploySounds: igidepa.wav,igidepb.wav
 		UndeployOnMove: true
 		RequiresCondition: !parachute
-		PauseOnCondition: ReaperTrap || ArbiterStasis || chronobeamed
+		PauseOnCondition: frozen
 		Voice: Move
 	TakeCover:
 		RequiresCondition: undeployed
@@ -3752,7 +3688,7 @@ YRGGI:
 	AttackTurreted@deployed:
 		Armaments: garrisoned
 		Turrets: deploy
-		PauseOnCondition: ReaperTrap || ArbiterStasis || chronobeamed
+		PauseOnCondition: frozen
 		RequiresCondition: deployed
 		Voice: Attack
 	Turreted:
@@ -3795,7 +3731,7 @@ YRGGI:
 		DeploySounds: iggidea.wav,iggideb.wav,iggidec.wav
 		UndeploySounds: iggidea.wav,iggideb.wav,iggidec.wav
 		UndeployOnMove: true
-		PauseOnCondition: ReaperTrap || ArbiterStasis || chronobeamed
+		PauseOnCondition: frozen
 		RequiresCondition: !parachute
 		Voice: Deploy
 	TakeCover:
@@ -3867,6 +3803,7 @@ RA2TANY:
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@MC: ^MCImmune
+	Inherits@swim: ^WithSwimsuit
 	Buildable:
 		Queue: Infantry.AlliesRA2, RAInfantry.AlliesRA2
 		BuildPaletteOrder: 120
@@ -3894,6 +3831,7 @@ RA2TANY:
 		Weapon: RA2DoublePistols
 	Armament@c4:
 		Weapon: TanyaAttach
+		Cursor: c4
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2DoublePistols
@@ -3915,6 +3853,7 @@ RA2TANY:
 RA2SEAL:
 	Inherits: RMBO
 	Inherits@anim: ^RA2Infantry
+	Inherits@swim: ^WithSwimsuit
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -3931,6 +3870,7 @@ RA2SEAL:
 		Weapon: RA2AWPG
 	Armament@c4:
 		Weapon: SEALAttach
+		Cursor: c4
 	AttackFrontal:
 		Voice: Attack
 	AttackMove:
@@ -4139,7 +4079,7 @@ RA2DESO:
 		UndeployedCondition: undeployed
 		UndeployOnMove: true
 		Voice: Attack
-		PauseOnCondition: ReaperTrap || ArbiterStasis || chronobeamed
+		PauseOnCondition: frozen
 		RequiresCondition: !parachute
 	AttackFrontal:
 		RequiresCondition: undeployed
@@ -4247,6 +4187,7 @@ RA2IVAN:
 		VoiceSet: CrazyIvanVoice
 	Armament:
 		Weapon: IvanAttach
+		Cursor: c4
 	Demolition:
 		Voice: Attack
 		DetonationDelay: 50
@@ -4354,6 +4295,7 @@ RA2YURI:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@MC: ^MCImmune
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -4362,7 +4304,7 @@ RA2YURI:
 		BuildPaletteOrder: 99
 		Prerequisites: barracks, ra2natech, ~yrygtech, ~techlevel.high
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
-		Description: Psychic infantry.\n Can control enemy units.\n Weak vs Aircraft, Robots
+		Description: Psychic infantry.\n Can control enemy units.\nDeploy to unleash a psychic blast.\n Weak vs Aircraft, Robots
 	Mobile:
 		Speed: 50
 	Health:
@@ -4379,6 +4321,24 @@ RA2YURI:
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: !deployed && !deploying
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		RequiresCondition: deployed || deploying
+	PeriodicExplosion:
+		Weapon: PsiWave
+		RequiresCondition: deployed && !frozen
+	GrantTimedConditionOnDeploy:
+		DeployedTicks: 50
+		CooldownTicks: 0
+		Facing: 96
+		DeployedCondition: deployed
+		DeployingCondition: deploying
+		DeployAnimation: deploy
+		UndeployAnimation: undeploy
+		ShowSelectionBar: false
+		Voice: Attack
+		PauseOnCondition: frozen
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -4640,6 +4600,7 @@ YRYURIX:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@MC: ^MCImmune
+	Inherits@vo: ^AttackFrontalVoice
 	Selectable:
 		DecorationBounds: 14,34,0,-12
 	Valued:
@@ -4651,7 +4612,7 @@ YRYURIX:
 		Prerequisites: yrygtech, anyhq, ~techlevel.high
 		Queue: Infantry.Yuri, RAInfantry.Yuri
 		BuildLimit: 1
-		Description: Psychic infantry.\nCan control enemy units and buildings.\n  Weak vs Aircraft, Robots
+		Description: Psychic infantry.\nCan control enemy units and buildings.\nDeploy to unleash a psychic blast.\n  Weak vs Aircraft, Robots
 	Mobile:
 		Speed: 100
 	Health:
@@ -4668,6 +4629,24 @@ YRYURIX:
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: !deployed && !deploying
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		RequiresCondition: deployed || deploying
+	PeriodicExplosion:
+		Weapon: PsiWave
+		RequiresCondition: deployed && !frozen
+	GrantTimedConditionOnDeploy:
+		DeployedTicks: 50
+		CooldownTicks: 0
+		Facing: 96
+		DeployedCondition: deployed
+		DeployingCondition: deploying
+		DeployAnimation: deploy
+		UndeployAnimation: undeploy
+		ShowSelectionBar: false
+		Voice: Attack
+		PauseOnCondition: frozen
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -4739,7 +4718,13 @@ RA2CMIN:
 	WithVoxelBody:
 	WithDockingAnimation:
 	ChronoResourceDelivery:
-		RequiresCondition: !TSNeutronBomb
+		Palette: ra2effect
+		WarpInSequence: warpout
+		WarpOutSequence: warpout
+		WarpInSound: vchrtele.wav
+		WarpOutSound: vchrtele.wav
+		AudibleThroughFog: false
+		RequiresCondition: !disabled
 	Voiced:
 		VoiceSet: ChronoMinerVoice
 	DeliversCash:
@@ -5617,7 +5602,6 @@ RA2V3ROCKET:
 	SpawnedExplodes:
 		Weapon: RA2Scud
 		EmptyWeapon: RA2Scud
-	-UpdatesPlayerStatistics:
 
 RA2TTNK:
 	Inherits: ^Tank
@@ -6237,6 +6221,7 @@ ra2sqd:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@sub: ^Submarine
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -6279,20 +6264,12 @@ ra2sqd:
 		ValidTypes: vehicle								##########
 	DeliversCash:
 		Payload: 250
-	Cloak:
-		CloakTypes: Underwater
-		InitialDelay: 0
+	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-		CloakedCondition: underwater
-		RequiresCondition: !cloak-force-disabled
 	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
-		RequiresCondition: !underwater
-	Targetable@Underwater:
-		TargetTypes: Submarine, Underwater
-		RequiresCondition: underwater
+		TargetTypes: Ground, Water, Ship, Submarine
 	-WithFacingSpriteBody:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
@@ -6306,6 +6283,7 @@ ra2dlph:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@sub: ^Submarine
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -6342,22 +6320,14 @@ ra2dlph:
 		ValidTypes: vehicle								##########
 	DeliversCash:
 		Payload: 250
-	Cloak:
-		CloakTypes: Underwater
-		InitialDelay: 0
+	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-		CloakedCondition: underwater
-		RequiresCondition: !cloak-force-disabled
 	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
-		RequiresCondition: !underwater
+		TargetTypes: Ground, Water, Ship, Submarine
 	Voiced:
 		VoiceSet: DolphinVoice
-	Targetable@Underwater:
-		TargetTypes: Submarine, Underwater
-		RequiresCondition: underwater
 	-ExternalCondition@CLOAK:
 
 ra2lcrf:
@@ -6636,6 +6606,7 @@ ra2sub:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -6680,24 +6651,16 @@ ra2sub:
 		ValidTypes: vehicle								##########
 	DeliversCash:
 		Payload: 475
-	Cloak:
-		CloakTypes: Underwater
-		InitialDelay: 0
+	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-		CloakedCondition: underwater
-		PauseOnCondition: disabled
-		RequiresCondition: !cloak-force-disabled
 	DetectCloaked:
 		CloakTypes: Underwater
 		Range: 4c0
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: TyphoonSubVoice
-	Targetable@Underwater:
-		TargetTypes: Submarine, Underwater
-		RequiresCondition: underwater
 	-ExternalCondition@CLOAK:
 
 ra2hyd:
@@ -6915,6 +6878,7 @@ yrbsub:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -6957,7 +6921,6 @@ yrbsub:
 		SpawnAllAtOnce: true
 	Targetable:
 		TargetTypes: Ground, Water, Ship, Submarine, Repair
-		RequiresCondition: !underwater
 	AttackFrontal:
 		FacingTolerance: 2
 		TargetFrozenActors: true
@@ -6970,24 +6933,16 @@ yrbsub:
 		ValidTypes: vehicle								##########
 	DeliversCash:
 		Payload: 475
-	Cloak:
-		CloakTypes: Underwater
-		InitialDelay: 0
+	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-		CloakedCondition: underwater
-		PauseOnCondition: disabled
-		RequiresCondition: !cloak-force-disabled
 	DetectCloaked:
 		CloakTypes: Underwater
 		Range: 4c0
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: BoomerVoice
-	Targetable@Underwater:
-		TargetTypes: Submarine, Underwater
-		RequiresCondition: underwater
 	-ExternalCondition@CLOAK:
 
 yrbsubmisl:

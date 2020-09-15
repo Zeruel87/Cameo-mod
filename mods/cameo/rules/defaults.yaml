@@ -310,7 +310,7 @@
 	Selectable:
 		Bounds: 24,24
 	Targetable:
-		RequiresCondition: !parachute
+		RequiresCondition: !parachute && !chronobeamed
 		TargetTypes: Ground, Vehicle
 	Passenger:
 		CargoType: Vehicle
@@ -575,6 +575,23 @@
 		Weapon: LargeHeliExplode
 		EmptyWeapon: LargeHeliExplode
 
+^InfantryDisable:
+	ExternalCondition@REAPERTRAP:
+		Condition: ReaperTrap
+	WithColoredOverlay@REAPERTRAP:
+		Palette: reapertrap
+		RequiresCondition: ReaperTrap
+	ExternalCondition@STASIS:
+		Condition: ArbiterStasis
+	WithColoredOverlay@STASIS:
+		Palette: tsneutron
+		RequiresCondition: ArbiterStasis
+	GrantCondition@disable:
+		Condition: frozen
+		RequiresCondition: ReaperTrap || ArbiterStasis || chronobeamed
+	Mobile:
+		PauseOnCondition: frozen
+
 ^Infantry:
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
@@ -582,6 +599,7 @@
 	Inherits@bounty: ^GlobalBounty
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
+	Inherits@disable: ^InfantryDisable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -600,7 +618,7 @@
 		Bounds: 18,18,0,-6
 		DecorationBounds: 12,17,0,-6
 	Targetable:
-		RequiresCondition: !parachute
+		RequiresCondition: !parachute && !chronobeamed
 		TargetTypes: Ground, Infantry
 	Targetable@HEAL:								##########
 		RequiresCondition: !parachute && damaged
@@ -750,19 +768,6 @@
 	Captures@CAPTURES:
 		CaptureTypes: ra2garrison
 		ConsumedByCapture: false
-	ExternalCondition@REAPERTRAP:
-		Condition: ReaperTrap
-	WithColoredOverlay@REAPERTRAP:
-		Palette: reapertrap
-		RequiresCondition: ReaperTrap
-	SpeedMultiplier@REAPERTRAP:
-		Modifier: 0
-		RequiresCondition: ReaperTrap || ArbiterStasis || chronobeamed
-	ExternalCondition@STASIS:
-		Condition: ArbiterStasis
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: ArbiterStasis
 	SpawnActorOnDeath@RA2Virus:
 		Actor: ra2txgasg
 		Probability: 50
@@ -788,7 +793,7 @@
 		IdleSequences: idle1, idle2
 		StandSequences: stand, stand2
 	AttackFrontal:
-		PauseOnCondition: ReaperTrap || ArbiterStasis || chronobeamed
+		PauseOnCondition: frozen
 
 ^CivInfantry:
 	Inherits: ^Infantry
@@ -854,8 +859,8 @@
 	Selectable:
 		Bounds: 24,24
 	Targetable:
-		RequiresCondition: !parachute
-		TargetTypes: Ground, Creep
+		RequiresCondition: !parachute && !chronobeamed
+		TargetTypes: Ground, Infantry, Creep
 	HiddenUnderFog:
 	RenderSprites:
 		Palette: terrain
@@ -1037,6 +1042,7 @@
 	WithSpriteControlGroupDecoration:
 	Targetable:
 		TargetTypes: Ground, C4, Structure
+		RequiresCondition: !chronobeamed
 	Armor:
 		Type: Wood
 	Health:
@@ -2629,6 +2635,8 @@ CPQDEBUGDUMMY:
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
+	-UpdatesPlayerStatistics:
+	-GivesExperience:
 	Armor:
 		Type: Light
 	ShootableBallisticMissile:
@@ -2647,6 +2655,9 @@ CPQDEBUGDUMMY:
 		Name: Missile
 		GenericName: Missile
 		ShowOwnerRow: false
+	Explodes:
+		Weapon: LargeHeliExplode
+		EmptyWeapon: LargeHeliExplode
 	HitShape:
 	RejectsOrders:
 	Interactable:
@@ -2759,6 +2770,9 @@ CPQDEBUGDUMMY:
 		RequiresCondition: chronobeamed
 	Targetable@chrono:
 		TargetTypes: Chronobeamable
+	Targetable@warping:
+		TargetTypes: chronobeaming
+		RequiresCondition: chronobeamed
 
 ^DarkSwarmable:
 	ExternalCondition@DarkSwarm:
@@ -2890,3 +2904,57 @@ CPQDEBUGDUMMY:
 ^TurretEMP:
 	AttackTurreted:
 		PauseOnCondition: disabled
+
+^WithSwimsuit:
+	Mobile:
+		Locomotor: swimsuit
+	WithInfantryBody:
+		RequiresCondition: !swimming
+	WithDeathAnimation:
+		RequiresCondition: !swimming
+	GrantConditionOnTerrain@Water:
+		TerrainTypes: Water
+		Condition: swimming
+	WithInfantryBody@Water:
+		IdleSequences: swim-idle1,swim-idle2
+		MoveSequence: swim-run
+		StandSequences: swim-stand
+		DefaultAttackSequence: swim-shoot
+		RequiresCondition: swimming
+	WithDeathAnimation@Water:
+		RequiresCondition: swimming
+		DeathSequence: swim-die
+		DeathTypes:
+			DefaultDeath: 1
+			BruteMutate: 1
+			BulletDeath: 1
+			RippedApartDeath: 2
+			SmallExplosionDeath: 1
+			ExplosionDeath: 2
+			FireDeath: 2
+			TiberiumDeath: 2
+			RA2VirusDeath: 1
+			ElectricityDeath: 1
+	Targetable@WaterBorne:
+		TargetTypes: Water
+		RequiresCondition: swimming
+	TakeCover:
+		RequiresCondition: !swimming
+
+^PrimarySuperweapon:
+	ProvidesPrerequisite@swlimit:
+		RequiresPrerequisites: global-swlimit
+
+^Submarine:
+	Targetable:
+		RequiresCondition: !underwater
+	Cloak@underwater:
+		CloakTypes: Underwater
+		InitialDelay: 0
+		CloakDelay: 50
+		CloakedCondition: underwater
+		PauseOnCondition: disabled
+		RequiresCondition: !cloak-force-disabled
+	Targetable@Underwater:
+		TargetTypes: Submarine, Underwater
+		RequiresCondition: underwater
