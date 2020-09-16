@@ -7029,6 +7029,7 @@ RA2ZEP:
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: KirovVoice
+	DeathSounds:
 	SelfHealing:
 		Step: 100
 		Delay: 3
@@ -7157,6 +7158,7 @@ RA2FALC:
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: HarrierVoice
+	DeathSounds:
 	AttackAircraft:
 		Voice: Attack
 		FacingTolerance: 20
@@ -7253,6 +7255,7 @@ ra2shad:
 	-WithVoxelBody:
 	Voiced:
 		VoiceSet: NighthawkVoice
+	DeathSounds:
 
 ra2hind:
 	Inherits: ^Helicopter
@@ -7363,6 +7366,7 @@ YRDISK:
 	Turreted:
 	Voiced:
 		VoiceSet: DiskVoice
+	DeathSounds:
 	SelfHealing:
 		Step: 100
 		Delay: 3
@@ -7404,20 +7408,20 @@ ra2rock:
 		Voice: Attack
 		FacingTolerance: 20
 		AttackType: Hover
-	-SpawnActorOnDeath:
+	SpawnActorOnDeath:
+		Actor: ra2rock.husk
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 12,20
 	Voiced:
 		VoiceSet: RocketeerVoice
+	DeathSounds:
 	-WithFacingSpriteBody:
 	WithInfantryBody:
 		AttackSequences: shoot
 		IdleSequences: idle
 		StandSequences: idle
 		MoveSequence: idle
-	WithDeathAnimation:
-		UseDeathTypeSuffix: false
 	Selectable:
 		Bounds: 18,18,0,-6
 		DecorationBounds: 12,17,0,-6
@@ -7443,9 +7447,35 @@ ra2rock:
 		RequiresCondition: hospitalheal
 		BlinkInterval: 32
 		BlinkPattern: On, Off
+	-WithShadow:
+	WithSpriteBody@shadow:
+		Name: shadow
+		Sequence: shadow
+		ForceToGround: true
+
+ra2rock.husk:
+	Inherits: ^HelicopterHusk
+	RenderSprites:
+		Image: ra2rock
+	Tooltip:
+		Name: Rocketeer
+	Aircraft:
+		TurnSpeed: 40
+		Speed: 140
+	FallsToEarth:
+		Explosion: UnitExplode
+	RevealsShroud:
+		Range: 4c0
+		Type: GroundPosition
+	WithFacingSpriteBody:
+		Sequence: die
+	WithSpriteBody@shadow:
+		Name: shadow
+		Sequence: shadow
+		ForceToGround: true
 
 ra2hornet:
-	Inherits: ^RAPlane
+	Inherits: ^RANeutralPlane
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
@@ -7477,7 +7507,6 @@ ra2hornet:
 		PipCount: 1
 		AmmoCondition: ammo
 	-SpawnActorOnDeath:
-	-EjectOnDeath:
 	WithMoveAnimation:
 		MoveSequence: move
 	RenderVoxels:
@@ -7535,6 +7564,7 @@ ra2asw:
 yrspyp:
 	Inherits: ^RANeutralPlane
 	Inherits@Voxel: ^RenderVoxel
+	-UpdatesPlayerStatistics:
 	Health:
 		HP: 200000
 	Tooltip:
@@ -7566,6 +7596,7 @@ yrspyp:
 ra2cplane:
 	Inherits: ^RANeutralPlane
 	Inherits@Voxel: ^RenderVoxel
+	-UpdatesPlayerStatistics:
 	ParaDrop:
 		DropRange: 4c0
 		ChuteSound: chute1.aud
@@ -7590,7 +7621,7 @@ ra2cplane:
 	Contrail@2:
 		Offset: -432,-560,0
 	SpawnActorOnDeath:
-		Actor: BADR.Husk
+		Actor: ra2cplane.Husk
 	SmokeTrailWhenDamaged@0:
 		Offset: -432,560,0
 		Interval: 2
@@ -7598,23 +7629,24 @@ ra2cplane:
 		Offset: -432,-560,0
 		Interval: 2
 	RejectsOrders:
-	GivesExperience:
-		Experience: 1000
 	Interactable:
 	WithVoxelBody:
-	-SpawnActorOnDeath:
 	RenderVoxels:
 		NormalsPalette: ts-normals
 
 yrbpln:
-	Inherits: ^Plane
+	Inherits: ^RANeutralPlane
 	Inherits@Voxel: ^RenderVoxel
+	-Selectable:
+	-UpdatesPlayerStatistics:
 	Interactable:
 	Tooltip:
-		Name: MIG Bomber
+		Name: MiG Bomber
 	Health:
 		HP: 30000
 	HitShape:
+	-Voiced:
+	-GainsExperience:
 	Aircraft:
 		TurnSpeed: 4
 		Speed: 373
@@ -7633,6 +7665,9 @@ yrbpln:
 		TrailLength: 15
 	AirstrikeSlave:
 		LandingDistance: 1c0
+	SpawnActorOnDeath:
+		Actor: yrbpln.husk
+	RejectsOrders:
 	-MapEditorData:
 	WithVoxelBody:
 
@@ -8285,7 +8320,6 @@ RA2ZEP.Husk:
 		Image: ra2zep
 	ShakeOnDeath:
 	FallsToEarth:
-		Spins: False
 		Moves: True
 		Velocity: 43	#86
 		Explosion: KirovExplode
@@ -8303,11 +8337,11 @@ ra2hornet.Husk:
 		Interval: 2
 		MinDamage: Undamaged
 	RevealsShroud:
-		Range: 13c0
+		Range: 6c0
 		Type: GroundPosition
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
-		Range: 11c0
+		Range: 5c0
 		Type: GroundPosition
 	RenderSprites:
 		Image: ra2hornet
@@ -8327,11 +8361,11 @@ RA2FALC.Husk:
 		Interval: 2
 		MinDamage: Undamaged
 	RevealsShroud:
-		Range: 13c0
+		Range: 8c0
 		Type: GroundPosition
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
-		Range: 11c0
+		Range: 6c0
 		Type: GroundPosition
 	RenderSprites:
 		Image: ra2falc
@@ -8342,7 +8376,7 @@ ra2beag.Husk:
 	Inherits: ^PlaneHusk
 	Inherits@Voxel: ^RenderVoxel
 	Tooltip:
-		Name: Harrier
+		Name: Black Eagle
 	Aircraft:
 		TurnSpeed: 5
 		Speed: 176
@@ -8351,11 +8385,11 @@ ra2beag.Husk:
 		Interval: 2
 		MinDamage: Undamaged
 	RevealsShroud:
-		Range: 13c0
+		Range: 8c0
 		Type: GroundPosition
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
-		Range: 11c0
+		Range: 6c0
 		Type: GroundPosition
 	RenderSprites:
 		Image: ra2beag
@@ -8443,6 +8477,58 @@ ra2shad.Husk:
 		Image: ra2shad
 	RenderVoxels:
 		Image: ra2shad
+
+yrbpln.husk:
+	Inherits: ^PlaneHusk
+	Inherits@Voxel: ^RenderVoxel
+	Tooltip:
+		Name: MiG Bomber
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 176
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 8c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 6c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: yrbpln
+	RenderVoxels:
+		Image: yrbpln
+
+ra2cplane.Husk:
+	Inherits: ^PlaneHusk
+	Inherits@Voxel: ^RenderVoxel
+	Tooltip:
+		Name: Cargo Plane
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 149
+	SmokeTrailWhenDamaged@0:
+		Offset: -432,560,0
+		Interval: 2
+		MinDamage: Undamaged
+	SmokeTrailWhenDamaged@1:
+		Offset: -432,-560,0
+		Interval: 2
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 8c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 6c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: ra2cplane
+	RenderVoxels:
+		Image: ra2cplane
 
 #######################################
 # RA2 Special Infantry
