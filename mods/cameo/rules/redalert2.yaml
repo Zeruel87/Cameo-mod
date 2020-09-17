@@ -36,7 +36,7 @@ RA2America:
 		Name: America
 	Buildable:
 		Queue: Building.AlliesRA2, RABuilding.AlliesRA2
-		Description: Unlocks American Paradrop.
+		Description: Unlocks Airborne.
 	RenderSprites:
 		Image: usaicon
 	ProvidesPrerequisite@Country:
@@ -69,7 +69,7 @@ RA2German:
 RA2British:
 	Inherits: ^RA2Country.template.allies
 	Tooltip:
-		Name: British
+		Name: Britain
 	Buildable:
 		Queue: Building.AlliesRA2, RABuilding.AlliesRA2
 		Description: Unlocks Sniper.
@@ -147,7 +147,7 @@ RA2CubaAddon:
 RA2Libyan:
 	Inherits: ^RA2Country.template.soviet
 	Tooltip:
-		Name: Libyan
+		Name: Libya
 	Buildable:
 		Queue: Building.SovietRA2, RABuilding.SovietRA2
 		Description: Unlocks Demolition Truck.
@@ -186,6 +186,8 @@ RA2IraqAddon:
 ^RA2InfantryShadow:
 	RenderSprites:
 		PlayerPalette: ra2unithack
+	WithDeathAnimation:
+		DeathSequencePalette: ra2unithack
 
 ^RA2BuildingShadow:
 	RenderSprites:
@@ -984,6 +986,7 @@ ra2gagap:
 ra2gaweat:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@SW: ^PrimarySuperweapon
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -995,7 +998,7 @@ ra2gaweat:
 	Buildable:
 		Queue: Defence.AlliesRA2, RADefence.AlliesRA2
 		BuildPaletteOrder: 120
-		Prerequisites: ra2gatech, ~techlevel.superweapons, ~CountryChoosedAlliesRA2
+		Prerequisites: ra2gatech, ~techlevel.superweapons, ~CountryChoosedAlliesRA2, !weatherstorm
 		Description: Provides Lightning Storm support power.\nRequires power to operate.
 	Valued:
 		Cost: 2000
@@ -1011,41 +1014,18 @@ ra2gaweat:
 	RevealsShroud:
 		Range: 6c0
 	DetonateWeaponPower:
-		OrderName: LightningStorm
-		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		Icon: bolticon
-		Cursor: ability
-		ChargeInterval: 9000
-		ActivationDelay: 50
-		Description: Lightning Storm
-		LongDesc: Creates a lightning storm.\nApplies heavy damage over a large area.
-		Weapon: LightningStorm
-		AirbustAltitude: 5c0
-		AllowMultiple: false
-		BeginChargeSpeechNotification: IonCannonCharging
-		EndChargeSpeechNotification: IonCannonReady
-		SelectTargetSpeechNotification: SelectTarget
-		LaunchSpeechNotification: NuclearWeaponLaunched
-		IncomingSpeechNotification: NuclearWarheadApproaching
-		InsufficientPowerSpeechNotification: InsufficientPower
-		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral, Enemy
-		CameraActor: camera
-		CameraRemoveDelay: 300
-	DetonateWeaponPower@unlimited:
-		OrderName: LightningStorm
-		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.unlimited
-		Icon: bolticon
-		Cursor: ability
-		ChargeInterval: 9000
-		ActivationDelay: 50
-		Description: Lightning Storm
-		LongDesc: Creates a lightning storm.\nApplies heavy damage over a large area.
-		Weapon: LightningStorm
-		AirbustAltitude: 5c0
 		AllowMultiple: true
+		OrderName: LightningStorm
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: bolticon
+		Cursor: ability
+		ChargeInterval: 9000
+		ActivationDelay: 50
+		Description: Lightning Storm
+		LongDesc: Creates a lightning storm.\nApplies heavy damage over a large area.
+		Weapon: LightningStorm
+		AirbustAltitude: 5c0
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		SelectTargetSpeechNotification: SelectTarget
@@ -1062,6 +1042,8 @@ ra2gaweat:
 	MustBeDestroyed:
 		RequiredForShortGame: false
 	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: weatherstorm
 
 ra2gacsph:
 	Inherits: ^BaseBuilding
@@ -1079,7 +1061,7 @@ ra2gacsph:
 		BuildPaletteOrder: 120
 		Prerequisites: ra2gatech, ~techlevel.superweapons, ~CountryChoosedAlliesRA2
 		BuildLimit: 1
-		Description: Teleports a group of units across the\nmap for a short time.\nRequires power to operate.\nMaximum 1 can be built.\n  Special Ability: Chronoshift
+		Description: Teleports a group of units across the map.\nRequires power to operate.\nMaximum 1 can be built.\n  Special Ability: Chronoshift
 	Valued:
 		Cost: 1800
 	Tooltip:
@@ -1236,6 +1218,17 @@ ra2atesla:
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	AutoTargetPriority@ATTACKANYTHING:
+		InvalidTargets: NoAutoTarget, PrismTower
+	Targetable@prism:
+		TargetTypes: PrismTower
+	AutoTargetPriority@charge:
+		RequiresCondition: !assault-move && !attack-move
+		ValidTargets: PrismTower
+	Targetable@PrismTowerChargeable:
+		TargetTypes: PrismTowerChargeable
+		RequiresCondition: !ammo
 	Buildable:
 		Queue: Defence.AlliesRA2, RADefence.AlliesRA2
 		BuildPaletteOrder: 80
@@ -1258,17 +1251,82 @@ ra2atesla:
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
 		Range: 6c0
-	WithTeslaChargeAnimation:
+	WithSpriteBody:
+		Sequence: idle
+		PauseOnCondition: disabled
+		RequiresCondition: !charging
+	WithSpriteBody@charging:
+		Sequence: active
+		Name: bodyactive
+		RequiresCondition: charging
+	GrantCondition@charging:
+		Condition: charging
+		RequiresCondition: !fired && !ammo
 	Armament:
 		Weapon: RA2Prism
 		LocalOffset: 128,0,1280
-	AttackTesla:
+		PauseOnCondition: !ammo && !powercharged 
+	Armament@Charge:
+		Name: secondary
+		Weapon: PrismCharge
+		LocalOffset: 128,0,1280
+		TargetStances: Ally
+		ForceTargetStances: Ally
+		PauseOnCondition: fired && !powercharged
+		RequiresCondition: ammo
+	Turreted:
+		TurnSpeed: 255
+	AttackTurreted:
 		Voice: Attack
-		ReloadDelay: 60
-		ChargeAudio: bpripow.wav
-		PauseOnCondition: lowpower || disabled
+	GrantConditionOnAttack@primary:
+		ArmamentNames: primary
+		Condition: fired
+		MaximumInstances: 1
+		RevokeDelay: 40
+	AmbientSound:
+	 	RequiresCondition: charging
+		SoundFiles: bpripow.wav
+		Interval: 30, 40
+	GrantConditionOnAttack@secondary:
+		ArmamentNames: secondary
+		Condition: fired
+		MaximumInstances: 1
+		RevokeDelay: 40
+	ExternalCondition@POWERCHARGED:
+		Condition: powercharged
+	AmmoPoolCA:
+		Name: primary
+		Ammo: 5
+		PipCount: 0
+		InitialAmmo: 1
+		PipType: Red
+		Armaments: primary, secondary
+		AmmoCondition: ammo
+	ReloadAmmoPoolCA@autocharge:
+		Delay: 25
+		Count: 1
+		ResetOnFire: False
+		RequiresCondition: ammo < 1 && !fired
+		ShowSelectionBar: false
+		SelectionBarColor: 0000ff
+	ReloadAmmoPoolCA@discharge:
+		Delay: 15
+		Count: -1
+		ResetOnFire: False
+		RequiresCondition: ammo > 1
+		ShowSelectionBar: false
+		SelectionBarColor: ff0000
+	ReloadAmmoPoolCA@powercharge:
+		AmmoPool: primary
+		Delay: 1
+		Count: 1
+		RequiresCondition: powercharged
+		ShowSelectionBar: false
+		SelectionBarColor: 00ff00
 	Power:
 		Amount: -75
+	Sellable:
+		-RequiresCondition:
 	DetectCloaked:
 		Range: 6c0
 		RequiresCondition: !lowpower && !disabled
@@ -1807,42 +1865,6 @@ ra2naradr:
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 10
-	ClassicAirstrikePower:
-		Squad:
-			yrbpln:
-				SpawnDelay: 20
-				SpawnOffset: -1536,1024,0
-				TargetOffset: -536,0,0
-			yrbpln:
-				SpawnDelay: 0
-				SpawnOffset: 0,0,0
-				TargetOffset: 0,0,0
-		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons
-		Icon: airstrike
-		ChargeInterval: 4500
-		Description: Precision Air Strike
-		LongDesc: MiG aircraft fire missiles in a precision strike.\nDeals heavy damage to a single target.
-		EndChargeSpeechNotification: AirstrikeReady
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		IncomingSpeechNotification: EnemyPlanesApproaching
-		QuantizedFacings: 8
-		DisplayBeacon: True
-		BeaconPoster: airstrike
-		BeaconPosterPalette: beaconposter
-		DisplayRadarPing: True
-		CameraActor: camera
-		CameraRemoveDelay: 100
-		ArrowSequence: arrow
-		ClockSequence: clock
-		CircleSequence: circles
-		UseDirectionalTarget: True
-		DirectionArrowAnimation: airstrikedirection
-		Strikes: 2
-		CircleDelay: 20
-		OrderName: AirstrikePowerInfoOrder
-		SupportPowerPaletteOrder: 20
 	SupportPowerChargeBar:
 	Power:
 		Amount: -50
@@ -2093,7 +2115,7 @@ ra2tesla:
 		Queue: Defence.SovietRA2, RADefence.SovietRA2
 		BuildPaletteOrder: 80
 		Prerequisites: ra2naweap, ~CountryChoosedSovietRA2
-		Description: Advanced base defense.\nRequires power to operate.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
+		Description: Advanced base defense.\nRequires power to operate.\nCan be charged by tesla troopers.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -2115,30 +2137,46 @@ ra2tesla:
 	Armament:
 		Weapon: TeslaZap
 		LocalOffset: 120,0,1100
+		RequiresCondition: !lowpower || (lowpower && TeslaCoilCharge >= 1)
 	AttackTesla:
-		PauseOnCondition: lowpower || disabled
+		PauseOnCondition: disabled
 		ChargeAudio: tslachg2.aud
 		MaxCharges: 3
-		ReloadDelay: 120
+		ReloadDelay: 80
 	Power:
 		Amount: -75
 	DetectCloaked:
 		Range: 6c0
-		RequiresCondition: !lowpower && !disabled
+		RequiresCondition: (!lowpower && !disabled) || TeslaCoilCharge
 	ProvidesPrerequisite@buildingname:
 	WithIdleOverlay@powered:
 		Sequence: idle-powered
-		RequiresCondition: !lowpower && !disabled
+		RequiresCondition: (!lowpower || TeslaCoilCharge) && !disabled
+	WithColoredOverlay@IDISABLE:
+		RequiresCondition: (lowpower && !TeslaCoilCharge) || disabled
 	Targetable@TeslaCoil:
 		TargetTypes: TeslaCoil
 	ExternalCondition@TeslaCoilCharge:
 		Condition: TeslaCoilCharge
-	RangeMultiplier@TeslaCoilCharge:
+		SourceCap: 1
+	RangeMultiplier@charge:
 		Modifier: 120
-		RequiresCondition: TeslaCoilCharge
-	FirepowerMultiplier@TeslaCoilCharge:
+		RequiresCondition: TeslaCoilCharge == 1
+	RangeMultiplier@charge2:
+		Modifier: 133
+		RequiresCondition: TeslaCoilCharge == 2
+	RangeMultiplier@charge3:
 		Modifier: 150
-		RequiresCondition: TeslaCoilCharge
+		RequiresCondition: TeslaCoilCharge >= 3
+	FirepowerMultiplier@charge:
+		Modifier: 133
+		RequiresCondition: TeslaCoilCharge == 1
+	FirepowerMultiplier@charge2:
+		Modifier: 167
+		RequiresCondition: TeslaCoilCharge == 2
+	FirepowerMultiplier@charge3:
+		Modifier: 200
+		RequiresCondition: TeslaCoilCharge >= 3
 
 yrngbnkr:
 	Inherits: ^Defense
@@ -2154,7 +2192,7 @@ yrngbnkr:
 		Queue: Defence.SovietRA2, RADefence.SovietRA2
 		BuildPaletteOrder: 40
 		Prerequisites: ra2nahand, ~techlevel.low, ~CountryChoosedSovietRA2
-		Description: Static defense with a fireport for\na garrisoned soldier.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: Static defense with a fireport for\n6 garrisoned soldiers.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 800
 	CustomSellValue:
@@ -2263,10 +2301,6 @@ yrschd:
 		Offset: 0,0
 		Facing: 2
 		NoTransformNotification: BuildingCannotPlaceAudio
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Defence.SovietRA2, RADefence.SovietRA2
 
 yrngindp:
 	Inherits: ^BaseBuilding
@@ -2290,7 +2324,7 @@ yrngindp:
 		Queue: Building.SovietRA2, RABuilding.SovietRA2
 		BuildDuration: 330
 		BuildLimit: 1
-		Description: Generates Ore minerals
+		Description: Reduces cost of vehicles by 25%.
 	Building:
 		Footprint: xxxx xxxx xxxx
 		Dimensions: 4,3
@@ -2337,15 +2371,11 @@ ra2naclon:
 	Power:
 		Amount: -200
 	ProvidesPrerequisite@buildingname:
-	Production@NORMAL:
-		Produces: Infantry.GDI, Infantry.Nod, Infantry.Allies, Infantry.Soviet, Infantry.Scavenger, Vehicle.Scavenger, Defence.Terran, Infantry.Terran, Infantry.SimCity, Vehicle.SimCity, Infantry.AlliesRA2, Infantry.SovietRA2, Infantry.Yuri
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry.SovietRA2
-		RequiresCondition: classicproductionqueues
+	Production:
+		Produces: Clone.Soviets
 	ClonesProducedUnits:
 		CloneableTypes: NormalInfantry
-		ProductionType: RAInfantry.SovietRA2
+		ProductionType: Clone.Soviets
 	Exit:
 		ExitCell: -1, 0
 	RallyPoint:
@@ -2355,6 +2385,7 @@ ra2naclon:
 ra2namisl:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@SW: ^PrimarySuperweapon
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -2369,7 +2400,7 @@ ra2namisl:
 		Prerequisite: anyhq
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ra2natech, ~techlevel.superweapons, ~CountryChoosedSovietRA2
+		Prerequisites: ra2natech, ~techlevel.superweapons, ~CountryChoosedSovietRA2, !ra2nuke
 		Queue: Defence.SovietRA2, RADefence.SovietRA2
 		Description: Provides Nuclear Strike support power.\nRequires power to operate.
 	Building:
@@ -2387,38 +2418,9 @@ ra2namisl:
 		Range: 5c0
 		RequiresCondition: !lowpower
 	NukePower:
+		AllowMultiple: true
 		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		Icon: abomb
-		Cursor: nuke
-		ChargeInterval: 9000
-		Description: Nuclear Missile
-		LongDesc: Launches a devastating nuclear missile.\nApplies heavy damage and radiation over\na large area.
-		EndChargeSpeechNotification: NuclearWeaponAvailable
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		LaunchSpeechNotification: NuclearWeaponLaunched
-		IncomingSpeechNotification: NuclearWarheadApproaching
-		LaunchSound: snuksire.wav
-		MissileWeapon: ra2atomic
-		MissileDelay: 45
-		MissilePalette: playerra2
-		IsPlayerPalette: true
-		SpawnOffset: 3c0,0,-1c512
-		DisplayBeacon: True
-		BeaconPoster: raatomicon
-		BeaconPosterPalette: beaconposter
-		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral, Enemy
-		CameraRange: 10c0
-		CameraRemoveDelay: 150
-		ArrowSequence: arrow
-		ClockSequence: clock
-		CircleSequence: circles
-	NukePower@unlimited:
-		AllowMultiple: True
-		Prerequisites: ~techlevel.unlimited
-		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
 		Icon: abomb
 		Cursor: nuke
 		ChargeInterval: 9000
@@ -2450,6 +2452,8 @@ ra2namisl:
 	Power:
 		Amount: -200
 	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: ra2nuke
 	RenderSprites:
 		PlayerPalette: player
 
@@ -2810,12 +2814,13 @@ yryabrck:
 	WithBuildingBib:
 
 yryarefn:
-	Inherits: ^BaseBuilding
-	#Inherits@2: ^Defense
+	Inherits@2: ^Defense
+	Inherits@voxel: ^RenderVoxel
 	Inherits@shape: ^2x2Shape
-	#Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Inherits@ref: ^Refinery
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -2877,21 +2882,23 @@ yryarefn:
 		QuantizedFacings: 8
 	DetectCloaked:
 		Range: 3c0
-	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
-		Condition: factundeploy
-		Prerequisites: global-factundeploy
 	Transforms:
-		RequiresCondition: factundeploy && !build-incomplete
+		RequiresCondition: !build-incomplete && !disabled
 		PauseOnCondition: being-demolished
 		IntoActor: yrsmin.empy
 		Offset: 1,1
 		Facing: 0
-	#Turreted:
-	#	TurnSpeed: 255
-	#AttackTurreted:
-	#	RequiresCondition: !build-incomplete
-	#Armament:
-	#	Weapon: RA220mmrapid
+	Turreted:
+		TurnSpeed: 255
+	AttackTurreted:
+	Armament:
+		Weapon: RA220mmrapid
+	RenderVoxels:
+		Image: yrsmin
+	WithVoxelTurret:
+	-WithVoxelBody:
+	Voiced:
+		VoiceSet: SlaveMinerVoice
 
 yryarefn.empy:
 	Inherits@2: yryarefn
@@ -3050,7 +3057,7 @@ yrngtbnk:
 		Queue: Defence.Yuri, RADefence.Yuri
 		BuildPaletteOrder: 40
 		Prerequisites: yrygweap
-		Description: Static defense with a fireport for\na garrisoned soldier.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: Static defense with fireports for\na garrisoned tank.
 	Valued:
 		Cost: 400
 	CustomSellValue:
@@ -3252,18 +3259,18 @@ ra2yclon:
 	Buildable:
 		Prerequisites: yryabrck, yrygtech
 		Queue: Building.Yuri, RABuilding.Yuri
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry.Yuri
-		RequiresCondition: classicproductionqueues
+	Production:
+		Produces: Clone.Yuri
 	ClonesProducedUnits:
 		CloneableTypes: NormalInfantry
-		ProductionType: RAInfantry.Yuri
+		ProductionType: Clone.Yuri
 	RenderSprites:
 		Image: ra2naclon
 
 yrygppet:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@SW: ^PrimarySuperweapon
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -3278,7 +3285,7 @@ yrygppet:
 		Prerequisite: yrygppet
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: yrygtech, ~techlevel.superweapons
+		Prerequisites: yrygtech, ~techlevel.superweapons, !psydom
 		Queue: Defence.Yuri, RADefence.Yuri
 		Description: Provides Psychic Dominator support power.\nRequires power to operate.
 	Building:
@@ -3296,32 +3303,9 @@ yrygppet:
 		Range: 5c0
 		RequiresCondition: !lowpower
 	DetonateWeaponPower@psi:
+		AllowMultiple: true
 		OrderName: PsychicDominator
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		PauseOnCondition: lowpower
-		Icon: ra2domin
-		Cursor: ability
-		ChargeInterval: 9000
-		ActivationDelay: 50
-		Description: Psychic Dominator
-		LongDesc: Unleashes a wave of psychic energy.\n Applies heavy damage over a large area.\n Takes control of units in proximity
-		EndChargeSpeechNotification: NuclearWeaponAvailable
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		LaunchSpeechNotification: NuclearWeaponLaunched
-		IncomingSpeechNotification: NuclearWarheadApproaching
-		Weapon: ra2psiatomic
-		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral, Enemy
-		CameraActor: camera
-		ArrowSequence: arrow
-		ClockSequence: clock
-		CircleSequence: circles
-		CameraRemoveDelay: 300
-	DetonateWeaponPower@psiunlimited:
-		OrderName: PsychicDominator
-		AllowMultiple: True
-		Prerequisites: ~techlevel.unlimited
+		Prerequisites: ~techlevel.superweapons
 		PauseOnCondition: lowpower
 		Icon: ra2domin
 		Cursor: ability
@@ -3346,6 +3330,8 @@ yrygppet:
 	Power:
 		Amount: -200
 	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: psydom
 
 yrygtech:
 	Inherits: ^BaseBuilding
@@ -3576,7 +3562,7 @@ RA2E1:
 	AttackTurreted@deployed:
 		Armaments: garrisoned
 		Turrets: deploy
-		PauseOnCondition: ReaperTrap || ArbiterStasis
+		PauseOnCondition: frozen
 		RequiresCondition: deployed
 		Voice: Attack
 	Turreted:
@@ -3620,7 +3606,7 @@ RA2E1:
 		UndeploySounds: igidepa.wav,igidepb.wav
 		UndeployOnMove: true
 		RequiresCondition: !parachute
-		PauseOnCondition: ReaperTrap || ArbiterStasis
+		PauseOnCondition: frozen
 		Voice: Move
 	TakeCover:
 		RequiresCondition: undeployed
@@ -3648,18 +3634,22 @@ RA2CLEG:
 		BuildPaletteOrder: 140
 		Prerequisites: barracks, ra2gatech, ~techlevel.high
 		Queue: Infantry.AlliesRA2, RAInfantry.AlliesRA2
-		Description: Elite unit.\n  Strong vs Ground\n  Weak vs Aircraft\n Can teleport.
+		Description: Elite infantry unit.\nFreezes units and buildings in time.\n Strong vs single targets\n Weak vs Aircraft
 	Mobile:
 		Speed: 40
 	Health:
 		HP: 7000
 	AutoTarget:
 		ScanRadius: 4
-	Armament@PRIMARY:							##########
+	Armament@sound:
 		Weapon: RA2ChronoTele
+	Armament@PRIMARY:
+		Weapon: ChronoBeam
+		LocalOffset: 256,43,256
 	Armament@GARRISONED:						##########
 		Name: garrisoned
-		Weapon: RA2ChronoTele
+		Weapon: ChronoBeam
+		LocalOffset: 256,43,256
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
@@ -3716,7 +3706,7 @@ YRGGI:
 	AttackTurreted@deployed:
 		Armaments: garrisoned
 		Turrets: deploy
-		PauseOnCondition: ReaperTrap || ArbiterStasis
+		PauseOnCondition: frozen
 		RequiresCondition: deployed
 		Voice: Attack
 	Turreted:
@@ -3759,7 +3749,7 @@ YRGGI:
 		DeploySounds: iggidea.wav,iggideb.wav,iggidec.wav
 		UndeploySounds: iggidea.wav,iggideb.wav,iggidec.wav
 		UndeployOnMove: true
-		PauseOnCondition: ReaperTrap || ArbiterStasis
+		PauseOnCondition: frozen
 		RequiresCondition: !parachute
 		Voice: Deploy
 	TakeCover:
@@ -3830,6 +3820,8 @@ RA2TANY:
 	Inherits@anim: ^RA2Infantry
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@MC: ^MCImmune
+	Inherits@swim: ^WithSwimsuit
 	Buildable:
 		Queue: Infantry.AlliesRA2, RAInfantry.AlliesRA2
 		BuildPaletteOrder: 120
@@ -3855,6 +3847,9 @@ RA2TANY:
 		Weapon: RA2DoublePistols
 	Armament@SECONDARY:
 		Weapon: RA2DoublePistols
+	Armament@c4:
+		Weapon: TanyaAttach
+		Cursor: c4
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2DoublePistols
@@ -3876,8 +3871,9 @@ RA2TANY:
 RA2SEAL:
 	Inherits: RMBO
 	Inherits@anim: ^RA2Infantry
+	Inherits@swim: ^WithSwimsuit
 	Valued:
-		Cost: 2000
+		Cost: 1200
 	Tooltip:
 		Name: SEAL
 	UpdatesPlayerStatistics:
@@ -3887,18 +3883,16 @@ RA2SEAL:
 		BuildPaletteOrder: 120
 		Prerequisites: ra2gatech, ~techlevel.high
 		BuildDurationModifier: 40
-		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+		Description: Elite infantry unit.\nCan plant timed bombs on vehicles\n Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
 	Armament:
 		Weapon: RA2AWPG
+	Armament@c4:
+		Weapon: SEALAttach
+		Cursor: c4
 	AttackFrontal:
 		Voice: Attack
 	AttackMove:
 		Voice: Attack
-	VoiceAnnouncement:
-		RequiresCondition: produced
-		Voice: Build
-	Voiced:
-		VoiceSet: CommandoVoice
 	DeliversCash:
 		Payload: 1000
 	Voiced:
@@ -3928,12 +3922,13 @@ YRBORIS:
 	Inherits@anim: ^RA2Infantry
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@MC: ^MCImmune
 	Buildable:
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 		BuildPaletteOrder: 120
 		Prerequisites: ra2natech, ~techlevel.high
 		BuildLimit: 1
-		Description: Elite commando infantry.\nCan detect cloaked units.\nMaximum 1 can be trained.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Destroy Building with C4
+		Description: Elite commando infantry.\nCan detect cloaked units.\nMaximum 1 can be trained.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Airstrike
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -3944,24 +3939,33 @@ YRBORIS:
 		Speed: 71
 	RevealsShroud:
 		Range: 6c0
-	Demolition:
-		DetonationDelay: 45
-		Voice: Demolish
 	Passenger:
 		PipType: Red
 	Armament@PRIMARY:
-		Weapon: Colt45
+		Weapon: BorisAKM
 	Armament@SECONDARY:
-		Weapon: RA2DoublePistols
+		Name: secondary
+		Weapon: MigTarget
+		LocalOffset: 32,0,256
 	Armament@GARRISONED:
 		Name: garrisoned
-		Weapon: RA2DoublePistols
+		Weapon: BorisAKM
+	AirstrikeMaster:
+		Actors: yrbpln
+		SquadSize: 1
+		RespawnTicks: 150
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: true
+		SpawnerArmamentName: secondary
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		StandSequences: stand
 	DetectCloaked:
 		CloakTypes: Cloak, Hijacker
+	WithInfantryBody:
+		AttackSequences:
+			secondary: secondary-fire
 	Voiced:
 		VoiceSet: BorisVoice
 	Inherits@EXPERIENCE: ^GainsExperience				##########
@@ -3970,10 +3974,6 @@ YRBORIS:
 		ValidTypes: infantry							##########
 	DeliversCash:
 		Payload: 600
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 
 RA2E2:
 	Inherits: ^Soldier
@@ -4016,10 +4016,6 @@ RA2E2:
 		Payload: 60
 	Cloneable:
 		Types: NormalInfantry
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 
 RA2flakt:
 	Inherits: ^Soldier
@@ -4065,10 +4061,6 @@ RA2flakt:
 		Payload: 125
 	Cloneable:
 		Types: NormalInfantry
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 
 RA2DESO:
 	Inherits: ^Soldier
@@ -4085,7 +4077,7 @@ RA2DESO:
 		BuildPaletteOrder: 40
 		Prerequisites: barracks, anyhq, ~techlevel.medium, ~RA2Iraq
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
-		Description: Radiological anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles\n Special Ability: Irradiation (harms all units)
+		Description: Radiological anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles\n Special Ability: Irradiation
 	Mobile:
 		Speed: 52
 	Health:
@@ -4094,9 +4086,11 @@ RA2DESO:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
 		Weapon: RA2RadBeamWeapon
+		LocalOffset: 256,43,341
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RA2RadBeamWeapon
+		LocalOffset: 256,43,341
 	PeriodicExplosion:
 		Weapon: RA2RadEruptionWeapon
 		RequiresCondition: deployed
@@ -4106,7 +4100,7 @@ RA2DESO:
 		UndeployedCondition: undeployed
 		UndeployOnMove: true
 		Voice: Attack
-		PauseOnCondition: ReaperTrap || ArbiterStasis
+		PauseOnCondition: frozen
 		RequiresCondition: !parachute
 	AttackFrontal:
 		RequiresCondition: undeployed
@@ -4136,10 +4130,6 @@ RA2DESO:
 		Payload: 300
 	Cloneable:
 		Types: NormalInfantry
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 	AIDeployNotifier:
 		DeployTrigger: Attack
 		DeployChance: 50
@@ -4184,10 +4174,6 @@ RA2TERROR:
 		Payload: 60
 	Cloneable:
 		Types: NormalInfantry
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 
 RA2IVAN:
 	Inherits: ^Soldier
@@ -4204,7 +4190,7 @@ RA2IVAN:
 		BuildPaletteOrder: 90
 		Prerequisites: barracks, anyhq, ~techlevel.medium
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
-		Description: Demolition infantry.\n  Strong vs Buildings\n  Weak vs Vehicles, Infantry, Aircraft
+		Description: Demolition infantry.\nCan plant timed bombs on units
 	Mobile:
 		Speed: 50
 	Health:
@@ -4220,18 +4206,17 @@ RA2IVAN:
 		ValidTypes: infantry							##########
 	Voiced:
 		VoiceSet: CrazyIvanVoice
+	Armament:
+		Weapon: IvanAttach
+		Cursor: c4
 	Demolition:
 		Voice: Attack
 		DetonationDelay: 50
-		TargetStances: Enemy, Neutral, Ally
+		TargetStances: Enemy, Neutral
 	DeliversCash:
 		Payload: 300
 	Cloneable:
 		Types: NormalInfantry
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 
 ra2shk:
 	Inherits: ^Soldier
@@ -4244,7 +4229,7 @@ ra2shk:
 		BuildPaletteOrder: 130
 		Description: Elite infantry with portable Tesla coils.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
 	Valued:
-		Cost: 500
+		Cost: 300
 	Tooltip:
 		Name: Tesla Trooper
 	Health:
@@ -4255,7 +4240,7 @@ ra2shk:
 	RevealsShroud:
 		Range: 5c0
 	Armament@PRIMARY:
-		Weapon: PortaTesla
+		Weapon: RA2PortaTesla
 		TargetStances: Enemy
 		ForceTargetStances: Enemy
 		LocalOffset: 427,0,341
@@ -4267,7 +4252,7 @@ ra2shk:
 		RequiresCondition: !botra2
 	Armament@GARRISONED:
 		Name: garrisoned
-		Weapon: PortaTesla
+		Weapon: TeslaZap
 	TakeCover:
 		ProneOffset: 227,0,-245
 	AttackFrontal:
@@ -4286,10 +4271,6 @@ ra2shk:
 		Payload: 250
 	Cloneable:
 		Types: NormalInfantry
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 	GrantConditionOnBotOwner:
 		Condition: botra2
 		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
@@ -4335,6 +4316,7 @@ RA2YURI:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@MC: ^MCImmune
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -4343,7 +4325,7 @@ RA2YURI:
 		BuildPaletteOrder: 99
 		Prerequisites: barracks, ra2natech, ~yrygtech, ~techlevel.high
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
-		Description: Psychic infantry.\n Can control enemy units.\n Weak vs Aircraft, Robots
+		Description: Psychic infantry.\n Can control enemy units.\nDeploy to unleash a psychic blast.\n Weak vs Aircraft, Robots
 	Mobile:
 		Speed: 50
 	Health:
@@ -4360,6 +4342,24 @@ RA2YURI:
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: !deployed && !deploying
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		RequiresCondition: deployed || deploying
+	PeriodicExplosion:
+		Weapon: PsiWave
+		RequiresCondition: deployed && !frozen
+	GrantTimedConditionOnDeploy:
+		DeployedTicks: 50
+		CooldownTicks: 0
+		Facing: 96
+		DeployedCondition: deployed
+		DeployingCondition: deploying
+		DeployAnimation: deploy
+		UndeployAnimation: undeploy
+		ShowSelectionBar: false
+		Voice: Attack
+		PauseOnCondition: frozen
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -4372,10 +4372,6 @@ RA2YURI:
 		Payload: 400
 	Cloneable:
 		Types: NormalInfantry
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 
 ##############################################
 #   Red Alert 2 Yuri Infantry
@@ -4625,6 +4621,7 @@ YRYURIX:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@MC: ^MCImmune
+	Inherits@vo: ^AttackFrontalVoice
 	Selectable:
 		DecorationBounds: 14,34,0,-12
 	Valued:
@@ -4636,7 +4633,7 @@ YRYURIX:
 		Prerequisites: yrygtech, anyhq, ~techlevel.high
 		Queue: Infantry.Yuri, RAInfantry.Yuri
 		BuildLimit: 1
-		Description: Psychic infantry.\nCan control enemy units and buildings.\n  Weak vs Aircraft, Robots
+		Description: Psychic infantry.\nCan control enemy units and buildings.\nDeploy to unleash a psychic blast.\n  Weak vs Aircraft, Robots
 	Mobile:
 		Speed: 100
 	Health:
@@ -4653,6 +4650,24 @@ YRYURIX:
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: !deployed && !deploying
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		RequiresCondition: deployed || deploying
+	PeriodicExplosion:
+		Weapon: PsiWave
+		RequiresCondition: deployed && !frozen
+	GrantTimedConditionOnDeploy:
+		DeployedTicks: 50
+		CooldownTicks: 0
+		Facing: 96
+		DeployedCondition: deployed
+		DeployingCondition: deploying
+		DeployAnimation: deploy
+		UndeployAnimation: undeploy
+		ShowSelectionBar: false
+		Voice: Attack
+		PauseOnCondition: frozen
 	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -4724,7 +4739,13 @@ RA2CMIN:
 	WithVoxelBody:
 	WithDockingAnimation:
 	ChronoResourceDelivery:
-		RequiresCondition: !TSNeutronBomb
+		Palette: ra2effect
+		WarpInSequence: warpout
+		WarpOutSequence: warpout
+		WarpInSound: vchrtele.wav
+		WarpOutSound: vchrtele.wav
+		AudibleThroughFog: false
+		RequiresCondition: !disabled
 	Voiced:
 		VoiceSet: ChronoMinerVoice
 	DeliversCash:
@@ -4969,10 +4990,12 @@ RA2FV:
 			e7: ifv-hero
 			ra2tany: ifv-hero
 			cityswat: ifv-hero
+			yrboris: ifv-hero
+			ra2seal: ifv-hero
 			scghost: ifv-sniper
 			ra2snipe: ifv-sniper
 			yrvirus: ifv-sniper
-			ra2cleg: ifv-legion
+			ra2cleg: ifv-chrono
 	###################
 	#	Armament
 	###################
@@ -4997,7 +5020,7 @@ RA2FV:
 		MuzzleSequence: muzzlemg
 		RequiresCondition: ifv-sniper
 	Armament@hero:
-		Weapon: Colt45
+		Weapon: BorisAKM
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlemg
 		RequiresCondition: ifv-hero
@@ -5005,33 +5028,40 @@ RA2FV:
 		Weapon: TTankZap
 		RequiresCondition: ifv-tesla
 	Armament@flak:
-		Weapon: RA2CRFlakGuyGun
+		Weapon: RA2FlakTrackGun
 		RequiresCondition: ifv-flak
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlefl
 	Armament@cannon:
-		Weapon: 70mm
+		Weapon: RA2MirageGun
 		RequiresCondition: ifv-cannon
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlemm
 	Armament@fire:
-		Weapon: Flamer
+		Weapon: BigFlamer
 		RequiresCondition: ifv-fire
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlefa
 	Armament@chem:
-		Weapon: RA2RadBeamWeapon
+		Weapon: IFVRadBeam
 		RequiresCondition: ifv-chem
 	Armament@missile:
 		Weapon: RA2MultiHoverMissile
 		LocalOffset: 768,85,220, 768,-85,220, -100,85,220, -100,-85,220
-		RequiresCondition: ifv-miss || ifv-legion
+		RequiresCondition: ifv-miss
+	Armament@chrono:
+		Weapon: IFVChronoBeam
+		LocalOffset: 171,0,255
+		RequiresCondition: ifv-chrono
+	Armament@chronosound:
+		Weapon: IFVChronoSound
+		RequiresCondition: ifv-chrono
 	###################
 	#	Turret Voxel
 	###################
 	WithVoxelTurret@default:
 		Sequence: turret-missile
-		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss# && !ifv-deso && !ifv-demo && !ifv-chrono
+		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss && !ifv-deso && !ifv-demo && !ifv-chrono
 	WithVoxelTurret@mg:
 		Sequence: turret-mg
 		RequiresCondition: ifv-mg || ifv-sniper || ifv-flak || ifv-hero || ifv-cannon
@@ -5106,7 +5136,7 @@ RA2SREF:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1000
+		Cost: 1200
 	Tooltip:
 		Name: Prism Tank
 	Buildable:
@@ -5153,14 +5183,20 @@ RA2MGTK:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1300
+		Cost: 1000
 	Tooltip:
 		Name: Mirage Tank
+		RequiresCondition: !tree
+	MirageTooltip@Tree:
+		Name: Mirage Tank
+		GenericName: Tree
+		GenericVisibility: Enemy, Neutral
+		RequiresCondition: tree
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: ra2gatech, ~techlevel.high
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
-		Description: Allied stealth tank.\n Strong vs Infantry, Vehicles\n Weak vs Aircraft
+		Description: Tank that disguises while immobile.\n Strong vs Infantry, Vehicles\n Weak vs Aircraft
 	Mobile:
 		Locomotor: tracked
 		Speed: 105
@@ -5179,25 +5215,28 @@ RA2MGTK:
 		Weapon: RA2MirageGun
 		Recoil: 128
 		RecoilRecovery: 26
-	Cloak:
-		InitialDelay: 90
-		CloakDelay: 90
-		CloakSound: trans1.aud
-		UncloakSound: trans1.aud
-		PauseOnCondition: cloak-force-disabled
-	GrantConditionOnDamageState@UNCLOAK:
-		Condition: cloak-force-disabled
-		ValidDamageStates: Critical
+	Mirage:
+		RequiresCondition: !disabled
+		InitialDelay: 25
+		RevealDelay: 25
+		RevealOn: Attack, Move
+		MirageCondition: tree
+		DefaultTargetTypes: t08, t18, t10, t03, t02
+	RenderSprites:
+		Palette: terrain
 	AttackTurreted:
 	SelectionDecorations:
 	AutoTarget:
 		AllowMovement: false
-		InitialStance: HoldFire
 	Selectable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithVoxelBody:
+		RequiresCondition: !tree
+	WithMirageSpriteBody:
+		Name: tree
+		RequiresCondition: tree
 	Voiced:
 		VoiceSet: MirageTankVoice
 	DeliversCash:
@@ -5210,6 +5249,7 @@ yrbfrt:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackVoice
+	Inherits@crush: ^VehicleCrusher
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -5220,7 +5260,6 @@ yrbfrt:
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
 		Description: Heavily armored Allied transport.\nMust be garrisoned with infantry to fire.\n Strong vs Everything
 	Mobile:
-		Locomotor: heavytracked
 		Speed: 60
 		TurnSpeed: 5
 	Health:
@@ -5336,10 +5375,6 @@ RA2SMCV:
 		Payload: 1750
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmsovietra2
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 RA2HTNK:
 	Inherits: ^Tank
@@ -5395,10 +5430,6 @@ RA2HTNK:
 		VoiceSet: RA2SovietVehicleVoice
 	DeliversCash:
 		Payload: 450
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 RA2HTK:
 	Inherits: ^Tank
@@ -5458,10 +5489,6 @@ RA2HTK:
 		PipCount: 4
 		LoadingCondition: notmobile
 		EjectOnDeath: false
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 RA2APOC:
 	Inherits: ^Tank
@@ -5481,7 +5508,7 @@ RA2APOC:
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 		Description: Heavily armored Soviet Tank.\nCan attack aircraft.\n  Strong vs Everything
 	Mobile:
-		Locomotor: tracked
+		Locomotor: heavytracked
 		Speed: 60
 		TurnSpeed: 5
 	Health:
@@ -5523,10 +5550,6 @@ RA2APOC:
 		VoiceSet: ApocalypseTankVoice
 	DeliversCash:
 		Payload: 900
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 RA2V3:
 	Inherits: ^Vehicle
@@ -5581,10 +5604,6 @@ RA2V3:
 		RequiresCondition: !ammo
 	DeliversCash:
 		Payload: 450
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 RA2V3ROCKET:
 	Inherits: ^ShootableMissile
@@ -5604,7 +5623,6 @@ RA2V3ROCKET:
 	SpawnedExplodes:
 		Weapon: RA2Scud
 		EmptyWeapon: RA2Scud
-	-UpdatesPlayerStatistics:
 
 RA2TTNK:
 	Inherits: ^Tank
@@ -5654,10 +5672,6 @@ RA2TTNK:
 		VoiceSet: Ra2TeslaTankVoice
 	DeliversCash:
 		Payload: 600
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 RA2HARV:
 	Inherits: HARV
@@ -5708,16 +5722,13 @@ ra2dtruck:
 		VoiceSet: RA2DemolitionTruckVoice
 	GrantConditionOnDeploy:
 		Voice: Attack
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 	Explodes:
 		Weapon: RA2ReactorExplosion
 		EmptyWeapon: RA2ReactorExplosion
 
 ra2dron:
 	Inherits: ^Soldier
+	Inherits@MC: ^MCImmune
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -6041,15 +6052,16 @@ YRCAOS:
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@MC: ^MCImmune
 	Valued:
-		Cost: 500
+		Cost: 600
 	Tooltip:
 		Name: Chaos Drone
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: ~techlevel.medium
 		Queue: Vehicle.Yuri, RAVehicle.Yuri
-		Description: Anti-infantry vehicle.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
+		Description: Releases a gas that causes units to go\nberserk and attack each other.
 	Mobile:
 		Speed: 120
 		TurnSpeed: 40
@@ -6230,6 +6242,7 @@ ra2sqd:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@sub: ^Submarine
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -6272,20 +6285,12 @@ ra2sqd:
 		ValidTypes: vehicle								##########
 	DeliversCash:
 		Payload: 250
-	Cloak:
-		CloakTypes: Underwater
-		InitialDelay: 0
+	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-		CloakedCondition: underwater
-		RequiresCondition: !cloak-force-disabled
 	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
-		RequiresCondition: !underwater
-	Targetable@Underwater:
-		TargetTypes: Submarine, Underwater
-		RequiresCondition: underwater
+		TargetTypes: Ground, Water, Ship, Submarine
 	-WithFacingSpriteBody:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
@@ -6299,6 +6304,7 @@ ra2dlph:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@sub: ^Submarine
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -6335,22 +6341,14 @@ ra2dlph:
 		ValidTypes: vehicle								##########
 	DeliversCash:
 		Payload: 250
-	Cloak:
-		CloakTypes: Underwater
-		InitialDelay: 0
+	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-		CloakedCondition: underwater
-		RequiresCondition: !cloak-force-disabled
 	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
-		RequiresCondition: !underwater
+		TargetTypes: Ground, Water, Ship, Submarine
 	Voiced:
 		VoiceSet: DolphinVoice
-	Targetable@Underwater:
-		TargetTypes: Submarine, Underwater
-		RequiresCondition: underwater
 	-ExternalCondition@CLOAK:
 
 ra2lcrf:
@@ -6629,6 +6627,7 @@ ra2sub:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -6673,29 +6672,17 @@ ra2sub:
 		ValidTypes: vehicle								##########
 	DeliversCash:
 		Payload: 475
-	Cloak:
-		CloakTypes: Underwater
-		InitialDelay: 0
+	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-		CloakedCondition: underwater
-		PauseOnCondition: disabled
-		RequiresCondition: !cloak-force-disabled
 	DetectCloaked:
 		CloakTypes: Underwater
 		Range: 4c0
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: TyphoonSubVoice
-	Targetable@Underwater:
-		TargetTypes: Submarine, Underwater
-		RequiresCondition: underwater
 	-ExternalCondition@CLOAK:
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 ra2hyd:
 	Inherits: ^BoatUnit
@@ -6751,10 +6738,6 @@ ra2hyd:
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: SeaScorpionVoice
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 ra2dred:
 	Inherits: ^BoatUnit
@@ -6816,10 +6799,6 @@ ra2dred:
 		RequiresCondition: !ammo
 	Voiced:
 		VoiceSet: SovietNavalVoice
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 ra2dmisl:
 	Inherits: RA2V3ROCKET
@@ -6920,6 +6899,7 @@ yrbsub:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -6962,7 +6942,6 @@ yrbsub:
 		SpawnAllAtOnce: true
 	Targetable:
 		TargetTypes: Ground, Water, Ship, Submarine, Repair
-		RequiresCondition: !underwater
 	AttackFrontal:
 		FacingTolerance: 2
 		TargetFrozenActors: true
@@ -6975,24 +6954,16 @@ yrbsub:
 		ValidTypes: vehicle								##########
 	DeliversCash:
 		Payload: 475
-	Cloak:
-		CloakTypes: Underwater
-		InitialDelay: 0
+	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-		CloakedCondition: underwater
-		PauseOnCondition: disabled
-		RequiresCondition: !cloak-force-disabled
 	DetectCloaked:
 		CloakTypes: Underwater
 		Range: 4c0
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: BoomerVoice
-	Targetable@Underwater:
-		TargetTypes: Submarine, Underwater
-		RequiresCondition: underwater
 	-ExternalCondition@CLOAK:
 
 yrbsubmisl:
@@ -7017,7 +6988,7 @@ yrbsubmisl:
 RA2ZEP:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@announce: ^AnnounceGlobal
 	Valued:
@@ -7063,15 +7034,12 @@ RA2ZEP:
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: KirovVoice
+	DeathSounds:
 	SelfHealing:
 		Step: 100
 		Delay: 3
 		HealIfBelow: 50
 		DamageCooldown: 150
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 yrschp:
 	Inherits: ^Helicopter
@@ -7137,10 +7105,6 @@ yrschp:
 		PauseOnCondition: disabled
 	Voiced:
 		VoiceSet: SiegeChopperVoice
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 	DeathSounds:
 
 RA2FALC:
@@ -7199,6 +7163,7 @@ RA2FALC:
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: HarrierVoice
+	DeathSounds:
 	AttackAircraft:
 		Voice: Attack
 		FacingTolerance: 20
@@ -7295,6 +7260,7 @@ ra2shad:
 	-WithVoxelBody:
 	Voiced:
 		VoiceSet: NighthawkVoice
+	DeathSounds:
 
 ra2hind:
 	Inherits: ^Helicopter
@@ -7405,6 +7371,7 @@ YRDISK:
 	Turreted:
 	Voiced:
 		VoiceSet: DiskVoice
+	DeathSounds:
 	SelfHealing:
 		Step: 100
 		Delay: 3
@@ -7446,20 +7413,20 @@ ra2rock:
 		Voice: Attack
 		FacingTolerance: 20
 		AttackType: Hover
-	-SpawnActorOnDeath:
+	SpawnActorOnDeath:
+		Actor: ra2rock.husk
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 12,20
 	Voiced:
 		VoiceSet: RocketeerVoice
+	DeathSounds:
 	-WithFacingSpriteBody:
 	WithInfantryBody:
 		AttackSequences: shoot
 		IdleSequences: idle
 		StandSequences: idle
 		MoveSequence: idle
-	WithDeathAnimation:
-		UseDeathTypeSuffix: false
 	Selectable:
 		Bounds: 18,18,0,-6
 		DecorationBounds: 12,17,0,-6
@@ -7485,9 +7452,35 @@ ra2rock:
 		RequiresCondition: hospitalheal
 		BlinkInterval: 32
 		BlinkPattern: On, Off
+	-WithShadow:
+	WithSpriteBody@shadow:
+		Name: shadow
+		Sequence: shadow
+		ForceToGround: true
+
+ra2rock.husk:
+	Inherits: ^HelicopterHusk
+	RenderSprites:
+		Image: ra2rock
+	Tooltip:
+		Name: Rocketeer
+	Aircraft:
+		TurnSpeed: 40
+		Speed: 140
+	FallsToEarth:
+		Explosion: UnitExplode
+	RevealsShroud:
+		Range: 4c0
+		Type: GroundPosition
+	WithFacingSpriteBody:
+		Sequence: die
+	WithSpriteBody@shadow:
+		Name: shadow
+		Sequence: shadow
+		ForceToGround: true
 
 ra2hornet:
-	Inherits: ^RAPlane
+	Inherits: ^RANeutralPlane
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
@@ -7519,7 +7512,6 @@ ra2hornet:
 		PipCount: 1
 		AmmoCondition: ammo
 	-SpawnActorOnDeath:
-	-EjectOnDeath:
 	WithMoveAnimation:
 		MoveSequence: move
 	RenderVoxels:
@@ -7577,6 +7569,7 @@ ra2asw:
 yrspyp:
 	Inherits: ^RANeutralPlane
 	Inherits@Voxel: ^RenderVoxel
+	-UpdatesPlayerStatistics:
 	Health:
 		HP: 200000
 	Tooltip:
@@ -7608,6 +7601,7 @@ yrspyp:
 ra2cplane:
 	Inherits: ^RANeutralPlane
 	Inherits@Voxel: ^RenderVoxel
+	-UpdatesPlayerStatistics:
 	ParaDrop:
 		DropRange: 4c0
 		ChuteSound: chute1.aud
@@ -7632,7 +7626,7 @@ ra2cplane:
 	Contrail@2:
 		Offset: -432,-560,0
 	SpawnActorOnDeath:
-		Actor: BADR.Husk
+		Actor: ra2cplane.Husk
 	SmokeTrailWhenDamaged@0:
 		Offset: -432,560,0
 		Interval: 2
@@ -7640,28 +7634,30 @@ ra2cplane:
 		Offset: -432,-560,0
 		Interval: 2
 	RejectsOrders:
-	GivesExperience:
-		Experience: 1000
 	Interactable:
 	WithVoxelBody:
-	-SpawnActorOnDeath:
 	RenderVoxels:
 		NormalsPalette: ts-normals
 
 yrbpln:
-	Inherits: ^Plane
+	Inherits: ^RANeutralPlane
 	Inherits@Voxel: ^RenderVoxel
+	-Selectable:
+	-UpdatesPlayerStatistics:
 	Interactable:
 	Tooltip:
-		Name: MIG Bomber
-	Valued:
-		Cost: 2000
+		Name: MiG Bomber
+	Health:
+		HP: 30000
+	HitShape:
+	-Voiced:
+	-GainsExperience:
 	Aircraft:
 		TurnSpeed: 4
 		Speed: 373
 		Repulsable: False
 		RepulsionSpeed: 10
-	AttackBomber:
+	AttackAircraft:
 	Armament:
 		Weapon: MigMissiles
 		LocalOffset: 0,-256,-43, 0,256,-43
@@ -7672,6 +7668,11 @@ yrbpln:
 	Contrail@2:
 		Offset: -640,-171,0
 		TrailLength: 15
+	AirstrikeSlave:
+		LandingDistance: 1c0
+	SpawnActorOnDeath:
+		Actor: yrbpln.husk
+	RejectsOrders:
 	-MapEditorData:
 	WithVoxelBody:
 
@@ -8324,7 +8325,6 @@ RA2ZEP.Husk:
 		Image: ra2zep
 	ShakeOnDeath:
 	FallsToEarth:
-		Spins: False
 		Moves: True
 		Velocity: 43	#86
 		Explosion: KirovExplode
@@ -8342,11 +8342,11 @@ ra2hornet.Husk:
 		Interval: 2
 		MinDamage: Undamaged
 	RevealsShroud:
-		Range: 13c0
+		Range: 6c0
 		Type: GroundPosition
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
-		Range: 11c0
+		Range: 5c0
 		Type: GroundPosition
 	RenderSprites:
 		Image: ra2hornet
@@ -8366,11 +8366,11 @@ RA2FALC.Husk:
 		Interval: 2
 		MinDamage: Undamaged
 	RevealsShroud:
-		Range: 13c0
+		Range: 8c0
 		Type: GroundPosition
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
-		Range: 11c0
+		Range: 6c0
 		Type: GroundPosition
 	RenderSprites:
 		Image: ra2falc
@@ -8381,7 +8381,7 @@ ra2beag.Husk:
 	Inherits: ^PlaneHusk
 	Inherits@Voxel: ^RenderVoxel
 	Tooltip:
-		Name: Harrier
+		Name: Black Eagle
 	Aircraft:
 		TurnSpeed: 5
 		Speed: 176
@@ -8390,11 +8390,11 @@ ra2beag.Husk:
 		Interval: 2
 		MinDamage: Undamaged
 	RevealsShroud:
-		Range: 13c0
+		Range: 8c0
 		Type: GroundPosition
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
-		Range: 11c0
+		Range: 6c0
 		Type: GroundPosition
 	RenderSprites:
 		Image: ra2beag
@@ -8482,6 +8482,58 @@ ra2shad.Husk:
 		Image: ra2shad
 	RenderVoxels:
 		Image: ra2shad
+
+yrbpln.husk:
+	Inherits: ^PlaneHusk
+	Inherits@Voxel: ^RenderVoxel
+	Tooltip:
+		Name: MiG Bomber
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 176
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 8c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 6c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: yrbpln
+	RenderVoxels:
+		Image: yrbpln
+
+ra2cplane.Husk:
+	Inherits: ^PlaneHusk
+	Inherits@Voxel: ^RenderVoxel
+	Tooltip:
+		Name: Cargo Plane
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 149
+	SmokeTrailWhenDamaged@0:
+		Offset: -432,560,0
+		Interval: 2
+		MinDamage: Undamaged
+	SmokeTrailWhenDamaged@1:
+		Offset: -432,-560,0
+		Interval: 2
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 8c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 6c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: ra2cplane
+	RenderVoxels:
+		Image: ra2cplane
 
 #######################################
 # RA2 Special Infantry
@@ -9228,10 +9280,6 @@ RA2MODHTNK:
 		VoiceSet: ApocalypseTankVoice
 	DeliversCash:
 		Payload: 600
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 
 RA2MODSLTNK:
 	Inherits: RA2MTNK
@@ -9320,10 +9368,6 @@ RA2MODOAPOC:
 		VoiceSet: TankDestroyerVoice
 	DeliversCash:
 		Payload: 900
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 	SelfHealing:
 		Step: 500
 		Delay: 10
@@ -9418,10 +9462,6 @@ RA2MODYHTK:
 		MaxWeight: 2
 		PipCount: 2
 		LoadingCondition: notmobile
-	ProductionCostMultiplier@Industrial:
-		Multiplier: 75
-		Prerequisites: yrngindp
-		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 	RenderVoxels:
 		NormalsPalette: ts-normals
 		Scale: 0.49

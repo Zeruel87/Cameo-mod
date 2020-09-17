@@ -26,7 +26,7 @@
 	WithDeathAnimation:
 		DeathTypes:
 			DefaultDeath: 1
-			BulletDeath: 1
+			BulletDeath: 2
 			RippedApartDeath: 2
 			SmallExplosionDeath: 4
 			ExplosionDeath: 4
@@ -1863,12 +1863,14 @@ tsgtradr:
 
 mutradar:
 	Inherits: tsgtradr
+	Inherits@SW: ^PrimarySuperweapon
 	Buildable:
 		BuildPaletteOrder: 70
-		Prerequisites: tsproc, ~techlevel.medium
+		Prerequisites: tsproc, ~techlevel.medium, !mutstorm
 		Queue: Building.MUTANT, RABuilding.MUTANT
 	DetonateWeaponPower:
 		OrderName: MutantCommando
+		Prerequisites: ~techlevel.superweapons
 		Cursor: ability
 		PauseOnCondition: lowpower
 		Icon: mutcommando
@@ -1884,8 +1886,9 @@ mutradar:
 		CameraRemoveDelay: 90
 		BeaconPoster: rapinficon
 	DetonateWeaponPower@wildlife:
+		AllowMultiple: true
 		OrderName: WildlifeRampage
-		Prerequisites: tek
+		Prerequisites: tek, ~techlevel.superweapons
 		Cursor: ability
 		PauseOnCondition: lowpower
 		Icon: mutwildlife
@@ -1906,6 +1909,8 @@ mutradar:
 		ClockSequence: clock
 		CircleSequence: circles
 		BeaconPoster: rapinficon
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: mutstorm
 	RenderSprites:
 		Image: tsgtradr
 
@@ -2160,12 +2165,13 @@ tsntmisl:
 	Inherits@sell: ^TSSpawnActorsOnSell
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^2x2Shape
+	Inherits@SW: ^PrimarySuperweapon
 	Selectable:
 		Bounds: 48,48
 	Buildable:
 		Queue: Defence.TSNod, RADefence.TSNod, Defence.CABAL, RADefence.CABAL
 		BuildPaletteOrder: 140
-		Prerequisites: supertek, ~techlevel.high
+		Prerequisites: supertek, ~techlevel.high, !tsmisl
 		Description: Provides Multi Missile and Chemical Missile\nsupport powers.
 	Valued:
 		Cost: 1000
@@ -2191,39 +2197,10 @@ tsntmisl:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
 	NukePower@tactmiss:
+		AllowMultiple: true
 		OrderName: TSClusterMissile
 		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		Icon: multimiss
-		Cursor: nuke
-		ChargeInterval: 4500
-		Description: Multi Missile
-		LongDesc: Launches a tactical cluster missile.\nApplies heavy damage over a large area.
-		EndChargeSpeechNotification: NuclearWeaponAvailable
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		LaunchSpeechNotification: NuclearWeaponLaunched
-		IncomingSpeechNotification: NuclearWarheadApproaching
-		MissileWeapon: TSTacticalMissile
-		MissileDelay: 5
-		FlightDelay: 100
-		DetonationAltitude: 4c0
-		SpawnOffset: 3c0,0,-1c512
-		DisplayBeacon: True
-		BeaconPoster: multimiss
-		BeaconPosterPalette: beaconposter
-		DisplayTimerStances: Ally, Neutral, Enemy
-		DisplayRadarPing: True
-		CameraRange: 10c0
-		CameraRemoveDelay: 60
-		ArrowSequence: arrow
-		ClockSequence: clocklarge
-		CircleSequence: circles
-	NukePower@tactmissunlimited:
-		OrderName: TSClusterMissile
-		AllowMultiple: True
-		Prerequisites: ~techlevel.unlimited
-		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
 		Icon: multimiss
 		Cursor: nuke
 		ChargeInterval: 4500
@@ -2250,38 +2227,10 @@ tsntmisl:
 		ClockSequence: clocklarge
 		CircleSequence: circles
 	NukePower@tactmiss2:
+		AllowMultiple: true
 		OrderName: TSChemicalMissile
 		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited, tsntwast
-		Icon: chemicalmiss
-		Cursor: nuke
-		ChargeInterval: 3500
-		Description: Chemical Missile
-		LongDesc: Launches a tactical missile with\na Tiberium warhead.\n Applies heavy damage over a small area\n Releases toxic gas clouds
-		EndChargeSpeechNotification: NuclearWeaponAvailable
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		LaunchSpeechNotification: NuclearWeaponLaunched
-		IncomingSpeechNotification: NuclearWarheadApproaching
-		MissileWeapon: TSChemTacticalMissile
-		MissileDelay: 5
-		FlightDelay: 100
-		SpawnOffset: 3c0,0,-1c512
-		DisplayBeacon: True
-		BeaconPoster: chemicalmiss
-		BeaconPosterPalette: beaconposter
-		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral
-		CameraRange: 10c0
-		CameraRemoveDelay: 150
-		ArrowSequence: arrow
-		ClockSequence: clocklarge
-		CircleSequence: circles
-	NukePower@tactmissunlimited2:
-		OrderName: TSChemicalMissile
-		AllowMultiple: True
-		Prerequisites: ~techlevel.unlimited, tsntwast
-		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons, tsntwast
 		Icon: chemicalmiss
 		Cursor: nuke
 		ChargeInterval: 3500
@@ -2311,6 +2260,8 @@ tsntmisl:
 	WithNukeLaunchOverlay:
 		RequiresCondition: !build-incomplete
 		Sequence: smoke
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: tsmisl
 	SupportPowerChargeBar:
 
 tsctarmr:
@@ -2358,6 +2309,7 @@ tsgtplug:
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^3x2Shape
 	Inherits@sell: ^TSSpawnActorsOnSell
+	Inherits@SW: ^PrimarySuperweapon
 	Selectable:
 		Bounds: 72,48
 	HitShape:
@@ -2365,7 +2317,7 @@ tsgtplug:
 	Buildable:
 		Queue: Defence.TSGDI, RADefence.TSGDI
 		BuildPaletteOrder: 140
-		Prerequisites: tek, ~techlevel.high
+		Prerequisites: tek, ~techlevel.high, !tsionc
 		Description: Provides Hunter-Seeker and Ion Cannon\nsupport powers.
 	Valued:
 		Cost: 1500
@@ -2404,30 +2356,9 @@ tsgtplug:
 		PauseOnCondition: disabled
 		Sequence: idle-hunterseekera
 	IonCannonPower:
+		AllowMultiple: true
 		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		Icon: ioncannon
-		Cursor: ioncannon
-		ChargeInterval: 6750
-		Effect: explosion
-		EffectSequence: ionring
-		EffectPalette: ra2unit
-		Weapon: TSIonCannon
-		Description: Ion Cannon
-		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
-		BeginChargeSpeechNotification: IonCannonCharging
-		EndChargeSpeechNotification: IonCannonReady
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		OnFireSound: ion1.aud
-		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral
-		CameraActor: camera.small
-		SupportPowerPaletteOrder: 20
-	IonCannonPower@unlimited:
-		AllowMultiple: True
-		Prerequisites: ~techlevel.unlimited
-		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
 		Icon: ioncannon
 		Cursor: ioncannon
 		ChargeInterval: 6750
@@ -2459,6 +2390,8 @@ tsgtplug:
 		BlockedAudio: 
 		OrderName: HunterSeekerSpawn
 		SupportPowerPaletteOrder: 20
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: tsionc
 	Exit@1:
 		SpawnOffset: -704,768,0
 		ExitCell: -1,2
@@ -2494,6 +2427,7 @@ tsntyard:
 		RequiresCondition: classicproductionqueues
 	RenderSprites:
 		Image: yrygyard
+
 tsntyard2:
 	Inherits: yrygyard
 	Buildable:
@@ -4375,6 +4309,8 @@ TSHMEC:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
 	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Inherits@crush: ^VehicleCrusher
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -4386,7 +4322,6 @@ TSHMEC:
 		BuildLimit: 1
 		Description: Slow heavy walker.\nArmed with dual railguns and rocket launchers.\n Strong vs Everything\n Maximum 1 can be built.
 	Mobile:
-		Locomotor: heavytracked
 		TurnSpeed: 3
 		Speed: 42
 	Health:
@@ -5006,6 +4941,7 @@ tsbsub:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -5053,23 +4989,16 @@ tsbsub:
 		ValidTypes: vehicle								##########
 	DeliversCash:
 		Payload: 475
-	Cloak:
-		CloakTypes: Underwater
-		InitialDelay: 0
+	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-		CloakedCondition: underwater
-		RequiresCondition: !cloak-force-disabled
 	DetectCloaked:
 		CloakTypes: Underwater
 		Range: 4c0
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: TSVehicle
-	Targetable@Underwater:
-		TargetTypes: Submarine, Underwater
-		RequiresCondition: underwater
 	-ExternalCondition@CLOAK:
 	RenderSprites:
 		Image: yrbsub
@@ -5492,6 +5421,7 @@ TSDEFENDER:
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@MC:  ^MCImmune
 	Inherits@EMP: ^FrontalEMP
+	Inherits@crush: ^VehicleCrusher
 	Health:
 		HP: 1900000
 	Armor:
@@ -5882,7 +5812,7 @@ TSTRNSPORT:
 	Selectable:
 		Bounds: 44,32,0,-8
 	SpawnActorOnDeath:
-		Actor: TRNSPORT.Husk
+		Actor: TSTRNSPORT.Husk
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: TSHeli
