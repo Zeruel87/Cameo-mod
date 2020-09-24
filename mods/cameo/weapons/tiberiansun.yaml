@@ -90,6 +90,8 @@ TS155mm:
 	Projectile: Bullet
 		Speed: 384
 		LaunchAngle: 165
+		ContrailLength: 30
+		ContrailWidth: 0c32
 	MinRange: 5c0
 	Warhead@1Dam: SpreadDamage
 		Damage: 15000
@@ -108,7 +110,9 @@ TSJugg90mm:
 	Projectile: Bullet
 		Speed: 384
 		LaunchAngle: 165
-		Inaccuracy: 2c0
+		Inaccuracy: 1c0
+		ContrailLength: 10
+		ContrailWidth: 0c32
 	Warhead@1Dam: SpreadDamage
 		Damage: 7500
 	Warhead@2Eff: CreateEffect
@@ -521,6 +525,8 @@ TSReaperTusk:
 		Speed: 500
 		Acceleration: 10
 	Report: rketinf1.aud
+	Warhead@1Dam: SpreadDamage
+		Damage: 3000
 
 TSHoverMissile:
 	Inherits: ^TSDefaultMissile
@@ -792,6 +798,9 @@ TSEMPulseCannon:
 		LaunchAngle: 165
 		Inaccuracy: 2c0
 		Image: tspulsball
+	Warhead@1: SpawnActor
+		Actors: CAMERA.sw
+		Range: 3
 	Warhead@3Eff: CreateEffect
 		Explosions: pulse_explosion
 		ExplosionPalette: tseffect
@@ -1009,13 +1018,27 @@ TSHSeekerExplode:
 	ValidTargets: Ground
 	Warhead@1Dam: SpreadDamage
 		Spread: 3c0
-		Damage: 16000
+		Falloff: 100, 75, 50, 25, 0
+		Damage: 10000
+		DamageTypes: Prone50Percent, TriggerProne, FireDeath
+	Warhead@2Dam: SpreadDamage
+		Range: 0, 32
+		Falloff: 100, 100
+		Damage: 10000
+		Versus:
+			None: 100
+			Wood: 200
+			Light: 500
+			Heavy: 1000
 		DamageTypes: Prone50Percent, TriggerProne, FireDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: big_napalm
 		ImpactSounds: expnew09.aud,expnew06.aud
 	Warhead@3Smu: LeaveSmudge
 		SmudgeType: Scorch
+	Warhead@Cam: SpawnActor
+		Actors: CAMERA.sw
+		Range: 3
 
 TSHSeekerTargeting:
 	ValidTargets: Ground
@@ -1204,13 +1227,14 @@ FloaterSpawner:
 	Range: 3c0
 	Projectile: InstantHit
 	Warhead@1: CreateEffect
-		Explosions: med_explosion
-		ImpactSounds: expnew16.aud
+		Image: tsdig
+		Explosions: idle
+		ExplosionPalette: tseffect
+		ImpactSounds: subdril1.aud
 		ImpactActors: false
 	Warhead@2: SpawnActor
-		InternalOwner: Creeps
-		OwnerType: InternalName
 		Actors: tsfloater
+		Delay: 5
 
 ViscSpawner:
 	Inherits: FloaterSpawner
@@ -1221,3 +1245,12 @@ FiendSpawner:
 	Inherits: FloaterSpawner
 	Warhead@2: SpawnActor
 		Actors: tsdoggiew
+
+TunnelDisappear:
+	ReloadDelay: 10
+	Warhead@1: CreateEffect
+		Image: tsdig
+		Explosions: idle
+		ExplosionPalette: tseffect
+		ImpactSounds: subdril1.aud
+		ImpactActors: false

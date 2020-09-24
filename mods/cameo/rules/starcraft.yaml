@@ -1558,6 +1558,8 @@ SCHATCHERY:
 		Prerequisite: botpowerrestriction
 		RequiresCondition: botpowerrestriction
 		RequiresPrerequisites: !Extractor
+	CashTrickler@hard:
+		RequiresCondition: hardcash || normalcash
 
 SCCREEPCOLONY:
 	Inherits: ^Defense
@@ -1598,6 +1600,8 @@ SCCREEPCOLONY:
 		RequiresCondition: sunken || spore
 	RevealsShroud:
 		Range: 9c0
+	Sellable:
+		-RequiresCondition:
 	-WithDeathAnimation:
 	-SpawnActorsOnSell:
 	##########
@@ -2589,6 +2593,7 @@ SCGHOST:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@detect: ^GenericGroundDetector #this is so terrans have a mobile detector, remove when science vessels are added
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -2604,6 +2609,9 @@ SCGHOST:
 		HP: 13000
 	RevealsShroud:
 		Range: 10c0
+	DetectCloaked:
+		Range: 6c0
+		RequiresCondition: !frozen
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -2674,7 +2682,6 @@ SCTE6:
 ^SCTVEHICLE:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@EXT: ^ExternalConditions
 	AcceptsDeliveredExperience:
 		ValidTypes: vehicle
@@ -2737,6 +2744,8 @@ SCSIEGETANK:
 		HP: 60000
 	RevealsShroud:
 		Range: 9c0
+	RevealOnFire:
+		ArmamentNames: primary, deployed
 	Armor:
 		Type: Heavy
 	Turreted:
@@ -2745,8 +2754,8 @@ SCSIEGETANK:
 		RequiresCondition: undeployed
 	Turreted@deployed:
 		Turret: deployed
-		TurnSpeed: 10
-		Offset: 0,0,0
+		RealignDelay: -1
+		TurnSpeed: 512
 		RequiresCondition: deployed
 	Armament:
 		Weapon: SiegeTankCanon
@@ -2756,7 +2765,7 @@ SCSIEGETANK:
 	Armament@DEPLOYED:
 		Name: deployed
 		Weapon: SiegeTankSiegeCanon
-		LocalOffset: 600,-100,768
+		LocalOffset: 600,-100,300
 		MuzzleSequence: muzzle
 		RequiresCondition: deployed
 	AttackTurreted:
@@ -2767,7 +2776,7 @@ SCSIEGETANK:
 		RequiresCondition: undeployed
 	WithSpriteTurret@deployed:
 		Sequence: deployed
-		Name: deployed
+		Turret: deployed
 		RequiresCondition: deployed
 	WithFacingSpriteBody:
 		RequiresCondition: !deployed
@@ -2997,6 +3006,16 @@ SCWRAITH:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 30,24
+	Cloak:
+		InitialDelay: 60
+		CloakDelay: 60
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		UncloakOn: Damage
+		PauseOnCondition: cloak-force-disabled || disabled
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
 	Power:
 		Amount: -20
 	Voiced:
@@ -3400,6 +3419,7 @@ SCDARKTEMPLAR:
 		CloakDelay: 60
 		CloakSound: trans1.aud
 		UncloakSound: trans1.aud
+		UncloakOn: None
 	Power:
 		Amount: -20
 	WithDeathAnimation:
@@ -3553,6 +3573,7 @@ SCOBSERVER:
 	Inherits: ^Helicopter
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@detect: ^GenericAirDetector
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -3563,7 +3584,7 @@ SCOBSERVER:
 		BuildPaletteOrder: 30
 		Prerequisites: Observatory, ~techlevel.medium
 		Queue: Vehicle.Protoss, RAVehicle.Protoss
-		Description: Stealth scout.\nRequires Observatory to remain cloaked\n Unarmed
+		Description: Stealth scout.\n Unarmed
 	Aircraft:
 		TurnSpeed: 5
 		Speed: 60
@@ -3582,19 +3603,17 @@ SCOBSERVER:
 		Range: 10c0
 	RenderDetectionCircle:
 	-SpawnActorOnDeath:
+	-MustBeDestroyed:
 	DeathSounds:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 24,24
-	GrantConditionOnPrerequisite:
-		Condition: observercloak
-		Prerequisites: Observatory
 	Cloak:
 		InitialDelay: 10
 		CloakDelay: 10
 		CloakSound: trans1.aud
 		UncloakSound: trans1.aud
-		RequiresCondition: observercloak
+		RequiresCondition: !disabled
 	Power:
 		Amount: -10
 	Voiced:
@@ -3879,6 +3898,8 @@ SCARBITER:
 	ProximityExternalCondition@StealGen:
 		Range: 7c0
 		Condition: tscloak
+	WithRangeCircle:
+		Range: 7c0
 
 SCPMCV:
 	Inherits: ^Vehicle
@@ -4033,6 +4054,7 @@ SCZERGLING:
 SCOVERLORD:
 	Inherits: ^Helicopter
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@detect: ^GenericAirDetector
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -4046,13 +4068,17 @@ SCOVERLORD:
 		BuildDurationModifier: 25
 		Prerequisites:
 		Queue: Building.Zerg, RABuilding.Zerg
-		Description: Provides supply and stores resources
+		Description: Provides supply and stores resources\nCan transport 8 units
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
 		Speed: 30
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
+	Cargo:
+		Types: Infantry, Vehicle
+		MaxWeight: 8
+		PipCount: 8
 	Health:
 		HP: 24000
 	Armor:
@@ -4229,7 +4255,7 @@ SCSCOURGE:
 	RevealsShroud:
 		Range: 4c0
 		Type: GroundPosition
-	AttackFrontal:
+	AttackAircraft:
 		FacingTolerance: 128
 	Armament@PRIMARY:
 		Weapon: ScourgeExplosion
@@ -4524,7 +4550,7 @@ SCINFESTEDTERRAN:
 SCDEFILER:
 	Inherits: ^LargeZerg
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EXT: ^ExternalConditions
 	Valued:
@@ -4566,7 +4592,7 @@ SCDEFILER:
 	-ExternalCondition@DarkSwarm:
 	AIDeployNotifier:
 		DeployTrigger: Damage
-		DeployChance: 25
+		DeployChance: 50
 		UndeployTicks: 0
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False

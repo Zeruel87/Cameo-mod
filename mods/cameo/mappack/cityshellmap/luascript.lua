@@ -4,7 +4,7 @@ CabalSquad = { "tscyborg", "tscyborg", "tscyborg", "tscyborg", "tscyborg", "tscy
 AlliedSquad = { "2tnk", "2tnk", "1tnk", "1tnk", "rajeep", "raarty" }
 AlliedInf = { "rae1", "rae1", "rae1", "rae1", "rae1", "rae1", "rae3", "rae3" }
 SovietSquad = { "ra2e2", "ra2e2", "ra2e2", "ra2e2", "ra2e2", "ra2e2", "ra2flakt", "ra2flakt", "ra2shk" }
-SovietHeavy = { "3tnk", "3tnk", "ftnk", "ltnk", "ltnk", "ltnk", "4tnk" }
+SovietHeavy = { "3tnk", "3tnk", "ftnk", "ltnk", "ltnk", "4tnk" }
 AlphaSquad = { "2100mvw", "2100mvw", "2100rvw", "2100rvw", "2100rvw", "2100mch" }
 AlphaSquadHeavy = { "2100tch", "2100apt", "2100hpt", "2100tch" }
 CitySquad = { "cityfiretruck", "citypolicecar", "tsdoggie", "tsdoggie", "tsdoggie", "tse3", "tse3", "cityambulance" }
@@ -94,6 +94,18 @@ ShuttleDrop = function(entry, hpad)
 	Trigger.AfterDelay(DateTime.Seconds(60), function() ShuttleDrop(entry, hpad) end)
 end
 
+ChronoshiftRedUnits = function()
+	local cells = Utils.ExpandFootprint({ SovietChrono.Location }, false)
+	local units = { }
+	for i = 1, #cells do
+		local unit = Actor.Create("2100tch", true, { Owner = alpha, Facing = 0 })
+		BindActorTriggers(unit)
+		units[unit] = cells[i]
+	end
+	RedChrono.Chronoshift(units)
+	Trigger.AfterDelay(DateTime.Seconds(60), ChronoshiftRedUnits)
+end
+
 ticks = 1250
 speed = 7
 
@@ -111,6 +123,8 @@ WorldLoaded = function()
 	alpha = Player.GetPlayer("Project")
 	city = Player.GetPlayer("SimCity")
 	viewportOrigin = Camera.Position
+
+	Trigger.AfterDelay(DateTime.Seconds(2), ChronoshiftRedUnits)
 	
 	SendProtossUnits(entry1.Location, ProtossSquad, 20)
 	SendProtossUnits(entry6.Location, ProtossSquad, 20)

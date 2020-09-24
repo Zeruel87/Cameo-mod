@@ -96,6 +96,10 @@ RA160mm:
 	ReloadDelay: 100
 	Range: 12c0
 	Report: vdesatta.wav, vrdesattb.wav
+	Projectile: Bullet
+		LaunchAngle: 128
+		ContrailLength: 10
+		ContrailWidth: 0c32
 	Warhead@1Dam: SpreadDamage
 		Damage: 9000
 		Versus:
@@ -158,7 +162,7 @@ RA2GrandCannonWeapon:
 	Projectile: Bullet
 		Blockable: false
 		Speed: 700
-		ContrailLength: 0
+		ContrailLength: 10
 		LaunchAngle: 35
 	Warhead@1Dam: SpreadDamage
 		Spread: 400
@@ -277,7 +281,7 @@ PrismScatter:
 
 RA2DiskLaser:
 	Inherits: Laser
-	ReloadDelay: 50
+	ReloadDelay: 80
 	Range: 7c0
 	Report: vfloatta.wav
 	ValidTargets: Ground, Water, Air
@@ -303,10 +307,10 @@ RA2DiskDrain:
 	-InvalidTargets:
 	ValidTargets: Structure
 	Projectile: LaserZap
-		Shape: Cylindrical
 		Width: 200
 		Color: aa799080
 		SecondaryBeamWidth: 128
+		-HitAnim:
 	Warhead@1Dam: SpreadDamage
 		Damage: 200
 		Versus:
@@ -353,38 +357,39 @@ PrismCharge:
 		ValidTargets: PrismTower
 
 RA2Magnet:
-	Inherits: Laser
 	Range: 7c0
 	ValidTargets: Vehicle, Structure
 	ReloadDelay: 120
 	Report: vmagatta.wav
+	TargetActorCenter: true
 	Projectile: LaserZap
 		Shape: Flat
 		Width: 350
-		Duration: 80
+		Duration: 120
+		Color: FF50F545
 	Warhead@1Dam: SpreadDamage
-		Spread: 64
-		Damage: 200
+		Range: 0, 32
+		Falloff: 100, 100
+		Damage: 8000
 		Versus:
-			Light: 105
-			Heavy: 90
-	Warhead@2Con: GrantExternalCondition
-		Condition: Magnet
-		Duration: 100
-		Range: 0c172
-		ValidTargets: Ground, Water, Structure, Wall
+			Light: 75
+			Heavy: 100
+			Wood: 100
+		ValidTargets: Vehicle, Structure
 
 RA2MagnetFlash:
 	Inherits: RA2Magnet
-	ReloadDelay: 300
 	Report: vmagat2a.wav
 	Projectile: LaserZap
+		Duration: 40
 		Width: 500
 	Warhead@1Dam: SpreadDamage
-		Spread: 64
-		Damage: 6000
-		Versus:
-			None: 10
+		Damage: 0
+	Warhead@2Con: GrantExternalCondition
+		Condition: Magnet
+		Duration: 120
+		Range: 0c172
+		ValidTargets: Ground, Water, Structure, Wall
 
 RA2MagnetAA:
 	Inherits: RA2Magnet
@@ -435,14 +440,19 @@ IFVChronoBeam:
 		Damage: 2500
 
 SonicZap:
-	ReloadDelay: 180
+	ReloadDelay: 120
 	Range: 6c0
 	Report: vdolatta.wav
 	ValidTargets: Water, Underwater
 	Burst: 2
-	Projectile: LaserZap
-		Duration: 10
-		DamageInterval: 5
+	Projectile: AreaBeam
+		Speed: 0c256
+		Duration: 5
+		DamageInterval: 1
+		Width: 0c512
+		Shape: Flat
+		ZOffset: 2047
+		BeyondTargetRange: 0c256
 		Blockable: true
 		Color: 50F5FF45
 	Warhead@1Dam: SpreadDamage
@@ -1630,3 +1640,11 @@ MigTarget:
 		Spread: 0c172
 		Duration: 30
 		Condition: BorisFlare
+
+WarpawayEffect:
+	ValidTargets: Ground, Water, Air
+	Warhead@1: CreateEffect
+		Explosions: warpaway
+		ExplosionPalette: ra2effect
+		ImpactSounds: ichrkill.wav
+		ValidTargets: Ground, Water, Air
