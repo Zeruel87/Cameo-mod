@@ -258,7 +258,15 @@
 		Condition: tscloak
 
 ^VehicleRadiation:
+	DamagedByTintedCells@rad:
+		Damage: 400
+		DamageInterval: 16
+		DamageTypes: DefaultDeath
 		LayerName: ra2radiation
+	DamagedByTintedCells@tib:
+		Damage: 400
+		DamageInterval: 16
+		DamageTypes: TiberiumDeath
 		LayerName: tibradiation
 
 ^UnitDisable:
@@ -275,14 +283,6 @@
 	ExternalCondition@STASIS:
 		Condition: ArbiterStasis
 
-	DamagedByTintedCells@rad:
-		Damage: 400
-		DamageInterval: 16
-		DamageTypes: DefaultDeath
-	DamagedByTintedCells@tib:
-		Damage: 400
-		DamageInterval: 16
-		DamageTypes: TiberiumDeath
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^IronCurtainable
@@ -294,6 +294,9 @@
 	Inherits@rad: ^VehicleRadiation
 	Inherits@fix: ^Repairable
 	Inherits@EMP: ^UnitDisable
+	Inherits@driver-dead: ^AffectedByDriverKill
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
+	Inherits@FrenzyPower: ^FrenzyPower
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -363,6 +366,9 @@
 		Type: GrinderCash
 		Sounds: bgrinda.wav
 	CaptureManager:
+	Capturable:
+		Types: vehicle
+		ValidStances: Enemy, Neutral
 	Carryable:
 		LockedCondition: carried
 	SelfHealing@MACHINESHOP:
@@ -401,27 +407,6 @@
 		RequiresCondition: Magnet
 	Hovers@Magnetron:
 		RequiresCondition: Magnet
-	ExternalCondition@TSNEUTRON:
-		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
-	SpeedMultiplier@TSNEUTRON:
-		Modifier: 2
-		RequiresCondition: TSNeutronBomb
-	ReloadDelayMultiplier@TSNEUTRON:
-		RequiresCondition: TSNeutronBomb
-		Modifier: 200
-	Capturable@Normal:
-		Types: vehicle
-		ValidStances: Enemy, Neutral
-		RequiresCondition: !deaddriver
-	Capturable@DeadDriver:
-		Types: vehicle, deaddriver
-		ValidStances: Enemy, Neutral
-		RequiresCondition: deaddriver
-	ExternalCondition@DeadDriver:
-		Condition: deaddriver
 	GpsDot:
 		String: Vehicle
 
@@ -436,10 +421,6 @@
 		Payload: 300
 		Type: GrinderCash
 		Sounds: bgrinda.wav
-	SpawnActorOnDeath@MaraunderCrate:
-		Probability: 99
-		Actor: glscrapcrate
-		DeathType: MakeScrapbox
 
 ^BoatUnit:
 	Inherits: ^Vehicle
@@ -592,6 +573,8 @@
 	Inherits@bounty: ^GlobalBounty
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
+	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -648,16 +631,16 @@
 		DamageInterval: 16
 		DamageTypes: TiberiumDeath
 		RequiresCondition: !hazmatsuits
-		LayerName: ra2radiation
-		LayerName: tibradiation
 	DamagedByTintedCells@rad:
 		Damage: 1000
 		DamageInterval: 16
 		DamageTypes: DefaultDeath
+		LayerName: ra2radiation
 	DamagedByTintedCells@tib:
 		Damage: 500
 		DamageInterval: 16
 		DamageTypes: TiberiumDeath
+		LayerName: tibradiation
 	GrantConditionOnTerrain@HAZMAT:
 		Condition: ontiberium
 		TerrainTypes: Tiberium, BlueTiberium
@@ -766,24 +749,20 @@
 		Palette: reapertrap
 		RequiresCondition: ReaperTrap
 	SpeedMultiplier@REAPERTRAP:
-		Modifier: 5
-		RequiresCondition: ReaperTrap
-	Explodes@RA2Virus:
-		Weapon: RA2VirusExplode
-		EmptyWeapon: RA2VirusExplode
-		DeathTypes: RA2VirusDeath
-	Captures@VEHICLE:
-		CaptureTypes: deaddriver
-		PlayerExperience: 10
-		ConsumedByCapture: True
-	Explodes@ExplosionDeath:
-		Weapon: InfantryExplode
-		EmptyWeapon: InfantryExplode
-		DeathTypes: ExplosionDeath
-	ExplosionOnDamageTransition@XD:
-		Weapon: InfantryExplodeDamaged
-		EmptyWeapon: InfantryExplodeDamaged
-		DamageState: Heavy, Critical
+		Modifier: 0
+		RequiresCondition: ReaperTrap || ArbiterStasis
+	ExternalCondition@STASIS:
+		Condition: ArbiterStasis
+	WithColoredOverlay@TSNEUTRON:
+		Palette: tsneutron
+		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
+	SpawnActorOnDeath@RA2Virus:
+		Actor: ra2txgasg
+		Probability: 50
+		OwnerType: Killer
+		DeathType: RA2VirusDeath
+	GpsDot:
+		String: Infantry
 
 ^Soldier:
 	Inherits: ^Infantry
@@ -1481,10 +1460,6 @@
 		EmptyWeapon: UnitExplodeSmall
 	BodyOrientation:
 		UseClassicFacingFudge: True
-	SpawnActorOnDeath@MaraunderCrate:
-		Probability: 99
-		Actor: glscrapcrate
-		DeathType: MakeScrapbox
 
 ^LightHusk:
 	Inherits: ^Husk
@@ -1603,52 +1578,7 @@
 		Condition: global-bounty
 		Prerequisites: global-bounty
 	GivesBounty:
-		RequiresCondition: global-bounty && !gla1-bounty && !gla2-bounty && !gla3-bounty
-	GivesBounty@GLA1:
-		RequiresCondition: gla1-bounty && !global-bounty
-		Percentage: 5
-	GivesBounty@GLA2:
-		RequiresCondition: gla2-bounty && !global-bounty
-		Percentage: 10
-	GivesBounty@GLA3:
-		RequiresCondition: gla3-bounty && !global-bounty
-		Percentage: 20
-	GivesBounty@GLOBALBOUNTYGLA1:
-		RequiresCondition: gla1-bounty && global-bounty
-		Percentage: 15
-	GivesBounty@GLOBALBOUNTYGLA2:
-		RequiresCondition: gla2-bounty && global-bounty
-		Percentage: 20
-	GivesBounty@GLOBALBOUNTYGLA3:
-		RequiresCondition: gla3-bounty && global-bounty
-		Percentage: 30
-	ExternalCondition@GLOBALBOUNTYGLA1:
-		Condition: gla1-bounty
-	ExternalCondition@GLOBALBOUNTYGLA2:
-		Condition: gla2-bounty
-	ExternalCondition@GLOBALBOUNTYGLA3:
-		Condition: gla3-bounty
-	ProximityExternalCondition@GLOBALBOUNTYGLA1:
-		Range: 8c0
-		Condition: gla1-bounty
-		RequiresCondition: upglabounty1 && !upglabounty2
-	ProximityExternalCondition@GLOBALBOUNTYGLA2:
-		Range: 8c0
-		Condition: gla2-bounty
-		RequiresCondition: upglabounty2 && !upglabounty3
-	ProximityExternalCondition@GLOBALBOUNTYGLA3:
-		Range: 8c0
-		Condition: gla3-bounty
-		RequiresCondition: upglabounty3
-	GrantConditionOnPrerequisite@GLOBALBOUNTYGLA1:
-		Condition: upglabounty1
-		Prerequisites: upglabounty1
-	GrantConditionOnPrerequisite@GLOBALBOUNTYGLA2:
-		Condition: upglabounty2
-		Prerequisites: upglabounty2
-	GrantConditionOnPrerequisite@GLOBALBOUNTYGLA3:
-		Condition: upglabounty3
-		Prerequisites: upglabounty3
+		RequiresCondition: global-bounty
 
 ####################################################################################################
 #		RA
@@ -1757,10 +1687,6 @@
 	HitShape:
 	MapEditorData:
 		Categories: Husk
-	SpawnActorOnDeath@MaraunderCrate:
-		Probability: 99
-		Actor: glscrapcrate
-		DeathType: MakeScrapbox
 
 ^PlaneHusk:
 	Inherits: ^BasicHusk
@@ -2679,6 +2605,29 @@ CPQDEBUGDUMMY:
 	Repairable:
 		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr
 
+^ShootableMissile:
+	Inherits@1: ^ExistsInWorld
+	Inherits@2: ^SpriteActor
+	Armor:
+		Type: Light
+	ShootableBallisticMissile:
+		LaunchAngle: 128
+		Speed: 110
+		AirborneCondition: airborne
+	Targetable@GROUND:
+		TargetTypes: Ground, Vehicle
+		RequiresCondition: !airborne
+	Targetable@AIRBORNE:
+		TargetTypes: Air
+		RequiresCondition: airborne
+	HiddenUnderFog:
+		Type: GroundPosition
+	Tooltip:
+		Name: Missile
+		GenericName: Missile
+		ShowOwnerRow: false
+	HitShape:
+	RejectsOrders:
 	Interactable:
 
 ^MindControllable:
@@ -2743,6 +2692,7 @@ CPQDEBUGDUMMY:
 		Condition: powerdisabled
 	AffectedByPowerOutage:
 		Condition: power-outage
+	InfiltrateForPowerOutage:
 		Types: SpyInfiltrate
 	Targetable@infiltrate:
 		TargetTypes: SpyInfiltrate
@@ -2812,27 +2762,100 @@ CPQDEBUGDUMMY:
 ^TurretEMP:
 	AttackTurreted:
 		PauseOnCondition: disabled
-^ShootableMissile:
-	Inherits@1: ^ExistsInWorld
-	Inherits@2: ^SpriteActor
-	Armor:
-		Type: Light
-	ShootableBallisticMissile:
-		LaunchAngle: 128
-		Speed: 110
-		AirborneCondition: airborne
-	Targetable@GROUND:
-		TargetTypes: Ground, Vehicle
-		RequiresCondition: !airborne
-	Targetable@AIRBORNE:
-		TargetTypes: Air
-		RequiresCondition: airborne
-	HiddenUnderFog:
-		Type: GroundPosition
-	Tooltip:
-		Name: Missile
-		GenericName: Missile
-		ShowOwnerRow: false
-	HitShape:
-	RejectsOrders:
-	InfiltrateForPowerOutage:
+
+####################################################################################################
+#		Generals
+####################################################################################################
+
+^AffectedByDriverKill:
+	GrantConditionIfOwnerIsNeutral:
+		Condition: driver-dead
+	Capturable@DRIVER_DEAD:
+		Types: driverless_vehicle
+		RequiresCondition: driver-dead
+		ValidStances: Enemy, Neutral, Ally
+		CancelActivity: true
+	SelfHealing@DRIVER_DEAD:
+		PercentageStep: -1
+		Delay: 800
+		HealIfBelow: 101
+		DamageCooldown: 0
+		RequiresCondition: driver-dead
+	ExternalCondition@DeadDriver:
+		Condition: driver-dead
+	Targetable@DRIVERKILL:
+		TargetTypes: DriverKill
+		RequiresCondition: !driver-dead
+	Targetable@AICAPTURE:
+		TargetTypes: NoCrew
+		RequiresCondition: driver-dead
+	WithDecoration@DRIVERKILL:
+		Image: gendriverdead
+		Sequence: idle
+		ReferencePoint: Right, Top
+		RequiresCondition: driver-dead
+		BlinkInterval: 32
+		BlinkPattern: On, Off, Off, Off
+
+^CanCaptureDriverlessVehicles:
+	Captures@DRIVER_KILL:
+		CaptureTypes: driverless_vehicle
+	CaptureManager:
+
+^FrenzyPower:
+	WithColoredOverlay@FRENZY1:
+		RequiresCondition: frenzypower1
+	WithColoredOverlay@FRENZY2:
+		RequiresCondition: frenzypower2
+	WithColoredOverlay@FRENZY3:
+		RequiresCondition: frenzypower3
+	FirepowerMultiplier@FRENZY1:
+		RequiresCondition: frenzypower1
+		Modifier: 110
+	FirepowerMultiplier@FRENZY2:
+		RequiresCondition: frenzypower2
+		Modifier: 120
+	FirepowerMultiplier@FRENZY3:
+		RequiresCondition: frenzypower3
+		Modifier: 130
+	TimedConditionBar@FRENZY1:
+		Condition: frenzypower1
+	TimedConditionBar@FRENZY2:
+		Condition: frenzypower2
+	TimedConditionBar@FRENZY3:
+		Condition: frenzypower3
+	ExternalCondition@FRENZY1:
+		Condition: frenzypower1
+	ExternalCondition@FRENZY2:
+		Condition: frenzypower2
+	ExternalCondition@FRENZY3:
+		Condition: frenzypower3
+
+^PropagandaSelfHeal:
+	GrantConditionOnPrerequisite@upsubmininal:
+		Condition: upsubmininal
+		Prerequisites: upsubmininal
+	ExternalCondition@PROPAGANDA:
+		Condition: propaganda
+	SelfHealing@PROPAGANDA1:
+		Step: 200
+		Delay: 100
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: propaganda
+	SelfHealing@PROPAGANDA2:
+		Step: 200
+		Delay: 100
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: propaganda && upsubmininal
+	WithDecoration@PROPAGANDAHEAL:
+		Image: pips
+		Sequence: pip-heal
+		ReferencePoint: Bottom, Right
+		RequiresCondition: propaganda
+		BlinkInterval: 32
+		BlinkPattern: On, Off
+	Targetable@PROPAGANDAPSI:
+		RequiresCondition: propaganda
+		TargetTypes: Propaganda
