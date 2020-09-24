@@ -17,7 +17,7 @@ using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.AS.Warheads
+namespace OpenRA.Mods.CA.Warheads
 {
 	[Desc("This warhead can detach a DelayedWeapon from the target. Requires an appropriate type of DelayedWeaponAttachable trait to function properly.")]
 	public class DetachDelayedWeaponWarhead : WarheadAS

@@ -1,3 +1,30 @@
+^SCSmallShadow:
+	WithIdleOverlay@Shadow:
+		Sequence: shadow
+		Offset: 0,0,-280
+
+^SCWorker:
+	Harvester:
+		PipCount: 2
+		Capacity: 2
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 0
+		BaleUnloadAmount: 2
+		FullyLoadedSpeed: 100
+		MaxUnloadQueue: 9
+	WithHarvestAnimation:
+	WithDockingAnimation:
+
+^SCUnitProduction:
+	Inherits@prod: ^ProducesUnits
+	GrantConditionOnPowerState@supply:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	Production@NORMAL:
+		PauseOnCondition: lowpower
+	Production@CLASSICPRODUCTIONQUEUES:
+		PauseOnCondition: lowpower
+
 ####################################################################################################
 #		BUILDING TERRAN
 ####################################################################################################
@@ -46,7 +73,6 @@ SCCOMMANDCENTER:
 		Type: Defence.Terran
 		DisplayOrder: 1
 		Group: Defence
-		LowPowerModifier: 9999
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
 	BaseBuilding:
@@ -63,7 +89,6 @@ SCCOMMANDCENTER:
 		ProductionType: RADefence.Terran
 		RequiresCondition: classicproductionqueues
 	BaseProvider:
-		Cooldown: 75
 		Range: 14c0
 	WithBuildingPlacedAnimation:
 	ProvidesPrerequisite@buildingname:
@@ -93,19 +118,18 @@ SCCOMMANDCENTER:
 SCSUPPLYDEPOT:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@power: ^Power
 	Valued:
 		Cost: 400
 	Tooltip:
 		Name: Supply Depot
 	ProvidesPrerequisite@supplydepot:
 		Prerequisite: Supply Depot
-	ProvidesPrerequisite@anypower:
-		Prerequisite: anypower
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 480
 		Queue: Building.Terran, RABuilding.Terran
-		Description: Generates power & Stores Ressources
+		Description: Provides supply and stores resources
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -120,14 +144,13 @@ SCSUPPLYDEPOT:
 		PipCount: 10
 		Capacity: 1000
 	-SpawnActorsOnSell:
-	Inherits@EXPERIENCE: ^GainsExperience				##########
-	Inherits@POWERMULTIPLIER: ^PowerMultiplier			##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 
 SCREFINERY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
+	Inherits@ref: ^Refinery
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -167,6 +190,7 @@ SCBARRACKS:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -207,7 +231,6 @@ SCBARRACKS:
 		Type: Infantry.Terran
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -226,7 +249,6 @@ SCBARRACKS:
 	Transforms:
 		IntoActor: scbarracksm
 		Offset: 1,1
-		TransformSounds: constru2.aud, hvydoor1.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
 
 SCENGINEERINGBAY:
@@ -261,13 +283,13 @@ SCENGINEERINGBAY:
 	Transforms:
 		IntoActor: scengineeringbaym
 		Offset: 1,1
-		TransformSounds: constru2.aud, hvydoor1.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
 
 SCMISSILETURRET:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@shape: ^2x2Shape
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -278,7 +300,7 @@ SCMISSILETURRET:
 		Queue: Defence.Terran, RADefence.Terran
 		BuildDuration: 1700
 		BuildDurationModifier: 40
-		Description: Anti-Aircraft base defense.\n  Cannot target Ground units.
+		Description: Anti-aircraft base defense.\nCan detect cloaked units.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -390,7 +412,7 @@ SCBUNKER:
 		Queue: Defence.Terran, RADefence.Terran
 		BuildPaletteOrder: 20
 		Prerequisites: barracks, ~techlevel.low
-		Description: Static defense with a fireport for\nup to four garrisoned soldier.
+		Description: Static defense with fireports for\nup to four garrisoned soldiers.
 	Valued:
 		Cost: 400
 	Health:
@@ -410,12 +432,13 @@ SCBUNKER:
 		Types: Infantry
 		MaxWeight: 4
 		PipCount: 4
-		EjectOnDeath: True
+		EjectOnDeath: false
 	AttackGarrisoned:
 		Armaments: garrisoned
 		PortOffsets: -100,0,128, -500,-241,128, -900,-241,128, -1100,0,128, -900,241,128, -500,241,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
+		PauseOnCondition: disabled
 	RenderRangeCircle:
 		FallbackRange: 7c0
 	-QuantizeFacingsFromSequence:
@@ -426,6 +449,7 @@ SCFACTORY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 1600
 	Tooltip:
@@ -464,7 +488,6 @@ SCFACTORY:
 		Type: Vehicle.Terran
 		DisplayOrder: 3
 		Group: Vehicle
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -486,13 +509,13 @@ SCFACTORY:
 	Transforms:
 		IntoActor: scfactorym
 		Offset: 1,1
-		TransformSounds: constru2.aud, hvydoor1.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
 
 SCSTARPORT:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -501,7 +524,7 @@ SCSTARPORT:
 		BuildPaletteOrder: 80
 		Prerequisites: Refinery
 		Queue: Building.Terran, RABuilding.Terran
-		Description: Produces aircrafts
+		Description: Produces aircraft
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -530,7 +553,6 @@ SCSTARPORT:
 		Type: Aircraft.Terran
 		DisplayOrder: 4
 		Group: Aircraft
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -550,7 +572,6 @@ SCSTARPORT:
 	Transforms:
 		IntoActor: scstarportm
 		Offset: 1,1
-		TransformSounds: constru2.aud, hvydoor1.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
 
 SCSCIENCEFACILITY:
@@ -566,7 +587,7 @@ SCSCIENCEFACILITY:
 		BuildPaletteOrder: 90
 		Prerequisites: Factory, Starport, ~techlevel.high
 		Queue: Building.Terran, RABuilding.Terran
-		Description: Unlocks Battle Cruiser, Ghost & Nuclear Strike.
+		Description: Unlocks Battlecruiser, Ghost & Nuclear Strike.
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -638,7 +659,6 @@ SCSCIENCEFACILITY:
 	Transforms:
 		IntoActor: scsciencefacilitym
 		Offset: 1,1
-		TransformSounds: constru2.aud, hvydoor1.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
 
 SCARMORY:
@@ -677,62 +697,12 @@ SCBUNKERD:
 		BuildPaletteOrder: 1000
 		BuildDuration: 400
 		Prerequisites: barracks, ~techlevel.low, ~botterran
-		Description: Static defense with a fireport for\nup to four garrisoned soldier.\n\nBot-Assistant Building
 	Valued:
 		Cost: 1000
 	Cargo:
 		InitialUnits: scmarine,scmarine,scmarine,scmarine
 	RenderSprites:
 		Image: scbunker
-
-SCSIEGETANKSIEGE:
-	Inherits: ^Defense
-	Inherits@AUTOTARGET: ^AutoTargetGround
-	Tooltip:
-		Name: Siege Tank Siege
-	Building:
-		UndeploySounds: TankSiegeEnd.aud
-		BuildSounds: tscupd00.aud
-	Buildable:
-		BuildPaletteOrder: 1010
-		Prerequisites: Factory, Engineering Bay, ~botterran
-		Queue: Defence.Terran, RADefence.Terran
-		Description: \n\nBot-Assistant Building
-	Valued:
-		Cost: 1050
-	Health:
-		HP: 47300
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 9c0
-	Turreted:
-		TurnSpeed: 12
-		Offset: 0,-180,0
-	WithEmbeddedTurretSpriteBody:
-	Armament:
-		Weapon: SiegeTankSiegeCanon
-		LocalOffset: 1024,0,512
-		MuzzleSequence: muzzle
-	AttackTurreted:
-	WithMuzzleOverlay:
-	Power:
-		Amount: -20
-	Transforms:
-		IntoActor: scsiegetank
-		Facing: 160
-	Selectable:
-		Bounds: 36,36
-		DecorationBounds: 36,36
-	WithMakeAnimation:
-	-WithDeathAnimation:
-	-WithSpriteBody:
-	-RepairableBuilding:
-	-WithBuildingRepairDecoration:
-	-Sellable:
-	-ShakeOnDeath:
-	-RenderDetectionCircle:
-	-Demolishable:
 
 ####################################################################################################
 #		BUILDING PROTOSS
@@ -748,7 +718,7 @@ SCNEXUS:
 		Bounds: 72,48
 		DecorationBounds: 74,62
 	Valued:
-		Cost: 2400
+		Cost: 2000
 	Tooltip:
 		Name: Nexus
 	Building:
@@ -778,7 +748,6 @@ SCNEXUS:
 		Type: Defence.Protoss
 		DisplayOrder: 1
 		Group: Defence
-		LowPowerModifier: 9999
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
 	BaseBuilding:
@@ -795,7 +764,6 @@ SCNEXUS:
 		ProductionType: RADefence.Protoss
 		RequiresCondition: classicproductionqueues
 	BaseProvider:
-		Cooldown: 75
 		Range: 14c0
 	WithBuildingPlacedAnimation:
 	WithBuildingBib:
@@ -826,19 +794,18 @@ SCPYLON:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@power: ^Power
 	Valued:
 		Cost: 400
 	Tooltip:
 		Name: Pylon
 	ProvidesPrerequisite@pylon:
 		Prerequisite: Pylon
-	ProvidesPrerequisite@anypower:
-		Prerequisite: anypower
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 480
 		Queue: Building.Protoss, RABuilding.Protoss
-		Description: Generates power & Stores Ressources
+		Description: Provides supply and stores resources
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -852,8 +819,6 @@ SCPYLON:
 	StoresResources:
 		PipCount: 10
 		Capacity: 1000
-	Inherits@EXPERIENCE: ^GainsExperience				##########
-	Inherits@POWERMULTIPLIER: ^PowerMultiplier			##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 	-WithDeathAnimation:
@@ -863,6 +828,7 @@ SCASSIMILATOR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@ref: ^Refinery
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -904,6 +870,7 @@ SCGATEWAY:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@supply: ^SCUnitProduction
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -944,7 +911,6 @@ SCGATEWAY:
 		Type: Infantry.Protoss
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -1006,7 +972,7 @@ SCPHOTONCANNON:
 		Queue: Defence.Protoss, RADefence.Protoss
 		BuildDuration: 1700
 		BuildDurationModifier: 40
-		Description: Ground and Air  base defense.
+		Description: Protoss base defense, can attack ground\nand air.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -1020,7 +986,6 @@ SCPHOTONCANNON:
 	DetectCloaked:
 		Range: 10c0
 	Turreted:
-		TurnSpeed: 10
 		InitialFacing: 0
 		RealignDelay: -1
 	WithEmbeddedTurretSpriteBody:
@@ -1031,6 +996,7 @@ SCPHOTONCANNON:
 		CloseDelay: 40
 		ClosedDamageMultiplier: 100
 		RequiresCondition: !build-incomplete
+		PauseOnCondition: disabled
 	BodyOrientation:
 		QuantizedFacings: 16
 	-WithSpriteBody:
@@ -1070,6 +1036,7 @@ SCCYBERNETICSCORE:
 SCSHIELDBATTERY:
 	Inherits: ^BaseBuilding
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -1083,7 +1050,7 @@ SCSHIELDBATTERY:
 		BuildPaletteOrder: 70
 		Prerequisites: Gateway
 		Queue: Building.Protoss, RABuilding.Protoss
-		Description: Automaticaly Heals Units in a 3 Tile Radius.
+		Description: Automatically heals nearby units.
 	Selectable:
 		Bounds: 48,48
 		DecorationBounds: 48,48,0,-12
@@ -1107,6 +1074,9 @@ SCSHIELDBATTERY:
 		ValidTargets: Infantry, Vehicle
 	RallyPoint:
 	RepairsUnits:
+		ValuePercentage: 0
+		HpPerStep: 500
+		Interval: 12
 	-WithSpriteBody:
 	-GivesBuildableArea:
 	-WithDeathAnimation:
@@ -1117,11 +1087,12 @@ SCROBOTICSFACILITY:
 	Inherits@shape: ^2x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@supply: ^SCUnitProduction
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 490,-470,0, 355,512,0, -355,-512,0, -630,512,0
 	Valued:
-		Cost: 2400
+		Cost: 1500
 	Tooltip:
 		Name: Robotics Facility
 	ProvidesPrerequisite:
@@ -1160,7 +1131,6 @@ SCROBOTICSFACILITY:
 		Type: Vehicle.Protoss
 		DisplayOrder: 3
 		Group: Vehicle
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -1184,8 +1154,9 @@ SCSTARGATE:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@supply: ^SCUnitProduction
 	Valued:
-		Cost: 1800
+		Cost: 1400
 	Tooltip:
 		Name: Stargate
 	ProvidesPrerequisite:
@@ -1194,7 +1165,7 @@ SCSTARGATE:
 		BuildPaletteOrder: 90
 		Prerequisites: Assimilator
 		Queue: Building.Protoss, RABuilding.Protoss
-		Description: Produces aircrafts
+		Description: Produces aircraft
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -1223,7 +1194,6 @@ SCSTARGATE:
 		Type: Aircraft.Protoss
 		DisplayOrder: 4
 		Group: Aircraft
-		LowPowerModifier: 9999
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -1245,7 +1215,7 @@ SCCITADELOFADUN:
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
 	Valued:
-		Cost: 1400
+		Cost: 1000
 	Tooltip:
 		Name: Citadel of Adun
 	ProvidesPrerequisite:
@@ -1275,7 +1245,7 @@ SCROBOTICSSUPPORTBAY:
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
 	Valued:
-		Cost: 1400
+		Cost: 1200
 	Tooltip:
 		Name: Robotics Support Bay
 	ProvidesPrerequisite:
@@ -1305,7 +1275,7 @@ SCFLEETBEACON:
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
 	Valued:
-		Cost: 2800
+		Cost: 2000
 	Tooltip:
 		Name: Fleet Beacon
 	ProvidesPrerequisite:
@@ -1314,7 +1284,7 @@ SCFLEETBEACON:
 		BuildPaletteOrder: 120
 		Prerequisites: Stargate, ~techlevel.high
 		Queue: Building.Protoss, RABuilding.Protoss
-		Description: Unlocks Carrier and Orbital Ion Cannon support power.
+		Description: Unlocks Carrier and Purifier Beam support power.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -1335,8 +1305,12 @@ SCFLEETBEACON:
 		Icon: ioncannon
 		Cursor: ioncannon
 		ChargeInterval: 6750
-		Description: Ion Cannon
-		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
+		Effect: explosion
+		EffectSequence: ionring
+		EffectPalette: ra2unit
+		Weapon: TSIonCannon
+		Description: Purifier Beam
+		LongDesc: An orbiting Protoss warship glasses the target.\nApplies instant damage to a small area.
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		SelectTargetSpeechNotification: SelectTarget
@@ -1353,8 +1327,12 @@ SCFLEETBEACON:
 		Icon: ioncannon
 		Cursor: ioncannon
 		ChargeInterval: 6750
-		Description: Ion Cannon
-		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
+		Effect: explosion
+		EffectSequence: ionring
+		EffectPalette: ra2unit
+		Weapon: TSIonCannon
+		Description: Purifier Beam
+		LongDesc: An orbiting Protoss warship glasses the target.\nApplies instant damage to a small area.
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		SelectTargetSpeechNotification: SelectTarget
@@ -1371,7 +1349,7 @@ SCTEMPLARARCHIVES:
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
 	Valued:
-		Cost: 2200
+		Cost: 1600
 	Tooltip:
 		Name: Templar Archives
 	ProvidesPrerequisite:
@@ -1431,16 +1409,16 @@ SCARBITERTRIBUNAL:
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
 	Valued:
-		Cost: 2000
+		Cost: 1000
 	Tooltip:
 		Name: Arbiter Tribunal
 	ProvidesPrerequisite:
 		Prerequisite: Arbiter Tribunal
-	#Buildable:
-	#	BuildPaletteOrder: 150
-	#	Prerequisites: Stargate, ~techlevel.medium
-	#	Queue: Building.Protoss, RABuilding.Protoss
-	#	Description: Unlocks Arbiter.
+	Buildable:
+		BuildPaletteOrder: 150
+		Prerequisites: Stargate, ~techlevel.medium
+		Queue: Building.Protoss, RABuilding.Protoss
+		Description: Unlocks Arbiter.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -1465,31 +1443,63 @@ SCHATCHERY:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
+	Inherits@supply: ^SCUnitProduction
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
 	Valued:
-		Cost: 2100
+		Cost: 2000
 	Tooltip:
 		Name: Hatchery
+		RequiresCondition: !lair && !hive
+	Tooltip@2:
+		Name: Lair
+		RequiresCondition: lair && !hive
+	Tooltip@3:
+		Name: Hive
+		RequiresCondition: hive
 	ProvidesPrerequisite:
 		Prerequisite: Hatchery
+	ProvidesPrerequisite@2:
+		Prerequisite: Lair
+		RequiresCondition: lair
+	ProvidesPrerequisite@3:
+		Prerequisite: Hive
+		RequiresCondition: hive
+	ProvidesPrerequisite@lairlimit:
+		Prerequisite: botlairlimit
+		RequiresCondition: lair && botzerg
+	ProvidesPrerequisite@hivelimit:
+		Prerequisite: bothivelimit
+		RequiresCondition: hive && botzerg
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: zchrdy00.aud
 	Health:
-		HP: 125000
+		HP: 150000
+	DamageMultiplier@lair:
+		Modifier: 75
+		RequiresCondition: lair && !hive
+	DamageMultiplier@hive:
+		Modifier: 50
+		RequiresCondition: hive
 	Armor:
 		Type: Wood
 	RevealsShroud:
 		Range: 8c0
+	Production@NORMALBUILDING:
+		Produces: Building.Zerg, Defence.Zerg
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICBUILDING:
+		Produces: RABuilding.Zerg, RADefence.Zerg
+		RequiresCondition: classicproductionqueues
 	Production@NORMAL:
-		Produces: Building.Zerg, Defence.Zerg, Infantry.Zerg, Hatchery.Zerg
+		Produces: Infantry.Zerg
 		RequiresCondition: !classicproductionqueues
 	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding.Zerg, RADefence.Zerg, RAInfantry.Zerg, Hatchery.Zerg
+		Produces: RAInfantry.Zerg
 		RequiresCondition: classicproductionqueues
 	ProductionQueue@ZergBuilding:
 		Type: Building.Zerg
@@ -1507,9 +1517,8 @@ SCHATCHERY:
 		Type: Infantry.Zerg
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 9999
 		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
+		ReadyAudio: UnitReady
 	BaseBuilding:
 	ProductionBar@BuildingZerg:
 		ProductionType: Building.Zerg
@@ -1530,9 +1539,7 @@ SCHATCHERY:
 		ProductionType: RAInfantry.Zerg
 		RequiresCondition: classicproductionqueues
 	BaseProvider:
-		Cooldown: 75
 		Range: 14c0
-	WithBuildingPlacedAnimation:
 	WithBuildingBib:
 	RallyPoint:							##########
 		Offset: 0,2
@@ -1562,23 +1569,57 @@ SCHATCHERY:
 	ProductionQueue@hatchery:
 		Type: Hatchery.Zerg
 		Group: Defence
+	ProductionQueue@lair:
+		Type: Lair.Zerg
+		Group: Defence
 	GrantConditionOnProduction@lair:
-		Condition: laircondition
+		Condition: lair
 		Actors: psclair
-	KillsSelf@lair:
-		RequiresCondition: laircondition
-		GrantsCondition: lairrebirth
-	SpawnActorOnDeath@lair:
-		RequiresCondition: lairrebirth
-		Actor: sclair
-	SoundOnDamageTransition:
-		-DamagedSounds: xplos.aud
-		-DestroyedSounds: crumble.aud
+	GrantConditionOnProduction@hive:
+		Condition: hive
+		Actors: pschive
+	GrantConditionOnProduction@animationhack:
+		Condition: transition
+		Duration: 1
+		Actors: psclair
+	GrantConditionOnProduction@animationhack2:
+		Condition: transition2
+		Duration: 1
+		Actors: pschive
+	PeriodicExplosion@1:
+		Weapon: Lairtransition
+		RequiresCondition: transition
+	PeriodicExplosion@2:
+		Weapon: Hivetransition
+		RequiresCondition: transition2
+	WithProductionOverlay@lair:
+		Queues: Hatchery.Zerg
+		Sequence: lairhatch
+	WithProductionOverlay@hive:
+		Queues: Lair.Zerg
+		Sequence: hivehatch
+	Production@lvl1:
+		Produces: Hatchery.Zerg
+		RequiresCondition: !lair
+	Production@lvl2:
+		Produces: Lair.Zerg
+		RequiresCondition: lair && !hive
+	WithMakeAnimation:
+		BodyNames: hatch
+	WithSpriteBody:
+		RequiresCondition: !lair && !hive
+		Name: hatch
+	WithSpriteBody@lair:
+		Sequence: lair
+		Name: lair
+		RequiresCondition: lair && !hive
+	WithSpriteBody@hive:
+		Sequence: hive
+		Name: hive
+		RequiresCondition: hive
 	Explodes:
 		Weapon: Creeptransition
 		Type: CenterPosition
-	-ShakeOnDeath:
-	-ActorLostNotification:
 	##########
 	GrantConditionOnProduction@botpowerrestriction:
 		Condition: botpowerrestriction
@@ -1591,14 +1632,22 @@ SCHATCHERY:
 		RequiresPrerequisites: !Extractor
 
 SCCREEPCOLONY:
-	Inherits: ^BaseBuilding
+	Inherits: ^Defense
 	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
 	Selectable:
 		Bounds: 44,44
 	Valued:
 		Cost: 500
 	Tooltip:
 		Name: Creep Colony
+		RequiresCondition: !sunken && !spore
+	Tooltip@2:
+		Name: Sunken Colony
+		RequiresCondition: sunken
+	Tooltip@3:
+		Name: Spore Colony
+		RequiresCondition: spore
 	ProvidesPrerequisite:
 		Prerequisite: Creep Colony
 	Buildable:
@@ -1606,17 +1655,21 @@ SCCREEPCOLONY:
 		Prerequisites: Extractor
 		BuildDuration: 480
 		Queue: Building.Zerg, RABuilding.Zerg
-		Description: can be upgraded to Sunken or spore colony.
+		Description: Can be upgraded to Sunken or Spore Colonies.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
 		BuildSounds: zchrdy00.aud
 	Health:
 		HP: 60000
+	Armor:
+		Type: Heavy
+		RequiresCondition: sunken || spore
+	DamageMultiplier@evo:
+		Modifier: 60
+		RequiresCondition: sunken || spore
 	RevealsShroud:
 		Range: 9c0
-	GivesBuildableArea:
-		AreaTypes: building, creep colony
 	-WithDeathAnimation:
 	-SpawnActorsOnSell:
 	##########
@@ -1624,39 +1677,69 @@ SCCREEPCOLONY:
 		ExitCell: 0,0
 	Production:
 		Produces: Colony.Zerg
+		RequiresCondition: !sunken && !spore
 	ProductionQueue:
 		Type: Colony.Zerg
 		Group: Defence
 	GrantConditionOnProduction@sunken:
-		Condition: sunkencondition
+		Condition: sunken
 		Actors: pscsunkencolony
-	KillsSelf@sunken:
-		RequiresCondition: sunkencondition
-		GrantsCondition: sunkenrebirth
-	SpawnActorOnDeath@sunken:
-		RequiresCondition: sunkenrebirth
-		Actor: scsunkencolony
 	GrantConditionOnProduction@spore:
-		Condition: sporecondition
+		Condition: spore
 		Actors: pscsporecolony
-	KillsSelf@spore:
-		RequiresCondition: sporecondition
-		GrantsCondition: sporerebirth
-	SpawnActorOnDeath@spore:
-		RequiresCondition: sporerebirth
-		Actor: scsporecolony
-	SoundOnDamageTransition:
-		-DamagedSounds: xplos.aud
-		-DestroyedSounds: crumble.aud
+	WithSpriteBody:
+		RequiresCondition: !sunken && !spore
+	WithSpriteBody@sunken:
+		Sequence: sunken
+		Name: sunken
+		RequiresCondition: sunken
+	WithSpriteBody@spore:
+		Sequence: spore
+		Name: spore
+		RequiresCondition: spore
+	AttackOmni:
+		Armaments: primary, spore
+		PauseOnCondition: disabled
+	WithAttackAnimation:
+		Body: sunken
+		Sequence: shoot
+		RequiresCondition: sunken
+	Armament@sunken:
+		Weapon: Tentacle
+		RequiresCondition: sunken
+	Armament@spore:
+		Name: spore
+		Weapon: Spore
+		RequiresCondition: spore
+	RevealsShroud@upgraded:
+		Range: 9c0
+		RequiresCondition: sunken || spore
+	DetectCloaked@spore:
+		Range: 9c0
+		RequiresCondition: spore
+	GrantConditionOnProduction@animationhack:
+		Condition: transition
+		Duration: 1
+		Actors: pscsporecolony, pscsunkencolony
+	PeriodicExplosion:
+		Weapon: Creeptransition
+		RequiresCondition: transition
 	Explodes:
 		Weapon: Creeptransition
 		Type: CenterPosition
-	-ShakeOnDeath:
-	-ActorLostNotification:
+
+SCBOTCREEPCOLONY:
+	Inherits: SCCREEPCOLONY
+	RenderSprites:
+		Image: sccreepcolony
+	Buildable:
+		Prerequisites: Extractor, ~botzerg
+		Queue: Defence.Zerg, RADefence.Zerg
 
 SCEXTRACTOR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
+	Inherits@ref: ^Refinery
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -1819,8 +1902,18 @@ SCSPIRE:
 		Cost: 2200
 	Tooltip:
 		Name: Spire
+		RequiresCondition: !spirecondition
+	Tooltip@2:
+		Name: Greater Spire
+		RequiresCondition: spirecondition
 	ProvidesPrerequisite:
 		Prerequisite: Spire
+	ProvidesPrerequisite@2:
+		Prerequisite: Greater Spire
+		RequiresCondition: spirecondition
+	ProvidesPrerequisite@botlimit:
+		Prerequisite: botspirelimit
+		RequiresCondition: botzerg && spirecondition
 	Buildable:
 		BuildPaletteOrder: 80
 		Prerequisites: Lair, ~techlevel.medium
@@ -1842,36 +1935,37 @@ SCSPIRE:
 		AreaTypes: building, spire
 	-WithDeathAnimation:
 	-SpawnActorsOnSell:
-	##########
 	Exit:
 		ExitCell: 0,0
 	Production:
 		Produces: Spire.Zerg
+		RequiresCondition: !spirecondition
 	ProductionQueue@ZergSpire:
 		Type: Spire.Zerg
 		Group: Defence
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
-	BaseBuilding:
 	ProductionBar@ZergSpire:
 		ProductionType: Spire.Zerg
 	GrantConditionOnProduction@spire:
 		Condition: spirecondition
 		Actors: pscgreaterspire
-	KillsSelf@spire:
-		RequiresCondition: spirecondition
-		GrantsCondition: spirerebirth
-	SpawnActorOnDeath@spire:
-		RequiresCondition: spirerebirth
-		Actor: scgreaterspire
-	SoundOnDamageTransition:
-		-DamagedSounds: xplos.aud
-		-DestroyedSounds: crumble.aud
+	GrantConditionOnProduction@animationhack:
+		Condition: transition
+		Actors: pscgreaterspire
+		Duration: 1
+	WithSpriteBody:
+		RequiresCondition: !spirecondition
+	WithSpriteBody@greater:
+		Sequence: greaterspire
+		Name: greaterspire
+		RequiresCondition: spirecondition	
+	PeriodicExplosion:
+		Weapon: Lairtransition
+		RequiresCondition: transition
 	Explodes:
 		Weapon: Creeptransition
 		Type: CenterPosition
-	-ShakeOnDeath:
-	-ActorLostNotification:
 
 SCULTRALISKCAVERN:
 	Inherits: ^BaseBuilding
@@ -1906,16 +2000,16 @@ SCDEFILERMOUND:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Valued:
-		Cost: 1400
+		Cost: 1200
 	Tooltip:
 		Name: Defiler Mound
 	ProvidesPrerequisite:
 		Prerequisite: Defiler Mound
-	#Buildable:
-	#	BuildPaletteOrder: 100
-	#	Prerequisites: Hive, ~techlevel.medium
-	#	Queue: Building.Zerg, RABuilding.Zerg
-	#	Description: Unlocks Defiler.
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: Hive, ~techlevel.medium
+		Queue: Building.Zerg, RABuilding.Zerg
+		Description: Unlocks Defiler.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -1964,6 +2058,7 @@ SCSUNKENCOLONY:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@shape: ^2x2Shape
+	Inherits@EMP: ^TurretEMP
 	Selectable:
 		Bounds: 44,44
 	Valued:
@@ -1972,13 +2067,13 @@ SCSUNKENCOLONY:
 		Name: Sunken Colony
 	ProvidesPrerequisite:
 		Prerequisite: Creep Colony
-	Buildable:
-		BuildPaletteOrder: 190
-		Prerequisites: Creep Colony, Spawning Pool, Lair, ~botzerg
-		Queue: Defence.Zerg, RADefence.Zerg
-		BuildDuration: 1700
-		BuildDurationModifier: 40
-		Description: Anti-Ground base defense.\n  Cannot target Air units.
+	#Buildable:
+	#	BuildPaletteOrder: 190
+	#	Prerequisites: Creep Colony, Spawning Pool, Lair, ~botzerg
+	#	Queue: Defence.Zerg, RADefence.Zerg
+	#	BuildDuration: 1700
+	#	BuildDurationModifier: 40
+	#	Description: Ground base defense.\n Strong vs Infantry
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -2006,6 +2101,7 @@ SCSPORECOLONY:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@shape: ^2x2Shape
+	Inherits@EMP: ^TurretEMP
 	Selectable:
 		Bounds: 44,44
 	Valued:
@@ -2014,13 +2110,13 @@ SCSPORECOLONY:
 		Name: Spore Colony
 	ProvidesPrerequisite:
 		Prerequisite: Creep Colony
-	Buildable:
-		BuildPaletteOrder: 200
-		Prerequisites: Creep Colony, Evolution Chamber, Spire, ~botzerg
-		Queue: Defence.Zerg, RADefence.Zerg
-		BuildDuration: 1700
-		BuildDurationModifier: 40
-		Description: Anti-Aircraft base defense.\n  Cannot target Ground units.
+	#Buildable:
+	#	BuildPaletteOrder: 200
+	#	Prerequisites: Creep Colony, Evolution Chamber, Spire, ~botzerg
+	#	Queue: Defence.Zerg, RADefence.Zerg
+	#	BuildDuration: 1700
+	#	BuildDurationModifier: 40
+	#	Description: Anti-aircraft base defense.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -2060,11 +2156,11 @@ SCLAIR:
 		Prerequisite: Hatchery
 	ProvidesPrerequisite@2:
 		Prerequisite: Lair
-	Buildable:
-		Queue: Building.Zerg, RABuilding.Zerg
-		Prerequisites: Hatchery, Spawning Pool, Extractor, ~botzerg
-		BuildPaletteOrder: 120
-		Description: Builds structures and provides radar.
+	#Buildable:
+	#	Queue: Building.Zerg, RABuilding.Zerg
+	#	Prerequisites: Hatchery, Spawning Pool, Extractor, ~botzerg
+	#	BuildPaletteOrder: 120
+	#	Description: Builds structures and provides radar.
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -2100,7 +2196,7 @@ SCLAIR:
 		Group: Infantry
 		LowPowerModifier: 9999
 		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
+		ReadyAudio: UnitReady
 	BaseBuilding:
 	ProductionBar@BuildingZerg:
 		ProductionType: Building.Zerg
@@ -2121,7 +2217,6 @@ SCLAIR:
 		ProductionType: RAInfantry.Zerg
 		RequiresCondition: classicproductionqueues
 	BaseProvider:
-		Cooldown: 75
 		Range: 14c0
 	WithBuildingPlacedAnimation:
 	WithBuildingBib:
@@ -2137,7 +2232,7 @@ SCLAIR:
 		Amount: 100
 	GrantConditionOnBotOwner:
 		Condition: botzerg
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botzerg
 		RequiresCondition: botzerg
@@ -2189,11 +2284,11 @@ SCHIVE:
 		Prerequisite: Lair
 	ProvidesPrerequisite@3:
 		Prerequisite: Hive
-	Buildable:
-		Queue: Building.Zerg, RABuilding.Zerg
-		Prerequisites: Lair, ~techlevel.high, Extractor, ~botzerg
-		BuildPaletteOrder: 130
-		Description: Builds structures and provides radar.
+	#Buildable:
+	#	Queue: Building.Zerg, RABuilding.Zerg
+	#	Prerequisites: Lair, ~techlevel.high, Extractor, ~botzerg
+	#	BuildPaletteOrder: 130
+	#	Description: Builds structures and provides radar.
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -2229,7 +2324,7 @@ SCHIVE:
 		Group: Infantry
 		LowPowerModifier: 9999
 		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
+		ReadyAudio: UnitReady
 	BaseBuilding:
 	ProductionBar@BuildingZerg:
 		ProductionType: Building.Zerg
@@ -2250,7 +2345,6 @@ SCHIVE:
 		ProductionType: RAInfantry.Zerg
 		RequiresCondition: classicproductionqueues
 	BaseProvider:
-		Cooldown: 75
 		Range: 14c0
 	WithBuildingPlacedAnimation:
 	WithBuildingBib:
@@ -2266,7 +2360,7 @@ SCHIVE:
 		Amount: 100
 	GrantConditionOnBotOwner:
 		Condition: botzerg
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botzerg
 		RequiresCondition: botzerg
@@ -2420,61 +2514,6 @@ SCINFESTEDCOMMANDCENTER:
 		SupportPowerPaletteOrder: 30
 	SupportPowerChargeBar:
 
-SCLURKERBURROWED:
-	Inherits: ^Defense
-	Inherits@AUTOTARGET: ^AutoTargetGround
-	Selectable:
-		Bounds: 24,24
-		DecorationBounds: 24,24
-	Tooltip:
-		Name: Lurker
-	Building:
-		UndeploySounds: burrowup.aud
-		BuildSounds: zluburrw.aud
-		Footprint: =
-	Buildable:
-		BuildPaletteOrder: 1050
-		Prerequisites: Hydralisk Den, Lair, ~botzerg
-		Queue: Defence.Zerg, RADefence.Zerg
-		Description: \n\nBot-Assistant Building
-	RequiresBuildableArea:
-		Adjacent: 6
-	Valued:
-		Cost: 1125
-	Health:
-		HP: 29500
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
-	Turreted:
-		TurnSpeed: 12
-		Offset: 0,-180,0
-	WithEmbeddedTurretSpriteBody:
-	Armament:
-		Weapon: LurkerSpines
-	AttackTurreted:
-	Cloak:
-		InitialDelay: 60
-		CloakDelay: 60
-	DetectCloaked:
-		Range: 0c0
-	WithDeathAnimation:
-	Power:
-		Amount: -20
-	Transforms:
-		IntoActor: sclurker
-	Voiced:
-		VoiceSet: SCLurkerVoice
-	WithMakeAnimation:
-	-WithSpriteBody:
-	-RepairableBuilding:
-	-WithBuildingRepairDecoration:
-	-Sellable:
-	-ShakeOnDeath:
-	-Demolishable:
-
 ####################################################################################################
 #		UNIT TERRAN
 ####################################################################################################
@@ -2482,12 +2521,15 @@ SCLURKERBURROWED:
 ^SCTINFANTRY:
 	Inherits: ^Soldier
 	Inherits@EXT: ^ExternalConditions
+	Inherits@shadow: ^SCSmallShadow
 	AttackFrontal:
 	WithInfantryBody:
 		IdleSequences: idle
 		DefaultAttackSequence: shoot
 	Armor:
 		Type: None
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
 	-DamagedByTerrain:
 	-Crushable:
 	-TakeCover:
@@ -2497,6 +2539,10 @@ SCLURKERBURROWED:
 SCSCV:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@worker: ^SCWorker
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -2507,40 +2553,44 @@ SCSCV:
 		Prerequisites: Refinery
 		BuildDuration: 480
 		Queue: Defence.Terran, RADefence.Terran
-		Description: Collects Tiberium for processing.\n  can repair mechanical units and buildings.
+		Description: Collects resources.\nCan repair mechanical units and buildings.
 	Mobile:
 		Locomotor: foot
 		TurnSpeed: 255
 		Speed: 75
 	Health:
-		HP: 9000
+		HP: 18000
 	Armor:
-		Type: None
+		Type: Heavy
 	RevealsShroud:
 		Range: 6c0
-	Harvester:
-		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals		##########
-		PipCount: 2
-		Capacity: 2
-		BaleLoadDelay: 28
-		BaleUnloadDelay: 0
-		MaxUnloadQueue: 9
-		DeliveryBuildings: screfinery
-	Armament:
+	Armament@repair:
+		Name: repair
 		Weapon: SCVRepair
 		TargetStances: Ally
 		ForceTargetStances: None
 		LocalOffset: 240,160,240
-	WithHarvestAnimation:
-	WithDockingAnimation:
+	Armament:
+		Weapon: SCVAttack
+		ForceTargetStances: Enemy, Neutral
 	AttackFrontal:
 		FacingTolerance: 16
+		Armaments: primary,repair
 	WithAttackAnimation:
 		Sequence: shoot
+	WithAttackAnimation@fix:
+		Armament: repair
+		Sequence: shoot
+	AutoTarget:
+		InitialStance: ReturnFire
+		InitialStanceAI: ReturnFire
 	Power:
 		Amount: -10
 	Voiced:
 		VoiceSet: SCSCVVoice
+	DeathSounds:
+	Targetable@aihack:
+		TargetTypes: SCV
 	Inherits@EXT: ^ExternalConditions
 	WithHarvesterSpriteBody:
 		ImageByFullness: scscv, scscvfull
@@ -2550,6 +2600,7 @@ SCMARINE:
 	Inherits: ^SCTINFANTRY
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Inherits@STIMPACK: ^StarcraftStimpack
 	Valued:
 		Cost: 150
@@ -2558,7 +2609,7 @@ SCMARINE:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Infantry.Terran, RAInfantry.Terran, Infantry.X_Infantry
-		Description: can attack air units.\n cannot be crushed and cannot be poisoned by tiberium.
+		Description: Basic Terran infantry.\n Strong vs. Infantry\n Weak vs. Vehicles\n Can attack aircraft\n Uncrushable
 	Mobile:
 		Speed: 60
 	Health:
@@ -2583,6 +2634,7 @@ SCFIREBAT:
 	Inherits: ^SCTINFANTRY
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Inherits@STIMPACK: ^StarcraftStimpack
 	Valued:
 		Cost: 300
@@ -2592,7 +2644,7 @@ SCFIREBAT:
 		BuildPaletteOrder: 20
 		Prerequisites: Academy, ~techlevel.medium
 		Queue: Infantry.Terran, RAInfantry.Terran, Infantry.X_Infantry
-		Description: Dual-Flamethrower Anti-infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks\n cannot be crushed and cannod be poisoned by tiberium.
+		Description: Terran flamethrower infantry.\n Strong vs. Infantry, Buildings\n Weak vs. Vehicles\n Uncrushable
 	Mobile:
 		Speed: 60
 	Health:
@@ -2624,7 +2676,6 @@ SCFIREBAT:
 		FireDelay: 3
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
-	-WithDeathAnimation:
 	Voiced:
 		VoiceSet: SCFirebatVoice
 	AcceptsDeliveredExperience:							##########
@@ -2634,15 +2685,16 @@ SCGHOST:
 	Inherits: ^SCTINFANTRY
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 525
+		Cost: 500
 	Tooltip:
 		Name: Ghost
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Infantry.Terran, RAInfantry.Terran, Infantry.X_Infantry
 		Prerequisites: Academy, Science Facility, ~techlevel.high
-		Description: stealth infantry with high range.\ncan attack air units.\n cannot be crushed and cannot be poisoned by tiberium.
+		Description: Terran stealth assassin.\n Strong vs. Infantry, Vehicles\n Can attack aircraft\n Can temporarily disable vehicles\n Uncrushable
 	Mobile:
 		Speed: 60
 	Health:
@@ -2653,6 +2705,8 @@ SCGHOST:
 		ScanRadius: 4
 	Armament@PRIMARY:
 		Weapon: GhostSniper
+	Armament@LOCKDOWN:
+		Weapon: GhostLockdown
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: GhostSniperBunker
@@ -2674,17 +2728,18 @@ SCGHOST:
 
 SCMEDIC:
 	Inherits: ^SCTINFANTRY
+	Inherits@announce: ^AnnounceOnBuild
 	Buildable:
 		Queue: Infantry.Terran, RAInfantry.Terran, Infantry.X_Infantry
 		BuildPaletteOrder: 40
 		Prerequisites: Academy
-		Description: Heals nearby infantry.\n Unarmed\n  cannot be crushed and cannot be poisoned by tiberium.
+		Description: Heals nearby infantry.\n Unarmed\n Uncrushable
 	Valued:
 		Cost: 300
 	Tooltip:
 		Name: Medic
 	Mobile:
-		Speed: 60
+		Speed: 55
 	Health:
 		HP: 18000
 	RevealsShroud:
@@ -2709,6 +2764,9 @@ SCTE6:
 		BuildPaletteOrder: 10000
 		Prerequisites: anypower
 		Queue: Infantry.Terran, Infantry.Protoss, RAInfantry.Terran, RAInfantry.Protoss
+		Icon: scicon
+	RenderSprites:
+		Image: e6
 
 ^SCTVEHICLE:
 	Inherits: ^Vehicle
@@ -2725,16 +2783,19 @@ SCTE6:
 SCVULTURE:
 	Inherits: ^SCTVEHICLE
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 225
 	Tooltip:
 		Name: Vulture
 	Buildable:
 		BuildPaletteOrder: 10
-		Description: Fast scout vehicle, armed with\ngrenades.
+		Description: Fast scout vehicle, armed with\ngrenades.\n Strong vs. Infantry\n Weak vs. Vehicles, Aircraft\n Can cross water
 	Mobile:
 		TurnSpeed: 10
 		Speed: 125
+		Locomotor: hover
 	Health:
 		HP: 18000
 	RevealsShroud:
@@ -2750,10 +2811,13 @@ SCVULTURE:
 		PipType: blue
 	Voiced:
 		VoiceSet: SCVultureVoice
+	DeathSounds:
 
 SCSIEGETANK:
 	Inherits: ^SCTVEHICLE
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 1050
 	Tooltip:
@@ -2761,12 +2825,13 @@ SCSIEGETANK:
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: Engineering Bay
-		Description: armored Tank with slightly longer range then other Tanks.\n can enter Siege Mode for Artillery range attacks with High Splash damage.
+		Description: Terran main battle tank and mobile artillery.\n Strong vs. Vehicles, Buildings\n Weak vs. Infantry, Aircraft\n Can deploy for increased range and splash damage
 	Mobile:
 		Speed: 60
+		Locomotor: tracked
 		RequireForceMoveCondition: !undeployed
 	Health:
-		HP: 47300
+		HP: 60000
 	RevealsShroud:
 		Range: 9c0
 	Armor:
@@ -2775,38 +2840,41 @@ SCSIEGETANK:
 		TurnSpeed: 10
 		Offset: -256,0,256
 		RequiresCondition: undeployed
+	Turreted@deployed:
+		Turret: deployed
+		TurnSpeed: 10
+		Offset: 0,0,0
+		RequiresCondition: deployed
 	Armament:
 		Weapon: SiegeTankCanon
 		MuzzleSequence: muzzle
 		LocalOffset: 600,0,0
+		RequiresCondition: undeployed
 	Armament@DEPLOYED:
 		Name: deployed
 		Weapon: SiegeTankSiegeCanon
 		LocalOffset: 600,-100,768
 		MuzzleSequence: muzzle
-	AttackTurreted:
-		RequiresCondition: !deployed
-	AttackFrontal@deployed:
-		Armaments: deployed
 		RequiresCondition: deployed
+	AttackTurreted:
+		Turrets: primary,deployed
+		Armaments: primary,deployed
 	WithMuzzleOverlay:
 	WithSpriteTurret:
 		RequiresCondition: undeployed
+	WithSpriteTurret@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: deployed
 	WithFacingSpriteBody:
 		RequiresCondition: !deployed
-	WithFacingSpriteBody@deployed:
-		Sequence: deployed
-		RequiresCondition: deployed
-		Name: deployed
 	WithMakeAnimation:
-	#Transforms:
-	#	IntoActor: scsiegetanksiege
-	#	Facing: 160
-	#	TransformSounds: TankSiege.aud
+	RenderRangeCircle:
 	Selectable:
 		Bounds: 36,36
 		DecorationBounds: 36,36
 	GrantConditionOnDeploy:
+		PauseOnCondition: disabled
 		DeployedCondition: deployed
 		UndeployedCondition: undeployed
 		DeploySounds: TankSiege.aud
@@ -2819,12 +2887,20 @@ SCSIEGETANK:
 		Weight: 4
 		PipType: blue
 		RequireForceMoveCondition: !undeployed
+	AIDeployNotifier:
+		DeployTrigger: Attack
+		DeployChance: 50
+		DeployTicks: 1000
+		UndeployTicks: 1000
 	Voiced:
 		VoiceSet: SCSiegeTankVoice
+	DeathSounds:
 
 SCGOLIATH:
 	Inherits: ^SCTVEHICLE
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -2832,9 +2908,10 @@ SCGOLIATH:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: Armory
-		Description: Medium armored Vehicle.\n armed with an MG strong against infantry and rockets very strong against aircrafts.
+		Description: Versatile Terran combat walker, armed with\nautocannons and AA missiles.\n Strong vs. Infantry, Aircraft\n Weak vs. Vehicles
 	Mobile:
 		Speed: 70
+		Locomotor: tracked
 	Health:
 		HP: 39400
 	RevealsShroud:
@@ -2894,7 +2971,6 @@ SCCOMMANDCENTERM:
 	Transforms:
 		IntoActor: sccommandcenter
 		Offset: -1,-1
-		TransformSounds: constru2.aud, hvydoor1.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
 	MustBeDestroyed:
 		RequiredForShortGame: true
@@ -2910,7 +2986,7 @@ SCCOMMANDCENTERM:
 	-Hovers@CRUISING:
 	-Voiced:
 	RenderSprites:
-		Image: sccommandcenterlift
+		Image: sccommandcenter
 
 SCBARRACKSM:
 	Inherits: SCCOMMANDCENTERM
@@ -2921,7 +2997,7 @@ SCBARRACKSM:
 	Transforms:
 		IntoActor: scbarracks
 	RenderSprites:
-		Image: scbarrackslift
+		Image: scbarracks
 
 SCENGINEERINGBAYM:
 	Inherits: SCCOMMANDCENTERM
@@ -2932,7 +3008,7 @@ SCENGINEERINGBAYM:
 	Transforms:
 		IntoActor: scengineeringbay
 	RenderSprites:
-		Image: scengineeringbaylift
+		Image: scengineeringbay
 
 SCFACTORYM:
 	Inherits: SCCOMMANDCENTERM
@@ -2943,7 +3019,7 @@ SCFACTORYM:
 	Transforms:
 		IntoActor: scfactory
 	RenderSprites:
-		Image: scfactorylift
+		Image: scfactory
 
 SCSTARPORTM:
 	Inherits: SCCOMMANDCENTERM
@@ -2954,7 +3030,7 @@ SCSTARPORTM:
 	Transforms:
 		IntoActor: scstarport
 	RenderSprites:
-		Image: scstarportlift
+		Image: scstarport
 
 SCSCIENCEFACILITYM:
 	Inherits: SCCOMMANDCENTERM
@@ -2965,21 +3041,24 @@ SCSCIENCEFACILITYM:
 	Transforms:
 		IntoActor: scsciencefacility
 	RenderSprites:
-		Image: scsciencefacilitylift
+		Image: scsciencefacility
 
 SCWRAITH:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 1050
 	Tooltip:
 		Name: Wraith
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: ~techlevel.medium
 		Queue: Aircraft.Terran, RAAircraft.Terran, Aircraft.X_Aircrafts
-		Description: light armored Aircraft.\n  laser againts ground and rockets againts air units.
+		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs. Infantry, Aircraft\n Weak vs. Buildings, Vehicles
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -3016,17 +3095,21 @@ SCWRAITH:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCWraithVoice
+	DeathSounds:
 
 SCDROPSHIP:
 	Inherits: ^Helicopter
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 900
 	Tooltip:
 		Name: Dropship
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
 		Queue: Aircraft.Terran, RAAircraft.Terran
-		Description: Fast Transport for all ground units.\n  Unarmed
+		Description: Fast transport for all ground units.\n Unarmed
 	Aircraft:
 		TurnSpeed: 5
 		Speed: 80
@@ -3057,20 +3140,25 @@ SCDROPSHIP:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCDropshipVoice
+	DeathSounds:
 
 SCBATTLECRUISER:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeLarge
+	Inherits@announce: ^AnnounceGlobal
 	Valued:
-		Cost: 3000
+		Cost: 2500
 	Tooltip:
 		Name: Battlecruiser
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: Science Facility, ~techlevel.high
 		Queue: Aircraft.Terran, RAAircraft.Terran, Aircraft.X_Aircrafts
-		Description: heavy armored Aircraft.\n  stronger and faster laser than "Wraith" for ground and air units.
+		Description: Terran capital ship.\n Strong vs. Everything
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -3101,10 +3189,12 @@ SCBATTLECRUISER:
 		Amount: -60
 	Voiced:
 		VoiceSet: SCBattleCruiserVoice
+	DeathSounds:
 
 SCTMCV:
 	Inherits: ^Vehicle
 	Inherits@EXT: ^ExternalConditions
+	Inherits@mcv: ^MCV
 	Valued:
 		Cost: 2000
 	Buildable:
@@ -3129,17 +3219,9 @@ SCTMCV:
 		IntoActor: sccommandcenter
 		Offset: -1,-1
 		Facing: 108
-		TransformSounds: constru2.aud, hvydoor1.aud
+		TransformSounds: tscupd00.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
 	SelectionDecorations:
-	WithTextDecoration:
-		Text: MCV
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmterran
 	Voiced:
@@ -3149,10 +3231,33 @@ SCTMCV:
 #		UNIT PROTOSS
 ####################################################################################################
 
+^BasicProtoss: #ONLY USE FOR UNITS THAT INHERIT ^SOLDIER
+	Inherits: ^Soldier
+	-DamagedByTerrain:
+	-Crushable:
+	-TakeCover:
+	-SpawnActorOnDeath:
+	-Explodes@Mutate:
+
+^LargeProtoss:
+	Inherits: ^BasicProtoss
+	Inherits@2: ^IronCurtainable
+	Inherits@EMP: ^UnitDisable
+	Mobile:
+		PauseOnCondition: disabled
+	-ExternalCondition@REAPERTRAP:
+	-SpawnActorOnDeath@RA2Virus:
+	Targetable:
+		TargetTypes: Ground, Vehicle
+
 SCPROBE:
 	Inherits: ^Vehicle
 	Inherits@explode: ^UnitExplodeSmallProtoss
 	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@worker: ^SCWorker
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -3163,7 +3268,7 @@ SCPROBE:
 		Prerequisites: Assimilator
 		BuildDuration: 480
 		Queue: Defence.Protoss, RADefence.Protoss
-		Description: Collects Tiberium for processing.\n  can repair mechanical units and buildings.
+		Description: Collects resources.
 	Mobile:
 		Locomotor: foot
 		TurnSpeed: 255
@@ -3171,32 +3276,33 @@ SCPROBE:
 	Health:
 		HP: 6000
 	Armor:
-		Type: None
+		Type: Heavy
 	RevealsShroud:
 		Range: 7c0
-	Harvester:
-		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals		##########
-		PipCount: 2
-		Capacity: 2
-		BaleLoadDelay: 28
-		BaleUnloadDelay: 0
-		MaxUnloadQueue: 9
-		DeliveryBuildings: scassimilator
-	WithHarvestAnimation:
-	WithDockingAnimation:
+	AttackFrontal:
+	Armament:
+		Weapon: ProbeAttack
+	SelfHealing:
+		Step: 200
+		Delay: 3
+		HealIfBelow: 100
+		DamageCooldown: 100
 	Power:
 		Amount: -10
 	Voiced:
 		VoiceSet: SCProbeVoice
+	DeathSounds:
 	Inherits@EXT: ^ExternalConditions					##########
 	WithHarvesterSpriteBody:
 		ImageByFullness: scprobe, scprobefull
 	-WithFacingSpriteBody:
 
 SCZEALOT:
-	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@protoss: ^BasicProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -3205,7 +3311,7 @@ SCZEALOT:
 		BuildPaletteOrder: 10
 		Prerequisites:
 		Queue: Infantry.Protoss, RAInfantry.Protoss, Infantry.X_Infantry
-		Description: cannot be crushed and cannod be poisoned by tiberium.
+		Description: Protoss infantry, attacks in close combat.\n Strong vs. Infantry\n Weak vs. Vehicles, Aircraft\n Uncrushable
 	Mobile:
 		Speed: 75
 	Health:
@@ -3215,11 +3321,13 @@ SCZEALOT:
 	RevealsShroud:
 		Range: 6c0
 	AutoTarget:
-		ScanRadius: 4
+		ScanRadius: 6
 	Armament:
 		Weapon: Psi-blades
 		FireDelay: 3
 	AttackFrontal:
+	AutoTarget:
+		InitialStance: AttackAnything
 	WithInfantryBody:
 		IdleSequences: idle
 		DefaultAttackSequence: shoot
@@ -3235,31 +3343,30 @@ SCZEALOT:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
 
 SCDRAGOON:
-	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@protoss: ^LargeProtoss
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^FrontalEMP
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,24
 	Valued:
-		Cost: 675
+		Cost: 600
 	Tooltip:
 		Name: Dragoon
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: Cybernetics Core, ~techlevel.medium
 		Queue: Infantry.Protoss, RAInfantry.Protoss, Vehicle.X_Vehicles
-		Description: cannot be crushed and cannod be poisoned by tiberium.
+		Description: Protoss assault walker.\n Strong vs. Vehicles\n Weak vs. Infantry
 	Mobile:
 		Speed: 80
 		Locomotor: wheeled
 	Health:
-		HP: 56700
+		HP: 45000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -3291,24 +3398,25 @@ SCDRAGOON:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
 
 SCHIGHTEMPLAR:
-	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@protoss: ^BasicProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 1050
+		Cost: 1000
 	Tooltip:
 		Name: High Templar
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: Templar Archives, ~techlevel.medium
 		Queue: Infantry.Protoss, RAInfantry.Protoss, Infantry.X_Infantry
-		Description: cannot be crushed and cannod be poisoned by tiberium.
+		Description: Protoss psionic warrior.\nCasts psionic storm for massive splash damage\n Strong vs. clustered units\n Uncrushable
 	Mobile:
 		Speed: 50
+		Locomotor: hover
 	Health:
 		HP: 12000
 	Armor:
@@ -3328,6 +3436,8 @@ SCHIGHTEMPLAR:
 		DefaultAttackSequence: shoot
 	Power:
 		Amount: -20
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
 	Passenger:
 		Weight: 2
 		PipType: blue
@@ -3336,32 +3446,27 @@ SCHIGHTEMPLAR:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-	-DamagedByTerrain:
-	-Crushable:
-	-WithDeathAnimation:
-	-TakeCover:
 	GrantConditionOnBotOwner:
 		Condition: botprotoss
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	AutoTarget:
-		RequiresCondition: botprotoss
-	AutoTargetPriority@ATTACKANYTHING:
-		RequiresCondition: botprotoss
-		ValidTargets: PsiStorm
+		InitialStance: HoldFire
 
 SCDARKTEMPLAR:
-	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@protoss: ^BasicProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 975
+		Cost: 900
 	Tooltip:
 		Name: Dark Templar
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: Citadel of Adun, ~techlevel.medium
 		Queue: Infantry.Protoss, RAInfantry.Protoss, Infantry.X_Infantry
-		Description: cannot be crushed and cannod be poisoned by tiberium.
+		Description: Protoss stealth warrior, attacks in close combat.\n Strong vs. ground targets\n Uncrushable
 	Mobile:
 		Speed: 75
 	Health:
@@ -3376,9 +3481,13 @@ SCDARKTEMPLAR:
 		Weapon: WarpBlade
 		FireDelay: 3
 	AttackFrontal:
+	AutoTarget:
+		InitialStance: AttackAnything
 	WithInfantryBody:
 		IdleSequences: idle
 		DefaultAttackSequence: shoot
+	WithIdleOverlay@Shadow:
+		Offset: 0,0,-360
 	Cloak:
 		InitialDelay: 60
 		CloakDelay: 60
@@ -3386,6 +3495,8 @@ SCDARKTEMPLAR:
 		UncloakSound: trans1.aud
 	Power:
 		Amount: -20
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
 	Passenger:
 		Weight: 2
 		PipType: blue
@@ -3394,14 +3505,11 @@ SCDARKTEMPLAR:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-	-DamagedByTerrain:
-	-Crushable:
-	-WithDeathAnimation:
-	-TakeCover:
 
 SCSHUTTLE:
 	Inherits: ^Helicopter
 	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -3409,7 +3517,7 @@ SCSHUTTLE:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Vehicle.Protoss, RAVehicle.Protoss
-		Description: Fast Transport for all ground units.\n  Unarmed
+		Description: Fast transport for all ground units.\n  Unarmed
 	Aircraft:
 		TurnSpeed: 5
 		Speed: 65
@@ -3436,6 +3544,7 @@ SCSHUTTLE:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCShuttleVoice
+	DeathSounds:
 	-SpawnActorOnDeath:
 
 SCREAVER:
@@ -3443,6 +3552,8 @@ SCREAVER:
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@explode: ^UnitExplodeSmallProtoss
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^FrontalEMP
 	Selectable:
 		DecorationBounds: 28,28
 	Valued:
@@ -3453,7 +3564,7 @@ SCREAVER:
 		BuildPaletteOrder: 20
 		Prerequisites: Robotics Support Bay, ~techlevel.medium
 		Queue: Vehicle.Protoss, RAVehicle.Protoss, Vehicle.X_Vehicles
-		Description: Long-range rocket artillery.
+		Description: Long-range rocket artillery.\n Strong vs. Vehicles, Buildings\n Weak vs. Aircraft
 	Mobile:
 		Speed: 25
 	Health:
@@ -3464,15 +3575,12 @@ SCREAVER:
 		Range: 9c0
 		RevealGeneratedShroud: False
 	Armament:
-		Weapon: Scarab
-		PauseOnCondition: !ammo
-	AmmoPool:
-		Ammo: 5
-		PipCount: 5
-		InitialAmmo: 1
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 300
+		Weapon: ScarabLaunch
+	CarrierMaster:
+		SpawnIsMissile: true
+		Actors: scscarab,scscarab,scscarab,scscarab,scscarab
+		RespawnTicks: 300
+		SpawnAllAtOnce: false
 	AutoTarget:
 		ScanRadius: 10
 	AttackFrontal:
@@ -3491,18 +3599,64 @@ SCREAVER:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle
 
+SCSCARAB:
+	Inherits: ^Plane
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeProtoss
+	Valued:
+		Cost: 50
+	Tooltip:
+		Name: Scarab
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 270
+		Repulsable: false
+		CruiseAltitude: 0c512
+	CarrierSlave:
+		LandingDistance: 2c0
+	Health:
+		HP: 50
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 6c0
+		Type: GroundPosition
+	Armament:
+		Weapon: Scarab
+		LocalOffset: 200,0,0
+	AttackAircraft:
+		FacingTolerance: 20
+		PersistentTargeting: false
+	LeavesTrails:
+		Image: blue_smokey
+		MovingInterval: 2
+		Type: CenterPosition
+	GrantConditionOnAttack:
+		Condition: triggered
+	KillsSelf:
+		RequiresCondition: triggered
+	-ActorLostNotification:
+	-UpdatesPlayerStatistics:
+	Interactable:
+	HitShape:
+
 SCOBSERVER:
 	Inherits: ^Helicopter
 	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 525
+		Cost: 500
 	Tooltip:
 		Name: Observer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: Observatory, ~techlevel.medium
 		Queue: Vehicle.Protoss, RAVehicle.Protoss
-		Description: Unarmed\n\n You need the Observatory (Building) in order to keep the Observer cloaked.
+		Description: Stealth scout.\nRequires Observatory to remain cloaked\n Unarmed
 	Aircraft:
 		TurnSpeed: 5
 		Speed: 60
@@ -3540,7 +3694,7 @@ SCOBSERVER:
 		VoiceSet: SCObserverVoice
 	GrantConditionOnBotOwner:
 		Condition: botprotoss
-		Bots: cabal, watson, hal9001, easyai, mediumai, hardai, infantryrush, vehiclesteamroll, airforce, xxlrandom
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
 	Wanders:
 		WanderMoveRadius: 6
 		MinMoveDelay: 20
@@ -3548,10 +3702,12 @@ SCOBSERVER:
 		RequiresCondition: botprotoss
 
 SCARCHON:
-	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@explode: ^UnitExplodeSmallProtoss
+	Inherits@protoss: ^LargeProtoss
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^FrontalEMP
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,24
@@ -3560,14 +3716,14 @@ SCARCHON:
 		Sequence: shroud
 		Name: body2
 	Valued:
-		Cost: 2100
+		Cost: 2000
 	Tooltip:
 		Name: Archon
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: Templar Archives, ~techlevel.high
 		Queue: Vehicle.Protoss, RAVehicle.Protoss, Infantry.X_Infantry
-		Description: cannot be crushed and cannod be poisoned by tiberium.
+		Description: Powerful heavy protoss warrior.\n Strong vs. Everything
 	Mobile:
 		Speed: 75
 		Locomotor: wheeled
@@ -3578,7 +3734,8 @@ SCARCHON:
 	RevealsShroud:
 		Range: 7c0
 	AutoTarget:
-		ScanRadius: 3
+		ScanRadius: 6
+		InitialStance: AttackAnything
 	Armament:
 		Weapon: PsionicShockwave
 		LocalOffset: 400,0,100
@@ -3603,25 +3760,25 @@ SCARCHON:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle							##########
-	-DamagedByTerrain:
 	-WithDeathAnimation:
-	-Crushable:
-	-TakeCover:
 
 SCSCOUT:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 1575
+		Cost: 1500
 	Tooltip:
 		Name: Scout
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~techlevel.medium
 		Queue: Aircraft.Protoss, RAAircraft.Protoss, Aircraft.X_Aircrafts
-		Description: light armored Aircraft.\n  laser againts ground and rockets againts air units.
+		Description: Protoss fighter aircraft.\n Strong vs. Aircraft
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -3669,15 +3826,18 @@ SCCARRIER:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceGlobal
 	Valued:
-		Cost: 2550
+		Cost: 2000
 	Tooltip:
 		Name: Carrier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: Fleet Beacon, ~techlevel.high
 		Queue: Aircraft.Protoss, RAAircraft.Protoss, Aircraft.X_Aircrafts
-		Description: heavy armored Aircraft.
+		Description: Heavy protoss warship, deploys\n5 interceptor craft.\n Strong vs. Vehicles, Aircraft
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -3699,12 +3859,11 @@ SCCARRIER:
 		AttackType: Hover
 	CarrierMaster:
 		Actors: SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR
-		RearmTicks: 150
-		RespawnTicks: 500
+		RearmTicks: 10
+		RespawnTicks: 300
 		InstaRepair: true
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
-		LoadedCondition: hornet-loaded
 	Exit@0:
 		SpawnOffset: 0,0,0
 		Facing: 0
@@ -3737,15 +3896,16 @@ SCINTERCEPTOR:
 		BuildPaletteOrder: 50
 		Prerequisites: ~techlevel.medium
 		Queue: #Aircraft.Protoss, RAAircraft.Protoss, Aircraft.X_Aircrafts
-		Description: light armored Aircraft.\n  laser againts ground and rockets againts air units.
+		Description:
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
 		Speed: 180
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		Repulsable: false
 		VTOL: true
 		CruiseAltitude: 1c256
+	Targetable:
+		TargetTypes: Air
 	CarrierSlave:
 		LandingDistance: 2c0
 	Health:
@@ -3758,20 +3918,15 @@ SCINTERCEPTOR:
 	Armament@PRIMARY:
 		Weapon: InterceptorCannon
 		LocalOffset: 200,0,0
-		PauseOnCondition: !ammo
 	AttackAircraft:
 		FacingTolerance: 20
-	Rearmable:
-		RearmActors: sccarrier
-	AmmoPool:
-		Ammo: 8
-		AmmoCondition: ammo
 	DeathSounds:
 	Power:
 		Amount: 0
 	Voiced:
 		VoiceSet: SCCarrierVoice
 	-ActorLostNotification:
+	-UpdatesPlayerStatistics:
 	Interactable:
 	HitShape:
 
@@ -3780,15 +3935,18 @@ SCARBITER:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 2400
+		Cost: 1400
 	Tooltip:
 		Name: Arbiter
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: Arbiter Tribunal, ~techlevel.high
 		Queue: Aircraft.Protoss, RAAircraft.Protoss, Aircraft.X_Aircrafts
-		Description: light armored Aircraft.\n  laser againts ground and rockets againts air units.
+		Description: Protoss support vessel.\n Cloaks nearby friendly units\n Can disable enemy mechanical units
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -3805,6 +3963,9 @@ SCARBITER:
 	Armament:
 		Weapon: ArbiterCannon
 		LocalOffset: 400,0,0
+	Armament@2:
+		Weapon: ArbiterStasis
+		LocalOffset: 400,0,0
 	AttackAircraft:
 		FacingTolerance: 20
 		AttackType: Hover
@@ -3819,11 +3980,12 @@ SCARBITER:
 		VoiceSet: SCArbiterVoice
 	ProximityExternalCondition@StealGen:
 		Range: 7c0
-		Condition: cloak-crate-collected
+		Condition: tscloak
 
 SCPMCV:
 	Inherits: ^Vehicle
 	Inherits@EXT: ^ExternalConditions
+	Inherits@mcv: ^MCV
 	Valued:
 		Cost: 2000
 	Buildable:
@@ -3848,17 +4010,9 @@ SCPMCV:
 		IntoActor: scnexus
 		Offset: -1,-1
 		Facing: 108
-		TransformSounds: constru2.aud, hvydoor1.aud
+		TransformSounds: pshbld03.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
 	SelectionDecorations:
-	WithTextDecoration:
-		Text: MCV
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmprotoss
 	Voiced:
@@ -3868,9 +4022,32 @@ SCPMCV:
 #		UNIT ZERG
 ####################################################################################################
 
+^BasicZerg: #ONLY USE FOR UNITS THAT INHERIT ^SOLDIER
+	Inherits: ^Soldier
+	-DamagedByTerrain:
+	-Crushable:
+	-TakeCover:
+	-SpawnActorOnDeath:
+	-Explodes@Mutate:
+
+^LargeZerg:
+	Inherits: ^BasicZerg
+	Targetable@dog:
+		TargetTypes: LargeZerg
+
+^VeryLargeZerg:
+	Inherits: ^LargeZerg
+	Inherits@2: ^IronCurtainable
+	Targetable:
+		TargetTypes: Ground, Vehicle
+
 SCDRONE:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@worker: ^SCWorker
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -3881,29 +4058,23 @@ SCDRONE:
 		Prerequisites: Extractor
 		BuildDuration: 480
 		Queue: Infantry.Zerg, RAInfantry.Zerg
-		Description: Collects Tiberium for processing.\n  can repair mechanical units and buildings.
+		Description: Collects resources.
 	Mobile:
 		Locomotor: foot
 		TurnSpeed: 255
 		Speed: 75
 	Health:
-		HP: 6000
+		HP: 12000
 	Armor:
-		Type: None
+		Type: Heavy
 	RevealsShroud:
 		Range: 6c0
-	Harvester:
-		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals		##########
-		PipCount: 2
-		Capacity: 2
-		BaleLoadDelay: 28
-		BaleUnloadDelay: 0
-		MaxUnloadQueue: 9
-		DeliveryBuildings: scextractor
 	WithDeathAnimation:
-	WithHarvestAnimation:
-	WithDockingAnimation:
+		UseDeathTypeSuffix: false
 	#WithMoveAnimation:
+	AttackFrontal:
+	Armament:
+		Weapon: DroneAttack
 	Power:
 		Amount: -10
 	Voiced:
@@ -3915,9 +4086,10 @@ SCDRONE:
 	-Explodes:
 
 SCZERGLING:
-	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@zerg: ^BasicZerg
 	Valued:
 		Cost: 75
 	Tooltip:
@@ -3926,21 +4098,23 @@ SCZERGLING:
 		BuildPaletteOrder: 20
 		Prerequisites: Spawning Pool
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
-		Description: cannot be crushed and cannod be poisoned by tiberium.
+		Description: Fast Zerg basic assault strain.\n Strong vs. Infantry\n Weak vs. Vehicles, Aircraft
 	Mobile:
 		Speed: 105
 	Health:
-		HP: 5300
+		HP: 6500
 	Armor:
 		Type: None
 	RevealsShroud:
 		Range: 4c0
 	AutoTarget:
-		ScanRadius: 4
+		ScanRadius: 6
 	Armament:
 		Weapon: ZerglingClaw
 		FireDelay: 3
 	AttackFrontal:
+	AutoTarget:
+		InitialStance: AttackAnything
 	WithInfantryBody:
 		IdleSequences: idle
 		DefaultAttackSequence: shoot
@@ -3948,17 +4122,17 @@ SCZERGLING:
 		Amount: -5
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
+	WithIdleOverlay@Shadow:
+		Offset: 0,0,-250
 	Voiced:
 		VoiceSet: SCZerglingVoice
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
 
 SCOVERLORD:
 	Inherits: ^Helicopter
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -3969,10 +4143,10 @@ SCOVERLORD:
 		Prerequisite: anypower
 	Buildable:
 		BuildPaletteOrder: 30
-		BuildDuration: 480
+		BuildDurationModifier: 25
 		Prerequisites:
-		Queue: Infantry.Zerg, RAInfantry.Zerg
-		Description: Generates power & Stores Ressources
+		Queue: Building.Zerg, RABuilding.Zerg
+		Description: Provides supply and stores resources
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -3988,6 +4162,7 @@ SCOVERLORD:
 		Type: GroundPosition
 	DetectCloaked:
 		Range: 10c0
+	RenderDetectionCircle:
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
 	DeathSounds:
@@ -4013,11 +4188,14 @@ SCOVERLORD:
 		RequiresCondition: botzerg
 	WithMoveAnimation:
 	-SpawnActorOnDeath:
+	-AttackAircraft:
 
 SCHYDRALISK:
-	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@zerg: ^LargeZerg
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 375
 	Tooltip:
@@ -4026,7 +4204,7 @@ SCHYDRALISK:
 		BuildPaletteOrder: 40
 		Prerequisites: Hydralisk Den
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
-		Description: cannot be crushed and cannod be poisoned by tiberium.
+		Description: Zerg armored assault strain.\n Strong vs. Vehicles, Aircraft\n Weak vs. Infantry
 	Mobile:
 		Speed: 70
 	Health:
@@ -4042,6 +4220,11 @@ SCHYDRALISK:
 		LocalOffset: 0,0,200
 		FireDelay: 3
 		MuzzleSequence: muzzle
+	Armament@2:
+		Weapon: HydraSpitAA
+		LocalOffset: 0,0,200
+		FireDelay: 3
+		MuzzleSequence: muzzle
 	AttackFrontal:
 	WithMuzzleOverlay:
 	WithInfantryBody:
@@ -4054,6 +4237,8 @@ SCHYDRALISK:
 		Amount: -10
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
+	WithIdleOverlay@Shadow:
+		Offset: 0,0,-320
 	Passenger:
 		Weight: 2
 		PipType: blue
@@ -4062,23 +4247,23 @@ SCHYDRALISK:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
 
 SCMUTALISK:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 900
 	Tooltip:
 		Name: Mutalisk
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: Spire
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Aircraft.X_Aircrafts
-		Description: light armored Aircraft.
+		Description: Airborne Zerg creature.\n Strong vs. Infantry, Aircraft
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -4094,6 +4279,9 @@ SCMUTALISK:
 		Type: GroundPosition
 	Armament:
 		Weapon: MutaliskSpore
+		LocalOffset: 0,0,0
+	Armament@2:
+		Weapon: MutaliskAA
 		LocalOffset: 0,0,0
 	AttackAircraft:
 		FacingTolerance: 20
@@ -4113,18 +4301,21 @@ SCMUTALISK:
 SCSCOURGE:
 	Inherits: ^Helicopter
 	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@announce: ^AnnounceOnBuild
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 20,20
 	Valued:
 		Cost: 260
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Tooltip:
 		Name: Scourge
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: Spire
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Aircraft.X_Aircrafts
-		Description: Self Sacrificing Air Unit.
+		Description: Aerial suicide bomber.\n Strong vs. Aircraft
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -4160,6 +4351,7 @@ SCSCOURGE:
 SCQUEEN:
 	Inherits: ^Helicopter
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -4198,9 +4390,10 @@ SCQUEEN:
 	-SpawnActorOnDeath:
 
 SCULTRALISK:
-	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@zerg: ^VeryLargeZerg
+	Inherits@announce: ^AnnounceOnBuild
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,24
@@ -4212,10 +4405,10 @@ SCULTRALISK:
 		BuildPaletteOrder: 80
 		Prerequisites: Ultralisk Cavern, ~techlevel.high
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
-		Description: cannot be crushed and cannod be poisoned by tiberium.
+		Description: Heavy Zerg assault strain.\n Strong vs. Vehicles\n Weak vs. Aircraft
 	Mobile:
 		Speed: 100
-		Locomotor: wheeled
+		Locomotor: tracked
 	Health:
 		HP: 126000
 	Armor:
@@ -4223,7 +4416,8 @@ SCULTRALISK:
 	RevealsShroud:
 		Range: 6c0
 	AutoTarget:
-		ScanRadius: 4
+		ScanRadius: 6
+		InitialStance: AttackAnything
 	Armament:
 		Weapon: UltraliskHusk
 		FireDelay: 3
@@ -4245,12 +4439,13 @@ SCULTRALISK:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle							##########
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
+	-ExternalCondition@REAPERTRAP:
 
 SCLURKER:
-	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@zerg: ^LargeZerg
+	Inherits@editorhack: ^DeployableInfantryEditor
+	Inherits@announce: ^AnnounceOnBuild
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,24
@@ -4260,9 +4455,9 @@ SCLURKER:
 		Name: Lurker
 	Buildable:
 		BuildPaletteOrder: 90
-		Prerequisites: Hydralisk Den, Evolution Chamber, ~techlevel.medium
+		Prerequisites: Hydralisk Den, Evolution Chamber, Lair, ~techlevel.medium
 		Queue: Infantry.Zerg, RAInfantry.Zerg
-		Description: needs to be Burrowed to attack.
+		Description: Zerg ambush strain.\nNeeds to deploy to attack\n Strong vs. Infantry
 	Mobile:
 		Speed: 90
 		Locomotor: wheeled
@@ -4278,6 +4473,9 @@ SCLURKER:
 	HitShape:
 	Power:
 		Amount: -20
+	DamageMultiplier:
+		Modifier: 50
+		RequiresCondition: deployed
 	GrantConditionOnDeploy:
 		DeployedCondition: deployed
 		UndeployedCondition: undeployed
@@ -4285,64 +4483,68 @@ SCLURKER:
 		UndeployOnPickup: true
 		DeploySounds: zluburrw.aud
 		UndeploySounds: zluburrw.aud
-	Turreted:
-		TurnSpeed: 12
-		Offset: 0,-180,0
-		RequiresCondition: deployed
-	WithSpriteTurret:
-		Name: deployed
+	WithSpriteBody@deployed:
 		Sequence: deploy-idle
-		RequiresCondition: deployed
-	WithSpriteBody:
-		Sequence: dot
-		Name: dot
+		Name: deployed
 		RequiresCondition: !undeployed
 	WithInfantryBody:
+		IdleSequences: stand
 		RequiresCondition: undeployed
 	WithMakeAnimation:
-		BodyNames: dot
+		BodyNames: deployed
 		Sequence: burrow
+	WithInfantryBody@Editor:
+		DefaultAttackSequence: stand
 	Armament:
 		Weapon: LurkerSpines
 		RequiresCondition: deployed
-	AttackTurreted:
-		RequiresCondition: deployed
+	Armament@AI:
+		Name: target
+		Weapon: LurkerAITarget
+		RequiresCondition: undeployed && botzerg
+	AttackOmni:
+		Armaments: primary,target
 	-AttackFrontal:
+	GrantConditionOnBotOwner:
+		Condition: botzerg
+		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
+	RenderRangeCircle:
 	Cloak:
 		InitialDelay: 60
 		CloakDelay: 60
 		RequiresCondition: deployed
 	DetectCloaked:
 		Range: 0c0
-	#Transforms:
-	#	IntoActor: sclurkerburrowed
-	#	TransformSounds: zluburrw.aud
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
 	Passenger:
 		Weight: 4
 		PipType: blue
 		RequireForceMoveCondition: !undeployed
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+		UndeployTicks: 1000
 	Voiced:
 		VoiceSet: SCLurkerVoice
 	Inherits@EXT: ^ExternalConditions					##########
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
 
 SCGUARDIAN:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 2025
+		Cost: 1800
 	Tooltip:
 		Name: Guardian
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: Greater Spire, ~techlevel.high
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Aircraft.X_Aircrafts
-		Description: heavy armored Aircraft.
+		Description: Heavy Zerg bomber.\n Strong vs. Vehicles, Buildings\n Weak vs. Aircraft
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -4375,8 +4577,10 @@ SCGUARDIAN:
 	-SpawnActorOnDeath:
 
 SCINFESTEDTERRAN:
-	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@zerg: ^LargeZerg
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -4385,7 +4589,7 @@ SCINFESTEDTERRAN:
 		BuildPaletteOrder: 110
 		Prerequisites: Infested Command Center
 		Queue: Infantry.Zerg, RAInfantry.Zerg
-		Description: cannot be crushed and cannod be poisoned by tiberium.
+		Description: Suicide bomber infantry.\n Strong vs. clustered units\n Does no damage if killed
 	Mobile:
 		Speed: 90
 	Health:
@@ -4415,34 +4619,33 @@ SCINFESTEDTERRAN:
 		VoiceSet: SCInfestedTerranVoice
 	WithInfantryBody:
 		IdleSequences: idle
-	Inherits@EXT: ^ExternalConditions					##########
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
+	Inherits@EXT: ^ExternalConditions
 
 SCDEFILER:
-	Inherits: ^Soldier
+	Inherits: ^LargeZerg
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EXT: ^ExternalConditions
 	Valued:
 		Cost: 1050
 	Tooltip:
 		Name: Defiler
-	#Buildable:
-	#	BuildPaletteOrder: 120
-	#	Prerequisites: Defiler Mound, ~techlevel.medium
-	#	Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
-	#	Description: cannot be crushed and cannod be poisoned by tiberium.
+	Buildable:
+		BuildPaletteOrder: 120
+		Prerequisites: Defiler Mound, ~techlevel.medium
+		Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
+		Description: Zerg support strain.\nAttack reduces targets' health over time\n Strong vs clustered units\n Special Ability: Dark Swarm
 	Mobile:
 		Speed: 60
 	Health:
-		HP: 18900
+		HP: 19000
 	Armor:
 		Type: Light
 	RevealsShroud:
 		Range: 9c0
 	Armament:
-		Weapon: FirebatF
+		Weapon: DefilerPlague
 		LocalOffset: 341,-120,128
 		FireDelay: 3
 		MuzzleSequence: muzzle
@@ -4452,16 +4655,55 @@ SCDEFILER:
 		DefaultAttackSequence: shoot
 	Power:
 		Amount: -20
+	GrantTimedConditionOnDeploy:
+		DeployedCondition: darkswarm
+		CooldownTicks: 1000
+		DeployedTicks: 1
+		PauseOnCondition: disabled
+	PeriodicExplosion:
+		Weapon: DarkSwarmSpawn
+		RequiresCondition: darkswarm
+	-ExternalCondition@DarkSwarm:
+	AIDeployNotifier:
+		DeployTrigger: Damage
+		DeployChance: 25
+		UndeployTicks: 0
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
 	Voiced:
-		VoiceSet: SCDefilerVoice
-	Inherits@EXT: ^ExternalConditions					##########
+		VoiceSet: SCDefilerVoice					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
+
+DARKSWARM:
+	Inherits@2: ^SpriteActor
+	-UpdatesPlayerStatistics:
+	RenderSprites:
+		PlayerPalette: alpha32
+	Interactable:
+	HiddenUnderFog:
+		Type: GroundPosition
+	Health:
+		HP: 100
+	HitShape:
+	Aircraft:
+		Repulsable: false
+		CruiseAltitude: 1
+		Speed: 18
+	WithSpriteBody:
+	WithMakeAnimation:
+	BodyOrientation:
+		QuantizedFacings: 32
+	SelfHealing:
+		Step: -1
+		Delay: 10
+		HealIfBelow: 200
+		DamageTypes: DefaultDeath
+	ProximityExternalCondition@ds:
+		Range: 5c0
+		Condition: DarkSwarm
+	Inherits@1: ^ExistsInWorld
+		AlwaysVisibleStances: None
 
 SCBROODLING:
 	Inherits: ^Soldier
@@ -4551,12 +4793,12 @@ SCKERRIGANZERG:
 
 SCZMCV:
 	Inherits: ^Vehicle
+	Inherits@mcv: ^MCV
 	Inherits@EXT: ^ExternalConditions
 	Valued:
 		Cost: 2000
 	Buildable:
 		Queue: Building.Zerg, RABuilding.Zerg
-		Prerequisites: 
 		BuildPaletteOrder: 10
 		Description: Builds structures and provides radar.
 	Tooltip:
@@ -4576,17 +4818,9 @@ SCZMCV:
 		IntoActor: schatchery
 		Offset: -1,-1
 		Facing: 108
-		TransformSounds: constru2.aud, hvydoor1.aud
+		TransformSounds: zchrdy00.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
 	SelectionDecorations:
-	WithTextDecoration:
-		Text: MCV
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmzerg
 	Voiced:
@@ -4598,6 +4832,9 @@ SCZE6:
 		BuildPaletteOrder: 10000
 		Prerequisites: anypower, Spawning Pool
 		Queue: Infantry.Zerg, RAInfantry.Zerg
+		Icon: scicon
+	RenderSprites:
+		Image: e6
 
 SCZTRUCK:
 	Inherits: TRUCK
@@ -4620,6 +4857,8 @@ SCBOTDRONE:
 
 SCBOTOVERLORD:
 	Inherits: SCOVERLORD
+	UpdatesPlayerStatistics:
+		OverrideActor: scoverlord
 	RenderSprites:
 		Image: SCOVERLORD
 	Buildable:
@@ -4662,9 +4901,9 @@ PSCLAIR:
 		BuildPaletteOrder: 210
 		Queue: Hatchery.Zerg
 		Description: Upgrade to Lair
-		Prerequisites: Spawning Pool
+		Prerequisites: Spawning Pool, ~!botlairlimit
 	Valued:
-		Cost: 1400
+		Cost: 1200
 	RenderSprites:
 		Image: sclair
 	Interactable:
@@ -4677,7 +4916,7 @@ PSCHIVE:
 		BuildPaletteOrder: 220
 		Queue: Lair.Zerg
 		Description: Upgrade to Hive
-		Prerequisites: Lair
+		Prerequisites: Lair, ~!bothivelimit
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -4692,7 +4931,7 @@ PSCGREATERSPIRE:
 		BuildPaletteOrder: 10
 		Queue: Spire.Zerg
 		Description: Unlocks Guardian.
-		Prerequisites: Hive
+		Prerequisites: Hive, ~!botspirelimit
 	Valued:
 		Cost: 1200
 	RenderSprites:
@@ -4706,7 +4945,7 @@ PSCSPORECOLONY:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Colony.Zerg
-		Description: Anti-Air base defense.\n  Cannot target Ground units.
+		Description: Anti-air base defense.
 		Prerequisites: Evolution Chamber
 	Valued:
 		Cost: 200
@@ -4723,7 +4962,7 @@ PSCSUNKENCOLONY:
 	Buildable:
 		BuildPaletteOrder: 20
 		Queue: Colony.Zerg
-		Description: Anti-Ground base defense.\n  Cannot target Air units.
+		Description: Ground base defense.
 		Prerequisites: Spawning Pool
 	Valued:
 		Cost: 200

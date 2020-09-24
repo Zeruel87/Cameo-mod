@@ -3,7 +3,7 @@
 	UpdatesPlayerStatistics:
 	CombatDebugOverlay:
 	GivesExperience:
-		PlayerExperienceModifier: 1
+		PlayerExperienceModifier: 100
 	ScriptTriggers:
 	ConditionManager:
 	RenderDebugState:
@@ -50,6 +50,12 @@
 			800: rank-veteran
 			1600: rank-veteran
 		LevelUpImage: crate-effects
+	ExternalCondition@rankveteran:
+		Condition: rank-veteran
+		TotalCap: 4
+	ExternalCondition@rankelite:
+		Condition: rank-elite
+		TotalCap: 1
 	GrantCondition@RANK-ELITE:
 		RequiresCondition: rank-veteran >= 4
 		Condition: rank-elite
@@ -114,8 +120,8 @@
 		RequiresCondition: rank-elite
 		Modifier: 50
 	SelfHealing@ELITE:
-		Step: 200
-		Delay: 100
+		PercentageStep: 5
+		Delay: 50
 		HealIfBelow: 100
 		DamageCooldown: 125
 		RequiresCondition: rank-elite
@@ -124,21 +130,21 @@
 		Sequence: rank-veteran-1
 		Palette: effect
 		ReferencePoint: Bottom, Right
-		RequiresCondition: rank-veteran == 1
+		RequiresCondition: rank-veteran == 1 && !rank-elite
 		ZOffset: 256
 	WithDecoration@RANK-2:
 		Image: rank
 		Sequence: rank-veteran-2
 		Palette: effect
 		ReferencePoint: Bottom, Right
-		RequiresCondition: rank-veteran == 2
+		RequiresCondition: rank-veteran == 2 && !rank-elite
 		ZOffset: 256
 	WithDecoration@RANK-3:
 		Image: rank
 		Sequence: rank-veteran-3
 		Palette: effect
 		ReferencePoint: Bottom, Right
-		RequiresCondition: rank-veteran == 3
+		RequiresCondition: rank-veteran == 3 && !rank-elite
 		ZOffset: 256
 	WithDecoration@RANK-ELITE:
 		Image: rank
@@ -234,7 +240,7 @@
 		CloakDelay: 90
 		CloakSound: trans1.aud
 		UncloakSound: trans1.aud
-		PauseOnCondition: cloak-force-disabled
+		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: cloak-crate-collected
 	ExternalCondition@CLOAK:
 		Condition: cloak-crate-collected
@@ -246,20 +252,48 @@
 		CloakDelay: 90
 		CloakSound: cloak5.aud
 		UncloakSound: cloak5.aud
-		PauseOnCondition: cloak-force-disabled
+		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: tscloak
 	ExternalCondition@TSCLOAK:
 		Condition: tscloak
 
+^VehicleRadiation:
+		LayerName: ra2radiation
+		LayerName: tibradiation
+
+^UnitDisable:
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
+	ExternalCondition@TSNEUTRON:
+		Condition: TSNeutronBomb
+	WithColoredOverlay@TSNEUTRON:
+		Palette: tsneutron
+		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
+	ExternalCondition@LOCKDOWN:
+		Condition: GhostLockdown
+	ExternalCondition@STASIS:
+		Condition: ArbiterStasis
+
+	DamagedByTintedCells@rad:
+		Damage: 400
+		DamageInterval: 16
+		DamageTypes: DefaultDeath
+	DamagedByTintedCells@tib:
+		Damage: 400
+		DamageInterval: 16
+		DamageTypes: TiberiumDeath
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^IronCurtainable
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
+	Inherits@bounty: ^GlobalBounty
 	Inherits@bot: ^BotProductionBoost
+	Inherits@mindcontrol: ^MindControllable
+	Inherits@rad: ^VehicleRadiation
+	Inherits@fix: ^Repairable
+	Inherits@EMP: ^UnitDisable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -267,6 +301,7 @@
 	Mobile:
 		Locomotor: wheeled
 		TurnSpeed: 5
+		PauseOnCondition: disabled
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
@@ -274,8 +309,6 @@
 	Targetable:
 		RequiresCondition: !parachute
 		TargetTypes: Ground, Vehicle
-	Repairable:
-		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept,tsgtdept	##########
 	Passenger:
 		CargoType: Vehicle
 	ActorLostNotification:
@@ -306,8 +339,6 @@
 	Targetable@HEALING:								##########
 		RequiresCondition: damaged
 		TargetTypes: Healing
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
 	GrantConditionOnDamageState@DAMAGED:
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
@@ -333,6 +364,7 @@
 		Sounds: bgrinda.wav
 	CaptureManager:
 	Carryable:
+		LockedCondition: carried
 	SelfHealing@MACHINESHOP:
 		Step: 500
 		Delay: 100
@@ -390,6 +422,8 @@
 		RequiresCondition: deaddriver
 	ExternalCondition@DeadDriver:
 		Condition: deaddriver
+	GpsDot:
+		String: Vehicle
 
 ^Tank:
 	Inherits: ^Vehicle
@@ -409,9 +443,11 @@
 
 ^BoatUnit:
 	Inherits: ^Vehicle
+	Inherits@EMP: ^UnitDisable
 	Mobile:
 		Locomotor: naval
 		TurnSpeed: 5
+		PauseOnCondition: disabled
 	Tooltip:
 		GenericName: Boat
 	DeliversCash:
@@ -430,32 +466,83 @@
 	ReloadDelayMultiplier@SQUIDTRAP:
 		RequiresCondition: SquidTrap
 		Modifier: 500
+	GpsDot:
+		String: Ship
 
-^Helicopter:
+^RANeutralPlane: #for actual air units
 	Inherits@1: ^ExistsInWorld
-	Inherits@3: ^SpriteActor
+	Inherits@4: ^SpriteActor
+	Inherits@bounty: ^GlobalBounty
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
+	Inherits@ext: ^ExternalConditionsAll
+	Inherits@2: ^GainsExperience
 	Inherits@bot: ^BotProductionBoost
+	Inherits@fix: ^Repairable
+	Inherits@EMP: ^UnitDisable
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
+	DrawLineToTarget:
+	Armor:
+		Type: Light
+	UpdatesPlayerStatistics:
 	AppearsOnRadar:
 		UseLocation: true
-	Targetable@GROUND:
-		TargetTypes: Ground, Vehicle
-		RequiresCondition: !airborne
-	Targetable@AIRBORNE:
-		TargetTypes: Air
-		RequiresCondition: airborne
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
 		Bounds: 24,24
-	Repairable:
-		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept	##########
+	Aircraft:
+		AirborneCondition: airborne
+	Targetable@GROUND:
+		RequiresCondition: !airborne
+		TargetTypes: Ground, Vehicle
+	Targetable@AIRBORNE:
+		RequiresCondition: airborne
+		TargetTypes: Air
+	Targetable@REPAIR:
+		RequiresCondition: !airborne && damaged
+		TargetTypes: Repair, Healing
+	AttackAircraft:
+		PauseOnCondition: disabled
+	GrantConditionOnDamageState@DAMAGED:
+		Condition: damaged
+		ValidDamageStates: Light, Medium, Heavy, Critical
+	SpeedMultiplier@disable:
+		Modifier: 0
+		RequiresCondition: disabled
+	HiddenUnderFog:
+		Type: GroundPosition
+	AttackMove:
+	Guard:
+	Guardable:
+	ProximityCaptor:
+		Types: Plane
+	GpsDot:
+		String: Plane
+	Tooltip:
+		GenericName: Plane
+	WithShadow:
+		Offset: 43, 128, 0
+		ZOffset: -129
+	WithFacingSpriteBody:
+	MustBeDestroyed:
+	Voiced:
+		VoiceSet: VehicleVoice
+	HitShape:
+	MapEditorData:
+		Categories: Aircraft
+	SpawnActorOnDeath:
+		RequiresCondition: airborne
+	Explodes:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	Explodes@2:
+		Weapon: UnitExplode
+		RequiresCondition: !airborne
+
+^Helicopter:
+	Inherits@1: ^RANeutralPlane
 	Aircraft:
 		AirborneCondition: airborne
 		CruisingCondition: cruising
@@ -466,45 +553,45 @@
 		Crushes: crate, infantry
 		InitialFacing: 224
 		CanSlide: True
-	HiddenUnderFog:
-		Type: GroundPosition
-	ActorLostNotification:
-	Explodes:
-		Weapon: HeliExplode
-		EmptyWeapon: HeliExplode
-	AttackMove:
-	DrawLineToTarget:
-	Guard:
-	Guardable:
-	Tooltip:
-		GenericName: Helicopter
-	WithFacingSpriteBody:
-	WithShadow:
-		Offset: 43, 128, 0
-		ZOffset: -129
 	Hovers@CRUISING:
 		RequiresCondition: cruising
-	MustBeDestroyed:
-	Voiced:
-		VoiceSet: VehicleVoice
 	BodyOrientation:
 		UseClassicFacingFudge: True
-	HitShape:
-	MapEditorData:
-		Categories: Aircraft
-	SpawnActorOnDeath:
-		RequiresCondition: airborne
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
+	GpsDot:
+		String: Helicopter
+
+^RAPlane:
+	Inherits: ^RANeutralPlane
+	EjectOnDeath:
+		PilotActor: RARE1
+		SuccessRate: 50
+		EjectOnGround: false
+		EjectInAir: true
+		AllowUnsuitableCell: true
+		ChuteSound: chute1.aud
+
+^RAHelicopter:
+	Inherits: ^Helicopter
+	EjectOnDeath:
+		PilotActor: RAE1
+		SuccessRate: 50
+		EjectOnGround: false
+		EjectInAir: true
+		AllowUnsuitableCell: true
+		ChuteSound: chute1.aud
+
+^HeliExplodeLarge:
+	Explodes:
+		Weapon: LargeHeliExplode
+		EmptyWeapon: LargeHeliExplode
 
 ^Infantry:
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
+	Inherits@bounty: ^GlobalBounty
 	Inherits@bot: ^BotProductionBoost
+	Inherits@mindcontrol: ^MindControllable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -531,8 +618,6 @@
 	Targetable@HEALING:								##########
 		RequiresCondition: !parachute && damaged
 		TargetTypes: Healing
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
 	GrantConditionOnDamageState@DAMAGED:			##########
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
@@ -542,12 +627,14 @@
 	WithDeathAnimation:
 		DeathTypes:
 			DefaultDeath: 1
+			BruteMutate: 1
 			BulletDeath: 1
 			RippedApartDeath: 2
 			SmallExplosionDeath: 3
 			ExplosionDeath: 4
 			FireDeath: 5
 			TiberiumDeath: 6
+			RA2VirusDeath: 6
 			ElectricityDeath: 7			##########
 		CrushedSequence: die-crushed
 	AttackMove:
@@ -561,6 +648,16 @@
 		DamageInterval: 16
 		DamageTypes: TiberiumDeath
 		RequiresCondition: !hazmatsuits
+		LayerName: ra2radiation
+		LayerName: tibradiation
+	DamagedByTintedCells@rad:
+		Damage: 1000
+		DamageInterval: 16
+		DamageTypes: DefaultDeath
+	DamagedByTintedCells@tib:
+		Damage: 500
+		DamageInterval: 16
+		DamageTypes: TiberiumDeath
 	GrantConditionOnTerrain@HAZMAT:
 		Condition: ontiberium
 		TerrainTypes: Tiberium, BlueTiberium
@@ -618,7 +715,7 @@
 		DeathTypes: FireDeath
 	DeathSounds@POISONED:
 		Voice: Poisoned
-		DeathTypes: TiberiumDeath
+		DeathTypes: TiberiumDeath, RA2VirusDeath
 	DeathSounds@ZAPPED:						##########
 		Voice: Zapped
 		DeathTypes: ElectricityDeath
@@ -652,18 +749,15 @@
 		Sounds: bgrinda.wav
 	Cloneable:
 		Types: NormalInfantry
-	SpawnActorOnDeath@Mutate:
-		Probability: 95
-		Actor: yrbrute
-		OwnerType: InternalName
-		InternalOwner: Creeps
-		DeathType: BruteMutate
-		RequiresLobbyCreeps: true
+	Explodes@Mutate:
+		Weapon: MutateEffect
+		EmptyWeapon: MutateEffect
+		DeathTypes: BruteMutate
 	DeliversCash:
 		Payload: 45
 		Type: GrinderCash
 	CaptureManager:
-	Captures@CAPTURES
+	Captures@CAPTURES:
 		CaptureTypes: ra2garrison
 		ConsumedByCapture: false
 	ExternalCondition@REAPERTRAP:
@@ -708,6 +802,7 @@
 		IdleSequences: idle1, idle2
 		StandSequences: stand, stand2
 	AttackFrontal:
+		PauseOnCondition: ReaperTrap || ArbiterStasis
 
 ^CivInfantry:
 	Inherits: ^Infantry
@@ -724,9 +819,6 @@
 		Range: 2c0
 	Passenger:
 		PipType: Gray
-	ActorLostNotification:
-		Notification: CivilianKilled
-		NotifyAll: true
 	ScaredyCat:
 	Crushable:
 		CrushSound: squish2.aud
@@ -750,7 +842,6 @@
 	Inherits@2: ^SpriteActor
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -777,6 +868,7 @@
 	Selectable:
 		Bounds: 24,24
 	Targetable:
+		RequiresCondition: !parachute
 		TargetTypes: Ground, Creep
 	HiddenUnderFog:
 	RenderSprites:
@@ -800,15 +892,35 @@
 	HitShape:
 		Type: Circle
 			Radius: 128
+	Passenger:
+		Weight: 2
+		CargoType: Infantry
+	Parachutable:
+		FallRate: 20
+		KilledOnImpassableTerrain: true
+		GroundCorpseSequence: corpse
+		GroundImpactSound: squishy2.aud
+		WaterImpactSound: splash9.aud
+		WaterCorpseSequence: small_splash
+		ParachutingCondition: parachute
+	WithParachute:
+		ShadowImage: parach-shadow
+		ShadowSequence: idle
+		Image: parach
+		Sequence: idle
+		OpeningSequence: open
+		Offset: 0,0,427
+		RequiresCondition: parachute
 	MapEditorData:
 		Categories: Critter
+	GpsDot:
+		String: Infantry
 
 ^Viceroid:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Huntable:
 	Health:
 		HP: 30000
@@ -861,14 +973,12 @@
 			Radius: 427
 	MapEditorData:
 		Categories: Critter
+	GpsDot:
+		String: Infantry
 
-^Plane:
+^Plane: #Not for actual air units
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
-	Inherits@bot: ^BotProductionBoost
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -889,15 +999,16 @@
 		IdleBehavior: LeaveMap
 	MapEditorData:
 		Categories: Aircraft
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
+	GpsDot:
+		String: Plane
 
 ^Ship:
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
 	Inherits@bot: ^BotProductionBoost
+	Inherits@mindcontrol: ^MindControllable
+	Inherits@rad: ^VehicleRadiation
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -923,15 +1034,14 @@
 	HitShape:
 	MapEditorData:
 		Categories: Naval
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
+	GpsDot:
+		String: Ship
 
 ^Building:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
+	Inherits@bounty: ^GlobalBounty
+	Inherits@commandodebuff: ^CommandoDebuff
 	Inherits@shape: ^1x1Shape
 	Inherits@selection: ^SelectableBuilding
 	Huntable:
@@ -976,6 +1086,7 @@
 	Tooltip:
 		GenericName: Structure
 	FrozenUnderFog:
+	FrozenUnderFogUpdatedByGps:
 	Demolishable:
 	MapEditorData:
 		Categories: Building
@@ -994,17 +1105,9 @@
 	DamageMultiplier@CEMENTFACTORY:
 		RequiresCondition: techcementffact
 		Modifier: 85
-	ExternalCondition@TSNEUTRON:
-		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
-	PowerMultiplier@TSNEUTRON:
-		Modifier: 200
-		RequiresCondition: TSNeutronBomb
 	Cloak@CloackGen:
 		InitialDelay: 15
-		CloakDelay: 90		
+		CloakDelay: 90
 		CloakSound: cloak5.aud
 		UncloakSound: cloak5.aud
 		PauseOnCondition: cloak-force-disabled
@@ -1039,6 +1142,8 @@
 	Inherits: ^Building
 	Inherits@2: ^IronCurtainable
 	Inherits@bot: ^BotProductionBoost
+	Inherits@mindcontrol: ^MindControllableStructure
+	Inherits@EMP: ^UnitDisable
 	Building:
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud
@@ -1075,6 +1180,8 @@
 		ReferencePoint: Center
 		Palette: player
 		IsPlayerPalette: True
+	GpsDot:
+		String: Structure
 
 ^CivBuilding:
 	Inherits: ^Building
@@ -1132,6 +1239,8 @@
 		ReferencePoint: Center
 		Palette: player
 		IsPlayerPalette: True
+	GpsDot:
+		String: Forward
 
 ^CivField:
 	Inherits: ^CivBuilding
@@ -1199,6 +1308,7 @@
 		Palette: staticterrain
 	WithWallSpriteBody:
 	GivesExperience:
+		PlayerExperienceModifier: 100
 	Sellable:
 		SellSounds: cashturn.aud
 	Guardable:
@@ -1433,7 +1543,7 @@
 		GenericName: Crate
 		ShowOwnerRow: false
 	Crate:
-		TerrainTypes: Clear, Rough, Road, Tiberium, BlueTiberium, Beach
+		TerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
 	RenderSprites:
 		Palette: effect
 		Image: crate
@@ -1456,21 +1566,13 @@
 		Categories: Defense
 	-CommandBarBlacklist:
 	-AcceptsDeliveredCash:
-	ExternalCondition@TSNEUTRON:
-		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb
-	ReloadDelayMultiplier@TSNEUTRON:
-		RequiresCondition: TSNeutronBomb
-		Modifier: 200
 
 ^DisabledOverlay:
 	GrantConditionOnPowerState@LOWPOWER:
 		Condition: lowpower
 		ValidPowerStates: Low, Critical
 	WithColoredOverlay@IDISABLE:
-		RequiresCondition: lowpower
+		RequiresCondition: lowpower || disabled
 		Palette: disabled
 
 ^SelectableCombatUnit:
@@ -1563,7 +1665,7 @@
 	Selectable:
 		Priority: 3
 	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure
+		TargetTypes: Ground, C4, Structure
 	Building:
 		Dimensions: 1,1
 		Footprint: x
@@ -1597,108 +1699,6 @@
 	MapEditorData:
 		Categories: Building
 	CommandBarBlacklist:
-
-^RANeutralPlane:
-	Inherits@1: ^ExistsInWorld
-	Inherits@4: ^SpriteActor
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@selection: ^SelectableCombatUnit
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@TargetbyCarrier: ^RA2CarrierTarget	##########
-	Huntable:
-	OwnerLostAction:
-		Action: Kill
-	DrawLineToTarget:
-	Armor:
-		Type: Light
-	UpdatesPlayerStatistics:
-	AppearsOnRadar:
-		UseLocation: true
-	SelectionDecorations:
-	WithSpriteControlGroupDecoration:
-	Selectable:
-		Bounds: 24,24
-	Aircraft:
-		AirborneCondition: airborne
-	Targetable@GROUND:
-		RequiresCondition: !airborne
-		TargetTypes: Ground, Vehicle
-	Targetable@AIRBORNE:
-		RequiresCondition: airborne
-		TargetTypes: Air
-	Targetable@REPAIR:
-		RequiresCondition: !airborne && damaged
-		TargetTypes: Repair
-	GrantConditionOnDamageState@DAMAGED:
-		Condition: damaged
-		ValidDamageStates: Light, Medium, Heavy, Critical
-	HiddenUnderFog:
-		Type: GroundPosition
-	AttackMove:
-	Guard:
-	Guardable:
-	#ActorLostNotification:
-	#	Notification: AirUnitLost
-	ProximityCaptor:
-		Types: Plane
-	EjectOnDeath:
-		PilotActor: E1
-		SuccessRate: 50
-		EjectOnGround: false
-		EjectInAir: true
-		AllowUnsuitableCell: true
-		ChuteSound: chute1.aud
-	GpsDot:
-		String: Plane
-	Tooltip:
-		GenericName: Plane
-	WithShadow:
-		Offset: 43, 128, 0
-		ZOffset: -129
-	WithFacingSpriteBody:
-	MustBeDestroyed:
-	Voiced:
-		VoiceSet: GenericVoice
-	HitShape:
-	MapEditorData:
-		Categories: Aircraft
-	SpawnActorOnDeath:
-		RequiresCondition: airborne
-	Explodes:
-		Weapon: UnitExplode
-		RequiresCondition: !airborne
-	Targetable@PSISTORM:							##########
-		TargetTypes: PsiStorm
-
-^RAPlane:
-	Inherits: ^RANeutralPlane
-	Inherits@2: ^GainsExperience
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Inherits@bot: ^BotProductionBoost
-	Repairable:
-		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept	##########
-
-^RAHelicopter:
-	Inherits: ^RAPlane
-	Inherits@bounty: ^GlobalBounty				##########
-	Inherits@commandodebuff: ^CommandoDebuff	##########
-	Aircraft:
-		CanHover: True
-		CruisingCondition: cruising
-		WaitDistanceFromResupplyBase: 4c0
-		TakeOffOnResupply: true
-		VTOL: true
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
-		Crushes: crate, mine, infantry
-		InitialFacing: 224
-		CanSlide: True
-	GpsDot:
-		String: Helicopter
-	Hovers@CRUISING:
-		RequiresCondition: cruising
-	BodyOrientation:
-		UseClassicFacingFudge: True
 
 ^IronCurtainable:
 	WithColoredOverlay@IRONCURTAIN:
@@ -1804,7 +1804,7 @@
 	Tooltip:
 		Name: Ammo Box
 	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, NoAutoTarget
+		TargetTypes: Ground, C4, Structure, NoAutoTarget
 	Armor:
 		Type: Light
 	MapEditorData:
@@ -1839,7 +1839,7 @@
 
 ^InfiltratableFake:
 	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
+		TargetTypes: Ground, Structure, C4, SpyInfiltrate
 	InfiltrateForDecoration:
 		Types: SpyInfiltrate
 		RequiresSelection: true
@@ -1908,335 +1908,258 @@
 	GainsExperience:
 		LevelUpNotification: LevelUp
 		Conditions:
-			200: rank-veteran
-			500: rank-veteran
-			900: rank-veteran
-			1400: rank-veteran
+			200: city-veteran
+			500: city-veteran
+			900: city-veteran
+			1400: city-veteran
 		LevelUpImage: crate-effects
+	ExternalCondition@rankveteran:
+		Condition: city-veteran
+		TotalCap: 4
+	ExternalCondition@rankelite:
+		Condition: city-elite
+		TotalCap: 1
 	GrantCondition@RANK-ELITE:
-		RequiresCondition: rank-veteran >= 4
-		Condition: rank-elite
+		RequiresCondition: city-veteran >= 4
+		Condition: city-elite
 	DamageMultiplier@RANK-1:
-		RequiresCondition: rank-veteran == 1
+		RequiresCondition: city-veteran == 1 && !city-elite
 		Modifier: 95
 	DamageMultiplier@RANK-2:
-		RequiresCondition: rank-veteran == 2
+		RequiresCondition: city-veteran == 2 && !city-elite
 		Modifier: 90
 	DamageMultiplier@RANK-3:
-		RequiresCondition: rank-veteran == 3
+		RequiresCondition: city-veteran == 3 && !city-elite
 		Modifier: 85
 	DamageMultiplier@RANK-ELITE:
-		RequiresCondition: rank-elite
+		RequiresCondition: city-elite
 		Modifier: 75
-	FirepowerMultiplier@RANK-1:
-		RequiresCondition: rank-veteran == 1
-		Modifier: 105
-	FirepowerMultiplier@RANK-2:
-		RequiresCondition: rank-veteran == 2
-		Modifier: 110
-	FirepowerMultiplier@RANK-3:
-		RequiresCondition: rank-veteran == 3
-		Modifier: 120
-	FirepowerMultiplier@RANK-ELITE:
-		RequiresCondition: rank-elite
-		Modifier: 130
-	SpeedMultiplier@RANK-1:
-		RequiresCondition: rank-veteran == 1
-		Modifier: 105
-	SpeedMultiplier@RANK-2:
-		RequiresCondition: rank-veteran == 2
-		Modifier: 110
-	SpeedMultiplier@RANK-3:
-		RequiresCondition: rank-veteran == 3
-		Modifier: 120
-	SpeedMultiplier@RANK-ELITE:
-		RequiresCondition: rank-elite
-		Modifier: 140
-	ReloadDelayMultiplier@RANK-1:
-		RequiresCondition: rank-veteran == 1
-		Modifier: 95
-	ReloadDelayMultiplier@RANK-2:
-		RequiresCondition: rank-veteran == 2
-		Modifier: 90
-	ReloadDelayMultiplier@RANK-3:
-		RequiresCondition: rank-veteran == 3
-		Modifier: 85
-	ReloadDelayMultiplier@RANK-ELITE:
-		RequiresCondition: rank-elite
-		Modifier: 75
-	InaccuracyMultiplier@RANK-1:
-		RequiresCondition: rank-veteran == 1
-		Modifier: 90
-	InaccuracyMultiplier@RANK-2:
-		RequiresCondition: rank-veteran == 2
-		Modifier: 80
-	InaccuracyMultiplier@RANK-3:
-		RequiresCondition: rank-veteran == 3
-		Modifier: 70
-	InaccuracyMultiplier@RANK-ELITE:
-		RequiresCondition: rank-elite
-		Modifier: 50
 	SelfHealing@ELITE:
-		Step: 200
+		PercentageStep: 200
 		Delay: 100
 		HealIfBelow: 100
 		DamageCooldown: 125
-		RequiresCondition: rank-elite
+		RequiresCondition: city-elite
 	WithDecoration@RANK-1:
 		Image: rank
 		Sequence: rank-veteran-1
 		Palette: effect
 		ReferencePoint: Bottom, Right
-		RequiresCondition: rank-veteran == 1
+		RequiresCondition: city-veteran == 1 && !city-elite
 		ZOffset: 256
 	WithDecoration@RANK-2:
 		Image: rank
 		Sequence: rank-veteran-2
 		Palette: effect
 		ReferencePoint: Bottom, Right
-		RequiresCondition: rank-veteran == 2
+		RequiresCondition: city-veteran == 2 && !city-elite
 		ZOffset: 256
 	WithDecoration@RANK-3:
 		Image: rank
 		Sequence: rank-veteran-3
 		Palette: effect
 		ReferencePoint: Bottom, Right
-		RequiresCondition: rank-veteran == 3
+		RequiresCondition: city-veteran == 3 && !city-elite
 		ZOffset: 256
 	WithDecoration@RANK-ELITE:
 		Image: rank
 		Sequence: rank-elite
 		Palette: effect
 		ReferencePoint: Bottom, Right
-		RequiresCondition: rank-elite
+		RequiresCondition: city-elite
 		ZOffset: 256
 
 ^PowerMultiplier:
+	Inherits: ^GainsExperienceCity
 	PowerMultiplier@RANK-1:
 		Modifier: 125
-		RequiresCondition: rank-veteran == 1
+		RequiresCondition: city-veteran == 1 && !city-elite
 	PowerMultiplier@RANK-2:
 		Modifier: 150
-		RequiresCondition: rank-veteran == 2
+		RequiresCondition: city-veteran == 2 && !city-elite
 	PowerMultiplier@RANK-3:
 		Modifier: 175
-		RequiresCondition: rank-veteran == 3
+		RequiresCondition: city-veteran == 3 && !city-elite
 	PowerMultiplier@RANK-4:
 		Modifier: 200
-		RequiresCondition: rank-veteran >= 4
+		RequiresCondition: city-elite
+
+^DefenseMultiplier:
+	Inherits: ^GainsExperienceCity
+	FirepowerMultiplier@RANK-1:
+		RequiresCondition: city-veteran == 1
+		Modifier: 105
+	FirepowerMultiplier@RANK-2:
+		RequiresCondition: city-veteran == 2
+		Modifier: 110
+	FirepowerMultiplier@RANK-3:
+		RequiresCondition: city-veteran == 3
+		Modifier: 120
+	FirepowerMultiplier@RANK-ELITE:
+		RequiresCondition: city-elite
+		Modifier: 130
+	ReloadDelayMultiplier@RANK-1:
+		RequiresCondition: city-veteran == 1
+		Modifier: 95
+	ReloadDelayMultiplier@RANK-2:
+		RequiresCondition: city-veteran == 2
+		Modifier: 90
+	ReloadDelayMultiplier@RANK-3:
+		RequiresCondition: city-veteran == 3
+		Modifier: 85
+	ReloadDelayMultiplier@RANK-ELITE:
+		RequiresCondition: city-elite
+		Modifier: 75
+	InaccuracyMultiplier@RANK-1:
+		RequiresCondition: city-veteran == 1
+		Modifier: 90
+	InaccuracyMultiplier@RANK-2:
+		RequiresCondition: city-veteran == 2
+		Modifier: 80
+	InaccuracyMultiplier@RANK-3:
+		RequiresCondition: city-veteran == 3
+		Modifier: 70
+	InaccuracyMultiplier@RANK-ELITE:
+		RequiresCondition: city-elite
+		Modifier: 50
 
 ^Residential:
 	CashTricklerBar:
 	ExternalCondition@CommercialCash0:
 		Condition: CommercialCash0
+		TotalCap: 1
 	ExternalCondition@CommercialCash1:
 		Condition: CommercialCash1
+		TotalCap: 1
 	ExternalCondition@CommercialCash2:
 		Condition: CommercialCash2
+		TotalCap: 1
 	ExternalCondition@CommercialCash3:
 		Condition: CommercialCash3
+		TotalCap: 1
 	ExternalCondition@CommercialCash4:
 		Condition: CommercialCash4
+		TotalCap: 1
 	CashTrickler@RANK-0:
-		Amount: 25
-		Interval: 200
-		RequiresCondition: rank-veteran == 0 && !lowpower && !CommercialCash0 && !CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-0-0:
-		Amount: 30
-		Interval: 200
-		RequiresCondition: rank-veteran == 0 && !lowpower && CommercialCash0 && !CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-0-1:
-		Amount: 34
-		Interval: 200
-		RequiresCondition: rank-veteran == 0 && !lowpower && CommercialCash0 && CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-0-2:
-		Amount: 37
-		Interval: 200
-		RequiresCondition: rank-veteran == 0 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-0-3:
-		Amount: 39
-		Interval: 200
-		RequiresCondition: rank-veteran == 0 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-0-4:
-		Amount: 40
-		Interval: 200
-		RequiresCondition: rank-veteran == 0 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && CommercialCash3 && CommercialCash4
+		Amount: 10
+		Interval: 400
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 0 && !lowpower && !city-elite
 	CashTrickler@RANK-1:
-		Amount: 30
-		Interval: 200
-		RequiresCondition: rank-veteran == 1 && !lowpower && !CommercialCash0 && !CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-1-0:
-		Amount: 35
-		Interval: 200
-		RequiresCondition: rank-veteran == 1 && !lowpower && CommercialCash0 && !CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-1-1:
-		Amount: 39
-		Interval: 200
-		RequiresCondition: rank-veteran == 1 && !lowpower && CommercialCash0 && CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-1-2:
-		Amount: 42
-		Interval: 200
-		RequiresCondition: rank-veteran == 1 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-1-3:
-		Amount: 44
-		Interval: 200
-		RequiresCondition: rank-veteran == 1 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-1-4:
-		Amount: 45
-		Interval: 200
-		RequiresCondition: rank-veteran == 1 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && CommercialCash3 && CommercialCash4
+		Amount: 20
+		Interval: 400
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
 	CashTrickler@RANK-2:
-		Amount: 35
-		Interval: 200
-		RequiresCondition: rank-veteran == 2 && !lowpower && !CommercialCash0 && !CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-2-0:
 		Amount: 40
-		Interval: 200
-		RequiresCondition: rank-veteran == 2 && !lowpower && CommercialCash0 && !CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-2-1:
-		Amount: 44
-		Interval: 200
-		RequiresCondition: rank-veteran == 2 && !lowpower && CommercialCash0 && CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-2-2:
-		Amount: 47
-		Interval: 200
-		RequiresCondition: rank-veteran == 2 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-2-3:
-		Amount: 49
-		Interval: 200
-		RequiresCondition: rank-veteran == 2 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-2-4:
-		Amount: 50
-		Interval: 200
-		RequiresCondition: rank-veteran == 2 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && CommercialCash3 && CommercialCash4
+		Interval: 400
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
 	CashTrickler@RANK-3:
-		Amount: 40
-		Interval: 200
-		RequiresCondition: rank-veteran == 3 && !lowpower && !CommercialCash0 && !CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-3-0:
-		Amount: 45
-		Interval: 200
-		RequiresCondition: rank-veteran == 3 && !lowpower && CommercialCash0 && !CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-3-1:
-		Amount: 49
-		Interval: 200
-		RequiresCondition: rank-veteran == 3 && !lowpower && CommercialCash0 && CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-3-2:
-		Amount: 52
-		Interval: 200
-		RequiresCondition: rank-veteran == 3 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-3-3:
-		Amount: 54
-		Interval: 200
-		RequiresCondition: rank-veteran == 3 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-3-4:
-		Amount: 55
-		Interval: 200
-		RequiresCondition: rank-veteran == 3 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && CommercialCash3 && CommercialCash4
-	CashTrickler@RANK-4:
-		Amount: 45
-		Interval: 200
-		RequiresCondition: rank-veteran >= 4 && !lowpower && !CommercialCash0 && !CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-4-0:
-		Amount: 50
-		Interval: 200
-		RequiresCondition: rank-veteran >= 4 && !lowpower && CommercialCash0 && !CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-4-1:
-		Amount: 54
-		Interval: 200
-		RequiresCondition: rank-veteran >= 4 && !lowpower && CommercialCash0 && CommercialCash1 && !CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-4-2:
-		Amount: 57
-		Interval: 200
-		RequiresCondition: rank-veteran >= 4 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && !CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-4-3:
-		Amount: 59
-		Interval: 200
-		RequiresCondition: rank-veteran >= 4 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && CommercialCash3 && !CommercialCash4
-	CashTrickler@RANK-4-4:
 		Amount: 60
-		Interval: 200
-		RequiresCondition: rank-veteran >= 4 && !lowpower && CommercialCash0 && CommercialCash1 && CommercialCash2 && CommercialCash3 && CommercialCash4
+		Interval: 400
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
+	CashTrickler@RANK-4:
+		Amount: 80
+		Interval: 400
+		UseResourceStorage: true
+		RequiresCondition: city-elite && !lowpower
+	CashTricklerMultiplier@COMMERCIAL0:
+		Modifier: 120
+		RequiresCondition: CommercialCash0
+	CashTricklerMultiplier@COMMERCIAL1:
+		Modifier: 140
+		RequiresCondition: CommercialCash1
+	CashTricklerMultiplier@COMMERCIAL2:
+		Modifier: 160
+		RequiresCondition: CommercialCash2
+	CashTricklerMultiplier@COMMERCIAL3:
+		Modifier: 180
+		RequiresCondition: CommercialCash3
+	CashTricklerMultiplier@COMMERCIAL4:
+		Modifier: 200
+		RequiresCondition: CommercialCash4
 	WithIdleOverlay@RANK-1:
 		Sequence: rank-veteran-1
-		RequiresCondition: rank-veteran == 1
+		RequiresCondition: city-veteran == 1 && !city-elite
 	WithIdleOverlay@RANK-2:
 		Sequence: rank-veteran-2
-		RequiresCondition: rank-veteran == 2
+		RequiresCondition: city-veteran == 2 && !city-elite
 	WithIdleOverlay@RANK-3:
 		Sequence: rank-veteran-3
-		RequiresCondition: rank-veteran == 3
+		RequiresCondition: city-veteran == 3 && !city-elite
 	WithIdleOverlay@RANK-4:
 		Sequence: rank-veteran-4
-		RequiresCondition: rank-veteran >= 4
+		RequiresCondition: city-elite
 
 ^Commercial:
 	ProximityExternalCondition@RANK-0:
 		Range: 7c0
 		Condition: CommercialCash0
-		RequiresCondition: rank-veteran == 0 || rank-veteran == 1 || rank-veteran == 2 || rank-veteran == 3 || rank-veteran == 4
+		RequiresCondition: city-veteran == 0 && !city-elite
 	ProximityExternalCondition@RANK-1:
 		Range: 7c0
 		Condition: CommercialCash1
-		RequiresCondition: rank-veteran == 1 || rank-veteran == 2 || rank-veteran == 3 || rank-veteran == 4
+		RequiresCondition: city-veteran == 1 && !city-elite
 	ProximityExternalCondition@RANK-2:
 		Range: 7c0
 		Condition: CommercialCash2
-		RequiresCondition: rank-veteran == 2 || rank-veteran == 3 || rank-veteran == 4
+		RequiresCondition: city-veteran == 2 && !city-elite
 	ProximityExternalCondition@RANK-3:
 		Range: 7c0
 		Condition: CommercialCash3
-		RequiresCondition: rank-veteran == 3 || rank-veteran == 4
+		RequiresCondition: city-veteran == 3 && !city-elite
 	ProximityExternalCondition@RANK-4:
 		Range: 7c0
 		Condition: CommercialCash4
-		RequiresCondition: rank-veteran == 4
+		RequiresCondition: city-elite
 	WithIdleOverlay@RANK-1:
 		Sequence: rank-veteran-1
-		RequiresCondition: rank-veteran == 1
+		RequiresCondition: city-veteran == 1 && !city-elite
 	WithIdleOverlay@RANK-2:
 		Sequence: rank-veteran-2
-		RequiresCondition: rank-veteran == 2
+		RequiresCondition: city-veteran == 2 && !city-elite
 	WithIdleOverlay@RANK-3:
 		Sequence: rank-veteran-3
-		RequiresCondition: rank-veteran == 3
+		RequiresCondition: city-veteran == 3 && !city-elite
 	WithIdleOverlay@RANK-4:
 		Sequence: rank-veteran-4
-		RequiresCondition: rank-veteran >= 4
+		RequiresCondition: city-elite
 
 ^Industrial:
 	ProximityExternalCondition@RANK-0:
 		Range: 9c0
 		Condition: IndustrySpeed0
-		RequiresCondition: rank-veteran >= 0 && !lowpower
+		RequiresCondition: city-veteran >= 0 && !lowpower && !city-elite
 	ProximityExternalCondition@RANK-1:
 		Range: 9c0
 		Condition: IndustrySpeed1
-		RequiresCondition: rank-veteran >= 1 && !lowpower
+		RequiresCondition: city-veteran >= 1 && !lowpower && !city-elite
 	ProximityExternalCondition@RANK-2:
 		Range: 9c0
 		Condition: IndustrySpeed2
-		RequiresCondition: rank-veteran >= 2 && !lowpower
+		RequiresCondition: city-veteran >= 2 && !lowpower && !city-elite
 	ProximityExternalCondition@RANK-3:
 		Range: 9c0
 		Condition: IndustrySpeed3
-		RequiresCondition: rank-veteran >= 3 && !lowpower
+		RequiresCondition: city-veteran >= 3 && !lowpower && !city-elite
 	ProximityExternalCondition@RANK-4:
 		Range: 9c0
 		Condition: IndustrySpeed4
-		RequiresCondition: rank-veteran >= 4 && !lowpower
+		RequiresCondition: city-elite && !lowpower
 	WithIdleOverlay@RANK-1:
 		Sequence: rank-veteran-1
-		RequiresCondition: rank-veteran == 1
+		RequiresCondition: city-veteran == 1 && !city-elite
 	WithIdleOverlay@RANK-2:
 		Sequence: rank-veteran-2
-		RequiresCondition: rank-veteran == 2
+		RequiresCondition: city-veteran == 2 && !city-elite
 	WithIdleOverlay@RANK-3:
 		Sequence: rank-veteran-3
-		RequiresCondition: rank-veteran == 3
+		RequiresCondition: city-veteran == 3 && !city-elite
 	WithIdleOverlay@RANK-4:
 		Sequence: rank-veteran-4
-		RequiresCondition: rank-veteran >= 4
+		RequiresCondition: city-elite
 
 ^MayorCall:
 	ProximityExternalCondition:
@@ -2244,13 +2167,13 @@
 		Condition: MayorCall
 	WithIdleOverlay@RANK-2:
 		Sequence: rank-veteran-2
-		RequiresCondition: rank-veteran == 2
+		RequiresCondition: city-veteran == 2 && !city-elite
 	WithIdleOverlay@RANK-3:
 		Sequence: rank-veteran-3
-		RequiresCondition: rank-veteran == 3
+		RequiresCondition: city-veteran == 3 && !city-elite
 	WithIdleOverlay@RANK-4:
 		Sequence: rank-veteran-4
-		RequiresCondition: rank-veteran >= 4
+		RequiresCondition: city-elite
 
 ^FireCall:
 	ProximityExternalCondition:
@@ -2262,23 +2185,51 @@
 		Range: 7c0
 		Condition: PoliceCall
 
+^ExternalConditionsAll:
+	Inherits@commando: ^CommandoDebuff
+	ExternalCondition@SCPlague:
+		Condition: DefilerPlague
+		TotalCap: 1
+	TimedConditionBar@Plague:
+		Color: A40000
+		Condition: DefilerPlague
+	SelfHealing@SCPlague:
+		Step: -500
+		PercentageStep: -1
+		Delay: 10
+		HealIfBelow: 101
+		DamageTypes: DefaultDeath
+		RequiresCondition: DefilerPlague
+
 ^ExternalConditions:
+	Inherits: ^ExternalConditionsAll
 	ExternalCondition@IndustrySpeed0:
 		Condition: IndustrySpeed0
+		TotalCap: 1
 	ExternalCondition@IndustrySpeed1:
 		Condition: IndustrySpeed1
+		TotalCap: 1
 	ExternalCondition@IndustrySpeed2:
 		Condition: IndustrySpeed2
+		TotalCap: 1
 	ExternalCondition@IndustrySpeed3:
 		Condition: IndustrySpeed3
+		TotalCap: 1
 	ExternalCondition@IndustrySpeed4:
 		Condition: IndustrySpeed4
+		TotalCap: 1
 	ExternalCondition@FireCall:
 		Condition: FireCall
+		TotalCap: 1
 	ExternalCondition@PoliceCall:
 		Condition: PoliceCall
+		TotalCap: 1
 	ExternalCondition@CommandoCall:
 		Condition: CommandoCall
+		TotalCap: 1
+	ExternalCondition@DarkSwarm:
+		Condition: DarkSwarm
+		TotalCap: 1
 	SpeedMultiplier@RANK-0:
 		Modifier: 120
 		RequiresCondition: IndustrySpeed0
@@ -2309,6 +2260,12 @@
 	InaccuracyMultiplier@COMMANDOCALL:
 		Modifier: 50
 		RequiresCondition: CommandoCall
+	DamageMultiplier@DARKSWARM:
+		Modifier: 0
+		RequiresCondition: DarkSwarm
+	FirepowerMultiplier@DARKSWARM:
+		Modifier: 0
+		RequiresCondition: DarkSwarm
 	WithDecoration@IndustrySpeed0:
 		Image: cityspeed
 		Sequence: speed0
@@ -2677,7 +2634,11 @@ CPQDEBUGDUMMY:
 		Bots: brutal
 	CashTrickler@brutal:
 		Interval: 400
-		Amount: 1000
+		Amount: 200
+		ShowTicks: False
+		RequiresCondition: brutalcash
+	ResourcePurifier@brutal:
+		Modifier: 200
 		ShowTicks: False
 		RequiresCondition: brutalcash
 	GrantConditionOnBotOwner@hard:
@@ -2685,14 +2646,193 @@ CPQDEBUGDUMMY:
 		Bots: hard
 	CashTrickler@hard:
 		Interval: 400
-		Amount: 600
+		Amount: 100
+		ShowTicks: False
+		RequiresCondition: hardcash
+	ResourcePurifier@hard:
+		Modifier: 150
 		ShowTicks: False
 		RequiresCondition: hardcash
 	GrantConditionOnBotOwner@medium:
 		Condition: normalcash
 		Bots: medium
-	CashTrickler@medium:
-		Interval: 400
-		Amount: 300
+	ResourcePurifier@medium:
+		Modifier: 125
 		ShowTicks: False
 		RequiresCondition: normalcash
+
+^Harvester:
+	Inherits@MC: ^MCImmune
+	Harvester:
+		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
+		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, tsntwast, screfinery, scassimilator, scextractor
+	GpsDot:
+		String: Harvester
+
+^RearmableAircraft:
+	Rearmable:
+		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2
+	AutoTarget:
+		InitialStance: HoldFire
+
+^Repairable:
+	Repairable:
+		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr
+
+	Interactable:
+
+^MindControllable:
+	ExternalCondition@prevent-mindcontrol:
+		Condition: prevent-mindcontrol
+	MindControllable:
+		Condition: controlled
+		PauseOnCondition: prevent-mindcontrol || invulnerability
+	WithMindControlArc:
+		UsePlayerColor: true
+		Transparency: 255
+		Offset: 0,0,511
+		Angle: 32
+		Width: 256
+	Targetable@MC:
+		TargetTypes: MindControl
+		RequiresCondition: !controlled && !prevent-mindcontrol && !invulnerability
+
+^MindControllableStructure:
+	ExternalCondition@prevent-mindcontrol:
+		Condition: prevent-mindcontrol
+	MindControllable:
+		Condition: controlled
+		PauseOnCondition: prevent-mindcontrol || invulnerability
+	WithMindControlArc:
+		Color: c71585
+		Transparency: 55
+		Offset: 0,0,511
+		Angle: 32
+		Width: 116
+	Targetable@MCStructure:
+		TargetTypes: MindControlStructure
+		RequiresCondition: !controlled && !prevent-mindcontrol && !invulnerability
+
+^MCImmune:
+	Targetable@MC:
+		TargetTypes: MCImmune
+
+^DeployableInfantryEditor:
+	GrantCondition:
+		Condition: editorhack
+	WithInfantryBody@Editor:
+		DefaultAttackSequence: shoot
+		RequiresCondition: !editorhack
+
+^Power:
+	Inherits: ^PowerMultiplier
+	Buildable:
+		BuildDurationModifier: 25
+	Targetable@BotArchitect:
+		TargetTypes: Power
+	ProvidesPrerequisite@anypower:
+		Prerequisite: anypower
+
+^PowerPlant:
+	Inherits: ^Power
+	WithColoredOverlay@IDISABLE:
+		Palette: disabled
+		RequiresCondition: powerdisabled
+	GrantCondition@IDISABLE:
+		RequiresCondition: power-outage || disabled
+		Condition: powerdisabled
+	AffectedByPowerOutage:
+		Condition: power-outage
+		Types: SpyInfiltrate
+	Targetable@infiltrate:
+		TargetTypes: SpyInfiltrate
+	Power:
+		RequiresCondition: !powerdisabled
+
+^Refinery:
+	Buildable:
+		BuildDurationModifier: 25
+
+^ProducesUnits:
+	Buildable:
+		BuildDurationModifier: 25
+
+^AnnounceOnBuild:
+	ExternalCondition@PRODUCED:
+		Condition: produced
+	VoiceAnnouncement:
+		RequiresCondition: produced
+		Voice: Build
+		ValidStances: None
+
+^AnnounceGlobal:
+	Inherits: ^AnnounceOnBuild
+	VoiceAnnouncement:
+		ValidStances: Enemy, Neutral, Ally
+
+^MCV:
+	Inherits@MC: ^MCImmune
+	MustBeDestroyed:
+		RequiredForShortGame: true
+	BaseBuilding:
+	WithTextDecoration:
+		Text: MCV
+		ReferencePoint: Bottom, Left
+		UsePlayerColor: True
+		ValidStances: Ally, Enemy, Neutral
+
+^AttackVoice:
+	Mobile:
+		Voice: Move
+	AttackMove:
+		Voice: Move
+	Passenger:
+		Voice: Move
+	Guard:
+		Voice: Move
+	DeliversCash:
+		Voice: Move
+
+^AttackFrontalVoice:
+	Inherits: ^AttackVoice
+	AttackFrontal:
+		Voice: Attack
+
+^AttackTurretedVoice:
+	Inherits: ^AttackVoice
+	AttackTurreted:
+		Voice: Attack
+
+#EMP disable traits, use depend on which attack trait the unit uses
+
+^FrontalEMP:
+	AttackFrontal:
+		PauseOnCondition: disabled
+
+^TurretEMP:
+	AttackTurreted:
+		PauseOnCondition: disabled
+^ShootableMissile:
+	Inherits@1: ^ExistsInWorld
+	Inherits@2: ^SpriteActor
+	Armor:
+		Type: Light
+	ShootableBallisticMissile:
+		LaunchAngle: 128
+		Speed: 110
+		AirborneCondition: airborne
+	Targetable@GROUND:
+		TargetTypes: Ground, Vehicle
+		RequiresCondition: !airborne
+	Targetable@AIRBORNE:
+		TargetTypes: Air
+		RequiresCondition: airborne
+	HiddenUnderFog:
+		Type: GroundPosition
+	Tooltip:
+		Name: Missile
+		GenericName: Missile
+		ShowOwnerRow: false
+	HitShape:
+	RejectsOrders:
+	InfiltrateForPowerOutage:

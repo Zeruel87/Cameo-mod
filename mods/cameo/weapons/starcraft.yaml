@@ -3,48 +3,83 @@ ArbiterCannon:
 	ReloadDelay: 60
 	Range: 5c0
 	Warhead@1Dam: SpreadDamage
-		Damage: 1500
+		Damage: 9000
 		Versus:
 			None: 50
 			Wood: 75
 			Light: 75
 			Heavy: 100
 
+ArbiterStasis:
+	Projectile: InstantHit
+	Report: plsecan2.aud
+	Range: 8c512
+	ReloadDelay: 180
+	ValidTargets: Ground, Air, Water
+	Warhead@1: GrantExternalCondition
+		ValidTargets: Ground, Air, Underwater
+		Range: 4c512
+		Condition: ArbiterStasis
+		Duration: 300
+		Delay: 10
+
 BCLaser:
 	Inherits: WraithLaser
-	ValidTargets: Ground, Air
-	ReloadDelay: 40
+	ValidTargets: Ground, Water, Air
+	ReloadDelay: 30
 	Range: 6c0
+	Projectile: Bullet
+		ContrailWidth: 0c128
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
-		Damage: 3750
-		ValidTargets: Ground, Air
-	Projectile: LaserZap
-		Color: FF5050
+		Damage: 15000
+		Versus:
+			Wood: 60
+		ValidTargets: Ground, Water, Air
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: artillery_explosion
+	Warhead@3EffWater: CreateEffect
+		Explosions: med_splash
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: Crater
 
 Creeptransition:
 	Warhead@2Eff: CreateEffect
 		Explosions: sczbm1
+		ImpactSounds: zchrdy00.aud
+
+Lairtransition:
+	Inherits: Creeptransition
+	Warhead@2Eff: CreateEffect
+		Explosions: make2
+		Image: schatchery
+
+Hivetransition:
+	Inherits: Creeptransition
+	Warhead@2Eff: CreateEffect
+		Explosions: make3
+		Image: schatchery
 
 DragoonCannon:
 	Inherits: PhotonCannon
-	ReloadDelay: 40
+	ReloadDelay: 20
 	Range: 5c0
 	Warhead@1Dam: SpreadDamage
 		Versus:
 			None: 50
-			Wood: 75
-			Light: 75
-			Heavy: 100
+			Wood: 50
+			Light: 100
+			Heavy: 125
 
 FirebatF:
 	Inherits: ^FlameWeapon
 	Report: TFBFir00.aud,TFBFir01.aud
 	ReloadDelay: 30
-	Range: 2c0
+	Range: 3c512
 	Warhead@1Dam: SpreadDamage
 		Spread: 468
-		Damage: 1200
+		Damage: 3600
 		ValidTargets: Ground, Water, Trees
 		InvalidTargets: Wall
 		Versus:
@@ -60,15 +95,15 @@ FirebatFBunker:
 GhostSniper:
 	Inherits: ^LightMG
 	Report: TGhFir00.aud
-	ValidTargets: Ground, Air
+	ValidTargets: Ground, Water, Air
 	ReloadDelay: 30
 	Range: 7c0
 	Projectile: Bullet
 		Speed: 5c682
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
-		Damage: 1500
-		ValidTargets: Ground, Air
+		Damage: 5000
+		ValidTargets: Ground, Water, Air
 		InvalidTargets: Wall
 		Versus:
 			None: 100
@@ -80,6 +115,23 @@ GhostSniperBunker:
 	Inherits: GhostSniper
 		Range: 10c0	#8c0
 
+GhostLockdown:
+	Projectile: Missile
+		Blockable: false
+		Image: DRAGON
+		Shadow: true
+		TrailImage: smokey
+		Speed: 426
+		RangeLimit: 12c0
+	ValidTargets: Vehicle, Air
+	Range: 5c0
+	ReloadDelay: 90
+	Warhead@1: GrantExternalCondition
+		Range: 0c512
+		Duration: 180
+		Condition: GhostLockdown
+		ValidTargets: Vehicle, Air
+
 GoliathMG:
 	Inherits: MarineMG
 	Report: TGoFir00.aud
@@ -88,8 +140,17 @@ GoliathMG:
 	Range: 5c0
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
-		Damage: 1800
+		Damage: 3200
 		ValidTargets: Ground
+		Versus:
+			None: 100
+			Wood: 10
+			Light: 50
+			Heavy: 25
+	Warhead@2Eff: CreateEffect
+		Explosions: piffs
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
 
 GoliathRockets:
 	Inherits: ^MissileWeapon
@@ -117,10 +178,10 @@ GuardianShoot:
 		Speed: 500		#682
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 3000
+		Damage: 8000
 		Versus:
 			None: 100
-			Wood: 100
+			Wood: 25
 			Light: 100
 			Heavy: 100
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
@@ -128,44 +189,67 @@ GuardianShoot:
 		Explosions: small_frag
 		ImpactSounds: zguhit00.aud
 		ImpactActors: false
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: Crater
+		InvalidTargets: Vehicle, Structure, Wall, Husk, Trees
 
 HydraSpit:
 	ReloadDelay: 20
 	Range: 4c0
 	Report: zhyfir00.aud
-	ValidTargets: Ground, Air
+	ValidTargets: Ground, Water
 	Projectile: Bullet
 		Speed: 1c682
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 1500
+		Damage: 2500
 		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
-		ValidTargets: Ground, Air
 		Versus:
 			None: 50
-			Wood: 75
-			Light: 75
-			Heavy: 100
+			Wood: 50
+			Light: 100
+			Heavy: 125
 	Warhead@3Eff: CreateEffect
 		Explosions: sczhsplash
 		ImpactActors: false
 		ValidTargets: Ground, Air
 
-InfestedExplosion:
-	Range: 1c512
+HydraSpitAA:
+	Inherits: HydraSpit
+	ValidTargets: Air
 	Projectile: InstantHit
-	Warhead@1Dam: TargetDamage
-		Spread: 1c0
-		Damage: 75000
+	Warhead@1Dam: SpreadDamage
 		Versus:
 			None: 100
 			Wood: 100
 			Light: 100
-			Heavy: 100
-	Warhead@2Eff: CreateEffect
+			Heavy: 150
+		ValidTargets: Air
+
+InfestedExplosion:
+	Range: 1c512
+	Projectile: InstantHit
+	Warhead@1Dam: SpreadDamage
+		Spread: 1c0
+		Damage: 45000
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Dam: SpreadDamage
+		Spread: 2c0
+		Damage: 12000
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@3Dam: SpreadDamage
+		Spread: 3c0
+		Damage: 6000
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@5Eff: CreateEffect
 		Explosions: self_destruct
 		ImpactSounds: ExploLrg.aud
 		ImpactActors: true
+	Warhead@6Eff: LeaveSmudge
+		SmudgeType: Scorch
+		InvalidTargets: Vehicle, Structure, Wall, Trees
+		Size: 2
+		Delay: 5
 
 InterceptorLauncher:
 	ReloadDelay: 175
@@ -180,45 +264,43 @@ InterceptorLauncher:
 InterceptorCannon:
 	ReloadDelay: 40
 	Range: 4c0
-	Burst: 8
+	Burst: 4
 	BurstDelays: 10
 	Report: blastcan.aud
-	ValidTargets: Ground, Air
+	ValidTargets: Ground, Air, Water
 	Projectile: Bullet
 		Speed: 450
 		Image: scinterceptorbullet
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
-		Damage: 900
-		ValidTargets: Ground, Air
+		Damage: 1800
+		ValidTargets: Ground, Air, Water
 		Versus:
 			None: 100
-			Wood: 100
+			Wood: 10
 			Light: 100
-			Heavy: 100
+			Heavy: 150
 		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
 
 LurkerSpines:
 	ReloadDelay: 50
 	Range: 6c0
 	Report: zlrkfir1.aud,zlrkfir2.aud
-	Projectile: AreaBeam
+	Projectile: LinearPulse
 		Speed: 0c256
-		Duration: 3
-		DamageInterval: 1
-		BeyondTargetRange: 2c0
-		Width: 0c256
-		Color: 8B4513
+		Spacing: 420
 	Warhead@1Dam: SpreadDamage
-		Spread: 64
-		Damage: 800
+		Spread: 426
+		Damage: 3000
 		ValidStances: Enemy, Neutral
 		Versus:
-			None: 100
-			Wood: 100
+			None: 150
+			Wood: 75
 			Light: 100
-			Heavy: 100
+			Heavy: 200
 		DamageTypes: DefaultDeath
+	Warhead@3Eff: CreateEffect
+		Explosions: sczlspine
 
 MarineMG:
 	Inherits: ^LightMG
@@ -228,8 +310,7 @@ MarineMG:
 	ValidTargets: Ground, Water, Air
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 900
-		InvalidTargets: Wall
+		Damage: 2000
 		ValidTargets: Ground, Water, Air
 		Versus:
 			None: 125	#100
@@ -250,7 +331,7 @@ MedicHeal:
 		Speed: 1c682
 	Warhead@1Dam: SpreadDamage
 		Spread: 213
-		Damage: -300
+		Damage: -1000
 		ValidStances: Ally
 		ValidTargets: Heal
 
@@ -270,7 +351,6 @@ MutaliskSpore:
 	ReloadDelay: 40
 	Range: 3c0
 	Report: zmufir00.aud
-	ValidTargets: Ground, Air
 	Projectile: Bullet
 		Image: scmspore
 		Speed: 482
@@ -278,38 +358,50 @@ MutaliskSpore:
 		BounceRangeModifier: 90
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 1350
-		ValidTargets: Ground, Air
+		Damage: 4000
 		Versus:
 			None: 100
-			Wood: 100
+			Wood: 25
 			Light: 100
-			Heavy: 100
+			Heavy: 75
 		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
 	Warhead@3Eff: CreateEffect
 		Explosions: sczhsplash
 		ImpactActors: false
 		ImpactSounds: zquhit00.aud,zquhit01.aud
-		ValidTargets: Ground, Air
+
+MutaliskAA:
+	Inherits: MutaliskSpore
+	ValidTargets: Air
+	Projectile: Missile
+		HorizontalRateOfTurn: 50
+		Jammable: false
+		Blockable: False
+		AllowSnapping: true
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Air
+	Warhead@3Eff: CreateEffect
+		ValidTargets: Air
 
 PhotonCannon:
-	ReloadDelay: 30
+	ReloadDelay: 25
 	Range: 7c512	#7c0
 	Report: dragbull.aud
-	ValidTargets: Ground, Air
-	Projectile: Missile	#Bullet
+	ValidTargets: Ground, Water, Air
+	Projectile: Missile
 		Image: scphotonbullet
-		HorizontalRateOfTurn: 40
+		HorizontalRateOfTurn: 50
 		Speed: 600
-		CloseEnough: 0c800	#0c298
 		Jammable: False
 		Blockable: False
+		AllowSnapping: true
+		CloseEnough: 600
 	Warhead@1Dam: SpreadDamage
 		Spread: 256	#128
-		Damage: 3000
+		Damage: 5000
 		Falloff: 100, 50
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
-		ValidTargets: Ground, Air
+		ValidTargets: Ground, Water, Air
 		Versus:
 			None: 100
 			Wood: 100
@@ -319,7 +411,10 @@ PhotonCannon:
 		Explosions: scphotonexplosion
 		ImpactSounds: xplos.aud
 		ImpactActors: false
-		ValidTargets: Ground, Air
+		ValidTargets: Ground, Water, Air
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: Scorch
+		InvalidTargets: Vehicle, Structure, Wall, Husk, Trees
 
 Psi-blades:
 	ReloadDelay: 30
@@ -331,7 +426,7 @@ Psi-blades:
 		Speed: 1c682
 	Warhead@1Dam: SpreadDamage
 		Spread: 64
-		Damage: 1200
+		Damage: 1800
 		Versus:
 			None: 125	#100
 			Wood: 75	#100
@@ -340,17 +435,17 @@ Psi-blades:
 		DamageTypes: DefaultDeath
 
 PsiStorm:
-	ReloadDelay: 720
+	ReloadDelay: 400
 	Range: 6c0
 	Projectile: InstantHit
-	ValidTargets: PsiStorm	#, Ground, Water, Air
+	ValidTargets: Ground, Water, Air
 	InvalidTargets: Structure, Wall, Husk
 	Warhead@1Dam: SpreadDamage
 		Delay: 8
 		Spread: 600
 		Falloff: 100, 100, 100, 100, 100
 		Damage: 2100
-		ValidTargets: PsiStorm
+		ValidTargets: Ground, Water, Air
 		AffectsParent: True
 		ValidStances: Enemy, Neutral
 		Versus:
@@ -364,7 +459,7 @@ PsiStorm:
 		Spread: 600
 		Falloff: 100, 100, 100, 100, 100
 		Damage: 2100
-		ValidTargets: PsiStorm
+		ValidTargets: Ground, Water, Air
 		AffectsParent: True
 		ValidStances: Enemy, Neutral
 		Versus:
@@ -378,7 +473,7 @@ PsiStorm:
 		Spread: 600
 		Falloff: 100, 100, 100, 100, 100
 		Damage: 2100
-		ValidTargets: PsiStorm
+		ValidTargets: Ground, Water, Air
 		AffectsParent: True
 		ValidStances: Enemy, Neutral
 		Versus:
@@ -392,7 +487,7 @@ PsiStorm:
 		Spread: 600
 		Falloff: 100, 100, 100, 100, 100
 		Damage: 2100
-		ValidTargets: PsiStorm
+		ValidTargets: Ground, Water, Air
 		AffectsParent: True
 		ValidStances: Enemy, Neutral
 		Versus:
@@ -406,7 +501,7 @@ PsiStorm:
 		Spread: 600
 		Falloff: 100, 100, 100, 100, 100
 		Damage: 2100
-		ValidTargets: PsiStorm
+		ValidTargets: Ground, Water, Air
 		AffectsParent: True
 		ValidStances: Enemy, Neutral
 		Versus:
@@ -420,7 +515,7 @@ PsiStorm:
 		Spread: 600
 		Falloff: 100, 100, 100, 100, 100
 		Damage: 2100
-		ValidTargets: PsiStorm
+		ValidTargets: Ground, Water, Air
 		AffectsParent: True
 		ValidStances: Enemy, Neutral
 		Versus:
@@ -434,7 +529,7 @@ PsiStorm:
 		Spread: 600
 		Falloff: 100, 100, 100, 100, 100
 		Damage: 2100
-		ValidTargets: PsiStorm
+		ValidTargets: Ground, Water, Air
 		AffectsParent: True
 		ValidStances: Enemy, Neutral
 		Versus:
@@ -448,7 +543,7 @@ PsiStorm:
 		Spread: 600
 		Falloff: 100, 100, 100, 100, 100
 		Damage: 2100
-		ValidTargets: PsiStorm
+		ValidTargets: Ground, Water, Air
 		AffectsParent: True
 		ValidStances: Enemy, Neutral
 		Versus:
@@ -470,13 +565,13 @@ PsionicShockwave:
 		Speed: 1c682
 	Warhead@1Dam: SpreadDamage
 		Spread: 683
-		Damage: 4500
+		Damage: 7500
 		ValidTargets: Ground, Water, Air
 		Versus:
 			None: 100
-			Wood: 100
+			Wood: 50
 			Light: 100
-			Heavy: 100
+			Heavy: 125
 		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: scaae
@@ -486,21 +581,19 @@ SCVRepair:
 	ReloadDelay: 5
 	Range: 1c512
 	ValidTargets: Repairing, Vehicle, Air
+	InvalidTargets: SCV
 	Projectile: LaserZap
 		Color: 8888FF
 	Warhead@1Dam: SpreadDamage
 		Spread: 213
-		Damage: -150
+		Damage: -1000
 		ValidStances: Ally
 		ValidTargets: Repairing, Vehicle, Air
 		DebugOverlayColor: 00FF00
 
 Scarab:
-	Inherits: SCUD
 	ReloadDelay: 80
-	Range: 8c0
-	-MinRange:
-	-Report:
+	Range: 1c512
 	Projectile: Missile	#Bullet
 		Speed: 270
 		Image: scscarab
@@ -515,9 +608,19 @@ Scarab:
 			Wood: 100
 			Light: 100
 			Heavy: 100
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 	Warhead@3Eff: CreateEffect
 		ImpactSounds: psahit00.aud
 		Explosions:	blueartexp
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: Crater
+		InvalidTargets: Vehicle, Structure, Wall, Husk, Trees
+
+ScarabLaunch:
+	ReloadDelay: 80
+	Range: 8c0
+	Projectile: InstantHit
+	Warhead@1Dam: TargetDamage
 
 ScourgeExplosion:
 	ValidTargets: Air
@@ -546,8 +649,13 @@ ScoutMG:
 	Range: 4c0
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
-		Damage: 1200
+		Damage: 3000
 		ValidTargets: Ground
+		Versus:
+			None: 100
+			Wood: 100
+			Light: 100
+			Heavy: 100
 	Warhead@2Eff: CreateEffect
 		Explosions: scscoutspark
 
@@ -572,7 +680,7 @@ SiegeTankCanon:
 		Speed: 1c9999
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 4500
+		Damage: 5000
 		Versus:
 			None: 50
 			Wood: 75
@@ -590,7 +698,7 @@ SiegeTankSiegeCanon:
 		-Inaccuracy:
 		-ContrailLength:
 	Warhead@1Dam: SpreadDamage
-		Spread: 341
+		Spread: 426
 		Damage: 10500
 		Versus:
 			None: 50
@@ -601,20 +709,21 @@ SiegeTankSiegeCanon:
 		ImpactSounds: ExploLrg.aud
 
 Spore:
-	Inherits: ^MissileWeapon
 	ReloadDelay: 20
-	Range: 7c512	#7c0
+	Range: 7c512
 	Report: zlufir00.aud
 	ValidTargets: Air
 	Projectile: Missile
 		Image: scspore
-		Speed: 400		#682
+		HorizontalRateOfTurn: 50
+		Speed: 600
+		Jammable: False
 		Blockable: False
-		-TrailImage: smokey
-		-ContrailLength: 8
+		AllowSnapping: true
+		CloseEnough: 600
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 2250
+		Damage: 4050
 		ValidTargets: Air
 		Versus:
 			None: 100
@@ -622,6 +731,7 @@ Spore:
 			Light: 100
 			Heavy: 100
 	Warhead@3Eff: CreateEffect
+		Explosions: small_frag
 		ImpactSounds: zluhit00.aud
 		ImpactActors: false
 		ValidTargets: Air
@@ -650,25 +760,24 @@ Tentacle:
 		ImpactActors: false
 
 UltraliskHusk:
-	ReloadDelay: 20
+	ReloadDelay: 40
 	Range: 1c512
 	Report: zulatt00.aud,zulatt01.aud,zulatt02.aud
 	Projectile: Bullet
 		Speed: 1c682
 	Warhead@1Dam: SpreadDamage
 		Spread: 64
-		Damage: 3000
-		Versus:
+		Damage: 9000
 		Versus:
 			None: 100
-			Wood: 100
-			Light: 100
+			Wood: 25
+			Light: 75
 			Heavy: 100
 		DamageTypes: DefaultDeath
 	Warhead@3Eff: CreateEffect
 		ImpactSounds: zulhit00.aud,zulhit01.aud
 
-VultureGrenade
+VultureGrenade:
 	Inherits: Grenade
 	ReloadDelay: 40
 	Range: 5c0
@@ -700,27 +809,42 @@ WarpBlade:
 		Versus:
 			None: 100
 			Wood: 100
-			Light: 100
-			Heavy: 100
+			Light: 150
+			Heavy: 150
 		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
 
 WraithLaser:
-	Inherits: GoliathMG
+	ValidTargets: Ground, Water
 	Report: TPhFi100.aud
-	ValidTargets: Ground
-	ReloadDelay: 40
+	ReloadDelay: 30
 	Range: 5c0
+	Projectile: Bullet
+		Image: 120MM
+		Speed: 682
+		ContrailLength: 6
+		ContrailUsePlayerColor: true
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
-		Damage: 1200
-		ValidTargets: Ground
+		Damage: 2500
 		Versus:
 			None: 100
 			Wood: 100
 			Light: 100
 			Heavy: 100
-	Projectile: LaserZap
-		Color: FF9090
+		ValidTargets: Ground, Water
+		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: small_frag
+		ImpactSounds: xplos.aud
+		ValidTargets: Ground, Air, Ship, Trees
+	Warhead@3EffWater: CreateEffect
+		Explosions: small_splash
+		ImpactSounds: splash9.aud
+		ValidTargets: Water, Underwater
+		InvalidTargets: Ship, Structure, Bridge
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: Scorch
+		InvalidTargets: Vehicle, Structure, Wall, Husk, Trees
 
 WraithRockets:
 	Inherits: ^MissileWeapon
@@ -741,18 +865,80 @@ WraithRockets:
 			Heavy: 100
 
 ZerglingClaw:
+	Report: zulhit00.aud
 	ReloadDelay: 10
 	Range: 1c512
 	Projectile: Bullet
 		Speed: 1c682
+	Warhead@1Dam: TargetDamage
+		Spread: 64
+		Damage: 1500
+		Versus:
+			None: 100
+			Wood: 10
+			Light: 90
+			Heavy: 80
+		DamageTypes: DefaultDeath
+
+# WORKER ATTACKS
+
+^WorkerAttack:
+	Range: 1c512
+	ReloadDelay: 30
+	Report: repair11.aud
 	Warhead@1Dam: SpreadDamage
 		Spread: 64
-		Damage: 750
-		Versus:
-			None: 125	#100
-			Wood: 75	#100
-			Light: 75	#100
-			Heavy: 75	#100
-		DamageTypes: DefaultDeath
+		Damage: 2000
+		ValidStances: Enemy, Neutral
+		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
+
+SCVAttack:
+	Inherits: ^WorkerAttack
+	ReloadDelay: 20
+	Projectile: LaserZap
+		Color: 8888FF
+
+DroneAttack:
+	Inherits: ^WorkerAttack
+	Report: zulhit00.aud
+	Projectile: Bullet
+		Speed: 1c682
+
+ProbeAttack:
+	Inherits: ^WorkerAttack
+	Projectile: Bullet
+		Speed: 1c682
+
+LurkerAITarget:
+	ReloadDelay: 20
+	Range: 6c0
+	Projectile: InstantHit
+	Warhead@1Dam: TargetDamage
+
+DarkSwarmSpawn:
+	ReloadDelay: 10
+	Projectile: InstantExplode
+	Warhead@1: SpawnActor
+		AffectsParent: true
+		ImpactActors: false
+		Actors: darkswarm
+
+DefilerPlague:
+	ReloadDelay: 220
+	Range: 9c512
+	Projectile: Bullet
+		Speed: 1c682
+	Warhead@1Dam: SpreadDamage
+		Spread: 468
+		Damage: 2000
+	Warhead@2: GrantExternalCondition
+		Range: 3c512
+		ValidTargets: Ground, Air, Water
+		ValidStances: Enemy, Neutral
+		Condition: DefilerPlague
+		Duration: 190
 	Warhead@3Eff: CreateEffect
+		Explosions: scplague
+		ImpactActors: false
 		ImpactSounds: zulhit00.aud
+		

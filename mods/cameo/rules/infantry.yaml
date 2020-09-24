@@ -25,6 +25,7 @@ E1:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RAVulcan
+		MuzzleSequence: garrison-muzzle
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
 		DefaultAttackSequence: shoot
@@ -225,6 +226,8 @@ E6:
 		EnterBlockedCursor: move-blocked
 	Selectable:
 		Priority: 5
+	Voiced:
+		VoiceSet: EngineerVoice
 	-AttackFrontal:
 	Inherits@EXT: ^ExternalConditions					##########
 
@@ -309,6 +312,15 @@ STEG:
 		Description: A large, heavily built, herbivorous quadruped
 	Inherits@EXT: ^ExternalConditions					##########
 
+steg.citydrop:
+	Inherits: STEG
+	Health:
+		HP: 30000
+	Armor:
+		Type: Light
+	RenderSprites:
+		Image: steg
+
 TREX:
 	Inherits: ^DINO
 	Tooltip:
@@ -323,6 +335,17 @@ TREX:
 		Description: Bipedal carnivore with a massive skull
 	Inherits@EXT: ^ExternalConditions					##########
 
+trex.citydrop:
+	Inherits: TREX
+	Mobile:
+		Speed: 130
+	Health:
+		HP: 26000
+	Armor:
+		Type: Light
+	RenderSprites:
+		Image: trex
+
 TRIC:
 	Inherits: ^DINO
 	Tooltip:
@@ -336,6 +359,15 @@ TRIC:
 		DecorationBounds: 34,24,0,2
 	Inherits@EXT: ^ExternalConditions					##########
 
+tric.citydrop:
+	Inherits: TRIC
+	Health:
+		HP: 40000
+	Armor:
+		Type: Light
+	RenderSprites:
+		Image: tric
+
 RAPT:
 	Inherits: ^DINO
 	Tooltip:
@@ -345,6 +377,15 @@ RAPT:
 	Buildable:
 		Description: Bipedal with enlarged sickle-shaped claw on each hindfoot
 	Inherits@EXT: ^ExternalConditions					##########
+
+rapt.citydrop:
+	Inherits: RAPT
+	Health:
+		HP: 13000
+	Armor:
+		Type: Light
+	RenderSprites:
+		Image: rapt
 
 ####################################################################################################
 #		RA
@@ -415,6 +456,7 @@ DOG:
 	Voiced:
 		VoiceSet: DogVoice
 	-TakeCover:
+	-Explodes@Mutate:
 	Inherits@EXPERIENCE: ^GainsExperience				##########
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -599,8 +641,6 @@ RAE6:
 		Speed: 48
 	Health:
 		HP: 3000
-	Voiced:
-		VoiceSet: EngineerVoice
 	Inherits@EXT: ^ExternalConditions
 	RenderSprites:
 		Image: e6
@@ -755,6 +795,8 @@ MECH:
 
 EINSTEIN:
 	Inherits: ^CivInfantry
+	RenderSprites:
+		Palette: ra_temperat
 	-Wanders:
 	Tooltip:
 		Name: Prof. Einstein
@@ -766,6 +808,8 @@ EINSTEIN:
 DELPHI:
 	Inherits: ^CivInfantry
 	-Wanders:
+	RenderSprites:
+		Palette: ra_temperat
 	Tooltip:
 		Name: Agent Delphi
 	Mobile:
@@ -811,6 +855,7 @@ GNRL:
 SHOK:
 	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
 	Buildable:
 		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.X_Infantry
 		BuildPaletteOrder: 130
@@ -826,7 +871,6 @@ SHOK:
 		HP: 5000
 	Mobile:
 		Speed: 56
-		Voice: Move
 	RevealsShroud:
 		Range: 5c0
 	Armament@PRIMARY:
@@ -837,14 +881,6 @@ SHOK:
 		Weapon: PortaTesla
 	TakeCover:
 		ProneOffset: 227,0,-245
-	AttackFrontal:
-		Voice: Attack
-	AttackMove:
-		Voice: Move
-	Passenger:
-		Voice: Move
-	Guard:
-		Voice: Move
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		RequiresCondition: !parachute
@@ -1082,8 +1118,11 @@ WarriorAnt:
 	Inherits: E6
 	Buildable:
 		BuildPaletteOrder: 10000
-		Prerequisites: 
+		Prerequisites:
 		Queue: Infantry.Alpha, Infantry.Scavenger, RAInfantry.Alpha, RAInfantry.Scavenger
+		Icon: 2100icon
+	RenderSprites:
+		Image: e6
 
 ####################################################################################################
 #		CITY
@@ -1100,7 +1139,7 @@ CITYFIREFIGHTER:
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 250
+		Cost: 200
 	Tooltip:
 		Name: Firefighter
 	UpdatesPlayerStatistics:
@@ -1125,7 +1164,7 @@ CITYFIREFIGHTER:
 	TakeCover:
 		ProneOffset: 190,0,-198
 	Voiced:
-		VoiceSet: CivilianMaleVoice
+		VoiceSet: RAGenericVoice
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	Inherits@EXT: ^ExternalConditions					##########
@@ -1138,7 +1177,7 @@ CITYPOLICEOFFICER:
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 150
+		Cost: 100
 	Tooltip:
 		Name: Police Officer
 	UpdatesPlayerStatistics:
@@ -1163,20 +1202,20 @@ CITYPOLICEOFFICER:
 	Crushable:
 		CrushSound: squish2.aud
 	Voiced:
-		VoiceSet: CivilianMaleVoice
+		VoiceSet: RAGenericVoice
 	WithInfantryBody:
-		IdleSequences: idle
+		IdleSequences: stand
 		DefaultAttackSequence: shoot
+	-TakeCover:
 
 CITYARCHITECT:
 	Inherits: ^CITYINFANTRY
 	Buildable:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 40
-		BuildDuration: 160
 		Description: Upgrades a Building by 1 Rank.\n\nAllies power producing buildings can also be upgraded.\n increases the power output by 25% per rank, up to 100% with rank Elite.
 	Valued:
-		Cost: 170
+		Cost: 1200
 	Tooltip:
 		Name: Architect
 	Passenger:
@@ -1189,10 +1228,24 @@ CITYARCHITECT:
 		Speed: 48
 	RevealsShroud:
 		Range: 4c0
-	DeliversExperience:
-		Type: building
+	#DeliversExperience:
+	#	Type: building
 	ProducibleWithLevel:
 		InitialLevels: 1
+	GrantExternalConditionPower@LEVELUP1:
+		OrderName: UpgradeBuilding
+		Icon: architect1
+		AllowMultiple: true
+		Description: Architect
+		LongDesc: Upgrades buildings by 1 rank.
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 600
+		Duration: 0
+		Range: 3
+		DisplayRadarPing: True
+		Condition: city-veteran
+		SupportPowerPaletteOrder: 10
 
 CITYELITEARCHITECT:
 	Inherits: ^CITYINFANTRY
@@ -1200,10 +1253,10 @@ CITYELITEARCHITECT:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 70
 		Prerequisites: Library
-		BuildDuration: 400
 		Description: Upgrades a Building to Rank 4 (Elite).\n\nAllies power producing buildings can also be upgraded.\n increases the power output by 25% per rank, up to 100% with rank Elite.
+		Icon: eliteicon
 	Valued:
-		Cost: 600
+		Cost: 2000
 	Tooltip:
 		Name: Elite Architect
 	Passenger:
@@ -1216,22 +1269,35 @@ CITYELITEARCHITECT:
 		Speed: 48
 	RevealsShroud:
 		Range: 4c0
-	DeliversExperience:
-		Type: building
+	#DeliversExperience:
+	#	Type: building
 	ProducibleWithLevel:
 		InitialLevels: 4
 	RenderSprites:
-		Scale: 1.2
+		Image: cityarchitect
+	GrantExternalConditionPower@LEVELUP1:
+		OrderName: UpgradeBuilding2
+		Icon: architect2
+		AllowMultiple: true
+		Description: Elite Architect
+		LongDesc: Upgrades buildings to Rank 4 (Elite).
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 900
+		Duration: 0
+		Range: 3
+		DisplayRadarPing: True
+		Condition: city-elite
+		SupportPowerPaletteOrder: 10
 
 CITYINSTRUCTOR:
 	Inherits: ^CITYINFANTRY
 	Buildable:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 50
-		BuildDuration: 160
-		Description: Upgrades an Infantry by 1 Rank.
+		Description: Upgrades units by 1 rank.
 	Valued:
-		Cost: 80
+		Cost: 1200
 	Tooltip:
 		Name: Instructor
 	Passenger:
@@ -1244,47 +1310,67 @@ CITYINSTRUCTOR:
 		Speed: 48
 	RevealsShroud:
 		Range: 4c0
-	DeliversExperience:
-		Type: infantry
+	WithInfantryBody:
+		IdleSequences: idle
+		DefaultAttackSequence: repair
+		StandSequences: stand
+	#DeliversExperience:
+	#	Type: infantry
 	ProducibleWithLevel:
 		InitialLevels: 1
+	GrantExternalConditionPower@LEVELUP2:
+		OrderName: UpgradeVeteran
+		Icon: instructor1
+		AllowMultiple: true
+		Description: Instructor
+		LongDesc: Upgrades a group of units by 1 rank.
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 600
+		Duration: 0
+		Range: 2
+		DisplayRadarPing: True
+		Condition: rank-veteran
+		SupportPowerPaletteOrder: 10
 	RenderSprites:
-		Scale: 0.8
 
 CITYELITEINSTRUCTOR:
-	Inherits: ^CITYINFANTRY
+	Inherits: CITYINSTRUCTOR
 	Buildable:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 80
 		Prerequisites: Library
-		BuildDuration: 400
-		Description: Upgrades an Infantry to Rank 4 (Elite).
+		Description: Upgrades units to Rank 4 (Elite).
+		Icon: eliteicon
 	Valued:
-		Cost: 280
+		Cost: 2000
 	Tooltip:
 		Name: Elite Instructor
-	Passenger:
-		PipType: blue
-	Health:
-		HP: 3000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 48
-	RevealsShroud:
-		Range: 4c0
-	DeliversExperience:
-		Type: infantry
 	ProducibleWithLevel:
 		InitialLevels: 4
+	GrantExternalConditionPower@LEVELUP2:
+		OrderName: UpgradeElite
+		Icon: instructor2
+		AllowMultiple: true
+		Description: Elite Instructor
+		LongDesc: Upgrades a group of units to elite rank.
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 900
+		Duration: 0
+		Range: 2
+		DisplayRadarPing: True
+		Condition: rank-elite
+		SupportPowerPaletteOrder: 10
 	RenderSprites:
-		Scale: 0.9
+		Image: cityinstructor
 
 CITYEXPERT:
 	Inherits: ^CITYINFANTRY
 	Buildable:
 		Queue: Vehicle.SimCity, RAVehicle.SimCity
 		BuildPaletteOrder: 50
+		Prerequisites: ~disabled
 		BuildDuration: 160
 		Description: Upgrades a Vehicle by 1 Rank.
 	Valued:
@@ -1301,48 +1387,39 @@ CITYEXPERT:
 		Speed: 48
 	RevealsShroud:
 		Range: 4c0
+	WithInfantryBody:
+		IdleSequences: idle
+		StandSequences: stand
+		DefaultAttackSequence: heal
 	DeliversExperience:
 		Type: vehicle
 	ProducibleWithLevel:
 		InitialLevels: 1
-	RenderSprites:
-		Scale: 0.8
 
 CITYELITEEXPERT:
-	Inherits: ^CITYINFANTRY
+	Inherits: CITYEXPERT
 	Buildable:
 		Queue: Vehicle.SimCity, RAVehicle.SimCity
 		BuildPaletteOrder: 80
-		Prerequisites: Bank
+		Prerequisites: ~disabled #Bank
 		BuildDuration: 400
 		Description: Upgrades a Vehicle to Rank 4 (Elite).
+		Icon: eliteicon
 	Valued:
 		Cost: 1400
 	Tooltip:
 		Name: Elite Expert
-	Passenger:
-		PipType: red
-	Health:
-		HP: 3000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 48
-	RevealsShroud:
-		Range: 4c0
-	DeliversExperience:
-		Type: vehicle
 	ProducibleWithLevel:
 		InitialLevels: 4
 	RenderSprites:
-		Scale: 0.9
+		Image: cityexpert
 
 CITYSWAT:
 	Inherits: ^CITYINFANTRY
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 4000
+		Cost: 2000
 	Tooltip:
 		Name: S.W.A.T.
 	Buildable:
@@ -1390,9 +1467,6 @@ CITYBOTELITEARCHITECT:
 	Inherits: CITYELITEARCHITECT
 	Buildable:
 		Queue: CityI.SimCity
-	RenderSprites:
-		Image: cityelitearchitect
-		Scale: 1.2
 	-MapEditorData:
 
 CITYBOTELITEINSTRUCTOR:
@@ -1400,26 +1474,23 @@ CITYBOTELITEINSTRUCTOR:
 	Buildable:
 		Queue: CityI.SimCity
 		Prerequisites: Library, Police Department
-	RenderSprites:
-		Image: cityeliteinstructor
-		Scale: 0.9
 	-MapEditorData:
 
 CITYBOTELITEEXPERT:
 	Inherits: CITYELITEEXPERT
 	Buildable:
 		Queue: CityV.SimCity
-	RenderSprites:
-		Image: cityeliteexpert
-		Scale: 0.9
 	-MapEditorData:
 
 CITYE6:
 	Inherits: E6
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: 
+		Prerequisites:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
+		Icon: cityicon
+	RenderSprites:
+		Image: e6
 
 ####################################################################################################
 #		MONSTERS

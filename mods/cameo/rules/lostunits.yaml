@@ -19,8 +19,8 @@ RATHF:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: barracks
-		Queue: Infantry.Soviet
-		Description: Damages and captures enemy structures.\n  Repairs destroyed vehicles\n  Unarmed
+		Queue: Infantry.Soviet, RAInfantry.Soviet
+		Description: Hijacks vehicles.
 	Mobile:
 		Speed: 71
 	Health:
@@ -41,6 +41,8 @@ RATHF:
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
 		CloakTypes: Cloak, Thief
 		PauseOnCondition: cloak-force-disabled
+	WithInfantryBody:
+		IdleSequences: idle
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -49,8 +51,9 @@ SAPC:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
 	Buildable:
-		Queue: Vehicle.Allies, Vehicle.X_Vehicles
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles
 		BuildPaletteOrder: 130
 		Prerequisites: atek
 		BuildDurationModifier: 50
@@ -68,7 +71,7 @@ SAPC:
 	Mobile:
 		Speed: 142
 		Locomotor: heavywheeled
-		RequiresCondition: !notmobile# && !being-captured
+		RequiresCondition: !notmobile && !being-captured && !disabled
 	RevealsShroud:
 		Range: 7c0
 		RevealGeneratedShroud: False
@@ -94,7 +97,7 @@ SAPC:
 		CloakDelay: 175
 		CloakSound: trans1.aud
 		UncloakSound: trans1.aud
-		PauseOnCondition: cloak-force-disabled
+		PauseOnCondition: cloak-force-disabled || disabled
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -103,10 +106,10 @@ SAPC:
 		ValidTypes: vehicle								##########
 	DeliversCash:
 		Payload: 625
-	SpawnActorOnDeath:
-		Actor: SAPC.Husk
-		OwnerType: InternalName
-		EffectiveOwnerFromOwner: true
+	#SpawnActorOnDeath:
+	#	Actor: SAPC.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
 
 SAPC.Husk:
 	Inherits: ^LightHusk
@@ -120,7 +123,7 @@ SAPC.Husk:
 RAMGG:
 	Inherits: ^Vehicle
 	Buildable:
-		Queue: Vehicle.Allies, Vehicle.X_Vehicles
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles
 		BuildPaletteOrder: 150
 		Prerequisites: atek
 		BuildDurationModifier: 50
@@ -147,11 +150,12 @@ RAMGG:
 		Range: 4c0
 	CreatesShroud:
 		Range: 6c0
+		RequiresCondition: !disabled
 	RenderShroudCircle:         
-	SpawnActorOnDeath:
-		Actor: RAMGG.Husk
-		OwnerType: InternalName
-		EffectiveOwnerFromOwner: true
+	#SpawnActorOnDeath:
+	#	Actor: RAMGG.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
 	Inherits@EXT: ^ExternalConditions					##########
 
 RAMGG.Husk:
@@ -192,10 +196,10 @@ NODWEAP:
 		ProductionType: Vehicle.TECHNOD
 		RequiresCondition: classicproductionqueues
 	TooltipDescription@ally:
-		Description: Create new Nod vehicle models.
+		Description: Produces special vehicles.
 		ValidStances: Ally
 	TooltipDescription@other:
-		Description: Capture to create new Nod vehicle models.
+		Description: Capture to produce special vehicle models.
 		ValidStances: Neutral, Enemy
 	MapEditorData:
 		Categories: Tech building
@@ -204,6 +208,8 @@ NODWEAP:
 	CaptureManager:
 	Capturable:
 		Types: building
+	GpsDot:
+		String: Biohazard
 
 RNBGGY:
 	Inherits: BGGY
@@ -245,7 +251,6 @@ RNAPC:
 	Mobile:
 		TurnSpeed: 5
 		Speed: 132
-		RequiresCondition: !notmobile
 	Health:
 		HP: 19000
 	Repairable:
@@ -340,9 +345,9 @@ NODBIO:
 	Tooltip:
 		Name: Black Hand Biological Lab
 	TooltipDescription@ally:
-		Description: Produces Upgraded Infantry units.
+		Description: Produces special infantry units.
 	TooltipDescription@other:
-		Description: Capture to produce Upgraded Infantry units.
+		Description: Capture to produce special infantry units.
 	Production:
 		Produces: Biolab.TECHNOD
 	ProductionQueue:
@@ -352,6 +357,8 @@ NODBIO:
 		ProductionType: Biolab.TECHNOD
 	SpawnActorOnDeath:
 		Actor: NODBIO.Husk
+	GpsDot:
+		String: Biohazard
 
 NODBIO.Husk:
 	Inherits: BIO.Husk
@@ -386,12 +393,11 @@ E3FLAMER:
 		BuildPaletteOrder: 20
 		Prerequisites: nodbio
 		Queue: Biolab.TECHNOD
-		Description: Same as the Other Rocket Soldier. \n  Now it's better against infantry\n  It can explode
-	Armament@PRIMARY:							##########
+	Armament@PRIMARY:
 		Weapon: FireRockets
 		LocalOffset: 256,43,341
 		FireDelay: 5
-	Armament@GARRISONED:						##########
+	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: FireRocketsG
 	Explodes:
@@ -409,12 +415,11 @@ E3CHEM:
 		BuildPaletteOrder: 20
 		Prerequisites: nodbio
 		Queue: Biolab.TECHNOD
-		Description: Same as the Other Rocket Soldier. \n  It Is powerful against every objective\n  It can explode
-	Armament@PRIMARY:							##########
+	Armament@PRIMARY:
 		Weapon: ChemRockets
 		LocalOffset: 256,43,341
 		FireDelay: 5
-	Armament@GARRISONED:						##########
+	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: ChemRocketsG
 	Explodes:
@@ -432,7 +437,7 @@ CHEMTNK:
 		BuildPaletteOrder: 50
 		Prerequisites: nodbio
 		Queue: Biolab.TECHNOD, Vehicle.TECHNOD
-		Description: Heavily armored chem-throwing vehicle.\n  Strong vs Infantry, Buildings and Vehicles\n  Weak vs Aircraft\n  Unstable in Large Groups
+		Description: Heavily armored tiberium-throwing vehicle.\n  Strong vs Infantry, Buildings and Vehicles\n  Weak vs Aircraft
 	Armament:
 		Weapon: BigChemSpray
 		LocalOffset: 512,128,42, 512,-128,42
@@ -450,6 +455,7 @@ RA1PT:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -460,7 +466,7 @@ RA1PT:
 		BuildPaletteOrder: 20
 		Prerequisites: anypower
 		Queue: Naval.Allies, RANaval.Allies
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Light scout & support ship.\nCan detect submarines.
 	Mobile:
 		TurnSpeed: 7
 		Speed: 128
@@ -505,6 +511,7 @@ CNCPT:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -515,7 +522,7 @@ CNCPT:
 		BuildPaletteOrder: 20
 		Prerequisites: anypower
 		Queue: Naval.GDI, RANaval.GDI
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Light scout & support ship.\nCan detect submarines.
 	Mobile:
 		TurnSpeed: 7
 		Speed: 128
@@ -555,6 +562,7 @@ RADD:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -565,7 +573,7 @@ RADD:
 		BuildPaletteOrder: 30
 		Prerequisites: anypower, anyhq
 		Queue: Naval.Allies, RANaval.Allies
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Fast multi-role ship.\nCan detect submarines.\n  Strong vs Naval units, Vehicles, Aircraft
 	Mobile:
 		TurnSpeed: 7
 		Speed: 85
@@ -616,6 +624,7 @@ CNCDD:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -626,7 +635,7 @@ CNCDD:
 		BuildPaletteOrder: 30
 		Prerequisites: anypower, anyhq
 		Queue: Naval.GDI, RANaval.GDI
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Fast multi-role ship.\nCan detect submarines.\n  Strong vs Naval units, Vehicles, Aircraft
 	Mobile:
 		TurnSpeed: 7
 		Speed: 85
@@ -679,6 +688,7 @@ RACA:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 2400
 	Tooltip:
@@ -689,7 +699,7 @@ RACA:
 		BuildPaletteOrder: 50
 		Prerequisites: anypower, atek
 		Queue: Naval.Allies, RANaval.Allies
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Very slow long-range ship.\n  Strong vs Buildings, Ground units\n  Weak vs Naval units, Aircraft
 	Mobile:
 		TurnSpeed: 2
 		Speed: 42
@@ -754,6 +764,7 @@ CNCCA:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 2500
 	Tooltip:
@@ -764,7 +775,7 @@ CNCCA:
 		BuildPaletteOrder: 50
 		Prerequisites: anypower, eye
 		Queue: Naval.GDI, RANaval.GDI
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Very slow long-range ship.\n  Strong vs surface, air targets\n  Weak vs Submarines
 	Mobile:
 		TurnSpeed: 2
 		Speed: 42
@@ -842,6 +853,7 @@ RASS:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 950
 	Tooltip:
@@ -852,7 +864,7 @@ RASS:
 		BuildPaletteOrder: 20
 		Prerequisites: anypower
 		Queue: Naval.Soviet, RANaval.Soviet
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Submerged anti-ship unit\narmed with torpedoes.\nCan detect other submarines.\n  Strong vs Naval units\n  Weak vs Ground units, Aircraft
 	Mobile:
 		TurnSpeed: 4
 		Speed: 71
@@ -890,6 +902,7 @@ RASS:
 		InitialDelay: 0
 		CloakDelay: 50
 		CloakedCondition: underwater
+		PauseOnCondition: disabled
 		RequiresCondition: !cloak-force-disabled
 	DetectCloaked:
 		CloakTypes: Underwater
@@ -905,6 +918,7 @@ RAMSUB:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -915,7 +929,7 @@ RAMSUB:
 		BuildPaletteOrder: 50
 		Prerequisites: anypower, stek
 		Queue: Naval.Soviet, RANaval.Soviet
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Submerged anti-ground siege unit\nwith anti-air capabilities.\nCan detect other submarines.\n  Strong vs Buildings, Ground units, Aircraft\n  Weak vs Naval units
 	Mobile:
 		TurnSpeed: 3
 		Speed: 42
@@ -953,6 +967,7 @@ RAMSUB:
 		InitialDelay: 0
 		CloakDelay: 100
 		CloakedCondition: underwater
+		PauseOnCondition: disabled
 		RequiresCondition: !cloak-force-disabled
 	DetectCloaked:
 		CloakTypes: Underwater
@@ -977,7 +992,6 @@ CNCRSS:
 		BuildPaletteOrder: 20
 		Prerequisites: anypower
 		Queue: Naval.Nod, RANaval.Nod
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
 	Mobile:
 		TurnSpeed: 5
 		Speed: 72
@@ -1009,6 +1023,7 @@ CNCRSS:
 		InitialDelay: 0
 		CloakDelay: 50
 		CloakedCondition: underwater
+		PauseOnCondition: disabled
 		RequiresCondition: !cloak-force-disabled && !notmobile
 	DetectCloaked:
 		CloakTypes: Underwater
@@ -1028,7 +1043,6 @@ CNCSS:
 		BuildPaletteOrder: 20
 		Prerequisites: anypower
 		Queue: Naval.Nod, RANaval.Nod
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
 	RenderSprites:
 		Image: rass
 	Targetable@Underwater:
@@ -1043,7 +1057,6 @@ CNCMSUB:
 		BuildPaletteOrder: 50
 		Prerequisites: anypower, tmpl
 		Queue: Naval.Nod, RANaval.Nod
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
 	RenderSprites:
 		Image: ramsub
 	Targetable@Underwater:
@@ -1066,7 +1079,6 @@ RALST:
 		BuildPaletteOrder: 10
 		Prerequisites: anypower
 		Queue: Naval.Soviet, Naval.Allies, RANaval.Soviet, RANaval.Allies
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
 	Mobile:
 		TurnSpeed: 10
 		Speed: 113
@@ -1111,7 +1123,6 @@ CNCLST:
 		BuildPaletteOrder: 10
 		Prerequisites: weap
 		Queue: Naval.GDI, RANaval.GDI
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
 	Mobile:
 		TurnSpeed: 10
 		Speed: 113
@@ -1267,6 +1278,7 @@ techroomba:
 	Inherits@@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 25
 	Tooltip:
@@ -1305,6 +1317,7 @@ techsoomba:
 	Inherits@@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 25
 	Tooltip:
@@ -1340,6 +1353,7 @@ techrctiger:
 	Inherits: ^Tank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
 	Buildable:
 		BuildPaletteOrder: 35
 		Queue: Vehicle.TECHBOTST
@@ -2024,7 +2038,6 @@ UniversalHusk:
 	ProductionBar@DefenceGDI:
 		ProductionType: Defence.315Flaite
 	BaseProvider:
-		Cooldown: 75
 		Range: 14c0
 	WithBuildingBib:
 	WithBuildingPlacedAnimation:

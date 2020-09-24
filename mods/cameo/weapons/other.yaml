@@ -106,7 +106,7 @@ Laser:
 
 ^DinoWeapon:
 	ReloadDelay: 30
-	Range: 1c0
+	Range: 1c512
 	Report: dinoatk1.aud
 	Projectile: Bullet
 		Speed: 1c682
@@ -244,6 +244,7 @@ TTankZap:
 
 DogJaw:
 	ValidTargets: Infantry
+	InvalidTargets: LargeZerg
 	ReloadDelay: 10
 	Range: 2c0
 	Report: dogg5p.aud
@@ -252,7 +253,7 @@ DogJaw:
 	Warhead@1Dam: TargetDamage
 		Damage: 100000
 		ValidTargets: Infantry
-		InvalidTargets: Ant
+		InvalidTargets: Ant, LargeZerg
 		DamageTypes: DefaultDeath
 
 Heal:
@@ -278,11 +279,10 @@ Repair:
 		ValidTargets: Repair
 
 DemoTruckTargeting:
-	ValidTargets: DetonateAttack
+	ValidTargets: Structure, Infantry, Vehicle
 	Range: 2c0
 	Projectile: InstantHit
 	Warhead@1Dam: TargetDamage
-		ValidTargets: DetonateAttack
 
 MADTankThump:
 	InvalidTargets: MADTank, Infantry
@@ -367,6 +367,19 @@ FlamerBunker:
 			Light: 75
 			Heavy: 50
 
+TractorFlamer:
+	Inherits: BigFlamer
+	Report: flmthrow.aud
+
+FiretruckFlamer:
+	Inherits: Flamer
+	Report: flmthrow.aud
+	ReloadDelay: 120
+	Warhead@1Dam: SpreadDamage
+		Damage: 3000
+	Warhead@3Eff: CreateEffect
+		Explosions: med_napalm
+
 ####################################################################################################
 #		CITY
 ####################################################################################################
@@ -404,6 +417,7 @@ WaterThrower:
 			Light: 40
 			Heavy: 20
 			Concrete: 10
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
 	Warhead@3Eff: CreateEffect
 		Explosions: citywatersplash	#blue_small_napalm
 
@@ -412,12 +426,47 @@ Taser:
 	ReloadDelay: 70		#50
 	Range: 5c512
 	Warhead@1Dam: SpreadDamage
-		Damage: 4000	#2500
+		Damage: 5000	#2500
 		Versus:
-			None: 1000
-			Wood: 100
+			None: 200
+			Wood: 50
 			Light: 100
-			Heavy: 100
+			Heavy: 75
+
+CasinoCrateCluster:
+	ReloadDelay: 60
+	Range: 3c0
+	TargetActorCenter: true
+	Projectile: Bullet
+		Speed: 1c0
+		AirburstAltitude: 1c512
+	Warhead@Cluster: FireCluster
+		Weapon: CasinoCrateSpawner
+		RandomClusterCount: 3
+		Dimensions: 6,6
+		ValidTargets: Ground
+		Footprint: xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx
+
+CasinoCrateSpawner:
+	InvalidTargets: Structure, Water, Trees
+	Projectile: Bullet
+		Image: tscrate
+		Speed: 370
+		Shadow: true
+		Blockable: false
+	Warhead@1: SpawnActor
+		Actors: casinocrate
+		OwnerType: InternalName
+		Range: 1
+	Warhead@3Eff: CreateEffect
+		Explosions: small_frag
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air, Water
+	Warhead@4Eff: CreateEffect
+		Image: tspodring
+		Explosions: idle
+		ExplosionPalette: tseffect
+		ValidTargets: Ground, Air, Water
 
 ####################################################################################################
 #		MONSTERS
