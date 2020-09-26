@@ -2265,6 +2265,7 @@ yrschd:
 	Inherits@sell: ^RA2SSpawnActorsOnSell
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@detect: ^GenericAirDetector
+	Inherits@EMP: ^TurretEMP
 	Selectable:
 		Bounds: 24,24
 	Valued:
@@ -2311,6 +2312,7 @@ yrschd:
 		Offset: 0,0
 		Facing: 2
 		NoTransformNotification: BuildingCannotPlaceAudio
+		PauseOnCondition: disabled
 
 yrngindp:
 	Inherits: ^BaseBuilding
@@ -4177,13 +4179,15 @@ RA2TERROR:
 	Explodes:
 		Weapon: FlametankExplode
 		EmptyWeapon: FlametankExplode
+		RequiresCondition: !frozen
 	AttackFrontal:
 	Armament@PRIMARY:							##########
 		Weapon: RA2Terrorist
 	GrantConditionOnAttack:
 		Condition: triggered
+		RequiresCondition: !frozen
 	KillsSelf:
-		RequiresCondition: triggered
+		RequiresCondition: triggered && !frozen
 	WithInfantryBody:
 	Voiced:
 		VoiceSet: RA2TerroristVoice
@@ -5014,13 +5018,16 @@ RA2FV:
 			ra2snipe: ifv-sniper
 			yrvirus: ifv-sniper
 			ra2cleg: ifv-chrono
+			ra2ivan: ifv-demo
+			ra2terror: ifv-demo
+			scinfestedterran: ifv-demo
 	###################
 	#	Armament
 	###################
 	Armament@primary:
 		Weapon: RA2HoverMissile
 		LocalOffset: 768,99,290, 768,-99,290
-		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss# && !ifv-deso && !ifv-demo && !ifv-chrono
+		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss && !ifv-deso && !ifv-demo && !ifv-chrono
 	Armament@mg:
 		Weapon: RA2CRM60
 		LocalOffset: 171,0,255
@@ -5074,6 +5081,18 @@ RA2FV:
 	Armament@chronosound:
 		Weapon: IFVChronoSound
 		RequiresCondition: ifv-chrono
+	Armament@ivan:
+		Weapon: DemoTruckTargeting
+		RequiresCondition: ifv-demo
+	GrantConditionOnAttack:
+		Condition: triggered
+		RequiresCondition: ifv-demo && !disabled
+	KillsSelf@ivan:
+		RequiresCondition: ifv-demo && (triggered || invulnerability)
+	Explodes@ivan:	
+		Weapon: RA2ReactorExplosion
+		EmptyWeapon: RA2ReactorExplosion
+		RequiresCondition: ifv-demo && !disabled
 	###################
 	#	Turret Voxel
 	###################
@@ -5091,7 +5110,7 @@ RA2FV:
 		RequiresCondition: ifv-repair
 	WithVoxelTurret@hitech:
 		Sequence: turret-hitech
-		RequiresCondition: ifv-tesla || ifv-miss || ifv-legion
+		RequiresCondition: ifv-tesla || ifv-miss || ifv-chrono || ifv-demo
 	###############
 	AttackTurreted:
 	SelectionDecorations:
@@ -5111,6 +5130,8 @@ RA2FVBOTMG:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: ~botra2
+	UpdatesPlayerStatistics:
+		OverrideActor: ra2fv
 	RenderSprites:
 		Image: ra2fv
 	RenderVoxels:
@@ -5124,6 +5145,8 @@ RA2FVBOTMS:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: ~botra2
+	UpdatesPlayerStatistics:
+		OverrideActor: ra2fv
 	RenderSprites:
 		Image: ra2fv
 	RenderVoxels:
@@ -5137,6 +5160,8 @@ RA2FVBOTREP:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: ~botra2
+	UpdatesPlayerStatistics:
+		OverrideActor: ra2fv
 	RenderSprites:
 		Image: ra2fv
 	RenderVoxels:
@@ -5739,7 +5764,7 @@ ra2dtruck:
 		VoiceSet: RA2DemolitionTruckVoice
 	GrantConditionOnDeploy:
 		Voice: Attack
-	Explodes:
+	Explodes@bomb:
 		Weapon: RA2ReactorExplosion
 		EmptyWeapon: RA2ReactorExplosion
 
@@ -5747,6 +5772,8 @@ ra2dron:
 	Inherits: ^Soldier
 	Inherits@MC: ^MCImmune
 	Inherits@detector: ^GenericGroundDetector
+	Inherits@disable: ^UnitDisable
+	Inherits@EXT: ^ExternalConditions
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -5759,6 +5786,7 @@ ra2dron:
 	Mobile:
 		Speed: 150
 		TurnSpeed: 15
+		PauseOnCondition: frozen || disabled
 	Crushable:
 		CrushClasses: vehicle
 	RenderSprites:
@@ -5781,6 +5809,7 @@ ra2dron:
 	-AttackFrontal:
 	AttackLeap:
 		Voice: Attack
+		PauseOnCondition: disabled
 	AutoTarget:
 		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
