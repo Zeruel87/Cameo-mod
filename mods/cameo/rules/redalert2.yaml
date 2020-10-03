@@ -2132,7 +2132,7 @@ ra2tesla:
 		Queue: Defence.SovietRA2, RADefence.SovietRA2
 		BuildPaletteOrder: 80
 		Prerequisites: ra2naweap, ~CountryChoosedSovietRA2
-		Description: Advanced base defense.\nRequires power to operate.\nCan be charged by tesla troopers.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
+		Description: Advanced base defense.\nCan be charged by tesla troopers.\nRequires power or at least 2 charges to operate.\nIncreases range and damage with at least 3 charges.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -2154,7 +2154,7 @@ ra2tesla:
 	Armament:
 		Weapon: TeslaZap
 		LocalOffset: 120,0,1100
-		RequiresCondition: !lowpower || (lowpower && TeslaCoilCharge >= 1)
+		RequiresCondition: !lowpower || (lowpower && TeslaCoilCharge >= 2)
 	AttackTesla:
 		PauseOnCondition: disabled
 		ChargeAudio: tslachg2.aud
@@ -2164,33 +2164,21 @@ ra2tesla:
 		Amount: -75
 	DetectCloaked:
 		Range: 6c0
-		RequiresCondition: (!lowpower && !disabled) || TeslaCoilCharge
+		RequiresCondition: (!lowpower && !disabled) || TeslaCoilCharge >= 2
 	ProvidesPrerequisite@buildingname:
 	WithIdleOverlay@powered:
 		Sequence: idle-powered
-		RequiresCondition: (!lowpower || TeslaCoilCharge) && !disabled
+		RequiresCondition: (!lowpower || TeslaCoilCharge >= 2) && !disabled
 	WithColoredOverlay@IDISABLE:
-		RequiresCondition: (lowpower && !TeslaCoilCharge) || disabled
+		RequiresCondition: (lowpower && TeslaCoilCharge < 2) || disabled
 	Targetable@TeslaCoil:
 		TargetTypes: TeslaCoil
 	ExternalCondition@TeslaCoilCharge:
 		Condition: TeslaCoilCharge
 		SourceCap: 1
-	RangeMultiplier@charge:
-		Modifier: 120
-		RequiresCondition: TeslaCoilCharge == 1
-	RangeMultiplier@charge2:
-		Modifier: 133
-		RequiresCondition: TeslaCoilCharge == 2
 	RangeMultiplier@charge3:
-		Modifier: 150
+		Modifier: 120
 		RequiresCondition: TeslaCoilCharge >= 3
-	FirepowerMultiplier@charge:
-		Modifier: 133
-		RequiresCondition: TeslaCoilCharge == 1
-	FirepowerMultiplier@charge2:
-		Modifier: 167
-		RequiresCondition: TeslaCoilCharge == 2
 	FirepowerMultiplier@charge3:
 		Modifier: 200
 		RequiresCondition: TeslaCoilCharge >= 3
@@ -4277,6 +4265,13 @@ ra2shk:
 		TargetStances: Enemy
 		ForceTargetStances: Enemy
 		LocalOffset: 427,0,341
+		RequiresCondition: !rank-elite
+	Armament@Elite:
+		Weapon: RA2PortaTeslaE
+		TargetStances: Enemy
+		ForceTargetStances: Enemy
+		LocalOffset: 427,0,341
+		RequiresCondition: rank-elite
 	Armament@TeslaCoilCharge:
 		Weapon: RA2TeslaCoilCharge
 		TargetStances: Ally
@@ -4300,6 +4295,8 @@ ra2shk:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	Crushable:
+		CrushClasses: vehicle
 	DeliversCash:
 		Payload: 250
 	Cloneable:
@@ -4319,12 +4316,13 @@ ra2shkbot:
 		Prerequisites: barracks, ra2natech, ~techlevel.high, ~botra2
 		BuildPaletteOrder: 131
 	-Armament@PRIMARY:
+	-Armament@Elite:
 	Armament@TeslaCoilCharge:
 		Weapon: RA2TeslaCoilCharge
 		TargetStances: Ally
 		ForceTargetStances: Ally
 		LocalOffset: 427,0,341
-		-RequiresCondition: !botra2
+		-RequiresCondition:
 	AutoTarget:
 		ScanRadius: 30
 		InitialStance: AttackAnything
@@ -5726,6 +5724,13 @@ RA2TTNK:
 		LocalOffset: 900,80,340, 900,-80,340
 		Recoil: 170
 		RecoilRecovery: 42
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2TankBoltE
+		LocalOffset: 900,80,340, 900,-80,340
+		Recoil: 170
+		RecoilRecovery: 42
+		RequiresCondition: rank-elite
 	AttackTurreted:
 	SelectionDecorations:
 	Selectable:
