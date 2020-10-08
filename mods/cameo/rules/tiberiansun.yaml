@@ -3469,6 +3469,94 @@ TSCYBORGC:
 	RenderSprites:
 		Image: tscyborg
 
+TSCHAMSPY:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@anim: ^TSInfantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Buildable:
+		Queue: Infantry.TSNod, RAInfantry.TSNod
+		BuildPaletteOrder: 90
+		Prerequisites: tek
+		Description: Cloaked spy that can infiltrate structures.
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Chameleon Spy
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	-Guard:
+	Health:
+		HP: 6000
+	Mobile:
+		Speed: 69
+		Voice: Move
+	RevealsShroud:
+		Range: 4c0
+	Passenger:
+		PipType: Blue
+		Voice: Move
+	Cloak:
+		InitialDelay: 60
+		CloakDelay: 60
+		UncloakOn: Unload
+	Infiltrates:
+		Types: SpyInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 50
+	IgnoresDisguise:
+	AttackMove:
+		Voice: Move
+	Voiced:
+		VoiceSet: TSSpy
+
+TSMHIJACK:
+	Inherits: ^Soldier
+	Inherits@EXT: ^ExternalConditions
+	Inherits@anim: ^TSInfantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@tibheal: ^TibHealable
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Mutant Hijacker
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: vehicleproduction, anyhq
+		Queue: Infantry.TSGDI, RAInfantry.TSGDI, Infantry.TSNod, RAInfantry.TSNod, Infantry.MUTANT, RAInfantry.MUTANT
+		BuildLimit: 1
+		Description: Hijacks vehicles.
+	Mobile:
+		Speed: 71
+	Health:
+		HP: 6000
+	Passenger:
+		PipType: Blue
+	CaptureManager:
+	Captures@CAPTURES:
+		CaptureTypes: vehicle
+		PlayerExperience: 50
+		ConsumedByCapture: true
+	Crushable:
+		WarnProbability: 95
+	Cloak:
+		InitialDelay: 250
+		CloakDelay: 120
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+		CloakTypes: Cloak, Thief
+		PauseOnCondition: cloak-force-disabled
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
+	Voiced:
+		VoiceSet: TSHijacker
+	-DamagedByTerrain:
+
 TSREAPER:
 	Inherits: ^Tank
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -3530,6 +3618,7 @@ TSREAPER2:
 
 TSCYC2:
 	Inherits: TSCYBORG
+	Inherits@tibheal: ^TibHealable
 	Valued:
 		Cost: 1600
 	Tooltip:
@@ -3606,6 +3695,7 @@ TSGHOST:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@tibheal: ^TibHealable
 	Valued:
 		Cost: 1750
 	Tooltip:
@@ -3643,6 +3733,7 @@ TSGHOST:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: TSLtRail
+	-DamagedByTerrain:
 
 tsghost.mutant:
 	Inherits: TSGHOST
@@ -3663,6 +3754,7 @@ TSMUTANT:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@tibheal: ^TibHealable
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -3694,20 +3786,7 @@ TSMUTANT:
 		ValidTypes: infantry							##########
 	Voiced:
 		VoiceSet: TSInfantry
-	SelfHealing@TIBREPAIR:
-		Step: 200
-		Delay: 70
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: ontiberium
 	-DamagedByTerrain:
-	WithDecoration@REDCROSS2:
-		Image: pips
-		Sequence: pip-heal
-		ReferencePoint: Bottom, Right
-		RequiresCondition: ontiberium
-		BlinkInterval: 32
-		BlinkPattern: On, Off
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: TSVulcanTower
@@ -3797,6 +3876,7 @@ TSWEEDGUY:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@tibheal: ^TibHealable
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -3828,20 +3908,7 @@ TSWEEDGUY:
 		ValidTypes: infantry							##########
 	Voiced:
 		VoiceSet: TSWeed
-	SelfHealing@TIBREPAIR:
-		Step: 200
-		Delay: 70
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: ontiberium
 	-DamagedByTerrain:
-	WithDecoration@REDCROSS2:
-		Image: pips
-		Sequence: pip-heal
-		ReferencePoint: Bottom, Right
-		RequiresCondition: ontiberium
-		BlinkInterval: 32
-		BlinkPattern: On, Off
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: Chemspray
@@ -3853,6 +3920,7 @@ TSDOGGIE:
 	Inherits@bounty: ^GlobalBounty			##########
 	Inherits@anim: ^TSInfantry
 	Inherits@autotarget: ^AutoTargetAllAssaultMove
+	Inherits@tibheal: ^TibHealable
 	Health:
 		HP: 20000		#100000
 	Valued:
@@ -3873,22 +3941,6 @@ TSDOGGIE:
 		Name: Tiberian Fiend
 	Voiced:
 		VoiceSet: TSFiend
-	GrantConditionOnTerrain@TIBREPAIR:
-		TerrainTypes: Tiberium, BlueTiberium
-		Condition: ontiberium
-	SelfHealing@TIBREPAIR:
-		Step: 200
-		Delay: 70
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: ontiberium
-	WithDecoration@REDCROSS2:
-		Image: pips
-		Sequence: pip-heal
-		ReferencePoint: Bottom, Right
-		RequiresCondition: ontiberium
-		BlinkInterval: 32
-		BlinkPattern: On, Off
 	DetectCloaked:
 		Range: 5c0
 		RequiresCondition: !frozen
