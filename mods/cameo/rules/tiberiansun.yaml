@@ -3172,8 +3172,9 @@ TSJUMPJET:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@detect: ^GenericGroundDetector
 	Valued:
-		Cost: 400
+		Cost: 450
 	Tooltip:
 		Name: Jumpjet Infantry
 	UpdatesPlayerStatistics:
@@ -3182,7 +3183,7 @@ TSJUMPJET:
 		BuildPaletteOrder: 40
 		Prerequisites: anyhq
 		Queue: Infantry.TSGDI, RAInfantry.TSGDI, Infantry.X_Infantry
-		Description: Airborne soldier.\n  Strong vs Infantry\n  Weak vs Aircraft
+		Description: Airborne soldier.\nCan attack aircraft.\n  Strong vs Infantry, Light armor\n  Weak vs AA
 	Voiced:
 		VoiceSet: TSJumpJet
 	Mobile:
@@ -3198,19 +3199,22 @@ TSJUMPJET:
 		Range: 6c0
 	Armament:
 		Weapon: TSJumpCannon
+	Armament@2:
+		Weapon: TSJumpCannonAA
+		RequiresCondition: airborne
 	AttackFrontal:
 		Voice: Attack
 	WithInfantryBody:
-		RequiresCondition: !airborne
+		RequiresCondition: !airborne && !swimming
 		DefaultAttackSequence: attack
 	WithInfantryBody@flying:
-		RequiresCondition: airborne
+		RequiresCondition: airborne || swimming
 		DefaultAttackSequence: flying-attack
 		StandSequences: flying
 		MoveSequence: flying
 	-TakeCover:
 	Hovers:
-		RequiresCondition: airborne
+		RequiresCondition: airborne || swimming
 	DamagedByTerrain:
 		RequiresCondition: !airborne
 	ProducibleWithLevel:
@@ -3240,9 +3244,13 @@ TSJUMPJET:
 	DeathSounds@ZAPPED:
 		RequiresCondition: !airborne
 	WithShadow@airborne:
-		RequiresCondition: airborne
+		Offset: 0, 64, 0
+		RequiresCondition: airborne || swimming
 	GrantConditionOnJumpjetLayer:
 		Condition: airborne
+	GrantConditionOnTerrain@Water:
+		TerrainTypes: Water, River
+		Condition: swimming
 	#Transforms:
 	#	IntoActor: tsjumpjet2
 	#	Offset: 0,0
@@ -3407,7 +3415,7 @@ TSCYBORG:
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 650
+		Cost: 450
 	Tooltip:
 		Name: Cyborg Infantry
 	UpdatesPlayerStatistics:
@@ -6271,6 +6279,7 @@ TSSCRIN:
 		ReloadCount: 5
 		PipCount: 3
 		AmmoCondition: ammo
+	DeathSounds:
 	SpawnActorOnDeath:
 		Actor: TSSCRIN.Husk
 
@@ -6670,3 +6679,13 @@ TSCLOUD1:
 	PeriodicExplosion:
 		Weapon: TSCloud
 		InitialDelay: 4
+
+TSTRUCK:
+	Inherits: TRUCK
+	Buildable:
+		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.TSNod, RAVehicle.TSNod, Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.CABAL, RAVehicle.CABAL
+		BuildPaletteOrder: 150
+	RenderSprites:
+		Image: truck
+	Voiced:
+		VoiceSet: TSVehicle

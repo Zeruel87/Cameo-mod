@@ -287,7 +287,7 @@
 		Condition: GhostLockdown
 	ExternalCondition@STASIS:
 		TotalCap: 1
-		Condition: ArbiterStasis
+		Condition: chronobeamed #ArbiterStasis
 	ExternalCondition@DRAIN:
 		TotalCap: 1
 		Condition: diskdrain
@@ -375,7 +375,7 @@
 	Capturable:
 		Types: vehicle
 		ValidStances: Enemy, Neutral
-		RequiresCondition: !chronobeamed
+		RequiresCondition: !chronobeamed && !invulnerability
 	Carryable:
 		LockedCondition: carried
 	SelfHealing@MACHINESHOP:
@@ -498,13 +498,13 @@
 	Aircraft:
 		AirborneCondition: airborne
 	Targetable@GROUND:
-		RequiresCondition: !airborne
+		RequiresCondition: !airborne && !chronobeamed
 		TargetTypes: Ground, Vehicle
 	Targetable@AIRBORNE:
-		RequiresCondition: airborne
+		RequiresCondition: airborne && !chronobeamed
 		TargetTypes: Air
 	Targetable@REPAIR:
-		RequiresCondition: !airborne && damaged
+		RequiresCondition: !airborne && !chronobeamed && damaged
 		TargetTypes: Repair, Healing
 	AttackAircraft:
 		PauseOnCondition: disabled
@@ -546,8 +546,11 @@
 		EmptyWeapon: HeliExplode
 	Explodes@2:
 		Weapon: UnitExplode
-		RequiresCondition: !airborne
+		RequiresCondition: !airborne && !chronobeamed
 	RevealOnFire:
+	Targetable@chrono:
+		TargetTypes: Chronobeamable
+		RequiresCondition: !airborne
 
 ^Helicopter:
 	Inherits@1: ^RANeutralPlane
@@ -602,7 +605,7 @@
 		RequiresCondition: ReaperTrap
 	ExternalCondition@STASIS:
 		TotalCap: 1
-		Condition: ArbiterStasis
+		Condition: chronobeamed #ArbiterStasis
 	WithColoredOverlay@STASIS:
 		Palette: tsneutron
 		RequiresCondition: ArbiterStasis
@@ -739,15 +742,19 @@
 		CloakTypes: Cloak, Hijacker
 	DeathSounds@NORMAL:
 		DeathTypes: DefaultDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, RippedApartDeath
+		RequiresCondition: !chronobeamed
 	DeathSounds@BURNED:
 		Voice: Burned
 		DeathTypes: FireDeath
+		RequiresCondition: !chronobeamed
 	DeathSounds@POISONED:
 		Voice: Poisoned
 		DeathTypes: TiberiumDeath, RA2VirusDeath
+		RequiresCondition: !chronobeamed
 	DeathSounds@ZAPPED:						##########
 		Voice: Zapped
 		DeathTypes: ElectricityDeath
+		RequiresCondition: !chronobeamed
 	Voiced:
 		VoiceSet: GenericVoice
 	HitShape:
@@ -1177,7 +1184,7 @@
 	CaptureManager:
 		BeingCapturedCondition: being-captured
 	Capturable:
-		RequiresCondition: !build-incomplete && !chronobeamed
+		RequiresCondition: !build-incomplete && !chronobeamed && !invulnerability
 		Types: building
 	CapturableProgressBar:
 	CapturableProgressBlink:
@@ -2278,6 +2285,7 @@
 	Inherits@commando: ^CommandoDebuff
 	Inherits@ivan: ^BombAttachable
 	Inherits@defplague: ^DefilerPlague
+	Inherits@chrono: ^ChronoBeamable
 
 ^ExternalConditions:
 	Inherits: ^ExternalConditionsAll
@@ -2286,7 +2294,6 @@
 	Inherits@darkswarm: ^DarkSwarmable
 	Inherits@industry: ^IndustrySpeed
 	Inherits@police: ^CityCombatCallable
-	Inherits@chrono: ^ChronoBeamable
 	Inherits@berserk: ^Berserkable
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
