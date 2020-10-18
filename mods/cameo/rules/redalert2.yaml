@@ -1874,11 +1874,9 @@ ra2naradr:
 		Icon: spyplane
 		ChargeInterval: 3750
 		Description: Spy Plane
-		LongDesc: Reveals an area of the map\nand cloaked enemy units.
+		LongDesc: Reveals an area of the map along a line.\nDoes not detect cloaked units
 		SelectTargetSpeechNotification: SelectTarget
 		EndChargeSpeechNotification: SpyPlaneReady
-		CameraActor: camera.spyplane
-		CameraRemoveDelay: 150
 		UnitType: yrspyp
 		QuantizedFacings: 8
 		DisplayBeacon: true
@@ -2981,7 +2979,7 @@ ra2napsis:
 	DetectCloaked:
 		Range: 6c0
 		RequiresCondition: !lowpower
-	DetonateWeaponPower@spyplane:
+	DetonateWeaponPower@psireveal:
 		OrderName: SovietRA2SpyPlane
 		Icon: ra2psirev
 		ChargeInterval: 3750
@@ -2991,10 +2989,8 @@ ra2napsis:
 		EndChargeSpeechNotification: SpyPlaneReady
 		ActivationDelay: 20
 		Weapon: psireveal
-		CameraActor: camera.psireveal
-		CameraRemoveDelay: 150
-		LaunchSound: spsyreve.wav
 		SupportPowerPaletteOrder: 10
+		CameraActor: camera.placeholderhack
 	SupportPowerChargeBar:
 	Power:
 		Amount: -100
@@ -3009,11 +3005,16 @@ yuriinvisibleplane:
 	-Contrail@2:
 
 camera.psireveal:
-	Inherits: CAMERA
+	Inherits: CAMERA.small
+	RevealsShroud:
+		Range: 10c0
 	DetectCloaked:
 		Range: 10c0
 	RenderSpritesEditorOnly:
 		Image: camera
+	KillsSelf:
+		RemoveInstead: true
+		Delay: 240
 
 yryggntc:
 	Inherits: ^BaseBuilding
@@ -7461,6 +7462,7 @@ ra2hind:
 		PipCount: 5
 		AmmoCondition: ammo
 	-SpawnActorOnDeath:
+	-WithShadow:
 	SelectionDecorations:
 	ReloadAmmoPool:
 		Delay: 40
@@ -7730,6 +7732,8 @@ yrspyp:
 		Repulsable: False
 		MaximumPitch: 56
 	AttackBomber:
+	Armament:
+		Weapon: RA2SpyCamera
 	-Selectable:
 	SelectionDecorations:
 		RenderSelectionBars: False
@@ -7746,6 +7750,17 @@ yrspyp:
 	Interactable:
 	WithVoxelBody:
 	-SpawnActorOnDeath:
+	-WithShadow:
+
+camera.ra2spy:
+	Inherits: CAMERA.small
+	RevealsShroud:
+		Range: 10c0
+	RenderSpritesEditorOnly:
+		Image: camera
+	KillsSelf:
+		RemoveInstead: true
+		Delay: 150
 
 ra2cplane:
 	Inherits: ^RANeutralPlane
@@ -7785,8 +7800,12 @@ ra2cplane:
 	RejectsOrders:
 	Interactable:
 	WithVoxelBody:
+	-WithShadow:
 	RenderVoxels:
 		NormalsPalette: ts-normals
+	-ExternalCondition@STASIS:
+	-ExternalCondition@LOCKDOWN:
+	-ExternalCondition@TSNEUTRON:
 
 yrbpln:
 	Inherits: ^RANeutralPlane
@@ -7824,6 +7843,7 @@ yrbpln:
 	RejectsOrders:
 	-MapEditorData:
 	WithVoxelBody:
+	-WithShadow:
 
 ####################################################################################################
 #		Red Alert 2 TechBuilding
