@@ -198,7 +198,7 @@ RA2155mm:
 	Inherits: ^RA2Cannon
 	ReloadDelay: 110
 	Range: 8c0
-	Report: vdesatta.wav, vrdesattb.wav
+	Report: vdesatta.wav, vdesattb.wav
 	Projectile: Bullet
 		Blockable: false
 		Speed: 682
@@ -287,6 +287,7 @@ RA2DiskLaser:
 	Range: 7c0
 	Report: vfloatta.wav
 	ValidTargets: Ground, Water, Air
+	InvalidTargets: DiskDrain
 	Projectile: LaserZap
 		Width: 50
 		Duration: 15
@@ -307,16 +308,11 @@ RA2DiskLaser:
 
 RA2DiskDrain:
 	ReloadDelay: 50
-	Range: 1c0
+	Range: 0c256
+	MinRange: 0c1
 	ValidTargets: DiskDrain
 	TargetActorCenter: true
-	Projectile: LaserZap
-		Width: 200
-		Color: aa799080
-		SecondaryBeam: true
-		SecondaryBeamWidth: 128
-		SecondaryBeamColor: FFFFFF80
-		UsePlayerColor: false
+	Projectile: InstantHit
 	Warhead@drain: GrantExternalCondition
 		ValidTargets: DiskDrain
 		Spread: 0c256
@@ -462,7 +458,7 @@ SonicZap:
 	Warhead@1Dam: SpreadDamage
 		Range: 0, 32
 		Falloff: 100, 100
-		Damage: 400
+		Damage: 1000
 		AffectsParent: false
 		ValidStances: Neutral, Enemy
 		Versus:
@@ -473,7 +469,7 @@ SonicZap:
 	Warhead@2Dam: SpreadDamage
 		Range: 0, 32
 		Falloff: 50, 50
-		Damage: 400
+		Damage: 1000
 		AffectsParent: false
 		ValidStances: Ally
 		Versus:
@@ -481,6 +477,17 @@ SonicZap:
 			Concrete: 60
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 		ValidTargets: Water, Underwater
+	Warhead@ExtraSquidDamage: SpreadDamage
+		Range: 0, 32
+		Falloff: 200, 200
+		Damage: 1000
+		AffectsParent: false
+		ValidStances: Neutral, Enemy
+		Versus:
+			Heavy: 80
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		ValidTargets: Squid
 
 RA2IFVRepair:
 	ReloadDelay: 10
@@ -581,17 +588,17 @@ RA2BrutePunch:
 		DamageTypes: Prone50Percent, TriggerProne, RippedApartDeath
 
 SquidPunch:
-	Inherits: RA2BrutePunch
-	ReloadDelay: 15
+	ReloadDelay: 32
 	Range: 1c856
 	Report: vsquat1a.wav
 	ValidTargets: Water, Underwater
+	Projectile: InstantHit
 	Warhead@1Dam: SpreadDamage
-		Damage: 2500
+		Damage: 3000
 		ValidTargets: Water, Underwater
 	Warhead@2Con: GrantExternalCondition
 		Condition: SquidTrap
-		Duration: 20
+		Duration: 40
 		Range: 0c172
 		ValidTargets: Water, Underwater
 
@@ -1009,6 +1016,8 @@ RA2SCUD:
 
 DredMissile:
 	Inherits: RA2SCUD
+	Warhead@1Dam: SpreadDamage
+		Damage: 7000
 
 YRBoomerSCUD:
 	Inherits: SCUD
@@ -1018,8 +1027,9 @@ YRBoomerSCUD:
 		Speed: 200
 		Image: MISSILE
 		TrailImage: bomb
+		RangeLimit: 18c512
 	Warhead@1Dam: SpreadDamage
-		Damage: 1500
+		Damage: 3000
 	Warhead@3Eff: CreateEffect
 		ImpactSounds: gexp14a.wav
 
@@ -1165,7 +1175,7 @@ RA2FlakTrackGun:
 	ReloadDelay: 25
 	ValidTargets: Ground, Water
 	Warhead@1Dam: SpreadDamage
-		Damage: 2500
+		Damage: 3500
 
 RA2TURRETFLAKAA:
 	Inherits: RA2FLAKAA

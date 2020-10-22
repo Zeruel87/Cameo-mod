@@ -427,12 +427,9 @@
 		CargoType: None
 	ExternalCondition@SQUIDTRAP:
 		Condition: SquidTrap
-	SpeedMultiplier@SQUIDTRAP:
-		Modifier: 0
-		RequiresCondition: SquidTrap
-	ReloadDelayMultiplier@SQUIDTRAP:
-		RequiresCondition: SquidTrap
-		Modifier: 500
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: (TSNeutronBomb || GhostLockdown || ArbiterStasis || chronobeamed || diskdrain || Magnet || SquidTrap ) && !invulnerability
 	ProductionCostMultiplier@Industrial:
 		Multiplier: 75
 		Prerequisites: yrngindp
@@ -2982,6 +2979,11 @@ CPQDEBUGDUMMY:
 		RequiresCondition: swimming
 	TakeCover:
 		RequiresCondition: !swimming
+	ExternalCondition@SQUIDTRAP:
+		Condition: SquidTrap
+	GrantCondition@disable:
+		Condition: frozen
+		RequiresCondition: ReaperTrap || ArbiterStasis || chronobeamed || SquidTrap
 
 ^PrimarySuperweapon:
 	ProvidesPrerequisite@swlimit:
@@ -3047,16 +3049,13 @@ CPQDEBUGDUMMY:
 		BlinkInterval: 32
 		BlinkPattern: On, Off
 
-^HospitalHealable:
+^TechStructureHealable:
 	SelfHealing@HOSPITAL:
 		PercentageStep: 10
 		Delay: 100
 		HealIfBelow: 100
 		DamageCooldown: 125
 		RequiresCondition: hospitalheal
-	GrantConditionOnPrerequisite@HOSPITAL:
-		Condition: hospital
-		Prerequisites: hosp
 	GrantConditionOnDamageState@HOSPITAL:
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
@@ -3071,29 +3070,23 @@ CPQDEBUGDUMMY:
 		BlinkInterval: 32
 		BlinkPattern: On, Off
 
+^HospitalHealable:
+	Inherits: ^TechStructureHealable
+	GrantConditionOnPrerequisite@HOSPITAL:
+		Condition: hospital
+		Prerequisites: hosp
+
 ^MachineShopRepairable:
-	SelfHealing@MACHINESHOP:
+	Inherits: ^TechStructureHealable
+	SelfHealing@HOSPITAL:
 		PercentageStep: 5
 		Delay: 50
 		HealIfBelow: 100
 		DamageCooldown: 125
-		RequiresCondition: machshopheal
+		RequiresCondition: hospitalheal
 	GrantConditionOnPrerequisite@MACHINESHOP:
-		Condition: machshop
+		Condition: hospital
 		Prerequisites: machshop
-	GrantConditionOnDamageState@MACHINESHOP:
-		Condition: damaged
-		ValidDamageStates: Light, Medium, Heavy, Critical
-	GrantCondition@MACHINESHOP:
-		RequiresCondition: machshop && damaged
-		Condition: machshopheal
-	WithDecoration@MACHINESHOP:
-		Image: pips
-		Sequence: pip-heal
-		ReferencePoint: Bottom, Right
-		RequiresCondition: machshopheal
-		BlinkInterval: 32
-		BlinkPattern: On, Off
 
 ^TDSpawnActorsOnSell:
 	SpawnActorsOnSell:
