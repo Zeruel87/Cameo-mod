@@ -270,9 +270,6 @@
 	WithColoredOverlay@disabled:
 		Palette: disabled
 		RequiresCondition: (TSNeutronBomb || GhostLockdown || diskdrain) && !invulnerability
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: ArbiterStasis && !invulnerability
 	ExternalCondition@LOCKDOWN:
 		TotalCap: 1
 		Condition: GhostLockdown
@@ -1073,7 +1070,7 @@
 	FrozenUnderFog:
 	FrozenUnderFogUpdatedByGps:
 	Demolishable:
-		RequiresCondition: !chronobeamed
+		RequiresCondition: !chronobeamed && !invulnerability && !forceshield
 	MapEditorData:
 		Categories: Building
 	CommandBarBlacklist:
@@ -1120,6 +1117,7 @@
 	Inherits@EMP: ^UnitDisable
 	Inherits@chrono: ^ChronoBeamable
 	Inherits@cloak: ^StealthGenCloakable
+	Inherits@forceshield: ^ForceShieldable
 	Building:
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud
@@ -2867,7 +2865,10 @@ CPQDEBUGDUMMY:
 		TargetTypes: SpyInfiltrate, DiskDrain
 		RequiresCondition: !chronobeamed
 	Power:
-		RequiresCondition: !powerdisabled
+		RequiresCondition: !powerdisabled && !forceshielddrain
+	GrantConditionOnPrerequisite@forceshielddrain:
+		Condition: forceshielddrain
+		Prerequisites: forceshielddrain
 
 ^Refinery:
 	Buildable:
@@ -3088,6 +3089,25 @@ CPQDEBUGDUMMY:
 	GrantConditionOnPrerequisite@MACHINESHOP:
 		Condition: hospital
 		Prerequisites: machshop
+
+^ForceShieldable:
+	ExternalCondition@FORCESHIELD:
+		Condition: forceshield
+	WithColoredOverlay@FORCESHIELD:
+		Palette: tsneutron
+		RequiresCondition: forceshield && !invulnerability
+	DamageMultiplier@FORCESHIELD:
+		RequiresCondition: forceshield
+		Modifier: 0
+	TimedConditionBar@FORCESHIELD:
+		Condition: forceshield
+		Color: 2f74e2
+	PowerMultiplier@FSPOWERDOWN:
+		RequiresCondition: forceshield && !invulnerability
+		Modifier: 0
+	ProvidesPrerequisite@FSdrain:
+		Prerequisite: forceshielddrain
+		RequiresCondition: forceshield
 
 ^TDSpawnActorsOnSell:
 	SpawnActorsOnSell:
