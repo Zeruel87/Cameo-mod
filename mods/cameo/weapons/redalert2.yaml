@@ -1017,6 +1017,11 @@ RA2SCUD:
 	Warhead@4EffWater: CreateEffect
 		ImpactSounds: gexpwasa.wav
 
+V3Explode:
+	Inherits: RA2SCUD
+	Warhead@1Dam: SpreadDamage
+		InvalidTargets: TerrorDrone
+
 DredMissile:
 	Inherits: RA2SCUD
 	Warhead@1Dam: SpreadDamage
@@ -1638,13 +1643,20 @@ IvanAttach:
 	ReloadDelay: 20
 	Range: 2c512
 	ValidTargets: ivanattachable
-	InvalidTargets: ivanattached
+	InvalidTargets: ivanattached, Aircraft
 	Warhead@1: AttachDelayedWeapon
 		Weapon: IvanBomb
 		Type: ivanbomb
 		TriggerTime: 200
 		Range: 0c128
 	Warhead@2: TargetDamage
+
+IvanAttachAir:
+	Inherits: IvanAttach
+	ValidTargets: Aircraft
+	InvalidTargets: ivanattached
+	Warhead@1: AttachDelayedWeapon
+		Weapon: IvanBombAir
 
 IFVAttach:
 	Inherits: IvanAttach
@@ -1655,13 +1667,13 @@ SEALAttach:
 	ValidTargets: Ship, Submarine
 	Range: 2c0
 	Warhead@1: AttachDelayedWeapon
-		ValidStances: Enemy, Neutral
 		Weapon: SealBomb
 		TriggerTime: 120
 
 TanyaAttach:
 	Inherits: SEALAttach
-	ValidTargets: Vehicle, Ship, Submarine
+	ValidTargets: Vehicle, Ship, Submarine, Aircraft
+	InvalidTargets: ivanattached
 	Range: 2c0
 	Warhead@1: AttachDelayedWeapon
 		Weapon: TanyaBomb
@@ -1669,7 +1681,7 @@ TanyaAttach:
 
 IvanBomb:
 	Warhead@1Dam: SpreadDamage
-		ValidTargets: Ground, Air, Water
+		ValidTargets: Ground, Water
 		Spread: 1c512
 		Damage: 80000
 		DamageTypes: Prone80Percent, ExplosionDeath
@@ -1684,9 +1696,16 @@ IvanBomb:
 		ValidTargets: Water, Underwater
 		InvalidTargets: Ship, Structure, Bridge
 
+IvanBombAir:
+	Inherits: IvanBomb
+	Warhead@1Dam: SpreadDamage
+		Spread: 64
+		ValidTargets: Aircraft
+
 TanyaBomb:
 	Inherits: IvanBomb
 	Warhead@1Dam: SpreadDamage
+		ValidTargets: Ground, Air, Water
 		Spread: 64
 		Damage: 200000
 	Warhead@2Eff: CreateEffect
