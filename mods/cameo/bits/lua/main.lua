@@ -17,7 +17,7 @@ WorldLoaded = function()
 		"2100hq.scavenger","2100chopshop","2100chopshopadv","2100scavhangar",
 		"sccommandcenter","scbarracks","scfactory","scstarport",
 		"scnexus","scgateway","scroboticsfacility","scstargate",
-		"schatchery","sclair","schive",
+		"schatchery","tsgtcnstgdi","tsgtcnstnod","tsgtcnstcabal","tsgtcnstmutant"
 	}
 
 	infantryall = {

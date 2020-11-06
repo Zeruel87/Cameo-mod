@@ -24,7 +24,7 @@ E1:
 		Weapon: M16
 	Armament@GARRISONED:						##########
 		Name: garrisoned
-		Weapon: RAVulcan
+		Weapon: HighV
 		MuzzleSequence: garrison-muzzle
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
@@ -47,7 +47,6 @@ E2:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: anyhq, ~techlevel.medium
 		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry
 		Description: Fast infantry armed with grenades. \n  Strong vs Buildings, slow-moving targets
 	Mobile:
@@ -123,7 +122,6 @@ E4:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: anyhq, ~techlevel.medium
 		Queue: Infantry.Nod, RAInfantry.Nod, Infantry.X_Infantry
 		Description: Advanced Anti-infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
 	Mobile:
@@ -197,7 +195,7 @@ E6:
 		BuildPaletteOrder: 30
 		Prerequisites: barracks
 		Queue: Infantry.GDI, Infantry.Nod, RAInfantry.GDI, RAInfantry.Nod
-		Description: Infiltrates and captures\nenemy structures.\n  Unarmed
+		Description: Infiltrates and captures enemy structures.\nRemoves attached explosives from units.\n  Unarmed
 	Mobile:
 		Speed: 48
 	Health:
@@ -226,9 +224,14 @@ E6:
 		EnterBlockedCursor: move-blocked
 	Selectable:
 		Priority: 5
+		Class: e6
 	Voiced:
 		VoiceSet: EngineerVoice
-	-AttackFrontal:
+	AttackFrontal:
+	Armament@defuse:
+		Weapon: DefuseKit
+		TargetStances: Ally
+		ForceTargetStances: None
 	Inherits@EXT: ^ExternalConditions					##########
 
 RMBO:
@@ -236,8 +239,10 @@ RMBO:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
 	Valued:
-		Cost: 2000
+		Cost: 1200
 	Tooltip:
 		Name: Commando
 	UpdatesPlayerStatistics:
@@ -275,11 +280,6 @@ RMBO:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		IdleSequences: idle1,idle2,idle3
-	ExternalCondition@PRODUCED:
-		Condition: produced
-	VoiceAnnouncement:
-		RequiresCondition: produced
-		Voice: Build
 	AnnounceOnKill:
 	Voiced:
 		VoiceSet: CommandoVoice
@@ -421,6 +421,10 @@ DOG:
 		Voice: Move
 	RevealsShroud:
 		Range: 5c512
+	DetectCloaked:
+		Range: 4c0
+		RequiresCondition: !frozen
+		CloakTypes: Cloak, Hijacker
 	Armament:
 		Weapon: DogJaw
 		ReloadingCondition: attack-cooldown
@@ -457,6 +461,7 @@ DOG:
 		VoiceSet: DogVoice
 	-TakeCover:
 	-Explodes@Mutate:
+	-Targetable@disguise:
 	Inherits@EXPERIENCE: ^GainsExperience				##########
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -498,6 +503,8 @@ RAE1:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	Selectable:
+		Class: rae1
 
 RARE1:
 	Inherits: RAE1
@@ -648,6 +655,8 @@ RAE6:
 E7:
 	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
 	Buildable:
 		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.X_Infantry
 		BuildPaletteOrder: 120
@@ -669,6 +678,10 @@ E7:
 		Voice: Move
 	RevealsShroud:
 		Range: 6c0
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !frozen
+		CloakTypes: Cloak, Hijacker
 	Demolition:
 		DetonationDelay: 45
 		Voice: Demolish
@@ -686,11 +699,6 @@ E7:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		StandSequences: stand
-	ExternalCondition@PRODUCED:
-		Condition: produced
-	VoiceAnnouncement:
-		RequiresCondition: produced
-		Voice: Build
 	AnnounceOnKill:
 	Voiced:
 		VoiceSet: TanyaVoice
@@ -736,17 +744,16 @@ MEDI:
 	AutoTarget:
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Infantry
-	Inherits@EXT: ^ExternalConditions					##########
-	RenderSprites:
-		Scale: 0.8
+	Inherits@EXT: ^ExternalConditions
 
 MECH:
 	Inherits: ^Soldier
+	Inherits@EXT: ^ExternalConditions
 	Buildable:
 		Queue: Infantry.Allies, RAInfantry.Allies
 		BuildPaletteOrder: 100
 		Prerequisites: rafix, ~techlevel.medium
-		Description: Repairs nearby vehicles and restores\nhusks to working condition by capturing them.\n  Unarmed
+		Description: Repairs nearby vehicles.\n  Unarmed
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -770,15 +777,10 @@ MECH:
 		TargetStances: Ally
 		ForceTargetStances: None
 	AttackFrontal:
-		#Voice: Action
+		Voice: Action
 	CaptureManager:
 	Captures:
 		CaptureTypes: husk
-		PlayerExperience: 25
-	Infiltrates:
-		Types: Husk
-		ValidStances: Ally
-		EnterCursor: goldwrench
 		PlayerExperience: 25
 	WithInfantryBody:
 		IdleSequences: idle
@@ -789,9 +791,6 @@ MECH:
 	AutoTarget:
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Vehicle
-	Inherits@EXT: ^ExternalConditions					##########
-	RenderSprites:
-		Scale: 0.8
 
 EINSTEIN:
 	Inherits: ^CivInfantry
@@ -862,13 +861,13 @@ SHOK:
 		Prerequisites: stek, tsla, ~techlevel.high
 		Description: Elite infantry with portable Tesla coils.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
 	Valued:
-		Cost: 350
+		Cost: 300
 	Tooltip:
 		Name: Shock Trooper
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 5000
+		HP: 8000
 	Mobile:
 		Speed: 56
 	RevealsShroud:
@@ -891,10 +890,71 @@ SHOK:
 		VoiceSet: ShokVoice
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
+	Crushable:
+		CrushClasses: vehicle
 	Inherits@EXPERIENCE: ^GainsExperience				##########
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+
+RASPY:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	Buildable:
+		Queue: Infantry.Allies, RAInfantry.Allies
+		BuildPaletteOrder: 90
+		Prerequisites: anyhq, ~tent
+		Description: Infiltrates enemy structures for intel or\nsabotage. Exact effect depends on the\nbuilding infiltrated.\nLoses disguise when attacking.\nCan detect spies.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft\n  Special Ability: Disguise
+	Valued:
+		Cost: 500
+	-Tooltip:
+	DisguiseTooltip:
+		Name: Spy
+		GenericName: Soldier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	-Guard:
+	Health:
+		HP: 4000
+	Mobile:
+		Speed: 56
+		Voice: Move
+	RevealsShroud:
+		Range: 5c0
+	Passenger:
+		PipType: Blue
+		Voice: Move
+	Disguise:
+		DisguisedCondition: disguise
+	Infiltrates:
+		Types: SpyInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 50
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+		ScanRadius: 5
+	-WithInfantryBody:
+	WithDisguisingInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2
+		StandSequences: stand,stand2
+	WithDecoration@disguise:
+		Image: pips
+		Sequence: pip-disguise
+		Palette: effect
+		ReferencePoint: Top, Right
+		ZOffset: 256
+		RequiresCondition: disguise
+	IgnoresDisguise:
+	Armament:
+		Weapon: SilencedPPK
+	AttackMove:
+		Voice: Move
+	Voiced:
+		VoiceSet: SpyVoice
 
 SNIPER:
 	Inherits: ^Soldier
@@ -954,10 +1014,8 @@ Zombie:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		Queue: RaBiolab
-		BuildAtProductionType: Soldier
+		Queue: RaBiolab, Biolab
 		BuildPaletteOrder: 200
-		Prerequisites: ~barracks, ~rabio
 		Description: Slow undead. Attacks in close combat.
 	Health:
 		HP: 25000
@@ -986,10 +1044,8 @@ Ant:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		Queue: RaBiolab
-		BuildAtProductionType: Soldier
+		Queue: RaBiolab, Biolab
 		BuildPaletteOrder: 1954
-		Prerequisites: ~barracks, ~rabio
 		Description: Irradiated insect that grew oversize.
 	Selectable:
 		Bounds: 24,24,0,-5
@@ -1095,7 +1151,7 @@ WarriorAnt:
 		Weapon: ScavPistol
 	Armament@GARRISONED:						##########
 		Name: garrisoned
-		Weapon: MachineGun
+		Weapon: ScavMG2
 	AttackFrontal:
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3
@@ -1106,6 +1162,8 @@ WarriorAnt:
 		ValidTypes: infantry							##########
 	RangeMultiplier@Charged:
 		Modifier: 130
+	Selectable:
+		Class: 2100scav
 
 2100SCAV2:
 	Inherits: 2100SCAV
@@ -1147,7 +1205,7 @@ CITYFIREFIGHTER:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Infantry.SimCity, RAInfantry.SimCity, Infantry.X_Infantry
-		Description: armed with Waterthrower.\n\nThis Unit has increassed stats inside your city, in a 14 tile radius around any Mayor's House.\n These stats are:\n  +30% movement speed \n  +30% damage reduction\n  +30% attack damage \n  +30% attack speed\n  +1 attack range
+		Description: Emergency worker armed with a fire hose.\n Strong vs Infantry, Buildings\n Weak vs Vehicles, Aircraft
 	Mobile:
 		Speed: 56
 	Health:
@@ -1185,7 +1243,7 @@ CITYPOLICEOFFICER:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Vehicle.SimCity, RAVehicle.SimCity, Infantry.X_Infantry
-		Description: armed with Colt.\n\nThis Unit has increassed stats inside your city, in a 14 tile radius around any Mayor's House.\n These stats are:\n  +30% movement speed \n  +30% damage reduction\n  +30% attack damage \n  +30% attack speed\n  +1 attack range
+		Description: Law enforcement armed with a pistol.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
 		Speed: 56
 	Health:
@@ -1210,10 +1268,11 @@ CITYPOLICEOFFICER:
 
 CITYARCHITECT:
 	Inherits: ^CITYINFANTRY
+	Inherits@selection: ^SelectableSupportUnit
 	Buildable:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 40
-		Description: Upgrades a Building by 1 Rank.\n\nAllies power producing buildings can also be upgraded.\n increases the power output by 25% per rank, up to 100% with rank Elite.
+		Description: Upgrades buildings by 1 rank.
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -1249,11 +1308,12 @@ CITYARCHITECT:
 
 CITYELITEARCHITECT:
 	Inherits: ^CITYINFANTRY
+	Inherits@selection: ^SelectableSupportUnit
 	Buildable:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 70
 		Prerequisites: Library
-		Description: Upgrades a Building to Rank 4 (Elite).\n\nAllies power producing buildings can also be upgraded.\n increases the power output by 25% per rank, up to 100% with rank Elite.
+		Description: Upgrades buildings to Rank 4 (Elite).
 		Icon: eliteicon
 	Valued:
 		Cost: 2000
@@ -1292,6 +1352,7 @@ CITYELITEARCHITECT:
 
 CITYINSTRUCTOR:
 	Inherits: ^CITYINFANTRY
+	Inherits@selection: ^SelectableSupportUnit
 	Buildable:
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 50
@@ -1428,7 +1489,7 @@ CITYSWAT:
 		Queue: Vehicle.SimCity, RAVehicle.SimCity
 		BuildDuration: 1500
 		BuildDurationModifier: 40
-		Description: S.W.A.T., Armed with silenced MP with grenade launcher.
+		Description: Elite law enforcement armed with a silenced\nsubmachine gun and a grenade launcher.\n Strong vs ground targets\n Weak vs Aircraft
 	Mobile:
 		Speed: 71
 		Voice: Move
@@ -1721,3 +1782,72 @@ RAPT2:
 		Speed: 113
 	RenderSprites:
 		Image: RAPT
+
+PoliceSquad:
+	Inherits@1: ^ExistsInWorld
+	Inherits@2: ^SpriteActor
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	SelectionDecorations:
+	WithSpriteControlGroupDecoration:
+	BodyOrientation:
+		UseClassicFacingFudge: True
+	HitShape:
+	AttackMove:
+	WithSpriteBody:
+	Selectable:
+		Bounds: 32, 32
+	HiddenUnderFog:
+		Type: CenterPosition
+	RevealsShroud:
+		Type: CenterPosition
+	Buildable:
+		Queue: Infantry.GDI, RAInfantry.GDI
+		BuildPaletteOrder: 4
+		Prerequisites: ~disabled
+		Description: Debug test for mobs
+	Tooltip:
+		Name: Police Unit
+	Valued:
+		Cost: 1000
+	MobSpawnerMaster:
+		Actors: migbot, migbot, migbot
+		RespawnTicks: 750
+		ExitByBudding: false
+	Health:
+		HP: 10000
+	AttackOmni:
+	Armament:
+		Weapon: PolicePistol
+	Mobile:
+		Locomotor: foot
+		Speed: 50
+		OccupySpace: false
+	DamageMultiplier:
+		Modifier: 0
+	RenderSprites:
+		Image: CITYPOLICEOFFICER
+
+mobpolice:
+	Inherits: CITYPOLICEOFFICER
+	RenderSprites:
+		Image: CITYPOLICEOFFICER
+	-Buildable:
+	-SelectionDecorations:
+	-WithSpriteControlGroupDecoration:
+	MobSpawnerSlave:
+	RejectsOrders:
+
+migbot:
+	Inherits: MIG
+	-Buildable:
+	-Selectable:
+	-SelectionDecorations:
+	-WithSpriteControlGroupDecoration:
+	Interactable:
+	RenderSprites:
+		Image: mig
+	MobSpawnerSlave:
+	RejectsOrders:
+	ReloadAmmoPool:
+		Delay: 40
+		Count: 1

@@ -47,8 +47,8 @@
 		Conditions:
 			200: rank-veteran
 			400: rank-veteran
+			600: rank-veteran
 			800: rank-veteran
-			1600: rank-veteran
 		LevelUpImage: crate-effects
 	ExternalCondition@rankveteran:
 		Condition: rank-veteran
@@ -207,6 +207,11 @@
 	AttackMove:
 		AssaultMoveCondition: assault-move
 
+^AutoTargetGroundAssaultMoveMelee:
+	Inherits: ^AutoTargetGroundAssaultMove
+	AutoTargetPriority@ATTACKANYTHING:
+		ValidTargets: Infantry, Vehicle, Creep, Water, Defense
+
 ^AutoTargetAir:
 	AutoTarget:
 	AutoTargetPriority@DEFAULT:
@@ -244,18 +249,6 @@
 		RequiresCondition: cloak-crate-collected
 	ExternalCondition@CLOAK:
 		Condition: cloak-crate-collected
-	GrantConditionOnDamageState@UNCLOAK:
-		Condition: cloak-force-disabled
-		ValidDamageStates: Critical
-	Cloak@TScloak:
-		InitialDelay: 15
-		CloakDelay: 90
-		CloakSound: cloak5.aud
-		UncloakSound: cloak5.aud
-		PauseOnCondition: cloak-force-disabled || disabled
-		RequiresCondition: tscloak
-	ExternalCondition@TSCLOAK:
-		Condition: tscloak
 
 ^VehicleRadiation:
 	DamagedByTintedCells@rad:
@@ -272,16 +265,28 @@
 ^UnitDisable:
 	GrantCondition@disable:
 		Condition: disabled
-		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
+		RequiresCondition: (TSNeutronBomb || GhostLockdown || chronobeamed || diskdrain || Magnet ) && !invulnerability
 	ExternalCondition@TSNEUTRON:
+		TotalCap: 1
 		Condition: TSNeutronBomb
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
+	TimedConditionBar@TSNEUTRON:
+		Condition: TSNeutronBomb
+		Color: FFFFFF
+	WithColoredOverlay@disabled:
+		Palette: disabled
+		RequiresCondition: (TSNeutronBomb || GhostLockdown || diskdrain) && !invulnerability
 	ExternalCondition@LOCKDOWN:
+		TotalCap: 1
 		Condition: GhostLockdown
+	TimedConditionBar@LOCKDOWN:
+		Condition: GhostLockdown
+		Color: FFFFFF
 	ExternalCondition@STASIS:
-		Condition: ArbiterStasis
+		TotalCap: 1
+		Condition: chronobeamed
+	ExternalCondition@DRAIN:
+		TotalCap: 1
+		Condition: diskdrain
 
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
@@ -297,6 +302,9 @@
 	Inherits@driver-dead: ^AffectedByDriverKill
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	Inherits@FrenzyPower: ^FrenzyPower
+	Inherits@mag: ^Magnefreezable
+	Inherits@cloak: ^AcceptsCloakCrate
+	Inherits@heal: ^MachineShopRepairable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -310,10 +318,11 @@
 	Selectable:
 		Bounds: 24,24
 	Targetable:
-		RequiresCondition: !parachute
+		RequiresCondition: !parachute && !chronobeamed
 		TargetTypes: Ground, Vehicle
 	Passenger:
 		CargoType: Vehicle
+		Weight: 3
 	ActorLostNotification:
 	HiddenUnderFog:
 	AttackMove:
@@ -323,6 +332,7 @@
 	Explodes:
 		Weapon: UnitExplodeSmall
 		EmptyWeapon: UnitExplodeSmall
+		RequiresCondition: !chronobeamed
 	Guard:
 	Guardable:
 	Tooltip:
@@ -337,11 +347,8 @@
 		Categories: Vehicle
 	Chronoshiftable:						##########
 	Targetable@REPAIR:
-		RequiresCondition: damaged
-		TargetTypes: Repair
-	Targetable@HEALING:								##########
-		RequiresCondition: damaged
-		TargetTypes: Healing
+		RequiresCondition: !parachute && !chronobeamed && damaged
+		TargetTypes: Repair, Healing
 	GrantConditionOnDamageState@DAMAGED:
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
@@ -369,44 +376,26 @@
 	Capturable:
 		Types: vehicle
 		ValidStances: Enemy, Neutral
+		RequiresCondition: !chronobeamed && !invulnerability
 	Carryable:
 		LockedCondition: carried
-	SelfHealing@MACHINESHOP:
-		Step: 500
-		Delay: 100
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: machshopheal
-	GrantConditionOnPrerequisite@MACHINESHOP:
-		Condition: machshop
-		Prerequisites: machshop
-	GrantConditionOnDamageState@MACHINESHOP:
-		Condition: damaged
-		ValidDamageStates: Light, Medium, Heavy, Critical
-	GrantCondition@MACHINESHOP:
-		RequiresCondition: machshop && damaged
-		Condition: machshopheal
-	WithDecoration@MACHINESHOP:
-		Image: pips
-		Sequence: pip-heal
-		ReferencePoint: Bottom, Right
-		RequiresCondition: machshopheal
-		BlinkInterval: 32
-		BlinkPattern: On, Off
 	GrantConditionOnPrerequisite@METALFACTORY:
 		Condition: techmetalffact
 		Prerequisites: techmetalffact
 	DamageMultiplier@METALFACTORY:
 		RequiresCondition: techmetalffact
 		Modifier: 85
-	EdibleByLeap:							##########
-	ExternalCondition@Magnetron:
-		Condition: Magnet
-	SpeedMultiplier@Magnetron:
-		Modifier: 2
-		RequiresCondition: Magnet
-	Hovers@Magnetron:
-		RequiresCondition: Magnet
+	ProductionCostMultiplier@Industrial:
+		Multiplier: 75
+		Prerequisites: yrngindp
+	EdibleByLeap:
+	Crushable:
+		WarnProbability: 0
+		CrushClasses: vehicle
+		RequiresCondition: !invulnerability
+	RevealOnFire:
+		Duration: 50
+	RevealOnDeath:
 	GpsDot:
 		String: Vehicle
 	ExternalCondition@EmergencyRepair1:
@@ -440,6 +429,7 @@
 		RequiresCondition: repairlvl1 || repairlvl2 || repairlvl3
 		BlinkInterval: 32
 		BlinkPattern: On, Off
+	TeleportNetworkTransportable:
 
 ^Tank:
 	Inherits: ^Vehicle
@@ -457,6 +447,7 @@
 ^BoatUnit:
 	Inherits: ^Vehicle
 	Inherits@EMP: ^UnitDisable
+	Inherits@mag: ^Magnefreezable
 	Mobile:
 		Locomotor: naval
 		TurnSpeed: 5
@@ -473,12 +464,18 @@
 		CargoType: None
 	ExternalCondition@SQUIDTRAP:
 		Condition: SquidTrap
-	SpeedMultiplier@SQUIDTRAP:
-		Modifier: 0
-		RequiresCondition: SquidTrap
-	ReloadDelayMultiplier@SQUIDTRAP:
-		RequiresCondition: SquidTrap
-		Modifier: 500
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: (TSNeutronBomb || GhostLockdown || chronobeamed || diskdrain || Magnet || SquidTrap ) && !invulnerability
+	ProductionCostMultiplier@Industrial:
+		Multiplier: 75
+		Prerequisites: yrngindp
+	RevealOnFire:
+		Duration: 50
+	RevealOnDeath:
+	-Repairable:
+	RepairableNear:
+		RepairActors: yrygyard, ra2nayard, ra2gayard, ra1syrd, cncsyrd, raspen, cncspen, tsntyard, tsntyard2, tsgtyard, tsgtyard2, cra2gayard, cra2nayard, craspen, ccncspen, cra1syrd, ccncsyrd
 	GpsDot:
 		String: Ship
 
@@ -492,6 +489,7 @@
 	Inherits@bot: ^BotProductionBoost
 	Inherits@fix: ^Repairable
 	Inherits@EMP: ^UnitDisable
+	Inherits@mag: ^Magnefreezable
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -499,6 +497,7 @@
 	Armor:
 		Type: Light
 	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	AppearsOnRadar:
 		UseLocation: true
 	SelectionDecorations:
@@ -506,15 +505,16 @@
 	Selectable:
 		Bounds: 24,24
 	Aircraft:
+		IdleTurnSpeed: 2
 		AirborneCondition: airborne
 	Targetable@GROUND:
-		RequiresCondition: !airborne
-		TargetTypes: Ground, Vehicle
+		RequiresCondition: !airborne && !chronobeamed
+		TargetTypes: Ground, Vehicle, Aircraft
 	Targetable@AIRBORNE:
-		RequiresCondition: airborne
-		TargetTypes: Air
+		RequiresCondition: airborne && !chronobeamed
+		TargetTypes: Air, Aircraft
 	Targetable@REPAIR:
-		RequiresCondition: !airborne && damaged
+		RequiresCondition: !airborne && !chronobeamed && damaged
 		TargetTypes: Repair, Healing
 	AttackAircraft:
 		PauseOnCondition: disabled
@@ -543,8 +543,12 @@
 	Voiced:
 		VoiceSet: VehicleVoice
 	HitShape:
+	ProductionCostMultiplier@Industrial:
+		Multiplier: 75
+		Prerequisites: yrngindp
 	MapEditorData:
 		Categories: Aircraft
+	ActorLostNotification:
 	SpawnActorOnDeath:
 		RequiresCondition: airborne
 	Explodes:
@@ -552,6 +556,11 @@
 		EmptyWeapon: HeliExplode
 	Explodes@2:
 		Weapon: UnitExplode
+		RequiresCondition: !airborne && !chronobeamed
+	RevealOnFire:
+	RevealOnDeath:
+	Targetable@chrono:
+		TargetTypes: Chronobeamable
 		RequiresCondition: !airborne
 
 ^Helicopter:
@@ -567,7 +576,7 @@
 		InitialFacing: 224
 		CanSlide: True
 	Hovers@CRUISING:
-		RequiresCondition: cruising
+		RequiresCondition: cruising && !disabled
 	BodyOrientation:
 		UseClassicFacingFudge: True
 	GpsDot:
@@ -598,6 +607,22 @@
 		Weapon: LargeHeliExplode
 		EmptyWeapon: LargeHeliExplode
 
+^InfantryDisable:
+	ExternalCondition@REAPERTRAP:
+		TotalCap: 1
+		Condition: ReaperTrap
+	WithColoredOverlay@REAPERTRAP:
+		Palette: reapertrap
+		RequiresCondition: ReaperTrap
+	ExternalCondition@STASIS:
+		TotalCap: 1
+		Condition: chronobeamed
+	GrantCondition@disable:
+		Condition: frozen
+		RequiresCondition: ReaperTrap || chronobeamed
+	Mobile:
+		PauseOnCondition: frozen
+
 ^Infantry:
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
@@ -605,6 +630,8 @@
 	Inherits@bounty: ^GlobalBounty
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
+	Inherits@disable: ^InfantryDisable
+	Inherits@heal: ^HospitalHealable
 	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	TemporaryOwnerManager:
@@ -625,14 +652,13 @@
 		Bounds: 18,18,0,-6
 		DecorationBounds: 12,17,0,-6
 	Targetable:
-		RequiresCondition: !parachute
+		RequiresCondition: !parachute && !chronobeamed
 		TargetTypes: Ground, Infantry
 	Targetable@HEAL:								##########
-		RequiresCondition: !parachute && damaged
-		TargetTypes: Heal
-	Targetable@HEALING:								##########
-		RequiresCondition: !parachute && damaged
-		TargetTypes: Healing
+		RequiresCondition: !parachute && !chronobeamed && damaged
+		TargetTypes: Heal, Healing
+	Targetable@disguise:
+		TargetTypes: Disguise
 	GrantConditionOnDamageState@DAMAGED:			##########
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
@@ -699,41 +725,25 @@
 		WarnProbability: 75
 		CrushSound: squish2.aud
 	Guardable:
-	SelfHealing@HOSPITAL:
-		Step: 500
-		Delay: 100
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: hospitalheal
-	GrantConditionOnPrerequisite@HOSPITAL:
-		Condition: hospital
-		Prerequisites: hosp
-	GrantConditionOnDamageState@HOSPITAL:
-		Condition: damaged
-		ValidDamageStates: Light, Medium, Heavy, Critical
-	GrantCondition@HOSPITAL:
-		RequiresCondition: hospital && damaged
-		Condition: hospitalheal
-	WithDecoration@REDCROSS:
-		Image: pips
-		Sequence: pip-heal
-		ReferencePoint: Bottom, Right
-		RequiresCondition: hospitalheal
-		BlinkInterval: 32
-		BlinkPattern: On, Off
 	DetectCloaked:
 		Range: 2c0
+		RequiresCondition: !frozen
+		CloakTypes: Cloak, Hijacker
 	DeathSounds@NORMAL:
 		DeathTypes: DefaultDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, RippedApartDeath
+		RequiresCondition: !chronobeamed
 	DeathSounds@BURNED:
 		Voice: Burned
 		DeathTypes: FireDeath
+		RequiresCondition: !chronobeamed
 	DeathSounds@POISONED:
 		Voice: Poisoned
 		DeathTypes: TiberiumDeath, RA2VirusDeath
+		RequiresCondition: !chronobeamed
 	DeathSounds@ZAPPED:						##########
 		Voice: Zapped
 		DeathTypes: ElectricityDeath
+		RequiresCondition: !chronobeamed
 	Voiced:
 		VoiceSet: GenericVoice
 	HitShape:
@@ -775,19 +785,6 @@
 	Captures@CAPTURES:
 		CaptureTypes: ra2garrison
 		ConsumedByCapture: false
-	ExternalCondition@REAPERTRAP:
-		Condition: ReaperTrap
-	WithColoredOverlay@REAPERTRAP:
-		Palette: reapertrap
-		RequiresCondition: ReaperTrap
-	SpeedMultiplier@REAPERTRAP:
-		Modifier: 0
-		RequiresCondition: ReaperTrap || ArbiterStasis
-	ExternalCondition@STASIS:
-		Condition: ArbiterStasis
-	WithColoredOverlay@TSNEUTRON:
-		Palette: tsneutron
-		RequiresCondition: TSNeutronBomb || GhostLockdown || ArbiterStasis
 	SpawnActorOnDeath@RA2Virus:
 		Actor: ra2txgasg
 		Probability: 50
@@ -795,6 +792,7 @@
 		DeathType: RA2VirusDeath
 	GpsDot:
 		String: Infantry
+	TeleportNetworkTransportable:
 
 ^Soldier:
 	Inherits: ^Infantry
@@ -806,14 +804,18 @@
 		SpeedModifier: 60
 		DamageModifiers:
 			Prone50Percent: 50
+			Prone70Percent: 70
 			Prone80Percent: 80
+			Prone100Percent: 100
 		DamageTriggers: TriggerProne
 		ProneOffset: 400,0,0
 	WithInfantryBody:
 		IdleSequences: idle1, idle2
 		StandSequences: stand, stand2
+	RevealOnFire:
+	RevealOnDeath:
 	AttackFrontal:
-		PauseOnCondition: ReaperTrap || ArbiterStasis
+		PauseOnCondition: frozen
 
 ^CivInfantry:
 	Inherits: ^Infantry
@@ -853,9 +855,13 @@
 	Inherits@2: ^SpriteActor
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@selection: ^SelectableCombatUnit
+	Inherits@EXT: ^ExternalConditions
+	Inherits@disable: ^InfantryDisable
+	Inherits@heal: ^HospitalHealable
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
+	ActorLostNotification:
 	Health:
 		HP: 100000
 	Armor:
@@ -870,6 +876,8 @@
 		Name: Dinosaur
 	RevealsShroud:
 		Range: 6c0
+	RevealOnFire:
+	RevealOnDeath:
 	Mobile:
 		Locomotor: critter
 		Speed: 113
@@ -879,8 +887,8 @@
 	Selectable:
 		Bounds: 24,24
 	Targetable:
-		RequiresCondition: !parachute
-		TargetTypes: Ground, Creep
+		RequiresCondition: !parachute && !chronobeamed
+		TargetTypes: Ground, Infantry, Creep
 	HiddenUnderFog:
 	RenderSprites:
 		Palette: terrain
@@ -896,6 +904,10 @@
 		Voice: Attack
 	AttackFrontal:
 		Voice: Attack
+		PauseOnCondition: frozen
+	Guard:
+		Voice: Move
+	Guardable:
 	DrawLineToTarget:
 	DeathSounds:
 	Voiced:
@@ -933,12 +945,15 @@
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@selection: ^SelectableCombatUnit
 	Huntable:
+	ActorLostNotification:
 	Health:
 		HP: 30000
 	Armor:
 		Type: Wood
 	RevealsShroud:
 		Range: 6c0
+	RevealOnFire:
+	RevealOnDeath:
 	Mobile:
 		Voice: Move
 		Speed: 71
@@ -1062,6 +1077,7 @@
 	WithSpriteControlGroupDecoration:
 	Targetable:
 		TargetTypes: Ground, C4, Structure
+		RequiresCondition: !chronobeamed
 	Armor:
 		Type: Wood
 	Health:
@@ -1079,18 +1095,12 @@
 		Type: Footprint
 		Weapon: BuildingExplode
 		EmptyWeapon: BuildingExplode
+		RequiresCondition: !chronobeamed
 	CaptureNotification:
+		LoseNotification: BuildingLost
 		Notification: BuildingCaptured
-		NewOwnerVoice: false
 	ActorLostNotification:
 		Notification: BuildingLost
-	CaptureManager:
-		BeingCapturedCondition: being-captured
-	Capturable:
-		RequiresCondition: !build-incomplete
-		Types: building
-	CapturableProgressBar:
-	CapturableProgressBlink:
 	ShakeOnDeath:
 	Guardable:
 		Range: 3c0
@@ -1099,6 +1109,7 @@
 	FrozenUnderFog:
 	FrozenUnderFogUpdatedByGps:
 	Demolishable:
+		RequiresCondition: !chronobeamed && !invulnerability && !forceshield
 	MapEditorData:
 		Categories: Building
 	CommandBarBlacklist:
@@ -1116,18 +1127,6 @@
 	DamageMultiplier@CEMENTFACTORY:
 		RequiresCondition: techcementffact
 		Modifier: 85
-	Cloak@CloackGen:
-		InitialDelay: 15
-		CloakDelay: 90
-		CloakSound: cloak5.aud
-		UncloakSound: cloak5.aud
-		PauseOnCondition: cloak-force-disabled
-		RequiresCondition: tscloak
-	ExternalCondition@CLOAKCloackGen:
-		Condition: tscloak
-	GrantConditionOnDamageState@UNCLOAKCloackGen:
-		Condition: cloak-force-disabled
-		ValidDamageStates: Critical
 
 ^BotProductionBoost:
 	GrantConditionOnBotOwner@brutal:
@@ -1155,6 +1154,9 @@
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllableStructure
 	Inherits@EMP: ^UnitDisable
+	Inherits@chrono: ^ChronoBeamable
+	Inherits@cloak: ^StealthGenCloakable
+	Inherits@forceshield: ^ForceShieldable
 	Building:
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud
@@ -1173,10 +1175,16 @@
 	WithDeathAnimation:
 		DeathSequence: dead
 		UseDeathTypeSuffix: false
+		RequiresCondition: !chronobeamed
 	GivesBuildableArea:
 		AreaTypes: building
-	SpawnActorsOnSell:
-		ActorTypes: e6,e1,e1,e1
+	CaptureManager:
+		BeingCapturedCondition: being-captured
+	Capturable:
+		RequiresCondition: !build-incomplete && !chronobeamed && !invulnerability
+		Types: building
+	CapturableProgressBar:
+	CapturableProgressBlink:
 	EngineerRepairable:
 	Demolishable:
 		Condition: being-demolished
@@ -1191,8 +1199,14 @@
 		ReferencePoint: Center
 		Palette: player
 		IsPlayerPalette: True
+	ExternalCondition@Boris:
+		Condition: BorisFlare
+	WithColoredOverlay@Boris:
+		Palette: borisflare
+		RequiresCondition: BorisFlare
 	GpsDot:
 		String: Structure
+	RevealOnDeath:
 
 ^CivBuilding:
 	Inherits: ^Building
@@ -1228,7 +1242,10 @@
 		Action: ChangeOwner
 	CaptureManager:
 	Capturable:
+		RequiresCondition: !chronobeamed
 		Types: building
+	CapturableProgressBar:
+	CapturableProgressBlink:
 	CaptureNotification:
 		Notification: CivilianBuildingCaptured
 	RepairableBuilding:
@@ -1289,6 +1306,8 @@
 ^Wall:
 	Inherits@1: ^SpriteActor
 	Inherits@shape: ^1x1Shape
+	Inherits@chrono: ^ChronoBeamable
+	Inherits@cloak: ^StealthGenCloakable
 	Interactable:
 		Bounds: 24,24
 	CombatDebugOverlay:
@@ -1333,6 +1352,7 @@
 		Terrain: Wall
 	MapEditorData:
 		Categories: Wall
+	ConditionManager:
 
 ^Tree:
 	Inherits@1: ^SpriteActor
@@ -1564,11 +1584,12 @@
 	Inherits@selection: ^SelectableCombatBuilding
 	RenderRangeCircle:
 	RenderDetectionCircle:
+	RevealOnFire:
 	-GivesBuildableArea:
 	MustBeDestroyed:
 		RequiredForShortGame: false
 	Targetable:
-		TargetTypes: Ground, C4, Structure, Defense
+		TargetTypes: Ground, C4, Structure, Defense, DiskDrain
 	MapEditorData:
 		Categories: Defense
 	-CommandBarBlacklist:
@@ -1579,7 +1600,7 @@
 		Condition: lowpower
 		ValidPowerStates: Low, Critical
 	WithColoredOverlay@IDISABLE:
-		RequiresCondition: lowpower || disabled
+		RequiresCondition: lowpower
 		Palette: disabled
 
 ^SelectableCombatUnit:
@@ -1729,7 +1750,7 @@
 		GenericName: Destroyed Plane
 	Aircraft:
 	FallsToEarth:
-		Spins: False
+		MaximumSpinSpeed: 0
 		Moves: True
 		Velocity: 86
 		Explosion: UnitExplodePlane
@@ -1770,6 +1791,14 @@
 	Interactable:
 		Bounds: 24,24
 	ConditionManager:
+	-ShakeOnDeath:
+	-SoundOnDamageTransition:
+	-CaptureManager:
+	-Capturable:
+	-CapturableProgressBar:
+	-CapturableProgressBlink:
+	-CaptureNotification:
+	-GpsDot:
 
 ^FakeBuilding:
 	Inherits: ^Building
@@ -1838,6 +1867,28 @@
 		ZOffset: 256
 		ValidStances: Enemy, Neutral, Ally
 
+^CommandoCallable:
+	ExternalCondition@CommandoCall:
+		Condition: CommandoCall
+		TotalCap: 1
+	DamageMultiplier@COMMANDOCALL:
+		Modifier: 90
+		RequiresCondition: CommandoCall
+	SpeedMultiplier@COMMANDOCALL:
+		Modifier: 110
+		RequiresCondition: CommandoCall
+	InaccuracyMultiplier@COMMANDOCALL:
+		Modifier: 50
+		RequiresCondition: CommandoCall
+	WithDecoration@CommandoCall:
+		Image: 2100commandocall
+		Sequence: idle
+		ReferencePoint: Right, Top
+		Offsets:
+			CommandoCall: -6,-2
+		RequiresCondition: CommandoCall
+		ZOffset: 256
+
 ####################################################################################################
 #		PROTOSS
 ####################################################################################################
@@ -1893,7 +1944,7 @@
 		RequiresCondition: city-elite
 		Modifier: 75
 	SelfHealing@ELITE:
-		PercentageStep: 200
+		PercentageStep: 20
 		Delay: 100
 		HealIfBelow: 100
 		DamageCooldown: 125
@@ -1983,9 +2034,6 @@
 
 ^Residential:
 	CashTricklerBar:
-	ExternalCondition@CommercialCash0:
-		Condition: CommercialCash0
-		TotalCap: 1
 	ExternalCondition@CommercialCash1:
 		Condition: CommercialCash1
 		TotalCap: 1
@@ -1998,23 +2046,18 @@
 	ExternalCondition@CommercialCash4:
 		Condition: CommercialCash4
 		TotalCap: 1
-	CashTrickler@RANK-0:
-		Amount: 10
-		Interval: 400
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 0 && !lowpower && !city-elite
 	CashTrickler@RANK-1:
-		Amount: 20
+		Amount: 10
 		Interval: 400
 		UseResourceStorage: true
 		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
 	CashTrickler@RANK-2:
-		Amount: 40
+		Amount: 20
 		Interval: 400
 		UseResourceStorage: true
 		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
 	CashTrickler@RANK-3:
-		Amount: 60
+		Amount: 40
 		Interval: 400
 		UseResourceStorage: true
 		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
@@ -2023,17 +2066,14 @@
 		Interval: 400
 		UseResourceStorage: true
 		RequiresCondition: city-elite && !lowpower
-	CashTricklerMultiplier@COMMERCIAL0:
-		Modifier: 120
-		RequiresCondition: CommercialCash0
 	CashTricklerMultiplier@COMMERCIAL1:
-		Modifier: 140
+		Modifier: 120
 		RequiresCondition: CommercialCash1
 	CashTricklerMultiplier@COMMERCIAL2:
-		Modifier: 160
+		Modifier: 140
 		RequiresCondition: CommercialCash2
 	CashTricklerMultiplier@COMMERCIAL3:
-		Modifier: 180
+		Modifier: 160
 		RequiresCondition: CommercialCash3
 	CashTricklerMultiplier@COMMERCIAL4:
 		Modifier: 200
@@ -2052,10 +2092,6 @@
 		RequiresCondition: city-elite
 
 ^Commercial:
-	ProximityExternalCondition@RANK-0:
-		Range: 7c0
-		Condition: CommercialCash0
-		RequiresCondition: city-veteran == 0 && !city-elite
 	ProximityExternalCondition@RANK-1:
 		Range: 7c0
 		Condition: CommercialCash1
@@ -2143,24 +2179,7 @@
 		Range: 7c0
 		Condition: PoliceCall
 
-^ExternalConditionsAll:
-	Inherits@commando: ^CommandoDebuff
-	ExternalCondition@SCPlague:
-		Condition: DefilerPlague
-		TotalCap: 1
-	TimedConditionBar@Plague:
-		Color: A40000
-		Condition: DefilerPlague
-	SelfHealing@SCPlague:
-		Step: -500
-		PercentageStep: -1
-		Delay: 10
-		HealIfBelow: 101
-		DamageTypes: DefaultDeath
-		RequiresCondition: DefilerPlague
-
-^ExternalConditions:
-	Inherits: ^ExternalConditionsAll
+^IndustrySpeed:
 	ExternalCondition@IndustrySpeed0:
 		Condition: IndustrySpeed0
 		TotalCap: 1
@@ -2175,18 +2194,6 @@
 		TotalCap: 1
 	ExternalCondition@IndustrySpeed4:
 		Condition: IndustrySpeed4
-		TotalCap: 1
-	ExternalCondition@FireCall:
-		Condition: FireCall
-		TotalCap: 1
-	ExternalCondition@PoliceCall:
-		Condition: PoliceCall
-		TotalCap: 1
-	ExternalCondition@CommandoCall:
-		Condition: CommandoCall
-		TotalCap: 1
-	ExternalCondition@DarkSwarm:
-		Condition: DarkSwarm
 		TotalCap: 1
 	SpeedMultiplier@RANK-0:
 		Modifier: 120
@@ -2203,27 +2210,6 @@
 	SpeedMultiplier@RANK-4:
 		Modifier: 104
 		RequiresCondition: IndustrySpeed4
-	DamageMultiplier@FIRECALL:
-		Modifier: 80
-		RequiresCondition: FireCall
-	FirepowerMultiplier@POLICECALL:
-		Modifier: 120
-		RequiresCondition: PoliceCall
-	DamageMultiplier@COMMANDOCALL:
-		Modifier: 90
-		RequiresCondition: CommandoCall
-	SpeedMultiplier@COMMANDOCALL:
-		Modifier: 110
-		RequiresCondition: CommandoCall
-	InaccuracyMultiplier@COMMANDOCALL:
-		Modifier: 50
-		RequiresCondition: CommandoCall
-	DamageMultiplier@DARKSWARM:
-		Modifier: 0
-		RequiresCondition: DarkSwarm
-	FirepowerMultiplier@DARKSWARM:
-		Modifier: 0
-		RequiresCondition: DarkSwarm
 	WithDecoration@IndustrySpeed0:
 		Image: cityspeed
 		Sequence: speed0
@@ -2260,6 +2246,20 @@
 		ZOffset: 256
 		BlinkInterval: 32
 		BlinkPattern: On, Off, Off, Off
+
+^CityCombatCallable:
+	ExternalCondition@FireCall:
+		Condition: FireCall
+		TotalCap: 1
+	ExternalCondition@PoliceCall:
+		Condition: PoliceCall
+		TotalCap: 1
+	DamageMultiplier@FIRECALL:
+		Modifier: 80
+		RequiresCondition: FireCall
+	FirepowerMultiplier@POLICECALL:
+		Modifier: 120
+		RequiresCondition: PoliceCall
 	WithDecoration@FireCall:
 		Image: cityfirecall
 		Sequence: idle
@@ -2276,14 +2276,21 @@
 		ZOffset: 256
 		BlinkInterval: 32
 		BlinkPattern: Off, Off, On, Off
-	WithDecoration@CommandoCall:				##########
-		Image: 2100commandocall
-		Sequence: idle
-		ReferencePoint: Right, Top
-		Offsets:
-			CommandoCall: -6,-2
-		RequiresCondition: CommandoCall
-		ZOffset: 256
+
+^ExternalConditionsAll:
+	Inherits@commando: ^CommandoDebuff
+	Inherits@ivan: ^BombAttachable
+	Inherits@defplague: ^DefilerPlague
+	Inherits@chrono: ^ChronoBeamable
+	Inherits@cloak: ^StealthGenCloakable
+
+^ExternalConditions:
+	Inherits: ^ExternalConditionsAll
+	Inherits@commando: ^CommandoCallable
+	Inherits@darkswarm: ^DarkSwarmable
+	Inherits@industry: ^IndustrySpeed
+	Inherits@police: ^CityCombatCallable
+	Inherits@berserk: ^Berserkable
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 
@@ -2465,6 +2472,22 @@
 		Prerequisite: Greater Spire
 	ProvidesPrerequisite@62:
 		Prerequisite: Overmind
+	ProvidesPrerequisite@63:
+		Prerequisite: ra2naweap
+	ProvidesPrerequisite@64:
+		Prerequisite: ra2gaweap
+	ProvidesPrerequisite@65:
+		Prerequisite: ra2natech
+	ProvidesPrerequisite@66:
+		Prerequisite: ra2gatech
+	ProvidesPrerequisite@67:
+		Prerequisite: yrygtech
+	ProvidesPrerequisite@68:
+		Prerequisite: yrygweap
+	ProvidesPrerequisite@69:
+		Prerequisite: tek
+	ProvidesPrerequisite@70:
+		Prerequisite: supertek
 
 ####################################################################################################
 #		MISC
@@ -2587,6 +2610,10 @@ CPQDEBUGDUMMY:
 		AreaTypes: building, cityi
 
 ^AIConyardCash:
+	Inherits@FS: ^AIForceShield
+		Threshold: 2500
+	GrantConditionOnPlayerResources@minimum:
+		Condition: noinsurance
 	GrantConditionOnBotOwner@brutal:
 		Condition: brutalcash
 		Bots: brutal
@@ -2594,11 +2621,11 @@ CPQDEBUGDUMMY:
 		Interval: 400
 		Amount: 200
 		ShowTicks: False
-		RequiresCondition: brutalcash
+		RequiresCondition: brutalcash && !noinsurance
 	ResourcePurifier@brutal:
-		Modifier: 200
+		Modifier: 50
 		ShowTicks: False
-		RequiresCondition: brutalcash
+		RequiresCondition: brutalcash && !noinsurance
 	GrantConditionOnBotOwner@hard:
 		Condition: hardcash
 		Bots: hard
@@ -2606,24 +2633,24 @@ CPQDEBUGDUMMY:
 		Interval: 400
 		Amount: 100
 		ShowTicks: False
-		RequiresCondition: hardcash
+		RequiresCondition: hardcash && !noinsurance
 	ResourcePurifier@hard:
-		Modifier: 150
+		Modifier: 25
 		ShowTicks: False
-		RequiresCondition: hardcash
+		RequiresCondition: hardcash && !noinsurance
 	GrantConditionOnBotOwner@medium:
 		Condition: normalcash
 		Bots: medium
 	ResourcePurifier@medium:
-		Modifier: 125
+		Modifier: 15
 		ShowTicks: False
-		RequiresCondition: normalcash
+		RequiresCondition: normalcash && !noinsurance
 
 ^Harvester:
 	Inherits@MC: ^MCImmune
 	Harvester:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
-		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, tsntwast, screfinery, scassimilator, scextractor, 315proc
+		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor
 	GpsDot:
 		String: Harvester
 
@@ -2635,11 +2662,33 @@ CPQDEBUGDUMMY:
 
 ^Repairable:
 	Repairable:
-		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap
+		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr
 
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
+^ShootableMissile:
+	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
+	-UpdatesPlayerStatistics:
+	-GivesExperience:
+	Armor:
+		Type: Light
+	ShootableBallisticMissile:
+		LaunchAngle: 128
+		Speed: 110
+		AirborneCondition: airborne
+	Targetable@GROUND:
+		TargetTypes: Ground, Vehicle
+		RequiresCondition: !airborne
+	Targetable@AIRBORNE:
+		TargetTypes: Air
+		RequiresCondition: airborne
+	HiddenUnderFog:
+		Type: GroundPosition
+	Tooltip:
+		Name: Missile
+		GenericName: Missile
+	-GivesExperience:
 	Armor:
 		Type: Light
 	ShootableBallisticMissile:
@@ -2658,6 +2707,12 @@ CPQDEBUGDUMMY:
 		Name: Missile
 		GenericName: Missile
 		ShowOwnerRow: false
+	Explodes:
+		Weapon: LargeHeliExplode
+		EmptyWeapon: LargeHeliExplode
+	HitShape:
+	RejectsOrders:
+		EmptyWeapon: LargeHeliExplode
 	HitShape:
 	RejectsOrders:
 	Interactable:
@@ -2673,7 +2728,16 @@ CPQDEBUGDUMMY:
 		Transparency: 255
 		Offset: 0,0,511
 		Angle: 32
-		Width: 256
+		Width: 96
+		Sequence: overlay
+		ValidStances: Ally, Neutral, Enemy
+	WithDecoration@MC:
+		Image: yuricntl
+		Palette: ra2effect
+		ReferencePoint: top, center
+		ZOffset: 2048
+		RequiresCondition: controlled
+		RequiresSelection: False
 	Targetable@MC:
 		TargetTypes: MindControl
 		RequiresCondition: !controlled && !prevent-mindcontrol && !invulnerability
@@ -2685,11 +2749,20 @@ CPQDEBUGDUMMY:
 		Condition: controlled
 		PauseOnCondition: prevent-mindcontrol || invulnerability
 	WithMindControlArc:
-		Color: c71585
-		Transparency: 55
+		UsePlayerColor: true
+		Transparency: 255
 		Offset: 0,0,511
 		Angle: 32
-		Width: 116
+		Width: 108
+		Sequence: overlay
+		ValidStances: Ally, Neutral, Enemy
+	WithDecoration@MC:
+		Image: yuricntl
+		Palette: ra2effect
+		ReferencePoint: top, center
+		ZOffset: 2048
+		RequiresCondition: controlled
+		RequiresSelection: False
 	Targetable@MCStructure:
 		TargetTypes: MindControlStructure
 		RequiresCondition: !controlled && !prevent-mindcontrol && !invulnerability
@@ -2698,12 +2771,141 @@ CPQDEBUGDUMMY:
 	Targetable@MC:
 		TargetTypes: MCImmune
 
+^BombAttachable:
+		ProgressBarColor: FF000080
+		ValidStances: Ally, Neutral, Enemy
+	Targetable@ivan:
+		TargetTypes: ivanattachable
+		RequiresCondition: !chronobeamed
+	Targetable@ivaned:
+		TargetTypes: ivanattached
+		RequiresCondition: ivanbomb && !chronobeamed
+	AmbientSound@IVANBOMB:
+		SoundFiles: icraloop.wav
+		Volume: 0.45
+		RequiresCondition: ivanbomb
+
+^Berserkable:
+	ExternalCondition@chaos:
+		Condition: chaosgas
+	Berserkable:
+		RequiresCondition: chaosgas && !invulnerability
+	RejectsOrders@chaos:
+		RequiresCondition: chaosgas && !invulnerability
+	WithColoredOverlay@chaos:
+		Palette: chaos
+		RequiresCondition: chaosgas && !invulnerability
+	TimedConditionBar@chaos:
+		Color: 880088
+		Condition: chaosgas && !invulnerability
+	FirepowerMultiplier@chaos:
+		Modifier: 150
+		RequiresCondition: chaosgas && !invulnerability
+	SpeedMultiplier@chaos:
+		Modifier: 150
+		RequiresCondition: chaosgas && !invulnerability
+
+^ChronoBeamable:
+		SelectionBarColor: 40FFFF
+		RequiresCondition: !invulnerability
+	GrantCondition@chrono:
+		Condition: chronobeamed
+		RequiresCondition: being-warped
+		Color: bfe6ff
+	WithColoredOverlay@ChronoDisable:
+		Palette: chronodisable
+		RequiresCondition: chronobeamed
+	Targetable@chrono:
+		TargetTypes: Chronobeamable
+		RequiresCondition: !invulnerability && !forceshield
+	Targetable@warping:
+		TargetTypes: chronobeaming
+		RequiresCondition: chronobeamed
+	Explodes@Chrono:
+		Weapon: WarpawayEffect
+		EmptyWeapon: WarpawayEffect
+		DeathTypes: ChronoDeath
+
+^DarkSwarmable:
+	ExternalCondition@DarkSwarm:
+		Condition: DarkSwarm
+		TotalCap: 1
+	DamageMultiplier@DARKSWARM:
+		Modifier: 0
+		RequiresCondition: DarkSwarm
+	FirepowerMultiplier@DARKSWARM:
+		Modifier: 0
+		RequiresCondition: DarkSwarm
+
+^DefilerPlague:
+	ExternalCondition@SCPlague:
+		Condition: DefilerPlague
+		TotalCap: 1
+	TimedConditionBar@Plague:
+		Color: A40000
+		Condition: DefilerPlague
+		ValidStances: Ally, Neutral, Enemy
+	SelfHealing@SCPlague:
+		Step: -500
+		PercentageStep: -2
+		Delay: 10
+		HealIfBelow: 101
+		DamageTypes: DefaultDeath
+		RequiresCondition: DefilerPlague
+
+	DelayedWeaponAttachable@ivan:
+		Type: ivanbomb
+		Condition: ivanbomb
+	WithDecoration@ivan:
+		Image: mouse2
+		Sequence: c4
+		ReferencePoint: center, center
+		ZOffset: 2048
+		RequiresCondition: ivanbomb
+		RequiresSelection: False
+	Warpable:
+		Condition: being-warped
+		RevokeDelay: 120
+		DamageTypes: ChronoDeath
+		ScaleWithCurrentHealthPercentage: true
+		ShowSelectionBar: true
+	TimedConditionBar@chrono:
+		Condition: being-warped
+	WithDecoration@Plague:
+		Image: plagueunit
+		Sequence: overlay
+		ReferencePoint: center, center
+		ZOffset: 2048
+		RequiresCondition: DefilerPlague
+		RequiresSelection: False
 ^DeployableInfantryEditor:
 	GrantCondition:
 		Condition: editorhack
 	WithInfantryBody@Editor:
 		DefaultAttackSequence: shoot
 		RequiresCondition: !editorhack
+
+^Magnefreezable:
+	ExternalCondition@Magnetron:
+		Condition: Magnet
+	Hovers@Magnetron:
+		RequiresCondition: Magnet
+	Targetable@magnet:
+		TargetTypes: Magnefreezable
+
+^StealthGenCloakable:
+	Cloak@TScloak:
+		InitialDelay: 15
+		CloakDelay: 90
+		CloakSound: cloak5.aud
+		UncloakSound: cloak5.aud
+		PauseOnCondition: cloak-force-disabled || disabled
+		RequiresCondition: tscloak
+	ExternalCondition@TSCLOAK:
+		Condition: tscloak
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
 
 ^Power:
 	Inherits: ^PowerMultiplier
@@ -2716,20 +2918,24 @@ CPQDEBUGDUMMY:
 
 ^PowerPlant:
 	Inherits: ^Power
-	WithColoredOverlay@IDISABLE:
+	WithColoredOverlay@OUTAGE:
 		Palette: disabled
 		RequiresCondition: powerdisabled
-	GrantCondition@IDISABLE:
-		RequiresCondition: power-outage || disabled
+	GrantCondition@OUTAGE:
+		RequiresCondition: power-outage
 		Condition: powerdisabled
 	AffectedByPowerOutage:
 		Condition: power-outage
 	InfiltrateForPowerOutage:
 		Types: SpyInfiltrate
 	Targetable@infiltrate:
-		TargetTypes: SpyInfiltrate
+		TargetTypes: SpyInfiltrate, DiskDrain
+		RequiresCondition: !chronobeamed
 	Power:
-		RequiresCondition: !powerdisabled
+		RequiresCondition: !powerdisabled && !forceshielddrain
+	GrantConditionOnPrerequisite@forceshielddrain:
+		Condition: forceshielddrain
+		Prerequisites: forceshielddrain
 
 ^Refinery:
 	Buildable:
@@ -2739,11 +2945,9 @@ CPQDEBUGDUMMY:
 	InfiltrateForCash:
 		Percentage: 50
 		Types: SpyInfiltrate, ThiefInfiltrate
-		Notification: BaseAttack
 	InfiltrateForCash@infiltrate:
 		Percentage: 10
 		Types: BrayanInfiltrate
-		Notification: BaseAttack
 
 ^ProducesUnits:
 	Buildable:
@@ -2772,6 +2976,12 @@ CPQDEBUGDUMMY:
 		ReferencePoint: Bottom, Left
 		UsePlayerColor: True
 		ValidStances: Ally, Enemy, Neutral
+		Condition: invulnerability
+	Passenger:
+		Weight: 6
+	Crushable:
+		CrushClasses: hugevehicle
+	TransferTimedExternalConditionOnTransform:
 
 ^AttackVoice:
 	Mobile:
@@ -2805,6 +3015,201 @@ CPQDEBUGDUMMY:
 	AttackTurreted:
 		PauseOnCondition: disabled
 
+^WithSwimsuit:
+	Mobile:
+		Locomotor: swimsuit
+	WithInfantryBody:
+		RequiresCondition: !swimming
+	WithDeathAnimation:
+		RequiresCondition: !swimming
+	GrantConditionOnTerrain@Water:
+		TerrainTypes: Water
+		Condition: swimming
+	WithInfantryBody@Water:
+		IdleSequences: swim-idle1,swim-idle2
+		MoveSequence: swim-run
+		StandSequences: swim-stand
+		DefaultAttackSequence: swim-shoot
+		RequiresCondition: swimming
+	WithDeathAnimation@Water:
+		RequiresCondition: swimming
+		DeathSequence: swim-die
+		DeathTypes:
+			DefaultDeath: 1
+			BruteMutate: 1
+			BulletDeath: 1
+			RippedApartDeath: 2
+			SmallExplosionDeath: 1
+			ExplosionDeath: 2
+			FireDeath: 2
+			TiberiumDeath: 2
+			RA2VirusDeath: 1
+			ElectricityDeath: 1
+	Targetable@WaterBorne:
+		TargetTypes: Water
+		RequiresCondition: swimming
+	TakeCover:
+		RequiresCondition: !swimming
+	ExternalCondition@SQUIDTRAP:
+		Condition: SquidTrap
+	GrantCondition@disable:
+		Condition: frozen
+		RequiresCondition: ReaperTrap || chronobeamed || SquidTrap
+
+^PrimarySuperweapon:
+	Inherits@FS: ^AIForceShield
+	ProvidesPrerequisite@swlimit:
+		RequiresPrerequisites: global-swlimit
+
+^Submarine:
+	Targetable:
+		RequiresCondition: !underwater
+	Cloak@underwater:
+		CloakTypes: Underwater
+		InitialDelay: 0
+		CloakDelay: 50
+		CloakedCondition: underwater
+		PauseOnCondition: disabled
+		RequiresCondition: !cloak-force-disabled
+		UncloakSound: subshow1.aud
+	Targetable@Underwater:
+		TargetTypes: Submarine, Underwater
+		RequiresCondition: underwater
+
+^VehicleCrusher:
+	Mobile:
+		Locomotor: vehiclecrusher
+	Crushable:
+		CrushClasses: hugevehicle
+
+^GenericGroundDetector:
+	DetectCloaked:
+		Range: 3c0
+		RequiresCondition: !disabled
+		CloakTypes: Cloak, Hijacker
+	RenderDetectionCircle:
+
+^EliteDetector:
+	DetectCloaked:
+		Range: 4c0
+		RequiresCondition: rank-elite && !disabled
+		CloakTypes: Cloak, Hijacker
+	RenderDetectionCircle:
+
+^GenericAirDetector:
+	DetectCloaked:
+		Range: 4c0
+		RequiresCondition: !disabled
+		CloakTypes: Cloak, Hijacker
+	RenderDetectionCircle:
+
+^TibHealable:
+	GrantConditionOnTerrain@TIBREPAIR:
+		TerrainTypes: Tiberium, BlueTiberium
+		Condition: ontiberium
+	SelfHealing@TIBREPAIR:
+		Step: 200
+		Delay: 70
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: ontiberium
+	WithDecoration@REDCROSS2:
+		Image: pips
+		Sequence: pip-heal
+		ReferencePoint: Bottom, Right
+		RequiresCondition: ontiberium
+		BlinkInterval: 32
+		BlinkPattern: On, Off
+
+^TechStructureHealable:
+	SelfHealing@HOSPITAL:
+		PercentageStep: 10
+		Delay: 100
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: hospitalheal
+	GrantConditionOnDamageState@HOSPITAL:
+		Condition: damaged
+		ValidDamageStates: Light, Medium, Heavy, Critical
+	GrantCondition@HOSPITAL:
+		RequiresCondition: hospital && damaged
+		Condition: hospitalheal
+	WithDecoration@REDCROSS:
+		Image: pips
+		Sequence: pip-heal
+		ReferencePoint: Bottom, Right
+		RequiresCondition: hospitalheal
+		BlinkInterval: 32
+		BlinkPattern: On, Off
+
+^HospitalHealable:
+	Inherits: ^TechStructureHealable
+	GrantConditionOnPrerequisite@HOSPITAL:
+		Condition: hospital
+		Prerequisites: hosp
+
+^MachineShopRepairable:
+	Inherits: ^TechStructureHealable
+	SelfHealing@HOSPITAL:
+		PercentageStep: 5
+		Delay: 50
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: hospitalheal
+	GrantConditionOnPrerequisite@MACHINESHOP:
+		Condition: hospital
+		Prerequisites: machshop
+
+^ForceShieldable:
+	ExternalCondition@FORCESHIELD:
+		Condition: forceshield
+	WithColoredOverlay@FORCESHIELD:
+		Palette: forceshield
+		RequiresCondition: forceshield && !invulnerability
+	DamageMultiplier@FORCESHIELD:
+		RequiresCondition: forceshield
+		Modifier: 0
+	TimedConditionBar@FORCESHIELD:
+		Condition: forceshield
+	TimedConditionBar@FORCESHIELD:
+		Condition: forceshield
+		Color: 2f74e2
+	PowerMultiplier@FSPOWERDOWN:
+		RequiresCondition: forceshield && !invulnerability
+	PowerMultiplier@FSPOWERDOWN:
+		RequiresCondition: forceshield && !invulnerability
+		Modifier: 0
+	ProvidesPrerequisite@FSdrain:
+		Prerequisite: forceshielddrain
+		RequiresCondition: forceshield
+
+^TDSpawnActorsOnSell:
+	SpawnActorsOnSell:
+		ActorTypes: e6,e1,e1,e1
+
+^RASpawnActorsOnSell:
+	Building:
+		BuildSounds: placbldg.aud, build5.aud
+	SpawnActorsOnSell:
+		ActorTypes: rae6,rae1,rae1,rae1
+
+^RASovietSpawnActorsOnSell:
+	Building:
+		BuildSounds: placbldg.aud, build5.aud
+	SpawnActorsOnSell:
+		ActorTypes: rae6,rare1,rare1,rare1
+
+^AIForceShield:
+	GrantConditionOnBotOwner@fs:
+		Condition: aiforceshield-enabled
+		Bots: hard, brutal
+	GrantConditionOnDamageState@AIFS:
+		Condition: aiforceshieldtarget
+		ValidDamageStates: Heavy, Critical
+	Targetable@AIFS:
+		TargetTypes: aiforceshield
+		RequiresCondition: aiforceshieldtarget && aiforceshield-enabled
+		RequiresCondition: aiforceshieldtarget && aiforceshield-enabled
 ####################################################################################################
 #		Generals
 ####################################################################################################
