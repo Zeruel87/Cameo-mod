@@ -6,12 +6,33 @@
 		Condition: damagedslow
 		ValidDamageStates: Heavy, Critical
 	SpeedMultiplier@DamagedSlow:
-		RequiresCondition: damagedslow
-		Modifier: 60
-	SpeedMultiplier@DamagedSlow:
 		RequiresCondition: !damagedslow
-		Modifier: 105
-
+		Modifier: 200
+	GrantConditionOnMovement@Pursuit:
+		ValidMovementTypes: Horizontal, Vertical
+		Condition: PursuitNove
+		RequiresCondition: AttackSlow
+	GrantConditionOnAttack@Slowdown:
+		Condition: AttackSlow
+		RequiresCondition: !PursuitNove
+	SpeedMultiplier@Pursuit:
+		RequiresCondition: PursuitNove
+		Modifier: 150
+	SpeedMultiplier@AttackSlow:
+		RequiresCondition: AttackSlow
+		Modifier: 85
+	ReloadDelayMultiplier@AttackSlow:
+		RequiresCondition: AttackSlow
+		Modifier: 95
+	InaccuracyMultiplier@AttackSlow:
+		RequiresCondition: AttackSlow
+		Modifier: 95
+	InaccuracyMultiplier@PursuitNove:
+		RequiresCondition: PursuitNove
+		Modifier: 110
+	DamageMultiplier@PursuitNove:
+		RequiresCondition: PursuitNove
+		Modifier: 90
 GLAHole4x4:
 	Inherits: ^BaseBuilding
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -109,113 +130,107 @@ GENE6:
 
 
 ^EmergencyRepairPower:
-	IonCannonPower@EmergencyRepair1:
-		PauseOnCondition: lowpower
-		Prerequisites: upemergencyrepair1
-		Icon: ioncannon
-		Cursor: ioncannon
-		ChargeInterval: 4000
-		Description: Emergency Repair
-		LongDesc: Provides repair for vehicles in the target area.\nApplies instant repair to a small area.
-		BeginChargeSpeechNotification: SelectTarget
-		EndChargeSpeechNotification: SelectTarget
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		OnFireSound: fixit1.aud
-		DisplayTimerStances: Ally, Neutral
-		DisplayRadarPing: True
-		CameraActor: camera.small
-		SupportPowerPaletteOrder: 20
+	GrantExternalConditionPower@EmergencyRepair1:
 		OrderName: EmergencyRepair1
-		Weapon: EmergencyRepair1
-	IonCannonPower@EmergencyRepair2:
 		PauseOnCondition: lowpower
-		Prerequisites: upemergencyrepair2
-		Icon: ioncannon
-		Cursor: ioncannon
-		ChargeInterval: 4000
-		Description: Emergency Repair
+		Icon: invuln
+		ChargeInterval: 3000
+		Description: Invulnerability
 		LongDesc: Provides repair for vehicles in the target area.\nApplies instant repair to a small area.
-		BeginChargeSpeechNotification: SelectTarget
-		EndChargeSpeechNotification: SelectTarget
+		Range: 2
+		Duration: 100
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
-		OnFireSound: fixit1.aud
-		DisplayTimerStances: Ally, Neutral
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
 		DisplayRadarPing: True
-		CameraActor: camera.small
-		SupportPowerPaletteOrder: 20
+		Condition: repairlvl3
+		OnFireSound: fixit1.aud
+		Prerequisites: upemergencyrepair1, !upemergencyrepair2
+	GrantExternalConditionPower@EmergencyRepair2:
 		OrderName: EmergencyRepair2
-		Weapon: EmergencyRepair2
-	IonCannonPower@EmergencyRepair3:
 		PauseOnCondition: lowpower
-		Prerequisites: upemergencyrepair3
-		Icon: ioncannon
-		Cursor: ioncannon
-		ChargeInterval: 4000
-		Description: Emergency Repair
+		Icon: invuln
+		ChargeInterval: 3000
+		Description: Invulnerability
 		LongDesc: Provides repair for vehicles in the target area.\nApplies instant repair to a small area.
-		BeginChargeSpeechNotification: SelectTarget
-		EndChargeSpeechNotification: SelectTarget
+		Range: 2
+		Duration: 150
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
-		OnFireSound: fixit1.aud
-		DisplayTimerStances: Ally, Neutral
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
 		DisplayRadarPing: True
-		CameraActor: camera.small
-		SupportPowerPaletteOrder: 20
+		Condition: repairlvl3
+		OnFireSound: fixit1.aud
+		Prerequisites: upemergencyrepair2, !upemergencyrepair3
+	GrantExternalConditionPower@EmergencyRepair3:
 		OrderName: EmergencyRepair3
-		Weapon: EmergencyRepair3
+		PauseOnCondition: lowpower
+		Icon: invuln
+		ChargeInterval: 3000
+		Description: Invulnerability
+		LongDesc: Provides repair for vehicles in the target area.\nApplies instant repair to a small area.
+		Range: 3
+		Duration: 200
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: repairlvl3
+		OnFireSound: fixit1.aud
+		Prerequisites: upemergencyrepair3
 	SupportPowerChargeBar:
 
 upemergencyrepair1:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: General's Promotion Rebel Ambush 1
+		Name: General's Promotion Emergency Repair 1
 	Buildable:
 		BuildPaletteOrder: 220
 		BuildDuration: 2500
 		Queue: Defence.GLA, RADefence.GLA, Defence.CHINA, RADefence.CHINA, Defence.USA, RADefence.USA
 		Description: Unlocks Paratroopers
-		Prerequisites: anypower, ~!upemergencyrepair1
+		Prerequisites: ~!upemergencyrepair1
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: uprebelambush1icon
+		Image: upemergencyrepair1icon
 	ProvidesPrerequisite:
 		Prerequisite: upemergencyrepair1
 
 upemergencyrepair2:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: General's Promotion Rebel Ambush 2
+		Name: General's Promotion Emergency Repair 2
 	Buildable:
 		BuildPaletteOrder: 220
 		BuildDuration: 3000
 		Queue: Defence.GLA, RADefence.GLA, Defence.CHINA, RADefence.CHINA, Defence.USA, RADefence.USA
 		Description: Unlocks Paratroopers
-		Prerequisites: anypower, ~!upemergencyrepair2
+		Prerequisites: upemergencyrepair1, ~!upemergencyrepair2
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: uprebelambush2icon
+		Image: upemergencyrepair2icon
 	ProvidesPrerequisite:
 		Prerequisite: upemergencyrepair2
 
 upemergencyrepair3:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: General's Promotion Rebel Ambush 3
+		Name: General's Promotion Emergency Repair 3
 	Buildable:
 		BuildPaletteOrder: 220
 		BuildDuration: 3500
 		Queue: Defence.GLA, RADefence.GLA, Defence.CHINA, RADefence.CHINA, Defence.USA, RADefence.USA
 		Description: Unlocks Paratroopers
-		Prerequisites: anypower, ~!upemergencyrepair3
+		Prerequisites: upemergencyrepair2, ~!upemergencyrepair3
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: uprebelambush3icon
+		Image: upemergencyrepair3icon
 	ProvidesPrerequisite:
 		Prerequisite: upemergencyrepair3
 
@@ -419,7 +434,7 @@ glcommand:
 	ProvidesPrerequisite@normal:
 		Prerequisite: glcommand
 	Power:
-		Amount: 15
+		Amount: 0
 	GrantConditionOnBotOwner:
 		Condition: botgla
 		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
@@ -544,7 +559,13 @@ glcommand:
 		UncloakSound: cloak5.aud
 		PauseOnCondition: cloak-force-disabled
 		RequiresCondition: upcamonetting2
-
+	WithIdleOverlay@FLAG:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim1
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
 glcommand.hole:
 	Inherits: GLAHole3x3
 	SpawnActorOnDeath@buildingrebirth:
@@ -563,9 +584,9 @@ glanthraxbomber:
 		RequiresCondition: antraxbetaupgrade && !upantraxgamma
 	Armament@Purple:
 		Weapon: GLToxinBombPurple
-		RequiresCondition: antraxbetaupgrade
+		RequiresCondition: upantraxgamma
 	Health:
-		HP: 600000
+		HP: 300000
 	Aircraft:
 		CruiseAltitude: 2560
 		TurnSpeed: 5
@@ -608,11 +629,37 @@ glanthraxbomber:
 		Prerequisites: upantraxgamma
 glscrapcrate:
 	Inherits: ^Crate
-	GiveCashCrateAction@Money:
-		Amount: 200
+	Tooltip:
+		Name: Scrap Crate
+	GiveCashCrateAction@0:
+		Amount: 5
 		SelectionShares: 1
-	LevelUpCrateAction@Rank:
-		SelectionShares: 99
+		UseCashTick: true
+	GiveCashCrateAction@1:
+		Amount: 25
+		SelectionShares: 3
+		UseCashTick: true
+		Prerequisites: glaselected
+	GiveCashCrateAction@2:
+		Amount: 50
+		SelectionShares: 6
+		UseCashTick: true
+		Prerequisites: glaselected
+	GiveCashCrateAction@3:
+		Amount: 75
+		SelectionShares: 3
+		UseCashTick: true
+		Prerequisites: glaselected
+	LevelUpCrateAction:
+		SelectionShares: 3
+		Prerequisites: glaselected
+	GrantExternalConditionCrateAction@SCRAP_CREATE_BONUS:
+		SelectionShares: 1000
+		Condition: scrap_create_bonus
+		Sound: gsalvage.wav
+		Prerequisites: glaselected
+	RenderSprites:
+		Image: glscrapbox
 
 glbarracks:
 	Inherits: ^BaseBuilding
@@ -633,7 +680,7 @@ glbarracks:
 		BuildPaletteOrder: 30
 		Prerequisites: glcommand, ~glaselected
 		Queue: Building.GLA, RABuilding.GLA
-		Description: Trains infantry
+		Description: Trains GLAs infantry
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -676,7 +723,7 @@ glbarracks:
 		ProductionType: RAInfantry.GLA
 		RequiresCondition: classicproductionqueues
 	Power:
-		Amount: 5
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Selectable:
 		Bounds: 48,42,0,-5
@@ -701,6 +748,10 @@ glbarracks:
 		UncloakSound: cloak5.aud
 		PauseOnCondition: cloak-force-disabled
 		RequiresCondition: upcamonetting2
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
 glbarracks.hole:
 	Inherits: GLAHole3x3
 	SpawnActorOnDeath@buildingrebirth:
@@ -717,7 +768,7 @@ glsupply:
 		BuildPaletteOrder: 20
 		Prerequisites: glcommand, ~glaselected
 		Queue: Building.GLA, RABuilding.GLA
-		Description: Processes raw Tiberium\ninto useable resources
+		Description: Manage collectible resources\ninto useable money
 	Building:
 		Footprint: xx ==
 		Dimensions: 2,2
@@ -744,7 +795,7 @@ glsupply:
 		Facing: 64
 		AllowRespawn: True
 	Power:
-		Amount: 5
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	SelectionDecorations:
 	GivesBuildableArea:					##########
@@ -772,6 +823,29 @@ glsupply:
 		UncloakSound: cloak5.aud
 		PauseOnCondition: cloak-force-disabled
 		RequiresCondition: upcamonetting2
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
+glsupply.bot:
+	Inherits: glsupply
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: glcommand, ~glaselected, ~botgla
+		Queue: Building.GLA, RABuilding.GLA
+	Power:
+		Amount: 200
+	RenderSprites:
+		Image: glsupply
+	ProvidesPrerequisite@glsupply:
+		Prerequisite: glsupply
+	GrantConditionOnPrerequisite@glsupply:
+		Condition: glsupply
+		Prerequisites: glsupply
+	ProductionCostMultiplier@glsupply:
+		Multiplier: 30
+		Prerequisites: !glsupply
+		Queue: Building.GLA, RABuilding.GLA
 glsupply.hole:
 	Inherits: GLAHole2x2
 	SpawnActorOnDeath@buildingrebirth:
@@ -795,11 +869,11 @@ glweap:
 		BuildPaletteOrder: 50
 		Prerequisites: glsupply, ~glaselected
 		Queue: Building.GLA, RABuilding.GLA
-		Description: Produces vehicles
+		Description: Produces GLAs vehicles
 	Building:
-		Footprint: ____ =xxx ==== ====
+		Footprint: xxxx x++x =++= ====
 		Dimensions: 4,4
-		LocalCenterOffset: 0,-512,0
+		LocalCenterOffset: -12,-512,0
 	SelectionDecorations:
 	Selectable:
 		Bounds: 72,48,0,0
@@ -850,7 +924,7 @@ glweap:
 		RequiresCondition: fortupgrade
 		Modifier: 75
 	Power:
-		Amount: 5
+		Amount: 0
 	Voiced:
 		VoiceSet: GLAArmsDealerVoice
 	SpawnActorOnDeath@hole:
@@ -866,6 +940,19 @@ glweap:
 		UncloakSound: cloak5.aud
 		PauseOnCondition: cloak-force-disabled
 		RequiresCondition: upcamonetting2
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
+	WithProductionOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: build-top
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 15
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
 glweap.hole:
 	Inherits: GLAHole4x4
 	SpawnActorOnDeath@buildingrebirth:
@@ -889,7 +976,7 @@ glpalace:
 		BuildPaletteOrder: 60
 		Prerequisites: glweap, ~glaselected
 		Queue: Building.GLA, RABuilding.GLA
-		Description: Produces vehicles
+		Description: Manage new GLA technology.\nUsable as a defensive bunker
 	Building:
 		Footprint: ____ =xxx ==== ====
 		Dimensions: 4,4
@@ -935,7 +1022,7 @@ glpalace:
 	Voiced:
 		VoiceSet: GLPalaceVoice
 	Power:
-		Amount: 5
+		Amount: 0
 	SpawnActorOnDeath@hole:
 		Actor: glpalace.hole
 	GrantConditionOnPrerequisite@upcamonetting2:
@@ -949,6 +1036,10 @@ glpalace:
 		UncloakSound: cloak5.aud
 		PauseOnCondition: cloak-force-disabled
 		RequiresCondition: upcamonetting2
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
 glpalace.hole:
 	Inherits: GLAHole4x4
 	SpawnActorOnDeath@buildingrebirth:
@@ -988,7 +1079,7 @@ glstorm:
 		BuildPaletteOrder: 100
 		Prerequisites: glpalace, ~techlevel.high, ~glaselected
 		Queue: Building.GLA, RABuilding.GLA
-		Description: Provides Nuclear Strike support power.\nUnlocks Stealth Tank, Chem. Warrior and Obelisk of Light.\nRequires power to operate.
+		Description: Drop multiple Scud missiles anywhere on the map.\nCan contaminate ground with Anthrax.\nRequires power to operate.
 	Building:
 		Footprint: xxxx xxxx xxxx ====
 		Dimensions: 4,4
@@ -1006,7 +1097,7 @@ glstorm:
 		Range: 5c0
 		RequiresCondition: !lowpower
 	Power:
-		Amount: -50
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Voiced:
 		VoiceSet: CHMissileSiloVoice
@@ -1070,6 +1161,17 @@ glstorm:
 		UncloakSound: cloak5.aud
 		PauseOnCondition: cloak-force-disabled
 		RequiresCondition: upcamonetting2
+	Explodes:
+		Weapon: GLBombTruckToxExplosive
+		EmptyWeapon: GLBombTruckToxExplosive
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
+	WithIdleOverlay@SMOKE2:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim3
+		Palette: placelinesegment
 glstorm.hole:
 	Inherits: GLAHole4x4
 	SpawnActorOnDeath@buildingrebirth:
@@ -1087,7 +1189,7 @@ glblackmarket:
 		Queue: Building.GLA, RABuilding.GLA
 		BuildPaletteOrder: 70
 		Prerequisites: glpalace, ~glaselected
-		Description: Provides power for other structures.
+		Description: Unlock upgrades for GLA weaponry.\nCan consistently make money.
 	Valued:
 		Cost: 2500			#300
 	Tooltip:
@@ -1106,7 +1208,7 @@ glblackmarket:
 		Range: 4c0
 	WithBuildingBib:
 	Power:
-		Amount: 5
+		Amount: 0
 	Targetable:
 		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	WithDeathAnimation:
@@ -1135,6 +1237,10 @@ glblackmarket:
 		UncloakSound: cloak5.aud
 		PauseOnCondition: cloak-force-disabled
 		RequiresCondition: upcamonetting2
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
 glblackmarket.hole:
 	Inherits: GLAHole2x2
 	SpawnActorOnDeath@buildingrebirth:
@@ -1217,7 +1323,7 @@ glsite:
 		Range: 5c0
 		RequiresCondition: !lowpower
 	Power:
-		Amount: 5
+		Amount: 0
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -1274,7 +1380,7 @@ gltunnel:
 		Queue: Defence.GLA, RADefence.GLA
 		BuildDuration: 890
 		BuildDurationModifier: 40
-		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+		Description: Anti-Infantry defensive structure.\nCan protect and transport units.\n  Strong vs Infantry\n  Weak vs Tanks
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 48,48,0,-12
@@ -1303,7 +1409,7 @@ gltunnel:
 		Range: 5c0
 		RequiresCondition: !lowpower
 	Power:
-		Amount: 5
+		Amount: 0
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -1380,7 +1486,7 @@ gltrap:
 		Prerequisites: glbarracks, ~glaselected
 		Queue: Defence.GLA, RADefence.GLA
 		BuildDurationModifier: 40
-		Description: Basic defensive structure.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Explosive defensive structure.\n  Strong vs Ground Units\n  Weak vs Detection
 	Building:
 	Health:
 		HP: 10000
@@ -1411,7 +1517,7 @@ gltrap:
 	Turreted:
 		TurnSpeed: 255
 	Power:
-		Amount: -1
+		Amount: 0
 	Cloak:
 		InitialDelay: 5
 		CloakDelay: 5
@@ -1432,13 +1538,14 @@ gltrap:
 		Adjacent: 9
 glamob:
 	Inherits: E1
+	Inherits@MC: ^MCImmune
 	Tooltip:
 		Name: Angry Mob
 	Buildable:
 		BuildPaletteOrder: 30
 		BuildDuration: 800
 		Queue: Infantry.GLA, RAInfantry.GLA
-		Description: Anti Building infantry squad.\n  Strong vs Buildings, Infantry\n  Weak vs Vehicles, Aircraft.
+		Description: Anti Building and infantry squad.\nRegenerate health on the battlefield.\n Strong vs Buildings, Infantry\n  Weak vs Vehicles, Aircraft.
 		Prerequisites: glpalace, ~techlevel.medium
 	Valued:
 		Cost: 500
@@ -1455,6 +1562,8 @@ glamob:
 	Armament@AK47:
 		Weapon: GLAngryMobAk47
 		PauseOnCondition: !ak47upgrade
+	Armament@Pistol2:
+		Weapon: GLAngryMobPistol2
 	Health:
 		HP: 40000
 	GrantConditionOnMovement@V:
@@ -1509,7 +1618,7 @@ GLE1:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks, ~!selectglatoxin
 		Queue: Infantry.GLA, RAInfantry.GLA
-		Description: Anti Tank infantry.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry.\n It can be deployed in a turret
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
 		Speed: 56
 	Health:
@@ -1553,10 +1662,7 @@ GLE1:
 		Prerequisites:selectglacamo
 		InitialLevels: 1
 GLE1toxin:
-	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits: E4
 	Valued:
 		Cost: 200
 	Tooltip:
@@ -1565,7 +1671,7 @@ GLE1toxin:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks, ~selectglatoxin
 		Queue: Infantry.GLA, RAInfantry.GLA
-		Description: Anti Tank infantry.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry.\n It can be deployed in a turret
+		Description: Anti-Infantry infantry.\n  Strong vs Infantry, Light Vehicles\n  Weak vs Vehicles
 	Mobile:
 		Speed: 56
 	Health:
@@ -1577,18 +1683,10 @@ GLE1toxin:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: GLRebelToxinGarrison
-	AttackFrontal:
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-	Parachutable:
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: infantry							##########
+	-Armament:
 	Voiced:
 		VoiceSet: RebelVoice
 	RenderSprites:
-		Scale: 0.85
-		Image: gle1
 	GrantConditionOnPrerequisite@upantraxgamma:
 		Condition: upantraxgamma
 		Prerequisites: upantraxgamma
@@ -1604,10 +1702,11 @@ GLKELL:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Buildable:
+		BuildLimit: 1
 		BuildPaletteOrder: 20
 		BuildDuration: 125
 		Queue: Infantry.GLA, RAInfantry.GLA
-		Description: General-purpose infantry armed with a rifle.
+		Description: Elite sniper infantry unit.\nCan kill the driver of a vehicle.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
 		Prerequisites: barracks
 	Valued:
 		Cost: 1500
@@ -1754,7 +1853,7 @@ glbiker:
 		BuildPaletteOrder: 1
 		Prerequisites: glweap, ~!selectglatoxin, ~!selectglademo
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Fast scout and multiple-purpose vehicle.\n Weak vs Tanks
 	Mobile:
 		TurnSpeed: 10
 		Speed: 180
@@ -1957,7 +2056,7 @@ glbbus:
 		BuildPaletteOrder: 60
 		Prerequisites: glweap, glpalace
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Mobile bunker vehicle.\n  Provides protection to infantry
 	Mobile:
 		TurnSpeed: 4
 		Speed: 140
@@ -2021,7 +2120,15 @@ glbbus:
 		HealIfBelow: 100
 		DamageCooldown: 125
 		RequiresCondition: junkupgrade
-
+	DamageMultiplier@scrap1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 80
+	DamageMultiplier@scrap2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 70
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
 glbbus.e1:
 	Inherits: glbbus
 	Valued:
@@ -2072,7 +2179,7 @@ glscorpion:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildDuration: 1020
 		BuildDurationModifier: 40
-		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+		Description: Fast, light tank.\nCan be upgraded with Scorpion Missiles.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
 	Mobile:
 		TurnSpeed: 8
 		Speed: 80
@@ -2113,24 +2220,23 @@ glscorpion:
 	WithSpriteTurret:
 	WithSpriteTurret@Missile:
 		Sequence: turret2
-		RequiresCondition: ammo && rocketupgrade
+		RequiresCondition: rocketupgrade
 	Armament@Missile:
 		Weapon: GlScorpionMissile
 		LocalOffset: 720,0,90
-		PauseOnCondition: !ammo
-		RequiresCondition: rocketupgrade && !selectglatoxin
-	Armament@Missile:
-		Weapon: GlScorpionMissile
+		RequiresCondition: rocketupgrade && !selectglatoxin && scrap_create_bonus <= 1
+	Armament@MissileThrax:
+		Weapon: GlScorpionMissileToxin
 		LocalOffset: 720,0,90
-		PauseOnCondition: !ammo
-		RequiresCondition: rocketupgrade && selectglatoxin
-	AmmoPool:
-		Ammo: 1
-		PipCount: 1
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 200
-		Count: 1
+		RequiresCondition: rocketupgrade && selectglatoxin && scrap_create_bonus <= 1
+	Armament@Missile2:
+		Weapon: GlScorpionMissileTwin
+		LocalOffset: 720,0,90
+		RequiresCondition: rocketupgrade && !selectglatoxin && scrap_create_bonus == 2
+	Armament@MissileThrax2:
+		Weapon: GlScorpionMissileToxinTwin
+		LocalOffset: 720,0,90
+		RequiresCondition: rocketupgrade && selectglatoxin && scrap_create_bonus == 2
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
@@ -2176,6 +2282,9 @@ glscorpion:
 		Multiplier: 110
 		Prerequisites: selectglademo
 		Queue: Vehicle.GLA, RAVehicle.GLA
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 75
 glscorpion.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -2203,7 +2312,7 @@ glmaura:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildDuration: 1020
 		BuildDurationModifier: 40
-		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+		Description: Medium tank.\nCan steal parts from other vehicles.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
 	Mobile:
 		TurnSpeed: 5
 		Speed: 80
@@ -2224,45 +2333,53 @@ glmaura:
 		RecoilRecovery: 17
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
-		RequiresCondition: !shellsupgrade && rank-veteran <= 2
+		RequiresCondition: !shellsupgrade && scrap_create_bonus <= 1
 	Armament@Toxin:
 		Weapon: GLMauranderShellToxin
 		Recoil: 85
 		RecoilRecovery: 17
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
-		RequiresCondition: shellsupgrade && !antraxbetaupgrade && rank-veteran <= 2
+		RequiresCondition: shellsupgrade && !antraxbetaupgrade && scrap_create_bonus <= 1
 	Armament@ToxinBeta:
 		Weapon: GLScorpionShellToxinBeta
 		Recoil: 85
 		RecoilRecovery: 17
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
-		RequiresCondition: shellsupgrade && antraxbetaupgrade && rank-veteran <= 2
+		RequiresCondition: shellsupgrade && antraxbetaupgrade && scrap_create_bonus <= 1
 	Armament@NormalElite:
 		Weapon: GLTwinMauranderShell
 		Recoil: 85
 		RecoilRecovery: 17
-		LocalOffset: 720,0,90
+		LocalOffset: 900,180,340, 900,-180,340
 		MuzzleSequence: muzzle
-		RequiresCondition: !shellsupgrade && rank-veteran >= 3
+		RequiresCondition: !shellsupgrade && scrap_create_bonus == 2
 	Armament@ToxinElite:
 		Weapon: GLTwinMauranderShellToxin
 		Recoil: 85
 		RecoilRecovery: 17
-		LocalOffset: 720,0,90
+		LocalOffset: 900,180,340, 900,-180,340
 		MuzzleSequence: muzzle
-		RequiresCondition: shellsupgrade && !antraxbetaupgrade && rank-veteran >= 3
+		RequiresCondition: shellsupgrade && !antraxbetaupgrade && scrap_create_bonus == 2
 	Armament@ToxinBetaElite:
 		Weapon: GLTwinMauranderShellToxinBeta
 		Recoil: 85
 		RecoilRecovery: 17
-		LocalOffset: 720,0,90
+		LocalOffset: 900,180,340, 900,-180,340
 		MuzzleSequence: muzzle
-		RequiresCondition: shellsupgrade && antraxbetaupgrade && rank-veteran >= 3
-	AttackTurreted:
+		RequiresCondition: shellsupgrade && antraxbetaupgrade && scrap_create_bonus == 2
+	AttackFrontal:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
+		Sequence: turret
+		RequiresCondition: scrap_create_bonus == 0
+	WithSpriteTurret@Scrap1:
+		Sequence: turret2
+		RequiresCondition: scrap_create_bonus == 1
+	WithSpriteTurret@Scrap2:
+		Sequence: turret3
+		RequiresCondition: scrap_create_bonus == 2
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
@@ -2277,7 +2394,7 @@ glmaura:
 		Condition: antraxbetaupgrade
 		Prerequisites: upantraxbeta
 	ReloadDelayMultiplier@Salvaged1:
-		RequiresCondition: rank-veteran >= 1
+		RequiresCondition: scrap_create_bonus == 1
 		Modifier: 75
 	GrantConditionOnPrerequisite@upjunkrepair:
 		Condition: junkupgrade
@@ -2302,6 +2419,10 @@ glmaura:
 		Multiplier: 110
 		Prerequisites: selectglademo
 		Queue: Vehicle.GLA, RAVehicle.GLA
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+
 glmaura.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -2328,7 +2449,7 @@ gltractor:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildDuration: 1020
 		BuildDurationModifier: 40
-		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+		Description: Vehicle armed with toxins.\n  Strong vs Infantry\n  Weak vs Defences, Vehicles
 	Mobile:
 		TurnSpeed: 8
 		Speed: 60
@@ -2443,7 +2564,7 @@ glpickup:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 1
 		Prerequisites: glweap, ~techlevel.low
-		Description: Fast scout & anti-infantry vehicle.\nCan carry one infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+		Description: Fast scout & anti-infantry vehicle.\nCan carry infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -2456,7 +2577,7 @@ glpickup:
 		Type: Light
 	Mobile:
 		TurnSpeed: 10
-		Speed: 180
+		Speed: 162
 		PauseOnCondition: notmobile# || being-captured
 	RevealsShroud:
 		Range: 8c0
@@ -2470,12 +2591,16 @@ glpickup:
 		Weapon: GLTechnicalMG
 		MuzzleSequence: muzzle
 		LocalOffset: 128,0,43
-		RequiresCondition: rank-veteran <= 2
+		RequiresCondition: scrap_create_bonus == 0
 	Armament@Salvage:
 		Weapon: GLTechnicalShell
 		MuzzleSequence: muzzle
 		LocalOffset: 128,0,43
-		RequiresCondition: rank-veteran >= 3
+		RequiresCondition: scrap_create_bonus == 1
+	Armament@Salvage2:
+		Weapon: GLTechnicalMissile
+		LocalOffset: 128,0,43
+		RequiresCondition: scrap_create_bonus == 2
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -2521,6 +2646,88 @@ glpickup:
 		Multiplier: 110
 		Prerequisites: selectglademo
 		Queue: Vehicle.GLA, RAVehicle.GLA
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+
+glscrapcar:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Buildable:
+		Queue: Infantry.GLA, RAInfantry.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 40
+		Prerequisites: glweap, ~techlevel.low
+		Description: Fast scout & anti-infantry vehicle.\nCan carry infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Scrap Car
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 14000
+	Armor:
+		Type: Light
+	Mobile:
+		TurnSpeed: 4
+		Speed: 100
+		PauseOnCondition: notmobile# || being-captured
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: 0,0,128
+	Armament@Normal:
+		Weapon: GLTerroistExplosive
+		MuzzleSequence: muzzle
+		LocalOffset: 128,0,43
+	AttackTurreted:
+	WithMuzzleOverlay:
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	RenderSprites:
+		Scale: 0.83
+	Voiced:
+		VoiceSet: GLATerroristVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	GrantConditionOnPrerequisite@upjunkrepair:
+		Condition: junkupgrade
+		Prerequisites: upjunkrepair
+	SelfHealing@upjunkrepair:
+		Step: 200
+		Delay: 100
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: junkupgrade
+	GrantConditionOnPrerequisite@selectglademo:
+		Condition: selectglademo
+		Prerequisites: selectglademo
+	ProductionCostMultiplier@selectglademo:
+		Multiplier: 90
+		Prerequisites: selectglademo
+		Queue: Vehicle.GLA, RAVehicle.GLA
+	Explodes:
+		Weapon: GLTerroistExplosive
+		EmptyWeapon: GLTerroistExplosive
+	Cloak:
+		InitialDelay: 5
+		CloakDelay: 5
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+		CloakSound:
+		UncloakSound:
+		PauseOnCondition: cloak-force-disabled
+	GrantConditionOnAttack:
+		Condition: triggered
+	KillsSelf:
+		RequiresCondition: triggered
+
 glvan:
 	Inherits: ^Vehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -2530,7 +2737,7 @@ glvan:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 1
 		Prerequisites: glweap, ~techlevel.low
-		Description: Fast scout & anti-infantry vehicle.\nCan carry one infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+		Description: Fast scout & anti-infantry vehicle.\nCan carry infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -2557,12 +2764,16 @@ glvan:
 		Weapon: GLTechnicalMG
 		MuzzleSequence: muzzle
 		LocalOffset: 128,0,43
-		RequiresCondition: rank-veteran <= 2
+		RequiresCondition: scrap_create_bonus == 0
 	Armament@Salvage:
 		Weapon: GLTechnicalShell
 		MuzzleSequence: muzzle
 		LocalOffset: 128,0,43
-		RequiresCondition: rank-veteran >= 3
+		RequiresCondition: scrap_create_bonus == 1
+	Armament@Salvage2:
+		Weapon: GLTechnicalMissile
+		LocalOffset: 128,0,43
+		RequiresCondition: scrap_create_bonus == 2
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -2608,6 +2819,10 @@ glvan:
 		Multiplier: 110
 		Prerequisites: selectglademo
 		Queue: Vehicle.GLA, RAVehicle.GLA
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+
 glradar:
 	Inherits: ^Vehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -2616,7 +2831,7 @@ glradar:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 1
 		Prerequisites: glweap, ~techlevel.low
-		Description: Fast scout & anti-infantry vehicle.\nCan carry one infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+		Description: Fast scout vehicle.\nDetect camouflaged units.\nProvides Radar.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -2679,7 +2894,7 @@ glquad:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 1
 		Prerequisites: glweap, ~techlevel.low
-		Description: Fast scout & anti-infantry vehicle.\nCan carry one infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+		Description: anti-air vehicle & anti-infantry vehicle.\n Strong vs Aircraft, Infantry\n  Weak vs Vehicles
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -2728,11 +2943,11 @@ glquad:
 	FirepowerMultiplier@uparmorpercingbullet:
 		RequiresCondition: bulletsupgrade
 		Modifier: 125
-	FirepowerMultiplier@Salvaged1:
-		RequiresCondition: rank-veteran >= 2
-		Modifier: 120
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 75
 	ReloadDelayMultiplier@Salvaged2:
-		RequiresCondition: rank-veteran >= 3
+		RequiresCondition: scrap_create_bonus == 2
 		Modifier: 50
 	GrantConditionOnPrerequisite@upjunkrepair:
 		Condition: junkupgrade
@@ -2757,6 +2972,10 @@ glquad:
 		Multiplier: 110
 		Prerequisites: selectglademo
 		Queue: Vehicle.GLA, RAVehicle.GLA
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+
 glquad.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -2774,7 +2993,7 @@ GLSCUD:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 80
 		Prerequisites: upscudlauncher, glpalace, ~techlevel.medium
-		Description: Long-range rocket artillery.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
+		Description: Long-range rocket artillery.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Aircraft
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -2793,9 +3012,14 @@ GLSCUD:
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
 		Range: 4c0
-	Armament:
+	Armament@EX:
 		Weapon: GLASCUD
 		ReloadingCondition: reloading
+		RequiresCondition: !deployed
+	Armament@TOX:
+		Weapon: GLASCUDTOXIN
+		ReloadingCondition: reloading
+		RequiresCondition: deployed
 	AutoTarget:
 		ScanRadius: 10
 	AttackFrontal:
@@ -2842,6 +3066,36 @@ GLSCUD:
 	ProducibleWithLevel:
 		Prerequisites: selectglademo
 		InitialLevels: 2
+	WithTextDecoration@EX:
+		Text: TOX
+		ReferencePoint: Bottom, Left
+		UsePlayerColor: True
+		ValidStances: Ally, Enemy, Neutral
+		RequiresCondition: deployed
+	WithTextDecoration@TOX:
+		Text: EX
+		ReferencePoint: Bottom, Left
+		UsePlayerColor: True
+		ValidStances: Ally, Enemy, Neutral
+		RequiresCondition: !deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		DeploySounds: igidepa.wav,igidepb.wav
+		UndeploySounds: igidepa.wav,igidepb.wav
+		UndeployOnMove: false
+		RequiresCondition: !parachute
+		PauseOnCondition: ReaperTrap || ArbiterStasis
+		Voice: Move
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	RangeMultiplier@Scrap1:
+		Modifier: 120
+		RequiresCondition: scrap_create_bonus == 1
+	RangeMultiplier@Scrap2:
+		Modifier: 140
+		RequiresCondition: scrap_create_bonus == 2
 GLSCUD.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -2865,7 +3119,7 @@ glbombtruck:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 40
 		Prerequisites: glweap, ~techlevel.medium
-		Description: Fast scout & anti-infantry vehicle.\nCan carry one infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+		Description: Suicide vehicle.\nCan be upgraded with different explosives.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
 	Health:
 		HP: 8000
 	Armor:
@@ -2964,7 +3218,7 @@ pscglbtruck2:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Bombtruck.GLA
-		Description: Toxin Explosive.
+		Description: Toxin Explosive upgrade.\n  Strong vs Infantry
 		Prerequisites: glpalace
 	Valued:
 		Cost: 300
@@ -2981,7 +3235,7 @@ pscglbtruck3:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Bombtruck.GLA
-		Description: High Damage Explosive.
+		Description: High Damage Explosive.\n  Strong vs Vehicles, Buildings
 		Prerequisites: glpalace
 	Valued:
 		Cost: 300
@@ -3005,7 +3259,7 @@ glworker:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks
 		Queue: Infantry.GLA, RAInfantry.GLA
-		Description: Resource Collector Infantry.\n  It can attack,\n but it is not recommended
+		Description: Resource Collector Infantry.\nCan repair buildings
 	Mobile:
 		Speed: 65
 	Health:
@@ -3116,7 +3370,7 @@ uprebelcamo:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: Infantry.GLA, RAInfantry.GLA
-		Description: is an upgrade allow Rebel to remain hidden when not attacking or capturing buildings.
+		Description: is an upgrade allow Rebel to remain hidden when not attacking or moving.
 		Prerequisites: glpalace, ~!uprebelcamo, ~!selectglatoxin
 	Valued:
 		Cost: 2000
@@ -3132,7 +3386,7 @@ upcamonetting:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: Building.GLA, RABuilding.GLA
-		Description: is an upgrade allow Rebel to remain hidden when not attacking or capturing buildings.
+		Description: is an upgrade can camouflage defensive buildings.
 		Prerequisites: glpalace, ~!upcamonetting, ~!selectglatoxin
 	Valued:
 		Cost: 2000
@@ -3147,7 +3401,7 @@ upcamonetting2:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: Building.GLA, RABuilding.GLA
-		Description: is an upgrade allow Rebel to remain hidden when not attacking or capturing buildings.
+		Description: is an upgrade can camouflage all buildings.
 		Prerequisites: glpalace, ~!upcamonetting2, ~!selectglatoxin, ~selectglacamo
 	Valued:
 		Cost: 2500
@@ -3163,7 +3417,7 @@ upglfort:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: Building.GLA, RABuilding.GLA
-		Description: is an upgrade allow Rebel to remain hidden when not attacking or capturing buildings.
+		Description: The upgrade boosts the armor of all the buildings.
 		Prerequisites: glpalace, ~!upglfort
 	Valued:
 		Cost: 1000
@@ -3470,9 +3724,254 @@ upanthraxbomb:
 	ProvidesPrerequisite:
 		Prerequisite: upanthraxbomb
 
+
+
+GLSYRD:
+	Inherits: RA1SYRD
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: glsupply, ~enablenaval
+		Queue: Building.GLA, RABuilding.GLA
+	Production@NORMAL:
+		Produces: Naval.GLA
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval.GLA
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Naval.GLA
+		DisplayOrder: 5
+	ProductionBar@NAVALGDI:
+		ProductionType: Naval.GLA
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RANAVALGDI:
+		ProductionType: RANaval.GLA
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea:					##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: ra1syrd
+	-ProductionBar@NAVALALLIES:
+	-ProductionBar@RANAVALALLIES:
+	Power:
+		Amount: 5
+
+glgunboat:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Patrol Boat
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: glsupply
+		Queue: Naval.GLA, RANaval.GLA
+		Description: Light scout & support ship.\nCan detect submarines.
+	Mobile:
+		TurnSpeed: 7
+		Speed: 72
+	Health:
+		HP: 30000
+	Armor:
+		Type: Heavy
+	Repairable:
+		HpPerStep: 1819
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: GLGunboatShell
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+		RequiresCondition: !selectglademo
+	Armament@AA:
+		Weapon: GLGunboatMG
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+		RequiresCondition: !selectglatoxin
+	Armament@Tox:
+		Weapon: GLRebelToxinGarrison
+		LocalOffset: 208,0,48
+		RequiresCondition: selectglatoxin
+	Armament@Miss:
+		Weapon: GLRocketBuggyMissiles
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+		RequiresCondition: selectglademo
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	DetectCloaked:
+		Range: 4c0
+		CloakTypes: Underwater
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	DeliversCash:
+		Payload: 250
+	Voiced:
+		VoiceSet: ScorpionTankVoice
+	Production:
+		Produces: Gunboat.GLA
+		RequiresCondition: !selectglatoxin && !selectglademo
+	ProductionQueue:
+		Type: Gunboat.GLA
+		Group: Defence
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		DisplayOrder: 0
+	GrantConditionOnProduction@selectglatoxin:
+		Condition: selectglatoxin
+		Actors: pscglgunboat1
+	GrantConditionOnProduction@selectglademo:
+		Condition: selectglademo
+		Actors: pscglgunboat2
+	WithSpriteTurret@MISS:
+		RequiresCondition: selectglademo
+		Sequence: turretmiss
+	RenderSprites:
+		Scale: 0.88
+
+pscglgunboat1:
+	Tooltip:
+		Name: Toxin Sprayer
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Gunboat.GLA
+		Description: Replaces MG gun.\n  Strong vs Infantry
+		Prerequisites: glbarracks
+	Valued:
+		Cost: 150
+	RenderSprites:
+		Image: gle1toxin
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+
+pscglgunboat2:
+	Tooltip:
+		Name: Brush Missiles
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Gunboat.GLA
+		Description: High Damage Explosive.\n  Strong vs Vehicles, Buildings
+		Prerequisites: glpalace
+	Valued:
+		Cost: 400
+	RenderSprites:
+		Image: glbggy
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
 ##################################################
 #	GLA Thrax
 ##################################################
+
+##################################################
+#	GLA
+##################################################
+
+selectchnormal:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Normal China
+	Buildable:
+		BuildPaletteOrder: 1
+		BuildDuration: 0
+		Queue: Building.CHINA, RABuilding.CHINA
+		Description: The Marauder tank was a medium tank
+		Prerequisites: ~!chselected
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: glglaicon
+	ProvidesPrerequisite:
+		Prerequisite: chselected
+	ProvidesPrerequisite@2:
+		Prerequisite: selectchnormal
+
+selectchtanks:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Tanks General
+	Buildable:
+		BuildPaletteOrder: 1
+		BuildDuration: 0
+		Queue: Building.CHINA, RABuilding.CHINA
+		Description: The Marauder tank was a medium tank
+		Prerequisites: ~!chselected
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: gltoxingeneralicon
+	ProvidesPrerequisite:
+		Prerequisite: chselected
+	ProvidesPrerequisite@2:
+		Prerequisite: selectchtanks
+selectchinf:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Infantry General
+	Buildable:
+		BuildPaletteOrder: 1
+		BuildDuration: 0
+		Queue: Building.CHINA, RABuilding.CHINA
+		Description: The Marauder tank was a medium tank
+		Prerequisites: ~!chselected
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: gldemogeneralicon
+	ProvidesPrerequisite:
+		Prerequisite: chselected
+	ProvidesPrerequisite@2:
+		Prerequisite: selectchinf
+
+selectchatomic:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Atomic General
+	Buildable:
+		BuildPaletteOrder: 1
+		BuildDuration: 0
+		Queue: Building.CHINA, RABuilding.CHINA
+		Description: The Marauder tank was a medium tank
+		Prerequisites: ~!chselected
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: glcamogeneralicon
+	ProvidesPrerequisite:
+		Prerequisite: chselected
+	ProvidesPrerequisite@2:
+		Prerequisite: selectchatomic
+	ProvidesPrerequisite@3:
+		Prerequisite: upatomictank
+	ProvidesPrerequisite@4:
+		Prerequisite: upuraniumshell
+	ProvidesPrerequisite@5:
+		Prerequisite: upnukecann
+
+
 ##################################################
 #	China
 ##################################################
@@ -3663,7 +4162,7 @@ chpower:
 	Buildable:
 		Queue: Building.CHINA, RABuilding.CHINA
 		BuildPaletteOrder: 110
-		Prerequisites: chcommand
+		Prerequisites: chcommand, ~!selectchatomic
 		Description: Provides double the power of\na standard Power Plant.
 	Valued:
 		Cost: 1000			#500
@@ -3687,7 +4186,7 @@ chpower:
 		Range: 4c0
 	WithBuildingBib:
 	Power:
-		Amount: 400
+		Amount: 300
 	Targetable:
 		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	ScalePowerWithHealth:
@@ -3706,7 +4205,32 @@ chpower:
 		EmptyWeapon: CHRadiationYellow
 	Voiced:
 		VoiceSet: CHNuclearReactorVoice
-
+	GrantConditionOnPrerequisite@anypower:
+		Condition: anypower
+		Prerequisites: anypower
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 30
+		Prerequisites: !anypower
+		Queue: Building.CHINA, RABuilding.CHINA
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
+chpower2:
+	Inherits: chpower
+	Buildable:
+		Queue: Building.CHINA, RABuilding.CHINA
+		BuildPaletteOrder: 110
+		Prerequisites: chcommand, ~selectchatomic
+		Description: Provides double the power of\na standard Power Plant.
+	Tooltip:
+		Name: Advanced Nuclear Plant
+	Valued:
+		Cost: 1200			#500
+	Power:
+		Amount: 500
+	RenderSprites:
+		Image: chpower
 chbarracks:
 	Inherits: ^BaseBuilding
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -3856,7 +4380,7 @@ chbunker:
 		Dimensions: 2, 2
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: chbarracks, ~techlevel.low
+		Prerequisites: chbarracks, ~techlevel.low, ~!selectchinf
 		Queue: Defence.CHINA, RADefence.CHINA
 		BuildDurationModifier: 40
 		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
@@ -3907,7 +4431,7 @@ chbunker.e1:
 	Inherits: chbunker
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: chbarracks, ~techlevel.low, ~botgla
+		Prerequisites: chbarracks, ~techlevel.low, ~botgla, ~!selectchinf
 		Queue: Defence.CHINA, RADefence.CHINA
 	Valued:
 		Cost: 800
@@ -3924,7 +4448,7 @@ chbunker.e2:
 	Inherits: chbunker
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: chbarracks, ~techlevel.low, ~botgla
+		Prerequisites: chbarracks, ~techlevel.low, ~botgla, ~!selectchinf
 		Queue: Defence.CHINA, RADefence.CHINA
 	Valued:
 		Cost: 800
@@ -3941,7 +4465,7 @@ chbunker.e3:
 	Inherits: chbunker
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: chbarracks, ~techlevel.low, ~botgla
+		Prerequisites: chbarracks, ~techlevel.low, ~botgla, ~!selectchinf
 		Queue: Defence.CHINA, RADefence.CHINA
 	Valued:
 		Cost: 800
@@ -3954,6 +4478,30 @@ chbunker.e3:
 	RenderSprites:
 		Image: chbunker
 
+
+chbunker2:
+	Inherits: chbunker
+	Tooltip:
+		Name: Fortified Bunker
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: chbarracks, ~techlevel.low, ~selectchinf
+		Queue: Defence.CHINA, RADefence.CHINA
+		BuildDurationModifier: 40
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	Valued:
+		Cost: 700
+	Health:
+		HP: 100000
+	Cargo:
+		Types: Infantry
+		MaxWeight: 8
+		PipCount: 8
+		InitialUnits: che2
+	Voiced:
+		VoiceSet: CHBunkerVoice
+	RenderSprites:
+		Image: chbunker
 chsupply:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -4021,9 +4569,9 @@ chweap:
 		Queue: Building.CHINA, RABuilding.CHINA
 		Description: Produces vehicles
 	Building:
-		Footprint: ____ =xxx ==== ====
+		Footprint: xxxx x++x =++= ====
 		Dimensions: 4,4
-		LocalCenterOffset: 0,-512,0
+		LocalCenterOffset: -12,-512,0
 	SelectionDecorations:
 	Selectable:
 		Bounds: 72,48,0,0
@@ -4071,6 +4619,16 @@ chweap:
 		Amount: -40
 	Voiced:
 		VoiceSet: PRCWarFactoryVoice
+	WithIdleOverlay@BOXES:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim1
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 15
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+
 chpropaganda:
 	Inherits: ^BaseBuilding
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -4126,7 +4684,7 @@ chpropaganda:
 		DisplayRadarPing: True
 		Condition: frenzypower1
 		OnFireSound: siroon.wav
-		Prerequisites: upfrenzy1
+		Prerequisites: upfrenzy1, !upfrenzy2
 	GrantExternalConditionPower@Frenzy2:
 		OrderName: FrenzyPower2
 		PauseOnCondition: lowpower
@@ -4143,7 +4701,7 @@ chpropaganda:
 		DisplayRadarPing: True
 		Condition: frenzypower2
 		OnFireSound: siroon.wav
-		Prerequisites: upfrenzy2
+		Prerequisites: upfrenzy2, !upfrenzy3
 	GrantExternalConditionPower@Frenzy3:
 		OrderName: FrenzyPower3
 		PauseOnCondition: lowpower
@@ -4162,6 +4720,9 @@ chpropaganda:
 		OnFireSound: siroon.wav
 		Prerequisites: upfrenzy3
 	SupportPowerChargeBar:
+	ProximityExternalCondition@PROPAGANDA:
+		Range: 6c0
+		Condition: propaganda
 chsilo:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -4170,7 +4731,7 @@ chsilo:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
 	Valued:
-		Cost: 2000
+		Cost: 5000
 	Tooltip:
 		Name: Nuclear Silo
 	ProvidesPrerequisite:
@@ -4261,6 +4822,16 @@ chsilo:
 	ProvidesPrerequisite@buildingname:
 	Voiced:
 		VoiceSet: CHMissileSiloVoice
+	GrantConditionOnPrerequisite@selectchatomic:
+		Condition: selectchatomic
+		Prerequisites: selectchatomic
+	ProductionCostMultiplier@selectchatomic:
+		Multiplier: 90
+		Prerequisites: selectchatomic
+		Queue: Building.CHINA, RABuilding.CHINA
+	Explodes:
+		Weapon: CHAtomicWeapon
+		EmptyWeapon: CHAtomicWeapon
 chairport:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -4275,7 +4846,7 @@ chairport:
 	Tooltip:
 		Name: Airfield
 	Building:
-		Footprint: xxxx xxxx xxxx xxxx
+		Footprint: xxxx xxxx xx== xx==
 		Dimensions: 4,4
 	Health:
 		HP: 150000
@@ -4335,7 +4906,7 @@ CHE1:
 		BuildDuration: 125
 		Queue: Infantry.CHINA, RAInfantry.CHINA
 		Description: General-purpose infantry armed with a rifle.
-		Prerequisites: barracks
+		Prerequisites: barracks, ~!selectchinf
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -4382,7 +4953,100 @@ CHE1:
 	ProducibleWithLevel:
 		Prerequisites: upredguard
 		InitialLevels: 1
-
+	GrantConditionOnPrerequisite@selectchtanks:
+		Condition: selectchtanks
+		Prerequisites: selectchtanks || selectchatomic
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 110
+		Prerequisites: selectchtanks
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+        
+CHE2:
+	Inherits: ^Soldier
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 125
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+		Description: General-purpose infantry armed with a rifle.
+		Prerequisites: barracks, ~selectchinf
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Minigunner
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 8000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: CHMinigunnerGatling
+	Armament@PRIMARYAA:							##########
+		Weapon: CHMinigunnerGatlingAA
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: CHGattlingTurret
+	AttackFrontal:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: RedGuardVoice
+	RenderSprites:
+		Scale: 0.85
+	ReloadDelayMultiplier@HordeEffect:
+		RequiresCondition: hordeeffect >= 5
+		Modifier: 75
+	ExternalCondition@HordeEffect:
+		Condition: hordeeffect
+	ProximityExternalCondition@HordeEffect:
+		Range: 3c0
+		Condition: hordeeffect
+	WithIdleOverlay@HordeEffect:
+		Sequence: redstar
+		RequiresCondition: hordeeffect >= 5
+	GrantConditionOnPrerequisite@hordeupgrade:
+		Condition: hordeupgrade
+		Prerequisites: upnationalism
+	ReloadDelayMultiplier@HordeEffectUpgraded:
+		RequiresCondition: hordeeffect >= 5 && hordeupgrade
+		Modifier: 75
+	ProducibleWithLevel:
+		Prerequisites: selectchinf
+		InitialLevels: 1
+	ProducibleWithLevel@2:
+		Prerequisites: upredguard
+		InitialLevels: 2
+	GrantConditionOnPrerequisite@selectchtanks:
+		Condition: selectchtanks
+		Prerequisites: selectchtanks
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 110
+		Prerequisites: selectchtanks
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+	AmmoPool:
+		Ammo: 8
+		PipCount: 0
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 50
+		Count: 1
+	ReloadDelayMultiplier@GattlingSpeed:
+		RequiresCondition: !ammo
+		Modifier: 75
+	GrantConditionOnPrerequisite@upchaingun:
+		Condition: gunsupgrade
+		Prerequisites: upchaingun
+	ReloadDelayMultiplier@GattlingSpeed2:
+		RequiresCondition: gunsupgrade
+		Modifier: 50
 CHE3:
 	Inherits: E3
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
@@ -4422,7 +5086,16 @@ CHE3:
 	ReloadDelayMultiplier@HordeEffectUpgraded:
 		RequiresCondition: hordeeffect >= 5 && hordeupgrade
 		Modifier: 75
-
+	GrantConditionOnPrerequisite@selectchtanks:
+		Condition: selectchtanks
+		Prerequisites: selectchtanks
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 110
+		Prerequisites: selectchtanks || selectchatomic
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+	ProducibleWithLevel:
+		Prerequisites: selectchinf
+		InitialLevels: 1
 CHHACKER:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -4436,7 +5109,7 @@ CHHACKER:
 		Name: Hacker
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: barracks, chpropaganda
+		Prerequisites: barracks, chpropaganda, ~!selectchinf
 		Queue: Infantry.CHINA, RAInfantry.CHINA
 		Description: General-purpose infantry.\n  Can deploy for increased firepower
 	Mobile:
@@ -4545,8 +5218,86 @@ CHHACKER:
 		Amount: 10
 		RequiresCondition: deployed && rank-elite
 	ExperienceTrickler@buildingrebirth:
-		Interval: 20
+		Interval: 2
 		Amount: 20
+	GrantConditionOnPrerequisite@selectchtanks:
+		Condition: selectchtanks
+		Prerequisites: selectchtanks
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 110
+		Prerequisites: selectchtanks
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+CHHACKER2:
+	Inherits: CHHACKER
+	Tooltip:
+		Name: Super Hacker
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: barracks, chpropaganda, ~selectchinf
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+	Armament@PRIMARYSUPER:							##########
+		Weapon: CHLotusDisable
+		RequiresCondition: !deployed
+	ProducibleWithLevel:
+		Prerequisites: selectchinf
+		InitialLevels: 1
+	RenderSprites:
+		Image: chhacker
+chlotus:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Black Lotus
+	Buildable:
+		BuildLimit: 1
+		BuildPaletteOrder: 70
+		Prerequisites: barracks, chpropaganda
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+		Description: General-purpose infantry.\n  Can deploy for increased firepower
+	Mobile:
+		Speed: 50
+	Health:
+		HP: 20000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: CHLotusDisable
+	Armament@CONTROL:							##########
+		Weapon: CHLotusControl
+		Name: control
+	MindController:
+		ArmamentNames: control
+		Capacity: 1
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: CHLotusDisable
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	TakeCover:
+	Voiced:
+		VoiceSet: CHHackerVoice
+	GrantConditionOnPrerequisite@selectchtanks:
+		Condition: selectchtanks
+		Prerequisites: selectchtanks
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 110
+		Prerequisites: selectchtanks
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+	Cloak:
+		InitialDelay: 30
+		CloakDelay: 30
+		CloakSound: cloak5.aud
+		UncloakSound: cloak5.aud
+		PauseOnCondition: cloak-force-disabled
 CHHACKERDEP:
 	Inherits: ^BaseBuilding
 	Selectable:
@@ -4580,7 +5331,7 @@ chbattle:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: chweap, ~techlevel.medium
+		Prerequisites: chweap, ~techlevel.medium, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
 		Description: General-Purpose China Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
 	Mobile:
@@ -4655,14 +5406,22 @@ chbattle:
 		Weapon: CHRadiationYellow
 		EmptyWeapon: CHRadiationYellow
 		RequiresCondition: upatomictank
-chbattle.Husk:
-	Inherits: ^LightHusk
-	Tooltip:
-		Name: Battlemaster Tank (Destroyed)
-	TransformOnCapture:
-		IntoActor: chbattle
-	RenderSprites:
-		Image: chbattle
+	GrantConditionOnPrerequisite@upautoload:
+		Condition: upautoload
+		Prerequisites: upautoload
+	ReloadDelayMultiplier@upautoload:
+		RequiresCondition: upautoload
+		Modifier: 60
+	ProducibleWithLevel:
+		Prerequisites: selectchtanks
+		InitialLevels: 1
+	GrantConditionOnPrerequisite@selectchtanks:
+		Condition: selectchtanks
+		Prerequisites: selectchtanks
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 90
+		Prerequisites: selectchtanks
+		Queue: Vehicle.CHINA, RAVehicle.CHINA
 charty:
 	Inherits: ^Tank
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
@@ -4678,7 +5437,7 @@ charty:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: chweap, ~techlevel.medium
+		Prerequisites: chweap, ~!selectchtanks, ~techlevel.medium, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
 		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings
 	Mobile:
@@ -4726,6 +5485,13 @@ charty:
 	Explodes:
 		Weapon: FlametankExplode
 		EmptyWeapon: FlametankExplode
+	GrantConditionOnPrerequisite@selectchatomic:
+		Condition: selectchatomic
+		Prerequisites: selectchatomic
+	ProductionCostMultiplier@selectchatomic:
+		Multiplier: 110
+		Prerequisites: selectchatomic
+		Queue: Infantry.CHINA, RAInfantry.CHINA
 charty.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -4749,7 +5515,7 @@ choverlord:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: chpropaganda, ~techlevel.high
+		Prerequisites: chpropaganda, ~techlevel.high, ~!selectchtanks, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
 		Description: Heavily armored China Tank.\nCan attack Aircraft.\n  Strong vs Everything
 	Mobile:
@@ -4764,7 +5530,6 @@ choverlord:
 		Type: Heavy
 	RevealsShroud:
 		Range: 6c0
-	WithSpriteTurret:
 	Turreted:
 		TurnSpeed: 3
 		Offset: -298,0,128
@@ -4801,9 +5566,9 @@ choverlord:
 	SpeedMultiplier@upatomictank:
 		RequiresCondition: upatomictank
 		Modifier: 125
-	-ActorLostNotification:
 	Production:
 		Produces: Overlord.CHINA
+		RequiresCondition: !addonpropaganda && !addonbunker && !addongattling
 	ProductionQueue:
 		Type: Overlord.CHINA
 		Group: Defence
@@ -4816,33 +5581,173 @@ choverlord:
 		CancelledAudio: Cancelled
 		DisplayOrder: 0
 	GrantConditionOnProduction@gattling:
-		Condition: bomb1condition
+		Condition: addongattling
 		Actors: pscchoverlord1
-	KillsSelf@gattling:
-		RequiresCondition: bomb1condition
-		GrantsCondition: bomb1rebirth
-	SpawnActorOnDeath@gattling:
-		RequiresCondition: bomb1rebirth
-		Actor: choverlord2
 	GrantConditionOnProduction@bunker:
-		Condition: bomb2condition
+		Condition: addonbunker
 		Actors: pscchoverlord2
-	KillsSelf@bunker:
-		RequiresCondition: bomb2condition
-		GrantsCondition: bomb2rebirth
-	SpawnActorOnDeath@bunker:
-		RequiresCondition: bomb2rebirth
-		Actor: choverlord3
 	GrantConditionOnProduction@propaganda:
-		Condition: bomb3condition
+		Condition: addonpropaganda
 		Actors: pscchoverlord3
-	KillsSelf@propaganda:
-		RequiresCondition: bomb3condition
-		GrantsCondition: bomb3rebirth
-	SpawnActorOnDeath@propaganda:
-		RequiresCondition: bomb3rebirth
-		Actor: choverlord4
-
+	Armament@GATTLING:
+		Name: secondary
+		Weapon: CHGattlingTurret
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle2
+		RequiresCondition: addongattling
+	Armament@GATTLINGAA:
+		Name: secondary
+		Weapon: CHGattlingTurretAA
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle2
+		RequiresCondition: addongattling
+	Armament@BUNKER:
+		Name: secondary
+		Weapon: CHGuardRifleOverlord
+		LocalOffset: -85,384,340, -85,-384,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle2
+		RequiresCondition: addonbunker
+	Armament@BUNKERMISS:
+		Name: secondary
+		Weapon: CHTankHunterOverlord
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle
+		RequiresCondition: addonbunker
+	ProximityExternalCondition@PROPAGANDA:
+		Range: 6c0
+		Condition: propaganda
+		RequiresCondition: addonpropaganda
+	WithSpriteTurret:
+		RequiresCondition: !addonpropaganda && !addonbunker && !addongattling
+	WithSpriteTurret@GATTLING:
+		RequiresCondition: addongattling
+		Sequence: turretgat
+	WithSpriteTurret@BUNKER:
+		RequiresCondition: addonbunker
+		Sequence: turretbun
+	WithSpriteTurret@PROPANGADA:
+		RequiresCondition: addonpropaganda
+		Sequence: turretpro
+	ProducibleWithLevel:
+		Prerequisites: selectchtanks
+		InitialLevels: 1
+choverlord2:
+	Inherits: ^Tank
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Emperor Overlord
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: chpropaganda, ~techlevel.high, ~selectchtanks
+		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
+		Description: Heavily armored China Tank.\nCan attack Aircraft.\n  Strong vs Everything
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 40
+		TurnSpeed: 3
+	Health:
+		HP: 120000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 3
+		Offset: -298,0,128
+	Armament@Normal:
+		Weapon: OverlordCannon
+		LocalOffset: 900,200,340, 900,-200,340
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+		RequiresCondition: !urshellupgrade
+	Armament@Atomic:
+		Weapon: OverlordCannonNuclear
+		LocalOffset: 900,200,340, 900,-200,340
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+		RequiresCondition: urshellupgrade
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 34,34,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Voiced:
+		VoiceSet: OverlordTankVoice
+	GrantConditionOnPrerequisite@upuraniumshell:
+		Condition: urshellupgrade
+		Prerequisites: upuraniumshell
+	GrantConditionOnPrerequisite@upuraniumshell:
+		Condition: upatomictank
+		Prerequisites: upatomictank
+	SpeedMultiplier@upatomictank:
+		RequiresCondition: upatomictank
+		Modifier: 125
+	Production:
+		Produces: Overlord.CHINA
+		RequiresCondition: !addonpropaganda && !addonbunker && !addongattling
+	ProductionQueue:
+		Type: Overlord.CHINA
+		Group: Defence
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		DisplayOrder: 0
+	GrantConditionOnProduction@gattling:
+		Condition: addongattling
+		Actors: pscchoverlord1
+	Armament@GATTLING:
+		Name: secondary
+		Weapon: CHGattlingTurret
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle2
+		RequiresCondition: addongattling
+	Armament@GATTLINGAA:
+		Name: secondary
+		Weapon: CHGattlingTurretAA
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle2
+		RequiresCondition: addongattling
+	ProximityExternalCondition@PROPAGANDA:
+		Range: 6c0
+		Condition: propaganda
+	WithSpriteTurret:
+	WithSpriteTurret@GATTLING:
+		RequiresCondition: addongattling
+		Sequence: turretgat
+	ProducibleWithLevel:
+		Prerequisites: selectchtanks
+		InitialLevels: 1
 pscchoverlord1:
 	Tooltip:
 		Name: Gattling Turret
@@ -4867,7 +5772,7 @@ pscchoverlord2:
 		BuildPaletteOrder: 10
 		Queue: Overlord.CHINA
 		Description: Toxin Explosive.
-		Prerequisites: chweap
+		Prerequisites: chweap, ~!selectchtanks
 	Valued:
 		Cost: 1600
 	RenderSprites:
@@ -4884,7 +5789,7 @@ pscchoverlord3:
 		BuildPaletteOrder: 10
 		Queue: Overlord.CHINA
 		Description: Toxin Explosive.
-		Prerequisites: chweap
+		Prerequisites: chweap, ~!selectchtanks
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -4893,103 +5798,6 @@ pscchoverlord3:
 	AlwaysVisible:
 	KillsSelf:
 		RemoveInstead: true
-
-choverlord2:
-	Inherits: choverlord
-	Valued:
-		Cost: 3200
-	-Buildable:
-	Tooltip:
-		Name: Gatling Overlord Tank
-	Armament@SECONDARY:
-		Name: secondary
-		Weapon: CHGattlingTurret
-		LocalOffset: -85,120,340, -85,-120,340
-		LocalYaw: -100, 100
-		Recoil: 10
-		MuzzleSequence: muzzle2
-	Armament@SECONDARYAA:
-		Name: secondary
-		Weapon: CHGattlingTurretAA
-		LocalOffset: -85,120,340, -85,-120,340
-		LocalYaw: -100, 100
-		Recoil: 10
-		MuzzleSequence: muzzle2
-	GrantConditionOnPrerequisite@upchaingun:
-		Condition: gunsupgrade
-		Prerequisites: upchaingun
-	ReloadDelayMultiplier@GattlingSpeed2:
-		RequiresCondition: gunsupgrade
-		Modifier: 90
-	Explodes@upatomictank:
-		Weapon: CHAtomicWeapon2
-		EmptyWeapon: CHAtomicWeapon2
-		RequiresCondition: upatomictank
-	Explodes@upatomictank2:
-		Weapon: CHRadiationYellow
-		EmptyWeapon: CHRadiationYellow
-		RequiresCondition: upatomictank
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@gattling:
-	-GrantConditionOnProduction@bunker:
-
-choverlord3:
-	Inherits: choverlord
-	Valued:
-		Cost: 3600
-	-Buildable:
-	Tooltip:
-		Name: Bunker Overlord Tank
-	Armament@SECONDARY:
-		Name: secondary
-		Weapon: CHGuardRifleOverlord
-		LocalOffset: -85,384,340, -85,-384,340
-		LocalYaw: -100, 100
-		Recoil: 10
-		MuzzleSequence: muzzle2
-	Armament@SECONDARYAA:
-		Name: secondary
-		Weapon: CHTankHunterOverlord
-		LocalOffset: -85,120,340, -85,-120,340
-		LocalYaw: -100, 100
-		Recoil: 10
-		MuzzleSequence: muzzle
-	Explodes@upatomictank:
-		Weapon: CHAtomicWeapon2
-		EmptyWeapon: CHAtomicWeapon2
-		RequiresCondition: upatomictank
-	Explodes@upatomictank2:
-		Weapon: CHRadiationYellow
-		EmptyWeapon: CHRadiationYellow
-		RequiresCondition: upatomictank
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@gattling:
-	-GrantConditionOnProduction@bunker:
-
-choverlord4:
-	Inherits: choverlord
-	Valued:
-		Cost: 2500
-	-Buildable:
-	Tooltip:
-		Name: Propaganda Overlord Tank
-	Explodes@upatomictank:
-		Weapon: CHAtomicWeapon2
-		EmptyWeapon: CHAtomicWeapon2
-		RequiresCondition: upatomictank
-	Explodes@upatomictank2:
-		Weapon: CHRadiationYellow
-		EmptyWeapon: CHRadiationYellow
-		RequiresCondition: upatomictank
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@gattling:
-	-GrantConditionOnProduction@bunker:
-	ProximityExternalCondition@PROPAGANDA:
-		Range: 6c0
-		Condition: propaganda
 
 choverlord.Husk:
 	Inherits: ^LightHusk
@@ -5007,14 +5815,14 @@ chdragon:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Valued:
-		Cost: 800
+		Cost: 750
 	Tooltip:
 		Name: Dragon Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~techlevel.medium
+		Prerequisites: ~techlevel.medium, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
 		Description: Fast, light tank.\n  Strong vs Infantry\n  Weak vs Tanks
 	Mobile:
@@ -5059,7 +5867,16 @@ chdragon:
 	Explodes:
 		Weapon: FlametankExplode
 		EmptyWeapon: FlametankExplode
-
+	ProducibleWithLevel:
+		Prerequisites: selectchtanks
+		InitialLevels: 1
+	GrantConditionOnPrerequisite@selectchtanks:
+		Condition: selectchtanks
+		Prerequisites: selectchtanks
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 90
+		Prerequisites: selectchtanks
+		Queue: Vehicle.CHINA, RAVehicle.CHINA
 chdragon.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -5076,14 +5893,14 @@ chgtnk:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Valued:
-		Cost: 800
+		Cost: 750
 	Tooltip:
 		Name: Gattling Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~techlevel.low
+		Prerequisites: ~techlevel.low, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
 		Description: Fast, light tank.\n  Strong vs Infantry, Aircraft\n  Weak vs Tanks
 	Mobile:
@@ -5135,7 +5952,16 @@ chgtnk:
 	ReloadDelayMultiplier@GattlingSpeed2:
 		RequiresCondition: gunsupgrade
 		Modifier: 50
-
+	ProducibleWithLevel:
+		Prerequisites: selectchtanks
+		InitialLevels: 1
+	GrantConditionOnPrerequisite@selectchtanks:
+		Condition: selectchtanks
+		Prerequisites: selectchtanks
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 90
+		Prerequisites: selectchtanks
+		Queue: Vehicle.CHINA, RAVehicle.CHINA
 chgtnk.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -5189,6 +6015,99 @@ chharv.Husk:
 		IntoActor: chharv
 	RenderSprites:
 		Image: chharv
+choutpost:
+	Inherits: ^Vehicle
+	Inherits@@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Listening outpost
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: chweap, chpropaganda, ~techlevel.medium, ~!selectchinf
+		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		TurnSpeed: 4
+		Speed: 80
+	Health:
+		HP: 24000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 32
+	Cargo:
+		Types: Infantry
+		MaxWeight: 2
+		PipCount: 2
+		EjectOnDeath: True
+		InitialUnits: che3, che3
+	AttackGarrisoned:
+		Armaments: primary
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PortYaws: 0, 176, 341, 512, 682, 853
+		PortCones: 88, 88, 88, 88, 88, 88
+	RenderRangeCircle:
+		FallbackRange: 6c0
+	SelectionDecorations:
+	AutoTarget:
+		AllowMovement: true
+	Turreted:
+		TurnSpeed: 10
+	WithMuzzleOverlay:
+	Armament:
+		Weapon: GLRebelAK47
+	Voiced:
+		VoiceSet: CycleVoice
+	RenderSprites:
+	Cloak:
+		InitialDelay: 45
+		CloakDelay: 45
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+		CloakSound: cloak5.aud
+		UncloakSound: cloak5.aud
+		PauseOnCondition: cloak-force-disabled
+	DetectCloaked:
+		Range: 10c0
+	RenderDetectionCircle:
+
+choutpost2:
+	Inherits: choutpost
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Attack outpost
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: chweap, chpropaganda, ~techlevel.medium, ~selectchinf
+		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Health:
+		HP: 35000
+	Cargo:
+		Types: Infantry
+		MaxWeight: 6
+		PipCount: 6
+		EjectOnDeath: True
+		InitialUnits: che3, che3, che3
+	ProximityExternalCondition@PROPAGANDA:
+		Range: 6c0
+		Condition: propaganda
+	RenderSprites:
+		Image: choutpost
 CHTRUK:
 	Inherits: TRUCK
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
@@ -5214,7 +6133,7 @@ chcrawl:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: chweap
+		Prerequisites: chweap, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
 		BuildDuration: 950
 		BuildDurationModifier: 40
@@ -5246,6 +6165,65 @@ chcrawl:
 	Voiced:
 		VoiceSet: TroopCrawlerVoice
 
+chcrawl2:
+	Inherits: ^Vehicle
+	Inherits@@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Assault Troop Crawler
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: chweap, ~selectchinf
+		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
+		Description: Mobile bunker vehicle.\n  Provides protection to infantry
+	Mobile:
+		TurnSpeed: 4
+		Speed: 140
+	Health:
+		HP: 105000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 32
+	Cargo:
+		Types: Infantry
+		MaxWeight: 6
+		PipCount: 6
+		EjectOnDeath: True
+		InitialUnits: che2, che2, che2, che2, che2, che2
+	AttackGarrisoned:
+		Armaments: primary
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PortYaws: 0, 176, 341, 512, 682, 853
+		PortCones: 88, 88, 88, 88, 88, 88
+	RenderRangeCircle:
+		FallbackRange: 6c0
+	SelectionDecorations:
+	AutoTarget:
+		AllowMovement: true
+	Turreted:
+		TurnSpeed: 10
+	WithMuzzleOverlay:
+	Armament:
+		Weapon: GLRebelAK47
+	Voiced:
+		VoiceSet: TroopCrawlerVoice
+	RenderSprites:
+		Image: chcrawl
 chcrawl.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -5267,7 +6245,7 @@ chnukecann:
 		Name: Nuke Cannon
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: chpropaganda, ~techlevel.high, upnukecann, chsilo
+		Prerequisites: chpropaganda, ~techlevel.high, upnukecann, chsilo, ~!selectchtanks, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
 		Description: Nod's main battle tank.\nCan deploy to gain extra protection.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
@@ -5363,7 +6341,7 @@ upcharty:
 		BuildDuration: 2000
 		Queue: Defence.CHINA, RADefence.CHINA
 		Description: The Marauder tank was a medium tank
-		Prerequisites: chcommand, ~!upcharty
+		Prerequisites: chcommand, ~!upcharty, ~!selectchtanks, ~!selectchinf
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -5380,7 +6358,7 @@ upnukecann:
 		BuildDuration: 2000
 		Queue: Defence.CHINA, RADefence.CHINA
 		Description: The Marauder tank was a medium tank
-		Prerequisites: chcommand, ~!upnukecann, ~techlevel.high
+		Prerequisites: chcommand, ~!upnukecann, ~techlevel.high, ~!selectchtanks, ~!selectchinf
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -5401,7 +6379,7 @@ upartybarrage1:
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: uprebelambush1icon
+		Image: upartybarrage1icon
 	ProvidesPrerequisite:
 		Prerequisite: upartybarrage1
 
@@ -5418,7 +6396,7 @@ upartybarrage2:
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: uprebelambush2icon
+		Image: upartybarrage1icon
 	ProvidesPrerequisite:
 		Prerequisite: upartybarrage2
 
@@ -5435,9 +6413,59 @@ upartybarrage3:
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: uprebelambush3icon
+		Image: upartybarrage3icon
 	ProvidesPrerequisite:
 		Prerequisite: upartybarrage3
+upfrenzy1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: General's Promotion AFrenzy 1
+	Buildable:
+		BuildPaletteOrder: 220
+		BuildDuration: 2500
+		Queue: Defence.CHINA, RADefence.CHINA
+		Description: Unlocks Artillery Barrage
+		Prerequisites: chcommand, ~!upfrenzy1
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: upfrenzy1icon
+	ProvidesPrerequisite:
+		Prerequisite: upfrenzy1
+
+upfrenzy2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: General's Promotion Frenzy 2
+	Buildable:
+		BuildPaletteOrder: 220
+		BuildDuration: 3000
+		Queue: Defence.CHINA, RADefence.CHINA
+		Description: Unlocks Artillery Barrage
+		Prerequisites: upartybarrage1, ~!upfrenzy2
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: upfrenzy2icon
+	ProvidesPrerequisite:
+		Prerequisite: upfrenzy2
+
+upfrenzy3:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: General's Promotion Frenzy 3
+	Buildable:
+		BuildPaletteOrder: 220
+		BuildDuration: 3500
+		Queue: Defence.CHINA, RADefence.CHINA
+		Description: Unlocks Artillery Barrage
+		Prerequisites: upartybarrage2, ~!upfrenzy3
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: upfrenzy3icon
+	ProvidesPrerequisite:
+		Prerequisite: upfrenzy3
 
 upchaingun:
 	Inherits: ^upgrade.template
@@ -5454,7 +6482,13 @@ upchaingun:
 		Image: chchaingunicon
 	ProvidesPrerequisite:
 		Prerequisite: upchaingun
-
+	GrantConditionOnPrerequisite@selectchatomic:
+		Condition: selectchatomic
+		Prerequisites: selectchatomic
+	ProductionCostMultiplier@selectchatomic:
+		Multiplier: 110
+		Prerequisites: selectchatomic
+		Queue: Infantry.CHINA, RAInfantry.CHINA
 upnationalism:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -5470,7 +6504,13 @@ upnationalism:
 		Image: chnationalismicon
 	ProvidesPrerequisite:
 		Prerequisite: upnationalism
-        
+	GrantConditionOnPrerequisite@selectchatomic:
+		Condition: selectchatomic
+		Prerequisites: selectchatomic
+	ProductionCostMultiplier@selectchatomic:
+		Multiplier: 110
+		Prerequisites: selectchatomic
+		Queue: Infantry.CHINA, RAInfantry.CHINA
 upuraniumshell:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -5517,7 +6557,13 @@ upbluefire:
 		Image: chblackfireicon
 	ProvidesPrerequisite:
 		Prerequisite: upbluefire
-
+	GrantConditionOnPrerequisite@selectchatomic:
+		Condition: selectchatomic
+		Prerequisites: selectchatomic
+	ProductionCostMultiplier@selectchatomic:
+		Multiplier: 110
+		Prerequisites: selectchatomic
+		Queue: Vehicle.CHINA, RAVehicle.CHINA, Aircraft.CHINA, RAAircraft.CHINA
 upneutronshell:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -5549,13 +6595,66 @@ upmigarmor:
 	ProvidesPrerequisite:
 		Prerequisite: upmigarmor
 
+upautoload:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Auto Loader
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.CHINA, RAVehicle.CHINA
+		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
+		Prerequisites: chweap, ~!upautoload, ~selectchtanks
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: chautoloadericon
+	ProvidesPrerequisite:
+		Prerequisite: upautoload
+upsubliminal:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Subliminal messaging
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
+		Prerequisites: chweap, ~!upsubliminal
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: chmessagingicon
+	ProvidesPrerequisite:
+		Prerequisite: upsubliminal
+	GrantConditionOnPrerequisite@selectchatomic:
+		Condition: selectchatomic
+		Prerequisites: selectchatomic
+	ProductionCostMultiplier@selectchatomic:
+		Multiplier: 120
+		Prerequisites: selectchatomic
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+upmignuke:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Tactical Nuke MiG
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Aircraft.CHINA, RAAircraft.CHINA
+		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
+		Prerequisites: chpropaganda, chsilo, ~!upmignuke, ~selectchatomic
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: upmigarmoricon
+	ProvidesPrerequisite:
+		Prerequisite: upmignuke
+
 CHMIG:
 	Inherits: ^RAPlane
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Aircraft.CHINA, RAAircraft.CHINA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
-		Prerequisites: chairport, ~techlevel.medium
+		Prerequisites: chairport, ~techlevel.medium, ~!upmignuke
 		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
 	Valued:
 		Cost: 1200
@@ -5629,31 +6728,111 @@ CHMIG:
 		Interval: 2
 	ProducibleWithLevel:
 		Prerequisites: aircraft.upgraded
-	Rearmable:
-		RearmActors: raafld,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,chairport
 	Voiced:
 		VoiceSet: CHMiGVoice
 	GrantConditionOnPrerequisite@upbluefire:
 		Condition: flameupgrade
 		Prerequisites: upbluefire
 	ReloadAmmoPool:
-		Delay: 90
+		Delay: 180
 		Count: 1
-
 	GrantConditionOnPrerequisite@upmigarmor:
 		Condition: upmigarmor
 		Prerequisites: upmigarmor
 	DamageMultiplier@upmigarmor:
 		RequiresCondition: upmigarmor
 		Modifier: 75
+	GrantConditionOnPrerequisite@selectchtanks:
+		Condition: selectchtanks || selectchatomic
+		Prerequisites: selectchtanks
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 110
+		Prerequisites: selectchtanks
+		Queue: Vehicle.CHINA, RAVehicle.CHINA
+
+CHMIG2:
+	Inherits: ^RAPlane
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Aircraft.CHINA, RAAircraft.CHINA, Aircraft.X_Aircrafts
+		BuildPaletteOrder: 50
+		Prerequisites: chairport, ~techlevel.medium, ~selectchatomic, ~upmignuke
+		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Tactical Nuke MiG
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 16000
+	RevealsShroud:
+		Range: 13c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 11c0
+		Type: GroundPosition
+	Armament@1:
+		Weapon: CHMIGWeapon
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		PersistentTargeting: false
+		AttackTurnDelay: 30
+	Aircraft:
+		CruiseAltitude: 2560
+		InitialFacing: 192
+		TurnSpeed: 4
+		Speed: 223
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	AmmoPool:
+		Ammo: 1
+		PipCount: 1
+		AmmoCondition: ammo
+	Selectable:
+		Bounds: 36,28,0,2
+		DecorationBounds: 40,29,0,1
+	SelectionDecorations:
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	SpawnActorOnDeath:
+		Actor: MIG.Husk
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+	ProducibleWithLevel:
+		Prerequisites: aircraft.upgraded
+	Rearmable:
+		RearmActors: raafld,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,chairport
+	Voiced:
+		VoiceSet: CHMiGVoice
+	ReloadAmmoPool:
+		Delay: 120
+		Count: 1
+	GrantConditionOnPrerequisite@upmigarmor:
+		Condition: upmigarmor
+		Prerequisites: upmigarmor
+	DamageMultiplier@upmigarmor:
+		RequiresCondition: upmigarmor
+		Modifier: 75
+	RenderSprites:
+		Image: chmig
 chhelix:
-	Inherits: ^RAHelicopter
+	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@reload: ^RearmableAircraft
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: chairport, ~techlevel.high
+		Prerequisites: chairport, ~techlevel.medium
 		Queue: Aircraft.CHINA, RAAircraft.CHINA, Aircraft.X_Aircrafts
 		Description: Helicopter gunship armed\nwith dual chainguns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
@@ -5694,7 +6873,7 @@ chhelix:
 		Sequence: slow-rotor
 		RequiresCondition: !airborne
 	AmmoPool:
-		Ammo: 8
+		Ammo: 80
 		PipCount: 6
 		ReloadDelay: 8
 		AmmoCondition: ammo
@@ -5713,7 +6892,7 @@ chhelix:
 	RenderSprites:
 		Image: mh60
 	ReloadAmmoPool:
-		Delay: 45
+		Delay: 39
 		Count: 4
 	Production:
 		Produces: Helix.CHINA
@@ -5745,7 +6924,7 @@ chhelix:
 		PauseOnCondition: !ammo
 		RequiresCondition: gattlingaddon
 	ReloadDelayMultiplier@GATTLING:
-		Modifier: 50
+		Modifier: 45
 		RequiresCondition: gattlingaddon
 	GrantConditionOnProduction@bunker:
 		Condition: bunkeraddon
@@ -5776,6 +6955,13 @@ chhelix:
 	ReloadDelayMultiplier@BUNKER:
 		Modifier: 300
 		RequiresCondition: bombaddon
+	GrantConditionOnPrerequisite@selectchtanks:
+		Condition: selectchtanks
+		Prerequisites: selectchtanks
+	ProductionCostMultiplier@selectchtanks:
+		Multiplier: 110
+		Prerequisites: selectchtanks
+		Queue: Vehicle.CHINA, RAVehicle.CHINA
 pscchhelix1:
 	Tooltip:
 		Name: Gattling Turret
@@ -5826,6 +7012,167 @@ pscchhelix3:
 	AlwaysVisible:
 	KillsSelf:
 		RemoveInstead: true
+
+CHSYRD:
+	Inherits: RA1SYRD
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: chsupply, ~enablenaval
+		Queue: Building.CHINA, RABuilding.CHINA
+	Production@NORMAL:
+		Produces: Naval.CHINA
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval.GLA
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Naval.CHINA
+		DisplayOrder: 5
+	ProductionBar@NAVALGDI:
+		ProductionType: Naval.CHINA
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RANAVALGDI:
+		ProductionType: RANaval.CHINA
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea:					##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: ra1syrd
+	-ProductionBar@NAVALALLIES:
+	-ProductionBar@RANAVALALLIES:
+	Power:
+		Amount: -20
+
+chflameboat:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Flame Boar
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Naval.CHINA, RANaval.CHINA
+		Description: Light scout & support ship.\nCan detect submarines.
+	Mobile:
+		TurnSpeed: 5
+		Speed: 70
+	Health:
+		HP: 45000
+	Armor:
+		Type: Wood
+	Repairable:
+		HpPerStep: 1819
+	RevealsShroud:
+		Range: 8c0
+	Armament@Normal:
+		Weapon: CHBoatFlamer
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		RequiresCondition: !flameupgrade
+	Armament@Blue:
+		Weapon: CHBoatFlamerBlue
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		RequiresCondition: flameupgrade
+	AttackFrontal:
+	DetectCloaked:
+		Range: 4c0
+		CloakTypes: Underwater
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	DeliversCash:
+		Payload: 250
+	Voiced:
+		VoiceSet: CHDragonTankVoice
+	GrantConditionOnPrerequisite@upbluefire:
+		Condition: flameupgrade
+		Prerequisites: upbluefire
+	RenderSprites:
+		Scale: 0.80
+
+chasub:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Atomic Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: chsilo
+		Queue: Naval.CHINA, RANaval.CHINA
+		Description: Submerged anti-ship unit\narmed with torpedoes.\nCan detect other submarines.\n  Strong vs Naval units\n  Weak vs Ground units, Aircraft
+	Mobile:
+		TurnSpeed: 4
+		Speed: 50
+	Health:
+		HP: 60000
+	Armor:
+		Type: Light
+	Repairable:
+		HpPerStep: 1819
+	RevealsShroud:
+		Range: 10c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: CHAtomicTorpTube
+		LocalOffset: 208,0,48
+	Armament@Arty:
+		Weapon: CHSubMortarShell
+		LocalOffset: 0,-100,28, 0,100,28, 50,-100,28, 50,100,28, -50,-100,28, -50,100,28
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+		RequiresCondition: !underwater
+	AttackFrontal:
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	DeliversCash:
+		Payload: 475
+	Cloak@underwater:
+		CloakTypes: Underwater
+		InitialDelay: 0
+		CloakDelay: 50
+		CloakedCondition: underwater
+		PauseOnCondition: disabled
+		RequiresCondition: !cloak-force-disabled
+	DetectCloaked:
+		CloakTypes: Underwater
+		Range: 4c0
+	Targetable@Underwater:
+		TargetTypes: Submarine, Underwater
+		RequiresCondition: underwater
+	Voiced:
+		VoiceSet: CHNukeCannonVoice
+	RenderSprites:
+		Scale: 0.80
 ################################################################
 #
 #	USA
@@ -5855,11 +7202,22 @@ USAE1:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
 		Weapon: USARangerMG
+		RequiresCondition: !deployed
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: USARangerMGGarrison
 	Armament@GRENADE:
 		Weapon: USARangerGrenade
+		RequiresCondition: deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		DeploySounds: igidepa.wav,igidepb.wav
+		UndeploySounds: igidepa.wav,igidepb.wav
+		UndeployOnMove: false
+		RequiresCondition: !parachute
+		PauseOnCondition: ReaperTrap || ArbiterStasis
+		Voice: Move
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
@@ -5869,8 +7227,46 @@ USAE1:
 		ValidTypes: infantry							##########
 	Targetable@Inmune:
 		TargetTypes: ToxinInmune
+	AttackFrontal:
+		Armaments: primary
+	Voiced:
+		VoiceSet: USARangerVoice
+	WithTextDecoration@GRENADE:
+		Text: G
+		ReferencePoint: Bottom, Left
+		UsePlayerColor: True
+		ValidStances: Ally, Enemy, Neutral
+		RequiresCondition: deployed
+	WithTextDecoration@MG:
+		Text: M
+		ReferencePoint: Bottom, Left
+		UsePlayerColor: True
+		ValidStances: Ally, Enemy, Neutral
+		RequiresCondition: !deployed
 
-USAPILOT:
+USAE3:
+	Inherits: E3
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Missile Defender
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		Queue: Infantry.USA, RAInfantry.USA
+		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
+	Armament@PRIMARY:							##########
+		Weapon: GLTrooperRPGMissile
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: CHTankHunterMissileG
+	Voiced:
+		VoiceSet: MissileDefenderVoice
+
+usapilot:
 	Inherits: CITYEXPERT
 	Buildable:
 		Queue: NULL
@@ -5887,7 +7283,7 @@ usajeep:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -5953,20 +7349,14 @@ usajeep:
 		Weapon: USAHumveeMissile
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-	-ActorLostNotification:
 	Inherits@ProducesDrones: ^ProducesDrones
-	SpawnActorOnDeath@hellfiredrone:
-		RequiresCondition: bomb2rebirth
-		Actor: usajeep.hellfire
-	SpawnActorOnDeath@repairdrone:
-		RequiresCondition: bomb1rebirth
-		Actor: usajeep.mgdrone
-	SpawnActorOnDeath@spydrone:
-		RequiresCondition: bomb3rebirth
-		Actor: usajeep.spydrone
+	Voiced:
+		VoiceSet: USAHumveeVoice
+
 ^ProducesDrones:
 	Production:
 		Produces: Drones.USA
+		RequiresCondition: !drone1 && !drone2 && !drone3
 	ProductionQueue:
 		Type: Drones.USA
 		Group: Defence
@@ -5979,32 +7369,50 @@ usajeep:
 		CancelledAudio: Cancelled
 		DisplayOrder: 0
 	GrantConditionOnProduction@repairdrone:
-		Condition: bomb1condition
+		Condition: drone1
 		Actors: pscdrones1
-	KillsSelf@repairdrone:
-		RequiresCondition: bomb1condition
-		GrantsCondition: bomb1rebirth
-	SpawnActorOnDeath@repairdrone:
-		RequiresCondition: bomb1rebirth
-		Actor: usajeep.mgdrone
 	GrantConditionOnProduction@hellfiredrone:
-		Condition: bomb2condition
+		Condition: drone2
 		Actors: pscdrones2
-	KillsSelf@hellfiredrone:
-		RequiresCondition: bomb2condition
-		GrantsCondition: bomb2rebirth
-	SpawnActorOnDeath@hellfiredrone:
-		RequiresCondition: bomb2rebirth
-		Actor: usajeep.hellfire
 	GrantConditionOnProduction@spydrone:
-		Condition: bomb3condition
+		Condition: drone3
 		Actors: pscdrones3
-	KillsSelf@spydrone:
-		RequiresCondition: bomb3condition
-		GrantsCondition: bomb3rebirth
-	SpawnActorOnDeath@spydrone:
-		RequiresCondition: bomb3rebirth
-		Actor: usajeep.spydrone
+	CarrierMaster@drone1:
+		Actors: usadrone
+		RearmTicks: 150
+		RespawnTicks: 250
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		LoadedCondition: hornet-loaded
+		RequiresCondition: drone1
+	SelfHealing@drone1:
+		Step: 200
+		Delay: 100
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: drone1
+	CarrierMaster@drone2:
+		Actors: usahellfire
+		RearmTicks: 150
+		RespawnTicks: 250
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		LoadedCondition: hornet-loaded
+		RequiresCondition: drone2
+	CarrierMaster@drone3:
+		Actors: usaspydrone
+		RearmTicks: 150
+		RespawnTicks: 250
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		LoadedCondition: hornet-loaded
+		RequiresCondition: drone3
+	SpawnActorOnDeath@pilotrank1:
+		RequiresCondition: rank-veteran >= 1
+		Actor: usapilot
 pscdrones1:
 	Tooltip:
 		Name: Repair Drone
@@ -6016,7 +7424,7 @@ pscdrones1:
 	Valued:
 		Cost: 300
 	RenderSprites:
-		Image: choverlord2
+		Image: usadrone
 	Interactable:
 	AlwaysVisible:
 	KillsSelf:
@@ -6033,7 +7441,7 @@ pscdrones2:
 	Valued:
 		Cost: 500
 	RenderSprites:
-		Image: choverlord3
+		Image: usahellfire
 	Interactable:
 	AlwaysVisible:
 	KillsSelf:
@@ -6049,7 +7457,7 @@ pscdrones3:
 	Valued:
 		Cost: 500
 	RenderSprites:
-		Image: choverlord3
+		Image: usaspydrone
 	Interactable:
 	AlwaysVisible:
 	KillsSelf:
@@ -6092,9 +7500,9 @@ usahellfire:
 usaspydrone:
 	Inherits: SCINTERCEPTOR
 	Valued:
-		Cost: 500
+		Cost: 100
 	Tooltip:
-		Name: Spy Drone
+		Name: Scout Drone
 	Buildable:
 		Queue: None
 	Armament@PRIMARY:
@@ -6108,93 +7516,7 @@ usaspydrone:
 	RenderDetectionCircle:
 	RenderSprites:
 		Scale: 0.15
-^WithBattleDrone:
-	CarrierMaster:
-		Actors: usadrone
-		RearmTicks: 150
-		RespawnTicks: 250
-		InstaRepair: true
-		SlaveDisposalOnKill: KillSlaves
-		SpawnAllAtOnce: false
-		LoadedCondition: hornet-loaded
-	SelfHealing@drone:
-		Step: 200
-		Delay: 100
-		HealIfBelow: 100
-		DamageCooldown: 125
 
-^WithHellfireDrone:
-	CarrierMaster:
-		Actors: usahellfire
-		RearmTicks: 150
-		RespawnTicks: 250
-		InstaRepair: true
-		SlaveDisposalOnKill: KillSlaves
-		SpawnAllAtOnce: false
-		LoadedCondition: hornet-loaded
-^WithSpyDrone:
-	CarrierMaster:
-		Actors: usaspydrone
-		RearmTicks: 150
-		RespawnTicks: 250
-		InstaRepair: true
-		SlaveDisposalOnKill: KillSlaves
-		SpawnAllAtOnce: false
-		LoadedCondition: hornet-loaded
-usajeep.mgdrone:
-	Inherits: usajeep
-	Inherits@Drone: ^WithBattleDrone
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Hum-Vee (Battle Drone)
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: weap
-		Queue: None
-	RenderSprites:
-		Image: usajeep
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@repairdrone:
-	-GrantConditionOnProduction@hellfiredrone:
-	-GrantConditionOnProduction@spydrone:
-usajeep.hellfire:
-	Inherits: usajeep
-	Inherits@Drone: ^WithHellfireDrone
-	Valued:
-		Cost: 1200
-	Tooltip:
-		Name: Hum-Vee (Hellfire)
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: weap
-		Queue: None
-	RenderSprites:
-		Image: usajeep
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@repairdrone:
-	-GrantConditionOnProduction@hellfiredrone:
-	-GrantConditionOnProduction@spydrone:
-usajeep.spydrone:
-	Inherits: usajeep
-	Inherits@Drone: ^WithSpyDrone
-	Valued:
-		Cost: 1200
-	Tooltip:
-		Name: Hum-Vee (Spy Drone)
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: weap
-		Queue: None
-	RenderSprites:
-		Image: usajeep
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@repairdrone:
-	-GrantConditionOnProduction@hellfiredrone:
-	-GrantConditionOnProduction@spydrone:
 usattnk:
 	Inherits: ^Tank
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
@@ -6227,11 +7549,15 @@ usattnk:
 		TurnSpeed: 5
 		Offset: -150,0,150
 	Armament@Normal:
-		Weapon: RA2SCUD
+		Weapon: USAThomahawk
 		Recoil: 128
 		RecoilRecovery: 26
 		LocalOffset: 768,0,90
 		ReloadingCondition: reloading
+	MissileSpawnerMaster:
+		Actors: usatomamiss
+		RespawnTicks: 150
+		LoadedCondition: ammo
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret@Reload:
@@ -6247,68 +7573,28 @@ usattnk:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	Voiced:
-		VoiceSet: BattlemasterTankVoice
+		VoiceSet: TomahawkLauncherVoice
 	RenderSprites:
 		Scale: 0.85
-	-ActorLostNotification:
 	Inherits@ProducesDrones: ^ProducesDrones
-	SpawnActorOnDeath@hellfiredrone:
-		RequiresCondition: bomb2rebirth
-		Actor: usattnk.hellfire
-	SpawnActorOnDeath@repairdrone:
-		RequiresCondition: bomb1rebirth
-		Actor: usattnk.mgdrone
-	SpawnActorOnDeath@spydrone:
-		RequiresCondition: bomb3rebirth
-		Actor: usattnk.spydrone
-usattnk.mgdrone:
-	Inherits: usattnk
-	Inherits@Drone: ^WithBattleDrone
-	Tooltip:
-		Name: Thomahawk (Battle Drone)
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: weap
-		Queue: None
-	RenderSprites:
-		Image: usattnk
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@repairdrone:
-	-GrantConditionOnProduction@hellfiredrone:
-	-GrantConditionOnProduction@spydrone:
-usattnk.hellfire:
-	Inherits: usattnk
-	Inherits@Drone: ^WithHellfireDrone
-	Tooltip:
-		Name: Thomahawk (Hellfire)
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: weap
-		Queue: None
-	RenderSprites:
-		Image: usattnk
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@repairdrone:
-	-GrantConditionOnProduction@hellfiredrone:
-	-GrantConditionOnProduction@spydrone:
-usattnk.spydrone:
-	Inherits: usattnk
-	Inherits@Drone: ^WithSpyDrone
-	Tooltip:
-		Name: Thomahawk (Spy Drone)
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: weap
-		Queue: None
-	RenderSprites:
-		Image: usattnk
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@repairdrone:
-	-GrantConditionOnProduction@hellfiredrone:
-	-GrantConditionOnProduction@spydrone:
+
+usatomamiss:
+	Inherits: RA2V3ROCKET
+	ShootableBallisticMissile:
+		LaunchAngle: 120
+		Speed: 255
+		LaunchSounds: vbooat1a.wav
+	LeavesTrails:
+		Image: smokey
+		MovingInterval: 2
+		Type: CenterPosition
+	MissileSpawnerSlave:
+	SpawnedExplodes:
+		Weapon: ArtilleryShell
+		EmptyWeapon: ArtilleryShell
+	RenderVoxels:
+		Image: yrbsubmisl
+
 usacrusader:
 	Inherits: ^Tank
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
@@ -6317,7 +7603,7 @@ usacrusader:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Valued:
-		Cost: 800
+		Cost: 900
 	Tooltip:
 		Name: Crusader Tank
 	UpdatesPlayerStatistics:
@@ -6328,9 +7614,9 @@ usacrusader:
 		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
 		Description: General-Purpose USA Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
 	Mobile:
-		Speed: 50
+		Speed: 60
 	Health:
-		HP: 40000
+		HP: 48000
 	Repairable:
 		HpPerStep: 2557
 	Armor:
@@ -6339,9 +7625,9 @@ usacrusader:
 		Range: 6c0
 	Turreted:
 		TurnSpeed: 5
-		Offset: 150,0,150
+		Offset: -50,0,150
 	Armament@Normal:
-		Weapon: CHBattlemasterCannon
+		Weapon: USACrusaderCannon
 		Recoil: 128
 		RecoilRecovery: 26
 		LocalOffset: 768,0,90
@@ -6356,73 +7642,204 @@ usacrusader:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	Voiced:
-		VoiceSet: BattlemasterTankVoice
-	-ActorLostNotification:
+		VoiceSet: USACrusaderTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones
-	SpawnActorOnDeath@hellfiredrone:
-		RequiresCondition: bomb2rebirth
-		Actor: usacrusader.hellfire
-	SpawnActorOnDeath@repairdrone:
-		RequiresCondition: bomb1rebirth
-		Actor: usacrusader.mgdrone
-	SpawnActorOnDeath@spydrone:
-		RequiresCondition: bomb3rebirth
-		Actor: usacrusader.spydrone
-usacrusader.mgdrone:
-	Inherits: usacrusader
-	Inherits@Drone: ^WithBattleDrone
+usapala:
+	Inherits: ^Tank
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Valued:
+		Cost: 1100
 	Tooltip:
-		Name: Crusader Tank (Battle Drone)
+		Name: Paladin Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: weap
-		Queue: None
-	RenderSprites:
-		Image: usacrusader
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@repairdrone:
-	-GrantConditionOnProduction@hellfiredrone:
-	-GrantConditionOnProduction@spydrone:
-usacrusader.hellfire:
-	Inherits: usacrusader
-	Inherits@Drone: ^WithHellfireDrone
+		BuildPaletteOrder: 40
+		Prerequisites: usaweap, ~techlevel.medium
+		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
+		Description: General-Purpose USA Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 60
+	Health:
+		HP: 50000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: -50,0,200
+	Armament@Normal:
+		Weapon: USAPaladinCannon
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	Armament@Laser:
+		Weapon: USAPaladinLaser
+		LocalOffset: -200,0,120
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Voiced:
+		VoiceSet: USAPaladinTankVoice
+	Inherits@ProducesDrones: ^ProducesDrones
+	JamsMissiles:
+		Range: 3c0
+		DeflectionStances: Neutral, Enemy
+		Chance: 25
+		RequiresCondition: !disabled
+usasentry:
+	Inherits: ^Tank
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 800
 	Tooltip:
-		Name: Crusader Tank (Hellfire)
+		Name: Sentry Drone
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: weap
-		Queue: None
+		BuildPaletteOrder: 40
+		Prerequisites: usaweap, ~techlevel.medium
+		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
+		Description: General-Purpose USA Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 70
+	Health:
+		HP: 30000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: -50,0,150
+	Armament@Normal:
+		Weapon: USASentryDroneMG
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Voiced:
+		VoiceSet: USASentryDroneVoice
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		CloakSound: cloak5.aud
+		UncloakSound: cloak5.aud
+		PauseOnCondition: cloak-force-disabled
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
+	DetectCloaked:
+		Range: 9c0
+	RenderDetectionCircle:
 	RenderSprites:
-		Image: usacrusader
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@repairdrone:
-	-GrantConditionOnProduction@hellfiredrone:
-	-GrantConditionOnProduction@spydrone:
-usacrusader.spydrone:
-	Inherits: usacrusader
-	Inherits@Drone: ^WithSpyDrone
+		Scale: 0.88
+	AmmoPool:
+		Ammo: 16
+		PipCount: 0
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 25
+		Count: 1
+	ReloadDelayMultiplier@GattlingSpeed:
+		RequiresCondition: !ammo
+		Modifier: 50
+usaavenger:
+	Inherits: ^Tank
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Valued:
+		Cost: 2000
 	Tooltip:
-		Name: Crusader Tank (Spy Drone)
+		Name: Avenger
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: weap
-		Queue: None
+		BuildPaletteOrder: 70
+		Prerequisites: usaweap, ~techlevel.medium
+		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
+		Description: General-Purpose USA Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 60
+	Health:
+		HP: 30000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: -128,0,170
+	Armament@Normal:
+		Weapon: USAAvengerLaser
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 10,128,90, 10,-128,90
+	Armament@Lights:
+		Weapon: USAAvengerBlueLaser
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 10,1,1, 10,-1,1
+	AttackTurreted:
+	WithSpriteTurret:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Voiced:
+		VoiceSet: USAAvengerVoice
+	Inherits@ProducesDrones: ^ProducesDrones
+	JamsMissiles:
+		Range: 4c0
+		DeflectionStances: Neutral, Enemy
+		Chance: 90
+		RequiresCondition: !disabled
 	RenderSprites:
-		Image: usacrusader
-	-Production:
-	-ProductionQueue:
-	-GrantConditionOnProduction@repairdrone:
-	-GrantConditionOnProduction@hellfiredrone:
-	-GrantConditionOnProduction@spydrone:
+		Scale: 0.88
 USAMCV:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
 	Valued:
 		Cost: 4000	#2000
 	Tooltip:
-		Name: Mobile Construction Vehicle (China)
+		Name: Mobile Construction Vehicle (USA)
 	Buildable:
 		BuildPaletteOrder: 200
 		Prerequisites: chpropaganda, ~techlevel.high
@@ -6544,7 +7961,6 @@ usacommand:
 	ProvidesPrerequisite@factionalpha:
 		Prerequisite: mmgla
 	RenderSprites:
-		Image: chcommand
 	RallyPoint:							##########
 		Offset: 0,2
 	Exit@1:
@@ -6552,9 +7968,7 @@ usacommand:
 		ExitCell: 0,2
 		Facing: 135
 	Voiced:
-		VoiceSet: PRCCommandCenterVoice
-	RenderSprites:
-		Image: chcommand
+		VoiceSet: USACommandCenterVoice
 usapower:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -6566,9 +7980,9 @@ usapower:
 		Prerequisites: usacommand
 		Description: Provides double the power of\na standard Power Plant.
 	Valued:
-		Cost: 1000			#500
+		Cost: 800			#500
 	Tooltip:
-		Name: Nuclear Plant
+		Name: Cold Fusion Reactor
 	ProvidesPrerequisite:
 		Prerequisite: anypower
 	Building:
@@ -6587,7 +8001,7 @@ usapower:
 		Range: 4c0
 	WithBuildingBib:
 	Power:
-		Amount: 100
+		Amount: 150
 	Targetable:
 		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	ScalePowerWithHealth:
@@ -6599,9 +8013,51 @@ usapower:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 	Voiced:
-		VoiceSet: CHNuclearReactorVoice
+		VoiceSet: USAColdFusionReactorVoice
+	GrantConditionOnPrerequisite@anypower:
+		Condition: anypower
+		Prerequisites: anypower
+	ProductionCostMultiplier@anypower:
+		Multiplier: 50
+		Prerequisites: !anypower
+		Queue: Building.USA, RABuilding.USA
+	Production:
+		Produces: PowerPlant.USA
+		RequiresCondition: !powerupgrade
+	ProductionQueue:
+		Type: PowerPlant.USA
+		Group: Defence
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		DisplayOrder: 0
+	GrantConditionOnProduction@powerupgrade:
+		Condition: powerupgrade
+		Actors: pscusapower
+	PowerMultiplier@upgrade:
+		Modifier: 200
+		RequiresCondition: powerupgrade
+
+pscusapower:
+	Tooltip:
+		Name: Control Rods
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: PowerPlant.USA
+		Description: Normal Weak Explosive.
+		Prerequisites: anypower
+	Valued:
+		Cost: 500
 	RenderSprites:
-		Image: chpower
+		Image: choverlord2
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
 usabarracks:
 	Inherits: ^BaseBuilding
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -6669,7 +8125,7 @@ usabarracks:
 	Selectable:
 		Bounds: 48,42,0,-5
 	Voiced:
-		VoiceSet: PRCBarracksVoice
+		VoiceSet: USABarracksVoice
 	RenderSprites:
 		Image: chbarracks
 usapatriot:
@@ -6703,11 +8159,15 @@ usapatriot:
 	WithSpriteBody:
 	WithSpriteTurret:
 	Armament@NORMAL:
-		Weapon: GLStingerSiteMissile
+		Weapon: USAPatriotMissAG
 		LocalOffset: -85,120,340, -85,-120,340
 		LocalYaw: -100, 100
 		Recoil: 10
-		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: USAPatriotMissAA
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+		Recoil: 10
 	AttackTurreted:
 	BodyOrientation:
 		QuantizedFacings: 8
@@ -6720,11 +8180,11 @@ usapatriot:
 	Voiced:
 		VoiceSet: CHGatlingCannonVoice
 	RenderSprites:
-		Image: chgattling
+		Image: usapatriot
+
 usasupply:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
-	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -6770,7 +8230,7 @@ usasupply:
 	Voiced:
 		VoiceSet: PRCSupplyVoice
 	RenderSprites:
-		Image: chsupply
+		Image: usasupply
 
 usahook:
 	Inherits: RAHARV
@@ -6846,18 +8306,18 @@ usaweap:
 	Valued:
 		Cost: 2000
 	Tooltip:
-		Name: Weapons Factory
+		Name: War Factory
 	ProvidesPrerequisite:
 		Prerequisite: chweap
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: chsupply
+		Prerequisites: usasupply
 		Queue: Building.USA, RABuilding.USA
 		Description: Produces vehicles
 	Building:
-		Footprint: ____ =xxx ==== ====
+		Footprint: xxxx x++x =++= ====
 		Dimensions: 4,4
-		LocalCenterOffset: 0,-512,0
+		LocalCenterOffset: -12,-512,0
 	SelectionDecorations:
 	Selectable:
 		Bounds: 72,48,0,0
@@ -6904,9 +8364,13 @@ usaweap:
 	Power:
 		Amount: -40
 	Voiced:
-		VoiceSet: PRCWarFactoryVoice
-	RenderSprites:
-		Image: chweap
+		VoiceSet: USAWarFactoryVoice
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 15
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
 usastrategy:
 	Inherits: ^BaseBuilding
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -6918,9 +8382,9 @@ usastrategy:
 	Valued:
 		Cost: 2000
 	Tooltip:
-		Name: Propaganda Center
+		Name: Strategy Center
 	ProvidesPrerequisite:
-		Prerequisite: chpropaganda
+		Prerequisite: usastrategy
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: usaweap
@@ -6940,8 +8404,6 @@ usastrategy:
 		Range: 5c0
 	WithBuildingBib:
 	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite:
-		Prerequisite: chpropaganda
 	Power:
 		Amount: -40
 	Voiced:
@@ -6955,14 +8417,14 @@ usaairport:
 	Buildable:
 		Queue: Building.USA, RABuilding.USA
 		BuildPaletteOrder: 130
-		Prerequisites: chpropaganda, ~techlevel.medium,
+		Prerequisites: usastrategy, ~techlevel.medium,
 		Description: Produces and reloads aircraft
 	Valued:
 		Cost: 1000
 	Tooltip:
 		Name: Airfield
 	Building:
-		Footprint: xxxx xxxx xxxx xxxx
+		Footprint: xxxx xx== xx== xx==
 		Dimensions: 4,4
 	Health:
 		HP: 150000
@@ -7013,6 +8475,440 @@ usaairport:
 		VoiceSet: PRCAirfieldVoice
 	RenderSprites:
 		Image: chairport
+	ClassicAirstrikePower@Spectre:
+		Squad:
+			usagunship:
+				SpawnDelay: 40
+				SpawnOffset: -1536,1024,0
+				TargetOffset: -536,0,0
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: airstrike
+		ChargeInterval: 4500
+		Description: Spectre gunship
+		LongDesc: MiG aircraft fire missiles in a precision strike.\nDeals heavy damage to a single target.
+		EndChargeSpeechNotification: AirstrikeReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: EnemyPlanesApproaching
+		QuantizedFacings: 8
+		DisplayBeacon: True
+		BeaconPoster: airstrike
+		BeaconPosterPalette: beaconposter
+		DisplayRadarPing: True
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		Strikes: 4
+		CircleDelay: 20
+		OrderName: AirstrikePowerSpectre
+		SupportPowerPaletteOrder: 20
+	SupportPowerChargeBar:
+usadropzone:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 640,-384,0, 640,512,0, -710,-512,0, -710,512,0
+	Buildable:
+		Queue: Building.USA, RABuilding.USA
+		BuildPaletteOrder: 70
+		Prerequisites: usastrategy
+		Description: Unlock upgrades for GLA weaponry.\nCan consistently make money.
+	Valued:
+		Cost: 2500			#300
+	Tooltip:
+		Name: Supply drop zone
+	ProvidesPrerequisite:
+		Prerequisite: usadropzone
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000	#40000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: -40
+	Targetable:
+		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
+	WithDeathAnimation:
+		DeathSequence: dead
+		UseDeathTypeSuffix: false
+	CashTrickler:
+		Amount: 1500 
+		Interval: 600
+	Voiced:
+		VoiceSet: GLBlackMarketVoice
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
+usastorm:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Tomahawk Storm
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: glpalace, ~techlevel.high, ~glaselected
+		Queue: Building.USA, RABuilding.USA
+		Description: Drop multiple Scud missiles anywhere on the map.\nCan contaminate ground with Anthrax.\nRequires power to operate.
+	Building:
+		Footprint: xxxx xxxx xxxx ====
+		Dimensions: 4,4
+		LocalCenterOffset: 0,-252,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,68,0,-12
+	SelectionDecorations:
+	Health:
+		HP: 210000
+	RevealsShroud:
+		Range: 6c0
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	Power:
+		Amount: -50
+	ProvidesPrerequisite@buildingname:
+	Voiced:
+		VoiceSet: CHMissileSiloVoice
+	Turreted:
+	AttackTurreted:
+	Armament@Power:
+		Weapon: USASuperWeaponThomahawk
+		LocalOffset: 900,900,340, 900,-900,340, -900,900,340, -900,-900,340
+		LocalYaw: 0,100
+	AttackOrderPower@Power:
+		OrderName: GLAScudStorm
+		PauseOnCondition: disabled || lowpower
+		Cursor: attackmove
+		Icon: emp
+		ChargeInterval: 9000
+		Description: Scud Storm
+		LongDesc: Fires a pulse blast which disables\nall mechanical units in the area.
+		EndChargeSpeechNotification:
+		SelectTargetSpeechNotification:
+	AttackOrderPower@PowerMulti:
+		OrderName: GLAScudStorm
+		PauseOnCondition: disabled || lowpower
+		AllowMultiple: True
+		Prerequisites: ~techlevel.unlimited
+		Cursor: attackmove
+		Icon: emp
+		ChargeInterval: 9000
+		Description: Scud Storm
+		LongDesc: Fires a pulse blast which disables\nall mechanical units in the area.
+		EndChargeSpeechNotification:
+		SelectTargetSpeechNotification:
+	RenderRangeCircle:
+	SupportPowerChargeBar:
+	RenderSprites:
+		Image: glstorm
+	MissileSpawnerMaster:
+		Actors: usatomamiss
+		RespawnTicks: 10
+		LoadedCondition: ammo
+
+usacannon:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Particle Cannon
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: usastrategy, ~techlevel.high
+		Queue: Building.USA, RABuilding.USA
+		Description: Provides Nuclear Strike support power.\nUnlocks Stealth Tank, Chem. Warrior and Obelisk of Light.\nRequires power to operate.
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,68,0,-12
+	SelectionDecorations:
+	Health:
+		HP: 210000
+	RevealsShroud:
+		Range: 6c0
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	IonCannonPower:
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
+		Icon: ioncannon
+		Cursor: ioncannon
+		ChargeInterval: 6750
+		Description: Ion Cannon
+		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: sparlo2a.aud, sparlo2b.aud, sparlo2c.aud, sparlo3a.aud, sparlo3b.aud, sparlo3c.aud, sparlo4a.aud, sparlo4b.aud, sparlo4c.aud
+		DisplayTimerStances: Ally, Neutral
+		DisplayRadarPing: True
+		CameraActor: camera.small
+		SupportPowerPaletteOrder: 20
+		Weapon: USAParticleCannon
+		Effect: usaparticlesfx
+	IonCannonPower@unlimited:
+		AllowMultiple: True
+		Prerequisites: ~techlevel.unlimited
+		PauseOnCondition: lowpower
+		Icon: ioncannon
+		Cursor: ioncannon
+		ChargeInterval: 6750
+		Description: Ion Cannon
+		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: sparlo2a.aud, sparlo2b.aud, sparlo2c.aud, sparlo3a.aud, sparlo3b.aud, sparlo3c.aud, sparlo4a.aud, sparlo4b.aud, sparlo4c.aud
+		DisplayTimerStances: Ally, Neutral
+		DisplayRadarPing: True
+		CameraActor: camera.small
+		SupportPowerPaletteOrder: 20
+		Weapon: USAParticleCannon
+		Effect: usaparticlesfx
+	WithBuildingBib:
+	WithNukeLaunchAnimation:
+		RequiresCondition: !build-incomplete
+	WithNukeLaunchOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: smoke
+	SupportPowerChargeBar:
+	Power:
+		Amount: -200
+	ProvidesPrerequisite@buildingname:
+	Voiced:
+		VoiceSet: CHMissileSiloVoice
+	GrantConditionOnPrerequisite@selectchatomic:
+		Condition: selectchatomic
+		Prerequisites: selectchatomic
+	ProductionCostMultiplier@selectchatomic:
+		Multiplier: 90
+		Prerequisites: selectchatomic
+		Queue: Building.CHINA, RABuilding.CHINA
+	Explodes:
+		Weapon: CHAtomicWeapon
+		EmptyWeapon: CHAtomicWeapon
+usagunship:
+	Inherits: ^RANeutralPlane
+	-Huntable:
+	-UpdatesPlayerStatistics:
+	-Voiced:
+	-GainsExperience:
+	-MapEditorData:
+	RejectsOrders:
+	Interactable:
+	Health:
+		HP: 150000
+	SpawnActorOnDeath:
+		Actor: BADR.Husk
+	Tooltip:
+		Name: Spectre gunship
+	Valued:
+		Cost: 2000
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 170
+		Repulsable: False
+		RepulsionSpeed: 10
+		CruiseAltitude: 2060
+	AttackBomber:
+	Armament@Gattling:
+		Weapon: CHGattlingTurret
+		LocalOffset: 0,-256,-128, 0,256,-128, 0,-256,128, 0,256,-128
+	Armament@Gattling2:
+		Weapon: USABattleDroneMG
+		LocalOffset: 0,-256,-128, 0,256,-128, 0,-256,128, 0,256,-128
+	Armament@Cannon:
+		Weapon: USAGunshipArty
+		LocalOffset: 0,-256,-43, 0,256,-43
+	Armament@PRIMARY:
+		Weapon: USAGunshipMG
+		LocalOffset: 0,-256,-128, 0,256,-128, 0,-256,128, 0,256,128
+	WithMuzzleOverlay:
+	Contrail@1:
+		Offset: -640,171,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -640,-171,0
+		TrailLength: 15
+	RenderSprites:
+		Image: badr
+
+usaraptor:
+	Inherits: ^RAPlane
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Buildable:
+		Queue: Aircraft.USA, RAAircraft.USA, Aircraft.X_Aircrafts
+		BuildPaletteOrder: 50
+		Prerequisites: usaairport, ~techlevel.high
+		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Raptor
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 16000
+	RevealsShroud:
+		Range: 13c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 11c0
+		Type: GroundPosition
+	Armament@AG:
+		Weapon: USARaptorMissileAG
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+	Armament@AA:
+		Weapon: USARaptorMissileAA
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		PersistentTargeting: false
+		AttackTurnDelay: 30
+	Aircraft:
+		CruiseAltitude: 2560
+		InitialFacing: 192
+		TurnSpeed: 4
+		Speed: 223
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	AmmoPool:
+		Ammo: 4
+		AmmoCondition: ammo
+	Selectable:
+		Bounds: 36,28,0,2
+		DecorationBounds: 40,29,0,1
+	SelectionDecorations:
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	SpawnActorOnDeath:
+		Actor: MIG.Husk
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+	ProducibleWithLevel:
+		Prerequisites: aircraft.upgraded
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	ReloadAmmoPool:
+		Delay: 180
+		Count: 1
+
+usaaurora:
+	Inherits: ^RAPlane
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Buildable:
+		Queue: Aircraft.USA, RAAircraft.USA, Aircraft.X_Aircrafts
+		BuildPaletteOrder: 50
+		Prerequisites: usaairport, ~techlevel.high
+		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Aurora
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 13c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 11c0
+		Type: GroundPosition
+	Armament@AG:
+		Weapon: USAMissileAurora
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		PersistentTargeting: false
+		AttackTurnDelay: 30
+	Aircraft:
+		CruiseAltitude: 2560
+		InitialFacing: 192
+		TurnSpeed: 4
+		Speed: 223
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	AmmoPool:
+		Ammo: 1
+		AmmoCondition: ammo
+	Selectable:
+		Bounds: 36,28,0,2
+		DecorationBounds: 40,29,0,1
+	SelectionDecorations:
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	SpawnActorOnDeath:
+		Actor: MIG.Husk
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+	ProducibleWithLevel:
+		Prerequisites: aircraft.upgraded
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	ReloadAmmoPool:
+		Delay: 180
+		Count: 1
 ################################################################
 #
 #	Leang
@@ -7024,7 +8920,7 @@ leangmcv:
 	Valued:
 		Cost: 4000	#2000
 	Tooltip:
-		Name: Mobile Construction Vehicle (Leang)
+		Name: Mobile Construction Vehicle (Boss)
 	Buildable:
 		BuildPaletteOrder: 200
 		Prerequisites: chpropaganda, ~techlevel.high
@@ -7068,130 +8964,35 @@ leangmcv:
 		Prerequisite: mmchina
 
 leangcommand:
-	Inherits: ^BaseBuilding
-	Inherits@CPQ: ^CPQCondition
-	Inherits@aicash: ^AIConyardCash
-	Inherits@repairpower: ^EmergencyRepairPower
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -1536, -1536
-			BottomRight: 1536, 1536
-	Valued:
-		Cost: 3500
+	Inherits: chcommand
 	Tooltip:
 		Name: Command Center (Leang)
-	Building:
-		Footprint: xxx xxx xxx
-		Dimensions: 3,3
-	Health:
-		HP: 210000
-	Armor:
-		Type: Wood
-	RevealsShroud:
-		Range: 10c0
-	WithBuildingBib:
 	Production@NORMAL:
 		Produces: Building.LEANG, Defence.LEANG
-		RequiresCondition: !classicproductionqueues
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RABuilding.LEANG, RADefence.LEANG
-		RequiresCondition: classicproductionqueues
 	ProductionQueue@AlphaBuilding:
 		Type: Building.LEANG
-		DisplayOrder: 0
-		Group: Building
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
 	ProductionQueue@AlphaDefense:
 		Type: Defence.LEANG
-		DisplayOrder: 1
-		Group: Defence
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	BaseBuilding:
 	ProductionBar@BuildingAlpha:
 		ProductionType: Building.LEANG
-		RequiresCondition: !classicproductionqueues
 	ProductionBar@DefenceAlpha:
 		ProductionType: Defence.LEANG
-		RequiresCondition: !classicproductionqueues
 	ProductionBar@RABuildingAlpha:
 		ProductionType: RABuilding.LEANG
-		RequiresCondition: classicproductionqueues
 	ProductionBar@RADefenceAlpha:
 		ProductionType: RADefence.LEANG
-		RequiresCondition: classicproductionqueues
-	BaseProvider:
-		Cooldown: 75
-		Range: 14c0
-	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite@normal:
-		Prerequisite: glcommand
-	ProvidesRadar:
-		RequiresCondition: !jammed
-	ExternalCondition@JAMMED:
-		Condition: jammed
-	Power:
-		Amount: 0
-	GrantConditionOnBotOwner:
-		Condition: botgla
-		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botgla
-		RequiresCondition: botgla
-	-SpawnActorsOnSell:
-	-WithDeathAnimation:
 	ProvidesPrerequisite@factionalpha:
-		Prerequisite: mmgla
-	RenderSprites:
-		Image: chcommand
-	RallyPoint:							##########
-		Offset: 0,2
-	Exit@1:
-		SpawnOffset: -1024,1024,0		#-1323,1280,0
-		ExitCell: 0,2
-		Facing: 135
-	Voiced:
-		VoiceSet: PRCCommandCenterVoice
+		Prerequisite: mmleang
 	RenderSprites:
 		Image: chcommand
 leangbarracks:
-	Inherits: ^BaseBuilding
-	Inherits@CPQWP: ^CPQConditionWithPrimary
-	HitShape:
-		UseTargetableCellsOffsets: false
-		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
-		Type: Rectangle
-			TopLeft: -1024, -1024
-			BottomRight: 1024, 640
-	Valued:
-		Cost: 500
-	Tooltip:
-		Name: China Barracks
-	ProvidesPrerequisite:
-		Prerequisite: barracks
+	Inherits: chbarracks
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: anypower
 		Queue: Building.LEANG, RABuilding.LEANG
-		Description: Trains infantry
-	Building:
-		Footprint: xxx xxx ===
-		Dimensions: 3,3
-		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 60000
-	RevealsShroud:
-		Range: 5c0
-	WithBuildingBib:
-	RallyPoint:
-	Exit@1:
-		SpawnOffset: -426,85,0
-		ExitCell: 0,1
-	Exit@2:
-		SpawnOffset: 298,298,0
-		ExitCell: 1,1
 	Production@NORMAL:
 		Produces: Infantry.LEANG
 		RequiresCondition: !classicproductionqueues
@@ -7202,25 +9003,119 @@ leangbarracks:
 		Condition: produced
 	ProductionQueue:
 		Type: Infantry.LEANG
-		DisplayOrder: 2
-		Group: Infantry
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
 	ProductionBar@INFANTRYGDI:
 		ProductionType: Infantry.LEANG
 		RequiresCondition: !classicproductionqueues
 	ProductionBar@RAINFANTRYGDI:
 		ProductionType: RAInfantry.LEANG
 		RequiresCondition: classicproductionqueues
-	Power:
-		Amount: -20
-	ProvidesPrerequisite@buildingname:
-	Selectable:
-		Bounds: 48,42,0,-5
-	Voiced:
-		VoiceSet: PRCBarracksVoice
+leangsupply:
+	Inherits: chsupply
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Building.LEANG, RABuilding.LEANG
+	FreeActor@1:
+		Actor: chharv
+	RenderSprites:
+		Image: chsupply
+leangweap:
+	Inherits: chweap
+	ProvidesPrerequisite:
+		Prerequisite: leangweap
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: leangsupply
+		Queue: Building.LEANG, RABuilding.LEANG
+	Production@NORMAL:
+		Produces: Vehicle.LEANG
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.LEANG
+	ProductionQueue:
+		Type: Vehicle.LEANG
+	ProductionBar@VEHICLESCAVENGER:
+		ProductionType: Vehicle.LEANG
+	ProductionBar@RAVEHICLESCAVENGER:
+		ProductionType: RAVehicle.LEANG
+	RenderSprites:
+		Image: chweap
+leange1:
+	Inherits: USAE1
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 125
+		Queue: Infantry.LEANG, RAInfantry.LEANG
+		Prerequisites: barracks
+	RenderSprites:
+		Image: usae1
+leange2:
+	Inherits: CHE2
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 125
+		Queue: Infantry.LEANG, RAInfantry.LEANG
+		Prerequisites: barracks
+	RenderSprites:
+		Image: che2
+leange3:
+	Inherits: CHE3
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		Queue: Infantry.LEANG, RAInfantry.LEANG
+	RenderSprites:
+		Image: che3
+	GrantConditionOnPrerequisite@uparmorpercingrocket:
+		Condition: rocketupgrade
+		Prerequisites: uparmorpercingrocket
+	FirepowerMultiplier@uparmorpercingrocket:
+		RequiresCondition: rocketupgrade
+		Modifier: 125
+	RenderSprites:
+		Image: che3
+leangmob:
+	Inherits: glamob
+	Buildable:
+		BuildPaletteOrder: 30
+		BuildDuration: 800
+		Queue: Infantry.LEANG, RAInfantry.LEANG
+		Prerequisites: glpalace, ~techlevel.medium
+	RenderSprites:
+		Image: glamob
+leangttnk:
+	Inherits: usattnk
+	Valued:
+		Cost: 1100
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: leangweap, ~techlevel.medium
+		Queue: Vehicle.LEANG, RAVehicle.LEANG
+	RenderSprites:
+		Image: usattnk
+leangpala:
+	Inherits: usapala
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: leangweap, ~techlevel.medium
+		Queue: Vehicle.LEANG, RAVehicle.LEANG
+	RenderSprites:
+		Image: usapala
+leangsentry:
+	Inherits: usasentry
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: leangweap, ~techlevel.medium
+		Queue: Vehicle.LEANG, RAVehicle.LEANG
+	RenderSprites:
+		Image: usasentry
+leangavenger:
+	Inherits: usaavenger
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: leangweap, ~techlevel.medium
+		Queue: Vehicle.LEANG, RAVehicle.LEANG
+	RenderSprites:
+		Image: usaavenger

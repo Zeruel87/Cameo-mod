@@ -304,7 +304,7 @@
 	Mobile:
 		Locomotor: wheeled
 		TurnSpeed: 5
-		PauseOnCondition: disabled
+		PauseOnCondition: disabled || driver-dead
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
@@ -409,6 +409,37 @@
 		RequiresCondition: Magnet
 	GpsDot:
 		String: Vehicle
+	ExternalCondition@EmergencyRepair1:
+		Condition: repairlvl1
+	ExternalCondition@EmergencyRepair2:
+		Condition: repairlvl2
+	ExternalCondition@EmergencyRepair3:
+		Condition: repairlvl3
+	SelfHealing@EmergencyRepair1:
+		Step: 250
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: repairlvl1
+	SelfHealing@EmergencyRepair2:
+		Step: 300
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: repairlvl2
+	SelfHealing@EmergencyRepair3:
+		Step: 350
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: repairlvl3
+	WithDecoration@EmergencyRepair1:
+		Image: select
+		Sequence: repair
+		ReferencePoint: Bottom, Right
+		RequiresCondition: repairlvl1 || repairlvl2 || repairlvl3
+		BlinkInterval: 32
+		BlinkPattern: On, Off
 
 ^Tank:
 	Inherits: ^Vehicle
@@ -421,6 +452,7 @@
 		Payload: 300
 		Type: GrinderCash
 		Sounds: bgrinda.wav
+
 
 ^BoatUnit:
 	Inherits: ^Vehicle
@@ -2591,19 +2623,19 @@ CPQDEBUGDUMMY:
 	Inherits@MC: ^MCImmune
 	Harvester:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
-		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, tsntwast, screfinery, scassimilator, scextractor
+		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, tsntwast, screfinery, scassimilator, scextractor, 315proc
 	GpsDot:
 		String: Harvester
 
 ^RearmableAircraft:
 	Rearmable:
-		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2
+		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport
 	AutoTarget:
 		InitialStance: HoldFire
 
 ^Repairable:
 	Repairable:
-		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr
+		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap
 
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
@@ -2702,6 +2734,16 @@ CPQDEBUGDUMMY:
 ^Refinery:
 	Buildable:
 		BuildDurationModifier: 25
+	Targetable@Infiltrate:
+		TargetTypes: ThiefInfiltrate, SpyInfiltrate, BrayanInfiltrate
+	InfiltrateForCash:
+		Percentage: 50
+		Types: SpyInfiltrate, ThiefInfiltrate
+		Notification: BaseAttack
+	InfiltrateForCash@infiltrate:
+		Percentage: 10
+		Types: BrayanInfiltrate
+		Notification: BaseAttack
 
 ^ProducesUnits:
 	Buildable:
@@ -2777,7 +2819,7 @@ CPQDEBUGDUMMY:
 		CancelActivity: true
 	SelfHealing@DRIVER_DEAD:
 		PercentageStep: -1
-		Delay: 800
+		Delay: 900
 		HealIfBelow: 101
 		DamageCooldown: 0
 		RequiresCondition: driver-dead
@@ -2796,7 +2838,27 @@ CPQDEBUGDUMMY:
 		RequiresCondition: driver-dead
 		BlinkInterval: 32
 		BlinkPattern: On, Off, Off, Off
-
+	SpeedMultiplier@DRIVERKILL:
+		RequiresCondition: driver-dead
+		Modifier: 0
+	RejectsOrders@DRIVERKILL:
+		RequiresCondition: driver-dead
+	SpawnActorOnDeath@Scraps:
+		Probability: 90
+		Actor: glscrapcrate
+		OwnerType: InternalName
+		InternalOwner: Creeps
+		DeathType: MakeScrapbox
+		RequiresLobbyCreeps: true
+	DamageMultiplier@scrap1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 95
+	DamageMultiplier@scrap2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 90
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
 ^CanCaptureDriverlessVehicles:
 	Captures@DRIVER_KILL:
 		CaptureTypes: driverless_vehicle
@@ -2832,23 +2894,23 @@ CPQDEBUGDUMMY:
 		Condition: frenzypower3
 
 ^PropagandaSelfHeal:
-	GrantConditionOnPrerequisite@upsubmininal:
-		Condition: upsubmininal
-		Prerequisites: upsubmininal
+	GrantConditionOnPrerequisite@upsubliminal:
+		Condition: upsubliminal
+		Prerequisites: upsubliminal
 	ExternalCondition@PROPAGANDA:
 		Condition: propaganda
 	SelfHealing@PROPAGANDA1:
 		Step: 200
-		Delay: 100
+		Delay: 50
 		HealIfBelow: 100
 		DamageCooldown: 125
 		RequiresCondition: propaganda
 	SelfHealing@PROPAGANDA2:
 		Step: 200
-		Delay: 100
+		Delay: 50
 		HealIfBelow: 100
 		DamageCooldown: 125
-		RequiresCondition: propaganda && upsubmininal
+		RequiresCondition: propaganda && upsubliminal
 	WithDecoration@PROPAGANDAHEAL:
 		Image: pips
 		Sequence: pip-heal
@@ -2859,3 +2921,4 @@ CPQDEBUGDUMMY:
 	Targetable@PROPAGANDAPSI:
 		RequiresCondition: propaganda
 		TargetTypes: Propaganda
+
