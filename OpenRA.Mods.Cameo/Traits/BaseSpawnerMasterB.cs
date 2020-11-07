@@ -1,15 +1,15 @@
-#region Copyright & License Information
+﻿#region Copyright & License Information
 /*
- * Copyright 2007-2018 The OpenRA Developers (see AUTHORS)
- * This file is part of OpenRA, which is free software. It is made
- * available to you under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version. For more
- * information, see COPYING.
+ * Copyright 2015- OpenRA.Mods.AS Developers (see AUTHORS)
+ * This file is a part of a third-party plugin for OpenRA, which is
+ * free software. It is made available to you under the terms of the
+ * GNU General Public License as published by the Free Software
+ * Foundation. For more information, see COPYING.
  */
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
@@ -17,25 +17,17 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Traits
 {
-	// What to do when master is killed or mind controlled
-	public enum SpawnerSlaveDisposal
-	{
-		DoNothing,
-		KillSlaves,
-		GiveSlavesToAttacker
-	}
-
-	public class BaseSpawnerSlaveEntry
+	public class BaseSpawnerSlaveEntryB
 	{
 		public string ActorName = null;
 		public Actor Actor = null;
-		public BaseSpawnerSlave SpawnerSlave = null;
+		public BaseSpawnerSlaveB SpawnerSlave = null;
 
 		public bool IsValid { get { return Actor != null && !Actor.IsDead; } }
 	}
 
 	[Desc("This actor can spawn actors.")]
-	public class BaseSpawnMasterInfo : ConditionalTraitInfo
+	public class BaseSpawnerMasterBInfo : PausableConditionalTraitInfo
 	{
 		[Desc("Spawn these units. Define this like paradrop support power.")]
 		public readonly string[] Actors;
@@ -43,8 +35,8 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Slave actors to contain upon creation. Set to -1 to start with full slaves.")]
 		public readonly int InitialActorCount = -1;
 
-		[Desc("The armament which will trigger the slaves to attack the target. (== \"Name:\" tag of Armament, not @tag!)")]
-		public readonly string SpawnerArmamentName = "primary";
+		[Desc("Name of the armaments that grant this condition.")]
+		public readonly HashSet<string> ArmamentNames = new HashSet<string>() { "primary" };
 
 		[Desc("What happens to the slaves when the master is killed?")]
 		public readonly SpawnerSlaveDisposal SlaveDisposalOnKill = SpawnerSlaveDisposal.KillSlaves;
@@ -61,10 +53,6 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Spawn regen delay, in ticks")]
 		public readonly int RespawnTicks = 150;
 
-		// This can be computed but this should be faster.
-		[Desc("Air units and ground units have different mobile trait so...")]
-		public readonly bool SpawnIsGroundUnit = false;
-
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
 			base.RulesetLoaded(rules, ai);
@@ -79,21 +67,20 @@ namespace OpenRA.Mods.CA.Traits
 				throw new YamlException("InitialActorCount must be -1 or non-negative. Actor type = {0}".F(ai.Name));
 		}
 
-		public override object Create(ActorInitializer init) { return new BaseSpawnerMaster(init, this); }
+		public override object Create(ActorInitializer init) { return new BaseSpawnerMasterB(init, this); }
 	}
 
-	public class BaseSpawnerMaster : ConditionalTrait<BaseSpawnMasterInfo>, INotifyCreated, INotifyKilled, INotifyOwnerChanged
+	public class BaseSpawnerMasterB : PausableConditionalTrait<BaseSpawnerMasterBInfo>, INotifyKilled, INotifyOwnerChanged, INotifyActorDisposing
 	{
 		readonly Actor self;
-		protected readonly BaseSpawnerSlaveEntry[] SlaveEntries;
 
 		IFacing facing;
-		ExitInfo[] exits;
-		RallyPoint rallyPoint;
 
-		public IReloadModifier[] ReloadModifiers;
+		protected IReloadModifier[] reloadModifiers;
 
-		public BaseSpawnerMaster(ActorInitializer init, BaseSpawnMasterInfo info)
+		public readonly BaseSpawnerSlaveEntryB[] SlaveEntries;
+
+		public BaseSpawnerMasterB(ActorInitializer init, BaseSpawnerMasterBInfo info)
 			: base(info)
 		{
 			self = init.Self;
@@ -108,12 +95,12 @@ namespace OpenRA.Mods.CA.Traits
 			}
 		}
 
-		public virtual BaseSpawnerSlaveEntry[] CreateSlaveEntries(BaseSpawnMasterInfo info)
+		public virtual BaseSpawnerSlaveEntryB[] CreateSlaveEntries(BaseSpawnerMasterBInfo info)
 		{
-			var slaveEntries = new BaseSpawnerSlaveEntry[info.Actors.Length];
+			var slaveEntries = new BaseSpawnerSlaveEntryB[info.Actors.Length];
 
-			for (int i = 0; i < slaveEntries.Length; i++)
-				slaveEntries[i] = new BaseSpawnerSlaveEntry();
+			for (var i = 0; i < slaveEntries.Length; i++)
+				slaveEntries[i] = new BaseSpawnerSlaveEntryB();
 
 			return slaveEntries;
 		}
@@ -122,32 +109,28 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			base.Created(self);
 
-			ReloadModifiers = self.TraitsImplementing<IReloadModifier>().ToArray();
 			facing = self.TraitOrDefault<IFacing>();
-			exits = self.Info.TraitInfos<ExitInfo>().ToArray();
-			rallyPoint = self.TraitOrDefault<RallyPoint>();
 
-			// Spawn initial load.
-			int burst = Info.InitialActorCount == -1 ? Info.Actors.Length : Info.InitialActorCount;
-			for (int i = 0; i < burst; i++)
-				Replenish(self, SlaveEntries);
+			reloadModifiers = self.TraitsImplementing<IReloadModifier>().ToArray();
 		}
 
 		/// <summary>
 		/// Replenish destoyed slaves or create new ones from nothing.
 		/// Follows policy defined by Info.OneShotSpawn.
 		/// </summary>
-		public void Replenish(Actor self, BaseSpawnerSlaveEntry[] slaveEntries)
+		public void Replenish(Actor self, BaseSpawnerSlaveEntryB[] slaveEntries)
 		{
 			if (Info.SpawnAllAtOnce)
 			{
 				foreach (var se in slaveEntries)
+				{
 					if (!se.IsValid)
 						Replenish(self, se);
+				}
 			}
 			else
 			{
-				BaseSpawnerSlaveEntry entry = SelectEntryToSpawn(slaveEntries);
+				var entry = SelectEntryToSpawn(slaveEntries);
 
 				// All are alive and well.
 				if (entry == null)
@@ -160,7 +143,7 @@ namespace OpenRA.Mods.CA.Traits
 		/// <summary>
 		/// Replenish one slave entry.
 		/// </summary>
-		public virtual void Replenish(Actor self, BaseSpawnerSlaveEntry entry)
+		public virtual void Replenish(Actor self, BaseSpawnerSlaveEntryB entry)
 		{
 			if (entry.IsValid)
 				throw new InvalidOperationException("Replenish must not be run on a valid entry!");
@@ -178,13 +161,19 @@ namespace OpenRA.Mods.CA.Traits
 		/// Slave entry initializer function.
 		/// Override this function from derived classes to initialize their own specific stuff.
 		/// </summary>
-		public virtual void InitializeSlaveEntry(Actor slave, BaseSpawnerSlaveEntry entry)
+		public virtual void InitializeSlaveEntry(Actor slave, BaseSpawnerSlaveEntryB entry)
 		{
 			entry.Actor = slave;
-			entry.SpawnerSlave = slave.Trait<BaseSpawnerSlave>();
+			entry.SpawnerSlave = slave.Trait<BaseSpawnerSlaveB>();
+
+			if (IsTraitDisabled)
+				entry.SpawnerSlave.GrantMasterDisabledCondition(entry.Actor);
+
+			if (IsTraitPaused)
+				entry.SpawnerSlave.GrantMasterPausedCondition(entry.Actor);
 		}
 
-		protected BaseSpawnerSlaveEntry SelectEntryToSpawn(BaseSpawnerSlaveEntry[] slaveEntries)
+		protected BaseSpawnerSlaveEntryB SelectEntryToSpawn(BaseSpawnerSlaveEntryB[] slaveEntries)
 		{
 			// If any thing is marked dead or null, that's a candidate.
 			var candidates = slaveEntries.Where(m => !m.IsValid);
@@ -196,26 +185,28 @@ namespace OpenRA.Mods.CA.Traits
 
 		public virtual void OnOwnerChanged(Actor self, Player oldOwner, Player newOwner)
 		{
-			// Owner thing is so difficult and confusing, I'm expecting bugs.
 			self.World.AddFrameEndTask(w =>
 			{
 				foreach (var slaveEntry in SlaveEntries)
+				{
 					if (slaveEntry.IsValid)
 						slaveEntry.SpawnerSlave.OnMasterOwnerChanged(slaveEntry.Actor, oldOwner, newOwner, Info.SlaveDisposalOnOwnerChange);
+				}
 			});
 		}
 
-		public virtual void Disposing(Actor self)
+		void INotifyActorDisposing.Disposing(Actor self)
 		{
-			// Just dispose them regardless of slave disposal options.
 			foreach (var slaveEntry in SlaveEntries)
+			{
 				if (slaveEntry.IsValid)
-					slaveEntry.Actor.Dispose();
+					slaveEntry.SpawnerSlave.OnMasterKilled(slaveEntry.Actor, self.Owner.PlayerActor, Info.SlaveDisposalOnKill);
+			}
 		}
 
 		public virtual void SpawnIntoWorld(Actor self, Actor slave, WPos centerPosition)
 		{
-			var exit = ChooseExit(self);
+			var exit = self.RandomExitOrDefault(self.World, null);
 			SetSpawnedFacing(slave, self, exit);
 
 			self.World.AddFrameEndTask(w =>
@@ -223,7 +214,7 @@ namespace OpenRA.Mods.CA.Traits
 				if (self.IsDead)
 					return;
 
-				var spawnOffset = exit == null ? WVec.Zero : exit.SpawnOffset;
+				var spawnOffset = exit == null ? WVec.Zero : exit.Info.SpawnOffset;
 				slave.Trait<IPositionable>().SetVisualPosition(slave, centerPosition + spawnOffset);
 
 				var location = self.World.Map.CellContaining(centerPosition + spawnOffset);
@@ -237,24 +228,11 @@ namespace OpenRA.Mods.CA.Traits
 			});
 		}
 
-		// Production.cs use random to select an exit.
-		// Here, we choose one by round robin.
-		// Start from -1 so that +1 logic below will make it 0.
-		int exitRoundRobin = -1;
-		ExitInfo ChooseExit(Actor self)
-		{
-			if (exits.Length == 0)
-				return null;
-
-			exitRoundRobin = (exitRoundRobin + 1) % exits.Length;
-			return exits[exitRoundRobin];
-		}
-
-		public void SetSpawnedFacing(Actor spawned, Actor spawner, ExitInfo exit)
+		public void SetSpawnedFacing(Actor spawned, Actor spawner, Exit exit)
 		{
 			int facingOffset = facing == null ? 0 : facing.Facing;
 
-			var exitFacing = exit != null ? exit.Facing : 0;
+			var exitFacing = exit != null ? exit.Info.Facing : 0;
 
 			var spawnFacing = spawned.TraitOrDefault<IFacing>();
 			if (spawnFacing != null)
@@ -263,6 +241,7 @@ namespace OpenRA.Mods.CA.Traits
 			foreach (var t in spawned.TraitsImplementing<Turreted>())
 				t.TurretFacing = (facingOffset + exitFacing) % 256;
 		}
+
 
 		public void StopSlaves()
 		{
@@ -286,8 +265,46 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			// Notify slaves.
 			foreach (var slaveEntry in SlaveEntries)
+			{
 				if (slaveEntry.IsValid)
 					slaveEntry.SpawnerSlave.OnMasterKilled(slaveEntry.Actor, e.Attacker, Info.SlaveDisposalOnKill);
+			}
+		}
+
+		protected override void TraitEnabled(Actor self)
+		{
+			foreach (var slaveEntry in SlaveEntries)
+			{
+				if (slaveEntry.IsValid)
+					slaveEntry.SpawnerSlave.RevokeMasterDisabledCondition(slaveEntry.Actor);
+			}
+		}
+
+		protected override void TraitDisabled(Actor self)
+		{
+			foreach (var slaveEntry in SlaveEntries)
+			{
+				if (slaveEntry.IsValid)
+					slaveEntry.SpawnerSlave.GrantMasterDisabledCondition(slaveEntry.Actor);
+			}
+		}
+
+		protected override void TraitResumed(Actor self)
+		{
+			foreach (var slaveEntry in SlaveEntries)
+			{
+				if (slaveEntry.IsValid)
+					slaveEntry.SpawnerSlave.RevokeMasterPausedCondition(slaveEntry.Actor);
+			}
+		}
+
+		protected override void TraitPaused(Actor self)
+		{
+			foreach (var slaveEntry in SlaveEntries)
+			{
+				if (slaveEntry.IsValid)
+					slaveEntry.SpawnerSlave.GrantMasterPausedCondition(slaveEntry.Actor);
+			}
 		}
 	}
 }

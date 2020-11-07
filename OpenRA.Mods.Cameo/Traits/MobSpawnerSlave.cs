@@ -14,6 +14,7 @@
 
 using System;
 using System.Linq;
+using OpenRA.Activities;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
@@ -25,14 +26,14 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("Can be slaved to a Mob spawner.")]
-	public class MobSpawnerSlaveInfo : BaseSpawnerSlaveInfo
+	public class MobSpawnerSlaveInfo : BaseSpawnerSlaveBInfo
 	{
 		public override object Create(ActorInitializer init) { return new MobSpawnerSlave(init, this); }
 	}
 
-	public class MobSpawnerSlave : BaseSpawnerSlave, INotifySelected
+	public class MobSpawnerSlave : BaseSpawnerSlaveB, INotifySelected
 	{
-		//readonly MobSpawnerSlaveInfo Info;
+		public MobSpawnerSlaveInfo Info { get; private set; }
 		readonly Actor self;
 
 		public IMove[] Moves { get; private set; }
@@ -42,42 +43,41 @@ namespace OpenRA.Mods.CA.Traits
 		Actor master;
 
 		// TODO: add more activities for aircrafts
-		public bool IsMoving { get { return self.CurrentActivity is Move; } }
+		public bool IsMoving()
+		{
+			return Moves.Any(m => m.IsTraitEnabled() && (m.CurrentMovementTypes.HasFlag(MovementType.Horizontal) || m.CurrentMovementTypes.HasFlag(MovementType.Vertical)));
+		}
 
 		public MobSpawnerSlave(ActorInitializer init, MobSpawnerSlaveInfo info) : base(init, info)
 		{
-			// this.info = info;
+			Info = info;
 			this.self = init.Self;
 		}
 
-		public override void Created(Actor self)
+		protected override void Created(Actor self)
 		{
-			base.Created(self);
+		base.Created(self);
 
-			Moves = self.TraitsImplementing<IMove>().ToArray();
+		Moves = self.TraitsImplementing<IMove>().ToArray();
 
-			var positionables = self.TraitsImplementing<IPositionable>();
-			if (positionables.Count() != 1)
-				throw new InvalidOperationException("Actor {0} has multiple (or no) traits implementing IPositionable.".F(self));
+		var positionables = self.TraitsImplementing<IPositionable>();
+		if (positionables.Count() != 1)
+			throw new InvalidOperationException("Actor {0} has multiple (or no) traits implementing IPositionable.".F(self));
 
-			Positionable = positionables.First();
+		Positionable = positionables.First();
 		}
 
-		public override void LinkMaster(Actor self, Actor master, BaseSpawnerMaster spawnerMaster)
+		public override void LinkMaster(Actor self, Actor master, BaseSpawnerMasterB spawnerMaster)
 		{
 			base.LinkMaster(self, master, spawnerMaster);
-			this.master = master;
 			this.spawnerMaster = spawnerMaster as MobSpawnerMaster;
+			this.master = master;
 		}
 
 		public void Move(Actor self, CPos location)
 		{
 			// And tell attack bases to stop attacking.
 			if (Moves.Length == 0)
-				return;
-
-			var masterMobile = master.TraitOrDefault<Mobile>();
-			if (masterMobile != null && masterMobile.IsTraitDisabled)
 				return;
 
 			foreach (var mv in Moves)
@@ -88,14 +88,11 @@ namespace OpenRA.Mods.CA.Traits
 				}
 		}
 
+
 		public void AttackMove(Actor self, CPos location)
 		{
 			// And tell attack bases to stop attacking.
 			if (Moves.Length == 0)
-				return;
-
-			var masterMobile = master.TraitOrDefault<Mobile>();
-			if (masterMobile != null && masterMobile.IsTraitDisabled)
 				return;
 
 			foreach (var mv in Moves)
@@ -120,5 +117,6 @@ namespace OpenRA.Mods.CA.Traits
 			// Also use RejectsOrder if necessary.
 			self.World.Selection.Add(Master);
 		}
+
 	}
 }

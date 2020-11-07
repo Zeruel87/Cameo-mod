@@ -17,17 +17,6 @@ using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
-/*
- * Needs base engine modification.
- * In AttackOmni.cs, SetTarget() made public.
- * In Mobile.cs, OccupySpace (true by default) added. Aircraft trait for a dummy unit wasn't the greatest idea as they fly over anything.
- * Move.cs, uses my PR which isn't in bleed yet. (PR to make Move use parent child activity)
- *
- * The difference between CarrierMaster and this is that carriers have
- * units going in and out of the master actor for reload activities,
- * while MobSpawnerMaster doesn't, thus MobSpawnerMaster has much simpler code.
- */
-
 namespace OpenRA.Mods.CA.Traits
 {
 	// What to do when master is killed or mind controlled
@@ -39,7 +28,7 @@ namespace OpenRA.Mods.CA.Traits
 	}
 
 	[Desc("This actor can spawn actors.")]
-	public class MobSpawnerMasterInfo : BaseSpawnMasterInfo
+	public class MobSpawnerMasterInfo : BaseSpawnerMasterBInfo
 	{
 		[Desc("Spawn at a member, not the nexus?")]
 		public readonly bool ExitByBudding = true;
@@ -72,9 +61,9 @@ namespace OpenRA.Mods.CA.Traits
 		public override object Create(ActorInitializer init) { return new MobSpawnerMaster(init, this); }
 	}
 
-	public class MobSpawnerMaster : BaseSpawnerMaster, INotifyCreated, INotifyOwnerChanged, ITick, IResolveOrder, INotifyAttack
+	public class MobSpawnerMaster : BaseSpawnerMasterB, INotifyCreated, INotifyOwnerChanged, ITick, IResolveOrder, INotifyAttack
 	{
-		class MobSpawnerSlaveEntry : BaseSpawnerSlaveEntry
+		class MobSpawnerSlaveEntry : BaseSpawnerSlaveEntryB
 		{
 			public new MobSpawnerSlave SpawnerSlave;
 			public Health Health;
@@ -83,8 +72,8 @@ namespace OpenRA.Mods.CA.Traits
 		public new MobSpawnerMasterInfo Info { get; private set; }
 
 		MobSpawnerSlaveEntry[] slaveEntries;
-
-		bool hasSpawnedInitialLoad = false;
+		ConditionManager conditionManager;
+		//bool hasSpawnedInitialLoad = false;
 		int spawnReplaceTicks = 0;
 
 		IPositionable position;
@@ -103,18 +92,25 @@ namespace OpenRA.Mods.CA.Traits
 			aircraft = self.TraitOrDefault<Aircraft>();
 
 			base.Created(self); // Base class does the initial spawning
+			conditionManager = self.Trait<ConditionManager>();
 
-			// The base class creates the slaves but doesn't move them into world.
-			// Let's do it here.
+			// Spawn initial load.
+			var burst = Info.InitialActorCount == -1 ? Info.Actors.Length : Info.InitialActorCount;
+			for (var i = 0; i < burst; i++)
+				Replenish(self, SlaveEntries);
+
 			if (!IsTraitDisabled)
-			{
 				SpawnReplenishedSlaves(self);
-
-				hasSpawnedInitialLoad = true;
-			}
 		}
 
-		public override BaseSpawnerSlaveEntry[] CreateSlaveEntries(BaseSpawnMasterInfo info)
+		protected override void TraitEnabled(Actor self)
+		{
+			base.TraitEnabled(self);
+
+			SpawnReplenishedSlaves(self);
+		}
+
+		public override BaseSpawnerSlaveEntryB[] CreateSlaveEntries(BaseSpawnerMasterBInfo info)
 		{
 			slaveEntries = new MobSpawnerSlaveEntry[info.Actors.Length]; // For this class to use
 
@@ -124,7 +120,7 @@ namespace OpenRA.Mods.CA.Traits
 			return slaveEntries; // For the base class to use
 		}
 
-		public override void InitializeSlaveEntry(Actor slave, BaseSpawnerSlaveEntry entry)
+		public override void InitializeSlaveEntry(Actor slave, BaseSpawnerSlaveEntryB entry)
 		{
 			var se = entry as MobSpawnerSlaveEntry;
 			base.InitializeSlaveEntry(slave, se);
@@ -160,7 +156,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		void ITick.Tick(Actor self)
 		{
-			if (spawnReplaceTicks > 0 && !IsTraitDisabled)
+			if (!IsTraitDisabled && !IsTraitPaused)
 			{
 				spawnReplaceTicks--;
 
@@ -171,9 +167,7 @@ namespace OpenRA.Mods.CA.Traits
 
 					SpawnReplenishedSlaves(self);
 
-					// If there's something left to spawn, restart the timer.
-					if (SelectEntryToSpawn(slaveEntries) != null)
-						spawnReplaceTicks = Info.RespawnTicks;
+					spawnReplaceTicks = OpenRA.Mods.Common.Util.ApplyPercentageModifiers(Info.RespawnTicks, reloadModifiers.Select(rm => rm.GetReloadModifier()));
 				}
 			}
 
@@ -190,13 +184,11 @@ namespace OpenRA.Mods.CA.Traits
 
 		void SpawnReplenishedSlaves(Actor self)
 		{
-			WPos centerPosition = WPos.Zero;
-			if (!hasSpawnedInitialLoad || !Info.ExitByBudding)
-			{
-				// Spawning from a solid actor...
-				centerPosition = self.CenterPosition;
-			}
-			else
+			if (self.IsDead || !self.IsInWorld)
+				return;
+
+			var centerPosition = self.CenterPosition;
+			if (Info.ExitByBudding)
 			{
 				// Spawning from a virtual nexus: exit by an existing member.
 				var se = slaveEntries.FirstOrDefault(s => s.IsValid && s.Actor.IsInWorld);
@@ -204,16 +196,37 @@ namespace OpenRA.Mods.CA.Traits
 					centerPosition = se.Actor.CenterPosition;
 			}
 
-			// WPos.Zero implies this mob spawner master is dead or something.
-			if (centerPosition == WPos.Zero)
-				return;
-
 			foreach (var se in slaveEntries)
 			{
 				if (se.IsValid && !se.Actor.IsInWorld)
 					SpawnIntoWorld(self, se.Actor, centerPosition + Info.Offset);
 			}
+
+			spawnReplaceTicks = OpenRA.Mods.Common.Util.ApplyPercentageModifiers(Info.RespawnTicks, reloadModifiers.Select(rm => rm.GetReloadModifier()));
 		}
+
+		public override void SpawnIntoWorld(Actor self, Actor slave, WPos centerPosition)
+		{
+			var exit = self.RandomExitOrDefault(self.World, null);
+			SetSpawnedFacing(slave, self, null);
+
+			self.World.AddFrameEndTask(w =>
+			{
+				if (self.IsDead)
+					return;
+
+				var spawnOffset = exit == null ? WVec.Zero : exit.Info.SpawnOffset;
+				slave.Trait<IPositionable>().SetPosition(slave, centerPosition + spawnOffset);
+
+				var location = self.World.Map.CellContaining(centerPosition + spawnOffset);
+
+				w.Add(slave);
+				var mobile = slave.TraitOrDefault<Mobile>();
+				if (mobile != null)
+					mobile.Nudge(slave);
+			});
+		}
+
 
 		public override void OnSlaveKilled(Actor self, Actor slave)
 		{
@@ -253,7 +266,7 @@ namespace OpenRA.Mods.CA.Traits
 				if (se.Actor.Location == location)
 					continue;
 
-				if (!se.SpawnerSlave.IsMoving)
+				if (!se.SpawnerSlave.IsMoving())
 				{
 					se.SpawnerSlave.Stop(se.Actor);
 					se.SpawnerSlave.Move(se.Actor, location);
@@ -352,23 +365,13 @@ namespace OpenRA.Mods.CA.Traits
 
 		void AssignSlaveActivity(Actor self)
 		{
-			if (self.CurrentActivity is Move || self.CurrentActivity is Fly)
-				MoveSlaves(self);
-			else if (self.CurrentActivity is AttackMoveActivity)
-				AttackMoveSlaves(self);
-			else if (self.CurrentActivity is AttackOmni.SetTarget)
-				AssignTargetsToSlaves(self, self.CurrentActivity.GetTargets(self).First());
+				if (self.CurrentActivity is Move || self.CurrentActivity is Fly)
+					MoveSlaves(self);
+				else if (self.CurrentActivity is AttackMoveActivity)
+					AttackMoveSlaves(self);
+ 				if (self.CurrentActivity is AttackOmni.SetTarget)
+					AssignTargetsToSlaves(self, self.CurrentActivity.GetTargets(self).First());
 		}
 
-		protected override void TraitEnabled(Actor self)
-		{
-			if (!Info.EnabledByDefault && !hasSpawnedInitialLoad)
-			{
-				Replenish(self, slaveEntries);
-
-				SpawnReplenishedSlaves(self);
-				hasSpawnedInitialLoad = true;
-			}
-		}
 	}
 }
