@@ -83,7 +83,6 @@ namespace OpenRA.Mods.CA.Traits
 			foreach (var mv in Moves)
 				if (mv.IsTraitEnabled())
 				{
-					Game.Debug("movesenabled");
 					self.QueueActivity(mv.MoveTo(location, 2));
 					break;
 				}
