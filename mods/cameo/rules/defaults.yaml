@@ -265,7 +265,7 @@
 ^UnitDisable:
 	GrantCondition@disable:
 		Condition: disabled
-		RequiresCondition: (TSNeutronBomb || GhostLockdown || chronobeamed || diskdrain || Magnet ) && !invulnerability
+		RequiresCondition: (TSNeutronBomb || GhostLockdown || ArbiterStasis || chronobeamed || diskdrain || Magnet ) && !invulnerability
 	ExternalCondition@TSNEUTRON:
 		TotalCap: 1
 		Condition: TSNeutronBomb
@@ -283,7 +283,7 @@
 		Color: FFFFFF
 	ExternalCondition@STASIS:
 		TotalCap: 1
-		Condition: chronobeamed
+		Condition: chronobeamed #ArbiterStasis
 	ExternalCondition@DRAIN:
 		TotalCap: 1
 		Condition: diskdrain
@@ -299,12 +299,12 @@
 	Inherits@rad: ^VehicleRadiation
 	Inherits@fix: ^Repairable
 	Inherits@EMP: ^UnitDisable
-	Inherits@driver-dead: ^AffectedByDriverKill
-	Inherits@PROPAGANDA: ^PropagandaSelfHeal
-	Inherits@FrenzyPower: ^FrenzyPower
 	Inherits@mag: ^Magnefreezable
 	Inherits@cloak: ^AcceptsCloakCrate
 	Inherits@heal: ^MachineShopRepairable
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
+	Inherits@FrenzyPower: ^FrenzyPower
+	Inherits@driver-dead: ^AffectedByDriverKill
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -398,37 +398,6 @@
 	RevealOnDeath:
 	GpsDot:
 		String: Vehicle
-	ExternalCondition@EmergencyRepair1:
-		Condition: repairlvl1
-	ExternalCondition@EmergencyRepair2:
-		Condition: repairlvl2
-	ExternalCondition@EmergencyRepair3:
-		Condition: repairlvl3
-	SelfHealing@EmergencyRepair1:
-		Step: 250
-		Delay: 1
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: repairlvl1
-	SelfHealing@EmergencyRepair2:
-		Step: 300
-		Delay: 1
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: repairlvl2
-	SelfHealing@EmergencyRepair3:
-		Step: 350
-		Delay: 1
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: repairlvl3
-	WithDecoration@EmergencyRepair1:
-		Image: select
-		Sequence: repair
-		ReferencePoint: Bottom, Right
-		RequiresCondition: repairlvl1 || repairlvl2 || repairlvl3
-		BlinkInterval: 32
-		BlinkPattern: On, Off
 	TeleportNetworkTransportable:
 
 ^Tank:
@@ -442,7 +411,6 @@
 		Payload: 300
 		Type: GrinderCash
 		Sounds: bgrinda.wav
-
 
 ^BoatUnit:
 	Inherits: ^Vehicle
@@ -466,7 +434,7 @@
 		Condition: SquidTrap
 	GrantCondition@disable:
 		Condition: disabled
-		RequiresCondition: (TSNeutronBomb || GhostLockdown || chronobeamed || diskdrain || Magnet || SquidTrap ) && !invulnerability
+		RequiresCondition: (TSNeutronBomb || GhostLockdown || ArbiterStasis || chronobeamed || diskdrain || Magnet || SquidTrap ) && !invulnerability
 	ProductionCostMultiplier@Industrial:
 		Multiplier: 75
 		Prerequisites: yrngindp
@@ -509,10 +477,10 @@
 		AirborneCondition: airborne
 	Targetable@GROUND:
 		RequiresCondition: !airborne && !chronobeamed
-		TargetTypes: Ground, Vehicle, Aircraft
+		TargetTypes: Ground, Vehicle
 	Targetable@AIRBORNE:
 		RequiresCondition: airborne && !chronobeamed
-		TargetTypes: Air, Aircraft
+		TargetTypes: Air
 	Targetable@REPAIR:
 		RequiresCondition: !airborne && !chronobeamed && damaged
 		TargetTypes: Repair, Healing
@@ -619,7 +587,7 @@
 		Condition: chronobeamed
 	GrantCondition@disable:
 		Condition: frozen
-		RequiresCondition: ReaperTrap || chronobeamed
+		RequiresCondition: ReaperTrap || ArbiterStasis || chronobeamed
 	Mobile:
 		PauseOnCondition: frozen
 
@@ -632,8 +600,8 @@
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@disable: ^InfantryDisable
 	Inherits@heal: ^HospitalHealable
-	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
+	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -1097,8 +1065,8 @@
 		EmptyWeapon: BuildingExplode
 		RequiresCondition: !chronobeamed
 	CaptureNotification:
-		LoseNotification: BuildingLost
 		Notification: BuildingCaptured
+		LoseNotification: BuildingLost
 	ActorLostNotification:
 		Notification: BuildingLost
 	ShakeOnDeath:
@@ -2611,9 +2579,9 @@ CPQDEBUGDUMMY:
 
 ^AIConyardCash:
 	Inherits@FS: ^AIForceShield
-		Threshold: 2500
 	GrantConditionOnPlayerResources@minimum:
 		Condition: noinsurance
+		Threshold: 2500
 	GrantConditionOnBotOwner@brutal:
 		Condition: brutalcash
 		Bots: brutal
@@ -2656,7 +2624,7 @@ CPQDEBUGDUMMY:
 
 ^RearmableAircraft:
 	Rearmable:
-		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport
+		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2
 	AutoTarget:
 		InitialStance: HoldFire
 
@@ -2666,28 +2634,8 @@ CPQDEBUGDUMMY:
 
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
-^ShootableMissile:
-	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
 	-UpdatesPlayerStatistics:
-	-GivesExperience:
-	Armor:
-		Type: Light
-	ShootableBallisticMissile:
-		LaunchAngle: 128
-		Speed: 110
-		AirborneCondition: airborne
-	Targetable@GROUND:
-		TargetTypes: Ground, Vehicle
-		RequiresCondition: !airborne
-	Targetable@AIRBORNE:
-		TargetTypes: Air
-		RequiresCondition: airborne
-	HiddenUnderFog:
-		Type: GroundPosition
-	Tooltip:
-		Name: Missile
-		GenericName: Missile
 	-GivesExperience:
 	Armor:
 		Type: Light
@@ -2712,9 +2660,6 @@ CPQDEBUGDUMMY:
 		EmptyWeapon: LargeHeliExplode
 	HitShape:
 	RejectsOrders:
-		EmptyWeapon: LargeHeliExplode
-	HitShape:
-	RejectsOrders:
 	Interactable:
 
 ^MindControllable:
@@ -2729,15 +2674,15 @@ CPQDEBUGDUMMY:
 		Offset: 0,0,511
 		Angle: 32
 		Width: 96
-		Sequence: overlay
-		ValidStances: Ally, Neutral, Enemy
 	WithDecoration@MC:
 		Image: yuricntl
+		Sequence: overlay
 		Palette: ra2effect
 		ReferencePoint: top, center
 		ZOffset: 2048
 		RequiresCondition: controlled
 		RequiresSelection: False
+		ValidStances: Ally, Neutral, Enemy
 	Targetable@MC:
 		TargetTypes: MindControl
 		RequiresCondition: !controlled && !prevent-mindcontrol && !invulnerability
@@ -2754,15 +2699,15 @@ CPQDEBUGDUMMY:
 		Offset: 0,0,511
 		Angle: 32
 		Width: 108
-		Sequence: overlay
-		ValidStances: Ally, Neutral, Enemy
 	WithDecoration@MC:
 		Image: yuricntl
+		Sequence: overlay
 		Palette: ra2effect
 		ReferencePoint: top, center
 		ZOffset: 2048
 		RequiresCondition: controlled
 		RequiresSelection: False
+		ValidStances: Ally, Neutral, Enemy
 	Targetable@MCStructure:
 		TargetTypes: MindControlStructure
 		RequiresCondition: !controlled && !prevent-mindcontrol && !invulnerability
@@ -2772,7 +2717,17 @@ CPQDEBUGDUMMY:
 		TargetTypes: MCImmune
 
 ^BombAttachable:
+	DelayedWeaponAttachable@ivan:
+		Type: ivanbomb
+		Condition: ivanbomb
 		ProgressBarColor: FF000080
+	WithDecoration@ivan:
+		Image: mouse2
+		Sequence: c4
+		ReferencePoint: center, center
+		ZOffset: 2048
+		RequiresCondition: ivanbomb
+		RequiresSelection: False
 		ValidStances: Ally, Neutral, Enemy
 	Targetable@ivan:
 		TargetTypes: ivanattachable
@@ -2806,11 +2761,19 @@ CPQDEBUGDUMMY:
 		RequiresCondition: chaosgas && !invulnerability
 
 ^ChronoBeamable:
+	Warpable:
+		Condition: being-warped
+		RevokeDelay: 120
+		DamageTypes: ChronoDeath
+		ScaleWithCurrentHealthPercentage: true
+		ShowSelectionBar: true
 		SelectionBarColor: 40FFFF
 		RequiresCondition: !invulnerability
 	GrantCondition@chrono:
 		Condition: chronobeamed
 		RequiresCondition: being-warped
+	TimedConditionBar@chrono:
+		Condition: being-warped
 		Color: bfe6ff
 	WithColoredOverlay@ChronoDisable:
 		Palette: chronodisable
@@ -2844,6 +2807,13 @@ CPQDEBUGDUMMY:
 	TimedConditionBar@Plague:
 		Color: A40000
 		Condition: DefilerPlague
+	WithDecoration@Plague:
+		Image: plagueunit
+		Sequence: overlay
+		ReferencePoint: center, center
+		ZOffset: 2048
+		RequiresCondition: DefilerPlague
+		RequiresSelection: False
 		ValidStances: Ally, Neutral, Enemy
 	SelfHealing@SCPlague:
 		Step: -500
@@ -2853,31 +2823,6 @@ CPQDEBUGDUMMY:
 		DamageTypes: DefaultDeath
 		RequiresCondition: DefilerPlague
 
-	DelayedWeaponAttachable@ivan:
-		Type: ivanbomb
-		Condition: ivanbomb
-	WithDecoration@ivan:
-		Image: mouse2
-		Sequence: c4
-		ReferencePoint: center, center
-		ZOffset: 2048
-		RequiresCondition: ivanbomb
-		RequiresSelection: False
-	Warpable:
-		Condition: being-warped
-		RevokeDelay: 120
-		DamageTypes: ChronoDeath
-		ScaleWithCurrentHealthPercentage: true
-		ShowSelectionBar: true
-	TimedConditionBar@chrono:
-		Condition: being-warped
-	WithDecoration@Plague:
-		Image: plagueunit
-		Sequence: overlay
-		ReferencePoint: center, center
-		ZOffset: 2048
-		RequiresCondition: DefilerPlague
-		RequiresSelection: False
 ^DeployableInfantryEditor:
 	GrantCondition:
 		Condition: editorhack
@@ -2940,14 +2885,12 @@ CPQDEBUGDUMMY:
 ^Refinery:
 	Buildable:
 		BuildDurationModifier: 25
-	Targetable@Infiltrate:
-		TargetTypes: ThiefInfiltrate, SpyInfiltrate, BrayanInfiltrate
+	Targetable@infiltrate:
+		TargetTypes: SpyInfiltrate, ThiefInfiltrate
+		RequiresCondition: !chronobeamed
 	InfiltrateForCash:
 		Percentage: 50
 		Types: SpyInfiltrate, ThiefInfiltrate
-	InfiltrateForCash@infiltrate:
-		Percentage: 10
-		Types: BrayanInfiltrate
 
 ^ProducesUnits:
 	Buildable:
@@ -2976,12 +2919,12 @@ CPQDEBUGDUMMY:
 		ReferencePoint: Bottom, Left
 		UsePlayerColor: True
 		ValidStances: Ally, Enemy, Neutral
+	TransferTimedExternalConditionOnTransform:
 		Condition: invulnerability
 	Passenger:
 		Weight: 6
 	Crushable:
 		CrushClasses: hugevehicle
-	TransferTimedExternalConditionOnTransform:
 
 ^AttackVoice:
 	Mobile:
@@ -3054,7 +2997,7 @@ CPQDEBUGDUMMY:
 		Condition: SquidTrap
 	GrantCondition@disable:
 		Condition: frozen
-		RequiresCondition: ReaperTrap || chronobeamed || SquidTrap
+		RequiresCondition: ReaperTrap || ArbiterStasis || chronobeamed || SquidTrap
 
 ^PrimarySuperweapon:
 	Inherits@FS: ^AIForceShield
@@ -3171,11 +3114,7 @@ CPQDEBUGDUMMY:
 		Modifier: 0
 	TimedConditionBar@FORCESHIELD:
 		Condition: forceshield
-	TimedConditionBar@FORCESHIELD:
-		Condition: forceshield
 		Color: 2f74e2
-	PowerMultiplier@FSPOWERDOWN:
-		RequiresCondition: forceshield && !invulnerability
 	PowerMultiplier@FSPOWERDOWN:
 		RequiresCondition: forceshield && !invulnerability
 		Modifier: 0
@@ -3209,7 +3148,7 @@ CPQDEBUGDUMMY:
 	Targetable@AIFS:
 		TargetTypes: aiforceshield
 		RequiresCondition: aiforceshieldtarget && aiforceshield-enabled
-		RequiresCondition: aiforceshieldtarget && aiforceshield-enabled
+        
 ####################################################################################################
 #		Generals
 ####################################################################################################
@@ -3249,12 +3188,9 @@ CPQDEBUGDUMMY:
 	RejectsOrders@DRIVERKILL:
 		RequiresCondition: driver-dead
 	SpawnActorOnDeath@Scraps:
-		Probability: 90
+		Probability: 99
 		Actor: glscrapcrate
-		OwnerType: InternalName
-		InternalOwner: Creeps
 		DeathType: MakeScrapbox
-		RequiresLobbyCreeps: true
 	DamageMultiplier@scrap1:
 		RequiresCondition: scrap_create_bonus == 1
 		Modifier: 95
@@ -3264,9 +3200,42 @@ CPQDEBUGDUMMY:
 	ExternalCondition@SCRAP_CREATE_BONUS:
 		Condition: scrap_create_bonus
 		TotalCap: 2
+	ExternalCondition@EmergencyRepair1:
+		Condition: repairlvl1
+	ExternalCondition@EmergencyRepair2:
+		Condition: repairlvl2
+	ExternalCondition@EmergencyRepair3:
+		Condition: repairlvl3
+	SelfHealing@EmergencyRepair1:
+		Step: 250
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: repairlvl1
+	SelfHealing@EmergencyRepair2:
+		Step: 300
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: repairlvl2
+	SelfHealing@EmergencyRepair3:
+		Step: 350
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: repairlvl3
+	WithDecoration@EmergencyRepair1:
+		Image: select
+		Sequence: repair
+		ReferencePoint: Bottom, Right
+		RequiresCondition: repairlvl1 || repairlvl2 || repairlvl3
+		BlinkInterval: 32
+		BlinkPattern: On, Off
+
 ^CanCaptureDriverlessVehicles:
 	Captures@DRIVER_KILL:
 		CaptureTypes: driverless_vehicle
+		Voice: Select
 	CaptureManager:
 
 ^FrenzyPower:
@@ -3326,4 +3295,3 @@ CPQDEBUGDUMMY:
 	Targetable@PROPAGANDAPSI:
 		RequiresCondition: propaganda
 		TargetTypes: Propaganda
-
