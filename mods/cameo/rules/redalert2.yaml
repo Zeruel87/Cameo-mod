@@ -1253,6 +1253,8 @@ ra2atesla:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2ASpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
+	AutoTargetPriority@DEFAULT:
+		InvalidTargets: NoAutoTarget, PrismTower
 	AutoTargetPriority@ATTACKANYTHING:
 		InvalidTargets: NoAutoTarget, PrismTower
 	Targetable@prism:
@@ -1293,6 +1295,8 @@ ra2atesla:
 		Sequence: active
 		Name: bodyactive
 		RequiresCondition: charging
+	WithMakeAnimation:
+		BodyNames: body, bodyactive
 	GrantCondition@charging:
 		Condition: charging
 		RequiresCondition: !fired && !ammo
@@ -2261,6 +2265,8 @@ yrngbnkr:
 		Sequence: idle-bunkered
 		RequiresCondition: bunkerup
 		Name: bunkered
+	WithMakeAnimation:
+		BodyNames: body, bunkered
 	AttackGarrisoned:
 		Armaments: garrisoned
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
@@ -2269,8 +2275,6 @@ yrngbnkr:
 		PauseOnCondition: disabled
 	RenderRangeCircle:
 		FallbackRange: 6c0
-	Power:
-		Amount: -20
 	DetectCloaked:
 		Range: 3c0
 	Selectable:
@@ -3158,8 +3162,6 @@ yrngtbnk:
 		PauseOnCondition: disabled
 	RenderRangeCircle:
 		FallbackRange: 6c0
-	Power:
-		Amount: -20
 	DetectCloaked:
 		Range: 3c0
 	WithSpriteBody:
@@ -3168,6 +3170,8 @@ yrngtbnk:
 		Sequence: idle-bunkered
 		RequiresCondition: bunkerup
 		Name: bunkered
+	WithMakeAnimation:
+		BodyNames: body, bunkered
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -4320,7 +4324,7 @@ RA2IVAN:
 		BuildPaletteOrder: 90
 		Prerequisites: barracks, anyhq, ~techlevel.medium
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
-		Description: Demolition infantry.\nCan plant timed bombs on units\nExplodes when killed
+		Description: Demolition infantry.\nCan plant timed bombs on units and buildings\nExplodes when killed
 	Mobile:
 		Speed: 75
 	Health:
@@ -4342,10 +4346,6 @@ RA2IVAN:
 	Armament@aa:
 		Weapon: IvanAttachAir
 		Cursor: c4
-	Demolition:
-		Voice: Attack
-		DetonationDelay: 50
-		TargetStances: Enemy, Neutral
 	Explodes:
 		Weapon: IvanBomb
 		EmptyWeapon: IvanBomb
@@ -4360,6 +4360,12 @@ ra2shk:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	AutoTargetPriority@DEFAULT:
+		InvalidTargets: NoAutoTarget, TeslaCoil
+	AutoTargetPriority@ATTACKANYTHING:
+		InvalidTargets: NoAutoTarget, TeslaCoil
 	Buildable:
 		Prerequisites: barracks
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
@@ -4378,37 +4384,34 @@ ra2shk:
 		Range: 5c0
 	Armament@PRIMARY:
 		Weapon: RA2PortaTesla
-		TargetStances: Enemy
-		ForceTargetStances: Enemy
 		LocalOffset: 427,0,341
 		RequiresCondition: !rank-elite
 	Armament@Elite:
 		Weapon: RA2PortaTeslaE
-		TargetStances: Enemy
-		ForceTargetStances: Enemy
 		LocalOffset: 427,0,341
 		RequiresCondition: rank-elite
 	Armament@TeslaCoilCharge:
 		Weapon: RA2TeslaCoilCharge
+		Cursor: ability
 		TargetStances: Ally
 		ForceTargetStances: Ally
 		LocalOffset: 427,0,341
 		RequiresCondition: !botra2
 	Armament@GARRISONED:
 		Name: garrisoned
-		Weapon: TeslaZap
+		Weapon: RA2PortaTesla
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: RA2PortaTeslaE
+		RequiresCondition: rank-elite
 	TakeCover:
 		ProneOffset: 227,0,-245
 	AttackFrontal:
-	AttackMove:
-	Passenger:
-	Guard:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	Voiced:
 		VoiceSet: RA2TeslaTrooperVoice
-	Inherits@EXPERIENCE: ^GainsExperience				##########
-	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
 	Crushable:
@@ -4417,35 +4420,8 @@ ra2shk:
 		Payload: 250
 	Cloneable:
 		Types: NormalInfantry
-	GrantConditionOnBotOwner:
-		Condition: botra2
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botra2
-		RequiresCondition: botra2
 	Selectable:
 		Class: ra2shk
-
-ra2shkbot:
-	Inherits: ra2shk
-	RenderSprites:
-		Image: ra2shk
-	UpdatesPlayerStatistics:
-		OverrideActor: ra2shk
-	Buildable:
-		Prerequisites: barracks, ra2natech, ~techlevel.high, ~botra2
-		BuildPaletteOrder: 131
-	-Armament@PRIMARY:
-	-Armament@Elite:
-	Armament@TeslaCoilCharge:
-		Weapon: RA2TeslaCoilCharge
-		TargetStances: Ally
-		ForceTargetStances: Ally
-		LocalOffset: 427,0,341
-		-RequiresCondition:
-	AutoTarget:
-		ScanRadius: 30
-		InitialStance: AttackAnything
 
 RA2DOG:
 	Inherits: DOG

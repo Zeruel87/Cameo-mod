@@ -265,7 +265,7 @@
 ^UnitDisable:
 	GrantCondition@disable:
 		Condition: disabled
-		RequiresCondition: (TSNeutronBomb || GhostLockdown || chronobeamed || diskdrain || Magnet ) && !invulnerability
+		RequiresCondition: (TSNeutronBomb || GhostLockdown || chronobeamed || diskdrain || Magnet || being-captured ) && !invulnerability
 	ExternalCondition@TSNEUTRON:
 		TotalCap: 1
 		Condition: TSNeutronBomb
@@ -370,6 +370,7 @@
 		Type: GrinderCash
 		Sounds: bgrinda.wav
 	CaptureManager:
+		BeingCapturedCondition: being-captured
 	Capturable:
 		Types: vehicle
 		ValidStances: Enemy, Neutral
@@ -1030,7 +1031,6 @@
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
 	Inherits@bounty: ^GlobalBounty
-	Inherits@commandodebuff: ^CommandoDebuff
 	Inherits@shape: ^1x1Shape
 	Inherits@selection: ^SelectableBuilding
 	Huntable:
@@ -1120,6 +1120,8 @@
 	Inherits@chrono: ^ChronoBeamable
 	Inherits@cloak: ^StealthGenCloakable
 	Inherits@forceshield: ^ForceShieldable
+	Inherits@commandodebuff: ^CommandoDebuff
+	Inherits@ivan: ^BombAttachable
 	Building:
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud
@@ -1152,7 +1154,7 @@
 	Demolishable:
 		Condition: being-demolished
 	Sellable:
-		RequiresCondition: !build-incomplete && !being-captured && !being-demolished
+		RequiresCondition: !build-incomplete && !being-captured && !being-demolished && !ivanbomb
 		SellSounds: cashturn.aud
 	WithMakeAnimation:
 		Condition: build-incomplete
@@ -1201,8 +1203,11 @@
 
 ^TechBuilding:
 	Inherits: ^CivBuilding
+	Selectable:
+		Priority: 0
 	OwnerLostAction:
 		Action: ChangeOwner
+	ConditionManager:
 	CaptureManager:
 	Capturable:
 		RequiresCondition: !chronobeamed
@@ -1232,6 +1237,20 @@
 		IsPlayerPalette: True
 	GpsDot:
 		String: Forward
+
+^TechBuildingHusk:
+	Inherits: ^TechBuilding
+	Targetable:
+		TargetTypes: TechHusk
+	-EngineerRepairable:
+	-Demolishable:
+	Capturable:
+		Types: building
+		ValidStances: Enemy, Neutral, Ally
+	TooltipDescription:
+		Description: Capture to restore to working condition.
+	TransformOnCapture:
+		CaptureTypes: building
 
 ^CivField:
 	Inherits: ^CivBuilding
