@@ -354,6 +354,23 @@ SCACADEMY:
 		HP: 60000
 	RevealsShroud:
 		Range: 7c0
+	GrantExternalConditionPower@StimpackBoost:
+		OrderName: StimpackBoost
+		PauseOnCondition: lowpower
+		Icon: scstimpack
+		ChargeInterval: 1500
+		Description: Stimpacks
+		LongDesc: Provides repair for vehicles in the target area.\nApplies instant repair to a small area.
+		Range: 3
+		Duration: 1500
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: stimpack
+		OnFireSound: TSCYes00.aud,TSCYes01.aud,TSCYes02.aud,TSCYes03.aud
+		Prerequisites: upemergencyrepair3
 
 SCBUNKER:
 	Inherits: ^Defense
@@ -1635,8 +1652,6 @@ SCCREEPCOLONY:
 		Name: spore
 		Weapon: Spore
 		RequiresCondition: spore
-	RevealOnFire:
-		ArmamentNames: primary, spore
 	RevealsShroud@upgraded:
 		Range: 9c0
 		RequiresCondition: sunken || spore
@@ -2518,11 +2533,26 @@ SCSCV:
 	Capturable:
 		Types: thiefproof
 
+^StimpackBoost:
+	WithColoredOverlay@StimpackBoost:
+		RequiresCondition: stimpack
+	TimedConditionBar@StimpackBoost:
+		Condition: stimpack
+	ExternalCondition@StimpackBoost:
+		Condition: stimpack
+	ReloadDelayMultiplier@StimpackBoost:
+		RequiresCondition: stimpack
+		Modifier: 75
+	SpeedMultiplier@StimpackBoost:
+		Modifier: 120
+		RequiresCondition: stimpack
+
 SCMARINE:
 	Inherits: ^SCTINFANTRY
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@StimpackBoost: ^StimpackBoost
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -2556,6 +2586,7 @@ SCFIREBAT:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@StimpackBoost: ^StimpackBoost
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -4021,7 +4052,7 @@ SCPMCV:
 ^LargeZerg:
 	Inherits: ^BasicZerg
 	Targetable@dog:
-		TargetTypes: DogImmune
+		TargetTypes: LargeZerg
 
 ^VeryLargeZerg:
 	Inherits: ^LargeZerg
@@ -4215,7 +4246,9 @@ SCHYDRALISK:
 	Mobile:
 		Speed: 75
 	Health:
-		HP: 24000
+		HP: 18000
+	Armor:
+		Type: Light
 	RevealsShroud:
 		Range: 5c0
 	AutoTarget:
@@ -4543,6 +4576,12 @@ SCLURKER:
 		Offset: 128, 12, 0
 		ZOffset: -512
 		RequiresCondition: undeployed
+
+sclurkerburrowed:
+	Inherits@AUTOTARGET: SCLURKER
+	RenderSprites:
+		Image: SCLURKER
+	-Buildable:
 
 SCGUARDIAN:
 	Inherits: ^Helicopter
