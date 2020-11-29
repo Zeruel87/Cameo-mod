@@ -33,9 +33,9 @@
 	DamageMultiplier@PursuitNove:
 		RequiresCondition: PursuitNove
 		Modifier: 90
+
 GLAHole4x4:
 	Inherits: ^BaseBuilding
-	Inherits@EXPERIENCE: ^GainsExperience
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -59,22 +59,18 @@ GLAHole4x4:
 		Range: 5c0
 	WithBuildingBib:
 	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite:
-		Prerequisite: chpropaganda
 	Power:
 		Amount: 0
 	RenderSprites:
 		Image: glhole2
-	-ActorLostNotification:
-	KillsSelf@buildingrebirth:
-		RequiresCondition: rank-veteran == 1
-		GrantsCondition: buildingrebirth
-	SpawnActorOnDeath@buildingrebirth:
+	GrantPeriodicCondition@rebuild:
+		Condition: buildingrebirth
+		CooldownDuration: 1000
+		PauseOnCondition: chronobeamed
+	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
-		Actor: glquad
-	ExperienceTrickler@buildingrebirth:
-		Interval: 5
-		Amount: 100
+		IntoActor: glquad
+
 GLAHole3x3:
 	Inherits: GLAHole4x4
 	HitShape:
@@ -85,6 +81,7 @@ GLAHole3x3:
 		Dimensions: 3,3
 	Selectable:
 		Bounds: 48,48
+
 GLAHole2x2:
 	Inherits: GLAHole3x3
 	HitShape:
@@ -99,6 +96,7 @@ GLAHole2x2:
 		DecorationBounds: 48,48
 	RenderSprites:
 		Image: glhole
+
 upgecapture:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -125,9 +123,6 @@ GENE6:
 		Image: E6
 	Voiced:
 		VoiceSet: EngineerVoice
-
-
-
 
 ^EmergencyRepairPower:
 	GrantExternalConditionPower@EmergencyRepair1:
@@ -752,9 +747,10 @@ glcommand:
 		Prerequisites: upgpscram
 glcommand.hole:
 	Inherits: GLAHole3x3
-	SpawnActorOnDeath@buildingrebirth:
+	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
 		Actor: glcommand
+
 glanthraxbomber:
 	Inherits: ^RANeutralPlane
 	-Huntable:
@@ -936,9 +932,10 @@ glbarracks:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-anim2
 		Palette: placelinesegment
+
 glbarracks.hole:
 	Inherits: GLAHole3x3
-	SpawnActorOnDeath@buildingrebirth:
+	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
 		Actor: glbarracks
 glsupply:
@@ -1032,7 +1029,7 @@ glsupply.bot:
 		Queue: Building.GLA, RABuilding.GLA
 glsupply.hole:
 	Inherits: GLAHole2x2
-	SpawnActorOnDeath@buildingrebirth:
+	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
 		Actor: glsupply
 glweap:
@@ -1139,7 +1136,7 @@ glweap:
 		StartRepairingNotification: Repairing
 glweap.hole:
 	Inherits: GLAHole4x4
-	SpawnActorOnDeath@buildingrebirth:
+	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
 		Actor: glweap
 glpalace:
@@ -1226,7 +1223,7 @@ glpalace:
 		Palette: placelinesegment
 glpalace.hole:
 	Inherits: GLAHole4x4
-	SpawnActorOnDeath@buildingrebirth:
+	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
 		Actor: glpalace
 glpalace.bot:
@@ -1250,6 +1247,7 @@ glstorm:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^3x2Shape
+	Inherits@sw: ^PrimarySuperweapon
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
@@ -1261,7 +1259,7 @@ glstorm:
 		Prerequisite: anyhq
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: glpalace, ~techlevel.high, ~glaselected
+		Prerequisites: glpalace, ~techlevel.high, ~glaselected, !scudstorm
 		Queue: Building.GLA, RABuilding.GLA
 		Description: Drop multiple Scud missiles anywhere on the map.\nCan contaminate ground with Anthrax.\nRequires power to operate.
 	Building:
@@ -1287,6 +1285,10 @@ glstorm:
 		VoiceSet: CHMissileSiloVoice
 	Turreted:
 	AttackTurreted:
+		RequiresCondition: ammo >= 9
+		OpportunityFire: false
+		PersistentTargeting: false
+		ForceFireIgnoresActors: true
 	GrantConditionOnPrerequisite@upantraxbeta:
 		Condition: antraxbetaupgrade
 		Prerequisites: upantraxbeta
@@ -1308,18 +1310,13 @@ glstorm:
 		LocalOffset: 900,900,340, 900,-900,340, -900,900,340, -900,-900,340
 		LocalYaw: 0,100
 		RequiresCondition: upantraxgamma
-	AttackOrderPower@Power:
-		OrderName: GLAScudStorm
-		PauseOnCondition: disabled || lowpower
-		Cursor: attackmove
-		Icon: glscudstorm
-		ChargeInterval: 9000
-		Description: Scud Storm
-		LongDesc: Fires a pulse blast which disables\nall mechanical units in the area.
-		EndChargeSpeechNotification:
-		SelectTargetSpeechNotification:
-		DisplayTimerStances: Ally, Neutral, Enemy
-	AttackOrderPower@PowerMulti:
+	AmmoPool:
+		Ammo: 9
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Count: 9
+		Delay: 100
+	AttackOrderPowerCA@PowerMulti:
 		OrderName: GLAScudStorm
 		PauseOnCondition: disabled || lowpower
 		AllowMultiple: True
@@ -1358,9 +1355,12 @@ glstorm:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-anim3
 		Palette: placelinesegment
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: scudstorm
+
 glstorm.hole:
 	Inherits: GLAHole4x4
-	SpawnActorOnDeath@buildingrebirth:
+	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
 		Actor: glstorm
 glblackmarket:
@@ -1452,7 +1452,7 @@ glblackmarket:
 		Palette: placelinesegment
 glblackmarket.hole:
 	Inherits: GLAHole2x2
-	SpawnActorOnDeath@buildingrebirth:
+	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
 		Actor: glblackmarket
 glsite:
@@ -1571,7 +1571,7 @@ glsite:
 		Prerequisites: selectglatoxin
 glsite.hole:
 	Inherits: GLAHole2x2
-	SpawnActorOnDeath@buildingrebirth:
+	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
 		Actor: glsite
 gltunnel:
@@ -1678,7 +1678,7 @@ gltunneltoxin:
 		Image: gltunnel
 gltunnel.hole:
 	Inherits: GLAHole2x2
-	SpawnActorOnDeath@buildingrebirth:
+	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
 		Actor: gltunnel
 gltrap:
@@ -1741,10 +1741,11 @@ gltrap:
 		Weapon: GLAnthraxBlue
 		EmptyWeapon: GLAnthraxBlue
 		DamageSource: Killer
-		RequiresCondition: selectglatoxin
+		RequiresCondition: selectglatoxin && !chronobeamed
 	RequiresBuildableArea:
 		AreaTypes: building
 		Adjacent: 9
+
 glamob:
 	Inherits: E1
 	Inherits@MC: ^MCImmune
@@ -1753,7 +1754,7 @@ glamob:
 	Buildable:
 		BuildPaletteOrder: 30
 		BuildDuration: 800
-		Queue: Infantry.GLA, RAInfantry.GLA
+		#Queue: Infantry.GLA, RAInfantry.GLA
 		Description: Anti Building and infantry squad.\nRegenerate health on the battlefield.\n Strong vs Buildings, Infantry\n  Weak vs Vehicles, Aircraft.
 		Prerequisites: glpalace, ~techlevel.medium
 	Mobile:
@@ -1852,102 +1853,86 @@ glamob:
 
 glamob.alternative:
 	Inherits@1: ^ExistsInWorld
-	Inherits@4: ^SpriteActor
+	Inherits@3: ^SpriteActor
+	Inherits@selection: ^SelectableCombatUnit
+	Inherits@bot: ^BotProductionBoost
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	-AppearsOnRadar:
+	OwnerLostAction:
+		Action: Kill
+		DeathTypes: DefaultDeath
 	Buildable:
 		BuildPaletteOrder: 30
 		BuildDuration: 800
-		Queue: None
+		Queue: Infantry.GLA, RAInfantry.GLA
 		Description: Anti Building and infantry squad.\nRegenerate health on the battlefield.\n Strong vs Buildings, Infantry\n  Weak vs Vehicles, Aircraft.
 		Prerequisites: glpalace, ~techlevel.medium
 	Tooltip:
 		Name: Angry Mob
-		GenericName: Soldier
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Valued:
 		Cost: 800
-	MobSpawnerMaster:
-		Actors: hack.angry_mob.male, hack.angry_mob.male, hack.angry_mob.male, hack.angry_mob.male, hack.angry_mob.female, hack.angry_mob.female, hack.angry_mob.female, hack.angry_mob.molotov, hack.angry_mob.molotov, hack.angry_mob.molotov
-		RespawnTicks: 750
-		ExitByBudding: false
 	Health:
-		HP: 10000
-	AttackOmni:
-		RequiresCondition: !leaflet
-	Armament@PRIMARY:
-		Weapon: InterceptorLauncher
+		HP: 100
 	Mobile:
-		Speed: 18
-		Voice: Move
-		OccupySpace: false
 		Locomotor: foot
-	Voiced:
-		VoiceSet: AngryMobVoice
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
-		Bounds: 32, 32
-		Class: infantry.angry_mob
+		Bounds: 32,32
+		DecorationBounds: 32,32
 	AttackMove:
+	DrawLineToTarget:
+	MobSpawnerMaster:
+		Actors: angrymob1, angrymob1, angrymob1, angrymob1, angrymob2, angrymob2, angrymob2, angrymob2, angrymob2, angrymob3, angrymob3
+		RespawnTicks: 750
+		ExitByBudding: false
+	AttackFrontal:
+	Armament:
+		Weapon: AngryMobTargeting
 	WithSpriteBody:
+		Sequence: dot
+	HitShape:
 	HiddenUnderFog:
 		Type: CenterPosition
 	RevealsShroud:
 		Type: CenterPosition
-	RevealsShroud@SEARCH_AND_DESTROY:
-		Type: CenterPosition
-	RevealsShroud@INTELLIGENCE:
-		Type: CenterPosition
-	BodyOrientation:
-		UseClassicFacingFudge: True
-	HitShape:
-	MapEditorData:
-		Categories: Infantry
 	SpeedMultiplier@Generic:
 		Modifier: 200
 	DamageMultiplier@INVINCIBLE:
 		Modifier: 0
 	RenderSprites:
 		Image: glamob
+
 ^default.angry_mob:
 	Inherits: E1
+	Inherits@MC: ^MCImmune
+	-UpdatesPlayerStatistics:
+	-Buildable:
+	-CaptureManager:
+	-Captures@CAPTURES:
+	-Captures@DRIVER_KILL:
 	Valued:
 		Cost: 160
 	Tooltip:
 		Name: Angry Mob
-	-SelectionDecorations:
-	-WithSpriteControlGroupDecoration:
 	-Passenger:
 	Health:
 		HP: 5000
 	Mobile:
-		Speed: 20
-	RejectsOrders@SLAVED:
+		Speed: 30
 	MobSpawnerSlave:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	Selectable:
-		Class: angry_mob
+		Class: angrymob
 	Voiced:
 		VoiceSet: AngryMobVoice
 	RenderSprites:
 		Image: glamob
 
-hack.angry_mob.male:
-	Inherits: ^default.angry_mob
-	AttackFrontal:
-	GrantConditionOnPrerequisite@uparmthemob:
-		Condition: ak47upgrade
-		Prerequisites: uparmthemob
-	Armament:
-		Weapon: GLAngryMobPistol
-		PauseOnCondition: ak47upgrade
-	Armament@AK47:
-		Weapon: GLAngryMobAk47
-		PauseOnCondition: !ak47upgrade
-hack.angry_mob.female:
+angrymob1:
 	Inherits: ^default.angry_mob
 	AttackFrontal:
 	GrantConditionOnPrerequisite@uparmthemob:
@@ -1960,14 +1945,26 @@ hack.angry_mob.female:
 		Weapon: GLAngryMobAk47
 		PauseOnCondition: !ak47upgrade
 
-hack.angry_mob.molotov:
+angrymob2:
+	Inherits: ^default.angry_mob
+	AttackFrontal:
+	GrantConditionOnPrerequisite@uparmthemob:
+		Condition: ak47upgrade
+		Prerequisites: uparmthemob
+	Armament:
+		Weapon: GLAngryMobPistol
+		PauseOnCondition: ak47upgrade
+	Armament@AK47:
+		Weapon: GLAngryMobAk47
+		PauseOnCondition: !ak47upgrade
+
+angrymob3:
 	Inherits: ^default.angry_mob
 	Armament:
 		Weapon: GLAngryMobMolotov
 		LocalOffset: 0,0,555
 		FireDelay: 15
 	AttackFrontal:
-
 
 GLE1:
 	Inherits: ^Soldier
@@ -2196,12 +2193,12 @@ GLTERROR:
 		Weapon: GLAnthraxBlue
 		EmptyWeapon: GLAnthraxBlue
 		DamageSource: Killer
-		RequiresCondition: selectglatoxin
-	Armament@PRIMARY:							##########
-		Weapon: GLTerroistExplosive
+		RequiresCondition: selectglatoxin && !frozen
+	Armament@PRIMARY:
 	Explodes:
 		Weapon: GLTerroistExplosive
 		EmptyWeapon: GLTerroistExplosive
+
 glsabo:
 	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -2488,10 +2485,6 @@ glbggy:
 	WithMuzzleOverlay:
 	AutoTarget:
 		InitialStanceAI: Defend
-	Explodes:
-		Weapon: ArtilleryShell
-		EmptyWeapon: UnitExplode
-		LoadedChance: 75
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
@@ -2523,6 +2516,7 @@ glbggy:
 	GrantConditionOnPrerequisite@selectglatoxin:
 		Condition: selectglatoxin
 		Prerequisites: selectglatoxin
+
 glbbus:
 	Inherits: ^Vehicle
 	Inherits@@EXPERIENCE: ^GainsExperience
@@ -2786,6 +2780,7 @@ glmaura:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -3016,12 +3011,12 @@ gltractor:
 		Weapon: GLAnthraxGreen
 		EmptyWeapon: GLAnthraxGreen
 		DamageSource: Killer
-		RequiresCondition: !antraxbetaupgrade
+		RequiresCondition: !antraxbetaupgrade && !chronobeamed
 	Explodes@antraxbeta1:
 		Weapon: GLAnthraxBlue
 		EmptyWeapon: GLAnthraxBlue
 		DamageSource: Killer
-		RequiresCondition: antraxbetaupgrade
+		RequiresCondition: antraxbetaupgrade && !chronobeamed
 	Targetable@Inmune:
 		TargetTypes: ToxinInmune
 	ProducibleWithLevel:
@@ -3034,6 +3029,7 @@ gltractor:
 		Multiplier: 110
 		Prerequisites: selectglademo
 		Queue: Vehicle.GLA, RAVehicle.GLA
+
 gltractor.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -3042,6 +3038,7 @@ gltractor.Husk:
 		IntoActor: gltractor
 	RenderSprites:
 		Image: gltractor
+
 glpickup:
 	Inherits: ^Vehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -3067,7 +3064,7 @@ glpickup:
 	Mobile:
 		TurnSpeed: 10
 		Speed: 150
-		PauseOnCondition: notmobile# || being-captured
+		PauseOnCondition: notmobile || disabled
 	RevealsShroud:
 		Range: 8c0
 		RevealGeneratedShroud: False
@@ -3152,7 +3149,7 @@ glscrapcar:
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
-	Inherits@EMP: ^TurretEMP
+	Inherits@EMP: ^FrontalEMP
 	Buildable:
 		Queue: Infantry.GLA, RAInfantry.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 40
@@ -3171,7 +3168,6 @@ glscrapcar:
 	Mobile:
 		TurnSpeed: 4
 		Speed: 100
-		PauseOnCondition: notmobile# || being-captured
 	RevealsShroud:
 		Range: 8c0
 		RevealGeneratedShroud: False
@@ -3181,10 +3177,9 @@ glscrapcar:
 		TurnSpeed: 10
 		Offset: 0,0,128
 	Armament@Normal:
-		Weapon: GLTerroistExplosive
-		MuzzleSequence: muzzle
+		Weapon: DemoTruckTargeting
 		LocalOffset: 128,0,43
-	AttackTurreted:
+	AttackFrontal:
 	WithMuzzleOverlay:
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
@@ -3224,7 +3219,7 @@ glscrapcar:
 	GrantConditionOnAttack:
 		Condition: triggered
 	KillsSelf:
-		RequiresCondition: triggered
+		RequiresCondition: triggered && !chronobeamed
 
 glvan:
 	Inherits: ^Vehicle
@@ -3507,6 +3502,7 @@ GLSCUD:
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^FrontalEMP
 	Buildable:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 80
@@ -3665,11 +3661,13 @@ GLSCUD.Husk:
 		IntoActor: glscud
 	RenderSprites:
 		Image: glscud
+
 glbombtruck:
 	Inherits: ^Vehicle
 	Inherits@EXT: ^ExternalConditions
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -3693,43 +3691,33 @@ glbombtruck:
 		Weapon: GLBombTruckExplosive
 		EmptyWeapon: GLBombTruckExplosive
 		DamageSource: Killer
-		RequiresCondition: !selectglademo && !selectglatoxin
+		RequiresCondition: !selectglademo && !selectglatoxin && !chronobeamed
 	Explodes@1:
 		Weapon: GLBombTruckSuperExplosive
 		EmptyWeapon: GLBombTruckSuperExplosive
 		DamageSource: Killer
-		RequiresCondition: selectglademo
+		RequiresCondition: selectglademo && !chronobeamed
 	Explodes@2:
 		Weapon: GLBombTruckToxExplosive
 		EmptyWeapon: GLBombTruckToxExplosive
 		DamageSource: Killer
-		RequiresCondition: selectglatoxin && !antraxbetaupgrade
+		RequiresCondition: selectglatoxin && !antraxbetaupgrade && !chronobeamed
 	Explodes@3:
 		Weapon: GLBombTruckToxExplosive2
 		EmptyWeapon: GLBombTruckToxExplosive2
 		DamageSource: Killer
-		RequiresCondition: selectglatoxin && antraxbetaupgrade
+		RequiresCondition: selectglatoxin && antraxbetaupgrade && !chronobeamed
 	AttackFrontal:
 		FacingTolerance: 128
 	Armament@PRIMARY:
-		Weapon: GLBombTruckExplosive
-		RequiresCondition: !selectglademo && !selectglatoxin
-	Armament@PRIMARYEx:
-		Weapon: GLBombTruckSuperExplosive
-		RequiresCondition: selectglademo
-	Armament@PRIMARYTox1:
-		Weapon: GLBombTruckToxExplosive
-		RequiresCondition: selectglatoxin && !antraxbetaupgrade
-	Armament@PRIMARYTox2:
-		Weapon: GLBombTruckToxExplosive2
-		RequiresCondition: selectglatoxin && antraxbetaupgrade
+		Weapon: DemoTruckTargeting
 	GrantConditionOnAttack:
 		Condition: triggered
 	GrantConditionOnDeploy:
 		DeployedCondition: triggered
 	-DamageMultiplier@IRONCURTAIN:
 	KillsSelf:
-		RequiresCondition: invulnerability || triggered
+		RequiresCondition: (invulnerability || triggered) && !chronobeamed
 	Chronoshiftable:
 		ExplodeInstead: True
 	Voiced:
@@ -3773,6 +3761,7 @@ glbombtruck:
 		Multiplier: 80
 		Prerequisites: selectglademo
 		Queue: Vehicle.GLA, RAVehicle.GLA
+
 pscglbtruck2:
 	Tooltip:
 		Name: Toxin Explosive
@@ -4809,6 +4798,7 @@ chpower:
 	Explodes@2:
 		Weapon: CHRadiationYellow
 		EmptyWeapon: CHRadiationYellow
+		RequiresCondition: !chronobeamed
 	Voiced:
 		VoiceSet: CHNuclearReactorVoice
 	GrantConditionOnPrerequisite@anypower:
@@ -5354,6 +5344,7 @@ chsilo:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^3x2Shape
+	Inherits@sw: ^PrimarySuperweapon
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
@@ -5365,7 +5356,7 @@ chsilo:
 		Prerequisite: anyhq
 	Buildable:
 		BuildPaletteOrder: 135
-		Prerequisites: chpropaganda, ~techlevel.high, ~chselected
+		Prerequisites: chpropaganda, ~techlevel.high, ~chselected, !chinanuke
 		Queue: Building.CHINA, RABuilding.CHINA
 		Description: Provides Nuclear Strike support power.\nUnlocks Stealth Tank, Chem. Warrior and Obelisk of Light.\nRequires power to operate.
 	Building:
@@ -5384,35 +5375,9 @@ chsilo:
 	DetectCloaked:
 		Range: 5c0
 		RequiresCondition: !lowpower
-	NukePower:
-		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		Icon: chnuclear
-		Cursor: nuke
-		ChargeInterval: 9000
-		Description: Nuclear Strike
-		LongDesc: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
-		EndChargeSpeechNotification: NuclearWeaponAvailable
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		LaunchSpeechNotification: NuclearWeaponLaunched
-		IncomingSpeechNotification: NuclearWarheadApproaching
-		MissileWeapon: CHBigAtomicWeapon
-		MissileDelay: 11
-		SpawnOffset: 3c0,0,-1c512
-		DisplayBeacon: True
-		BeaconPoster: atomic
-		BeaconPosterPalette: beaconposter
-		DisplayTimerStances: Ally, Neutral, Enemy
-		DisplayRadarPing: True
-		CameraRange: 10c0
-		ArrowSequence: arrow
-		ClockSequence: clock
-		CircleSequence: circles
-		SupportPowerPaletteOrder: 30
 	NukePower@unlimited:
 		AllowMultiple: True
-		Prerequisites: ~techlevel.unlimited
+		Prerequisites: ~techlevel.superweapons
 		PauseOnCondition: lowpower
 		Icon: chnuclear
 		Cursor: nuke
@@ -5459,6 +5424,9 @@ chsilo:
 	Explodes:
 		Weapon: CHAtomicWeapon
 		EmptyWeapon: CHAtomicWeapon
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: chinanuke
+
 chairport:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -6098,11 +6066,11 @@ chbattle:
 	Explodes@upatomictank:
 		Weapon: CHAtomicWeapon2
 		EmptyWeapon: CHAtomicWeapon2
-		RequiresCondition: upatomictank
+		RequiresCondition: upatomictank && !chronobeamed
 	Explodes@upatomictank2:
 		Weapon: CHRadiationYellow
 		EmptyWeapon: CHRadiationYellow
-		RequiresCondition: upatomictank
+		RequiresCondition: upatomictank && !chronobeamed
 	GrantConditionOnPrerequisite@upautoload:
 		Condition: upautoload
 		Prerequisites: upautoload
@@ -6119,6 +6087,7 @@ chbattle:
 		Multiplier: 90
 		Prerequisites: selectchtanks
 		Queue: Vehicle.CHINA, RAVehicle.CHINA
+
 charty:
 	Inherits: ^Tank
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
@@ -6126,6 +6095,7 @@ charty:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -6197,6 +6167,7 @@ charty.Husk:
 		IntoActor: charty
 	RenderSprites:
 		Image: charty
+
 choverlord:
 	Inherits: ^Tank
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
@@ -6506,6 +6477,7 @@ choverlord.Husk:
 		IntoActor: choverlord
 	RenderSprites:
 		Image: choverlord
+
 chdragon:
 	Inherits: ^Tank
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
@@ -6577,6 +6549,7 @@ chdragon:
 		Multiplier: 90
 		Prerequisites: selectchtanks
 		Queue: Vehicle.CHINA, RAVehicle.CHINA
+
 chdragon.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -6937,6 +6910,7 @@ chcrawl.Husk:
 		IntoActor: chcrawl
 	RenderSprites:
 		Image: chcrawl
+
 chnukecann:
 	Inherits: ^Tank
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
@@ -7009,9 +6983,11 @@ chnukecann:
 	Explodes@upatomictank:
 		Weapon: CHAtomicWeapon2
 		EmptyWeapon: CHAtomicWeapon2
+		RequiresCondition: !chronobeamed
 	GrantConditionOnPrerequisite@upneutronshell:
 		Condition: upneutronshell
 		Prerequisites: upneutronshell
+
 chnukecann.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
@@ -7020,6 +6996,7 @@ chnukecann.Husk:
 		IntoActor: chnukecann
 	RenderSprites:
 		Image: chnukecann
+
 upredguard:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -8073,6 +8050,7 @@ selectusasuper:
 		Interval: 2
 		Amount: 20
 		RequiresCondition: usauptraining
+
 USAE1:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -8113,7 +8091,6 @@ USAE1:
 		RequiresCondition: !parachute && usaupgrenade
 		PauseOnCondition: frozen
 		Voice: Move
-	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	Parachutable:
@@ -8172,6 +8149,7 @@ USAE3:
 		Weapon: CHTankHunterMissileG
 	Voiced:
 		VoiceSet: MissileDefenderVoice
+
 usapath:
 	Inherits: ^Soldier
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
@@ -9507,7 +9485,7 @@ usabarracks:
 		Produces: Infantry.USA
 		RequiresCondition: !classicproductionqueues
 	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry.CHINA
+		Produces: RAInfantry.USA
 		RequiresCondition: classicproductionqueues
 	GrantExternalConditionToProduced:
 		Condition: produced
@@ -10187,6 +10165,7 @@ usacannon:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^3x2Shape
+	Inherits@SW: ^PrimarySuperweapon
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
@@ -10198,7 +10177,7 @@ usacannon:
 		Prerequisite: anyhq
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: usastrategy, ~techlevel.high, ~!selectusasuper
+		Prerequisites: usastrategy, ~techlevel.high, ~!selectusasuper, !particlecannon
 		Queue: Building.USA, RABuilding.USA
 		Description: Provides Nuclear Strike support power.\nUnlocks Stealth Tank, Chem. Warrior and Obelisk of Light.\nRequires power to operate.
 	Building:
@@ -10217,28 +10196,9 @@ usacannon:
 	DetectCloaked:
 		Range: 5c0
 		RequiresCondition: !lowpower
-	IonCannonPower:
-		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons, !techlevel.unlimited
-		Icon: ioncannon
-		Cursor: ioncannon
-		ChargeInterval: 6750
-		Description: Ion Cannon
-		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
-		BeginChargeSpeechNotification: IonCannonCharging
-		EndChargeSpeechNotification: IonCannonReady
-		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		OnFireSound: sparlo2a.aud, sparlo2b.aud, sparlo2c.aud, sparlo3a.aud, sparlo3b.aud, sparlo3c.aud, sparlo4a.aud, sparlo4b.aud, sparlo4c.aud
-		DisplayTimerStances: Ally, Neutral
-		DisplayRadarPing: True
-		CameraActor: camera.small
-		SupportPowerPaletteOrder: 20
-		Weapon: USAParticleCannon
-		Effect: usaparticlesfx
 	IonCannonPower@unlimited:
 		AllowMultiple: True
-		Prerequisites: ~techlevel.unlimited
+		Prerequisites: ~techlevel.superweapons
 		PauseOnCondition: lowpower
 		Icon: ioncannon
 		Cursor: ioncannon
@@ -10268,6 +10228,8 @@ usacannon:
 	ProvidesPrerequisite@buildingname:
 	Voiced:
 		VoiceSet: CHMissileSiloVoice
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: particlecannon
 
 usacannon2:
 	Inherits: ^BaseBuilding
