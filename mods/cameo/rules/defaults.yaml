@@ -658,8 +658,6 @@
 		DamageInterval: 16
 		DamageTypes: TiberiumDeath
 		RequiresCondition: !hazmatsuits
-=======
-		LayerName: tibradiation
 
 ^UnitDisable:
 	GrantCondition@disable:
@@ -1052,7 +1050,6 @@
 		DamageInterval: 16
 		DamageTypes: TiberiumDeath
 		RequiresCondition: !hazmatsuits
->>>>>>> d9e8d6f6e772ca7e3d374e1ef6f7c4f6ed729fa4
 	DamagedByTintedCells@rad:
 		Damage: 1000
 		DamageInterval: 16
@@ -3525,8 +3522,6 @@ CPQDEBUGDUMMY:
 	DamageMultiplier@FORCESHIELD:
 		RequiresCondition: forceshield
 		Modifier: 0
-=======
-		Condition: invulnerability
 	Passenger:
 		Weight: 6
 	Crushable:
@@ -3718,7 +3713,6 @@ CPQDEBUGDUMMY:
 	DamageMultiplier@FORCESHIELD:
 		RequiresCondition: forceshield
 		Modifier: 0
->>>>>>> d9e8d6f6e772ca7e3d374e1ef6f7c4f6ed729fa4
 	TimedConditionBar@FORCESHIELD:
 		Condition: forceshield
 		Color: 2f74e2
@@ -3755,3 +3749,184 @@ CPQDEBUGDUMMY:
 	Targetable@AIFS:
 		TargetTypes: aiforceshield
 		RequiresCondition: aiforceshieldtarget && aiforceshield-enabled
+
+####################################################################################################
+#		Generals
+####################################################################################################
+
+^AffectedByDriverKill:
+	GrantConditionIfOwnerIsNeutral:
+		Condition: driver-dead
+	Capturable@DRIVER_DEAD:
+		Types: driverless_vehicle
+		RequiresCondition: driver-dead
+		ValidStances: Enemy, Neutral, Ally
+		CancelActivity: true
+	SelfHealing@DRIVER_DEAD:
+		PercentageStep: -1
+		Delay: 900
+		HealIfBelow: 101
+		DamageCooldown: 0
+		RequiresCondition: driver-dead
+	ExternalCondition@DeadDriver:
+		Condition: driver-dead
+	Targetable@DRIVERKILL:
+		TargetTypes: DriverKill
+		RequiresCondition: !driver-dead
+	Targetable@AICAPTURE:
+		TargetTypes: NoCrew
+		RequiresCondition: driver-dead
+	WithDecoration@DRIVERKILL:
+		Image: gendriverdead
+		Sequence: idle
+		ReferencePoint: Right, Top
+		RequiresCondition: driver-dead
+		BlinkInterval: 32
+		BlinkPattern: On, Off, Off, Off
+	SpeedMultiplier@DRIVERKILL:
+		RequiresCondition: driver-dead
+		Modifier: 0
+	RejectsOrders@DRIVERKILL:
+		RequiresCondition: driver-dead
+	SpawnActorOnDeath@Scraps:
+		Probability: 99
+		Actor: glscrapcrate
+		DeathType: MakeScrapbox
+	DamageMultiplier@scrap1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 95
+	DamageMultiplier@scrap2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 90
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	ExternalCondition@EmergencyRepair1:
+		Condition: repairlvl1
+	ExternalCondition@EmergencyRepair2:
+		Condition: repairlvl2
+	ExternalCondition@EmergencyRepair3:
+		Condition: repairlvl3
+	SelfHealing@EmergencyRepair1:
+		Step: 250
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: repairlvl1
+	SelfHealing@EmergencyRepair2:
+		Step: 300
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: repairlvl2
+	SelfHealing@EmergencyRepair3:
+		Step: 350
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: repairlvl3
+	WithDecoration@EmergencyRepair1:
+		Image: select
+		Sequence: repair
+		ReferencePoint: Bottom, Right
+		RequiresCondition: repairlvl1 || repairlvl2 || repairlvl3
+		BlinkInterval: 32
+		BlinkPattern: On, Off
+
+^CanCaptureDriverlessVehicles:
+	Captures@DRIVER_KILL:
+		CaptureTypes: driverless_vehicle
+		Voice: Select
+	CaptureManager:
+
+^FrenzyPower:
+	WithColoredOverlay@FRENZY1:
+		RequiresCondition: frenzypower1
+	WithColoredOverlay@FRENZY2:
+		RequiresCondition: frenzypower2
+	WithColoredOverlay@FRENZY3:
+		RequiresCondition: frenzypower3
+	FirepowerMultiplier@FRENZY1:
+		RequiresCondition: frenzypower1
+		Modifier: 110
+	FirepowerMultiplier@FRENZY2:
+		RequiresCondition: frenzypower2
+		Modifier: 120
+	FirepowerMultiplier@FRENZY3:
+		RequiresCondition: frenzypower3
+		Modifier: 130
+	TimedConditionBar@FRENZY1:
+		Condition: frenzypower1
+	TimedConditionBar@FRENZY2:
+		Condition: frenzypower2
+	TimedConditionBar@FRENZY3:
+		Condition: frenzypower3
+	ExternalCondition@FRENZY1:
+		Condition: frenzypower1
+	ExternalCondition@FRENZY2:
+		Condition: frenzypower2
+	ExternalCondition@FRENZY3:
+		Condition: frenzypower3
+
+^PropagandaSelfHeal:
+	GrantConditionOnPrerequisite@upsubliminal:
+		Condition: upsubliminal
+		Prerequisites: upsubliminal
+	ExternalCondition@PROPAGANDA:
+		Condition: propaganda
+	SelfHealing@PROPAGANDA1:
+		Step: 200
+		Delay: 50
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: propaganda
+	SelfHealing@PROPAGANDA2:
+		Step: 200
+		Delay: 50
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: propaganda && upsubliminal
+	WithDecoration@PROPAGANDAHEAL:
+		Image: pips
+		Sequence: pip-heal
+		ReferencePoint: Bottom, Right
+		RequiresCondition: propaganda
+		BlinkInterval: 32
+		BlinkPattern: On, Off
+	Targetable@PROPAGANDAPSI:
+		RequiresCondition: propaganda
+		TargetTypes: Propaganda
+	GrantConditionOnPrerequisite@usabombardament:
+		Condition: usabombardament
+		Prerequisites: usabombardament
+	GrantConditionOnPrerequisite@usasearchndestroy:
+		Condition: usasearchndestroy
+		Prerequisites: usasearchndestroy
+	GrantConditionOnPrerequisite@usaholdtheline:
+		Condition: usaholdtheline
+		Prerequisites: usaholdtheline
+	DamageMultiplier@usaholdtheline:
+		RequiresCondition: usaholdtheline
+		Modifier: 90
+	FirepowerMultiplier@usabombardament:
+		RequiresCondition: usabombardament
+		Modifier: 120
+	RangeMultiplier@usasearchndestroy:
+		Modifier: 120
+		RequiresCondition: usasearchndestroy
+
+^DisableBunkerGarrison:
+	Targetable@BunkerDisabled:
+		TargetTypes: GarrsonableBunker
+	AttackGarrisoned:
+		PauseOnCondition: bunkerdisable
+	ExternalCondition@BunkerDisabled:
+		Condition: bunkerdisable
+	WithDecoration@BunkerDisabled:
+		Image: explosion
+		Sequence: large_napalm
+		ReferencePoint: Bottom, Center
+		RequiresCondition: bunkerdisable
+		BlinkInterval: 32
+		BlinkPattern: On, On
+		ValidStances: Ally, Neutral, Enemy
