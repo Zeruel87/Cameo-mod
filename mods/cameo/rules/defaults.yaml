@@ -265,11 +265,7 @@
 ^UnitDisable:
 	GrantCondition@disable:
 		Condition: disabled
-<<<<<<< HEAD
 		RequiresCondition: (TSNeutronBomb || GhostLockdown || chronobeamed || diskdrain || Magnet || being-captured ) && !invulnerability
-=======
-		RequiresCondition: (TSNeutronBomb || GhostLockdown || ArbiterStasis || chronobeamed || diskdrain || Magnet ) && !invulnerability
->>>>>>> 03daeafc78ea6ed3eb04ce4de729ef55f72ff6a0
 	ExternalCondition@TSNEUTRON:
 		TotalCap: 1
 		Condition: TSNeutronBomb
@@ -287,7 +283,7 @@
 		Color: FFFFFF
 	ExternalCondition@STASIS:
 		TotalCap: 1
-		Condition: chronobeamed #ArbiterStasis
+		Condition: chronobeamed
 	ExternalCondition@DRAIN:
 		TotalCap: 1
 		Condition: diskdrain
@@ -306,9 +302,6 @@
 	Inherits@mag: ^Magnefreezable
 	Inherits@cloak: ^AcceptsCloakCrate
 	Inherits@heal: ^MachineShopRepairable
-	Inherits@PROPAGANDA: ^PropagandaSelfHeal
-	Inherits@FrenzyPower: ^FrenzyPower
-	Inherits@driver-dead: ^AffectedByDriverKill
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -316,7 +309,7 @@
 	Mobile:
 		Locomotor: wheeled
 		TurnSpeed: 5
-		PauseOnCondition: disabled || driver-dead
+		PauseOnCondition: disabled
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
@@ -439,7 +432,7 @@
 		Condition: SquidTrap
 	GrantCondition@disable:
 		Condition: disabled
-		RequiresCondition: (TSNeutronBomb || GhostLockdown || ArbiterStasis || chronobeamed || diskdrain || Magnet || SquidTrap ) && !invulnerability
+		RequiresCondition: (TSNeutronBomb || GhostLockdown || chronobeamed || diskdrain || Magnet || SquidTrap ) && !invulnerability
 	ProductionCostMultiplier@Industrial:
 		Multiplier: 75
 		Prerequisites: yrngindp
@@ -482,10 +475,10 @@
 		AirborneCondition: airborne
 	Targetable@GROUND:
 		RequiresCondition: !airborne && !chronobeamed
-		TargetTypes: Ground, Vehicle
+		TargetTypes: Ground, Vehicle, Aircraft
 	Targetable@AIRBORNE:
 		RequiresCondition: airborne && !chronobeamed
-		TargetTypes: Air
+		TargetTypes: Air, Aircraft
 	Targetable@REPAIR:
 		RequiresCondition: !airborne && !chronobeamed && damaged
 		TargetTypes: Repair, Healing
@@ -592,7 +585,7 @@
 		Condition: chronobeamed
 	GrantCondition@disable:
 		Condition: frozen
-		RequiresCondition: ReaperTrap || ArbiterStasis || chronobeamed
+		RequiresCondition: ReaperTrap || chronobeamed
 	Mobile:
 		PauseOnCondition: frozen
 
@@ -605,8 +598,6 @@
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@disable: ^InfantryDisable
 	Inherits@heal: ^HospitalHealable
-	Inherits@PROPAGANDA: ^PropagandaSelfHeal
-	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -1694,7 +1685,6 @@
 	Mine:
 		CrushClasses: mine
 		DetonateClasses: mine
-		AvoidFriendly: false
 		BlockFriendly: false
 	Health:
 		HP: 10000
@@ -2641,7 +2631,7 @@ CPQDEBUGDUMMY:
 	Inherits@MC: ^MCImmune
 	Harvester:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
-		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, usasupply, glsupply, chsupply, leangsupply
+		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor
 	GpsDot:
 		String: Harvester
 
@@ -3020,7 +3010,7 @@ CPQDEBUGDUMMY:
 		Condition: SquidTrap
 	GrantCondition@disable:
 		Condition: frozen
-		RequiresCondition: ReaperTrap || ArbiterStasis || chronobeamed || SquidTrap
+		RequiresCondition: ReaperTrap || chronobeamed || SquidTrap
 
 ^PrimarySuperweapon:
 	Inherits@FS: ^AIForceShield
@@ -3171,184 +3161,3 @@ CPQDEBUGDUMMY:
 	Targetable@AIFS:
 		TargetTypes: aiforceshield
 		RequiresCondition: aiforceshieldtarget && aiforceshield-enabled
-        
-####################################################################################################
-#		Generals
-####################################################################################################
-
-^AffectedByDriverKill:
-	GrantConditionIfOwnerIsNeutral:
-		Condition: driver-dead
-	Capturable@DRIVER_DEAD:
-		Types: driverless_vehicle
-		RequiresCondition: driver-dead
-		ValidStances: Enemy, Neutral, Ally
-		CancelActivity: true
-	SelfHealing@DRIVER_DEAD:
-		PercentageStep: -1
-		Delay: 900
-		HealIfBelow: 101
-		DamageCooldown: 0
-		RequiresCondition: driver-dead
-	ExternalCondition@DeadDriver:
-		Condition: driver-dead
-	Targetable@DRIVERKILL:
-		TargetTypes: DriverKill
-		RequiresCondition: !driver-dead
-	Targetable@AICAPTURE:
-		TargetTypes: NoCrew
-		RequiresCondition: driver-dead
-	WithDecoration@DRIVERKILL:
-		Image: gendriverdead
-		Sequence: idle
-		ReferencePoint: Right, Top
-		RequiresCondition: driver-dead
-		BlinkInterval: 32
-		BlinkPattern: On, Off, Off, Off
-	SpeedMultiplier@DRIVERKILL:
-		RequiresCondition: driver-dead
-		Modifier: 0
-	RejectsOrders@DRIVERKILL:
-		RequiresCondition: driver-dead
-	SpawnActorOnDeath@Scraps:
-		Probability: 99
-		Actor: glscrapcrate
-		DeathType: MakeScrapbox
-	DamageMultiplier@scrap1:
-		RequiresCondition: scrap_create_bonus == 1
-		Modifier: 95
-	DamageMultiplier@scrap2:
-		RequiresCondition: scrap_create_bonus == 2
-		Modifier: 90
-	ExternalCondition@SCRAP_CREATE_BONUS:
-		Condition: scrap_create_bonus
-		TotalCap: 2
-	ExternalCondition@EmergencyRepair1:
-		Condition: repairlvl1
-	ExternalCondition@EmergencyRepair2:
-		Condition: repairlvl2
-	ExternalCondition@EmergencyRepair3:
-		Condition: repairlvl3
-	SelfHealing@EmergencyRepair1:
-		Step: 250
-		Delay: 1
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: repairlvl1
-	SelfHealing@EmergencyRepair2:
-		Step: 300
-		Delay: 1
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: repairlvl2
-	SelfHealing@EmergencyRepair3:
-		Step: 350
-		Delay: 1
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: repairlvl3
-	WithDecoration@EmergencyRepair1:
-		Image: select
-		Sequence: repair
-		ReferencePoint: Bottom, Right
-		RequiresCondition: repairlvl1 || repairlvl2 || repairlvl3
-		BlinkInterval: 32
-		BlinkPattern: On, Off
-
-^CanCaptureDriverlessVehicles:
-	Captures@DRIVER_KILL:
-		CaptureTypes: driverless_vehicle
-		Voice: Select
-	CaptureManager:
-
-^FrenzyPower:
-	WithColoredOverlay@FRENZY1:
-		RequiresCondition: frenzypower1
-	WithColoredOverlay@FRENZY2:
-		RequiresCondition: frenzypower2
-	WithColoredOverlay@FRENZY3:
-		RequiresCondition: frenzypower3
-	FirepowerMultiplier@FRENZY1:
-		RequiresCondition: frenzypower1
-		Modifier: 110
-	FirepowerMultiplier@FRENZY2:
-		RequiresCondition: frenzypower2
-		Modifier: 120
-	FirepowerMultiplier@FRENZY3:
-		RequiresCondition: frenzypower3
-		Modifier: 130
-	TimedConditionBar@FRENZY1:
-		Condition: frenzypower1
-	TimedConditionBar@FRENZY2:
-		Condition: frenzypower2
-	TimedConditionBar@FRENZY3:
-		Condition: frenzypower3
-	ExternalCondition@FRENZY1:
-		Condition: frenzypower1
-	ExternalCondition@FRENZY2:
-		Condition: frenzypower2
-	ExternalCondition@FRENZY3:
-		Condition: frenzypower3
-
-^PropagandaSelfHeal:
-	GrantConditionOnPrerequisite@upsubliminal:
-		Condition: upsubliminal
-		Prerequisites: upsubliminal
-	ExternalCondition@PROPAGANDA:
-		Condition: propaganda
-	SelfHealing@PROPAGANDA1:
-		Step: 200
-		Delay: 50
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: propaganda
-	SelfHealing@PROPAGANDA2:
-		Step: 200
-		Delay: 50
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: propaganda && upsubliminal
-	WithDecoration@PROPAGANDAHEAL:
-		Image: pips
-		Sequence: pip-heal
-		ReferencePoint: Bottom, Right
-		RequiresCondition: propaganda
-		BlinkInterval: 32
-		BlinkPattern: On, Off
-	Targetable@PROPAGANDAPSI:
-		RequiresCondition: propaganda
-		TargetTypes: Propaganda
-	GrantConditionOnPrerequisite@usabombardament:
-		Condition: usabombardament
-		Prerequisites: usabombardament
-	GrantConditionOnPrerequisite@usasearchndestroy:
-		Condition: usasearchndestroy
-		Prerequisites: usasearchndestroy
-	GrantConditionOnPrerequisite@usaholdtheline:
-		Condition: usaholdtheline
-		Prerequisites: usaholdtheline
-	DamageMultiplier@usaholdtheline:
-		RequiresCondition: usaholdtheline
-		Modifier: 90
-	FirepowerMultiplier@usabombardament:
-		RequiresCondition: usabombardament
-		Modifier: 120
-	RangeMultiplier@usasearchndestroy:
-		Modifier: 120
-		RequiresCondition: usasearchndestroy
-
-^DisableBunkerGarrison:
-	Targetable@BunkerDisabled:
-		TargetTypes: GarrsonableBunker
-	AttackGarrisoned:
-		PauseOnCondition: bunkerdisable
-	ExternalCondition@BunkerDisabled:
-		Condition: bunkerdisable
-	WithDecoration@BunkerDisabled:
-		Image: explosion
-		Sequence: large_napalm
-		ReferencePoint: Bottom, Center
-		RequiresCondition: bunkerdisable
-		BlinkInterval: 32
-		BlinkPattern: On, On
-		ValidStances: Ally, Neutral, Enemy
