@@ -87,6 +87,47 @@
 		RequiresCondition: rocketupgrade
 		Modifier: 125
 
+^HordeBonus:
+	ReloadDelayMultiplier@HordeEffect:
+		RequiresCondition: hordeeffect >= 5
+		Modifier: 75
+	ExternalCondition@HordeEffect:
+		Condition: hordeeffect
+		TotalCap: 5
+	ProximityExternalCondition@HordeEffect:
+		Range: 3c0
+		Condition: hordeeffect
+	WithDecoration@HordeEffect:
+		Image: chhorde
+		Sequence: idle
+		RequiresCondition: hordeeffect >= 5
+	GrantConditionOnPrerequisite@hordeupgrade:
+		Condition: hordeupgrade
+		Prerequisites: upnationalism
+	ReloadDelayMultiplier@HordeEffectUpgraded:
+		RequiresCondition: hordeeffect >= 5 && hordeupgrade
+		Modifier: 75
+
+^AtomicTankUpgrade:
+	GrantConditionOnPrerequisite@upatomictank:
+		Condition: upatomictank
+		Prerequisites: upatomictank
+	SpeedMultiplier@upatomictank:
+		RequiresCondition: upatomictank
+		Modifier: 125
+	Explodes@upatomictank:
+		Weapon: CHAtomicWeapon2
+		EmptyWeapon: CHAtomicWeapon2
+		RequiresCondition: upatomictank && !chronobeamed
+
+^ChaingunUpgrade:
+	GrantConditionOnPrerequisite@upchaingun:
+		Condition: gunsupgrade
+		Prerequisites: upchaingun
+	ReloadDelayMultiplier@GattlingSpeed2:
+		RequiresCondition: gunsupgrade
+		Modifier: 50
+
 GLAHole4x4:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^4x4Shape
@@ -422,7 +463,7 @@ selectglatoxin:
 		BuildPaletteOrder: 1
 		BuildDuration: 0
 		Queue: Building.GLA, RABuilding.GLA
-		Description: tbd
+		Description: - Most units have toxin weapons\n- No access to stealth upgrades\n- More expensive heavy armor
 		Prerequisites: ~!glaselected
 	Valued:
 		Cost: 0
@@ -445,7 +486,7 @@ selectglademo:
 		BuildPaletteOrder: 1
 		BuildDuration: 0
 		Queue: Building.GLA, RABuilding.GLA
-		Description: tbd
+		Description: - Cheaper and more effective suicide bombers\n- No access to toxin weapons\n- More expensive heavy armor
 		Prerequisites: ~!glaselected
 	Valued:
 		Cost: 0
@@ -464,7 +505,7 @@ selectglacamo:
 		BuildPaletteOrder: 1
 		BuildDuration: 0
 		Queue: Building.GLA, RABuilding.GLA
-		Description: tbd
+		Description: - All defenses come with camo nets\n- All buildings can be cloaked\n- No access to heavy armor
 		Prerequisites: ~!glaselected
 	Valued:
 		Cost: 0
@@ -485,8 +526,9 @@ selectglacamo:
 GLAMCV:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
 	Valued:
-		Cost: 4000	#2000
+		Cost: 2000
 	Tooltip:
 		Name: Mobile Construction Vehicle (GLA)
 	Buildable:
@@ -513,19 +555,9 @@ GLAMCV:
 		Facing: 96
 		TransformSounds: placbldg.aud, build5.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
-	TransferTimedExternalConditionOnTransform:
-		Condition: invulnerability
 	Voiced:
 		VoiceSet: WorkerVoice
-	Inherits@EXT: ^ExternalConditions					##########
-	WithTextDecoration:
-		Text: MCV
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
+	Inherits@EXT: ^ExternalConditions
 	RenderSprites:
 		Image: glmcv
 	ProvidesPrerequisite@faction:
@@ -622,7 +654,7 @@ glcommand:
 		Amount: 0
 	GrantConditionOnBotOwner:
 		Condition: botgla
-		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
+		Bots: easy, medium, hard, brutal, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botgla
 		RequiresCondition: botgla
@@ -790,7 +822,7 @@ glanthraxbomber:
 	AttackBomber:
 	Armament@Greem:
 		Weapon: GLToxinBomb
-		RequiresCondition: !antraxbetaupgrade
+		RequiresCondition: !antraxbetaupgrade && !upantraxgamma
 	Armament@Blue:
 		Weapon: GLToxinBombBlue
 		RequiresCondition: antraxbetaupgrade && !upantraxgamma
@@ -813,7 +845,7 @@ glanthraxbomber:
 	-Voiced:
 	-GainsExperience:
 	Tooltip:
-		Name: Anthrax bomber
+		Name: Anthrax Bomber
 	Contrail@1:
 		Offset: -432,560,0
 	Contrail@2:
@@ -1227,7 +1259,7 @@ glstorm:
 		Weapon: GLASCUDPOWER
 		LocalOffset: 900,900,340, 900,-900,340, -900,900,340, -900,-900,340
 		LocalYaw: 0,100
-		RequiresCondition: !antraxbetaupgrade
+		RequiresCondition: !antraxbetaupgrade && !upantraxgamma
 	Armament@Power2:
 		Weapon: GLASCUDPOWER2
 		LocalOffset: 900,900,340, 900,-900,340, -900,900,340, -900,-900,340
@@ -1637,7 +1669,7 @@ glamob:
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@bot: ^BotProductionBoost
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@vo: ^AttackFrontalVoice
+	Inherits@vo: ^AttackTurretedVoice
 	Inherits@announce: ^AnnounceOnBuild
 	-AppearsOnRadar:
 	OwnerLostAction:
@@ -1670,7 +1702,9 @@ glamob:
 		Actors: angrymob1, angrymob1, angrymob1, angrymob1, angrymob2, angrymob2, angrymob2, angrymob2, angrymob2, angrymob3, angrymob3
 		RespawnTicks: 750
 		ExitByBudding: false
-	AttackFrontal:
+	AttackTurreted:
+	Turreted:
+		TurnSpeed: 255
 	Armament:
 		Weapon: AngryMobTargeting
 	WithSpriteBody:
@@ -1814,6 +1848,7 @@ GLE1toxin:
 		Description: Anti-Infantry infantry.\n  Strong vs Infantry, Light Vehicles\n  Weak vs Vehicles
 	Armament@PRIMARY:							##########
 		Weapon: GLRebelToxin
+		LocalOffset: 256,43,341
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: GLRebelToxinGarrison
@@ -1880,8 +1915,6 @@ GLKELL:
 	Cloak:
 		InitialDelay: 30
 		CloakDelay: 30
-		CloakSound: cloak5.aud
-		UncloakSound: cloak5.aud
 		PauseOnCondition: cloak-force-disabled
 	RevealsShroud:
 		Range: 6c0
@@ -1952,13 +1985,6 @@ GLTERROR:
 	DamageMultiplier@selectglademo:
 		RequiresCondition: selectglademo
 		Modifier: 75
-	WithDecoration@selectglademo:
-		Image: rank
-		Sequence: rank-veteran-3
-		Palette: effect
-		ReferencePoint: Bottom, Right
-		RequiresCondition: selectglademo
-		ZOffset: 256
 	GrantConditionOnPrerequisite@selectglatoxin:
 		Condition: selectglatoxin
 		Prerequisites: selectglatoxin
@@ -2063,7 +2089,8 @@ glhijack:
 		CloakTypes: Cloak, Thief
 		PauseOnCondition: cloak-force-disabled
 	WithInfantryBody:
-		IdleSequences: idle
+		-IdleSequences:
+		StandSequences: stand
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -2125,7 +2152,7 @@ glbiker:
 		Types: Infantry
 		MaxWeight: 1
 		PipCount: 1
-		EjectOnDeath: True
+		EjectOnDeath: false
 		InitialUnits: gle1
 		PassengerConditions:
 			glterror: bomb
@@ -2208,6 +2235,7 @@ glbggy:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@junk: ^JunkRepair
 	Inherits@AP: ^APRocketUpgrade
@@ -2479,9 +2507,6 @@ glscorpion:
 	GrantConditionOnPrerequisite@selectglatoxin:
 		Condition: selectglatoxin
 		Prerequisites: selectglatoxin
-	GrantConditionOnPrerequisite@selectglademo:
-		Condition: selectglademo
-		Prerequisites: selectglademo
 	ProductionCostMultiplier@selectglatoxin:
 		Multiplier: 110
 		Prerequisites: selectglatoxin
@@ -2616,9 +2641,6 @@ glmaura:
 		Multiplier: 110
 		Prerequisites: selectglatoxin
 		Queue: Vehicle.GLA, RAVehicle.GLA
-	GrantConditionOnPrerequisite@selectglademo:
-		Condition: selectglademo
-		Prerequisites: selectglademo
 	ProductionCostMultiplier@selectglademo:
 		Multiplier: 110
 		Prerequisites: selectglademo
@@ -2642,6 +2664,7 @@ gltractor:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@EMP: ^TurretEMP
+	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@junk: ^JunkRepair
 	Valued:
@@ -2690,7 +2713,24 @@ gltractor:
 		LocalOffset: 600,0,90
 		RequiresCondition: upantraxgamma
 	AttackTurreted:
+		PauseOnCondition: disabled || contaminate
 	WithMuzzleOverlay:
+	GrantConditionOnDeploy:
+		DeployedCondition: contaminate
+		SkipMakeAnimation: true
+		UndeployOnMove: true
+		UndeployOnPickup: true
+		Voice: Attack
+		PauseOnCondition: disabled
+	PeriodicExplosion@1:
+		Weapon: GLTractorContaminate
+		RequiresCondition: contaminate && !antraxbetaupgrade && !upantraxgamma
+	PeriodicExplosion@2:
+		Weapon: GLTractorContaminateBeta
+		RequiresCondition: contaminate && antraxbetaupgrade && !upantraxgamma
+	PeriodicExplosion@3:
+		Weapon: GLTractorContaminateGamma
+		RequiresCondition: contaminate && upantraxgamma
 	WithSpriteTurret:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -2720,9 +2760,6 @@ gltractor:
 	ProducibleWithLevel:
 		Prerequisites: selectglatoxin
 		InitialLevels: 1
-	GrantConditionOnPrerequisite@selectglademo:
-		Condition: selectglademo
-		Prerequisites: selectglademo
 	ProductionCostMultiplier@selectglademo:
 		Multiplier: 110
 		Prerequisites: selectglademo
@@ -2826,9 +2863,6 @@ glpickup:
 	Explodes:
 		Weapon: GLTechnicalHuskCluster
 		EmptyWeapon: GLTechnicalHuskCluster
-	GrantConditionOnPrerequisite@selectglademo:
-		Condition: selectglademo
-		Prerequisites: selectglademo
 	ProductionCostMultiplier@selectglademo:
 		Multiplier: 110
 		Prerequisites: selectglademo
@@ -2883,9 +2917,6 @@ glscrapcar:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
-	GrantConditionOnPrerequisite@selectglademo:
-		Condition: selectglademo
-		Prerequisites: selectglademo
 	ProductionCostMultiplier@selectglademo:
 		Multiplier: 90
 		Prerequisites: selectglademo
@@ -2897,13 +2928,11 @@ glscrapcar:
 		InitialDelay: 5
 		CloakDelay: 5
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
-		CloakSound:
-		UncloakSound:
-		PauseOnCondition: cloak-force-disabled
+		PauseOnCondition: cloak-force-disabled || disabled
 	GrantConditionOnAttack:
 		Condition: triggered
 	KillsSelf:
-		RequiresCondition: triggered && !chronobeamed
+		RequiresCondition: triggered && !disabled
 
 glvan:
 	Inherits: ^Vehicle
@@ -2985,9 +3014,6 @@ glvan:
 	Explodes:
 		Weapon: GLTechnicalHusk2Cluster
 		EmptyWeapon: GLTechnicalHusk2Cluster
-	GrantConditionOnPrerequisite@selectglademo:
-		Condition: selectglademo
-		Prerequisites: selectglademo
 	ProductionCostMultiplier@selectglademo:
 		Multiplier: 110
 		Prerequisites: selectglademo
@@ -3131,9 +3157,6 @@ glquad:
 		Multiplier: 110
 		Prerequisites: selectglatoxin
 		Queue: Vehicle.GLA, RAVehicle.GLA
-	GrantConditionOnPrerequisite@selectglademo:
-		Condition: selectglademo
-		Prerequisites: selectglademo
 	ProductionCostMultiplier@selectglademo:
 		Multiplier: 110
 		Prerequisites: selectglademo
@@ -3157,6 +3180,7 @@ GLSCUD:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@EMP: ^FrontalEMP
+	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@junk: ^JunkRepair
 	Buildable:
@@ -3606,6 +3630,8 @@ upcamonetting2:
 	RenderSprites:
 		Image: glcamo2icon
 	ProvidesPrerequisite:
+		Prerequisite: upcamonetting
+	ProvidesPrerequisite@2:
 		Prerequisite: upcamonetting2
 
 upglfort:
@@ -4082,7 +4108,7 @@ glgunboat:
 		MaxWeight: 4
 		PipCount: 4
 		LoadingCondition: notmobile
-		LoadedCondition: Passager
+		LoadedCondition: Passenger
 
 pscglgunboat1:
 	Tooltip:
@@ -4143,7 +4169,7 @@ selectchnormal:
 		BuildPaletteOrder: 1
 		BuildDuration: 0
 		Queue: Building.CHINA, RABuilding.CHINA
-		Description: The Marauder tank was a medium tank
+		Description: No specialties
 		Prerequisites: ~!chselected
 	Valued:
 		Cost: 0
@@ -4162,7 +4188,7 @@ selectchtanks:
 		BuildPaletteOrder: 1
 		BuildDuration: 0
 		Queue: Building.CHINA, RABuilding.CHINA
-		Description: The Marauder tank was a medium tank
+		Description: - Cheaper and more effective tanks\n- No access to heavy artillery\n- More expensive infantry and aircraft
 		Prerequisites: ~!chselected
 	Valued:
 		Cost: 0
@@ -4172,6 +4198,7 @@ selectchtanks:
 		Prerequisite: chselected
 	ProvidesPrerequisite@2:
 		Prerequisite: selectchtanks
+
 selectchinf:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -4180,7 +4207,7 @@ selectchinf:
 		BuildPaletteOrder: 1
 		BuildDuration: 0
 		Queue: Building.CHINA, RABuilding.CHINA
-		Description: The Marauder tank was a medium tank
+		Description: - More effective infantry\n- Support vehicles are armed and have greater capacity\n- No access to heavy armor
 		Prerequisites: ~!chselected
 	Valued:
 		Cost: 0
@@ -4199,7 +4226,7 @@ selectchatomic:
 		BuildPaletteOrder: 1
 		BuildDuration: 0
 		Queue: Building.CHINA, RABuilding.CHINA
-		Description: The Marauder tank was a medium tank
+		Description: - Faster tanks with uranium shells\n- More effective nuclear weapons and upgrades\n- More expensive infantry and aircraft
 		Prerequisites: ~!chselected
 	Valued:
 		Cost: 0
@@ -4224,8 +4251,9 @@ selectchatomic:
 CHNMCV:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
 	Valued:
-		Cost: 4000	#2000
+		Cost: 2000
 	Tooltip:
 		Name: Mobile Construction Vehicle (China)
 	Buildable:
@@ -4252,19 +4280,9 @@ CHNMCV:
 		Facing: 96
 		TransformSounds: placbldg.aud, build5.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
-	TransferTimedExternalConditionOnTransform:
-		Condition: invulnerability
 	Voiced:
 		VoiceSet: PRCMCCVoice
-	Inherits@EXT: ^ExternalConditions					##########
-	WithTextDecoration:
-		Text: MCV
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
+	Inherits@EXT: ^ExternalConditions
 	RenderSprites:
 		Image: chmcv
 	ProvidesPrerequisite@faction:
@@ -4272,14 +4290,10 @@ CHNMCV:
 
 chcommand:
 	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x3Shape
 	Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
 	Inherits@repairpower: ^EmergencyRepairPower
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -1536, -1536
-			BottomRight: 1536, 1536
 	Valued:
 		Cost: 3500
 	Tooltip:
@@ -4339,7 +4353,7 @@ chcommand:
 		Amount: 0
 	GrantConditionOnBotOwner:
 		Condition: botgla
-		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
+		Bots: easy, medium, hard, brutal, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botgla
 		RequiresCondition: botgla
@@ -4357,50 +4371,29 @@ chcommand:
 	Voiced:
 		VoiceSet: PRCCommandCenterVoice
 	Turreted:
-	AttackTurreted:
-		OpportunityFire: false
-		PersistentTargeting: false
-	GrantConditionOnPrerequisite@upartybarrage1:
-		Condition: upartybarrage1
-		Prerequisites: upartybarrage1
-	GrantConditionOnPrerequisite@upartybarrage2:
-		Condition: upartybarrage2
-		Prerequisites: upartybarrage2
-	GrantConditionOnPrerequisite@upartybarrage3:
-		Condition: upartybarrage3
-		Prerequisites: upartybarrage3
-	Armament@Barrage1:
-		Weapon: CHArtilleryBarrage1
-		LocalOffset: 212,0,40000
-		LocalYaw: 0,100
-		RequiresCondition: upartybarrage1 && !upartybarrage2
-	Armament@Barrage2:
-		Weapon: CHArtilleryBarrage2
-		LocalOffset: 212,0,40000
-		LocalYaw: 0,100
-		RequiresCondition: upartybarrage2 && !upartybarrage3
-	Armament@Barrage3:
-		Weapon: CHArtilleryBarrage3
-		LocalOffset: 212,0,40000
-		LocalYaw: 0,100
-		RequiresCondition: upartybarrage3
-	AttackOrderPower@Barriage1:
+	DetonateWeaponPower@ArtilleryBarrage:
 		OrderName: CHArtilleryBarrage1
-		PauseOnCondition: disabled || lowpower
-		Cursor: attackmove
+		PauseOnCondition: lowpower
+		Prerequisites: upartybarrage1
 		Icon: chartybarr2
-		ChargeInterval: 3375
-		Description: Artillery Barrage
-		LongDesc: Fires a pulse blast which disables\nall mechanical units in the area.
-		EndChargeSpeechNotification:
-		SelectTargetSpeechNotification:
-		RequiresCondition: upartybarrage1
-	RenderRangeCircle:
+		Cursor: attackmove
+		ChargeInterval: 6000
+		ActivationDelay: 50
+		Description: ArtilleryBarrage
+		LongDesc: Off-map guns fire at the target.\nApplies heavy damage over a large area.
+		Weapon: CHBarrageSpawner
+		AirbustAltitude: 5c0
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		CameraActor: camera
+		CameraRemoveDelay: 300
 	SupportPowerChargeBar:
 
 chpower:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
+	Inherits@power: ^PowerPlant
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
@@ -4437,17 +4430,9 @@ chpower:
 	WithDeathAnimation:
 		DeathSequence: dead
 		UseDeathTypeSuffix: false
-	Inherits@EXPERIENCE: ^GainsExperience				##########
-	Inherits@POWERMULTIPLIER: ^PowerMultiplier			##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: building							##########
 	Explodes:
 		Weapon: CHAtomicWeapon
 		EmptyWeapon: CHAtomicWeapon
-	Explodes@2:
-		Weapon: CHRadiationYellow
-		EmptyWeapon: CHRadiationYellow
-		RequiresCondition: !chronobeamed
 	Voiced:
 		VoiceSet: CHNuclearReactorVoice
 	GrantConditionOnPrerequisite@anypower:
@@ -4461,6 +4446,7 @@ chpower:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-anim2
 		Palette: placelinesegment
+
 chpower2:
 	Inherits: chpower
 	Buildable:
@@ -4476,9 +4462,11 @@ chpower2:
 		Amount: 500
 	RenderSprites:
 		Image: chpower
+
 chbarracks:
 	Inherits: ^BaseBuilding
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
@@ -4544,9 +4532,12 @@ chbarracks:
 		Bounds: 48,42,0,-5
 	Voiced:
 		VoiceSet: PRCBarracksVoice
+
 chgattling:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@chaingun: ^ChaingunUpgrade
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -4603,16 +4594,11 @@ chgattling:
 	ReloadDelayMultiplier@GattlingSpeed:
 		RequiresCondition: !ammo
 		Modifier: 75
-	GrantConditionOnPrerequisite@upchaingun:
-		Condition: gunsupgrade
-		Prerequisites: upchaingun
-	ReloadDelayMultiplier@GattlingSpeed2:
-		RequiresCondition: gunsupgrade
-		Modifier: 50
 	Power:
 		Amount: -10
 	Voiced:
 		VoiceSet: CHGatlingCannonVoice
+
 chbunker:
 	Inherits: ^Defense
 	Inherits@shape: ^2x2Shape
@@ -4771,6 +4757,7 @@ chbunker2.e2:
 chsupply:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@ref: ^Refinery
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -4815,14 +4802,12 @@ chsupply:
  		TargetTypes: ThiefInfiltrate, SpyInfiltrate
 	Voiced:
 		VoiceSet: PRCSupplyVoice
+
 chweap:
 	Inherits: ^BaseBuilding
+	Inherits@shape: ^4x4Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -1536, -1536
-			BottomRight: 1536, 1536
+	Inherits@prod: ^ProducesUnits
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -4877,8 +4862,6 @@ chweap:
 		ProductionType: RAVehicle.CHINA
 		RequiresCondition: classicproductionqueues
 	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite:
-		Prerequisite: chweap
 	ProvidesPrerequisite@vehicleproduction:
 		Prerequisite: vehicleproduction
 	Power:
@@ -4897,18 +4880,12 @@ chweap:
 
 chpropaganda:
 	Inherits: ^BaseBuilding
+	Inherits@shape: ^4x3Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -1536, -1536
-			BottomRight: 1536, 1536
 	Valued:
 		Cost: 2000
 	Tooltip:
 		Name: Propaganda Center
-	ProvidesPrerequisite:
-		Prerequisite: chpropaganda
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: chweap, ~chselected
@@ -4928,8 +4905,6 @@ chpropaganda:
 		Range: 5c0
 	WithBuildingBib:
 	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite:
-		Prerequisite: chpropaganda
 	Power:
 		Amount: -40
 	Voiced:
@@ -4989,6 +4964,7 @@ chpropaganda:
 	ProximityExternalCondition@PROPAGANDA:
 		Range: 6c0
 		Condition: propaganda
+
 chsilo:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -5080,6 +5056,7 @@ chairport:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
 	Buildable:
 		Queue: Building.CHINA, RABuilding.CHINA
 		BuildPaletteOrder: 130
@@ -5132,8 +5109,6 @@ chairport:
 	SupportPowerChargeBar:
 	Power:
 		Amount: -20
-	ProvidesPrerequisite@afld:
-		Prerequisite: afld
 	ProvidesPrerequisite@buildingname:
 	Targetable:
 		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
@@ -5205,11 +5180,15 @@ chairport:
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
 		Prerequisites: upchminebomb
+
 CHE1:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@horde: ^HordeBonus
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 125
@@ -5231,6 +5210,7 @@ CHE1:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: CHGuardRifleGarrison
+		MuzzleSequence: muzzle
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
@@ -5242,39 +5222,21 @@ CHE1:
 		VoiceSet: RedGuardVoice
 	RenderSprites:
 		Scale: 0.85
-	ReloadDelayMultiplier@HordeEffect:
-		RequiresCondition: hordeeffect >= 5
-		Modifier: 75
-	ExternalCondition@HordeEffect:
-		Condition: hordeeffect
-	ProximityExternalCondition@HordeEffect:
-		Range: 3c0
-		Condition: hordeeffect
-	WithIdleOverlay@HordeEffect:
-		Sequence: redstar
-		RequiresCondition: hordeeffect >= 5
-	GrantConditionOnPrerequisite@hordeupgrade:
-		Condition: hordeupgrade
-		Prerequisites: upnationalism
-	ReloadDelayMultiplier@HordeEffectUpgraded:
-		RequiresCondition: hordeeffect >= 5 && hordeupgrade
-		Modifier: 75
 	ProducibleWithLevel:
 		Prerequisites: upredguard
 		InitialLevels: 1
-	GrantConditionOnPrerequisite@selectchtanks:
-		Condition: selectchtanks
-		Prerequisites: selectchtanks || selectchatomic
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 110
 		Prerequisites: selectchtanks
 		Queue: Infantry.CHINA, RAInfantry.CHINA
+	ProductionCostMultiplier@selectchatomic:
+		Multiplier: 130
+		Prerequisites: selectchatomic
+		Queue: Infantry.CHINA, RAInfantry.CHINA
         
 CHE2:
-	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits: CHE1
+	Inherits@chaingun: ^ChaingunUpgrade
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 125
@@ -5285,12 +5247,6 @@ CHE2:
 		Cost: 350
 	Tooltip:
 		Name: Minigunner
-	Mobile:
-		Speed: 56
-	Health:
-		HP: 8000
-	AutoTarget:
-		ScanRadius: 4
 	Armament@PRIMARY:							##########
 		Weapon: CHMinigunnerGatling
 	Armament@PRIMARYAA:							##########
@@ -5298,47 +5254,11 @@ CHE2:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: CHGattlingTurret
-	AttackFrontal:
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-	Parachutable:
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: infantry							##########
-	Voiced:
-		VoiceSet: RedGuardVoice
-	RenderSprites:
-		Scale: 0.85
-	ReloadDelayMultiplier@HordeEffect:
-		RequiresCondition: hordeeffect >= 5
-		Modifier: 75
-	ExternalCondition@HordeEffect:
-		Condition: hordeeffect
-	ProximityExternalCondition@HordeEffect:
-		Range: 3c0
-		Condition: hordeeffect
-	WithIdleOverlay@HordeEffect:
-		Sequence: redstar
-		RequiresCondition: hordeeffect >= 5
-	GrantConditionOnPrerequisite@hordeupgrade:
-		Condition: hordeupgrade
-		Prerequisites: upnationalism
-	ReloadDelayMultiplier@HordeEffectUpgraded:
-		RequiresCondition: hordeeffect >= 5 && hordeupgrade
-		Modifier: 75
 	ProducibleWithLevel:
+		InitialLevels: 2
+	ProducibleWithLevel@2:
 		Prerequisites: selectchinf
 		InitialLevels: 1
-	ProducibleWithLevel@2:
-		Prerequisites: upredguard
-		InitialLevels: 2
-	GrantConditionOnPrerequisite@selectchtanks:
-		Condition: selectchtanks
-		Prerequisites: selectchtanks
-	ProductionCostMultiplier@selectchtanks:
-		Multiplier: 110
-		Prerequisites: selectchtanks
-		Queue: Infantry.CHINA, RAInfantry.CHINA
 	AmmoPool:
 		Ammo: 8
 		PipCount: 0
@@ -5349,14 +5269,12 @@ CHE2:
 	ReloadDelayMultiplier@GattlingSpeed:
 		RequiresCondition: !ammo
 		Modifier: 75
-	GrantConditionOnPrerequisite@upchaingun:
-		Condition: gunsupgrade
-		Prerequisites: upchaingun
-	ReloadDelayMultiplier@GattlingSpeed2:
-		RequiresCondition: gunsupgrade
-		Modifier: 50
+
 CHE3:
 	Inherits: E3
+	Inherits@horde: ^HordeBonus
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -5367,7 +5285,7 @@ CHE3:
 		Queue: Infantry.CHINA, RAInfantry.CHINA
 		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
 	Armament@PRIMARY:							##########
-		Weapon: GLTrooperRPGMissile
+		Weapon: CHTankHunterMissile
 		LocalOffset: 256,43,341
 		FireDelay: 5
 	Armament@GARRISONED:						##########
@@ -5381,24 +5299,13 @@ CHE3:
 		Cursor: c4
 	Voiced:
 		VoiceSet: TankHunterVoice
-	ExternalCondition@HordeEffect:
-		Condition: hordeeffect
-	ProximityExternalCondition@HordeEffect:
-		Range: 3c0
-		Condition: hordeeffect
-		RequiresCondition: hordeeffect >= 3
-	WithIdleOverlay@HordeEffect:
-		Sequence: redstar
-		RequiresCondition: hordeeffect >= 5
-	GrantConditionOnPrerequisite@hordeupgrade:
-		Condition: hordeupgrade
-		Prerequisites: upnationalism
-	ReloadDelayMultiplier@HordeEffectUpgraded:
-		RequiresCondition: hordeeffect >= 5 && hordeupgrade
-		Modifier: 75
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 110
-		Prerequisites: !selectchinf
+		Prerequisites: selectchtanks
+		Queue: Infantry.CHINA, RAInfantry.CHINA
+	ProductionCostMultiplier@selectchatomic:
+		Multiplier: 130
+		Prerequisites: selectchatomic
 		Queue: Infantry.CHINA, RAInfantry.CHINA
 	ProducibleWithLevel:
 		Prerequisites: selectchinf
@@ -5410,6 +5317,7 @@ CHHACKER:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@editorhack: ^DeployableInfantryEditor
+	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 500
@@ -5419,62 +5327,35 @@ CHHACKER:
 		BuildPaletteOrder: 40
 		Prerequisites: barracks, chpropaganda, ~!selectchinf
 		Queue: Infantry.CHINA, RAInfantry.CHINA
-		Description: General-purpose infantry.\n  Can deploy for increased firepower
+		Description: Computer specialist.\n Can deploy to provide money\n Can disable buildings
 	Mobile:
 		Speed: 50
+		PauseOnCondition: frozen || hacking
 		RequireForceMoveCondition: !undeployed
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 8000
-	AutoTarget:
-		ScanRadius: 4
-	Armament@PRIMARY:							##########
+	Passenger:
+		CargoCondition: indoors
+	Armament@PRIMARY:
 		Weapon: CHHackerDisable
-		RequiresCondition: !deployed
-	Armament@GARRISONED:						##########
+		RequiresCondition: undeployed
+	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: CHHackerDisable
-		MuzzleSequence: garrison-muzzle
-	Armament@DEPLOYED:						##########
-		Name: deployed
-		Weapon: CHHackerHacking
 	AttackFrontal:
 		Armaments: primary
 		RequiresCondition: undeployed
-	AttackTurreted@deployed:
-		Armaments: garrisoned
-		Turrets: deploy
-		PauseOnCondition: frozen
-		RequiresCondition: deployed
-		Voice: Attack
-	Turreted:
-		Turret: deploy
-		RealignDelay: -1
-		TurnSpeed: 1023
-		InitialFacing: 368
-	WithSpriteTurret@idle:
-		Turret: deploy
-		Sequence: deployed
-		RequiresCondition: deployed && !animate-turret
-	WithSpriteTurret@animated:
-		Turret: deploy
-		Sequence: shoot-deployed
-		RequiresCondition: deployed && animate-turret
 	WithSpriteBody:
-		Sequence: dot
-		Name: dot
-		RequiresCondition: !undeployed
-	GrantConditionOnAttack:
-		Condition: animate-turret
-		RevokeDelay: 10
-		ArmamentNames: garrisoned
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed || hacking
 	WithInfantryBody:
+		-IdleSequences:
+		StandSequences: stand
 		DefaultAttackSequence: shoot
-		RequiresCondition: undeployed
-	WithMakeAnimation:
-		Sequence: deploy
-		BodyNames: dot
+		RequiresCondition: undeployed && !hacking
 	RejectsOrders@deployment:
 		Reject: AttackMove, AssaultMove
 		RequiresCondition: deployed
@@ -5482,59 +5363,58 @@ CHHACKER:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	GrantConditionOnAttack:
+		Condition: hacking
+		RevokeDelay: 50
 	GrantConditionOnDeploy:
 		DeployedCondition: deployed
 		UndeployedCondition: undeployed
-		DeploySounds: igidepa.wav,igidepb.wav
-		UndeploySounds: igidepa.wav,igidepb.wav
-		UndeployOnMove: false
+		UndeployOnMove: true
+		SkipMakeAnimation: true
 		RequiresCondition: !parachute
 		PauseOnCondition: frozen
-		Voice: Move
+		Voice: Attack
 	TakeCover:
 		RequiresCondition: undeployed
-	AIDeployNotifier:
-		DeployChance: 100
-		DeployTicks: 0
-		DeployTrigger: Attack
 	Voiced:
 		VoiceSet: CHHackerVoice
 	DeliversCash:
 		Payload: 250
-	CashTrickler@Bots:
-		Interval: 20
-		Amount: 6
-		RequiresCondition: botgla && !deployed
+	ExperienceTrickler:
+		Interval: 45
+		Amount: 15
+		RequiresCondition: deployed || indoors
+		PauseOnCondition: frozen
 	CashTrickler@Rank0:
 		Interval: 20
 		Amount: 5
-		RequiresCondition: deployed && rank-veteran == 0
+		PauseOnCondition: frozen
+		RequiresCondition: (deployed || indoors) && rank-veteran == 0
 	CashTrickler@Rank1:
 		Interval: 20
 		Amount: 6
-		RequiresCondition: deployed && rank-veteran == 1
+		PauseOnCondition: frozen
+		RequiresCondition: (deployed || indoors) && rank-veteran == 1
 	CashTrickler@Rank2:
 		Interval: 20
 		Amount: 7
-		RequiresCondition: deployed && rank-veteran == 2
+		PauseOnCondition: frozen
+		RequiresCondition: (deployed || indoors) && rank-veteran == 2
 	CashTrickler@Rank3:
 		Interval: 20
 		Amount: 8
-		RequiresCondition: deployed && rank-veteran == 3
+		PauseOnCondition: frozen
+		RequiresCondition: (deployed || indoors) && rank-veteran == 3
 	CashTrickler@Rank4:
 		Interval: 20
 		Amount: 10
-		RequiresCondition: deployed && rank-elite
-	ExperienceTrickler@buildingrebirth:
-		Interval: 2
-		Amount: 30
-	GrantConditionOnPrerequisite@selectchtanks:
-		Condition: selectchtanks
-		Prerequisites: selectchtanks
+		PauseOnCondition: frozen
+		RequiresCondition: (deployed || indoors) && rank-elite
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 110
 		Prerequisites: selectchtanks
 		Queue: Infantry.CHINA, RAInfantry.CHINA
+
 CHHACKER2:
 	Inherits: CHHACKER
 	Tooltip:
@@ -5543,20 +5423,24 @@ CHHACKER2:
 		BuildPaletteOrder: 40
 		Prerequisites: barracks, chpropaganda, ~selectchinf
 		Queue: Infantry.CHINA, RAInfantry.CHINA
+		Description: Computer specialist.\n Can deploy to provide money\n Can disable buildings and vehicles
 	Armament@PRIMARYSUPER:							##########
 		Weapon: CHLotusDisable
-		RequiresCondition: !deployed
+		RequiresCondition: undeployed
 	ProducibleWithLevel:
 		Prerequisites: selectchinf
 		InitialLevels: 1
 	RenderSprites:
 		Image: chhacker
+	Voiced:
+		VoiceSet: SuperHackerVoice
 
 chlotus:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceGlobal
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@MC: ^MCImmune
 	Valued:
@@ -5568,7 +5452,7 @@ chlotus:
 		BuildPaletteOrder: 70
 		Prerequisites: barracks, chpropaganda
 		Queue: Infantry.CHINA, RAInfantry.CHINA
-		Description: General-purpose infantry.\n  Can deploy for increased firepower
+		Description: Elite hacker.\n Can take control of buildings\n Can disable vehicles
 	Mobile:
 		Speed: 50
 	Health:
@@ -5593,11 +5477,12 @@ chlotus:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
 	TakeCover:
+	WithInfantryBody:
+		-IdleSequences:
+		StandSequences: stand
+		DefaultAttackSequence: shoot
 	Voiced:
 		VoiceSet: CHLotusVoice
-	GrantConditionOnPrerequisite@selectchtanks:
-		Condition: selectchtanks
-		Prerequisites: selectchtanks
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 110
 		Prerequisites: selectchtanks
@@ -5605,34 +5490,18 @@ chlotus:
 	Cloak:
 		InitialDelay: 30
 		CloakDelay: 30
-		CloakSound: cloak5.aud
-		UncloakSound: cloak5.aud
-		PauseOnCondition: cloak-force-disabled
-CHHACKERDEP:
-	Inherits: ^BaseBuilding
-	Selectable:
-		Bounds: 24,24
-	CashTrickler:
-		Amount: 5
-	Building:
-		Footprint: =
-		Dimensions: 1,1
-	Health:
-		HP: 8000
-	Tooltip:
-		Name: Hacker
-	UpdatesDerrickCount:
-	ConditionManager:			##########
-	Transforms:
-		IntoActor: chhacker
-		Facing: 2
+		PauseOnCondition: frozen
 
 chbattle:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@horde: ^HordeBonus
+	Inherits@atom: ^AtomicTankUpgrade
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -5682,40 +5551,9 @@ chbattle:
 		ValidTypes: vehicle								##########
 	Voiced:
 		VoiceSet: BattlemasterTankVoice
-	ReloadDelayMultiplier@HordeEffect:
-		RequiresCondition: hordeeffect >= 5
-		Modifier: 75
-	ExternalCondition@HordeEffect:
-		Condition: hordeeffect
-	ProximityExternalCondition@HordeEffect:
-		Range: 3c0
-		Condition: hordeeffect
-	WithIdleOverlay@HordeEffect:
-		Sequence: redstar
-		RequiresCondition: hordeeffect >= 5
-	GrantConditionOnPrerequisite@hordeupgrade:
-		Condition: hordeupgrade
-		Prerequisites: upnationalism
-	ReloadDelayMultiplier@HordeEffectUpgraded:
-		RequiresCondition: hordeeffect >= 5 && hordeupgrade
-		Modifier: 75
 	GrantConditionOnPrerequisite@upuraniumshell:
 		Condition: urshellupgrade
 		Prerequisites: upuraniumshell
-	GrantConditionOnPrerequisite@upatomictank:
-		Condition: upatomictank
-		Prerequisites: upatomictank
-	SpeedMultiplier@upatomictank:
-		RequiresCondition: upatomictank
-		Modifier: 125
-	Explodes@upatomictank:
-		Weapon: CHAtomicWeapon2
-		EmptyWeapon: CHAtomicWeapon2
-		RequiresCondition: upatomictank && !chronobeamed
-	Explodes@upatomictank2:
-		Weapon: CHRadiationYellow
-		EmptyWeapon: CHRadiationYellow
-		RequiresCondition: upatomictank && !chronobeamed
 	GrantConditionOnPrerequisite@upautoload:
 		Condition: upautoload
 		Prerequisites: upautoload
@@ -5725,9 +5563,6 @@ chbattle:
 	ProducibleWithLevel:
 		Prerequisites: selectchtanks
 		InitialLevels: 1
-	GrantConditionOnPrerequisite@selectchtanks:
-		Condition: selectchtanks
-		Prerequisites: selectchtanks
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 90
 		Prerequisites: selectchtanks
@@ -5739,6 +5574,8 @@ charty:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@EMP: ^FrontalEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -5795,9 +5632,6 @@ charty:
 	Explodes:
 		Weapon: FlametankExplode
 		EmptyWeapon: FlametankExplode
-	GrantConditionOnPrerequisite@selectchatomic:
-		Condition: selectchatomic
-		Prerequisites: selectchatomic
 	ProductionCostMultiplier@selectchatomic:
 		Multiplier: 110
 		Prerequisites: selectchatomic
@@ -5818,6 +5652,9 @@ choverlord:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@EMP: ^TurretEMP
+	Inherits@atom: ^AtomicTankUpgrade
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackTurretedVoice
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -5871,12 +5708,6 @@ choverlord:
 	GrantConditionOnPrerequisite@upuraniumshell:
 		Condition: urshellupgrade
 		Prerequisites: upuraniumshell
-	GrantConditionOnPrerequisite@upuraniumshell:
-		Condition: upatomictank
-		Prerequisites: upatomictank
-	SpeedMultiplier@upatomictank:
-		RequiresCondition: upatomictank
-		Modifier: 125
 	Production:
 		Produces: Overlord.CHINA
 		RequiresCondition: !addonpropaganda && !addonbunker && !addongattling
@@ -5944,18 +5775,15 @@ choverlord:
 	WithSpriteTurret@BUNKER:
 		RequiresCondition: addonbunker
 		Sequence: turretbun
-	WithSpriteTurret@PROPANGADA:
+	WithSpriteTurret@PROPAGANDA:
 		RequiresCondition: addonpropaganda
 		Sequence: turretpro
 	ProducibleWithLevel:
 		Prerequisites: selectchtanks
 		InitialLevels: 1
+
 choverlord2:
-	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@@GeneralsVehicle: ^GeneralsVehicle
-	Inherits@EMP: ^TurretEMP
+	Inherits: choverlord
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -5967,103 +5795,31 @@ choverlord2:
 		Prerequisites: chpropaganda, ~techlevel.high, ~selectchtanks
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
 		Description: Heavily armored China Tank.\nCan attack Aircraft.\n  Strong vs Everything
-	Mobile:
-		Locomotor: vehiclecrusher
-		Speed: 40
-		TurnSpeed: 3
 	Health:
 		HP: 120000
-	Repairable:
-		HpPerStep: 2637
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-	Turreted:
-		TurnSpeed: 3
-		Offset: -298,0,128
-	Armament@Normal:
-		Weapon: OverlordCannon
-		LocalOffset: 900,200,340, 900,-200,340
-		Recoil: 170
-		RecoilRecovery: 42
-		MuzzleSequence: muzzle
-		RequiresCondition: !urshellupgrade
-	Armament@Atomic:
-		Weapon: OverlordCannonNuclear
-		LocalOffset: 900,200,340, 900,-200,340
-		Recoil: 170
-		RecoilRecovery: 42
-		MuzzleSequence: muzzle
-		RequiresCondition: urshellupgrade
-	AttackTurreted:
-	WithMuzzleOverlay:
-	SelectionDecorations:
-	Selectable:
-		DecorationBounds: 34,34,0,-3
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	Voiced:
-		VoiceSet: OverlordTankVoice
-	GrantConditionOnPrerequisite@upuraniumshell:
-		Condition: urshellupgrade
-		Prerequisites: upuraniumshell
-	GrantConditionOnPrerequisite@upuraniumshell:
-		Condition: upatomictank
-		Prerequisites: upatomictank
-	SpeedMultiplier@upatomictank:
-		RequiresCondition: upatomictank
-		Modifier: 125
 	Production:
-		Produces: Overlord.CHINA
-		RequiresCondition: !addonpropaganda && !addonbunker && !addongattling
+		Produces: EOverlord.CHINA
+		RequiresCondition: !addonpropaganda && !addongattling
 	ProductionQueue:
-		Type: Overlord.CHINA
-		Group: Defence
-		LowPowerModifier: 200
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		DisplayOrder: 0
-	GrantConditionOnProduction@gattling:
-		Condition: addongattling
-		Actors: pscchoverlord1
-	Armament@GATTLING:
-		Name: secondary
-		Weapon: CHGattlingTurret
-		LocalOffset: -85,120,340, -85,-120,340
-		LocalYaw: -100, 100
-		Recoil: 10
-		MuzzleSequence: muzzle2
-		RequiresCondition: addongattling
-	Armament@GATTLINGAA:
-		Name: secondary
-		Weapon: CHGattlingTurretAA
-		LocalOffset: -85,120,340, -85,-120,340
-		LocalYaw: -100, 100
-		Recoil: 10
-		MuzzleSequence: muzzle2
-		RequiresCondition: addongattling
+		Type: EOverlord.CHINA
 	ProximityExternalCondition@PROPAGANDA:
-		Range: 6c0
-		Condition: propaganda
-	WithSpriteTurret:
-	WithSpriteTurret@GATTLING:
-		RequiresCondition: addongattling
-		Sequence: turretgat
+		-RequiresCondition:
+	-WithSpriteTurret@BUNKER:
+	-WithSpriteTurret@PROPAGANDA:
+	-GrantConditionOnProduction@bunker:
+	-GrantConditionOnProduction@propaganda:
+	-Armament@BUNKER:
+	-Armament@BUNKERMISS:
 	ProducibleWithLevel:
 		Prerequisites: selectchtanks
 		InitialLevels: 1
+
 pscchoverlord1:
 	Tooltip:
 		Name: Gattling Turret
 	Buildable:
 		BuildPaletteOrder: 10
-		Queue: Overlord.CHINA
+		Queue: Overlord.CHINA, EOverlord.CHINA
 		Description: Normal Weak Explosive.
 		Prerequisites: anypower
 	Valued:
@@ -6124,6 +5880,8 @@ chdragon:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@EMP: ^TurretEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackTurretedVoice
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -6134,10 +5892,13 @@ chdragon:
 		BuildPaletteOrder: 40
 		Prerequisites: ~techlevel.medium, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
-		Description: Fast, light tank.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Flame tank.\nCan deploy to create a fire wall.\n  Strong vs Infantry\n  Weak vs Tanks
 	Mobile:
 		TurnSpeed: 8
 		Speed: 60
+		RequiresForceMoveCondition: deployed
+	Passenger:
+		RequiresForceMoveCondition: deployed
 	Health:
 		HP: 28000
 	Repairable:
@@ -6155,15 +5916,63 @@ chdragon:
 		RecoilRecovery: 17
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
-		RequiresCondition: !flameupgrade
+		RequiresCondition: !flameupgrade && !deployed
 	Armament@Blue:
 		Weapon: CHDragonFlamerBlue
 		Recoil: 85
 		RecoilRecovery: 17
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
-		RequiresCondition: flameupgrade
+		RequiresCondition: flameupgrade && !deployed
+	Armament@Firewall1:
+		Name: firewall1
+		Weapon: CHDragonFirestorm
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: !flameupgrade && deployed
+	#Armament@Firewall2:
+	#	Weapon: CHDragonFirestorm2
+	#	Recoil: 85
+	#	RecoilRecovery: 17
+	#	LocalOffset: 720,0,90
+	#	MuzzleSequence: muzzle
+	#	RequiresCondition: !flameupgrade && deployed && !firewallcycle
+	Armament@FirewallB1:
+		Name: firewall1
+		Weapon: CHDragonFirestormB
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: flameupgrade && deployed
+	#Armament@FirewallB2:
+	#	Weapon: CHDragonFirestormB2
+	#	Recoil: 85
+	#	RecoilRecovery: 17
+	#	LocalOffset: 720,0,90
+	#	MuzzleSequence: muzzle
+	#	RequiresCondition: flameupgrade && deployed && !firewallcycle
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		SkipMakeAnimation: true
+		UndeployOnMove: true
+		UndeployOnPickup: true
+		Voice: Attack
+		PauseOnCondition: disabled
+	RenderRangeCircle:
+		RequiresCondition: deployed
+	#AmmoPool@firewall:
+	#	Armaments: firewall1
+	#	Ammo: 12
+	#	PipCount: 0
+	#	AmmoCondition: firewallcycle
+	#ReloadAmmoPool@firewall:
+	#	Count: 12
+	#	Delay: 60
 	AttackTurreted:
+		Armaments: primary, secondary, firewall1
 	WithMuzzleOverlay:
 	WithSpriteTurret:
 	Inherits@EXT: ^ExternalConditions					##########
@@ -6180,9 +5989,6 @@ chdragon:
 	ProducibleWithLevel:
 		Prerequisites: selectchtanks
 		InitialLevels: 1
-	GrantConditionOnPrerequisite@selectchtanks:
-		Condition: selectchtanks
-		Prerequisites: selectchtanks
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 90
 		Prerequisites: selectchtanks
@@ -6196,12 +6002,16 @@ chdragon.Husk:
 		IntoActor: chdragon
 	RenderSprites:
 		Image: chdragon
+
 chgtnk:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@EMP: ^TurretEMP
+	Inherits@chaingun: ^ChaingunUpgrade
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackTurretedVoice
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -6232,6 +6042,7 @@ chgtnk:
 		Recoil: 85
 		RecoilRecovery: 17
 		LocalOffset: 720,50,90, 720,-50,90, 720,50,140, 720,-50,140
+		MuzzleSequence: muzzle
 	Armament@AA:
 		Weapon: CHGattlingTankAA
 		Recoil: 85
@@ -6256,18 +6067,9 @@ chgtnk:
 	ReloadDelayMultiplier@GattlingSpeed:
 		RequiresCondition: !ammo
 		Modifier: 75
-	GrantConditionOnPrerequisite@upchaingun:
-		Condition: gunsupgrade
-		Prerequisites: upchaingun
-	ReloadDelayMultiplier@GattlingSpeed2:
-		RequiresCondition: gunsupgrade
-		Modifier: 50
 	ProducibleWithLevel:
 		Prerequisites: selectchtanks
 		InitialLevels: 1
-	GrantConditionOnPrerequisite@selectchtanks:
-		Condition: selectchtanks
-		Prerequisites: selectchtanks
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 90
 		Prerequisites: selectchtanks
@@ -6281,6 +6083,7 @@ chgtnk.Husk:
 		IntoActor: chgtnk
 	RenderSprites:
 		Image: chgtnk
+
 chharv:
 	Inherits: RAHARV
 	Inherits@selection: ^SelectableEconomicUnit
@@ -6293,8 +6096,7 @@ chharv:
 	Valued:
 		Cost: 600			#1100
 	Tooltip:
-		Name: Ore Truck
-		GenericName: Harvester
+		Name: Supply Truck
 	Harvester:
 		Capacity: 8
 	Health:
@@ -6317,28 +6119,29 @@ chharv:
 chharv.Husk:
 	Inherits: ^LightHusk
 	Tooltip:
-		Name: Ore Truck (Destroyed)
+		Name: Supply Truck (Destroyed)
 	TransformOnCapture:
 		IntoActor: chharv
 	RenderSprites:
 		Image: chharv
+
 choutpost:
 	Inherits: ^Vehicle
 	Inherits@@EXPERIENCE: ^GainsExperience
-	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 800
 	Tooltip:
-		Name: Listening outpost
+		Name: Listening Outpost
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: chweap, chpropaganda, ~techlevel.medium, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Detects cloaked units and buildings.\nGarrisoned by 2 Tank Hunters.
 	Mobile:
 		TurnSpeed: 4
 		Speed: 80
@@ -6367,6 +6170,7 @@ choutpost:
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
+		Voice: Attack
 	RenderRangeCircle:
 		FallbackRange: 6c0
 	SelectionDecorations:
@@ -6374,19 +6178,13 @@ choutpost:
 		AllowMovement: true
 	Turreted:
 		TurnSpeed: 10
-	WithMuzzleOverlay:
-	Armament:
-		Weapon: GLRebelAK47
 	Voiced:
-		VoiceSet: CycleVoice
-	RenderSprites:
+		VoiceSet: ListeningOutpostVoice
 	Cloak:
 		InitialDelay: 45
 		CloakDelay: 45
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
-		CloakSound: cloak5.aud
-		UncloakSound: cloak5.aud
-		PauseOnCondition: cloak-force-disabled
+		UncloakOn: Attack, Unload, Move
+		PauseOnCondition: cloak-force-disabled || disabled
 	DetectCloaked:
 		Range: 10c0
 	RenderDetectionCircle:
@@ -6396,18 +6194,18 @@ choutpost2:
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Attack outpost
+		Name: Attack Outpost
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: chweap, chpropaganda, ~techlevel.medium, ~selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
-		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: Detects cloaked units and buildings.\nMounted with a propaganda speaker.\nHas space for up to 8 garrisoned infantry.\nGarrisoned by 3 Tank Hunters.
 	Health:
 		HP: 35000
 	Cargo:
 		Types: Infantry
-		MaxWeight: 6
-		PipCount: 6
+		MaxWeight: 8
+		PipCount: 8
 		EjectOnDeath: false #desync
 		InitialUnits: che3, che3, che3
 	ProximityExternalCondition@PROPAGANDA:
@@ -6415,6 +6213,7 @@ choutpost2:
 		Condition: propaganda
 	RenderSprites:
 		Image: choutpost
+
 CHTRUK:
 	Inherits: TRUCK
 	Buildable:
@@ -6426,9 +6225,10 @@ CHTRUK:
 		VoiceSet: CHSupplyTruckVoice
 
 chcrawl:
-	Inherits: ^Tank
+	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -6441,11 +6241,11 @@ chcrawl:
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
 		BuildDuration: 950
 		BuildDurationModifier: 40
-		Description: Armed infantry transport.\nCan attack Aircraft.\n  Strong vs Vehicles\n  Weak vs Infantry
+		Description: Armed infantry transport.\n Unarmed
 	Mobile:
 		TurnSpeed: 5
 		Speed: 80
-		PauseOnCondition: notmobile
+		PauseOnCondition: notmobile || disabled
 	Health:
 		HP: 24000
 	Repairable:
@@ -6472,21 +6272,17 @@ chcrawl:
 		DeployChance: 100
 
 chcrawl2:
-	Inherits: ^Vehicle
-	Inherits@@EXPERIENCE: ^GainsExperience
+	Inherits: chcrawl
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Valued:
 		Cost: 2000
 	Tooltip:
 		Name: Assault Troop Crawler
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: chweap, ~selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
-		Description: Mobile bunker vehicle.\n  Provides protection to infantry
+		Description: Mobile bunker vehicle.
 	Mobile:
 		TurnSpeed: 4
 		Speed: 140
@@ -6494,43 +6290,30 @@ chcrawl2:
 		HP: 105000
 	Repairable:
 		HpPerStep: 1819
-	Armor:
-		Type: Heavy
 	RevealsShroud:
 		Range: 8c0
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	-QuantizeFacingsFromSequence:
-	BodyOrientation:
-		QuantizedFacings: 32
 	Cargo:
 		Types: Infantry
 		MaxWeight: 6
 		PipCount: 6
-		EjectOnDeath: True
+		EjectOnDeath: false
 		InitialUnits: che2, che2, che2, che2, che2, che2
 	AttackGarrisoned:
 		Armaments: primary
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
-	RenderRangeCircle:
-		FallbackRange: 6c0
-	SelectionDecorations:
+		Voice: Attack
+	WithMuzzleOverlay:
 	AutoTarget:
 		AllowMovement: true
 	Turreted:
 		TurnSpeed: 10
-	WithMuzzleOverlay:
-	Armament:
-		Weapon: GLRebelAK47
 	Voiced:
-		VoiceSet: TroopCrawlerVoice
+		VoiceSet: AssaultTroopCrawlerVoice
 	RenderSprites:
 		Image: chcrawl
-	AIDeployNotifier:
-		DeployChance: 50
+	-AIDeployNotifier:
 
 chcrawl.Husk:
 	Inherits: ^LightHusk
@@ -6546,6 +6329,9 @@ chnukecann:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^TurretEMP
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@vo: ^AttackTurretedVoice
 	Valued:
 		Cost: 1800
 	Tooltip:
@@ -6572,10 +6358,12 @@ chnukecann:
 	Armament@PRIMARY:
 		Weapon: CHNukeCannon
 		LocalOffset: 407,0,362
+		PauseOnCondition: !ammo
 	Armament@NEUTRON:
 		Weapon: CHNukeCannonNeutron
 		LocalOffset: 407,0,362
-		RequiresCondition: upneutronshell && ammo == 1
+		RequiresCondition: upneutronshell
+		PauseOnCondition: !ammo
 	AttackTurreted:
 	SelectionDecorations:
 	Selectable:
@@ -6584,7 +6372,7 @@ chnukecann:
 		ValidTypes: vehicle								##########
 	WithFacingSpriteBody@Skin1:
 		Sequence: idle2
-		RequiresCondition: ammo == 1
+		RequiresCondition: !immobile
 		Name: body1
 	Voiced:
 		VoiceSet: CHNukeCannonVoice
@@ -6595,20 +6383,23 @@ chnukecann:
 	ReloadAmmoPool:
 		Delay: 200
 		Count: 1
+	GrantConditionOnAttack@DEPLOY:
+		Condition: immobile
+		RevokeDelay: 100
 	SpeedMultiplier@DEPLOY:
 		Modifier: 0
-		RequiresCondition: ammo == 0
+		RequiresCondition: immobile
 	WithFacingSpriteBody@Skin2:
 		Sequence: deploy
-		RequiresCondition: ammo == 0
+		RequiresCondition: immobile
 		Name: body2
 	WithSpriteTurret@Skin2:
-		RequiresCondition: ammo == 0
+		RequiresCondition: immobile
 		Sequence: turret
 	ProducibleWithLevel:
 		Prerequisites: upcharty
 		InitialLevels: 1
-	Explodes@upatomictank:
+	Explodes:
 		Weapon: CHAtomicWeapon2
 		EmptyWeapon: CHAtomicWeapon2
 		RequiresCondition: !chronobeamed
@@ -6792,9 +6583,6 @@ upchaingun:
 		Image: chchaingunicon
 	ProvidesPrerequisite:
 		Prerequisite: upchaingun
-	GrantConditionOnPrerequisite@selectchatomic:
-		Condition: selectchatomic
-		Prerequisites: selectchatomic
 	ProductionCostMultiplier@selectchatomic:
 		Multiplier: 110
 		Prerequisites: selectchatomic
@@ -6815,9 +6603,6 @@ upnationalism:
 		Image: chnationalismicon
 	ProvidesPrerequisite:
 		Prerequisite: upnationalism
-	GrantConditionOnPrerequisite@selectchatomic:
-		Condition: selectchatomic
-		Prerequisites: selectchatomic
 	ProductionCostMultiplier@selectchatomic:
 		Multiplier: 110
 		Prerequisites: selectchatomic
@@ -6924,6 +6709,7 @@ upautoload:
 		Image: chautoloadericon
 	ProvidesPrerequisite:
 		Prerequisite: upautoload
+
 upsubliminal:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -6939,13 +6725,11 @@ upsubliminal:
 		Image: chmessagingicon
 	ProvidesPrerequisite:
 		Prerequisite: upsubliminal
-	GrantConditionOnPrerequisite@selectchatomic:
-		Condition: selectchatomic
-		Prerequisites: selectchatomic
 	ProductionCostMultiplier@selectchatomic:
 		Multiplier: 120
 		Prerequisites: selectchatomic
 		Queue: Infantry.CHINA, RAInfantry.CHINA
+
 upmignuke:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -6963,8 +6747,9 @@ upmignuke:
 		Prerequisite: upmignuke
 
 CHMIG:
-	Inherits: ^RAPlane
+	Inherits: ^RANeutralPlane
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Buildable:
 		Queue: Aircraft.CHINA, RAAircraft.CHINA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
@@ -7013,6 +6798,7 @@ CHMIG:
 		FacingTolerance: 20
 		PersistentTargeting: false
 		AttackTurnDelay: 30
+		Voice: Attack
 	Aircraft:
 		CruiseAltitude: 2560
 		InitialFacing: 192
@@ -7056,17 +6842,16 @@ CHMIG:
 	DamageMultiplier@upmigarmor:
 		RequiresCondition: upmigarmor
 		Modifier: 75
-	GrantConditionOnPrerequisite@selectchtanks:
-		Condition: selectchtanks || selectchatomic
-		Prerequisites: selectchtanks
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 110
 		Prerequisites: selectchtanks
 		Queue: Vehicle.CHINA, RAVehicle.CHINA
 
 CHMIG2:
-	Inherits: ^RAPlane
+	Inherits: ^RANeutralPlane
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@rearm: ^RearmableAircraft
 	Buildable:
 		Queue: Aircraft.CHINA, RAAircraft.CHINA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
@@ -7088,7 +6873,7 @@ CHMIG2:
 		Range: 11c0
 		Type: GroundPosition
 	Armament@1:
-		Weapon: CHMIGWeapon
+		Weapon: CHMIGNuke
 		LocalOffset: 0,-640,0, 0,640,0
 		LocalYaw: -40, 24
 		PauseOnCondition: !ammo
@@ -7096,6 +6881,7 @@ CHMIG2:
 		FacingTolerance: 20
 		PersistentTargeting: false
 		AttackTurnDelay: 30
+		Voice: Attack
 	Aircraft:
 		CruiseAltitude: 2560
 		InitialFacing: 192
@@ -7107,8 +6893,8 @@ CHMIG2:
 		InitialStance: HoldFire
 		InitialStanceAI: HoldFire
 	AmmoPool:
-		Ammo: 1
-		PipCount: 1
+		Ammo: 2
+		PipCount: 2
 		AmmoCondition: ammo
 	Selectable:
 		Bounds: 36,28,0,2
@@ -7123,15 +6909,8 @@ CHMIG2:
 	SmokeTrailWhenDamaged:
 		Offset: -853,0,171
 		Interval: 2
-	ProducibleWithLevel:
-		Prerequisites: aircraft.upgraded
-	Rearmable:
-		RearmActors: raafld,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,chairport
 	Voiced:
 		VoiceSet: CHMiGVoice
-	ReloadAmmoPool:
-		Delay: 120
-		Count: 1
 	GrantConditionOnPrerequisite@upmigarmor:
 		Condition: upmigarmor
 		Prerequisites: upmigarmor
@@ -7140,10 +6919,12 @@ CHMIG2:
 		Modifier: 75
 	RenderSprites:
 		Image: chmig
+
 chhelix:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: chairport, ~techlevel.medium
@@ -7174,6 +6955,7 @@ chhelix:
 		FacingTolerance: 20
 		PersistentTargeting: false
 		AttackType: Hover
+		Voice: Attack
 	Aircraft:
 		TurnSpeed: 4
 		Speed: 112
@@ -7267,9 +7049,6 @@ chhelix:
 	ReloadDelayMultiplier@BUNKER:
 		Modifier: 300
 		RequiresCondition: bombaddon
-	GrantConditionOnPrerequisite@selectchtanks:
-		Condition: selectchtanks
-		Prerequisites: selectchtanks
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 110
 		Prerequisites: selectchtanks
@@ -7417,7 +7196,8 @@ chflameboat:
 		MaxWeight: 3
 		PipCount: 3
 		LoadingCondition: notmobile
-		LoadedCondition: Passager
+		LoadedCondition: Passenger
+
 chasub:
 	Inherits: ^BoatUnit
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -7484,6 +7264,7 @@ chasub:
 		VoiceSet: CHNukeCannonVoice
 	RenderSprites:
 		Scale: 0.80
+
 chmnly:
 	Inherits: MNLY
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
@@ -7524,8 +7305,17 @@ chminv:
 	Mine:
 		AvoidFriendly: true
 		BlockFriendly: false
+	-Immobile:
+	Mobile:
+		Locomotor: wheeled
+		Speed: 1
+		PauseOnCondition: dontmove
+	GrantCondition@dontmove:
+		Condition: dontmove
+	RejectsOrders:
 	Health:
-		HP: 200000
+		HP: 10000
+
 upcarpetbomb:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -7542,6 +7332,7 @@ upcarpetbomb:
 		Image: chcarpetbombicon
 	ProvidesPrerequisite:
 		Prerequisite: upcarpetbomb
+
 upchneutronbomb:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -7663,7 +7454,16 @@ selectusasuper:
 #
 ################################################################
 
+^AdvancedTrainingUpgrade:
+	GrantConditionOnPrerequisite@usauptraining:
+		Condition: usauptraining
+		Prerequisites: usauptraining
+	GainsExperienceMultiplier@usauptraining:
+		Modifier: 200
+		RequiresCondition: usauptraining
+
 ^GeneralsUSAInfantry:
+	Inherits@training: ^AdvancedTrainingUpgrade
 	GrantConditionOnPrerequisite@usaupgrenade:
 		Condition: usaupgrenade
 		Prerequisites: usaupgrenade
@@ -7673,13 +7473,6 @@ selectusasuper:
 	Targetable@Immune:
 		TargetTypes: ToxinImmune
 		RequiresCondition: usaupchemsuit
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 20
-		RequiresCondition: usauptraining
 
 USAE1:
 	Inherits: ^Soldier
@@ -7917,6 +7710,7 @@ usajeep:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -7957,27 +7751,27 @@ usajeep:
 		MaxWeight: 4
 		PipCount: 4
 		LoadingCondition: notmobile
-		LoadedCondition: Passager
-	Armament@Passager1:
+		LoadedCondition: Passenger
+	Armament@Passenger1:
 		Weapon: USARangerMG
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-		RequiresCondition: Passager == 1
-	Armament@Passager2:
+		RequiresCondition: Passenger == 1
+	Armament@Passenger2:
 		Weapon: USARangerMGJeep1
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-		RequiresCondition: Passager == 2
-	Armament@Passager3:
+		RequiresCondition: Passenger == 2
+	Armament@Passenger3:
 		Weapon: USARangerMGJeep2
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-		RequiresCondition: Passager == 3
-	Armament@Passager4:
+		RequiresCondition: Passenger == 3
+	Armament@Passenger4:
 		Weapon: USARangerMGJeep3
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-		RequiresCondition: Passager >= 4
+		RequiresCondition: Passenger >= 4
 	Armament@Tow:
 		Weapon: USAHumveeMissile
 		LocalOffset: 171,0,85
@@ -7989,13 +7783,6 @@ usajeep:
 	GrantConditionOnPrerequisite@usauptowmiss:
 		Condition: usauptowmiss
 		Prerequisites: usauptowmiss
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 27
-		RequiresCondition: usauptraining
 
 ^ProducesDrones:
 	Production:
@@ -8178,6 +7965,7 @@ usattnk:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Valued:
 		Cost: 1100
 	Tooltip:
@@ -8231,13 +8019,6 @@ usattnk:
 	RenderSprites:
 		Scale: 0.85
 	Inherits@ProducesDrones: ^ProducesDrones
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 31
-		RequiresCondition: usauptraining
 
 usatomamiss:
 	Inherits: RA2V3ROCKET
@@ -8261,6 +8042,7 @@ usacrusader:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -8309,13 +8091,7 @@ usacrusader:
 	DamageMultiplier@usauparmor:
 		RequiresCondition: usauparmor
 		Modifier: 60
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 29
-		RequiresCondition: usauptraining
+
 usacrusader2:
 	Inherits: usacrusader
 	Valued:
@@ -8339,6 +8115,7 @@ usapala:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Valued:
 		Cost: 1100
 	Tooltip:
@@ -8395,13 +8172,6 @@ usapala:
 	DamageMultiplier@usauparmor:
 		RequiresCondition: usauparmor
 		Modifier: 80
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 31
-		RequiresCondition: usauptraining
 
 usasentry:
 	Inherits: ^Tank
@@ -8490,6 +8260,7 @@ usaavenger:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -8542,13 +8313,6 @@ usaavenger:
 		RequiresCondition: !disabled
 	RenderSprites:
 		Scale: 0.88
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 30
-		RequiresCondition: usauptraining
 	GrantConditionOnPrerequisite@selectusalaser:
 		Condition: selectusalaser
 		Prerequisites: selectusalaser
@@ -8562,6 +8326,7 @@ usaambulan:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -8615,18 +8380,13 @@ usaambulan:
 	GrantConditionOnPrerequisite@usauptowmiss:
 		Condition: usauptowmiss
 		Prerequisites: usauptowmiss
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 27
-		RequiresCondition: usauptraining
+
 usamicro:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -8674,13 +8434,6 @@ usamicro:
 	Voiced:
 		VoiceSet: USACrusaderTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 28
-		RequiresCondition: usauptraining
         
 USAMCV:
 	Inherits: ^Vehicle
@@ -8731,14 +8484,10 @@ USAMCV:
 
 usacommand:
 	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x3Shape
 	Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
 	Inherits@repairpower: ^EmergencyRepairPower
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -1536, -1536
-			BottomRight: 1536, 1536
 	Valued:
 		Cost: 3500
 	Tooltip:
@@ -8798,7 +8547,7 @@ usacommand:
 		Amount: 0
 	GrantConditionOnBotOwner:
 		Condition: botgla
-		Bots: easy, medium, hard, brutal, infantryrush, vehiclesteamroll, airforce
+		Bots: easy, medium, hard, brutal, airforce
 	ProvidesPrerequisite@botowner:
 		Prerequisite: botgla
 		RequiresCondition: botgla
@@ -8920,6 +8669,7 @@ usacommand:
 usapower:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
+	Inherits@power: ^PowerPlant
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
@@ -8956,8 +8706,6 @@ usapower:
 	WithDeathAnimation:
 		DeathSequence: dead
 		UseDeathTypeSuffix: false
-	Inherits@EXPERIENCE: ^GainsExperience				##########
-	Inherits@POWERMULTIPLIER: ^PowerMultiplier			##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 	Voiced:
@@ -9426,6 +9174,7 @@ usaweap:
 		Interval: 15
 		PlayerExperience: 25
 		StartRepairingNotification: Repairing
+
 usastrategy:
 	Inherits: ^BaseBuilding
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -9465,6 +9214,7 @@ usastrategy:
 		VoiceSet: CHPropagandaCenterVoice
 	RenderSprites:
 		Image: usastrategy
+
 usaairport:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -9948,7 +9698,8 @@ usagunship.Husk:
 usaraptor:
 	Inherits: ^RAPlane
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@reload: ^RearmableAircraft
+	#Inherits@reload: ^RearmableAircraft
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Buildable:
 		Queue: Aircraft.USA, RAAircraft.USA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
@@ -10034,12 +9785,6 @@ usaraptor:
 	DamageMultiplier@usaupcounter:
 		RequiresCondition: usaupcounter
 		Modifier: 75
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 34
 
 usaraptor2:
 	Inherits: usaraptor
@@ -10067,7 +9812,8 @@ usaraptor2:
 usastealth:
 	Inherits: ^RAPlane
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@reload: ^RearmableAircraft
+	#Inherits@reload: ^RearmableAircraft
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Buildable:
 		Queue: Aircraft.USA, RAAircraft.USA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
@@ -10154,12 +9900,6 @@ usastealth:
 	DamageMultiplier@usaupcounter:
 		RequiresCondition: usaupcounter
 		Modifier: 75
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 36
 	Cloak:
 		InitialDelay: 90
 		CloakDelay: 90
@@ -10171,6 +9911,7 @@ usaaurora:
 	Inherits: ^RAPlane
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@reload: ^RearmableAircraft
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Buildable:
 		Queue: Aircraft.USA, RAAircraft.USA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
@@ -10242,16 +9983,12 @@ usaaurora:
 	DamageMultiplier@usaupcounter:
 		RequiresCondition: usaupcounter
 		Modifier: 75
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 45
+
 usacomanche:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@training: ^AdvancedTrainingUpgrade
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -10328,12 +10065,6 @@ usacomanche:
 	DamageMultiplier@usaupcounter:
 		RequiresCondition: usaupcounter
 		Modifier: 75
-	GrantConditionOnPrerequisite@usauptraining:
-		Condition: usauptraining
-		Prerequisites: usauptraining
-	ExperienceTrickler@usauptraining:
-		Interval: 2
-		Amount: 35
 	Voiced:
 		VoiceSet: USAComancheVoice
 usafirebase:
@@ -10372,37 +10103,37 @@ usafirebase:
 		MaxWeight: 4
 		PipCount: 4
 		LoadingCondition: notmobile
-		LoadedCondition: Passager
+		LoadedCondition: Passenger
 		PassengerConditions:
 			usae3: ifv-miss
 			gle3: ifv-miss
 			che3: ifv-miss
 			e3: ifv-miss
-	Armament@Passager1:
+	Armament@Passenger1:
 		Weapon: USARangerMG
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-		RequiresCondition: Passager == 1
-	Armament@Passager2:
+		RequiresCondition: Passenger == 1
+	Armament@Passenger2:
 		Weapon: USARangerMGJeep1
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-		RequiresCondition: Passager == 2
-	Armament@Passager3:
+		RequiresCondition: Passenger == 2
+	Armament@Passenger3:
 		Weapon: USARangerMGJeep2
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-		RequiresCondition: Passager == 3 || Passager == 4 && ifv-miss
-	Armament@Passager4:
+		RequiresCondition: Passenger == 3 || Passenger == 4 && ifv-miss
+	Armament@Passenger4:
 		Weapon: USARangerMGJeep3
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-		RequiresCondition: Passager == 4 && !ifv-miss
-	Armament@Passager4Miss2:
+		RequiresCondition: Passenger == 4 && !ifv-miss
+	Armament@Passenger4Miss2:
 		Weapon: CHTankHunterMissileG
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-		RequiresCondition: Passager == 4 && ifv-miss
+		RequiresCondition: Passenger == 4 && ifv-miss
 	AttackTurreted:
 	Power:
 		Amount: -40
@@ -10776,7 +10507,7 @@ usagunboat:
 		MaxWeight: 6
 		PipCount: 6
 		LoadingCondition: notmobile
-		LoadedCondition: Passager
+		LoadedCondition: Passenger
 
 usabattleship:
 	Inherits: ^BoatUnit
@@ -12146,7 +11877,7 @@ leanguparmthemob:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: Infantry.LEANG, RAInfantry.LEANG
-		Description: Arm Angry Mob members with AK-47 assault rifles.
+		Description: Arm Angry Mob members with assault rifles.
 		Prerequisites: leangstorm, ~!uparmthemob
 	Valued:
 		Cost: 1000
