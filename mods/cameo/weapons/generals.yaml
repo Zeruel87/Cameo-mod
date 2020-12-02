@@ -35,14 +35,11 @@ EmergencyRepair3:
 		Range: 4c0
 
 HookNullWeapon:
-	Inherits: ^BallisticWeapon
-	ReloadDelay: 999
+	ReloadDelay: 100
 	Range: 1c0
-	ValidTargets: Null
-	Projectile: Bullet
-		Speed: 853
-	Warhead@1Dam: SpreadDamage
-		Damage: 0
+	ValidTargets: None
+	Projectile: InstantHit
+	Warhead@1Dam: TargetDamage
 
 GLAnthraxGreen:
 	Warhead@1Cloud: SpawnSmokeParticle
@@ -122,7 +119,7 @@ CHRadiationYellow:
 CHFlameRadiation:
 	Warhead@1Cloud: SpawnSmokeParticle
 		Count: 1, 3
-		Duration: 66
+		Duration: 132
 		Speed: 2, 10
 		TurnRate: 4
 		Image: burn-l
@@ -136,7 +133,7 @@ CHFlame:
 	Warhead@1Dam: SpreadDamage
 		Spread: 0c341
 		Falloff: 100, 75, 50, 25
-		Damage: 100
+		Damage: 800
 		ValidTargets: Ground, Water
 		AffectsParent: True
 		Versus:
@@ -150,6 +147,8 @@ CHFlame:
 CHFlameRadiationB:
 	Inherits: CHFlameRadiation
 	Warhead@1Cloud: SpawnSmokeParticle
+		Duration: 180
+		Speed: 4, 16
 		Image: explosion
 		Sequences: blue_small_napalm
 		Weapon: CHFlameBlue
@@ -157,7 +156,7 @@ CHFlameRadiationB:
 CHFlameBlue:
 	Inherits: CHFlame
 	Warhead@1Dam: SpreadDamage
-		Damage: 200
+		Damage: 1600
 		Versus:
 			None: 150
 			Wood: 100
@@ -496,16 +495,20 @@ GLTunnelToxinWeapon:
 # Suicide Weapons
 #####################################################
 GLTerroristExplosive:
-	Inherits: SCUD
 	Inherits@Rad: CHFlameRadiation
 	ReloadDelay: 350
-	Projectile: Bullet
-		Image: BOMB
-	Range: 1c0
-	MinRange: 0c0
+	Projectile: InstantExplode
+	Range: 1c512
 	Warhead@1Dam: SpreadDamage
-		Spread: 341
-		Damage: 4500
+		Spread: 0c640
+		Falloff: 100, 75, 50, 25
+		Damage: 10000
+		Versus:
+			None: 100
+			Wood: 25
+			Light: 40
+			Heavy: 20
+		DamageTypes: TriggerProne, Prone100Percent, ExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: ex_terr_flash
 		ImpactSounds: gexpmina.wav, gexpminb.wav
@@ -513,14 +516,19 @@ GLTerroristExplosive:
 GLTerroristExplosive2:
 	Inherits: GLTerroristExplosive
 	Warhead@1Dam: SpreadDamage
-		Spread: 341
-		Damage: 6500
+		Spread: 1c512
+		Damage: 15000
 
 GLBombTruckExplosive:
 	Inherits: GLTerroristExplosive
 	Warhead@1Dam: SpreadDamage
-		Spread: 512
-		Damage: 9000
+		Spread: 1c512
+		Damage: 20000
+		Versus:
+			None: 150
+			Wood: 50
+			Light: 75
+			Heavy: 50
 	Warhead@2Eff: CreateEffect
 		Explosions: ex_terr_flash
 		ImpactSounds: gexpmina.wav, gexpminb.wav
@@ -529,10 +537,9 @@ GLBombTruckSuperExplosive:
 	Inherits: GLBombTruckExplosive
 	Warhead@1Dam: SpreadDamage
 		Spread: 1c768
-		Damage: 10000
+		Damage: 50000
 	Warhead@2Eff: CreateEffect
 		Explosions: ex_big_flash
-		ImpactSounds: xplobig6.aud
 
 GLBombTruckToxExplosive:
 	Inherits: GLTerroristExplosive
@@ -547,29 +554,32 @@ GLBombTruckToxExplosive2:
 GLBarrelExplode:
 	Inherits: GLTerroristExplosive
 	Warhead@1Dam: SpreadDamage
-		Spread: 512
-		Damage: 8000
+		Spread: 0c768
+		Falloff: 100, 80, 60, 30, 15
+		Damage: 14000
+		Versus:
+			None: 100
+			Wood: 20
+			Light: 75
+			Heavy: 50
 		ValidStances: Enemy, Neutral
 	Warhead@2Eff: CreateEffect
 		Explosions: ex_terr_flash
 		ImpactSounds: gexpmina.wav, gexpminb.wav
 
 CHMineExplosive:
-	Inherits: SCUD
 	ReloadDelay: 350
-	Projectile: Bullet
-		Image: BOMB
-	Range: 1c0
-	MinRange: 0c0
+	Projectile: InstantExplode
+	Range: 1c512
 	Warhead@1Dam: SpreadDamage
-		Spread: 0c512
-		Damage: 2000
+		Spread: 512
+		Damage: 20000
 		Versus:
 			Heavy: 50
 		InvalidTargets: Infantry
 	Warhead@2Dam: SpreadDamage
 		Spread: 0c512
-		Damage: 8000
+		Damage: 10000
 		ValidTargets: Infantry
 	Warhead@2Eff: CreateEffect
 		Explosions: artillery_explosion
@@ -869,14 +879,15 @@ GLASCUDPOWER:
 	ReloadDelay: 500
 	Range: 128c0
 	Report: vintatta.wav
-	Projectile: Missile
-		Speed: 100
+	-Projectile:
+	Projectile: Bullet
+		Speed: 180
 		Blockable: false
-		LaunchAngle: 180
-		Inaccuracy: 4072
-		CruiseAltitude: 128c0
+		LaunchAngle: 45
+		Inaccuracy: 6c0
+		TrailImage: laserfire
 		Image: glscudmiss
-		RangeLimit: 128c0
+		Shadow: true
 	Warhead@1Dam: SpreadDamage
 		Spread: 0c768
 		Damage: 4000
@@ -937,7 +948,7 @@ GLToxinClusterSmall:
 	Projectile: Bullet
 		Speed: 100
 		Blockable: false
-		Inaccuracy: 0c512
+		Inaccuracy: 2c512
 	Warhead@1Dam: TargetDamage
 
 GLToxinClusterBlue:
@@ -1020,8 +1031,10 @@ GLToxinExplodeClust3:
 
 GLToxinBomb:
 	Inherits: ParaBomb
+	ReloadDelay: 100
+	Range: 1c0
 	Warhead@1Dam: SpreadDamage
-		Spread: 768
+		Spread: 1c512
 		Damage: 5000
 	Warhead@3Eff: CreateEffect
 		Explosions: ex_big_flash_green
@@ -1116,7 +1129,11 @@ OverlordCannon:
 
 OverlordCannonNuclear:
 	Inherits: OverlordCannon
-	Inherits@Rad: CHRadiationYellow
+	Warhead@Radiation: CreateTintedCells
+		Spread: 0c512
+		Falloff: 100, 75, 50
+		Level: 300
+		LayerName: genradiation
 
 CHGuardRifleOverlord:
 	Inherits: CHGuardRifleGarrison
@@ -1240,7 +1257,11 @@ CHBattlemasterCannon:
 
 CHBattlemasterCannonNuclear:
 	Inherits: CHBattlemasterCannon
-	Inherits@Rad: CHRadiationYellow
+	Warhead@Radiation: CreateTintedCells
+		Spread: 0c512
+		Falloff: 100, 75, 50
+		Level: 300
+		LayerName: genradiation
 
 CHDragonFlamer:
 	Inherits: Flamer
@@ -1275,7 +1296,7 @@ CHDragonFlamerBlue:
 	Projectile: Bullet
 		Speed: 200
 		TrailImage: citywatherthrower
-		Image: citywatherthrower
+		Image: blue_fb1
 		Inaccuracy: 512
 	Warhead@1Dam: SpreadDamage
 		Damage: 700
@@ -1292,19 +1313,19 @@ CHDragonFlamerBlue:
 
 CHDragonFirestorm:
 	Inherits: CHDragonFlamer
-	FirstBurstTargetOffset: 0,-250,0
-	FollowingBurstTargetOffset: 0,250,0
+	FirstBurstTargetOffset: -100,-180,0
+	FollowingBurstTargetOffset: 100,180,0
 	Burst: 12
 	BurstDelays: 5
 	ReloadDelay: 60
-	Range: 3c0
+	Range: 4c0
 	Warhead@1Dam: SpreadDamage
 		Damage: 5000
 
 CHDragonFirestorm2:
 	Inherits: CHDragonFirestorm
-	FirstBurstTargetOffset: 0,250,0
-	FollowingBurstTargetOffset: 0,-250,0
+	FirstBurstTargetOffset: 100,180,0
+	FollowingBurstTargetOffset: -100,-180,0
 
 CHDragonFirestormB:
 	Inherits: CHDragonFirestorm
@@ -1314,8 +1335,8 @@ CHDragonFirestormB:
 
 CHDragonFirestormB2:
 	Inherits: CHDragonFirestormB
-	FirstBurstTargetOffset: 0,250,0
-	FollowingBurstTargetOffset: 0,-250,0
+	FirstBurstTargetOffset: 100,180,0
+	FollowingBurstTargetOffset: -1000,-1800,0
 
 CHBoatFlamer:
 	Inherits: CHDragonFlamer
@@ -1387,10 +1408,14 @@ CHMIGNuke:
 	Inherits@2: ^MissileWeapon
 	ReloadDelay: 30
 	Range: 10c0
+	Projectile: Missile
+		RangeLimit: 12c0
 	Warhead@1Dam: SpreadDamage
 		Spread: 512
 		Damage: 10000
 		AffectsParent: True
+		ValidTargets: Ground, Air, Water
+	Warhead@2Eff: CreateEffect
 		ValidTargets: Ground, Air, Water
 	Warhead@1Radiation: CreateTintedCells
 		Spread: 1c512
@@ -1450,7 +1475,7 @@ CHGattlingTankAA:
 
 CHHackerDisable:
 	ReloadDelay: 370
-	Report: iteschaa.wav
+	Report: ucapture.aud
 	Range: 6c0
 	TargetActorCenter: true
 	ValidTargets: Building, Structure
@@ -1466,25 +1491,18 @@ CHHackerDisable:
 		ValidTargets: Building, Structure
 
 CHLotusDisable:
+	Inherits: CHHackerDisable
 	ReloadDelay: 200
-	Report: iteschaa.wav
-	Range: 6c0
-	TargetActorCenter: true
 	ValidTargets: Vehicle
-	Projectile: LaserZap
-		Width: 0c43
-		UsePlayerColor: True
-	Warhead@1Dam: TargetDamage
-		Damage: 0
 	Warhead@2Con: GrantExternalCondition
-		Condition: TSNeutronBomb
-		Duration: 200
+		Duration: 400
 		Range: 0c768
 		ValidTargets: Vehicle
 
 CHLotusControl:
 	ReloadDelay: 100
 	Inherits: RA2MindControl
+	Report: ucapture.aud
 	ValidTargets: MindControlStructure
 
 CHInfernoCannon:
@@ -1631,7 +1649,7 @@ USARangerGrenade:
 	Inherits: Grenade
 	Range: 7c384
 	MinRange: 0c512
-	ValidTargets: Infantry, GarrsonableBunker
+	ValidTargets: Infantry, GarrisonableBunker
 	Projectile: Bullet
 		Speed: 128
 		Inaccuracy: 512
@@ -1651,6 +1669,43 @@ USARangerGrenade:
 		Condition: bunkerdisable
 		Duration: 250
 		Range: 1c0
+
+USAMissileDefenderAG:
+	Inherits: ^AntiGroundMissile
+	ReloadDelay: 50
+	Projectile: Missile
+		RangeLimit: 9c0
+	Report: imisweaa.wav, imisweab.wav, imisweac.wav
+
+USAMissileDefenderAA:
+	Inherits: ^AntiAirMissile
+	Range: 6c512
+	ReloadDelay: 50
+	Projectile: Missile
+		RangeLimit: 9c0
+	Report: imisweaa.wav, imisweab.wav, imisweac.wav
+
+USAMissileDefenderGarrisoned:
+	Inherits: USAMissileDefenderAA
+	ValidTargets: Ground, Air
+	Range: 7c0
+
+USAMissileDefenderLaser:
+	ValidTargets: Vehicle, Air
+	InvalidTargets: Structure
+	Range: 6c512
+	ReloadDelay: 30
+	Burst: 5
+	BurstDelays: 5
+	TargetActorCenter: true
+	Projectile: LaserZap
+		Width: 36
+		Duration: 30
+		SecondaryBeamWidth: 96
+		SecondaryBeamColor: FF000030
+	Warhead@1: TargetDamage
+		ValidTargets: Vehicle, Air
+
 USAPatriotMissAG:
 	Inherits: ^AntiGroundMissile
 	ReloadDelay: 50
@@ -1697,13 +1752,27 @@ USAPatriotMissAA:
 
 USAEMPPatriotMissAG:
 	Inherits: USAPatriotMissAG
+	Projectile: Missile
 		Image: bhreddragon
 	Warhead@2Con: GrantExternalCondition
 		Condition: TSNeutronBomb
 		ValidTargets: Vehicle
 		Duration: 15
-		Range: 1c0
-		ValidTargets: Vehicle
+		Range: 0c768
+		AffectsParent: true
+
+USAEMPPatriotMissAA:
+	Inherits: USAPatriotMissAA
+	Projectile: Missile
+		Image: bhreddragon
+	Warhead@1Dam: SpreadDamage
+		Spread: 64
+		Damage: 10000
+	Warhead@2Con: GrantExternalCondition
+		Condition: TSNeutronBomb
+		ValidTargets: Air
+		Duration: 15
+		Range: 0c768
 
 USABurtonMG:
 	Inherits: ^LightMG
@@ -1725,7 +1794,7 @@ CHTankHunterAttach1:
 	ValidTargets: Structure, Wall
 	Range: 2c0
 	Warhead@1: AttachDelayedWeapon
-		Weapon: BarrelExplode
+		Weapon: CHTankHunterBomb
 		TriggerTime: 120
 
 CHTankHunterAttach2:
@@ -1734,24 +1803,17 @@ CHTankHunterAttach2:
 	ValidStances: Neutral
 	Range: 2c0
 	Warhead@1: AttachDelayedWeapon
-		Weapon: BarrelExplode
+		Weapon: CHTankHunterBomb
 		TriggerTime: 120
+
+CHTankHunterBomb:
+	Inherits: TanyaBomb
+	Warhead@1Dam: SpreadDamage
+		Damage: 50000
 
 #####################################################
 # Jeep Weapons
 #####################################################
-
-USARangerMGJeep1:
-	Inherits: USARangerMG
-	Burst: 6
-
-USARangerMGJeep2:
-	Inherits: USARangerMG
-	Burst: 9
-
-USARangerMGJeep3:
-	Inherits: USARangerMG
-	Burst: 12
 
 USAHumveeMissile:
 	Inherits: ^MissileWeapon
@@ -1947,28 +2009,28 @@ USALaserCannonAA:
 #####################################################
 
 USAMicrowaveFlame:
-	Inherits: BigFlamer
-	ReloadDelay: 3
-	Burst: 9
+	ReloadDelay: 30
+	Burst: 5
 	Range: 2c512
 	Report: iiniatta.wav
 	ValidTargets: Infantry
+	Projectile: InstantExplode
 	Warhead@1Dam: SpreadDamage
+		Spread: 2c512
+		Falloff: 100, 100
 		Damage: 2500
 		ValidTargets: Infantry
+		ValidStances: Enemy, Neutral
 		Versus:
 			None: 100
 			Light: 50
 			Heavy: 25
-	Warhead@3Eff: CreateEffect
-		Explosions: small_frag
-		ImpactActors: true
-		ValidTargets: Infantry
+		DamageTypes: Prone50Percent, TriggerProne, FireDeath, Incendiary
 
 USAMicrowaveDisable:
 	ReloadDelay: 2
-	Report: sonic4.aud
-	Range: 12c0
+	Report: vmiclo2a.aud
+	Range: 7c0
 	TargetActorCenter: true
 	ValidTargets: Building, Structure
 	Projectile: LaserZap
@@ -2146,26 +2208,20 @@ GECarpetBomb:
 
 CHNeutronBomb:
 	ReloadDelay: 800
-	Range: 3c0
-	Report: plsecan2.aud
+	Range: 1c0
+	Report: chute1.aud
 	Projectile: GravityBomb
 		Image: PARABOMB
 		OpenSequence: open
 		Velocity: 0, 0, -86
 		Acceleration: 0, 0, 0
 		Shadow: False
-	Warhead@1Dam: SpreadDamage
-		Spread: 768
-		Damage: 5000
-		Versus:
-			None: 30
-			Wood: 30
-			Light: 75
-			Concrete: 25
-		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
-	Warhead@1: SpawnActor
-		Actors: CAMERA.sw
-		Range: 3
+	Warhead@1KillAircraft: SpreadDamage
+		Spread: 6c0
+		Falloff: 100, 100
+		Damage: 50000
+		ValidTargets: Air
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
 	Warhead@3Eff: CreateEffect
 		Explosions: pulse_explosion
 		ExplosionPalette: tseffect
@@ -2175,40 +2231,35 @@ CHNeutronBomb:
 		Condition: TSNeutronBomb
 		Duration: 250
 		Range: 6c0
+		ValidTargets: Ground, Air, Water
 
 CHMineBomb:
 	ReloadDelay: 8
-	Range: 3c0
+	Range: 1c0
 	Report: chute1.aud
-	Projectile: GravityBomb
-		Image: PARABOMB
-		OpenSequence: open
-		Velocity: 0, 0, -86
-		Acceleration: 0, 0, 0
-		Shadow: False
-	Warhead@1Dam: SpreadDamage
-		Spread: 768
-		Damage: 30000
-		Versus:
-			None: 30
-			Wood: 30
-			Light: 75
-			Concrete: 25
-		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
-	Warhead@2Smu: LeaveSmudge
-		SmudgeType: Crater
-		InvalidTargets: Vehicle, Structure, Wall, Husk, Trees
-	Warhead@3Eff: CreateEffect
-		Explosions: artillery_explosion
-		ImpactSounds: kaboom15.aud
-		ValidTargets: Ground, Ship, Trees
+	Projectile: InstantExplode
+	Warhead@1: FireCluster
+		Weapon: CHMineSpawner
+		Dimensions: 5,5
+		Footprint: __x__ _xxx_ xxxxx _xxx_ __x__
+		ValidTargets: Ground, Air, Water
+
+CHMineSpawner:
+	Range: 4c0
+	ReloadDelay: 100
+	Projectile: Bullet
+		Image: chminv
+		Sequences: idle
+		Blockable: false
+		Speed: 250
 	Warhead@1: SpawnActor
-		Actors: chminv,chminv,chminv,chminv,chminv,chminv,chminv,chminv,chminv,chminv
-		Range: 5
+		Actors: chminv
+		Range: 0
+		ValidTargets: Ground, Water, Air
 
 USAFuelBomb:
 	ReloadDelay: 800
-	Range: 3c0
+	Range: 1c0
 	Report: chute1.aud
 	Projectile: GravityBomb
 		Image: PARABOMB
@@ -2250,7 +2301,7 @@ USAFuelBomb:
 
 USAMotherBomb:
 	ReloadDelay: 800
-	Range: 3c0
+	Range: 1c0
 	Report: chute1.aud
 	Projectile: GravityBomb
 		Image: PARABOMB
@@ -2279,16 +2330,7 @@ USAMotherBomb:
 		Dimensions: 3,3
 		Delay: 9
 		Footprint: _x_ xxx _x_
-	Warhead@3ClustF: FireCluster
-		Weapon: USAMissileAurora
-		Dimensions: 3,3
-		Delay: 15
-		Footprint: _x_ xxx _x_
-	Warhead@4ClustF: FireCluster
-		Weapon: CHInfernoCannonC
-		Dimensions: 3,3
-		Delay: 20
-		Footprint: _x_ xxx _x_
+
 GLSneakAttack:
 	Range: 3c0
 	Projectile: InstantHit
@@ -2320,28 +2362,23 @@ GLAmbush3:
 	Warhead@2: SpawnActor
 		Actors: gle1,gle1,gle1,gle1,gle1,gle1,gle1,gle1,gle1,gle1,gle1,gle1,gle1,gle1,gle1,gle1,gene6,gene6
 		Delay: 5
-USALeafet:
+
+USALeaflet:
 	ReloadDelay: 3
-	Range: 3c0
-	Report: igidepa.wav,igidepb.wav
+	Range: 1c0
+	Report: chute1.aud
 	Projectile: GravityBomb
-		Image: usaleafet
+		Image: usaleaflet
 		Velocity: 0, 0, -88
 		Acceleration: 0, 0, 0
 		Shadow: False
-	Warhead@1Dam: SpreadDamage
-		Spread: 768
-		Damage: 0
-	Warhead@4EffWater: CreateEffect
-		Explosions: small_splash
-		ImpactSounds: splash9.aud
-		ValidTargets: Water, Underwater
-		InvalidTargets: Ship, Structure
+	Warhead@1Dam: TargetDamage
 	Warhead@2: GrantExternalCondition
-		Range: 2c768
+		Range: 6c0
 		Duration: 180
-		Condition: GhostLockdown
+		Condition: leaflet
 		ValidTargets: Vehicle, Infantry
+
 USAA10Miss:
 	Inherits: USARaptorMissileAG
 	Range: 10c0
@@ -2506,6 +2543,38 @@ GLRadarvanHuskCluster:
 	Warhead@toxin: FireFragment
 		Weapon: GLRadarvanHusk
 
+USATomahawk:
+	Inherits: ^AntiGroundMissile
+	MinRange: 4c0
+	ReloadDelay: 250
+	Range: 17c0
+	Report: vtomweaa.wav
+	TargetActorCenter: true
+	Projectile: Missile
+		Arm: 0
+		Blockable: false
+		Shadow: true
+		HorizontalRateOfTurn: 15
+		Image: V2
+		TrailImage: laserfire
+		ContrailLength: 0
+		Speed: 180
+		RangeLimit: 19c0
+		LaunchAngle: 62
+	Warhead@1Dam: SpreadDamage
+		Spread: 0c640
+		Falloff: 100, 100
+		Damage: 10000
+		Versus:
+			None: 40
+			Wood: 100
+			Light: 125
+			Heavy: 100
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: ex_terr_flash
+		ImpactSounds: gexpmina.wav, gexpminb.wav
+
 USAThomahawk:
 	ReloadDelay: 150
 	Report: vtomweaa.wav
@@ -2648,3 +2717,23 @@ USAParticleCannonCluster2:
 		ImpactSounds: sparlo2a.aud, sparlo2b.aud, sparlo2c.aud, sparlo3a.aud, sparlo3b.aud, sparlo3c.aud, sparlo4a.aud, sparlo4b.aud, sparlo4c.aud
 		ExplosionPalette: toxincloud
         
+USAAmbulanceHeal:
+	ReloadDelay: 30
+	Range: 4c0
+	Report: heal2.aud
+	ValidTargets: Healing
+	Projectile: InstantExplode
+	Warhead@1Bio: SpreadDamage
+		Spread: 4c0
+		Falloff: 100, 100
+		Damage: -7500
+		ValidStances: Ally
+		ValidTargets: Heal
+		DebugOverlayColor: 00FF00
+	Warhead@2Mech: SpreadDamage
+		Spread: 4c0
+		Falloff: 100, 100
+		Damage: -2500
+		ValidStances: Ally
+		ValidTargets: Repair
+		DebugOverlayColor: 00FF00
