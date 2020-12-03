@@ -698,7 +698,6 @@ glcommand:
 		ProductionType: RADefence.GLA
 		RequiresCondition: classicproductionqueues
 	BaseProvider:
-		Cooldown: 75
 		Range: 14c0
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@normal:
@@ -3446,14 +3445,9 @@ glbombtruck:
 		RequiresCondition: !selectglatoxin && !selectglademo
 	ProductionQueue:
 		Type: Bombtruck.GLA
-		Group: Defence
-		LowPowerModifier: 200
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
+		Group: Vehicle
+		QueueLimit: 1
+		ItemLimit: 1
 		DisplayOrder: 0
 	GrantConditionOnProduction@selectglatoxin:
 		Condition: selectglatoxin
@@ -3479,7 +3473,6 @@ pscglbtruck2:
 		BuildPaletteOrder: 10
 		Queue: Bombtruck.GLA
 		Description: Toxin Explosive upgrade.\n  Strong vs Infantry
-		Prerequisites: glpalace
 	Valued:
 		Cost: 300
 	RenderSprites:
@@ -3496,7 +3489,7 @@ pscglbtruck3:
 		BuildPaletteOrder: 10
 		Queue: Bombtruck.GLA
 		Description: High Damage Explosive.\n  Strong vs Vehicles, Buildings
-		Prerequisites: glpalace
+		Prerequisites: !selectglatoxin
 	Valued:
 		Cost: 300
 	RenderSprites:
@@ -3521,11 +3514,11 @@ glworker:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks
 		Queue: Infantry.GLA, RAInfantry.GLA
-		Description: Resource Collector Infantry.\nCan repair buildings
+		Description: Resource collector.\nCan repair buildings
 	Mobile:
-		Speed: 65
+		Speed: 95
 	Health:
-		HP: 5000
+		HP: 12000
 	AutoTarget:
 		ScanRadius: 4
 	WithInfantryBody:
@@ -3538,8 +3531,9 @@ glworker:
 		VoiceSet: WorkerVoice
 	Harvester:
 		PipCount: 1
-		Capacity: 2
-		BaleLoadDelay: 28
+		Capacity: 5
+		BaleLoadDelay: 4
+		BaleUnloadAmount: 5
 		BaleUnloadDelay: 0
 		MaxUnloadQueue: 9
 	SelfHealing:
@@ -4383,7 +4377,6 @@ chcommand:
 		ProductionType: RADefence.CHINA
 		RequiresCondition: classicproductionqueues
 	BaseProvider:
-		Cooldown: 75
 		Range: 14c0
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@normal:
@@ -4608,8 +4601,6 @@ chbarracks:
 	Power:
 		Amount: -20
 	ProvidesPrerequisite@buildingname:
-	Selectable:
-		Bounds: 48,42,0,-5
 	Voiced:
 		VoiceSet: PRCBarracksVoice
 
@@ -4619,9 +4610,9 @@ chgattling:
 	Inherits@EMP: ^TurretEMP
 	Inherits@chaingun: ^ChaingunUpgrade
 	Valued:
-		Cost: 1200
+		Cost: 800
 	Tooltip:
-		Name: Gattling Cannon
+		Name: Gatling Cannon
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: chbarracks, ~techlevel.low, ~chselected
@@ -4719,10 +4710,7 @@ chbunker:
 		PipCount: 5
 		InitialUnits: che1
 		LoadedCondition: bunkerup
-	WithSpriteBody@Bunkered:
-		Sequence: idle-bunkered
-		RequiresCondition: bunkerup
-		Name: bunkered
+	WithSpriteBody:
 	AttackGarrisoned:
 		Armaments: garrisoned
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
@@ -4736,57 +4724,37 @@ chbunker:
 		Range: 6c0
 	Voiced:
 		VoiceSet: CHBunkerVoice
+	RenderSprites:
+		Image: chbunker
+	Selectable:
+		Class: chbunker
 
 chbunker.e1:
 	Inherits: chbunker
 	Buildable:
-		BuildPaletteOrder: 40
 		Prerequisites: chbarracks, ~techlevel.low, ~botgla, ~!selectchinf
-		Queue: Defence.CHINA, RADefence.CHINA
 	Valued:
 		Cost: 800
 	Cargo:
-		Types: Infantry
-		MaxWeight: 5
-		PipCount: 5
 		InitialUnits: che1, che1, che1, che1, che1
-		LoadedCondition: bunkerup
-	RenderSprites:
-		Image: chbunker
 
 chbunker.e2:
 	Inherits: chbunker
 	Buildable:
-		BuildPaletteOrder: 40
 		Prerequisites: chbarracks, ~techlevel.low, ~botgla, ~!selectchinf
-		Queue: Defence.CHINA, RADefence.CHINA
 	Valued:
 		Cost: 800
 	Cargo:
-		Types: Infantry
-		MaxWeight: 5
-		PipCount: 5
 		InitialUnits: che1, che1, che1, che3, che3
-		LoadedCondition: bunkerup
-	RenderSprites:
-		Image: chbunker
 
 chbunker.e3:
 	Inherits: chbunker
 	Buildable:
-		BuildPaletteOrder: 40
 		Prerequisites: chbarracks, ~techlevel.low, ~botgla, ~!selectchinf
-		Queue: Defence.CHINA, RADefence.CHINA
 	Valued:
 		Cost: 800
 	Cargo:
-		Types: Infantry
-		MaxWeight: 5
-		PipCount: 5
 		InitialUnits: che3, che3, che3, che3, che3
-		LoadedCondition: bunkerup
-	RenderSprites:
-		Image: chbunker
 
 chbunker2:
 	Inherits: chbunker
@@ -4809,8 +4777,8 @@ chbunker2:
 		InitialUnits: che2
 	Voiced:
 		VoiceSet: CHBunkerVoice
-	RenderSprites:
-		Image: chbunker
+	Selectable:
+		Class: chbunker2
 	#FreeActor@1:
 	#	Actor: chmnly
 	#	SpawnOffset: 1,1
@@ -4820,19 +4788,11 @@ chbunker2:
 chbunker2.e2:
 	Inherits: chbunker2
 	Buildable:
-		BuildPaletteOrder: 40
 		Prerequisites: chbarracks, ~techlevel.low, ~selectchinf, ~botgla
-		Queue: Defence.CHINA, RADefence.CHINA
 	Valued:
 		Cost: 700
 	Cargo:
-		Types: Infantry
-		MaxWeight: 8
-		PipCount: 8
 		InitialUnits: che2, che2, che2, che3, che3, che3, che3
-		LoadedCondition: bunkerup
-	RenderSprites:
-		Image: chbunker
 
 chsupply:
 	Inherits: ^BaseBuilding
@@ -5406,6 +5366,7 @@ CHHACKER:
 		Speed: 50
 		PauseOnCondition: frozen || hacking
 		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
@@ -5794,14 +5755,9 @@ choverlord:
 		RequiresCondition: !addonpropaganda && !addonbunker && !addongattling
 	ProductionQueue:
 		Type: Overlord.CHINA
-		Group: Defence
-		LowPowerModifier: 200
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
+		Group: Vehicle
+		QueueLimit: 1
+		ItemLimit: 1
 		DisplayOrder: 0
 	GrantConditionOnProduction@gattling:
 		Condition: addongattling
@@ -5900,8 +5856,7 @@ pscchoverlord1:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Overlord.CHINA, EOverlord.CHINA
-		Description: Installs a Gattling gun.
-		Prerequisites: anypower
+		Description: Installs an anti-aircraft Gattling gun.
 	Valued:
 		Cost: 1200
 	RenderSprites:
@@ -5918,7 +5873,7 @@ pscchoverlord2:
 		BuildPaletteOrder: 10
 		Queue: Overlord.CHINA
 		Description: Installs a bunker with infantry weapons.
-		Prerequisites: anypower, ~!selectchtanks
+		Prerequisites: ~!selectchtanks
 	Valued:
 		Cost: 1600
 	RenderSprites:
@@ -5935,7 +5890,7 @@ pscchoverlord3:
 		BuildPaletteOrder: 10
 		Queue: Overlord.CHINA
 		Description: Installs a morale-improving propaganda speaker.
-		Prerequisites: anypower, ~!selectchtanks
+		Prerequisites: ~!selectchtanks
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -6169,7 +6124,7 @@ chharv:
 	Inherits@selection: ^SelectableEconomicUnit
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Buildable:
-		Queue: Vehicle.CHINA, Vehicle.CHINA
+		Queue: Vehicle.CHINA, RAVehicle.CHINA
 		BuildPaletteOrder: 10
 		Prerequisites: chsupply
 		Description: Collects Ore and Gems for processing.\n  Unarmed
@@ -6184,7 +6139,7 @@ chharv:
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 80
+		Speed: 90
 		Locomotor: wheeled
 	RevealsShroud:
 		Range: 4c0
@@ -6830,11 +6785,11 @@ CHMIG:
 		Queue: Aircraft.CHINA, RAAircraft.CHINA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
 		Prerequisites: chairport, ~techlevel.medium, ~!upmignuke
-		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Fighter armed with napalm missiles.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
 	Valued:
 		Cost: 1200
 	Tooltip:
-		Name: MiG Attack Plane
+		Name: MiG
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
@@ -6930,7 +6885,7 @@ CHMIG2:
 		Queue: Aircraft.CHINA, RAAircraft.CHINA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
 		Prerequisites: chairport, ~techlevel.medium, ~selectchatomic, ~upmignuke
-		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Fighter armed with nuclear missiles.\n  Strong vs ground targets\n  Weak vs Aircraft
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -7156,8 +7111,7 @@ pscchhelix1:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Helix.CHINA
-		Description: Normal Weak Explosive.
-		Prerequisites: anypower
+		Description: Installs an anti-aircraft Gattling gun.
 	Valued:
 		Cost: 1200
 	RenderSprites:
@@ -7173,8 +7127,7 @@ pscchhelix2:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Helix.CHINA
-		Description: Normal Weak Explosive.
-		Prerequisites: anypower
+		Description: Installs a bunker with infantry weapons.
 	Valued:
 		Cost: 1600
 	RenderSprites:
@@ -7190,8 +7143,7 @@ pscchhelix3:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Helix.CHINA
-		Description: Normal Weak Explosive.
-		Prerequisites: anypower
+		Description: Allows dropping napalm bombs.
 	Valued:
 		Cost: 800
 	RenderSprites:
@@ -8386,6 +8338,7 @@ usasentry:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@MC: ^MCImmune
+	Inherits@EMP: ^TurretEMP
 	Inherits@vo: ^AttackTurretedVoice
 	Valued:
 		Cost: 800
@@ -8720,7 +8673,6 @@ usacommand:
 		ProductionType: RADefence.USA
 		RequiresCondition: classicproductionqueues
 	BaseProvider:
-		Cooldown: 75
 		Range: 14c0
 	ProvidesPrerequisite@buildingname:
 	ProvidesRadar:
@@ -9867,6 +9819,7 @@ usacannon.beam:
 		RequiresCondition: selectusasuper
 	Armament:
 		Weapon: SuicideBomberTargeting
+		RequiresCondition: !botgla
 	AutoTarget:
 		InitialStance: AttackAnything
 		ScanRadius: 6
