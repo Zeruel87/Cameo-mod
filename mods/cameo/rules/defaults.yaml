@@ -463,6 +463,7 @@
 	Inherits: ^Vehicle
 	Inherits@EMP: ^UnitDisable
 	Inherits@mag: ^Magnefreezable
+	Inherits@snipe: ^DriverKillImmune
 	Mobile:
 		Locomotor: naval
 		TurnSpeed: 5
@@ -2688,6 +2689,7 @@ CPQDEBUGDUMMY:
 
 ^Harvester:
 	Inherits@MC: ^MCImmune
+	Inherits@snipe: ^DriverKillImmune
 	Harvester:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
 		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply
@@ -2992,6 +2994,7 @@ CPQDEBUGDUMMY:
 
 ^MCV:
 	Inherits@MC: ^MCImmune
+	Inherits@snipe: ^DriverKillImmune
 	MustBeDestroyed:
 		RequiredForShortGame: true
 	BaseBuilding:
@@ -3239,8 +3242,8 @@ CPQDEBUGDUMMY:
 		Condition: driver-dead
 	Capturable@DRIVER_DEAD:
 		Types: driverless_vehicle
-		RequiresCondition: driver-dead
-		ValidStances: Enemy, Neutral, Ally
+		RequiresCondition: driver-dead && !chronobeamed
+		ValidStances: Neutral
 		CancelActivity: true
 	SelfHealing@DRIVER_DEAD:
 		PercentageStep: -1
@@ -3248,14 +3251,9 @@ CPQDEBUGDUMMY:
 		HealIfBelow: 101
 		DamageCooldown: 0
 		RequiresCondition: driver-dead
-	ExternalCondition@DeadDriver:
-		Condition: driver-dead
 	Targetable@DRIVERKILL:
 		TargetTypes: DriverKill
 		RequiresCondition: !driver-dead
-	Targetable@AICAPTURE:
-		TargetTypes: NoCrew
-		RequiresCondition: driver-dead
 	WithDecoration@DRIVERKILL:
 		Image: gendriverdead
 		Sequence: idle
@@ -3318,6 +3316,10 @@ CPQDEBUGDUMMY:
 		CaptureTypes: driverless_vehicle
 		Voice: Select
 	CaptureManager:
+
+^DriverKillImmune:
+	Targetable@DRIVERKILL:
+		TargetTypes: DriverKillImmune
 
 ^FrenzyPower:
 	WithColoredOverlay@FRENZY1:
