@@ -4,7 +4,7 @@
 ^GeneralsVehicle:
 	GrantConditionOnDamageState@DamagedSlow:
 		Condition: damagedslow
-		ValidDamageStates: Heavy, Critical
+		ValidDamageStates: Critical
 	SpeedMultiplier@DamagedSlow:
 		RequiresCondition: damagedslow
 		Modifier: 50
@@ -988,8 +988,6 @@ glbarracks:
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RAInfantry.GLA
 		RequiresCondition: classicproductionqueues
-	GrantExternalConditionToProduced:
-		Condition: produced
 	ProductionQueue:
 		Type: Infantry.GLA
 		DisplayOrder: 2
@@ -1183,8 +1181,6 @@ glpalace:
 		Cost: 2500
 	Tooltip:
 		Name: Palace
-	ProvidesPrerequisite:
-		Prerequisite: glpalace
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: glweap, ~glaselected
@@ -1197,6 +1193,8 @@ glpalace:
 	SelectionDecorations:
 	Health:
 		HP: 110000
+	Armor:
+		Type: Heavy
 	RevealsShroud:
 		Range: 5c0
 	WithBuildingBib:
@@ -1211,6 +1209,7 @@ glpalace:
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
+		PauseOnCondition: chronobeamed
 	Turreted:
 		TurnSpeed: 255
 	-QuantizeFacingsFromSequence:
@@ -1508,6 +1507,7 @@ glsite.soldier:
 	Health:
 		HP: 4500
 	AutoTarget:
+		AllowMovement: false
 	AttackFrontal:
 	Selectable:
 		Priority: 4
@@ -2279,7 +2279,7 @@ glbggy:
 	Valued:
 		Cost: 900
 	Tooltip:
-		Name: Rocket buggy
+		Name: Rocket Buggy
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -2353,24 +2353,25 @@ glbbus:
 		BuildPaletteOrder: 60
 		Prerequisites: glweap, glpalace
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
-		Description: Mobile bunker vehicle.\n  Passengers can fire from within
+		Description: Mobile bunker vehicle.\n  Passengers can fire from within\n  Immobilized on heavy damage
 	Mobile:
 		TurnSpeed: 4
 		Speed: 140
+		RequiresCondition: !damagedslow
 	Health:
 		HP: 105000
 	Repairable:
 		HpPerStep: 1819
 	Armor:
 		Type: Heavy
+	DamageMultiplier@bunker:
+		Modifier: 50
+		RequiresCondition: damagedslow
 	RevealsShroud:
 		Range: 8c0
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
-	-QuantizeFacingsFromSequence:
-	BodyOrientation:
-		QuantizedFacings: 32
 	Cargo:
 		Types: Infantry
 		MaxWeight: 5
@@ -2383,6 +2384,7 @@ glbbus:
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
 		Voice: Attack
+		PauseOnCondition: disabled
 	RenderRangeCircle:
 		FallbackRange: 6c0
 	Selectable:
@@ -2391,9 +2393,6 @@ glbbus:
 		AllowMovement: true
 	Turreted:
 		TurnSpeed: 10
-	WithMuzzleOverlay:
-	Armament:
-		Weapon: GLRebelAK47
 	RenderSprites:
 		Scale: 0.9
 	Voiced:
@@ -3622,7 +3621,7 @@ upscorpionrocket:
 		BuildPaletteOrder: 200
 		Queue: VehicleUpgrades.GLA
 		Description: Allows Scorpion Tanks to launch rockets.
-		Prerequisites: glweap, ~!upscorpionrocket, ~!selectglacamo
+		Prerequisites: ~!upscorpionrocket, ~!selectglacamo
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -3638,7 +3637,7 @@ uparmthemob:
 		BuildPaletteOrder: 200
 		Queue: PalaceUpgrades.GLA
 		Description: Arm Angry Mob members with assault rifles.
-		Prerequisites: glpalace, ~!uparmthemob
+		Prerequisites: ~!uparmthemob
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -3654,7 +3653,7 @@ uprebelcamo:
 		BuildPaletteOrder: 200
 		Queue: PalaceUpgrades.GLA
 		Description: Allow Rebels to cloak when stationary.
-		Prerequisites: glpalace, ~!uprebelcamo, ~!selectglatoxin
+		Prerequisites: ~!uprebelcamo, ~!selectglatoxin
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -3670,7 +3669,7 @@ upcamonetting:
 		BuildPaletteOrder: 200
 		Queue: PalaceUpgrades.GLA
 		Description: Cloaks defensive structures.
-		Prerequisites: glpalace, ~!upcamonetting, ~!selectglatoxin
+		Prerequisites: ~!upcamonetting, ~!selectglatoxin
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -3686,7 +3685,7 @@ upcamonetting2:
 		BuildPaletteOrder: 200
 		Queue: PalaceUpgrades.GLA
 		Description: Cloaks all structures.
-		Prerequisites: glpalace, ~!upcamonetting2, ~!selectglatoxin, ~selectglacamo
+		Prerequisites: ~!upcamonetting2, ~!selectglatoxin, ~selectglacamo
 	Valued:
 		Cost: 2500
 	RenderSprites:
@@ -3704,7 +3703,7 @@ upglfort:
 		BuildPaletteOrder: 200
 		Queue: PalaceUpgrades.GLA
 		Description: Increases durability of all buildings.
-		Prerequisites: glpalace, ~!upglfort
+		Prerequisites: ~!upglfort
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -3720,7 +3719,7 @@ uparmorpiercingrocket:
 		BuildPaletteOrder: 200
 		Queue: MarketUpgrades.GLA
 		Description: All GLA rocket units attack with 25% more damage.
-		Prerequisites: glblackmarket, ~!uparmorpiercingrocket
+		Prerequisites: ~!uparmorpiercingrocket
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -3736,7 +3735,7 @@ uparmorpiercingbullet:
 		BuildPaletteOrder: 200
 		Queue: MarketUpgrades.GLA
 		Description: All GLA MG units attack with 25% more damage.
-		Prerequisites: glblackmarket, ~!uparmorpiercingbullet
+		Prerequisites: ~!uparmorpiercingbullet
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -3752,7 +3751,7 @@ upjunkrepair:
 		BuildPaletteOrder: 200
 		Queue: MarketUpgrades.GLA
 		Description: Allow all GLA vehicles to self-repair.
-		Prerequisites: glblackmarket, ~!upjunkrepair
+		Prerequisites: ~!upjunkrepair
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -3768,7 +3767,7 @@ uptoxinshells:
 		BuildPaletteOrder: 200
 		Queue: PalaceUpgrades.GLA
 		Description: Allow tanks to fire toxin shells.
-		Prerequisites: glpalace, ~!uptoxinshells, ~!selectglacamo
+		Prerequisites: ~!uptoxinshells, ~!selectglacamo
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -3784,7 +3783,7 @@ upantraxbeta:
 		BuildPaletteOrder: 200
 		Queue: PalaceUpgrades.GLA
 		Description: Increases effectiveness of toxin weapons.
-		Prerequisites: glpalace, ~!upantraxbeta
+		Prerequisites: ~!upantraxbeta
 	Valued:
 		Cost: 2500
 	RenderSprites:
@@ -3800,7 +3799,7 @@ upnewshoes:
 		BuildPaletteOrder: 200
 		Queue: MarketUpgrades.GLA
 		Description: Increases speed of Workers.
-		Prerequisites: glblackmarket, ~!upnewshoes
+		Prerequisites: ~!upnewshoes
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -3816,7 +3815,7 @@ upbuggyammo:
 		BuildPaletteOrder: 200
 		Queue: MarketUpgrades.GLA
 		Description: Doubles rockets fired by Rocket Buggies.
-		Prerequisites: glblackmarket, ~!upbuggyammo
+		Prerequisites: ~!upbuggyammo
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -3832,7 +3831,7 @@ upantraxgamma:
 		BuildPaletteOrder: 200
 		Queue: PalaceUpgrades.GLA
 		Description: Increases effectiveness of toxin weapons.
-		Prerequisites: ~glpalace, ~upantraxbeta, ~!upantraxgamma, ~selectglatoxin
+		Prerequisites: ~upantraxbeta, ~!upantraxgamma, ~selectglatoxin
 	Valued:
 		Cost: 2500
 	RenderSprites:
@@ -3847,8 +3846,8 @@ upradarvanscan:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: MarketUpgrades.GLA
-		Description: Allows Radar Vans to reveal areas of the map.
-		Prerequisites: glblackmarket, ~!upradarvanscan
+		Description: Allow Radar Vans to reveal areas of the map.
+		Prerequisites: ~!upradarvanscan
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -3865,7 +3864,7 @@ upmaraunder:
 		BuildDuration: 1500
 		Queue: Promotions.GLA
 		Description: Allows production of the Marauder Tank.
-		Prerequisites: glcommand, !upmaraunder, ~!selectglacamo
+		Prerequisites: !upmaraunder, ~!selectglacamo
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -3882,7 +3881,7 @@ uptechnical:
 		BuildDuration: 1500
 		Queue: Promotions.GLA
 		Description: Trains technicals as Rank 1.
-		Prerequisites: glcommand, !uptechnical
+		Prerequisites: !uptechnical
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -3899,7 +3898,7 @@ upscudlauncher:
 		BuildDuration: 1500
 		Queue: Promotions.GLA
 		Description: Allows production of the Scud Launcher.
-		Prerequisites: glcommand, !upscudlauncher
+		Prerequisites: !upscudlauncher
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -3916,7 +3915,7 @@ uprebelambush1:
 		BuildDuration: 2000
 		Queue: Promotions.GLA
 		Description: Enables Rebel Ambush Level 1.
-		Prerequisites: glcommand, !uprebelambush1
+		Prerequisites: !uprebelambush1
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -3967,7 +3966,7 @@ upglabounty1:
 		BuildDuration: 2000
 		Queue: Promotions.GLA
 		Description: Increases Black Market income.
-		Prerequisites: glcommand, !upglabounty1
+		Prerequisites: !upglabounty1
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -4018,7 +4017,7 @@ upanthraxbomb:
 		BuildDuration: 5000
 		Queue: Promotions.GLA
 		Description: Enables Anthrax Bomb strikes.
-		Prerequisites: glpalace, !upanthraxbomb
+		Prerequisites: !upanthraxbomb
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -4053,7 +4052,7 @@ upgpscram:
 		BuildDuration: 5000
 		Queue: Promotions.GLA
 		Description: Enables use of GPS Scrambling.
-		Prerequisites: glpalace, !upgpscram
+		Prerequisites: !upgpscram
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -4420,8 +4419,6 @@ chcommand:
 	BaseProvider:
 		Range: 14c0
 	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite@normal:
-		Prerequisite: glcommand
 	ProvidesRadar:
 		RequiresCondition: !jammed
 	ExternalCondition@JAMMED:
@@ -4549,19 +4546,15 @@ chpower:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@power: ^PowerPlant
-	HitShape:
-		TargetableOffsets: -355,-1024,0
 	Buildable:
 		Queue: Building.CHINA, RABuilding.CHINA
 		BuildPaletteOrder: 110
 		Prerequisites: chcommand, ~!selectchatomic, ~chselected
-		Description: Provides double the power of\na standard Power Plant.
+		Description: Provides power.\nCan be deployed to overcharge at expense of damage to self.\nExplodes violently when destroyed
 	Valued:
 		Cost: 800			#500
 	Tooltip:
-		Name: Nuclear Plant
-	ProvidesPrerequisite:
-		Prerequisite: anypower
+		Name: Nuclear Reactor
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
@@ -4581,7 +4574,6 @@ chpower:
 		Amount: 300
 	Targetable:
 		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
-	ScalePowerWithHealth:
 	WithDeathAnimation:
 		DeathSequence: dead
 		UseDeathTypeSuffix: false
@@ -4601,6 +4593,24 @@ chpower:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-anim2
 		Palette: placelinesegment
+	GrantTimedConditionOnDeploy:
+		CooldownTicks: 500
+		DeployedTicks: 1000
+		StartsFullyCharged: true
+		DeployedCondition: overcharge
+		Voice: Select
+		PauseOnCondition: critical
+	PowerMultiplier@overcharge:
+		Modifier: 200
+		RequiresCondition: overcharge
+	SelfHealing@overcharge:
+		Step: -1000
+		Delay: 50
+		HealIfBelow: 150
+		RequiresCondition: overcharge
+	GrantConditionOnDamageState@nocharge:
+		Condition: critical
+		ValidDamageStates: Critical
 
 chpower2:
 	Inherits: chpower
@@ -4608,7 +4618,6 @@ chpower2:
 		Queue: Building.CHINA, RABuilding.CHINA
 		BuildPaletteOrder: 110
 		Prerequisites: chcommand, ~selectchatomic
-		Description: Provides double the power of\na standard Power Plant.
 	Tooltip:
 		Name: Advanced Nuclear Plant
 	Valued:
@@ -4620,14 +4629,9 @@ chpower2:
 
 chbarracks:
 	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
-	HitShape:
-		UseTargetableCellsOffsets: false
-		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
-		Type: Rectangle
-			TopLeft: -1024, -1024
-			BottomRight: 1024, 640
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -4661,8 +4665,6 @@ chbarracks:
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RAInfantry.CHINA
 		RequiresCondition: classicproductionqueues
-	GrantExternalConditionToProduced:
-		Condition: produced
 	ProductionQueue:
 		Type: Infantry.CHINA
 		DisplayOrder: 2
@@ -5027,13 +5029,12 @@ chpropaganda:
 		Icon: chfrenzy1
 		ChargeInterval: 3000
 		Description: Frenzy
-		LongDesc: Add Firepower a group of units\nfor 30 seconds.
+		LongDesc: Increases the firepower of selected vehicles.
 		Range: 2
 		Duration: 500
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
-		#BeginChargeSpeechNotification: IronCurtainCharging
-		#EndChargeSpeechNotification: IronCurtainReady
+		OnFireSound: sfrenzya.wav
 		DisplayRadarPing: True
 		Condition: frenzypower1
 		Prerequisites: upfrenzy1, !upfrenzy2
@@ -5044,13 +5045,12 @@ chpropaganda:
 		Icon: chfrenzy2
 		ChargeInterval: 3000
 		Description: Frenzy
-		LongDesc: Add Firepower a group of units\nfor 30 seconds.
+		LongDesc: Increases the firepower of selected vehicles.
 		Range: 3
 		Duration: 750
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
-		#BeginChargeSpeechNotification: IronCurtainCharging
-		#EndChargeSpeechNotification: IronCurtainReady
+		OnFireSound: sfrenzya.wav
 		DisplayRadarPing: True
 		Condition: frenzypower2
 		Prerequisites: upfrenzy2, !upfrenzy3
@@ -5061,13 +5061,12 @@ chpropaganda:
 		Icon: chfrenzy3
 		ChargeInterval: 3000
 		Description: Frenzy
-		LongDesc: Add Firepower a group of units\nfor 30 seconds.
+		LongDesc: Increases the firepower of selected vehicles.
 		Range: 4
 		Duration: 1000
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
-		#BeginChargeSpeechNotification: IronCurtainCharging
-		#EndChargeSpeechNotification: IronCurtainReady
+		OnFireSound: sfrenzya.wav
 		DisplayRadarPing: True
 		Condition: frenzypower3
 		Prerequisites: upfrenzy3
@@ -5082,9 +5081,6 @@ chsilo:
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^3x2Shape
 	Inherits@sw: ^PrimarySuperweapon
-	HitShape:
-		UseTargetableCellsOffsets: false
-		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
 	Valued:
 		Cost: 5000
 	Tooltip:
@@ -6563,7 +6559,7 @@ upredguard:
 		BuildDuration: 1500
 		Queue: Promotions.CHINA
 		Description: Trains Red Guard as Rank 1.
-		Prerequisites: chcommand, !upredguard
+		Prerequisites: !upredguard
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -6580,7 +6576,7 @@ upcharty:
 		BuildDuration: 1500
 		Queue: Promotions.CHINA
 		Description: Trains artillery as Rank 1.
-		Prerequisites: chcommand, !upcharty, ~!selectchtanks, ~!selectchinf
+		Prerequisites: !upcharty, ~!selectchtanks, ~!selectchinf
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -6597,7 +6593,7 @@ upbattlemaster:
 		BuildDuration: 1500
 		Queue: Promotions.CHINA
 		Description: Trains Battlemasters as Rank 4.
-		Prerequisites: chcommand, ~selectchtanks, !upbattlemaster
+		Prerequisites: ~selectchtanks, !upbattlemaster
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -6614,7 +6610,7 @@ upnukecann:
 		BuildDuration: 1500
 		Queue: Promotions.CHINA
 		Description: Allows production of the Nuke Cannon.
-		Prerequisites: chcommand, !upnukecann, ~techlevel.high, ~!selectchtanks, ~!selectchinf
+		Prerequisites: !upnukecann, ~techlevel.high, ~!selectchtanks, ~!selectchinf
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -6665,7 +6661,7 @@ upartybarrage1:
 		BuildDuration: 2000
 		Queue: Promotions.CHINA
 		Description: Unlocks Artillery Barrage
-		Prerequisites: chcommand, !upartybarrage1
+		Prerequisites: !upartybarrage1
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -6716,7 +6712,7 @@ upfrenzy1:
 		BuildDuration: 2000
 		Queue: Promotions.CHINA
 		Description: Unlocks Frenzy Level 1
-		Prerequisites: chcommand, !upfrenzy1
+		Prerequisites: !upfrenzy1
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -6766,7 +6762,7 @@ upchaingun:
 		BuildPaletteOrder: 200
 		Queue: VehicleUpgrades.CHINA
 		Description: Increases firing rate of units using Gatling weapons.
-		Prerequisites: chweap, ~!upchaingun
+		Prerequisites: ~!upchaingun
 	Valued:
 		Cost: 1500
 	RenderSprites:
@@ -6785,7 +6781,7 @@ upnationalism:
 		BuildPaletteOrder: 200
 		Queue: PropagandaUpgrades.CHINA
 		Description: Increases effect of the Horde Bonus.
-		Prerequisites: chpropaganda, ~!upnationalism
+		Prerequisites: ~!upnationalism
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -6804,7 +6800,7 @@ upuraniumshell:
 		BuildPaletteOrder: 200
 		Queue: NukeUpgrades.CHINA
 		Description: Increases Battlemaster and Overlord damage.
-		Prerequisites: chsilo, ~!upuraniumshell
+		Prerequisites: ~!upuraniumshell
 	Valued:
 		Cost: 2500
 	RenderSprites:
@@ -6820,7 +6816,7 @@ upatomictank:
 		BuildPaletteOrder: 200
 		Queue: NukeUpgrades.CHINA
 		Description: Increases Battlemaster and Overlord speed.
-		Prerequisites: chsilo, ~!upatomictank
+		Prerequisites: ~!upatomictank
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -6835,8 +6831,8 @@ upisotopestability:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: PropagandaUpgrades.CHINA
-		Description: Nuclear tank explosions do not damage friendly units.
-		Prerequisites: chpropaganda, ~upisotopestability
+		Description: Nuclear tank explosions do not damage friendly units\nor leave radiation.
+		Prerequisites: ~!upisotopestability, ~selectchatomic
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -6852,7 +6848,7 @@ upbluefire:
 		BuildPaletteOrder: 200
 		Queue: VehicleUpgrades.CHINA
 		Description: Increases effectiveness of incendiary weapons.
-		Prerequisites: chpropaganda, ~!upbluefire
+		Prerequisites: ~!upbluefire
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -6871,7 +6867,7 @@ upneutronshell:
 		BuildPaletteOrder: 200
 		Queue: NukeUpgrades.CHINA
 		Description: Give Nuke Cannons neutron munitions.
-		Prerequisites: chsilo, upnukecann, ~!upneutronshell
+		Prerequisites: upnukecann, ~!upneutronshell
 	Valued:
 		Cost: 2500
 	RenderSprites:
@@ -6887,7 +6883,7 @@ upmigarmor:
 		BuildPaletteOrder: 200
 		Queue: AirUpgrades.CHINA
 		Description: Increases durability of MiGs.
-		Prerequisites: chpropaganda, ~!upmigarmor
+		Prerequisites: ~!upmigarmor
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -6903,7 +6899,7 @@ upautoload:
 		BuildPaletteOrder: 200
 		Queue: PropagandaUpgrades.CHINA
 		Description: Increases firing rate of Battlemasters.
-		Prerequisites: chweap, ~!upautoload, ~selectchtanks
+		Prerequisites: ~!upautoload, ~selectchtanks
 	Valued:
 		Cost: 2500
 	RenderSprites:
@@ -6919,7 +6915,7 @@ upsubliminal:
 		BuildPaletteOrder: 200
 		Queue: PropagandaUpgrades.CHINA
 		Description: Increases effectiveness of propaganda.
-		Prerequisites: chpropaganda, ~!upsubliminal
+		Prerequisites: ~!upsubliminal
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -6939,7 +6935,7 @@ upmignuke:
 		BuildPaletteOrder: 200
 		Queue: AirUpgrades.CHINA
 		Description: Allows MiGs to use nuclear missiles.
-		Prerequisites: chpropaganda, ~!upmignuke, ~selectchatomic
+		Prerequisites: ~!upmignuke, ~selectchatomic
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -7289,7 +7285,7 @@ chhelix:
 		MuzzleSequence: muzzle
 		RequiresCondition: bombaddon && selectchatomic
 	ReloadDelayMultiplier@BUNKER:
-		Modifier: 300
+		Modifier: 200
 		RequiresCondition: bombaddon
 	GrantConditionOnPrerequisite@selectchatomic:
 		Condition: selectchatomic
@@ -7590,7 +7586,7 @@ upcarpetbomb:
 		BuildDuration: 4000
 		Queue: Promotions.CHINA
 		Description: Enables carpet bombing runs.
-		Prerequisites: chairport, !upcarpetbomb
+		Prerequisites: !upcarpetbomb
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -7607,7 +7603,7 @@ upchneutronbomb:
 		BuildDuration: 5000
 		Queue: Promotions.CHINA
 		Description: Enables EMP Bomb strikes.
-		Prerequisites: chairport, !upchneutronbomb
+		Prerequisites: !upchneutronbomb
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -7624,7 +7620,7 @@ upchminebomb:
 		BuildDuration: 4000
 		Queue: Promotions.CHINA
 		Description: Enables deployment of Cluster Mines.
-		Prerequisites: chairport, !upchminebomb
+		Prerequisites: !upchminebomb
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -8997,7 +8993,7 @@ usapower:
 		Queue: Building.USA, RABuilding.USA
 		BuildPaletteOrder: 110
 		Prerequisites: usacommand
-		Description: Provides double the power of\na standard Power Plant.
+		Description: Provides power.\nCan be upgraded to increase output
 	Valued:
 		Cost: 500			#500
 	Tooltip:
@@ -9043,12 +9039,8 @@ usapower:
 		Type: PowerPlant.USA
 		Group: Defence
 		LowPowerModifier: 200
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
+		QueueLimit: 1
+		ItemLimit: 1
 		DisplayOrder: 0
 	GrantConditionOnProduction@powerupgrade:
 		Condition: powerupgrade
@@ -9143,8 +9135,6 @@ usabarracks:
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RAInfantry.USA
 		RequiresCondition: classicproductionqueues
-	GrantExternalConditionToProduced:
-		Condition: produced
 	ProductionQueue:
 		Type: Infantry.USA
 		DisplayOrder: 2
@@ -9642,7 +9632,6 @@ usaairport:
 	ClassicAirstrikePower@Spectre:
 		Squad:
 			usagunship:
-				SpawnDelay: 40
 				SpawnOffset: -1536,1024,0
 				TargetOffset: -536,0,0
 		PauseOnCondition: lowpower
@@ -10362,7 +10351,7 @@ usaaurora:
 		Queue: Aircraft.USA, RAAircraft.USA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
 		Prerequisites: usaairport, ~techlevel.high
-		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Heavy bomber.\n  Strong vs ground targets\n  Weak vs Aircraft
 	Valued:
 		Cost: 2500
 	Tooltip:
@@ -10417,9 +10406,6 @@ usaaurora:
 		Prerequisites: aircraft.upgraded
 	Voiced:
 		VoiceSet: USAAuroraVoice
-	ReloadAmmoPool:
-		Delay: 180
-		Count: 1
 
 usaaurora.husk:
 	Inherits: ^PlaneHusk
@@ -10670,7 +10656,7 @@ usaupgrenade:
 		BuildPaletteOrder: 200
 		Queue: InfantryUpgrades.USA
 		Description: Allow Rangers to use flashbangs.
-		Prerequisites: usabarracks, ~!usaupgrenade
+		Prerequisites: ~!usaupgrenade
 	Valued:
 		Cost: 800
 	RenderSprites:
@@ -10686,7 +10672,7 @@ usauptowmiss:
 		BuildPaletteOrder: 200
 		Queue: VehicleUpgrades.USA
 		Description: Equips Humvees with TOW missiles.
-		Prerequisites: usaweap, ~!usauptowmiss
+		Prerequisites: ~!usauptowmiss
 	Valued:
 		Cost: 800
 	RenderSprites:
@@ -10702,7 +10688,7 @@ usaupdronegun:
 		BuildPaletteOrder: 200
 		Queue: VehicleUpgrades.USA
 		Description: Arms the Sentry Drone with a machine gun.
-		Prerequisites: usaweap, ~!usaupdronegun
+		Prerequisites: ~!usaupdronegun
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -10718,7 +10704,7 @@ usaupchemsuit:
 		BuildPaletteOrder: 200
 		Queue: StrategyUpgrades.USA
 		Description: Makes infantry immune to lingering toxin weapons.
-		Prerequisites: usastrategy, ~!usaupchemsuit
+		Prerequisites: ~!usaupchemsuit
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -10734,7 +10720,7 @@ usauparmor:
 		BuildPaletteOrder: 200
 		Queue: VehicleUpgrades.USA
 		Description: Increases durability of Crusader and Paladin Tanks.
-		Prerequisites: usaweap, ~!usauparmor
+		Prerequisites: ~!usauparmor
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -10750,7 +10736,7 @@ usauplasmiss:
 		BuildPaletteOrder: 200
 		Queue: AirUpgrades.USA
 		Description: Increases damage done by aircraft by 25%.
-		Prerequisites: usaairport, ~!usauplasmiss
+		Prerequisites: ~!usauplasmiss
 	Valued:
 		Cost: 1500
 	RenderSprites:
@@ -10766,7 +10752,7 @@ usaupsupplylines:
 		BuildPaletteOrder: 200
 		Queue: StrategyUpgrades.USA
 		Description: Increases income from Supply Drops and Chinooks.
-		Prerequisites: usastrategy, ~!usaupsupplylines
+		Prerequisites: ~!usaupsupplylines
 	Valued:
 		Cost: 800
 	RenderSprites:
@@ -10782,7 +10768,7 @@ usaupmisspod:
 		BuildPaletteOrder: 200
 		Queue: AirUpgrades.USA
 		Description: Upgrades the Comanche with rocket pods strong against clustered targets.
-		Prerequisites: usaairport, ~!usaupmisspod
+		Prerequisites: ~!usaupmisspod
 	Valued:
 		Cost: 800
 	RenderSprites:
@@ -10798,7 +10784,7 @@ usabombardament:
 		BuildPaletteOrder: 200
 		Queue: StrategyUpgrades.USA
 		Description: All units deal 20% more damage.
-		Prerequisites: usastrategy, ~!usabombardament, ~!usasearchndestroy, ~!usaholdtheline
+		Prerequisites: ~!usabombardament, ~!usasearchndestroy, ~!usaholdtheline
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -10814,7 +10800,7 @@ usasearchndestroy:
 		BuildPaletteOrder: 200
 		Queue: StrategyUpgrades.USA
 		Description: All units have 20% more range.
-		Prerequisites: usastrategy, ~!usabombardament, ~!usasearchndestroy, ~!usaholdtheline
+		Prerequisites: ~!usabombardament, ~!usasearchndestroy, ~!usaholdtheline
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -10830,7 +10816,7 @@ usaholdtheline:
 		BuildPaletteOrder: 200
 		Queue: StrategyUpgrades.USA
 		Description: All units take 10% less damage.
-		Prerequisites: usastrategy, ~!usabombardament, ~!usasearchndestroy, ~!usaholdtheline
+		Prerequisites: ~!usabombardament, ~!usasearchndestroy, ~!usaholdtheline
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -10846,7 +10832,7 @@ usaupbunkerbuster:
 		BuildPaletteOrder: 200
 		Queue: AirUpgrades.USA
 		Description: Increases damage of Stealth Fighters.
-		Prerequisites: usaairport, ~!usaupbunkerbuster
+		Prerequisites: ~!usaupbunkerbuster
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -10862,7 +10848,7 @@ usaupcounter:
 		BuildPaletteOrder: 200
 		Queue: AirUpgrades.USA
 		Description: Increases durability of aircraft.
-		Prerequisites: usaairport, ~!usaupcounter
+		Prerequisites: ~!usaupcounter
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -10878,7 +10864,7 @@ usauptraining:
 		BuildPaletteOrder: 200
 		Queue: StrategyUpgrades.USA
 		Description: All ground units gain experience faster.
-		Prerequisites: usastrategy, ~!usauptraining
+		Prerequisites: ~!usauptraining
 	Valued:
 		Cost: 1500
 	RenderSprites:
@@ -10894,7 +10880,7 @@ usaupdronearmor:
 		BuildPaletteOrder: 200
 		Queue: StrategyUpgrades.USA
 		Description: Increases durability of drones.
-		Prerequisites: usastrategy, ~!usaupdronearmor
+		Prerequisites: ~!usaupdronearmor
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -11238,7 +11224,7 @@ upusapath:
 		BuildDuration: 2000
 		Queue: Promotions.USA
 		Description: Allows training of Pathfinders.
-		Prerequisites: usacommand, !upusapath, ~techlevel.medium
+		Prerequisites: !upusapath, ~techlevel.medium
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -11255,7 +11241,7 @@ upusapala:
 		BuildDuration: 1500
 		Queue: Promotions.USA
 		Description: Allows production of the Paladin Tank.
-		Prerequisites: usacommand, !upusapala, ~techlevel.medium, ~!selectusalaser, ~!selectusaairforce, ~!selectusasuper
+		Prerequisites: !upusapala, ~techlevel.medium, ~!selectusalaser, ~!selectusaairforce, ~!selectusasuper
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -11272,7 +11258,7 @@ upusastealth:
 		BuildDuration: 1500
 		Queue: Promotions.USA
 		Description: Allows production of the Stealth Fighter.
-		Prerequisites: usacommand, !upusastealth, ~techlevel.medium
+		Prerequisites: !upusastealth, ~techlevel.medium
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -11289,7 +11275,7 @@ upusaspydrone:
 		BuildDuration: 1500
 		Queue: Promotions.USA
 		Description: Enables the deployment of Spy Drones.
-		Prerequisites: usacommand, !upusaspydrone, ~techlevel.medium
+		Prerequisites: !upusaspydrone, ~techlevel.medium
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -11300,13 +11286,13 @@ upusaspydrone:
 upusaparadrop1:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: General's Promotion Artillery Paradrop 1
+		Name: General's Promotion Paradrop 1
 	Buildable:
 		BuildPaletteOrder: 220
 		BuildDuration: 2000
 		Queue: Promotions.USA
 		Description: Unlocks Paradrop
-		Prerequisites: usacommand, !upusaparadrop1
+		Prerequisites: !upusaparadrop1
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -11357,7 +11343,7 @@ upusaa101:
 		BuildDuration: 2000
 		Queue: Promotions.USA
 		Description: Unlocks A10 Strike
-		Prerequisites: usacommand, !upusaa101
+		Prerequisites: !upusaa101
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -11408,7 +11394,7 @@ upusagunship:
 		BuildDuration: 4000
 		Queue: Promotions.USA
 		Description: Allows use of Spectre Gunship airstrikes.
-		Prerequisites: usaairport, !upusagunship
+		Prerequisites: !upusagunship
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -11425,7 +11411,7 @@ upusaleaflet:
 		BuildDuration: 4000
 		Queue: Promotions.USA
 		Description: Allows use of the Leaflet Drop.
-		Prerequisites: usaairport, !upusaleaflet
+		Prerequisites: !upusaleaflet
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -11442,7 +11428,7 @@ upusafuelbomb:
 		BuildDuration: 4000
 		Queue: Promotions.USA
 		Description: Allows use of Fuel Air Bomb strikes.
-		Prerequisites: usaairport, !upusafuelbomb
+		Prerequisites: !upusafuelbomb
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -11458,13 +11444,14 @@ upusamotherbomb:
 		BuildPaletteOrder: 200
 		Queue: StrategyUpgrades.USA
 		Description: Allows use of MOAB strikes.
-		Prerequisites: usaairport, ~!upusamotherbomb
+		Prerequisites: ~!upusamotherbomb
 	Valued:
 		Cost: 4000
 	RenderSprites:
 		Image: usamotherbombicon
 	ProvidesPrerequisite:
 		Prerequisite: upusamotherbomb
+
 ################################################################
 #
 #	Leang
@@ -11473,8 +11460,9 @@ upusamotherbomb:
 leangmcv:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
 	Valued:
-		Cost: 4000	#2000
+		Cost: 4000
 	Tooltip:
 		Name: Mobile Construction Vehicle (Boss)
 	Buildable:
@@ -11501,19 +11489,9 @@ leangmcv:
 		Facing: 96
 		TransformSounds: placbldg.aud, build5.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
-	TransferTimedExternalConditionOnTransform:
-		Condition: invulnerability
 	Voiced:
 		VoiceSet: PRCMCCVoice
-	Inherits@EXT: ^ExternalConditions					##########
-	WithTextDecoration:
-		Text: MCV
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
+	Inherits@EXT: ^ExternalConditions
 	RenderSprites:
 		Image: usamcv
 	ProvidesPrerequisite@faction:
@@ -11523,6 +11501,8 @@ leangcommand:
 	Inherits: chcommand
 	Tooltip:
 		Name: Command Center (Leang)
+	Production@Upgrades:
+		Produces: Promotions.LEANG
 	Production@NORMAL:
 		Produces: Building.LEANG, Defence.LEANG
 	Production@CLASSICPRODUCTIONQUEUES:
@@ -11550,14 +11530,14 @@ leangbarracks:
 		BuildPaletteOrder: 30
 		Prerequisites: anypower
 		Queue: Building.LEANG, RABuilding.LEANG
+	Production@Upgrades:
+		Produces: InfantryUpgrades.USA
 	Production@NORMAL:
 		Produces: Infantry.LEANG
 		RequiresCondition: !classicproductionqueues
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RAInfantry.LEANG
 		RequiresCondition: classicproductionqueues
-	GrantExternalConditionToProduced:
-		Condition: produced
 	ProductionQueue:
 		Type: Infantry.LEANG
 	ProductionBar@INFANTRYGDI:
@@ -11568,15 +11548,16 @@ leangbarracks:
 		RequiresCondition: classicproductionqueues
 	RenderSprites:
 		Image: chbarracks
+
 leangpower:
 	Inherits: usapower
 	Buildable:
 		Queue: Building.LEANG, RABuilding.LEANG
 		BuildPaletteOrder: 110
 		Prerequisites: leangcommand
-		Description: Provides double the power of\na standard Power Plant.
 	RenderSprites:
 		Image: usapower
+
 leangsupply:
 	Inherits: chsupply
 	Buildable:
@@ -11587,6 +11568,7 @@ leangsupply:
 		Actor: leangharv
 	RenderSprites:
 		Image: chsupply
+
 leangweap:
 	Inherits: chweap
 	ProvidesPrerequisite:
@@ -11595,6 +11577,10 @@ leangweap:
 		BuildPaletteOrder: 50
 		Prerequisites: leangsupply
 		Queue: Building.LEANG, RABuilding.LEANG
+	Production@Upgrades3:
+		Produces: MarketUpgrades.GLA
+	Production@Upgrades4:
+		Produces: VehicleUpgrades.USA
 	Production@NORMAL:
 		Produces: Vehicle.LEANG
 	Production@CLASSICPRODUCTIONQUEUES:
@@ -11607,13 +11593,15 @@ leangweap:
 		ProductionType: RAVehicle.LEANG
 	RenderSprites:
 		Image: chweap
+
 leangairport:
 	Inherits: chairport
 	Buildable:
 		Queue: Building.LEANG, RABuilding.LEANG
 		BuildPaletteOrder: 130
-		Prerequisites: leangweap, ~techlevel.medium,
-		Description: Produces and reloads aircraft
+		Prerequisites: leangweap, ~techlevel.medium
+	Production@Upgrades2:
+		Produces: AirUpgrades.USA
 	Production@NORMAL:
 		Produces: Aircraft.LEANG
 	Production@CLASSICPRODUCTIONQUEUES:
@@ -11633,15 +11621,14 @@ leangairport:
 	ClassicAirstrikePower@Spectre:
 		Squad:
 			usagunship:
-				SpawnDelay: 40
 				SpawnOffset: -1536,1024,0
 				TargetOffset: -536,0,0
 		PauseOnCondition: lowpower
 		Prerequisites: ~techlevel.superweapons, upusagunship
 		Icon: usagunshipicon
 		ChargeInterval: 4500
-		Description: Spectre gunship
-		LongDesc: MiG aircraft fire missiles in a precision strike.\nDeals heavy damage to a single target.
+		Description: Spectre Gunship
+		LongDesc: Deploys a Spectre Gunship to fire on the target.
 		EndChargeSpeechNotification: AirstrikeReady
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -11662,6 +11649,7 @@ leangairport:
 		CircleDelay: 20
 		OrderName: AirstrikePowerSpectre
 		SupportPowerPaletteOrder: 20
+
 leangtunnel:
 	Inherits: gltunnel
 	Buildable:
@@ -11678,14 +11666,13 @@ leangpatriot:
 		Queue: Defence.LEANG, RADefence.LEANG
 	RenderSprites:
 		Image: usapatriot
+
 leanggattling:
 	Inherits: chgattling
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: leangbarracks, ~techlevel.low
 		Queue: Defence.LEANG, RADefence.LEANG
-		BuildDurationModifier: 40
-		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
 	RenderSprites:
 		Image: chgattling
 leangbunker:
@@ -11694,29 +11681,35 @@ leangbunker:
 		BuildPaletteOrder: 40
 		Prerequisites: leangbarracks, ~techlevel.low, ~!selectchinf
 		Queue: Defence.LEANG, RADefence.LEANG
-		BuildDurationModifier: 40
-		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
 	RenderSprites:
 		Image: chbunker
 
 leangstorm:
 	Inherits: glstorm
+	Production@Upgrades:
+		Produces: PalaceUpgrades.GLA
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: chpropaganda, ~techlevel.superweapons
 		Queue: Building.LEANG, RABuilding.LEANG
 	RenderSprites:
 		Image: glstorm
+
 leangsilo:
 	Inherits: chsilo
+	Production@Upgrades2:
+		Produces: PropagandaUpgrades.CHINA
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: chpropaganda, ~techlevel.high
 		Queue: Building.LEANG, RABuilding.LEANG
 	RenderSprites:
 		Image: chsilo
+
 leangcannon:
 	Inherits: usacannon
+	Production@Upgrades:
+		Produces: StrategyUpgrades.USA
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: chpropaganda, ~techlevel.superweapons
@@ -11731,6 +11724,12 @@ leangraptor:
 		Prerequisites: chairport, ~techlevel.high
 	RenderSprites:
 		Image: usaraptor
+	GrantConditionOnPrerequisite@upmigarmor:
+		Condition: upmigarmor
+		Prerequisites: upmigarmor
+	DamageMultiplier@upmigarmor:
+		RequiresCondition: upmigarmor
+		Modifier: 75
 
 leangmig:
 	Inherits: CHMIG
@@ -11758,11 +11757,15 @@ leangaurora:
 		Prerequisites: chairport, ~techlevel.high
 	RenderSprites:
 		Image: usaaurora
+	GrantConditionOnPrerequisite@upmigarmor:
+		Condition: upmigarmor
+		Prerequisites: upmigarmor
+	DamageMultiplier@upmigarmor:
+		RequiresCondition: upmigarmor
+		Modifier: 75
+
 leange1:
 	Inherits: USAE1
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 125
@@ -11770,8 +11773,10 @@ leange1:
 		Prerequisites: barracks
 	RenderSprites:
 		Image: usae1
+
 leange2:
 	Inherits: CHE2
+	Inherits@2: ^GeneralsUSAInfantry
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 125
@@ -11779,22 +11784,20 @@ leange2:
 		Prerequisites: barracks
 	RenderSprites:
 		Image: che2
+
 leange3:
 	Inherits: CHE3
+	Inherits@AP: ^APRocketUpgrade
+	Inherits@2: ^GeneralsUSAInfantry
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
 		Queue: Infantry.LEANG, RAInfantry.LEANG
 	RenderSprites:
 		Image: che3
-	GrantConditionOnPrerequisite@uparmorpiercingrocket:
-		Condition: rocketupgrade
-		Prerequisites: uparmorpiercingrocket
-	FirepowerMultiplier@uparmorpiercingrocket:
-		RequiresCondition: rocketupgrade
-		Modifier: 125
 	RenderSprites:
 		Image: che3
+
 leangpath:
 	Inherits: usapath
 	Buildable:
@@ -11805,11 +11808,13 @@ leangpath:
 
 leanghacker:
 	Inherits: CHHACKER
+	Inherits@2: ^GeneralsUSAInfantry
 	Buildable:
 		Prerequisites: leangbarracks, chpropaganda, ~!selectchinf
 		Queue: Infantry.LEANG, RAInfantry.LEANG
 	RenderSprites:
 		Image: chhacker
+
 leangmob:
 	Inherits: glamob
 	Buildable:
@@ -11819,20 +11824,25 @@ leangmob:
 		Prerequisites: chpropaganda, ~techlevel.medium
 	RenderSprites:
 		Image: glamob
+
 leangkell:
 	Inherits: GLKELL
+	Inherits@2: ^GeneralsUSAInfantry
 	Buildable:
 		Queue: Infantry.LEANG, RAInfantry.LEANG
 		Prerequisites: leangstorm, ~techlevel.high
 	RenderSprites:
 		Image: glkell
+
 leanglotus:
 	Inherits: chlotus
+	Inherits@2: ^GeneralsUSAInfantry
 	Buildable:
 		Queue: Infantry.LEANG, RAInfantry.LEANG
 		Prerequisites: leangsilo, ~techlevel.high
 	RenderSprites:
 		Image: chlotus
+
 leangburton:
 	Inherits: usaburton
 	Buildable:
@@ -11840,6 +11850,7 @@ leangburton:
 		Prerequisites: leangcannon, ~techlevel.high
 	RenderSprites:
 		Image: usaburton
+
 leangharv:
 	Inherits: chharv
 	Buildable:
@@ -11858,14 +11869,16 @@ leangttnk:
 		Queue: Vehicle.LEANG, RAVehicle.LEANG
 	RenderSprites:
 		Image: usattnk
+
 leangpala:
 	Inherits: usapala
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: leangweap, leangupusapala, ~techlevel.medium
+		Prerequisites: leangweap, upusapala, ~techlevel.medium
 		Queue: Vehicle.LEANG, RAVehicle.LEANG
 	RenderSprites:
 		Image: usapala
+
 leangsentry:
 	Inherits: usasentry
 	Buildable:
@@ -11874,6 +11887,7 @@ leangsentry:
 		Queue: Vehicle.LEANG, RAVehicle.LEANG
 	RenderSprites:
 		Image: usasentry
+
 leangavenger:
 	Inherits: usaavenger
 	Buildable:
@@ -11882,6 +11896,7 @@ leangavenger:
 		Queue: Vehicle.LEANG, RAVehicle.LEANG
 	RenderSprites:
 		Image: usaavenger
+
 leangdragon:
 	Inherits: chdragon
 	Buildable:
@@ -11924,6 +11939,7 @@ leangoverlord:
 	DamageMultiplier@usauparmor:
 		RequiresCondition: usauparmor
 		Modifier: 80
+
 leangbggy:
 	Inherits: glbggy
 	Buildable:
@@ -11953,390 +11969,46 @@ leangbiker:
 		Modifier: 90
 
 leangsneakattack:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: General's Promotion Sneak Attack
+	Inherits: upsneakattack
 	Buildable:
-		BuildPaletteOrder: 250
-		BuildDuration: 5000
-		Queue: Defence.LEANG, RADefence.LEANG
-		Description: The Marauder tank was a medium tank
-		Prerequisites: ~disabled #chpropaganda, ~!upsneakattack
-	Valued:
-		Cost: 0
-	RenderSprites:
-		Image: upsneakattackicon
-	ProvidesPrerequisite:
-		Prerequisite: upsneakattack
+		Queue: Promotions.LEANG
+		Prerequisites: ~disabled
 
 leangartybarrage1:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: General's Promotion Artillery Barrage 1
+	Inherits: upartybarrage1
 	Buildable:
-		BuildPaletteOrder: 220
-		BuildDuration: 2000
-		Queue: Defence.LEANG, RADefence.LEANG
-		Description: Unlocks Artillery Barrage
-		Prerequisites: leangcommand, ~!upartybarrage1
-	Valued:
-		Cost: 0
-	RenderSprites:
-		Image: upartybarrage1icon
-	ProvidesPrerequisite:
-		Prerequisite: upartybarrage1
+		Queue: Promotions.LEANG
 
 leangartybarrage2:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: General's Promotion Artillery Barrage 2
+	Inherits: upartybarrage2
 	Buildable:
-		BuildPaletteOrder: 220
-		BuildDuration: 2500
-		Queue: Defence.LEANG, RADefence.LEANG
-		Description: Unlocks Artillery Barrage
-		Prerequisites: leangcommand, ~!upartybarrage2, upartybarrage1
-	Valued:
-		Cost: 0
-	RenderSprites:
-		Image: upartybarrage1icon
-	ProvidesPrerequisite:
-		Prerequisite: upartybarrage2
+		Queue: Promotions.LEANG
 
 leangartybarrage3:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: General's Promotion Artillery Barrage 3
+	Inherits: upartybarrage3
 	Buildable:
-		BuildPaletteOrder: 220
-		BuildDuration: 2500
-		Queue: Defence.LEANG, RADefence.LEANG
-		Description: Unlocks Artillery Barrage
-		Prerequisites: leangcommand, ~!upartybarrage3, upartybarrage2, upartybarrage1
-	Valued:
-		Cost: 0
-	RenderSprites:
-		Image: upartybarrage3icon
-	ProvidesPrerequisite:
-		Prerequisite: upartybarrage3
+		Queue: Promotions.LEANG
 
 leangupusapath:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: General's Promotion Pathfinder
+	Inherits: upusapath
 	Buildable:
-		BuildPaletteOrder: 200
-		BuildDuration: 2000
-		Queue: Defence.LEANG, RADefence.LEANG
-		Description: The Pathfinder elite was a sniper
-		Prerequisites: leangcommand, ~!upusapath, ~techlevel.medium
-	Valued:
-		Cost: 0
-	RenderSprites:
-		Image: usapath
-	ProvidesPrerequisite:
-		Prerequisite: upusapath
+		Queue: Promotions.LEANG
+
 leangupusapala:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: General's Promotion Paladin Tank
+	Inherits: upusapala
 	Buildable:
-		BuildPaletteOrder: 200
-		BuildDuration: 1500
-		Queue: Defence.LEANG, RADefence.LEANG
-		Description: The Marauder tank was a medium tank
-		Prerequisites: leangcommand, ~!upusapala, ~techlevel.medium
-	Valued:
-		Cost: 0
-	RenderSprites:
-		Image: usapala
-	ProvidesPrerequisite:
-		Prerequisite: upusapala
+		Queue: Promotions.LEANG
 
 leangchneutronbomb:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: General's Promotion Neutron Bomb
+	Inherits: upchneutronbomb
 	Buildable:
-		BuildPaletteOrder: 250
-		BuildDuration: 5000
-		Queue: Defence.LEANG, RADefence.LEANG
-		Description: The Marauder tank was a medium tank
-		Prerequisites: chairport, ~!upchneutronbomb
-	Valued:
-		Cost: 0
-	RenderSprites:
-		Image: chneutronbombicon
-	ProvidesPrerequisite:
-		Prerequisite: upchneutronbomb
+		Queue: Promotions.LEANG
+
 leangusagunship:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: General's Promotion Spectre Gunship
+	Inherits: upusagunship
 	Buildable:
-		BuildPaletteOrder: 250
-		BuildDuration: 4000
-		Queue: Defence.LEANG, RADefence.LEANG
-		Description: The Marauder tank was a medium tank
-		Prerequisites: leangairport, ~!upusagunship
-	Valued:
-		Cost: 0
-	RenderSprites:
-		Image: usagunship
-	ProvidesPrerequisite:
-		Prerequisite: upusagunship
-leangmigarmor:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: MiG Armor
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Aircraft.LEANG, RAAircraft.LEANG
-		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
-		Prerequisites: chpropaganda, ~!upmigarmor
-	Valued:
-		Cost: 1000
-	RenderSprites:
-		Image: upmigarmoricon
-	ProvidesPrerequisite:
-		Prerequisite: upmigarmor
+		Queue: Promotions.LEANG
 
-leangbluefire:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Black napalm
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Vehicle.LEANG, RAVehicle.LEANG, Aircraft.LEANG, RAAircraft.LEANG
-		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
-		Prerequisites: leangsilo, ~!upbluefire
-	Valued:
-		Cost: 2000
-	RenderSprites:
-		Image: chblackfireicon
-	ProvidesPrerequisite:
-		Prerequisite: upbluefire
-
-leangchaingun:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Chainguns
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Vehicle.LEANG, RAVehicle.LEANG
-		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
-		Prerequisites: leangweap, ~!upchaingun
-	Valued:
-		Cost: 1500
-	RenderSprites:
-		Image: chchaingunicon
-	ProvidesPrerequisite:
-		Prerequisite: upchaingun
-
-leangnationalism:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Nationalism
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Infantry.LEANG, RAInfantry.LEANG
-		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
-		Prerequisites: leangsilo, ~!upnationalism
-	Valued:
-		Cost: 2000
-	RenderSprites:
-		Image: chnationalismicon
-	ProvidesPrerequisite:
-		Prerequisite: upnationalism
-
-leanguraniumshell:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Uranium shells
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Vehicle.LEANG, RAVehicle.LEANG
-		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
-		Prerequisites: leangsilo, ~!upuraniumshell
-	Valued:
-		Cost: 2500
-	RenderSprites:
-		Image: churaniumshellicon
-	ProvidesPrerequisite:
-		Prerequisite: upuraniumshell
-
-leangupgrenade:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Flash-bang grenades
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Infantry.LEANG, RAInfantry.LEANG
-		Description: Once purchased, it allows rangers to switch from using a rifle, to using flash-bang grenades. They are highly effective against groups of infantry.
-		Prerequisites: leangbarracks, ~!usaupgrenade
-	Valued:
-		Cost: 800
-	RenderSprites:
-		Image: usagrenadeicon
-	ProvidesPrerequisite:
-		Prerequisite: usaupgrenade
-
-leangupdronegun:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Sentry Drone Gun
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Vehicle.LEANG, RAVehicle.LEANG
-		Description: The Sentry drone gun is a USA upgrade for the sentry drone, equipping it with a 20mm autocannon.
-		Prerequisites: leangweap, ~!usaupdronegun
-	Valued:
-		Cost: 1000
-	RenderSprites:
-		Image: usadronegunicon
-	ProvidesPrerequisite:
-		Prerequisite: usaupdronegun
-leangupchemsuit:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Chemical Suit
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Infantry.LEANG, RAInfantry.LEANG
-		Description: Chemical suits is an upgrade that drastically reduces damage taken from toxins and radiation for American infantry units. When equipped with Chemical Suits,
-		Prerequisites: leangcannon, ~!usaupchemsuit
-	Valued:
-		Cost: 1000
-	RenderSprites:
-		Image: usachemsuiticon
-	ProvidesPrerequisite:
-		Prerequisite: usaupchemsuit
-leanguparmor:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Composite armour
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Vehicle.LEANG, RAVehicle.LEANG
-		Description: Composite armor boosts the armor of all tank units on the battlefield.
-		Prerequisites: leangcannon, ~!usauparmor
-	Valued:
-		Cost: 2000
-	RenderSprites:
-		Image: usaarmoricon
-	ProvidesPrerequisite:
-		Prerequisite: usauparmor
-
-leanguplasmiss:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Laser-Guided Missiles
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Aircraft.LEANG, RAAircraft.LEANG
-		Description: Laser-Guided Missiles are an upgraded version of the standard missile used by USA aircraft. With this upgrade, the airplanes aimed much better, increasing the damage done to enemy planes and tanks with 25%.
-		Prerequisites: chairport, ~!usauplasmiss
-	Valued:
-		Cost: 1500
-	RenderSprites:
-		Image: usalasmissicon
-	ProvidesPrerequisite:
-		Prerequisite: usauplasmiss
-
-leangupcounter:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Countermeasures
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Aircraft.LEANG, RAAircraft.LEANG
-		Description: Gives all USA aircraft, including those used to deliver generals powers, access to countermeasures.
-		Prerequisites: chairport, ~!usaupcounter
-	Valued:
-		Cost: 1000
-	RenderSprites:
-		Image: usacountericon
-	ProvidesPrerequisite:
-		Prerequisite: usaupcounter
-leanguptraining:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Advanced training
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Infantry.LEANG, RAInfantry.LEANG
-		Description: Gives all USA aircraft, including those used to deliver generals powers, access to countermeasures.
-		Prerequisites: leangcannon, ~!usauptraining
-	Valued:
-		Cost: 2000
-	RenderSprites:
-		Image: usatrainingicon
-	ProvidesPrerequisite:
-		Prerequisite: usauptraining
-
-leangupdronearmor:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Drone armor
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Vehicle.LEANG, RAVehicle.LEANG
-		Description: Gives all USA aircraft, including those used to deliver generals powers, access to countermeasures.
-		Prerequisites: leangcannon, ~!usaupdronearmor
-	Valued:
-		Cost: 2000
-	RenderSprites:
-		Image: usadronearmoricon
-	ProvidesPrerequisite:
-		Prerequisite: usaupdronearmor
-
-leangupbuggyammo:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Buggy Ammo
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Vehicle.LEANG, RAVehicle.LEANG
-		Description: Rocket Buggy gives extra rockets.
-		Prerequisites: leangstorm, ~!upbuggyammo
-	Valued:
-		Cost: 2000
-	RenderSprites:
-		Image: glbuggyammoicon
-	ProvidesPrerequisite:
-		Prerequisite: upbuggyammo
-
-leanguparmorpiercingrocket:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Armor-piercing Rockets
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Vehicle.LEANG, RAVehicle.LEANG
-		Description: All GLA rocket units attack with 25% more damage.
-		Prerequisites: leangstorm, ~!uparmorpiercingrocket
-	Valued:
-		Cost: 2000
-	RenderSprites:
-		Image: glaprocketsicon
-	ProvidesPrerequisite:
-		Prerequisite: uparmorpiercingrocket
-
-leanguparmthemob:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Arm the mob
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Infantry.LEANG, RAInfantry.LEANG
-		Description: Arm Angry Mob members with assault rifles.
-		Prerequisites: leangstorm, ~!uparmthemob
-	Valued:
-		Cost: 1000
-	RenderSprites:
-		Image: glarmthemobicon
-	ProvidesPrerequisite:
-		Prerequisite: upscorpionrocket
 leangsyrd:
 	Inherits: RA1SYRD
 	Buildable:
