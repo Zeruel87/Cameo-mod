@@ -42,6 +42,7 @@ HookNullWeapon:
 	Warhead@1Dam: TargetDamage
 
 GLAnthraxGreen:
+	InvalidTargets: Water
 	Warhead@1Cloud: SpawnSmokeParticle
 		Count: 1
 		Duration: 360
@@ -51,6 +52,7 @@ GLAnthraxGreen:
 		Sequences: green_toxins_small
 		Palette: toxincloud
 		Weapon: AnthraxCloud
+		InvalidTargets: Water
 
 AnthraxCloud:
 	Projectile: InstantExplode
@@ -126,6 +128,7 @@ CHFlameRadiation:
 		Sequences: idle
 		Palette: toxincloud
 		Weapon: CHFlame
+		InvalidTargets: Water
 
 CHFlame:
 	Projectile: InstantExplode
@@ -375,7 +378,7 @@ GLWorkerHealBuilding:
 
 GLTractorToxin:
 	Inherits@Contaminated: TractorGLAnthraxGreen
-	ValidTargets: Ground, Water
+	InvalidTargets: Structure, Water, ToxinImmune
 	ReloadDelay: 60
 	Range: 3c0
 	Report: flamer2.aud, firebl3.aud, flmthrow.aud, DSSLOP.wav
@@ -458,7 +461,7 @@ GLTractorContaminateGamma:
 
 GLRebelToxin:
 	Inherits@Contaminated: GLAnthraxPurple
-	ValidTargets: Ground, Water
+	InvalidTargets: Structure, Water, ToxinImmune
 	ReloadDelay: 30
 	Burst: 2
 	BurstDelays: 5
@@ -1164,6 +1167,24 @@ CHHelixMG:
 			Wood: 50
 			Concrete: 6
 
+CHHelixNuke:
+	Inherits: RA2KirovBomb
+	Warhead@1Dam: SpreadDamage
+		Spread: 1c0
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@3Eff: CreateEffect
+		Explosions: nuke
+		ImpactSounds: kaboom22.aud
+		ImpactActors: false
+	Warhead@4EffWater: CreateEffect
+		Explosions: nuke
+		ImpactSounds: kaboom22.aud
+	Warhead@3Radiation: CreateTintedCells
+		Spread: 1c512
+		Falloff: 100, 66, 33
+		Level: 500
+		LayerName: genradiation
+
 #####################################################
 # Battlemaster Weapons
 #####################################################
@@ -1193,14 +1214,20 @@ CHAtomicWeapon:
 		Level: 500
 		LayerName: genradiation
 
-CHAtomicWeapon2:
+CHAtomicTankExplode:
 	Inherits: CHAtomicWeapon
-	Warhead@1Dam_impact: SpreadDamage
-		Spread: 128
+	Warhead@1Dam: SpreadDamage
+		Spread: 256
 		Damage: 3000
 	Warhead@3Radiation: CreateTintedCells
-		Spread: 0c512
+		Spread: 1c0
+		Falloff: 100, 100
 		Level: 250
+
+CHAtomicTankExplode2:
+	Inherits: CHAtomicTankExplode
+	Warhead@1Dam: SpreadDamage
+		ValidStances: Enemy, Neutral
 
 CHNukeCannon:
 	Inherits: ArtilleryShell
@@ -1365,7 +1392,6 @@ CHBoatFlamerBlue:
 
 CHMIGWeapon:
 	Inherits: ^MissileWeapon
-	Inherits@Rad: CHFlameRadiation
 	Burst: 2
 	ReloadDelay: 30
 	Projectile: Bullet
@@ -1387,7 +1413,7 @@ CHMIGWeapon:
 		ImpactActors: false
 	Warhead@Shrapnel: FireShrapnel
 		Weapon: CHInfernoCannonC
-		Amount: 5
+		Amount: 3
 
 CHMIGWeaponBlue:
 	Inherits: CHMIGWeapon
@@ -1406,11 +1432,21 @@ CHMIGWeaponBlue:
 	Warhead@Shrapnel: FireShrapnel
 		Weapon: CHInfernoCannonCBlue
 
+CHMIGWeapon2:
+	Inherits: CHMIGWeapon
+	Warhead@1Dam: SpreadDamage
+		Damage: 5000
+	Warhead@3Eff: CreateEffect
+		Explosions: small_frag
+		ImpactSounds: kaboom25.aud
+	-Warhead@Shrapnel:
+
 CHMIGNuke:
 	Inherits@1: CHAtomicWeapon
 	Inherits@2: ^MissileWeapon
 	ReloadDelay: 30
 	Range: 10c0
+	TargetActorCenter: true
 	Projectile: Missile
 		RangeLimit: 12c0
 	Warhead@1Dam: SpreadDamage
@@ -1481,7 +1517,8 @@ CHHackerDisable:
 	Report: ucapture.aud
 	Range: 6c0
 	TargetActorCenter: true
-	ValidTargets: Building, Structure
+	ValidTargets: Defense
+	InvalidTargets: Mine
 	Projectile: LaserZap
 		Width: 0c43
 		UsePlayerColor: True
@@ -1502,11 +1539,18 @@ CHLotusDisable:
 		Range: 0c768
 		ValidTargets: Vehicle
 
+CHSuperLotusDisable:
+	Inherits: CHHackerDisable
+	ReloadDelay: 200
+	Warhead@2Con: GrantExternalCondition
+		Duration: 400
+
 CHLotusControl:
 	ReloadDelay: 100
 	Inherits: RA2MindControl
 	Report: ucapture.aud
 	ValidTargets: MindControlStructure
+	InvalidTargets: Defense
 
 CHInfernoCannon:
 	Inherits: ArtilleryShell
@@ -1673,15 +1717,21 @@ USARangerGrenade:
 
 USAMissileDefenderAG:
 	Inherits: ^AntiGroundMissile
-	ReloadDelay: 50
+	ReloadDelay: 25
 	Projectile: Missile
 		RangeLimit: 9c0
 	Report: imisweaa.wav, imisweab.wav, imisweac.wav
+	ValidTargets: Vehicle, Ship
+
+USAMissileDefenderStructure:
+	Inherits: USAMissileDefenderAG
+	ReloadDelay: 75
+	ValidTargets: Structure, Infantry
 
 USAMissileDefenderAA:
 	Inherits: ^AntiAirMissile
 	Range: 6c512
-	ReloadDelay: 50
+	ReloadDelay: 25
 	Projectile: Missile
 		RangeLimit: 9c0
 	Report: imisweaa.wav, imisweab.wav, imisweac.wav
@@ -1695,9 +1745,9 @@ USAMissileDefenderLaser:
 	ValidTargets: Vehicle, Air
 	InvalidTargets: Structure
 	Range: 6c512
-	ReloadDelay: 30
-	Burst: 5
-	BurstDelays: 5
+	ReloadDelay: 45
+	Burst: 6
+	BurstDelays: 8
 	TargetActorCenter: true
 	Projectile: LaserZap
 		Width: 36
@@ -1758,7 +1808,7 @@ USAEMPPatriotMissAG:
 	Warhead@2Con: GrantExternalCondition
 		Condition: TSNeutronBomb
 		ValidTargets: Vehicle
-		Duration: 15
+		Duration: 60
 		Range: 0c768
 		AffectsParent: true
 
@@ -1772,7 +1822,7 @@ USAEMPPatriotMissAA:
 	Warhead@2Con: GrantExternalCondition
 		Condition: TSNeutronBomb
 		ValidTargets: Air
-		Duration: 15
+		Duration: 60
 		Range: 0c768
 
 USABurtonMG:
@@ -1794,6 +1844,7 @@ USABurtonAttach:
 CHTankHunterAttach1:
 	Inherits: IvanAttach
 	ValidTargets: Structure, Wall
+	InvalidTargets: ivanattached
 	Range: 2c0
 	Warhead@1: AttachDelayedWeapon
 		Weapon: CHTankHunterBomb
@@ -2035,6 +2086,7 @@ USAMicrowaveDisable:
 	Range: 7c0
 	TargetActorCenter: true
 	ValidTargets: Defense
+	InvalidTargets: Mine
 	Projectile: LaserZap
 		Width: 0c43
 		UsePlayerColor: True
@@ -2609,7 +2661,6 @@ USATomahawk:
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: ex_terr_flash
-		ImpactSounds: gexpmina.wav, gexpminb.wav
 
 USAThomahawk:
 	ReloadDelay: 150

@@ -113,13 +113,20 @@
 	GrantConditionOnPrerequisite@upatomictank:
 		Condition: upatomictank
 		Prerequisites: upatomictank
+	GrantConditionOnPrerequisite@upisotopestability:
+		Condition: upisotopestability
+		Prerequisites: upisotopestability
 	SpeedMultiplier@upatomictank:
 		RequiresCondition: upatomictank
 		Modifier: 125
 	Explodes@upatomictank:
-		Weapon: CHAtomicWeapon2
-		EmptyWeapon: CHAtomicWeapon2
-		RequiresCondition: upatomictank && !chronobeamed
+		Weapon: CHAtomicTankExplode
+		EmptyWeapon: CHAtomicTankExplode
+		RequiresCondition: upatomictank && !chronobeamed && !upisotopestability
+	Explodes@upatomictank2:
+		Weapon: CHAtomicTankExplode2
+		EmptyWeapon: CHAtomicTankExplode2
+		RequiresCondition: upatomictank && !chronobeamed && upisotopestability
 
 ^ChaingunUpgrade:
 	GrantConditionOnPrerequisite@upchaingun:
@@ -1292,6 +1299,7 @@ glstorm:
 	AmmoPool:
 		Ammo: 9
 		AmmoCondition: ammo
+		PipCount: 0
 	ReloadAmmoPool:
 		Count: 9
 		Delay: 100
@@ -1702,7 +1710,7 @@ glamob:
 		BuildPaletteOrder: 30
 		BuildDuration: 800
 		Queue: Infantry.GLA, RAInfantry.GLA
-		Description: Large armed crowd, armed with pistols and Molotovs.\n  Strong vs Buildings, Infantry\n  Weak vs Vehicles, Aircraft.
+		Description: Large armed crowd, armed with pistols and Molotovs.\n  Strong vs Buildings, Infantry\n  Weak vs Vehicles, Aircraft
 		Prerequisites: glpalace, ~techlevel.medium
 	Tooltip:
 		Name: Angry Mob
@@ -1713,12 +1721,13 @@ glamob:
 	Health:
 		HP: 100
 	Mobile:
+		Speed: 50
 		Locomotor: foot
+	Guardable:
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
-		Bounds: 32,32
-		DecorationBounds: 32,32
+		Bounds: 48,48
 	AttackMove:
 	DrawLineToTarget:
 	MobSpawnerMaster:
@@ -1758,6 +1767,7 @@ glamob:
 	-Captures@DRIVER_KILL:
 	-TakeCover:
 	-ActorLostNotification:
+	RejectsOrders:
 	Valued:
 		Cost: 160
 	Tooltip:
@@ -1766,7 +1776,7 @@ glamob:
 	Health:
 		HP: 5000
 	Mobile:
-		Speed: 30
+		Speed: 40
 	MobSpawnerSlave:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
@@ -3056,6 +3066,7 @@ glradar:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@junk: ^JunkRepair
 	Buildable:
+		BuildLimit: 1
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 1
 		Prerequisites: glweap, ~techlevel.low
@@ -3102,6 +3113,22 @@ glradar:
 	Explodes:
 		Weapon: GLRadarvanHuskCluster
 		EmptyWeapon: GLRadarvanHuskCluster
+	SpawnActorPower@scan:
+		PauseOnCondition: disabled
+		OrderName: SovietSpyPlane
+		Icon: radarvan
+		ChargeInterval: 3000
+		Description: Radar Van Scan
+		LongDesc: Reveals an area of the map\nand cloaked enemy units.
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		EndChargeSpeechNotification: SpyPlaneReady
+		Actor: camera.radarvan
+		LifeTime: 250
+		DeploySound: vradscan.wav
+		LaunchSound: vradscan.wav
+		IncomingSound: vradscan.wav
+		SupportPowerPaletteOrder: 10
 
 glquad:
 	Inherits: ^Vehicle
@@ -3813,6 +3840,22 @@ upantraxgamma:
 	ProvidesPrerequisite:
 		Prerequisite: upantraxgamma
 
+upradarvanscan:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Radar Van Scan
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: MarketUpgrades.GLA
+		Description: Allows Radar Vans to reveal areas of the map.
+		Prerequisites: glblackmarket, ~!upradarvanscan
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: glradaricon
+	ProvidesPrerequisite:
+		Prerequisite: upradarvanscan
+
 upmaraunder:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -4118,14 +4161,9 @@ glgunboat:
 		RequiresCondition: !selectglatoxin && !selectglademo
 	ProductionQueue:
 		Type: Gunboat.GLA
-		Group: Defence
-		LowPowerModifier: 200
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
+		Group: Aircraft
+		QueueLimit: 1
+		ItemLimit: 1
 		DisplayOrder: 0
 	GrantConditionOnProduction@selectglatoxin:
 		Condition: selectglatoxin
@@ -4178,6 +4216,7 @@ pscglgunboat2:
 	AlwaysVisible:
 	KillsSelf:
 		RemoveInstead: true
+
 GLTRUK:
 	Inherits: TRUCK
 	Buildable:
@@ -4277,6 +4316,8 @@ selectchatomic:
 		Prerequisite: upuraniumshell
 	ProvidesPrerequisite@5:
 		Prerequisite: upnukecann
+	ProvidesPrerequisite@6:
+		Prerequisite: upemergencyrepair1
 
 
 ##################################################
@@ -4407,6 +4448,47 @@ chcommand:
 	Voiced:
 		VoiceSet: PRCCommandCenterVoice
 	Turreted:
+	CashHackPower:
+		OrderName: cashhack
+		Icon: glgpscram #todo
+		ChargeInterval: 4500
+		Minimum: 500
+		Maximum: 2000
+		Prerequisites: upcashhack
+		Description: Cash Hack
+		LongDesc: Steal up to $2000 credits from a selected enemy refinery.
+		OnFireSound: scashhac.aud
+		Notification: CreditsStolen
+		DisplayTimerStances: Ally
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		Cursor: ability
+		PauseOnCondition: lowpower
+	ParatroopersPower@tankdrop:
+		PauseOnCondition: lowpower
+		Prerequisites: uptankdrop
+		OrderName: TankDrop
+		Icon: usaparadrop1 #todo
+		ChargeInterval: 5000
+		Description: Tank Drop
+		LongDesc: Cargo planes drop Battlemaster tanks\nanywhere on the map.
+		DropItems: chbattle, chbattle, chbattle
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		UnitType: usabomber
+		SquadSize: 1
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		StartFullyCharged: true
 	DetonateWeaponPower@ArtilleryBarrage:
 		OrderName: CHArtilleryBarrage1
 		PauseOnCondition: lowpower
@@ -4618,10 +4700,7 @@ chgattling:
 		Prerequisites: chbarracks, ~techlevel.low, ~chselected
 		Queue: Defence.CHINA, RADefence.CHINA
 		BuildDurationModifier: 40
-		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
-	RequiresBuildableArea:
-		AreaTypes: building
-		Adjacent: 8
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Infantry\n  Weak vs Vehicles
 	Selectable:
 		Bounds: 24,24
 	SelectionDecorations:
@@ -4950,7 +5029,7 @@ chpropaganda:
 		Description: Frenzy
 		LongDesc: Add Firepower a group of units\nfor 30 seconds.
 		Range: 2
-		Duration: 750
+		Duration: 500
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		#BeginChargeSpeechNotification: IronCurtainCharging
@@ -4966,7 +5045,7 @@ chpropaganda:
 		ChargeInterval: 3000
 		Description: Frenzy
 		LongDesc: Add Firepower a group of units\nfor 30 seconds.
-		Range: 2
+		Range: 3
 		Duration: 750
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -4983,8 +5062,8 @@ chpropaganda:
 		ChargeInterval: 3000
 		Description: Frenzy
 		LongDesc: Add Firepower a group of units\nfor 30 seconds.
-		Range: 2
-		Duration: 750
+		Range: 4
+		Duration: 1000
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		#BeginChargeSpeechNotification: IronCurtainCharging
@@ -5227,8 +5306,8 @@ CHE1:
 		BuildPaletteOrder: 20
 		BuildDuration: 125
 		Queue: Infantry.CHINA, RAInfantry.CHINA
-		Description: General-purpose infantry armed with a rifle.
-		Prerequisites: barracks, ~!selectchinf
+		Description: General-purpose infantry armed with a rifle.\n  Strong vs Infantry\n  Weak vs Vehicles
+		Prerequisites: barracks
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -5275,7 +5354,7 @@ CHE2:
 		BuildPaletteOrder: 20
 		BuildDuration: 125
 		Queue: Infantry.CHINA, RAInfantry.CHINA
-		Description: General-purpose infantry armed with a rifle.
+		Description: General-purpose infantry armed with a minigun.\nCan attack aircraft.\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
 		Prerequisites: barracks, ~selectchinf
 	Valued:
 		Cost: 350
@@ -5289,7 +5368,7 @@ CHE2:
 		Name: garrisoned
 		Weapon: CHGattlingTurret
 	ProducibleWithLevel:
-		InitialLevels: 2
+		InitialLevels: 4
 	ProducibleWithLevel@2:
 		Prerequisites: selectchinf
 		InitialLevels: 1
@@ -5482,6 +5561,10 @@ chlotus:
 		Cost: 1500
 	Tooltip:
 		Name: Black Lotus
+		RequiresCondition: !selectchinf
+	Tooltip@2:
+		Name: Super Lotus
+		RequiresCondition: selectchinf
 	Buildable:
 		BuildLimit: 1
 		BuildPaletteOrder: 70
@@ -5494,21 +5577,24 @@ chlotus:
 		HP: 20000
 	AutoTarget:
 		ScanRadius: 4
-	Armament@PRIMARY:							##########
+	Armament@PRIMARY:
 		Weapon: CHLotusDisable
-	Armament@CONTROL:							##########
+	Armament@SUPER:
+		Weapon: CHSuperLotusDisable
+		RequiresCondition: selectchinf
+	Armament@CONTROL:
 		Weapon: CHLotusControl
 		Name: control
 	MindController:
 		ArmamentNames: control
 		Capacity: 1
-	Armament@GARRISONED:						##########
+	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: CHLotusDisable
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	Parachutable:
-	Inherits@EXT: ^ExternalConditions					##########
+	Inherits@EXT: ^ExternalConditions
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
 	TakeCover:
@@ -5518,6 +5604,20 @@ chlotus:
 		DefaultAttackSequence: shoot
 	Voiced:
 		VoiceSet: CHLotusVoice
+	Infiltrates:
+		Types: ThiefInfiltrate
+		Voice: Attack
+		EnterBehaviour: Exit
+		Notification: BuildingInfiltrated
+	ReloadDelayMultiplier@superlotus:
+		Modifier: 75
+		RequiresCondition: selectchinf
+	RangeMultiplier@superlotus:
+		Modifier: 150
+		RequiresCondition: selectchinf
+	GrantConditionOnPrerequisite@selectchinf:
+		Condition: selectchinf
+		Prerequisites: selectchinf
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 110
 		Prerequisites: selectchtanks
@@ -5601,6 +5701,9 @@ chbattle:
 	ProducibleWithLevel:
 		Prerequisites: selectchtanks
 		InitialLevels: 1
+	ProducibleWithLevel@2:
+		Prerequisites: upbattlemaster
+		InitialLevels: 4
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 90
 		Prerequisites: selectchtanks
@@ -6133,7 +6236,7 @@ chharv:
 	Tooltip:
 		Name: Supply Truck
 	Harvester:
-		Capacity: 8
+		Capacity: 18
 	Health:
 		HP: 30000
 	Armor:
@@ -6435,8 +6538,8 @@ chnukecann:
 		Prerequisites: upcharty
 		InitialLevels: 1
 	Explodes:
-		Weapon: CHAtomicWeapon2
-		EmptyWeapon: CHAtomicWeapon2
+		Weapon: CHAtomicTankExplode
+		EmptyWeapon: CHAtomicTankExplode
 		RequiresCondition: !chronobeamed
 	GrantConditionOnPrerequisite@upneutronshell:
 		Condition: upneutronshell
@@ -6485,6 +6588,23 @@ upcharty:
 	ProvidesPrerequisite:
 		Prerequisite: upcharty
 
+upbattlemaster:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: General's Promotion Battlemaster Training
+	Buildable:
+		BuildPaletteOrder: 200
+		BuildDuration: 1500
+		Queue: Promotions.CHINA
+		Description: Trains Battlemasters as Rank 4.
+		Prerequisites: chcommand, ~selectchtanks, !upbattlemaster
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: chbattle
+	ProvidesPrerequisite:
+		Prerequisite: upbattlemaster
+
 upnukecann:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -6501,6 +6621,40 @@ upnukecann:
 		Image: chnukecann
 	ProvidesPrerequisite:
 		Prerequisite: upnukecann
+
+upcashhack:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: General's Promotion Cash Hack
+	Buildable:
+		BuildPaletteOrder: 200
+		BuildDuration: 4000
+		Queue: Promotions.CHINA
+		Description: Enables Cash Hacks.
+		Prerequisites: !upcashhack, ~!selectchtanks
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: upgpscramicon #todo
+	ProvidesPrerequisite:
+		Prerequisite: upcashhack
+
+uptankdrop:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: General's Promotion Tank Drop
+	Buildable:
+		BuildPaletteOrder: 200
+		BuildDuration: 4000
+		Queue: Promotions.CHINA
+		Description: Enables Tank Drops.
+		Prerequisites: !uptankdrop, ~selectchtanks
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: chbattle #todo
+	ProvidesPrerequisite:
+		Prerequisite: uptankdrop
 
 upartybarrage1:
 	Inherits: ^upgrade.template
@@ -6611,7 +6765,7 @@ upchaingun:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: VehicleUpgrades.CHINA
-		Description: Increases firing rate of units using Gattling weapons.
+		Description: Increases firing rate of units using Gatling weapons.
 		Prerequisites: chweap, ~!upchaingun
 	Valued:
 		Cost: 1500
@@ -6673,6 +6827,22 @@ upatomictank:
 		Image: chnuketankicon
 	ProvidesPrerequisite:
 		Prerequisite: upatomictank
+
+upisotopestability:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Isotope Stability
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: PropagandaUpgrades.CHINA
+		Description: Nuclear tank explosions do not damage friendly units.
+		Prerequisites: chpropaganda, ~upisotopestability
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: chnuketankicon
+	ProvidesPrerequisite:
+		Prerequisite: isotopestability
 
 upbluefire:
 	Inherits: ^upgrade.template
@@ -6749,7 +6919,7 @@ upsubliminal:
 		BuildPaletteOrder: 200
 		Queue: PropagandaUpgrades.CHINA
 		Description: Increases effectiveness of propaganda.
-		Prerequisites: chweap, ~!upsubliminal
+		Prerequisites: chpropaganda, ~!upsubliminal
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -6768,8 +6938,8 @@ upmignuke:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: AirUpgrades.CHINA
-		Description: Allows production of the Tactical Nuke MiG.
-		Prerequisites: chpropaganda, chsilo, ~!upmignuke, ~selectchatomic
+		Description: Allows MiGs to use nuclear missiles.
+		Prerequisites: chpropaganda, ~!upmignuke, ~selectchatomic
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -6784,7 +6954,7 @@ CHMIG:
 	Buildable:
 		Queue: Aircraft.CHINA, RAAircraft.CHINA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
-		Prerequisites: chairport, ~techlevel.medium, ~!upmignuke
+		Prerequisites: chairport, ~techlevel.medium, ~!selectchatomic
 		Description: Fighter armed with napalm missiles.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
 	Valued:
 		Cost: 1200
@@ -6884,8 +7054,8 @@ CHMIG2:
 	Buildable:
 		Queue: Aircraft.CHINA, RAAircraft.CHINA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
-		Prerequisites: chairport, ~techlevel.medium, ~selectchatomic, ~upmignuke
-		Description: Fighter armed with nuclear missiles.\n  Strong vs ground targets\n  Weak vs Aircraft
+		Prerequisites: chairport, ~techlevel.medium, ~selectchatomic
+		Description: Fighter jet, can be upgraded with nuclear missiles.\n  Strong vs ground targets\n  Weak vs Aircraft
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -6902,10 +7072,17 @@ CHMIG2:
 		Range: 11c0
 		Type: GroundPosition
 	Armament@1:
+		Weapon: CHMIGWeapon2
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+		RequiresCondition: !upmignuke
+	Armament@2:
 		Weapon: CHMIGNuke
 		LocalOffset: 0,-640,0, 0,640,0
 		LocalYaw: -40, 24
 		PauseOnCondition: !ammo
+		RequiresCondition: upmignuke
 	AttackAircraft:
 		FacingTolerance: 20
 		PersistentTargeting: false
@@ -6924,6 +7101,10 @@ CHMIG2:
 		Ammo: 2
 		PipCount: 2
 		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 30
+		Count: 2
+		RequiresCondition: !upmignuke
 	Selectable:
 		Bounds: 36,28,0,2
 		DecorationBounds: 40,29,0,1
@@ -6945,6 +7126,9 @@ CHMIG2:
 	DamageMultiplier@upmigarmor:
 		RequiresCondition: upmigarmor
 		Modifier: 75
+	GrantConditionOnPrerequisite@upmignuke:
+		Condition: upmignuke
+		Prerequisites: upmignuke
 	RenderSprites:
 		Image: chmig
 
@@ -7097,10 +7281,19 @@ chhelix:
 		Weapon: RA2KirovBomb
 		LocalOffset: 85,-213,-85, 85,213,-85
 		MuzzleSequence: muzzle
-		RequiresCondition: bombaddon
+		RequiresCondition: bombaddon && !selectchatomic
+	Armament@NUKE:
+		Name: secondary
+		Weapon: CHHelixNuke
+		LocalOffset: 85,-213,-85, 85,213,-85
+		MuzzleSequence: muzzle
+		RequiresCondition: bombaddon && selectchatomic
 	ReloadDelayMultiplier@BUNKER:
 		Modifier: 300
 		RequiresCondition: bombaddon
+	GrantConditionOnPrerequisite@selectchatomic:
+		Condition: selectchatomic
+		Prerequisites: selectchatomic
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 110
 		Prerequisites: selectchtanks
@@ -7214,7 +7407,7 @@ chflameboat:
 	Valued:
 		Cost: 800
 	Tooltip:
-		Name: Flame Boar
+		Name: Flame Boat
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -7571,20 +7764,12 @@ USAE1:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
 		Weapon: USARangerMG
-		RequiresCondition: !deployed
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: USARangerMGGarrison
 	Armament@GRENADE:
 		Weapon: USARangerGrenade
-		RequiresCondition: deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		UndeployOnMove: false
-		RequiresCondition: !parachute && usaupgrenade
-		PauseOnCondition: frozen
-		Voice: Move
+		RequiresCondition: usaupgrenade
 	GrantConditionOnPrerequisite@usaupgrenade:
 		Condition: usaupgrenade
 		Prerequisites: usaupgrenade
@@ -7598,18 +7783,6 @@ USAE1:
 		Armaments: primary
 	Voiced:
 		VoiceSet: USARangerVoice
-	WithTextDecoration@GRENADE:
-		Text: G
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
-		RequiresCondition: deployed
-	WithTextDecoration@MG:
-		Text: M
-		ReferencePoint: Bottom, Left
-		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
-		RequiresCondition: undeployed
 	RenderSprites:
 		PlayerPalette: ra2unithack
 	WithDeathAnimation:
@@ -7636,17 +7809,21 @@ USAE3:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
 		Queue: Infantry.USA, RAInfantry.USA
-		Description: Anti-tank/anti-aircraft infantry.\nCan deploy to lock on mobile targets with a laser.\n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
+		Description: Anti-tank/anti-aircraft infantry.\nHas to lock on to mobile targets before attacking.\n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
 	Armament@PRIMARY:
 		Weapon: USAMissileDefenderAG
 		LocalOffset: 256,43,341
 		FireDelay: 5
-		PauseOnCondition: deployed && !lockon
+		PauseOnCondition: !lockon
+	Armament@AntiStructure:
+		Weapon: USAMissileDefenderStructure
+		LocalOffset: 256,43,341
+		FireDelay: 5
 	Armament@AA:
 		Weapon: USAMissileDefenderAA
 		LocalOffset: 256,43,341
 		FireDelay: 5
-		PauseOnCondition: deployed && !lockon
+		PauseOnCondition: !lockon
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: USAMissileDefenderGarrisoned
@@ -7654,27 +7831,16 @@ USAE3:
 		Name: laser
 		Weapon: USAMissileDefenderLaser
 		LocalOffset: 256,43,341
-		RequiresCondition: deployed
 	AttackFrontal:
 		Armaments: primary, secondary, laser
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		UndeployOnMove: false
-		RequiresCondition: !parachute
-		PauseOnCondition: frozen
-		Voice: Move
 	GrantConditionOnAttack@laser:
 		Condition: lockon
 		ArmamentNames: laser
-		RequiredShotsPerInstance: 5
+		RequiredShotsPerInstance: 6
 		MaximumInstances: 1
 		RevokeDelay: 120
 		RevokeAll: true
 		RevokeOnNewTarget: true
-	ReloadDelayMultiplier@laser:
-		Modifier: 50
-		RequiresCondition: lockon
 	Voiced:
 		VoiceSet: MissileDefenderVoice
 
@@ -8720,6 +8886,22 @@ usacommand:
 	ProvidesPrerequisite@3h:
 		Prerequisite: usaholdtheline
 		RequiresCondition: usaholdthelinex
+	SpawnActorPower@spysat:
+		PauseOnCondition: lowpower
+		OrderName: SovietSpyPlane
+		Icon: gps
+		ChargeInterval: 3000
+		Description: Spy Satellite
+		LongDesc: Reveals an area of the map\nand cloaked enemy units.
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		EndChargeSpeechNotification: SpyPlaneReady
+		Actor: camera.spysat
+		LifeTime: 250
+		DeploySound: sspysate.aud
+		LaunchSound: sspysate.aud
+		IncomingSound: sspysate.aud
+		SupportPowerPaletteOrder: 10
 	SpawnActorPower@spydrone:
 		PauseOnCondition: lowpower
 		Icon: usaspydrone
@@ -9068,9 +9250,6 @@ usalasertur:
 		Queue: Defence.USA, RADefence.USA
 		BuildDurationModifier: 40
 		Description: All-purpose defensive structure.\nRequires power to operate.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
-	RequiresBuildableArea:
-		AreaTypes: building
-		Adjacent: 8
 	Selectable:
 		Bounds: 24,24
 	SelectionDecorations:
@@ -9891,9 +10070,7 @@ usaspydronepower:
 	-Voiced:
 	-GainsExperience:
 	-MapEditorData:
-	-Selectable:
 	RejectsOrders:
-	Interactable:
 	Health:
 		HP: 10000
 	-SpawnActorOnDeath:
