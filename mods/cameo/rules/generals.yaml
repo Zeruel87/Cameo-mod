@@ -615,7 +615,7 @@ GLAMCV:
 		Name: Mobile Construction Vehicle (GLA)
 	Buildable:
 		BuildPaletteOrder: 200
-		Prerequisites: glpalace, ~techlevel.high
+		Prerequisites: glpalace, ~techlevel.high, ~glaselected
 		Queue: Building.GLA, RABuilding.GLA
 		Description: Builds structures and provides radar.
 	Selectable:
@@ -790,11 +790,9 @@ glcommand:
 		OrderName: GLAmbush1
 		Prerequisites: uprebelambush1, !uprebelambush2
 		Cursor: ability
-		PauseOnCondition: lowpower
 		Icon: glambush1
 		Description: Ambush
 		LongDesc: Spawns a small Rebel squad.
-		InsufficientPowerSpeechNotification: InsufficientPower
 		IncomingSpeechNotification: EnemyUnitsApproaching
 		SelectTargetSpeechNotification: SelectTarget
 		DisplayRadarPing: True
@@ -813,11 +811,9 @@ glcommand:
 		OrderName: GLAmbush2
 		Prerequisites: uprebelambush2, !uprebelambush3
 		Cursor: ability
-		PauseOnCondition: lowpower
 		Icon: glambush2
 		Description: Ambush
 		LongDesc: Spawns a medium Rebel squad.
-		InsufficientPowerSpeechNotification: InsufficientPower
 		IncomingSpeechNotification: EnemyUnitsApproaching
 		SelectTargetSpeechNotification: SelectTarget
 		DisplayRadarPing: True
@@ -836,11 +832,9 @@ glcommand:
 		OrderName: GLAmbush3
 		Prerequisites: uprebelambush3
 		Cursor: ability
-		PauseOnCondition: lowpower
 		Icon: glambush3
 		Description: Ambush
 		LongDesc: Spawns a large Rebel squad.
-		InsufficientPowerSpeechNotification: InsufficientPower
 		IncomingSpeechNotification: EnemyUnitsApproaching
 		SelectTargetSpeechNotification: SelectTarget
 		DisplayRadarPing: True
@@ -857,7 +851,6 @@ glcommand:
 		StartFullyCharged: true
 	GrantExternalConditionPower@GPSScrambler:
 		OrderName: GPSScrambler
-		PauseOnCondition: lowpower
 		Icon: glgpscram
 		ChargeInterval: 3000
 		Description: GPS Scrambler
@@ -865,13 +858,52 @@ glcommand:
 		Range: 3
 		Duration: 2000
 		SelectTargetSpeechNotification: SelectTarget
-		InsufficientPowerSpeechNotification: InsufficientPower
-		#BeginChargeSpeechNotification: IronCurtainCharging
-		#EndChargeSpeechNotification: IronCurtainReady
 		DisplayRadarPing: True
 		Condition: tscloak
 		OnFireSound: cloak5.aud
 		Prerequisites: upgpscram
+		StartFullyCharged: true
+	GrantExternalConditionPower@Bounty1:
+		OrderName: CashBounty1
+		Icon: glabounty1
+		ChargeInterval: 3000
+		Description: Cash Bounty
+		LongDesc: Makes selected targets grant 10% of value\nupon being killed or destroyed.
+		Range: 3
+		Duration: 500
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		Condition: glabounty1
+		ValidStances: Enemy, Neutral
+		Prerequisites: upglabounty1, !upglabounty2
+		StartFullyCharged: true
+	GrantExternalConditionPower@Bounty2:
+		OrderName: CashBounty2
+		Icon: glabounty2
+		ChargeInterval: 3000
+		Description: Cash Bounty
+		LongDesc: Makes selected targets grant 20% of value\nupon being killed or destroyed.
+		Range: 4
+		Duration: 750
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		Condition: glabounty2
+		ValidStances: Enemy, Neutral
+		Prerequisites: upglabounty2, !upglabounty3
+		StartFullyCharged: true
+	GrantExternalConditionPower@Bounty3:
+		OrderName: CashBounty3
+		Icon: glabounty3
+		ChargeInterval: 3000
+		Description: Cash Bounty
+		LongDesc: Makes selected targets grant 40% of value\nupon being killed or destroyed.
+		Range: 5
+		Duration: 1000
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		Condition: glabounty3
+		ValidStances: Enemy, Neutral
+		Prerequisites: upglabounty3
 		StartFullyCharged: true
 
 glcommand.hole:
@@ -2184,6 +2216,7 @@ glbiker:
 		Name: Combat Cycle
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
+		OverrideActor: glbiker
 	Buildable:
 		BuildPaletteOrder: 1
 		Prerequisites: glweap, ~!selectglatoxin, ~!selectglademo
@@ -2386,6 +2419,7 @@ glbbus:
 		Name: Battle Bus
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
+		OverrideActor: glbbus
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: glweap, glpalace
@@ -4102,7 +4136,7 @@ GLSYRD:
 	Inherits: RA1SYRD
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: glsupply, ~enablenaval
+		Prerequisites: glsupply, ~enablenaval, ~glaselected
 		Queue: Building.GLA, RABuilding.GLA
 	Production@NORMAL:
 		Produces: Naval.GLA
@@ -4485,7 +4519,7 @@ chcommand:
 	Turreted:
 	CashHackPower:
 		OrderName: cashhack
-		Icon: glgpscram #todo
+		Icon: glabounty1 #todo
 		ChargeInterval: 4500
 		Minimum: 500
 		Maximum: 2000
@@ -5188,8 +5222,7 @@ chsilo:
 		MissileDelay: 11
 		SpawnOffset: 3c0,0,-1c512
 		DisplayBeacon: True
-		BeaconPoster: atomic
-		BeaconPosterPalette: beaconposter
+		BeaconPoster: raatomicon
 		DisplayTimerStances: Ally, Neutral, Enemy
 		DisplayRadarPing: True
 		CameraRange: 10c0
@@ -5554,8 +5587,8 @@ CHHACKER:
 	DeliversCash:
 		Payload: 250
 	ExperienceTrickler:
-		Interval: 45
-		Amount: 15
+		Interval: 30
+		Amount: 30
 		RequiresCondition: deployed || indoors
 		PauseOnCondition: frozen
 	CashTrickler@Rank0:
@@ -8712,7 +8745,7 @@ usaavenger:
 		BuildPaletteOrder: 70
 		Prerequisites: usaweap, ~techlevel.high, usastrategy
 		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
-		Description: Laser-based air defense system.\n Strong vs Aircraft
+		Description: Laser-based air defense system.\nIncreases accuracy and firepower of nearby units.\nDazzles ground targets.\n Strong vs Aircraft
 	Mobile:
 		Speed: 60
 	Health:
@@ -8738,6 +8771,10 @@ usaavenger:
 		LocalOffset: 10,1,1, 10,-1,1
 	AttackTurreted:
 		Armaments: primary, secondary, pointdefense
+	ProximityExternalCondition@avenger:
+		Condition: avengerguided
+		Range: 5c0
+		RequiresCondition: !disabled
 	WithSpriteTurret:
 	SelectionDecorations:
 	Selectable:
