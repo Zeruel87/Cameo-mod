@@ -259,7 +259,7 @@ GENE6:
 		ChargeInterval: 3000
 		Description: Emergency Repair
 		LongDesc: Provides repair for vehicles in the target area.
-		Range: 2
+		Range: 3
 		Duration: 300
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -277,7 +277,7 @@ GENE6:
 		ChargeInterval: 3000
 		Description: Emergency Repair
 		LongDesc: Provides repair for vehicles in the target area.
-		Range: 3
+		Range: 4
 		Duration: 450
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -389,6 +389,28 @@ usabomber.carpet:
 	Tooltip:
 		Name: H-6 Bomber
 
+usabomber.carpet2:
+	Inherits: BADR.Bomber
+	Aircraft:
+		Speed: 223
+	AttackBomber:
+		PauseOnCondition: !ammo
+	Armament:
+		Weapon: GECarpetBomb
+		LocalOffset: 300,300,340, 300,-300,340, -300,900,340, -300,-400,340, 300,0,340, -300,0,340
+	AmmoPool:
+		Ammo: 18
+	Tooltip:
+		Name: Stealth Bomber
+	RenderSprites:
+		Image: usastealth
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		PauseOnCondition: cloak-force-disabled
+	SpawnActorOnDeath:
+		Actor: usastealth.husk
+
 usabomber.fuelbomb:
 	Inherits: usabomber
 	AttackBomber:
@@ -475,6 +497,8 @@ a10generals.Husk:
 
 usabomber.motherbomb:
 	Inherits: BADR.Bomber
+	Aircraft:
+		Speed: 223
 	Armament:
 		Weapon: USAMotherBomb
 	AmmoPool:
@@ -1319,6 +1343,8 @@ glstorm:
 		Except: Sell
 	RenderRangeCircle:
 	SupportPowerChargeBar:
+	Voiced:
+		VoiceSet: GLSCUDStormVoice
 	SpawnActorOnDeath@hole:
 		Actor: glstorm.hole
 	Explodes:
@@ -2119,18 +2145,29 @@ glhijack:
 	Inherits@EXT: ^ExternalConditions					##########
 	Crushable:
 		WarnProbability: 95
-	Cloak:
+	Cloak@1:
 		InitialDelay: 250
 		CloakDelay: 120
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
 		CloakTypes: Cloak, Thief
-		PauseOnCondition: cloak-force-disabled
+		PauseOnCondition: cloak-force-disabled || frozen
+		RequiresCondition: !selectglacamo
+	Cloak@2:
+		InitialDelay: 120
+		CloakDelay: 60
+		UncloakOn: Attack, Unload, Infiltrate, Demolish
+		CloakTypes: Cloak, Thief
+		PauseOnCondition: cloak-force-disabled || frozen
+		RequiresCondition: selectglacamo
 	WithInfantryBody:
 		-IdleSequences:
 		StandSequences: stand
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
+	GrantConditionOnPrerequisite@selectglacamo:
+		Condition: selectglacamo
+		Prerequisites: selectglacamo
 	Voiced:
 		VoiceSet: GLHijackerVoice
 
@@ -3104,6 +3141,7 @@ glradar:
 		Color: 0000FF80
 	DetectCloaked:
 		Range: 10c0
+		RequiresCondition: !disabled
 	RenderDetectionCircle:
 	ProvidesRadar:
 		RequiresCondition: !jammed && !disabled
@@ -4856,8 +4894,6 @@ chbunker2:
 		MaxWeight: 8
 		PipCount: 8
 		InitialUnits: che2
-	Voiced:
-		VoiceSet: CHBunkerVoice
 	Selectable:
 		Class: chbunker2
 	#FreeActor@1:
@@ -5075,15 +5111,29 @@ chpropaganda:
 	RevealActorsPower@SATHACK:
 		CameraActor: camera.sathack
 		TargetActors: fact.gdi, fact.nod, rafact.allies, rafact.soviet, ra2nacnst, ra2gacnst, yrnacnst, tsgtcnstgdi, tsgtcnstnod, tsgtcnstmutant, tsgtcnstcabal, 2100hq.alpha, 2100hq.scavenger, sccommandcenter, scnexus, schatchery, citymayor, cfact, xfact, glcommand, chcommand, usacommand, leangcommand
-		LifeTime: 250
+		LifeTime: 500
 		OrderName: satellitehack1
 		Icon: gps
 		ChargeInterval: 3000
-		Description: Satellite Hack
+		Description: Satellite Hack 1
 		LongDesc: Reveals command centers.
 		LaunchSound: bintsela.wav
 		Prerequisites: upsathack
 		PauseOnCondition: lowpower
+	GpsPower@SATHACK2:
+		Icon: gps
+		OneShot: true
+		ChargeInterval: 0
+		Description: Satellite Hack 2
+		LongDesc: Reveals map terrain and provides tactical\ninformation. Requires power.
+		RevealDelay: 0
+		#LaunchSpeechNotification: SatelliteLaunched
+		DisplayTimerStances: Ally, Neutral, Enemy
+		PauseOnCondition: lowpower
+		LaunchSound: bintsela.wav
+		IncomingSound: bintsela.wav
+		Prerequisites: upsathack2
+		SupportPowerPaletteOrder: 90
 	SupportPowerChargeBar:
 	ProximityExternalCondition@PROPAGANDA:
 		Range: 6c0
@@ -5251,7 +5301,7 @@ chairport:
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
-		UseDirectionalTarget: True
+		UseDirectionalTarget: false
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
 		Prerequisites: upcarpetbomb
@@ -5274,7 +5324,7 @@ chairport:
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
-		UseDirectionalTarget: True
+		UseDirectionalTarget: false
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
 		Prerequisites: upchneutronbomb
@@ -5810,6 +5860,7 @@ choverlord:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@crush: ^VehicleCrusher
+	Inherits@detect: ^GenericGroundDetector
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -5931,6 +5982,8 @@ choverlord:
 	WithSpriteTurret@PROPAGANDA:
 		RequiresCondition: addonpropaganda
 		Sequence: turretpro
+	DetectCloaked:
+		RequiresCondition: !disabled && addongattling
 	ProducibleWithLevel:
 		Prerequisites: selectchtanks
 		InitialLevels: 1
@@ -6380,6 +6433,7 @@ chcrawl:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@detect: ^GenericGroundDetector
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -6978,6 +7032,23 @@ upsathack:
 	ProvidesPrerequisite:
 		Prerequisite: upsathack
 
+upsathack2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Satellite Hack 2
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: PropagandaUpgrades.CHINA
+		Description: Reveals all buildings and troop movements.
+		Prerequisites: ~!upsathack2, upsathack
+		Icon: gps
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: icon #TODO
+	ProvidesPrerequisite:
+		Prerequisite: upsathack2
+
 CHMIG:
 	Inherits: ^RANeutralPlane
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -7193,6 +7264,7 @@ chhelix:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@detect: ^GenericAirDetector
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: chairport, ~techlevel.medium
@@ -7322,6 +7394,8 @@ chhelix:
 	ReloadDelayMultiplier@BUNKER:
 		Modifier: 200
 		RequiresCondition: bombaddon
+	DetectCloaked:
+		RequiresCondition: !disabled && gattlingaddon
 	GrantConditionOnPrerequisite@selectchatomic:
 		Condition: selectchatomic
 		Prerequisites: selectchatomic
@@ -7704,6 +7778,8 @@ selectusaairforce:
 		Prerequisite: usaselected
 	ProvidesPrerequisite@2:
 		Prerequisite: selectusaairforce
+	ProvidesPrerequisite@3:
+		Prerequisite: upusastealth
 
 selectusalaser:
 	Inherits: ^upgrade.template
@@ -7921,6 +7997,8 @@ usapath:
 		CloakDelay: 15
 		PauseOnCondition: cloak-force-disabled || frozen
 	-TakeCover:
+	DetectCloaked:
+		Range: 5c0
 
 usaburton:
 	Inherits: ^Soldier
@@ -7986,10 +8064,13 @@ usaburton:
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
 		CloakTypes: Cloak, Thief
 		PauseOnCondition: cloak-force-disabled || frozen
+	ProductionCostMultiplier@selectusasuper:
+		Multiplier: 80
+		Prerequisites: selectusasuper
+		Queue: Infantry.USA, RAInfantry.USA
 
 usapilot:
 	Inherits: ^CivInfantry
-	Inherits@armed: ^ArmedCivilian
 	Inherits@EXP: ^GainsExperience
 	Inherits@EXT: ^ExternalConditions
 	Inherits@USAInfantry: ^GeneralsUSAInfantry
@@ -7999,8 +8080,11 @@ usapilot:
 		Name: Pilot
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
+	Buildable:
+		Description: Can deliver experience to US vehicles and aircraft.
 	Mobile:
 		Speed: 80
+		Voice: Move
 	Health:
 		HP: 7000
 	RevealsShroud:
@@ -8016,27 +8100,31 @@ usapilot:
 		ProneOffset: 400,0,0
 	-Wanders:
 	-ScaredyCat:
-	-AttackFrontal:
-	-Armament:
+	Voiced:
+		VoiceSet: USAPilotVoice
 	RenderSprites:
 		Image: usapilot
 	Selectable:
 		Class: usapilot
+	DeliversExperience:
+		Type: USAPilot
+	ProducibleWithLevel:
+		InitialLevels: 1
 
 usapilot.lvl2:
 	Inherits: usapilot
-	ProducibleWithLevel@LVL2:
-		InitialLevels: 1
+	ProducibleWithLevel:
+		InitialLevels: 2
 
 usapilot.lvl3:
 	Inherits: usapilot
-	ProducibleWithLevel@LVL2:
-		InitialLevels: 2
+	ProducibleWithLevel:
+		InitialLevels: 3
 
 usapilot.lvl4:
 	Inherits: usapilot
-	ProducibleWithLevel@LVL2:
-		InitialLevels: 3
+	ProducibleWithLevel:
+		InitialLevels: 4
 
 usajeep:
 	Inherits: ^Vehicle
@@ -8080,8 +8168,8 @@ usajeep:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
 	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
 	Cargo:
 		Types: Infantry
 		MaxWeight: 4
@@ -8126,14 +8214,9 @@ usajeep:
 		RequiresCondition: !drone1 && !drone2 && !drone3
 	ProductionQueue:
 		Type: Drones.USA
-		Group: Defence
-		LowPowerModifier: 200
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
+		Group: Vehicle
+		QueueLimit: 1
+		ItemLimit: 1
 		DisplayOrder: 0
 	GrantConditionOnProduction@repairdrone:
 		Condition: drone1
@@ -8169,16 +8252,16 @@ usajeep:
 		AggregateHealth: false
 		RequiresCondition: drone3
 	SpawnActorOnDeath@pilotrank1:
-		RequiresCondition: rank-veteran == 1
+		RequiresCondition: rank-veteran == 1 && !chronobeamed
 		Actor: usapilot
 	SpawnActorOnDeath@pilotrank2:
-		RequiresCondition: rank-veteran == 2
+		RequiresCondition: rank-veteran == 2 && !chronobeamed
 		Actor: usapilot.lvl2
 	SpawnActorOnDeath@pilotrank3:
-		RequiresCondition: rank-veteran == 3
+		RequiresCondition: rank-veteran == 3 && !chronobeamed
 		Actor: usapilot.lvl3
 	SpawnActorOnDeath@pilotrank4:
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && !chronobeamed
 		Actor: usapilot.lvl4
 
 pscdrones1:
@@ -8360,8 +8443,8 @@ usattnk:
 	Selectable:
 		DecorationBounds: 28,28
 	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
 	Voiced:
 		VoiceSet: TomahawkLauncherVoice
 	RenderSprites:
@@ -8430,8 +8513,8 @@ usacrusader:
 	Selectable:
 		DecorationBounds: 28,28
 	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
 	Voiced:
 		VoiceSet: USACrusaderTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones
@@ -8453,6 +8536,7 @@ usacrusader2:
 		BuildPaletteOrder: 40
 		Prerequisites: usaweap, ~techlevel.medium, ~selectusalaser
 		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
+		Description: General-purpose USA tank.\nRequires power to operate.\n  Strong vs Vehicles\n  Weak vs Infantry
 	Mobile:
 		PauseOnCondition: disabled || lowpower
 	Armament@Normal:
@@ -8518,8 +8602,8 @@ usapala:
 	Selectable:
 		DecorationBounds: 28,28
 	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
 	Voiced:
 		VoiceSet: USAPaladinTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones
@@ -8538,6 +8622,7 @@ usasentry:
 	Inherits@MC: ^MCImmune
 	Inherits@EMP: ^TurretEMP
 	Inherits@vo: ^AttackTurretedVoice
+	Inherits@snipe: ^DriverKillImmune
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -8575,9 +8660,7 @@ usasentry:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 28,28
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
+	Inherits@EXT: ^ExternalConditions
 	Voiced:
 		VoiceSet: USASentryDroneVoice
 	Cloak:
@@ -8660,14 +8743,14 @@ usaavenger:
 	Selectable:
 		DecorationBounds: 28,28
 	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
 	Voiced:
 		VoiceSet: USAAvengerVoice
 	Inherits@ProducesDrones: ^ProducesDrones
 	RenderSprites:
 		Scale: 0.88
-	ProductionCostMultiplier@selectchtanks:
+	ProductionCostMultiplier@selectusalaser:
 		Multiplier: 90
 		Prerequisites: selectusalaser
 		Queue: Vehicle.USA, RAVehicle.USA
@@ -8773,8 +8856,8 @@ usamicro:
 	Selectable:
 		DecorationBounds: 28,28
 	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
 	Voiced:
 		VoiceSet: USAMicrowaveTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones
@@ -8923,7 +9006,7 @@ usacommand:
 		OrderName: SovietSpyPlane
 		Icon: gps
 		ChargeInterval: 3000
-		Description: Spy Satellite
+		Description: Spy Satellite Scan
 		LongDesc: Reveals an area of the map\nand cloaked enemy units.
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -8938,9 +9021,9 @@ usacommand:
 		PauseOnCondition: lowpower
 		Icon: usaspydrone
 		Description: Spy Drone
-		LongDesc: Spawns a spy drone.
+		LongDesc: Spawns a spy drone.\nDetects cloaked units.
 		Prerequisites: upusaspydrone
-		ChargeInterval: 4000
+		ChargeInterval: 4500
 		LifeTime: -1
 		EndChargeSpeechNotification: SpyPlaneReady
 		SelectTargetSpeechNotification: SelectTarget
@@ -9068,6 +9151,14 @@ usapower:
 		Multiplier: 50
 		Prerequisites: !anypower
 		Queue: Building.USA, RABuilding.USA
+	ProductionCostMultiplier@selectusalaser:
+		Multiplier: 80
+		Prerequisites: selectusalaser
+		Queue: Building.USA, RABuilding.USA
+	ProductionCostMultiplier@selectusasuper:
+		Multiplier: 120
+		Prerequisites: selectusasuper
+		Queue: Building.USA, RABuilding.USA
 	Production:
 		Produces: PowerPlant.USA
 		RequiresCondition: !powerupgrade && !powerupgrade2
@@ -9096,6 +9187,12 @@ usapower:
 	WithIdleOverlay@RODS2:
 		RequiresCondition: powerupgrade2
 		Sequence: idle-rods2
+	PowerMultiplier@laser:
+		Modifier: 150
+		RequiresCondition: selectusalaser
+	GrantConditionOnPrerequisite@selectusalaser:
+		Condition: selectusalaser
+		Prerequisites: selectusalaser
 
 pscusapower:
 	Tooltip:
@@ -9595,7 +9692,30 @@ usastrategy:
 	Power:
 		Amount: -40
 	Voiced:
-		VoiceSet: CHPropagandaCenterVoice
+		VoiceSet: USAStrategyCenterVoice
+	AirstrikePower@carpet:
+		OrderName: CHCarpetBombing
+		Icon: chcarpet
+		ChargeInterval: 6000
+		Description: Carpet Bombing
+		LongDesc: A stealth bomber strikes targets along a line.
+		SelectTargetSpeechNotification: SelectTarget
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		UnitType: usabomber.carpet2
+		QuantizedFacings: 8
+		DisplayBeacon: true
+		BeaconPoster: airstrike
+		SquadSize: 1
+		SquadOffset: 1792,1792,0
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: false
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 40
+		Prerequisites: selectusaairforce
+		StartFullyCharged: true
 	RenderSprites:
 		Image: usastrategy
 
@@ -9662,7 +9782,7 @@ usaairport:
 	Targetable:
 		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
 	Voiced:
-		VoiceSet: PRCAirfieldVoice
+		VoiceSet: USAAirfieldVoice
 	RenderSprites:
 		Image: usaairport
 	ClassicAirstrikePower@Spectre:
@@ -9715,7 +9835,7 @@ usaairport:
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
-		UseDirectionalTarget: True
+		UseDirectionalTarget: false
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
 		Prerequisites: upusafuelbomb, !upusamotherbomb
@@ -9738,7 +9858,7 @@ usaairport:
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
-		UseDirectionalTarget: True
+		UseDirectionalTarget: false
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
 		Prerequisites: upusamotherbomb
@@ -9885,7 +10005,7 @@ usadropzone:
 		Interval: 600
 		RequiresCondition: usaupsupplylines
 	Voiced:
-		VoiceSet: GLBlackMarketVoice
+		VoiceSet: USASupplyDropVoice
 	WithIdleOverlay@SMOKE:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-anim2
@@ -9951,7 +10071,7 @@ usacannon:
 		Amount: -200
 	ProvidesPrerequisite@buildingname:
 	Voiced:
-		VoiceSet: CHMissileSiloVoice
+		VoiceSet: USAParticleCannonVoice
 	ProductionCostMultiplier@selectusasuper:
 		Multiplier: 50
 		Prerequisites: selectusasuper
@@ -10114,7 +10234,7 @@ usaspydronepower:
 		VTOL: true
 	RenderSprites:
 		Image: usaspydrone
-		Scale: 0.20
+		Scale: 0.40
 	DetectCloaked:
 		Range: 8c0
 	GrantConditionOnPrerequisite@usaupdronearmor:
@@ -10218,22 +10338,24 @@ usaraptor:
 	SmokeTrailWhenDamaged:
 		Offset: -853,0,171
 		Interval: 2
-	ProducibleWithLevel:
-		Prerequisites: aircraft.upgraded
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
 	Voiced:
 		VoiceSet: USARaptorVoice
 	ReloadAmmoPool:
 		Delay: 180
 		Count: 1
+	ProductionCostMultiplier@selectusaairforce:
+		Multiplier: 90
+		Prerequisites: selectusaairforce
+		Queue: Aircraft.USA, RAAircraft.USA
 
 usaraptor2:
 	Inherits: usaraptor
 	Inherits@PLD: ^PointLaserDefenseSystem
+	Inherits@detect: ^GenericAirDetector
 	Buildable:
-		Queue: Aircraft.USA, RAAircraft.USA, Aircraft.X_Aircrafts
-		BuildPaletteOrder: 50
 		Prerequisites: usaairport, ~techlevel.high, ~selectusaairforce
-		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
 	Valued:
 		Cost: 1100
 	Tooltip:
@@ -10242,6 +10364,11 @@ usaraptor2:
 		Image: usaraptor
 	Armament@pointdefense:
 		LocalOffset: -200,0,120
+	AmmoPool:
+		Ammo: 6
+	ReloadAmmoPool:
+		Delay: 90
+		Count: 2
 	AttackAircraft:
 		Armaments: primary, secondary, pointdefense
 	Voiced:
@@ -10275,7 +10402,8 @@ usaraptor.husk:
 usastealth:
 	Inherits: ^RANeutralPlane
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	#Inherits@reload: ^RearmableAircraft
+	Inherits@reload: ^RearmableAircraft
+	Inherits@announce: ^AnnounceOnBuild
 	Inherits@training: ^AdvancedTrainingUpgrade
 	Inherits@CM: ^CountermeasuresUpgrade
 	Inherits@LGM: ^LaserMissilesUpgrade
@@ -10315,6 +10443,7 @@ usastealth:
 		Speed: 223
 		RepulsionSpeed: 40
 		MaximumPitch: 56
+		IdleBehavior: Land
 	AutoTarget:
 		InitialStance: HoldFire
 	AmmoPool:
@@ -10333,13 +10462,10 @@ usastealth:
 	SmokeTrailWhenDamaged:
 		Offset: -853,0,171
 		Interval: 2
-	ProducibleWithLevel:
-		Prerequisites: aircraft.upgraded
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
 	Voiced:
 		VoiceSet: USAStealthFighterVoice
-	ReloadAmmoPool:
-		Delay: 180
-		Count: 1
 	GrantConditionOnPrerequisite@usaupbunkerbuster:
 		Condition: usaupbunkerbuster
 		Prerequisites: usaupbunkerbuster
@@ -10350,6 +10476,10 @@ usastealth:
 		InitialDelay: 90
 		CloakDelay: 90
 		PauseOnCondition: cloak-force-disabled || disabled
+	ProductionCostMultiplier@selectusaairforce:
+		Multiplier: 90
+		Prerequisites: selectusaairforce
+		Queue: Aircraft.USA, RAAircraft.USA
 
 usastealth.husk:
 	Inherits: ^PlaneHusk
@@ -10386,16 +10516,12 @@ usaaurora:
 	Buildable:
 		Queue: Aircraft.USA, RAAircraft.USA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
-		Prerequisites: usaairport, ~techlevel.high
+		Prerequisites: usaairport, usastrategy, ~!selectusasuper
 		Description: Heavy bomber.\n  Strong vs ground targets\n  Weak vs Aircraft
 	Valued:
 		Cost: 2500
 	Tooltip:
 		Name: Aurora
-		RequiresCondition: !selectusasuper
-	Tooltip@2:
-		Name: Aurora Alpha
-		RequiresCondition: selectusasuper
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
@@ -10412,13 +10538,6 @@ usaaurora:
 		LocalOffset: 0,-640,0, 0,640,0
 		LocalYaw: -40, 24
 		PauseOnCondition: !ammo
-		RequiresCondition: !selectusasuper
-	Armament@Super:
-		Weapon: USAMissileAurora2
-		LocalOffset: 0,-640,0, 0,640,0
-		LocalYaw: -40, 24
-		PauseOnCondition: !ammo
-		RequiresCondition: selectusasuper
 	AttackAircraft:
 		FacingTolerance: 20
 		PersistentTargeting: false
@@ -10428,9 +10547,18 @@ usaaurora:
 		CruiseAltitude: 2560
 		InitialFacing: 192
 		TurnSpeed: 4
-		Speed: 223
+		Speed: 180
 		RepulsionSpeed: 40
 		MaximumPitch: 56
+		IdleBehavior: Land
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 250
+		RequiresCondition: supersonic && ammo
+	DamageMultiplier@supersonic:
+		Modifier: 50
+		RequiresCondition: supersonic && ammo
 	AutoTarget:
 		InitialStance: HoldFire
 	AmmoPool:
@@ -10449,13 +10577,36 @@ usaaurora:
 	SmokeTrailWhenDamaged:
 		Offset: -853,0,171
 		Interval: 2
-	ProducibleWithLevel:
-		Prerequisites: aircraft.upgraded
-	GrantConditionOnPrerequisite@selectusasuper:
-		Condition: selectusasuper
-		Prerequisites: selectusasuper
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
 	Voiced:
 		VoiceSet: USAAuroraVoice
+	ProductionCostMultiplier@selectusaairforce:
+		Multiplier: 90
+		Prerequisites: selectusaairforce
+		Queue: Aircraft.USA, RAAircraft.USA
+
+usaaurora2:
+	Inherits: usaaurora
+	Buildable:
+		Queue: Aircraft.USA, RAAircraft.USA, Aircraft.X_Aircrafts
+		BuildPaletteOrder: 50
+		Prerequisites: usaairport, usastrategy, ~selectusasuper
+	Tooltip:
+		Name: Aurora Alpha
+	Armament@AG:
+		Weapon: USAMissileAurora2
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	GrantConditionOnActivity@supersonic2:
+		Condition: supersonic
+		Activity: ReturnToBase
+	SpeedMultiplier@supersonic:
+		RequiresCondition: supersonic
+	DamageMultiplier@supersonic:
+		RequiresCondition: supersonic
+	SpawnActorOnDeath:
+		Actor: usaaurora2.husk
 
 usaaurora.husk:
 	Inherits: ^PlaneHusk
@@ -10481,6 +10632,11 @@ usaaurora.husk:
 		Type: GroundPosition
 	RenderSprites:
 		Image: usaaurora
+
+usaaurora2.husk:
+	Inherits: usaaurora.husk
+	RenderSprites:
+		Image: usaaurora2
 
 usacomanche:
 	Inherits: ^Helicopter
@@ -10551,14 +10707,28 @@ usacomanche:
 	WithMuzzleOverlay:
 	SpawnActorOnDeath:
 		Actor: usacomanche.husk
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 30,24
 	GrantConditionOnPrerequisite@usaupmisspod:
 		Condition: usaupmisspod
 		Prerequisites: usaupmisspod
+	GrantConditionOnPrerequisite@stealth:
+		Condition: upstealthcomanche
+		Prerequisites: upstealthcomanche
 	Voiced:
 		VoiceSet: USAComancheVoice
+	Cloak:
+		InitialDelay: 45
+		CloakDelay: 45
+		PauseOnCondition: cloak-force-disabled || disabled
+		RequiresCondition: upstealthcomanche
+	ProductionCostMultiplier@selectusaairforce:
+		Multiplier: 90
+		Prerequisites: selectusaairforce
+		Queue: Aircraft.USA, RAAircraft.USA
 
 usacomanche.husk:
 	Inherits: ^HelicopterHusk
@@ -10664,7 +10834,7 @@ usafirebase:
 	DetectCloaked:
 		Range: 6c0
 	Voiced:
-		VoiceSet: CHBunkerVoice
+		VoiceSet: USAFirebaseVoice
 	Armament:
 		Weapon: USAFirebaseObus
 		LocalOffset: 520,0,450
@@ -10937,6 +11107,23 @@ usaupdronearmor:
 		Image: usadronearmoricon
 	ProvidesPrerequisite:
 		Prerequisite: usaupdronearmor
+
+upstealthcomanche:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Stealth Comanche
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Aircraft.USA, RAAircraft.USA
+		Description: Cloaks Comanches.
+		Prerequisites: ~!upstealthcomanche, ~selectusaairforce
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: usacomanche
+	ProvidesPrerequisite:
+		Prerequisite: upstealthcomanche
+
 USASYRD:
 	Inherits: RA1SYRD
 	Buildable:
@@ -11627,10 +11814,6 @@ leangweap:
 		BuildPaletteOrder: 50
 		Prerequisites: leangsupply
 		Queue: Building.LEANG, RABuilding.LEANG
-	Production@Upgrades3:
-		Produces: MarketUpgrades.GLA
-	#Production@Upgrades4:
-	#	Produces: VehicleUpgrades.USA
 	Production@NORMAL:
 		Produces: Vehicle.LEANG
 	Production@CLASSICPRODUCTIONQUEUES:
@@ -11905,7 +12088,7 @@ leangburton:
 leangharv:
 	Inherits: chharv
 	Buildable:
-		Queue: Vehicle.LEANG, Vehicle.LEANG
+		Queue: Vehicle.LEANG, RAVehicle.LEANG
 		Prerequisites: leangsupply
 	RenderSprites:
 		Image: chharv
@@ -12066,7 +12249,7 @@ leangclustermines:
 		Queue: Promotions.LEANG
 
 leangcarpetbomb:
-	Inherits: upchcarpetbomb
+	Inherits: upcarpetbomb
 	Buildable:
 		Queue: Promotions.LEANG
 
