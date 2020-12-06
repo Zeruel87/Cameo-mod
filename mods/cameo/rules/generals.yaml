@@ -735,12 +735,6 @@ glcommand:
 		Prerequisite: glcommand
 	Power:
 		Amount: 0
-	GrantConditionOnBotOwner:
-		Condition: botgla
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botgla
-		RequiresCondition: botgla
 	-WithDeathAnimation:
 	ProvidesPrerequisite@factionalpha:
 		Prerequisite: mmgla
@@ -1696,7 +1690,7 @@ gltrap:
 	Valued:
 		Cost: 400
 	Tooltip:
-		Name: Trap
+		Name: Demo Trap
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: glbarracks, ~glaselected
@@ -1724,7 +1718,7 @@ gltrap:
 		PauseOnCondition: disabled
 	-DamageMultiplier@IRONCURTAIN:
 	KillsSelf:
-		RequiresCondition: invulnerability || triggered
+		RequiresCondition: (invulnerability || triggered) && !chronobeamed
 	AttackTurreted:
 		RequiresCondition: !build-incomplete
 	BodyOrientation:
@@ -1984,6 +1978,8 @@ GLKELL:
 		Speed: 71
 	Health:
 		HP: 10000
+	Passenger:
+		PipType: Red
 	AutoTarget:
 	Armament@PRIMARY:							##########
 		Weapon: GLKellSniper
@@ -2329,7 +2325,7 @@ glbiker.e3:
 		Cost: 500
 	Buildable:
 		BuildPaletteOrder: 1
-		Prerequisites: glweap, ~botgla
+		Prerequisites: glweap, ~botplayer
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 	Cargo:
 		InitialUnits: gle3
@@ -2343,7 +2339,8 @@ glbggy:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@announce: ^AnnounceOnBuild
-	Inherits@vo: ^AttackFrontalVoice
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
 	Inherits@junk: ^JunkRepair
 	Inherits@AP: ^APRocketUpgrade
 	Valued:
@@ -2383,9 +2380,18 @@ glbggy:
 		LocalOffset: 624,-128,208, 624,128,208
 		MuzzleSequence: muzzle
 		RequiresCondition: selectglatoxin
-	AttackFrontal:
+	AttackTurreted:
 		TargetFrozenActors: True
 		ForceFireIgnoresActors: True
+	Turreted:
+	WithSpriteTurret@1:
+		Sequence: turret
+		RequiresCondition: !ammoupgrade
+		Offset: -298,0,298
+	WithSpriteTurret@2:
+		Sequence: turret2
+		RequiresCondition: ammoupgrade
+		Offset: -298,0,298
 	WithMuzzleOverlay:
 	AutoTarget:
 		InitialStanceAI: Defend
@@ -2484,7 +2490,7 @@ glbbus.e1:
 		Cost: 1200
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: glweap, ~botgla, glpalace
+		Prerequisites: glweap, ~botplayer, glpalace
 	Cargo:
 		Types: Infantry
 		MaxWeight: 5
@@ -2499,7 +2505,7 @@ glbbus.e2:
 		Cost: 1400
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: glweap, ~botgla, glpalace
+		Prerequisites: glweap, ~botplayer, glpalace
 	Cargo:
 		Types: Infantry
 		MaxWeight: 5
@@ -3164,6 +3170,9 @@ glradar:
 	Voiced:
 		VoiceSet: CHRadarVanVoice
 	Inherits@EXT: ^ExternalConditions
+	WithIdleOverlay@SPINNER:
+		Sequence: spinner
+		Offset: -256,0,256
 	ProximityExternalCondition@JAMMER:
 		Range: 5c0
 		ValidStances: Enemy, Neutral
@@ -3920,10 +3929,11 @@ upradarvanscan:
 		Queue: MarketUpgrades.GLA
 		Description: Allow Radar Vans to reveal areas of the map.
 		Prerequisites: ~!upradarvanscan
+		Icon: radarvan
 	Valued:
 		Cost: 500
 	RenderSprites:
-		Image: glradaricon
+		Image: icon
 	ProvidesPrerequisite:
 		Prerequisite: upradarvanscan
 
@@ -4497,12 +4507,6 @@ chcommand:
 		Condition: jammed
 	Power:
 		Amount: 0
-	GrantConditionOnBotOwner:
-		Condition: botgla
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botgla
-		RequiresCondition: botgla
 	-WithDeathAnimation:
 	ProvidesPrerequisite@factionalpha:
 		Prerequisite: mmchina
@@ -4519,7 +4523,7 @@ chcommand:
 	Turreted:
 	CashHackPower:
 		OrderName: cashhack
-		Icon: glabounty1 #todo
+		Icon: cashhack
 		ChargeInterval: 4500
 		Minimum: 500
 		Maximum: 2000
@@ -4885,7 +4889,7 @@ chbunker:
 chbunker.e1:
 	Inherits: chbunker
 	Buildable:
-		Prerequisites: chbarracks, ~techlevel.low, ~botgla, ~!selectchinf
+		Prerequisites: chbarracks, ~techlevel.low, ~botplayer, ~!selectchinf
 	Valued:
 		Cost: 800
 	Cargo:
@@ -4894,7 +4898,7 @@ chbunker.e1:
 chbunker.e2:
 	Inherits: chbunker
 	Buildable:
-		Prerequisites: chbarracks, ~techlevel.low, ~botgla, ~!selectchinf
+		Prerequisites: chbarracks, ~techlevel.low, ~botplayer, ~!selectchinf
 	Valued:
 		Cost: 800
 	Cargo:
@@ -4903,7 +4907,7 @@ chbunker.e2:
 chbunker.e3:
 	Inherits: chbunker
 	Buildable:
-		Prerequisites: chbarracks, ~techlevel.low, ~botgla, ~!selectchinf
+		Prerequisites: chbarracks, ~techlevel.low, ~botplayer, ~!selectchinf
 	Valued:
 		Cost: 800
 	Cargo:
@@ -4939,7 +4943,7 @@ chbunker2:
 chbunker2.e2:
 	Inherits: chbunker2
 	Buildable:
-		Prerequisites: chbarracks, ~techlevel.low, ~selectchinf, ~botgla
+		Prerequisites: chbarracks, ~techlevel.low, ~selectchinf, ~botplayer
 	Valued:
 		Cost: 700
 	Cargo:
@@ -5142,12 +5146,84 @@ chpropaganda:
 		Condition: frenzypower3
 		Prerequisites: upfrenzy3
 		StartFullyCharged: true
+	SupportPowerChargeBar:
+	ProximityExternalCondition@PROPAGANDA:
+		Range: 6c0
+		Condition: propaganda
+		RequiresCondition: !disabled
+
+chpropagandatower:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Speaker Tower
+	Buildable:
+		Queue: Building.CHINA, RABuilding.CHINA
+		BuildPaletteOrder: 200
+		Prerequisites: chpropaganda, ~chselected
+		Description: Allows nearby units to self-heal.
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Power:
+		Amount: -20
+	WithBuildingBib:
+		HasMinibib: true
+	Selectable:
+		Bounds: 24,24
+		DecorationBounds: 24,48,0,-12
+	ProximityExternalCondition@PROPAGANDA:
+		Range: 6c0
+		Condition: propaganda
+		RequiresCondition: !disabled && !lowpower
+	Voiced:
+		VoiceSet: CHSpeakerTowerVoice
+
+chinternetcenter:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^4x3Shape
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Internet Center
+	Buildable:
+		Queue: Building.CHINA, RABuilding.CHINA
+		BuildPaletteOrder: 70
+		Prerequisites: chweap, ~chselected
+		Description: Can shelter Hackers.\nCan be upgraded with surveillance powers.
+	Building:
+		Footprint: ==== xxxx xxxx
+		Dimensions: 4,3
+	Health:
+		HP: 100000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithBuildingBib:
+	ProvidesPrerequisite@buildingname:
+	Production@Upgrades:
+		Produces: InternetUpgrades.CHINA
+	Power:
+		Amount: -80
+	Cargo:
+		MaxWeight: 8
+		Types: Hacker
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
 	RevealActorsPower@SATHACK:
 		CameraActor: camera.sathack
 		TargetActors: fact.gdi, fact.nod, rafact.allies, rafact.soviet, ra2nacnst, ra2gacnst, yrnacnst, tsgtcnstgdi, tsgtcnstnod, tsgtcnstmutant, tsgtcnstcabal, 2100hq.alpha, 2100hq.scavenger, sccommandcenter, scnexus, schatchery, citymayor, cfact, xfact, glcommand, chcommand, usacommand, leangcommand
 		LifeTime: 500
 		OrderName: satellitehack1
-		Icon: gps
+		Icon: sathack1
 		ChargeInterval: 3000
 		Description: Satellite Hack 1
 		LongDesc: Reveals command centers.
@@ -5155,7 +5231,7 @@ chpropaganda:
 		Prerequisites: upsathack
 		PauseOnCondition: lowpower
 	GpsPower@SATHACK2:
-		Icon: gps
+		Icon: sathack2
 		OneShot: true
 		ChargeInterval: 0
 		Description: Satellite Hack 2
@@ -5168,10 +5244,8 @@ chpropaganda:
 		IncomingSound: bintsela.wav
 		Prerequisites: upsathack2
 		SupportPowerPaletteOrder: 90
-	SupportPowerChargeBar:
-	ProximityExternalCondition@PROPAGANDA:
-		Range: 6c0
-		Condition: propaganda
+	Voiced:
+		VoiceSet: CHInternetCenterVoice
 
 chsilo:
 	Inherits: ^BaseBuilding
@@ -5539,11 +5613,13 @@ CHHACKER:
 		RequireForceMoveCondition: !undeployed
 		ImmovableCondition: !undeployed
 	Passenger:
+		CargoType: Hacker
+		PipType: Blue
 		RequireForceMoveCondition: !undeployed
+		CargoConditions: 
+			chinternetcenter: indoors
 	Health:
 		HP: 8000
-	Passenger:
-		CargoCondition: indoors
 	Armament@PRIMARY:
 		Weapon: CHHackerDisable
 		RequiresCondition: undeployed
@@ -5616,6 +5692,9 @@ CHHACKER:
 		Amount: 10
 		PauseOnCondition: frozen
 		RequiresCondition: (deployed || indoors) && rank-elite
+	CashTricklerMultiplier@indoors:
+		Modifier: 200
+		RequiresCondition: indoors
 	ProductionCostMultiplier@selectchtanks:
 		Multiplier: 110
 		Prerequisites: selectchtanks
@@ -5671,6 +5750,8 @@ chlotus:
 		Speed: 50
 	Health:
 		HP: 20000
+	Passenger:
+		PipType: Red
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -6393,11 +6474,8 @@ choutpost:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
-	-QuantizeFacingsFromSequence:
-	BodyOrientation:
-		QuantizedFacings: 32
 	Cargo:
-		Types: Infantry
+		Types: Infantry, Hacker
 		MaxWeight: 2
 		PipCount: 2
 		EjectOnDeath: false #desync
@@ -6415,6 +6493,9 @@ choutpost:
 		AllowMovement: true
 	Turreted:
 		TurnSpeed: 10
+	WithIdleOverlay@SPINNER:
+		Sequence: spinner
+		Offset: -256,0,256
 	Voiced:
 		VoiceSet: ListeningOutpostVoice
 	Cloak:
@@ -6440,7 +6521,7 @@ choutpost2:
 	Health:
 		HP: 35000
 	Cargo:
-		Types: Infantry
+		Types: Infantry, Hacker
 		MaxWeight: 8
 		PipCount: 8
 		EjectOnDeath: false #desync
@@ -6450,6 +6531,53 @@ choutpost2:
 		Condition: propaganda
 	RenderSprites:
 		Image: choutpost
+
+checm:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@EXT: ^ExternalConditions
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: ECM Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: chweap, chpropaganda, ~techlevel.medium
+		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
+		Description: Disables vehicles and jams incoming missiles.
+	Mobile:
+		TurnSpeed: 4
+		Speed: 90
+	Health:
+		HP: 24000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	JamsMissiles:
+		Range: 5c0
+		DeflectionStances: Neutral, Enemy
+		RequiresCondition: !disabled && !attacking
+	RenderJammerCircle:
+	Armament:
+		Weapon: USAMicrowaveDisable #TODO
+	GrantConditionOnAttack:
+		Condition: attacking
+		RevokeDelay: 60
+	Turreted:
+	AttackTurreted:
+	WithIdleOverlay@SPINNER:
+		Sequence: spinner
+		Offset: -256,0,256
+	Voiced:
+		VoiceSet: ECMTankVoice
 
 CHTRUK:
 	Inherits: TRUCK
@@ -6495,7 +6623,7 @@ chcrawl:
 	Turreted:
 		TurnSpeed: 10
 	Cargo:
-		Types: Infantry
+		Types: Infantry, Hacker
 		MaxWeight: 5
 		PipCount: 5
 		LoadingCondition: notmobile
@@ -6531,7 +6659,6 @@ chcrawl2:
 	RevealsShroud:
 		Range: 8c0
 	Cargo:
-		Types: Infantry
 		MaxWeight: 6
 		PipCount: 6
 		EjectOnDeath: false
@@ -6549,8 +6676,6 @@ chcrawl2:
 		TurnSpeed: 10
 	Voiced:
 		VoiceSet: AssaultTroopCrawlerVoice
-	RenderSprites:
-		Image: chcrawl
 	-AIDeployNotifier:
 
 chcrawl.Husk:
@@ -6736,7 +6861,7 @@ upcashhack:
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: upgpscramicon #todo
+		Image: upcashhack
 	ProvidesPrerequisite:
 		Prerequisite: upcashhack
 
@@ -6941,7 +7066,7 @@ upisotopestability:
 	Valued:
 		Cost: 2000
 	RenderSprites:
-		Image: chnuketankicon
+		Image: upisotopestability
 	ProvidesPrerequisite:
 		Prerequisite: isotopestability
 
@@ -7054,14 +7179,13 @@ upsathack:
 		Name: Satellite Hack 1
 	Buildable:
 		BuildPaletteOrder: 250
-		Queue: PropagandaUpgrades.CHINA
+		Queue: InternetUpgrades.CHINA
 		Description: Reveals all command centers.
 		Prerequisites: ~!upsathack
-		Icon: gps
 	Valued:
 		Cost: 1000
 	RenderSprites:
-		Image: icon #TODO
+		Image: upsathack
 	ProvidesPrerequisite:
 		Prerequisite: upsathack
 
@@ -7071,14 +7195,13 @@ upsathack2:
 		Name: Satellite Hack 2
 	Buildable:
 		BuildPaletteOrder: 250
-		Queue: PropagandaUpgrades.CHINA
+		Queue: InternetUpgrades.CHINA
 		Description: Reveals all buildings and troop movements.
 		Prerequisites: ~!upsathack2, upsathack
-		Icon: gps
 	Valued:
 		Cost: 2000
 	RenderSprites:
-		Image: icon #TODO
+		Image: upsathack2
 	ProvidesPrerequisite:
 		Prerequisite: upsathack2
 
@@ -7593,12 +7716,6 @@ chflameboat:
 		Prerequisites: upbluefire
 	RenderSprites:
 		Scale: 0.80
-	Cargo:
-		Types: Infantry, Vehicle
-		MaxWeight: 3
-		PipCount: 3
-		LoadingCondition: notmobile
-		LoadedCondition: Passenger
 
 chasub:
 	Inherits: ^BoatUnit
@@ -7982,6 +8099,9 @@ USAE3:
 		RevokeDelay: 120
 		RevokeAll: true
 		RevokeOnNewTarget: true
+	WithInfantryBody:
+		AttackSequences:
+			primary: shoot
 	Voiced:
 		VoiceSet: MissileDefenderVoice
 
@@ -8689,7 +8809,11 @@ usasentry:
 		RequiresCondition: usaupdronegun
 	AttackTurreted:
 	WithMuzzleOverlay:
-	WithSpriteTurret:
+	WithSpriteTurret@1:
+		Sequence: turretnone
+		RequiresCondition: !usaupdronegun
+	WithSpriteTurret@2:
+		RequiresCondition: usaupdronegun
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 28,28
@@ -8999,12 +9123,6 @@ usacommand:
 		Condition: jammed
 	Power:
 		Amount: 0
-	GrantConditionOnBotOwner:
-		Condition: botgla
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botgla
-		RequiresCondition: botgla
 	-WithDeathAnimation:
 	ProvidesPrerequisite@factionalpha:
 		Prerequisite: mmusa
@@ -9658,8 +9776,8 @@ usaweap:
 		SpawnOffset: 128,256,0
 		ExitCell: 1,3
 		ExitDelay: 3
-	Production@Upgrades:
-		Produces: VehicleUpgrades.USA
+	#Production@Upgrades:
+	#	Produces: VehicleUpgrades.USA
 	Production@NORMAL:
 		Produces: Vehicle.USA
 		RequiresCondition: !classicproductionqueues
@@ -9732,7 +9850,7 @@ usastrategy:
 		VoiceSet: USAStrategyCenterVoice
 	AirstrikePower@carpet:
 		OrderName: CHCarpetBombing
-		Icon: chcarpet
+		Icon: usacarpet
 		ChargeInterval: 6000
 		Description: Carpet Bombing
 		LongDesc: A stealth bomber strikes targets along a line.
@@ -10120,6 +10238,7 @@ usacannon.beam:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bot: ^BotMicromanageable
 	-UpdatesPlayerStatistics:
 	RenderSprites:
 	-QuantizeFacingsFromSequence:
@@ -10180,7 +10299,7 @@ usacannon.beam:
 		RequiresCondition: selectusasuper
 	Armament:
 		Weapon: SuicideBomberTargeting
-		RequiresCondition: !botgla
+		RequiresCondition: !botmicro
 	AutoTarget:
 		InitialStance: AttackAnything
 		ScanRadius: 6
@@ -10188,13 +10307,10 @@ usacannon.beam:
 	AttackOmni:
 	AttackWander:
 		WanderMoveRadius: 3
-		RequiresCondition: botgla
+		RequiresCondition: botmicro
 	GrantConditionOnPrerequisite@selectusasuper:
 		Condition: selectusasuper
 		Prerequisites: selectusasuper
-	GrantConditionOnBotOwner:
-		Condition: botgla
-		Bots: easy, medium, hard, brutal, airforce
 	KillsSelf:
 		RemoveInstead: true
 		Delay: 300
@@ -10397,8 +10513,6 @@ usaraptor2:
 		Cost: 1100
 	Tooltip:
 		Name: King Raptor
-	RenderSprites:
-		Image: usaraptor
 	Armament@pointdefense:
 		LocalOffset: -200,0,120
 	AmmoPool:
@@ -10882,7 +10996,7 @@ usafirebase:
 usafirebase.e1:
 	Inherits: usafirebase
 	Buildable:
-		Prerequisites: usabarracks, ~techlevel.medium, ~botgla
+		Prerequisites: usabarracks, ~techlevel.medium, ~botplayer
 	Valued:
 		Cost: 1300
 	Cargo:
@@ -10895,7 +11009,7 @@ usafirebase.e1:
 usafirebase.e3:
 	Inherits: usafirebase
 	Buildable:
-		Prerequisites: usabarracks, ~techlevel.medium, ~botgla
+		Prerequisites: usabarracks, ~techlevel.medium, ~botplayer
 	Valued:
 		Cost: 1600
 	Cargo:
@@ -11077,7 +11191,7 @@ usaholdtheline:
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: usaholdteline
+		Image: usaholdtheline
 	ProvidesPrerequisite:
 		Prerequisite: usaholdthelinec
 
@@ -11154,10 +11268,10 @@ upstealthcomanche:
 		Queue: Aircraft.USA, RAAircraft.USA
 		Description: Cloaks Comanches.
 		Prerequisites: ~!upstealthcomanche, ~selectusaairforce
+	RenderSprites:
+		Image: upstealthcomanche
 	Valued:
 		Cost: 1000
-	RenderSprites:
-		Image: usacomanche
 	ProvidesPrerequisite:
 		Prerequisite: upstealthcomanche
 

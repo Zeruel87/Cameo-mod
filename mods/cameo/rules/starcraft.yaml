@@ -103,12 +103,6 @@ SCCOMMANDCENTER:
 		RequiresCondition: !jammed
 	Power:
 		Amount: 100
-	GrantConditionOnBotOwner:
-		Condition: botterran
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botterran
-		RequiresCondition: botterran
 	ExternalCondition@JAMMED:
 		Condition: jammed
 	ProvidesPrerequisite@faction:
@@ -628,7 +622,7 @@ SCBUNKERD:
 		Queue: Defence.Terran, RADefence.Terran
 		BuildPaletteOrder: 1000
 		BuildDuration: 400
-		Prerequisites: barracks, ~techlevel.low, ~botterran
+		Prerequisites: barracks, ~techlevel.low, ~botplayer
 	Valued:
 		Cost: 1000
 	Cargo:
@@ -709,12 +703,6 @@ SCNEXUS:
 		RequiresCondition: !jammed
 	Power:
 		Amount: 100
-	GrantConditionOnBotOwner:
-		Condition: botprotoss
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botprotoss
-		RequiresCondition: botprotoss
 	ExternalCondition@JAMMED:
 		Condition: jammed
 	-WithDeathAnimation:
@@ -1357,6 +1345,7 @@ SCHATCHERY:
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
 	Inherits@supply: ^SCUnitProduction
+	Inherits@bot: ^BotMicromanageable
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -1381,10 +1370,10 @@ SCHATCHERY:
 		RequiresCondition: hive
 	ProvidesPrerequisite@lairlimit:
 		Prerequisite: botlairlimit
-		RequiresCondition: lair && botzerg
+		RequiresCondition: lair && botmicro
 	ProvidesPrerequisite@hivelimit:
 		Prerequisite: bothivelimit
-		RequiresCondition: hive && botzerg
+		RequiresCondition: hive && botmicro
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -1464,12 +1453,6 @@ SCHATCHERY:
 		RequiresCondition: !jammed
 	Power:
 		Amount: 100
-	GrantConditionOnBotOwner:
-		Condition: botzerg
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botzerg
-		RequiresCondition: botzerg
 	ExternalCondition@JAMMED:
 		Condition: jammed
 	GivesBuildableArea:					##########
@@ -1538,7 +1521,7 @@ SCHATCHERY:
 	##########
 	GrantConditionOnProduction@botpowerrestriction:
 		Condition: botpowerrestriction
-		Duration: 100
+		Duration: 1000
 		ShowSelectionBar: False
 		Actors: scbotoverlord
 	ProvidesPrerequisite@botpowerrestriction:
@@ -1659,7 +1642,7 @@ SCBOTCREEPCOLONY:
 	RenderSprites:
 		Image: sccreepcolony
 	Buildable:
-		Prerequisites: Extractor, ~botzerg
+		Prerequisites: Extractor, ~botplayer
 		Queue: Defence.Zerg, RADefence.Zerg
 
 SCEXTRACTOR:
@@ -1824,6 +1807,7 @@ SCQUEENSNEST:
 SCSPIRE:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@bot: ^BotMicromanageable
 	Valued:
 		Cost: 2200
 	Tooltip:
@@ -1839,7 +1823,7 @@ SCSPIRE:
 		RequiresCondition: spirecondition
 	ProvidesPrerequisite@botlimit:
 		Prerequisite: botspirelimit
-		RequiresCondition: botzerg && spirecondition
+		RequiresCondition: botmicro && spirecondition
 	Buildable:
 		BuildPaletteOrder: 80
 		Prerequisites: Lair, ~techlevel.medium
@@ -1860,7 +1844,6 @@ SCSPIRE:
 	GivesBuildableArea:
 		AreaTypes: building, spire
 	-WithDeathAnimation:
-	
 	Exit:
 		ExitCell: 0,0
 	Production:
@@ -2165,12 +2148,6 @@ SCLAIR:
 		RequiresCondition: !jammed
 	Power:
 		Amount: 100
-	GrantConditionOnBotOwner:
-		Condition: botzerg
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botzerg
-		RequiresCondition: botzerg
 	ExternalCondition@JAMMED:
 		Condition: jammed
 	GivesBuildableArea:					##########
@@ -2293,12 +2270,6 @@ SCHIVE:
 		RequiresCondition: !jammed
 	Power:
 		Amount: 100
-	GrantConditionOnBotOwner:
-		Condition: botzerg
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botzerg
-		RequiresCondition: botzerg
 	ExternalCondition@JAMMED:
 		Condition: jammed
 	-WithDeathAnimation:
@@ -2317,11 +2288,11 @@ SCGREATERSPIRE:
 		Prerequisite: Spire
 	ProvidesPrerequisite@2:
 		Prerequisite: Greater Spire
-	Buildable:
-		BuildPaletteOrder: 140
-		Prerequisites: Spire, Hive, ~techlevel.high, ~botzerg
-		Queue: Building.Zerg, RABuilding.Zerg
-		Description: Unlocks Guardian.
+	#Buildable:
+	#	BuildPaletteOrder: 140
+	#	Prerequisites: Spire, Hive, ~techlevel.high, ~botplayer
+	#	Queue: Building.Zerg, RABuilding.Zerg
+	#	Description: Unlocks Guardian.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -3057,6 +3028,7 @@ SCDROPSHIP:
 		Name: Dropship
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
+		OverrideActor: scdropship
 	Buildable:
 		BuildPaletteOrder: 20
 		Queue: Aircraft.Terran, RAAircraft.Terran
@@ -3077,21 +3049,53 @@ SCDROPSHIP:
 	Armor:
 		Type: Light
 	Cargo:
-		Types: Infantry,Vehicle
+		Types: Infantry, Vehicle
 		MaxWeight: 8
 		PipCount: 8
+		LoadedCondition: loaded
 	-SpawnActorOnDeath:
 	Explodes:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
-	SelectionDecorations:
 	Selectable:
+		Class: scdropship
 		DecorationBounds: 36,32
 	Power:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCDropshipVoice
 	DeathSounds:
+	RenderSprites:
+		Image: scdropship
+
+scdropship.marine:
+	Inherits: SCDROPSHIP
+	Inherits@bot: ^BotMicromanageable
+	Buildable:
+		Prerequisites: scbarracks, Academy, ~hardbotplayer
+	Cargo:
+		InitialUnits: scmarine, scmarine, scmarine, scmarine, scmarine, scmarine, scmarine, scmedic
+	Armament:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: botmicro && loaded
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	ProductionCostMultiplier:
+		Multiplier: 200
+	EditorOnlyTooltip:
+		Name: Loaded Dropship (Marines)
+
+scdropship.mech:
+	Inherits: scdropship.marine
+	Buildable:
+		Prerequisites: Factory, Engineering Bay, Armory, ~hardbotplayer
+	Cargo:
+		InitialUnits: scsiegetank, scgoliath, scgoliath
+	ProductionCostMultiplier:
+		Multiplier: 400
+	EditorOnlyTooltip:
+		Name: Loaded Dropship (Mechanized)
 
 SCBATTLECRUISER:
 	Inherits: ^Helicopter
@@ -3382,7 +3386,7 @@ SCHIGHTEMPLAR:
 	Inherits@protoss: ^BasicProtoss
 	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 900
+		Cost: 1000
 	Tooltip:
 		Name: High Templar
 	Buildable:
@@ -3421,9 +3425,6 @@ SCHIGHTEMPLAR:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-	GrantConditionOnBotOwner:
-		Condition: botprotoss
-		Bots: easy, medium, hard, brutal, airforce
 	AutoTarget:
 		InitialStance: HoldFire
 
@@ -3508,18 +3509,73 @@ SCSHUTTLE:
 		Range: 7c0
 		Type: GroundPosition
 	Cargo:
-		Types: Infantry,Vehicle
+		Types: Infantry, Vehicle
 		MaxWeight: 8
 		PipCount: 8
+		LoadedCondition: loaded
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 36,32
+		Class: scshuttle
 	Power:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCShuttleVoice
 	DeathSounds:
 	-SpawnActorOnDeath:
+	RenderSprites:
+		Image: scshuttle
+
+scshuttle.reaver:
+	Inherits: SCSHUTTLE
+	Inherits@bot: ^BotMicromanageable
+	Buildable:
+		Prerequisites: Robotics Support Bay, ~botplayer
+	Cargo:
+		InitialUnits: screaver
+	Armament:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: botmicro && loaded
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	ProductionCostMultiplier:
+		Multiplier: 300
+	EditorOnlyTooltip:
+		Name: Loaded Shuttle (Reaver)
+
+scshuttle.reaver2:
+	Inherits: scshuttle.reaver
+	Buildable:
+		Prerequisites: Robotics Support Bay, ~hardbotplayer
+	Cargo:
+		InitialUnits: screaver, screaver
+	ProductionCostMultiplier:
+		Multiplier: 500
+	EditorOnlyTooltip:
+		Name: Loaded Shuttle (2 Reavers)
+
+scshuttle.hightemplar:
+	Inherits: scshuttle.reaver
+	Buildable:
+		Prerequisites: Templar Archives, ~hardbotplayer
+	Cargo:
+		InitialUnits: schightemplar, schightemplar
+	ProductionCostMultiplier:
+		Multiplier: 400
+	EditorOnlyTooltip:
+		Name: Loaded Shuttle (2 High Templar)
+
+scshuttle.darktemplar:
+	Inherits: scshuttle.reaver
+	Buildable:
+		Prerequisites: Citadel of Adun, ~hardbotplayer
+	Cargo:
+		InitialUnits: scdarktemplar, scdarktemplar, scdarktemplar, scdarktemplar
+	ProductionCostMultiplier:
+		Multiplier: 700
+	EditorOnlyTooltip:
+		Name: Loaded Shuttle (4 Dark Templar)
 
 SCREAVER:
 	Inherits: ^Vehicle
@@ -3624,6 +3680,7 @@ SCOBSERVER:
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@detect: ^GenericAirDetector
+	Inherits@bot: ^BotMicromanageable
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -3668,14 +3725,11 @@ SCOBSERVER:
 		Amount: -10
 	Voiced:
 		VoiceSet: SCObserverVoice
-	GrantConditionOnBotOwner:
-		Condition: botprotoss
-		Bots: easy, medium, hard, brutal, airforce
 	Wanders:
 		WanderMoveRadius: 6
 		MinMoveDelay: 20
 		MaxMoveDelay: 80
-		RequiresCondition: botprotoss
+		RequiresCondition: botmicro
 
 SCARCHON:
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -4130,6 +4184,7 @@ SCOVERLORD:
 	Inherits: ^Helicopter
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@detect: ^GenericAirDetector
+	Inherits@bot: ^BotMicromanageable
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -4141,7 +4196,7 @@ SCOVERLORD:
 	Buildable:
 		BuildPaletteOrder: 30
 		BuildDurationModifier: 25
-		Prerequisites: ~!botzerg
+		Prerequisites: ~!botplayer
 		Queue: Building.Zerg, RABuilding.Zerg
 		Description: Provides supply and stores resources\nCan transport 8 units
 	Aircraft:
@@ -4180,14 +4235,11 @@ SCOVERLORD:
 		Capacity: 1000
 	Voiced:
 		VoiceSet: SCOverlordVoice
-	GrantConditionOnBotOwner:
-		Condition: botzerg
-		Bots: easy, medium, hard, brutal, airforce
 	Wanders:
 		WanderMoveRadius: 2
 		MinMoveDelay: 10
 		MaxMoveDelay: 40
-		RequiresCondition: botzerg
+		RequiresCondition: botmicro
 	WithMoveAnimation:
 	-SpawnActorOnDeath:
 	-AttackAircraft:
@@ -4451,6 +4503,7 @@ SCLURKER:
 	Inherits@zerg: ^LargeZerg
 	Inherits@editorhack: ^DeployableInfantryEditor
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@bot: ^BotMicromanageable
 	Selectable:
 		Bounds: 24,24
 		DecorationBounds: 24,24
@@ -4507,13 +4560,10 @@ SCLURKER:
 	Armament@AI:
 		Name: target
 		Weapon: LurkerAITarget
-		RequiresCondition: undeployed && botzerg
+		RequiresCondition: undeployed && botmicro
 	AttackOmni:
 		Armaments: primary,target
 	-AttackFrontal:
-	GrantConditionOnBotOwner:
-		Condition: botzerg
-		Bots: easy, medium, hard, brutal, airforce
 	RenderRangeCircle:
 	Cloak:
 		InitialDelay: 60
@@ -4871,7 +4921,7 @@ SCBOTDRONE:
 		Image: SCDRONE
 	Buildable:
 		BuildPaletteOrder: 1010
-		Prerequisites: Extractor, ~botzerg
+		Prerequisites: Extractor, ~botplayer
 		Queue: Defence.Zerg, RADefence.Zerg
 	-MapEditorData:
 
@@ -4884,7 +4934,7 @@ SCBOTOVERLORD:
 	Buildable:
 		BuildPaletteOrder: 1020
 		Queue: Building.Zerg, RABuilding.Zerg
-		Prerequisites: ~botzerg, !botpowerrestriction
+		Prerequisites: ~botplayer, !botpowerrestriction
 		BuildLimit: 15
 	Wanders:
 		WanderMoveRadius: 2
@@ -4898,7 +4948,7 @@ SCBOTSPAWNINGPOOL:
 		Image: SCSPAWNINGPOOL
 	Buildable:
 		BuildPaletteOrder: 1030
-		Prerequisites: Extractor, Overlord, ~techlevel.medium, ~botzerg
+		Prerequisites: Extractor, Overlord, ~techlevel.medium, ~botplayer
 	-MapEditorData:
 
 SCBOTEVOLUTIONCHAMBER:
@@ -4907,7 +4957,7 @@ SCBOTEVOLUTIONCHAMBER:
 		Image: SCEVOLUTIONCHAMBER
 	Buildable:
 		BuildPaletteOrder: 1040
-		Prerequisites: Extractor, Overlord, ~techlevel.medium, ~botzerg
+		Prerequisites: Extractor, Overlord, ~techlevel.medium, ~botplayer
 	-MapEditorData:
 
 ####################################################################################################

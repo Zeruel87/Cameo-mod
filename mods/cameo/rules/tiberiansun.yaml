@@ -10,9 +10,6 @@
 		ActorTypes: tsengineer, tse1, tse1, tse1
 	Building:
 		BuildSounds: tsplace2.aud
-	GrantConditionOnBotOwner:
-		Condition: botts
-		Bots: easy, medium, hard, brutal, airforce
 
 ^TSRenderVoxel:
 	Inherits: ^RenderVoxel
@@ -1862,7 +1859,7 @@ tsgtradr:
 		CameraRemoveDelay: 60
 	SupportPowerChargeBar:
 
-mutradar:
+tsgtradr2:
 	Inherits: tsgtradr
 	Inherits@SW: ^PrimarySuperweapon
 	Buildable:
@@ -3650,7 +3647,7 @@ TSUMAGON:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: barracks, anyhq
+		Prerequisites: barracks, tek
 		Queue: Infantry.MUTANT, RAInfantry.MUTANT, Infantry.X_Infantry
 		Description: Advanced anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
@@ -3833,7 +3830,7 @@ TSMUTANT3:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: barracks
+		Prerequisites: barracks, anyhq
 		Queue: Infantry.MUTANT, RAInfantry.MUTANT, Infantry.X_Infantry
 		Description: Elite mutant infantry, can use grenades.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
@@ -3877,7 +3874,7 @@ TSWEEDGUY:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: barracks
+		Prerequisites: barracks, anyhq
 		Queue: Infantry.MUTANT, RAInfantry.MUTANT, Infantry.X_Infantry
 		Description: Mutant soldier with a Tiberium weapon.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
@@ -3914,11 +3911,11 @@ TSDOGGIE:
 	Inherits@autotarget: ^AutoTargetAllAssaultMove
 	Inherits@tibheal: ^TibHealable
 	Health:
-		HP: 20000		#100000
+		HP: 18000
 	Valued:
-		Cost: 600		#1000
+		Cost: 600
 	Armor:
-		Type: Light
+		Type: None
 	Armament:
 		Weapon: TSFiendShard
 	Buildable:
@@ -4319,6 +4316,8 @@ TSAPC:
 		Cost: 800
 	Tooltip:
 		Name: Amphibious APC
+	UpdatesPlayerStatistics:
+		OverrideActor: tsapc
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: barracks, ~techlevel.low
@@ -4347,10 +4346,10 @@ TSAPC:
 	AttackTurreted:
 	SelectionDecorations:
 	Selectable:
+		Class: tsapc
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
-	WithVoxelBody:
 	Voiced:
 		VoiceSet: TSVehicle
 	DeliversCash:
@@ -4367,6 +4366,22 @@ TSAPC:
 	WithVoxelBody@water:
 		Sequence: water
 		RequiresCondition: inwater
+	RenderVoxels:
+		Image: tsapc
+	RenderSprites:
+		Image: tsapc
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+
+tsapc.bot:
+	Inherits: TSAPC
+	Buildable:
+		Prerequisites: barracks, ~hardbotplayer
+	Cargo:
+		InitialUnits: tse2, tse2, tse1, tse1, tsmedic
+	ProductionCostMultiplier:
+		Multiplier: 180
 
 TSHVR:
 	Inherits: ^Tank
@@ -5088,6 +5103,8 @@ TSSAPC:
 		Cost: 800
 	Tooltip:
 		Name: Subterranean APC
+	UpdatesPlayerStatistics:
+		OverrideActor: tssapc
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: anyhq, ~techlevel.medium
@@ -5111,6 +5128,7 @@ TSSAPC:
 		TurnSpeed: 5	#3
 	SelectionDecorations:
 	Selectable:
+		Class: tssapc
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
@@ -5762,6 +5780,8 @@ tsm113:
 		Cost: 700
 	Tooltip:
 		Name: M113 APC
+	UpdatesPlayerStatistics:
+		OverrideActor: tsm113
 	Buildable:
 		BuildPaletteOrder: 160
 		Prerequisites: barracks
@@ -5784,8 +5804,8 @@ tsm113:
 	Turreted:
 	WithMuzzleOverlay:
 	AttackTurreted:
-	SelectionDecorations:
 	Selectable:
+		Class: tsm113
 	WithVoxelBody:
 	WithVoxelTurret:
 	Cargo:
@@ -5798,7 +5818,38 @@ tsm113:
 	DeliversCash:
 		Payload: 350
 	RenderVoxels:
+		Image: tsm113
 		Scale: 7.5
+	RenderSprites:
+		Image: tsm113
+
+tsm113.bot1:
+	Inherits: tsm113
+	Buildable:
+		Prerequisites: barracks, ~anyhq, ~hardbotplayer
+	Cargo:
+		InitialUnits: tsmutant3, tsmutant, tsmutant, tsmwmn, tsmwmn
+	ProductionCostMultiplier:
+		Multiplier: 200
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+
+tsm113.bot2:
+	Inherits: tsm113.bot1
+	Cargo:
+		InitialUnits: tsdoggie, tsdoggie, tsmutant3
+	ProductionCostMultiplier:
+		Multiplier: 300
+
+tsm113.bot3:
+	Inherits: tsm113.bot1
+	Buildable:
+		Prerequisites: barracks, ~tek, ~hardbotplayer
+	Cargo:
+		InitialUnits: tsghost.mutant, tsumagon, tsmutant3, tsmutant3, tsweedguy
+	ProductionCostMultiplier:
+		Multiplier: 430
 
 #######################################
 # TS CABAL Vehicles

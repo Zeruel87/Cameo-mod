@@ -58,7 +58,6 @@ SAPC:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
-	Inherits@detect: ^GenericGroundDetector
 	Buildable:
 		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles
 		BuildPaletteOrder: 130
@@ -71,6 +70,7 @@ SAPC:
 		Name: Phase Transport
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
+		OverrideActor: sapc
 	Health:
 		HP: 35000
 	Armor:
@@ -78,7 +78,7 @@ SAPC:
 	Mobile:
 		Speed: 142
 		Locomotor: heavywheeled
-		RequiresCondition: !notmobile && !being-captured && !disabled
+		PauseOnCondition: notmobile || being-captured || disabled
 	RevealsShroud:
 		Range: 7c0
 		RevealGeneratedShroud: False
@@ -115,10 +115,28 @@ SAPC:
 		Payload: 625
 	Voiced:
 		VoiceSet: RAVehicleVoice
+	Selectable:
+		Class: sapc
+	RenderSprites:
+		Image: sapc
 	#SpawnActorOnDeath:
 	#	Actor: SAPC.Husk
 	#	OwnerType: InternalName
 	#	EffectiveOwnerFromOwner: true
+
+sapc.bot:
+	Inherits: SAPC
+	Buildable:
+		Prerequisites: atek, ~hardbotplayer, !e7
+	Cargo:
+		InitialUnits: medi, medi, medi, e7
+	AutoTarget:
+		InitialStanceAI: AttackAnything
+	ProductionCostMultiplier:
+		Multiplier: 250
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
 
 SAPC.Husk:
 	Inherits: ^LightHusk
