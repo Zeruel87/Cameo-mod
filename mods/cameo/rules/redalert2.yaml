@@ -262,6 +262,7 @@ RA2IraqAddon:
 ^RA2GarrisonBuilding:
 	Inherits: ^TechBuilding
 	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@gar: ^DisableBunkerGarrison
 	OwnerLostAction:
 		Action: ChangeOwner
 	CaptureManager:
@@ -293,14 +294,10 @@ RA2IraqAddon:
 		PipCount: 6
 		EjectOnDeath: false
 		LoadedCondition: loaded
-	AttackGarrisoned:
+	AttackOpenTopped:
 		Armaments: garrisoned
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
-		PortYaws: 0, 176, 341, 512, 682, 853
-		PortCones: 88, 88, 88, 88, 88, 88
-	RenderRangeCircle:
-	DetectCloaked:
-		Range: 3c0
+		PauseOnCondition: bunkerdisable || chronobeamed
 	TooltipDescription@ally:
 		Description: Can be garrisoned with infantry.
 		ValidStances: Ally
@@ -1127,13 +1124,13 @@ ra2gacsph:
 		Icon: chrono
 		ChargeInterval: 3000
 		Description: Chronoshift
-		LongDesc: Teleports a large group of units\nacross the map.
+		LongDesc: Temporarily teleports selected units across\nthe map.
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		#BeginChargeSpeechNotification: ChronosphereCharging
 		#EndChargeSpeechNotification: ChronosphereReady
-		Range: 2
-		Duration: 0
+		Range: 1
+		Duration: 500
 		KillCargo: False
 		DisplayRadarPing: True
 		SelectionCursor: ability
@@ -2101,7 +2098,6 @@ ra2nairon:
 		ChargeInterval: 3000
 		Description: Invulnerability
 		LongDesc: Makes a group of units invulnerable\nfor 20 seconds.
-		Range: 2
 		Duration: 500
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -2227,6 +2223,7 @@ yrngbnkr:
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@shadow: ^RA2BuildingShadow
+	Inherits@gar: ^DisableBunkerGarrison
 	Tooltip:
 		Name: Battle Bunker
 	Building:
@@ -2260,13 +2257,12 @@ yrngbnkr:
 		MaxWeight: 6
 		PipCount: 6
 		InitialUnits: ra2e2
-		LoadedCondition: bunkerup
 		EjectOnDeath: false
 	WithSpriteBody:
-		RequiresCondition: !bunkerup
+		RequiresCondition: !loaded
 	WithSpriteBody@Bunkered:
 		Sequence: idle-bunkered
-		RequiresCondition: bunkerup
+		RequiresCondition: loaded
 		Name: bunkered
 	WithMakeAnimation:
 		BodyNames: body, bunkered
@@ -2275,7 +2271,7 @@ yrngbnkr:
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
-		PauseOnCondition: chronobeamed
+		PauseOnCondition: bunkerdisable || chronobeamed
 	RenderRangeCircle:
 		FallbackRange: 6c0
 	DetectCloaked:
@@ -3137,6 +3133,9 @@ yrngtbnk:
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
 		PauseOnCondition: chronobeamed
+	Targetable@garrisoned:
+		TargetTypes: LoadedTankBunker
+		RequiresCondition: bunkerup
 	RenderRangeCircle:
 		FallbackRange: 6c0
 	DetectCloaked:
@@ -3892,7 +3891,6 @@ RA2ENGINEER:
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackVoice
 	Buildable:
-		BuildPaletteOrder: 30
 		Prerequisites: barracks
 		Queue: Infantry.AlliesRA2, RAInfantry.AlliesRA2
 	Voiced:
@@ -4267,7 +4265,7 @@ RA2TERROR:
 	Tooltip:
 		Name: Terrorist
 	Buildable:
-		BuildPaletteOrder: 10
+		BuildPaletteOrder: 40
 		Prerequisites: barracks, anyhq, ~techlevel.medium, ~RA2Cuba
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 		Description: Suicide bomber infantry.\n  Strong vs Infantry, Vehicles\n  Weak vs Defence, Aircraft\nExplodes when killed
@@ -4601,7 +4599,7 @@ YRSLAV:
 	Tooltip:
 		Name: Slave
 	Buildable:
-		BuildPaletteOrder: 10
+		BuildPaletteOrder: 25
 		Prerequisites: barracks
 		Queue: Infantry.Yuri, RAInfantry.Yuri
 		Description: Yuri resource collector.
@@ -4903,7 +4901,7 @@ RA2MTNK:
 	Tooltip:
 		Name: Grizzly Tank
 	Buildable:
-		BuildPaletteOrder: 60
+		BuildPaletteOrder: 40
 		Prerequisites:  ~techlevel.medium
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
 		Description: Allied main battle tank.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
@@ -5066,7 +5064,7 @@ RA2FV:
 	Tooltip:
 		Name: Infantry Fighting Vehicle
 	Buildable:
-		BuildPaletteOrder: 60
+		BuildPaletteOrder: 50
 		Prerequisites: ~techlevel.low
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2, Vehicle.X_Vehicles
 		Description: Versatile Allied vehicle.\nChanges turret with passenger
@@ -5438,6 +5436,7 @@ yrbfrt:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Inherits@crush: ^VehicleCrusher
+	Inherits@cargo: ^CargoVehicle
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -5477,9 +5476,6 @@ yrbfrt:
 		Types: Infantry, Hacker
 		MaxWeight: 6
 		PipCount: 6
-		AfterLoadDelay: 0
-		BeforeUnloadDelay: 0
-		AfterUnloadDelay: 0
 		EjectOnDeath: false
 	AttackOpenTopped:
 		Voice: Attack
@@ -5625,6 +5621,7 @@ RA2HTK:
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@cargo: ^CargoVehicle
 	Valued:
 		Cost: 650
 	Tooltip:
@@ -5678,9 +5675,6 @@ RA2HTK:
 		Types: Infantry, Hacker
 		MaxWeight: 4
 		PipCount: 4
-		AfterLoadDelay: 0
-		BeforeUnloadDelay: 0
-		AfterUnloadDelay: 0
 		LoadingCondition: notmobile
 		EjectOnDeath: false
 
@@ -6429,7 +6423,6 @@ RA2TRUK:
 	Inherits: TRUCK
 	Buildable:
 		Queue: Vehicle.AlliesRA2, Vehicle.SovietRA2, Vehicle.Yuri, RAVehicle.AlliesRA2, RAVehicle.SovietRA2, RAVehicle.Yuri
-		BuildPaletteOrder: 100
 	RenderSprites:
 		Image: truck
 	Voiced:
@@ -7538,7 +7531,7 @@ ra2shad.bot1:
 		DeployTicks: 0
 	KillsSelf:
 		RemoveInstead: true
-		RequiresCondition: !loaded || !botmicro
+		RequiresCondition: !loaded && botmicro
 		Delay: 200
 
 ra2hind:
@@ -7752,7 +7745,6 @@ ra2hornet:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
-	Interactable:
 	Valued:
 		Cost: 350
 	Tooltip:
@@ -7779,7 +7771,8 @@ ra2hornet:
 		Ammo: 6
 		PipCount: 1
 		AmmoCondition: ammo
-	-SpawnActorOnDeath:
+	SpawnActorOnDeath:
+		Actor: ra2hornet.Husk
 	WithMoveAnimation:
 		MoveSequence: move
 	RenderVoxels:
@@ -7804,7 +7797,6 @@ ra2hornet:
 
 ra2asw:
 	Inherits: ra2hornet
-	Interactable:
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -7834,6 +7826,8 @@ ra2asw:
 		Range: 6c0
 		CloakTypes: Underwater
 	RenderDetectionCircle:
+	SpawnActorOnDeath:
+		Actor: ra2asw.Husk
 
 yrspyp:
 	Inherits: ^RANeutralPlane
@@ -7856,7 +7850,6 @@ yrspyp:
 	SelectionDecorations:
 		RenderSelectionBars: False
 	-Voiced:
-	-Targetable@AIRBORNE:
 	Contrail@1:
 		Offset: -725,683,0
 	Contrail@2:
@@ -7867,8 +7860,12 @@ yrspyp:
 	RejectsOrders:
 	Interactable:
 	WithVoxelBody:
-	-SpawnActorOnDeath:
+	SpawnActorOnDeath:
+		Actor: yrspyp.husk
 	-WithShadow:
+	-ExternalCondition@STASIS:
+	-ExternalCondition@LOCKDOWN:
+	-ExternalCondition@TSNEUTRON:
 
 camera.ra2spy:
 	Inherits: CAMERA.small
@@ -8091,22 +8088,21 @@ ra2ctbunk01:
 		Types: Infantry
 		MaxWeight: 5
 		PipCount: 5
-		LoadedCondition: bunkerup
+		LoadedCondition: loaded
 		EjectOnDeath: false
+	WithSpriteBody:
+		RequiresCondition: !loaded
 	WithSpriteBody@Bunkered:
 		Sequence: idle-bunkered
-		RequiresCondition: bunkerup
+		RequiresCondition: loaded
 		Name: bunkered
-	AttackGarrisoned:
+	AttackOpenTopped:
 		Armaments: garrisoned
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
-		PortYaws: 0, 176, 341, 512, 682, 853
-		PortCones: 88, 88, 88, 88, 88, 88
 	RenderRangeCircle:
 		FallbackRange: 6c0
 	DetectCloaked:
 		Range: 3c0
-	ConditionManager:
 
 ra2ctbunk02:
 	Inherits: ra2ctbunk01
@@ -8131,7 +8127,7 @@ ra2ctchig01:
 	Health:
 		HP: 75000
 	Tooltip:
-		Name: Departament
+		Name: Department
 	Selectable:
 		Bounds: 72,48
 	Building:
@@ -8527,7 +8523,6 @@ ra2caairp:
 		DirectionArrowAnimation: airstrikedirection
 	SupportPowerChargeBar:
 	WithIdleOverlay@decoration:
-	ConditionManager:
 	GpsDot:
 		String: Communications
 
@@ -8832,6 +8827,31 @@ ra2cplane.Husk:
 		Image: ra2cplane
 	RenderVoxels:
 		Image: ra2cplane
+	-WithShadow:
+
+yrspyp.husk:
+	Inherits: ^PlaneHusk
+	Inherits@Voxel: ^RenderVoxel
+	Tooltip:
+		Name: Spy Plane
+	Aircraft:
+		TurnSpeed: 7
+		Speed: 250
+	SmokeTrailWhenDamaged:
+		Offset: -1c43,0,0
+		Interval: 2
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 8c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 6c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: yrspyp
+	RenderVoxels:
+		Image: yrspyp
 	-WithShadow:
 
 #######################################

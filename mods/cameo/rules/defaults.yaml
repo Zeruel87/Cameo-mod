@@ -351,6 +351,8 @@
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	Inherits@FrenzyPower: ^FrenzyPower
 	Inherits@driver-dead: ^AffectedByDriverKill
+	Inherits@salvage: ^GenericSalvageBonus
+	Inherits@emergencyrepair: ^EmergencyRepairable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -446,6 +448,10 @@
 	GpsDot:
 		String: Vehicle
 	TeleportNetworkTransportable:
+	SpawnActorOnDeath@Scraps:
+		Probability: 99
+		Actor: glscrapcrate
+		DeathType: MakeScrapbox
 
 ^Tank:
 	Inherits: ^Vehicle
@@ -3022,7 +3028,7 @@ CPQDEBUGDUMMY:
 	BaseBuilding:
 	WithTextDecoration:
 		Text: MCV
-		ReferencePoint: Bottom, Left
+		ReferencePoint: Bottom, Center
 		UsePlayerColor: True
 		ValidStances: Ally, Enemy, Neutral
 	TransferTimedExternalConditionOnTransform:
@@ -3288,19 +3294,19 @@ CPQDEBUGDUMMY:
 		Modifier: 0
 	RejectsOrders@DRIVERKILL:
 		RequiresCondition: driver-dead
-	SpawnActorOnDeath@Scraps:
-		Probability: 99
-		Actor: glscrapcrate
-		DeathType: MakeScrapbox
+
+^GenericSalvageBonus:
 	DamageMultiplier@scrap1:
 		RequiresCondition: scrap_create_bonus == 1
 		Modifier: 95
 	DamageMultiplier@scrap2:
-		RequiresCondition: scrap_create_bonus == 2
+		RequiresCondition: scrap_create_bonus >= 2
 		Modifier: 90
 	ExternalCondition@SCRAP_CREATE_BONUS:
 		Condition: scrap_create_bonus
 		TotalCap: 2
+
+^EmergencyRepairable:
 	ExternalCondition@EmergencyRepair1:
 		Condition: repairlvl1
 	ExternalCondition@EmergencyRepair2:
@@ -3308,22 +3314,25 @@ CPQDEBUGDUMMY:
 	ExternalCondition@EmergencyRepair3:
 		Condition: repairlvl3
 	SelfHealing@EmergencyRepair1:
-		Step: 250
-		Delay: 1
+		PercentageStep: 2
+		Step: 0
+		Delay: 10
 		HealIfBelow: 100
-		DamageCooldown: 125
+		DamageCooldown: 0
 		RequiresCondition: repairlvl1 && damaged
 	SelfHealing@EmergencyRepair2:
-		Step: 300
-		Delay: 1
+		PercentageStep: 4
+		Step: 0
+		Delay: 10
 		HealIfBelow: 100
-		DamageCooldown: 125
+		DamageCooldown: 0
 		RequiresCondition: repairlvl2 && damaged
 	SelfHealing@EmergencyRepair3:
-		Step: 350
-		Delay: 1
+		PercentageStep: 6
+		Step: 0
+		Delay: 10
 		HealIfBelow: 100
-		DamageCooldown: 125
+		DamageCooldown: 0
 		RequiresCondition: repairlvl3 && damaged
 	WithDecoration@EmergencyRepair1:
 		Image: select
@@ -3383,13 +3392,13 @@ CPQDEBUGDUMMY:
 		Step: 500
 		Delay: 50
 		HealIfBelow: 150
-		DamageCooldown: 50
+		DamageCooldown: 0
 		RequiresCondition: propaganda && damaged
 	SelfHealing@PROPAGANDA2:
 		Step: 500
 		Delay: 50
 		HealIfBelow: 150
-		DamageCooldown: 50
+		DamageCooldown: 0
 		RequiresCondition: propaganda && upsubliminal && damaged
 	ReloadDelayMultiplier@PROPAGANDA1:
 		Modifier: 120
@@ -3427,10 +3436,13 @@ CPQDEBUGDUMMY:
 		RequiresCondition: usasearchndestroy
 
 ^DisableBunkerGarrison:
+	Cargo:
+		LoadedCondition: loaded
 	Targetable@BunkerDisabled:
 		TargetTypes: GarrisonableBunker
-	AttackGarrisoned:
-		PauseOnCondition: bunkerdisable || chronobeamed
+	Targetable@garrisoned:
+		TargetTypes: Garrisoned
+		RequiresCondition: loaded
 	ExternalCondition@BunkerDisabled:
 		Condition: bunkerdisable
 		TotalCap: 1
@@ -3493,3 +3505,21 @@ CPQDEBUGDUMMY:
 	GrantConditionOnBotOwner@aimicro:
 		Condition: botmicro
 		Bots: easy, medium, hard, brutal, airforce
+
+^upgrade.template:
+	Buildable:
+		BuildLimit: 1
+	Interactable:
+	AlwaysVisible:
+
+^CargoVehicle:
+	Targetable@garrisoned:
+		TargetTypes: LoadedVehicle
+		RequiresCondition: loaded
+	Capturable:
+		RequiresCondition: !loaded && !invulnerability && !chronobeamed
+	Cargo:
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+		LoadedCondition: loaded
