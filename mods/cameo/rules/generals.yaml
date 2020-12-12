@@ -418,12 +418,12 @@ usabomber.fuelbomb:
 	Tooltip:
 		Name: B-52 Bomber
 
-usabomber.neutronbomb:
+usabomber.emp:
 	Inherits: usabomber
 	AttackBomber:
 		PauseOnCondition: !ammo
 	Armament:
-		Weapon: CHNeutronBomb
+		Weapon: CHEMPBomb
 	AmmoPool:
 		Ammo: 1
 	Tooltip:
@@ -961,7 +961,7 @@ glanthraxbomber:
 		Prerequisites: upantraxgamma
 	-ExternalCondition@STASIS:
 	-DelayedWeaponAttachable@lockdown:
-	-ExternalCondition@TSNEUTRON:
+	-ExternalCondition@EMP:
 
 glscrapcrate:
 	Inherits: ^Crate
@@ -1374,6 +1374,7 @@ glstorm:
 	Explodes:
 		Weapon: GLBombTruckToxExplosive
 		EmptyWeapon: GLBombTruckToxExplosive
+		Type: CenterPosition
 	WithIdleOverlay@SMOKE:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-anim2
@@ -1703,7 +1704,7 @@ gltrap:
 		EmptyWeapon: GLBarrelExplode
 		DamageSource: Killer
 	Armament@PRIMARY:
-		Weapon: DemoTruckTargeting
+		Weapon: SuicideBomberTargeting
 	GrantConditionOnAttack:
 		Condition: triggered
 		PauseOnCondition: disabled
@@ -2454,6 +2455,8 @@ glbbus:
 		Armaments: garrisoned
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PauseOnCondition: chronobeamed
+	RevealOnFire:
+		ArmamentNames: primary, garrisoned
 	RenderRangeCircle:
 		FallbackRange: 6c0
 	Selectable:
@@ -2464,7 +2467,6 @@ glbbus:
 		TurnSpeed: 10
 	RenderSprites:
 		Image: glbbus
-		Scale: 0.9
 	Voiced:
 		VoiceSet: GLBattleBusVoice
 	DamageMultiplier@scrap1:
@@ -2941,8 +2943,6 @@ glpickup:
 		MaxWeight: 2
 		PipCount: 2
 		LoadingCondition: notmobile
-	RenderSprites:
-		Scale: 0.92
 	Voiced:
 		VoiceSet: TechnicalVoice
 	Inherits@EXT: ^ExternalConditions					##########
@@ -3094,7 +3094,6 @@ glvan:
 		PipCount: 4
 		LoadingCondition: notmobile
 	RenderSprites:
-		Scale: 0.92
 	Voiced:
 		VoiceSet: TechnicalVoice
 	Inherits@EXT: ^ExternalConditions					##########
@@ -3116,6 +3115,7 @@ glvan:
 
 glradar:
 	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
 	Inherits@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@announce: ^AnnounceOnBuild
@@ -3174,6 +3174,7 @@ glradar:
 		EmptyWeapon: GLRadarvanHuskCluster
 	SpawnActorPower@scan:
 		PauseOnCondition: disabled
+		RequiresCondition: radarvanscan
 		OrderName: SovietSpyPlane
 		Icon: radarvan
 		ChargeInterval: 3000
@@ -3188,6 +3189,9 @@ glradar:
 		LaunchSound: vradscan.wav
 		IncomingSound: vradscan.wav
 		SupportPowerPaletteOrder: 10
+	GrantConditionOnPrerequisite@scan:
+		Condition: radarvanscan
+		Prerequisites: upradarvanscan
 
 glquad:
 	Inherits: ^Vehicle
@@ -3245,7 +3249,6 @@ glquad:
 		Sequence: turret3
 		RequiresCondition: scrap_create_bonus >= 2
 	RenderSprites:
-		Scale: 0.86
 	Voiced:
 		VoiceSet: QuadCannonVoice
 	Inherits@EXT: ^ExternalConditions					##########
@@ -3298,7 +3301,7 @@ GLSCUD:
 	Valued:
 		Cost: 1200
 	Tooltip:
-		Name: SCUD Launcher
+		Name: Scud Launcher
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
@@ -3306,7 +3309,7 @@ GLSCUD:
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 40
+		Speed: 50
 		TurnSpeed: 4
 	RevealsShroud:
 		Range: 5c0
@@ -3647,6 +3650,9 @@ glworker:
 		ValidTargets: Structure
 	AttackFrontal:
 		Voice: Repair
+	DetectCloaked:
+		Range: 4c0
+		CloakTypes: Mine
 	GrantConditionOnPrerequisite@upnewshoes:
 		Condition: newshoesupgrade
 		Prerequisites: upnewshoes
@@ -4409,6 +4415,10 @@ CHNMCV:
 		NoTransformNotification: BuildingCannotPlaceAudio
 	Voiced:
 		VoiceSet: PRCMCCVoice
+	DetectCloaked:
+		Range: 6c0
+		CloakTypes: Mine
+		RequiresCondition: !disabled
 	Inherits@EXT: ^ExternalConditions
 	RenderSprites:
 		Image: chmcv
@@ -5379,16 +5389,16 @@ chairport:
 		SupportPowerPaletteOrder: 40
 		Prerequisites: upcarpetbomb
 		StartFullyCharged: true
-	AirstrikePower@neutron:
-		OrderName: CHNeutronBomb
-		Icon: chneutronbomb
+	AirstrikePower@EMP:
+		OrderName: CHEMPBomb
+		Icon: chemp
 		ChargeInterval: 6000
 		Description: EM Pulse
 		LongDesc: A bomber drops a EMP bomb on the target.\nDisables vehicles and defenses.\nInstant-kills most aircraft.
 		SelectTargetSpeechNotification: SelectTarget
 		CameraActor: camera
 		CameraRemoveDelay: 150
-		UnitType: usabomber.neutronbomb
+		UnitType: usabomber.emp
 		QuantizedFacings: 8
 		DisplayBeacon: true
 		BeaconPoster: airstrike
@@ -5400,7 +5410,7 @@ chairport:
 		UseDirectionalTarget: false
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
-		Prerequisites: upchneutronbomb
+		Prerequisites: upchemp
 		StartFullyCharged: true
 	AirstrikePower@cluster:
 		OrderName: CHClusterBomb
@@ -7929,7 +7939,7 @@ upcarpetbomb:
 	ProvidesPrerequisite:
 		Prerequisite: upcarpetbomb
 
-upchneutronbomb:
+upchemp:
 	Inherits: ^upgrade.template
 	Tooltip:
 		Name: General's Promotion EMP Strike
@@ -7937,13 +7947,13 @@ upchneutronbomb:
 		BuildPaletteOrder: 250
 		Queue: Promotions.CHINA
 		Description: Enables EMP Bomb strikes.
-		Prerequisites: !upchneutronbomb, rank5
+		Prerequisites: !upchemp, rank5
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: chneutronbombicon
+		Image: chempicon
 	ProvidesPrerequisite:
-		Prerequisite: upchneutronbomb
+		Prerequisite: upchemp
 
 upchminebomb:
 	Inherits: ^upgrade.template
@@ -9161,6 +9171,10 @@ USAMCV:
 		NoTransformNotification: BuildingCannotPlaceAudio
 	Voiced:
 		VoiceSet: USAMCCVoice
+	DetectCloaked:
+		Range: 6c0
+		CloakTypes: Mine
+		RequiresCondition: !disabled
 	Inherits@EXT: ^ExternalConditions
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmusa
@@ -10120,7 +10134,7 @@ usaairport:
 		UseDirectionalTarget: false
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
-		Prerequisites: upusamotherbomb
+		Prerequisites: upusafuelbomb, upusamotherbomb
 		StartFullyCharged: true
 	AirstrikePower@leaflet:
 		OrderName: USALeaflet
@@ -10466,7 +10480,7 @@ usagunship:
 		Image: usagunship
 	-ExternalCondition@STASIS:
 	-DelayedWeaponAttachable@lockdown:
-	-ExternalCondition@TSNEUTRON:
+	-ExternalCondition@EMP:
 
 usaspydronepower:
 	Inherits: ^RANeutralPlane
@@ -10482,12 +10496,11 @@ usaspydronepower:
 	Tooltip:
 		Name: Spy Drone
 	Valued:
-		Cost: 2000
+		Cost: 1000
 	Aircraft:
-		TurnSpeed: 16
+		TurnSpeed: 28
 		Speed: 120
 		Repulsable: False
-		RepulsionSpeed: 5
 		CruiseAltitude: 3060
 		AltitudeVelocity: 3060
 		MaximumPitch: 255
@@ -10622,6 +10635,7 @@ usaraptor2:
 	AmmoPool:
 		Ammo: 6
 	AttackAircraft:
+		FacingTolerance: 128
 		Armaments: primary, secondary, pointdefense
 	Voiced:
 		VoiceSet: KingRaptorVoice
@@ -11940,7 +11954,7 @@ upusamotherbomb:
 		BuildPaletteOrder: 200
 		Queue: StrategyUpgrades.USA
 		Description: Allows use of MOAB strikes.
-		Prerequisites: ~!upusamotherbomb
+		Prerequisites: ~upusafuelbomb, ~!upusamotherbomb
 	Valued:
 		Cost: 4000
 	RenderSprites:
@@ -11987,6 +12001,10 @@ leangmcv:
 		NoTransformNotification: BuildingCannotPlaceAudio
 	Voiced:
 		VoiceSet: PRCMCCVoice
+	DetectCloaked:
+		Range: 6c0
+		CloakTypes: Mine
+		RequiresCondition: !disabled
 	Inherits@EXT: ^ExternalConditions
 	RenderSprites:
 		Image: usamcv
@@ -12488,8 +12506,8 @@ leangupusapala:
 	Buildable:
 		Queue: Promotions.LEANG
 
-leangchneutronbomb:
-	Inherits: upchneutronbomb
+leangchemp:
+	Inherits: upchemp
 	Buildable:
 		Queue: Promotions.LEANG
 

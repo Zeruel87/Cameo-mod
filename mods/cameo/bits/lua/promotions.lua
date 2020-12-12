@@ -36,9 +36,9 @@ TickPromotions = function()
 		if player.IsLocalPlayer then
 			localPlayerIsNull = false;
 			if Levels[player.InternalName] < 4 then
-				PromotionsText = "Current Rank: " .. Ranks[Levels[player.InternalName] + 1] .. "\nCommander's Points: " .. Points[player.InternalName] .. "\nProgress to Next Rank: " .. player.Experience - RankXPs[Levels[player.InternalName] + 1] .. "/" .. RankXPs[Levels[player.InternalName] + 2] - RankXPs[Levels[player.InternalName] + 1] .. "\n\n"
+				PromotionsText = "Current Rank: " .. Ranks[Levels[player.InternalName] + 1] .. "\nPromotion Points: " .. Points[player.InternalName] .. "\nProgress to Next Rank: " .. player.Experience - RankXPs[Levels[player.InternalName] + 1] .. "/" .. RankXPs[Levels[player.InternalName] + 2] - RankXPs[Levels[player.InternalName] + 1] .. "\n\n"
 			else
-				PromotionsText = "Current Rank: " .. Ranks[Levels[player.InternalName] + 1] .. "\nCommander's Points: " .. Points[player.InternalName] .. "\n\n"
+				PromotionsText = "Current Rank: " .. Ranks[Levels[player.InternalName] + 1] .. "\nPromotion Points: " .. Points[player.InternalName] .. "\n\n"
 			end
 			UserInterface.SetMissionText(PromotionsText, TextColors[player.InternalName])
 		end
