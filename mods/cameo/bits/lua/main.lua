@@ -1,4 +1,9 @@
+Tick = function()
+	TickPromotions()
+end
+
 WorldLoaded = function()
+	WorldLoadedGeneralsPromotions()
 
 	powerall = {
 		"citybotcoal","citybotnuke","nuk2","nuke","apwr","powr","ra2gapowr","ra2nanrct","ra2napowr","yryapowr",

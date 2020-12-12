@@ -17,12 +17,6 @@ ArbiterStasis:
 	MinRange: 4c512
 	ReloadDelay: 360
 	ValidTargets: Chronobeamable, Air
-	#Warhead@1: GrantExternalCondition
-	#	ValidTargets: Ground, Air, Underwater
-	#	Range: 4c512
-	#	Condition: ArbiterStasis
-	#	Duration: 300
-	#	Delay: 10
 	Warhead@1: GrantExternalCondition
 		ValidTargets: Ground, Air, Underwater
 		Range: 4c512
@@ -40,7 +34,7 @@ BCLaser:
 		Spread: 128
 		Damage: 15000
 		Versus:
-			Wood: 60
+			Wood: 50
 		ValidTargets: Ground, Water, Air
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 	Warhead@2Eff: CreateEffect
@@ -131,21 +125,27 @@ GhostLockdown:
 		RangeLimit: 12c0
 		PointDefenseType: Missile
 	ValidTargets: Vehicle
-	InvalidTargets: OrganicAircraft
+	InvalidTargets: OrganicAircraft, lockdowned
 	Range: 5c0
 	ReloadDelay: 90
 	TargetActorCenter: true
 	Warhead@1: TargetDamage
-	Warhead@2: GrantExternalCondition
-		Range: 0c768
-		Duration: 90
-		Condition: GhostLockdown
+	#Warhead@2: GrantExternalCondition
+	#	Range: 0c768
+	#	Duration: 90
+	#	Condition: GhostLockdown
+	#	ValidTargets: Vehicle
+	Warhead@2: AttachDelayedWeapon
+		Weapon: RemovableDebuffDummy
+		Type: lockdown
+		TriggerTime: 90
+		Range: 1
 		ValidTargets: Vehicle
 
 GhostLockdownAA:
 	Inherits: GhostLockdown
 	ValidTargets: Air
-	Warhead@2: GrantExternalCondition
+	Warhead@2: AttachDelayedWeapon
 		ValidTargets: Air
 
 GoliathMG:
@@ -311,7 +311,7 @@ LurkerSpines:
 		ValidStances: Enemy, Neutral
 		Versus:
 			None: 150
-			Wood: 75
+			Wood: 50
 			Light: 100
 			Heavy: 200
 		DamageTypes: DefaultDeath
@@ -320,19 +320,19 @@ LurkerSpines:
 
 MarineMG:
 	Inherits: ^LightMG
-	ReloadDelay: 20
+	ReloadDelay: 30
 	Range: 4c0
 	Report: TMaFir00.aud
 	ValidTargets: Ground, Water, Air
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 2000
+		Damage: 1800
 		ValidTargets: Ground, Water, Air
 		Versus:
 			None: 125	#100
-			Wood: 75	#100
+			Wood: 50	#100
 			Light: 75	#100
-			Heavy: 75	#100
+			Heavy: 66	#100
 
 MarineMGbunker:
 	Inherits: MarineMG
@@ -350,9 +350,25 @@ MedicHeal:
 		Damage: -1000
 		ValidStances: Ally
 		ValidTargets: Heal
-	Warhead@2Defuse: DetachDelayedWeapon
+
+MedicRestore:
+	Report: TMedHeal.aud
+	ReloadDelay: 30
+	Range: 3c0
+	ValidTargets: lockdowned, plagued, ivanattached
+	Projectile: InstantHit
+	Warhead@Dam: TargetDamage
+	Warhead@1Defuse: DetachDelayedWeapon
 		Types: ivanbomb
 		ValidTargets: ivanattached
+		ValidStances: Ally
+	Warhead@2Defuse: DetachDelayedWeapon
+		Types: lockdown
+		ValidTargets: lockdowned
+		ValidStances: Ally
+	Warhead@3Defuse: DetachDelayedWeapon
+		Types: defilerplague
+		ValidTargets: plagued
 		ValidStances: Ally
 
 MissileTurret:
@@ -472,7 +488,7 @@ Psi-blades:
 		Damage: 1800
 		Versus:
 			None: 125
-			Wood: 100
+			Wood: 75
 			Light: 100
 			Heavy: 100
 		DamageTypes: RippedApartDeath
@@ -734,7 +750,7 @@ SiegeTankCanon:
 		Damage: 5000
 		Versus:
 			None: 50
-			Wood: 75
+			Wood: 50
 			Light: 75
 			Heavy: 100
 
@@ -753,7 +769,7 @@ SiegeTankSiegeCanon:
 		Damage: 11000
 		Versus:
 			None: 150
-			Wood: 100
+			Wood: 50
 			Light: 100
 			Heavy: 100
 	Warhead@3Eff: CreateEffect
@@ -799,7 +815,7 @@ Tentacle:
 		Falloff: 100, 50
 		Versus:
 			None: 50
-			Wood: 75
+			Wood: 50
 			Light: 75
 			Heavy: 100
 		DamageTypes: DefaultDeath
@@ -842,7 +858,7 @@ VultureGrenade:
 		Damage: 4500
 		Versus:
 			None: 100
-			Wood: 50
+			Wood: 25
 			Light: 80
 			Heavy: 25
 	Warhead@3Eff: CreateEffect
@@ -878,7 +894,7 @@ WraithLaser:
 		Damage: 2500
 		Versus:
 			None: 100
-			Wood: 100
+			Wood: 75
 			Light: 100
 			Heavy: 100
 		ValidTargets: Ground, Water
@@ -982,15 +998,27 @@ DefilerPlague:
 	Warhead@1Dam: SpreadDamage
 		Spread: 468
 		Damage: 2000
-	Warhead@2: GrantExternalCondition
+	#Warhead@2: GrantExternalCondition
+	#	Range: 3c512
+	#	ValidTargets: Ground, Air, Water
+	#	ValidStances: Enemy, Neutral
+	#	Condition: DefilerPlague
+	#	Duration: 190
+	Warhead@2: AttachDelayedWeapon
+		Weapon: RemovableDebuffDummy
+		Type: defilerplague
+		TriggerTime: 190
 		Range: 3c512
 		ValidTargets: Ground, Air, Water
+		InvalidTargets: plagued
 		ValidStances: Enemy, Neutral
-		Condition: DefilerPlague
-		Duration: 190
 	Warhead@3Eff: CreateEffect
 		Explosions: scplague
 		ValidTargets: Ground, Water, Air
 		ImpactActors: false
 		ImpactSounds: zulhit00.aud
-		
+
+RemovableDebuffDummy:
+	Projectile: InstantHit
+	ReloadDelay: 30
+	Warhead@1: TargetDamage
