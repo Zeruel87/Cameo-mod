@@ -367,8 +367,10 @@
 	Selectable:
 		Bounds: 24,24
 	Targetable:
-		RequiresCondition: !parachute && !chronobeamed
+		RequiresCondition: !parachute && !chronobeamed && !invulnerability
 		TargetTypes: Ground, Vehicle
+	Targetable@ivan:
+		RequiresCondition: !ivanbomb && !chronobeamed && !invulnerability
 	Passenger:
 		CargoType: Vehicle
 		Weight: 3
@@ -404,8 +406,8 @@
 	Parachutable:							##########
 		FallRate: 20
 		KilledOnImpassableTerrain: true
-		GroundCorpseSequence: corpse
-		GroundImpactSound: squishy2.aud
+		GroundCorpseSequence:
+		GroundCorpsePalette:
 		WaterImpactSound: splash9.aud
 		WaterCorpseSequence: small_splash
 		ParachutingCondition: parachute
@@ -1177,6 +1179,7 @@
 	Inherits@forceshield: ^ForceShieldable
 	Inherits@commandodebuff: ^CommandoDebuff
 	Inherits@ivan: ^BombAttachable
+	Inherits@trap: ^BoobyTrappable
 	Building:
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud
@@ -1190,7 +1193,7 @@
 	RepairableBuilding:
 		RepairPercent: 40
 		RepairStep: 1400
-		PlayerExperience: 15
+		PlayerExperience: 0
 		RepairingNotification: Repairing
 	WithDeathAnimation:
 		DeathSequence: dead
@@ -1208,8 +1211,13 @@
 	EngineerRepairable:
 	Demolishable:
 		Condition: being-demolished
+	Targetable:
+		RequiresCondition: !chronobeamed && !invulnerability && !forceshield
 	Targetable@ivan:
 		TargetTypes: ivanattachable, demolishable
+		RequiresCondition: !ivanbomb && !chronobeamed && !invulnerability && !forceshield
+	Targetable@chrono:
+		RequiresCondition: !invulnerability && !forceshield
 	Sellable:
 		RequiresCondition: !build-incomplete && !being-captured && !being-demolished && !ivanbomb
 		SellSounds: cashturn.aud
@@ -1260,12 +1268,14 @@
 
 ^TechBuilding:
 	Inherits: ^CivBuilding
+	Inherits@trap: ^BoobyTrappable
 	Selectable:
 		Priority: 0
 	OwnerLostAction:
 		Action: ChangeOwner
 	ConditionManager:
 	CaptureManager:
+		BeingCapturedCondition: being-captured
 	Capturable:
 		RequiresCondition: !chronobeamed
 		Types: building
@@ -1276,7 +1286,7 @@
 	RepairableBuilding:
 		RepairPercent: 40
 		RepairStep: 1400
-		PlayerExperience: 15
+		PlayerExperience: 0
 		RepairingNotification: Repairing
 	EngineerRepairable:
 	RevealsShroud:
@@ -1947,26 +1957,6 @@
 			CommandoCall: -6,-2
 		RequiresCondition: CommandoCall
 		ZOffset: 256
-
-####################################################################################################
-#		PROTOSS
-####################################################################################################
-
-^BuildingExplodeProtoss:
-	Explodes:
-		Type: Footprint
-		Weapon: BuildingExplodeProtoss
-		EmptyWeapon: BuildingExplodeProtoss
-
-^HeliExplodeProtoss:
-	Explodes:
-		Weapon: HeliExplodeProtoss
-		EmptyWeapon: HeliExplodeProtoss
-
-^UnitExplodeSmallProtoss:
-	Explodes:
-		Weapon: UnitExplodeSmallProtoss
-		EmptyWeapon: UnitExplodeSmallProtoss
 
 ####################################################################################################
 #		CITY
@@ -2881,7 +2871,7 @@ CPQDEBUGDUMMY:
 		RequiresCondition: chronobeamed
 	Targetable@chrono:
 		TargetTypes: Chronobeamable
-		RequiresCondition: !invulnerability && !forceshield
+		RequiresCondition: !invulnerability
 	Targetable@warping:
 		TargetTypes: chronobeaming
 		RequiresCondition: chronobeamed
@@ -3515,3 +3505,36 @@ CPQDEBUGDUMMY:
 		BeforeUnloadDelay: 0
 		AfterUnloadDelay: 0
 		LoadedCondition: loaded
+
+^BoobyTrappable:
+	WithDecoration@boobytrapped:
+		Image: mouse2
+		Sequence: c4
+		ReferencePoint: center, center
+		ZOffset: 2048
+		RequiresCondition: trapped
+		RequiresSelection: true
+		ValidStances: Ally, Neutral
+	WithDecoration@trapneutralized:
+		Image: mouse2
+		Sequence: c4
+		ReferencePoint: center, center
+		ZOffset: 2048
+		RequiresCondition: trapped && trap-neutralized
+		RequiresSelection: false
+		ValidStances: Enemy
+	PeriodicExplosion@boobytrap:
+		Weapon: GLBarrelExplode
+		RequiresCondition: being-captured && trapped && !trap-neutralized
+	ExternalCondition@boobytrap:
+		Condition: trapped
+		TotalCap: 1
+	Targetable@trappable:
+		TargetTypes: trappable
+		RequiresCondition: !trapped
+	Targetable@trapped:
+		TargetTypes: trapped
+		RequiresCondition: trapped
+	ExternalCondition@neutralizetrap:
+		Condition: trap-neutralized
+		TotalCap: 1

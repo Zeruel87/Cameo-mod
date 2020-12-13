@@ -11,7 +11,7 @@ PromotionsText = ""
 
 Seconds = 0
 
-PointsPerRank = { 1, 1, 3, 3, 3 }
+PointsPerRank = { 1, 1, 1, 1, 3 }
 
 PointActorExists = { }
 Points = { }

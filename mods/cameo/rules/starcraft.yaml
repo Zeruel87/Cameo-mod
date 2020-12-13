@@ -1079,7 +1079,9 @@ SCSHIELDBATTERY:
 	-WithSpriteBody:
 	-GivesBuildableArea:
 	-WithDeathAnimation:
-	
+	FirepowerMultiplier@plasmashield:
+		Modifier: 200
+		RequiresCondition: plasmashield
 
 SCROBOTICSFACILITY:
 	Inherits: ^BaseBuilding
@@ -1098,7 +1100,7 @@ SCROBOTICSFACILITY:
 		Prerequisite: Robotics Facility
 	Buildable:
 		BuildPaletteOrder: 80
-		Prerequisites: Assimilator
+		Prerequisites: Assimilator, Cybernetics Core
 		Queue: Building.Protoss, RABuilding.Protoss
 		Description: Produces vehicles
 	Building:
@@ -1162,7 +1164,7 @@ SCSTARGATE:
 		Prerequisite: Stargate
 	Buildable:
 		BuildPaletteOrder: 90
-		Prerequisites: Assimilator
+		Prerequisites: Assimilator, Cybernetics Core
 		Queue: Building.Protoss, RABuilding.Protoss
 		Description: Produces aircraft
 	Building:
@@ -1221,7 +1223,7 @@ SCCITADELOFADUN:
 		Prerequisite: Citadel of Adun
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: Gateway, ~techlevel.medium
+		Prerequisites: Gateway, Cybernetics Core, ~techlevel.medium
 		Queue: Building.Protoss, RABuilding.Protoss
 		Description: Unlocks Dark Templar.
 	Building:
@@ -2594,9 +2596,10 @@ SCINFESTEDCOMMANDCENTER:
 	GrantTimedConditionOnDeploy@stim:
 		DeployedCondition: stimmed
 		CooldownTicks: 1000
-		DeployedTicks: 300
+		DeployedTicks: 500
 		PauseOnCondition: frozen || nostim
 		RequiresCondition: upstimpack
+		StartsFullyCharged: true
 	SpeedMultiplier@stim:
 		Modifier: 150
 		RequiresCondition: stimmed
@@ -2624,6 +2627,14 @@ SCSCV:
 	Inherits@worker: ^SCWorker
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
+	#AutoTargetPriority@Repair:
+	#	ValidTargets: Repair, Repairing
+	#	ValidStances: Ally
+	#	Priority: 2
+	#AutoTargetPriority@DEFAULT:
+	#	ValidStances: Enemy, Neutral
+	#AutoTargetPriority@ATTACKANYTHING:
+	#	ValidStances: Enemy, Neutral
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -2649,7 +2660,7 @@ SCSCV:
 		Name: repair
 		Weapon: SCVRepair
 		TargetStances: Ally
-		ForceTargetStances: None
+		ForceTargetStances: Ally
 		LocalOffset: 240,160,240
 	Armament:
 		Weapon: SCVAttack
@@ -2662,9 +2673,6 @@ SCSCV:
 	WithAttackAnimation@fix:
 		Armament: repair
 		Sequence: shoot
-	AutoTarget:
-		InitialStance: ReturnFire
-		InitialStanceAI: ReturnFire
 	Power:
 		Amount: -10
 	Voiced:
@@ -3461,8 +3469,40 @@ SCTMCV:
 #		UNIT PROTOSS
 ####################################################################################################
 
+^PlasmaShieldUpgrade:
+	GrantConditionOnPrerequisite@plasmashield:
+		Condition: plasmashield
+		Prerequisites: upplasmashield
+	DamageMultiplier@plasmashield:
+		Modifier: 75
+		RequiresCondition: plasmashield
+
+^ForgeUpgrades:
+	GrantConditionOnPrerequisite@weap:
+		Condition: upweapon
+		Prerequisites: upgroundweapons
+	FirepowerMultiplier@weap:
+		Modifier: 125
+		RequiresCondition: upweapon
+	GrantConditionOnPrerequisite@armor:
+		Condition: uparmor
+		Prerequisites: upgroundarmor
+	DamageMultiplier@armor:
+		Modifier: 75
+		RequiresCondition: uparmor
+
+^GraviticUpgrade:
+	GrantConditionOnPrerequisite@grav:
+		Condition: upspeed
+		Prerequisites: upairspeed
+	SpeedMultiplier@grav:
+		Modifier: 150
+		RequiresCondition: upspeed
+
 ^BasicProtoss: #ONLY USE FOR UNITS THAT INHERIT ^SOLDIER
 	Inherits: ^Soldier
+	Inherits@2: ^PlasmaShieldUpgrade
+	Inherits@3: ^ForgeUpgrades
 	-DamagedByTerrain:
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
@@ -3493,8 +3533,41 @@ SCTMCV:
 	-Captures@DRIVER_KILL:
 	Targetable:
 		TargetTypes: Ground, Vehicle
+		RequiresCondition: !parachute && !chronobeamed && !invulnerability
+	Targetable@ivan:
+		RequiresCondition: !ivanbomb && !chronobeamed && !invulnerability
 	Passenger:
 		CargoType: Vehicle
+
+^BuildingExplodeProtoss:
+	Inherits@1: ^PlasmaShieldUpgrade
+	Explodes:
+		Type: Footprint
+		Weapon: BuildingExplodeProtoss
+		EmptyWeapon: BuildingExplodeProtoss
+
+^HeliExplodeProtoss:
+	Inherits@1: ^PlasmaShieldUpgrade
+	Explodes:
+		Weapon: HeliExplodeProtoss
+		EmptyWeapon: HeliExplodeProtoss
+	GrantConditionOnPrerequisite@weap:
+		Condition: upweapon
+		Prerequisites: upairweapons
+	FirepowerMultiplier@weap:
+		Modifier: 150
+		RequiresCondition: upweapon
+	GrantConditionOnPrerequisite@armor:
+		Condition: uparmor
+		Prerequisites: upairarmor
+	DamageMultiplier@armor:
+		Modifier: 75
+		RequiresCondition: uparmor
+
+^UnitExplodeSmallProtoss:
+	Explodes:
+		Weapon: UnitExplodeSmallProtoss
+		EmptyWeapon: UnitExplodeSmallProtoss
 
 SCPROBE:
 	Inherits: ^Vehicle
@@ -3504,6 +3577,7 @@ SCPROBE:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@worker: ^SCWorker
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@shield: ^PlasmaShieldUpgrade
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -3766,6 +3840,7 @@ SCSHUTTLE:
 	Inherits: ^Helicopter
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@speed: ^GraviticUpgrade
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -3873,6 +3948,8 @@ SCREAVER:
 	Inherits@explode: ^UnitExplodeSmallProtoss
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EMP: ^FrontalEMP
+	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@forge: ^ForgeUpgrades
 	Selectable:
 		DecorationBounds: 28,28
 	Valued:
@@ -3900,6 +3977,13 @@ SCREAVER:
 		Actors: scscarab,scscarab,scscarab,scscarab,scscarab
 		RespawnTicks: 300
 		SpawnAllAtOnce: false
+		RequiresCondition: !upcapacity
+	CarrierMaster@2:
+		SpawnIsMissile: true
+		Actors: scscarab,scscarab,scscarab,scscarab,scscarab,scscarab,scscarab,scscarab,scscarab,scscarab
+		RespawnTicks: 300
+		SpawnAllAtOnce: false
+		RequiresCondition: upcapacity
 	AutoTarget:
 		ScanRadius: 10
 	AttackFrontal:
@@ -3920,6 +4004,9 @@ SCREAVER:
 	WithShadow:
 		Offset: 108, 64, 0
 		ZOffset: -512
+	GrantConditionOnPrerequisite@capacity:
+		Condition: upcapacity
+		Prerequisites: upreavercapacity
 
 SCSCARAB:
 	Inherits: ^Plane
@@ -3963,6 +4050,10 @@ SCSCARAB:
 	-UpdatesPlayerStatistics:
 	Interactable:
 	HitShape:
+	GrantConditionOnPrerequisite@weap:
+		Prerequisites: upreaverdamage
+	FirepowerMultiplier@weap:
+		Modifier: 200
 
 SCOBSERVER:
 	Inherits: ^Helicopter
@@ -3970,6 +4061,7 @@ SCOBSERVER:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@detect: ^GenericAirDetector
 	Inherits@bot: ^BotMicromanageable
+	Inherits@speed: ^GraviticUpgrade
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -4089,6 +4181,7 @@ SCSCOUT:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@speed: ^GraviticUpgrade
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -4380,8 +4473,27 @@ SCPMCV:
 		Prerequisites: machshop
 	Targetable:
 		TargetTypes: Ground, Vehicle
+		RequiresCondition: !parachute && !chronobeamed && !invulnerability
+	Targetable@ivan:
+		RequiresCondition: !ivanbomb && !chronobeamed && !invulnerability
 	Passenger:
 		CargoType: Vehicle
+
+^AirZerg:
+	Inherits: ^Helicopter
+	-SpawnActorOnDeath:
+	Targetable@EMP:
+		TargetTypes: OrganicAircraft
+	-DelayedWeaponAttachable@lockdown:
+	WithDeathAnimation:
+		UseDeathTypeSuffix: False
+	DeathSounds:
+	GrantConditionOnPrerequisite@carapace:
+		Condition: upcarapace
+		Prerequisites: upflyerarmor
+	DamageMultiplier@carapace:
+		Modifier: 75
+		RequiresCondition: upcarapace
 
 SCDRONE:
 	Inherits: ^Vehicle
@@ -4449,7 +4561,7 @@ SCZERGLING:
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
 		Description: Fast Zerg basic assault strain.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
-		Speed: 125
+		Speed: 108
 	Health:
 		HP: 8000
 	Armor:
@@ -4475,9 +4587,27 @@ SCZERGLING:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	GrantConditionOnPrerequisite@upmelee:
+		Condition: upmelee
+		Prerequisites: upzergmelee
+	FirepowerMultiplier@upmelee:
+		Modifier: 133
+		RequiresCondition: upmelee
+	GrantConditionOnPrerequisite@adrenal:
+		Condition: upattack
+		Prerequisites: uplingattack
+	ReloadDelayMultiplier@adrenal:
+		Modifier: 50
+		RequiresCondition: upattack
+	GrantConditionOnPrerequisite@metab:
+		Condition: upspeed
+		Prerequisites: uplingspeed
+	SpeedMultiplier@metab:
+		Modifier: 125
+		RequiresCondition: upspeed
 
 SCOVERLORD:
-	Inherits: ^Helicopter
+	Inherits: ^AirZerg
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@detect: ^GenericAirDetector
 	Inherits@bot: ^BotMicromanageable
@@ -4519,9 +4649,6 @@ SCOVERLORD:
 	DetectCloaked:
 		Range: 6c0
 	RenderDetectionCircle:
-	WithDeathAnimation:
-		UseDeathTypeSuffix: False
-	DeathSounds:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 30,24
@@ -4541,7 +4668,6 @@ SCOVERLORD:
 		MaxMoveDelay: 40
 		RequiresCondition: botmicro
 	WithMoveAnimation:
-	-SpawnActorOnDeath:
 	-AttackAircraft:
 
 SCHYDRALISK:
@@ -4597,9 +4723,15 @@ SCHYDRALISK:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	GrantConditionOnPrerequisite@upmissile:
+		Condition: upmissile
+		Prerequisites: upzergmissile
+	FirepowerMultiplier@upmissile:
+		Modifier: 133
+		RequiresCondition: upmissile
 
 SCMUTALISK:
-	Inherits: ^Helicopter
+	Inherits: ^AirZerg
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
@@ -4636,9 +4768,6 @@ SCMUTALISK:
 	AttackAircraft:
 		FacingTolerance: 20
 		AttackType: Hover
-	WithDeathAnimation:
-		UseDeathTypeSuffix: False
-	DeathSounds:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 30,30
@@ -4646,13 +4775,15 @@ SCMUTALISK:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCMutaliskVoice
-	-SpawnActorOnDeath:
-	Targetable@EMP:
-		TargetTypes: OrganicAircraft
-	-DelayedWeaponAttachable@lockdown:
+	GrantConditionOnPrerequisite@upattack:
+		Condition: upattack
+		Prerequisites: upflyerattack
+	FirepowerMultiplier@upattack:
+		Modifier: 133
+		RequiresCondition: upattack
 
 SCSCOURGE:
-	Inherits: ^Helicopter
+	Inherits: ^AirZerg
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@announce: ^AnnounceOnBuild
 	SelectionDecorations:
@@ -4690,7 +4821,6 @@ SCSCOURGE:
 		Condition: triggered
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
-	DeathSounds:
 	KillsSelf:
 		RequiresCondition: triggered
 	AttackAircraft:
@@ -4699,13 +4829,9 @@ SCSCOURGE:
 		Amount: -5
 	Voiced:
 		VoiceSet: SCScourgeVoice
-	-SpawnActorOnDeath:
-	Targetable@EMP:
-		TargetTypes: OrganicAircraft
-	-DelayedWeaponAttachable@lockdown:
 
 SCQUEEN:
-	Inherits: ^Helicopter
+	Inherits: ^AirZerg
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Valued:
@@ -4733,9 +4859,6 @@ SCQUEEN:
 	AttackAircraft:
 		FacingTolerance: 20
 		AttackType: Hover
-	WithDeathAnimation:
-		UseDeathTypeSuffix: False
-	DeathSounds:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 30,24
@@ -4743,7 +4866,6 @@ SCQUEEN:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCQueenVoice
-	-SpawnActorOnDeath:
 
 SCULTRALISK:
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -4797,6 +4919,12 @@ SCULTRALISK:
 	WithShadow:
 		Offset: 108, 24, 0
 		ZOffset: -512
+	GrantConditionOnPrerequisite@upmelee:
+		Condition: upmelee
+		Prerequisites: upzergmelee
+	FirepowerMultiplier@upmelee:
+		Modifier: 150
+		RequiresCondition: upmelee
 
 SCLURKER:
 	Inherits@AUTOTARGET: ^AutoTargetGround
@@ -4888,9 +5016,15 @@ SCLURKER:
 		Offset: 128, 12, 0
 		ZOffset: -512
 		RequiresCondition: undeployed
+	GrantConditionOnPrerequisite@upmissile:
+		Condition: upmissile
+		Prerequisites: upzergmissile
+	FirepowerMultiplier@upmissile:
+		Modifier: 150
+		RequiresCondition: upmissile
 
 SCGUARDIAN:
-	Inherits: ^Helicopter
+	Inherits: ^AirZerg
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
@@ -4924,9 +5058,6 @@ SCGUARDIAN:
 	AttackAircraft:
 		FacingTolerance: 20
 		AttackType: Hover
-	WithDeathAnimation:
-		UseDeathTypeSuffix: False
-	DeathSounds:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 30,24
@@ -4934,10 +5065,12 @@ SCGUARDIAN:
 		Amount: -20
 	Voiced:
 		VoiceSet: SCGuardianVoice
-	-SpawnActorOnDeath:
-	Targetable@EMP:
-		TargetTypes: OrganicAircraft
-	-DelayedWeaponAttachable@lockdown:
+	GrantConditionOnPrerequisite@upattack:
+		Condition: upattack
+		Prerequisites: upflyerattack
+	FirepowerMultiplier@upattack:
+		Modifier: 133
+		RequiresCondition: upattack
 
 SCINFESTEDTERRAN:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -5343,6 +5476,70 @@ PSCSUNKENCOLONY:
 	KillsSelf:
 		RemoveInstead: true
 
+uplingspeed:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Metabolic Boost
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: SpawningPool
+		Description: Increases Zergling speed.
+		Prerequisites: ~!uplingspeed
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: uplingspeed
+	ProvidesPrerequisite:
+		Prerequisite: uplingspeed
+
+uplingattack:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Adrenal Glands
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: SpawningPool
+		Description: Increases Zergling attack speed.
+		Prerequisites: ~!uplingattack, Hive
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: uplingattack
+	ProvidesPrerequisite:
+		Prerequisite: uplingattack
+
+upzergmelee:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Melee Attacks
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: EvoChamber
+		Description: Increases damage dealt by Zerglings and Ultralisks.
+		Prerequisites: ~!upzergmelee, Hive
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upzergmelee
+	ProvidesPrerequisite:
+		Prerequisite: upzergmelee
+
+upzergmissile:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Missile Attacks
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: EvoChamber
+		Description: Increases damage dealt by Hydralisks and Lurkers.
+		Prerequisites: ~!upzergmissile, Hive
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upzergmissile
+	ProvidesPrerequisite:
+		Prerequisite: upzergmissile
+
 upcarapace:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -5353,11 +5550,43 @@ upcarapace:
 		Description: Increases durability of Zerg ground units.
 		Prerequisites: ~!upcarapace, Hive
 	Valued:
-		Cost: 2000
+		Cost: 2500
 	RenderSprites:
 		Image: upcarapace
 	ProvidesPrerequisite:
 		Prerequisite: upcarapace
+
+upflyerattack:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Flyer Attacks
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: SpireUpgrades
+		Description: Increases damage dealt by Mutalisks and Guardians.
+		Prerequisites: ~!upflyerattack, Hive, Greater Spire
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upflyerattack
+	ProvidesPrerequisite:
+		Prerequisite: upflyerattack
+
+upflyerarmor:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Flyer Carapace
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: SpireUpgrades
+		Description: Increases durability of Zerg aircraft.
+		Prerequisites: ~!upflyerarmor, Hive, Greater Spire
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upflyerarmor
+	ProvidesPrerequisite:
+		Prerequisite: upflyerarmor
 
 updragoonrange:
 	Inherits: ^upgrade.template
@@ -5369,11 +5598,139 @@ updragoonrange:
 		Description: Increases range of Dragoons.
 		Prerequisites: ~!updragoonrange
 	Valued:
-		Cost: 1500
+		Cost: 2000
 	RenderSprites:
 		Image: updragoonrange
 	ProvidesPrerequisite:
 		Prerequisite: updragoonrange
+
+upairweapons:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Air Weapons
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: CyberCore
+		Description: Increases firepower of all Protoss aircraft.
+		Prerequisites: ~!upairweapons, Fleet Beacon
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upairweapons
+	ProvidesPrerequisite:
+		Prerequisite: upairweapons
+
+upairarmor:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Air Armor
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: CyberCore
+		Description: Increases durability of all Protoss aircraft.
+		Prerequisites: ~!upairarmor, Fleet Beacon
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upairarmor
+	ProvidesPrerequisite:
+		Prerequisite: upairarmor
+
+upgroundweapons:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Ground Weapons
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Forge
+		Description: Increases firepower of all Protoss ground units.
+		Prerequisites: ~!upgroundweapons, Templar Archives
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upgroundweapons
+	ProvidesPrerequisite:
+		Prerequisite: upgroundweapons
+
+upgroundarmor:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Ground Armor
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Forge
+		Description: Increases durability of all Protoss ground units.
+		Prerequisites: ~!upgroundarmor, Templar Archives
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upgroundarmor
+	ProvidesPrerequisite:
+		Prerequisite: upgroundarmor
+
+upplasmashield:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Plasma Shields
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Forge
+		Description: Increases durability of all Protoss units and structures.
+		Prerequisites: ~!upplasmashield, Cybernetics Core
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: upplasmashield
+	ProvidesPrerequisite:
+		Prerequisite: upplasmashield
+
+upreavercapacity:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Reaver Capacity
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: RoboBay
+		Description: Doubles Reaver capacity.
+		Prerequisites: ~!upreavercapacity
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upreavercapacity
+	ProvidesPrerequisite:
+		Prerequisite: upreavercapacity
+
+upreaverdamage:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Reaver Damage
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: RoboBay
+		Description: Doubles Reaver damage.
+		Prerequisites: ~!upreaverdamage
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upreaverdamage
+	ProvidesPrerequisite:
+		Prerequisite: upreaverdamage
+
+upairspeed:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Gravitic Propulsion
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: RoboBay
+		Description: Increases speed of Shuttles, Observers, and Scouts.
+		Prerequisites: ~!upairspeed
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: upairspeed
+	ProvidesPrerequisite:
+		Prerequisite: upairspeed
 
 upstimpack:
 	Inherits: ^upgrade.template
@@ -5401,7 +5758,7 @@ upmarinerange:
 		Description: Increases range of Marines.
 		Prerequisites: ~!upmarinerange
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	RenderSprites:
 		Image: upmarinerange
 	ProvidesPrerequisite:
@@ -5417,7 +5774,7 @@ upinfweapon:
 		Description: Increases firepower of all Terran infantry.
 		Prerequisites: ~!upinfweapon, Science Facility
 	Valued:
-		Cost: 2000
+		Cost: 2500
 	RenderSprites:
 		Image: upinfweapon
 	ProvidesPrerequisite:
@@ -5433,7 +5790,7 @@ upinfarmor:
 		Description: Increases durability of all Terran infantry.
 		Prerequisites: ~!upinfarmor, Science Facility
 	Valued:
-		Cost: 2000
+		Cost: 2500
 	RenderSprites:
 		Image: upinfarmor
 	ProvidesPrerequisite:
@@ -5449,7 +5806,7 @@ upmechweapon:
 		Description: Increases firepower of all Terran vehicles.
 		Prerequisites: ~!upmechweapon, Science Facility
 	Valued:
-		Cost: 2000
+		Cost: 2500
 	RenderSprites:
 		Image: upmechweapon
 	ProvidesPrerequisite:
@@ -5465,7 +5822,7 @@ upmecharmor:
 		Description: Increases durability of all Terran vehicles.
 		Prerequisites: ~!upmecharmor, Science Facility
 	Valued:
-		Cost: 2000
+		Cost: 2500
 	RenderSprites:
 		Image: upmecharmor
 	ProvidesPrerequisite:
@@ -5481,7 +5838,7 @@ upshiparmor:
 		Description: Increases durability of all Terran aircraft.
 		Prerequisites: ~!upshiparmor, Science Facility
 	Valued:
-		Cost: 2000
+		Cost: 2500
 	RenderSprites:
 		Image: upshiparmor
 	ProvidesPrerequisite:
@@ -5497,7 +5854,7 @@ upshipweapon:
 		Description: Increases firepower of all Terran aircraft.
 		Prerequisites: ~!upshipweapon, Science Facility
 	Valued:
-		Cost: 2000
+		Cost: 2500
 	RenderSprites:
 		Image: upshipweapon
 	ProvidesPrerequisite:
