@@ -263,6 +263,12 @@ namespace OpenRA.Mods.CA.Traits
 				if (!se.IsValid || !se.Actor.IsInWorld)
 					continue;
 
+				if (se.SpawnerSlave.IsFlying())
+				{
+					se.SpawnerSlave.Stop(se.Actor);
+					se.SpawnerSlave.Move(se.Actor, location);
+				}
+
 				if (se.Actor.Location == location)
 					continue;
 

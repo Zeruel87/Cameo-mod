@@ -37,6 +37,7 @@ namespace OpenRA.Mods.CA.Traits
 		readonly Actor self;
 
 		public IMove[] Moves { get; private set; }
+		public bool IsAircraft;
 		public IPositionable Positionable { get; private set; }
 
 		MobSpawnerMaster spawnerMaster;
@@ -47,6 +48,10 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			return Moves.Any(m => m.IsTraitEnabled() && (m.CurrentMovementTypes.HasFlag(MovementType.Horizontal) || m.CurrentMovementTypes.HasFlag(MovementType.Vertical)));
 		}
+		public bool IsFlying()
+		{
+			return IsAircraft;
+		}
 
 		public MobSpawnerSlave(ActorInitializer init, MobSpawnerSlaveInfo info) : base(init, info)
 		{
@@ -56,15 +61,16 @@ namespace OpenRA.Mods.CA.Traits
 
 		protected override void Created(Actor self)
 		{
-		base.Created(self);
+			base.Created(self);
 
-		Moves = self.TraitsImplementing<IMove>().ToArray();
+			IsAircraft = self.TraitOrDefault<Aircraft>() != null;
+			Moves = self.TraitsImplementing<IMove>().ToArray();
 
-		var positionables = self.TraitsImplementing<IPositionable>();
-		if (positionables.Count() != 1)
-			throw new InvalidOperationException("Actor {0} has multiple (or no) traits implementing IPositionable.".F(self));
+			var positionables = self.TraitsImplementing<IPositionable>();
+			if (positionables.Count() != 1)
+				throw new InvalidOperationException("Actor {0} has multiple (or no) traits implementing IPositionable.".F(self));
 
-		Positionable = positionables.First();
+			Positionable = positionables.First();
 		}
 
 		public override void LinkMaster(Actor self, Actor master, BaseSpawnerMasterB spawnerMaster)
@@ -76,6 +82,14 @@ namespace OpenRA.Mods.CA.Traits
 
 		public void Move(Actor self, CPos location)
 		{
+			if (IsAircraft) {
+				var target = Target.FromCell(self.World, location);
+				//Game.Debug(target.ToString());
+				self.QueueActivity(new Fly(self, target, WDist.Zero));
+
+				return;
+			}
+
 			// And tell attack bases to stop attacking.
 			if (Moves.Length == 0)
 				return;
@@ -87,7 +101,6 @@ namespace OpenRA.Mods.CA.Traits
 					break;
 				}
 		}
-
 
 		public void AttackMove(Actor self, CPos location)
 		{
