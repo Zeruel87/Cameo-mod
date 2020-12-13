@@ -139,12 +139,23 @@ namespace OpenRA.Mods.CA.Traits
 				case "Stop":
 					StopSlaves();
 					break;
+				case "Attack":
+					//Game.Debug("Attack");
+					AssignTargetsToSlaves(self, order.Target);
+					break;
+				case "ForceAttack":
+					//Game.Debug("ForceAttack");
+					AssignTargetsToSlaves(self, order.Target);
+					break;
 				default:
+					//Game.Debug(order.ToString());
 					break;
 			}
 		}
 
-		void INotifyAttack.PreparingAttack(Actor self, Target target, Armament a, Barrel barrel) { }
+		void INotifyAttack.PreparingAttack(Actor self, Target target, Armament a, Barrel barrel)
+		{
+		}
 
 		void INotifyAttack.Attacking(Actor self, Target target, Armament a, Barrel barrel)
 		{
@@ -226,7 +237,6 @@ namespace OpenRA.Mods.CA.Traits
 					mobile.Nudge(slave);
 			});
 		}
-
 
 		public override void OnSlaveKilled(Actor self, Actor slave)
 		{
@@ -371,12 +381,24 @@ namespace OpenRA.Mods.CA.Traits
 
 		void AssignSlaveActivity(Actor self)
 		{
-				if (self.CurrentActivity is Move || self.CurrentActivity is Fly)
-					MoveSlaves(self);
-				else if (self.CurrentActivity is AttackMoveActivity)
-					AttackMoveSlaves(self);
- 				if (self.CurrentActivity is AttackOmni.SetTarget)
-					AssignTargetsToSlaves(self, self.CurrentActivity.GetTargets(self).First());
+			if (self.CurrentActivity != null) {
+				//Game.Debug(self.CurrentActivity.ToString());
+			} else {
+				return;
+			}
+
+			if (self.CurrentActivity is Move || self.CurrentActivity is Fly) {
+				MoveSlaves(self);
+				//Game.Debug("Move ||Fly");
+			}
+			else if (self.CurrentActivity is AttackMoveActivity) {
+				AttackMoveSlaves(self);
+				//Game.Debug("AttackMoveActivity");
+			}
+			if (self.CurrentActivity is AttackOmni.SetTarget) {
+				AssignTargetsToSlaves(self, self.CurrentActivity.GetTargets(self).First());
+				//Game.Debug("AttackOmni.SetTarget");
+			}
 		}
 
 	}
