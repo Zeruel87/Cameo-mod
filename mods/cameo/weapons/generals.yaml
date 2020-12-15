@@ -53,7 +53,7 @@ AnthraxCloud:
 		Falloff: 100, 100
 		Damage: 750
 		ValidTargets: Ground, Water
-		InvalidTargets: Structure, ToxinImmune
+		InvalidTargets: Structure, Mine, ToxinImmune
 		AffectsParent: True
 		Versus:
 			None: 100
@@ -166,6 +166,7 @@ CHFlame:
 		Falloff: 100, 75, 50, 25
 		Damage: 800
 		ValidTargets: Ground, Water
+		InvalidTargets: Mine
 		AffectsParent: True
 		Versus:
 			None: 90
@@ -193,6 +194,13 @@ CHFlameBlue:
 			Wood: 40
 			Light: 90
 			Heavy: 75
+
+ThermobaricFlame:
+	Inherits: CHFlame
+	Warhead@1Dam: SpreadDamage
+		Damage: 2000
+		Versus:
+			Wood: 15
 
 #####################################################
 # Scorpion Tank Weapons
@@ -331,7 +339,7 @@ GLTwinMarauderShellToxinGamma:
 
 AngryMobTargeting:
 	ReloadDelay: 50
-	Range: 48c0
+	Range: 6c0
 	Projectile: InstantHit
 	Warhead@1Dam: TargetDamage
 
@@ -627,18 +635,45 @@ CHMineExplosive:
 	Warhead@1Dam: SpreadDamage
 		Spread: 512
 		Damage: 20000
-		Versus:
-			Heavy: 50
 		InvalidTargets: Infantry
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@2Dam: SpreadDamage
 		Spread: 0c512
 		Damage: 10000
 		ValidTargets: Infantry
-	Warhead@2Eff: CreateEffect
-		Explosions: artillery_explosion
-		ImpactSounds: gexpmina.wav, gexpminb.wav
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@3Eff: CreateEffect
 		Explosions: artillery_explosion
+		ImpactSounds: gexpmina.wav, gexpminb.wav
+
+CHNeutronMineExplosive:
+	ReloadDelay: 350
+	Projectile: InstantExplode
+	Range: 1c512
+	Warhead@1Dam: SpreadDamage
+		Spread: 1c256
+		Falloff: 100, 100
+		Damage: 10000
+		ValidTargets: Infantry
+		ValidStances: Enemy
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@2Clear: OpenToppedDamage
+		Spread: 1c0
+		Falloff: 100, 100
+		Damage: 15000
+		ValidTargets: LoadedVehicle
+		ValidStances: Enemy
+		Amount: 6
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@3Driver: ChangeOwnerToNeutral
+		Range: 1c0
+		ValidTargets: DriverKill
+		ValidStances: Enemy
+		InvalidTargets: LoadedVehicle, DriverKillImmune
+	Warhead@4Eff: CreateEffect
+		Explosions: artillery_explosion
+		ImpactSounds: gexpmina.wav, gexpminb.wav
+
 #####################################################
 # Rebel Weapons
 #####################################################
@@ -682,11 +717,12 @@ GLRebelTrap:
 
 GLKellSniper:
 	Inherits: CHGuardRifle
-	ValidTargets: Infantry
+	ValidTargets: Infantry, LoadedVehicle
 	Report: ijarwe1a.wav
 	Range: 12c0
 	Warhead@1Dam: SpreadDamage
 		Damage: 10000
+		ValidTargets: Infantry
 	Warhead@2Clear: OpenToppedDamage
 		ValidTargets: LoadedVehicle
 		Spread: 0c512
@@ -943,8 +979,8 @@ GLASCUD:
 GLASCUDTOXIN:
 	Inherits: GLASCUD
 	Warhead@1Dam: SpreadDamage
-		Spread: 0c768
-		Damage: 2000
+		Spread: 1c512
+		Damage: 3000
 	Warhead@Cluster: FireFragment
 		Weapon: GLToxinExplodeClust1
 	Warhead@3Eff: CreateEffect
@@ -967,7 +1003,7 @@ GLASCUDPOWER:
 		Image: glscudmiss
 		Shadow: true
 	Warhead@1Dam: SpreadDamage
-		Spread: 0c768
+		Spread: 1c0
 		Damage: 8000
 	Warhead@Cluster: FireFragment
 		Weapon: GLToxinExplodeClust1
@@ -1107,6 +1143,11 @@ GLToxinBomb:
 	Warhead@1Dam: SpreadDamage
 		Spread: 2c512
 		Damage: 15000
+		Versus:
+			None: 100
+			Wood: 50
+			Light: 200
+			Heavy: 300
 	Warhead@3Eff: CreateEffect
 		Explosions: ex_big_flash_green
 	Warhead@4EffWater: CreateEffect
@@ -1330,7 +1371,7 @@ CHNukeCannonNeutron:
 	#	Range: 6c0
 	-Warhead@3Radiation:
 	Warhead@1Dam: SpreadDamage
-		Spread: 3c0
+		Spread: 4c0
 		Falloff: 100, 100
 		Damage: 25000
 		ValidTargets: Infantry
@@ -1343,10 +1384,11 @@ CHNukeCannonNeutron:
 		Amount: 6
 		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@4Driver: ChangeOwnerToNeutral
-		Range: 2c0
+		Range: 3c0
 		ValidTargets: DriverKill
 		ValidStances: Enemy
 		InvalidTargets: LoadedVehicle, DriverKillImmune
+		Delay: 8
 
 CHAtomicTorpTube:
 	Inherits: TorpTube
@@ -1515,6 +1557,8 @@ CHMIGWeapon:
 		Damage: 2000
 		Versus:
 			None: 110
+			Light: 200
+			Heavy: 300
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath, FireDeath, Incendiary
 	Warhead@2Smu: LeaveSmudge
 		SmudgeType: Scorch
@@ -1525,7 +1569,7 @@ CHMIGWeapon:
 		ImpactActors: false
 	Warhead@Shrapnel: FireShrapnel
 		Weapon: CHInfernoCannonC
-		Amount: 2
+		Amount: 1
 
 CHMIGWeaponBlue:
 	Inherits: CHMIGWeapon
@@ -1547,7 +1591,7 @@ CHMIGWeaponBlue:
 CHMIGWeapon2:
 	Inherits: CHMIGWeapon
 	Warhead@1Dam: SpreadDamage
-		Damage: 5000
+		Damage: 3000
 	Warhead@3Eff: CreateEffect
 		Explosions: small_frag
 		ImpactSounds: kaboom25.aud
@@ -2316,10 +2360,10 @@ USARaptorMissileAG:
 		CruiseAltitude: 2c0
 		RangeLimit: 12c410
 	Warhead@1Dam: SpreadDamage
-		Damage: 10000
+		Damage: 15000
 		Versus:
 			Light: 100
-			Heavy: 100
+			Heavy: 150
 			Wood: 25
 
 USARaptorMissileAA:
@@ -2393,7 +2437,7 @@ USAMissileAurora:
 		Image: DRAGON
 		Shadow: True
 	Warhead@1Dam: SpreadDamage
-		Spread: 1c0
+		Spread: 1c512
 		Damage: 40000
 		Versus:
 			None: 75
@@ -2408,9 +2452,10 @@ USAMissileAurora:
 USAMissileAurora2:
 	Inherits: USAMissileAurora
 	Warhead@1Dam: SpreadDamage
-		Spread: 1c512
+		Spread: 2c0
+		Damage: 60000
 	Warhead@2ClustF: FireShrapnel
-		Weapon: CHInfernoCannonC
+		Weapon: USAThermobaricCluster
 		Amount: 6
 
 USAMissileStealth:
@@ -2430,6 +2475,7 @@ USAMissileStealth:
 		Versus:
 			Light: 100
 			Heavy: 100
+			Wood: 50
 
 USABunkerBuster:
 	Inherits: USAMissileStealth
@@ -2437,7 +2483,7 @@ USABunkerBuster:
 		Spread: 0c512
 		Falloff: 100, 100
 		Damage: 20000
-		ValidTargets: Garrisoned, LoadedTankBunker
+		ValidTargets: Garrisoned, LoadedTankBunker, LoadedVehicle
 		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
 #####################################################
 # Bomber Weapons
@@ -2518,7 +2564,7 @@ CHEMPBomb:
 		Falloff: 100, 100
 		Damage: 50000
 		ValidTargets: Air
-		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+		DamageTypes: SmallExplosionDeath
 	Warhead@3Eff: CreateEffect
 		Explosions: pulse_explosion
 		ExplosionPalette: tseffect
@@ -2565,13 +2611,13 @@ USAFuelBomb:
 		Acceleration: 0, 0, 0
 		Shadow: False
 	Warhead@1Dam: SpreadDamage
-		Spread: 0c768
-		Damage: 30000
+		Spread: 1c512
+		Damage: 60000
 		Versus:
 			None: 100
-			Wood: 100
-			Light: 75
-			Heavy: 50
+			Wood: 50
+			Light: 100
+			Heavy: 150
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 		ValidTargets: Ground, Water, Air
 	Warhead@2Smu: LeaveSmudge
@@ -2589,12 +2635,7 @@ USAMotherBomb:
 	Inherits: USAFuelBomb
 	Warhead@1Dam: SpreadDamage
 		Spread: 1c512
-		Damage: 40000
-		Versus:
-			None: 30
-			Wood: 30
-			Light: 75
-			Concrete: 25
+		Damage: 80000
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 	Warhead@2ClustF: FireShrapnel
 		Weapon: USAThermobaricCluster2
@@ -2610,6 +2651,7 @@ USAThermobaricCluster:
 	Warhead@1Cloud: SpawnSmokeParticle
 		Count: 3
 		Duration: 264
+		Weapon: ThermobaricFlame
 
 USAThermobaricCluster2:
 	Inherits: USAThermobaricCluster
