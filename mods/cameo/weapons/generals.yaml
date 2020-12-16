@@ -37,7 +37,7 @@ GLAnthraxGreen:
 	Warhead@1Cloud: SpawnSmokeParticle
 		Count: 1
 		Duration: 240
-		Speed: 3, 9
+		Speed: 4, 16
 		TurnRate: 4
 		Image: explosion
 		Sequences: green_toxins_small
@@ -47,13 +47,14 @@ GLAnthraxGreen:
 
 AnthraxCloud:
 	Projectile: InstantExplode
-	ReloadDelay: 20
+	ReloadDelay: 30
 	Warhead@1Dam: SpreadDamage
 		Spread: 512
 		Falloff: 100, 100
 		Damage: 750
 		ValidTargets: Ground, Water
 		InvalidTargets: Structure, Mine, ToxinImmune
+		ValidStances: Enemy, Neutral
 		AffectsParent: True
 		Versus:
 			None: 100
@@ -150,7 +151,7 @@ CHFlameRadiation:
 	Warhead@1Cloud: SpawnSmokeParticle
 		Count: 1, 3
 		Duration: 132
-		Speed: 2, 10
+		Speed: 4, 12
 		TurnRate: 4
 		Image: burn-l
 		Sequences: idle
@@ -180,7 +181,7 @@ CHFlameRadiationB:
 	Inherits: CHFlameRadiation
 	Warhead@1Cloud: SpawnSmokeParticle
 		Duration: 180
-		Speed: 4, 16
+		Speed: 8, 16
 		Image: explosion
 		Sequences: blue_small_napalm
 		Weapon: CHFlameBlue
@@ -212,7 +213,7 @@ GLScorpionShell:
 	ReloadDelay: 25
 	Report: vscoweaa.wav, vscoweab.wav, vscoweac.wav, vscowead.wav
 	Warhead@1Dam: SpreadDamage
-		Damage: 2000
+		Damage: 2500
 		Versus:
 			None: 10
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath, MakeScrapbox
@@ -221,7 +222,7 @@ GLScorpionShellToxin:
 	Inherits: GLScorpionShell
 	Inherits@Contaminated: GLAnthraxGreen
 	Warhead@1Dam: SpreadDamage
-		Damage: 2100
+		Damage: 3000
 		Versus:
 			None: 20
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath, MakeScrapbox
@@ -232,7 +233,7 @@ GLScorpionShellToxinBeta:
 	Inherits: GLScorpionShellToxin
 	Inherits@Contaminated: GLAnthraxBlue
 	Warhead@1Dam: SpreadDamage
-		Damage: 2200
+		Damage: 3500
 		Versus:
 			None: 75
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath, MakeScrapbox
@@ -243,7 +244,7 @@ GLScorpionShellToxinGamma:
 	Inherits: GLScorpionShellToxin
 	Inherits@Contaminated: GLAnthraxPurple
 	Warhead@1Dam: SpreadDamage
-		Damage: 2300
+		Damage: 4500
 		Versus:
 			None: 100
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath, MakeScrapbox
@@ -268,7 +269,6 @@ GlScorpionMissileTwin:
 	Inherits: GlScorpionMissile
 	Burst: 2
 	Warhead@1Dam: SpreadDamage
-		Damage: 8000
 
 GlScorpionMissileToxinTwin:
 	Inherits: GlScorpionMissileTwin
@@ -482,7 +482,7 @@ GLTractorContaminate:
 	Projectile: InstantExplode
 	Warhead@1Cloud: SpawnSmokeParticle
 		Duration: 600
-		Speed: 8, 24
+		Speed: 12, 24
 		TurnRate: 5
 		
 
@@ -492,7 +492,7 @@ GLTractorContaminateBeta:
 	Projectile: InstantExplode
 	Warhead@1Cloud: SpawnSmokeParticle
 		Duration: 600
-		Speed: 8, 24
+		Speed: 12, 24
 		TurnRate: 5
 
 GLTractorContaminateGamma:
@@ -501,7 +501,7 @@ GLTractorContaminateGamma:
 	Projectile: InstantExplode
 	Warhead@1Cloud: SpawnSmokeParticle
 		Duration: 600
-		Speed: 8, 24
+		Speed: 12, 24
 		TurnRate: 5
 
 GLRebelToxin:
@@ -817,15 +817,10 @@ GLRocketBuggyMissiles:
 		RangeLimit: 12c512
 		Speed: 341
 	Warhead@1Dam: SpreadDamage
-		Spread: 0c128
-		Damage: 1500
+		Spread: 384
+		Damage: 3000
 		ValidTargets: Ground
-		DamageTypes: TriggerProne, DropCrate, ExplosionDeath
-	Warhead@2Dam: SpreadDamage
-		Spread: 0c256
-		Damage: 500
-		ValidTargets: Ground
-		DamageTypes: TriggerProne, DropCrate, ExplosionDeath
+		DamageTypes: Prone50Percent, TriggerProne, MakeScrapbox, ExplosionDeath
 
 GLRocketBuggyMissilesToxin:
 	Inherits: GLRocketBuggyMissiles
@@ -1141,13 +1136,17 @@ GLToxinBomb:
 	ReloadDelay: 100
 	Range: 1c0
 	Warhead@1Dam: SpreadDamage
-		Spread: 2c512
-		Damage: 15000
+		Spread: 1c512
+		Damage: 50000
 		Versus:
 			None: 100
 			Wood: 50
-			Light: 200
-			Heavy: 300
+			Light: 100
+			Heavy: 150
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		ValidTargets: Ground, Water, Air
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: Scorch
 	Warhead@3Eff: CreateEffect
 		Explosions: ex_big_flash_green
 	Warhead@4EffWater: CreateEffect
@@ -2816,33 +2815,49 @@ USAComancheMissile:
 #####################################################
 
 ^GeneralsLightHusks:
+	Inherits: ^DamagingExplosion
 	ReloadDelay: 60
-	Range: 3c0
+	Range: 5c0
+	ValidTargets: Ground, Air
 	Projectile: Bullet
 		Speed: 96
 		Blockable: false
-		LaunchAngle: 192
+		LaunchAngle: 160
 		Palette: player
 		IsPlayerPalette: true
 		Shadow: true
 		AirburstAltitude: 768
 		Inaccuracy: 2048
-	Warhead@1Eff: CreateEffect
-		Explosions: building
-		ValidTargets: Ground, Air
 	Warhead@2Eff: CreateEffect
+		Explosions: building
+		ImpactSounds: xplos.aud
+		ValidTargets: Ground, Air
+	Warhead@3EffWater: CreateEffect
 		Explosions: large_splash
 		ImpactSounds: splash9.aud
 		ValidTargets: Water, Underwater
 
 ^GeneralsHuskClusterExplode:
 	Inherits: UnitExplode
+	Projectile: InstantExplode
+	ReloadDelay: 30
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000
 	Warhead@2Eff: CreateEffect
 		ImpactSounds: xplobig6.aud
 	Warhead@Shrapnel: FireShrapnel
 		Weapon: GLToxinCluster
+		ValidTargets: Ground, Water, Air
+
+GLBikeHusk:
+	Inherits: ^GeneralsLightHusks
+	Projectile: Bullet
+		Image: glbiker
+
+GLBikeHuskCluster:
+	Inherits: ^GeneralsHuskClusterExplode
+	Warhead@Shrapnel: FireShrapnel
+		Weapon: GLBikeHusk
 
 GLTechnicalHusk:
 	Inherits: ^GeneralsLightHusks
@@ -2955,7 +2970,7 @@ USAParticleCannonDamage2:
 		Damage: 7500
         
 USAAmbulanceHeal:
-	ReloadDelay: 30
+	ReloadDelay: 80
 	Range: 4c0
 	Report: heal2.aud
 	ValidTargets: Healing

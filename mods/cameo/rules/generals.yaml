@@ -44,6 +44,7 @@
 		UncloakOn: Attack, Unload, Infiltrate, Demolish
 		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: camoupgrade
+		IsPlayerPalette: true
 
 ^BuildingCamoLevel2:
 	Inherits: ^BuildingCamoLevel1
@@ -304,11 +305,11 @@ GENE6:
 upemergencyrepair1:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: General's Promotion Emergency Repair 1
+		Name: General's Promotion Emergency Repair
 	Buildable:
 		BuildPaletteOrder: 220
 		Queue: Promotions.GLA, Promotions.USA, Promotions.CHINA
-		Description: Unlocks Emergency Repair Level 1.
+		Description: Unlocks Emergency Repair.
 		Prerequisites: !upemergencyrepair1, canselectrepair, rank1
 	Valued:
 		Cost: 0
@@ -416,6 +417,7 @@ usabomber.carpet2:
 		InitialDelay: 90
 		CloakDelay: 90
 		PauseOnCondition: cloak-force-disabled
+		IsPlayerPalette: true
 	SpawnActorOnDeath:
 		Actor: usastealth.husk
 
@@ -452,6 +454,7 @@ usabomber.fuelbomb:
 		InitialDelay: 90
 		CloakDelay: 90
 		PauseOnCondition: cloak-force-disabled
+		IsPlayerPalette: true
 		RequiresCondition: moab
 	SpawnActorOnDeath:
 		RequiresCondition: !moab
@@ -548,6 +551,7 @@ usabomber.motherbomb:
 		InitialDelay: 90
 		CloakDelay: 90
 		PauseOnCondition: cloak-force-disabled
+		IsPlayerPalette: true
 	SpawnActorOnDeath:
 		Actor: usastealth.husk
 
@@ -1792,6 +1796,7 @@ gltrap:
 		InitialDelay: 5
 		CloakDelay: 5
 		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
 	-MustBeDestroyed:
 	GrantConditionOnPrerequisite@selectglatoxin:
 		Condition: selectglatoxin
@@ -1996,6 +2001,7 @@ GLE1:
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
 		PauseOnCondition: frozen
 		RequiresCondition: camoupgrade
+		IsPlayerPalette: true
 	ProducibleWithLevel:
 		Prerequisites: selectglacamo
 		InitialLevels: 1
@@ -2017,13 +2023,16 @@ GLE1toxin:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: GLRebelToxinGarrison
-		MuzzleSequence: muzzle
+		-MuzzleSequence:
+	-WithMuzzleOverlay:
 	GrantConditionOnPrerequisite@upantraxgamma:
 		Condition: upantraxgamma
 		Prerequisites: upantraxgamma
 	FirepowerMultiplier@upantraxgamma:
 		RequiresCondition: upantraxgamma
 		Modifier: 125
+	RenderSprites:
+		Scale: 1
 	-GrantConditionOnPrerequisite@uprebelcamo:
 	-Cloak:
 	-GrantConditionOnPrerequisite@uparmorpiercingbullet:
@@ -2043,7 +2052,7 @@ upglatrap:
 		BuildPaletteOrder: 200
 		Queue: Infantry.GLA, RAInfantry.GLA
 		Description: Allows Rebels to plant explosives.\nFriendly and neutral buildings can be trapped to prevent capture.
-		Prerequisites: ~!upglatrap
+		Prerequisites: ~!upglatrap, ~!selectglatoxin
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -2077,17 +2086,20 @@ GLKELL:
 	Passenger:
 		PipType: Red
 	AutoTarget:
-	Armament@PRIMARY:							##########
+	Armament@PRIMARY:
 		Weapon: GLKellSniper
-	Armament@VEHICLE:							##########
+	Armament@VEHICLE:
 		Weapon: GLKellSniperVehicle
 	Armament@demolition:
 		Weapon: GLKellAttach
 		Cursor: c4
 		RequiresCondition: selectglademo
-	Armament@GARRISONED:						##########
+	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: GLKellSniper
+	Armament@GARRISONED2:
+		Name: garrisoned
+		Weapon: GLKellSniperVehicle
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
@@ -2103,6 +2115,7 @@ GLKELL:
 		InitialDelay: 30
 		CloakDelay: 30
 		PauseOnCondition: cloak-force-disabled
+		IsPlayerPalette: true
 	RevealsShroud:
 		Range: 6c0
 	GrantConditionOnPrerequisite@selectglademo:
@@ -2235,6 +2248,7 @@ glsabo:
 		CloakDelay: 60
 		UncloakOn: Unload
 		PauseOnCondition: frozen
+		IsPlayerPalette: true
 	AttackMove:
 		Voice: Move
 	Voiced:
@@ -2276,6 +2290,7 @@ glhijack:
 		CloakTypes: Cloak, Thief
 		PauseOnCondition: cloak-force-disabled || frozen
 		RequiresCondition: !selectglacamo
+		IsPlayerPalette: true
 	Cloak@2:
 		InitialDelay: 120
 		CloakDelay: 60
@@ -2283,6 +2298,7 @@ glhijack:
 		CloakTypes: Cloak, Thief
 		PauseOnCondition: cloak-force-disabled || frozen
 		RequiresCondition: selectglacamo
+		IsPlayerPalette: true
 	WithInfantryBody:
 		-IdleSequences:
 		StandSequences: stand
@@ -2323,6 +2339,9 @@ glbiker:
 		TurnSpeed: 10
 		Speed: 180
 		Locomotor: glabike
+		PauseOnCondition: !loaded
+	RejectsOrders@nobiker:
+		RequiresCondition: !loaded
 	GrantConditionOnTerrain@Rock:
 		TerrainTypes: Rock
 		Condition: bikejump
@@ -2388,6 +2407,9 @@ glbiker:
 		Weapon: GLTerroristExplosive2
 		EmptyWeapon: GLTerroristExplosive2
 		RequiresCondition: bomb && !disabled
+	Explodes:
+		Weapon: GLBikeHuskCluster
+		EmptyWeapon: GLBikeHuskCluster
 	Voiced:
 		VoiceSet: CycleVoice
 
@@ -2528,7 +2550,11 @@ glbbus:
 	Mobile:
 		TurnSpeed: 4
 		Speed: 140
-		PauseOnCondition: disabled || damagedslow
+	SpeedMultiplier@DamagedSlow:
+		Modifier: 0
+	RejectsOrders@immobile:
+		Reject: Move, AssaultMove, AttackMove
+		RequiresCondition: damagedslow
 	Passenger:
 		Weight: 6
 	Health:
@@ -2550,7 +2576,6 @@ glbbus:
 		MaxWeight: 5
 		PipCount: 5
 		EjectOnDeath: false #desync
-		InitialUnits: gle1
 	AttackOpenTopped:
 		Voice: Attack
 		Armaments: garrisoned
@@ -2582,23 +2607,31 @@ glbbus:
 
 glbbus.e1:
 	Inherits: glbbus
-	Valued:
-		Cost: 1200
+	ProductionCostMultiplier:
+		Multiplier: 150
 	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: glweap, ~botplayer, glpalace
+		Prerequisites: glweap, ~hardbotplayer, glpalace, !selectglatoxin
 	Cargo:
 		InitialUnits: gle1, gle1, gle1, gle1, gle1
+	AIDeployNotifier:
+		DeployChance: 25
+		RequiresCondition: damagedslow
 
 glbbus.e2:
-	Inherits: glbbus
-	Valued:
-		Cost: 1400
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: glweap, ~botplayer, glpalace
+	Inherits: glbbus.e1
+	ProductionCostMultiplier:
+		Multiplier: 200
 	Cargo:
-		InitialUnits: gle1, gle1, gle1, gle3, gle3
+		InitialUnits: gle1, gle1, gle3, gle3, gle3
+
+glbbus.toxin:
+	Inherits: glbbus.e1
+	Buildable:
+		Prerequisites: glweap, ~hardbotplayer, glpalace, selectglatoxin
+	ProductionCostMultiplier:
+		Multiplier: 200
+	Cargo:
+		InitialUnits: gle1toxin, gle1toxin, gle3, gle3, gle3
 
 glscorpion:
 	Inherits: ^Tank
@@ -2875,7 +2908,7 @@ gltractor:
 		Description: Vehicle armed with toxins.\nCan deploy to contaminate an area.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
 		TurnSpeed: 8
-		Speed: 60
+		Speed: 80
 	Health:
 		HP: 25000
 	Repairable:
@@ -3121,6 +3154,7 @@ glscrapcar:
 		CloakDelay: 30
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
 		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
 	GrantConditionOnAttack:
 		Condition: triggered
 	KillsSelf:
@@ -3776,7 +3810,7 @@ glworker:
 		InitialLevels: 1
 	RenderSprites:
 		Image: yrslav
-		PlayerPalette: ra2unithack
+		PlayerPalette: ra2infantry
 	WithDeathAnimation:
 		DeathTypes:
 			DefaultDeath: 1
@@ -3786,7 +3820,7 @@ glworker:
 			ExplosionDeath: 2
 			TiberiumDeath: 1
 			RA2VirusDeath: 1
-		DeathSequencePalette: ra2unithack
+		DeathSequencePalette: ra2infantry
 	ProximityExternalCondition@clearmines:
 		Condition: trap-neutralized
 		Range: 4c0
@@ -5024,6 +5058,7 @@ chbarracks:
 chgattling:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@EMP: ^TurretEMP
 	Inherits@chaingun: ^ChaingunUpgrade
 	Inherits@mines: ^MinefieldUpgrade
@@ -5066,6 +5101,7 @@ chgattling:
 		Recoil: 10
 		MuzzleSequence: muzzle
 	AttackTurreted:
+		PauseOnCondition: lowpower || disabled
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 8
@@ -5398,6 +5434,8 @@ chpropagandatower:
 		Range: 6c0
 	Power:
 		Amount: -20
+	MustBeDestroyed:
+		RequiredForShortGame: false
 	WithBuildingBib:
 		HasMinibib: true
 	Selectable:
@@ -5907,6 +5945,7 @@ CHHACKER2:
 		InitialDelay: 60
 		CloakDelay: 60
 		PauseOnCondition: frozen
+		IsPlayerPalette: true
 	RenderSprites:
 		Image: chhacker
 	Voiced:
@@ -5991,6 +6030,7 @@ chlotus:
 		InitialDelay: 30
 		CloakDelay: 30
 		PauseOnCondition: frozen
+		IsPlayerPalette: true
 
 chbattle:
 	Inherits: ^Tank
@@ -6619,6 +6659,7 @@ chharv:
 	Inherits@harv: ^Harvester
 	Inherits@selection: ^SelectableEconomicUnit
 	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EXT: ^ExternalConditions
 	Buildable:
 		Queue: Vehicle.CHINA, RAVehicle.CHINA
 		BuildPaletteOrder: 10
@@ -6720,6 +6761,7 @@ choutpost:
 		CloakDelay: 45
 		UncloakOn: Attack, Unload, Move
 		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
 	DetectCloaked:
 		Range: 10c0
 	RenderDetectionCircle:
@@ -6914,7 +6956,8 @@ chcrawl2:
 		TurnSpeed: 10
 	Voiced:
 		VoiceSet: AssaultTroopCrawlerVoice
-	-AIDeployNotifier:
+	AIDeployNotifier:
+		RequiresCondition: damagedslow
 
 chcrawl.Husk:
 	Inherits: ^LightHusk
@@ -8028,6 +8071,7 @@ chasub:
 	Inherits: ^BoatUnit
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@sub: ^Submarine
 	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 3000
@@ -8383,7 +8427,7 @@ USAE1:
 	Voiced:
 		VoiceSet: USARangerVoice
 	RenderSprites:
-		PlayerPalette: ra2unithack
+		PlayerPalette: ra2infantry
 	WithDeathAnimation:
 		DeathTypes:
 			DefaultDeath: 1
@@ -8393,7 +8437,7 @@ USAE1:
 			ExplosionDeath: 2
 			TiberiumDeath: 1
 			RA2VirusDeath: 1
-		DeathSequencePalette: ra2unithack
+		DeathSequencePalette: ra2infantry
 
 USAE3:
 	Inherits: E3
@@ -8491,6 +8535,7 @@ usapath:
 		InitialDelay: 15
 		CloakDelay: 15
 		PauseOnCondition: cloak-force-disabled || frozen
+		IsPlayerPalette: true
 	-TakeCover:
 	DetectCloaked:
 		Range: 5c0
@@ -8561,6 +8606,7 @@ usaburton:
 		UncloakOn: Unload
 		CloakTypes: Cloak, Thief
 		PauseOnCondition: cloak-force-disabled || frozen
+		IsPlayerPalette: true
 	ProductionCostMultiplier@selectusasuper:
 		Multiplier: 80
 		Prerequisites: selectusasuper
@@ -9186,6 +9232,7 @@ usasentry:
 		CloakDelay: 90
 		UncloakOn: Attack, Move, Unload
 		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
 	DetectCloaked:
 		Range: 9c0
 	RenderDetectionCircle:
@@ -10763,6 +10810,7 @@ usaspydronepower:
 		InitialDelay: 30
 		CloakDelay: 30
 		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
 	RevealsShroud:
 		Range: 8c0
 		Type: CenterPosition
@@ -10996,6 +11044,7 @@ usastealth:
 		InitialDelay: 90
 		CloakDelay: 90
 		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
 	ProductionCostMultiplier@selectusaairforce:
 		Multiplier: 90
 		Prerequisites: selectusaairforce
@@ -11255,6 +11304,7 @@ usacomanche:
 		CloakDelay: 45
 		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: upstealthcomanche
+		IsPlayerPalette: true
 	ProductionCostMultiplier@selectusaairforce:
 		Multiplier: 90
 		Prerequisites: selectusaairforce
