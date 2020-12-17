@@ -329,7 +329,7 @@
 		ProgressBarColor: FFFFFF
 	Targetable@lockdown:
 		TargetTypes: lockdowned
-		RequiresCondition: GhostLockdown && !chronobeamed
+		RequiresCondition: GhostLockdown && !untargetable
 	ExternalCondition@STASIS:
 		TotalCap: 1
 		Condition: chronobeamed
@@ -362,6 +362,7 @@
 	Inherits@driver-dead: ^AffectedByDriverKill
 	Inherits@salvage: ^GenericSalvageBonus
 	Inherits@emergencyrepair: ^EmergencyRepairable
+	Inherits@chrono: ^Chronoshiftable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -407,7 +408,6 @@
 	HitShape:
 	MapEditorData:
 		Categories: Vehicle
-	Chronoshiftable:						##########
 	Targetable@REPAIR:
 		RequiresCondition: !parachute && !untargetable && damaged
 		TargetTypes: Repair, Healing
@@ -1129,7 +1129,6 @@
 	WithSpriteControlGroupDecoration:
 	Targetable:
 		TargetTypes: Ground, C4, Structure
-		RequiresCondition: !chronobeamed
 	Armor:
 		Type: Wood
 	Health:
@@ -1147,7 +1146,6 @@
 		Type: Footprint
 		Weapon: BuildingExplode
 		EmptyWeapon: BuildingExplode
-		RequiresCondition: !chronobeamed
 	CaptureNotification:
 		Notification: BuildingCaptured
 		LoseNotification: BuildingLost
@@ -1161,7 +1159,6 @@
 	FrozenUnderFog:
 	FrozenUnderFogUpdatedByGps:
 	Demolishable:
-		RequiresCondition: !chronobeamed && !invulnerability && !forceshield
 	MapEditorData:
 		Categories: Building
 	CommandBarBlacklist:
@@ -1228,10 +1225,12 @@
 	EngineerRepairable:
 	Demolishable:
 		Condition: being-demolished
+		RequiresCondition: !build-incomplete && !untargetable
 	GrantCondition@untargetable:
 		Condition: untargetable
 		RequiresCondition: chronobeamed || invulnerability || forceshield
 	Targetable:
+		TargetTypes: Ground, C4, Structure, BaseBuilding
 		RequiresCondition: !untargetable
 	Targetable@ivan:
 		TargetTypes: ivanattachable, demolishable
@@ -1297,12 +1296,13 @@
 	CaptureManager:
 		BeingCapturedCondition: being-captured
 	Capturable:
-		RequiresCondition: !chronobeamed
-		Types: building
+		Types: tech
 	CapturableProgressBar:
 	CapturableProgressBlink:
 	CaptureNotification:
 		Notification: CivilianBuildingCaptured
+	Targetable:
+		TargetTypes: Ground, C4, Structure, TechBuilding
 	RepairableBuilding:
 		RepairPercent: 40
 		RepairStep: 1400
@@ -1332,7 +1332,7 @@
 	-EngineerRepairable:
 	-Demolishable:
 	Capturable:
-		Types: building
+		Types: tech
 		ValidStances: Enemy, Neutral, Ally
 	TooltipDescription:
 		Description: Capture to restore to working condition.
@@ -1661,6 +1661,8 @@
 		TargetTypes: Ground, C4, Structure, Defense, DiskDrain
 	MapEditorData:
 		Categories: Defense
+	Capturable:
+		Types: defense
 	-CommandBarBlacklist:
 	-AcceptsDeliveredCash:
 
@@ -3009,10 +3011,19 @@ CPQDEBUGDUMMY:
 		BuildDurationModifier: 25
 	Targetable@infiltrate:
 		TargetTypes: SpyInfiltrate, ThiefInfiltrate
-		RequiresCondition: !chronobeamed
+		RequiresCondition: !untargetable
 	InfiltrateForCash:
 		Percentage: 50
 		Types: SpyInfiltrate, ThiefInfiltrate
+
+^InfiltrateForSupportPowerReset:
+	Targetable@infiltrate:
+		TargetTypes: SpyInfiltrate
+		RequiresCondition: !untargetable
+	InfiltrateForSupportPowerReset:
+		Types: SpyInfiltrate
+		InfiltratedNotification: BuildingInfiltrated
+		InfiltrationNotification: BuildingInfiltrated
 
 ^ProducesUnits:
 	Buildable:
@@ -3124,6 +3135,7 @@ CPQDEBUGDUMMY:
 
 ^PrimarySuperweapon:
 	Inherits@FS: ^AIForceShield
+	Inherits@spy: ^InfiltrateForSupportPowerReset
 	ProvidesPrerequisite@swlimit:
 		RequiresPrerequisites: global-swlimit
 
@@ -3527,7 +3539,7 @@ CPQDEBUGDUMMY:
 		TargetTypes: LoadedVehicle
 		RequiresCondition: loaded
 	Capturable:
-		RequiresCondition: !loaded && !invulnerability && !chronobeamed
+		RequiresCondition: !loaded && !untargetable
 	Cargo:
 		AfterLoadDelay: 0
 		BeforeUnloadDelay: 0
@@ -3580,3 +3592,11 @@ CPQDEBUGDUMMY:
 		Range: 4c0
 		RequiresCondition: !disabled && clearmines
 		ValidStances: Neutral, Enemy
+
+^Chronoshiftable:
+	ChronoshiftableWithSpriteEffect:
+		Image: ra2cmin
+		WarpInSequence: warpout
+		WarpOutSequence: warpout
+		RequiresCondition: !untargetable
+		Palette: ra2effect

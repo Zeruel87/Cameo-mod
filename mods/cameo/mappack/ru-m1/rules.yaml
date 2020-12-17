@@ -1,38 +1,60 @@
 World:
+	-CrateSpawner:
+	ObjectivesPanel:
+		PanelName: MISSION_OBJECTIVES
+	LuaScript:
+		Scripts: rum1.lua
 	MusicPlaylist:
 		StartingMusic: bigf226m
 	MissionData:
-		Briefing: Use the units provided to protect the Mobile Construction Vehicle (MCV).\n\nYou should then deploy the MCV by selecting it with a left-click and then right-clicking on it.\n\nThen you can begin to build up a base. Start with a Power Plant.\n\nFinally, search out and destroy all enemy Nod units in the surrounding area.
-		BackgroundVideo: intro2.vqa
-		BriefingVideo: gdi1.vqa
-		StartVideo: landing.vqa
-		WinVideo: consyard.vqa
-		LossVideo: gameover.vqa
+		Briefing: Capture the vehicle yard and destroy the local Allied presence.
 	MPStartUnits@mcvonlyrasoviet:
 		Class: none
 		ClassName: MCV Only
 		Factions: soviet
 		BaseActor: ra2shkhero
 
+Player:
+	-ConquestVictoryConditions:
+	MissionObjectives:
+		EarlyGameOver: true
+	Shroud:
+		FogCheckboxLocked: True
+		FogCheckboxEnabled: True
+		ExploredMapCheckboxLocked: True
+		ExploredMapCheckboxEnabled: False
+	PlayerResources:
+		DefaultCashDropdownLocked: True
+		DefaultCash: 5000
+	ModularBot@CampaignAI:
+		Name: Campaign Player AI
+		Type: campaign
+	LobbyPrerequisiteCheckbox@CLASSICPRODUCTIONQUEUES:
+		Enabled: true
+		Locked: true
+	GrantConditionOnBotOwner@easyai:
+		Condition: enable-campaign-ai
+		Bots: campaign
+	DeployBotModule:
+		RequiresCondition: enable-easy-ai || enable-medium-ai || enable-hard-ai || enable-airforce-ai || enable-brutal-ai || enable-campaign-ai
+
 ra2shkhero:
 	Inherits: ra2shk
 	RenderSprites:
 		Image: ra2shk
 		Scale: 1.3
-	Buildable:
-		Prerequisites: ~disable
-		BuildPaletteOrder: 131
+	-Buildable:
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Shok chelovek
+		Name: Tesla Commando
 	Health:
 		HP: 45000
 	ReloadDelayMultiplier@HERO:
 		Modifier: 25
-	Demolition:
-		DetonationDelay: 45
-		Voice: Attack
+	Armament@c4building:
+		Weapon: GenericC4
+		Cursor: c4
 	MustBeDestroyed:
 		RequiredForShortGame: true
 	SelfHealing@HERO:
@@ -40,3 +62,11 @@ ra2shkhero:
 		Delay: 50
 		HealIfBelow: 100
 		DamageCooldown: 125
+
+^AffectedByDriverKill:
+	-SelfHealing@DRIVER_DEAD:
+	-WithDecoration@DRIVERKILL:
+
+^HordeBonus:
+	ProximityExternalCondition@HordeEffect:
+		RequiresCondition: !driver-dead

@@ -97,7 +97,7 @@
 		Condition: hordeeffect
 		TotalCap: 5
 	ProximityExternalCondition@HordeEffect:
-		Range: 3c0
+		Range: 4c0
 		Condition: hordeeffect
 	WithDecoration@HordeEffect:
 		Image: chhorde
@@ -168,6 +168,20 @@
 		RecreationInterval: 1600
 		RequiresCondition: minefield
 
+^BuildingCaptureUpgrade:
+	GrantConditionOnPrerequisite@capturebuilding:
+		Condition: upcapture
+		Prerequisites: upgecapture
+	Captures:
+		RequiresCondition: upcapture
+		CaptureTypes: building, tech
+		PlayerExperience: 500
+		CaptureDelay: 375
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+		Voice: Capture
+
 GLAHole4x4:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^4x3Shape
@@ -221,11 +235,11 @@ GLAHole2x2:
 upgecapture:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: Building Capture
+		Name: Capture Building
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Infantry.GLA, RAInfantry.GLA, Infantry.CHINA, RAInfantry.CHINA, Infantry.USA, RAInfantry.USA, Infantry.LEANG, RAInfantry.LEANG
-		Description: Unlocks Engineer.
+		Description: Allow anti-personnel infantry to capture base buildings.\nAlt-click to capture enemy base buildings.
 		Prerequisites: barracks, ~!upgecapture
 	Valued:
 		Cost: 1000
@@ -238,7 +252,7 @@ GENE6:
 	Inherits: E6
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: barracks, ~upgecapture
+		Prerequisites: ~disabled
 		Queue: Infantry.GLA, RAInfantry.GLA, Infantry.CHINA, RAInfantry.CHINA, Infantry.USA, RAInfantry.USA, Infantry.LEANG, RAInfantry.LEANG
 	RenderSprites:
 		Image: E6
@@ -1491,8 +1505,6 @@ glblackmarket:
 	WithBuildingBib:
 	Power:
 		Amount: 0
-	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	WithDeathAnimation:
 		DeathSequence: dead
 		UseDeathTypeSuffix: false
@@ -1947,6 +1959,7 @@ GLE1:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@AP: ^APBulletUpgrade
+	Inherits@cap: ^BuildingCaptureUpgrade
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -2043,6 +2056,8 @@ GLE1toxin:
 	-ProducibleWithLevel:
 	Targetable@Immune:
 		TargetTypes: ToxinImmune
+	Voiced:
+		VoiceSet: ToxinRebelVoice
 
 upglatrap:
 	Inherits: ^upgrade.template
@@ -2051,7 +2066,7 @@ upglatrap:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: Infantry.GLA, RAInfantry.GLA
-		Description: Allows Rebels to plant explosives.\nFriendly and neutral buildings can be trapped to prevent capture.
+		Description: Allows Rebels to plant explosives.\nFriendly and neutral buildings can\nbe trapped to prevent capture.
 		Prerequisites: ~!upglatrap, ~!selectglatoxin
 	Valued:
 		Cost: 1000
@@ -2550,8 +2565,7 @@ glbbus:
 	Mobile:
 		TurnSpeed: 4
 		Speed: 140
-	SpeedMultiplier@DamagedSlow:
-		Modifier: 0
+		RequiresCondition: !damagedslow
 	RejectsOrders@immobile:
 		Reject: Move, AssaultMove, AttackMove
 		RequiresCondition: damagedslow
@@ -3651,7 +3665,7 @@ glbombtruck:
 	-DamageMultiplier@IRONCURTAIN:
 	KillsSelf:
 		RequiresCondition: (invulnerability || triggered) && !disabled
-	Chronoshiftable:
+	ChronoshiftableWithSpriteEffect:
 		ExplodeInstead: True
 	Voiced:
 		VoiceSet: GLBombTruckVoice
@@ -4935,8 +4949,6 @@ chpower:
 	WithBuildingBib:
 	Power:
 		Amount: 300
-	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	WithDeathAnimation:
 		DeathSequence: dead
 		UseDeathTypeSuffix: false
@@ -5661,8 +5673,6 @@ chairport:
 	Power:
 		Amount: -20
 	ProvidesPrerequisite@buildingname:
-	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
 	Voiced:
 		VoiceSet: PRCAirfieldVoice
 
@@ -5672,6 +5682,7 @@ CHE1:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@horde: ^HordeBonus
+	Inherits@cap: ^BuildingCaptureUpgrade
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackFrontalVoice
 	Buildable:
@@ -6931,11 +6942,11 @@ chcrawl2:
 		Description: Heavy infantry transport.\n Passengers can fire from within
 	Mobile:
 		TurnSpeed: 4
-		Speed: 140
+		Speed: 110
 	Passenger:
 		Weight: 6
 	Health:
-		HP: 105000
+		HP: 85000
 	Repairable:
 		HpPerStep: 1819
 	RevealsShroud:
@@ -6950,6 +6961,8 @@ chcrawl2:
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		Voice: Attack
 		PauseOnCondition: chronobeamed
+	RevealOnFire:
+		ArmamentNames: primary, garrisoned
 	AutoTarget:
 		AllowMovement: true
 	Turreted:
@@ -8386,6 +8399,7 @@ USAE1:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@USAInfantry: ^GeneralsUSAInfantry
+	Inherits@cap: ^BuildingCaptureUpgrade
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackFrontalVoice
 	Buildable:
@@ -9632,7 +9646,7 @@ usacommand:
 	# 	ChargeInterval: 5000
 	# 	Description: USA Paratroopers
 	# 	LongDesc: Cargo planes drop a squad of infantry\nanywhere on the map.
-	# 	DropItems: USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,GENE6
+	# 	DropItems: USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1
 	# 	ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
 	# 	SelectTargetSpeechNotification: SelectTarget
 	# 	AllowImpassableCells: false
@@ -9656,7 +9670,7 @@ usacommand:
 		ChargeInterval: 5000
 		Description: USA Paratroopers
 		LongDesc: Cargo planes drop a squad of infantry\nanywhere on the map.
-		DropItems: USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,GENE6,GENE6
+		DropItems: USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1,USAE1
 		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
 		SelectTargetSpeechNotification: SelectTarget
 		AllowImpassableCells: false
@@ -9873,8 +9887,6 @@ usapower:
 	WithBuildingBib:
 	Power:
 		Amount: 125
-	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	ScalePowerWithHealth:
 	WithDeathAnimation:
 		DeathSequence: dead
@@ -10403,6 +10415,7 @@ usaweap:
 usastrategy:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^4x2Shape
+	Inherits@spy: ^InfiltrateForSupportPowerReset
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -10453,6 +10466,11 @@ usastrategy:
 		SupportPowerPaletteOrder: 40
 		Prerequisites: selectusaairforce
 		StartFullyCharged: true
+	GrantConditionOnPrerequisite@selectusaairforce:
+		Condition: selectusaairforce
+		Prerequisites: selectusaairforce
+	Targetable@infiltrate:
+		RequiresCondition: !untargetable && selectusaairforce
 	RenderSprites:
 		Image: usastrategy
 
@@ -10515,8 +10533,6 @@ usaairport:
 	Power:
 		Amount: -20
 	ProvidesPrerequisite@buildingname:
-	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
 	Voiced:
 		VoiceSet: USAAirfieldVoice
 	RenderSprites:
@@ -10554,8 +10570,6 @@ usadropzone:
 	WithBuildingBib:
 	Power:
 		Amount: -40
-	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	WithDeathAnimation:
 		DeathSequence: dead
 		UseDeathTypeSuffix: false
