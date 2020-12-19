@@ -701,7 +701,7 @@ MLRS:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 70
-		Prerequisites: anyhq, ~techlevel.medium
+		Prerequisites: ~disabled #anyhq
 		Queue: Vehicle.Nod, RAVehicle.Nod, Vehicle.X_Vehicles
 		Description: Powerful anti-air unit.\nCannot attack Ground units.
 		Icon: samicon
@@ -758,7 +758,7 @@ MSSM:
 		Name: SSM Launcher
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ~disabled #tmpl
+		Prerequisites: tmpl
 		Queue: Vehicle.Nod, RAVehicle.Nod, Vehicle.X_Vehicles
 		Description: Long-range rocket artillery.\n  Strong vs Buildings\n  Weak vs Aircraft
 		Icon: icon
@@ -1893,6 +1893,153 @@ TRUK:
 		Queue: ~disabled
 	RenderSprites:
 		Image: truck
+
+SAPC:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles
+		BuildPaletteOrder: 130
+		Prerequisites: atek
+		BuildDurationModifier: 50
+		Description: Lightly armored infantry transport which\ncan cloak. Armed with anti-ground missiles.\n  Strong vs Light armor\n  Weak vs Infantry, Tanks, Aircraft
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Phase Transport
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: sapc
+	Health:
+		HP: 35000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 142
+		Locomotor: heavywheeled
+		PauseOnCondition: notmobile || being-captured || disabled
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: ReturnFire
+	Armament:
+		Weapon: APTusk
+		LocalOffset: 192,0,176
+	Turreted:
+		TurnSpeed: 5
+	AttackTurreted:
+	WithSpriteTurret:
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 4
+		PipCount: 4
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+		LoadingCondition: notmobile
+	Cloak:
+		InitialDelay: 125
+		CloakDelay: 175
+		CloakSound: appear1.aud
+		UncloakSound: appear1.aud
+		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	DeliversCash:
+		Payload: 625
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	Selectable:
+		Class: sapc
+	RenderSprites:
+		Image: sapc
+	#SpawnActorOnDeath:
+	#	Actor: SAPC.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+
+sapc.bot:
+	Inherits: SAPC
+	Buildable:
+		Prerequisites: atek, ~hardbotplayer, !e7
+	Cargo:
+		InitialUnits: medi, medi, medi, e7
+	AutoTarget:
+		InitialStanceAI: AttackAnything
+	ProductionCostMultiplier:
+		Multiplier: 250
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+
+SAPC.Husk:
+	Inherits: ^LightHusk
+	Tooltip:
+		Name: Phase Transport (Destroyed)
+	TransformOnCapture:
+		IntoActor: sapc
+	RenderSprites:
+		Image: sapc
+
+RAMGG:
+	Inherits: ^Vehicle
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles
+		BuildPaletteOrder: 150
+		Prerequisites: atek
+		BuildDurationModifier: 50
+		Description: Regenerates the shroud nearby, \nobscuring the area.\n  Unarmed
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Mobile Gap Generator
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 22000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 85
+	WithIdleOverlay@SPINNER:
+		Offset: -299,0,171
+		Sequence: spinner
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	CreatesShroud:
+		Range: 6c0
+		RequiresCondition: !disabled
+	RenderShroudCircle:         
+	#SpawnActorOnDeath:
+	#	Actor: RAMGG.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	Inherits@EXT: ^ExternalConditions					##########
+	Voiced:
+		VoiceSet: RAVehicleVoice
+
+RAMGG.Husk:
+	Inherits: ^LightHusk
+	Tooltip:
+		Name: Mobile Gap Generator (Destroyed)
+	TransformOnCapture:
+		IntoActor: ramgg
+	RenderSprites:
+		Image: ramgg
 
 ####################################################################################################
 #		2100
