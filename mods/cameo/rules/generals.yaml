@@ -2088,7 +2088,7 @@ GLKELL:
 		BuildLimit: 1
 		BuildPaletteOrder: 125
 		Queue: Infantry.GLA, RAInfantry.GLA
-		Description: Elite sniper infantry unit.\nCan kill the driver of a vehicle.\n  Strong vs Infantry\n  Weak vs Vehicles
+		Description: Elite sniper infantry unit.\nCan snipe enemy vehicles, allowing them to be captured.\n  Strong vs Infantry\n  Weak vs Vehicles
 		Prerequisites: barracks, glpalace
 	Valued:
 		Cost: 1500
@@ -2105,6 +2105,7 @@ GLKELL:
 		Weapon: GLKellSniper
 	Armament@VEHICLE:
 		Weapon: GLKellSniperVehicle
+		Name: secondary
 	Armament@demolition:
 		Weapon: GLKellAttach
 		Cursor: c4
@@ -2115,6 +2116,8 @@ GLKELL:
 	Armament@GARRISONED2:
 		Name: garrisoned
 		Weapon: GLKellSniperVehicle
+	ReloadArmamentsBar:
+		Armaments: secondary
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
@@ -2566,9 +2569,9 @@ glbbus:
 		TurnSpeed: 4
 		Speed: 140
 		RequireForceMoveCondition: damagedslow
-		ImmovableCondition: damagedslow
+		ImmovableCondition: damagedslow || driver-dead
 	RejectsOrders@immobile:
-		Except: Unload, Attack, Stop
+		Except: Unload, Stop
 		RequiresCondition: damagedslow
 	Passenger:
 		Weight: 6
@@ -6215,6 +6218,7 @@ choverlord:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@crush: ^VehicleCrusher
 	Inherits@detect: ^GenericGroundDetector
+	Inherits@cargo: ^CargoVehicle
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -6386,6 +6390,9 @@ choverlord2:
 	ProximityExternalCondition@PROPAGANDA:
 		-RequiresCondition:
 	-Cargo:
+	-Targetable@garrisoned:
+	Capturable:
+		RequiresCondition: !untargetable
 	-WithSpriteTurret@BUNKER:
 	-WithSpriteTurret@PROPAGANDA:
 	-GrantConditionOnProduction@bunker:
@@ -7395,7 +7402,7 @@ upneutronshell:
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: NukeUpgrades.CHINA
-		Description: Give Nuke Cannons neutron munitions.\nCan kill vehicle passengers.
+		Description: Gives Nuke Cannons neutron munitions.\nCan kill vehicle passengers and drivers, allowing them\nto be captured.
 		Prerequisites: upnukecann, ~!upneutronshell, ~!selectchinf
 	Valued:
 		Cost: 2500

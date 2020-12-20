@@ -694,10 +694,12 @@ TSFireballLauncher:
 	Range: 4c256
 	Report: flamtnk1.aud
 	Projectile: Bullet
-		Speed: 100
-		TrailImage: fb4
-		Image: fb3
+		Speed: 180
+		Image: flameall
+		-TrailImage:
+		Palette: tseffect
 		Inaccuracy: 384
+		LaunchAngle: 0
 	Burst: 5
 	BurstDelays: 5
 	Warhead@1Dam: SpreadDamage
@@ -853,12 +855,11 @@ TSEMPulseCannon:
 		Speed: 425
 		Blockable: false
 		LaunchAngle: 165
-		Inaccuracy: 2c0
 		Image: tspulsball
 	Warhead@Cam: RevealShroud
 		Radius: 6c0
 		RevealGeneratedShroud: true
-		Duration: 240
+		Duration: 360
 	Warhead@3Eff: CreateEffect
 		Explosions: pulse_explosion
 		ExplosionPalette: tseffect
@@ -866,8 +867,25 @@ TSEMPulseCannon:
 		ImpactActors: false
 	Warhead@2Con: GrantExternalCondition
 		Condition: empdisable
-		Duration: 250
+		Duration: 360
 		Range: 6c0
+
+TSMobileEMP:
+	Projectile: InstantExplode
+	Report: mobemp1.aud
+	Range: 5c0
+	ReloadDelay: 300
+	ValidTargets: Vehicle, Defense, Cyborg
+	Warhead@1: TargetDamage
+	Warhead@2Con: GrantExternalCondition
+		Condition: empdisable
+		Duration: 240
+		Range: 5c0
+	Warhead@3Eff: CreateEffect
+		Explosions: mobileemp
+		ExplosionPalette: ra2unit
+		ImpactActors: false
+		ValidTargets: Vehicle, Defense, Cyborg
 
 ####################################################################################################
 #		Tiberian Sun MGS
@@ -1077,41 +1095,42 @@ TSTacticalMissile:
 			Heavy: 35
 			Concrete: 28
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
-	Warhead@SoundEffect: CreateEffect
-		Explosions: large_explosion
+	Warhead@2Eff: CreateEffect
+		Explosions: large_twlt
+		ExplosionPalette: tseffect
 		ImpactSounds: expnew19.aud
 		ImpactActors: false
 		ValidTargets: Ground, Water, Air
 	Warhead@Cluster: FireCluster
 		Weapon: TSMissileBomblet
 		Dimensions: 7,7
-		Footprint: __xxx__ _x___x_ x_____x x_____x x_____x _x___x_ __xxx__
+		Footprint: __XXX__ _X___X_ X_____X X_____X X_____X _X___X_ __XXX__
 
 TSMissileBomblet:
-	Inherits: ^DamagingExplosion
-	Projectile: Missile
-		MaximumLaunchSpeed: 120
+	Projectile: Bullet
 		Image: 120mm
 		TrailImage: smokey
 		Shadow: true
-		Speed: 370
-		MinimumLaunchAngle: -255
-		MaximumLaunchAngle: 255
-		RangeLimit: 10c0
-		VerticalRateOfTurn: 16
-		Jammable: false
+		Speed: 128
 	Warhead@1Dam: SpreadDamage
 		Spread: 1c0
 		Damage: 26000
+		ValidTargets: Ground, Water, Air
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
-		Explosions: big_napalm
-		ImpactSounds: expnew09.aud,expnew06.aud
-	Warhead@3Smu: LeaveSmudge
+		Explosions: small_twlt
+		ExplosionPalette: tseffect
+		ImpactSounds: expnew09.aud, expnew06.aud
+		ValidTargets: Ground, Air, Ship, Trees
+	Warhead@3EffWater: CreateEffect
+		Explosions: large_splash
+		ImpactSounds: splash9.aud
+		ValidTargets: Water, Underwater
+		InvalidTargets: Ship, Structure, Bridge
+	Warhead@4Smu: LeaveSmudge
 		SmudgeType: Crater
 
 TSChemTacticalMissile:
-	Inherits: ^DamagingExplosion
 	Warhead@1Dam: SpreadDamage
 		Spread: 3c0
 		Damage: 47000
@@ -1119,7 +1138,8 @@ TSChemTacticalMissile:
 			None: 50
 		DamageTypes: Prone50Percent, TriggerProne, TiberiumDeath
 	Warhead@2Eff: CreateEffect
-		Explosions: large_explosion
+		Explosions: verylarge_twlt
+		ExplosionPalette: tseffect
 		ImpactSounds: expnew06.aud
 	Warhead@3Smu: LeaveSmudge
 		SmudgeType: Scorch
@@ -1130,9 +1150,28 @@ TSChemTacticalMissile:
 		Actors: tscloud1,tscloud1,tscloud1,tscloud1,tscloud1,tscloud1,tscloud1,tscloud1,tscloud1,tscloud1
 		Range: 4
 
+TSHSeekerBomb:
+	Range: 0c128
+	ReloadDelay: 120
+	ValidTargets: Ground, Air, Water
+	TargetActorCenter: true
+	Projectile: InstantHit
+	Warhead@1Dam: HealthPercentageDamage
+		Damage: 100
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath
+		ValidTargets: Infantry, Vehicle, Aircraft, Ship, Submarine, Creep
+		InvalidTargets: Structure
+	Warhead@2DamStructure: SpreadDamage
+		Damage: 50000
+		Spread: 64
+		Falloff: 100, 100
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath
+		ValidTargets: Structure
+
 TSHSeekerExplode:
-	Inherits: ^DamagingExplosion
-	ValidTargets: Ground
+	Projectile: InstantExplode
+	Range: 1c0
+	ValidTargets: Ground, Air, Water
 	Warhead@1Dam: SpreadDamage
 		Spread: 1c0
 		Falloff: 100, 75, 50, 25, 0
@@ -1143,23 +1182,27 @@ TSHSeekerExplode:
 			Light: 100
 			Heavy: 150
 		DamageTypes: Prone50Percent, TriggerProne, FireDeath
+		ValidTargets: Ground, Air, Water
+		AffectsParent: true
 	Warhead@2Eff: CreateEffect
-		Explosions: big_napalm
-		ImpactSounds: expnew09.aud,expnew06.aud
+		Explosions: verylarge_twlt
+		ExplosionPalette: tseffect
+		ImpactSounds: expnew09.aud, expnew06.aud
+		ValidTargets: Ground, Air, Water
 	Warhead@3Smu: LeaveSmudge
-		Size: 2
 		SmudgeType: Scorch
-	Warhead@Cam: RevealShroud
+		InvalidTargets: Vehicle, Building, Wall
+		Size: 2
+	Warhead@4Cam: RevealShroud
 		Radius: 4c0
 		RevealGeneratedShroud: true
 		Duration: 120
 
 TSHSeekerTargeting:
-	ValidTargets: Ground
-	Range: 2c0
+	ReloadDelay: 30
+	Range: 0c128
 	Projectile: InstantHit
 	Warhead@1Dam: TargetDamage
-		ValidTargets: Ground
 
 TSIonCannon:
 	ValidTargets: Ground, Water, Air
