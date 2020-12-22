@@ -970,6 +970,7 @@ HQ:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@spy: ^InfiltrateForSupportPowerReset
 	HitShape:
 		TargetableOffsets: 0,0,0, 0,512,0, 420,-598,256
 		Type: Rectangle
@@ -1130,7 +1131,7 @@ EYE:
 		Prerequisites: ~techlevel.superweapons
 		Icon: ioncannon
 		Cursor: ioncannon
-		ChargeInterval: 6750
+		ChargeInterval: 6000
 		Description: Ion Cannon
 		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
 		BeginChargeSpeechNotification: IonCannonCharging
@@ -1692,7 +1693,6 @@ MSLO:
 		DisplayBeacon: True
 		DisplayRadarPing: True
 		BeaconPoster: raatomicon
-		FlashType: Nuke
 		CameraRange: 10c0
 		ArrowSequence: arrow
 		ClockSequence: clock
@@ -1758,6 +1758,7 @@ IRON:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^2x1Shape
+	Inherits@spy: ^InfiltrateForSupportPowerReset
 	Buildable:
 		Queue: Defence.Soviet, RADefence.Soviet
 		BuildPaletteOrder: 130
@@ -1798,6 +1799,7 @@ IRON:
 		ChargeInterval: 3000
 		Description: Invulnerability
 		LongDesc: Makes a group of units invulnerable\nfor 20 seconds.
+		Range: 2
 		Duration: 500
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -1818,6 +1820,7 @@ PDOX:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^2x2Shape
+	Inherits@spy: ^InfiltrateForSupportPowerReset
 	Selectable:
 		Bounds: 48,48
 	Buildable:
@@ -1825,7 +1828,7 @@ PDOX:
 		BuildPaletteOrder: 120
 		Prerequisites: atek, ~techlevel.superweapons
 		BuildLimit: 1
-		Description: Teleports a group of units across the\nmap for a short time.\nRequires power to operate.\nMaximum 1 can be built.\n  Special Ability: Chronoshift
+		Description: Teleports a group of units across the map.\nRequires power to operate.\nMaximum 1 can be built.\n  Special Ability: Chronoshift
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -1855,13 +1858,14 @@ PDOX:
 		Icon: chrono
 		ChargeInterval: 3000
 		Description: Chronoshift
-		LongDesc: Teleports a group of units across\nthe map for 20 seconds.
+		LongDesc: Teleports a large group of units\nacross the map.
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		#BeginChargeSpeechNotification: ChronosphereCharging
 		#EndChargeSpeechNotification: ChronosphereReady
-		Duration: 400
-		KillCargo: true
+		Range: 2
+		Duration: 0
+		KillCargo: False
 		DisplayRadarPing: True
 		SelectionCursor: ability
 		TargetCursor: ability
@@ -1893,7 +1897,7 @@ TSLA:
 		DecorationBounds: 24,40,0,-8
 	SelectionDecorations:
 	Health:
-		HP: 40000
+		HP: 60000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -1993,8 +1997,6 @@ DOME:
 		Footprint: xx xx ==
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
-	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	Health:
 		HP: 100000
 	Armor:
@@ -2053,7 +2055,7 @@ PBOX:
 	BodyOrientation:
 		QuantizedFacings: 8
 	Cargo:
-		Types: Infantry
+		Types: Infantry, Hacker
 		MaxWeight: 1
 		PipCount: 1
 		InitialUnits: rae1
@@ -2063,7 +2065,7 @@ PBOX:
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
-		PauseOnCondition: disabled
+		PauseOnCondition: chronobeamed
 	RenderRangeCircle:
 		FallbackRange: 6c0
 	Power:
@@ -2087,7 +2089,7 @@ HBOX:
 	CustomSellValue:
 		Value: 500
 	Health:
-		HP: 40000
+		HP: 50000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -2099,6 +2101,7 @@ HBOX:
 		InitialDelay: 125
 		CloakDelay: 60
 		RequiresCondition: !cloak-force-disabled
+		IsPlayerPalette: true
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -2108,7 +2111,7 @@ HBOX:
 	BodyOrientation:
 		QuantizedFacings: 8
 	Cargo:
-		Types: Infantry
+		Types: Infantry, Hacker
 		MaxWeight: 1
 		PipCount: 1
 		InitialUnits: rae1
@@ -2122,7 +2125,7 @@ HBOX:
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
-		PauseOnCondition: disabled
+		PauseOnCondition: chronobeamed
 	Power:
 		Amount: -20
 	-MustBeDestroyed:
@@ -2384,8 +2387,6 @@ RAWEAPA:
 		RequiresCondition: classicproductionqueues
 	Power:
 		Amount: -30
-	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite:
 		Prerequisite: vehicleproduction
@@ -2454,8 +2455,6 @@ RAWEAP:
 		RequiresCondition: classicproductionqueues
 	Power:
 		Amount: -30
-	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite:
 		Prerequisite: vehicleproduction
@@ -2747,8 +2746,6 @@ RAPROC:
 		Bounds: 72,50,0,12
 		DecorationBounds: 72,70,0,-2
 	SelectionDecorations:
-	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	Health:
 		HP: 90000
 	Armor:
@@ -2885,8 +2882,6 @@ RAHPAD:
 	ProvidesPrerequisite@hpad:
 		Prerequisite: hpad
 	ProvidesPrerequisite@buildingname:
-	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
 
 RAAFLD:
 	Inherits: ^BaseBuilding
@@ -2894,6 +2889,7 @@ RAAFLD:
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
 	Inherits@sell: ^RASovietSpawnActorsOnSell
+	Inherits@spy: ^InfiltrateForSupportPowerReset
 	Buildable:
 		Queue: Building.Soviet, RABuilding.Soviet
 		BuildPaletteOrder: 130
@@ -2991,8 +2987,6 @@ RAAFLD:
 	ProvidesPrerequisite@afld:
 		Prerequisite: afld
 	ProvidesPrerequisite@buildingname:
-	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
 
 POWR:
 	Inherits: ^BaseBuilding
@@ -3026,8 +3020,6 @@ POWR:
 	WithBuildingBib:
 	Power:
 		Amount: 100
-	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	ScalePowerWithHealth:
 	WithDeathAnimation:
 		DeathSequence: dead
@@ -3068,8 +3060,6 @@ APWR:
 	WithBuildingBib:
 	Power:
 		Amount: 200
-	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
 	ScalePowerWithHealth:
 	WithDeathAnimation:
 		DeathSequence: dead
@@ -3182,8 +3172,6 @@ BARR:
 	Power:
 		Amount: -20
 	ProvidesPrerequisite@buildingname:
-	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
 
 KENN:
 	Inherits: ^BaseBuilding
@@ -3283,8 +3271,6 @@ TENT:
 	Power:
 		Amount: -20
 	ProvidesPrerequisite@buildingname:
-	Targetable:
-		TargetTypes: Ground, C4, DetonateAttack, Structure, SpyInfiltrate
 
 RAFIX:
 	Inherits: ^BaseBuilding
@@ -3410,7 +3396,7 @@ RA1SYRD:
 		Queue: Building.Allies, RABuilding.Allies
 		Description: Produces, and\nrepairs boats
 	Building:
-		Footprint: xxx xxx xxx
+		Footprint: +++ +++ +++
 		Dimensions: 3,3
 		TerrainTypes: Water
 	RequiresBuildableArea:
@@ -3470,6 +3456,15 @@ RA1SYRD:
 	ProvidesPrerequisite@buildingname:
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
+
+SYRD:
+	Inherits: RA1SYRD
+	RenderSprites:
+		Image: ra1syrd
+	-Buildable:
+	-MapEditorData:
 
 RASPEN:
 	Inherits: ^BaseBuilding
@@ -3495,7 +3490,7 @@ RASPEN:
 		Queue: Building.Soviet, RABuilding.Soviet
 		Description: Produces and\nrepairs submarines
 	Building:
-		Footprint: xxx xxx xxx
+		Footprint: +++ +++ +++
 		Dimensions: 3,3
 		TerrainTypes: Water
 	RequiresBuildableArea:
@@ -3555,6 +3550,15 @@ RASPEN:
 	ProvidesPrerequisite@buildingname:
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
+
+SPEN:
+	Inherits: RASPEN
+	RenderSprites:
+		Image: raspen
+	-Buildable:
+	-MapEditorData:
 
 ####################################################################################################
 #		2100
@@ -3582,7 +3586,7 @@ RASPEN:
 		Footprint: xxx xxx xxx
 		Dimensions: 3,3
 	Health:
-		HP: 210000
+		HP: 300000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -3631,12 +3635,6 @@ RASPEN:
 		Condition: jammed
 	Power:
 		Amount: 0
-	GrantConditionOnBotOwner:
-		Condition: botalpha
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botalpha
-		RequiresCondition: botalpha
 	-WithDeathAnimation:
 	ProvidesPrerequisite@factionalpha:
 		Prerequisite: mmalpha
@@ -3679,6 +3677,7 @@ RASPEN:
 
 2100OIL:
 	Inherits: ^BaseBuilding
+	Inherits@2: ^CashTricklerMultipliers
 	Inherits@IDISABLE: ^DisabledOverlay
 	Valued:
 		Cost: 100
@@ -3714,7 +3713,7 @@ RASPEN:
 	Inherits: 2100OIL
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: anypower, ~botalpha
+		Prerequisites: anypower, ~botplayer
 		Queue: Defence.Alpha, Defence.Scavenger, RADefence.Alpha, RADefence.Scavenger
 		BuildLimit: 6
 	RenderSprites:
@@ -4497,7 +4496,7 @@ RASPEN:
 		Footprint: xxx xxx xxx
 		Dimensions: 3,3
 	Health:
-		HP: 210000
+		HP: 300000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -4546,13 +4545,6 @@ RASPEN:
 		Condition: jammed
 	Power:
 		Amount: 0
-	GrantConditionOnBotOwner:
-		Condition: botalpha
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botalpha
-		RequiresCondition: botalpha
-	
 	-WithDeathAnimation:
 	ProvidesPrerequisite@factionscavenger:
 		Prerequisite: mmscavenger
@@ -4865,7 +4857,7 @@ RASPEN:
 		LocalCenterOffset: 0,-512,0
 	SelectionDecorations:
 	Health:
-		HP: 130000
+		HP: 150000
 	RevealsShroud:
 		Range: 10c0
 	WithBuildingBib:
@@ -5117,7 +5109,7 @@ RASPEN:
 	BodyOrientation:
 		QuantizedFacings: 8
 	Cargo:
-		Types: Infantry
+		Types: Infantry, Hacker
 		MaxWeight: 1
 		PipCount: 1
 		InitialUnits: 2100scav
@@ -5126,7 +5118,7 @@ RASPEN:
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
-		PauseOnCondition: disabled
+		PauseOnCondition: chronobeamed
 	RenderRangeCircle:
 		FallbackRange: 6c0
 	DetectCloaked:
@@ -5234,7 +5226,7 @@ CITYMAYOR:
 		Dimensions: 2,2
 		BuildSounds: citybuild.aud
 	Health:
-		HP: 180000
+		HP: 275000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -5285,12 +5277,6 @@ CITYMAYOR:
 		RequiresCondition: !jammed
 	ExternalCondition@JAMMED:
 		Condition: jammed
-	GrantConditionOnBotOwner:
-		Condition: botcity
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botcity
-		RequiresCondition: botcity
 	GivesBuildableArea:					##########
 		AreaTypes: building, citybot
 	ProvidesPrerequisite@faction:
@@ -5309,6 +5295,7 @@ CITYR:
 	Inherits@shape: ^2x2Shape
 	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits@RESIDENTIAL: ^Residential
+	Inherits@2: ^CashTricklerMultipliers
 	AcceptsDeliveredExperience:
 		ValidTypes: building
 	Selectable:
@@ -5319,7 +5306,7 @@ CITYR:
 		Name: Residential
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: anypower, !botcity
+		Prerequisites: anypower, !botplayer
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildDuration: 200
 		Description: Generates tax revenue\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n Limit: 20
@@ -5401,7 +5388,7 @@ CITYI:
 		Name: Industrial
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: anypower, !botcity
+		Prerequisites: anypower, !botplayer
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildDuration: 200
 		Description: Increases speed of nearby units\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n Limit: 10
@@ -5443,7 +5430,7 @@ CITYFD:
 	Buildable:
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildPaletteOrder: 40
-		Prerequisites: MoneyIncome, !botcity
+		Prerequisites: MoneyIncome, !botplayer
 		BuildDuration: 500
 		Description: Produces fire department units, Architects, and Instructors.\nDefense structure, can attack aircraft\nRequires power to operate
 	Building:
@@ -5529,7 +5516,7 @@ CITYPD:
 	Buildable:
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildPaletteOrder: 50
-		Prerequisites: MoneyIncome, !botcity
+		Prerequisites: MoneyIncome, !botplayer
 		BuildDuration: 500
 		Description: Produces police units and dozers.\nDefense structure.\nRequires power to operate
 	Building:
@@ -5668,7 +5655,7 @@ CITYCOAL:
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildPaletteOrder: 70
 		Description: Generates power.\n\nUpgradeable:\n each upgrade increases power output by 25% up to 100%.
-		Prerequisites: !botcity
+		Prerequisites: !botplayer
 	Building:
 		Footprint: xxx xxx xxx
 		Dimensions: 3,3
@@ -5699,7 +5686,7 @@ CITYNUKE:
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildPaletteOrder: 80
 		Description: Provides triple the power of\na standard Power Plant.\n\nUpgradeable:\n each upgrade increases power output by 25% up to 100%.
-		Prerequisites: !botcity, ~techlevel.medium
+		Prerequisites: !botplayer, ~techlevel.medium
 	Building:
 		Footprint: xxx xxx xxx
 		Dimensions: 3,3
@@ -5729,7 +5716,7 @@ CITYAIRPORT:
 		Name: Airport
 	Buildable:
 		BuildPaletteOrder: 90
-		Prerequisites: Fire Department, Police Department, !botcity, ~techlevel.high, !cityair
+		Prerequisites: Fire Department, Police Department, !botplayer, ~techlevel.high, !cityair
 		Queue: Building.SimCity, RABuilding.SimCity
 		Description: Provides airborne support powers.
 	Building:
@@ -5739,7 +5726,7 @@ CITYAIRPORT:
 	ProvidesPrerequisite:
 		Prerequisite: cityairport
 	Health:
-		HP: 110000
+		HP: 210000
 	RevealsShroud:
 		Range: 4c0
 	SupportPowerChargeBar:
@@ -5921,7 +5908,13 @@ CITYBANK:
 		PipColor: Green
 		PipCount: 10
 		Capacity: 15000
-	
+	CashHackable:
+	Targetable@infiltrate:
+		TargetTypes: SpyInfiltrate, ThiefInfiltrate
+		RequiresCondition: !untargetable
+	InfiltrateForCash:
+		Percentage: 50
+		Types: SpyInfiltrate, ThiefInfiltrate
 
 CITYPARK:
 	Inherits: ^BaseBuilding
@@ -6117,6 +6110,7 @@ CITYMARIO:
 
 CITYCASINO:
 	Inherits: ^BaseBuilding
+	Inherits@2: ^CashTricklerMultipliers
 	Inherits@shape: ^2x2Shape
 	Inherits@IDISABLE: ^DisabledOverlay
 	Selectable:
@@ -6142,7 +6136,7 @@ CITYCASINO:
 	RevealsShroud:
 		Range: 4c0
 	CashTrickler:
-		Interval: 400
+		Interval: 600
 		Amount: 1000
 	ProvidesPrerequisite@buildingname:
 	AirstrikePower@casino:
@@ -6223,6 +6217,7 @@ CITYZOO:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@spy: ^InfiltrateForSupportPowerReset
 	Selectable:
 		Bounds: 48,48
 	Valued:
@@ -6274,7 +6269,7 @@ CITYBOTR:
 	Inherits: CITYR
 	Buildable:
 		BuildPaletteOrder: 110
-		Prerequisites: anypower, Commercial, ~botcity
+		Prerequisites: anypower, Commercial, ~botplayer
 		BuildLimit: 17
 	Building:
 		Footprint: _=__ _xx= =xx_ __=_
@@ -6294,7 +6289,7 @@ CITYBOTR2:
 	Inherits: CITYBOTR
 	Buildable:
 		BuildPaletteOrder: 115
-		Prerequisites: anypower, Commercial, ~botcity, Library
+		Prerequisites: anypower, Commercial, ~botplayer, Library
 		Queue: Defence.SimCity, RADefence.SimCity
 		BuildLimit: 3
 
@@ -6302,7 +6297,7 @@ CITYBOTI:
 	Inherits: CITYI
 	Buildable:
 		BuildPaletteOrder: 130
-		Prerequisites: anypower, ~botcity
+		Prerequisites: anypower, ~botplayer
 	Building:
 		Footprint: _==_ =xx= =xx= _==_
 		Dimensions: 4,4
@@ -6319,7 +6314,7 @@ CITYBOTFD1:
 	Inherits: CITYFD
 	Buildable:
 		BuildPaletteOrder: 140
-		Prerequisites: anypower, ~botcity
+		Prerequisites: anypower, ~botplayer
 		BuildLimit: 1
 	Production:
 		Produces: CityI.SimCity
@@ -6353,7 +6348,7 @@ CITYBOTFD2:
 	Inherits: CITYFD
 	Buildable:
 		BuildPaletteOrder: 145
-		Prerequisites: anypower, Residential, Commercial, Industrial, Fire Department BOT, ~botcity
+		Prerequisites: anypower, Residential, Commercial, Industrial, Fire Department BOT, ~botplayer
 	RenderSprites:
 		Image: cityfd
 	-MapEditorData:
@@ -6362,7 +6357,7 @@ CITYBOTPD1:
 	Inherits: CITYPD
 	Buildable:
 		BuildPaletteOrder: 150
-		Prerequisites: anypower, Residential, Commercial, Industrial, Fire Department BOT, ~botcity
+		Prerequisites: anypower, Residential, Commercial, Industrial, Fire Department BOT, ~botplayer
 		BuildLimit: 1
 	Production:
 		Produces: CityV.SimCity
@@ -6396,7 +6391,7 @@ CITYBOTPD2:
 	Inherits: CITYPD
 	Buildable:
 		BuildPaletteOrder: 155
-		Prerequisites: anypower, Residential, Commercial, Industrial, Fire Department, Police Department BOT, ~botcity
+		Prerequisites: anypower, Residential, Commercial, Industrial, Fire Department, Police Department BOT, ~botplayer
 	RenderSprites:
 		Image: citypd
 	-MapEditorData:
@@ -6405,7 +6400,7 @@ CITYBOTCOAL:
 	Inherits: CITYCOAL
 	Buildable:
 		BuildPaletteOrder: 170
-		Prerequisites: ~botcity
+		Prerequisites: ~botplayer
 		BuildLimit: 1
 	RenderSprites:
 		Image: citycoal
@@ -6415,7 +6410,7 @@ CITYBOTNUKE:
 	Inherits: CITYNUKE
 	Buildable:
 		BuildPaletteOrder: 180
-		Prerequisites: Residential, ~botcity
+		Prerequisites: Residential, ~botplayer
 	RenderSprites:
 		Image: citynuke
 	-MapEditorData:
@@ -6424,7 +6419,7 @@ CITYBOTAIRPORT:
 	Inherits: CITYAIRPORT
 	Buildable:
 		BuildPaletteOrder: 190
-		Prerequisites: Fire Department, Police Department, ~botcity, ~techlevel.high, !cityair
+		Prerequisites: Fire Department, Police Department, ~botplayer, ~techlevel.high, !cityair
 		BuildLimit: 1
 	Building:
 		Footprint: xxxx xxxx xxxx xxxx
@@ -6897,8 +6892,6 @@ EVO:
 	Building:
 		Footprint: ___ xxx
 		Dimensions: 3,2
-	Targetable:
-		TargetTypes: Ground, Structure, C4, DetonateAttack
 	Health:
 		HP: 600
 	Armor:

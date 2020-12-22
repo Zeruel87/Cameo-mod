@@ -588,6 +588,7 @@ BlazerMH:
 
 JACK:
 	Inherits@HEROES: ^Heroes
+	Inherits@bot: ^BotMicromanageable
 	Tooltip:
 		Name: Jack
 	Buildable:
@@ -727,14 +728,8 @@ JACK:
 			powerberry: 2,-13
 		RequiresCondition: powerberry
 	##########
-	GrantConditionOnBotOwner@bothero:
-		Condition: bothero
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: bothero
-		RequiresCondition: bothero
 	ProximityExternalCondition@bothero:
-		RequiresCondition: bothero
+		RequiresCondition: botmicro
 		Condition: jacknearby
 		Range: 10c0
 
@@ -883,7 +878,7 @@ Shippingbox:
 		BuildDuration: 200
 		Queue: Upgrade.Jack
 		Description: Delivery Building for Jack's harvestes ressources.\n\n this structure will be destroyed if jack dies.
-		Prerequisites: ~1hero, !bothero
+		Prerequisites: ~1hero, !botplayer
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
@@ -925,7 +920,7 @@ ShippingboxBot:
 		Image: shippingbox
 	Buildable:
 		BuildPaletteOrder: 31
-		Prerequisites: ~1hero, ~bothero
+		Prerequisites: ~1hero, ~botplayer
 	ExternalCondition@bothero:
 		Condition: jacknearby
 	CashTrickler@bothero:
@@ -1485,12 +1480,6 @@ ANGEL:
 	AttackAircraft:
 		FacingTolerance: 20
 		AttackType: Hover
-	GrantConditionOnBotOwner:
-		Condition: bottemple
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@bottemple:
-		Prerequisite: bottemple
-		RequiresCondition: bottemple
 	-SpawnActorOnDeath:
 	-Voiced:
 
@@ -1633,7 +1622,7 @@ HouseBot:
 		Image: House
 	Buildable:
 		BuildPaletteOrder: 15
-		Prerequisites: ~botfield
+		Prerequisites: ~botplayer
 	RequiresBuildableArea:
 		AreaTypes: botfield
 		Adjacent: 1
@@ -1680,12 +1669,6 @@ Field:
 		Range: 4c0
 	WithRangeCircle:
 		Range: 2c512
-	GrantConditionOnBotOwner:
-		Condition: botfield
-		Bots: easy, medium, hard, brutal, airforce
-	ProvidesPrerequisite@botowner:
-		Prerequisite: botfield
-		RequiresCondition: botfield
 	GivesBuildableArea:
 		AreaTypes: botfield
 	SelfHealing:
@@ -1710,15 +1693,15 @@ Field:
 	ProximityExternalCondition@Field1:
 		Range: 2c512
 		Condition: Field1
-		RequiresCondition: rank-veteran == 0 || rank-veteran == 1 || rank-veteran == 2
+		RequiresCondition: rank-veteran >= 0
 	ProximityExternalCondition@Field2:
 		Range: 2c512
 		Condition: Field2
-		RequiresCondition: rank-veteran == 1 || rank-veteran == 2
+		RequiresCondition: rank-veteran >= 1
 	ProximityExternalCondition@Field3:
 		Range: 2c512
 		Condition: Field3
-		RequiresCondition: rank-veteran == 2
+		RequiresCondition: rank-veteran >= 2
 
 Temple:
 	Inherits: ^Defense
@@ -1726,7 +1709,7 @@ Temple:
 	Selectable:
 		Bounds: 48,48
 	Buildable:
-		Prerequisites: ~!bottemple
+		Prerequisites: ~!botplayer
 		Queue: Upgrade.Angel
 		BuildPaletteOrder: 30
 		BuildLimit: 1
@@ -1779,7 +1762,7 @@ TempleBot:
 		Image: Temple
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Buildable:
-		Prerequisites: ~bottemple
+		Prerequisites: ~botplayer
 	Armament:
 		Weapon: angellightning
 		TargetStances: Enemy
@@ -2037,12 +2020,6 @@ Forcefield:
 ####################################################################################################
 #		HEROES TEMPLATES AND MISC
 ####################################################################################################
-
-^upgrade.template:
-	Buildable:
-		BuildLimit: 1
-	Interactable:
-	AlwaysVisible:
 
 ^Heroes:
 	Inherits@1: ^ExistsInWorld

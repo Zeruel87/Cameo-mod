@@ -59,6 +59,10 @@ E2:
 		Weapon: Grenade
 		LocalOffset: 0,0,427
 		FireDelay: 15
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Grenade
+		FireDelay: 15
 	TakeCover:
 		ProneOffset: 300,0,-227
 	WithInfantryBody:
@@ -135,6 +139,10 @@ E4:
 		LocalOffset: 341,0,256
 		FireDelay: 3
 		MuzzleSequence: muzzle
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Flamethrower
+		MuzzleSequence: muzzle
 	TakeCover:
 		ProneOffset: 190,0,-198
 	WithMuzzleOverlay:
@@ -172,10 +180,16 @@ E5:
 		LocalOffset: 341,0,256
 		FireDelay: 3
 		MuzzleSequence: muzzle
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Chemspray
+		MuzzleSequence: muzzle
 	TakeCover:
 		ProneOffset: 190,0,-190
 	WithMuzzleOverlay:
 	-DamagedByTerrain:
+	Targetable@Immune:
+		TargetTypes: ToxinImmune
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	Inherits@EXT: ^ExternalConditions					##########
@@ -210,13 +224,13 @@ E6:
 		Prerequisites: global-reusable-engineers
 	Captures:
 		RequiresCondition: !global-reusable-engineers
-		CaptureTypes: building
-		PlayerExperience: 50
+		CaptureTypes: building, defense, tech
+		PlayerExperience: 500
 		ConsumedByCapture: True
 	Captures@REUSABLE:
 		RequiresCondition: global-reusable-engineers
-		CaptureTypes: building
-		PlayerExperience: 50
+		CaptureTypes: building, defense, tech
+		PlayerExperience: 500
 		CaptureDelay: 375
 		ConsumedByCapture: False
 		EnterCursor: ability
@@ -250,8 +264,6 @@ RMBO:
 		BuildPaletteOrder: 50
 		Prerequisites: eye, ~techlevel.high
 		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry
-		BuildDuration: 2000
-		BuildDurationModifier: 40
 		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
 	Mobile:
 		Speed: 71
@@ -267,11 +279,14 @@ RMBO:
 		Range: 6c0
 	AutoTarget:
 		ScanRadius: 8
-	Demolition:
-		DetonationDelay: 45
-		Voice: Demolish
 	Armament:
 		Weapon: Sniper
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Sniper
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
 	AttackFrontal:
 		Voice: Attack
 	AttackMove:
@@ -313,6 +328,7 @@ STEG:
 
 steg.citydrop:
 	Inherits: STEG
+	-Buildable:
 	Health:
 		HP: 30000
 	Armor:
@@ -336,6 +352,7 @@ TREX:
 
 trex.citydrop:
 	Inherits: TREX
+	-Buildable:
 	Mobile:
 		Speed: 130
 	Health:
@@ -360,6 +377,7 @@ TRIC:
 
 tric.citydrop:
 	Inherits: TRIC
+	-Buildable:
 	Health:
 		HP: 40000
 	Armor:
@@ -379,6 +397,7 @@ RAPT:
 
 rapt.citydrop:
 	Inherits: RAPT
+	-Buildable:
 	Health:
 		HP: 13000
 	Armor:
@@ -509,17 +528,15 @@ RARE1:
 	Inherits: RAE1
 	Buildable:
 		Queue: Infantry.Soviet, RAInfantry.Soviet
-	RenderSprites:
-		Image: E1
 	UpdatesPlayerStatistics:
 		OverrideActor: rae1
+	Selectable:
+		Class: rae1
 	Voiced:
 		VoiceSet: RussianVoice
 
 E1R1:
 	Inherits: RARE1
-	RenderSprites:
-		Image: E1
 	ProducibleWithLevel:
 		Prerequisites: techlevel.infonly
 		InitialLevels: 1
@@ -532,10 +549,6 @@ RAE2:
 		Prerequisites: ~techlevel.medium
 		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.X_Infantry
 		Description: Infantry armed with grenades.\n  Strong vs Buildings, Infantry\n  Weak vs Vehicles, Aircraft
-	Armament@GARRISONED:
-		Name: garrisoned
-		Weapon: Grenade
-		FireDelay: 15
 	Explodes:
 		Weapon: UnitExplodeSmall
 		EmptyWeapon: UnitExplodeSmall
@@ -543,7 +556,6 @@ RAE2:
 		Image: E2
 	Voiced:
 		VoiceSet: RussianVoice
-	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -592,10 +604,10 @@ RARE3:
 	Inherits: RAE3
 	Buildable:
 		Queue: Infantry.Soviet, RAInfantry.Soviet
-	RenderSprites:
-		Image: E3
 	UpdatesPlayerStatistics:
 		OverrideActor: rae3
+	Selectable:
+		Class: rae3
 	Voiced:
 		VoiceSet: RussianVoice
 
@@ -609,15 +621,15 @@ RAE4:
 		Prerequisites: ftur
 		Description: Advanced anti-structure unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
 	Health:
-		HP: 4000
-	-Armament:
-	Armament@PRIMARY:
+		HP: 7000
+	Armament:
 		Weapon: Flamer
 		LocalOffset: 700,0,500
 		FireDelay: 8
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: Flamer
+	-WithMuzzleOverlay:
 	TakeCover:
 		ProneOffset: 160,0,-288
 	Explodes:
@@ -643,11 +655,6 @@ RAE6:
 		BuildPaletteOrder: 30
 		Prerequisites: barracks
 		Queue: Infantry.Allies, Infantry.Soviet, RAInfantry.Allies, RAInfantry.Soviet
-	Mobile:
-		Speed: 48
-	Health:
-		HP: 3000
-	Inherits@EXT: ^ExternalConditions
 	RenderSprites:
 		Image: e6
 
@@ -681,9 +688,6 @@ E7:
 		Range: 5c0
 		RequiresCondition: !frozen
 		CloakTypes: Cloak, Hijacker
-	Demolition:
-		DetonationDelay: 45
-		Voice: Demolish
 	Passenger:
 		PipType: Red
 		Voice: Move
@@ -695,6 +699,9 @@ E7:
 		Name: garrisoned
 		Weapon: Colt45
 		MuzzleSequence: garrison-muzzle
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		StandSequences: stand
@@ -707,12 +714,13 @@ E7:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	ProvidesPrerequisite:
 
 MEDI:
 	Inherits: ^Soldier
 	Buildable:
 		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.X_Infantry
-		BuildPaletteOrder: 40
+		BuildPaletteOrder: 25
 		Description: Heals nearby infantry.\n  Unarmed
 	Valued:
 		Cost: 200
@@ -734,6 +742,7 @@ MEDI:
 		#OutsideRangeCursor: heal
 		TargetStances: Ally
 		ForceTargetStances: None
+	RenderRangeCircle:
 	WithInfantryBody:
 		IdleSequences: idle
 		StandSequences: stand
@@ -741,8 +750,9 @@ MEDI:
 	Voiced:
 		VoiceSet: MedicVoice
 	AutoTarget:
+		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
-		ValidTargets: Infantry
+		ValidTargets: Infantry, plagued
 	Inherits@EXT: ^ExternalConditions
 
 MECH:
@@ -775,6 +785,7 @@ MECH:
 		#OutsideRangeCursor: repair
 		TargetStances: Ally
 		ForceTargetStances: None
+	RenderRangeCircle:
 	AttackFrontal:
 		Voice: Action
 	CaptureManager:
@@ -789,7 +800,7 @@ MECH:
 		VoiceSet: MechanicVoice
 	AutoTarget:
 	AutoTargetPriority@DEFAULT:
-		ValidTargets: Vehicle
+		ValidTargets: Vehicle, lockdowned, ivanattached
 
 EINSTEIN:
 	Inherits: ^CivInfantry
@@ -903,7 +914,7 @@ RASPY:
 	Inherits@EXT: ^ExternalConditions
 	Buildable:
 		Queue: Infantry.Allies, RAInfantry.Allies
-		BuildPaletteOrder: 90
+		BuildPaletteOrder: 25
 		Prerequisites: anyhq, ~tent
 		Description: Infiltrates enemy structures for intel or\nsabotage. Exact effect depends on the\nbuilding infiltrated.\nLoses disguise when attacking.\nCan detect spies.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft\n  Special Ability: Disguise
 	Valued:
@@ -954,6 +965,58 @@ RASPY:
 		Voice: Move
 	Voiced:
 		VoiceSet: SpyVoice
+
+TECH1:
+	Inherits: ^CivInfantry
+	Inherits@armed: ^ArmedCivilian
+	Tooltip:
+		Name: Technician
+
+RATHF:
+	Inherits: ^Soldier
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Thief
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks
+		Queue: Infantry.Soviet, RAInfantry.Soviet
+		Description: Hijacks vehicles and steals cash.
+	Mobile:
+		Speed: 71
+	Health:
+		HP: 5000
+	Passenger:
+		PipType: Blue
+	CaptureManager:
+	Captures@CAPTURES:
+		CaptureTypes: vehicle
+		PlayerExperience: 50
+		ConsumedByCapture: true
+	Infiltrates:
+		Types: ThiefInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 50
+	Inherits@EXT: ^ExternalConditions					##########
+	Crushable:
+		WarnProbability: 95
+	Cloak:
+		InitialDelay: 250
+		CloakDelay: 120
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+		CloakTypes: Cloak, Thief
+		PauseOnCondition: cloak-force-disabled
+		IsPlayerPalette: true
+	WithInfantryBody:
+		IdleSequences: idle
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
+	Voiced:
+		VoiceSet: ThiefVoice
 
 SNIPER:
 	Inherits: ^Soldier
@@ -1486,8 +1549,6 @@ CITYSWAT:
 		BuildPaletteOrder: 30
 		Prerequisites: citylibrary, citybank, cityairport, ~techlevel.high
 		Queue: Vehicle.SimCity, RAVehicle.SimCity
-		BuildDuration: 1500
-		BuildDurationModifier: 40
 		Description: Elite law enforcement armed with a silenced\nsubmachine gun and a grenade launcher.\n Strong vs ground targets\n Weak vs Aircraft
 	Mobile:
 		Speed: 71

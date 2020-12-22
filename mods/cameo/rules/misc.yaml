@@ -243,12 +243,99 @@ camera.paradrop:
 		Range: 6c0
 
 camera.spyplane:
-	Inherits: RACAMERA
+	Inherits: camera.scan
+
+camera.scan:
+	RenderSprites:
+		Image: camera.scan
+		Palette: effect
+	Interactable:
 	EditorOnlyTooltip:
 		Name: (support power proxy camera)
+	HiddenUnderFog:
+		Type: CenterPosition
+	Immobile:
+		OccupiesSpace: false
+	RevealsShroud:
+		Range: 8c0
+		Type: CenterPosition
 	DetectCloaked:
+		Range: 8c0
+	BodyOrientation:
+		QuantizedFacings: 1
+	WithSpriteBody:
+	MapEditorData:
+		Categories: System
+
+camera.radarvan:
+	Inherits: camera.scan
+	RevealsShroud:
+		Range: 6c0
+	DetectCloaked:
+		Range: 6c0
+	AmbientSound:
+		SoundFiles: vradscan.wav
+		Interval: 1000
+
+camera.spysat:
+	Inherits: camera.scan
+	AmbientSound:
+		SoundFiles: sspysate.aud
+		Interval: 1000
+
+camera.psireveal:
+	Inherits: camera.scan
+	AmbientSound:
+		SoundFiles: spsyreve.wav
+		Interval: 1000
+
+camera.sathack:
+	Inherits: camera.paradrop
+
+camera.gpssat:
+	ConditionManager:
+	Interactable:
+	EditorOnlyTooltip:
+		Name: (reveals map to owner)
+	AlwaysVisible:
+	Immobile:
+		OccupiesSpace: false
+	BodyOrientation:
+		QuantizedFacings: 1
+	Buildable:
+		Queue: SpySatellite
+	RevealsMap:
+		RevealGeneratedShroud: false
+		RequiresCondition: uplinkavailable
+		IncludeAllies: true
+	GrantConditionOnPrerequisite@UPLINK:
+		Condition: uplinkavailable
+		Prerequisites: ra2gaspysat
+	KillsSelf:
+		RemoveInstead: true
+		Delay: 375
+		GrantsCondition: killsself
+	VoiceAnnouncement:
+		Voice: Build
+	VoiceAnnouncement@off:
+		Voice: Die
+		RequiresCondition: killsself
+	Voiced:
+		VoiceSet: SpySatelliteVoice
+	WithSpriteBody:
+	RenderSpritesEditorOnly:
+		Image: camera
+	MapEditorData:
+		Categories: System
+
+sonar:
+	Inherits: camera.spyplane
+	EditorOnlyTooltip:
+		Name: (support power proxy camera)
+	-RevealsShroud:
+	DetectCloaked:
+		CloakTypes: Underwater
 		Range: 10c0
-		CloakTypes: Cloak, Hijacker
 
 sonar:
 	Inherits: camera.spyplane
@@ -274,7 +361,7 @@ MINE:
 		Terrain: Ore
 	SeedsResource:
 		ResourceType: Ore
-		Interval: 75
+		Interval: 55
 	-WithMakeAnimation
 
 GMINE:
@@ -380,7 +467,7 @@ powerproxy.emp:
 	ConditionManager:
 	DetonateWeaponPower:
 		OrderName: crateemp
-		Icon: emp
+		Icon: chemp
 		Description: E. M. Pulse
 		LongDesc: Detonate a EMP weapon anywhere on the map.
 		Weapon: TSEMPulseCannon

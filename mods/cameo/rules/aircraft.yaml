@@ -6,6 +6,7 @@ TRAN:
 		Name: Chinook Transport
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
+		OverrideActor: tran
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: hpad
@@ -43,20 +44,59 @@ TRAN:
 		RequiresCondition: !airborne
 		PauseOnCondition: disabled
 	Cargo:
-		Types: Infantry
+		Types: Infantry, Hacker
 		MaxWeight: 10
 		PipCount: 10
-		AfterUnloadDelay: 40
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
 	SpawnActorOnDeath:
 		Actor: TRAN.Husk
 	SelectionDecorations:
 	Selectable:
+		Class: tran
 		DecorationBounds: 41,41
+	RenderSprites:
+		Image: tran
+
+tran.e2:
+	Inherits: TRAN
+	Inherits@bot: ^BotMicromanageable
+	Buildable:
+		Prerequisites: barracks, ~hardbotplayer
+		Queue: Aircraft.GDI, RAAircraft.GDI
+	Cargo:
+		InitialUnits: e2, e2, e2, e2, e3, e3, e1, e1, e1, e1
+		LoadedCondition: loaded
+	Armament:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: botmicro && loaded
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	ProductionCostMultiplier:
+		Multiplier: 300
+	KillsSelf:
+		RemoveInstead: true
+		RequiresCondition: !loaded && botmicro
+		Delay: 200
+	EditorOnlyTooltip:
+		Name: Loaded Chinook (GDI)
+
+tran.e4:
+	Inherits: tran.e2
+	Buildable:
+		Queue: Aircraft.Nod, RAAircraft.Nod
+	Cargo:
+		InitialUnits: e4, e4, e4, e4, e3, e3, e1, e1, e1, e1
+	EditorOnlyTooltip:
+		Name: Loaded Chinook (Nod)
 
 HELI:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -124,6 +164,7 @@ ORCA:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -293,6 +334,7 @@ BADR:
 	Inherits: ^RANeutralPlane
 	-Huntable:
 	-UpdatesPlayerStatistics:
+	-GainsExperience:
 	ParaDrop:
 		DropRange: 4c0
 		ChuteSound: chute1.aud
@@ -329,8 +371,8 @@ BADR:
 		Experience: 1000
 	Interactable:
 	-ExternalCondition@STASIS:
-	-ExternalCondition@LOCKDOWN:
-	-ExternalCondition@TSNEUTRON:
+	-DelayedWeaponAttachable@lockdown:
+	-ExternalCondition@EMP:
 
 C17.Paradrop:
 	Inherits: BADR
@@ -342,51 +384,12 @@ C17.Paradrop:
 		Actor: C17.Husk
 
 BADR.Bomber:
-	Inherits: ^RANeutralPlane
-	-Huntable:
-	-UpdatesPlayerStatistics:
+	Inherits: BADR
 	AttackBomber:
 	Armament:
 		Weapon: ParaBomb
-	Health:
-		HP: 60000
-	Aircraft:
-		CruiseAltitude: 2560
-		TurnSpeed: 5
-		Speed: 180
-		Repulsable: False
-		MaximumPitch: 56
-	AmmoPool:
-		Ammo: 5
-	-Selectable:
-	SelectionDecorations:
-		RenderSelectionBars: False
-	-Voiced:
-	-GainsExperience:
-	Tooltip:
-		Name: Badger
-	Contrail@1:
-		Offset: -432,560,0
-	Contrail@2:
-		Offset: -432,-560,0
-	SpawnActorOnDeath:
-		Actor: BADR.Husk
-	SmokeTrailWhenDamaged@0:
-		Offset: -432,560,0
-		Interval: 2
-	SmokeTrailWhenDamaged@1:
-		Offset: -432,-560,0
-		Interval: 2
-	-MapEditorData:
-	RejectsOrders:
 	RenderSprites:
 		Image: badr
-	GivesExperience:
-		Experience: 1000
-	Interactable:
-	-ExternalCondition@STASIS:
-	-ExternalCondition@LOCKDOWN:
-	-ExternalCondition@TSNEUTRON:
 
 C17.Bomber:
 	Inherits: BADR.Bomber
@@ -399,13 +402,13 @@ C17.Bomber:
 
 MIG:
 	Inherits: ^RAPlane
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@reload: ^RearmableAircraft
 	Buildable:
 		Queue: Aircraft.Soviet, RAAircraft.Soviet, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
 		Prerequisites: raafld, stek, ~techlevel.high
-		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Multirole jet fighter.\n  Strong vs Aircraft, Vehicles\n  Weak vs Infantry
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -426,6 +429,11 @@ MIG:
 		LocalOffset: 0,-640,0, 0,640,0
 		LocalYaw: -40, 24
 		PauseOnCondition: !ammo
+	Armament@AA:
+		Weapon: Aphid
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
 	AttackAircraft:
 		FacingTolerance: 20
 		PersistentTargeting: false
@@ -443,6 +451,7 @@ MIG:
 	AmmoPool:
 		Ammo: 8
 		AmmoCondition: ammo
+		ReloadCount: 4
 	Selectable:
 		Bounds: 36,28,0,2
 		DecorationBounds: 40,29,0,1
@@ -533,9 +542,8 @@ YAK:
 RATRAN:
 	Inherits: ^RAHelicopter
 	Buildable:
-		Queue: Aircraft.Allies, RAAircraft.Allies
+		Queue: Aircraft.Allies, RAAircraft.Allies, Aircraft.Soviet, RAAircraft.Soviet
 		BuildPaletteOrder: 10
-		Prerequisites: ~rahpad, ~techlevel.medium
 		Description: Fast Infantry Transport Helicopter.\n  Unarmed
 	Valued:
 		Cost: 900
@@ -543,6 +551,7 @@ RATRAN:
 		Name: Chinook
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
+		OverrideActor: ratran
 	Health:
 		HP: 18000
 	RevealsShroud:
@@ -577,17 +586,55 @@ RATRAN:
 		RequiresCondition: !airborne
 		PauseOnCondition: disabled
 	Cargo:
-		Types: Infantry
+		Types: Infantry, Hacker
 		MaxWeight: 8
 		PipCount: 8
-		AfterUnloadDelay: 40
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
 	SpawnActorOnDeath:
 		Actor: TRAN.Husk
 	SelectionDecorations:
 	Selectable:
+		Class: ratran
 		DecorationBounds: 40,36
 	Voiced:
 		VoiceSet: RAVehicleVoice
+	RenderSprites:
+		Image: ratran
+
+ratran.e4:
+	Inherits: RATRAN
+	Inherits@bot: ^BotMicromanageable
+	Buildable:
+		Prerequisites: barracks, ftur, ~hardbotplayer
+		Queue: Aircraft.Soviet, RAAircraft.Soviet
+	Cargo:
+		InitialUnits: rae4, rae4, rae4, rae4, rae2, rae2, rare1, rare1
+		LoadedCondition: loaded
+	Armament:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: botmicro && loaded
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	ProductionCostMultiplier:
+		Multiplier: 300
+	KillsSelf:
+		RemoveInstead: true
+		RequiresCondition: !loaded && botmicro
+		Delay: 200
+	EditorOnlyTooltip:
+		Name: Loaded Chinook (Soviet)
+
+ratran.shok:
+	Inherits: ratran.e4
+	Buildable:
+		Prerequisites: barracks, stek, tsla, ~hardbotplayer
+	Cargo:
+		InitialUnits: shok, shok, shok, shok, shok, shok, shok, shok
+	ProductionCostMultiplier:
+		Multiplier: 400
 
 RAHELI:
 	Inherits: ^RAHelicopter
@@ -664,6 +711,7 @@ HIND:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@reload: ^RearmableAircraft
+	Inherits@detect: ^GenericAirDetector
 	Buildable:
 		Queue: Aircraft.Soviet, RAAircraft.Soviet
 		BuildPaletteOrder: 20
@@ -768,6 +816,7 @@ MH60:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@reload: ^RearmableAircraft
+	Inherits@detect: ^GenericAirDetector
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: rahpad, ~techlevel.medium
@@ -974,8 +1023,8 @@ MH60:
 		Offset: 220,0,111
 		Sequence: rotor
 	-ExternalCondition@STASIS:
-	-ExternalCondition@LOCKDOWN:
-	-ExternalCondition@TSNEUTRON:
+	-DelayedWeaponAttachable@lockdown:
+	-ExternalCondition@EMP:
 
 2100POLMAV:
 	Inherits: ^Helicopter

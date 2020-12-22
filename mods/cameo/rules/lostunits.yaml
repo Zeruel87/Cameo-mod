@@ -1,183 +1,3 @@
-##################################################
-#	Red Alert Lost Units
-##################################################
-
-TECH1:
-	Inherits: ^CivInfantry
-	Inherits@armed: ^ArmedCivilian
-	Tooltip:
-		Name: Technician
-
-RATHF:
-	Inherits: ^Soldier
-	Valued:
-		Cost: 500
-	Tooltip:
-		Name: Thief
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 30
-		Prerequisites: barracks
-		Queue: Infantry.Soviet, RAInfantry.Soviet
-		Description: Hijacks vehicles.
-	Mobile:
-		Speed: 71
-	Health:
-		HP: 5000
-	Passenger:
-		PipType: Blue
-	CaptureManager:
-	Captures@CAPTURES:
-		CaptureTypes: vehicle
-		PlayerExperience: 50
-		ConsumedByCapture: true
-	Infiltrates:
-		Types: ThiefInfiltrate
-		Notification: BuildingInfiltrated
-		PlayerExperience: 50
-	Inherits@EXT: ^ExternalConditions					##########
-	Crushable:
-		WarnProbability: 95
-	Cloak:
-		InitialDelay: 250
-		CloakDelay: 120
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
-		CloakTypes: Cloak, Thief
-		PauseOnCondition: cloak-force-disabled
-	WithInfantryBody:
-		IdleSequences: idle
-	GrantConditionOnDamageState@UNCLOAK:
-		Condition: cloak-force-disabled
-		ValidDamageStates: Critical
-	Voiced:
-		VoiceSet: ThiefVoice
-
-SAPC:
-	Inherits: ^Vehicle
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@EMP: ^TurretEMP
-	Inherits@detect: ^GenericGroundDetector
-	Buildable:
-		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles
-		BuildPaletteOrder: 130
-		Prerequisites: atek
-		BuildDurationModifier: 50
-		Description: Lightly armored infantry transport which\ncan cloak. Armed with anti-ground missiles.\n  Strong vs Light armor\n  Weak vs Infantry, Tanks, Aircraft
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Phase Transport
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 35000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 142
-		Locomotor: heavywheeled
-		RequiresCondition: !notmobile && !being-captured && !disabled
-	RevealsShroud:
-		Range: 7c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 4c0
-	AutoTarget:
-		InitialStance: HoldFire
-		InitialStanceAI: ReturnFire
-	Armament:
-		Weapon: APTusk
-		LocalOffset: 192,0,176
-	Turreted:
-		TurnSpeed: 5
-	AttackTurreted:
-	WithSpriteTurret:
-	Cargo:
-		Types: Infantry
-		MaxWeight: 4
-		PipCount: 4
-		LoadingCondition: notmobile
-	Cloak:
-		InitialDelay: 125
-		CloakDelay: 175
-		CloakSound: trans1.aud
-		UncloakSound: trans1.aud
-		PauseOnCondition: cloak-force-disabled || disabled
-	GrantConditionOnDamageState@UNCLOAK:
-		Condition: cloak-force-disabled
-		ValidDamageStates: Critical
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	DeliversCash:
-		Payload: 625
-	Voiced:
-		VoiceSet: RAVehicleVoice
-	#SpawnActorOnDeath:
-	#	Actor: SAPC.Husk
-	#	OwnerType: InternalName
-	#	EffectiveOwnerFromOwner: true
-
-SAPC.Husk:
-	Inherits: ^LightHusk
-	Tooltip:
-		Name: Phase Transport (Destroyed)
-	TransformOnCapture:
-		IntoActor: sapc
-	RenderSprites:
-		Image: sapc
-
-RAMGG:
-	Inherits: ^Vehicle
-	Buildable:
-		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles
-		BuildPaletteOrder: 150
-		Prerequisites: atek
-		BuildDurationModifier: 50
-		Description: Regenerates the shroud nearby, \nobscuring the area.\n  Unarmed
-	Valued:
-		Cost: 1200
-	Tooltip:
-		Name: Mobile Gap Generator
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 22000
-	Armor:
-		Type: Heavy
-	Mobile:
-		Speed: 85
-	WithIdleOverlay@SPINNER:
-		Offset: -299,0,171
-		Sequence: spinner
-	RevealsShroud:
-		Range: 6c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 4c0
-	CreatesShroud:
-		Range: 6c0
-		RequiresCondition: !disabled
-	RenderShroudCircle:         
-	#SpawnActorOnDeath:
-	#	Actor: RAMGG.Husk
-	#	OwnerType: InternalName
-	#	EffectiveOwnerFromOwner: true
-	Inherits@EXT: ^ExternalConditions					##########
-	Voiced:
-		VoiceSet: RAVehicleVoice
-
-RAMGG.Husk:
-	Inherits: ^LightHusk
-	Tooltip:
-		Name: Mobile Gap Generator (Destroyed)
-	TransformOnCapture:
-		IntoActor: ramgg
-	RenderSprites:
-		Image: ramgg
-
 NODWEAP:
 	Inherits: WEAP
 	Tooltip:
@@ -456,760 +276,6 @@ CHEMTNK:
 	Explodes:
 		Weapon: TiberiumExplosion
 		EmptyWeapon: TiberiumExplosion
-
-#
-#
-#
-
-RA1PT:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@EMP: ^TurretEMP
-	Valued:
-		Cost: 500
-	Tooltip:
-		Name: Gunboat
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: anypower
-		Queue: Naval.Allies, RANaval.Allies
-		Description: Light scout & support ship.\nCan detect submarines.
-	Mobile:
-		TurnSpeed: 7
-		Speed: 128
-	Health:
-		HP: 20000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 8c0
-	Turreted:
-		TurnSpeed: 7
-		Offset: 512,0,0
-	Armament@PRIMARY:
-		Weapon: 2Inch
-		LocalOffset: 208,0,48
-		MuzzleSequence: muzzle
-	Armament@SECONDARY:
-		Name: secondary
-		Weapon: DepthCharge
-		MuzzleSequence: muzzle
-	AttackTurreted:
-	WithMuzzleOverlay:
-	WithSpriteTurret:
-	DetectCloaked:
-		Range: 4c0
-		CloakTypes: Underwater
-	RenderDetectionCircle:
-	Selectable:
-		DecorationBounds: 36,36
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	DeliversCash:
-		Payload: 250
-	Voiced:
-		VoiceSet: RAVehicleVoice
-
-CNCPT:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EMP: ^TurretEMP
-	Valued:
-		Cost: 700
-	Tooltip:
-		Name: Missile Gunboat
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: anypower
-		Queue: Naval.GDI, RANaval.GDI
-		Description: Light scout & support ship.\nCan detect submarines.
-	Mobile:
-		TurnSpeed: 7
-		Speed: 128
-	Health:
-		HP: 20000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 8c0
-	Turreted:
-		TurnSpeed: 5
-		Offset: 512,0,0
-	Armament@Ground:
-		Weapon: NewBoatMissile
-		LocalOffset: 208,0,48
-	Armament@AA:
-		Weapon: NewBoatMissileAA
-		LocalOffset: 208,0,48
-	AttackTurreted:
-	WithSpriteTurret:
-	DetectCloaked:
-		Range: 4c0
-		CloakTypes: Underwater
-	RenderDetectionCircle:
-	Selectable:
-		DecorationBounds: 36,36
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	DeliversCash:
-		Payload: 250
-
-RADD:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EMP: ^TurretEMP
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Destroyer
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 30
-		Prerequisites: anypower, anyhq
-		Queue: Naval.Allies, RANaval.Allies
-		Description: Fast multi-role ship.\nCan detect submarines.\n  Strong vs Naval units, Vehicles, Aircraft
-	Mobile:
-		TurnSpeed: 7
-		Speed: 85
-	Health:
-		HP: 40000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 5c0
-	Turreted:
-		TurnSpeed: 7
-		Offset: 469,0,128
-	Armament:
-		Weapon: Stinger
-		LocalOffset: 0,-100,0, 0,100,0
-		LocalYaw: 64, -64
-	Armament@AA:
-		Weapon: StingerAA
-		LocalOffset: 0,-100,0, 0,100,0
-		LocalYaw: 64, -64
-	Armament@DC:
-		Weapon: DepthCharge
-		LocalOffset: 0,-100,0, 0,100,0
-		LocalYaw: 80, -80
-	AttackTurreted:
-	WithSpriteTurret:
-	DetectCloaked:
-		Range: 4c0
-		CloakTypes: Underwater
-	RenderDetectionCircle:
-	Selectable:
-		DecorationBounds: 38,38
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	DeliversCash:
-		Payload: 500
-	Voiced:
-		VoiceSet: RAVehicleVoice
-
-CNCDD:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EMP: ^TurretEMP
-	Valued:
-		Cost: 1200
-	Tooltip:
-		Name: Destroyer
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 30
-		Prerequisites: anypower, anyhq
-		Queue: Naval.GDI, RANaval.GDI
-		Description: Fast multi-role ship.\nCan detect submarines.\n  Strong vs Naval units, Vehicles, Aircraft
-	Mobile:
-		TurnSpeed: 7
-		Speed: 85
-	Health:
-		HP: 40000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 5c0
-	Turreted:
-		TurnSpeed: 7
-		Offset: 469,0,30
-	Armament:
-		Weapon: Short8Inch
-		LocalOffset: 0,-100,0, 0,100,0
-		LocalYaw: 64, -64
-		MuzzleSequence: muzzle
-	Armament@DC:
-		Weapon: DepthCharge
-		LocalOffset: 0,-100,0, 0,100,0
-		LocalYaw: 80, -80
-		MuzzleSequence: muzzle
-	Armament@SECONDARY:
-		Name: secondary
-		LocalOffset: 0,100,0, 0,-100,0
-		Weapon: DepthCharge
-		MuzzleSequence: muzzle
-	AttackTurreted:
-	WithMuzzleOverlay:
-	WithSpriteTurret:
-	DetectCloaked:
-		Range: 4c0
-		CloakTypes: Underwater
-	RenderDetectionCircle:
-	Selectable:
-		DecorationBounds: 38,38
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	DeliversCash:
-		Payload: 500
-
-RACA:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EMP: ^TurretEMP
-	Valued:
-		Cost: 2400
-	Tooltip:
-		Name: Cruiser
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: anypower, atek
-		Queue: Naval.Allies, RANaval.Allies
-		Description: Very slow long-range ship.\n  Strong vs Buildings, Ground units\n  Weak vs Naval units, Aircraft
-	Mobile:
-		TurnSpeed: 2
-		Speed: 42
-	Health:
-		HP: 80000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 5c0
-	Turreted@PRIMARY:
-		Turret: primary
-		Offset: -896,0,128
-		TurnSpeed: 3
-	Turreted@SECONDARY:
-		Turret: secondary
-		Offset: 768,0,128
-		TurnSpeed: 3
-	Armament@PRIMARY:
-		Turret: primary
-		Weapon: 8Inch
-		LocalOffset: 480,-100,40, 480,100,40
-		Recoil: 171
-		RecoilRecovery: 34
-		MuzzleSequence: muzzle
-	Armament@SECONDARY:
-		Name: secondary
-		Turret: secondary
-		Weapon: 8Inch
-		LocalOffset: 480,-100,40, 480,100,40
-		Recoil: 171
-		RecoilRecovery: 34
-		MuzzleSequence: muzzle
-	AttackTurreted:
-		Turrets: primary, secondary
-	WithMuzzleOverlay:
-	WithSpriteTurret:
-	DetectCloaked:
-		Range: 4c0
-		CloakTypes: Underwater
-	RenderDetectionCircle:
-	Selectable:
-		DecorationBounds: 44,44
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	WithSpriteTurret@PRIMARY:
-		Turret: primary
-	WithSpriteTurret@SECONDARY:
-		Turret: secondary
-	DeliversCash:
-		Payload: 500
-	Voiced:
-		VoiceSet: RAVehicleVoice
-
-CNCCA:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EMP: ^TurretEMP
-	Valued:
-		Cost: 2500
-	Tooltip:
-		Name: Missile Cruiser
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: anypower, eye
-		Queue: Naval.GDI, RANaval.GDI
-		Description: Very slow long-range ship.\n  Strong vs surface, air targets\n  Weak vs Submarines
-	Mobile:
-		TurnSpeed: 2
-		Speed: 42
-	Health:
-		HP: 80000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 5c0
-	Turreted@PRIMARY:
-		Turret: primary
-		Offset: -896,0,128
-		TurnSpeed: 3
-	Turreted@SECONDARY:
-		Turret: secondary
-		Offset: 768,0,128
-		TurnSpeed: 3
-	Armament@PRIMARY:
-		Turret: primary
-		Weapon: NewBoatMissile2
-		LocalOffset: 480,-100,40, 480,100,40
-		Recoil: 171
-		RecoilRecovery: 34
-		MuzzleSequence: muzzle
-	Armament@SECONDARY:
-		Name: secondary
-		Turret: secondary
-		Weapon: NewBoatMissile2
-		LocalOffset: 480,-100,40, 480,100,40
-		Recoil: 171
-		RecoilRecovery: 34
-		MuzzleSequence: muzzle
-	Armament@PRIMARYAA:
-		Turret: primary
-		Weapon: NewBoatMissile2AA
-		LocalOffset: 480,-100,40, 480,100,40
-		Recoil: 171
-		RecoilRecovery: 34
-		MuzzleSequence: muzzle
-	Armament@SECONDARYAA:
-		Name: secondary
-		Turret: secondary
-		Weapon: NewBoatMissile2AA
-		LocalOffset: 480,-100,40, 480,100,40
-		Recoil: 171
-		RecoilRecovery: 34
-		MuzzleSequence: muzzle
-	AttackTurreted:
-		Turrets: primary, secondary
-	WithMuzzleOverlay:
-	WithSpriteTurret:
-	DetectCloaked:
-		Range: 4c0
-		CloakTypes: Underwater
-	RenderDetectionCircle:
-	Selectable:
-		DecorationBounds: 44,44
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	WithSpriteTurret@PRIMARY:
-		Turret: primary
-	WithSpriteTurret@SECONDARY:
-		Turret: secondary
-	DeliversCash:
-		Payload: 500
-
-RASS:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@EMP: ^FrontalEMP
-	Inherits@sub: ^Submarine
-	Valued:
-		Cost: 950
-	Tooltip:
-		Name: Submarine
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: anypower
-		Queue: Naval.Soviet, RANaval.Soviet
-		Description: Submerged anti-ship unit\narmed with torpedoes.\nCan detect other submarines.\n  Strong vs Naval units\n  Weak vs Ground units, Aircraft
-	Mobile:
-		TurnSpeed: 4
-		Speed: 71
-	Health:
-		HP: 25000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 8c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 5c0
-	Turreted:
-		TurnSpeed: 7
-		Offset: 512,0,0
-	Armament@PRIMARY:
-		Weapon: TorpTube
-		LocalOffset: 208,0,48
-	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
-	AttackFrontal:
-	RenderDetectionCircle:
-	Selectable:
-		DecorationBounds: 36,36
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	DeliversCash:
-		Payload: 475
-	DetectCloaked:
-		CloakTypes: Underwater
-		Range: 4c0
-	Voiced:
-		VoiceSet: RussianVehicleVoice
-
-RAMSUB:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@EMP: ^FrontalEMP
-	Inherits@sub: ^Submarine
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Missile Submarine
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: anypower, stek
-		Queue: Naval.Soviet, RANaval.Soviet
-		Description: Submerged anti-ground siege unit\nwith anti-air capabilities.\nCan detect other submarines.\n  Strong vs Buildings, Ground units, Aircraft\n  Weak vs Naval units
-	Mobile:
-		TurnSpeed: 3
-		Speed: 42
-	Health:
-		HP: 40000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 8c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 5c0
-	Armament@GROUND:
-		Weapon: SubMissile
-		LocalOffset: 208,0,48
-	Armament@Air:
-		Weapon: SubMissileAA
-		LocalOffset: 208,0,48
-	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
-	AttackFrontal:
-	RenderDetectionCircle:
-	Selectable:
-		DecorationBounds: 44,44
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	DeliversCash:
-		Payload: 1000
-	Cloak@underwater:
-		CloakDelay: 100
-	DetectCloaked:
-		CloakTypes: Underwater
-		Range: 4c0
-	Voiced:
-		VoiceSet: RussianVehicleVoice
-
-CNCRSS:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@sub: ^Submarine
-	Valued:
-		Cost: 650
-	Tooltip:
-		Name: Transport Submarine
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: anyhq
-		Queue: Naval.Nod, RANaval.Nod
-	Mobile:
-		TurnSpeed: 5
-		Speed: 50
-		RequiresCondition: !notmobile && !disabled
-		Locomotor: lcraft
-	Health:
-		HP: 15000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 8c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 5c0
-	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
-	Selectable:
-		DecorationBounds: 36,36
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	DeliversCash:
-		Payload: 325
-	Cargo:
-		Types: Infantry, Vehicle
-		MaxWeight: 5
-		PipCount: 5
-		LoadingCondition: notmobile
-	GrantConditionOnTerrain@underwater:
-		Condition: cancloak
-		TerrainTypes: Water
-	Cloak@underwater:
-		PauseOnCondition: disabled || !cancloak
-
-CNCSS:
-	Inherits: RASS
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: anypower
-		Queue: Naval.Nod, RANaval.Nod
-	RenderSprites:
-		Image: rass
-	Voiced:
-		VoiceSet: VehicleVoice
-
-CNCMSUB:
-	Inherits: RAMSUB
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: anypower, tmpl
-		Queue: Naval.Nod, RANaval.Nod
-	RenderSprites:
-		Image: ramsub
-	Voiced:
-		VoiceSet: VehicleVoice
-
-RALST:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Valued:
-		Cost: 700
-	Tooltip:
-		Name: Transport
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 10
-		Prerequisites: anypower
-		Queue: Naval.Soviet, Naval.Allies, RANaval.Soviet, RANaval.Allies
-	Mobile:
-		TurnSpeed: 10
-		Speed: 113
-		RequiresCondition: !notmobile && !disabled
-		Locomotor: lcraft
-	Health:
-		HP: 35000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 8c0
-	WithLandingCraftAnimation:
-		OpenTerrainTypes: Clear, Rough, Road, Ore, Gems, Beach
-	Selectable:
-		DecorationBounds: 36,36
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	DeliversCash:
-		Payload: 250
-	Cargo:
-		Types: Infantry, Vehicle
-		MaxWeight: 10
-		PipCount: 10
-		PassengerFacing: 0
-		LoadingCondition: notmobile
-	Voiced:
-		VoiceSet: RAVehicleVoice
-
-CNCLST:
-	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
-	Valued:
-		Cost: 700
-	Tooltip:
-		Name: Landing Craft
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 10
-		Queue: Naval.GDI, RANaval.GDI, Naval.Nod, RANaval.Nod
-	Mobile:
-		TurnSpeed: 10
-		Speed: 113
-		RequiresCondition: !notmobile && !disabled
-		Locomotor: lcraft
-	Health:
-		HP: 35000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 8c0
-	Selectable:
-		DecorationBounds: 36,36
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	DeliversCash:
-		Payload: 250
-	WithRoof:
-	WithCargo:
-		DisplayTypes: Infantry, Vehicle
-		LocalOffset: 390,-256,0, 390,256,0, 0,0,0, -390,-256,0, -390,256,0
-	Cargo:
-		Types: Infantry, Vehicle
-		MaxWeight: 10
-		PipCount: 10
-		PassengerFacing: 0
-		LoadingCondition: notmobile
-	RenderSprites:
-		Image: lst
-
-TECHBCANNON:
-	Inherits: ^Defense
-	Inherits@AUTOTARGET: ^AutoTargetGround
-	Inherits@shape: ^2x2Shape
-	Selectable:
-		Bounds: 48,48
-		Priority: 0
-	Building:
-		Footprint: xx xx
-		Dimensions: 2,2
-	Valued:
-		Cost: 6000
-	Tooltip:
-		Name: Bomb Artillery Cannon
-	Health:
-		HP: 420000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-	WithBuildingBib:
-		HasMinibib: true
-	Turreted:
-		TurnSpeed: 7
-		InitialFacing: 56
-	-WithSpriteBody:
-	WithEmbeddedTurretSpriteBody:
-	AttackTurreted:
-		RequiresCondition: !build-incomplete
-	WithMuzzleOverlay:
-	-WithDeathAnimation:
-	DetectCloaked:
-		Range: 4c0
-	BodyOrientation:
-	Armament:
-		Weapon: GiantArtilleryTurret
-		LocalOffset: 1024,0,448
-		MuzzleSequence: muzzle
-	TooltipDescription@ally:
-		Description: Powerful long-range artillery.
-		ValidStances: Ally
-	TooltipDescription@other:
-		Description: Capture to provide powerful long-range artillery.
-		ValidStances: Neutral, Enemy
-	MapEditorData:
-		Categories: Tech building
-	OwnerLostAction:
-		Action: ChangeOwner
-	CaptureManager:
-	Capturable:
-		Types: building
-
-TECHBCANNON2:
-	Inherits: TECHBCANNON
-	Valued:
-		Cost: 7000
-	Tooltip:
-		Name: Bomb Bowling Cannon
-	Turreted:
-		TurnSpeed: 8
-	Armament:
-		Weapon: GiantBowlingTurret
-		LocalOffset: 1024,0,224
-		MuzzleSequence: muzzle
-	Armament@2:
-		Weapon: BowlingTrail
-		LocalOffset: 1024,0,224
-	-WithMuzzleOverlay:
-
-techcementffact:
-	Inherits: ^TechBuilding
-	Selectable:
-		Bounds: 48,48
-	Building:
-		Footprint: xx xx
-		Dimensions: 2,2
-	Health:
-		HP: 220000
-	Tooltip:
-		Name: Cement Factory
-	TooltipDescription@ally:
-		Description: Increases building durability.
-		ValidStances: Ally
-	TooltipDescription@other:
-		Description: Capture to increase building durability.
-		ValidStances: Neutral, Enemy
-	ProvidesPrerequisite@buildingname:
-	ConditionManager:			##########
-
-techmetalffact:
-	Inherits: ^TechBuilding
-	Selectable:
-		Bounds: 48,48
-	Building:
-		Footprint: xx xx
-		Dimensions: 2,2
-	Health:
-		HP: 220000
-	Tooltip:
-		Name: Metal Factory
-	TooltipDescription@ally:
-		Description: Increase vehicle durability.
-		ValidStances: Ally
-	TooltipDescription@other:
-		Description: Capture to increase vehicle durability.
-		ValidStances: Neutral, Enemy
-	ProvidesPrerequisite@buildingname:
-	ConditionManager:			##########
 
 techbotweap:
 	Inherits: BIO
@@ -1522,13 +588,93 @@ UniversalHusk:
 ########################################################
 #	South America Marginals (Flaites)
 ########################################################
+^BrayansVehicles:
+	SpeedMultiplier@BRAYANNITRO:
+		Modifier: 150
+		RequiresCondition: brayannitro
+	TimedConditionBar@BRAYANNITRO:
+		Condition: brayannitro
+	ExternalCondition@BRAYANNITRO:
+		Condition: brayannitro
+	Explodes@BRAYANNITRO:
+		Weapon: FlametankExplode
+		EmptyWeapon: FlametankExplode
+		RequiresCondition: brayannitro
+	GrantConditionOnPrerequisite@315uptuning:
+		Condition: u315uptuning
+		Prerequisites: 315uptuning
+	DamageMultiplier@315uptuning:
+		RequiresCondition: u315uptuning
+		Modifier: 75
+	GrantConditionOnPrerequisite@315upctuning:
+		Condition: u315upctuning
+		Prerequisites: 315upctuning
+	DamageMultiplier@315upctuning:
+		RequiresCondition: u315upctuning
+		Modifier: 75
+	GrantConditionOnPrerequisite@315upctuning:
+		Condition: u315upctuning
+		Prerequisites: 315upctuning
+	SpeedMultiplier@315upturbo:
+		Modifier: 120
+		RequiresCondition: u315upturbo
+	GrantConditionOnPrerequisite@315upturbo:
+		Condition: u315upturbo
+		Prerequisites: 315upturbo
+315uptuning:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Tuning
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.315Flaite
+		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
+		Prerequisites: 315garage, ~!315uptuning
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: 315tuningicon
+	ProvidesPrerequisite:
+		Prerequisite: 315uptuning
 
+315upctuning:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Carbon Tuning
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.315Flaite
+		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
+		Prerequisites: 315uptuning, ~!315upctuning
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: 315ctuningicon
+	ProvidesPrerequisite:
+		Prerequisite: 315upctuning
+
+315upturbo:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Turbocharger
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.315Flaite
+		Description: Scorpion Rockets are crude missiles which can be attached and launched from GLA Scorpion Tanks.
+		Prerequisites: 315garage, ~!315upturbo
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: 315turbochargericon
+	ProvidesPrerequisite:
+		Prerequisite: 315upturbo
 315charade:
 	Inherits: ^Vehicle
 	Inherits@@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@BrayansVehicles: ^BrayansVehicles
 	Valued:
-		Cost: 320
+		Cost: 500
 	Tooltip:
 		Name: Charade
 	UpdatesPlayerStatistics:
@@ -1552,7 +698,7 @@ UniversalHusk:
 		TurnSpeed: 10
 		Offset: -43,0,128
 	Armament:
-		Weapon: 315AAWeapon
+		Weapon: 315AAHWeapon
 		LocalOffset: 171,0,43
 		MuzzleSequence: muzzle
 	AttackTurreted:
@@ -1563,11 +709,134 @@ UniversalHusk:
 		ValidTypes: vehicle								##########
 	Power:
 		Amount: -8
-
+	Voiced:
+		VoiceSet: RocketBuggyVoice
+315tsuru:
+	Inherits: ^Vehicle
+	Inherits@@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@BrayansVehicles: ^BrayansVehicles
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Tsuru V16
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Vehicle.315Flaite
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		TurnSpeed: 10
+		Speed: 160
+	Health:
+		HP: 34000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -43,0,128
+	Armament@SECONDARY:
+		Weapon: M60mg
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 2
+		PipCount: 2
+		LoadingCondition: notmobile
+		LoadedCondition: Passager
+	Armament@Passager1:
+		Weapon: 315AAWeapon
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+		RequiresCondition: Passager >= 1
+	Armament@Passager2:
+		Weapon: 315AAWeapon
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+		RequiresCondition: Passager == 2
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Power:
+		Amount: -10
+	Voiced:
+		VoiceSet: RocketBuggyVoice
+315narcojeep:
+	Inherits: ^Vehicle
+	Inherits@@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@BrayansVehicles: ^BrayansVehicles
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Hummer H2
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Vehicle.315Flaite
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		TurnSpeed: 10
+		Speed: 160
+	Health:
+		HP: 54000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -43,0,128
+	Armament@SECONDARY:
+		Weapon: M60mg
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 4
+		PipCount: 4
+		LoadingCondition: notmobile
+		LoadedCondition: Passager
+		InitialUnits: 315narco,315narco,315narco,315narco
+	Armament@Passager1:
+		Weapon: 315AAWeapon
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+		RequiresCondition: Passager >= 1
+	Armament@Passager2:
+		Weapon: 315AAWeapon
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+		RequiresCondition: Passager == 2
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Power:
+		Amount: -10
+	Voiced:
+		VoiceSet: 315NarcoVVoice
+	AIDeployNotifier:
+		DeployChance: 100
 315racer:
 	Inherits: ^Vehicle
 	Inherits@@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@BrayansVehicles: ^BrayansVehicles
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -1608,7 +877,8 @@ UniversalHusk:
 		ValidTypes: vehicle								##########
 	Power:
 		Amount: -10
-
+	Voiced:
+		VoiceSet: RocketBuggyVoice
 315carru:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1624,7 +894,7 @@ UniversalHusk:
 		Queue: Vehicle.315Flaite
 		BuildDuration: 1020
 		BuildDurationModifier: 40
-		Description: Flaite Battle Tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+		Description: Bulldog tanks hijacked by flaites.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
 	Mobile:
 		TurnSpeed: 7
 		Speed: 95
@@ -1753,7 +1023,7 @@ UniversalHusk:
 	Valued:
 		Cost: 90
 	Tooltip:
-		Name: Flaite
+		Name: Gangster
 		GenericName: Marginalized People
 	Buildable:
 		BuildPaletteOrder: 10
@@ -1766,7 +1036,7 @@ UniversalHusk:
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
-		Weapon: 315PistolFlaite
+		Weapon: 315AAWeapon
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: MachineGun
@@ -1787,17 +1057,57 @@ UniversalHusk:
 		RequiresCondition: rank-elite
 	Power:
 		Amount: -5
+	Voiced:
+		VoiceSet: 315FlaiteVoice
+	GrantRandomCondition@Names:
+		Conditions: Brayan, Kevin, Brandon, Brayatan, Maikol, Byron, Dylan
+	TooltipDescription@Name1:
+		Description: Brayan
+		ValidStances: Ally
+		RequiresCondition: Brayan
+	TooltipDescription@Name2:
+		Description: Kevin
+		ValidStances: Ally
+		RequiresCondition: Kevin
+	TooltipDescription@Name3:
+		Description: Brandon
+		ValidStances: Ally
+		RequiresCondition: Brandon
+	TooltipDescription@Name4:
+		Description: Brayatan
+		ValidStances: Ally
+		RequiresCondition: Brayatan
+	TooltipDescription@Name5:
+		Description: Maikol
+		ValidStances: Ally
+		RequiresCondition: Maikol
+	TooltipDescription@Name6:
+		Description: Byron
+		ValidStances: Ally
+		RequiresCondition: Byron
+	TooltipDescription@Name7:
+		Description: Dylan
+		ValidStances: Ally
+		RequiresCondition: Dylan
+	Infiltrates:
+		Types: BrayanInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 5
 
-315flaite2:
+315narco:
 	Inherits: 315flaite
 	Buildable:
 		BuildPaletteOrder: 10
-		Queue: Defence.315Flaite
+		Queue: None
 	Armament@PRIMARY:							##########
-		Weapon: 315PistolFlaite
-	RenderSprites:
-		Image: 315flaite
-
+		Weapon: USABurtonMG
+	Tooltip:
+		Name: Narco
+		GenericName: Narco
+	Health:
+		HP: 12000
+	Voiced:
+		VoiceSet: 315NarcoVoice
 315MECH:
 	Inherits: MECH
 	Buildable:
@@ -1812,7 +1122,8 @@ UniversalHusk:
 		Queue: Infantry.315Flaite
 	RenderSprites:
 		Image: e6
-
+	Tooltip:
+		Name: Fontanero
 315shinobi:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1827,7 +1138,7 @@ UniversalHusk:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: mapuches, ~techlevel.medium
+		Prerequisites: ~techlevel.medium
 		Queue: Infantry.315Flaite, Infantry.X_Infantry
 		Description: Fast infantry armed with grenades. \n  Strong vs Buildings, slow-moving targets
 	Mobile:
@@ -1858,6 +1169,7 @@ UniversalHusk:
 		CloakSound: trans1.aud
 		UncloakSound: trans1.aud
 		PauseOnCondition: cloak-force-disabled
+		IsPlayerPalette: true
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -1871,7 +1183,12 @@ UniversalHusk:
 		RequiresCondition: rank-elite
 	Power:
 		Amount: -5
-
+	Voiced:
+		VoiceSet: 315FlaiteVoice
+	Infiltrates:
+		Types: BrayanInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 5
 315weichafe:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1886,7 +1203,7 @@ UniversalHusk:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: mapuches, ~techlevel.medium
+		Prerequisites: ~mapuches, ~techlevel.medium
 		Queue: Infantry.315Flaite, Infantry.X_Infantry
 		Description: Advanced Anti-infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
 	Mobile:
@@ -1915,6 +1232,7 @@ UniversalHusk:
 		CloakSound: trans1.aud
 		UncloakSound: trans1.aud
 		PauseOnCondition: cloak-force-disabled
+		IsPlayerPalette: true
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -1929,7 +1247,7 @@ UniversalHusk:
 	Power:
 		Amount: -5
 
-315FACT:
+315fact:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Selectable:
@@ -2022,7 +1340,7 @@ UniversalHusk:
 	Valued:
 		Cost: 600
 	Tooltip:
-		Name: Village
+		Name: Brayan Village
 	ProvidesPrerequisite:
 		Prerequisite: barracks
 	Buildable:
@@ -2075,7 +1393,7 @@ UniversalHusk:
 	BodyOrientation:
 		QuantizedFacings: 8
 	Cargo:
-		Types: Infantry
+		Types: Infantry, Hacker
 		MaxWeight: 2
 		PipCount: 2
 	AttackGarrisoned:
@@ -2090,6 +1408,45 @@ UniversalHusk:
 	Power:
 		Amount: 70
 
+315weedfarm:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 640,-384,0, 640,512,0, -710,-512,0, -710,512,0
+	Buildable:
+		Queue: Building.315Flaite
+		BuildPaletteOrder: 70
+		Prerequisites: barracks
+		Description: Can consistently make money.
+	Valued:
+		Cost: 2000			#300
+	Tooltip:
+		Name: Weed Farm
+	ProvidesPrerequisite:
+		Prerequisite: 315weedfarm
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 40000	#40000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	WithDeathAnimation:
+		DeathSequence: dead
+		UseDeathTypeSuffix: false
+	CashTrickler:
+		Amount: 40
+	Voiced:
+		VoiceSet: GLBlackMarketVoice
+
+
 315ranchhousebot:
 	Inherits: ^BaseBuilding
 	HitShape:
@@ -2101,7 +1458,7 @@ UniversalHusk:
 	Valued:
 		Cost: 500
 	Tooltip:
-		Name: Ruca
+		Name: Brayan Village
 	ProvidesPrerequisite:
 		Prerequisite: barracks
 	ProvidesPrerequisite@2:
@@ -2248,9 +1605,6 @@ UniversalHusk:
 	RevealsShroud:
 		Range: 4c0
 	WithBuildingBib:
-	WithProductionDoorOverlay:
-		RequiresCondition: !build-incomplete
-		Sequence: build-top
 	RallyPoint:
 		Offset: 0,2
 	Exit@1:
@@ -2279,6 +1633,22 @@ UniversalHusk:
 		AreaTypes: building, cityi
 	Power:
 		Amount: 150
+	GrantExternalConditionPower@BRAYANNITRO:
+		OrderName: BrayanNitroPower
+		PauseOnCondition: lowpower
+		Icon: invuln
+		ChargeInterval: 3000
+		Description: Nitrous Oxide
+		LongDesc: Add Speed a group of units\nfor 30 seconds.
+		Range: 2
+		Duration: 750
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: brayannitro
+		OnFireSound: cmon1.aud
 
 315sturret:
 	Inherits: ^Defense
@@ -2324,6 +1694,7 @@ UniversalHusk:
 		CloakSound: trans1.aud
 		UncloakSound: trans1.aud
 		PauseOnCondition: cloak-force-disabled
+		IsPlayerPalette: true
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -2433,3 +1804,1090 @@ UniversalHusk:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
+
+
+315dog:
+	Inherits: ^Soldier
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Cop Killer Dog
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~techlevel.medium
+		Queue: Infantry.315Flaite, Infantry.X_Infantry
+		Description: Fast assault robot.\nCan attack tanks.\n  Strong vs Infantry, Vehicles
+	Mobile:
+		Speed: 150
+		TurnSpeed: 15
+	RenderSprites:
+		PlayerPalette: player
+	Health:
+		HP: 100000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 4c0
+	Passenger:
+		CargoType: Infantry
+		Weight: 2
+	WithInfantryBody:
+		IdleSequences: stand
+		StandSequences: stand
+		DefaultAttackSequence: jump
+	Armament:
+		Weapon: RA2DroneJump
+	-AttackFrontal:
+	AttackLeap:
+		Voice: Attack
+	AutoTarget:
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry, Vehicle
+	Voiced:
+		VoiceSet: TerrorDroneVoice
+	DeliversCash:
+		Payload: 200
+	-TemporaryOwnerManager:
+	-WithDeathAnimation:
+	-DamagedByTerrain:
+	-SpawnActorOnDeath:
+	-Explodes@Mutate:
+	RenderSprites:
+		Image: dog
+
+
+315chatarrero:
+	Inherits: ^Tank
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@BrayansVehicles: ^BrayansVehicles
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Chatarrero
+		GenericName: Truck
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: proc
+		Queue: Vehicle.315Flaite
+		BuildDurationModifier: 40
+		Description: Collects Tiberium for processing.\n  Unarmed
+	Selectable:
+		DecorationBounds: 36,36
+	Harvester:
+		PipCount: 7
+		Capacity: 10
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 15
+		SearchFromHarvesterRadius: 8
+		EmptyCondition: no-tiberium
+	Mobile:
+		Speed: 90
+	Health:
+		HP: 32500
+	Repairable:
+		HpPerStep: 2537
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 4c0
+	#SpawnActorOnDeath:
+	#	Actor: HARV.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	Explodes:
+		RequiresCondition: !no-tiberium
+		Weapon: TiberiumExplosion
+	Explodes@empty:
+		RequiresCondition: no-tiberium
+		Weapon: UnitExplode
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions					##########
+	Voiced:
+		VoiceSet: 315ChatarreroVoice
+
+315proc:
+	Inherits: RAPROC
+	RenderSprites:
+		Image: RAPROC
+	Buildable:
+		Queue: Building.315Flaite
+		Prerequisites: 315ranchhouse
+	FreeActor:
+		Actor: 315chatarrero
+	ProvidesPrerequisite:
+		Prerequisite: proc
+	-MapEditorData:
+
+###########################################################################################
+##
+###########################################################################################
+
+BHFACT:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Selectable:
+		Bounds: 72,48
+	Valued:
+		Cost: 3500
+	Tooltip:
+		Name: Construction Yard (Nod)
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 210000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building.BHNod, Defence.BHNod
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.BHNod, RADefence.BHNod
+		RequiresCondition: classicproductionqueues
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: mcv.nod
+		Offset: 1,1
+		Facing: 108
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransformsIntoRepairable:
+		RequiresCondition: factundeploy
+		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept	##########
+		RequiresForceMove: true
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@NodBuilding:
+		Type: Building.BHNod
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@NodDefense:
+		Type: Defence.BHNod
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	ProductionBar@BuildingNod:
+		ProductionType: Building.BHNod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceNod:
+		ProductionType: Defence.BHNod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingNod:
+		ProductionType: RABuilding.BHNod
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceNod:
+		ProductionType: RADefence.BHNod
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Cooldown: 75
+		Range: 14c0
+	WithBuildingBib:
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
+	Buildable:
+		Queue: Building.Nod, RABuilding.Nod
+		BuildPaletteOrder: 1000
+		Prerequisites: ~disabled
+		Description: Builds structures
+	ProvidesPrerequisite@factionnod:
+		Prerequisite: mmbhnod
+
+BHNUKE:
+	Inherits: NUKE
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: fact
+		Queue: Building.BHNod, RABuilding.BHNod
+		BuildDuration: 330
+		Description: Generates power
+
+BHNUK2:
+	Inherits: NUK2
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: anyhq, ~techlevel.medium
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Provides more power, cheaper than the\nstandard Power Plant
+
+BHPROC:
+	Inherits: PROC
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Processes raw Tiberium\ninto useable resources
+	Refinery:
+		DockAngle: 112
+		DockOffset: 0,2
+		IsDragRequired: True
+		DragOffset: -554,512,0
+		DragLength: 12
+		TickRate: 15
+	FreeActor:
+		Actor: HARV
+		SpawnOffset: 1,2
+		Facing: 64
+	RenderSprites:
+		Image: proc
+BHSILO:
+	Inherits: SILO
+	Buildable:
+		BuildPaletteOrder: 35
+		Prerequisites: bhproc
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Stores processed Tiberium
+	RenderSprites:
+		Image: silo
+BHHAND:
+	Inherits: HAND
+	Tooltip:
+		Name: Biolab
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Trains infantry
+	Production@NORMAL:
+		Produces: Infantry.BHNod
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.BHNod
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry.BHNod
+	ProductionBar@INFANTRYNOD:
+		ProductionType: Infantry.BHNod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYNOD:
+		ProductionType: RAInfantry.BHNod
+		RequiresCondition: classicproductionqueues
+
+BHWEAP:
+	Inherits: WEAP
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: bhproc
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Produces vehicles
+	Production@NORMAL:
+		Produces: Vehicle.BHNod
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.BHNod
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Vehicle.BHNod
+	ProductionBar@VEHICLEGDI:
+		ProductionType: Vehicle.BHNod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLEGDI:
+		ProductionType: RAVehicle.BHNod
+		RequiresCondition: classicproductionqueues
+
+HPAD.BHNOD:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Helipad (Nod)
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: bhproc
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Produces, rearms and\nrepairs helicopters
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Production@NORMAL:
+		Produces: Aircraft.BHNod
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.BHNod
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ProductionQueue:
+		Type: Aircraft.BHNod
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AIRCRAFTNOD:
+		ProductionType: Aircraft.BHNod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFTNOD:
+		ProductionType: RAAircraft.BHNod
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -10
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: hpad
+	RenderSprites:
+		Image: hpad
+
+BHHQ:
+	Inherits: HQ
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: bhproc, ~techlevel.medium
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Provides radar and Air Strike support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+	AirstrikePower:
+		UnitType: bhmig
+	SupportPowerChargeBar:
+	RenderSprites:
+		Image: hq
+
+BHMIG:
+	Inherits: A10
+	Tooltip:
+		Name: Black Plane
+	Armament@GUNS:
+		Name: gun
+		Weapon: TSTurretLaserFire
+		LocalOffset: 1024,0,-85
+	Armament@BOMBS:
+		Name: bombs
+		Weapon: BHBombs
+		LocalOffset: 0,-256,-43, 0,256,-43
+
+BHFIX:
+	Inherits: FIX
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: vehicleproduction
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Repairs vehicles
+	RenderSprites:
+		Image: fix
+
+BHEYE:
+	Inherits: EYE
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Advanced Communications Center
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Provides radar and Orbital Ion Cannon support power.\nUnlocks Mammoth Tank and Commando.\nRequires power to operate.
+	RenderSprites:
+		Image: eye
+
+BHTMPL:
+	Inherits: TMPL
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Temple of Nod
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high
+		Queue: Building.BHNod, RABuilding.BHNod
+		Description: Provides Nuclear Strike support power.\nUnlocks Stealth Tank, Chem. Warrior and Obelisk of Light.\nRequires power to operate.
+	ProvidesPrerequisite@buildingname:
+	RenderSprites:
+		Image: tmpl
+
+BHGUN:
+	Inherits: GUN
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Laser Turret
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: barracks
+		Queue: Defence.BHNod, RADefence.BHNod
+	Armament:
+		Weapon: TSTurretLaserFire
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	Power:
+		Amount: -30
+	RenderSprites:
+		Image: gun
+
+BHSAM:
+	Inherits: SAM
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: hand
+		Queue: Defence.BHNod, RADefence.BHNod
+	RenderSprites:
+		Image: sam
+
+BHOBLI:
+	Inherits: OBLI
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: bhtmpl, ~techlevel.high
+		Queue: Defence.BHNod, RADefence.BHNod
+	RenderSprites:
+		Image: obli
+
+BHGTWR:
+	Inherits: GTWR
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: barracks
+		Queue: Defence.BHNod, RADefence.BHNod
+	RenderSprites:
+		Image: gtwr
+
+BHCYCL:
+	Inherits: CYCL
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: fact
+		Queue: Defence.BHNod, RADefence.BHNod
+	RenderSprites:
+		Image: cycl
+
+BHBRIK:
+	Inherits: BRIK
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Metal Barrier
+	Buildable:
+		Prerequisites: vehicleproduction
+		Queue: Defence.BHNod, RADefence.BHNod
+		BuildDuration: 600
+		BuildDurationModifier: 40
+		Description: Stops infantry and most tanks.\nBlocks some projectiles.
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+
+BHBIKE:
+	Inherits: BIKE
+	Tooltip:
+		Name: Black Bike
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: bhweap
+		Queue: Vehicle.BHNod, RAVehicle.BHNod, Vehicle.X_Vehicles
+		Description: Fast scout vehicle, armed with\nrockets.\nCan attack Aircraft.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+	Armament:
+		Weapon: BHRedDarts
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+
+BHAPC:
+	Inherits: RNAPC
+	Valued:
+		Cost: 550
+	Tooltip:
+		Name: Nod APC
+	Buildable:
+		Queue: Vehicle.BHNod, RAVehicle.BHNod, Vehicle.X_Vehicles
+		BuildPaletteOrder: 40
+		Prerequisites: vehicleproduction
+	RenderSprites:
+		Image: rnapc
+
+BHLTNK:
+	Inherits: RNLTNK
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Light Tank MKII
+	Buildable:
+		Queue: Vehicle.BHNod, RAVehicle.BHNod, Vehicle.X_Vehicles
+		BuildPaletteOrder: 50
+		Prerequisites: anyhq
+	Mobile:
+		Locomotor: heavywheeled
+		TurnSpeed: 11
+		Speed: 152
+	RenderSprites:
+		Image: rnltnk
+
+BHV2RL:
+	Inherits: V2RL
+	RenderSprites:
+		Image: V2RL
+	Buildable:
+		Queue: Vehicle.BHNod, RAVehicle.BHNod, Vehicle.X_Vehicles
+		BuildPaletteOrder: 70
+		Prerequisites: anyhq
+	-MapEditorData:
+
+BHFTNK:
+	Inherits: RNFTNK
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Flame Tank MKII
+	Buildable:
+		Queue: Vehicle.BHNod, RAVehicle.BHNod, Vehicle.X_Vehicles
+		BuildPaletteOrder: 60
+		Prerequisites: anyhq
+	RenderSprites:
+		Image: rnftnk
+
+BHE3:
+	Inherits: E3
+	Valued:
+		Cost: 450
+	Tooltip:
+		Name: Chemical Rocket Soldier
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks
+		Queue: Infantry.BHNod, RAInfantry.BHNod
+		Description: Same as the Other Rocket Soldier. \n  It Is powerful against every objective\n  It can explode
+	Armament@PRIMARY:							##########
+		Weapon: ChemRockets
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: ChemRocketsG
+	Explodes:
+		Weapon: TiberiumExplosion
+		EmptyWeapon: TiberiumExplosion
+		Chance: 50
+	RenderSprites:
+		Image: e3chem
+
+BHE1:
+	Inherits: E1
+	Valued:
+		Cost: 180
+	Tooltip:
+		Name: Elite Minigunner
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Infantry.BHNod, RAInfantry.BHNod
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 60
+	Armament@PRIMARY:							##########
+		Weapon: BHSuperRifle
+	RenderSprites:
+		Image: e1
+		Scale: 1.2
+	ProducibleWithLevel:
+		Prerequisites: barracks
+		InitialLevels: 1
+        
+EABOSS:
+	Inherits: ^Viceroid
+	Inherits@Prequesite: ^Xprerequisite
+	AttackWander:
+	Mobile:
+		Speed: 15
+	Health:
+		HP: 9000000
+	Tooltip:
+		Name: EA Games
+	CashTrickler:
+		Amount: 1400 
+		Interval: 300
+	Power:
+		Amount: -10
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	GrantExternalConditionToProduced:
+		Condition: produced
+	Production@GDII:
+		Produces: Infantry.GDI
+	ProductionQueue@GDII:
+		Type: Infantry.GDI
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@GDII:
+		ProductionType: Infantry.GDI
+	Production@NodI:
+		Produces: Infantry.Nod
+	ProductionQueue@NodI:
+		Type: Infantry.Nod
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NodI:
+		ProductionType: Infantry.Nod
+	Production@SovietI:
+		Produces: Infantry.Soviet
+	ProductionQueue@SovietI:
+		Type: Infantry.Soviet
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@SovietI:
+		ProductionType: Infantry.Soviet
+	Production@AlliesI:
+		Produces: Infantry.Allies
+	ProductionQueue@AlliesI:
+		Type: Infantry.Allies
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AlliesI:
+		ProductionType: Infantry.Allies
+	Production@AlliesRA2I:
+		Produces: Infantry.AlliesRA2
+	ProductionQueue@AlliesRA2I:
+		Type: Infantry.AlliesRA2
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AlliesRA2I:
+		ProductionType: Infantry.AlliesRA2
+	Production@SovietRA2I:
+		Produces: Infantry.SovietRA2
+	ProductionQueue@SovietRA2I:
+		Type: Infantry.SovietRA2
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@SovietRA2I:
+		ProductionType: Infantry.SovietRA2
+	Production@TSGDII:
+		Produces: Infantry.TSGDI
+	ProductionQueue@TSGDII:
+		Type: Infantry.TSGDI
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@TSGDII:
+		ProductionType: Infantry.TSGDI
+	Production@TSNodI:
+		Produces: Infantry.TSNod
+	ProductionQueue@TSNodI:
+		Type: Infantry.TSNod
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@TSNodI:
+		ProductionType: Infantry.TSNod
+	Production@YuriI:
+		Produces: Infantry.Yuri
+	ProductionQueue@YuriI:
+		Type: Infantry.Yuri
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@YuriI:
+		ProductionType: Infantry.Yuri
+	Production@MUTANTI:
+		Produces: Infantry.MUTANT
+	ProductionQueue@MUTANTI:
+		Type: Infantry.MUTANT
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@MUTANTI:
+		ProductionType: Infantry.MUTANT
+	Production@CABALI:
+		Produces: Infantry.CABAL
+	ProductionQueue@CABALI:
+		Type: Infantry.CABAL
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@CABALI:
+		ProductionType: Infantry.CABAL
+	Production@USAI:
+		Produces: Infantry.USA
+	ProductionQueue@USAI:
+		Type: Infantry.USA
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@USAI:
+		ProductionType: Infantry.USA
+	Production@GLAI:
+		Produces: Infantry.GLA
+	ProductionQueue@GLAI:
+		Type: Infantry.GLA
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@GLAI:
+		ProductionType: Infantry.GLA
+	Production@CHINAI:
+		Produces: Infantry.CHINA
+	ProductionQueue@CHINAI:
+		Type: Infantry.CHINA
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@CHINAI:
+		ProductionType: Infantry.CHINA
+	Production@GDIV:
+		Produces: Vehicle.GDI
+	ProductionQueue@GDIV:
+		Type: Vehicle.GDI
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@GDIV:
+		ProductionType: Vehicle.GDI
+	Production@NodV:
+		Produces: Vehicle.Nod
+	ProductionQueue@NodV:
+		Type: Vehicle.Nod
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NodV:
+		ProductionType: Vehicle.Nod
+	Production@SovietV:
+		Produces: Vehicle.Soviet
+	ProductionQueue@SovietV:
+		Type: Vehicle.Soviet
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@SovietV:
+		ProductionType: Vehicle.Soviet
+	Production@AlliesV:
+		Produces: Vehicle.Allies
+	ProductionQueue@AlliesV:
+		Type: Vehicle.Allies
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AlliesV:
+		ProductionType: Vehicle.Allies
+	Production@AlliesRA2V:
+		Produces: Vehicle.AlliesRA2
+	ProductionQueue@AlliesRA2V:
+		Type: Vehicle.AlliesRA2
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AlliesRA2V:
+		ProductionType: Vehicle.AlliesRA2
+	Production@SovietRA2V:
+		Produces: Vehicle.SovietRA2
+	ProductionQueue@SovietRA2V:
+		Type: Vehicle.SovietRA2
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@SovietRA2V:
+		ProductionType: Vehicle.SovietRA2
+	Production@TSGDIV:
+		Produces: Vehicle.TSGDI
+	ProductionQueue@TSGDIV:
+		Type: Vehicle.TSGDI
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@TSGDIV:
+		ProductionType: Vehicle.TSGDI
+	Production@TSNodV:
+		Produces: Vehicle.TSNod
+	ProductionQueue@TSNodV:
+		Type: Vehicle.TSNod
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@TSNodV:
+		ProductionType: Vehicle.TSNod
+	Production@YuriV:
+		Produces: Vehicle.Yuri
+	ProductionQueue@YuriV:
+		Type: Vehicle.Yuri
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@YuriV:
+		ProductionType: Vehicle.Yuri
+	Production@MUTANTV:
+		Produces: Vehicle.MUTANT
+	ProductionQueue@MUTANTV:
+		Type: Vehicle.MUTANT
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@MUTANTV:
+		ProductionType: Vehicle.MUTANT
+	Production@CABALV:
+		Produces: Vehicle.CABAL
+	ProductionQueue@CABALV:
+		Type: Vehicle.CABAL
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@CABALV:
+		ProductionType: Vehicle.CABAL
+	Production@USAV:
+		Produces: Vehicle.USA
+	ProductionQueue@USAV:
+		Type: Vehicle.USA
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@USAV:
+		ProductionType: Vehicle.USA
+	Production@GLAV:
+		Produces: Vehicle.GLA
+	ProductionQueue@GLAV:
+		Type: Vehicle.GLA
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@GLAV:
+		ProductionType: Vehicle.GLA
+	Production@CHINAV:
+		Produces: Vehicle.CHINA
+	ProductionQueue@CHINAV:
+		Type: Vehicle.CHINA
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@CHINAV:
+		ProductionType: Vehicle.CHINA
+	MustBeDestroyed:
+		RequiredForShortGame: true

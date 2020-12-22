@@ -1,3 +1,5 @@
+# TD mod stuff do not use
+
 BOAT:
 	Inherits: ^Ship
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -56,7 +58,7 @@ LST:
 	Tooltip:
 		Name: Landing Craft
 	Buildable:
-		Queue: Vehicle.GDI
+		#Queue: Vehicle.GDI
 		BuildPaletteOrder: 1000
 		Prerequisites: ~disabled
 	Mobile:
@@ -76,29 +78,28 @@ LST:
 		Bounds: 48,48
 	WithRoof:
 	WithCargo:
-		DisplayTypes: Infantry, Vehicle
+		DisplayTypes: Infantry, Hacker, Vehicle
 		LocalOffset: 390,-256,0, 390,256,0, 0,0,0, -390,-256,0, -390,256,0
 	Cargo:
-		Types: Infantry, Vehicle
+		Types: Infantry, Hacker, Vehicle
 		MaxWeight: 5
 		PipCount: 5
 		PassengerFacing: 0
 		LoadingCondition: notmobile
 
-####################################################################################################
-#		RA
-####################################################################################################
+# RA Naval
 
 PT:
 	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EXT: ^ExternalConditions
 	Inherits@EMP: ^TurretEMP
 	Buildable:
-		Queue: Ship
-		BuildAtProductionType: Boat
 		BuildPaletteOrder: 20
-		Prerequisites: ~syrd, ~techlevel.low
-		Description: Light scout & support ship.\nCan detect submarines.\n  Strong vs Naval units\n  Weak vs Ground units, Aircraft
+		Prerequisites: anypower
+		Queue: Naval.Allies, RANaval.Allies
+		Description: Light scout & support ship.\nCan detect submarines.
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -138,5 +139,630 @@ PT:
 	RenderDetectionCircle:
 	Selectable:
 		DecorationBounds: 36,36
+	DeliversCash:
+		Payload: 250
+	Voiced:
+		VoiceSet: RAVehicleVoice
 	RenderSprites:
-		Palette: ra_temperat
+		Image: ra1pt
+
+RA1PT:
+	Inherits: PT
+	-Buildable:
+	-MapEditorData:
+
+DD:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Destroyer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower, anyhq
+		Queue: Naval.Allies, RANaval.Allies
+		Description: Fast multi-role ship.\nCan detect submarines.\n  Strong vs Naval units, Vehicles, Aircraft
+	Mobile:
+		TurnSpeed: 7
+		Speed: 85
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 469,0,128
+	Armament:
+		Weapon: Stinger
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 64, -64
+	Armament@AA:
+		Weapon: StingerAA
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 64, -64
+	Armament@DC:
+		Weapon: DepthCharge
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 80, -80
+	AttackTurreted:
+	WithSpriteTurret:
+	DetectCloaked:
+		Range: 4c0
+		CloakTypes: Underwater
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 38,38
+	Inherits@EXT: ^ExternalConditions
+	DeliversCash:
+		Payload: 500
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	RenderSprites:
+		Image: radd
+
+RADD:
+	Inherits: DD
+	-Buildable:
+	-MapEditorData:
+
+CA:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 2400
+	Tooltip:
+		Name: Cruiser
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: anypower, atek
+		Queue: Naval.Allies, RANaval.Allies
+		Description: Very slow long-range ship.\n  Strong vs Buildings, Ground units\n  Weak vs Naval units, Aircraft
+	Mobile:
+		TurnSpeed: 2
+		Speed: 42
+	Health:
+		HP: 80000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -896,0,128
+		TurnSpeed: 3
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 768,0,128
+		TurnSpeed: 3
+	Armament@PRIMARY:
+		Turret: primary
+		Weapon: 8Inch
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 171
+		RecoilRecovery: 34
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Turret: secondary
+		Weapon: 8Inch
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 171
+		RecoilRecovery: 34
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		Turrets: primary, secondary
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	DetectCloaked:
+		Range: 4c0
+		CloakTypes: Underwater
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 44,44
+	Inherits@EXT: ^ExternalConditions
+	WithSpriteTurret@PRIMARY:
+		Turret: primary
+	WithSpriteTurret@SECONDARY:
+		Turret: secondary
+	DeliversCash:
+		Payload: 500
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	RenderSprites:
+		Image: raca
+
+RACA:
+	Inherits: CA
+	-Buildable:
+	-MapEditorData:
+
+SS:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 950
+	Tooltip:
+		Name: Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Naval.Soviet, RANaval.Soviet
+		Description: Submerged anti-ship unit\narmed with torpedoes.\nCan detect other submarines.\n  Strong vs Naval units\n  Weak vs Ground units, Aircraft
+	Mobile:
+		TurnSpeed: 4
+		Speed: 71
+	Health:
+		HP: 25000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: TorpTube
+		LocalOffset: 208,0,48
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+	AttackFrontal:
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+	Inherits@EXT: ^ExternalConditions
+	DeliversCash:
+		Payload: 475
+	DetectCloaked:
+		CloakTypes: Underwater
+		Range: 4c0
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	RenderSprites:
+		Image: rass
+
+RASS:
+	Inherits: SS
+	-Buildable:
+	-MapEditorData:
+
+MSUB:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Missile Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: anypower, stek
+		Queue: Naval.Soviet, RANaval.Soviet
+		Description: Submerged anti-ground siege unit\nwith anti-air capabilities.\nCan detect other submarines.\n  Strong vs Buildings, Ground units, Aircraft\n  Weak vs Naval units
+	Mobile:
+		TurnSpeed: 3
+		Speed: 42
+	Health:
+		HP: 40000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Armament@GROUND:
+		Weapon: SubMissile
+		LocalOffset: 208,0,48
+	Armament@Air:
+		Weapon: SubMissileAA
+		LocalOffset: 208,0,48
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+	AttackFrontal:
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 44,44
+	Inherits@EXT: ^ExternalConditions
+	DeliversCash:
+		Payload: 1000
+	Cloak@underwater:
+		CloakDelay: 100
+	DetectCloaked:
+		CloakTypes: Underwater
+		Range: 4c0
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	RenderSprites:
+		Image: ramsub
+
+RAMSUB:
+	Inherits: MSUB
+	-Buildable:
+	-MapEditorData:
+
+RALST:
+	Inherits: ^BoatUnit
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Transport
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: anypower
+		Queue: Naval.Soviet, Naval.Allies, RANaval.Soviet, RANaval.Allies
+	Mobile:
+		TurnSpeed: 10
+		Speed: 113
+		RequiresCondition: !notmobile && !disabled
+		Locomotor: lcraft
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	WithLandingCraftAnimation:
+		OpenTerrainTypes: Clear, Rough, Road, Ore, Gems, Beach
+	Selectable:
+		DecorationBounds: 36,36
+	Inherits@EXT: ^ExternalConditions
+	DeliversCash:
+		Payload: 250
+	Cargo:
+		Types: Infantry, Hacker, Vehicle
+		MaxWeight: 10
+		PipCount: 10
+		PassengerFacing: 0
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+		LoadingCondition: notmobile
+	Voiced:
+		VoiceSet: RAVehicleVoice
+
+# TD Naval
+
+CNCPT:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Missile Gunboat
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Naval.GDI, RANaval.GDI
+		Description: Light scout & support ship.\nCan detect submarines.
+	Mobile:
+		TurnSpeed: 7
+		Speed: 128
+	Health:
+		HP: 20000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: 512,0,0
+	Armament@Ground:
+		Weapon: NewBoatMissile
+		LocalOffset: 208,0,48
+	Armament@AA:
+		Weapon: NewBoatMissileAA
+		LocalOffset: 208,0,48
+	AttackTurreted:
+	WithSpriteTurret:
+	DetectCloaked:
+		Range: 4c0
+		CloakTypes: Underwater
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	DeliversCash:
+		Payload: 250
+
+CNCDD:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Destroyer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower, anyhq
+		Queue: Naval.GDI, RANaval.GDI
+		Description: Fast multi-role ship.\nCan detect submarines.\n  Strong vs Naval units, Vehicles, Aircraft
+	Mobile:
+		TurnSpeed: 7
+		Speed: 85
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 469,0,30
+	Armament:
+		Weapon: Short8Inch
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 64, -64
+		MuzzleSequence: muzzle
+	Armament@DC:
+		Weapon: DepthCharge
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 80, -80
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		LocalOffset: 0,100,0, 0,-100,0
+		Weapon: DepthCharge
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	DetectCloaked:
+		Range: 4c0
+		CloakTypes: Underwater
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 38,38
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	DeliversCash:
+		Payload: 500
+
+CNCCA:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Missile Cruiser
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: anypower, eye
+		Queue: Naval.GDI, RANaval.GDI
+		Description: Very slow long-range ship.\n  Strong vs surface, air targets\n  Weak vs Submarines
+	Mobile:
+		TurnSpeed: 2
+		Speed: 42
+	Health:
+		HP: 80000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -896,0,128
+		TurnSpeed: 3
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 768,0,128
+		TurnSpeed: 3
+	Armament@PRIMARY:
+		Turret: primary
+		Weapon: NewBoatMissile2
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 171
+		RecoilRecovery: 34
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Turret: secondary
+		Weapon: NewBoatMissile2
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 171
+		RecoilRecovery: 34
+		MuzzleSequence: muzzle
+	Armament@PRIMARYAA:
+		Turret: primary
+		Weapon: NewBoatMissile2AA
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 171
+		RecoilRecovery: 34
+		MuzzleSequence: muzzle
+	Armament@SECONDARYAA:
+		Name: secondary
+		Turret: secondary
+		Weapon: NewBoatMissile2AA
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 171
+		RecoilRecovery: 34
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		Turrets: primary, secondary
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	DetectCloaked:
+		Range: 4c0
+		CloakTypes: Underwater
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 44,44
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	WithSpriteTurret@PRIMARY:
+		Turret: primary
+	WithSpriteTurret@SECONDARY:
+		Turret: secondary
+	DeliversCash:
+		Payload: 500
+
+CNCRSS:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Transport Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anyhq
+		Queue: Naval.Nod, RANaval.Nod
+	Mobile:
+		TurnSpeed: 5
+		Speed: 50
+		RequiresCondition: !notmobile && !disabled
+		Locomotor: lcraft
+	Health:
+		HP: 15000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+	Selectable:
+		DecorationBounds: 36,36
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	DeliversCash:
+		Payload: 325
+	Cargo:
+		Types: Infantry, Hacker, Vehicle
+		MaxWeight: 5
+		PipCount: 5
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+		LoadingCondition: notmobile
+	GrantConditionOnTerrain@underwater:
+		Condition: cancloak
+		TerrainTypes: Water
+	Cloak@underwater:
+		PauseOnCondition: disabled || !cancloak
+
+CNCSS:
+	Inherits: SS
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Naval.Nod, RANaval.Nod
+	RenderSprites:
+		Image: rass
+	Voiced:
+		VoiceSet: VehicleVoice
+
+CNCMSUB:
+	Inherits: MSUB
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: anypower, tmpl
+		Queue: Naval.Nod, RANaval.Nod
+	RenderSprites:
+		Image: ramsub
+	Voiced:
+		VoiceSet: VehicleVoice
+
+CNCLST:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Landing Craft
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Naval.GDI, RANaval.GDI, Naval.Nod, RANaval.Nod
+	Mobile:
+		TurnSpeed: 10
+		Speed: 113
+		RequiresCondition: !notmobile && !disabled
+		Locomotor: lcraft
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Selectable:
+		DecorationBounds: 36,36
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	DeliversCash:
+		Payload: 250
+	WithRoof:
+	WithCargo:
+		DisplayTypes: Infantry, Hacker, Vehicle
+		LocalOffset: 390,-256,0, 390,256,0, 0,0,0, -390,-256,0, -390,256,0
+	Cargo:
+		Types: Infantry, Hacker, Vehicle
+		MaxWeight: 10
+		PipCount: 10
+		PassengerFacing: 0
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+		LoadingCondition: notmobile
+	RenderSprites:
+		Image: lst

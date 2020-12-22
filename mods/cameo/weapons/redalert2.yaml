@@ -37,23 +37,36 @@ RA2DepthCharge:
 
 RA2KirovBomb:
 	ReloadDelay: 50
-	Range: 2c0
-	MinRange: 0c128
+	Range: 0c256
 	Report: vkiratta.wav
 	TargetActorCenter: true
-	Projectile: Bullet
-		Speed: 256
+	Projectile: GravityBomb
+		Velocity: 0, 0, -50
+		Acceleration: 0, 0, -10
 		Image: V2
 		Shadow: True
 		Blockable: false
 	Warhead@1Dam: SpreadDamage
-		Damage: 25000
-		Spread: 0c512
+		Damage: 50000
+		InvalidTargets: LoadedTankBunker
+		Spread: 1c0
 			None: 100
 			Light: 70
 			Heavy: 35
 			Wood: 85
 			Concrete: 50
+		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
+	Warhead@2Dam: OpenToppedDamage
+		Damage: 50000
+		ValidTargets: LoadedTankBunker
+		Amount: 1
+		Spread: 1c0
+			None: 100
+			Light: 70
+			Heavy: 35
+			Wood: 85
+			Concrete: 50
+		DamageTypes: ExplosionDeath
 	Warhead@2Smu: LeaveSmudge
 		SmudgeType: Crater
 		InvalidTargets: Vehicle, Structure, Wall, Husk, Trees, Creep
@@ -589,8 +602,8 @@ RA2BrutePunch:
 		Versus:
 			None: 100
 			Light: 70
-			Heavy: 50
-			Wood: 30
+			Heavy: 33
+			Wood: 15
 			Concrete: 20
 		DamageTypes: Prone50Percent, TriggerProne, RippedApartDeath
 
@@ -667,6 +680,7 @@ RA2Dronegas:
 		Condition: chaosgas
 		Duration: 320
 		InvalidTargets: Hero, MCImmune
+		ValidStances: Enemy
 
 RA2RadBeamWeapon:
 	Range: 6c0
@@ -700,7 +714,7 @@ RA2RadEruptionWeapon:
 		Spread: 6c0
 		Falloff: 100, 100
 		Level: 250
-		MaxLevel: 250
+		MaxLevel: 500
 		LayerName: ra2radiation
 
 ####################################################################################################
@@ -815,7 +829,7 @@ RA2PSIAtomic:
 ^RA2Missile:
 	Inherits: ^MissileWeapon
 	Report: bpatatta.wav
-	Projectile: Missile
+	Projectile: MissileCA
 		Blockable: false
 		Shadow: true
 		ContrailLength: 8
@@ -837,7 +851,7 @@ RA2HoverMissile:
 	Burst: 2
 	BurstDelays: 5
 	Report: vifvatta.wav
-	Projectile: Missile
+	Projectile: MissileCA
 		HorizontalRateOfTurn: 10
 		Speed: 213
 		Arm: 2
@@ -863,7 +877,7 @@ RA2HornetMissile:
 	Burst: 4
 	BurstDelays: 2
 	Report: vospatta.wav
-	Projectile: Missile
+	Projectile: MissileCA
 		ContrailLength: 0
 	Warhead@1Dam: SpreadDamage
 		Damage: 1800
@@ -871,7 +885,7 @@ RA2HornetMissile:
 RA2GIRockets:
 	Inherits: ^RA2Missile
 	Report: iggiat2a.wav, iggiat2b.wav
-	Projectile: Missile
+	Projectile: MissileCA
 		HorizontalRateOfTurn: 10
 		Speed: 400
 		Acceleration: 1
@@ -899,7 +913,7 @@ RA2Patriot:
 		Damage: 2500
 	Burst: 2
 	BurstDelays: 5
-	Projectile: Missile
+	Projectile: MissileCA
 		Speed: 380
 		Acceleration: 1
 		RangeLimit: 7c350
@@ -910,7 +924,7 @@ RA2Medusa:
 	Report: vaegatta.wav, vaegattb.wav
 	Burst: 3
 	BurstDelays: 13
-	Projectile: Missile
+	Projectile: MissileCA
 		ContrailLength: 35
 		LockOnProbability: 85
 		RangeLimit: 14c409
@@ -926,7 +940,7 @@ HarrierMissiles:
 	Report: vintatta.wav
 	MinRange: 1c256
 	ValidTargets: Ground
-	Projectile: Missile
+	Projectile: MissileCA
 		Speed: 373
 		Arm: 2
 		Inaccuracy: 128
@@ -960,7 +974,7 @@ RA2MammothTusk:
 	ReloadDelay: 80
 	Report: vapoat2a.wav, vapoat2b.wav, vapoat2c.wav
 	Burst: 2
-	Projectile: Missile
+	Projectile: MissileCA
 		Speed: 341
 		HorizontalRateOfTurn: 15
 		RangeLimit: 9c614
@@ -1099,13 +1113,13 @@ RA2M1Carbine:
 
 GuardianGIMG:
 	Inherits: ^RA2MG
-	ValidTargets: Ground, Air
+	ValidTargets: Ground
 	ReloadDelay: 35
 	Range: 4c0
 	Report: vblhatta.wav, vblhattb.wav
 	Warhead@1Dam: SpreadDamage
 		Damage: 2500
-		ValidTargets: Ground, Air
+		ValidTargets: Ground
 
 RA2para:
 	Inherits: RA2M60
@@ -1222,7 +1236,7 @@ RA2DoublePistols:
 
 RA2AWP:
 	Inherits: RA2DoublePistols
-	ValidTargets: Infantry
+	ValidTargets: Infantry, Garrisoned, LoadedVehicle
 	ReloadDelay: 100
 	Range: 10c0
 	Report: isniatta.wav
@@ -1231,6 +1245,12 @@ RA2AWP:
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
 		Damage: 12500
+		DamageTypes: BulletDeath
+	Warhead@2Clear: OpenToppedDamage
+		ValidTargets: Garrisoned, LoadedVehicle
+		Spread: 0c512
+		Damage: 12500
+		Amount: 1
 		DamageTypes: BulletDeath
 	-Warhead@2Eff:
 
@@ -1360,6 +1380,16 @@ RA2Virusgun:
 			Wood: 10
 			Concrete: 10
 		DamageTypes: Prone50Percent, TriggerProne, RA2VirusDeath
+	Warhead@Cloud: SpawnSmokeParticle
+		Count: 1
+		Duration: 200
+		Speed: 4, 16
+		TurnRate: 10
+		Image: ra2txgasg
+		Sequences: idle
+		Palette: ra2effect
+		Weapon: RA2Cloud
+		InvalidTargets: Water
 
 RA2VirusExplode:
 	Inherits: ^DamagingExplosion
@@ -1428,15 +1458,16 @@ RA220mmrapid:
 
 RA2Mutate:
 	ValidTargets: Ground, Air, Trees
-	Warhead@1Dam_impact: SpreadDamage
+	Warhead@1Dam: HealthPercentageDamage
 		Spread: 4c0
-		Damage: 10000
-		Falloff: 1000, 100
+		Damage: 100
 		ValidTargets: Infantry
 		InvalidTargets: Vehicle, Structure, Wall, Husk, TerrorDrone
 		AffectsParent: True
-		DamageTypes: Prone50Percent, TriggerProne, BruteMutate
+		DamageTypes: BruteMutate
 	Warhead@2eff: CreateEffect
+		Explosions: controlwave
+		ExplosionPalette: ra2effect
 		ImpactSounds: sgenon.wav
 		ImpactActors: false
 
@@ -1652,7 +1683,7 @@ IvanAttach:
 		Weapon: IvanBomb
 		Type: ivanbomb
 		TriggerTime: 200
-		Range: 0c128
+		Range: 1
 	Warhead@2: TargetDamage
 
 IvanAttachAir:
@@ -1686,15 +1717,20 @@ TanyaAttach:
 IvanBomb:
 	Warhead@1Dam: SpreadDamage
 		ValidTargets: Ground, Water
-		Spread: 1c512
+		Spread: 64
 		Damage: 80000
 		DamageTypes: Prone80Percent, ExplosionDeath
-	Warhead@2Eff: CreateEffect
+	Warhead@2Splash: SpreadDamage
+		ValidTargets: Ground, Water
+		Spread: 1c512
+		Damage: 10000
+		DamageTypes: Prone80Percent, ExplosionDeath
+	Warhead@3Eff: CreateEffect
 		Explosions: ivan_explosion
 		ExplosionPalette: ra2effect
 		ImpactSounds: gexpcraa.wav
 		ValidTargets: Ground, Air, Ship, Trees
-	Warhead@3EffWater: CreateEffect
+	Warhead@4EffWater: CreateEffect
 		Explosions: large_splash
 		ImpactSounds: gexpcraa.wav
 		ValidTargets: Water, Underwater
@@ -1702,17 +1738,18 @@ IvanBomb:
 
 IvanBombAir:
 	Inherits: IvanBomb
+	-Warhead@2Splash:
 	Warhead@1Dam: SpreadDamage
-		Spread: 64
 		ValidTargets: Aircraft
 
 TanyaBomb:
 	Inherits: IvanBomb
+	-Warhead@2Splash:
 	Warhead@1Dam: SpreadDamage
 		ValidTargets: Ground, Air, Water
 		Spread: 64
 		Damage: 200000
-	Warhead@2Eff: CreateEffect
+	Warhead@3Eff: CreateEffect
 		Explosions: self_destruct
 		ExplosionPalette: effect
 

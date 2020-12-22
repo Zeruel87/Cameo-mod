@@ -1,3 +1,48 @@
+PDLaser:
+	ReloadDelay: 5
+	ValidTargets: Ground, Air, Missile, BulletCA, BallisticMissile
+	InvalidTargets: Infantry, Vehicle, Tank, Structure, Wall
+	Range: 2c512
+	Projectile: LaserZap
+		Width: 30
+		Duration: 3
+		Color: ff0000
+		ZOffset: 2047
+		SecondaryBeam: true
+		SecondaryBeamWidth: 50
+		SecondaryBeamZOffset: 2047
+		SecondaryBeamColor: ff000030
+		Blockable: true
+	Warhead@1Dam: SpreadDamage
+		Spread: 3
+		Damage: 1
+
+GenericC4:
+	Projectile: InstantHit
+	TargetActorCenter: true
+	Report: icraatta.wav
+	ReloadDelay: 20
+	Range: 1c512
+	ValidTargets: demolishable
+	InvalidTargets: ivanattached
+	Warhead@1: AttachDelayedWeapon
+		Weapon: C4
+		Type: ivanbomb
+		TriggerTime: 60
+		Range: 1
+		ValidTargets: demolishable
+	Warhead@2: TargetDamage
+
+C4:
+	Projectile: InstantHit
+	Warhead@1Dam: HealthPercentageDamage
+		ValidTargets: demolishable
+		Spread: 64
+		Damage: 100
+	Warhead@2Eff: CreateEffect
+		Explosions: self_destruct
+		ImpactSounds: gexpcraa.wav
+
 ^FlameWeapon:
 	ValidTargets: Ground, Water, Trees
 	ReloadDelay: 55
@@ -261,33 +306,35 @@ Heal:
 	ReloadDelay: 80
 	Range: 4c0
 	Report: heal2.aud
-	ValidTargets: Heal
-	Projectile: Bullet
-		Speed: 1c682
+	ValidTargets: Heal, plagued
+	Projectile: InstantExplode
 	Warhead@1Dam: SpreadDamage
-		Spread: 213
+		Spread: 4c0
+		Falloff: 100, 100
 		Damage: -7500
 		ValidStances: Ally
 		ValidTargets: Heal
 		DebugOverlayColor: 00FF00
+	Warhead@1Defuse: DetachDelayedWeapon
+		Types: defilerplague
+		ValidTargets: plagued
+		ValidStances: Ally
 
 Repair:
 	Inherits: Heal
 	Report: fixit1.aud
-	ValidTargets: Repair
+	ValidTargets: Repair, lockdowned, ivanattached
 	Warhead@1Dam: SpreadDamage
 		Damage: -5000
 		ValidTargets: Repair
-	Warhead@2Defuse: DetachDelayedWeapon
+	Warhead@1Defuse: DetachDelayedWeapon
 		Types: ivanbomb
 		ValidTargets: ivanattached
 		ValidStances: Ally
-
-DemoTruckTargeting:
-	ValidTargets: Structure, Infantry, Vehicle
-	Range: 2c0
-	Projectile: InstantHit
-	Warhead@1Dam: TargetDamage
+	Warhead@2Defuse: DetachDelayedWeapon
+		Types: lockdown
+		ValidTargets: lockdowned
+		ValidStances: Ally
 
 SuicideBomberTargeting:
 	Inherits: DemoTruckTargeting
@@ -323,7 +370,7 @@ HealBuilding:
 	Burst: 2
 	BurstDelays: 3
 	Range: 3c512
-	ValidTargets: Repairing
+	ValidTargets: Repairing, ivanattached
 	Projectile: LaserZap
 		Color: 8888FF
 	Warhead@1Dam: SpreadDamage
@@ -332,11 +379,15 @@ HealBuilding:
 		ValidStances: Ally
 		ValidTargets: Repairing
 		DebugOverlayColor: 00FF00
+	Warhead@2Defuse: DetachDelayedWeapon
+		Types: ivanbomb
+		ValidTargets: ivanattached
+		ValidStances: Ally
 
 HealUnit:
 	ReloadDelay: 5
 	Range: 2c512
-	ValidTargets: Healing
+	ValidTargets: Healing, ivanattached
 	Projectile: LaserZap
 		Color: 99FF99
 	Warhead@1Dam: SpreadDamage
@@ -345,11 +396,15 @@ HealUnit:
 		ValidStances: Ally
 		ValidTargets: Healing
 		DebugOverlayColor: 00FF00
+	Warhead@2Defuse: DetachDelayedWeapon
+		Types: ivanbomb
+		ValidTargets: ivanattached
+		ValidStances: Ally
 
 HealUnitFix:
 	ReloadDelay: 5
 	Range: 3c512
-	ValidTargets: Healing
+	ValidTargets: Healing, ivanattached
 	Projectile: LaserZap
 		Color: 99FF99
 	Warhead@1Dam: SpreadDamage
@@ -358,6 +413,10 @@ HealUnitFix:
 		ValidStances: Ally
 		ValidTargets: Healing
 		DebugOverlayColor: 00FF00
+	Warhead@2Defuse: DetachDelayedWeapon
+		Types: ivanbomb
+		ValidTargets: ivanattached
+		ValidStances: Ally
 
 FlamerBunker:
 	Inherits: ^FlameWeapon
@@ -399,7 +458,7 @@ FiretruckFlamer:
 AmbulanceHeal:
 	ReloadDelay: 10
 	Range: 3c512
-	ValidTargets: Healing
+	ValidTargets: Healing, plagued
 	Projectile: LaserZap
 		Color: 99EE88
 	Warhead@1Dam: SpreadDamage
@@ -408,6 +467,10 @@ AmbulanceHeal:
 		ValidStances: Ally
 		ValidTargets: Healing
 		DebugOverlayColor: 00FF00
+	Warhead@2Defuse: DetachDelayedWeapon
+		Types: defilerplague
+		ValidTargets: plagued
+		ValidStances: Ally
 
 WaterThrower:
 	Inherits: Flamer
