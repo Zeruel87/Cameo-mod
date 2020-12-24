@@ -1038,6 +1038,7 @@ Smoke = "flare"
 TechCrate = "techcrate"
 Weapons = "weaponscrate"
 WorldLoaded = function()
+	WorldLoadedGeneralsPromotions()
 --factions
 	Neutral = Player.GetPlayer("Neutral")
 	Monsters = Player.GetPlayer("Monsters")
@@ -1074,6 +1075,7 @@ Lightning = function()
 	Lighting.Flash("LightningStrike", delay)
 	Lighting.Flash("LightningStrike", delay)
 	Tick = function()
+		TickPromotions()
 		if (Utils.RandomInteger(1, 200) == 10) then
 			local delay = Utils.RandomInteger(1, 10)
 			Lighting.Flash("LightningStrike", delay)
