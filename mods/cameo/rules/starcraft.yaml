@@ -4011,10 +4011,41 @@ SCREAVER:
 		Condition: upcapacity
 		Prerequisites: upreavercapacity
 
+screaver2:
+	Inherits: SCREAVER
+	Buildable:
+		Prerequisites: ~disabled
+		Description: Test for alternative reaver implementation
+	-CarrierMaster:
+	-CarrierMaster@2:
+	Mobile:
+	Armament:
+		PauseOnCondition: !ammo || firing
+	Armament@2:
+		Weapon: ScarabLaunch
+		Name: secondary
+	MobSpawnerMaster:
+		Actors: scscarab2
+		RespawnTicks: 80
+		AggregateHealth: false
+		RequiresCondition: firing
+		ArmamentNames: primary, secondary
+	AmmoPool:
+		Ammo: 5
+		AmmoCondition: ammo
+		Armaments: primary
+	ReloadAmmoPool:
+		Delay: 500
+	GrantConditionOnAttack:
+		Condition: firing
+		RevokeDelay: 160
+	RenderSprites:
+		Image: screaver
+
 SCSCARAB:
 	Inherits: ^Plane
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
 	Valued:
 		Cost: 50
@@ -4057,6 +4088,23 @@ SCSCARAB:
 		Prerequisites: upreaverdamage
 	FirepowerMultiplier@weap:
 		Modifier: 200
+
+scscarab2:
+	Inherits: SCSCARAB
+	RenderSprites:
+		Image: scscarab
+	-AttackAircraft:
+	-Aircraft:
+	-CarrierSlave:
+	MobSpawnerSlave:
+		GrantConditionWhenMasterIsDisabled: notenabled
+		GrantConditionWhenMasterIsPaused: paused
+	Mobile:
+		Speed: 200
+		Locomotor: foot
+	AttackFrontal:
+	KillsSelf:
+		RequiresCondition: triggered || notenabled
 
 SCOBSERVER:
 	Inherits: ^Helicopter
@@ -5377,24 +5425,6 @@ SCBOTOVERLORD:
 		WanderMoveRadius: 2
 		MinMoveDelay: 10
 		MaxMoveDelay: 40
-	-MapEditorData:
-
-SCBOTSPAWNINGPOOL:
-	Inherits: SCSPAWNINGPOOL
-	RenderSprites:
-		Image: SCSPAWNINGPOOL
-	#Buildable:
-	#	BuildPaletteOrder: 1030
-	#	Prerequisites: Extractor, Overlord, ~techlevel.medium, ~botplayer
-	-MapEditorData:
-
-SCBOTEVOLUTIONCHAMBER:
-	Inherits: SCEVOLUTIONCHAMBER
-	RenderSprites:
-		Image: SCEVOLUTIONCHAMBER
-	#Buildable:
-	#	BuildPaletteOrder: 1040
-	#	Prerequisites: Extractor, Overlord, ~techlevel.medium, ~botplayer
 	-MapEditorData:
 
 ####################################################################################################
