@@ -1,12 +1,42 @@
 ^AdvanceWarsUniversalPowers:
+	Inherits@announce: ^AnnounceOnBuild
 	GrantConditionOnPrerequisite@selectmax:
 		Condition: selectmax
 		Prerequisites: selectmax
 	GrantConditionOnPrerequisite@selectsami:
 		Condition: selectsami
 		Prerequisites: selectsami
-	ExternalCondition@awattack10:
-		Condition: awattack10
+	GrantConditionOnPrerequisite@selectnell:
+		Condition: selectnell
+		Prerequisites: selectnell
+	GrantConditionOnPrerequisite@selecthachi:
+		Condition: selecthachi
+		Prerequisites: selecthachi
+	GrantConditionOnPrerequisite@selectjake:
+		Condition: selectjake
+		Prerequisites: selectjake
+	GrantConditionOnPrerequisite@hachipower1cost:
+		Condition: hachipower1cost
+		Prerequisites: hachipower1cost
+	ExternalCondition@nellpower1:
+		Condition: nellpower1
+	ExternalCondition@nellpower2:
+		Condition: nellpower2
+	ExternalCondition@jakepower1:
+		Condition: jakepower1
+	ExternalCondition@jakepower2:
+		Condition: jakepower2
+	ExternalCondition@andypower1:
+		Condition: andypower1
+	ExternalCondition@andypower2:
+		Condition: andypower2
+	SelfHealing@andypower1:
+		PercentageStep: 2
+		Step: 0
+		Delay: 10
+		HealIfBelow: 100
+		DamageCooldown: 0
+		RequiresCondition: andypower1 && damaged || andypower2 && damaged
 	ExternalCondition@awattack20:
 		Condition: awattack20
 	ExternalCondition@awattack30:
@@ -43,8 +73,23 @@
 	DamageMultiplier@lashrought2:
 		RequiresCondition: lashrought && lashpower2
 		Modifier: 60
+	GrantConditionOnTerrain@jakegrass:
+		Condition: jakegrass
+		TerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior
+	FirepowerMultiplier@jakegrass:
+		RequiresCondition: jakegrass && selectjake
+		Modifier: 110
+	FirepowerMultiplier@jakepower1:
+		RequiresCondition: jakegrass && jakepower1
+		Modifier: 120
+	FirepowerMultiplier@jakepower2:
+		RequiresCondition: jakegrass && jakepower2
+		Modifier: 140
+	SpeedMultiplier@jakepower2:
+		RequiresCondition: jakegrass && jakepower2
+		Modifier: 120
 	DamageMultiplier@AWGenericDefence10:
-		RequiresCondition: awdefence10 || adderpower2 || roadkoalpower1 || flakpower1 || flakpower2 || lashpower1 || lashpower2
+		RequiresCondition: awdefence10 || adderpower2 || roadkoalpower1 || flakpower1 || flakpower2 || lashpower1 || lashpower2 || jakegrass && jakepower1 || jakegrass && jakepower2
 		Modifier: 90
 	DamageMultiplier@AWGenericDefence20:
 		RequiresCondition: awdefence20 || roadkoalpower2
@@ -53,10 +98,10 @@
 		RequiresCondition: awattack10 || adderpower2 || roadkoalpower1
 		Modifier: 110
 	FirepowerMultiplier@AWGenericAttack20:
-		RequiresCondition: awattack20 || roadkoalpower2
+		RequiresCondition: awattack20 || roadkoalpower2 || nellpower1
 		Modifier: 120
 	FirepowerMultiplier@AWGenericAttack30:
-		RequiresCondition: awattack30
+		RequiresCondition: awattack30 || nellpower2 || andypower2
 		Modifier: 130
 	SpeedMultiplier@AWGenericSpeed10:
 		RequiresCondition: awspeed10 || adderpower1 || koalpower1
@@ -73,6 +118,9 @@
 	ProductionCostMultiplier@selecthachi:
 		Multiplier: 90
 		Prerequisites: selecthachi
+	ProductionCostMultiplier@hachipower1:
+		Multiplier: 60
+		Prerequisites: hachipower1cost
 	ProductionCostMultiplier@selectcolin:
 		Multiplier: 80
 		Prerequisites: selectcolin
@@ -118,6 +166,8 @@
 	FirepowerMultiplier@awspeakertower3:
 		RequiresCondition: awspeakertower > 2
 		Modifier: 145
+	Cloneable@AW:
+		Types: AWUnits
 ^AdvanceWarsVehicle:
 	Inherits@AW: ^AdvanceWarsUniversalPowers
 	Explodes:
@@ -127,6 +177,9 @@
 	WithShadow:
 		Offset: 108, 24, 0
 		ZOffset: -512
+	SoundOnDamageTransition:
+		DamagedSounds: AWMetal1.wav, AWMetal2.wav
+		DestroyedSounds: AWMetal1.wav, AWMetal2.wav
 
 ^AdvanceWarsVehicleAttack:
 	Inherits@AW: ^AdvanceWarsVehicle
@@ -141,6 +194,15 @@
 	FirepowerMultiplier@selectsami:
 		RequiresCondition: selectsami
 		Modifier: 90
+	AmmoPool:
+		Ammo: 99
+		PipCount: 4
+		AmmoCondition: ammo
+		RearmSound: AWCash.wav
+	ReloadAmmoPool:
+		Delay: 40
+		Count: 10
+		RequiresCondition: apcreload
 
 ^AdvanceWarsInfantry:
 	Inherits@AW: ^AdvanceWarsUniversalPowers
@@ -168,6 +230,24 @@
 	DamageMultiplier@samipower1:
 		RequiresCondition: samipower1 || samipower2
 		Modifier: 90
+	Captures:
+		RequiresCondition: !samipower2
+		CaptureTypes: building, tech
+		PlayerExperience: 500
+		CaptureDelay: 375
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+		Voice: Capture
+	Captures@sami:
+		RequiresCondition: samipower2
+		CaptureTypes: building, tech
+		PlayerExperience: 500
+		CaptureDelay: 180
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+		Voice: Capture
 ^AdvanceWarsVehicleDirect:
 	Inherits@AW: ^AdvanceWarsVehicleAttack
 	FirepowerMultiplier@selectmax:
@@ -202,20 +282,30 @@
 	ProducibleWithLevel@selectgrit:
 		Prerequisites: selectgrit
 		InitialLevels: 1
+	RangeMultiplier@selectjake:
+		RequiresCondition: jakegrass && jakepower1 || jakegrass && jakepower2
+		Modifier: 110
+^AdvanceWarsVehicleAircraft:
+	Inherits@AW: ^AdvanceWarsUniversalPowers
+	GainsExperience:
+		LevelUpNotification: LevelUpAW
+	ProducibleWithLevel:
+		Prerequisites: selecteagle
+		InitialLevels: 1
 selectandy:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: Commander Andy
+		Name: Repairs Commander Andy
 	Buildable:
 		BuildPaletteOrder: 1
 		BuildDuration: 0
 		Queue: Building.OrangeStar, RABuilding.OrangeStar
-		Description: No specialties
+		Description: No specialties.\n Has support repair powers
 		Prerequisites: ~!awselected
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: glglaicon
+		Image: awandyicon
 	ProvidesPrerequisite:
 		Prerequisite: awselected
 	ProvidesPrerequisite@2:
@@ -223,17 +313,17 @@ selectandy:
 selectmax:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: Commander Max
+		Name: Direct Combat Commander Max
 	Buildable:
 		BuildPaletteOrder: 1
 		BuildDuration: 0
 		Queue: Building.OrangeStar, RABuilding.OrangeStar
-		Description: No specialties
+		Description: Specialized in direct combat.\n the artillery is weaker
 		Prerequisites: ~!awselected
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: glglaicon
+		Image: awmaxicon
 	ProvidesPrerequisite:
 		Prerequisite: awselected
 	ProvidesPrerequisite@2:
@@ -241,21 +331,75 @@ selectmax:
 selectsami:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: Commander Max
+		Name: Special Forces Sami
 	Buildable:
 		BuildPaletteOrder: 1
 		BuildDuration: 0
 		Queue: Building.OrangeStar, RABuilding.OrangeStar
-		Description: No specialties
+		Description: Specialized in infantry.\n Transports are faster.\n non-infantry units are weaker
 		Prerequisites: ~!awselected
 	Valued:
 		Cost: 0
 	RenderSprites:
-		Image: glglaicon
+		Image: awsamiicon
 	ProvidesPrerequisite:
 		Prerequisite: awselected
 	ProvidesPrerequisite@2:
 		Prerequisite: selectsami
+selectnell:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Chief Commander Nell
+	Buildable:
+		BuildPaletteOrder: 1
+		BuildDuration: 0
+		Queue: Building.OrangeStar, RABuilding.OrangeStar
+		Description: All units are stronger
+		Prerequisites: ~!awselected
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: awnellicon
+	ProvidesPrerequisite:
+		Prerequisite: awselected
+	ProvidesPrerequisite@2:
+		Prerequisite: selectnell
+selecthachi:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Merchant Hachi
+	Buildable:
+		BuildPaletteOrder: 1
+		BuildDuration: 0
+		Queue: Building.OrangeStar, RABuilding.OrangeStar
+		Description: All units are 90% cheaper
+		Prerequisites: ~!awselected
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: awhachiicon
+	ProvidesPrerequisite:
+		Prerequisite: awselected
+	ProvidesPrerequisite@2:
+		Prerequisite: selecthachi
+selectjake:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Plains Forces Jake
+	Buildable:
+		BuildPaletteOrder: 1
+		BuildDuration: 0
+		Queue: Building.OrangeStar, RABuilding.OrangeStar
+		Description: All units are stronger on Plains
+		Prerequisites: ~!awselected
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: awjakeicon
+	ProvidesPrerequisite:
+		Prerequisite: awselected
+	ProvidesPrerequisite@2:
+		Prerequisite: selectjake
 hq.orange:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -272,6 +416,7 @@ hq.orange:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
+		BuildSounds: AWBuilding.wav
 	Health:
 		HP: 210000
 	Armor:
@@ -343,7 +488,7 @@ hq.orange:
 	GrantExternalConditionPower@AndyRepair:
 		OrderName: AndyRepair
 		PauseOnCondition: lowpower
-		Icon: gerepair1
+		Icon: awpower1
 		ChargeInterval: 3000
 		Description: Mega Repair
 		LongDesc: Provides repair for vehicles in the target area.
@@ -354,14 +499,14 @@ hq.orange:
 		#BeginChargeSpeechNotification: IronCurtainCharging
 		#EndChargeSpeechNotification: IronCurtainReady
 		DisplayRadarPing: True
-		Condition: repairlvl3
-		OnFireSound: fixit1.aud
+		Condition: andypower1
+		OnFireSound: AWPower.wav
 		Prerequisites: selectandy
 		StartFullyCharged: true
 	GrantExternalConditionPower@AndyUpgrade:
 		OrderName: AndyUpgrade
 		PauseOnCondition: lowpower
-		Icon: gerepair1
+		Icon: awpower2
 		ChargeInterval: 6000
 		Description: Mega Upgrade
 		LongDesc: Provides repair for vehicles in the target area.
@@ -372,14 +517,14 @@ hq.orange:
 		#BeginChargeSpeechNotification: IronCurtainCharging
 		#EndChargeSpeechNotification: IronCurtainReady
 		DisplayRadarPing: True
-		Condition: repairlvl3, awattack30
-		OnFireSound: fixit1.aud
+		Condition: andypower2
+		OnFireSound: AWPower.wav
 		Prerequisites: selectandy
 		StartFullyCharged: true
 	GrantExternalConditionPower@MaxForce:
 		OrderName: MaxForce
 		PauseOnCondition: lowpower
-		Icon: gerepair1
+		Icon: awpower1
 		ChargeInterval: 3000
 		Description: Max Force
 		LongDesc: Provides repair for vehicles in the target area.
@@ -391,13 +536,13 @@ hq.orange:
 		#EndChargeSpeechNotification: IronCurtainReady
 		DisplayRadarPing: True
 		Condition: maxpower1
-		OnFireSound: fixit1.aud
+		OnFireSound: AWPower.wav
 		Prerequisites: selectmax
 		StartFullyCharged: true
 	GrantExternalConditionPower@MaxBlast:
 		OrderName: MaxBlast
 		PauseOnCondition: lowpower
-		Icon: gerepair1
+		Icon: awpower2
 		ChargeInterval: 6000
 		Description: Max Blast
 		LongDesc: Provides repair for vehicles in the target area.
@@ -409,13 +554,13 @@ hq.orange:
 		#EndChargeSpeechNotification: IronCurtainReady
 		DisplayRadarPing: True
 		Condition: maxpower1
-		OnFireSound: fixit1.aud
+		OnFireSound: AWPower.wav
 		Prerequisites: selectmax
 		StartFullyCharged: true
 	GrantExternalConditionPower@DoubleTime:
 		OrderName: DoubleTime
 		PauseOnCondition: lowpower
-		Icon: gerepair1
+		Icon: awpower1
 		ChargeInterval: 3000
 		Description: Double Time
 		LongDesc: Provides repair for vehicles in the target area.
@@ -427,13 +572,13 @@ hq.orange:
 		#EndChargeSpeechNotification: IronCurtainReady
 		DisplayRadarPing: True
 		Condition: samipower1
-		OnFireSound: fixit1.aud
+		OnFireSound: AWPower.wav
 		Prerequisites: selectsami
 		StartFullyCharged: true
 	GrantExternalConditionPower@VictoryMarch:
 		OrderName: VictoryMarch
 		PauseOnCondition: lowpower
-		Icon: gerepair1
+		Icon: awpower2
 		ChargeInterval: 8000
 		Description: Victory March
 		LongDesc: Provides repair for vehicles in the target area.
@@ -445,9 +590,142 @@ hq.orange:
 		#EndChargeSpeechNotification: IronCurtainReady
 		DisplayRadarPing: True
 		Condition: samipower2
-		OnFireSound: fixit1.aud
+		OnFireSound: AWPower.wav
 		Prerequisites: selectsami
 		StartFullyCharged: true
+	GrantExternalConditionPower@LuckyStar:
+		OrderName: LuckyStar
+		PauseOnCondition: lowpower
+		Icon: awpower1
+		ChargeInterval: 3000
+		Description: Lucky Star
+		LongDesc: Provides repair for vehicles in the target area.
+		Range: 25
+		Duration: 750
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: nellpower1
+		OnFireSound: AWPower.wav
+		Prerequisites: selectnell
+		StartFullyCharged: true
+	GrantExternalConditionPower@LadyLuck:
+		OrderName: LadyLuck
+		PauseOnCondition: lowpower
+		Icon: awpower2
+		ChargeInterval: 6000
+		Description: Lady Luck
+		LongDesc: Provides repair for vehicles in the target area.
+		Range: 25
+		Duration: 750
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: nellpower2
+		OnFireSound: AWPower.wav
+		Prerequisites: selectnell
+		StartFullyCharged: true
+	GrantExternalConditionPower@Barter:
+		OrderName: Barter
+		PauseOnCondition: lowpower
+		Icon: awpower2
+		ChargeInterval: 6000
+		Description: Barter
+		LongDesc: Provides repair for vehicles in the target area.
+		Range: 25
+		Duration: 750
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: hachipower1
+		OnFireSound: AWPower.wav
+		Prerequisites: selecthachi
+		StartFullyCharged: true
+	GrantExternalConditionPower@BeatDown:
+		OrderName: BeatDown
+		PauseOnCondition: lowpower
+		Icon: awpower1
+		ChargeInterval: 3000
+		Description: Beat Down
+		LongDesc: Provides repair for vehicles in the target area.
+		Range: 25
+		Duration: 750
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: jakepower2
+		OnFireSound: AWPower.wav
+		Prerequisites: selectjake
+		StartFullyCharged: true
+	GrantExternalConditionPower@BlockRock:
+		OrderName: BlockRock
+		PauseOnCondition: lowpower
+		Icon: awpower2
+		ChargeInterval: 6000
+		Description: Block Rock
+		LongDesc: Provides repair for vehicles in the target area.
+		Range: 25
+		Duration: 750
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: jakepower2
+		OnFireSound: AWPower.wav
+		Prerequisites: selectjake
+		StartFullyCharged: true
+mcv.orange:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Mobile Construction Vehicle (Orange Star)
+	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: awlab, ~techlevel.high, ~awselected
+		Queue: Vehicle.OrangeStar, RAVehicle.OrangeStar
+		Description: Builds structures and provides radar.
+	Selectable:
+		Priority: 4
+		DecorationBounds: 42,42
+	SelectionDecorations:
+	Health:
+		HP: 60000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 71
+		Locomotor: heavywheeled
+	RevealsShroud:
+		Range: 8c0	#4c0
+	Transforms:
+		IntoActor: hq.orange
+		Offset: -1,-1
+		Facing: 96
+		TransformSounds: AWBuilding.wav
+		NoTransformNotification: BuildingCannotPlaceAudio
+	Voiced:
+		VoiceSet: AWTrackedVoiced
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: awapc
+		Scale: 1.8
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmorangestar
+	WithInfantryBody:
+		IdleSequences: idle
+	-WithFacingSpriteBody:
 awcity:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -468,6 +746,7 @@ awcity:
 		Footprint: xX xx ==
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
+		BuildSounds: AWBuilding.wav
 	Health:
 		HP: 105000
 	RevealsShroud:
@@ -484,6 +763,43 @@ awcity:
 		Multiplier: 30
 		Prerequisites: !awcity
 		Queue: Building.OrangeStar, RABuilding.OrangeStar, Building.BlueMoon, RABuilding.BlueMoon, Building.YellowComet, RABuilding.YellowComet, Building.GreenEarth, RABuilding.GreenEarth, Building.BlackHole, RABuilding.BlackHole, Building.DaysofRuins, RABuilding.DaysofRuins
+	ProximityExternalCondition@apcreload:
+		Range: 5c0
+		Condition: apcreload
+		RequiresCondition: !lowpower
+awpipe:
+	Inherits: ^Wall
+	Valued:
+		Cost: 1000
+	CustomSellValue:
+		Value: 0
+	Tooltip:
+		Name: Wall Pipe
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: vehicleproduction
+		Queue: Defence.OrangeStar, Defence.BlueMoon, Defence.YellowComet, Defence.GreenEarth, Defence.BlackHole, RADefence.OrangeStar, RADefence.BlueMoon, RADefence.YellowComet, RADefence.GreenEarth, RADefence.BlackHole
+		Description: Stops infantry and most tanks.\nBlocks some projectiles.
+	Health:
+		HP: 180000
+	Armor:
+		Type: Heavy
+	BlocksProjectiles:
+	Crushable:
+		CrushClasses: nocrushable
+		-CrushSound:
+	SoundOnDamageTransition:
+		DestroyedSounds: crumble.aud
+	LineBuild:
+		NodeTypes: awpipe
+	LineBuildNode:
+		Types: awpipe
+	WithWallSpriteBody:
+		Type: concrete
+	ProximityExternalCondition@piperunner:
+		Range: 800
+		Condition: piperunnermove
+		RequiresCondition: !lowpower
 
 awweap.orange:
 	Inherits: ^BaseBuilding
@@ -496,7 +812,7 @@ awweap.orange:
 			TopLeft: -1536, -1024
 			BottomRight: 1536, 512
 	Valued:
-		Cost: 2300
+		Cost: 2000
 	Tooltip:
 		Name: Weapons Factory
 	ProvidesPrerequisite:
@@ -510,6 +826,7 @@ awweap.orange:
 		Footprint: xxx === ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
+		BuildSounds: AWBuilding.wav
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,64,0,-16
@@ -552,6 +869,22 @@ awweap.orange:
 	ProvidesPrerequisite@buildingname:
 	RenderSprites:
 		Image: awweap
+	ProximityExternalCondition@apcreload:
+		Range: 5c0
+		Condition: apcreload
+		RequiresCondition: !lowpower
+	ProvidesPrerequisite@hachipower1:
+		Prerequisite: hachipower1cost
+		RequiresPrerequisites: selecthachi
+		RequiresCondition: hachipower1
+	ExternalCondition@hachipower1:
+		Condition: hachipower1
+	TimedConditionBar@hachipower1:
+		Condition: hachipower1
+	ProximityExternalCondition@piperunner:
+		Range: 2c0
+		Condition: piperunnermove
+		RequiresCondition: !lowpower
 awhpad.orange:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -574,6 +907,7 @@ awhpad.orange:
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
+		BuildSounds: AWBuilding.wav
 	Health:
 		HP: 60000
 	RevealsShroud:
@@ -616,6 +950,135 @@ awhpad.orange:
 	RenderSprites:
 		Image: awhpad
 
+awbhweap:
+	Inherits: ^BaseBuilding
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -2000, -2000
+			BottomRight: 2000, 2000
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Selectable:
+		Bounds: 72,72
+	Valued:
+		Cost: 6000
+	Tooltip:
+		Name: Giant Factory
+	Buildable:
+		BuildPaletteOrder: 90
+		Prerequisites: awlab
+		Queue: Building.OrangeStar, RABuilding.OrangeStar
+		Description: Clones produced vehicles.
+		BuildLimit: 1
+	Building:
+		Footprint: xxxx xxxx xxxx xxxx
+		Dimensions: 4,4
+	Health:
+		HP: 800000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	Production:
+		Produces: Clone.BlackHole
+	ClonesProducedUnits:
+		CloneableTypes: AWUnits
+		ProductionType: Clone.BlackHole
+	Exit:
+		ExitCell: -1, 0
+	Exit@2:
+		ExitCell: 1, 0
+	RallyPoint:
+		Offset: 3,3
+awyard.orange:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Selectable:
+		Bounds: 72,72
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Naval Yard
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: awcity, ~enablenaval
+		Queue: Building.OrangeStar, RABuilding.OrangeStar
+		Description: Produces, and\nrepairs boats
+	Building:
+		Footprint: +++ +++ +++
+		Dimensions: 3,3
+		TerrainTypes: Water
+	RequiresBuildableArea:
+		Adjacent: 8
+	-GivesBuildableArea:
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: -1024,1024,0
+		Facing: 160
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 1024,1024,0
+		Facing: 224
+		ExitCell: 2,2
+	Exit@3:
+		SpawnOffset: -1024,-1024,0
+		Facing: 96
+		ExitCell: 0,0
+	Exit@4:
+		SpawnOffset: 1024,-1024,0
+		Facing: 32
+		ExitCell: 2,0
+	Production@NORMAL:
+		Produces: Naval.OrangeStar
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval.OrangeStar
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	RallyPoint:
+	ProductionQueue:
+		Type: Naval.OrangeStar
+		DisplayOrder: 5
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NAVALALLIES:
+		ProductionType: Naval.OrangeStar
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RANAVALALLIES:
+		ProductionType: RANaval.OrangeStar
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea:					##########
+		AreaTypes: building, cityi
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
+	RenderSprites:
+		Image: awyard
 awlab:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -636,6 +1099,7 @@ awlab:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
+		BuildSounds: AWBuilding.wav
 	Health:
 		HP: 80000
 	Armor:
@@ -673,6 +1137,7 @@ awsilo:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
+		BuildSounds: AWBuilding.wav
 	Health:
 		HP: 80000
 	Armor:
@@ -1035,8 +1500,13 @@ awapc:
 		Name: secondary
 		Armaments: secondary
 		Ammo: 10
-		PipCount: 10
+		PipCount: 5
 		AmmoCondition: ammo
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 5
+		PipCount: 5
+		LoadingCondition: notmobile
 	ReloadAmmoPool:
 		AmmoPool: secondary
 		Delay: 80
@@ -1313,6 +1783,64 @@ awntnk:
 	ProducibleWithLevel:
 		Prerequisites: selectjess
 		InitialLevels: 1
+awoozium:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AW: ^AdvanceWarsVehicleAttack
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Oozium 238
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle.OrangeStar, RAVehicle.OrangeStar, Vehicle.X_Vehicles
+		Prerequisites: awlab
+		Description: General-Purpose GDI Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 16
+	Health:
+		HP: 150000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 2c0
+	Armament@Cannon:
+		Weapon: AWEatOozium
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	ReloadAmmoPool:
+		Delay: 40
+		Count: 4
+		RequiresCondition: apcreload
+	AttackFrontal:
+	WithInfantryBody:
+		IdleSequences: idle
+	-WithFacingSpriteBody:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Image: awoozium
+		Scale: 1.6
+	Voiced:
+		VoiceSet: AWSlimeVoice
+	Explodes:
+		Weapon: AWOoziumExplode
+		EmptyWeapon: AWOoziumExplode
+		RequiresCondition: !chronobeamed
 awe1:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1389,10 +1917,147 @@ awe3:
 		ValidTypes: infantry							##########
 	Voiced:
 		VoiceSet: AWInfVoice
+awduster:
+	Inherits: ^RAPlane
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Inherits@aw: ^AdvanceWarsVehicleAircraft
+	Buildable:
+		Queue: Aircraft.OrangeStar, RAAircraft.OrangeStar, Aircraft.X_Aircrafts
+		BuildPaletteOrder: 50
+		Prerequisites: awhpad
+		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: Duster
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 23000
+	RevealsShroud:
+		Range: 13c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 11c0
+		Type: GroundPosition
+	Armament:
+		Weapon: AWDusterMG
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		PersistentTargeting: false
+		AttackTurnDelay: 30
+	Aircraft:
+		CruiseAltitude: 2560
+		InitialFacing: 180
+		TurnSpeed: 10
+		Speed: 200
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	AmmoPool:
+		Ammo: 99
+		PipCount: 6
+		ReloadDelay: 22
+		AmmoCondition: ammo
+	Selectable:
+		Bounds: 36,28,0,2
+		DecorationBounds: 40,29,0,1
+	SelectionDecorations:
+	Contrail@1:
+		Offset: -598,-1,0
+	Contrail@2:
+		Offset: -598,1,0
+	-SpawnActorOnDeath:
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+	ProducibleWithLevel:
+		Prerequisites: aircraft.upgraded
+	Voiced:
+		VoiceSet: AWCopterVoice
+	RenderSprites:
+		Scale: 1.2
+	Passenger:
+		CargoType: AWCarrier
+awhydro:
+	Inherits: ^RAPlane
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Inherits@aw: ^AdvanceWarsVehicleAircraft
+	Buildable:
+		Queue: Aircraft.OrangeStar, RAAircraft.OrangeStar, Aircraft.X_Aircrafts
+		BuildPaletteOrder: 50
+		Prerequisites: awhpad
+		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Hydro Plane
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 25000
+	RevealsShroud:
+		Range: 13c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 11c0
+		Type: GroundPosition
+	Armament:
+		Weapon: AWHydroMissile
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		PersistentTargeting: false
+		AttackTurnDelay: 30
+	Aircraft:
+		CruiseAltitude: 2560
+		InitialFacing: 185
+		TurnSpeed: 10
+		Speed: 210
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	AmmoPool:
+		Ammo: 3
+		AmmoCondition: ammo
+	Selectable:
+		Bounds: 36,28,0,2
+		DecorationBounds: 40,29,0,1
+	SelectionDecorations:
+	Contrail@1:
+		Offset: -598,-1,0
+	Contrail@2:
+		Offset: -598,1,0
+	-SpawnActorOnDeath:
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+	ProducibleWithLevel:
+		Prerequisites: aircraft.upgraded
+	Voiced:
+		VoiceSet: AWPlaneVoice
+	RenderSprites:
+		Scale: 1.2
+	Passenger:
+		CargoType: AWCarrier
 awfighter:
 	Inherits: ^RAPlane
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@reload: ^RearmableAircraft
+	Inherits@aw: ^AdvanceWarsVehicleAircraft
 	Buildable:
 		Queue: Aircraft.OrangeStar, RAAircraft.OrangeStar, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
@@ -1458,13 +2123,85 @@ awfighter:
 		VoiceSet: AWPlaneVoice
 	RenderSprites:
 		Scale: 1.2
+	Passenger:
+		CargoType: AWCarrier
+awattacker:
+	Inherits: ^RAPlane
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Inherits@aw: ^AdvanceWarsVehicleAircraft
+	Buildable:
+		Queue: Aircraft.OrangeStar, RAAircraft.OrangeStar, Aircraft.X_Aircrafts
+		BuildPaletteOrder: 50
+		Prerequisites: awhpad
+		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 2600
+	Tooltip:
+		Name: Attacker
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 25000
+	RevealsShroud:
+		Range: 13c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 11c0
+		Type: GroundPosition
+	Armament:
+		Weapon: AWFighterMissileAA
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+	Armament@AG:
+		Weapon: AWAttackerMissileAG
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		PersistentTargeting: false
+		AttackTurnDelay: 30
+	Aircraft:
+		CruiseAltitude: 2560
+		InitialFacing: 192
+		TurnSpeed: 10
+		Speed: 223
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	AmmoPool:
+		Ammo: 6
+		AmmoCondition: ammo
+	Selectable:
+		Bounds: 36,28,0,2
+		DecorationBounds: 40,29,0,1
+	SelectionDecorations:
+	Contrail@1:
+		Offset: -598,-1,0
+	Contrail@2:
+		Offset: -598,1,0
+	-SpawnActorOnDeath:
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
 	ProducibleWithLevel:
-		Prerequisites: selecteagle
-		InitialLevels: 1
+		Prerequisites: aircraft.upgraded
+	Voiced:
+		VoiceSet: AWPlaneVoice
+	RenderSprites:
+		Scale: 1.2
+	Passenger:
+		CargoType: AWCarrier
 awbomber:
 	Inherits: ^RAPlane
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@reload: ^RearmableAircraft
+	Inherits@aw: ^AdvanceWarsVehicleAircraft
 	Buildable:
 		Queue: Aircraft.OrangeStar, RAAircraft.OrangeStar, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
@@ -1529,3 +2266,435 @@ awbomber:
 	ProducibleWithLevel:
 		Prerequisites: selecteagle
 		InitialLevels: 1
+awstealth:
+	Inherits: ^RAPlane
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Inherits@aw: ^AdvanceWarsVehicleAircraft
+	Buildable:
+		Queue: Aircraft.OrangeStar, RAAircraft.OrangeStar, Aircraft.X_Aircrafts
+		BuildPaletteOrder: 50
+		Prerequisites: awhpad, awlab
+		Description: Fast Ground-Attack Plane.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 4800
+	Tooltip:
+		Name: Stealth
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 200000
+	RevealsShroud:
+		Range: 13c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 11c0
+		Type: GroundPosition
+	Armament:
+		Weapon: AWFighterMissileAA
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+	Armament@AG:
+		Weapon: AWAttackerMissileAG
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		PersistentTargeting: false
+		AttackTurnDelay: 30
+	Aircraft:
+		CruiseAltitude: 2560
+		InitialFacing: 192
+		TurnSpeed: 10
+		Speed: 223
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	AmmoPool:
+		Ammo: 6
+		AmmoCondition: ammo
+	Selectable:
+		Bounds: 36,28,0,2
+		DecorationBounds: 40,29,0,1
+	SelectionDecorations:
+	Contrail@1:
+		Offset: -598,-1,0
+	Contrail@2:
+		Offset: -598,1,0
+	-SpawnActorOnDeath:
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+	ProducibleWithLevel:
+		Prerequisites: aircraft.upgraded
+	Voiced:
+		VoiceSet: AWPlaneVoice
+	RenderSprites:
+		Scale: 1.7
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		PauseOnCondition: cloak-force-disabled
+		IsPlayerPalette: true
+	Passenger:
+		CargoType: AWCarrier
+awbcopter:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@aw: ^AdvanceWarsVehicleAircraft
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: B-Copter
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Aircraft.OrangeStar, RAAircraft.OrangeStar, Aircraft.X_Aircrafts
+		BuildPaletteOrder: 50
+		Prerequisites: awhpad
+		Description: Helicopter gunship.\n  Strong vs Infantry, Light vehicles\n  Weak vs Aircraft
+	Aircraft:
+		TurnSpeed: 7
+		Speed: 180
+	Health:
+		HP: 22000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+		Type: GroundPosition
+	Armament@MG:
+		Weapon: AWMachinegunGeneral
+		LocalOffset: 512,0,-85
+		MuzzleSequence: muzzle
+	Armament:
+		Name: secondary
+		Weapon: AWFighterMissileAG
+		LocalOffset: 384,213,-85, 384,-213,-85
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	AmmoPool:
+		Name: secondary
+		Armaments: secondary
+		Ammo: 12
+		PipCount: 0
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		AmmoPool: secondary
+		Delay: 375
+		Count: 12
+	WithMuzzleOverlay:
+	SpawnActorOnDeath:
+		Actor: usacomanche.husk
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	Voiced:
+		VoiceSet: AWCopterVoice
+awcruiser:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 2200
+	Tooltip:
+		Name: Cruiser
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: awcity
+		Queue: Naval.OrangeStar, RANaval.OrangeStar
+		Description: Fast multi-role ship.\nCan detect submarines.\n  Strong vs Naval units, Vehicles, Aircraft
+	Mobile:
+		TurnSpeed: 7
+		Speed: 85
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Armament:
+		Weapon: AWCruiserMissile
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 64, -64
+	Armament@AA:
+		Weapon: AWCruiserFlakCannon
+		LocalOffset: 100,-1,0, 100,1,0
+		LocalYaw: 64, -64
+	AttackFrontal:
+	DetectCloaked:
+		Range: 4c0
+		CloakTypes: Underwater
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 38,38
+	Inherits@EXT: ^ExternalConditions
+	DeliversCash:
+		Payload: 500
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	RenderSprites:
+		Scale: 1.7
+awcarrier:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 6000
+	Tooltip:
+		Name: Carrier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: awlab
+		Queue: Naval.OrangeStar, RANaval.OrangeStar
+		Description: Very slow long-range ship.\n  Strong vs Buildings, Ground units\n  Weak vs Naval units, Aircraft
+	Mobile:
+		TurnSpeed: 3
+		Speed: 35
+	Health:
+		HP: 360000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -950,0,390
+		TurnSpeed: 3
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 800,0,390
+		TurnSpeed: 3
+	Armament@PRIMARY:
+		Turret: primary
+		Weapon: RA2CarrierTarget
+		LocalOffset: 480,-100,40, 480,100,40, 480,0,40
+		Recoil: 171
+		RecoilRecovery: 34
+	Armament@SECONDARY:
+		Name: secondary
+		Turret: secondary
+		Weapon: AWHydroMissile
+		LocalOffset: 480,-100,40, 480,100,40, 480,0,40
+		Recoil: 171
+		RecoilRecovery: 34
+	CarrierMaster@awfighter:
+		Actors: awfighter.carrier, awfighter.carrier
+		RearmTicks: 150
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		LoadedCondition: hornet-loaded
+		RequiresCondition: carrier-awfighter
+	CarrierMaster@awhydro:
+		Actors: awhydro.carrier, awhydro.carrier, awhydro.carrier
+		RearmTicks: 150
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		LoadedCondition: hornet-loaded
+		RequiresCondition: carrier-awhydro
+	CarrierMaster@awduster:
+		Actors: awduster.carrier, awduster.carrier, awduster.carrier
+		RearmTicks: 150
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		LoadedCondition: hornet-loaded
+		RequiresCondition: carrier-awduster
+	CarrierMaster@awattacker:
+		Actors: awattacker.carrier, awattacker.carrier
+		RearmTicks: 150
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		LoadedCondition: hornet-loaded
+		RequiresCondition: carrier-awattacker
+	CarrierMaster@awstealth:
+		Actors: awstealth.carrier
+		RearmTicks: 150
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		LoadedCondition: hornet-loaded
+		RequiresCondition: carrier-awstealth
+	AttackTurreted:
+		Turrets: primary, secondary
+	WithMuzzleOverlay:
+	DetectCloaked:
+		Range: 8c0
+		CloakTypes: Underwater
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 44,44
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	DeliversCash:
+		Payload: 500
+	Voiced:
+		VoiceSet: AlliesNavalVoice
+	RenderSprites:
+		Scale: 1.8
+	Cargo:
+		Types: AWCarrier
+		MaxWeight: 1
+		PipCount: 1
+		UnloadVoice: Move
+		LoadedCondition: loaded
+		LoadingCondition: notmobile
+		PassengerConditions:
+			awfighter: carrier-awfighter
+			awhydro: carrier-awhydro
+			awduster: carrier-awduster
+			awattacker: carrier-awattacker
+			awstealth: carrier-awstealth
+
+awfighter.carrier:
+	Inherits: awfighter
+	-Buildable:
+	-Rearmable:
+	RenderSprites:
+		Image: awfighter
+	CarrierSlave:
+		LandingDistance: 2c0
+
+awhydro.carrier:
+	Inherits: awhydro
+	-Buildable:
+	-Rearmable:
+	RenderSprites:
+		Image: awhydro
+	CarrierSlave:
+		LandingDistance: 2c0
+
+awduster.carrier:
+	Inherits: awduster
+	-Buildable:
+	-Rearmable:
+	RenderSprites:
+		Image: awduster
+	CarrierSlave:
+		LandingDistance: 2c0
+
+awattacker.carrier:
+	Inherits: awattacker
+	-Buildable:
+	-Rearmable:
+	RenderSprites:
+		Image: awattacker
+	CarrierSlave:
+		LandingDistance: 2c0
+
+awstealth.carrier:
+	Inherits: awstealth
+	-Buildable:
+	-Rearmable:
+	RenderSprites:
+		Image: awstealth
+	CarrierSlave:
+		LandingDistance: 2c0
+awpiperunner:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@aw: ^AdvanceWarsVehicleAircraft
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Test Piperunner
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Vehicle.OrangeStar, RAVehicle.OrangeStar, Vehicle.X_Vehicles
+		BuildPaletteOrder: 50
+		Prerequisites: vehicleproduction
+		Description: Helicopter gunship.\n  Strong vs Infantry, Light vehicles\n  Weak vs Aircraft
+	Aircraft:
+		TurnSpeed: 7
+		Speed: 180
+		CruiseAltitude: 100
+	Health:
+		HP: 44000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+		Type: GroundPosition
+	Armament@MG:
+		Weapon: AWArtilleryShell
+		LocalOffset: 512,0,-85
+		MuzzleSequence: muzzle
+	Armament:
+		Name: secondary
+		Weapon: AWArtilleryShell
+		LocalOffset: 384,213,-85, 384,-213,-85
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	AmmoPool:
+		Name: secondary
+		Armaments: secondary
+		Ammo: 12
+		PipCount: 0
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		AmmoPool: secondary
+		Delay: 375
+		Count: 12
+	WithMuzzleOverlay:
+	SpawnActorOnDeath:
+		Actor: usacomanche.husk
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	Voiced:
+		VoiceSet: AWCopterVoice
+	RenderSprites:
+		Image: awntnk
+		Scale: 1.2
+	SpeedMultiplier@piperunnermove:
+		RequiresCondition: !piperunnermove
+		Modifier: 10
+	Targetable@GROUND:
+		RequiresCondition: !airborne && !untargetable
+		TargetTypes: Ground, Vehicle
+	Targetable@AIRBORNE:
+		RequiresCondition: airborne && !untargetable
+		TargetTypes: Ground, Vehicle
+	ExternalCondition@piperunnermove:
+		Condition: piperunnermove
