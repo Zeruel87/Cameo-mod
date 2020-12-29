@@ -9,8 +9,6 @@
 	Buildable:
 		BuildPaletteOrder: 0
 		Prerequisites: ~!CountryChoosedAlliesRA2
-	Valued:
-		Cost: 0
 	RenderSprites:
 		Image: orb
 	ProvidesPrerequisite@Countryselected:
@@ -23,8 +21,6 @@
 	Buildable:
 		BuildPaletteOrder: 0
 		Prerequisites: ~!CountryChoosedSovietRA2
-	Valued:
-		Cost: 0
 	RenderSprites:
 		Image: orb
 	ProvidesPrerequisite@Countryselected:
@@ -482,7 +478,7 @@ ra2gacnst:
 	RevealsShroud:
 		Range: 4c0
 	RallyPoint:
-		Offset: 5,2
+		Path: 5,2
 	Exit@1:
 		ExitCell: 4,2
 	Power:
@@ -581,7 +577,7 @@ ra2gapile:
 	RevealsShroud:
 		Range: 5c0
 	RallyPoint:
-		Offset: 0,2
+		Path: 0,2
 	Exit@1:
 		ExitCell: 0,1
 	Exit@2:
@@ -1076,7 +1072,7 @@ ra2gaweat:
 		Description: Lightning Storm
 		LongDesc: Creates a lightning storm.\nApplies heavy damage over a large area.
 		Weapon: LightningStorm
-		AirbustAltitude: 5c0
+		AirburstAltitude: 5c0
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		SelectTargetSpeechNotification: SelectTarget
@@ -1144,15 +1140,15 @@ ra2gacsph:
 		OrderName: Chronoshift
 		PauseOnCondition: lowpower
 		Icon: chrono
-		ChargeInterval: 3000
+		ChargeInterval: 4500
 		Description: Chronoshift
-		LongDesc: Temporarily teleports selected units across\nthe map.
+		LongDesc: Teleports a large group of units\nacross the map.
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		#BeginChargeSpeechNotification: ChronosphereCharging
 		#EndChargeSpeechNotification: ChronosphereReady
-		Range: 1
-		Duration: 500
+		Range: 2
+		Duration: 0
 		KillCargo: False
 		DisplayRadarPing: True
 		SelectionCursor: ability
@@ -1793,7 +1789,7 @@ ra2nahand:
 	RevealsShroud:
 		Range: 5c0
 	RallyPoint:
-		Offset: 1,2
+		Path: 1,2
 	Exit@1:
 		SpawnOffset: 512,1024,0
 		ExitCell: 1,2
@@ -2119,9 +2115,10 @@ ra2nairon:
 		OrderName: IronCurtain
 		PauseOnCondition: lowpower
 		Icon: invuln
-		ChargeInterval: 3000
+		ChargeInterval: 4500
 		Description: Invulnerability
 		LongDesc: Makes a group of units invulnerable\nfor 20 seconds.
+		Range: 2
 		Duration: 500
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -2213,9 +2210,13 @@ ra2tesla:
 		Range: 6c0
 	WithTeslaChargeAnimation:
 	Armament:
-		Weapon: TeslaZap
+		Weapon: RA2CoilBolt
 		LocalOffset: 120,0,1100
-		RequiresCondition: !lowpower || (lowpower && TeslaCoilCharge >= 2)
+		RequiresCondition: (!lowpower || (lowpower && TeslaCoilCharge >= 2)) && TeslaCoilCharge < 3
+	Armament@Charged:
+		Weapon: RA2OPCoilBolt
+		LocalOffset: 120,0,1100
+		RequiresCondition: TeslaCoilCharge >= 3
 	AttackTesla:
 		PauseOnCondition: disabled
 		ChargeAudio: btespow.wav
@@ -2237,12 +2238,6 @@ ra2tesla:
 	ExternalCondition@TeslaCoilCharge:
 		Condition: TeslaCoilCharge
 		SourceCap: 1
-	RangeMultiplier@charge3:
-		Modifier: 120
-		RequiresCondition: TeslaCoilCharge >= 3
-	FirepowerMultiplier@charge3:
-		Modifier: 200
-		RequiresCondition: TeslaCoilCharge >= 3
 
 yrngbnkr:
 	Inherits: ^Defense
@@ -2456,7 +2451,7 @@ ra2naclon:
 	Exit@2:
 		ExitCell: 1, 0
 	RallyPoint:
-		Offset: 3,3
+		Path: 3,3
 
 ra2namisl:
 	Inherits: ^BaseBuilding
@@ -2848,7 +2843,7 @@ yryabrck:
 	RevealsShroud:
 		Range: 5c0
 	RallyPoint:
-		Offset: 1,2
+		Path: 1,2
 	Exit@1:
 		SpawnOffset: 512,1024,0
 		ExitCell: 1,2
@@ -5973,7 +5968,7 @@ RA2TTNK:
 	Turreted:
 		TurnSpeed: 3
 	Armament@PRIMARY:
-		Weapon: TTankZap
+		Weapon: RA2TankBolt
 		LocalOffset: 900,80,340, 900,-80,340
 		Recoil: 170
 		RecoilRecovery: 42
@@ -6033,6 +6028,7 @@ ra2dtruck:
 	Inherits: DTRK
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@announce: ^AnnounceGlobal
 	Inherits@EMP: ^FrontalEMP
 	Buildable:
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
@@ -7892,7 +7888,6 @@ ra2hornet:
 	AttackAircraft:
 		FacingTolerance: 20
 		PersistentTargeting: false
-		AttackTurnDelay: 30
 	Rearmable:
 		RearmActors: ra2carrier
 	CarrierSlave:
@@ -7902,6 +7897,7 @@ ra2hornet:
 		InitialStance: AttackAnything
 	-UpdatesPlayerStatistics:
 	-WithShadow:
+	-MapEditorData:
 
 ra2asw:
 	Inherits: ra2hornet
@@ -7927,7 +7923,6 @@ ra2asw:
 	AttackAircraft:
 		FacingTolerance: 20
 		PersistentTargeting: false
-		AttackTurnDelay: 30
 	Rearmable:
 		RearmActors: ra2dest
 	DetectCloaked:
