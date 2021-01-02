@@ -3555,16 +3555,14 @@ GLSCUD:
 		Prerequisites: selectglademo
 		InitialLevels: 2
 	WithTextDecoration@TOX:
-		Text: TOX
-		ReferencePoint: Bottom, Left
+		Text: TOXIN
+		ReferencePoint: Bottom, Center
 		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
 		RequiresCondition: deployed
 	WithTextDecoration@EX:
-		Text: EX
-		ReferencePoint: Bottom, Left
+		Text: EXPLOSIVE
+		ReferencePoint: Bottom, Center
 		UsePlayerColor: True
-		ValidStances: Ally, Enemy, Neutral
 		RequiresCondition: !deployed
 	GrantConditionOnDeploy:
 		DeployedCondition: deployed
@@ -3593,8 +3591,6 @@ glscud.exp:
 		RequiresCondition: expammo
 	WithFacingSpriteBody@EMPTY:
 		RequiresCondition: !expammo
-	WithTextDecoration@EX:
-		Text: EX
 	-WithTextDecoration@TOX:
 	-GrantConditionOnDeploy:
 	RenderSprites:
@@ -3612,7 +3608,7 @@ glscud.tox:
 	WithFacingSpriteBody@EMPTY:
 		RequiresCondition: !toxammo
 	WithTextDecoration@EX:
-		Text: TOX
+		Text: TOXIN
 	-WithTextDecoration@TOX:
 	-GrantConditionOnDeploy:
 	RenderSprites:
@@ -5885,7 +5881,7 @@ CHHACKER:
 		Queue: Infantry.CHINA, RAInfantry.CHINA
 		Description: Computer specialist.\n Can deploy to provide money\n Can disable buildings
 	Mobile:
-		Speed: 50
+		Speed: 65
 		PauseOnCondition: frozen || hacking
 		RequireForceMoveCondition: !undeployed
 		ImmovableCondition: !undeployed
@@ -6054,12 +6050,23 @@ chlotus:
 		ScanRadius: 4
 	Armament@PRIMARY:
 		Weapon: CHLotusDisable
+		PauseOnCondition: !hack-complete
 	Armament@SUPER:
 		Weapon: CHSuperLotusDisable
+		PauseOnCondition: !hack-complete
 		RequiresCondition: selectchinf
 	Armament@CONTROL:
 		Weapon: CHLotusControl
 		Name: control
+		PauseOnCondition: !hack-complete
+	Armament@CHARGE:
+		Name: secondary
+		Weapon: CHLotusCharge
+		RequiresCondition: !selectchinf
+	Armament@SUPERCHARGE:
+		Name: secondary
+		Weapon: CHSuperLotusCharge
+		RequiresCondition: selectchinf
 	MindController:
 		ArmamentNames: control
 		Capacity: 1
@@ -6068,8 +6075,32 @@ chlotus:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: CHLotusDisable
+	Armament@GARRISONEDSUPER:
+		Name: garrisoned
+		Weapon: CHSuperLotusDisable
+		RequiresCondition: selectchinf
+	GrantConditionOnAttack@hackcomplete:
+		Condition: hack-complete
+		RevokeDelay: 50
+		ArmamentNames: secondary
+		RequiredShotsPerInstance: 5
+		MaximumInstances: 1
+		RevokeAll: true
+		RevokeOnNewTarget: true
+		RequiresCondition: !selectchinf
+	GrantConditionOnAttack@superhackcomplete:
+		Condition: hack-complete
+		RevokeDelay: 50
+		ArmamentNames: secondary
+		RequiredShotsPerInstance: 3
+		MaximumInstances: 1
+		RevokeAll: true
+		RevokeOnNewTarget: true
+		RequiresCondition: selectchinf
 	AttackFrontal:
-		Armaments: primary, control
+		Armaments: primary, secondary, control
+	RevealOnFire:
+		ArmamentNames: primary, secondary, control
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	Parachutable:
@@ -7091,13 +7122,13 @@ chnukecann:
 		Name: Nuke Cannon
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: chpropaganda, ~techlevel.high, upnukecann, chsilo, ~!selectchtanks, ~!selectchinf
+		Prerequisites: chpropaganda, ~techlevel.high, upnukecann, ~!selectchtanks, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
 		Description: Slow heavy artillery.\n Strong vs ground targets\n Weak vs Aircraft
 	Mobile:
 		Locomotor: tracked
 		TurnSpeed: 2
-		Speed: 50
+		Speed: 55
 	Health:
 		HP: 24000
 	Repairable:
@@ -7111,13 +7142,27 @@ chnukecann:
 	Armament@PRIMARY:
 		Weapon: CHNukeCannon
 		LocalOffset: 407,0,362
-		RequiresCondition: !upneutronshell
+		RequiresCondition: !neutronmode
 		PauseOnCondition: !ammo
 	Armament@NEUTRON:
 		Weapon: CHNukeCannonNeutron
 		LocalOffset: 407,0,362
-		RequiresCondition: upneutronshell
+		RequiresCondition: neutronmode
 		PauseOnCondition: !ammo
+	WithTextDecoration@NEUTRON:
+		Text: NEUTRON
+		ReferencePoint: Bottom, Center
+		UsePlayerColor: True
+		RequiresCondition: neutronmode
+	WithTextDecoration@NUCLEAR:
+		Text: NUCLEAR
+		ReferencePoint: Bottom, Center
+		UsePlayerColor: True
+		RequiresCondition: !neutronmode
+	GrantConditionOnDeploy:
+		DeployedCondition: neutronmode
+		RequiresCondition: upneutronshell
+		PauseOnCondition: disabled
 	AttackTurreted:
 	SelectionDecorations:
 	Selectable:
@@ -8786,8 +8831,8 @@ usajeep:
 		ValidTypes: USAPilot
 	Cargo:
 		Types: Infantry, Hacker
-		MaxWeight: 4
-		PipCount: 4
+		MaxWeight: 5
+		PipCount: 5
 		LoadingCondition: notmobile
 	AttackOpenTopped:
 		Voice: Attack
@@ -8814,14 +8859,14 @@ usajeep.bot1:
 	Buildable:
 		Prerequisites: usaweap, ~hardbotplayer
 	Cargo:
-		InitialUnits: usae1, usae1, usae1, usae1
+		InitialUnits: usae1, usae1, usae1, usae1, usae3
 	ProductionCostMultiplier:
 		Multiplier: 230
 
 usajeep.bot2:
 	Inherits: usajeep.bot1
 	Cargo:
-		InitialUnits: usae3, usae3, usae3, usae3
+		InitialUnits: usae3, usae3, usae3, usae3, usae1
 	ProductionCostMultiplier:
 		Multiplier: 280
 
@@ -9011,7 +9056,7 @@ usaspydrone:
 	AttackAircraft:
 		AttackType: Default
 	RevealsShroud:
-		Range: 4c0
+		Range: 10c0
 	RenderDetectionCircle:
 	RenderSprites:
 		Scale: 0.15
