@@ -385,6 +385,9 @@
 		TargetTypes: Ground, Vehicle
 	Targetable@ivan:
 		RequiresCondition: !ivanbomb && !untargetable
+	Warpable:
+	Targetable@chrono:
+		RequiresCondition: !invulnerability
 	Passenger:
 		CargoType: Vehicle
 		Weight: 3
@@ -480,6 +483,15 @@
 		Type: GrinderCash
 		Sounds: bgrinda.wav
 
+^Walker:
+	Inherits: ^Vehicle
+	Tooltip:
+		GenericName: Walker
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+
 ^BoatUnit:
 	Inherits: ^Vehicle
 	Inherits@snipe: ^DriverKillImmune
@@ -517,10 +529,10 @@
 ^RANeutralPlane: #for actual air units
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
-	Inherits@3: ^GainsExperience
 	Inherits@bounty: ^GlobalBounty
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@ext: ^ExternalConditionsAll
+	Inherits@IC: ^IronCurtainable
 	Inherits@cloak: ^AcceptsCloakCrate
 	Inherits@bot: ^BotProductionBoost
 	Inherits@fix: ^Repairable
@@ -545,7 +557,7 @@
 		AirborneCondition: airborne
 	GrantCondition@untargetable:
 		Condition: untargetable
-		RequiresCondition: chronobeamed
+		RequiresCondition: chronobeamed || invulnerability
 	Targetable@GROUND:
 		RequiresCondition: !airborne && !untargetable
 		TargetTypes: Ground, Vehicle
@@ -605,6 +617,12 @@
 	Targetable@chrono:
 		TargetTypes: Chronobeamable
 		RequiresCondition: !airborne
+	CaptureManager:
+		BeingCapturedCondition: being-captured
+	Capturable:
+		Types: vehicle
+		ValidStances: Enemy, Neutral
+		RequiresCondition: !untargetable && !airborne
 
 ^Helicopter:
 	Inherits@1: ^RANeutralPlane
@@ -664,15 +682,15 @@
 		TotalCap: 1
 		Condition: leaflet
 	GrantCondition@disable:
-		Condition: frozen
+		Condition: disabled
 		RequiresCondition: ReaperTrap || chronobeamed || leaflet
 	WithColoredOverlay@leaflet:
 		Palette: disabled
 		RequiresCondition: leaflet
 	Mobile:
-		PauseOnCondition: frozen
+		PauseOnCondition: disabled
 
-^Infantry:
+^DefaultInfantry:
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
@@ -706,17 +724,74 @@
 	Targetable:
 		RequiresCondition: !parachute && !untargetable
 		TargetTypes: Ground, Infantry
-	Targetable@HEAL:								##########
+	Targetable@HEAL:
 		RequiresCondition: !parachute && !untargetable && damaged
 		TargetTypes: Heal, Healing
 	Targetable@disguise:
 		TargetTypes: Disguise
-	GrantConditionOnDamageState@DAMAGED:			##########
+	GrantConditionOnDamageState@DAMAGED:
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
 	QuantizeFacingsFromSequence:
 		Sequence: stand
 	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	WithDeathAnimation:
+	AttackMove:
+	DrawLineToTarget:
+	Passenger:
+		CargoType: Infantry
+	HiddenUnderFog:
+	ActorLostNotification:
+	Crushable:
+		WarnProbability: 75
+		CrushSound: squish2.aud
+	Guardable:
+	DetectCloaked:
+		Range: 2c0
+		RequiresCondition: !disabled
+		CloakTypes: Cloak, Hijacker
+	DeathSounds@NORMAL:
+	Voiced:
+		VoiceSet: GenericVoice
+	HitShape:
+		Type: Circle
+			Radius: 128
+	MapEditorData:
+		Categories: Infantry
+	Parachutable:							##########
+		FallRate: 26
+		KilledOnImpassableTerrain: true
+		GroundCorpseSequence: corpse
+		GroundImpactSound: squishy2.aud
+		WaterImpactSound: splash9.aud
+		WaterCorpseSequence: small_splash
+		ParachutingCondition: parachute
+	WithParachute:							##########
+		ShadowImage: parach-shadow
+		ShadowSequence: idle
+		Image: parach
+		Sequence: idle
+		OpeningSequence: open
+		Offset: 0,0,427
+		RequiresCondition: parachute
+	EdibleByLeap:
+	DeliversCash:
+		Payload: 25
+		Type: GrinderCash
+		Sounds: bgrinda.wav
+	Cloneable:
+		Types: NormalInfantry
+	CaptureManager:
+	Captures@CAPTURES:
+		CaptureTypes: ra2garrison
+		ConsumedByCapture: false
+	GpsDot:
+		String: Infantry
+	TeleportNetworkTransportable:
+
+^Infantry: #Human units only
+	Inherits: ^DefaultInfantry
 	WithDeathAnimation:
 		DeathTypes:
 			DefaultDeath: 1
@@ -728,13 +803,8 @@
 			FireDeath: 5
 			TiberiumDeath: 6
 			RA2VirusDeath: 6
-			ElectricityDeath: 7			##########
+			ElectricityDeath: 7
 		CrushedSequence: die-crushed
-	AttackMove:
-	DrawLineToTarget:
-	Passenger:
-		CargoType: Infantry
-	HiddenUnderFog:
 	DamagedByTerrain:
 		Terrain: Tiberium, BlueTiberium
 		Damage: 200
@@ -770,7 +840,6 @@
 		Sequence: pip-hazmat
 		ReferencePoint: Bottom, Right
 		RequiresCondition: hazmatsuits
-	ActorLostNotification:
 	SpawnActorOnDeath:
 		Probability: 5
 		Actor: vice
@@ -778,14 +847,6 @@
 		InternalOwner: Creeps
 		DeathType: TiberiumDeath
 		RequiresLobbyCreeps: true
-	Crushable:
-		WarnProbability: 75
-		CrushSound: squish2.aud
-	Guardable:
-	DetectCloaked:
-		Range: 2c0
-		RequiresCondition: !frozen
-		CloakTypes: Cloak, Hijacker
 	DeathSounds@NORMAL:
 		DeathTypes: DefaultDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, RippedApartDeath
 		RequiresCondition: !chronobeamed
@@ -801,59 +862,30 @@
 		Voice: Zapped
 		DeathTypes: ElectricityDeath
 		RequiresCondition: !chronobeamed
-	Voiced:
-		VoiceSet: GenericVoice
-	HitShape:
-		Type: Circle
-			Radius: 128
-	MapEditorData:
-		Categories: Infantry
-	Parachutable:							##########
-		FallRate: 26
-		KilledOnImpassableTerrain: true
-		GroundCorpseSequence: corpse
-		GroundImpactSound: squishy2.aud
-		WaterImpactSound: splash9.aud
-		WaterCorpseSequence: small_splash
-		ParachutingCondition: parachute
-	WithParachute:							##########
-		ShadowImage: parach-shadow
-		ShadowSequence: idle
-		Image: parach
-		Sequence: idle
-		OpeningSequence: open
-		Offset: 0,0,427
-		RequiresCondition: parachute
-	EdibleByLeap:
-	DeliversCash:
-		Payload: 25
-		Type: GrinderCash
-		Sounds: bgrinda.wav
-	Cloneable:
-		Types: NormalInfantry
 	Explodes@Mutate:
 		Weapon: MutateEffect
 		EmptyWeapon: MutateEffect
 		DeathTypes: BruteMutate
-	CaptureManager:
-	Captures@CAPTURES:
-		CaptureTypes: ra2garrison
-		ConsumedByCapture: false
 	SpawnActorOnDeath@RA2Virus:
 		Actor: ra2txgasg
 		Probability: 50
 		OwnerType: Killer
 		DeathType: RA2VirusDeath
-	GpsDot:
-		String: Infantry
-	TeleportNetworkTransportable:
 
-^Soldier:
-	Inherits: ^Infantry
+^DefaultSoldier:
+	Inherits: ^DefaultInfantry
 	MustBeDestroyed:
 	Tooltip:
 		GenericName: Soldier
 	Guard:
+	RevealOnFire:
+	RevealOnDeath:
+	AttackFrontal:
+		PauseOnCondition: disabled
+
+^Soldier:
+	Inherits: ^DefaultSoldier
+	Inherits@2: ^Infantry
 	TakeCover:
 		SpeedModifier: 60
 		DamageModifiers:
@@ -867,10 +899,6 @@
 	WithInfantryBody:
 		IdleSequences: idle1, idle2
 		StandSequences: stand, stand2
-	RevealOnFire:
-	RevealOnDeath:
-	AttackFrontal:
-		PauseOnCondition: frozen
 
 ^CivInfantry:
 	Inherits: ^Infantry
@@ -906,17 +934,7 @@
 		DefaultAttackSequence: shoot
 
 ^DINO:
-	Inherits@1: ^ExistsInWorld
-	Inherits@2: ^SpriteActor
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@selection: ^SelectableCombatUnit
-	Inherits@EXT: ^ExternalConditions
-	Inherits@disable: ^InfantryDisable
-	Inherits@heal: ^HospitalHealable
-	Huntable:
-	OwnerLostAction:
-		Action: Kill
-	ActorLostNotification:
+	Inherits: ^DefaultInfantry
 	Health:
 		HP: 100000
 	Armor:
@@ -937,20 +955,12 @@
 		Locomotor: critter
 		Speed: 113
 		Voice: Move
-	SelectionDecorations:
-	WithSpriteControlGroupDecoration:
-	Selectable:
-		Bounds: 24,24
 	Targetable:
 		RequiresCondition: !parachute && !chronobeamed
 		TargetTypes: Ground, Infantry, Creep
 	HiddenUnderFog:
 	RenderSprites:
 		Palette: terrain
-	QuantizeFacingsFromSequence:
-		Sequence: stand
-	WithInfantryBody:
-		DefaultAttackSequence: attack
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	AutoTarget:
@@ -959,11 +969,11 @@
 		Voice: Attack
 	AttackFrontal:
 		Voice: Attack
-		PauseOnCondition: frozen
+		PauseOnCondition: disabled
+	WithInfantryBody:
+		DefaultAttackSequence: attack
 	Guard:
 		Voice: Move
-	Guardable:
-	DrawLineToTarget:
 	DeathSounds:
 	Voiced:
 		VoiceSet: DinoVoice
@@ -973,34 +983,15 @@
 	Passenger:
 		Weight: 2
 		CargoType: Infantry
-	Parachutable:
-		FallRate: 20
-		KilledOnImpassableTerrain: true
-		GroundCorpseSequence: corpse
-		GroundImpactSound: squishy2.aud
-		WaterImpactSound: splash9.aud
-		WaterCorpseSequence: small_splash
-		ParachutingCondition: parachute
-	WithParachute:
-		ShadowImage: parach-shadow
-		ShadowSequence: idle
-		Image: parach
-		Sequence: idle
-		OpeningSequence: open
-		Offset: 0,0,427
-		RequiresCondition: parachute
 	MapEditorData:
 		Categories: Critter
 	GpsDot:
 		String: Infantry
 
 ^Viceroid:
-	Inherits@1: ^ExistsInWorld
-	Inherits@2: ^SpriteActor
+	Inherits: ^DefaultInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@selection: ^SelectableCombatUnit
-	Huntable:
-	ActorLostNotification:
 	Health:
 		HP: 30000
 	Armor:
@@ -1013,18 +1004,12 @@
 		Voice: Move
 		Speed: 71
 		Locomotor: critter
-	SelectionDecorations:
-	WithSpriteControlGroupDecoration:
-	Selectable:
-		Bounds: 24,24
 	Targetable:
 		TargetTypes: Ground, Creep
 	AutoTarget:
 		ScanRadius: 5
 	AttackMove:
 		Voice: Attack
-	DrawLineToTarget:
-	HiddenUnderFog:
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -1037,11 +1022,9 @@
 		Voice: Attack
 	BodyOrientation:
 		QuantizedFacings: 8
+	-WithInfantryBody:
 	WithSpriteBody:
 	WithMuzzleOverlay:
-	Guard:
-		Voice: Move
-	Guardable:
 	DamagedByTerrain:
 		Damage: -100
 		DamageInterval: 4
@@ -1237,8 +1220,12 @@
 	Targetable@ivan:
 		TargetTypes: ivanattachable, demolishable
 		RequiresCondition: !ivanbomb && !untargetable
+	Targetable@trappable:
+		TargetTypes: trappable
+		RequiresCondition: !trapped && !untargetable
 	Targetable@chrono:
 		RequiresCondition: !invulnerability && !forceshield
+	Warpable:
 	Sellable:
 		RequiresCondition: !build-incomplete && !being-captured && !being-demolished && !ivanbomb && !untargetable
 		SellSounds: cashturn.aud
@@ -1377,7 +1364,6 @@
 ^Wall:
 	Inherits@1: ^SpriteActor
 	Inherits@shape: ^1x1Shape
-	Inherits@chrono: ^ChronoBeamable
 	Inherits@cloak: ^StealthGenCloakable
 	Interactable:
 		Bounds: 24,24
@@ -1424,6 +1410,8 @@
 	MapEditorData:
 		Categories: Wall
 	ConditionManager:
+	Cloak@TScloak:
+		PauseOnCondition: cloak-force-disabled
 
 ^Tree:
 	Inherits@1: ^SpriteActor
@@ -2741,7 +2729,7 @@ CPQDEBUGDUMMY:
 		InitialDelay: 1
 		CloakDelay: 1
 		UncloakOn: None
-		PauseOnCondition: frozen
+		PauseOnCondition: disabled
 		RequiresCondition: stashcamo
 		IsPlayerPalette: true
 
@@ -2790,7 +2778,7 @@ CPQDEBUGDUMMY:
 		Condition: prevent-mindcontrol
 	MindControllable:
 		Condition: controlled
-		PauseOnCondition: prevent-mindcontrol || invulnerability
+		PauseOnCondition: prevent-mindcontrol || untargetable
 	WithMindControlArc:
 		UsePlayerColor: true
 		Transparency: 255
@@ -2808,14 +2796,14 @@ CPQDEBUGDUMMY:
 		ValidStances: Ally, Neutral, Enemy
 	Targetable@MC:
 		TargetTypes: MindControl
-		RequiresCondition: !controlled && !prevent-mindcontrol && !invulnerability
+		RequiresCondition: !controlled && !prevent-mindcontrol && !untargetable
 
 ^MindControllableStructure:
 	ExternalCondition@prevent-mindcontrol:
 		Condition: prevent-mindcontrol
 	MindControllable:
 		Condition: controlled
-		PauseOnCondition: prevent-mindcontrol || invulnerability
+		PauseOnCondition: prevent-mindcontrol || untargetable
 	WithMindControlArc:
 		UsePlayerColor: true
 		Transparency: 255
@@ -2833,8 +2821,7 @@ CPQDEBUGDUMMY:
 		ValidStances: Ally, Neutral, Enemy
 	Targetable@MCStructure:
 		TargetTypes: MindControlStructure
-		RequiresCondition: !controlled && !prevent-mindcontrol && !invulnerability
-
+		RequiresCondition: !controlled && !prevent-mindcontrol && !untargetable
 ^MCImmune:
 	Targetable@MC:
 		TargetTypes: MCImmune
@@ -2860,28 +2847,27 @@ CPQDEBUGDUMMY:
 		RequiresCondition: ivanbomb && !chronobeamed
 	AmbientSound@IVANBOMB:
 		SoundFiles: icraloop.wav
-		Volume: 0.45
 		RequiresCondition: ivanbomb
 
 ^Berserkable:
 	ExternalCondition@chaos:
 		Condition: chaosgas
 	Berserkable:
-		RequiresCondition: chaosgas && !invulnerability
+		RequiresCondition: chaosgas && !untargetable
 	RejectsOrders@chaos:
-		RequiresCondition: chaosgas && !invulnerability
+		RequiresCondition: chaosgas && !untargetable
 	WithColoredOverlay@chaos:
 		Palette: chaos
-		RequiresCondition: chaosgas && !invulnerability
+		RequiresCondition: chaosgas && !untargetable
 	TimedConditionBar@chaos:
 		Color: 880088
-		Condition: chaosgas && !invulnerability
+		Condition: chaosgas && !untargetable
 	FirepowerMultiplier@chaos:
 		Modifier: 150
-		RequiresCondition: chaosgas && !invulnerability
+		RequiresCondition: chaosgas && !untargetable
 	SpeedMultiplier@chaos:
 		Modifier: 150
-		RequiresCondition: chaosgas && !invulnerability
+		RequiresCondition: chaosgas && !untargetable
 
 ^ChronoBeamable:
 	Warpable:
@@ -2891,7 +2877,6 @@ CPQDEBUGDUMMY:
 		ScaleWithCurrentHealthPercentage: true
 		ShowSelectionBar: true
 		SelectionBarColor: 40FFFF
-		RequiresCondition: !invulnerability
 	GrantCondition@chrono:
 		Condition: chronobeamed
 		RequiresCondition: being-warped
@@ -2903,7 +2888,6 @@ CPQDEBUGDUMMY:
 		RequiresCondition: chronobeamed
 	Targetable@chrono:
 		TargetTypes: Chronobeamable
-		RequiresCondition: !invulnerability
 	Targetable@warping:
 		TargetTypes: chronobeaming
 		RequiresCondition: chronobeamed
@@ -3138,7 +3122,7 @@ CPQDEBUGDUMMY:
 	ExternalCondition@SQUIDTRAP:
 		Condition: SquidTrap
 	GrantCondition@disable:
-		Condition: frozen
+		Condition: disabled
 		RequiresCondition: ReaperTrap || chronobeamed || leaflet || SquidTrap
 
 ^Superweapon:
@@ -3483,9 +3467,9 @@ CPQDEBUGDUMMY:
 	Targetable@garrisoned:
 		TargetTypes: Garrisoned
 		RequiresCondition: loaded && !untargetable
-	ExternalCondition@BunkerDisabled:
-		Condition: bunkerdisable
-		TotalCap: 1
+	#ExternalCondition@BunkerDisabled:
+	#	Condition: bunkerdisable
+	#	TotalCap: 1
 
 ^PointLaserDefenseSystem:
 	Turreted@pointdefense:
@@ -3592,7 +3576,7 @@ CPQDEBUGDUMMY:
 		TotalCap: 1
 	Targetable@trappable:
 		TargetTypes: trappable
-		RequiresCondition: !trapped && !untargetable
+		RequiresCondition: !trapped
 	Targetable@trapped:
 		TargetTypes: trapped
 		RequiresCondition: trapped
@@ -3605,7 +3589,6 @@ CPQDEBUGDUMMY:
 		DeployedTicks: 50
 		CooldownTicks: 0
 		DeployedCondition: clearmines
-		SkipMakeAnimation: true
 		Voice: Action
 		PauseOnCondition: disabled
 	ProximityExternalCondition@clearmines:
