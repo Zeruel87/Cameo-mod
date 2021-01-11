@@ -4085,21 +4085,25 @@ TSHARV:
 #		Cost: 1100
 
 tsldrone:
-	Inherits: ^Tank
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	Inherits@MC: ^MCImmune
-	Inherits@snipe: ^DriverKillImmune
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@snipe: ^DriverKillAndNeutronImmune
 	Valued:
 		Cost: 150
 	Tooltip:
 		Name: Limpet drone
 	Buildable:
 		BuildPaletteOrder: 80
-		Prerequisites:  anyhq, ~techlevel.high
+		Prerequisites: ~disabled #anyhq
 		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.TSNod, RAVehicle.TSNod, Vehicle.CABAL, RAVehicle.CABAL
 		Description: Hovering drone that can deploy\ninto a mine.
 	Mobile:
 		Locomotor: hover
 		Speed: 166
+		RequireForceMoveCondition: deployed
 	Health:
 		HP: 11500
 	Repairable:
@@ -4108,33 +4112,51 @@ tsldrone:
 		Type: Light
 	RevealsShroud:
 		Range: 9c0
-	SelectionDecorations:
-	Selectable:
 	Inherits@EXT: ^ExternalConditions					##########
 	Voiced:
 		VoiceSet: RobotTankVoice
 	DeliversCash:
-		Payload: 250
+		Payload: 75
 	Hovers:
-		RequiresCondition: !disabled
+		RequiresCondition: !disabled && undeployed
+	Turreted:
+	AttackTurreted:
+		RequiresCondition: deployed
+	Armament:
+		Weapon: TSEMPLimpetBomb
 	RenderVoxels:
 		Scale: 7.2
 	-TemporaryOwnerManager:
 	Capturable:
 		Types: thiefproof
-	Transforms:
-		IntoActor: tsdlimpmk
-		Offset: 0,0
-		Facing: 1
+	WithMakeAnimation:
+		BodyNames: deployed
+	GrantConditionOnDeploy:
+		UndeployedCondition: undeployed
+		DeployedCondition: deployed
+		UndeployOnMove: true
 		PauseOnCondition: disabled
-		NoTransformNotification: BuildingCannotPlaceAudio
-
-tsdlimpmk:
-	Inherits: ^Mine
-	RenderSprites:
-		Image: tsdlimpmk
-	Explodes:
-		Weapon: ATMine
+		DeploySounds: place2.aud
+		UndeploySounds: place2.aud
+	WithFacingSpriteBody:
+		RequiresCondition: undeployed
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	GrantConditionOnAttack:
+		Condition: triggered
+	KillsSelf@EMP:
+		RequiresCondition: (empdisable && !untargetable) || triggered
+		DamageTypes: DefaultDeath
+	DetectCloaked:
+		Range: 6c0
+		RequiresCondition: deployed && !disabled
+	Cloak:
+		InitialDelay: 30
+		CloakDelay: 30
+		RequiresCondition: deployed
+		IsPlayerPalette: true
 
 tsprobe:
 	Inherits: ^Helicopter
