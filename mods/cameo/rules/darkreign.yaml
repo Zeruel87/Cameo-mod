@@ -669,7 +669,7 @@ drcamera:
 		Name: Camera Tower
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: drhq
+		Prerequisites: anypower
 		Queue: Defence.Imperium, RADefence.Imperium, Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Shadowhand, RADefence.Shadowhand, Defence.Xenite, RADefence.Xenite
 		BuildDurationModifier: 40
 		Description: Detection purpose Turret
@@ -737,7 +737,7 @@ drcamera:
 		RequiresCondition: !lvl2
 	ProductionQueue@drihq1:
 		Type: drihq1.Imperium
-		Group: Defence
+		Group: Addon
 		LowPowerModifier: 200
 		ReadyAudio: ConstructionComplete
 		BlockedAudio: NoBuild
@@ -751,10 +751,10 @@ drcamera:
 		Actors: pscdrihq2
 	Production@drihq2:
 		Produces: drihq2.Imperium
-		RequiresCondition: !lvl3
+		RequiresCondition: !lvl3 && lvl2
 	ProductionQueue@drihq2:
 		Type: drihq2.Imperium
-		Group: Defence
+		Group: Addon
 		LowPowerModifier: 200
 		ReadyAudio: ConstructionComplete
 		BlockedAudio: NoBuild
@@ -823,7 +823,7 @@ drcamera:
 		RequiresCondition: !lvl2
 	ProductionQueue@drihq1:
 		Type: dribarr.Imperium
-		Group: Defence
+		Group: Addon
 		LowPowerModifier: 200
 		ReadyAudio: ConstructionComplete
 		BlockedAudio: NoBuild
@@ -1413,7 +1413,7 @@ drplastur1:
 		Name: Plasma Turret
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: drhq
+		Prerequisites: anypower
 		Queue: Defence.Imperium, RADefence.Imperium, Defence.Shadowhand, RADefence.Shadowhand
 		BuildDurationModifier: 40
 		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Infantry\n  Weak vs Tanks
@@ -2407,7 +2407,7 @@ drfghelipad.freedomguard:
 		Name: Rearming
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: drihq3
+		Prerequisites: drfghq3
 		Queue: Building.FreedomGuard, RABuilding.FreedomGuard, Building.Xenite, RABuilding.Xenite
 		Description: Produces, rearms and\nrepairs helicopters
 	Building:
@@ -2440,6 +2440,48 @@ drfghelipad.freedomguard:
 	WithIdleOverlay@BOTTOM:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-bottom
+drlastur1:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Laser Turret
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: anypower
+		Queue: Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Xenite, RADefence.Xenite
+		BuildDurationModifier: 40
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 8
+	Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+	Health:
+		HP: 45000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,220
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament:
+		Weapon: DRLaserTurret
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 3c0
+	RenderDetectionCircle:
+	Power:
+		Amount: -20
+	RenderSprites:
+		Scale: 0.668
 #Infantry
 drraid:
 	Inherits: ^Soldier
@@ -2483,12 +2525,11 @@ drraid:
 	Cloak:
 		InitialDelay: 250
 		CloakDelay: 120
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
-		CloakTypes: Phase
 		CloakSound: gxphsoc1.wav
 		UncloakSound: gxphsoc1.wav
-		PauseOnCondition: cloak-force-disabled
-
+		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
 drscout:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -2575,11 +2616,11 @@ drmercenary:
 	Cloak:
 		InitialDelay: 250
 		CloakDelay: 120
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
-		CloakTypes: Phase
 		CloakSound: gxphsoc1.wav
 		UncloakSound: gxphsoc1.wav
-		PauseOnCondition: cloak-force-disabled
+		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
 drsnipe:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -2627,6 +2668,50 @@ drsnipe:
 		CloakSound: gxmphoc0.wav
 		UncloakSound: gxmphoc0.wav
 		PauseOnCondition: cloak-force-disabled
+
+drmartyr:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Martyr
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks
+		Queue: Infantry.FreedomGuard, RAInfantry.FreedomGuard
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 126
+	Health:
+		HP: 20000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: DRSuicideBomb
+	GrantConditionOnAttack:
+		Condition: triggered
+	KillsSelf:
+		RequiresCondition: triggered
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: RAVulcan
+	AttackFrontal:
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.68
+	Voiced:
+		VoiceSet: DRMartyrVoice
 
 #Vehicle
 drspid:
@@ -4089,48 +4174,6 @@ drfgweap2:
 		DestroyedSounds: crumble.aud
 	ShakeOnDeath:
 	ActorLostNotification:
-drlastur1:
-	Inherits: ^Defense
-	Inherits@AUTOTARGET: ^AutoTargetAll
-	Valued:
-		Cost: 600
-	Tooltip:
-		Name: Laser Turret
-	Buildable:
-		BuildPaletteOrder: 40
-		Prerequisites: 2100ChopShop, ~techlevel.medium
-		Queue: Defence.DRImperium
-		BuildDurationModifier: 40
-		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
-	RequiresBuildableArea:
-		AreaTypes: building
-		Adjacent: 8
-	Selectable:
-		Bounds: 24,24
-	SelectionDecorations:
-	Health:
-		HP: 45000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 8c0
-	Turreted:
-		TurnSpeed: 12
-		Offset: 0,0,220
-	WithSpriteBody:
-	WithSpriteTurret:
-	Armament:
-		Weapon: DRLaserTurret
-	AttackTurreted:
-	BodyOrientation:
-		QuantizedFacings: 8
-	DetectCloaked:
-		Range: 3c0
-	RenderDetectionCircle:
-	Power:
-		Amount: -20
-	RenderSprites:
-		Scale: 0.668
 
 draacannon1:
 	Inherits: ^Defense
@@ -4321,51 +4364,6 @@ DRTRAINER:
 		Scale: 0.68
 	Voiced:
 		VoiceSet: DRAnimalTrainerVoice
-
-DRMARTYR:
-	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Valued:
-		Cost: 600
-	Tooltip:
-		Name: Martyr
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 10
-		Prerequisites: barracks
-		Queue: Infantry.DRFreedomGuard
-		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
-	Mobile:
-		Speed: 126
-	Health:
-		HP: 20000
-	AutoTarget:
-		ScanRadius: 4
-	Armament@PRIMARY:							##########
-		Weapon: DRSuicideBomb
-	GrantConditionOnAttack:
-		Condition: triggered
-	KillsSelf:
-		RequiresCondition: triggered
-	Armament@GARRISONED:						##########
-		Name: garrisoned
-		Weapon: RAVulcan
-	AttackFrontal:
-	WithInfantryBody:
-		IdleSequences: idle1,idle2,idle3,idle4
-		DefaultAttackSequence: shoot
-	Parachutable:
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: infantry							##########
-	RenderSprites:
-		Scale: 0.68
-	Voiced:
-		VoiceSet: DRMartyrVoice
-
 DRZOMBIE:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
