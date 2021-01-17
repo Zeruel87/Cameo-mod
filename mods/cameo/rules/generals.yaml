@@ -2485,7 +2485,6 @@ glbiker.toxin:
 		Cost: 500
 	Buildable:
 		Prerequisites: glweap, ~selectglatoxin
-		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 	Cargo:
 		InitialUnits: gle1toxin
 	RenderSprites:
@@ -2497,7 +2496,6 @@ glbiker.terror:
 		Cost: 500
 	Buildable:
 		Prerequisites: glweap, ~selectglademo
-		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 	Cargo:
 		InitialUnits: glterror
 	RenderSprites:
@@ -3179,7 +3177,7 @@ glscrapcar:
 		Queue: Infantry.GLA, RAInfantry.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 40
 		Prerequisites: glweap, ~techlevel.low
-		Description: Suicide bomber vehicle.
+		Description: Suicide bomber vehicle.\nCloaked when stationary.
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -3205,7 +3203,7 @@ glscrapcar:
 		Weapon: SuicideBomberTargeting
 		LocalOffset: 128,0,43
 	AttackFrontal:
-	WithMuzzleOverlay:
+		FacingTolerance: 128
 	RenderSprites:
 		Scale: 0.83
 	Voiced:
@@ -3213,13 +3211,35 @@ glscrapcar:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
+	GrantConditionOnPrerequisite@selectglademo:
+		Condition: selectglademo
+		Prerequisites: selectglademo
+	SpeedMultiplier@selectglademo:
+		RequiresCondition: selectglademo
+		Modifier: 135
+	DamageMultiplier@selectglademo:
+		RequiresCondition: selectglademo
+		Modifier: 75
 	ProductionCostMultiplier@selectglademo:
 		Multiplier: 90
 		Prerequisites: selectglademo
 		Queue: Vehicle.GLA, RAVehicle.GLA
+	GrantConditionOnPrerequisite@selectglatoxin:
+		Condition: selectglatoxin
+		Prerequisites: selectglatoxin
+	Explodes@antraxbeta1:
+		Weapon: GLAnthraxBlue
+		EmptyWeapon: GLAnthraxBlue
+		DamageSource: Killer
+		RequiresCondition: selectglatoxin && !disabled
 	Explodes:
 		Weapon: GLTerroristExplosive
 		EmptyWeapon: GLTerroristExplosive
+		RequiresCondition: !selectglademo && !disabled
+	Explodes@2:
+		Weapon: GLTerroristExplosive2
+		EmptyWeapon: GLTerroristExplosive2
+		RequiresCondition: selectglademo && !disabled
 	Cloak:
 		InitialDelay: 30
 		CloakDelay: 30
@@ -5757,7 +5777,7 @@ CHE1:
 	Inherits@vo: ^AttackFrontalVoice
 	Buildable:
 		BuildPaletteOrder: 20
-		Queue: Infantry.CHINA, RAInfantry.CHINA
+		Queue: Infantry.CHINA, RAInfantry.CHINA, Infantry.X_Infantry
 		Description: General-purpose infantry armed with a rifle.\n  Strong vs Infantry\n  Weak vs Vehicles
 		Prerequisites: barracks
 	Valued:
@@ -5801,7 +5821,6 @@ CHE2:
 	Inherits@chaingun: ^ChaingunUpgrade
 	Buildable:
 		BuildPaletteOrder: 20
-		Queue: Infantry.CHINA, RAInfantry.CHINA
 		Description: General-purpose infantry armed with a minigun.\nCan attack aircraft.\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
 		Prerequisites: barracks, ~selectchinf
 	Valued:
@@ -5845,7 +5864,7 @@ CHE3:
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
-		Queue: Infantry.CHINA, RAInfantry.CHINA
+		Queue: Infantry.CHINA, RAInfantry.CHINA, Infantry.X_Infantry
 		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
 	Armament@PRIMARY:							##########
 		Weapon: CHTankHunterMissile
@@ -6004,7 +6023,7 @@ CHHACKER2:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: barracks, chpropaganda, ~selectchinf
-		Queue: Infantry.CHINA, RAInfantry.CHINA
+		Queue: Infantry.CHINA, RAInfantry.CHINA, Infantry.X_Infantry
 		Description: Computer specialist.\n Can deploy to provide money\n Can disable buildings and vehicles
 	Armament@PRIMARYSUPER:							##########
 		Weapon: CHLotusDisable
@@ -6049,7 +6068,7 @@ chlotus:
 		BuildLimit: 1
 		BuildPaletteOrder: 70
 		Prerequisites: barracks, chpropaganda
-		Queue: Infantry.CHINA, RAInfantry.CHINA
+		Queue: Infantry.CHINA, RAInfantry.CHINA, Infantry.X_Infantry
 		Description: Elite hacker.\n Can take control of buildings\n Can disable vehicles
 	Mobile:
 		Speed: 71
@@ -8502,7 +8521,7 @@ USAE1:
 	Inherits@vo: ^AttackFrontalVoice
 	Buildable:
 		BuildPaletteOrder: 20
-		Queue: Infantry.USA, RAInfantry.USA
+		Queue: Infantry.USA, RAInfantry.USA, Infantry.X_Infantry
 		Description: Basic USA infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 		Prerequisites: barracks
 	Valued:
@@ -8560,7 +8579,7 @@ USAE3:
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
-		Queue: Infantry.USA, RAInfantry.USA
+		Queue: Infantry.USA, RAInfantry.USA, Infantry.X_Infantry
 		Description: Anti-tank/anti-aircraft infantry.\nHas to lock on to mobile targets before attacking.\n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
 	Passenger:
 		CargoCondition: indoors
