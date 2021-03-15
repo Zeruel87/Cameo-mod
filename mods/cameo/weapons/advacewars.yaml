@@ -215,15 +215,28 @@ AWMachinegunGeneral:
 AWMachinegunYC:
 	Inherits: AWMachinegunGeneral
 	ReloadDelay: 40
+	BurstDelays: 8
 	Range: 5c0
 	Report: AWDustergun.wav
 	ValidTargets: Ground, Helicopter
 	Warhead@1Dam: SpreadDamage
-		Damage: 1000
+		Damage: 1200
 		ValidTargets: Ground, Helicopter
 	Warhead@2Eff: CreateEffect
-		ImpactSounds: AWRicochet1.wav, AWRicochet2.wav
-
+		ImpactSounds: AWRicochet1.wav, AWRicochet2.wav, AWDustergun.wav
+AWMachinegunIFV:
+	Inherits: AWMachinegunYC
+	ReloadDelay: 15
+	BurstDelays: 2
+	Range: 6c0
+	Report: AWDustergun.wav
+	Warhead@1Dam: SpreadDamage
+		Damage: 3000
+AWMobGuns:
+	Inherits: AWMachinegunYC
+	InvalidTargets: Structure, Building
+	Warhead@1Dam: SpreadDamage
+		Damage: 800
 AWGarrisonMG:
 	Inherits: ^RA2MG
 	ReloadDelay: 26
@@ -355,6 +368,25 @@ AWFighterMissileAG:
 	Warhead@4EffAir: CreateEffect
 		Explosions: awexplosion
 		ImpactSounds: AWExplosion1.wav
+AWCarMissiles:
+	Inherits: ^MissileWeapon
+	Report: AWMissile1.wav, AWMissile2.wav
+	ValidTargets: Vehicle
+	Burst: 1
+	Projectile: MissileCA
+		Image: awmissile2
+		Shadow: true
+		TrailImage: smokey
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Vehicle
+		Versus:
+			None: 32
+			Wood: 50
+			Light: 50
+			Heavy: 250
+	Warhead@3Eff: CreateEffect
+		Explosions: awgrenadeex
+		ImpactSounds: AWExplosion1.wav
 
 AWAttackerMissileAG:
 	Inherits: ^MissileWeapon
@@ -445,6 +477,25 @@ AWHydroMissile:
 	Warhead@4EffAir: CreateEffect
 		Explosions: awexplosion
 		ImpactSounds: AWExplosion3.wav
+AWRA2HoverMissile:
+	Inherits: RA2HoverMissile
+	Report: AWBazooka1.wav, AWBazooka3.wav
+	Projectile: MissileCA
+		Image: awmissile2
+	Warhead@3Eff: CreateEffect
+		Explosions: awexplosion2
+		ImpactSounds: AWExplosion1.wav
+	Warhead@4EffAir: CreateEffect
+		Explosions: awexplosion
+		ImpactSounds: AWExplosion3.wav
+AWRA2MultiHoverMissile:
+	Inherits: AWRA2HoverMissile
+	Report: AWMissile1.wav, AWMissile2.wav
+	Burst: 4
+	BurstDelays: 6
+	Warhead@1Dam: SpreadDamage
+		Damage: 2500
+
 AWCruiserMissile:
 	Inherits: AWHydroMissile
 	Burst: 4
@@ -526,7 +577,8 @@ AWDusterBomb:
 
 AWBuggyGrenade:
 	Inherits: VultureGrenade
-	Burst: 4
+	Report: AWGrenadeToss.wav, AWGrenadeToss2.wav
+	Burst: 3
 	BurstDelays: 10
 	Projectile: Bullet
 		Speed: 384
@@ -535,7 +587,7 @@ AWBuggyGrenade:
 		Image: usabomberbomb
 	Warhead@3Eff: CreateEffect
 		Explosions: awgrenadeex
-		ImpactSounds: AWExplosion1.wav
+		ImpactSounds: AWGrenadeEx.wav
 AWVolcanoLavaSpawner:
 	Projectile: InstantExplode
 	Warhead@Dam: TargetDamage
@@ -587,6 +639,8 @@ AWVolcanoLava:
 	ReloadDelay: 100
 	Projectile: Bullet
 		Speed: 180
+		-TrailImage: fb2
+		Image: awlava
 	Warhead@1Dam: SpreadDamage
 		Spread: 400
 		Damage: 15000
@@ -610,12 +664,6 @@ AWOlafFreeze1:
 	MinRange: 4c512
 	ReloadDelay: 360
 	ValidTargets: Chronobeamable, Air
-	Warhead@1: GrantExternalCondition
-		Range: 40c0
-		Condition: chronobeamed
-		Duration: 300
-		ValidStances: Enemy, Neutral
-		ValidTargets: Ground, Water
 	Warhead@1s: FireShrapnel
 		Weapon: AWSnowCloud
 		Amount: 14
@@ -660,7 +708,12 @@ AWOlafFreeze1:
 		Weapon: AWSnowCloud
 		Amount: 18
 		Delay: 300
-
+	Warhead@1Con: GrantExternalCondition
+		Range: 3c0
+		Condition: chronobeamed
+		Duration: 150
+		ValidStances: Enemy, Neutral
+		ValidTargets: Ground, Water
 AWOlafFreeze2:
 	Inherits: AWOlafFreeze1
 	Projectile: InstantHit
@@ -675,9 +728,12 @@ AWOlafFreeze2:
 		ValidTargets: Ground, Water, Air
 		ValidStances: Enemy, Neutral
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
-	Warhead@1: GrantExternalCondition
-		Range: 40c0
-		Duration: 600
+	Warhead@1Con: GrantExternalCondition
+		Range: 3c0
+		Condition: chronobeamed
+		Duration: 150
+		ValidStances: Enemy, Neutral
+		ValidTargets: Ground, Water
 	Warhead@12: FireShrapnel
 		Weapon: AWSnowCloud
 		Amount: 14
@@ -734,6 +790,169 @@ AWSnowEffect:
 		Duration: 150
 		ValidStances: Enemy, Neutral
 		ValidTargets: Ground, Water
+
+AWDrakeTsunami:
+	Projectile: InstantHit
+	Report: plsecan2.aud
+	Range: 8c512
+	MinRange: 4c512
+	ReloadDelay: 360
+	Warhead@1s: FireShrapnel
+		Weapon: AWTsunamiCloud
+		Amount: 40
+		Delay: 1
+	Warhead@2: FireShrapnel
+		Weapon: AWTsunamiCloud
+		Amount: 8
+		Delay: 25
+	Warhead@3: FireShrapnel
+		Weapon: AWTsunamiCloud
+		Amount:8
+		Delay: 40
+	Warhead@4: FireShrapnel
+		Weapon: AWTsunamiCloud
+		Amount: 10
+		Delay: 55
+	Warhead@5: FireShrapnel
+		Weapon: AWTsunamiCloud
+		Amount: 11
+		Delay: 70
+	Warhead@6: FireShrapnel
+		Weapon: AWTsunamiCloud
+		Amount: 12
+		Delay: 85
+	Warhead@7: FireShrapnel
+		Weapon: AWTsunamiCloud
+		Amount: 13
+		Delay: 100
+	Warhead@8: FireShrapnel
+		Weapon: AWTsunamiCloud
+		Amount: 15
+		Delay: 124
+	Warhead@9: FireShrapnel
+		Weapon: AWTsunamiCloud
+		Amount: 18
+		Delay: 150
+	Warhead@10: FireShrapnel
+		Weapon: AWTsunamiCloud2
+		Amount: 18
+		Delay: 275
+	Warhead@11: FireShrapnel
+		Weapon: AWTsunamiCloud2
+		Amount: 18
+		Delay: 300
+
+AWDrakeTsunami2:
+	Inherits: AWDrakeTsunami
+	Projectile: InstantHit
+	Warhead@1Dam: SpreadDamage
+		Spread: 40c0
+		Damage: 7000
+		Versus:
+			None: 24
+			Wood: 72
+			Light: 100
+			Heavy: 80
+		ValidTargets: Ground, Water, Air
+		ValidStances: Enemy, Neutral
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@12: FireShrapnel
+		Weapon: AWTsunamiCloud2
+		Amount: 14
+		Delay: 315
+	Warhead@13: FireShrapnel
+		Weapon: AWTsunamiCloud2
+		Amount: 12
+		Delay: 320
+	Warhead@14: FireShrapnel
+		Weapon: AWTsunamiCloud2
+		Amount: 10
+		Delay: 335
+	Warhead@15: FireShrapnel
+		Weapon: AWTsunamiCloud2
+		Amount: 8
+		Delay: 350
+AWTsunamiCloud:
+	Range: 11c0
+	ReloadDelay: 8
+	Projectile: AthenaProjectile
+		Altitude: 5c0
+	Warhead@1: FireFragment
+		UseZOffsetAsAbsoluteHeight: true
+		Weapon: AWTsunamiWater
+		ValidTargets: Air, Ground, Water
+		Delay: 20
+
+AWTsunamiWater:
+	Inherits: WaterThrower
+	ReloadDelay: 100
+	Projectile: Bullet
+		Speed: 250
+		-Image:
+	Warhead@1Dam: SpreadDamage
+		Spread: 426
+		Damage: 15000
+		InvalidTargets: Wall, Building, Structure
+	Warhead@2Dam: SpreadDamage
+		Spread: 400
+		Damage: 1500
+	Warhead@3Eff: CreateEffect
+		Explosions: awsplashbig
+		ImpactSounds: splash9.aud, vnavupa.wav, AWLava.wav, gexpwasa.wav, gexpifva.wav, vbooat2a.wav
+
+AWTsunamiCloud2:
+	Range: 5c0
+	ReloadDelay: 8
+	Projectile: AthenaProjectile
+		Altitude: 5c0
+	Warhead@1: FireFragment
+		UseZOffsetAsAbsoluteHeight: true
+		Weapon: AWTsunamiWater2
+		ValidTargets: Air, Ground, Water
+		Delay: 1
+
+AWTsunamiWater2:
+	Inherits: WaterThrower
+	ReloadDelay: 100
+	Projectile: Bullet
+		Speed: 250
+		-Image:
+	Warhead@1Dam: SpreadDamage
+		Spread: 400
+		Damage: 7000
+		InvalidTargets: Wall, Building, Structure
+	Warhead@2Dam: SpreadDamage
+		Spread: 400
+		Damage: 1500
+	Warhead@3Eff: CreateEffect
+		Explosions: awsplash
+		ImpactSounds: splash9.aud, vnavupa.wav, AWLava.wav, gexpwasa.wav, gexpifva.wav, vbooat2a.wav
+AWEaglePower1:
+	Projectile: InstantHit
+	Report: plsecan2.aud
+	Range: 8c512
+	MinRange: 4c512
+	ReloadDelay: 360
+	ValidTargets: Air
+	Warhead@1: GrantExternalCondition
+		Range: 40c0
+		Condition: eaglepower1
+		Duration: 1000
+		ValidStances: Ally
+		ValidTargets: Air
+AWEaglePower2:
+	Projectile: InstantHit
+	Report: plsecan2.aud
+	Range: 8c512
+	MinRange: 4c512
+	ReloadDelay: 360
+	ValidTargets: Air, Vehicle
+	Warhead@1: GrantExternalCondition
+		Range: 40c0
+		Condition: eaglepower2
+		Duration: 1000
+		ValidStances: Ally
+		ValidTargets: Air, Vehicle
 AWE1Husk:
 	Inherits: ^GeneralsLightHusks
 	Projectile: Bullet
@@ -868,3 +1087,105 @@ AWBlackBombExplode:
 		ImpactSounds: xplos.aud
 		ImpactActors: false
 		ValidTargets: Air
+
+AWTalonGun:
+	Inherits: ^AWBallisticWeapon
+	ValidTargets: Ground
+	InvalidTargets: Air
+	Range: 8c0
+	Report: AWMegaCannon.wav
+	Burst: 12
+	BurstDelays: 0
+	Projectile: Bullet
+		-Image:
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Air
+
+AWTalonGunAA:
+	Inherits: ^AWBallisticWeapon
+	ValidTargets: Air
+	InvalidTargets: Ground
+	Range: 8c0
+	Report: AWMegaCannon.wav
+	Burst: 12
+	BurstDelays: 0
+	Projectile: Bullet
+		-Image:
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Ground
+
+AWLaserTurretRailgun:
+	Inherits: TSMechRailgun
+	ReloadDelay: 240
+	InvalidTargets: Building, Structure
+	Range: 24c0
+	Report: railuse5.aud
+	Projectile: Railgun
+		BeamColor: FFC551
+	Warhead@1Dam: SpreadDamage
+		ValidStances: Enemy
+
+AWKindleMobCloudMaker:
+	Projectile: InstantHit
+	Range: 8c512
+	MinRange: 4c512
+	ReloadDelay: 360
+	ValidTargets: Ground
+	Warhead@1s: FireShrapnel
+		Weapon: AWKindleMobCloud
+		Amount: 12
+		Delay: 1
+	Warhead@2s: FireShrapnel
+		Weapon: AWKindleMobCloud
+		Amount: 14
+		Delay: 2
+	Warhead@3s: FireShrapnel
+		Weapon: AWKindleMobCloud
+		Amount: 16
+		Delay: 3
+AWKindleMobCloud:
+	Range: 22c0
+	ReloadDelay: 8
+	Projectile: AthenaProjectile
+		Altitude: 5c0
+	Warhead@1: FireFragment
+		UseZOffsetAsAbsoluteHeight: true
+		Weapon: AWKindleSelectBuilding
+		ValidTargets: Air, Ground, Water
+		Delay: 20
+
+AWKindleSelectBuilding:
+	Inherits: ^BallisticWeapon
+	ReloadDelay: 50
+	Range: 33c0
+	-Report:
+	Projectile: Bullet
+		Speed: 400
+		Blockable: false
+		LaunchAngle: 62
+		Inaccuracy: 9999
+	Warhead@1Dam: SpreadDamage
+		Spread: 341
+		Damage: 0
+		Versus:
+			None: 100
+			Wood: 50
+			Light: 80
+			Heavy: 34
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	-Warhead@2Smu: LeaveSmudge
+	-Warhead@3Eff: CreateEffect
+	-Warhead@4EffWater: CreateEffect
+	Warhead@1: FireFragment
+		UseZOffsetAsAbsoluteHeight: true
+		Weapon: AWKindleMobSpawn
+		ValidStances: Enemy, Neutral
+		ValidTargets: Building, Structure
+		InvalidTargets: Wall, Defense
+
+AWKindleMobSpawn:
+	Range: 3c0
+	Projectile: InstantHit
+	Warhead@2: SpawnActor
+		Actors: awmob
+		Delay: 5
