@@ -1,0 +1,790 @@
+^Burnable:
+	GrantConditionOnDamageState:
+		ValidDamageStates: Medium
+		Condition: isBurning 
+	GrantConditionOnDamageState@2:
+		ValidDamageStates: Heavy, Critical
+		Condition: isBurning2
+	WithIdleOverlay:
+		RequiresCondition: isBurning
+		Sequence: flame1
+	WithIdleOverlay@2:
+		RequiresCondition: isBurning2
+		Sequence: flame2
+	RenderSprites:
+		PlayerPalette: WC1Player
+	ActorPreviewPlaceBuildingPreview:
+		OverridePalette: WC1Player
+
+^WC1Infantry:
+	RenderSprites:
+		PlayerPalette: WC1Player
+	WithDeathAnimation:
+		DeathSequencePalette: WC1Player
+
+^WCWorker:
+	Harvester:
+		PipCount: 2
+		Capacity: 2
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 0
+		BaleUnloadAmount: 2
+		FullyLoadedSpeed: 100
+		MaxUnloadQueue: 9
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	
+^Harvester:
+	#Inherits@MC: ^MCImmune
+	#Inherits@snipe: ^DriverKillImmune
+	Harvester:
+		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
+		DeliveryBuildings: hlm,proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom,drpowr
+		FullyLoadedSpeed: 100
+	GpsDot:
+		String: Harvester
+	ExternalCondition@stashcamo:
+		Condition: stashcamo
+		TotalCap: 1
+	Cloak@stashcamo:
+		InitialDelay: 1
+		CloakDelay: 1
+		UncloakOn: None
+		PauseOnCondition: frozen
+		RequiresCondition: stashcamo
+		IsPlayerPalette: true
+
+####################################################################################################
+#		BUILDING HUMAN
+####################################################################################################
+HTH:
+	Inherits: ^BaseBuilding
+	Inherits@BURNABLE: ^Burnable
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 64,64
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Town Hall
+	ProvidesPrerequisite:
+		Prerequisite: hth
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Building.Human
+		BuildDuration: 330
+		Description: Builds Structures\n Trains Peasants.
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Power:
+		Amount: 10
+	SpawnActorsOnSell:
+		ActorTypes: hfoo
+	ScalePowerWithHealth:
+	BaseBuilding:
+	Production:
+		Produces: Building.Human,Defence.Human
+	ProductionBar@BuildingHuman:
+		ProductionType: Building.Human
+	ProductionBar@DefenceHuman:
+		ProductionType: Defence.Human
+	ProductionQueue@HumanBuilding:
+		Type: Building.Human
+		DisplayOrder: 0
+		Factions: human
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@HumanDefence:
+		Type: Defence.Human
+		DisplayOrder: 1
+		Factions: human
+		Group: Defence
+		LowPowerModifier: 200
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseProvider:
+		Cooldown: 75
+		Range: 14c0
+	RotationPaletteEffect:
+		ExcludePalettes: WC1Player
+	LightPaletteRotator:
+		ExcludePalettes: WC1Player
+		
+
+HFAR:
+	Inherits: ^BaseBuilding
+	Inherits@BURNABLE: ^Burnable
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 64,64
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Farm
+	ProvidesPrerequisite:
+		Prerequisite: hfar
+	Buildable:
+		BuildPaletteOrder: 11
+		Prerequisites: hth
+		Queue: Building.Human
+		BuildDuration: 330
+		Description: Provides Food (Power)
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 6
+	SpawnActorsOnSell:
+		ActorTypes: hfoo
+	ScalePowerWithHealth:
+HBAR:
+	Inherits: ^BaseBuilding
+	Inherits@BURNABLE: ^Burnable
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Barracks
+	ProvidesPrerequisite:
+		Prerequisite: hbar
+	Buildable:
+		BuildPaletteOrder: 12
+		Prerequisites: hth
+		Queue: Building.Human
+		Description: Trains infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production:
+		Produces: Infantry.Human
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Infantry.Human
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar:
+		ProductionType: Infantry.Human
+	Power:
+		Amount: 0
+	SpawnActorsOnSell:
+		ActorTypes: hfoo
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 48,42,0,-5
+
+HLM:
+	Inherits: ^BaseBuilding
+	Inherits@BURNABLE: ^Burnable
+	Inherits@shape: ^2x2Shape
+	HitShape:
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 853
+	HitShape@TOP:
+		Type: Rectangle
+			TopLeft: -512, -1450
+			BottomRight: 896, -512
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Lumber Mill
+	ProvidesPrerequisite:
+		Prerequisite: hlm
+	Buildable:
+		BuildPaletteOrder: 13
+		Prerequisites: hfar
+		Queue: Building.Human
+		Description: Dropoff point for\ngold. (Tiberium)
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 6c0
+	Refinery:
+		DockAngle: 112
+		DockOffset: 0,2
+		IsDragRequired: True
+		DragOffset: -554,512,0
+		DragLength: 12
+		TickRate: 15
+	StoresResources:
+		PipColor: Green
+		PipCount: 10
+		Capacity: 1000
+	Selectable:
+		Bounds: 64,64
+	CustomSellValue:
+		Value: 500
+	#FreeActor:
+	#	Actor: hpea
+	#	SpawnOffset: 1,2
+	#	Facing: 64
+	WithResourceLevelOverlay:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	SpawnActorsOnSell:
+		ActorTypes: harc
+	ProvidesPrerequisite@buildingname:
+	SelectionDecorations:
+HBLA:
+	Inherits: ^BaseBuilding
+	Inherits@BURNABLE: ^Burnable
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 64,64
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Blacksmith
+	ProvidesPrerequisite:
+		Prerequisite: hbla
+	Buildable:
+		BuildPaletteOrder: 14
+		Prerequisites: hbar
+		Queue: Building.Human
+		BuildDuration: 330
+		Description: Upgrades Units
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	SpawnActorsOnSell:
+		ActorTypes: hfoo
+	ScalePowerWithHealth:
+HCHU:
+	Inherits: ^BaseBuilding
+	Inherits@BURNABLE: ^Burnable
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 64,64
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Church
+	ProvidesPrerequisite:
+		Prerequisite: hchu
+	Buildable:
+		BuildPaletteOrder: 15
+		Prerequisites: hbar
+		Queue: Building.Human
+		BuildDuration: 330
+		Description: Trains Clerics.
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production:
+		Produces: Vehicle.Human
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Vehicle.Human
+		DisplayOrder: 2
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar:
+		ProductionType: Vehicle.Human
+	Power:
+		Amount: 0
+	SpawnActorsOnSell:
+		ActorTypes: hfoo
+	ScalePowerWithHealth:
+HSTA:
+	Inherits: ^BaseBuilding
+	Inherits@BURNABLE: ^Burnable
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 64,64
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Stable
+	ProvidesPrerequisite:
+		Prerequisite: hsta
+	Buildable:
+		BuildPaletteOrder: 16
+		Prerequisites: hbar
+		Queue: Building.Human
+		BuildDuration: 330
+		Description: Allows for Knights
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	SpawnActorsOnSell:
+		ActorTypes: hfoo
+	ScalePowerWithHealth:
+HTOW:
+	Inherits: ^BaseBuilding
+	Inherits@BURNABLE: ^Burnable
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 64,64
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Tower
+	ProvidesPrerequisite:
+		Prerequisite: htow
+	Buildable:
+		BuildPaletteOrder: 17
+		Prerequisites: hbar
+		Queue: Building.Human
+		BuildDuration: 330
+		Description: Trains Conjurers.\nProvides Radar.
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production:
+		Produces: Aircraft.Human
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Aircraft.Human
+		DisplayOrder: 2
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar:
+		ProductionType: Aircraft.Human
+	ProvidesRadar:
+		RequiresCondition: !lowpower
+	Power:
+		Amount: 0
+	SpawnActorsOnSell:
+		ActorTypes: hfoo
+	ScalePowerWithHealth:
+HSTO:
+	Inherits: ^BaseBuilding
+	Inherits@BURNABLE: ^Burnable
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 96,96
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Stormwind
+	Buildable:
+		BuildPaletteOrder: 18
+		Prerequisites: hlm,hbla,hchu,htow
+		Queue: Building.Human
+		BuildDuration: 330
+		Description: Provides Superweapon
+	Building:
+		Footprint: xxx xxx xxx ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	SpawnActorsOnSell:
+		ActorTypes: hfoo
+	ScalePowerWithHealth:
+####################################################################################################
+#		BUILDING ORC
+####################################################################################################
+
+
+####################################################################################################
+#		UNIT HUMAN
+####################################################################################################
+HPEA:
+	Inherits: ^Soldier
+	Inherits@WC1Infantry: ^WC1Infantry
+	Inherits@harv: ^Harvester
+	Inherits@worker: ^WCWorker
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	AutoTargetPriority@Repair:
+		ValidTargets: Repair, Repairing
+		ValidStances: Ally
+		Priority: 2
+	AutoTargetPriority@DEFAULT:
+		ValidStances: Enemy, Neutral
+	AutoTargetPriority@ATTACKANYTHING:
+		ValidStances: Enemy, Neutral
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Peasant
+	UpdatesPlayerStatistics:
+		AddToArmyValue: false
+	Buildable:
+		BuildPaletteOrder: 5
+		Prerequisites:
+		Queue: Defence.Human
+		Description: Harvester.
+	Mobile:
+		Speed: 100
+	Health:
+		HP: 18000
+	#Food
+	Power:
+		Amount: -1
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: footmanSlice
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithHarvesterSpriteBody:
+		ImageByFullness: hpea, hpeafull
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle,idle1,idle2,idle3,idle4
+	AttackFrontal:	
+HFOO:
+	Inherits: ^Soldier
+	Inherits@WC1Infantry: ^WC1Infantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Footman
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: hbar
+		Queue: Infantry.Human
+		Description: Melee Infantry.
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 10000
+	#Food
+	Power:
+		Amount: -1
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: footmanSlice
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+HARC:
+	Inherits: ^Soldier
+	Inherits@WC1Infantry: ^WC1Infantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Archer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: hlm
+		Queue: Infantry.Human
+		Description: Ranged Infantry.
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 3000
+	#Food
+	Power:
+		Amount: -1
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: bowFire
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+HKNI:
+	Inherits: ^Soldier
+	Inherits@WC1Infantry: ^WC1Infantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Knight
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: hsta
+		Queue: Infantry.Human
+		Description: Mounted Infantry.
+	Mobile:
+		Speed: 80
+	Health:
+		HP: 9000
+	#Food
+	Power:
+		Amount: -1
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: M16
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+HCAT:
+	Inherits: ^Soldier
+	Inherits@WC1Infantry: ^WC1Infantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Catapult
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: hbla
+		Queue: Infantry.Human
+		Description: Seige weapon.
+	Mobile:
+		Speed: 30
+	Health:
+		HP: 30000
+	#Food
+	Power:
+		Amount: -1
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: catapultFire
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+HCON:
+	Inherits: ^Soldier
+	Inherits@WC1Infantry: ^WC1Infantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 250
+	Tooltip:
+		Name: Conjurer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: htow
+		Queue: Aircraft.Human
+		Description: Spell Caster.
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 3000
+	#Food
+	Power:
+		Amount: -1
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: M16
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+HCLE:
+	Inherits: ^Soldier
+	Inherits@WC1Infantry: ^WC1Infantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 220
+	Tooltip:
+		Name: Cleric
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: htow
+		Queue: Vehicle.Human
+		Description: Support Caster.
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 2500
+	#Food
+	Power:
+		Amount: -1
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: M16
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+		
+HSCO:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 0
+	Tooltip:
+		Name: Scorpion
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: htow
+		Queue: Aircraft.Human
+		Description: Lesser Spawn.
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 2500
+	#Food
+	Power:
+		Amount: 0
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: M16
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+####################################################################################################
+#		UNIT ORC
+####################################################################################################
