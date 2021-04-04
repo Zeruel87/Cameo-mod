@@ -28,8 +28,6 @@ E1:
 		MuzzleSequence: garrison-muzzle
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
-		DefaultAttackSequence: shoot
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -106,9 +104,6 @@ E3:
 		Weapon: RocketsG
 	TakeCover:
 		ProneOffset: 180,0,-200
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -411,6 +406,9 @@ rapt.citydrop:
 
 DOG:
 	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	Inherits@MC: ^MCImmune
 	Buildable:
 		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.X_Infantry
 		BuildPaletteOrder: 29
@@ -441,7 +439,7 @@ DOG:
 		Range: 5c512
 	DetectCloaked:
 		Range: 4c0
-		RequiresCondition: !frozen
+		RequiresCondition: !disabled
 		CloakTypes: Cloak, Hijacker
 	Armament:
 		Weapon: DogJaw
@@ -480,8 +478,6 @@ DOG:
 	-TakeCover:
 	-Explodes@Mutate:
 	-Targetable@disguise:
-	Inherits@EXPERIENCE: ^GainsExperience				##########
-	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
 
@@ -512,8 +508,6 @@ RAE1:
 	AttackFrontal:
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
-		DefaultAttackSequence: shoot
-	Parachutable:
 	RenderSprites:
 		Image: E1
 	Voiced:
@@ -589,9 +583,6 @@ RAE3:
 	TakeCover:
 		ProneOffset: 180,0,-200
 	AttackFrontal:
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-	Parachutable:
 	RenderSprites:
 		Image: E3
 	Voiced:
@@ -686,7 +677,7 @@ E7:
 		Range: 6c0
 	DetectCloaked:
 		Range: 5c0
-		RequiresCondition: !frozen
+		RequiresCondition: !disabled
 		CloakTypes: Cloak, Hijacker
 	Passenger:
 		PipType: Red
@@ -877,7 +868,7 @@ SHOK:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 8000
+		HP: 9000
 	Mobile:
 		Speed: 56
 	RevealsShroud:
@@ -1217,8 +1208,6 @@ WarriorAnt:
 	AttackFrontal:
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3
-		DefaultAttackSequence: shoot
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -1587,25 +1576,6 @@ CITYSWAT:
 	ProducibleWithLevel:
 		InitialLevels: 4
 
-CITYBOTELITEARCHITECT:
-	Inherits: CITYELITEARCHITECT
-	Buildable:
-		Queue: CityI.SimCity
-	-MapEditorData:
-
-CITYBOTELITEINSTRUCTOR:
-	Inherits: CITYELITEINSTRUCTOR
-	Buildable:
-		Queue: CityI.SimCity
-		Prerequisites: Library, Police Department
-	-MapEditorData:
-
-CITYBOTELITEEXPERT:
-	Inherits: CITYELITEEXPERT
-	Buildable:
-		Queue: CityV.SimCity
-	-MapEditorData:
-
 CITYE6:
 	Inherits: E6
 	Buildable:
@@ -1845,63 +1815,3 @@ RAPT2:
 		Speed: 113
 	RenderSprites:
 		Image: RAPT
-
-PoliceSquad:
-	Inherits: ^CITYINFANTRY
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Buildable:
-		Queue: Infantry.GDI, RAInfantry.GDI
-		BuildPaletteOrder: 4
-		Prerequisites: ~disabled
-		Description: Debug test for mobs
-	Tooltip:
-		Name: Police Unit
-	Valued:
-		Cost: 1000
-	Health:
-		HP: 10000
-	Armament:
-		Weapon: PolicePistol
-	AutoTarget:
-		ScanRadius: 4
-	Mobile:
-		Locomotor: foot
-		Speed: 50
-		OccupySpace: false
-	RenderSprites:
-		Image: CITYPOLICEOFFICER
-	Voiced:
-		VoiceSet: RAGenericVoice
-	WithInfantryBody:
-		IdleSequences: stand
-		DefaultAttackSequence: shoot
-	-TakeCover:
-	MobSpawnerMaster:
-		Actors: mobpolice, mobpolice, mobpolice, mobpolice
-		RespawnTicks: 750
-		ExitByBudding: false
-	Exit@1:
-		SpawnOffset: 24,-24,0
-		ExitCell: 1,2
-
-mobpolice:
-	Inherits: CITYPOLICEOFFICER
-	RenderSprites:
-		Image: CITYPOLICEOFFICER
-	-Buildable:
-	MobSpawnerSlave:
-    
-migbot:
-	Inherits: MIG
-	-Buildable:
-	-Selectable:
-	-SelectionDecorations:
-	-WithSpriteControlGroupDecoration:
-	Interactable:
-	RenderSprites:
-		Image: mig
-	MobSpawnerSlave:
-	RejectsOrders:
-	ReloadAmmoPool:
-		Delay: 40
-		Count: 1

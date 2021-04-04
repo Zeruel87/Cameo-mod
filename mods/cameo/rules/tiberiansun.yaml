@@ -37,13 +37,13 @@
 
 ^HunterSeekersPower:
 	ProduceActorPowerCA@HunterSeeker:
-		Description: Deploy Hunter-Seekers
-		LongDesc: Deploys 2 Hunter-Seekers.\n  Instantly kills mobile targets\n  Requires line of sight to target
+		Description: Deploy Hunter-Seeker
+		LongDesc: Deploys a Hunter-Seeker.\n  Instantly kills mobile targets\n  Splash damage strong vs Vehicles, Buildings\n  Requires line of sight to target
 		Icon: hunterseeker
 		PauseOnCondition: lowpower
-		Actors: tsprobe, tsprobe
+		Actors: tsprobe
 		Type: Vehicle.HunterSeeker
-		ChargeInterval: 2250
+		ChargeInterval: 3000
 		ReadyAudio: Reinforce
 		BlockedAudio: 
 		AutoFire: True
@@ -1262,7 +1262,7 @@ TSNTHAND:
 		Range: 5c0
 	WithBuildingBib:
 	RallyPoint:
-		Offset: 1,2
+		Path: 1,2
 	Exit@1:
 		SpawnOffset: -426,85,0
 		ExitCell: 0,1
@@ -1366,7 +1366,7 @@ TSGTWEAP:
 		Range: 4c0
 	WithBuildingBib:
 	RallyPoint:
-		Offset: 0,2
+		Path: 0,2
 	Exit@1:
 		SpawnOffset: -512,-512,0
 		ExitCell: 2,1
@@ -1471,7 +1471,7 @@ TSNTWEAP:
 		Range: 4c0
 	WithBuildingBib:
 	RallyPoint:
-		Offset: 0,2
+		Path: 0,2
 	Exit@1:
 		SpawnOffset: -512,-512,0
 		ExitCell: 2,1
@@ -2197,6 +2197,7 @@ tsntmisl:
 		IncomingSpeechNotification: NuclearWarheadApproaching
 		MissileWeapon: TSTacticalMissile
 		MissileDelay: 5
+		MissilePalette: tseffect
 		FlightDelay: 100
 		DetonationAltitude: 4c0
 		SpawnOffset: 3c0,0,-1c512
@@ -2227,6 +2228,7 @@ tsntmisl:
 		IncomingSpeechNotification: NuclearWarheadApproaching
 		MissileWeapon: TSChemTacticalMissile
 		MissileDelay: 5
+		MissilePalette: tseffect
 		FlightDelay: 100
 		SpawnOffset: 3c0,0,-1c512
 		DisplayBeacon: True
@@ -2829,7 +2831,6 @@ tsntpuls:
 		Prerequisites: anyhq, ~techlevel.medium
 		Queue: Defence.TSGDI, RADefence.TSGDI, Defence.CABAL, RADefence.CABAL, Defence.TSNod, RADefence.TSNod, Defence.Mutant, RADefence.Mutant
 		BuildDurationModifier: 40
-		BuildLimit: 1
 		Description: Disables mechanical units in an area.\nRequires power to operate.
 	Valued:
 		Cost: 1000
@@ -3025,9 +3026,6 @@ TSE1:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: TSVulcanTower
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -3200,7 +3198,7 @@ TSJUMPJET:
 		MoveSequence: flying
 	-TakeCover:
 	Hovers:
-		RequiresCondition: (airborne || swimming) && !frozen
+		RequiresCondition: (airborne || swimming) && !disabled
 	DamagedByTerrain:
 		RequiresCondition: !airborne
 	ProducibleWithLevel:
@@ -3381,9 +3379,6 @@ TSE3:
 		Weapon: RocketsG
 	TakeCover:
 		ProneOffset: 180,0,-200
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -3421,11 +3416,11 @@ TSCYBORG:
 	Armament@PRIMARY:
 		Weapon: TSVulcan3
 	WithInfantryBody:
-		DefaultAttackSequence: attack
 		RequiresCondition: !cydamaged
+		DefaultAttackSequence: attack
 	WithInfantryBody@damaged:
 		MoveSequence: crippled-run
-		AttackSequences: crippled-attack
+		DefaultAttackSequence: crippled-attack
 		StandSequences: crippled-stand
 		RequiresCondition: cydamaged
 	GrantConditionOnDamageState@damaged:
@@ -3453,7 +3448,6 @@ TSCYBORG:
 	GrantConditionOnPrerequisite@MACHINESHOP:
 		Condition: hospital
 		Prerequisites: machshop
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -3512,7 +3506,7 @@ TSCHAMSPY:
 		InitialDelay: 60
 		CloakDelay: 60
 		UncloakOn: Unload
-		PauseOnCondition: frozen
+		PauseOnCondition: disabled
 		IsPlayerPalette: true
 	Infiltrates:
 		Types: SpyInfiltrate
@@ -3571,7 +3565,7 @@ TSMHIJACK:
 	-DamagedByTerrain:
 
 TSREAPER:
-	Inherits: ^Vehicle
+	Inherits: ^Walker
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@MC:  ^MCImmune
@@ -3586,7 +3580,7 @@ TSREAPER:
 	Valued:
 		Cost: 750		#1000
 	Buildable:
-		Queue: Infantry.CABAL, RAInfantry.CABAL, Vehicle.X_All
+		Queue: Infantry.CABAL, RAInfantry.CABAL, Vehicle.X_Vehicles
 		BuildPaletteOrder: 140
 		Prerequisites: anyhq
 		Description: Cyborg walker armed with missiles and nets.\n Strong vs vehicles\n Can immobilize infantry
@@ -3605,10 +3599,6 @@ TSREAPER:
 		Name: Cyborg Reaper
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
-	QuantizeFacingsFromSequence:
-		Sequence: stand
-	WithInfantryBody:
-		DefaultAttackSequence: attack
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	DeathSounds:
@@ -3693,8 +3683,6 @@ TSUMAGON:
 		Weapon: TSSniperE
 	WithInfantryBody:
 		IdleSequences: idle1,idle2
-		DefaultAttackSequence: shoot
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -3723,7 +3711,7 @@ TSGHOST:
 	Buildable:
 		BuildPaletteOrder: 90
 		Prerequisites: barracks, tek
-		Queue: Infantry.TSGDI, RAInfantry.TSGDI, Infantry.X_Infantry
+		Queue: Infantry.TSGDI, RAInfantry.TSGDI
 		BuildLimit: 1
 		Description: Elite commando infantry, armed with\na railgun and C4.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Destroy Building with C4\nMaximum 1 can be trained.
 	Mobile:
@@ -3737,9 +3725,6 @@ TSGHOST:
 	Armament@PRIMARY:
 		Weapon: TSLtRail
 		LocalOffset: 256,43,256
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -3762,7 +3747,7 @@ tsghost.mutant:
 	Valued:
 		Cost: 1100
 	Buildable:
-		Queue: Infantry.MUTANT, RAInfantry.MUTANT
+		Queue: Infantry.MUTANT, RAInfantry.MUTANT, Infantry.X_Infantry
 		BuildLimit: 0
 	UpdatesPlayerStatistics:
 		OverrideActor: tsghost
@@ -3798,9 +3783,6 @@ TSMUTANT:
 	Armament@ELITE:
 		Weapon: MutDualWieldE
 		RequiresCondition: rank-elite
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -3836,9 +3818,6 @@ TSMWMN:
 	Armament@ELITE:
 		Weapon: MutAPRifleE
 		RequiresCondition: rank-elite
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -3921,8 +3900,6 @@ TSWEEDGUY:
 		MuzzleSequence: muzzle
 	WithInfantryBody:
 		IdleSequences: idle1,idle2
-		DefaultAttackSequence: shoot
-	Parachutable:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -3964,7 +3941,7 @@ TSDOGGIE:
 		VoiceSet: TSFiend
 	DetectCloaked:
 		Range: 3c0
-		RequiresCondition: !frozen
+		RequiresCondition: !disabled
 	-RenderSprites:
 	RenderSprites:
 	Armament@GARRISONED:						##########
@@ -4108,21 +4085,25 @@ TSHARV:
 #		Cost: 1100
 
 tsldrone:
-	Inherits: ^Tank
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
 	Inherits@MC: ^MCImmune
-	Inherits@snipe: ^DriverKillImmune
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@snipe: ^DriverKillAndNeutronImmune
 	Valued:
 		Cost: 150
 	Tooltip:
 		Name: Limpet drone
 	Buildable:
 		BuildPaletteOrder: 80
-		Prerequisites:  anyhq, ~techlevel.high
+		Prerequisites: ~disabled #anyhq
 		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.TSNod, RAVehicle.TSNod, Vehicle.CABAL, RAVehicle.CABAL
 		Description: Hovering drone that can deploy\ninto a mine.
 	Mobile:
 		Locomotor: hover
 		Speed: 166
+		RequireForceMoveCondition: deployed
 	Health:
 		HP: 11500
 	Repairable:
@@ -4131,37 +4112,55 @@ tsldrone:
 		Type: Light
 	RevealsShroud:
 		Range: 9c0
-	SelectionDecorations:
-	Selectable:
 	Inherits@EXT: ^ExternalConditions					##########
 	Voiced:
 		VoiceSet: RobotTankVoice
 	DeliversCash:
-		Payload: 250
+		Payload: 75
 	Hovers:
-		RequiresCondition: !disabled
+		RequiresCondition: !disabled && undeployed
+	Turreted:
+	AttackTurreted:
+		RequiresCondition: deployed
+	Armament:
+		Weapon: TSEMPLimpetBomb
 	RenderVoxels:
 		Scale: 7.2
 	-TemporaryOwnerManager:
 	Capturable:
 		Types: thiefproof
-	Transforms:
-		IntoActor: tsdlimpmk
-		Offset: 0,0
-		Facing: 1
+	WithMakeAnimation:
+		BodyNames: deployed
+	GrantConditionOnDeploy:
+		UndeployedCondition: undeployed
+		DeployedCondition: deployed
+		UndeployOnMove: true
 		PauseOnCondition: disabled
-		NoTransformNotification: BuildingCannotPlaceAudio
-
-tsdlimpmk:
-	Inherits: ^Mine
-	RenderSprites:
-		Image: tsdlimpmk
-	Explodes:
-		Weapon: ATMine
+		DeploySounds: place2.aud
+		UndeploySounds: place2.aud
+	WithFacingSpriteBody:
+		RequiresCondition: undeployed
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	GrantConditionOnAttack:
+		Condition: triggered
+	KillsSelf@EMP:
+		RequiresCondition: (empdisable && !untargetable) || triggered
+		DamageTypes: DefaultDeath
+	DetectCloaked:
+		Range: 6c0
+		RequiresCondition: deployed && !disabled
+	Cloak:
+		InitialDelay: 30
+		CloakDelay: 30
+		RequiresCondition: deployed
+		IsPlayerPalette: true
 
 tsprobe:
 	Inherits: ^Helicopter
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
 	Aircraft:
 		Speed: 300
@@ -4169,9 +4168,9 @@ tsprobe:
 		AltitudeVelocity: 0c768
 		Repulsable: false
 	Health:
-		HP: 50000
+		HP: 20000
 	Armor:
-		Type: Heavy
+		Type: Light
 	RevealsShroud:
 		Range: 3c0
 		Type: GroundPosition
@@ -4182,7 +4181,14 @@ tsprobe:
 		Cost: 600
 	Tooltip:
 		Name: Hunter-Seeker Droid
-	WithVoxelBody:
+	Selectable:
+		Bounds: 18,18,0,-6
+		DecorationBounds: 12,17,0,-6
+	WithFacingSpriteBody:
+	WithSpriteBody@shadow:
+		Sequence: shadow
+		Name: shadow
+		ForceToGround: true
 	Voiced:
 		VoiceSet: RobotTankVoice
 	AutoTarget:
@@ -4200,6 +4206,10 @@ tsprobe:
 		Condition: triggered
 	KillsSelf:
 		RequiresCondition: triggered
+	RenderSprites:
+		PlayerPalette: playerra2
+	-RenderVoxels:
+	-WithVoxelBody:
 	-WithShadow:
 	-SpawnActorOnDeath:
 	Explodes:
@@ -4223,18 +4233,16 @@ TSMMCH:
 	Inherits@EMP: ^TurretEMP
 	Inherits@detect: ^EliteDetector
 	Inherits@vo: ^AttackTurretedVoice
-	Inherits@SWTargetableWalker: ^SWTargetableWalker
 	Valued:
 		Cost: 800
 	Tooltip:
 		Name: Titan
 	Buildable:
 		BuildPaletteOrder: 50
-		Queue: Vehicle.TSGDI, RAVehicle.TSGDI
+		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
 		Description: General purpose mechanized walker.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		Locomotor: tracked
-		TurnSpeed: 5
 		Speed: 75
 	Health:
 		HP: 45000
@@ -4295,12 +4303,11 @@ TSJUGG:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: tek, ~techlevel.high
-		Queue: Vehicle.TSGDI, RAVehicle.TSGDI
+		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
 		Description: Mobile artillery mech.\nImmobile when firing.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Mobile:
 		Locomotor: tracked
 		Speed: 71
-		TurnSpeed: 5
 	Health:
 		HP: 35000
 	Repairable:
@@ -4379,12 +4386,11 @@ TSAPC:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: barracks, ~techlevel.low
-		Queue: Vehicle.TSGDI, RAVehicle.TSGDI
+		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
 		Description: Armored infantry transport.\nCan move on water.
 	Mobile:
 		Locomotor: amphibius
 		Speed: 113
-		TurnSpeed: 5
 	Health:
 		HP: 25000
 	Repairable:
@@ -4455,7 +4461,7 @@ TSHVR:
 	Buildable:
 		BuildPaletteOrder: 80
 		Prerequisites:  anyhq, ~techlevel.medium
-		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Naval.TSGDI, Naval.TSGDI
+		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Naval.TSGDI, RANaval.TSGDI, Vehicle.X_Vehicles
 		Description: Hovering vehicle armed with\nlong range missiles.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
 		Locomotor: hover
@@ -4499,7 +4505,6 @@ TSSMECH:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EXT: ^ExternalConditions
-	Inherits@SWTargetableWalker: ^SWTargetableWalker
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -4507,12 +4512,12 @@ TSSMECH:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		Queue: Vehicle.TSGDI, RAVehicle.TSGDI
+		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
 		BuildPaletteOrder: 20
 		Prerequisites: vehicleproduction, ~techlevel.low
 		Description: Anti-personnel walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
-		TurnSpeed: 5
+		TurnSpeed: 20
 		Speed: 99
 		Locomotor: wheeled
 	Health:
@@ -4546,7 +4551,6 @@ TSHMEC:
 	Inherits@crush: ^VehicleCrusher
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@snipe: ^DriverKillImmune
-	Inherits@SWTargetableWalker: ^SWTargetableWalker
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -4554,11 +4558,11 @@ TSHMEC:
 	Buildable:
 		BuildPaletteOrder: 140
 		Prerequisites: tek, ~techlevel.high
-		Queue: Vehicle.TSGDI, RAVehicle.TSGDI
+		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
 		BuildLimit: 1
 		Description: Slow heavy walker.\nArmed with dual railguns and rocket launchers.\n Strong vs Everything\n Maximum 1 can be built.
 	Mobile:
-		TurnSpeed: 3
+		TurnSpeed: 8
 		Speed: 42
 	Health:
 		HP: 200000
@@ -4623,10 +4627,10 @@ TSSONIC:
 	Buildable:
 		BuildPaletteOrder: 120
 		Prerequisites: tek, ~techlevel.high
-		Queue: Vehicle.TSGDI, RAVehicle.TSGDI
+		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
 		Description: Armored high-tech vehicle with\na long range sonic armament.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Aircraft
 	Mobile:
-		TurnSpeed: 4
+		TurnSpeed: 8
 		Speed: 56
 	Health:
 		HP: 50000
@@ -4677,7 +4681,6 @@ tsaegis:
 		Queue: Naval.TSGDI, RANaval.TSGDI
 		Description: Heavy GDI anti-aircraft warship.\n Strong vs. Aircraft
 	Mobile:
-		TurnSpeed: 5
 		Speed: 90
 	Health:
 		HP: 80000
@@ -4721,11 +4724,11 @@ TSBGGY:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: vehicleproduction, ~techlevel.low
-		Queue: Vehicle.TSNod, RAVehicle.TSNod
+		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.X_Vehicles
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
 		Locomotor: wheeled
-		TurnSpeed: 40
+		TurnSpeed: 20
 		Speed: 142
 	Health:
 		HP: 22000
@@ -4768,18 +4771,18 @@ TSBIKE:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: vehicleproduction, ~techlevel.low
-		Queue: Vehicle.TSNod, RAVehicle.TSNod
+		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.X_Vehicles
 		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		Locomotor: wheeled
-		TurnSpeed: 40
+		TurnSpeed: 20
 		Speed: 170
 	Health:
 		HP: 15000
 	Repairable:
 		HpPerStep: 2000
 	Armor:
-		Type: Wood
+		Type: Light
 	RevealsShroud:
 		Range: 6c0
 	Armament@PRIMARY:
@@ -4816,17 +4819,16 @@ TSSTNK:
 	Buildable:
 		BuildPaletteOrder: 150
 		Prerequisites: tek, ~techlevel.high
-		Queue: Vehicle.TSNod, RAVehicle.TSNod
+		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.X_Vehicles
 		Description: Lightly armoured tank equipped with a \nstealth generator. Armed with missiles.\nCan be spotted by infantry at close range.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
-		TurnSpeed: 5
-		Speed: 100
+		Speed: 108
 	Health:
 		HP: 18000
 	Repairable:
 		HpPerStep: 2000
 	Armor:
-		Type: Wood
+		Type: Heavy
 	RevealsShroud:
 		Range: 5c0
 	Armament@PRIMARY:
@@ -4871,18 +4873,17 @@ TSREPAIR:
 	Buildable:
 		BuildPaletteOrder: 70
 		Prerequisites: tsgtdept, ~techlevel.medium
-		Queue: Vehicle.TSNod, RAVehicle.TSNod
+		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.X_Vehicles
 		Description: Repairs nearby vehicles.\n  Unarmed
 	Mobile:
 		Locomotor: tracked
-		TurnSpeed: 5
 		Speed: 85
 	Health:
 		HP: 20000
 	Repairable:
 		HpPerStep: 2000
 	Armor:
-		Type: Wood
+		Type: Heavy
 	RevealsShroud:
 		Range: 5c0
 	Armament:
@@ -4918,11 +4919,11 @@ TSTTNK:
 		Name: Tick Tank
 	Buildable:
 		BuildPaletteOrder: 60
-		Queue: Vehicle.TSNod, RAVehicle.TSNod
+		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.X_Vehicles
 		Description: Nod's main battle tank.\nCan deploy to gain extra protection.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		Locomotor: tracked
-		TurnSpeed: 64
+		TurnSpeed: 24
 		Speed: 90
 		RequireForceMoveCondition: deployed
 	Health:
@@ -5010,7 +5011,7 @@ TSTTNK:
 		RequiresCondition: !deployed
 	AIDeployNotifier:
 		DeployChance: 75
-		DeployTicks: 0
+		DeployTicks: 300
 		UndeployTicks: 1000
 	Voiced:
 		VoiceSet: TSVehicle
@@ -5031,11 +5032,10 @@ TSART2:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: anyhq, ~techlevel.medium
-		Queue: Vehicle.TSNod, RAVehicle.TSNod
+		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.X_Vehicles
 		Description: Mobile artillery.\nImmobile when firing.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Mobile:
 		Locomotor: tracked
-		TurnSpeed: 2
 		Speed: 71
 	Health:
 		HP: 30000
@@ -5111,6 +5111,9 @@ TSART2:
 	AnnounceOnSeen@subterranean:
 		PingRadar: true
 		Notification: SubterraneanUnitDetected
+	GrantCondition@untargetable:
+		Condition: untargetable
+		RequiresCondition: chronobeamed || invulnerability || submerged
 
 TSSUBTANK:
 	Inherits: ^Tank
@@ -5127,11 +5130,10 @@ TSSUBTANK:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: tek, ~techlevel.high
-		Queue: Vehicle.TSNod, RAVehicle.TSNod
+		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.X_Vehicles
 		Description: Subterranean flame tank.\nIs able to move underground.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks, Aircraft
 	Mobile:
 		Locomotor: subterranean
-		TurnSpeed: 6
 		Speed: 71
 	Health:
 		HP: 30000
@@ -5172,12 +5174,11 @@ TSSAPC:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: anyhq, ~techlevel.medium
-		Queue: Vehicle.TSNod, RAVehicle.TSNod
+		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.X_Vehicles
 		Description: Troop transport that can move\nunderground to avoid detection.\n  Unarmed
 	Mobile:
 		Locomotor: subterranean
 		PauseOnCondition: loading || being-captured || disabled
-		TurnSpeed: 5
 		Speed: 71
 	Health:
 		HP: 17500
@@ -5227,7 +5228,6 @@ tsbsub:
 		Queue: Naval.TSNod, RANaval.TSNod
 		Description: Versatile Nod submarine, armed with missiles.\n Strong vs Vehicles, Aircraft
 	Mobile:
-		TurnSpeed: 4
 		Speed: 71
 	Health:
 		HP: 120000
@@ -5286,10 +5286,9 @@ tssgen:
 	Buildable:
 		BuildPaletteOrder: 120
 		Prerequisites: tsntstlh, ~techlevel.high
-		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.CABAL, RAVehicle.CABAL
+		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.CABAL, RAVehicle.CABAL, Vehicle.X_Vehicles
 		Description: Cloaks nearby buildings and units.\nCan not be cloaked.\n Unarmed
 	Mobile:
-		TurnSpeed: 4
 		Speed: 56
 	Health:
 		HP: 20000
@@ -5335,10 +5334,9 @@ tslpst:
 	Buildable:
 		BuildPaletteOrder: 120
 		Prerequisites: anyhq
-		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.TSNod, RAVehicle.TSNod, Vehicle.CABAL, RAVehicle.CABAL
+		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.TSNod, RAVehicle.TSNod, Vehicle.CABAL, RAVehicle.CABAL, Vehicle.X_Vehicles
 		Description: Detects cloaked units and buildings.\n Unarmed
 	Mobile:
-		TurnSpeed: 5
 		Speed: 85
 	Health:
 		HP: 60000
@@ -5370,11 +5368,10 @@ tsmemp:
 		Name: Mobile EMP
 	Buildable:
 		BuildPaletteOrder: 110
-		Prerequisites: anyhq
-		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, tsntpuls
+		Prerequisites: anyhq, tsntpuls
+		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
 		Description: Shuts down vehicles with an EMP blast.\n  Strong vs Vehicles, Cyborgs
 	Mobile:
-		TurnSpeed: 8
 		Speed: 100
 	Health:
 		HP: 20000
@@ -5420,7 +5417,7 @@ TSWINI2:
 	Buildable:
 		BuildPaletteOrder: 160
 		Prerequisites: anyhq, ~techlevel.medium
-		Queue: Vehicle.MUTANT, RAVehicle.MUTANT
+		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Light motor vehicle armed with\nlong range missiles.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
 		Speed: 99
@@ -5456,7 +5453,7 @@ TSWINI2:
 		Scale: 7.5
 
 TSCAR2:
-	Inherits: ^Tank
+	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -5469,7 +5466,7 @@ TSCAR2:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: vehicleproduction, ~techlevel.low
-		Queue: Vehicle.MUTANT, RAVehicle.MUTANT
+		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Fast raiding vehicle.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
 		Speed: 113
@@ -5519,12 +5516,10 @@ TS1TNK:
 		Name: Light Tank
 	Buildable:
 		BuildPaletteOrder: 170
-		Prerequisites:
-		Queue: Vehicle.MUTANT, RAVehicle.MUTANT
+		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Fast, lightly armored tank.\n Strong vs Light Vehicles
 	Mobile:
 		Locomotor: tracked
-		TurnSpeed: 7
 		Speed: 110
 	Health:
 		HP: 34000
@@ -5572,7 +5567,7 @@ TS2TNK:
 	Buildable:
 		BuildPaletteOrder: 180
 		Prerequisites: anyhq, ~techlevel.medium
-		Queue: Vehicle.MUTANT, RAVehicle.MUTANT
+		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: General-purpose Mutant tank.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
 	Mobile:
 		Locomotor: tracked
@@ -5675,11 +5670,9 @@ TSFTNK:
 		Name: Flame Tank
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites:
-		Queue: Vehicle.MUTANT, RAVehicle.MUTANT
+		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Mutant incendiary tank, restored from\nFirst Tiberium War inventories.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
 	Mobile:
-		TurnSpeed: 7
 		Speed: 99
 	Health:
 		HP: 27000
@@ -5721,7 +5714,7 @@ TS4TNK:
 	Buildable:
 		BuildPaletteOrder: 200
 		Prerequisites: tek, ~techlevel.high
-		Queue: Vehicle.MUTANT, RAVehicle.MUTANT
+		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Mutant superheavy tank, restored from\nFirst Tiberium War inventories.\n Can attack Aircraft\n Strong vs Everything
 	Mobile:
 		Locomotor: heavytracked
@@ -5788,7 +5781,7 @@ TSARTY:
 	Buildable:
 		BuildPaletteOrder: 160
 		Prerequisites: anyhq
-		Queue: Vehicle.MUTANT, RAVehicle.MUTANT
+		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Mutant artillery with heavy sabot shells.\n Strong vs Vehicles, Buildings\n Weak vs Infantry, Aircraft
 	Mobile:
 		Speed: 85
@@ -5836,7 +5829,7 @@ tsmlrs:
 	Buildable:
 		BuildPaletteOrder: 160
 		Prerequisites: anyhq
-		Queue: Vehicle.MUTANT, RAVehicle.MUTANT
+		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Mutant rocket artillery.\n Strong vs Infantry, Buildings\n Weak vs Vehicles
 	Mobile:
 		Speed: 85
@@ -5893,7 +5886,7 @@ tsm113:
 	Buildable:
 		BuildPaletteOrder: 160
 		Prerequisites: barracks
-		Queue: Vehicle.MUTANT, RAVehicle.MUTANT
+		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Armored troop transport.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
 		Speed: 132
@@ -5982,7 +5975,7 @@ TSDEFENDER:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		Queue: Vehicle.CABAL, RAVehicle.CABAL, Vehicle.X_All
+		Queue: Vehicle.CABAL, RAVehicle.CABAL, Vehicle.X_Vehicles
 		BuildPaletteOrder: 140
 		BuildLimit: 1
 		BuildDurationModifier: 40
@@ -6217,8 +6210,6 @@ TSORCA:
 		PauseOnCondition: disabled
 		AttackType: Hover
 	-WithShadow:
-	WithMoveAnimation:
-		MoveSequence: move
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 36,36
@@ -6302,8 +6293,6 @@ TSORCAB:
 		PersistentTargeting: false
 		PauseOnCondition: disabled
 	-WithShadow:
-	WithMoveAnimation:
-		MoveSequence: move
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 36,36
@@ -6457,8 +6446,6 @@ TSSCRIN:
 		PersistentTargeting: false
 		PauseOnCondition: disabled
 	-WithShadow:
-	WithMoveAnimation:
-		MoveSequence: move
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 36,36
@@ -6538,8 +6525,6 @@ TSAPACHE:
 		PauseOnCondition: disabled
 		AttackType: Hover
 	-WithShadow:
-	WithMoveAnimation:
-		MoveSequence: move
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 36,36
@@ -6634,8 +6619,6 @@ TSHELI:
 		PauseOnCondition: disabled
 		AttackType: Hover
 	-WithShadow:
-	WithMoveAnimation:
-		MoveSequence: move
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 36,36
@@ -6726,8 +6709,6 @@ TSHIND:
 		PauseOnCondition: disabled
 		AttackType: Hover
 	-WithShadow:
-	WithMoveAnimation:
-		MoveSequence: move
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 36,36
