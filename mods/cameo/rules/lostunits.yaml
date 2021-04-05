@@ -4371,6 +4371,15 @@ swafldh:
 		Prerequisite: scrapvehicles
 	RenderSprites:
 		Image: swafld
+	SeedsResource@C:
+		ResourceType: SWPCarbon
+		Interval: 440
+	SeedsResource@N:
+		ResourceType: SWPMin
+		Interval: 660
+	SeedsResource@M:
+		ResourceType: SWPNova
+		Interval: 660
 swweap:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -5441,9 +5450,10 @@ swdtmpl:
 	ProvidesPrerequisite@2:
 		Prerequisite: tek
 swpalace:
-	Inherits: ^BaseBuilding
+	Inherits: ^Defense
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^3x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@SW: ^PrimarySuperweapon
 	Inherits@sell: ^TDSpawnActorsOnSell
 	HitShape:
@@ -5517,6 +5527,26 @@ swpalace:
 		Prerequisite: nodnuke
 	ProvidesPrerequisite@2:
 		Prerequisite: tek
+	ProvidesPrerequisite@buildingname:
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 5
+		PipCount: 5
+		EjectOnDeath: false
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 768,0,1024, 448,-682,1024, -448,-682,1024, -768,0,1024, -448,682,1024, 448,682,1024
+		PauseOnCondition: chronobeamed
+	Turreted:
+		TurnSpeed: 255
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	RangeMultiplier@Extrarange:
+		Modifier: 175
+	DetectCloaked:
+		Range: 2c0
+
 swgun:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
@@ -5526,7 +5556,7 @@ swgun:
 	Valued:
 		Cost: 900
 	Tooltip:
-		Name: Turret
+		Name: Turbolaser Turret
 	Buildable:
 		BuildPaletteOrder: 45
 		Prerequisites: barracks
@@ -5933,7 +5963,7 @@ swsite:
 	Power:
 		Amount: 0
 	Building:
-		Footprint: xx xx
+		Footprint: xx __
 		Dimensions: 2,2
 	Voiced:
 		VoiceSet: GLStingerSiteVoice
@@ -6029,7 +6059,7 @@ swtrade:
 		BuildPaletteOrder: 10
 		Prerequisites: anyhq
 		Queue: Building.SWSEPARATIST, Building.SWHUTT, RABuilding.SWSEPARATIST, RABuilding.SWHUTT
-		Description: Provides a cash supply
+		Description: Spawn Resources
 	Building:
 		Footprint: xX xx ==
 		Dimensions: 2,3
@@ -6041,10 +6071,15 @@ swtrade:
 	WithBuildingBib:
 	Power:
 		Amount: -30
-	CashTrickler@Rank0:
-		Interval: 20
-		Amount: 20
-
+	SeedsResource@C:
+		ResourceType: SWPCarbon
+		Interval: 330
+	SeedsResource@N:
+		ResourceType: SWPMin
+		Interval: 550
+	SeedsResource@M:
+		ResourceType: SWPNova
+		Interval: 550
 ########################################################
 #	SW Meet CNC Units
 ########################################################
@@ -7507,7 +7542,7 @@ sw2tnk:
 		BuildPaletteOrder: 110
 		Description: Droid Army Main Battle Tank.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Valued:
-		Cost: 700
+		Cost: 750
 	Tooltip:
 		Name: Armored Assault Tank Mk I
 		GenericName: Tank
@@ -7531,6 +7566,10 @@ sw2tnk:
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle
+	Armament@B:
+		Weapon: SWTuskLaser
+		LocalOffset: 200,130,33, 200,-130,33
 		MuzzleSequence: muzzle
 	AttackFrontal:
 	WithMuzzleOverlay:
@@ -8660,7 +8699,6 @@ swbadr:
 	Inherits: ^RANeutralPlane
 	-Huntable:
 	-UpdatesPlayerStatistics:
-	-GainsExperience:
 	ParaDrop:
 		DropRange: 4c0
 		ChuteSound: chute1.aud
@@ -8866,6 +8904,77 @@ swptnk:
 	RangeMultiplier@Salvage2:
 		RequiresCondition: scrap_create_bonus >= 2
 		Modifier: 170
+swjabbaparty:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@cargo: ^CargoVehicle
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Party Sail Barge
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: glbbus
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: tek
+		Queue: Vehicle.SWHUTT, RAVehicle.SWHUTT, Vehicle.X_Vehicles
+		Description: Mobile bunker vehicle.\n  Passengers can fire from within\n  Immobilized on heavy damage
+	Mobile:
+		Speed: 90
+		Locomotor: hover
+	Hovers:
+	RejectsOrders@immobile:
+		Except: Unload, Stop
+		RequiresCondition: damagedslow
+	Passenger:
+		Weight: 6
+	Health:
+		HP: 175000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Heavy
+	DamageMultiplier@bunker:
+		Modifier: 50
+		RequiresCondition: damagedslow
+	RevealsShroud:
+		Range: 8c0
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 8
+		PipCount: 8
+		EjectOnDeath: false #desync
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PauseOnCondition: chronobeamed
+	RevealOnFire:
+		ArmamentNames: primary, garrisoned
+	RenderRangeCircle:
+		FallbackRange: 6c0
+	Selectable:
+		Class: swjabbaparty
+	AutoTarget:
+		AllowMovement: true
+	Turreted:
+		TurnSpeed: 10
+	RenderSprites:
+		Image: swjabbaparty
+	DamageMultiplier@scrap1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 80
+	DamageMultiplier@scrap2:
+		RequiresCondition: scrap_create_bonus >= 2
+		Modifier: 70
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+
 ########################################################
 #	Misc
 ########################################################
