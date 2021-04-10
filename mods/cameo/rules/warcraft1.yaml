@@ -1,3 +1,8 @@
+#   https://www.unitstatistics.com/warcraft/
+#   10HP WC1= 1200 ORA
+#   1 DMG WC1 = 100 ORA
+#   1 Armor point WC1 = 10% armor ORA
+
 ^Burnable:
 	GrantConditionOnDamageState:
 		ValidDamageStates: Medium
@@ -33,10 +38,61 @@
 		MaxUnloadQueue: 9
 	WithHarvestAnimation:
 	WithDockingAnimation:
-	
+    
+^WCUnitProduction:
+	Inherits@prod: ^ProducesUnits
+	GrantConditionOnPowerState@supply:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	Production@NORMAL:
+		PauseOnCondition: lowpower
+	#Production@CLASSICPRODUCTIONQUEUES:
+	#	PauseOnCondition: lowpower	
 
+^wc_h_str_sword:
+    GrantConditionOnPrerequisite@upgrade:
+        Condition: sword_upg
+        Prerequisites: wc_h_str_sword || wc_o_str_axe
+    GrantConditionOnPrerequisite@upgrade2:
+        Condition: sword_upg2
+        Prerequisites: wc_h_str_sword2 || wc_o_str_axe2
+    FirepowerMultiplier@upgrade:
+        Modifier: 120
+        RequiresCondition: sword_upg
+    FirepowerMultiplier@upgrade2:
+        Modifier: 140
+        RequiresCondition: sword_upg2             
+        
+^wc_h_str_shield:
+    GrantConditionOnPrerequisite@supgrade:
+        Condition: shield_upg
+        Prerequisites: wc_h_str_shield || wc_o_str_shield
+    GrantConditionOnPrerequisite@supgrade2:
+        Condition: shield_upg2
+        Prerequisites: wc_h_str_shield2 || wc_o_str_shield2
+    DamageMultiplier@upgrade:
+        Modifier: 80
+        RequiresCondition: shield_upg
+    DamageMultiplier@upgrade2:
+        Modifier: 80
+        RequiresCondition: shield_upg2    
+        
+^wc_h_horses:
+    GrantConditionOnPrerequisite@spupgrade:
+        Condition: horses_upg
+        Prerequisites: wc_h_horses || wc_o_wolves
+    GrantConditionOnPrerequisite@spupgrade2:
+        Condition: horses_upg2
+        Prerequisites: wc_h_horses2 || wc_o_wolves2
+    SpeedMultiplier@upgrade:
+        Modifier: 110
+        RequiresCondition: horses_upg
+    SpeedMultiplier@upgrade2:
+        Modifier: 120
+        RequiresCondition: horses_upg2            
+    
 ####################################################################################################
-#		BUILDING HUMAN
+#		BUILDING human
 ####################################################################################################
 HTH:
 	Inherits: ^BaseBuilding
@@ -47,14 +103,13 @@ HTH:
 	HitShape:
 		TargetableOffsets: 630,299,0
 	Valued:
-		Cost: 2000
+		Cost: 1500
 	Tooltip:
 		Name: Town Hall
 	ProvidesPrerequisite:
-		Prerequisite: hth
 	Buildable:
 		BuildPaletteOrder: 10
-		Queue: Building.Human
+		Queue: Building.human
 		BuildDuration: 330
 		Description: Builds Structures\n Trains Peasants.
 	Building:
@@ -62,7 +117,7 @@ HTH:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 55000
+		HP: 120000
 	RevealsShroud:
 		Range: 4c0
 	RallyPoint:
@@ -79,15 +134,15 @@ HTH:
 	ScalePowerWithHealth:
 	BaseBuilding:
 	Production:
-		Produces: Building.Human,Defence.Human
-	ProductionBar@BuildingHuman:
-		ProductionType: Building.Human
-	ProductionBar@DefenceHuman:
-		ProductionType: Defence.Human
-	ProductionQueue@HumanBuilding:
-		Type: Building.Human
+		Produces: Building.human, Defence.human
+        PauseOnCondition: lowpower
+	ProductionBar@Building:
+		ProductionType: Building.human
+	ProductionBar@Defence:
+		ProductionType: Defence.human
+	ProductionQueue@Building:
+		Type: Building.human
 		DisplayOrder: 0
-		Factions: human
 		Group: Building
 		LowPowerModifier: 200
 		ReadyAudio: ConstructionComplete
@@ -96,10 +151,9 @@ HTH:
 		QueuedAudio: Building
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
-	ProductionQueue@HumanDefence:
-		Type: Defence.Human
+	ProductionQueue@Defence:
+		Type: Defence.human
 		DisplayOrder: 1
-		Factions: human
 		Group: Defence
 		LowPowerModifier: 200
 		ReadyAudio: UnitReady
@@ -111,12 +165,14 @@ HTH:
 	BaseProvider:
 		Cooldown: 75
 		Range: 14c0
+  	BaseBuilding:         
 	RotationPaletteEffect:
 		ExcludePalettes: WC1Player
 	LightPaletteRotator:
 		ExcludePalettes: WC1Player
-		
-
+	Voiced:
+		VoiceSet: humanTownhallVoice    
+        
 HFAR:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
@@ -126,15 +182,14 @@ HFAR:
 	HitShape:
 		TargetableOffsets: 630,299,0
 	Valued:
-		Cost: 500
+		Cost: 400
 	Tooltip:
 		Name: Farm
 	ProvidesPrerequisite:
-		Prerequisite: hfar
 	Buildable:
 		BuildPaletteOrder: 11
 		Prerequisites: hth
-		Queue: Building.Human
+		Queue: Building.human
 		BuildDuration: 330
 		Description: Provides Food (Power)
 	Building:
@@ -150,9 +205,13 @@ HFAR:
 	SpawnActorsOnSell:
 		ActorTypes: hfoo
 	ScalePowerWithHealth:
+    Voiced:
+		VoiceSet: humanFarmVoice
+        
 HBAR:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
+    Inherits@wcprod: ^WCUnitProduction   
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
@@ -160,22 +219,21 @@ HBAR:
 			TopLeft: -1024, -1024
 			BottomRight: 1024, 640
 	Valued:
-		Cost: 500
+		Cost: 450
 	Tooltip:
 		Name: Barracks
 	ProvidesPrerequisite:
-		Prerequisite: hbar
 	Buildable:
 		BuildPaletteOrder: 12
 		Prerequisites: hth
-		Queue: Building.Human
-		Description: Trains infantry
+		Queue: Building.human
+		Description: Trains basic infantry and knights
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 60000
+		HP: 80000
 	RevealsShroud:
 		Range: 5c0
 	RallyPoint:
@@ -185,12 +243,12 @@ HBAR:
 	Exit@2:
 		SpawnOffset: 298,298,0
 		ExitCell: 1,1
-	Production:
-		Produces: Infantry.Human
+	Production@NORMAL:
+		Produces: Infantry.human
 	GrantExternalConditionToProduced:
 		Condition: produced
 	ProductionQueue:
-		Type: Infantry.Human
+		Type: Infantry.human 
 		DisplayOrder: 2
 		Group: Infantry
 		LowPowerModifier: 300
@@ -201,7 +259,7 @@ HBAR:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 	ProductionBar:
-		ProductionType: Infantry.Human
+		ProductionType: Infantry.human
 	Power:
 		Amount: 0
 	SpawnActorsOnSell:
@@ -209,11 +267,14 @@ HBAR:
 	ProvidesPrerequisite@buildingname:
 	Selectable:
 		Bounds: 48,42,0,-5
-
+    Voiced:
+		VoiceSet: humanBarracksVoice
+        
 HLM:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
+	Inherits@ref: ^Refinery    
 	HitShape:
 		Type: Rectangle
 			TopLeft: -1536, -512
@@ -223,28 +284,42 @@ HLM:
 			TopLeft: -512, -1450
 			BottomRight: 896, -512
 	Valued:
-		Cost: 1500
+		Cost: 800
 	Tooltip:
 		Name: Lumber Mill
 	ProvidesPrerequisite:
-		Prerequisite: hlm
 	Buildable:
 		BuildPaletteOrder: 13
 		Prerequisites: hfar
-		Queue: Building.Human
-		Description: Dropoff point for\ngold. (Tiberium)
+		Queue: Building.human
+		Description: Dropoff point for gold. (Tiberium)\nCan store up to 1000 resource\nProduces bows enabling Archers\nProvides arrow upgrades for archers
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
-		LocalCenterOffset: 0,-512,0
+		LocalCenterOffset: 0,-512,0  
 	Health:
-		HP: 100000
+		HP: 60000
 	RevealsShroud:
-		Range: 6c0
+		Range: 6c0        
+    Production:
+		Produces: lumberupg.human
+	ProductionQueue:
+		Type: lumberupg.human 
+		DisplayOrder: 2
+		Group: Addon
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar:
+		ProductionType: lumberupg.human
 	Refinery:
 		DockAngle: 112
 		DockOffset: 0,2
-		IsDragRequired: True
+		IsDragRequired: False
 		DragOffset: -554,512,0
 		DragLength: 12
 		TickRate: 15
@@ -256,18 +331,23 @@ HLM:
 		Bounds: 64,64
 	CustomSellValue:
 		Value: 500
-	#FreeActor:
-	#	Actor: hpea
-	#	SpawnOffset: 1,2
-	#	Facing: 64
+	FreeActor:
+		Actor: hpea
+		SpawnOffset: 1,2
+		Facing: 64
 	WithResourceLevelOverlay:
 		RequiresCondition: !build-incomplete
 	Power:
 		Amount: 0
 	SpawnActorsOnSell:
 		ActorTypes: harc
+    ProvidesPrerequisite:
+        Prerequisite: Refinery
 	ProvidesPrerequisite@buildingname:
 	SelectionDecorations:
+    Voiced:
+		VoiceSet: humanLumbermillVoice 
+        
 HBLA:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
@@ -277,15 +357,29 @@ HBLA:
 	HitShape:
 		TargetableOffsets: 630,299,0
 	Valued:
-		Cost: 500
+		Cost: 1200
 	Tooltip:
 		Name: Blacksmith
 	ProvidesPrerequisite:
-		Prerequisite: hbla
+    Production:
+		Produces: blacksmithupg.human 
+	ProductionQueue:
+		Type: blacksmithupg.human
+		DisplayOrder: 2
+		Group: Addon
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar:
+		ProductionType: blacksmithupg.human              
 	Buildable:
 		BuildPaletteOrder: 14
 		Prerequisites: hbar
-		Queue: Building.Human
+		Queue: Building.human
 		BuildDuration: 330
 		Description: Upgrades Units
 	Building:
@@ -293,7 +387,7 @@ HBLA:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 55000
+		HP: 75000
 	RevealsShroud:
 		Range: 4c0
 	Power:
@@ -301,10 +395,14 @@ HBLA:
 	SpawnActorsOnSell:
 		ActorTypes: hfoo
 	ScalePowerWithHealth:
+    Voiced:
+		VoiceSet: humanBlackssmithVoice    
+        
 HCHU:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
+    Inherits@wcprod: ^WCUnitProduction   
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -314,11 +412,10 @@ HCHU:
 	Tooltip:
 		Name: Church
 	ProvidesPrerequisite:
-		Prerequisite: hchu
 	Buildable:
 		BuildPaletteOrder: 15
 		Prerequisites: hbar
-		Queue: Building.Human
+		Queue: Building.human
 		BuildDuration: 330
 		Description: Trains Clerics.
 	Building:
@@ -326,7 +423,7 @@ HCHU:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 55000
+		HP: 75000
 	RevealsShroud:
 		Range: 4c0
 	RallyPoint:
@@ -336,12 +433,12 @@ HCHU:
 	Exit@2:
 		SpawnOffset: 298,298,0
 		ExitCell: 1,1
-	Production:
-		Produces: Vehicle.Human
+	Production@NORMAL:
+		Produces: Vehicle.human
 	GrantExternalConditionToProduced:
 		Condition: produced
 	ProductionQueue:
-		Type: Vehicle.Human
+		Type: Vehicle.human
 		DisplayOrder: 2
 		Group: Vehicle
 		LowPowerModifier: 300
@@ -352,12 +449,15 @@ HCHU:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 	ProductionBar:
-		ProductionType: Vehicle.Human
+		ProductionType: Vehicle.human
 	Power:
 		Amount: 0
 	SpawnActorsOnSell:
 		ActorTypes: hfoo
 	ScalePowerWithHealth:
+    Voiced:
+		VoiceSet: humanChurchVoice     
+        
 HSTA:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
@@ -370,20 +470,34 @@ HSTA:
 		Cost: 750
 	Tooltip:
 		Name: Stable
+    Production:
+		Produces: stablesupg.human 
+	ProductionQueue:
+		Type: stablesupg.human
+		DisplayOrder: 2
+		Group: Addon
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar:
+		ProductionType: stablesupg.human       
 	ProvidesPrerequisite:
-		Prerequisite: hsta
 	Buildable:
 		BuildPaletteOrder: 16
 		Prerequisites: hbar
-		Queue: Building.Human
+		Queue: Building.human
 		BuildDuration: 330
-		Description: Allows for Knights
+		Description: Allows production of Knights
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 55000
+		HP: 75000
 	RevealsShroud:
 		Range: 4c0
 	Power:
@@ -391,10 +505,14 @@ HSTA:
 	SpawnActorsOnSell:
 		ActorTypes: hfoo
 	ScalePowerWithHealth:
+    Voiced:
+		VoiceSet: humanStableVoice  
+        
 HTOW:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
+    Inherits@wcprod: ^WCUnitProduction   
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -404,11 +522,10 @@ HTOW:
 	Tooltip:
 		Name: Tower
 	ProvidesPrerequisite:
-		Prerequisite: htow
 	Buildable:
 		BuildPaletteOrder: 17
 		Prerequisites: hbar
-		Queue: Building.Human
+		Queue: Building.human
 		BuildDuration: 330
 		Description: Trains Conjurers.\nProvides Radar.
 	Building:
@@ -416,7 +533,7 @@ HTOW:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 55000
+		HP: 75000
 	RevealsShroud:
 		Range: 4c0
 	RallyPoint:
@@ -426,12 +543,12 @@ HTOW:
 	Exit@2:
 		SpawnOffset: 298,298,0
 		ExitCell: 1,1
-	Production:
-		Produces: Aircraft.Human
+	Production@NORMAL:
+		Produces: Aircraft.human
 	GrantExternalConditionToProduced:
 		Condition: produced
 	ProductionQueue:
-		Type: Aircraft.Human
+		Type: Aircraft.human
 		DisplayOrder: 2
 		Group: Aircraft
 		LowPowerModifier: 300
@@ -442,14 +559,17 @@ HTOW:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 	ProductionBar:
-		ProductionType: Aircraft.Human
+		ProductionType: Aircraft.human
 	ProvidesRadar:
-		RequiresCondition: !lowpower
+		RequiresCondition: !lowpower && !jammed
 	Power:
 		Amount: 0
 	SpawnActorsOnSell:
 		ActorTypes: hfoo
 	ScalePowerWithHealth:
+    Voiced:
+		VoiceSet: humanTowerVoice 
+        
 HSTO:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
@@ -459,13 +579,13 @@ HSTO:
 	HitShape:
 		TargetableOffsets: 630,299,0
 	Valued:
-		Cost: 3000
+		Cost: 2000
 	Tooltip:
 		Name: Stormwind
 	Buildable:
 		BuildPaletteOrder: 18
 		Prerequisites: hlm,hbla,hchu,htow
-		Queue: Building.Human
+		Queue: Building.human
 		BuildDuration: 330
 		Description: Provides Superweapon
 	Building:
@@ -481,22 +601,178 @@ HSTO:
 	SpawnActorsOnSell:
 		ActorTypes: hfoo
 	ScalePowerWithHealth:
+    Voiced:
+		VoiceSet: humanStormwindVoice 
+    
 ####################################################################################################
 #		BUILDING ORC
 ####################################################################################################
 
+wc_o_townhall:
+	Inherits@WTH: HTH
+	ProvidesPrerequisite:
+	Buildable:
+		Queue: Building.orc
+		Description: Builds Structures\n Trains Peons.
+	SpawnActorsOnSell:
+		ActorTypes: hfoo
+	Production:
+		Produces: Building.orc, Defence.orc
+	ProductionBar@Building:
+		ProductionType: Building.orc
+	ProductionBar@Defence:
+		ProductionType: Defence.orc
+	ProductionQueue@Building:
+		Type: Building.orc
+	ProductionQueue@Defence:
+		Type: Defence.orc
+	Voiced:
+		VoiceSet: orcTownhallVoice
+     
+wc_o_farm:
+	Inherits@HFAR: HFAR
+	Buildable:
+		Prerequisites: wc_o_townhall
+		Queue: Building.orc
+	SpawnActorsOnSell:
+		ActorTypes: wc_o_grunt
+    Voiced:
+		VoiceSet: orcFarmVoice
+        
+wc_o_barracks:
+	Inherits@HBAR: HBAR  
+	Buildable:
+		Prerequisites: wc_o_townhall
+		Queue: Building.orc
+		Description: Trains basic infantry and knights
+	Production@NORMAL:
+		Produces: Infantry.orc
+	ProductionQueue:
+		Type: Infantry.orc 
+	ProductionBar:
+		ProductionType: Infantry.orc
+	SpawnActorsOnSell:
+		ActorTypes: wc_o_grunt
+    Voiced:
+		VoiceSet: orcBarracksVoice
+        
+wc_o_lumbermill:
+	Inherits@HLM: HLM
+	Buildable:
+		Prerequisites: wc_o_farm
+		Queue: Building.orc
+		Description: Dropoff point for gold. (Tiberium)\nCan store up to 1000 resource\nProduces bows enabling Spearmen\nProvides spear upgrades for spearmen
+    Production:
+		Produces: lumberupg.orc
+	ProductionQueue:
+		Type: lumberupg.orc 
+	ProductionBar:
+		ProductionType: lumberupg.orc
+	FreeActor:
+		Actor: wc_o_peon
+	SpawnActorsOnSell:
+		ActorTypes: wc_o_spearman
+    Voiced:
+		VoiceSet: orcLumbermillVoice 
+        
+wc_o_blacksmith:
+	Inherits@HBLA: HBLA
+    Production:
+		Produces: blacksmithupg.orc 
+	ProductionQueue:
+		Type: blacksmithupg.orc
+	ProductionBar:
+		ProductionType: blacksmithupg.orc              
+	Buildable:
+		Prerequisites: wc_o_barracks
+		Queue: Building.orc
+	SpawnActorsOnSell:
+		ActorTypes: wc_o_grunt
+    Voiced:
+		VoiceSet: orcBlackssmithVoice    
+        
+wc_o_damnedtemple:
+	Inherits@HCHU: HCHU
+	Tooltip:
+		Name: Temple of the Damned
+	Production@NORMAL:
+		Produces: Vehicle.orc
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Vehicle.orc
+	ProductionBar:
+		ProductionType: Vehicle.orc
+   	Buildable:
+		Prerequisites: wc_o_barracks
+		Queue: Building.orc    
+	SpawnActorsOnSell:
+		ActorTypes: wc_o_grunt
+    Voiced:
+		VoiceSet: orcTempleVoice     
+        
+wc_o_kennel:
+	Inherits@HSTA: HSTA
+	Tooltip:
+		Name: Kennels
+    Production:
+		Produces: kennelupg.orc 
+	ProductionQueue:
+		Type: kennelupg.orc
+	ProductionBar:
+		ProductionType: kennelupg.orc 
+	Buildable:
+		Prerequisites: wc_o_barracks
+		Queue: Building.orc
+		Description: Allows production of Knights
+	SpawnActorsOnSell:
+		ActorTypes: wc_o_grunt
+    Voiced:
+		VoiceSet: orcKennelVoice
+        
+wc_o_tower:
+	Inherits@HTOW: HTOW    
+	Buildable:
+		Prerequisites: wc_o_barracks
+		Queue: Building.orc
+		Description: Trains Conjurers.\nProvides Radar.
+	Production@NORMAL:
+		Produces: Aircraft.orc
+	ProductionQueue:
+		Type: Aircraft.orc
+	ProductionBar:
+		ProductionType: Aircraft.orc
+	SpawnActorsOnSell:
+		ActorTypes: wc_o_grunt
+    Voiced:
+		VoiceSet: orcTowerVoice 
+        
+wc_o_blackrockspire:
+	Inherits@HSTO: HSTO 
+	Tooltip:
+		Name: Blackrock Spire
+	Buildable:
+		Prerequisites: wc_o_lumbermill,wc_o_blacksmith,wc_o_damnedtemple,wc_o_tower
+		Queue: Building.orc
+	SpawnActorsOnSell:
+		ActorTypes: wc_o_grunt
+    Voiced:
+		VoiceSet: orcBlackrockVoice 
+    
+####################################################################################################
+#		UNIT human
+####################################################################################################
 
-####################################################################################################
-#		UNIT HUMAN
-####################################################################################################
 HPEA:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
+    Inherits@selection: ^SelectableEconomicUnit
 	Inherits@harv: ^Harvester
 	Inherits@worker: ^WCWorker
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+    Inherits@upgrade_shields: ^wc_h_str_shield
 	AutoTargetPriority@Repair:
 		ValidTargets: Repair, Repairing
 		ValidStances: Ally
@@ -506,43 +782,47 @@ HPEA:
 	AutoTargetPriority@ATTACKANYTHING:
 		ValidStances: Enemy, Neutral
 	Valued:
-		Cost: 150
+		Cost: 125
 	Tooltip:
 		Name: Peasant
 	UpdatesPlayerStatistics:
 		AddToArmyValue: false
 	Buildable:
 		BuildPaletteOrder: 5
-		Prerequisites:
-		Queue: Defence.Human
+		Queue: Defence.human
 		Description: Harvester.
 	Mobile:
 		Speed: 100
 	Health:
-		HP: 18000
+		HP: 4800
 	#Food
 	Power:
 		Amount: -1
 	AutoTarget:
 		ScanRadius: 4
-	Armament:
-		Weapon: footmanSlice
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	WithHarvesterSpriteBody:
 		ImageByFullness: hpea, hpeafull
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-		-IdleSequences: idle,idle1,idle2,idle3,idle4
+  	Inherits@EXT: ^ExternalConditions      
 	AttackFrontal:	
+    Voiced:
+		VoiceSet: voiceHuman  
+	WithInfantryBody:
+		DefaultAttackSequence: harvest
+		-IdleSequences: idle1,idle2,idle3,idle4        
+    -DamagedByTerrain:   
+    
 HFOO:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+    Inherits@upgrade_swords: ^wc_h_str_sword
+    Inherits@upgrade_shields: ^wc_h_str_shield
 	Valued:
-		Cost: 100
+		Cost: 125
 	Tooltip:
 		Name: Footman
 	UpdatesPlayerStatistics:
@@ -550,12 +830,16 @@ HFOO:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: hbar
-		Queue: Infantry.Human
-		Description: Melee Infantry.
+		Queue: Infantry.human
+		Description: Basic Melee Infantry. Slow but can take some damage.
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 10000
+		HP: 7200
+    DamageMultiplier@armor:
+        Modifier: 80       
+   	Armor:
+		Type: None     
 	#Food
 	Power:
 		Amount: -1
@@ -568,12 +852,16 @@ HFOO:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
+    Voiced:
+		VoiceSet: voiceHuman           
+        
 HARC:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+    Inherits@upgrade_shields: ^wc_h_str_shield  
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -583,12 +871,16 @@ HARC:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: hlm
-		Queue: Infantry.Human
-		Description: Ranged Infantry.
+		Queue: Infantry.human
+		Description: Basic Ranged Infantry. Not as durable as Footman.
+   	Armor:
+		Type: None   
+    DamageMultiplier@armor:
+        Modifier: 90     
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 3000
+		HP: 7200
 	#Food
 	Power:
 		Amount: -1
@@ -601,14 +893,32 @@ HARC:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
+    GrantConditionOnPrerequisite@upgrade:
+        Condition: arrow_upg
+        Prerequisites: wc_h_str_arrow || wc_o_str_spear
+    GrantConditionOnPrerequisite@upgrade2:
+        Condition: arrow_upg2
+        Prerequisites: wc_h_str_arrow2 || wc_o_str_spear2
+    FirepowerMultiplier@upgrade:
+        Modifier: 115
+        Condition: arrow_upg
+    FirepowerMultiplier@upgrade2:
+        Modifier: 130
+        Condition: arrow_upg2
+    Voiced:
+		VoiceSet: voiceHuman           
+        
 HKNI:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+    Inherits@upgrade_shields: ^wc_h_str_shield    
+    Inherits@upgrade_swords: ^wc_h_str_sword
+    Inherits@upgrade_horses: ^wc_h_horses 
 	Valued:
-		Cost: 200
+		Cost: 500
 	Tooltip:
 		Name: Knight
 	UpdatesPlayerStatistics:
@@ -616,24 +926,31 @@ HKNI:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: hsta
-		Queue: Infantry.Human
-		Description: Mounted Infantry.
+		Queue: Infantry.human
+		Description: Mounted Infantry. Fast and durable.
 	Mobile:
 		Speed: 80
+  	Armor:
+		Type: Medium      
 	Health:
-		HP: 9000
+		HP: 10800
+    DamageMultiplier@armor:
+        Modifier: 50           
 	#Food
 	Power:
-		Amount: -1
+		Amount: -2
 	AutoTarget:
-		ScanRadius: 4
+		ScanRadius: 4 
 	Armament:
-		Weapon: M16
+		Weapon: knightSlice
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
+    Voiced:
+		VoiceSet: voiceHuman     
+        
 HCAT:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
@@ -641,7 +958,7 @@ HCAT:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 500
+		Cost: 800
 	Tooltip:
 		Name: Catapult
 	UpdatesPlayerStatistics:
@@ -649,15 +966,17 @@ HCAT:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: hbla
-		Queue: Infantry.Human
-		Description: Seige weapon.
+		Queue: Infantry.human
+		Description: Siege weapon. Powerful against static targets.
 	Mobile:
 		Speed: 30
+	Armor:
+		Type: Light        
 	Health:
-		HP: 30000
+		HP: 14400
 	#Food
 	Power:
-		Amount: -1
+		Amount: -2
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
@@ -667,14 +986,18 @@ HCAT:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
+    Voiced:
+		VoiceSet: voiceHuman 
+        
 HCON:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+    Inherits@upgrade_shields: ^wc_h_str_shield
 	Valued:
-		Cost: 250
+		Cost: 800
 	Tooltip:
 		Name: Conjurer
 	UpdatesPlayerStatistics:
@@ -682,32 +1005,37 @@ HCON:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: htow
-		Queue: Aircraft.Human
+		Queue: Aircraft.human
 		Description: Spell Caster.
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 3000
+		HP: 4800
+  	Armor:
+		Type: None      
 	#Food
 	Power:
 		Amount: -1
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
-		Weapon: M16
+		Weapon: fireballConjurer
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
+    Voiced:
+		VoiceSet: voiceHuman          
 HCLE:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+    Inherits@upgrade_shields: ^wc_h_str_shield  
 	Valued:
-		Cost: 220
+		Cost: 600
 	Tooltip:
 		Name: Cleric
 	UpdatesPlayerStatistics:
@@ -715,25 +1043,44 @@ HCLE:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: htow
-		Queue: Vehicle.Human
-		Description: Support Caster.
+		Queue: Vehicle.human
+		Description: Support Caster. Heals nearby units.
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 2500
+		HP: 4800
+ 	Armor:
+		Type: None       
 	#Food
 	Power:
 		Amount: -1
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
-		Weapon: M16
+		Weapon: clericHeal
+		TargetStances: Ally
+		ForceTargetStances: None  
+	Armament@2:
+		Weapon: clericRestore
+		TargetStances: Ally
+		ForceTargetStances: None
+  	Armament@3:
+		Weapon: fireballCleric
+		TargetStances: Enemy
+		ForceTargetStances: None            
+	AutoTarget:
+		ScanRadius: 4
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry, plagued, ivanattached, lockdowned
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
-		
+    Voiced:
+		VoiceSet: voiceHuman  
+ 		
 HSCO:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -748,24 +1095,399 @@ HSCO:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: htow
-		Queue: Aircraft.Human
+		Queue: Aircraft.human
 		Description: Lesser Spawn.
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 2500
+		HP: 3600
+    Armor:
+		Type: None
 	#Food
 	Power:
 		Amount: 0
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
-		Weapon: M16
+		Weapon: scorpionSlice
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
+        
+     
+wc_h_waterelemental:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 0
+	Tooltip:
+		Name: Water Elemental
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: htow
+		Queue: Aircraft.human
+		Description: Lesser Spawn.
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 30000
+    Armor:
+		Type: None
+	#Food
+	Power:
+		Amount: 0
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: waterElementalFire
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+        
 ####################################################################################################
 #		UNIT ORC
 ####################################################################################################
+
+wc_o_peon:
+	Inherits@HPEA: HPEA
+	Tooltip:
+		Name: Peon
+	Buildable:
+		BuildPaletteOrder: 5
+		Queue: Defence.orc
+		Description: Harvester.
+	Armament:
+		Weapon: footmanSlice
+	WithHarvesterSpriteBody:
+		ImageByFullness: wc_o_peon, wc_o_peon_full
+    Voiced:
+		VoiceSet: voiceOrc     
+        
+wc_o_grunt:
+	Inherits@HFOO: HFOO
+	Tooltip:
+		Name: Grunt
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: wc_o_barracks
+		Queue: Infantry.orc
+		Description: Basic Melee Infantry. Slow and can take some damage.
+	Armament:
+		Weapon: footmanSlice
+    Voiced:
+		VoiceSet: voiceOrc         
+        
+wc_o_spearman:
+	Inherits@HARC: HARC
+    Tooltip:
+		Name: Spearman
+	Buildable:
+		Prerequisites: wc_o_lumbermill
+		Queue: Infantry.orc
+		Description: Basic Ranged Infantry. Not as durable as Footman.
+	Armament:
+		Weapon: spearFire
+    Voiced:
+		VoiceSet: voiceOrc       
+        
+wc_o_raider:
+	Inherits@HKNI: HKNI
+	Tooltip:
+		Name: Raider
+	Buildable:
+		Prerequisites: wc_o_kennel
+		Queue: Infantry.orc
+		Description: Mounted Infantry. Fast and durable.
+	Armament:
+		Weapon: knightSlice
+    Voiced:
+		VoiceSet: voiceOrc   
+        
+wc_o_catapult:
+	Inherits@HCAT: HCAT
+	Buildable:
+		Prerequisites: wc_o_blacksmith
+		Queue: Infantry.orc
+    Voiced:
+		VoiceSet: voiceOrc 
+        
+wc_o_warlock:
+	Inherits@HCON: HCON
+	Tooltip:
+		Name: Warlock
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Prerequisites: wc_o_tower
+		Queue: Aircraft.orc
+		Description: Spell Caster.
+	Armament:
+		Weapon: fireballWarlock
+    Voiced:
+		VoiceSet: voiceOrc       
+       
+wc_o_necrolyte:
+	Inherits@HCLE: HCLE 
+	Tooltip:
+		Name: Necrolyte
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Prerequisites: wc_o_tower
+		Queue: Vehicle.orc
+		Description: Support Caster. Heals nearby units.
+  	Armament@3:
+		Weapon: fireballNecrolyte
+		TargetStances: Enemy
+		ForceTargetStances: None            
+    Voiced:
+		VoiceSet: voiceOrc
+ 		
+wc_o_spider:
+	Inherits@HSCO: HSCO
+	Tooltip:
+		Name: Scorpion
+	Buildable:
+		Prerequisites: wc_o_tower
+		Queue: Aircraft.orc
+		Description: Lesser Spawn.
+	Armament:
+		Weapon: spiderSlice
+        
+#######################################################
+#                     UPGRADES                        #
+#######################################################     
+
+wc_h_str_arrow:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Arrow Strength
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: lumberupg.human
+        BuildDuration: 1500
+        BuildDurationModifier: 50       
+		Description: Increases Bow Damage by 50%
+        Prerequisites: !wc_h_str_arrow
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: wc_h_str_arrow
+	ProvidesPrerequisite:
+
+wc_h_str_arrow2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Arrow Strength
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: lumberupg.human
+        BuildDuration: 3000
+        BuildDurationModifier: 50       
+		Description: Increases Bow Damage by further 50%
+        Prerequisites: !wc_h_str_arrow2, wc_h_str_arrow
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: wc_h_str_arrow2
+	ProvidesPrerequisite:
+
+wc_h_str_sword:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Sword Strength
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: blacksmithupg.human
+        BuildDuration: 1500
+        BuildDurationModifier: 50       
+		Description: Increases Sword Damage by 20%
+        Prerequisites: !wc_h_str_sword
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: wc_h_str_sword
+	ProvidesPrerequisite:  
+
+wc_h_str_sword2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Sword Strength
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: blacksmithupg.human
+        BuildDuration: 3000
+        BuildDurationModifier: 50       
+		Description: Increases Sword Damage by further 40%
+        Prerequisites: !wc_h_str_sword2, wc_h_str_sword
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: wc_h_str_sword2
+	ProvidesPrerequisite:
+ 
+wc_h_str_shield:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Shield Strength
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: blacksmithupg.human
+        BuildDuration: 1500
+        BuildDurationModifier: 50       
+		Description: Increases Shield Resistance by 20%
+        Prerequisites: !wc_h_str_shield
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: wc_h_str_shield
+	ProvidesPrerequisite:
+
+wc_h_str_shield2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Shield Strength
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: blacksmithupg.human
+        BuildDuration: 3000
+        BuildDurationModifier: 50       
+		Description: Increases Shield Resistance by further 20%
+        Prerequisites: !wc_h_str_shield2, wc_h_str_shield
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: wc_h_str_shield2
+	ProvidesPrerequisite:
+    
+wc_h_horses:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Breed Faster Horses
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: stablesupg.human
+        BuildDuration: 1500
+        BuildDurationModifier: 50       
+		Description: Increases Horses speed by 10%
+        Prerequisites: !wc_h_horses
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: wc_h_horses
+	ProvidesPrerequisite:   
+
+wc_h_horses2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Breed Faster Horses
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: stablesupg.human
+        BuildDuration: 3000
+        BuildDurationModifier: 50       
+		Description: Increases Horses speed by further 20%
+        Prerequisites: !wc_h_horses2, wc_h_horses
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: wc_h_horses2
+	ProvidesPrerequisite:
+      
+wc_o_str_spear:
+	Inherits@spear: wc_h_str_arrow
+	Tooltip:
+		Name: Spear Strength
+	Buildable:
+		Queue: lumberupg.orc      
+		Description: Increases Spear Damage by 50%
+        Prerequisites: !wc_o_str_spear
+	RenderSprites:
+		Image: wc_o_str_spear
+
+wc_o_str_spear2:
+	Inherits@spear: wc_h_str_arrow2
+	Tooltip:
+		Name: Spear Strength
+	Buildable:
+		Queue: lumberupg.orc
+		Description: Increases Spear Damage by further 50%
+        Prerequisites: !wc_o_str_spear2, wc_o_str_spear
+	RenderSprites:
+		Image: wc_o_str_spear2
+
+wc_o_str_axe:
+	Inherits@axe: wc_h_str_sword
+	Tooltip:
+		Name: Axe Strength
+	Buildable:
+		Queue: blacksmithupg.orc
+		Description: Increases Axe Damage by 20%
+        Prerequisites: !wc_o_str_axe2
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: wc_o_str_axe
+
+wc_o_str_axe2:
+	Inherits@axe: wc_h_str_sword2
+	Tooltip:
+		Name: Sword Strength
+	Buildable:
+		Queue: blacksmithupg.orc   
+		Description: Increases Axe Damage by further 40%
+        Prerequisites: !wc_o_str_axe2, wc_o_str_axe
+	RenderSprites:
+		Image: wc_o_str_axe2
+ 
+wc_o_str_shield:
+	Inherits@shld: wc_h_str_shield
+	Buildable:
+		Queue: blacksmithupg.orc    
+        Prerequisites: !wc_h_str_shield
+	RenderSprites:
+		Image: wc_o_str_shield
+        
+wc_o_str_shield2:
+	Inherits@shld: wc_h_str_shield2
+	Buildable:
+		Queue: blacksmithupg.orc
+        Prerequisites: !wc_h_str_shield2, wc_h_str_shield
+	RenderSprites:
+		Image: wc_o_str_shield2
+    
+wc_o_wolves:
+	Inherits@wolves: wc_h_horses
+	Tooltip:
+		Name: Breed Faster Wolves
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: kennelupg.orc
+        BuildDuration: 1500
+        BuildDurationModifier: 50       
+		Description: Increases Wolves speed by 10%
+        Prerequisites: !wc_o_wolves
+	RenderSprites:
+		Image: wc_o_wolves
+
+wc_o_wolves2:
+	Inherits@wolves: wc_h_horses2
+	Tooltip:
+		Name: Breed Faster Wolves
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: kennelupg.orc
+        BuildDuration: 3000
+        BuildDurationModifier: 50       
+		Description: Increases Wolves speed by further 20%
+        Prerequisites: !wc_o_wolves2, wc_o_wolves
+	RenderSprites:
+		Image: wc_o_wolves2
