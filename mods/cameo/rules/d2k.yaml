@@ -1,4 +1,67 @@
-^D2kBuilding:
+^D2KInfantry:
+	Inherits@inf: ^Infantry
+	WithDeathAnimation:
+		DeathTypes:
+			ExplosionDeath: 1
+			SoundDeath: 2
+			SmallExplosionDeath: 3
+			BulletDeath: 4
+		CrushedSequence: die-crushed
+	Huntable:
+	RevealsShroud:
+		Range: 3c768
+	SelectionDecorations:
+	WithSpriteControlGroupDecoration:
+	Targetable:
+		TargetTypes: Ground, Infantry
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	WithInfantryBody:
+		IdleSequences: idle1, idle2
+	TakeCover:
+		DamageModifiers:
+			Prone50Percent: 50
+		DamageTriggers: TriggerProne
+		ProneOffset: 300,0,0
+
+	AttackMove:
+	DrawLineToTarget:
+	Passenger:
+		CargoType: Infantry
+		PipType: Green
+	HiddenUnderFog:
+	ActorLostNotification:
+	Crushable:
+		CrushSound: CRUSH1.WAV
+	Guard:
+		Voice: Guard
+	Guardable:
+	DetectCloaked:
+		Range: 1c768
+	DeathSounds:
+		DeathTypes: ExplosionDeath, SoundDeath, SmallExplosionDeath, BulletDeath
+	MustBeDestroyed:
+	TerrainModifiesDamage:
+		TerrainModifier:
+			Rough: 80
+	Voiced:
+		VoiceSet: D2KInfantryVoice
+	RevealOnFire:
+	RevealOnDeath:
+		Duration: 100
+	HitShape:
+		Type: Circle
+			Radius: 96
+	MapEditorData:
+		Categories: Infantry
+	AttackFrontal:
+    -DeathSounds@NORMAL:
+	-DeathSounds@BURNED:
+	-DeathSounds@POISONED:
+	-DeathSounds@ZAPPED:				
+	-Explodes@Mutate:
+    
+^D2KBuilding:
 	Inherits@1: ^BaseBuilding
 	Inherits@selection: ^SelectableBuilding
 	Tooltip:
@@ -7,10 +70,6 @@
 		Action: Kill
 	Building:
 		BuildSounds: BUILD1.WAV
-		ConcretePrerequisites: global-auto-concrete
-	ActorPreviewPlaceBuildingPreview:
-		RequiresPrerequisites: !global-auto-concrete
-		OverridePalette: placebuilding
 	CaptureManager:
 	Capturable:
 		RequiresCondition: !build-incomplete
@@ -20,8 +79,8 @@
 		DestroyedSounds: EXPLHG1.WAV
 	Explodes:
 		Type: Footprint
-		Weapon: BuildingExplode
-		EmptyWeapon: BuildingExplode
+		Weapon: D2KBuildingExplode
+		EmptyWeapon: D2KBuildingExplode
 	RepairableBuilding:
 		RepairStep: 500
 		PlayerExperience: 25
@@ -45,6 +104,9 @@
 		Position: Center
 		Palette: player
 		IsPlayerPalette: True
+    -ActorPreviewPlaceBuildingPreview: 
+    D2kActorPreviewPlaceBuildingPreview:
+		OverridePalette: playerd2k     
         
 ^D2kUpgradeable:
 	GrantConditionOnPrerequisite@UPGRADEABLE:
@@ -67,13 +129,8 @@
 ^D2KPaletteRenderInfantry: 
     Inherits: ^D2KPaletteRender       
 	Crushable:
-		CrushSound: igensqua.wav
-
-^D2KPaletteRenderBuilding:
-    Inherits: ^D2KPaletteRender
-    ActorPreviewPlaceBuildingPreview:
-        OverridePalette: playerd2k
-
+		CrushSound: igensqua.wav    
+        
 ^D2KDisableOnLowPowerOrPowerDown:
 	Inherits: ^D2KDisableOnLowPower
 	GrantCondition@IDISABLE:
@@ -124,7 +181,7 @@
 		Action: Kill
 	Mobile:
 		TurnSpeed: 5
-		Locomotor: vehicle
+		Locomotor: wheeled
 		PauseOnCondition: notmobile
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
@@ -141,7 +198,6 @@
 	Repairable:
 		RepairActors: repair_pad
 	Guard:
-		Voice: Guard
 	Guardable:
 	WithFacingSpriteBody:
 	Demolishable:
@@ -168,35 +224,69 @@
 		Categories: Vehicle
 
 ^D2KTank:
-	Inherits: ^D2KVehicle
+	Inherits@D2KV: ^D2KVehicle
 	Mobile:
 		Locomotor: tracked
-       
+    
+^D2KDefense:
+	Inherits: ^D2KBuilding
+	Inherits@selection: ^SelectableCombatBuilding
+	WithSpriteTurret:
+	AttackTurreted:
+	RenderRangeCircle:
+	DetectCloaked:
+		Range: 1c768
+	-GivesBuildableArea:
+	-WithMakeAnimation:
+	Capturable:
+	Sellable:
+		RequiresCondition: !being-demolished
+	WithWallSpriteBody:
+	LineBuildNode:
+		Types: turret
+	ThrowsShrapnel:
+		Weapons: Debris, Debris3
+		Pieces: 2, 2
+		Range: 2c0, 4c0
+	MustBeDestroyed:
+		RequiredForShortGame: false
+	RevealOnFire:
+	Targetable:
+		TargetTypes: Ground, C4, Structure, Defense
+	MapEditorData:
+		Categories: Defense
+	-CommandBarBlacklist:    
+    
 ###########################################
 #   BUILDINGS
 ###########################################
 ^concrete:
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding
+    Inherits@D2KSprite: ^D2KPaletteRender
 	AlwaysVisible:
 	Interactable:
 	Building:
-		TerrainTypes: Rock
 		BuildSounds: CHUNG.WAV
 		AllowInvalidPlacement: true
+        TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road  
+    D2kActorPreviewPlaceBuildingPreview:
+		OverridePalette: playerd2k       
 	RequiresBuildableArea:
 		AreaTypes: building
 		Adjacent: 4
+   	LaysTerrain:
+		Template: 88
+		TerrainTypes: Rock     
 	Tooltip:
 		Name: Concrete
 		GenericName: Structure
 	RenderSprites:
 	KillsSelf:
 		RemoveInstead: true
-	Buildable:
-		Queue: Building.d2k
-		BuildPaletteOrder: 10
-		Description: Provides a strong foundation that prevents\ndamage from the terrain.
-        IconPalette: d2kunit
+	#Buildable:
+	#	Queue: Building.d2k
+	#	BuildPaletteOrder: 10
+	#	Description: Provides a strong foundation that prevents\ndamage from the terrain.
+    #   IconPalette: d2kunit
 
 concretea:
 	Inherits: ^concrete
@@ -228,11 +318,10 @@ concreteb:
 		BuildDurationModifier: 100
 
 construction_yard:
-	Inherits@D2kBLD: ^D2kBuilding
-	Inherits@BB: ^BaseBuilding
+	Inherits@D2kBLD: ^D2KBuilding
     Inherits@shape: ^3x3Shape
 	Inherits@UPGRADEABLE: ^D2kUpgradeable
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding
+    Inherits@D2KSprite: ^D2KPaletteRender
 	Buildable:
 		Description: Produces structures.
 	Building:
@@ -243,7 +332,7 @@ construction_yard:
 	Selectable:
 		Bounds: 72,48
 	Health:
-		HP: 150000
+		HP: 140000
 	Armor:
 		Type: Concrete
 	RevealsShroud:
@@ -251,7 +340,7 @@ construction_yard:
 	Production:
 		Produces: Building.d2k, Defence.d2k, Upgrade.d2k
 	Valued:
-		Cost: 2500
+		Cost: 2000
 	Tooltip:
 		Name: Construction Yard
 	CustomSellValue:
@@ -307,10 +396,11 @@ construction_yard:
 		Range: 14c0
     GivesBuildableArea:
 		AreaTypes: building     
-        
+    -WithDeathAnimation:
+    
 wind_trap:
-	Inherits: ^D2kBuilding
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding
+	Inherits: ^D2KBuilding
+    Inherits@D2KSprite: ^D2KPaletteRender
 	Buildable:
 		Queue: Building.d2k
 		BuildPaletteOrder: 120
@@ -357,14 +447,14 @@ wind_trap:
     -WithDeathAnimation:
     
 d2k_barracks:
-	Inherits: ^D2kBuilding
+	Inherits: ^D2KBuilding
 	Inherits@UPGRADEABLE: ^D2kUpgradeable
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding
+    Inherits@D2KSprite: ^D2KPaletteRender
 	Buildable:
 		Prerequisites: wind_trap
 		Queue: Building.d2k
 		BuildPaletteOrder: 220
-		BuildDuration: 268
+		BuildDuration: 150
 		BuildDurationModifier: 100
 		Description: Trains infantry.
         IconPalette: d2kunit      
@@ -437,8 +527,8 @@ d2k_barracks:
     -WithDeathAnimation:
     
 refinery:
-	Inherits: ^BaseBuilding
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding    
+	Inherits: ^D2KBuilding
+    Inherits@D2KSprite: ^D2KPaletteRender    
     Inherits@ref: ^Refinery
 	Buildable:
 		Prerequisites: wind_trap
@@ -451,7 +541,7 @@ refinery:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 1500
+		Cost: 1400
 	Tooltip:
 		Name: Spice Refinery
 	Building:
@@ -505,8 +595,8 @@ refinery:
     -WithDeathAnimation:    
     
 d2k_silo:
-	Inherits: ^D2kBuilding
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding   
+	Inherits: ^D2KBuilding
+    Inherits@D2KSprite: ^D2KPaletteRender   
 	Buildable:
 		Prerequisites: refinery
 		Queue: Building.d2k
@@ -557,21 +647,21 @@ d2k_silo:
     -WithDeathAnimation:
     
 light_factory:
-	Inherits: ^D2kBuilding
+	Inherits: ^D2KBuilding
 	Inherits@UPGRADEABLE: ^D2kUpgradeable
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding
+    Inherits@D2KSprite: ^D2KPaletteRender
 	Buildable:
 		Prerequisites: refinery
 		Queue: Building.d2k
 		BuildPaletteOrder: 230
-		BuildDuration: 321
+		BuildDuration: 200
 		BuildDurationModifier: 100
 		Description: Produces light vehicles.
         IconPalette: d2kunit    
 	Selectable:
 		Bounds: 72, 60
 	Valued:
-		Cost: 1000
+		Cost: 800
 	Tooltip:
 		Name: Light Factory
 	Building:
@@ -646,21 +736,21 @@ light_factory:
     -WithDeathAnimation:
     
 heavy_factory:
-	Inherits: ^D2kBuilding
+	Inherits: ^D2KBuilding
 	Inherits@UPGRADEABLE: ^D2kUpgradeable
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding    
+    Inherits@D2KSprite: ^D2KPaletteRender    
 	Buildable:
 		Prerequisites: refinery
 		Queue: Building.d2k
 		BuildPaletteOrder: 330
-		BuildDuration: 750
+		BuildDuration: 500
 		BuildDurationModifier: 100
 		Description: Produces heavy vehicles.
         IconPalette: d2kunit     
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 2000
+		Cost: 1500
 	Tooltip:
 		Name: Heavy Factory
 	Building:
@@ -747,9 +837,9 @@ heavy_factory:
     -WithDeathAnimation:
     
 outpost:
-	Inherits: ^D2kBuilding
+	Inherits: ^D2KBuilding
 	Inherits@IDISABLE: ^D2KDisableOnLowPowerOrPowerDown
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding   
+    Inherits@D2KSprite: ^D2KPaletteRender   
 	Buildable:
 		Prerequisites: d2k_barracks, ~techlevel.medium
 		Queue: Building.d2k
@@ -761,7 +851,7 @@ outpost:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 1500
+		Cost: 1200
 	Tooltip:
 		Name: Outpost
 	Building:
@@ -799,8 +889,8 @@ outpost:
     -WithDeathAnimation:
     
 starport:
-  	Inherits: ^D2kBuilding
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding    
+  	Inherits: ^D2KBuilding
+    Inherits@D2KSprite: ^D2KPaletteRender    
 	Tooltip:
 		Name: Starport
 	Buildable:
@@ -812,7 +902,7 @@ starport:
 		Description: Dropzone for quick reinforcements, at a price.
         IconPalette: d2kunit    
 	Valued:
-		Cost: 3000
+		Cost: 2000
 	Building:
 		Footprint: xxx x=x =x=
 		Dimensions: 3,3
@@ -888,8 +978,8 @@ starport:
     -WithDeathAnimation:
         
 wall:
-	Inherits@1: ^SpriteActor
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding   
+    Inherits@spriteactor: ^SpriteActor
+    Inherits@D2KSprite: ^D2KPaletteRender
 	Interactable:
 	CombatDebugOverlay:
 	FrozenUnderFog:
@@ -914,16 +1004,18 @@ wall:
 		Name: Concrete Wall
 		GenericName: Structure
 	AppearsOnRadar:
+    D2kActorPreviewPlaceBuildingPreview:
+		OverridePalette: playerd2k  
 	Building:
 		BuildSounds: CHUNG.WAV
-		TerrainTypes: Rock, Concrete
+        TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road  
 	RequiresBuildableArea:
-		AreaTypes: building
 		Adjacent: 7
+        AreaTypes: building
 	Health:
-		HP: 10000
+		HP: 5000
 	Armor:
-		Type: Wood
+		Type: Concrete
 	RevealsShroud:
 		Range: 1c768
 	Crushable:
@@ -957,12 +1049,11 @@ wall:
 		Categories: Defense
 	Replaceable:
 		Types: Tower
-    -WithDeathAnimation:
     
 medium_gun_turret:
-	Inherits: ^Defense
+	Inherits: ^D2KDefense
 	Inherits@AUTOTARGET: ^AutoTargetGround
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding   
+    Inherits@D2KSprite: ^D2KPaletteRender   
 	Buildable:
 		Queue: Defence.d2k
 		Prerequisites: barracks
@@ -972,7 +1063,7 @@ medium_gun_turret:
 		Description: Defensive structure.\n  Strong vs Tanks\n  Weak vs Infantry, Aircraft
         IconPalette: d2kunit      
 	Valued:
-		Cost: 1100
+		Cost: 700
 	Tooltip:
 		Name: Gun Turret
 	RequiresBuildableArea:
@@ -1003,6 +1094,7 @@ medium_gun_turret:
 		ReplaceableTypes: Tower
     WithWallSpriteBody:
     WithSpriteTurret:
+    -WithSpriteBody:
 	AttackTurreted:
 		RequiresCondition: !build-incomplete
 	DetectCloaked:
@@ -1010,10 +1102,10 @@ medium_gun_turret:
     -WithDeathAnimation:
     
 large_gun_turret:
-	Inherits: ^Defense
+	Inherits: ^D2KDefense
 	Inherits@IDISABLE: ^D2KDisableOnLowPowerOrPowerDown
 	Inherits@AUTOTARGET: ^AutoTargetGround
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding   
+    Inherits@D2KSprite: ^D2KPaletteRender   
 	AttackTurreted:
 		PauseOnCondition: disabled
 	Buildable:
@@ -1025,7 +1117,7 @@ large_gun_turret:
 		Description: Defensive structure.\n  Strong vs Infantry, Aircraft\n  Weak vs Tanks\n\n  Requires power to operate.
         IconPalette: d2kunit       
 	Valued:
-		Cost: 1500
+		Cost: 1000
 	Tooltip:
 		Name: Rocket Turret
 	RequiresBuildableArea:
@@ -1052,6 +1144,7 @@ large_gun_turret:
 		Amount: -60
     WithWallSpriteBody:
     WithSpriteTurret:        
+    -WithSpriteBody:
 	RevealOnDeath:
 		Radius: 5c768
 	Replacement:
@@ -1063,8 +1156,8 @@ large_gun_turret:
     -WithDeathAnimation:       
     
 repair_pad:
-	Inherits: ^D2kBuilding
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding    
+	Inherits: ^D2KBuilding
+    Inherits@D2KSprite: ^D2KPaletteRender    
 	Buildable:
 		Queue: Building.d2k
 		Prerequisites: heavy_factory, upgrade.heavy, ~techlevel.medium
@@ -1074,7 +1167,7 @@ repair_pad:
 		Description: Repairs vehicles.\n Allows construction of MCVs
         IconPalette: d2kunit       
 	Valued:
-		Cost: 1500
+		Cost: 1200
 	Tooltip:
 		Name: Repair Pad
 	Building:
@@ -1101,7 +1194,6 @@ repair_pad:
 		Interval: 10
 		HpPerStep: 800
 		StartRepairingNotification: Repairing
-		FinishRepairingNotification: UnitRepaired
 		PlayerExperience: 15
 	RallyPoint:
 	RenderSprites:
@@ -1120,9 +1212,9 @@ repair_pad:
     -WithDeathAnimation:
     
 high_tech_factory:
-	Inherits: ^D2kBuilding
+	Inherits: ^D2KBuilding
 	Inherits@UPGRADEABLE: ^D2kUpgradeable
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding    
+    Inherits@D2KSprite: ^D2KPaletteRender    
 	Buildable:
 		Prerequisites: outpost, ~techlevel.medium
 		Queue: Building.d2k
@@ -1134,7 +1226,7 @@ high_tech_factory:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 2500
+		Cost: 2000
 	Tooltip:
 		Name: High Tech Factory
 	ProductionFromMapEdge:
@@ -1188,14 +1280,14 @@ high_tech_factory:
 				SpawnOffset: 0,0,0
 				TargetOffset: 0,0,0
             ornithopter:
-				SpawnOffset: -768,512,0
-				TargetOffset: -384,128,0    
+				SpawnOffset: -1024,512,0
+				TargetOffset: -1024,512,0    
             ornithopter:
-				SpawnOffset: -1536,1024,0
-				TargetOffset: -768,256,0        
+				SpawnOffset: -2048,1024,0
+				TargetOffset: -2048,1024,0        
 		Icon: ornistrike
         IconPalette: d2kunit         
-		ChargeInterval: 7500
+		ChargeInterval: 4500
 		Description: Air Strike
 		LongDesc: Ornithopters hit the target with bombs
 		SelectTargetSpeechNotification: SelectTarget
@@ -1226,8 +1318,8 @@ high_tech_factory:
     -WithDeathAnimation:
     
 research_centre:
-	Inherits: ^D2kBuilding
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding   
+	Inherits: ^D2KBuilding
+    Inherits@D2KSprite: ^D2KPaletteRender   
 	Buildable:
 		Queue: Building.d2k
 		Prerequisites: outpost, heavy_factory, upgrade.heavy, ~techlevel.high
@@ -1239,7 +1331,7 @@ research_centre:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 2000
+		Cost: 1500
 	Tooltip:
 		Name: IX Research Center
 	Building:
@@ -1279,9 +1371,9 @@ research_centre:
     -WithDeathAnimation:
     
 palace:
-	Inherits: ^D2kBuilding
+	Inherits: ^D2KBuilding
 	Inherits@IDISABLE: ^D2KDisableOnLowPowerOrPowerDown
-    Inherits@D2KSprite: ^D2KPaletteRenderBuilding    
+    Inherits@D2KSprite: ^D2KPaletteRender    
 	Buildable:
 		Prerequisites: research_centre, ~techlevel.high
 		Queue: Building.d2k
@@ -1293,7 +1385,7 @@ palace:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 3500
+		Cost: 3000
 	Tooltip:
 		Name: Palace
 	Building:
@@ -1351,7 +1443,7 @@ palace:
 		PauseOnCondition: disabled
 		RequiresCondition: harkonnen
 		Prerequisites: ~techlevel.superweapons, ~palace.nuke
-		ChargeInterval: 7500
+		ChargeInterval: 4500
 		Description: Death Hand
 		LongDesc: Launches an atomic missile at a target location
 		SelectTargetSpeechNotification: SelectTarget
@@ -1361,6 +1453,8 @@ palace:
 		IncomingSpeechNotification: NuclearWarheadApproaching
 		MissileWeapon: deathhand
 		MissileDelay: 18
+        MissilePalette: d2kunit          
+        TrailPalette: d2kunit
 		SpawnOffset: 32,816,0
 		DetonationAltitude: 3c0
 		RemoveMissileOnDetonation: False
@@ -1384,7 +1478,7 @@ palace:
 		Prerequisites: ~techlevel.superweapons, ~palace.fremen
 		Actors: fremen, fremen
 		Type: Fremen
-		ChargeInterval: 2250
+		ChargeInterval: 1500
 		ReadyAudio: Reinforce
 		BlockedAudio: NoRoom
 		OrderName: ProduceActorPower.Fremen
@@ -1399,7 +1493,7 @@ palace:
 		Prerequisites: ~techlevel.superweapons, ~palace.saboteur
 		Actors: saboteur
 		Type: Saboteur
-		ChargeInterval: 2250
+		ChargeInterval: 1500
 		ReadyAudio: Reinforce
 		BlockedAudio: NoRoom
 		OrderName: ProduceActorPower.Saboteur
@@ -1471,13 +1565,13 @@ conyard.ordos:
 ###################################
 
 light_inf:
-	Inherits: ^Soldier
+	Inherits: ^D2KInfantry
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^D2KPaletteRenderInfantry
 	Valued:
-		Cost: 80
+		Cost: 60
 	Tooltip:
 		Name: Light Infantry
 	UpdatesPlayerStatistics:
@@ -1508,7 +1602,7 @@ light_inf:
 		ValidTypes: infantry							##########
         
 engineer:
-	Inherits: ^Soldier
+	Inherits: ^D2KInfantry
 	Inherits@selection: ^SelectableSupportUnit
 	Inherits@anim: ^D2KPaletteRenderInfantry    
 	Inherits@EXT: ^ExternalConditions    
@@ -1521,7 +1615,7 @@ engineer:
 		Description: Infiltrates and captures enemy structures\n  Strong vs Buildings\n  Weak vs Everything
         IconPalette: d2kunit       
 	Valued:
-		Cost: 350
+		Cost: 300
 	Tooltip:
 		Name: Engineer
 	UpdatesPlayerStatistics:
@@ -1543,7 +1637,7 @@ engineer:
 	-AttackFrontal:
 
 trooper:
-	Inherits: ^Soldier
+	Inherits: ^D2KInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@anim: ^D2KPaletteRenderInfantry
 	Inherits@EXT: ^ExternalConditions    
@@ -1556,7 +1650,7 @@ trooper:
 		Description: Anti-tank infantry\n  Strong vs Tanks\n  Weak vs Infantry, Artillery
         IconPalette: d2kunit            
 	Valued:
-		Cost: 160
+		Cost: 80
 	Tooltip:
 		Name: Trooper
 	UpdatesPlayerStatistics:
@@ -1576,7 +1670,7 @@ trooper:
 		DefaultAttackSequence: shoot
 
 thumper:
-	Inherits: ^Soldier
+	Inherits: ^D2KInfantry
  	Inherits@anim: ^D2KPaletteRenderInfantry
 	Inherits@EXT: ^ExternalConditions    
 	-RevealOnFire:
@@ -1589,7 +1683,7 @@ thumper:
 		Description: Attracts nearby worms when deployed\n  Unarmed
         IconPalette: d2kunit            
 	Valued:
-		Cost: 250
+		Cost: 150
 	Tooltip:
 		Name: Thumper Infantry
 	UpdatesPlayerStatistics:
@@ -1605,8 +1699,7 @@ thumper:
 		DeployedCondition: deployed
 		UndeployedCondition: undeployed
 		Facing: 128
-		AllowedTerrainTypes: Sand, Spice, Dune, SpiceSand
-	WithInfantryBody:
+		AllowedTerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road
 		RequiresCondition: undeployed
 	WithSpriteBody@DEPLOYED:
 		Sequence: thump
@@ -1627,7 +1720,7 @@ thumper:
 	-AttackFrontal:
 
 fremen:
-	Inherits: ^Soldier
+	Inherits: ^D2KInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@anim: ^D2KPaletteRenderInfantry
 	Inherits@EXT: ^ExternalConditions    
@@ -1665,6 +1758,7 @@ fremen:
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Dock, Damage, Heal
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
+        Palette: d2kcloak
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -1673,7 +1767,7 @@ fremen:
 		VoiceSet: D2KFremenVoice
 
 grenadier:
-	Inherits: ^Soldier
+	Inherits: ^D2KInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
  	Inherits@anim: ^D2KPaletteRenderInfantry   
     Inherits@EXT: ^ExternalConditions
@@ -1686,7 +1780,7 @@ grenadier:
 		Description: Infantry armed with grenades. \n  Strong vs Buildings, Infantry\n  Weak vs Vehicles
         IconPalette: d2kunit           
 	Valued:
-		Cost: 120
+		Cost: 80
 	Tooltip:
 		Name: Grenadier
 	UpdatesPlayerStatistics:
@@ -1708,7 +1802,7 @@ grenadier:
 		EmptyWeapon: GrenDeath
 
 sardaukar:
-	Inherits: ^Soldier
+	Inherits: ^D2KInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@anim: ^D2KPaletteRenderInfantry    
     Inherits@EXT: ^ExternalConditions
@@ -1763,7 +1857,7 @@ mpsardaukar:
 		Image: sardaukar
 
 saboteur:
-	Inherits: ^Soldier
+	Inherits: ^D2KInfantry
 	Inherits@anim: ^D2KPaletteRenderInfantry    
     Inherits@EXT: ^ExternalConditions
 	Buildable:
@@ -1791,9 +1885,10 @@ saboteur:
 		InitialDelay: 85
 		CloakDelay: 85
 		CloakSound: STEALTH1.WAV
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move, Damage, Heal
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage, Heal
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
+        Palette: d2kcloak
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -1814,7 +1909,7 @@ nsfremen:
 	-GrantConditionOnDamageState@UNCLOAK:
     
 d2k_mcv:
-	Inherits: ^D2KTank
+	Inherits@D2KT: ^D2KTank
 	Inherits@selection: ^SelectableSupportUnit
     Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@EXT: ^ExternalConditions    
@@ -1827,7 +1922,7 @@ d2k_mcv:
 		Description: Deploys into another Construction Yard\n  Unarmed
         IconPalette: d2kunit            
 	Valued:
-		Cost: 2500
+		Cost: 2000
 	Tooltip:
 		Name: Mobile Construction Vehicle
 	Selectable:
@@ -1866,7 +1961,7 @@ d2k_mcv:
 	-RevealOnFire:
 
 harvester:
-	Inherits: ^D2KTank
+	Inherits@D2KT: ^D2KTank
     Inherits@harv: ^Harvester
 	Inherits@selection: ^SelectableEconomicUnit
     Inherits@D2KSprite: ^D2KPaletteRender  
@@ -1920,7 +2015,7 @@ harvester:
 	-RevealOnFire:
 
 trike:
-	Inherits: ^Vehicle
+	Inherits@D2KV: ^D2KVehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender      
@@ -1934,7 +2029,7 @@ trike:
 		Description: Fast scout\n  Strong vs Infantry\n  Weak vs Tanks
         IconPalette: d2kunit          
 	Valued:
-		Cost: 400
+		Cost: 300
 	Tooltip:
 		Name: Trike
 	UpdatesPlayerStatistics:
@@ -1966,7 +2061,7 @@ trike:
 		Intensity: 420
 
 quad:
-	Inherits: ^Vehicle
+	Inherits: ^D2KVehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender    
@@ -1980,7 +2075,7 @@ quad:
 		Description: Missile Scout\n  Strong vs Vehicles\n  Weak vs Infantry
         IconPalette: d2kunit          
 	Valued:
-		Cost: 600
+		Cost: 400
 	Tooltip:
 		Name: Missile Quad
 	UpdatesPlayerStatistics:
@@ -2007,7 +2102,7 @@ quad:
 		Intensity: 470
 
 siege_tank:
-	Inherits: ^D2KTank
+	Inherits@D2KT: ^D2KTank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender   
@@ -2021,7 +2116,7 @@ siege_tank:
 		Description: Siege Artillery\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
         IconPalette: d2kunit            
 	Valued:
-		Cost: 1200
+		Cost: 800
 	Tooltip:
 		Name: Siege Tank
 	UpdatesPlayerStatistics:
@@ -2062,7 +2157,7 @@ siege_tank:
 		Intensity: 600
 
 missile_tank:
-	Inherits: ^D2KTank
+	Inherits@D2KT: ^D2KTank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender   
@@ -2080,7 +2175,7 @@ missile_tank:
 		Description: Rocket Artillery\n  Strong vs Vehicles, Buildings, Aircraft\n  Weak vs Infantry
         IconPalette: d2kunit         
 	Valued:
-		Cost: 1400
+		Cost: 1000
 	Mobile:
 		Speed: 64
 		TurnSpeed: 20
@@ -2109,7 +2204,7 @@ missile_tank:
 		Intensity: 600
 
 sonic_tank:
-	Inherits: ^Vehicle
+	Inherits: ^D2KTank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender   
@@ -2123,7 +2218,7 @@ sonic_tank:
 		Description: Fires sonic shocks\n  Strong vs Infantry, Vehicles\n  Weak vs Artillery
         IconPalette: d2kunit           
 	Valued:
-		Cost: 1500
+		Cost: 1200
 	Tooltip:
 		Name: Sonic Tank
 	UpdatesPlayerStatistics:
@@ -2152,7 +2247,7 @@ sonic_tank:
 		Intensity: 600
 
 devastator:
-	Inherits: ^D2KTank
+	Inherits@D2KT: ^D2KTank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender    
@@ -2166,7 +2261,7 @@ devastator:
 		Description: Super Heavy Tank\n  Strong vs Tanks\n  Weak vs Artillery
         IconPalette: d2kunit            
 	Valued:
-		Cost: 1800
+		Cost: 1500
 	Tooltip:
 		Name: Devastator
 	UpdatesPlayerStatistics:
@@ -2178,7 +2273,7 @@ devastator:
 	Mobile:
 		TurnSpeed: 12
 		Speed: 31
-		Locomotor: heavywheeled
+		Locomotor: heavytracked
 		RequiresCondition: !overload
 		PauseOnCondition: notmobile
 	AutoCarryable:
@@ -2227,7 +2322,7 @@ devastator:
 		DecorationBounds: 32, 32, 0, 0
 
 raider:
-	Inherits: ^Vehicle
+	Inherits@D2KV: ^D2KVehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender    
@@ -2241,7 +2336,7 @@ raider:
 		Description: Improved Scout\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
         IconPalette: d2kunit            
 	Valued:
-		Cost: 500
+		Cost: 300
 	Tooltip:
 		Name: Raider Trike
 	UpdatesPlayerStatistics:
@@ -2282,7 +2377,7 @@ stealth_raider:
 		Description: Invisible Raider Trike\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
         IconPalette: d2kunit
 	Valued:
-		Cost: 600
+		Cost: 350
 	Tooltip:
 		Name: Stealth Raider Trike
 	UpdatesPlayerStatistics:
@@ -2293,6 +2388,7 @@ stealth_raider:
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Dock, Damage, Heal
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
+        Palette: d2kcloak     
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -2302,13 +2398,13 @@ stealth_raider:
 	-MustBeDestroyed:
 
 deviator:
-	Inherits: ^D2KTank
+	Inherits@D2KT: ^D2KTank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender    
  	Inherits@EXT: ^ExternalConditions  
 	Valued:
-		Cost: 1500
+		Cost: 1200
 	Tooltip:
 		Name: Deviator
 	UpdatesPlayerStatistics:
@@ -2327,7 +2423,7 @@ deviator:
 	Health:
 		HP: 65000
 	Armor:
-		Type: Heavy
+		Type: Medium
 	RevealsShroud:
 		Range: 4c768
 	Armament:
@@ -2347,7 +2443,7 @@ deviator:
 		Intensity: 600
 
 ^combat_tank:
-	Inherits: ^D2KTank
+	Inherits@D2KT: ^D2KTank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender   
@@ -2360,7 +2456,7 @@ deviator:
 		Description: Main Battle Tank\n  Strong vs Tanks\n  Weak vs Infantry
         IconPalette: d2kunit
 	Valued:
-		Cost: 800
+		Cost: 600
 	Tooltip:
 		Name: Combat Tank
 	UpdatesPlayerStatistics:
@@ -2439,7 +2535,7 @@ carryall.reinforce:
     Inherits@D2KSprite: ^D2KPaletteRender  
  	Inherits@EXT: ^ExternalConditions   
 	Valued:
-		Cost: 1100
+		Cost: 1000
 	Tooltip:
 		Name: Carryall
 	Health:
@@ -2727,7 +2823,7 @@ upgrade.hightech:
 		Description: Unlocks the Atreides Air Strike superweapon
         IconPalette: d2kunit
 	Valued:
-		Cost: 2000
+		Cost: 1500
 	RenderSprites:
 		Image: hightech.atreides
 	ProvidesPrerequisite@upgradename:
@@ -2845,8 +2941,19 @@ combat_tank_o.husk:
 	TransformOnCapture:
 		IntoActor: combat_tank_o
 
+#####################################
+#   Starport
+#####################################
+
+^starport_unit:
+    ProductionCostMultiplier:
+		Multiplier: 125
+    ProductionTimeMultiplier:
+        Multiplier: 10       
+        
 mcv.starport:
 	Inherits: d2k_mcv
+    Inherits@starportunit: ^starport_unit
 	Buildable:
 		Prerequisites: starport
 		Queue: Starport
@@ -2855,20 +2962,16 @@ mcv.starport:
 		Cost: 2500
 	-MapEditorData:
 	RenderSprites:
-		Image: mcv
+		Image: d2k_mcv
 	UpdatesPlayerStatistics:
 		OverrideActor: d2k_mcv
-
-#####################################
-#   Starport
-#####################################
+   
 harvester.starport:
 	Inherits: harvester
+    Inherits@starportunit: ^starport_unit
 	Buildable:
 		Prerequisites: starport
 		Queue: Starport
-	Valued:
-		Cost: 1500
 	-MapEditorData:
 	RenderSprites:
 		Image: harvester
@@ -2877,11 +2980,10 @@ harvester.starport:
 
 trike.starport:
 	Inherits: trike
+    Inherits@starportunit: ^starport_unit
 	Buildable:
 		Prerequisites: starport
 		Queue: Starport
-	Valued:
-		Cost: 315
 	-MapEditorData:
 	RenderSprites:
 		Image: trike
@@ -2890,11 +2992,10 @@ trike.starport:
 
 quad.starport:
 	Inherits: quad
+    Inherits@starportunit: ^starport_unit    
 	Buildable:
 		Prerequisites: starport
-		Queue: Starport
-	Valued:
-		Cost: 500
+		Queue: Starport       
 	-MapEditorData:
 	RenderSprites:
 		Image: quad
@@ -2903,11 +3004,10 @@ quad.starport:
 
 siege_tank.starport:
 	Inherits: siege_tank
+    Inherits@starportunit: ^starport_unit   
 	Buildable:
 		Prerequisites: starport
-		Queue: Starport
-	Valued:
-		Cost: 1075
+		Queue: Starport  
 	-MapEditorData:
 	RenderSprites:
 		Image: siege_tank
@@ -2916,11 +3016,10 @@ siege_tank.starport:
 
 missile_tank.starport:
 	Inherits: missile_tank
+    Inherits@starportunit: ^starport_unit    
 	Buildable:
 		Prerequisites: starport
 		Queue: Starport
-	Valued:
-		Cost: 1250
 	-MapEditorData:
 	RenderSprites:
 		Image: missile_tank
@@ -2929,11 +3028,10 @@ missile_tank.starport:
 
 combat_tank_a.starport:
 	Inherits: combat_tank_a
+    Inherits@starportunit: ^starport_unit    
 	Buildable:
 		Prerequisites: ~starport.atreides_combat
-		Queue: Starport
-	Valued:
-		Cost: 875
+		Queue: Starport      
 	-MapEditorData:
 	RenderSprites:
 		Image: combat_tank_a
@@ -2942,11 +3040,10 @@ combat_tank_a.starport:
 
 combat_tank_h.starport:
 	Inherits: combat_tank_h
+    Inherits@starportunit: ^starport_unit    
 	Buildable:
 		Prerequisites: ~starport.harkonnen_combat
 		Queue: Starport
-	Valued:
-		Cost: 875
 	-MapEditorData:
 	RenderSprites:
 		Image: combat_tank_h
@@ -2955,11 +3052,10 @@ combat_tank_h.starport:
 
 combat_tank_o.starport:
 	Inherits: combat_tank_o
+    Inherits@starportunit: ^starport_unit    
 	Buildable:
 		Prerequisites: ~starport.ordos_combat
-		Queue: Starport
-	Valued:
-		Cost: 875
+		Queue: Starport    
 	-MapEditorData:
 	RenderSprites:
 		Image: combat_tank_o
@@ -2968,11 +3064,10 @@ combat_tank_o.starport:
 
 carryall.starport:
 	Inherits: carryall
+    Inherits@starportunit: ^starport_unit    
 	Buildable:
 		Prerequisites: starport
 		Queue: Starport
-	Valued:
-		Cost: 1500
 	-MapEditorData:
 	UpdatesPlayerStatistics:
 		OverrideActor: carryall
@@ -3033,7 +3128,7 @@ sandworm:
 		Sequences: traila, trailb, trailc
 		Palette: effect
 		Type: CenterPosition
-		TerrainTypes: ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Bridge, Ore, Gems, Beach, Sand, Dune, SpiceSand, Spice
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road 
 		MovingInterval: 3
 		RequiresCondition: !attacking
 	ConditionManager:
