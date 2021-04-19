@@ -64,12 +64,14 @@
 ^D2KBuilding:
 	Inherits@1: ^BaseBuilding
 	Inherits@selection: ^SelectableBuilding
+    Inherits@BotMicro: ^BotMicromanageable
 	Tooltip:
 		GenericName: Structure
 	OwnerLostAction:
 		Action: Kill
 	Building:
 		BuildSounds: BUILD1.WAV
+        TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete
 	CaptureManager:
 	Capturable:
 		RequiresCondition: !build-incomplete
@@ -107,7 +109,13 @@
     -ActorPreviewPlaceBuildingPreview: 
     D2kActorPreviewPlaceBuildingPreview:
 		OverridePalette: playerd2k     
-        
+   	DamagedByTerrain:
+		Damage: 600
+		DamageInterval: 80
+		Terrain: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road
+		DamageThreshold: 30
+		StartOnThreshold: false    
+        RequiresCondition: !botmicro
 ^D2kUpgradeable:
 	GrantConditionOnPrerequisite@UPGRADEABLE:
 		Condition: stardecoration
@@ -261,7 +269,6 @@
 #   BUILDINGS
 ###########################################
 ^concrete:
-    Inherits@D2KSprite: ^D2KPaletteRender
 	AlwaysVisible:
 	Interactable:
 	Building:
@@ -269,24 +276,23 @@
 		AllowInvalidPlacement: true
         TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road  
     D2kActorPreviewPlaceBuildingPreview:
-		OverridePalette: playerd2k       
 	RequiresBuildableArea:
 		AreaTypes: building
 		Adjacent: 4
+    RenderSprites:    
    	LaysTerrain:
-		Template: 88
-		TerrainTypes: Rock     
+		Template: 447
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road     
 	Tooltip:
 		Name: Concrete
 		GenericName: Structure
-	RenderSprites:
 	KillsSelf:
 		RemoveInstead: true
-	#Buildable:
-	#	Queue: Building.d2k
-	#	BuildPaletteOrder: 10
-	#	Description: Provides a strong foundation that prevents\ndamage from the terrain.
-    #   IconPalette: d2kunit
+	Buildable:
+		Queue: Building.d2k
+		BuildPaletteOrder: 10
+		Description: Provides a strong foundation that prevents\ndamage from the terrain.
+        IconPalette: d2kunit
 
 concretea:
 	Inherits: ^concrete
@@ -356,6 +362,7 @@ construction_yard:
 		ProductionType: Defence.d2k               
 	Power:
 		Amount: 20
+    -DamagedByTerrain:
 	RenderSprites:
 		Image: conyard.ordos
 		FactionImages:
@@ -411,7 +418,7 @@ wind_trap:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 300
+		Cost: 225
 	Tooltip:
 		Name: Wind Trap
 	Building:
@@ -461,7 +468,7 @@ d2k_barracks:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 500
+		Cost: 225
 	Tooltip:
 		Name: Barracks
 	Building:
@@ -534,7 +541,7 @@ refinery:
 		Prerequisites: wind_trap
 		Queue: Building.d2k
 		BuildPaletteOrder: 130
-		BuildDuration: 625
+		BuildDuration: 500
 		BuildDurationModifier: 100
 		Description: Harvesters unload Spice here for processing.
         IconPalette: d2kunit   
@@ -570,7 +577,7 @@ refinery:
 		Capacity: 2000
         PipCount: 10
 	CustomSellValue:
-		Value: 1000
+		Value: 500
 	FreeActorWithDelivery:
 		Actor: harvester
 		DeliveryOffset: 2,2
@@ -608,7 +615,7 @@ d2k_silo:
 	Selectable:
 		Bounds: 32, 32
 	Valued:
-		Cost: 250
+		Cost: 120
 	Tooltip:
 		Name: Silo
 	RequiresBuildableArea:
@@ -661,7 +668,7 @@ light_factory:
 	Selectable:
 		Bounds: 72, 60
 	Valued:
-		Cost: 800
+		Cost: 500
 	Tooltip:
 		Name: Light Factory
 	Building:
@@ -750,7 +757,7 @@ heavy_factory:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 1500
+		Cost: 1000
 	Tooltip:
 		Name: Heavy Factory
 	Building:
@@ -851,7 +858,7 @@ outpost:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 1200
+		Cost: 750
 	Tooltip:
 		Name: Outpost
 	Building:
@@ -902,7 +909,7 @@ starport:
 		Description: Dropzone for quick reinforcements, at a price.
         IconPalette: d2kunit    
 	Valued:
-		Cost: 2000
+		Cost: 1500
 	Building:
 		Footprint: xxx x=x =x=
 		Dimensions: 3,3
@@ -1008,7 +1015,7 @@ wall:
 		OverridePalette: playerd2k  
 	Building:
 		BuildSounds: CHUNG.WAV
-        TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road  
+        TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete
 	RequiresBuildableArea:
 		Adjacent: 7
         AreaTypes: building
@@ -1063,7 +1070,7 @@ medium_gun_turret:
 		Description: Defensive structure.\n  Strong vs Tanks\n  Weak vs Infantry, Aircraft
         IconPalette: d2kunit      
 	Valued:
-		Cost: 700
+		Cost: 550
 	Tooltip:
 		Name: Gun Turret
 	RequiresBuildableArea:
@@ -1110,14 +1117,14 @@ large_gun_turret:
 		PauseOnCondition: disabled
 	Buildable:
 		Queue: Defence.d2k
-		Prerequisites: outpost, upgrade.conyard, ~techlevel.medium
+		Prerequisites: outpost, heavy_factory, ~techlevel.medium
 		BuildPaletteOrder: 610
 		BuildDuration: 312
 		BuildDurationModifier: 100
 		Description: Defensive structure.\n  Strong vs Infantry, Aircraft\n  Weak vs Tanks\n\n  Requires power to operate.
         IconPalette: d2kunit       
 	Valued:
-		Cost: 1000
+		Cost: 750
 	Tooltip:
 		Name: Rocket Turret
 	RequiresBuildableArea:
@@ -1167,7 +1174,7 @@ repair_pad:
 		Description: Repairs vehicles.\n Allows construction of MCVs
         IconPalette: d2kunit       
 	Valued:
-		Cost: 1200
+		Cost: 800
 	Tooltip:
 		Name: Repair Pad
 	Building:
@@ -1226,7 +1233,7 @@ high_tech_factory:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 2000
+		Cost: 1150
 	Tooltip:
 		Name: High Tech Factory
 	ProductionFromMapEdge:
@@ -1331,7 +1338,7 @@ research_centre:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 1500
+		Cost: 1000
 	Tooltip:
 		Name: IX Research Center
 	Building:
@@ -1385,7 +1392,7 @@ palace:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 3000
+		Cost: 1600
 	Tooltip:
 		Name: Palace
 	Building:
@@ -1468,6 +1475,7 @@ palace:
 		TrailImage: large_trail
 		TrailSequences: idle
 		SupportPowerPaletteOrder: 40
+        OrderName: deathhand
 	ProduceActorPower@fremen:
 		Description: Recruit Fremen
 		LongDesc: Elite infantry unit armed with assault rifles and rockets\n  Strong vs Infantry, Vehicles\n  Weak vs Artillery\n  Special Ability: Invisibility
@@ -1481,7 +1489,7 @@ palace:
 		ChargeInterval: 1500
 		ReadyAudio: Reinforce
 		BlockedAudio: NoRoom
-		OrderName: ProduceActorPower.Fremen
+		OrderName: callfremen
 		SupportPowerPaletteOrder: 20
 	ProduceActorPower@saboteur:
 		Description: Recruit Saboteur
@@ -1496,7 +1504,7 @@ palace:
 		ChargeInterval: 1500
 		ReadyAudio: Reinforce
 		BlockedAudio: NoRoom
-		OrderName: ProduceActorPower.Saboteur
+		OrderName: callsaboteur
 		SupportPowerPaletteOrder: 30
 	Exit@1:
 		SpawnOffset: -704,768,0
@@ -1571,7 +1579,7 @@ light_inf:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^D2KPaletteRenderInfantry
 	Valued:
-		Cost: 60
+		Cost: 50
 	Tooltip:
 		Name: Light Infantry
 	UpdatesPlayerStatistics:
@@ -1645,7 +1653,7 @@ trooper:
 		Queue: Infantry.d2k
 		BuildPaletteOrder: 20
 		Prerequisites: upgrade.barracks, ~techlevel.medium
-		BuildDuration: 73
+		BuildDuration: 65
 		BuildDurationModifier: 40
 		Description: Anti-tank infantry\n  Strong vs Tanks\n  Weak vs Infantry, Artillery
         IconPalette: d2kunit            
@@ -1699,7 +1707,7 @@ thumper:
 		DeployedCondition: deployed
 		UndeployedCondition: undeployed
 		Facing: 128
-		AllowedTerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road
+		AllowedTerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete
 		RequiresCondition: undeployed
 	WithSpriteBody@DEPLOYED:
 		Sequence: thump
@@ -1776,7 +1784,7 @@ grenadier:
 		BuildPaletteOrder: 60
 		Prerequisites: ~barracks.atreides, upgrade.barracks, high_tech_factory, ~techlevel.medium
 		BuildDuration: 81 ## Wasn't converted, copied from Sardauker who has same value in TibEd.
-		BuildDurationModifier: 40
+		BuildDurationModifier: 35
 		Description: Infantry armed with grenades. \n  Strong vs Buildings, Infantry\n  Weak vs Vehicles
         IconPalette: d2kunit           
 	Valued:
@@ -1810,7 +1818,7 @@ sardaukar:
 		Queue: Infantry.d2k
 		BuildPaletteOrder: 50
 		Prerequisites: ~palace.sardaukar, ~techlevel.high
-		BuildDuration: 81
+		BuildDuration: 70
 		BuildDurationModifier: 40
 		Description: Elite assault infantry of Corrino\n  Strong vs Infantry, Vehicles\n  Weak vs Artillery
         IconPalette: d2kunit         
@@ -1970,7 +1978,7 @@ harvester:
 		Queue: Armor.d2k
 		Prerequisites: refinery
 		BuildPaletteOrder: 10
-		BuildDuration: 625
+		BuildDuration: 400
 		BuildDurationModifier: 100
 		Description: Collects Spice for processing\n  Unarmed
         IconPalette: d2kunit           
@@ -1982,7 +1990,7 @@ harvester:
 		Class: harvester
 		DecorationBounds: 32, 32
 	Harvester:
-		Capacity: 28
+		Capacity: 32
 		HarvestFacings: 8
 		BaleUnloadDelay: 5
 		SearchFromProcRadius: 30
@@ -2024,12 +2032,12 @@ trike:
 		Queue: Vehicle.d2k
 		BuildPaletteOrder: 10
 		Prerequisites: ~light.trike
-		BuildDuration: 225
+		BuildDuration: 175
 		BuildDurationModifier: 100
 		Description: Fast scout\n  Strong vs Infantry\n  Weak vs Tanks
         IconPalette: d2kunit          
 	Valued:
-		Cost: 300
+		Cost: 250
 	Tooltip:
 		Name: Trike
 	UpdatesPlayerStatistics:
@@ -2070,12 +2078,12 @@ quad:
 		Queue: Vehicle.d2k
 		Prerequisites: upgrade.light, ~techlevel.medium
 		BuildPaletteOrder: 20
-		BuildDuration: 321
+		BuildDuration: 250
 		BuildDurationModifier: 100
 		Description: Missile Scout\n  Strong vs Vehicles\n  Weak vs Infantry
         IconPalette: d2kunit          
 	Valued:
-		Cost: 400
+		Cost: 350
 	Tooltip:
 		Name: Missile Quad
 	UpdatesPlayerStatistics:
@@ -2111,18 +2119,18 @@ siege_tank:
 		Queue: Armor.d2k
 		Prerequisites: upgrade.heavy, ~techlevel.medium
 		BuildPaletteOrder: 50
-		BuildDuration: 375
+		BuildDuration: 300
 		BuildDurationModifier: 100
 		Description: Siege Artillery\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
         IconPalette: d2kunit            
 	Valued:
-		Cost: 800
+		Cost: 650
 	Tooltip:
 		Name: Siege Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 40000
+		HP: 45000
 	Armor:
 		Type: Light
 	Mobile:
@@ -2170,12 +2178,12 @@ missile_tank:
 		Queue: Armor.d2k
 		Prerequisites: ~heavy.missile_tank, upgrade.heavy, research_centre, ~techlevel.high
 		BuildPaletteOrder: 60
-		BuildDuration: 512
+		BuildDuration: 400
 		BuildDurationModifier: 100
 		Description: Rocket Artillery\n  Strong vs Vehicles, Buildings, Aircraft\n  Weak vs Infantry
         IconPalette: d2kunit         
 	Valued:
-		Cost: 1000
+		Cost: 800
 	Mobile:
 		Speed: 64
 		TurnSpeed: 20
@@ -2213,18 +2221,18 @@ sonic_tank:
 		Queue: Armor.d2k
 		BuildPaletteOrder: 100
 		Prerequisites: ~heavy.atreides, research_centre, ~techlevel.high
-		BuildDuration: 562
+		BuildDuration: 450
 		BuildDurationModifier: 100
 		Description: Fires sonic shocks\n  Strong vs Infantry, Vehicles\n  Weak vs Artillery
         IconPalette: d2kunit           
 	Valued:
-		Cost: 1200
+		Cost: 900
 	Tooltip:
 		Name: Sonic Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 70000
+		HP: 75000
 	Armor:
 		Type: Heavy
 	Mobile:
@@ -2256,12 +2264,12 @@ devastator:
 		Queue: Armor.d2k
 		BuildPaletteOrder: 100
 		Prerequisites: ~heavy.harkonnen, research_centre, ~techlevel.high
-		BuildDuration: 625
+		BuildDuration: 500
 		BuildDurationModifier: 100
 		Description: Super Heavy Tank\n  Strong vs Tanks\n  Weak vs Artillery
         IconPalette: d2kunit            
 	Valued:
-		Cost: 1500
+		Cost: 1000
 	Tooltip:
 		Name: Devastator
 	UpdatesPlayerStatistics:
@@ -2331,7 +2339,7 @@ raider:
 		Queue: Vehicle.d2k
 		BuildPaletteOrder: 10
 		Prerequisites: ~light.raider
-		BuildDuration: 225
+		BuildDuration: 175
 		BuildDurationModifier: 100
 		Description: Improved Scout\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
         IconPalette: d2kunit            
@@ -2372,7 +2380,7 @@ stealth_raider:
 	Buildable:
 		Prerequisites: ~light.ordos, upgrade.light, high_tech_factory, ~techlevel.medium
 		BuildPaletteOrder: 30
-		BuildDuration: 225
+		BuildDuration: 200
 		BuildDurationModifier: 100
 		Description: Invisible Raider Trike\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
         IconPalette: d2kunit
@@ -2404,7 +2412,7 @@ deviator:
     Inherits@D2KSprite: ^D2KPaletteRender    
  	Inherits@EXT: ^ExternalConditions  
 	Valued:
-		Cost: 1200
+		Cost: 900
 	Tooltip:
 		Name: Deviator
 	UpdatesPlayerStatistics:
@@ -2413,7 +2421,7 @@ deviator:
 		Queue: Armor.d2k
 		BuildPaletteOrder: 50
 		Prerequisites: ~heavy.ordos, research_centre, ~techlevel.high
-		BuildDuration: 562
+		BuildDuration: 400
 		BuildDurationModifier: 100
 		Description: Fires a warhead which changes\nthe allegiance of enemy vehicles
         IconPalette: d2kunit
@@ -2451,7 +2459,7 @@ deviator:
 	Buildable:
 		Queue: Armor.d2k
 		BuildPaletteOrder: 40
-		BuildDuration: 432
+		BuildDuration: 350
 		BuildDurationModifier: 100
 		Description: Main Battle Tank\n  Strong vs Tanks\n  Weak vs Infantry
         IconPalette: d2kunit
@@ -2548,7 +2556,7 @@ carryall.reinforce:
 		InitialFacing: 0
 		Speed: 144
 		TurnSpeed: 4
-		LandableTerrainTypes: Sand, Rock, Transition, Spice, SpiceSand, Dune, Concrete
+		LandableTerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete
 		Repulsable: False
 		AirborneCondition: airborne
 		CanSlide: True
@@ -2770,7 +2778,7 @@ upgrade.light:
 		Description: Unlocks additional light unit \n(Missile Quad) \n\nRequired to unlock faction specific light unit \n(Ordos: Stealth Raider Trike)
         IconPalette: d2kunit
 	Valued:
-		Cost: 500
+		Cost: 400
 	RenderSprites:
 		Image: light.ordos
 		FactionImages:
@@ -2796,7 +2804,7 @@ upgrade.heavy:
 		Description: Unlocks additional construction options    \n(Repair Pad, IX Research Center) \n\nUnlocks additional heavy units \n(Siege Tank, Missile Tank, MCV)
         IconPalette: d2kunit
 	Valued:
-		Cost: 1000
+		Cost: 800
 	RenderSprites:
 		Image: heavy.ordos
 		FactionImages:
@@ -3079,6 +3087,7 @@ carryall.starport:
 
 sandworm:
 	Inherits@1: ^SpriteActor
+    Inherits: ^D2KPaletteRender 
 	Interactable:
 	Tooltip:
 		Name: Sandworm
