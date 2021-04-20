@@ -122,6 +122,7 @@
 		DamageThreshold: 30
 		StartOnThreshold: false    
         RequiresCondition: !botmicro
+        
 ^D2kUpgradeable:
 	GrantConditionOnPrerequisite@UPGRADEABLE:
 		Condition: stardecoration
@@ -136,7 +137,7 @@
 ^D2KPaletteRender:
 	RenderSprites:
 		PlayerPalette: playerd2k
-        Scale: 0.85     
+        Scale: 0.80     
 	WithDeathAnimation:
 		DeathSequencePalette: playerd2k
  
@@ -522,6 +523,9 @@ d2k_barracks:
 	ProvidesPrerequisite@harkonnen:
 		Prerequisite: barracks.harkonnen
 		Factions: harkonnen
+    ProvidesPrerequisite@mechanic_prereq:
+        Prerequisite: mechanic_prereq
+        Factions: atreides, harkonnen
 	Power:
 		Amount: -30
 	RenderSprites:
@@ -825,6 +829,9 @@ heavy_factory:
 	ProvidesPrerequisite@missile_tank:
 		Prerequisite: heavy.missile_tank
 		Factions: atreides, fremen, harkonnen, corrino
+    ProvidesPrerequisite@d2k_ifv_prereq:
+        Prerequisite: d2k_ifv_prereq
+        Factions: atreides, harkonnen      
 	RenderSprites:
 		Image: heavy.ordos
 		FactionImages:
@@ -1233,7 +1240,7 @@ high_tech_factory:
 		BuildPaletteOrder: 420
 		BuildDuration: 468
 		BuildDurationModifier: 100
-		Description: Unlocks advanced technology.
+		Description: Unlocks advanced technology.\nAllows production of Air units for Atreides and Harkonnen
         IconPalette: d2kunit      
 	Selectable:
 		Bounds: 72, 72
@@ -1285,9 +1292,9 @@ high_tech_factory:
 	ProvidesPrerequisite@upgrade:
 		Prerequisite: hightech.atreides
 		Factions: atreides
-    ProvidesPrerequisite@swarmer:
-        Prerequisite: ~swarmer_prereq
-        Factions: atreides, harkonnen
+   	ProvidesPrerequisite@upgrade2:
+		Prerequisite: hightech.ordos
+		Factions: ordos     
 	ProvidesPrerequisite@buildingname:	
     ClassicAirstrikePower@orni:
 		Squad:
@@ -1492,7 +1499,7 @@ palace:
 		PauseOnCondition: disabled
 		RequiresCondition: atreides
 		Prerequisites: ~techlevel.superweapons, ~palace.fremen
-		Actors: fremen, fremen
+		Actors: fremen, fremen, fremen, fremen
 		Type: Fremen
 		ChargeInterval: 1500
 		ReadyAudio: Reinforce
@@ -1550,6 +1557,7 @@ conyard.atreides:
 		BuildPaletteOrder: 1000
 		Prerequisites: ~disabled
 		ForceFaction: atreides
+        IconPalette: d2kunit     
 	RenderSprites:
 		Image: conyard.atreides
 		-FactionImages:
@@ -1561,6 +1569,7 @@ conyard.harkonnen:
 		BuildPaletteOrder: 1000
 		Prerequisites: ~disabled
 		ForceFaction: harkonnen
+        IconPalette: d2kunit     
 	RenderSprites:
 		Image: conyard.harkonnen
 		-FactionImages:
@@ -1572,6 +1581,7 @@ conyard.ordos:
 		BuildPaletteOrder: 1000
 		Prerequisites: ~disabled
 		ForceFaction: ordos
+        IconPalette: d2kunit      
 	RenderSprites:
 		Image: conyard.ordos
 		-FactionImages:
@@ -1753,7 +1763,7 @@ fremen:
 	Mobile:
 		Speed: 55
 	Valued:
-		Cost: 200 ## actually 0, but spawns from support power at Palace
+		Cost: 300 ## actually 0, but spawns from support power at Palace
 	Health:
 		HP: 15000
 	RevealsShroud:
@@ -1918,7 +1928,7 @@ nsfremen:
 		Name: Fremen
 	Buildable:
 		BuildPaletteOrder: 90
-		Prerequisites: ~barracks.atreides, upgrade.barracks, ~techlevel.medium
+		Prerequisites: ~barracks.atreides, upgrade.barracks, high_tech_factory, ~techlevel.medium
 		Description: Elite infantry unit armed with assault rifles and rockets\n  Strong vs Infantry, Vehicles\n  Weak vs Artillery
 	RenderSprites:
 		Image: fremen
@@ -2012,7 +2022,7 @@ d2k_drone:
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 90
+		Speed: 85
 		Voice: Move
 		RequiresCondition: !attack-cooldown
 	RevealsShroud:
@@ -2064,11 +2074,15 @@ d2k_drone:
 	-Passenger:
 	-WithDeathAnimation:
 	RenderSprites:
-		Scale: 0.85
+		Scale: 0.80
 		PlayerPalette: ra2player
 	Cloak:
         Palette: ra2cloak
   		IsPlayerPalette: true  
+        InitialDelay: 20
+		CloakDelay: 20
+		PauseOnCondition: cloak-force-disabled
+        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
         
 rocketeer:
 	Inherits: ^D2KInfantry
@@ -2078,7 +2092,7 @@ rocketeer:
 	Buildable:
 		Queue: Infantry.d2k
 		BuildPaletteOrder: 140
-		Prerequisites: ~barracks.ordos, upgrade.barracks, high_tech_factory, ~techlevel.high
+		Prerequisites: ~barracks.ordos, upgrade.barracks, high_tech_factory, ~techlevel.medium
 		Description: Flying infantry unit armed with dual machine guns.\n  Strong vs Infantry\n  Weak vs Vehicles
         IconPalette: d2kunit    
 	Valued:
@@ -2086,20 +2100,20 @@ rocketeer:
 	Tooltip:
 		Name: Rocketeer
 	Health:
-		HP: 6000
+		HP: 8000
 	Armor:
-		Type: Light
+		Type: None
 	-Mobile:
 	RevealsShroud:
 		Range: 5c0
 		Type: CenterPosition
 	Armament:
-		Weapon: HMG
+		Weapon: Rocketeer
 	Aircraft:
 		CruiseAltitude: 1200
 		InitialFacing: 92
 		TurnSpeed: 1023
-		Speed: 88
+		Speed: 90
 		AltitudeVelocity: 83
 		AirborneCondition: airborne
 		VTOL: true
@@ -2158,8 +2172,8 @@ d2k_sniper:
 	Buildable:
 		Queue: Infantry.d2k
 		BuildPaletteOrder: 160
-		Prerequisites: ~barracks.ordos, upgrade.barracks, ~techlevel.medium
-		Description: Stealth infantry armed with a long range rifle\nCan detect cloaked units.\n  Strong vs Infantry\n  Weak vs Vehicles\n  Special Ability: Invisibility
+		Prerequisites: ~barracks.ordos, upgrade.barracks, ~techlevel.medium, high_tech_factory
+		Description: Stealth infantry armed with a long range rifle\nCan detect cloaked units.\n  Strong vs Infantry\n  Weak vs Vehicles\n  Special Ability: Invisibility when idle
         IconPalette: d2kunit    
 	Valued:
 		Cost: 300
@@ -2185,13 +2199,16 @@ d2k_sniper:
 		CloakDelay: 85
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
+        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Move
+        Palette: racloak
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
 	-MustBeDestroyed:
 	WithDeathAnimation:
 	RenderSprites:
-    
+  		PlayerPalette: raplayer
+        
 flamethrower:
 	Inherits: ^D2KInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -2226,15 +2243,118 @@ flamethrower:
 	AttackFrontal:
 	WithDeathAnimation:
 	RenderSprites:
+    	PlayerPalette: raplayer
 	Cloak:
 		InitialDelay: 85
 		CloakDelay: 85
         UncloakOn: Attack, Unload, Demolish, Dock, Heal
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
+        Palette: racloak
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
+        
+d2k_hijacker:
+	Inherits: ^D2KInfantry
+	Buildable:
+		Queue: Infantry.d2k
+		BuildPaletteOrder: 170
+		Prerequisites: upgrade.barracks, ~barracks.ordos
+		Description: Stealth unit that can hijack enemy vehicles\n  Unarmed
+        IconPalette: d2kunit    
+	Valued:
+		Cost: 250
+	Tooltip:
+		Name: Hijacker
+	Health:
+		HP: 12000
+	RevealsShroud:
+		Range: 3c0
+	Infiltrates:
+		Types: building
+		PlayerExperience: 50
+		Notification:
+	CaptureManager:
+	Captures:
+		CaptureTypes: vehicle
+		PlayerExperience: 50
+	-TakeCover:
+	WithInfantryBody:
+		-IdleSequences:
+		StandSequences: stand
+  	Cloak:
+		InitialDelay: 200
+		CloakDelay: 120
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage
+		CloakTypes: Cloak, Hijacker
+		Palette: racloak
+		IsPlayerPalette: true      
+	Crushable:
+		WarnProbability: 80
+	Mobile:
+		Speed: 43
+	Voiced:
+		VoiceSet: D2KEngineerVoice
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+	RenderSprites:
+		PlayerPalette: raplayer      
+        
+d2k_mechanic:
+	Inherits: ^Infantry
+	Buildable:
+		Queue: Infantry.d2k
+		BuildPaletteOrder: 80
+		BuildDuration: 111
+		BuildDurationModifier: 100
+		Prerequisites: upgrade.barracks, high_tech_factory, ~techlevel.medium, ~mechanic_prereq
+		Description: Repairs nearby vehicles and defences.\nCan enter vehicle husks to repair them.\nRemoves attached explosives from units and buildings\n  Unarmed
+        IconPalette: d2kunit           
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Mechanic
+	Health:
+		HP: 10000
+	Armor:
+		Type: None
+	Mobile:
+		Speed: 38
+	RevealsShroud:
+		Range: 4c768
+	Armament@repair:
+		Weapon: D2KRepair
+		Cursor: repair
+		OutsideRangeCursor: repair
+		TargetRelationships: Ally
+		ForceTargetRelationships: None
+	AttackFrontal:
+	CaptureManager:
+	Captures:
+		CaptureTypes: husk
+		PlayerExperience: 25
+	Infiltrates:
+		Types: Husk
+		ValidRelationships: Ally
+		EnterCursor: goldwrench
+		PlayerExperience: 25
+	WithInfantryBody:
+		DefaultAttackSequence: repair
+		StandSequences: stand
+   	Armament@defuse:
+		Weapon: DefuseKit
+		TargetStances: Ally
+		ForceTargetStances: None     
+	Voiced:
+		VoiceSet: EngineerVoice
+	AutoTarget:
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Vehicle, Defense
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+	RenderSprites:
+		PlayerPalette: raplayer
         
 d2k_light_tank:
 	Inherits@D2KT: ^D2KTank
@@ -2245,58 +2365,105 @@ d2k_light_tank:
 		BuildPaletteOrder: 80
 		BuildDuration: 380
 		BuildDurationModifier: 100
-		Prerequisites: ~light.ordos, upgrade.light, high_tech_factory, ~techlevel.medium
-		Description: Light Hit and Run vehicle\nCan carry 4 passengers\n Strong vs Tanks\n Weak vs Infantry
+		Prerequisites: ~d2k_ifv_prereq, upgrade.light, high_tech_factory, ~techlevel.medium
+		Description: Light Carrier vehicle with Tank Cannon\nCan carry 3 passengers\n Strong vs Infantry\n Weak vs Tanks
 	    IconPalette: d2kunit    
     Valued:
-		Cost: 700
+		Cost: 750
 	Tooltip:
-		Name: Light Tank
+		Name: Armored Personal Carrier
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 25000
+		HP: 40000
 	Armor:
-		Type: Medium
+		Type: Heavy
 	Mobile:
 		TurnSpeed: 28
-		Speed: 110
+		Speed: 85
 	Turreted:
 		TurnSpeed: 24
 		RealignDelay: 0
 	RevealsShroud:
-		Range: 4c0
+		Range: 3c512
 	WithMuzzleOverlay:
     Cargo:
-        MaxWeight: 4
+        MaxWeight: 3
         InitialUnits: light_inf      
 		Types: Infantry
-		PipCount: 4       
+		PipCount: 3    
 	Armament:
-		Weapon: d2k25mm
+		Weapon: d2k70mm
 		Recoil: 65
 		RecoilRecovery: 25
-		LocalOffset: 768,0,90
 		MuzzleSequence: muzzle
+        LocalOffset: 575, 0, 175
 	AttackTurreted:
-		PauseOnCondition: ecmdisable
 	WithMuzzleOverlay:
 	WithSpriteTurret:
 	Explodes:
-		Weapon: D2KUnitExplodeSmall
-		EmptyWeapon: D2KUnitExplodeSmall
+    	Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
 	Selectable:
 		Class: light_tank
 	AttractsWorms:
-		Intensity: 480
-	Cloak@STEALTH:
-    	InitialDelay: 85
-		CloakDelay: 85
-        UncloakOn: Attack, Unload, Demolish, Dock, Heal, Infiltrate, Damage
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled
+		Intensity: 500
 	RenderSprites:
-		Scale: 1.2
+		PlayerPalette: raplayer
+   
+bomb_buggy:
+	Inherits: ^D2KVehicle
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Bomb Buggy
+	Buildable:
+		Queue: Vehicle.d2k
+		BuildPaletteOrder: 110
+		BuildDuration: 531
+		BuildDurationModifier: 100
+		Prerequisites: ~techlevel.medium, ~light.harkonnen, upgrade.light
+		Description: Suicidal remote vehicle armed with high explosives\nHas very weak armor \n\n Requires a Light Factory in order to move.
+        IconPalette: d2kunit    
+	WithColoredOverlay:
+		Palette: disabled
+		RequiresCondition: !remote
+	Selectable:
+		Class: bomb_buggy
+		DecorationBounds: 28,28
+	Mobile:
+		TurnSpeed: 24
+		Speed: 120
+		PauseOnCondition: notmobile || !remote
+	GrantConditionOnPrerequisite@Remote:
+		Prerequisites: light_factory
+		Condition: remote
+	Health:
+		HP: 5000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 4c768
+	Explodes:
+		Weapon: D2KBuggyExplosion
+		EmptyWeapon: D2KBuggyExplosion
+	AttackFrontal:
+		FacingTolerance: 128
+	Armament@PRIMARY:
+		Weapon: BombBuggyTargeting
+	GrantConditionOnAttack:
+		Condition: triggered
+	GrantConditionOnDeploy:
+		DeployedCondition: triggered
+	KillsSelf@Triggered:
+		RequiresCondition: triggered
+	ThrowsShrapnel:
+		Weapons: Debris, Debris2, Debris3, Debris4
+		Pieces: 4, 8
+		Range: 1c0, 3c768
+	-Capturable:
+	RenderSprites:
+		PlayerPalette: cncplayer
         
 d2k_stealth_tank:
 	Inherits@D2KT: ^D2KTank
@@ -2317,7 +2484,7 @@ d2k_stealth_tank:
 		BuildDuration: 460
 		BuildDurationModifier: 100
 		Prerequisites: ~heavy.atreides, research_centre, ~techlevel.medium
-		Description: Stealth light tank armed with dual missile launchers\n  Strong vs Tanks\n  Weak vs Infantry
+		Description: Quick Stealth tank armed with dual missile launchers\n  Strong vs Tanks, Air\n  Weak vs Infantry
         IconPalette: d2kunit    
 	Selectable:
 		Class: stealth_tank
@@ -2325,9 +2492,9 @@ d2k_stealth_tank:
 		TurnSpeed: 32
 		Speed: 90
 	Health:
-		HP: 10000
+		HP: 30000
 	Armor:
-		Type: Light
+		Type: Medium
 	RevealsShroud:
 		Range: 3c0
 	Cloak:
@@ -2347,10 +2514,12 @@ d2k_stealth_tank:
 		Weapon: Rocket.stealthAA
 		LocalOffset: 213,43,128, 213,-43,128
 	AttackFrontal:
-		PauseOnCondition: ecmdisable
 	SpawnActorOnDeath:
 		Actor: d2k_stealth_tank.husk
 	-MustBeDestroyed:
+    Explodes:
+    	Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
 	RenderSprites:
 		PlayerPalette: cncplayer
 		Scale: 1.1
@@ -2368,6 +2537,78 @@ d2k_stealth_tank.husk:
 	RenderSprites:
 		PlayerPalette: cncplayer
 		Scale: 1.25
+   
+d2k_apc:
+	Inherits: ^D2KTank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Personal Carrier
+	Buildable:
+		Queue: Vehicle.d2k
+		BuildPaletteOrder: 40
+		BuildDuration: 555
+		BuildDurationModifier: 100
+		Prerequisites: ~light.ordos, ~techlevel.medium
+		Description: Cloaked Hit and Run Vehicle with small anti-infantry cannon\nCan carry 4 passengers\n  Special Ability: Invisibility
+        IconPalette: d2kunit          
+	Selectable:
+		Class: apc
+	Mobile:
+		TurnSpeed: 16
+		Speed: 125
+	Health:
+		HP: 30000
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 4c768
+	Turreted:
+		TurnSpeed: 15
+	Explodes:
+		Weapon: D2KUnitExplodeSmall
+		EmptyWeapon: D2KUnitExplodeSmall
+	Armament@primary:
+		Weapon: d2k25mm
+		LocalOffset: 768,0,90
+	AttackTurreted:
+	AutoTarget:
+	Cargo:
+		Types: Infantry
+		MaxWeight: 4
+		LoadingCondition: notmobile
+        PipCount: 4
+	WithSpriteTurret@default:
+		Sequence: turret-tank
+	SpawnActorOnDeath:
+		Actor: d2k_apc.husk
+	RenderSprites:
+        PlayerPalette: raplayer
+        Scale: 1.2
+    Cloak:
+		InitialDelay: 80
+		CloakDelay: 80
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled
+        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
+      	Palette: racloak       
+        
+d2k_apc.husk:
+	Inherits: ^Husk
+	Health:
+		HP: 10000
+	Tooltip:
+		Name: Destroyed Armored Personal Carrier
+	ThrowsParticle@turret:
+		Anim: turret
+	TransformOnCapture:
+		IntoActor: d2k_apc
+	InfiltrateForTransform:
+		IntoActor: d2k_apc
+	RenderSprites:
+        PlayerPalette: raplayer
         
 d2k_mcv:
 	Inherits@D2KT: ^D2KTank
@@ -2433,7 +2674,7 @@ d2k_jammer:
 		BuildPaletteOrder: 80
 		BuildDuration: 562
 		BuildDurationModifier: 100
-		Prerequisites: research_centre, upgrade.hightech, ~techlevel.medium
+		Prerequisites: ~heavy.missile_tank, research_centre, upgrade.hightech, ~techlevel.medium
 		Description: Jams nearby enemy outposts\nand deflects incoming missiles.\nCan detect cloaked units.\nCan disable enemy vehicles with EMP.
 	    IconPalette: d2kunit      
     Health:
@@ -2470,7 +2711,6 @@ d2k_jammer:
 		RevokeAll: true
 		IsCyclic: false
 	AttackFrontal:
-		PauseOnCondition: ecmdisable
 	JamsMissiles:
 		Range: 5c0
 		DeflectionRelationships: Neutral, Enemy
@@ -2487,8 +2727,10 @@ d2k_jammer:
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Dock, Damage, Heal
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
+        Palette: racloak
 	RenderSprites:
 		Scale: 1.1
+        PlayerPalette: raplayer
         
 d2k_jammer.husk:
 	Inherits: ^Husk
@@ -2503,6 +2745,7 @@ d2k_jammer.husk:
 	InfiltrateForTransform:
 		IntoActor: d2k_jammer
 	RenderSprites:
+    	PlayerPalette: raplayer
 		Scale: 1.1   
         
 swarmer:
@@ -2516,24 +2759,24 @@ swarmer:
 	Buildable:
 		Queue: Aircraft.d2k
 		BuildPaletteOrder: 30
-		Prerequisites: outpost, ~techlevel.medium, ~swarmer_prereq
+		Prerequisites: outpost, ~techlevel.medium, ~hightech.atreides
 		BuildDuration: 321
 		BuildDurationModifier: 100
-		Description: Light plane armed with dual machine guns.\n Strong vs Infantry\n  Weak vs Tanks
+		Description: Light scout plane armed with dual machine guns.\n Strong vs Infantry\n  Weak vs Tanks
         IconPalette: d2kunit
 	Tooltip:
 		Name: Swarmer
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 5000
+		HP: 12000
 	Armor:
-		Type: Light
+		Type: Medium
 	RevealsShroud:
 		Range: 5c0
 		Type: GroundPosition
 	AmmoPool:
-		Ammo: 24
+		Ammo: 30
 		AmmoCondition: ammo
 	ReloadAmmoPool:
 		Delay: 100
@@ -2577,7 +2820,8 @@ swarmer:
 		VoiceSet: VehicleVoice
 	RenderSprites:
 		Scale: 0.7
-    
+    	PlayerPalette: raplayer
+        
 phoenix:
 	Inherits: ^RANeutralPlane
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -2589,7 +2833,7 @@ phoenix:
 	Buildable:
 		Queue: Aircraft.d2k
 		BuildPaletteOrder: 40
-		Prerequisites: outpost, ~techlevel.medium
+		Prerequisites: outpost, ~hightech.harkonnen, ~techlevel.medium
 		BuildDuration: 512
 		BuildDurationModifier: 100
 		Description: Light plane armed with dual flame rockets.\n Strong vs Buildings\n  Weak vs Tanks
@@ -2599,9 +2843,9 @@ phoenix:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 7500
+		HP: 20000
 	Armor:
-		Type: light
+		Type: Medium
 	RevealsShroud:
 		Range: 4c512
 		Type: GroundPosition
@@ -2650,7 +2894,8 @@ phoenix:
 	Voiced:
 		VoiceSet: VehicleVoice
 	RenderSprites:
- 
+ 		PlayerPalette: raplayer
+        
 swarmer.husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -2659,7 +2904,7 @@ swarmer.husk:
 		TurnSpeed: 2
 		Speed: 172
 	RenderSprites:
-		Image: swarmer
+		PlayerPalette: raplayer
 
 phoenix.husk:
 	Inherits: ^PlaneHusk
@@ -2669,7 +2914,7 @@ phoenix.husk:
 		TurnSpeed: 2
 		Speed: 172
 	RenderSprites:
-		Image: phoenix
+       	PlayerPalette: raplayer 
         
 harvester:
 	Inherits@D2KT: ^D2KTank
@@ -2751,7 +2996,7 @@ trike:
 	Health:
 		HP: 25000
 	Armor:
-		Type: wood
+		Type: Light
 	Mobile:
 		TurnSpeed: 40
 		Speed: 128
@@ -2789,7 +3034,7 @@ quad:
 	Valued:
 		Cost: 350
 	Tooltip:
-		Name: Missile Quad
+		Name: Quad
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
@@ -2930,7 +3175,7 @@ sonic_tank:
 		Description: Fires sonic shocks\n  Strong vs Infantry, Vehicles\n  Weak vs Artillery
         IconPalette: d2kunit           
 	Valued:
-		Cost: 900
+		Cost: 950
 	Tooltip:
 		Name: Sonic Tank
 	UpdatesPlayerStatistics:
@@ -3045,13 +3290,8 @@ raider:
 		Prerequisites: ~light.raider
 		BuildDuration: 175
 		BuildDurationModifier: 100
-		Description: Improved Scout\nCan carry passenger\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
-        IconPalette: d2kunit   
-    Cargo:
-        MaxWeight: 1
-        InitialUnits: light_inf      
-		Types: Infantry
-		PipCount: 1        
+		Description: Improved Scout\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
+        IconPalette: d2kunit       
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -3099,7 +3339,6 @@ stealth_raider:
 		Name: Stealth Raider Trike
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
-	-Cargo:
     Cloak:
 		InitialDelay: 45
 		CloakDelay: 90
@@ -3856,3 +4095,4 @@ sandworm:
 		Radius: 2c512
 	RequiresSpecificOwners:
 		ValidOwnerNames: Creeps
+        

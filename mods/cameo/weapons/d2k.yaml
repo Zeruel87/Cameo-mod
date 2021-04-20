@@ -150,16 +150,12 @@ Debris4:
 80mm_O:
 	Inherits: ^D2K_Cannon
 	ReloadDelay: 45  
-        
-d2k25mm:
-	Inherits: ^D2K_Cannon
-	ReloadDelay: 25
-	Range: 3c256
-	Projectile: Bullet
-		Speed: 768
-		Inaccuracy: 96
-	Warhead@1Dam: SpreadDamage
-		Damage: 1000
+    
+D2K70mm:
+	Inherits: ^D2K_Cannon  
+	ReloadDelay: 35
+   	Warhead@1Dam: SpreadDamage
+		Damage: 2500
         
 DevBullet:
 	Inherits: ^D2K_Cannon
@@ -386,7 +382,7 @@ Rocket.stealth:
     Burst: 2
     BurstDelays: 8
 	ReloadDelay: 80
-	Range: 6c0
+	Range: 5c0
 	Projectile: Bullet
 		Inaccuracy: 64
 	Warhead@1Dam: SpreadDamage
@@ -397,7 +393,7 @@ Rocket.stealthAA:
     Burst: 2
     BurstDelays: 8
 	ReloadDelay: 80
-	Range: 8c0
+	Range: 7c0
 	MinRange: 0c512
 	ValidTargets: Air
 	-Projectile:
@@ -622,6 +618,15 @@ EMPDisable.end:
 		Range: 0c512
 		Duration: 100
 		Condition: empdisable
+        
+D2KRepair:
+	Inherits: Heal
+	ReloadDelay: 80
+	Report: fixit1.aud
+	ValidTargets: Repair
+	Warhead@1Dam: SpreadDamage
+		Damage: -1500
+		ValidTargets: Repair
 
 CrateExplosion:
 	Warhead@1Dam: SpreadDamage
@@ -916,7 +921,18 @@ M_HMG:
 M_HMG_H:
 	Inherits: M_HMG
 	ReloadDelay: 50
-
+    
+d2k25mm:
+	Inherits: M_HMG
+	ReloadDelay: 25
+	Range: 3c256
+    ValidTargets: Ground
+    InvalidTargets:
+	Warhead@1Dam: SpreadDamage
+		Damage: 1500   
+        ValidTargets: Ground
+        InvalidTargets:
+        
 Fremen_L:
 	Inherits: M_HMG
 	Report: 20MMGUN1.WAV
@@ -951,6 +967,23 @@ HMGo:
 	Inherits: HMG
 	ReloadDelay: 18
 
+Rocketeer:
+    Inherits: HMG
+	ReloadDelay: 18
+    Range: 3c512
+    ValidTargets: Ground, Air
+    Warhead@1Dam: SpreadDamage
+    	Damage: 2500
+		DamageTypes: TriggerProne, SmallExplosionDeath
+        ValidTargets: Ground, Air
+        Versus:
+			None: 120
+			Wood: 90
+			Light: 100
+            Medium: 90
+			Heavy: 60
+            Concrete: 40
+            
 HMG_muzzle:
 	ReloadDelay: 16
 	Range: 3c0
@@ -976,10 +1009,38 @@ DroneJump:
 		ValidTargets: Infantry
 		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
         
+BombBuggyTargeting:
+	ValidTargets: DetonateAttack
+	Range: 2c0
+	Projectile: InstantHit
+	Warhead@1Dam: TargetDamage
+		ValidTargets: DetonateAttack       
+ 
+D2KBuggyExplosion:
+	ValidTargets: Ground, Air
+	Warhead@1Dam: SpreadDamage
+		Spread: 1024
+		Falloff: 100, 90, 80, 60, 40, 10, 0
+		ValidTargets: Ground, Air
+		Damage: 15000
+		Versus:
+			None: 200
+			Wood: 75
+			Light: 150
+            Medium: 120
+			Heavy: 100
+            Concrete: 60
+		AffectsParent: true
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath, SuppressDrone
+	Warhead@2Eff: CreateEffect
+		Explosions: d2k_large_explosion
+		ImpactSounds: EXPLSML4.WAV
+        ExplosionPalette: effect75alpha
+        
 D2KSniperRifle:
 	Report: FREMODD1.WAV
 	ReloadDelay: 80
-	Range: 14c0
+	Range: 12c0
 	ValidTargets: Ground, Air
 	InvalidTargets: Water, Structure, Wall, Husk
 	Projectile: Bullet
@@ -990,7 +1051,7 @@ D2KSniperRifle:
         Versus:
 			None: 100
 			Wood: 20
-			Light: 100
+			Light: 75
             Medium: 50
 			Heavy: 5
             Concrete: 5
@@ -1030,11 +1091,11 @@ d2kChainGun:
 		Blockable: false
 	Warhead@1Dam: SpreadDamage
 		Spread: 192
-		Damage: 600
+		Damage: 750
 		Versus:
-			None: 250
+			None: 300
 			Wood: 20
-			Light: 60
+			Light: 150
             Medium: 40
 			Heavy: 25
             Concrete: 10
@@ -1048,8 +1109,8 @@ PhoenixRocket:
 	Inherits: ^D2KMissile
 	ReloadDelay: 100
 	Burst: 2
-	BurstDelays: 10
 	Range: 4c0
+	BurstDelays: 10
 	Projectile: Missile
 		Inaccuracy: 96
 		Speed: 256
