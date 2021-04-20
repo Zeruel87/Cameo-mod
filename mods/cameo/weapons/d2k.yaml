@@ -36,6 +36,7 @@ Debris:
 	Warhead@3Eff: CreateEffect
 		Explosions: d2k_tiny_explosion
 		ImpactActors: false
+        ExplosionPalette: effect75alpha      
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 300
 
@@ -63,6 +64,7 @@ Debris2:
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 	Warhead@3Eff: CreateEffect
 		Explosions: d2k_small_napalm
+        ExplosionPalette: effect75alpha      
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 2250
 
@@ -97,7 +99,7 @@ Debris4:
 		InaccuracyType: PerCellIncrement
 		Image: d2k_120mm
 	Warhead@1Dam: SpreadDamage
-		Damage: 3500
+		Damage: 4000
 		Spread: 512
 		Falloff: 100, 0
 		Versus:
@@ -127,7 +129,14 @@ Debris4:
 		Speed: 875
 		Blockable: false
 	Warhead@1Dam: SpreadDamage
-		Damage: 4000
+		Damage: 4500
+        Versus:
+            None: 60
+			Wood: 75
+			Light: 150
+            Medium: 125
+			Heavy: 115
+            Concrete: 25
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 3000
 
@@ -140,11 +149,22 @@ Debris4:
 
 80mm_O:
 	Inherits: ^D2K_Cannon
-	ReloadDelay: 45
-
+	ReloadDelay: 45  
+        
+d2k25mm:
+	Inherits: ^D2K_Cannon
+	ReloadDelay: 25
+	Range: 3c256
+	Projectile: Bullet
+		Speed: 768
+		Inaccuracy: 96
+	Warhead@1Dam: SpreadDamage
+		Damage: 1000
+        
 DevBullet:
 	Inherits: ^D2K_Cannon
 	ReloadDelay: 75
+    Range: 5c0
 	Report: TANKHVY1.WAV
 	Projectile: Bullet
 		Speed: 281
@@ -163,11 +183,22 @@ DevBullet:
 	Warhead@3Eff: CreateEffect
 		Explosions: d2k_shockwave
 		ImpactSounds: EXPLMD1.WAV
-
+        ExplosionPalette: effect75alpha
+        
+PlasBullet:
+	Inherits: DevBullet
+	ReloadDelay: 100
+	Projectile: Bullet
+		Speed: 320
+		Image: oneblastbullet
+	Warhead@1Dam: SpreadDamage
+		Damage: 12000
+        Spread: 256
+        
 D2K_155mm:
 	Inherits: ^D2K_Cannon
 	ReloadDelay: 80
-	Range: 8c512
+	Range: 8c0
 	Report: MORTAR1.WAV
 	Projectile: Bullet
 		Speed: 192
@@ -182,8 +213,8 @@ D2K_155mm:
 		Versus:
             None: 150
 			Wood: 100
-			Light: 100
-            Medium: 75
+			Light: 90
+            Medium: 60
 			Heavy: 50
             Concrete: 75
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
@@ -192,7 +223,7 @@ D2K_155mm:
 	Warhead@3Eff: CreateEffect
 		Explosions: d2k_med_explosion
 		ImpactSounds: EXPLMD2.WAV
-
+        ExplosionPalette: effect75alpha
 #############################
 #       MISSILES
 #############################
@@ -251,33 +282,34 @@ D2K_155mm:
 		Damage: 8000
 		Versus:
             None: 15
-			Wood: 40
+			Wood: 60
 			Light: 100
             Medium: 100
 			Heavy: 100
-            Concrete: 30
+            Concrete: 45
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 720
 	Warhead@3Eff: CreateEffect
 		Explosions: d2k_small_explosion
 		ImpactSounds: EXPLSML1.WAV
-
+        ExplosionPalette: effect75alpha
 D2K_Bazooka:
 	Inherits: ^D2KRocket
 	Range: 4c512
+    ValidTargets: Ground, Air
  	Warhead@1Dam: SpreadDamage
 		Damage: 3500
-        
+        ValidTargets: Ground, Air   
 D2K_Rocket:
 	Inherits: ^D2KRocket
 	ReloadDelay: 30
-	Range: 3c512
+	Range: 4c512
 	Projectile: Bullet
 		Speed: 352
 	Warhead@1Dam: SpreadDamage
-		Damage: 4000
+		Damage: 3500
 		Versus:
-            None: 25
+            None: 35
 			Wood: 75
 			Light: 100
             Medium: 60
@@ -293,12 +325,12 @@ D2K_TowerMissile:
 	Inherits: ^D2KMissile
 	ReloadDelay: 60
 	Burst: 2
-    Range: 9c512
+    Range: 10c512
 	BurstDelays: 60
 	ValidTargets: Ground, Air
 	Projectile: Missile
 		HorizontalRateOfTurn: 10
-        RangeLimit: 12c512
+        RangeLimit: 13c512
 	Warhead@1Dam: SpreadDamage
     	Damage: 12000
 		ValidTargets: Ground, Air
@@ -309,10 +341,10 @@ mtank_pri:
 	ReloadDelay: 115
 	Burst: 2
 	BurstDelays: 115
-	Range: 8c0
+	Range: 10c0
 	ValidTargets: Ground, Air
 	Projectile: Missile
-		RangeLimit: 11c204
+		RangeLimit: 12c204
 	Warhead@1Dam: SpreadDamage
 		Damage: 12000
 		ValidTargets: Ground, Air
@@ -324,6 +356,7 @@ DeviatorMissile:
 	ReloadDelay: 160
 	Range: 6c0
 	Report: MISSLE1.WAV
+    ValidTargets: Vehicle, Air
 	Projectile: Missile
 		RangeLimit: 6c0
 		Inaccuracy: 96
@@ -343,9 +376,45 @@ DeviatorMissile:
 	Warhead@5OwnerChange: ChangeOwner
 		Range: 512
 		Duration: 375
+        ValidTargets: Vehicle, Air
 		InvalidTargets: Infantry, Structure
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 1000
+
+Rocket.stealth:
+	Inherits: ^D2KMissile
+    Burst: 2
+    BurstDelays: 8
+	ReloadDelay: 80
+	Range: 6c0
+	Projectile: Bullet
+		Inaccuracy: 64
+	Warhead@1Dam: SpreadDamage
+		Damage: 7500
+        
+Rocket.stealthAA:
+	Inherits: Rocket.stealth
+    Burst: 2
+    BurstDelays: 8
+	ReloadDelay: 80
+	Range: 8c0
+	MinRange: 0c512
+	ValidTargets: Air
+	-Projectile:
+	Projectile: Missile
+		Inaccuracy: 0
+		Image: RPG
+		HorizontalRateOfTurn: 24
+		VerticalRateOfTurn: 80
+        TrailImage: large_trail
+		TrailPalette: effect75alpha
+		TrailInterval: 1
+		Speed: 384
+		RangeLimit: 9c614
+	Warhead@1Dam: SpreadDamage
+		Spread: 256
+		ValidTargets: Air
+	-Warhead@2Smu:
 
 ############################
 #       OTHER
@@ -375,11 +444,11 @@ Sound:
 		ValidRelationships: Neutral, Enemy
 		Versus:
         	None: 200
-			Wood: 50
-			Light: 100
+			Wood: 60
+			Light: 110
             Medium: 75
 			Heavy: 60
-            Concrete: 35
+            Concrete: 40
 		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
 	Warhead@2Dam: SpreadDamage
 		Range: 0, 32
@@ -396,8 +465,23 @@ Sound:
             Concrete: 40
 		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
 	Warhead@3Concrete: DamagesConcrete
-		Damage: 1720
-
+		Damage: 1500
+        
+Sound2:
+	Inherits: Sound
+	Range: 4c0
+	ReloadDelay: 70
+	Projectile: AreaBeam
+		Speed: 0c256
+		Duration: 2
+		Width: 0c256
+	Warhead@1Dam: SpreadDamage
+		Damage: 750
+	Warhead@2Dam: SpreadDamage
+		Damage: 375
+	Warhead@3Concrete: DamagesConcrete
+		Damage: 1500
+        
 WormJaw:
 	ReloadDelay: 10
 	InvalidTargets: Structure, Infantry
@@ -435,6 +519,7 @@ OrniBomb:
 		Explosions: d2k_large_explosion
 		ImpactSounds: EXPLSML4.WAV
 		ImpactActors: false
+        ExplosionPalette: effect75alpha
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 6750
 
@@ -452,7 +537,7 @@ D2KDemolish:
 		Explosions: building
 		ImpactSounds: EXPLLG2.WAV
 		ImpactActors: false
-
+        ExplosionPalette: effect75alpha
 DeathHand:
 	Warhead@Cluster: FireCluster
 		Weapon: DeathHandCluster
@@ -463,6 +548,7 @@ DeathHand:
 		Explosions: d2k_nuke
 		ImpactSounds: EXPLLG2.WAV
 		ImpactActors: false
+        ExplosionPalette: effect75alpha
 	Warhead@Shake: ShakeScreen
 		Duration: 20
 		Intensity: 5
@@ -495,8 +581,47 @@ DeathHandCluster:
 	Warhead@3Eff: CreateEffect
 		Explosions: d2k_large_explosion
 		ImpactSounds: EXPLSML4.WAV
+        ExplosionPalette: effect75alpha
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 4500
+
+EMPDisable.anim:
+	ReloadDelay: 2
+	Range: 5c0
+	ValidTargets: Vehicle
+	InvalidTargets: Jammer
+	TargetActorCenter: true
+	Projectile: LaserZap
+		Width: 60
+		Duration: 2
+		Color: 00FF0070
+		SecondaryBeam: true
+		SecondaryBeamWidth: 90
+		SecondaryBeamColor: FF000035
+	Warhead@1Dam: TargetDamage
+		ValidTargets: Vehicle
+		InvalidTargets: Jammer
+
+EMPDisable.end:
+	ReloadDelay: 3
+	Range: 5c0
+	ValidTargets: Vehicle
+	InvalidTargets: Jammer
+	TargetActorCenter: true
+	Projectile: LaserZap
+		Width: 60
+		Duration: 2
+		Color: 00FF0070
+		SecondaryBeam: true
+		SecondaryBeamWidth: 90
+		SecondaryBeamColor: FF000035
+	Warhead@1Dam: TargetDamage
+		ValidTargets: Vehicle
+		InvalidTargets: Jammer
+	Warhead@2Dis: GrantExternalCondition
+		Range: 0c512
+		Duration: 100
+		Condition: empdisable
 
 CrateExplosion:
 	Warhead@1Dam: SpreadDamage
@@ -520,38 +645,41 @@ CrateExplosion:
 		Explosions: d2k_large_explosion
 		ImpactSounds: EXPLSML4.WAV
 		ImpactActors: false
+        ExplosionPalette: effect75alpha
 	Warhead@2Concrete: DamagesConcrete
 		Damage: 4500
 
-UnitExplodeSmall:
+D2KUnitExplodeSmall:
 	Warhead@1Eff: CreateEffect
 		Explosions: self_destruct
 		ImpactSounds: EXPLSML1.WAV
 		ImpactActors: false
+        ExplosionPalette: effect75alpha
 
-UnitExplodeMed:
+D2KUnitExplodeMed:
 	Warhead@1Eff: CreateEffect
-		Explosions: building
+		Explosions: d2k_building
 		ImpactSounds: EXPLSML2.WAV
 		ImpactActors: false
+        ExplosionPalette: effect75alpha
 
-UnitExplodeLarge:
+D2KUnitExplodeLarge:
 	Warhead@1Eff: CreateEffect
 		Explosions: d2k_large_explosion
 		ImpactSounds: EXPLLG2.WAV
 		ImpactActors: false
-
+        ExplosionPalette: effect75alpha
 D2kBuildingExplode:
 	Warhead@1Eff: CreateEffect
-		Explosions: building, self_destruct, d2k_large_explosion
+		Explosions: d2k_building, self_destruct, d2k_large_explosion
 		ImpactActors: false
-
+        ExplosionPalette: effect75alpha
 WallExplode:
 	Warhead@1Eff: CreateEffect
 		Explosions: d2k_wall_explosion
 		ImpactSounds: EXPLHG1.WAV
 		ImpactActors: false
-
+        ExplosionPalette: effect75alpha
 d2k_grenade:
 	ReloadDelay: 50
 	Range: 4c512
@@ -583,9 +711,10 @@ d2k_grenade:
 		Explosions: d2k_med_explosion
 		ImpactSounds: EXPLMD2.WAV
 		ImpactActors: false
+        ExplosionPalette: effect75alpha
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 1875
-
+        
 GrenDeath:
 	Warhead@1Dam: SpreadDamage
 		Damage: 1500
@@ -739,7 +868,7 @@ LMG:
 Fremen_S:
 	Inherits: ^MG
     ValidTargets: Infantry
-    InvalidTargets: Vehicle, Structure
+    InvalidTargets: Vehicle, Structure, Air
 	ReloadDelay: 30
 	Report: FREMODD1.WAV
     Warhead@1Dam: SpreadDamage
@@ -757,14 +886,21 @@ M_LMG:
 M_LMG_H:
 	Inherits: M_LMG
 	ReloadDelay: 30
-
+    InvalidTargets: Vehicle, Structure
+    ValidTargets: Infantry
+    Warhead@1Dam: SpreadDamage
+        InvalidTargets: Vehicle, Structure
+        ValidTargets: Infantry
 M_HMG:
 	Inherits: ^MG
 	ReloadDelay: 40
 	Range: 4c512
 	Report: 20MMGUN1.WAV
-	InvalidTargets: Infantry
+    ValidTargets: Vehicle, Structure
+    InvalidTargets: Infantry
 	Warhead@1Dam: SpreadDamage
+        ValidTargets: Vehicle, Structure
+        InvalidTargets: Infantry
 		Damage: 2500
 		Spread: 512
 		Versus:
@@ -785,8 +921,12 @@ Fremen_L:
 	Inherits: M_HMG
 	Report: 20MMGUN1.WAV
     ReloadDelay: 40
+    ValidTargets: Vehicle, Structure
+    InvalidTargets: Infantry
 	Warhead@1Dam: SpreadDamage
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+        ValidTargets: Vehicle, Structure
+        InvalidTargets: Infantry
         Versus:
 			None: 100
 			Wood: 75
@@ -822,3 +962,103 @@ HMG_muzzle:
 HMGo_muzzle:
 	Inherits: HMG_muzzle
 	ReloadDelay: 14
+
+DroneJump:
+	ValidTargets: Infantry
+	ReloadDelay: 40
+	Range: 3c0
+	Report: vteratta.aud
+	Projectile: InstantHit
+	Warhead@1Dam: SpreadDamage
+		Spread: 64
+		Falloff: 100, 0
+		Damage: 100000
+		ValidTargets: Infantry
+		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+        
+D2KSniperRifle:
+	Report: FREMODD1.WAV
+	ReloadDelay: 80
+	Range: 14c0
+	ValidTargets: Ground, Air
+	InvalidTargets: Water, Structure, Wall, Husk
+	Projectile: Bullet
+		Speed: 1c768
+	Warhead@1Dam: SpreadDamage
+		Spread: 42
+		Damage: 12000
+        Versus:
+			None: 100
+			Wood: 20
+			Light: 100
+            Medium: 50
+			Heavy: 5
+            Concrete: 5
+		ValidTargets: Infantry, Vehicle, Tank, Air
+		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+        
+d2kFlamegun:
+	ReloadDelay: 5
+	Range: 2c0
+	Report: FLAMER1.WAV
+	Projectile: Bullet
+		Speed: 1c256
+	Warhead@1Dam: SpreadDamage
+		Spread: 256
+		Falloff: 100, 50, 0
+		Damage: 800
+		Versus:
+			None: 150
+			Wood: 35
+			Light: 30
+            Medium: 20
+			Heavy: 10
+            Concrete: 25
+		DamageTypes: Prone50Percent, TriggerProne, FireDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: flame
+        ExplosionPalette: effect75alpha
+	Warhead@3Concrete: DamagesConcrete
+		Damage: 100
+
+d2kChainGun:
+	ReloadDelay: 3
+	Range: 5c0
+	Report: MGUN2.WAV
+	MinRange: 3c0
+	Projectile: InstantHit
+		Blockable: false
+	Warhead@1Dam: SpreadDamage
+		Spread: 192
+		Damage: 600
+		Versus:
+			None: 250
+			Wood: 20
+			Light: 60
+            Medium: 40
+			Heavy: 25
+            Concrete: 10
+		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: piffs
+	Warhead@3Concrete: DamagesConcrete
+		Damage: 500
+        
+PhoenixRocket:
+	Inherits: ^D2KMissile
+	ReloadDelay: 100
+	Burst: 2
+	BurstDelays: 10
+	Range: 4c0
+	Projectile: Missile
+		Inaccuracy: 96
+		Speed: 256
+		RangeLimit: 4c512
+	Warhead@1Dam: SpreadDamage
+		Spread: 256
+		Damage: 8000
+	Warhead@3Eff: CreateEffect
+		Explosions: napalm
+		ImpactSounds: firebl3.aud
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 1250
