@@ -327,6 +327,7 @@
 ###########################################
 #   BUILDINGS
 ###########################################
+
 ^concrete:
 	AlwaysVisible:
 	Interactable:
@@ -625,7 +626,7 @@ refinery:
     Inherits@D2KSprite: ^D2KPaletteRender    
     Inherits@ref: ^Refinery
 	Buildable:
-		Prerequisites: wind_trap, ~factionselected
+		Prerequisites: wind_trap, ~factionselected, ~!faction.tleilaxu
 		Queue: Building.d2k
 		BuildPaletteOrder: 130
 		BuildDuration: 350
@@ -651,10 +652,7 @@ refinery:
 	HitShape@BOTTOM:
 		Type: Rectangle
 			TopLeft: -1536, 0
-			BottomRight: 512, 1024
-    GrantConditionOnPrerequisite@tleilaxu:
-        Condition: tleilaxu
-        Prerequisites: faction.tleilaxu         
+			BottomRight: 512, 1024   
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -673,10 +671,6 @@ refinery:
 		DeliveryOffset: 2,2
 		DeliveringActor: carryall.reinforce
 		Facing: 160
-        RequiresCondition: !tleilaxu
-    FreeActor@2:
-        Actor: facedancer_harv
-        RequiresCondition: tleilaxu
 	RenderSprites:
 		Image: refinery.ordos
 		FactionImages:
@@ -699,7 +693,7 @@ d2k_silo:
 	Inherits: ^D2KBuilding
     Inherits@D2KSprite: ^D2KPaletteRender   
 	Buildable:
-		Prerequisites: refinery, ~factionselected 
+		Prerequisites: refinery, ~factionselected, ~!faction.tleilaxu
 		Queue: Defence.d2k
 		BuildPaletteOrder: 310
 		BuildDuration: 156
@@ -746,7 +740,62 @@ d2k_silo:
 	RevealOnDeath:
 		Radius: 2c768
     -WithDeathAnimation:
-    
+
+d2k_silo_tleilaxu:
+    Inherits: refinery
+	Buildable:
+		Prerequisites: ~factionselected, wind_trap, ~faction.tleilaxu
+		Queue: Building.d2k
+		BuildPaletteOrder: 130
+		BuildDuration: 300
+		BuildDurationModifier: 100
+		Description: Workers unload Spice here for processing.\nStores excess harvested Spice.\nRearms ammo
+        IconPalette: d2kunit         
+    GrantConditionOnPrerequisite@tleilaxu:
+        Condition: tleilaxu
+        Prerequisites: faction.tleilaxu 
+    ProvidesPrerequisite@refinery:  
+        Prerequisite: refinery
+    Building:
+		Footprint: x= x=
+		Dimensions: 2,2
+    Selectable:
+		Bounds: 40, 40
+	Tooltip:
+		Name: Resource Center
+    ProximityExternalCondition@rearm:
+        Condition: tleilaxu_rearm
+        Range: 2c0
+        ValidStances: Ally
+    -FreeActorWithDelivery@1:
+    Valued:
+        Cost: 1000
+    RenderSprites:
+        Image: silo.ordos
+        Scale: 1.35
+    Health:
+        HP: 45000
+    StoresResources:
+		Capacity: 3000
+        PipCount: 15
+	RequiresBuildableArea:
+        AreaTypes: facedancer, building
+		Adjacent: 4
+    FreeActor@1:
+        Actor: facedancer_harv
+    FreeActor@2:
+        Actor: facedancer_harv     
+    FreeActor@3:
+        Actor: facedancer_harv
+    FreeActor@4:
+        Actor: facedancer_harv
+    FreeActor@5:
+        Actor: facedancer_harv
+    -WithIdleOverlay@TOP:
+	-WithDockedOverlay@SMOKE:
+    WithResourceLevelSpriteBody:
+		Sequence: stages
+        
 light_factory:
 	Inherits: ^D2KBuilding
 	Inherits@UPGRADEABLE: ^D2kUpgradeable
@@ -830,6 +879,9 @@ light_factory:
 		Prerequisite: light.raider
 		Factions: ordos, smuggler, mercenary
 	ProvidesPrerequisite@buildingname:
+    ProvidesPrerequisite@trikemerc:
+        Prerequisite: light.trike
+        RequiresPrerequisites: ~faction.mercenary
 	Power:
 		Amount: -125
 	GrantConditionOnPrerequisite@UPGRADEABLE:
@@ -947,6 +999,8 @@ heavy_factory_merc:
 		Prerequisites: refinery, ~factionselected, ~faction.mercenary
     ProvidesPrerequisite@hvyfactory:  
         Prerequisite: heavy_factory
+    ProvidesPrerequisite@missiletank:
+        Prerequisite: heavy.missile_tank    
         
 outpost:
 	Inherits: ^D2KBuilding
@@ -1009,7 +1063,7 @@ starport:
 	Tooltip:
 		Name: Starport
 	Buildable:
-		Prerequisites: heavy_factory, outpost, ~techlevel.high, ~factionselected, ~!faction.mercenary, ~!faction.ixian
+		Prerequisites: heavy_factory, outpost, ~techlevel.high, ~factionselected, ~!faction.mercenary, ~!faction.ixian, ~!faction.smugglers
 		Queue: Building.d2k
 		BuildPaletteOrder: 530
 		BuildDuration: 540
@@ -1097,7 +1151,7 @@ starport_smuggler:
     RenderSprites:
 		Image: starport.smuggler
     Buildable:
-		Prerequisites: heavy_factory, outpost, ~techlevel.high, ~factionselected, ~conyard.ordos, ~!faction.ordos, ~!faction.tleilaxu
+		Prerequisites: heavy_factory, outpost, ~techlevel.high, ~factionselected, ~faction.smugglers
         BuildLimit: 2
       	Description: Dropzone for quick reinforcements, at a price.\nCan be built twice. 
     Valued:
@@ -1606,7 +1660,7 @@ palace:
 	Inherits@IDISABLE: ^D2KDisableOnLowPowerOrPowerDown
     Inherits@D2KSprite: ^D2KPaletteRender    
 	Buildable:
-		Prerequisites: research_centre, ~techlevel.high, ~factionselected, ~!faction.corrino, ~!faction.ixian, ~!faction.smugglers, ~!faction.tleilaxu
+		Prerequisites: research_centre, ~techlevel.high, ~factionselected, ~!faction.corrino, ~!faction.ixian, ~!faction.smugglers
 		Queue: Building.d2k
 		BuildPaletteOrder: 620
 		BuildDuration: 937
@@ -1751,7 +1805,22 @@ palace:
 		CircleSequence: circles
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
-		StartFullyCharged: false   
+		StartFullyCharged: false 
+    SpawnActorPower@worm:
+		PauseOnCondition: disabled
+		OrderName: sandworm
+        Icon: wormicon
+        IconPalette: d2kunit
+		ChargeInterval: 4500
+		Description: Wormsign
+		LongDesc: Summons sandworm anywhere on the map.\nThis Sandworm can devour vehicles and buildings (friendly ones too)\nDon't summon it on tiberium or impassable terrains
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+      	Prerequisites: ~faction.tleilaxu 
+		Actor: sandworm_tleilaxu
+		LifeTime: 500
+		SupportPowerPaletteOrder: 10   
+
     Exit@1:
 		SpawnOffset: -704,768,0
 		ExitCell: -1,2
@@ -2096,10 +2165,10 @@ fremen:
 
 facedancer:
 	Inherits: ^D2KInfantry
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
  	Inherits@EXPERIENCE: ^GainsExperience   
 	Valued:
-		Cost: 100
+		Cost: 125
 	Tooltip:
 		Name: Face Dancer
 	Buildable:
@@ -2107,20 +2176,34 @@ facedancer:
 		BuildPaletteOrder: 10
 		BuildDurationModifier: 80
 		Prerequisites: ~faction.tleilaxu
-		Description: Genetically modified durable humanoid that feels no pain.\nIncredibly fast\n Does not lie down when attacked\nCannot be damaged by Tiberium\n  Strong vs Buildings, Infantry\n  Weak vs Vehicles
+		Description: Genetically modified durable humanoid.\nIncredibly fast\n Does not lie down when attacked\nCannot be damaged by Tiberium\nThrows powerful grenades when far, punches when close\nMust resupply at Resource Center\n  Strong vs Buildings, Infantry, Air, Vehicles\n  Weak vs Siege
 	Health:
-		HP: 8000	
+		HP: 8000
 	Mobile:
 		Speed: 90	#42
 	AutoTarget:
 		ScanRadius: 5
 	AttackFrontal:
+    AmmoPool:
+		Ammo: 3
+		AmmoCondition: ammo
+    ReloadAmmoPool: 
+    	Delay: 20
+		Count: 1
+		ResetOnFire: true    
+        RequiresCondition: tleilaxu_rearm
+    ExternalCondition@rearm:
+        Condition: tleilaxu_rearm   
 	WithInfantryBody:
 		DefaultAttackSequence: bite
-		IdleSequences: idle, idle1
-        StandSequences: stand, stand2
-	Armament:
-		Weapon: facedancer_attack
+		IdleSequences: idle
+        StandSequences: stand
+    Armament:
+        Name: punching
+        Weapon: facedancer_attack
+	Armament@nade:
+		Weapon: facedancer_grenade
+        PauseOnCondition: !ammo
 	Voiced:
 		VoiceSet: D2KInfantryVoice
 	-TakeCover
@@ -2129,7 +2212,7 @@ facedancer:
         Scale: 0.7
 		Image: facedancer
     ChangesHealth:
-        Delay: 40
+        Delay: 25
         PercentageStep: 5
         StartIfBelow: 100
 
@@ -2137,9 +2220,12 @@ facedancer_harv:
     Inherits@harv: ^Harvester
     Inherits: facedancer
    	Tooltip:
-		Name: Worker Face Dancer
+		Name: Face Dancer Worker
 	Valued:
-		Cost: 50        
+		Cost: 75
+    -Armament@nade:
+    -AmmoPool:
+    -ReloadAmmoPool:
     Health:
         HP: 5000
     Buildable:
@@ -2147,8 +2233,12 @@ facedancer_harv:
 		BuildPaletteOrder: 10
 		BuildDurationModifier: 80
 		Prerequisites: ~faction.tleilaxu, refinery
-		Description: Worker unit harvesting resources
+		Description: Worker unit harvesting resources\nProvides buildable area for bases
         IconPalette: player
+    BaseProvider:
+		Range: 3c0
+    GivesBuildableArea:
+        AreaTypes: facedancer
     RenderSprites:
         Scale: 0.7
 		Image: facedancer_harv    
@@ -2545,7 +2635,7 @@ rocketeer:
 	Valued:
 		Cost: 350
 	Tooltip:
-		Name: Rocketeer
+		Name: Jetpacker
 	Health:
 		HP: 10000
 	Armor:
@@ -2616,31 +2706,60 @@ rocketeer.husk:
 rocketeer_o:
 	Inherits: rocketeer
 	Tooltip:
-		Name: Stealth Rocketeer
+		Name: Rocketeer
   	Valued:
 		Cost: 500      
     Buildable:
 		Queue: Infantry.d2k
 		BuildPaletteOrder: 140
 		Prerequisites: ~barracks.ordos, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~!faction.tleilaxu
-		Description: Flying Stealth infantry unit armed with deadly dual machine guns\n  Strong vs Infantry, Vehicles\n  Weak vs Vehicles
+		Description: Flying infantry unit armed with deadly dual machine guns\n  Strong vs Infantry, Vehicles\n  Weak vs Air
         IconPalette: d2kunit    
     Health:
 		HP: 8000
     Armor:
 		Type: Light    
-	Cloak:
-        Palette: ra2cloak
-  		IsPlayerPalette: true  
-        InitialDelay: 60
-		CloakDelay: 60
-        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
-        CloakedCondition: healself
     RenderSprites:
 		PlayerPalette: ra2player   
         Image: rocketeer
     Armament:
 		Weapon: Rocketeer_o    
+
+rocketeer_tleilaxu:
+    Inherits: rocketeer_o
+    Health:
+		HP: 5000
+    Armor:
+		Type: None 
+  	Valued:
+		Cost: 800  
+    Buildable:
+		Queue: Infantry.d2k
+		BuildPaletteOrder: 140
+		Prerequisites: ~barracks.ordos, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.tleilaxu
+   		Description: Stealth Flying infantry unit armed with deadly dual machine guns\n  Strong vs Everything
+    Cloak:
+        Palette: ra2cloak
+  		IsPlayerPalette: true  
+        InitialDelay: 60
+		CloakDelay: 60
+        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
+        CloakedCondition: healself  
+	Tooltip:
+		Name: Stealth Rocketeer        
+    Armament:
+		Weapon: Rocketeer_t  
+        PauseOnCondition: !ammo
+    AmmoPool:
+		Ammo: 20
+		AmmoCondition: ammo
+    ReloadAmmoPool: 
+    	Delay: 20
+		Count: 1
+		ResetOnFire: true    
+        RequiresCondition: tleilaxu_rearm
+    ExternalCondition@rearm:
+        Condition: tleilaxu_rearm       
         
 d2k_sniper:
 	Inherits: ^D2KInfantry
@@ -2650,7 +2769,7 @@ d2k_sniper:
 	Buildable:
 		Queue: Infantry.d2k
 		BuildPaletteOrder: 160
-		Prerequisites: ~barracks.ordos, upgrade.barracks, ~!faction.ordos. ~!faction.smuggler
+		Prerequisites: ~barracks.ordos, upgrade.barracks, ~!faction.ordos. ~!faction.smugglers
 		Description: Stealth infantry armed with a long range rifle\nCan detect cloaked units.\n  Strong vs Infantry, Air, Vehicles\n  Weak vs Tanks\n  Special Ability: Invisibility while static
         IconPalette: d2kunit    
 	Valued:
@@ -2791,7 +2910,7 @@ d2k_mechanic:
 		BuildDuration: 111
 		BuildDurationModifier: 100
 		Prerequisites: upgrade.barracks, high_tech_factory, ~techlevel.medium, ~mechanic_prereq
-		Description: Repairs nearby vehicles and defences.\nCan enter vehicle husks to repair them.\nRemoves attached explosives from units and buildings\nLimit: 10\n  Unarmed
+		Description: Repairs nearby vehicles and buildings.\nCan enter vehicle husks to repair them.\nRemoves attached explosives from units and buildings\nLimit: 10\n  Unarmed
         IconPalette: d2kunit           
         BuildLimit: 10
 	Valued:
@@ -2799,7 +2918,7 @@ d2k_mechanic:
 	Tooltip:
 		Name: Mechanic
 	Health:
-		HP: 8000
+		HP: 6000
 	Armor:
 		Type: None
 	Mobile:
@@ -2943,7 +3062,7 @@ bomb_buggy:
 	AttackFrontal:
 		FacingTolerance: 128
 	Armament@PRIMARY:
-		Weapon: BombBuggyTargeting
+		Weapon: SuicideBomberTargeting
 	GrantConditionOnAttack:
 		Condition: triggered
 	GrantConditionOnDeploy:
@@ -3670,7 +3789,7 @@ quad:
  	Inherits@EXT: ^ExternalConditions   
 	Buildable:
 		Queue: Vehicle.d2k
-		Prerequisites: upgrade.light, ~techlevel.medium, ~!faction.tleilaxu, ~!faction.ordos
+		Prerequisites: upgrade.light, ~techlevel.medium, ~!faction.tleilaxu, ~!faction.smugglers
 		BuildPaletteOrder: 20
 		BuildDuration: 250
 		BuildDurationModifier: 100
@@ -3704,7 +3823,61 @@ quad:
 		Intensity: 470
     Cloak@TDcloak:
         Palette: d2kcloak
-        
+
+mg_quad:
+    Inherits: quad
+    Tooltip:
+		Name: MG Quad
+    Buildable:
+        Prerequisites: ~conyard.ordos, ~faction.smugglers
+        Description: Quad MG Scout\n  Strong vs Infantry\n  Weak vs Vehicles
+    Valued: 
+        Cost: 300
+    Armament:
+        Weapon: HMGo
+    Armament@muzzle:
+		Weapon: HMGo_muzzle
+		LocalOffset: -400,0,0
+		MuzzleSequence: muzzle
+    RenderSprites:
+        Image: quad
+    WithMuzzleOverlay:
+
+mg_quad_tleilaxu:
+    Inherits: mg_quad
+    Buildable:    
+        Prerequisites: ~conyard.ordos, ~faction.tleilaxu
+        Description: Turbo Speed Quad with burst MG\nMust resupply at resource center\nCan carry up to 2 passengers\n  Strong vs Infantry\n  Weak vs Vehicles
+        BuildPaletteOrder: 10
+    Valued: 
+        Cost: 600
+    Cargo:
+		Types: Infantry
+		MaxWeight: 2
+		LoadingCondition: notmobile
+        InitialUnits: facedancer, facedancer
+        PipCount: 2     
+    AIDeployNotifier:
+		DeployChance: 100      
+    Mobile:
+		TurnSpeed: 15
+		Speed: 150     
+   	Health:
+		HP: 15000     
+    Armament:
+        Weapon: HMG_tleilaxu
+        PauseOnCondition: !ammo
+    AmmoPool:
+		Ammo: 30
+		AmmoCondition: ammo   
+    ReloadAmmoPool: 
+    	Delay: 20
+		Count: 1
+		ResetOnFire: true    
+        RequiresCondition: tleilaxu_rearm
+    ExternalCondition@rearm:
+        Condition: tleilaxu_rearm
+    
 siege_tank:
 	Inherits@D2KT: ^D2KTank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -3772,11 +3945,19 @@ siege_tank_ixian:
 		Cost: 800    
    	Mobile:
 		Speed: 55
-		TurnSpeed: 12     
+		TurnSpeed: 12 
+    AmmoPool:
+		Ammo: 2
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 200
+		Count: 2
+		ResetOnFire: true                 
    	Tooltip:
 		Name: Ix Siege Tank 
     Armament:
 		Weapon: D2K_155mm2
+        PauseOnCondition: !ammo
     RenderSprites:
         Image: siege_tank
     -AttackFrontal:
@@ -3839,14 +4020,22 @@ missile_tank_ixian:
 		HP: 40000    
     Armor:
 		Type: Light    
+    AmmoPool:
+		Ammo: 6
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 1000
+		Count: 6
+		ResetOnFire: true               
     Valued:
 		Cost: 950    
    	Mobile:
-		Speed: 80
+		Speed: 85
 		TurnSpeed: 25    
    	Armament:
 		Weapon: mtank_pri2
 		LocalOffset: -128,128,171, -128,-128,171     
+        PauseOnCondition: !ammo
    	Tooltip:
 		Name: Ix Missile Tank
     RenderSprites:
@@ -3984,7 +4173,7 @@ raider:
 	Buildable:
 		Queue: Vehicle.d2k
 		BuildPaletteOrder: 10
-		Prerequisites: ~light.raider, ~faction.mercenary
+		Prerequisites: ~conyard.ordos, ~!faction.tleilaxu, ~!faction.smugglers, ~!faction.mercenary
 		BuildDuration: 175
 		BuildDurationModifier: 100
 		Description: Improved Scout\nCan carry a passenger\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
@@ -4074,10 +4263,20 @@ rocket_raider:
 		BuildPaletteOrder: 10
 		BuildDuration: 150
 		BuildDurationModifier: 100
-		Description: Invisible Raider Trike with Rockets\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
+		Description: Invisible Raider Trike with Rockets\nMust resupply at Resource Center\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
         IconPalette: d2kunit
 	Armor:
 		Type: Medium        
+    AmmoPool:
+		Ammo: 15
+		AmmoCondition: ammo   
+    ReloadAmmoPool: 
+    	Delay: 20
+		Count: 1
+		ResetOnFire: true    
+        RequiresCondition: tleilaxu_rearm
+    ExternalCondition@rearm:
+        Condition: tleilaxu_rearm
   	Cargo:
 		Types: Infantry
 		MaxWeight: 4
@@ -4091,8 +4290,9 @@ rocket_raider:
 		IsPlayerPalette: true
         Palette: d2kcloak     
     Armament@damage:
-		Weapon: D2K_Bazooka
+		Weapon: D2K_Bazooka2
 		LocalOffset: 170,0,0  
+        PauseOnCondition: !ammo
     -Armament@muzzle:   
     RenderSprites:
         Image: stealth_raider
@@ -4102,7 +4302,15 @@ rocket_raider_ixian:
     Tooltip:
 		Name: Ix Raider   
     Valued: 
-        Cost: 750
+        Cost: 750   
+    AmmoPool:
+		Ammo: 5
+		AmmoCondition: ammo
+        Name: primary
+	ReloadAmmoPool:
+		Delay: 200
+		Count: 1
+		ResetOnFire: true             
     Buildable:
         Queue: Armor.d2k    
 		Prerequisites: ~faction.ixian, research_centre  
@@ -4113,17 +4321,19 @@ rocket_raider_ixian:
 		LoadingCondition: notmobile
         InitialUnits: trooper, trooper, trooper, trooper
         PipCount: 4     
+    Armament@damage:
+        PauseOnCondition: !ammo
     RenderSprites:
         Scale: 0.9
         
 rocket_raider_o:
     Inherits: rocket_raider
     Valued: 
-        Cost: 350
+        Cost: 300
     Tooltip:
         Name: Rocket Raider
     Buildable:
-		Prerequisites: ~faction.ordos, upgrade.light
+		Prerequisites: ~faction.smugglers, upgrade.light
         Description: Raider Trike with Rockets\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
     RenderSprites:
         Image: raider
@@ -4283,29 +4493,50 @@ combat_siege_tank:
 	Inherits: ^combat_tank
     Tooltip:
 		Name: Combat Siege
+    Valued:
+		Cost: 1800   
+    AmmoPool:
+		Ammo: 15
+		AmmoCondition: ammo
+    ReloadAmmoPool: 
+    	Delay: 20
+		Count: 1
+		ResetOnFire: true    
+        RequiresCondition: tleilaxu_rearm
+    ExternalCondition@rearm:
+        Condition: tleilaxu_rearm
     Buildable:
 		Queue: Armor.d2k
 		BuildPaletteOrder: 40
 		BuildDuration: 500
 		BuildDurationModifier: 100
-		Description: Main Battle Tank\n  Strong vs Tanks\n  Weak vs Infantry
+		Description: Siege tank with autoloader system.\nCan shoot 3 shots at once with longer reloading time\nMust resupply at resource center\nCan carry up to 4 passengers\n  Strong vs Tanks\n  Weak vs Infantry
         Prerequisites: ~faction.tleilaxu
  	-AttackTurreted:
     AttackFrontal:
+    Cargo:
+		Types: Infantry
+		MaxWeight: 4
+		LoadingCondition: notmobile
+        InitialUnits: d2k_sniper, d2k_sniper, d2k_sniper, d2k_sniper
+        PipCount: 4
+    AIDeployNotifier:
+		DeployChance: 100 
 	WithSpriteTurret:       
 	Turreted:
 		TurnSpeed: 20
         Offset: 0,100,200
 	Armament:
-		Weapon: D2K_155mm
+		Weapon: D2K_155mm3
         Recoil: 150
 		RecoilRecovery: 19
-		LocalOffset: 512,0,320
+		LocalOffset: 256,0,320
 		MuzzleSequence: muzzle
+        PauseOnCondition: !ammo
 	Mobile:
 		Speed: 85
 	Health:
-		HP: 45000
+		HP: 50000
 	-SpawnActorOnDeath:
         
 quake_tank:
@@ -5031,7 +5262,7 @@ trike.starport:
 	Inherits: trike
     Inherits@starportunit: ^starport_unit
 	Buildable:
-		Prerequisites: ~!conyard.ordos
+		Prerequisites: ~!conyard.ordos, ~!faction.tleilaxu
 		Queue: Starport
 	-MapEditorData:
 	RenderSprites:
@@ -5043,7 +5274,7 @@ raider.starport:
 	Inherits: raider
     Inherits@starportunit: ^starport_unit
 	Buildable:
-		Prerequisites: ~conyard.ordos
+		Prerequisites: ~conyard.ordos, ~!faction.tleilaxu
 		Queue: Starport
 	-MapEditorData:
 	RenderSprites:
@@ -5055,7 +5286,7 @@ quad.starport:
 	Inherits: quad
     Inherits@starportunit: ^starport_unit    
 	Buildable:
-		Prerequisites: starport
+		Prerequisites: starport, ~!faction.tleilaxu
 		Queue: Starport       
 	-MapEditorData:
 	RenderSprites:
@@ -5169,7 +5400,42 @@ carryall.starport:
 	UpdatesPlayerStatistics:
 		OverrideActor: carryall
 
+combat_siege_tank.starport:
+	Inherits: combat_siege_tank
+    Inherits@starportunit: ^starport_unit    
+	Buildable:
+		Prerequisites: starport, ~faction.tleilaxu
+		Queue: Starport      
+	-MapEditorData:
+	RenderSprites:
+		Image: combat_siege_tank
+	UpdatesPlayerStatistics:
+		OverrideActor: combat_siege_tank
+ 
+rocket_raider.starport: 
+    Inherits: rocket_raider
+    Inherits@starportunit: ^starport_unit    
+	Buildable:
+		Prerequisites: starport, ~faction.tleilaxu
+		Queue: Starport      
+	-MapEditorData:
+	RenderSprites:
+		Image: raider
+	UpdatesPlayerStatistics:
+		OverrideActor: rocket_raider
 
+mg_quad_tleilaxu.starport:
+    Inherits: mg_quad_tleilaxu
+    Inherits@starportunit: ^starport_unit    
+	Buildable:
+		Prerequisites: starport, ~faction.tleilaxu
+		Queue: Starport      
+	-MapEditorData:
+	RenderSprites:
+		Image: quad
+	UpdatesPlayerStatistics:
+		OverrideActor: mg_quad_tleilaxu
+        
 ==================================
 =       MISC
 ==================================
@@ -5181,7 +5447,7 @@ sandworm:
 	Tooltip:
 		Name: Sandworm
 	Health:
-		HP: 120000
+		HP: 150000
 	HitShape:
 		Type: Circle
 			Radius: 256
@@ -5189,7 +5455,7 @@ sandworm:
 		Type: Heavy
 	Mobile:
 		Speed: 42
-		Locomotor: subterranean
+		Locomotor: sandwormsub
 	Targetable:
 		TargetTypes: Ground, Creep
 	WithSpriteBody:
@@ -5229,7 +5495,7 @@ sandworm:
 		Sequences: traila, trailb, trailc
 		Palette: d2keffect
 		Type: CenterPosition
-		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road 
+		TerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, Concrete
 		MovingInterval: 3
 		RequiresCondition: !attacking
 	ConditionManager:
@@ -5239,3 +5505,13 @@ sandworm:
 	RequiresSpecificOwners:
 		ValidOwnerNames: Creeps
         
+sandworm_tleilaxu:
+    Inherits: sandworm
+    -RequiresSpecificOwners:
+    RenderSprites:
+        Image: sandworm
+    Armament:
+		Weapon: WormJawT    
+	Sandworm:
+		WanderMoveRadius: 5
+        ChanceToDisappear: 20
