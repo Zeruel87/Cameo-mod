@@ -200,7 +200,7 @@
 	Mobile:
 		TurnSpeed: 5
 		Locomotor: wheeled
-		PauseOnCondition: notmobile
+		PauseOnCondition: notmobile || disabled
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
@@ -1325,7 +1325,7 @@ medium_gun_turret:
 		Description: Defensive structure.\nDetector.\n  Strong vs Tanks\n  Weak vs Infantry, Aircraft
         IconPalette: d2kunit      
 	Valued:
-		Cost: 550
+		Cost: 600
 	Tooltip:
 		Name: Gun Turret
 	RequiresBuildableArea:
@@ -1374,7 +1374,7 @@ artillery_platform:
     Health:
 		HP: 25000
     Valued:
-		Cost: 500
+		Cost: 450
 	Tooltip:
 		Name: Artillery Platform
   	Armament:
@@ -2276,7 +2276,7 @@ facedancer:
 		ResetOnFire: true    
         RequiresCondition: tleilaxu_rearm
     ReloadAmmoPool@aireload:
-        Delay: 200
+        Delay: 150
         Count: 1
         ResetOnFire: false
         RequiresCondition: botmicro    
@@ -2439,6 +2439,7 @@ saboteur:
 	Inherits: ^D2KInfantry
 	Inherits@anim: ^D2KPaletteRenderInfantry    
     Inherits@EXT: ^ExternalConditions
+    Inherits@bot: ^BotMicromanageable     
 	Buildable:
 		Queue: Infantry.d2k
 		BuildPaletteOrder: 100
@@ -2460,6 +2461,12 @@ saboteur:
 		Flashes: 0
 		EnterBehaviour: Suicide
 	-RevealOnFire:
+    AutoTarget:
+        ScanRadius: 9999
+        RequiresCondition: botmicro
+    AutoTargetPriority:
+        ValidTargets: Structure, Defence
+        RequiresCondition: botmicro  
 	Cloak:
 		InitialDelay: 85
 		CloakDelay: 85
@@ -2849,7 +2856,7 @@ rocketeer_tleilaxu:
 		ResetOnFire: true    
         RequiresCondition: tleilaxu_rearm
     ReloadAmmoPool@aireload:
-        Delay: 200
+        Delay: 150
         Count: 4
         ResetOnFire: true
         RequiresCondition: botmicro
@@ -2912,7 +2919,7 @@ flamethrower:
 		BuildPaletteOrder: 90
 		BuildDuration: 164
 		BuildDurationModifier: 100
-		Prerequisites: ~barracks.harkonnen, upgrade.barracks, high_tech_factory, ~techlevel.medium
+		Prerequisites: ~barracks.harkonnen, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.harkonnen
 		Description: Stealthed Advanced anti-structure unit\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles\n  Special Ability: Invisibility
         IconPalette: d2kunit    
 	Valued:
@@ -3059,6 +3066,7 @@ d2k_light_tank:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@CARGO: ^CargoVehicle
     Inherits@EXT: ^ExternalConditions
+    Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Armor.d2k
 		BuildPaletteOrder: 80
@@ -3255,6 +3263,7 @@ d2k_apc:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@CARGO: ^CargoVehicle
     Inherits@EXT: ^ExternalConditions   
+    Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 850
 	Tooltip:
@@ -3834,6 +3843,7 @@ trike:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender      
 	Inherits@EXT: ^ExternalConditions   
+    Inherits@EMP: ^FrontalEMP
 	Buildable:
 		Queue: Vehicle.d2k
 		BuildPaletteOrder: 10
@@ -3881,7 +3891,8 @@ quad:
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender    
- 	Inherits@EXT: ^ExternalConditions   
+ 	Inherits@EXT: ^ExternalConditions 
+    Inherits@EMP: ^FrontalEMP    
 	Buildable:
 		Queue: Vehicle.d2k
 		Prerequisites: upgrade.light, ~techlevel.medium, ~!faction.tleilaxu, ~!faction.smugglers
@@ -3972,7 +3983,7 @@ mg_quad_tleilaxu:
 		ResetOnFire: true    
         RequiresCondition: tleilaxu_rearm
     ReloadAmmoPool@aireload:
-        Delay: 200
+        Delay: 150
         Count: 6
         ResetOnFire: false
         RequiresCondition: botmicro   
@@ -3985,6 +3996,7 @@ siege_tank:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender   
  	Inherits@EXT: ^ExternalConditions   
+  	Inherits@EMP: ^FrontalEMP  
 	Buildable:
 		Queue: Armor.d2k
 		Prerequisites: upgrade.heavy, ~techlevel.medium, ~!faction.tleilaxu, ~!faction.ixian
@@ -4038,6 +4050,8 @@ siege_tank:
 
 siege_tank_ixian:
     Inherits: siege_tank
+    Inherits@EMP: ^TurretEMP
+    -AttackFrontal:
     Buildable:
 		Prerequisites: upgrade.heavy, ~techlevel.medium, ~faction.ixian, research_centre
  	Health:
@@ -4061,7 +4075,6 @@ siege_tank_ixian:
         PauseOnCondition: !ammo
     RenderSprites:
         Image: siege_tank
-    -AttackFrontal:
     AttackTurreted: 
     
 missile_tank:
@@ -4069,7 +4082,8 @@ missile_tank:
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender   
- 	Inherits@EXT: ^ExternalConditions   
+ 	Inherits@EXT: ^ExternalConditions 
+	Inherits@EMP: ^FrontalEMP    
 	Tooltip:
 		Name: Missile Tank
 	UpdatesPlayerStatistics:
@@ -4148,6 +4162,7 @@ sonic_tank:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender   
  	Inherits@EXT: ^ExternalConditions   
+ 	Inherits@EMP: ^FrontalEMP   
 	Buildable:
 		Queue: Armor.d2k
 		BuildPaletteOrder: 100
@@ -4193,6 +4208,7 @@ devastator:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender    
  	Inherits@EXT: ^ExternalConditions   
+ 	Inherits@EMP: ^FrontalEMP   
 	Buildable:
 		Queue: Armor.d2k
 		BuildPaletteOrder: 100
@@ -4271,6 +4287,7 @@ raider:
     Inherits@D2KSprite: ^D2KPaletteRender    
  	Inherits@EXT: ^ExternalConditions   
     Inherits@CARGO: ^CargoVehicle
+ 	Inherits@EMP: ^FrontalEMP   
 	Buildable:
 		Queue: Vehicle.d2k
 		BuildPaletteOrder: 10
@@ -4378,7 +4395,7 @@ rocket_raider:
 		ResetOnFire: true    
         RequiresCondition: tleilaxu_rearm
     ReloadAmmoPool@aireload:
-        Delay: 200
+        Delay: 150
         Count: 3
         ResetOnFire: false
         RequiresCondition: botmicro
@@ -4458,6 +4475,7 @@ deviator:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender    
  	Inherits@EXT: ^ExternalConditions  
+    Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -4505,6 +4523,7 @@ deviator:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender   
 	Inherits@EXT: ^ExternalConditions    
+    Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Armor.d2k
 		BuildPaletteOrder: 40
@@ -4617,7 +4636,7 @@ combat_siege_tank:
 		ResetOnFire: true    
         RequiresCondition: tleilaxu_rearm
     ReloadAmmoPool@aireload:
-        Delay: 200
+        Delay: 150
         Count: 3
         ResetOnFire: false
         RequiresCondition: botmicro     
@@ -4630,8 +4649,7 @@ combat_siege_tank:
 		BuildDurationModifier: 100
 		Description: Siege tank with autoloader system.\nCan shoot 3 shots at once with longer reloading time\nMust resupply at resource center\nCan carry up to 4 passengers\n  Strong vs Tanks\n  Weak vs Infantry
         Prerequisites: ~faction.tleilaxu
- 	-AttackTurreted:
-    AttackFrontal:
+ 	AttackTurreted:
     Cargo:
 		Types: Infantry
 		MaxWeight: 4
