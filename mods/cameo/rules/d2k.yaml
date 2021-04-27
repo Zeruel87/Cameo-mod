@@ -849,10 +849,12 @@ d2k_silo_tleilaxu:
         ValidStances: Ally
     -FreeActorWithDelivery@1:
     Valued:
-        Cost: 1000
+        Cost: 2000
     RenderSprites:
         Image: silo.ordos
         Scale: 1.35
+    Refinery:
+		TickRate: 30
     Health:
         HP: 45000
     StoresResources:
@@ -1407,7 +1409,7 @@ flame_turret:
     Buildable:
         Queue: Defence.d2k
         Prerequisites: ~conyard.harkonnen, d2k_barracks, ~factionselected
-        Description: Defensive structure.\nDetector.\n  Strong vs Infantry\n  Weak vs Tanks
+        Description: Defensive structure.\nDetector.\n  Strong vs Infantry, Vehicles, Tanks\n  Weak vs Siege
     Health:
 		HP: 25000
     -WithSpriteTurret:   
@@ -2251,7 +2253,7 @@ facedancer:
  	Inherits@EXPERIENCE: ^GainsExperience   
     Inherits@bot: ^BotMicromanageable
 	Valued:
-		Cost: 150
+		Cost: 200
 	Tooltip:
 		Name: Face Dancer
 	Buildable:
@@ -2310,7 +2312,9 @@ facedancer_harv:
    	Tooltip:
 		Name: Face Dancer Worker
 	Valued:
-		Cost: 100
+		Cost: 300
+   	Mobile:
+		Speed: 75	#42      
     -Armament@nade:
     -AmmoPool:
     -ReloadAmmoPool:
@@ -2328,16 +2332,19 @@ facedancer_harv:
 		Range: 3c0
     GivesBuildableArea:
         AreaTypes: facedancer
+    Armament:
+        Name: punching
+        Weapon: facedancer_attack      
     RenderSprites:
         Scale: 0.7
 		Image: facedancer_harv    
     Harvester:
 		PipCount: 4
-		Capacity: 4
-		BaleLoadDelay: 4
-		BaleUnloadDelay: 2
+		Capacity: 2
+		BaleLoadDelay: 6
+		BaleUnloadDelay: 6
 		BaleUnloadAmount: 3
-		FullyLoadedSpeed: 80
+		FullyLoadedSpeed: 60
 		MaxUnloadQueue: 9
     WithSpriteBody:
         Sequence: invisible
@@ -2803,10 +2810,17 @@ rocketeer_o:
 		Queue: Infantry.d2k
 		BuildPaletteOrder: 140
 		Prerequisites: ~barracks.ordos, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~!faction.tleilaxu
-		Description: Flying infantry unit armed with deadly dual machine guns\n  Strong vs Infantry, Vehicles\n  Weak vs Air
+		Description: Stealth Flying infantry unit armed with deadly dual machine guns\n  Strong vs Infantry, Vehicles\n  Weak vs Air
         IconPalette: d2kunit    
+    Cloak:
+        Palette: ra2cloak
+  		IsPlayerPalette: true  
+        InitialDelay: 60
+		CloakDelay: 60
+        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
+        CloakedCondition: healself   
     Health:
-		HP: 8000
+		HP: 6000
     Armor:
 		Type: Light    
     RenderSprites:
@@ -2819,7 +2833,7 @@ rocketeer_tleilaxu:
     Inherits: rocketeer_o
     Inherits@bot: ^BotMicromanageable
     Health:
-		HP: 5000
+		HP: 8000
     Armor:
 		Type: None 
   	Valued:
@@ -2828,14 +2842,8 @@ rocketeer_tleilaxu:
 		Queue: Infantry.d2k
 		BuildPaletteOrder: 140
 		Prerequisites: ~barracks.ordos, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.tleilaxu
-   		Description: Stealth Flying infantry unit armed with deadly dual machine guns\n\nMust resupply at Resource Center\n  Strong vs Infantry\n  Weak vs Vehicles Strong vs Everything
-    Cloak:
-        Palette: ra2cloak
-  		IsPlayerPalette: true  
-        InitialDelay: 60
-		CloakDelay: 60
-        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
-        CloakedCondition: healself  
+   		Description: Flying infantry unit armed with deadly dual machine guns\n\nMust resupply at Resource Center\n  Strong vs Infantry\n  Weak vs Vehicles Strong vs Everything
+    -Cloak:
 	Tooltip:
 		Name: Stealth Rocketeer        
     Armament:
@@ -2914,7 +2922,7 @@ flamethrower:
 		BuildDuration: 164
 		BuildDurationModifier: 100
 		Prerequisites: ~barracks.harkonnen, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.harkonnen
-		Description: Stealthed Advanced anti-structure unit\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles\n  Special Ability: Invisibility
+        Description: Defensive structure.\nDetector.\n  Strong vs Infantry, Vehicles, Tanks, Buildings\n  Weak vs Siege\n  Special Ability: Invisibility
         IconPalette: d2kunit    
 	Valued:
 		Cost: 300
@@ -3279,7 +3287,7 @@ d2k_apc:
 		TurnSpeed: 16
 		Speed: 125
 	Health:
-		HP: 30000
+		HP: 35000
 	Armor:
 		Type: Medium
 	RevealsShroud:
@@ -3486,14 +3494,14 @@ swarmer:
 		Prerequisites: ~conyard.ordos, outpost, ~techlevel.medium, ~!faction.tleilaxu
 		BuildDuration: 321
 		BuildDurationModifier: 100
-		Description: Light scout plane armed with dual machine guns. \nCan attack air.\n Strong vs Infantry
+		Description: Light plane armed with dual machine guns. \nCan attack air.\n Strong vs Infantry and Vehicles
         IconPalette: d2kunit
 	Tooltip:
 		Name: Swarmer
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 15000
+		HP: 12000
 	Armor:
 		Type: Medium
 	RevealsShroud:
@@ -3521,8 +3529,8 @@ swarmer:
 		PauseOnCondition: !ammo
 	Aircraft:
 		CruiseAltitude: 1920
-		Speed: 256
-		TurnSpeed: 16
+		Speed: 264
+		TurnSpeed: 18
 		RepulsionSpeed: 40
 		MaximumPitch: 56
 		CanHover: false
@@ -3608,14 +3616,14 @@ ornithopter.controllable:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 22000
+		HP: 20000
 	AmmoPool:
         Name: primary
 		Ammo: 5
 		AmmoCondition: ammo
 	ReloadAmmoPool:
 		Delay: 400
-		Count: 4
+		Count: 5
 		ResetOnFire: false
 	AttackAircraft:
         AttackType: Strafe
@@ -3689,7 +3697,7 @@ phoenix:
 		Prerequisites: outpost, ~hightech.harkonnen, ~techlevel.medium
 		BuildDuration: 512
 		BuildDurationModifier: 100
-		Description: Light plane armed with dual Air-To-Ground flame rockets.\n Strong vs Buildings, Vehicles, Infantry
+		Description: Medium Plane armed with dual Air-To-Ground flame rockets.\n Strong vs Buildings, Vehicles, Infantry
         IconPalette: d2kunit     
 	Tooltip:
 		Name: Phoenix
@@ -3703,11 +3711,11 @@ phoenix:
 		Range: 4c512
 		Type: GroundPosition
 	AmmoPool:
-		Ammo: 10
+		Ammo: 8
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 180
-		Count: 2
+		Delay: 500
+		Count: 8
 		ResetOnFire: true
 	AttackAircraft:
 		FacingTolerance: 80
@@ -3719,7 +3727,7 @@ phoenix:
 	Aircraft:
 		CruiseAltitude: 1920
 		Speed: 174
-		TurnSpeed: 16
+		TurnSpeed: 12
 		RepulsionSpeed: 40
 		MaximumPitch: 56
 		CanHover: false
@@ -4368,7 +4376,7 @@ rocket_raider:
     Inherits: raider
     Inherits@bot: ^BotMicromanageable
    	Valued:
-		Cost: 1200
+		Cost: 1500
     Tooltip:
 		Name: Stealth Rocket Raider     
     Buildable:
@@ -4376,7 +4384,7 @@ rocket_raider:
 		BuildPaletteOrder: 10
 		BuildDuration: 150
 		BuildDurationModifier: 100
-		Description: Invisible Raider Trike with Rockets\nMust resupply at Resource Center\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
+		Description: Invisible Raider Trike with Rockets\nMust resupply at Resource Center\nCan Carrry up to 2 passengers\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
         IconPalette: d2kunit
 	Armor:
 		Type: Medium        
@@ -4397,10 +4405,10 @@ rocket_raider:
         Condition: tleilaxu_rearm
   	Cargo:
 		Types: Infantry
-		MaxWeight: 4
+		MaxWeight: 2
 		LoadingCondition: notmobile
-        InitialUnits: facedancer, facedancer, facedancer, facedancer
-        PipCount: 4     
+        InitialUnits: facedancer, facedancer
+        PipCount: 2    
     Cloak:
 		InitialDelay: 45
 		CloakDelay: 40
@@ -4620,7 +4628,7 @@ combat_siege_tank:
     Tooltip:
 		Name: Combat Siege
     Valued:
-		Cost: 1800   
+		Cost: 2500
     AmmoPool:
 		Ammo: 12
 		AmmoCondition: ammo
@@ -4641,21 +4649,21 @@ combat_siege_tank:
 		BuildPaletteOrder: 40
 		BuildDuration: 500
 		BuildDurationModifier: 100
-		Description: Siege tank with autoloader system.\nCan shoot 3 shots at once with longer reloading time\nMust resupply at resource center\nCan carry up to 4 passengers\n  Strong vs Tanks\n  Weak vs Infantry
+		Description: Siege tank with autoloader system.\nCan shoot 3 shots at once with longer reloading time\nMust resupply at resource center\nCan carry up to 2 passengers\n  Strong vs Tanks\n  Weak vs Infantry
         Prerequisites: ~faction.tleilaxu
  	AttackTurreted:
     Cargo:
 		Types: Infantry
-		MaxWeight: 4
+		MaxWeight: 2
 		LoadingCondition: notmobile
-        InitialUnits: d2k_sniper, d2k_sniper, d2k_sniper, d2k_sniper
-        PipCount: 4
+        InitialUnits: d2k_sniper, d2k_sniper
+        PipCount: 2
     AIDeployNotifier:
 		DeployChance: 100 
 	WithSpriteTurret:       
 	Turreted:
 		TurnSpeed: 20
-        Offset: 0,100,200
+        Offset: 0,0,0
 	Armament:
 		Weapon: D2K_155mm3
         Recoil: 150
