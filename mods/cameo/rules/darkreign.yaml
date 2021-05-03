@@ -267,7 +267,7 @@ drcamera:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: anypower
-		Queue: Defence.Imperium, RADefence.Imperium, Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Shadowhand, RADefence.Shadowhand, Defence.Xenite, RADefence.Xenite
+		Queue: Defence.Imperium, RADefence.Imperium, Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Shadowhand, RADefence.Shadowhand, Defence.Xenite, RADefence.Xenite, Defence.Togran, RADefence.Togran
 		BuildDurationModifier: 40
 		Description: Detection purpose Turret
 	RequiresBuildableArea:
@@ -517,7 +517,7 @@ drwall1:
 		Name: Concrete Wall
 	Buildable:
 		BuildPaletteOrder: 10
-		Queue: Defence.Imperium, RADefence.Imperium, Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Shadowhand, RADefence.Shadowhand, Defence.Xenite, RADefence.Xenite
+		Queue: Defence.Imperium, RADefence.Imperium, Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Shadowhand, RADefence.Shadowhand, Defence.Xenite, RADefence.Xenite, Defence.Togran, RADefence.Togran
 		Description: Blocks Units
 	Building:
 		Footprint: _x_ xx_
@@ -543,7 +543,7 @@ drwall2:
 		Name: Concrete Wall
 	Buildable:
 		BuildPaletteOrder: 10
-		Queue: Defence.Imperium, RADefence.Imperium, Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Shadowhand, RADefence.Shadowhand, Defence.Xenite, RADefence.Xenite
+		Queue: Defence.Imperium, RADefence.Imperium, Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Shadowhand, RADefence.Shadowhand, Defence.Xenite, RADefence.Xenite, Defence.Togran, RADefence.Togran
 		Description: Blocks Units
 	Building:
 		Footprint: xx_ _x_
@@ -576,7 +576,7 @@ mcv.imperium:
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: drihq2, ~techlevel.medium
-		Queue: Vehicle.Imperium, RAVehicle.Imperium
+		Queue: Building.Imperium, RABuilding.Imperium
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
 	Selectable:
@@ -689,6 +689,12 @@ drihq.imperium:
 		Image: drihq
 		Scale: 0.67
 	Inherits@upgrade: ^UpgradesDRIHQType
+	RallyPoint:							##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0		#-1323,1280,0
+		ExitCell: 0,2
+		Facing: 135
 pscdrihq2:
 	Tooltip:
 		Name: HQ Tier 2
@@ -1854,7 +1860,7 @@ mcv.freedomguard:
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: drfghq2, ~techlevel.medium
-		Queue: Vehicle.FreedomGuard, RAVehicle.FreedomGuard
+		Queue: Building.FreedomGuard, RABuilding.FreedomGuard
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
 	Selectable:
@@ -1964,6 +1970,12 @@ drfghq.freedomguard:
 		Image: drfghq
 		Scale: 0.67
 	Inherits@upgrade: ^UpgradesDRFGHQType
+	RallyPoint:							##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0		#-1323,1280,0
+		ExitCell: 0,2
+		Facing: 135
 pscdrfghq2:
 	Tooltip:
 		Name: HQ Tier 2
@@ -2403,13 +2415,53 @@ drpplant1.freedomguard:
 		Image: drpplant1
 		Scale: 0.67
 	Inherits@upgrade: ^UpgradesDRFGPHASEType
-	MobSpawnerMaster:
+	MobSpawnerMaster@player:
 		Actors: drphasetran
 		RespawnTicks: 750
 		ExitByBudding: false
 		AggregateHealth: false
-		Offset: 255,255,0
-		RequiresCondition: lvl2
+		RequiresCondition: lvl2 && !brutalbot && !hardbot && !normalbot && !easybot 
+		PauseOnCondition: disabled
+	GrantConditionOnBotOwner@brutal:
+		Condition: brutalbot
+		Bots: brutal
+	MobSpawnerMaster@brutalbot:
+		Actors: drphasetran
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		RequiresCondition: lvl2 && brutalbot
+		PauseOnCondition: disabled
+	GrantConditionOnBotOwner@hard:
+		Condition: hardbot
+		Bots: hard
+	MobSpawnerMaster@hardbot:
+		Actors: drphasetran
+		RespawnTicks: 600
+		ExitByBudding: false
+		AggregateHealth: false
+		RequiresCondition: lvl2 && hardbot
+		PauseOnCondition: disabled
+	GrantConditionOnBotOwner@medium:
+		Condition: normalbot
+		Bots: medium
+	MobSpawnerMaster@normalbot:
+		Actors: drphasetran
+		RespawnTicks: 750
+		ExitByBudding: false
+		AggregateHealth: false
+		RequiresCondition: lvl2 && normalbot
+		PauseOnCondition: disabled
+	GrantConditionOnBotOwner@easy:
+		Condition: easybot
+		Bots: easy, airforce
+	MobSpawnerMaster@easybot:
+		Actors: drphasetran
+		RespawnTicks: 750
+		ExitByBudding: false
+		AggregateHealth: false
+		RequiresCondition: lvl2 && easybot 
+		PauseOnCondition: disabled
 pscdrpplant2:
 	Tooltip:
 		Name: Phase Plant Tier 2
@@ -3077,21 +3129,6 @@ drphasetnk:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
-testsapc.freedomguard:
-	Inherits: TSSAPC
-	-Buildable:
-	RenderVoxels:
-		Image: tssapc
-	RenderSprites:
-		Image: tssapc
-	Cargo:
-		InitialUnits: drraid,drraid,drraid,drraid,drraid
-	AIDeployNotifier:
-		DeployChance: 100
-		DeployTicks: 0
-	UpdatesPlayerStatistics:
-		OverrideActor: tssapc
-	MobSpawnerSlave:
 
 drphasetran:
 	Inherits: ^Tank
@@ -3129,7 +3166,7 @@ drphasetran:
 	Voiced:
 		VoiceSet: DRPhaseVoice
 	DeliversCash:
-		Payload: 400
+		Payload: 0
 	Cargo:
 		Types: Infantry, Hacker, Vehicle
 		MaxWeight: 10
@@ -3138,12 +3175,65 @@ drphasetran:
 	Targetable@garrisoned:
 		RequiresCondition: loaded && !submerged
 	-WithVoxelBody:
-	MobSpawnerSlave:
 	RenderSprites:
 		Scale: 0.68
 	WithFacingSpriteBody:
 		RequiresCondition: !submerged
+	MobSpawnerSlave:
+		GrantConditionWhenMasterIsDisabled: notenabled
+		GrantConditionWhenMasterIsPaused: paused
+	KillsSelf@masterdisabled:
+		RequiresCondition: paused
 
+drphasetran.easybot:
+	Inherits: drphasetran
+	RenderSprites:
+		Image: drphasetran
+	Cargo:
+		InitialUnits: drraid,drraid,drraid,drraid,drraid
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	UpdatesPlayerStatistics:
+		OverrideActor: tssapc
+	MobSpawnerSlave:
+
+drphasetran.normalbot:
+	Inherits: drphasetran
+	RenderSprites:
+		Image: drphasetran
+	Cargo:
+		InitialUnits: drstnk,drstnk,drraid,drraid,drraid,drraid,drraid,drraid
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	UpdatesPlayerStatistics:
+		OverrideActor: tssapc
+	MobSpawnerSlave:
+drphasetran.hardbot:
+	Inherits: drphasetran
+	RenderSprites:
+		Image: drphasetran
+	Cargo:
+		InitialUnits: drstnk,drstnk,drraid,drraid,drraid,drsabot,drsabot,drsabot
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	UpdatesPlayerStatistics:
+		OverrideActor: tssapc
+	MobSpawnerSlave:
+drphasetran.brutalbot:
+	Inherits: drphasetran
+	RenderSprites:
+		Image: drphasetran
+	Cargo:
+		InitialUnits: drstnk,drraid,drraid,drraid,drsabot,drsabot,drsabot,drsabot,drsabot
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	UpdatesPlayerStatistics:
+		OverrideActor: tssapc
+	MobSpawnerSlave:
 drjack:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -3348,7 +3438,7 @@ mcv.shadowhand:
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: drihq2, ~techlevel.medium
-		Queue: Vehicle.Shadowhand, RAVehicle.Shadowhand
+		Queue: Building.Shadowhand, RABuilding.Shadowhand
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
 	Selectable:
@@ -3465,6 +3555,12 @@ drihq.shadowhand:
 		Image: drihq
 		Scale: 0.67
 	Inherits@upgrade: ^UpgradesDRIHQType
+	RallyPoint:							##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0		#-1323,1280,0
+		ExitCell: 0,2
+		Facing: 135
 dribarr.shadowhand:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -3854,11 +3950,11 @@ mcv.xenite:
 	Valued:
 		Cost: 2000
 	Tooltip:
-		Name: Construction Rig (FreedomGuard)
+		Name: Construction Rig (Xenite)
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: drfghq2, ~techlevel.medium
-		Queue: Vehicle.FreedomGuard, RAVehicle.FreedomGuard
+		Queue: Building.Xenite, RABuilding.Xenite
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
 	Selectable:
@@ -3876,7 +3972,7 @@ mcv.xenite:
 	RevealsShroud:
 		Range: 8c0
 	Transforms:
-		IntoActor: drfghq.freedomguard
+		IntoActor: drfghq.xenite
 		Offset: -1,-1
 		Facing: 108
 		TransformSounds: constru2.aud, hvydoor1.aud
@@ -3888,7 +3984,7 @@ mcv.xenite:
 	-WithFacingSpriteBody:
 	WithInfantryBody:
 	ProvidesPrerequisite@faction:
-		Prerequisite: mmfreedomguard
+		Prerequisite: mmxenite
 	Voiced:
 		VoiceSet: DRFGRigVoice
 drfghq.xenite:
@@ -3968,6 +4064,12 @@ drfghq.xenite:
 		Image: drfghq
 		Scale: 0.67
 	Inherits@upgrade: ^UpgradesDRFGHQType
+	RallyPoint:							##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0		#-1323,1280,0
+		ExitCell: 0,2
+		Facing: 135
 drbiocom.xenite:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -4125,7 +4227,7 @@ drtrainer:
 	Valued:
 		Cost: 200
 	Tooltip:
-		Name: DRAnimalTrainerVoice
+		Name: Animal Trainer
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -4548,7 +4650,7 @@ mcv.togran:
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: drihq2, ~techlevel.medium
-		Queue: Vehicle.Togran, RAVehicle.Togran
+		Queue: Building.Togran, RABuilding.Togran
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
 	Selectable:
@@ -4661,6 +4763,12 @@ drihq.togran:
 		Image: drthq
 		Scale: 0.67
 	Inherits@upgrade: ^UpgradesDRIHQType
+	RallyPoint:							##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0		#-1323,1280,0
+		ExitCell: 0,2
+		Facing: 135
 dribarr.togran:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape

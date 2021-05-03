@@ -1,0 +1,401 @@
+#######################################
+# Rcorp Buildings
+#######################################
+RCORPFACT:
+	Inherits: ^BaseBuilding
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@sell: ^RASpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Command Center (Rcorp)
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	Health:
+		HP: 210000	#150000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	WithBuildingBib:
+	Production@NORMAL:
+		Produces: Building.315Rcorp, Defence.315Rcorp
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.315Rcorp, RADefence.315Rcorp
+		RequiresCondition: classicproductionqueues
+	Transforms:
+		IntoActor: ramcv.allies
+		Offset: 1,1
+		Facing: 108
+		RequiresCondition: factundeploy
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@AlliesBuilding:
+		Type: Building.315Rcorp
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+	ProductionQueue@AlliesDefense:
+		Type: Defence.315Rcorp
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+	BaseBuilding:
+	ProductionBar@BuildingAllies:
+		ProductionType: Building.315Rcorp
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceAllies:
+		ProductionType: Defence.315Rcorp
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingAllies:
+		ProductionType: RABuilding.315Rcorp
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceAllies:
+		ProductionType: RADefence.315Rcorp
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 14c0
+	WithBuildingPlacedAnimation:
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: rafact
+	Buildable:
+		Description: Builds structures
+	ProvidesPrerequisite@factionallies:
+		Prerequisite: mmallies
+	RenderSprites:
+		Image: rafact
+#######################################
+# Rcorp Infantry
+#######################################
+rcorpe1:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Heavy Trooper
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Infantry.Rcorp, RAInfantry.Rcorp
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 14000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: M16
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: HighV
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+
+rcorpe3:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Sting Trooper
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		Queue: Infantry.Rcorp, RAInfantry.Rcorp
+		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
+	Mobile:
+		Speed: 42
+	Health:
+		HP: 12000
+	AutoTarget:
+		ScanRadius: 6
+	Armament@PRIMARY:							##########
+		Weapon: Rockets
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: RocketsG
+	TakeCover:
+		ProneOffset: 180,0,-200
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+
+rcorpcom:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Commando A13
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: eye, ~techlevel.high
+		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry
+		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+	Mobile:
+		Speed: 71
+		Voice: Move
+	Guard:
+		Voice: Move
+	Health:
+		HP: 15000
+	Passenger:
+		PipType: Red
+		Voice: Move
+	RevealsShroud:
+		Range: 6c0
+	AutoTarget:
+		ScanRadius: 8
+	Armament:
+		Weapon: Sniper
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Sniper
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+	AttackFrontal:
+		Voice: Attack
+	AttackMove:
+		Voice: Attack
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2,idle3
+	AnnounceOnKill:
+	Voiced:
+		VoiceSet: CommandoVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+rcorpsnp:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Sniper A14
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: eye, ~techlevel.high
+		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry
+		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+	Mobile:
+		Speed: 71
+		Voice: Move
+	Guard:
+		Voice: Move
+	Health:
+		HP: 15000
+	Passenger:
+		PipType: Red
+		Voice: Move
+	RevealsShroud:
+		Range: 6c0
+	AutoTarget:
+		ScanRadius: 8
+	Armament:
+		Weapon: Sniper
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Sniper
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+	AttackFrontal:
+		Voice: Attack
+	AttackMove:
+		Voice: Attack
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2,idle3
+	AnnounceOnKill:
+	Voiced:
+		VoiceSet: CommandoVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+rcorpage:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Agent A12
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: eye, ~techlevel.high
+		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry
+		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+	Mobile:
+		Speed: 71
+		Voice: Move
+	Guard:
+		Voice: Move
+	Health:
+		HP: 15000
+	Passenger:
+		PipType: Red
+		Voice: Move
+	RevealsShroud:
+		Range: 6c0
+	AutoTarget:
+		ScanRadius: 8
+	Armament:
+		Weapon: Sniper
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Sniper
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+	AttackFrontal:
+		Voice: Attack
+	AttackMove:
+		Voice: Attack
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2,idle3
+	AnnounceOnKill:
+	Voiced:
+		VoiceSet: CommandoVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+
+#######################################
+# Rcorp Vehicle
+#######################################
+rcorpvulk:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APBulletUpgrade
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 30
+		Prerequisites: glweap, ~techlevel.low
+		Description: Anti-air and anti-infantry vehicle.\n  Strong vs Aircraft, Infantry\n  Weak vs Vehicles
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Quad Cannon
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 30000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 110
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 9
+		Offset: -370,0,225
+	Armament@2:
+		Weapon: GLQuadCannonGround
+		MuzzleSequence: muzzle
+		LocalOffset: 128,128,200, 128,-128,200, 128,-128,43, 128,128,43
+	Armament@2AA:
+		Weapon: GLQuadCannonAir
+		MuzzleSequence: muzzle
+		LocalOffset: 128,128,200, 128,-128,200, 128,-128,43, 128,128,43
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+		Sequence: turret
+		RequiresCondition: scrap_create_bonus == 0
+	WithSpriteTurret@Scrap1:
+		Sequence: turret2
+		RequiresCondition: scrap_create_bonus == 1
+	WithSpriteTurret@Scrap2:
+		Sequence: turret3
+		RequiresCondition: scrap_create_bonus >= 2
+	RenderSprites:
+	Voiced:
+		VoiceSet: QuadCannonVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 75
+	ReloadDelayMultiplier@Salvaged2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 50
+	GrantConditionOnPrerequisite@selectglatoxin:
+		Condition: selectglatoxin
+		Prerequisites: selectglatoxin
+	ProductionCostMultiplier@selectglatoxin:
+		Multiplier: 110
+		Prerequisites: selectglatoxin
+		Queue: Vehicle.GLA, RAVehicle.GLA
+	ProductionCostMultiplier@selectglademo:
+		Multiplier: 110
+		Prerequisites: selectglademo
+		Queue: Vehicle.GLA, RAVehicle.GLA
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
