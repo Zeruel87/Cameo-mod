@@ -358,7 +358,7 @@
 	Buildable:
 		Queue: Building.d2k
 		BuildPaletteOrder: 10
-		Description: Provides a strong foundation that prevents\ndamage from the terrain.
+		Description: Provides a strong foundation that prevents\ndamage from the terrain.\nNot required for walls and turrets.
         IconPalette: d2kunit
 
 concretea:
@@ -1456,6 +1456,7 @@ medium_gun_turret:
 		Weapon: 110mm_Gun
 		LocalOffset: 512,0,432
 		MuzzleSequence: muzzle
+        MuzzlePalette: d2keffect     
 	Power:
 		Amount: -50
 	Replacement:
@@ -1513,7 +1514,7 @@ machine_gun_turret:
 		Weapon: HMG_turret
 		LocalOffset: 256,0,576
 		MuzzleSequence: muzzle
-        
+        MuzzlePalette: d2keffect    
 flame_turret:
     Inherits: medium_gun_turret  
     Buildable:
@@ -1712,7 +1713,7 @@ high_tech_factory:
 		BuildPaletteOrder: 420
 		BuildDuration: 468
 		BuildDurationModifier: 100
-		Description: Unlocks advanced technology.\nAllows production of Air units for Atreides and Harkonnen
+		Description: Unlocks advanced technology.\nAllows production of Air units
         IconPalette: d2kunit      
 	Selectable:
 		Bounds: 72, 72
@@ -2257,6 +2258,7 @@ light_inf:
 		Name: garrisoned
 		Weapon: HighV
 		MuzzleSequence: garrison-muzzle
+        MuzzlePalette: d2keffect      
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
 		DefaultAttackSequence: shoot
@@ -2284,7 +2286,7 @@ chem_troop:
 		Weapon: d2k_chemgun
         LocalOffset: 0,0,50
    	Health:
-		HP: 10000     
+		HP: 6000     
     Targetable:
         TargetTypes: Ground, Infantry, ToxinImmune 
     Mobile:
@@ -3137,8 +3139,9 @@ d2k_sniper:
 		Queue: Infantry.d2k, Infantry.X_Infantry
 		BuildPaletteOrder: 160
 		Prerequisites: ~barracks.ordos, upgrade.barracks, ~!faction.ordos. ~!faction.smugglers
-		Description: Stealth infantry armed with a long range rifle\nCan detect cloaked units.\n  Strong vs Infantry, Air, Vehicles\n  Weak vs Tanks\n  Special Ability: Invisibility while static
-        IconPalette: d2kunit    
+		Description: Stealth infantry armed with a long range rifle\nCan detect cloaked units at great distances.\n  Strong vs Infantry, Air, Vehicles\n  Weak vs Tanks\n  Special Ability: Invisibility while static
+        IconPalette: d2kunit 
+        BuildDuration: 600
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -3146,18 +3149,21 @@ d2k_sniper:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 6000
+		HP: 5000
 	Mobile:
-		Speed: 31
+		Speed: 25
 	Armament:
 		Weapon: D2KSniperRifle
+    RevealsShroud:
+		Range: 5c0   
   	DetectCloaked:
 		Range: 8c0      
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	Crushable:
-		WarnProbability: 80
+		WarnProbability: 20
+        CrushedByFriendlies: True
 	Cloak:
 		InitialDelay: 85
 		CloakDelay: 85
@@ -3172,7 +3178,35 @@ d2k_sniper:
 	WithDeathAnimation:
 	RenderSprites:
   		PlayerPalette: raplayer
-        Scale: 0.85
+        Scale: 0.8
+        
+d2k_marksman:
+    Inherits: d2k_sniper
+  	Tooltip:
+		Name: Marksman
+    Buildable:
+		Queue: Infantry.d2k, Infantry.X_Infantry
+		BuildPaletteOrder: 160
+		Prerequisites: ~barracks.atreides, upgrade.barracks, ~!faction.ixian
+		Description: Spotter Infantry armed with a long range rifle\nCan detect cloaked units.\n  Strong vs Infantry, Air, Vehicles\n  Weak vs Tanks\n  Special Ability: Binoculars
+        IconPalette: d2kunit 
+        BuildDuration: 400        
+	Health:
+		HP: 8000
+    Valued:
+		Cost: 300
+    RevealsShroud:
+		Range: 10c0
+    DetectCloaked:
+		Range: 5c0     
+   	Crushable:
+		WarnProbability: 50
+   	Mobile:
+		Speed: 40
+    -Cloak:
+    -GrantConditionOnDamageState@UNCLOAK:
+   	Armament:
+		Weapon: D2KMarksmanRifle 
         
 flamethrower:
 	Inherits: ^D2KInfantry
@@ -3182,10 +3216,10 @@ flamethrower:
 	Buildable:
 		Queue: Infantry.d2k, Infantry.X_Infantry
 		BuildPaletteOrder: 40
-		BuildDuration: 164
+		BuildDuration: 220
 		BuildDurationModifier: 100
 		Prerequisites: ~barracks.harkonnen, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.harkonnen
-        Description: Defensive structure.\nDetector.\n  Strong vs Infantry, Vehicles, Tanks, Buildings\n  Weak vs Siege\n  Special Ability: Invisibility
+        Description: Stealth Deadly unit.\nUndetected even when exiting vehicles and infiltrating.\n  Strong vs Infantry, Vehicles, Tanks, Buildings\n  Weak vs Siege\n  Special Ability: Invisibility
         IconPalette: d2kunit    
 	Valued:
 		Cost: 300
@@ -3198,7 +3232,7 @@ flamethrower:
 	Health:
 		HP: 8000
 	Mobile:
-		Speed: 36
+		Speed: 32
 	RevealsShroud:
 		Range: 4c768
 	WithInfantryBody:
@@ -3209,10 +3243,11 @@ flamethrower:
 	WithDeathAnimation:
 	RenderSprites:
     	PlayerPalette: raplayer
+        Scale: 0.85
 	Cloak:
 		InitialDelay: 85
 		CloakDelay: 85
-        UncloakOn: Attack, Unload, Demolish, Dock, Heal
+        UncloakOn: Attack, Demolish, Dock, Heal
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
         Palette: racloak
@@ -3229,6 +3264,7 @@ d2k_hijacker:
 		Prerequisites: upgrade.barracks, ~barracks.ordos
 		Description: Stealth unit that can hijack enemy vehicles\n  Unarmed
         IconPalette: d2kunit    
+        BuildDuration: 250
 	Valued:
 		Cost: 250
 	Tooltip:
@@ -3370,6 +3406,7 @@ d2k_light_tank:
 		RecoilRecovery: 25
 		MuzzleSequence: muzzle
         LocalOffset: 575, 0, 175
+        MuzzlePalette: d2keffect       
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -3459,7 +3496,7 @@ d2k_stealth_tank:
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Stealth Tank
+		Name: Alshabah
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -3468,7 +3505,7 @@ d2k_stealth_tank:
 		BuildDuration: 460
 		BuildDurationModifier: 100
 		Prerequisites: ~heavy.atreides, research_centre, ~techlevel.medium, ~faction.fremen
-		Description: Quick Stealth tank armed with dual missile launchers\n  Strong vs Tanks, Air\n  Weak vs Infantry
+		Description: Fremen Quick Stealth tank armed with dual missile launchers\n  Strong vs Tanks, Air\n  Weak vs Infantry
         IconPalette: d2kunit    
 	Selectable:
 		Class: stealth_tank
@@ -3476,7 +3513,7 @@ d2k_stealth_tank:
 		TurnSpeed: 32
 		Speed: 90
 	Health:
-		HP: 40000
+		HP: 45000
 	Armor:
 		Type: Medium
 	RevealsShroud:
@@ -3506,14 +3543,14 @@ d2k_stealth_tank:
 		EmptyWeapon: D2KUnitExplodeMed
 	RenderSprites:
 		PlayerPalette: cncplayer
-		Scale: 1.1
+		Scale: 1.25
 	AttractsWorms:
 		Intensity: 520
         
 d2k_stealth_tank.husk:
 	Inherits: ^Husk
 	Tooltip:
-		Name: Destroyed Stealth Tank
+		Name: Destroyed Alshabah
 	TransformOnCapture:
 		IntoActor: d2k_stealth_tank
 	InfiltrateForTransform:
@@ -3530,7 +3567,7 @@ d2k_apc:
     Inherits@EXT: ^ExternalConditions   
     Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 850
+		Cost: 600
 	Tooltip:
 		Name: Personnel Carrier
 	Buildable:
@@ -3539,16 +3576,15 @@ d2k_apc:
 		BuildDuration: 555
 		BuildDurationModifier: 100
 		Prerequisites: upgrade.light, ~light.ordos, ~techlevel.medium, ~!faction.tleilaxu
-		Description: Cloaked Hit and Run Vehicle with small anti-infantry cannon\nCan carry 4 passengers\n  Special Ability: Invisibility
+		Description: Hit and Run Vehicle with small cannon\nCan carry 3 passengers
         IconPalette: d2kunit       
 	AIDeployNotifier:
 		DeployChance: 100     
-    WithMuzzleOverlay:
 	Selectable:
 		Class: apc
 	Mobile:
-		TurnSpeed: 16
-		Speed: 125
+		TurnSpeed: 12
+		Speed: 105
 	Health:
 		HP: 30000
 	Armor:
@@ -3562,16 +3598,15 @@ d2k_apc:
 		EmptyWeapon: D2KUnitExplodeSmall
 	Armament@primary:
 		Weapon: d2k25mm
-		LocalOffset: 768,0,90
-        MuzzleSequence: muzzle
+		LocalOffset: 768,0,90  
 	AttackTurreted:
 	AutoTarget:
 	Cargo:
 		Types: Infantry
-		MaxWeight: 4
+		MaxWeight: 3
 		LoadingCondition: notmobile
-        PipCount: 4
-        InitialUnits: trooper, trooper, trooper, trooper
+        PipCount: 3
+        InitialUnits: trooper, trooper, trooper
 	WithSpriteTurret@default:
 		Sequence: turret-tank
         IsPlayerPalette: true
@@ -3579,15 +3614,9 @@ d2k_apc:
 	SpawnActorOnDeath:
 		Actor: d2k_apc.husk
 	RenderSprites:
+        Image: d2k_apc
         PlayerPalette: raplayer
-        Scale: 1
-    Cloak:
-		InitialDelay: 80
-		CloakDelay: 80
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled
-        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
-      	Palette: racloak       
+        Scale: 1   
         
 d2k_apc.husk:
 	Inherits: ^Husk
@@ -3603,7 +3632,47 @@ d2k_apc.husk:
 		IntoActor: d2k_apc
 	RenderSprites:
         PlayerPalette: raplayer
-        
+
+d2k_stealth_apc:
+    Inherits: d2k_apc
+    Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Stealth Personnel Carrier
+	Buildable:
+		Queue: Vehicle.d2k
+		BuildPaletteOrder: 40
+		BuildDuration: 555
+		BuildDurationModifier: 100
+		Prerequisites: upgrade.light, high_tech_factory, ~light.ordos, ~techlevel.medium, ~!faction.ordos, ~!faction.tleilaxu
+		Description: Stealth Hit and Run Vehicle\nCan carry 6 passengers\nUnarmed.\n  Special Ability: Invisibility
+        IconPalette: d2kunit      
+        Icon: icon_stealth
+   	-Turreted:   
+	-Armament@primary:    
+    -AutoTarget:
+    -AttackTurreted:
+    -WithSpriteTurret@default:
+    -AutoTargetPriority@DEFAULT:
+    -AutoTargetPriority@ATTACKANYTHING:
+    -SpawnActorOnDeath:
+    Cargo:
+		Types: Infantry
+		MaxWeight: 6
+		LoadingCondition: notmobile
+        PipCount: 6
+        InitialUnits: trooper, trooper, trooper, trooper, trooper, trooper
+   	Mobile:
+		TurnSpeed: 16
+		Speed: 130    
+    Cloak:
+		InitialDelay: 80
+		CloakDelay: 80
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled
+        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
+      	Palette: racloak         
+    
 d2k_mcv:
 	Inherits@D2KT: ^D2KTank
 	Inherits@selection: ^SelectableSupportUnit
@@ -3672,7 +3741,7 @@ d2k_jammer:
 		BuildDuration: 562
 		BuildDurationModifier: 100
 		Prerequisites: research_centre, ~techlevel.medium, ~faction.ixian
-		Description: Jams nearby enemy outposts\nand deflects incoming missiles.\nCan detect cloaked units.\nCan disable enemy vehicles with EMP.
+		Description: Jams nearby enemy outposts\nand deflects incoming missiles.\nCan detect cloaked units.\nCan disable enemy vehicles with EMP.\n  Special Ability: Invisibility
 	    IconPalette: d2kunit      
     Health:
 		HP: 20000
@@ -3682,7 +3751,7 @@ d2k_jammer:
 		TurnSpeed: 12
 		Speed: 62
 	RevealsShroud:
-		Range: 7c0
+		Range: 8c0
 	WithIdleOverlay@SPINNER:
 		Sequence: spinner
 		Offset: -256,0,256
@@ -3760,7 +3829,6 @@ swarmer:
 		BuildDuration: 321
 		BuildDurationModifier: 100
 		Description: Light plane armed with dual machine guns. \nCan attack air.\n Strong vs Infantry and Vehicles
-        IconPalette: d2kunit
 	Tooltip:
 		Name: Swarmer
 	UpdatesPlayerStatistics:
@@ -3778,10 +3846,11 @@ swarmer:
 		Weapon: d2kChainGun
 		LocalOffset: 256,-213,0, 256,213,0
 		MuzzleSequence: muzzle
+        MuzzlePalette: ra2effect       
 	Aircraft:
 		CruiseAltitude: 1920
 		Speed: 264
-		TurnSpeed: 18
+		TurnSpeed: 12
 		RepulsionSpeed: 40
 		MaximumPitch: 56
 		CanHover: false
@@ -3803,7 +3872,6 @@ swarmer:
 		VoiceSet: D2KVehicleVoice
 	RenderSprites:
 		Scale: 0.7
-    	PlayerPalette: raplayer 
 
 ornithopter:
     Inherits@D2KSprite: ^D2KPaletteRender  
@@ -3819,6 +3887,7 @@ ornithopter:
 		Weapon: OrniGun
 		LocalOffset: 0,128,0, 0,-128,0
         MuzzleSequence: muzzle
+        MuzzlePalette: d2keffect       
 	Health:
 		HP: 30000
 	Armor:
@@ -3867,13 +3936,13 @@ ornithopter.controllable:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 20000
+		HP: 24000
 	AmmoPool:
         Name: primary
 		Ammo: 5
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 400
+		Delay: 300
 		Count: 5
 		ResetOnFire: false
 	AttackAircraft:
@@ -3887,13 +3956,14 @@ ornithopter.controllable:
 		Weapon: OrniGunC
 		LocalOffset: 0,128,0, 0,-128,0
         MuzzleSequence: muzzle
+        MuzzlePalette: d2keffect      
     Armament@bombs:
         Name: primary
 		Weapon: OrniBombC    
         PauseOnCondition: !ammo
 	Aircraft:
         CruiseAltitude: 1920
-		Speed: 194
+		Speed: 181
 		RepulsionSpeed: 40
 		MaximumPitch: 56
 		Repulsable: true
@@ -3949,24 +4019,23 @@ phoenix:
 		BuildDuration: 512
 		BuildDurationModifier: 100
 		Description: Medium Plane armed with dual Air-To-Ground flame rockets.\n Strong vs Buildings, Vehicles, Infantry
-        IconPalette: d2kunit     
 	Tooltip:
-		Name: Phoenix
+		Name: Gunship
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 25000
+		HP: 30000
 	Armor:
 		Type: Medium
 	RevealsShroud:
 		Range: 4c512
 		Type: GroundPosition
 	AmmoPool:
-		Ammo: 8
+		Ammo: 3
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 500
-		Count: 8
+		Delay: 150
+		Count: 3
 		ResetOnFire: true
 	AttackAircraft:
 		FacingTolerance: 80
@@ -3977,8 +4046,8 @@ phoenix:
 		PauseOnCondition: !ammo
 	Aircraft:
 		CruiseAltitude: 1920
-		Speed: 174
-		TurnSpeed: 12
+		Speed: 166
+		TurnSpeed: 8
 		RepulsionSpeed: 40
 		MaximumPitch: 56
 		CanHover: false
@@ -3986,8 +4055,7 @@ phoenix:
 		RepairActors: repair_pad
 	Guard:
 		Voice: Guard
-	Guardable:
-	WithMuzzleOverlay:
+	Guardable:      
 	Targetable:
 		TargetTypes: Air, Plane
 	SpawnActorOnDeath:
@@ -3997,16 +4065,9 @@ phoenix:
 		Bounds: 36,28,0,2
 		DecorationBounds: 40,29,0,1
 	SelectionDecorations:
-	Contrail@1:
-		Offset: -538,-614,0
-		UsePlayerColor: false
-	Contrail@2:
-		Offset: -538,614,0
-		UsePlayerColor: false
 	Voiced:
 		VoiceSet: D2KVehicleVoice
 	RenderSprites:
- 		PlayerPalette: raplayer
         
 swarmer.husk:
 	Inherits: ^PlaneHusk
@@ -4016,17 +4077,15 @@ swarmer.husk:
 		TurnSpeed: 2
 		Speed: 172
 	RenderSprites:
-		PlayerPalette: raplayer
 
 phoenix.husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
-		Name: Phoenix
+		Name: Gunship
 	Aircraft:
 		TurnSpeed: 2
 		Speed: 172
 	RenderSprites:
-       	PlayerPalette: raplayer 
         
 harvester:
 	Inherits@D2KT: ^D2KTank
@@ -4126,10 +4185,12 @@ trike:
 	Armament@damage:
 		Weapon: HMG
 		LocalOffset: 180,0,110
+        MuzzlePalette: d2keffect
 	Armament@muzzle:
 		Weapon: HMG_muzzle
 		LocalOffset: -544,0,0
 		MuzzleSequence: muzzle
+        MuzzlePalette: d2keffect  
 	AttackFrontal:
 	Explodes:
 		Weapon: D2KUnitExplodeSmall
@@ -4172,6 +4233,7 @@ quad:
 	Armament:
 		Weapon: D2K_Rocket
 		LocalOffset: 128,64,64, 128,-64,64
+        MuzzlePalette: d2keffect
 	AttackFrontal:
 	Explodes:
 		Weapon: D2KUnitExplodeSmall
@@ -4198,6 +4260,7 @@ mg_quad:
 		Weapon: HMGo_muzzle
 		LocalOffset: -400,0,0
 		MuzzleSequence: muzzle
+        MuzzlePalette: d2keffect  
     RenderSprites:
         Image: quad
     WithMuzzleOverlay:
@@ -4226,6 +4289,7 @@ mg_quad_tleilaxu:
     Armament:
         Weapon: HMG_tleilaxu
         PauseOnCondition: !ammo
+        MuzzlePalette: d2keffect    
     -Armament@muzzle:
     AmmoPool:
 		Ammo: 30
@@ -4282,6 +4346,7 @@ siege_tank:
 		RecoilRecovery: 19
 		LocalOffset: 512,0,320
 		MuzzleSequence: muzzle
+        MuzzlePalette: d2keffect    
 	AttackFrontal:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -4307,19 +4372,19 @@ siege_tank_ixian:
     -AttackFrontal:
     Buildable:
 		Prerequisites: upgrade.heavy, ~techlevel.medium, ~faction.ixian, research_centre
-        Description: Siege Artillery with turnable turret\nthat can shoot burst up to 3 shots in\na row at a higher range.\nLess accurate than regular version and with long reload times\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
+        Description: Stealth Siege Artillery with turnable turret\nthat can shoot burst up to 3 shots in\na row at a higher range.\nLess accurate than regular version and with long reload times\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Everything
  	Health:
-		HP: 40000    
+		HP: 20000    
     Valued:
-		Cost: 800    
+		Cost: 700    
    	Mobile:
-		Speed: 55
+		Speed: 60
 		TurnSpeed: 12 
     AmmoPool:
 		Ammo: 3
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 350
+		Delay: 250
 		Count: 3
 		ResetOnFire: true                 
    	Tooltip:
@@ -4329,7 +4394,14 @@ siege_tank_ixian:
         PauseOnCondition: !ammo
     RenderSprites:
         Image: siege_tank
+    Cloak:
+		InitialDelay: 80
+		CloakDelay: 80
+		UncloakOn: Attack, infiltrate, damage
+		IsPlayerPalette: true
+        Palette: d2kcloak         
     AttackTurreted: 
+    -SpawnActorOnDeath:
     
 missile_tank:
 	Inherits@D2KT: ^D2KTank
@@ -4385,20 +4457,20 @@ missile_tank_ixian:
     Inherits: missile_tank
     Buildable:
 		Prerequisites: upgrade.heavy, ~techlevel.medium, ~faction.ixian, research_centre  
-        Description: Rocket Artillery\nCan shoot up to 8 rockets in a row at much higher distance\nLess accurate than regular version and with long reload times\n  Strong vs Vehicles, Buildings, Aircraft\n  Weak vs Infantry
+        Description: Stealth Rocket Artillery\nCan shoot up to 8 rockets in a row at much higher distance\nLess accurate than regular version and with long reload times\n  Strong vs Vehicles, Buildings, Tanks\n  Weak vs Everything
  	Health:
-		HP: 45000    
+		HP: 25000    
     Armor:
 		Type: Light    
     AmmoPool:
-		Ammo: 8
+		Ammo: 10
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 1000
-		Count: 8
+		Delay: 400
+		Count: 10
 		ResetOnFire: true               
     Valued:
-		Cost: 950    
+		Cost: 1000   
    	Mobile:
 		Speed: 85
 		TurnSpeed: 25    
@@ -4408,9 +4480,16 @@ missile_tank_ixian:
         PauseOnCondition: !ammo
    	Tooltip:
 		Name: Ix Missile Tank
+    Cloak:
+		InitialDelay: 60
+		CloakDelay: 60
+		UncloakOn: Attack, infiltrate, damage
+		IsPlayerPalette: true
+        Palette: d2kcloak          
     RenderSprites:
         Image: missile_tank
-        
+    -SpawnActorOnDeath:    
+    
 sonic_tank:
 	Inherits: ^D2KTank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -4496,6 +4575,7 @@ devastator:
 		Weapon: DevBullet
 		LocalOffset: 640,0,32
 		MuzzleSequence: muzzle
+        MuzzlePalette: d2keffect       
 	AttackFrontal:
 	WithMuzzleOverlay:
 		IgnoreOffset: true
@@ -4578,10 +4658,12 @@ raider:
 	Armament@damage:
 		Weapon: HMGo
 		LocalOffset: 170,0,0
+        MuzzlePalette: d2keffect 
 	Armament@muzzle:
 		Weapon: HMGo_muzzle
 		LocalOffset: 170,0,0
 		MuzzleSequence: muzzle
+        MuzzlePalette: d2keffect   
 	AttackFrontal:
 	Explodes:
 		Weapon: D2KUnitExplodeSmall
@@ -4810,6 +4892,7 @@ deviator:
 		RecoilRecovery: 32
 		LocalOffset: 256,0,0
 		MuzzleSequence: muzzle
+        MuzzlePalette: d2keffect     
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -4874,7 +4957,8 @@ combat_tank_ixian:
         Description: Ixian Main Battle Tank\nCombines the best of the base variants\nHarkonnen Hull, Atreides Turret and Ordos Gun\n  Strong vs Tanks\n  Weak vs Infantry
     Armament:
 		Weapon: 80mm_O   
-        
+    -SpawnActorOnDeath:
+    
 combat_siege_tank:
 	Inherits: ^combat_tank
     Inherits@bot: ^BotMicromanageable
@@ -4923,6 +5007,7 @@ combat_siege_tank:
 		RecoilRecovery: 19
 		LocalOffset: 256,0,320
 		MuzzleSequence: muzzle
+        MuzzlePalette: d2keffect   
         PauseOnCondition: !ammo
 	Mobile:
 		Speed: 85

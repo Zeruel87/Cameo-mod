@@ -1,6 +1,6 @@
 #   https://www.unitstatistics.com/warcraft/
-#   10HP WC1= 1200 ORA
-#   1 DMG WC1 = 100 ORA
+#   10HP WC1= 1800 ORA
+#   1 DMG WC1 = 150 ORA
 #   1 Armor point WC1 = 10% armor ORA
 
 ^Burnable:
@@ -225,7 +225,6 @@ HBAR:
 	ProvidesPrerequisite:
 	Buildable:
 		BuildPaletteOrder: 12
-		Prerequisites: hth
 		Queue: Building.human
 		Description: Trains basic infantry and knights
 	Building:
@@ -588,6 +587,7 @@ HSTO:
 		Queue: Building.human
 		BuildDuration: 330
 		Description: Provides Superweapon
+        BuildLimit: 1
 	Building:
 		Footprint: xxx xxx xxx ===
 		Dimensions: 3,4
@@ -601,9 +601,60 @@ HSTO:
 	SpawnActorsOnSell:
 		ActorTypes: hfoo
 	ScalePowerWithHealth:
+    SpawnActorPower:
+		AllowMultiple: True
+		OrderName: rainoffire
+		Icon: rainoffire_icon
+		Description: Rain Of Fire
+		LongDesc: This is a very powerful spell that combines the natures of flame and water.\nIt calls forth the essence of fire and delivers it through\nmassive thunderheads of vapor and brimstone, creating an actual firestorm.\nThis spell is very destructive, and will cause damage to any\nfoes and buildings in its sphere of influence.\nUse this spell with care, for the rain of fire knows no friends.
+		Prerequisites: ~techlevel.superweapons
+		ChargeInterval: 9000
+		LifeTime: -1
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayTimerStances: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		Actor: rainoffire
+		SupportPowerPaletteOrder: 20  
     Voiced:
 		VoiceSet: humanStormwindVoice 
-    
+
+rainoffire:
+	Inherits@1: ^ExistsInWorld
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bot: ^BotMicromanageable
+	-UpdatesPlayerStatistics:
+	BodyOrientation:
+        QuantizedFacings: 1
+	OwnerLostAction:
+		Action: Kill
+	HiddenUnderFog:
+		Type: CenterPosition
+	HitShape:
+	Aircraft:
+		CruiseAltitude: 7000
+		Speed: 1000
+        MaximumPitch: 2000
+		Repulsable: false
+		VTOL: true
+		CanHover: true
+		CanSlide: true
+		CanForceLand: false
+	Armament:
+		Weapon: rainoffire
+        LocalOffset: 200,4000,90, -900,-4200,90, 900,10000,30, 4000,-800,60, -2600,500,-30, 6600,500,40, 500,500,60, 1000,1300,50
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 9999
+	AttackMove:
+	AttackOmni:
+        ForceFireIgnoresActors: true
+	AttackWander:
+		WanderMoveRadius: 9999
+	KillsSelf:
+		RemoveInstead: true
+		Delay: 600
+        
 ####################################################################################################
 #		BUILDING ORC
 ####################################################################################################
@@ -756,9 +807,60 @@ wc_o_blackrockspire:
 		Queue: Building.orc
 	SpawnActorsOnSell:
 		ActorTypes: wc_o_grunt
+    SpawnActorPower:
+		AllowMultiple: True
+		OrderName: poisoncloud
+		Icon: poisoncloud_icon
+		Description: Poison Cloud
+		LongDesc: The caster creates a cloud comprised of brimstone,\nacid, and poisonous gases to envelop and choke his targets.\nThis foul stench eats through anything that stands in its way,\nand chokes the very life out of anyone unlucky enough to be in its path.\nIt is a mix of the sickly stench of rotting corpses and the essence of evil,\ndesigned to decay and corrode all that it comes in contact with.
+		Prerequisites: ~techlevel.superweapons
+		ChargeInterval: 9000
+		LifeTime: -1
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayTimerStances: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		Actor: poisoncloud
+		SupportPowerPaletteOrder: 20     
     Voiced:
 		VoiceSet: orcBlackrockVoice 
-    
+   
+poisoncloud:  
+	Inherits@1: ^ExistsInWorld
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bot: ^BotMicromanageable
+	-UpdatesPlayerStatistics:
+	BodyOrientation:
+        QuantizedFacings: 1
+	OwnerLostAction:
+		Action: Kill
+	HiddenUnderFog:
+		Type: CenterPosition
+	Aircraft:
+		CruiseAltitude: 7000
+		Speed: 1000
+        MaximumPitch: 2000
+		Repulsable: false
+		VTOL: true
+		CanHover: true
+		CanSlide: true
+		CanForceLand: false
+	HitShape:
+	Armament:
+        LocalOffset: 200,4000,90, -900,-4200,90, 900,10000,30, 4000,-800,60, -2600,500,-30, 6600,500,40, 500,500,60, 1000,1300,50
+		Weapon: poisoncloud
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 9999
+	AttackMove:
+	AttackOmni:
+        ForceFireIgnoresActors: true
+   	AttackWander:
+		WanderMoveRadius: 9999     
+	KillsSelf:
+		RemoveInstead: true
+		Delay: 1000
+        
 ####################################################################################################
 #		UNIT human
 ####################################################################################################
@@ -794,7 +896,7 @@ HPEA:
 	Mobile:
 		Speed: 100
 	Health:
-		HP: 4800
+		HP: 7200
 	#Food
 	Power:
 		Amount: -1
@@ -835,7 +937,7 @@ HFOO:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 7200
+		HP: 10800
     DamageMultiplier@armor:
         Modifier: 80       
    	Armor:
@@ -880,7 +982,7 @@ HARC:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 7200
+		HP: 10800
 	#Food
 	Power:
 		Amount: -1
@@ -933,7 +1035,7 @@ HKNI:
   	Armor:
 		Type: Medium      
 	Health:
-		HP: 10800
+		HP: 16200
     DamageMultiplier@armor:
         Modifier: 50           
 	#Food
@@ -973,14 +1075,14 @@ HCAT:
 	Armor:
 		Type: Light        
 	Health:
-		HP: 14400
+		HP: 21600
 	#Food
 	Power:
-		Amount: -2
+		Amount: -3
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
-		Weapon: catapultFire
+		Weapon: catapultfire
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	WithInfantryBody:
@@ -1010,7 +1112,7 @@ HCON:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 4800
+		HP: 7200
   	Armor:
 		Type: None      
 	#Food
@@ -1018,27 +1120,20 @@ HCON:
 		Amount: -1
 	AutoTarget:
 		ScanRadius: 4
-    AmmoPool@1:
-        Armaments: summon1
-        AmmoCondition: reloaded
-    ReloadAmmoPool@1:
-        Delay: 800
-        Count: 1
-	Armament:
+    Armament:
+		Weapon: summon1_conjurer       
+	Armament@1:
 		Weapon: fireballConjurer
-  	Armament@1:
-		Weapon: summon1_conjurer      
-        PauseOnCondition: !reloaded
-        Name: summon1
-    ReloadArmamentsBar@1:
-        Armaments: summon1
+    Armament@2:
+        Weapon: summon2_elemental
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
     Voiced:
-		VoiceSet: voiceHuman          
+		VoiceSet: voiceHuman     
+        
 HCLE:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
@@ -1060,7 +1155,7 @@ HCLE:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 4800
+		HP: 7200
  	Armor:
 		Type: None       
 	#Food
@@ -1112,14 +1207,20 @@ HSCO:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 3600
+		HP: 14400
     Armor:
 		Type: None
 	#Food
 	Power:
 		Amount: 0
-	AutoTarget:
-		ScanRadius: 4
+    ChangesHealth:
+        PercentageStep: -2
+        Step: 0
+        Delay: 20
+        StartIfBelow: 100
+    AutoTarget:
+        InitialStance: AttackAnything
+		ScanRadius: -1
 	Armament:
 		Weapon: scorpionSlice
 	WithDeathAnimation:
@@ -1142,17 +1243,23 @@ wc_h_waterelemental:
 		AddToArmyValue: true
 	Mobile:
 		Speed: 56
+    ChangesHealth:
+        PercentageStep: -2
+        Step: 0
+        Delay: 20
+        StartIfBelow: 100    
 	Health:
-		HP: 30000
+		HP: 45000
     Armor:
 		Type: None
 	#Food
 	Power:
 		Amount: 0
-	AutoTarget:
-		ScanRadius: 4
+    AutoTarget:
+        InitialStance: AttackAnything
+		ScanRadius: -1
 	Armament:
-		Weapon: waterElementalFire
+		Weapon: waterelementalFire
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	WithInfantryBody:
@@ -1237,8 +1344,12 @@ wc_o_warlock:
 		Prerequisites: wc_o_tower
 		Queue: Aircraft.orc
 		Description: Spell Caster.
-	Armament:
+    Armament:
+        Weapon: summon1_spider
+	Armament@1:
 		Weapon: fireballWarlock
+    Armament@2:
+        Weapon: summon2_daemon     
     Voiced:
 		VoiceSet: voiceOrc       
        
@@ -1272,14 +1383,19 @@ wc_o_skeleton:
 		Name: Skeleton
 	Armament:
 		Weapon: skeletonSlice
+    AutoTarget:
+        InitialStance: AttackAnything
+		ScanRadius: -1     
         
 wc_o_demon:
-	Inherits@WE: wc_h_waterelemental
+	Inherits@WD: wc_h_waterelemental
 	Tooltip:
 		Name: Demon
 	Armament:
 		Weapon: demonSlice
-    
+    AutoTarget:
+        InitialStance: AttackAnything
+		ScanRadius: -1
 #######################################################
 #                     UPGRADES                        #
 #######################################################     
