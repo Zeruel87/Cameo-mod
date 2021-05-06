@@ -64,7 +64,16 @@
 	-DeathSounds@POISONED:
 	-DeathSounds@ZAPPED:				
 	-Explodes@Mutate:
-
+    SpeedMultiplier@ordos-stealth-bonus:
+        Modifier: 125
+        RequiresCondition: cloakordos && cloaked
+    GrantConditionOnPrerequisite@ordos:
+        Prerequisites: faction.ordos
+        Condition: cloakordos
+    ProductionCostMultiplier:     
+        Multiplier: 90
+        Prerequisites: faction.mercenary
+        
 ^D2KPlane:
     Inherits@plane: ^Plane
     Aircraft:
@@ -92,6 +101,12 @@
 		Type: Footprint
 		Weapon: D2kBuildingExplode
 		EmptyWeapon: D2kBuildingExplode
+        RequiresCondition: !harkonnenexplode      
+    Explodes@harkonnen:
+    	Type: Footprint
+		Weapon: D2kBuildingExplodeH
+		EmptyWeapon: D2kBuildingExplodeH
+        RequiresCondition: harkonnenexplode   
 	RepairableBuilding:
 		RepairStep: 500
 		PlayerExperience: 25
@@ -124,7 +139,16 @@
 		Terrain: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road
 		DamageThreshold: 30
 		StartOnThreshold: false    
-        RequiresCondition: !botmicro
+        RequiresCondition: !botmicro || !nodecay
+    GrantConditionOnPrerequisite@Tleilaxu:
+        Condition: nodecay
+        Prerequisites: faction.tleilaxu
+    GrantConditionOnPrerequisite@HARKONNENFACTION:
+        Condition: harkonnenexplode
+        Prerequisites: faction.harkonnen     
+    ProductionTimeMultiplier@ATREIDESBUILD:
+        Prerequisites: faction.atreides
+        Multiplier: 85
         
 ^D2kUpgradeable:
 	GrantConditionOnPrerequisite@UPGRADEABLE:
@@ -244,10 +268,21 @@
     GrantConditionOnPrerequisite@FREMENFACTION:
         Condition: faction.fremen
         Prerequisites: faction.fremen
+    GrantConditionOnPrerequisite@HARKONNENFACTION:
+        Condition: harkonnenexplode
+        Prerequisites: faction.harkonnen     
     AttractsWorms@fremen:
         Intensity: 0
         RequiresCondition: faction.fremen
-        
+    SpeedMultiplier@ordos-stealth-bonus:
+        Modifier: 125
+        RequiresCondition: cloakordos && cloaked
+    GrantConditionOnPrerequisite@ordos:
+        Prerequisites: faction.ordos
+        Condition: cloakordos    
+    ProductionCostMultiplier:     
+        Multiplier: 90
+        Prerequisites: faction.mercenary 
 ^D2KTank:
 	Inherits@D2KV: ^D2KVehicle
 	Mobile:
@@ -333,7 +368,22 @@
 	RenderSprites:
 		PlayerPalette: raplayer
 		Scale: 1.25
+
+^D2K_Ix_technology:
+    Mobile:
+        PauseOnCondition: disabled || ixdisable
+
+^D2K_Ix_Turret_EMP:
+    Inherits: ^D2K_Ix_technology
+    AttackTurreted:
+		PauseOnCondition: disabled || ixdisable
         
+^D2K_Ix_Frontal_EMP:
+    Inherits: ^D2K_Ix_technology
+	AttackFrontal:
+		FacingTolerance: 2
+		PauseOnCondition: disabled || ixdisable
+
 ###########################################
 #   BUILDINGS
 ###########################################
@@ -447,7 +497,6 @@ construction_yard:
 		ProductionType: Defence.d2k               
 	Power:
 		Amount: 20
-    -DamagedByTerrain:
 	RenderSprites:
 		Image: conyard.ordos
 		FactionImages:
@@ -616,7 +665,7 @@ wind_trap:
 		Prerequisites: faction.mercenary
 		Condition: wt_upg
     PowerMultiplier@wt_upg:
-        Modifier: 150
+        Modifier: 125
         RequiresCondition: wt_upg       
 	Armor:
 		Type: Wood
@@ -813,7 +862,7 @@ refinery:
 	ProvidesPrerequisite@buildingname:
     ThrowsShrapnel:
 		Weapons: Debris, Debris2, Debris3
-		Pieces: 2, 4
+		Pieces: 5, 8
 		Range: 1c512, 2c768  
     -WithDeathAnimation:    
     SpawnActorOnDeath@death1:
@@ -839,7 +888,7 @@ d2k_silo:
 	Selectable:
 		Bounds: 32, 32
 	Valued:
-		Cost: 120
+		Cost: 150
 	Tooltip:
 		Name: Silo
 	RequiresBuildableArea:
@@ -937,7 +986,7 @@ d2k_silo_tleilaxu:
         Actor: facedancer_harv
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 3, 5
+		Pieces: 3, 6
 		Range: 1c512, 2c768
     -WithIdleOverlay@TOP:
 	-WithDockedOverlay@SMOKE:
@@ -1043,7 +1092,7 @@ light_factory:
     -WithDeathAnimation:
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 3, 5
+		Pieces: 3, 7
 		Range: 1c512, 2c768
     SpawnActorOnDeath@death1:
         Actor: light_inf
@@ -1156,7 +1205,7 @@ heavy_factory:
     -WithDeathAnimation:
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 3, 5
+		Pieces: 6, 9
 		Range: 1c512, 2c768  
     SpawnActorOnDeath@death1:
         Actor: light_inf
@@ -1234,7 +1283,7 @@ outpost:
     -WithDeathAnimation:
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 3, 5
+		Pieces: 5, 9
 		Range: 1c512, 2c768 
     SpawnActorOnDeath@death1:
         Actor: light_inf
@@ -1331,7 +1380,7 @@ starport:
     -WithDeathAnimation:
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 3, 5
+		Pieces: 5, 8
 		Range: 1c512, 2c768
     SpawnActorOnDeath@death1:
         Actor: light_inf
@@ -1415,7 +1464,7 @@ wall:
 		EmptyWeapon: WallExplode
 	ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 1, 1
+		Pieces: 1, 2
 		Range: 1c512, 2c768
 	HitShape:
 		Type: Rectangle
@@ -1434,12 +1483,11 @@ medium_gun_turret:
 	Buildable:
 		Queue: Defence.d2k
 		Prerequisites: d2k_barracks, ~factionselected, ~!faction.smugglers, upgrade.barracks
-		BuildPaletteOrder: 510
+		BuildPaletteOrder: 550
 		BuildDuration: 268
 		BuildDurationModifier: 100
 		Description: Defensive structure.\nDetector.\n  Strong vs Tanks\n  Weak vs Infantry, Aircraft
-        IconPalette: d2kunit    
-    -DamagedByTerrain:        
+        IconPalette: d2kunit         
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -1483,7 +1531,7 @@ medium_gun_turret:
     -WithDeathAnimation:
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 1, 2
+		Pieces: 2, 4
 		Range: 1c512, 2c768 
     SpawnActorOnDeath@death1:
         Actor: light_inf  
@@ -1493,9 +1541,10 @@ artillery_platform:
     Buildable:
 		Queue: Defence.d2k
 		Prerequisites: ~conyard.ordos, d2k_barracks, ~factionselected, ~!faction.smugglers 
+        BuildPaletteOrder: 510
         Description: Defensive structure.\nDetector.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
     Health:
-		HP: 25000
+		HP: 20000
     Valued:
 		Cost: 600
 	Tooltip:
@@ -1511,6 +1560,7 @@ machine_gun_turret:
     Buildable:
     	Queue: Defence.d2k
 		Prerequisites: ~conyard.atreides, d2k_barracks, ~factionselected, ~!faction.fremen 
+        BuildPaletteOrder: 510
         Description: Defensive structure.\nDetector.\n  Strong vs Infantry\n  Weak vs Tanks     
     Health:
 		HP: 30000
@@ -1525,11 +1575,13 @@ machine_gun_turret:
 		LocalOffset: 256,0,576
 		MuzzleSequence: muzzle
         MuzzlePalette: d2keffect    
+        
 flame_turret:
     Inherits: medium_gun_turret  
     Buildable:
         Queue: Defence.d2k
         Prerequisites: ~conyard.harkonnen, d2k_barracks, ~factionselected
+        BuildPaletteOrder: 510    
         Description: Defensive structure.\nDetector.\n  Strong vs Infantry, Vehicles, Tanks\n  Weak vs Siege
     Health:
 		HP: 25000
@@ -1556,8 +1608,7 @@ large_gun_turret:
 		BuildDuration: 312
 		BuildDurationModifier: 100
 		Description: Defensive structure.\nDetector.\n  Strong vs Infantry, Aircraft\n  Weak vs Tanks\n\n  Requires power to operate.
-        IconPalette: d2kunit       
-    -DamagedByTerrain:       
+        IconPalette: d2kunit         
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -1598,7 +1649,7 @@ large_gun_turret:
     -WithDeathAnimation:       
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 2, 3
+		Pieces: 3, 5
 		Range: 1c512, 2c768
     SpawnActorOnDeath@death1:
         Actor: light_inf
@@ -1623,7 +1674,7 @@ d2k_mine_ap:
 		OverridePalette: placebuilding 
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 2, 3
+		Pieces: 2, 4
 		Range: 1c512, 2c768     
         
 d2k_mine_at:
@@ -1646,7 +1697,7 @@ d2k_mine_at:
 		OverridePalette: placebuilding   
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 3, 4
+		Pieces: 3, 5
 		Range: 1c512, 2c768  
         
 repair_pad:
@@ -1706,7 +1757,7 @@ repair_pad:
     -WithDeathAnimation:
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 2, 3
+		Pieces: 4, 6
 		Range: 1c512, 2c768  
     SpawnActorOnDeath@death1:
         Actor: light_inf
@@ -1821,7 +1872,7 @@ high_tech_factory:
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		Strikes: 3
-		CircleDelay: 30
+		CircleDelay: 25
 		OrderName: ornistrike
 		SupportPowerPaletteOrder: 20
 		Prerequisites: ~conyard.atreides, ~techlevel.superweapons, upgrade.hightech, ~faction.atreides
@@ -1832,7 +1883,7 @@ high_tech_factory:
     -WithDeathAnimation:
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 3, 4
+		Pieces: 7, 10
 		Range: 1c512, 2c768  
     SpawnActorOnDeath@death1:
         Actor: light_inf
@@ -1845,7 +1896,7 @@ high_tech_factory:
         
 research_centre:
 	Inherits: ^D2KBuilding
-    Inherits@D2KSprite: ^D2KPaletteRender   
+    Inherits@D2KSprite: ^D2KPaletteRender  
 	Buildable:
 		Queue: Building.d2k
 		Prerequisites: outpost, heavy_factory, upgrade.heavy, ~techlevel.high, ~factionselected 
@@ -1890,13 +1941,21 @@ research_centre:
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-lights
+    CashTrickler:
+		Interval: 125
+		Amount: 80   
+        RequiresCondition: ixcash
+    GrantConditionOnPrerequisite@ixianfact:
+        Condition: ixcash
+        Prerequisites: faction.ixian
 	Power:
 		Amount: -175
 	ProvidesPrerequisite@buildingname:
+        RequiresCondition: !ixdisable
     -WithDeathAnimation:
     ThrowsShrapnel:
 		Weapons: Debris2, Debris3
-		Pieces: 3, 4
+		Pieces: 8, 12
 		Range: 1c512, 2c768     
     SpawnActorOnDeath@death1:
         Actor: light_inf
@@ -1906,8 +1965,8 @@ research_centre:
         Actor: light_inf
     SpawnActorOnDeath@death4:
         Actor: trooper     
-        
-        
+    ExternalCondition@ixdisable:    
+        Condition: ixdisable
 palace:
 	Inherits: ^D2KBuilding
 	Inherits@IDISABLE: ^D2KDisableOnLowPowerOrPowerDown
@@ -1918,7 +1977,7 @@ palace:
 		BuildPaletteOrder: 620
 		BuildDuration: 937
 		BuildDurationModifier: 100
-		Description: Unlocks elite infantry and weapons.\nCan be only built once.
+		Description: Unlocks elite infantry and weapons.\nGrants pasive income\nCan be only built once.
         IconPalette: d2kunit       
         BuildLimit: 1
 	Selectable:
@@ -2098,11 +2157,14 @@ palace:
 		Factions: ordos, mercenary, smuggler
 	SupportPowerChargeBar:
 		RequiresCondition: atreides || harkonnen || ordos
+    CashTrickler:
+		Interval: 125
+		Amount: 80    
 	ProvidesPrerequisite@buildingname:
     -WithDeathAnimation:
     ThrowsShrapnel:
 		Weapons: Debris, Debris2, Debris3
-		Pieces: 3, 4
+		Pieces: 8, 14
 		Range: 1c512, 2c768  
     SpawnActorOnDeath@death1:
         Actor: trooper
@@ -2123,7 +2185,7 @@ palace_emperor:
 		BuildPaletteOrder: 620
 		BuildDuration: 937
 		BuildDurationModifier: 100
-		Description: Trains Emperor's Elite Sardaukars.\nCan be only built once.
+		Description: Trains Emperor's Elite Sardaukars.\nGrants pasive income\nCan be only built once.
         IconPalette: d2kunit  
         BuildLimit: 1
 	Selectable:
@@ -2185,7 +2247,7 @@ palace_emperor:
 		StartFullyCharged: true     
     ThrowsShrapnel:
 		Weapons: Debris, Debris2, Debris3
-		Pieces: 3, 4
+		Pieces: 9, 15
 		Range: 1c512, 2c768   
     SpawnActorOnDeath@death1:
         Actor: mpsardaukar
@@ -2197,6 +2259,9 @@ palace_emperor:
         Actor: mpsardaukar   
     SpawnActorOnDeath@death5:
         Actor: mpsardaukar     
+    CashTrickler:
+		Interval: 110
+		Amount: 125  
         
 conyard.atreides:
 	Inherits: construction_yard
@@ -2465,6 +2530,7 @@ fremen:
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
         Palette: d2kcloak
+        CloakedCondition: cloaked
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical  
@@ -2569,7 +2635,7 @@ contaminator:
         Delay: 25
         PercentageStep: 5
         StartIfBelow: 100
-        
+
 facedancer_harv:
     Inherits@harv: ^Harvester
     Inherits: facedancer
@@ -2717,7 +2783,7 @@ saboteur:
 		Queue: Infantry.d2k, Infantry.X_Infantry
 		BuildPaletteOrder: 100
 		Prerequisites: ~disabled
-		Description: Sneaky stealth infantry that can infiltrate safely, armed with explosives that can be attached to vehicles and buildings\n  Strong vs Buildings\n  Weak vs Everything\n  Special Abilities: Destroy Buildings, Invisibility
+		Description: Sneaky stealth infantry that can infiltrate safely, armed with explosives that can be attached to vehicles and buildings\nExplodes upon death\n  Strong vs Buildings\n  Weak vs Everything\n  Special Abilities: Destroy Buildings, Invisibility
         IconPalette: d2kunit         
 	Valued:
 		Cost: 300 ## actually 0, but spawns from support power at Palace
@@ -2738,6 +2804,7 @@ saboteur:
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
         Palette: d2kcloak
+        CloakedCondition: cloaked
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -2747,7 +2814,10 @@ saboteur:
 	Voiced:
 		VoiceSet: D2KSaboteurVoice
 	AttackFrontal:
-
+	Explodes:
+		Weapon: SaboDeath
+		EmptyWeapon: SaboDeath
+        
 nsfremen:
 	Inherits: fremen
 	Tooltip:
@@ -2932,12 +3002,12 @@ d2k_drone:
         InitialDelay: 30
 		CloakDelay: 30
         UncloakOn: Unload, Demolish, Dock, Heal, Attack    
-        CloakedCondition: healself
+        CloakedCondition: cloaked
     ChangesHealth:
         Delay: 10
         PercentageStep: 10
         StartIfBelow: 100
-        RequiresCondition: healself
+        RequiresCondition: cloaked
     Armament@primary:
 		Weapon: DroneJump
      	PauseOnCondition: attacking || attack-cooldown  
@@ -2976,7 +3046,7 @@ d2k_drone_h:
         InitialDelay: 30
 		CloakDelay: 45
         UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
-        CloakedCondition: 
+        CloakedCondition: cloaked
     Armament@primary:
 		Weapon: DroneJumpH
      	PauseOnCondition: attacking || attack-cooldown  
@@ -3088,7 +3158,7 @@ rocketeer_o:
         InitialDelay: 60
 		CloakDelay: 60
         UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
-        CloakedCondition: healself   
+        CloakedCondition: cloaked   
     Health:
 		HP: 6000
     Armor:
@@ -3176,6 +3246,7 @@ d2k_sniper:
 		PauseOnCondition: cloak-force-disabled
         UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Move
         Palette: racloak
+        CloakedCondition: cloaked
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -3256,6 +3327,7 @@ flamethrower:
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
         Palette: racloak
+        CloakedCondition: cloaked
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -3297,6 +3369,7 @@ d2k_hijacker:
 		CloakTypes: Cloak, Hijacker
 		Palette: racloak
 		IsPlayerPalette: true      
+        CloakedCondition: cloaked
 	Crushable:
 		WarnProbability: 80
 	Mobile:
@@ -3495,6 +3568,7 @@ d2k_stealth_tank:
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
     Inherits@EXT: ^ExternalConditions   
+    Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	AutoTarget:
 		InitialStance: HoldFire
 		InitialStanceAI: ReturnFire
@@ -3530,6 +3604,7 @@ d2k_stealth_tank:
 		Palette: cnccloak
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
+        CloakedCondition: cloaked
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -3677,7 +3752,7 @@ d2k_stealth_apc:
 		PauseOnCondition: cloak-force-disabled
         UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
       	Palette: racloak         
-    
+        CloakedCondition: cloaked
 d2k_mcv:
 	Inherits@D2KT: ^D2KTank
 	Inherits@selection: ^SelectableSupportUnit
@@ -3736,17 +3811,18 @@ d2k_jammer:
 	Inherits@D2KT: ^D2KTank
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@EXT: ^ExternalConditions
+    Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Valued:
 		Cost: 800
 	Tooltip:
-		Name: Jammer
+		Name: Ix Jammer
 	Buildable:
 		Queue: Armor.d2k, Vehicle.X_Vehicles
 		BuildPaletteOrder: 80
 		BuildDuration: 562
 		BuildDurationModifier: 100
 		Prerequisites: research_centre, ~techlevel.medium, ~faction.ixian
-		Description: Jams nearby enemy outposts\nand deflects incoming missiles.\nCan detect cloaked units.\nCan disable enemy vehicles with EMP.\n  Special Ability: Invisibility
+		Description: Jams nearby enemy outposts and Ixian technologies in enemy hands\nDeflects incoming missiles.\nCan detect cloaked units.\nCan disable enemy vehicles with EMP.\n  Special Ability: Invisibility, Security Measure
 	    IconPalette: d2kunit      
     Health:
 		HP: 20000
@@ -3768,6 +3844,10 @@ d2k_jammer:
 		Type: jammer
 		Range: 18c0
 		Color: 0000FF80
+    ProximityExternalCondition@IXDISABLE:
+		Range: 18c0
+		ValidStances: Enemy, Neutral
+		Condition: ixdisable   
 	Armament@Anim:
 		Weapon: empdisable.anim
 		RequiresCondition: end_disable == 0
@@ -3808,7 +3888,7 @@ d2k_jammer.husk:
 	Health:
 		HP: 10000
 	Tooltip:
-		Name: Destroyed Jammer
+		Name: Destroyed Ix Jammer
 	ThrowsParticle@spinner:
 		Anim: spinner
 	TransformOnCapture:
@@ -3904,7 +3984,7 @@ ornithopter:
 		Repulsable: False
 		CruiseAltitude: 1920
 	AmmoPool:
-		Ammo: 5
+		Ammo: 6
 	Tooltip:
 		Name: Ornithopter
 	SpawnActorOnDeath:
@@ -3944,11 +4024,11 @@ ornithopter.controllable:
 		HP: 24000
 	AmmoPool:
         Name: primary
-		Ammo: 5
+		Ammo: 6
 		AmmoCondition: ammo
 	ReloadAmmoPool:
 		Delay: 300
-		Count: 5
+		Count: 6
 		ResetOnFire: false
 	AttackAircraft:
         AttackType: Strafe
@@ -4128,11 +4208,14 @@ harvester:
 		Speed: 43
 	RevealsShroud:
 		Range: 3c768
-    GrantConditionOnPrerequisite@Remote:
+    GrantConditionOnPrerequisite@smugglerharv:
 		Prerequisites: faction.smugglers
 		Condition: harv_spd
+    GrantConditionOnPrerequisite@ixianharv:
+		Prerequisites: faction.ixian
+		Condition: harv_cloak   
     SpeedMultiplier@harv_upg:
-        Modifier: 125
+        Modifier: 140
         RequiresCondition: harv_spd
 	Explodes:
 		Weapon: D2KUnitExplodeLarge
@@ -4153,6 +4236,15 @@ harvester:
 	-RevealOnFire:
     Cloak@TDcloak:
         Palette: d2kcloak
+    Cloak:
+		InitialDelay: 80
+		CloakDelay: 80
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled
+        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
+      	Palette: d2kcloak         
+        CloakedCondition: cloaked 
+        RequiresCondition: harv_cloak
         
 trike:
 	Inherits@D2KV: ^D2KVehicle
@@ -4373,7 +4465,7 @@ siege_tank:
 
 siege_tank_ixian:
     Inherits: siege_tank
-    Inherits@EMP: ^TurretEMP
+    Inherits@IXEMP: ^D2K_Ix_Turret_EMP
     -AttackFrontal:
     Buildable:
 		Prerequisites: upgrade.heavy, ~techlevel.medium, ~faction.ixian, research_centre
@@ -4405,6 +4497,7 @@ siege_tank_ixian:
 		UncloakOn: Attack, infiltrate, damage
 		IsPlayerPalette: true
         Palette: d2kcloak         
+        CloakedCondition: cloaked
     AttackTurreted: 
     -SpawnActorOnDeath:
     
@@ -4414,7 +4507,7 @@ missile_tank:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender   
  	Inherits@EXT: ^ExternalConditions 
-	Inherits@EMP: ^FrontalEMP    
+    Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Tooltip:
 		Name: Missile Tank
 	UpdatesPlayerStatistics:
@@ -4490,7 +4583,8 @@ missile_tank_ixian:
 		CloakDelay: 60
 		UncloakOn: Attack, infiltrate, damage
 		IsPlayerPalette: true
-        Palette: d2kcloak          
+        Palette: d2kcloak   
+        CloakedCondition: cloaked    
     RenderSprites:
         Image: missile_tank
     -SpawnActorOnDeath:    
@@ -4501,7 +4595,7 @@ sonic_tank:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender   
  	Inherits@EXT: ^ExternalConditions   
- 	Inherits@EMP: ^FrontalEMP   
+    Inherits@IXEMP: ^D2K_Ix_Frontal_EMP  
 	Buildable:
 		Queue: Armor.d2k, Vehicle.X_Vehicles
 		BuildPaletteOrder: 100
@@ -4547,7 +4641,7 @@ devastator:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender    
  	Inherits@EXT: ^ExternalConditions   
- 	Inherits@EMP: ^FrontalEMP   
+ 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Buildable:
 		Queue: Armor.d2k, Vehicle.X_Vehicles
 		BuildPaletteOrder: 100
@@ -4704,6 +4798,7 @@ stealth_raider:
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
         Palette: d2kcloak     
+        CloakedCondition: cloaked
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
@@ -4755,6 +4850,7 @@ rocket_raider:
 		UncloakOn: Attack, Unload
 		IsPlayerPalette: true
         Palette: d2kcloak     
+        CloakedCondition: cloaked
     Armament@damage:
 		Weapon: D2K_Bazooka2
 		LocalOffset: 170,0,0  
@@ -4765,6 +4861,7 @@ rocket_raider:
 
 rocket_raider_ixian:
     Inherits: rocket_raider
+    Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
     Tooltip:
 		Name: Ix Raider   
     Valued: 
@@ -4817,7 +4914,7 @@ deviator:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@D2KSprite: ^D2KPaletteRender    
  	Inherits@EXT: ^ExternalConditions  
-    Inherits@EMP: ^FrontalEMP
+    Inherits@IXEMP: ^D2K_Ix_Frontal_EMP   
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -4953,6 +5050,7 @@ combat_tank_o:
 
 combat_tank_ixian:
     Inherits: combat_tank_h
+    Inherits@IXEMP: ^D2K_Ix_Turret_EMP
     Valued:
 		Cost: 700
     Tooltip:
@@ -5023,6 +5121,7 @@ combat_siege_tank:
 quake_tank:
     Inherits@BotMicro: ^BotMicromanageable
 	Inherits: ^D2KTank
+    Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Buildable:
 		Queue: Armor.d2k, Vehicle.X_Vehicles
 		BuildPaletteOrder: 90
@@ -5396,7 +5495,7 @@ upgrade.hightech:
 		Name: High Tech Factory Upgrade
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~hightech.atreides, ~techlevel.superweapons, ~faction.atreides
+		Prerequisites: ~hightech.atreides, ~techlevel.superweapons
 		Queue: Upgrade.d2k
 		BuildLimit: 1
 		BuildDuration: 720
@@ -5422,7 +5521,7 @@ faction.ordos:
 		BuildDuration: 0
 		BuildDurationModifier: 50
 		ForceFaction: ordos
-        Description: Wealthy House focused on speed and stealth. Its speciality is Deviator and Saboteur.
+        Description: Wealthy Insidious House focused on speed and stealth.\nSneaky bonus: Stealthed units moves 25% faster 
     Valued:
 		Cost: 0
 	RenderSprites:
@@ -5443,7 +5542,7 @@ faction.smugglers:
 		BuildLimit: 1
 		BuildDuration: 0
 		BuildDurationModifier: 50   
-        Description: House focused on smuggling other houses equipment.\nIts speciality is special Starport that can call other houses' special units.\nThey can plant Mines. Can build Starport two times.
+        Description: House focused on smuggling other houses equipment.\nIts speciality is special Starport that can call other houses' special units.\nThey can plant Mines.\nSmuggling bonus: Don't have to pay extra fee for Starport units
     Valued:
 		Cost: 0
 	RenderSprites:
@@ -5464,7 +5563,7 @@ faction.mercenary:
 		BuildLimit: 1
 		BuildDuration: 0
 		BuildDurationModifier: 50
-        Description: Contractors army - they join whoever pays the most. Its speciality is ability to call Mercs anywhere on map. Can build Starport two times.
+        Description: Contractors army - they join whoever pays the most. Its speciality is ability to call Mercs anywhere on map.\nContract bonus: All units are 10% cheaper
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -5472,7 +5571,7 @@ faction.mercenary:
 	ProvidesPrerequisite@upgradename:
     ProvidesPrerequisite@factionselected:
         Prerequisite: factionselected
-
+        
 faction.tleilaxu:
 	AlwaysVisible:
 	Interactable:
@@ -5485,9 +5584,9 @@ faction.tleilaxu:
 		BuildLimit: 1
 		BuildDuration: 0
 		BuildDurationModifier: 50 
-        Description: Genetic Engineers. They're small but handy. Its speciality are vehicles\nwith powerful weaponry sacrificing ammo storage for cargo space.\nThey also can build bases wherever they want and can summon Sandworms upon their enemies.
+        Description: Genetic Engineers. They're small but handy. Their speciality are vehicles\nwith powerful weaponry sacrificing ammo storage for cargo space.\n Unorthodox Building bonus: Can build anywhere near Face Dancer Workers
 	Valued:
-		Cost: 1500
+		Cost: 0
 	RenderSprites:
 		Image: faction.Tleilaxu
 	ProvidesPrerequisite@upgradename:
@@ -5506,7 +5605,7 @@ faction.atreides:
 		BuildLimit: 1
 		BuildDuration: 0
 		BuildDurationModifier: 50
-        Description: Noble house focused on technology. Its speciality are ornithopters\nproviding air superiority and their Allies, powerful native Fremen.
+        Description: Noble house focused on technology, balance and alliance. Its speciality are ornithopters\nproviding air superiority and their Allies, powerful native Fremen.\nQuick Build Bonus: All Buildings are built 15% faster
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -5527,7 +5626,7 @@ faction.fremen:
 		BuildLimit: 1
 		BuildDuration: 0
 		BuildDurationModifier: 50
-        Description: Natives of Arrakis. Its speciality are powerful soldiers, Fremen.\nFremen vehicles cannot be hurt by Sandworms.
+        Description: Natives of Arrakis. Its speciality are powerful soldiers, Fremen.\nNative Warriors bonus: Fremen units cannot attract Sandworms.
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -5549,7 +5648,7 @@ faction.ixian:
 		BuildDuration: 0
 		BuildDurationModifier: 50
         IconPalette: d2kunit
-        Description: Technology fanatics. Its speciality are their own enhanced variations of various vehicles.
+        Description: Technology fanatics. They craft forbidden technologies and sell it to other houses.\nIts speciality are their own enhanced variations of various vehicles\nand equipment capable of countering various threats.\nThey also possess unit Jammer that can disable enemy units based on Ixian technology\nNo special bonus 
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -5570,7 +5669,7 @@ faction.harkonnen:
 		BuildLimit: 1
 		BuildDuration: 0
 		BuildDurationModifier: 50
-        Description: House focused on raw power and superiority. Its speciality\nare powerful devastators and Death Hand Missile. 
+        Description: House focused on raw power and superiority. Its speciality\nare powerful devastators and Death Hand Missile.\nFor the Baron bonus: Building explosions are more powerful
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -5591,7 +5690,7 @@ faction.corrino:
 		BuildLimit: 1
 		BuildDuration: 0
 		BuildDurationModifier: 50
-        Description: House of the Emperor. Its speciality are well trained infantry\nwith elite Sardaukars which can be dropped anywhere on map. 
+        Description: House of the Emperor. Its speciality are well trained infantry\nwith elite Sardaukars which can be dropped anywhere on map.\nImperial bonus: All Infantry units are trained elite
 	Valued:
 		Cost: 0
 	RenderSprites:
@@ -5612,6 +5711,7 @@ wormspawner:
 	Immobile:
 		OccupiesSpace: false
 	RenderSpritesEditorOnly:
+        Palette: d2kunit
 	WithSpriteBody:
 	BodyOrientation:
 		QuantizedFacings: 1
@@ -5619,7 +5719,98 @@ wormspawner:
 	MapEditorData:
 		Categories: System
 
+force.atreides:
+	Interactable:
+	EditorOnlyTooltip:
+		Name: (Force House Atreides)
+	AlwaysVisible:
+    ProvidesPrerequisite@factionselect:
+        Prerequisite: factionselected
+    ProvidesPrerequisite@faction:
+        Prerequisite: faction.atreides
+	Immobile:
+		OccupiesSpace: false
+	RenderSpritesEditorOnly:
+        Image: faction.atreides
+        Scale: 0.5
+	WithSpriteBody:
+	BodyOrientation:
+		QuantizedFacings: 1
+	MapEditorData:
+		Categories: System
 
+force.fremen:
+    Inherits: force.atreides
+    EditorOnlyTooltip:
+		Name: (Force House Fremen)
+    ProvidesPrerequisite@faction:
+        Prerequisite: faction.fremen 
+    RenderSpritesEditorOnly:
+        Image: faction.fremen   
+
+force.ixian:
+    Inherits: force.atreides
+    EditorOnlyTooltip:
+		Name: (Force House Ixian)
+    ProvidesPrerequisite@faction:
+        Prerequisite: faction.ixian 
+    RenderSpritesEditorOnly:
+        Image: faction.ixian       
+
+force.harkonnen:
+    Inherits: force.atreides
+    EditorOnlyTooltip:
+		Name: (Force House Harkonnen)
+    ProvidesPrerequisite@faction:
+        Prerequisite: faction.harkonnen 
+    RenderSpritesEditorOnly:
+        Image: faction.harkonnen   
+
+force.corrino:
+    Inherits: force.atreides
+    EditorOnlyTooltip:
+		Name: (Force House Corrino)
+    ProvidesPrerequisite@faction:
+        Prerequisite: faction.corrino 
+    RenderSpritesEditorOnly:
+        Image: faction.corrino             
+               
+force.ordos:
+    Inherits: force.atreides
+    EditorOnlyTooltip:
+		Name: (Force House Ordos)
+    ProvidesPrerequisite@faction:
+        Prerequisite: faction.ordos 
+    RenderSpritesEditorOnly:
+        Image: faction.ordos  
+
+force.smugglers:
+    Inherits: force.atreides
+    EditorOnlyTooltip:
+		Name: (Force House Smugglers)
+    ProvidesPrerequisite@faction:
+        Prerequisite: faction.smugglers 
+    RenderSpritesEditorOnly:
+        Image: faction.smugglers
+
+force.mercenary:
+    Inherits: force.atreides
+    EditorOnlyTooltip:
+		Name: (Force House Mercenary)
+    ProvidesPrerequisite@faction:
+        Prerequisite: faction.mercenary 
+    RenderSpritesEditorOnly:
+        Image: faction.mercenary    
+
+force.tleilaxu:
+    Inherits: force.atreides
+    EditorOnlyTooltip:
+		Name: (Force House Tleilaxu)
+    ProvidesPrerequisite@faction:
+        Prerequisite: faction.tleilaxu 
+    RenderSpritesEditorOnly:
+        Image: faction.tleilaxu
+        
 #######################################
 #       HUSKS
 #######################################
@@ -5718,10 +5909,11 @@ combat_tank_o.husk:
 #####################################
 
 ^starport_unit:
-    ProductionCostMultiplier:
-		Multiplier: 125
+    ProductionCostMultiplier@expansive:
+		Multiplier: 135
+        Prerequisites: !faction.smugglers
     ProductionTimeMultiplier:
-        Multiplier: 10       
+        Multiplier: 15      
         
 mcv.starport:
 	Inherits: d2k_mcv
