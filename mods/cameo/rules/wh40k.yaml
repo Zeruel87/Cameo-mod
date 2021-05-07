@@ -423,7 +423,6 @@ wh40kpower:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@power: ^PowerPlant
-	Inherits@sell: ^RASpawnActorsOnSell
 	Selectable:
 		Bounds: 48,48
 	HitShape:
@@ -450,13 +449,24 @@ wh40kpower:
 		Range: 4c0
 	WithBuildingBib:
 	Power:
-		Amount: 200
+		Amount: 150
 	WithDeathAnimation:
 		DeathSequence: dead
 		UseDeathTypeSuffix: false
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
-
+	GrantConditionOnPrerequisite@wh40kupenergy1:
+		Condition: wh40kupenergy1
+		Prerequisites: wh40kupenergy1
+	GrantConditionOnPrerequisite@wh40kupenergy2:
+		Condition: wh40kupenergy2
+		Prerequisites: wh40kupenergy2
+	PowerMultiplier@wh40kupenergy1:
+		Modifier: 150
+		RequiresCondition: wh40kupenergy1
+	PowerMultiplier@wh40kupenergy2:
+		Modifier: 150
+		RequiresCondition: wh40kupenergy2
 wh40kbarr:
 	Inherits: ^BunkerBaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -779,7 +789,7 @@ wh40kproc:
 		DockOffset: 1,2
 	StoresResources:
 		PipCount: 17
-		Capacity: 1000		#2000
+		Capacity: 5000		#2000
 	DrawLineToTarget:
 	CustomSellValue:
 		Value: 500			#600
@@ -1114,6 +1124,37 @@ wh40kupfullscalewar:
 		Image: wh40kupfullscalewar
 	ProvidesPrerequisite:
 		Prerequisite: wh40kupfullscalewar
+wh40kupenergy1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Death before Dishonor
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Tactica.ImperialGuard
+		Description: Increases Guardsmens to 15% of health.
+		Prerequisites: ~!wh40kupenergy1
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: wh40kupenergy1
+	ProvidesPrerequisite:
+		Prerequisite: wh40kupenergy1
+wh40kupenergy2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Satellite Targeting Resolution
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Tactica.ImperialGuard
+		Description: Increases Guardsmens to 20% of shoot range.
+		Prerequisites: ~!wh40kupenergy2, wh40kupenergy1
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: wh40kupenergy2
+	ProvidesPrerequisite:
+		Prerequisite: wh40kupenergy2
+
 #######################################
 # Imperial Guard, Infantry
 #######################################
@@ -1387,6 +1428,7 @@ wh40kbigguns:
 	Inherits@anim: ^RA2Infantry
 	Inherits@editorhack: ^DeployableInfantryEditor
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -1399,6 +1441,7 @@ wh40kbigguns:
 	Mobile:
 		Speed: 50
 		RequireForceMoveCondition: !undeployed
+		Locomotor: critter
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
@@ -1474,13 +1517,16 @@ wh40kbigguns:
 		DeployTicks: 450
 		DeployTrigger: Attack
 	Voiced:
-		VoiceSet: GIVoice
+		VoiceSet: WH40KBigGunsVoice
 	DeliversCash:
 		Payload: 75
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
 	RenderSprites:
-		Scale: 1.2
+		Scale: 1.1
+	DamageMultiplier@deployed:
+		RequiresCondition: deployed
+		Modifier: 25
 wh40kbigguns2:
 	Inherits: wh40kbigguns
 	Buildable:
@@ -1537,6 +1583,8 @@ wh40kleman:
 	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 1800
+	Power:
+		Amount: -75
 	Tooltip:
 		Name: Leman Russ
 	UpdatesPlayerStatistics:
@@ -1553,7 +1601,7 @@ wh40kleman:
 	Passenger:
 		Weight: 4
 	Health:
-		HP: 118000
+		HP: 120000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -1585,7 +1633,8 @@ wh40kleman:
 		ValidTypes: vehicle								##########
 	RenderSprites:
 		Scale: 0.68
-
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
 wh40kchime:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1646,6 +1695,8 @@ wh40kchime:
 		ValidTypes: vehicle								##########
 	RenderSprites:
 		Scale: 0.68
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
 wh40khellhound:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1748,6 +1799,8 @@ wh40khellhound:
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
 		RequiresCondition: deployed && firewallcycle >= 1
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
 wh40kharv:
 	Inherits: ^Tank
 	Inherits@selection: ^SelectableEconomicUnit
@@ -1795,6 +1848,8 @@ wh40kharv:
 	Inherits@EXT: ^ExternalConditions					##########
 	RenderSprites:
 		Scale: 0.52
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
 wh40kbasilisk:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1844,7 +1899,8 @@ wh40kbasilisk:
 		ValidTypes: vehicle								##########
 	RenderSprites:
 		Scale: 0.68
-
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
 wh40ksentinel:
 	Inherits: ^Tank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -1892,8 +1948,6 @@ wh40ksentinel:
 		Prerequisites: vehicles.upgraded
 	Selectable:
 		DecorationBounds: 28,28
-	Voiced:
-		VoiceSet: RussianVehicleVoice
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
@@ -1902,6 +1956,8 @@ wh40ksentinel:
 		IdleSequences: idle
 	RenderSprites:
 		Scale: 0.72
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
 wh40kmaurader:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1952,13 +2008,17 @@ wh40kmaurader:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 30,24
-wh40kblaneblade:
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
+wh40kbaneblade:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 4000
+	Power:
+		Amount: -150
 	Tooltip:
 		Name: Baneblade
 	UpdatesPlayerStatistics:
@@ -1983,27 +2043,47 @@ wh40kblaneblade:
 		Type: Heavy
 	RevealsShroud:
 		Range: 6c0
-	WithSpriteTurret:
-	Turreted:
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -148,0,128
+		TurnSpeed: 3
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: -128,900,12
+		TurnSpeed: 3
+	Turreted@TIERTARY:
+		Turret: tiertary
+		Offset: -128,-900,12
 		TurnSpeed: 3
 	Armament@CANNON:
 		Weapon: WH40KLemanCannon
-		LocalOffset: 900,1,340, 900,-1,340
+		LocalOffset: 900,1,240, 900,-1,240
 		Recoil: 170
 		RecoilRecovery: 42
 		MuzzleSequence: muzzle
+		Turret: primary
 	Armament@PRIMARY:
 		Weapon: WH40KHeavyBolterMG
-		LocalOffset: 427,-171,-213, 427,171,-213
-		PauseOnCondition: !ammo
+		LocalOffset: 427,-32,32, 427,32,32
+		Turret: secondary
 	Armament@SECONDARY:
 		Weapon: WH40KHeavyBolterMG2
-		LocalOffset: 427,-171,-213, 427,171,-213
-		PauseOnCondition: !ammo
+		LocalOffset: 427,-32,32, 427,32,32
+		Turret: secondary
+	Armament@PRIMARY2:
+		Weapon: WH40KHeavyBolterMG
+		LocalOffset: 427,-32,32, 427,32,32
+		Turret: tiertary
+	Armament@SECONDARY2:
+		Weapon: WH40KHeavyBolterMG2
+		LocalOffset: 427,-32,32, 427,32,32
+		Turret: tiertary
 	Armament:
 		Weapon: WH40KSentinelCannon
 		LocalOffset: 768,12,20, 768,-12,20
+		Turret: primary
 	AttackTurreted:
+		Turrets: primary, secondary, tiertary
 	WithMuzzleOverlay:
 	SelectionDecorations:
 	Selectable:
@@ -2012,8 +2092,18 @@ wh40kblaneblade:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	RenderSprites:
-		Scale: 0.72
-
+		Scale: 0.60
+	WithSpriteTurret:
+	WithSpriteTurret@PRIMARY:
+		Turret: primary
+	WithSpriteTurret@SECONDARY:
+		Turret: secondary
+		Sequence: turret2
+	WithSpriteTurret@TIERTARY:
+		Turret: tiertary
+		Sequence: turret2
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
 #######################################
 # Orkz, Building
 #######################################
