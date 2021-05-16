@@ -149,7 +149,17 @@
     ProductionCostMultiplier@IXIANBUILD:
         Prerequisites: faction.ixian
         Multiplier: 135
-        
+    GrantConditionOnPrerequisite@FREMENFACTION:
+        Condition: faction.fremen
+        Prerequisites: faction.fremen
+    Cloak@fremen:
+		InitialDelay: 0
+		CloakDelay: 40
+		UncloakOn: Attack, Unload
+		IsPlayerPalette: true
+        Palette: d2kcloak     
+        CloakedCondition: cloaked   
+        RequiresCondition: faction.fremen    
 ^D2kUpgradeable:
 	GrantConditionOnPrerequisite@UPGRADEABLE:
 		Condition: stardecoration
@@ -633,7 +643,13 @@ construction_yard:
         Actor: trooper   
     SpawnActorOnDeath@death5:
         Actor: trooper
-        
+    CashTrickler:
+		Interval: 100
+		Amount: 50
+        RequiresCondition: mercenarycash
+    GrantConditionOnPrerequisite@merccash:
+        Condition: mercenarycash
+        Prerequisites: faction.mercenary      
 wind_trap:
 	Inherits: ^D2KBuilding
     Inherits@D2KSprite: ^D2KPaletteRender
@@ -1402,7 +1418,13 @@ starport_smuggler:
 		Cost: 1200
    	ProvidesPrerequisite@itself:
         Prerequisite: starport
-        
+    CashTrickler:
+		Interval: 125
+		Amount: 80   
+        RequiresCondition: smugglercash
+    GrantConditionOnPrerequisite@ixianfact:
+        Condition: smugglercash
+        Prerequisites: faction.smugglers   
 wall:
     Inherits@spriteactor: ^SpriteActor
     Inherits@D2KSprite: ^D2KPaletteRender
@@ -1872,6 +1894,7 @@ high_tech_factory:
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
+        DisplayTimerStances: Ally, Neutral, Enemy
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		Strikes: 3
@@ -1974,6 +1997,7 @@ palace:
 	Inherits: ^D2KBuilding
 	Inherits@IDISABLE: ^D2KDisableOnLowPowerOrPowerDown
     Inherits@D2KSprite: ^D2KPaletteRender    
+    Inherits@SW: ^PrimarySuperweapon
 	Buildable:
 		Prerequisites: research_centre, ~techlevel.high, ~factionselected, ~!faction.corrino, ~!faction.ixian, ~!faction.smugglers
 		Queue: Building.d2k
@@ -2008,6 +2032,9 @@ palace:
 			BottomRight: 1536, 1536
 	Armor:
 		Type: Concrete
+    RevealsShroud@showenemy:
+        Range: 4c0
+        ValidStances: Neutral, Enemy     
 	RevealsShroud:
 		Range: 4c768
 	RenderSprites:
@@ -2037,6 +2064,7 @@ palace:
 		Factions: corrino
 	#ProductionQueue:
 	#	RequiresCondition: atreides || ordos
+    SupportPowerChargeBar:
 	NukePower:
 		Cursor: nuke
 		Icon: deathhand
@@ -2061,6 +2089,7 @@ palace:
 		RemoveMissileOnDetonation: False
 		DisplayBeacon: True
 		DisplayRadarPing: True
+        DisplayTimerStances: Ally, Neutral, Enemy
 		CameraRange: 10c0
 		ArrowSequence: arrow
 		CircleSequence: circles
@@ -2070,19 +2099,44 @@ palace:
 		TrailSequences: idle
 		SupportPowerPaletteOrder: 40
         OrderName: deathhand
-	ProduceActorPower@fremen:
+	ProduceActorPower@atrfremen:
 		Description: Recruit Fremen
 		LongDesc: Fast Elite infantry units armed with assault rifles and machine guns. When grouped, they can take down buildings extremely quickly\n  Strong vs Buildings\n  Weak vs Infantry, Vehicles\n  Special Ability: Invisibility
 		Icon: fremen
         IconPalette: d2kunit         
 		PauseOnCondition: disabled
 		RequiresCondition: atreides
-		Prerequisites: ~techlevel.superweapons, ~palace.fremen
+		Prerequisites: ~techlevel.superweapons, ~faction.atreides
 		Actors: fremen, fremen, fremen
 		Type: Fremen
 		ChargeInterval: 1500
-		OrderName: callfremen
+		OrderName: callatrfremen
 		SupportPowerPaletteOrder: 20
+    ParatroopersPower@fremen:
+		PauseOnCondition: lowpower
+	    OrderName: callfremen
+		Icon: fremen 
+        IconPalette: d2kunit
+		ChargeInterval: 3000
+		Description: Fremen Paradrop
+		LongDesc: Drops 8 Stealth Fremen anywhere on the map
+		DropItems: fremen, fremen, fremen, fremen, fremen, fremen, fremen, fremen
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		Prerequisites: ~techlevel.superweapons, ~faction.fremen
+        QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		UnitType: carryall.paradrop
+		SquadSize: 3
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		StartFullyCharged: false 
 	ProduceActorPower@saboteur:
 		Description: Recruit Saboteur
 		LongDesc: Sneaky stealth infantry that can infiltrate safely, armed with explosives that can be attached to vehicles and buildings\n  Strong vs Buildings\n  Weak vs Everything\n  Special Abilities: Destroy Buildings, Invisibility
@@ -2104,11 +2158,11 @@ palace:
 		ChargeInterval: 4500
 		Description: Strike Team Paradrop
 		LongDesc: Carryall planes drops a Mercenary strike team\nanywhere on the map.
-		DropItems: light_inf, light_inf, light_inf, light_inf, trooper, trooper, light_inf, light_inf, trooper, trike, trike, trike, quad, quad, combat_tank_o, combat_tank_o
+		DropItems: light_inf, light_inf, light_inf, light_inf, light_inf, light_inf, light_inf, light_inf, trooper, trooper, trooper, trooper, light_inf, light_inf, trooper, trike, trike, trike, quad, quad, quad, combat_tank_o, combat_tank_o, siege_tank
 		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
 		SelectTargetSpeechNotification: SelectTarget
 		AllowImpassableCells: false
-		Prerequisites: ~faction.mercenary
+		Prerequisites: ~techlevel.superweapons, ~faction.mercenary
         QuantizedFacings: 8
 		CameraActor: camera.paradrop
 		DisplayBeacon: true
@@ -2128,6 +2182,7 @@ palace:
         IconPalette: d2kunit
 		ChargeInterval: 4500
 		Description: Wormsign
+        DisplayTimerStances: Ally, Neutral, Enemy
 		LongDesc: Summons sandworm anywhere on the map.\nThis Sandworm can devour vehicles and buildings
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -2191,6 +2246,9 @@ palace_emperor:
 		Description: Trains Emperor's Elite Sardaukars.\nGrants pasive income\nCan be only built once.
         IconPalette: d2kunit  
         BuildLimit: 1
+    RevealsShroud@showenemy:
+        Range: 4c0
+        ValidStances: Neutral, Enemy    
 	Selectable:
 		Bounds: 72, 72
     Power:
@@ -2515,7 +2573,7 @@ fremen:
 	Mobile:
 		Speed: 60
 	Valued:
-		Cost: 250 ## actually 0, but spawns from support power at Palace
+		Cost: 300 
 	Health:
 		HP: 16000
 	RevealsShroud:
@@ -2901,14 +2959,14 @@ fedaykin:
 		Queue: Infantry.d2k, Infantry.X_Infantry
 		BuildPaletteOrder: 120
 		Prerequisites: ~barracks.atreides, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.fremen
-		Description: Elite Fremen Guerilla infantry armed with Sonic Weapon\n  Strong vs Infantry, Vehicles\n  Weak vs Artillery, Tanks
+		Description: Stealth Elite Fremen Guerilla infantry armed with Sonic Weapon\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Artillery, Tanks
         IconPalette: d2kunit       
 	Mobile:
-		Speed: 45
+		Speed: 52
 	Valued:
-		Cost: 250
+		Cost: 300
 	Health:
-		HP: 12500
+		HP: 17500
 	RevealsShroud:
 		Range: 4c768
 	Armament:
@@ -2920,7 +2978,14 @@ fedaykin:
 		WarnProbability: 80
 	Voiced:
 		VoiceSet: D2KFremenVoice
-
+    Cloak:
+        Palette: d2kcloak
+  		IsPlayerPalette: true  
+        InitialDelay: 60
+		CloakDelay: 60
+        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
+        CloakedCondition: cloaked   
+        
 d2k_drone:
 	Inherits: ^D2KInfantry
     Inherits@EXT: ^ExternalConditions   
@@ -3593,17 +3658,17 @@ d2k_stealth_tank:
 		Class: stealth_tank
 	Mobile:
 		TurnSpeed: 32
-		Speed: 90
+		Speed: 95
 	Health:
-		HP: 45000
+		HP: 50000
 	Armor:
 		Type: Medium
 	RevealsShroud:
 		Range: 3c0
 	Cloak:
 		InitialDelay: 40
-		CloakDelay: 25
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Dock, Damage, Heal
+		CloakDelay: 20
+		UncloakOn: Attack, Unload, Demolish, Dock, Damage, Heal
 		Palette: cnccloak
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled
@@ -3628,7 +3693,7 @@ d2k_stealth_tank:
 		PlayerPalette: cncplayer
 		Scale: 1.25
 	AttractsWorms:
-		Intensity: 520
+		Intensity: 0
         
 d2k_stealth_tank.husk:
 	Inherits: ^Husk
@@ -4211,8 +4276,8 @@ harvester:
 		Speed: 43
 	RevealsShroud:
 		Range: 3c768
-    GrantConditionOnPrerequisite@smugglerharv:
-		Prerequisites: faction.smugglers
+    GrantConditionOnPrerequisite@mercharv:
+		Prerequisites: faction.mercenary
 		Condition: harv_spd
     GrantConditionOnPrerequisite@ixianharv:
 		Prerequisites: faction.ixian
@@ -4220,6 +4285,12 @@ harvester:
     SpeedMultiplier@harv_upg:
         Modifier: 140
         RequiresCondition: harv_spd
+    GrantConditionOnPrerequisite@corrinoharv:
+		Prerequisites: faction.corrino
+		Condition: harv_hp    
+    DamageMultiplier@corrinoharv:
+        Modifier: 60
+        RequiresCondition: harv_hp
 	Explodes:
 		Weapon: D2KUnitExplodeLarge
 		EmptyWeapon: D2KUnitExplodeLarge
@@ -4484,7 +4555,7 @@ siege_tank_ixian:
 		Ammo: 3
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 250
+		Delay: 100
 		Count: 3
 		ResetOnFire: true                 
    	Tooltip:
@@ -4558,7 +4629,7 @@ missile_tank_ixian:
     Inherits: missile_tank
     Buildable:
 		Prerequisites: upgrade.heavy, ~techlevel.medium, ~faction.ixian, research_centre  
-        Description: Stealth Rocket Artillery\nCan shoot up to 8 rockets in a row at much higher distance\nLess accurate than regular version and with long reload times\n  Strong vs Vehicles, Buildings, Tanks\n  Weak vs Everything
+        Description: Stealth Rocket Artillery\nCan shoot up to 10 rockets in a row at much higher distance\nLess accurate than regular version and with long reload times\n  Strong vs Vehicles, Buildings, Tanks\n  Weak vs Everything
  	Health:
 		HP: 25000    
     Armor:
@@ -4567,7 +4638,7 @@ missile_tank_ixian:
 		Ammo: 10
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 400
+		Delay: 200
 		Count: 10
 		ResetOnFire: true               
     Valued:
@@ -5060,9 +5131,9 @@ combat_tank_ixian:
 		Name: Ix Combat Tank
     Buildable:
 		Prerequisites: ~heavy.atreides_combat, ~faction.ixian, research_centre   
-        Description: Ixian Main Battle Tank\nCombines the best of the base variants\nHarkonnen Hull, Atreides Turret and Ordos Gun\n  Strong vs Tanks\n  Weak vs Infantry
+        Description: Ixian Main Battle Tank\nCombines the best of the base variants with Ixian quick fire cannon\n  Strong vs Tanks\n  Weak vs Infantry
     Armament:
-		Weapon: 80mm_O   
+		Weapon: 80mm_OUP   
     -SpawnActorOnDeath:
     
 combat_siege_tank:
@@ -5286,7 +5357,18 @@ carryall.reinforce:
 			Radius: 256
     RejectsOrders:    
     Interactable:     
-    
+    GrantConditionOnPrerequisite@ixianharv:
+		Prerequisites: faction.ixian
+		Condition: carryall_cloak   
+    Cloak:
+		InitialDelay: 80
+		CloakDelay: 80
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled
+        UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
+      	Palette: d2kcloak         
+        CloakedCondition: cloaked 
+        RequiresCondition: carryall_cloak
 carryall:
 	Inherits: carryall.reinforce
 	-Carryall:
@@ -5629,7 +5711,7 @@ faction.fremen:
 		BuildLimit: 1
 		BuildDuration: 0
 		BuildDurationModifier: 50
-        Description: Natives of Arrakis. Its speciality are powerful soldiers, Fremen.\nNative Warriors bonus: Fremen units cannot attract Sandworms.
+        Description: Natives of Arrakis. Its speciality are powerful soldiers, Fremen.\nNative Warriors bonus: Fremen Buildings are stealthed\nFremen units cannot attract Sandworms
 	Valued:
 		Cost: 0
 	RenderSprites:
