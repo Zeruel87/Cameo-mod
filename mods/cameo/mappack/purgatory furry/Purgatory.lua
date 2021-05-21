@@ -843,9 +843,9 @@ AlienMonsterEntryPoints = { MotherShipWaypoint }
 AlienSpawnPoints = { Waypoint2, Waypoint, Waypoint2, Waypoint3 }
 
 if Map.LobbyOption("difficulty") == "normal" then
-	Mechwarrior = { "mechwarrior", "mechwarrior", "mechwarrior", "mechwarrior" }
-	Exciter = { "exciter", "exciter", "exciter", "exciter" }
-	Tripod = { "tripod", "tripod", "tripod" }
+	Mechwarrior = { "furryinf3", "furryinf3", "furryinf3", "furryinf3" }
+	Exciter = { "furrysonic", "furrysonic", "furrysonic", "furrysonic" }
+	Tripod = { "furryinf3", "furryinf3", "furryinf3" }
 end
 
 AlienWave = 0
@@ -915,9 +915,9 @@ AlienMonsterEntryPoints = { MotherShipWaypoint }
 AlienSpawnPoints = { Waypoint2, Waypoint, Waypoint2, Waypoint3 }
 
 if Map.LobbyOption("difficulty") == "hard" then
-	Mechwarrior = { "mechwarrior", "mechwarrior", "mechwarrior", "mechwarrior" }
-	Exciter = { "exciter", "exciter", "exciter" }
-	Tripod = { "tripod", "tripod", "tripod", "tripod" }
+	Mechwarrior = { "furryinf3", "furryinf3", "furryinf3", "furryinf3", "furrysonic", "furrysonic", "furrysonic", "furry3", "furry3", "furry3", "furry2", "furry2", "furry2", "furry1", "furry1", "furry1", "furry1", "furry1", "furry1" }
+	Exciter = { "furrysonic", "furrysonic", "furrysonic", "furry3", "furry3", "furry3", "furry2", "furry2", "furry2", "furry1", "furry1", "furry1", "furry1", "furry1", "furry1" }
+	Tripod = { "furryinf3", "furryinf3", "furryinf3", "furryinf3", "furry3", "furry3", "furry3", "furry2", "furry2", "furry2", "furry1", "furry1", "furry1", "furry1", "furry1", "furry1" }
 end
 
 AlienWave = 0

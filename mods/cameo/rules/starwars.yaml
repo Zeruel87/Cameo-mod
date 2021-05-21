@@ -1,0 +1,6386 @@
+########################################################
+#	SW Meet CNC
+########################################################
+swmcv.empire:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Mobile Construction Vehicle (Empire)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.medium, swfix
+		Queue: Vehicle.SWEMPIRE, RAVehicle.SWEMPIRE
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Selectable:
+		Priority: 4
+		DecorationBounds: 36,36
+	Mobile:
+		Speed: 71
+		Locomotor: heavywheeled
+	Health:
+		HP: 120000
+	Repairable:
+		HpPerStep: 2182
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Transforms:
+		IntoActor: swfact.empire
+		Offset: -1,-1
+		Facing: 108
+		TransformSounds: constru2.aud, hvydoor1.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	#SpawnActorOnDeath:
+	#	Actor: MCV.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: mcv
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmswempire
+swmcv.rebels:
+	Inherits: swmcv.empire
+	Tooltip:
+		Name: Mobile Construction Vehicle (Rebel Alliance)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.medium, swfix
+		Queue: Vehicle.SWREBELS, RAVehicle.SWREBELS
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Transforms:
+		IntoActor: swfact.rebels
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmswrebels
+swmcv.republic:
+	Inherits: swmcv.empire
+	Tooltip:
+		Name: Mobile Construction Vehicle (Republic)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.medium, swfix
+		Queue: Vehicle.SWREPUBLIC, RAVehicle.SWREPUBLIC
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Transforms:
+		IntoActor: swfact.republic
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmswrepublic
+swmcv.separatist:
+	Inherits: swmcv.empire
+	Tooltip:
+		Name: Mobile Construction Vehicle (Separatist)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.medium, swfix
+		Queue: Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Transforms:
+		IntoActor: swfact.separatist
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmswseparatist
+	RenderSprites:
+		Image: swdmcv
+swmcv.hutt:
+	Inherits: swmcv.empire
+	Tooltip:
+		Name: Mobile Construction Vehicle (Hutt Clan)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.medium, swfix
+		Queue: Vehicle.SWHUTT, RAVehicle.SWHUTT
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Transforms:
+		IntoActor: swfact.hutt
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmswseparatist
+	RenderSprites:
+		Image: swdmcv
+^SWSpawnActorsOnSell:
+	SpawnActorsOnSell:
+		ActorTypes: swe6,swe1,swe1,swe1
+
+swfact.empire:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Selectable:
+		Bounds: 72,48
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Construction Yard (Empire)
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 210000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building.SWEMPIRE, Defence.SWEMPIRE
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.SWEMPIRE, RADefence.SWEMPIRE
+		RequiresCondition: classicproductionqueues
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: swmcv.empire
+		Offset: 1,1
+		Facing: 108
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransformsIntoRepairable:
+		RequiresCondition: factundeploy
+		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept	##########
+		RequiresForceMove: true
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@GDIBuilding:
+		Type: Building.SWEMPIRE
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@GDIDefense:
+		Type: Defence.SWEMPIRE
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	ProductionBar@BuildingGDI:
+		ProductionType: Building.SWEMPIRE
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceGDI:
+		ProductionType: Defence.SWEMPIRE
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingGDI:
+		ProductionType: RABuilding.SWEMPIRE
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceGDI:
+		ProductionType: RADefence.SWEMPIRE
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 14c0
+	WithBuildingBib:
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
+	Buildable:
+		Queue: Building.SWEMPIRE, RABuilding.SWEMPIRE
+		BuildPaletteOrder: 1000
+		Prerequisites: ~disabled
+		Description: Builds structures
+	ProvidesPrerequisite@factiongdi:
+		Prerequisite: mmswempire
+	RenderSprites:
+		Image: swifact
+
+swfact.rebels:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Selectable:
+		Bounds: 72,48
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Construction Yard (Rebel Alliance)
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 210000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building.SWREBELS, Defence.SWREBELS
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.SWREBELS, RADefence.SWREBELS
+		RequiresCondition: classicproductionqueues
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: swmcv.rebels
+		Offset: 1,1
+		Facing: 108
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransformsIntoRepairable:
+		RequiresCondition: factundeploy
+		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept	##########
+		RequiresForceMove: true
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@NodBuilding:
+		Type: Building.SWREBELS
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@NodDefense:
+		Type: Defence.SWREBELS
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	ProductionBar@BuildingNod:
+		ProductionType: Building.SWREBELS
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceNod:
+		ProductionType: Defence.SWREBELS
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingNod:
+		ProductionType: RABuilding.SWREBELS
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceNod:
+		ProductionType: RADefence.SWREBELS
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 14c0
+	WithBuildingBib:
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
+	Buildable:
+		Queue: Building.SWREBELS, RABuilding.SWREBELS
+		BuildPaletteOrder: 1000
+		Prerequisites: ~disabled
+		Description: Builds structures
+	ProvidesPrerequisite@factionnod:
+		Prerequisite: mmswrebels
+	RenderSprites:
+		Image: swfact
+swfact.republic:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Selectable:
+		Bounds: 72,48
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Construction Yard (Republic)
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 210000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building.SWREPUBLIC, Defence.SWREPUBLIC
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.SWREPUBLIC, RADefence.SWREPUBLIC
+		RequiresCondition: classicproductionqueues
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: swmcv.republic
+		Offset: 1,1
+		Facing: 108
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransformsIntoRepairable:
+		RequiresCondition: factundeploy
+		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept	##########
+		RequiresForceMove: true
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@NodBuilding:
+		Type: Building.SWREPUBLIC
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@NodDefense:
+		Type: Defence.SWREPUBLIC
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	ProductionBar@BuildingNod:
+		ProductionType: Building.SWREPUBLIC
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceNod:
+		ProductionType: Defence.SWREPUBLIC
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingNod:
+		ProductionType: RABuilding.SWREPUBLIC
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceNod:
+		ProductionType: RADefence.SWREPUBLIC
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 14c0
+	WithBuildingBib:
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
+	Buildable:
+		Queue: Building.SWREPUBLIC, RABuilding.SWREPUBLIC
+		BuildPaletteOrder: 1000
+		Prerequisites: ~disabled
+		Description: Builds structures
+	ProvidesPrerequisite@factionnod:
+		Prerequisite: mmswrepublic
+	RenderSprites:
+		Image: swrfact
+swfact.separatist:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Selectable:
+		Bounds: 72,48
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Construction Yard (Separatist)
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 210000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building.SWSEPARATIST, Defence.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.SWSEPARATIST, RADefence.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: swmcv.separatist
+		Offset: 1,1
+		Facing: 108
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransformsIntoRepairable:
+		RequiresCondition: factundeploy
+		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept	##########
+		RequiresForceMove: true
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@NodBuilding:
+		Type: Building.SWSEPARATIST
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@NodDefense:
+		Type: Defence.SWSEPARATIST
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	ProductionBar@BuildingNod:
+		ProductionType: Building.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceNod:
+		ProductionType: Defence.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingNod:
+		ProductionType: RABuilding.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceNod:
+		ProductionType: RADefence.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 14c0
+	WithBuildingBib:
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
+	Buildable:
+		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST
+		BuildPaletteOrder: 1000
+		Prerequisites: ~disabled
+		Description: Builds structures
+	ProvidesPrerequisite@factionnod:
+		Prerequisite: mmswseparatist
+	RenderSprites:
+		Image: swdfact
+swfact.hutt:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Selectable:
+		Bounds: 72,48
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Construction Yard (Hutt Clan)
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 210000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building.SWHUTT, Defence.SWHUTT
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.SWHUTT, RADefence.SWHUTT
+		RequiresCondition: classicproductionqueues
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: swmcv.hutt
+		Offset: 1,1
+		Facing: 108
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransformsIntoRepairable:
+		RequiresCondition: factundeploy
+		RepairActors: fix,rafix,2100rr,scshieldbattery,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,c12100rr,c22100rr,cscshieldbattery,cra2nadept,cra2gadept	##########
+		RequiresForceMove: true
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@NodBuilding:
+		Type: Building.SWHUTT
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@NodDefense:
+		Type: Defence.SWHUTT
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	ProductionBar@BuildingNod:
+		ProductionType: Building.SWHUTT
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceNod:
+		ProductionType: Defence.SWHUTT
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingNod:
+		ProductionType: RABuilding.SWHUTT
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceNod:
+		ProductionType: RADefence.SWHUTT
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 14c0
+	WithBuildingBib:
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
+	Buildable:
+		Queue: Building.SWHUTT, RABuilding.SWHUTT
+		BuildPaletteOrder: 1000
+		Prerequisites: ~disabled
+		Description: Builds structures
+	ProvidesPrerequisite@factionnod:
+		Prerequisite: mmswhutt
+	RenderSprites:
+		Image: swdfact
+swnuke:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@power: ^PowerPlant
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Shield Plant
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: fact
+		Queue: Building.SWEMPIRE, Building.SWREBELS, RABuilding.SWEMPIRE, RABuilding.SWREBELS, Building.SWSEPARATIST, Building.SWREPUBLIC, RABuilding.SWSEPARATIST, RABuilding.SWREPUBLIC, Building.SWHUTT, RABuilding.SWHUTT
+		Description: Generates power
+	Building:
+		Footprint: xX xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: 100
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: building							##########
+
+SWNUK2:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@power: ^PowerPlant
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Inherits@forceshield: ^ForceShieldPower
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Advanced Shield Plant
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: anyhq, ~techlevel.medium
+		Queue: Building.SWEMPIRE, Building.SWREBELS, RABuilding.SWEMPIRE, RABuilding.SWREBELS, Building.SWSEPARATIST, Building.SWREPUBLIC, RABuilding.SWSEPARATIST, RABuilding.SWREPUBLIC, Building.SWHUTT, RABuilding.SWHUTT
+		Description: Provides more power, cheaper than the\nstandard Power Plant
+	Building:
+		Footprint: xX xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: 200
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: building							##########
+
+SWPROC:
+	Inherits: PROC
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Scrap Refinery
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Building.SWEMPIRE, Building.SWREBELS, RABuilding.SWEMPIRE, RABuilding.SWREBELS, Building.SWSEPARATIST, RABuilding.SWSEPARATIST, Building.SWREPUBLIC, RABuilding.SWREPUBLIC, Building.SWHUTT, RABuilding.SWHUTT
+		Description: Processes raw Resources\ninto useable resources
+	FreeActor:
+		Actor: SWHARV
+		SpawnOffset: 1,2
+		Facing: 64
+
+swsilo:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x1Shape
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Scrap Silo
+	Buildable:
+		BuildPaletteOrder: 35
+		Prerequisites: swproc
+		Queue: Defence.SWEMPIRE, Defence.SWREBELS, RADefence.SWEMPIRE, RADefence.SWREBELS, Defence.SWREPUBLIC, RADefence.SWREPUBLIC
+		Description: Stores processed Resources
+	Building:
+		Footprint: xx
+		Dimensions: 2,1
+	-GivesBuildableArea:
+	Health:
+		HP: 50000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+		HasMinibib: true
+	-WithSpriteBody:
+	WithResourceLevelSpriteBody:
+		Sequence: stages
+	StoresResources:
+		PipCount: 10
+		PipColor: Green
+		Capacity: 3000
+	Power:
+		Amount: -10
+	MustBeDestroyed:
+		RequiredForShortGame: false
+	SelectionDecorations:
+	-AcceptsDeliveredCash:
+	Selectable:
+		Bounds: 48,24
+		DecorationBounds: 49,30
+swdsilo:
+	Inherits: swsilo
+	Buildable:
+		BuildPaletteOrder: 35
+		Prerequisites: swproc
+		Queue: Defence.SWSEPARATIST, RADefence.SWSEPARATIST, Defence.SWHUTT, RADefence.SWHUTT
+swpyle:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^SWSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Barracks
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building.SWEMPIRE, RABuilding.SWEMPIRE
+		Description: Trains infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Infantry.SWEMPIRE
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.SWEMPIRE
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Infantry.SWEMPIRE
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry.SWEMPIRE
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry.SWEMPIRE
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 48,42,0,-5
+	RenderSprites:
+		Image: pyle
+swpyler:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^SWSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Barracks
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building.SWREPUBLIC, RABuilding.SWREPUBLIC
+		Description: Trains infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Infantry.SWREPUBLIC
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.SWREPUBLIC
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Infantry.SWREPUBLIC
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry.SWREPUBLIC
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry.SWREPUBLIC
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 48,42,0,-5
+	RenderSprites:
+		Image: pyle
+swpyleh:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^SWSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Refuge
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building.SWHUTT, RABuilding.SWHUTT
+		Description: Trains infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Infantry.SWHUTT
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.SWHUTT
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Infantry.SWHUTT
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry.SWHUTT
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry.SWHUTT
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 48,42,0,-5
+	RenderSprites:
+		Image: barr
+swhand:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 630,-512,0, 355,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Milleanire Falcon
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building.SWREBELS, RABuilding.SWREBELS
+		Description: Trains infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+	Production@NORMAL:
+		Produces: Infantry.SWREBELS
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.SWREBELS
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry.SWREBELS
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYNOD:
+		ProductionType: Infantry.SWREBELS
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYNOD:
+		ProductionType: RAInfantry.SWREBELS
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 48,48
+		DecorationBounds: 48,68,0,-10
+	SelectionDecorations:
+swbarrdroid:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 630,-512,0, 355,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Droid Factory
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST
+		Description: Trains infantry.\nProduces droids
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+	Production@NORMAL:
+		Produces: Infantry.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry.SWSEPARATIST
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYNOD:
+		ProductionType: Infantry.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYNOD:
+		ProductionType: RAInfantry.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 48,48
+		DecorationBounds: 48,68,0,-10
+	SelectionDecorations:
+
+swafld:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Selectable:
+		Bounds: 96,48
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,-512,256, 0,-1451,384, 0,512,128, 0,1536,85
+		Type: Rectangle
+			TopLeft: -2048, -1024
+			BottomRight: 2048, 1024
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Space Port
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: swproc
+		Queue: Building.SWREBELS, RABuilding.SWREBELS
+		Description: Provides a dropzone\nfor vehicle reinforcements
+	Building:
+		Footprint: XXX+ xxx+ ====
+		Dimensions: 4,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 7c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -1024,0,0
+		ExitCell: 3,1
+	ProductionAirdropCA@NORMAL:
+		Produces: Vehicle.SWREBELS
+		RequiresCondition: !classicproductionqueues
+		ActorType: swc17
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	ProductionAirdropCA@CLASSIC:
+		Produces: RAVehicle.SWREBELS
+		RequiresCondition: classicproductionqueues
+		ActorType: swc17
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	WithBuildingBib:
+	WithIdleOverlay@DISH:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-dish
+	WithDeliveryAnimation:
+		RequiresCondition: !build-incomplete
+	ProductionQueue:
+		Type: Vehicle.SWREBELS
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLENOD:
+		ProductionType: Vehicle.SWREBELS
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLENOD:
+		ProductionType: RAVehicle.SWREBELS
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@scrapvehicles:
+		Prerequisite: starwarsscrapvehicles
+swafldh:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Selectable:
+		Bounds: 96,48
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,-512,256, 0,-1451,384, 0,512,128, 0,1536,85
+		Type: Rectangle
+			TopLeft: -2048, -1024
+			BottomRight: 2048, 1024
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Space Port
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: swproc
+		Queue: Building.SWHUTT, RABuilding.SWHUTT
+		Description: Provides a dropzone\nfor vehicle reinforcements
+	Building:
+		Footprint: XXX+ xxx+ ====
+		Dimensions: 4,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 7c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -1024,0,0
+		ExitCell: 3,1
+	ProductionAirdropCA@NORMAL:
+		Produces: Vehicle.SWHUTT
+		RequiresCondition: !classicproductionqueues
+		ActorType: swc17
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	ProductionAirdropCA@CLASSIC:
+		Produces: RAVehicle.SWHUTT
+		RequiresCondition: classicproductionqueues
+		ActorType: swc17
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	WithBuildingBib:
+	WithIdleOverlay@DISH:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-dish
+	WithDeliveryAnimation:
+		RequiresCondition: !build-incomplete
+	ProductionQueue:
+		Type: Vehicle.SWHUTT
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLENOD:
+		ProductionType: Vehicle.SWHUTT
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLENOD:
+		ProductionType: RAVehicle.SWHUTT
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@scrapvehicles:
+		Prerequisite: starwarsscrapvehicles
+	RenderSprites:
+		Image: swafld
+	SeedsResource@C:
+		ResourceType: SWPCarbon
+		Interval: 440
+	SeedsResource@N:
+		ResourceType: SWPMin
+		Interval: 660
+	SeedsResource@M:
+		ResourceType: SWPNova
+		Interval: 660
+swweap:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,1024,0, 0,-1024,0
+		Type: Rectangle
+			TopLeft: -1536, -1024
+			BottomRight: 1536, 512
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Weapons Factory
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: swproc
+		Queue: Building.SWEMPIRE, RABuilding.SWEMPIRE
+		Description: Produces vehicles
+	Building:
+		Footprint: xxx === ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,64,0,-16
+	SelectionDecorations:
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	WithProductionDoorOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: build-top
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -512,-512,0
+		ExitCell: 0,1
+		ExitDelay: 3
+	Production@NORMAL:
+		Produces: Vehicle.SWEMPIRE
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.SWEMPIRE
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Vehicle.SWEMPIRE
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLEGDI:
+		ProductionType: Vehicle.SWEMPIRE
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLEGDI:
+		ProductionType: RAVehicle.SWEMPIRE
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	-ActorPreviewPlaceBuildingPreview:
+	SequencePlaceBuildingPreview:
+		Sequence: place
+		SequencePalette: placebuilding
+	RenderSprites:
+		Image: weap
+swweapr:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,1024,0, 0,-1024,0
+		Type: Rectangle
+			TopLeft: -1536, -1024
+			BottomRight: 1536, 512
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Weapons Factory
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: swproc
+		Queue: Building.SWREPUBLIC, RABuilding.SWREPUBLIC
+		Description: Produces vehicles
+	Building:
+		Footprint: xxx === ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,64,0,-16
+	SelectionDecorations:
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	WithProductionDoorOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: build-top
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -512,-512,0
+		ExitCell: 0,1
+		ExitDelay: 3
+	Production@NORMAL:
+		Produces: Vehicle.SWREPUBLIC
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.SWREPUBLIC
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Vehicle.SWREPUBLIC
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLEGDI:
+		ProductionType: Vehicle.SWREPUBLIC
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLEGDI:
+		ProductionType: RAVehicle.SWREPUBLIC
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	-ActorPreviewPlaceBuildingPreview:
+	SequencePlaceBuildingPreview:
+		Sequence: place
+		SequencePalette: placebuilding
+	RenderSprites:
+		Image: weap
+swweapd:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,1024,0, 0,-1024,0
+		Type: Rectangle
+			TopLeft: -1536, -1024
+			BottomRight: 1536, 512
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Weapons Factory
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: swproc
+		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST
+		Description: Produces vehicles and Droids
+	Building:
+		Footprint: xxx === ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,64,0,-16
+	SelectionDecorations:
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	WithProductionDoorOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: build-top
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -512,-512,0
+		ExitCell: 0,1
+		ExitDelay: 3
+	Production@NORMAL:
+		Produces: Vehicle.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Vehicle.SWSEPARATIST
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLEGDI:
+		ProductionType: Vehicle.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLEGDI:
+		ProductionType: RAVehicle.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	-ActorPreviewPlaceBuildingPreview:
+	SequencePlaceBuildingPreview:
+		Sequence: place
+		SequencePalette: placebuilding
+	RenderSprites:
+		Image: swdweap
+swhpad.empire:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Rearming Deck (Empire)
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: swproc
+		Queue: Building.SWEMPIRE, RABuilding.SWEMPIRE
+		Description: Produces, rearms and\nrepairs aircraft
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Production@NORMAL:
+		Produces: Aircraft.SWEMPIRE
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.SWEMPIRE
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ProductionQueue:
+		Type: Aircraft.SWEMPIRE
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AIRCRAFTGDI:
+		ProductionType: Aircraft.SWEMPIRE
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFTGDI:
+		ProductionType: RAAircraft.SWEMPIRE
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -10
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: hpad
+	RenderSprites:
+		Image: swhpad
+
+swhpad.rebels:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Rearming Deck (Rebels)
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: swproc
+		Queue: Building.SWREBELS, RABuilding.SWREBELS
+		Description: Produces, rearms and\nrepairs aircraft
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Production@NORMAL:
+		Produces: Aircraft.SWREBELS
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.SWREBELS
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ProductionQueue:
+		Type: Aircraft.SWREBELS
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AIRCRAFTNOD:
+		ProductionType: Aircraft.SWREBELS
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFTNOD:
+		ProductionType: RAAircraft.SWREBELS
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -10
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: hpad
+	RenderSprites:
+		Image: swhpad
+swhpad.swseparatist:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Rearming Deck (Separatist)
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: swproc
+		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST
+		Description: Produces, rearms and\nrepairs aircraft
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Production@NORMAL:
+		Produces: Aircraft.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ProductionQueue:
+		Type: Aircraft.SWSEPARATIST
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AIRCRAFTNOD:
+		ProductionType: Aircraft.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFTNOD:
+		ProductionType: RAAircraft.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -10
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: hpad
+	RenderSprites:
+		Image: swdhpad
+
+swhpad.republic:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Rearming Deck (Republic)
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: swproc
+		Queue: Building.SWREPUBLIC, RABuilding.SWREPUBLIC
+		Description: Produces, rearms and\nrepairs aircraft
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Production@NORMAL:
+		Produces: Aircraft.SWREPUBLIC
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.SWREPUBLIC
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ProductionQueue:
+		Type: Aircraft.SWREPUBLIC
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AIRCRAFTNOD:
+		ProductionType: Aircraft.SWREPUBLIC
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFTNOD:
+		ProductionType: RAAircraft.SWREPUBLIC
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -10
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: hpad
+	RenderSprites:
+		Image: swhpad
+swhpad.hutt:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Rearming Deck (Hutt)
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: swproc
+		Queue: Building.SWHUTT, RABuilding.SWHUTT
+		Description: Produces, rearms and\nrepairs aircraft
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Production@NORMAL:
+		Produces: Aircraft.SWHUTT
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.SWHUTT
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ProductionQueue:
+		Type: Aircraft.SWHUTT
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AIRCRAFTNOD:
+		ProductionType: Aircraft.SWHUTT
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFTNOD:
+		ProductionType: RAAircraft.SWHUTT
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -10
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: hpad
+	RenderSprites:
+		Image: swdhpad
+swhq:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Inherits@spy: ^InfiltrateForSupportPowerReset
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,512,0, 420,-598,256
+		Type: Rectangle
+			TopLeft: -1024, -384
+			BottomRight: 1024, 1024
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Communications Center
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: swproc, ~techlevel.medium
+		Queue: None
+		Description: Provides radar and Air Strike support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+	Building:
+		Footprint: X_ xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 48,40,0,9
+		DecorationBounds: 48,53,0,-4
+	SelectionDecorations:
+	WithSpriteBody:
+		PauseOnCondition: lowpower
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 10c0
+	WithBuildingBib:
+	ProvidesRadar:
+		RequiresCondition: !jammed && !lowpower
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	Power:
+		Amount: -50
+	ExternalCondition@JAMMED:
+		Condition: jammed
+swhqe:
+	Inherits: swhq
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: swproc, ~techlevel.medium
+		Queue: Building.SWEMPIRE, RABuilding.SWEMPIRE
+	RenderSprites:
+		Image: swhq
+	AirstrikePower:
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: airstrike
+		ChargeInterval: 6000
+		SquadSize: 3
+		QuantizedFacings: 8
+		Description: Air Strike
+		LongDesc: Deploy an aerial napalm strike.\nBurns buildings and infantry along a line.
+		EndChargeSpeechNotification: AirstrikeReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: EnemyPlanesApproaching
+		UnitType: swa10
+		DisplayBeacon: True
+		BeaconPoster: airstrike
+		BeaconPosterPalette: beaconposter
+		DisplayRadarPing: True
+		CameraActor: camera
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 10
+	SupportPowerChargeBar:
+	Production@Upgrades:
+		Produces: Upgrades.SWEMPIRE
+	ProductionQueue@Upgrades:
+		Type: Upgrades.SWEMPIRE
+		DisplayOrder: 10
+		Group: Upgrade
+		ItemLimit: 1
+		DisallowPaused: true
+	ProductionBar@Upgrades:
+		ProductionType: Upgrades.SWEMPIRE
+swhqr:
+	Inherits: swhq
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: swproc, ~techlevel.medium
+		Queue: Building.SWREBELS, RABuilding.SWREBELS
+	RenderSprites:
+		Image: swhq
+	AirstrikePower:
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: airstrike
+		ChargeInterval: 3000
+		SquadSize: 3
+		QuantizedFacings: 8
+		Description: Air Strike
+		LongDesc: Deploy an aerial napalm strike.\nBurns buildings and infantry along a line.
+		EndChargeSpeechNotification: AirstrikeReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: EnemyPlanesApproaching
+		UnitType: swa10xwing
+		DisplayBeacon: True
+		BeaconPoster: airstrike
+		BeaconPosterPalette: beaconposter
+		DisplayRadarPing: True
+		CameraActor: camera
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 10
+	SupportPowerChargeBar:
+	Production@Upgrades:
+		Produces: Upgrades.SWREBELS
+	ProductionQueue@Upgrades:
+		Type: Upgrades.SWREBELS
+		DisplayOrder: 10
+		Group: Upgrade
+		ItemLimit: 1
+		DisallowPaused: true
+	ProductionBar@Upgrades:
+		ProductionType: Upgrades.SWREBELS
+swhqre:
+	Inherits: swhq
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: swproc, ~techlevel.medium
+		Queue: Building.SWREPUBLIC, RABuilding.SWREPUBLIC
+	RenderSprites:
+		Image: swhq
+	ParatroopersPower@ra2paratroopers:
+		PauseOnCondition: lowpower
+		Prerequisites: RA2America
+		OrderName: USA Paratroopers
+		Icon: paratroopers
+		ChargeInterval: 5000
+		Description: Airborne
+		LongDesc: Cargo planes drop a squad of infantry\nanywhere on the map.
+		DropItems: swe1troop,swe1troop,swe1troop,swe3,swe3,swe1troop,swe1troop,swe1troop,swe3,swe3,swe1troop,swe1troop,swe1troop,swe3,swe3
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		UnitType: swbadr
+		SquadSize: 3
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+	SupportPowerChargeBar:
+	Production@Upgrades:
+		Produces: Upgrades.SWREPUBLIC
+	ProductionQueue@Upgrades:
+		Type: Upgrades.SWREPUBLIC
+		DisplayOrder: 10
+		Group: Upgrade
+		ItemLimit: 1
+		DisallowPaused: true
+	ProductionBar@Upgrades:
+		ProductionType: Upgrades.SWREPUBLIC
+swhqs:
+	Inherits: swhq
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: swproc, ~techlevel.medium
+		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST
+	RenderSprites:
+		Image: swdhq
+	AirstrikePower:
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: airstrike
+		ChargeInterval: 6000
+		SquadSize: 8
+		QuantizedFacings: 8
+		Description: Air Strike
+		LongDesc: Deploy an aerial napalm strike.\nBurns buildings and infantry along a line.
+		EndChargeSpeechNotification: AirstrikeReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: EnemyPlanesApproaching
+		UnitType: swa10droid
+		DisplayBeacon: True
+		BeaconPoster: airstrike
+		BeaconPosterPalette: beaconposter
+		DisplayRadarPing: True
+		CameraActor: camera
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 10
+	SupportPowerChargeBar:
+	Production@Upgrades:
+		Produces: Upgrades.SWSEPARATIST
+	ProductionQueue@Upgrades:
+		Type: Upgrades.SWSEPARATIST
+		DisplayOrder: 10
+		Group: Upgrade
+		ItemLimit: 1
+		DisallowPaused: true
+	ProductionBar@Upgrades:
+		ProductionType: Upgrades.SWSEPARATIST
+swhqh:
+	Inherits: swhq
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: swproc, ~techlevel.medium
+		Queue: Building.SWHUTT, RABuilding.SWHUTT
+	RenderSprites:
+		Image: swdhq
+	AirstrikePower:
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: airstrike
+		ChargeInterval: 3000
+		SquadSize: 3
+		QuantizedFacings: 8
+		Description: Air Strike
+		LongDesc: Deploy an aerial napalm strike.\nBurns buildings and infantry along a line.
+		EndChargeSpeechNotification: AirstrikeReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: EnemyPlanesApproaching
+		UnitType: swa10xwing
+		DisplayBeacon: True
+		BeaconPoster: airstrike
+		BeaconPosterPalette: beaconposter
+		DisplayRadarPing: True
+		CameraActor: camera
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 10
+	SupportPowerChargeBar:
+	Production@Upgrades:
+		Produces: Upgrades.SWHUTT
+	ProductionQueue@Upgrades:
+		Type: Upgrades.SWHUTT
+		DisplayOrder: 10
+		Group: Upgrade
+		ItemLimit: 1
+		DisallowPaused: true
+	ProductionBar@Upgrades:
+		ProductionType: Upgrades.SWHUTT
+SWFIX:
+	Inherits: ^BaseBuilding
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: 840,0,0, 598,-640,0, 598,640,0, -1060,0,0, -768,-640,0, -768,640,0
+		Type: Polygon
+			Points: -1536,-256, -341,-940, 341,-940, 1536,-256, 1536,341, 341,1110, -341,1110, -1536,341
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Repair Facility
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: vehicleproduction
+		Queue: Building.SWEMPIRE, Building.SWREBELS, RABuilding.SWEMPIRE, RABuilding.SWREBELS, Building.SWSEPARATIST, RABuilding.SWSEPARATIST, Building.SWREPUBLIC, RABuilding.SWREPUBLIC, Building.SWHUTT, RABuilding.SWHUTT
+		Description: Repairs vehicles
+	Building:
+		Footprint: _+_ +++ _+_
+		Dimensions: 3,3
+	Selectable:
+		Bounds: 64,34,0,3
+		DecorationBounds: 72,48
+	SelectionDecorations:
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+		HasMinibib: true
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 15
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	RallyPoint:
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea:					##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: fix
+sweye:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,512,128, 420,-598,213
+		Type: Rectangle
+			TopLeft: -1024, -384
+			BottomRight: 1024, 1024
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Advanced Communications Center
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high, !ionc
+		Queue: Building.SWREPUBLIC, RABuilding.SWREPUBLIC
+		Description: Provides radar and Orbital Ion Cannon support power.\nRequires power to operate.
+	Building:
+		Footprint: X_ xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 48,40,0,9
+		DecorationBounds: 48,53,0,-4
+	SelectionDecorations:
+	WithSpriteBody:
+		PauseOnCondition: lowpower
+	Health:
+		HP: 130000
+	RevealsShroud:
+		Range: 10c0
+	WithBuildingBib:
+	ProvidesRadar:
+		RequiresCondition: !jammed && !lowpower
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	IonCannonPower:
+		AllowMultiple: True
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: ioncannon
+		Cursor: ioncannon
+		ChargeInterval: 6000
+		Description: Ion Cannon
+		LongDesc: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: ion1.aud
+		DisplayTimerStances: Ally, Neutral
+		DisplayRadarPing: True
+		CameraActor: camera.small
+		SupportPowerPaletteOrder: 20
+	SupportPowerChargeBar:
+	Power:
+		Amount: -150
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: ionc
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	ProvidesPrerequisite@2:
+		Prerequisite: tek
+sweyee:
+	Inherits: sweye
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high, !ionc
+		Queue: Building.SWEMPIRE, RABuilding.SWEMPIRE
+		Description: Provides radar and Death Star support power.\nRequires power to operate.
+	IonCannonPower:
+		AllowMultiple: True
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: ioncannon
+		Cursor: ioncannon
+		ChargeInterval: 8500
+		Description: Death Star
+		LongDesc: Initiate an Death Star strike.\nApplies instant damage to a small area.
+		BeginChargeSpeechNotification: SWIonCannonCharging
+		EndChargeSpeechNotification: SWIonCannonReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: ion1.aud
+		DisplayTimerStances: Ally, Neutral
+		DisplayRadarPing: True
+		CameraActor: camera.small
+		SupportPowerPaletteOrder: 20
+		Weapon: SWDeathStar
+		Effect: swionsfx
+	RenderSprites:
+		Image: sweye
+swtmpl:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Temple of Nod
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high, !nodnuke
+		Queue: Building.SWREBELS, RABuilding.SWREBELS
+		Description: Provides Nuclear Strike support power.\nUnlocks Hi-Tech.\nRequires power to operate.
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,68,0,-12
+	SelectionDecorations:
+	Health:
+		HP: 210000
+	RevealsShroud:
+		Range: 6c0
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	NukePower:
+		AllowMultiple: True
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: abomb
+		Cursor: nuke
+		ChargeInterval: 9000
+		Description: Nuclear Strike
+		LongDesc: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		MissileWeapon: SWAtomic
+		MissileDelay: 11
+		SpawnOffset: 3c0,0,-1c512
+		DisplayBeacon: True
+		BeaconPoster: atomic
+		BeaconPosterPalette: beaconposter
+		DisplayTimerStances: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		CameraRange: 10c0
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		SupportPowerPaletteOrder: 30
+	WithBuildingBib:
+	WithNukeLaunchAnimation:
+		RequiresCondition: !build-incomplete
+	WithNukeLaunchOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: smoke
+	SupportPowerChargeBar:
+	Power:
+		Amount: -150
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: nodnuke
+	ProvidesPrerequisite@2:
+		Prerequisite: tek
+swdtmpl:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Separatist Tech Center
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high, !nodnuke
+		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST
+		Description: Provides Nuclear Strike support power.\nUnlocks Hi-Tech.\nRequires power to operate.
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,68,0,-12
+	SelectionDecorations:
+	Health:
+		HP: 210000
+	RevealsShroud:
+		Range: 6c0
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	NukePower:
+		AllowMultiple: True
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: abomb
+		Cursor: nuke
+		ChargeInterval: 9000
+		Description: Nuclear Strike
+		LongDesc: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		MissileWeapon: SWAtomic
+		MissileDelay: 11
+		SpawnOffset: 3c0,0,-1c512
+		DisplayBeacon: True
+		BeaconPoster: atomic
+		BeaconPosterPalette: beaconposter
+		DisplayTimerStances: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		CameraRange: 10c0
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		SupportPowerPaletteOrder: 30
+	WithBuildingBib:
+	WithNukeLaunchAnimation:
+		RequiresCondition: !build-incomplete
+	WithNukeLaunchOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: smoke
+	SupportPowerChargeBar:
+	Power:
+		Amount: -150
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: nodnuke
+	ProvidesPrerequisite@2:
+		Prerequisite: tek
+swpalace:
+	Inherits: ^Defense
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Palace of Jabba
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high, !nodnuke
+		Queue: Building.SWHUTT, RABuilding.SWHUTT
+		Description: Provides Nuclear Strike support power.\nUnlocks Hi-Tech.\nRequires power to operate.
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,68,0,-12
+	SelectionDecorations:
+	Health:
+		HP: 210000
+	RevealsShroud:
+		Range: 6c0
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	NukePower:
+		AllowMultiple: True
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: abomb
+		Cursor: nuke
+		ChargeInterval: 9000
+		Description: Nuclear Strike
+		LongDesc: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		MissileWeapon: SWAtomic
+		MissileDelay: 11
+		SpawnOffset: 3c0,0,-1c512
+		DisplayBeacon: True
+		BeaconPoster: atomic
+		BeaconPosterPalette: beaconposter
+		DisplayTimerStances: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		CameraRange: 10c0
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		SupportPowerPaletteOrder: 30
+	WithBuildingBib:
+	WithNukeLaunchAnimation:
+		RequiresCondition: !build-incomplete
+	WithNukeLaunchOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: smoke
+	SupportPowerChargeBar:
+	Power:
+		Amount: -150
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: nodnuke
+	ProvidesPrerequisite@2:
+		Prerequisite: tek
+	ProvidesPrerequisite@buildingname:
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 5
+		PipCount: 5
+		EjectOnDeath: false
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 768,0,1024, 448,-682,1024, -448,-682,1024, -768,0,1024, -448,682,1024, 448,682,1024
+		PauseOnCondition: chronobeamed
+	Turreted:
+		TurnSpeed: 255
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	RangeMultiplier@Extrarange:
+		Modifier: 175
+	DetectCloaked:
+		Range: 2c0
+
+swgun:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Turbolaser Turret
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: barracks
+		Queue: Defence.SWEMPIRE, Defence.SWREBELS, RADefence.SWEMPIRE, RADefence.SWREBELS, Defence.SWREPUBLIC, RADefence.SWREPUBLIC
+		Description: Basic Anti-Tank base defense.\n  Strong vs Tanks, vehicles\n  Weak vs Infantry\n  Can attack Aircraft
+	Building:
+	Health:
+		HP: 41000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 12
+		InitialFacing: 56
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: SWTurretGun
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	DetectCloaked:
+		Range: 3c0
+	Power:
+		Amount: -20
+	BodyOrientation:
+		UseClassicFacingFudge: True
+swdgun:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Laser Turret
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: barracks
+		Queue: Defence.SWSEPARATIST, RADefence.SWSEPARATIST, Defence.SWHUTT, RADefence.SWHUTT
+		Description: Basic Anti-Infantry base defense.\n  Strong vs Infantry\n  Weak vs Tanks
+	Building:
+	Health:
+		HP: 41000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 12
+		InitialFacing: 56
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: SWLaserV
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	DetectCloaked:
+		Range: 3c0
+	Power:
+		Amount: -20
+	BodyOrientation:
+		UseClassicFacingFudge: True
+
+SWSAM:
+	Inherits: ^Defense
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@shape: ^2x1Shape
+	Selectable:
+		Bounds: 48,24
+	HitShape:
+		Type: Rectangle
+			TopLeft: -768,-512
+			BottomRight: 768,512
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: SAM Site
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: barracks
+		Queue: Defence.SWREBELS, RADefence.SWREBELS, Defence.SWHUTT, RADefence.SWHUTT
+		Description: Anti-Aircraft base defense.\n  Strong vs Aircraft\n  Cannot target Ground units.
+	Building:
+		Footprint: xx
+		Dimensions: 2,1
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 10
+		InitialFacing: 0
+		RealignDelay: -1
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: Dragon
+		MuzzleSequence: muzzle
+	AttackPopupTurreted:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+	WithMuzzleOverlay:
+	-RenderDetectionCircle:
+	Power:
+		Amount: -20
+	BodyOrientation:
+		UseClassicFacingFudge: True
+	-ActorPreviewPlaceBuildingPreview:
+	SequencePlaceBuildingPreview:
+		Sequence: place
+		SequencePalette: placebuilding
+	RenderSprites:
+		Image: sam
+SWOBLI:
+	Inherits: ^Defense
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Obelisk of Light
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: tek, ~techlevel.high
+		Queue: Defence.SWREBELS, RADefence.SWREBELS, Defence.SWSEPARATIST, RADefence.SWSEPARATIST
+		Description: Advanced base defense.\nRequires power to operate.\n  Strong vs all Ground units\n  Cannot target Aircraft
+	Selectable:
+		Bounds: 24,24
+		DecorationBounds: 22,44,0,-10
+	SelectionDecorations:
+	Health:
+		HP: 75000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	WithBuildingBib:
+		HasMinibib: true
+	-WithSpriteBody:
+	WithChargeSpriteBody:
+		Sequence: active
+	Armament:
+		Weapon: Laser
+		LocalOffset: 0,-85,1280
+	AttackCharges:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+		ChargeLevel: 50
+		ChargingCondition: charging
+	AmbientSound:
+		RequiresCondition: charging
+		SoundFiles: obelpowr.aud
+		Interval: 30, 40
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	Power:
+		Amount: -75
+	RenderSprites:
+		Image: obli
+SWGTWR:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Guard Tower
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: barracks
+		Queue: Defence.SWREBELS, Defence.SWEMPIRE, RADefence.SWREBELS, RADefence.SWEMPIRE, Defence.SWREPUBLIC, RADefence.SWREPUBLIC
+		Description: Basic defensive structure.\n  Strong vs Infantry\n  Weak vs Tanks
+	Building:
+	Health:
+		HP: 40000
+	RevealsShroud:
+		Range: 7c0
+	WithBuildingBib:
+		HasMinibib: true
+	Armament:
+		Weapon: SWLaserV
+		LocalOffset: 256,0,256
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 3c0
+	WithMuzzleOverlay:
+	Turreted:
+		TurnSpeed: 255
+	Power:
+		Amount: -10
+
+SWATWR:
+	Inherits: ^Defense
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Advanced Guard Tower
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: anyhq, ~techlevel.medium
+		Queue: Defence.SWEMPIRE, RADefence.SWEMPIRE, Defence.SWSEPARATIST, RADefence.SWSEPARATIST
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks, Infantry
+	Selectable:
+		Bounds: 24,24
+		DecorationBounds: 22,48,0,-12
+	SelectionDecorations:
+	Health:
+		HP: 55000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 255
+		Offset: 128,128,384
+	Armament@PRIMARYInf:
+		Weapon: SWLaserV
+		LocalOffset: 256,128,0, 256,-128,0
+		LocalYaw: -100,100
+	Armament@PRIMARY:
+		Weapon: SWTowerMissile
+		LocalOffset: 256,128,0, 256,-128,0
+		LocalYaw: -100,100
+	Armament@SECONDARY:
+		Weapon: SWTowerAAMissile
+		LocalOffset: 256,128,0, 256,-128,0
+		LocalYaw: -100,100
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	Power:
+		Amount: -50
+
+SWSBAG:
+	Inherits: ^Wall
+	Valued:
+		Cost: 25
+	CustomSellValue:
+		Value: 0
+	Tooltip:
+		Name: Sandbag Barrier
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: fact
+		Queue: Defence.SWREBELS, RADefence.SWREBELS, Defence.SWSEPARATIST, RADefence.SWSEPARATIST, Defence.SWHUTT, RADefence.SWHUTT
+		Description: Stops infantry and light vehicles.\nCan be crushed by tanks.
+	Armor:
+		Type: Light
+	LineBuild:
+		NodeTypes: sandbag
+	LineBuildNode:
+		Types: sandbag
+	WithWallSpriteBody:
+		Type: sandbag
+	RenderSprites:
+		Image: sbag
+SWCYCL:
+	Inherits: ^Wall
+	Valued:
+		Cost: 25
+	CustomSellValue:
+		Value: 0
+	Tooltip:
+		Name: Chain Link Barrier
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: fact
+		Queue: Defence.SWEMPIRE, RADefence.SWEMPIRE, Defence.SWREPUBLIC, RADefence.SWREPUBLIC
+		Description: Stops infantry and light vehicles.\nCan be crushed by tanks.
+	Armor:
+		Type: Light
+	LineBuild:
+		NodeTypes: chain
+	LineBuildNode:
+		Types: chain
+	WithWallSpriteBody:
+		Type: chain
+	RenderSprites:
+		Image: cycl
+SWBRIK:
+	Inherits: ^Wall
+	Valued:
+		Cost: 150
+	CustomSellValue:
+		Value: 0
+	Tooltip:
+		Name: Concrete Barrier
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: vehicleproduction
+		Queue: Defence.SWEMPIRE, Defence.SWREBELS, RADefence.SWEMPIRE, RADefence.SWREBELS, Defence.SWSEPARATIST, RADefence.SWSEPARATIST, Defence.SWREPUBLIC, RADefence.SWREPUBLIC
+		Description: Stops infantry and most tanks.\nBlocks some projectiles.
+	Health:
+		HP: 25000
+	Armor:
+		Type: Heavy
+	BlocksProjectiles:
+	Crushable:
+		CrushClasses: heavywall
+		-CrushSound:
+	SoundOnDamageTransition:
+		DestroyedSounds: crumble.aud
+	LineBuild:
+		NodeTypes: concrete
+	LineBuildNode:
+		Types: concrete
+	WithWallSpriteBody:
+		Type: concrete
+	RenderSprites:
+		Image: brik
+
+swsite:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Tusken Riders Site
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: barracks, ~techlevel.medium
+		Queue: Defence.SWHUTT, RADefence.SWHUTT
+		Description: All-purpose defensive structure.\n  Strong vs Infantry, Tanks\n  Weak vs Aircraft\n Spawn Tusken Raiders
+	Selectable:
+		Bounds: 48,48
+		DecorationBounds: 48,48,0,-12
+	SelectionDecorations:
+	Health:
+		HP: 85000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 255
+	Armament:
+		Weapon: GLStingerTargeting
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	MobSpawnerMaster@1:
+		Actors: swsite.soldier
+		Offset: 255,255,0
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+	MobSpawnerMaster@2:
+		Actors: swsite.soldier
+		Offset: 255,-255,0
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+	MobSpawnerMaster@3:
+		Actors: swsite.soldier
+		Offset: -255,255,0
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+	MobSpawnerMaster@4:
+		Actors: swsite.bantha
+		Offset: -255,-255,0
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !disabled
+		CloakTypes: Cloak, Hijacker
+	Power:
+		Amount: 0
+	Building:
+		Footprint: xx __
+		Dimensions: 2,2
+	Voiced:
+		VoiceSet: GLStingerSiteVoice
+
+swsite.soldier:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EXT: ^ExternalConditions
+	Inherits@MC: ^MCImmune
+	RenderSprites:
+		Image: swe1tusk
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Tusken Raider
+	Mobile:
+		Speed: 42
+	Health:
+		HP: 6000
+	AutoTarget:
+		AllowMovement: false
+	AttackFrontal:
+	Selectable:
+		Priority: 4
+	Armament@PRIMARY:
+		Weapon: SWTuskLaser
+		LocalOffset: 256,43,341
+	TakeCover:
+		ProneOffset: 180,0,-200
+	MobSpawnerSlave:
+	RejectsOrders:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Voiced:
+		VoiceSet: SWTuskVoice
+	-MapEditorData:
+	-ActorLostNotification:
+swsite.bantha:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EXT: ^ExternalConditions
+	Inherits@MC: ^MCImmune
+	RenderSprites:
+		Image: swbantha
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Bantha Raider
+	Mobile:
+		Speed: 42
+	Health:
+		HP: 28000
+	AutoTarget:
+		AllowMovement: false
+	AttackFrontal:
+	Selectable:
+		Priority: 4
+	Armament@PRIMARY:
+		Weapon: SWBikeLaserShell
+		LocalOffset: 256,43,341
+	TakeCover:
+		ProneOffset: 180,0,-200
+	MobSpawnerSlave:
+	RejectsOrders:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Voiced:
+		VoiceSet: SWTuskVoice
+	-MapEditorData:
+	-ActorLostNotification:
+
+swntpuls:
+	Inherits: tsntpuls
+	Buildable:
+		BuildPaletteOrder: 140
+		Prerequisites: anyhq, ~techlevel.medium
+		Queue: Defence.SWREPUBLIC, RADefence.SWREPUBLIC
+	RenderSprites:
+		Image: tsntpuls
+swtrade:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Trade Building
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: anyhq
+		Queue: Building.SWSEPARATIST, Building.SWHUTT, RABuilding.SWSEPARATIST, RABuilding.SWHUTT
+		Description: Spawn Resources
+	Building:
+		Footprint: xX xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: -30
+	SeedsResource@C:
+		ResourceType: SWPCarbon
+		Interval: 330
+	SeedsResource@N:
+		ResourceType: SWPMin
+		Interval: 550
+	SeedsResource@M:
+		ResourceType: SWPNova
+		Interval: 550
+	CashTrickler@Rank0:
+		Interval: 150
+		Amount: 10
+
+swcloneplant:
+	Inherits: ^BaseBuilding
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Selectable:
+		Bounds: 72,72
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Cloning Vats
+	Buildable:
+		BuildPaletteOrder: 90
+		Prerequisites: barracks, sweye
+		Queue: Building.SWREPUBLIC, RABuilding.SWREPUBLIC
+		Description: Clones produced infantry.
+		BuildLimit: 1
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -200
+	ProvidesPrerequisite@buildingname:
+	Production:
+		Produces: Clone.Soviets
+	ClonesProducedUnits:
+		CloneableTypes: NormalInfantry
+		ProductionType: Clone.Soviets
+	Exit:
+		ExitCell: -1, 0
+	Exit@2:
+		ExitCell: 1, 0
+	RallyPoint:
+		Path: 3,3
+
+swindustrialplant:
+	Inherits: ^BaseBuilding
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -2048, -1536
+			BottomRight: 2048, 1536
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Selectable:
+		Bounds: 96,72
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Industrial Plant
+	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: swdtmpl
+		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST
+		BuildDuration: 330
+		BuildLimit: 1
+		Description: Reduces cost of vehicles by 25%.
+	Building:
+		Footprint: xxxx xxxx xxxx
+		Dimensions: 4,3
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -200
+	ProvidesPrerequisite@buildingname:
+	WithIdleOverlay@processing:
+		Sequence: idle-processing
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+	RenderSprites:
+		Image: yrngindp
+	ProvidesPrerequisite:
+		Prerequisite: yrngindp
+########################################################
+#	SW Meet CNC Units
+########################################################
+^SWShields:
+	WithColoredOverlay@Shield:
+		Palette: forceshield
+		RequiresCondition: !move && !empdisable
+	GrantConditionOnMovement@Shield:
+		ValidMovementTypes: Horizontal, Vertical
+		Condition: move
+	GrantConditionOnDamageState@Shield:
+		ValidDamageStates: Heavy, Critical
+		Condition: shielddamage
+	DamageMultiplier@Shield:
+		RequiresCondition: !move && !empdisable && shielddamage
+		Modifier: 50
+	SelfHealing@Shield:
+		PercentageStep: 5
+		Delay: 50
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: !move && !empdisable && shielddamage
+
+swaddonupgrade1:
+	Tooltip:
+		Name: Composite Armor
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: ScrapAddons.SWHUTT
+		Description: add 50% of armor.
+		Prerequisites: scrapvehicles
+	Valued:
+		Cost: 150
+	RenderSprites:
+		Image: usaarmoricon
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+
+swaddonupgrade2:
+	Tooltip:
+		Name: Camo
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: ScrapAddons.SWHUTT
+		Description: add Camo to Unit.
+		Prerequisites: scrapvehicles
+	Valued:
+		Cost: 600
+	RenderSprites:
+		Image: glcamo2icon
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+
+swaddonupgrade3:
+	Tooltip:
+		Name: Accelerator
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: ScrapAddons.SWHUTT
+		Description: Add 30% of Speed.
+		Prerequisites: scrapvehicles
+	Valued:
+		Cost: 150
+	RenderSprites:
+		Image: swxwing
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+^SWTargetableWalker:
+	Targetable@SWTargetableWalker:
+		TargetTypes: WalkerMech
+	SpeedMultiplier@SWTargetableWalker:
+		RequiresCondition: disableswwalker
+		Modifier: 20
+	ExternalCondition@SWTargetableWalker:
+		Condition: disableswwalker
+
+swe1:
+	Inherits: E1
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Trooper
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Infantry.SWREBELS, RAInfantry.SWREBELS
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: SWLaser
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWLaserG
+		MuzzleSequence: garrison-muzzle
+	GrantConditionOnPrerequisite@upswe1:
+		Condition: upswe1
+		Prerequisites: upswe1
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+		PauseOnCondition: disabled
+		RequiresCondition: upswe1
+		IsPlayerPalette: true
+	SpeedMultiplier@upswe1:
+		RequiresCondition: upswe1
+		Modifier: 120
+swe1troop:
+	Inherits: E1
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Trooper
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Infantry.SWEMPIRE, RAInfantry.SWEMPIRE
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: SWLaser
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWLaserG
+		MuzzleSequence: garrison-muzzle
+	Voiced:
+		VoiceSet: SWTrooperVoice
+	GrantConditionOnPrerequisite@upe1troop:
+		Condition: upe1troop
+		Prerequisites: upe1troop
+	DamageMultiplier@upe1troop:
+		RequiresCondition: upe1troop
+		Modifier: 85
+swe1dark:
+	Inherits: E1
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Dark Trooper
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: barracks, tek
+		Queue: Infantry.SWEMPIRE, RAInfantry.SWEMPIRE
+		Description: Heavy infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: SWLaserG
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWLaserG
+		MuzzleSequence: garrison-muzzle
+	Voiced:
+		VoiceSet: SWTrooperVoice
+	Mobile:
+		Speed: 71
+	Health:
+		HP: 9000
+
+swe1clone:
+	Inherits: E1
+	Valued:
+		Cost: 90
+	Tooltip:
+		Name: Clone Trooper
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Infantry.SWREPUBLIC, RAInfantry.SWREPUBLIC
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: SWLaserClone
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWLaserCloneG
+		MuzzleSequence: garrison-muzzle
+	Voiced:
+		VoiceSet: SWTrooperVoice
+	GrantConditionOnPrerequisite@upswe1clone:
+		Condition: upswe1clone
+		Prerequisites: upswe1clone
+	DamageMultiplier@upswe1clone:
+		RequiresCondition: upswe1clone
+		Modifier: 85
+
+swjumpjet:
+	Inherits: TSJUMPJET
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Jetpack Clone
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: anyhq
+		Queue: Infantry.SWREPUBLIC, RAInfantry.SWREPUBLIC, Infantry.X_Infantry
+		Description: Airborne soldier.\nCan attack aircraft.\n  Strong vs Infantry, Light armor\n  Weak vs AA
+	Armament:
+		Weapon: SWLaserJetpack
+	Armament@2:
+		Weapon: SWLaserJetpackAA
+		RequiresCondition: airborne
+
+swe1droid:
+	Inherits: E1
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 25
+	Tooltip:
+		Name: Battle Droid B1
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Infantry.SWSEPARATIST, RAInfantry.SWSEPARATIST, Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Health:
+		HP: 2000
+	Armament@PRIMARY:							##########
+		Weapon: SWLaser
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWLaserG
+		MuzzleSequence: garrison-muzzle
+	Voiced:
+		VoiceSet: SWDroidVoice
+	ExternalCondition@EMP:
+		TotalCap: 1
+		Condition: empdisable
+	TimedConditionBar@EMP:
+		Condition: empdisable
+		Color: FFFFFF
+	GrantCondition@disable:
+		RequiresCondition: ReaperTrap || chronobeamed || leaflet || empdisable
+	WithColoredOverlay@leaflet:
+		RequiresCondition: leaflet || empdisable
+	Targetable@HEAL:
+		TargetTypes: Heal, Repair, Healing
+	Targetable:
+		TargetTypes: Ground, Infantry, Cyborg
+	GrantConditionOnPrerequisite@MACHINESHOP:
+		Condition: hospital
+		Prerequisites: machshop
+	-DamagedByTerrain:
+	-SpawnActorOnDeath:
+	ProductionCostMultiplier@Industrial:
+		Multiplier: 75
+		Prerequisites: yrngindp
+	GrantConditionOnPrerequisite@upswe1droid:
+		Condition: upswe1droid
+		Prerequisites: upswe1droid
+	DamageMultiplier@upswe1droid:
+		RequiresCondition: upswe1droid
+		Modifier: 85
+swddroid:
+	Inherits: E1
+	Inherits@MC: ^MCImmune
+	Inherits@SWShields: ^SWShields
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Destructor Droid
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks, tek
+		Queue: Infantry.SWSEPARATIST, RAInfantry.SWSEPARATIST, Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST
+		Description: Heavy infantry.\n  Strong vs Ground\n  Weak vs Aircraft, EMP weapons
+	Health:
+		HP: 23000
+	Mobile:
+		TurnSpeed: 2
+		Speed: 105
+	Armor:
+		Type: Light		#Wood
+	Armament@PRIMARY:							##########
+		Weapon: SWDDroidLaser
+		LocalOffset: 768,85,90, 768,-85,90
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWDDroidLaser
+		MuzzleSequence: garrison-muzzle
+	Voiced:
+		VoiceSet: SWBigDroidVoice
+	ExternalCondition@EMP:
+		TotalCap: 1
+		Condition: empdisable
+	TimedConditionBar@EMP:
+		Condition: empdisable
+		Color: FFFFFF
+	GrantCondition@disable:
+		RequiresCondition: ReaperTrap || chronobeamed || leaflet || empdisable
+	WithColoredOverlay@leaflet:
+		RequiresCondition: leaflet || empdisable
+	Targetable@HEAL:
+		TargetTypes: Heal, Repair, Healing
+	Targetable:
+		TargetTypes: Ground, Infantry, Cyborg
+	GrantConditionOnPrerequisite@MACHINESHOP:
+		Condition: hospital
+		Prerequisites: machshop
+	-DamagedByTerrain:
+	-SpawnActorOnDeath:
+	ProductionCostMultiplier@Industrial:
+		Multiplier: 75
+		Prerequisites: yrngindp
+swdroidb2:
+	Inherits: TSCYBORG
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Battle Droid B2
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks, anyhq
+		Queue: Infantry.SWSEPARATIST, RAInfantry.SWSEPARATIST, Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST
+		Description: Cybernetic infantry unit.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
+	Armament@PRIMARY:
+		Weapon: SWLaserG
+	Selectable:
+		Class: tscyborg
+	Voiced:
+		VoiceSet: SWBigDroidVoice
+	ProductionCostMultiplier@Industrial:
+		Multiplier: 75
+		Prerequisites: yrngindp
+swjedi:
+	Inherits: E1
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Jedi
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: tek
+		Queue: Infantry.SWREBELS, RAInfantry.SWREBELS, Infantry.SWREPUBLIC, RAInfantry.SWREPUBLIC
+		Description: Melee combat infantry.\n  Strong vs Ground Targets\n  Weak vs Aircraft
+	Armament@PRIMARY:							##########
+		Weapon: SWJediSword
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWLaserG
+		MuzzleSequence: garrison-muzzle
+	Voiced:
+		VoiceSet: YuriVoice
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 200
+		RequiresCondition: supersonic
+	Health:
+		HP: 20000
+	Armor:
+		Type: Heavy
+	BlocksProjectiles:
+	Mobile:
+		Speed: 71
+
+swsith:
+	Inherits: E1
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Sith
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: tek
+		Queue: Infantry.SWEMPIRE, RAInfantry.SWEMPIRE, Infantry.SWSEPARATIST, RAInfantry.SWSEPARATIST
+		Description: Melee combat infantry.\n  Strong vs Ground Targets\n  Weak vs Aircraft
+	Armament@PRIMARY:							##########
+		Weapon: SWSithSword
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWLaserG
+		MuzzleSequence: garrison-muzzle
+	Voiced:
+		VoiceSet: YuriVoice
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 200
+		RequiresCondition: supersonic
+	Health:
+		HP: 20000
+	Armor:
+		Type: Heavy
+	BlocksProjectiles:
+	Mobile:
+		Speed: 71
+swvice:
+	Inherits: ^Viceroid
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty			##########
+	Valued:
+		Cost: 200
+	Health:
+		HP: 10000	#30000
+	Mobile:
+		Locomotor: swimsuit
+		Speed: 71
+	Hovers:
+	Buildable:
+		Queue: Infantry.SWEMPIRE, RAInfantry.SWEMPIRE
+		BuildPaletteOrder: 30
+		Prerequisites: vehicleproduction
+		Description: Small recon droid.\n  Strong vs Infantry\n  Weak vs Aircraft
+	Tooltip:
+		Name: Probot
+	ActorLostNotification:
+	Armament:
+		Weapon: SWLaser
+		LocalOffset: 384,0,0
+	-WithMuzzleOverlay
+	-DamagedByTerrain
+	Selectable:
+		Bounds: 14,14
+	RenderSprites:
+		Scale: 0.7
+		Image: swvice
+	Voiced:
+		VoiceSet: SWProbotVoice
+swe2:
+	Inherits: E2
+	Valued:
+		Cost: 180
+	Tooltip:
+		Name: Energy Grenadier
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Infantry.SWEMPIRE, Infantry.SWREBELS, RAInfantry.SWEMPIRE, RAInfantry.SWREBELS, Infantry.SWHUTT, RAInfantry.SWHUTT, Infantry.X_Infantry
+		Description: Fast infantry armed with grenades. \nDisables Vehicles. \n  Strong vs Buildings, Vehicle
+	Armament: 
+		Weapon: SWGrenade
+		LocalOffset: 0,0,427
+		FireDelay: 15
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: SWGrenade
+		FireDelay: 15
+	RenderSprites:
+		Image: e2
+swe3:
+	Inherits: ^Soldier
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Laser Trooper
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		Queue: Infantry.SWREBELS, RAInfantry.SWREBELS, Infantry.SWHUTT, RAInfantry.SWHUTT, Infantry.X_Infantry
+		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
+	Mobile:
+		Speed: 42
+	Health:
+		HP: 4500
+	AutoTarget:
+		ScanRadius: 6
+	Armament@PRIMARY:							##########
+		Weapon: SWGreenLaser
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWGreenLaserG
+	GrantConditionOnPrerequisite@upswe1:
+		Condition: upswe1
+		Prerequisites: upswe1
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+		PauseOnCondition: disabled
+		RequiresCondition: upswe1
+		IsPlayerPalette: true
+	SpeedMultiplier@upswe1:
+		RequiresCondition: upswe1
+		Modifier: 120
+swe3troop:
+	Inherits: ^Soldier
+	Valued:
+		Cost: 420
+	Tooltip:
+		Name: Heavy Laser Trooper
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		Queue: Infantry.SWEMPIRE, RAInfantry.SWEMPIRE, Infantry.X_Infantry
+		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
+	Mobile:
+		Speed: 42
+	Health:
+		HP: 6000
+	AutoTarget:
+		ScanRadius: 6
+	Armament@PRIMARY:							##########
+		Weapon: SWrBigRedLaser
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWGBigRedLaserG
+	GrantConditionOnPrerequisite@upe1troop:
+		Condition: upe1troop
+		Prerequisites: upe1troop
+	DamageMultiplier@upe1troop:
+		RequiresCondition: upe1troop
+		Modifier: 85
+swe3clone:
+	Inherits: ^Soldier
+	Valued:
+		Cost: 290
+	Tooltip:
+		Name: Clone Rocket Launcher
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		Queue: Infantry.SWREPUBLIC, RAInfantry.SWREPUBLIC, Infantry.X_Infantry
+		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
+	Mobile:
+		Speed: 42
+	Health:
+		HP: 6000
+	AutoTarget:
+		ScanRadius: 6
+	Armament@PRIMARY:							##########
+		Weapon: SWCloneBazooka
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWCloneBazookaG
+	GrantConditionOnPrerequisite@upswe1clone:
+		Condition: upswe1clone
+		Prerequisites: upswe1clone
+	DamageMultiplier@upswe1clone:
+		RequiresCondition: upswe1clone
+		Modifier: 85
+swe3droid:
+	Inherits: ^Soldier
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Missile Droid
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		Queue: Infantry.SWSEPARATIST, RAInfantry.SWSEPARATIST, Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST
+		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
+	Mobile:
+		Speed: 42
+	Health:
+		HP: 3000
+	AutoTarget:
+		ScanRadius: 6
+	Voiced:
+		VoiceSet: SWDroidVoice
+	Armament@PRIMARY:							##########
+		Weapon: SWrBigRedLaser
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: SWGBigRedLaserG
+	ExternalCondition@EMP:
+		TotalCap: 1
+		Condition: empdisable
+	TimedConditionBar@EMP:
+		Condition: empdisable
+		Color: FFFFFF
+	GrantCondition@disable:
+		RequiresCondition: ReaperTrap || chronobeamed || leaflet || empdisable
+	WithColoredOverlay@leaflet:
+		RequiresCondition: leaflet || empdisable
+	Targetable@HEAL:
+		TargetTypes: Heal, Repair, Healing
+	Targetable:
+		TargetTypes: Ground, Infantry, Cyborg
+	GrantConditionOnPrerequisite@MACHINESHOP:
+		Condition: hospital
+		Prerequisites: machshop
+	-DamagedByTerrain:
+	-SpawnActorOnDeath:
+	ProductionCostMultiplier@Industrial:
+		Multiplier: 75
+		Prerequisites: yrngindp
+	GrantConditionOnPrerequisite@upswe1droid:
+		Condition: upswe1droid
+		Prerequisites: upswe1droid
+	DamageMultiplier@upswe1droid:
+		RequiresCondition: upswe1droid
+		Modifier: 85
+swe4:
+	Inherits: E4
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Flamethrower
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Infantry.SWEMPIRE, Infantry.SWREBELS, RAInfantry.SWEMPIRE, RAInfantry.SWREBELS, Infantry.SWHUTT, RAInfantry.SWHUTT
+		Description: Advanced Anti-infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
+	RenderSprites:
+		Image: e4
+swe6:
+	Inherits: E6
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: R2 Unit
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks
+		Queue: Infantry.SWEMPIRE, Infantry.SWREBELS, RAInfantry.SWEMPIRE, RAInfantry.SWREBELS, Infantry.SWSEPARATIST, Infantry.SWREPUBLIC, RAInfantry.SWSEPARATIST, RAInfantry.SWREPUBLIC, Infantry.SWHUTT, RAInfantry.SWHUTT
+	RenderSprites:
+		Image: swe6
+	AutoTarget:
+		ScanRadius: 6
+		InitialStance: AttackAnything
+	Armament@PRIMARY:							##########
+		Weapon: SWR2D2Tesla
+		TargetStances: Enemy
+	Armament:
+		Weapon: TSRepair
+		TargetStances: Ally
+		ForceTargetStances: None
+	Voiced:
+		VoiceSet: SWR2Voice
+swrmbo:
+	Inherits: RMBO
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Mercenary
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: tek, ~techlevel.high
+		Queue: Infantry.SWREBELS, Infantry.SWREBELS
+		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+	Armament:
+		Weapon: Sniper
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Sniper
+	Armament@c4:
+		Weapon: CHTankHunterAttach1
+		Cursor: c4
+	Voiced:
+		VoiceSet: SWMercenaryVoice
+swgreedo:
+	Inherits: E1
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Bounty Hunter
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: tek, ~techlevel.high
+		Queue: Infantry.SWEMPIRE, Infantry.SWEMPIRE, Infantry.SWHUTT, Infantry.SWHUTT
+		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+	Armament@PRIMARY:
+		Weapon: Sniper
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Sniper
+	Infiltrates:
+		Types: SpyInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 50
+	Cloak:
+		InitialDelay: 60
+		CloakDelay: 60
+		RequiresCondition: !cloak-force-disabled
+		IsPlayerPalette: true
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
+	Voiced:
+		VoiceSet: SWGreedoVoice
+	Mobile:
+		Speed: 71
+swbike:
+	Inherits: ^Vehicle
+	Inherits@@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Speeder Bike
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: vehicleproduction
+		Queue: Vehicle.SWEMPIRE, RAVehicle.SWEMPIRE, Vehicle.SWREBELS, RAVehicle.SWREBELS, Vehicle.SWREPUBLIC, RAVehicle.SWREPUBLIC, Vehicle.SWHUTT, RAVehicle.SWHUTT, Vehicle.X_Vehicles
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		TurnSpeed: 10
+		Speed: 170
+		Locomotor: hover
+	Hovers:
+	Health:
+		HP: 12000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Armament:
+		Weapon: SWBikeLaser
+		LocalOffset: 200,120,23, 200,-120,23
+		MuzzleSequence: muzzle
+		RequiresCondition: scrap_create_bonus == 0
+	Armament@Salvage:
+		Weapon: SWBikeLaserSalvage
+		MuzzleSequence: muzzle
+		LocalOffset: 128,0,43
+		RequiresCondition: scrap_create_bonus == 1
+	Armament@Salvage2:
+		Weapon: SWBikeLaserShell
+		LocalOffset: 128,0,43
+		RequiresCondition: scrap_create_bonus >= 2
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	GrantConditionOnPrerequisite@upswbike:
+		Condition: upswbike
+		Prerequisites: upswbike
+	SpeedMultiplier@upswbike:
+		RequiresCondition: upswbike
+		Modifier: 140
+swbggy:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: X-34 Land Speeder
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: vehicleproduction
+		Queue: Vehicle.SWREBELS, RAVehicle.SWREBELS, Vehicle.SWHUTT, RAVehicle.SWHUTT, Vehicle.X_Vehicles
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks. \n Upgradable width Salvage Parts
+	Mobile:
+		TurnSpeed: 10
+		Speed: 156
+		Locomotor: hover
+	Hovers:
+	Health:
+		HP: 16000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -85,0,128
+	Armament@Normal:
+		Weapon: SWBikeLaserSalvage
+		MuzzleSequence: muzzle
+		LocalOffset: 128,0,43
+		RequiresCondition: scrap_create_bonus == 0
+	Armament@Salvage:
+		Weapon: SWBikeLaserShell
+		MuzzleSequence: muzzle
+		LocalOffset: 128,0,43
+		RequiresCondition: scrap_create_bonus == 1
+	Armament@Salvage2:
+		Weapon: SWBikeLaserMissile
+		LocalOffset: 128,0,43
+		RequiresCondition: scrap_create_bonus >= 2
+	AttackTurreted:
+	WithMuzzleOverlay:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 1
+		PipCount: 1
+		LoadingCondition: notmobile
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+
+swjeep:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: TIE Crawler
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: vehicleproduction
+		Queue: Vehicle.SWEMPIRE, RAVehicle.SWEMPIRE, Vehicle.X_Vehicles
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		TurnSpeed: 10
+		Speed: 156
+		Locomotor: tracked
+	Health:
+		HP: 24000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -85,0,128
+	Armament:
+		Weapon: SWTieCrawlLaser
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	GrantConditionOnPrerequisite@upswjeep:
+		Condition: upswjeep
+		Prerequisites: upswjeep
+	DamageMultiplier@upswjeep:
+		RequiresCondition: upswjeep
+		Modifier: 80
+swspider:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Spider Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: vehicleproduction
+		Queue: Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST, Vehicle.X_Vehicles
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		TurnSpeed: 8
+		Speed: 126
+		Locomotor: tracked
+	Health:
+		HP: 44000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Armament:
+		Weapon: SWTieCrawlLaser
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+		IdleSequences: idle
+	Voiced:
+		VoiceSet: SWDroidVoice
+swltnk:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@detect: ^GenericAirDetector
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: T-47 Airspeeder
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Aircraft.SWREBELS, RAAircraft.SWREBELS, Vehicle.SWREBELS, RAVehicle.SWREBELS, Aircraft.X_Aircrafts
+		Description: Aircraft Gunship with AG Laser.\n  Strong vs Tanks, Walker Mech\n  Weak vs Infantry
+	Aircraft:
+		CruiseAltitude: 900
+		TurnSpeed: 10
+		Speed: 176
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 9000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWSkySpeederLaser
+		Name: secondary
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	Armament@Disable:
+		Weapon: SWWalkerDisable
+		LocalOffset: 0,0,0
+	Armament@Disable2:
+		Weapon: SWWalkerDisable2
+		LocalOffset: 0,0,0
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+	AmmoPool:
+		Ammo: 6
+		PipCount: 6
+		AmmoCondition: ammo
+		Name: secondary
+		Armaments: secondary
+	-SpawnActorOnDeath:
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	ReloadAmmoPool:
+		Delay: 100
+		Count: 1
+		AmmoPool: secondary
+	Selectable:
+		DecorationBounds: 30,24
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 120
+		RequiresCondition: supersonic && ammo
+swmtnk:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@SWTargetableWalker: ^SWTargetableWalker
+	Buildable:
+		Queue: Vehicle.SWEMPIRE, RAVehicle.SWEMPIRE, Vehicle.X_Vehicles
+		BuildPaletteOrder: 120
+		Description: Empire Main Battle Walker, with dual cannons\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 950
+	Tooltip:
+		Name: AT-ST Walker
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 71
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 5
+	Armament:
+		Weapon: SWATSTLaser
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 768,85,90, 768,-85,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	SelectionDecorations:
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Selectable:
+		DecorationBounds: 28,28
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+		IdleSequences: idle
+
+swhtnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@SWTargetableWalker: ^SWTargetableWalker
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: AT-AT Walker
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: tek
+		Queue: Vehicle.SWEMPIRE, RAVehicle.SWEMPIRE, Vehicle.X_Vehicles
+		Description: Heavily armored Empire Walker.\nCan attack Aircraft.\n  Strong vs Everything
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 35
+		TurnSpeed: 3
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 110000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 3
+	Armament@PRIMARY:
+		Weapon: SWATATLaser
+		LocalOffset: 768,85,90, 768,-85,90
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWLaserG
+		LocalOffset: -85,384,340, -85,-384,340
+		LocalYaw: -100, 100
+		Recoil: 10
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelfHealing:
+		Step: 500
+		Delay: 10
+		HealIfBelow: 50
+		DamageCooldown: 200
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 34,34,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 5
+		PipCount: 5
+		LoadingCondition: notmobile
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+		IdleSequences: idle
+swarty:
+	Inherits: ARTY
+	Tooltip:
+		Name: Movile Artillery
+	Buildable:
+		BuildPaletteOrder: 60
+		Queue: Vehicle.SWREBELS, RAVehicle.SWREBELS, Vehicle.SWEMPIRE, RAVehicle.SWEMPIRE, Vehicle.SWREPUBLIC, RAVehicle.SWREPUBLIC, Vehicle.X_Vehicles, Vehicle.SWHUTT, RAVehicle.SWHUTT
+		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings
+	Armament:
+		Weapon: SWArtilleryShell
+		RequiresCondition: scrap_create_bonus == 0
+	Armament@Salvage:
+		Weapon: SWArtilleryShell2
+		RequiresCondition: scrap_create_bonus == 1
+	Armament@Salvage2:
+		Weapon: SWArtilleryShell3
+		RequiresCondition: scrap_create_bonus >= 2
+	RenderSprites:
+		Image: swarty
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	Mobile:
+		Locomotor: hover
+	Hovers:
+	WithShadow:
+		Offset: 108, 24, 0
+		ZOffset: -512
+
+swheli:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: A Wing
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Aircraft.SWREBELS, RAAircraft.SWREBELS, Aircraft.X_Aircrafts
+		Description: Fast Aircraft with Light Lasers.\n  Strong vs Infantry, Light Vehicles and\n  Aircraft\n  Weak vs Tanks
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 7
+		Speed: 180
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 7500
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWAWingGun
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWAWingGunAA
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 20
+	AmmoPool:
+		Ammo: 10
+		PipCount: 5
+		AmmoCondition: ammo
+	-SpawnActorOnDeath:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 270
+		RequiresCondition: supersonic && ammo
+swdroidheli:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Vulture
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Aircraft.SWSEPARATIST, RAAircraft.SWSEPARATIST, Aircraft.X_Aircrafts
+		Description: Light Aircraft with Lasers.\n  Strong vs Infantry, Light Vehicles and\n  Aircraft\n  Weak vs Tanks
+	Aircraft:
+		CruiseAltitude: 2567
+		TurnSpeed: 7
+		Speed: 180
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 6000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWAWingGun
+		LocalOffset: 128,-213,-85, 128,213,-85
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWAWingGunAA
+		LocalOffset: 128,-213,-85, 128,213,-85
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 20
+	-SpawnActorOnDeath:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	Voiced:
+		VoiceSet: SWDroidVoice
+swxwing:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: X Wing
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Aircraft.SWREBELS, RAAircraft.SWREBELS, Aircraft.X_Aircrafts, Aircraft.SWHUTT, RAAircraft.SWHUTT
+		Description: Fighter Aircraft with Medium Lasers and Missiles.\n  Strong vs Infantry, Light Vehicles and\n  Aircraft\n  Weak vs Tanks
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 5
+		Speed: 200
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 15000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWXWingGun
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWXWingGunAA
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	Armament@TREE:
+		Name: secondary
+		Weapon: SWXwingRocket
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 20
+	AmmoPool:
+		Ammo: 48
+		PipCount: 5
+		ReloadDelay: 12
+		AmmoCondition: ammo
+	-SpawnActorOnDeath:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 200
+		RequiresCondition: supersonic && ammo
+swstarfighter:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Star Fighter
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Aircraft.SWREPUBLIC, RAAircraft.SWREPUBLIC, Aircraft.X_Aircrafts
+		Description: Fighter Aircraft with Lasers.\n  Strong vs Infantry, Light Vehicles and\n  Aircraft\n  Weak vs Tanks
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 5
+		Speed: 200
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 15000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWXWingGun
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWXWingGunAA
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 20
+	AmmoPool:
+		Ammo: 48
+		PipCount: 5
+		ReloadDelay: 12
+		AmmoCondition: ammo
+	-SpawnActorOnDeath:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 200
+		RequiresCondition: supersonic && ammo
+swfalc:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Millennium Falcon
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildLimit: 1
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Aircraft.SWREBELS, RAAircraft.SWREBELS, Aircraft.X_Aircrafts
+		Description: Hero Aircraft.\nwith Lasers, Heavy Lasers, etc.\n  Strong vs Infantry, Light Vehicles and\n  Aircraft\n  Weak vs Tanks
+	Aircraft:
+		CruiseAltitude: 2660
+		TurnSpeed: 5
+		Speed: 220
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 45000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWBikeLaser
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWTB2BlaserAA
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	Armament@TREE:
+		Weapon: SWATATLaser
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 20
+	AmmoPool:
+		Ammo: 48
+		PipCount: 5
+		ReloadDelay: 12
+		AmmoCondition: ammo
+	-SpawnActorOnDeath:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 200
+		RequiresCondition: supersonic && ammo
+
+sworca:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: TIE Fighter
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Aircraft.SWEMPIRE, RAAircraft.SWEMPIRE, Aircraft.X_Aircrafts
+		Description: Aircraft with Heavy Lasers.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 7
+		Speed: 186
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 9000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWOrcaAGMissiles
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Weapon: SWOrcaAAMissiles
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+	AmmoPool:
+		Ammo: 6
+		PipCount: 6
+		AmmoCondition: ammo
+	-SpawnActorOnDeath:
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+swtrifighter:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Tri Fighter
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Aircraft.SWSEPARATIST, RAAircraft.SWSEPARATIST, Aircraft.X_Aircrafts
+		Description: Aircraft with Heavy Lasers.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 7
+		Speed: 186
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 9000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWOrcaAGMissiles
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Weapon: SWOrcaAAMissiles
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+	AmmoPool:
+		Ammo: 6
+		PipCount: 6
+		AmmoCondition: ammo
+	-SpawnActorOnDeath:
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	Voiced:
+		VoiceSet: SWDroidVoice
+
+swywing:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Y-Wing Bomber
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Aircraft.SWREBELS, RAAircraft.SWREBELS, Aircraft.SWREPUBLIC, RAAircraft.SWREPUBLIC, Aircraft.X_Aircrafts, Aircraft.SWHUTT, RAAircraft.SWHUTT
+		Description: Bomber Aircraft.\n  Strong vs Buildings, Tanks, Infantry\n  Weak vs AA Armament
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 7
+		Speed: 170
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 9000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWArtilleryShell
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+	AmmoPool:
+		Ammo: 2
+		PipCount: 2
+		AmmoCondition: ammo
+	-SpawnActorOnDeath:
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 150
+		RequiresCondition: supersonic && ammo
+swharv:
+	Inherits: ^Tank
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Valued:
+		Cost: 1100
+	Tooltip:
+		Name: Jawa Sandcrawler
+		GenericName: Harvester
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: swproc
+		Queue: Vehicle.SWEMPIRE, Vehicle.SWREBELS, RAVehicle.SWEMPIRE, RAVehicle.SWREBELS, Vehicle.SWSEPARATIST, Vehicle.SWREPUBLIC, RAVehicle.SWSEPARATIST, RAVehicle.SWREPUBLIC, Vehicle.SWHUTT, RAVehicle.SWHUTT
+		BuildDurationModifier: 40
+		Description: Collects Resources for processing.\n  Unarmed
+	Selectable:
+		DecorationBounds: 36,36
+	Harvester:
+		PipCount: 7
+		Capacity: 25
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 15
+		SearchFromHarvesterRadius: 8
+		EmptyCondition: no-tiberium
+	Mobile:
+		Speed: 70
+	Health:
+		HP: 85000
+	Repairable:
+		HpPerStep: 2537
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 4c0
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	Explodes:
+		RequiresCondition: !no-tiberium
+		Weapon: TiberiumExplosion
+	Explodes@empty:
+		RequiresCondition: no-tiberium
+		Weapon: UnitExplode
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions					##########
+swcrawl:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@cargo: ^CargoVehicle
+	Inherits@MC: ^MCImmune
+	Buildable:
+		Queue: Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST, Vehicle.X_Vehicles
+		BuildPaletteOrder: 120
+		Description: Tough infantry transport.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft.\n Transport 30 droids
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Droid Transport
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: raapc
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 40
+		PauseOnCondition: notmobile || being-captured || disabled
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Armament:
+		Weapon: SWBikeLaser
+		LocalOffset: 200,120,23, 200,-120,23
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 25
+		PipCount: 5
+		LoadingCondition: notmobile
+		EjectOnDeath: false
+		InitialUnits: swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid,swe1droid
+	AIDeployNotifier:
+		DeployChance: 100
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Voiced:
+		VoiceSet: SWDroidVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+sw2tnk:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Buildable:
+		Queue: Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST, Vehicle.X_Vehicles
+		BuildPaletteOrder: 110
+		Description: Droid Army Main Battle Tank.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Armored Assault Tank Mk I
+		GenericName: Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 45000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 72
+		Locomotor: hover
+	Hovers:
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Armament:
+		Weapon: SWSkySpeederLaser
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle
+	Armament@B:
+		Weapon: SWTuskLaser
+		LocalOffset: 200,130,33, 200,-130,33
+		MuzzleSequence: muzzle
+	AttackFrontal:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Selectable:
+		DecorationBounds: 28,28
+	Voiced:
+		VoiceSet: SWDroidVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+swlaat:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: LAAT Gunner
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: tran
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: hpad
+		Queue: Aircraft.SWREPUBLIC, Aircraft.SWREPUBLIC
+		Description: Fast Infantry Transport Aircraft.\n  Armed width AG Missiles
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 150
+		AltitudeVelocity: 0c100
+	Health:
+		HP: 18000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 10
+		PipCount: 10
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	-SpawnActorOnDeath:
+	SelectionDecorations:
+	Armament@PRIMARY:
+		Weapon: SWAWingGun
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWLAATMissile
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	AmmoPool:
+		Ammo: 20
+		PipCount: 5
+		ReloadDelay: 5
+		AmmoCondition: ammo
+
+swlaat.e1:
+	Inherits: swlaat
+	Inherits@bot: ^BotMicromanageable
+	Buildable:
+		Prerequisites: barracks, ~hardbotplayer
+		Queue: Aircraft.SWREPUBLIC, RAAircraft.SWREPUBLIC
+	Cargo:
+		InitialUnits: swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe3, swe3, swe3
+		LoadedCondition: loaded
+	Armament:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: botmicro && loaded
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	ProductionCostMultiplier:
+		Multiplier: 200
+	KillsSelf:
+		RemoveInstead: true
+		RequiresCondition: !loaded && botmicro
+		Delay: 300
+	EditorOnlyTooltip:
+		Name: Loaded LAAT
+	RenderSprites:
+		Image: swlaat
+swc17:
+	Inherits: ^Plane
+	Interactable:
+	Tooltip:
+		Name: Rebel Transport Vessel
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 326
+		Repulsable: False
+		MaximumPitch: 36
+		CanHover: false
+		CanSlide: false
+	HiddenUnderFog:
+		AlwaysVisibleStances: None
+		Type: CenterPosition
+	Cargo:
+		MaxWeight: 10
+		PipCount: 10
+	DamageMultiplier@INVULNERABLE:
+		Modifier: 0
+	Contrail@1:
+		Offset: -261,-650,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -85,-384,0
+		TrailLength: 16
+	Contrail@3:
+		Offset: -85,384,0
+		TrailLength: 16
+	Contrail@4:
+		Offset: -261,650,0
+		TrailLength: 15
+	-MapEditorData:
+	RenderSprites:
+		Scale: 1.8
+swc17player:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+	Valued:
+		Cost: 4000
+	Tooltip:
+		Name: Mon Calamari Transport
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: tran
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: tek
+		Queue: Aircraft.SWREBELS, Aircraft.SWREBELS
+		Description: Heavy Transport Cruiser.\n  Armed width Interceptor X-wings
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 45
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 95000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Cargo:
+		Types: Infantry, Hacker, Vehicle
+		MaxWeight: 15
+		PipCount: 15
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	-SpawnActorOnDeath:
+	SelectionDecorations:
+	Armament:
+		Weapon: InterceptorLauncher
+	Armament@AG:
+		Weapon: SWXWingGun
+		LocalOffset: 128,-213,-85, 128,213,-85, -128,-213,-85, 128,213,-85
+	Armament@AA:
+		Name: secondary
+		Weapon: SWTB2BlaserAA
+		LocalOffset: 128,-213,-85, 128,213,-85, -128,-213,-85, 128,213,-85
+	AutoTarget:
+		ScanRadius: 4
+	Turreted:
+	AttackTurreted:
+		PauseOnCondition: disabled
+	-AttackAircraft:
+	RenderSprites:
+		Image: swc17
+		Scale: 2.0
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 170
+		RequiresCondition: supersonic && ammo
+	CarrierMaster:
+		Actors: swintercepto2, swintercepto2
+		RearmTicks: 10
+		RespawnTicks: 320
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Voiced:
+		VoiceSet: SWItsAtrapVoice
+swc17player.e1:
+	Inherits: swc17player
+	Inherits@bot: ^BotMicromanageable
+	Buildable:
+		Prerequisites: barracks, ~hardbotplayer
+		Queue: Aircraft.SWREBELS, Aircraft.SWREBELS
+	Cargo:
+		InitialUnits: sw3tnk, sw3tnk, sw3tnk, swquad, swquad, swe1, swe1, swe1, swe1, swe1, swe1, swe1, swe1, swe1, swe1
+		LoadedCondition: loaded
+	Armament:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: botmicro && loaded
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	ProductionCostMultiplier:
+		Multiplier: 250
+	EditorOnlyTooltip:
+		Name: Loaded Cruiser (E1)
+	RenderSprites:
+		Image: swc17
+swstard:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+	Valued:
+		Cost: 7500
+	Tooltip:
+		Name: Star Destroyer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: tran
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: tek
+		Queue: Aircraft.SWEMPIRE, Aircraft.SWEMPIRE
+		Description: Heavy Cruiser.\n  Armed width Interceptor TIE Fighters\n and Heavy Lasers
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 40
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 100000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	-SpawnActorOnDeath:
+	SelectionDecorations:
+	Armament:
+		Weapon: InterceptorLauncher
+	Armament@PRIMARY:
+		Weapon: SWTowerAAMissile
+		LocalOffset: 128,-213,-85, 128,213,-85, -128,-213,-85, 128,213,-85
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWXWingGunAA
+		LocalOffset: 128,-213,-85, 128,213,-85, -128,-213,-85, 128,213,-85
+	Armament@TREE:
+		Name: secondary
+		Weapon: SWATATLaser
+		LocalOffset: 128,-213,-85, 128,213,-85, -128,-213,-85, 128,213,-85
+	AutoTarget:
+		ScanRadius: 4
+	Turreted:
+	AttackTurreted:
+		PauseOnCondition: disabled
+	-AttackAircraft:
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 150
+		RequiresCondition: supersonic && ammo
+	Explodes@upatomictank:
+		Weapon: CHAtomicTankExplode
+		EmptyWeapon: CHAtomicTankExplode
+	CarrierMaster:
+		Actors: swinterceptor, swinterceptor, swinterceptor, swinterceptor
+		RearmTicks: 10
+		RespawnTicks: 320
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+swexecutor:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+	Valued:
+		Cost: 22000
+	Tooltip:
+		Name: Executor
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: tran
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: anyhq
+		Queue: None
+		Description: Heavy Cruiser.\n  Armed width Interceptor TIE Fighters\n and Heavy Lasers
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 6
+		Speed: 40
+		IdealSeparation: 2c0
+		RepulsionSpeed: 10
+		CruiseAltitude: 3769
+	Health:
+		HP: 600000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 15c0
+		Type: GroundPosition
+	SpawnActorOnDeath:
+		Actor: swexecutor.husk
+	SelectionDecorations:
+	Armament:
+		Weapon: InterceptorLauncher
+	Armament@PRIMARY:
+		Weapon: SWTowerAAMissile
+		LocalOffset: 128,-213,-85, 128,213,-85, -128,-213,-85, 128,213,-85
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWXWingGunAA
+		LocalOffset: 128,-213,-85, 128,213,-85, -128,-213,-85, 128,213,-85
+	Armament@TREE:
+		Name: secondary
+		Weapon: SWExecutorLaser
+		LocalOffset: 228,-213,-85, 228,213,-85, -228,-213,-85, -228,213,-85
+	AutoTarget:
+		ScanRadius: 4
+	Turreted:
+	AttackTurreted:
+		PauseOnCondition: disabled
+	-AttackAircraft:
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 150
+		RequiresCondition: supersonic && ammo
+	Explodes@upatomictank:
+		Weapon: CHAtomicTankExplode
+		EmptyWeapon: CHAtomicTankExplode
+	CarrierMaster:
+		Actors: swinterceptor, swinterceptor, swinterceptor, swinterceptor, swinterceptor, swinterceptor, swinterceptor, swinterceptor, swinterceptor, swinterceptor
+		RearmTicks: 10
+		RespawnTicks: 250
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	RenderSprites:
+		Scale: 1.5
+swexecutor.husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Executor
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 149
+	RevealsShroud:
+		Range: 8c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 6c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: swexecutordie
+	FallsToEarth:
+		Moves: False
+		Explosion: Atomic
+		Velocity: 5
+		MaximumSpinSpeed: 1
+	RenderSprites:
+		Scale: 1.5
+swaclamator:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+	Valued:
+		Cost: 7000
+	Tooltip:
+		Name: Aclamator
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: tran
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: tek
+		Queue: Aircraft.SWREPUBLIC, Aircraft.SWREPUBLIC
+		Description: Heavy Cruiser.\n  Armed width Interceptor Starfighters\n and Heavy Lasers
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 40
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 95000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	-SpawnActorOnDeath:
+	SelectionDecorations:
+	Armament:
+		Weapon: InterceptorLauncher
+	Armament@PRIMARY:
+		Weapon: SWTowerAAMissile
+		LocalOffset: 128,-213,-85, 128,213,-85, -128,-213,-85, 128,213,-85
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWXWingGunAA
+		LocalOffset: 128,-213,-85, 128,213,-85, -128,-213,-85, 128,213,-85
+	Armament@TREE:
+		Name: secondary
+		Weapon: SWATATLaser
+		LocalOffset: 128,-213,-85, 128,213,-85, -128,-213,-85, 128,213,-85
+	AutoTarget:
+		ScanRadius: 4
+	Turreted:
+	AttackTurreted:
+		PauseOnCondition: disabled
+	-AttackAircraft:
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 150
+		RequiresCondition: supersonic && ammo
+	Explodes@upatomictank:
+		Weapon: CHAtomicTankExplode
+		EmptyWeapon: CHAtomicTankExplode
+	CarrierMaster:
+		Actors: swintercepto3, swintercepto3, swintercepto3, swintercepto3
+		RearmTicks: 10
+		RespawnTicks: 320
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+
+swinterceptor:
+	Inherits: ^Plane
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeProtoss
+	Valued:
+		Cost: 120
+	Tooltip:
+		Name: TIE Fighter
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 180
+		Repulsable: false
+		VTOL: true
+		CruiseAltitude: 1c256
+	Targetable:
+		TargetTypes: Air
+	CarrierSlave:
+		LandingDistance: 2c0
+	Health:
+		HP: 10000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 6c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWOrcaAAMissiles
+		LocalOffset: 200,0,0
+	Armament@SECONDARY:
+		Weapon: SWSkySpeederLaser
+		LocalOffset: 200,0,0
+	AttackAircraft:
+		FacingTolerance: 20
+	DeathSounds:
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: SCCarrierVoice
+	-ActorLostNotification:
+	-UpdatesPlayerStatistics:
+	Interactable:
+	HitShape:
+	RenderSprites:
+		Image: sworca
+		Scale: 0.7
+swintercepto2:
+	Inherits: ^Plane
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeProtoss
+	Valued:
+		Cost: 160
+	Tooltip:
+		Name: X Wing
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 180
+		Repulsable: false
+		VTOL: true
+		CruiseAltitude: 1c256
+	Targetable:
+		TargetTypes: Air
+	CarrierSlave:
+		LandingDistance: 2c0
+	Health:
+		HP: 10000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 6c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWXWingGunAA
+		LocalOffset: 200,0,0
+	Armament@SECONDARY:
+		Weapon: SWXWingGun
+		LocalOffset: 200,0,0
+	AttackAircraft:
+		FacingTolerance: 20
+	DeathSounds:
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: SCCarrierVoice
+	-ActorLostNotification:
+	-UpdatesPlayerStatistics:
+	Interactable:
+	HitShape:
+	RenderSprites:
+		Image: swxwing
+		Scale: 0.6
+swintercepto3:
+	Inherits: ^Plane
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeProtoss
+	Valued:
+		Cost: 160
+	Tooltip:
+		Name: Star Fighter
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 180
+		Repulsable: false
+		VTOL: true
+		CruiseAltitude: 1c256
+	Targetable:
+		TargetTypes: Air
+	CarrierSlave:
+		LandingDistance: 2c0
+	Health:
+		HP: 10000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 6c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: SWXWingGunAA
+		LocalOffset: 200,0,0
+	Armament@SECONDARY:
+		Weapon: SWXWingGun
+		LocalOffset: 200,0,0
+	AttackAircraft:
+		FacingTolerance: 20
+	DeathSounds:
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: SCCarrierVoice
+	-ActorLostNotification:
+	-UpdatesPlayerStatistics:
+	Interactable:
+	HitShape:
+	RenderSprites:
+		Image: swstarfighter
+		Scale: 0.6
+swdarty:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Droid Missile
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Queue: Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST, Vehicle.X_Vehicles
+		Description: Long-range missile artillery.\n  Strong vs Infantry, Vehicles and Aircraft
+	Mobile:
+		TurnSpeed: 4
+		Speed: 110
+	Health:
+		HP: 7500
+	Repairable:
+		HpPerStep: 569
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 5c0
+	Armament:
+		Weapon: SWDroidRocketsAG
+		LocalOffset: 624,0,208
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: SWDroidRocketsAA
+		LocalOffset: 624,0,208
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		TargetFrozenActors: True
+		ForceFireIgnoresActors: True
+	WithMuzzleOverlay:
+	AutoTarget:
+		InitialStanceAI: Defend
+	Explodes:
+		Weapon: ArtilleryShell
+		EmptyWeapon: UnitExplode
+		LoadedChance: 75
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Voiced:
+		VoiceSet: SWBigDroidVoice
+swquad:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@SWShields: ^SWShields
+	Buildable:
+		Queue: Vehicle.SWREBELS, RAVehicle.SWREBELS, Vehicle.X_Vehicles
+		BuildPaletteOrder: 60
+		Prerequisites: ~techlevel.low
+		Description: Mobile unit with mounted quad Lasers.\n  Strong vs Infantry, Light armor, Aircraft\n  Weak vs Tanks
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: TB2 Light Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: ftrk
+	Health:
+		HP: 15000
+	Armor:
+		Type: Light
+	Mobile:
+		TurnSpeed: 10
+		Speed: 118
+		Locomotor: hover
+	Hovers:
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -298,0,129
+	Armament@AA:
+		Weapon: SWTB2BlaserAA
+		Recoil: 85
+		LocalOffset: 512,0,192
+	Armament@AG:
+		Weapon: SWTB2BlaserAG
+		Recoil: 85
+		LocalOffset: 512,0,192
+	AttackTurreted:
+	WithSpriteTurret:
+	SelectionDecorations:
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Selectable:
+		Class: ftrk
+		DecorationBounds: 28,28
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 75
+	ReloadDelayMultiplier@Salvaged2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 50
+
+
+sw4tnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@SWTargetableWalker: ^SWTargetableWalker
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: AT-TE Walker
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: anyhq
+		Queue: Vehicle.SWREPUBLIC, RAVehicle.SWREPUBLIC, Vehicle.X_Vehicles
+		Description: Heavily armored Republic Tank.\nCan attack Aircraft.\n  Strong vs Everything
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 45
+		TurnSpeed: 3
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 80000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 3
+		Offset: 72,0,64
+	Armament@PRIMARY:
+		Weapon: SWATTELaser
+		LocalOffset: 768,85,90, 768,-85,90
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWLaserG
+		LocalOffset: -85,384,340, -85,-384,340
+		LocalYaw: -100, 100
+		Recoil: 10
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelfHealing:
+		Step: 500
+		Delay: 10
+		HealIfBelow: 50
+		DamageCooldown: 200
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 34,34,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+		IdleSequences: idle
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 5
+		PipCount: 5
+		LoadingCondition: notmobile
+		EjectOnDeath: false
+		InitialUnits: swe1clone, swe1clone, swe1clone, swe1clone, swe1clone
+	AIDeployNotifier:
+		DeployChance: 100
+swjugger:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@SWTargetableWalker: ^SWTargetableWalker
+	Valued:
+		Cost: 4000
+	Tooltip:
+		Name: A6 Juggernaut
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: tek
+		Queue: Vehicle.SWREPUBLIC, RAVehicle.SWREPUBLIC, Vehicle.X_Vehicles
+		Description: Heavily armored Republic Tank.\nCan attack Aircraft.\n  Strong vs Everything
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 40
+		TurnSpeed: 3
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 210000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 4
+		Offset: 512,0,72
+	Armament@PRIMARY:
+		Weapon: SWATATLaser
+		LocalOffset: 768,85,90, 768,-85,90
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: SWLaserG
+		LocalOffset: -85,384,340, -85,-384,340
+		LocalYaw: -100, 100
+		Recoil: 10
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelfHealing:
+		Step: 500
+		Delay: 10
+		HealIfBelow: 50
+		DamageCooldown: 200
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 42,42,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Cargo:
+		Types: Infantry, Hacker, Vehicle
+		MaxWeight: 20
+		PipCount: 20
+		LoadingCondition: notmobile
+		EjectOnDeath: false
+		InitialUnits: swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe1clone, swe3clone, swe3clone, swe3clone, swe3clone, swe3clone
+	AIDeployNotifier:
+		DeployChance: 100
+sw3tnk:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Buildable:
+		Queue: Vehicle.SWREBELS, RAVehicle.SWREBELS, Vehicle.X_Vehicles
+		BuildPaletteOrder: 120
+		Description: Rebels Main Battle Tank, with dual cannons\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 950
+	Tooltip:
+		Name: T3-B Heavy Tank
+		GenericName: Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 60000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 71
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Armament:
+		Weapon: SW105mm
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 768,85,90, 768,-85,90
+	Armament@Normal:
+		Weapon: SWT2BMissle
+		LocalOffset: 299,148,90
+		RequiresCondition: scrap_create_bonus == 0
+	Armament@Salvage:
+		Weapon: SWT2BMissle2
+		LocalOffset: 299,148,90
+		RequiresCondition: scrap_create_bonus == 1
+	Armament@Salvage2:
+		Weapon: SWT2BMissle3
+		LocalOffset: 299,148,90
+		RequiresCondition: scrap_create_bonus >= 2
+	RangeMultiplier@Salvage:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 120
+	RangeMultiplier@Salvage2:
+		RequiresCondition: scrap_create_bonus >= 2
+		Modifier: 150
+	AttackFrontal:
+	SelectionDecorations:
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Selectable:
+		DecorationBounds: 28,28
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+swftnk:
+	Inherits: FTNK
+	Valued:
+		Cost: 600
+	Buildable:
+		Queue: Vehicle.SWREBELS, RAVehicle.SWREBELS
+		Description: Heavily armored flame-throwing vehicle.\n  Strong vs Infantry, Buildings and Vehicles\n  Weak vs Tanks
+	RenderSprites:
+		Image: ftnk
+	Armament:
+		Weapon: SWBigFlamer
+ 
+swftnk2:
+	Inherits: swftnk
+	Inherits@MC: ^MCImmune
+	Tooltip:
+		Name: Beetle Droid
+	Valued:
+		Cost: 300
+	Buildable:
+		Queue: Infantry.SWSEPARATIST, RAInfantry.SWSEPARATIST, Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST
+		Description: Heavily armored flame-throwing vehicle.\n  Strong vs Infantry, Buildings and Vehicles\n  Weak vs Tanks
+	RenderSprites:
+		Image: swftnk2
+	Voiced:
+		VoiceSet: SWDroidVoice
+	Health:
+		HP: 14000
+	WithShadow:
+		Offset: 108, 24, 0
+		ZOffset: -512
+	Armament:
+		Weapon: Flamer
+	Mobile:
+		TurnSpeed: 24
+		Speed: 102
+
+swmsam:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Buildable:
+		Queue: Vehicle.SWEMPIRE, RAVehicle.SWEMPIRE, Vehicle.SWREPUBLIC, RAVehicle.SWREPUBLIC, Vehicle.X_Vehicles
+		BuildPaletteOrder: 110
+		Description: Light Hovertank, armed width Missiles.\n  Strong vs Vehicles\n  Weak vs Heavy Tanks
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: AAC-1 Speeder Tank
+		GenericName: Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 23000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 99
+		Locomotor: hover
+	Hovers:
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Armament:
+		Weapon: TSHoverMissile
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,121,271, 720,-121,271
+		MuzzleSequence: muzzle
+	Armament@B:
+		Weapon: SWTuskLaser
+		LocalOffset: 200,130,23, 200,-130,23
+		MuzzleSequence: muzzle
+	AttackFrontal:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+sw1tnk:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@SWTargetableWalker: ^SWTargetableWalker
+	Buildable:
+		Queue: Vehicle.SWREPUBLIC, RAVehicle.SWREPUBLIC, Vehicle.X_Vehicles
+		BuildPaletteOrder: 120
+		Description: Light Republic Walker\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: AT-RT Walker
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 38000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 90
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 7
+	Armament:
+		Weapon: SWTieCrawlLaser
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 768,85,90, 768,-85,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	SelectionDecorations:
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Selectable:
+		DecorationBounds: 28,28
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+		IdleSequences: idle
+	RenderSprites:
+		Scale: 0.9
+swhijack:
+	Inherits: glhijack
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anyhq
+		Queue: Infantry.SWREBELS, RAInfantry.SWREBELS, Infantry.SWHUTT, RAInfantry.SWHUTT
+	RenderSprites:
+		Image: glhijack
+swtran:
+	Inherits: ^Helicopter
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Lambda Class Shuttle
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: tran
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: hpad
+		Queue: Aircraft.SWEMPIRE, RAAircraft.SWEMPIRE
+		Description: Fast Infantry Transport Helicopter.\n  Unarmed
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 150
+		AltitudeVelocity: 0c100
+	Health:
+		HP: 18000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 10
+		PipCount: 10
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	SpawnActorOnDeath:
+		Actor: TRAN.Husk
+	SelectionDecorations:
+	Selectable:
+		Class: tran
+		DecorationBounds: 41,41
+	RenderSprites:
+		Image: swtran
+		Scale: 1.8
+swtran.e2:
+	Inherits: swtran
+	Inherits@bot: ^BotMicromanageable
+	Buildable:
+		Prerequisites: barracks, ~hardbotplayer
+		Queue: Aircraft.SWEMPIRE, RAAircraft.SWEMPIRE
+	Cargo:
+		InitialUnits: swe2, swe2, swe2, swe2, swe3troop, swe3troop, swe1troop, swe1troop, swe1troop, swe1troop
+		LoadedCondition: loaded
+	Armament:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: botmicro && loaded
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	ProductionCostMultiplier:
+		Multiplier: 300
+	KillsSelf:
+		RemoveInstead: true
+		RequiresCondition: !loaded && botmicro
+		Delay: 200
+	EditorOnlyTooltip:
+		Name: Loaded Lambda (E2)
+
+swtran.e1:
+	Inherits: swtran
+	Inherits@bot: ^BotMicromanageable
+	Buildable:
+		Prerequisites: barracks, ~hardbotplayer
+		Queue: Aircraft.SWEMPIRE, RAAircraft.SWEMPIRE
+	Cargo:
+		InitialUnits: swe1troop, swe1troop, swe1troop, swe1troop, swe1troop, swe1troop, swe1troop, swe1troop, swe1troop, swe1troop
+		LoadedCondition: loaded
+	Armament:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: botmicro && loaded
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	ProductionCostMultiplier:
+		Multiplier: 180
+	KillsSelf:
+		RemoveInstead: true
+		RequiresCondition: !loaded && botmicro
+		Delay: 200
+	EditorOnlyTooltip:
+		Name: Loaded Lambda (E1)
+########################################################
+#	SW Support
+########################################################
+swa10:
+	Inherits: ^Plane
+	Interactable:
+	Tooltip:
+		Name: TIE Bomber
+	Valued:
+		Cost: 2000
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 373
+		Repulsable: False
+	AttackBomber:
+		Armaments: gun, bombs
+	WithMuzzleOverlay:
+	Armament@BOMBS:
+		Name: bombs
+		Weapon: SWNapalm
+		LocalOffset: 0,-256,-43, 0,256,-43
+	-MapEditorData:
+
+swa10xwing:
+	Inherits: ^Plane
+	Interactable:
+	Tooltip:
+		Name: X Wing
+	Valued:
+		Cost: 2000
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 373
+		Repulsable: False
+	AttackBomber:
+		Armaments: gun, bombs
+	WithMuzzleOverlay:
+	Armament@BOMBS:
+		Name: bombs
+		Weapon: SWNapalm2
+		LocalOffset: 0,-256,-43, 0,256,-43
+	-MapEditorData:
+	RenderSprites:
+		Image: swxwing
+swbadr:
+	Inherits: ^RANeutralPlane
+	-Huntable:
+	-UpdatesPlayerStatistics:
+	ParaDrop:
+		DropRange: 4c0
+		ChuteSound: chute1.aud
+	Health:
+		HP: 70000
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 5
+		Speed: 150
+		Repulsable: False
+		MaximumPitch: 56
+	Cargo:
+		MaxWeight: 10
+	-Selectable:
+	SelectionDecorations:
+		RenderSelectionBars: False
+	-Voiced:
+	Tooltip:
+		Name: LAAT
+	Contrail@1:
+		Offset: -432,560,0
+	Contrail@2:
+		Offset: -432,-560,0
+	SpawnActorOnDeath:
+		Actor: BADR.Husk
+	SmokeTrailWhenDamaged@0:
+		Offset: -432,560,0
+		Interval: 2
+	SmokeTrailWhenDamaged@1:
+		Offset: -432,-560,0
+		Interval: 2
+	RejectsOrders:
+	GivesExperience:
+		Experience: 1000
+	Interactable:
+	-ExternalCondition@STASIS:
+	-DelayedWeaponAttachable@lockdown:
+	-ExternalCondition@EMP:
+	RenderSprites:
+		Image: swlaat
+swa10droid:
+	Inherits: ^Plane
+	Interactable:
+	Tooltip:
+		Name: TIE Bomber
+	Valued:
+		Cost: 2000
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 373
+		Repulsable: False
+	AttackBomber:
+		Armaments: gun, bombs
+	WithMuzzleOverlay:
+	Armament@BOMBS:
+		Name: bombs
+		Weapon: SWNapalm3
+		LocalOffset: 0,-256,-43, 0,256,-43
+	-MapEditorData:
+	RenderSprites:
+		Image: swdroidheli
+########################################################
+#	SW Meet CNC, Hutt, Units
+########################################################
+swrmbo.hutt:
+	Inherits: swrmbo
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Lite Mercenary
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~techlevel.low
+		Queue: Infantry.SWHUTT, Infantry.SWHUTT
+		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+	Armament:
+		Weapon: SWBikeLaserSalvage
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Sniper
+	Armament@c4:
+		Weapon: CHTankHunterAttach1
+		Cursor: c4
+	RenderSprites:
+		Image: swrmbo
+
+sw2tnk.hutt:
+	Inherits: sw2tnk
+	Buildable:
+		Queue: Vehicle.SWHUTT, RAVehicle.SWHUTT, Vehicle.X_Vehicles
+		BuildPaletteOrder: 110
+		Description: Droid Army Main Battle Tank.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+	Tooltip:
+		Name: Armored Assault Tank Mk I
+		GenericName: Tank
+	RenderSprites:
+		Image: sw2tnk
+	Armament:
+		Weapon: SWBikeLaserShell
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 75
+	ReloadDelayMultiplier@Salvaged2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 50
+	RangeMultiplier@Salvage:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 120
+	RangeMultiplier@Salvage2:
+		RequiresCondition: scrap_create_bonus >= 2
+		Modifier: 150
+swrandom.generator:
+	Inherits: swftnk
+	GrantRandomCondition:
+		Conditions: makemin, makenova, makecarbon, makecarbon, makecarbon, makecarbon
+	Explodes@makemin:
+		RequiresCondition: makemin
+		Weapon: SWRandomMin
+		EmptyWeapon: SWRandomMin
+	Explodes@makenova:
+		RequiresCondition: makenova
+		Weapon: SWRandomNova
+		EmptyWeapon: SWRandomNova
+	Explodes@makecarbon:
+		RequiresCondition: makecarbon
+		Weapon: SWRandomCarbon
+		EmptyWeapon: SWRandomCarbon
+	RenderSprites:
+		Image: ftnk
+	Buildable:
+		BuildLimit: 10
+		Queue: NO
+swptnk:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@SWTargetableWalker: ^SWTargetableWalker
+	Buildable:
+		Queue: Vehicle.SWHUTT, RAVehicle.SWHUTT, Vehicle.X_Vehicles
+		BuildPaletteOrder: 120
+		Description: Empire Main Battle Walker, with dual cannons\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 950
+	Tooltip:
+		Name: Pirate Pod Walker
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 45000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 61
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 8
+	Armament:
+		Weapon: SWPodLaser
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 768,0,90, 968,0,30
+		MuzzleSequence: muzzle
+	AttackFrontal:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	SelectionDecorations:
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Selectable:
+		DecorationBounds: 28,28
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+		IdleSequences: idle
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 80
+	ReloadDelayMultiplier@Salvaged2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 60
+	RangeMultiplier@Salvage:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 130
+	RangeMultiplier@Salvage2:
+		RequiresCondition: scrap_create_bonus >= 2
+		Modifier: 170
+swjabbaparty:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@cargo: ^CargoVehicle
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Party Sail Barge
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: glbbus
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: tek
+		Queue: Vehicle.SWHUTT, RAVehicle.SWHUTT, Vehicle.X_Vehicles
+		Description: Mobile bunker vehicle.\n  Passengers can fire from within\n  Immobilized on heavy damage
+	Mobile:
+		Speed: 90
+		Locomotor: hover
+	Hovers:
+	RejectsOrders@immobile:
+		Except: Unload, Stop
+		RequiresCondition: damagedslow
+	Passenger:
+		Weight: 6
+	Health:
+		HP: 175000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Heavy
+	DamageMultiplier@bunker:
+		Modifier: 50
+		RequiresCondition: damagedslow
+	RevealsShroud:
+		Range: 8c0
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 8
+		PipCount: 8
+		EjectOnDeath: false #desync
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PauseOnCondition: chronobeamed
+	RevealOnFire:
+		ArmamentNames: primary, garrisoned
+	RenderRangeCircle:
+		FallbackRange: 6c0
+	Selectable:
+		Class: swjabbaparty
+	AutoTarget:
+		AllowMovement: true
+	Turreted:
+		TurnSpeed: 10
+	RenderSprites:
+		Image: swjabbaparty
+	DamageMultiplier@scrap1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 80
+	DamageMultiplier@scrap2:
+		RequiresCondition: scrap_create_bonus >= 2
+		Modifier: 70
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+
+swjabbaparty.e3:
+	Inherits: swjabbaparty
+	Inherits@bot: ^BotMicromanageable
+	Buildable:
+		Prerequisites: barracks, ~hardbotplayer, tek
+		Queue: Vehicle.SWHUTT, RAVehicle.SWHUTT, Vehicle.X_Vehicles
+	Cargo:
+		InitialUnits: swrmbo.hutt, swrmbo.hutt, swe3, swe3, swe3, swe3, swe3, swe2, swe2
+		LoadedCondition: loaded
+	ProductionCostMultiplier:
+		Multiplier: 180
+	EditorOnlyTooltip:
+		Name: Loaded Lambda (E1)
+########################################################
+#	SW Upgrades
+########################################################
+upswe1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Trooper Upgrade
+	Buildable:
+		BuildPaletteOrder: 220
+		#Queue: Upgrades.SWREBELS
+		Description: Rebel Troopers receive extra camouflage and speed.
+		Prerequisites: !upswe1
+	RenderSprites:
+		Image: swe1
+	ProvidesPrerequisite:
+		Prerequisite: upswe1
+	Valued:
+		Cost: 2000
+
+upswe1troop:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Storm Trooper Upgrade
+	Buildable:
+		BuildPaletteOrder: 220
+		#Queue: Upgrades.SWEMPIRE
+		Description: Storm Troopers receive extra armor.
+		Prerequisites: !upswe1troop
+	RenderSprites:
+		Image: swe1troop
+	ProvidesPrerequisite:
+		Prerequisite: upswe1troop
+	Valued:
+		Cost: 2000
+
+upswe1clone:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Clone Trooper Upgrade
+	Buildable:
+		BuildPaletteOrder: 220
+		#Queue: Upgrades.SWREPUBLIC
+		Description: Clone Troopers receive extra armor.
+		Prerequisites: !upswe1clone
+	RenderSprites:
+		Image: swe1troop
+	ProvidesPrerequisite:
+		Prerequisite: swe1clone
+	Valued:
+		Cost: 2000
+
+upswe1droid:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Battle Droid B1 Upgrade
+	Buildable:
+		BuildPaletteOrder: 220
+		#Queue: Upgrades.SWSEPARATIST
+		Description: Battle Droid B1 receive extra armor.
+		Prerequisites: !upswe1droid
+	RenderSprites:
+		Image: swe1droid
+	ProvidesPrerequisite:
+		Prerequisite: upswe1droid
+	Valued:
+		Cost: 1500
+upswbike:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Speeder Bike Upgrade
+	Buildable:
+		BuildPaletteOrder: 220
+		#Queue: Upgrades.SWREBELS, Upgrades.SWEMPIRE, Upgrades.SWREPUBLIC, Upgrades.SWHUTT
+		Description: Speeder Bike receive extra speed.
+		Prerequisites: !upswbike
+	RenderSprites:
+		Image: swbike
+	ProvidesPrerequisite:
+		Prerequisite: upswbike
+	Valued:
+		Cost: 2000
+
+upswjeep:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: TIE Crawler Upgrade
+	Buildable:
+		BuildPaletteOrder: 220
+		#Queue: Upgrades.SWEMPIRE
+		Description: TIE Crawler receive extra armor.
+		Prerequisites: !upswjeep
+	RenderSprites:
+		Image: swjeep
+	ProvidesPrerequisite:
+		Prerequisite: upswjeep
+	Valued:
+		Cost: 2500
