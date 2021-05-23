@@ -13,9 +13,14 @@
 	WithIdleOverlay:
 		RequiresCondition: isBurning
 		Sequence: flame1
+        Palette: WC1Player
+        IsPlayerPalette: True
 	WithIdleOverlay@2:
 		RequiresCondition: isBurning2
 		Sequence: flame2
+        Palette: WC1Player
+        IsPlayerPalette: True
+^WC1PNGPal:
 	RenderSprites:
 		PlayerPalette: WC1Player
 	ActorPreviewPlaceBuildingPreview:
@@ -73,12 +78,24 @@
         Condition: shield_upg2
         Prerequisites: wc_h_str_shield2 || wc_o_str_shield2
     DamageMultiplier@upgrade:
-        Modifier: 80
+        Modifier: 75
         RequiresCondition: shield_upg
     DamageMultiplier@upgrade2:
-        Modifier: 80
+        Modifier: 75        
         RequiresCondition: shield_upg2    
-        
+^wc_h_str_arrow:        
+    GrantConditionOnPrerequisite@upgrade:
+        Condition: arrow_upg
+        Prerequisites: wc_h_str_arrow || wc_o_str_spear
+    GrantConditionOnPrerequisite@upgrade2:
+        Condition: arrow_upg2
+        Prerequisites: wc_h_str_arrow2 || wc_o_str_spear2
+    FirepowerMultiplier@upgrade:
+        Modifier: 115
+        Condition: arrow_upg
+    FirepowerMultiplier@upgrade2:
+        Modifier: 130
+        Condition: arrow_upg2
 ^wc_h_horses:
     GrantConditionOnPrerequisite@spupgrade:
         Condition: horses_upg
@@ -99,6 +116,7 @@
 wc_h_townhall:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
+    Inherits@WC1PAL: ^WC1PNGPal
 	Inherits@shape: ^2x2Shape
 	Selectable:
 		Bounds: 64,64
@@ -180,6 +198,7 @@ wc_h_farm:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
+    Inherits@WC1PAL: ^WC1PNGPal
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -215,11 +234,69 @@ wc_h_farm:
 	ScalePowerWithHealth:
     Voiced:
 		VoiceSet: humanfarmvoice
+ 
+wc_h_guard_tower:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+    Inherits@shape: ^2x2Shape    
+    Inherits@upgrade_arrows: ^wc_h_str_arrow
+	Selectable:
+		Bounds: 40,40
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Guard Tower
+	Buildable:
+		BuildPaletteOrder: 5
+		Prerequisites: wc_h_barracks
+		Queue: Defence.human
+        BuildDuration: 750
+        BuildDurationModifier: 50
+		Description: Defence building\nDetector
+	Building:
+    	Footprint: xx xx
+		Dimensions: 2,2   
+    RenderDetectionCircle: 
+    AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: -1          
+	GivesBuildableArea:
+		AreaTypes: building
+	Health:
+		HP: 60000
+	Armor:
+		Type: Wood
+    DamageMultiplier:
+        Modifier: 80
+    DetectCloaked:
+        Range: 5c0
+	RevealsShroud:
+		Range: 15c0
+	Turreted:
+		TurnSpeed: 6
+		InitialFacing: 56
+	WithSpriteBody:
+    -MustBeDestroyed:  
+	Armament:
+		Weapon: wc_tower_fire
+	AttackTurreted:
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	Power:
+		Amount: 0   
+    WithMakeAnimation:     
+    
+wc_o_guard_tower:
+    Inherits: wc_h_guard_tower
+    Buildable:
+        Prerequisites: wc_o_barracks
+        Queue: Defence.orc
         
 wc_h_barracks:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
     Inherits@wcprod: ^WCUnitProduction   
+    Inherits@WC1PAL: ^WC1PNGPal   
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
@@ -284,6 +361,7 @@ wc_h_lumbermill:
 	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
 	Inherits@ref: ^Refinery    
+    Inherits@WC1PAL: ^WC1PNGPal   
 	HitShape:
 		Type: Rectangle
 			TopLeft: -1536, -512
@@ -363,6 +441,7 @@ wc_h_blacksmith:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
+    Inherits@WC1PAL: ^WC1PNGPal   
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -414,7 +493,8 @@ wc_h_church:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
-    Inherits@wcprod: ^WCUnitProduction   
+    Inherits@wcprod: ^WCUnitProduction 
+    Inherits@WC1PAL: ^WC1PNGPal    
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -475,6 +555,7 @@ wc_h_stable:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
+    Inherits@WC1PAL: ^WC1PNGPal    
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -526,7 +607,8 @@ wc_h_tower:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
-    Inherits@wcprod: ^WCUnitProduction   
+    Inherits@wcprod: ^WCUnitProduction  
+    Inherits@WC1PAL: ^WC1PNGPal    
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -589,6 +671,7 @@ wc_h_stormwind:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
+    Inherits@WC1PAL: ^WC1PNGPal   
 	Selectable:
 		Bounds: 96,96
 	HitShape:
@@ -901,7 +984,7 @@ wc_h_peasant:
 	AutoTargetPriority@ATTACKANYTHING:
 		ValidStances: Enemy, Neutral
 	Valued:
-		Cost: 125
+		Cost: 150
 	Tooltip:
 		Name: Peasant
 	UpdatesPlayerStatistics:
@@ -913,7 +996,7 @@ wc_h_peasant:
         BuildDuration: 100
         BuildDurationModifier: 100
 	Mobile:
-		Speed: 100
+		Speed: 90
 	Health:
 		HP: 7200
 	#Food
@@ -943,7 +1026,7 @@ wc_h_footman:
     Inherits@upgrade_swords: ^wc_h_str_sword
     Inherits@upgrade_shields: ^wc_h_str_shield
 	Valued:
-		Cost: 125
+		Cost: 150
 	Tooltip:
 		Name: Footman
 	UpdatesPlayerStatistics:
@@ -958,7 +1041,7 @@ wc_h_footman:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 10800
+		HP: 12600
     DamageMultiplier@armor:
         Modifier: 80       
    	Armor:
@@ -985,8 +1068,9 @@ wc_h_archer:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
     Inherits@upgrade_shields: ^wc_h_str_shield  
+    Inherits@upgrade_arrows: ^wc_h_str_arrow
 	Valued:
-		Cost: 175
+		Cost: 200
 	Tooltip:
 		Name: Archer
 	UpdatesPlayerStatistics:
@@ -1018,18 +1102,6 @@ wc_h_archer:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
-    GrantConditionOnPrerequisite@upgrade:
-        Condition: arrow_upg
-        Prerequisites: wc_h_str_arrow || wc_o_str_spear
-    GrantConditionOnPrerequisite@upgrade2:
-        Condition: arrow_upg2
-        Prerequisites: wc_h_str_arrow2 || wc_o_str_spear2
-    FirepowerMultiplier@upgrade:
-        Modifier: 115
-        Condition: arrow_upg
-    FirepowerMultiplier@upgrade2:
-        Modifier: 130
-        Condition: arrow_upg2
     Voiced:
 		VoiceSet: voicehuman           
         
@@ -1043,7 +1115,7 @@ wc_h_knight:
     Inherits@upgrade_swords: ^wc_h_str_sword
     Inherits@upgrade_horses: ^wc_h_horses 
 	Valued:
-		Cost: 500
+		Cost: 600
 	Tooltip:
 		Name: Knight
 	UpdatesPlayerStatistics:
@@ -1063,7 +1135,7 @@ wc_h_knight:
   	Armor:
 		Type: Medium      
 	Health:
-		HP: 16200
+		HP: 21600
     DamageMultiplier@armor:
         Modifier: 50           
     WithAttackAnimation:
@@ -1081,7 +1153,8 @@ wc_h_knight:
         MoveSequence: run
     Voiced:
 		VoiceSet: voicehuman     
-        
+    -Explodes:
+    
 wc_h_catapult:
 	Inherits: ^Vehicle
 	Inherits@WC1Infantry: ^WC1Infantry
@@ -1089,7 +1162,7 @@ wc_h_catapult:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@EXT: ^ExternalConditions
 	Valued:
-		Cost: 800
+		Cost: 850
 	Tooltip:
 		Name: Catapult
 	UpdatesPlayerStatistics:
@@ -1112,6 +1185,8 @@ wc_h_catapult:
 		HP: 25000
     WithMoveAnimation:
         MoveSequence: run
+    WithAttackAnimation:
+        Sequence: shoot
 	#Food
 	Power:
 		Amount: -30
@@ -1246,7 +1321,7 @@ wc_h_scorpion:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 14400
+		HP: 18000
     Armor:
 		Type: None
 	#Food
@@ -1452,7 +1527,7 @@ wc_h_str_arrow:
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Bow Damage by 50%
-        Prerequisites: !wc_h_str_arrow
+        Prerequisites: ~!wc_h_str_arrow
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -1469,7 +1544,7 @@ wc_h_str_arrow2:
         BuildDuration: 3000
         BuildDurationModifier: 100       
 		Description: Increases Bow Damage by further 50%
-        Prerequisites: !wc_h_str_arrow2, wc_h_str_arrow
+        Prerequisites: ~!wc_h_str_arrow2, ~wc_h_str_arrow
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -1486,7 +1561,7 @@ wc_h_str_sword:
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Sword Damage by 20%
-        Prerequisites: !wc_h_str_sword
+        Prerequisites: ~!wc_h_str_sword
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -1503,7 +1578,7 @@ wc_h_str_sword2:
         BuildDuration: 3000
         BuildDurationModifier: 100       
 		Description: Increases Sword Damage by further 40%
-        Prerequisites: !wc_h_str_sword2, wc_h_str_sword
+        Prerequisites: ~!wc_h_str_sword2, ~wc_h_str_sword
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -1519,8 +1594,8 @@ wc_h_str_shield:
 		Queue: blacksmithupg.human
         BuildDuration: 1500
         BuildDurationModifier: 100       
-		Description: Increases Shield Resistance by 20%
-        Prerequisites: !wc_h_str_shield
+		Description: Increases Shield Resistance of all units by 25%
+        Prerequisites: ~!wc_h_str_shield
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -1536,8 +1611,8 @@ wc_h_str_shield2:
 		Queue: blacksmithupg.human
         BuildDuration: 3000
         BuildDurationModifier: 100       
-		Description: Increases Shield Resistance by further 20%
-        Prerequisites: !wc_h_str_shield2, wc_h_str_shield
+		Description: Increases Shield Resistance of all units by further 25%
+        Prerequisites: ~!wc_h_str_shield2, ~wc_h_str_shield
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -1554,7 +1629,7 @@ wc_h_horses:
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Horses speed by 10%
-        Prerequisites: !wc_h_horses
+        Prerequisites: ~!wc_h_horses
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -1571,7 +1646,7 @@ wc_h_horses2:
         BuildDuration: 3000
         BuildDurationModifier: 100       
 		Description: Increases Horses speed by further 20%
-        Prerequisites: !wc_h_horses2, wc_h_horses
+        Prerequisites: ~!wc_h_horses2, ~wc_h_horses
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -1585,7 +1660,7 @@ wc_o_str_spear:
 	Buildable:
 		Queue: lumberupg.orc      
 		Description: Increases Spear Damage by 50%
-        Prerequisites: !wc_o_str_spear
+        Prerequisites: ~!wc_o_str_spear
 	RenderSprites:
 		Image: wc_o_str_spear
 
@@ -1596,7 +1671,7 @@ wc_o_str_spear2:
 	Buildable:
 		Queue: lumberupg.orc
 		Description: Increases Spear Damage by further 50%
-        Prerequisites: !wc_o_str_spear2, wc_o_str_spear
+        Prerequisites: ~!wc_o_str_spear2, ~wc_o_str_spear
 	RenderSprites:
 		Image: wc_o_str_spear2
 
@@ -1607,7 +1682,7 @@ wc_o_str_axe:
 	Buildable:
 		Queue: blacksmithupg.orc
 		Description: Increases Axe Damage by 20%
-        Prerequisites: !wc_o_str_axe2
+        Prerequisites: ~!wc_o_str_axe2
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -1620,7 +1695,7 @@ wc_o_str_axe2:
 	Buildable:
 		Queue: blacksmithupg.orc   
 		Description: Increases Axe Damage by further 40%
-        Prerequisites: !wc_o_str_axe2, wc_o_str_axe
+        Prerequisites: ~!wc_o_str_axe2, ~wc_o_str_axe
 	RenderSprites:
 		Image: wc_o_str_axe2
  
@@ -1628,7 +1703,7 @@ wc_o_str_shield:
 	Inherits@shld: wc_h_str_shield
 	Buildable:
 		Queue: blacksmithupg.orc    
-        Prerequisites: !wc_h_str_shield
+        Prerequisites: ~!wc_h_str_shield
 	RenderSprites:
 		Image: wc_o_str_shield
         
@@ -1636,7 +1711,7 @@ wc_o_str_shield2:
 	Inherits@shld: wc_h_str_shield2
 	Buildable:
 		Queue: blacksmithupg.orc
-        Prerequisites: !wc_h_str_shield2, wc_h_str_shield
+        Prerequisites: ~!wc_h_str_shield2, ~wc_h_str_shield
 	RenderSprites:
 		Image: wc_o_str_shield2
     
@@ -1650,7 +1725,7 @@ wc_o_wolves:
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Wolves speed by 10%
-        Prerequisites: !wc_o_wolves
+        Prerequisites: ~!wc_o_wolves
 	RenderSprites:
 		Image: wc_o_wolves
 
@@ -1664,6 +1739,6 @@ wc_o_wolves2:
         BuildDuration: 3000
         BuildDurationModifier: 100       
 		Description: Increases Wolves speed by further 20%
-        Prerequisites: !wc_o_wolves2, wc_o_wolves
+        Prerequisites: ~!wc_o_wolves2, ~wc_o_wolves
 	RenderSprites:
 		Image: wc_o_wolves2
