@@ -3,7 +3,7 @@
 #   1 DMG WC1 = 150 ORA
 #   1 Armor point WC1 = 10% armor ORA
 
-^Burnable:
+^WC1Building:
 	GrantConditionOnDamageState:
 		ValidDamageStates: Medium
 		Condition: isBurning 
@@ -12,20 +12,16 @@
 		Condition: isBurning2
 	WithIdleOverlay:
 		RequiresCondition: isBurning
-		Sequence: flame1
-        Palette: WC1Player
-        IsPlayerPalette: True
+		Sequence: burn1    
+        Palette: player
 	WithIdleOverlay@2:
 		RequiresCondition: isBurning2
-		Sequence: flame2
-        Palette: WC1Player
-        IsPlayerPalette: True
-^WC1PNGPal:
-	RenderSprites:
-		PlayerPalette: WC1Player
-	ActorPreviewPlaceBuildingPreview:
-		OverridePalette: WC1Player
-
+		Sequence: burn2
+        Palette: player
+    RenderSprites:
+        PlayerPalette: player
+    ActorPreviewPlaceBuildingPreview:
+        Palette: player
 ^WC1Infantry:
 	RenderSprites:
 		PlayerPalette: WC1Player
@@ -34,6 +30,7 @@
         DeathSequence: die
         CrushedSequence: die-crushed
         UseDeathTypeSuffix: false
+
 ^WCWorker:
 	Harvester:
 		PipCount: 2
@@ -115,9 +112,8 @@
 ####################################################################################################
 wc_h_townhall:
 	Inherits: ^BaseBuilding
-	Inherits@BURNABLE: ^Burnable
-    Inherits@WC1PAL: ^WC1PNGPal
 	Inherits@shape: ^2x2Shape
+  	Inherits@BURNABLE: ^WC1Building  
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -132,13 +128,13 @@ wc_h_townhall:
 		Queue: Building.human
 		BuildDuration: 900
         BuildDurationModifier: 100
-		Description: Builds Structures\n Trains Peasants.
+		Description: Builds Structures\nGrants 50 Food\nTrains Peasants.
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 120000
+		HP: 130000
 	RevealsShroud:
 		Range: 4c0
 	RallyPoint:
@@ -149,7 +145,7 @@ wc_h_townhall:
 		SpawnOffset: 298,298,0
 		ExitCell: 1,1
 	Power:
-		Amount: 10
+		Amount: 50
 	SpawnActorsOnSell:
 		ActorTypes: wc_h_footman
 	ScalePowerWithHealth:
@@ -187,18 +183,13 @@ wc_h_townhall:
 		Cooldown: 75
 		Range: 14c0
   	BaseBuilding:         
-	RotationPaletteEffect:
-		ExcludePalettes: WC1Player
-	LightPaletteRotator:
-		ExcludePalettes: WC1Player
 	Voiced:
 		VoiceSet: humantownhallvoice    
         
 wc_h_farm:
 	Inherits: ^BaseBuilding
-	Inherits@BURNABLE: ^Burnable
 	Inherits@shape: ^2x2Shape
-    Inherits@WC1PAL: ^WC1PNGPal
+ 	Inherits@BURNABLE: ^WC1Building   
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -218,7 +209,7 @@ wc_h_farm:
 		Queue: Building.human
 		BuildDuration: 160
         BuildDurationModifier: 100
-		Description: Provides 80 Food (Power)\nCan store up to 500 resources.
+		Description: Provides 100 Food (Power)\nCan be expanded to store twice as much Food\nCan store up to 500 resources.
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
@@ -228,17 +219,40 @@ wc_h_farm:
 	RevealsShroud:
 		Range: 4c0
 	Power:
-		Amount: 80
+		Amount: 100
 	SpawnActorsOnSell:
 		ActorTypes: wc_h_footman
 	ScalePowerWithHealth:
+    Production:
+		Produces: Farmupgrade.human
+        RequiresCondition: !farmupg1
+	ProductionBar:
+		ProductionType: Farmupgrade.human
+	ProductionQueue:
+		Type: Farmupgrade.human
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+        QueueLimit: 1
+		ItemLimit: 1
+	GrantConditionOnProduction@upgrade:
+		Condition: farmupg1
+		Actors: wc_h_upgradefarm   
     Voiced:
 		VoiceSet: humanfarmvoice
- 
+    PowerMultiplier@upgrade:
+        Modifier: 200
+        RequiresCondition: farmupg1         
+    WithSpriteBody:
+        RequiresCondition: !farmupg1    
+    WithSpriteBody@upgraded:
+        Sequence: expand-idle
+        RequiresCondition: farmupg1   
 wc_h_guard_tower:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
     Inherits@shape: ^2x2Shape    
+    Inherits@BURNABLE: ^WC1Building
     Inherits@upgrade_arrows: ^wc_h_str_arrow
 	Selectable:
 		Bounds: 40,40
@@ -271,33 +285,29 @@ wc_h_guard_tower:
     DetectCloaked:
         Range: 5c0
 	RevealsShroud:
-		Range: 15c0
+		Range: 10c0
 	Turreted:
 		TurnSpeed: 6
 		InitialFacing: 56
 	WithSpriteBody:
-        Scale: 0.8
+        Scale: 0.6
     -MustBeDestroyed:  
 	Armament:
 		Weapon: wc_tower_fire
 	AttackTurreted:
+        Voice:
 	WithMuzzleOverlay:
-	-WithDeathAnimation:
+	WithDeathAnimation:
 	Power:
 		Amount: 0   
     WithMakeAnimation:     
-    
-wc_o_guard_tower:
-    Inherits: wc_h_guard_tower
-    Buildable:
-        Prerequisites: wc_o_barracks
-        Queue: Defence.orc
+    Voiced:
+        VoiceSet: humanguardtowervoice
         
 wc_h_barracks:
 	Inherits: ^BaseBuilding
-	Inherits@BURNABLE: ^Burnable
-    Inherits@wcprod: ^WCUnitProduction   
-    Inherits@WC1PAL: ^WC1PNGPal   
+	Inherits@BURNABLE: ^WC1Building
+    Inherits@wcprod: ^WCUnitProduction     
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
@@ -315,6 +325,7 @@ wc_h_barracks:
 		Description: Trains most human units
         BuildDuration: 200
         BuildDurationModifier: 100
+        Prerequisites: wc_h_farm
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
@@ -359,10 +370,9 @@ wc_h_barracks:
         
 wc_h_lumbermill:
 	Inherits: ^BaseBuilding
-	Inherits@BURNABLE: ^Burnable
+	Inherits@BURNABLE: ^WC1Building
 	Inherits@shape: ^2x2Shape
 	Inherits@ref: ^Refinery    
-    Inherits@WC1PAL: ^WC1PNGPal   
 	HitShape:
 		Type: Rectangle
 			TopLeft: -1536, -512
@@ -440,9 +450,8 @@ wc_h_lumbermill:
         
 wc_h_blacksmith:
 	Inherits: ^BaseBuilding
-	Inherits@BURNABLE: ^Burnable
-	Inherits@shape: ^2x2Shape
-    Inherits@WC1PAL: ^WC1PNGPal   
+	Inherits@BURNABLE: ^WC1Building
+	Inherits@shape: ^2x2Shape 
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -492,10 +501,9 @@ wc_h_blacksmith:
         
 wc_h_church:
 	Inherits: ^BaseBuilding
-	Inherits@BURNABLE: ^Burnable
+	Inherits@BURNABLE: ^WC1Building
 	Inherits@shape: ^2x2Shape
     Inherits@wcprod: ^WCUnitProduction 
-    Inherits@WC1PAL: ^WC1PNGPal    
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -554,9 +562,8 @@ wc_h_church:
         
 wc_h_stable:
 	Inherits: ^BaseBuilding
-	Inherits@BURNABLE: ^Burnable
-	Inherits@shape: ^2x2Shape
-    Inherits@WC1PAL: ^WC1PNGPal    
+	Inherits@BURNABLE: ^WC1Building
+	Inherits@shape: ^2x2Shape  
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -606,10 +613,9 @@ wc_h_stable:
         
 wc_h_tower:
 	Inherits: ^BaseBuilding
-	Inherits@BURNABLE: ^Burnable
+	Inherits@BURNABLE: ^WC1Building
 	Inherits@shape: ^2x2Shape
-    Inherits@wcprod: ^WCUnitProduction  
-    Inherits@WC1PAL: ^WC1PNGPal    
+    Inherits@wcprod: ^WCUnitProduction   
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -670,9 +676,8 @@ wc_h_tower:
         
 wc_h_stormwind:
 	Inherits: ^BaseBuilding
-	Inherits@BURNABLE: ^Burnable
-	Inherits@shape: ^2x2Shape
-    Inherits@WC1PAL: ^WC1PNGPal   
+	Inherits@BURNABLE: ^WC1Building
+	Inherits@shape: ^2x2Shape   
 	Selectable:
 		Bounds: 96,96
 	HitShape:
@@ -694,7 +699,7 @@ wc_h_stormwind:
 		Dimensions: 3,4
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 100000
+		HP: 150000
 	RevealsShroud:
 		Range: 4c0
 	Power:
@@ -765,7 +770,7 @@ wc_o_townhall:
 	ProvidesPrerequisite:
 	Buildable:
 		Queue: Building.orc
-		Description: Builds Structures\n Trains Peons.
+		Description: Builds Structures\nGrants 50 Food\nTrains Peons.
 	SpawnActorsOnSell:
 		ActorTypes: wc_h_footman
 	Production:
@@ -790,13 +795,30 @@ wc_o_farm:
 		ActorTypes: wc_o_grunt
     Voiced:
 		VoiceSet: orcfarmvoice
+    Production:
+		Produces: Farmupgrade.orc
+	ProductionBar:
+		ProductionType: Farmupgrade.orc
+	ProductionQueue:
+		Type: Farmupgrade.orc
+    GrantConditionOnProduction@upgrade:
+		Condition: farmupg1
+		Actors: wc_o_upgradefarm    
+        
+wc_o_guard_tower:
+    Inherits: wc_h_guard_tower
+    Buildable:
+        Prerequisites: wc_o_barracks
+        Queue: Defence.orc
+    Voiced:
+        VoiceSet: orcguardtowervoice     
         
 wc_o_barracks:
 	Inherits@wc_h_barracks: wc_h_barracks  
 	Buildable:
-		Prerequisites: wc_o_townhall
 		Queue: Building.orc
 		Description: Trains most orc units
+        Prerequisites: wc_o_farm
 	Production@NORMAL:
 		Produces: Infantry.orc
 	ProductionQueue:
@@ -887,7 +909,7 @@ wc_o_tower:
 	Buildable:
 		Prerequisites: wc_o_barracks
 		Queue: Building.orc
-		Description: Trains Necrolytes.\nProvides Radar.
+		Description: Trains Necrolytes and Skeleton Armies.\nProvides Radar.
 	Production@NORMAL:
 		Produces: Aircraft.orc
 	ProductionQueue:
@@ -985,7 +1007,7 @@ wc_h_peasant:
 	AutoTargetPriority@ATTACKANYTHING:
 		ValidStances: Enemy, Neutral
 	Valued:
-		Cost: 150
+		Cost: 200
 	Tooltip:
 		Name: Peasant
 	UpdatesPlayerStatistics:
@@ -1011,13 +1033,53 @@ wc_h_peasant:
 		ImageByFullness: wc_h_peasant, wc_h_peasant_full
   	Inherits@EXT: ^ExternalConditions      
 	AttackFrontal:	
+   	ExperienceTrickler:
+		Interval: 80
+		Amount: 400
+		RequiresCondition: indoors
+		PauseOnCondition: disabled
+	CashTrickler@Rank0:
+		Interval: 80
+		Amount: 10
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 0
+        UseResourceStorage: true   
+	CashTrickler@Rank1:
+		Interval: 80
+		Amount: 12
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 1
+        UseResourceStorage: true   
+	CashTrickler@Rank2:
+		Interval: 80
+		Amount: 15
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 2
+        UseResourceStorage: true   
+	CashTrickler@Rank3:
+		Interval: 80
+		Amount: 17
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 3
+        UseResourceStorage: true   
+	CashTrickler@Rank4:
+		Interval: 80
+		Amount: 20
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-elite 
+		UseResourceStorage: true           
     Voiced:
 		VoiceSet: voicehuman  
 	WithInfantryBody:
 		DefaultAttackSequence: harvest
 		-IdleSequences: idle1,idle2,idle3,idle4        
     -DamagedByTerrain:   
-    
+    Passenger:
+        CargoType: Worker 
+		PipType: Blue
+		CargoConditions:
+			wc_goldmine: indoors
+        
 wc_h_footman:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
@@ -1061,7 +1123,8 @@ wc_h_footman:
 		-IdleSequences: idle1,idle2,idle3,idle4
     Voiced:
 		VoiceSet: voicehuman           
-        
+    -Crushable:  
+    
 wc_h_archer:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
@@ -1092,6 +1155,7 @@ wc_h_archer:
 	Health:
 		HP: 10800
 	#Food
+    Crushable:
 	Power:
 		Amount: -10
 	AutoTarget:
@@ -1155,7 +1219,10 @@ wc_h_knight:
     Voiced:
 		VoiceSet: voicehuman     
     -Explodes:
-    
+    Targetable@HEAL:
+		RequiresCondition: !parachute && !untargetable && damaged
+		TargetTypes: Heal, Healing
+        
 wc_h_catapult:
 	Inherits: ^Vehicle
 	Inherits@WC1Infantry: ^WC1Infantry
@@ -1245,8 +1312,8 @@ wc_h_conjurer:
     Voiced:
 		VoiceSet: voicehuman     
     DetectCloaked:
-		Range: 5c0   
-        
+		Range: 5c0       
+    
 wc_h_cleric:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
@@ -1344,7 +1411,8 @@ wc_h_scorpion:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
     -Voiced:   
-     
+    -Crushable:   
+    
 wc_h_waterelemental:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1381,7 +1449,56 @@ wc_h_waterelemental:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
     -Voiced: 
-      
+    -Crushable:   
+####################################################################################################
+#       NEUTRAL
+####################################################################################################    
+
+wc_goldmine:
+	Inherits: ^BaseBuilding
+    Inherits@shape: ^3x3Shape    
+    Inherits@bot: ^BotMicromanageable
+    Inherits@BURNABLE: ^WC1Building
+	Selectable:
+		Bounds: 40,40
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Gold Mine
+	Buildable:
+		BuildPaletteOrder: 13
+		Queue: Building.human, Building.orc
+        BuildDuration: 375
+        BuildDurationModifier: 100
+		Description: Send workers inside to provide passive income\nMiners progressively get experience and work more efficiently
+	Building:
+    	Footprint: xxx xxx xxx
+		Dimensions: 3,3      
+	GivesBuildableArea:
+		AreaTypes: building
+	Health:
+		HP: 100000
+    Power:
+        Amount: -50
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 5c0
+    Cargo:
+        MaxWeight: 5
+        Types: Worker
+        PipCount: 5
+	WithSpriteBody:
+    RenderSprites:
+    CashTrickler@bot:
+		Interval: 80
+		Amount: 100
+		RequiresCondition: botmicro
+		UseResourceStorage: true       
+    WithMakeAnimation:  
+    WithDeathAnimation:
+    Voiced:
+		VoiceSet: humanlumbermillvoice 
 ####################################################################################################
 #		UNIT ORC
 ####################################################################################################
@@ -1494,20 +1611,30 @@ wc_o_spider:
         
 wc_o_skeleton:
 	Inherits@wc_h_scorpion: wc_h_scorpion
+    Inherits@upgrade_shields: ^wc_h_str_shield    
+    Inherits@upgrade_swords: ^wc_h_str_sword
+    -Buildable:
 	Tooltip:
 		Name: Skeleton
 	Armament:
 		Weapon: skeletonSlice
    	Health:
 		HP: 5400     
+    Mobile:
+		Speed: 75       
     AutoTarget:
         InitialStance: AttackAnything
 		ScanRadius: -1     
-    -ChangesHealth:
+    ChangesHealth:
+        PercentageStep: 5
+        Step: 0
+        Delay: 16
+        StartIfBelow: 100  
     RenderSprites:
 		PlayerPalette: WC1Player   
     MobSpawnerSlave:
-        
+    Voiced:
+        VoiceSet: voiceskeleton
 wc_o_demon:
 	Inherits@WD: wc_h_waterelemental
     Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -1531,20 +1658,20 @@ wc_o_skeleton_army:
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Aircraft.orc
-		Description: Big group of skeletons\nRegenerates fast
+		Description: Big group of skeletons\nRegenerates fast\nWeak against Siege and Toxins
 	Tooltip:
 		Name: Skeleton Army
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Valued:
-		Cost: 800
+		Cost: 1000
 	Health:
 		HP: 100
 	Mobile:
-		Speed: 60
-		Locomotor: foot
+		Speed: 75
+		Locomotor: foot  
     Power:
-        Amount: -120
+        Amount: -50
 	Guardable:
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
@@ -1554,7 +1681,7 @@ wc_o_skeleton_army:
 	DrawLineToTarget:
 	MobSpawnerMaster:
 		Actors: wc_o_skeleton, wc_o_skeleton, wc_o_skeleton, wc_o_skeleton, wc_o_skeleton, wc_o_skeleton, wc_o_skeleton, wc_o_skeleton, wc_o_skeleton, wc_o_skeleton, wc_o_skeleton, wc_o_skeleton
-		RespawnTicks: 200
+		RespawnTicks: 100
 		ExitByBudding: false
 	AttackTurreted:
 		PersistentTargeting: false
@@ -1577,6 +1704,8 @@ wc_o_skeleton_army:
 		Modifier: 0
 	RenderSprites:
 		Image: wc_o_skeleton
+    Voiced:
+        VoiceSet: voiceskeleton
 #######################################################
 #                     UPGRADES                        #
 #######################################################     
@@ -1593,7 +1722,7 @@ wc_h_str_arrow:
 		Description: Increases Arrow Damage dealt by Archers and Guard Towers by 35%
         Prerequisites: ~!wc_h_str_arrow
 	Valued:
-		Cost: 500
+		Cost: 1000
 	RenderSprites:
 		Image: wc_h_str_arrow
 	ProvidesPrerequisite:
@@ -1605,7 +1734,7 @@ wc_h_str_arrow2:
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: lumberupg.human
-        BuildDuration: 3000
+        BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Arrow Damage by Archers and Guard Towers by further 35%
         Prerequisites: ~!wc_h_str_arrow2, ~wc_h_str_arrow
@@ -1627,7 +1756,7 @@ wc_h_str_sword:
 		Description: Increases Sword Damage by 30%
         Prerequisites: ~!wc_h_str_sword
 	Valued:
-		Cost: 500
+		Cost: 1000
 	RenderSprites:
 		Image: wc_h_str_sword
 	ProvidesPrerequisite:  
@@ -1635,11 +1764,11 @@ wc_h_str_sword:
 wc_h_str_sword2:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: Sword Strength
+		Name: Sword Strength II
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: blacksmithupg.human
-        BuildDuration: 3000
+        BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Sword Damage by further 30%
         Prerequisites: ~!wc_h_str_sword2, ~wc_h_str_sword
@@ -1661,7 +1790,7 @@ wc_h_str_shield:
 		Description: Increases Shield Resistance of all units by 25%
         Prerequisites: ~!wc_h_str_shield
 	Valued:
-		Cost: 500
+		Cost: 1000
 	RenderSprites:
 		Image: wc_h_str_shield
 	ProvidesPrerequisite:
@@ -1669,11 +1798,11 @@ wc_h_str_shield:
 wc_h_str_shield2:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: Shield Strength
+		Name: Shield Strength II
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: blacksmithupg.human
-        BuildDuration: 3000
+        BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Shield Resistance of all units by further 25%
         Prerequisites: ~!wc_h_str_shield2, ~wc_h_str_shield
@@ -1695,7 +1824,7 @@ wc_h_horses:
 		Description: Increases Horses speed by 15%
         Prerequisites: ~!wc_h_horses
 	Valued:
-		Cost: 500
+		Cost: 1000
 	RenderSprites:
 		Image: wc_h_horses
 	ProvidesPrerequisite:   
@@ -1703,11 +1832,11 @@ wc_h_horses:
 wc_h_horses2:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: Breed Faster Horses
+		Name: Breed Faster Horses II
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: stablesupg.human
-        BuildDuration: 3000
+        BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Horses speed by further 15%
         Prerequisites: ~!wc_h_horses2, ~wc_h_horses
@@ -1731,7 +1860,7 @@ wc_o_str_spear:
 wc_o_str_spear2:
 	Inherits@spear: wc_h_str_arrow2
 	Tooltip:
-		Name: Spear Strength
+		Name: Spear Strength II
 	Buildable:
 		Queue: lumberupg.orc
 		Description: Increases Spear Damage dealt by Spearmen and Guard Towers by further 35%
@@ -1755,7 +1884,7 @@ wc_o_str_axe:
 wc_o_str_axe2:
 	Inherits@axe: wc_h_str_sword2
 	Tooltip:
-		Name: Sword Strength
+		Name: Sword Strength II
 	Buildable:
 		Queue: blacksmithupg.orc   
 		Description: Increases Axe Damage by further 30%
@@ -1767,7 +1896,7 @@ wc_o_str_shield:
 	Inherits@shld: wc_h_str_shield
 	Buildable:
 		Queue: blacksmithupg.orc    
-        Prerequisites: ~!wc_h_str_shield
+        Prerequisites: ~!wc_o_str_shield
 	RenderSprites:
 		Image: wc_o_str_shield
         
@@ -1775,7 +1904,7 @@ wc_o_str_shield2:
 	Inherits@shld: wc_h_str_shield2
 	Buildable:
 		Queue: blacksmithupg.orc
-        Prerequisites: ~!wc_h_str_shield2, ~wc_h_str_shield
+        Prerequisites: ~!wc_o_str_shield2, ~wc_o_str_shield
 	RenderSprites:
 		Image: wc_o_str_shield2
     
@@ -1785,9 +1914,7 @@ wc_o_wolves:
 		Name: Breed Faster Wolves
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: kennelupg.orc
-        BuildDuration: 1500
-        BuildDurationModifier: 100       
+		Queue: kennelupg.orc    
 		Description: Increases Wolves speed by 15%
         Prerequisites: ~!wc_o_wolves
 	RenderSprites:
@@ -1796,13 +1923,38 @@ wc_o_wolves:
 wc_o_wolves2:
 	Inherits@wolves: wc_h_horses2
 	Tooltip:
-		Name: Breed Faster Wolves
+		Name: Breed Faster Wolves II
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: kennelupg.orc
-        BuildDuration: 3000
-        BuildDurationModifier: 100       
 		Description: Increases Wolves speed by further 15%
         Prerequisites: ~!wc_o_wolves2, ~wc_o_wolves
 	RenderSprites:
 		Image: wc_o_wolves2
+      
+wc_h_upgradefarm:
+	Tooltip:
+		Name: Farm Expansion
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Farmupgrade.human
+        BuildDuration: 375
+        BuildDurationModifier: 100       
+		Description: Expands farm gaining 100 more food out of this farm
+        Icon: expand-icon
+	Valued:
+		Cost: 750
+	RenderSprites:
+		Image: wc_h_farm
+    Interactable:
+	AlwaysVisible:
+  	KillsSelf:
+		RemoveInstead: true     
+        
+wc_o_upgradefarm:
+    Inherits: wc_h_upgradefarm
+    Buildable:
+        Icon: expand-icon
+        Queue: Farmupgrade.orc
+    RenderSprites:
+		Image: wc_o_farm
