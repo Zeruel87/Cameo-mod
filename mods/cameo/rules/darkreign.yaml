@@ -299,13 +299,10 @@ drspy.freedom:
 	IgnoresDisguise:
 	Voiced:
 		VoiceSet: DRFreedomGuardSpyVoice
-	Captures:
-		CaptureTypes: building, tech
-		PlayerExperience: 500
-		CaptureDelay: 750
-		ConsumedByCapture: False
-		EnterCursor: ability
-		EnterBlockedCursor: move-blocked
+	Infiltrates:
+		Types: SpyInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 50
 	RenderSprites:
 		Scale: 0.668
 		Image: drspy
@@ -313,7 +310,7 @@ drspy.freedom:
 drspy.imperium:
 	Inherits: drspy.freedom
 	Buildable:
-		Queue: Infantry.Imperium, RAInfantry.Imperium, Infantry.Shadowhand, RAInfantry.Shadowhand
+		Queue: Infantry.Imperium, RAInfantry.Imperium, Infantry.Shadowhand, RAInfantry.Shadowhand, Infantry.Togran, RAInfantry.Togran
 		BuildPaletteOrder: 25
 		Prerequisites: dribarr2
 		Description: Infiltrates enemy structures for intel or\nsabotage. Exact effect depends on the\nbuilding infiltrated.\nLoses disguise when attacking.\nCan detect spies.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft\n  Special Ability: Disguise
@@ -406,6 +403,7 @@ drcamera:
 	Production@drihq1:
 		Produces: drihq1.Imperium
 		RequiresCondition: !lvl2
+		PauseOnCondition: lvl2
 	ProductionQueue@drihq1:
 		Type: drihq1.Imperium
 		Group: Addon
@@ -417,12 +415,15 @@ drcamera:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 		DisplayOrder: 0
+		QueueLimit: 1
+		Sticky: False
 	GrantConditionOnProduction@drihq1:
 		Condition: lvl2
 		Actors: pscdrihq2
 	Production@drihq2:
 		Produces: drihq2.Imperium
 		RequiresCondition: !lvl3 && lvl2
+		PauseOnCondition: lvl3 && !lvl2
 	ProductionQueue@drihq2:
 		Type: drihq2.Imperium
 		Group: Addon
@@ -434,6 +435,8 @@ drcamera:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 		DisplayOrder: 0
+		QueueLimit: 1
+		Sticky: False
 	GrantConditionOnProduction@drihq2:
 		Condition: lvl3
 		Actors: pscdrihq3
@@ -620,6 +623,16 @@ drwall2:
 		Range: 3c0
 	RenderSprites:
 		Scale: 0.67
+dre6:
+	Inherits: E6
+	Buildable:
+		BuildPaletteOrder: 10000
+		Prerequisites: anypower
+		Queue: Infantry.Imperium, Infantry.FreedomGuard, RAInfantry.Imperium, RAInfantry.FreedomGuard, Infantry.Xenite, Infantry.Shadowhand, RAInfantry.Xenite, RAInfantry.Shadowhand, Infantry.Togran, RAInfantry.Togran
+		Icon: dricon
+	RenderSprites:
+		Image: e6
+
 ##############################################################################
 ##
 ##      Darkreign Imperium
@@ -1372,13 +1385,39 @@ drihosp:
 		Sequence: idle-top
 	RenderSprites:
 		Scale: 0.67
+#Upgraded Buildings (Editor Purpose)
+drihq2.imperium:
+	Inherits: drihq.imperium
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+drihq3.imperium:
+	Inherits: drihq.imperium
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	GrantCondition@Addlevel3:
+		Condition: lvl3
+	Buildable:
+		Queue: Null
+dribarr2.imperium:
+	Inherits: dribarr.imperium
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+driweap2.imperium:
+	Inherits: driweap.imperium
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
 #Infantry
 drguardian:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Inherits@shadow: ^SCSmallShadow
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -1419,7 +1458,6 @@ drbion:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Inherits@shadow: ^SCSmallShadow
 	Valued:
 		Cost: 350
 	Tooltip:
@@ -1890,6 +1928,7 @@ drscarab:
 		Weapon: DRScarabShell
 		LocalOffset: 624,0,208
 		MuzzleSequence: muzzle
+		PauseOnCondition: deployed
 	AttackFrontal:
 		TargetFrozenActors: True
 		ForceFireIgnoresActors: True
@@ -1910,6 +1949,23 @@ drscarab:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: false
+		PauseOnCondition: disabled
+		Voice: Move
+	WithFacingSpriteBody:
+		RequiresCondition: !deployed
+	WithFacingSpriteBody@ALT:
+		RequiresCondition: deployed
+		Sequence: idle-alt
+	SpeedMultiplier@ALT:
+		RequiresCondition: deployed
+		Modifier: 10
+	DamageMultiplier@ALT:
+		RequiresCondition: deployed
+		Modifier: 20
 drimpapc.e1:
 	Inherits: drimpapc
 	Buildable:
@@ -1978,7 +2034,7 @@ drhostage:
 	RenderSprites:
 		Scale: 0.68
 	Voiced:
-		VoiceSet: DRImperiumVoice
+		VoiceSet: DRHostageTakerVoice
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
@@ -1995,6 +2051,277 @@ drhostage:
 		Facing: 64
 		AllowRespawn: True
 		RequiresCondition: !ammo
+#Fake Vehicles
+drptnkfake:
+	Inherits: ^Tank
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Fake Plasma Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: vehicleproduction, ~techlevel.medium
+		Queue: Vehicle.Imperium, RAVehicle.Imperium
+		BuildDuration: 350
+		BuildDurationModifier: 40
+		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry, Aircraft
+	Mobile:
+		Locomotor: hover
+		TurnSpeed: 8
+		Speed: 126
+	Hovers:
+	Health:
+		HP: 34000
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 0,0,22
+	Armament:
+		Weapon: DRNullWeapon
+	AttackTurreted:
+	WithSpriteTurret:
+	RenderSprites:
+		Scale: 0.68
+	Voiced:
+		VoiceSet: DRImperiumVoice
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
+	SelfHealing@FAKEUNIT:
+		PercentageStep: -2
+		Delay: 450
+		HealIfBelow: 150
+		DamageCooldown: 0
+	DamageMultiplier@FAKE:
+		Modifier: 150
+drimpapcfake:
+	Inherits: ^Tank
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Fake Invader Troop Transport
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 1000
+		Prerequisites: vehicleproduction
+		Queue: Vehicle.Imperium, RAVehicle.Imperium, Vehicle.Shadowhand, RAVehicle.Shadowhand
+		BuildDuration: 300
+		BuildDurationModifier: 40
+		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry, Aircraft
+	Mobile:
+		Locomotor: hover
+		TurnSpeed: 8
+		Speed: 150
+	Hovers:
+	Health:
+		HP: 19000
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 8
+		Offset: 0,0,22
+	Armament:
+		Weapon: DRNullWeapon
+	AttackTurreted:
+	WithSpriteTurret:
+	RenderSprites:
+		Scale: 0.68
+	Voiced:
+		VoiceSet: DRImperiumVoice
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
+	SelfHealing@FAKEUNIT:
+		PercentageStep: -2
+		Delay: 450
+		HealIfBelow: 150
+		DamageCooldown: 0
+	DamageMultiplier@FAKE:
+		Modifier: 150
+drshrederfake:
+	Inherits: ^Vehicle
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Fake Shredder
+	Buildable:
+		BuildPaletteOrder: 1000
+		Prerequisites: vehicleproduction, ~techlevel.medium
+		Queue: Vehicle.Imperium, RAVehicle.Imperium
+		Description: Sadic Anti Infantry, armed with\n Blades.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Mobile:
+		Locomotor: hover
+		TurnSpeed: 15
+		Speed: 150
+	Hovers:
+	Health:
+		HP: 20000
+	Repairable:
+		HpPerStep: 1200
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	RenderSprites:
+		Scale: 0.68
+	Voiced:
+		VoiceSet: DRShredderVoice
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
+	SelfHealing@FAKEUNIT:
+		PercentageStep: -1
+		Delay: 450
+		HealIfBelow: 150
+		DamageCooldown: 0
+	DamageMultiplier@FAKE:
+		Modifier: 150
+drttnkfake:
+	Inherits: ^Tank
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Fake Tachyon Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 1020
+		Prerequisites: driweap2, ~techlevel.medium
+		Queue: Vehicle.Imperium, RAVehicle.Imperium
+		BuildDurationModifier: 40
+		Description: Slow, heavy tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry, Aircraft
+	Mobile:
+		Locomotor: hover
+		TurnSpeed: 8
+		Speed: 102
+	Hovers:
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 7
+	Armament:
+		Weapon: DRNullWeapon
+	AttackTurreted:
+	WithSpriteTurret:
+	RenderSprites:
+		Scale: 0.68
+	Voiced:
+		VoiceSet: DRTachyonVoice
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
+	SelfHealing@FAKEUNIT:
+		PercentageStep: -2
+		Delay: 450
+		HealIfBelow: 150
+		DamageCooldown: 0
+	DamageMultiplier@FAKE:
+		Modifier: 150
+drmadfake:
+	Inherits: ^Tank
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Fake Mobile Air Defense
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 1000
+		Prerequisites: driweap2, ~techlevel.medium
+		Queue: Vehicle.Imperium, RAVehicle.Imperium, Vehicle.Shadowhand, RAVehicle.Shadowhand
+		Description: Fast, light AA.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry, Vehicles
+	Mobile:
+		Locomotor: hover
+		TurnSpeed: 8
+		Speed: 126
+	Hovers:
+	Health:
+		HP: 19000
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	RenderSprites:
+		Scale: 0.68
+	Voiced:
+		VoiceSet: DRImperiumVoice
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
+	SelfHealing@FAKEUNIT:
+		PercentageStep: -2
+		Delay: 450
+		HealIfBelow: 150
+		DamageCooldown: 0
+	DamageMultiplier@FAKE:
+		Modifier: 150
+drscarabfake:
+	Inherits: ^Tank
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Fake S.C.A.R.A.B.
+	Buildable:
+		BuildPaletteOrder: 1000
+		Prerequisites: driweap2, ~techlevel.medium
+		Queue: Vehicle.Imperium, RAVehicle.Imperium, Vehicle.Shadowhand, RAVehicle.Shadowhand
+		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings
+	Mobile:
+		Locomotor: hover
+		TurnSpeed: 5
+		Speed: 70
+	Hovers:
+	Health:
+		HP: 26600
+	Repairable:
+		HpPerStep: 569
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 5c0
+	RenderSprites:
+		Scale: 0.68
+	Voiced:
+		VoiceSet: DRImperiumVoice
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
+	SelfHealing@FAKEUNIT:
+		PercentageStep: -2
+		Delay: 450
+		HealIfBelow: 150
+		DamageCooldown: 0
+	DamageMultiplier@FAKE:
+		Modifier: 150
 #Aircraft
 drcyclone:
 	Inherits: ^Helicopter
@@ -2036,6 +2363,7 @@ drcyclone:
 	AmmoPool:
 		Ammo: 4
 		PipCount: 4
+		ReloadDelay: 2
 		AmmoCondition: ammo
 	SelectionDecorations:
 	Selectable:
@@ -2096,6 +2424,53 @@ drskyfort:
 	-SpawnActorOnDeath:
 	Voiced:
 		VoiceSet: DRSkyFortVoice
+drdrone:
+	Inherits: ^Helicopter
+	Inherits@detect: ^GenericAirDetector
+	Inherits@bot: ^BotMicromanageable
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Recon Drone
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: drihq2, ~techlevel.medium
+		Queue: Vehicle.Imperium, RAVehicle.Imperium, Vehicle.Shadowhand, RAVehicle.Shadowhand
+		Description: Light aircraft scout.\n Unarmed
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 100
+		InitialFacing: 224
+		AltitudeVelocity: 0c100
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 7200
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	DetectCloaked:
+		Range: 8c0
+	RenderDetectionCircle:
+	-SpawnActorOnDeath:
+	-MustBeDestroyed:
+	DeathSounds:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 24,24
+	Voiced:
+		VoiceSet: DRDroneVoice
+	Wanders:
+		WanderMoveRadius: 6
+		MinMoveDelay: 20
+		MaxMoveDelay: 80
+		RequiresCondition: botmicro
+	RenderSprites:
+		Scale: 0.70
 ##############################################################################
 ##
 ##      Darkreign Freedom Guard
@@ -2231,6 +2606,24 @@ drfghq.freedomguard:
 		SpawnOffset: -1024,1024,0		#-1323,1280,0
 		ExitCell: 0,2
 		Facing: 135
+	Transforms@lvl1:
+		RequiresCondition: factundeploy && !lvl2
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: drfgmcv.drfghq.freedomguard
+		Offset: 1,1
+		Facing: 108
+	Transforms@lvl2:
+		RequiresCondition: factundeploy && lvl2 && !lvl3
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: drfgmcv.drfghq2.freedomguard
+		Offset: 1,1
+		Facing: 108
+	Transforms@lvl3:
+		RequiresCondition: factundeploy && lvl3
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: drfgmcv.drfghq3.freedomguard
+		Offset: 1,1
+		Facing: 108
 pscdrfghq2:
 	Tooltip:
 		Name: HQ Tier 2
@@ -2331,6 +2724,18 @@ drfgbarr.freedomguard:
 		Image: drfgbarr
 		Scale: 0.67
 	Inherits@upgrade: ^UpgradesDRFGBARRType
+	Transforms@lvl1:
+		RequiresCondition: factundeploy && !lvl2
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: drfgmcv.drfgbarr.freedomguard
+		Offset: 1,1
+		Facing: 108
+	Transforms@lvl2:
+		RequiresCondition: factundeploy && lvl2
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: drfgmcv.drfgbarr2.freedomguard
+		Offset: 1,1
+		Facing: 108
 pscdrfgbarr:
 	Tooltip:
 		Name: Barracks Tier 2
@@ -2413,6 +2818,18 @@ drfgweap.freedomguard:
 	RenderSprites:
 		Image: drfgweap
 		Scale: 0.67
+	Transforms@lvl1:
+		RequiresCondition: factundeploy && !lvl2
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: drfgmcv.drfgweap.freedomguard
+		Offset: 1,1
+		Facing: 108
+	Transforms@lvl2:
+		RequiresCondition: factundeploy && lvl2
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: drfgmcv.drfgweap2.freedomguard
+		Offset: 1,1
+		Facing: 108
 pscdrfgweap:
 	Tooltip:
 		Name: Assembly Plant Tier 2
@@ -2728,7 +3145,7 @@ pscdrpplant2:
 	Valued:
 		Cost: 1200
 	RenderSprites:
-		Image: drpplant1
+		Image: drpplant2
 	Interactable:
 	AlwaysVisible:
 	KillsSelf:
@@ -2819,6 +3236,39 @@ drfghosp:
 		Sequence: idle-top
 	RenderSprites:
 		Scale: 0.67
+#Upgraded Buildings (Editor Purpose)
+drfghq2.freedomguard:
+	Inherits: drfghq.freedomguard
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+drfghq3.freedomguard:
+	Inherits: drfghq.freedomguard
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	GrantCondition@Addlevel3:
+		Condition: lvl3
+	Buildable:
+		Queue: Null
+drfgbarr2.freedomguard:
+	Inherits: drfgbarr.freedomguard
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+drfgweap2.freedomguard:
+	Inherits: drfgweap.freedomguard
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+drpplant2.freedomguard:
+	Inherits: drpplant1.freedomguard
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
 #Infantry
 drraid:
 	Inherits: ^Soldier
@@ -3101,7 +3551,7 @@ drsabot:
 	RenderSprites:
 		Scale: 0.68
 	Voiced:
-		VoiceSet: DRFreedomGuardVoice
+		VoiceSet: DRSaboteurVoice
 
 drmech:
 	Inherits: ^Soldier
@@ -3145,7 +3595,7 @@ drmech:
 		DefaultAttackSequence: repair
 		StandSequences: stand
 	Voiced:
-		VoiceSet: MechanicVoice
+		VoiceSet: DRMechanicVoice
 	AutoTarget:
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Vehicle, lockdowned, ivanattached
@@ -3184,7 +3634,7 @@ drmedi:
 		StandSequences: stand
 		DefaultAttackSequence: heal
 	Voiced:
-		VoiceSet: MedicVoice
+		VoiceSet: DRMedicVoice
 	AutoTarget:
 		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
@@ -3192,6 +3642,46 @@ drmedi:
 	Inherits@EXT: ^ExternalConditions
 	RenderSprites:
 		Scale: 0.68
+drjebradec:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Jeb Radec
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildLimit: 1
+		BuildPaletteOrder: 100
+		Prerequisites: drfghq3
+		Queue: Infantry.FreedomGuard, RAInfantry.FreedomGuard
+		Description: Hero Infantry.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
+	Mobile:
+		Speed: 71
+	Health:
+		HP: 12000
+	AutoTarget:
+		ScanRadius: 7
+	Armament@PRIMARY:							##########
+		Weapon: DRJebRadecRifle
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: DRJebRadecRifle
+	AttackFrontal:
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.68
+	Voiced:
+		VoiceSet: DRJebRadecVoice
 #Vehicle
 drspid:
 	Inherits: ^Vehicle
@@ -3422,6 +3912,8 @@ drarty:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+	Voiced:
+		VoiceSet: DRArtilleryVoice
 drtnkh:
 	Inherits: ^Vehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -3791,6 +4283,7 @@ drskybike:
 	AmmoPool:
 		Ammo: 10
 		PipCount: 5
+		ReloadDelay: 5
 		AmmoCondition: ammo
 	SelectionDecorations:
 	Selectable:
@@ -3840,6 +4333,7 @@ droutrider:
 	AmmoPool:
 		Ammo: 10
 		PipCount: 5
+		ReloadDelay: 5
 		AmmoCondition: ammo
 	SelectionDecorations:
 	Selectable:
@@ -3849,6 +4343,107 @@ droutrider:
 	-SpawnActorOnDeath:
 	Voiced:
 		VoiceSet: DRSkyBikeVoice
+#Base Mover
+drfgmcv:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Base Mover
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.medium, fix
+		Queue: Null
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Selectable:
+		Priority: 4
+		DecorationBounds: 36,36
+	Mobile:
+		Speed: 71
+		Locomotor: heavywheeled
+	Health:
+		HP: 80000
+	Repairable:
+		HpPerStep: 2182
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Transforms:
+		IntoActor: drfghq.freedomguard
+		Offset: -1,-1
+		Facing: 108
+		TransformSounds: constru2.aud, hvydoor1.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: drfgmcv
+	Voiced:
+		VoiceSet: DRFGRigVoice
+drfgmcv.drfghq.freedomguard:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drfghq.freedomguard
+drfgmcv.drfghq2.freedomguard:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drfghq2.freedomguard
+drfgmcv.drfghq3.freedomguard:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drfghq3.freedomguard
+drfgmcv.drfgbarr.freedomguard:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drfgbarr.freedomguard
+drfgmcv.drfgbarr2.freedomguard:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drfgbarr2.freedomguard
+drfgmcv.drfgweap.freedomguard:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drfgweap.freedomguard
+drfgmcv.drfgweap2.freedomguard:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drfgweap2.freedomguard
+drfgmcv.drpplant1.freedomguard:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drpplant1.freedomguard
+drfgmcv.drpplant2.freedomguard:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drpplant2.freedomguard
+drfgmcv.drfghelipad.freedomguard:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drfghelipad.freedomguard
+drfgmcv.drlastur1:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drlastur1
+drfgmcv.drrailtur1:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drrailtur1
+drfgmcv.draacannon1:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: draacannon1
+drfgmcv.drfgrep:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drfgrep
+drfgmcv.drfghosp:
+	Inherits: drfgmcv
+	Transforms:
+		IntoActor: drfghosp
 ##############################################################################
 ##
 ##      Darkreign Shadowhand
@@ -4172,6 +4767,33 @@ drmadrix.shadowhand:
 	WithIdleOverlay@ANIM:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-lights
+#Upgraded Buildings (Editor Purpose)
+drihq2.shadowhand:
+	Inherits: drihq.shadowhand
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+drihq3.shadowhand:
+	Inherits: drihq.shadowhand
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	GrantCondition@Addlevel3:
+		Condition: lvl3
+	Buildable:
+		Queue: Null
+dribarr2.shadowhand:
+	Inherits: dribarr.shadowhand
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+driweap2.shadowhand:
+	Inherits: driweap.shadowhand
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
 #Infantry
 drreaper:
 	Inherits: ^Soldier
@@ -4260,7 +4882,6 @@ drgemenis1:
 		Offset: 0,-10,0
 	AttackTurreted:
 	WithMuzzleOverlay:
-	WithSpriteTurret:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
@@ -4271,6 +4892,28 @@ drgemenis1:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: false
+		PauseOnCondition: disabled
+		Voice: Move
+	WithFacingSpriteBody:
+		RequiresCondition: !deployed
+	WithFacingSpriteBody@ALT:
+		RequiresCondition: deployed
+		Sequence: idle-alt
+	WithSpriteTurret:
+		RequiresCondition: !deployed
+	WithSpriteTurret@ALT:
+		RequiresCondition: deployed
+		Sequence: turret-alt
+	SpeedMultiplier@ALT:
+		RequiresCondition: deployed
+		Modifier: 150
+	DamageMultiplier@ALT:
+		RequiresCondition: deployed
+		Modifier: 150
 drfury:
 	Inherits: ^Vehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -4328,6 +4971,50 @@ drimpapc.e3:
 		DeployTicks: 0
 	RenderSprites:
 		Image: drimpapc
+drshadowblade:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Shadow Blade
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: vehicleproduction, ~techlevel.medium
+		Queue: Vehicle.Shadowhand, RAVehicle.Shadowhand
+		Description: Sadic Anti Infantry, armed with\n Blades.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Mobile:
+		Locomotor: hover
+		TurnSpeed: 15
+		Speed: 150
+	Hovers:
+	Health:
+		HP: 22000
+	Repairable:
+		HpPerStep: 1200
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	RenderSprites:
+		Scale: 0.68
+	Armament:
+		Weapon: DRShredderKnifes
+	AttackTurreted:
+	Turreted:
+		TurnSpeed: 200
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle
+	Voiced:
+		VoiceSet: DRShredderVoice
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
 #Aircraft
 drhades:
 	Inherits: ^Helicopter
@@ -4369,6 +5056,7 @@ drhades:
 	AmmoPool:
 		Ammo: 3
 		PipCount: 3
+		ReloadDelay: 3
 		AmmoCondition: ammo
 	SelectionDecorations:
 	Selectable:
@@ -4378,6 +5066,57 @@ drhades:
 	-SpawnActorOnDeath:
 	Voiced:
 		VoiceSet: DRHadesVoice
+drempdisable:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: EMP Device
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 130
+		Prerequisites: driweap2, drihelipad, ~techlevel.medium
+		Queue: Vehicle.Shadowhand, RAVehicle.Shadowhand
+		Description: Base Disable Unit.\n  Place it in the enemy's central building\n  Weak vs AA
+	Aircraft:
+		TurnSpeed: 8
+		Speed: 75
+	Health:
+		HP: 88000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: DREMPDevice
+		LocalOffset: 128,-213,-85, 128,213,-85
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	AmmoPool:
+		Ammo: 1
+		PipCount: 4
+		AmmoCondition: ammo
+	SelectionDecorations:
+	ReloadAmmoPool:
+		Delay: 200
+		Count: 1
+	Selectable:
+		DecorationBounds: 30,24
+	RenderSprites:
+		Scale: 0.70
+	-SpawnActorOnDeath:
+	Voiced:
+		VoiceSet: DREMPDeviceSound
 ##############################################################################
 ##
 ##      Darkreign Xenite
@@ -4579,6 +5318,11 @@ drbiocom.xenite:
 		Image: drbiocom
 		Scale: 0.67
 	Inherits@upgrade: ^UpgradesDRBIOType
+	ProximityExternalCondition:
+		Range: 7c0
+		Condition: trainercontrol
+	WithRangeCircle:
+		Range: 7c0
 pscbiocom2:
 	Tooltip:
 		Name: Bio Compotech Tier 2
@@ -4590,7 +5334,7 @@ pscbiocom2:
 	Valued:
 		Cost: 750
 	RenderSprites:
-		Image: drfgbarr2
+		Image: drbiocom2
 	Interactable:
 	AlwaysVisible:
 	KillsSelf:
@@ -4661,6 +5405,33 @@ drfgweap.xenite:
 	RenderSprites:
 		Image: drfgweap
 		Scale: 0.67
+#Upgraded Buildings (Editor Purpose)
+drfghq2.xenite:
+	Inherits: drfghq.xenite
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+drfghq3.xenite:
+	Inherits: drfghq.xenite
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	GrantCondition@Addlevel3:
+		Condition: lvl3
+	Buildable:
+		Queue: Null
+drbiocom2.freedomguard:
+	Inherits: drbiocom.xenite
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+drfgweap2.xenite:
+	Inherits: drfgweap.xenite
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
 #Infantry
 drtrainer:
 	Inherits: ^Soldier
@@ -4719,7 +5490,7 @@ drgant:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
 		Queue: Infantry.Xenite, RAInfantry.Xenite
-		Description: Melee Attack Unit.\n  Strong vs Infantry\n  Weak vs Aircraft, Heavy Vehicles
+		Description: Melee Attack Unit.\n  Strong vs Infantry\n  Weak vs Aircraft, Heavy Vehicles\n Requires Control
 	Mobile:
 		Locomotor: critter
 		Speed: 120
@@ -4777,6 +5548,9 @@ drgant:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+	Selectable:
+		Bounds: 24,24
+		DecorationBounds: 24,24
 drgrendel:
 	Inherits@Test: ^Infantry
 	Inherits: ^Vehicle
@@ -4789,12 +5563,12 @@ drgrendel:
 		BuildPaletteOrder: 30
 		Prerequisites: drbiocom2
 		Queue: Infantry.Xenite, RAInfantry.Xenite
-		Description: Tesla Attack Unit.\n  Strong vs Infantry\n  Weak vs Aircraft, Heavy Vehicles
+		Description: Electric Attack Unit.\n  Strong vs Infantry\n  Weak vs Aircraft, Heavy Vehicles\n Requires Control
 	Mobile:
 		Locomotor: critter
 		Speed: 90
 	Health:
-		HP: 90000
+		HP: 80000
 	RevealsShroud:
 		Range: 7c0
 	Armor:
@@ -4847,6 +5621,9 @@ drgrendel:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+	Selectable:
+		Bounds: 24,24
+		DecorationBounds: 28,28
 drgrider:
 	Inherits@Test: ^Infantry
 	Inherits: ^Vehicle
@@ -4859,12 +5636,12 @@ drgrider:
 		BuildPaletteOrder: 30
 		Prerequisites: drbiocom2
 		Queue: Infantry.Xenite, RAInfantry.Xenite
-		Description: Tesla Attack Unit.\n  Strong vs Infantry\n  Weak vs Aircraft, Heavy Vehicles
+		Description: Animal Control Unit.\n Electric Attack Unit.\n  Strong vs Infantry\n  Weak vs Aircraft, Heavy Vehicles
 	Mobile:
 		Locomotor: critter
 		Speed: 90
 	Health:
-		HP: 200000
+		HP: 90000
 	RevealsShroud:
 		Range: 7c0
 	Armor:
@@ -4907,7 +5684,7 @@ drgrider:
 	Targetable:
 		TargetTypes: Ground, Infantry
 	Voiced:
-		VoiceSet: DRGrendelVoice
+		VoiceSet: DRGrendelRiderVoice
 	ProximityExternalCondition:
 		Range: 7c0
 		Condition: trainercontrol
@@ -4916,6 +5693,9 @@ drgrider:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+	Selectable:
+		Bounds: 24,24
+		DecorationBounds: 28,28
 #Vehicle
 drrat2:
 	Inherits: ^Tank
@@ -4971,6 +5751,8 @@ drrat2:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+	Voiced:
+		VoiceSet: DRFreedomGuardVoice
 drrat2.e1:
 	Inherits: drrat2
 	Buildable:
@@ -5004,6 +5786,7 @@ dravenger:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@reload: ^RearmableAircraft
 	Valued:
 		Cost: 1800
 	Tooltip:
@@ -5040,9 +5823,6 @@ dravenger:
 		PipCount: 1
 		AmmoCondition: ammo
 	SelectionDecorations:
-	ReloadAmmoPool:
-		Delay: 260
-		Count: 1
 	Selectable:
 		DecorationBounds: 30,24
 	RenderSprites:
@@ -5164,7 +5944,7 @@ drihq.togran:
 	Valued:
 		Cost: 2000
 	Tooltip:
-		Name: HQ (Tograns)
+		Name: HQ Ship (Tograns)
 	Building:
 		Footprint: xxx xxx =xx
 		Dimensions: 3,3
@@ -5629,6 +6409,33 @@ drtmissile:
 		RecoilRecovery: 34
 		MuzzleSequence: muzzle
 	WithSpriteTurret@PRIMARY:
+#Upgraded Buildings (Editor Purpose)
+drihq2.togran:
+	Inherits: drihq.togran
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+drihq3.togran:
+	Inherits: drihq.togran
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	GrantCondition@Addlevel3:
+		Condition: lvl3
+	Buildable:
+		Queue: Null
+dribarr2.togran:
+	Inherits: dribarr.togran
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
+driweap2.togran:
+	Inherits: driweap.togran
+	GrantCondition@Addlevel2:
+		Condition: lvl2
+	Buildable:
+		Queue: Null
 #Infantry
 drshok:
 	Inherits: ^Soldier
@@ -5729,6 +6536,53 @@ drreaper2:
 		Weapon: DRPlasmaReaperWeapon
 	RenderSprites:
 		Image: drreaper
+drphasemine:
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Phase Mine
+	Buildable:
+		BuildPaletteOrder: 61
+		Prerequisites: vehicleproduction, ~techlevel.medium
+		Queue: Infantry.Togran, Infantry.Togran
+		Description: Speedy, heavy mech.\n  Powerful Firepower.\n  Strong vs Ground Units\n  Weak vs Aircraft
+	Mobile:
+		Speed: 85
+	Health:
+		HP: 20000
+	RevealsShroud:
+		Range: 7c0
+	Armor:
+		Type: Light
+	Armament@PRIMARY:							##########
+		Weapon: DRSuicideBomb
+	GrantConditionOnAttack:
+		Condition: triggered
+	KillsSelf:
+		RequiresCondition: triggered
+	WithInfantryBody:
+	AttackFrontal:
+	-WithFacingSpriteBody:
+	Passenger:
+		Weight: 1
+		PipType: blue
+	RenderSprites:
+		Scale: 0.68
+	Voiced:
+		VoiceSet: DRPhaseVoice
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
+	Cloak:
+		InitialDelay: 250
+		CloakDelay: 120
+		CloakSound: gxphsoc1.wav
+		UncloakSound: gxphsoc1.wav
+		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
 #Vehicle
 drntnk:
 	Inherits: ^Tank
@@ -5875,9 +6729,9 @@ drticktank:
 		TurnSpeed: 10
 		Offset: 0,0,120
 	Armament:
-		Weapon: DRBioConntrolEnergy
+		Weapon: DRTickTankLaser
 	Armament@2:
-		Weapon: DRBioConntrolEnergy
+		Weapon: DRTickTankLaser
 		RequiresCondition: airborne
 	WithInfantryBody:
 		RequiresCondition: !airborne && !swimming
@@ -5919,14 +6773,14 @@ drvortextank:
 	Inherits: ^Vehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
-		Cost: 1600
+		Cost: 2200
 	Tooltip:
 		Name: Vortex Tank
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: driweap2
 		Queue: Vehicle.Togran, RAVehicle.Togran
-		Description: Speedy, heavy mech.\n  Powerful Firepower.\n  Strong vs Ground Units\n  Weak vs Aircraft
+		Description: Speedy, heavy tank.\n  Powerful Firepower.\n  Strong vs Ground Units\n  Weak vs Aircraft\n  When deploy can attack with a Black Hole
 	Mobile:
 		Speed: 100
 		TurnSpeed: 10
@@ -5942,6 +6796,14 @@ drvortextank:
 	Armament@G1:
 		Weapon: DrVortexTankWeapon
 		LocalOffset: 200,300,170, 200,-300,170
+		PauseOnCondition: deployed
+	Armament@G2:
+		Weapon: DRVortexTankBlackHoleMaker
+		LocalOffset: 200,300,170, 200,-300,170
+		PauseOnCondition: !deployed
+		Name: secondary
+	ReloadArmamentsBar:
+		Armaments: secondary
 	WithInfantryBody:
 	AttackTurreted:
 	WithSpriteTurret:
@@ -5949,10 +6811,28 @@ drvortextank:
 	RenderSprites:
 		Scale: 0.68
 	Voiced:
-		VoiceSet: DRTripleRailVoice
+		VoiceSet: DRVortexVoice
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: false
+		PauseOnCondition: disabled
+		Voice: Move
+	WithSpriteTurret:
+		RequiresCondition: !deployed
+	WithSpriteTurret@ALT:
+		RequiresCondition: deployed
+		Sequence: turret-alt
+	SpeedMultiplier@ALT:
+		RequiresCondition: deployed
+		Modifier: 50
+	AIDeployNotifier:
+		DeployChance: 50
+		DeployTicks: 450
+		DeployTrigger: Attack
 drflamedeath:
 	Inherits: ^Vehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -5991,7 +6871,91 @@ drflamedeath:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+drsonic:
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Sonic Thumper
+	Buildable:
+		BuildPaletteOrder: 61
+		Prerequisites: driweap2, ~techlevel.medium
+		Queue: Vehicle.Togran, RAVehicle.Togran
+		Description: Speedy, heavy mech.\n  Powerful Firepower.\n  Strong vs Ground Units\n  Weak vs Aircraft
+	Mobile:
+		Speed: 85
+	Health:
+		HP: 22000
+	RevealsShroud:
+		Range: 7c0
+	Armor:
+		Type: Medium
+	Armament@G1:
+		Weapon: DRShokWaveSonic
+		LocalOffset: 400,400,300, 400,-400,300
+	WithInfantryBody:
+	AttackFrontal:
+	-WithFacingSpriteBody:
+	Passenger:
+		Weight: 3
+		PipType: blue
+	RenderSprites:
+		Scale: 0.68
+	Voiced:
+		VoiceSet: DRSonicVoice
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
 #Aircraft
+drihq.togran.m:
+	Inherits: ^Helicopter
+	Inherits@explode: ^HeliExplodeLarge
+	Tooltip:
+		Name: HQ Ship
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,58,0,-12
+	Health:
+		HP: 210000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Transforms:
+		IntoActor: drihq.togran
+		Offset: -1,-1
+		NoTransformNotification: BuildingCannotPlaceAudio
+	MustBeDestroyed:
+		RequiredForShortGame: true
+	BaseBuilding:
+	SelectionDecorations:
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 61	#71
+		VTOL: true
+		CanForceLand: false
+		-CruisingCondition:
+	-AttackAircraft:
+	-SpawnActorOnDeath:
+	-Hovers@CRUISING:
+	-Voiced:
+	RenderSprites:
+		Image: drthq
+
+drihq2.togran.m:
+	Inherits: drihq.togran.m
+	Transforms:
+		IntoActor: drihq2.togran
+	RenderSprites:
+		Image: drthq
+drihq3.togran.m:
+	Inherits: drihq.togran.m
+	Transforms:
+		IntoActor: drihq3.togran
+	RenderSprites:
+		Image: drthq
 ##############################################################################
 ##
 ##      Darkreign Terrorist (Auran)
@@ -5999,6 +6963,54 @@ drflamedeath:
 ##      Credits: Auran Terrorist Side
 ##
 ##############################################################################
+drrasta:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Rasta Soldier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks, ~testing
+		Queue: Infantry.FreedomGuard, RAInfantry.FreedomGuard, Infantry.Xenite, RAInfantry.Xenite
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 80
+	Health:
+		HP: 8000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: DRRastaLaser
+		RequiresCondition: rank-veteran == 0
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: DRLaserPistolG
+	Armament@GRENADE:							##########
+		Weapon: DRRastaGrenade
+		RequiresCondition: rank-veteran >= 1
+	Armament@PRIMARYB:							##########
+		Weapon: DRRastaLaser2
+		RequiresCondition: rank-veteran >= 2
+	AttackFrontal:
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.68
+		Image: drraid
+	Voiced:
+		VoiceSet: DRRastaVoice
+
 ##############################################################################
 ##
 ##      Darkreign Aliens (EOD)
@@ -6006,6 +7018,54 @@ drflamedeath:
 ##      Credits: Activision, Dark Reign Edge of Darkness
 ##
 ##############################################################################
+drsalamander:
+	Inherits@Test: ^Infantry
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Salamander
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks, ~eodunit
+		Queue: Infantry.Xenite, RAInfantry.Xenite
+		Description: Melee Attack Unit.\n  Strong vs Infantry\n  Weak vs Aircraft, Heavy Vehicles
+	Mobile:
+		Locomotor: critter
+		Speed: 120
+	Health:
+		HP: 20000
+	RevealsShroud:
+		Range: 7c0
+	Armor:
+		Type: Light
+	Armament:
+		Weapon: DRFireballLauncher
+		LocalOffset: 0,0,0
+	WithInfantryBody:
+	AttackFrontal:
+	-WithFacingSpriteBody:
+	Passenger:
+		Weight: 2
+		PipType: blue
+	RenderSprites:
+		Scale: 0.68
+	SelfHealing:
+		Step: 100
+		Delay: 100
+		HealIfBelow: 100
+		DamageCooldown: 125
+	Targetable:
+		TargetTypes: Ground, Infantry, Creature
+	Voiced:
+		VoiceSet: DRGantVoice
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
+	Selectable:
+		Bounds: 24,24
+		DecorationBounds: 24,24
 ##############################################################################
 ##
 ##      Darkreign Civilians or Misc
