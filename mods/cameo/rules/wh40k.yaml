@@ -419,6 +419,52 @@ wh40kfieldcommand:
 	DamageMultiplier@wh40kupbattlecommand:
 		RequiresCondition: wh40kupbattlecommand
 		Modifier: 75
+	SpawnActorPower@spysat:
+		PauseOnCondition: lowpower
+		OrderName: SovietSpyPlane
+		Icon: gps
+		ChargeInterval: 3000
+		Description: Spy Satellite Scan
+		LongDesc: Reveals an area of the map\nand cloaked enemy units.
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		EndChargeSpeechNotification: SpyPlaneReady
+		Actor: camera.spysat
+		LifeTime: 250
+		DeploySound: sspysate.aud
+		LaunchSound: sspysate.aud
+		IncomingSound: sspysate.aud
+		SupportPowerPaletteOrder: 10
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	ProvidesRadar:
+		RequiresCondition: !jammed
+	AirstrikePower@Bomber1:
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons, wh40kupmarauderdepot
+		Icon: airstrike
+		ChargeInterval: 6000
+		SquadSize: 1
+		QuantizedFacings: 8
+		Description: Incendiary Bombs
+		LongDesc: Deploy an aerial napalm strike.\nBurns buildings and infantry along a line.
+		EndChargeSpeechNotification: AirstrikeReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: EnemyPlanesApproaching
+		UnitType: wh40kmaurader.napalm
+		DisplayBeacon: True
+		BeaconPoster: airstrike
+		BeaconPosterPalette: beaconposter
+		DisplayRadarPing: True
+		CameraActor: camera
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 10
+
 wh40kpower:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -1343,6 +1389,8 @@ wh40kguard:
 		ConsumedByCapture: False
 		EnterCursor: ability
 		EnterBlockedCursor: move-blocked
+	SoundOnDamageTransition:
+		DamagedSounds: wh40kguardunder1.wav, wh40kguardunder2.wav, wh40kguardunder3.wav, wh40kguardunder4.wav, wh40kguardunder5.wav
 
 wh40kgrenade:
 	Inherits: ^Soldier
@@ -1760,7 +1808,7 @@ wh40kkars:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
 	Voiced:
-		VoiceSet: WH40KImperialGuardVoice
+		VoiceSet: WH40KKasrkinVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
 	Passenger:
@@ -1882,7 +1930,7 @@ wh40ktechpriest:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
 	Voiced:
-		VoiceSet: WH40KImperialGuardVoice
+		VoiceSet: WH40KTechpriestVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
 	Passenger:
@@ -1890,6 +1938,48 @@ wh40ktechpriest:
 	-TakeCover:
 	GivesBuildableArea:
 		AreaTypes: building
+wh40kpsyker:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@MC: ^MCImmune
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Psyker
+	Buildable:
+		BuildPaletteOrder: 99
+		Prerequisites: wh40kupbattlecommand
+		Queue: Defence.ImperialGuard, RADefence.ImperialGuard
+		Description: Psychic infantry.\nCan control enemy units.\nCan deploy to unleash a psychic blast.\n Weak vs Aircraft, Robots
+	Mobile:
+		Speed: 50
+	Health:
+		HP: 4500
+	AutoTarget:
+		ScanRadius: 6
+	Armament@PRIMARY:
+		Weapon: WH40KPsykerTesla
+	ReloadArmamentsBar:
+	AutoTarget:
+	AttackFrontal:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: WH40KPsykerVoice
+	DeliversCash:
+		Payload: 400
+	Cloneable:
+		Types: NormalInfantry
+	IgnoresDisguise:
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Power:
+		Amount: -25
 #######################################
 # Imperial Guard, Sargents
 #######################################
@@ -2012,6 +2102,7 @@ wh40kchime:
 	Inherits@EMP: ^TurretEMP
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@cargo: ^CargoVehicle
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 1100
 	Power:
@@ -2066,12 +2157,13 @@ wh40kchime:
 	RenderSprites:
 		Scale: 0.60
 	Voiced:
-		VoiceSet: WH40KImperialVehicleVoice
+		VoiceSet: WH40KChimeraVoice
 wh40khellhound:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
+	Inherits@announce: ^AnnounceOnBuild
 	Valued:
 		Cost: 1400
 	Power:
@@ -2170,7 +2262,7 @@ wh40khellhound:
 		MuzzleSequence: muzzle
 		RequiresCondition: deployed && firewallcycle >= 1
 	Voiced:
-		VoiceSet: WH40KImperialVehicleVoice
+		VoiceSet: WH40KHellhoundVoice
 wh40kbanewolf:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -2340,7 +2432,7 @@ wh40ksentinel:
 		Description: Imperial Guard Main Battle Walker, with dual cannons\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 		Prerequisites: wh40kupsentineldepot
 	Valued:
-		Cost: 1600
+		Cost: 1500
 	Tooltip:
 		Name: Sentinel
 	UpdatesPlayerStatistics:
@@ -2361,12 +2453,202 @@ wh40ksentinel:
 	Turreted:
 		TurnSpeed: 6
 		Offset: 0,0,440
-	Armament:
+	Cargo:
+		Types: Infantry
+		MaxWeight: 1
+		PipCount: 1
+		UnloadVoice: Move
+		LoadedCondition: loaded
+		LoadingCondition: notmobile
+		PassengerConditions:
+			e1: ifv-mg
+			rae1: ifv-mg
+			rare1: ifv-mg
+			ra2e1: ifv-mg
+			ra2e2: ifv-mg
+			2100scav: ifv-mg
+			2100scav2: ifv-mg
+			scmarine: ifv-mg
+			tse1: ifv-mg
+			tse1.nod: ifv-mg
+			tse1para: ifv-mg
+			tscyborg: ifv-mg
+			tscyborgc: ifv-mg
+			tsmutant: ifv-mg
+			tsmwmn: ifv-mg
+			sczergling: ifv-mg
+			gle1: ifv-mg
+			che1: ifv-mg
+			usae1: ifv-mg
+			leange1: ifv-mg
+			wh40kguard: ifv-mg
+			wh40kkars: ifv-mg
+			e2: ifv-cannon
+			rae2: ifv-cannon
+			tse2: ifv-cannon
+			tse2para: ifv-cannon
+			tsmutant3: ifv-cannon
+			che2: ifv-cannon
+			leange2: ifv-cannon
+			wh40kgrenade: ifv-cannon
+			wh40kkarsgrenade: ifv-cannon
+			e6: ifv-repair
+			rae6: ifv-repair
+			mech: ifv-repair
+			scscv: ifv-repair
+			ra2engineer: ifv-repair
+			ra2engineer.soviet: ifv-repair
+			ra2engineer.yuri: ifv-repair
+			yrslav: ifv-repair
+			tsengineer: ifv-repair
+			tsengineer2: ifv-repair
+			tsmhijack: ifv-repair
+			rathf: ifv-repair
+			glhijack: ifv-repair
+			chhacker: ifv-repair
+			chhacker2: ifv-repair
+			chlotus: ifv-repair
+			leanghacker: ifv-repair
+			leanglotus: ifv-repair
+			wh40ktechpriest: ifv-repair
+			e3: ifv-miss
+			rae3: ifv-miss
+			rare3: ifv-miss
+			yrggi: ifv-miss
+			tse3: ifv-miss
+			gle3: ifv-miss
+			che3: ifv-miss
+			usae3: ifv-miss
+			leange3: ifv-miss
+			ra2flakt: ifv-flak
+			shok: ifv-tesla
+			ra2shk: ifv-tesla
+			wh40kguardplasma: ifv-tesla
+			wh40kkarsplasma: ifv-tesla
+			wh40kpsyker: ifv-tesla
+			e4: ifv-fire
+			rae4: ifv-fire
+			yrinit: ifv-fire
+			scfirebat: ifv-fire
+			e5: ifv-chem
+			ra2deso: ifv-chem
+			tsweedguy: ifv-chem
+			gle1toxin: ifv-chem
+			rmbo: ifv-hero
+			e7: ifv-hero
+			ra2tany: ifv-hero
+			cityswat: ifv-hero
+			yrboris: ifv-hero
+			ra2seal: ifv-hero
+			tscyc2: ifv-hero
+			tscyc2.cabal: ifv-hero
+			tsghost: ifv-hero
+			tsghost.mutant: ifv-hero
+			usaburton: ifv-hero
+			leangburton: ifv-hero
+			scghost: ifv-sniper
+			ra2snipe: ifv-sniper
+			yrvirus: ifv-sniper
+			raspy: ifv-sniper
+			ra2spy: ifv-sniper
+			tschamspy: ifv-sniper
+			tsumagon: ifv-sniper
+			glkell: ifv-sniper
+			leangkell: ifv-sniper
+			glsabo: ifv-sniper
+			usapath: ifv-sniper
+			leangpath: ifv-sniper
+			wh40kcommisair: ifv-sniper
+			ra2cleg: ifv-chrono
+			ra2ivan: ifv-demo
+			ra2terror: ifv-demo
+			scinfestedterran: ifv-demo
+			glterror: ifv-demo
+	###################
+	#	Armament
+	###################
+	Armament@primary:
 		Weapon: WH40KSentinelCannon
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 768,12,20, 768,-12,20
 		MuzzleSequence: muzzle
+		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss && !ifv-deso && !ifv-demo && !ifv-chrono
+	Armament@MG1:
+		Weapon: WH40KHeavyBolterMG
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 768,12,20, 768,-12,20
+		MuzzleSequence: muzzle
+		RequiresCondition: ifv-mg
+	Armament@MG2:
+		Weapon: WH40KHeavyBolterMG2
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 768,12,20, 768,-12,20
+		MuzzleSequence: muzzle
+		RequiresCondition: ifv-mg
+	Armament@repair:
+		Weapon: RA2IFVRepair
+		LocalOffset: 164,0,864
+		RequiresCondition: ifv-repair
+		TargetStances: Ally
+		ForceTargetStances: None
+	Armament@sniper:
+		Weapon: WH40KSentinelCannon
+		LocalOffset: 171,0,255
+		MuzzleSequence: muzzlemg
+		RequiresCondition: ifv-sniper
+	Armament@hero:
+		Weapon: WH40KOgrynGun
+		LocalOffset: 171,0,255
+		MuzzleSequence: muzzlemg
+		RequiresCondition: ifv-hero
+	Armament@tesla:
+		Weapon: WH40KPlasmapistolG
+		RequiresCondition: ifv-tesla
+	Armament@flak:
+		Weapon: RA2FlakTrackGun
+		RequiresCondition: ifv-flak
+		LocalOffset: 171,0,255
+		MuzzleSequence: muzzlefl
+	Armament@cannon:
+		Weapon: WH40KLemanCannon
+		RequiresCondition: ifv-cannon
+		LocalOffset: 171,0,255
+		MuzzleSequence: muzzlemm
+	Armament@fire:
+		Weapon: WH40KHellhoundFlamer
+		RequiresCondition: ifv-fire
+		LocalOffset: 171,0,255
+		MuzzleSequence: muzzlefa
+	Armament@chem:
+		Weapon: WH40KBaneBeamWeapon
+		LocalOffset: 768,12,20, 768,-12,20
+		RequiresCondition: ifv-chem
+	Armament@missile:
+		Weapon: WH40KHeavyMissileLauncher
+		LocalOffset: 768,12,20, 768,-12,20
+		RequiresCondition: ifv-miss
+	Armament@chrono:
+		Weapon: IFVChronoBeam
+		LocalOffset: 171,0,255
+		RequiresCondition: ifv-chrono
+	Armament@chronosound:
+		Weapon: IFVChronoSound
+		RequiresCondition: ifv-chrono
+	Armament@ivan:
+		Weapon: DemoTruckTargeting
+		RequiresCondition: ifv-demo
+	GrantConditionOnAttack:
+		Condition: triggered
+		RequiresCondition: ifv-demo && !disabled
+	KillsSelf@ivan:
+		RequiresCondition: ifv-demo && (triggered || invulnerability)
+	Explodes@ivan:	
+		Weapon: RA2DemoBomb
+		EmptyWeapon: RA2DemoBomb
+		RequiresCondition: ifv-demo && !disabled
 	AttackFrontal:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -2445,7 +2727,7 @@ wh40kbaneblade:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 4500
+		Cost: 5000
 	Power:
 		Amount: -150
 	Tooltip:
@@ -2454,10 +2736,9 @@ wh40kbaneblade:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: wh40kuplemanrussdepot
+		Prerequisites: wh40kuplemanrussdepot, !wh40kbanebladec
 		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
 		Description: Heavily armored Imperial Guard Tank.\nCan attack Aircraft.\n  Strong vs Everything
-		BuildLimit: 1
 	Mobile:
 		Locomotor: heavytracked
 		Speed: 68
@@ -2533,6 +2814,55 @@ wh40kbaneblade:
 		Sequence: turret2
 	Voiced:
 		VoiceSet: WH40KImperialVehicleVoice
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: wh40kbanebladec
+		RequiresPrerequisites: global-swlimit
+	GrantConditionOnPrerequisite@SWReveal:
+		Condition: swreveal
+		Prerequisites: global-swreveal
+	RevealsShroud@SWReveal:
+		Range: 2c0
+		ValidStances: Neutral, Enemy
+		RequiresCondition: swreveal
+wh40kmaurader.napalm:
+	Inherits: ^Plane
+	Interactable:
+	Tooltip:
+		Name: Maraunder Bomber
+	Valued:
+		Cost: 2000
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 373
+		Repulsable: False
+	AttackBomber:
+		Armaments: bombs
+	WithMuzzleOverlay:
+	Armament@BOMBS:
+		Name: bombs
+		Weapon: CHDragonFirestorm
+		LocalOffset: 0,-256,-43, 0,256,-43
+	Armament@BOMBS1:
+		Name: bombs
+		Weapon: CHDragonFirestorm
+		LocalOffset: 0,-256,-43, 0,256,-43
+	Armament@BOMBS2:
+		Name: bombs
+		Weapon: CHDragonFirestorm
+		LocalOffset: 0,-256,-43, 0,256,-43
+	Armament@BOMBS3:
+		Name: bombs
+		Weapon: CHDragonFirestorm
+		LocalOffset: 0,-256,-43, 0,256,-43
+	Contrail@1:
+		Offset: -640,171,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -640,-171,0
+		TrailLength: 15
+	-MapEditorData:
+	RenderSprites:
+		Image: wh40kmaurader
 #######################################
 # Orkz, Building
 #######################################
