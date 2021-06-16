@@ -1,7 +1,107 @@
 #######################################
 # RA2 Defaults
 #######################################
-
+   
+^GainsExperienceRA2:
+	GainsExperience:
+		LevelUpNotification: LevelUp
+		Conditions:
+			100: rank-veteran
+			250: rank-veteran
+			400: rank-veteran
+			600: rank-veteran
+            1200: rank-veteran
+		LevelUpImage: crate-effects
+	ExternalCondition@rankveteran:
+		Condition: rank-veteran
+		TotalCap: 5
+	ExternalCondition@rankelite:
+		Condition: rank-elite
+		TotalCap: 1
+	GrantCondition@RANK-ELITE:
+		RequiresCondition: rank-veteran >= 5
+		Condition: rank-elite
+	WithDecoration@RANK-1:
+		Image: ra2rank
+		Sequence: rank-veteran-1
+		Palette: effect
+		ReferencePoint: Bottom, Right
+		RequiresCondition: rank-veteran == 1 && !rank-elite
+		ZOffset: 256
+	WithDecoration@RANK-2:
+		Image: ra2rank
+		Sequence: rank-veteran-2
+		Palette: effect
+		ReferencePoint: Bottom, Right
+		RequiresCondition: rank-veteran == 2 && !rank-elite
+		ZOffset: 256
+	WithDecoration@RANK-3:
+		Image: ra2rank
+		Sequence: rank-veteran-3
+		Palette: effect
+		ReferencePoint: Bottom, Right
+		RequiresCondition: rank-veteran == 3 && !rank-elite
+		ZOffset: 256
+ 	WithDecoration@RANK-4:
+		Image: ra2rank
+		Sequence: rank-veteran-4
+		Palette: effect
+		ReferencePoint: Bottom, Right
+		RequiresCondition: rank-veteran == 4 && !rank-elite
+		ZOffset: 256       
+	WithDecoration@RANK-ELITE:
+		Image: ra2rank
+		Sequence: rank-elite
+		Palette: effect
+		ReferencePoint: Bottom, Right
+		RequiresCondition: rank-elite
+		ZOffset: 256
+ 	DamageMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 98
+	DamageMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 95
+	DamageMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 92
+ 	DamageMultiplier@RANK-4:
+		RequiresCondition: rank-veteran == 4
+		Modifier: 90       
+	DamageMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 50
+	FirepowerMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 102
+	FirepowerMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 105
+	FirepowerMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 108
+    FirepowerMultiplier@RANK-4:
+		RequiresCondition: rank-veteran == 4
+		Modifier: 112   
+	FirepowerMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 200
+	InaccuracyMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 95
+	InaccuracyMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 90
+	InaccuracyMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 85
+  	InaccuracyMultiplier@RANK-4:
+		RequiresCondition: rank-veteran == 4
+		Modifier: 80      
+	InaccuracyMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 20
+        
 ^RA2Country.template.allies:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -331,6 +431,15 @@ force.RA2Psicorps:
         Prerequisite: RA2Psicorps
     RenderSpritesEditorOnly:
         Image: ra2yuri   
+         
+force.RA2DOOM:
+    Inherits: force.RA2Russia
+    EditorOnlyTooltip:
+		Name: (Force RA2 DOOM Russia)
+    ProvidesPrerequisite@faction:
+        Prerequisite: RA2DOOM
+    RenderSpritesEditorOnly:
+        Image: ra2doomicon  
         
 ^RA2InfantryShadow:
 	RenderSprites:
@@ -532,6 +641,24 @@ ForceShieldDrainer:
 ##############################################
 #   Red Alert 2 Allies Structures
 ##############################################
+
+OILB.RA2:
+	Inherits: OILB.camea
+    Buildable:
+		Queue: Defence.SovietRA2, RADefence.SovietRA2, Defence.AlliesRA2, RADefence.AlliesRA2, Defence.Yuri, RADefence.Yuri
+		BuildPaletteOrder: 120
+		Prerequisites: tek, ~techlevel.medium, ~!faction.doom
+		Description: Provides Passive income
+    Valued:
+        Cost: 3000
+    RenderSprites:
+        Image: ra2caoild
+    Power:
+        Amount: -100
+    Health: 
+        HP: 120000
+    -WithMakeAnimation:
+        
 ra2gacnst:
 	Inherits: ^RA2Building
 	Inherits@CPQ: ^CPQCondition
@@ -2243,6 +2370,8 @@ RA2DEMONRADAR:
         Scale: 1.2
 	Buildable:
 		Prerequisites: ra2narefn, ~RA2DOOM
+        BuildDuration: 1350
+        BuildDurationModifier: 100
     Tooltip:
 		Name: DOOM Radar
     Health:
@@ -2251,7 +2380,7 @@ RA2DEMONRADAR:
 		Cost: 2500
     CashTrickler@Rank0:
 		Interval: 100
-		Amount: 20
+		Amount: 75
     ProvidesPrerequisite@radar:
         Prerequisite: ra2naradr    
         
@@ -2416,7 +2545,7 @@ ra2natech:
 		Queue: Building.SovietRA2, RABuilding.SovietRA2
 		BuildPaletteOrder: 150
 		Prerequisites: ra2naweap, ra2naradr, ~techlevel.high, ~CountryChoosedSovietRA2
-		Description: Provides Soviet advanced technologies.
+		Description: Provides Soviet advanced technologies and support power.
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -2440,7 +2569,50 @@ ra2natech:
 	ProvidesPrerequisite@buildingname:
 	GrantExternalConditionPowerCA@FORCESHIELD:
 		Prerequisites: !RA2Psicorps, ~brutalaiorhuman
-
+    GrantConditionOnPrerequisite@doom:
+        Prerequisites: RA2DOOM
+        Condition: RA2DOOM
+  	DetonateWeaponPower@aichrono:
+		OrderName: ChronoshiftAI
+		PauseOnCondition: lowpower
+		Icon: chrono
+		Cursor: ability
+		ChargeInterval: 4500
+		Description: DOOM Chronoshift
+		ActivationDelay: 25
+		LongDesc: Chronoshifts five Imps anywhere on the map.
+		Weapon: RA2ChronoDOOM
+		CameraActor: camera.placeholderhack
+		CameraRemoveDelay: 0
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		LaunchSound: chrono2.aud
+		IncomingSound: chrono2.aud
+        Prerequisites: RA2DOOM
+	ParatroopersPower@ra2paratroopers:
+		OrderName: Allies2Paratroopers
+		Icon: paratroopers
+		ChargeInterval: 4500
+		Description: Airborne
+		LongDesc: A cargo plane drops 15 conscripts\nanywhere on the map.
+		DropItems: RA2E2,RA2E2,RA2E2,RA2E2,RA2E2,RA2E2,RA2E2,RA2E2,RA2E2,RA2E2,RA2E2,RA2E2,RA2E2,RA2E2,RA2E2
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		CircleSequence: circles
+		UnitType: ra2cplane
+		UseDirectionalTarget: True
+        SquadSize: 3
+        Prerequisites: !RA2DOOM
+		DirectionArrowAnimation: airstrikedirection
+  
 ra2nairon:
 	Inherits: ^RA2Building
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -2657,7 +2829,7 @@ yrngbnkr:
 	Buildable:
 		Queue: Defence.SovietRA2, RADefence.SovietRA2
 		BuildPaletteOrder: 40
-		Prerequisites: ra2nahand, ~techlevel.low, ~CountryChoosedSovietRA2, ~!RA2Psicorps, ~!RA2DOOM
+		Prerequisites: ra2nahand, ~techlevel.low, ~CountryChoosedSovietRA2, ~!RA2DOOM
 		Description: Static defense with a fireport for\n6 garrisoned soldiers.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 800
@@ -2720,14 +2892,14 @@ yrschd:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@RenderVoxel: ^RenderVoxel
 	Inherits@sell: ^RA2SSpawnActorsOnSell
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@detect: ^GenericAirDetector
 	Inherits@EMP: ^TurretEMP
 	Inherits@ivan: ^BombAttachable
 	Selectable:
 		Bounds: 24,24
 	Valued:
-		Cost: 1000
+		Cost: 1200
 	Tooltip:
 		Name: Siege Chopper (Deployed)
 	Selectable:
@@ -2740,7 +2912,7 @@ yrschd:
 		Dimensions: 1, 1
 		UndeploySounds: vchodepa.wav
 	Health:
-		HP: 35000
+		HP: 32500
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -2752,8 +2924,15 @@ yrschd:
 	AttackTurreted:
 		Voice: DeployedAttack
 	Armament:
+        Name: primary
 		Weapon: RA160mmE
 		LocalOffset: 410,0,1386
+        RequiresCondition: !rank-elite
+	Armament@elite:
+        Name: primary
+		Weapon: RA160mmE_elite
+		LocalOffset: 410,0,1386
+        RequiresCondition: rank-elite        
 	BodyOrientation:
 		QuantizedFacings: 16
 	WithVoxelTurret:
@@ -2774,7 +2953,10 @@ yrschd:
 		PauseOnCondition: disabled
 	-Demolishable:
 	-Cloak@TDcloak:
-
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite    
+        
 yrngindp:
 	Inherits: ^RA2Building
 	HitShape:
@@ -3155,19 +3337,20 @@ yryapowr:
 	Inherits@shape: ^2x2Shape
 	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Inherits@power: ^PowerPlant
+    Inherits@BotMicro: ^BotMicromanageable 
 	Selectable:
 		Bounds: 48,48
 		Class: yryapowr
 	HitShape:
 		TargetableOffsets: 630,299,0
 	Valued:
-		Cost: 600
+		Cost: 800
 	Tooltip:
 		Name: Bio Reactor
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Building.Yuri, RABuilding.Yuri
-		Description: Generates power
+		Description: Generates power\nExplodes upon death when loaded by 4 or more workers
 	Building:
 		Footprint: xX xx __
 		Dimensions: 2,3
@@ -3187,25 +3370,34 @@ yryapowr:
 		PipCount: 5
 		EjectOnDeath: false
 		LoadedCondition: PowerLoad
-	Power@0:
-		Amount: 150
-		RequiresCondition: PowerLoad == 0
+    Power@0:
+        Amount: 100
+        RequiresCondition: PowerLoad == 0
 	Power@1:
-		Amount: 250
+		Amount: 125
 		RequiresCondition: PowerLoad == 1
 	Power@2:
-		Amount: 350
+		Amount: 150
 		RequiresCondition: PowerLoad == 2
 	Power@3:
-		Amount: 450
+		Amount: 200
 		RequiresCondition: PowerLoad == 3
 	Power@4:
-		Amount: 550
+		Amount: 300
 		RequiresCondition: PowerLoad == 4
 	Power@5:
-		Amount: 650
+		Amount: 500
 		RequiresCondition: PowerLoad >= 5
-
+    PowerMultiplier@bot:
+        Modifier: 300
+        RequiresCondition: botmicro
+	Explodes@4:
+		Weapon: ReactorNukeWeak
+		RequiresCondition: !chronobeamed && PowerLoad == 4
+  	Explodes@5:
+		Weapon: ReactorNuke
+		RequiresCondition: !chronobeamed && PowerLoad == 5      
+        
 yryapowr.bot:
 	Inherits: yryapowr
 	RenderSprites:
@@ -3268,7 +3460,7 @@ yryabrck:
 		ProductionType: RAInfantry.Yuri
 		RequiresCondition: classicproductionqueues
 	Power:
-		Amount: -20
+		Amount: -25
 	ProvidesPrerequisite@buildingname:
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi
@@ -3294,6 +3486,8 @@ yryarefn:
 	Building:
 		Footprint: xx ==
 		Dimensions: 2,2
+  	Power:
+		Amount: -40      
 	Health:
 		HP: 65000
 	Armor:
@@ -3434,7 +3628,7 @@ ra2napsis:
 		SupportPowerPaletteOrder: 10
 	SupportPowerChargeBar:
 	Power:
-		Amount: -75
+		Amount: -100
 	ExternalCondition@JAMMED:
 		Condition: jammed
 	ProvidesPrerequisite:
@@ -3625,7 +3819,7 @@ YRygggun:
 	Valued:
 		Cost: 1000
 	Power:
-		Amount: -50
+		Amount: -75
 	Tooltip:
 		Name: Gattling Cannon
 	Building:
@@ -3723,7 +3917,7 @@ yryggrnd:
 	RevealsShroud:
 		Range: 4c0
 	Power:
-		Amount: -20
+		Amount: -50
 	AcceptsDeliveredCash:
 		ValidTypes: GrinderCash
 
@@ -3810,7 +4004,7 @@ yrygppet:
 		IncomingSound: spsyopen.wav
 	SupportPowerChargeBar:
 	Power:
-		Amount: -200
+		Amount: -300
 	ProvidesPrerequisite@swlimit:
 		Prerequisite: psydom
 
@@ -3846,40 +4040,12 @@ yrygtech:
 		Range: 6c0
 	SupportPowerChargeBar:
 	Power:
-		Amount: -100
+		Amount: -150
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite:
 		Prerequisite: tek
 	WithIdleOverlay@critical:
 		Sequence: idle-critical
-    GrantConditionOnPrerequisite@doom:
-        Prerequisites: RA2DOOM
-        Condition: RA2DOOM
-    FreeActor@imp1:
-		Actor: RA2IMP
-		SpawnOffset: 2,2
-		Facing: 64
-        RequiresCondition: RA2DOOM
-    FreeActor@imp2:
-		Actor: RA2IMP
-		SpawnOffset: 2,2
-		Facing: 64
-        RequiresCondition: RA2DOOM
-    FreeActor@imp3:
-		Actor: RA2IMP
-		SpawnOffset: 2,2
-		Facing: 64
-        RequiresCondition: RA2DOOM
-    FreeActor@imp4:
-		Actor: RA2IMP
-		SpawnOffset: 2,2
-		Facing: 64
-        RequiresCondition: RA2DOOM
-    FreeActor@imp5:
-		Actor: RA2IMP
-		SpawnOffset: 2,2
-		Facing: 64
-        RequiresCondition: RA2DOOM   
         
 yrygpsyt:
 	Inherits: ^Defense
@@ -3923,7 +4089,7 @@ yrygpsyt:
 		PauseOnCondition: lowpower || disabled
 	AutoTarget:
 	Power:
-		Amount: -75
+		Amount: -100
 	DetectCloaked:
 		Range: 4c0
 		RequiresCondition: !lowpower && !disabled
@@ -4033,7 +4199,7 @@ yrygyard:
 ##############################################
 RA2E1:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -4131,9 +4297,13 @@ RA2E1:
 		Payload: 75
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite    
+        
 RA2CLEG:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -4156,8 +4326,15 @@ RA2CLEG:
 	Armament@sound:
 		Weapon: RA2ChronoTele
 	Armament@PRIMARY:
+        Name: primary
 		Weapon: ChronoBeam
 		LocalOffset: 256,43,256
+        RequiresCondition: !rank-elite
+  	Armament@PRIMARY:
+        Name: primary
+		Weapon: ChronoBeam_elite
+		LocalOffset: 256,43,256
+        RequiresCondition: rank-elite
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: ChronoBeam
@@ -4180,9 +4357,13 @@ RA2CLEG:
 		CrushClasses: vehicle
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 40
+        RequiresCondition: rank-elite  
+        
 YRGGI:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -4218,9 +4399,19 @@ YRGGI:
 	Armament@DEPLOYED:						##########
 		Name: deployed
 		Weapon: RA2GIRocketsG
+        RequiresCondition: !rank-elite 
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RA2GIRocketsG
+        RequiresCondition: !rank-elite     
+  	Armament@DEPLOYEDELITE:						##########
+		Name: deployed
+		Weapon: RA2GIRocketsG_elite
+        RequiresCondition: rank-elite 
+	Armament@GARRISONEDELITE:						##########
+		Name: garrisoned
+		Weapon: RA2GIRocketsG_elite
+        RequiresCondition: rank-elite         
 	AttackFrontal:
 		Armaments: primary, targeting
 		RequiresCondition: undeployed
@@ -4290,15 +4481,19 @@ YRGGI:
 		Payload: 150
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    ReloadDelayMultiplier@elite:
+        Modifier: 90
+        RequiresCondition: rank-elite       
+        
 RA2SNIPE:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 600
+		Cost: 800
 	Tooltip:
 		Name: Sniper
 	Buildable:
@@ -4406,7 +4601,7 @@ RA2TANY:
 		StandSequences: stand
 	Voiced:
 		VoiceSet: RA2TanyaVoice
-	Inherits@EXPERIENCE: ^GainsExperience				##########
+	Inherits@EXPERIENCE: ^GainsExperienceRA2				##########
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -4417,10 +4612,20 @@ RA2TANY:
 	ProvidesPrerequisite:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+  	ChangesHealth@eliteplus:
+		PercentageStep: 5
+		Delay: 40
+		StartIfBelow: 100
+        RequiresCondition: rank-elite      
+    ReloadDelayMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 80
+        
 RA2SEAL:
 	Inherits: RMBO
 	Inherits@anim: ^RA2Infantry
 	Inherits@swim: ^WithSwimsuit
+  	Inherits@EXPERIENCE: ^GainsExperienceRA2     
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -4452,8 +4657,17 @@ RA2SEAL:
 	Voiced:
 		VoiceSet: SealVoice
 	-AnnounceOnKill:
+    ChangesHealth@eliteplus:
+		PercentageStep: 5
+		Delay: 40
+		StartIfBelow: 100
+        RequiresCondition: rank-elite      
+    ReloadDelayMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 80
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+        
 RA2SPY:
 	Inherits: RASPY
 	Inherits@anim: ^RA2Infantry
@@ -4471,7 +4685,9 @@ RA2SPY:
 		LevelUpNotification: LevelUpRA2
 RA2ADOG:
 	Inherits: DOG
+    -GainsExperience:
 	Inherits@anim: ^RA2Infantry
+    Inherits@EXPERIENCE: ^GainsExperienceRA2 
 	Buildable:
 		Queue: Infantry.AlliesRA2, RAInfantry.AlliesRA2
 		BuildPaletteOrder: 29
@@ -4485,6 +4701,12 @@ RA2ADOG:
 		VoiceSet: RA2DogVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    SpeedMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 125
+    ReloadDelayMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 70      
 ##############################################
 #   Red Alert 2 Soviet Infantry
 ##############################################
@@ -4499,7 +4721,7 @@ YRBORIS:
 	Buildable:
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 		BuildPaletteOrder: 120
-		Prerequisites: ra2natech, ~techlevel.high, ~!RA2Psicorps, ~!RA2DOOM
+		Prerequisites: ra2natech, ~techlevel.high, ~!RA2DOOM
 		BuildLimit: 1
 		Description: Elite commando infantry.\nCan detect cloaked units.\nMaximum 1 can be trained.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft\n  Special Ability: Airstrike
 	Valued:
@@ -4507,7 +4729,7 @@ YRBORIS:
 	Tooltip:
 		Name: Boris
 	Health:
-		HP: 10000
+		HP: 35000
 	Mobile:
 		Speed: 71
 	RevealsShroud:
@@ -4543,7 +4765,7 @@ YRBORIS:
 			secondary: secondary-fire
 	Voiced:
 		VoiceSet: BorisVoice
-	Inherits@EXPERIENCE: ^GainsExperience				##########
+	Inherits@EXPERIENCE: ^GainsExperienceRA2				##########
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -4551,9 +4773,23 @@ YRBORIS:
 		Payload: 600
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    RangeMultiplier@eliteplus:
+        Modifier: 110
+        RequiresCondition: rank-elite       
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 85
+        RequiresCondition: rank-elite     
+    DamageMultiplier@eliteplus:
+        Modifier: 90
+        RequiresCondition: rank-elite              
+    ChangesHealth@eliteplus:
+		PercentageStep: 4
+		Delay: 50
+		StartIfBelow: 100
+        RequiresCondition: rank-elite       
 RA2E2:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -4591,9 +4827,16 @@ RA2E2:
 		Types: NormalInfantry
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite  
+    DamageMultiplier@eliteplus:
+        Modifier: 95
+        RequiresCondition: rank-elite  
+        
 RA2flakt:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -4614,15 +4857,37 @@ RA2flakt:
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
+        Name: primary
 		Weapon: RA2CRFlakGuyGun
+        RequiresCondition: !rank-elite
 	Armament@PRIMARYAA:
+        Name: primary
 		Weapon: RA2FLAKAA
+        RequiresCondition: !rank-elite
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2CRFlakGuyGun
+        RequiresCondition: !rank-elite
 	Armament@GARRISONEDAA:
 		Name: garrisoned
 		Weapon: RA2FLAKAA
+        RequiresCondition: !rank-elite
+   	Armament@PRIMARYE:
+        Name: primary
+		Weapon: RA2CRFlakGuyGun_elite
+        RequiresCondition: rank-elite
+	Armament@PRIMARYAAE:
+        Name: primary
+		Weapon: RA2FLAKAA_elite
+        RequiresCondition: rank-elite
+	Armament@GARRISONEDE:
+		Name: garrisoned
+		Weapon: RA2CRFlakGuyGun_elite
+        RequiresCondition: rank-elite
+	Armament@GARRISONEDAAE:
+		Name: garrisoned
+		Weapon: RA2FLAKAA_elite
+        RequiresCondition: rank-elite     
 	AttackFrontal:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -4635,26 +4900,29 @@ RA2flakt:
 		Types: NormalInfantry
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-
+    RangeMultiplier@eliteplus:
+        Modifier: 115
+        RequiresCondition: rank-elite    
+        
 RA2ZOMBIE:
 	Inherits: ZOMBIE2
 	Valued:
-		Cost: 50
+		Cost: 60
 	Tooltip:
 		Name: DOOM Zombie
 	Buildable:
 		Queue: Infantry.SovietRA2
 		BuildPaletteOrder: 20
 		BuildDurationModifier: 100
-        BuildDuration: 22
+        BuildDuration: 45
 		Prerequisites: ~RA2DOOM
 		Description: Fast undead. Attacks in close combat.
 	Health:
-		HP: 8000
+		HP: 5000
 	Armament:
 		Weapon: RA2ZOMBIE
     Mobile:
-		Speed: 72 
+		Speed: 64
     RenderSprites:
         Scale: 0.8               
     GivesBounty:
@@ -4846,14 +5114,14 @@ RA2EXCITER:
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 		BuildPaletteOrder: 20
 		BuildDurationModifier: 100
-        BuildDuration: 900
+        BuildDuration: 550
 		Prerequisites: ~RA2DOOM, tek
 		Description: This is Exciter
     RenderSprites:
         Image: EXCITER
         Scale: 0.7
     Valued:
-        Cost: 2000
+        Cost: 1600
     Health:
 		HP: 40000
 	Armor:
@@ -4878,9 +5146,9 @@ RA2SKELETON:
 	Armament:
 		Weapon: skeletonSlice
    	Health:
-		HP: 13000     
+		HP: 15000     
     Valued:
-        Cost: 400
+        Cost: 150
     Mobile:
 		Speed: 59       
     RenderSprites:
@@ -4889,6 +5157,8 @@ RA2SKELETON:
     -RejectsOrders:
     Voiced:
         VoiceSet: voiceskeleton
+    Armament:
+        Weapon: RA2SKELETON
 	ActorLostNotification: 
 
 RA2SPIDER: 
@@ -4905,7 +5175,7 @@ RA2SPIDER:
     AutoTarget:
         InitialStance: AttackAnything
     Health:
-        HP: 3000
+        HP: 4000
     ChangesHealth:
         PercentageStep: -5
         Step: 0
@@ -4950,12 +5220,12 @@ RA2FLOATER:
    	Buildable:
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 		Prerequisites: ~techlevel.medium, ~RA2DOOM
-		Description: Basic tank of DOOM Russia\n  Strong vs Vehicles 
+		Description: Basic tank of DOOM Russia\nLeaves burning traces on ground\n  Strong vs Infantry, Light Vehicles 
         BuildPaletteOrder: 1
     Valued:
-        Cost: 500
+        Cost: 700
     Health:
-        HP: 25000
+        HP: 18000
 	Mobile:
 		Speed: 71
 		Locomotor: hover
@@ -4978,13 +5248,13 @@ RA2FLOATER:
         Percentage: 10
 RA2DESO:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 600
+		Cost: 800
 	Tooltip:
 		Name: Desolator
 	Buildable:
@@ -4995,7 +5265,7 @@ RA2DESO:
 	Mobile:
 		Speed: 52
 	Health:
-		HP: 7500
+		HP: 9000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
@@ -5075,6 +5345,7 @@ RA2TRIPOD:
 		Speed: 40
 		Voice: Move
 		Locomotor: glabike
+        TurnSpeed: 4
 	RevealsShroud:
 		Range: 10c0
 	RenderSprites:
@@ -5134,7 +5405,7 @@ RA2TERROR:
 	Mobile:
 		Speed: 95
 	Health:
-		HP: 7500
+		HP: 10000
 	AutoTarget:
 		ScanRadius: 4
 	Inherits@EXT: ^ExternalConditions					##########
@@ -5162,7 +5433,7 @@ RA2TERROR:
 
 RA2IVAN:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -5204,12 +5475,20 @@ RA2IVAN:
 		Types: NormalInfantry
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    SpeedMultiplier@eliteplus:
+        Modifier: 115
+        RequiresCondition: rank-elite        
+    ChangesHealth@eliteplus:
+		PercentageStep: 4
+		Delay: 50
+		StartIfBelow: 100
+        RequiresCondition: rank-elite
 ra2shk:
 	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@EXT: ^ExternalConditions
 	AutoTargetPriority@DEFAULT:
 		InvalidTargets: NoAutoTarget, TeslaCoil
@@ -5272,9 +5551,17 @@ ra2shk:
 		Class: ra2shk
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    RangeMultiplier@eliteplus:
+        Modifier: 115
+        RequiresCondition: rank-elite       
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite     
 RA2DOG:
 	Inherits: DOG
+    -GainsExperience:
 	Inherits@anim: ^RA2Infantry
+    Inherits@EXPERIENCE: ^GainsExperienceRA2 
 	Buildable:
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 		BuildPaletteOrder: 29
@@ -5288,9 +5575,16 @@ RA2DOG:
 		VoiceSet: RA2DogVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    SpeedMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 125
+    ReloadDelayMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 70
+        
 RA2YURI:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -5314,6 +5608,10 @@ RA2YURI:
 		RequiresCondition: !controlling
 	Armament@PRIMARY:
 		Weapon: RA2MindControl
+    Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2MindControl   
+    Passenger:
 	MindController:
 		ArmamentNames: primary
 		Capacity: 1
@@ -5360,7 +5658,7 @@ RA2YURI:
 ##############################################
 YRINIT:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -5381,10 +5679,21 @@ YRINIT:
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
+        Name: primary
 		Weapon: RA2PsychicJab
+        RequiresCondition: !rank-elite
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RA2PsychicJab
+        RequiresCondition: !rank-elite
+ 	Armament@PRIMARYELITE:							##########
+        Name: primary
+		Weapon: RA2PsychicJab_elite
+        RequiresCondition: rank-elite
+	Armament@GARRISONEDELITE:						##########
+		Name: garrisoned
+		Weapon: RA2PsychicJab_elite
+        RequiresCondition: rank-elite       
 	AttackFrontal:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -5397,9 +5706,16 @@ YRINIT:
 		Types: NormalInfantry
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite       
+    FirepowerMultiplier@eliteplus:
+        Modifier: 120
+        RequiresCondition: rank-elite                 
+         
 YRBRUTE:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -5443,10 +5759,18 @@ YRBRUTE:
 	Targetable@dog:
 		TargetTypes: DogImmune
 	GainsExperience:
-		LevelUpNotification: LevelUpRA2
+		LevelUpNotification: LevelUpRA2 
+    FirepowerMultiplier@eliteplus:
+        Modifier: 120
+        RequiresCondition: rank-elite              
+    ChangesHealth@eliteplus:
+		PercentageStep: 10
+		Delay: 90
+		StartIfBelow: 100
+        RequiresCondition: rank-elite  
 YRSLAV:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@selection: ^SelectableEconomicUnit
@@ -5463,7 +5787,7 @@ YRSLAV:
 		Queue: Infantry.Yuri, RAInfantry.Yuri
 		Description: Yuri resource collector.
 	Mobile:
-		Speed: 80
+		Speed: 85
 	Health:
 		HP: 8000
 	AutoTarget:
@@ -5485,7 +5809,7 @@ YRSLAV:
 		BaleLoadDelay: 5
 		BaleUnloadDelay: 0
 		BaleUnloadAmount: 2
-		FullyLoadedSpeed: 75
+		FullyLoadedSpeed: 90
 		MaxUnloadQueue: 9
 	SelfHealing:
 		Step: 500
@@ -5518,7 +5842,7 @@ RA2SLAV:
         
 YRVIRUS:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -5557,9 +5881,12 @@ YRVIRUS:
 		Types: NormalInfantry
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite                  
 YRJULIA:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
@@ -5600,7 +5927,7 @@ YRYURI:
 	Buildable:
 		BuildPaletteOrder: 45
 		Prerequisites: barracks, anyhq, ~techlevel.medium
-		Queue: Infantry.Yuri, RAInfantry.Yuri
+		Queue: Infantry.Yuri, RAInfantry.Yuri    
 	RenderSprites:
 		Image: RA2YURI
 	Health:
@@ -5609,7 +5936,7 @@ YRYURI:
 		LevelUpNotification: LevelUpRA2
 YRYURIX:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
@@ -5727,7 +6054,7 @@ RA2AMCV:
 
 RA2CMIN:
 	Inherits: HARV
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@Voxel: ^RenderVoxel
 	Valued:
 		Cost: 1200
@@ -5754,25 +6081,27 @@ RA2CMIN:
 
 RA2MTNK:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 700
+		Cost: 650
 	Tooltip:
 		Name: Grizzly Tank
 	Buildable:
 		BuildPaletteOrder: 40
+        BuildDuration: 300
+        BuildDurationModifier: 100
 		Prerequisites:  ~techlevel.medium
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
 		Description: Allied main battle tank.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
 	Mobile:
 		Locomotor: tracked
-		Speed: 105
+		Speed: 115
 	Health:
-		HP: 30000
+		HP: 32000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -5782,11 +6111,21 @@ RA2MTNK:
 	Turreted:
 		TurnSpeed: 5	#3
 	Armament:
+        Name: primary
 		Weapon: RA2105mm
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 720,0,80
 		MuzzleSequence: muzzle
+        RequiresCondition: !rank-elite
+  	Armament@elite:
+        Name: primary
+		Weapon: RA2105mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle   
+        RequiresCondition: rank-elite 
 	AttackTurreted:
 	WithMuzzleOverlay:
 	SelectionDecorations:
@@ -5805,16 +6144,31 @@ RA2MTNK:
 		Payload: 350
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    SpeedMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 110
+    DamageMultiplier@eliteplus:
+        Modifier: 90
+        RequiresCondition: rank-elite
+  	ChangesHealth@eliteplus:
+		PercentageStep: 3
+		Delay: 40
+		StartIfBelow: 100
+        RequiresCondition: rank-elite
+    RangeMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 110
+        
 YRROBO:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@MC: ^MCImmune
 	Valued:
-		Cost: 500
+		Cost: 400
 	Tooltip:
 		Name: Robot Tank
 	Buildable:
@@ -5838,11 +6192,21 @@ YRROBO:
 	Turreted:
 		TurnSpeed: 5	#3
 	Armament:
+        Name: primary
 		Weapon: RA2Robotmm
 		Recoil: 85
 		RecoilRecovery: 25
 		LocalOffset: 768,0,90
 		MuzzleSequence: muzzle
+        RequiresCondition: !rank-elite
+   	Armament@elite:
+        Name: primary
+		Weapon: RA2Robotmm_elite
+		Recoil: 85
+		RecoilRecovery: 25
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+        RequiresCondition: rank-elite
 	AttackTurreted:
 		PauseOnCondition: !robotcontrol || disabled
 	WithMuzzleOverlay:
@@ -5870,15 +6234,26 @@ YRROBO:
 		Prerequisites: robotcontrol
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    DamageMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 90        
+    SpeedMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 110    
+   	ChangesHealth@eliteplus:
+		PercentageStep: 5
+		Delay: 40
+		StartIfBelow: 100      
+        RequiresCondition: rank-elite    
 RA2TNKD:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 900
+		Cost: 750
 	Tooltip:
 		Name: Tank Destroyer
 	Buildable:
@@ -5886,6 +6261,8 @@ RA2TNKD:
 		Prerequisites: anyhq, ~techlevel.medium, ~RA2German
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
 		Description: Allied anti-tank vehicle.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
+        BuildDuration: 375
+        BuildDurationModifier: 100
 	Mobile:
 		Locomotor: tracked
 		Speed: 75
@@ -5900,10 +6277,19 @@ RA2TNKD:
 	Turreted:
 		TurnSpeed: 3
 	Armament:
+        Name: primary
 		Weapon: RA2sabot
 		RecoilRecovery: 38
 		LocalOffset: 750,0,80
 		MuzzleSequence: muzzle
+        RequiresCondition: !rank-elite
+   	Armament@elite:
+        Name: primary
+		Weapon: RA2sabot_elite
+		RecoilRecovery: 38
+		LocalOffset: 750,0,80
+		MuzzleSequence: muzzle
+        RequiresCondition: rank-elite     
 	AttackFrontal:
 	WithMuzzleOverlay:
 	SelectionDecorations:
@@ -5920,9 +6306,23 @@ RA2TNKD:
 		Payload: 450
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    SpeedMultiplier@eliteplus:
+        Modifier: 110
+        RequiresCondition: rank-elite       
+    DamageMultiplier@eliteplus:
+        Modifier: 90
+        RequiresCondition: rank-elite   
+    RangeMultiplier@eliteplus:
+        Modifier: 110
+        RequiresCondition: rank-elite          
+    ChangesHealth@eliteplus:
+		PercentageStep: 15
+		Delay: 120
+		StartIfBelow: 100
+        RequiresCondition: rank-elite  
 RA2FV:
 	Inherits: ^Vehicle
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
@@ -5938,6 +6338,8 @@ RA2FV:
 		Prerequisites: ~techlevel.low
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2, Vehicle.X_Vehicles
 		Description: Versatile Allied vehicle.\nChanges turret with passenger
+        BuildDuration: 300
+        BuildDurationModifier: 100
 	Mobile:
 		Locomotor: wheeled
 		Speed: 150
@@ -6061,9 +6463,15 @@ RA2FV:
 	#	Armament
 	###################
 	Armament@primary:
+        Name: primary
 		Weapon: RA2HoverMissile
 		LocalOffset: 768,99,290, 768,-99,290
-		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss && !ifv-deso && !ifv-demo && !ifv-chrono
+		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss && !ifv-deso && !ifv-demo && !ifv-chrono && !rank-elite
+  	Armament@primaryelite:
+        Name: primary
+		Weapon: RA2HoverMissile_elite
+		LocalOffset: 768,99,290, 768,-99,290
+		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss && !ifv-deso && !ifv-demo && !ifv-chrono && rank-elite     
 	Armament@mg:
 		Weapon: RA2CRM60
 		LocalOffset: 171,0,255
@@ -6235,13 +6643,13 @@ RA2FVBOTCHRONO:
 
 RA2SREF:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1200
+		Cost: 1500
 	Tooltip:
 		Name: Prism Tank
 	Buildable:
@@ -6263,9 +6671,17 @@ RA2SREF:
 	Turreted:
 		TurnSpeed: 5	#3
 	Armament:
+        Name: primary
 		Weapon: RA2Comet
 		Recoil: 128
 		RecoilRecovery: 26
+        RequiresCondition: !rank-elite
+  	Armament@elite:
+        Name: primary
+		Weapon: RA2Comet_elite
+		Recoil: 128
+		RecoilRecovery: 26    
+        RequiresCondition: rank-elite        
 	AttackTurreted:
 	SelectionDecorations:
 	Selectable:
@@ -6280,15 +6696,21 @@ RA2SREF:
 		Payload: 500
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    SpeedMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 105
+    DamageMultiplier@eliteplus:
+        Modifier: 90
+        RequiresCondition: rank-elite    
 RA2MGTK:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1000
+		Cost: 850
 	Tooltip:
 		Name: Mirage Tank
 		RequiresCondition: !tree
@@ -6302,6 +6724,8 @@ RA2MGTK:
 		Prerequisites: ra2gatech, ~techlevel.high
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
 		Description: Tank that disguises while stationary.\n Strong vs Infantry, Vehicles\n Weak vs Aircraft
+        BuildDuration: 500
+        BuildDurationModifier: 100
 	Mobile:
 		Locomotor: tracked
 		Speed: 105
@@ -6316,9 +6740,17 @@ RA2MGTK:
 	Turreted:
 		TurnSpeed: 3
 	Armament:
+        Name: primary
 		Weapon: RA2MirageGun
 		Recoil: 128
 		RecoilRecovery: 26
+        RequiresCondition: !rank-elite
+    Armament@elite:
+        Name: primary
+		Weapon: RA2MirageGun_elite
+		Recoil: 128
+		RecoilRecovery: 26
+        RequiresCondition: rank-elite
 	Mirage:
 		RequiresCondition: !disabled
 		InitialDelay: 25
@@ -6347,9 +6779,20 @@ RA2MGTK:
 		Payload: 650
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    DamageMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 90        
+    SpeedMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 110    
+   	ChangesHealth@eliteplus:
+		PercentageStep: 5
+		Delay: 40
+		StartIfBelow: 100      
+        RequiresCondition: rank-elite
 yrbfrt:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackFrontalVoice
@@ -6357,7 +6800,7 @@ yrbfrt:
 	Inherits@crush: ^VehicleCrusher
 	Inherits@cargo: ^CargoVehicle
 	Valued:
-		Cost: 2000
+		Cost: 1800
 	Tooltip:
 		Name: Battle Fortress
 	UpdatesPlayerStatistics:
@@ -6367,6 +6810,8 @@ yrbfrt:
 		Prerequisites: ra2gatech, ~techlevel.high
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
 		Description: Heavily armored Allied transport.\nMust be garrisoned with infantry to attack.\n Strong vs Everything
+        BuildDuration: 800
+        BuildDurationModifier: 100
 	Mobile:
 		Speed: 60
 	Passenger:
@@ -6501,17 +6946,19 @@ RA2SMCV:
 
 RA2HTNK:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 900
+		Cost: 800
 	Tooltip:
 		Name: Rhino Heavy Tank
 	Buildable:
 		BuildPaletteOrder: 60
+        BuildDuration: 375
+        BuildDurationModifier: 100
 		Prerequisites: ra2naweap, ~techlevel.medium, ~!RA2DOOM
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 		Description: Soviet main battle tank.\n Strong vs Vehicles\n Weak vs Infantry, Aircraft
@@ -6529,11 +6976,21 @@ RA2HTNK:
 	Turreted:
 		TurnSpeed: 5	#3
 	Armament:
+        Name: primary
 		Weapon: RA2120mm
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 720,0,80
 		MuzzleSequence: muzzle
+        RequiresCondition: !rank-elite
+ 	Armament@elite:
+        Name: primary
+		Weapon: RA2120mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle   
+        RequiresCondition: rank-elite        
 	AttackTurreted:
 	WithMuzzleOverlay:
 	SelectionDecorations:
@@ -6553,9 +7010,23 @@ RA2HTNK:
 		Payload: 450
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    RangeMultiplier@eliteplus:
+        Modifier: 110
+        RequiresCondition: rank-elite    
+    SpeedMultiplier@eliteplus:
+        Modifier: 110
+        RequiresCondition: rank-elite      
+    DamageMultiplier@eliteplus:
+        Modifier: 110
+        RequiresCondition: rank-elite     
+    ChangesHealth@eliteplus:
+		PercentageStep: 15
+		Delay: 150
+		StartIfBelow: 100
+        RequiresCondition: rank-elite          
 RA2HTK:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
@@ -6573,7 +7044,9 @@ RA2HTK:
 		Prerequisites: ra2naweap, ~!RA2DOOM
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 		Description: Light scout and transport vehicle.\nCan attack aircraft.\n  Strong vs Infantry, Aircraft\n Weak vs Vehicles\n Can transport infantry
-	Mobile:
+	    BuildDuration: 300
+        BuildDurationModifier: 100
+    Mobile:
 		Locomotor: lighttracked
 		Speed: 120
 		RequiresCondition: !notmobile
@@ -6639,13 +7112,13 @@ ra2htk.bot2:
 
 RA2APOC:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1800
+		Cost: 1500
 	Tooltip:
 		Name: Apocalypse Tank
 	Buildable:
@@ -6659,7 +7132,7 @@ RA2APOC:
 	Passenger:
 		Weight: 6
 	Health:
-		HP: 65000
+		HP: 72000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -6680,6 +7153,14 @@ RA2APOC:
 		LocalOffset: -85,90,340, -85,-90,340
 		LocalYaw: -100, 100
 		Recoil: 10
+        RequiresCondition: !rank-elite
+    Armament@SECONDARYELITE:
+		Name: secondary
+		Weapon: RA2MammothTusk_elite
+		LocalOffset: -85,90,340, -85,-90,340
+		LocalYaw: -100, 100
+		Recoil: 10
+        RequiresCondition: rank-elite    
 	AttackTurreted:
 	WithMuzzleOverlay:
 	SelectionDecorations:
@@ -6689,7 +7170,7 @@ RA2APOC:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	RenderVoxels:
-		Scale: 5.8
+		Scale: 7
 	WithVoxelBody:
 	WithVoxelTurret:
 	WithVoxelBarrel:
@@ -6698,10 +7179,22 @@ RA2APOC:
 	DeliversCash:
 		Payload: 900
 	GainsExperience:
-		LevelUpNotification: LevelUpRA2
+		LevelUpNotification: LevelUpRA2 
+    SpeedMultiplier@eliteplus:
+        Modifier: 115
+        RequiresCondition: rank-elite     
+    DamageMultiplier@eliteplus:
+        Modifier: 90
+        RequiresCondition: rank-elite         
+    ChangesHealth@eliteplus:
+		PercentageStep: 10
+		Delay: 80
+		StartIfBelow: 100
+        RequiresCondition: rank-elite          
+        
 RA2V3:
 	Inherits: ^Vehicle
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackFrontalVoice
@@ -6712,7 +7205,7 @@ RA2V3:
 		Prerequisites: anyhq, ~techlevel.medium, ~!RA2DOOM
 		Description: Long-range rocket artillery.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n Rockets can be shot down
 	Valued:
-		Cost: 900
+		Cost: 800
 	Tooltip:
 		Name: V3 Rocket Launcher
 	Health:
@@ -6760,14 +7253,26 @@ RA2V3:
 		Payload: 450
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    RangeMultiplier@eliteplus:
+        Modifier: 115
+        RequiresCondition: rank-elite       
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite        
+    ChangesHealth@eliteplus:
+		PercentageStep: 6
+		Delay: 50
+		StartIfBelow: 100
+        RequiresCondition: rank-elite        
+        
 RA2V3ROCKET:
 	Inherits: ^ShootableMissile
 	Inherits@Voxel: ^RenderVoxel
 	Health:
-		HP: 4000
+		HP: 5000
 	ShootableBallisticMissile:
 		LaunchAngle: 62
-		Speed: 177
+		Speed: 200
 		AirborneCondition: airborne
 		#LaunchSounds: vv3latta.wav, vv3lattb.wav
 	LeavesTrails:
@@ -6781,13 +7286,13 @@ RA2V3ROCKET:
 
 RA2TTNK:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1200
+		Cost: 1100
 	Tooltip:
 		Name: Tesla Tank
 	Buildable:
@@ -6834,9 +7339,16 @@ RA2TTNK:
 		Payload: 600
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    RangeMultiplier@eliteplus:
+        Modifier: 115
+        RequiresCondition: rank-elite       
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite         
+        
 RA2HARV:
 	Inherits: HARV
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
@@ -6865,12 +7377,21 @@ RA2HARV:
 		VoiceSet: WarMinerVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite    
+    FirepowerMultiplier@eliteplus:
+        Modifier: 140
+        RequiresCondition: rank-elite             
+        
 ra2dtruck:
 	Inherits: DTRK
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@EMP: ^FrontalEMP
+    Health:
+		HP: 20000
 	Buildable:
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 		BuildPaletteOrder: 180
@@ -6994,7 +7515,7 @@ YRPCV:
 YRSMIN:
 	Inherits: ^Vehicle
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	ProvidesPrerequisite:
@@ -7018,6 +7539,8 @@ YRSMIN:
 		Locomotor: heavywheeled
 	Health:
 		HP: 65000
+  	Power:
+		Amount: -40     
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -7064,7 +7587,7 @@ yrsmin.empy:
 
 YRYTNK:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
@@ -7145,10 +7668,20 @@ YRYTNK:
 		Payload: 300
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite     
+    ChangesHealth@eliteplus:
+		PercentageStep: 5
+		Delay: 50
+		StartIfBelow: 100
+        
 YRLTNK:
 	Inherits: RA2MTNK
 	Tooltip:
 		Name: Lasher Tank
+    Valued:
+		Cost: 550   
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: yrygweap, ~techlevel.medium
@@ -7158,14 +7691,38 @@ YRLTNK:
 		VoiceSet: LasherTankVoice
 	-WithVoxelBarrel:
 	Armament:
+        Name: primary
 		Weapon: RA2Lashmm
+        RequiresCondition: !rank-elite
+   	Armament@elite:
+        Name: primary
+		Weapon: RA2Lashmm_elite  
+        RequiresCondition: rank-elite    
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: RA2LashmmG
-
+        RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:						##########
+		Name: garrisoned
+		Weapon: RA2Lashmm_elite
+        RequiresCondition: rank-elite
+    SpeedMultiplier@eliteplus:
+        Modifier: 110
+        RequiresCondition: rank-elite       
+    DamageMultiplier@eliteplus:
+        Modifier: 90
+        RequiresCondition: rank-elite     
+    RangeMultiplier@eliteplus:
+        Modifier: 110
+        RequiresCondition: rank-elite              
+    ChangesHealth@eliteplus:
+		PercentageStep: 5
+		Delay: 50
+		StartIfBelow: 100
+        RequiresCondition: rank-elite        
 YRTELE:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
@@ -7186,7 +7743,7 @@ YRTELE:
 	Passenger:
 		Weight: 3
 	Health:
-		HP: 30000
+		HP: 40000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -7196,7 +7753,13 @@ YRTELE:
 	Turreted:
 		TurnSpeed: 3
 	Armament@Normal:
+        Name: primary
 		Weapon: RA2Magnet
+        RequiresCondition: !rank-elite
+ 	Armament@elite:
+        Name: primary
+		Weapon: RA2Magnet_elite
+        RequiresCondition: rank-elite       
 	Armament@Flash:
 		Weapon: RA2MagnetFlash
 	AttackTurreted:
@@ -7217,9 +7780,15 @@ YRTELE:
 		Payload: 500
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    FirepowerMultiplier@eliteplus:
+        Modifier: 120
+        RequiresCondition: rank-elite        
+    RangeMultiplier@eliteplus:
+        Modifier: 115
+        RequiresCondition: rank-elite                    
 YRCAOS:
 	Inherits: ^Vehicle
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
@@ -7275,7 +7844,7 @@ YRCAOS:
 		LevelUpNotification: LevelUpRA2
 YRMIND:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
@@ -7419,7 +7988,7 @@ ra2howi:
 
 ra2sqd:
 	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@sub: ^Submarine
 	Inherits@heal: ^HospitalHealable
@@ -7493,7 +8062,7 @@ ra2sqd:
 		LevelUpNotification: LevelUpRA2
 ra2dlph:
 	Inherits: ^BoatUnit
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@sub: ^Submarine
 	Inherits@heal: ^HospitalHealable
@@ -7555,7 +8124,7 @@ ra2dlph:
 ra2lcrf:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -7598,7 +8167,7 @@ ra2lcrf:
 yrhovr:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -7641,7 +8210,7 @@ yrhovr:
 ra2dest:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
@@ -7709,7 +8278,7 @@ ra2dest:
 ra2aegis:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
@@ -7766,7 +8335,7 @@ ra2cdest:
 ra2sapc:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -7810,7 +8379,7 @@ ra2sapc:
 ra2sub:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Inherits@sub: ^Submarine
@@ -7872,7 +8441,7 @@ ra2sub:
 ra2hyd:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
@@ -7923,7 +8492,7 @@ ra2hyd:
 ra2dred:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
@@ -8020,7 +8589,7 @@ ra2vlad:
 ra2carrier:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
@@ -8072,7 +8641,7 @@ ra2carrier:
 yrbsub:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Inherits@sub: ^Submarine
@@ -8171,12 +8740,12 @@ yrbsubmisl:
 
 RA2ZEP:
 	Inherits: ^Helicopter
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@announce: ^AnnounceGlobal
 	Valued:
-		Cost: 2000
+		Cost: 1600
 	Tooltip:
 		Name: Kirov Airship
 	UpdatesPlayerStatistics:
@@ -8226,7 +8795,13 @@ RA2ZEP:
 		DamageCooldown: 150
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-
+    DamageMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite    
+    SpeedMultiplier@eliteplus:
+        Modifier: 125
+        RequiresCondition: rank-elite   
+        
 RA2ZEPDOOM:
     Inherits: RA2ZEP
     RenderSprites:
@@ -8266,12 +8841,12 @@ RA2ZEPDOOM:
         Actor: RA2IMP
 yrschp:
 	Inherits: ^Helicopter
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@detect: ^GenericAirDetector
 	Valued:
-		Cost: 1000
+		Cost: 1200
 	Tooltip:
 		Name: Siege Chopper
 	UpdatesPlayerStatistics:
@@ -8280,13 +8855,15 @@ yrschp:
 		BuildPaletteOrder: 98
 		Prerequisites: ra2naweap, anyhq, ~!RA2Psicorps, ~!RA2DOOM
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2, Aircraft.X_Aircrafts
+        BuildDuration: 800
+        BuildDurationModifier: 100
 		Description: Helicopter gunship that can deploy into a cannon.\n  Strong vs Buildings, Infantry\n  Weak vs Aircraft
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 6
-		Speed: 180
+		Speed: 162
 		AltitudeVelocity: 120
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
+		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune
 		VTOL: true
 		RepulsionSpeed: 10
 		Voice: Move
@@ -8333,9 +8910,13 @@ yrschp:
 	DeathSounds:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite           
+        
 RA2FALC:
 	Inherits: ^Helicopter
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@reload: ^RearmableAircraft
@@ -8368,16 +8949,35 @@ RA2FALC:
 		Range: 10c0
 		Type: GroundPosition
 	Armament@PRIMARY:
+        Name: primary
 		Weapon: HarrierMissiles
 		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: ammo < 3
+        RequiresCondition: !rank-elite
+    Armament@PRIMARYELITE:
+		Name: primary
+        Weapon: HarrierMissiles_elite  
+       	LocalOffset: 427,-171,-213, 427,171,-213
 		PauseOnCondition: !ammo
+        RequiresCondition: rank-elite     
+    SpeedMultiplier@eliteplus:
+        Modifier: 110
+        RequiresCondition: rank-elite
+    DamageMultiplier@eliteplus:
+        Modifier: 90
+        RequiresCondition: rank-elite
+  	ChangesHealth@eliteplus:
+		PercentageStep: 5
+		Delay: 60
+		StartIfBelow: 100
+        RequiresCondition: rank-elite    
 	AutoTarget:
 		ScanRadius: 5
 		InitialStance: HoldFire
-	AmmoPool:
-		Ammo: 5
+	AmmoPool:  
+		Ammo: 7
 		PipCount: 1
-		AmmoCondition: ammo
+		AmmoCondition: ammo 
 	SpawnActorOnDeath:
 		Actor: RA2FALC.Husk
 	-WithShadow:
@@ -8394,11 +8994,12 @@ RA2FALC:
 		Voice: Attack
 		FacingTolerance: 20
 	GainsExperience:
-		LevelUpNotification: LevelUpRA2
+		LevelUpNotification: LevelUpRA2  
+        
 RA2BEAG:
 	Inherits: RA2FALC
 	Valued:
-		Cost: 1200
+		Cost: 1600
 	Tooltip:
 		Name: Black Eagle
 	Buildable:
@@ -8407,13 +9008,21 @@ RA2BEAG:
 		Speed: 166
 		RepulsionSpeed: 10
 	Health:
-		HP: 20000
+		HP: 18000
 	Armament@PRIMARY:
+        Name: primary
 		Weapon: BlackEagleMissiles
 		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: ammo < 3
+        RequiresCondition: !rank-elite
+    Armament@PRIMARYELITE:
+        Name: primary
+		Weapon: BlackEagleMissiles_elite
+		LocalOffset: 427,-171,-213, 427,171,-213
 		PauseOnCondition: !ammo
+        RequiresCondition: rank-elite    
 	AmmoPool:
-		Ammo: 10
+		Ammo: 12
 		PipCount: 2
 		AmmoCondition: ammo
 		ReloadCount: 2
@@ -8421,10 +9030,21 @@ RA2BEAG:
 		Actor: ra2beag.Husk
 	Voiced:
 		VoiceSet: BlackEagleVoice
-
+    SpeedMultiplier@eliteplus:
+        Modifier: 110
+        RequiresCondition: rank-elite       
+    DamageMultiplier@eliteplus:
+        Modifier: 90
+        RequiresCondition: rank-elite        
+    ChangesHealth@eliteplus:
+		PercentageStep: 15
+		Delay: 120
+		StartIfBelow: 100
+        RequiresCondition: rank-elite  
+        
 ra2shad:
 	Inherits: ^Helicopter
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Valued:
@@ -8442,7 +9062,7 @@ ra2shad:
 	Aircraft:
 		TurnSpeed: 5
 		Speed: 120
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
+		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune
 		AltitudeVelocity: 0c100
 		RepulsionSpeed: 10
 	Health:
@@ -8497,6 +9117,10 @@ ra2shad:
 	DeathSounds:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    SpeedMultiplier@eliteplus:
+        RequiresCondition: rank-elite
+        Modifier: 115
+        
 ra2shad.bot1:
 	Inherits: ra2shad
 	Inherits@bot: ^BotMicromanageable
@@ -8532,7 +9156,7 @@ ra2shad.bot3:
 
 ra2hind:
 	Inherits: ^Helicopter
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Valued:
@@ -8544,7 +9168,7 @@ ra2hind:
 	Aircraft:
 		TurnSpeed: 5
 		Speed: 150
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals
+		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune
 		AltitudeVelocity: 0c100
 		RepulsionSpeed: 10
 	Health:
@@ -8581,19 +9205,21 @@ ra2hind:
 		LevelUpNotification: LevelUpRA2
 YRDISK:
 	Inherits: ^Helicopter
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@detect: ^GenericAirDetector
 	Valued:
-		Cost: 1400
+		Cost: 2000
 	Tooltip:
 		Name: Floating Disc
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
+        BuildDuration: 750
+        BuildDurationModifier: 100
 		Prerequisites: yrygtech, ~techlevel.medium
 		Queue: Vehicle.Yuri, RAVehicle.Yuri, Aircraft.X_Aircrafts
 		Description: Flying saucer armed with lasers.\nCan shut down power plants and defenses when overhead\n  Strong vs Everything
@@ -8635,7 +9261,7 @@ YRDISK:
 	WithMuzzleOverlay:
 	SelectionDecorations:
 	ReloadAmmoPool:
-		Delay: 80
+		Delay: 120
 		Count: 1
 	Selectable:
 		DecorationBounds: 30,24
@@ -8653,10 +9279,21 @@ YRDISK:
 		HealIfBelow: 50
 		DamageCooldown: 150
 	GainsExperience:
-		LevelUpNotification: LevelUpRA2
+		LevelUpNotification: LevelUpRA2    
+    FirepowerMultiplier@eliteplus:
+        Modifier: 120
+        RequiresCondition: rank-elite     
+    RangeMultiplier@eliteplus:
+        Modifier: 120
+        RequiresCondition: rank-elite              
+    ChangesHealth@eliteplus:
+		PercentageStep: 10
+		Delay: 100
+		StartIfBelow: 100
+        RequiresCondition: rank-elite           
 ra2rock:
 	Inherits: ^Helicopter
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@heal: ^HospitalHealable
 	Inherits@detect: ^GenericAirDetector
@@ -8719,6 +9356,15 @@ ra2rock:
 		TargetTypes: Heal, Healing
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite   
+  	ChangesHealth@eliteplus:
+		PercentageStep: 3
+		Delay: 40
+		StartIfBelow: 100        
+        RequiresCondition: rank-elite   
+        
 ra2rock.husk:
 	Inherits: ^HelicopterHusk
 	RenderSprites:
@@ -8743,7 +9389,7 @@ ra2rock.husk:
 
 ra2hornet:
 	Inherits: ^RANeutralPlane
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	-Selectable:
@@ -8970,6 +9616,7 @@ yrbpln:
 ####################################################################################################
 #		Red Alert 2 TechBuilding
 ####################################################################################################
+
 ra2caoild:
 	Inherits: ^TechBuilding
 	Inherits@2: ^CashTricklerMultipliers
@@ -9759,7 +10406,7 @@ yrschp.Husk:
 		Name: Siege Chopper
 	Aircraft:
 		TurnSpeed: 4
-		Speed: 223
+		Speed: 200
 	RevealsShroud:
 		Range: 8c0
 		Type: GroundPosition
@@ -9957,7 +10604,7 @@ YRARND:
 		CloakTypes: Cloak, Hijacker
 	Voiced:
 		VoiceSet: GIVoice
-	Inherits@EXPERIENCE: ^GainsExperience				##########
+	Inherits@EXPERIENCE: ^GainsExperienceRA2				##########
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -10007,7 +10654,7 @@ YRSTLN:
 		CloakTypes: Cloak, Hijacker
 	Voiced:
 		VoiceSet: GIVoice
-	Inherits@EXPERIENCE: ^GainsExperience				##########
+	Inherits@EXPERIENCE: ^GainsExperienceRA2				##########
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
@@ -10464,7 +11111,7 @@ ra2flata:
 
 RA2MODFV:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Valued:
@@ -10518,7 +11165,7 @@ RA2MODFV:
 		LevelUpNotification: LevelUpRA2
 RA2MODHTK:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Valued:
@@ -10569,7 +11216,7 @@ RA2MODHTK:
 		LevelUpNotification: LevelUpRA2
 RA2MODHTNK:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Valued:
@@ -10653,7 +11300,7 @@ RA2MODYSREF:
 		LevelUpNotification: LevelUpRA2
 RA2MODOAPOC:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Valued:
@@ -10718,7 +11365,7 @@ RA2MODMAMMO:
 		LevelUpNotification: LevelUpRA2
 RA2MODYHTK:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Valued:
@@ -10818,7 +11465,7 @@ RA2MODYHTNK:
 
 RA2MODVULK:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Valued:
@@ -10898,7 +11545,7 @@ RA2MODVULK:
 		LevelUpNotification: LevelUpRA2
 RA2MODROBO:
 	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Valued:

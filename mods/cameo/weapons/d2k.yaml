@@ -92,7 +92,7 @@ Debris4:
 		Image: d2k_120mm
         Palette: d2keffect
 	Warhead@1Dam: SpreadDamage
-		Damage: 4000
+		Damage: 4500
 		Spread: 0c384
 		Falloff: 100, 0
 		Versus:
@@ -122,7 +122,7 @@ Debris4:
 		Speed: 875
 		Blockable: false
 	Warhead@1Dam: SpreadDamage
-		Damage: 4500
+		Damage: 5000
         Versus:
             None: 20
 			Wood: 75
@@ -152,13 +152,21 @@ Debris4:
 	Inherits: ^D2K_Cannon
 	ReloadDelay: 35      
     Warhead@1Dam: SpreadDamage
-		Damage: 5250
+		Damage: 5775
         
 D2K70mm:
 	Inherits: ^D2K_Cannon  
 	ReloadDelay: 40
    	Warhead@1Dam: SpreadDamage
 		Damage: 2500
+
+D2K70mmH:
+	Inherits: ^D2K_Cannon  
+	ReloadDelay: 80
+    Burst: 2
+    BurstDelays: 0
+   	Warhead@1Dam: SpreadDamage
+		Damage: 2400
         
 DevBullet:
 	Inherits: ^D2K_Cannon
@@ -226,6 +234,19 @@ D2K_155mm:
 		ImpactSounds: EXPLMD2.WAV
         ExplosionPalette: effect75alpha
         
+D2K_155mm_turret:        
+    Inherits: D2K_155mm
+    ReloadDelay: 100
+    Projectile: Bullet
+        Speed: 168
+ 	Warhead@1Dam: SpreadDamage
+		Damage: 6000
+		Spread: 1c0
+		Versus:
+			Light: 75
+            Medium: 30
+			Heavy: 20
+            
 D2K_155mm2:     
     Inherits: D2K_155mm
     Range: 12c0
@@ -336,13 +357,26 @@ D2K_Bazooka:
         ValidTargets: Ground, Air 
         
 D2K_Bazooka2:
-	Inherits: ^D2KRocket
-    Range: 3c768
+	Inherits: ^D2KMissile
+    Range: 5c768
     ReloadDelay: 50
     BurstDelays: 6
     Burst: 3
+    ValidTargets: Ground, Air
+    Projectile: Missile
+        Blockable: false
+        RangeLimit: 10c0
+		Speed: 301
+		Inaccuracy: 32
+		InaccuracyType: PerCellIncrement
+		Image: d2k_RPG
+        Palette: d2keffect
+		TrailImage: bazooka_trail2
+		TrailPalette: effect75alpha
+		TrailInterval: 1
 	Warhead@1Dam: SpreadDamage
-    Damage: 4500
+        ValidTargets: Ground, Air
+        Damage: 4500
         Versus:
             None: 15
 			Wood: 75
@@ -382,6 +416,15 @@ D2K_Trooper_AA:
     Inherits: ^D2KMissile
     ValidTargets: Air
     Projectile: Missile
+        Blockable: false
+		Speed: 281
+		Inaccuracy: 128
+		InaccuracyType: PerCellIncrement
+		Image: d2k_RPG
+        Palette: d2keffect
+		TrailImage: bazooka_trail2
+		TrailPalette: effect75alpha
+		TrailInterval: 1
     MinRange: 0c56
         TrailImage: bazooka_trail2
         Image: d2k_RPG
@@ -786,7 +829,7 @@ DeathHandCluster:
 		Inaccuracy: 1c512
 		BounceCount: 1
 	Warhead@1Dam: SpreadDamage
-		Damage: 15000
+		Damage: 18000
 		Versus:
             None: 90
 			Wood: 120
@@ -805,6 +848,57 @@ DeathHandCluster:
         ExplosionPalette: effect75alpha
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 4500
+
+SardaukarDroppodSpawner:
+	Projectile: InstantExplode
+	Range: 4c0
+	Warhead@1: FireShrapnel
+		Weapon: SardaukarDroppod1
+		Amount: 8
+
+SardaukarDroppod1:
+	Range: 1c0
+	Projectile: AthenaProjectile
+		Altitude: 8000
+	Warhead@Dam: TargetDamage
+	Warhead@1: FireCluster
+		Weapon: SardaukarDroppod
+		RandomClusterCount: 1
+		Dimensions: 5,5
+		Footprint: _____ x____ x____ x____ _xxx_
+	Warhead@4Eff: CreateEffect
+		ImpactSounds: meteor1.aud, meteor2.aud
+		ValidTargets: Ground, Air, Water    
+
+SardaukarDroppod:
+	InvalidTargets: Water
+	Projectile: Bullet
+		Speed: 300
+		Image: tsdroppod
+		TrailImage: smokey
+		Palette: tseffect
+	Warhead@1Dam: SpreadDamage
+		Damage: 15000
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: Crater
+	Warhead@3Eff: CreateEffect
+		Explosions: small_frag
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air, Water
+	Warhead@4Eff: CreateEffect
+		Image: tspodring
+		Explosions: idle
+		ExplosionPalette: tseffect
+		ValidTargets: Ground, Air, Water
+	Warhead@5Eff: CreateEffect
+		Image: tsdroppod
+		Explosions: idle
+		ExplosionPalette: tseffect
+		ValidTargets: Ground, Air, Water
+	Warhead@6: SpawnActor
+		Actors: mpsardaukar
+		Range: 2
 
 EMPDisable.anim:
 	ReloadDelay: 2
@@ -1138,7 +1232,7 @@ PlasmaExplosion:
 
 ^MG:
 	ReloadDelay: 30
-	Range: 3c0
+	Range: 4c0
 	Report: MGUN2.WAV
 	Projectile: InstantHit
 		Inaccuracy: 0c128
@@ -1340,7 +1434,17 @@ HMG_tleilaxu:
             Medium: 75
 			Heavy: 60
             Concrete: 50
-            
+HMGh:
+	Inherits: HMG
+    ValidTargets: Ground, Vehicle
+    Burst: 2
+    BurstDelays: 1
+	ReloadDelay: 50         
+   	Warhead@1Dam: SpreadDamage
+		Damage: 2000 
+        ValidTargets: Ground
+        InvalidTargets: Infantry
+        
 HMG_turret:
     Inherits: HMG
     Range: 6c512
@@ -1434,18 +1538,6 @@ Rocketeer_t:
     ValidTargets: Ground, Air
     Warhead@1Dam: SpreadDamage
         ValidTargets: Ground, Air
-        
-HMG_muzzle:
-	ReloadDelay: 16
-	Range: 3c0
-	Burst: 3
-	BurstDelays: 2
-	Projectile: InstantHit
-	Warhead@TargetValidation: SpreadDamage
-
-HMGo_muzzle:
-	Inherits: HMG_muzzle
-	ReloadDelay: 14
         
 DroneJump:
 	ReloadDelay: 45
@@ -1592,7 +1684,7 @@ PhoenixRocket:
 	Inherits: ^D2KMissile
 	ReloadDelay: 100
 	Burst: 8
-	Range: 5c0
+	Range: 4c512
 	BurstDelays: 10
 	Projectile: Missile
 		Inaccuracy: 96
@@ -1614,6 +1706,21 @@ PhoenixRocket:
         ExplosionPalette: effect
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 1250
+        
+d2k_air_drone:        
+    Inherits: PhoenixRocket
+    Burst: 1
+    Range: 8c0
+    ReloadDelay: 120
+    ValidTargets: Air
+    Projectile: Missile
+		Inaccuracy: 0
+		Speed: 312
+		RangeLimit: 12c0
+    Warhead@1Dam: SpreadDamage
+        ValidTargets: Air 
+        Spread: 0c384
+        Damage: 8500
         
 d2k_chemgun:
 	InvalidTargets: Structure, Water, ToxinImmune
@@ -1652,3 +1759,46 @@ d2k_chemgun:
 		Palette: alpha25
 		Weapon: AnthraxCloud
 		InvalidTargets: Water, Structure
+        
+DesertPhantomsSpawn:
+	Projectile: InstantExplode
+	InvalidTargets: Water
+	Warhead@1: FireShrapnel
+		Weapon: DesertPhantoms
+		Amount: 1
+  	Warhead@2: FireShrapnel
+		Weapon: DesertPhantoms
+		Amount: 1
+	Warhead@3: FireShrapnel
+		Weapon: DesertPhantoms
+		Amount: 1
+	Warhead@4: FireShrapnel
+		Weapon: DesertPhantoms
+		Amount: 1       
+        
+DesertPhantoms:
+	InvalidTargets: Vehicle, Structure
+	Projectile: InstantHit
+	Warhead@1Eff: CreateEffect
+		Image: tsdig
+		Explosions: idle
+		ExplosionPalette: tseffect
+		ImpactSounds: sandfall.aud
+		ValidTargets: Ground, Air, Water
+		ImpactActors: false
+	Warhead@2: SpawnActor
+		Actors: fremen,fremen
+		Range: 4
+		Delay: 10
+        
+D2K_buzzsaw:
+	ValidTargets: Infantry
+	ReloadDelay: 1
+	Range: 1c256
+    Report: d2k_buzzsaw.aud
+	TargetActorCenter: true
+	Projectile: InstantHit
+	Warhead@1Dam: TargetDamage
+		Damage: 1200
+		ValidTargets: Infantry
+		DamageTypes: DefaultDeath

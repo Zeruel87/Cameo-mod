@@ -13,7 +13,7 @@ E1:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks
-		Queue: Infantry.GDI, Infantry.Nod, RAInfantry.GDI, RAInfantry.Nod, Infantry.X_Infantry
+		Queue: Infantry.GDI, Infantry.Nod, RAInfantry.GDI, RAInfantry.Nod, Infantry.X_Infantry, Infantry.camea, RAInfantry.camea
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
 		Speed: 56
@@ -32,7 +32,7 @@ E1:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-
+        
 E2:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -209,7 +209,7 @@ E6:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: barracks
-		Queue: Infantry.GDI, Infantry.Nod, RAInfantry.GDI, RAInfantry.Nod
+		Queue: Infantry.GDI, Infantry.Nod, RAInfantry.GDI, RAInfantry.Nod, Infantry.camea, RAInfantry.camea
 		Description: Infiltrates and captures enemy structures.\nRemoves attached explosives from units.\n  Unarmed
 	Mobile:
 		Speed: 48
@@ -254,10 +254,9 @@ RMBO:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@announce: ^AnnounceGlobal
-    Inherits@oldbuff: ^OldFactionBuff
 	Inherits@MC: ^MCImmune
 	Valued:
-		Cost: 1200
+		Cost: 900
 	Tooltip:
 		Name: Commando
 	UpdatesPlayerStatistics:
@@ -267,7 +266,9 @@ RMBO:
 		Prerequisites: eye, ~techlevel.high
 		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry
 		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
-	Mobile:
+        BuildDuration: 375
+        BuildDurationModifier: 100
+    Mobile:
 		Speed: 71
 		Voice: Move
 	Guard:
@@ -302,7 +303,7 @@ RMBO:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-
+        
 PVICE:
 	Inherits: ^Viceroid
 	Buildable:
@@ -581,7 +582,7 @@ RAE3:
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
-		Queue: Infantry.Allies, RAInfantry.Allies
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.camea, RAInfantry.camea
 		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
 	Mobile:
 		Speed: 42
@@ -734,7 +735,7 @@ MEDI:
 	Inherits: ^Soldier
     Inherits@oldbuff: ^OldFactionBuff
 	Buildable:
-		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.X_Infantry
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.X_Infantry, Infantry.camea, RAInfantry.camea
 		BuildPaletteOrder: 25
 		Description: Heals nearby infantry.\n  Unarmed
 	Valued:
@@ -757,6 +758,9 @@ MEDI:
 		#OutsideRangeCursor: heal
 		TargetStances: Ally
 		ForceTargetStances: None
+   	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: Heal     
 	RenderRangeCircle:
 	WithInfantryBody:
 		IdleSequences: idle
@@ -881,20 +885,21 @@ SHOK:
 	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
-    Inherits@oldbuff: ^OldFactionBuff
 	Buildable:
 		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.X_Infantry
 		BuildPaletteOrder: 130
 		Prerequisites: stek, tsla, ~techlevel.high
 		Description: Elite infantry with portable Tesla coils.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
-	Valued:
-		Cost: 300
+        BuildDuration: 125
+        BuildDurationModifier: 100
+    Valued:
+		Cost: 450
 	Tooltip:
 		Name: Shock Trooper
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 9000
+		HP: 10000
 	Mobile:
 		Speed: 56
 	RevealsShroud:
@@ -933,7 +938,7 @@ RASPY:
 	Inherits@EXT: ^ExternalConditions
     Inherits@oldbuff: ^OldFactionBuff
 	Buildable:
-		Queue: Infantry.Allies, RAInfantry.Allies
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.camea, RAInfantry.camea
 		BuildPaletteOrder: 25
 		Prerequisites: anyhq, ~tent
 		Description: Infiltrates enemy structures for intel or\nsabotage. Exact effect depends on the\nbuilding infiltrated.\nLoses disguise when attacking.\nCan detect spies.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft\n  Special Ability: Disguise
@@ -987,7 +992,15 @@ RASPY:
 		VoiceSet: SpyVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA1
-
+    GrantConditionOnPrerequisite@camea:
+        Prerequisites: faction.camea
+        Condition: faction.camea
+    Cloak@cameaclaok:
+		InitialDelay: 60
+		CloakDelay: 30
+		UncloakOn: Attack, Unload
+        CloakedCondition: cloaked    
+        RequiresCondition: faction.camea
 TECH1:
 	Inherits: ^CivInfantry
 	Inherits@armed: ^ArmedCivilian
@@ -1265,418 +1278,6 @@ WarriorAnt:
 		Prerequisites:
 		Queue: Infantry.Alpha, Infantry.Scavenger, RAInfantry.Alpha, RAInfantry.Scavenger
 		Icon: 2100icon
-	RenderSprites:
-		Image: e6
-
-####################################################################################################
-#		CITY
-####################################################################################################
-
-^CITYINFANTRY:
-	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@EXT: ^ExternalConditions
-
-CITYFIREFIGHTER:
-	Inherits: ^CITYINFANTRY
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Valued:
-		Cost: 200
-	Tooltip:
-		Name: Firefighter
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 10
-		Queue: Infantry.SimCity, RAInfantry.SimCity, Infantry.X_Infantry
-		Description: Emergency worker armed with a fire hose.\n Strong vs Infantry, Buildings\n Weak vs Vehicles, Aircraft
-	Mobile:
-		Speed: 56
-	Health:
-		HP: 8000
-	AutoTarget:
-		ScanRadius: 4
-	Armament:
-		Weapon: WaterThrower
-		LocalOffset: 341,0,256
-		FireDelay: 3
-	Armament@GARRISONED:						##########
-		Name: garrisoned
-		Weapon: WaterThrower
-	TakeCover:
-		ProneOffset: 190,0,-198
-	Voiced:
-		VoiceSet: RAGenericVoice
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: infantry							##########
-
-CITYPOLICEOFFICER:
-	Inherits: ^CITYINFANTRY
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Valued:
-		Cost: 60
-	Tooltip:
-		Name: Police Officer
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 10
-		Queue: Vehicle.SimCity, RAVehicle.SimCity, Infantry.X_Infantry
-		Description: Law enforcement armed with a pistol.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
-	Mobile:
-		Speed: 56
-	Health:
-		HP: 4500
-	AutoTarget:
-		ScanRadius: 4
-	Armament@PRIMARY:
-		Weapon: PolicePistol
-	Armament@GARRISONED:						##########
-		Name: garrisoned
-		Weapon: PolicePistol
-	Passenger:
-		PipType: Blue
-	Crushable:
-		CrushSound: squish2.aud
-	Voiced:
-		VoiceSet: RAGenericVoice
-	WithInfantryBody:
-		IdleSequences: stand
-		DefaultAttackSequence: shoot
-	-TakeCover:
-
-CITYARCHITECT:
-	Inherits: ^CITYINFANTRY
-	Inherits@selection: ^SelectableSupportUnit
-	Buildable:
-		Queue: Infantry.SimCity, RAInfantry.SimCity
-		BuildPaletteOrder: 40
-		Description: Upgrades buildings by 1 rank.
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Architect
-	Passenger:
-		PipType: yellow
-	Health:
-		HP: 3000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 48
-	RevealsShroud:
-		Range: 4c0
-	#DeliversExperience:
-	#	Type: building
-	ProducibleWithLevel:
-		InitialLevels: 1
-	GrantExternalConditionPower@LEVELUP1:
-		OrderName: UpgradeBuilding
-		Icon: architect1
-		AllowMultiple: true
-		Description: Architect
-		LongDesc: Upgrades buildings by 1 rank.
-		SelectTargetSpeechNotification: SelectTarget
-		OnFireSound: text2.aud
-		ChargeInterval: 600
-		Duration: 0
-		Range: 3
-		DisplayRadarPing: True
-		Condition: city-veteran
-		SupportPowerPaletteOrder: 10
-
-CITYELITEARCHITECT:
-	Inherits: ^CITYINFANTRY
-	Inherits@selection: ^SelectableSupportUnit
-	Buildable:
-		Queue: Infantry.SimCity, RAInfantry.SimCity
-		BuildPaletteOrder: 70
-		Prerequisites: Library
-		Description: Upgrades buildings to Rank 4 (Elite).
-		Icon: eliteicon
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Elite Architect
-	Passenger:
-		PipType: yellow
-	Health:
-		HP: 3000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 48
-	RevealsShroud:
-		Range: 4c0
-	#DeliversExperience:
-	#	Type: building
-	ProducibleWithLevel:
-		InitialLevels: 4
-	RenderSprites:
-		Image: cityarchitect
-	GrantExternalConditionPower@LEVELUP1:
-		OrderName: UpgradeBuilding2
-		Icon: architect2
-		AllowMultiple: true
-		Description: Elite Architect
-		LongDesc: Upgrades buildings to Rank 4 (Elite).
-		SelectTargetSpeechNotification: SelectTarget
-		OnFireSound: text2.aud
-		ChargeInterval: 900
-		Duration: 0
-		Range: 3
-		DisplayRadarPing: True
-		Condition: city-elite
-		SupportPowerPaletteOrder: 10
-
-CITYINSTRUCTOR:
-	Inherits: ^CITYINFANTRY
-	Inherits@selection: ^SelectableSupportUnit
-	Buildable:
-		Queue: Infantry.SimCity, RAInfantry.SimCity
-		BuildPaletteOrder: 50
-		Description: Upgrades units by 1 rank.
-	Valued:
-		Cost: 1200
-	Tooltip:
-		Name: Instructor
-	Passenger:
-		PipType: blue
-	Health:
-		HP: 3000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 48
-	RevealsShroud:
-		Range: 4c0
-	WithInfantryBody:
-		IdleSequences: idle
-		DefaultAttackSequence: repair
-		StandSequences: stand
-	#DeliversExperience:
-	#	Type: infantry
-	ProducibleWithLevel:
-		InitialLevels: 1
-	GrantExternalConditionPower@LEVELUP2:
-		OrderName: UpgradeVeteran
-		Icon: instructor1
-		AllowMultiple: true
-		Description: Instructor
-		LongDesc: Upgrades a group of units by 1 rank.
-		SelectTargetSpeechNotification: SelectTarget
-		OnFireSound: text2.aud
-		ChargeInterval: 600
-		Duration: 0
-		Range: 2
-		DisplayRadarPing: True
-		Condition: rank-veteran
-		SupportPowerPaletteOrder: 10
-	RenderSprites:
-
-CITYELITEINSTRUCTOR:
-	Inherits: CITYINSTRUCTOR
-	Buildable:
-		Queue: Infantry.SimCity, RAInfantry.SimCity
-		BuildPaletteOrder: 80
-		Prerequisites: Library
-		Description: Upgrades units to Rank 4 (Elite).
-		Icon: eliteicon
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Elite Instructor
-	ProducibleWithLevel:
-		InitialLevels: 4
-	GrantExternalConditionPower@LEVELUP2:
-		OrderName: UpgradeElite
-		Icon: instructor2
-		AllowMultiple: true
-		Description: Elite Instructor
-		LongDesc: Upgrades a group of units to elite rank.
-		SelectTargetSpeechNotification: SelectTarget
-		OnFireSound: text2.aud
-		ChargeInterval: 900
-		Duration: 0
-		Range: 2
-		DisplayRadarPing: True
-		Condition: rank-elite
-		SupportPowerPaletteOrder: 10
-	RenderSprites:
-		Image: cityinstructor
-
-CITYEXPERT:
-	Inherits: ^CITYINFANTRY
-	Buildable:
-		Queue: Vehicle.SimCity, RAVehicle.SimCity
-		BuildPaletteOrder: 50
-		Prerequisites: ~disabled
-		BuildDuration: 160
-		Description: Upgrades a Vehicle by 1 Rank.
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Expert
-	Passenger:
-		PipType: red
-	Health:
-		HP: 3000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 48
-	RevealsShroud:
-		Range: 4c0
-	WithInfantryBody:
-		IdleSequences: idle
-		StandSequences: stand
-		DefaultAttackSequence: heal
-	DeliversExperience:
-		Type: vehicle
-	ProducibleWithLevel:
-		InitialLevels: 1
-
-CITYELITEEXPERT:
-	Inherits: CITYEXPERT
-	Buildable:
-		Queue: Vehicle.SimCity, RAVehicle.SimCity
-		BuildPaletteOrder: 80
-		Prerequisites: ~disabled #Bank
-		BuildDuration: 400
-		Description: Upgrades a Vehicle to Rank 4 (Elite).
-		Icon: eliteicon
-	Valued:
-		Cost: 1400
-	Tooltip:
-		Name: Elite Expert
-	ProducibleWithLevel:
-		InitialLevels: 4
-	RenderSprites:
-		Image: cityexpert
-
-CITYSWAT:
-	Inherits@1: ^ExistsInWorld
-	Inherits@3: ^SpriteActor
-	Inherits@selection: ^SelectableCombatUnit
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	-AppearsOnRadar:
-	OwnerLostAction:
-		Action: Kill
-		DeathTypes: DefaultDeath
-	Buildable:
-		BuildPaletteOrder: 30
-		Prerequisites: citylibrary, citybank, cityairport, ~techlevel.high
-		Queue: Vehicle.SimCity, RAVehicle.SimCity
-		Description: Elite law enforcement Team armed with a silenced\nsubmachine guns and a grenade launchers.\n Strong vs ground targets\n Weak vs Aircraft
-	Tooltip:
-		Name: S.W.A.T Team
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Valued:
-		Cost: 2000
-	Health:
-		HP: 100
-	Mobile:
-		Speed: 71
-		Locomotor: foot  
-    Power:
-        Amount: -50
-	Guardable:
-	SelectionDecorations:
-	WithSpriteControlGroupDecoration:
-	Selectable:
-		Bounds: 48,48
-	AttackMove:
-	DrawLineToTarget:
-	MobSpawnerMaster:
-		Actors: CITYSWAT1,CITYSWAT1,CITYSWAT1,CITYSWAT2
-		RespawnTicks: 600
-		ExitByBudding: false
-	AttackTurreted:
-		PersistentTargeting: false
-	Turreted:
-		TurnSpeed: 255
-	Armament:
-		Weapon: AngryMobTargeting
-	AutoTarget:
-		ScanRadius: 10
-	WithSpriteBody:
-		Sequence: dot
-	HitShape:
-	HiddenUnderFog:
-		Type: CenterPosition
-	RevealsShroud:
-		Type: CenterPosition
-	SpeedMultiplier@Generic:
-		Modifier: 200
-	DamageMultiplier@INVINCIBLE:
-		Modifier: 0
-	RenderSprites:
-		Image: CITYSWAT
-    Voiced:
-        VoiceSet: CommandoVoice
-        
-CITYSWAT1:
-	Inherits: ^CITYINFANTRY
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Tooltip:
-		Name: S.W.A.T. Officer
-	Mobile:
-		Speed: 71
-		Voice: Move
-	Guard:
-		Voice: Move
-	Health:
-		HP: 10000
-	Passenger:
-		PipType: green
-		Voice: Move
-	RevealsShroud:
-		Range: 7c0
-	AutoTarget:
-		ScanRadius: 8
-	Armament@SNIPER:
-		Weapon: SwatSniper
-	Armament@GARRISONED:						##########
-		Name: garrisoned
-		Weapon: SwatSniper
-	AttackFrontal:
-		Voice: Attack
-	AttackMove:
-		Voice: Attack
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-		IdleSequences: idle1,idle2,idle3
-	Voiced:
-		VoiceSet: CommandoVoice
-	ProducibleWithLevel:
-		InitialLevels: 4
-    RenderSprites:
-        Image: CITYSWAT
-    MobSpawnerSlave:
-    -MapEditorData:   
-    
-CITYSWAT2:
-    Inherits: CITYSWAT1
-  	Armament@GRENADE:
-		Weapon: SwatGrenade
-		LocalOffset: -200,0,300
-        
-CITYE6:
-	Inherits: E6
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites:
-		Queue: Infantry.SimCity, RAInfantry.SimCity
-		Icon: cityicon
 	RenderSprites:
 		Image: e6
 

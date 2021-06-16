@@ -114,6 +114,7 @@ wc_h_townhall:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
   	Inherits@BURNABLE: ^WC1Building  
+    Inherits@CPQWP: ^CPQCondition
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -125,7 +126,7 @@ wc_h_townhall:
 	ProvidesPrerequisite:
 	Buildable:
 		BuildPaletteOrder: 10
-		Queue: Building.human
+		Queue: Building.human, RABuilding.human
 		BuildDuration: 900
         BuildDurationModifier: 100
 		Description: Builds Structures\nGrants 50 Food\nTrains Peasants.
@@ -153,7 +154,7 @@ wc_h_townhall:
     SpawnActorPower@spysat:
 		PauseOnCondition: lowpower
 		OrderName: SpydronePower
-		Icon: gps
+		Icon: wc_far_seeing
 		ChargeInterval: 1500
 		Description: Far Seeing
 		LongDesc: Reveals an area of the map\nand cloaked enemy units.
@@ -166,13 +167,26 @@ wc_h_townhall:
 		LaunchSound: sspysate.aud
 		IncomingSound: sspysate.aud
 		SupportPowerPaletteOrder: 10
-	Production:
+	Production@NORMAL:
 		Produces: Building.human, Defence.human
         PauseOnCondition: lowpower
+        RequiresCondition: !classicproductionqueues
+  	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.human, RADefence.human
+        PauseOnCondition: lowpower
+        RequiresCondition: classicproductionqueues      
 	ProductionBar@Building:
 		ProductionType: Building.human
+        RequiresCondition: !classicproductionqueues
+    ProductionBar@RABuilding:
+		ProductionType: RABuilding.human
+        RequiresCondition: classicproductionqueues    
 	ProductionBar@Defence:
 		ProductionType: Defence.human
+        RequiresCondition: !classicproductionqueues      
+    ProductionBar@RADefence:
+		ProductionType: RADefence.human
+        RequiresCondition: classicproductionqueues  
 	ProductionQueue@Building:
 		Type: Building.human
 		DisplayOrder: 0
@@ -222,7 +236,7 @@ wc_h_farm:
 	Buildable:
 		BuildPaletteOrder: 11
 		Prerequisites: wc_h_townhall
-		Queue: Building.human
+		Queue: Building.human, RABuilding.human
 		BuildDuration: 160
         BuildDurationModifier: 100
 		Description: Provides 100 Food (Power)\nCan be expanded to store twice as much Food\nCan store up to 500 resources.
@@ -264,6 +278,7 @@ wc_h_farm:
     WithSpriteBody@upgraded:
         Sequence: expand-idle
         RequiresCondition: farmupg1   
+        
 wc_h_guard_tower:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
@@ -279,7 +294,7 @@ wc_h_guard_tower:
 	Buildable:
 		BuildPaletteOrder: 5
 		Prerequisites: wc_h_barracks
-		Queue: Defence.human
+		Queue: Defence.human, RADefence.human
         BuildDuration: 750
         BuildDurationModifier: 50
 		Description: Basic Anti-Ground and Anti-Air Defense building\nDetector
@@ -310,6 +325,8 @@ wc_h_guard_tower:
     -MustBeDestroyed:  
 	Armament:
 		Weapon: wc_tower_fire
+  	Armament@aa:
+		Weapon: wc_tower_fire_aa           
 	AttackTurreted:
         Voice:
 	WithMuzzleOverlay:
@@ -324,6 +341,7 @@ wc_h_barracks:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^WC1Building
     Inherits@wcprod: ^WCUnitProduction     
+    Inherits@CPQWP: ^CPQConditionWithPrimary 
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
@@ -337,7 +355,7 @@ wc_h_barracks:
 	ProvidesPrerequisite:
 	Buildable:
 		BuildPaletteOrder: 12
-		Queue: Building.human
+		Queue: Building.human, RABuilding.human
 		Description: Trains most human units
         BuildDuration: 200
         BuildDurationModifier: 100
@@ -359,6 +377,10 @@ wc_h_barracks:
 		ExitCell: 1,1
 	Production@NORMAL:
 		Produces: Infantry.human
+        RequiresCondition: !classicproductionqueues  
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.human
+        RequiresCondition: classicproductionqueues      
 	GrantExternalConditionToProduced:
 		Condition: produced
 	ProductionQueue:
@@ -372,8 +394,12 @@ wc_h_barracks:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
-	ProductionBar:
+	ProductionBar@NORMAL:
 		ProductionType: Infantry.human
+        RequiresCondition: !classicproductionqueues  
+    ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAInfantry.human
+        RequiresCondition: classicproductionqueues     
 	Power:
 		Amount: 0
 	SpawnActorsOnSell:
@@ -388,7 +414,8 @@ wc_h_lumbermill:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^WC1Building
 	Inherits@shape: ^2x2Shape
-	Inherits@ref: ^Refinery    
+	Inherits@ref: ^Refinery
+    Inherits@CPQWP: ^CPQCondition     
 	HitShape:
 		Type: Rectangle
 			TopLeft: -1536, -512
@@ -405,7 +432,7 @@ wc_h_lumbermill:
 	Buildable:
 		BuildPaletteOrder: 13
 		Prerequisites: wc_h_farm
-		Queue: Building.human
+		Queue: Building.human, RABuilding.human
 		Description: Dropoff point for gold. (Tiberium)\nCan store up to 1000 resources\nProduces bows enabling Archers\nProvides arrow upgrades for archers and guard towers
         BuildDuration: 200
         BuildDurationModifier: 100
@@ -417,8 +444,12 @@ wc_h_lumbermill:
 		HP: 60000
 	RevealsShroud:
 		Range: 6c0        
-    Production:
+    Production@NORMAL:
 		Produces: lumberupg.human
+        RequiresCondition: !classicproductionqueues
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAlumberupg.human
+        RequiresCondition: classicproductionqueues       
 	ProductionQueue:
 		Type: lumberupg.human 
 		DisplayOrder: 2
@@ -430,8 +461,12 @@ wc_h_lumbermill:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
-	ProductionBar:
+	ProductionBar@NORMAL:
 		ProductionType: lumberupg.human
+        RequiresCondition: !classicproductionqueues 
+ 	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAlumberupg.human
+        RequiresCondition: classicproductionqueues            
 	Refinery:
 		DockAngle: 112
 		DockOffset: 0,2
@@ -468,6 +503,7 @@ wc_h_blacksmith:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^WC1Building
 	Inherits@shape: ^2x2Shape 
+    Inherits@CPQWP: ^CPQCondition
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -477,8 +513,12 @@ wc_h_blacksmith:
 	Tooltip:
 		Name: Blacksmith
 	ProvidesPrerequisite:
-    Production:
+    Production@NORMAL:
 		Produces: blacksmithupg.human 
+        RequiresCondition: !classicproductionqueues 
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAblacksmithupg.human 
+        RequiresCondition: classicproductionqueues      
 	ProductionQueue:
 		Type: blacksmithupg.human
 		DisplayOrder: 2
@@ -490,12 +530,16 @@ wc_h_blacksmith:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
-	ProductionBar:
-		ProductionType: blacksmithupg.human              
+	ProductionBar@NORMAL:
+		ProductionType: blacksmithupg.human        
+        RequiresCondition: !classicproductionqueues        
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAblacksmithupg.human        
+        RequiresCondition: classicproductionqueues          
 	Buildable:
 		BuildPaletteOrder: 14
 		Prerequisites: wc_h_barracks
-		Queue: Building.human
+		Queue: Building.human, RABuilding.human
 		BuildDuration: 400
         BuildDurationModifier: 100
 		Description: Upgrades Units
@@ -514,12 +558,19 @@ wc_h_blacksmith:
 	ScalePowerWithHealth:
     Voiced:
 		VoiceSet: humanblacksmithvoice    
+    ProvidesPrerequisite@blacksmith:
+        Prerequisite: wc_blacksmith
+
+wc_blacksmith:
+	Tooltip:
+		Name: Blacksmith
         
 wc_h_church:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^WC1Building
 	Inherits@shape: ^2x2Shape
     Inherits@wcprod: ^WCUnitProduction 
+    Inherits@CPQWP: ^CPQConditionWithPrimary 
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -532,7 +583,7 @@ wc_h_church:
 	Buildable:
 		BuildPaletteOrder: 15
 		Prerequisites: wc_h_barracks
-		Queue: Building.human
+		Queue: Building.human, RABuilding.human
 		BuildDuration: 300
         BuildDurationModifier: 100
 		Description: Trains Clerics.
@@ -553,6 +604,10 @@ wc_h_church:
 		ExitCell: 1,1
 	Production@NORMAL:
 		Produces: Vehicle.human
+        RequiresCondition: !classicproductionqueues
+ 	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.human       
+        RequiresCondition: classicproductionqueues
 	GrantExternalConditionToProduced:
 		Condition: produced
 	ProductionQueue:
@@ -566,8 +621,12 @@ wc_h_church:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
-	ProductionBar:
+	ProductionBar@NORMAL:
 		ProductionType: Vehicle.human
+        RequiresCondition: !classicproductionqueues
+  	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAVehicle.human
+        RequiresCondition: classicproductionqueues      
 	Power:
 		Amount: 0
 	SpawnActorsOnSell:
@@ -580,6 +639,7 @@ wc_h_stable:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^WC1Building
 	Inherits@shape: ^2x2Shape  
+    Inherits@CPQWP: ^CPQCondition 
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -588,8 +648,12 @@ wc_h_stable:
 		Cost: 750
 	Tooltip:
 		Name: Stable
-    Production:
+    Production@NORMAL:
 		Produces: stablesupg.human 
+        RequiresCondition: !classicproductionqueues
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAstablesupg.human 
+        RequiresCondition: classicproductionqueues       
 	ProductionQueue:
 		Type: stablesupg.human
 		DisplayOrder: 2
@@ -601,13 +665,17 @@ wc_h_stable:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
-	ProductionBar:
-		ProductionType: stablesupg.human       
+	ProductionBar@NORMAL:
+		ProductionType: stablesupg.human   
+        RequiresCondition: !classicproductionqueues
+ 	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAstablesupg.human   
+        RequiresCondition: classicproductionqueues       
 	ProvidesPrerequisite:
 	Buildable:
 		BuildPaletteOrder: 16
 		Prerequisites: wc_h_barracks
-		Queue: Building.human
+		Queue: Building.human, RABuilding.human
 		BuildDuration: 400
         BuildDurationModifier: 100
 		Description: Allows production of Knights\nProvides upgrades for Knights
@@ -632,6 +700,7 @@ wc_h_tower:
 	Inherits@BURNABLE: ^WC1Building
 	Inherits@shape: ^2x2Shape
     Inherits@wcprod: ^WCUnitProduction   
+    Inherits@CPQWP: ^CPQConditionWithPrimary 
 	Selectable:
 		Bounds: 64,64
 	HitShape:
@@ -644,7 +713,7 @@ wc_h_tower:
 	Buildable:
 		BuildPaletteOrder: 17
 		Prerequisites: wc_h_barracks
-		Queue: Building.human
+		Queue: Building.human, RABuilding.human
 		BuildDuration: 400
         BuildDurationModifier: 100
 		Description: Trains Conjurers.\nProvides Radar.
@@ -665,6 +734,10 @@ wc_h_tower:
 		ExitCell: 1,1
 	Production@NORMAL:
 		Produces: Aircraft.human
+        RequiresCondition: !classicproductionqueues
+  	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.human
+        RequiresCondition: classicproductionqueues      
 	GrantExternalConditionToProduced:
 		Condition: produced
 	ProductionQueue:
@@ -678,8 +751,12 @@ wc_h_tower:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
-	ProductionBar:
+	ProductionBar@NORMAL:
 		ProductionType: Aircraft.human
+        RequiresCondition: !classicproductionqueues
+  	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAAircraft.human
+        RequiresCondition: classicproductionqueues      
 	ProvidesRadar:
 		RequiresCondition: !lowpower && !jammed
 	Power:
@@ -694,6 +771,7 @@ wc_h_stormwind:
 	Inherits: ^BaseBuilding
 	Inherits@BURNABLE: ^WC1Building
 	Inherits@shape: ^2x2Shape   
+    Inherits@SW: ^PrimarySuperweapon
 	Selectable:
 		Bounds: 96,96
 	HitShape:
@@ -704,12 +782,11 @@ wc_h_stormwind:
 		Name: Stormwind
 	Buildable:
 		BuildPaletteOrder: 18
-		Prerequisites: wc_h_lumbermill,wc_h_blacksmith,wc_h_church,wc_h_tower
-		Queue: Building.human
+		Prerequisites: wc_h_lumbermill,wc_h_blacksmith,wc_h_church,wc_h_tower,!swstormwind
+		Queue: Building.human, RABuilding.human
 		BuildDuration: 900
         BuildDurationModifier: 100
 		Description: Provides Superweapon
-        BuildLimit: 1
 	Building:
 		Footprint: xxx xxx xxx ===
 		Dimensions: 3,4
@@ -740,7 +817,8 @@ wc_h_stormwind:
 		SupportPowerPaletteOrder: 20  
     Voiced:
 		VoiceSet: humanstormwindvoice 
-
+    ProvidesPrerequisite@swlimit:
+		Prerequisite: swstormwind 
 rainoffire:
 	Inherits@1: ^ExistsInWorld
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -785,16 +863,28 @@ wc_o_townhall:
 	Inherits@WTH: wc_h_townhall
 	ProvidesPrerequisite:
 	Buildable:
-		Queue: Building.orc
+		Queue: Building.orc, RABuilding.orc
 		Description: Builds Structures\nGrants 50 Food\nTrains Peons.
 	SpawnActorsOnSell:
 		ActorTypes: wc_h_footman
-	Production:
+	Production@NORMAL:
 		Produces: Building.orc, Defence.orc
+        RequiresCondition: !classicproductionqueues
+ 	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.orc, RADefence.orc
+        RequiresCondition: classicproductionqueues       
 	ProductionBar@Building:
 		ProductionType: Building.orc
+        RequiresCondition: !classicproductionqueues
 	ProductionBar@Defence:
 		ProductionType: Defence.orc
+        RequiresCondition: !classicproductionqueues
+  	ProductionBar@RABuilding:
+		ProductionType: RABuilding.orc
+        RequiresCondition: classicproductionqueues
+	ProductionBar@RADefence:
+		ProductionType: RADefence.orc
+        RequiresCondition: classicproductionqueues      
 	ProductionQueue@Building:
 		Type: Building.orc
 	ProductionQueue@Defence:
@@ -804,14 +894,14 @@ wc_o_townhall:
     SpawnActorPower@spysat:
 		PauseOnCondition: lowpower
 		OrderName: SpydronePower
-		Icon: gps
+		Icon: wc_dark_vision
 		ChargeInterval: 1500
 		Description: Dark Vision
 wc_o_farm:
 	Inherits@wc_h_farm: wc_h_farm
 	Buildable:
 		Prerequisites: wc_o_townhall
-		Queue: Building.orc
+		Queue: Building.orc, RABuilding.orc
 	SpawnActorsOnSell:
 		ActorTypes: wc_o_grunt
     Voiced:
@@ -830,22 +920,26 @@ wc_o_guard_tower:
     Inherits: wc_h_guard_tower
     Buildable:
         Prerequisites: wc_o_barracks
-        Queue: Defence.orc
+        Queue: Defence.orc, RADefence.orc
     Voiced:
         VoiceSet: orcguardtowervoice     
         
 wc_o_barracks:
 	Inherits@wc_h_barracks: wc_h_barracks  
 	Buildable:
-		Queue: Building.orc
+		Queue: Building.orc, RABuilding.orc
 		Description: Trains most orc units
         Prerequisites: wc_o_farm
 	Production@NORMAL:
 		Produces: Infantry.orc
+   	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.orc     
 	ProductionQueue:
 		Type: Infantry.orc 
-	ProductionBar:
+	ProductionBar@NORMAL:
 		ProductionType: Infantry.orc
+   	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAInfantry.orc     
 	SpawnActorsOnSell:
 		ActorTypes: wc_o_grunt
     Voiced:
@@ -855,14 +949,18 @@ wc_o_lumbermill:
 	Inherits@wc_h_lumbermill: wc_h_lumbermill
 	Buildable:
 		Prerequisites: wc_o_farm
-		Queue: Building.orc
+		Queue: Building.orc, RABuilding.orc
 		Description: Dropoff point for gold. (Tiberium)\nCan store up to 1000 resource\nProduces spears enabling Spearmen\nProvides spear upgrades for spearmen and Guard towers
-    Production:
+    Production@NORMAL:
 		Produces: lumberupg.orc
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAlumberupg.orc      
 	ProductionQueue:
 		Type: lumberupg.orc 
-	ProductionBar:
+	ProductionBar@NORMAL:
 		ProductionType: lumberupg.orc
+ 	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAlumberupg.orc       
 	FreeActor:
 		Actor: wc_o_peon
 	SpawnActorsOnSell:
@@ -872,15 +970,19 @@ wc_o_lumbermill:
         
 wc_o_blacksmith:
 	Inherits@wc_h_blacksmith: wc_h_blacksmith
-    Production:
+    Production@NORMAL:
 		Produces: blacksmithupg.orc 
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAblacksmithupg.orc      
 	ProductionQueue:
 		Type: blacksmithupg.orc
-	ProductionBar:
-		ProductionType: blacksmithupg.orc              
+	ProductionBar@NORMAL:
+		ProductionType: blacksmithupg.orc            
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAblacksmithupg.orc   
 	Buildable:
 		Prerequisites: wc_o_barracks
-		Queue: Building.orc
+		Queue: Building.orc, RABuilding.orc
 	SpawnActorsOnSell:
 		ActorTypes: wc_o_grunt
     Voiced:
@@ -892,15 +994,19 @@ wc_o_damnedtemple:
 		Name: Temple of the Damned
 	Production@NORMAL:
 		Produces: Vehicle.orc
+  	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.orc      
 	GrantExternalConditionToProduced:
 		Condition: produced
 	ProductionQueue:
 		Type: Vehicle.orc
-	ProductionBar:
+	ProductionBar@NORMAL:
 		ProductionType: Vehicle.orc
+  	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAVehicle.orc      
    	Buildable:
 		Prerequisites: wc_o_barracks
-		Queue: Building.orc    
+		Queue: Building.orc, RABuilding.orc    
         Description: Trains Warlocks.
 	SpawnActorsOnSell:
 		ActorTypes: wc_o_grunt
@@ -911,15 +1017,19 @@ wc_o_kennel:
 	Inherits@wc_h_stable: wc_h_stable
 	Tooltip:
 		Name: Kennels
-    Production:
+    Production@NORMAL:
 		Produces: kennelupg.orc 
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAkennelupg.orc      
 	ProductionQueue:
 		Type: kennelupg.orc
-	ProductionBar:
+	ProductionBar@NORMAL:
 		ProductionType: kennelupg.orc 
+  	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAkennelupg.orc      
 	Buildable:
 		Prerequisites: wc_o_barracks
-		Queue: Building.orc
+		Queue: Building.orc, RABuilding.orc
 		Description: Allows production of Raiders
 	SpawnActorsOnSell:
 		ActorTypes: wc_o_grunt
@@ -930,14 +1040,18 @@ wc_o_tower:
 	Inherits@wc_h_tower: wc_h_tower    
 	Buildable:
 		Prerequisites: wc_o_barracks
-		Queue: Building.orc
+		Queue: Building.orc, RABuilding.orc
 		Description: Trains Necrolytes and Skeleton Armies.\nProvides Radar.
 	Production@NORMAL:
 		Produces: Aircraft.orc
+ 	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.orc       
 	ProductionQueue:
 		Type: Aircraft.orc
-	ProductionBar:
+	ProductionBar@NORMAL:
 		ProductionType: Aircraft.orc
+  	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAAircraft.orc      
 	SpawnActorsOnSell:
 		ActorTypes: wc_o_grunt
     Voiced:
@@ -948,14 +1062,15 @@ wc_o_blackrockspire:
 	Tooltip:
 		Name: Blackrock Spire
 	Buildable:
-		Prerequisites: wc_o_lumbermill,wc_o_blacksmith,wc_o_damnedtemple,wc_o_tower
-		Queue: Building.orc
+		Prerequisites: wc_o_lumbermill,wc_o_blacksmith,wc_o_damnedtemple,wc_o_tower,!swblackspire
+		Queue: Building.orc, RABuilding.orc
 	SpawnActorsOnSell:
 		ActorTypes: wc_o_grunt
     SpawnActorPower:
 		AllowMultiple: True
 		OrderName: poisoncloud
 		Icon: poisoncloud_icon
+        IconPalette: windows256
 		Description: Poison Cloud
 		LongDesc: The caster creates a cloud comprised of brimstone,\nacid, and poisonous gases to envelop and choke his targets.\nThis foul stench eats through anything that stands in its way,\nand chokes the very life out of anyone unlucky enough to be in its path.\nIt is a mix of the sickly stench of rotting corpses and the essence of evil,\ndesigned to decay and corrode all that it comes in contact with.
 		Prerequisites: ~techlevel.superweapons
@@ -969,7 +1084,9 @@ wc_o_blackrockspire:
 		SupportPowerPaletteOrder: 20     
     Voiced:
 		VoiceSet: orcblackrockvoice 
-   
+    ProvidesPrerequisite@swlimit:
+		Prerequisite: swblackspire 
+        
 poisoncloud:  
 	Inherits@1: ^ExistsInWorld
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -1005,7 +1122,7 @@ poisoncloud:
 	KillsSelf:
 		RemoveInstead: true
 		Delay: 1000
-        
+
 ####################################################################################################
 #		UNIT human
 ####################################################################################################
@@ -1036,7 +1153,7 @@ wc_h_peasant:
 		AddToArmyValue: false
 	Buildable:
 		BuildPaletteOrder: 5
-		Queue: Defence.human
+		Queue: Defence.human, RADefence.human
 		Description: Harvester.
         BuildDuration: 100
         BuildDurationModifier: 100
@@ -1119,7 +1236,7 @@ wc_h_footman:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: wc_h_barracks
-		Queue: Infantry.human
+		Queue: Infantry.human, RAInfantry.human
 		Description: Basic Melee Infantry. Slow but can take some damage.
         BuildDuration: 80
         BuildDurationModifier: 100
@@ -1164,7 +1281,7 @@ wc_h_archer:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: wc_h_lumbermill
-		Queue: Infantry.human
+		Queue: Infantry.human, RAInfantry.human
 		Description: Basic Ranged Infantry. Not as durable as Footman.\nCan attack air
         BuildDuration: 120
         BuildDurationModifier: 100
@@ -1184,6 +1301,8 @@ wc_h_archer:
 		ScanRadius: 4
 	Armament:
 		Weapon: bowFire
+ 	Armament@aa:
+		Weapon: bowFireAA    
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	WithInfantryBody:
@@ -1210,7 +1329,7 @@ wc_h_knight:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: wc_h_stable
-		Queue: Infantry.human
+		Queue: Infantry.human, RAInfantry.human
 		Description: Mounted Infantry. Fast and durable.
         BuildDuration: 300
         BuildDurationModifier: 100
@@ -1260,7 +1379,7 @@ wc_h_catapult:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: wc_h_blacksmith
-		Queue: Infantry.human
+		Queue: Infantry.human, RAInfantry.human
 		Description: Siege weapon. Powerful against static targets.
         BuildDuration: 400
         BuildDurationModifier: 100
@@ -1268,7 +1387,7 @@ wc_h_catapult:
     RevealsShroud:
 		Range: 5c0     
 	Mobile:
-		Speed: 30
+		Speed: 35
 	Armor:
 		Type: Medium        
 	Health:
@@ -1296,6 +1415,7 @@ wc_h_conjurer:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
     Inherits@upgrade_shields: ^wc_h_str_shield
+    Inherits@MC: ^MCImmune 
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -1305,7 +1425,7 @@ wc_h_conjurer:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: wc_h_tower
-		Queue: Aircraft.human
+		Queue: Aircraft.human, RAAircraft.human
 		Description: Spell Caster.\nFar seer.\nCan summon Scorpion and Water Elemental\nCan attack Air\nDetector
         BuildDuration: 340
         BuildDurationModifier: 100
@@ -1334,7 +1454,7 @@ wc_h_conjurer:
     Voiced:
 		VoiceSet: voicehuman  
     RevealsShroud:
-        Range: 7c0
+        Range: 8c0
     DetectCloaked:
 		Range: 6c0       
     
@@ -1354,7 +1474,7 @@ wc_h_cleric:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: wc_h_tower
-		Queue: Vehicle.human
+		Queue: Vehicle.human, RAVehicle.human
 		Description: Support Caster. Heals nearby units.
         BuildDuration: 280
         BuildDurationModifier: 100
@@ -1408,7 +1528,7 @@ wc_h_scorpion:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: ~disabled
-		Queue: Aircraft.human
+		Queue: Aircraft.human, RAAircraft.human
 		Description: Lesser Spawn.
 	Mobile:
 		Speed: 56
@@ -1493,11 +1613,12 @@ wc_goldmine:
 	Tooltip:
 		Name: Gold Mine
 	Buildable:
-		BuildPaletteOrder: 13
-		Queue: Building.human, Building.orc
+		BuildPaletteOrder: 15
+		Queue: Building.human, RABuilding.human, Building.orc, RABuilding.orc
         BuildDuration: 375
         BuildDurationModifier: 100
 		Description: Send workers inside to provide passive income\nMiners progressively get experience and work more efficiently
+        Prerequisites: wc_blacksmith
 	Building:
     	Footprint: xxx xxx xxx
 		Dimensions: 3,3      
@@ -1525,7 +1646,7 @@ wc_goldmine:
     WithMakeAnimation:  
     WithDeathAnimation:
     Voiced:
-		VoiceSet: humanlumbermillvoice 
+		VoiceSet: neutralgoldminevoice 
 ####################################################################################################
 #		UNIT ORC
 ####################################################################################################
@@ -1536,7 +1657,7 @@ wc_o_peon:
 		Name: Peon
 	Buildable:
 		BuildPaletteOrder: 5
-		Queue: Defence.orc
+		Queue: Defence.orc, RADefence.orc
 		Description: Harvester.
 	Armament:
 		Weapon: footmanSlice
@@ -1552,7 +1673,7 @@ wc_o_grunt:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: wc_o_barracks
-		Queue: Infantry.orc
+		Queue: Infantry.orc, RAInfantry.orc
 		Description: Basic Melee Infantry. Slow but can take some damage.
 	Armament:
 		Weapon: footmanSlice
@@ -1565,7 +1686,7 @@ wc_o_spearman:
 		Name: Spearman
 	Buildable:
 		Prerequisites: wc_o_lumbermill
-		Queue: Infantry.orc
+		Queue: Infantry.orc, RAInfantry.orc
 		Description: Basic Ranged Infantry. Not as durable as Grunt.\nCan attack air
 	Armament:
 		Weapon: spearFire
@@ -1578,7 +1699,7 @@ wc_o_raider:
 		Name: Raider
 	Buildable:
 		Prerequisites: wc_o_kennel
-		Queue: Infantry.orc
+		Queue: Infantry.orc, RAInfantry.orc
 		Description: Mounted Infantry. Fast and durable.
 	Armament:
 		Weapon: knightSlice
@@ -1589,7 +1710,7 @@ wc_o_catapult:
 	Inherits@wc_h_catapult: wc_h_catapult
 	Buildable:
 		Prerequisites: wc_o_blacksmith
-		Queue: Infantry.orc
+		Queue: Infantry.orc, RAInfantry.orc
     Voiced:
 		VoiceSet: voiceorc 
         
@@ -1601,7 +1722,7 @@ wc_o_warlock:
 		AddToArmyValue: true
 	Buildable:
 		Prerequisites: wc_o_tower
-		Queue: Aircraft.orc
+		Queue: Aircraft.orc, RAAircraft.orc
 		Description: Spell Caster.\nFar seer\nCan summon Spider and Demon\nCan attack Air\nDetector
     Armament:
         Weapon: summon1_spider
@@ -1620,7 +1741,7 @@ wc_o_necrolyte:
 		AddToArmyValue: true
 	Buildable:
 		Prerequisites: wc_o_damnedtemple
-		Queue: Vehicle.orc
+		Queue: Vehicle.orc, RAVehicle.orc
 		Description: Support Caster. Heals nearby units.
   	Armament@3:
 		Weapon: fireballNecrolyte
@@ -1689,7 +1810,7 @@ wc_o_skeleton_army:
 		DeathTypes: DefaultDeath
 	Buildable:
 		BuildPaletteOrder: 30
-		Queue: Aircraft.orc
+		Queue: Aircraft.orc, RAAircraft.orc
 		Description: Big group of skeletons\nRegenerates fast\nWeak against Siege and Toxins
 	Tooltip:
 		Name: Skeleton Army
@@ -1748,7 +1869,7 @@ wc_h_str_arrow:
 		Name: Arrow Strength
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: lumberupg.human
+		Queue: lumberupg.human, RAlumberupg.human
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Arrow Damage dealt by Archers and Guard Towers by 35%
@@ -1765,7 +1886,7 @@ wc_h_str_arrow2:
 		Name: Arrow Strength
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: lumberupg.human
+		Queue: lumberupg.human, RAlumberupg.human
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Arrow Damage by Archers and Guard Towers by further 35%
@@ -1782,7 +1903,7 @@ wc_h_str_sword:
 		Name: Sword Strength
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: blacksmithupg.human
+		Queue: blacksmithupg.human, RAblacksmithupg.human
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Sword Damage by 30%
@@ -1799,7 +1920,7 @@ wc_h_str_sword2:
 		Name: Sword Strength II
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: blacksmithupg.human
+		Queue: blacksmithupg.human, RAblacksmithupg.human
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Sword Damage by further 30%
@@ -1816,7 +1937,7 @@ wc_h_str_shield:
 		Name: Shield Strength
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: blacksmithupg.human
+		Queue: blacksmithupg.human, RAblacksmithupg.human
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Shield Resistance of all units by 25%
@@ -1833,7 +1954,7 @@ wc_h_str_shield2:
 		Name: Shield Strength II
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: blacksmithupg.human
+		Queue: blacksmithupg.human, RAblacksmithupg.human
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Shield Resistance of all units by further 25%
@@ -1850,7 +1971,7 @@ wc_h_horses:
 		Name: Breed Faster Horses
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: stablesupg.human
+		Queue: stablesupg.human, RAstablesupg.human 
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Horses speed by 15%
@@ -1867,7 +1988,7 @@ wc_h_horses2:
 		Name: Breed Faster Horses II
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: stablesupg.human
+		Queue: stablesupg.human, RAstablesupg.human 
         BuildDuration: 1500
         BuildDurationModifier: 100       
 		Description: Increases Horses speed by further 15%
@@ -1883,7 +2004,7 @@ wc_o_str_spear:
 	Tooltip:
 		Name: Spear Strength
 	Buildable:
-		Queue: lumberupg.orc      
+		Queue: lumberupg.orc, RAlumberupg.orc      
 		Description: Increases Spear Damage dealt by Spearmen and Guard Towers by 35%
         Prerequisites: ~!wc_o_str_spear
 	RenderSprites:
@@ -1894,7 +2015,7 @@ wc_o_str_spear2:
 	Tooltip:
 		Name: Spear Strength II
 	Buildable:
-		Queue: lumberupg.orc
+		Queue: lumberupg.orc, RAlumberupg.orc
 		Description: Increases Spear Damage dealt by Spearmen and Guard Towers by further 35%
         Prerequisites: ~!wc_o_str_spear2, ~wc_o_str_spear
 	RenderSprites:
@@ -1905,7 +2026,7 @@ wc_o_str_axe:
 	Tooltip:
 		Name: Axe Strength
 	Buildable:
-		Queue: blacksmithupg.orc
+		Queue: blacksmithupg.orc, RAblacksmithupg.orc
 		Description: Increases Axe Damage by 30%
         Prerequisites: ~!wc_o_str_axe2
 	Valued:
@@ -1918,7 +2039,7 @@ wc_o_str_axe2:
 	Tooltip:
 		Name: Sword Strength II
 	Buildable:
-		Queue: blacksmithupg.orc   
+		Queue: blacksmithupg.orc, RAblacksmithupg.orc   
 		Description: Increases Axe Damage by further 30%
         Prerequisites: ~!wc_o_str_axe2, ~wc_o_str_axe
 	RenderSprites:
@@ -1927,7 +2048,7 @@ wc_o_str_axe2:
 wc_o_str_shield:
 	Inherits@shld: wc_h_str_shield
 	Buildable:
-		Queue: blacksmithupg.orc    
+		Queue: blacksmithupg.orc, RAblacksmithupg.orc    
         Prerequisites: ~!wc_o_str_shield
 	RenderSprites:
 		Image: wc_o_str_shield
@@ -1935,7 +2056,7 @@ wc_o_str_shield:
 wc_o_str_shield2:
 	Inherits@shld: wc_h_str_shield2
 	Buildable:
-		Queue: blacksmithupg.orc
+		Queue: blacksmithupg.orc, RAblacksmithupg.orc
         Prerequisites: ~!wc_o_str_shield2, ~wc_o_str_shield
 	RenderSprites:
 		Image: wc_o_str_shield2
@@ -1946,7 +2067,7 @@ wc_o_wolves:
 		Name: Breed Faster Wolves
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: kennelupg.orc    
+		Queue: kennelupg.orc, RAkennelupg.orc   
 		Description: Increases Wolves speed by 15%
         Prerequisites: ~!wc_o_wolves
 	RenderSprites:
@@ -1958,7 +2079,7 @@ wc_o_wolves2:
 		Name: Breed Faster Wolves II
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: kennelupg.orc
+		Queue: kennelupg.orc, RAkennelupg.orc
 		Description: Increases Wolves speed by further 15%
         Prerequisites: ~!wc_o_wolves2, ~wc_o_wolves
 	RenderSprites:
