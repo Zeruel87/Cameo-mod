@@ -7,7 +7,7 @@
 	ScriptTriggers:
 	ConditionManager:
 	RenderDebugState:
-
+        
 ^SpriteActor:
 	BodyOrientation:
 	QuantizeFacingsFromSequence:
@@ -230,7 +230,14 @@
 		ReferencePoint: Bottom, Right
 		RequiresCondition: rank-elite
 		ZOffset: 256
-
+        
+^Instant_Kill_Vehicle:
+    GrantConditionOnPrerequisite@ONESHOT: 
+        Prerequisites: global-one-shot-vehicle
+        Condition: vehicleoneshot 
+    DamageMultiplier@ONESHOT:
+        RequiresCondition: vehicleoneshot
+        Modifier: 9999
 ^InfantryExperienceHospitalHazmatOverrides:
 	WithDecoration@RANK-1:
 		BlinkInterval: 32
@@ -327,7 +334,7 @@
 		IsPlayerPalette: true
 	ExternalCondition@CLOAK:
 		Condition: cloak-crate-collected
-
+        
 ^VehicleRadiation:
 	DamagedByTintedCells@rad:
 		Damage: 400
@@ -335,8 +342,8 @@
 		DamageTypes: DefaultDeath
 		LayerName: ra2radiation
 	DamagedByTintedCells@genrad:
-		Damage: 400
-		DamageInterval: 16
+		Damage: 150
+		DamageInterval: 24
 		DamageTypes: DefaultDeath
 		LayerName: genradiation
 	DamagedByTintedCells@tib:
@@ -398,6 +405,7 @@
 	Inherits@salvage: ^GenericSalvageBonus
 	Inherits@emergencyrepair: ^EmergencyRepairable
 	Inherits@chrono: ^Chronoshiftable
+    Inherits@instablow: ^Instant_Kill_Vehicle
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -580,6 +588,7 @@
 	Inherits@fix: ^Repairable
 	Inherits@EMP: ^UnitDisable
 	Inherits@mag: ^Magnefreezable
+    Inherits@instablow: ^Instant_Kill_Vehicle 
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -667,14 +676,14 @@
 		RequiresCondition: !untargetable && !airborne
 
 ^Helicopter:
-	Inherits@1: ^RANeutralPlane
+	Inherits@1: ^RANeutralPlane   
 	Aircraft:
 		AirborneCondition: airborne
 		CruisingCondition: cruising
 		CanHover: True
 		TakeOffOnResupply: true
 		VTOL: true
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, Concrete
+		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, Concrete, ClearDune
 		Crushes: crate, infantry
 		InitialFacing: 224
 		CanSlide: True
@@ -824,7 +833,7 @@
 		LayerName: ra2radiation
 		RequiresCondition: !parachute
 	DamagedByTintedCells@genrad:
-		Damage: 2000
+		Damage: 1000
 		DamageInterval: 16
 		DamageTypes: DefaultDeath
 		LayerName: genradiation
@@ -849,7 +858,39 @@
 	GpsDot:
 		String: Infantry
 	TeleportNetworkTransportable:
-        
+    GrantConditionOnPrerequisite@EXTRAGORE: 
+        Prerequisites: global-gore
+        Condition: unitgore 
+    GrantConditionOnPrerequisite@ONESHOT: 
+        Prerequisites: global-one-shot
+        Condition: unitoneshot 
+    GrantConditionOnPrerequisite@INFDOM: 
+        Prerequisites: global-inf-dom
+        Condition: infdom   
+    GrantConditionOnPrerequisite@INFLOW: 
+        Prerequisites: global-inf-low
+        Condition: inflow             
+    DamageMultiplier@ONESHOT:
+        RequiresCondition: unitoneshot
+        Modifier: 9999
+    DamageMultiplier@INFDOM:
+        RequiresCondition: infdom
+        Modifier: 50
+    FirepowerMultiplier@INFDOM:
+        RequiresCondition: infdom
+        Modifier: 250
+    DamageMultiplier@INFLOW:
+        RequiresCondition: inflow
+        Modifier: 150
+    Explodes@ONESHOT:
+        Weapon: instagib
+        RequiresCondition: unitgore
+    ThrowsShrapnel@ONESHOT:
+        Weapons: instagib1, instagib2, instagib3, instagib4
+        Pieces: 1, 4
+        Range: 0c256, 2c0
+        RequiresCondition: unitgore
+
 ^Infantry: #Human units only
 	Inherits: ^DefaultInfantry
 	WithDeathAnimation:
@@ -1125,6 +1166,7 @@
 	Inherits@bot: ^BotProductionBoost
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@rad: ^VehicleRadiation
+    Inherits@instablow: ^Instant_Kill_Vehicle
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -1215,7 +1257,12 @@
 	DamageMultiplier@CEMENTFACTORY:
 		RequiresCondition: techcementffact
 		Modifier: 85
-        
+    DamageMultiplier@BLDDURABLE:
+        Modifier: 30
+        RequiresCondition: blddurable
+    GrantConditionOnPrerequisite@BLDDURABLE: 
+        Prerequisites: global-durable-buildings  
+        Condition: blddurable
 ^BotProductionBoost:
 	ProductionTimeMultiplier@hard:
 		Multiplier: 90
@@ -1237,7 +1284,7 @@
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud
 		UndeploySounds: cashturn.aud
-		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete		##########
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune		##########
 	RequiresBuildableArea:
 		AreaTypes: building
 		Adjacent: 4
@@ -1369,6 +1416,15 @@
 		IsPlayerPalette: True
 	GpsDot:
 		String: Forward
+        
+^OldFactionBuff:
+    ProductionTimeMultiplier@oldbuff:
+        Multiplier: 85
+    ProductionCostMultiplier@oldbuff:
+        Multiplier: 75
+        Prerequisites: !faction.camea
+    DamageMultiplier@oldbuff:
+        Modifier: 90
 
 ^TechBuildingHusk:
 	Inherits: ^TechBuilding
@@ -1431,7 +1487,7 @@
 		Dimensions: 1,1
 		Footprint: x
 		BuildSounds: hvydoor1.aud
-		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete		##########
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune		##########
 	FootprintPlaceBuildingPreview:
 		LineBuildSegmentPalette: placelinesegment
 	RequiresBuildableArea:
@@ -1685,7 +1741,7 @@
 		GenericName: Crate
 		ShowOwnerRow: false
 	Crate:
-		TerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, Concrete
+		TerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, Concrete, ClearDune
 	RenderSprites:
 		Palette: effect
 		Image: crate
@@ -1711,7 +1767,15 @@
 		Types: defense
 	-CommandBarBlacklist:
 	-AcceptsDeliveredCash:
-
+    -DamageMultiplier@BLDDURABLE:
+    -GrantConditionOnPrerequisite@BLDDURABLE:
+    FirepowerMultiplier@NTRPSRS:
+        Modifier: 200
+        RequiresCondition: global-notrespassers
+    DamageMultiplier@NTRPSRS:
+        Modifier: 50
+        RequiresCondition: global-notrespassers
+        
 ^DisabledOverlay:
 	GrantConditionOnPowerState@LOWPOWER:
 		Condition: lowpower
@@ -2783,8 +2847,8 @@ CPQDEBUGDUMMY:
 	Inherits@MC: ^MCImmune
 	Inherits@snipe: ^DriverKillImmune
 	Harvester:
-		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, GESupplies, SWPCarbon, SWRCarbon, SWDCarbon, SWPNova, SWCNova, SWPMin, SWCMin
-		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu
+		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, GESupplies, SWPCarbon, SWRCarbon, SWDCarbon, SWPNova, SWCNova, SWPMin, SWCMin, Spice
+		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc
 		FullyLoadedSpeed: 100
 	GpsDot:
 		String: Harvester
@@ -2803,13 +2867,13 @@ CPQDEBUGDUMMY:
         
 ^RearmableAircraft:
 	Rearmable:
-		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,ra2gaairc.dock,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport,leangairport,drihelipad.imperium,drfghelipad.freedomguard,awhpad.orange,awhpad.bluemoon,awhpad.yellowcomet,awhpad.greenearth,awhpad.blackhole,awhpad.daysofruins,swhpad.empire,swhpad.rebels,swhpad.swseparatist,swhpad.republic,swhpad.hutt,d2k_silo_tleilaxu
+		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,ra2gaairc.dock,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport,leangairport,drihelipad.imperium,drfghelipad.freedomguard,awhpad.orange,awhpad.bluemoon,awhpad.yellowcomet,awhpad.greenearth,awhpad.blackhole,awhpad.daysofruins,swhpad.empire,swhpad.rebels,swhpad.swseparatist,swhpad.republic,swhpad.hutt,d2k_silo_tleilaxu,hpad.camea
 	AutoTarget:
 		InitialStance: HoldFire
 
 ^Repairable:
 	Repairable:
-		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix
+		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix,rafix.camea,drirep
 
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
@@ -3298,7 +3362,8 @@ CPQDEBUGDUMMY:
 	GrantConditionOnPrerequisite@HOSPITAL:
 		Condition: hospital
 		Prerequisites: hosp
-
+    Repairable:
+		RepairActors: drfghosp, drihosp
 ^MachineShopRepairable:
 	Inherits: ^TechStructureHealable
 	SelfHealing@HOSPITAL:

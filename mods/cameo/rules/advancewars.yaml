@@ -1191,6 +1191,7 @@ hq.orange:
 		QueuedAudio: Building
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
+    ProvidesRadar:
 	BaseBuilding:
 	ProductionBar@BuildingGDI:
 		ProductionType: Building.OrangeStar
@@ -2785,15 +2786,16 @@ awcity:
 	HitShape:
 		TargetableOffsets: 630,299,0
 	Valued:
-		Cost: 900
+		Cost: 800
 	Tooltip:
 		Name: City
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: fact
 		Queue: Building.OrangeStar, RABuilding.OrangeStar, Building.Rubinelle, RABuilding.Rubinelle
-		Description: Generates money
-		BuildDurationModifier: 35
+		Description: Generates money\nProvides Electricity to power Defense buildings
+		BuildDurationModifier: 100
+        BuildDuration: 125
 	Building:
 		Footprint: xX xx ==
 		Dimensions: 2,3
@@ -2807,7 +2809,28 @@ awcity:
 	ProvidesPrerequisite@awcity:
 		Prerequisite: awcity
 	Power:
-		Amount: 0
+		Amount: 20
+    CashTricklerMultiplier@cityupg:
+        Modifier: 200
+        RequiresCondition: cityupgrade
+    PowerMultiplier@cityupg:
+        Modifier: 250
+        RequiresCondition: cityupgrade          
+    Production:
+		Produces: cityupgrade.aw
+        RequiresCondition: !cityupgrade
+	ProductionBar:
+		ProductionType: cityupgrade.aw
+	ProductionQueue:
+		Type: cityupgrade.aw
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+        QueueLimit: 1
+		ItemLimit: 1      
+	GrantConditionOnProduction@upgrade:
+		Condition: cityupgrade
+		Actors: awupgradecity           
 	ProductionCostMultiplier@awcity:
 		Multiplier: 30
 		Prerequisites: !awcity
@@ -2820,30 +2843,30 @@ awcity:
 		AreaTypes: building
 	CashTrickler@brutal:
 		Interval: 200
-		Amount: 200
+		Amount: 100
 		ShowTicks: False
 		RequiresCondition: brutalcash && !noinsurance
 	CashTrickler@hard:
 		Interval: 200
-		Amount: 100
+		Amount: 50
 		ShowTicks: False
 		RequiresCondition: hardcash && !noinsurance
-	CashTrickler@hard:
+	CashTrickler@normal1:
 		Interval: 200
 		Amount: 20
 		ShowTicks: False
 		RequiresCondition: normalcash && !noinsurance
 	CashTrickler@Normal:
 		Interval: 200
-		Amount: 100
+		Amount: 50
 		RequiresCondition: !selectsasha && !colinpower1
 	CashTrickler@Sasha:
 		Interval: 200
-		Amount: 200
+		Amount: 80
 		RequiresCondition: selectsasha
 	CashTrickler@Colin:
 		Interval: 200
-		Amount: 1000
+		Amount: 500
 		RequiresCondition: colinpower1
 	GrantConditionOnPrerequisite@selectsasha:
 		Condition: selectsasha
@@ -2888,6 +2911,25 @@ awcity:
 		Facing: 64
 		AllowRespawn: True
 		RequiresCondition: senseipower2
+        
+awupgradecity:
+	Tooltip:
+		Name: Farm Expansion
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: cityupgrade.aw
+        BuildDuration: 750
+        BuildDurationModifier: 100       
+		Description: Upgrades City giving more Power and income
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: awcity
+    Interactable:
+	AlwaysVisible:
+  	KillsSelf:
+		RemoveInstead: true   
+        
 awcitybm:
 	Inherits: awcity
 	Buildable:
@@ -2950,6 +2992,7 @@ awminicannon:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@EMP: ^TurretEMP
+    Inherits@lowpower: ^DisabledOverlay
 	Selectable:
 		Bounds: 24,24
 	Valued:
@@ -2961,7 +3004,11 @@ awminicannon:
 		Prerequisites: vehicleproduction
 		Queue: Defence.OrangeStar, Defence.BlueMoon, RADefence.OrangeStar, RADefence.BlueMoon, Defence.YellowComet, Defence.GreenEarth, RADefence.YellowComet, RADefence.GreenEarth, Defence.BlackHole, RADefence.BlackHole
 		Description: Basic Anti-Tank base defense.\n  Strong vs Tanks, vehicles\n  Weak vs Infantry
+        BuildDuration: 500
+        BuildDurationModifier: 100
 	Building:
+    Power:
+        Amount: -20
 	Health:
 		HP: 80000
 	Armor:
@@ -2982,13 +3029,11 @@ awminicannon:
 		LocalOffset: 512,0,112
 		MuzzleSequence: muzzle
 	AttackTurreted:
-		RequiresCondition: !build-incomplete
+		RequiresCondition: !build-incomplete && !lowpower
 	WithMuzzleOverlay:
 	-WithDeathAnimation:
 	DetectCloaked:
 		Range: 3c0
-	Power:
-		Amount: 0
 	BodyOrientation:
 		UseClassicFacingFudge: True
 	RenderSprites:
@@ -2997,10 +3042,11 @@ awlaserbunk:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@EMP: ^TurretEMP
+    Inherits@lowpower: ^DisabledOverlay
 	Selectable:
 		Bounds: 24,24
 	Valued:
-		Cost: 2500
+		Cost: 3000
 	Tooltip:
 		Name: Laser Bunker
 	Buildable:
@@ -3009,6 +3055,8 @@ awlaserbunk:
 		Queue: Defence.OrangeStar, Defence.BlueMoon, RADefence.OrangeStar, RADefence.BlueMoon, Defence.YellowComet, Defence.GreenEarth, RADefence.YellowComet, RADefence.GreenEarth, Defence.BlackHole, RADefence.BlackHole
 		Description: Basic Anti-Tank base defense.\n  Strong vs Tanks, vehicles\n  Weak vs Infantry
 	Building:
+    Power:
+        Amount: -50
 	Health:
 		HP: 80000
 	Armor:
@@ -3024,12 +3072,10 @@ awlaserbunk:
 		Weapon: AWLaserTurretRailgun
 		LocalOffset: 512,0,112
 	AttackTurreted:
-		RequiresCondition: !build-incomplete
+		RequiresCondition: !build-incomplete && !lowpower
 	-WithDeathAnimation:
 	DetectCloaked:
 		Range: 3c0
-	Power:
-		Amount: 0
 	BodyOrientation:
 		UseClassicFacingFudge: True
 	RenderSprites:
@@ -3039,6 +3085,7 @@ awtalon:
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@shape: ^3x2Shape
 	Inherits@EMP: ^TurretEMP
+    Inherits@lowpower: ^DisabledOverlay   
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -3052,6 +3099,8 @@ awtalon:
 		Footprint: xxx xxx xxx
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
+    Power:
+        Amount: -40
 	Health:
 		HP: 280000
 	Armor:
@@ -3080,13 +3129,11 @@ awtalon:
 		LocalOffset: 0,0,0
 		MuzzleSequence: muzzle2
 	AttackTurreted:
-		RequiresCondition: !build-incomplete
+		RequiresCondition: !build-incomplete && !lowpower
 	WithMuzzleOverlay:
 	-WithDeathAnimation:
 	DetectCloaked:
 		Range: 3c0
-	Power:
-		Amount: 0
 	BodyOrientation:
 		UseClassicFacingFudge: True
 	RenderSprites:
@@ -3105,7 +3152,7 @@ awweap.orange:
 			TopLeft: -1536, -1024
 			BottomRight: 1536, 512
 	Valued:
-		Cost: 2000
+		Cost: 3000
 	Tooltip:
 		Name: Weapons Factory
 	ProvidesPrerequisite:
@@ -3115,6 +3162,8 @@ awweap.orange:
 		Prerequisites: awcity
 		Queue: Building.OrangeStar, RABuilding.OrangeStar
 		Description: Produces vehicles, Infantry
+        BuildDuration: 250
+        BuildDurationModifier: 100
 	Building:
 		Footprint: xxx === ===
 		Dimensions: 3,3
@@ -4659,7 +4708,7 @@ awifv:
 		TargetStances: Ally
 		ForceTargetStances: None
 	Armament@sniper:
-		Weapon: RA2AWPG
+		Weapon: GENAWP
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlemg
 		RequiresCondition: ifv-sniper
@@ -5629,13 +5678,14 @@ awoozium:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@AW: ^AdvanceWarsVehicleAttack
 	Valued:
-		Cost: 300
+		Cost: 1500
 	Tooltip:
 		Name: Oozium 238
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
+        BuildDuration: 1000
 		Queue: Vehicle.BlackHole, RAVehicle.BlackHole, Vehicle.X_Vehicles
 		Prerequisites: awlab, ~boltguard
 		Description: Biological Weapon of the Black Hole.\n.Can be used for bulk spam \n  Strong vs Nearby land units\n  Weak vs Anti armor units
@@ -5688,7 +5738,7 @@ awe1:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@AW: ^AdvanceWarsInfantry
 	Valued:
-		Cost: 100
+		Cost: 120
 	Tooltip:
 		Name: Infantry
 	UpdatesPlayerStatistics:
@@ -5701,7 +5751,7 @@ awe1:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 5000
+		HP: 6000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
@@ -6486,7 +6536,7 @@ awbomber:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 200000
+		HP: 150000
 	RevealsShroud:
 		Range: 13c0
 		Type: GroundPosition
