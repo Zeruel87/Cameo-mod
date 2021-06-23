@@ -1,7 +1,7 @@
 #######################################
 # Rcorp Buildings
 #######################################
-RCORPFACT:
+315rcorpfact:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
@@ -81,10 +81,82 @@ RCORPFACT:
 		Prerequisite: mmallies
 	RenderSprites:
 		Image: rafact
+315weap:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@gensound: ^GeneralsDamageBuilding
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: War Factory
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: usasupply, ~usaselected
+		Queue: Building.USA, RABuilding.USA
+		Description: Produces vehicles
+	Building:
+		Footprint: xxxx x++x ====
+		Dimensions: 4,3
+	SelectionDecorations:
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+		Path: 1,4
+	Exit@1:
+		SpawnOffset: 128,256,0
+		ExitCell: 1,1
+		ExitDelay: 3
+	Exit@2:
+		ExitCell: 2,1
+		ExitDelay: 3
+	#Production@Upgrades:
+	#	Produces: VehicleUpgrades.USA
+	Production@NORMAL:
+		Produces: Vehicle.USA
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.USA
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Vehicle.USA
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 200
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLESCAVENGER:
+		ProductionType: Vehicle.USA
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLESCAVENGER:
+		ProductionType: RAVehicle.USA
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@vehicleproduction:
+		Prerequisite: vehicleproduction
+	Power:
+		Amount: -40
+	Voiced:
+		VoiceSet: USAWarFactoryVoice
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 15
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+
 #######################################
 # Rcorp Infantry
 #######################################
-rcorpe1:
+315rtroop:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -92,22 +164,22 @@ rcorpe1:
 	Valued:
 		Cost: 200
 	Tooltip:
-		Name: Heavy Trooper
+		Name: Heavy Soldier
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks
-		Queue: Infantry.Rcorp, RAInfantry.Rcorp
+		Queue: Infantry.GDI, RAInfantry.GDI
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
-		Speed: 56
+		Speed: 50
 	Health:
 		HP: 14000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
-		Weapon: M16
+		Weapon: USARangerMG
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: HighV
@@ -117,96 +189,47 @@ rcorpe1:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: USARangerVoice
 
-rcorpe3:
+315rtroop2:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 600
+		Cost: 450
 	Tooltip:
-		Name: Sting Trooper
+		Name: Rocket Soldier
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 20
+		BuildPaletteOrder: 30
 		Prerequisites: barracks
-		Queue: Infantry.Rcorp, RAInfantry.Rcorp
-		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
+		Queue: Infantry.GDI, RAInfantry.GDI
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
-		Speed: 42
+		Speed: 40
 	Health:
 		HP: 12000
 	AutoTarget:
-		ScanRadius: 6
+		ScanRadius: 4
 	Armament@PRIMARY:							##########
-		Weapon: Rockets
-		LocalOffset: 256,43,341
-		FireDelay: 5
+		Weapon: mtank_pri
 	Armament@GARRISONED:						##########
 		Name: garrisoned
-		Weapon: RocketsG
-	TakeCover:
-		ProneOffset: 180,0,-200
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: infantry							##########
-
-rcorpcom:
-	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Inherits@announce: ^AnnounceGlobal
-	Inherits@MC: ^MCImmune
-	Valued:
-		Cost: 1200
-	Tooltip:
-		Name: Commando A13
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: eye, ~techlevel.high
-		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry
-		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
-	Mobile:
-		Speed: 71
-		Voice: Move
-	Guard:
-		Voice: Move
-	Health:
-		HP: 15000
-	Passenger:
-		PipType: Red
-		Voice: Move
-	RevealsShroud:
-		Range: 6c0
-	AutoTarget:
-		ScanRadius: 8
-	Armament:
-		Weapon: Sniper
-	Armament@GARRISONED:
-		Name: garrisoned
-		Weapon: Sniper
-	Armament@c4:
-		Weapon: GenericC4
-		Cursor: c4
-	AttackFrontal:
-		Voice: Attack
-	AttackMove:
-		Voice: Attack
+		Weapon: mtank_pri
+		MuzzleSequence: garrison-muzzle
 	WithInfantryBody:
-		DefaultAttackSequence: shoot
-		IdleSequences: idle1,idle2,idle3
-	AnnounceOnKill:
-	Voiced:
-		VoiceSet: CommandoVoice
+		IdleSequences: idle1,idle2,idle3,idle4
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-rcorpsnp:
+	Voiced:
+		VoiceSet: MissileDefenderVoice
+	RenderSprites:
+		Scale: 0.90
+315amanda:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -214,60 +237,7 @@ rcorpsnp:
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@MC: ^MCImmune
 	Valued:
-		Cost: 1200
-	Tooltip:
-		Name: Sniper A14
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: eye, ~techlevel.high
-		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry
-		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
-	Mobile:
-		Speed: 71
-		Voice: Move
-	Guard:
-		Voice: Move
-	Health:
-		HP: 15000
-	Passenger:
-		PipType: Red
-		Voice: Move
-	RevealsShroud:
-		Range: 6c0
-	AutoTarget:
-		ScanRadius: 8
-	Armament:
-		Weapon: Sniper
-	Armament@GARRISONED:
-		Name: garrisoned
-		Weapon: Sniper
-	Armament@c4:
-		Weapon: GenericC4
-		Cursor: c4
-	AttackFrontal:
-		Voice: Attack
-	AttackMove:
-		Voice: Attack
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-		IdleSequences: idle1,idle2,idle3
-	AnnounceOnKill:
-	Voiced:
-		VoiceSet: CommandoVoice
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: infantry							##########
-rcorpage:
-	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Inherits@announce: ^AnnounceGlobal
-	Inherits@MC: ^MCImmune
-	Valued:
-		Cost: 1200
+		Cost: 2000
 	Tooltip:
 		Name: Agent A12
 	UpdatesPlayerStatistics:
@@ -276,9 +246,9 @@ rcorpage:
 		BuildPaletteOrder: 50
 		Prerequisites: eye, ~techlevel.high
 		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry
-		Description: Elite sniper infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+		Description: Sabotage infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
 	Mobile:
-		Speed: 71
+		Speed: 100
 		Voice: Move
 	Guard:
 		Voice: Move
@@ -291,13 +261,10 @@ rcorpage:
 		Range: 6c0
 	AutoTarget:
 		ScanRadius: 8
-	Armament:
-		Weapon: Sniper
-	Armament@GARRISONED:
-		Name: garrisoned
+	Armament@2:
 		Weapon: Sniper
 	Armament@c4:
-		Weapon: GenericC4
+		Weapon: USABurtonAttach
 		Cursor: c4
 	AttackFrontal:
 		Voice: Attack
@@ -308,38 +275,39 @@ rcorpage:
 		IdleSequences: idle1,idle2,idle3
 	AnnounceOnKill:
 	Voiced:
-		VoiceSet: CommandoVoice
+		VoiceSet: LMMVoice
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-
+	Cloak:
+		InitialDelay: 250
+		CloakDelay: 80
+		UncloakOn: Unload
+		CloakTypes: Cloak, Thief
+		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
 #######################################
 # Rcorp Vehicle
 #######################################
-rcorpvulk:
+315vulk:
 	Inherits: ^Vehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@GeneralsVehicle: ^GeneralsVehicle
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EMP: ^TurretEMP
 	Inherits@vo: ^AttackTurretedVoice
-	Inherits@junk: ^JunkRepair
-	Inherits@AP: ^APBulletUpgrade
-	Inherits@demo: ^DemolitionUpgrade
 	Buildable:
-		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Queue: Vehicle.GDI, RAVehicle.GDI, Vehicle.X_Vehicles
 		BuildPaletteOrder: 30
-		Prerequisites: glweap, ~techlevel.low
 		Description: Anti-air and anti-infantry vehicle.\n  Strong vs Aircraft, Infantry\n  Weak vs Vehicles
 	Valued:
-		Cost: 700
+		Cost: 800
 	Tooltip:
-		Name: Quad Cannon
+		Name: Quad Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 30000
+		HP: 40000
 	Armor:
 		Type: Heavy
 	Mobile:
@@ -364,38 +332,171 @@ rcorpvulk:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
 		Sequence: turret
-		RequiresCondition: scrap_create_bonus == 0
-	WithSpriteTurret@Scrap1:
-		Sequence: turret2
-		RequiresCondition: scrap_create_bonus == 1
-	WithSpriteTurret@Scrap2:
-		Sequence: turret3
-		RequiresCondition: scrap_create_bonus >= 2
 	RenderSprites:
 	Voiced:
 		VoiceSet: QuadCannonVoice
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
-	ReloadDelayMultiplier@Salvaged1:
-		RequiresCondition: scrap_create_bonus == 1
-		Modifier: 75
-	ReloadDelayMultiplier@Salvaged2:
-		RequiresCondition: scrap_create_bonus == 2
-		Modifier: 50
-	GrantConditionOnPrerequisite@selectglatoxin:
-		Condition: selectglatoxin
-		Prerequisites: selectglatoxin
-	ProductionCostMultiplier@selectglatoxin:
-		Multiplier: 110
-		Prerequisites: selectglatoxin
-		Queue: Vehicle.GLA, RAVehicle.GLA
-	ProductionCostMultiplier@selectglademo:
-		Multiplier: 110
-		Prerequisites: selectglademo
-		Queue: Vehicle.GLA, RAVehicle.GLA
-	ExternalCondition@SCRAP_CREATE_BONUS:
-		Condition: scrap_create_bonus
-		TotalCap: 2
+	RenderSprites:
+		Scale: 0.65
+
+315mtnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Medium Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle.GDI, RAVehicle.GDI, Vehicle.X_Vehicles
+		Description: General-Purpose GDI Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 90
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: 0,0,225
+	Armament:
+		Weapon: 120mm
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplodeBig
+		EmptyWeapon: UnitExplodeBig
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.65
+	Voiced:
+		VoiceSet: RA2AlliesVehicleVoice
+315htrak:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@cargo: ^CargoVehicle
+	Buildable:
+		Queue: Vehicle.GDI, RAVehicle.GDI, Vehicle.X_Vehicles
+		BuildPaletteOrder: 30
+		Prerequisites: ~techlevel.low
+		Description: Fast scout & anti-infantry vehicle.\nCan carry one infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Potato Track
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 20000
+	Armor:
+		Type: Light
+	Mobile:
+		TurnSpeed: 16
+		Speed: 150
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: 0,0,128
+	Armament:
+		Weapon: M60mg
+		MuzzleSequence: muzzle
+		LocalOffset: 128,0,43
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 4
+		PipCount: 4
+		LoadingCondition: notmobile
+	Voiced:
+		VoiceSet: USAHumveeVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
 	GainsExperience:
-		LevelUpNotification: LevelUpRA2
+		LevelUpNotification: LevelUpRA1
+	RenderSprites:
+		Scale: 0.65
+
+315turtle:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@cargo: ^CargoVehicle
+	Buildable:
+		Queue: Vehicle.GDI, RAVehicle.GDI, Vehicle.X_Vehicles
+		BuildPaletteOrder: 30
+		Prerequisites: anyhq
+		Description: Fast scout & anti-infantry vehicle.\nCan carry one infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: The Turtle
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 9999999
+	Armor:
+		Type: Heavy
+	Mobile:
+		TurnSpeed: 2
+		Speed: 20
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: 0,0,128
+	Armament:
+		Weapon: M60mg
+		MuzzleSequence: muzzle
+		LocalOffset: 128,0,43
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 1
+		PipCount: 1
+		LoadingCondition: notmobile
+	Voiced:
+		VoiceSet: USAHumveeVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+	RenderSprites:
+		Scale: 0.65

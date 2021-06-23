@@ -59,6 +59,36 @@
         RequiresCondition: sowupgrade && sowupgrade_1 && sowupgrade_2 && sowupgrade_3  
         RequiresSelection: True   
 		ReferencePoint: Center, Center
+    DamageMultiplier@upgrade:
+        Modifier: 88
+        RequiresCondition: sowupgrade    
+    DamageMultiplier@upgrade1:
+        Modifier: 88
+        RequiresCondition: sowupgrade_1    
+    DamageMultiplier@upgrade2:
+        Modifier: 88
+        RequiresCondition: sowupgrade_2    
+    DamageMultiplier@upgrade3:
+        Modifier: 88
+        RequiresCondition: sowupgrade_3      
+    Armor:
+		Type: Wood 
+        RequiresCondition: !sowupgrade_3  
+    Armor@upgrade3:
+		Type: Concrete 
+        RequiresCondition: sowupgrade_3          
+        
+^sow_unit_lowpower:
+    Inherits@lowpower: ^DisabledOverlay  
+    DamageMultiplier@lowpower:
+        Modifier: 200
+        RequiresCondition: lowpower
+    SpeedMultiplier@lowpower:
+        Modifier: 75
+        RequiresCondition: lowpower  
+    ReloadDelayMultiplier@lowpower:
+        Modifier: 150
+        RequiresCondition: lowpower  
         
 ^sowgeneric:
     Inherits@disabledoverlay: ^DisabledOverlay
@@ -67,16 +97,16 @@
 		Condition: sowboteasy
 		Bots: easy
     FirepowerMultiplier@easyai:
-        Modifier: 80
+        Modifier: 75
         RequiresCondition: sowboteasy
     DamageMultiplier@easyai:   
-        Modifier: 120
+        Modifier: 125
         RequiresCondition: sowboteasy
     ReloadDelayMultiplier@easyai: 
-        Modifier: 120
+        Modifier: 125
         RequiresCondition: sowboteasy
     SpeedMultiplier@easyai:
-        Modifier: 90
+        Modifier: 85
         RequiresCondition: sowboteasy
     GrantConditionOnBotOwner@mediumai:
 		Condition: sowbotmedium
@@ -97,16 +127,16 @@
 		Condition: sowbothard
 		Bots: hard
     FirepowerMultiplier@hardai:
-        Modifier: 125
+        Modifier: 110
         RequiresCondition: sowbothard
     DamageMultiplier@hardai:   
-        Modifier: 90
+        Modifier: 95
         RequiresCondition: sowbothard
     ReloadDelayMultiplier@hardai:  
-        Modifier: 90
+        Modifier: 95
         RequiresCondition: sowbothard
     SpeedMultiplier@hardai:
-        Modifier: 110
+        Modifier: 105
         RequiresCondition: sowbothard
  	GrantConditionOnBotOwner@brutalai:
 		Condition: sowbotbrutal
@@ -115,13 +145,13 @@
         Modifier: 120
         RequiresCondition: sowbotbrutal       
     FirepowerMultiplier@brutalai:
-        Modifier: 150
+        Modifier: 120
         RequiresCondition: sowbotbrutal
     DamageMultiplier@brutalai:   
-        Modifier: 60
+        Modifier: 90
         RequiresCondition: sowbotbrutal
     ReloadDelayMultiplier@brutalai: 
-        Modifier: 80
+        Modifier: 90
         RequiresCondition: sowbotbrutal   
     GrantCondition@botupg1:
         Condition: sowupgrade
@@ -173,7 +203,9 @@
     ProductionTimeMultiplier@powersow:
         Multiplier: 0
         Prerequisites: stateofwar     
-
+    ProductionCostMultiplier@powersow:
+        Multiplier: 150
+        Prerequisites: stateofwar     
 ^satelliteprotection_upgrade:   
     GrantConditionOnPrerequisite@satelliteprotection: 
         Condition: SatelliteUpgrade
@@ -213,15 +245,16 @@
         
 sowheadquarters:
 	Inherits: ^BaseBuilding
-    Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
     Inherits@resize: ^sowresize
     Inherits@shape: ^4x4Shape
     Inherits@satprot: ^satelliteprotection_upgrade
     Inherits@sowaiunit: ^sowgeneric  
-    Inherits@BotMicro: ^BotMicromanageable   
+    Inherits@BotMicro: ^BotMicromanageable  
+    Inherits@lowpower: ^DisabledOverlay  
+    Inherits@CPQ: ^CPQConditionWithPrimary    
 	Valued:
-		Cost: 3000
+		Cost: 2500
 	Tooltip:
 		Name: Headquarters
     Armor:
@@ -236,18 +269,18 @@ sowheadquarters:
         Modifier: 90    
     RallyPoint:
 	RevealsShroud:
-		Range: 10c0
+		Range: 12c0
     BaseProvider@human:
-		Range: 6c0
-        RequiresCondition: !botmicro
-    BaseProvider@ai:
-		Range: 14c0
-        RequiresCondition: botmicro        
-    ProductionFromMapEdge: 
+		Range: 12c0    
+    Production@NORMAL: 
         Produces: Building.sow, Defence.sow
+        RequiresCondition: !classicproductionqueues
+ 	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.sow, RADefence.sow
+		RequiresCondition: classicproductionqueues   
 	Exit@1:
-		SpawnOffset: -426,-485,0
-		ExitCell: 0,1
+		SpawnOffset: 200,-485,0
+		ExitCell: 4,2
 	#Exit@2:
 	#	SpawnOffset: 298,298,0
 	#	ExitCell: 200,200
@@ -258,17 +291,27 @@ sowheadquarters:
 		DisplayOrder: 0
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
+        LowPowerModifier: 300
     ProductionQueue@Defence.sow:
         Type: Defence.sow
 		DisplayOrder: 1
         Group: Defence
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
+        LowPowerModifier: 300
   	BaseBuilding:      
     ProductionBar@Building.sow:
 		ProductionType: Building.sow   
+        RequiresCondition: !classicproductionqueues 
     ProductionBar@Defence.sow:
-		ProductionType: Defence.sow    
+		ProductionType: Defence.sow  
+        RequiresCondition: !classicproductionqueues     
+    ProductionBar@RABuilding.sow:
+		ProductionType: RABuilding.sow 
+        RequiresCondition: classicproductionqueues         
+    ProductionBar@RADefence.sow:
+		ProductionType: RADefence.sow      
+        RequiresCondition: classicproductionqueues     
     StoresResources:
 		PipCount: 5
 		Capacity: 500 
@@ -291,7 +334,14 @@ sowheadquarters:
     GrantConditionOnPrerequisite@satelliteprotection: 
         Prerequisites: sowheadquarters
         Condition: SatelliteUpgrade_mk2
-
+    CashTrickler@player:
+		Interval: 100
+		Amount: 25
+		ShowTicks: True
+		UseResourceStorage: true   
+	CashTricklerBar:
+        DisplayStance: Ally, Neutral, Enemy
+        
 sowlightfactory:
 	Inherits: ^BaseBuilding
     Inherits@resize: ^sowresize
@@ -301,41 +351,37 @@ sowlightfactory:
     Inherits@BotMicro: ^BotMicromanageable 
     Inherits@upgradeable: ^sow_upgradeable
     Inherits@fasterprodb: ^sow_power_boost
+    Inherits@lowpower: ^DisabledOverlay    
+	Inherits@CPQWP: ^CPQConditionWithPrimary    
 	Valued:
 		Cost: 750
 	Tooltip:
 		Name: Light Factory
 	Buildable:
 		BuildPaletteOrder: 5
-		BuildDuration: 750
+		BuildDuration: 500
         BuildDurationModifier: 50  
-		Queue: Building.sow
+		Queue: Building.sow, RABuilding.sow
 		Description: Produces Light Tanks
-        Prerequisites: sowgoldmine
     Building:
 		Footprint: =xx= =xx= 
 		Dimensions: 4,2
-		LocalCenterOffset: 0,-512,0
-    BaseProvider:
-		Range: 6c0    
-        RequiresCondition: !botmicro   
+		LocalCenterOffset: 0,-512,0 
     Armor:
 		Type: Wood
 	Health:
-		HP: 120000
-    GivesBuildableArea:
-		AreaTypes: building     
+		HP: 125000  
 	RevealsShroud:
     	Range: 8c0
 	RallyPoint:
     -MustBeDestroyed:    
 	Exit@1:
 		SpawnOffset: -426,85,0
-		ExitCell: 0,2
+		ExitCell: 4,2
         Facing: 130
 	Exit@2:
 		SpawnOffset: 298,298,0
-		ExitCell: 1,2
+		ExitCell: 1,1
         Facing: 130
 	Selectable:
 		Bounds: 60,55,0,-5
@@ -349,19 +395,27 @@ sowlightfactory:
         sequence: idle-overlay
 	-WithBuildingRepairDecoration:
     ProvidesPrerequisite@buildingname:
-  	Production:
+  	Production@NORMAL:
 		Produces: lt.sow
-	ProductionQueue:
+        RequiresCondition: !classicproductionqueues 
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAlt.sow
+        RequiresCondition: classicproductionqueues     
+	ParallelProductionQueue:
 		Type: lt.sow
-        Group: Vehicle
+        Group: Infantry
     	ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled      
-	ProductionBar:
-		ProductionType: lt.sow       
+		CancelledAudio: Cancelled    
+	ProductionBar@NORMAL:
+		ProductionType: lt.sow   
+        RequiresCondition: !classicproductionqueues 
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: lt.sow           
+        RequiresCondition: classicproductionqueues 
     GrantConditionOnPrerequisite@2:
         Prerequisites: factory_sowupgrade
         Condition: lt_upgraded
@@ -401,19 +455,19 @@ sowlightfactory:
 
 factory_sowupgrade:
  	Tooltip:
-		Name: Factory Upgrade 2
+		Name: Any Tier 2 Factory
 
 factory_sowupgrade_1:
  	Tooltip:
-		Name: Factory Upgrade 3
+		Name: Any Tier 3 Factory
         
 factory_sowupgrade_2:
  	Tooltip:
-		Name: Factory Upgrade 4
+		Name: Any Tier 4 Factory
         
 factory_sowupgrade_3:
  	Tooltip:
-		Name: Factory Upgrade 5
+		Name: Any Tier 5 Factory
         
         
 sowmediumfactory:
@@ -425,35 +479,34 @@ sowmediumfactory:
     Inherits@BotMicro: ^BotMicromanageable  
     Inherits@upgradeable: ^sow_upgradeable
     Inherits@fasterprodb: ^sow_power_boost 
+    Inherits@lowpower: ^DisabledOverlay  
+ 	Inherits@CPQWP: ^CPQConditionWithPrimary   
 	Valued:
 		Cost: 1250
 	Tooltip:
-		Name: Medium Factory
-    BaseProvider:
-		Range: 6c0   
-        RequiresCondition: !botmicro        
+		Name: Medium Factory 
     Armor:
 		Type: Wood  
 	Buildable:
 		BuildPaletteOrder: 6
-		BuildDuration: 1500
+		BuildDuration: 1000
         BuildDurationModifier: 50
-		Queue: Building.sow
+		Queue: Building.sow, RABuilding.sow
 		Description: Produces Light Tanks\nCan produce Medium Tanks after research
-  		Prerequisites: sowgoldmine
+        Prerequisites: ~techlevel.low
     -MustBeDestroyed:  
     Building:
 		Footprint: xxx= xxx= xxx=
 		Dimensions: 4,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 140000		#60000
+		HP: 150000		#60000
 	RevealsShroud:
 		Range: 10c0
 	RallyPoint:
 	Exit@1:
 		SpawnOffset: -426,85,0
-		ExitCell: 0,2
+		ExitCell: 4,2
 	Exit@2:
 		SpawnOffset: 298,298,0
 		ExitCell: 1,2
@@ -467,8 +520,6 @@ sowmediumfactory:
     ProvidesPrerequisite@buildingname:     
 	Selectable:
 		Bounds: 65,65,0,-5
-    GivesBuildableArea:
-		AreaTypes: building       
 	Power:
 		Amount: -75
 	WithMakeAnimation:
@@ -478,10 +529,15 @@ sowmediumfactory:
     WithIdleOverlay@fans:
         RequiresCondition: !disable-overlay && !build-incomplete
         sequence: idle-overlay    
-    Production:
+    Production@NORMAL:
 		Produces: mt.sow
         PauseOnCondition: lowpower
-	ProductionQueue:
+        RequiresCondition: !classicproductionqueues
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAmt.sow
+        PauseOnCondition: lowpower
+        RequiresCondition: classicproductionqueues    
+	ParallelProductionQueue:
 		Type: mt.sow
         Group: Vehicle
     	ReadyAudio: UnitReady
@@ -489,9 +545,14 @@ sowmediumfactory:
 		LimitedAudio: BuildingInProgress
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled     
-	ProductionBar:
+		CancelledAudio: Cancelled   
+        LowPowerModifier: 300        
+	ProductionBar@NORMAL:
 		ProductionType: mt.sow      
+        RequiresCondition: !classicproductionqueues
+    ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAmt.sow      
+        RequiresCondition: classicproductionqueues   
     GrantConditionOnPrerequisite@2:
         Prerequisites: factory_sowupgrade
         Condition: mt_upgraded
@@ -538,38 +599,37 @@ sowheavyfactory:
     Inherits@BotMicro: ^BotMicromanageable
     Inherits@upgradeable: ^sow_upgradeable
     Inherits@fasterprodb: ^sow_power_boost
+    Inherits@lowpower: ^DisabledOverlay
+    Inherits@CPQWP: ^CPQConditionWithPrimary
 	Valued:
 		Cost: 2000
 	Tooltip:
 		Name: Heavy Factory
 	Buildable:
 		BuildPaletteOrder: 7
-		BuildDuration: 3000
+		BuildDuration: 1500
         BuildDurationModifier: 50 
-		Queue: Building.sow
+		Queue: Building.sow, RABuilding.sow
 		Description: Produces Light Tanks\nCan produce Medium and Heavy Tanks after research
-  		Prerequisites: sowgoldmine, heavyunits
+  		Prerequisites: heavyunits
+        LowPowerModifier: 300       
+        Prerequisites ~techlevel.low
     Armor:
-		Type: Wood
-    BaseProvider:
-		Range: 6c0       
-        RequiresCondition: !botmicro        
+		Type: Wood      
 	Building:
 		Footprint: =xxx= =xxx= =xxx=
 		Dimensions: 5,3
 		LocalCenterOffset: 0,-512,0
     ProvidesPrerequisite@buildingname:     
 	Health:
-		HP: 160000
-    GivesBuildableArea:
-		AreaTypes: building
+		HP: 150000
 	RevealsShroud:
 		Range: 12c0
 	RallyPoint:
     -MustBeDestroyed:  
 	Exit@1:
 		SpawnOffset: -800,-805,0
-		ExitCell: 0,2
+		ExitCell: 5,2
 	Exit@2:
         SpawnOffset: 1298,1208,0
         ExitCell: 1,2
@@ -592,10 +652,15 @@ sowheavyfactory:
         RequiresCondition: !disable-overlay && !build-incomplete 
         sequence: idle-overlay
 	-WithBuildingRepairDecoration:
-    Production:
+    Production@NORMAL:
 		Produces: ht.sow
         PauseOnCondition: lowpower
-	ProductionQueue:
+        RequiresCondition: !classicproductionqueues
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAht.sow
+        PauseOnCondition: lowpower
+        RequiresCondition: classicproductionqueues      
+	ParallelProductionQueue:
 		Type: ht.sow
         Group: Vehicle
     	ReadyAudio: UnitReady
@@ -603,9 +668,13 @@ sowheavyfactory:
 		LimitedAudio: BuildingInProgress
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled     
-	ProductionBar:
-		ProductionType: ht.sow      
+		CancelledAudio: Cancelled       
+	ProductionBar@NORMAL:
+		ProductionType: ht.sow     
+        RequiresCondition: !classicproductionqueues        
+ 	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAht.sow     
+        RequiresCondition: classicproductionqueues               
     GrantConditionOnPrerequisite@2:
         Prerequisites: factory_sowupgrade
         Condition: ht_upgraded
@@ -641,7 +710,8 @@ sowheavyfactory:
         RequiresCondition: sowupgrade && sowupgrade_1 && !sowupgrade_2 && !sowupgrade_3 && !factory_sowupgrade_2
     Targetable@sowupgrade3:
         TargetTypes: sowupgrade_3
-        RequiresCondition: sowupgrade && sowupgrade_1 && sowupgrade_2 && !sowupgrade_3 && !factory_sowupgrade_3         
+        RequiresCondition: sowupgrade && sowupgrade_1 && sowupgrade_2 && !sowupgrade_3 && !factory_sowupgrade_3       
+        
 sowabcfactory:
 	Inherits: ^BaseBuilding
     Inherits@resize: ^sowresize    
@@ -650,6 +720,9 @@ sowabcfactory:
     Inherits@sowaiunit: ^sowgeneric  
     Inherits@BotMicro: ^BotMicromanageable
     Inherits@fasterprodb: ^sow_power_boost
+    Inherits@lowpower: ^DisabledOverlay  
+    Inherits@CPQWP: ^CPQConditionWithPrimary
+    Inherits@SW: ^Superweapon
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -658,9 +731,9 @@ sowabcfactory:
 		Type: Wood   
 	Buildable:
 		BuildPaletteOrder: 9
-		BuildDuration: 4500
+		BuildDuration: 3000
         BuildDurationModifier: 50 
-		Queue: Building.sow
+		Queue: Building.sow, RABuilding.sow
 		Description: Produces Atomic Bomb Carriers
 		Prerequisites: stateofwar
 	Building:
@@ -669,15 +742,9 @@ sowabcfactory:
 		LocalCenterOffset: 0,-512,0
 	Health:
 		HP: 150000		#60000      
-    ProvidesPrerequisite@buildingname:       
-    BaseProvider:
-		Range: 6c0            
-        RequiresCondition: !botmicro      
+    ProvidesPrerequisite@buildingname:         
 	RevealsShroud:
 		Range: 12c0
-    RevealsShroud@showenemy:
-        Range: 4c0
-        ValidStances: Neutral, Enemy
     -MustBeDestroyed: 
 	RallyPoint:
 	Exit@1:
@@ -702,21 +769,30 @@ sowabcfactory:
     WithIdleOverlay@abc:
         RequiresCondition: !build-incomplete 
         Sequence: idle-overlay-2  
-    Production:
+    Production@NORMAL:
 		Produces: abc.sow
         PauseOnCondition: lowpower
+        RequiresCondition: !classicproductionqueues
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAabc.sow
+        PauseOnCondition: lowpower
+        RequiresCondition: classicproductionqueues      
 	ProductionQueue:
 		Type: abc.sow
-        Group: Vehicle
+        Group: Aircraft
     	ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled     
-	ProductionBar:
+		CancelledAudio: Cancelled 
+        LowPowerModifier: 300        
+	ProductionBar@NORMAL:
 		ProductionType: abc.sow      
-        
+        RequiresCondition: !classicproductionqueues
+  	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAabc.sow      
+        RequiresCondition: classicproductionqueues      
 sowradar:
 	Inherits: ^BaseBuilding
     Inherits@resize: ^sowresize
@@ -725,6 +801,7 @@ sowradar:
     Inherits@sowaiunit: ^sowgeneric  
     Inherits@BotMicro: ^BotMicromanageable   
     Inherits@fasterprodb: ^sow_power_boost    
+    Inherits@lowpower: ^DisabledOverlay   
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -733,16 +810,13 @@ sowradar:
 		BuildPaletteOrder: 7
 		BuildDuration: 3000
         BuildDurationModifier: 50   
-		Queue: Building.sow
-		Description: Provides radar and air supports
-		Prerequisites: sowgoldmine
+		Queue: Building.sow, RABuilding.sow
+		Description: Provides radar and air supports\nProvides air support only once
+        Prerequisites: ~techlevel.low
 	Building:
 		Footprint: == xx x=
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
-    BaseProvider:
-		Range: 6c0    
-        RequiresCondition: !botmicro     
 	Health:
 		HP: 150000		#60000
 	RevealsShroud:
@@ -793,7 +867,7 @@ sowradar:
 		UnitType: sowfighter
 		QuantizedFacings: 8
 		DisplayBeacon: true
-        AllowMultiple: True
+        AllowMultiple: false
 		BeaconPoster: airstrike
 		SquadSize: 1
 		SquadOffset: 1792,1792,0
@@ -805,10 +879,11 @@ sowradar:
 		SupportPowerPaletteOrder: 40
 		StartFullyCharged: true   
         PauseOnCondition: lowpower
+        Prerequisites: ~techlevel.high
     AirstrikePower@Bomber:
 		OrderName: sowbomber
 		Icon: sowbomber_icon
-		ChargeInterval: 3750
+		ChargeInterval: 4500
 		Description: Hercules
 		LongDesc: Slow carpet bomber
        	EndChargeSpeechNotification: sowbomberready
@@ -830,7 +905,7 @@ sowradar:
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
 		StartFullyCharged: false  
-        Prerequisites: advancedairstrikes, sowresearch
+        Prerequisites: advancedairstrikes, sowresearch, ~techlevel.high
         PauseOnCondition: lowpower
     ClassicAirstrikePower@tripler:
 		Squad:
@@ -838,7 +913,7 @@ sowradar:
 				SpawnOffset: 0,0,0
 				TargetOffset: 0,0,0
 		Icon: sowtripler_icon
-		ChargeInterval: 3000
+		ChargeInterval: 3750
 		Description: Tripler
 		LongDesc: Drops 9 massive fire circles on its target\nSlow and Extremely vulnerable
 		EndChargeSpeechNotification: sowtriplerready
@@ -862,7 +937,7 @@ sowradar:
 		CircleDelay: 20
 		OrderName: sowtripler
 		SupportPowerPaletteOrder: 20
-        Prerequisites: advancedairstrikes, sowresearch 
+        Prerequisites: advancedairstrikes, sowresearch, ~techlevel.high 
         PauseOnCondition: lowpower
         
 sowgoldmine:
@@ -874,15 +949,16 @@ sowgoldmine:
     Inherits@BotMicro: ^BotMicromanageable
     Inherits@upgradeable: ^sow_upgradeable
     Inherits@sowaiunit: ^sowgeneric   
+    Inherits@lowpower: ^DisabledOverlay      
 	Valued:
 		Cost: 1250
 	Tooltip:
 		Name: Gold Mine
 	Buildable:
 		BuildPaletteOrder: 2
-		BuildDuration: 1500
+		BuildDuration: 1000
         BuildDurationModifier: 50
-		Queue: Building.sow
+		Queue: Building.sow, RABuilding.sow
 		Description: Provides Passive Income\nStores 1000 resources
 	Building:
 		Footprint: ==== xxxx =xx=
@@ -891,17 +967,14 @@ sowgoldmine:
     ProvidesPrerequisite@sowgoldmine:
         Prerequisite: sowgoldmine    
     Armor:
-		Type: Wood    
+		Type: Wood 
 	Health:
-		HP: 140000		#60000
+		HP: 150000		#60000
 	RevealsShroud:
 		Range: 10c0
     -MustBeDestroyed:        
 	Selectable:
-		Bounds: 60,60,0,-5
-    BaseProvider:
-		Range: 6c0    
-        RequiresCondition: !botmicro           
+		Bounds: 60,60,0,-5         
     GrantConditionOnDamageState:
         Condition: disable-overlay
     WithIdleOverlay@mlynek:
@@ -909,7 +982,7 @@ sowgoldmine:
         sequence: idle-overlay
     CashTrickler@player:
 		Interval: 80
-		Amount: 30
+		Amount: 50
 		ShowTicks: True
 		UseResourceStorage: true   
 	CashTricklerBar:
@@ -934,6 +1007,9 @@ sowgoldmine:
    	GrantConditionOnBotOwner@brutalai:
 		Condition: sowbotbrutal
 		Bots: brutal      
+    CashTricklerMultiplier@lowpower:
+        Modifier: 30
+        RequiresCondition: lowpower      
     CashTricklerMultiplier@easyai:
         Modifier: 110
         RequiresCondition: sowboteasy
@@ -947,16 +1023,16 @@ sowgoldmine:
         Modifier: 200
         RequiresCondition: sowbotbrutal  
     CashTricklerMultiplier@upgrade:
-        Modifier: 130
+        Modifier: 119
         RequiresCondition: sowupgrade
     CashTricklerMultiplier@upgrade1:
-        Modifier: 130
+        Modifier: 119
         RequiresCondition: sowupgrade_1
     CashTricklerMultiplier@upgrade2:
-        Modifier: 130
+        Modifier: 119
         RequiresCondition: sowupgrade_2
     CashTricklerMultiplier@upgrade3:
-        Modifier: 130
+        Modifier: 119
         RequiresCondition: sowupgrade_3  
     GrantConditionOnPrerequisite@goldupgrade:
         Prerequisites: goldmineupgrade
@@ -996,26 +1072,23 @@ sowpower:
     Inherits@fasterprodb: ^sow_power_boost
     Inherits@sowaiunit: ^sowgeneric  
     Inherits@BotMicro: ^BotMicromanageable  
+    Inherits@lowpower: ^DisabledOverlay       
 	Valued:
 		Cost: 2500
 	Tooltip:
 		Name: Power Plant
 	Buildable:
 		BuildPaletteOrder: 8
-		BuildDuration: 1500
+		BuildDuration: 1250
         BuildDurationModifier: 50
 		BuildLimit: 1
-		Queue: Building.sow
-		Description: Accelerates build times\Increases Research Points by 50% for each Research Center\nCan be only built once
-		Prerequisites: sowgoldmine
+		Queue: Building.sow, RABuilding.sow
+		Description: Accelerates build times\Doubles all Research Points for each Research Center\nCan be only built once
 	Building:
 		Footprint: xx= xx= xx=
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
-    -MustBeDestroyed:       
-    BaseProvider:
-		Range: 6c0  
-        RequiresCondition: !botmicro      
+    -MustBeDestroyed:          
     Armor:
 		Type: Wood 
 	Health:
@@ -1056,7 +1129,7 @@ sowpower:
         RequiresCondition: !disable-overlay && !build-incomplete   
         sequence: idle-overlay
     DamageMultiplier@overcharge:
-        Modifier: 150
+        Modifier: 110
         RequiresCondition: sowovercharge
     AmbientSound:
         SoundFiles: sowelectricity.aud
@@ -1069,11 +1142,7 @@ sowpower:
 		Weapon: sow_abc_nuke_pp
 		EmptyWeapon: sow_abc_nuke_pp
 		DamageSource: Self 
-        RequiresCondition: sowovercharge       
-    RevealsShroud@showenemy:
-        Range: 4c0
-        ValidStances: Neutral, Enemy     
-        RequiresCondition: sowovercharge       
+        RequiresCondition: sowovercharge          
         
 sowresearch:
 	Inherits: ^BaseBuilding
@@ -1083,18 +1152,19 @@ sowresearch:
     Inherits@fasterprodb: ^sow_power_boost
     Inherits@sowaiunit: ^sowgeneric     
     Inherits@BotMicro: ^BotMicromanageable   
-    Inherits@upgradeable: ^sow_upgradeable    
+    Inherits@upgradeable: ^sow_upgradeable   
+    Inherits@lowpower: ^DisabledOverlay         
 	Valued:
 		Cost: 1500
 	Tooltip:
 		Name: Research Center
 	Buildable:
 		BuildPaletteOrder: 4
-		BuildDuration: 1500
+		BuildDuration: 1000
         BuildDurationModifier: 50
-		Queue: Building.sow
+		Queue: Building.sow, RABuilding.sow
 		Description: Provides Research Points (Power) that is used for Advanced Buildings and Upgrades\nUnlocks upgrades
-		Prerequisites: sowgoldmine
+        Prerequisites: ~techlevel.low
 	Building:
 		Footprint: =xx= =xx=
 		Dimensions: 4,2
@@ -1104,17 +1174,15 @@ sowresearch:
     Armor:
 		Type: Wood
     -MustBeDestroyed:         
-    BaseProvider:
-		Range: 6c0    
-        RequiresCondition: !botmicro       
 	RevealsShroud:
 		Range: 10c0
 	ProvidesPrerequisite@sowresearch:
         Prerequisite: sowresearch
 	Selectable:
 		Bounds: 60,60,0,-5
+    ScalePowerWithHealth:
 	Power:
-		Amount: 100
+		Amount: 50
     GrantConditionOnDamageState:
         Condition: disable-overlay
     WithIdleOverlay@koule:
@@ -1122,37 +1190,29 @@ sowresearch:
         sequence: idle-overlay
     Production@research:
 		Produces: research.sow 
-    ProductionQueue@research:
-		Type: research.sow
-		DisplayOrder: 0
-		Group: Upgrade  
-        ItemLimit: 1
+        PauseOnCondition: lowpower
     ProductionBar@research:
 		ProductionType: research.sow         
     Production@upgrade:
 		Produces: upgrade.sow 
-    ProductionQueue@upgrade:
-		Type: upgrade.sow
-		DisplayOrder: 0
-		Group: Addon  
-        ItemLimit: 1
+        PauseOnCondition: lowpower
     ProductionBar@upgrade:
 		ProductionType: upgrade.sow              
 	WithMakeAnimation:
 		Condition: build-incomplete
 	-WithBuildingRepairDecoration:
     PowerMultiplier@upgrade:
-        Modifier: 120
+        Modifier: 135
         RequiresCondition: sowupgrade
     PowerMultiplier@upgrade1:
-        Modifier: 120
+        Modifier: 135
         RequiresCondition: sowupgrade_1
     PowerMultiplier@upgrade2:
-        Modifier: 120
+        Modifier: 135
         RequiresCondition: sowupgrade_2
     PowerMultiplier@upgrade3:
-        Modifier: 120
-        RequiresCondition: sowupgrade_3       
+        Modifier: 135
+        RequiresCondition: sowupgrade_3               
     PowerMultiplier@powerai:
         Modifier: 1000
         RequiresCondition: botmicro    
@@ -1175,7 +1235,7 @@ sowresearch:
         Modifier: 120
         RequiresCondition: researchupgrade        
     PowerMultiplier@researchdouble:
-        Modifier: 150
+        Modifier: 200
         RequiresCondition: researchdouble      
     PowerMultiplier@overcharge:
         Modifier: 200
@@ -1199,26 +1259,25 @@ sowmechfactory:
     Inherits@fasterprodb: ^sow_power_boost
     Inherits@sowaiunit: ^sowgeneric   
     Inherits@BotMicro: ^BotMicromanageable   
+    Inherits@lowpower: ^DisabledOverlay   
+    Inherits@CPQWP: ^CPQConditionWithPrimary
 	Valued:
 		Cost: 3000
 	Tooltip:
 		Name: Walker Factory
 	Buildable:
 		BuildPaletteOrder: 8
-		BuildDuration: 4500
+		BuildDuration: 3000
         BuildDurationModifier: 50
-		Queue: Building.sow
+		Queue: Building.sow, RABuilding.sow
 		Description: Produces Powerful Walkers
-		Prerequisites: stateofwar
+		Prerequisites: stateofwar, ~techlevel.high
 	Building:
 		Footprint: =xx= =xx= =xx= 
 		Dimensions: 4,3
-		LocalCenterOffset: 0,-512,0
-    BaseProvider:
-		Range: 6c0     
-        RequiresCondition: !botmicro        
+		LocalCenterOffset: 0,-512,0     
 	Health:
-		HP: 120000		#60000
+		HP: 150000		#60000
 	RevealsShroud:
 		Range: 12c0
 	RallyPoint:
@@ -1233,15 +1292,25 @@ sowmechfactory:
 	Exit@2:
 		SpawnOffset: 298,298,0
 		ExitCell: 1,2
-    Production@wp:
+    Production@NORMAL:
 		Produces: walker.sow 
         PauseOnCondition: lowpower
+        RequiresCondition: !classicproductionqueues
+    Production@CLASSICPRODUCTIONQUEUES:
+      	Produces: RAwalker.sow 
+        PauseOnCondition: lowpower  
+        RequiresCondition: classicproductionqueues
     ProductionQueue@wp:
 		Type: walker.sow
 		DisplayOrder: 0
-		Group: Addon    
-    ProductionBar@wp:
+		Group: Aircraft    
+        LowPowerModifier: 300
+    ProductionBar@NORMAL:
 		ProductionType: walker.sow     
+        RequiresCondition: !classicproductionqueues    
+    ProductionBar@CLASSICPRODUCTIONQUEUES:
+        ProductionType: RAwalker.sow
+        RequiresCondition: classicproductionqueues
 	ProvidesPrerequisite@buildingname:
     WithIdleOverlay@vetraky:
         RequiresCondition: !disable-overlay && !build-incomplete 
@@ -1260,9 +1329,11 @@ sowasteroidstation:
     Inherits@shape: ^4x4Shape
     Inherits@satprot: ^satelliteprotection_upgrade
     Inherits@fasterprodb: ^sow_power_boost
-    Inherits@SW: ^PrimarySuperweapon
     Inherits@sowaiunit: ^sowgeneric        
-    Inherits@BotMicro: ^BotMicromanageable   
+    Inherits@BotMicro: ^BotMicromanageable 
+    Inherits@lowpower: ^DisabledOverlay    
+    Inherits@CPQWP: ^CPQConditionWithPrimary    
+    Inherits@SW: ^PrimarySuperweapon
 	Valued:
 		Cost: 5000
 	Tooltip:
@@ -1271,26 +1342,27 @@ sowasteroidstation:
 		Type: Concrete
     Buildable:
 		BuildPaletteOrder: 10
-        BuildDuration: 7500
+        BuildDuration: 4500
         BuildDurationModifier: 50
-        Prerequisites: sowresearch, sowmechfactory
-		Queue: Building.sow
+        Prerequisites: sowresearch, sowmechfactory, ~techlevel.superweapons, !swasteroid
+		Queue: Building.sow, RABuilding.sow
 		Description: Provides superweapon\nProduces Walkers Mk.2\nUnlocks all vehicles\nStores 2000 resources\nIncreases passive income by 20%
-        BuildLimit: 1
 	Building:
 		Footprint: ==== ==== =xx= xxxx
 		Dimensions: 4,4
-		LocalCenterOffset: 0,-512,0
-    BaseProvider:
-		Range: 6c0      
-        RequiresCondition: !botmicro       
-    ProductionFromMapEdge@mk2:
+		LocalCenterOffset: 0,-512,0    
+    Production@NORMAL:
 		Produces: wmk2.sow 
         PauseOnCondition: lowpower
+        RequiresCondition: !classicproductionqueues
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: wmk2.sow 
+        PauseOnCondition: lowpower
+        RequiresCondition: classicproductionqueues      
     ProductionQueue@mk2:
 		Type: wmk2.sow
 		DisplayOrder: 0
-		Group: Vehicle  
+		Group: Aircraft
     ProductionBar@mk2:
 		ProductionType: wmk2.sow     
 	Health:
@@ -1302,10 +1374,10 @@ sowasteroidstation:
 	RallyPoint:
 	Exit@1:
 		SpawnOffset: -426,85,0
-		ExitCell: 0,2
+		ExitCell: 4,2
 	Exit@2:
 		SpawnOffset: 298,298,0
-		ExitCell: 1,2    
+		ExitCell: 4,3   
     Power:
 		Amount: -500
 	Selectable:
@@ -1349,7 +1421,9 @@ sowasteroidstation:
     GrantConditionOnPrerequisite@satelliteprotection: 
         Prerequisites: sowheadquarters
         Condition: SatelliteUpgrade_mk2  
-    
+  	ProvidesPrerequisite@swlimit:
+		Prerequisite: swasteroid 
+        
     ################
     #   TURRETS    #
     ################
@@ -1362,31 +1436,25 @@ sow_gun_tower:
     Inherits@shape: ^1x1Shape  
     Inherits@sownocd: ^sow_no_cd
     Inherits@sowaiunit: ^sowgeneric    
-    Inherits@BotMicro: ^BotMicromanageable        
+    Inherits@BotMicro: ^BotMicromanageable 
+    Inherits@lowpower: ^DisabledOverlay       
 	Selectable:
 		Bounds: 24,24
 	Valued:
-		Cost: 500
+		Cost: 300
 	Tooltip:
 		Name: Gun Turret
 	Buildable:
 		BuildPaletteOrder: 1
-        BuildDuration: 500
+        BuildDuration: 375
         BuildDurationModifier: 50
         Prerequisites: sowlightfactory
-		Queue: Defence.sow
+		Queue: Defence.sow, RADefence.sow
 		Description: Basic defence against Light vehicles and infantry
 	Building:
-    	BuildSounds: sow_turret_place.aud
-    BaseProvider:
-		Range: 2c0   
-        RequiresCondition: !botmicro      
-	GivesBuildableArea:
-		AreaTypes: building        
+    	BuildSounds: sow_turret_place.aud    
 	Health:
-		HP: 40000
-    DamageMultiplier:
-        Modifier: 90          
+		HP: 30000        
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -1402,7 +1470,7 @@ sow_gun_tower:
 		LocalOffset: 512,0,112
 		MuzzleSequence: muzzle
 	AttackTurreted:
-		RequiresCondition: !build-incomplete
+		RequiresCondition: !build-incomplete && !lowpower
 	WithMuzzleOverlay:
 	-WithDeathAnimation:
     AutoTarget:
@@ -1422,31 +1490,25 @@ sow_antiair_tower:
     Inherits@shape: ^1x1Shape  
     Inherits@sownocd: ^sow_no_cd
     Inherits@sowaiunit: ^sowgeneric   
-    Inherits@BotMicro: ^BotMicromanageable    
+    Inherits@BotMicro: ^BotMicromanageable  
+    Inherits@lowpower: ^DisabledOverlay       
 	Selectable:
 		Bounds: 24,24
 	Valued:
-		Cost: 750
+		Cost: 600
 	Tooltip:
 		Name: Anti-Air Turret
 	Buildable:
 		BuildPaletteOrder: 2
         BuildDuration: 750	
         BuildDurationModifier: 50
-        Prerequisites: sowlightfactory, factory_sowupgrade_3
-		Queue: Defence.sow
+        Prerequisites: sowlightfactory, factory_sowupgrade_3, ~techlevel.low
+		Queue: Defence.sow, RADefence.sow
 		Description: Basic Air defence\nDetector
 	Building: 
         BuildSounds: sow_turret_place.aud
-    BaseProvider:
-		Range: 2c0   
-        RequiresCondition: !botmicro
-	GivesBuildableArea:
-		AreaTypes: building        
 	Health:
-		HP: 55000
-    DamageMultiplier:
-        Modifier: 80    
+		HP: 40000  
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -1463,7 +1525,7 @@ sow_antiair_tower:
 		Weapon: sow_antiair_tower
 		LocalOffset: 512,0,112
 	AttackTurreted:
-		RequiresCondition: !build-incomplete
+		RequiresCondition: !build-incomplete && !lowpower
 	WithMuzzleOverlay:
 	-WithDeathAnimation:
 	DetectCloaked:
@@ -1485,31 +1547,25 @@ sow_plasma_tower:
     Inherits@sownocd: ^sow_no_cd
     Inherits@sowaiunit: ^sowgeneric      
     Inherits@BotMicro: ^BotMicromanageable       
+    Inherits@lowpower: ^DisabledOverlay   
 	Selectable:
 		Bounds: 24,24
 	Valued:
-		Cost: 1000
+		Cost: 800
 	Tooltip:
 		Name: Plasma Turret
 	Buildable:
 		BuildPaletteOrder: 3
-		Prerequisites: sowmediumfactory
+		Prerequisites: sowmediumfactory, ~techlevel.low
         BuildDurationModifier: 50
         BuildDuration: 1000
-	    Queue: Defence.sow
+	    Queue: Defence.sow, RADefence.sow
 		Description: Advanced ground defence
 	Building:
         BuildSounds: sow_turret_place.aud
 	Health:
-		HP: 70000
+		HP: 50000
     -RenderDetectionCircle:       
-    BaseProvider:
-		Range: 2c0    
-        RequiresCondition: !botmicro      
-    GivesBuildableArea:
-		AreaTypes: building
-    DamageMultiplier:
-        Modifier: 80    
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -1524,7 +1580,7 @@ sow_plasma_tower:
 		Weapon: sow_plasma_tower
 		LocalOffset: 512,0,112
 	AttackTurreted:
-		RequiresCondition: !build-incomplete
+		RequiresCondition: !build-incomplete && !lowpower
 	WithMuzzleOverlay:
 	-WithDeathAnimation:
     AutoTarget:
@@ -1544,22 +1600,18 @@ sow_minigun_tower:
     Inherits@shape: ^1x1Shape  
     Inherits@sownocd: ^sow_no_cd
     Inherits@sowaiunit: ^sowgeneric     
-    Inherits@BotMicro: ^BotMicromanageable        
+    Inherits@BotMicro: ^BotMicromanageable 
+    Inherits@lowpower: ^DisabledOverlay       
 	Selectable:
 		Bounds: 30,40
 	Valued:
-		Cost: 1250
+		Cost: 1000
 	Tooltip:
-		Name: Gatling Turret
-    BaseProvider:
-		Range: 3c0    
-        RequiresCondition: !botmicro    
-	GivesBuildableArea:
-		AreaTypes: building        
+		Name: Gatling Turret  
 	Buildable:
 		BuildPaletteOrder: 4
-		Prerequisites: sowheavyfactory
-		Queue: Defence.sow
+		Prerequisites: sowheavyfactory, ~techlevel.medium
+		Queue: Defence.sow, RADefence.sow
         BuildDurationModifier: 50
         BuildDuration: 1250
 		Description: Advanced Long Range Ground defence
@@ -1569,11 +1621,9 @@ sow_minigun_tower:
         BuildSounds: sow_turret_place.aud
     Armor:
 		Type: Wood
-    DamageMultiplier:
-        Modifier: 70
     -RenderDetectionCircle:     
 	Health:
-		HP: 100000
+		HP: 65000
 	RevealsShroud:
 		Range: 12c0      
 	Turreted:
@@ -1590,7 +1640,7 @@ sow_minigun_tower:
 		LocalOffset: 1412,0,112
 		MuzzleSequence: muzzle
 	AttackTurreted:
-		RequiresCondition: !build-incomplete
+		RequiresCondition: !build-incomplete && !lowpower
 	WithMuzzleOverlay:
 	-WithDeathAnimation:
 	Power:
@@ -1607,17 +1657,18 @@ sow_defragmenter_tower:
     Inherits@shape: ^1x1Shape
     Inherits@sownocd: ^sow_no_cd
     Inherits@sowaiunit: ^sowgeneric    
-    Inherits@BotMicro: ^BotMicromanageable        
+    Inherits@BotMicro: ^BotMicromanageable   
+    Inherits@lowpower: ^DisabledOverlay       
 	Selectable:
 		Bounds: 30,40
 	Valued:
-		Cost: 1500
+		Cost: 1200
 	Tooltip:
 		Name: Defragmenter
 	Buildable:
-		BuildPaletteOrder: 6
-		Prerequisites: sowheavyfactory, hta_unlock
-		Queue: Defence.sow
+		BuildPaletteOrder: 5
+		Prerequisites: sowheavyfactory, hta_unlock, ~techlevel.high
+		Queue: Defence.sow, RADefence.sow
         BuildDuration: 1750
         BuildDurationModifier: 50
 		Description: Advanced Long Range Ground defence
@@ -1629,17 +1680,10 @@ sow_defragmenter_tower:
     AutoTarget:
 		InitialStance: AttackAnything
 		ScanRadius: -1        
-    BaseProvider:
-		Range: 3c0         
-        RequiresCondition: !botmicro        
-	GivesBuildableArea:
-		AreaTypes: building
 	Health:
-		HP: 120000
+		HP: 85000
 	Armor:
 		Type: Wood
-    DamageMultiplier:
-        Modifier: 70
 	RevealsShroud:
 		Range: 15c0
 	Turreted:
@@ -1652,6 +1696,7 @@ sow_defragmenter_tower:
 		Weapon: sow_defragmenter_tower
 		LocalOffset: 512,-100,112, 100,400,200, -300,500,600
 	AttackTurreted:
+        RequiresCondition: !build-incomplete && !lowpower
 	WithMuzzleOverlay:
 	-WithDeathAnimation:
 	Power:
@@ -1669,36 +1714,30 @@ sow_vulcano_tower:
     Inherits@sownocd: ^sow_no_cd
     Inherits@sowaiunit: ^sowgeneric     
     Inherits@BotMicro: ^BotMicromanageable    
+    Inherits@lowpower: ^DisabledOverlay   
 	Selectable:
 		Bounds: 30,40
 	Valued:
-		Cost: 1750
+		Cost: 1200
 	Tooltip:
 		Name: Vulcano
 	Buildable:
-		BuildPaletteOrder: 5
+		BuildPaletteOrder: 6
         BuildDuration: 1500
         BuildDurationModifier: 50
-        Prerequisites: sowheavyfactory, hte_unlock
-		Queue: Defence.sow
+        Prerequisites: sowheavyfactory, hte_unlock, ~techlevel.high
+		Queue: Defence.sow, RADefence.sow
 		Description: Advanced Air Defence\nDetector
 	Building: 
         Footprint: x x
 		Dimensions: 1,2       
         BuildSounds: sow_turret_place.aud
 	Health:
-		HP: 110000
-    DamageMultiplier:
-        Modifier: 70
+		HP: 80000
 	Armor:
 		Type: Wood
 	RevealsShroud:
-		Range: 16c0
-    BaseProvider:
-		Range: 3c0        
-        RequiresCondition: !botmicro
-	GivesBuildableArea:
-		AreaTypes: building        
+		Range: 16c0  
     AutoTarget:
 		InitialStance: AttackAnything
 		ScanRadius: -1      
@@ -1711,7 +1750,7 @@ sow_vulcano_tower:
 		Weapon: sow_vulcano_tower
 		LocalOffset: 512,0,112
 	AttackTurreted:
-		RequiresCondition: !build-incomplete
+		RequiresCondition: !build-incomplete && !lowpower
 	WithMuzzleOverlay:
 	-WithDeathAnimation:
 	DetectCloaked:
@@ -1742,7 +1781,7 @@ sow_lt_cannon:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 1
-		Queue: lt.sow, mt.sow, ht.sow, Vehicle.X_Vehicles
+		Queue: lt.sow, mt.sow, ht.sow, RAlt.sow, RAmt.sow, RAht.sow, Vehicle.X_Vehicles
         BuildDurationModifier: 50
 		BuildDuration: 600
 		Description: Light Main battle tank
@@ -1750,7 +1789,7 @@ sow_lt_cannon:
 		Speed: 80
         TurnSpeed: 10        
 	Health:
-		HP: 20000
+		HP: 25000
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -1797,16 +1836,16 @@ sow_lt_flame:
 		Bounds: 28,25
 	Buildable:
 		BuildPaletteOrder: 2
-		Queue: lt.sow, mt.sow, ht.sow, Vehicle.X_Vehicles
+		Queue: lt.sow, mt.sow, ht.sow, RAlt.sow, RAmt.sow, RAht.sow, Vehicle.X_Vehicles
         BuildDurationModifier: 50
 		BuildDuration: 600
 		Description: Light Anti-Infantry Vehicle
-        Prerequisites: ~factory_sowupgrade
+        Prerequisites: factory_sowupgrade
 	Mobile:
 		Speed: 80
         TurnSpeed: 10
 	Health:
-		HP: 25000
+		HP: 31250
     AutoTarget:
 		InitialStance: AttackAnything
 		ScanRadius: -1
@@ -1842,25 +1881,25 @@ sow_lt_siege:
     Inherits@sowaiunit: ^sowgeneric
     Inherits@fasterprodb: ^sow_power_boost
 	Valued:
-		Cost: 125
+		Cost: 150
 	Tooltip:
 		Name: Light Siege 
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 3
-		Queue: lt.sow, mt.sow, ht.sow, Vehicle.X_Vehicles
+		Queue: lt.sow, mt.sow, ht.sow, RAlt.sow, RAmt.sow, RAht.sow, Vehicle.X_Vehicles
 		BuildDuration: 600
         BuildDurationModifier: 50
 		Description: Light Long Range Vehicle
-        Prerequisites: ~factory_sowupgrade_1
+        Prerequisites: factory_sowupgrade_1
 	Selectable:
 		Bounds: 25,25
     Mobile:
 		Speed: 80
         TurnSpeed: 10
 	Health:
-		HP: 17500
+		HP: 18750
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -1905,16 +1944,16 @@ sow_lt_special:
 		Bounds: 25,25
 	Buildable:
 		BuildPaletteOrder: 4
-		Queue: lt.sow, mt.sow, ht.sow, Vehicle.X_Vehicles
+		Queue: lt.sow, mt.sow, ht.sow, RAlt.sow, RAmt.sow, RAht.sow, Vehicle.X_Vehicles
 		BuildDuration: 600
         BuildDurationModifier: 50    
 		Description: Light Anti-Tank vehicle
-        Prerequisites: ~factory_sowupgrade_2
+        Prerequisites: factory_sowupgrade_2
 	Mobile:
 		Speed: 80
         TurnSpeed: 10
 	Health:
-		HP: 17500
+		HP: 18750
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -1955,11 +1994,11 @@ sow_lt_antiair:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 5
-		Queue: lt.sow, mt.sow, ht.sow, Vehicle.X_Vehicles
+		Queue: lt.sow, mt.sow, ht.sow, RAlt.sow, RAmt.sow, RAht.sow, Vehicle.X_Vehicles
 		BuildDuration: 600
         BuildDurationModifier: 50
 		Description: Light Anti-Air vehicle\nDetector
-        Prerequisites: ~factory_sowupgrade_3
+        Prerequisites: factory_sowupgrade_3
 	Selectable:
 		Bounds: 25,25
 	Mobile:
@@ -1971,7 +2010,7 @@ sow_lt_antiair:
     AutoTargetPriority:
         ValidTargets: Air
 	Health:
-		HP: 20000
+		HP: 25000
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -2005,6 +2044,7 @@ sow_mt_cannon:
 	Inherits@EMP: ^TurretEMP   
     Inherits@sowaiunit: ^sowgeneric    
     Inherits@fasterprodb: ^sow_power_boost
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 250
 	Tooltip:
@@ -2015,11 +2055,11 @@ sow_mt_cannon:
 		Bounds: 34,34	
     Buildable:
 		BuildPaletteOrder: 40
-		Queue: mt.sow, ht.sow, Vehicle.X_Vehicles
-		BuildDuration: 900
+		Queue: mt.sow, ht.sow, RAmt.sow, RAht.sow, Vehicle.X_Vehicles
+		BuildDuration: 1000
         BuildDurationModifier: 50
 		Description: Main Battle tank
-        Prerequisites: ~mta_unlock
+        Prerequisites: mta_unlock
 	Mobile:
 		Speed: 60
         TurnSpeed: 8
@@ -2059,6 +2099,7 @@ sow_mt_flame:
 	Inherits@EMP: ^TurretEMP 
     Inherits@sowaiunit: ^sowgeneric  
     Inherits@fasterprodb: ^sow_power_boost    
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -2069,11 +2110,11 @@ sow_mt_flame:
 		Bounds: 36,34	     
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: mt.sow, ht.sow, Vehicle.X_Vehicles
+		Queue: mt.sow, ht.sow, RAmt.sow, RAht.sow, Vehicle.X_Vehicles
         BuildDurationModifier: 50
-		BuildDuration: 900
+		BuildDuration: 1000
 		Description: Medium Anti-Infantry vehicle
-        Prerequisites: ~factory_sowupgrade, ~mtb_unlock
+        Prerequisites: factory_sowupgrade, mtb_unlock
 	Mobile:
 		Speed: 60
         TurnSpeed: 8
@@ -2113,8 +2154,9 @@ sow_mt_siege:
 	Inherits@EMP: ^TurretEMP 
     Inherits@sowaiunit: ^sowgeneric
     Inherits@fasterprodb: ^sow_power_boost    
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
-		Cost: 300
+		Cost: 350
 	Tooltip:
 		Name: Medium Siege
 	UpdatesPlayerStatistics:
@@ -2123,11 +2165,11 @@ sow_mt_siege:
 		Bounds: 34,34
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: mt.sow, ht.sow, Vehicle.X_Vehicles
-		BuildDuration: 900
+		Queue: mt.sow, ht.sow, RAmt.sow, RAht.sow, Vehicle.X_Vehicles
+		BuildDuration: 1000
         BuildDurationModifier: 50
 		Description: Medium Long Range vehicle
-        Prerequisites: ~factory_sowupgrade_1, ~mtc_unlock
+        Prerequisites: factory_sowupgrade_1, mtc_unlock
 	Mobile:
 		Speed: 60
         TurnSpeed: 8
@@ -2167,6 +2209,7 @@ sow_mt_special:
 	Inherits@EMP: ^TurretEMP
     Inherits@sowaiunit: ^sowgeneric  
     Inherits@fasterprodb: ^sow_power_boost
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 350
 	Tooltip:
@@ -2177,11 +2220,11 @@ sow_mt_special:
 		Bounds: 34,34
     Buildable:
 		BuildPaletteOrder: 40
-		Queue: mt.sow, ht.sow, Vehicle.X_Vehicles
-		BuildDuration: 900
+		Queue: mt.sow, ht.sow, RAmt.sow, RAht.sow, Vehicle.X_Vehicles
+		BuildDuration: 1000
         BuildDurationModifier: 50
 		Description: Medium Anti-Tank vehicle
-        Prerequisites: ~factory_sowupgrade_2, ~mtd_unlock
+        Prerequisites: factory_sowupgrade_2, mtd_unlock
 	Mobile:
 		Speed: 60
         TurnSpeed: 8
@@ -2221,6 +2264,7 @@ sow_mt_antiair:
 	Inherits@EMP: ^TurretEMP
     Inherits@sowaiunit: ^sowgeneric  
     Inherits@fasterprodb: ^sow_power_boost    
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 350
 	Tooltip:
@@ -2231,11 +2275,11 @@ sow_mt_antiair:
 		Bounds: 34,34
     Buildable:
 		BuildPaletteOrder: 40
-		Queue: mt.sow, ht.sow, Vehicle.X_Vehicles
-		BuildDuration: 900
+		Queue: mt.sow, ht.sow, RAmt.sow, RAht.sow, Vehicle.X_Vehicles
+		BuildDuration: 1000
         BuildDurationModifier: 50
 		Description: Medium Anti-Air vehicle\nDetector
-        Prerequisites: ~factory_sowupgrade_3, ~mte_unlock
+        Prerequisites: factory_sowupgrade_3, mte_unlock
 	Mobile:
 		Speed: 60
         TurnSpeed: 8      
@@ -2280,6 +2324,7 @@ sow_ht_cannon:
 	Inherits@EMP: ^TurretEMP
     Inherits@sowaiunit: ^sowgeneric    
     Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 550
     Selectable:
@@ -2290,11 +2335,11 @@ sow_ht_cannon:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: ht.sow, Vehicle.X_Vehicles
-		BuildDuration: 1200
+		Queue: ht.sow, RAht.sow, Vehicle.X_Vehicles
+		BuildDuration: 1500
         BuildDurationModifier: 50
 		Description: Heavy Main Battle Tank
-        Prerequisites: ~hta_unlock
+        Prerequisites: hta_unlock
 	Mobile:
 		Speed: 40
         TurnSpeed: 6
@@ -2338,6 +2383,7 @@ sow_ht_flame:
 	Inherits@EMP: ^TurretEMP  
     Inherits@sowaiunit: ^sowgeneric    
     Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -2348,11 +2394,11 @@ sow_ht_flame:
 		Bounds: 42,38      
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: ht.sow, Vehicle.X_Vehicles
-		BuildDuration: 1200
+		Queue: ht.sow, RAht.sow, Vehicle.X_Vehicles
+		BuildDuration: 1500
         BuildDurationModifier: 50
 		Description: Heavy Anti-Infantry vehicle
-        Prerequisites: ~factory_sowupgrade, ~htb_unlock
+        Prerequisites: factory_sowupgrade, htb_unlock
 	Mobile:
 		Speed: 40
         TurnSpeed: 6
@@ -2396,8 +2442,9 @@ sow_ht_siege:
 	Inherits@EMP: ^TurretEMP
     Inherits@sowaiunit: ^sowgeneric    
     Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
-		Cost: 600
+		Cost: 650
     Selectable:
 		Bounds: 38,38
 	Tooltip:
@@ -2406,11 +2453,11 @@ sow_ht_siege:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: ht.sow, Vehicle.X_Vehicles
-		BuildDuration: 1200
+		Queue: ht.sow, RAht.sow, Vehicle.X_Vehicles
+		BuildDuration: 1500
         BuildDurationModifier: 50
 		Description: Heavy Long Range vehicle
-        Prerequisites: ~factory_sowupgrade_1, ~htc_unlock
+        Prerequisites: factory_sowupgrade_1, htc_unlock
 	Mobile:
 		Speed: 40
         TurnSpeed: 6
@@ -2454,6 +2501,7 @@ sow_ht_special:
 	Inherits@EMP: ^TurretEMP
     Inherits@sowaiunit: ^sowgeneric    
     Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 650
     Selectable:
@@ -2464,11 +2512,11 @@ sow_ht_special:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: ht.sow, Vehicle.X_Vehicles
-		BuildDuration: 1200
+		Queue: ht.sow, RAht.sow, Vehicle.X_Vehicles
+		BuildDuration: 1500
         BuildDurationModifier: 50
 		Description: Heavy Anti-Tank vehicle
-        Prerequisites: ~factory_sowupgrade_2, ~htd_unlock
+        Prerequisites: factory_sowupgrade_2, htd_unlock
 	Mobile:
 		Speed: 40
         TurnSpeed: 6
@@ -2511,6 +2559,7 @@ sow_ht_antiair:
 	Inherits@EMP: ^TurretEMP
     Inherits@sowaiunit: ^sowgeneric    
     Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@lowpowerw: ^sow_unit_lowpower    
     Selectable:
 		Bounds: 38,38
 	Valued:
@@ -2521,11 +2570,11 @@ sow_ht_antiair:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: ht.sow, Vehicle.X_Vehicles
-		BuildDuration: 1200
+		Queue: ht.sow, RAht.sow, Vehicle.X_Vehicles
+		BuildDuration: 1500
         BuildDurationModifier: 50
 		Description: Heavy Anti-Air vehicle\nDetector
-        Prerequisites: ~factory_sowupgrade_3, ~hte_unlock
+        Prerequisites: factory_sowupgrade_3, hte_unlock
 	Mobile:
 		Speed: 40
         TurnSpeed: 6
@@ -2576,18 +2625,20 @@ sow_abc:
     Inherits@resize: ^sowresize
     Inherits@BotMicro: ^BotMicromanageable
     Inherits@sowaiunit: ^sowgeneric  
-    Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@fasterprodb: ^sow_power_boost
+    Inherits@lowpowerw: ^sow_unit_lowpower    
+    Inherits@MC: ^MCImmune    
     Selectable:
 		Bounds: 38,38	
     Valued:
-		Cost: 1500
+		Cost: 2000
 	Tooltip:
 		Name: Atomic Bomb Carrier
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 2
-		Queue: abc.sow, Vehicle.X_Vehicles
+		Queue: abc.sow, RAabc.sow, Vehicle.X_Vehicles
 		BuildDuration: 3000
         BuildDurationModifier: 50
 		Description: Suicidal Unit\nWon't explode if disabled
@@ -2651,6 +2702,8 @@ sow_advancer:
     Inherits@AUTOTARGET: ^AutoTargetAir
     Inherits@BotMicro: ^BotMicromanageable
     Inherits@sowaiunit: ^sowgeneric   
+    Inherits@MC: ^MCImmune  
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 500 
 	Tooltip:
@@ -2659,7 +2712,7 @@ sow_advancer:
 		AddToArmyValue: true
 	Aircraft:
 		TurnSpeed: 5
-		Speed: 90
+		Speed: 60
 		AltitudeVelocity: 0c100
         Repulsable: False
         CanSlide: True
@@ -2674,7 +2727,7 @@ sow_advancer:
         ScanOnIdle: true
     RenderDetectionCircle:
 	Health:
-		HP: 125000
+		HP: 80000
 	Armor:
 		Type: Medium
 	RevealsShroud:
@@ -2696,6 +2749,12 @@ sow_advancer:
     ProximityExternalCondition@proxy:
         Range: 2c256
         Condition: sowupgradeproximity
+    GrantConditionOnPrerequisite@invader: 
+        Prerequisites: sow_invader
+        Condition: sow_invader      
+    GrantConditionOnPrerequisite@invader2: 
+        Prerequisites: sow_invader_mk2
+        Condition: sow_invader_mk2         
     CaptureManager:
         CapturingCondition: advancercapturing
 	Captures@CAPTURES:
@@ -2737,7 +2796,8 @@ sow_advancer:
 		Recoil: 0
 		RecoilRecovery: 0
 		LocalOffset: 0,-600,0
-        TargetStances: Enemy     
+        TargetStances: Enemy 
+        RequiresCondition: sow_invader && !sow_invader_mk2
     Armament@capture:
 		Weapon: sow_advancer_capture
 		Recoil: 0
@@ -2745,6 +2805,22 @@ sow_advancer:
 		LocalOffset: 300,0,90
         Cursor: sow_capture
         OutsideRangeCursor: sow_capture
+        RequiresCondition: sow_invader && !sow_invader_mk2     
+    Armament@laser2:
+		Weapon: sow_advancer_mk2
+		Recoil: 0
+		RecoilRecovery: 0
+		LocalOffset: 0,-600,0
+        TargetStances: Enemy 
+        RequiresCondition: sow_invader && sow_invader_mk2
+    Armament@capture2:
+		Weapon: sow_advancer_capture_mk2
+		Recoil: 0
+		RecoilRecovery: 0
+		LocalOffset: 300,0,90
+        Cursor: sow_capture
+        OutsideRangeCursor: sow_capture
+        RequiresCondition: sow_invader && sow_invader_mk2          
     Armament@repair:
 		Weapon: sow_advancer_repair
         TargetStances: Ally
@@ -2785,6 +2861,18 @@ sow_advancer:
 		LocalOffset: 300,0,90
         Cursor: sow_upgrade
         OutsideRangeCursor: sow_upgrade
+    DamageMultiplier@invader:
+        Modifier: 90
+        RequiresCondition: sow_invader
+    DamageMultiplier@invader2:
+        Modifier: 70
+        RequiresCondition: sow_invader_mk2     
+    SpeedMultiplier@invader:
+        Modifier: 130
+        RequiresCondition: sow_invader
+    SpeedMultiplier@invader2:
+        Modifier: 150
+        RequiresCondition: sow_invader_mk2           
     WithMuzzleOverlay:
     ProximityCaptor:
 		Types: Building
@@ -2819,7 +2907,7 @@ sow_advancer_husk:
 		GenericName: Destroyed Advancer
     FallsToEarth:
         Velocity: 0c150
-        
+       
 sow_mech_avenger:
 	Inherits: ^Vehicle
 	Inherits@AUTOTARGET: ^AutoTargetAir
@@ -2830,6 +2918,7 @@ sow_mech_avenger:
     Inherits@walkercrush: ^VehicleCrusher
     Inherits@sowaiunit: ^sowgeneric   
     Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@lowpowerw: ^sow_unit_lowpower
 	Valued:
 		Cost: 1000
     Selectable:
@@ -2839,7 +2928,7 @@ sow_mech_avenger:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		Queue: walker.sow
+		Queue: walker.sow, RAwalker.sow
 		BuildPaletteOrder: 20
         BuildDuration: 3000
         BuildDurationModifier: 50
@@ -2859,7 +2948,7 @@ sow_mech_avenger:
     Turreted:
     	TurnSpeed: 5
     AttackTurreted:
-        Voice: Attack
+        Voice: Attack   
     WithSpriteTurret:
 		TurnSpeed: 5
     Passenger:
@@ -2889,6 +2978,7 @@ sow_mech_avenger:
         
 sow_mech_avenger_mk2:
     Inherits: sow_mech_avenger
+    Inherits@MC: ^MCImmune   
     Valued:
         Cost: 1500
     Tooltip:
@@ -2947,6 +3037,7 @@ sow_mech_kodiak:
     Inherits@walkercrush: ^VehicleCrusher
     Inherits@sowaiunit: ^sowgeneric   
     Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -2956,7 +3047,7 @@ sow_mech_kodiak:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		Queue: walker.sow
+		Queue: walker.sow, RAwalker.sow
 		BuildPaletteOrder: 19
         BuildDuration: 3000
         BuildDurationModifier: 50
@@ -2976,7 +3067,7 @@ sow_mech_kodiak:
     Turreted:
         TurnSpeed: 5
     AttackTurreted:
-        Voice: Attack
+        Voice: Attack  
     WithSpriteTurret:
 		TurnSpeed: 5
     Passenger:
@@ -3003,6 +3094,7 @@ sow_mech_kodiak:
         
 sow_mech_kodiak_mk2:
     Inherits: sow_mech_kodiak
+    Inherits@MC: ^MCImmune   
     Valued:
         Cost: 1500
     Tooltip:
@@ -3055,6 +3147,7 @@ sow_mech_gatling:
     Inherits@walkercrush: ^VehicleCrusher
     Inherits@sowaiunit: ^sowgeneric    
     Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -3062,7 +3155,7 @@ sow_mech_gatling:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		Queue: walker.sow
+		Queue: walker.sow, RAwalker.sow
 		BuildPaletteOrder: 18
         BuildDuration: 3000
         BuildDurationModifier: 50
@@ -3113,6 +3206,7 @@ sow_mech_gatling:
 sow_mech_gatling_mk2:
     Inherits: sow_mech_gatling
     Inherits@BotMicro: ^BotMicromanageable
+    Inherits@MC: ^MCImmune    
     Valued:
         Cost: 1500
     Tooltip:
@@ -3172,6 +3266,7 @@ sow_mech_jaguar:
     Inherits@walkercrush: ^VehicleCrusher 
     Inherits@sowaiunit: ^sowgeneric    
     Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -3184,7 +3279,7 @@ sow_mech_jaguar:
         InitialStance: AttackAnything
 		ScanRadius: -1   
 	Buildable:
-        Queue: walker.sow
+        Queue: walker.sow, RAwalker.sow
 		BuildPaletteOrder: 18		
         BuildDuration: 3000
         BuildDurationModifier: 50
@@ -3229,6 +3324,7 @@ sow_mech_jaguar:
 sow_mech_jaguar_mk2:
     Inherits: sow_mech_jaguar
     Inherits@BotMicro: ^BotMicromanageable
+    Inherits@MC: ^MCImmune
     Valued:
         Cost: 1500
     Tooltip:
@@ -3291,7 +3387,8 @@ sow_mech_achilles:
 	Inherits@EXT: ^ExternalConditions
     Inherits@walkercrush: ^VehicleCrusher  
     Inherits@sowaiunit: ^sowgeneric  
-    Inherits@fasterprodb: ^sow_power_boost  
+    Inherits@fasterprodb: ^sow_power_boost      
+    Inherits@lowpowerw: ^sow_unit_lowpower    
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -3306,7 +3403,7 @@ sow_mech_achilles:
     Selectable:
 		Bounds: 48,48       
 	Buildable:
-		Queue: walker.sow
+		Queue: walker.sow, RAwalker.sow
 		BuildPaletteOrder: 18
         BuildDuration: 3000
         BuildDurationModifier: 50
@@ -3324,7 +3421,7 @@ sow_mech_achilles:
 		TurnSpeed: 9
     AttackTurreted:
     WithSpriteTurret:
-		TurnSpeed: 9
+		TurnSpeed: 9 
     Passenger:
         Weight: 20
     Voiced:
@@ -3349,6 +3446,7 @@ sow_mech_achilles:
         
 sow_mech_achilles_mk2:
     Inherits: sow_mech_achilles
+    Inherits@MC: ^MCImmune
     Valued:
         Cost: 1500
     Tooltip:
@@ -3403,15 +3501,15 @@ sow_mcv:
     Inherits@sowaiunit: ^sowgeneric    
     Inherits@fasterprodb: ^sow_power_boost  
 	Valued:
-		Cost: 3000
+		Cost: 2500
 	Tooltip:
 		Name: Mobile Construction Vehicle (MCV)
 	Buildable:
 		BuildPaletteOrder: 1
         BuildDurationModifier: 50
-		Queue: Building.sow
+		Queue: Building.sow, RABuilding.sow
 		BuildDuration: 3000
-		Description: Mobile unit that deploys into Headquarters\nEach Headquarters provides One Advancer\n\nAdvancer:\nFlying unit that can upgrade, repair and destroy buildings and units\nDetector
+		Description: Mobile unit that deploys into Headquarters\nGrants 75 Research Points\nEach Headquarters provides One Advancer\nProvides some passive income\n\nAdvancer:\nFlying unit that can upgrade, repair and destroy buildings and units\nDetector
         Prerequisites: sowgoldmine
     Selectable:
 		DecorationBounds: 36,36
@@ -3461,12 +3559,12 @@ satelliteprotection_mk1:
 		Queue: research.sow
         BuildDuration: 3000
         BuildDurationModifier: 50     
-		Prerequisites: sowresearch, !satelliteprotection_mk1
+		Prerequisites: sowresearch, ~!satelliteprotection_mk1
 		Description: Protects non-defensive buildings from aerial attacks\nHigh damage output, long cooldown
 	Valued:
 		Cost: 2000
     Power:
-        Amount: -200
+        Amount: -300
 	RenderSprites:
 		Image: satelliteprotection_icon
 	ProvidesPrerequisite@upgradename:
@@ -3481,10 +3579,10 @@ satelliteprotection_mk2:
 		Queue: research.sow
         BuildDuration: 3000
         BuildDurationModifier: 50
-		Prerequisites: sowresearch, satelliteprotection_mk1, !satelliteprotection_mk2, stateofwar
+		Prerequisites: sowresearch, ~satelliteprotection_mk1, ~!satelliteprotection_mk2, stateofwar
 		Description: Protects non-defensive buildings from aerial attacks\nModerate damage output, short cooldown
     Power:
-        Amount: -500
+        Amount: -300
     Valued:
 		Cost: 5000
 	RenderSprites:
@@ -3502,15 +3600,55 @@ heavyunits:
         BuildDuration: 1500
         BuildDurationModifier: 50     
 		Description: Unlocks Heavy Units to be researched inside Heavy Factories. 
-		Prerequisites: sowresearch, !heavyunits
+		Prerequisites: sowresearch, ~!heavyunits
     Power:
-        Amount: -500
+        Amount: -400
 	Valued:
 		Cost: 2000
 	RenderSprites:
 		Image: sowheavyunits
 	ProvidesPrerequisite@upgradename:
-           
+
+sow_invader:
+	Inherits: ^upgrade.template
+    Inherits@fasterprodb: ^sow_power_boost  
+	Tooltip:
+		Name: Invader
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: research.sow
+        BuildDuration: 1500
+        BuildDurationModifier: 50     
+		Description: Gives advancers ability to capture buildings and attack units\nEnhances Durability and Speed
+		Prerequisites: sowresearch, ~!sow_invader
+    Power:
+        Amount: -50
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: sow_invader
+	ProvidesPrerequisite@upgradename:
+
+sow_invader_mk2:
+	Inherits: ^upgrade.template
+    Inherits@fasterprodb: ^sow_power_boost  
+	Tooltip:
+		Name: Invader Mk.2
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: research.sow
+        BuildDuration: 1500
+        BuildDurationModifier: 50     
+		Description: Upgrades weapons of Advancers\nGreatly Enhances Durability and Speed
+		Prerequisites: sowresearch, ~sow_invader, ~!sow_invader_mk2
+    Power:
+        Amount: -150
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: sow_invader_mk2
+	ProvidesPrerequisite@upgradename:
+    
 sowovercharge:
 	Inherits: ^upgrade.template
     Inherits@fasterprodb: ^sow_power_boost  
@@ -3521,10 +3659,12 @@ sowovercharge:
 		Queue: research.sow
         BuildDuration: 1500
         BuildDurationModifier: 50     
-		Prerequisites: !sowovercharge
+		Prerequisites: ~!sowovercharge, sowpower
 		Description: Overcharges Power Plant doubling its effectivity\nReveals its location to all players\nNukes after death
 	Valued:
 		Cost: 2000
+    Power:
+        Amount: -100    
 	RenderSprites:
 		Image: sowovercharge_icon
 	ProvidesPrerequisite@upgradename:
@@ -3540,15 +3680,18 @@ advancedairstrikes:
         BuildDuration: 1500
         BuildDurationModifier: 50     
 		Description: Unlocks Bomber and Tripler support powers for Radar.
-		Prerequisites: sowresearch, !advancedairstrikes, sowradar
+		Prerequisites: sowresearch, ~!advancedairstrikes, sowradar
     Power:
-        Amount: -200     
+        Amount: -150    
+        RequiresCondition: nopower
 	Valued:
 		Cost: 2000
 	RenderSprites:
 		Image: sowbombertripler
 	ProvidesPrerequisite@upgradename:  
-         
+    GrantConditionOnPrerequisite@power:
+        Condition: nopower
+        Prerequisites: sowradar           
 goldmineupgrade:
 	Inherits: ^upgrade.template
     Inherits@fasterprodb: ^sow_power_boost  
@@ -3560,14 +3703,18 @@ goldmineupgrade:
         BuildDuration: 1500
         BuildDurationModifier: 50     
 		Description: Increases the generated Income from all Gold Mines by 35%
-		Prerequisites: sowresearch, sowgoldmine, !goldmineupgrade
+		Prerequisites: sowresearch, sowgoldmine, ~!goldmineupgrade
     Power:
         Amount: -100 
+        RequiresCondition: nopower
 	Valued:
 		Cost: 2000
 	RenderSprites:
 		Image: sowgoldprocessing
 	ProvidesPrerequisite@upgradename:
+    GrantConditionOnPrerequisite@power:
+        Condition: nopower
+        Prerequisites: sowgoldmine  
         
 goldmineupgrade2:
 	Inherits: ^upgrade.template
@@ -3575,20 +3722,23 @@ goldmineupgrade2:
 	Tooltip:
 		Name: Gold Processing Mk.2
     Power:
-        Amount: -250       
+        Amount: -150
+        RequiresCondition: nopower
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: research.sow
         BuildDuration: 3000
         BuildDurationModifier: 50
 		Description: Increases the generated Income from Maxed Gold Mines by 50%
-		Prerequisites: sowresearch, sowgoldmine, goldmineupgrade, !goldmineupgrade2
+		Prerequisites: sowresearch, sowgoldmine, ~goldmineupgrade, ~!goldmineupgrade2
 	Valued:
 		Cost: 2000
 	RenderSprites:
 		Image: sowgoldprocessing2
 	ProvidesPrerequisite@upgradename:   
-         
+    GrantConditionOnPrerequisite@power:
+        Condition: nopower
+        Prerequisites: sowgoldmine              
 researchupgrade:
 	Inherits: ^upgrade.template
     Inherits@fasterprodb: ^sow_power_boost  
@@ -3600,8 +3750,10 @@ researchupgrade:
         BuildDuration: 1500
         BuildDurationModifier: 50     
 		Description: Increases the Research points provided by all Research Centers by 20%
-		Prerequisites: sowresearch, !researchupgrade
-	Valued:
+		Prerequisites: sowresearch, ~!researchupgrade
+    Power:
+        Amount: -25
+    Valued:
 		Cost: 2000
 	RenderSprites:
 		Image: sowresearch_upg
@@ -3618,7 +3770,9 @@ researchupgrade2:
         BuildDuration: 3000
         BuildDurationModifier: 50
 		Description: Increases the Research points provided by Maxed Research Centers by 35% 
-		Prerequisites: sowresearch, researchupgrade, !researchupgrade2
+		Prerequisites: sowresearch, ~researchupgrade, ~!researchupgrade2
+    Power:
+        Amount: -50   
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -3635,8 +3789,8 @@ stateofwar:
 		Queue: research.sow
         BuildDuration: 3000
         BuildDurationModifier: 50       
-		Description: Removes Build Time From Turrets\nUnlocks late game technologies
-		Prerequisites: sowresearch, !stateofwar, sowheavyfactory
+		Description: Removes Build Time From Turrets but increases their cost by 50%\nUnlocks late game technologies
+		Prerequisites: sowresearch, ~!stateofwar, sowheavyfactory
     Power:
         Amount: -500     
 	Valued:
@@ -3653,12 +3807,12 @@ mta_unlock:
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: upgrade.sow
-        BuildDuration: 3000
+        BuildDuration: 2000
         BuildDurationModifier: 50       
 		Description: Research vehicle to be ready for production
-		Prerequisites: sowmediumfactory
+		Prerequisites: sowmediumfactory, ~!mta_unlock
     Power:
-        Amount: -50  
+        Amount: -50
     RenderSprites:
         Image: sow_mt_cannon
 	Valued:
@@ -3668,83 +3822,84 @@ mta_unlock:
 mtb_unlock:
     Inherits: mta_unlock
     Buildable: 
-        Prerequisites: ~sowmediumfactory, ~factory_sowupgrade
+        Prerequisites: ~sowmediumfactory, ~factory_sowupgrade, ~!mtb_unlock
     Tooltip:
-        Name: Research Medium Flame
+        Name: Medium Flame Unlock
     RenderSprites:
         Image: sow_mt_flame 
     
 mtc_unlock:
     Inherits: mta_unlock
     Buildable: 
-        Prerequisites: ~sowmediumfactory, ~factory_sowupgrade_1
+        Prerequisites: ~sowmediumfactory, ~factory_sowupgrade_1, ~!mtc_unlock
     Tooltip:
-        Name: Research Medium Siege
+        Name: Medium Siege Unlock
     RenderSprites:
         Image: sow_mt_siege
 
 mtd_unlock:
     Inherits: mta_unlock
     Buildable: 
-        Prerequisites: ~sowmediumfactory, ~factory_sowupgrade_2
+        Prerequisites: ~sowmediumfactory, ~factory_sowupgrade_2, ~!mtd_unlock
     Tooltip:
-        Name: Research Medium Special
+        Name: Medium Special Unlock
     RenderSprites:
         Image: sow_mt_special
 
 mte_unlock:
     Inherits: mta_unlock
     Buildable: 
-        Prerequisites: ~sowmediumfactory, ~factory_sowupgrade_3
+        Prerequisites: ~sowmediumfactory, ~factory_sowupgrade_3, ~!mte_unlock
     Tooltip:
-        Name: Research Medium Anti-Air
+        Name: Medium Anti-Air Unlock
     RenderSprites:
         Image: sow_mt_antiair
 
 hta_unlock:
     Inherits: mta_unlock
     Buildable: 
-        Prerequisites: ~sowheavyfactory, ~mta_unlock
+        Prerequisites: ~sowheavyfactory, ~mta_unlock, ~!hta_unlock
+        BuildDuration: 3000
     Power:
         Amount: -100  
     Tooltip:
-        Name: Research Heavy Panzer
+        Name: Heavy Panzer Unlock
     RenderSprites:
         Image: sow_ht_cannon
 
 htb_unlock:
     Inherits: hta_unlock
     Buildable: 
-        Prerequisites: ~sowheavyfactory, ~factory_sowupgrade, ~mtb_unlock
+        Prerequisites: ~sowheavyfactory, ~factory_sowupgrade, ~mtb_unlock, ~!htb_unlock
     Tooltip:
-        Name: Research Heavy Flame
+        Name: Heavy Flame Unlock
     RenderSprites:
         Image: sow_ht_flame 
 
 htc_unlock:
     Inherits: hta_unlock
     Buildable: 
-        Prerequisites: ~sowheavyfactory, ~factory_sowupgrade_1, ~mtc_unlock
+        Prerequisites: ~sowheavyfactory, ~factory_sowupgrade_1, ~mtc_unlock, ~!htc_unlock
     Tooltip:
-        Name: Research Heavy Siege
+        Name: Heavy Siege Unlock
     RenderSprites:
         Image: sow_ht_siege     
 
 htd_unlock:
     Inherits: hta_unlock
     Buildable: 
-        Prerequisites: ~sowheavyfactory, ~factory_sowupgrade_2, ~mtd_unlock    
+        Prerequisites: ~sowheavyfactory, ~factory_sowupgrade_2, ~mtd_unlock, ~!htd_unlock    
     Tooltip:
-        Name: Research Heavy Special
+        Name: Heavy Special Unlock
     RenderSprites:
-        Image: sow_ht_siege   
+        Image: sow_ht_special  
 
 hte_unlock:
     Inherits: hta_unlock
     Buildable: 
-        Prerequisites: ~sowheavyfactory, ~factory_sowupgrade_3, ~mte_unlock   
+        Prerequisites: ~sowheavyfactory, ~factory_sowupgrade_3, ~mte_unlock, ~!hte_unlock   
     Tooltip:
-        Name: Research Heavy Anti-Air
+        Name: Heavy Anti-Air Unlock
     RenderSprites:
         Image: sow_ht_antiair   
         

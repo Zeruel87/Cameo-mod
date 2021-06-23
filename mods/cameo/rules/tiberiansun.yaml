@@ -157,6 +157,23 @@ tsmonstermaker1:
 # TS MCV
 #######################################
 
+OILB.TS:
+	Inherits: OILB.camea
+    Buildable:
+		Queue: Defence.TSGDI, RADefence.TSGDI, Defence.TSNod, RADefence.TSNod, Defence.MUTANT, RADefence.MUTANT, Defence.CABAL, RADefence.CABAL
+		BuildPaletteOrder: 120
+		Prerequisites: tek, ~techlevel.medium
+		Description: Provides Passive income
+    Valued:
+        Cost: 3000
+    RenderSprites:
+        Image: ra2cpower
+    Power:
+        Amount: -100
+    Health: 
+        HP: 120000
+    -WithMakeAnimation:
+    
 TSGTCNST:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -1035,7 +1052,7 @@ TSNTPOWR:
 		Range: 4c0
 	WithBuildingBib:
 	Power:
-		Amount: 100
+		Amount: 120
 	ScalePowerWithHealth:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
@@ -1209,29 +1226,6 @@ TSGTPILE:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-flag
 
-TSGTPILE2:
-	Inherits: TSGTPILE
-	Buildable:
-		BuildPaletteOrder: 30
-		Prerequisites: anypower
-		Queue: Building.MUTANT, RABuilding.MUTANT
-		Description: Trains infantry
-	Production@NORMAL:
-		Produces: Infantry.MUTANT
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry.MUTANT
-	GrantExternalConditionToProduced:
-		Condition: produced
-	ProductionQueue:
-		Type: Infantry.MUTANT
-	ProductionBar@INFANTRYGDI:
-		ProductionType: Infantry.MUTANT
-	ProductionBar@RAINFANTRYGDI:
-		ProductionType: RAInfantry.MUTANT
-	-WithIdleOverlay@FLAG:
-	RenderSprites:
-		Image: tsgtpile
-
 TSNTHAND:
 	Inherits: ^BaseBuilding
 	Inherits@sell: ^TSSpawnActorsOnSell
@@ -1330,6 +1324,30 @@ TSNTHAND2:
 	RenderSprites:
 		Image: tsnthand
 
+TSGTPILE2:
+	Inherits: TSNTHAND
+    Tooltip:
+		Name: Hand of Forgotten
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building.MUTANT, RABuilding.MUTANT
+		Description: Trains infantry
+	Production@NORMAL:
+		Produces: Infantry.MUTANT
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.MUTANT
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Infantry.MUTANT
+	ProductionBar@INFANTRYNOD:
+		ProductionType: Infantry.MUTANT
+	ProductionBar@RAINFANTRYNOD:
+		ProductionType: RAInfantry.MUTANT
+	RenderSprites:
+		Image: tsnthand
+        
 TSGTWEAP:
 	Inherits: ^BaseBuilding
 	Inherits@sell: ^TSSpawnActorsOnSell
@@ -1414,26 +1432,6 @@ TSGTWEAP:
 	WithIdleOverlay@BIB:
 		RequiresCondition: !build-incomplete
 		Sequence: bib2
-
-TSGTWEAP2:
-	Inherits: TSGTWEAP
-	Buildable:
-		BuildPaletteOrder: 40
-		Prerequisites: tsproc
-		Queue: Building.MUTANT, RABuilding.MUTANT
-		Description: Produces vehicles
-	Production@NORMAL:
-		Produces: Vehicle.MUTANT
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAVehicle.MUTANT
-	ProductionQueue:
-		Type: Vehicle.MUTANT
-	ProductionBar@VEHICLEGDI:
-		ProductionType: Vehicle.MUTANT
-	ProductionBar@RAVEHICLEGDI:
-		ProductionType: RAVehicle.MUTANT
-	RenderSprites:
-		Image: tsgtweap
 
 TSNTWEAP:
 	Inherits: ^BaseBuilding
@@ -1531,6 +1529,26 @@ TSNTWEAP2:
 		ProductionType: Vehicle.CABAL
 	ProductionBar@RAVEHICLEGDI:
 		ProductionType: RAVehicle.CABAL
+	RenderSprites:
+		Image: tsntweap
+
+TSGTWEAP2:
+	Inherits: TSNTWEAP
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: tsproc
+		Queue: Building.MUTANT, RABuilding.MUTANT
+		Description: Produces vehicles
+	Production@NORMAL:
+		Produces: Vehicle.MUTANT
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.MUTANT
+	ProductionQueue:
+		Type: Vehicle.MUTANT
+	ProductionBar@VEHICLEGDI:
+		ProductionType: Vehicle.MUTANT
+	ProductionBar@RAVEHICLEGDI:
+		ProductionType: RAVehicle.MUTANT
 	RenderSprites:
 		Image: tsntweap
 
@@ -1790,7 +1808,7 @@ tsntradr:
 		BuildPaletteOrder: 70
 		Prerequisites: tsproc, ~techlevel.medium
 		Queue: Building.CABAL, Building.TSNod, RABuilding.CABAL, RABuilding.TSNod
-		Description: Provides radar.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+		Description: Provides radar.\nUnlocks higher-tech units and buildings.\nProvides Support power\nRequires power to operate.
 	Building:
 		Footprint: X_ xx
 		Dimensions: 2,2
@@ -1821,7 +1839,27 @@ tsntradr:
 		RequiresCondition: !build-incomplete
 		PauseOnCondition: lowpower || disabled
 		Sequence: idle-dish
-
+   	DetonateWeaponPower@bribedmutants:
+		OrderName: GDI Drop
+		Cursor: ability
+		PauseOnCondition: lowpower
+		Icon: mutcommando 
+		Description: Bribed Mutants
+		LongDesc: Deploys Corrino's Elite Sardaukars from orbit to decimate your enemies.\nDrop Pods damages area around
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: ReinforcementsArrived
+        IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+        DisplayBeacon: True
+		DisplayRadarPing: True
+        DisplayTimerStances: Ally, Neutral, Enemy
+		ChargeInterval: 6000
+		Weapon: NODMutantSpawner
+		CameraActor: camera.small
+		CameraRemoveDelay: 60
+        AllowMultiple: True
+        Prerequisites: mmtsnod
+        
 tsgtradr:
 	Inherits: ^BaseBuilding
 	Inherits@sell: ^TSSpawnActorsOnSell
@@ -1842,7 +1880,7 @@ tsgtradr:
 		BuildPaletteOrder: 70
 		Prerequisites: tsproc, ~techlevel.medium
 		Queue: Building.TSGDI, RABuilding.TSGDI
-		Description: Provides radar.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+		Description: Provides radar.\nUnlocks higher-tech units and buildings.\nRequires power to operate.\nCan be only built once.      
 	Building:
 		Footprint: X_ xx ==
 		Dimensions: 2,3
@@ -1910,7 +1948,8 @@ tsgtradr2:
 		IncomingSpeechNotification: EnemyUnitsApproaching
 		SelectTargetSpeechNotification: SelectTarget
 		DisplayRadarPing: True
-		ChargeInterval: 6000
+        DisplayTimerStances: Ally, Neutral, Enemy
+		ChargeInterval: 6750
 		Weapon: MutSAPCSpawner
 		ActivationDelay: 60
 		CameraRemoveDelay: 90
@@ -2026,7 +2065,7 @@ tsgttech:
 	HitShape:
 		TargetableOffsets: 420,-768,0, 420,768,0, -770,-768,0, -770,768,0
 	Buildable:
-		Queue: Building.TSGDI, RABuilding.TSGDI, Building.MUTANT, RABuilding.MUTANT
+		Queue: Building.TSGDI, RABuilding.TSGDI
 		BuildPaletteOrder: 150
 		Prerequisites: vehicleproduction, anyhq, ~techlevel.high
 		Description: Provides GDI advanced technologies.
@@ -2056,6 +2095,19 @@ tsgttech:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
 
+tsfgttech:
+    Inherits: tsgttech
+    Tooltip:
+        Name: Forgotten Tech Center
+	Buildable:
+		Queue: Building.MUTANT, RABuilding.MUTANT
+		BuildPaletteOrder: 150
+		Prerequisites: vehicleproduction, anyhq, ~techlevel.high
+		Description: Provides Forgotten advanced technologies.\nCan be only built once
+        BuildLimit: 1
+    RenderSprites:
+        Image: tsgttech
+        
 tsnttmpl:
 	Inherits: ^BaseBuilding
 	Inherits@sell: ^TSSpawnActorsOnSell
@@ -2570,7 +2622,7 @@ tsntlasr:
 	Valued:
 		Cost: 300
 	Power:
-		Amount: -40
+		Amount: -20
 	Tooltip:
 		Name: Laser Turret
 	Building:
@@ -2614,7 +2666,7 @@ tsgtctwrmg:
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: barracks
-		Queue: Defence.TSGDI, RADefence.TSGDI, Defence.MUTANT, RADefence.MUTANT
+		Queue: Defence.TSGDI, RADefence.TSGDI
 		BuildDurationModifier: 40
 		Description: Basic base defense.\nDoes not require power to operate.\n  Strong vs Infantry, Light armor\n  Weak vs Aircraft
 	RequiresBuildableArea:
@@ -2660,7 +2712,7 @@ tsgtctwrrpg:
 	Buildable:
 		BuildPaletteOrder: 130
 		Prerequisites: vehicleproduction, ~techlevel.medium
-		Queue: Defence.TSGDI, RADefence.TSGDI, Defence.MUTANT, RADefence.MUTANT
+		Queue: Defence.TSGDI, RADefence.TSGDI
 		BuildDurationModifier: 40
 		Description: GDI anti-vehicle base defense.\nDoes not require power to operate.\n  Strong vs Armored ground units\n  Weak vs Aircraft
 	RequiresBuildableArea:
@@ -2704,7 +2756,7 @@ tsgtctwrsam:
 		Name: SAM Tower
 	Buildable:
 		BuildPaletteOrder: 140
-		Prerequisites: barracks, anyhq, ~techlevel.medium
+		Prerequisites: barracks, ~techlevel.medium
 		Queue: Defence.TSGDI, RADefence.TSGDI, Defence.MUTANT, RADefence.MUTANT
 		BuildDurationModifier: 40
 		Description: GDI anti-air base defense.\nDoes not require power to operate.\n  Strong vs Aircraft
@@ -2736,6 +2788,22 @@ tsgtctwrsam:
 	Power:
 		Amount: -30
 
+tsgtwr:
+	Inherits: GTWR
+    Valued:
+		Cost: 650
+	Buildable:
+		BuildPaletteOrder: 0
+		Prerequisites: barracks
+		Queue: Defence.MUTANT, RADefence.MUTANT
+	RenderSprites:
+		Image: gtwr
+        Scale: 1.1
+    Health:
+		HP: 45000
+    RangeMultiplier:
+        Modifier: 105
+
 tsntsam:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
@@ -2747,7 +2815,7 @@ tsntsam:
 		Name: SAM Site
 	Buildable:
 		BuildPaletteOrder: 140
-		Prerequisites: barracks, anyhq, ~techlevel.medium
+		Prerequisites: barracks, ~techlevel.medium
 		Queue: Defence.TSNod, RADefence.TSNod, Defence.CABAL, RADefence.CABAL
 		BuildDurationModifier: 40
 		Description: Nod anti-air base defense.\nRequires power to operate.\n  Strong vs Aircraft
@@ -2829,7 +2897,7 @@ tsntpuls:
 	Buildable:
 		BuildPaletteOrder: 140
 		Prerequisites: anyhq, ~techlevel.medium
-		Queue: Defence.TSGDI, RADefence.TSGDI, Defence.CABAL, RADefence.CABAL, Defence.TSNod, RADefence.TSNod, Defence.Mutant, RADefence.Mutant
+		Queue: Defence.TSGDI, RADefence.TSGDI, Defence.CABAL, RADefence.CABAL, Defence.TSNod, RADefence.TSNod
 		BuildDurationModifier: 40
 		Description: Disables mechanical units in an area.\nRequires power to operate.
 	Valued:
@@ -2889,7 +2957,7 @@ tsntobel:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: tek, ~techlevel.high
-		Queue: Defence.TSNod, RADefence.TSNod, Defence.CABAL, RADefence.CABAL
+		Queue: Defence.TSNod, RADefence.TSNod, Defence.CABAL, RADefence.CABAL, Defence.MUTANT, RADefence.MUTANT
 		BuildDurationModifier: 40
 		Description: Advanced base defense.\nRequires power to operate.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Building:
@@ -3071,7 +3139,9 @@ TSMEDIC:
 		DefaultAttackSequence: shoot
 	Voiced:
 		VoiceSet: TSMedic
-
+    RenderSprites:
+        Scale: 0.7
+        
 TSENGINEER:
 	Inherits: E6
 	Inherits@anim: ^TSInfantry
@@ -3102,7 +3172,7 @@ TSE2:
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 200
+		Cost: 300
 	Tooltip:
 		Name: Disc Thrower
 	UpdatesPlayerStatistics:
@@ -3114,7 +3184,7 @@ TSE2:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 7500
+		HP: 8000
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
@@ -3387,7 +3457,63 @@ TSE3:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: TSBazookaG
-
+        
+elitcadre:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^TSInfantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Elite Cadre
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks, anyhq, tek
+		Queue: Infantry.TSNod, RAInfantry.TSNod, Infantry.X_Infantry
+		Description: Elite Infantry of NOD used to fight high technology enemies \n  Strong vs Infantry, Air, Vehicles\n  Weak vs Siege, Heavy armor
+        BuildDuration: 425
+        BuildDurationModifier: 100
+    Mobile:
+		Speed: 70
+	Health:
+		HP: 20000
+	AutoTarget:
+		ScanRadius: 6
+	Armament@PRIMARY:
+		Weapon: elitecadre
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: elitecadre
+	TakeCover:
+		ProneOffset: 180,0,-200
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: TSRocket
+   	WithInfantryBody:
+		RequiresCondition: !cydamaged
+		DefaultAttackSequence: attack
+	WithInfantryBody@damaged:
+		MoveSequence: crippled-run
+		DefaultAttackSequence: crippled-attack
+		StandSequences: crippled-stand
+		RequiresCondition: cydamaged
+	GrantConditionOnDamageState@damaged:
+		Condition: cydamaged
+		ValidDamageStates: Critical
+    RenderSprites:
+        PlayerPalette: ra2player
+        Scale: 0.7
+    WithDeathAnimation:
+        DeathSequencePalette: ra2player
+        CrushedSequencePalette: ra2effect
+        
 TSCYBORG:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -3396,20 +3522,27 @@ TSCYBORG:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
+    Inherits@EMPfrontal: ^FrontalEMP
+    Inherits@EMP: ^UnitDisable
 	Valued:
-		Cost: 450
+		Cost: 300
 	Tooltip:
 		Name: Cyborg Infantry
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: barracks, anyhq
-		Queue: Infantry.TSNod, RAInfantry.TSNod, Infantry.X_Infantry
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+        BuildDurationModifier: 100
+        BuildDuration: 250
+		Queue: Infantry.CABAL, RAInfantry.CABAL, Infantry.X_Infantry
 		Description: Cybernetic infantry unit.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
-	Mobile:
+    Mobile:
 		Speed: 56
-	Health:
+        PauseOnCondition: disabled
+	Armor:
+		Type: Light
+    Health:
 		HP: 25000
 	AutoTarget:
 		ScanRadius: 4
@@ -3461,18 +3594,7 @@ TSCYBORG:
 		Weapon: TSVulcanTower
 	Selectable:
 		Class: tscyborg
-
-TSCYBORGC:
-	Inherits: TSCYBORG
-	Valued:
-		Cost: 250
-	Buildable:
-		BuildPaletteOrder: 10
-		Prerequisites: barracks
-		Queue: Infantry.CABAL, RAInfantry.CABAL, Infantry.X_Infantry
-	RenderSprites:
-		Image: tscyborg
-
+        
 TSCHAMSPY:
 	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -3534,7 +3656,7 @@ TSMHIJACK:
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: vehicleproduction, anyhq
-		Queue: Infantry.TSGDI, RAInfantry.TSGDI, Infantry.TSNod, RAInfantry.TSNod, Infantry.MUTANT, RAInfantry.MUTANT
+		Queue: Infantry.TSNod, RAInfantry.TSNod, Infantry.MUTANT, RAInfantry.MUTANT
 		BuildLimit: 1
 		Description: Hijacks vehicles.
 	Mobile:
@@ -3543,6 +3665,13 @@ TSMHIJACK:
 		HP: 6000
 	Passenger:
 		PipType: Blue
+   	Mirage:
+		RequiresCondition: !disabled
+		InitialDelay: 100
+		RevealDelay: 20
+		RevealOn: Attack, Infiltrate, Damage
+		MirageCondition: disguise
+		DefaultTargetTypes: t08, t18, t10, t03, t02     
 	CaptureManager:
 	Captures@CAPTURES:
 		CaptureTypes: vehicle
@@ -3635,11 +3764,12 @@ TSCYC2:
 		BuildPaletteOrder: 25
 		Prerequisites: barracks, tek
 		Queue: Infantry.TSNod, RAInfantry.TSNod, Infantry.X_Infantry
+        BuildLimit: 1
 		Description: Elite cybernetic infantry unit.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Aircraft
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 35000
+		HP: 45000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -3655,6 +3785,7 @@ TSCYC2.CABAL:
 		Cost: 1150
 	Buildable:
 		Queue: Infantry.CABAL, RAInfantry.CABAL
+        -BuildLimit: 
 	RenderSprites:
 		Image: tscyc2
 
@@ -3670,7 +3801,8 @@ TSUMAGON:
 		BuildPaletteOrder: 95
 		Prerequisites: barracks, tek
 		Queue: Infantry.MUTANT, RAInfantry.MUTANT, Infantry.X_Infantry
-		Description: Advanced anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles
+		Description: Advanced anti-infantry unit.\nMaximum 10 can be trained.\n  Strong vs Infantry\n  Weak vs Vehicles
+        BuildLimit: 10
 	Mobile:
 		Speed: 71
 	Health:
@@ -3694,6 +3826,22 @@ TSUMAGON:
 	Selectable:
 		Class: tsumagon
 
+TSUMAGONSP:
+    Inherits: TSUMAGON
+    -Buildable:
+    RejectsOrders:
+    -MapEditorData:
+    RenderSprites:
+        Image: tsumagon
+    AutoTarget:
+        ScanRadius: 9999
+        InitialStance: AttackAnything
+    -Voiced:      
+    GivesBounty:
+        Percentage: 5
+  	GivesExperience:
+		PlayerExperienceModifier: 5
+        
 TSGHOST:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -3712,8 +3860,8 @@ TSGHOST:
 		BuildPaletteOrder: 90
 		Prerequisites: barracks, tek
 		Queue: Infantry.TSGDI, RAInfantry.TSGDI
-		BuildLimit: 1
-		Description: Elite commando infantry, armed with\na railgun and C4.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Destroy Building with C4\nMaximum 1 can be trained.
+		BuildLimit: 5
+		Description: Elite commando infantry, armed with\na railgun and C4.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Destroy Building with C4\nMaximum 5 can be trained.
 	Mobile:
 		Speed: 71
 	Armor:
@@ -3740,6 +3888,23 @@ TSGHOST:
 	Selectable:
 		Class: tsghost
 
+TSGHOSTSP:
+    Inherits: TSGHOST
+    -Buildable:
+    RejectsOrders:
+    -MapEditorData:
+    RenderSprites:
+        Image: tsghost   
+    AutoTarget:
+        InitialStance: AttackAnything
+        ScanRadius: 9999
+    -Voiced:
+    -Armament@c4:
+    GivesBounty:
+        Percentage: 5   
+ 	GivesExperience:
+		PlayerExperienceModifier: 5
+        
 tsghost.mutant:
 	Inherits: TSGHOST
 	RenderSprites:
@@ -3761,7 +3926,7 @@ TSMUTANT:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@tibheal: ^TibHealable
 	Valued:
-		Cost: 100
+		Cost: 50
 	Tooltip:
 		Name: Mutant
 	UpdatesPlayerStatistics:
@@ -3769,6 +3934,8 @@ TSMUTANT:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks
+        BuildDuration: 68
+        BuildDurationModifier: 100
 		Queue: Infantry.MUTANT, RAInfantry.MUTANT, Infantry.X_Infantry
 		Description: Mutant armed with dual pistols.\nWeapon has high spread.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
@@ -3792,11 +3959,27 @@ TSMUTANT:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: TSVulcanTower
-
+        
+TSMUTANTSP:
+    Inherits: TSMUTANT
+    -Buildable:
+    RejectsOrders:
+    -MapEditorData:
+    RenderSprites:
+        Image: tsmutant
+    AutoTarget:
+        InitialStance: AttackAnything
+        ScanRadius: 9999
+    -Voiced:      
+    GivesBounty:
+        Percentage: 5   
+	GivesExperience:
+		PlayerExperienceModifier: 0    
+        
 TSMWMN:
 	Inherits: TSMUTANT
 	Valued:
-		Cost: 100
+		Cost: 150
 	Tooltip:
 		Name: Mutant Soldier
 	UpdatesPlayerStatistics:
@@ -3806,10 +3989,12 @@ TSMWMN:
 		Prerequisites: barracks
 		Queue: Infantry.MUTANT, RAInfantry.MUTANT, Infantry.X_Infantry
 		Description: Mutant armed with a carbine.\nWeapon does high, precise damage.\n  Strong vs infantry, light vehicles\n  Weak vs tanks, aircraft
+        BuildDuration: 120
+        BuildDurationModifier: 100
 	Mobile:
-		Speed: 71
+		Speed: 68
 	Health:
-		HP: 7000
+		HP: 8000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -3826,14 +4011,30 @@ TSMWMN:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: TSRPGTower
-
+        
+TSMWMNSP:
+    Inherits: TSMWMN
+    -Buildable:
+    RejectsOrders:
+    -MapEditorData:
+    RenderSprites:
+        Image: tsmwmn
+    AutoTarget:
+        InitialStance: AttackAnything
+        ScanRadius: 9999
+    -Voiced:        
+    GivesBounty:
+        Percentage: 5
+	GivesExperience:
+		PlayerExperienceModifier: 0
+        
 TSMUTANT3:
 	Inherits: TSMUTANT
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 250
+		Cost: 450
 	Tooltip:
 		Name: Mutant Sergeant
 	UpdatesPlayerStatistics:
@@ -3843,6 +4044,8 @@ TSMUTANT3:
 		Prerequisites: barracks, anyhq
 		Queue: Infantry.MUTANT, RAInfantry.MUTANT, Infantry.X_Infantry
 		Description: Elite mutant infantry, can use grenades.\n  Strong vs Infantry\n  Weak vs Vehicles
+        BuildDuration: 180
+        BuildDurationModifier: 100
 	Mobile:
 		Speed: 56
 	Health:
@@ -3888,14 +4091,14 @@ TSWEEDGUY:
 		Queue: Infantry.MUTANT, RAInfantry.MUTANT, Infantry.X_Infantry
 		Description: Mutant soldier with a Tiberium weapon.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
-		Speed: 60
+		Speed: 64
 		Locomotor: chem
 	Health:
-		HP: 9000
+		HP: 10000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
-		Weapon: Chemspray
+		Weapon: TSChemspray
 		LocalOffset: 341,0,256
 		MuzzleSequence: muzzle
 	WithInfantryBody:
@@ -3908,10 +4111,12 @@ TSWEEDGUY:
 	-DamagedByTerrain:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
-		Weapon: Chemspray
+		Weapon: TSChemspray
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
-
+	Targetable@Immune:
+		TargetTypes: ToxinImmune
+        
 TSDOGGIE:
 	Inherits: RAPT
 	Inherits@bounty: ^GlobalBounty			##########
@@ -3921,15 +4126,16 @@ TSDOGGIE:
 	Health:
 		HP: 18000
 	Valued:
-		Cost: 600
+		Cost: 500
 	Armor:
 		Type: None
 	Armament:
 		Weapon: TSFiendShard
 	Buildable:
 		BuildPaletteOrder: 25
-		BuildDurationModifier: 70
-		Prerequisites: barracks
+		BuildDurationModifier: 100
+        BuildDuration: 300
+		Prerequisites: barracks, anyhq
 		Queue: Infantry.MUTANT, RAInfantry.MUTANT, Infantry.X_Infantry
 		Description: Canine mutant that hurls Tiberium shards.\nCan attack aircraft\n Strong vs Vehicles\n Weak vs Infantry
 	Mobile:
@@ -4054,7 +4260,12 @@ tsvislrg:
 TSHARV:
 	Inherits: HARV
 	Inherits@Voxel: ^TSRenderVoxel
-	Buildable:
+ 	Health:
+		HP: 85000   
+	Harvester:
+		PipCount: 8
+		Capacity: 35
+    Buildable:
 		Prerequisites: tsproc
 		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.TSNod, RAVehicle.TSNod, Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.CABAL, RAVehicle.CABAL
 		Description: Harvests Tiberium for processing
@@ -4234,18 +4445,20 @@ TSMMCH:
 	Inherits@detect: ^EliteDetector
 	Inherits@vo: ^AttackTurretedVoice
 	Valued:
-		Cost: 800
+		Cost: 750
 	Tooltip:
 		Name: Titan
 	Buildable:
 		BuildPaletteOrder: 50
 		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
+        BuildDurationModifier: 100
+        BuildDuration: 375
 		Description: General purpose mechanized walker.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		Locomotor: tracked
 		Speed: 75
 	Health:
-		HP: 45000
+		HP: 50000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -4455,7 +4668,7 @@ TSHVR:
 	Inherits@EMP: ^TurretEMP
 	Inherits@vo: ^AttackTurretedVoice
 	Valued:
-		Cost: 900
+		Cost: 600
 	Tooltip:
 		Name: Hover MLRS
 	Buildable:
@@ -4463,6 +4676,8 @@ TSHVR:
 		Prerequisites:  anyhq, ~techlevel.medium
 		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Naval.TSGDI, RANaval.TSGDI, Vehicle.X_Vehicles
 		Description: Hovering vehicle armed with\nlong range missiles.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
+        BuildDuration: 300
+        BuildDurationModifier: 100
 	Mobile:
 		Locomotor: hover
 		Speed: 99
@@ -4506,7 +4721,7 @@ TSSMECH:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EXT: ^ExternalConditions
 	Valued:
-		Cost: 500
+		Cost: 450
 	Tooltip:
 		Name: Wolverine
 	UpdatesPlayerStatistics:
@@ -4514,6 +4729,8 @@ TSSMECH:
 	Buildable:
 		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
 		BuildPaletteOrder: 20
+        BuildDuration: 250
+        BuildDurationModifier: 100
 		Prerequisites: vehicleproduction, ~techlevel.low
 		Description: Anti-personnel walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
@@ -4552,22 +4769,26 @@ TSHMEC:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@snipe: ^DriverKillImmune
 	Valued:
-		Cost: 3000
+		Cost: 3500
 	Tooltip:
 		Name: Mammoth Mk. II
 	Buildable:
 		BuildPaletteOrder: 140
 		Prerequisites: tek, ~techlevel.high
 		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
+        BuildDuration: 1250
+        BuildDurationModifier: 100
 		BuildLimit: 1
 		Description: Slow heavy walker.\nArmed with dual railguns and rocket launchers.\n Strong vs Everything\n Maximum 1 can be built.
 	Mobile:
 		TurnSpeed: 8
 		Speed: 42
 	Health:
-		HP: 200000
-	SelfHealing:
-		Step: 500
+		HP: 250000
+	ChangesHealth:
+		PercentageStep: 1
+		Delay: 40
+		StartIfBelow: 100
 	Repairable:
 		HpPerStep: 3500
 	Armor:
@@ -4580,11 +4801,26 @@ TSHMEC:
 		LocalOffset: -420,-300,600, -420,300,600
 		LocalYaw: -100,100
 		MuzzleSequence: muzzle1
+        RequiresCondition: !rank-elite
+ 	Armament@MISSILESE:
+		Name: missiles
+		Weapon: TSMammothTusk_elite
+		LocalOffset: -420,-300,600, -420,300,600
+		LocalYaw: -100,100
+		MuzzleSequence: muzzle1
+        RequiresCondition: rank-elite       
 	Armament@RAILGUN:
 		Name: railgun
 		Weapon: TSMechRailgun
 		LocalOffset: 550,-420,650, 550,420,650
 		MuzzleSequence: muzzle2
+        RequiresCondition: !rank-elite 
+    Armament@RAILGUNE:
+		Name: railgun
+		Weapon: TSMechRailgun_elite
+		LocalOffset: 550,-420,650, 550,420,650
+		MuzzleSequence: muzzle2    
+        RequiresCondition: rank-elite 
 	AttackFrontal:
 		Armaments: railgun
 	AttackFollow:
@@ -4621,19 +4857,21 @@ TSSONIC:
 	Inherits@EMP: ^TurretEMP
 	Inherits@vo: ^AttackTurretedVoice
 	Valued:
-		Cost: 1300
+		Cost: 1500
 	Tooltip:
 		Name: Disruptor
 	Buildable:
 		BuildPaletteOrder: 120
 		Prerequisites: tek, ~techlevel.high
+        BuildDuration: 680
+        BuildDurationModifier: 100
 		Queue: Vehicle.TSGDI, RAVehicle.TSGDI, Vehicle.X_Vehicles
 		Description: Armored high-tech vehicle with\na long range sonic armament.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Aircraft
 	Mobile:
 		TurnSpeed: 8
 		Speed: 56
 	Health:
-		HP: 50000
+		HP: 62500
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -4718,7 +4956,7 @@ TSBGGY:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 400
+		Cost: 350
 	Tooltip:
 		Name: Attack Buggy
 	Buildable:
@@ -4765,7 +5003,7 @@ TSBIKE:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 600
+		Cost: 550
 	Tooltip:
 		Name: Attack Cycle
 	Buildable:
@@ -4813,7 +5051,7 @@ TSSTNK:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 1100
+		Cost: 1000
 	Tooltip:
 		Name: Stealth Tank
 	Buildable:
@@ -4824,7 +5062,7 @@ TSSTNK:
 	Mobile:
 		Speed: 108
 	Health:
-		HP: 18000
+		HP: 24000
 	Repairable:
 		HpPerStep: 2000
 	Armor:
@@ -4914,11 +5152,13 @@ TSTTNK:
 	Inherits@detect: ^EliteDetector
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 800
+		Cost: 600
 	Tooltip:
 		Name: Tick Tank
 	Buildable:
 		BuildPaletteOrder: 60
+        BuildDurationModifier: 100
+        BuildDuration: 300                                                    
 		Queue: Vehicle.TSNod, RAVehicle.TSNod, Vehicle.X_Vehicles
 		Description: Nod's main battle tank.\nCan deploy to gain extra protection.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
@@ -4927,7 +5167,7 @@ TSTTNK:
 		Speed: 90
 		RequireForceMoveCondition: deployed
 	Health:
-		HP: 35000
+		HP: 40000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -4937,7 +5177,7 @@ TSTTNK:
 	RevealOnFire:
 		ArmamentNames: primary, deployed
 	DamageMultiplier:
-		Modifier: 50
+		Modifier: 75
 		RequiresCondition: deployed
 	Turreted:
 		TurnSpeed: 40
@@ -5124,7 +5364,7 @@ TSSUBTANK:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 750
+		Cost: 550
 	Tooltip:
 		Name: Devil's Tongue
 	Buildable:
@@ -5166,7 +5406,7 @@ TSSAPC:
 	Inherits@sub: ^SubterraneanVoxelVehicle
 	Inherits@cargo: ^CargoVehicle
 	Valued:
-		Cost: 800
+		Cost: 700
 	Tooltip:
 		Name: Subterranean APC
 	UpdatesPlayerStatistics:
@@ -5205,7 +5445,7 @@ TSSAPC:
 		Types: Infantry, Hacker
 		MaxWeight: 5
 		PipCount: 5
-		UnloadTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach
+		UnloadTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, ClearDune
 	Targetable@garrisoned:
 		RequiresCondition: loaded && !submerged
 
@@ -5280,7 +5520,7 @@ tssgen:
 	Inherits@Voxel: ^TSRenderVoxel
 	Inherits@detect: ^GenericGroundDetector
 	Valued:
-		Cost: 1600
+		Cost: 1500
 	Tooltip:
 		Name: Mobile Stealth Generator
 	Buildable:
@@ -5415,10 +5655,12 @@ TSWINI2:
 	Tooltip:
 		Name: Missile Van
 	Buildable:
-		BuildPaletteOrder: 160
-		Prerequisites: anyhq, ~techlevel.medium
+		BuildPaletteOrder: 100
+		Prerequisites: ~techlevel.medium
 		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Light motor vehicle armed with\nlong range missiles.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
+        BuildDuration: 300
+        BuildDurationModifier: 100
 	Mobile:
 		Speed: 99
 	Health:
@@ -5469,7 +5711,7 @@ TSCAR2:
 		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Fast raiding vehicle.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
-		Speed: 113
+		Speed: 135
 	Health:
 		HP: 20000
 	Repairable:
@@ -5518,9 +5760,11 @@ TS1TNK:
 		BuildPaletteOrder: 170
 		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: Fast, lightly armored tank.\n Strong vs Light Vehicles
+        BuildDuration: 250
+        BuildDurationModifier: 100
 	Mobile:
 		Locomotor: tracked
-		Speed: 110
+		Speed: 126
 	Health:
 		HP: 34000
 	Repairable:
@@ -5561,7 +5805,7 @@ TS2TNK:
 	Inherits@EMP: ^TurretEMP
 	Inherits@vo: ^AttackTurretedVoice
 	Valued:
-		Cost: 800
+		Cost: 700
 	Tooltip:
 		Name: Medium Tank
 	Buildable:
@@ -5569,9 +5813,11 @@ TS2TNK:
 		Prerequisites: anyhq, ~techlevel.medium
 		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
 		Description: General-purpose Mutant tank.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
+        BuildDuration: 375
+        BuildDurationModifier: 100
 	Mobile:
 		Locomotor: tracked
-		Speed: 85
+		Speed: 90
 	Health:
 		HP: 45000
 	Repairable:
@@ -5613,7 +5859,7 @@ TS3TNK:
 	Inherits@EMP: ^TurretEMP
 	Inherits@vo: ^AttackTurretedVoice
 	Valued:
-		Cost: 1150
+		Cost: 1000
 	Tooltip:
 		Name: Heavy Tank
 	Buildable:
@@ -5621,6 +5867,8 @@ TS3TNK:
 		Prerequisites: tek, ~techlevel.high
 		Queue: Vehicle.MUTANT, RAVehicle.MUTANT
 		Description: Mutant heavy armor.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
+        BuildDuration: 550
+        BuildDurationModifier: 100
 	Mobile:
 		Locomotor: tracked
 		Speed: 71
@@ -5708,13 +5956,15 @@ TS4TNK:
 	Inherits@EMP: ^TurretEMP
 	Inherits@vo: ^AttackTurretedVoice
 	Valued:
-		Cost: 1700
+		Cost: 1500
 	Tooltip:
 		Name: Mammoth Tank
 	Buildable:
 		BuildPaletteOrder: 200
 		Prerequisites: tek, ~techlevel.high
 		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
+        BuildDuration: 800
+        BuildDurationModifier: 100
 		Description: Mutant superheavy tank, restored from\nFirst Tiberium War inventories.\n Can attack Aircraft\n Strong vs Everything
 	Mobile:
 		Locomotor: heavytracked
@@ -5777,12 +6027,12 @@ TSARTY:
 	Valued:
 		Cost: 900
 	Tooltip:
-		Name: Artillery
+		Name: Tank Killer
 	Buildable:
 		BuildPaletteOrder: 160
 		Prerequisites: anyhq
 		Queue: Vehicle.MUTANT, RAVehicle.MUTANT, Vehicle.X_Vehicles
-		Description: Mutant artillery with heavy sabot shells.\n Strong vs Vehicles, Buildings\n Weak vs Infantry, Aircraft
+		Description: Mutant long ranged vehicle with heavy sabot shells.\n Strong vs Vehicles, Buildings\n Weak vs Infantry, Aircraft
 	Mobile:
 		Speed: 85
 		TurnSpeed: 2
@@ -6059,7 +6309,7 @@ TSBIKE2:
 	RenderVoxels:
 		Image: tsbike
 	Valued:
-		Cost: 650
+		Cost: 550
 	-TemporaryOwnerManager:
 
 TSSTNK2:
@@ -6077,7 +6327,7 @@ TSSTNK2:
 	RenderVoxels:
 		Image: tsstnk
 	Valued:
-		Cost: 1200
+		Cost: 1100
 	-TemporaryOwnerManager:
 
 TSREPAIR2:
@@ -6109,7 +6359,7 @@ TSTTNK2:
 	RenderVoxels:
 		Image: tsttnk
 	Valued:
-		Cost: 900
+		Cost: 700
 	-TemporaryOwnerManager:
 
 TSART2C:
@@ -6141,7 +6391,7 @@ TSSUBTANK2:
 	RenderVoxels:
 		Image: tssubtank
 	Valued:
-		Cost: 875
+		Cost: 700
 	-TemporaryOwnerManager:
 
 TSSAPC2:
@@ -6157,7 +6407,7 @@ TSSAPC2:
 	RenderVoxels:
 		Image: tssapc
 	Valued:
-		Cost: 875
+		Cost: 750
 	-TemporaryOwnerManager:
 
 
