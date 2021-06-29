@@ -776,7 +776,7 @@ SCPYLON:
 	Inherits@explode: ^BuildingExplodeProtoss
 	Inherits@power: ^Power
 	Valued:
-		Cost: 400
+		Cost: 500
 	Tooltip:
 		Name: Pylon
 	ProvidesPrerequisite@pylon:
@@ -795,14 +795,49 @@ SCPYLON:
 	RevealsShroud:
 		Range: 7c0
 	Power:
-		Amount: 80
+		Amount: 100
 	StoresResources:
-		PipCount: 10
-		Capacity: 1000
+		PipCount: 6
+		Capacity: 1200
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 	-WithDeathAnimation:
-	
+    PowerMultiplier@pylonupg:
+        Modifier: 250
+        RequiresCondition: scpylonexpand          
+    Production@pylonupg:
+		Produces: pylonupg.Protoss
+        RequiresCondition: !scpylonexpand
+	ProductionBar@pylonupg:
+		ProductionType: pylonupg.Protoss
+	ProductionQueue@pylonupg:
+		Type: pylonupg.Protoss
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+        QueueLimit: 1
+		ItemLimit: 1      
+	GrantConditionOnProduction@pylonupg:
+		Condition: scpylonexpand
+		Actors: scpylonexpand           
+        
+SCPYLONEXPAND:
+	Tooltip:
+		Name: Growing Psionic Force
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: pylonupg.Protoss
+        BuildDuration: 1500
+        BuildDurationModifier: 100
+		Description: Psionic enhancement of this pylon will provide more supply
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: scpylon
+    Interactable:
+	AlwaysVisible:
+  	KillsSelf:
+		RemoveInstead: true  	
 
 SCASSIMILATOR:
 	Inherits: ^BaseBuilding
@@ -1448,7 +1483,17 @@ SCARBITERTRIBUNAL:
 ####################################################################################################
 #		BUILDING ZERG
 ####################################################################################################
-
+^SCBREEDFASTER:
+    ExternalCondition@Fasterbreed:
+        Condition: SCFASTERBREED
+    ProvidesPrerequisite@fasterbreed:
+        Prerequisite: SCFASTERBREED
+        RequiresCondition: SCFASTERBREED
+    ProductionTimeMultiplier@fasterbreed:
+        Prerequisites: SCFASTERBREED
+        Multiplier: 75
+        Queue: Infantry.Zerg, RAInfantry.Zerg
+        
 SCHATCHERY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -1456,6 +1501,7 @@ SCHATCHERY:
 	Inherits@aicash: ^AIConyardCash
 	Inherits@supply: ^SCUnitProduction
 	Inherits@bot: ^BotMicromanageable
+    Inherits@breedfaster: ^SCBREEDFASTER
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -1663,7 +1709,6 @@ SCCREEPCOLONY:
 		Prerequisite: Creep Colony
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: Extractor
 		BuildDuration: 240
 		Queue: Building.Zerg, RABuilding.Zerg
 		Description: Can be upgraded to Sunken or Spore Colonies.
@@ -1801,7 +1846,7 @@ SCSPAWNINGPOOL:
 		BuildPaletteOrder: 40
 		Prerequisites: Overlord, ~techlevel.medium
 		Queue: Building.Zerg, RABuilding.Zerg
-		Description: Unlocks Zergling & Sunken Colony.
+		Description: Unlocks Zergling.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -1916,11 +1961,11 @@ SCQUEENSNEST:
 		Name: Queen's Nest
 	ProvidesPrerequisite:
 		Prerequisite: Queen's Nest
-	#Buildable:
-	#	BuildPaletteOrder: 70
-	#	Prerequisites: Lair, ~techlevel.medium
-	#	Queue: Building.Zerg, RABuilding.Zerg
-	#	Description: Unlocks Queen.
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: Lair, ~techlevel.medium
+		Queue: Building.Zerg, RABuilding.Zerg
+		Description: Unlocks Queen and Kerrigan.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -2146,7 +2191,7 @@ SCSUNKENCOLONY:
 		Dimensions: 2,2
 		BuildSounds: zchrdy00.aud
 	Health:
-		HP: 99000
+		HP: 60000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -2205,13 +2250,13 @@ SCSPORECOLONY:
 	Armament:
 		Weapon: Spore
 	-WithDeathAnimation:
-	
 
 SCLAIR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
+    Inherits@breedfaster: ^SCBREEDFASTER
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -2332,6 +2377,7 @@ SCHIVE:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
+    Inherits@breedfaster: ^SCBREEDFASTER
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -2653,9 +2699,9 @@ SCSCV:
 		TurnSpeed: 255
 		Speed: 100
 	Health:
-		HP: 18000
+		HP: 12000
 	Armor:
-		Type: Heavy
+		Type: None
 	RevealsShroud:
 		Range: 6c0
 	Armament@repair:
@@ -3447,11 +3493,11 @@ SCTMCV:
 		Priority: 4
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 110
 	Health:
-		HP: 120000
+		HP: 12000
 	Armor:
-		Type: Heavy
+		Type: None
 	RevealsShroud:
 		Range: 8c0
 	Transforms:
@@ -3592,9 +3638,9 @@ SCPROBE:
 		TurnSpeed: 255
 		Speed: 100
 	Health:
-		HP: 6000
+		HP: 12000
 	Armor:
-		Type: Heavy
+		Type: None
 	RevealsShroud:
 		Range: 7c0
 	AttackFrontal:
@@ -4448,11 +4494,11 @@ SCPMCV:
 		Priority: 4
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 110
 	Health:
-		HP: 120000
+		HP: 12000
 	Armor:
-		Type: Heavy
+		Type: None
 	RevealsShroud:
 		Range: 8c0
 	Transforms:
@@ -4554,9 +4600,9 @@ SCDRONE:
 		TurnSpeed: 255
 		Speed: 100
 	Health:
-		HP: 12000
+		HP: 8000
 	Armor:
-		Type: Heavy
+		Type: None
 	RevealsShroud:
 		Range: 6c0
 	WithDeathAnimation:
@@ -4613,7 +4659,7 @@ SCZERGLING:
 	AttackFrontal:
 	WithInfantryBody:
 	Power:
-		Amount: -5
+		Amount: -6
 	WithIdleOverlay@Shadow:
 		Offset: 0,0,-250
 	Voiced:
@@ -4690,7 +4736,7 @@ SCOVERLORD:
 		PriorityModifiers: Ctrl, Alt
 		Class: scoverlord
 	Power:
-		Amount: 80
+		Amount: 75
 	StoresResources:
 		PipCount: 10
 		Capacity: 1000
@@ -4744,7 +4790,7 @@ SCHYDRALISK:
 		Bounds: 15,20
 		DecorationBounds: 15,20
 	Power:
-		Amount: -10
+		Amount: -12
 	WithIdleOverlay@Shadow:
 		Offset: 0,0,-320
 	Passenger:
@@ -4768,7 +4814,7 @@ SCMUTALISK:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 800
+		Cost: 1000
 	Tooltip:
 		Name: Mutalisk
 	UpdatesPlayerStatistics:
@@ -4787,7 +4833,7 @@ SCMUTALISK:
 	Health:
 		HP: 15000
 	Armor:
-		Type: Heavy
+		Type: Medium
 	RevealsShroud:
 		Range: 6c0
 		Type: GroundPosition
@@ -4804,7 +4850,7 @@ SCMUTALISK:
 	Selectable:
 		DecorationBounds: 30,30
 	Power:
-		Amount: -20
+		Amount: -25
 	Voiced:
 		VoiceSet: SCMutaliskVoice
 	GrantConditionOnPrerequisite@upattack:
@@ -4868,22 +4914,22 @@ SCQUEEN:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 900
+		Cost: 1000
 	Tooltip:
 		Name: Queen
-	#Buildable:
-	#	BuildPaletteOrder: 70
-	#	Prerequisites: Queen's Nest
-	#	Queue: Infantry.Zerg, RAInfantry.Zerg, Aircraft.X_Aircrafts
-	#	Description: light armored Aircraft.
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: Queen's Nest, ~techlevel.medium
+		Queue: Infantry.Zerg, RAInfantry.Zerg, Aircraft.X_Aircrafts
+		Description: Defensive Air Unit\nKeep close to Lairs to boost breed speed\nCan attack air and ground\nDetector
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
-		Speed: 100
+		Speed: 60
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
-		HP: 14400
+		HP: 12000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -4893,13 +4939,28 @@ SCQUEEN:
 		FacingTolerance: 20
 		AttackType: Hover
 	SelectionDecorations:
+    Armament:
+		Weapon: QueenSpine
+		LocalOffset: 0,0,200
+		FireDelay: 2
+		MuzzleSequence: muzzle
+	Armament@2:
+		Weapon: QueenSpineAA
+		LocalOffset: 0,0,200
+		FireDelay: 2
+		MuzzleSequence: muzzle
 	Selectable:
 		DecorationBounds: 30,24
 	Power:
-		Amount: -20
+		Amount: -30
 	Voiced:
 		VoiceSet: SCQueenVoice
-
+	DetectCloaked:
+		Range: 6c0
+    ProximityExternalCondition@Fasterbreed:
+        Condition: SCFASTERBREED
+        ValidStances: Ally
+        
 SCULTRALISK:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
@@ -4938,7 +4999,7 @@ SCULTRALISK:
 	-HitShape:
 	HitShape:
 	Power:
-		Amount: -40
+		Amount: -50
 	-Crushable:
 	Passenger:
 		Weight: 4
@@ -4990,7 +5051,7 @@ SCLURKER:
 	-HitShape:
 	HitShape:
 	Power:
-		Amount: -20
+		Amount: -25
 	DamageMultiplier:
 		Modifier: 50
 		RequiresCondition: deployed
@@ -5065,7 +5126,7 @@ SCGUARDIAN:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 1600
+		Cost: 2000
 	Tooltip:
 		Name: Guardian
 	UpdatesPlayerStatistics:
@@ -5098,7 +5159,7 @@ SCGUARDIAN:
 	Selectable:
 		DecorationBounds: 30,24
 	Power:
-		Amount: -20
+		Amount: -60
 	Voiced:
 		VoiceSet: SCGuardianVoice
 	GrantConditionOnPrerequisite@upattack:
@@ -5114,7 +5175,7 @@ SCINFESTEDTERRAN:
 	Inherits@zerg: ^LargeZerg
 	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 600
+		Cost: 500
 	Tooltip:
 		Name: Infested Terran
 	Buildable:
@@ -5123,7 +5184,7 @@ SCINFESTEDTERRAN:
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Monsters
 		Description: Suicide bomber infantry.\n Strong vs clustered units\n Does no damage if killed
 	Mobile:
-		Speed: 90
+		Speed: 95
 	Health:
 		HP: 9000
 	Armor:
@@ -5187,7 +5248,7 @@ SCDEFILER:
 	AttackFrontal:
 	WithInfantryBody:
 	Power:
-		Amount: -20
+		Amount: -25
 	GrantTimedConditionOnDeploy:
 		DeployedCondition: darkswarm
 		CooldownTicks: 1000
@@ -5289,24 +5350,30 @@ SCKERRIGANZERG:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
-		Cost: 2000
+		Cost: 3000
 	Tooltip:
 		Name: Kerrigan
-	#Buildable:
-	#	BuildPaletteOrder: 140
-	#	Prerequisites:
-	#	Queue: Defence.Zerg, RADefence.Zerg, Infantry.X_Infantry
-	#	Description: cannot be crushed and cannod be poisoned by tiberium.
+	Buildable:
+		BuildPaletteOrder: 140
+		Prerequisites: Queen's Nest, ~techlevel.high
+		Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
+		Description: Queen Of Blades\nPowerful melee attack\nCan Breed Zergs
+        BuildLimit: 1
+        BuildDuration: 2250
+        BuildDurationModifier: 100
+        IconPalette: windows256
 	Mobile:
-		Speed: 70
+		Speed: 75
 	Health:
-		HP: 90000
+		HP: 80000
+    Power:
+        Amount: -200
 	Armor:
-		Type: Light
+		Type: None
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
-		Weapon: FirebatF
+		Weapon: SCKERRIGANZERG
 		LocalOffset: 341,-120,128
 		FireDelay: 3
 		MuzzleSequence: muzzle
@@ -5316,6 +5383,8 @@ SCKERRIGANZERG:
 		DefaultAttackSequence: shoot
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
+    RenderSprites:
+        Scale: 1.2
 	Voiced:
 		VoiceSet: SCKerriganZergVoice
 	Inherits@EXT: ^ExternalConditions					##########
@@ -5325,6 +5394,26 @@ SCKERRIGANZERG:
 	-DamagedByTerrain:
 	-Crushable:
 	-TakeCover:
+	GrantConditionOnDeploy:
+		DeployedCondition: summon
+		SkipMakeAnimation: true
+		UndeployOnMove: true
+		UndeployOnPickup: true
+		PauseOnCondition: disabled
+    AmmoPool: 
+        Name: summon
+        Ammo: 5
+        Armaments: 
+    ReloadAmmoPool:
+        AmmoPool: summon
+        Delay: 750
+        Count: 5
+	PeriodicExplosion@projections:
+		Weapon: SCKERRIGANSUMMON
+		RequiresCondition: summon
+        AmmoPoolName: summon
+   	AIDeployNotifier:
+		DeployChance: 100      
 
 SCZMCV:
 	Inherits: ^Vehicle
@@ -5342,11 +5431,11 @@ SCZMCV:
 		Priority: 4
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 110
 	Health:
-		HP: 120000
+		HP: 12000
 	Armor:
-		Type: Heavy
+		Type: None
 	RevealsShroud:
 		Range: 8c0
 	Transforms:
@@ -5479,7 +5568,6 @@ PSCSUNKENCOLONY:
 		BuildPaletteOrder: 20
 		Queue: Colony.Zerg
 		Description: Ground base defense.
-		Prerequisites: Spawning Pool
 	Valued:
 		Cost: 200
 	RenderSprites:
