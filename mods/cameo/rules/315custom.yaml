@@ -1,6 +1,47 @@
 #######################################
 # Rcorp Buildings
 #######################################
+mcv.rcorp:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Mobile Construction Vehicle (Rcorp)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.medium, fix
+		Queue: Vehicle.315Rcorp, RAVehicle.315Rcorp
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Selectable:
+		Priority: 4
+		DecorationBounds: 36,36
+	Mobile:
+		Speed: 71
+		Locomotor: heavywheeled
+	Health:
+		HP: 120000
+	Repairable:
+		HpPerStep: 2182
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Transforms:
+		IntoActor: 315rcorpfact
+		Offset: -1,-1
+		Facing: 108
+		TransformSounds: constru2.aud, hvydoor1.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: mcv
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmrcorp
+
 315rcorpfact:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
@@ -74,7 +115,7 @@
 	Power:
 		Amount: 0
 	ProvidesPrerequisite@buildingname:
-		Prerequisite: rafact
+		Prerequisite: 315fact
 	Buildable:
 		Description: Builds structures
 	ProvidesPrerequisite@factionallies:
@@ -93,8 +134,8 @@
 		Name: War Factory
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: usasupply, ~usaselected
-		Queue: Building.USA, RABuilding.USA
+		Prerequisites: 315refin
+		Queue: Building.315Rcorp, RABuilding.315Rcorp
 		Description: Produces vehicles
 	Building:
 		Footprint: xxxx x++x ====
@@ -115,15 +156,15 @@
 		ExitCell: 2,1
 		ExitDelay: 3
 	#Production@Upgrades:
-	#	Produces: VehicleUpgrades.USA
+	#	Produces: VehicleUpgrades.315Rcorp
 	Production@NORMAL:
-		Produces: Vehicle.USA
+		Produces: Vehicle.315Rcorp
 		RequiresCondition: !classicproductionqueues
 	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAVehicle.USA
+		Produces: RAVehicle.315Rcorp
 		RequiresCondition: classicproductionqueues
 	ProductionQueue:
-		Type: Vehicle.USA
+		Type: Vehicle.315Rcorp
 		DisplayOrder: 3
 		Group: Vehicle
 		LowPowerModifier: 200
@@ -134,10 +175,10 @@
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 	ProductionBar@VEHICLESCAVENGER:
-		ProductionType: Vehicle.USA
+		ProductionType: Vehicle.315Rcorp
 		RequiresCondition: !classicproductionqueues
 	ProductionBar@RAVEHICLESCAVENGER:
-		ProductionType: RAVehicle.USA
+		ProductionType: RAVehicle.315Rcorp
 		RequiresCondition: classicproductionqueues
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@vehicleproduction:
@@ -152,6 +193,230 @@
 		Interval: 15
 		PlayerExperience: 25
 		StartRepairingNotification: Repairing
+
+315barr:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Barracks
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building.315Rcorp, RABuilding.315Rcorp
+		Description: Trains infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Infantry.315Rcorp
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.315Rcorp
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Infantry.315Rcorp
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry.315Rcorp
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry.315Rcorp
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 48,42,0,-5
+
+315refin:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@ref: ^Refinery
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Material Factory
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Building.315Rcorp, RABuilding.315Rcorp
+		Description: Processes raw Tiberium\ninto useable resources
+	Building:
+		Footprint: xxx ===
+		Dimensions: 3,2
+	Health:
+		HP: 65000
+	RevealsShroud:
+		Range: 6c0
+	Refinery:
+		DockAngle: 128
+		DockOffset: 1,1
+	StoresResources:
+		PipCount: 17
+		Capacity: 2500		#2000
+	DrawLineToTarget:
+	CustomSellValue:
+		Value: 500
+	FreeActor@1:
+		Actor: 315harv
+		SpawnOffset: 1,1
+		Facing: 64
+		AllowRespawn: True
+	Power:
+		Amount: -30
+	ProvidesPrerequisite@buildingname:
+	SelectionDecorations:
+	GivesBuildableArea:					##########
+		AreaTypes: building, cityi
+	Targetable@Steal:
+ 		TargetTypes: ThiefInfiltrate, SpyInfiltrate
+	Voiced:
+		VoiceSet: PRCSupplyVoice
+
+315power:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@power: ^PowerPlant
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Power Plant
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: 315fact
+		Queue: Building.315Rcorp, RABuilding.315Rcorp
+		Description: Generates power
+	Building:
+		Footprint: xX xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: 150
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: building							##########
+315radar:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@gensound: ^GeneralsDamageBuilding
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Airfield
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 315weap
+		Queue: Building.315Rcorp, RABuilding.315Rcorp
+		Description: Produces vehicles
+	Building:
+		Footprint: xxxx x++x ====
+		Dimensions: 4,3
+	SelectionDecorations:
+	Health:
+		HP: 110000
+	WithBuildingBib:
+	RallyPoint:
+		Path: 1,4
+	Exit@1:
+		SpawnOffset: 128,256,0
+		ExitCell: 1,1
+		ExitDelay: 3
+	Exit@2:
+		ExitCell: 2,1
+		ExitDelay: 3
+	#Production@Upgrades:
+	#	Produces: VehicleUpgrades.315Rcorp
+	Production@NORMAL:
+		Produces: Aircraft.315Rcorp
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.315Rcorp
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Aircraft.315Rcorp
+		DisplayOrder: 3
+		Group: Aircraft
+		LowPowerModifier: 200
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLESCAVENGER:
+		ProductionType: Aircraft.315Rcorp
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLESCAVENGER:
+		ProductionType: RAAircraft.315Rcorp
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@vehicleproduction:
+		Prerequisite: vehicleproduction
+	Power:
+		Amount: -30
+	Voiced:
+		VoiceSet: USAWarFactoryVoice
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 15
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	RevealsShroud:
+		Range: 10c0
+	ProvidesRadar:
+		RequiresCondition: !jammed && !lowpower
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
 
 #######################################
 # Rcorp Infantry
@@ -170,7 +435,7 @@
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks
-		Queue: Infantry.GDI, RAInfantry.GDI
+		Queue: Infantry.315Rcorp, RAInfantry.315Rcorp
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
 		Speed: 50
@@ -206,7 +471,7 @@
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: barracks
-		Queue: Infantry.GDI, RAInfantry.GDI
+		Queue: Infantry.315Rcorp, RAInfantry.315Rcorp
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
 		Speed: 40
@@ -244,8 +509,8 @@
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: eye, ~techlevel.high
-		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry
+		Prerequisites: 315radar, ~techlevel.high
+		Queue: Infantry.315Rcorp, RAInfantry.315Rcorp, Infantry.X_Infantry
 		Description: Sabotage infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
 	Mobile:
 		Speed: 100
@@ -262,7 +527,7 @@
 	AutoTarget:
 		ScanRadius: 8
 	Armament@2:
-		Weapon: Sniper
+		Weapon: 315AmandaPistol
 	Armament@c4:
 		Weapon: USABurtonAttach
 		Cursor: c4
@@ -286,6 +551,57 @@
 		CloakTypes: Cloak, Thief
 		PauseOnCondition: cloak-force-disabled || disabled
 		IsPlayerPalette: true
+315sniper:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Sniper A13
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: 315radar, ~techlevel.high
+		Queue: Infantry.315Rcorp, RAInfantry.315Rcorp, Infantry.X_Infantry
+		Description: Sabotage infantry unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+	Mobile:
+		Speed: 71
+	Guard:
+	Health:
+		HP: 15000
+	Passenger:
+		PipType: Red
+		Voice: Move
+	RevealsShroud:
+		Range: 6c0
+	AutoTarget:
+		ScanRadius: 8
+	Armament@PRIMARY:
+		Weapon: GLKellSniper
+	Armament@VEHICLE:
+		Weapon: GLKellSniperVehicle
+		Name: secondary
+	AttackFrontal:
+	AttackMove:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2,idle3
+	Voiced:
+		VoiceSet: TSUmagon
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Cloak:
+		InitialDelay: 250
+		CloakDelay: 80
+		UncloakOn: Unload
+		CloakTypes: Cloak, Thief
+		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
 #######################################
 # Rcorp Vehicle
 #######################################
@@ -297,11 +613,11 @@
 	Inherits@EMP: ^TurretEMP
 	Inherits@vo: ^AttackTurretedVoice
 	Buildable:
-		Queue: Vehicle.GDI, RAVehicle.GDI, Vehicle.X_Vehicles
+		Queue: Vehicle.315Rcorp, RAVehicle.315Rcorp, Vehicle.X_Vehicles
 		BuildPaletteOrder: 30
 		Description: Anti-air and anti-infantry vehicle.\n  Strong vs Aircraft, Infantry\n  Weak vs Vehicles
 	Valued:
-		Cost: 800
+		Cost: 700
 	Tooltip:
 		Name: Quad Tank
 	UpdatesPlayerStatistics:
@@ -320,12 +636,8 @@
 	Turreted:
 		TurnSpeed: 9
 		Offset: -370,0,225
-	Armament@2:
-		Weapon: GLQuadCannonGround
-		MuzzleSequence: muzzle
-		LocalOffset: 128,128,200, 128,-128,200, 128,-128,43, 128,128,43
 	Armament@2AA:
-		Weapon: GLQuadCannonAir
+		Weapon: 315AAHWeapon
 		MuzzleSequence: muzzle
 		LocalOffset: 128,128,200, 128,-128,200, 128,-128,43, 128,128,43
 	AttackTurreted:
@@ -354,7 +666,7 @@
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: Vehicle.GDI, RAVehicle.GDI, Vehicle.X_Vehicles
+		Queue: Vehicle.315Rcorp, RAVehicle.315Rcorp, Vehicle.X_Vehicles
 		Description: General-Purpose GDI Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
 	Mobile:
 		Speed: 90
@@ -391,6 +703,102 @@
 		Scale: 0.65
 	Voiced:
 		VoiceSet: RA2AlliesVehicleVoice
+315mtnk2:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Railgun Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle.315Rcorp, RAVehicle.315Rcorp, Vehicle.X_Vehicles
+		Description: General-Purpose GDI Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 90
+	Health:
+		HP: 65000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: 0,0,225
+	Armament:
+		Weapon: TSLtRail
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplodeBig
+		EmptyWeapon: UnitExplodeBig
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.65
+	Voiced:
+		VoiceSet: RA2AlliesVehicleVoice
+315arty:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Obus
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Queue: Vehicle.315Rcorp, RAVehicle.315Rcorp, Vehicle.X_Vehicles
+		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings
+        BuildDuration: 425
+        BuildDurationModifier: 100
+	Mobile:
+		Speed: 65
+	Health:
+		HP: 40000
+	Repairable:
+		HpPerStep: 569
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 5c0
+	Armament:
+		Weapon: TS152mm
+		LocalOffset: 624,0,208
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		TargetFrozenActors: True
+		ForceFireIgnoresActors: True
+	WithMuzzleOverlay:
+	AutoTarget:
+		InitialStanceAI: Defend
+	Explodes:
+		Weapon: ArtilleryShell
+		EmptyWeapon: UnitExplode
+		LoadedChance: 75
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.65
 315htrak:
 	Inherits: ^Vehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -398,7 +806,7 @@
 	Inherits@EMP: ^TurretEMP
 	Inherits@cargo: ^CargoVehicle
 	Buildable:
-		Queue: Vehicle.GDI, RAVehicle.GDI, Vehicle.X_Vehicles
+		Queue: Vehicle.315Rcorp, RAVehicle.315Rcorp, Vehicle.X_Vehicles
 		BuildPaletteOrder: 30
 		Prerequisites: ~techlevel.low
 		Description: Fast scout & anti-infantry vehicle.\nCan carry one infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
@@ -453,23 +861,23 @@
 	Inherits@EMP: ^TurretEMP
 	Inherits@cargo: ^CargoVehicle
 	Buildable:
-		Queue: Vehicle.GDI, RAVehicle.GDI, Vehicle.X_Vehicles
-		BuildPaletteOrder: 30
+		Queue: Vehicle.315Rcorp, RAVehicle.315Rcorp, Vehicle.X_Vehicles
+		BuildPaletteOrder: 40
 		Prerequisites: anyhq
 		Description: Fast scout & anti-infantry vehicle.\nCan carry one infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
 	Valued:
-		Cost: 2000
+		Cost: 2500
 	Tooltip:
 		Name: The Turtle
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 9999999
+		HP: 7999999
 	Armor:
 		Type: Heavy
 	Mobile:
 		TurnSpeed: 2
-		Speed: 20
+		Speed: 15
 		PauseOnCondition: notmobile || disabled
 	RevealsShroud:
 		Range: 8c0
@@ -500,3 +908,161 @@
 		LevelUpNotification: LevelUpRA1
 	RenderSprites:
 		Scale: 0.65
+315harv:
+	Inherits: ^Vehicle
+	Inherits@harv: ^Harvester
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EXT: ^ExternalConditions
+	Buildable:
+		Queue: Vehicle.315Rcorp, RAVehicle.315Rcorp
+		BuildPaletteOrder: 10
+		Prerequisites: 315refin
+		Description: Collects Ore and Gems for processing.\n  Unarmed
+	Valued:
+		Cost: 600			#1100
+	Tooltip:
+		Name: Logistic Truck
+	Harvester:
+		Capacity: 16
+	Health:
+		HP: 30000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 95
+		Locomotor: wheeled
+	RevealsShroud:
+		Range: 4c0
+	-WithFacingSpriteBody:
+	WithHarvesterSpriteBody:
+		ImageByFullness: 315harv, 315harvfull, 315harvfull
+	WithDockingAnimation:
+		DockSequence: idle
+		DockLoopSequence: idle
+	Voiced:
+		VoiceSet: CHSupplyTruckVoice
+	RenderSprites:
+		Scale: 0.65
+315coinbreak:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+    Inherits@oldbuff: ^OldFactionBuff
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Coinbreaker
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: 315radar, 315weap, ~techlevel.medium
+		Queue: Aircraft.315Rcorp, RAAircraft.315Rcorp, Aircraft.X_Aircrafts
+		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 5
+		Speed: 180
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+	SpeedMultiplier@supersonic:
+		Modifier: 120
+		RequiresCondition: supersonic && ammo
+	Health:
+		HP: 12000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Name: secondary
+		Weapon: RA2KirovBomb
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: USARaptorMissileAA
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	Armament@MG:
+		Weapon: USAComancheMG
+		LocalOffset: 512,0,-85
+		MuzzleSequence: muzzle
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+	AmmoPool:
+		Name: secondary
+		Armaments: secondary
+		Ammo: 3
+		PipCount: 3
+		AmmoCondition: ammo
+	-SpawnActorOnDeath:
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	ReloadAmmoPool:
+		AmmoPool: secondary
+		Delay: 375
+		Count: 3
+	Selectable:
+		DecorationBounds: 30,24
+	RenderSprites:
+		Scale: 0.70
+315ltnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Opressor Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle.315Rcorp, RAVehicle.315Rcorp, Vehicle.X_Vehicles
+		Description: General-Purpose GDI Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 110
+	Health:
+		HP: 35000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: 0,0,225
+	Armament:
+		Weapon: 315MegaShotgun
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplodeBig
+		EmptyWeapon: UnitExplodeBig
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.65
+	Voiced:
+		VoiceSet: RA2AlliesVehicleVoice
