@@ -181,7 +181,7 @@
 ^D2KPaletteRender:
 	RenderSprites:
 		PlayerPalette: playerd2k
-        Scale: 0.80     
+        Scale: 0.85 
 	WithDeathAnimation:
 		DeathSequencePalette: playerd2k
         
@@ -189,7 +189,7 @@
     RenderSprites:
         PlayerPalette: d2kplayer
         Palette: d2keffect
-        Scale: 0.8     
+        Scale: 0.85     
         
 ^D2KVehicleHusk:
     Inherits@palette: ^D2KPaletteRenderHusk
@@ -379,7 +379,7 @@
 	Armor:
 		Type: Concrete
 	Building:
-        TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete     
+        TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune 
 		BuildSounds: CHUNG.WAV
 		Dimensions: 1,1
 		Footprint: x
@@ -691,6 +691,15 @@ construction_yard:
 		UsePlayerColor: True
 		ValidStances: Ally, Enemy, Neutral    
         RequiresCondition: faction.ixian   
+    GrantConditionOnPrerequisite@GUILDTEXT:
+        Condition: faction.guild
+        Prerequisites: faction.guild
+   	WithTextDecoration@GUILDTEXT:
+		Text: SPACING GUILD
+		ReferencePoint: Top, Center
+		UsePlayerColor: True
+		ValidStances: Ally, Enemy, Neutral    
+        RequiresCondition: faction.guild        
     ThrowsShrapnel:
 		Weapons: Debris, Debris2, Debris3, Debris4
 		Pieces: 4, 6
@@ -718,7 +727,7 @@ wind_trap:
 	Buildable:
 		Queue: Building.d2k, RABuilding.d2k
 		BuildPaletteOrder: 120
-		BuildDuration: 120
+		BuildDuration: 150
 		BuildDurationModifier: 100
 		Description: Provides power for other structures.
         IconPalette: d2kunit      
@@ -726,7 +735,7 @@ wind_trap:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 300
+		Cost: 475
 	Tooltip:
 		Name: Wind Trap
 	Building:
@@ -760,7 +769,7 @@ wind_trap:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-zaps
 	Power:
-		Amount: 250
+		Amount: 400
 	ScalePowerWithHealth:
 	ProvidesPrerequisite@buildingname:
 	RevealOnDeath:
@@ -887,7 +896,7 @@ refinery:
 		Prerequisites: wind_trap, ~factionselected, ~!faction.tleilaxu
 		Queue: Building.d2k, RABuilding.d2k
 		BuildPaletteOrder: 130
-		BuildDuration: 350
+		BuildDuration: 375
 		BuildDurationModifier: 100
 		Description: Harvesters unload Spice here for processing.
         IconPalette: d2kunit   
@@ -1546,7 +1555,7 @@ wall:
 		Adjacent: 7
         AreaTypes: building
 	Health:
-		HP: 35000
+		HP: 40000
 	Armor:
 		Type: Concrete
 	RevealsShroud:
@@ -3433,7 +3442,7 @@ d2k_sniper:
 		Queue: Infantry.d2k, RAInfantry.d2k, Infantry.X_Infantry
 		BuildPaletteOrder: 160
 		Prerequisites: ~barracks.ordos, upgrade.barracks, ~!faction.ordos. ~!faction.smugglers, ~techlevel.medium, high_tech_factory
-		Description: Stealth infantry armed with a long range rifle\nCan detect cloaked units at great distances.\n  Strong vs Infantry, Air, Vehicles\n  Weak vs Tanks\n  Special Ability: Invisibility while static
+		Description: Infantry armed with a long range rifle\nCan detect cloaked units at great distances.\nCan Deplay to grant stealth and accuracy but loses movement\n  Strong vs Infantry, Air, Vehicles\n  Weak vs Tanks\n  Special Ability: Invisibility while static
         IconPalette: d2kunit 
         BuildDuration: 600
         BuildDurationModifier: 100
@@ -3466,11 +3475,18 @@ d2k_sniper:
         UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Move
         Palette: racloak
         CloakedCondition: cloaked
+        RequiresCondition: deployed
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
 	-MustBeDestroyed:
 	WithDeathAnimation:
+    GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		SkipMakeAnimation: true
+		UndeployOnMove: true
+		UndeployOnPickup: true
+		PauseOnCondition: disabled
 	RenderSprites:
   		PlayerPalette: raplayer
         Scale: 0.8
@@ -3478,6 +3494,14 @@ d2k_sniper:
         DeathSequencePalette: raplayer
         CrushedSequencePalette: raplayer
         CrushedPaletteIsPlayerPalette: True
+    InaccuracyMultiplier@deploy:
+        Modifier: 0
+        RequiresCondition: deployed
+    AIDeployNotifier:
+		DeployChance: 100
+    SpeedMultiplier@deploy:
+        Modifier: 0
+        RequiresCondition: deployed
 d2k_marksman:
     Inherits: d2k_sniper
   	Tooltip:
@@ -3486,7 +3510,7 @@ d2k_marksman:
 		Queue: Infantry.d2k, RAInfantry.d2k, Infantry.X_Infantry
 		BuildPaletteOrder: 160
 		Prerequisites: ~barracks.atreides, upgrade.barracks, ~!faction.ixian, ~techlevel.low
-		Description: Spotter Infantry armed with a long range rifle\nCan detect cloaked units.\n  Strong vs Infantry, Air, Vehicles\n  Weak vs Tanks\n  Special Ability: Binoculars
+		Description: Spotter Infantry armed with a long range rifle\nCan detect cloaked units.\nCan Deplay to grant more view distance and accuracy, but loses movement\n  Strong vs Infantry, Air, Vehicles\n  Weak vs Tanks\n  Special Ability: Binoculars
         IconPalette: d2kunit 
         BuildDuration: 400    
         BuildDurationModifier: 100        
@@ -3495,7 +3519,7 @@ d2k_marksman:
     Valued:
 		Cost: 300
     RevealsShroud:
-		Range: 10c0
+		Range: 6c0
     DetectCloaked:
 		Range: 5c0     
    	Crushable:
@@ -3506,6 +3530,9 @@ d2k_marksman:
     -GrantConditionOnDamageState@UNCLOAK:
    	Armament:
 		Weapon: D2KMarksmanRifle 
+    RevealsShroudMultiplier@deploy:
+        Modifier: 200
+        RequiresCondition: deployed     
         
 flamethrower:
 	Inherits: ^D2KInfantry
@@ -3969,7 +3996,7 @@ d2k_apc:
 		BuildPaletteOrder: 40
 		BuildDuration: 555
 		BuildDurationModifier: 100
-		Prerequisites: upgrade.light, ~light.ordos, ~techlevel.low, ~!faction.tleilaxu, ~!faction.smugglers
+		Prerequisites: upgrade.light, ~light.ordos, ~techlevel.low, ~!faction.tleilaxu
 		Description: Hit and Run Vehicle with small cannon and missile launcher\nCan carry 3 passengers
         IconPalette: d2kunit       
 	AIDeployNotifier:
@@ -4073,7 +4100,9 @@ d2k_stealth_apc:
         UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack    
       	Palette: racloak         
         CloakedCondition: cloaked
-        
+    -Armament@MGround:
+	-Armament@MAA:
+    
 d2k_mcv:
 	Inherits@D2KT: ^D2KTank
 	Inherits@selection: ^SelectableSupportUnit
@@ -4246,7 +4275,7 @@ swarmer:
 	Valued:
 		Cost: 450
 	Buildable:
-		Queue: Aircraft.d2k, RAAircraft.d2k
+		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 30
 		Prerequisites: ~conyard.ordos, outpost, ~techlevel.medium, ~!faction.tleilaxu
 		BuildDuration: 250
@@ -4276,7 +4305,7 @@ swarmer:
 		TurnSpeed: 12
 		RepulsionSpeed: 40
 		MaximumPitch: 56
-		CanHover: false
+		CanHover: false    
 	Repairable:
 		RepairActors: repair_pad
 	Guard:
@@ -4295,7 +4324,11 @@ swarmer:
 		VoiceSet: D2KVehicleVoice
 	RenderSprites:
 		Scale: 0.7
-
+  	ThrowsShrapnel:
+		Weapons: Debris2, Debris3
+		Pieces: 1, 2
+		Range: 1c0, 3c0    
+        
 d2k_aa_mine:
 	Inherits: ^RANeutralPlane
 	Inherits@AUTOTARGET: ^AutoTargetAir
@@ -4305,7 +4338,7 @@ d2k_aa_mine:
 	Valued:
 		Cost: 500
 	Buildable:
-		Queue: Aircraft.d2k, RAAircraft.d2k
+		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 30
 		Prerequisites: ~conyard.ordos, outpost, ~techlevel.medium, ~!faction.tleilaxu
 		BuildDuration: 500
@@ -4423,7 +4456,7 @@ ornithopter.controllable:
 	Tooltip:
 		Name: Ornithopter
     Buildable:
-		Queue: Aircraft.d2k, RAAircraft.d2k
+		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 40
 		Prerequisites: ~conyard.atreides, outpost, ~techlevel.medium
 		BuildDuration: 600
@@ -4474,7 +4507,7 @@ ornithopter.controllable:
 		Type: GroundPosition
     WithMuzzleOverlay:
 	Guard:
-		Voice: Guard
+		Voice: Guard       
 	Guardable:
 	Targetable:
 		TargetTypes: Air, Plane
@@ -4512,7 +4545,7 @@ d2k_air_drone:
 	Tooltip:
 		Name: Air Drone
     Buildable:
-		Queue: Aircraft.d2k, RAAircraft.d2k
+		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 10
 		Prerequisites: ~conyard.atreides, outpost, ~techlevel.medium
 		BuildDuration: 275
@@ -4577,6 +4610,10 @@ d2k_air_drone:
 		Categories: Aircraft
     DetectCloaked:
 		Range: 4c0   
+  	ThrowsShrapnel:
+		Weapons: Debris2, Debris3
+		Pieces: 1, 2
+		Range: 1c0, 3c0     
         
 phoenix:
 	Inherits: ^RANeutralPlane
@@ -4587,9 +4624,9 @@ phoenix:
 	Valued:
 		Cost: 800
 	Buildable:
-		Queue: Aircraft.d2k, RAAircraft.d2k
+		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 40
-		Prerequisites: outpost, ~hightech.harkonnen, ~techlevel.medium
+		Prerequisites: outpost, ~hightech.harkonnen, ~techlevel.medium, ~!faction.guild
 		BuildDuration: 512
 		BuildDurationModifier: 100
 		Description: Medium Plane armed with dual Air-To-Ground flame rockets.\n Strong vs Buildings, Vehicles, Infantry
@@ -4643,6 +4680,10 @@ phoenix:
 		VoiceSet: D2KVehicleVoice
 	RenderSprites:
         Image: d2k_gunship
+    ThrowsShrapnel:
+		Weapons: Debris2, Debris3
+		Pieces: 2, 3
+		Range: 2c0, 4c0     
         
 swarmer.husk:
 	Inherits: ^PlaneHusk
@@ -4653,6 +4694,9 @@ swarmer.husk:
 		Speed: 172
 	RenderSprites:
         Scale: 0.8
+ 	FallsToEarth:
+		Explosion: D2KUnitExplodeSmall        
+        
 phoenix.husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -4662,6 +4706,8 @@ phoenix.husk:
 		Speed: 172
 	RenderSprites:
         Image: d2k_gunship.husk
+    FallsToEarth:
+		Explosion: D2KUnitExplodeMed    
 d2k_air_drone.husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -4671,7 +4717,137 @@ d2k_air_drone.husk:
 		Speed: 196
 	RenderSprites:
         Image: d2k_air_drone.husk
-        Scale: 0.8        
+        Scale: 0.8      
+ 	FallsToEarth:
+		Explosion: D2KUnitExplodeSmall   
+   
+d2k_combat_fleet:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+    Inherits@MC: ^MCImmune 
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Combat Fleet
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: high_tech_factory, ~techlevel.high, ~faction.guild
+		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
+		Description: Heavy fleet which fires multiple unguided rockets at its targets.\n Strong vs Ground targets
+        IconPalette: ra2
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 6
+		Speed: 45
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 75000
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armor:
+		Type: Heavy
+	Armament:
+		Weapon: D2K_Combat_Fleet
+		LocalOffset: 1200,-600,0,1200,600,0
+	Turreted:
+	AttackAircraft:
+		FacingTolerance: 40
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 60,48
+	Voiced:
+		VoiceSet: D2KVehicleVoice
+    RenderSprites:
+        Scale: 1.25
+  	SpawnActorOnDeath:
+		Actor: d2k_combat_fleet.husk
+		OwnerType: InternalName
+		EffectiveOwnerFromOwner: true
+   	ThrowsShrapnel:
+		Weapons: Debris, Debris2, Debris3, Debris4
+		Pieces: 3, 5
+		Range: 2c0, 5c0
+        
+d2k_combat_fleet.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Combat Fleet
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 80
+    RenderSprites:
+        Image: d2k_combat_fleet
+        Scale: 1.25
+   	FallsToEarth:
+		Explosion: D2KUnitExplodeLarge       
+   
+d2k_kwny_fighter:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+    Inherits@MC: ^MCImmune 
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Kwny Fighter
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: high_tech_factory, ~techlevel.high, ~faction.guild
+		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
+		Description: Fast Spaceship fighter used for aerial combat. Equipped with guided missiles\nStrong vs Everything
+        IconPalette: ra2
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 6
+		Speed: 170
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 35000
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armor:
+		Type: Medium
+	Armament:
+		Weapon: d2k_kwny_fighter
+		LocalOffset: 1200,-400,0,1200,400,0
+	Turreted:
+	AttackAircraft:
+		FacingTolerance: 40
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 45,40
+	Voiced:
+		VoiceSet: D2KVehicleVoice
+  	SpawnActorOnDeath:
+		Actor: d2k_combat_fleet.husk
+		OwnerType: InternalName
+		EffectiveOwnerFromOwner: true
+   	ThrowsShrapnel:
+		Weapons: Debris, Debris2, Debris3, Debris4
+		Pieces: 3, 5
+		Range: 2c0, 5c0
+         
+d2k_kwny_fighter.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Kwny Fighter
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 200
+    RenderSprites:
+        Image: d2k_kwny_fighter
+   	FallsToEarth:
+		Explosion: D2KUnitExplodeMed
+       
 harvester:
 	Inherits@D2KT: ^D2KTank
     Inherits@harv: ^Harvester
@@ -4694,7 +4870,7 @@ harvester:
 		Class: harvester
 		DecorationBounds: 32, 32
 	Harvester:
-		Capacity: 32
+		Capacity: 45
 		HarvestFacings: 8
 		BaleUnloadDelay: 5
 		SearchFromProcRadius: 30
@@ -4705,7 +4881,7 @@ harvester:
 	Armor:
 		Type: Heavy
 	Mobile:
-		Speed: 43
+		Speed: 48
 	RevealsShroud:
 		Range: 3c768
     GrantConditionOnPrerequisite@mercharv:
@@ -4734,7 +4910,7 @@ harvester:
 		Palette: effect50alpha
 	WithDockingAnimation:
 	AttractsWorms:
-		Intensity: 700
+		Intensity: 750
 	ChangesHealth:
 		Step: 50
 		Delay: 3
@@ -5264,7 +5440,7 @@ d2k_annihilator:
 		HP: 200000
     Armament:
 		Weapon: D2K_Annihilator
-		LocalOffset: 150,0,0
+		LocalOffset: 350,0,0
     Armament@aa:
         Weapon: D2K_Annihilator.AA
         LocalOffset: 100,-150,100, 100,150,100
@@ -5741,7 +5917,13 @@ combat_tank_ixian_p:
     Inherits: combat_tank_ixian
     -Buildable:
     Health:
-        HP: 1
+        HP: 100000
+    DamageMultiplier@hologram:
+        Modifier: 0
+    ChangesHealth:
+        StartIfBelow: 150
+        PercentageStep: 100
+        Delay: 1
     -Explodes:
     FirepowerMultiplier:
         Modifier: 0
@@ -5987,6 +6169,13 @@ carryall.reinforce:
       	Palette: d2kcloak         
         CloakedCondition: cloaked 
         RequiresCondition: carryall_cloak
+    SpeedMultiplier@ordos-stealth-bonus:
+        Modifier: 140
+        RequiresCondition: faction.guild
+    GrantConditionOnPrerequisite@ordos:
+        Prerequisites: faction.guild
+        Condition: faction.guild
+        
 carryall:
 	Inherits: carryall.reinforce
 	-Carryall:
@@ -6041,7 +6230,13 @@ frigate:
 		MaxWeight: 20
 		PipCount: 10
 	RejectsOrders:
-    
+    SpeedMultiplier@ordos-stealth-bonus:
+        Modifier: 140
+        RequiresCondition: faction.guild
+    GrantConditionOnPrerequisite@ordos:
+        Prerequisites: faction.guild
+        Condition: faction.guild
+        
 ornithopter.husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -6053,6 +6248,8 @@ ornithopter.husk:
         Image: ornithopter
         Palette: d2kunit
         Scale: 0.8
+   	FallsToEarth:
+		Explosion: D2KUnitExplodeMed            
 carryall.husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -6065,6 +6262,8 @@ carryall.husk:
 	RenderSprites:
 		Image: carryall
         Scale: 0.8
+    FallsToEarth:
+		Explosion: D2KUnitExplodeLarge         
 carryall.huskVTOL:
 	Inherits: ^PlaneHusk 
 	Tooltip:
@@ -6079,6 +6278,8 @@ carryall.huskVTOL:
 	RenderSprites:
 		Image: carryall
         Scale: 0.8
+    FallsToEarth:
+		Explosion: D2KUnitExplodeLarge        
 ###########################
 #   UPGRADES
 ###########################
@@ -6399,7 +6600,28 @@ faction.corrino:
 	ProvidesPrerequisite@upgradename:
     ProvidesPrerequisite@factionselected:
         Prerequisite: factionselected
-        
+ 
+faction.guild:
+	AlwaysVisible:
+	Interactable:
+	Tooltip:
+		Name: House Spacing Guild
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~conyard.harkonnen, ~!factionselected, ~wip-content
+		Queue: Building.d2k, RABuilding.d2k
+		BuildLimit: 1
+		BuildDuration: 0
+		BuildDurationModifier: 100
+        Description: House specialized on Interstellar travelling and starships.\nAerial bonus: Carryalls and Frigates fly faster
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: faction.guild
+	ProvidesPrerequisite@upgradename:
+    ProvidesPrerequisite@factionselected:
+        Prerequisite: factionselected
+     
 #####################################
 #       EDITOR STUFF
 #####################################
@@ -6474,7 +6696,16 @@ force.corrino:
         Prerequisite: faction.corrino 
     RenderSpritesEditorOnly:
         Image: faction.corrino             
-               
+  
+force.guild:
+    Inherits: force.atreides
+    EditorOnlyTooltip:
+		Name: (Force Guild)
+    ProvidesPrerequisite@faction:
+        Prerequisite: faction.guild 
+    RenderSpritesEditorOnly:
+        Image: faction.guild
+        
 force.ordos:
     Inherits: force.atreides
     EditorOnlyTooltip:
@@ -7011,6 +7242,7 @@ sietch_creep:
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
         SlaveDisposalOnOwnerChange: DoNothing
+        SpawnAllAtOnce: false
     MobSpawnerMaster@1:
         Actors: fremen_creep
         Offset: 0,2000,0
@@ -7019,7 +7251,8 @@ sietch_creep:
         AggregateHealth: false
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
-        SlaveDisposalOnOwnerChange: DoNothing       
+        SlaveDisposalOnOwnerChange: DoNothing     
+        SpawnAllAtOnce: false
     MobSpawnerMaster@2:
         Actors: fremen_creep
         Offset: 0,2000,0
@@ -7029,6 +7262,7 @@ sietch_creep:
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
         SlaveDisposalOnOwnerChange: DoNothing    
+        SpawnAllAtOnce: false
     MobSpawnerMaster@3:
         Actors: fremen_creep
         Offset: 0,2000,0
@@ -7037,7 +7271,8 @@ sietch_creep:
         AggregateHealth: false
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
-        SlaveDisposalOnOwnerChange: DoNothing      
+        SlaveDisposalOnOwnerChange: DoNothing     
+        SpawnAllAtOnce: false        
     MobSpawnerMaster@4:
         Actors: fremen_creep
         Offset: 0,2000,0
@@ -7046,7 +7281,8 @@ sietch_creep:
         AggregateHealth: false
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
-        SlaveDisposalOnOwnerChange: DoNothing       
+        SlaveDisposalOnOwnerChange: DoNothing 
+        SpawnAllAtOnce: false    
     MobSpawnerMaster@5:
         Actors: fremen_creep
         Offset: 0,2000,0
@@ -7055,7 +7291,8 @@ sietch_creep:
         AggregateHealth: false
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
-        SlaveDisposalOnOwnerChange: DoNothing     
+        SlaveDisposalOnOwnerChange: DoNothing   
+        SpawnAllAtOnce: false
     MobSpawnerMaster@6:
         Actors: fremen_creep
         Offset: 0,2000,0
@@ -7064,7 +7301,8 @@ sietch_creep:
         AggregateHealth: false
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
-        SlaveDisposalOnOwnerChange: DoNothing         
+        SlaveDisposalOnOwnerChange: DoNothing     
+        SpawnAllAtOnce: false
     MobSpawnerMaster@7:
         Actors: fremen_creep_s
         Offset: 0,2000,0
@@ -7073,7 +7311,8 @@ sietch_creep:
         AggregateHealth: false
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
-        SlaveDisposalOnOwnerChange: DoNothing       
+        SlaveDisposalOnOwnerChange: DoNothing      
+        SpawnAllAtOnce: false
     MobSpawnerMaster@8:
         Actors: fremen_creep_s
         Offset: 0,2000,0
@@ -7082,7 +7321,8 @@ sietch_creep:
         AggregateHealth: false
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
-        SlaveDisposalOnOwnerChange: DoNothing               
+        SlaveDisposalOnOwnerChange: DoNothing   
+        SpawnAllAtOnce: false
     MobSpawnerMaster@9:
         Actors: fremen_creep_s
         Offset: 0,2000,0
@@ -7091,7 +7331,8 @@ sietch_creep:
         AggregateHealth: false
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
-        SlaveDisposalOnOwnerChange: DoNothing                      
+        SlaveDisposalOnOwnerChange: DoNothing  
+        SpawnAllAtOnce: false
     MobSpawnerMaster@10:
         Actors: fremen_creep_s
         Offset: 0,2000,0
@@ -7101,6 +7342,7 @@ sietch_creep:
         SlavesHaveFreeWill: true
         SlaveDisposalOnKill: DoNothing
         SlaveDisposalOnOwnerChange: DoNothing    
+        SpawnAllAtOnce: false
     SpawnActorOnDeath:
         Actor: sietch_creep_disabled
         
