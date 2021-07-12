@@ -268,7 +268,7 @@ GENE6:
 	Inherits: E6
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~disabled
+		Prerequisites: ~wip-content
 		Queue: Infantry.GLA, RAInfantry.GLA, Infantry.CHINA, RAInfantry.CHINA, Infantry.USA, RAInfantry.USA, Infantry.LEANG, RAInfantry.LEANG
 	RenderSprites:
 		Image: E6
@@ -1842,7 +1842,7 @@ gltunnel:
 		Name: Tunnel Network
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~disabled #glbarracks, ~techlevel.low, ~glaselected, ~!selectglatoxin
+		Prerequisites: ~wip-content #glbarracks, ~techlevel.low, ~glaselected, ~!selectglatoxin
 		Queue: Defence.GLA, RADefence.GLA
 		Description: Anti-Infantry defensive structure.\nCan protect and transport units.\n  Strong vs Infantry\n  Weak vs Tanks
 	Selectable:
@@ -1904,7 +1904,7 @@ gltunneltoxin:
 		Name: Toxin Network
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~disabled #glbarracks, ~techlevel.low, ~glaselected, ~selectglatoxin
+		Prerequisites: ~wip-content #glbarracks, ~techlevel.low, ~glaselected, ~selectglatoxin
 	Armament@PRIMARY:
 		Weapon: GLTunnelToxinWeapon
 	RenderSprites:
@@ -4468,7 +4468,7 @@ upsneakattack:
 		BuildPaletteOrder: 250
 		Queue: Promotions.GLA
 		Description: Enables Sneak Attacks.
-		Prerequisites: ~disabled #glpalace, !upsneakattack, rank5, rank1
+		Prerequisites: ~wip-content #glpalace, !upsneakattack, rank5, rank1
 	RenderSprites:
 		Image: upsneakattackicon
 	ProvidesPrerequisite:
@@ -8511,7 +8511,7 @@ chmnly:
 	Buildable:
 		Queue: Building.CHINA, RABuilding.CHINA
 		BuildPaletteOrder: 100
-		Prerequisites: ~disabled #anypower, ~techlevel.medium, ~chselected
+		Prerequisites: ~wip-content #anypower, ~techlevel.medium, ~chselected
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -8632,7 +8632,7 @@ upchminebomb:
 		Image: chclusterminesicon
 	ProvidesPrerequisite:
 		Prerequisite: upchminebomb
-
+        
 ##################################################
 #	USA Generals
 ##################################################
@@ -10763,7 +10763,7 @@ usahook:
 	Selectable:
 		Bounds: 40,36,0,-25
 	Mobile:
-		Speed: 140
+		Speed: 120
 		Locomotor: fakeaircraft
 		PauseOnCondition: disabled
     AttackGarrisoned:
@@ -10861,16 +10861,29 @@ usahook.husk:
 
 usacombathook:
     Inherits: usahook
-    Inherits@selection: ^SelectableCombatUnit
+    Inherits@heli: ^Helicopter
    	Tooltip:
 		Name: Combat Chinook
     Valued:
-		Cost: 3000	          
+		Cost: 8000
+    -Mobile:
+    Aircraft:
+        Speed: 100
+	Health:
+		HP: 30000      
+   	RevealsShroud:
+		Range: 6c0
+		Type: CenterPosition     
+   	Armor:
+		Type: Medium     
+	Cargo:
+		InitialUnits: USAE3, USAE3, USAE3, USAE3, USAE3, USAE3, USAE3, USAE3
  	Buildable:
 		Queue: Vehicle.USA, RAVehicle.USA
-		BuildPaletteOrder: 10
+		BuildPaletteOrder: 200
 		Prerequisites: usaweap, ~selectusaairforce
-		Description: Combat helicopter that allows garrisoned soldiers to shoot out of it.\n  Unarmed        
+		Description: Combat helicopter that allows garrisoned soldiers to shoot out of it.\nComes with 8 missile defenders\nCan be only built 3 times\n  Unarmed        
+        BuildLimit: 3
     -Harvester:    
     	GrantCondition@combat:
   	AutoTargetPriority@DEFAULT:
@@ -10886,11 +10899,18 @@ usacombathook:
         Condition: combatchinook     
     SpawnActorOnDeath:
         Actor: usacombathook.husk
-        
+    RenderSprites:
+        Scale: 1.25
+    -VoiceAnnouncement:  
+    -AttackAircraft:
+    Selectable:
+        Bounds: 50,50 
 usacombathook.husk:
     Inherits: usahook.husk
    	Tooltip:
 		Name: Combat Chinook   
+    RenderSprites:
+        Scale: 1.25       
         
 usaweap:
 	Inherits: ^BaseBuilding
@@ -11051,6 +11071,8 @@ usaairport:
 		BuildPaletteOrder: 130
 		Prerequisites: usasupply, ~techlevel.medium, ~usaselected, usaweap
 		Description: Produces and reloads aircraft
+        BuildDuration: 500
+        BuildDurationModifier: 100
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -11844,20 +11866,23 @@ usacomanche:
 	Buildable:
 		Queue: Aircraft.USA, RAAircraft.USA, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 50
-        BuildDuration: 250
+        BuildDuration: 375
         BuildDurationModifier: 100
 		Prerequisites: usaairport, ~techlevel.high
 		Description: Helicopter gunship.\n  Strong vs Infantry, Light vehicles\n  Weak vs Aircraft
 	Aircraft:
 		TurnSpeed: 7
-		Speed: 180
+		Speed: 164
 	Health:
-		HP: 22000
+		HP: 20000
 	Armor:
 		Type: Light
 	RevealsShroud:
 		Range: 10c0
 		Type: GroundPosition
+    GrantConditionOnMovement@nomoving:
+        Condition: moving
+        ValidMovementTypes: Horizontal, Vertical, Turn
 	Armament@MG:
 		Weapon: USAComancheMG
 		LocalOffset: 512,0,-85
@@ -11867,7 +11892,10 @@ usacomanche:
 		Weapon: USAComancheMissile
 		LocalOffset: 384,213,-85, 384,-213,-85
 		RequiresCondition: usaupmisspod
-		PauseOnCondition: !ammo
+		PauseOnCondition: !ammo || moving
+    Armament@rockets:
+        Weapon: USAComancheRockets
+        LocalOffset: 15,213,-85, 150,-213,-85
 	AutoTarget:
 		ScanRadius: 4
 	AttackAircraft:
@@ -11913,8 +11941,8 @@ usacomanche:
 	Voiced:
 		VoiceSet: USAComancheVoice
 	Cloak:
-		InitialDelay: 45
-		CloakDelay: 45
+		InitialDelay: 68
+		CloakDelay: 68
 		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: upstealthcomanche
 		IsPlayerPalette: true
@@ -11925,7 +11953,7 @@ usacomanche:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
 	ProductionCostMultiplier@selectusaairforce:
-		Multiplier: 58
+		Multiplier: 60
 		Prerequisites: selectusaairforce
         
 usacomanche.husk:
@@ -12192,22 +12220,6 @@ usaupsupplylines:
 		Image: usasupplylinesicon
 	ProvidesPrerequisite:
 		Prerequisite: usaupsupplylines
-
-usaupmisspod:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Rocket Pods
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Aircraft.USA, RAAircraft.USA
-		Description: Upgrades the Comanche with rocket pods strong against clustered targets.
-		Prerequisites: ~!usaupmisspod
-	Valued:
-		Cost: 800
-	RenderSprites:
-		Image: usamisspodicon
-	ProvidesPrerequisite:
-		Prerequisite: usaupmisspod
         
 usabombardament:
 	Inherits: ^upgrade.template
@@ -12331,10 +12343,12 @@ upstealthcomanche:
 		Queue: Aircraft.USA, RAAircraft.USA
 		Description: Cloaks Comanches.
 		Prerequisites: ~!upstealthcomanche, ~selectusaairforce
+        BuildDuration: 1500
+        BuildDurationModifier: 100
 	RenderSprites:
 		Image: upstealthcomanche
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	ProvidesPrerequisite:
 		Prerequisite: upstealthcomanche
 
@@ -12870,6 +12884,22 @@ upusamotherbomb:
 		Image: usamotherbombicon
 	ProvidesPrerequisite:
 		Prerequisite: upusamotherbomb
+ 
+usaupmisspod:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: General's Promotion Rocket Pods
+	Buildable:
+		BuildPaletteOrder: 300
+		Queue: Promotions.USA
+		Description: Upgrades the Comanche with rocket pods strong against clustered targets.
+		Prerequisites: ~!usaupmisspod, rank3, rank1
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: usamisspodicon
+	ProvidesPrerequisite:
+		Prerequisite: usaupmisspod
         
 ################################################################
 #
@@ -13102,7 +13132,7 @@ leangpropagandatower:
 leangtunnel:
 	Inherits: gltunnel
 	Buildable:
-		Prerequisites: ~disabled #leangbarracks, ~techlevel.low
+		Prerequisites: ~wip-content #leangbarracks, ~techlevel.low
 		Queue: Defence.LEANG, RADefence.LEANG
 	RenderSprites:
 		Image: gltunnel
@@ -13423,7 +13453,7 @@ leangsneakattack:
 	Inherits: upsneakattack
 	Buildable:
 		Queue: Promotions.LEANG
-		Prerequisites: ~disabled
+		Prerequisites: ~wip-content
 
 leangartybarrage1:
 	Inherits: upartybarrage1
