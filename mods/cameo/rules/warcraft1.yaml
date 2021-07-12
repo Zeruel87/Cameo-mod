@@ -24,21 +24,20 @@
         Palette: player
 ^WC1Infantry:
 	RenderSprites:
-		PlayerPalette: WC1Player
+        PlayerPalette: player
 	WithDeathAnimation:
-		DeathSequencePalette: WC1Player
         DeathSequence: die
         CrushedSequence: die-crushed
         UseDeathTypeSuffix: false
 
 ^WCWorker:
 	Harvester:
-		PipCount: 2
-		Capacity: 2
+		PipCount: 3
+		Capacity: 3
 		BaleLoadDelay: 4
 		BaleUnloadDelay: 0
 		BaleUnloadAmount: 2
-		FullyLoadedSpeed: 90
+		FullyLoadedSpeed: 100
 		MaxUnloadQueue: 9
 	WithHarvestAnimation:
 	WithDockingAnimation:
@@ -88,10 +87,10 @@
         Condition: arrow_upg2
         Prerequisites: wc_h_str_arrow2 || wc_o_str_spear2
     FirepowerMultiplier@upgrade:
-        Modifier: 135
+        Modifier: 140
         Condition: arrow_upg
     FirepowerMultiplier@upgrade2:
-        Modifier: 135
+        Modifier: 140
         Condition: arrow_upg2
 ^wc_h_horses:
     GrantConditionOnPrerequisite@spupgrade:
@@ -101,10 +100,10 @@
         Condition: horses_upg2
         Prerequisites: wc_h_horses2 || wc_o_wolves2
     SpeedMultiplier@upgrade:
-        Modifier: 115
+        Modifier: 120
         RequiresCondition: horses_upg
     SpeedMultiplier@upgrade2:
-        Modifier: 115
+        Modifier: 120
         RequiresCondition: horses_upg2            
     
 ####################################################################################################
@@ -124,18 +123,12 @@ wc_h_townhall:
 	Tooltip:
 		Name: Town Hall
 	ProvidesPrerequisite:
-	Buildable:
-		BuildPaletteOrder: 10
-		Queue: Building.human, RABuilding.human
-		BuildDuration: 900
-        BuildDurationModifier: 100
-		Description: Builds Structures\nGrants 50 Food\nTrains Peasants.
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 130000
+		HP: 200000
 	RevealsShroud:
 		Range: 4c0
 	RallyPoint:
@@ -245,7 +238,7 @@ wc_h_farm:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 55000
+		HP: 65000
 	RevealsShroud:
 		Range: 4c0
 	Power:
@@ -271,7 +264,7 @@ wc_h_farm:
     Voiced:
 		VoiceSet: humanfarmvoice
     PowerMultiplier@upgrade:
-        Modifier: 200
+        Modifier: 250
         RequiresCondition: farmupg1         
     WithSpriteBody:
         RequiresCondition: !farmupg1    
@@ -862,9 +855,6 @@ rainoffire:
 wc_o_townhall:
 	Inherits@WTH: wc_h_townhall
 	ProvidesPrerequisite:
-	Buildable:
-		Queue: Building.orc, RABuilding.orc
-		Description: Builds Structures\nGrants 50 Food\nTrains Peons.
 	SpawnActorsOnSell:
 		ActorTypes: wc_h_footman
 	Production@NORMAL:
@@ -1146,7 +1136,7 @@ wc_h_peasant:
 	AutoTargetPriority@ATTACKANYTHING:
 		ValidStances: Enemy, Neutral
 	Valued:
-		Cost: 200
+		Cost: 150
 	Tooltip:
 		Name: Peasant
 	UpdatesPlayerStatistics:
@@ -1163,7 +1153,7 @@ wc_h_peasant:
 		HP: 7200
 	#Food
 	Power:
-		Amount: -10
+		Amount: -5
 	AutoTarget:
 		ScanRadius: 4
 	WithDeathAnimation:
@@ -1218,6 +1208,67 @@ wc_h_peasant:
 		PipType: Blue
 		CargoConditions:
 			wc_goldmine: indoors
+    
+wc_h_mcv:
+	Inherits: ^Soldier
+    Inherits@WC1Infantry: ^WC1Infantry
+	Inherits@EXT: ^ExternalConditions
+	Inherits@mcv: ^MCV
+	Valued:
+		Cost: 1500
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Building.human, RABuilding.human
+		BuildDuration: 750
+        BuildDurationModifier: 100
+		Description: Tramsforms into another Town Hall
+        Icon: townhall_icon
+	Tooltip:
+		Name: Mobile Construction Vehicle (Human)
+	Selectable:
+		Priority: 4
+		DecorationBounds: 36,36
+	Mobile:
+		Speed: 95
+	Health:
+		HP: 30000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 7c0
+    -Crushable:
+    WithInfantryBody:
+		-DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+	Transforms:
+		IntoActor: wc_h_townhall
+		Offset: -1,-1
+		Facing: 108
+		TransformSounds: pshbld03.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Voiced:
+		VoiceSet: voicehuman
+    RenderSprites:  
+        Image: wc_h_peasant
+        Scale: 1.3
+        
+wc_o_mcv:
+    Inherits: wc_h_mcv
+  	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Building.orc, RABuilding.orc
+		BuildDuration: 750
+        BuildDurationModifier: 100
+        Icon: townhall_icon  
+   	Transforms:
+		IntoActor: wc_o_townhall    
+  	Tooltip:
+		Name: Mobile Construction Vehicle (Orc)  
+	Voiced:
+		VoiceSet: voiceorc        
+    RenderSprites:  
+        Image: wc_o_peon
         
 wc_h_footman:
 	Inherits: ^Soldier
@@ -1243,14 +1294,14 @@ wc_h_footman:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 12600
+		HP: 14400
     DamageMultiplier@armor:
-        Modifier: 80       
+        Modifier: 60       
    	Armor:
 		Type: None     
 	#Food
 	Power:
-		Amount: -10
+		Amount: -5
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
@@ -1296,7 +1347,7 @@ wc_h_archer:
 	#Food
     Crushable:
 	Power:
-		Amount: -10
+		Amount: -5
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
@@ -1341,14 +1392,14 @@ wc_h_knight:
   	Armor:
 		Type: Medium      
 	Health:
-		HP: 21600
+		HP: 28800
     DamageMultiplier@armor:
         Modifier: 50           
     WithAttackAnimation:
         Sequence: shoot
 	#Food
 	Power:
-		Amount: -20
+		Amount: -10
 	AutoTarget:
 		ScanRadius: 4 
 	Armament:
@@ -1432,7 +1483,7 @@ wc_h_conjurer:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 7200
+		HP: 9000
   	Armor:
 		Type: None      
 	#Food
@@ -1481,7 +1532,7 @@ wc_h_cleric:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 7200
+		HP: 9000
  	Armor:
 		Type: None       
 	#Food
@@ -1527,7 +1578,7 @@ wc_h_scorpion:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~disabled
+		Prerequisites: ~wip-content
 		Queue: Aircraft.human, RAAircraft.human
 		Description: Lesser Spawn.
 	Mobile:
@@ -1627,7 +1678,7 @@ wc_goldmine:
 	Health:
 		HP: 100000
     Power:
-        Amount: -100
+        Amount: -60
 	Armor:
 		Type: Concrete
 	RevealsShroud:
@@ -1780,7 +1831,6 @@ wc_o_skeleton:
         Delay: 16
         StartIfBelow: 100  
     RenderSprites:
-		PlayerPalette: WC1Player   
     MobSpawnerSlave:
     RejectsOrders:
     Voiced:
@@ -1859,6 +1909,49 @@ wc_o_skeleton_army:
 		Image: wc_o_skeleton
     Voiced:
         VoiceSet: voiceskeleton
+        
+   
+wc_n_brigand:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 120
+	Tooltip:
+		Name: Brigand
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: wc_h_barracks, ~wip-content
+		Queue: Infantry.human, RAInfantry.human
+		Description: Basic Melee Infantry.
+        BuildDuration: 80
+        BuildDurationModifier: 100
+	Mobile:
+		Speed: 64
+	Health:
+		HP: 12000
+    DamageMultiplier@armor:
+        Modifier: 70       
+   	Armor:
+		Type: None     
+	#Food
+	Power:
+		Amount: -5
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: footmanSlice
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+    Voiced:
+		VoiceSet: voicehuman           
+    -Crushable:         
 #######################################################
 #                     UPGRADES                        #
 #######################################################     
@@ -1872,7 +1965,7 @@ wc_h_str_arrow:
 		Queue: lumberupg.human, RAlumberupg.human
         BuildDuration: 1500
         BuildDurationModifier: 100       
-		Description: Increases Arrow Damage dealt by Archers and Guard Towers by 35%
+		Description: Increases Arrow Damage dealt by Archers and Guard Towers by 40%
         Prerequisites: ~!wc_h_str_arrow
 	Valued:
 		Cost: 1000
@@ -1889,7 +1982,7 @@ wc_h_str_arrow2:
 		Queue: lumberupg.human, RAlumberupg.human
         BuildDuration: 1500
         BuildDurationModifier: 100       
-		Description: Increases Arrow Damage by Archers and Guard Towers by further 35%
+		Description: Increases Arrow Damage by Archers and Guard Towers by further 40%
         Prerequisites: ~!wc_h_str_arrow2, ~wc_h_str_arrow
 	Valued:
 		Cost: 1000
@@ -1974,7 +2067,7 @@ wc_h_horses:
 		Queue: stablesupg.human, RAstablesupg.human 
         BuildDuration: 1500
         BuildDurationModifier: 100       
-		Description: Increases Horses speed by 15%
+		Description: Increases Horses speed by 20%
         Prerequisites: ~!wc_h_horses
 	Valued:
 		Cost: 1000
@@ -1991,7 +2084,7 @@ wc_h_horses2:
 		Queue: stablesupg.human, RAstablesupg.human 
         BuildDuration: 1500
         BuildDurationModifier: 100       
-		Description: Increases Horses speed by further 15%
+		Description: Increases Horses speed by further 20%
         Prerequisites: ~!wc_h_horses2, ~wc_h_horses
 	Valued:
 		Cost: 1000
@@ -2068,7 +2161,7 @@ wc_o_wolves:
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: kennelupg.orc, RAkennelupg.orc   
-		Description: Increases Wolves speed by 15%
+		Description: Increases Wolves speed by 20%
         Prerequisites: ~!wc_o_wolves
 	RenderSprites:
 		Image: wc_o_wolves
@@ -2080,7 +2173,7 @@ wc_o_wolves2:
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: kennelupg.orc, RAkennelupg.orc
-		Description: Increases Wolves speed by further 15%
+		Description: Increases Wolves speed by further 20%
         Prerequisites: ~!wc_o_wolves2, ~wc_o_wolves
 	RenderSprites:
 		Image: wc_o_wolves2
@@ -2091,12 +2184,12 @@ wc_h_upgradefarm:
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: Farmupgrade.human
-        BuildDuration: 375
+        BuildDuration: 1125
         BuildDurationModifier: 100       
 		Description: Expands farm gaining 100 more food out of this farm
         Icon: expand-icon
 	Valued:
-		Cost: 750
+		Cost: 1000
 	RenderSprites:
 		Image: wc_h_farm
     Interactable:
