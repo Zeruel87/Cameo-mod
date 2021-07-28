@@ -350,7 +350,9 @@ DRGrendelRay:
 			None: 100
 			Wood: 75
 			Light: 75
+            Medium: 75
 			Heavy: 75
+            Concrete: 60
 		InvalidTargets: Building
 	Warhead@1DamBuildings: SpreadDamage
 		Spread: 56
@@ -360,7 +362,9 @@ DRGrendelRay:
 			None: 40
 			Wood: 40
 			Light: 40
+            Medium: 40
 			Heavy: 40
+            Concrete: 40
 		DamageTypes: Prone50Percent, TriggerProne, FireDeath
 
 DRPlasmaTankWeapon:
@@ -369,7 +373,7 @@ DRPlasmaTankWeapon:
 		Explosions: drplasmaex
 
 DRBionWeapon:
-	Inherits: ^BallisticWeapon
+	Inherits: ^DRPlasmaWeapon
 	ReloadDelay: 13
 	Range: 4c0
 	Report: drgxbonwc0.wav
@@ -438,11 +442,11 @@ DRSkyFortressWeapon:
 DRTachyonTankWeapon:
 	Inherits: ^DRPlasmaWeapon
 	ReloadDelay: 28
-	Range: 8c0
+	Range: 10c0
 	Report: drgxtctwc0.wav
 	Projectile: Bullet
 		Image: drtachbullet
-		Speed: 853
+		Speed: 600
 		Blockable: True
 		ContrailLength: 30
 		ContrailColor: d1dbff
@@ -469,7 +473,24 @@ DrVortexTankWeapon:
 		Damage: 5000
 	Warhead@1DamBuildings: SpreadDamage
 		Damage: 5000
-
+        
+DRTachionSuicideExplosion:
+	Warhead@1Dam: SpreadDamage
+		Damage: 45000
+		Spread: 3c512
+		Falloff: 100, 60
+		Versus:
+			None: 100
+			Wood: 100
+			Light: 100
+            Medium: 100
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		DamageCalculationType: ClosestTargetablePosition
+	Warhead@3Eff: CreateEffect
+		Explosions: drtachexp
+        
 DRFuryWeapon:
 	Inherits: DRTachyonTankWeapon
 	ReloadDelay: 22
@@ -627,7 +648,7 @@ DRPortableRailgun:
 DRTripleRail:
 	Inherits: ^DRRailgun
 	ReloadDelay: 28
-	Range: 8c0
+	Range: 12c0
 	Report: drgxtrtwc0.wav
 	Projectile: Bullet
 		Speed: 1c682
@@ -757,38 +778,41 @@ DRSatanClawzMG:
 			Light: 50
 			Heavy: 25
 
-DRAMPSnipe:
+DRAMPInjection:
 	Report: gxsnpwc0.wav
-	ValidTargets: Ground, Infantry, Creep
-	InvalidTargets: Vehicle, Water, Structure, Wall, Husk
+	ValidTargets: Heal, plagued
+	InvalidTargets: Vehicle, Water, Structure, Wall, Husk, poisoned
+    ValidStances: Ally
 	ReloadDelay: 40
-	Range: 12c0
+	Range: 4c0
 	Projectile: Bullet
 		Speed: 5c682
-	Warhead@1Dam: SpreadDamage
-		Spread: 42
-		Damage: 2000
-		ValidTargets: Infantry, Creep
-		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
-	Warhead@1: AttachDelayedWeapon
-		Weapon: DRAMPSnipePoison
-		Type: ivanbomb
-		TriggerTime: 200
-		Range: 0c128
+	Warhead@1Dam: HealthPercentageDamage
+		Spread: 60
+		Damage: -100
+		ValidTargets: Heal
+        ValidStances: Ally
+	Warhead@1Con: GrantExternalCondition
+		Condition: poisoned
+		Duration: 1000
+		Range: 0c60
 
-DRAMPSnipePoison:
-	ValidTargets: Ground, Infantry, Creep
-	InvalidTargets: Vehicle, Water, Structure, Wall, Husk
-	ReloadDelay: 40
-	Range: 8c0
-	Projectile: Bullet
-		Speed: 5c682
-	Warhead@1Dam: SpreadDamage
-		Spread: 42
-		Damage: 50000
-		ValidTargets: Infantry, Creep
-		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
-
+DRAMPInjectionEnemy:
+    Inherits: DRAMPInjection
+    ValidTargets: Ground, Infantry, poisoned
+    ValidStances: Neutral, Enemy
+    Warhead@1Dam: HealthPercentageDamage
+		Damage: 40
+		ValidTargets: Infantry
+        InvalidTargets: poisoned
+        ValidStances: Neutral, Enemy
+        DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+    Warhead@2Dam: HealthPercentageDamage
+        Damage: 10
+        ValidTargets: Infantry, poisoned
+        ValidStances: Neutral, Enemy
+        DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+        
 DRMadWeapon:
 	Inherits: Patriot
 	ReloadDelay: 25
@@ -859,7 +883,9 @@ DRShokWaveQuake:
 			None: 150
 			Wood: 80
 			Light: 100
+            Medium: 90
 			Heavy: 80
+            Concrete: 40
 		DamageTypes: DefaultDeath
 	Warhead@3Eff: CreateEffect
 		Explosions: nuke
@@ -1155,19 +1181,21 @@ DRTNissileTurretAA:
 	Warhead@3Eff: CreateEffect
 		Explosions: poof
 		ImpactSounds: drgxex1oc0.wav
+        
 DRHostageTake:
-	Report: ramgun2.aud
-	ValidTargets: Ground, Infantry
+	ValidTargets: Infantry
 	InvalidTargets: Vehicle, Water, Structure, Wall, Husk
-	ReloadDelay: 180
+    ValidStances: Neutral, Enemy
+	ReloadDelay: 150
 	Range: 1c0
-	Projectile: Bullet
-		Speed: 5c682
+	Projectile: InstantHit
 	Warhead@1Dam: SpreadDamage
-		Spread: 42
-		Damage: 25000
+		Damage: 500000
 		ValidTargets: Infantry
-		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+        ValidStances: Neutral, Enemy
+    Warhead@spawn: SpawnActor
+        Actors: drzombie2    
+        ValidStances: Neutral, Enemy
 DRNullWeapon:
 	ValidTargets: NullTarget
 	InvalidTargets: Ground
@@ -1278,4 +1306,20 @@ DREMPDevice:
 		Condition: empdisable
 		Duration: 360
 		Range: 22c0
-		ValidRelationships: Enemy
+		ValidStances: Enemy
+
+DRSabouteurAttach:
+	Inherits: IvanAttach
+    ReloadDelay: 40
+	ValidTargets: demolishable
+	InvalidTargets: ivanattached
+	Range: 1c512
+	Warhead@1: AttachDelayedWeapon
+		Weapon: DRSaboteurBomb
+		TriggerTime: 40
+		ValidTargets: demolishable
+
+DRSaboteurBomb:
+	Inherits: TanyaBomb
+	Warhead@1Dam: HealthPercentageDamage
+		Damage: 50
