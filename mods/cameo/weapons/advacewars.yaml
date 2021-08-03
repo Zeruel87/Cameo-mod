@@ -41,6 +41,11 @@ AWSupport:
 		Duration: 80
 		Range: 1c0
 		ValidStances: Ally
+AWSuperSupport:
+	Inherits: AWSupport
+	Warhead@1Dam: SpreadDamage
+		Damage: -20000
+		ValidTargets: Repair, Heal
 
 ^AWBallisticWeapon:
 	ReloadDelay: 120
@@ -95,7 +100,7 @@ AWMedCannon:
 		Damage: 8000
 AWDevastator:
 	Inherits: AWMedCannon
-	Burst: 2                      
+	Burst: 2
 
 AWArtilleryShell:
 	Inherits: ArtilleryShell
@@ -303,10 +308,17 @@ AWMachinegunTank:
 
 AWMachinegunTankAA:
 	Inherits: AWMachinegunGeneral
-	ValidTargets: Infantry, Air
+	ValidTargets: Infantry, Helicopter
 	Warhead@1Dam: SpreadDamage
 		Damage: 400
 		ValidTargets: Infantry, Helicopter
+
+AWMachinegunTankHeavy:
+	Inherits: AWMachinegunGeneral
+	ValidTargets: Vehicle, Building, Structure
+	Warhead@1Dam: SpreadDamage
+		Damage: 800
+		ValidTargets: Vehicle, Building, Structure
 
 AWFlakCannon:
 	Inherits: AWMachinegunGeneral
@@ -347,8 +359,6 @@ AWFighterMissileAA:
 		Image: awmissile2
 		Shadow: true
 		TrailImage: smokey
-  	Warhead@1Dam: SpreadDamage
-		Damage: 1250      
 	Warhead@4EffAir: CreateEffect
 		Explosions: awexplosion
 		ImpactSounds: AWExplosion1.wav
@@ -363,7 +373,6 @@ AWFighterMissileAG:
 		Shadow: true
 		TrailImage: smokey
 	Warhead@1Dam: SpreadDamage
-		Damage: 1250
 		ValidTargets: Ground
 		Versus:
 			None: 32
@@ -376,6 +385,18 @@ AWFighterMissileAG:
 	Warhead@4EffAir: CreateEffect
 		Explosions: awexplosion
 		ImpactSounds: AWExplosion1.wav
+
+AWBcopterMissile:
+	Inherits: AWFighterMissileAG
+	Burst: 2
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Ground
+		Versus:
+			None: 60
+			Wood: 222
+			Light: 222
+			Heavy: 200
+
 AWCarMissiles:
 	Inherits: ^MissileWeapon
 	Report: AWMissile1.wav, AWMissile2.wav
@@ -426,10 +447,6 @@ AWAARockets:
 	MinRange: 6c0
 	Projectile: MissileCA
 		RangeLimit: 19c0
-        HorizontalRateOfTurn: 25
-        VerticalRateOfTurn: 25
-        Speed: 500
-        Inaccuracy: 0
 		Image: awmissile3
 		Shadow: true
 		TrailImage: smokey
@@ -443,11 +460,6 @@ AWMechMissile:
 	Report: AWBazooka1.wav, AWBazooka3.wav
 	Warhead@1Dam: SpreadDamage
 	Projectile: MissileCA
-        HorizontalRateOfTurn: 20
-        VerticalRateOfTurn: 20
-        Speed: 400
-        Inaccuracy: 0
-        RangeLimit: 11c0
 		Image: awmissile1
 		Shadow: true
 		TrailImage: smokey
@@ -681,52 +693,8 @@ AWOlafFreeze1:
 	MinRange: 4c512
 	ReloadDelay: 360
 	ValidTargets: Chronobeamable, Air
-	Warhead@1s: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount: 14
-		Delay: 1
-	Warhead@2: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount: 8
-		Delay: 25
-	Warhead@3: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount:8
-		Delay: 40
-	Warhead@4: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount: 10
-		Delay: 55
-	Warhead@5: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount: 11
-		Delay: 70
-	Warhead@6: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount: 12
-		Delay: 85
-	Warhead@7: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount: 13
-		Delay: 100
-	Warhead@8: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount: 15
-		Delay: 124
-	Warhead@9: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount: 18
-		Delay: 150
-	Warhead@10: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount: 18
-		Delay: 275
-	Warhead@11: FireShrapnel
-		Weapon: AWSnowCloud
-		Amount: 18
-		Delay: 300
 	Warhead@1Con: GrantExternalCondition
-		Range: 3c0
+		Range: 8c0
 		Condition: chronobeamed
 		Duration: 150
 		ValidStances: Enemy, Neutral
@@ -746,9 +714,9 @@ AWOlafFreeze2:
 		ValidStances: Enemy, Neutral
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 	Warhead@1Con: GrantExternalCondition
-		Range: 3c0
+		Range: 12c0
 		Condition: chronobeamed
-		Duration: 150
+		Duration: 300
 		ValidStances: Enemy, Neutral
 		ValidTargets: Ground, Water
 	Warhead@12: FireShrapnel
@@ -1434,3 +1402,63 @@ AWExmachina:
 		Condition: empdisable
 		Duration: 360
 		Range: 6c0
+AWNukeCannon:
+	Inherits: ArtilleryShell
+	Inherits@Explosion: CHAtomicWeapon
+	ReloadDelay: 330
+	Range: 18c0
+	MinRange: 5c0
+	Report: vnukweaa.wav
+	TargetActorCenter: true
+	Projectile: Bullet
+		ContrailLength: 30
+		Speed: 180
+	Warhead@1Dam: SpreadDamage
+		Spread: 1c0
+		Damage: 25000
+AWFrostWeapon:
+	Inherits: TSSonicZap
+	ReloadDelay: 60
+	Range: 6c0
+	Report: sonic4.aud
+	Projectile: AreaBeam
+		Speed: 0c256
+		Duration: 45
+		DamageInterval: 5
+		Width: 384
+		Shape: Flat
+		ZOffset: 2047
+		BeyondTargetRange: 0c256
+		Blockable: true
+		TrackTarget: true
+		Color: C0EBFF45
+	Warhead@1Dam: SpreadDamage
+		Range: 0, 32
+		Falloff: 100, 100
+		Damage: 2000
+		AffectsParent: false
+		ValidStances: Neutral, Enemy
+		Versus:
+			Light: 33
+			Heavy: 20
+            Medium: 40
+			Wood: 60
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Dam: SpreadDamage
+		Range: 0, 32
+		Falloff: 100, 100
+		Damage: 1000
+		AffectsParent: false
+		ValidStances: Ally
+		Versus:
+			Light: 33
+			Heavy: 20
+            Medium: 40
+			Wood: 60
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@1Con: GrantExternalCondition
+		Range: 1c0
+		Condition: chronobeamed
+		Duration: 75
+		ValidStances: Enemy, Neutral
+		ValidTargets: Ground, Water
