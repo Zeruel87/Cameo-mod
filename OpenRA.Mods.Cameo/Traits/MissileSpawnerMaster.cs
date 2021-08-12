@@ -184,7 +184,7 @@ namespace OpenRA.Mods.CA.Traits
 			}
 		}
 
-		public void Tick(Actor self)
+		void ITick.Tick(Actor self)
 		{
 			if (respawnTicks > 0)
 			{

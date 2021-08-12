@@ -52,6 +52,7 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			hasFiredThisTick = false;
 		}
+
 		void ITick.Tick(Actor self)
 		{
 			// Split into a protected method to allow subclassing

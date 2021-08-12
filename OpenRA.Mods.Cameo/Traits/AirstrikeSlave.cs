@@ -93,7 +93,7 @@ namespace OpenRA.Mods.CA.Traits
 			 */
 		}
 
-		public virtual void OnBecomingIdle(Actor self)
+		void INotifyBecomingIdle.OnBecomingIdle(Actor self)
 		{
 			EnterSpawner(self);
 		}
