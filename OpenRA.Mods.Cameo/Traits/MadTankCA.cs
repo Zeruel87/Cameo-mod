@@ -83,18 +83,19 @@ namespace OpenRA.Mods.CA.Traits
 		}
 	}
 
-	class MadTankCA : PausableConditionalTrait<MadTankCAInfo>, INotifyCreated, IIssueOrder, IResolveOrder, IOrderVoice, IIssueDeployOrder
+	class MadTankCA : PausableConditionalTrait<MadTankCAInfo>, IIssueOrder, IResolveOrder, IOrderVoice, IIssueDeployOrder
 	{
 		readonly MadTankCAInfo info;
 
 		ConditionManager conditionManager;
 
-		public MadTankCA(Actor self, MadTankCAInfo info) : base(info)
+		public MadTankCA(Actor self, MadTankCAInfo info)
+			: base(info)
 		{
 			this.info = info;
 		}
 
-		void INotifyCreated.Created(Actor self)
+		protected override void Created(Actor self)
 		{
 			conditionManager = self.TraitOrDefault<ConditionManager>();
 		}
@@ -111,7 +112,8 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			get
 			{
-				if (!IsTraitDisabled) {
+				if (!IsTraitDisabled)
+				{
 					yield return new TargetTypeOrderTargeter(new BitSet<TargetableType>("DetonateAttack"), "DetonateAttack", 5, "attack", true, false) { ForceAttack = false };
 					yield return new DeployOrderTargeter("Detonate", 5);
 				}

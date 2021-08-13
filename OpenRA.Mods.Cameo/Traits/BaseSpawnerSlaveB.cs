@@ -138,9 +138,8 @@ namespace OpenRA.Mods.CA.Traits
 
 		public virtual void OnMasterKilled(Actor self, Actor attacker, SpawnerSlaveDisposal disposal)
 		{
-
 			// Grant MasterDead condition.
-			//self.GrantCondition(info.MasterDeadCondition); // AS Style
+			// self.GrantCondition(info.MasterDeadCondition); // AS Style
 			if (conditionManager != null && !string.IsNullOrEmpty(info.MasterDeadCondition))
 				masterDeadToken = conditionManager.GrantCondition(self, info.MasterDeadCondition);
 
@@ -206,7 +205,6 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			if (masterTraitPausedConditionToken == ConditionManager.InvalidConditionToken)
 				masterTraitPausedConditionToken = conditionManager.GrantCondition(self, info.GrantConditionWhenMasterIsPaused);
-
 		}
 
 		public void RevokeMasterPausedCondition(Actor self)

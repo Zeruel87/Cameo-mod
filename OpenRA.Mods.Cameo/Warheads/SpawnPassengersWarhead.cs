@@ -91,8 +91,9 @@ namespace OpenRA.Mods.CA.Warheads
 
 			foreach (var passenger in args.SourceActor.TraitOrDefault<Cargo>().Passengers)
 			{
-        var a = passenger.Info.Name;
-				//var placed = false;
+				var a = passenger.Info.Name;
+
+				// var placed = false;
 				var td = new TypeDictionary();
 				var ai = map.Rules.Actors[a.ToLowerInvariant()];
 
@@ -101,19 +102,17 @@ namespace OpenRA.Mods.CA.Warheads
 				else
 					td.Add(new OwnerInit(firedBy.World.Players.First(p => p.InternalName == InternalOwner)));
 
-
 				firedBy.World.AddFrameEndTask(w =>
 				{
-					firedBy.TraitOrDefault<ProductionCA>().Produce(firedBy, passenger.Info, firedBy.TraitOrDefault<ProductionCA>().Info.Produces[0], td, unit => {
-						//Game.Debug(String.Join("; ", firedBy.TraitOrDefault<Production>() ));
-
-						if( passenger.TraitOrDefault<Cargo>() != null )
+					firedBy.TraitOrDefault<ProductionCA>().Produce(firedBy, passenger.Info, firedBy.TraitOrDefault<ProductionCA>().Info.Produces[0], td, unit =>
+					{
+						// Game.Debug(String.Join("; ", firedBy.TraitOrDefault<Production>() ));
+						if (passenger.TraitOrDefault<Cargo>() != null)
 						{
 							foreach (var p in passenger.TraitOrDefault<Cargo>().Passengers)
 							{
-									//Game.Debug(String.Join("; ", passenger.TraitOrDefault<Cargo>().Passengers));
-									//Game.Debug(p.Info.Name);
-
+									// Game.Debug(String.Join("; ", passenger.TraitOrDefault<Cargo>().Passengers));
+									// Game.Debug(p.Info.Name);
 									var newPassenger = firedBy.World.CreateActor(false, p.Info.Name, td);
 									unit.TraitOrDefault<Cargo>().Load(unit, newPassenger);
 							}

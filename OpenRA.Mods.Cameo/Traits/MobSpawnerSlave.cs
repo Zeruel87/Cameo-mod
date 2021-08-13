@@ -48,15 +48,17 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			return Moves.Any(m => m.IsTraitEnabled() && (m.CurrentMovementTypes.HasFlag(MovementType.Horizontal) || m.CurrentMovementTypes.HasFlag(MovementType.Vertical)));
 		}
+
 		public bool IsFlying()
 		{
 			return IsAircraft;
 		}
 
-		public MobSpawnerSlave(ActorInitializer init, MobSpawnerSlaveInfo info) : base(init, info)
+		public MobSpawnerSlave(ActorInitializer init, MobSpawnerSlaveInfo info)
+			: base(init, info)
 		{
 			Info = info;
-			this.self = init.Self;
+			self = init.Self;
 		}
 
 		protected override void Created(Actor self)
@@ -82,9 +84,11 @@ namespace OpenRA.Mods.CA.Traits
 
 		public void Move(Actor self, CPos location)
 		{
-			if (IsAircraft) {
+			if (IsAircraft)
+			{
 				var target = Target.FromCell(self.World, location);
-				//Game.Debug(target.ToString());
+
+				// Game.Debug(target.ToString());
 				self.QueueActivity(new Fly(self, target, WDist.Zero));
 
 				return;
@@ -130,6 +134,5 @@ namespace OpenRA.Mods.CA.Traits
 			// Also use RejectsOrder if necessary.
 			self.World.Selection.Add(Master);
 		}
-
 	}
 }
