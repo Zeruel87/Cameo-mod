@@ -51,10 +51,10 @@ SCCOMMANDCENTER:
 		Range: 9c0
 	Production@NORMAL:
 		Produces: Building.Terran, Defence.Terran
-		RequiresCondition: !classicproductionqueues
+		RequiresCondition: !classicproductionqueues && !littlebuilderenable
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RABuilding.Terran, RADefence.Terran
-		RequiresCondition: classicproductionqueues
+		RequiresCondition: classicproductionqueues && !littlebuilderenable
 	Transforms:
 		IntoActor: sccommandcenterm
 		Offset: 1,1
@@ -81,18 +81,19 @@ SCCOMMANDCENTER:
 	BaseBuilding:
 	ProductionBar@BuildingTerran:
 		ProductionType: Building.Terran
-		RequiresCondition: !classicproductionqueues
+		RequiresCondition: !classicproductionqueues && !littlebuilderenable
 	ProductionBar@DefenceTerran:
 		ProductionType: Defence.Terran
-		RequiresCondition: !classicproductionqueues
+		RequiresCondition: !classicproductionqueues && !littlebuilderenable
 	ProductionBar@RABuildingTerran:
 		ProductionType: RABuilding.Terran
-		RequiresCondition: classicproductionqueues
+		RequiresCondition: classicproductionqueues && !littlebuilderenable
 	ProductionBar@RADefenceTerran:
 		ProductionType: RADefence.Terran
-		RequiresCondition: classicproductionqueues
+		RequiresCondition: classicproductionqueues && !littlebuilderenable
 	BaseProvider:
 		Range: 14c0
+		RequiresCondition: !littlebuilderenable
 	WithBuildingPlacedAnimation:
 	ProvidesPrerequisite@buildingname:
 	WithBuildingBib:
@@ -110,7 +111,26 @@ SCCOMMANDCENTER:
 		Condition: jammed
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmterran
-
+	FreeActor@littlebuilderenable1:
+		Actor: scscv
+		SpawnOffset: 1,2
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+	FreeActor@littlebuilderenable2:
+		Actor: scscv
+		SpawnOffset: 1,3
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+	FreeActor@littlebuilderenable3:
+		Actor: scscv
+		SpawnOffset: 1,4
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+	FreeActor@littlebuilderenable4:
+		Actor: scscv
+		SpawnOffset: 1,5
+		Facing: 64
+		RequiresCondition: littlebuilderenable
 SCSUPPLYDEPOT:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -741,10 +761,10 @@ SCNEXUS:
 		Range: 10c0
 	Production@NORMAL:
 		Produces: Building.Protoss, Defence.Protoss
-		RequiresCondition: !classicproductionqueues
+		RequiresCondition: !classicproductionqueues && !littlebuilderenable
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RABuilding.Protoss, RADefence.Protoss
-		RequiresCondition: classicproductionqueues
+		RequiresCondition: classicproductionqueues && !littlebuilderenable
 	ProductionQueue@ProtossBuilding:
 		Type: Building.Protoss
 		DisplayOrder: 0
@@ -760,18 +780,22 @@ SCNEXUS:
 	BaseBuilding:
 	ProductionBar@BuildingProtoss:
 		ProductionType: Building.Protoss
-		RequiresCondition: !classicproductionqueues
+		RequiresCondition: !classicproductionqueues && !littlebuilderenable
 	ProductionBar@DefenceProtoss:
 		ProductionType: Defence.Protoss
-		RequiresCondition: !classicproductionqueues
+		RequiresCondition: !classicproductionqueues && !littlebuilderenable
 	ProductionBar@RABuildingProtoss:
 		ProductionType: RABuilding.Protoss
-		RequiresCondition: classicproductionqueues
+		RequiresCondition: classicproductionqueues && !littlebuilderenable
 	ProductionBar@RADefenceProtoss:
 		ProductionType: RADefence.Protoss
-		RequiresCondition: classicproductionqueues
+		RequiresCondition: classicproductionqueues && !littlebuilderenable
 	BaseProvider:
 		Range: 14c0
+		RequiresCondition: !littlebuilderenable
+	BaseProvider@littlebuilder:
+		Range: 7c0
+		RequiresCondition: littlebuilderenable
 	WithBuildingPlacedAnimation:
 	WithBuildingBib:
 	RallyPoint:							##########
@@ -789,12 +813,32 @@ SCNEXUS:
 	-WithDeathAnimation:
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmprotoss
-
+	FreeActor@littlebuilderenable1:
+		Actor: scprobe
+		SpawnOffset: 1,2
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+	FreeActor@littlebuilderenable2:
+		Actor: scprobe
+		SpawnOffset: 1,3
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+	FreeActor@littlebuilderenable3:
+		Actor: scprobe
+		SpawnOffset: 1,4
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+	FreeActor@littlebuilderenable4:
+		Actor: scprobe
+		SpawnOffset: 1,5
+		Facing: 64
+		RequiresCondition: littlebuilderenable
 SCPYLON:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
 	Inherits@power: ^Power
+	Inherits@CPQ: ^CPQCondition
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -840,7 +884,9 @@ SCPYLON:
 	GrantConditionOnProduction@pylonupg:
 		Condition: scpylonexpand
 		Actors: scpylonexpand           
-        
+	BaseProvider:
+		Range: 6c0
+		RequiresCondition: littlebuilderenable
 SCPYLONEXPAND:
 	Tooltip:
 		Name: Growing Psionic Force
@@ -1514,6 +1560,70 @@ SCARBITERTRIBUNAL:
         Multiplier: 75
         Queue: Infantry.Zerg, RAInfantry.Zerg
         
+^ZERGCREEP:
+	AlwaysVisible:
+	Interactable:
+	Building:
+		BuildSounds: CHUNG.WAV
+		AllowInvalidPlacement: true
+        TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune  
+    D2kActorPreviewPlaceBuildingPreview:
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 4
+    RenderSprites:    
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
+	Tooltip:
+		Name: Zerg Soil
+		GenericName: Structure
+	KillsSelf:
+		RemoveInstead: true
+	Buildable:
+		Queue: Building.Zerg, RABuilding.Zerg
+		BuildPaletteOrder: 10
+		Description: Provides a strong foundation that regenerates buildings on top of it.
+ZERGCREEP3:
+	Inherits: ^ZERGCREEP
+	Building:
+		Footprint: _xxx__ xxxxx_ xxxxx_ xxxxx_ _xxx__ ______
+		Dimensions: 6,6
+        BuildDuration: 50
+	Tooltip:
+		Name: Zerg Soil
+	Valued:
+		Cost: 1
+	-Buildable:
+
+ZERGCREEP:
+	Inherits: ^ZERGCREEP
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+        BuildDuration: 50
+	Tooltip:
+		Name: Zerg Soil
+	Valued:
+		Cost: 10
+	-Buildable:
+        
+ZERGCREEP2:
+	Inherits: ^ZERGCREEP
+	Building:
+		Footprint: xxx xxx xxx 
+		Dimensions: 3,3
+        BuildDuration: 50
+	Tooltip:
+		Name: Large Zerg Soil
+	Valued:
+		Cost: 30
+	-Buildable:
+^SCZergBuilding:
+	Building:
+		RequiresBaseProvider: true
+		BuildSounds: zchrdy00.aud
+		TerrainTypes: SporeColony		##########
 SCHATCHERY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -1521,6 +1631,7 @@ SCHATCHERY:
 	Inherits@aicash: ^AIConyardCash
 	Inherits@supply: ^SCUnitProduction
 	Inherits@bot: ^BotMicromanageable
+	Inherits@SCZergBuilding: ^SCZergBuilding
     Inherits@breedfaster: ^SCBREEDFASTER
 	Selectable:
 		Bounds: 72,48
@@ -1555,6 +1666,7 @@ SCHATCHERY:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: zchrdy00.aud
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,SporeColony		##########
 	Health:
 		HP: 150000
 	DamageMultiplier@lair:
@@ -1569,16 +1681,10 @@ SCHATCHERY:
 		Range: 8c0
 	Production@NORMALBUILDING:
 		Produces: Building.Zerg, Defence.Zerg
-		RequiresCondition: !classicproductionqueues
+		RequiresCondition: !classicproductionqueues && !littlebuilderenable
 	Production@CLASSICBUILDING:
 		Produces: RABuilding.Zerg, RADefence.Zerg
-		RequiresCondition: classicproductionqueues
-	Production@NORMAL:
-		Produces: Infantry.Zerg
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry.Zerg
-		RequiresCondition: classicproductionqueues
+		RequiresCondition: classicproductionqueues && !littlebuilderenable
 	ProductionQueue@ZergBuilding:
 		Type: Building.Zerg
 		DisplayOrder: 0
@@ -1591,33 +1697,19 @@ SCHATCHERY:
 		Group: Vehicle
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
-	ProductionQueue@ZergInfantry:
-		Type: Infantry.Zerg
-		DisplayOrder: 2
-		Group: Infantry
-		QueuedAudio: Building
-		ReadyAudio: UnitReady
 	BaseBuilding:
 	ProductionBar@BuildingZerg:
 		ProductionType: Building.Zerg
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@DefenceZerg:
-		ProductionType: Defence.Zerg
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@InfantryZerg:
-		ProductionType: Infantry.Zerg
-		RequiresCondition: !classicproductionqueues
+		RequiresCondition: !classicproductionqueues && !littlebuilderenable
 	ProductionBar@RABuildingZerg:
 		ProductionType: RABuilding.Zerg
-		RequiresCondition: classicproductionqueues
+		RequiresCondition: classicproductionqueues && !littlebuilderenable
 	ProductionBar@RADefenceZerg:
 		ProductionType: RADefence.Zerg
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RAInfantryZerg:
-		ProductionType: RAInfantry.Zerg
-		RequiresCondition: classicproductionqueues
+		RequiresCondition: classicproductionqueues && !littlebuilderenable
 	BaseProvider:
 		Range: 14c0
+		RequiresCondition: !littlebuilderenable
 	WithBuildingBib:
 	RallyPoint:							##########
 		Path: 0,2
@@ -1634,7 +1726,24 @@ SCHATCHERY:
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi, hatchery
 	-WithDeathAnimation:
-	
+	ProductionQueue@ZergInfantry:
+		Type: Infantry.Zerg
+		DisplayOrder: 2
+		Group: Infantry
+		QueuedAudio: Building
+		ReadyAudio: UnitReady
+	ProductionBar@InfantryZerg:
+		ProductionType: Infantry.Zerg
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAInfantryZerg:
+		ProductionType: RAInfantry.Zerg
+		RequiresCondition: classicproductionqueues
+	Production@NORMAL:
+		Produces: Infantry.Zerg
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.Zerg
+		RequiresCondition: classicproductionqueues
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmzerg
 	##########
@@ -1716,11 +1825,83 @@ SCHATCHERY:
         Actor: SCBROODLING   
     SpawnActorOnDeath@death5:
         Actor: SCBROODLING
-        
+	FreeActor@littlebuilderenable1:
+		Actor: scdrone
+		SpawnOffset: 2,1
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+	FreeActor@littlebuilderenable2:
+		Actor: scdrone
+		SpawnOffset: 3,1
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+	FreeActor@littlebuilderenable3:
+		Actor: scdrone
+		SpawnOffset: 4,1
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+	FreeActor@littlebuilderenable4:
+		Actor: scdrone
+		SpawnOffset: 5,1
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+	FreeActor@littlebuilderenable4:
+		Actor: scoverlord
+		SpawnOffset: 5,1
+		Facing: 64
+		RequiresCondition: littlebuilderenable
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune
+	FreeActor@1:
+		Actor: zergcreep3
+		SpawnOffset: 1,1
+	FreeActor@2:
+		Actor: zergcreep3
+		SpawnOffset: -3,-3
+	FreeActor@3:
+		Actor: zergcreep3
+		SpawnOffset: -3,1
+	FreeActor@4:
+		Actor: zergcreep3
+		SpawnOffset: 1,-3
+	FreeActor@1b:
+		Actor: zergcreep3
+		SpawnOffset: 5,0
+	FreeActor@2b:
+		Actor: zergcreep3
+		SpawnOffset: 0,5
+	FreeActor@3b:
+		Actor: zergcreep3
+		SpawnOffset: -6,0
+	FreeActor@4b:
+		Actor: zergcreep3
+		SpawnOffset: 0,-6
+	MobSpawnerMaster@1:
+		Actors: sclarvae
+		Offset: 255,255,0
+		RespawnTicks: 200
+		ExitByBudding: false
+		AggregateHealth: false
+	MobSpawnerMaster@2:
+		Actors: sclarvae
+		Offset: 255,-255,0
+		RespawnTicks: 200
+		ExitByBudding: false
+		AggregateHealth: false
+	MobSpawnerMaster@3:
+		Actors: sclarvae
+		Offset: -255,255,0
+		RespawnTicks: 200
+		ExitByBudding: false
+		AggregateHealth: false
+
 SCCREEPCOLONY:
 	Inherits: ^Defense
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@CPQ: ^CPQCondition
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Selectable:
 		Bounds: 44,44
 		Class: sccreepcolony
@@ -1816,7 +1997,22 @@ SCCREEPCOLONY:
 		Type: CenterPosition
     SpawnActorOnDeath@death1:
         Actor: SCBROODLING
-        
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune
+	FreeActor@1:
+		Actor: zergcreep3
+		SpawnOffset: 0,0
+	FreeActor@2:
+		Actor: zergcreep3
+		SpawnOffset: -3,-3
+	FreeActor@3:
+		Actor: zergcreep3
+		SpawnOffset: -3,0
+	FreeActor@4:
+		Actor: zergcreep3
+		SpawnOffset: 0,-3
+	BaseBuilding:
 SCBOTCREEPCOLONY:
 	Inherits: SCCREEPCOLONY
 	RenderSprites:
@@ -1829,6 +2025,7 @@ SCEXTRACTOR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@ref: ^Refinery
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -1868,10 +2065,13 @@ SCEXTRACTOR:
         Actor: SCBROODLING
     SpawnActorOnDeath@death2:
         Actor: SCBROODLING    
-
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCSPAWNINGPOOL:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -1914,10 +2114,13 @@ SCSPAWNINGPOOL:
         Actor: SCBROODLING    
     SpawnActorOnDeath@death3:
         Actor: SCBROODLING        
-
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCEVOLUTIONCHAMBER:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -1959,10 +2162,13 @@ SCEVOLUTIONCHAMBER:
         Actor: SCBROODLING    
     SpawnActorOnDeath@death3:
         Actor: SCBROODLING        
-
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCHYDRALISKDEN:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -2005,10 +2211,13 @@ SCHYDRALISKDEN:
         Actor: SCBROODLING    
     SpawnActorOnDeath@death3:
         Actor: SCBROODLING        
-        
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune       
 SCQUEENSNEST:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -2041,11 +2250,14 @@ SCQUEENSNEST:
         Actor: SCBROODLING        
     SpawnActorOnDeath@death4:
         Actor: SCBROODLING   
-
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCSPIRE:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@bot: ^BotMicromanageable
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -2131,10 +2343,13 @@ SCSPIRE:
         Actor: SCBROODLING        
     SpawnActorOnDeath@death4:
         Actor: SCBROODLING   
-        
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune     
 SCULTRALISKCAVERN:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -2177,10 +2392,13 @@ SCULTRALISKCAVERN:
         Actor: SCBROODLING        
     SpawnActorOnDeath@death4:
         Actor: SCBROODLING   
-        
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCDEFILERMOUND:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 1600
 	Tooltip:
@@ -2205,11 +2423,14 @@ SCDEFILERMOUND:
 	RevealsShroud:
 		Range: 7c0
 	-WithDeathAnimation:
-	
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 
 SCNYDUSCANAL:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -2247,12 +2468,16 @@ SCNYDUSCANAL:
         Actor: SCBROODLING    
     SpawnActorOnDeath@death3:
         Actor: SCBROODLING        
-
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCSUNKENCOLONY:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@shape: ^2x2Shape
 	Inherits@EMP: ^TurretEMP
+	Inherits@CPQ: ^CPQCondition
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Selectable:
 		Bounds: 44,44
 	Valued:
@@ -2291,12 +2516,19 @@ SCSUNKENCOLONY:
 	-WithDeathAnimation:
     SpawnActorOnDeath@death1:
         Actor: SCBROODLING
-
+	BaseProvider:
+		Range: 6c0
+		RequiresCondition: littlebuilderenable
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCSPORECOLONY:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@shape: ^2x2Shape
 	Inherits@EMP: ^TurretEMP
+	Inherits@CPQ: ^CPQCondition
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Selectable:
 		Bounds: 44,44
 	Valued:
@@ -2335,13 +2567,19 @@ SCSPORECOLONY:
 	-WithDeathAnimation:
     SpawnActorOnDeath@death1:
         Actor: SCBROODLING
-        
+	BaseProvider:
+		Range: 6c0
+		RequiresCondition: littlebuilderenable
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCLAIR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
     Inherits@breedfaster: ^SCBREEDFASTER
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -2467,13 +2705,16 @@ SCLAIR:
         Actor: SCBROODLING
     SpawnActorOnDeath@death6:
         Actor: SCBROODLING    
-        
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune     
 SCHIVE:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
     Inherits@breedfaster: ^SCBREEDFASTER
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
@@ -2581,10 +2822,13 @@ SCHIVE:
         Actor: SCBROODLING    
     SpawnActorOnDeath@death7:
         Actor: SCBROODLING    
-        
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCGREATERSPIRE:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 1600
 	Tooltip:
@@ -2619,10 +2863,13 @@ SCGREATERSPIRE:
         Actor: SCBROODLING        
     SpawnActorOnDeath@death4:
         Actor: SCBROODLING   	
-
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCOVERMIND:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -2654,11 +2901,14 @@ SCOVERMIND:
         Actor: SCBROODLING    
     SpawnActorOnDeath@death3:
         Actor: SCBROODLING        	
-
+   	LaysTerrain:
+		Template: 857
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune    
 SCINFESTEDCOMMANDCENTER:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@SW: ^PrimarySuperweapon
+	Inherits@SCZergBuilding: ^SCZergBuilding
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -2810,6 +3060,7 @@ SCSCV:
 	Inherits@worker: ^SCWorker
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@CPQ: ^CPQCondition
 	#AutoTargetPriority@Repair:
 	#	ValidTargets: Repair, Repairing
 	#	ValidStances: Ally
@@ -2872,7 +3123,42 @@ SCSCV:
 		ZOffset: -512
 	Capturable:
 		Types: thiefproof
-
+	Production@NORMAL:
+		Produces: Building.Terran, Defence.Terran
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.Terran, RADefence.Terran
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	ProductionQueue@TerranBuilding:
+		Type: Building.Terran
+		DisplayOrder: 0
+		Group: Building
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		BuildDurationModifier: 200
+	ProductionQueue@TerranDefense:
+		Type: Defence.Terran
+		DisplayOrder: 1
+		Group: Defence
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		BuildDurationModifier: 200
+	BaseBuilding:
+	ProductionBar@BuildingTerran:
+		ProductionType: Building.Terran
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	ProductionBar@DefenceTerran:
+		ProductionType: Defence.Terran
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	ProductionBar@RABuildingTerran:
+		ProductionType: RABuilding.Terran
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	ProductionBar@RADefenceTerran:
+		ProductionType: RADefence.Terran
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	BaseProvider:
+		Range: 5c0
+		RequiresCondition: littlebuilderenable
 SCMARINE:
 	Inherits: ^SCTINFANTRY
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -3766,6 +4052,7 @@ SCPROBE:
 	Inherits@worker: ^SCWorker
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@CPQ: ^CPQCondition
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -3809,7 +4096,39 @@ SCPROBE:
 		ZOffset: -512
 	Capturable:
 		Types: thiefproof
-
+	Production@NORMAL:
+		Produces: Building.Protoss, Defence.Protoss
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.Protoss, RADefence.Protoss
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	ProductionQueue@ProtossBuilding:
+		Type: Building.Protoss
+		DisplayOrder: 0
+		Group: Building
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		BuildDurationModifier: 200
+	ProductionQueue@ProtossDefense:
+		Type: Defence.Protoss
+		DisplayOrder: 1
+		Group: Defence
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		BuildDurationModifier: 200
+	BaseBuilding:
+	ProductionBar@BuildingProtoss:
+		ProductionType: Building.Protoss
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	ProductionBar@DefenceProtoss:
+		ProductionType: Defence.Protoss
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	ProductionBar@RABuildingProtoss:
+		ProductionType: RABuilding.Protoss
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	ProductionBar@RADefenceProtoss:
+		ProductionType: RADefence.Protoss
+		RequiresCondition: classicproductionqueues && littlebuilderenable
 SCZEALOT:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
@@ -4730,6 +5049,7 @@ SCDRONE:
 	Inherits@worker: ^SCWorker
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@CPQ: ^CPQCondition
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -4773,7 +5093,52 @@ SCDRONE:
 		Types: thiefproof
 	Selectable:
 		Class: scdrone
-
+	Production@NORMALBUILDING:
+		Produces: Building.Zerg, Defence.Zerg
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	Production@CLASSICBUILDING:
+		Produces: RABuilding.Zerg, RADefence.Zerg
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	ProductionQueue@ZergBuilding:
+		Type: Building.Zerg
+		DisplayOrder: 0
+		Group: Building
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		BuildDurationModifier: 200
+		ItemLimit: 1
+	ProductionQueue@ZergDefense:
+		Type: Defence.Zerg
+		DisplayOrder: 1
+		Group: Vehicle
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		BuildDurationModifier: 200
+		ItemLimit: 1
+	BaseBuilding:
+	BaseProvider:
+		Range: 5c0
+		RequiresCondition: littlebuilderenable
+	ProductionBar@BuildingZerg:
+		ProductionType: Building.Zerg
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	ProductionBar@DefenceZerg:
+		ProductionType: Defence.Zerg
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	ProductionBar@RABuildingZerg:
+		ProductionType: RABuilding.Zerg
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	ProductionBar@RADefenceZerg:
+		ProductionType: RADefence.Zerg
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	GrantConditionOnProduction@Builder:
+		Condition: buildkillself
+	KillsSelf@Builder:
+		RequiresCondition: buildkillself
+	Exit@1:
+		SpawnOffset: -1024,1024,0		#-1323,1280,0
+		ExitCell: 0,0
+		Facing: 135
 SCZERGLING:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
@@ -5660,6 +6025,89 @@ SCBOTOVERLORD:
 		MaxMoveDelay: 40
 	-MapEditorData:
 
+SCLARVAE:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EXT: ^ExternalConditions
+	Inherits@MC: ^MCImmune
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	RenderSprites:
+		Image: scdefiler
+		Scale: 0.60
+	Valued:
+		Cost: 50
+	Tooltip:
+		Name: Larva
+	Mobile:
+		Speed: 22
+	Health:
+		HP: 12000
+	AutoTarget:
+		AllowMovement: false
+		InitialStanceAI: Defend
+		EnableStances: false
+	AttackFrontal:
+		OutsideRangeRequiresForceFire: true
+		FacingTolerance: 2
+	Selectable:
+		Priority: 4
+	Armament@PRIMARY:
+		Weapon: SCBROODLING
+		LocalOffset: 256,43,341
+	TakeCover:
+		ProneOffset: 180,0,-200
+	MobSpawnerSlave:
+	RejectsOrders:
+	WithInfantryBody:
+		IdleSequences: idle
+		DefaultAttackSequence: shoot
+	WithDeathAnimation:
+		UseDeathTypeSuffix: False
+	Voiced:
+		VoiceSet: SCDroneVoice
+	-MapEditorData:
+	-ActorLostNotification:
+	ProductionQueue@ZergInfantry:
+		Type: Infantry.Zerg
+		DisplayOrder: 2
+		Group: Infantry
+		QueuedAudio: Building
+		ReadyAudio: UnitReady
+		ItemLimit: 1
+	ProductionBar@InfantryZerg:
+		ProductionType: Infantry.Zerg
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAInfantryZerg:
+		ProductionType: RAInfantry.Zerg
+		RequiresCondition: classicproductionqueues
+	Production@NORMAL:
+		Produces: Infantry.Zerg
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.Zerg
+		RequiresCondition: classicproductionqueues
+	GrantConditionOnProduction@Builder:
+		Condition: buildkillself
+	KillsSelf@Builder:
+		RequiresCondition: buildkillself
+	Exit@1:
+		SpawnOffset: -1,1,0		#-1323,1280,0
+		ExitCell: 0,0
+		Facing: 135
+	GrantConditionOnProduction@zerglin:
+		Condition: producezerglin
+		Actors: sczergling
+	FreeActor@zerglin:
+		Actor: sczergling
+		SpawnOffset: 0,0
+		RequiresCondition: producezerglin
+	GrantConditionOnProduction@scourge:
+		Condition: producescourge
+		Actors: scscourge
+	FreeActor@scourge:
+		Actor: scscourge
+		SpawnOffset: 0,0
+		RequiresCondition: producescourge
 ####################################################################################################
 #		UPGRADES ZERG
 ####################################################################################################
