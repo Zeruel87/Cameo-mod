@@ -73,14 +73,16 @@ namespace OpenRA.Mods.CA.Traits
 
 		MobSpawnerSlaveEntry[] slaveEntries;
 		ConditionManager conditionManager;
-		//bool hasSpawnedInitialLoad = false;
+
+		// bool hasSpawnedInitialLoad = false;
 		int spawnReplaceTicks = 0;
 
 		IPositionable position;
 		Aircraft aircraft;
 		Health health;
 
-		public MobSpawnerMaster(ActorInitializer init, MobSpawnerMasterInfo info) : base(init, info)
+		public MobSpawnerMaster(ActorInitializer init, MobSpawnerMasterInfo info)
+			: base(init, info)
 		{
 			Info = info;
 		}
@@ -140,15 +142,15 @@ namespace OpenRA.Mods.CA.Traits
 					StopSlaves();
 					break;
 				case "Attack":
-					//Game.Debug("Attack");
+					// Game.Debug("Attack");
 					AssignTargetsToSlaves(self, order.Target);
 					break;
 				case "ForceAttack":
-					//Game.Debug("ForceAttack");
+					// Game.Debug("ForceAttack");
 					AssignTargetsToSlaves(self, order.Target);
 					break;
 				default:
-					//Game.Debug(order.ToString());
+					// Game.Debug(order.ToString());
 					break;
 			}
 		}
@@ -381,25 +383,34 @@ namespace OpenRA.Mods.CA.Traits
 
 		void AssignSlaveActivity(Actor self)
 		{
-			if (self.CurrentActivity != null) {
-				//Game.Debug(self.CurrentActivity.ToString());
-			} else {
+			if (self.CurrentActivity != null)
+			{
+				// Game.Debug(self.CurrentActivity.ToString());
+			}
+			else
+			{
 				return;
 			}
 
-			if (self.CurrentActivity is Move || self.CurrentActivity is Fly) {
+			if (self.CurrentActivity is Move || self.CurrentActivity is Fly)
+			{
 				MoveSlaves(self);
-				//Game.Debug("Move ||Fly");
+
+				// Game.Debug("Move ||Fly");
 			}
-			else if (self.CurrentActivity is AttackMoveActivity) {
+			else if (self.CurrentActivity is AttackMoveActivity)
+			{
 				AttackMoveSlaves(self);
-				//Game.Debug("AttackMoveActivity");
+
+				// Game.Debug("AttackMoveActivity");
 			}
-			if (self.CurrentActivity is AttackOmni.SetTarget) {
+
+			if (self.CurrentActivity is AttackOmni.SetTarget)
+			{
 				AssignTargetsToSlaves(self, self.CurrentActivity.GetTargets(self).First());
-				//Game.Debug("AttackOmni.SetTarget");
+
+				// Game.Debug("AttackOmni.SetTarget");
 			}
 		}
-
 	}
 }

@@ -99,7 +99,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public delegate void ManipulateActorCallback(Actor unit);
 
-		public virtual void DoProduction(Actor self, ActorInfo producee, ExitInfo exitinfo, string productionType, TypeDictionary inits, ManipulateActorCallback OnSpawnCallback)
+		public virtual void DoProduction(Actor self, ActorInfo producee, ExitInfo exitinfo, string productionType, TypeDictionary inits, ManipulateActorCallback onSpawnCallback)
 		{
 			var exit = CPos.Zero;
 			var exitLocations = new List<CPos>();
@@ -141,7 +141,7 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				var newUnit = self.World.CreateActor(producee.Name, td);
 
-				OnSpawnCallback(newUnit);
+				onSpawnCallback(newUnit);
 
 				var move = newUnit.TraitOrDefault<IMove>();
 				if (exitinfo != null && move != null)
@@ -186,7 +186,7 @@ namespace OpenRA.Mods.Common.Traits
 			return false;
 		}
 
-		public virtual bool Produce(Actor self, ActorInfo producee, string productionType, TypeDictionary inits, ManipulateActorCallback OnSpawnCallback)
+		public virtual bool Produce(Actor self, ActorInfo producee, string productionType, TypeDictionary inits, ManipulateActorCallback onSpawnCallback)
 		{
 			if (IsTraitDisabled || IsTraitPaused || Reservable.IsReserved(self))
 				return false;
@@ -196,7 +196,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (exit != null || self.OccupiesSpace == null || !producee.HasTraitInfo<IOccupySpaceInfo>())
 			{
-				DoProduction(self, producee, exit == null ? null : exit.Info, productionType, inits, OnSpawnCallback);
+				DoProduction(self, producee, exit == null ? null : exit.Info, productionType, inits, onSpawnCallback);
 
 				return true;
 			}

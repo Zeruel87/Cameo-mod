@@ -100,13 +100,13 @@ namespace OpenRA.Mods.CA.Traits
 		// This kind of missile will not turn anyway. Hard-coding here.
 		public int TurnSpeed { get { return 10; } }
 
-		public void Created(Actor self)
+		void INotifyCreated.Created(Actor self)
 		{
 			conditionManager = self.TraitOrDefault<ConditionManager>();
 			speedModifiers = self.TraitsImplementing<ISpeedModifier>().ToArray().Select(sm => sm.GetSpeedModifier());
 		}
 
-		public void AddedToWorld(Actor self)
+		void INotifyAddedToWorld.AddedToWorld(Actor self)
 		{
 			self.World.AddToMaps(self, this);
 
@@ -115,7 +115,7 @@ namespace OpenRA.Mods.CA.Traits
 				OnAirborneAltitudeReached();
 		}
 
-		public virtual void Tick(Actor self) { }
+		void ITick.Tick(Actor self) { }
 
 		public int MovementSpeed
 		{
@@ -277,7 +277,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		#endregion
 
-		public void RemovedFromWorld(Actor self)
+		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
 		{
 			self.World.RemoveFromMaps(self, this);
 			OnAirborneAltitudeLeft();
@@ -307,7 +307,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		#endregion
 
-		public void Disposing(Actor self)
+		void INotifyActorDisposing.Disposing(Actor self)
 		{
 		}
 

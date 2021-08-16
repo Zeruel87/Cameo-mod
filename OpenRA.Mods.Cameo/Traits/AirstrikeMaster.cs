@@ -230,7 +230,7 @@ namespace OpenRA.Mods.CA.Traits
 			}
 		}
 
-		public virtual void OnBecomingIdle(Actor self)
+		void INotifyBecomingIdle.OnBecomingIdle(Actor self)
 		{
 			Recall(self);
 		}
@@ -304,7 +304,7 @@ namespace OpenRA.Mods.CA.Traits
 				loadedTokens.Push(conditionManager.GrantCondition(self, Info.LoadedCondition));
 		}
 
-		public void Tick(Actor self)
+		void ITick.Tick(Actor self)
 		{
 			if (respawnTicks > 0)
 			{

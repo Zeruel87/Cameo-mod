@@ -33,8 +33,8 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Equivalent to sequence ZOffset. Controls Z sorting.")]
 		public readonly int ZOffset = 0;
 
-    [Desc("The offset on the impact target position.")]
-		public readonly WVec targetOffset = new WVec(0, 0, 0);
+		[Desc("The offset on the impact target position.")]
+		public readonly WVec TargetOffset = new WVec(0, 0, 0);
 
 		[Desc("The maximum duration (in ticks) of the beam's existence.")]
 		public readonly int Duration = 10;
@@ -129,7 +129,8 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.color = color;
 			secondaryColor = info.SecondaryBeamUsePlayerColor ? args.SourceActor.Owner.Color : info.SecondaryBeamColor;
 			target = args.PassiveTarget;
-      //Game.Debug(target.ToString());
+
+			// Game.Debug(target.ToString());
 			source = args.Source;
 
 			if (info.Inaccuracy.Length > 0)
@@ -196,12 +197,12 @@ namespace OpenRA.Mods.Common.Projectiles
 			{
 				var rc = Color.FromArgb((info.Duration - ticks) * color.A / info.Duration, color);
 
-				yield return new BeamRenderable(source, info.ZOffset, target - source + info.targetOffset, info.Shape, info.Width, rc);
+				yield return new BeamRenderable(source, info.ZOffset, target - source + info.TargetOffset, info.Shape, info.Width, rc);
 
 				if (info.SecondaryBeam)
 				{
 					var src = Color.FromArgb((info.Duration - ticks) * secondaryColor.A / info.Duration, secondaryColor);
-					yield return new BeamRenderable(source, info.SecondaryBeamZOffset, target - source + info.targetOffset,
+					yield return new BeamRenderable(source, info.SecondaryBeamZOffset, target - source + info.TargetOffset,
 						info.SecondaryBeamShape, info.SecondaryBeamWidth, src);
 				}
 			}

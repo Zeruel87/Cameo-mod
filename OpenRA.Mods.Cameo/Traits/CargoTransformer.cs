@@ -1,4 +1,3 @@
-
 #region Copyright & License Information
 /*
 * Modded by Boolbada of Over Powered Mod.
@@ -39,7 +38,8 @@ public class CargoTransformerInfo : ITraitInfo, Requires<CargoInfo>
   public readonly string[] TransformSound = null;
 
   [Desc("The animation sequence to play when transforming.")]
-  [SequenceReference] public readonly string ActiveSequence = "active";
+  [SequenceReference]
+  public readonly string ActiveSequence = "active";
 
   [Desc("Radius to search for a load/unload location if the ordered cell is blocked.")]
   public readonly WDist UnloadRange = WDist.FromCells(5);
@@ -93,6 +93,7 @@ public class CargoTransformer : INotifyPassengerEntered, INotifyPassengerExited
   void INotifyPassengerExited.OnPassengerExited(Actor self, Actor passenger)
   {
     var exitLocations = new List<CPos>();
+
     // Make the unloaded passenger move to rally point.
     self.World.AddFrameEndTask(w1 =>
     {
@@ -126,6 +127,5 @@ public class CargoTransformer : INotifyPassengerEntered, INotifyPassengerExited
       }
     }
   }
-
 }
 }
