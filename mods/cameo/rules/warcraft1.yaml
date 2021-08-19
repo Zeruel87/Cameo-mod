@@ -812,6 +812,9 @@ wc_h_stormwind:
 		VoiceSet: humanstormwindvoice 
     ProvidesPrerequisite@swlimit:
 		Prerequisite: swstormwind 
+    ProvidesPrerequisite@portalprereq:
+        Prerequisite: wc_superweapon  
+        
 rainoffire:
 	Inherits@1: ^ExistsInWorld
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -1608,7 +1611,21 @@ wc_h_scorpion:
     -Voiced:   
     -Crushable:   
     Voiced:
-		VoiceSet: AntVoice   
+		VoiceSet: AntVoice
+
+wc_n_scorpion:
+    Inherits: wc_h_scorpion
+    Buildable:
+        Queue: WC.Neutral
+        Description: Mighty Scorpion
+        -Prerequisites: 
+    Valued:
+        Cost: 200
+    Health:
+        HP: 50000
+    -ChangesHealth
+    RenderSprites:
+        Image: wc_h_scorpion
 wc_h_waterelemental:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1647,11 +1664,85 @@ wc_h_waterelemental:
     -Voiced: 
     -Crushable: 
    	Voiced:
-		VoiceSet: AntVoice    
+		VoiceSet: AntVoice   
+
+wc_n_waterelemental:
+    Inherits: wc_h_waterelemental
+    Buildable:
+        Queue: WC.Neutral
+        Description: Will make you wet your pants\nLiterally
+        Prerequisites: 
+    Valued:
+        Cost: 400
+    Health:
+        HP: 80000
+    RenderSprites:
+        Image: wc_h_waterelemental
+    -ChangesHealth   
 ####################################################################################################
 #       NEUTRAL
 ####################################################################################################    
 
+wc_superweapon:
+    Tooltip:
+        Name: Stormwind or Blackrock Spire
+
+wc_n_portal:
+    Inherits: ^BaseBuilding
+    Inherits@shape: ^3x3Shape   
+    Inherits@CPQWP: ^CPQConditionWithPrimary 
+    Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+    Tooltip:
+		Name: Portal    
+    Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Buildable:
+		Queue: Building.human, RABuilding.human, Building.orc, RABuilding.orc
+        BuildDuration: 1125
+        BuildDurationModifier: 100
+		Description: Warps powerful units from other dimensions
+        Prerequisites: wc_superweapon 
+        BuildLimit: 1
+        BuildPaletteOrder: 200
+    Production@NORMAL:
+		Produces: WC.Neutral
+        RequiresCondition: !classicproductionqueues  
+    Production@CLASSICPRODUCTIONQUEUES:
+		Produces: WC.Neutral
+        RequiresCondition: classicproductionqueues      
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: WC.Neutral
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		ProductionType: WC.Neutral
+        RequiresCondition: !classicproductionqueues  
+    ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: WC.Neutral
+        RequiresCondition: classicproductionqueues  
+    WithMakeAnimation:  
+    WithDeathAnimation:       
+    Valued:
+        Cost: 3000
+    RenderSprites:  
+        Scale: 0.7
+        
 wc_goldmine:
 	Inherits: ^BaseBuilding
     Inherits@shape: ^3x3Shape    
@@ -1807,6 +1898,22 @@ wc_o_spider:
 		Name: Spider
 	Armament:
 		Weapon: spiderSlice
+ 
+wc_n_spider:
+    Inherits: wc_n_scorpion
+    Buildable:
+        Queue: WC.Neutral
+        Description: May cause heart attack to Arachnophobics.\nFaster but more vulnerable than Scorpion
+    Valued:
+        Cost: 300
+    Mobile:
+        Speed: 70
+    ReloadDelayMultiplier:
+        Modifier: 80
+    Health:
+        HP: 38000
+    RenderSprites:
+        Image: wc_o_spider 
         
 wc_o_skeleton:
 	Inherits@wc_h_scorpion: wc_h_scorpion
@@ -1849,6 +1956,23 @@ wc_o_demon:
         InitialStance: AttackAnything
 		ScanRadius: 6
 
+wc_n_demon:
+    Inherits: wc_o_demon
+    Buildable:
+        Queue: WC.Neutral
+        Description: This beast comes from hell itself
+        -Prerequisites:
+    Valued:
+        Cost: 1000
+    Mobile:
+        Speed: 100
+    ReloadDelayMultiplier:
+        Modifier: 80
+    Health:
+        HP: 175000
+    RenderSprites:
+        Image: wc_o_demon
+        
 wc_o_skeleton_army:
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
@@ -1860,7 +1984,7 @@ wc_o_skeleton_army:
 		DeathTypes: DefaultDeath
 	Buildable:
 		BuildPaletteOrder: 30
-		Queue: Aircraft.orc, RAAircraft.orc
+		Queue: WC.Neutral
 		Description: Big group of skeletons\nRegenerates fast\nWeak against Siege and Toxins
 	Tooltip:
 		Name: Skeleton Army
@@ -1874,7 +1998,7 @@ wc_o_skeleton_army:
 		Speed: 75
 		Locomotor: foot  
     Power:
-        Amount: -50
+        Amount: 0
 	Guardable:
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
@@ -1924,22 +2048,20 @@ wc_n_brigand:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: wc_h_barracks, ~wip-content
-		Queue: Infantry.human, RAInfantry.human
+		Prerequisites: ~wip-content
+		Queue: WC.Neutral
 		Description: Basic Melee Infantry.
         BuildDuration: 80
         BuildDurationModifier: 100
 	Mobile:
 		Speed: 64
 	Health:
-		HP: 12000
-    DamageMultiplier@armor:
-        Modifier: 70       
+		HP: 20000     
    	Armor:
 		Type: None     
 	#Food
 	Power:
-		Amount: -5
+		Amount: 0
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
@@ -1951,7 +2073,94 @@ wc_n_brigand:
 		-IdleSequences: idle1,idle2,idle3,idle4
     Voiced:
 		VoiceSet: voicehuman           
-    -Crushable:         
+    -Crushable:   
+
+wc_n_slime:
+    Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Great Slime
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: 
+		Queue: WC.Neutral
+		Description: Slow Booger-like creature that splits into more upon death
+        BuildDuration: 80
+        BuildDurationModifier: 100
+	Mobile:
+		Speed: 30
+	Health:
+		HP: 100000       
+   	Armor:
+		Type: None     
+	#Food
+	Power:
+		Amount: 0
+    -AttackFrontal:
+    AttackLeap:    
+        FacingTolerance: 128
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: SlimeJump
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+    Voiced:
+		VoiceSet: AntVoice       
+    -Crushable:   
+	Selectable:
+		Bounds: 36,36
+    SpawnActorOnDeath:
+		Actor: wc_n_slime_b
+    SpawnActorOnDeath@1:
+		Actor: wc_n_slime_b
+        
+wc_n_slime_b:
+    Inherits: wc_n_slime
+    -Buildable:
+    Tooltip:
+        Name: Slime
+    Mobile: 
+        Speed: 45
+    ReloadDelayMultiplier:
+        Modifier: 70
+    Health:
+        HP: 25000
+    Selectable:
+        Bound: 24,24
+    RenderSprites:
+        Image: wc_n_slime
+        Scale: 0.66
+    SpawnActorOnDeath:
+		Actor: wc_n_slime_c
+    SpawnActorOnDeath@1:
+		Actor: wc_n_slime_c    
+
+wc_n_slime_c:
+    Inherits: wc_n_slime_b
+    Tooltip:
+        Name: Tiny Slime
+    ReloadDelayMultiplier:
+        Modifier: 40      
+    Mobile: 
+        Speed: 55
+    Health:
+        HP: 6400
+    Selectable:
+        Bound: 16,16
+    RenderSprites:
+        Scale: 0.45
+    -SpawnActorOnDeath:
+    -SpawnActorOnDeath@1:          
 #######################################################
 #                     UPGRADES                        #
 #######################################################     
