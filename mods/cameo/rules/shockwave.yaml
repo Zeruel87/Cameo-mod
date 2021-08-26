@@ -1,0 +1,949 @@
+#########################################
+#           INHERITABLES
+#########################################    
+
+  
+#########################################
+#           SHARED ASSETS
+#########################################    
+  
+shockwave_mcv:
+    Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+	Valued:
+		Cost: 3000
+    Tooltip:
+		Name: Mobile Construction Vehicle
+    RenderSprites:
+		Image: usamcv
+		FactionImages:
+            susa: usamcv
+            susaarmor: usamcv
+            susalsr: usamcv
+            susasuper: usamcv
+            susaair: usamcv
+            schina: chmcv
+            schinatnk: chmcv 
+            schinainf: chmcv
+            schinaatom: chmcv 
+            sleang: chmcv   
+            sgla: glmcv
+            sglatoxin: glmcv 
+            sglademo: glmcv
+            sglacamo: glmcv
+            sglascrap: glmcv
+  	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: chpropaganda, ~techlevel.high
+		Queue: Building.Shockwave, RABuilding.Shockwave
+		Description: Builds structures and provides radar.     
+    Selectable:
+		Priority: 4
+		DecorationBounds: 42,42
+	SelectionDecorations:
+	Health:
+		HP: 50000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 75
+		Locomotor: heavywheeled
+	RevealsShroud:
+		Range: 8c0	#4c0
+	Transforms:
+		IntoActor: shockwave_conyard
+		Offset: -1,-1
+		Facing: 96
+		TransformSounds: placbldg.aud, build5.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	DetectCloaked:
+		Range: 6c0
+		CloakTypes: Mine
+		RequiresCondition: !disabled
+	Inherits@EXT: ^ExternalConditions
+
+shockwave_conyard:
+    Inherits: ^BaseBuilding
+	Inherits@shape: ^3x3Shape
+	Inherits@CPQ: ^CPQConditionWithPrimary
+	Inherits@aicash: ^AIConyardCash
+	Inherits@repairpower: ^EmergencyRepairPower
+	Inherits@gensound: ^GeneralsDamageBuilding
+    Inherits@usasupportpowers: ^GeneralsUSASupportPowers
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Command Center
+    ProvidesPrerequisite@anysusa:
+        Prerequisite: anysusa
+        Factions: susa, susaarmor, susasuper, susalsr, susaair   
+    ProvidesPrerequisite@susa:
+        Prerequisite: susa_regular
+        Factions: susa    
+    ProvidesPrerequisite@wptargetting:
+        Prerequisite: wptargettingprereq
+        Factions: susa, susasuper        
+    ProvidesPrerequisite@susa_armor:
+        Prerequisite: susa_armor
+        Factions: susaarmor   
+    ProvidesPrerequisite@susa_super:
+        Prerequisite: susa_super
+        Factions: susasuper     
+    ProvidesPrerequisite@susa_laser:
+        Prerequisite: susa_laser
+        Factions: susa_lsr   
+    ProvidesPrerequisite@susa_air:
+        Prerequisite: susa_air
+        Factions: susaair           
+    ProvidesPrerequisite@susaambulancereq:
+        Prerequisite: susaambulancereq
+        Factions: susa, susalsr
+    ProvidesPrerequisite@anyschina:
+		Prerequisite: anyschina
+        Factions: schina, schinatnk, schinainf, schinaatom, sleang    
+    ProvidesPrerequisite@schina_regular:
+        Prerequisite: schina_regular
+        Factions: schina           
+    ProvidesPrerequisite@schina_tank:
+        Prerequisite: schina_tank
+        Factions: schinatnk        
+    ProvidesPrerequisite@schina_inf:
+        Prerequisite: schina_inf
+        Factions: schinainf  
+    ProvidesPrerequisite@schina_nuke:
+        Prerequisite: schina_nuke
+        Factions: schinaatom
+    ProvidesPrerequisite@schina_leang:
+        Prerequisite: schina_leang
+        Factions: sleang
+    ProvidesPrerequisite@anysgla:
+		Prerequisite: anysgla
+        Factions: sgla, sglatoxin, sglademo, sglacamo, sglascrap    
+    ProvidesPrerequisite@sgla:
+		Prerequisite: sgla_regular
+        Factions: sgla    
+    ProvidesPrerequisite@sgla_toxin:
+        Prerequisite: sgla_toxin
+        Factions: sglatoxin  
+    ProvidesPrerequisite@sgla_demo:
+        Prerequisite: sgla_demo
+        Factions: sglademo  
+    ProvidesPrerequisite@sgla_camo:
+        Prerequisite: sgla_camo
+        Factions: sglacamo  
+    ProvidesPrerequisite@sgla_scrap:
+        Prerequisite: sgla_scrap
+        Factions: sglascrap          
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	Health:
+		HP: 300000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	WithBuildingBib:
+	Production@NORMAL:
+		Produces: Building.Shockwave, Defence.Shockwave
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.Shockwave, RADefence.Shockwave
+		RequiresCondition: classicproductionqueues
+	ProductionQueue@AlphaBuilding:
+		Type: Building.Shockwave
+		DisplayOrder: 0
+		Group: Building
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+	ProductionQueue@AlphaDefense:
+		Type: Defence.Shockwave
+		DisplayOrder: 1
+		Group: Defence
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+	BaseBuilding:
+	ProductionBar@BuildingAlpha:
+		ProductionType: Building.Shockwave
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceAlpha:
+		ProductionType: Defence.Shockwave
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingAlpha:
+		ProductionType: RABuilding.Shockwave
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceAlpha:
+		ProductionType: RADefence.Shockwave
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 14c0
+	ProvidesPrerequisite@buildingname:
+	ProvidesRadar:
+		RequiresCondition: !jammed
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	Power:
+		Amount: 0
+	-WithDeathAnimation:
+    RenderSprites:
+		Image: usacommand
+		FactionImages:
+            susa: usacommand
+            schina: chcommand
+            sgla: glcommand
+	RallyPoint:							##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0		#-1323,1280,0
+		ExitCell: 0,2
+		Facing: 135    
+
+#########################################
+#           USA SHARED ASSETS
+#########################################
+
+susaambulancerepair:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Ambulance Repair Crew
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: StrategyUpgrades.USA
+		Description: Allows Ambulances to repair vehicles
+		Prerequisites: ~!susaambulancerepair, ~susaambulancereq
+        IconPalette: windows256
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: susaambulancerepair_icon
+	ProvidesPrerequisite@upgradename:
+    
+#########################################
+#           USA GENERIC
+#########################################    
+
+susapower:
+    Inherits: usapower
+    Buildable:
+        Queue: Building.Shockwave, RABuilding.Shockwave
+		BuildPaletteOrder: 10
+		Prerequisites: ~anysusa
+	Valued:
+		Cost: 600			#500
+   	Power:
+		Amount: 175
+    RenderSprites:
+        Image: usapower
+    ProvidesPrerequisite@generals:
+        Prerequisite: usapower
+        
+susabarracks:
+    Inherits: usabarracks
+    Buildable:
+        Queue: Building.Shockwave, RABuilding.Shockwave
+		Prerequisites: ~anysusa
+    Power:
+        Amount: 0
+    RenderSprites:
+        Image: usabarracks
+    ProvidesPrerequisite@generals:
+        Prerequisite: usabarracks   
+        
+susasupply:
+    Inherits: usasupply
+    Buildable:
+        Queue: Building.Shockwave, RABuilding.Shockwave
+		Prerequisites: ~anysusa, anypower
+    RenderSprites:
+        Image: usasupply
+    ProvidesPrerequisite@generals:
+        Prerequisite: usasupply
+        
+susapatriot:
+    Inherits: usapatriot
+    Tooltip:
+		Name: Patriot Missile System
+    Buildable:
+        Queue: Defence.Shockwave, RADefence.Shockwave
+		Prerequisites: ~anysusa, susabarracks
+    RenderSprites:
+        Image: usapatriot
+    ProvidesPrerequisite@generals:
+        Prerequisite: usapatriot
+        
+susafirebase:
+    Inherits: usafirebase
+    Buildable:
+        Queue: Defence.Shockwave, RADefence.Shockwave
+		Prerequisites: ~anysusa, susabarracks
+    RenderSprites:
+        Image: usafirebase
+        
+susaweap:
+    Inherits: usaweap
+    Buildable:
+        Queue: Building.Shockwave, RABuilding.Shockwave
+		Prerequisites: ~anysusa, susasupply
+    RenderSprites:
+        Image: usaweap
+    ProvidesPrerequisite@usaweaporairport:
+        Prerequisite: usaweaporairport
+    ProvidesPrerequisite@generals:
+        Prerequisite: usaweap
+        
+susaairport:
+    Inherits: usaairport
+    Buildable:
+        Queue: Building.Shockwave, RABuilding.Shockwave
+		Prerequisites: ~anysusa, susasupply
+    RenderSprites:
+        Image: usaairport
+    ProvidesPrerequisite@usaweaporairport:
+        Prerequisite: usaweaporairport   
+    ProvidesPrerequisite@generals:
+        Prerequisite: usaairport
+        
+susastrategy:
+    Inherits: usastrategy
+    Buildable:
+        Queue: Building.Shockwave, RABuilding.Shockwave
+		Prerequisites: ~anysusa, usaweaporairport
+    RenderSprites:
+        Image: usastrategy
+    ProvidesPrerequisite@generals:
+        Prerequisite: usastrategy
+        
+usaweaporairport:
+    Tooltip:
+        Name: Air Field or Factory
+        
+susadropzone:
+    Inherits: usadropzone
+    Buildable:
+        Queue: Building.Shockwave, RABuilding.Shockwave
+		Prerequisites: ~anysusa, susastrategy
+    RenderSprites:
+        Image: usadropzone
+    ProvidesPrerequisite@generals:
+        Prerequisite: usadropzone
+        
+susacannon:
+    Inherits: usacannon
+    Buildable:
+        Queue: Building.Shockwave, RABuilding.Shockwave
+	    Prerequisites: ~anysusa, usastrategy, ~techlevel.high, !particlecannon
+    RenderSprites:
+        Image: usacannon        
+
+susaupmisspod:
+	Inherits: usaupmisspod
+	Buildable:
+		Description: Upgrades the Comanche and Little Birds with rocket pods strong against clustered targets.
+		Prerequisites: ~!susaupmisspod, susastrategy, ~susa_regular
+	RenderSprites:
+		Image: usamisspodicon
+        
+susaburtonequipment:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Burton's Special Equipment
+	Buildable:
+		BuildPaletteOrder: 300
+        BuildDuration: 1125
+        BuildDurationModifier: 100
+		Queue: StrategyUpgrades.USA
+		Description: Equips Burton with an OICW Rifle\nAllows Burton to fire grenades
+		Prerequisites: ~!susaburtonequipment, susastrategy, ~anysusa, ~!susa_armor
+        IconPalette: windows256
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: susaburtonequipment_icon
+	ProvidesPrerequisite@upgradename:       
+
+susawptargetting:
+ 	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Waypoint Targetting
+	Buildable:
+		BuildPaletteOrder: 300
+        BuildDuration: 750
+        BuildDurationModifier: 100
+		Queue: StrategyUpgrades.USA
+		Description: Install assisted targeting systems on Tomahawk\nAllows to relay targets to other nearby Tomahawks
+		Prerequisites: ~!susawptargetting, susastrategy, ~wptargettingprereq
+        IconPalette: windows256
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: susawptargetting_icon
+	ProvidesPrerequisite@upgradename:     
+   
+susaburton:
+    Inherits: usaburton
+	Buildable:
+		Prerequisites: susastrategy, ~techlevel.high, ~anysusa    
+    Armament@OICW:
+        Weapon: SUSABurtonOICW
+        Name: oicw
+        RequiresCondition: susaburtonequipment      
+    RenderSprites:
+        Image: usaburton
+    GrantConditionOnPrerequisite@susaburtonequipment:
+        Condition: susaburtonequipment
+        Prerequisites: susaburtonequipment
+    AttackFrontal:
+        Armaments: primary, secondary, c4, oicw
+        
+#########################################
+#           USA REGULAR
+#########################################
+
+susapillbox:
+	Inherits: ^Defense
+	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@gar: ^ClearableGarrisonNeutronOnly
+	Tooltip:
+		Name: Pillbox
+	Building:
+		Footprint: xx xx
+		Dimensions: 2, 2
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~susa_regular, ~techlevel.low, susabarracks
+		Queue: Defence.Shockwave, RADefence.Shockwave
+		BuildDurationModifier: 40
+		Description: Garrisonable defensive structure.\n  Strong vs ground targets\n  Weak vs Aircraft
+        IconPalette: windows256
+	Valued:
+		Cost: 300
+	CustomSellValue:
+		Value: 200
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	Turreted:
+		TurnSpeed: 255
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	Cargo:
+		Types: Infantry
+		MaxWeight: 1
+		PipCount: 1
+	WithSpriteBody:
+	AttackGarrisoned:
+		Armaments: garrisoned
+		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
+		PortYaws: 0, 176, 341, 512, 682, 853
+		PortCones: 88, 88, 88, 88, 88, 88
+	RenderRangeCircle:
+		FallbackRange: 6c0
+    -RenderDetectionCircle
+	Power:
+		Amount: -15
+	Voiced:
+		VoiceSet: CHBunkerVoice
+	RenderSprites:
+        Scale: 0.6
+	Selectable:
+		Class: susapillbox
+    -WithDeathAnimation
+    -WithMakeAnimation   
+    
+susalosathumvee:
+	Inherits: usajeep
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: LOSAT Humvee
+	UpdatesPlayerStatistics:
+		OverrideActor: susalosathumvee
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~susa_regular, susastrategy, ~techlevel.medium
+		Description: Fast AT Humvee.\nFires long range kinetic missiles\n  Strong vs Vehicles\n  Weak vs Infantry
+        IconPalette: windows256
+	Mobile:
+		TurnSpeed: 8
+		Speed: 121
+	Selectable:
+		Class: susalosathumvee
+	-Turreted:
+	Armament:
+		Weapon: SUSALOSATHumveeMissile
+	AttackFrontal:
+	-WithMuzzleOverlay:
+	-WithSpriteTurret:
+	-Cargo:
+	-Armament@Tow:
+	Inherits@ProducesDrones: ^ProducesDrones
+	-GrantConditionOnPrerequisite@usauptowmiss:
+	RenderSprites:
+		Image: susalosathumvee
+        Scale: 0.66
+	GainsExperience:
+    -ProductionCostMultiplier@selectusaairforce:  
+        
+susalittlebird:
+	Inherits: usacomanche
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Little Bird
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+        BuildDuration: 300
+		Prerequisites: ~susa_regular, ~techlevel.medium
+		Description: Attack Recon Helicopter with dual M134 miniguns.\nCan transport 2 soldiers who can shoot from inside\nCan be upgraded with Rocket pods\n  Strong vs Infantry, Light vehicles\n  Weak vs Aircraft, Anti-Air
+        IconPalette: windows256
+    Aircraft:
+		TurnSpeed: 7
+		Speed: 213
+	Health:
+		HP: 12000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 13c0
+    Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 2
+		PipCount: 2		
+		PassengerConditions:
+			usae3: ifv-miss
+			gle3: ifv-miss
+			che3: ifv-miss
+			e3: ifv-miss
+			rae3: ifv-miss
+			yrggi: ifv-miss
+			tse3: ifv-miss
+	Armament@MG:
+		Weapon: SUSALittleBirdMG
+		LocalOffset: 512,-220,-85, 512,220,-85
+		MuzzleSequence: muzzle
+	Armament:
+		LocalOffset: 384,293,-85, 384,-293,-85
+    -Armament@rockets:
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 15
+	ReloadAmmoPool:
+		Delay: 625
+	WithIdleOverlay@ROTORAIR:
+		Offset: 140,0,250
+	WithIdleOverlay@ROTORGROUND:
+		Offset: 140,0,250
+	SpawnActorOnDeath:
+		Actor: susalittlebird.husk
+	Selectable:
+		DecorationBounds: 24,24
+	-GrantConditionOnPrerequisite@stealth:
+	Voiced:
+		VoiceSet: USAComancheVoice
+	-Cloak:
+	-ProductionCostMultiplier@selectusaairforce:
+    Armament@Passenger1:
+		Weapon: USARangerMGGarrison
+		LocalOffset: 200,-220,85
+		MuzzleSequence: muzzle
+		PauseOnCondition: chronobeamed
+		RequiresCondition: loaded >= 1   
+   	Armament@PassengerMiss1:
+		Weapon: USAMissileDefenderGarrisoned
+		LocalOffset: 200,-220,85
+		MuzzleSequence: muzzle
+		PauseOnCondition: chronobeamed
+		RequiresCondition: ifv-miss >= 1   
+    Armament@Passenger2:
+		Weapon: USARangerMGGarrison
+		LocalOffset: 200,220,85
+		MuzzleSequence: muzzle
+		PauseOnCondition: chronobeamed
+		RequiresCondition: loaded >= 2  
+   	Armament@PassengerMiss2:
+		Weapon: USAMissileDefenderGarrisoned
+		LocalOffset: 200,220,85
+		MuzzleSequence: muzzle
+		PauseOnCondition: chronobeamed
+		RequiresCondition: ifv-miss >= 2        
+susalittlebird.husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Little Bird
+	Aircraft:
+		TurnSpeed: 7
+		Speed: 240
+	WithIdleOverlay:
+		Offset: 140,0,250
+		Sequence: rotor
+	SmokeTrailWhenDamaged:
+		Offset: -427,0,0
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 12c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 10c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: susalittlebird
+        
+susacomanche:
+	Inherits: usacomanche
+	Buildable:
+		Prerequisites: susaairport, ~techlevel.high, ~anysusa
+        IconPalette: windows256
+	Armament@MG:
+		LocalOffset: 950,0,-280
+	Armament:
+		LocalOffset: 50,213,-85, 50,-213,-85
+    Armament@rockets:
+        LocalOffset: 50,213,-85, 50,-213,-85
+	WithIdleOverlay@ROTORAIR:
+		Offset: 200,0,100
+	WithIdleOverlay@ROTORGROUND:
+		Offset: 200,0,100
+	Selectable:
+		DecorationBounds: 36,28
+    RenderSprites:
+        Image: usarah66
+    SpawnActorOnDeath:
+		Actor: susacomanche.husk
+        
+susacomanche.husk:        
+	Inherits: usacomanche.husk
+	WithIdleOverlay:
+		Offset: 80,0,165
+	RenderSprites:
+		Image: usarah64
+        
+        
+#########################################
+#           USA SUPERWEAPON
+#########################################       
+susafortifiedfirebase:
+	Inherits: usafirebase
+	Tooltip:
+		Name: Fortified Firebase
+	RenderSprites:
+		Image: susafortifiedfirebase
+	Building:
+		Footprint: xxx xxx
+		Dimensions: 3, 2
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: usabarracks, ~techlevel.medium, ~susa_super
+		Queue: Defence.Shockwave, RADefence.Shockwave
+		BuildDurationModifier: 40
+		Description: Heavily armored garrisonable defensive structure.\n  Strong vs ground targets\n  Weak vs Aircraft
+        IconPalette: windows256
+	Valued:
+		Cost: 1500
+	CustomSellValue:
+		Value: 1000
+	Health:
+		HP: 180000
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 5
+		PipCount: 5
+  	Armament@Passenger5:
+		Weapon: USARangerMGGarrison
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+		PauseOnCondition: chronobeamed
+		RequiresCondition: loaded >= 5     
+   	Armament@PassengerMiss5:
+		Weapon: USAMissileDefenderGarrisoned
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+		PauseOnCondition: chronobeamed
+		RequiresCondition: ifv-miss >= 5    
+	Power:
+		Amount: -60
+	Voiced:
+		VoiceSet: USAFirebaseVoice
+
+susapopuppatriot:
+	Inherits: usapatriot
+	Inherits@EMP: ^PopupTurretEMP
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Pop-Up Patriot Missile System
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: usabarracks, ~techlevel.low, ~susa_super
+		Queue: Defence.Shockwave, RADefence.Shockwave
+		Description: All-purpose defensive structure that is stealth before it attacks.\nRequires power to operate.\nMust Pop up before it can attack\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+        IconPalette: windows256
+	Turreted:
+        InitialFacing: 0
+		TurnSpeed: 6
+		Offset: 1000,-175,5
+        RealignDelay: -1
+	Armament@NORMAL:
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+	Armament@AA:
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+	-AttackTurreted:
+    -WithSpriteTurret:
+    -WithSpriteBody:
+    AttackPopupTurreted:
+        CloseDelay: 40
+		ClosedDamageMultiplier: 100
+		RequiresCondition: !build-incomplete
+        OpeningSequence: opening
+        ClosingSequence: closing
+        ClosedIdleSequence: closed-idle
+    WithEmbeddedTurretSpriteBody:
+        QuantizedFacings: 32
+        StartSequence: closed-idle
+    WithIdleOverlay@body:
+        Sequence: body
+    WithIdleOverlay@body-open:
+        Sequence: body-open
+        RequiresCondition: !build-incomplete && !cloaked
+	Power:
+		Amount: -20
+    ReloadDelayMultiplier:
+        Modifier: 90
+	RenderSprites:
+		Image: susapopuppatriot
+    Cloak:
+		InitialDelay: 80
+		CloakDelay: 80
+		UncloakOn: Attack, Damage
+		IsPlayerPalette: true
+        CloakedCondition: cloaked        
+    -ProximityExternalCondition@patriotrange:
+    -ExternalCondition@patriotrange:
+    -RangeMultiplier@patriotrange1:
+    -RangeMultiplier@patriotrange2:
+    -RangeMultiplier@patriotrange3:
+    -RangeMultiplier@patriotrange4:
+
+susarobottank:
+	Inherits: usasentry
+    Inherits@SHADOWS: ^Shadows
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Robot Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, ~techlevel.medium, ~susa_super
+		Description: Armored Hover Drone equipped with AT Cannon\n Strong vs Tanks
+        IconPalette: windows256
+	Mobile:
+		Speed: 90
+        Locomotor: hover
+	Health:
+		HP: 30000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: -100,0,200
+	Armament@Normal:
+		Weapon: USACrusaderCannon
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		-MuzzleSequence: muzzle
+		-RequiresCondition: 
+    Hovers:
+	AttackTurreted:
+	-WithMuzzleOverlay:
+	WithSpriteTurret@1:
+		Sequence: turret
+		-RequiresCondition: !usaupdronegun
+	-WithSpriteTurret@2:
+	Selectable:
+		DecorationBounds: 28,28
+	-Cloak:
+	-DetectCloaked:
+	-RenderDetectionCircle:
+	RenderSprites:
+		Scale: 0.75
+	-AmmoPool:
+	-ReloadAmmoPool:
+	-ReloadDelayMultiplier@GattlingSpeed:
+	-GrantConditionOnPrerequisite@usaupdronegun:
+	-DamageMultiplier@usaupdronearmor:
+	-ProductionCostMultiplier@selectusaairforce:
+    WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512 
+
+susamortarhmmwv:
+	Inherits: usajeep
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+    Inherits@switchableupgrades: ^usa_switchable_upgrades
+	Valued:
+		Cost: 850
+	Tooltip:
+		Name: Mortar Humvee
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: usajeep
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: susaweap, ~techlevel.medium, ~susa_super
+		Description: Light Transport Vehicle equipped with mortar.\n  Strong vs Infantry, Vehicles, Buildings
+        IconPalette: windows256
+	Mobile:
+		TurnSpeed: 10
+		Speed: 115
+	Selectable:
+		Class: usajeep
+	Health:
+		HP: 24000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: 20,0,128
+	Armament:
+		Weapon: SUSAMortarHMMWV
+		LocalOffset: 171,0,150
+	AttackFrontal:
+	-WithMuzzleOverlay:
+	WithSpriteTurret:
+	-Armament@Tow:
+	-GrantConditionOnPrerequisite@usauptowmiss:
+	RenderSprites:
+		Image: susamortarhmmwv
+        Scale: 0.7
+  	-ProductionCostMultiplier@selectusaairforce:     
+
+susaminigunhmmwv:
+    Inherits: susamortarhmmwv
+    Valued:
+		Cost: 1150
+    Buildable:
+        Description: Light Transport Vehicle equipped with powerful M163 Minigun.\n  Strong vs Infantry, Vehicles\n  Weak vs Tanks
+        Icon: icon_minigun
+        IconPalette: ra2
+    WithMuzzleOverlay:
+    WithSpriteTurret:
+        Sequence: turret2
+    Armament:
+        Weapon: SUSAMinigunHMMWV
+        LocalOffset: 171,0,25
+        MuzzleSequence: muzzle
+ 	Tooltip:
+		Name: Minigun Humvee     
+        
+#########################################
+#           GLA SALVAGE
+#########################################  
+
+sglbadger:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APBulletUpgrade
+	Inherits@cargo: ^CargoVehicle
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 25
+		Prerequisites: glweap, ~techlevel.low, ~sgla_scrap
+		Description: Fast scout & anti-infantry vehicle.\nCan carry infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Badger IFV
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 26000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 140
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: 80,0,240
+	Armament@Normal:
+		Weapon: GLTechnicalMG
+		MuzzleSequence: muzzle
+		LocalOffset: 250,0,43
+		RequiresCondition: scrap_create_bonus == 0
+	Armament@Salvage:
+		Weapon: GLTechnicalShell
+		MuzzleSequence: muzzle
+		LocalOffset: 250,0,43
+		RequiresCondition: scrap_create_bonus == 1
+	Armament@Salvage2:
+		Weapon: GLTechnicalMissile
+		LocalOffset: 250,0,43
+		RequiresCondition: scrap_create_bonus == 2
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+		Sequence: turret
+		RequiresCondition: scrap_create_bonus == 0
+	WithSpriteTurret@Scrap1:
+		Sequence: turret2
+		RequiresCondition: scrap_create_bonus == 1
+	WithSpriteTurret@Scrap2:
+		Sequence: turret3
+		RequiresCondition: scrap_create_bonus == 2
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 4
+		PipCount: 4
+		LoadingCondition: notmobile
+	RenderSprites:
+	Voiced:
+		VoiceSet: TechnicalVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ProductionCostMultiplier@selectglademo:
+		Multiplier: 110
+		Prerequisites: selectglademo
+		Queue: Vehicle.GLA, RAVehicle.GLA
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2

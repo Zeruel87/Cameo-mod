@@ -73,9 +73,12 @@
     GrantConditionOnPrerequisite@ordos:
         Prerequisites: faction.ordos
         Condition: cloakordos
-    ProductionCostMultiplier:     
+    ProductionCostMultiplier@mercenaries:     
         Multiplier: 90
         Prerequisites: faction.mercenary
+    ProductionCostMultiplier@corrino:     
+        Multiplier: 150
+        Prerequisites: faction.corrino
         
 ^D2KInfantryDefaultDeath:
 	WithDeathAnimation:
@@ -540,6 +543,15 @@ construction_yard:
         Factions: harkonnen
     ProvidesPrerequisite@ordos:
         Factions: ordos     
+    ProvidesPrerequisite@anyatreides:
+        Prerequisite: anyatreides
+        Factions: atreides, ixian, fremen         
+    ProvidesPrerequisite@anyharkonnen:
+        Prerequisite: anyharkonnen
+        Factions: harkonnen, corrino, guild       
+    ProvidesPrerequisite@anyordos:
+        Prerequisite: anyordos
+        Factions: ordos, smugglers, mercenary, tleilax                 
     ProvidesPrerequisite@atreides1:
 		Prerequisite: faction.atreides
         Factions: atreides
@@ -1803,7 +1815,7 @@ artillery_platform:
     Inherits: medium_gun_turret
     Buildable:
 		Queue: Defence.d2k, RADefence.d2k
-		Prerequisites: ~conyard.ordos, d2k_barracks, upgrade.barracks, ~factionselected, ~!faction.smugglers, ~!faction.tleilaxu 
+		Prerequisites: ~anyordos, d2k_barracks, upgrade.barracks, ~factionselected, ~!faction.smugglers, ~!faction.tleilaxu 
         BuildPaletteOrder: 510
         Description: Defensive structure.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
     Health:
@@ -1823,7 +1835,7 @@ machine_gun_turret:
     Inherits: medium_gun_turret
     Buildable:
     	Queue: Defence.d2k, RADefence.d2k
-		Prerequisites: ~conyard.atreides, d2k_barracks, ~factionselected, ~!faction.fremen
+		Prerequisites: ~anyatreides, d2k_barracks, ~factionselected, ~!faction.fremen
         BuildPaletteOrder: 510
         Description: Defensive structure.\nDetector.\n  Strong vs Infantry\n  Weak vs Tanks     
     Health:
@@ -1844,7 +1856,7 @@ flame_turret:
     Inherits: medium_gun_turret  
     Buildable:
         Queue: Defence.d2k, RADefence.d2k
-        Prerequisites: ~conyard.harkonnen, d2k_barracks, ~factionselected
+        Prerequisites: ~anyharkonnen, d2k_barracks, ~factionselected
         BuildPaletteOrder: 510    
         Description: Defensive structure.\nDetector.\n  Strong vs Infantry, Vehicles, Tanks\n  Weak vs Siege
     Health:
@@ -2235,7 +2247,7 @@ high_tech_factory:
 		CircleDelay: 25
 		OrderName: ornistrike
 		SupportPowerPaletteOrder: 20
-		Prerequisites: ~conyard.atreides, ~techlevel.superweapons, upgrade.hightech, ~faction.atreides
+		Prerequisites: ~anyatreides, ~techlevel.superweapons, upgrade.hightech, ~faction.atreides
 	Power:
 		Amount: -75
 	GrantConditionOnPrerequisite@UPGRADEABLE:
@@ -3153,7 +3165,7 @@ sardaukar:
 	Buildable:
 		Queue: Infantry.d2k, RAInfantry.d2k, Infantry.X_Infantry
 		BuildPaletteOrder: 50
-		Prerequisites: ~palace.sardaukar, ~techlevel.high
+		Prerequisites: ~palace.sardaukar, ~techlevel.high, ~wip-content
         BuildDuration: 280
         BuildDurationModifier: 100
 		Description: Elite assault infantry of Emperor's Army\n  Strong vs Infantry, Vehicles\n  Weak vs Artillery
@@ -3193,7 +3205,7 @@ mpsardaukar:
         BuildDuration: 200
         BuildDurationModifier: 100
 	Valued:
-		Cost: 500
+		Cost: 400
 	Armament@PRIMARY:
 		Weapon: M_LMG_H
 	Armament@SECONDARY:
@@ -3332,7 +3344,7 @@ fedaykin:
 	Buildable:
 		Queue: Infantry.d2k, RAInfantry.d2k, Infantry.X_Infantry
 		BuildPaletteOrder: 120
-		Prerequisites: ~barracks.atreides, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.fremen
+		Prerequisites: ~barracks.atreides, ~fremen_sietch, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.fremen
 		Description: Stealth Elite Fremen Guerilla infantry armed with Sonic Weapon\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Artillery, Tanks
         IconPalette: d2kunit      
         BuildDuration: 280
@@ -3979,17 +3991,23 @@ d2k_light_tank:
 	Armament:
 		Weapon: d2k70mm
 		Recoil: 65
+        Name: primary
 		RecoilRecovery: 25
 		MuzzleSequence: muzzle
         LocalOffset: 575, 0, 175
         MuzzlePalette: d2keffect       
    	Armament@MGround:
 		Weapon: d2k_APC.AG
+        Name: secondary
 		LocalOffset: 575, 75, 175
+        PauseOnCondition: !ammo
 	Armament@MAA:
 		Weapon: d2k_APC.AA
-		LocalOffset: 575, 75, 175    
+        Name: aa
+		LocalOffset: 575, 75, 175   
+        PauseOnCondition: !ammo
 	AttackTurreted:
+        Armaments: primary, secondary, aa
 	WithMuzzleOverlay:
 	WithSpriteTurret:
         Palette: player
@@ -4005,7 +4023,16 @@ d2k_light_tank:
         Scale: 0.6
     Cloak@TDcloak:
         Palette: racloak 
-
+    AmmoPool:
+		Ammo: 1
+		AmmoCondition: ammo
+        Armaments: secondary, aa
+        PipCount: 0
+    ReloadAmmoPool: 
+    	Delay: 120
+		Count: 1
+		ResetOnFire: false 
+        
 d2k_atreides_apc:
  	Inherits@D2KT: ^D2KTank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -4326,20 +4353,35 @@ d2k_stealth_tank:
     Armament@cannon:
 		Weapon: D2K_alshabah_autocannon
 		LocalOffset: 400,0,0
+        Name: primary
         MuzzlePalette: d2keffect       
 	Armament@RGround:
 		Weapon: Rocket.stealth
+        Name: secondary
+        PauseOnCondition: !ammo
 		LocalOffset: 213,43,128, 213,-43,128
 	Armament@RAA:
 		Weapon: Rocket.stealthAA
+        Name: aa
+        PauseOnCondition: !ammo
 		LocalOffset: 213,43,128, 213,-43,128
     WithSpriteTurret:
     Turreted:
         TurnSpeed: 15
 	AttackTurreted:
+        Armaments: primary, secondary, aa
 	SpawnActorOnDeath:
 		Actor: d2k_stealth_tank.husk
 	-MustBeDestroyed:
+    AmmoPool:
+		Ammo: 2
+		AmmoCondition: ammo
+        Armaments: secondary, aa
+        PipCount: 0
+    ReloadAmmoPool: 
+    	Delay: 250
+		Count: 2
+		ResetOnFire: false 
     Explodes:
     	Weapon: D2KUnitExplodeMed
 		EmptyWeapon: D2KUnitExplodeMed
@@ -4394,11 +4436,13 @@ d2k_apc:
 		TurnSpeed: 15
 	Explodes:
 		Weapon: D2KUnitExplodeSmall
-		EmptyWeapon: D2KUnitExplodeSmall
+		EmptyWeapon: D2KUnitExplodeSmall        
 	Armament@primary:
 		Weapon: d2k25mm
+        Name: primary
 		LocalOffset: 768,0,90  
 	AttackTurreted:
+        Armaments: primary, secondary, aa
 	AutoTarget:
 	Cargo:
 		Types: Infantry
@@ -4415,14 +4459,26 @@ d2k_apc:
 	RenderSprites:
         Image: d2k_apc
         PlayerPalette: raplayer
-        Scale: 1
+        Scale: 1      
     Armament@MGround:
 		Weapon: d2k_APCo.AG
+        Name: secondary
 		LocalOffset: 768,75,90
+        PauseOnCondition: !ammo
 	Armament@MAA:
 		Weapon: d2k_APCo.AA
+        Name: aa
 		LocalOffset: 768,75,90
-        
+        PauseOnCondition: !ammo
+    AmmoPool:
+		Ammo: 1
+		AmmoCondition: ammo
+        Armaments: secondary, aa
+        PipCount: 0
+    ReloadAmmoPool: 
+    	Delay: 150
+		Count: 1
+		ResetOnFire: false    
 d2k_apc.husk:
 	Inherits: ^D2KVehicleHusk
 	Health:
@@ -4666,7 +4722,7 @@ swarmer:
 	Buildable:
 		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 30
-		Prerequisites: ~conyard.ordos, outpost, ~techlevel.medium, ~!faction.tleilaxu
+		Prerequisites: ~anyordos, outpost, ~techlevel.medium, ~!faction.tleilaxu
 		BuildDuration: 250
 		BuildDurationModifier: 100
 		Description: Light plane armed with dual machine guns. \nCan attack air.\n Strong vs Infantry and Air
@@ -4727,7 +4783,7 @@ d2k_aa_mine:
 	Buildable:
 		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 30
-		Prerequisites: ~conyard.ordos, outpost, ~techlevel.medium, ~!faction.tleilaxu
+		Prerequisites: ~anyordos, outpost, ~techlevel.medium, ~!faction.tleilaxu
 		BuildDuration: 500
 		BuildDurationModifier: 100
 		Description: Slowly Flying Mine that hurls missiles upon contact with enemy airplane before exploding\nIn higher numbers can take down entire squadron
@@ -4845,7 +4901,7 @@ ornithopter.controllable:
     Buildable:
 		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 40
-		Prerequisites: ~conyard.atreides, outpost, ~techlevel.medium
+		Prerequisites: ~anyatreides, outpost, ~techlevel.medium
 		BuildDuration: 600
 		BuildDurationModifier: 100
 		Description: Powerful Aircraft armed with dual Heavy Machine Guns and Bombs.\n Strong vs Everything
@@ -4932,7 +4988,7 @@ d2k_air_drone:
     Buildable:
 		Queue: Aircraft.d2k, RAAircraft.d2k, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 10
-		Prerequisites: ~conyard.atreides, outpost, ~techlevel.medium
+		Prerequisites: ~anyatreides, outpost, ~techlevel.medium
 		BuildDuration: 450
 		BuildDurationModifier: 100
 		Description: Stealthed and Light air unit that is used for defence against other air units.\nCarries an AA missile launcher that automatically fires\nat any air unit within range. Due to it's light armor,\nit is easily destroyed from enemy AA fire.\nDetector
@@ -5621,8 +5677,9 @@ mg_quad:
     Tooltip:
 		Name: MG Quad
     Buildable:
-        Prerequisites: ~conyard.ordos, ~faction.smugglers
+        Prerequisites: ~faction.smugglers
         Description: Quad MG Scout\n  Strong vs Infantry\n  Weak vs Vehicles
+        BuildPaletteOrder: 0
     Valued: 
         Cost: 300
     Armament:
@@ -5639,7 +5696,7 @@ mg_quad_tleilaxu:
     Inherits: mg_quad
     Inherits@bot: ^BotMicromanageable
     Buildable:    
-        Prerequisites: ~conyard.ordos, ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.mg_quad, ~techlevel.low
+        Prerequisites: ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.mg_quad, ~techlevel.low
         Queue: Infantry.d2k, Infantry.d2k, Infantry.X_Infantry
         Description: Speedy Quad with burst MG\nMust resupply at resource center\nCan carry up to 3 passengers\n  Strong vs Infantry\n  Weak vs Vehicles
         BuildPaletteOrder: 10
@@ -5930,6 +5987,7 @@ d2k_laser_tank:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove  
  	Inherits@EXT: ^ExternalConditions   
     Inherits@IXEMP: ^D2K_Ix_Turret_EMP  
+    Inherits@SHADOWS: ^Shadows
 	Buildable:
 		Queue: Armor.d2k, RAArmor.d2k, Vehicle.X_Vehicles
 		BuildPaletteOrder: 100
@@ -5974,6 +6032,9 @@ d2k_laser_tank:
 		Intensity: 350
 	Voiced:
 		VoiceSet: D2KLaserTankVoice 
+    WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
         
 d2k_qafza:
   	Inherits: ^D2KTank
@@ -6184,7 +6245,7 @@ raider:
 	Buildable:
 		Queue: Vehicle.d2k, RAVehicle.d2k, Vehicle.X_Vehicles
 		BuildPaletteOrder: 10
-		Prerequisites: ~conyard.ordos, ~!faction.tleilaxu, ~!faction.smugglers, ~!faction.mercenary
+		Prerequisites: ~anyordos, ~!faction.tleilaxu, ~!faction.smugglers, ~!faction.mercenary
 		BuildDuration: 150
 		BuildDurationModifier: 100
 		Description: Improved Scout\nCan carry a passenger\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
@@ -6507,35 +6568,56 @@ combat_tank_o:
 		HP: 58000
 	SpawnActorOnDeath:
 		Actor: combat_tank_o.husk
+    GrantConditionOnPrerequisite@ORDOS:
+        Condition: faction.ordos
+        Prerequisites: faction.ordos
+    Cloak:
+		InitialDelay: 40
+		CloakDelay: 45
+		UncloakOn: Attack, Unload
+		IsPlayerPalette: true
+        Palette: d2kcloak     
+        CloakedCondition: cloaked  
+        RequiresCondition: faction.ordos
         
 combat_tank_o_stealth:
 	Inherits: ^combat_tank
 	Buildable:
 		Prerequisites: ~heavy.ordos_combat, ~faction.ordos, ~techlevel.medium
-        Description: Faster less armored stealth Version of Main Battle Tank with more powerful cannon\n  Strong vs Tanks\n  Weak vs Infantry
+        Description: Fast stealth tank with powerful long range cannon\n  Strong vs Tanks\n  Weak vs Infantry
+        IconPalette: windows256
     Valued:
 		Cost: 850
 	Tooltip:
-		Name: Stealth Combat Tank    
+		Name: Tank Destroyer   
 	Turreted:
 		TurnSpeed: 25
     Armor:
 		Type: Light    
 	Armament:
-		Weapon: 80mm_OS
+		Weapon: 120mm_td
+        LocalOffset: 450,0,0
+        -MuzzleSequence 
     Health:
-		HP: 45000  
+		HP: 35000
+    -AttackTurreted
+    AttackFrontal:
+    -WithSpriteTurret
+    -WithMuzzleOverlay
+    -Turreted
 	Mobile:
-		Speed: 100
+		Speed: 90
 	-SpawnActorOnDeath: 
     RenderSprites:
-        Image: combat_tank_o
+        Image: d2k_ordos_stealth_tank
+        PlayerPalette: player
+        Scale: 0.9
     Cloak:
-		InitialDelay: 45
-		CloakDelay: 40
+		InitialDelay: 60
+		CloakDelay: 60
 		UncloakOn: Attack, Unload
 		IsPlayerPalette: true
-        Palette: d2kcloak     
+        Palette: cloak     
         CloakedCondition: cloaked    
         
 combat_tank_ixian:
@@ -6635,13 +6717,12 @@ quake_tank:
 		Queue: Armor.d2k, RAArmor.d2k, Vehicle.X_Vehicles
 		BuildPaletteOrder: 90
 		Prerequisites: ~heavy.harkonnen, research_centre, ~techlevel.high, ~faction.corrino
-		BuildDuration: 750
+		BuildDuration: 500
 		BuildDurationModifier: 100
 		Description: Suicidal Unit\nOnce deployed, Deals seismic damage to nearby vehicles\nand structures\nDeals massive damage after exploding\nSummons all worms on map once detonated - keeps luring Worms even after its death\nOnly one can be built at a time\n  Strong vs Ground targets
-        BuildLimit: 1
         IconPalette: d2kunit     
 	Valued:
-		Cost: 1500
+		Cost: 1200
 	Tooltip:
 		Name: Quake Tank
 	Health:
@@ -7219,6 +7300,7 @@ upgrade.basq:
 		BuildDuration: 750
 		BuildDurationModifier: 100
 		Description: Unlocks Basq
+        IconPalette: ra2
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -7259,7 +7341,7 @@ faction.ordos:
 		Name: Ordos
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~conyard.ordos, ~!factionselected
+		Prerequisites: ~anyordos, ~!factionselected
 		Queue: Building.d2k, RABuilding.d2k
 		BuildLimit: 1
 		BuildDuration: 0
@@ -7281,7 +7363,7 @@ faction.smugglers:
 		Name: Smugglers
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~conyard.ordos, ~!factionselected
+		Prerequisites: ~anyordos, ~!factionselected
 		Queue: Building.d2k, RABuilding.d2k
 		BuildLimit: 1
 		BuildDuration: 0
@@ -7302,7 +7384,7 @@ faction.mercenary:
 		Name: Mercenary
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~conyard.ordos, ~!factionselected
+		Prerequisites: ~anyordos, ~!factionselected
 		Queue: Building.d2k, RABuilding.d2k
 		BuildLimit: 1
 		BuildDuration: 0
@@ -7323,7 +7405,7 @@ faction.tleilaxu:
 		Name: Tleilaxu
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~conyard.ordos, ~!factionselected
+		Prerequisites: ~anyordos, ~!factionselected
 		Queue: Building.d2k, RABuilding.d2k
 		BuildLimit: 1
 		BuildDuration: 0
@@ -7344,7 +7426,7 @@ faction.atreides:
 		Name: House Atreides
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~conyard.atreides, ~!factionselected
+		Prerequisites: ~anyatreides, ~!factionselected
 		Queue: Building.d2k, RABuilding.d2k
 		BuildLimit: 1
 		BuildDuration: 0
@@ -7365,7 +7447,7 @@ faction.fremen:
 		Name: House Fremen
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~conyard.atreides, ~!factionselected
+		Prerequisites: ~anyatreides, ~!factionselected
 		Queue: Building.d2k, RABuilding.d2k
 		BuildLimit: 1
 		BuildDuration: 0
@@ -7386,7 +7468,7 @@ faction.ixian:
 		Name: House Ixian
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~conyard.atreides, ~!factionselected
+		Prerequisites: ~anyatreides, ~!factionselected
 		Queue: Building.d2k, RABuilding.d2k
 		BuildLimit: 1
 		BuildDuration: 0
@@ -7408,7 +7490,7 @@ faction.harkonnen:
 		Name: House Harkonnen
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~conyard.harkonnen, ~!factionselected
+		Prerequisites: ~anyharkonnen, ~!factionselected
 		Queue: Building.d2k, RABuilding.d2k
 		BuildLimit: 1
 		BuildDuration: 0
@@ -7429,7 +7511,7 @@ faction.corrino:
 		Name: House Corrino
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~conyard.harkonnen, ~!factionselected
+		Prerequisites: ~anyharkonnen, ~!factionselected
 		Queue: Building.d2k, RABuilding.d2k
 		BuildLimit: 1
 		BuildDuration: 0
@@ -7450,7 +7532,7 @@ faction.guild:
 		Name: House Spacing Guild
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~conyard.harkonnen, ~!factionselected
+		Prerequisites: ~anyharkonnen, ~!factionselected
 		Queue: Building.d2k, RABuilding.d2k
 		BuildLimit: 1
 		BuildDuration: 0
@@ -7635,7 +7717,7 @@ raider.starport:
 	Inherits: raider
     Inherits@starportunit: ^starport_unit
 	Buildable:
-		Prerequisites: ~conyard.ordos, ~!faction.tleilaxu
+		Prerequisites: ~anyordos, ~!faction.tleilaxu
 		Queue: Starport.d2k, RAStarport.d2k
 	-MapEditorData:
 	RenderSprites:
