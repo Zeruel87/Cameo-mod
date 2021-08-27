@@ -146,6 +146,9 @@
 	PowerMultiplier@upgrade:
 		Modifier: 200
 		RequiresCondition: powerupgrade
+	WithIdleOverlay@lvl2:
+		RequiresCondition: powerupgrade
+		Sequence: idle2
 2100OIL:
 	Inherits: ^BaseBuilding
 	Inherits@2: ^CashTricklerMultipliers
@@ -252,6 +255,13 @@
 		Cost: 750
 	Tooltip:
 		Name: Factory Tier 1
+		RequiresCondition: !lvl2
+	Tooltip@2:
+		Name: Factory Tier 2
+		RequiresCondition: lvl2 && !lvl3
+	Tooltip@3:
+		Name: Factory Tier 3
+		RequiresCondition: lvl3
 	ProvidesPrerequisite@1:
 		Prerequisite: 2100FY1
 	ProvidesPrerequisite@2:
@@ -318,7 +328,7 @@
 	-WithDeathAnimation:
 	Production@LVL1:
 		Produces: FactoryUpgrade1.Alpha
-		RequiresCondition: !lvl2 && !lvl3
+		RequiresCondition: !lvl2
 	ProductionQueue@LVL1:
 		Type: FactoryUpgrade1.Alpha
 		Group: Addon
@@ -326,7 +336,9 @@
 		QueueLimit: 1
 		ItemLimit: 1
 		DisplayOrder: 0
-	GrantConditionOnProduction@psc2100factory1@LVL1:
+		RequiresCondition: !lvl2
+		Sticky: False
+	GrantConditionOnProduction@psc2100factory1:
 		Condition: lvl2
 		Actors: psc2100factory1
 	Production@LVL2:
@@ -338,10 +350,12 @@
 		LowPowerModifier: 200
 		QueueLimit: 1
 		ItemLimit: 1
-		DisplayOrder: 1
-	GrantConditionOnProduction@psc2100factory1:
+		DisplayOrder: 0
+		RequiresCondition: lvl2 && !lvl3
+		Sticky: False
+	GrantConditionOnProduction@psc2100factory2:
 		Condition: lvl3
-		Actors: psc2100factory1
+		Actors: psc2100factory2
 	ProvidesPrerequisite@2100fy2:
 		Prerequisite: 2100fy2
 		RequiresCondition: lvl2
@@ -372,6 +386,12 @@
     ProvidesPrerequisite@up2100upretribution1:
 		Prerequisite: up2100upretribution1
 		Factions: nexus
+	WithIdleOverlay@lvl2:
+		RequiresCondition: lvl2 && !lvl3
+		Sequence: idle2
+	WithIdleOverlay@lvl3:
+		RequiresCondition: lvl3
+		Sequence: idle3
 2100FY2:
 	Inherits: ^BaseBuilding
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -494,6 +514,18 @@
 		DisallowPaused: true
 	ProductionBar:
 		ProductionType: Research.Alpha
+    ProvidesPrerequisite@alpha:
+		Prerequisite: bodies.alpha
+		Factions: alpha
+    ProvidesPrerequisite@collective:
+		Prerequisite: bodies.collective
+		Factions: collective, alpha    
+    ProvidesPrerequisite@paradigm:
+		Prerequisite: bodies.paradigm
+		Factions: paradigm, alpha
+    ProvidesPrerequisite@nexus:
+		Prerequisite: bodies.nexus
+		Factions: nexus, alpha
 2100CRC:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -543,6 +575,70 @@
 		Prerequisite: nasda
 	-WithDeathAnimation:
 
+2100CF:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 630,-512,0, 355,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Cyborg Factory
+	ProvidesPrerequisite:
+		Prerequisite: barracks 
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: 2100fy1
+		Queue: Building.Alpha, RABuilding.Alpha
+		Description: Trains infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+	Production@NORMAL:
+		Produces: Infantry.Alpha
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.Alpha
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry.Alpha
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYNOD:
+		ProductionType: Infantry.Alpha
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYNOD:
+		ProductionType: RAInfantry.Alpha
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 48,48
+		DecorationBounds: 48,68,0,-10
+	SelectionDecorations:
+
+####################################################################################################
+#		2100 Defence
+####################################################################################################
 2100WALL:
 	Inherits@1: ^ExistsInWorld
 	Inherits: ^Wall
@@ -1031,7 +1127,7 @@ psc2100power:
 		RemoveInstead: true
 psc2100factory1:
 	Tooltip:
-		Name: Factory Module
+		Name: Factory Module 1
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: FactoryUpgrade1.Alpha
@@ -1047,16 +1143,16 @@ psc2100factory1:
 		RemoveInstead: true
 psc2100factory2:
 	Tooltip:
-		Name: Factory Module
+		Name: Factory Module 2
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: FactoryUpgrade2.Alpha
 		Description: Increases power output.
-		Prerequisites: ~anypower, ~up2100uppowermodule1
+		Prerequisites: ~2100fy2, ~up2100uppowermodule1
 	Valued:
 		Cost: 1000
 	RenderSprites:
-		Image: 2100upfactorymodule
+		Image: 2100fy2
 	Interactable:
 	AlwaysVisible:
 	KillsSelf:
@@ -1761,7 +1857,7 @@ psc2100factory2:
 
 
 ####################################################################################################
-#		2100 Driods Weapons
+#		2100 Driods Bodies
 ####################################################################################################
 ^2100ViperWheels:
 	Inherits: ^2100VEHICLE
@@ -1792,7 +1888,7 @@ psc2100factory2:
 		Range: 7c0
 	Turreted:
 		TurnSpeed: 10
-		Offset: -128,0,128
+		Offset: -150,0,160
 	RenderSprites:
 		Scale: 0.56
 ^2100CobraHTracks:
@@ -1822,7 +1918,7 @@ psc2100factory2:
 		Range: 8c0
 	Turreted:
 		TurnSpeed: 10
-		Offset: -58,0,128
+		Offset: -150,0,250
 	RenderSprites:
 		Scale: 0.70
 ^2100PythonTracks:
@@ -1855,8 +1951,187 @@ psc2100factory2:
 		Offset: -128,0,256
 	RenderSprites:
 		Scale: 0.75
+^2100CyborgLegs:
+	Inherits: ^2100VEHICLE
+	Mobile:
+		TurnSpeed: 99
+		Speed: 100
+		Locomotor: foot
+	Health:
+		HP: 13000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -1,0,200
+	RenderSprites:
+		Scale: 0.50
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+^2100LeopardWheels:
+	Inherits: ^2100VEHICLE
+	Mobile:
+		TurnSpeed: 16
+		Speed: 130
+	Health:
+		HP: 32000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -175,0,138
+	RenderSprites:
+		Scale: 0.56
+^2100PantherHTracks:
+	Inherits: ^2100VEHICLE
+	Mobile:
+		Speed: 110
+	Health:
+		HP: 50000
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -70,0,140
+	RenderSprites:
+		Scale: 0.70
+^2100TigerTracks:
+	Inherits: ^2100VEHICLE
+	Mobile:
+		Speed: 70
+	Health:
+		HP: 75000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -128,0,256
+	RenderSprites:
+		Scale: 0.75
+^2100RetealiatonWheels:
+	Inherits: ^2100VEHICLE
+	Mobile:
+		TurnSpeed: 16
+		Speed: 110
+	Health:
+		HP: 52000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -128,0,128
+	RenderSprites:
+		Scale: 0.56
+^2100RetributionHTracks:
+	Inherits: ^2100VEHICLE
+	Mobile:
+		Speed: 100
+	Health:
+		HP: 70000
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -58,0,128
+	RenderSprites:
+		Scale: 0.70
+^2100VengeanceTracks:
+	Inherits: ^2100VEHICLE
+	Mobile:
+		Speed: 62
+	Health:
+		HP: 100000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -128,0,256
+	RenderSprites:
+		Scale: 0.75
 ####################################################################################################
-#		2100 Droids Bodies
+#		2100 Droids Supports
+####################################################################################################
+^2100RepairHealer:
+	Armament:
+		Weapon: HealUnit
+		TargetStances: Ally
+		LocalOffset: 350,0,150
+	AutoTarget:
+		ScanRadius: 4
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry, Vehicle
+	Turreted:
+		TurnSpeed: 10
+		Offset: -128,0,128
+^2100Constructor:
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@CPQ: ^CPQCondition
+	Armament:
+		Weapon: HealBuilding
+		TargetStances: Ally
+		LocalOffset: 250,-200,50, 250,200,50
+	Harvester:
+		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems
+		PipCount: 0
+		Capacity: 90000
+		SearchOnCreation: False
+		DeliveryBuildings: none
+	BaseProvider:
+		Range: 5c0
+		RequiresCondition: littlebuilderenable
+	Production@NORMAL:
+		Produces: Building.Alpha, Defence.Alpha
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.Alpha, RADefence.Alpha
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	ProductionQueue@AlphaBuilding:
+		Type: Building.Alpha
+		DisplayOrder: 0
+		Group: Building
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		BuildDurationModifier: 150
+	ProductionQueue@AlphaDefense:
+		Type: Defence.Alpha
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 200
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		BuildDurationModifier: 150
+	ProductionBar@BuildingAlpha:
+		ProductionType: Building.Alpha
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	ProductionBar@DefenceAlpha:
+		ProductionType: Defence.Alpha
+		RequiresCondition: !classicproductionqueues && littlebuilderenable
+	ProductionBar@RABuildingAlpha:
+		ProductionType: RABuilding.Alpha
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	ProductionBar@RADefenceAlpha:
+		ProductionType: RADefence.Alpha
+		RequiresCondition: classicproductionqueues && littlebuilderenable
+	BaseBuilding:
+####################################################################################################
+#		2100 Droids Weapons
 ####################################################################################################
 ^2100RocketPod:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -1883,6 +2158,13 @@ psc2100factory2:
 		Weapon: 2100MachineGunAA
 		LocalOffset: 250,0,50
 		MuzzleSequence: muzzle
+	Armament@PRIMARYFX:
+		Weapon: 2100MachineGunEffect
+		LocalOffset: 250,0,50
+	Armament@SECONDARYFX:
+		Name: secondary
+		Weapon: 2100MachineGunAAEffect
+		LocalOffset: 250,0,50
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	Explodes:
@@ -1963,6 +2245,37 @@ psc2100factory2:
 		ValidTypes: vehicle								##########
 	SpeedMultiplier@2100Tanks:
 		Modifier: 90
+^2100Mortar:
+	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AP: ^2100CannonWeaponsUpgrades
+	Armament:
+		Weapon: MortarShell
+		MuzzleSequence: muzzle
+		LocalOffset: 600,0,0
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	SpeedMultiplier@2100Tanks:
+		Modifier: 60
+	AutoTarget:
+		ScanRadius: 7
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Structure
+^2100LightCannon:
+	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AP: ^2100CannonWeaponsUpgrades
+	Armament:
+		Weapon: lightcanon
+		MuzzleSequence: muzzle
+		LocalOffset: 500,0,0
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	DamageMultiplier@2100Tanks:
+		Modifier: 80
+	SpeedMultiplier@2100Tanks:
+		Modifier: 80
 ####################################################################################################
 #		SCAVENGER Infantry
 ####################################################################################################
@@ -2058,6 +2371,12 @@ psc2100factory2:
 	SpeedMultiplier@up2100upengine3:
 		RequiresCondition: up2100upengine3
 		Modifier: 105
+	GrantConditionOnPrerequisite@up2100upengine4:
+		Condition: up2100upengine4
+		Prerequisites: up2100upengine4
+	SpeedMultiplier@up2100upengine4:
+		RequiresCondition: up2100upengine4
+		Modifier: 105
 	GrantConditionOnPrerequisite@up2100uparmor1:
 		Condition: up2100uparmor1
 		Prerequisites: up2100uparmor1
@@ -2076,13 +2395,37 @@ psc2100factory2:
 	DamageMultiplier@up2100uparmor3:
 		RequiresCondition: up2100uparmor3
 		Modifier: 90
+	GrantConditionOnPrerequisite@up2100uparmor4:
+		Condition: up2100uparmor4
+		Prerequisites: up2100uparmor4
+	DamageMultiplier@up2100uparmor4:
+		RequiresCondition: up2100uparmor4
+		Modifier: 90
+	GrantConditionOnPrerequisite@up2100uparmor5:
+		Condition: up2100uparmor5
+		Prerequisites: up2100uparmor5
+	DamageMultiplier@up2100uparmor5:
+		RequiresCondition: up2100uparmor5
+		Modifier: 90
+	GrantConditionOnPrerequisite@up2100uparmor6:
+		Condition: up2100uparmor6
+		Prerequisites: up2100uparmor6
+	DamageMultiplier@up2100uparmor6:
+		RequiresCondition: up2100uparmor6
+		Modifier: 90
+	GrantConditionOnPrerequisite@up2100uparmor7:
+		Condition: up2100uparmor7
+		Prerequisites: up2100uparmor7
+	DamageMultiplier@up2100uparmor7:
+		RequiresCondition: up2100uparmor7
+		Modifier: 90
 2100MCV.ALPHA:
-	Inherits: ^2100VEHICLE
+	Inherits@Body: ^2100PythonTracks
 	Inherits@mcv: ^MCV
 	Valued:
 		Cost: 3500
 	Tooltip:
-		Name: Mobile Construction Vehicle (Alpha)
+		Name: MCV Python Tracks (Alpha)
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: 2100RF, ~techlevel.medium, 2100RR
@@ -2093,14 +2436,6 @@ psc2100factory2:
 	Selectable:
 		Priority: 4
 		DecorationBounds: 36,36
-	Mobile:
-		Speed: 71
-	Health:
-		HP: 120000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 8c0
 	Transforms:
 		IntoActor: 2100hq.alpha
 		Offset: -1,-1
@@ -2119,11 +2454,12 @@ psc2100factory2:
 		Image: 2100mcv
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmalpha
+	RenderSprites:
+		Scale: 0.75
 
 2100REPAIRTRUCK:
-	Inherits: ^2100VEHICLE
-	Inherits@selection: ^SelectableSupportUnit
-	Inherits@CPQ: ^CPQCondition
+	Inherits@Body: ^2100ViperWheels
+	Inherits@@Turret: ^2100Constructor
 	Buildable:
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		BuildPaletteOrder: 10
@@ -2132,75 +2468,13 @@ psc2100factory2:
 	Valued:
 		Cost: 600
 	Tooltip:
-		Name: Repair Truck
-	Health:
-		HP: 25000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 130
-	RevealsShroud:
-		Range: 4c0
-	Armament:
-		Weapon: HealBuilding
-		TargetStances: Ally
-		LocalOffset: 250,-200,50, 250,200,50
-	AutoTarget:
-		ScanRadius: 7
-		InitialStance: AttackAnything
-	AutoTargetPriority@DEFAULT:
-		ValidTargets: Structure
-	Harvester:
-		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems
-		PipCount: 0
-		Capacity: 90000
-		SearchOnCreation: False
-		DeliveryBuildings: none
-	Turreted:
-		TurnSpeed: 10
-		Offset: -128,0,128
+		Name: Construction Truck Viper Wheels
 	Selectable:
 		Class: 2100repairtruck
-	RenderSprites:
-		Scale: 0.60
-	BaseProvider:
-		Range: 5c0
-	Production@NORMAL:
-		Produces: Building.Alpha, Defence.Alpha
-		RequiresCondition: !classicproductionqueues && littlebuilderenable
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding.Alpha, RADefence.Alpha
-		RequiresCondition: classicproductionqueues && littlebuilderenable
-	ProductionQueue@AlphaBuilding:
-		Type: Building.Alpha
-		DisplayOrder: 0
-		Group: Building
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-		BuildDurationModifier: 150
-	ProductionQueue@AlphaDefense:
-		Type: Defence.Alpha
-		DisplayOrder: 1
-		Group: Defence
-		LowPowerModifier: 200
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-		BuildDurationModifier: 150
-	ProductionBar@BuildingAlpha:
-		ProductionType: Building.Alpha
-		RequiresCondition: !classicproductionqueues && littlebuilderenable
-	ProductionBar@DefenceAlpha:
-		ProductionType: Defence.Alpha
-		RequiresCondition: !classicproductionqueues && littlebuilderenable
-	ProductionBar@RABuildingAlpha:
-		ProductionType: RABuilding.Alpha
-		RequiresCondition: classicproductionqueues && littlebuilderenable
-	ProductionBar@RADefenceAlpha:
-		ProductionType: RADefence.Alpha
-		RequiresCondition: classicproductionqueues && littlebuilderenable
-	BaseBuilding:
+
 2100HEALTRUCK:
-	Inherits: ^2100VEHICLE
+	Inherits@Body: ^2100ViperWheels
+	Inherits@@Turret: ^2100RepairHealer
 	Buildable:
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		BuildPaletteOrder: 40
@@ -2208,30 +2482,11 @@ psc2100factory2:
 	Valued:
 		Cost: 500
 	Tooltip:
-		Name: Healing Unit
-	Health:
-		HP: 20000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 130
-	RevealsShroud:
-		Range: 4c0
-	Armament:
-		Weapon: HealUnit
-		TargetStances: Ally
-		LocalOffset: 350,0,150
-	AutoTarget:
-		ScanRadius: 4
-		InitialStance: AttackAnything
-	AutoTargetPriority@DEFAULT:
-		ValidTargets: Infantry, Vehicle
-	Turreted:
-		TurnSpeed: 10
-		Offset: -128,0,128
+		Name: Repair Viper Wheels
 	Selectable:
 		Class: 2100healtruck
 
+#		Viper
 2100MVW:
 	Inherits@Body: ^2100ViperWheels
 	Inherits@@Turret: ^2100LightMG
@@ -2275,7 +2530,21 @@ psc2100factory2:
 		Prerequisites: ~up2100upflamer1, ~up2100upviper1
 	Selectable:
 		Class: 2100fvw
-
+2100LCVW:
+	Inherits@Body: ^2100ViperWheels
+	Inherits@@Turret: ^2100LightCannon
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Light Cannon Viper Wheels
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Vehicles, Aircraft
+		Prerequisites: ~up2100uplcannon1, ~up2100upviper1
+	Selectable:
+		Class: 2100lcvw
+#		Cobra
 2100TCH:
 	Inherits@Body: ^2100CobraHTracks
 	Inherits@Turret: ^2100Lancer
@@ -2301,7 +2570,20 @@ psc2100factory2:
 		Prerequisites: 2100fy2, ~up2100upmcannon1, ~up2100upcobra1, ~techlevel.medium
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
+2100MOCH:
+	Inherits: ^2100CobraHTracks
+	Inherits@Turret: ^2100Mortar
+	Valued:
+		Cost: 1100
+	Tooltip:
+		Name: Mortar Cobra Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upmortar1, ~up2100upcobra1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 
+#		Python
 2100APT:
 	Inherits: ^2100PythonTracks
 	Inherits@Turret: ^2100AssaultMG
@@ -2311,7 +2593,7 @@ psc2100factory2:
 		Name: Assault Gun Python Tracks
 	Buildable:
 		BuildPaletteOrder: 80
-		Prerequisites: 2100CRC, ~techlevel.high, ~up2100uppython1
+		Prerequisites: 2100CRC, ~techlevel.high, ~up2100uppython1, ~up2100uptracks1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Infantry
 2100HPT:
@@ -2323,7 +2605,7 @@ psc2100factory2:
 		Name: Heavy Cannon Python Tracks
 	Buildable:
 		BuildPaletteOrder: 90
-		Prerequisites: 2100CRC, ~techlevel.high, ~up2100uppython1
+		Prerequisites: 2100CRC, ~techlevel.high, ~up2100uppython1, ~up2100uptracks1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
 2100CPT:
@@ -2338,7 +2620,7 @@ psc2100factory2:
 		Name: Command Turret Python Tracks
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: 2100CRC, ~techlevel.high
+		Prerequisites: 2100CRC, ~techlevel.high, ~up2100uppython1, ~up2100uptracks1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Buffs nearby allies and debuffs targeted enemies.\n Unarmed
 	Mobile:
@@ -2398,6 +2680,52 @@ psc2100factory2:
 	-MapEditorData:
 
 ####################################################################################################
+#		2100 Cyborgs
+####################################################################################################
+2100CYMG:
+	Inherits@Body: ^2100CyborgLegs
+	Inherits@@Turret: ^2100LightMG
+	Valued:
+		Cost: 180
+	Tooltip:
+		Name: Machinegun Cyborg
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Infantry.Alpha, RAInfantry.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
+		Prerequisites: ~up2100uplmg1, ~up2100upviper1
+	Selectable:
+		Class: 2100cymg
+2100CYCAN:
+	Inherits@Body: ^2100CyborgLegs
+	Inherits@@Turret: ^2100LightCannon
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Heavy Gunner Cyborg
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Infantry.Alpha, RAInfantry.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Vehicles
+		Prerequisites: ~up2100uplcannon1, ~up2100upviper1
+	Selectable:
+		Class: 2100cycan
+2100CYLAN:
+	Inherits@Body: ^2100CyborgLegs
+	Inherits@@Turret: ^2100Lancer
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Lancer Cyborg
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Infantry.Alpha, RAInfantry.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
+		Prerequisites: ~up2100uplcannon1, ~up2100upviper1
+	Selectable:
+		Class: 2100cylan
+
+####################################################################################################
 #		2100 Vehicles Obsolete
 #   Is Obsolete, only Editor Purposes
 ####################################################################################################
@@ -2437,6 +2765,7 @@ psc2100factory2:
 ####################################################################################################
 #		2100 Vehicles Collective
 ####################################################################################################
+#		Bug
 2100MBUW:
 	Inherits@Body: ^2100BugWheels
 	Inherits@@Turret: ^2100LightMG
@@ -2485,6 +2814,7 @@ psc2100factory2:
 		Class: 2100fvw
 	RenderSprites:
 		Scale: 0.60
+#		Scorpion
 2100TSCH:
 	Inherits@Body: ^2100CobraHTracks
 	Inherits@Turret: ^2100Lancer
@@ -2522,7 +2852,32 @@ psc2100factory2:
 		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upscorpion1, ~up2100uplrk1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Vehicles, Buildings
+2100LCSCH:
+	Inherits@Body: ^2100CobraHTracks
+	Inherits@Turret: ^2100LightCannon
+	Valued:
+		Cost: 950
+	Tooltip:
+		Name: Light Cannon Scorpion Half-tracks
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upscorpion1, ~up2100uplcannon1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Vehicles, Buildings
+2100MOSCH:
+	Inherits@Body: ^2100CobraHTracks
+	Inherits@Turret: ^2100Mortar
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Mortar Scorpion Half-tracks
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upscorpion1, ~up2100upmortar1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Vehicles, Buildings
 
+#		Mantis
 2100AMAT:
 	Inherits: ^2100MantisTracks
 	Inherits@Turret: ^2100AssaultMG
@@ -2532,7 +2887,7 @@ psc2100factory2:
 		Name: Assault Gun Mantis Tracks
 	Buildable:
 		BuildPaletteOrder: 80
-		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upmantis1
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upmantis1, ~up2100uptracks1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Infantry
 2100HMAT:
@@ -2544,9 +2899,240 @@ psc2100factory2:
 		Name: Heavy Cannon Mantis Tracks
 	Buildable:
 		BuildPaletteOrder: 90
-		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upmantis1
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upmantis1, ~up2100uptracks1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
+####################################################################################################
+#		2100 Vehicles Paradigm
+####################################################################################################
+#		Leopard
+2100MLEW:
+	Inherits@Body: ^2100LeopardWheels
+	Inherits@@Turret: ^2100LightMG
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Machinegun Leopard Wheels
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Vehicle.Alpha, RAVehicle.Alpha
+		Description: Strong vs Infantry
+		Prerequisites: ~up2100uplmg1, ~up2100upleopard1
+	Selectable:
+		Class: 2100mvw
+	RenderSprites:
+		Scale: 0.60
+2100RLEW:
+	Inherits@Body: ^2100LeopardWheels
+	Inherits@@Turret: ^2100RocketPod
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Mini-Rocket Pod Leopard Wheels
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Vehicle.Alpha, RAVehicle.Alpha
+		Description: Strong vs Vehicles, Aircraft
+		Prerequisites: ~up2100uplrk1, ~up2100upleopard1
+	Selectable:
+		Class: 2100rvw
+	RenderSprites:
+		Scale: 0.60
+2100FLEW:
+	Inherits@Body: ^2100LeopardWheels
+	Inherits@@Turret: ^2100LightFlamer
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Flamer Leopard Wheels
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Vehicle.Alpha, RAVehicle.Alpha
+		Description: Strong vs Vehicles, Aircraft
+		Prerequisites: ~up2100upflamer1, ~up2100upleopard1
+	Selectable:
+		Class: 2100fvw
+	RenderSprites:
+		Scale: 0.60
+#		Panther
+2100TPHH:
+	Inherits@Body: ^2100CobraHTracks
+	Inherits@Turret: ^2100Lancer
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Lancer Panther Half-tracks
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100uppanther1, up2100uplancer1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Vehicles, Buildings
+2100MPHH:
+	Inherits: ^2100CobraHTracks
+	Inherits@Turret: ^2100MediumCannon
+	Valued:
+		Cost: 1450
+	Tooltip:
+		Name: Medium Cannon Panther Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upmcannon1, ~up2100uppanther1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100MOPHH:
+	Inherits: ^2100CobraHTracks
+	Inherits@Turret: ^2100Mortar
+	Valued:
+		Cost: 1350
+	Tooltip:
+		Name: Mortar Panther Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upmortar1, ~up2100uppanther1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+
+#		Tiger
+2100ATIT:
+	Inherits: ^2100TigerTracks
+	Inherits@Turret: ^2100AssaultMG
+	Valued:
+		Cost: 1450
+	Tooltip:
+		Name: Assault Gun Tiger Tracks
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: 2100CRC, ~techlevel.high, ~up2100uptiger1, ~up2100uptracks1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
+2100HTIT:
+	Inherits: ^2100TigerTracks
+	Inherits@Turret: ^2100HeavyCannon
+	Valued:
+		Cost: 2100
+	Tooltip:
+		Name: Heavy Cannon Tiger Tracks
+	Buildable:
+		BuildPaletteOrder: 90
+		Prerequisites: 2100CRC, ~techlevel.high, ~up2100uptiger1, ~up2100uptracks1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+####################################################################################################
+#		2100 Vehicles Nexus
+####################################################################################################
+#		Retaliaton
+2100MREW:
+	Inherits@Body: ^2100RetealiatonWheels
+	Inherits@@Turret: ^2100LightMG
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Machinegun Retaliation Wheels
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Vehicle.Alpha, RAVehicle.Alpha
+		Description: Strong vs Infantry
+		Prerequisites: ~up2100uplmg1, ~up2100upretaliaton1
+	Selectable:
+		Class: 2100mvw
+	RenderSprites:
+		Scale: 0.60
+2100RREW:
+	Inherits@Body: ^2100RetealiatonWheels
+	Inherits@@Turret: ^2100RocketPod
+	Valued:
+		Cost: 950
+	Tooltip:
+		Name: Mini-Rocket Pod Retaliation Wheels
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Vehicle.Alpha, RAVehicle.Alpha
+		Description: Strong vs Vehicles, Aircraft
+		Prerequisites: ~up2100uplrk1, ~up2100upretaliaton1
+	Selectable:
+		Class: 2100rvw
+	RenderSprites:
+		Scale: 0.60
+2100FREW:
+	Inherits@Body: ^2100RetealiatonWheels
+	Inherits@@Turret: ^2100LightFlamer
+	Valued:
+		Cost: 950
+	Tooltip:
+		Name: Flamer Retaliation Wheels
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Vehicle.Alpha, RAVehicle.Alpha
+		Description: Strong vs Vehicles, Aircraft
+		Prerequisites: ~up2100upflamer1, ~up2100upretaliaton1
+	Selectable:
+		Class: 2100fvw
+	RenderSprites:
+		Scale: 0.60
+#		Retribution
+2100TRTH:
+	Inherits@Body: ^2100RetributionHTracks
+	Inherits@Turret: ^2100Lancer
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Lancer Retribution Half-tracks
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upretribution1, up2100uplancer1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Vehicles, Buildings
+2100MRTH:
+	Inherits: ^2100RetributionHTracks
+	Inherits@Turret: ^2100MediumCannon
+	Valued:
+		Cost: 1650
+	Tooltip:
+		Name: Medium Cannon Retribution Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upmcannon1, ~up2100upretribution1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100MORTH:
+	Inherits: ^2100RetributionHTracks
+	Inherits@Turret: ^2100Mortar
+	Valued:
+		Cost: 1550
+	Tooltip:
+		Name: Mortar Retribution Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upmortar1, ~up2100upretribution1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+
+#		Vengeance
+2100AVET:
+	Inherits: ^2100VengeanceTracks
+	Inherits@Turret: ^2100AssaultMG
+	Valued:
+		Cost: 1750
+	Tooltip:
+		Name: Assault Gun Vengeance Tracks
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: 2100CRC, ~techlevel.high, ~up2100upvengeance1, ~up2100uptracks1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
+2100HVET:
+	Inherits: ^2100VengeanceTracks
+	Inherits@Turret: ^2100HeavyCannon
+	Valued:
+		Cost: 2400
+	Tooltip:
+		Name: Heavy Cannon Vengeance Tracks
+	Buildable:
+		BuildPaletteOrder: 90
+		Prerequisites: 2100CRC, ~techlevel.high, ~up2100upvengeance1, ~up2100uptracks1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+
 ####################################################################################################
 #		SCAVENGER Vehicles
 ####################################################################################################
@@ -3950,6 +4536,21 @@ up2100upengine3:
 		Image: 2100upengine
 	ProvidesPrerequisite:
 		Prerequisite: up2100upengine3
+up2100upengine4:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Turbo Charger Engine
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Vehicles gains %5 more speed
+		Prerequisites: ~!up2100upengine4, ~up2100upengine3
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: 2100upengine
+	ProvidesPrerequisite:
+		Prerequisite: up2100upengine4
 
 up2100uplrk1:
 	Inherits: ^upgrade.template
@@ -4012,6 +4613,21 @@ up2100uplrk4:
 		Image: 2100uplrk
 	ProvidesPrerequisite:
 		Prerequisite: up2100uplrk4
+up2100uplrk5:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Stabilized Rockets
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Upgrades the Target of Rockets
+		Prerequisites: ~!up2100uplrk5, ~up2100uplrk3
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: 2100uplrk
+	ProvidesPrerequisite:
+		Prerequisite: up2100uplrk5
 up2100uplancer1:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -4051,7 +4667,7 @@ up2100uparmor2:
 		BuildPaletteOrder: 200
 		Queue: Research.Alpha, Research.Scavenger
 		Description: Vehicles gains %10 more HP
-		Prerequisites: ~!up2100uparmor2, ~up2100uparmor1
+		Prerequisites: ~!up2100uparmor2, ~up2100uparmor1, ~up2100upfactorymodule1
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -4073,6 +4689,66 @@ up2100uparmor3:
 		Image: 2100uparmor
 	ProvidesPrerequisite:
 		Prerequisite: up2100uparmor3
+up2100uparmor4:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name:  Dense Composite Alloys
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Vehicles gains %10 more HP
+		Prerequisites: ~!up2100uparmor4, ~up2100uparmor3, ~up2100upsypnaticdata1
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: 2100uparmor
+	ProvidesPrerequisite:
+		Prerequisite: up2100uparmor4
+up2100uparmor5:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name:  Super Dense Composite Alloys
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Vehicles gains %10 more HP
+		Prerequisites: ~!up2100uparmor5, ~up2100uparmor4, ~up2100upsypnaticdata4
+	Valued:
+		Cost: 3500
+	RenderSprites:
+		Image: 2100uparmor
+	ProvidesPrerequisite:
+		Prerequisite: up2100uparmor5
+up2100uparmor6:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name:  Super Dense Composite Alloys MK2
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Vehicles gains %10 more HP
+		Prerequisites: ~!up2100uparmor6, ~up2100uparmor5
+	Valued:
+		Cost: 4000
+	RenderSprites:
+		Image: 2100uparmor
+	ProvidesPrerequisite:
+		Prerequisite: up2100uparmor6
+up2100uparmor7:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name:  Super Dense Composite Alloys MK3
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Vehicles gains %10 more HP
+		Prerequisites: ~!up2100uparmor6, ~up2100uparmor6
+	Valued:
+		Cost: 4000
+	RenderSprites:
+		Image: 2100uparmor
+	ProvidesPrerequisite:
+		Prerequisite: up2100uparmor7
 up2100uplcannon1:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -4148,6 +4824,36 @@ up2100upmcannon1:
 		Image: 2100upmcannon
 	ProvidesPrerequisite:
 		Prerequisite: up2100upmcannon1
+up2100upmortar1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Mortar Research
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Unlock Light Cannon Weapon
+		Prerequisites: ~!up2100upmortar1, ~up2100uplcannon2, ~up2100upfactorymodule1
+	Valued:
+		Cost: 750
+	RenderSprites:
+		Image: 2100upmortar
+	ProvidesPrerequisite:
+		Prerequisite: up2100upmortar1
+up2100uptracks1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Cobra Medium Body Research
+	Buildable:
+		BuildPaletteOrder: 100
+		Queue: Research.Alpha
+		Description: Unlock Cobra Vehicles
+		Prerequisites: ~!up2100uptracks1, ~up2100upfactorymodule1, ~up2100uparmor2
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: 2100uptracks
+	ProvidesPrerequisite:
+		Prerequisite: up2100uptracks1
 up2100upviper1:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -4156,7 +4862,7 @@ up2100upviper1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Viper Vehicles
-		Prerequisites: ~!up2100upviper1, ~conyard.alpha
+		Prerequisites: ~!up2100upviper1, ~bodies.alpha
 	Valued:
 		Cost: 100
 	RenderSprites:
@@ -4171,7 +4877,7 @@ up2100upbug1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Bug Vehicles
-		Prerequisites: ~!up2100upbug1
+		Prerequisites: ~!up2100upbug1, ~bodies.collective, ~up2100uparmor1
 	Valued:
 		Cost: 150
 	RenderSprites:
@@ -4186,7 +4892,7 @@ up2100upcobra1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Cobra Vehicles
-		Prerequisites: ~!up2100upcobra1, ~up2100upviper1, ~conyard.alpha
+		Prerequisites: ~!up2100upcobra1, ~up2100upviper1, ~bodies.alpha, ~up2100upfactorymodule1
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -4201,7 +4907,7 @@ up2100uppython1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Python Vehicles
-		Prerequisites: ~!up2100uppython1, ~up2100upcobra1, ~conyard.alpha
+		Prerequisites: ~!up2100uppython1, ~up2100upcobra1, ~bodies.alpha
 	Valued:
 		Cost: 750
 	RenderSprites:
@@ -4216,7 +4922,7 @@ up2100upscorpion1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Scorpion Vehicles
-		Prerequisites: ~!up2100upscorpion1, up2100upbug1
+		Prerequisites: ~!up2100upscorpion1, ~up2100upbug1, ~bodies.collective, ~up2100uparmor2
 	Valued:
 		Cost: 800
 	RenderSprites:
@@ -4231,7 +4937,7 @@ up2100upmantis1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Mantis Vehicles
-		Prerequisites: ~!up2100upmantis1, up2100upscorpion1
+		Prerequisites: ~!up2100upmantis1, ~up2100upscorpion1, ~bodies.collective, ~up2100upengine4, ~up2100upresearchmodule1
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -4246,7 +4952,7 @@ up2100upleopard1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Leopard Vehicles
-		Prerequisites: ~!up2100upleopard1
+		Prerequisites: ~!up2100upleopard1, ~bodies.paradigm, ~up2100uparmor4
 	Valued:
 		Cost: 1000
 	RenderSprites:
@@ -4261,7 +4967,7 @@ up2100uppanther1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Panther Vehicles
-		Prerequisites: ~!up2100uppanther1, up2100upleopard1
+		Prerequisites: ~!up2100uppanther1, ~up2100upleopard1, ~bodies.paradigm
 	Valued:
 		Cost: 1500
 	RenderSprites:
@@ -4276,7 +4982,7 @@ up2100uptiger1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Tiger Vehicles
-		Prerequisites: ~!up2100uptiger1, up2100uppanther1
+		Prerequisites: ~!up2100uptiger1, ~up2100uppanther1, ~bodies.paradigm
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -4292,7 +4998,7 @@ up2100upretaliaton1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Retaliation Vehicles
-		Prerequisites: ~!up2100upretaliaton1
+		Prerequisites: ~!up2100upretaliaton1, ~bodies.nexus, ~up2100uparmor5
 	Valued:
 		Cost: 1500
 	RenderSprites:
@@ -4307,7 +5013,7 @@ up2100upretribution1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Panther Vehicles
-		Prerequisites: ~!up2100upretribution1, up2100upretaliaton1
+		Prerequisites: ~!up2100upretribution1, ~up2100upretaliaton1, ~bodies.nexus, ~up2100uparmor6
 	Valued:
 		Cost: 2000
 	RenderSprites:
@@ -4322,7 +5028,7 @@ up2100upvengeance1:
 		BuildPaletteOrder: 100
 		Queue: Research.Alpha
 		Description: Unlock Tiger Vehicles
-		Prerequisites: ~!up2100upvengeance1, up2100upretribution1
+		Prerequisites: ~!up2100upvengeance1, ~up2100upretribution1, ~bodies.nexus, ~up2100uparmor7
 	Valued:
 		Cost: 3000
 	RenderSprites:
@@ -4337,7 +5043,7 @@ up2100uppowermodule1:
 		BuildPaletteOrder: 200
 		Queue: Research.Alpha
 		Description: Unlock Tiger Vehicles
-		Prerequisites: ~!up2100uppowermodule1, up2100upengine1
+		Prerequisites: ~!up2100uppowermodule1, ~up2100upengine1
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -4352,14 +5058,90 @@ up2100upfactorymodule1:
 		BuildPaletteOrder: 200
 		Queue: Research.Alpha
 		Description: Unlock Tiger Vehicles
-		Prerequisites: ~!up2100upfactorymodule1, up2100uppowermodule1
+		Prerequisites: ~!up2100upfactorymodule1, ~up2100uppowermodule1
 	Valued:
 		Cost: 750
 	RenderSprites:
-		Image: 2100uppowermodule
+		Image: 2100upfactorymodule
 	ProvidesPrerequisite:
 		Prerequisite: up2100upfactorymodule1
+up2100upresearchmodule1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Research Center Module Research
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha
+		Description: Unlock Tiger Vehicles
+		Prerequisites: ~!up2100upresearchmodule1, ~up2100uppowermodule1
+	Valued:
+		Cost: 750
+	RenderSprites:
+		Image: 2100upresearchmodule
+	ProvidesPrerequisite:
+		Prerequisite: up2100upresearchmodule1
+up2100upsypnaticdata1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Synaptic Link Data Analysis
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha
+		Description: Unlock Tiger Vehicles
+		Prerequisites: ~!up2100upsypnaticdata1, ~up2100upresearchmodule1
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: 2100upsypnaticdata
+	ProvidesPrerequisite:
+		Prerequisite: up2100upsypnaticdata1
+up2100upsypnaticdata2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Synaptic Link Data Analysis Mk2
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha
+		Description: Unlock Tiger Vehicles
+		Prerequisites: ~!up2100upsypnaticdata2, ~up2100upsypnaticdata1
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: 2100upsypnaticdata
+	ProvidesPrerequisite:
+		Prerequisite: up2100upsypnaticdata2
 
+up2100upsypnaticdata3:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Synaptic Link Data Analysis Mk3
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha
+		Description: Unlock Tiger Vehicles
+		Prerequisites: ~!up2100upsypnaticdata3, ~up2100upsypnaticdata2
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: 2100upsypnaticdata
+	ProvidesPrerequisite:
+		Prerequisite: up2100upsypnaticdata3
+
+up2100upsypnaticdata4:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Neural Synapse Research Brain
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha
+		Description: Unlock Tiger Vehicles
+		Prerequisites: ~!up2100upsypnaticdata4, ~up2100upsypnaticdata3
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: 2100upsypnaticdata
+	ProvidesPrerequisite:
+		Prerequisite: up2100upsypnaticdata4
 ####################################################################################################
 #		2100 Scav Research
 ####################################################################################################
