@@ -291,6 +291,7 @@ wc_h_guard_tower:
         BuildDuration: 750
         BuildDurationModifier: 50
 		Description: Basic Anti-Ground and Anti-Air Defense building\nDetector
+        IconPalette: windows256
 	Building:
     	Footprint: xx xx
 		Dimensions: 2,2   
@@ -1631,6 +1632,7 @@ wc_h_waterelemental:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+    Inherits@elemental: ^WaterActor
 	Valued:
 		Cost: 0
 	Tooltip:
@@ -1670,15 +1672,29 @@ wc_n_waterelemental:
     Inherits: wc_h_waterelemental
     Buildable:
         Queue: WC.Neutral
-        Description: Will make you wet your pants\nLiterally
+        Description: Will make you wet your pants\nLiterally\nCannot be hurt by fire
         Prerequisites: 
     Valued:
-        Cost: 400
+        Cost: 800
     Health:
-        HP: 80000
+        HP: 60000
     RenderSprites:
         Image: wc_h_waterelemental
-    -ChangesHealth   
+    -ChangesHealth 
+
+wc_n_fireelemental:
+    Inherits: wc_n_waterelemental   
+    Inherits@elemental: ^FireActor  
+	Armament:
+		Weapon: fireballFireElemental       
+    Tooltip:
+        Name: Fire Elemental
+    Buildable:
+        Description: Don't play with fire.\nExtremely vulnerable against Water\nCannot be hurt by fire
+    Health:
+        HP: 60000
+    RenderSprites:
+        Image: wc_n_fireelemental   
 ####################################################################################################
 #       NEUTRAL
 ####################################################################################################    
@@ -1691,6 +1707,8 @@ wc_n_portal:
     Inherits: ^BaseBuilding
     Inherits@shape: ^3x3Shape   
     Inherits@CPQWP: ^CPQConditionWithPrimary 
+    Health:
+        HP: 150000
     Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
@@ -1947,6 +1965,7 @@ wc_o_skeleton:
     
 wc_o_demon:
 	Inherits@WD: wc_h_waterelemental
+    Inherits@elemental: ^FireActor  
     Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Tooltip:
 		Name: Demon
@@ -1960,7 +1979,7 @@ wc_n_demon:
     Inherits: wc_o_demon
     Buildable:
         Queue: WC.Neutral
-        Description: This beast comes from hell itself
+        Description: This beast comes from hell itself and therefore cannot be hurt by fire
         -Prerequisites:
     Valued:
         Cost: 1000
@@ -1972,7 +1991,8 @@ wc_n_demon:
         HP: 175000
     RenderSprites:
         Image: wc_o_demon
-        
+    -ChangesHealth
+    
 wc_o_skeleton_army:
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
@@ -2048,11 +2068,10 @@ wc_n_brigand:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~wip-content
 		Queue: WC.Neutral
-		Description: Basic Melee Infantry.
+		Description: Deceitful bandit\nFaster than Footman
         BuildDuration: 80
-        BuildDurationModifier: 100
+        BuildDurationModifier: 100  
 	Mobile:
 		Speed: 64
 	Health:
@@ -2074,14 +2093,53 @@ wc_n_brigand:
     Voiced:
 		VoiceSet: voicehuman           
     -Crushable:   
-
+   
+wc_n_ogre:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Ogre
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: WC.Neutral
+		Description: Large and stupid\nPowerful melee attack
+        BuildDuration: 120
+        BuildDurationModifier: 100
+	Mobile:
+		Speed: 48
+	Health:
+		HP: 45000     
+   	Armor:
+		Type: None     
+	#Food
+	Power:
+		Amount: 0
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: ogreBash
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+    Voiced:
+		VoiceSet: voiceorc          
+    -Crushable:   
+    
 wc_n_slime:
     Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 600
+		Cost: 800
 	Tooltip:
 		Name: Great Slime
 	UpdatesPlayerStatistics:
@@ -2119,9 +2177,9 @@ wc_n_slime:
     -Crushable:   
 	Selectable:
 		Bounds: 36,36
-    SpawnActorOnDeath:
-		Actor: wc_n_slime_b
     SpawnActorOnDeath@1:
+		Actor: wc_n_slime_b
+    SpawnActorOnDeath@2:
 		Actor: wc_n_slime_b
         
 wc_n_slime_b:
@@ -2140,9 +2198,9 @@ wc_n_slime_b:
     RenderSprites:
         Image: wc_n_slime
         Scale: 0.66
-    SpawnActorOnDeath:
-		Actor: wc_n_slime_c
     SpawnActorOnDeath@1:
+		Actor: wc_n_slime_c
+    SpawnActorOnDeath@2:
 		Actor: wc_n_slime_c    
 
 wc_n_slime_c:
@@ -2159,8 +2217,8 @@ wc_n_slime_c:
         Bound: 16,16
     RenderSprites:
         Scale: 0.45
-    -SpawnActorOnDeath:
-    -SpawnActorOnDeath@1:          
+    -SpawnActorOnDeath@1:
+    -SpawnActorOnDeath@2:          
 #######################################################
 #                     UPGRADES                        #
 #######################################################     

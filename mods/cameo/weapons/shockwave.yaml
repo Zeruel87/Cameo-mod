@@ -1,3 +1,7 @@
+####################################
+#       WEAPONS USA
+####################################
+
 SUSALOSATHumveeMissile:
 	Inherits: USAHumveeMissile
 	ReloadDelay: 70
@@ -58,15 +62,15 @@ SUSABurtonOICW:
 SUSAMortarHMMWV:
 	Inherits: MortarShell
 	ReloadDelay: 60
-	Range: 8c0
+	Range: 9c0
 	MinRange: 2c0
     
 SUSAMinigunHMMWV:
 	Inherits: SUSALittleBirdMG
-	ReloadDelay: 2
+	ReloadDelay: 3
     Burst: 1
-	Range: 6c512
-	MinRange: 1c512
+	Range: 5c756
+	MinRange: 0c512
 	Projectile: InstantHit
 		Blockable: false
         Inaccuracy: 1c256
@@ -79,3 +83,376 @@ SUSAMinigunHMMWV:
 			Heavy: 2
 			Wood: 55
 			Concrete: 4
+
+SUSATomahawk: 
+	Inherits: USATomahawk
+	MinRange: 4c512
+	Projectile: MissileCA
+		HorizontalRateOfTurn: 18
+		Speed: 180
+		RangeLimit: 45c0
+
+SUSAMLRSEMP:
+	Inherits: USAEMPPatriotMissAG
+	Burst: 7
+    Range: 10c0
+    ReloadDelay: 200
+    BurstDelays: 5
+    TargetActorCenter: true
+	Projectile: MissileCA
+		Image: bhreddragonemp
+        HorizontalRateOfTurn: 10
+		MinimumLaunchAngle: 62
+		MaximumLaunchAngle: 62
+        Inaccuracy: 1c512
+        LockOnProbability: 0
+        InaccuracyType: PerCellIncrement
+        Speed: 260
+    Warhead@1Dam: SpreadDamage
+		Damage: 2000     
+        Spread: 1c0
+	Warhead@2Con: GrantExternalCondition
+		Condition: empdisable
+		ValidTargets: Vehicle
+		Duration: 75
+		Range: 1c256
+  	Warhead@3Con: GrantExternalCondition
+		Condition: disabled
+		ValidTargets: Structure, Building
+		Duration: 75
+		Range: 1c256
+  	Warhead@4Con: GrantExternalCondition
+		Condition: lowpower
+		ValidTargets: Structure, Building
+		Duration: 75
+		Range: 1c256
+        
+SUSAMLRSHE:
+	Inherits: USAPatriotMissAG
+	ReloadDelay: 75
+	Burst: 2
+	BurstDelays: 15
+	Range: 10c0
+	Projectile: MissileCA
+		Arm: 3
+		Inaccuracy: 0c768
+		Image: MISSILE
+        LockOnProbability: 0
+		HorizontalRateOfTurn: 8
+		RangeLimit: 10c0
+		Speed: 180
+		MinimumLaunchAngle: 62
+		MaximumLaunchAngle: 62
+	Warhead@1Dam: SpreadDamage
+		Damage: 12000
+        Spread: 1c512
+    Warhead@3Eff: CreateEffect
+		Explosions: napalm
+		ImpactSounds: firebl3.aud
+        
+SUSAShatterer:
+	ReloadDelay: 100
+	Range: 9c0
+	Projectile: LinearPulse
+		Speed: 220
+		Spacing: 120
+		Inaccuracy: 1c256
+	Warhead@1Dam: SpreadDamage
+		Spread: 1c512
+		Damage: 1000
+		Versus:
+			None: 120
+			Wood: 80
+			Light: 100
+            Medium: 80
+			Heavy: 60
+            Concrete: 60
+		DamageTypes: DefaultDeath
+	Warhead@3Eff: CreateEffect
+		Explosions: poof
+          
+SUSAPlasmaTomahawk:
+    Inherits: SUSATomahawk
+    ReloadDelay: 400
+    Projectile: MissileCA   
+	Warhead@Cluster: FireCluster
+		Weapon: SUSAPlasmaTomahawkCluster
+		RandomClusterCount: 6
+		Dimensions: 3,3
+		Footprint: xxx xXx xxx
+	Warhead@3Eff: CreateEffect
+		Explosions: susattnk_boom
+		ImpactSounds: vmigweaa.wav, vmigweab.wav
+		ImpactActors: false
+        ExplosionPalette: effect
+	Warhead@Shake: ShakeScreen
+		Duration: 10
+		Intensity: 3
+		Multiplier: 1,1
+
+SUSAPlasmaTomahawkCluster:
+	Inherits: Debris2
+	Range: 7c0
+	Projectile: Bullet
+		Image: susattnk_boom_particle
+		TrailImage: green_smokey
+        TrailPalette: effect
+		Speed: 108
+		LaunchAngle: 0, 32
+		Inaccuracy: 1c512
+		BounceCount: 1
+	Warhead@1Dam: SpreadDamage
+		Damage: 5000
+		Versus:
+            None: 90
+			Wood: 120
+			Light: 120
+            Medium: 120
+			Heavy: 120
+            Concrete: 90
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		DamageCalculationType: ClosestTargetablePosition
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 4500
+        
+SUSAMedicDroneHeal:
+    Inherits: USAAmbulanceHeal
+    -Report
+	ReloadDelay: 2
+	Range: 4c0
+	Projectile: LaserZap
+		Width: 50
+		ZOffset: 2047
+		Color: 5CF736
+	Warhead@1Bio: SpreadDamage
+		Damage: -60
+     
+SUSAEnforcerDroneBeam:
+	ReloadDelay: 18
+	Range: 5c0
+    Report: susaenforcerbeam.wav
+	Projectile: LaserZap
+		Width: 120
+		ZOffset: 2047
+		Color: 20D03E
+        SecondaryBeam: True
+        Duration: 50
+	Warhead@1Dam: SpreadDamage
+		Damage: 4000
+        DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+        Versus:
+            None: 150
+			Wood: 100
+			Light: 120
+            Medium: 60
+			Heavy: 25
+            Concrete: 60
+    Warhead@3Eff: CreateEffect
+		Explosions: usaenforcerdrone_splash
+        ExplosionPalette: alpha75
+        ImpactSounds: susaenforcerbeamimpact.wav
+      
+SUSAEnforcerDroneBall:
+	ReloadDelay: 50
+	Range: 7c0
+    Report: susaenforcerball.wav
+	Projectile: Bullet
+		Image: susaenforcerball
+		TrailImage: susaenforcertrail
+        TrailPalette: effect
+		Speed: 300
+		LaunchAngle: 0, 32
+		Inaccuracy: 0c56
+	Warhead@1Dam: SpreadDamage
+		Damage: 18000
+        DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+        Versus:
+            None: 30
+			Wood: 60
+			Light: 120
+            Medium: 100
+			Heavy: 80
+            Concrete: 90
+    Warhead@3Eff: CreateEffect
+		Explosions: usaenforcerdrone_splash
+        ExplosionPalette: alpha75
+        ImpactSounds: susaenforcerballimpact.wav
+        
+SUSAExosuitMG:       
+	Inherits: USAHumveeMG
+	ReloadDelay: 8
+    Burst: 4
+    BurstDelays: 0
+	Range: 4c512
+	Warhead@1Dam: SpreadDamage
+		Damage: 400
+        
+SUSAExosuitMinigun:
+    Inherits: SUSALittleBirdMG  
+  	Warhead@1Dam: SpreadDamage
+		Damage: 600  
+        
+SUSAExosuitMissiles:
+    Inherits: USAPatriotMissAG
+    ReloadDelay: 120
+    BurstDelays: 6
+    ValidTargets: Ground, Air
+ 	Warhead@1Dam: SpreadDamage
+		Damage: 3250
+        ValidTargets: Ground, Air
+        
+USALaserPaladinCannon:
+	Inherits: USALaserCrusaderCannon
+	ReloadDelay: 4
+    Range: 5c0
+	-Report: 
+	-Projectile:
+	Projectile: LaserZap
+		Width: 80
+		ZOffset: 2047
+		Color: FF0000
+	Warhead@1Dam: SpreadDamage
+		Damage: 1500
+    Warhead@3Eff: CreateEffect
+		Explosions: susalasersplash
+        ExplosionPalette: effect
+        ImpactSounds: susaenforcerbeamimpact.wav   
+
+SUSARailGunArtillery:     
+	ReloadDelay: 150
+	Range: 15c0
+    MinRange: 2c0
+    TargetActorCenter: true
+	Report: usarailgunartillery.wav
+	Projectile: Railgun
+		Duration: 25
+		Blockable: false
+		DamageActorsInLine: false
+		BeamColor: FFFFFF
+        BeamWidth: 0c128
+        HelixThickness: 0c196
+        HelixRadiusDeltaPerTick: 16
+        HelixAngleDeltaPerTick: 32
+        QuantizationCount: 32
+        HelixRadius: 0c256
+        HelixPitch: 1c128
+        HelixColor: 5A63E6
+	Warhead@1Dam: SpreadDamage
+        Spread: 0c768
+		Damage: 85000
+		AffectsParent: false
+		Versus:
+			None: 60
+			Wood: 30
+			Light: 100
+            Medium: 100
+			Heavy: 100
+			Concrete: 25
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath
+  	Warhead@3Eff: CreateEffect
+		Explosions: usarailgunartillery_splash
+		ImpactSounds: usarailgunartilleryboom.wav
+        ExplosionPalette: alpha75      
+####################################
+#        WEAPONS GLA
+####################################        
+GLBadgerMissile:
+	Inherits: BikeRockets
+    Burst: 2
+	ReloadDelay: 50
+	Report: irpgweaa.wav, irpgweab.wav, irpgweac.wav, irpgwead.wav, irpgweae.wav
+    ValidTargets: Ground, Air                 
+	Warhead@1Dam: SpreadDamage
+        ValidTargets: Ground, Air
+		Damage: 3000
+		Versus:
+			None: 80
+			Wood: 50
+			Light: 80
+            Medium: 65
+			Heavy: 55
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath, MakeScrapbox
+
+GLBadgerBarrage:
+	Inherits: BikeRockets
+    Burst: 5
+    BurstDelays: 5
+	ReloadDelay: 50
+	Report: irpgweaa.wav, irpgweab.wav, irpgweac.wav, irpgwead.wav, irpgweae.wav
+    ValidTargets: Ground, Air
+	Warhead@1Dam: SpreadDamage
+        ValidTargets: Ground, Air
+		Damage: 3500
+		Versus:
+			None: 80
+			Wood: 50
+			Light: 80
+            Medium: 65
+			Heavy: 55
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath, MakeScrapbox
+        
+GLRocketBuggyShockwavex3:
+	Inherits: GLRocketBuggyMissiles
+	Burst: 3
+
+GLRocketBuggyShockwaveExplosivex3:
+	Inherits: GLRocketBuggyShockwavex3
+	Projectile: MissileCA
+		ContrailColor: FF573345
+		Image: d2k_missile2
+        Palette: d2keffect
+	Warhead@1Dam: SpreadDamage
+		Spread: 512
+		Damage: 4000
+		Versus:
+			None: 30
+			Wood: 74
+			Light: 50
+            Medium: 75
+			Heavy: 100
+			Concrete: 50
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_small_explosion
+		ImpactSounds: EXPLSML1.WAV
+        ExplosionPalette: effect75alpha
+
+GLRocketBuggyShockwavex6:
+	Inherits: GLRocketBuggyMissiles
+	Burst: 6
+
+GLRocketBuggyShockwaveExplosivex6:
+	Inherits: GLRocketBuggyShockwaveExplosivex3
+	Burst: 6
+
+GLCamelWeapons:
+	Inherits: ArtilleryShell
+	ReloadDelay: 40
+	Range: 5c0
+	MinRange: 1c0
+	Report: tnkfire2.aud
+	TargetActorCenter: true
+	Projectile: Bullet
+		Speed: 204
+		Blockable: false
+		LaunchAngle: 56
+		Inaccuracy: 22
+		ContrailLength: 18
+		ContrailColor: 74706F45
+	Warhead@1Dam: SpreadDamage
+		Spread: 341
+		Damage: 4000
+		Versus:
+			None: 150
+			Wood: 120
+			Light: 112
+            Medium: 84      
+			Heavy: 75
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@3Eff: CreateEffect
+		Explosions: poof
+		ImpactSounds: xplosml2.aud
+	Warhead@4EffWater: CreateEffect
+		Explosions: med_splash

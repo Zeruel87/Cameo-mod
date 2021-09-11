@@ -71,10 +71,11 @@ shockwave_conyard:
 	Inherits@repairpower: ^EmergencyRepairPower
 	Inherits@gensound: ^GeneralsDamageBuilding
     Inherits@usasupportpowers: ^GeneralsUSASupportPowers
+    Inherits@promotions: ^Promotions
 	Valued:
 		Cost: 3000
 	Tooltip:
-		Name: Command Center
+		Name: Command Center  
     ProvidesPrerequisite@anysusa:
         Prerequisite: anysusa
         Factions: susa, susaarmor, susasuper, susalsr, susaair   
@@ -218,7 +219,86 @@ susaambulancerepair:
 	RenderSprites:
 		Image: susaambulancerepair_icon
 	ProvidesPrerequisite@upgradename:
-    
+
+susattnk:
+	Inherits: usattnk
+	UpdatesPlayerStatistics:
+    Valued: 
+        Cost: 1250
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, susastrategy, ~techlevel.medium, ~susa_regular
+        Description: USA siege weapon\nCan be upgraded with Waypoint Targetting to relay targets to other Tomahawks nearby.\n Strong vs Vehicles, Buildings\n Weak vs Aircraft
+	Health:
+		HP: 30000
+    Mobile:
+		Speed: 70
+	RevealsShroud:
+		Range: 7c0
+    RenderSprites:
+        Image: susattnk
+	Armament@Normal:
+		Weapon: SUSATomahawk
+    -ProductionCostMultiplier@selectusaairforce:
+    ProximityExternalCondition@patriotrange:
+        Condition: tomahawkrange
+        ValidStances: Ally
+        Range: 3c0
+    ExternalCondition@patriotrange:
+        Condition: tomahawkrange
+    RangeMultiplier@patriotrange1:
+        Modifier: 115
+        RequiresCondition: tomahawkrange == 1
+    RangeMultiplier@patriotrange2:
+        Modifier: 133
+        RequiresCondition: tomahawkrange == 2     
+    RangeMultiplier@patriotrange3:
+        Modifier: 150
+        RequiresCondition: tomahawkrange == 3    
+    RangeMultiplier@patriotrange4:
+        Modifier: 166
+        RequiresCondition: tomahawkrange == 4    
+    RangeMultiplier@patriotrange5:
+        Modifier: 200
+        RequiresCondition: tomahawkrange >= 5 
+
+susattnkp:
+    Inherits: susattnk
+ 	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, susastrategy, ~techlevel.medium, ~susa_super
+        Description: USA siege weapon with Plasma missile\nCan be upgraded with Waypoint Targetting to relay targets to other Tomahawks nearby.\n Strong vs Vehicles, Buildings\n Weak vs Aircraft
+        Icon: icon_plasma
+        IconPalette: windows256
+    Tooltip:
+        Name: Plasma Tomahawk
+  	Armament@Normal:
+		Weapon: SUSAPlasmaTomahawk   
+
+susapala:
+	Inherits: usapala
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, ~techlevel.medium, upusapala, ~anysusa, ~!susa_super, ~!susa_laser
+	Health:
+		HP: 55000
+	Repairable:
+		HpPerStep: 2632
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: 0,0,20
+	Armament@Normal:
+		LocalOffset: 768,0,90
+	Armament@Laser:
+		LocalOffset: -200,0,120
+	Selectable:
+		DecorationBounds: 32,32
+    RenderSprites:
+        Scale: 0.85
+        
 #########################################
 #           USA GENERIC
 #########################################    
@@ -395,7 +475,41 @@ susaburton:
         Prerequisites: susaburtonequipment
     AttackFrontal:
         Armaments: primary, secondary, c4, oicw
+
+upsusagunship:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Spectre Gunship 
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Promotions.USA
+		Description: Allows calling a Spectre Gunship.\nPummels enemy forces with multiple weapons.\nLevel 1: 4 strikes\nLevel 2: 6 strikes\nLevel 3: 8 strikes
+		Prerequisites: !upusagunship, rank3, rank1, ~anysusa, ~!susa_armor
+	RenderSprites:
+		Image: usagunship
+	ProvidesPrerequisite:
+		Prerequisite: upsusagunship
+    ProvidesPrerequisite@generals:
+        Prerequisite: upusagunship
         
+upsusagunship2:
+	Inherits: upsusagunship
+	Tooltip:
+		Name: Spectre Gunship 2 
+	Buildable:
+		Prerequisites: !upsusagunship2, upsusagunship, rank3, rank1, ~anysusa, ~!susa_armor
+	ProvidesPrerequisite:
+		Prerequisite: upsusagunship2
+    -ProvidesPrerequisite@generals:
+upsusagunship3:
+	Inherits: upsusagunship
+	Tooltip:
+		Name: Spectre Gunship 3 
+	Buildable:
+		Prerequisites: !upsusagunship3, upsusagunship2, rank5, rank1, ~anysusa, ~!susa_armor, ~!susa_laser
+	ProvidesPrerequisite:
+		Prerequisite: upsusagunship3
+    -ProvidesPrerequisite@generals:    
 #########################################
 #           USA REGULAR
 #########################################
@@ -628,12 +742,122 @@ susacomanche.husk:
 	WithIdleOverlay:
 		Offset: 80,0,165
 	RenderSprites:
-		Image: usarah64
-        
+		Image: usarah66
+      
+susadecoydrone:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@MC: ^MCImmune
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@snipe: ^DriverKillImmune
+    Inherits@switchableupgrades: ^usa_switchable_upgrades
+    Inherits@compositearmorusa: ^usa_composite_armor_upgrade
+    Inherits@SHADOWS: ^Shadows
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Decoy Drone
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, ~techlevel.medium, ~susa_regular
+		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
+        Description: Cloaked scout and detector robot.\nCan be upgraded with a machinegun\n Strong vs Infantry when upgraded
+        IconPalette: windows256
+  	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		UncloakOn: Attack, Move, Unload
+		PauseOnCondition: cloak-force-disabled || disabled
+		IsPlayerPalette: true
+	DetectCloaked:
+		Range: 9c0
+	RenderDetectionCircle:      
+	Mobile:
+		Speed: 100
+        Locomotor: hover
+	Health:
+		HP: 20000
+	Repairable:
+		HpPerStep: 1999
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: 50,0,-250
+	Armament@Normal:
+		Weapon: USASentryDroneMG
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: usaupdronegun
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+        Sequence: turret
+		RequiresCondition: usaupdronegun
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions
+	Voiced:
+		VoiceSet: USASentryDroneVoice
+    Disguise:
+        TargetTypes: VehicleDisguise
+	RenderSprites:
+		Scale: 0.85
+	AmmoPool:
+		Ammo: 16
+		PipCount: 0
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 25
+		Count: 1
+	ReloadDelayMultiplier@GattlingSpeed:
+		RequiresCondition: !ammo
+		Modifier: 50
+	GrantConditionOnPrerequisite@usaupdronegun:
+		Condition: usaupdronegun
+		Prerequisites: usaupdronegun
+	GrantConditionOnPrerequisite@usaupdronearmor:
+		Condition: usaupdronearmor
+		Prerequisites: usaupdronearmor
+	DamageMultiplier@usaupdronearmor:
+		RequiresCondition: usaupdronearmor
+		Modifier: 75
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+   	WithShadow:
+		Offset: 43, 128, 0
+		ZOffset: -129
         
 #########################################
 #           USA SUPERWEAPON
 #########################################       
+susaupcombatvest:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Combat Vest
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Infantry.USA
+		Description: All infantry units gain protective combat vest.
+		Prerequisites: ~!susaupcombatvest, ~susa_super
+        IconPalette: windows256
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: susaupcombatvest_icon
+	ProvidesPrerequisite:
+		Prerequisite: susaupcombatvest
+        
 susafortifiedfirebase:
 	Inherits: usafirebase
 	Tooltip:
@@ -681,7 +905,7 @@ susapopuppatriot:
 	Inherits: usapatriot
 	Inherits@EMP: ^PopupTurretEMP
 	Valued:
-		Cost: 1000
+		Cost: 1600
 	Tooltip:
 		Name: Pop-Up Patriot Missile System
 	Buildable:
@@ -722,7 +946,7 @@ susapopuppatriot:
 	Power:
 		Amount: -20
     ReloadDelayMultiplier:
-        Modifier: 90
+        Modifier: 75
 	RenderSprites:
 		Image: susapopuppatriot
     Cloak:
@@ -859,6 +1083,555 @@ susaminigunhmmwv:
         MuzzleSequence: muzzle
  	Tooltip:
 		Name: Minigun Humvee     
+
+susamedicdrone:
+	Inherits: usasentry
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Medic Drone
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, ~techlevel.medium, ~susa_super
+		Description: Drone that heals nearby infantry
+        IconPalette: windows256
+	RevealsShroud:
+		Range: 5c0
+	Armament@Normal:
+		Weapon: SUSAMedicDroneHeal
+		Recoil: 0
+		RecoilRecovery: 0
+		LocalOffset: 600,0,90
+        TargetStances: Ally
+		ForceTargetStances: None
+		-MuzzleSequence:
+		-RequiresCondition:
+	WithRangeCircle@heal:
+		Range: 5c0
+	AttackTurreted:
+	-WithMuzzleOverlay:
+    WithSpriteTurret:
+	-WithSpriteTurret@1:
+	-WithSpriteTurret@2:
+	-Cloak:
+	-DetectCloaked:
+	-RenderDetectionCircle:
+	RenderSprites:
+		Scale: 0.88
+	-AmmoPool:
+	-ReloadAmmoPool:
+	-ReloadDelayMultiplier@GattlingSpeed:
+	-GrantConditionOnPrerequisite@usaupdronegun:
+	-GrantConditionOnPrerequisite@usaupdronearmor:r
+	-ProductionCostMultiplier@selectusaairforce:
+ 
+susaenforcerdrone:
+	Inherits: usasentry
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Enforcer Drone
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, ~techlevel.high, susastrategy, ~susa_super, upsusaenforcer
+		Description: Experimental Hover Drone Tank armed with Plasma Cannon that can cause unstable effects\nif used in group. Vehicle can change fire modes between Plasma Pulse\nand Plasma Ball.\nImmune to toxic and radiation\nAmphibious
+        IconPalette: windows256
+    Mobile:
+		Speed: 90    
+        Locomotor: hover
+    Hovers:
+	RevealsShroud:
+		Range: 7c0
+    Armament@beam:
+		Weapon: SUSAEnforcerDroneBeam
+        Name: primary
+		Recoil: 0
+		RecoilRecovery: 26
+		LocalOffset: 768,0,200
+        RequiresCondition: !deployed
+  	Armament@ball:
+		Weapon: SUSAEnforcerDroneBall
+        Name: secondary
+		Recoil: 20
+		RecoilRecovery: 10
+		LocalOffset: 768,0,200
+        RequiresCondition: deployed        
+    GrantConditionOnAttack:
+		Condition: attacking
+        ArmamentNames: primary, secondary
+    GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployOnMove: false
+		UndeployOnPickup: false           
+    AIDeployNotifier:
+		DeployChance: 50
+	-Armament@Normal:
+    Turreted:
+        Offset: 0,0,96
+	AttackTurreted:
+	-WithMuzzleOverlay:
+    WithSpriteTurret:
+	-WithSpriteTurret@1:
+	-WithSpriteTurret@2:
+	-Cloak:
+	-DetectCloaked:
+	-RenderDetectionCircle:
+	RenderSprites:
+		Scale: 0.88
+    -DamagedByTintedCells@rad:
+	-DamagedByTintedCells@genrad:
+	-DamagedByTintedCells@tib:
+	-AmmoPool:
+	-ReloadAmmoPool:
+	-ReloadDelayMultiplier@GattlingSpeed:
+	-GrantConditionOnPrerequisite@usaupdronegun:
+	-GrantConditionOnPrerequisite@usaupdronearmor:r
+	-ProductionCostMultiplier@selectusaairforce:
+    WithDecoration@beam:
+        Sequence: beam_ammo
+        RequiresCondition: !deployed
+        RequiresSelection: true
+    WithDecoration@ball:
+        Sequence: ball_ammo
+        RequiresCondition: deployed
+        RequiresSelection: true
+        
+susalockdownmlrs:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@PLD: ^PointLaserDefenseSystem
+    Inherits@switchableupgrades: ^usa_switchable_upgrades
+    Inherits@compositearmorusa: ^usa_composite_armor_upgrade
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Lockdown MLRS
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, susastrategy, ~techlevel.high, ~susa_super
+		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
+		Description: Racket Artillery.\Can swap between EMP and HE rounds\n  Strong vs Ground Targets\nWeak vs Everything
+        IconPalette: windows256
+	Mobile:
+		Speed: 68
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 35000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: -50,0,200
+	Armament@EMP:
+		Weapon: SUSAMLRSEMP
+        Name: primary
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,320,500
+        RequiresCondition: !deployed
+  	Armament@HE:
+		Weapon: SUSAMLRSHE
+        Name: secondary
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,-320,500
+        RequiresCondition: deployed        
+    WithSpriteTurret@folded:
+        Sequence: folded
+        RequiresCondition: !attacking
+    WithSpriteTurret@unfolded:
+        Sequence: unfolded
+        RequiresCondition: attacking
+    GrantConditionOnAttack:
+		Condition: attacking
+        ArmamentNames: primary, secondary
+    GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployOnMove: false
+		UndeployOnPickup: false           
+    AIDeployNotifier:
+		DeployChance: 50
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
+	Voiced:
+		VoiceSet: USAPaladinTankVoice
+	Inherits@ProducesDrones: ^ProducesDrones
+    RenderSprites:
+        Scale: 0.8
+	DamageMultiplier@usauparmor:
+		Modifier: 80
+           PauseOnCondition: !ammo
+    AmmoPool:
+		Ammo: 7
+		AmmoCondition: ammo
+        Armaments: primary
+        PipCount: 7
+    ReloadAmmoPool: 
+    	Delay: 200
+		Count: 7
+		ResetOnFire: false 
+    WithDecoration@emp:
+        Sequence: emp_ammo
+        RequiresCondition: !deployed
+        RequiresSelection: true
+    WithDecoration@he:
+        Sequence: he_ammo
+        RequiresCondition: deployed
+        RequiresSelection: true
+        
+susashatterer:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+    Inherits@switchableupgrades: ^usa_switchable_upgrades
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Shatterer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, ~techlevel.high, ~susa_super, upsusashatterer
+		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
+		Description: Experimental Hovercraft armed with sonic wave cannon that can damage multiple targets in a line.\n  Strong vs Vehicles\n  Weak vs Infantry
+        IconPalette: windows256
+	Mobile:
+		Speed: 95
+        Locomotor: hover
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 40000
+    Hovers:
+	Repairable:
+		HpPerStep: 1999
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 7c0
+	Armament:
+		Weapon: SUSAShatterer
+		LocalOffset: 600,0,90
+	AttackFrontal:
+		Armaments: primary
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
+	Voiced:
+		VoiceSet: USAPaladinTankVoice
+	Inherits@ProducesDrones: ^ProducesDrones  
+
+upsusashatterer:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Shatterer
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.USA
+		Description: Allows production of the Shatterer
+		Prerequisites: !upsusashatterer, ~techlevel.high, ~susa_super, rank1
+        IconPalette: windows256
+	RenderSprites:
+		Image: susashatterer
+	ProvidesPrerequisite:
+		Prerequisite: upsusashatterer
+        
+upsusaenforcer:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Enforcer
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.USA
+		Description: Allows production of the Enforcer
+		Prerequisites: !upsusaenforcer, ~techlevel.high, ~susa_super, rank1
+        IconPalette: windows256
+	RenderSprites:
+		Image: susaenforcerdrone
+	ProvidesPrerequisite:
+		Prerequisite: upsusaenforcer
+        
+        
+susamicrohumvee:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
+	Inherits@emp: ^TurretEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackTurretedVoice
+    Inherits@switchableupgrades: ^usa_switchable_upgrades
+    Inherits@compositearmorusa: ^usa_composite_armor_upgrade
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Microwave Humvee
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, ~techlevel.high, susastrategy, ~susa_super
+		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
+		Description: Combat Support Vehicle that can disable buildings around him, clears garrisons, kills any enemy infantry nearby.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+        IconPalette: windows256
+	Mobile:
+		Speed: 115
+	Health:
+		HP: 21500
+	Repairable:
+		HpPerStep: 999
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: -50,0,150
+	Armament@Normal:
+		Weapon: USAMicrowaveFlame
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	Armament@ClearGarrison:
+		Weapon: USAMicrowaveClear
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	Armament@Disable:
+		Weapon: USAMicrowaveDisable
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+	WithRangeCircle@microwavefield:
+		Range: 2c0
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+    RenderSprites:
+        Image: susamicrohumvee
+        Scale: 0.7  
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
+	Voiced:
+		VoiceSet: USAMicrowaveTankVoice
+	Inherits@ProducesDrones: ^ProducesDrones
+	DamageMultiplier@usauparmor:
+		Modifier: 60
+ 	ProductionCostMultiplier@selectusaairforce:
+		Multiplier: 125
+		Prerequisites: selectusaairforce
+
+susaexosuit:
+	Inherits: ^Walker
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+    Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Exosuit
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: susaweap, ~techlevel.low, ~susa_regular
+		Queue: Vehicle.USA, RAVehicle.USA
+		Description: Highly mobile Walker unit with Weapon Systems changing depending on passenger\nUnarmed when empty
+        IconPalette: windows256
+	Mobile:
+		Speed: 95
+		Locomotor: tracked
+	Health:
+		HP: 37500
+	RevealsShroud:
+		Range: 7c0
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 10
+		Offset: 0,0,12
+    Cargo:
+		Types: Infantry
+		MaxWeight: 1
+		PipCount: 1		
+		PassengerConditions:
+	Inherits@IFV: ^IFVConditions
+	Armament@mg:
+		Weapon: SUSAExosuitMG
+		LocalOffset: 500,384,150, 500,-384,150, 500,-256,150, 500,256,150
+        MuzzleSequence: muzzle
+    Armament@minigun:
+		Weapon: SUSAExosuitMinigun
+		LocalOffset: 500,384,150, 500,-384,150
+        RequiresCondition: ifv-minigun
+        MuzzleSequence: muzzle
+	Armament@missile:
+		Weapon: SUSAExosuitMissiles
+		LocalOffset: 150,384,340, 150,-384,340
+	WithInfantryBody:
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+		Sequence: turret0
+		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-hero && !ifv-tesla && !ifv-flak && !ifv-cannon && !ifv-plasma && !ifv-litlaser && !ifv-medlaser && !ifv-greelaser && !ifv-misslaser && !ifv-fire && !ifv-chem && !ifv-thrax && !ifv-miss && !ifv-chrono && !ifv-demo && !ifv-fremen && !ifv-sonic && !ifv-minigun
+	WithSpriteTurret@MG:
+		Sequence: turret2
+        RequiresCondition: ifv-mg
+    WithSpriteTurret@minigun: 
+        Sequence: turret1
+		RequiresCondition: ifv-minigun
+	WithSpriteTurret@Missile:
+		Sequence: turret3
+		RequiresCondition: ifv-miss || ifv-misslaser
+	WithSpriteTurret@Flamer:
+		Sequence: turret4
+		RequiresCondition: ifv-fire || ifv-chem || ifv-thrax
+	WithSpriteTurret@Cannon:
+		Sequence: turret5
+		RequiresCondition: ifv-cannon || ifv-plasma || ifv-greelaser || ifv-medlaser || ifv-litlaser
+	WithSpriteTurret@Siege:
+		Sequence: turret6
+		RequiresCondition: ifv-flak
+	WithSpriteTurret@Sniper:
+		Sequence: turret7
+		RequiresCondition: ifv-sniper || ifv-hero || ifv-fremen
+	Passenger:
+		Weight: 2
+		PipType: blue
+	Voiced:
+		VoiceSet: SCGoliathVoice
+    Inherits@ProducesDrones: ^ProducesDrones    
+	RenderSprites:
+		Scale: 0.78       
+        
+#########################################
+#           USA lASER
+#########################################    
+susapalalaser:
+	Inherits: susapala
+    Tooltip:
+        Name: Laser Paladin
+	Buildable:
+		Prerequisites: susaweap, ~techlevel.medium, ~susa_laser
+        IconPalette: windows256
+	Health:
+		HP: 55000
+	Repairable:
+		HpPerStep: 2632
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: -150,-150,80
+	Armament@Normal:
+        Weapon: USALaserPaladinCannon
+		LocalOffset: 768,0,90
+	Armament@Laser:
+		LocalOffset: -200,0,120
+	Selectable:
+		DecorationBounds: 32,32
+    RenderSprites:
+        Scale: 0.85
+
+susarailgunartillery:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+    Inherits@switchableupgrades: ^usa_switchable_upgrades
+    Inherits@compositearmorusa: ^usa_composite_armor_upgrade
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Railgun Artillery
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, ~techlevel.high, upsusarailgunartillery, ~susa_laser
+		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
+		Description: Long Range Artillery armed with Railgun that travels instantly\n  Strong vs Ground\nWeak vs Air
+        IconPalette: windows256
+	Mobile:
+		Speed: 60
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 8c0
+	Armament@Normal:
+		Weapon: SUSARailGunArtillery
+		Recoil: 196
+		RecoilRecovery: 76
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	AttackFrontal:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 36,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
+	Voiced:
+		VoiceSet: USAPaladinTankVoice
+	Inherits@ProducesDrones: ^ProducesDrones
+    RenderSprites:
+        Scale: 0.7
+	DamageMultiplier@usauparmor:
+		Modifier: 60
+
+upsusarailgunartillery:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Railgun Artillery
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.USA
+		Description: Allows production of the Railgun Artillery
+		Prerequisites: !upsusashatterer, ~techlevel.high, ~susa_laser, rank1
+        IconPalette: windows256
+	RenderSprites:
+		Image: susarailgunartillery
+	ProvidesPrerequisite:
+		Prerequisite: upsusarailgunartillery        
         
 #########################################
 #           GLA SALVAGE
@@ -879,7 +1652,7 @@ sglbadger:
 	Buildable:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 25
-		Prerequisites: glweap, ~techlevel.low, ~sgla_scrap
+		Prerequisites: sglweap, ~techlevel.low, ~sgla_scrap
 		Description: Fast scout & anti-infantry vehicle.\nCan carry infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
 	Valued:
 		Cost: 600
@@ -908,13 +1681,13 @@ sglbadger:
 		LocalOffset: 250,0,43
 		RequiresCondition: scrap_create_bonus == 0
 	Armament@Salvage:
-		Weapon: GLTechnicalShell
+		Weapon: GLTechnicalMissile
 		MuzzleSequence: muzzle
-		LocalOffset: 250,0,43
+		LocalOffset: 624,-32,208, 624,32,208
 		RequiresCondition: scrap_create_bonus == 1
 	Armament@Salvage2:
-		Weapon: GLTechnicalMissile
-		LocalOffset: 250,0,43
+		Weapon: GLBadgerBarrage
+		LocalOffset: 624,-128,208, 624,128,208
 		RequiresCondition: scrap_create_bonus == 2
 	AttackTurreted:
 	WithMuzzleOverlay:
@@ -947,3 +1720,365 @@ sglbadger:
 		TotalCap: 2
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+ 	RenderSprites:
+		Scale: 0.80              
+sglballoon:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Balloon
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Vehicle.GLA, RAVehicle.GLA, Aircraft.X_Aircrafts
+		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		TurnSpeed: 2
+		Speed: 75
+	Health:
+		HP: 16000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+    Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 2
+		PipCount: 2		
+		PassengerConditions:
+			usae3: ifv-miss
+			gle3: ifv-miss
+			che3: ifv-miss
+			e3: ifv-miss
+			rae3: ifv-miss
+			yrggi: ifv-miss
+			tse3: ifv-miss
+		InitialUnits: gle3,gle3
+    Armament@Passenger1:
+		Weapon: GLRebelAK47Garrison
+		LocalOffset: 200,-220,85
+		MuzzleSequence: muzzle
+		PauseOnCondition: chronobeamed
+		RequiresCondition: loaded >= 1   
+   	Armament@PassengerMiss1:
+		Weapon: GLTrooperRPGMissileG
+		LocalOffset: 200,-220,85
+		MuzzleSequence: muzzle
+		PauseOnCondition: chronobeamed
+		RequiresCondition: ifv-miss >= 1   
+    Armament@Passenger2:
+		Weapon: GLRebelAK47Garrison
+		LocalOffset: 200,220,85
+		MuzzleSequence: muzzle
+		PauseOnCondition: chronobeamed
+		RequiresCondition: loaded >= 2  
+   	Armament@PassengerMiss2:
+		Weapon: GLTrooperRPGMissileG
+		LocalOffset: 200,220,85
+		MuzzleSequence: muzzle
+		PauseOnCondition: chronobeamed
+		RequiresCondition: ifv-miss >= 2  
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	SpawnActorOnDeath:
+		Actor: sglballoon.husk
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+
+sglballoon.husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Balloon
+	Aircraft:
+		TurnSpeed: 1
+		Speed: 75
+	SmokeTrailWhenDamaged:
+		Offset: -427,0,0
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 12c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 10c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: sglballoon
+
+sglbggy:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APRocketUpgrade
+	Inherits@demo: ^DemolitionUpgrade
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Rocket Buggy
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, sglpalace, ~techlevel.medium, ~anysgla
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Fast, long-range artillery.\n  Strong vs Vehicles, Buildings\n  Weak vs Aircraft
+	Mobile:
+		Speed: 155
+	Health:
+		HP: 12000
+	Repairable:
+		HpPerStep: 569
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 5c0
+	Armament@Normal:
+		Weapon: GLRocketBuggyShockwavex3
+		LocalOffset: 624,-128,208, 624,128,208
+		MuzzleSequence: muzzle
+		RequiresCondition: !ammoupgrade
+	Armament@Extra:
+		Weapon: GLRocketBuggyShockwavex6
+		LocalOffset: 624,128,208, 624,-128,208
+		MuzzleSequence: muzzle
+		RequiresCondition: ammoupgrade
+	Armament@ExtraSalvage1:
+		Weapon: GLRocketBuggyShockwavex3
+		LocalOffset: 624,128,208, 624,-128,208
+		MuzzleSequence: muzzle
+		RequiresCondition: ammoupgrade && scrap_create_bonus == 1
+ 	Armament@ExtraSalvage2:
+		Weapon: GLRocketBuggyShockwavex6
+		LocalOffset: 624,128,208, 624,-128,208
+		MuzzleSequence: muzzle
+		RequiresCondition: ammoupgrade && scrap_create_bonus == 2
+	AttackTurreted:
+		TargetFrozenActors: True
+		ForceFireIgnoresActors: True
+	Turreted:
+		Offset: -400,0,250
+	WithSpriteTurret@1:
+		Sequence: turret
+		RequiresCondition: !ammoupgrade
+	WithSpriteTurret@2:
+		Sequence: turret2
+		RequiresCondition: ammoupgrade && scrap_create_bonus == 0
+	WithSpriteTurret@3:
+		Sequence: turret3
+		RequiresCondition: ammoupgrade && scrap_create_bonus == 1
+	WithSpriteTurret@4:
+		Sequence: turret4
+		RequiresCondition: ammoupgrade && scrap_create_bonus == 2
+	WithMuzzleOverlay:
+	AutoTarget:
+		InitialStanceAI: Defend
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Voiced:
+		VoiceSet: RocketBuggyVoice
+	RenderSprites:
+		Scale: 0.85
+	GrantConditionOnPrerequisite@upbuggyammo:
+		Condition: ammoupgrade
+		Prerequisites: upbuggyammo
+	Explodes:
+		Weapon: GLBuggyHuskCluster
+		EmptyWeapon: GLBuggyHuskCluster
+	GrantConditionOnPrerequisite@selectglatoxin:
+		Condition: selectglatoxin
+		Prerequisites: selectglatoxin
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+
+sglbggyexp:
+	Inherits: sglbggy
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Rocket Buggy
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, sglpalace, ~techlevel.medium, ~anysgla
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Fast, long-range artillery.\n  Strong vs Vehicles, Buildings\n  Weak vs Aircraft
+	Armament@Normal:
+		Weapon: GLRocketBuggyShockwaveExplosivex3
+	Armament@Extra:
+		Weapon: GLRocketBuggyShockwaveExplosivex6
+	Armament@ExtraSalvage1:
+		Weapon: GLRocketBuggyShockwaveExplosivex3
+	Armament@ExtraSalvage2:
+		Weapon: GLRocketBuggyShockwaveExplosivex6
+
+sglcamel:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^FrontalEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 40
+		Prerequisites: upscudlauncher, sglpalace, ~techlevel.medium, ~sgla_demo
+		Description: Long-range ballistic missile launcher.\n  Strong vs ground targets\n  Weak vs Aircraft
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Camel
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 18000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 85
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Armament:
+		Weapon: GLCamelWeapons
+		LocalOffset: 800,-128,208, 800,128,208, 000,-128,208, 000,128,208, -800,-128,208, -800,128,208
+	AutoTarget:
+		ScanRadius: 10
+	AttackFrontal:
+		TargetFrozenActors: True
+		ForceFireIgnoresActors: True
+	WithFacingSpriteBody:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.90
+	Voiced:
+		VoiceSet: GLSCUDLauncherVoice
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	RangeMultiplier@Scrap1:
+		Modifier: 120
+		RequiresCondition: scrap_create_bonus == 1
+	RangeMultiplier@Scrap2:
+		Modifier: 140
+		RequiresCondition: scrap_create_bonus >= 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+
+sglbus:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@junk: ^JunkRepair
+	Inherits@cargo: ^CargoVehicle
+	Inherits@demo: ^DemolitionUpgrade
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Battle Bus
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: glbbus
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: sglweap, sglpalace, ~anysgla, ~!sgla_scrap
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Mobile bunker vehicle.\n  Passengers can fire from within\n  Immobilized on heavy damage
+	Mobile:
+		Speed: 140
+		RequireForceMoveCondition: damagedslow
+		ImmovableCondition: damagedslow || driver-dead
+	RejectsOrders@immobile:
+		Except: Unload, Stop
+		RequiresCondition: damagedslow
+	Passenger:
+		Weight: 6
+	Health:
+		HP: 75000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Heavy
+	DamageMultiplier@bunker:
+		Modifier: 50
+		RequiresCondition: damagedslow
+	RevealsShroud:
+		Range: 8c0
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 6
+		PipCount: 6
+		EjectOnDeath: false #desync
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PauseOnCondition: chronobeamed
+	RevealOnFire:
+		ArmamentNames: primary, garrisoned
+	RenderRangeCircle:
+		FallbackRange: 6c0
+	Selectable:
+		Class: glbbus
+	AutoTarget:
+		AllowMovement: true
+	Turreted:
+		TurnSpeed: 10
+	RenderSprites:
+		Image: sglbus
+	Voiced:
+		VoiceSet: GLBattleBusVoice
+	DamageMultiplier@scrap1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 80
+	DamageMultiplier@scrap2:
+		RequiresCondition: scrap_create_bonus >= 2
+		Modifier: 70
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Minelayer:
+		Mine: chminv
+	MineImmune:
+	AmmoPool:
+		Ammo: 5
+		RearmSound: minelay1.aud
+	Rearmable:
+		RearmActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,chweap,usaweap,glweap,leangweap           
