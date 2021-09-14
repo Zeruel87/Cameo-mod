@@ -3397,6 +3397,400 @@ digdugfigars:
 		SubterraneanTransitionSequence: idle
 		SubterraneanTransitionSound: digdugdirt.wav
 ########################################################
+#	Infection Gamemode
+########################################################
+^InfectionGamemode:
+	MustBeDestroyed:
+		RequiredForShortGame: true
+	DetonateWeaponPower@ZombieAmbush:
+		OrderName: ZombieAmbush
+		Cursor: ability
+		Icon: glambush3
+		Description: Aircraft Crash
+		LongDesc: Spawns a large Zombie squad.
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		ChargeInterval: 4000
+		ActivationDelay: 50
+		Weapon: InfectAmbushSpawner
+		CameraActor: camera
+		CameraRemoveDelay: 240
+		DisplayBeacon: True
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		BeaconPoster: rapinficon
+		StartFullyCharged: false
+	DetonateWeaponPower@ZombieInfect:
+		OrderName: ZombieToxins
+		Cursor: ability
+		Icon: glanthraxbomb
+		Description: Zombie Virus
+		LongDesc: Spawns a Infection Cloud.
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		ChargeInterval: 2500
+		ActivationDelay: 50
+		Weapon: InfectToxicSpawner
+		CameraActor: camera
+		CameraRemoveDelay: 240
+		DisplayBeacon: True
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		BeaconPoster: rapinficon
+		StartFullyCharged: true
+	DetonateWeaponPower@ZombieAmbush2:
+		OrderName: ZombieAmbush2
+		Cursor: ability
+		Icon: glambush3
+		Description: SpaceShip Crash
+		LongDesc: Spawns a large Zombie squad.
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		ChargeInterval: 12000
+		ActivationDelay: 50
+		Weapon: InfectAmbushSpawner2
+		CameraActor: camera
+		CameraRemoveDelay: 240
+		DisplayBeacon: True
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		BeaconPoster: rapinficon
+		StartFullyCharged: false
+	SpeedMultiplier@ZombieBuffed:
+		Modifier: 130
+	DamageMultiplier@ZombieBuffed:
+		Modifier: 75
+	SelfHealing:
+		Step: 500
+		Delay: 10
+		HealIfBelow: 50
+		DamageCooldown: 200
+	GrantConditionOnPrerequisite@upzombiemutate1:
+		Condition: upzombiemutate1
+		Prerequisites: upzombiemutate1
+	DamageMultiplier@upzombiemutate1:
+		RequiresCondition: upzombiemutate1
+		Modifier: 80
+	GrantConditionOnPrerequisite@upzombiemutate2:
+		Condition: upzombiemutate2
+		Prerequisites: upzombiemutate2
+	DamageMultiplier@upzombiemutate2:
+		RequiresCondition: upzombiemutate2
+		Modifier: 80
+	GrantConditionOnPrerequisite@upzombiemutate3:
+		Condition: upzombiemutate3
+		Prerequisites: upzombiemutate3
+	DamageMultiplier@upzombiemutate3:
+		RequiresCondition: upzombiemutate3
+		Modifier: 80
+civzombie.infect:
+	Inherits: civzombie
+	Inherits@Infect: ^InfectionGamemode
+	Buildable:
+		Queue: InfantryInfection
+		BuildPaletteOrder: 10
+		BuildDurationModifier: 1000
+		Prerequisites: zombie.squad
+	Armament:
+		Weapon: InfectZClaw1
+	RenderSprites:
+		Image: civzombie
+	Valued:
+		Cost: 5
+zombie1.infect:
+	Inherits: ZOMBIE1
+	Inherits@Infect: ^InfectionGamemode
+	Buildable:
+		Queue: InfantryInfection
+		BuildPaletteOrder: 10
+		BuildDurationModifier: 800
+		Prerequisites: zombie.squad
+	Armament:
+		Weapon: InfectZClaw1
+	DamageMultiplier@ZombieBuffed:
+		Modifier: 60
+	Valued:
+		Cost: 5
+zombie2.infect:
+	Inherits: ZOMBIE2
+	Inherits@Infect: ^InfectionGamemode
+	Buildable:
+		Queue: InfantryInfection
+		BuildPaletteOrder: 10
+		BuildDurationModifier: 800
+		Prerequisites: zombie.squad
+	Armament:
+		Weapon: InfectZClaw3
+	DamageMultiplier@ZombieBuffed:
+		Modifier: 60
+	Valued:
+		Cost: 10
+zombie.squad:
+	Inherits@1: ^ExistsInWorld
+	Inherits@3: ^SpriteActor
+	Inherits@selection: ^SelectableCombatUnit
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@Infect: ^InfectionGamemode
+	-AppearsOnRadar:
+	OwnerLostAction:
+		Action: Kill
+		DeathTypes: DefaultDeath
+	Tooltip:
+		Name: Zombie Horde
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Valued:
+		Cost: 400
+	Buildable:
+		Queue: InfantryInfection
+		BuildPaletteOrder: 10
+		BuildDurationModifier: 800
+		Prerequisites: zombie.squad
+		BuildLimit: 3
+	Health:
+		HP: 100
+	Mobile:
+		Speed: 71
+		Locomotor: foot  
+	Guardable:
+	SelectionDecorations:
+	WithSpriteControlGroupDecoration:
+	Selectable:
+		Bounds: 48,48
+	AttackMove:
+	DrawLineToTarget:
+	MobSpawnerMaster:
+		Actors: zombie1.horde,zombie1.horde,zombie1.horde,zombie1.horde,zombie1.horde,zombie2.horde,zombie2.horde,zombie1.horde,zombie1.horde
+		RespawnTicks: 600
+		ExitByBudding: false
+	AttackTurreted:
+		PersistentTargeting: false
+	Turreted:
+		TurnSpeed: 255
+	Armament:
+		Weapon: AngryMobTargeting
+	AutoTarget:
+		ScanRadius: 10
+	WithSpriteBody:
+		Sequence: dot
+	HitShape:
+	HiddenUnderFog:
+		Type: CenterPosition
+	RevealsShroud:
+		Type: CenterPosition
+	SpeedMultiplier@Generic:
+		Modifier: 200
+	DamageMultiplier@INVINCIBLE:
+		Modifier: 0
+	RenderSprites:
+		Image: civzombie
+    Voiced:
+        VoiceSet: AntVoice
+	Exit@1:
+		SpawnOffset: 0,-1,0
+		ExitCell: 0,0
+	Production:
+		Produces: InfantryInfection
+	ProductionQueue:
+		Type: InfantryInfection
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar:
+		ProductionType: InfantryInfection
+	RallyPoint:
+	ProvidesPrerequisite@buildingname:
+	CashTrickler:
+		Interval: 500
+		Amount: 100
+zombie1.horde:
+	Inherits: ^CITYINFANTRY
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@Infect: ^InfectionGamemode
+	Tooltip:
+		Name: Zombie Horde
+	Mobile:
+		Speed: 71
+	Guard:
+		Voice: Move
+	Health:
+		HP: 9000
+	Passenger:
+		PipType: green
+	RevealsShroud:
+		Range: 7c0
+	AutoTarget:
+		ScanRadius: 8
+	Armament@SMG:
+		Weapon: InfectZClaw3
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: InfectZClaw3
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2,idle3
+	Voiced:
+		VoiceSet: AntVoice
+    RenderSprites:
+        Image: civzombie
+    MobSpawnerSlave:
+    -MapEditorData:   
+    -Passenger:
+
+zombie2.horde:
+	Inherits: ^CITYINFANTRY
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@Infect: ^InfectionGamemode
+	Tooltip:
+		Name: Zombie Horde
+	Mobile:
+		Speed: 65
+	Guard:
+		Voice: Move
+	Health:
+		HP: 12000
+	Passenger:
+		PipType: green
+	RevealsShroud:
+		Range: 7c0
+	AutoTarget:
+		ScanRadius: 8
+	Armament@SMG:
+		Weapon: InfectZClaw3
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: InfectZClaw3
+	WithInfantryBody:
+		DefaultAttackSequence: idle
+		IdleSequences: idle
+	Voiced:
+		VoiceSet: AntVoice
+    RenderSprites:
+        Image: civzombie
+    MobSpawnerSlave:
+    -MapEditorData:   
+    -Passenger:
+upzombiemutate1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Mutate DNA
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: InfantryInfection
+		Description: zombies has +20% more hp.
+		Prerequisites: ~!upzombiemutate1
+		BuildDurationModifier: 300
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: upisotopestability
+	ProvidesPrerequisite:
+		Prerequisite: upzombiemutate1
+upzombiemutate2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Mutate DNA 2
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: InfantryInfection
+		Description: zombies has +20% more hp.
+		Prerequisites: ~!upzombiemutate2, upzombiemutate1
+		BuildDurationModifier: 300
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: upisotopestability
+	ProvidesPrerequisite:
+		Prerequisite: upzombiemutate2
+upzombiemutate3:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Mutate DNA 3
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: InfantryInfection
+		Description: zombies has +20% more hp.
+		Prerequisites: ~!upzombiemutate3, upzombiemutate2
+		BuildDurationModifier: 300
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: upisotopestability
+	ProvidesPrerequisite:
+		Prerequisite: upzombiemutate3
+tnkzombie.infect:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@Infect: ^InfectionGamemode
+	Valued:
+		Cost: 40
+	Tooltip:
+		Name: Zombie Tank
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDurationModifier: 800
+		Prerequisites: upzombiemutate1
+		Queue: InfantryInfection
+		Description: Melee infantry.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
+	Mobile:
+		Speed: 80
+	Crushable:
+		CrushClasses: vehicle
+	Health:
+		HP: 40000
+	AutoTarget:
+		ScanRadius: 4
+		InitialStance: AttackAnything
+	Armament@PRIMARY:							##########
+		Weapon: ZBrutePunch
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: ZBrutePunch
+	AttackFrontal:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: BruteVoice
+	DeliversCash:
+		Payload: 250
+	Cloneable:
+		Types: NormalInfantry
+	Passenger:
+		Weight: 2
+	-TakeCover:
+	Targetable@dog:
+		TargetTypes: DogImmune
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2 
+    FirepowerMultiplier@eliteplus:
+        Modifier: 120
+        RequiresCondition: rank-elite              
+    ChangesHealth@eliteplus:
+		PercentageStep: 10
+		Delay: 90
+		StartIfBelow: 100
+        RequiresCondition: rank-elite
+	RenderSprites:
+		Image: tnkzombie
+########################################################
 #	PVZ
 ########################################################
 pvzpea1:
