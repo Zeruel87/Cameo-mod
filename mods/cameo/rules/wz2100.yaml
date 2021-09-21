@@ -1095,6 +1095,7 @@
 		Range: 7c0
 	Turreted:
 		TurnSpeed: 24
+		Offset: 0,0,200
 	-WithSpriteBody:
 	WithEmbeddedTurretSpriteBody:
 	Armament:
@@ -1109,7 +1110,7 @@
 	-RenderDetectionCircle:
 	WithMuzzleOverlay:
 	AttackTurreted:
-		Offset: 0,0,200
+		Offset: 0,0,40
 	-WithDeathAnimation:
 	WithSpriteTurret:
 
@@ -1313,7 +1314,7 @@
 	Buildable:
 		Queue: Defence.Alpha, RADefence.Alpha
 		BuildPaletteOrder: 110
-		Prerequisites: 2100FY1, ~techlevel.medium
+		Prerequisites: 2100FY1, ~techlevel.medium, ~up2100uphurricane1
 		Description: Anti-Air base defense.\n  Strong vs Aircraft\n  Weak vs Ground units
 	Valued:
 		Cost: 600
@@ -1567,15 +1568,15 @@ psc2100factory2:
 		ExitCell: 1,3
 		ExitDelay: 3
 	Production@NORMAL:
-		Produces: Infantry.Scavenger
+		Produces: Vehicle.Scavenger
 		RequiresCondition: !classicproductionqueues
 	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry.Scavenger
+		Produces: RAVehicle.Scavenger
 		RequiresCondition: classicproductionqueues
 	ProductionQueue:
-		Type: Infantry.Scavenger
+		Type: Vehicle.Scavenger
 		DisplayOrder: 2
-		Group: Infantry
+		Group: Vehicle
 		LowPowerModifier: 150
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
@@ -1584,10 +1585,10 @@ psc2100factory2:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 	ProductionBar@INFANTRYSCAVENGER:
-		ProductionType: Infantry.Scavenger
+		ProductionType: Vehicle.Scavenger
 		RequiresCondition: !classicproductionqueues
 	ProductionBar@RAINFANTRYSCAVENGER:
-		ProductionType: RAInfantry.Scavenger
+		ProductionType: RAVehicle.Scavenger
 		RequiresCondition: classicproductionqueues
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@1:
@@ -2341,7 +2342,7 @@ psc2100factory2:
 	RenderSprites:
 		Scale: 0.70
 	ProductionCostMultiplier@nexus:
-		Multiplier: 80
+		Multiplier: 95
 		Prerequisites: conyard.nexus
 	Voiced:
 		VoiceSet: 2100NexusVoice
@@ -2361,7 +2362,7 @@ psc2100factory2:
 	RenderSprites:
 		Scale: 0.75
 	ProductionCostMultiplier@nexus:
-		Multiplier: 80
+		Multiplier: 95
 		Prerequisites: conyard.nexus
 	Voiced:
 		VoiceSet: 2100NexusVoice
@@ -2505,7 +2506,7 @@ psc2100factory2:
 	RenderSprites:
 		Scale: 0.70
 	ProductionCostMultiplier@nexus:
-		Multiplier: 80
+		Multiplier: 95
 		Prerequisites: conyard.nexus
 	Voiced:
 		VoiceSet: 2100NexusVoice
@@ -2527,7 +2528,7 @@ psc2100factory2:
 	RenderSprites:
 		Scale: 0.75
 	ProductionCostMultiplier@nexus:
-		Multiplier: 80
+		Multiplier: 95
 		Prerequisites: conyard.nexus
 	Voiced:
 		VoiceSet: 2100NexusVoice
@@ -2766,8 +2767,6 @@ psc2100factory2:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@COMMANDOCALL: ^CommandoCall
 	Inherits@detect: ^GenericGroundDetector
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
 	DamageMultiplier@2100Tanks:
 		Modifier: 80
 	SpeedMultiplier@2100Tanks:
@@ -2785,6 +2784,21 @@ psc2100factory2:
 		Range: 7c0
 	DetectCloaked:
 		Range: 6c0
+^2100Radar:
+	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericGroundDetector
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	WithRangeCircle:
+		Range: 13c0
+	DetectCloaked:
+		Range: 13c0
+	RevealsShroud:
+		Range: 12c0
+	Armament@PRIMARY:
+		Weapon: 2100RadarGun
+		LocalOffset: 200,100,150
 ####################################################################################################
 #		2100 Droids Weapons
 ####################################################################################################
@@ -2841,19 +2855,6 @@ psc2100factory2:
 		Name: secondary
 		Weapon: 2100MachineGunAAEffect
 		LocalOffset: 250,0,50
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
-	Explodes:
-		Weapon: 2100lmghuskCluster
-		EmptyWeapon: 2100lmghuskCluster
-^2100TankKiller:
-	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@AP: ^2100RKWeaponsUpgrades
-	Armament:
-		Weapon: TankKiller
-		LocalOffset: 0,200,0, 0,-200,0
-		MuzzleSequence: muzzle
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 ^2100MediumCannon:
@@ -2924,6 +2925,16 @@ psc2100factory2:
 		MuzzleSequence: muzzle
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
+^2100Tankiller:
+	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AP: ^2100RKWeaponsUpgrades
+	Armament:
+		Weapon: TankKiller
+		LocalOffset: 0,200,0, 0,-200,0
+		MuzzleSequence: muzzle
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
 ^2100LightFlamer:
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -2936,6 +2947,22 @@ psc2100factory2:
 		ValidTypes: vehicle								##########
 	SpeedMultiplier@2100Tanks:
 		Modifier: 90
+^2100InfernoFlamer:
+	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AP: ^2100FlamerWeaponsUpgrades
+	Armament:
+		Weapon: 2100Flamer
+		MuzzleSequence: muzzle
+		LocalOffset: 500,200,0
+	Armament@2:
+		Weapon: 2100Flamer
+		MuzzleSequence: muzzle
+		LocalOffset: 500,-200,0
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	SpeedMultiplier@2100Tanks:
+		Modifier: 85
 ^2100Mortar:
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -3008,6 +3035,17 @@ psc2100factory2:
 		Modifier: 50
 	SpeedMultiplier@2100Tanks:
 		Modifier: 50
+^2100Hurricane:
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AP: ^2100MGWeaponsUpgrades
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: 2100AA
+		LocalOffset: 250,120,50, 250,-120,50
+		MuzzleSequence: muzzle
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
 ####################################################################################################
 #		2100 Vtols Weapons
 ####################################################################################################
@@ -3331,6 +3369,21 @@ psc2100factory2:
 	Selectable:
 		Class: 2100healtruck
 
+2100RADARTRUCK:
+	Inherits@Body: ^2100ViperWheels
+	Inherits@@Turret: ^2100Radar
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Radar Viper Wheels
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
+		Prerequisites: ~up2100upviper1
+	Selectable:
+		Class: 2100radartruck
+
 #		Viper
 2100MVW:
 	Inherits@Body: ^2100ViperWheels
@@ -3402,6 +3455,18 @@ psc2100factory2:
 		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upcobra1, up2100uplancer1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Vehicles, Buildings
+2100T2CH:
+	Inherits@Body: ^2100CobraHTracks
+	Inherits@Turret: ^2100Tankiller
+	Valued:
+		Cost: 1550
+	Tooltip:
+		Name: Tank Killer Cobra Half-tracks
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upcobra1, up2100uptankkiller1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Vehicles, Buildings
 
 2100MCH:
 	Inherits: ^2100CobraHTracks
@@ -3451,7 +3516,30 @@ psc2100factory2:
 		Prerequisites: 2100fy2, ~up2100rkarray1, ~up2100upcobra1, ~techlevel.medium
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
-
+2100IFCH:
+	Inherits: ^2100CobraHTracks
+	Inherits@Turret: ^2100InfernoFlamer
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Inferno Cobra Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upinferno1, ~up2100upcobra1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100AACH:
+	Inherits: ^2100CobraHTracks
+	Inherits@Turret: ^2100Hurricane
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: Hurricane AA Cobra Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100uphurricane1, ~up2100upcobra1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 #		Python
 2100APT:
 	Inherits: ^2100PythonTracks
@@ -3648,7 +3736,7 @@ psc2100factory2:
 	Tooltip:
 		Name: Heavy Gunner Cyborg
 	Buildable:
-		BuildPaletteOrder: 20
+		BuildPaletteOrder: 30
 		Queue: Infantry.Alpha, RAInfantry.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Vehicles
 		Prerequisites: ~up2100uplcannon1, ~barracks
@@ -3662,14 +3750,44 @@ psc2100factory2:
 	Tooltip:
 		Name: Lancer Cyborg
 	Buildable:
-		BuildPaletteOrder: 20
+		BuildPaletteOrder: 40
 		Queue: Infantry.Alpha, RAInfantry.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Infantry
-		Prerequisites: ~up2100uplcannon1, ~barracks
+		Prerequisites: ~up2100uplancer1, ~barracks
 	Selectable:
 		Class: 2100cylan
 	Armament:
 		Weapon: 2100LancerCyborg
+
+2100CYMOR:
+	Inherits@Body: ^2100CyborgLegs
+	Inherits@@Turret: ^2100Mortar
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Grenadier Cyborg
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Infantry.Alpha, RAInfantry.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
+		Prerequisites: ~up2100upmortar1, ~barracks
+	Selectable:
+		Class: 2100cylan
+
+2100CYFLA:
+	Inherits@Body: ^2100CyborgLegs
+	Inherits@@Turret: ^2100LightFlamer
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Flamer Cyborg
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Infantry.Alpha, RAInfantry.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
+		Prerequisites: ~up2100upflamer1, ~barracks
+	Selectable:
+		Class: 2100cylan
 ####################################################################################################
 #		2100 Vehicles Obsolete
 #   Is Obsolete, only Editor Purposes or AI
@@ -3794,6 +3912,20 @@ psc2100factory2:
 	Selectable:
 		Class: 2100healtruck
 
+2100RADARTRUCKC:
+	Inherits@Body: ^2100BugWheels
+	Inherits@@Turret: ^2100Radar
+	Valued:
+		Cost: 450
+	Tooltip:
+		Name: Radar Bug Wheels
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
+		Prerequisites: ~up2100upbug1
+	Selectable:
+		Class: 2100radartruck
 #		Bug
 2100MBUW:
 	Inherits@Body: ^2100BugWheels
@@ -3870,6 +4002,18 @@ psc2100factory2:
 		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upscorpion1, up2100uplancer1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Vehicles, Buildings
+2100T2SCH:
+	Inherits@Body: ^2100ScorpionHTracks
+	Inherits@Turret: ^2100Tankiller
+	Valued:
+		Cost: 1450
+	Tooltip:
+		Name: Tank Killer Scorpion Half-tracks
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upscorpion1, up2100uptankkiller1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Vehicles, Buildings
 
 2100MSCH:
 	Inherits: ^2100ScorpionHTracks
@@ -3931,6 +4075,19 @@ psc2100factory2:
 		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upscorpion1, ~up2100upmortar1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Vehicles, Buildings
+
+2100IFSCH:
+	Inherits: ^2100ScorpionHTracks
+	Inherits@Turret: ^2100InfernoFlamer
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: Inferno Scorpion Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upinferno1, ~up2100upscorpion1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 
 #		Mantis
 2100AMAT:
@@ -4006,6 +4163,18 @@ psc2100factory2:
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Buffs nearby allies and debuffs targeted enemies.\n Unarmed
 
+2100AAMAT:
+	Inherits: ^2100MantisTracks
+	Inherits@Turret: ^2100Hurricane
+	Valued:
+		Cost: 1450
+	Tooltip:
+		Name: Hurricane AA Mantis Tracks
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upmantis1, ~up2100uptracks1, ~up2100uphurricane1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
 #		Scorpion Hovercraft
 2100MSCHOV:
 	Inherits: ^2100ScorpionHovercraft
@@ -4220,6 +4389,20 @@ psc2100factory2:
 	Selectable:
 		Class: 2100healtruck
 
+2100RADARTRUCKP:
+	Inherits@Body: ^2100LeopardWheels
+	Inherits@@Turret: ^2100Radar
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Radar Leopard Wheels
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
+		Prerequisites: ~up2100upleopard1
+	Selectable:
+		Class: 2100radartruck
 #		Leopard
 2100MLEW:
 	Inherits@Body: ^2100LeopardWheels
@@ -4296,6 +4479,18 @@ psc2100factory2:
 		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100uppanther1, up2100uplancer1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Vehicles, Buildings
+2100T2PHH:
+	Inherits@Body: ^2100PantherHTracks
+	Inherits@Turret: ^2100Tankiller
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Tank Killer Panther Half-tracks
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100uppanther1, up2100uptankkiller1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Vehicles, Buildings
 2100MPHH:
 	Inherits: ^2100PantherHTracks
 	Inherits@Turret: ^2100MediumCannon
@@ -4333,6 +4528,30 @@ psc2100factory2:
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
 
+2100IFPHH:
+	Inherits: ^2100PantherHTracks
+	Inherits@Turret: ^2100InfernoFlamer
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Inferno Panther Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upinferno1, ~up2100uppanther1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100AAPHH:
+	Inherits: ^2100PantherHTracks
+	Inherits@Turret: ^2100Hurricane
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Hurricane AA Panther Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100uphurricane1, ~up2100uppanther1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 #		Tiger
 2100ATIT:
 	Inherits: ^2100TigerTracks
@@ -4529,6 +4748,20 @@ psc2100factory2:
 		Name: Repair Retaliation Wheels
 	Selectable:
 		Class: 2100healtruck
+2100RADARTRUCKN:
+	Inherits@Body: ^2100LeopardWheels
+	Inherits@@Turret: ^2100Radar
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Radar Retaliaton Wheels
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
+		Prerequisites: ~up2100upretaliaton1
+	Selectable:
+		Class: 2100radartruck
 #		Retaliaton
 2100MREW:
 	Inherits@Body: ^2100RetealiatonWheels
@@ -4591,6 +4824,18 @@ psc2100factory2:
 		Prerequisites: ~2100fy2, ~techlevel.medium, ~up2100upretribution1, up2100uplancer1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Vehicles, Buildings
+2100T2RTH:
+	Inherits@Body: ^2100RetributionHTracks
+	Inherits@Turret: ^2100Tankiller
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Tank Killer Retribution Half-tracks
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~2100fy2, ~techlevel.medium, ~up2100upretribution1, up2100uptankkiller1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Vehicles, Buildings
 2100MRTH:
 	Inherits: ^2100RetributionHTracks
 	Inherits@Turret: ^2100MediumCannon
@@ -4640,6 +4885,18 @@ psc2100factory2:
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
 
+2100IFRTH:
+	Inherits: ^2100RetributionHTracks
+	Inherits@Turret: ^2100InfernoFlamer
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Inferno Retribution Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upinferno1, ~up2100upretribution1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 #		Vengeance
 2100AVET:
 	Inherits: ^2100VengeanceTracks
@@ -4714,6 +4971,18 @@ psc2100factory2:
 		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upvengeance1, ~up2100uptracks1, ~up2100upa2cannon1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
+2100AAVET:
+	Inherits: ^2100VengeanceTracks
+	Inherits@Turret: ^2100Hurricane
+	Valued:
+		Cost: 2050
+	Tooltip:
+		Name: Hurricane AA Vengeance Tracks
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upvengeance1, ~up2100uptracks1, ~up2100uphurricane1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs Infantry
 #		Retribution Hovercraft
 2100MRTHOV:
 	Inherits: ^2100RetributionHovercraft
@@ -4804,6 +5073,222 @@ psc2100factory2:
 		Cost: 1600
 	Tooltip:
 		Name: Lancer Retribution Vtol
+####################################################################################################
+#		2100 Scavenger Bodies
+####################################################################################################
+^2100Trike:
+	Inherits: ^Vehicle
+	Inherits@shadow: ^ScavShadow
+	Mobile:
+		TurnSpeed: 16
+		Speed: 180
+	Health:
+		HP: 10000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -43,0,128
+	RenderSprites:
+		Scale: 0.65
+	Voiced:
+		VoiceSet: 2100ScavengerVoice2
+^2100Buggy:
+	Inherits: ^Vehicle
+	Inherits@shadow: ^ScavShadow
+	Mobile:
+		TurnSpeed: 16
+		Speed: 156
+	Health:
+		HP: 12000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -43,0,128
+	RenderSprites:
+		Scale: 0.65
+	Voiced:
+		VoiceSet: 2100ScavengerVoice2
+^2100Jeep:
+	Inherits: ^Vehicle
+	Inherits@shadow: ^ScavShadow
+	Mobile:
+		TurnSpeed: 16
+		Speed: 156
+	Health:
+		HP: 16000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -43,0,128
+	RenderSprites:
+		Scale: 0.65
+	Voiced:
+		VoiceSet: 2100ScavengerVoice2
+^2100Camper:
+	Inherits: ^Tank
+	Inherits@shadow: ^ScavShadow
+	Mobile:
+		Speed: 110
+	Health:
+		HP: 19000
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 8
+		Offset: -10,0,120
+	RenderSprites:
+		Scale: 0.65
+	GrantRandomCondition:
+		Conditions: Skin1, Skin2, Skin3
+	WithFacingSpriteBody:
+		Sequence: idle
+		RequiresCondition: Skin1
+	WithFacingSpriteBody@Skin2:
+		Sequence: skin2
+		RequiresCondition: Skin2
+		Name: body2
+	WithFacingSpriteBody@Skin3:
+		Sequence: idle
+		RequiresCondition: Skin3
+		Name: body3
+	Voiced:
+		VoiceSet: 2100ScavengerVoice2
+^2100Tractor:
+	Inherits: ^Tank
+	Inherits@shadow: ^ScavShadow
+	Mobile:
+		Speed: 99
+	Health:
+		HP: 20000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 8
+		Offset: -10,0,200
+	RenderSprites:
+		Scale: 0.65
+	Voiced:
+		VoiceSet: 2100ScavengerVoice2
+^2100SchoolBus:
+	Inherits: ^Tank
+	Inherits@shadow: ^ScavShadow
+	Mobile:
+		Speed: 85
+	Health:
+		HP: 27000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 30,0,160
+	RenderSprites:
+		Scale: 0.60
+	Voiced:
+		VoiceSet: 2100ScavengerVoice1
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 6
+		PipCount: 6
+		LoadingCondition: notmobile
+^2100FireTruck:
+	Inherits: ^Tank
+	Inherits@shadow: ^ScavShadow
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 30000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 30,0,160
+	RenderSprites:
+		Scale: 0.60
+	Voiced:
+		VoiceSet: 2100ScavengerVoice1
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 6
+		PipCount: 6
+		LoadingCondition: notmobile
+^2100IceVan:
+	Inherits: ^Tank
+	Inherits@shadow: ^ScavShadow
+	Mobile:
+		Speed: 85
+	Health:
+		HP: 12000
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 8
+		Offset: -10,0,200
+	RenderSprites:
+		Scale: 0.7
+	Voiced:
+		VoiceSet: 2100ScavengerVoice2
+	AmbientSound@Walk:
+		SoundFiles: scavicetruck1.wav, scavicetruck2.wav, scavicetruck3.wav, scavicetruck4.wav
+		Volume: 0.25
+		RequiresCondition: walking
+	GrantConditionOnMovement:
+		Condition: walking
+^2100Trailer:
+	Inherits: ^Tank
+	Inherits@shadow: ^ScavShadow
+	Mobile:
+		Speed: 85
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 8
+		Offset: -10,0,200
+	RenderSprites:
+		Scale: 0.60
+	Voiced:
+		VoiceSet: 2100ScavengerVoice1
+####################################################################################################
+#		2100 Guns
+####################################################################################################
+^2100BabaMG:
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AP: ^2100MGWeaponsUpgrades
+	Armament:
+		Weapon: ScavPistol
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	Armament@FX:
+		Weapon: ScavPistolEffect
+		LocalOffset: 171,0,43
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+
 ####################################################################################################
 #		SCAVENGER Vehicles
 ####################################################################################################
@@ -5007,86 +5492,54 @@ psc2100factory2:
 	-MapEditorData:
 
 2100TRIKE:
-	Inherits: ^Vehicle
-	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^2100Trike
+	Inherits@@Weapon: ^2100BabaMG
 	Inherits@EMP: ^TurretEMP
-	Inherits@detect: ^GenericGroundDetector
-	Inherits@shadow: ^ScavShadow
 	Valued:
 		Cost: 200
 	Tooltip:
-		Name: Pk-100 Trike
+		Name: Pk-100 Trike Barbarian MG
 	Buildable:
 		BuildPaletteOrder: 30
-		Queue: Infantry.Scavenger, RAInfantry.Scavenger, Vehicle.X_Vehicles
+		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Fast scout and anti-infantry vehicle.\nCan detect cloaked units.\n  Strong vs Infantry\n  Weak vs Tanks
-	Mobile:
-		TurnSpeed: 16
-		Speed: 170
-	Health:
-		HP: 12000
-	Repairable:
-		HpPerStep: 1819
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 8c0
-	Turreted:
-		TurnSpeed: 10
-		Offset: -43,0,128
-	Armament:
-		Weapon: ScavPistol
-		LocalOffset: 171,0,43
-		MuzzleSequence: muzzle
-	Armament@FX:
-		Weapon: ScavPistolEffect
-		LocalOffset: 171,0,43
 	AttackTurreted:
 	WithMuzzleOverlay:
 	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: vehicle								##########
 	Selectable:
 		Class: 2100trike
-	RenderSprites:
-		Scale: 0.65
-	Voiced:
-		VoiceSet: 2100ScavengerVoice2
+2100TRIKE2:
+	Inherits: ^2100Trike
+	Inherits@@Weapon: ^2100RocketPod
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Pk-100 Trike Rocket Pod
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
+		Description: Fast scout and anti-infantry vehicle.\nCan detect cloaked units.\n  Strong vs Infantry\n  Weak vs Tanks
+	AttackTurreted:
+	WithSpriteTurret:
+	WithMuzzleOverlay:
+	Inherits@EXT: ^ExternalConditions					##########
+	Selectable:
+		Class: 2100trike
 
 2100JEEP:
-	Inherits: ^Vehicle
-	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@EMP: ^FrontalEMP
-	Inherits@shadow: ^ScavShadow
+	Inherits: ^2100Jeep
+	Inherits@@Weapon: ^2100BabaMG
+	Inherits@EMP: ^TurretEMP
 	Valued:
 		Cost: 300
 	Tooltip:
-		Name: PK-105 Jeep
+		Name: PK-105 Jeep Barbarian MG
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: Infantry.Scavenger, RAInfantry.Scavenger, Vehicle.X_Vehicles
+		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
-	Mobile:
-		TurnSpeed: 16
-		Speed: 156
-	Health:
-		HP: 16000
-	Repairable:
-		HpPerStep: 1819
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 8c0
-	Turreted:
-		TurnSpeed: 10
-		Offset: -43,0,128
-	Armament:
-		Weapon: ScavMG2
-		LocalOffset: 171,0,43
-		MuzzleSequence: muzzle
-	AttackFrontal:
+	AttackTurreted:
 	WithMuzzleOverlay:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
@@ -5192,17 +5645,6 @@ psc2100factory2:
 		Conditions: Skin1, Skin2, Skin3
 	RenderSprites:
 		Scale: 0.65
-	WithFacingSpriteBody:
-		Sequence: idle
-		RequiresCondition: Skin1
-	WithFacingSpriteBody@Skin2:
-		Sequence: skin2
-		RequiresCondition: Skin2
-		Name: body2
-	WithFacingSpriteBody@Skin3:
-		Sequence: idle
-		RequiresCondition: Skin3
-		Name: body3
 	Selectable:
 		Class: 2100camper
 	Voiced:
@@ -5277,13 +5719,6 @@ psc2100factory2:
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger
 	RenderSprites:
 		Image: 2100CRANE
-
-2100TRIKE2:
-	Inherits: 2100TRIKE
- 	Buildable:
-		Queue: Vehicle.Scavenger, RAVehicle.Scavenger
-	RenderSprites:
-		Image: 2100TRIKE
 
 2100JEEP2:
 	Inherits: 2100JEEP
@@ -6005,6 +6440,12 @@ psc2100factory2:
 	FirepowerMultiplier@up2100uplancer4:
 		RequiresCondition: up2100uplancer4
 		Modifier: 110
+	GrantConditionOnPrerequisite@up2100uplancer5:
+		Condition: up2100uplancer5
+		Prerequisites: up2100uplancer5
+	FirepowerMultiplier@up2100uplancer5:
+		RequiresCondition: up2100uplancer5
+		Modifier: 110
 ^2100CannonWeaponsUpgrades:
 	GrantConditionOnPrerequisite@up2100uplcannon2:
 		Condition: up2100uplcannon2
@@ -6061,6 +6502,30 @@ psc2100factory2:
 	ReloadDelayMultiplier@up2100upflamer4:
 		RequiresCondition: up2100upflamer4
 		Modifier: 85
+	GrantConditionOnPrerequisite@up2100upflamer5:
+		Condition: up2100upflamer5
+		Prerequisites: up2100upflamer5
+	FirepowerMultiplier@up2100upflamer5:
+		RequiresCondition: up2100upflamer5
+		Modifier: 110
+	GrantConditionOnPrerequisite@up2100upflamer6:
+		Condition: up2100upflamer6
+		Prerequisites: up2100upflamer6
+	FirepowerMultiplier@up2100upflamer6:
+		RequiresCondition: up2100upflamer6
+		Modifier: 110
+	GrantConditionOnPrerequisite@up2100upinferno2:
+		Condition: up2100upinferno2
+		Prerequisites: up2100upinferno2
+	FirepowerMultiplier@up2100upinferno2:
+		RequiresCondition: up2100upinferno2
+		Modifier: 110
+	GrantConditionOnPrerequisite@up2100upinferno3:
+		Condition: up2100upinferno3
+		Prerequisites: up2100upinferno3
+	FirepowerMultiplier@up2100upinferno3:
+		RequiresCondition: up2100upinferno3
+		Modifier: 110
 ^2100BuildingArmorUpgrades:
 	GrantConditionOnPrerequisite@up2100upstructure1:
 		Condition: up2100upstructure1
@@ -6197,6 +6662,21 @@ up2100uptwinmg1:
 		Image: 2100uplmg
 	ProvidesPrerequisite:
 		Prerequisite: up2100uptwinmg1
+up2100uphurricane1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Hurricane AA Research
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Unlock Hurricane AA Weapon
+		Prerequisites: ~!2100uphurricane, ~up2100uptwinmg1
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: 2100uplmg
+	ProvidesPrerequisite:
+		Prerequisite: 2100uphurricane
 up2100upheavymg1:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -6303,6 +6783,82 @@ up2100upflamer4:
 		Image: 2100upflamer
 	ProvidesPrerequisite:
 		Prerequisite: up2100upflamer4
+up2100upflamer5:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: High Temeperature Gel MK3
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Unlock Machinegun Weapon
+		Prerequisites: ~!up2100upflamer5, ~up2100upflamer3
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: 2100upflamer
+	ProvidesPrerequisite:
+		Prerequisite: up2100upflamer5
+up2100upflamer6:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: SuperHot Gel
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Unlock Machinegun Weapon
+		Prerequisites: ~!up2100upflamer6, ~up2100upflamer5
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: 2100upflamer
+	ProvidesPrerequisite:
+		Prerequisite: up2100upflamer6
+up2100upinferno1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Inferno Flamer Research
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Unlock Inferno Flamer Weapon
+		Prerequisites: ~!up2100upinferno1, ~up2100upflamer6
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: 2100upinferno
+	ProvidesPrerequisite:
+		Prerequisite: up2100upinferno1
+up2100upinferno2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: SuperHot Gel MK2
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Unlock Machinegun Weapon
+		Prerequisites: ~!up2100upinferno2, ~up2100upinferno1
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: 2100upflamer
+	ProvidesPrerequisite:
+		Prerequisite: up2100upinferno2
+
+up2100upinferno3:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: SuperHot Gel MK3
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Unlock Machinegun Weapon
+		Prerequisites: ~!up2100upinferno3, ~up2100upinferno2
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: 2100upflamer
+	ProvidesPrerequisite:
+		Prerequisite: up2100upinferno3
 up2100uplmg2:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -6590,6 +7146,36 @@ up2100uplancer4:
 		Image: 2100uplancer
 	ProvidesPrerequisite:
 		Prerequisite: up2100uplancer4
+up2100uplancer5:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: HEAT Rocket Warhead MK3
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Vehicles gains %5 more speed
+		Prerequisites: ~!up2100uplancer5, ~up2100uplancer4
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: 2100uplancer
+	ProvidesPrerequisite:
+		Prerequisite: up2100uplancer5
+up2100uptankkiller1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Tank Killer Research
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Tank Killer Unlock
+		Prerequisites: ~!up2100uptankkiller1, ~up2100uplancer5
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: 2100uptankkiller
+	ProvidesPrerequisite:
+		Prerequisite: up2100uptankkiller1
 up2100rkarray1:
 	Inherits: ^upgrade.template
 	Tooltip:
