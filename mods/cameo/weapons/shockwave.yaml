@@ -84,6 +84,18 @@ SUSAMinigunHMMWV:
 			Wood: 55
 			Concrete: 4
 
+SUSALaserStealth:
+    Inherits: SUSAMinigunHMMWV
+    ReloadDelay: 1
+    Projectile: InstantHit
+        Inaccuracy: 0c128
+    Warhead@1Dam: SpreadDamage
+		Damage: 1200
+        Versus:
+            Medium: 60
+			Heavy: 45
+			Concrete: 40  
+            
 SUSATomahawk: 
 	Inherits: USATomahawk
 	MinRange: 4c512
@@ -202,7 +214,7 @@ SUSAPlasmaTomahawkCluster:
 		Inaccuracy: 1c512
 		BounceCount: 1
 	Warhead@1Dam: SpreadDamage
-		Damage: 5000
+		Damage: 4000
 		Versus:
             None: 90
 			Wood: 120
@@ -241,7 +253,7 @@ SUSAEnforcerDroneBeam:
         SecondaryBeam: True
         Duration: 50
 	Warhead@1Dam: SpreadDamage
-		Damage: 4000
+		Damage: 3000
         DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
         Versus:
             None: 150
@@ -256,9 +268,10 @@ SUSAEnforcerDroneBeam:
         ImpactSounds: susaenforcerbeamimpact.wav
       
 SUSAEnforcerDroneBall:
-	ReloadDelay: 50
+	ReloadDelay: 65
 	Range: 7c0
     Report: susaenforcerball.wav
+    ValidTargets: Ground, UnstableEffect
 	Projectile: Bullet
 		Image: susaenforcerball
 		TrailImage: susaenforcertrail
@@ -267,8 +280,9 @@ SUSAEnforcerDroneBall:
 		LaunchAngle: 0, 32
 		Inaccuracy: 0c56
 	Warhead@1Dam: SpreadDamage
-		Damage: 18000
+		Damage: 9000
         DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+        ValidTargets: Ground, UnstableEffect
         Versus:
             None: 30
 			Wood: 60
@@ -276,11 +290,15 @@ SUSAEnforcerDroneBall:
             Medium: 100
 			Heavy: 80
             Concrete: 90
+    Warhead@1UE: GrantExternalCondition
+        Condition: unstableeffexternal
     Warhead@3Eff: CreateEffect
 		Explosions: usaenforcerdrone_splash
         ExplosionPalette: alpha75
         ImpactSounds: susaenforcerballimpact.wav
-        
+   	#Warhead@spawn: SpawnActor
+	#	Actors: susaunstableeffect
+	#	Delay: 10    
 SUSAExosuitMG:       
 	Inherits: USAHumveeMG
 	ReloadDelay: 8
@@ -341,21 +359,152 @@ SUSARailGunArtillery:
         HelixPitch: 1c128
         HelixColor: 5A63E6
 	Warhead@1Dam: SpreadDamage
-        Spread: 0c768
-		Damage: 85000
+        Spread: 0c512
+		Damage: 80000
 		AffectsParent: false
 		Versus:
 			None: 60
-			Wood: 30
-			Light: 100
-            Medium: 100
-			Heavy: 100
-			Concrete: 25
+			Wood: 25
+			Light: 90
+            Medium: 60
+			Heavy: 45
+			Concrete: 20
 		DamageTypes: Prone100Percent, TriggerProne, FireDeath
   	Warhead@3Eff: CreateEffect
 		Explosions: usarailgunartillery_splash
 		ImpactSounds: usarailgunartilleryboom.wav
-        ExplosionPalette: alpha75      
+        ExplosionPalette: alpha75    
+
+SUSAJeepLaser:
+    Inherits: USAPaladinLaser
+	ReloadDelay: 30
+	Range: 6c0
+    ValidTargets: Ground, Air
+	-InvalidTargets: 
+	Warhead@1Dam: SpreadDamage
+		Damage: 4000
+        ValidTargets: Ground, Air
+		-InvalidTargets:
+        
+SUSAComancheLaser:
+    Inherits: USAPaladinLaser
+    ReloadDelay: 15
+    Burst: 2
+    BurstDelays: 0
+	Range: 8c0
+    ValidTargets: Ground
+    -InvalidTargets:
+    Warhead@1Dam: SpreadDamage
+		Damage: 7500
+        Spread: 0c768
+        Versus:
+			None: 80
+			Wood: 40
+			Light: 100
+            Medium: 90
+			Heavy: 75
+			Concrete: 30
+        ValidTargets: Ground    
+        -InvalidTargets:
+        
+SUSAFB22:
+	Inherits: USAMissileAurora
+	ReloadDelay: 5
+	Range: 4c512
+	Warhead@1Dam: SpreadDamage
+		Spread: 1c512
+		Damage: 25000
+		ValidTargets: Ground, Water
+	Warhead@3Eff: CreateEffect
+		Explosions: ex_big_flash
+	Warhead@4EffWater: CreateEffect
+		Explosions: large_splash     
+  
+SUSALaserDesignatorBase:
+	ReloadDelay: 200
+	Range: 8c512
+    MinRange: 3c0
+    Report: susaenforcerbeam.wav
+	Projectile: LaserZap
+		Width: 120
+		ZOffset: 2047
+		Color: FF0000
+        SecondaryBeam: True
+        Duration: 45
+  	Warhead@1Dam: HealthPercentageDamage
+		Damage: 1
+        Spread: 3c256
+        DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+        Versus:
+            Wood: 20
+            Concrete: 15
+  	Warhead@2Dam: HealthPercentageDamage
+		Damage: 3
+        Delay: 8
+        Spread: 2c512
+        DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary  
+        Versus:
+            Wood: 30
+            Concrete: 20
+  	Warhead@3Dam: HealthPercentageDamage
+		Damage: 5
+        Delay: 16
+        Spread: 1c768
+        DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary  
+        Versus:
+			None: 125       
+            Wood: 50
+            Concrete: 30            
+  	Warhead@4Dam: HealthPercentageDamage
+		Damage: 7
+        Delay: 24
+        Spread: 1c256
+        DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary 
+        Versus:
+			None: 150
+            Wood: 50
+            Concrete: 30  
+  	Warhead@5Dam: HealthPercentageDamage
+		Damage: 10
+        Delay: 28
+        Spread: 0c512
+        DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary 
+        Versus:
+			None: 200   
+            Wood: 50
+            Concrete: 30              
+	Warhead@6Dam: HealthPercentageDamage
+		Damage: 20
+        Delay: 32
+        Spread: 0c384
+        DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+        Versus:
+			None: 250
+            Wood: 50
+            Concrete: 30
+    Warhead@3Eff: CreateEffect
+		Explosions: usalaserdesignatorbase_effect
+        ExplosionPalette: alpha75
+        ImpactSounds: susaenforcerbeamimpact.wav
+
+SUSASheridan:
+	Inherits: CHBattlemasterCannon
+	ReloadDelay: 100
+    Range: 6c256
+    MinRange: 1c0
+    Projectile: Bullet
+		Speed: 456
+		Inaccuracy: 1c256
+	Warhead@1Dam: SpreadDamage
+		Damage: 15000
+        Spread: 0c768
+		Versus:
+			None: 15
+			Wood: 60 
+            Light: 150
+            Medium: 120
+            Heavy: 110
+            Concrete: 25
 ####################################
 #        WEAPONS GLA
 ####################################        

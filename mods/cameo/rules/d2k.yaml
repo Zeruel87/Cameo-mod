@@ -60,7 +60,7 @@
     Passenger:
 	AttackFrontal:
     GrantConditionOnPrerequisite@corrinoelite:
-        Prerequisites: faction.corrino
+        Prerequisites: faction.corrino, palace_emperor
         Condition: rank-elite
     -DeathSounds@NORMAL:
 	-DeathSounds@BURNED:
@@ -73,9 +73,6 @@
     GrantConditionOnPrerequisite@ordos:
         Prerequisites: faction.ordos
         Condition: cloakordos
-    ProductionCostMultiplier@mercenaries:     
-        Multiplier: 90
-        Prerequisites: faction.mercenary
     ProductionCostMultiplier@corrino:     
         Multiplier: 150
         Prerequisites: faction.corrino
@@ -705,11 +702,11 @@ construction_yard:
 	GrantExternalConditionPower@Bounty:
 		OrderName: CashBounty3
 		Icon: glabounty3
-		ChargeInterval: 2250
+		ChargeInterval: 4500
 		Description: Bounty Hunting
 		LongDesc: Places Bounty on selected targets giving up to 40% of value\nupon being killed or destroyed.
 		Range: 6
-		Duration: 750
+		Duration: 375
 		SelectTargetSpeechNotification: SelectTarget
 		DisplayRadarPing: True
 		Condition: glabounty3
@@ -788,7 +785,7 @@ d2k_barracks:
     Inherits@CPQWP: ^CPQConditionWithPrimary 
     Inherits@Prereqs: ^D2KPrereqs
 	Buildable:
-		Prerequisites: wind_trap, ~!faction.tleilaxu, ~factionselected, ~!fremen_sietch      
+		Prerequisites: wind_trap, ~!faction.tleilaxu, ~!faction.fremen, ~factionselected    
 		Queue: Building.d2k, RABuilding.d2k
 		BuildPaletteOrder: 220
 		BuildDuration: 200
@@ -850,8 +847,6 @@ d2k_barracks:
 		Prerequisite: barracks.ordos
 	ProvidesPrerequisite@harkonnen:
 		Prerequisite: barracks.harkonnen
-    ProvidesPrerequisite@banfremensietch:
-		Prerequisite: d2k_barracksa  
     ProvidesPrerequisite@mechanic_prereq:
         Prerequisite: mechanic_prereq
         Factions: atreides, harkonnen, ixian, fremen, corrino, guild
@@ -2574,7 +2569,7 @@ palace_emperor:
 		BuildPaletteOrder: 620
 		BuildDuration: 937
 		BuildDurationModifier: 100
-		Description: Trains Emperor's Elite Sardaukars.\nGrants pasive income\nCan be only built once.
+		Description: Trains Emperor's Elite Sardaukars.\nGrants pasive income\nMakes all infantry trained elite\nProvides discount for Sardaukars\nCan be only built once.
         IconPalette: d2kunit  
 	Selectable:
 		Bounds: 72, 72
@@ -3040,7 +3035,7 @@ contaminator:
     Inherits@bot: ^BotMicromanageable
     Inherits@deathpal: ^D2KInfantryDefaultDeath
 	Valued:
-		Cost: 350
+		Cost: 500
 	Tooltip:
 		Name: Contaminator
 	Buildable:
@@ -3051,7 +3046,7 @@ contaminator:
 		Prerequisites: ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.contaminator, ~techlevel.medium
 		Description: The Contaminator is a genetically engineered organism\nthat infects a target organic unit to create another Contaminator\nwhen the target dies. They are quite\nresilient to gunfire.\n  Strong vs Buildings, Infantry, Air, Vehicles\n  Weak vs Siege
     Power:
-        Amount: -10
+        Amount: -25
     Health:
 		HP: 25000
 	Mobile:
@@ -3076,7 +3071,21 @@ contaminator:
         Delay: 25
         PercentageStep: 5
         StartIfBelow: 100
-
+   	-Crushable:
+    
+contaminator_s:
+    Inherits: contaminator
+    DamageMultiplier:
+        Modifier: 150
+    Power:
+        Amount: 0
+    Crushable:
+		WarnProbability: 0
+		CrushSound: squish2.aud    
+    RenderSprites:
+        Image: contaminator
+    -Buildable:
+    
 facedancer_harv:
     Inherits@harv: ^Harvester
     Inherits: facedancer
@@ -3214,7 +3223,10 @@ mpsardaukar:
 		Weapon: M_HMG_H
 	RenderSprites:
 		Image: sardaukar
-    
+    ProductionCostMultiplier@discountsardaukar:
+        Prerequisites: palace_emperor
+        Multiplier: 75
+        
 saboteur:
 	Inherits: ^D2KInfantry
 	Inherits@anim: ^D2KPaletteRenderInfantry    
@@ -3391,7 +3403,7 @@ d2k_drone:
         BuildDuration: 380
         BuildDurationModifier: 100
     Power:
-        Amount: -15     
+        Amount: -25
     Valued:
 		Cost: 500
 	Tooltip:
@@ -3481,6 +3493,8 @@ d2k_drone_h:
         Scale: 0.7
     Valued:
 		Cost: 200     
+    Power:
+        Amount: 0
     Mobile:
 		Speed: 100
     Armor:
@@ -3641,7 +3655,9 @@ rocketeer_o:
         Image: rocketeer
     Armament:
 		Weapon: Rocketeer_o    
-
+    Power:
+        Amount: -25
+        
 rocketeer_tleilaxu:
     Inherits: rocketeer_o
     Inherits@bot: ^BotMicromanageable
@@ -4126,7 +4142,7 @@ d2k_zergling:
 	Health:
 		HP: 10000
   	Power:
-		Amount: -5
+		Amount: -15
  	Valued:
 		Cost: 120
     FirepowerMultiplier:
@@ -4164,7 +4180,8 @@ d2k_scourge:
 	-GrantConditionOnAttack:
 	-KillsSelf:
 	AttackAircraft:
-	-Power:
+    Power:
+        Amount: -10
     Cloak:
 		InitialDelay: 0
 		CloakDelay: 0
@@ -4191,7 +4208,7 @@ d2k_basq:
     Valued:
 		Cost: 750
     Power:
-        Amount: -15     
+        Amount: -25    
 	Tooltip: 
 		Name: Basq 
 	UpdatesPlayerStatistics:
@@ -5476,7 +5493,7 @@ harvester:
 		Prerequisites: faction.ixian
 		Condition: harv_cloak   
     SpeedMultiplier@harv_upg:
-        Modifier: 140
+        Modifier: 125
         RequiresCondition: harv_spd
     GrantConditionOnPrerequisite@corrinoharv:
 		Prerequisites: faction.corrino
@@ -7992,7 +8009,7 @@ sietch:
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
-		TerrainTypes: Cliff
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,Cliff
 	Health:
 		HP: 120000
 	Armor:
@@ -8019,12 +8036,12 @@ sietch:
 fremen_sietch:
     Inherits: sietch
     Buildable:
-		Prerequisites: wind_trap, ~faction.fremen, ~!d2k_barracksa, ~factionselected      
+		Prerequisites: wind_trap, ~faction.fremen, ~factionselected      
 		Queue: Building.d2k, RABuilding.d2k
 		BuildPaletteOrder: 150
-		BuildDuration: 200
+		BuildDuration: 250
 		BuildDurationModifier: 100
-		Description: Unlocks and Produces Fremen Units but disables Barracks\nCan be built on any cliff but entrance must be unblocked
+		Description: Produces Fremen Units\nCan be additionally placed on Cliffs
         IconPalette: windows256      
     RequiresBuildableArea:
 		AreaTypes: building

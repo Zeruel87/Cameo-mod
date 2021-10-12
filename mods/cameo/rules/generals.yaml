@@ -3554,8 +3554,8 @@ glpickup:
 		RequiresCondition: scrap_create_bonus >= 2
 	Cargo:
 		Types: Infantry, Hacker
-		MaxWeight: 2
-		PipCount: 2
+		MaxWeight: 5
+		PipCount: 5
 		LoadingCondition: notmobile
 	Voiced:
 		VoiceSet: TechnicalVoice
@@ -3728,8 +3728,8 @@ glvan:
 		RequiresCondition: scrap_create_bonus == 2
 	Cargo:
 		Types: Infantry, Hacker
-		MaxWeight: 4
-		PipCount: 4
+		MaxWeight: 8
+		PipCount: 8
 		LoadingCondition: notmobile
 	RenderSprites:
 	Voiced:
@@ -9022,6 +9022,7 @@ USAE3:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackFrontalVoice
     Inherits@switchableupgrades: ^usa_switchable_upgrades
+    Inherits@focusingcrystal: ^upsusafocusingcrystal
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -9294,10 +9295,12 @@ usajeep:
 		Weapon: USAHumveeMG
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
-	AttackFrontal:
+	AttackTurreted:
+        Armaments: primary, secondary, tertiary
 	WithMuzzleOverlay:
 	WithSpriteTurret:
 	Inherits@EXT: ^ExternalConditions					##########
+    Inherits@IFV: ^IFVConditionsBunker
 	AcceptsDeliveredExperience:
 		ValidTypes: USAPilot
 	Cargo:
@@ -9305,23 +9308,30 @@ usajeep:
 		MaxWeight: 5
 		PipCount: 5
 		LoadingCondition: notmobile
-	AttackOpenTopped:
-		Voice: Attack
-		Armaments: primary
-		PortOffsets: 400,128,32, 400,-128,32, -400,128,32, -400,-128,32
-		PauseOnCondition: chronobeamed
-		RequiresCondition: loaded
+	Armament@mg:
+		Weapon: USARangerMGGarrison  
+   	Armament@missile:     
+        Weapon: USAMissileDefenderGarrisoned
 	Armament@Tow:
 		Weapon: USAHumveeMissile
 		LocalOffset: 171,0,85
 		MuzzleSequence: muzzle
 		RequiresCondition: usauptowmiss
+   	Armament@laser:
+		Weapon: SUSAJeepLaser
+        Name: tertiary
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+		RequiresCondition: upsusajeeplaser     
 	Inherits@ProducesDrones: ^ProducesDrones
 	Voiced:
 		VoiceSet: USAHumveeVoice
 	GrantConditionOnPrerequisite@usauptowmiss:
 		Condition: usauptowmiss
 		Prerequisites: usauptowmiss
+  	GrantConditionOnPrerequisite@upsusajeeplaser:
+		Condition: upsusajeeplaser
+		Prerequisites: upsusajeeplaser      
 	RenderSprites:
 		Image: usajeep
 	GainsExperience:
@@ -9461,6 +9471,7 @@ pscdrones3:
 
 ^generalsdrone:
 	Inherits: ^RANeutralPlane
+    Inherits@PLD: ^PointLaserDefenseSystem
     Inherits@switchableupgrades: ^usa_switchable_upgrades
     Inherits@compositearmorusa: ^usa_composite_armor_upgrade
 	-Selectable:
@@ -9499,7 +9510,11 @@ pscdrones3:
 		RequiresCondition: paused
 	RejectsOrders:
 	-MapEditorData:
-
+    Armament@pointdefense:
+		RequiresCondition: haspointdefense
+   	GrantConditionOnPrerequisite@haspointdefense:
+		Condition: haspointdefense
+		Prerequisites: susaupdronepointdefense    
 usadrone:
 	Inherits: ^generalsdrone
 	Valued:
@@ -9511,7 +9526,9 @@ usadrone:
 		LocalOffset: 200,0,0
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
-
+    AttackAircraft:
+        Armaments: primary, pointdefense
+        
 usahellfire:
 	Inherits: ^generalsdrone
 	Valued:
@@ -9521,7 +9538,9 @@ usahellfire:
 	Armament@PRIMARY:
 		Weapon: USAHellfireMissile
 		LocalOffset: 200,0,0
-
+    AttackAircraft:
+        Armaments: primary, pointdefense
+        
 usaspydrone:
 	Inherits: ^generalsdrone
 	Inherits@2: ^GenericAirDetector
@@ -9685,10 +9704,11 @@ usacrusader:
 usacrusader2:
 	Inherits: usacrusader
 	Inherits@IDISABLE: ^DisabledOverlay
+    Inherits@focusingcrystal: ^upsusafocusingcrystal
 	Valued:
 		Cost: 900
 	Tooltip:
-		Name: Laser Tank
+		Name: Laser Crusader
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: usaweap, ~techlevel.medium, ~selectusalaser
@@ -10343,7 +10363,7 @@ pscusapower:
 		BuildPaletteOrder: 10
 		Queue: PowerPlant.USA
 		Description: Increases power output.
-		Prerequisites: anypower, ~!selectusasuper
+		Prerequisites: anypower, ~!selectusasuper, ~!susa_laser
 	Valued:
 		Cost: 500
 	RenderSprites:
@@ -11421,6 +11441,9 @@ usaraptor:
 		Queue: Aircraft.USA, RAAircraft.USA
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+   	GrantConditionOnPrerequisite@haspointdefense:
+		Condition: haspointdefense
+		Prerequisites: susauppointdefense      
 usaraptor2:
 	Inherits: usaraptor
 	Inherits@PLD: ^PointLaserDefenseSystem
@@ -11813,7 +11836,7 @@ usacomanche:
 		AmmoCondition: ammo
 	ReloadAmmoPool:
 		AmmoPool: secondary
-		Delay: 375
+		Delay: 450
 		Count: 12
 	WithIdleOverlay@ROTORAIR:
 		Offset: 0,0,85
@@ -11898,7 +11921,7 @@ usafirebase:
 		Dimensions: 2, 2
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: usabarracks, ~techlevel.medium, ~usaselected
+		Prerequisites: usabarracks, ~techlevel.medium, ~usaselected, ~!susa_laser
 		Queue: Defence.USA, RADefence.USA
 		BuildDurationModifier: 40
 		Description: Garrisonable defensive structure.\n  Strong vs ground targets\n  Weak vs Aircraft
@@ -12034,7 +12057,7 @@ usauptowmiss:
 		BuildPaletteOrder: 200
 		Queue: Vehicle.USA, RAVehicle.USA
 		Description: Equips Humvees with TOW missiles.
-		Prerequisites: ~!usauptowmiss, ~!susa_super
+		Prerequisites: ~!usauptowmiss, ~!susa_super, ~!susa_laser
 	Valued:
 		Cost: 800
 	RenderSprites:

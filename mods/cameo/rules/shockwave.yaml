@@ -1,8 +1,16 @@
 #########################################
 #           INHERITABLES
 #########################################    
-
-  
+^upsusafocusingcrystal:
+    GrantConditionOnPrerequisite@upsusafocusingcrystal:
+        Condition: upsusafocusingcrystal
+        Prerequisites: upsusafocusingcrystal
+    FirepowerMultiplier@upsusafocusingcrystal:
+        Modifier: 115
+        RequiresCondition: upsusafocusingcrystal
+    RangeMultiplier@upsusafocusingcrystal:
+        Modifier: 115
+        RequiresCondition: upsusafocusingcrystal 
 #########################################
 #           SHARED ASSETS
 #########################################    
@@ -35,7 +43,7 @@ shockwave_mcv:
             sglascrap: glmcv
   	Buildable:
 		BuildPaletteOrder: 200
-		Prerequisites: chpropaganda, ~techlevel.high
+		Prerequisites: susastrategy, ~techlevel.high, ~disabled
 		Queue: Building.Shockwave, RABuilding.Shockwave
 		Description: Builds structures and provides radar.     
     Selectable:
@@ -63,6 +71,24 @@ shockwave_mcv:
 		RequiresCondition: !disabled
 	Inherits@EXT: ^ExternalConditions
 
+shockwave_mcv_usa:
+    Inherits: shockwave_mcv
+  	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: susastrategy, ~techlevel.medium, ~anysusa
+
+shockwave_mcv_china:
+    Inherits: shockwave_mcv
+  	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: chpropaganda, ~techlevel.medium, ~anyschina
+
+shockwave_mcv_gla:
+    Inherits: shockwave_mcv
+  	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: glpalace, ~techlevel.medium, ~anysgla
+        
 shockwave_conyard:
     Inherits: ^BaseBuilding
 	Inherits@shape: ^3x3Shape
@@ -93,7 +119,7 @@ shockwave_conyard:
         Factions: susasuper     
     ProvidesPrerequisite@susa_laser:
         Prerequisite: susa_laser
-        Factions: susa_lsr   
+        Factions: susalsr   
     ProvidesPrerequisite@susa_air:
         Prerequisite: susa_air
         Factions: susaair           
@@ -265,6 +291,8 @@ susattnk:
 
 susattnkp:
     Inherits: susattnk
+    Valued: 
+        Cost: 1500
  	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: susaweap, susastrategy, ~techlevel.medium, ~susa_super
@@ -308,7 +336,7 @@ susapower:
     Buildable:
         Queue: Building.Shockwave, RABuilding.Shockwave
 		BuildPaletteOrder: 10
-		Prerequisites: ~anysusa
+		Prerequisites: ~anysusa, ~!susa_laser
 	Valued:
 		Cost: 600			#500
    	Power:
@@ -317,6 +345,21 @@ susapower:
         Image: usapower
     ProvidesPrerequisite@generals:
         Prerequisite: usapower
+
+susapower_laser:
+    Inherits: susapower
+    Buildable:
+		Prerequisites: ~susa_laser
+        Icon: icon_laser
+        IconPalette: windows256
+   	Power:
+		Amount: 200
+    RenderSprites:
+        Image: usapower
+  	WithIdleOverlay@RODS:
+		Sequence: idle-rods-laser
+    GrantConditionOnProduction@powerupgrade:
+		Actors: pscusapower3
         
 susabarracks:
     Inherits: usabarracks
@@ -423,6 +466,14 @@ susaupmisspod:
 		Prerequisites: ~!susaupmisspod, susastrategy, ~susa_regular
 	RenderSprites:
 		Image: usamisspodicon
+        
+susalasertur:
+	Inherits: usalasertur
+	Buildable:
+		Prerequisites: susabarracks, ~techlevel.low, ~susa_laser
+		Queue: Defence.Shockwave, RADefence.Shockwave
+	RenderSprites:
+		Image: usalasertur       
         
 susaburtonequipment:
 	Inherits: ^upgrade.template
@@ -597,7 +648,9 @@ susalosathumvee:
 	AttackFrontal:
 	-WithMuzzleOverlay:
 	-WithSpriteTurret:
+    -AttackTurreted:
 	-Cargo:
+    -Armament@laser:
 	-Armament@Tow:
 	Inherits@ProducesDrones: ^ProducesDrones
 	-GrantConditionOnPrerequisite@usauptowmiss:
@@ -654,7 +707,7 @@ susalittlebird:
 	AttackAircraft:
 		FacingTolerance: 15
 	ReloadAmmoPool:
-		Delay: 625
+		Delay: 700
 	WithIdleOverlay@ROTORAIR:
 		Offset: 140,0,250
 	WithIdleOverlay@ROTORGROUND:
@@ -718,7 +771,7 @@ susalittlebird.husk:
 susacomanche:
 	Inherits: usacomanche
 	Buildable:
-		Prerequisites: susaairport, ~techlevel.high, ~anysusa
+		Prerequisites: susaairport, ~techlevel.high, ~anysusa, ~!susa_laser
         IconPalette: windows256
 	Armament@MG:
 		LocalOffset: 950,0,-280
@@ -743,7 +796,7 @@ susacomanche.husk:
 		Offset: 80,0,165
 	RenderSprites:
 		Image: usarah66
-      
+        
 susadecoydrone:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1052,13 +1105,13 @@ susamortarhmmwv:
 		Range: 8c0
 	Turreted:
 		TurnSpeed: 10
-		Offset: 20,0,128
+		Offset: -85,0,128
 	Armament:
 		Weapon: SUSAMortarHMMWV
 		LocalOffset: 171,0,150
-	AttackFrontal:
 	-WithMuzzleOverlay:
 	WithSpriteTurret:
+    -Armament@laser:
 	-Armament@Tow:
 	-GrantConditionOnPrerequisite@usauptowmiss:
 	RenderSprites:
@@ -1074,6 +1127,8 @@ susaminigunhmmwv:
         Description: Light Transport Vehicle equipped with powerful M163 Minigun.\n  Strong vs Infantry, Vehicles\n  Weak vs Tanks
         Icon: icon_minigun
         IconPalette: ra2
+ 	Turreted:
+		Offset: -85,0,128   
     WithMuzzleOverlay:
     WithSpriteTurret:
         Sequence: turret2
@@ -1159,10 +1214,7 @@ susaenforcerdrone:
 		Recoil: 20
 		RecoilRecovery: 10
 		LocalOffset: 768,0,200
-        RequiresCondition: deployed        
-    GrantConditionOnAttack:
-		Condition: attacking
-        ArmamentNames: primary, secondary
+        RequiresCondition: deployed    
     GrantConditionOnDeploy:
 		DeployedCondition: deployed
 		UndeployOnMove: false
@@ -1189,7 +1241,7 @@ susaenforcerdrone:
 	-ReloadAmmoPool:
 	-ReloadDelayMultiplier@GattlingSpeed:
 	-GrantConditionOnPrerequisite@usaupdronegun:
-	-GrantConditionOnPrerequisite@usaupdronearmor:r
+	-GrantConditionOnPrerequisite@usaupdronearmor:
 	-ProductionCostMultiplier@selectusaairforce:
     WithDecoration@beam:
         Sequence: beam_ammo
@@ -1199,6 +1251,88 @@ susaenforcerdrone:
         Sequence: ball_ammo
         RequiresCondition: deployed
         RequiresSelection: true
+    ExternalCondition@unstableeffexternal:
+        Condition: unstableeffexternal
+    GrantConditionOnAttack@unstableefflocal:
+        Condition: unstableefflocal
+        ArmamentNames: secondary
+        RequiredShotsPerInstance: 2
+        RequiresCondition: unstableeffexternal
+        RevokeOnNewTarget: True
+        RevokeAll: True
+
+susaunstableeffect:
+    AlwaysVisible:
+	Interactable:
+ 	Targetable@UnstableEffect:
+		TargetTypes: UnstableEffect
+    RenderSprites:
+        Image: susaenforcerdrone
+        Scale: 0.3
+    HitShape:
+    WithSpriteBody:
+    BodyOrientation:
+        QuantizedFacings: 32
+    SpawnActorOnDeath: 
+        Actor: susaunstableeffecton
+    KillsSelf:
+        Delay: 5000
+        RemoveInstead: True
+        
+susaunstableeffecton:
+	Inherits@1: ^ExistsInWorld
+	Inherits@2: ^SpriteActor
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	-UpdatesPlayerStatistics:
+	RenderSprites:
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 32
+	OwnerLostAction:
+		Action: Kill
+	HiddenUnderFog:
+		Type: CenterPosition
+	HitShape:
+	Selectable:
+		Bounds: 24,90,0,-45
+		Priority: 5
+	SelectionDecorations:
+	WithSpriteControlGroupDecoration:
+	WithSpriteBody@1:
+		Sequence: idle
+		ForceToGround: true
+	WithMakeAnimation@1:
+		Sequence: make
+		BodyNames: body
+	WithDeathAnimation@1:
+		DeathSequence: die
+		DeathPaletteIsPlayerPalette: false
+	Aircraft:
+		CruiseAltitude: 1
+		Speed: 50
+		Repulsable: false
+		VTOL: true
+		CanHover: true
+		CanSlide: true
+		CanForceLand: false
+	RevealsShroud:
+		Range: 5c0
+		Type: CenterPosition
+	AmbientSound:
+		SoundFiles: sparlo2a.aud, sparlo2b.aud, sparlo2c.aud, sparlo3a.aud, sparlo3b.aud, sparlo3c.aud, sparlo4a.aud, sparlo4b.aud, sparlo4c.aud
+		Interval: 2
+	PeriodicExplosion:
+		Weapon: USAParticleCannonDamage
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 6
+	AttackMove:
+	AttackOmni:
+	AttackWander:
+		WanderMoveRadius: 3
+	KillsSelf:
+		RemoveInstead: true
+		Delay: 300
         
 susalockdownmlrs:
 	Inherits: ^Tank
@@ -1538,6 +1672,7 @@ susaexosuit:
 #########################################    
 susapalalaser:
 	Inherits: susapala
+    Inherits@focusingcrystal: ^upsusafocusingcrystal
     Tooltip:
         Name: Laser Paladin
 	Buildable:
@@ -1551,7 +1686,7 @@ susapalalaser:
 		Range: 6c0
 	Turreted:
 		TurnSpeed: 5
-		Offset: -150,-150,80
+		Offset: -150,75,128
 	Armament@Normal:
         Weapon: USALaserPaladinCannon
 		LocalOffset: 768,0,90
@@ -1573,7 +1708,7 @@ susarailgunartillery:
     Inherits@switchableupgrades: ^usa_switchable_upgrades
     Inherits@compositearmorusa: ^usa_composite_armor_upgrade
 	Valued:
-		Cost: 1600
+		Cost: 2000
 	Tooltip:
 		Name: Railgun Artillery
 	UpdatesPlayerStatistics:
@@ -1631,7 +1766,302 @@ upsusarailgunartillery:
 	RenderSprites:
 		Image: susarailgunartillery
 	ProvidesPrerequisite:
-		Prerequisite: upsusarailgunartillery        
+		Prerequisite: upsusarailgunartillery  
+        
+upsusajeeplaser:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Humvee Laser
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.USA, RAVehicle.USA
+		Description: Arms Humvees with Laser. Can fire at both ground and air
+		Prerequisites: ~!upsusajeeplaser, ~susa_laser
+        IconPalette: windows256
+	Valued:
+		Cost: 800
+	RenderSprites:
+		Image: upsusajeeplaser
+	ProvidesPrerequisite:
+		Prerequisite: upsusajeeplaser
+
+susauppointdefense:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Laser Point Defense
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Aircraft.USA
+		Description: Equips All Aircrafts with Defence Lasers
+		Prerequisites: ~!susauppointdefense, ~susa_laser
+        IconPalette: windows256
+	Valued:
+		Cost: 1200
+	RenderSprites:
+		Image: susauppointdefense
+	ProvidesPrerequisite:
+		Prerequisite: susauppointdefense
+
+susaupdronepointdefense:
+ 	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Battle Drone Laser Point Defense
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: StrategyUpgrades.USA
+		Description: Equips All Battle Drones with Defence Lasers\nAllows Battle Drones to intercept small rockets
+		Prerequisites: ~!susaupdronepointdefense, ~susa_laser
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: susaupdronepointdefense
+	ProvidesPrerequisite:
+		Prerequisite: susaupdronepointdefense 
+
+upsusafocusingcrystal:
+ 	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Focusing Crystal
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: StrategyUpgrades.USA
+		Description: Installs Focusing Crystals on Heavy lasers\nGives Heavy Lasers 15% Damage and Range
+		Prerequisites: ~!upsusafocusingcrystal, ~susa_laser
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: upsusafocusingcrystal
+	ProvidesPrerequisite:
+		Prerequisite: upsusafocusingcrystal 
+        
+susalaserstealth:
+	Inherits: usastealth
+	Buildable:
+		Prerequisites: susaairport, ~techlevel.high, ~susa_laser
+		Description: Cloaked Ground Attack Aircraft armed with rapid fire Autocannons.\n  Strong vs Buildings, Vehicles\n  Weak vs Aircraft
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Laser Stealth Fighter
+	Armament@AG:
+		Weapon: SUSALaserStealth
+		-RequiresCondition:
+	-Armament@Upgrade:
+	AmmoPool:
+		Ammo: 100
+        ReloadCount: 20
+		AmmoCondition: ammo
+        PipCount: 1
+	Selectable:
+		Bounds: 36,28,0,2
+		DecorationBounds: 40,29,0,1
+	SelectionDecorations:
+    RenderSprites:
+        Scale: 1.15
+	SpawnActorOnDeath:
+		Actor: susalaserstealth.husk
+	-ProductionCostMultiplier@selectusaairforce:
+	-GrantConditionOnPrerequisite@selectusaairforce:
+  	GrantConditionOnPrerequisite@haspointdefense:
+		Condition: haspointdefense
+		Prerequisites: susauppointdefense      
+    -FirepowerMultiplier@airforce:
+
+susalaserstealth.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Laser Stealth Fighter
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 245
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 13c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 11c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: susalaserstealth
+        Scale: 1.15
+susafb22:
+	Inherits: usaaurora
+	Buildable:
+		Prerequisites: susaairport, susastrategy, ~susa_laser
+		Description: Ground Attack bomber armed with Precision Bomb.\n  Strong vs ground targets\n  Weak vs Aircraft
+        IconPalette: windows256
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: F/B-22 Bomber
+	Health:
+		HP: 14000
+	Armament@AG:
+		Weapon: SUSAFB22
+        RequiresCondition: !usaupbunkerbuster
+  	Armament@Upgrade:
+		Weapon: USABunkerBuster
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		PauseOnCondition: !ammo
+		RequiresCondition: usaupbunkerbuster      
+	Aircraft:
+		Speed: 125
+	AmmoPool:
+        ReloadDelay: 450
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+    -SpeedMultiplier@Empty:
+	SpawnActorOnDeath:
+		Actor: susafb22.husk
+    RenderSprites:
+        Scale: 0.86
+	Voiced:
+		VoiceSet: USAAuroraVoice
+	-ProductionCostMultiplier@selectusaairforce:
+	GrantConditionOnPrerequisite@haspointdefense:
+		Condition: haspointdefense
+		Prerequisites: susauppointdefense      
+	GrantConditionOnPrerequisite@usaupbunkerbuster:
+		Condition: usaupbunkerbuster
+		Prerequisites: usaupbunkerbuster
+        
+susafb22.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: F/B-22 Bomber
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 160
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 13c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 11c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: susafb22
+        Scale: 0.86
+        
+susalasercomanche:
+    Inherits: susacomanche
+    Inherits@focusingcrystal: ^upsusafocusingcrystal
+    Buildable:
+		Prerequisites: susaairport, ~techlevel.high, ~susa_laser
+        Icon: laser_icon
+    Tooltip:
+        Name: Laser Comanche
+    Armament:
+        Weapon: SUSAComancheLaser
+        LocalOffset: 350,213,-85, 350,-213,-85
+        -RequiresCondition:
+    -Armament@rockets:
+   	AmmoPool:
+		Ammo: 8       
+
+susalaserdesignatorbase:
+	Inherits: usafirebase
+	Tooltip:
+		Name: Laser Designator Base
+	Buildable:
+		Prerequisites: susabarracks, ~techlevel.medium, ~susa_laser
+        Queue: Defence.Shockwave, RADefence.Shockwave
+	Turreted:
+		Offset: 0,0,180
+        TurnSpeed: 12
+	Power:
+		Amount: -50
+	Armament:
+		Weapon: SUSALaserDesignatorBase
+	WithSpriteTurret:
+	RenderSprites:
+		Image: susalaserdesignatorbase
+ 
+pscusapower3:
+	Tooltip:
+		Name: Control Rods
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: PowerPlant.USA
+		Description: Increases power output.
+		Prerequisites: anypower, ~susa_laser
+        IconPalette: windows256
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: usacontrolrodicon3
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+
+#########################################
+#           USA AIRFORCE
+#########################################
+
+susasheridan:
+	Inherits: usacrusader
+	Valued:
+		Cost: 850
+	Tooltip:
+		Name: Sheridan
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: susaweap, ~techlevel.medium, ~susa_air
+		Description: Light tank armed with high calibre 152mm Howitzer Cannon.\n  Strong vs Vehicles\n  Weak vs Infantry
+        IconPalette: windows256
+	Mobile:
+		Speed: 125
+        TurnSpeed: 11
+	Health:
+		HP: 28500
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 8
+		Offset: -64,0,64
+	Armament@Normal:
+		Weapon: SUSASheridan
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		-MuzzleSequence:
+    -WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 24,24
+	Voiced:
+		VoiceSet: USACrusaderTankVoice
+	Inherits@ProducesDrones: ^ProducesDrones
+	DamageMultiplier@usauparmor:
+		Modifier: 60
+    RenderSprites:
+        Image: susasheridan
+        Scale: 0.7
         
 #########################################
 #           GLA SALVAGE
