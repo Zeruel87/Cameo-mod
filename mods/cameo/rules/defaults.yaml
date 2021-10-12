@@ -117,6 +117,13 @@
 		Type: Rectangle
 			TopLeft: -2560, -2560
 			BottomRight: 2560, 2560    
+
+^Shadows:
+    GrantConditionOnPrerequisite@enable-shadows:
+        Condition: enable-shadows
+        Prerequisites: enable-shadows
+    WithShadow:
+        RequiresCondition: enable-shadows
    
 ^GainsExperience:
 	GainsExperience:
@@ -385,6 +392,18 @@
 		Condition: leaflet
 		Color: FFFFFF
 
+^Poisonable:
+    ChangesHealth@poison:
+        Delay: 20
+        PercentageStep: -1
+        StartIfBelow: 101   
+        RequiresCondition: poisoned
+    ExternalCondition@Poisoned:
+        Condition: poisoned
+    Targetable@poisoned:
+        TargetTypes: poisoned
+        RequiresCondition: poisoned
+        
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^IronCurtainable
@@ -521,7 +540,8 @@
 		DeathType: MakeScrapbox
    	AttractsWorms:
 		Intensity: 500
-
+    Targetable@disguise:
+		TargetTypes: VehicleDisguise    
 ^Tank:
 	Inherits: ^Vehicle
 	Mobile:
@@ -589,6 +609,7 @@
 	Inherits@EMP: ^UnitDisable
 	Inherits@mag: ^Magnefreezable
     Inherits@instablow: ^Instant_Kill_Vehicle 
+    Inherits@SHADOWS: ^Shadows
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -752,6 +773,7 @@
 	Inherits@heal: ^HospitalHealable
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
+    Inherits@poisonable: ^Poisonable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -959,8 +981,8 @@
 		OwnerType: Killer
 		DeathType: RA2VirusDeath
     SpawnActorOnDeath@Contaminator:
-        Actor: contaminator
-        Probability: 80
+        Actor: contaminator_s
+        Probability: 60
         OwnerType: Killer   
         DeathType: ContaminatorMutate
     SpawnActorOnDeath@Assimilator:
@@ -1153,6 +1175,7 @@
 ^Plane: #Not for actual air units
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
+    Inherits@SHADOWS: ^Shadows
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -1712,6 +1735,7 @@
 
 ^HelicopterHusk:
 	Inherits: ^CommonHuskDefaults
+    Inherits@SHADOWS: ^Shadows
 	WithShadow:
 		Offset: 43, 128, 0
 		ZOffset: -129
@@ -1972,6 +1996,7 @@
 
 ^PlaneHusk:
 	Inherits: ^BasicHusk
+    Inherits@SHADOWS: ^Shadows
 	WithShadow:
 		Offset: 43, 128, 0
 		ZOffset: -129
@@ -2909,8 +2934,8 @@ CPQDEBUGDUMMY:
 	Inherits@MC: ^MCImmune
 	Inherits@snipe: ^DriverKillImmune
 	Harvester:
-		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, GESupplies, SWPCarbon, SWRCarbon, SWDCarbon, SWPNova, SWCNova, SWPMin, SWCMin, Spice, ZeldaTiberium, ZeldaBlueTiberium, ZeldaRedTiberium
-		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc, 315refin, 315proc, awcity, awcitybm, awcityyc, awcityge, awcitybh, awcityids, drlife.eodalien
+		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, GESupplies, SWPCarbon, SWRCarbon, SWDCarbon, SWPNova, SWCNova, SWPMin, SWCMin, Spice
+		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc, 315refin, 315proc, awcity, awcitybm, awcityyc, awcityge, awcitybh, awcityids, drlife.eodalien, susasupply
 		FullyLoadedSpeed: 100
 	GpsDot:
 		String: Harvester
@@ -2929,13 +2954,13 @@ CPQDEBUGDUMMY:
         
 ^RearmableAircraft:
 	Rearmable:
-		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,ra2gaairc.dock,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport,leangairport,drihelipad.imperium,drfghelipad.freedomguard,awhpad.orange,awhpad.bluemoon,awhpad.yellowcomet,awhpad.greenearth,awhpad.blackhole,awhpad.daysofruins,swhpad.empire,swhpad.rebels,swhpad.swseparatist,swhpad.republic,swhpad.hutt,d2k_silo_tleilaxu,hpad.camea,repair_pad,awhpad.rubinelle,awhpad.ids,awhpad.newrubinelle,awhpad.lazurian,2100vtolpad,drhive.eodalien
+		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,ra2gaairc.dock,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport,leangairport,drihelipad.imperium,drfghelipad.freedomguard,awhpad.orange,awhpad.bluemoon,awhpad.yellowcomet,awhpad.greenearth,awhpad.blackhole,awhpad.daysofruins,swhpad.empire,swhpad.rebels,swhpad.swseparatist,swhpad.republic,swhpad.hutt,d2k_silo_tleilaxu,hpad.camea,repair_pad,awhpad.rubinelle,awhpad.ids,awhpad.newrubinelle,awhpad.lazurian,susaairport,2100vtolpad,drhive.eodalien
 	AutoTarget:
 		InitialStance: HoldFire
 
 ^Repairable:
 	Repairable:
-		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix,rafix.camea,drirep,repair_pad,d2k_silo_tleilaxu
+		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix,rafix.camea,drirep,repair_pad,d2k_silo_tleilaxu,susaweap
 
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
@@ -3308,7 +3333,7 @@ CPQDEBUGDUMMY:
 	Inherits: ^AttackVoice
 	AttackTurreted:
 		Voice: Attack
-
+        
 #EMP disable traits, use depend on which attack trait the unit uses
 
 ^FrontalEMP:
@@ -3320,6 +3345,14 @@ CPQDEBUGDUMMY:
 	AttackTurreted:
 		PauseOnCondition: disabled
 
+^FollowEMP:
+	AttackFollow:
+		PauseOnCondition: disabled
+
+^PopupTurretEMP:
+	AttackPopupTurreted:
+		PauseOnCondition: disabled
+        
 ^WithSwimsuit:
 	Mobile:
 		Locomotor: swimsuit
@@ -3894,3 +3927,515 @@ CPQDEBUGDUMMY:
 		WarpOutSequence: warpout
 		RequiresCondition: !untargetable
 		Palette: ra2effect
+        
+^Promotions:
+    FreeActor@selectedhack:
+		Actor: CPQDEBUGDUMMY   
+        
+^IFVConditions:
+	Cargo:
+		PassengerConditions:
+			e1: ifv-mg
+			rae1: ifv-mg
+			rare1: ifv-mg
+			ra2e1: ifv-mg
+			ra2e2: ifv-mg
+			2100scav: ifv-mg
+			2100scav2: ifv-mg
+			scmarine: ifv-mg
+			tse1: ifv-mg
+			tse1.nod: ifv-mg
+			tse1para: ifv-mg
+			tscyborg: ifv-mg
+			tscyborgc: ifv-mg
+			tsmutant: ifv-mg
+			tsmwmn: ifv-mg
+			sczergling: ifv-mg
+			gle1: ifv-mg
+			che1: ifv-mg
+			usae1: ifv-mg
+			leange1: ifv-mg
+            susamarine: ifv-minigun
+			e2: ifv-cannon
+			rae2: ifv-cannon
+			tse2: ifv-cannon
+			tse2para: ifv-cannon
+			tsmutant3: ifv-cannon
+			che2: ifv-cannon
+			leange2: ifv-cannon
+			e6: ifv-repair
+			rae6: ifv-repair
+			mech: ifv-repair
+			scscv: ifv-repair
+			ra2engineer: ifv-repair
+			ra2engineer.soviet: ifv-repair
+			ra2engineer.yuri: ifv-repair
+			yrslav: ifv-repair
+			tsengineer: ifv-repair
+			tsengineer2: ifv-repair
+			tsmhijack: ifv-repair
+			rathf: ifv-repair
+			glhijack: ifv-repair
+			chhacker: ifv-repair
+			chhacker2: ifv-repair
+			chlotus: ifv-repair
+			leanghacker: ifv-repair
+			leanglotus: ifv-repair
+			e3: ifv-miss
+			rae3: ifv-miss
+			rare3: ifv-miss
+			yrggi: ifv-miss
+			tse3: ifv-miss
+			gle3: ifv-miss
+			che3: ifv-miss
+			usae3: ifv-miss
+			leange3: ifv-miss
+			ra2flakt: ifv-flak
+			shok: ifv-tesla
+			ra2shk: ifv-tesla
+			e4: ifv-fire
+			rae4: ifv-fire
+			yrinit: ifv-fire
+			scfirebat: ifv-fire
+			e5: ifv-chem
+			ra2deso: ifv-chem
+			tsweedguy: ifv-chem
+			gle1toxin: ifv-thrax
+			rmbo: ifv-hero
+			e7: ifv-hero
+			ra2tany: ifv-hero
+			cityswat: ifv-hero
+			yrboris: ifv-hero
+			ra2seal: ifv-hero
+			tscyc2: ifv-hero
+			tscyc2.cabal: ifv-hero
+			tsghost: ifv-hero
+			tsghost.mutant: ifv-hero
+			usaburton: ifv-hero
+			leangburton: ifv-hero
+			scghost: ifv-sniper
+			ra2snipe: ifv-sniper
+			yrvirus: ifv-sniper
+			raspy: ifv-sniper
+			ra2spy: ifv-sniper
+			tschamspy: ifv-sniper
+			tsumagon: ifv-sniper
+			glkell: ifv-sniper
+			leangkell: ifv-sniper
+			glsabo: ifv-sniper
+			usapath: ifv-sniper
+			leangpath: ifv-sniper
+			ra2cleg: ifv-chrono
+			ra2ivan: ifv-demo
+			ra2terror: ifv-demo
+			scinfestedterran: ifv-demo
+			glterror: ifv-demo
+			swe1: ifv-litlaser
+			swe1troop: ifv-litlaser
+			swe1dark: ifv-medlaser
+			swe1clone: ifv-litlaser
+			swjumpjet: ifv-litlaser
+			swe1droid: ifv-litlaser
+			swddroid: ifv-medlaser
+			swdroidb2: ifv-medlaser
+			swjedi: ifv-litlaser
+			swsith: ifv-litlaser
+			swe3: ifv-greelaser
+			swe3troop: ifv-misslaser
+			swe3droid: ifv-misslaser
+			swe3clone: ifv-miss
+			swe4: ifv-fire
+			swe6: ifv-repair
+			swrmbo: ifv-hero
+			swgreedo: ifv-hero
+			swrmbo.hutt: ifv-medlaser
+			light_inf: ifv-mg
+			chem_troop: ifv-chem
+			engineer: ifv-repair
+			trooper: ifv-miss
+			fremen: ifv-fremen
+			facedancer: ifv-cannon
+			contaminator: ifv-chem
+			grenadier: ifv-cannon
+			sardaukar: ifv-mg
+			mpsardaukar: ifv-mg
+			saboteur: ifv-demo
+			nsfremen: ifv-fremen
+			plasma_infantry: ifv-plasma
+			fedaykin: ifv-sonic
+			d2k_sniper: ifv-sniper
+			d2k_marksman: ifv-sniper
+			flamethrower: ifv-fire
+			d2k_mechanic: ifv-repair
+			drguardian: ifv-litlaser
+			drbion: ifv-plasma
+			drext: ifv-cannon
+			drzombie2: ifv-demo
+			drraid: ifv-litlaser
+			drscout: ifv-fremen
+			drmercenary: ifv-cannon
+			drsnipe: ifv-sniper
+			drmartyr: ifv-demo
+			drsabot: ifv-demo
+			drmech: ifv-repair
+			drjebradec: ifv-hero
+			drmedi: ifv-healer
+			drreaper: ifv-tesla
+			drtrainer: ifv-healer
+			drshok: ifv-tesla
+			drbiocontrol: ifv-plasma
+			drreaper2: ifv-plasma
+			drphasemine: ifv-demo
+			wh40kguard: ifv-litlaser
+			wh40kgrenade: ifv-cannon
+			wh40kguardplasma: ifv-plasma
+			wh40kcommisair: ifv-healer
+			wh40kogryn: ifv-medlaser
+			wh40kbigguns: ifv-mg
+			wh40kbigguns2: ifv-medlaser
+			wh40kbigguns3: ifv-cannon
+			wh40kkars: ifv-litlaser
+			wh40kkarsgrenade: ifv-cannon
+			wh40kkarsplasma: ifv-plasma
+			wh40ktechpriest: ifv-repair
+			wh40kguardsargent: ifv-hero
+			wh40kkarssargent: ifv-hero
+			wh40kogrynsargent: ifv-hero
+			awe1: ifv-mg
+			awe1sami: ifv-hero
+			awe1bluemoon: ifv-mg
+			awe1yellowcomet: ifv-mg
+			awe1greenearth: ifv-mg
+			awe1blackhole: ifv-mg
+			awe1rb: ifv-mg
+			awe1lz: ifv-mg
+			awe3: ifv-miss
+			awe3yellowcomet: ifv-miss
+			awe3bluemoon: ifv-miss
+			awe3greenearth: ifv-miss
+			awe3blackhole: ifv-miss
+			awe3rb: ifv-miss
+			awe3lz: ifv-miss
+			awe1sensei: ifv-mg
+			awe3sensei: ifv-miss
+	###################
+	#	Armament
+	###################
+	Armament@mg:
+		Weapon: RA2CRM60
+		RequiresCondition: ifv-mg
+	Armament@repair:
+		Weapon: RA2IFVRepair
+		RequiresCondition: ifv-repair
+		TargetStances: Ally
+		ForceTargetStances: None
+	Armament@sniper:
+		Weapon: RA2AWPG
+		RequiresCondition: ifv-sniper
+	Armament@hero:
+		Weapon: BorisAKM
+		RequiresCondition: ifv-hero
+	Armament@tesla:
+		Weapon: TTankZap
+		RequiresCondition: ifv-tesla
+	Armament@flak:
+		Weapon: RA2FlakTrackGun
+		RequiresCondition: ifv-flak
+	Armament@cannon:
+		Weapon: RA2MirageGun
+		RequiresCondition: ifv-cannon
+	Armament@plasma:
+		Weapon: DRPlasmaTankWeapon
+		RequiresCondition: ifv-plasma
+	Armament@litlaser:
+		Weapon: SWLaserG
+		RequiresCondition: ifv-litlaser
+	Armament@medlaser:
+		Weapon: USALaserCannonAG
+		RequiresCondition: ifv-medlaser
+	Armament@greenlaser:
+		Weapon: SWGreenLaserG
+		RequiresCondition: ifv-greelaser
+	Armament@misslaser:
+		Weapon: SWGBigRedLaserG
+		RequiresCondition: ifv-misslaser
+	Armament@fire:
+		Weapon: BigFlamer
+		RequiresCondition: ifv-fire
+	Armament@chem:
+		Weapon: IFVRadBeam
+		RequiresCondition: ifv-chem
+	Armament@thrax:
+		Weapon: IFVRadBeam
+		RequiresCondition: ifv-thrax
+	Armament@missile:
+		Weapon: RA2MultiHoverMissile
+		RequiresCondition: ifv-miss
+	Armament@chrono:
+		Weapon: IFVChronoBeam
+		RequiresCondition: ifv-chrono
+	Armament@chronosound:
+		Weapon: IFVChronoSound
+		RequiresCondition: ifv-chrono
+	Armament@ivan:
+		Weapon: DemoTruckTargeting
+		RequiresCondition: ifv-demo
+	GrantConditionOnAttack:
+		Condition: triggered
+		RequiresCondition: ifv-demo && !disabled
+	KillsSelf@ivan:
+		RequiresCondition: ifv-demo && (triggered || invulnerability)
+	Explodes@ivan:	
+		Weapon: RA2DemoBomb
+		EmptyWeapon: RA2DemoBomb
+		RequiresCondition: ifv-demo && !disabled
+	Armament@fremen:
+		Weapon: Fremen_L
+		RequiresCondition: ifv-fremen
+	Cloak@fremen:
+		InitialDelay: 80
+		CloakDelay: 40
+		UncloakOn: Attack, Unload, Demolish, Dock, Damage, Heal
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled
+        Palette: cnccloak
+        CloakedCondition: cloaked
+		RequiresCondition: ifv-fremen
+	Armament@sonic:
+		Weapon: TSSonicZap
+		RequiresCondition: ifv-sonic
+	ProximityExternalCondition@PROPAGANDA:
+		Range: 6c0
+		Condition: propaganda
+		RequiresCondition: ifv-healer
+        
+^IFVConditionsBunker:
+	Inherits@IFV: ^IFVConditions
+	Armament@mg:
+		Weapon: RA2CRM60
+		RequiresCondition: ifv-mg >= 1
+	Armament@mg2:
+		Weapon: RA2CRM60
+		RequiresCondition: ifv-mg >= 2
+	Armament@mg3:
+		Weapon: RA2CRM60
+		RequiresCondition: ifv-mg >= 3
+	Armament@mg4:
+		Weapon: RA2CRM60
+		RequiresCondition: ifv-mg >= 4
+	Armament@mg5:
+		Weapon: RA2CRM60
+		RequiresCondition: ifv-mg >= 5
+	Armament@missile:
+		Weapon: GLTrooperRPGMissileG
+		RequiresCondition: ifv-miss >= 1 && !selectglatoxin
+	Armament@missile2:
+		Weapon: GLTrooperRPGMissileG
+		RequiresCondition: ifv-miss >= 2 && !selectglatoxin
+	Armament@missile3:
+		Weapon: GLTrooperRPGMissileG
+		RequiresCondition: ifv-miss >= 3 && !selectglatoxin
+	Armament@missile4:
+		Weapon: GLTrooperRPGMissileG
+		RequiresCondition: ifv-miss >= 4 && !selectglatoxin
+	Armament@missile5:
+		Weapon: GLTrooperRPGMissileG
+		RequiresCondition: ifv-miss >= 5 && !selectglatoxin
+	Armament@sniper:
+		Weapon: RA2AWPG
+		RequiresCondition: ifv-sniper >= 1
+	Armament@sniper2:
+		Weapon: RA2AWPG
+		RequiresCondition: ifv-sniper >= 2
+	Armament@sniper3:
+		Weapon: RA2AWPG
+		RequiresCondition: ifv-sniper >= 3
+	Armament@sniper4:
+		Weapon: RA2AWPG
+		RequiresCondition: ifv-sniper >= 4
+	Armament@sniper5:
+		Weapon: RA2AWPG
+		RequiresCondition: ifv-sniper >= 5
+	Armament@cannon:
+		Weapon: RA2MirageGun
+		RequiresCondition: ifv-cannon >= 1
+	Armament@cannon2:
+		Weapon: RA2MirageGun
+		RequiresCondition: ifv-cannon >= 2
+	Armament@cannon3:
+		Weapon: RA2MirageGun
+		RequiresCondition: ifv-cannon >= 3
+	Armament@cannon4:
+		Weapon: RA2MirageGun
+		RequiresCondition: ifv-cannon >= 4
+	Armament@cannon5:
+		Weapon: RA2MirageGun
+		RequiresCondition: ifv-cannon >= 5
+	Armament@fire:
+		Weapon: Flamer
+		RequiresCondition: ifv-fire >= 1
+	Armament@fire2:
+		Weapon: Flamer
+		RequiresCondition: ifv-fire >= 2
+	Armament@fire3:
+		Weapon: Flamer
+		RequiresCondition: ifv-fire >= 3
+	Armament@fire4:
+		Weapon: Flamer
+		RequiresCondition: ifv-fire >= 4
+	Armament@fire5:
+		Weapon: Flamer
+		RequiresCondition: ifv-fire >= 5
+	Armament@flak:
+		Weapon: RA2FlakTrackGun
+		RequiresCondition: ifv-flak >= 1
+	Armament@flak2:
+		Weapon: RA2FlakTrackGun
+		RequiresCondition: ifv-flak >= 2
+	Armament@flak3:
+		Weapon: RA2FlakTrackGun
+		RequiresCondition: ifv-flak >= 3
+	Armament@flak4:
+		Weapon: RA2FlakTrackGun
+		RequiresCondition: ifv-flak >= 4
+	Armament@flak5:
+		Weapon: RA2FlakTrackGun
+		RequiresCondition: ifv-flak >= 5
+	GrantConditionOnPrerequisite@selectglatoxin:
+		Condition: selectglatoxin
+		Prerequisites: selectglatoxin
+	Armament@missile-tox:
+		Weapon: GLTrooperRPGMissileToxin
+		RequiresCondition: ifv-miss >= 1 && selectglatoxin
+	Armament@missile2-tox:
+		Weapon: GLTrooperRPGMissileToxin
+		RequiresCondition: ifv-miss >= 2 && selectglatoxin
+	Armament@missile3-tox:
+		Weapon: GLTrooperRPGMissileToxin
+		RequiresCondition: ifv-miss >= 3 && selectglatoxin
+	Armament@missile4-tox:
+		Weapon: GLTrooperRPGMissileToxin
+		RequiresCondition: ifv-miss >= 4 && selectglatoxin
+	Armament@missile5-tox:
+		Weapon: GLTrooperRPGMissileToxin
+		RequiresCondition: ifv-miss >= 5 && selectglatoxin
+	Armament@chem:
+		Weapon: IFVRadBeam
+		RequiresCondition: ifv-chem >= 1
+	Armament@chem2:
+		Weapon: IFVRadBeam
+		RequiresCondition: ifv-chem >= 2
+	Armament@chem3:
+		Weapon: IFVRadBeam
+		RequiresCondition: ifv-chem >= 3
+	Armament@chem4:
+		Weapon: IFVRadBeam
+		RequiresCondition: ifv-chem >= 4
+	Armament@chem5:
+		Weapon: IFVRadBeam
+		RequiresCondition: ifv-chem >= 5
+	Armament@thrax:
+		Weapon: GLRebelToxinGarrison
+		RequiresCondition: ifv-thrax >= 1
+	Armament@thrax2:
+		Weapon: GLRebelToxinGarrison
+		RequiresCondition: ifv-thrax >= 2
+	Armament@thrax3:
+		Weapon: GLRebelToxinGarrison
+		RequiresCondition: ifv-thrax >= 3
+	Armament@thrax4:
+		Weapon: GLRebelToxinGarrison
+		RequiresCondition: ifv-thrax >= 4
+	Armament@thrax5:
+		Weapon: GLRebelToxinGarrison
+		RequiresCondition: ifv-thrax >= 5
+	Armament@plasma:
+		Weapon: DRPlasmaTankWeapon
+		RequiresCondition: ifv-plasma >= 1
+	Armament@plasma2:
+		Weapon: DRPlasmaTankWeapon
+		RequiresCondition: ifv-plasma >= 2
+	Armament@plasma3:
+		Weapon: DRPlasmaTankWeapon
+		RequiresCondition: ifv-plasma >= 3
+	Armament@plasma4:
+		Weapon: DRPlasmaTankWeapon
+		RequiresCondition: ifv-plasma >= 4
+	Armament@plasma5:
+		Weapon: DRPlasmaTankWeapon
+		RequiresCondition: ifv-plasma >= 5
+	Armament@litlaser:
+		Weapon: SWLaserG
+		RequiresCondition: ifv-litlaser >= 1
+	Armament@litlaser2:
+		Weapon: SWLaserG
+		RequiresCondition: ifv-litlaser >= 2
+	Armament@litlaser3:
+		Weapon: SWLaserG
+		RequiresCondition: ifv-litlaser >= 3
+	Armament@litlaser4:
+		Weapon: SWLaserG
+		RequiresCondition: ifv-litlaser >= 4
+	Armament@litlaser5:
+		Weapon: SWLaserG
+		RequiresCondition: ifv-litlaser >= 5
+	Armament@medlaser:
+		Weapon: USALaserCannonAG
+		RequiresCondition: ifv-medlaser >= 1
+	Armament@medlaser2:
+		Weapon: USALaserCannonAG
+		RequiresCondition: ifv-medlaser >= 2
+	Armament@medlaser3:
+		Weapon: USALaserCannonAG
+		RequiresCondition: ifv-medlaser >= 3
+	Armament@medlaser4:
+		Weapon: USALaserCannonAG
+		RequiresCondition: ifv-medlaser >= 4
+	Armament@medlaser5:
+		Weapon: USALaserCannonAG
+		RequiresCondition: ifv-medlaser >= 5
+	Armament@greenlaser:
+		Weapon: SWGreenLaserG
+		RequiresCondition: ifv-greelaser >= 1
+	Armament@greenlaser2:
+		Weapon: SWGreenLaserG
+		RequiresCondition: ifv-greelaser >= 2
+	Armament@greenlaser3:
+		Weapon: SWGreenLaserG
+		RequiresCondition: ifv-greelaser >= 3
+	Armament@greenlaser4:
+		Weapon: SWGreenLaserG
+		RequiresCondition: ifv-greelaser >= 4
+	Armament@greenlaser5:
+		Weapon: SWGreenLaserG
+		RequiresCondition: ifv-greelaser >= 5
+	Armament@misslaser:
+		Weapon: SWGBigRedLaserG
+		RequiresCondition: ifv-misslaser >= 1
+	Armament@misslaser2:
+		Weapon: SWGBigRedLaserG
+		RequiresCondition: ifv-misslaser >= 2
+	Armament@misslaser3:
+		Weapon: SWGBigRedLaserG
+		RequiresCondition: ifv-misslaser >= 3
+	Armament@misslaser4:
+		Weapon: SWGBigRedLaserG
+		RequiresCondition: ifv-misslaser >= 4
+	Armament@misslaser5:
+		Weapon: SWGBigRedLaserG
+		RequiresCondition: ifv-misslaser >= 5
+	Armament@fremen:
+		Weapon: Fremen_L
+		RequiresCondition: ifv-fremen >= 1
+	Armament@fremen2:
+		Weapon: Fremen_L
+		RequiresCondition: ifv-fremen >= 2
+	Armament@fremen3:
+		Weapon: Fremen_L
+		RequiresCondition: ifv-fremen >= 3
+	Armament@fremen4:
+		Weapon: Fremen_L
+		RequiresCondition: ifv-fremen >= 4
+	Armament@fremen5:
+		Weapon: Fremen_L
+		RequiresCondition: ifv-fremen >= 5
