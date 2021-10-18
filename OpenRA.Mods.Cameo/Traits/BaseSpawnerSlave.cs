@@ -47,13 +47,13 @@ namespace OpenRA.Mods.CA.Traits
 			this.info = info;
 		}
 
-		public virtual void Created(Actor self)
+		void INotifyCreated.Created(Actor self)
 		{
 			attackBases = self.TraitsImplementing<AttackBase>().ToArray();
 			conditionManager = self.Trait<ConditionManager>();
 		}
 
-		public void Killed(Actor self, AttackInfo e)
+		void INotifyKilled.Killed(Actor self, AttackInfo e)
 		{
 			if (Master == null || Master.IsDead)
 				return;

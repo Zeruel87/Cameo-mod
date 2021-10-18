@@ -242,7 +242,6 @@ namespace OpenRA.Mods.CA.Traits
 				t.TurretFacing = (facingOffset + exitFacing) % 256;
 		}
 
-
 		public void StopSlaves()
 		{
 			foreach (var slaveEntry in SlaveEntries)
