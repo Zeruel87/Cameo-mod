@@ -124,20 +124,7 @@
         Prerequisites: enable-shadows
     WithShadow:
         RequiresCondition: enable-shadows
-        
-^Conyard:
-    ProvidesPrerequisite@conyard:
-        Prerequisite: conyard
-
-^Base-reveal:
-    RevealsShroud@base-reveal:
-        Range: 2c0
-		ValidStances: Neutral, Enemy
-		RequiresCondition: base-reveal
-    GrantConditionOnPrerequisite@base-reveal:
-        Prerequisites: base-reveal, !conyard
-        Condition: base-reveal
-        
+   
 ^GainsExperience:
 	GainsExperience:
 		LevelUpNotification: LevelUp
@@ -251,16 +238,6 @@
 		RequiresCondition: rank-elite
 		ZOffset: 256
 
-^UnstableEffect:
-    ExternalCondition@unstableeffect:
-        Condition: unstableeffexternal
-    SpawnActorOnDeath@unstableeffect:
-        Actor: susaunstableeffects
-        Probability: 100
-        OwnerType: Killer
-        DeathType: EnforcerPlasmaBall
-        RequiresCondition: unstableeffexternal > 5
-        
 ^Instant_Kill_Vehicle:
     GrantConditionOnPrerequisite@ONESHOT: 
         Prerequisites: global-one-shot-vehicle
@@ -359,7 +336,7 @@
 		CloakDelay: 90
 		CloakSound: trans1.aud
 		UncloakSound: trans1.aud
-		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: cloak-crate-collected
 		IsPlayerPalette: true
 	ExternalCondition@CLOAK:
@@ -448,8 +425,6 @@
 	Inherits@emergencyrepair: ^EmergencyRepairable
 	Inherits@chrono: ^Chronoshiftable
     Inherits@instablow: ^Instant_Kill_Vehicle
-    Inherits@unstableeffect: ^UnstableEffect
-    Inherits@base-reveal: ^Base-reveal
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -548,9 +523,6 @@
 	ProductionCostMultiplier@Industrial:
 		Multiplier: 75
 		Prerequisites: yrngindp
-    ProductionCostMultiplier@ShockwaveIndustrial:
-        Multiplier: 90
-        Prerequisites: schindustrialplant
 	EdibleByLeap:
 	Crushable:
 		WarnProbability: 0
@@ -572,8 +544,6 @@
 		TargetTypes: VehicleDisguise    
 ^Tank:
 	Inherits: ^Vehicle
-    Passenger:
-		Weight: 8
 	Mobile:
 		Locomotor: tracked
 	Tooltip:
@@ -640,7 +610,6 @@
 	Inherits@mag: ^Magnefreezable
     Inherits@instablow: ^Instant_Kill_Vehicle 
     Inherits@SHADOWS: ^Shadows
-    Inherits@base-reveal: ^Base-reveal
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -805,8 +774,6 @@
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
     Inherits@poisonable: ^Poisonable
-    Inherits@unstableeffect: ^UnstableEffect
-    Inherits@base-reveal: ^Base-reveal
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -847,8 +814,6 @@
 	DrawLineToTarget:
 	Passenger:
 		CargoType: Infantry
-        CargoConditions:
-            susamedivacblackhawk: hospitalheal
 	HiddenUnderFog:
 	ActorLostNotification:
 	Crushable:
@@ -1016,8 +981,8 @@
 		OwnerType: Killer
 		DeathType: RA2VirusDeath
     SpawnActorOnDeath@Contaminator:
-        Actor: contaminator
-        Probability: 80
+        Actor: contaminator_s
+        Probability: 60
         OwnerType: Killer   
         DeathType: ContaminatorMutate
     SpawnActorOnDeath@Assimilator:
@@ -1065,8 +1030,6 @@
 		DeathType: ZombieInfection
 ^CivInfantry:
 	Inherits: ^Infantry
-    -RevealsShroud@base-reveal  
-    -GrantConditionOnPrerequisite@base-reveal
 	Valued:
 		Cost: 10
 	Tooltip:
@@ -1278,7 +1241,6 @@
 	Inherits@bounty: ^GlobalBounty
 	Inherits@shape: ^1x1Shape
 	Inherits@selection: ^SelectableBuilding
-    Inherits@unstableeffect: ^UnstableEffect
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -1358,7 +1320,6 @@
 	Inherits@commandodebuff: ^CommandoDebuff
 	Inherits@ivan: ^BombAttachable
 	Inherits@trap: ^BoobyTrappable
-    Inherits@base-reveal: ^Base-reveal
 	Building:
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud
@@ -1427,17 +1388,11 @@
 	GpsDot:
 		String: Structure
 	RevealOnDeath:
-    ExternalCondition@spybase:
-        Condition: spybase
-    RevealsShroud@spybase:
-        Range: 3c0
-        RequiresCondition: spybase
 	SpawnActorOnDeath@ZombieInfect:
 		Actor: zombie1.infect
 		Probability: 99
 		OwnerType: Killer
 		DeathType: ZombieInfection
-        
 ^CivBuilding:
 	Inherits: ^Building
 	-ConditionManager:
@@ -1612,7 +1567,7 @@
 		Categories: Wall
 	ConditionManager:
 	Cloak@TScloak:
-		PauseOnCondition: cloak-force-disabled || base-reveal
+		PauseOnCondition: cloak-force-disabled
 
 ^Tree:
 	Inherits@1: ^SpriteActor
@@ -2974,13 +2929,13 @@ CPQDEBUGDUMMY:
 		Modifier: 10
 		ShowTicks: False
 		RequiresCondition: normalcash && !noinsurance
-     
+
 ^Harvester:
 	Inherits@MC: ^MCImmune
 	Inherits@snipe: ^DriverKillImmune
 	Harvester:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, GESupplies, SWPCarbon, SWRCarbon, SWDCarbon, SWPNova, SWCNova, SWPMin, SWCMin, Spice
-		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc, 315refin, 315proc, awcity, awcitybm, awcityyc, awcityge, awcitybh, awcityids, susasupply, susasupply_air, susasupply_armor, sglsupply, schsupply, drlife.eodalien, sc2krecyclingcenter
+		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc, 315refin, 315proc, awcity, awcitybm, awcityyc, awcityge, awcitybh, awcityids, drlife.eodalien, susasupply
 		FullyLoadedSpeed: 100
 	GpsDot:
 		String: Harvester
@@ -2999,7 +2954,7 @@ CPQDEBUGDUMMY:
         
 ^RearmableAircraft:
 	Rearmable:
-		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,ra2gaairc.dock,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport,leangairport,drihelipad.imperium,drfghelipad.freedomguard,awhpad.orange,awhpad.bluemoon,awhpad.yellowcomet,awhpad.greenearth,awhpad.blackhole,awhpad.daysofruins,swhpad.empire,swhpad.rebels,swhpad.swseparatist,swhpad.republic,swhpad.hutt,d2k_silo_tleilaxu,hpad.camea,repair_pad,awhpad.rubinelle,awhpad.ids,awhpad.newrubinelle,awhpad.lazurian,susaairport,susahangar,2100vtolpad,drhive.eodalien
+		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,ra2gaairc.dock,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport,leangairport,drihelipad.imperium,drfghelipad.freedomguard,awhpad.orange,awhpad.bluemoon,awhpad.yellowcomet,awhpad.greenearth,awhpad.blackhole,awhpad.daysofruins,swhpad.empire,swhpad.rebels,swhpad.swseparatist,swhpad.republic,swhpad.hutt,d2k_silo_tleilaxu,hpad.camea,repair_pad,awhpad.rubinelle,awhpad.ids,awhpad.newrubinelle,awhpad.lazurian,susaairport,2100vtolpad,drhive.eodalien
 	AutoTarget:
 		InitialStance: HoldFire
 
@@ -3089,11 +3044,7 @@ CPQDEBUGDUMMY:
 ^MCImmune:
 	Targetable@MC:
 		TargetTypes: MCImmune
-        
-^NotDevourable:
-	Targetable@ND:
-		TargetTypes: DevourImmune
-        
+
 ^BombAttachable:
 	DelayedWeaponAttachable@ivan:
 		Type: ivanbomb
@@ -3223,7 +3174,7 @@ CPQDEBUGDUMMY:
 		CloakDelay: 90
 		CloakSound: cloak5.aud
 		UncloakSound: cloak5.aud
-		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		PauseOnCondition: cloak-force-disabled || disabled
 		RequiresCondition: tscloak
 		IsPlayerPalette: true
 	ExternalCondition@TSCLOAK:
@@ -4003,9 +3954,8 @@ CPQDEBUGDUMMY:
 			gle1: ifv-mg
 			che1: ifv-mg
 			usae1: ifv-mg
-            susaranger: ifv-mg
 			leange1: ifv-mg
-            susamarine: ifv-mg
+            susamarine: ifv-minigun
 			e2: ifv-cannon
 			rae2: ifv-cannon
 			tse2: ifv-cannon
@@ -4039,7 +3989,6 @@ CPQDEBUGDUMMY:
 			gle3: ifv-miss
 			che3: ifv-miss
 			usae3: ifv-miss
-            susamissiledefender: ifv-miss
 			leange3: ifv-miss
 			ra2flakt: ifv-flak
 			shok: ifv-tesla
@@ -4063,7 +4012,6 @@ CPQDEBUGDUMMY:
 			tsghost: ifv-hero
 			tsghost.mutant: ifv-hero
 			usaburton: ifv-hero
-            susaburton: ifv-hero
 			leangburton: ifv-hero
 			scghost: ifv-sniper
 			ra2snipe: ifv-sniper
@@ -4076,7 +4024,6 @@ CPQDEBUGDUMMY:
 			leangkell: ifv-sniper
 			glsabo: ifv-sniper
 			usapath: ifv-sniper
-            susapath: ifv-sniper
 			leangpath: ifv-sniper
 			ra2cleg: ifv-chrono
 			ra2ivan: ifv-demo
@@ -4250,7 +4197,7 @@ CPQDEBUGDUMMY:
 		CloakDelay: 40
 		UncloakOn: Attack, Unload, Demolish, Dock, Damage, Heal
 		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
+		PauseOnCondition: cloak-force-disabled
         Palette: cnccloak
         CloakedCondition: cloaked
 		RequiresCondition: ifv-fremen

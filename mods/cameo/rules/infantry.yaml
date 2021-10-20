@@ -408,6 +408,716 @@ rapt.citydrop:
 	RenderSprites:
 		Image: rapt
 
+####################################################################################################
+#		RA
+####################################################################################################
+
+DOG:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	Inherits@MC: ^MCImmune
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@oldbuff: ^OldFactionBuff
+	Buildable:
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.X_Infantry, Infantry.ModSoviet, RAInfantry.ModSoviet
+		BuildPaletteOrder: 29
+		Prerequisites: kenn, ~!modukranie
+		Description: Anti-infantry unit.\nCan detect cloaked units and spies.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Attack Dog
+		GenericName: Dog
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Selectable:
+		Bounds: 12,17,-1,-4
+		DecorationBounds: 12,17,-1,-4
+	SelectionDecorations:
+	Health:
+		HP: 1800
+	Mobile:
+		Speed: 99
+		Voice: Move
+		RequiresCondition: !attack-cooldown && !eating
+	Guard:
+		Voice: Move
+	Passenger:
+		Voice: Move
+	RevealsShroud:
+		Range: 5c512
+	DetectCloaked:
+		Range: 4c0
+		RequiresCondition: !disabled
+		CloakTypes: Cloak, Hijacker
+	Armament:
+		Weapon: DogJaw
+		ReloadingCondition: attack-cooldown
+	-AttackFrontal:
+	AttackLeap:
+		Voice: Attack
+		PauseOnCondition: attacking || attack-cooldown
+	AttackMove:
+		Voice: Move
+	GrantConditionOnAttack:
+		Condition: eating
+		RevokeDelay: 45
+	GrantConditionWhileAiming:
+		Condition: run
+	AutoTarget:
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry
+	Targetable:
+		TargetTypes: Ground, Infantry
+	WithInfantryBody:
+		MoveSequence: walk
+		StandSequences: stand
+		DefaultAttackSequence: eat
+		RequiresCondition: !run
+	WithInfantryBody@RUN:
+		MoveSequence: run
+		RequiresCondition: run
+	SpeedMultiplier:
+		Modifier: 150
+		RequiresCondition: run
+	IgnoresDisguise:
+	Voiced:
+		VoiceSet: DogVoice
+	-TakeCover:
+	-Explodes@Mutate:
+	-Targetable@disguise:
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+
+RAE1:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@oldbuff: ^OldFactionBuff
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Rifle Infantry
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.ModAllies, RAInfantry.ModAllies
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 5000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: M1Carbine
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: RAVulcan
+	AttackFrontal:
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	RenderSprites:
+		Image: E1
+	Voiced:
+		VoiceSet: RAGenericVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Selectable:
+		Class: rae1
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+
+RARE1:
+	Inherits: RAE1
+	Buildable:
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.ModSoviet, RAInfantry.ModSoviet
+	UpdatesPlayerStatistics:
+		OverrideActor: rae1
+	Selectable:
+		Class: rae1
+	Voiced:
+		VoiceSet: RussianVoice
+	ProducibleWithLevel@modrussia:
+		Prerequisites: modrussia
+		InitialLevels: 1
+E1R1:
+	Inherits: RARE1
+	ProducibleWithLevel:
+		Prerequisites: techlevel.infonly
+		InitialLevels: 1
+	-Buildable:
+
+RAE2:
+	Inherits: E2
+	Inherits@country: ^AffectedByCountryBonuses
+	Buildable
+		BuildPaletteOrder: 25
+		Prerequisites: ~techlevel.medium
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.X_Infantry, Infantry.ModSoviet, RAInfantry.ModSoviet
+		Description: Infantry armed with grenades.\n  Strong vs Buildings, Infantry\n  Weak vs Vehicles, Aircraft
+	Explodes:
+		Weapon: UnitExplodeSmall
+		EmptyWeapon: UnitExplodeSmall
+	RenderSprites:
+		Image: E2
+	Voiced:
+		VoiceSet: RussianVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+	ProducibleWithLevel@modukraine:
+		Prerequisites: modukraine
+		InitialLevels: 1
+RAE3:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@oldbuff: ^OldFactionBuff
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Rocket Soldier
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.camea, RAInfantry.camea, Infantry.ModAllies, RAInfantry.ModAllies
+		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
+	Mobile:
+		Speed: 42
+	Health:
+		HP: 4500
+	AutoTarget:
+		ScanRadius: 6
+	Armament@PRIMARY:							##########
+		Weapon: Rockets
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: RocketsG
+	TakeCover:
+		ProneOffset: 180,0,-200
+	AttackFrontal:
+	RenderSprites:
+		Image: E3
+	Voiced:
+		VoiceSet: RAGenericVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+
+RARE3:
+	Inherits: RAE3
+	Buildable:
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.ModSoviet, RAInfantry.ModSoviet
+	UpdatesPlayerStatistics:
+		OverrideActor: rae3
+	Selectable:
+		Class: rae3
+	Voiced:
+		VoiceSet: RussianVoice
+	ProducibleWithLevel@modukraine:
+		Prerequisites: modukraine
+		InitialLevels: 1
+RAE4:
+	Inherits: E4
+	Inherits@country: ^AffectedByCountryBonuses
+	Valued:
+		Cost: 300
+	Buildable:
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.X_Infantry, Infantry.ModSoviet, RAInfantry.ModSoviet
+		BuildPaletteOrder: 45
+		Prerequisites: ftur
+		Description: Advanced anti-structure unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
+	Health:
+		HP: 7000
+	Armament:
+		Weapon: Flamer
+		LocalOffset: 700,0,500
+		FireDelay: 8
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Flamer
+	-WithMuzzleOverlay:
+	TakeCover:
+		ProneOffset: 160,0,-288
+	Explodes:
+		Weapon: napalm
+		EmptyWeapon: napalm
+		Chance: 50
+	RenderSprites:
+		Image: E4
+	Voiced:
+		VoiceSet: RussianVoice
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+
+RAE6:
+	Inherits: E6
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Engineer
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks
+		Queue: Infantry.Allies, Infantry.Soviet, RAInfantry.Allies, RAInfantry.Soviet, Infantry.ModSoviet, RAInfantry.ModSoviet, Infantry.ModAllies, RAInfantry.ModAllies
+	RenderSprites:
+		Image: e6
+
+E7:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@oldbuff: ^OldFactionBuff
+	Buildable:
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.X_Infantry
+		BuildPaletteOrder: 120
+		Prerequisites: atek, ~techlevel.high
+		BuildLimit: 1
+		Description: Elite commando infantry. Armed with\ndual pistols and C4.\nCan detect cloaked units.\nMaximum 1 can be trained.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Destroy Building with C4
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Tanya
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 10000
+	Mobile:
+		Speed: 71
+		Voice: Move
+	Guard:
+		Voice: Move
+	RevealsShroud:
+		Range: 6c0
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !disabled
+		CloakTypes: Cloak, Hijacker
+	Passenger:
+		PipType: Red
+		Voice: Move
+	Armament@PRIMARY:
+		Weapon: Colt45
+	Armament@SECONDARY:
+		Weapon: Colt45
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Colt45
+		MuzzleSequence: garrison-muzzle
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		StandSequences: stand
+	AnnounceOnKill:
+	Voiced:
+		VoiceSet: TanyaVoice
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	Inherits@EXPERIENCE: ^GainsExperience				##########
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	ProvidesPrerequisite:
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+
+MEDI:
+	Inherits: ^Soldier
+    Inherits@oldbuff: ^OldFactionBuff
+	Buildable:
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.X_Infantry, Infantry.camea, RAInfantry.camea, Infantry.ModAllies, RAInfantry.ModAllies
+		BuildPaletteOrder: 25
+		Description: Heals nearby infantry.\n  Unarmed
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Medic
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 6000
+	Mobile:
+		Speed: 50
+	RevealsShroud:
+		Range: 3c0
+	Passenger:
+		PipType: Blue
+	Armament:
+		Weapon: Heal
+		#Cursor: heal
+		#OutsideRangeCursor: heal
+		TargetStances: Ally
+		ForceTargetStances: None
+   	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: Heal     
+	RenderRangeCircle:
+	WithInfantryBody:
+		IdleSequences: idle
+		StandSequences: stand
+		DefaultAttackSequence: heal
+	Voiced:
+		VoiceSet: MedicVoice
+	AutoTarget:
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry, plagued
+	Inherits@EXT: ^ExternalConditions
+
+MECH:
+	Inherits: ^Soldier
+    Inherits@oldbuff: ^OldFactionBuff
+	Inherits@EXT: ^ExternalConditions
+	Buildable:
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.ModAllies, RAInfantry.ModAllies
+		BuildPaletteOrder: 100
+		Prerequisites: rafix, ~techlevel.medium
+		Description: Repairs nearby vehicles.\n  Unarmed
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Mechanic
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 8000
+	Mobile:
+		Speed: 50
+		Voice: Move
+	RevealsShroud:
+		Range: 3c0
+	Passenger:
+		PipType: Blue
+		Voice: Move
+	Armament:
+		Weapon: Repair
+		#Cursor: repair
+		#OutsideRangeCursor: repair
+		TargetStances: Ally
+		ForceTargetStances: None
+	RenderRangeCircle:
+	AttackFrontal:
+		Voice: Action
+	CaptureManager:
+	Captures:
+		CaptureTypes: husk
+		PlayerExperience: 25
+	WithInfantryBody:
+		IdleSequences: idle
+		DefaultAttackSequence: repair
+		StandSequences: stand
+	Voiced:
+		VoiceSet: MechanicVoice
+	AutoTarget:
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Vehicle, lockdowned, ivanattached
+
+EINSTEIN:
+	Inherits: ^CivInfantry
+	RenderSprites:
+		Palette: ra_temperat
+	-Wanders:
+	Tooltip:
+		Name: Prof. Einstein
+	Mobile:
+		Speed: 71
+	Voiced:
+		VoiceSet: EinsteinVoice
+
+DELPHI:
+	Inherits: ^CivInfantry
+	-Wanders:
+	RenderSprites:
+		Palette: ra_temperat
+	Tooltip:
+		Name: Agent Delphi
+	Mobile:
+		Speed: 71
+
+RACHAN:
+	Inherits: ^CivInfantry
+	Valued:
+		Cost: 500
+	Selectable:
+		Class: CHAN
+	Tooltip:
+		Name: Scientist
+
+GNRL:
+	Inherits@1: ^CivInfantry
+	Inherits@2: ^ArmedCivilian
+	-Wanders:
+	Tooltip:
+		Name: General
+	Selectable:
+		Class: GNRL
+	Mobile:
+		Voice: Move
+	AttackFrontal:
+		Voice: Attack
+	AttackMove:
+		Voice: Move
+	Passenger:
+		Voice: Move
+	Guard:
+		Voice: Move
+	Voiced:
+		VoiceSet: StavrosVoice
+	-ScaredyCat:
+	TakeCover:
+		DamageModifiers:
+			Prone50Percent: 50
+		DamageTriggers: TriggerProne
+	WithInfantryBody:
+		IdleSequences: idle1
+
+SHOK:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@country: ^AffectedByCountryBonuses
+	Buildable:
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.X_Infantry
+		BuildPaletteOrder: 130
+		Prerequisites: stek, tsla, ~techlevel.high
+		Description: Elite infantry with portable Tesla coils.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
+        BuildDuration: 125
+        BuildDurationModifier: 100
+    Valued:
+		Cost: 450
+	Tooltip:
+		Name: Shock Trooper
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 10000
+	Mobile:
+		Speed: 56
+	RevealsShroud:
+		Range: 5c0
+	Armament@PRIMARY:
+		Weapon: PortaTesla
+		LocalOffset: 427,0,341
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: PortaTesla
+	TakeCover:
+		ProneOffset: 227,0,-245
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
+	Voiced:
+		VoiceSet: ShokVoice
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	Crushable:
+		CrushClasses: vehicle
+	Inherits@EXPERIENCE: ^GainsExperience				##########
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+
+RASPY:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@oldbuff: ^OldFactionBuff
+	Buildable:
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.camea, RAInfantry.camea
+		BuildPaletteOrder: 25
+		Prerequisites: anyhq, ~tent
+		Description: Infiltrates enemy structures for intel or\nsabotage. Exact effect depends on the\nbuilding infiltrated.\nLoses disguise when attacking.\nCan detect spies.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft\n  Special Ability: Disguise
+	Valued:
+		Cost: 500
+	-Tooltip:
+	DisguiseTooltip:
+		Name: Spy
+		GenericName: Soldier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	-Guard:
+	Health:
+		HP: 4000
+	Mobile:
+		Speed: 56
+		Voice: Move
+	RevealsShroud:
+		Range: 5c0
+	Passenger:
+		PipType: Blue
+		Voice: Move
+	Disguise:
+		DisguisedCondition: disguise
+	Infiltrates:
+		Types: SpyInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 50
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+		ScanRadius: 5
+	-WithInfantryBody:
+	WithDisguisingInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2
+		StandSequences: stand,stand2
+	WithDecoration@disguise:
+		Image: pips
+		Sequence: pip-disguise
+		Palette: effect
+		ReferencePoint: Top, Right
+		ZOffset: 256
+		RequiresCondition: disguise
+	IgnoresDisguise:
+	Armament:
+		Weapon: SilencedPPK
+	AttackMove:
+		Voice: Move
+	Voiced:
+		VoiceSet: SpyVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+    GrantConditionOnPrerequisite@camea:
+        Prerequisites: faction.camea
+        Condition: faction.camea
+    Cloak@cameaclaok:
+		InitialDelay: 60
+		CloakDelay: 30
+		UncloakOn: Attack, Unload
+        CloakedCondition: cloaked    
+        RequiresCondition: faction.camea
+TECH1:
+	Inherits: ^CivInfantry
+	Inherits@armed: ^ArmedCivilian
+	Inherits@country: ^AffectedByCountryBonuses
+	Tooltip:
+		Name: Technician
+
+RATHF:
+	Inherits: ^Soldier
+    Inherits@oldbuff: ^OldFactionBuff
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Thief
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.ModSoviet, RAInfantry.ModSoviet
+		Description: Hijacks vehicles and steals cash.
+	Mobile:
+		Speed: 71
+	Health:
+		HP: 5000
+	Passenger:
+		PipType: Blue
+	CaptureManager:
+	Captures@CAPTURES:
+		CaptureTypes: vehicle
+		PlayerExperience: 50
+		ConsumedByCapture: true
+	Infiltrates:
+		Types: ThiefInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 50
+	Inherits@EXT: ^ExternalConditions					##########
+	Crushable:
+		WarnProbability: 95
+	Cloak:
+		InitialDelay: 250
+		CloakDelay: 120
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+		CloakTypes: Cloak, Thief
+		PauseOnCondition: cloak-force-disabled
+		IsPlayerPalette: true
+	WithInfantryBody:
+		IdleSequences: idle
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
+	Voiced:
+		VoiceSet: ThiefVoice
+
+SNIPER:
+	Inherits: ^Soldier
+	Inherits@country: ^AffectedByCountryBonuses
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Sniper
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Infantry
+		BuildAtProductionType: Soldier
+		BuildPaletteOrder: 80
+		Prerequisites: ~wip-content
+		Description: Elite sniper infantry unit.\nCan detect cloaked units.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Health:
+		HP: 8000
+	Passenger:
+		PipType: Red
+	RevealsShroud:
+		Range: 6c0
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: ReturnFire
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry
+	Armament@PRIMARY:
+		Weapon: Sniper
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Sniper
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Cloak:
+		InitialDelay: 250
+		CloakDelay: 120
+		CloakSound:
+		UncloakSound:
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
+	-MustBeDestroyed:
+	#ProducibleWithLevel:
+	#	Prerequisites: barracks.upgraded
+
 Zombie:
 	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -527,3 +1237,256 @@ WarriorAnt:
 		Prerequisites: ~wip-content
 	RenderSprites:
 		Image: Ant
+
+####################################################################################################
+#		MONSTERS
+####################################################################################################
+
+civzombie:
+	Inherits: ^CivInfantry
+	Inherits@armed: ^ArmedCivilian
+	Buildable:
+		Queue: Infantry.X_Monsters
+		BuildPaletteOrder: 10
+		BuildDurationModifier: 200
+		Prerequisites: xhosp
+		Description: Faster undead. Attacks in close combat.
+	Tooltip:
+		Name: Civilian Zombie
+		GenericName: Zombie
+	AutoTarget:
+		ScanRadius: 5
+        InitialStance: AttackAnything
+	Armament:
+		Weapon: zclaw1
+	Voiced:
+		VoiceSet: AntVoice
+	Cloneable:
+		Types: zombie
+ZOMBIE1:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 50
+	Tooltip:
+		Name: Zombie
+		GenericName: Zombie
+	Buildable:
+		Queue: Infantry.X_Monsters
+		BuildPaletteOrder: 10
+		BuildDurationModifier: 200
+		Prerequisites: xhosp
+		Description: Slow undead. Attacks in close combat.
+	Health:
+		HP: 6000	#25000
+	Mobile:
+		Speed: 25	#42
+	AutoTarget:
+		ScanRadius: 5
+        InitialStance: AttackAnything
+	AttackFrontal:
+	WithInfantryBody:
+		DefaultAttackSequence: bite
+		IdleSequences: idle1
+	Armament:
+		Weapon: zclaw1
+	Voiced:
+		VoiceSet: AntVoice
+	-TakeCover
+	-DamagedByTerrain
+	RenderSprites:
+		Image: zombie
+		Scale: 0.7
+	Cloneable:
+		Types: zombie
+        
+ZOMBIE2:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Big Zombie
+		GenericName: Zombie
+	Buildable:
+		Queue: Infantry.X_Monsters
+		BuildPaletteOrder: 20
+		BuildDurationModifier: 80
+		Prerequisites: xhosp
+		Description: Slow undead. Attacks in close combat.
+	Health:
+		HP: 15000	#25000
+	Mobile:
+		Speed: 25	#42
+	AutoTarget:
+		ScanRadius: 5
+        InitialStance: AttackAnything      
+	AttackFrontal:
+	WithInfantryBody:
+		DefaultAttackSequence: bite
+		IdleSequences: idle1
+	Armament:
+		Weapon: zclaw3
+	Voiced:
+		VoiceSet: AntVoice
+	-TakeCover
+	-DamagedByTerrain
+	RenderSprites:
+		Image: zombie
+
+SPITTER:
+	Inherits: ^Viceroid
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty			##########
+	Valued:
+		Cost: 300
+	Health:
+		HP: 10000	#30000
+	Mobile:
+		Locomotor: foot
+	Buildable:
+		Queue: Infantry.X_Monsters
+		BuildPaletteOrder: 30
+		Prerequisites: xbio
+		Description: Mutated abomination that spits liquid Tiberium.\n  Strong vs Infantry, Buildings\n  Weak vs Aircraft
+	Tooltip:
+		Name: Spitter
+	ActorLostNotification:
+	Armament:
+		Weapon: Spit
+		LocalOffset: 384,0,0
+	-WithMuzzleOverlay
+	-DamagedByTerrain
+	Selectable:
+		Bounds: 14,14
+	RenderSprites:
+		Scale: 0.6
+
+ANT2:
+	Inherits: ^Infantry
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Giant Ant
+		GenericName: Ant
+	Buildable:
+		Queue: Vehicle.X_Monsters, Vehicle.X_All
+		BuildPaletteOrder: 10
+		BuildDurationModifier: 70
+		Prerequisites: xbio
+		Description: Irradiated insect that grew oversize.
+	Selectable:
+		Bounds: 24,24,0,-5
+		DecorationBounds: 30,30,0,-2
+	SelectionDecorations:
+	Health:
+		HP: 35000	#75000
+	Mobile:
+		Speed: 99
+		TurnSpeed: 12
+		Locomotor: lighttracked
+	-Crushable:
+	AutoTarget:
+		ScanRadius: 5
+	AttackFrontal:
+	WithInfantryBody:
+		DefaultAttackSequence: bite
+	Armament:
+		Weapon: mandible
+	Targetable:
+		TargetTypes: Ground, Infantry, Ant
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	Voiced:
+		VoiceSet: AntVoice
+	HitShape:
+		Type: Circle
+			Radius: 469
+	RenderSprites:
+		Image: Ant
+
+STEG2:
+	Inherits: STEG
+	Inherits@bounty: ^GlobalBounty			##########
+	Health:
+		HP: 50000		#100000
+	Armor:
+		Type: Light		#Wood
+	Valued:
+		Cost: 1000
+	Armament:
+		Weapon: Tail2
+	Buildable:
+		Queue: Vehicle.X_Monsters, Vehicle.X_All
+		BuildPaletteOrder: 20
+		BuildDurationModifier: 70
+		Prerequisites: xbio
+	Mobile:
+		Speed: 60	#113
+	RenderSprites:
+		Image: STEG
+
+TREX2:
+	Inherits: TREX
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty			##########
+	Health:
+		HP: 100000
+	Armor:
+		Type: Heavy		#Wood
+	Valued:
+		Cost: 1500		#1000
+	Armament:
+		Weapon: Teeth2
+	Buildable:
+		Queue: Vehicle.X_Monsters, Vehicle.X_All
+		BuildPaletteOrder: 30
+		BuildDurationModifier: 70
+		Prerequisites: xbio
+	Mobile:
+		Speed: 60	#113
+	RenderSprites:
+		Image: TREX
+
+TRIC2:
+	Inherits: TRIC
+	Inherits@bounty: ^GlobalBounty			##########
+	Health:
+		HP: 50000		#100000
+	Armor:
+		Type: Heavy		#Wood
+	Valued:
+		Cost: 1000
+	Armament:
+		Weapon: Horn2
+	Buildable:
+		Queue: Vehicle.X_Monsters, Vehicle.X_All
+		BuildPaletteOrder: 40
+		BuildDurationModifier: 70
+		Prerequisites: xbio
+	Mobile:
+		Speed: 60	#113
+	RenderSprites:
+		Image: TRIC
+
+RAPT2:
+	Inherits: RAPT
+	Inherits@bounty: ^GlobalBounty			##########
+	Health:
+		HP: 40000		#100000
+	Armor:
+		Type: Light		#Wood
+	Valued:
+		Cost: 800		#1000
+	Armament:
+		Weapon: Claw2
+	Buildable:
+		Queue: Vehicle.X_Monsters, Vehicle.X_All
+		BuildPaletteOrder: 50
+		BuildDurationModifier: 70
+		Prerequisites: xbio
+	Mobile:
+		Speed: 113
+	RenderSprites:
+		Image: RAPT
