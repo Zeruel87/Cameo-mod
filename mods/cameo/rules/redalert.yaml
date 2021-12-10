@@ -94,7 +94,7 @@ RAE1:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks
-		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.ModAllies, RAInfantry.ModAllies, Infantry.ModJapan, RAInfantry.ModJapan
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.ModAllies, RAInfantry.ModAllies
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
 		Speed: 56
@@ -190,7 +190,7 @@ RAE3:
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
-		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.camea, RAInfantry.camea, Infantry.ModAllies, RAInfantry.ModAllies, Infantry.ModJapan, RAInfantry.ModJapan
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.camea, RAInfantry.camea, Infantry.ModAllies, RAInfantry.ModAllies
 		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
 	Mobile:
 		Speed: 42
@@ -240,9 +240,30 @@ RARE3:
 		Class: rae3
 	Voiced:
 		VoiceSet: RussianVoice
-	ProducibleWithLevel@modukraine:
-		Prerequisites: modukraine
-		InitialLevels: 1
+RAJE3:
+	Inherits: RAE3
+	Buildable:
+		Queue: Infantry.ModJapan, RAInfantry.ModJapan
+	UpdatesPlayerStatistics:
+		OverrideActor: rae3
+	Selectable:
+		Class: rae3
+	Voiced:
+		VoiceSet: JapaneseVoice
+RAJE1:
+	Inherits: RAE1
+	Buildable:
+		Queue: Infantry.ModJapan, RAInfantry.ModJapan
+	UpdatesPlayerStatistics:
+		OverrideActor: rae1
+	Selectable:
+		Class: rae1
+	Voiced:
+		VoiceSet: JapaneseVoice
+	Armament@PRIMARY:							##########
+		Weapon: CHGuardRifle
+	Armament@GARRISONED:						##########
+		Weapon: CHGuardRifleGarrison
 RAE4:
 	Inherits: E4
 	Inherits@country: ^AffectedByCountryBonuses
@@ -743,7 +764,7 @@ V2RL:
 	Buildable:
 		Queue: Vehicle.Soviet, RAVehicle.Soviet, Vehicle.X_Vehicles, Vehicle.ModSoviet, RAVehicle.ModSoviet
 		BuildPaletteOrder: 80
-		Prerequisites: anyhq, ~techlevel.medium, ~!modukranie
+		Prerequisites: anyhq, ~techlevel.medium, ~v2rlunlock
 		Description: Long-range rocket artillery.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
         BuildDuration: 450
         BuildDurationModifier: 100
@@ -912,6 +933,7 @@ V2RL:
 		Description: Soviet Main Battle Tank, with dual cannons\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
         BuildDuration: 375
         BuildDurationModifier: 100
+		Prerequisites: ~normaltanksoviet
     Valued:
 		Cost: 750
 	Tooltip:
@@ -962,7 +984,7 @@ V2RL:
 	Buildable:
 		Queue: Vehicle.Soviet, RAVehicle.Soviet, Vehicle.X_Vehicles, Vehicle.ModSoviet, RAVehicle.ModSoviet
 		BuildPaletteOrder: 180
-		Prerequisites: rafix, stek, ~techlevel.high
+		Prerequisites: rafix, stek, ~techlevel.high, ~normaltanksoviet
 		Description: Big and slow tank, with anti-air capability.\nCan crush concrete walls.\n  Strong vs Vehicles, Infantry, Aircraft\n  Weak vs Nothing
     Valued:
 		Cost: 1700
@@ -2618,6 +2640,78 @@ modhip.husk:
 		Type: GroundPosition
 	RenderSprites:
 		Image: modhip
+mod4tnkgirl:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@oldbuff: ^OldFactionBuff
+	Buildable:
+		Queue: Vehicle.Soviet, RAVehicle.Soviet, Vehicle.X_Vehicles, Vehicle.ModSoviet, RAVehicle.ModSoviet
+		BuildPaletteOrder: 180
+		Prerequisites: rafix, stek, ~techlevel.high, ~modjtek
+		Description: Big and slow tank, with anti-air capability.\nCan crush concrete walls.\n  Strong vs Vehicles, Infantry, Aircraft\n  Weak vs Nothing
+    Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Mammoth Tank Girl
+		GenericName: Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 270000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 55
+		Locomotor: heavytracked
+	Passenger:
+		Weight: 4
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+	Armament@PRIMARY:
+		Weapon: ragal120mm
+		LocalOffset: 900,180,340, 900,-180,340
+		Recoil: 171
+		RecoilRecovery: 30
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: MammothTusk
+		LocalOffset: -85,384,340, -85,-384,340
+		LocalYaw: -100,100
+		Recoil: 43
+		MuzzleSequence: muzzle
+	AttackFrontal:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	#SpawnActorOnDeath:
+	#	Actor: 4TNK.Husk
+	SelfHealing:
+		Step: 100
+		Delay: 3
+		HealIfBelow: 50
+		DamageCooldown: 150
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 44,38,0,-4
+	Voiced:
+		VoiceSet: MammothGirlVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+    GrantConditionOnMovement@nomoving:
+        Condition: moving
+        ValidMovementTypes: Horizontal, Vertical, Turn    
+    AmbientSound:
+        SoundFiles: mammothgm2.wav
+        RequiresCondition: moving
+        Interval: 5
 ####################################################################################################
 #		Modded RA Britain
 ####################################################################################################
@@ -3330,7 +3424,7 @@ MODKATY:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: anyhq, ~modukranie, ~techlevel.medium
+		Prerequisites: anyhq, ~katyshaunlock, ~techlevel.medium
 		Queue: Vehicle.ModSoviet, RAVehicle.ModSoviet
 		Description: Long range rocket artillery.\n  Strong vs all Ground units.
 	Mobile:
@@ -3372,6 +3466,29 @@ MODKATY:
 ####################################################################################################
 #		Modded RA Japan
 ####################################################################################################
+RABGGYJ:
+	Inherits: BGGY
+	RenderSprites:
+		Image: BGGY
+	Buildable:
+		Queue: Vehicle.ModJapan, RAVehicle.ModJapan
+		Prerequisites: ~canbuildrabggy
+	Tooltip:
+		Name: Attack Buggy
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
+        
+MODBGGYJ:
+	Inherits: MODBGGY
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Vehicle.ModJapan, RAVehicle.ModJapan
+		Prerequisites: ~canbuildrabggy
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	RenderSprites:
+		Image: modbggy
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
 MODTYPEJ:
 	Inherits: 1TNK
 	Buildable:
@@ -3392,6 +3509,8 @@ MODTYPEJ:
 		Offset: 128,0,120
 	RenderSprites:
 		Scale: 0.90
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
 MODHOVER:
 	Inherits: ^Tank
 	Inherits@GAINSEXPERIENCE: ^GainsExperienceVehicle
@@ -3446,7 +3565,7 @@ MODHOVER:
 	RenderSprites:
 		Image: modhover
 	Voiced:
-		VoiceSet: RAVehicleVoice
+		VoiceSet: JapaneseVehicleVoice
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
@@ -3524,7 +3643,7 @@ MODKAMI:
 	Selectable:
 		DecorationBounds: 30,28,0,2
 	Voiced:
-		VoiceSet: RussianVehicleVoice
+		VoiceSet: JapaneseVehicleVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA1
 	RenderSprites:
@@ -3538,7 +3657,7 @@ MODBOMBER:
 	Buildable:
 		Queue: Aircraft.ModJapan, RAAircraft.ModJapan, Aircraft.X_Aircrafts
 		BuildPaletteOrder: 30
-		Prerequisites: ~techlevel.medium, stek
+		Prerequisites: ~techlevel.medium, modjtek
 		Description: Attack Plane armed with\ndual machine guns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 2000
@@ -3599,7 +3718,7 @@ MODBOMBER:
 	Selectable:
 		DecorationBounds: 30,28,0,2
 	Voiced:
-		VoiceSet: RussianVehicleVoice
+		VoiceSet: JapaneseVehicleVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA1
 	RenderSprites:
@@ -3660,7 +3779,7 @@ MODCORE:
 		TransformSounds: placbldg.aud, build5.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
 	Voiced:
-		VoiceSet: RAVehicleVoice
+		VoiceSet: JapaneseVehicleVoice
 	Inherits@EXT: ^ExternalConditions
 	RenderSprites:
 		Image: modcore
@@ -3782,6 +3901,25 @@ MODCORE6:
 		Text: Fix
 	Passenger:
 		Weight: 4
+MODCORE7:
+	Inherits: MODCORE
+	Buildable:
+		Queue: Vehicle.ModJapan, RAVehicle.ModJapan
+		BuildPaletteOrder: 210
+		Prerequisites: rafix, ~techlevel.medium, anyhq
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+		Icon: icon7
+	Valued:
+		Cost: 1700
+	Tooltip:
+		Name: Core (Tech Center)
+	Transforms:
+		IntoActor: modjtek
+	WithTextDecoration:
+		Text: Tech Center
+	Passenger:
+		Weight: 4
 MODCARR:
 	Inherits: ^Vehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperienceVehicle
@@ -3841,7 +3979,7 @@ MODCARR:
 	Selectable:
 		DecorationBounds: 28,28
 	Voiced:
-		VoiceSet: RussianVehicleVoice
+		VoiceSet: JapaneseVehicleVoice
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
@@ -3859,6 +3997,19 @@ MODCARR:
 	ReloadDelayMultiplier@GattlingSpeed:
 		RequiresCondition: !ammo
 		Modifier: 125
+modcarr.bot1:
+	Inherits: MODCARR
+	Buildable:
+		Prerequisites: barracks, ~hardbotplayer
+	Cargo:
+		InitialUnits: rae1, rae1, rae3, rae3
+	ProductionCostMultiplier:
+		Multiplier: 180
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+	RenderSprites:
+		Image: modcarr
 ####################################################################################################
 #		Modded RA Greece
 ####################################################################################################
@@ -3867,7 +4018,7 @@ RABGGY:
 	RenderSprites:
 		Image: BGGY
 	Buildable:
-		Queue: Vehicle.ModAllies, RAVehicle.ModAllies, Vehicle.ModJapan, RAVehicle.ModJapan
+		Queue: Vehicle.ModAllies, RAVehicle.ModAllies
 		Prerequisites: ~canbuildrabggy
 	Tooltip:
 		Name: Attack Buggy
@@ -3886,7 +4037,7 @@ MODBGGY:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Queue: Vehicle.ModAllies, RAVehicle.ModAllies, Vehicle.ModJapan, RAVehicle.ModJapan
+		Queue: Vehicle.ModAllies, RAVehicle.ModAllies
 		Prerequisites: ~canbuildrabggy
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
 	Mobile:
@@ -3918,6 +4069,148 @@ MODBGGY:
 		ValidTypes: vehicle								##########
 	RenderSprites:
 		Image: modbggy
+MODTYPEJG:
+	Inherits: MODTYPEJ
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies
+		Prerequisites: ~modgreek
+		BuildLimit: 5
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Stealed Type Light Tank
+		GenericName: Tank
+	RenderSprites:
+		Image: modtypej
+	ProducibleWithLevel@modgreek:
+		InitialLevels: 1
+	SpeedMultiplier@modgreek:
+		Modifier: 110
+MODPANZERG:
+	Inherits: MODPANZER
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies
+		Prerequisites: ~modgreek
+		BuildLimit: 5
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Stealed Panzer Medium Tank
+		GenericName: Tank
+	RenderSprites:
+		Image: modpanzer
+	ProducibleWithLevel@modgreek:
+		InitialLevels: 1
+	SpeedMultiplier@modgreek:
+		Modifier: 110
+MODTIGERG:
+	Inherits: MODTIGER
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies
+		Prerequisites: ~modgreek
+		BuildLimit: 5
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Stealed Tiger Heavy Tank
+		GenericName: Tank
+	RenderSprites:
+		Image: modtiger
+	ProducibleWithLevel@modgreek:
+		InitialLevels: 1
+	SpeedMultiplier@modgreek:
+		Modifier: 110
+MOD3TNKG:
+	Inherits: 3TNK
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies
+		BuildPaletteOrder: 100
+		Prerequisites: ~modgreek
+		BuildLimit: 5
+	Valued:
+		Cost: 850
+	Tooltip:
+		Name: Stealed Soviet Heavy Tank
+		GenericName: Tank
+	RenderSprites:
+		Image: 3tnk
+	ProducibleWithLevel@modgreek:
+		InitialLevels: 1
+	SpeedMultiplier@modgreek:
+		Modifier: 110
+MOD4TNKG:
+	Inherits: 4TNK
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies
+		BuildPaletteOrder: 100
+		Prerequisites: ~modgreek, atek
+		BuildLimit: 1
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Stealed Mammoth Tank
+		GenericName: Tank
+	RenderSprites:
+		Image: 4tnk
+	ProducibleWithLevel@modgreek:
+		InitialLevels: 1
+	SpeedMultiplier@modgreek:
+		Modifier: 110
+MODTTNKG:
+	Inherits: TTNK
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies
+		BuildPaletteOrder: 100
+		Prerequisites: ~modgreek, atek
+		BuildLimit: 2
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Stealed Tesla Tank
+		GenericName: Tank
+	RenderSprites:
+		Image: ttnk
+	ProducibleWithLevel@modgreek:
+		InitialLevels: 1
+	SpeedMultiplier@modgreek:
+		Modifier: 110
+
+RATHFG:
+	Inherits: RATHF
+    Inherits@oldbuff: ^OldFactionBuff
+	Valued:
+		Cost: 400
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks, ~modgreek
+		Queue: Infantry.ModAllies, RAInfantry.ModAllies
+		Description: Hijacks vehicles and steals cash.
+	Cloak:
+		InitialDelay: 120
+		CloakDelay: 60
+	RenderSprites:
+		Image: rathf
+	SpeedMultiplier@modgreek:
+		Modifier: 130
+MODHINDG:
+	Inherits: HIND
+	Buildable:
+		Queue: Aircraft.Allies, RAAircraft.Allies
+		BuildPaletteOrder: 20
+		Prerequisites: anyhq, ~modgreek
+		BuildLimit: 2
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Stealed Hind
+	Health:
+		HP: 22000
+	RenderSprites:
+		Image: hind
+	ProducibleWithLevel@modgreek:
+		InitialLevels: 1
+	SpeedMultiplier@modgreek:
+		Modifier: 110
 ####################################################################################################
 #		Modded RA USA
 ####################################################################################################
@@ -3934,6 +4227,45 @@ raapc.modusa:
 		DeployTicks: 0
 ####################################################################################################
 #		Modded RA Irak
+####################################################################################################
+MOD3TNKI:
+	Inherits: 3TNK
+	RenderSprites:
+		Image: 3TNK
+	Buildable:
+		Prerequisites: ~raatomictank
+	Tooltip:
+		Name: Atomic Heavy Tank
+	Armament:
+		Weapon: 105mmirak
+	Explodes:
+		Weapon: V2ExplodeIrak
+MOD4TNKI:
+	Inherits: 4TNK
+	RenderSprites:
+		Image: 4TNK
+	Buildable:
+		Prerequisites: rafix, stek, ~techlevel.high, ~raatomictank
+	Tooltip:
+		Name: Atomic Heavy Tank
+	Armament:
+		Weapon: ra120mmirak
+	Explodes:
+		Weapon: V2ExplodeIrak
+MODV2RLI:
+	Inherits: V2RL
+	RenderSprites:
+		Image: V2RL
+	Buildable:
+		Prerequisites: anyhq, ~techlevel.medium, ~v2rlunlocki
+	Tooltip:
+		Name: Atomic V2 Rocket
+	Armament:
+		Weapon: SCUDIrak
+	Explodes:
+		Weapon: V2ExplodeIrak
+####################################################################################################
+#		Ships
 ####################################################################################################
 PT:
 	Inherits: ^BoatUnit
@@ -4758,6 +5090,20 @@ PBOX:
 	DetectCloaked:
 		Range: 6c0
 
+PBOX.E3:
+	Inherits: PBOX
+	Building:
+	Buildable:
+		Queue: Defence.Allies, RADefence.Allies, Defence.ModAllies, RADefence.ModAllies, Defence.ModJapan, RADefence.ModJapan
+		BuildPaletteOrder: 50
+		Prerequisites: tent, ~techlevel.medium, ~botplayer
+		Description: Camouflaged static defense with a fireport\nfor a garrisoned soldier.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+	Valued:
+		Cost: 800
+	Cargo:
+		InitialUnits: rae3
+	RenderSprites:
+		Image: pbox
 HBOX:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
@@ -4765,7 +5111,7 @@ HBOX:
 		Name: Camo Pillbox
 	Building:
 	Buildable:
-		Queue: Defence.Allies, RADefence.Allies, Defence.ModAllies, RADefence.ModAllies, Defence.ModJapan, RADefence.ModJapan
+		Queue: Defence.Allies, RADefence.Allies, Defence.ModAllies, RADefence.ModAllies
 		BuildPaletteOrder: 50
 		Prerequisites: tent, ~techlevel.medium
 		Description: Camouflaged static defense with a fireport\nfor a garrisoned soldier.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
@@ -4815,7 +5161,20 @@ HBOX:
 	Power:
 		Amount: -20
 	-MustBeDestroyed:
-
+HBOX.E3:
+	Inherits: HBOX
+	Building:
+	Buildable:
+		Queue: Defence.Allies, RADefence.Allies, Defence.ModAllies, RADefence.ModAllies, Defence.ModJapan, RADefence.ModJapan
+		BuildPaletteOrder: 50
+		Prerequisites: tent, ~techlevel.medium, ~botplayer
+		Description: Camouflaged static defense with a fireport\nfor a garrisoned soldier.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+	Valued:
+		Cost: 950
+	Cargo:
+		InitialUnits: rae3
+	RenderSprites:
+		Image: hbox
 RAGUN:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
@@ -5159,7 +5518,21 @@ RAWEAP:
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite:
 		Prerequisite: vehicleproduction
-
+	ProvidesPrerequisite@normaltanksoviet:
+		Prerequisite: normaltanksoviet 
+		Factions: soviet, modukraine, modrussia
+	ProvidesPrerequisite@raatomictank:
+		Prerequisite: raatomictank 
+		Factions: modirak
+	ProvidesPrerequisite@katyshaunlock:
+		Prerequisite: katyshaunlock 
+		Factions: modukraine
+	ProvidesPrerequisite@v2rlunlock:
+		Prerequisite: v2rlunlock 
+		Factions:  soviet, modrussia
+	ProvidesPrerequisite@v2rlunlocki:
+		Prerequisite: v2rlunlocki 
+		Factions:  modirak
 RAFACT:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
@@ -5799,7 +6172,7 @@ STEK:
 	HitShape:
 		TargetableOffsets: 420,-768,0, 420,768,0, -770,-768,0, -770,768,0
 	Buildable:
-		Queue: Building.Soviet, RABuilding.Soviet, Building.ModSoviet, RABuilding.ModSoviet, Building.ModJapan, RABuilding.ModJapan
+		Queue: Building.Soviet, RABuilding.Soviet, Building.ModSoviet, RABuilding.ModSoviet
 		BuildPaletteOrder: 150
 		Prerequisites: vehicleproduction, anyhq, ~techlevel.high
 		Description: Provides Soviet advanced technologies.
@@ -6477,6 +6850,9 @@ MODRAFACT.SOVIET:
     ProvidesPrerequisite@modukranie:
 		Prerequisite: modukranie
 		Factions: modukranie
+    ProvidesPrerequisite@modirak:
+		Prerequisite: modirak
+		Factions: modirak
 MODRAFACT.JAPAN:
 	Inherits: RAFACT.SOVIET
 	Production@NORMAL:
@@ -6552,7 +6928,7 @@ MODTENTJ:
 	ProductionBar@RAINFANTRYALLIES:
 		ProductionType: RAInfantry.ModJapan
 	RenderSprites:
-		Image: TENT
+		Image: modjbarr
     ProvidesPrerequisite@tent:
 		Prerequisite: tent
 	Tooltip:
@@ -6702,6 +7078,59 @@ MODRAAFLD:
 	ProvidesPrerequisite@buildingname:
 	RenderSprites:
 		Image: raafld
+MODJTEK:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RASovietSpawnActorsOnSell
+	Inherits@tech: ^IsTechnoBuilding
+	Selectable:
+		Bounds: 72,48
+	HitShape:
+		TargetableOffsets: 420,-768,0, 420,768,0, -770,-768,0, -770,768,0
+	Buildable:
+		Queue: Building.ModJapan, RABuilding.ModJapan
+		BuildPaletteOrder: 150
+		Prerequisites: vehicleproduction, anyhq, ~techlevel.high
+		Description: Provides Soviet advanced technologies.
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Japanese Tech Center
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 80000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: tek
+
+
+HBOXJ:
+	Inherits: HBOX
+	Building:
+	Buildable:
+		Queue: Defence.ModJapan, RADefence.ModJapan
+		BuildPaletteOrder: 50
+		Prerequisites: tent, ~techlevel.medium
+		Description: Camouflaged static defense with a fireport\nfor a garrisoned soldier.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+	Valued:
+		Cost: 700
+	Cargo:
+		InitialUnits: raje1
+	RenderSprites:
+		Image: hbox
 ####################################################################################################
 #		Ants Stuff
 ####################################################################################################
