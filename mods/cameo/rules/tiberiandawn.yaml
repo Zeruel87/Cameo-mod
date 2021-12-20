@@ -59,7 +59,7 @@ MCV.MODNOD:
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: anyhq, ~techlevel.medium, fix
-		Queue: Vehicle.MODNOD, RAVehicle.MODNOD
+		Queue: Vehicle.MODNod, RAVehicle.MODNod
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
 	Selectable:
@@ -162,6 +162,12 @@ fact.modnod:
 	ProvidesPrerequisite@modblackhand:
 		Prerequisite: modblackhand
 		Factions: modblackhand
+	ProvidesPrerequisite@nodscavenger:
+		Prerequisite: nodscavenger
+		Factions: nodscavenger
+	ProvidesPrerequisite@stealthnod:
+		Prerequisite: stealthnod
+		Factions: stealthnod
 fact.modnod2:
 	Inherits: fact.modnod
 	Transforms:
@@ -809,6 +815,29 @@ e1officernod:
 		InitialLevels: 1
 	Valued:
 		Cost: 300
+modne6:
+	Inherits: E6
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Repair & Demolition Engineer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks, ~modblackhand
+		Queue: Infantry.MODNod, RAInfantry.MODNod
+	Armament@repair:
+		Weapon: Repair
+		TargetStances: Ally
+		ForceTargetStances: None
+	Armament@c4:
+		Weapon: C4
+		TargetStances: Enemy
+	Inherits@EXT: ^ExternalConditions					##########
+	RenderSprites:
+		Image: e6
 ####################################################################################################
 #		Tiberian Dawn Renegade Mode
 ####################################################################################################
@@ -861,6 +890,17 @@ e4.renegade:
 		Queue: Infantry.MODNodR, RAInfantry.MODNodR
 	RenderSprites:
 		Image: e4
+
+e6.renegade:
+	Inherits: E6
+    Inherits@renegaded: ^IsRenegadeUnitInfantry
+	Tooltip:
+		Name: Renegaded Engineer
+	Buildable:
+		Prerequisites: barracks
+		Queue: Infantry.MODGDIR, Infantry.MODNodR, RAInfantry.MODGDIR, RAInfantry.MODNodR
+	RenderSprites:
+		Image: e6
 
 e1officergdi.renegade:
 	Inherits: e1officergdi
@@ -954,7 +994,7 @@ MODMSSM:
 		Prerequisites: tmpl, ~chemnod
 		Queue: Vehicle.MODNod, RAVehicle.MODNod
 		Description: Long-range rocket artillery.\n  Strong vs Buildings\n  Weak vs Aircraft
-		Icon: icon
+		Icon: chemicon
 	Mobile:
 		Speed: 85
 	Armament:
@@ -996,6 +1036,7 @@ MODCHEMBIKE:
 		BuildPaletteOrder: 30
 		Prerequisites: afld, ~chemnod
 		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
+		Icon: chemicon
 	Armament:
 		Weapon: ChemicalBikeRockets
   	Armament@AA:
@@ -1011,13 +1052,15 @@ MODCHEMLTNK:
 	Inherits: LTNK
 	Valued:
 		Cost: 700
+	Tooltip:
+		Name: Chemical Light Tank
 	Buildable:
 		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
 		Prerequisites: afld, ~chemnod
 	Armament:
 		Weapon: Chem70mm
 	RenderSprites:
-		Image: ltnk
+		Image: modchemltnk
 	Explodes:
 		Weapon: TiberiumExplosion
 		EmptyWeapon: TiberiumExplosion
@@ -1035,12 +1078,187 @@ MODCHEMSTNK:
 	Armament:
 		Weapon: Chemical227mm.stnk
 	RenderSprites:
-		Image: stnk
+		Image: modchemstnk
 	Explodes:
 		Weapon: TiberiumExplosion
 		EmptyWeapon: TiberiumExplosion
 		Chance: 50
 
+
+MODCHEMGUN:
+	Inherits: GUN
+	RenderSprites:
+		Image: GUN
+	Buildable:
+		Queue: Defence.MODNod, RADefence.MODNod
+		Prerequisites: barracks, ~chemnod
+		Icon: chemicon
+	Tooltip:
+		Name: Chemical Shells Turret
+	Armament:
+		Weapon: ChemTurretGun
+MODCHEMFTUR:
+	Inherits: FTUR
+	Buildable:
+		Queue: Defence.MODNod, RADefence.MODNod
+		BuildPaletteOrder: 60
+		Prerequisites: anyhq, ~techlevel.low, ~chemnod
+		Description: Anti-Infantry base defense.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+	Valued:
+		Cost: 850
+	Tooltip:
+		Name: Chemical Mix Tower
+	Armament:
+		Weapon: ChemsprayLauncher
+		LocalOffset: 512,0,0
+
+MODCHEMHELI:
+	Inherits: HELI
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: Chemical Apache
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium, ~chemnod
+		Queue: Aircraft.Nod, RAAircraft.Nod, Aircraft.X_Aircrafts
+		Icon: chemicon
+	Armament@PRIMARY:
+		Weapon: ChemHeliAGMissiles
+	Armament@SECONDARY:
+		Weapon: ChemHeliAAMissiles
+	ReloadAmmoPool:
+		Delay: 100
+		Count: 2
+	AmmoPool:
+		Ammo: 6
+		PipCount: 6
+		AmmoCondition: ammo
+	RenderSprites:
+		Image: HELI
+MODCHEMTMPL:
+	Inherits: TMPL
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high, !nodnuke, ~chemnod
+	NukePower:
+		Description: Chemical Nuclear Strike
+		MissileWeapon: chemtibatomic
+	ProvidesPrerequisite@tmpl:
+		Prerequisite: tmpl
+	RenderSprites:
+		Image: TMPL
+####################################################################################################
+#		Tiberian Dawn Expansion Stealth Nod
+####################################################################################################
+MODSSTNK:
+	Inherits: STNK
+	Valued:
+		Cost: 900
+	Buildable:
+		Prerequisites: anyhq, ~stealthnod
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
+	Cloak:
+		InitialDelay: 1
+		CloakDelay: 1
+	RenderSprites:
+		Image: STNK
+MODSBIKE:
+	Inherits: BIKE
+	Valued:
+		Cost: 550
+	Tooltip:
+		Name: Cloak Recon Bike
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Prerequisites: ~stealthnod
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
+	RenderSprites:
+		Image: BIKE
+	Cloak:
+		InitialDelay: 160
+		CloakDelay: 160
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
+MODSLTNK:
+	Inherits: LTNK
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Cloak Light Tank
+	Buildable:
+		Prerequisites: ~stealthnod
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
+	RenderSprites:
+		Image: LTNK
+	Cloak:
+		InitialDelay: 160
+		CloakDelay: 160
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
+
+MODSFTNK:
+	Inherits: FTNK
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Cloak Flame Tank
+	Buildable:
+		Prerequisites: anyhq, ~techlevel.medium, ~stealthnod
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
+	RenderSprites:
+		Image: FTNK
+	Cloak:
+		InitialDelay: 160
+		CloakDelay: 160
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
+MODSARTY:
+	Inherits: ARTY
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Cloak Artillery
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Prerequisites: anyhq, ~techlevel.medium, ~stealthnod
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
+	Cloak:
+		InitialDelay: 160
+		CloakDelay: 160
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
+	RenderSprites:
+		Image: ARTY
+MODSMSSM:
+	Inherits: MSSM
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: Cloak SSM Launcher
+	Buildable:
+		Prerequisites: tmpl, ~stealthnod
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
+	Cloak:
+		InitialDelay: 160
+		CloakDelay: 160
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
 ####################################################################################################
 #		Tiberian Dawn Expansion Black Hand Nod
 ####################################################################################################
@@ -1063,7 +1281,7 @@ NEWLTNK:
 	Tooltip:
 		Name: Light Tank Mk2
 	Buildable:
-		Queue: Vehicle.ModNod, RAVehicle.ModNod, Vehicle.X_Vehicles
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
 		BuildPaletteOrder: 50
 		Prerequisites: anyhq, ~selectblackhand
 	RenderSprites:
@@ -1083,7 +1301,7 @@ NEWFTNK:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: Vehicle.ModNod, RAVehicle.ModNod, Vehicle.X_Vehicles
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
 		BuildDurationModifier: 40
 		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
 		Prerequisites: vehicleproduction, ~selectblackhand
@@ -1123,7 +1341,7 @@ NEWARTY:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: Vehicle.ModNod, RAVehicle.ModNod, Vehicle.X_Vehicles
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
 		BuildDurationModifier: 40
 		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
 		Prerequisites: vehicleproduction, ~selectblackhand
@@ -1157,14 +1375,15 @@ NEWSMM:
 	Inherits@EMP: ^FrontalEMP
  	Inherits@country: ^AffectedByCountryBonuses
 	Inherits@jammable: ^ArtilleryJammable
+    Inherits@oldbuff: ^ModernFactionBuff
 	Buildable:
 		BuildPaletteOrder: 100
-		Queue: Vehicle.ModNod, RAVehicle.ModNod, Vehicle.X_Vehicles
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
 		Description: Long-range rocket artillery.\n  Strong vs Buildings\n  Weak vs Aircraft
 		Prerequisites: tmpl, ~selectblackhand
 		Icon: icon
     Valued:
-		Cost: 625
+		Cost: 700
 	Tooltip:
 		Name: SMM Launcher Mk2
 	UpdatesPlayerStatistics:
@@ -1211,7 +1430,7 @@ NEWBGGY:
 	Tooltip:
 		Name: Nod Buggy Mk2
 	Buildable:
-		Queue: Vehicle.ModNod, RAVehicle.ModNod, Vehicle.X_Vehicles
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
 		BuildPaletteOrder: 50
 		Prerequisites: vehicleproduction, ~selectblackhand
 	RenderSprites:
@@ -1221,6 +1440,58 @@ NEWBGGY:
 		LocalOffset: 171,0,43
 		MuzzleSequence: muzzle
 
+####################################################################################################
+#		Tiberian Dawn Expansion Scavenger
+####################################################################################################
+NODV2RL:
+	Inherits: V2RL
+	Buildable:
+		Prerequisites: anyhq, ~nodscavenger
+		Queue: Vehicle.MODNod, RAVehicle.MODNod
+	RenderSprites:
+		Image: V2RL
+NODFTRK:
+	Inherits: FTRK
+	Buildable:
+		Prerequisites: vehicleproduction, ~nodscavenger
+		Queue: Vehicle.MODNod, RAVehicle.MODNod
+	RenderSprites:
+		Image: FTRK
+NOD4TNK:
+	Inherits: 4TNK
+	Buildable:
+		Prerequisites: tmpl, ~nodscavenger
+		Queue: Vehicle.MODNod, RAVehicle.MODNod
+	RenderSprites:
+		Image: 4TNK
+NMODKIROV:
+	Inherits: MODKIROV
+	Buildable:
+		Prerequisites: tmpl, ~nodscavenger
+		Queue: Vehicle.MODNod, RAVehicle.MODNod
+	RenderSprites:
+		Image: modkirov
+NMODAPOC:
+	Inherits: modapoc
+	Buildable:
+		Prerequisites: anyhq, ~nodscavenger
+		Queue: Vehicle.MODNod, RAVehicle.MODNod
+	RenderSprites:
+		Image: modapoc
+NMODRHINO:
+	Inherits: modrhino
+	Buildable:
+		Prerequisites: ~nodscavenger
+		Queue: Vehicle.MODNod, RAVehicle.MODNod
+	RenderSprites:
+		Image: modrhino
+NODDTRK:
+	Inherits: DTRK
+	Buildable:
+		Prerequisites: tmpl, ~nodscavenger
+		Queue: Vehicle.MODNod, RAVehicle.MODNod
+	RenderSprites:
+		Image: DTRK
 ####################################################################################################
 #		Tiberian Dawn Renegade Mode
 ####################################################################################################
