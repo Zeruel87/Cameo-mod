@@ -31,7 +31,7 @@ MCV.MODGDI:
 	RevealsShroud:
 		Range: 8c0
 	Transforms:
-		IntoActor: fact.gdi
+		IntoActor: fact.modgdi
 		Offset: -1,-1
 		Facing: 108
 		TransformSounds: constru2.aud, hvydoor1.aud
@@ -125,7 +125,12 @@ FACT.MODGDI:
 		Prerequisite: mmgdi
 	RenderSprites:
 		Image: fact
-
+	ProvidesPrerequisite@gdispecialf:
+		Prerequisite: gdispecialf
+		Factions: gdispecialf
+	ProvidesPrerequisite@modsteel:
+		Prerequisite: modsteel
+		Factions: modsteel
 fact.modnod:
 	Inherits: FACT.NOD
 	Production@NORMAL:
@@ -204,7 +209,7 @@ MODWEAP:
 		Cost: 2000
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: proc
+		Prerequisites: proc, ~!gdispecialfr
 		Queue: Building.MODGDI, RABuilding.MODGDI
 		Description: Produces vehicles
 	Production@NORMAL:
@@ -226,7 +231,7 @@ MODPYLE:
 	Inherits: PYLE
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: anypower, ~!modblackhandr
+		Prerequisites: anypower, ~!gdispecialfr
 		Queue: Building.MODGDI, RABuilding.MODGDI
 	Production@NORMAL:
 		Produces: Infantry.MODGDI
@@ -263,7 +268,7 @@ MODPYLER:
 	Inherits: PYLE
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: anypower, ~modblackhandr
+		Prerequisites: anypower, ~gdispecialfr
 		Queue: Building.MODGDI, RABuilding.MODGDI
 	Production@NORMAL:
 		Produces: Infantry.MODGDIR
@@ -325,7 +330,7 @@ MODWEAPR:
 		Cost: 2000
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: proc, ~modblackhandr
+		Prerequisites: proc, ~gdispecialfr
 		Queue: Building.MODGDI, RABuilding.MODGDI
 		Description: Produces vehicles
 	Production@NORMAL:
@@ -765,8 +770,8 @@ e1officergdi:
 	Tooltip:
 		Name: Officer
 	Buildable:
-		Prerequisites: barracks, anyhq
-		Queue: Infantry.GDI, RAInfantry.GDI
+		Prerequisites: barracks, anyhq, ~gdispecialf
+		Queue: Infantry.MODGDI, RAInfantry.MODGDI
 	RenderSprites:
 		Image: e1officergdi
         Scale: 1.15
@@ -778,6 +783,14 @@ e1officergdi:
 		InitialLevels: 1
 	Valued:
 		Cost: 300
+modge6:
+	Inherits: modne6
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks, ~gdispecialf
+		Queue: Infantry.MODGDI, RAInfantry.MODGDI
+	RenderSprites:
+		Image: e6
 ####################################################################################################
 #		Tiberian Dawn Expansion Chemical Nod
 ####################################################################################################
@@ -833,8 +846,7 @@ modne6:
 		TargetStances: Ally
 		ForceTargetStances: None
 	Armament@c4:
-		Weapon: C4
-		TargetStances: Enemy
+		Weapon: RenegadeC4
 	Inherits@EXT: ^ExternalConditions					##########
 	RenderSprites:
 		Image: e6
@@ -892,7 +904,7 @@ e4.renegade:
 		Image: e4
 
 e6.renegade:
-	Inherits: E6
+	Inherits: modne6
     Inherits@renegaded: ^IsRenegadeUnitInfantry
 	Tooltip:
 		Name: Renegaded Engineer
@@ -979,6 +991,39 @@ MODEGG:
 ####################################################################################################
 #		Tiberian Dawn Expansion Special Forces
 ####################################################################################################
+NEWHUMVEE:
+	Inherits: JEEP
+    Inherits@oldbuff: ^ModernFactionBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Tooltip:
+		Name: Hum-Vee MK2
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: weap, ~gdispecialf
+		Queue: Vehicle.MODGDI, RAVehicle.MODGDI, Vehicle.X_Vehicles
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		Speed: 160
+	Armament@AA:
+		Weapon: MachineGun.AA
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+MODRAPC:
+	Inherits: APC
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks, ~gdispecialf
+		Queue: Vehicle.MODGDI, RAVehicle.MODGDI, Vehicle.X_Vehicles
+	Armament@PRIMARY:
+		Weapon: MachineGunH
+	Armament@SECONDARY:
+		Weapon: MachineGun.AA
+    Armament@ROCKET:
+        Weapon: APCRocket.AA
+        LocalOffset: 85,125,299
+	RenderSprites:
+		Image: APC
+	-WithSpriteTurret:
 ####################################################################################################
 #		Tiberian Dawn Expansion Chemical Nod
 ####################################################################################################
@@ -1262,19 +1307,23 @@ MODSMSSM:
 ####################################################################################################
 #		Tiberian Dawn Expansion Black Hand Nod
 ####################################################################################################
-BHAPC:
+NEWNAPC:
 	Inherits: RNAPC
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
 		Cost: 550
 	Tooltip:
 		Name: Nod APC
 	Buildable:
-		Queue: Vehicle.ModNod, RAVehicle.ModNod, Vehicle.X_Vehicles
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
 		BuildPaletteOrder: 40
-		Prerequisites: vehicleproduction, ~selectblackhand
+		Prerequisites: barracks, ~selectblackhand
 	RenderSprites:
-		Image: rnapc
-
+		Image: newnapc
+	Armament@AA:
+		Weapon: MachineGun.AA
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
 NEWLTNK:
 	Inherits: LTNK
     Inherits@oldbuff: ^ModernFactionBuff
@@ -1493,7 +1542,7 @@ NODDTRK:
 	RenderSprites:
 		Image: DTRK
 ####################################################################################################
-#		Tiberian Dawn Renegade Mode
+#		Tiberian Dawn N Renegade Mode
 ####################################################################################################
 ^IsRenegadeUnit:
     DamageMultiplier@renegadedriverbuff:
@@ -1576,3 +1625,64 @@ newsmm.renegade:
 		Image: newsmm
 	Tooltip:
 		Name: Renegaded SMM Launcher
+newnapc.renegade:
+	Inherits: NEWNAPC
+    Inherits@renegaded: ^IsRenegadeUnit
+	Buildable:
+		Queue: Vehicle.MODNodR, RAVehicle.MODNodR, Vehicle.X_Vehicles
+		BuildPaletteOrder: 50
+		Prerequisites: barracks
+	RenderSprites:
+		Image: newnapc
+	Tooltip:
+		Name: Renegaded APC
+####################################################################################################
+#		Tiberian Dawn G Renegade Mode
+####################################################################################################
+mtnk.renegade:
+	Inherits: MTNK
+    Inherits@renegaded: ^IsRenegadeUnit
+	Buildable:
+		Queue: Vehicle.MODGDIR, RAVehicle.MODGDIR, Vehicle.X_Vehicles
+	RenderSprites:
+		Image: mtnk
+	Tooltip:
+		Name: Renegaded Medium Tank
+
+modrapc.renegade:
+	Inherits: MODRAPC
+    Inherits@renegaded: ^IsRenegadeUnit
+	Buildable:
+		Queue: Vehicle.MODGDIR, RAVehicle.MODGDIR, Vehicle.X_Vehicles
+	RenderSprites:
+		Image: apc
+	Tooltip:
+		Name: Renegaded APC
+
+newhumvee.renegade:
+	Inherits: NEWHUMVEE
+    Inherits@renegaded: ^IsRenegadeUnit
+	Buildable:
+		Queue: Vehicle.MODGDIR, RAVehicle.MODGDIR, Vehicle.X_Vehicles
+	RenderSprites:
+		Image: newhumvee
+	Tooltip:
+		Name: Renegaded Hum-Vee
+htnk.renegade:
+	Inherits: HTNK
+    Inherits@renegaded: ^IsRenegadeUnit
+	Buildable:
+		Queue: Vehicle.MODGDIR, RAVehicle.MODGDIR, Vehicle.X_Vehicles
+	RenderSprites:
+		Image: htnk
+	Tooltip:
+		Name: Renegaded Mammoth Tank
+msam.renegade:
+	Inherits: MSAM
+    Inherits@renegaded: ^IsRenegadeUnit
+	Buildable:
+		Queue: Vehicle.MODGDIR, RAVehicle.MODGDIR, Vehicle.X_Vehicles
+	RenderSprites:
+		Image: htnk
+	Tooltip:
+		Name: Renegaded Rocket Launcher
