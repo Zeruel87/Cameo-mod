@@ -10,6 +10,7 @@ Debris:
 		LaunchAngle: 128, 192
 		Inaccuracy: 1c256
 		Image: shrapnel
+        Palette: d2keffect
 		Shadow: true
 		BounceCount: 3
 		BounceRangeModifier: 20
@@ -40,6 +41,7 @@ Debris2:
 	Inherits: Debris
 	Projectile: Bullet
 		Image: shrapnel2
+        Palette: d2keffect
 		TrailImage: small_trail
         TrailPalette: effect75alpha
 		TrailInterval: 1
@@ -144,18 +146,18 @@ Debris4:
 80mm_O:
 	Inherits: ^D2K_Cannon
 	ReloadDelay: 45  
- 
+
 80mm_OUP:
 	Inherits: ^D2K_Cannon
 	ReloadDelay: 30  
 
 100mm_A:
  	Inherits: ^D2K_Cannon
-    Range: 8c0
+    Range: 8c512
     Report: d2khc.wav
-    ReloadDelay: 70   
+    ReloadDelay: 65
     Warhead@1Dam: SpreadDamage
-		Damage: 11000
+		Damage: 11500
 120mm_td:
 	Inherits: ^D2K_Cannon
     Range: 10c0
@@ -201,7 +203,22 @@ D2K70mmH:
     BurstDelays: 0
    	Warhead@1Dam: SpreadDamage
 		Damage: 3000
-        
+
+Emperor_Sardaukar_Elite:
+	Inherits: ^D2K_Cannon  
+	ReloadDelay: 80
+    Report: d2k_gauss.wav
+    Range: 4c512
+    Warhead@1Dam: SpreadDamage
+		Damage: 9000
+        Versus:
+            None: 90
+			Wood: 60
+			Light: 115
+            Medium: 110
+			Heavy: 100
+            Concrete: 45   
+
 DevBullet:
 	Inherits: ^D2K_Cannon
 	ReloadDelay: 75
@@ -317,6 +334,7 @@ D2K_155mm3:
 #       MISSILES
 #############################
 ^D2KRocket:
+    Inherits: ^AnyMissile
 	ReloadDelay: 40
 	Range: 3c0
 	Report: ROCKET1.WAV
@@ -873,7 +891,12 @@ Sound2:
 		Damage: 1000
 	Warhead@3Concrete: DamagesConcrete
 		Damage: 1500
-        
+
+Combat_Tank_F_Sound:
+	Inherits: Sound
+    Range: 5c512
+	ReloadDelay: 135
+    
 facedancer_attack:
 	ReloadDelay: 20
 	Report: zulhit00.aud
@@ -897,15 +920,80 @@ contaminator_attack:
 	Range: 1c512
 	Projectile: InstantHit
 	Warhead@1Dam: SpreadDamage
-		Damage: 5000
+		Damage: 5750
 		Versus:
-			None: 150
+			None: 175
 			Wood: 70		#10
-			Light: 90		#30
-            Medium: 60
-			Heavy: 45		#10
+			Light: 20		#30
+            Medium: 10
+			Heavy: 5		#10
 			Concrete: 45
 		DamageTypes: Prone50Percent, TriggerProne, ContaminatorMutate
+
+LeechAttack:
+	ReloadDelay: 50
+	Range: 3c512
+	Report: vteratta.aud
+	Projectile: InstantHit
+    InvalidTargets: Structure
+	Warhead@Standard: SpreadDamage
+		Spread: 0c204
+		Falloff: 100, 0
+        InvalidTargets: Structure, LeechEggKill
+		Damage: 10000
+        Versus:
+			None: 125
+			Wood: 10
+			Light: 125
+            Medium: 100
+			Heavy: 75
+            Concrete: 5
+		DamageTypes: Prone50Percent, TriggerProne
+	Warhead@HealedByMech: SpreadDamage
+		Spread: 0c204
+		Falloff: 100, 0
+        ValidTargets: LeechEggKill
+		Damage: 2000
+        Versus:
+			None: 125
+			Wood: 10
+			Light: 125
+            Medium: 100
+			Heavy: 75
+            Concrete: 5
+        DamageTypes: Prone50Percent, TriggerProne
+	Warhead@Infected: SpreadDamage
+		Spread: 0c204
+		Falloff: 100, 0
+        ValidTargets: LeechEggKill
+		Damage: 20000
+        Versus:
+			None: 125
+			Wood: 10
+			Light: 125
+            Medium: 100
+			Heavy: 75
+            Concrete: 5
+		DamageTypes: Prone50Percent, TriggerProne
+	Warhead@2Ext: GrantExternalCondition
+		Condition: LeechEggLaid
+		Duration: 0
+		Range: 0c512
+		ValidTargets: Vehicle
+
+LeechDisinfect:
+    Projectile: InstantHit
+    ReloadDelay: 100
+    Range: 1c512
+    Report: vterdiea.aud, vterdieb.aud
+    ValidTargets: LeechEggLaid
+    InvalidTargets: LeechEggKill
+	Warhead@2Ext: GrantExternalCondition
+		Condition: LeechEggKill
+		Duration: 0
+		Range: 0c512
+		ValidTargets: LeechEggLaid
+        InvalidTargets: LeechEggKill
         
 WormJaw:
 	ReloadDelay: 10
@@ -963,7 +1051,31 @@ OrniBomb:
 OrniBombC:
     Inherits: OrniBomb  
         Range: 2c512
-  
+
+OrniMissile:
+    Inherits: PhoenixRocket
+    ReloadDelay: 85
+    Burst: 2
+    Range: 6c0
+    ValidTargets: Ground, Air
+    BurstDelays: 12
+    Projectile: Missile
+		Inaccuracy: 16
+		Speed: 318
+		RangeLimit: 7c512
+    Warhead@1Dam: SpreadDamage 
+        Damage: 7500
+        Spread: 1c0
+        ValidTargets: Ground, Air
+        Versus:
+			None: 20
+			Wood: 125
+			Light: 90
+            Medium: 75
+			Heavy: 60
+            Concrete: 90
+    -Warhead@Shrapnel:
+    
 Crush:
 	Warhead@1Dam: SpreadDamage
 		Damage: 1000
@@ -975,7 +1087,7 @@ D2KDemolish:
 	Warhead@1Dam: SpreadDamage
 		DamageTypes: ExplosionDeath
 	Warhead@2Eff: CreateEffect
-		Explosions: building
+		Explosions: d2k_building
 		ImpactSounds: EXPLLG2.WAV
 		ImpactActors: false
         ExplosionPalette: effect75alpha
@@ -1031,7 +1143,8 @@ DeathHandCluster:
 SardaukarDroppodSpawner:
 	Projectile: InstantExplode
 	Range: 4c0
-	Warhead@1: FireShrapnel
+	Warhead@1: FireShrapnel 
+		InvalidTargets: FireImmune
 		Weapon: SardaukarDroppod1
 		Amount: 8
 
@@ -1079,6 +1192,83 @@ SardaukarDroppod:
 		Actors: mpsardaukar
 		Range: 2
 
+SardaukarEliteDroppodSpawner:
+	Projectile: InstantExplode
+	Range: 4c0
+	Warhead@1: FireShrapnel 
+		InvalidTargets: FireImmune
+		Weapon: SardaukarEliteDroppod1
+		Amount: 5
+        Delay: 75
+	Warhead@2: FireShrapnel 
+		InvalidTargets: FireImmune
+		Weapon: SardaukarChiefDropPod1
+		Amount: 1
+        Delay: 75
+SardaukarEliteDroppod1:
+	Range: 1c0
+	Projectile: AthenaProjectile
+		Altitude: 8000
+	Warhead@Dam: TargetDamage
+	Warhead@1: FireCluster
+		Weapon: SardaukarEliteDroppod
+		RandomClusterCount: 1
+		Dimensions: 5,5
+		Footprint: _____ x____ x____ x____ _xxx_
+	Warhead@4Eff: CreateEffect
+		ImpactSounds: meteor1.aud, meteor2.aud
+		ValidTargets: Ground, Air, Water    
+
+SardaukarEliteDroppod:
+	InvalidTargets: Water
+	Projectile: Bullet
+		Speed: 350
+		Image: tsdroppod
+		TrailImage: smokey
+		Palette: tseffect
+	Warhead@1Dam: SpreadDamage
+		Damage: 20000
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+        ValidStances: Enemy, Neutral
+        Spread: 0c384
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: Crater
+	Warhead@3Eff: CreateEffect
+		Explosions: big_frag
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air, Water
+	Warhead@4Eff: CreateEffect
+		Image: tspodring
+		Explosions: idle
+		ExplosionPalette: tseffect
+		ValidTargets: Ground, Air, Water
+	Warhead@5Eff: CreateEffect
+		Image: tsdroppod
+		Explosions: idle
+		ExplosionPalette: tseffect
+		ValidTargets: Ground, Air, Water
+	Warhead@6: SpawnActor
+		Actors: emperor_sardaukar_elite
+		Range: 2
+   	Warhead@2Dis: GrantExternalCondition
+		Range: 400
+		Duration: 200
+		Condition: empdisable
+    Warhead@3Dis: GrantExternalCondition
+		Range: 400
+		Duration: 200
+		Condition: leaflet
+
+SardaukarChiefDroppod1:
+	Inherits: SardaukarEliteDroppod1
+	Warhead@1: FireCluster
+		Weapon: SardaukarChiefDroppod
+
+SardaukarChiefDroppod:
+    Inherits: SardaukarEliteDroppod
+	Warhead@6: SpawnActor
+		Actors: emperor_sardaukar_chief
+        
 EMPDisable.anim:
 	ReloadDelay: 2
 	Range: 5c0
@@ -1151,14 +1341,13 @@ CrateExplosion:
 		Spread: 1c0
 		Falloff: 100, 0
 		Versus:
-			none: 90
+			None: 90
 			wall: 5
-			building: 65
-			wood: 50
-			light: 40
-			heavy: 30
+			Wood: 65
+			Light: 40
+			Heavy: 30
 			invulnerable: 0
-			cy: 20
+			Concrete: 20
 			harvester: 25
 		AffectsParent: true
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
@@ -1232,7 +1421,7 @@ d2k_grenade:
 		Shadow: true
 	Warhead@1Dam: SpreadDamage
 		Damage: 6000
-		Spread: 1c0
+		Spread: 0c424
 		Falloff: 100, 50
 		Versus:
 			None: 120
@@ -1268,7 +1457,6 @@ facedancer_grenade:
 		ImpactActors: false
     Warhead@1Dam: SpreadDamage
 		Damage: 6500
-		Spread: 1c0
 		Falloff: 100, 0
         ValidTargets: Ground, Infantry, Structure, Air, Vehicle
 		Versus:
@@ -1279,10 +1467,24 @@ facedancer_grenade:
 			Heavy: 55
             Concrete: 30
 GrenDeath:
-	Warhead@1Dam: SpreadDamage
+	Warhead@EnemyDam: SpreadDamage
 		Damage: 10000
-		Spread: 1c256
+		Spread: 0c512
         ValidStances: Enemy, Neutral
+		Falloff: 100, 0
+		Versus:
+			None: 100
+			Wood: 60
+			Light: 80
+            Medium: 60
+			Heavy: 60
+            Concrete: 30
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		DamageCalculationType: ClosestTargetablePosition
+	Warhead@FrndlDam: SpreadDamage
+		Damage: 3333
+		Spread: 0c512
+        ValidStances: Ally
 		Falloff: 100, 0
 		Versus:
 			None: 100
@@ -1307,7 +1509,7 @@ SaboDeath:
     Inherits: GrenDeath
    	Warhead@1Dam: SpreadDamage
 		Damage: 20000
-        Spread: 2c0  
+        Spread: 0c768  
         Falloff: 100, 66, 33
     	Versus:
 			None: 200
@@ -1450,6 +1652,7 @@ d2k_munitions_explosion_h:
 ##########################
 
 ^MG:
+    Inherits: ^LightMG
 	ReloadDelay: 30
 	Range: 4c0
 	Report: MGUN2.WAV
@@ -1622,7 +1825,18 @@ Fremen_Upg:
             Concrete: 80
 	Warhead@2Eff: CreateEffect
 		Explosions: d2k_small_explosion
- 
+
+Arrakis_Tanya_Guns:
+    Inherits: Fremen_Upg
+    ReloadDelay: 10
+    Burst: 2
+    BurstDelays: 5
+    ValidTargets: Ground
+    -InvalidTargets:
+    Warhead@1Dam: SpreadDamage
+        ValidTargets: Ground
+        -InvalidTargets:
+        
 Fremen_RPG:
 	Inherits: ^D2KMissile
 	ReloadDelay: 45
@@ -1953,15 +2167,21 @@ D2KMarksmanRifle:
 		ValidTargets: Ground, Air
         InvalidTargets: Water
 		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+
+emperor_sardaukar_chief_c4:
+	Inherits: GenericC4
+	Warhead@1: AttachDelayedWeapon
+		TriggerTime: 175
         
 d2kFlamegun:
+    Inherits: Flamer
 	ReloadDelay: 6
 	Range: 2c0
 	Report: FLAMER1.WAV
 	Projectile: Bullet
 		Speed: 1c256
 	Warhead@1Dam: SpreadDamage
-		Spread: 1c0
+		Spread: 0c344
 		Falloff: 100, 50, 0
 		Damage: 1200
 		Versus:
@@ -1981,7 +2201,8 @@ d2kFlamegun:
         
 d2kFlameTurret:
     Inherits: d2kFlamegun
-    Range: 4c512
+    ReloadDelay: 10
+    Range: 4c256
     Projectile: Bullet
         Blockable: false
 	Warhead@1Dam: SpreadDamage
@@ -2166,7 +2387,8 @@ PhoenixRocket:
         ExplosionPalette: effect
 	Warhead@4Concrete: DamagesConcrete
 		Damage: 1250
-   	Warhead@Shrapnel: FireShrapnel
+   	Warhead@Shrapnel: FireShrapnel 
+		InvalidTargets: FireImmune
 		Weapon: CHInfernoCannonC
 		Amount: 2
         
@@ -2406,16 +2628,20 @@ d2k_chemgun:
 DesertPhantomsSpawn:
 	Projectile: InstantExplode
 	InvalidTargets: Water
-	Warhead@1: FireShrapnel
+	Warhead@1: FireShrapnel 
+		InvalidTargets: FireImmune
 		Weapon: DesertPhantoms
 		Amount: 1
-  	Warhead@2: FireShrapnel
+  	Warhead@2: FireShrapnel 
+		InvalidTargets: FireImmune
 		Weapon: DesertPhantoms
 		Amount: 1
-	Warhead@3: FireShrapnel
+	Warhead@3: FireShrapnel 
+		InvalidTargets: FireImmune
 		Weapon: DesertPhantoms
 		Amount: 1
-	Warhead@4: FireShrapnel
+	Warhead@4: FireShrapnel 
+		InvalidTargets: FireImmune
 		Weapon: DesertPhantoms
 		Amount: 1       
         
@@ -2530,3 +2756,750 @@ d2k_airdefenseplatform:
             Medium: 90
 			Heavy: 90
             Concrete: 30 
+            
+###################################################
+#       OG DUNE 2000
+###################################################
+
+^oCannon:
+	ReloadDelay: 50
+	Range: 4c0
+	Report: MEDTANK1.WAV
+	Projectile: Bullet
+		Speed: 562
+		Inaccuracy: 380
+		Image: 120mm
+	Warhead@1Dam: SpreadDamage
+		Spread: 256
+		Falloff: 100, 50, 25, 0
+		Damage: 2700
+		Versus:
+			None: 20
+			wall: 50
+			Wood: 60
+			Heavy: 75
+			invulnerable: 0
+			Concrete: 20
+			harvester: 50
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_small_napalm
+        ExplosionPalette: effect75alpha
+		ImpactActors: false
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 540
+
+o110mm_Gun:
+	Inherits: ^oCannon
+	ReloadDelay: 35
+	Range: 5c0
+	Report: TURRET1.WAV
+	Projectile: Bullet
+		Speed: 875
+		Blockable: false
+	Warhead@1Dam: SpreadDamage
+		Damage: 2900
+	Warhead@2Concrete: DamagesConcrete
+		Damage: 2900
+
+o80mm_A:
+	Inherits: ^oCannon
+
+o80mm_H:
+	Inherits: ^oCannon
+	ReloadDelay: 55
+
+o80mm_O:
+	Inherits: ^oCannon
+	ReloadDelay: 45
+
+oDevBullet:
+	Inherits: ^oCannon
+	ReloadDelay: 75
+	Report: TANKHVY1.WAV
+	Projectile: Bullet
+		Speed: 281
+		Inaccuracy: 0
+		Image: doubleblastbullet
+        Palette: d2keffect
+	Warhead@1Dam: SpreadDamage
+		Spread: 384
+		Damage: 6500
+		Versus:
+			None: 50
+			wall: 100
+			Wood: 75
+			Heavy: 100
+			invulnerable: 0
+			Concrete: 40
+			harvester: 100
+	Warhead@2Concrete: DamagesConcrete
+		Damage: 3250
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_shockwave
+        ExplosionPalette: effect75alpha
+		ImpactSounds: EXPLMD4.WAV
+
+o155mm:
+	Inherits: ^oCannon
+	ReloadDelay: 80
+	Range: 5c512
+	Report: MORTAR1.WAV
+	Projectile: Bullet
+		Speed: 192
+		Blockable: false
+		Shadow: true
+		LaunchAngle: 62
+		Inaccuracy: 768
+		ContrailLength: 20
+		Image: d2k_155mm
+        Palette: d2keffect
+	Warhead@1Dam: SpreadDamage
+		Spread: 416
+		Falloff: 100, 65, 35, 20, 0
+		Damage: 4500
+		Versus:
+			None: 125
+			wall: 100
+			Wood: 100
+			Light: 30
+			Heavy: 20
+			invulnerable: 0
+			Concrete: 20
+			harvester: 25
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Concrete: DamagesConcrete
+		Damage: 5625
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_med_explosion
+		ImpactSounds: EXPLMD2.WAV
+        ExplosionPalette: effect75alpha
+
+^oRocket:
+	ReloadDelay: 40
+	Range: 3c0
+	Report: ROCKET1.WAV
+	Projectile: Bullet
+		Blockable: false
+		Speed: 281
+		Inaccuracy: 256
+		Image: d2k_RPG
+        Palette: d2keffect
+		TrailImage: bazooka_trail2
+		TrailPalette: effect75alpha
+		TrailInterval: 1
+	Warhead@1Dam: SpreadDamage
+		Spread: 192
+		Falloff: 100, 50, 25, 0
+		Damage: 3000
+		Versus:
+			None: 8
+			wall: 75
+			Wood: 45
+			Light: 70
+			Heavy: 100
+			invulnerable: 0
+			Concrete: 20
+			harvester: 50
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_tiny_explosion
+		ImpactActors: false
+		ValidTargets: Ground, Air
+        ExplosionPalette: effect75alpha      
+	Warhead@3Concrete: DamagesConcrete
+		Damage: 240
+
+^oMissile:
+	Inherits: ^oRocket
+	ReloadDelay: 60
+	Range: 5c512
+	MinRange: 0c512
+	Projectile: Missile
+		Shadow: true
+		HorizontalRateOfTurn: 3
+		RangeLimit: 6c614
+		Inaccuracy: 384
+		CruiseAltitude: 1c0
+		MinimumLaunchAngle: 64
+		VerticalRateOfTurn: 10
+		Image: d2k_missile2
+		TrailImage: large_trail
+		Speed: 288
+	Warhead@1Dam: SpreadDamage
+		Spread: 256
+		Damage: 4800
+		Versus:
+			None: 15
+			wall: 75
+			Wood: 65
+			Light: 90
+			Heavy: 100
+			invulnerable: 0
+			Concrete: 30
+			harvester: 50
+	Warhead@2Concrete: DamagesConcrete
+		Damage: 720
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_small_explosion
+        ExplosionPalette: effect75alpha
+		ImpactSounds: EXPLSML1.WAV
+
+oBazooka:
+	Inherits: ^oRocket
+
+oRocket:
+	Inherits: ^oRocket
+	ReloadDelay: 30
+	Range: 3c512
+	Projectile: Bullet
+		Speed: 352
+	Warhead@1Dam: SpreadDamage
+		Spread: 160
+		Damage: 2500
+		Versus:
+			None: 25
+			wall: 100
+			Wood: 65
+			Light: 100
+			Heavy: 50
+			invulnerable: 0
+			Concrete: 20
+			harvester: 50
+	Warhead@2Concrete: DamagesConcrete
+		Damage: 625
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_rocket_explosion
+		ExplosionPalette: effect75alpha
+
+oTowerMissile:
+	Inherits: ^oMissile
+	ReloadDelay: 60
+	Burst: 2
+	BurstDelays: 60
+	ValidTargets: Ground, Air
+	Projectile: Missile
+		HorizontalRateOfTurn: 1
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Ground, Air
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+
+omtank_pri:
+	Inherits: ^oMissile
+	ReloadDelay: 115
+	Burst: 2
+	BurstDelays: 115
+	Range: 6c0
+	ValidTargets: Ground, Air
+	Projectile: Missile
+		Inaccuracy: 96
+		RangeLimit: 7c204
+	Warhead@1Dam: SpreadDamage
+		Damage: 6000
+		ValidTargets: Ground, Air
+	Warhead@2Concrete: DamagesConcrete
+		Damage: 900
+
+oDeviatorMissile:
+	Inherits: ^oMissile
+	ReloadDelay: 160
+	Range: 5c0
+	Report: MISSLE1.WAV
+	Projectile: Missile
+		RangeLimit: 6c0
+		Image: MISSILE
+		TrailImage: deviator_trail
+		TrailPalette: deviatorgas
+		TrailUsePlayerPalette: true
+	Warhead@1Dam: SpreadDamage
+		Damage: 1000
+		Versus:
+			None: 100
+			wall: 100
+			Wood: 100
+			Light: 100
+			Heavy: 100
+			invulnerable: 0
+			Concrete: 50
+			harvester: 100
+	-Warhead@2Smu:
+	Warhead@3Eff: CreateEffect
+		Explosions: deviator
+		ExplosionPalette: deviatorgas
+		UsePlayerPalette: true
+		-ImpactSounds:
+	Warhead@4OwnerChange: ChangeOwner
+		Range: 512
+		Duration: 375
+		InvalidTargets: Infantry, Structure
+	Warhead@5Concrete: DamagesConcrete
+		Damage: 1000
+        
+oSound:
+	ReloadDelay: 90
+	Range: 5c0
+	Report: SONIC1.WAV
+	Projectile: AreaBeam
+		Speed: 0c128
+		Duration: 4 # Has a length of 0c512
+		DamageInterval: 3 # Travels 0c384 between impacts, will hit a target roughly three times
+		Width: 0c512
+		Shape: Flat
+		Falloff: 100, 100, 50
+		Range: 0, 6c0, 11c0
+		BeyondTargetRange: 1c0
+		Color: 00FFFFC8
+	Warhead@1Dam: SpreadDamage
+		Range: 0, 32
+		Falloff: 100, 100
+		Damage: 860
+		AffectsParent: false
+		ValidStances: Neutral, Enemy
+		Versus:
+			None: 200
+			wall: 50
+			Wood: 110
+			Light: 110
+			Heavy: 60
+			invulnerable: 0
+			Concrete: 20
+			harvester: 50
+		DamageTypes: Prone50Percent, TriggerProne, SoundDeath
+	Warhead@2Dam: SpreadDamage
+		Range: 0, 32
+		Falloff: 100, 100
+		Damage: 430 # Only does half damage to friendly units
+		AffectsParent: false
+		ValidStances: Ally
+		Versus:
+			None: 200
+			wall: 50
+			Wood: 110
+			Light: 110
+			Heavy: 60
+			invulnerable: 0
+			Concrete: 20
+			harvester: 50
+		DamageTypes: Prone50Percent, TriggerProne, SoundDeath
+	Warhead@3Concrete: DamagesConcrete
+		Damage: 1720
+
+oOrniBomb:
+	ReloadDelay: 25
+	Burst: 3
+	BurstDelays: 6
+	Range: 3c0
+	Projectile: GravityBomb
+		Image: d2k_bombs
+        Palette: d2keffect
+		Velocity: 0, 0, -64
+		Acceleration: 0, 0, 0
+		Shadow: true
+	Warhead@1Dam: SpreadDamage
+		Spread: 320
+		Falloff: 100, 60, 30, 15, 0
+		Damage: 7500 #400 in original, reduce when bombers can do multiple passes
+		Versus:
+			None: 90
+			wall: 50
+			Wood: 75
+			Light: 60
+			Heavy: 60
+			invulnerable: 0
+			Concrete: 25
+			harvester: 60
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_large_explosion
+		ImpactSounds: EXPLSML4.WAV
+        ExplosionPalette: effect75alpha
+		ImpactActors: false
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 6750
+
+oCrush:
+	Warhead@1Dam: SpreadDamage
+		Damage: 1000
+		DamageTypes: ExplosionDeath
+	Warhead@2Eff: CreateEffect
+		ImpactSounds: CRUSH1.WAV
+
+oDemolish:
+	Warhead@1Dam: SpreadDamage
+		DamageTypes: ExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: d2k_building
+		ImpactSounds: EXPLLG2.WAV
+        ExplosionPalette: effect75alpha
+		ImpactActors: false
+
+oDeathHand:
+	Warhead@Cluster: FireCluster
+		Weapon: DeathHandCluster
+		RandomClusterCount: 14
+		Dimensions: 3,3
+		Footprint: xxx xXx xxx
+	Warhead@2Eff: CreateEffect
+		Explosions: d2k_nuke
+		ImpactSounds: EXPLLG2.WAV
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+	Warhead@Shake: ShakeScreen
+		Duration: 20
+		Intensity: 5
+		Multiplier: 1,1
+
+oDeathHandCluster:
+	Inherits: Debris2
+	Range: 7c0
+	Projectile: Bullet
+		Image: 120mm
+		TrailImage: small_trail2
+        TrailPalette: d2keffect
+		Speed: 96
+		LaunchAngle: 0, 32
+		Inaccuracy: 1c512
+		BounceCount: 0
+	Warhead@1Dam: SpreadDamage
+		Damage: 4500
+		Versus:
+			None: 90
+			wall: 50
+			Wood: 100
+			Light: 60
+			Heavy: 60
+			invulnerable: 0
+			Concrete: 25
+			harvester: 60
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_large_explosion
+		ImpactSounds: EXPLSML4.WAV
+        ExplosionPalette: effect75alpha
+	Warhead@2Concrete: DamagesConcrete
+		Damage: 4500
+
+oUnitExplodeSmall:
+	Warhead@1Eff: CreateEffect
+		Explosions: d2k_self_destruct
+		ImpactSounds: EXPLSML1.WAV
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+oUnitExplodeMed:
+	Warhead@1Eff: CreateEffect
+		Explosions: d2k_building
+		ImpactSounds: EXPLSML2.WAV
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+oUnitExplodeLarge:
+	Warhead@1Eff: CreateEffect
+		Explosions: d2k_large_explosion
+		ImpactSounds: EXPLLG2.WAV
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+oBuildingExplode:
+	Warhead@1Eff: CreateEffect
+		Explosions: d2k_building, d2k_self_destruct, d2k_large_explosion
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+oWallExplode:
+	Warhead@1Eff: CreateEffect
+		Explosions: d2k_wall_explosion
+		ImpactSounds: EXPLHG1.WAV
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+ogrenade:
+	ReloadDelay: 50
+	Range: 4c0
+	Projectile: Bullet
+		Speed: 160
+		Blockable: false
+		LaunchAngle: 128
+		Inaccuracy: 416
+		Image: d2k_grenade
+        Palette: d2keffect
+		Shadow: true
+	Warhead@1Dam: SpreadDamage
+		Spread: 320
+		Falloff: 100, 65, 35, 20, 0
+		Damage: 1500
+		Versus:
+			None: 125
+			Wood: 70
+			Light: 30
+			Heavy: 20
+			invulnerable: 0
+			Concrete: 20
+			harvester: 25
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_med_explosion
+		ImpactSounds: EXPLMD2.WAV
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 1875
+
+oGrenDeath:
+	Warhead@1Dam: SpreadDamage
+		Spread: 320
+		Falloff: 100, 60, 30, 15, 0
+		Damage: 1500
+		Versus:
+			None: 125
+			Wood: 70
+			Light: 30
+			Heavy: 20
+			invulnerable: 0
+			Concrete: 20
+			harvester: 25
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_building
+		ImpactSounds: EXPLSML4.WAV
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 1875
+
+oSardDeath:
+	Warhead@1Dam: SpreadDamage
+		Spread: 256
+		Falloff: 100, 50, 25, 0
+		Damage: 3000
+		Versus:
+			None: 15
+			wall: 75
+			Wood: 65
+			Light: 90
+			invulnerable: 0
+			Concrete: 30
+			harvester: 50
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_small_napalm
+		ImpactSounds: EXPLSML2.WAV
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 450
+
+oPlasmaExplosion:
+	Warhead@1Dam: SpreadDamage
+		Spread: 2c0
+		Falloff: 100, 37, 0
+		Damage: 20000
+		Versus:
+			None: 100
+			Wood: 100
+			Light: 100
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater
+	Warhead@3Eff: CreateEffect
+		Explosions: devastator
+        ExplosionPalette: effect75alpha
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 20000
+
+^oMG:
+	ReloadDelay: 30
+	Range: 2c512
+	Report: MGUN2.WAV
+	Projectile: InstantHit
+	Warhead@1Dam: SpreadDamage
+		Spread: 128
+		Falloff: 100, 50, 25, 0
+		Damage: 1250
+		Versus:
+			wall: 10
+			Wood: 25
+			Light: 40
+			Heavy: 20
+			invulnerable: 0
+			Concrete: 20
+			harvester: 25
+		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: d2k_piffs
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+	Warhead@3Concrete: DamagesConcrete
+		Damage: 1250
+
+oLMG:
+	Inherits: ^oMG
+
+oFremen_S:
+	Inherits: ^oMG
+	ReloadDelay: 40
+	Report: FREMODD1.WAV
+	Warhead@2Eff: CreateEffect
+		Explosions: d2k_small_explosion
+        ExplosionPalette: effect75alpha
+oM_LMG:
+	Inherits: ^oMG
+	ReloadDelay: 40
+
+oM_LMG_H:
+	Inherits: oM_LMG
+	ReloadDelay: 50
+
+oM_HMG:
+	Inherits: ^oMG
+	ReloadDelay: 40
+	Range: 3c512
+	Report: 20MMGUN1.WAV
+	Warhead@1Dam: SpreadDamage
+		Spread: 192
+		Damage: 2500
+		Versus:
+			None: 25
+			wall: 100
+			Wood: 65
+			Light: 100
+			Heavy: 50
+			invulnerable: 0
+			Concrete: 20
+			harvester: 50
+	Warhead@2Concrete: DamagesConcrete
+		Damage: 625
+
+oM_HMG_H:
+	Inherits: oM_HMG
+	ReloadDelay: 50
+
+oFremen_L:
+	Inherits: oM_HMG
+	Report: BAZOOK2.WAV
+	Warhead@1Dam: SpreadDamage
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: small_explosion
+
+oHMG:
+	Inherits: ^oMG
+	ReloadDelay: 20
+	Range: 3c0
+	Report: 20MMGUN1.WAV
+	Warhead@1Dam: SpreadDamage
+		Spread: 160
+		Falloff: 100, 60, 30, 0
+		Damage: 1800
+	Warhead@2Concrete: DamagesConcrete
+		Damage: 1800
+
+oHMGo:
+	Inherits: oHMG
+	ReloadDelay: 18
+
+oHMG_muzzle:
+	ReloadDelay: 16
+	Range: 3c0
+	Burst: 3
+	BurstDelays: 2
+	Projectile: InstantHit
+	Warhead@TargetValidation: SpreadDamage
+
+oHMGo_muzzle:
+	Inherits: oHMG_muzzle
+	ReloadDelay: 14
+
+oDebris:
+	ReloadDelay: 60
+	Range: 2c768
+	Projectile: Bullet
+		Speed: 32, 64
+		Blockable: false
+		LaunchAngle: 128, 192
+		Inaccuracy: 1c256
+		Image: shrapnel
+		Shadow: true
+		BounceCount: 3
+		BounceRangeModifier: 20
+	Warhead@1Dam: SpreadDamage
+		Damage: 1500
+		Spread: 512
+		Falloff: 100, 0
+		Versus:
+			None: 20
+			wall: 50
+			Wood: 50
+			Light: 100
+			Heavy: 75
+			Concrete: 100
+			invulnerable: 0
+			harvester: 50
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+		DamageCalculationType: ClosestTargetablePosition
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_tiny_explosion
+		ImpactActors: false
+        ExplosionPalette: effect75alpha
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 300
+
+oDebris2:
+	Inherits: oDebris
+	Projectile: Bullet
+		Image: shrapnel2
+		TrailImage: small_trail
+		TrailPalette: effect75alpha
+		TrailInterval: 1
+	Warhead@1Dam: SpreadDamage
+		Damage: 2500
+		Spread: 1c0
+		Versus:
+			None: 90
+			wall: 5
+			Wood: 50
+			Light: 40
+			Heavy: 30
+			invulnerable: 0
+			Concrete: 20
+			harvester: 25
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_small_napalm
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 2250
+
+oDebris3:
+	Inherits: oDebris2
+	Projectile: Bullet
+		Image: shrapnel3
+		TrailImage: small_trail2
+	Warhead@1Dam: SpreadDamage
+		Damage: 1500
+	Warhead@4Concrete: DamagesConcrete
+		Damage: 1350
+
+oDebris4:
+	Inherits: oDebris2
+	Projectile: Bullet
+		Image: shrapnel4
+		TrailImage: large_trail

@@ -20,6 +20,12 @@
 			TopLeft: -512, -512
 			BottomRight: 512, 512
 
+^1x2Shape:
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -512, -1024
+			BottomRight: 512, 1024
 ^2x1Shape:
 	HitShape:
 		UseTargetableCellsOffsets: true
@@ -125,7 +131,46 @@
     WithShadow:
         RequiresCondition: enable-shadows
         
+^InfantryShadows:
+    Inherits@SHADOWS: ^Shadows
+   	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512 
+  
+^Xmas_setting:
+    GrantConditionOnPrerequisite@xmas-setting:
+        Condition: xmas-setting
+        Prerequisites: xmas-setting
+    SpawnActorOnDeath@xmas-setting:
+		Actor: XMASCRATE
+		Probability: 5
+
+^Xmas_Decorations:
+    WithIdleOverlay@xmas_gift_red:
+        Image: xmas_presents
+        Sequence: red
+        RequiresCondition: xmas-setting
+        Offset: -200,0,0
+    WithIdleOverlay@xmas_gift_orange:
+        Image: xmas_presents
+        Sequence: orange
+        RequiresCondition: xmas-setting
+        Offset: -200,0,0
+    WithIdleOverlay@xmas_gift_green:
+        Image: xmas_presents
+        Sequence: green
+        RequiresCondition: xmas-setting
+        Offset: -200,0,0
+    WithIdleOverlay@xmas_cameo_tree:
+        Image: xmas_cameo_tree
+        Sequence: idle
+        RequiresCondition: xmas-setting
+        Offset: -150,0,0
+        
 ^Conyard:
+    Inherits@susaintelligence: ^susaintelligence
+    Inherits@xmas: ^Xmas_setting
+    #Inherits@xmas-decorations: ^Xmas_Decorations
     ProvidesPrerequisite@conyard:
         Prerequisite: conyard
 
@@ -137,6 +182,14 @@
     GrantConditionOnPrerequisite@base-reveal:
         Prerequisites: base-reveal, !conyard
         Condition: base-reveal
+        
+^susaintelligence:
+    ExternalCondition@susaintelligence:
+        Condition: susaintelligence
+    RevealsShroud@susaintelligence:
+        Range: 5c0
+		ValidStances: Neutral, Enemy
+		RequiresCondition: susaintelligence
         
 ^GainsExperience:
 	GainsExperience:
@@ -426,6 +479,32 @@
     Targetable@poisoned:
         TargetTypes: poisoned
         RequiresCondition: poisoned
+
+^LeechEggLayable:
+    ChangesHealth@leechegglay:
+        Delay: 17
+        PercentageStep: -2
+        StartIfBelow: 101   
+        RequiresCondition: LeechEggLaid && !LeechEggKill
+    ExternalCondition@leechegglay:
+        Condition: LeechEggLaid
+    ExternalCondition@leecheggkill:
+        Condition: LeechEggKill
+    Targetable@leechegglay:
+        TargetTypes: LeechEggLaid
+        RequiresCondition: LeechEggLaid && !LeechEggKill
+    Targetable@leecheggkill:
+        TargetTypes: LeechEggKill
+        RequiresCondition: LeechEggLaid && LeechEggKill
+    SpawnActorOnDeath@Leech:
+        Actor: d2k_leech_s
+        Probability: 100
+        OwnerType: Killer   
+        RequiresCondition: LeechEggLaid && !LeechEggKill
+        
+^AllQueues:
+	Buildable:
+		Queue: Building.GDI, Building.Nod, Building.Allies, Building.Soviet, Building.AlliesRA2, Building.SovietRA2, Building.Yuri, Building.Alpha, Building.Scavenger, Building.Terran, Building.Protoss, Building.Zerg, Building.SimCity, Building.TSGDI, Building.TSNod, Building.CABAL, Building.MUTANT, RABuilding.GDI, RABuilding.Nod, RABuilding.Allies, RABuilding.Soviet, RABuilding.AlliesRA2, RABuilding.SovietRA2, RABuilding.Yuri, RABuilding.Alpha, RABuilding.Scavenger, RABuilding.Terran, RABuilding.Protoss, RABuilding.Zerg, RABuilding.SimCity, RABuilding.TSGDI, RABuilding.TSNod, RABuilding.CABAL, RABuilding.MUTANT, Building.GLA, RABuilding.GLA, Building.USA, RABuilding.USA, Building.CHINA, RABuilding.CHINA, Building.LEANG, RABuilding.LEANG, Building.OrangeStar, RABuilding.OrangeStar, Building.BlueMoon, RABuilding.BlueMoon, Building.YellowComet, RABuilding.YellowComet, Building.GreenEarth, RABuilding.GreenEarth, Building.BlackHole, RABuilding.BlackHole, Building.Rubinelle, RABuilding.Rubinelle, Building.IDS, RABuilding.IDS, Building.NRA, RABuilding.NRA, Building.Lazurian, RABuilding.Lazurian, Building.sow, RABuilding.sow, Building.SWEMPIRE, Building.SWREBELS, RABuilding.SWEMPIRE, RABuilding.SWREBELS, Building.SWSEPARATIST, Building.SWREPUBLIC, RABuilding.SWSEPARATIST, RABuilding.SWREPUBLIC, Building.SWHUTT, RABuilding.SWHUTT, Building.sow, Building.camea, Building.d2k, RABuilding.sow, Building.orc, Building.human, RABuilding.orc, RABuilding.human, RABuilding.d2k, Building.Shockwave, RABuilding.Shockwave, Building.ImperialGuard, RABuilding.ImperialGuard, Building.FreedomGuard, RABuilding.FreedomGuard, Building.Imperium, Building.Shadowhand, RABuilding.Imperium, RABuilding.Shadowhand, RABuilding.Togran, Building.Togran
         
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
@@ -450,6 +529,8 @@
     Inherits@instablow: ^Instant_Kill_Vehicle
     Inherits@unstableeffect: ^UnstableEffect
     Inherits@base-reveal: ^Base-reveal
+    Inherits@LeechEggLayable: ^LeechEggLayable
+    Inherits@Xmassetting: ^Xmas_setting
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -569,16 +650,9 @@
    	AttractsWorms:
 		Intensity: 500
     Targetable@disguise:
-		TargetTypes: VehicleDisguise
-	ProductionCostMultiplier@ReinforcementPad:
-		Multiplier: 5
-		Queue: Vehicle.ReinforcementPad
-	ProductionTimeMultiplier@ReinforcementPad:
-		Multiplier: 750
-		Queue: Vehicle.ReinforcementPad, Vehicle.ModUSAPad, RAVehicle.ModUSAPad
-	ProductionCostMultiplier@ReinforcementPad:
-		Multiplier: 25
-		Queue: Vehicle.ModUSAPad, RAVehicle.ModUSAPad
+		TargetTypes: VehicleDisguise   
+    SpawnActorOnDeath@xmas-setting:
+		Probability: 4
 ^Tank:
 	Inherits: ^Vehicle
     Passenger:
@@ -650,6 +724,7 @@
     Inherits@instablow: ^Instant_Kill_Vehicle 
     Inherits@SHADOWS: ^Shadows
     Inherits@base-reveal: ^Base-reveal
+    Inherits@Xmassetting: ^Xmas_setting
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -801,7 +876,7 @@
 		RequiresCondition: leaflet
 	Mobile:
 		PauseOnCondition: disabled
-
+        
 ^DefaultInfantry:
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
@@ -816,6 +891,7 @@
     Inherits@poisonable: ^Poisonable
     Inherits@unstableeffect: ^UnstableEffect
     Inherits@base-reveal: ^Base-reveal
+    Inherits@Xmassetting: ^Xmas_setting
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -952,11 +1028,13 @@
         Weapon: instagib
         RequiresCondition: unitgore
     ThrowsShrapnel@ONESHOT:
-        Weapons: instagib1, instagib2, instagib3, instagib4, instagib5, instagib6, instagib7
-        Pieces: 1, 3
+        Weapons: instagib1, instagib2, instagib3, instagib4, instagib5, instagib6, instagib7, instagib8
+        Pieces: 1, 4
         Range: 0c256, 2c0
         RequiresCondition: unitgore
-
+    SpawnActorOnDeath@xmas-setting:
+		Probability: 2
+        
 ^Infantry: #Human units only
 	Inherits: ^DefaultInfantry
 	WithDeathAnimation:
@@ -972,7 +1050,7 @@
 			RA2VirusDeath: 6
 			ElectricityDeath: 7
             ContaminatorMutate: 1
-			QuestionMutate: 1
+            QuestionMutate: 1
 		CrushedSequence: die-crushed
 	DamagedByTerrain:
 		Terrain: Tiberium, BlueTiberium
@@ -1114,6 +1192,98 @@
 		Probability: 99
 		OwnerType: Killer
 		DeathType: ZombieInfection
+
+^Monster:
+	Inherits@1: ^ExistsInWorld
+	Inherits@3: ^IronCurtainable
+	TemporaryOwnerManager:
+	WithSpriteControlGroupDecoration:
+	GivesBounty:
+		Percentage: 50
+	AppearsOnRadar:
+		UseLocation: true
+	Valued:
+		Cost: 500
+	Buildable:
+		Queue: Infantry
+		BuildAtProductionType: Soldier
+		BuildPaletteOrder: 10
+		Prerequisites: ~wip-content
+	Tooltip:
+		GenericName: Monster
+	Mobile:
+		SharesCell: false
+		Locomotor: foot
+		TurnSpeed: 8
+		Speed: 50
+	Health:
+		HP: 30000
+	HitShape:
+		Type: Circle
+			Radius: 488
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 5c0
+	SelectionDecorations:
+	Selectable:
+		Bounds: 24,24,0,-4
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 10
+	WithInfantryBody:
+		IdleSequences: idle
+		MinIdleWaitTicks: 12
+		MaxIdleWaitTicks: 50
+		StandSequences: idle
+		MoveSequence: run
+		DefaultAttackSequence: shoot
+	HiddenUnderFog:
+	DrawLineToTarget:
+	ActorLostNotification:
+	CombatDebugOverlay:
+	Guard:
+	Guardable:
+	BodyOrientation:
+	Huntable:
+	UpdatesPlayerStatistics:
+	AttackFrontal:
+		Voice: Action
+	AttackMove:
+		Voice: Action
+	WithMuzzleOverlay:
+	Targetable:
+		TargetTypes: Ground, Vehicle
+	WithDeathAnimation:
+		DeathSequencePalette: spidercostume
+		DeathPaletteIsPlayerPalette: False
+		DeathSequence: die
+		UseDeathTypeSuffix: false
+	ScriptTriggers:
+	AnnounceOnKill:
+	SelfHealing:
+		Step: 10
+		Ticks: 25
+		HealIfBelow: 1
+		DamageCooldown: 375
+	DeathSounds:
+		Voice: Die
+	Explodes:
+		Weapon: UnitExplodeSmall
+		EmptyWeapon: UnitExplodeSmall
+	Voiced:
+		VoiceSet: AntVoice
+	WithDamageOverlay:
+	CombatDebugOverlay:
+	KillsSelf:
+		RequiresCondition: invulnerability
+	Chronoshiftable:
+		ExplodeInstead: True
+	RenderSprites:
+		Palette: ra_temperat
+	MapEditorData:
+		Categories: Critter
+
 ^ArmedCivilian:
 	Armament:
 		Weapon: Pistol
@@ -1533,7 +1703,7 @@
         Prerequisites: !faction.camea
     DamageMultiplier@oldbuff:
         Modifier: 90
-
+        
 ^ModernFactionBuff:
     ProductionTimeMultiplier@modernbuff:
         Multiplier: 85
@@ -1543,7 +1713,7 @@
         Modifier: 80
     FirepowerMultiplier@modernbuff:
         Modifier: 120
-
+        
 ^TechBuildingHusk:
 	Inherits: ^TechBuilding
 	Targetable:
@@ -1894,7 +2064,16 @@
     DamageMultiplier@NTRPSRS:
         Modifier: 50
         RequiresCondition: global-notrespassers
-        
+    GrantConditionOnPrerequisite@regen-turrets:
+        Prerequisites: regen-turrets
+        Condition: regen-turrets
+    ChangesHealth@regen-turrets:
+        PercentageStep: 1
+        Delay: 30
+        DamageCooldown: 375
+        StartIfBelow: 101
+        RequiresCondition: regen-turrets
+    
 ^DisabledOverlay:
 	GrantConditionOnPowerState@LOWPOWER:
 		Condition: lowpower
@@ -2937,7 +3116,7 @@
 	GrantConditionOnPrerequisite@littlebuilderenable:
 		Condition: littlebuilderenable
 		Prerequisites: littlebuilderenable
-	FreeActor:
+	FreeActor@CPQDEBUGDUMMY:
 		Actor: CPQDEBUGDUMMY
 		RequiresCondition: classicproductionqueues
 	GrantExternalConditionToProduced:
@@ -2967,6 +3146,12 @@ CPQDEBUGDUMMY:
 		ZOffset: 256
 		RequiresCondition: primary
 
+^UnconditionalCPQ:
+	FreeActor@CPQDEBUGDUMMY:
+		Actor: CPQDEBUGDUMMY
+	GrantExternalConditionToProduced:
+		Condition: produced
+        
 ^AIConyardCash:
 	Inherits@FS: ^AIForceShield
 	GrantConditionOnPlayerResources@minimum:
@@ -3009,7 +3194,7 @@ CPQDEBUGDUMMY:
 	Inherits@snipe: ^DriverKillImmune
 	Harvester:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, GESupplies, SWPCarbon, SWRCarbon, SWDCarbon, SWPNova, SWCNova, SWPMin, SWCMin, Spice
-		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc, 315refin, 315proc, awcity, awcitybm, awcityyc, awcityge, awcitybh, awcityids, susasupply, susasupply_air, susasupply_armor, sglsupply, schsupply, drlife.eodalien, sc2krecyclingcenter, tagdiref, tanodref, tamutref, qnest, tinynest, dtproc, drwaterl.actibliz
+		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc, 315refin, 315proc, awcity, awcitybm, awcityyc, awcityge, awcitybh, awcityids, susasupply, susasupply_air, susasupply_armor, sglsupply, schsupply, drlife.eodalien, sc2krecyclingcenter, orefinery, schsupply_tank, qnest, tinynest, schsupply_leang, iokproc, xmas_elves_refinery, dtproc, tagdiref, tanodref, tamutref, drwaterl.actibliz
 		FullyLoadedSpeed: 100
 	GpsDot:
 		String: Harvester
@@ -3028,13 +3213,13 @@ CPQDEBUGDUMMY:
         
 ^RearmableAircraft:
 	Rearmable:
-		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,ra2gaairc.dock,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport,leangairport,drihelipad.imperium,drfghelipad.freedomguard,awhpad.orange,awhpad.bluemoon,awhpad.yellowcomet,awhpad.greenearth,awhpad.blackhole,awhpad.daysofruins,swhpad.empire,swhpad.rebels,swhpad.swseparatist,swhpad.republic,swhpad.hutt,d2k_silo_tleilaxu,hpad.camea,repair_pad,awhpad.rubinelle,awhpad.ids,awhpad.newrubinelle,awhpad.lazurian,susaairport,susahangar,2100vtolpad,drhive.eodalien,modraafld,scstarport.actibliz
+		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,ra2gaairc.dock,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport,leangairport,drihelipad.imperium,drfghelipad.freedomguard,awhpad.orange,awhpad.bluemoon,awhpad.yellowcomet,awhpad.greenearth,awhpad.blackhole,awhpad.daysofruins,swhpad.empire,swhpad.rebels,swhpad.swseparatist,swhpad.republic,swhpad.hutt,d2k_silo_tleilaxu,hpad.camea,repair_pad,awhpad.rubinelle,awhpad.ids,awhpad.newrubinelle,awhpad.lazurian,susaairport,susahangar,2100vtolpad,drhive.eodalien,modraafld
 	AutoTarget:
 		InitialStance: HoldFire
 
 ^Repairable:
 	Repairable:
-		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix,rafix.camea,drirep,repair_pad,d2k_silo_tleilaxu,susaweap,tagdidept,tanoddept,drirep.actibliz
+		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix,rafix.camea,drirep,repair_pad,orepair_pad,d2k_silo_tleilaxu,susaweap,tagdidept,tanoddept
 
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
@@ -3298,7 +3483,7 @@ CPQDEBUGDUMMY:
 		TotalCap: 1
 	PowerMultiplier@acumulatorbonus:
 		Modifier: 150
-		RequiresCondition: acumulatorbonus
+		RequiresCondition: acumulatorbonus 
 
 ^Refinery:
 	CashHackable:
@@ -3468,7 +3653,7 @@ CPQDEBUGDUMMY:
 			RA2VirusDeath: 1
 			ElectricityDeath: 1
             ContaminatorMutate: 1
-			QuestionMutate: 1
+            QuestionMutate: 1        
 	Targetable@WaterBorne:
 		TargetTypes: Water
 		RequiresCondition: swimming
@@ -3584,7 +3769,7 @@ CPQDEBUGDUMMY:
 		Condition: hospital
 		Prerequisites: hosp
     Repairable:
-		RepairActors: drfghosp, drihosp, drihosp.actibliz
+		RepairActors: drfghosp, drihosp
 ^MachineShopRepairable:
 	Inherits: ^TechStructureHealable
 	SelfHealing@HOSPITAL:
@@ -3733,6 +3918,8 @@ CPQDEBUGDUMMY:
 		Condition: repairlvl2
 	ExternalCondition@EmergencyRepair3:
 		Condition: repairlvl3
+	ExternalCondition@schinasupportcrawlerrepair:
+		Condition: schvehrepair
 	SelfHealing@EmergencyRepair1:
 		PercentageStep: 2
 		Step: 0
@@ -3754,11 +3941,18 @@ CPQDEBUGDUMMY:
 		HealIfBelow: 100
 		DamageCooldown: 0
 		RequiresCondition: repairlvl3 && damaged
+	SelfHealing@schvehrepair:
+		PercentageStep: 2
+		Step: 0
+		Delay: 25
+		HealIfBelow: 100
+		DamageCooldown: 0
+		RequiresCondition: schvehrepair && damaged
 	WithDecoration@EmergencyRepair1:
 		Image: select
 		Sequence: repair
 		ReferencePoint: Center, Center
-		RequiresCondition: repairlvl1 || repairlvl2 || repairlvl3
+		RequiresCondition: repairlvl1 || repairlvl2 || repairlvl3 || schvehrepair
 		BlinkInterval: 32
 		BlinkPattern: On, Off
 

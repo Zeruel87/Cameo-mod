@@ -95,9 +95,12 @@ SUSABurtonSniperHE_AI:
     
 SUSAMortarHMMWV:
 	Inherits: MortarShell
+    Report: mortarhmvfire1.wav, mortarhmvfire2.wav, mortarhmvfire3.wav
 	ReloadDelay: 60
-	Range: 9c0
+	Range: 11c0
 	MinRange: 2c0
+	Warhead@3Eff: CreateEffect
+		ImpactSounds: mortarhmvexplosion1.wav, mortarhmvexplosion2.wav, mortarhmvexplosion3.wav
     
 SUSAMinigunHMMWV:
 	Inherits: SUSALittleBirdMG
@@ -695,6 +698,81 @@ SUSALaserDesignatorBase:
         ExplosionPalette: alpha75
         ImpactSounds: susaenforcerbeamimpact.wav
 
+SUSAAMDGrenadeMG:
+    ReloadDelay: 3
+    Range: 0c0
+    Report: admggunfire1.wav, admggunfire2.wav, admggunfire3.wav
+    ValidTargets: Ground
+    Projectile: InstantHit
+	Warhead@1Dam: SpreadDamage
+		Damage: 1000
+        ValidTargets: Ground
+        Spread: 2c0
+		Versus:
+			None: 125
+			Wood: 55
+            Light: 80
+            Medium: 65
+            Heavy: 50
+            Concrete: 30
+            
+SUSAAMDGrenadeExplode:
+	Inherits: ^DamagingExplosion
+	Warhead@1Dam: SpreadDamage
+		Spread: 1c512
+		Damage: 15000
+		DamageTypes: Prone50Percent, TriggerProne, FireDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: big_napalm
+		ImpactSounds: admgexplosion1.wav, admgexplosion2.wav, admgexplosion3.wav
+	Warhead@3Smu: LeaveSmudge
+		SmudgeType: Scorch
+        
+SCHGrinderCannon:
+	Inherits: CHBattlemasterCannon
+	ReloadDelay: 150
+    Range: 7c0
+    MinRange: 1c0
+    Report: grinderartilleryfire.wav
+    ValidTargets: Ground
+    Projectile: InstantHit
+	Warhead@1Dam: SpreadDamage
+        Delay: 45
+		Damage: 15000
+        ValidTargets: Ground
+        Spread: 1c768
+		Versus:
+			None: 150
+			Wood: 100
+            Light: 90
+            Medium: 75
+            Heavy: 60
+            Concrete: 80
+	-Warhead@3Eff: CreateEffect
+	-Warhead@4EffWater: CreateEffect
+    -Warhead@2Smu: LeaveSmudge
+    Warhead@3Eff: CreateEffect
+		Explosions: chflachetteshrapnels
+        ImpactSounds: grinderartillerydetonate.wav
+        Delay: 25
+    Warhead@4Eff: CreateEffect
+        Explosions: chgrindercannonimpact
+        Delay: 50
+        
+SCHGrinderCannonMine:
+	Inherits: SCHGrinderCannon
+    ReloadDelay: 250
+	-Warhead@1Dam: SpreadDamage
+    Warhead@4Eff: CreateEffect
+        -Explosions:
+        ImpactSounds: grinderartilleryminepop.wav
+	Warhead@mines: FireCluster
+        Delay: 50
+		Weapon: CHMineSpawner
+		Dimensions: 5,5
+		Footprint: __X__ _XXX_ XXXXX _XXX_ __X__
+		ValidTargets: Ground, Air, Water
+        
 SUSASheridan:
 	Inherits: CHBattlemasterCannon
 	ReloadDelay: 100
@@ -1274,7 +1352,7 @@ SUSAUCAVBomb:
 		Spread: 1c256
 		Damage: 17500
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
-	-Warhead@2ClustF: FireShrapnel
+	-Warhead@2ClustF: FireShrapnel 
     
 SUSAUnstableEffectExplosion:
 	ReloadDelay: 10
@@ -1361,7 +1439,54 @@ SUSAB52CruiseMissile:
 		Explosions: ex_big_flash
 		ImpactSounds: kaboom15.aud
 		ValidTargets: Ground, Ship, Trees
-	-Warhead@2ClustF: FireShrapnel
+	-Warhead@2ClustF: FireShrapnel 
+
+SUSALaserCannonAGUp:
+	Inherits: USALaserCannonAG
+	Projectile: LaserZap
+		Color: 66FFFF
+
+SUSALaserCannonAAUp:
+	Inherits: USALaserCannonAA
+	Projectile: LaserZap
+		Color: 66FFFF
+
+SUSAAdvMicrowaveClear:
+    Inherits: USAMicrowaveClear
+	ReloadDelay: 20
+	Range: 3c768
+
+SUSAAdvMicrowaveDisable:
+    Inherits: USAMicrowaveDisable
+	Range: 8c0
+
+SUSAAdvMicrowaveFlame:
+    Inherits: USAMicrowaveFlame
+	ReloadDelay: 25
+	Burst: 6
+	Range: 3c768
+	Warhead@1Dam: SpreadDamage
+		Spread: 3c768
+		Damage: 6000
+
+SUSAPopUpTurret:
+    Inherits: SUSAMarineMG
+    Burst: 2
+    Range: 7c0
+    BurstDelays: 6
+    ReloadDelay: 6
+    Report: popturretfire.wav
+    Projectile: InstantHit
+        Inaccuracy: 0c768
+    Warhead@1Dam: SpreadDamage
+		Damage: 1950
+        Versus:
+            None: 120
+            Light: 90
+            Medium: 65
+            Heavy: 45
+            Wood: 30
+            Concrete: 20
         
 ####################################
 #        WEAPONS GLA
@@ -1530,38 +1655,6 @@ SGLSparkaCannonAA:
 			Heavy: 55
             Concrete: 20
 
-SGScourge:
-	ReloadDelay: 120
-	Burst: 1
-	BurstDelays: 25
-	Range: 12c0
-	MinRange: 4c0
-	Report: rocket2.aud
-	Projectile: Bullet
-		Blockable: false
-		Shadow: true
-		Inaccuracy: 213
-		Image: MISSILE
-		TrailImage: smokey
-		TrailDelay: 3
-		Speed: 210
-		LaunchAngle: 37
-	Warhead@1Dam: SpreadDamage
-		Spread: 512
-		Damage: 3000
-		Falloff: 1000, 368, 135, 50, 18, 7, 0
-		ValidTargets: Ground, Water, Trees
-		Versus:
-			None: 100
-			Wood: 50
-			Light: 75
-            Medium: 60
-			Heavy: 50
-		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath, Incendiary
-	Warhead@3Eff: CreateEffect
-		ImpactSounds: firebl3.aud
-	Warhead@toxin: FireFragment
-		Weapon: GLToxinExplodeClust2
 #####################################################
 # TripleMarauder Tank Weapons
 #####################################################
@@ -1670,12 +1763,40 @@ SCHWarmasterDualMissile:
 		Spread: 384
 		Damage: 6500
 		ValidTargets: Ground
-		DamageTypes: Prone50Percent, TriggerProne, MakeScrapbox, ExplosionDeath
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
     Warhead@Radiation: CreateTintedCells
 		Spread: 0c512
 		Falloff: 100, 75, 50
 		Level: 75
 		LayerName: genradiation
+
+SCHRavageTankMissile:
+	Inherits: ^AntiGroundMissile
+	ReloadDelay: 300
+	Range: 8c0
+	Report: vrocweaa.wav, vrocweab.wav, vrocweac.wav, vrocwead.wav, vrocweae.wav, vrocweaf.wav
+	ValidTargets: Ground
+	TargetActorCenter: true
+	Projectile: MissileCA
+		MinimumLaunchAngle: 48
+		MaximumLaunchAngle: 48
+        LockOnProbability: 100
+        HorizontalRateOfTurn: 25
+        VerticalRateOfTurn: 25
+		RangeLimit: 12c512
+		Speed: 280
+	Warhead@1Dam: SpreadDamage
+		Spread: 445
+		Damage: 32500
+		ValidTargets: Ground
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+        Versus:
+			None: 10
+			Wood: 30
+			Light: 100
+            Medium: 100
+			Heavy: 100
+            Concrete: 25
         
 SCHReaper:
 	Inherits: CHGattlingTank
@@ -1738,7 +1859,7 @@ SCHFlameTowerBlue:
         
 SCHEMPMig:
     Range: 1c512
-    ReloadDelay: 2
+    ReloadDelay: 40
     Report: chute1.aud
     Projectile: GravityBomb
 		Image: PARABOMB
@@ -1750,17 +1871,17 @@ SCHEMPMig:
 		SmudgeType: Crater
 		InvalidTargets: Vehicle, Structure, Wall, Husk, Trees
 	Warhead@1Dam: SpreadDamage
-		Damage: 9500
+		Damage: 3000
 		DamageTypes: Prone50Percent, TriggerProne, ElectricityDeath
         Spread: 1c512
         ValidTargets: Ground, Water
         Versus:
-			None: 80
-			Wood: 110
-			Light: 125
-            Medium: 125
-			Heavy: 125
-            Concrete: 90
+			None: 10
+            Wood: 96
+			Light: 160
+            Medium: 200
+			Heavy: 250
+            Concrete: 45
 	Warhead@3Eff: CreateEffect
 		Explosions: pulse_explosion_small
 		ExplosionPalette: tseffect
@@ -1768,13 +1889,13 @@ SCHEMPMig:
 		ImpactActors: false
 	Warhead@2Con: GrantExternalCondition
 		Condition: empdisable
-		Duration: 250
-		Range: 1c512
+		Duration: 300
+		Range: 2c512
 		ValidTargets: Ground, Water
     Warhead@3Con: GrantExternalCondition
 		Condition: disabled
-		Duration: 250
-		Range: 1c512
+		Duration: 300
+		Range: 2c512
 		ValidTargets: Building, Structure
         
 SCHTigerMG:
@@ -1864,7 +1985,7 @@ SCHInfernoCannonAP:
 	Warhead@3Eff: CreateEffect
 		Explosions: small_frag
 		ImpactSounds: kaboom25.aud
-	-Warhead@Shr: FireShrapnel
+	-Warhead@Shr: FireShrapnel 
     
 SCHRamjet:
 	Inherits: SCHTigerGrenades
@@ -1927,7 +2048,8 @@ SCHRazerBomb:
 		Explosions: napalm
 		ImpactSounds: firebl3.aud
         ExplosionPalette: effect
-    Warhead@2ClustF: FireShrapnel
+    Warhead@2ClustF: FireShrapnel 
+		InvalidTargets: FireImmune
 		Weapon: CHInfernoCannonC
 		Amount: 2
     -Warhead@2Clust: FireCluster
@@ -1938,7 +2060,8 @@ SCHRazerBomb2:
     Warhead@1Dam: SpreadDamage
 		Damage: 10000
         Spread: 1c768
-	Warhead@2ClustF: FireShrapnel
+	Warhead@2ClustF: FireShrapnel 
+		InvalidTargets: FireImmune
 		Weapon: CHInfernoCannonC
 		Amount: 5
         
@@ -1988,3 +2111,597 @@ SCHGattlingAPC:
 SCHGattlingAPCAA:
 	Inherits: CHGattlingTankAA
 	ReloadDelay: 12
+
+SCHRADTank:
+	InvalidTargets: Water, RadiationImmune
+	ReloadDelay: 6
+	Range: 5c0
+	Report: radbeamloop01.wav, radbeamloop02.wav, radbeamloop03.wav, radbeamloop04.wav, radbeamloop05.wav, radbeamloop06.wav, radbeamloop07.wav, radbeamloop08.wav, radbeamloop09.wav, radbeamloop10.wav, radbeamloop11.wav,radbeamloop12.wav,radbeamloop13.wav,radbeamloop14.wav
+	Projectile: RadBeam
+		Amplitude: 250
+		WaveLength: 360
+		Color: FF8000
+	Warhead@1Dam: SpreadDamage
+		Spread: 384
+		Damage: 333
+		InvalidTargets: Wall, Husk, RadiationImmune
+		Versus:
+			None: 200
+			Light: 60
+            Medium: 45
+			Heavy: 30
+			Wood: 40
+			Concrete: 30
+		DamageTypes: Prone100Percent, TriggerProne, DefaultDeath
+	Warhead@3Eff: CreateEffect
+        ImpactSounds: rad_geiger01.wav, rad_geiger02.wav, rad_geiger03.wav, rad_geiger04.wav, rad_geiger05.wav, rad_geiger06.wav, rad_geiger07.wav, rad_geiger08.wav, rad_geiger09.wav
+	Warhead@Clear: OpenToppedDamage
+		Spread: 0c512
+		Damage: 5000
+		Amount: 1
+		ValidTargets: Garrisoned
+		DamageTypes: Prone100Percent, TriggerProne, DefaultDeath
+    Warhead@Radiation: CreateTintedCells
+		Spread: 0c512
+		Falloff: 100, 75, 50
+		Level: 5
+		LayerName: genradiation
+
+RADTankDropBarrels:
+    ReloadDelay: 750
+    Range: 0c128
+    Report: radcoreeject.wav
+    ValidTargets: Ground
+	Warhead@1Dam: SpreadDamage
+		Spread: 2c0
+        Delay: 40
+		Damage: 8000
+        ValidTargets: Ground
+		InvalidTargets: Structure, Wall, Husk, RadiationImmune
+		Versus:
+			None: 100
+			Light: 30
+            Medium: 15
+			Heavy: 10
+			Wood: 10
+			Concrete: 10
+    Warhead@Radiation: CreateTintedCells
+		Spread: 2c0
+        Delay: 40
+		Falloff: 100, 75, 50
+		Level: 100
+		LayerName: genradiation
+    Warhead@3Eff: CreateEffect
+		Explosions: radbarreldrop
+    Warhead@4Eff: CreateEffect
+        Explosions: napalm
+        Delay: 40
+		ImpactSounds: radgrenadefire.wav
+        
+SCHSiegeCannon:
+    Inherits: SUSAHowitzer
+	Projectile: Bullet
+		Speed: 130
+	Warhead@1Dam: SpreadDamage
+		Spread: 0c512
+		Damage: 11000
+    Warhead@Radiation: CreateTintedCells
+		Spread: 1c0
+		Falloff: 100, 75, 50
+		Level: 90
+		LayerName: genradiation
+        
+SCHOverlordTacticalNuke:
+	Inherits: CHNukeCannon
+	ReloadDelay: 400
+	Range: 5c0
+	MinRange: 0c256
+	TargetActorCenter: true
+	Projectile: Bullet
+		ContrailLength: 30
+		Speed: 120
+	Warhead@1Dam: SpreadDamage
+		Spread: 1c0
+		Damage: 15000
+
+SCHDevastatorExplosion:
+    Warhead@1Dam: SpreadDamage
+		Spread: 2c512
+		Falloff: 100, 45, 0
+		Damage: 15000
+		Versus:
+			None: 150
+			Wood: 125
+			Light: 115
+            Medium: 100
+			Heavy: 90
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater
+        Size: 3
+	Warhead@3Eff: CreateEffect
+		Explosions: nuke_small
+		ImpactSounds: kaboom22.aud
+		ImpactActors: false
+    Warhead@13Shake: ShakeScreen
+		Duration: 10
+		Intensity: 8
+		Multiplier: 1,2
+    Warhead@3Radiation: CreateTintedCells
+        Spread: 2c512
+		Level: 300
+        LayerName: genradiation
+        
+SCHDevastator:
+	Inherits: CHNukeCannon
+	ReloadDelay: 85
+    Burst: 2
+    BurstDelays: 12
+	Range: 6c0
+	MinRange: 0c0
+	Report: vnukweaa.wav
+	TargetActorCenter: true
+	Projectile: Bullet
+		ContrailLength: 30
+		Speed: 170
+        LaunchAngle: 20
+	Warhead@1Dam: SpreadDamage
+		Spread: 1c0
+		Damage: 11500
+    Warhead@3Radiation: CreateTintedCells
+        Spread: 1c0
+		Level: 175
+
+SCHNukeGattlingTurret:
+    Inherits: CHGattlingTurret
+	ReloadDelay: 5
+	Range: 6c512
+
+SCHNukeGattlingTurretAA:
+	Inherits: CHGattlingTurretAA
+	ReloadDelay: 5
+	Range: 7c512
+
+SCHNuclearMIGWeapon:
+	Inherits: CHMIGWeapon
+	-Warhead@Shrapnel: FireShrapnel 
+    Warhead@3Radiation: CreateTintedCells
+        Spread: 0c768
+		Level: 200
+        LayerName: genradiation
+
+SCHOfficerPistol:
+    Inherits: Pistol
+    ReloadDelay: 14
+	Warhead@1Dam: SpreadDamage
+		Damage: 1200
+        
+SCHBuratino:
+	Inherits: BikeRockets
+    Burst: 16
+    BurstDelays: 5
+	ReloadDelay: 60
+    Range: 10c0
+	Report: irpgweaa.wav, irpgweab.wav, irpgweac.wav, irpgwead.wav, irpgweae.wav
+    ValidTargets: Ground, Air
+    Projectile: MissileCA
+		HorizontalRateOfTurn: 1
+        VerticalRateOfTurn: 1
+        LockOnProbability: 0
+        Inaccuracy: 3c0
+        RangeLimit: 10c0
+	Warhead@1Dam: SpreadDamage
+        ValidTargets: Ground, Air
+        Spread: 0c284
+		Damage: 3750
+		Versus:
+			None: 30
+			Wood: 55
+			Light: 105
+            Medium: 85
+			Heavy: 80
+            Concrete: 45
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+
+SCHHammerCannonHE:
+	Inherits: ArtilleryShell
+	Inherits@Explosion: CHAtomicWeapon
+	ReloadDelay: 400
+	Range: 22c0
+	MinRange: 6c0
+	Report: vnukweaa.wav
+	TargetActorCenter: true
+	Projectile: Bullet
+		ContrailLength: 30
+		Speed: 180
+	Warhead@1Dam: SpreadDamage
+		Spread: 1c0
+		Damage: 30000
+	Warhead@3Eff: CreateEffect
+		Explosions: schnukeexplosion
+
+^SCHSeismic:
+    Warhead@1Dam: SpreadDamage
+		Spread: 1c512
+		Damage: 1500
+	Warhead@3Eff: CreateEffect
+		Explosions: schnukeexplosion
+	Warhead@3Eff1: CreateEffect
+        Delay: 20
+        ImpactSounds: hammerseismicundergroundexp1.wav
+	Warhead@2Dam: SpreadDamage
+        Delay: 105
+		Spread: 1c512
+		Damage: 2000
+	Warhead@4Eff: CreateEffect
+        Delay: 105
+		Explosions: susaseismiceffects
+        ImpactSounds: hammercannonseicmicquakestart.wav
+	Warhead@3Dam: SpreadDamage
+        Delay: 125
+		Spread: 1c512
+		Damage: 4000
+	Warhead@5Eff: CreateEffect
+        Delay: 125
+		Explosions: susaseismiceffects
+        ImpactSounds: hammercannonseicmicquake1.wav, hammercannonseicmicquake2.wav, hammercannonseicmicquake3.wav, hammercannonseicmicquake4.wav, hammercannonseicmicquake5.wav, hammercannonseicmicquake6.wav
+	Warhead@4Dam: SpreadDamage
+        Delay: 145
+		Spread: 1c512
+		Damage: 4000
+	Warhead@6Eff: CreateEffect
+        Delay: 145
+		Explosions: susaseismiceffects
+        ImpactSounds: hammercannonseicmicquake1.wav, hammercannonseicmicquake2.wav, hammercannonseicmicquake3.wav, hammercannonseicmicquake4.wav, hammercannonseicmicquake5.wav, hammercannonseicmicquake6.wav
+	Warhead@5Dam: SpreadDamage
+        Delay: 165
+		Spread: 1c512
+		Damage: 4000
+	Warhead@7Eff: CreateEffect
+        Delay: 165
+		Explosions: susaseismiceffects
+        ImpactSounds: hammercannonseicmicquake1.wav, hammercannonseicmicquake2.wav, hammercannonseicmicquake3.wav, hammercannonseicmicquake4.wav, hammercannonseicmicquake5.wav, hammercannonseicmicquake6.wav
+	Warhead@6Dam: SpreadDamage
+        Delay: 185
+		Spread: 1c512
+		Damage: 4000
+	Warhead@8Eff: CreateEffect
+        Delay: 185
+		Explosions: susaseismiceffects
+        ImpactSounds: hammercannonseicmicquake1.wav, hammercannonseicmicquake2.wav, hammercannonseicmicquake3.wav, hammercannonseicmicquake4.wav, hammercannonseicmicquake5.wav, hammercannonseicmicquake6.wav
+	Warhead@7Dam: SpreadDamage
+        Delay: 205
+		Spread: 1c512
+		Damage: 4000
+	Warhead@9Eff: CreateEffect
+        Delay: 205
+		Explosions: susaseismiceffects
+        ImpactSounds: hammercannonseicmicquake1.wav, hammercannonseicmicquake2.wav, hammercannonseicmicquake3.wav, hammercannonseicmicquake4.wav, hammercannonseicmicquake5.wav, hammercannonseicmicquake6.wav
+	Warhead@8Dam: SpreadDamage
+        Delay: 225
+		Spread: 1c512
+		Damage: 4000
+	Warhead@10Eff: CreateEffect
+        Delay: 225
+		Explosions: susaseismiceffects
+        ImpactSounds: hammercannonseicmicquake1.wav, hammercannonseicmicquake2.wav, hammercannonseicmicquake3.wav, hammercannonseicmicquake4.wav, hammercannonseicmicquake5.wav, hammercannonseicmicquake6.wav
+	Warhead@9Dam: SpreadDamage
+        Delay: 245
+		Spread: 1c512
+		Damage: 4000
+	Warhead@11Eff: CreateEffect
+        Delay: 245
+		Explosions: susaseismiceffects
+        ImpactSounds: hammercannonseicmicquakestop.wav
+	Warhead@2Con: GrantExternalCondition
+        Delay: 105
+		Condition: empdisable
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Ground, Water
+    Warhead@3Con: GrantExternalCondition
+        Delay: 105
+		Condition: disabled
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Building, Structure
+	Warhead@4Con: GrantExternalCondition
+        Delay: 125
+		Condition: empdisable
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Ground, Water
+    Warhead@5Con: GrantExternalCondition
+        Delay: 125
+		Condition: disabled
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Building, Structure
+	Warhead@6Con: GrantExternalCondition
+        Delay: 145
+		Condition: empdisable
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Ground, Water
+    Warhead@7Con: GrantExternalCondition
+        Delay: 145
+		Condition: disabled
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Building, Structure
+	Warhead@8Con: GrantExternalCondition
+        Delay: 165
+		Condition: empdisable
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Ground, Water
+    Warhead@9Con: GrantExternalCondition
+        Delay: 165
+		Condition: disabled
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Building, Structure
+	Warhead@10Con: GrantExternalCondition
+        Delay: 185
+		Condition: empdisable
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Ground, Water
+    Warhead@11Con: GrantExternalCondition
+        Delay: 185
+		Condition: disabled
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Building, Structure
+	Warhead@12Con: GrantExternalCondition
+        Delay: 205
+		Condition: empdisable
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Ground, Water
+    Warhead@13Con: GrantExternalCondition
+        Delay: 205
+		Condition: disabled
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Building, Structure
+	Warhead@14Con: GrantExternalCondition
+        Delay: 225
+		Condition: empdisable
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Ground, Water
+    Warhead@15Con: GrantExternalCondition
+        Delay: 225
+		Condition: disabled
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Building, Structure
+	Warhead@16Con: GrantExternalCondition
+        Delay: 245
+		Condition: empdisable
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Ground, Water
+    Warhead@17Con: GrantExternalCondition
+        Delay: 245
+		Condition: disabled
+		Duration: 200
+		Range: 1c512
+		ValidTargets: Building, Structure
+	Warhead@1Shake: ShakeScreen
+        Delay: 105
+		Duration: 140
+		Intensity: 3
+		Multiplier: 1,1
+
+SCHHammerCannonSeismic:
+	Inherits: ArtilleryShell
+    Inherits@seismic: ^SCHSeismic
+	ReloadDelay: 400
+	Range: 22c0
+	MinRange: 6c0
+	Report: hammerexplosion1.wav, hammerexplosion2.wav
+	TargetActorCenter: true
+	Projectile: Bullet
+		ContrailLength: 30
+		Speed: 170
+    Warhead@3Smu: LeaveSmudge
+		Size: 3
+        
+SCHAnvilTank:
+    ReloadDelay: 25
+    Range: 0c0
+    Projectile: InstantExplode
+	Warhead@3Dam: SpreadDamage
+		Spread: 3c0
+		Damage: 5000
+	Warhead@5Eff: CreateEffect
+		Explosions: susaseismiceffects
+        ImpactSounds: hammercannonseicmicquake1.wav, hammercannonseicmicquake2.wav, hammercannonseicmicquake3.wav, hammercannonseicmicquake4.wav, hammercannonseicmicquake5.wav, hammercannonseicmicquake6.wav
+	Warhead@1Shake: ShakeScreen
+		Duration: 20
+		Intensity: 3
+		Multiplier: 1,1
+	Warhead@1Con: GrantExternalCondition
+		Condition: empdisable
+		Duration: 25
+		Range: 3c768
+		ValidTargets: Ground, Water
+    Warhead@2Con: GrantExternalCondition
+		Condition: disabled
+		Duration: 25
+		Range: 3c768
+		ValidTargets: Building, Structure
+        
+SCHSupportCrawlerMissile:
+	Inherits: ^MissileWeapon
+	Burst: 2
+    BurstDelays: 14
+	ReloadDelay: 125
+    ValidTargets: Ground
+	Projectile: Bullet
+		Speed: 340
+		TrailImage: fb2
+		Image: DRAGON
+		Inaccuracy: 768
+	Warhead@1Dam: SpreadDamage
+		Damage: 3500
+        ValidTargets: Ground
+		Versus:
+			None: 110
+			Light: 200
+            Medium: 200
+			Heavy: 200
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath, FireDeath, Incendiary
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: Scorch
+		InvalidTargets: Vehicle, Structure, Wall
+	Warhead@3Eff: CreateEffect
+		Explosions: small_frag
+		ImpactSounds: kaboom25.aud
+		ImpactActors: false
+
+SCHSupportCrawlerMissileAA: 
+    Inherits: SCHSupportCrawlerMissile
+    ValidTargets: Air
+	Warhead@1Dam: SpreadDamage
+        ValidTargets: Air
+		Versus:
+			None: 30
+			Light: 75
+            Medium: 75
+			Heavy: 75
+    Warhead@3Eff: CreateEffect
+		Explosions: med_explosion_air
+
+SCHNeutronBomb:
+	ReloadDelay: 800
+	Range: 1c0
+	Report: chute1.aud
+	Projectile: GravityBomb
+		Image: PARABOMB
+		OpenSequence: open
+		Velocity: 0, 0, -86
+		Acceleration: 0, 0, 0
+		Shadow: False
+	Warhead@1KillAircraft: SpreadDamage
+		Spread: 4c0
+		Falloff: 100, 100
+		Damage: 50000
+		ValidTargets: Air
+		DamageTypes: SmallExplosionDeath
+	Warhead@3Clear: OpenToppedDamage
+		Spread: 4c0
+		Damage: 25000
+		ValidTargets: Garrisoned, GarrisonedNBC, LoadedVehicle
+		ValidStances: Enemy
+		Amount: 6
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@4Driver: ChangeOwnerToNeutral
+		Range: 6c0
+		ValidTargets: DriverKill
+		ValidStances: Enemy
+		InvalidTargets: LoadedVehicle, NeutronImmune
+	Warhead@3Eff: CreateEffect
+		Explosions: schnukeexplosion
+        ImpactSounds: sneutexp.wav
+
+SCHSiegeSoldierAim:
+    Range: 11c0
+    MinRange: 3c0
+    ReloadDelay: 45
+	ValidTargets: Ground
+	Projectile: InstantHit
+    
+SCHSiegeSoldier:
+	Inherits: SUSAMortarHMMWV
+	MinRange: 3c0
+    ReloadDelay: 175
+    Report: mortarfire1.wav
+
+SCHSiegeSoldier_Nuke:
+    Inherits: SCHSiegeSoldier
+    Warhead@3Radiation: CreateTintedCells
+        Spread: 1c768
+		Level: 100
+        LayerName: genradiation
+        
+SCHSiegeSoldierChaff:
+    Inherits: SCHSiegeSoldier
+    ReloadDelay: 750
+    -Warhead@1Dam: SpreadDamage
+    Warhead@spawn: SpawnActor
+        Actors: schchaff
+
+SCHTankHunter_Nuke:
+    Inherits: CHTankHunterMissile
+    Warhead@3Radiation: CreateTintedCells
+        Spread: 1c0
+		Level: 100
+        LayerName: genradiation
+        
+SCHIronDragon:
+    Inherits: SCHRazerBomb
+    Range: 3c0
+    ReloadDelay: 800
+    Warhead@1Dam: SpreadDamage
+		Damage: 15000
+        Spread: 2c512
+	Warhead@2ClustF: FireShrapnel 
+		InvalidTargets: FireImmune
+		Weapon: CHInfernoCannonC
+		Amount: 8
+    Warhead@4Eff: CreateEffect
+        Explosions: napalm
+		ImpactSounds: firebl3.aud
+	Warhead@3Eff: CreateEffect
+		Explosions: schnukeexplosion
+        
+SCHNeutronMineBomb:
+    Inherits: CHMineBomb
+	Warhead@1: FireCluster
+		Weapon: SCHNeutronMineSpawner
+
+SCHNeutronMineSpawner:
+    Inherits: CHMineSpawner
+	Warhead@1: SpawnActor
+		Actors: schneutronminv
+
+SCHRadiationGrenade:
+	Inherits: Grenade
+    ReloadDelay: 200
+	Range: 7c0
+	Report: toss1.aud
+	ValidTargets: Ground
+	Projectile: Bullet
+		Speed: 115
+		Inaccuracy: 768
+	Warhead@1Dam: SpreadDamage
+		Spread: 341
+		Damage: 2000
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+    Warhead@3Radiation: CreateTintedCells
+        Spread: 2c0
+		Level: 100
+        LayerName: genradiation
+        
+SCHTankHunterAttachNuke1:
+	Inherits: CHTankHunterAttach1
+	Warhead@1: AttachDelayedWeapon
+		Weapon: SCHTankHunterNukeBomb
+
+SCHTankHunterAttachNuke2:
+	Inherits: CHTankHunterAttach2
+	Warhead@1: AttachDelayedWeapon
+		Weapon: SCHTankHunterNukeBomb
+
+SCHTankHunterNukeBomb:
+	Inherits: CHTankHunterBomb
+	Warhead@1Dam: SpreadDamage
+		Damage: 50000
+    Warhead@3Radiation: CreateTintedCells
+        Spread: 3c0
+		Level: 100
+        LayerName: genradiation

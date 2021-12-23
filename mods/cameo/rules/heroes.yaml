@@ -1,5 +1,6 @@
 HERO:
 	Inherits: ^BaseBuilding
+    Inherits@allques: ^AllQueues
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
@@ -14,7 +15,6 @@ HERO:
 		BuildPaletteOrder: 10000
 		BuildLimit: 1
 		Prerequisites: barracks, ~heroes
-		Queue: Building.GDI, Building.Nod, Building.Allies, Building.Soviet, Building.AlliesRA2, Building.SovietRA2, Building.Yuri, Building.Alpha, Building.Scavenger, Building.Terran, Building.Protoss, Building.Zerg, Building.SimCity, Building.TSGDI, Building.TSNod, Building.CABAL, Building.MUTANT, RABuilding.GDI, RABuilding.Nod, RABuilding.Allies, RABuilding.Soviet, RABuilding.AlliesRA2, RABuilding.SovietRA2, RABuilding.Yuri, RABuilding.Alpha, RABuilding.Scavenger, RABuilding.Terran, RABuilding.Protoss, RABuilding.Zerg, RABuilding.SimCity, RABuilding.TSGDI, RABuilding.TSNod, RABuilding.CABAL, RABuilding.MUTANT, Building.GLA, RABuilding.GLA, Building.USA, RABuilding.USA, Building.CHINA, RABuilding.CHINA, Building.LEANG, RABuilding.LEANG, Building.OrangeStar, RABuilding.OrangeStar, Building.BlueMoon, RABuilding.BlueMoon, Building.YellowComet, RABuilding.YellowComet, Building.GreenEarth, RABuilding.GreenEarth, Building.BlackHole, RABuilding.BlackHole, Building.Rubinelle, RABuilding.Rubinelle, Building.IDS, RABuilding.IDS, Building.NRA, RABuilding.NRA, Building.Lazurian, RABuilding.Lazurian, Building.sow, RABuilding.sow, Building.SWEMPIRE, Building.SWREBELS, RABuilding.SWEMPIRE, RABuilding.SWREBELS, Building.SWSEPARATIST, Building.SWREPUBLIC, RABuilding.SWSEPARATIST, RABuilding.SWREPUBLIC, Building.SWHUTT, RABuilding.SWHUTT, Building.sow, Building.camea, Building.d2k, RABuilding.sow, Building.orc, Building.human, RABuilding.orc, RABuilding.human, RABuilding.d2k, Building.Shockwave, RABuilding.Shockwave, Building.ImperialGuard, RABuilding.ImperialGuard, Building.FreedomGuard, RABuilding.FreedomGuard, Building.Imperium, Building.Shadowhand, RABuilding.Imperium, RABuilding.Shadowhand, RABuilding.Togran, Building.Togran
 		Description: Summones Heroes.\n Heroes heal 1% of their max Health every 1 second when not attacking for at least 5 sec.\n you may have only one Hero at a time!\n Heroes do not benefit from external condition such as Industrial, Firetrucks or Policecars.\n\n Limit: 1
 	Building:
 		Footprint: xx xx ==
@@ -655,7 +655,7 @@ volkovcc:
 	Buildable:
 		Queue: Heroes
 		BuildPaletteOrder: 140
-		Prerequisites: ra2naweap, ra2natech, ~techlevel.high, ~CountryChoosedSovietRA2, !1hero
+		Prerequisites: ra2naweap, ra2natech, ~techlevel.high, ~anysovietsallra, !1hero
 		Description: Controls and provides Volkov\nBuilding must be sold and rebuilt for another Volkov to appear
         IconPalette: ra2
         BuildLimit: 1
@@ -778,7 +778,7 @@ RA2HTANY:
 	Buildable:
 		Queue: Heroes
 		BuildPaletteOrder: 120
-		Prerequisites: ra2gatech, ~anyallies, !1hero
+		Prerequisites: ra2gatech, ~anyalliesallra, !1hero
 		BuildLimit: 1
 		Description: Elite amphibious commando infantry with dual laser guns, C4 and Knife.\nCan plant timed bombs on vehicles\nCan demolish buildings with C4\nCan use Chrono teleportation\nMaximum 1 can be trained\n Strong vs Infantry, Buildings, Vehicles\n Weak vs Aircraft\n\nTip:\nClick or use F key to switch weaponry\nUse Alt+Click for chrono teleportation
         Icon: iconchrono
@@ -834,10 +834,333 @@ RA2HTANY:
 		StartIfBelow: 100        
     -Production:
 	-ProductionQueue:
+
+TSMCNEAL:
+    Inherits@HEROES: ^Heroes
+    Inherits: GNRL
+    Inherits@EXPERIENCE: ^GainsExperience
+    Buildable:
+		Queue: Heroes
+		BuildPaletteOrder: 120
+		Prerequisites: !1hero, ~anygdi
+        Description: Equipped with Grenade Launcher that can stun enemies\nCan call down Super Wolverine Mechsuit
+        IconPalette: ra2
+        BuildDuration: 500
+        BuildDurationModifier: 100
+    Valued:
+		Cost: 2000
+    Tooltip:
+        Name: Joshua McNeil
+    Armament:
+        Weapon: McNealGL
+        RequiresCondition: rank-veteran == 0 && !rank-elite
+    Armament@GL2:
+		Weapon: McNealGL1
+        RequiresCondition: rank-veteran == 1 && !rank-elite
+    Armament@GL3:
+		Weapon: McNealGL2
+        RequiresCondition: rank-veteran == 2 && !rank-elite
+    Armament@GL4:
+		Weapon: McNealGL3
+        RequiresCondition: rank-veteran == 3 && !rank-elite
+    Armament@GL5:
+		Weapon: McNealGL4
+        RequiresCondition: rank-veteran == 4 || rank-elite
+    Health:
+        HP: 30000
+    Armor:
+        Type: None
+    Mobile:
+        Speed: 75
+        PauseOnCondition: nocc
+    -Production:
+	-ProductionQueue:
+    AttackFrontal:
+        Armaments: primary
+    WithInfantryBody:
+        IdleSequences: stand
+    RenderSprites:
+        Image: tsmcneal
+        Scale: 1
+    -ProvidesPrerequisite@hero
+    -Crushable
+    Passenger:
+        CargoType: tsmcneal
+    -SelfHealing@healdefault:
+	-WithDecoration@healdefault:
+	-GrantConditionOnAttack@herohealblock
+	RevealsShroud:
+		Range: 5c0
+    DetonateWeaponPower:
+		OrderName: McNealMechDrop
+		Cursor: ability
+		Icon: tsmcneilmech
+        IconPalette: ra2
+        StartFullyCharged: true
+		Description: Super Wolverine Drop
+		LongDesc: Drops Super Wolverine out of sky.\nRequires the Man to control it
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+        Prerequisites: ~!tsmcnealmech
+		ChargeInterval: 3000
+		Weapon: McNealMechDropSpawner
+		CameraActor: camera.small
+		CameraRemoveDelay: 60
+    Voiced:
+        VoiceSet: TSInfantry
+
+TSMCNEALMECH:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EXT: ^ExternalConditions
+	Valued:
+		Cost: 450
+	Tooltip:
+		Name: Super Wolverine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Heroes
+		BuildPaletteOrder: 20
+        BuildDuration: 250
+        BuildDurationModifier: 100
+		Prerequisites: ~disabled
+		Description: Anti-personnel walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
+	Mobile:
+		TurnSpeed: 20
+		Speed: 90
+		Locomotor: wheeled
+        RequiresCondition: loaded
+    Cargo:
+        PipCount: 1
+        MaxWeight: 1
+        LoadedCondition: loaded
+        Types: tsmcneal
+        EjectOnDeath: True
+    WithMuzzleOverlay:
+	Health:
+		HP: 100000
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+    RenderSprites:
+        Image: tsmcnealmech
+	AttackFrontal:
+        RequiresCondition: loaded
+	Armament:
+		Weapon: McNealWolveringMG
+        MuzzleSequence: muzzle
+        LocalOffset: 350,-200,150, 350,200,150
+	Armament@missiles:
+		Weapon: McNealWolveringMissile
+        LocalOffset: 50,-300,550
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	WithFacingSpriteBody:
+		Sequence: stand
+	WithMoveAnimation:
+		MoveSequence: walk
+		ValidMovementTypes: Horizontal, Turn
+	Voiced:
+		VoiceSet: TSMech
+    ProvidesPrerequisite@unitname:
+    WithIdleOverlay@autodestruction:
+		Sequence: overload
+		RequiresCondition: overload
+        Palette: d2keffect
+    GrantConditionOnHealth:
+        MinHP: 0
+        MaxHP: 25000
+        Condition: overload
+    KillsSelf@autodestruction:
+        Delay: 150
+        RequiresCondition: overload && !loaded
+        DamageTypes: AutoDestruction
+    Explodes@autodestruction:
+        Weapon: McNealWolverinSuicide
+        RequiresCondition: overload && !loaded
+        DeathTypes: AutoDestruction
+        
+TSNASHWA:
+    Inherits@HEROES: ^Heroes
+    Inherits: GNRL
+    Inherits@EXPERIENCE: ^GainsExperience
+    Buildable:
+		Queue: Heroes
+		BuildPaletteOrder: 120
+		Prerequisites: !1hero, ~anynod
+        Description: Permanently Stealthed until her weapon is fully charged up\nCan call Nod Bike
+        IconPalette: ra2
+        BuildDuration: 500
+        BuildDurationModifier: 100
+    Valued:
+		Cost: 2000
+    Tooltip:
+        Name: Nashwa
+    Armament:
+        Weapon: TSNashwaLaser
+        LocalOffset: 200,0,75
+	AmmoPool:
+		Ammo: 60
+		PipCount: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 13
+		Count: 1
+        ResetOnFire: True
+	FirepowerMultiplier@NashwaLaser:
+		RequiresCondition: !ammo
+		Modifier: 350
+	Cloak:
+		InitialDelay: 40
+		CloakDelay: 40
+		UncloakOn: Unload
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled || !ammo
+		IsPlayerPalette: true
+    Health:
+        HP: 30000
+    Armor:
+        Type: None
+    Mobile:
+        Speed: 70
+    -Production:
+	-ProductionQueue:
+    AttackFrontal:
+        Armaments: primary
+    WithInfantryBody:
+        IdleSequences: stand
+    RenderSprites:
+        Image: tsnashwa
+        Scale: 1
+    -ProvidesPrerequisite@hero
+    -Crushable
+    Passenger:
+        CargoType: tsnashwa
+    DeathSounds:
+        VolumeMultiplier: 2
+    -SelfHealing@healdefault:
+	-WithDecoration@healdefault:
+	-GrantConditionOnAttack@herohealblock
+	RevealsShroud:
+		Range: 5c0
+    ProductionFromMapEdge@Nashwa:
+		Produces: NashwaBike.TSNod
+	ProductionQueue@Nashwa:
+		Type: NashwaBike.TSNod
+        Group: Unit
+    	ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+     	LowPowerModifier: 250    
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled         
+	ProductionBar@Nashwa:
+		ProductionType: NashwaBike.TSNod
+    Voiced:
+        VoiceSet: TSNashwa
+    ChangesHealth:
+  		PercentageStep: 2
+		Delay: 15
+		StartIfBelow: 100        
+	HitShape:
+		Type: Circle
+			Radius: 256
+
+TSNASHWABIKE:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^FrontalEMP
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 0
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+    Buildable:
+		BuildPaletteOrder: 30
+		Queue: NashwaBike.TSNod
+		Description: Autonomous Bike that helps Nashwa get over long distances\nShoots flame rockets
+        Prerequisites: ~!TSNASHWABIKE
+        BuildLimit: 1
+        IconPalette: ra2
+        BuildDuration: 75
+        BuildDurationModifier: 100
+    ProvidesPrerequisite@nashwabike:
+        Prerequisite: 1hero
+        RequiresCondition: loaded
+    ProvidesPrerequisite@nashwabike:
+        Prerequisite: TSNASHWABIKE
+	Mobile:
+		Speed: 190
+    Health:
+		HP: 40000
+    Tooltip:
+		Name: Nod Bike
+    RenderSprites:
+        Image: tsnashwabike
+        Scale: 0.8
+    WithFacingSpriteBody:
+        RequiresCondition: !loaded
+    WithFacingSpriteBody@1:
+        Sequence: idle-full
+        RequiresCondition: loaded
+    Cargo:
+        PipCount: 1
+        MaxWeight: 1
+        LoadedCondition: loaded
+        Types: tsnashwa
+        EjectOnDeath: True
+	Repairable:
+		HpPerStep: 1250
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 5c0
+	Armament@PRIMARY:
+		Weapon: TSBikeMissileNashwa
+		RequiresCondition: !rank-elite
+		LocalOffset: -153,-204,509, -153,204,509
+	Armament@ELITE:
+		Weapon: TSBikeMissileNashwaElite
+		RequiresCondition: rank-elite
+		LocalOffset: -153,-204,509, -153,204,509
+	AttackFrontal:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Voiced:
+		VoiceSet: USASentryDroneVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+    SpawnActorOnDeath@cd:
+        Actor: TSNASHWABIKE.cd
     
+TSNASHWABIKE.cd:
+    Inherits: ^Husk
+    ProvidesPrerequisite@nashwabike:
+        Prerequisite: TSNASHWABIKE
+	Tooltip:
+		Name: Nod Bike (Destroyed)
+	RenderSprites:
+        Image: TSNASHWABIKE
+	KillsSelf:
+        Delay: 750
+    -TransformOnCapture
+    -Burns
+    -Targetable
+    -Capturable
+        
 ancientvisceroid:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
     Inherits@HEROES: ^Heroes
@@ -861,6 +1184,19 @@ ancientvisceroid:
 		Weapon: AncientViceroid
     Armament@SPAWN:							    ##########
 		Weapon: AncientViceroidSpawn
+        RequiresCondition: rank-veteran == 0
+    Armament@SPAWN2:							    ##########
+		Weapon: AncientViceroidSpawn2
+        RequiresCondition: rank-veteran == 1 && !rank-elite
+    Armament@SPAWN3:							    ##########
+		Weapon: AncientViceroidSpawn3
+        RequiresCondition: rank-veteran == 2 && !rank-elite
+    Armament@SPAWN4:							    ##########
+		Weapon: AncientViceroidSpawn4
+        RequiresCondition: rank-veteran == 3 && !rank-elite
+    Armament@SPAWN5:							    ##########
+		Weapon: AncientViceroidSpawn5
+        RequiresCondition: rank-veteran == 4 || rank-elite
 	AttackFrontal:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########

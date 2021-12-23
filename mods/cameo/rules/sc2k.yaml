@@ -396,6 +396,7 @@ SC2KFACTORYSTRUCTURE:
 	#Inherits@EXPCITY: ^GainsExperienceCity
 	#Inherits@MAYORCALL: ^MayorCall
 	Inherits@aicash: ^AIConyardCash
+    Inherits@conyard: ^Conyard
 	#AcceptsDeliveredExperience:
 	#	ValidTypes: building
 	HitShape:
@@ -1538,10 +1539,53 @@ SC2KPOLICEDEPT:
 	RenderSprites:
 		Image: sc2kpolicedept
 		Scale: 1
+    ProvidesPrerequisite@buildingname:
     ProductionBar@PRODUCTIONQUEUE:
 		ProductionType: Police.sc2k  
 	ProductionQueue:
 		Type: Police.sc2k
+        Group: Infantry
+        ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+        LowPowerModifier: 250
+		CancelledAudio: Cancelled    
+    -WithDeathAnimation
+        
+SC2KFIREDEPT:
+	Inherits: ^BaseBuilding
+    Inherits@shape: ^3x3Shape
+    ProductionFromMapEdge@NORMAL:
+		Produces: FireDept.sc2k
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Fire Department
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 50
+		Prerequisites: Observatory
+		Description: Calls in Firefighters
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 8c0
+	Power:
+		Amount: -25
+	RenderSprites:
+		Image: sc2kfiredept
+		Scale: 1
+    ProvidesPrerequisite@buildingname:
+    ProductionBar@PRODUCTIONQUEUE:
+		ProductionType: FireDept.sc2k
+	ProductionQueue:
+		Type: FireDept.sc2k
         Group: Vehicle
         ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
@@ -1577,7 +1621,7 @@ SC2KHOSPITAL:
 	RenderSprites:
 		Image: sc2khospital
 		Scale: 1
-    ProximityExternalCondition@strykerheal:
+    ProximityExternalCondition@sc2khospitalheal:
         Condition: hospitalheal
         ValidStances: Ally
         Range: 6c0
@@ -1590,6 +1634,7 @@ SC2KMCV:
 	Inherits@EXT: ^ExternalConditions
 	Inherits@mcv: ^MCV
 	Inherits@shadow: ^ScavShadow
+    Inherits@conyard: ^Conyard
 	Valued:
 		Cost: 3500
 	Tooltip:
@@ -1638,7 +1683,7 @@ SC2KFIRE:
 	Inherits@shadow: ^ScavShadow
     Inherits@elemental: ^FireActor
 	Buildable:
-		Queue: Infantry.sc2k, RAVehicle.sc2k
+		Queue: Infantry.sc2k, RAInfantry.sc2k
 		BuildPaletteOrder: 20
 		Description: Burning.
 	Valued:
@@ -1646,7 +1691,7 @@ SC2KFIRE:
 	Tooltip:
 		Name: Fire
 	Health:
-		HP: 15000
+		HP: 30000
 	Armor:
 		Type: Light
 	Mobile:
@@ -1657,9 +1702,10 @@ SC2KFIRE:
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
 		Range: 6c0
-	Armament:
-		Weapon: FireballLauncher
-		LocalOffset: 512,0,0
+    Armament@PRIMARY:
+		Weapon: SuicideBomberTargeting
+	PeriodicExplosion:
+		Weapon: sc2kfire
 	AttackFrontal:
 	Voiced:
 		VoiceSet: voicesc2kfire
@@ -1675,7 +1721,7 @@ SC2KFIRE:
 SC2KTORNADO:
 	Inherits: ^Tank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
 	Inherits@POLICECALL: ^PoliceCall
 	Inherits@EXT: ^ExternalConditions
@@ -1688,15 +1734,15 @@ SC2KTORNADO:
 	Selectable:
 		Bounds: 72, 144
 	Buildable:
-		Queue: Infantry.sc2k, RAVehicle.sc2k
+		Queue: Infantry.sc2k, RAInfantry.sc2k
 		BuildPaletteOrder: 20
-		Description: Anti-air rush of air
+		Description: Sucks and eats everything in its way.
 	Valued:
 		Cost: 700
 	Tooltip:
 		Name: Tornado
 	Health:
-		HP: 30000
+		HP: 50000
 	Armor:
 		Type: Light
 	Mobile:
@@ -1707,13 +1753,61 @@ SC2KTORNADO:
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
 		Range: 6c0
-	Armament:
-		Weapon: Nike
-		LocalOffset: 0,0,320
-		MuzzleSequence: muzzle
-	AttackFrontal:
+    Armament@PRIMARY:
+		Weapon: SuicideBomberTargeting
+	PeriodicExplosion:
+		Weapon: sc2ktornado
 	Voiced:
-		VoiceSet: voicesc2kfire
+		VoiceSet: sc2ktornado
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	WithRangeCircle:
+		Range: 7c0
+	-ExternalCondition@FireCall:
+	-ExternalCondition@PoliceCall:
+	RenderSprites:
+		Scale: 1.0
+
+SC2KMOB:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
+	Inherits@POLICECALL: ^PoliceCall
+	Inherits@EXT: ^ExternalConditions
+	Inherits@shadow: ^ScavShadow
+	Buildable:
+		Queue: Infantry.sc2k, RAInfantry.sc2k
+		BuildPaletteOrder: 20
+		Description: Rioting.\nArmed with molotovs
+    ChangesHealth:
+  		PercentageStep: 5
+		Delay: 75
+		StartIfBelow: 150
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Mob
+	Health:
+		HP: 25000
+	Armor:
+		Type: None
+	Mobile:
+		Locomotor: wheeled
+		Speed: 80
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 6c0
+	Armament:
+		Weapon: sc2kmoblotov
+        Name: primary
+	AttackTurreted:
+    Turreted:
+        TurnSpeed: 50
+	Voiced:
+		VoiceSet: sc2kmob
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithRangeCircle:
@@ -1739,7 +1833,7 @@ SC2K_THUNDERCLOUD_MAIN:
 	Selectable:
 		Bounds: 72, 48
 	Buildable:
-		Queue: Infantry.sc2k, RAVehicle.sc2k
+		Queue: Infantry.sc2k, RAInfantry.sc2k
 		BuildPaletteOrder: 20
 		Description: Mobile tesla coil
 	Valued:
@@ -1774,7 +1868,7 @@ SC2K_THUNDERCLOUD_MAIN:
 		MaxCharges: 3
 		ReloadDelay: 120
 	Voiced:
-		VoiceSet: voicesc2kfire
+		VoiceSet: sc2kthunder
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithRangeCircle:
@@ -1831,7 +1925,7 @@ SC2KBULLDOZER:
 	WithDockingAnimation:
 	AttackFrontal:
 	Voiced:
-		VoiceSet: voicesc2kfire
+		VoiceSet: sc2kbulldozer
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithRangeCircle:
@@ -1851,7 +1945,7 @@ SC2KJETPLANE:
 	#Inherits@EMP: ^FrontalEMP
 	#Inherits@shadow: ^ScavShadow
 	Buildable:
-		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Queue: Infantry.sc2k, Infantry.sc2k
 		BuildPaletteOrder: 20
 		Description: Crashes into ground targets.
 	Valued:
@@ -1891,7 +1985,7 @@ SC2KJETPLANE:
 	Contrail@2:
 		Offset: -598,683,0
 	Voiced:
-		VoiceSet: voicesc2kfire
+		VoiceSet: sc2kjet
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithRangeCircle:
@@ -1902,6 +1996,8 @@ SC2KJETPLANE:
 		Scale: 1.0
 	SpawnActorOnDeath:
 		Actor: SC2KJetplane.Husk
+    EjectOnDeath:
+		PilotActor: glterror
 		
 SC2KJETPLANE.HUSK:
 	Inherits: ^PlaneHusk
@@ -1935,7 +2031,6 @@ SC2KHELICOPTER:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EXT: ^ExternalConditions
 	Inherits@EMP: ^FrontalEMP
-	#Inherits@shadow: ^ScavShadow
 	Buildable:
 		Queue: Vehicle.sc2k, RAVehicle.sc2k
 		BuildPaletteOrder: 20
@@ -1951,7 +2046,7 @@ SC2KHELICOPTER:
 	Aircraft:
 		TurnSpeed: 5
 		Speed: 150
-		CruiseAltitude: 6c0
+		CruiseAltitude: 4c0
 		AltitudeVelocity: 0c100
 	RevealsShroud:
 		Range: 15c0
@@ -1960,10 +2055,10 @@ SC2KHELICOPTER:
 	RevealsShroud@GAPGEN:
 		Range: 6c0
 	SpawnActorOnDeath:
-		Actor: TRAN.Husk
+		Actor: SC2KHELICOPTER.Husk
 	AttackFrontal:
 	Voiced:
-		VoiceSet: voicesc2kfire
+		VoiceSet: sc2kheli
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithRangeCircle:
@@ -1972,7 +2067,27 @@ SC2KHELICOPTER:
 	-ExternalCondition@PoliceCall:
 	RenderSprites:
 		Scale: 1.0
-		
+
+SC2KHELICOPTER.Husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Sim Copter
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 155
+	SmokeTrailWhenDamaged:
+		Offset: -427,0,0
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 8c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: sc2khelicopter
+        
 SC2KCARGOSHIP:
 	Inherits: ^BoatUnit
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -2034,20 +2149,18 @@ SC2KPOLICECAR:
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
 	Inherits@POLICECALL: ^PoliceCall
 	Inherits@EXT: ^ExternalConditions
-	Inherits@EMP: ^FrontalEMP
-	Inherits@shadow: ^ScavShadow
 	Buildable:
 		Queue: Police.sc2k, RAPolice.sc2k
 		BuildPaletteOrder: 20
         BuildDuration: 300
         BuildDurationModifier: 100
-		Description: Light vehicle that drives police officers to their destination.\nCan carry up to 4 officers\nIncreases damage output of nearby allied units
-	Valued:
-		Cost: 700
+		Description: Light vehicle that drives police officers to their destination.\nCan carry up to 4 officers who can shoot from inside\nIncreases damage output of nearby allied units
+    Valued:
+		Cost: 600
 	Tooltip:
 		Name: Police Car
 	Health:
-		HP: 25000
+		HP: 30000
 	Armor:
 		Type: Light
 	Mobile:
@@ -2069,20 +2182,20 @@ SC2KPOLICECAR:
 	RenderSprites:
         Image: sc2kpolicecar
         Scale: 0.8
-    GrantConditionOnAttack:
+    GrantConditionOnMovement:
         Condition: attacking
-    WithSpriteTurret@lightbaroff:
+        ValidMovementTypes: Horizontal, Vertical, Turn
+    WithFacingSpriteBody@lightbaroff:
         Sequence: lightbar-off
         RequiresCondition: !attacking
-    WithSpriteTurret@lightbaron:
+    WithFacingSpriteBody@lightbaron:
         Sequence: lightbar-on
         RequiresCondition: attacking
-    Turreted:
-        RealignDelay: -1
-        Offset: 25,0,400
-    Armament:
-        Weapon: PolicePistol
-    AttackFrontal:
+	AttackGarrisoned:
+		Armaments: garrisoned
+		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
+		PortYaws: 0, 176, 341, 512, 682, 853
+		PortCones: 88, 88, 88, 88, 88, 88
     Cargo:
         PipCount: 3
         MaxWeight: 3
@@ -2096,3 +2209,60 @@ SC2KPOLICECAR:
         Condition: bailout
         ValidDamageStates: Critical
         GrantPermanently: true
+        
+SC2KFIRETRUCK:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
+	Inherits@FIRECALL: ^FireCall
+	Inherits@EXT: ^ExternalConditions
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 1200	#800
+	Tooltip:
+		Name: Fire Truck
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: FireDept.sc2k, RAFireDept.sc2k
+		Description: Truck armed with a water cannon.\n Strong vs Infantry, Buildings\n Increases damage resistance of nearby allied units
+        BuildDuration: 425
+        BuildDurationModifier: 100
+    Mobile:
+		Locomotor: heavywheeled
+		Speed: 90
+	Health:
+		HP: 57500
+	Repairable:
+		HpPerStep: 1364
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 9c0
+	Armament:
+		Weapon: SC2KFireTruck
+		LocalOffset: 75,0,75
+	AttackTurreted:
+    WithSpriteTurret:
+    Turreted:
+        TurnSpeed: 12
+        Offset: -150,0,480
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	-ExternalCondition@FireCall:
+	-ExternalCondition@PoliceCall:
+	WithRangeCircle:
+		Range: 7c0
+	RenderSprites:
+        Image: sc2kfiretruck
+		Scale: 0.8
+	Voiced:
+		VoiceSet: RAVehicleVoice
+    Cargo:
+        PipCount: 4
+        MaxWeight: 4
+        InitialUnits: CITYFIREFIGHTER, CITYFIREFIGHTER, CITYFIREFIGHTER, CITYFIREFIGHTER
+		Types: Infantry
+		LoadingCondition: notmobile
+    AIDeployNotifier:
+		DeployChance: 100 
