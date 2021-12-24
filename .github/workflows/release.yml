@@ -1,0 +1,80 @@
+name: Release
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Branch name
+        id: branch_name
+        run: |
+          echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
+          echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
+          echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        # Ignore the failure of a step and avoid terminating the job.
+        continue-on-error: true
+
+      - name: Build docker
+        run: docker build -t openra-build .
+
+      - name: Build CA
+        run: docker run -e RELEASE_VERSION=${{ steps.branch_name.outputs.SOURCE_TAG }} -v $GITHUB_WORKSPACE:/workdir --rm openra-build ./build-docker.sh
+
+      #    - uses: actions/upload-artifact@v2
+      #      with:
+      #        name: release-${{ steps.branch_name.outputs.SOURCE_TAG }}
+      #        path: ./build/
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.branch_name.outputs.SOURCE_TAG }}
+          release_name: Release ${{ steps.branch_name.outputs.SOURCE_TAG }}
+          draft: true
+          prerelease: false
+
+      - name: Upload Release Asset (Linux AppImage)
+        id: upload-release-asset-linux-appimage
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/CombinedArms-${{ steps.branch_name.outputs.SOURCE_TAG }}-x86_64.AppImage
+          asset_name: CombinedArms-${{ steps.branch_name.outputs.SOURCE_TAG }}-x86_64.AppImage
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset (Windows Portable)
+        id: upload-release-asset-windows-portable
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/CombinedArms-${{ steps.branch_name.outputs.SOURCE_TAG }}-x64-winportable.zip
+          asset_name: CombinedArms-${{ steps.branch_name.outputs.SOURCE_TAG }}-x64-winportable.zip
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset (Windows Setup)
+        id: upload-release-asset-windows-setup
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/CombinedArms-${{ steps.branch_name.outputs.SOURCE_TAG }}-x64.exe
+          asset_name: CombinedArms-${{ steps.branch_name.outputs.SOURCE_TAG }}-x64.exe
+          asset_content_type: application/octet-stream
