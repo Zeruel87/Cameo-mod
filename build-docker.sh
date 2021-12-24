@@ -5,8 +5,11 @@ if [ -z "$RELEASE_VERSION" ]; then
     exit 1
 fi
 
+set -e
+
 make
+
+rm -rf build
 mkdir build && cd build
 ../packaging/package-all.sh ${RELEASE_VERSION} $(pwd)
 cd ..
-
