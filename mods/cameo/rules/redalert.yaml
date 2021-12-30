@@ -71,6 +71,12 @@ World:
 		Side: Soviets
 		Game: Red Alert
 		Description: Irak: Desolation\nSpecial Ability: Contamination\nSpecial Unit: Contamination Truck\nSpecial Upgrades: Atomic Tanks
+	FactionCA@modchina:
+		Name: China RA
+		InternalName: modchina
+		Side: Soviets
+		Game: Red Alert
+		Description: China: Spam\nSpecial Ability: Spam\nSpecial Unit: Battlemaster Tank
 	FactionCA@Randomra:
 		Name: Any
 		InternalName: Randomra
@@ -150,20 +156,20 @@ World:
 	MPStartUnits@mcvonlyrasovietmod:
 		Class: none
 		ClassName: MCV Only
-		Factions: modrussia, modukranie, modirak
+		Factions: modrussia, modukranie, modirak, modchina
 		BaseActor: modramcv.soviet
 
 	MPStartUnits@defaultsovietmod:
 		Class: light
 		ClassName: Light Support
-		Factions: modrussia, modukranie, modirak
+		Factions: modrussia, modukranie, modirak, modchina
 		BaseActor: modramcv.soviet
 		SupportActors: rae1,rae1,rae1,rae3,rae3,raapc,ftrk
 
 	MPStartUnits@heavysovietmod:
 		Class: heavy
 		ClassName: Heavy Support
-		Factions: modrussia, modukranie, modirak
+		Factions: modrussia, modukranie, modirak, modchina
 		BaseActor: modramcv.soviet
 		SupportActors: rae1,rae1,rae1,rae3,rae3,raapc,ftrk,3tnk,3tnk
 
@@ -518,6 +524,12 @@ RAE4:
 		LevelUpNotification: LevelUpRA1
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
+	GrantConditionOnPrerequisite@upbluefire:
+		Condition: upbluefire
+		Prerequisites: upbluefire
+	FirepowerMultiplier@upbluefire:
+		RequiresCondition: upbluefire
+		Modifier: 125
 RAE6:
 	Inherits: E6
 	Valued:
@@ -1204,7 +1216,7 @@ V2RL:
 	Buildable:
 		Queue: Vehicle.Soviet, RAVehicle.Soviet, Vehicle.X_Vehicles, Vehicle.ModSoviet, RAVehicle.ModSoviet
 		BuildPaletteOrder: 180
-		Prerequisites: rafix, stek, ~techlevel.high
+		Prerequisites: rafix, stek, ~techlevel.high, ~normaltanksoviet
 		Description: Big and slow tank, with anti-air capability.\nCan crush concrete walls.\n  Strong vs Vehicles, Infantry, Aircraft\n  Weak vs Nothing
     Valued:
 		Cost: 1700
@@ -2340,6 +2352,12 @@ MIG:
 		VoiceSet: RussianVehicleVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA1
+	GrantConditionOnPrerequisite@upmigarmor:
+		Condition: upmigarmor
+		Prerequisites: upmigarmor
+	DamageMultiplier@upmigarmor:
+		RequiresCondition: upmigarmor
+		Modifier: 75
 YAK:
 	Inherits: ^RAPlane
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -3026,6 +3044,69 @@ modrhino:
 		VoiceSet: RussianVehicleVoice
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
+modgrizzly:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@country: ^AffectedByCountryBonuses
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies, Vehicle.ModUSAPad, RAVehicle.ModUSAPad
+		BuildPaletteOrder: 110
+		Description: Allies Main Battle Tank.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+		Prerequisites: ~disabled
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Grizzly Tank
+		GenericName: Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 32000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 85
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: 128,0,22
+	Armament:
+        Name: primary
+		Weapon: RA2105mm
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle
+        RequiresCondition: !rank-elite
+  	Armament@elite:
+        Name: primary
+		Weapon: RA2105mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle   
+        RequiresCondition: rank-elite 
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Voiced:
+		VoiceSet: RA2AlliesVehicleVoice
 ####################################################################################################
 #		Modded RA Britain
 ####################################################################################################
@@ -3475,6 +3556,7 @@ MODGTNK:
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@country: ^AffectedByCountryBonuses
     Inherits@oldbuff: ^OldFactionBuff
+	Inherits@chaingun: ^ChaingunUpgrade
 	Buildable:
 		Queue: Vehicle.ModSoviet, RAVehicle.ModSoviet
 		BuildPaletteOrder: 60
@@ -4592,7 +4674,249 @@ MODV2RLI:
 		Weapon: SCUDIrak
 	Explodes:
 		Weapon: V2ExplodeIrak
+#####################################################################
+#		Modded RA China
 ####################################################################################################
+MODT34:
+	Inherits: chbattle
+	Buildable:
+		Queue: Vehicle.Soviet, RAVehicle.Soviet, Vehicle.X_Vehicles, Vehicle.ModSoviet, RAVehicle.ModSoviet
+		BuildPaletteOrder: 110
+		Description: Chinese Main Battle Tank.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+		Prerequisites: ~modchina
+
+MODGTNKC:
+	Inherits: MODGTNK
+	Buildable:
+		Queue: Vehicle.ModSoviet, RAVehicle.ModSoviet
+		BuildPaletteOrder: 60
+		Prerequisites: ~techlevel.low, ~modchina
+	RenderSprites:
+		Image: modgtnk
+	Voiced:
+		VoiceSet: CHGatlingTankVoice
+MOD4TNKC:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@oldbuff: ^OldFactionBuff
+	Buildable:
+		Queue: Vehicle.Soviet, RAVehicle.Soviet, Vehicle.X_Vehicles, Vehicle.ModSoviet, RAVehicle.ModSoviet
+		BuildPaletteOrder: 180
+		Prerequisites: rafix, stek, ~techlevel.high, ~modchina
+		Description: Big and slow tank, with anti-air capability.\nCan crush concrete walls.\n  Strong vs Vehicles, Infantry, Aircraft\n  Weak vs Nothing
+    Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Overlod Mammoth
+		GenericName: Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 90000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 50
+		Locomotor: heavytracked
+	Passenger:
+		Weight: 4
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 2
+	Armament@PRIMARY:
+		Weapon: ra120mm
+		LocalOffset: 900,180,340, 900,-180,340
+		Recoil: 171
+		RecoilRecovery: 30
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: MammothTusk
+		LocalOffset: -85,384,340, -85,-384,340
+		LocalYaw: -100,100
+		Recoil: 43
+		MuzzleSequence: muzzle
+	GrantConditionOnProduction@gattling:
+		Condition: addongattling
+		Actors: pscchoverlord1
+	Production:
+		Produces: EOverlord.CHINA
+		RequiresCondition: !addonpropaganda && !addonbunker && !addongattling
+	ProductionQueue:
+		Type: EOverlord.CHINA
+		Group: Unit
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	Armament@GATTLING:
+		Name: secondary
+		Weapon: CHGattlingTurret
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle2
+		RequiresCondition: addongattling
+	Armament@GATTLINGAA:
+		Name: secondary
+		Weapon: CHGattlingTurretAA
+		LocalOffset: -85,120,340, -85,-120,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle2
+		RequiresCondition: addongattling
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	#SpawnActorOnDeath:
+	#	Actor: 4TNK.Husk
+	SelfHealing:
+		Step: 100
+		Delay: 3
+		HealIfBelow: 50
+		DamageCooldown: 150
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 44,38,0,-4
+	Voiced:
+		VoiceSet: OverlordTankVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	WithSpriteTurret@GATTLING:
+		RequiresCondition: addongattling
+		Sequence: turretgat
+MODSU57:
+	Inherits: CHMIG
+	Buildable:
+		Queue: Aircraft.Soviet, RAAircraft.Soviet, Aircraft.ModSoviet, RAAircraft.ModSoviet
+		BuildPaletteOrder: 50
+		Prerequisites: anyhq, ~techlevel.medium, ~modchina
+		Description: Fighter armed with napalm missiles.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+	Tooltip:
+		Name: Flamer MiG
+MODCHE1:
+	Inherits: CHE1
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.ModSoviet, RAInfantry.ModSoviet
+		Prerequisites: barracks, ~modchina
+	RenderSprites:
+		Image: CHE1
+MODBTRC:
+	Inherits: MODBTR
+	Buildable:
+		Queue: Vehicle.ModSoviet, RAVehicle.ModSoviet
+		BuildPaletteOrder: 120
+		Prerequisites: ~modchina, barracks
+		Description: Tough infantry transport.\nEquipped with Machine gun and Missile launcher\n  Strong vs Infantry, Light armor, Air\n  Weak vs Tanks, Aircraft
+	Valued:
+		Cost: 1700
+	Cargo:
+		InitialUnits: modche1,modche1,modche1,modche1,modche1
+	RenderSprites:
+		Image: modbtr
+ra1upmigarmor:
+	Inherits: upmigarmor
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Aircraft.Soviet, RAAircraft.Soviet, Aircraft.ModSoviet, RAAircraft.ModSoviet
+		Prerequisites: ~modchina, ~!upmigarmor
+
+ra1upchaingun:
+	Inherits: upchaingun
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.ModSoviet, RAInfantry.ModSoviet
+		Prerequisites: ~!upchaingun, ~modchina
+
+ra1upnationalism:
+	Inherits: upnationalism
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.ModSoviet, RAInfantry.ModSoviet
+		Prerequisites: ~!upnationalism, ~modchina
+
+ra1upautoload:
+	Inherits: upautoload
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.ModSoviet, RAInfantry.ModSoviet
+		Description: Increases firing rate of Battlemasters.
+		Prerequisites: ~!upautoload, vehicleproduction, ~modchina
+
+ra1upbluefire:
+	Inherits: upbluefire
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.ModSoviet, RAInfantry.ModSoviet
+		Description: Increases effectiveness of incendiary weapons.
+		Prerequisites: ~!upbluefire, ~modchina
+
+ra1upschmassproduction:
+    Inherits: upschmassproduction
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.ModSoviet, RAInfantry.ModSoviet
+		Description: Decreases price and build time of Battlemaster Tank
+		Prerequisites: ~!upschmassproduction, ~modchina, anyhq
+        IconPalette: ra2
+
+modcharty:
+	Inherits: charty
+	Tooltip:
+		Name: Inferno Cannon
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: chweap, ~techlevel.medium, ~modchina
+		Queue: Vehicle.ModSoviet, RAVehicle.ModSoviet
+modchgattling:
+	Inherits: chgattling
+	Tooltip:
+		Name: Gattling Cannon
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: barracks, ~techlevel.low, ~modchina
+		Queue: Defence.ModSoviet, RADefence.ModSoviet
+		BuildDurationModifier: 40
+	RenderSprites:
+		Image: chgattling
+
+modchpower2:
+	Inherits: chpower
+	Buildable:
+		Queue: Building.ModSoviet, RABuilding.ModSoviet
+		Prerequisites: stek, ~modchina
+        Icon: iconadv
+	Tooltip:
+		Name: Advanced Nuclear Plant
+	Valued:
+		Cost: 900			#500
+	Power:
+		Amount: 500
+	RenderSprites:
+		Image: chpower
+
+modchbunker:
+	Inherits: chbunker
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: barracks, ~techlevel.low, ~modchina
+		Queue: Defence.ModSoviet, RADefence.ModSoviet
+	RenderSprites:
+		Image: chbunker
+
+###################################################
 #		Ships
 ####################################################################################################                                                              
 PT:
@@ -5593,7 +5917,12 @@ FTUR:
 	Explodes:
 		Weapon: BuildingExplode
 		EmptyWeapon: BuildingExplode
-
+	GrantConditionOnPrerequisite@upbluefire:
+		Condition: upbluefire
+		Prerequisites: upbluefire
+	FirepowerMultiplier@upbluefire:
+		RequiresCondition: upbluefire
+		Modifier: 125
 RASAM:
 	Inherits: ^Defense
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -7173,6 +7502,9 @@ MODRAFACT.SOVIET:
     ProvidesPrerequisite@modirak:
 		Prerequisite: modirak
 		Factions: modirak
+    ProvidesPrerequisite@modchina:
+		Prerequisite: modchina
+		Factions: modchina
 MODRAFACT.JAPAN:
 	Inherits: RAFACT.SOVIET
 	Production@NORMAL:
