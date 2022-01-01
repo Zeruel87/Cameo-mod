@@ -23,6 +23,12 @@ World:
         Game: Tiberian Dawn
 		Side: GDI
 		Description: GDI Special Forces
+    FactionCA@gdiallies:
+		Name: GDI Allied Nations
+        InternalName: gdiallies
+        Game: Tiberian Dawn
+		Side: GDI
+		Description: GDI Special Forces
 	FactionCA@modblackhand:
 		Name: Black Hand TD
 		InternalName: modblackhand
@@ -53,6 +59,12 @@ World:
 		Game: Tiberian Dawn
         Side: Renegade
 		Description: Nod Black Hand (Renegade Mode)
+	FactionCA@gdispecialfr:
+		Name: GDI Special Forces (R) TD
+		InternalName: gdispecialfr
+		Game: Tiberian Dawn
+        Side: Renegade
+		Description: GDI Special Forces (Renegade Mode)
     FactionCA@iok:
         Name: Infidels of Kane TD
         InternalName: iok
@@ -158,20 +170,20 @@ World:
 	MPStartUnits@mcvonlymodgdi:
 		Class: none
 		ClassName: MCV Only
-		Factions: modsteel, gdispecialf
+		Factions: modsteel, gdispecialf, gdispecialfr, gdiallies
 		BaseActor: mcv.modgdi
 
 	MPStartUnits@defaultmodgdia:
 		Class: light
 		ClassName: Light Support
-		Factions: modsteel, gdispecialf
+		Factions: modsteel, gdispecialf, gdispecialfr, gdiallies
 		BaseActor: mcv.modgdi
 		SupportActors: e1,e1,e1,e1,e1,e3,e3,jeep
 
 	MPStartUnits@heavymodgdia:
 		Class: heavy
 		ClassName: Heavy Support
-		Factions: modsteel, gdispecialf
+		Factions: modsteel, gdispecialf, gdispecialfr, gdiallies
 		BaseActor: mcv.modgdi
 		SupportActors: e1,e1,e1,e1,e3,e3,jeep,mtnk,mtnk
 
@@ -327,7 +339,7 @@ FACT.MODGDI:
 		Produces: RABuilding.MODGDI, RADefence.MODGDI
 		RequiresCondition: classicproductionqueues
 	Transforms:
-		IntoActor: mcv.gdi
+		IntoActor: mcv.modgdi
 	ProductionQueue@GDIBuilding:
 		Type: Building.MODGDI
 	ProductionQueue@GDIDefense:
@@ -350,9 +362,15 @@ FACT.MODGDI:
 	ProvidesPrerequisite@gdispecialf:
 		Prerequisite: gdispecialf
 		Factions: gdispecialf
+	ProvidesPrerequisite@gdispecialfr:
+		Prerequisite: gdispecialfr
+		Factions: gdispecialfr
 	ProvidesPrerequisite@modsteel:
 		Prerequisite: modsteel
 		Factions: modsteel
+	ProvidesPrerequisite@gdiallies:
+		Prerequisite: gdiallies
+		Factions: gdiallies
 fact.modnod:
 	Inherits: FACT.NOD
 	Production@NORMAL:
@@ -1013,6 +1031,213 @@ modge6:
 		Queue: Infantry.MODGDI, RAInfantry.MODGDI
 	RenderSprites:
 		Image: e6
+
+
+modrmbosquad:
+	Inherits@1: ^ExistsInWorld
+	Inherits@3: ^SpriteActor
+	Inherits@selection: ^SelectableCombatUnit
+	Inherits@bot: ^BotProductionBoost
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@announce: ^AnnounceOnBuild
+	-AppearsOnRadar:
+	OwnerLostAction:
+		Action: Kill
+		DeathTypes: DefaultDeath
+	Buildable:
+		BuildLimit: 1
+		BuildPaletteOrder: 40
+		Queue: Infantry.MODGDI, RAInfantry.MODGDI
+		Description: Specialized Commando Squad.\n  Strong vs All Things\n  Weak vs Anti-Infantry
+		Prerequisites: eye, ~techlevel.medium, ~gdispecialf
+	Tooltip:
+		Name: Dead Six Squad
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Valued:
+		Cost: 2000
+	Health:
+		HP: 100
+	Mobile:
+		Speed: 48
+		Locomotor: foot
+	Guardable:
+	SelectionDecorations:
+	WithSpriteControlGroupDecoration:
+	Selectable:
+		Bounds: 48,48
+	AttackMove:
+	DrawLineToTarget:
+	MobSpawnerMaster:
+		Actors: modrmbosquad1, modrmbosquad2, modrmbosquad3, modrmbosquad4, modrmbosquad5, modrmbosquad6
+		RespawnTicks: 850
+		ExitByBudding: false
+	AttackTurreted:
+		PersistentTargeting: false
+	Turreted:
+		TurnSpeed: 255
+	Armament:
+		Weapon: AngryMobTargeting
+	AutoTarget:
+		ScanRadius: 6
+	WithSpriteBody:
+		Sequence: dot
+	HitShape:
+	HiddenUnderFog:
+		Type: CenterPosition
+	RevealsShroud:
+		Type: CenterPosition
+	SpeedMultiplier@Generic:
+		Modifier: 200
+	DamageMultiplier@INVINCIBLE:
+		Modifier: 0
+	RenderSprites:
+		Image: deadsixrmbo
+
+^default.rmbosquad:
+	Inherits: RMBO
+	Inherits@MC: ^MCImmune
+	Inherits@vo: ^AttackFrontalVoice
+	-ExternalCondition@TSCLOAK:
+	-Cloak@TScloak:
+	-GrantConditionOnDamageState@UNCLOAK:
+	-UpdatesPlayerStatistics:
+	-Buildable:
+	-CaptureManager:
+	-Captures@CAPTURES:
+	-Captures@DRIVER_KILL:
+	-TakeCover:
+	-ActorLostNotification:
+	-MapEditorData:
+	RejectsOrders:
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Commando
+	-Passenger:
+	Health:
+		HP: 20000
+	Mobile:
+		Speed: 55
+	MobSpawnerSlave:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Selectable:
+		Class: modrmbosquad
+	Voiced:
+		VoiceSet: CommandoVoice
+	RenderSprites:
+		Image: deadsixrmbo
+	SoundOnDamageTransition:
+		DamagedSounds: grunt_grunt.wav
+#		Havoc
+modrmbosquad1:
+	Inherits: ^default.rmbosquad
+	AttackFrontal:
+	Armament:
+		Weapon: Sniper
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+	Armament@Vehicle:
+		Weapon: CommandoM16.Vehicle
+	Armament@AA:
+		Weapon: CommandoM16.AA
+#		Patch
+modrmbosquad2:
+	Inherits: ^default.rmbosquad
+	AttackFrontal:
+	Armament:
+		Weapon: BuggyGrenade
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+	RenderSprites:
+		Image: modrpatch
+#		Gunner
+modrmbosquad3:
+	Inherits: ^default.rmbosquad
+	AttackFrontal:
+	Armament:
+		Weapon: TowerMissile
+	Armament@AA:
+		Weapon: TowerAAMissile
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+	RenderSprites:
+		Image: modgunner
+#		Hotwire
+modrmbosquad4:
+	Inherits: ^default.rmbosquad
+	AttackFrontal:
+	Armament:
+		Weapon: CommandoPistol
+	Armament@repair:
+		Weapon: RenegadeRepairTechnician
+		TargetStances: Ally
+		ForceTargetStances: None
+	RenderSprites:
+		Image: modhotwire
+	Voiced:
+		VoiceSet: TanyaVoice
+#		Deadeye
+modrmbosquad5:
+	Inherits: ^default.rmbosquad
+	AttackFrontal:
+	Armament:
+		Weapon: Sniper
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+	Armament@Vehicle:
+		Weapon: CommandoM16.Vehicle
+	Armament@AA:
+		Weapon: CommandoM16.AA
+	RenderSprites:
+		Image: moddeadeye
+#		Sakura
+modrmbosquad6:
+	Inherits: ^default.rmbosquad
+	AttackFrontal:
+	Armament:
+		Weapon: Sniper
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+	Armament@Vehicle:
+		Weapon: CommandoM16.Vehicle
+	Armament@AA:
+		Weapon: CommandoM16.AA
+	RenderSprites:
+		Image: modsakura
+	Cloak:
+		InitialDelay: 66
+		CloakDelay: 66
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
+	Voiced:
+		VoiceSet: TanyaVoice
+tdshotgunner:
+    Inherits: shotgunner
+    Valued:
+        Cost: 80
+    Tooltip:
+        Name: Shotgunner
+    Buildable:
+		BuildPaletteOrder: 20
+		Queue: Infantry.MODGDI, RAInfantry.MODGDI
+		Description: General-purpose infantry equipped with shotgun\nDeals massive damage up front.\nVery Short Range\n  Strong vs Infantry, Vehicles\n  Weak vs Siege   
+        Prerequisites: ~gdispecialf
+        BuildDuration: 90
+        BuildDurationModifier: 100
+    Voiced:
+		VoiceSet: D2KShotgunner
+	RenderSprites:
+		Image: shotgunner
 ####################################################################################################
 #		Tiberian Dawn Expansion Chemical Nod
 ####################################################################################################
@@ -1039,6 +1264,7 @@ e1officernod:
 	Buildable:
 		Prerequisites: barracks, anyhq
 		Queue: Infantry.Nod, RAInfantry.Nod
+		Description: General-purpose Infantry\n Has better Equipement
 	RenderSprites:
 		Image: e1officernod
         Scale: 1.15
@@ -1063,8 +1289,9 @@ modne6:
 		BuildPaletteOrder: 30
 		Prerequisites: barracks, ~modblackhand
 		Queue: Infantry.MODNod, RAInfantry.MODNod
+		Description: More Specialized Engineer\n Can repair vehicles\n Can attack attach C4 in buildings and Vehicles\n Unarmed
 	Armament@repair:
-		Weapon: Repair
+		Weapon: RenegadeRepairEngineer
 		TargetStances: Ally
 		ForceTargetStances: None
 	Armament@c4:
@@ -1072,6 +1299,27 @@ modne6:
 	Inherits@EXT: ^ExternalConditions					##########
 	RenderSprites:
 		Image: e6
+modntech1:
+	Inherits: ^CivInfantry
+	Inherits@armed: ^ArmedCivilian
+	Inherits@country: ^AffectedByCountryBonuses
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks, ~modblackhand
+		Queue: Infantry.MODNod, RAInfantry.MODNod
+		Description: Support Technician\n Can repair vehicles\n Can attack units but is weak
+	Valued:
+		Cost: 120
+	Armament:
+		Weapon: Pistol
+	Armament@repair:
+		Weapon: RenegadeRepairTechnician
+		TargetStances: Ally
+		ForceTargetStances: None
+	Tooltip:
+		Name: Support Technician
+	RenderSprites:
+		Image: modntech1
 ####################################################################################################
 #		Tiberian Dawn Renegade Mode
 ####################################################################################################
@@ -1162,6 +1410,43 @@ e1officernod.renegade:
 ####################################################################################################
 
 ####################################################################################################
+#		Tiberian Dawn Expansion Allies GDI
+####################################################################################################
+TDMODGRIZZLY:
+	Inherits: modgrizzly
+	Buildable:
+		Queue: Vehicle.MODGDI, RAVehicle.MODGDI
+		BuildPaletteOrder: 50
+		Prerequisites: ~techlevel.low, ~gdiallies
+	RenderSprites:
+		Image: modgrizzly
+TDMRJ:
+	Inherits: MRJ
+	Buildable:
+		Queue: Vehicle.MODGDI, RAVehicle.MODGDI
+		Prerequisites: eye, ~gdiallies
+	RenderSprites:
+		Image: mrj
+
+TDCTNK:
+	Inherits: CTNK
+	Buildable:
+		Queue: Vehicle.MODGDI, RAVehicle.MODGDI
+		Prerequisites: eye, ~gdiallies
+	RenderSprites:
+		Image: ctnk
+
+TDMH60:
+	Inherits: MH60
+	Buildable:
+		Prerequisites: ~techlevel.medium, ~gdiallies
+		Queue: Aircraft.GDI, RAAircraft.GDI
+	RenderSprites:
+		Image: mh60
+	ReloadAmmoPool:
+		Delay: 100
+		Count: 2
+####################################################################################################
 #		Tiberian Dawn Expansion Steel Talons
 ####################################################################################################
 MODEGG:
@@ -1178,7 +1463,7 @@ MODEGG:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: anyhq, ~steeltalons
+		Prerequisites: anyhq, ~modsteel
 		Queue: Vehicle.MODGDI, RAVehicle.MODGDI, Vehicle.X_Vehicles
 		Description: Fast scout vehicle, armed with\nrockets.\nCan attack Aircraft.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
 	Mobile:
@@ -1210,6 +1495,78 @@ MODEGG:
 	WithInfantryBody:
 		IdleSequences: idle
 	-WithFacingSpriteBody:
+MODEGG2:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+    Inherits@oldbuff: ^ModernFactionBuff
+	Valued:
+		Cost: 2200
+	Tooltip:
+		Name: Jetpack X-O Powersuit
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 120
+		Prerequisites: hpad, eye, ~techlevel.medium, ~modsteel
+		Queue: Vehicle.MODGDI, RAVehicle.MODGDI, Aircraft.X_Aircrafts
+		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		TurnSpeed: 7
+		Speed: 186
+	Health:
+		HP: 40000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: MachineGunH
+		LocalOffset: 427,-171,-213, 427,171,-213
+  	Armament@AA:
+		Weapon: TSLtRail
+		LocalOffset: -128, -170, 170
+		LocalYaw: 100, -100
+	Armament@ROCKET:
+		Weapon: OrcaAAMissiles
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	AmmoPool:
+		Ammo: 8
+		PipCount: 8
+		AmmoCondition: ammo
+	SpawnActorOnDeath:
+		Actor: MODEGG2.Husk
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	ReloadAmmoPool:
+		Delay: 75
+		Count: 4
+	Selectable:
+		DecorationBounds: 30,24
+
+MODEGG2.Husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Jetpack X-O Powersuit
+	Aircraft:
+		TurnSpeed: 2
+		Speed: 186
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: modegg2
 ####################################################################################################
 #		Tiberian Dawn Expansion Special Forces
 ####################################################################################################
@@ -1711,6 +2068,53 @@ NEWBGGY:
 		LocalOffset: 171,0,43
 		MuzzleSequence: muzzle
 
+NEWSTNK:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+    Inherits@oldbuff: ^OldFactionBuff
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Stealth Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.X_Vehicles
+		BuildDurationModifier: 40
+		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+		Prerequisites: anyhq, ~modblackhand
+	Mobile:
+		Locomotor: heavywheeled
+		Speed: 142
+	Health:
+		HP: 15000
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 7
+	Armament:
+		Weapon: 227mm.stnk
+		LocalOffset: 213,43,128, 213,-43,128
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Cloak:
+		InitialDelay: 80
+		CloakDelay: 80
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
 ####################################################################################################
 #		Tiberian Dawn Expansion Scavenger
 ####################################################################################################
@@ -1867,6 +2271,7 @@ mtnk.renegade:
     Inherits@renegaded: ^IsRenegadeUnit
 	Buildable:
 		Queue: Vehicle.MODGDIR, RAVehicle.MODGDIR, Vehicle.X_Vehicles
+		Prerequisites: vehicleproduction
 	RenderSprites:
 		Image: mtnk
 	Tooltip:
@@ -1877,6 +2282,7 @@ modrapc.renegade:
     Inherits@renegaded: ^IsRenegadeUnit
 	Buildable:
 		Queue: Vehicle.MODGDIR, RAVehicle.MODGDIR, Vehicle.X_Vehicles
+		Prerequisites: barracks
 	RenderSprites:
 		Image: apc
 	Tooltip:
@@ -1887,6 +2293,7 @@ newhumvee.renegade:
     Inherits@renegaded: ^IsRenegadeUnit
 	Buildable:
 		Queue: Vehicle.MODGDIR, RAVehicle.MODGDIR, Vehicle.X_Vehicles
+		Prerequisites: vehicleproduction
 	RenderSprites:
 		Image: newhumvee
 	Tooltip:
@@ -1896,6 +2303,7 @@ htnk.renegade:
     Inherits@renegaded: ^IsRenegadeUnit
 	Buildable:
 		Queue: Vehicle.MODGDIR, RAVehicle.MODGDIR, Vehicle.X_Vehicles
+		Prerequisites: eye
 	RenderSprites:
 		Image: htnk
 	Tooltip:
@@ -1905,8 +2313,9 @@ msam.renegade:
     Inherits@renegaded: ^IsRenegadeUnit
 	Buildable:
 		Queue: Vehicle.MODGDIR, RAVehicle.MODGDIR, Vehicle.X_Vehicles
+		Prerequisites: anyhq
 	RenderSprites:
-		Image: htnk
+		Image: msam
 	Tooltip:
 		Name: Renegaded Rocket Launcher
 ####################################################################################################
