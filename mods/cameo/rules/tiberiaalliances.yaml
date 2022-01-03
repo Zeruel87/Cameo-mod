@@ -202,15 +202,24 @@ TAE1:
 	Armament@GRENADE:
 		Weapon: TASmokegrenade
 		RequiresCondition: taupsmokegrenades
-TSA1.NOD:
+TAE1.NOD:
 	Inherits: TSE1
 	Tooltip:
 		Name: Militant
 	Buildable:
 		Queue: Infantry.TANod, RAInfantry.TANod
 	RenderSprites:
-		Image: tse1.nod
-
+		Image: tae1.nod
+	GrantConditionOnPrerequisite@taupstealth1:
+		Condition: taupstealth1
+		Prerequisites: taupstealth1
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		UncloakOn: Attack, Unload, Infiltrate, Damage
+		PauseOnCondition: cloak-force-disabled || base-reveal
+		RequiresCondition: taupstealth1
+		IsPlayerPalette: true
 TAFORGOTTEN:
 	Inherits: TSMUTANT
 	Valued:
@@ -243,7 +252,36 @@ TAE3.NOD:
 	Buildable:
 		Queue: Infantry.TANod, RAInfantry.TANod
 	RenderSprites:
-		Image: tse3
+		Image: tae3.nod
+	GrantConditionOnPrerequisite@taupdefence1:
+		Condition: taupdefence1
+		Prerequisites: taupdefence1
+	DamageMultiplier@taupdefence1:
+		RequiresCondition: taupdefence1
+		Modifier: 75
+TABLACKHAND:
+	Inherits: elitcadre
+	Valued:
+		Cost: 250
+	Tooltip:
+		Name: Black Hand
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks, anyhq
+		Queue: Infantry.TANod, RAInfantry.TANod, Infantry.X_Infantry
+		Description: The Black Hand is a step up from the Rocket Squad, being a better-armoured anti-tank unit. Equipped with flamethrowers, they will cook a tank until it bursts, allowing the rest of your units to pass.
+	Health:
+		HP: 14000
+	Armament@PRIMARY:
+		Weapon: Flamethrower
+	RenderSprites:
+		Image: tablackhand
+	GrantConditionOnPrerequisite@taupflamer1:
+		Condition: taupflamer1
+		Prerequisites: taupflamer1
+	ReloadDelayMultiplier@taupflamer1:
+		RequiresCondition: taupflamer1
+		Modifier: 75
 
 TAE3.MUTANT:
 	Inherits: TSE3
@@ -453,7 +491,7 @@ tabowler:
 tareckoner:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 800
@@ -470,22 +508,20 @@ tareckoner:
 		TurnSpeed: 7
 		Speed: 99
 	Health:
-		HP: 27000
+		HP: 75000
 	Repairable:
 		HpPerStep: 2046
 	Armor:
 		Type: Heavy
 	RevealsShroud:
 		Range: 5c0
-	Armament:
-		Weapon: BigFlamer
-		LocalOffset: 512,128,42, 512,-128,42
-		MuzzleSequence: muzzle
-	AttackFrontal:
-	WithMuzzleOverlay:
-	Explodes:
-		Weapon: FlametankExplode
-		EmptyWeapon: FlametankExplode
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PauseOnCondition: chronobeamed
+	Turreted:
+		TurnSpeed: 10
 	Cargo:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 5
@@ -495,7 +531,8 @@ tareckoner:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	RenderSprites:
-		Image: ftnk
+		Image: tareckoner
+		Scale: 0.70
 	Voiced:
 		VoiceSet: TSVehicle
 tastnk:
@@ -504,7 +541,7 @@ tastnk:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 600
+		Cost: 800
 	Tooltip:
 		Name: Scorpion Tank
 	UpdatesPlayerStatistics:
@@ -527,12 +564,16 @@ tastnk:
 		Range: 6c0
 	Turreted:
 		TurnSpeed: 7
+		Offset: -222,1,222
 	Armament:
-		Weapon: 70mm
+		Weapon: USALaserCrusaderCannon
 		Recoil: 85
 		RecoilRecovery: 17
 		LocalOffset: 720,0,90
-		MuzzleSequence: muzzle
+	Armament@Lasercut:
+		Weapon: USAPaladinLaser
+		LocalOffset: 1024,0,20
+		RequiresCondition: tauplasercut1
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -540,9 +581,20 @@ tastnk:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	RenderSprites:
-		Image: ltnk
+		Image: tastnk
+		Scale: 0.45
 	Voiced:
 		VoiceSet: TSVehicle
+	GrantConditionOnPrerequisite@tauplasercut1:
+		Condition: tauplasercut1
+		Prerequisites: tauplasercut1
+	WithFacingSpriteBody:
+		Sequence: idle
+		RequiresCondition: !tauplasercut1
+	WithFacingSpriteBody@Skin2:
+		Sequence: idle2
+		RequiresCondition: tauplasercut1
+		Name: body2
 taspecter:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -551,7 +603,7 @@ taspecter:
 	Valued:
 		Cost: 450
 	Tooltip:
-		Name: Artillery
+		Name: Specter
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -587,9 +639,20 @@ taspecter:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	RenderSprites:
-		Image: arty
+		Image: taspecter
+		Scale: 0.55
 	Voiced:
 		VoiceSet: TSVehicle
+	GrantConditionOnPrerequisite@taupstealth3:
+		Condition: taupstealth3
+		Prerequisites: taupstealth3
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		UncloakOn: Attack, Unload, Infiltrate, Damage
+		PauseOnCondition: cloak-force-disabled || base-reveal
+		RequiresCondition: taupstealth3
+		IsPlayerPalette: true
 tabike:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
@@ -599,7 +662,7 @@ tabike:
 	Valued:
 		Cost: 500
 	Tooltip:
-		Name: Recon Bike
+		Name: Attack Bike
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -631,9 +694,16 @@ tabike:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	RenderSprites:
-		Image: bike
+		Image: tabike
+		Scale: 0.55
 	Voiced:
 		VoiceSet: TSVehicle
+	GrantConditionOnPrerequisite@taupshield1:
+		Condition: taupshield1
+		Prerequisites: taupshield1
+	DamageMultiplier@taupshield1:
+		RequiresCondition: taupshield1
+		Modifier: 75
 taavatar:
 	Inherits: ^Walker
 	Inherits@SC: ^SCTVEHICLE
@@ -954,6 +1024,25 @@ tapaladin.husk:
 		Type: GroundPosition
 	RenderSprites:
 		Image: tapaladin
+
+tagdiharv:
+	Inherits: HARV
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: vehicleproduction
+		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.TAMUTANT, RAVehicle.TAMUTANT
+	RenderSprites:
+		Image: tagdiharv
+		Scale: 0.55
+tanodharv:
+	Inherits: HARV
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: vehicleproduction
+		Queue: Vehicle.TANod, RAVehicle.TANod
+	RenderSprites:
+		Image: tanodharv
+		Scale: 0.66
 #######################################
 # TA Upgrades
 #######################################
@@ -1100,6 +1189,133 @@ taupbatteringram:
 		Image: taupbatteringram
 	ProvidesPrerequisite:
 		Prerequisite: taupbatteringram
+
+taupstealth1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Stealth Militant
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TANod
+		Description: Unlock Stealth Ability for Nod Militants
+		Prerequisites: ~!taupstealth1, barracks
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: taupstealth1
+	ProvidesPrerequisite:
+		Prerequisite: taupstealth1
+
+taupdefence1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Defense Matrix Rocket Militants
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TANod
+		Description: Upgrade the Armot of Rocket Militants
+		Prerequisites: ~!taupdefence1, barracks
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: taupdefence1
+	ProvidesPrerequisite:
+		Prerequisite: taupdefence1
+
+taupflamer1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Conflagration
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TANod
+		Description: Blackhand causes more Damage
+		Prerequisites: ~!taupflamer1, barracks
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: taupflamer1
+	ProvidesPrerequisite:
+		Prerequisite: taupflamer1
+taupstealth2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Stealth Commando
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TANod
+		Description: Unlock Stealth Ability for Nod Commandos
+		Prerequisites: ~!taupstealth2, taupstealth1, barracks
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: taupstealth2
+	ProvidesPrerequisite:
+		Prerequisite: taupstealth2
+
+taupdefence2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Defense Matrix Confessor
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TANod
+		Description: Upgrade the Armot of Confessor
+		Prerequisites: ~!taupdefence2, barracks, taupdefence1
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: taupdefence2
+	ProvidesPrerequisite:
+		Prerequisite: taupdefence2
+
+taupshield1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Shields
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TANod
+		Description: Upgrade the Armot of Attack Bike
+		Prerequisites: ~!taupshield1, vehicleproduction
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: taupshield1
+	ProvidesPrerequisite:
+		Prerequisite: taupshield1
+
+tauplasercut1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Laser Cutter
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TANod
+		Description: Upgrade the Armot of Attack Bike
+		Prerequisites: ~!tauplasercut1, vehicleproduction
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: tauplasercut1
+	ProvidesPrerequisite:
+		Prerequisite: tauplasercut1
+taupstealth3:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Stealth Specter
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TANod
+		Description: Unlock Stealth Ability for Specter
+		Prerequisites: ~!taupstealth2, taupstealth1, vehicleproduction
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: taupstealth2
+	ProvidesPrerequisite:
+		Prerequisite: taupstealth2
+
 #######################################
 # TA Building Upgrades
 #######################################
@@ -2125,6 +2341,13 @@ tagdiacum:
 	GrantConditionOnPrerequisite@levelupgrade3:
 		Condition: levelupgrade3
 		Prerequisites: upgrade.tagdiacum3
+tanodacum:
+	Inherits: tagdiacum
+	Buildable:
+		Queue:Building.TANod, RABuilding.TANod
+		BuildPaletteOrder: 110
+		Prerequisites: anypower
+        
 tanodpower:
 	Inherits: tagdipower
 	Buildable:
@@ -2368,7 +2591,7 @@ tagdiref:
 		DragLength: 12
 		TickRate: 15
 	FreeActor:
-		Actor: HARV
+		Actor: tagdiharv
 		SpawnOffset: 1,2
 		Facing: 64
 	ProvidesPrerequisite@buildingname:
@@ -2393,16 +2616,16 @@ tanodref:
 		Queue:Building.TANod, RABuilding.TANod
 		BuildPaletteOrder: 110
 		Prerequisites: anypower
-	Valued:
-		Cost: 1500			#500
+	FreeActor:
+		Actor: tanodharv
 tamutref:
 	Inherits: tagdiref
 	Buildable:
 		Queue:Building.TAMUTANT, RABuilding.TAMUTANT
 		BuildPaletteOrder: 110
 		Prerequisites: anypower
-	Valued:
-		Cost: 1500			#500
+	FreeActor:
+		Actor: tagdiharv
 tagdiweap:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -2802,6 +3025,73 @@ tagdihpad:
 		RequiresCondition: classicproductionqueues
 	RallyPoint:
 	Reservable:
+
+tanodhpad:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@Levels: ^TALevelUpgradeable
+	HitShape:
+		TargetableOffsets: -355,-1024,0
+	Buildable:
+		Queue:Building.TANod, RABuilding.TANod
+		BuildPaletteOrder: 110
+		Prerequisites: vehicleproduction
+		Description: Trains Aircraft.
+	Valued:
+		Cost: 800			#500
+	Tooltip:
+		Name: Helipad
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,68,0,-10
+	SelectionDecorations:
+	Health:
+		HP: 70000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	WithDeathAnimation:
+		DeathSequence: dead
+		UseDeathTypeSuffix: false
+	RenderSprites:
+		Scale: 0.668
+	Exit@1:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Aircraft.TANod
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.TANod
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Aircraft.TANod
+		DisplayOrder: 2
+		Group: Aircraft
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Aircraft.TANod
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAAircraft.TANod
+		RequiresCondition: classicproductionqueues
+	RallyPoint:
+	Reservable:
 #######################################
 # TA Defences
 #######################################
@@ -2996,3 +3286,128 @@ taflakb:
 	GrantConditionOnPrerequisite@levelupgrade3:
 		Condition: levelupgrade3
 		Prerequisites: upgrade.taflakb3
+
+tamgnod:
+	Inherits: tsntlasr
+	Inherits@Levels: ^TALevelUpgradeableWidthAttack
+	RenderSprites:
+		Image: tsntlasr
+	RenderVoxels:
+		Image: ra2nalasr
+	Buildable:
+		Prerequisites: barracks
+		Queue: Defence.TANod, RADefence.TANod
+	Tooltip:
+		Name: Shredder Machine Gun
+	Armament:
+		Weapon: TSVulcanTower
+		LocalOffset: 300,60,600
+	Armament@VULCSECONDARY:
+		Weapon: TSVulcanTower
+		LocalOffset: 300,-60,600
+
+tanodobelisk:
+	Inherits: ^Defense
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Obelisk Artillery
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: anyhq, ~techlevel.high
+		Queue: Defence.TANod, RADefence.TANod
+		BuildDurationModifier: 40
+		Description: Advanced base defense.\nRequires power to operate.\n  Strong vs Ground units\n  Weak vs Aircraft
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Selectable:
+		Bounds: 24,24
+		DecorationBounds: 44,44,0,-10
+	SelectionDecorations:
+	Health:
+		HP: 100000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	-WithSpriteBody:
+	WithChargeSpriteBody:
+		Sequence: idle
+	Armament:
+		Weapon: TSObeliskLaserFire
+		LocalOffset: 0,180,1600
+	AttackCharges:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+		ChargeLevel: 50
+		ChargingCondition: charging
+	AmbientSound:
+		RequiresCondition: charging
+		SoundFiles: obelpowr.aud
+		Interval: 30, 40
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower && !disabled
+	Power:
+		Amount: -100
+	RenderSprites:
+		Scale: 0.668
+
+tanodsam:
+	Inherits: ^Defense
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Surface-to-Air Missile
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: anyhq, ~techlevel.high
+		Queue: Defence.TANod, RADefence.TANod
+		BuildDurationModifier: 40
+		Description: Advanced base defense.\nRequires power to operate.\n  Strong vs Ground units\n  Weak vs Aircraft
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Selectable:
+		Bounds: 24,24
+		DecorationBounds: 44,44,0,-10
+	SelectionDecorations:
+	Health:
+		HP: 100000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	-WithSpriteBody:
+	WithChargeSpriteBody:
+		Sequence: idle
+	Armament:
+		Weapon: TSRedEye2
+		LocalOffset: 0,180,1600
+	Armament@1:
+		Weapon: TSRedEye2
+		LocalOffset: 180,180,1600
+	Armament@2:
+		Weapon: TSRedEye2
+		LocalOffset: 0,-180,1600
+	AttackCharges:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+		ChargeLevel: 50
+		ChargingCondition: charging
+	AmbientSound:
+		RequiresCondition: charging
+		SoundFiles: obelpowr.aud
+		Interval: 30, 40
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower && !disabled
+	Power:
+		Amount: -50
+	RenderSprites:
+		Scale: 0.668
