@@ -17,8 +17,15 @@ World:
 		InternalName: taforgotten
 		Game: Tiberian Alliances
 		Side: Factions
-        Selectable: false
+        Selectable: true
 		Description: Forgotten from Tiberian Alliances
+	FactionCA@taelectro:
+		Name: Electronic Army TA
+		InternalName: taelectro
+		Game: Tiberian Alliances
+		Side: Factions
+        Selectable: true
+		Description: This dangerous faction converted to CNC in a game of chance with sluts, that is his plan when he acquires the Tacitus
 	FactionCA@randomta:
 		Name: Any
 		InternalName: RandomTA
@@ -90,6 +97,26 @@ World:
 		Factions: taforgotten
 		BaseActor: mcv.tamutant
 		SupportActors: tsmutant,tsmutant,tsmwmn,tsmutant3,tsmutant3,tscar2,ts1tnk,ts2tnk,ts2tnk,ts2tnk
+
+	MPStartUnits@mcvonlyrataelectro:
+		Class: none
+		ClassName: MCV Only
+		Factions: taelectro
+		BaseActor: mcv.tamutant
+
+	MPStartUnits@defaulttaelectro:
+		Class: light
+		ClassName: Light Support
+		Factions: taelectro
+		BaseActor: mcv.taelectro
+		SupportActors: tsmutant,tsmutant,tsmwmn,tsmutant3,tsmutant3,tscar2,ts1tnk
+
+	MPStartUnits@heavytaelectro:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: taelectro
+		BaseActor: mcv.taelectro
+		SupportActors: tsmutant,tsmutant,tsmwmn,tsmutant3,tsmutant3,tscar2,ts1tnk,ts2tnk,ts2tnk,ts2tnk
         
 Player:
     ClassicProductionQueue@ADDONTAGDI:
@@ -118,6 +145,18 @@ Player:
 		SpeedUp: True
     ClassicProductionQueue@ADDONTAMUTANT:
 		Type: Upgrade.TAMUTANT
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 250
+		ReadyAudio: NewOptions
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Upgrading
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+    ClassicProductionQueue@ADDONTAElectro:
+		Type: Upgrade.TAElectro
 		DisplayOrder: 0
 		Group: Addon
 		LowPowerModifier: 250
@@ -392,7 +431,7 @@ TAE1:
 	Tooltip:
 		Name: Rifleman
 	Buildable:
-		Queue: Infantry.TAGDI, RAInfantry.TAGDI
+		Queue: Infantry.TAGDI, RAInfantry.TAGDI, Infantry.TAElectro, RAInfantry.TAElectro
 	RenderSprites:
 		Image: tae1.gdi
 	GrantConditionOnPrerequisite@taupsmokegrenades:
@@ -429,13 +468,19 @@ TAFORGOTTEN:
 		Queue: Infantry.TAMUTANT, RAInfantry.TAMUTANT
 	RenderSprites:
 		Image: taforgotten
+	GrantConditionOnPrerequisite@taupbarbaric2:
+		Condition: taupbarbaric2
+		Prerequisites: taupbarbaric2
+	ReloadDelayMultiplier@taupbarbaric2:
+		RequiresCondition: taupbarbaric2
+		Modifier: 70
 
 TAE3:
 	Inherits: TSE3
 	Tooltip:
 		Name: Missile
 	Buildable:
-		Queue: Infantry.TAGDI, RAInfantry.TAGDI
+		Queue: Infantry.TAGDI, RAInfantry.TAGDI, Infantry.TAElectro, RAInfantry.TAElectro
 	RenderSprites:
 		Image: tae3.gdi
 	GrantConditionOnPrerequisite@taupmissilestorm:
@@ -467,7 +512,7 @@ TABLACKHAND:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: barracks, upgrade.tanodhand2
-		Queue: Infantry.TANod, RAInfantry.TANod, Infantry.X_Infantry
+		Queue: Infantry.TANod, RAInfantry.TANod, Infantry.X_Infantry, Infantry.TAElectro, RAInfantry.TAElectro
 		Description: The Black Hand is a step up from the Rocket Squad, being a better-armoured anti-tank unit. Equipped with flamethrowers, they will cook a tank until it bursts, allowing the rest of your units to pass.
 	Health:
 		HP: 14000
@@ -490,7 +535,7 @@ TACONFESSOR:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: barracks, upgrade.tanodhand3
-		Queue: Infantry.TANod, RAInfantry.TANod, Infantry.X_Infantry
+		Queue: Infantry.TANod, RAInfantry.TANod, Infantry.X_Infantry, Infantry.TAElectro, RAInfantry.TAElectro
 		Description: Similar to the GDI Sniper Team, the Nod Confessors are a lightly-armoured infantry unit capable of eliminating enemy infantry quickly and efficiently while maintaining a safe distance. Unfortunately, they’re pretty much weak against anything else.
 	Health:
 		HP: 14000
@@ -521,7 +566,21 @@ TAE3.MUTANT:
 		Queue: Infantry.TAMUTANT, RAInfantry.TAMUTANT
 	RenderSprites:
 		Image: tae3mutant
-
+	Armament@PRIMARY:							##########
+		Weapon: TSBazooka
+		LocalOffset: 256,43,341
+		FireDelay: 5
+		RequiresCondition: !taupchemical1
+	Armament@Upgraded:							##########
+		Weapon: TAChemBazooka
+		LocalOffset: 256,43,341
+		FireDelay: 5
+		RequiresCondition: taupchemical1
+	GrantConditionOnPrerequisite@taupchemical1:
+		Condition: taupchemical1
+		Prerequisites: taupchemical1
+	Voiced:
+		VoiceSet: RA2DesolatorVoice
 TATROOPER:
 	Inherits: elitcadre
 	Tooltip:
@@ -529,7 +588,7 @@ TATROOPER:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks, upgrade.tagdibarr2
-		Queue: Infantry.TAGDI, RAInfantry.TAGDI, Infantry.X_Infantry
+		Queue: Infantry.TAGDI, RAInfantry.TAGDI, Infantry.X_Infantry, Infantry.TAElectro, RAInfantry.TAElectro
 	RenderSprites:
 		Image: tatrooper
 	GrantConditionOnPrerequisite@taupcharge:
@@ -560,7 +619,7 @@ TASNIPE:
 TANODCOMMANDO:
 	Inherits: RA2TANY
 	Buildable:
-		Queue: Infantry.TANod, RAInfantry.TANod
+		Queue: Infantry.TANod, RAInfantry.TANod, Infantry.TAElectro, RAInfantry.TAElectro
 		Prerequisites: barracks, upgrade.tanodhand2
 	Armament@PRIMARY:
 		Weapon: TSTurretLaserFire
@@ -585,6 +644,51 @@ TANODCOMMANDO:
 		PauseOnCondition: cloak-force-disabled || base-reveal
 		RequiresCondition: taupstealth2
 		IsPlayerPalette: true
+TAMUTSNIPE:
+	Inherits: TSUMAGON
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Mutant Sniper
+	Buildable:
+		BuildPaletteOrder: 95
+		Prerequisites: barracks, upgrade.tamutbarr2
+		Queue: Infantry.TAMUTANT, RAInfantry.TAMUTANT
+		Description: Advanced anti-infantry unit.\nMaximum 10 can be trained.\n  Strong vs Infantry\n  Weak vs Vehicles
+        BuildLimit: 10
+	RenderSprites:
+		Image: tamutsnipe
+TAMUTCOMMANDO:
+	Inherits: TSGHOST
+	RenderSprites:
+		Image: tamutcommando
+	Valued:
+		Cost: 1100
+	Buildable:
+		Queue: Infantry.TAMUTANT, RAInfantry.TAMUTANT, Infantry.TAElectro, RAInfantry.TAElectro
+		BuildLimit: 0
+		Prerequisites: barracks, upgrade.tamutbarr3
+	UpdatesPlayerStatistics:
+		OverrideActor: tsghost
+	Armament@PRIMARY:
+		Weapon: MutAPRifleE
+		LocalOffset: 256,43,256
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: MutAPRifleE
+	Voiced:
+		VoiceSet: BruteVoice
+	GrantConditionOnPrerequisite@taupbarbaric:
+		Condition: taupbarbaric
+		Prerequisites: taupbarbaric
+	ReloadDelayMultiplier@taupbarbaric:
+		RequiresCondition: taupbarbaric
+		Modifier: 70
+	ReloadDelayMultiplier@plus:
+		Modifier: 48
+	FirepowerMultiplier@taupbarbaric:
+		RequiresCondition: taupbarbaric
+		Modifier: 120
 #######################################
 # TA Vehicles
 #######################################
@@ -605,9 +709,9 @@ taguardian:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites:
-		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.X_Vehicles
+		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.X_Vehicles, Vehicle.TAElectro, RAVehicle.TAElectro
 		BuildDurationModifier: 40
-		Description: Armed infantry transport.\nCan attack Aircraft.\n  Strong vs Vehicles\n  Weak vs Infantry
+		Description: Armed infantry transport.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
 	Mobile:
 		TurnSpeed: 5
 		Speed: 132
@@ -647,6 +751,18 @@ taguardian:
 		Scale: 0.64
 	Voiced:
 		VoiceSet: TSVehicle
+taguardian.bot:
+	Inherits: APC
+	Buildable:
+		Prerequisites: barracks, ~hardbotplayer
+	Cargo:
+		InitialUnits: tae3, tae3, tae3, tae1, tae1
+	ProductionCostMultiplier:
+		Multiplier: 210
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 0
+
 tapitbull:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -662,9 +778,9 @@ tapitbull:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites:
-		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.X_Vehicles
+		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.X_Vehicles, Vehicle.TAElectro, RAVehicle.TAElectro
 		BuildDurationModifier: 40
-		Description: Armed infantry transport.\nCan attack Aircraft.\n  Strong vs Vehicles\n  Weak vs Infantry
+		Description: Missile Light Buggy.\nCan attack Aircraft.\n  Strong vs Vehicles\n  Weak vs Infantry
 	Mobile:
 		TurnSpeed: 5
 		Speed: 132
@@ -745,7 +861,46 @@ tabowler:
 		Image: tabowler
 		Scale: 0.78
 	Voiced:
-		VoiceSet: TSVehicle
+		VoiceSet: TechnicalVoice
+tarocketfist:
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+    Inherits@DRShadow: ^InfantryShadows
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Rocket Fist
+	Buildable:
+		BuildPaletteOrder: 61
+		Prerequisites: upgrade.tamutbarr1
+		Queue: Infantry.TAMUTANT, RAInfantry.TAMUTANT, Vehicle.TAElectro, RAVehicle.TAElectro
+		Description: Slow, little mech.\n  Powerful Anti Tank.\n  Strong vs Ground Units\n  Weak vs Aircraft
+	Mobile:
+		Speed: 48
+	Health:
+		HP: 18000
+	RevealsShroud:
+		Range: 7c0
+	Armor:
+		Type: Light
+	Turreted:
+		TurnSpeed: 10
+		Offset: 0,0,24
+	Armament@G1:
+		Weapon: TAFistRocket
+		LocalOffset: 400,-400,300, 400,-400,300
+	WithInfantryBody:
+	AttackTurreted:
+	WithSpriteTurret:
+	-WithFacingSpriteBody:
+	Passenger:
+		Weight: 2
+		PipType: blue
+	RenderSprites:
+		Scale: 0.40
+	Voiced:
+		VoiceSet: DRFuryVoice
+
 tareckoner:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -760,8 +915,8 @@ tareckoner:
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: barracks
-		Queue: Vehicle.TANod, RAVehicle.TANod, Vehicle.X_Vehicles
-		Description: Heavily armored flame-throwing vehicle.\n  Strong vs Infantry, Buildings and Vehicles\n  Weak vs Tanks
+		Queue: Vehicle.TANod, RAVehicle.TANod, Vehicle.X_Vehicles, Vehicle.TAElectro, RAVehicle.TAElectro
+		Description: Heavily armored bunker vehicle.\n Can Garrison Troops
 	Mobile:
 		TurnSpeed: 7
 		Speed: 99
@@ -820,9 +975,9 @@ tastnk:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: upgrade.tanodweap1
-		Queue: Vehicle.TANod, RAVehicle.TANod, Vehicle.X_Vehicles
+		Queue: Vehicle.TANod, RAVehicle.TANod, Vehicle.X_Vehicles, Vehicle.TAElectro, RAVehicle.TAElectro
 		BuildDurationModifier: 40
-		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry\n Can be upgraded with Laser Cutter
 	Mobile:
 		TurnSpeed: 7
 		Speed: 110
@@ -886,7 +1041,7 @@ taspecter:
 		Prerequisites: upgrade.tanodweap2
 		BuildPaletteOrder: 60
 		Queue: Vehicle.TANod, RAVehicle.TANod, Vehicle.X_Vehicles
-		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings
+		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings.\n Can be upgrade with Stealth
 	Mobile:
 		TurnSpeed: 4
 		Speed: 85
@@ -1001,10 +1156,10 @@ taavatar:
 	Tooltip:
 		Name: Avatar
 	Buildable:
-		Queue: Vehicle.TANod, RAVehicle.TANod
+		Queue: Vehicle.TANod, RAVehicle.TANod, Vehicle.TAElectro, RAVehicle.TAElectro
 		BuildPaletteOrder: 30
 		Prerequisites: upgrade.tanodweap3
-		Description: Versatile Terran combat walker, armed with\nautocannons and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Vehicles
+		Description: Heavy Nod Mech.\nArmed with a Big Laser.\n Strong vs Ground Units.\n Can be upgrade with Avatar parts
 	Mobile:
 		Speed: 70
 		Locomotor: tracked
@@ -1105,7 +1260,7 @@ tamammoth:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: upgrade.tagdiweap3
-		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.X_Vehicles
+		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.X_Vehicles, Vehicle.TAElectro, RAVehicle.TAElectro
 		Description: Heavily armored GDI Tank.\nCan attack Aircraft.\n  Strong vs Everything
         BuildDuration: 500
         BuildDurationModifier: 100
@@ -1176,17 +1331,246 @@ tamammoth2:
 	Tooltip:
 		Name: Mammoth Tank Forgotten
 	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: anyhq
+		BuildPaletteOrder: 110
+		Prerequisites: upgrade.tamuttrade3
 		Queue: Vehicle.TAMUTANT, RAVehicle.TAMUTANT, Vehicle.X_Vehicles
-		Description: Heavily armored GDI Tank.\nCan attack Aircraft.\n  Strong vs Everything
+		Description: Modified GDI Tank by Forgotten.\nIs armed with Heavy Cannons.\n  Strong vs Gound targets
         BuildDuration: 500
         BuildDurationModifier: 100
 	RenderSprites:
-		Image: tamammoth
+		Image: tamammoth2
 		Scale: 0.85
 	Voiced:
-		VoiceSet: TSVehicle
+		VoiceSet: ApocalypseTankVoice
+	Armament@PRIMARY:
+		Weapon: TS120mmx
+		LocalOffset: 900,-180,340, 900,180,340
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: TAChemBazooka
+		LocalOffset: 100,180,340
+
+tabaneblade:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+    Inherits@MC: ^MCImmune 
+    Inherits@snipe: ^DriverKillImmune
+    Inherits@ND: ^NotDevourable
+	Valued:
+		Cost: 5000
+	Power:
+		Amount: -160
+	Tooltip:
+		Name: Baneblade
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 122
+		Prerequisites: upgrade.tamuttrade3
+		Queue: Vehicle.TAMUTANT, RAVehicle.TAMUTANT, Vehicle.X_Vehicles, Vehicle.TAElectro, RAVehicle.TAElectro
+		Description: Heavily armored Imperial Guard Tank.\nStealed by EA and adquired in Tacitus.\nCan attack Aircraft.\n  Strong vs Everything
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 68
+		TurnSpeed: 2
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 500000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -148,0,128
+		TurnSpeed: 3
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: -128,900,12
+		TurnSpeed: 3
+	Turreted@TIERTARY:
+		Turret: tiertary
+		Offset: -128,-900,12
+		TurnSpeed: 3
+	Armament@CANNON:
+		Weapon: WH40KLemanCannon
+		LocalOffset: 900,1,240, 900,-1,240
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+		Turret: primary
+	Armament@PRIMARY:
+		Weapon: WH40KHeavyBolterMG
+		LocalOffset: 427,-32,32, 427,32,32
+		Turret: secondary
+	Armament@SECONDARY:
+		Weapon: WH40KHeavyBolterMG2
+		LocalOffset: 427,-32,32, 427,32,32
+		Turret: secondary
+	Armament@PRIMARY2:
+		Weapon: WH40KHeavyBolterMG
+		LocalOffset: 427,-32,32, 427,32,32
+		Turret: tiertary
+	Armament@SECONDARY2:
+		Weapon: WH40KHeavyBolterMG2
+		LocalOffset: 427,-32,32, 427,32,32
+		Turret: tiertary
+	Armament:
+		Weapon: WH40KSentinelCannon
+		LocalOffset: 768,12,20, 768,-12,20
+		Turret: primary
+	AttackTurreted:
+		Turrets: primary, secondary, tiertary
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 34,34,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.50
+	WithSpriteTurret:
+	WithSpriteTurret@PRIMARY:
+		Turret: primary
+	WithSpriteTurret@SECONDARY:
+		Turret: secondary
+		Sequence: turret2
+	WithSpriteTurret@TIERTARY:
+		Turret: tiertary
+		Sequence: turret2
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: wh40kbanebladec
+		RequiresPrerequisites: global-swlimit
+	GrantConditionOnPrerequisite@SWReveal:
+		Condition: swreveal
+		Prerequisites: global-swreveal
+	RevealsShroud@SWReveal:
+		Range: 2c0
+		ValidStances: Neutral, Enemy
+		RequiresCondition: swreveal
+tathumper:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Thumper
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 120
+		Prerequisites: upgrade.tamuttrade3
+		Queue: Vehicle.TAMUTANT, RAVehicle.TAMUTANT, Vehicle.X_Vehicles, Vehicle.TAElectro, RAVehicle.TAElectro
+		Description: Heavily armored GDI Tank.\nCan attack Aircraft.\n  Strong vs Everything
+        BuildDuration: 750
+        BuildDurationModifier: 100
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 35
+		TurnSpeed: 3
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 320000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 3
+	Armament@PRIMARY:
+		Weapon: TAThumper
+		LocalOffset: 900,180,340, 900,-180,340
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelfHealing:
+		Step: 500
+		Delay: 10
+		HealIfBelow: 50
+		DamageCooldown: 200
+	Explodes:
+		Weapon: UnitExplodeMech
+		EmptyWeapon: UnitExplodeMech
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 34,34,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Image: tathumper
+		Scale: 0.80
+	Voiced:
+		VoiceSet: GLSCUDLauncherVoice
+tascooper:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Scooper Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: upgrade.tamuttrade2
+		Queue: Vehicle.TAMUTANT, RAVehicle.TAMUTANT, Vehicle.X_Vehicles
+		Description: General-Purpose Forgotten Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 77
+	Health:
+		HP: 85000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: -200,0,300
+	Armament:
+		Weapon: TS120mmx
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplodeBig
+		EmptyWeapon: UnitExplodeBig
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Image: tascooper
+		Scale: 0.60
+	Voiced:
+		VoiceSet: MarauderTankVoice
+
 tajugg:
 	Inherits: TSJUGG
 	Valued:
@@ -1196,7 +1580,7 @@ tajugg:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: upgrade.tagdiweap2, ~techlevel.high
-		Queue: Vehicle.TAGDI, RAVehicle.TAGDI
+		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.TAElectro, RAVehicle.TAElectro
 		Description: Mobile artillery mech.\nImmobile when firing.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Armament:
 		Weapon: TSJugg90mm
@@ -1232,7 +1616,7 @@ taptnk:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.X_Vehicles
+		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.X_Vehicles, Vehicle.TAElectro, RAVehicle.TAElectro
 		Description: General-Purpose GDI Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
 		Prerequisites: upgrade.tagdiweap1
 	Mobile:
@@ -1435,7 +1819,7 @@ tagdiharv:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: vehicleproduction
-		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.TAMUTANT, RAVehicle.TAMUTANT
+		Queue: Vehicle.TAGDI, RAVehicle.TAGDI, Vehicle.TAMUTANT, RAVehicle.TAMUTANT, Vehicle.TAElectro, RAVehicle.TAElectro
 	RenderSprites:
 		Image: tagdiharv
 		Scale: 0.55
@@ -1449,6 +1833,66 @@ tanodharv:
 		Image: tanodharv
 		Scale: 0.66
 
+tascrapbus:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@ifvbunk: ^IFVConditionsBunker
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: Scrapbus
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: upgrade.tamuttrade1
+		Queue: Vehicle.TAMUTANT, RAVehicle.TAMUTANT, Vehicle.X_Vehicles
+		Description: Heavily armored flame-throwing vehicle.\n  Strong vs Infantry, Buildings and Vehicles\n  Weak vs Tanks
+	Mobile:
+		TurnSpeed: 7
+		Speed: 78
+	Health:
+		HP: 75000
+	Repairable:
+		HpPerStep: 2046
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 5c0
+	Armament:
+		Weapon: ZSU-23
+		LocalOffset: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+	AttackTurreted:
+	Turreted:
+		TurnSpeed: 10
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 5
+		PipCount: 5
+		LoadingCondition: notmobile
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Image: tascrapbus
+		Scale: 0.66
+	Voiced:
+		VoiceSet: GLBattleBusVoice
+tascrapbus.bot:
+	Inherits: tascrapbus
+	Buildable:
+		Queue: Vehicle.TAMUTANT, RAVehicle.TAMUTANT
+		BuildPaletteOrder: 1000
+		BuildDuration: 1300
+		Prerequisites: barracks, upgrade.tamuttrade1, ~techlevel.low, ~botplayer
+	Valued:
+		Cost: 1800
+	Cargo:
+		InitialUnits: tae3,tae3,tae3,tae3,tae3
+	RenderSprites:
+		Image: tascrapbus
 #######################################
 # TA Vehicles
 #######################################
@@ -1791,6 +2235,101 @@ taupstealth3:
 		Image: taupstealth3
 	ProvidesPrerequisite:
 		Prerequisite: taupstealth2
+
+tauptrade1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Tiberium Trade
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TAMUTANT
+		Description: Upgrades Trade center Income
+		Prerequisites: ~!tauptrade1, vehicleproduction
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: tauptrade1
+	ProvidesPrerequisite:
+		Prerequisite: tauptrade1
+tauptrade2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Crystal Trade
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TAMUTANT
+		Description: Upgrades Trade center Income
+		Prerequisites: ~!tauptrade2, tauptrade1
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: tauptrade2
+	ProvidesPrerequisite:
+		Prerequisite: tauptrade2
+taupenergy1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Buy Energy
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TAMUTANT
+		Description: Upgrades Energy Plants Power
+		Prerequisites: ~!taupenergy1, tauptrade1
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: taupenergy1
+	ProvidesPrerequisite:
+		Prerequisite: taupenergy1
+
+taupbarbaric2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Barbaric Blow
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TAMUTANT
+		Description: Upgrade the Reload Speed of Mutant Soldiers
+		Prerequisites: ~!taupbarbaric2, barracks
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: taupbarbaric2
+	ProvidesPrerequisite:
+		Prerequisite: taupbarbaric2
+
+
+taupbarbaric:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Barbaric Blow
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TAMUTANT
+		Description: Upgrade the Reload Speed of Mutant Commando
+		Prerequisites: ~!taupbarbaric, taupbarbaric2
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: taupbarbaric
+	ProvidesPrerequisite:
+		Prerequisite: taupbarbaric
+
+taupchemical1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Chemical Rockets
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.TAMUTANT
+		Description: Adds Chemical Rockets to Mutant Missiles
+		Prerequisites: ~!taupchemical1, barracks
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: taupchemical1
+	ProvidesPrerequisite:
+		Prerequisite: taupchemical1
 
 #######################################
 # TA Upgrades Defences
@@ -3089,6 +3628,129 @@ upgrade.tanodgattling3:
 		Image: tanodgattling
 	ProvidesPrerequisite@upgradename:
 
+
+#######################################
+# TA Building Upgrades MUTANT
+#######################################
+upgrade.tamutbarr1:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Barracks lvl 5
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~barracks, ~!upgrade.tamutbarr1
+		Queue: Upgrade.TAMUTANT
+		BuildLimit: 1
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: Upgrade all Power Plants to lvl 5
+	Valued:
+		Cost: 750
+	RenderSprites:
+		Image: tamutbarr
+	ProvidesPrerequisite@upgradename:
+
+upgrade.tamutbarr2:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Barracks lvl 10
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~upgrade.tamutbarr1, ~!upgrade.tamutbarr2
+		Queue: Upgrade.TAMUTANT
+		BuildLimit: 1
+		BuildDuration: 1000
+		BuildDurationModifier: 100
+		Description: Upgrade all Power Plants to lvl 10    
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: tamutbarr
+	ProvidesPrerequisite@upgradename:
+    
+upgrade.tamutbarr3:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Barracks lvl 20
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~upgrade.tamutbarr2, ~!upgrade.tamutbarr3
+		Queue: Upgrade.TAMUTANT
+		BuildLimit: 1
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: Upgrade all Power Plants to lvl 20     
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: tamutbarr
+	ProvidesPrerequisite@upgradename:
+upgrade.tamuttrade1:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Trade Center lvl 5
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~vehicleproduction, ~!upgrade.tamuttrade1
+		Queue: Upgrade.TAMUTANT
+		BuildLimit: 1
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: Upgrade all Trade Centers to lvl 5
+	Valued:
+		Cost: 750
+	RenderSprites:
+		Image: tamuttrade
+	ProvidesPrerequisite@upgradename:
+
+upgrade.tamuttrade2:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Trade Center lvl 10
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~upgrade.tamuttrade1, ~!upgrade.tamuttrade2
+		Queue: Upgrade.TAMUTANT
+		BuildLimit: 1
+		BuildDuration: 1000
+		BuildDurationModifier: 100
+		Description: Upgrade all Trade Centers to lvl 10    
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: tamuttrade
+	ProvidesPrerequisite@upgradename:
+    
+upgrade.tamuttrade3:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Trade Center lvl 20
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~upgrade.tamuttrade2, ~!upgrade.tamuttrade3
+		Queue: Upgrade.TAMUTANT
+		BuildLimit: 1
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: Upgrade all Trade Centers to lvl 20     
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: tamuttrade
+	ProvidesPrerequisite@upgradename:
+
 #######################################
 # TA Conyard
 #######################################
@@ -3405,6 +4067,70 @@ tanoddept:
 		ProductionType: Defence.TANod
 	ProductionBar@RADefenceGDI:
 		ProductionType: RADefence.TANod
+mcv.taelectro:
+	Inherits: mcv.tagdi
+	Tooltip:
+		Name: Mobile Construction Vehicle (Electronic Army)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.medium, fix
+		Queue: Vehicle.TAMUTANT, RAVehicle.TAMUTANT
+		BuildDurationModifier: 40
+	Transforms:
+		IntoActor: taelecyard
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmtaelectro
+
+taelecyard:
+	Inherits: tagdiyard
+	Tooltip:
+		Name: Construction Yard (Electronic Army)
+	Production@NORMAL:
+		Produces: Building.TAElectro
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.TAElectro
+	Transforms:
+		IntoActor: mcv.taelectro
+	ProductionQueue@GDIBuilding:
+		Type: Building.TAElectro
+	ProductionBar@BuildingGDI:
+		ProductionType: Building.TAElectro
+	ProductionBar@RABuildingGDI:
+		ProductionType: RABuilding.TAElectro
+	Buildable:
+		Queue: Building.TAElectro, RABuilding.TAElectro
+	ProvidesPrerequisite@factiongdi:
+		Prerequisite: mmtaelectro
+	RenderSprites:
+		Image: tanodyard
+	Production@upgrade:
+		Produces: Upgrade.TAElectro
+	ProductionBar@upgrade:
+		ProductionType: Upgrade.TAElectro
+	RenderSprites:
+		Image: tagdiyard
+
+taelecdept:
+	Inherits: tagdidept
+	Tooltip:
+		Name: Defense Facility (Nod)
+	Buildable:
+		Queue: Building.TAElectro, RABuilding.TAElectro
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Description: Builds structures
+	Production@NORMAL:
+		Produces: Defence.TAElectro
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RADefence.TAElectro
+	ProductionQueue@GDIDefense:
+		Type: Defence.TAElectro
+	ProductionBar@DefenceGDI:
+		ProductionType: Defence.TAElectro
+	ProductionBar@RADefenceGDI:
+		ProductionType: RADefence.TAElectro
+	RenderSprites:
+		Image: tagdiyard
 #######################################
 # TA Buildings
 #######################################
@@ -3416,7 +4142,7 @@ tagdipower:
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
-		Queue: Building.TAGDI, RABuilding.TAGDI, Building.TAMUTANT, RABuilding.TAMUTANT
+		Queue: Building.TAGDI, RABuilding.TAGDI, Building.TAElectro, RABuilding.TAElectro
 		BuildPaletteOrder: 110
 		Prerequisites: fact
 		Description: Provides double the power of\na standard Power Plant.
@@ -3468,7 +4194,7 @@ tagdiacum:
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
-		Queue: Building.TAGDI, RABuilding.TAGDI
+		Queue: Building.TAGDI, RABuilding.TAGDI, Building.TAElectro, RABuilding.TAElectro
 		BuildPaletteOrder: 110
 		Prerequisites: anypower
 		Description: Upgrade nearvy Power Plants\na Produces more energy.
@@ -3546,6 +4272,38 @@ tanodpower:
 	GrantConditionOnPrerequisite@levelupgrade3:
 		Condition: levelupgrade3
 		Prerequisites: upgrade.tanodpower3
+tamutpower:
+	Inherits: tagdipower
+	Buildable:
+		Queue:Building.TAMUTANT, RABuilding.TAMUTANT
+		BuildPaletteOrder: 110
+		Prerequisites: fact
+	Valued:
+		Cost: 700			#500
+	Tooltip:
+		Name: Power Plant
+	Production:
+		Produces: Turbine.TSGDI
+		RequiresCondition: !powerupgrade
+	ProductionQueue:
+		Type: Turbine.TSGDI
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@powerupgrade:
+		Condition: powerupgrade
+		Actors: tsgtpowr.turbine
+	PowerMultiplier@upgrade:
+		Modifier: 200
+		RequiresCondition: powerupgrade
+	GrantConditionOnPrerequisite@taupenergy1:
+		Condition: taupenergy1
+		Prerequisites: taupenergy1
+	PowerMultiplier@taupenergy1:
+		Modifier: 125
+		RequiresCondition: taupenergy1
 tagdibarr:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -3673,6 +4431,15 @@ tamutbarr:
 		ProductionType: Infantry.TAMUTANT
 	ProductionBar@RAINFANTRYGDI:
 		ProductionType: RAInfantry.TAMUTANT
+	GrantConditionOnPrerequisite@levelupgrade1:
+		Condition: levelupgrade1
+		Prerequisites: upgrade.tamutbarr1
+	GrantConditionOnPrerequisite@levelupgrade2:
+		Condition: levelupgrade2
+		Prerequisites: upgrade.tamutbarr2
+	GrantConditionOnPrerequisite@levelupgrade3:
+		Condition: levelupgrade3
+		Prerequisites: upgrade.tamutbarr3
 tagdisilo:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -3680,7 +4447,7 @@ tagdisilo:
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
-		Queue: Building.TAGDI, RABuilding.TAGDI
+		Queue: Building.TAGDI, RABuilding.TAGDI, Building.TAElectro, RABuilding.TAElectro
 		BuildPaletteOrder: 110
 		Prerequisites: tagdiref
 		Description: Provides double the power of\na standard Power Plant.
@@ -3747,6 +4514,22 @@ tamutsilo:
 		Prerequisites: tamutref
 	Valued:
 		Cost: 800			#500
+
+tamutcrystal:
+	Inherits: tagdisilo
+	Buildable:
+		Queue: Building.TAMUTANT, RABuilding.TAMUTANT, Building.TAElectro, RABuilding.TAElectro
+		BuildPaletteOrder: 140
+		Prerequisites: tamuthq
+	Valued:
+		Cost: 2500			#500
+	Tooltip:
+		Name: Crystal Silo
+	Power:
+		Amount: -50
+	CashTrickler:
+		Amount: 300
+		Interval: 600
 tagdiref:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -3755,7 +4538,7 @@ tagdiref:
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
-		Queue:Building.TAGDI, RABuilding.TAGDI
+		Queue:Building.TAGDI, RABuilding.TAGDI, Building.TAElectro, RABuilding.TAElectro
 		BuildPaletteOrder: 110
 		Prerequisites: anypower
 		Description: Provides double the power of\na standard Power Plant.
@@ -3815,6 +4598,8 @@ tagdiref:
 	GrantConditionOnPrerequisite@levelupgrade3:
 		Condition: levelupgrade3
 		Prerequisites: upgrade.tagdiref3
+	Voiced:
+		VoiceSet: PRCSupplyVoice
 tanodref:
 	Inherits: tagdiref
 	Buildable:
@@ -3905,6 +4690,8 @@ tagdiweap:
 	GrantConditionOnPrerequisite@levelupgrade3:
 		Condition: levelupgrade3
 		Prerequisites: upgrade.tagdiweap3
+	Voiced:
+		VoiceSet: USAWarFactoryVoice
 tanodweap:
 	Inherits: tagdiweap
 	HitShape:
@@ -3958,6 +4745,36 @@ tamuttrade:
 		ProductionType: Vehicle.TAMUTANT
 	ProductionBar@RAINFANTRYGDI:
 		ProductionType: RAVehicle.TAMUTANT
+	GrantConditionOnPrerequisite@tauptrade1:
+		Condition: tauptrade1
+		Prerequisites: tauptrade1
+	GrantConditionOnPrerequisite@tauptrade2:
+		Condition: tauptrade2
+		Prerequisites: tauptrade2
+	CashTrickler@tauptrade0:
+		Interval: 120
+		Amount: 10
+		PauseOnCondition: disabled
+		RequiresCondition: !tauptrade1
+	CashTrickler@tauptrade1:
+		Interval: 120
+		Amount: 25
+		PauseOnCondition: disabled
+		RequiresCondition: tauptrade1 && !tauptrade2
+	CashTrickler@tauptrade2:
+		Interval: 120
+		Amount: 50
+		PauseOnCondition: disabled
+		RequiresCondition: tauptrade2
+	GrantConditionOnPrerequisite@levelupgrade1:
+		Condition: levelupgrade1
+		Prerequisites: upgrade.tamuttrade1
+	GrantConditionOnPrerequisite@levelupgrade2:
+		Condition: levelupgrade2
+		Prerequisites: upgrade.tamuttrade2
+	GrantConditionOnPrerequisite@levelupgrade3:
+		Condition: levelupgrade3
+		Prerequisites: upgrade.tamuttrade3
 tagdihq:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -4024,6 +4841,8 @@ tagdihq:
 	GrantConditionOnPrerequisite@levelupgrade3:
 		Condition: levelupgrade3
 		Prerequisites: upgrade.tagdihq3
+	Voiced:
+		VoiceSet: USASupplyDropVoice
 tanodhq:
 	Inherits: tagdihq
 	Buildable:
@@ -4102,6 +4921,8 @@ tagdihq2:
 	RevealsShroud:
 		Range: 10c0
 	ProvidesPrerequisite@buildingname:
+	Voiced:
+		VoiceSet: USASupplyDropVoice
 tanodhq2:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -4224,7 +5045,8 @@ tagdihpad:
 		RequiresCondition: classicproductionqueues
 	RallyPoint:
 	Reservable:
-
+	Voiced:
+		VoiceSet: USAAirfieldVoice
 tanodhpad:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -4291,6 +5113,8 @@ tanodhpad:
 		RequiresCondition: classicproductionqueues
 	RallyPoint:
 	Reservable:
+	Voiced:
+		VoiceSet: USAAirfieldVoice
 tagdiskystrike:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -4299,7 +5123,7 @@ tagdiskystrike:
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
-		Queue: Building.TAGDI, RABuilding.TAGDI
+		Queue: Building.TAGDI, RABuilding.TAGDI, Building.TAElectro, RABuilding.TAElectro
 		BuildPaletteOrder: 110
 		Prerequisites: tagdihq2, ~techlevel.medium, !tagdiskystrikesw
 		Description: Provides double the power of\na standard Power Plant.
@@ -4368,7 +5192,7 @@ tagdifalcon:
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
-		Queue: Building.TAGDI, RABuilding.TAGDI
+		Queue: Building.TAGDI, RABuilding.TAGDI, Building.TAElectro, RABuilding.TAElectro
 		BuildPaletteOrder: 110
 		Prerequisites: tagdihq2, ~techlevel.medium, !tagdifalconsw
 		Description: Provides double the power of\na standard Power Plant.
@@ -4455,7 +5279,7 @@ tagdiion:
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
-		Queue: Building.TAGDI, RABuilding.TAGDI
+		Queue: Building.TAGDI, RABuilding.TAGDI, Building.TAElectro, RABuilding.TAElectro
 		BuildPaletteOrder: 110
 		Prerequisites: tagdihq2, ~techlevel.medium, !tagdiionsw
 		Description: Provides double the power of\na standard Power Plant.
@@ -4685,7 +5509,7 @@ tafistofkane:
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
-		Queue: Building.TANod, RABuilding.TANod
+		Queue: Building.TANod, RABuilding.TANod, Building.TAElectro, RABuilding.TAElectro
 		BuildPaletteOrder: 110
 		Prerequisites: tanodhq2, ~techlevel.medium, !tafistofkanesw
 		Description: Provides double the power of\na standard Power Plant.
@@ -4772,6 +5596,65 @@ tafistofkane:
 		Delay: 100
 	ProvidesPrerequisite@buildingname:
 	SupportPowerChargeBar:
+taelechq:
+	Inherits: tagdihq
+	Buildable:
+		Queue: Building.TAElectro, RABuilding.TAElectro
+		BuildPaletteOrder: 110
+		Prerequisites: tagdiref, ~techlevel.medium
+	Production:
+		Produces: Research.TAElectro
+	ProductionQueue:
+		Type: Research.TAElectro
+	ProductionBar:
+		ProductionType: Research.TAElectro
+	RenderSprites:
+		Image: tagdihq
+	ProvidesPrerequisite@tagdihq:
+		Prerequisite: tagdihq
+	ProvidesPrerequisite@tanodhq:
+		Prerequisite: tanodhq
+	ProvidesPrerequisite@tamuthq:
+		Prerequisite: tamuthq
+
+taelechq2:
+	Inherits: tagdihq2
+	Buildable:
+		Queue: Building.TAElectro, RABuilding.TAElectro
+		BuildPaletteOrder: 120
+		Prerequisites: tagdihq, ~techlevel.medium
+	RenderSprites:
+		Image: tagdihq2
+	ProvidesPrerequisite@tagdihq2:
+		Prerequisite: tagdihq2
+	ProvidesPrerequisite@tanodhq2:
+		Prerequisite: tanodhq2
+	ProvidesPrerequisite@tamuthq2:
+		Prerequisite: tamuthq2
+taelecweap:
+	Inherits: tagdiweap
+	HitShape:
+		TargetableOffsets: -355,-1024,0
+	Buildable:
+		Queue: Building.TAElectro, RABuilding.TAElectro
+		BuildPaletteOrder: 110
+		Prerequisites: tagdiref, ~techlevel.medium
+	Valued:
+		Cost: 2000			#500
+	Tooltip:
+		Name: Weapon Factory
+	Production@NORMAL:
+		Produces: Vehicle.TAElectro
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.TAElectro
+	ProductionQueue:
+		Type: Vehicle.TAElectro
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Vehicle.TAElectro
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAVehicle.TAElectro
+	RenderSprites:
+		Image: tagdiweap
 #######################################
 # TA Defences
 #######################################
