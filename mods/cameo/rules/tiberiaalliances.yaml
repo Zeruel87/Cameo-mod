@@ -102,7 +102,7 @@ World:
 		Class: none
 		ClassName: MCV Only
 		Factions: taelectro
-		BaseActor: mcv.tamutant
+		BaseActor: mcv.taelectro
 
 	MPStartUnits@defaulttaelectro:
 		Class: light
@@ -752,7 +752,7 @@ taguardian:
 	Voiced:
 		VoiceSet: TSVehicle
 taguardian.bot:
-	Inherits: APC
+	Inherits: taguardian
 	Buildable:
 		Prerequisites: barracks, ~hardbotplayer
 	Cargo:
@@ -1893,6 +1893,76 @@ tascrapbus.bot:
 		InitialUnits: tae3,tae3,tae3,tae3,tae3
 	RenderSprites:
 		Image: tascrapbus
+tawasp:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+    Inherits@oldbuff: ^OldFactionBuff
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Wasp
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: upgrade.tamuttrade1
+		Queue: Vehicle.TAMUTANT, RAVehicle.TAMUTANT, Aircraft.X_Aircrafts
+		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		TurnSpeed: 7
+		Speed: 176
+	Health:
+		HP: 7000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: TSHarpyClaw
+		LocalOffset: 427,-3,-213, 427,3,-213
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Weapon: TSHarpyClaw
+		LocalOffset: 427,-3,-213, 427,3,-213
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	AmmoPool:
+		Ammo: 5
+		PipCount: 5
+		AmmoCondition: ammo
+	SpawnActorOnDeath:
+		Actor: tawasp.husk
+	SelectionDecorations:
+	ReloadAmmoPool:
+		Delay: 100
+		Count: 2
+	Selectable:
+		DecorationBounds: 30,24
+	RenderSprites:
+		Scale: 0.68
+
+tawasp.husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Wasp
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 186
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: tawasp
+		Scale: 0.68
 #######################################
 # TA Vehicles
 #######################################
@@ -3815,7 +3885,7 @@ mcv.tamutant:
 		Name: Mobile Construction Vehicle (Forgotten)
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: anyhq, ~techlevel.medium, fix
+		Prerequisites: anyhq, ~techlevel.medium, upgrade.tamuttrade1
 		Queue: Vehicle.TAMUTANT, RAVehicle.TAMUTANT
 		BuildDurationModifier: 40
 	Transforms:
@@ -4074,7 +4144,7 @@ mcv.taelectro:
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: anyhq, ~techlevel.medium, fix
-		Queue: Vehicle.TAMUTANT, RAVehicle.TAMUTANT
+		Queue: Vehicle.TAElectro, RAVehicle.TAElectro
 		BuildDurationModifier: 40
 	Transforms:
 		IntoActor: taelecyard
@@ -4130,7 +4200,7 @@ taelecdept:
 	ProductionBar@RADefenceGDI:
 		ProductionType: RADefence.TAElectro
 	RenderSprites:
-		Image: tagdiyard
+		Image: tagdidept
 #######################################
 # TA Buildings
 #######################################
@@ -4611,7 +4681,7 @@ tanodref:
 tamutref:
 	Inherits: tagdiref
 	Buildable:
-		Queue:Building.TAMUTANT, RABuilding.TAMUTANT
+		Queue: Building.TAMUTANT, RABuilding.TAMUTANT
 		BuildPaletteOrder: 110
 		Prerequisites: anypower
 	FreeActor:
@@ -5655,6 +5725,28 @@ taelecweap:
 		ProductionType: RAVehicle.TAElectro
 	RenderSprites:
 		Image: tagdiweap
+taelecbarr:
+	Inherits: tagdibarr
+	HitShape:
+		TargetableOffsets: -355,-1024,0
+	Buildable:
+		Queue:Building.TAElectro, RABuilding.TAElectro
+		BuildPaletteOrder: 110
+		Prerequisites: anypower
+	Valued:
+		Cost: 500			#500
+	RenderSprites:
+		Image: tagdibarr
+	Production@NORMAL:
+		Produces: Infantry.TAElectro
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.TAElectro
+	ProductionQueue:
+		Type: Infantry.TAElectro
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry.TAElectro
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry.TAElectro
 #######################################
 # TA Defences
 #######################################
@@ -5725,6 +5817,16 @@ tamgnest:
 	GrantConditionOnPrerequisite@levelupgrade3:
 		Condition: levelupgrade3
 		Prerequisites: upgrade.tamgnest3
+tamgnest2:
+	Inherits: tamgnest
+	RenderSprites:
+		Image: tamgnest
+	RenderVoxels:
+		Image: ra2nalasr
+	Buildable:
+		Prerequisites: barracks
+		Queue: Defence.TAMUTANT, RADefence.TAMUTANT
+
 tabrik:
 	Inherits: BRIK
 	RenderSprites:
@@ -6098,3 +6200,147 @@ tanodsam:
 	GrantConditionOnPrerequisite@levelupgrade3:
 		Condition: levelupgrade3
 		Prerequisites: upgrade.tanodsam3
+
+tademolisher:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@Levels: ^TALevelUpgradeableWidthAttack
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Demolisher Artillery
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: barracks, vehicleproduction
+		Queue: Defence.TAMUTANT, RADefence.TAMUTANT
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	RequiresBuildableArea:
+		AreaTypes: building
+	Building:
+		Footprint: xx xx
+		Dimensions: 2, 2
+	Selectable:
+		Bounds: 48,48
+	SelectionDecorations:
+	Health:
+		HP: 150000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,900
+	WithSpriteBody:
+	Armament:
+		Weapon: USAFirebaseObus
+		LocalOffset: 410,0,111
+	AttackTurreted:
+	WithSpriteTurret:
+	DetectCloaked:
+		Range: 5c0
+	-RenderDetectionCircle:
+	-WithDeathAnimation:
+	RenderSprites:
+		Scale: 0.668
+
+tareapercann:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@Levels: ^TALevelUpgradeableWidthAttack
+	Inherits@RenderVoxel: ^RenderVoxel
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Reaper Machine Gun
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: barracks, vehicleproduction
+		Queue: Defence.TAMUTANT, RADefence.TAMUTANT
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	RequiresBuildableArea:
+		AreaTypes: building
+	Building:
+		Footprint: xx xx
+		Dimensions: 2, 2
+	Selectable:
+		Bounds: 48,48
+	SelectionDecorations:
+	Health:
+		HP: 150000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,900
+	WithSpriteBody:
+	Armament:
+		Weapon: TAReaperVulcan
+		LocalOffset: 410,0,700
+	AttackTurreted:
+	WithVoxelTurret:
+	DetectCloaked:
+		Range: 5c0
+	-RenderDetectionCircle:
+	-WithDeathAnimation:
+	-WithVoxelBody:
+	RenderSprites:
+		Scale: 0.668
+	RenderVoxels:
+		Image: ra2nalasr
+		Scale: 7.5
+		NormalsPalette: normals
+		PlayerPalette: playerra2
+
+tamutflak:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@Levels: ^TALevelUpgradeableWidthAttack
+	Inherits@RenderVoxel: ^TSRenderVoxel
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Flak
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: barracks, vehicleproduction
+		Queue: Defence.TAMUTANT, RADefence.TAMUTANT
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	RequiresBuildableArea:
+		AreaTypes: building
+	Building:
+		Footprint: xx xx
+		Dimensions: 2, 2
+	Selectable:
+		Bounds: 48,48
+	SelectionDecorations:
+	Health:
+		HP: 150000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,900
+	WithSpriteBody:
+	Armament:
+		Weapon: ZSU-23
+		LocalOffset: 410,0,700
+	AttackTurreted:
+	WithVoxelBarrel:
+	DetectCloaked:
+		Range: 5c0
+	-RenderDetectionCircle:
+	-WithDeathAnimation:
+	-WithVoxelBody:
+	RenderSprites:
+		Scale: 0.668
+	RenderVoxels:
+		Image: tsjugg
+		Scale: 7.5

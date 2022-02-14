@@ -1,0 +1,130 @@
+World:
+	LuaScript:
+		Scripts: mdsu.lua, mtd.lua, main.lua
+	-MPStartLocations:
+	-SpawnMPUnits:
+	MapOptions:
+		TechLevelDropdownLocked: true
+		TechLevel: unrestricted
+		ShortGameCheckboxEnabled: false
+		ShortGameCheckboxLocked: true
+	CrateSpawner:
+		CheckboxEnabled: false
+		CheckboxLocked: true
+	MapBuildRadius:
+		AllyBuildRadiusCheckboxEnabled: false
+		AllyBuildRadiusCheckboxLocked: true
+Player:
+	-ConquestVictoryConditions:
+	Shroud:
+		FogCheckboxEnabled: false
+		FogCheckboxLocked: true
+		ExploredMapCheckboxEnabled: true
+		ExploredMapCheckboxLocked: true
+	PlayerResources:
+		SelectableCash: 400, 700, 1000, 1400, 1700, 2000
+		DefaultCash: 700
+
+^towdef.logic:
+	Interactable:
+	AlwaysVisible:
+	WithSpriteBody:
+	RenderSpritesEditorOnly:
+	BodyOrientation:
+		QuantizedFacings: 1
+	MapEditorData:
+		Categories: System
+	ScriptTriggers:
+	ConditionManager:
+
+spawn:
+	Inherits: ^towdef.logic
+	EditorOnlyTooltip:
+		Name: Enemy Spawn
+		Description: (Enemies spawn here each wave)
+	Immobile:
+		OccupiesSpace: False
+	-RenderSpritesEditorOnly:
+	RenderSprites:
+	Disguise:
+
+target:
+	Inherits: ^towdef.logic
+	EditorOnlyTooltip:
+		Name: Enemy Target
+		Description: (Enemies travel towards this)
+	Immobile:
+		OccupiesSpace: False
+	-RenderSpritesEditorOnly:
+	RenderSprites:
+	Disguise:
+	Targetable:
+		TargetTypes: Ground
+	Cargo:
+		Types: Enemy
+		MaxWeight: 10
+		PipCount: 10
+
+path:
+	Inherits: ^towdef.logic
+	EditorOnlyTooltip:
+		Name: Path Tile
+		Description: (Place these along the path of the level - not on the spawns or objectives)
+	Immobile:
+		OccupiesSpace: true
+
+border:
+	Inherits: ^towdef.logic
+	EditorOnlyTooltip:
+		Name: Path Border Tile
+		Description: (Place these around the path of the level - not on the spawns or objectives)
+	Immobile:
+		OccupiesSpace: True
+
+producer:
+	Inherits: ^towdef.logic
+	EditorOnlyTooltip:
+		Name: Producer
+		Description: (Allows the player to produce structures)
+	Immobile:
+		OccupiesSpace: False
+	GivesBuildableArea:
+		AreaTypes: Defense
+    BaseBuilding:
+	Production@NORMAL:
+		Produces: Defence.TOWER
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RADefence.TOWER
+		RequiresCondition: classicproductionqueues
+    ProductionQueue@TOWERDefense:
+		Type: Defence.TOWER
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+    ProductionBar@DefenceTOWER:
+		ProductionType: Defence.TOWER
+		RequiresCondition: !classicproductionqueues
+    ProductionBar@RADefenceTOWER:
+		ProductionType: RADefence.TOWER
+		RequiresCondition: classicproductionqueues        
+    
+mode.wave:
+	Interactable:
+	Tooltip:
+		Name: Ready
+		Description: Send the next wave!
+	Buildable:
+		Queue: Defence.TOWER, RADefence.TOWER
+		BuildPaletteOrder: 999
+	Valued:
+		Cost: 0
+	RenderSprites:
+	AlwaysVisible:
+	ProvidesPrerequisite:
