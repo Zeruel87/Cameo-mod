@@ -33,7 +33,7 @@ World:
 #######################################
 # WH40K, WIP
 #######################################
-wh40kstrategy:
+wh40kstrategy.oldwip:
 	Inherits: ^TechBuilding
 	Inherits@2: ^CashTricklerMultipliers
 	Inherits@shape: ^2x2Shape
@@ -170,16 +170,16 @@ wh40kstrategy:
 		Actors: pscwh40kstrategy3
 pscwh40kstrategy1:
 	Tooltip:
-		Name: Addon 1
+		Name: Listening Post
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: WH40KStrategy.ImperialGuard1
-		Description: Increases power output.
-		Prerequisites: wh30kcommand
+		Description: Increases Health and Increases Cash.
+		Prerequisites: anypower
 	Valued:
 		Cost: 500
 	RenderSprites:
-		Image: usacontrolrodicon
+		Image: pscwh40kstrategy1
 	Interactable:
 	AlwaysVisible:
 	KillsSelf:
@@ -187,16 +187,16 @@ pscwh40kstrategy1:
 
 pscwh40kstrategy2:
 	Tooltip:
-		Name: Addon 2
+		Name: Fortified Position
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: WH40KStrategy.ImperialGuard2
-		Description: Increases power output.
-		Prerequisites: wh30kcommand
+		Description: Increases Health and Increases Cash.\n Adds a defensive Weapon
+		Prerequisites: anypower
 	Valued:
-		Cost: 700
+		Cost: 1000
 	RenderSprites:
-		Image: usacontrolrodicon
+		Image: pscwh40kstrategy2
 	Interactable:
 	AlwaysVisible:
 	KillsSelf:
@@ -204,16 +204,16 @@ pscwh40kstrategy2:
 
 pscwh40kstrategy3:
 	Tooltip:
-		Name: Addon 3
+		Name: Heavily Fortified Position
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: WH40KStrategy.ImperialGuard3
-		Description: Increases power output.
-		Prerequisites: wh30kcommand
+		Description: Increases Health and Increases Cash.\n Upgrades the Previus Weapon
+		Prerequisites: anypower
 	Valued:
-		Cost: 1000
+		Cost: 1500
 	RenderSprites:
-		Image: usacontrolrodicon
+		Image: pscwh40kstrategy3
 	Interactable:
 	AlwaysVisible:
 	KillsSelf:
@@ -273,6 +273,160 @@ wh40kstrategy.playermake:
 		SkipMakeAnims: true
 	RenderSprites:
 		Image: wh40kstrategy.neutral
+#######################################
+# Strategy Buildable
+#######################################
+wh40kstrategy:
+	Inherits: ^ArmedBaseBuilding
+	Inherits@2: ^CashTricklerMultipliers
+	Inherits@shape: ^2x2Shape
+    Inherits@lowpower: ^DisabledOverlay
+    Buildable:
+		Queue: Building.ImperialGuard, RABuilding.ImperialGuard
+		BuildPaletteOrder: 120
+		Prerequisites: anypower, ~techlevel.medium
+		Description: Provides Passive income.\n Provides Base Area .\n Attacks when is Upgraded.\n  Upgradeable with Addons
+		BuildLimit: 5
+    Valued:
+        Cost: 1500
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 630,-300,0, 420,512,0, -420,-512,0, -630,300,0
+	Selectable:
+		Priority: 0
+		Bounds: 48,48
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 70000
+    UpdatesDerrickCount:    
+	RevealsShroud:
+		Range: 4c0
+	CaptureManager:
+	Capturable:
+		Types: building
+	EngineerRepairable:
+	CashTrickler:
+		Interval: 50
+		Amount: 6
+		RequiresCondition: !addon1
+	CashTrickler@lvl1:
+		Interval: 50
+		Amount: 12
+		RequiresCondition: addon1 && !upgrade1 && !addon2
+	CashTrickler@lvl2:
+		Interval: 50
+		Amount: 18
+		RequiresCondition: addon2 && !upgrade1 && !addon3
+	CashTrickler@lvl3:
+		Interval: 50
+		Amount: 24
+		RequiresCondition: addon3 && !upgrade1
+	CashTrickler@lvl1up1:
+		Interval: 50
+		Amount: 42
+		RequiresCondition: addon1 && upgrade1  && !upgrade2 && !addon2
+	CashTrickler@lvl2up1:
+		Interval: 50
+		Amount: 48
+		RequiresCondition: addon2 && upgrade1  && !upgrade2 && !addon3
+	CashTrickler@lvl3up1:
+		Interval: 50
+		Amount: 54
+		RequiresCondition: addon3 && upgrade1  && !upgrade2
+	CashTrickler@lvl1up2:
+		Interval: 50
+		Amount: 62
+		RequiresCondition: addon1 && upgrade2 && !addon2
+	CashTrickler@lvl2up2:
+		Interval: 50
+		Amount: 68
+		RequiresCondition: addon2 && upgrade2 && !addon3
+	CashTrickler@lvl3up2:
+		Interval: 50
+		Amount: 74
+		RequiresCondition: addon3 && upgrade2
+    CashTricklerBar:
+	Tooltip:
+		Name: Strategy Point
+    RenderSprites:
+        Image: wh40kstrategy
+    -WithDeathAnimation:
+    Power:
+        Amount: -25     
+	Production@1:
+		Produces: WH40KStrategy.ImperialGuard1
+		RequiresCondition: !addon1
+	ProductionQueue@1:
+		Type: WH40KStrategy.ImperialGuard1
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@addon1:
+		Condition: addon1
+		Actors: pscwh40kstrategy1
+	Production@2:
+		Produces: WH40KStrategy.ImperialGuard2
+		RequiresCondition: !addon2 && addon1
+	ProductionQueue@2:
+		Type: WH40KStrategy.ImperialGuard2
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@addon2:
+		Condition: addon2
+		Actors: pscwh40kstrategy2
+	Production@3:
+		Produces: WH40KStrategy.ImperialGuard3
+		RequiresCondition: !addon3 && addon2
+	ProductionQueue@3:
+		Type: WH40KStrategy.ImperialGuard3
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@addon3:
+		Condition: addon3
+		Actors: pscwh40kstrategy3
+	DamageMultiplier@addon1:
+		RequiresCondition: addon1
+		Modifier: 90
+	DamageMultiplier@addon2:
+		RequiresCondition: addon2
+		Modifier: 90
+	DamageMultiplier@addon3:
+		RequiresCondition: addon3
+		Modifier: 90
+	GivesBuildableArea:
+		AreaTypes: building
+	BaseProvider:
+		Range: 5c0
+	Armament:
+		Weapon: WH40KHeavyBolterMG
+		LocalOffset: 700,0,500
+		RequiresCondition: addon2
+	Armament@2:
+		Weapon: WH40KHeavyBolterMG
+		LocalOffset: 700,0,500
+		RequiresCondition: addon3
+	WithIdleOverlay@addon1:
+		RequiresCondition: addon1
+		Sequence: idle2
+	WithSpriteTurret@addon2:
+		RequiresCondition: addon2
+		Sequence: turret1
+	WithSpriteTurret@addon3:
+		RequiresCondition: addon3
+		Sequence: turret2
+	RangeMultiplier@Extrarange:
+		Modifier: 110
+
 #######################################
 # Imperial Guard, TestBuildings
 #######################################
@@ -518,7 +672,7 @@ wh40kpower:
 	Tooltip:
 		Name: Plasma Generator
 	Building:
-		Footprint: xx xx ==
+		Footprint: __ xx ==
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
@@ -898,6 +1052,72 @@ wh40kproc:
 	RenderSprites:
 		Image: wh40kproc
 
+wh40kmars:
+	Inherits: ^BunkerBaseBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@gensound: ^GeneralsDamageBuilding
+	Valued:
+		Cost: 2500
+	Power:
+		Amount: -100
+	Tooltip:
+		Name: Mars Pattern Command
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: wh40kupfullscalewar
+		Queue: Building.ImperialGuard, RABuilding.ImperialGuard
+		Description: Produces vehicles
+		BuildLimit: 1
+	Building:
+		Footprint: xxxx x++x ====
+		Dimensions: 4,3
+	SelectionDecorations:
+	Health:
+		HP: 250000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+		Path: 1,4
+	Exit@1:
+		SpawnOffset: 128,256,0
+		ExitCell: 1,1
+		ExitDelay: 3
+	Exit@2:
+		ExitCell: 2,1
+		ExitDelay: 3
+	#Production@Upgrades:
+	#	Produces: VehicleUpgrades.ImperialGuard
+	Production@NORMAL:
+		Produces: HVehicle.ImperialGuard
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAHVehicle.ImperialGuard
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: HVehicle.ImperialGuard
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 200
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLESCAVENGER:
+		ProductionType: HVehicle.ImperialGuard
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLESCAVENGER:
+		ProductionType: RAHVehicle.ImperialGuard
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@vehicleproduction:
+		Prerequisite: vehicleproduction
+	RenderSprites:
+		Image: wh40kmars
 #######################################
 # Imperial Guard, Bots
 #######################################
@@ -2048,6 +2268,81 @@ wh40kpsyker:
 #######################################
 # Imperial Guard, Sargents
 #######################################
+wh40kmarine:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@horde: ^WH40KHordeEffect
+	Valued:
+		Cost: 200
+	Power:
+		Amount: -7
+	Tooltip:
+		Name: Space Marine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: barracks
+		Queue: Infantry.ImperialGuard, RAInfantry.ImperialGuard, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 70
+	Crushable:
+		CrushClasses: vehicle
+	Health:
+		HP: 12000
+	Armor:
+		Type: Wood
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WH40KMarineMG
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WH40KMarineMGG
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: WH40KMarineVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Passenger:
+		Weight: 1
+	-TakeCover:
+	Captures:
+		CaptureTypes: building, tech
+		PlayerExperience: 500
+		CaptureDelay: 750
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+	GrantConditionOnPrerequisite@wh40kupweapspecialization:
+		Condition: wh40kupweapspecialization
+		Prerequisites: wh40kupweapspecialization
+	FirepowerMultiplier@wh40kupweapspecialization:
+		RequiresCondition: wh40kupweapspecialization
+		Modifier: 115
+	GrantConditionOnPrerequisite@wh40kupkasrkinarmor:
+		Condition: wh40kupkasrkinarmor
+		Prerequisites: wh40kupkasrkinarmor
+	DamageMultiplier@wh40kupkasrkinarmor:
+		RequiresCondition: wh40kupkasrkinarmor
+		Modifier: 75
+	GrantConditionOnPrerequisite@wh40kupgenenhancement:
+		Condition: wh40kupgenenhancement
+		Prerequisites: wh40kupgenenhancement
+	SpeedMultiplier@wh40kupgenenhancement:
+		RequiresCondition: wh40kupgenenhancement
+		Modifier: 133
+
 wh40kguardsargent:
 	Inherits: wh40kguardplasma
 	Inherits@sargent: ^WH40KSargent
@@ -2117,7 +2412,7 @@ wh40kleman:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: wh40kuplemanrussdepot
-		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
+		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles, HVehicle.ImperialGuard, RAHVehicle.ImperialGuard
 		Description: Heavily armored Imperial Guard Tank.\nCan attack Aircraft.\n  Strong vs Everything
         BuildDuration: 2500
         BuildDurationModifier: 100
@@ -2182,7 +2477,7 @@ wh40kchime:
 		BuildPaletteOrder: 60
 		Prerequisites: wh40kupbattlecommand
 		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
-		Description: Heavily armored Imperial Guard Tank.\nCan attack Aircraft.\n  Strong vs Everything
+		Description: Heavily armored Imperial Guard Transport.\nCan attack Aircraft.\n  Strong vs Infantry
 	Mobile:
 		Locomotor: heavytracked
 		Speed: 90
@@ -2243,7 +2538,7 @@ wh40khellhound:
 		BuildPaletteOrder: 60
 		Prerequisites: wh40kuphellhounddepot
 		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
-		Description: Heavily armored Imperial Guard Tank.\nCan attack Aircraft.\n  Strong vs Everything
+		Description: Heavily armored Imperial Guard Flame Tank.\n\n  Strong vs Infantry
 	Mobile:
 		Locomotor: heavytracked
 		Speed: 85
@@ -2347,7 +2642,7 @@ wh40kbanewolf:
 		BuildPaletteOrder: 60
 		Prerequisites: wh40kuphellhounddepot
 		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
-		Description: Heavily armored Imperial Guard Tank.\nCan attack Aircraft.\n  Strong vs Everything
+		Description: Radiation Tank.\n  Strong vs Infantry
 	Mobile:
 		Locomotor: heavytracked
 		Speed: 85
@@ -2496,7 +2791,7 @@ wh40ksentinel:
 	Buildable:
 		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
 		BuildPaletteOrder: 120
-		Description: Imperial Guard Main Battle Walker, with dual cannons\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Imperial Guard Main Battle Walker, with las cannons\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 		Prerequisites: wh40kupsentineldepot
 	Valued:
 		Cost: 1500
@@ -2751,7 +3046,7 @@ wh40kmaurader:
 		BuildPaletteOrder: 90
 		Prerequisites: wh40kupmarauderdepot
 		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Aircraft.X_Aircrafts
-		Description: Aircraft Gunship with AG Missiles.\n  Strong vs All
+		Description: Aircraft Gunship with las Guns and MGs.\n  Strong vs All
 	Aircraft:
 		TurnSpeed: 7
 		Speed: 186
@@ -2806,9 +3101,9 @@ wh40kbaneblade:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: wh40kuplemanrussdepot, !wh40kbanebladec
-		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
-		Description: Heavily armored Imperial Guard Tank.\nCan attack Aircraft.\n  Strong vs Everything
+		Prerequisites: wh40kupfullscalewar, !wh40kbanebladec
+		Queue: HVehicle.ImperialGuard, RAHVehicle.ImperialGuard, Vehicle.X_Vehicles
+		Description: The Ultimate Imperial Guard Tank.\nCan attack Aircraft.\n  Strong vs Everything
 	Mobile:
 		Locomotor: heavytracked
 		Speed: 68
@@ -2933,6 +3228,464 @@ wh40kmaurader.napalm:
 	-MapEditorData:
 	RenderSprites:
 		Image: wh40kmaurader
+#######################################
+# Marines Vehicles
+#######################################
+wh40kpredator:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 1800
+	Power:
+		Amount: -75
+	Tooltip:
+		Name: Predator
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: wh40kuplemanrussdepot
+		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
+		Description: Heavily armored Marines Tank.\nCan attack Aircraft.\n  Strong vs Everything.\n  Upgradeable with Lascannon Addons
+        BuildDuration: 2500
+        BuildDurationModifier: 100
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 92
+		TurnSpeed: 4
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 80000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithSpriteTurret:
+		RequiresCondition: !lascannon
+	WithSpriteTurret@lascannon:
+		RequiresCondition: lascannon
+		Sequence: turret2
+	Turreted:
+		TurnSpeed: 3
+		Offset: 0,0,100
+	Armament@PRIMARY:
+		Weapon: WH40KPredatorCannon
+		LocalOffset: 900,1,340, 900,-1,340
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+		RequiresCondition: !lascannon
+	Armament@LASGUN1:
+		Weapon: WH40KPredatorLasgun
+		LocalOffset: 890,80,300
+		RequiresCondition: lascannon
+	Armament@LASGUN2:
+		Weapon: WH40KPredatorLasgun
+		LocalOffset: 900,-80,300
+		RequiresCondition: lascannon
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: WH40KLemanMG
+		LocalOffset: -85,384,120, -85,-384,120
+		LocalYaw: -100, 100
+		Recoil: 10
+		RequiresCondition: !lascannonb
+	Armament@LASGUN3:
+		Name: secondary
+		Weapon: WH40KPredatorLasgunSmall
+		LocalOffset: -85,444,110, -85,-444,110
+		LocalYaw: -100, 100
+		Recoil: 10
+		RequiresCondition: lascannonb
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 34,34,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.60
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
+	Production:
+		Produces: Addon.wh40kpredator
+		RequiresCondition: !lascannon
+	ProductionQueue:
+		Type: Addon.wh40kpredator
+		Group: Unit
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@lascannon:
+		Condition: lascannon
+		Actors: pscwh40kpredator1
+		QueueLimit: 1
+		Sticky: False
+	Production@Lasgun2:
+		Produces: Addon.wh40kpredator2
+		RequiresCondition: !lascannonb && lascannon
+	ProductionQueue@Lasgun2:
+		Type: Addon.wh40kpredator2
+		Group: Unit
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@Lasgun2:
+		Condition: lascannonb
+		Actors: pscwh40kpredator2
+pscwh40kpredator1:
+	Tooltip:
+		Name: Twin-Linked Lascannon Turret
+	Buildable:
+		Prerequisites: anypower
+		BuildPaletteOrder: 10
+		Queue: Addon.wh40kpredator
+		Description: Replaces the Cannon with a Twin Lascannon.\n Strong vs Vehicles.\n Weak vs Infantry
+	Valued:
+		Cost: 800
+	RenderSprites:
+		Image: pscwh40kpredator1
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+pscwh40kpredator2:
+	Tooltip:
+		Name: Side Lascannon
+	Buildable:
+		Prerequisites: anypower
+		BuildPaletteOrder: 10
+		Queue: Addon.wh40kpredator2
+		Description: Replaces side Bolters with a Small Lascannons.\n Strong vs Vehicles.\n Weak vs Infantry
+	Valued:
+		Cost: 600
+	RenderSprites:
+		Image: pscwh40kpredator2
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+wh40krhino:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@cargo: ^CargoVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Valued:
+		Cost: 1000
+	Power:
+		Amount: -25
+	Tooltip:
+		Name: Rhino APC
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: wh40kupbattlecommand
+		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
+		Description: Heavy Transport.\nCan attack Infantry with Smoke Launcher
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 100
+		TurnSpeed: 3
+		PauseOnCondition: notmobile || disabled
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 72000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 8
+		PipCount: 8
+		LoadingCondition: notmobile
+	Turreted:
+		TurnSpeed: 4
+		Offset: 200,0,100
+	Armament@PRIMARY:
+		Weapon: WH40KSmoke
+		LocalOffset: 700,100,120, 700,-100,120
+		Recoil: 170
+		RecoilRecovery: 42
+	Armament@PRIMARY2:
+		Weapon: WH40KSmoke
+		LocalOffset: -400,100,120, -400,-100,120
+		Recoil: 170
+		RecoilRecovery: 42
+	AttackTurreted:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 34,34,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.60
+	Voiced:
+		VoiceSet: WH40KChimeraVoice
+wh40kwhirl:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 2000
+	Power:
+		Amount: -75
+	Tooltip:
+		Name: Whirlwind
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: wh40kuplemanrussdepot
+		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
+		Description: Heavy Artillery Missile Tank.\nCan attack Aircraft.\n  Strong vs Everything
+        BuildDuration: 2500
+        BuildDurationModifier: 100
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 72
+		TurnSpeed: 3
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 80000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 2
+		Offset: -320,0,400
+	Armament@PRIMARY:
+		Weapon: WH40KWhirlWindAG
+		LocalOffset: 900,240,340, 900,-240,340
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: WH40KWhirlWindAA
+		LocalOffset: 900,240,340, 900,-240,340
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 34,34,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.60
+	Voiced:
+		VoiceSet: WH40KImperialVehicleVoice
+wh40klandspeed:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@announce: ^AnnounceOnBuild
+	Valued:
+		Cost: 900
+	Power:
+		Amount: -25
+	Tooltip:
+		Name: Landspeeder
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: wh40kupbattlecommand
+		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
+		Description: Light Scout Imperial Guard Vehicle.\nCan attack Aircraft.\n  Strong vs Infantry
+	Mobile:
+		Locomotor: jumpjetv
+		Speed: 100
+		TurnSpeed: 7
+		PauseOnCondition: notmobile || disabled
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 55000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Armament@PRIMARY:
+		Weapon: WH40KChimeraMGG
+		LocalOffset: 700,100,120, 700,110,120
+		MuzzleSequence: muzzle
+	AttackFrontal:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 34,34,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.60
+	Voiced:
+		VoiceSet: WH40KChimeraVoice
+	Hovers:
+		RequiresCondition: (airborne || swimming) && !frozen
+	Targetable:
+		RequiresCondition: !airborne && !chronobeamed
+	Targetable@AIRBORNE:
+		TargetTypes: Air, Aircraft
+		RequiresCondition: airborne && !chronobeamed
+	Explodes@airborne:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+		RequiresCondition: airborne
+	WithShadow@airborne:
+		Offset: 0, 128, 0
+		ZOffset: -128
+		RequiresCondition: airborne || swimming
+	GrantConditionOnJumpjetLayer:
+		Condition: airborne
+	GrantConditionOnTerrain@Water:
+		TerrainTypes: Water, River
+		Condition: swimming
+wh40kdread:
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+    Inherits@DRShadow: ^InfantryShadows
+	Inherits@announce: ^AnnounceOnBuild
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Dreadnought
+	Buildable:
+		BuildPaletteOrder: 65
+		Prerequisites: wh40kupbattlecommand
+		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
+		Description: Light Scout Imperial Guard Vehicle.\nCan attack Aircraft.\n  Strong vs Infantry.\n  Upgradeable with Addons
+	Mobile:
+		Speed: 85
+	Health:
+		HP: 120000
+	RevealsShroud:
+		Range: 7c0
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 10
+		Offset: 0,0,24
+	Armament@Flamer:
+		Weapon: WH40KHellhoundFlamer
+		LocalOffset: 400,-400,300
+		PauseOnCondition: !ammo
+		RequiresCondition: !lascannon && !bolter
+	Armament@Bolter:
+		Weapon: WH40KHeavyBolterMG3
+		LocalOffset: 400,-400,300
+		PauseOnCondition: !ammo
+		RequiresCondition: bolter
+	Armament@Lasgun:
+		Weapon: WH40KPredatorLasgun
+		LocalOffset: 400,-400,300, 400,-420,300
+		PauseOnCondition: !ammo
+		RequiresCondition: lascannon
+	Armament@G2:
+		Weapon: WH40KDreadPunch
+		PauseOnCondition: ammo
+	Armament@G3:
+		Weapon: WH40KDreadPunch
+		PauseOnCondition: ammo
+	AmmoPool:
+		Ammo: 3
+		PipCount: 1
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 55
+		Count: 2
+	ReloadAmmoPool@Extra:
+		Delay: 22
+		Count: 2
+		RequiresCondition: bolter
+	WithInfantryBody:
+	AttackTurreted:
+	WithSpriteTurret:
+	-WithFacingSpriteBody:
+	Passenger:
+		Weight: 3
+		PipType: blue
+	RenderSprites:
+		Scale: 0.60
+	Voiced:
+		VoiceSet: WH40KDreadVoice
+	Power:
+		Amount: -50
+	Production:
+		Produces: Addon.wh40kdread
+		RequiresCondition: !lascannon && !bolter
+	ProductionQueue:
+		Type: Addon.wh40kdread
+		Group: Unit
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@bolter:
+		Condition: bolter
+		Actors: pscwh40kdread1
+	GrantConditionOnProduction@lascannon:
+		Condition: lascannon
+		Actors: pscwh40kdread2
+
+pscwh40kdread1:
+	Tooltip:
+		Name: Assault Cannon
+	Buildable:
+		Prerequisites: anypower
+		BuildPaletteOrder: 10
+		Queue: Addon.wh40kdread
+		Description: Replaces the Flamer with a Assault Bolter.\n Strong vs Infantry.\n Weak vs Vehicles
+	Valued:
+		Cost: 800
+	RenderSprites:
+		Image: pscwh40kdread1
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+pscwh40kdread2:
+	Tooltip:
+		Name: Twin-Linked Lascannon
+	Buildable:
+		Prerequisites: anypower
+		BuildPaletteOrder: 10
+		Queue: Addon.wh40kdread
+		Description: Replaces the Flamer with a Lascannon.\n Strong vs Vehicles.\n Weak vs Infantry
+	Valued:
+		Cost: 900
+	RenderSprites:
+		Image: pscwh40kdread2
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
 #######################################
 # Orkz, Building
 #######################################
@@ -3328,6 +4081,68 @@ wh40knob:
 		EnterCursor: ability
 		EnterBlockedCursor: move-blocked
 
+#######################################
+# Orkz, Vehicle
+#######################################
+wh40kwartrukk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@cargo: ^CargoVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Valued:
+		Cost: 1000
+	Power:
+		Amount: -25
+	Tooltip:
+		Name: War Trukk
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: wh40kupbattlecommand
+		Queue: Vehicle.ImperialGuard, RAVehicle.ImperialGuard, Vehicle.X_Vehicles
+		Description: Heavily armored Imperial Guard Transport.\nCan attack Aircraft.\n  Strong vs Infantry
+	Mobile:
+		Locomotor: tracked
+		Speed: 120
+		TurnSpeed: 3
+		PauseOnCondition: notmobile || disabled
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 60000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 8
+		PipCount: 8
+		LoadingCondition: notmobile
+	Armament@PRIMARY:
+		Weapon: WH40KBigShoota
+		LocalOffset: 700,1,120, 700,-1,120
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+	AttackFrontal:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 34,34,0,-3
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.60
+	Voiced:
+		VoiceSet: WH40KChimeraVoice
 wh30kcommand:
     Tooltip:
         Name: Field Command

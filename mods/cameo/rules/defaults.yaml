@@ -407,6 +407,53 @@
 	AttackMove:
 		AssaultMoveCondition: assault-move
 
+#Target types for Smart Auto-Targetting
+
+^PrioritizeInfantry:
+    AutoTargetPriority@ENGINEER:
+        ValidTargets: Engineer
+        Priority: 50
+	AutoTargetPriority@INFANTRY:
+		ValidTargets: Infantry
+        Priority: 15
+   
+^PrioritizeVehicle:
+	AutoTargetPriority@VEHICLE:
+		ValidTargets: Vehicle
+        Priority: 20
+   
+^PrioritizeTank:
+	AutoTargetPriority@TANK:
+		ValidTargets: Tank
+        Priority: 25
+   
+^PrioritizeAir:
+	AutoTargetPriority@AIR:
+		ValidTargets: Air
+        Priority: 30
+
+^PrioritizeShip:
+	AutoTargetPriority@AIR:
+		ValidTargets: Ship
+        Priority: 30
+        
+^PrioritizeBuilding:
+	AutoTargetPriority@BUILDING:
+		ValidTargets: Building
+        Priority: 10
+   
+^PrioritizeDefence:
+	AutoTargetPriority@DEFENCE:
+		ValidTargets: Defense
+        Priority: 15
+
+##
+
+^PrioritizeMindControl:
+    AutoTargetPriority@MINDCONTROL:
+        ValidTargets: MindControl
+        Priority: 30
+        
 ^AcceptsCloakCrate:
 	Cloak@TDcloak:
 		InitialDelay: 15
@@ -513,7 +560,7 @@
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@bounty: ^GlobalBounty
-	Inherits@bot: ^BotProductionBoost
+	Inherits@bot: ^BotProductionBehavior
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@rad: ^VehicleRadiation
 	Inherits@fix: ^Repairable
@@ -532,6 +579,7 @@
     Inherits@base-reveal: ^Base-reveal
     Inherits@LeechEggLayable: ^LeechEggLayable
     Inherits@Xmassetting: ^Xmas_setting
+    Inherits@casinoupgrade: ^CasinoUpgradeable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -648,6 +696,10 @@
 		Probability: 99
 		Actor: glscrapcrate
 		DeathType: MakeScrapbox
+	SpawnActorOnDeath@ScrapsAvatar:
+		Probability: 99
+		Actor: taavatarscrap1
+		DeathType: MakeScrapboxAvatar
    	AttractsWorms:
 		Intensity: 500
     Targetable@disguise:
@@ -718,7 +770,7 @@
 	Inherits@ext: ^ExternalConditionsAll
 	Inherits@IC: ^IronCurtainable
 	Inherits@cloak: ^AcceptsCloakCrate
-	Inherits@bot: ^BotProductionBoost
+	Inherits@bot: ^BotProductionBehavior
 	Inherits@fix: ^Repairable
 	Inherits@EMP: ^UnitDisable
 	Inherits@mag: ^Magnefreezable
@@ -726,6 +778,7 @@
     Inherits@SHADOWS: ^Shadows
     Inherits@base-reveal: ^Base-reveal
     Inherits@Xmassetting: ^Xmas_setting
+    Inherits@casinoupgrade: ^CasinoUpgradeable
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -830,6 +883,8 @@
 		UseClassicFacingFudge: True
 	GpsDot:
 		String: Helicopter
+	Targetable@helicopter:
+		TargetTypes: Helicopter
 
 ^RAPlane:
 	Inherits: ^RANeutralPlane
@@ -883,7 +938,7 @@
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@bounty: ^GlobalBounty
-	Inherits@bot: ^BotProductionBoost
+	Inherits@bot: ^BotProductionBehavior
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@disable: ^InfantryDisable
 	Inherits@heal: ^HospitalHealable
@@ -893,6 +948,7 @@
     Inherits@unstableeffect: ^UnstableEffect
     Inherits@base-reveal: ^Base-reveal
     Inherits@Xmassetting: ^Xmas_setting
+    Inherits@casinoupgrade: ^CasinoUpgradeable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -1292,6 +1348,24 @@
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 
+^EngineerDefaultWeapons:
+	Armament@defuse:
+		Weapon: DefuseKit
+		TargetStances: Ally
+		ForceTargetStances: None
+    Armament@leechdisinfect:
+        Weapon: LeechDisinfect
+        TargetStances: Ally
+		ForceTargetStances: None
+
+^MechanicDefaultWeapons:
+    Armament@repair:
+		Weapon: Repair
+		#Cursor: repair
+		#OutsideRangeCursor: repair
+		TargetStances: Ally
+		ForceTargetStances: None
+        
 ^DINO:
 	Inherits: ^DefaultInfantry
 	Health:
@@ -1430,7 +1504,7 @@
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
 	Inherits@selection: ^SelectableCombatUnit
-	Inherits@bot: ^BotProductionBoost
+	Inherits@bot: ^BotProductionBehavior
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@rad: ^VehicleRadiation
     Inherits@instablow: ^Instant_Kill_Vehicle
@@ -1531,15 +1605,60 @@
     GrantConditionOnPrerequisite@BLDDURABLE: 
         Prerequisites: global-durable-buildings  
         Condition: blddurable
-^BotProductionBoost:
-	ProductionTimeMultiplier@hard:
-		Multiplier: 90
-		Prerequisites: brutalbotplayer
-
+^BotProductionBehavior:
+	GrantPeriodicCondition@activeai:
+		Condition: activeai
+		ActiveDuration: 6750
+		CooldownDuration: 2250
+	ProvidesPrerequisite@activeai:
+		Prerequisite: activeai
+		RequiresCondition: activeai
+	ProductionTimeMultiplier@easiestbotplayer:
+		Multiplier: 200
+		Prerequisites: easiestbotplayer
+	ProductionTimeMultiplier@easybotplayer:
+		Multiplier: 140
+		Prerequisites: easybotplayer
+	ProductionTimeMultiplier@hardbotplayer:
+		Multiplier: 85
+		Prerequisites: hardbotplayer, activeai
+	ProductionTimeMultiplier@brutalbotplayer:
+		Multiplier: 75
+		Prerequisites: brutalbotplayer, activeai
+	ProductionTimeMultiplier@challengerbotplayer:
+		Multiplier: 65
+		Prerequisites: challengerbotplayer, activeai
+	ProductionTimeMultiplier@unbeatablebotplayer:
+		Multiplier: 50
+		Prerequisites: unbeatablebotplayer, activeai
+	ProductionTimeMultiplier@cameogodbotplayer:
+		Multiplier: 35
+		Prerequisites: cameogodbotplayer, activeai
+	ProductionCostMultiplier@easiestbotplayer:
+		Multiplier: 200
+		Prerequisites: easiestbotplayer
+	ProductionCostMultiplier@easybotplayer:
+		Multiplier: 140
+		Prerequisites: easybotplayer
+	ProductionCostMultiplier@hardbotplayer:
+		Multiplier: 85
+		Prerequisites: hardbotplayer, activeai
+	ProductionCostMultiplier@brutalbotplayer:
+		Multiplier: 75
+		Prerequisites: brutalbotplayer, activeai
+	ProductionCostMultiplier@challengerbotplayer:
+		Multiplier: 65
+		Prerequisites: challengerbotplayer, activeai
+	ProductionCostMultiplier@unbeatablebotplayer:
+		Multiplier: 50
+		Prerequisites: unbeatablebotplayer, activeai
+	ProductionCostMultiplier@cameogodbotplayer:
+		Multiplier: 35
+		Prerequisites: cameogodbotplayer, activeai
 ^BaseBuilding:
 	Inherits: ^Building
 	Inherits@2: ^IronCurtainable
-	Inherits@bot: ^BotProductionBoost
+	Inherits@bot: ^BotProductionBehavior
 	Inherits@mindcontrol: ^MindControllableStructure
 	Inherits@EMP: ^UnitDisable
 	Inherits@chrono: ^ChronoBeamable
@@ -3154,48 +3273,75 @@ CPQDEBUGDUMMY:
 		Condition: produced
         
 ^AIConyardCash:
+    Inherits@AIDifficulties: ^AIDifficulties
 	Inherits@FS: ^AIForceShield
 	GrantConditionOnPlayerResources@minimum:
 		Condition: noinsurance
 		Threshold: 2000
-	GrantConditionOnBotOwner@brutal:
-		Condition: brutalcash
-		Bots: brutal
+	CashTrickler@cameogod:
+		Interval: 200
+		Amount: 1200
+		ShowTicks: False
+		RequiresCondition: cameogodbot && !noinsurance
+	ResourcePurifier@cameogod:
+		Modifier: 100
+		ShowTicks: False
+		RequiresCondition: cameogodbot && !noinsurance
+	CashTrickler@unbeatable:
+		Interval: 250
+		Amount: 800
+		ShowTicks: False
+		RequiresCondition: unbeatablebot && !noinsurance
+	ResourcePurifier@unbeatable:
+		Modifier: 70
+		ShowTicks: False
+		RequiresCondition: unbeatablebot && !noinsurance
+	CashTrickler@challenger:
+		Interval: 300
+		Amount: 400
+		ShowTicks: False
+		RequiresCondition: challengerbot && !noinsurance
+	ResourcePurifier@challenger:
+		Modifier: 50
+		ShowTicks: False
+		RequiresCondition: challengerbot && !noinsurance
 	CashTrickler@brutal:
 		Interval: 400
 		Amount: 200
 		ShowTicks: False
-		RequiresCondition: brutalcash && !noinsurance
+		RequiresCondition: brutalbot && !noinsurance
 	ResourcePurifier@brutal:
 		Modifier: 30
 		ShowTicks: False
-		RequiresCondition: brutalcash && !noinsurance
-	GrantConditionOnBotOwner@hard:
-		Condition: hardcash
-		Bots: hard
+		RequiresCondition: brutalbot && !noinsurance
 	CashTrickler@hard:
 		Interval: 400
 		Amount: 100
 		ShowTicks: False
-		RequiresCondition: hardcash && !noinsurance
+		RequiresCondition: hardbot && !noinsurance
 	ResourcePurifier@hard:
 		Modifier: 20
 		ShowTicks: False
-		RequiresCondition: hardcash && !noinsurance
-	GrantConditionOnBotOwner@medium:
-		Condition: normalcash
-		Bots: medium
+		RequiresCondition: hardbot && !noinsurance
 	ResourcePurifier@medium:
 		Modifier: 10
 		ShowTicks: False
-		RequiresCondition: normalcash && !noinsurance
-     
+		RequiresCondition: normalbot && !noinsurance
+	ResourcePurifier@easy:
+		Modifier: -15
+		ShowTicks: False
+		RequiresCondition: easybot && !noinsurance
+	ResourcePurifier@easiest:
+		Modifier: -25
+		ShowTicks: False
+		RequiresCondition: easiestbot && !noinsurance
+		
 ^Harvester:
 	Inherits@MC: ^MCImmune
 	Inherits@snipe: ^DriverKillImmune
 	Harvester:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, GESupplies, SWPCarbon, SWRCarbon, SWDCarbon, SWPNova, SWCNova, SWPMin, SWCMin, Spice
-		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc, 315refin, 315proc, awcity, awcitybm, awcityyc, awcityge, awcitybh, awcityids, susasupply, susasupply_air, susasupply_armor, sglsupply, schsupply, drlife.eodalien, sc2krecyclingcenter, orefinery, schsupply_tank, qnest, tinynest, schsupply_leang, iokproc, xmas_elves_refinery, dtproc, tagdiref, tanodref, tamutref, drwaterl.actibliz
+		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc, 315refin, 315proc, awcity, awcitybm, awcityyc, awcityge, awcitybh, awcityids, susasupply, susasupply_air, susasupply_armor, sglsupply, schsupply, drlife.eodalien, sc2krecyclingcenter, orefinery, schsupply_tank, qnest, tinynest, schsupply_leang, iokproc, xmas_elves_refinery, dtproc, tagdiref, tanodref, tamutref, drwaterl.actibliz, n64procgdi, n64procnod, sglmobilesupplytruck_deployed, sglmobilesupplytruck_deployed_empty, dunerefin, valentine_chocolate_refinery
 		FullyLoadedSpeed: 100
 	GpsDot:
 		String: Harvester
@@ -3214,13 +3360,13 @@ CPQDEBUGDUMMY:
         
 ^RearmableAircraft:
 	Rearmable:
-		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,ra2gaairc.dock,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport,leangairport,drihelipad.imperium,drfghelipad.freedomguard,awhpad.orange,awhpad.bluemoon,awhpad.yellowcomet,awhpad.greenearth,awhpad.blackhole,awhpad.daysofruins,swhpad.empire,swhpad.rebels,swhpad.swseparatist,swhpad.republic,swhpad.hutt,d2k_silo_tleilaxu,hpad.camea,repair_pad,awhpad.rubinelle,awhpad.ids,awhpad.newrubinelle,awhpad.lazurian,susaairport,susahangar,2100vtolpad,drhive.eodalien,modraafld,scstarport.actibliz
+		RearmActors: hpad.gdi,hpad.nod,rahpad,raafld,scstarport,scstargate,2100scavhangar,xhpad,c1hpad,c2hpad,crahpad,craafld,cscstarport,c2100scavhangar,ra2gaairc,ra2gaairc.dock,tsgthpad,tsgthpad2,tsnthpad,tsnthpad2,usaairport,chairport,leangairport,drihelipad.imperium,drfghelipad.freedomguard,awhpad.orange,awhpad.bluemoon,awhpad.yellowcomet,awhpad.greenearth,awhpad.blackhole,awhpad.daysofruins,swhpad.empire,swhpad.rebels,swhpad.swseparatist,swhpad.republic,swhpad.hutt,d2k_silo_tleilaxu,hpad.camea,repair_pad,awhpad.rubinelle,awhpad.ids,awhpad.newrubinelle,awhpad.lazurian,susaairport,susahangar,2100vtolpad,drhive.eodalien,modraafld,scstarport.actibliz,sglairpad
 	AutoTarget:
 		InitialStance: HoldFire
 
 ^Repairable:
 	Repairable:
-		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix,rafix.camea,drirep,repair_pad,orepair_pad,d2k_silo_tleilaxu,susaweap,tagdidept,tanoddept,drirep.actibliz
+		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix,rafix.camea,drirep,repair_pad,orepair_pad,d2k_silo_tleilaxu,susaweap,tagdidept,tanoddept,drirep.actibliz, n64fixgdi, n64fixnod
 
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
@@ -3823,7 +3969,15 @@ CPQDEBUGDUMMY:
 		TargetTypes: aiforceshield
 		RequiresCondition: aiforceshieldtarget
 
+
+#Extra Unit types for Smart Auto-Targetting
+
+^IsEngineer:
+    Targetable@ENGINEER:
+        TargetTypes: Engineer    
+        
 #Structures Based
+
 ^IsBarrack:
 	InfiltrateForSupportPower:
 		Proxy: barracks.upgraded
@@ -4131,7 +4285,7 @@ CPQDEBUGDUMMY:
 ^BotMicromanageable:
 	GrantConditionOnBotOwner@aimicro:
 		Condition: botmicro
-		Bots: easy, medium, hard, brutal, airforce
+		Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce
 
 ^upgrade.template:
 	Buildable:
