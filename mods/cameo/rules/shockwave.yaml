@@ -8096,6 +8096,20 @@ sglcamorebel:
 		PauseOnCondition: cloak-force-disabled || base-reveal
 		RequiresCondition: camoupgrade
 		IsPlayerPalette: true
+
+sglcamorpgtrooper:
+	Inherits: sglrpgtrooper
+    Inherits@SHADOWS: ^Shadows
+	Buildable:
+		Prerequisites: barracks, ~sgla_camo
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage
+		PauseOnCondition: cloak-force-disabled || base-reveal
+		RequiresCondition: camoupgrade
+		IsPlayerPalette: true
+
 sglradartruck:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
@@ -8265,7 +8279,6 @@ sglsniperquadcannon:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: sglweap, ~techlevel.low, ~sgla_camo
-        IconPalette: ra2
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -8323,7 +8336,7 @@ sglmgnest:
 	WithSpriteBody:
 	WithSpriteTurret:
 	Armament@NORMAL:
-		Weapon: GLTechnicalMG
+		Weapon: GLRebelAK47Garrison
 		LocalOffset: 100,0,100
 		LocalYaw: -100, 100
 		Recoil: 0
@@ -8347,9 +8360,16 @@ sglmgnest:
 		PauseOnCondition: cloak-force-disabled || base-reveal
 		IsPlayerPalette: true
 	SpawnActorOnDeath@hole:
-		Actor: glsite.hole
+		Actor: sglmgnest.hole
     WithIdleOverlay:
-        
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+sglmgnest.hole:
+	Inherits: GLAHole2x2Defense
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sglmgnest
 sglcobra:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -8471,7 +8491,6 @@ sglkatyusha:
 		BuildPaletteOrder: 25
 		Prerequisites: sglweap, ~techlevel.low, ~sgla_scrap, upsglkatyusha
 		Description: Rocket Artillery Armed with multiple long range rockets.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
-        IconPalette: ra2
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -8676,8 +8695,15 @@ sglhornetnest:
 	RenderSprites:
 		Image: sglhornetnest
 	SpawnActorOnDeath@hole:
-		Actor: glsite.hole
-
+		Actor: sglhornetnest.hole
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+sglhornetnest.hole:
+	Inherits: GLAHole2x2Defense
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sglhornetnest
 sglsa2samsite:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
@@ -8737,7 +8763,7 @@ sglsa2samsite:
 	RenderSprites:
 		Image: sglsa2samsite
 	SpawnActorOnDeath@hole:
-		Actor: glsite.hole
+		Actor: sglsa2samsite.hole
 	WithIdleOverlay:
 		Offset: 250,0,0
     AmmoPool:
@@ -8749,7 +8775,14 @@ sglsa2samsite:
     	Delay: 120
 		Count: 1
 		ResetOnFire: false 
-		
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+sglsa2samsite.hole:
+	Inherits: GLAHole2x2Defense
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sglsa2samsite
 sglcombatbuggy:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -8761,6 +8794,7 @@ sglcombatbuggy:
 	Inherits@junk: ^JunkRepair
 	Inherits@AP: ^APRocketUpgrade
 	Inherits@demo: ^DemolitionUpgrade
+	Inherits@IFV: ^IFVConditions
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -8787,21 +8821,6 @@ sglcombatbuggy:
 		Type: Light
 	RevealsShroud:
 		Range: 5c256
-	Armament@Normal:
-		Weapon: GLRocketBuggyMissiles
-		LocalOffset: 624,-128,208, 624,128,208
-		MuzzleSequence: muzzle
-		RequiresCondition: !selectglatoxin
-	Armament@Extra:
-		Weapon: GLRocketBuggyMissiles
-		LocalOffset: 624,128,208, 624,-128,208
-		MuzzleSequence: muzzle
-		RequiresCondition: ammoupgrade
-	Armament@Toxin:
-		Weapon: GLRocketBuggyMissilesToxin
-		LocalOffset: 624,-128,208, 624,128,208
-		MuzzleSequence: muzzle
-		RequiresCondition: selectglatoxin
 	AttackTurreted:
 		TargetFrozenActors: True
 		ForceFireIgnoresActors: True
@@ -8816,20 +8835,20 @@ sglcombatbuggy:
 		Sequence: idle-max
 		RequiresCondition: scrap_create_bonus >= 2
 	WithSpriteTurret@rebel:
-		Sequence: turret-rebel
-		RequiresCondition: crew-rebel
+		Sequence: turret-rebel || ifv-litlaser || ifv-medlaser || ifv-greelaser || ifv-fire || ifv-chem || ifv-thrax
+		RequiresCondition: ifv-mg
 	WithSpriteTurret@grenadier:
 		Sequence: turret-grenadier
-		RequiresCondition: crew-grenadier
+		RequiresCondition: ifv-cannon
 	WithSpriteTurret@jarmen:
 		Sequence: turret-jarmen
-		RequiresCondition: crew-jarmen
+		RequiresCondition: ifv-hero
 	WithSpriteTurret@tow:
 		Sequence: turret-tow 
-		RequiresCondition: crew-rpginf && !attackaa
+		RequiresCondition: ifv-miss && !attackaa
 	WithSpriteTurret@tow-aa:
 		Sequence: turret-tow-up 
-		RequiresCondition: crew-rpginf && attackaa
+		RequiresCondition: ifv-miss && attackaa
 	WithSpriteTurret@flash:
 		Sequence: turret-flash
 		RequiresCondition: crew-flash
@@ -8843,12 +8862,6 @@ sglcombatbuggy:
 		VoiceSet: RocketBuggyVoice
 	RenderSprites:
 		Scale: 0.85
-	GrantConditionOnPrerequisite@upbuggyammo:
-		Condition: ammoupgrade
-		Prerequisites: upbuggyammo
-		Weapon: GLBuggyHuskCluster
-	Explodes:
-		EmptyWeapon: GLBuggyHuskCluster
 	GrantConditionOnPrerequisite@selectglatoxin:
 		Condition: selectglatoxin
 		Prerequisites: selectglatoxin
@@ -8875,7 +8888,7 @@ sgllatrun:
 		Description: Agile Artillery armed with Long Range Cannon\n  Strong vs Ground\nWeak vs Air
         IconPalette: ra2
 	Mobile:
-		Speed: 96
+		Speed: 100
         Locomotor: tracked
         TurnSpeed: 8
 	Health:
@@ -8895,6 +8908,25 @@ sgllatrun:
 		Weapon: SGLLatrun
 		LocalOffset: 1250,0,400
         MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade && scrap_create_bonus <= 1
+	Armament@Toxin:
+        Name: primary
+		Weapon: SGLLatrunToxin
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && scrap_create_bonus <= 1
+	Armament@Twins:
+        Name: primary
+		Weapon: SGLLatrunToxin
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade && scrap_create_bonus >= 2
+	Armament@TwinsToxin:
+        Name: primary
+		Weapon: SGLLatrunTwinToxin
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && scrap_create_bonus >= 2
     WithSpriteTurret:
         Sequence: turret
         RequiresCondition: !attacking
@@ -8913,7 +8945,7 @@ sgllatrun:
 	AcceptsDeliveredExperience:
 		ValidTypes: USAPilot
 	Voiced:
-		VoiceSet: GLSCUDLauncherVoice
+		VoiceSet: RocketBuggyVoice
 	ReloadDelayMultiplier@Salvaged1:
 		RequiresCondition: scrap_create_bonus == 1
 		Modifier: 75
@@ -8926,7 +8958,9 @@ sgllatrun:
 	ExternalCondition@SCRAP_CREATE_BONUS:
 		Condition: scrap_create_bonus
 		TotalCap: 3
-    
+	GrantConditionOnPrerequisite@uptoxinshells:
+		Condition: shellsupgrade
+		Prerequisites: uptoxinshells
 sglgadfly:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -9009,7 +9043,7 @@ sglgadfly:
 		Count: 1
 		ResetOnFire: false 
 	Voiced:
-		VoiceSet: BattlemasterTankVoice
+		VoiceSet: GLSCUDLauncherVoice
     RenderSprites:
         Scale: 0.91
 	DamageMultiplier@Salvaged1:
@@ -9030,7 +9064,6 @@ sglquadcannontank:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: sglweap, ~techlevel.low, ~sgla_scrap
-        IconPalette: ra2
 	Valued:
 		Cost: 850
 	Tooltip:
@@ -9253,7 +9286,6 @@ sglscarab:
 		Prerequisites: sglweap, ~techlevel.medium, ~sgla_scrap
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		Description: Medium Tank.\n  Strong vs Vehicles\n  Weak vs Infantry
-        IconPalette: ra2
 	Mobile:
 		Speed: 78
 	Health:
@@ -9268,14 +9300,57 @@ sglscarab:
 		TurnSpeed: 7
 		Offset: 60,0,200
 	Armament@Normal:
-		Weapon: SCHWarmasterCannon
+		Weapon: GLScorpionShell
 		Recoil: 85
 		RecoilRecovery: 17
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade && scrap_create_bonus <= 1
+	Armament@Toxin:
+		Weapon: GLScorpionShellToxin
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && scrap_create_bonus <= 1
+	Armament@Twins:
+		Weapon: SGLScarabTwins
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade && scrap_create_bonus >= 2
+	Armament@TwinsToxin:
+		Weapon: SGLScarabToxinTwins
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && scrap_create_bonus >= 2
+	Armament@Missile:
+		Weapon: GlScorpionMissile
+		LocalOffset: 720,0,90
+		RequiresCondition: rocketupgrade
+	Armament@Smokers:
+		Weapon: SGLScarabSmokers
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,100,90, 720,-100,90, 720,-200,90, 720,-200,90
+		MuzzleSequence: muzzle
+		Name: secondary
+	ReloadArmamentsBar:
+		Armaments: secondary
+	GrantConditionOnPrerequisite@upscorpionrocket:
+		Condition: rocketupgrade
+		Prerequisites: upscorpionrocket
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
+		Sequence: turret
+		RequiresCondition: scrap_create_bonus <= 1
+	WithSpriteTurret@Scrap1:
+		Sequence: turret2
+		RequiresCondition: scrap_create_bonus >= 2
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
@@ -9288,7 +9363,14 @@ sglscarab:
 		Modifier: 75
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-
+    AmmoPool:
+        Armaments: secondary
+		Ammo: 4
+        PipCount: 0
+    ReloadAmmoPool:
+        Delay: 300
+        Count: 4
+        Sound: t28reload.wav
 sglradartank:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
@@ -9494,7 +9576,7 @@ glsmaura:
 	Inherits@junk: ^JunkRepair
 	Inherits@demo: ^DemolitionUpgrade
 	Valued:
-		Cost: 800
+		Cost: 1000
 	Tooltip:
 		Name: Scrap Marauder Tank
 	UpdatesPlayerStatistics:
@@ -9958,11 +10040,23 @@ sglscrapyard:
 	RallyPoint:
 		Path: 1,4
 	Exit@1:
-		SpawnOffset: 128,256,0
-		ExitCell: 1,1
-		ExitDelay: 3
+		SpawnOffset: -1024,1024,0
+		Facing: 160
+		ExitCell: 0,2
 	Exit@2:
-		ExitCell: 2,1
+		SpawnOffset: 1024,1024,0
+		Facing: 224
+		ExitCell: 2,2
+	Exit@3:
+		SpawnOffset: -1024,-1024,0
+		Facing: 96
+		ExitCell: 0,0
+	Exit@4:
+		SpawnOffset: 1024,-1024,0
+		Facing: 32
+		ExitCell: 2,0
+	Tooltip:
+		Name: Scrap Yard
 sglscrapyard.hole:
 	Inherits: GLAHole2x2
 	TransformOnCondition@buildingrebirth:
@@ -10038,6 +10132,19 @@ sglgrenadierterror:
         DefaultAttackSequence: shoot
         MoveSequence: run-suicide
         RequiresCondition: attacking && !triggered
+sglscrapcrate:
+	Inherits: glscrapcrate
+	Tooltip:
+		Name: Scrap Crate
+	Buildable:
+		Queue: MarketUpgrades.GLA
+		BuildPaletteOrder: 60
+		Prerequisites: ~techlevel.low, ~sgla_scrap
+		Description: You can Buy upgrades for your GLA Vehicles.
+	Valued:
+		Cost: 200
+    RenderSprites:
+        Image: sglscrapbox 
 #########################################
 #           GLA DEMO
 #########################################     
@@ -10522,7 +10629,7 @@ sglcamel:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 18000
+		HP: 22000
 	Armor:
 		Type: Light
 	Mobile:
@@ -10560,6 +10667,63 @@ sglcamel:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
     
+
+
+sgldemomaura:
+	Inherits: glmaura
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Demolition Marauder Tank
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: glweap, upmarauder, ~techlevel.medium, ~sgla_demo
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Medium tank.\n  Strong vs Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 80
+	Turreted:
+		TurnSpeed: 7
+		Offset: 225,0,185
+		Turret: primary
+	Armament@Normal:
+		Turret: primary
+	Armament@Toxin:
+		Turret: primary
+	Armament@ToxinBeta:
+		Turret: primary
+	Armament@NormalElite:
+		Turret: primary
+	Armament@ToxinElite:
+		Turret: primary
+	Armament@ToxinBetaElite:
+		Turret: primary
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: -400,0,428
+		TurnSpeed: 3
+	Armament@Rockets:
+		Name: secondary
+		Turret: secondary
+		Weapon: SGLHornetNest
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 171
+		RecoilRecovery: 34
+		MuzzleSequence: muzzle
+	WithSpriteTurret@Rockets:
+		Sequence: turretr
+		Turret: secondary
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	WithSpriteTurret:
+		Turret: primary
+	WithSpriteTurret@Scrap1:
+		Turret: primary
+	WithSpriteTurret@Scrap2:
+		Turret: primary
 #########################################
 #           GLA TOXIN
 #########################################  
