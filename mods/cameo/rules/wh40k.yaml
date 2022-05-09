@@ -2512,6 +2512,12 @@ wh40kkarsgrenade:
 		Modifier: 130
 	FirepowerMultiplier@kars1:
 		Modifier: 125
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: grenade
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
 wh40kkarsplasma:
 	Inherits: wh40kkars
 	Valued:
@@ -2537,6 +2543,12 @@ wh40kkarsplasma:
 		Modifier: 130
 	FirepowerMultiplier@kars1:
 		Modifier: 125
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: plasma
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
 wh40ktechpriest:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -3865,7 +3877,7 @@ wh40kstronghold:
 	ProductionAirdropCA@NORMAL:
 		Produces: Building.SpaceMarines
 		RequiresCondition: !classicproductionqueues
-		ActorType: c17
+		ActorType: wh40kthunderhawk
 		EntryType: DropSiteClosestEdge
 		ExitType: StraightAhead
 		LandingFacing: 64
@@ -3873,7 +3885,7 @@ wh40kstronghold:
 	ProductionAirdropCA@CLASSIC:
 		Produces: RABuilding.SpaceMarines
 		RequiresCondition: classicproductionqueues
-		ActorType: c17
+		ActorType: wh40kthunderhawk
 		EntryType: DropSiteClosestEdge
 		ExitType: StraightAhead
 		LandingFacing: 64
@@ -3911,7 +3923,9 @@ wh40kstronghold:
 		Condition: jammed
 	ProvidesRadar:
 		RequiresCondition: !jammed
-
+	CashTrickler@placeholder:
+		Interval: 50
+		Amount: 40
 wh40kbarrm:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -4060,7 +4074,7 @@ wh40ksacredart:
 		RequiresCondition: !lowpower
 
 wh40karmorym:
-	Inherits: ^BunkerBaseBuilding
+	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 1500
@@ -4096,7 +4110,63 @@ wh40karmorym:
 		Amount: -25
 	RenderSprites:
 		Image: wh40karmorym
-
+wh40korbitalrelay:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Orbital Relay
+	ProvidesPrerequisite:
+		Prerequisite: orbital
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: wh40kupmonastery2
+		Queue: Building.SpaceMarines, RABuilding.SpaceMarines
+		Description: Provides Deep Strike Support Powers.\n Unlock Variants introduce the next units.\n Rocket Marines = Adds Rocket Marines in the Strike.\n Flamer Marines = Adds Flamer Marines in the Strike.\n Bolter Marines = Adds Bolter Marines in the Strike.\n Plasma Marines = Adds Plasma Marines in the Strike.\n Dreadnought = Replace Marines with a single Dreadnought in the Strike.\n Hellfire Dreadnought = Replace Marines with a Hellfire Dreadnought in the Strike
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	SelectionDecorations:
+	Health:
+		HP: 200000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	ProvidesPrerequisite@buildingname:
+	Power:
+		Amount: -100
+	RenderSprites:
+		Image: wh40korbitalrelay
+	DetonateWeaponPower@marines:
+		OrderName: Deep Strike
+		Cursor: ability
+		PauseOnCondition: lowpower
+		Icon: droppod
+		Description: Deep Strike
+		LongDesc: Deploys squad marines from orbit.
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		ChargeInterval: 4200
+		Weapon: Wh40kDeepStrikeSpawnerE1
+		CameraActor: camera.small
+		CameraRemoveDelay: 60
+	SupportPowerChargeBar:
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 8
+		PipCount: 8
+		LoadingCondition: notmobile
+		PassengerConditions:
+			wh40kmarineflamer: flamers
+			wh40kmarineplasma: plasmas
+			wh40kmarinerocket: rockets
+			wh40kmarinebolter: bolters
+			wh40kdread: dread
+			wh40kdreadh: hellfire
 wh40kpowerm:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -4145,6 +4215,9 @@ wh40kpowerm:
 	PowerMultiplier@wh40kupenergy2:
 		Modifier: 150
 		RequiresCondition: wh40kupenergy2
+	CashTrickler@placeholder:
+		Interval: 50
+		Amount: 1
 wh40kmachinecult:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^4x3Shape
@@ -4159,7 +4232,7 @@ wh40kmachinecult:
 		Name: Machine Cult
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: wh40kupbattlecommand
+		Prerequisites: wh40kupmonastery
 		Queue: Building.SpaceMarines, RABuilding.SpaceMarines
 		Description: Produces vehicles
 	Building:
@@ -4182,12 +4255,6 @@ wh40kmachinecult:
 		ExitDelay: 3
 	#Production@Upgrades:
 	#	Produces: VehicleUpgrades.SpaceMarines
-	Production@NORMAL:
-		Produces: Vehicle.SpaceMarines
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAVehicle.SpaceMarines
-		RequiresCondition: classicproductionqueues
 	ProductionQueue:
 		Type: Vehicle.SpaceMarines
 		DisplayOrder: 3
@@ -4199,6 +4266,22 @@ wh40kmachinecult:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
+	ProductionAirdropCA@NORMAL:
+		Produces:Vehicle.SpaceMarines
+		RequiresCondition: !classicproductionqueues
+		ActorType: wh40kthunderhawk
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	ProductionAirdropCA@CLASSIC:
+		Produces: RAVehicle.SpaceMarines
+		RequiresCondition: classicproductionqueues
+		ActorType: wh40kthunderhawk
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
 	ProductionBar@VEHICLESCAVENGER:
 		ProductionType: Vehicle.SpaceMarines
 		RequiresCondition: !classicproductionqueues
@@ -4222,8 +4305,9 @@ wh40kmarine:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@horde: ^WH40KHordeEffect
+	Inherits@upgrades: ^WH40KMarinesUpgrades
 	Valued:
-		Cost: 200
+		Cost: 220
 	Power:
 		Amount: -7
 	Tooltip:
@@ -4240,7 +4324,7 @@ wh40kmarine:
 	Crushable:
 		CrushClasses: vehicle
 	Health:
-		HP: 12000
+		HP: 10000
 	Armor:
 		Type: Wood
 	AutoTarget:
@@ -4270,33 +4354,453 @@ wh40kmarine:
 		ConsumedByCapture: False
 		EnterCursor: ability
 		EnterBlockedCursor: move-blocked
-	GrantConditionOnPrerequisite@wh40kupweapspecialization:
-		Condition: wh40kupweapspecialization
-		Prerequisites: wh40kupweapspecialization
-	FirepowerMultiplier@wh40kupweapspecialization:
-		RequiresCondition: wh40kupweapspecialization
-		Modifier: 115
-	GrantConditionOnPrerequisite@wh40kupkasrkinarmor:
-		Condition: wh40kupkasrkinarmor
-		Prerequisites: wh40kupkasrkinarmor
-	DamageMultiplier@wh40kupkasrkinarmor:
-		RequiresCondition: wh40kupkasrkinarmor
-		Modifier: 75
-	GrantConditionOnPrerequisite@wh40kupgenenhancement:
-		Condition: wh40kupgenenhancement
-		Prerequisites: wh40kupgenenhancement
-	SpeedMultiplier@wh40kupgenenhancement:
-		RequiresCondition: wh40kupgenenhancement
-		Modifier: 133
 
+wh40kmarineflamer:
+	Inherits: wh40kmarine
+	Valued:
+		Cost: 260
+	Power:
+		Amount: -15
+	Tooltip:
+		Name: Flamer Marine
+	Buildable:
+		BuildPaletteOrder: 63
+		Prerequisites: barracks, wh40karmorym
+		Queue: Infantry.SpaceMarines, RAInfantry.SpaceMarines, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: Flamethrower
+		MuzzleSequence: muzzle
+		LocalOffset: 341,0,256
+		FireDelay: 3
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: Flamethrower
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: flamer
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
+wh40kmarineplasma:
+	Inherits: wh40kmarine
+	Valued:
+		Cost: 280
+	Power:
+		Amount: -15
+	Tooltip:
+		Name: Plasma Marine
+	Buildable:
+		BuildPaletteOrder: 63
+		Prerequisites: barracks, wh40karmorym
+		Queue: Infantry.SpaceMarines, RAInfantry.SpaceMarines, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: WH40KPlasmapistol
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WH40KPlasmapistolG
+		MuzzleSequence: garrison-muzzle
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: plasmamarine
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
+wh40kmarinerocket:
+	Inherits: wh40kmarine
+	Valued:
+		Cost: 350
+	Power:
+		Amount: -15
+	Tooltip:
+		Name: Missile Marine
+	Buildable:
+		BuildPaletteOrder: 63
+		Prerequisites: barracks, wh40karmorym
+		Queue: Infantry.SpaceMarines, RAInfantry.SpaceMarines, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: WH40KTankbustaMissile
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WH40KTankbustaMissileG
+		MuzzleSequence: garrison-muzzle
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: missile
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
+wh40kmarinebolter:
+	Inherits: wh40kmarine
+	Valued:
+		Cost: 500
+	Power:
+		Amount: -15
+	Tooltip:
+		Name: Heavy Bolter Marine
+	Buildable:
+		BuildPaletteOrder: 64
+		Prerequisites: barracks, wh40karmorym
+		Queue: Infantry.SpaceMarines, RAInfantry.SpaceMarines, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: WH40KMarineMGG
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WH40KMarineMGGH
+		MuzzleSequence: garrison-muzzle
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: missile
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
+wh40kscout:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@horde: ^WH40KHordeEffect
+	Inherits@upgrades: ^WH40KMarinesUpgrades
+	Valued:
+		Cost: 180
+	Power:
+		Amount: -7
+	Tooltip:
+		Name: Scout Marine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: barracks
+		Queue: Defence.SpaceMarines, RADefence.SpaceMarines, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 80
+	Crushable:
+		CrushClasses: vehicle
+	Health:
+		HP: 8500
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WH40KMarineMG
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WH40KMarineMGG
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: WH40KMarineVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Passenger:
+		Weight: 1
+	-TakeCover:
+	Captures:
+		CaptureTypes: building, tech
+		PlayerExperience: 500
+		CaptureDelay: 750
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+
+wh40kscoutflamer:
+	Inherits: wh40kscout
+	Valued:
+		Cost: 210
+	Power:
+		Amount: -14
+	Tooltip:
+		Name: Flamer Scout
+	Buildable:
+		BuildPaletteOrder: 63
+		Prerequisites: barracks, wh40karmorym
+		Queue: Defence.SpaceMarines, RADefence.SpaceMarines, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: Flamethrower
+		MuzzleSequence: muzzle
+		LocalOffset: 341,0,256
+		FireDelay: 3
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: Flamethrower
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: flamer
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
+wh40kscoutplasma:
+	Inherits: wh40kscout
+	Valued:
+		Cost: 240
+	Power:
+		Amount: -14
+	Tooltip:
+		Name: Plasma Scout
+	Buildable:
+		BuildPaletteOrder: 63
+		Prerequisites: barracks, wh40karmorym
+		Queue: Defence.SpaceMarines, RADefence.SpaceMarines, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: WH40KPlasmapistol
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WH40KPlasmapistolG
+		MuzzleSequence: garrison-muzzle
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: plasmamarine
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
+wh40kscoutsniper:
+	Inherits: wh40kscout
+	Valued:
+		Cost: 600
+	Power:
+		Amount: -15
+	Tooltip:
+		Name: Sniper Scout
+	Buildable:
+		BuildPaletteOrder: 63
+		Prerequisites: barracks, wh40karmorym
+		Queue: Defence.SpaceMarines, RADefence.SpaceMarines, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Armament@PRIMARY:							##########
+		Weapon: Sniper
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: Sniper
+		MuzzleSequence: garrison-muzzle
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: sniper
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
+wh40kforcecmd:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 1500
+	Power:
+		Amount: -15
+	Tooltip:
+		Name: Force Command
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: barracks, wh40karmorym
+		Queue: Defence.SpaceMarines, RADefence.SpaceMarines, Infantry.X_Infantry
+		Description: Support Infantry.\n  Strong vs Infantry\n  Weak vs Vehicles\n  Can Upgrade Firepower of Nearby Infantry
+	Mobile:
+		Speed: 75
+	Crushable:
+		CrushClasses: vehicle
+	Health:
+		HP: 142000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: knightslice
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WH40KMarineMGGH
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: WH40KCommandSquadVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Passenger:
+		Weight: 1
+	-TakeCover:
+wh40kterminator1:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@horde: ^WH40KHordeEffect
+	Inherits@upgrades: ^WH40KMarinesUpgrades
+	Valued:
+		Cost: 700
+	Power:
+		Amount: -20
+	Tooltip:
+		Name: Terminator Marine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: wh40kupmonastery2
+		Queue: Infantry.SpaceMarines, RAInfantry.SpaceMarines, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 55
+	Crushable:
+		CrushClasses: vehicle
+	Health:
+		HP: 25000
+	Armor:
+		Type: Heavy
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WH40KMarineMGG
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WH40KMarineMGGH
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: WH40KMarineVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Passenger:
+		Weight: 1
+	-TakeCover:
+	PortableChrono:
+		ChargeDelay: 250
+		TargetCursor: ability
+wh40kterminator2:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@horde: ^WH40KHordeEffect
+	Inherits@upgrades: ^WH40KMarinesUpgrades
+	Valued:
+		Cost: 850
+	Power:
+		Amount: -20
+	Tooltip:
+		Name: Assault Terminator Marine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: wh40kupmonastery2
+		Queue: Infantry.SpaceMarines, RAInfantry.SpaceMarines, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 55
+	Crushable:
+		CrushClasses: vehicle
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: knightslice
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WH40KMarineMGGH
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: WH40KMarineVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Passenger:
+		Weight: 1
+	-TakeCover:
+	PortableChrono:
+		ChargeDelay: 250
+		TargetCursor: ability
 #######################################
 # Marines Vehicles
 #######################################
+wh40kmcvm:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+    Inherits@conyard: ^Conyard
+	Buildable:
+		Queue: Building.ImperialGuard, RABuilding.ImperialGuard
+		BuildPaletteOrder: 210
+		Prerequisites: wh40karmory, ~techlevel.medium
+		BuildDurationModifier: 40
+		Description: Deploys into another Field Command.\n  Unarmed
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Stronghold Transporter (Space Marines)
+	Selectable:
+		Priority: 4
+		DecorationBounds: 42,42
+	SelectionDecorations:
+	Health:
+		HP: 140000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 71
+		Locomotor: hover
+	RevealsShroud:
+		Range: 8c0	#4c0
+	Transforms:
+		IntoActor: wh40kstronghold
+		Offset: -1,-1
+		Facing: 96
+		TransformSounds: placbldg.aud, build5.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	#SpawnActorOnDeath:
+	#	Actor: RAMCV.Husk
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	Inherits@EXT: ^ExternalConditions
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmmarines
+	RenderSprites:
+		Image: wh40kthunderhawk
+		Scale: 0.70
+	Hovers:
+    
 wh40kpredator:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
+	Inherits@upgrades: ^WH40KMarineVehicleUpgrades
 	Valued:
 		Cost: 1800
 	Power:
@@ -4439,6 +4943,7 @@ wh40krhino:
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@cargo: ^CargoVehicle
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@upgrades: ^WH40KMarineVehicleUpgrades
 	Valued:
 		Cost: 1000
 	Power:
@@ -4501,6 +5006,7 @@ wh40kwhirl:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
+	Inherits@upgrades: ^WH40KMarineVehicleUpgrades
 	Valued:
 		Cost: 2000
 	Power:
@@ -4532,7 +5038,7 @@ wh40kwhirl:
 		Range: 6c0
 	WithSpriteTurret:
 	Turreted:
-		TurnSpeed: 2
+		TurnSpeed: 5
 		Offset: -320,0,400
 	Armament@PRIMARY:
 		Weapon: WH40KWhirlWindAG
@@ -4565,6 +5071,7 @@ wh40klandspeed:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@upgrades: ^WH40KMarineVehicleUpgrades
 	Valued:
 		Cost: 900
 	Power:
@@ -4634,6 +5141,7 @@ wh40kdread:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
     Inherits@DRShadow: ^InfantryShadows
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@upgrades: ^WH40KMarineVehicleUpgrades
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -4689,6 +5197,13 @@ wh40kdread:
 	WithInfantryBody:
 	AttackTurreted:
 	WithSpriteTurret:
+		RequiresCondition: !lascannon && !bolter
+	WithSpriteTurret@turret2:
+		RequiresCondition: bolter
+		Sequence: turret2
+	WithSpriteTurret@turret3:
+		RequiresCondition: lascannon
+		Sequence: turret3
 	-WithFacingSpriteBody:
 	Passenger:
 		Weight: 3
@@ -4747,6 +5262,194 @@ pscwh40kdread2:
 	AlwaysVisible:
 	KillsSelf:
 		RemoveInstead: true
+wh40kdreadh:
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+    Inherits@DRShadow: ^InfantryShadows
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@upgrades: ^WH40KMarineVehicleUpgrades
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Dreadnought Hellfire
+	Buildable:
+		BuildPaletteOrder: 65
+		Prerequisites: wh40kmachinecult
+		Queue: Vehicle.SpaceMarines, RAVehicle.SpaceMarines, Vehicle.X_Vehicles
+		Description: Light Scout Imperial Guard Vehicle.\nCan attack Aircraft.\n  Strong vs Infantry.\n  Upgradeable with Addons
+	Mobile:
+		Speed: 82
+	Health:
+		HP: 120000
+	RevealsShroud:
+		Range: 7c0
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 10
+		Offset: 0,0,14
+	Armament@Bolter:
+		Weapon: WH40KHeavyBolterMG3
+		LocalOffset: 400,-400,300
+	Armament@Rockit:
+		Weapon: WH40KWartrakkMissile
+		LocalOffset: 400,400,300
+	WithInfantryBody:
+	AttackTurreted:
+	WithSpriteTurret:
+	-WithFacingSpriteBody:
+	Passenger:
+		Weight: 3
+		PipType: blue
+	RenderSprites:
+		Scale: 0.60
+	Voiced:
+		VoiceSet: WH40KDreadVoice
+	Power:
+		Amount: -60
+
+wh40kthunderhawk:
+	Inherits: ^Plane
+	Interactable:
+	Tooltip:
+		Name: Thunderhawk
+	Aircraft:
+		TurnSpeed: 5
+		Speed: 326
+		Repulsable: False
+		MaximumPitch: 36
+	HiddenUnderFog:
+		AlwaysVisibleStances: None
+		Type: CenterPosition
+	Cargo:
+		MaxWeight: 10
+		PipCount: 10
+	DamageMultiplier@INVULNERABLE:
+		Modifier: 0
+	-MapEditorData:
+	RenderSprites:
+		Scale: 0.70
+#######################################
+# Marines, Upgrades
+#######################################
+^WH40KMarinesUpgrades:
+	GrantConditionOnPrerequisite@wh40kupcapincrease:
+		Condition: wh40kupcapincrease
+		Prerequisites: wh40kupcapincrease
+	ProductionTimeMultiplier@wh40kupcapincrease:
+		RequiresCondition: wh40kupcapincrease
+		Modifier: 90
+	GrantConditionOnPrerequisite@wh40kupbionics:
+		Condition: wh40kupbionics
+		Prerequisites: wh40kupbionics
+	DamageMultiplier@wh40kupbionics:
+		Modifier: 85
+		RequiresCondition: wh40kupbionics
+	GrantConditionOnPrerequisite@wh40kupbionics2:
+		Condition: wh40kupbionics2
+		Prerequisites: wh40kupbionics2
+	DamageMultiplier@wh40kupbionics2:
+		Modifier: 85
+		RequiresCondition: wh40kupbionics2
+^WH40KMarineVehicleUpgrades:
+	GrantConditionOnPrerequisite@wh40kupcapincrease2:
+		Condition: wh40kupcapincrease2
+		Prerequisites: wh40kupcapincrease2
+	ProductionTimeMultiplier@wh40kupcapincrease2:
+		RequiresCondition: wh40kupcapincrease2
+		Modifier: 90
+wh40kupmonastery:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Monastery
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Defence.SpaceMarines, RADefence.SpaceMarines
+		Description: Increases Field Command to 25% of health, Unlock new Tech
+		Prerequisites: ~!wh40kupmonastery, barracks
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: wh40kupmonastery
+	ProvidesPrerequisite:
+		Prerequisite: wh40kupmonastery
+wh40kupmonastery2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Fortress Monastery
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Defence.SpaceMarines, RADefence.SpaceMarines
+		Description: Increases Field Command to 25% of health, Unlock new Tech
+		Prerequisites: ~!wh40kupmonastery2, wh40kupmonastery, vehicleproduction
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: wh40kupmonastery2
+	ProvidesPrerequisite:
+		Prerequisite: wh40kupmonastery2
+
+wh40kupcapincrease:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Squad Cap Increase
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Defence.SpaceMarines, RADefence.SpaceMarines
+		Description: Increase Marine Production
+		Prerequisites: ~!wh40kupcapincrease, barracks
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: wh40kupcapincrease
+	ProvidesPrerequisite:
+		Prerequisite: wh40kupcapincrease
+wh40kupcapincrease2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Squad Cap Increase
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Defence.SpaceMarines, RADefence.SpaceMarines
+		Description: Increase Vehicle Production
+		Prerequisites: ~!wh40kupcapincrease2, vehicleproduction
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: wh40kupcapincrease2
+	ProvidesPrerequisite:
+		Prerequisite: wh40kupcapincrease2
+
+wh40kupbionics:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Bionics
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Armoury.SpaceMarines
+		Description: Increase Marine Production
+		Prerequisites: ~!wh40kupbionics, barracks
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: wh40kupbionics
+	ProvidesPrerequisite:
+		Prerequisite: wh40kupbionics
+wh40kupbionics2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Bionics Level 2
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Armoury.SpaceMarines
+		Description: Increase Vehicle Production
+		Prerequisites: ~!wh40kupbionics2, wh40kupbionics
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: wh40kupbionics2
+	ProvidesPrerequisite:
+		Prerequisite: wh40kupbionics2
 #######################################
 # Orkz, Building
 #######################################
@@ -5854,6 +6557,12 @@ wh40kburna:
 	FirepowerMultiplier@wh40kupburny2:
 		RequiresCondition: wh40kupburny2
 		Modifier: 115
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: flamerork
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
 wh40kshoota:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -5928,6 +6637,12 @@ wh40kshoota2:
 		Amount: -10
 	ReloadDelayMultiplier@buff:
 		Modifier: 70
+	WithDecoration@addon:
+		Image: wh40kitems
+		Sequence: bigshoota
+		ReferencePoint: Right, Top
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off
 wh40knob:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -6599,7 +7314,7 @@ wh40kwarboss:
 	GrantConditionOnPrerequisite@wh40kuporkboss1:
 		Condition: wh40kuporkboss1
 		Prerequisites: wh40kuporkboss1
-	SpeedMultiplier@wh40kuporkboss1:
+	DamageMultiplier@wh40kuporkboss1:
 		Modifier: 85
 		RequiresCondition: wh40kuporkboss1
 	GrantConditionOnPrerequisite@wh40kuporkboss2:
@@ -7367,6 +8082,60 @@ wh40ksquiggoth:
 		MaxWeight: 8
 		PipCount: 8
 		LoadingCondition: notmobile
+wh40kfightabomma:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+	Valued:
+		Cost: 1450
+	Power:
+		Amount: -140
+	Tooltip:
+		Name: Fighta Bomma
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 90
+		Prerequisites: wh40kuporkyfort
+		Queue:  Vehicle.Orkz, RAVehicle.Orkz, Aircraft.X_Aircrafts
+		Description: Aircraft Gunship with las Guns and MGs.\n  Strong vs All
+	Aircraft:
+		TurnSpeed: 7
+		Speed: 186
+	Health:
+		HP: 40000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: WH40KHeavyBolterMG
+		LocalOffset: 427,-171,-213, 427,171,-213
+	Armament@SECONDARY:
+		Weapon: WH40KHeavyBolterMG2
+		LocalOffset: 427,-171,-213, 427,171,-213
+	Armament:
+		Weapon: WH40KBommaBomb
+		LocalOffset: 768,12,20, 768,-12,20
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	-SpawnActorOnDeath:
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	Voiced:
+		VoiceSet: WH40KLootedTankVoice
+	RenderSprites:
+		Scale: 0.80
 #######################################
 # Orkz, Bots
 #######################################
