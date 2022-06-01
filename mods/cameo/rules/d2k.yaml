@@ -1601,7 +1601,7 @@ d2k_flesh_vat:
 	Selectable:
 		Bounds: 72, 72
 	Valued:
-		Cost: 1500
+		Cost: 1000
 	Tooltip:
 		Name: Flesh Vat
   	Power:
@@ -1734,7 +1734,6 @@ d2k_tleilaxu_tech:
     ProvidesPrerequisite@buildingname:
     -WithMakeAnimation:
     -WithDeathAnimation:
-    
 refinery:
 	Inherits: ^D2KBuilding
     Inherits@D2KSprite: ^D2KPaletteRender    
@@ -1888,7 +1887,7 @@ d2k_silo:
 d2k_silo_tleilaxu:
     Inherits: refinery
 	Buildable:
-		Prerequisites: ~faction.tleilaxu
+		Prerequisites: ~faction.tleilaxu, anypower
 		Queue: Building.d2k, RABuilding.d2k
 		BuildPaletteOrder: 130
 		BuildDuration: 450
@@ -1915,7 +1914,7 @@ d2k_silo_tleilaxu:
         ValidStances: Ally
     -FreeActorWithDelivery@1:
     Power:
-        Amount: 250
+        Amount: -30
     Valued:
         Cost: 1500
     -RenderSprites:
@@ -1958,6 +1957,85 @@ d2k_silo_tleilaxu:
 		HpPerStep: 1000
 		StartRepairingNotification: Repairing
 		PlayerExperience: 15    
+d2k_tleilaxu_power:
+	Inherits: ^D2KBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@shadow: ^RA2BuildingShadow
+	Inherits@power: ^PowerPlant
+    Inherits@BotMicro: ^BotMicromanageable 
+	Selectable:
+		Bounds: 48,48
+		Class: d2k_tleilaxu_power
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Bio Reactor
+	Buildable:
+		Prerequisites: ~faction.tleilaxu
+		BuildPaletteOrder: 10
+		Queue: Building.d2k, RABuilding.d2k
+		Description: Generates power\nExplodes upon death when loaded by 4 or more workers
+	Building:
+		Footprint: xX xx __
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: BUILD1.WAV
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	ScalePowerWithHealth:
+	Selectable:
+		Class: yryapowr
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: building							##########
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 5
+		PipCount: 5
+		EjectOnDeath: false
+		LoadedCondition: PowerLoad
+    Power@0:
+        Amount: 100
+        RequiresCondition: PowerLoad == 0
+	Power@1:
+		Amount: 125
+		RequiresCondition: PowerLoad == 1
+	Power@2:
+		Amount: 150
+		RequiresCondition: PowerLoad == 2
+	Power@3:
+		Amount: 200
+		RequiresCondition: PowerLoad == 3
+	Power@4:
+		Amount: 300
+		RequiresCondition: PowerLoad == 4
+	Power@5:
+		Amount: 500
+		RequiresCondition: PowerLoad >= 5
+    PowerMultiplier@bot:
+        Modifier: 300
+        RequiresCondition: botmicro
+	Explodes@4:
+		Weapon: ReactorNukeWeak
+		RequiresCondition: !chronobeamed && PowerLoad == 4
+  	Explodes@5:
+		Weapon: ReactorNuke
+		RequiresCondition: !chronobeamed && PowerLoad == 5      
+    -WithMakeAnimation:
+    SpawnActorOnDeath@death1:
+        Actor: facedancer
+    SpawnActorOnDeath@death2:
+        Actor: facedancer   
+d2k_tleilaxu_power.bot:
+	Inherits: d2k_tleilaxu_power
+	RenderSprites:
+		Image: d2k_tleilaxu_power
+	-Buildable:
+	Cargo:
+		InitialUnits: facedancer,facedancer,facedancer,facedancer,facedancer
 
 d2k_munitions:
 	Inherits: ^D2KBuilding 
@@ -2270,6 +2348,22 @@ heavy_factory_merc:
     ProvidesPrerequisite@missiletank:
         Prerequisite: heavy.missile_tank    
     ProvidesPrerequisite@hvyfactoryupgr:  
+        Prerequisite: upgrade.heavy
+
+heavy_factory_tlaixu:
+    Inherits: heavy_factory
+    Tooltip:
+		Name: Tlaixu Heavy Factory
+	Health:
+		HP: 145000
+    RenderSprites: 
+        Image: heavy.ordos
+    Buildable:
+		Prerequisites: d2k_silo_tleilaxu, ~faction.tleilaxu, ~techlevel.low
+        Description: Produces heavy vehicles.\nComes with Heavy Factory Upgrade
+    ProvidesPrerequisite@hvyfactory:  
+        Prerequisite: heavy_factory 
+    ProvidesPrerequisite@hvyfactoryupgr:  
         Prerequisite: upgrade.heavy   
 outpost:
 	Inherits: ^D2KBuilding
@@ -2471,7 +2565,23 @@ starport_smuggler:
         Prerequisite: starport
     Power:
         Amount: -250 
-       
+starport_tlaixu:
+    Inherits: starport   
+    Tooltip:
+		Name: Starport
+    RenderSprites:
+		Image: starport.smuggler
+   	Health:
+		HP: 121000     
+    Buildable:
+		Prerequisites: d2k_tleilaxu_tech, ~techlevel.high, ~faction.tleilaxu
+      	Description: Dropzone for quick reinforcements.\nEnables drop-off of supervehicles
+        BuildDuration: 1500
+		BuildDurationModifier: 100
+        IconPalette: player
+   	ProvidesPrerequisite@itself:
+        Prerequisite: starport
+
 starport_corrino:
     Inherits: starport_smuggler   
     Tooltip:
@@ -4297,7 +4407,26 @@ facedancer:
     DetectCloaked:
 		Range: 4c0  
         RequiresCondition: upgrade.tleilaxueyes
-        
+    GrantConditionOnPrerequisite@ghola:
+        Prerequisites: upgrade.gholas
+        Condition: upgrade.gholas
+	Explodes@ghola:
+		Weapon: ghola_spawner
+		EmptyWeapon: ghola_spawner
+        RequiresCondition: upgrade.gholas
+facedancer_ghola:
+	Inherits: facedancer
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Ghola Face Dancer
+	-Buildable:
+	Health:
+		HP: 2500
+	RenderSprites:
+        Scale: 0.7
+		Image: facedancer
+	-Explodes@ghola:
 contaminator:
 	Inherits: ^D2KInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
@@ -4402,7 +4531,10 @@ facedancer_harv:
     WithSpriteBody:
         Sequence: invisible
     WithDockingAnimation:    
-    
+	Explodes@ghola:
+		Weapon: ghola_spawner
+		EmptyWeapon: ghola_spawner
+        RequiresCondition: upgrade.gholas
 grenadier:
 	Inherits: ^D2KInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -4892,7 +5024,7 @@ d2k_leech:
     Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@AntiVeh: ^PrioritizeVehicle
 	Buildable:
-		Queue: Infantry.d2k, RAInfantry.d2k, Infantry.X_Infantry
+		Queue: Armor.d2k, RAArmor.d2k, Infantry.X_Infantry, Starport.d2k, RAStarport.d2k
 		BuildPaletteOrder: 130
 		Prerequisites: ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.leech, ~techlevel.medium
 		Description: Stealth creature that can attack infantry and vehicles.\nCan detect cloaked units.\nRegenerates health extremely quickly\nUpon attack lays eggs which, upon death of vehicls, creates another Leech\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft\n  Special Abilities: Invisibility, Jump, Lay Eggs
@@ -5891,7 +6023,7 @@ d2k_basq:
     Inherits@EMP: ^FrontalEMP
     Inherits@bot: ^BotMicromanageable
 	Buildable:
-		Queue: Infantry.d2k, Infantry.d2k, Infantry.X_Infantry
+		Queue: Armor.d2k, RAArmor.d2k, Infantry.X_Infantry, Starport.d2k, RAStarport.d2k
 		BuildPaletteOrder: 80
 		BuildDuration: 650
 		BuildDurationModifier: 100
@@ -5901,7 +6033,7 @@ d2k_basq:
     Valued:
 		Cost: 750
     Power:
-        Amount: -40    
+        Amount: -20    
 	Tooltip: 
 		Name: Basq 
 	UpdatesPlayerStatistics:
@@ -5914,6 +6046,7 @@ d2k_basq:
 		TurnSpeed: 14
 		Speed: 115
         Locomotor: hover
+	Hovers:
 	RevealsShroud:
 		Range: 4c0
 	Armament:
@@ -5943,12 +6076,12 @@ d2k_basq:
     Cloak@TDcloak:
         Palette: racloak 
     AmmoPool:
-		Ammo: 20
+		Ammo: 50
 		AmmoCondition: ammo
         PipCount: 5
     ReloadAmmoPool: 
     	Delay: 40
-		Count: 5
+		Count: 10
 		ResetOnFire: true    
         RequiresCondition: tleilaxu_rearm
     ReloadAmmoPool@aireload:
@@ -6377,7 +6510,7 @@ d2k_tleilaxu_mcv:
     Inherits: d2k_mcv
     Buildable:
 		Prerequisites: d2k_tleilaxu_tech, upgrade.mcv, ~faction.tleilaxu, ~techlevel.medium
-		Queue: Infantry.d2k, RAInfantry.d2k
+		Queue: Armor.d2k, RAArmor.d2k, Starport.d2k, RAStarport.d2k
 		BuildPaletteOrder: 110
 		BuildDuration: 750
 		BuildDurationModifier: 100  
@@ -7874,7 +8007,7 @@ mg_quad_tleilaxu:
     Inherits@bot: ^BotMicromanageable
     Buildable:    
         Prerequisites: ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.mg_quad, ~techlevel.low
-        Queue: Infantry.d2k, Infantry.d2k, Infantry.X_Infantry
+        Queue: Armor.d2k, RAArmor.d2k, Infantry.X_Infantry, Starport.d2k, RAStarport.d2k
         Description: Speedy Quad with burst MG\nMust resupply at resource center\nCan carry up to 3 passengers\n  Strong vs Infantry\n  Weak vs Vehicles
         BuildPaletteOrder: 10
         BuildDuration: 175
@@ -8844,7 +8977,7 @@ rocket_raider:
 		Name: Stealth Rocket Raider     
     Buildable:
 		Prerequisites: ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.rocket_raider, ~techlevel.medium
-        Queue: Infantry.d2k, Infantry.d2k, Infantry.X_Infantry
+        Queue: Armor.d2k, RAArmor.d2k, Infantry.X_Infantry, Starport.d2k, RAStarport.d2k
 		BuildPaletteOrder: 10
 		BuildDuration: 275
 		BuildDurationModifier: 100
@@ -9741,7 +9874,7 @@ d2k_emperor_worm:
 		DecorationBounds: 52,38
 	SelectionDecorations:
 	Buildable:
-		Queue: Infantry.d2k, RAInfantry.d2k, Infantry.X_Infantry
+		Queue: Armor.d2k, RAArmor.d2k, Infantry.X_Infantry
 		BuildPaletteOrder: 130
 		Prerequisites: ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.emperorworm, ~techlevel.medium
 		Description: Giant Sandworm
@@ -10227,6 +10360,25 @@ upgrade.tleilaxueyes:
         IconPalette: windows256
 	Valued:
 		Cost: 1000
+	RenderSprites:
+        Palette: windows256
+	ProvidesPrerequisite@upgradename:   
+upgrade.gholas:    
+   	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Tleilaxu Gholas
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~d2k_tleilaxu_tech, upgrade.tleilaxueyes, ~faction.tleilaxu
+		Queue: Upgrade.d2k
+		BuildLimit: 1
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: Facedancers Respawn when are Killed
+	Valued:
+		Cost: 2500
 	RenderSprites:
         Palette: windows256
 	ProvidesPrerequisite@upgradename:   

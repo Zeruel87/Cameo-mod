@@ -328,6 +328,9 @@ Player:
     ProvidesPrerequisite@glscorpionprereq:
         Prerequisite: glscorpionprereq
         Factions: gla, glademo, glatoxin, sgla
+    ProvidesPrerequisite@normalscudstorm:
+        Prerequisite: normalscudstorm
+        Factions: gla, glademo, glacamo, glatoxin, sgla, sglatoxin, sglacamo
     ProvidesPrerequisite@glradarvanprereq:
         Prerequisite: glradarvanprereq
         Factions: gla, glademo, glatoxin, glacamo, sgla, sglademo, sglatoxin
@@ -349,6 +352,9 @@ Player:
     ProvidesPrerequisite@glstingerprereq:
         Prerequisite: glstingerprereq
         Factions: gla, glacamo, glademo, glatoxin, sgla, sglademo, sglacamo, sglatoxin
+    ProvidesPrerequisite@normalscudlauncher:
+        Prerequisite: normalscudlauncher
+        Factions: gla, glacamo, glademo, glatoxin, sgla
  	# US
 	ClassicProductionQueue@RABUILDINGUSA:
 		Type: RABuilding.USA
@@ -1526,7 +1532,7 @@ GENE6:
 	# 	StartFullyCharged: true
 	DetonateWeaponPower@GLAmbush3:
 		OrderName: GLAmbush
-		Prerequisites: uprebelambush3, !selectglatoxin
+		Prerequisites: uprebelambush3, !selectglatoxin, !sgla_demo, !sgla_toxin, !sgla_regular
 		Cursor: ability
 		Icon: glambush3
 		Description: Ambush
@@ -2800,8 +2806,8 @@ glstorm:
 		Prerequisite: anyhq
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: glpalace, ~techlevel.high, ~glaselected, !scudstorm
-		Queue: Building.GLA, RABuilding.GLA
+		Prerequisites: glpalace, ~techlevel.high, !scudstorm, ~normalscudstorm
+		Queue: Building.GLA, RABuilding.GLA, Building.Shockwave, RABuilding.Shockwave
 		Description: Provides Scud Storm support power.\nRequires power to operate.
 	Building:
 		Footprint: xxxx xxxx xxxx
@@ -3341,7 +3347,8 @@ glamob:
 		Image: glamob
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-        
+	-Armament@PRIMARY:							##########
+
 angrymob1:
 	Inherits: ^default.angry_mob
 	AttackFrontal:
@@ -3495,7 +3502,7 @@ upglatrap:
 	Valued:
 		Cost: 1000
 	RenderSprites:
-		Image: gltrap
+		Image: glboobytrapicon
 	ProvidesPrerequisite:
 		Prerequisite: upglatrap
 
@@ -4929,7 +4936,7 @@ GLSCUD:
 	Buildable:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 80
-		Prerequisites: upscudlauncher, glpalace, ~techlevel.medium, ~!selectglademo, ~!selectglatoxin
+		Prerequisites: upscudlauncher, glpalace, ~techlevel.medium, ~!selectglademo, ~!selectglatoxin, ~normalscudlauncher
 		Description: Long-range ballistic missile launcher.\n  Strong vs ground targets\n  Weak vs Aircraft
 	Valued:
 		Cost: 1200
@@ -5017,7 +5024,7 @@ GLSCUD:
 glscud.exp:
 	Inherits: GLSCUD
 	Buildable:
-		Prerequisites: upscudlauncher, glpalace, ~techlevel.medium, ~selectglademo, ~!selectglatoxin
+		Prerequisites: upscudlauncher, glpalace, ~techlevel.medium, ~selectglademo, ~!selectglatoxin, ~normalscudlauncher
 	MissileSpawnerMaster@1:
 		-RequiresCondition:
 	-MissileSpawnerMaster@2:
@@ -5033,7 +5040,7 @@ glscud.exp:
 glscud.tox:
 	Inherits: GLSCUD
 	Buildable:
-		Prerequisites: upscudlauncher, glpalace, ~techlevel.medium, ~!selectglademo, ~selectglatoxin
+		Prerequisites: upscudlauncher, glpalace, ~techlevel.medium, ~!selectglademo, ~selectglatoxin, ~normalscudlauncher
 	MissileSpawnerMaster@2:
 		-RequiresCondition:
 	-MissileSpawnerMaster@1:
@@ -5103,7 +5110,7 @@ glbombtruck:
 	Buildable:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 40
-		Prerequisites: glweap, ~techlevel.medium, ~!sgla_toxin
+		Prerequisites: glweap, ~techlevel.medium, ~!sgla_toxin, ~!sgla_demo
 		Description: Suicide vehicle.\nCan be upgraded with different explosives.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
 	Health:
 		HP: 8000
@@ -5187,8 +5194,18 @@ glbombtruck:
 		Prerequisites: selectglademo
 		Queue: Vehicle.GLA, RAVehicle.GLA
     RenderSprites:
-        Scale: 1.12
-
+        Scale: 0.90
+	WithFacingSpriteBody:
+		Sequence: idle
+		RequiresCondition: !selectglatoxin && !selectglademo
+	WithFacingSpriteBody@Skin2:
+		Sequence: idle1
+		RequiresCondition: selectglatoxin
+		Name: body2
+	WithFacingSpriteBody@Skin3:
+		Sequence: idle2
+		RequiresCondition: selectglademo
+		Name: body3
 pscglbtruck2:
 	Tooltip:
 		Name: Toxin Explosive
@@ -5612,7 +5629,7 @@ upscudlauncher:
 		BuildPaletteOrder: 200
 		Queue: Promotions.GLA
 		Description: Allows production of the Scud Launcher.
-		Prerequisites: !upscudlauncher, rank1
+		Prerequisites: !upscudlauncher, rank1, ~normalscudlauncher
 	RenderSprites:
 		Image: glscud
 	ProvidesPrerequisite:
