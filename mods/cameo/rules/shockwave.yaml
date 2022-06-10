@@ -71,35 +71,35 @@ World:
 		Name: GLA SHW
 		InternalName: sgla
         Game: Shockwave 
-        Selectable: false
+        Selectable: true
 		Side: GLA
 		Description: GLA\nFeatures:\n -Buildings and defenses do not require power to operate\n- Destroyed buildings can rebuild\nSupport powers: Scud Storm, General's Powers
     FactionCA@gla_shockwave_toxin:
 		Name: Thrax SHW
 		InternalName: sglatoxin
         Game: Shockwave 
-        Selectable: false
+        Selectable: true
 		Side: GLA
 		Description: GLA Toxin General\nDr. Thrax prefers to mix deadly toxins to defeat his enemies\nSupport powers: Scud Storm, General's Powers
     FactionCA@gla_shockwave_demo:
 		Name: Demo SHW
 		InternalName: sglademo
         Game: Shockwave 
-        Selectable: false
+        Selectable: true
 		Side: GLA
 		Description: GLA Demolition General\nGeneral Rodall "Demo" Juhziz prefers to wire up powerful explosives to defeat his enemies\nnSupport powers: Scud Storm, General's Powers
     FactionCA@gla_shockwave_camo:
 		Name: Kassad SHW
 		InternalName: sglacamo
         Game: Shockwave 
-        Selectable: false
+        Selectable: true
 		Side: GLA
 		Description: GLA Stealth General\nPrince Kassad prefers to use camouflage and covert ops to defeat his enemies\nSupport powers: Scud Storm, General's Powers         
     FactionCA@gla_shockwave_scrap:
 		Name: Deathstrike SHW
 		InternalName: sglascrap
         Game: Shockwave 
-        Selectable: false
+        Selectable: true
 		Side: GLA
 		Description: GLA Salvage General\nGeneral Mohmar "Deathstrike" demands the use of salvaged weapon systems left on battlefield to defeat his enemies\nSupport powers: Scud Storm, General's Powers    
     FactionCA@RandomSHWSUSA:
@@ -119,7 +119,7 @@ World:
     FactionCA@RandomSHWSGLA:
 		Name: Any GLA
 		InternalName: RandomSGLA
-        Selectable: false
+        Selectable: true
 		RandomFactionMembers: sgla, sglacamo, sglademo, sglascrap, sglatoxin
         Game: Shockwave
 		Side: Random
@@ -208,6 +208,9 @@ Player:
     ProvidesPrerequisite@anysgla:
 		Prerequisite: anysgla
         Factions: sgla, sglatoxin, sglademo, sglacamo, sglascrap    
+    ProvidesPrerequisite@scrapcratesshockwave:
+		Prerequisite: scrapvehicles
+        Factions: sgla, sglatoxin, sglademo, sglacamo, sglascrap    
     ProvidesPrerequisite@sgla:
 		Prerequisite: sgla_regular
         Factions: sgla    
@@ -223,6 +226,9 @@ Player:
     ProvidesPrerequisite@sgla_scrap:
         Prerequisite: sgla_scrap
         Factions: sglascrap          
+    ProvidesPrerequisite@sglaterrorist:
+		Prerequisite: sglaterroristprereq
+        Factions: sgla, sglacamo, sglademo
     ProvidesPrerequisite@shockwavenoradar:
         Prerequisite: noradar
         Factions: sgla,sglacamo,sglatoxin,sglascrap,sglademo,susaarmor
@@ -241,7 +247,21 @@ Player:
     ProvidesPrerequisite@schlisteningpostprereq:
         Prerequisite: schlisteningpostprereq
         Factions: schina, schinaatom
-        
+    ProvidesPrerequisite@sglbusprereq:
+        Prerequisite: sglbusprereq
+        Factions: sgla, sglatoxin, sglademo, sglacamo
+    ProvidesPrerequisite@sglbggyprereq:
+        Prerequisite: sglbggyprereq
+        Factions: sgla, sglatoxin, sglacamo
+    ProvidesPrerequisite@sgle1prereq:
+        Prerequisite: sgle1prereq
+        Factions: sglascrap, sgla
+    ProvidesPrerequisite@sglballoonprereq:
+        Prerequisite: sglballoonprereq
+        Factions: sgla
+    ProvidesPrerequisite@sgle3prereq:
+        Prerequisite: sgle3prereq
+        Factions: sgla_camo, sgla, sglademo
 	ClassicProductionQueue@RABUILDINGSHOCKWAVE:
 		Type: RABuilding.Shockwave
 		DisplayOrder: 0
@@ -268,6 +288,9 @@ Player:
 		CancelledAudio: Cancelled
 		SpeedUp: True
 		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+    ProvidesPrerequisite@sglblackmarketprereq:
+		Prerequisite: sglblackmarketprereq
+        Factions: sgla, sglatoxin, sglademo, sglacamo
     ClassicProductionQueue@RADARSHOCKWAVE:
 		Type: RadarAddon.Shockwave
 		DisplayOrder: 0
@@ -1503,10 +1526,238 @@ Player:
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		StartFullyCharged: true
+^ShockwaveGLASupportPowers:
+	ParatroopersPower@scrapdrop1:
+		PauseOnCondition: lowpower
+		Prerequisites: sglscrapboxdrop1, !sglscrapboxdrop2, !sglscrapboxdrop3
+		OrderName: SCScrapDrop1
+		Icon: sglscrapboxdropicon #todo
+		ChargeInterval: 5000
+		Description: Scrap Box Drop 1
+		LongDesc: Cargo planes drop Scrap Boxes\nanywhere on the map.
+		DropItems: sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+        IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		UnitType: gla.paradrop
+		SquadSize: 1
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		StartFullyCharged: true
+	ParatroopersPower@scrapdrop2:
+		PauseOnCondition: lowpower
+		Prerequisites: sglscrapboxdrop1, sglscrapboxdrop2, !sglscrapboxdrop3
+		OrderName: SCScrapDrop2
+		Icon: sglscrapboxdropicon #todo
+		ChargeInterval: 5000
+		Description: Scrap Box Drop 2
+		LongDesc: Cargo planes drop Scrap Boxes\nanywhere on the map.
+		DropItems: sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+        IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		UnitType: gla.paradrop
+		SquadSize: 2
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		StartFullyCharged: true
+	ParatroopersPower@scrapdrop3:
+		PauseOnCondition: lowpower
+		Prerequisites: sglscrapboxdrop1, sglscrapboxdrop2, sglscrapboxdrop3
+		OrderName: SCScrapDrop3
+		Icon: sglscrapboxdropicon #todo
+		ChargeInterval: 5000
+		Description: Scrap Box Drop 3
+		LongDesc: Cargo planes drop Scrap Boxes\nanywhere on the map.
+		DropItems: sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate, sglscrapcrate
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+        IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		UnitType: gla.paradrop
+		SquadSize: 3
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		StartFullyCharged: true
+    AirstrikePower@blackmarketbomb:
+		OrderName: GLABlackMarketBomb
+		Icon: chnuclear
+		ChargeInterval: 6000
+		Description: Black Market Bomb
+		LongDesc: Drops a nuclear weapon weapon on the target.
+		SelectTargetSpeechNotification: SelectTarget
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		UnitType: glanthraxbomber.nuke
+		QuantizedFacings: 8
+		DisplayBeacon: true
+		BeaconPoster: airstrike
+		SquadSize: 1
+		SquadOffset: 1792,1792,0
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 40
+		Prerequisites: upblackmarketbomb
+		StartFullyCharged: true
+	ParatroopersPower@sgltrapdrop:
+		PauseOnCondition: lowpower
+		Prerequisites: upblackmarketbomb
+		OrderName: SDemotrapDrop
+		Icon: sglscrapboxdropicon #todo
+		ChargeInterval: 5000
+		Description: Demo Trap Drop
+		LongDesc: Cargo planes drop Demo traps\nanywhere on the map.
+		DropItems: sgltrapdrop, sgltrapdrop, sgltrapdrop, sgltrapdrop
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+        IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		UnitType: gla.paradrop
+		SquadSize: 1
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		StartFullyCharged: true
+	DetonateWeaponPower@SToxinAmbush:
+		OrderName: SGLAmbushToxin
+		Prerequisites: uprebelambush3, sgla_toxin
+		Cursor: ability
+		Icon: glambush3
+		Description: Ambush
+		LongDesc: Spawns a large Rebel squad.
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		ChargeInterval: 8000
+		ActivationDelay: 50
+		Weapon: SGLAmbush3Toxin
+		CameraActor: camera
+		CameraRemoveDelay: 240
+		DisplayBeacon: True
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		BeaconPoster: rapinficon
+		StartFullyCharged: true
+	DetonateWeaponPower@SDemoAmbush:
+		OrderName: SDemoAmbush
+		Prerequisites: uprebelambush3, sgla_demo
+		Cursor: ability
+		Icon: glambush3
+		Description: Ambush
+		LongDesc: Spawns a large Fanatic squad.
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		ChargeInterval: 8000
+		ActivationDelay: 50
+		Weapon: SGLAmbush3Demo
+		CameraActor: camera
+		CameraRemoveDelay: 240
+		DisplayBeacon: True
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		BeaconPoster: rapinficon
+		StartFullyCharged: true
+	DetonateWeaponPower@SGLAmbush:
+		OrderName: SGLAmbush
+		Prerequisites: uprebelambush3, sgla_regular
+		Cursor: ability
+		Icon: glambush3
+		Description: Ambush
+		LongDesc: Spawns a large Fanatic squad.
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		ChargeInterval: 8000
+		ActivationDelay: 50
+		Weapon: SGLAmbush3
+		CameraActor: camera
+		CameraRemoveDelay: 240
+		DisplayBeacon: True
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		BeaconPoster: rapinficon
+		StartFullyCharged: true
+	DetonateWeaponPower@SGLAmbush2:
+		OrderName: SGLAmbush
+		Prerequisites: uprebelambush3, sgla_scrap
+		Cursor: ability
+		Icon: glambush3
+		Description: Ambush
+		LongDesc: Spawns a large Fanatic squad.
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		ChargeInterval: 8000
+		ActivationDelay: 50
+		Weapon: SGLAmbush3
+		CameraActor: camera
+		CameraRemoveDelay: 240
+		DisplayBeacon: True
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		BeaconPoster: rapinficon
+		StartFullyCharged: true
+	DetonateWeaponPower@SGLAmbushCamo:
+		OrderName: SGLAmbushCamo
+		Prerequisites: uprebelambush3, sgla_camo
+		Cursor: ability
+		Icon: glambush3
+		Description: Ambush
+		LongDesc: Spawns a large Fanatic squad.
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: True
+		ChargeInterval: 8000
+		ActivationDelay: 50
+		Weapon: SGLAmbush3Camo
+		CameraActor: camera
+		CameraRemoveDelay: 240
+		DisplayBeacon: True
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		BeaconPoster: rapinficon
+		StartFullyCharged: true
 #########################################
 #           SHARED ASSETS
 #########################################    
-  
 shockwave_mcv:
     Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
@@ -1569,18 +1820,24 @@ shockwave_mcv_usa:
   	Buildable:
 		BuildPaletteOrder: 200
 		Prerequisites: susastrategy, ~techlevel.medium, ~anysusa
-
+	Voiced:
+		VoiceSet: USAMCCVoice
+        
 shockwave_mcv_china:
     Inherits: shockwave_mcv
   	Buildable:
 		BuildPaletteOrder: 200
 		Prerequisites: chpropaganda, ~techlevel.medium, ~anyschina
+	Voiced:
+		VoiceSet: PRCMCCVoice 
 
 shockwave_mcv_gla:
     Inherits: shockwave_mcv
   	Buildable:
 		BuildPaletteOrder: 200
 		Prerequisites: glpalace, ~techlevel.medium, ~anysgla
+	Voiced:
+		VoiceSet: WorkerVoice
         
 shockwave_conyard:
     Inherits: ^BaseBuilding
@@ -1595,13 +1852,14 @@ shockwave_conyard:
     Inherits@glasupportpowers: ^GeneralsGLASupportPowers
     Inherits@chsupportpowers: ^GeneralsChinaSupportPowers
     Inherits@schinasupportpowers: ^ShockwaveChinaSupportPowers
+    Inherits@sglasupportpowers: ^ShockwaveGLASupportPowers
     Inherits@promotions: ^Promotions
 	Valued:
 		Cost: 3000
 	Tooltip:
 		Name: Command Center
     ProvidesPrerequisite@radar:
-        Factions: susa, susaair, susalaser, susasuper
+        Factions: susa, susaair, susalsr, susasuper
         Prerequisite: radarshockwave
     GrantConditionOnPrerequisite@radar:
         Prerequisites: radarshockwave
@@ -2198,7 +2456,6 @@ upsusarodfromgod1:
 		Queue: Promotions.USA
 		Description: Allows launching of tungsten rods from a space platform.\nThese Inflict massive damage to anything they hit.\n\nRank 1: 1x Tungsten Rod\nRank 2: 2x Tungsten Rods\nRank 3: 3x Tungsten Rods
 		Prerequisites: ~!upsusarodfromgod1, rank3, rank1, ~susa_super
-        IconPalette: ra2
 	RenderSprites:
 		Image: susarodsfromgods
 	ProvidesPrerequisite:
@@ -2338,7 +2595,7 @@ susamarine:
 	AttackFrontal:
 		Armaments: primary
 	Voiced:
-		VoiceSet: MarineVoice
+		VoiceSet: USARangerVoice
     -TakeCover
     WithShadow:
 		Offset: 0, 96, 0
@@ -2726,10 +2983,7 @@ susalittlebird:
 	Selectable:
 		DecorationBounds: 24,24
 	-GrantConditionOnPrerequisite@stealth:
-	Voiced:
-		VoiceSet: LittleBirdVoice
 	-Cloak:
-    DeathSounds:
 	-ProductionCostMultiplier@selectusaairforce:
     Armament@Passenger1:
 		Weapon: USARangerMGGarrison
@@ -2924,7 +3178,7 @@ susadecoydrone:
 		DecorationBounds: 28,28
 	Inherits@EXT: ^ExternalConditions
 	Voiced:
-		VoiceSet: DecoyDroneVoice
+		VoiceSet: USASentryDroneVoice
     Disguise:
         TargetTypes: VehicleDisguise
 	RenderSprites:
@@ -3042,7 +3296,7 @@ susabiohazardtech:
 	AttackFrontal:
 		Armaments: primary
 	Voiced:
-		VoiceSet: MarineVoice
+		VoiceSet: USARangerVoice
     -TakeCover
     WithShadow:
 		Offset: 0, 96, 0
@@ -3277,8 +3531,6 @@ susapopupturret:
         CloakedCondition: cloaked        
         PauseOnCondition: cloak-force-disabled || base-reveal
     -WithIdleOverlay@body-open
-    Voiced:
-        VoiceSet: PopUpTurretSelect
     
 susarobottank:
 	Inherits: usasentry
@@ -3328,7 +3580,7 @@ susarobottank:
 	-DetectCloaked:
 	-RenderDetectionCircle:
 	RenderSprites:
-		Scale: 0.75
+		Scale: 0.68
 	-AmmoPool:
 	-ReloadAmmoPool:
 	-ReloadDelayMultiplier@GattlingSpeed:
@@ -3483,6 +3735,7 @@ susamedicdrone:
  
 susaenforcerdrone:
 	Inherits: usasentry
+    Inherits@shadow: ^InfantryShadows
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -3509,14 +3762,14 @@ susaenforcerdrone:
         Name: primary
 		Recoil: 0
 		RecoilRecovery: 26
-		LocalOffset: 768,0,200
+		LocalOffset: 450,0,100
         RequiresCondition: !deployed
   	Armament@ball:
 		Weapon: SUSAEnforcerDroneBall
         Name: secondary
 		Recoil: 20
 		RecoilRecovery: 10
-		LocalOffset: 768,0,200
+		LocalOffset: 500,0,120
         RequiresCondition: deployed           
     Armament@unstableeffect:
         Weapon: SUSAEnforcerDroneUnstableEffect
@@ -3560,8 +3813,6 @@ susaenforcerdrone:
         Sequence: ball_ammo                                                                                 
         RequiresCondition: deployed
         RequiresSelection: true
-    Voiced:
-        VoiceSet: EnforcerVoice
 
 susaunstableeffects:
 	Inherits@1: ^ExistsInWorld
@@ -3690,7 +3941,7 @@ susalockdownmlrs:
 	AcceptsDeliveredExperience:
 		ValidTypes: USAPilot
 	Voiced:
-		VoiceSet: LockdownMLRSVoice
+		VoiceSet: BattlemasterTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones
     RenderSprites:
         Scale: 0.8
@@ -3724,6 +3975,7 @@ susashatterer:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackFrontalVoice
     Inherits@switchableupgrades: ^usa_switchable_upgrades
+    Inherits@shadow: ^InfantryShadows
 	Valued:
 		Cost: 1600
 	Tooltip:
@@ -3761,8 +4013,10 @@ susashatterer:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:
 		ValidTypes: USAPilot
-	Voiced:
-		VoiceSet: ShattererVoice
+    RenderSprites:  
+        Scale: 0.9
+    Voiced:
+        VoiceSet: BattlemasterTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones  
 
 upsusashatterer:
@@ -3961,7 +4215,7 @@ susaexosuit:
 		Weight: 2
 		PipType: blue
 	Voiced:
-		VoiceSet: ExoSuitVoice
+		VoiceSet: BattlemasterTankVoice
     Inherits@ProducesDrones: ^ProducesDrones    
 	RenderSprites:
 		Scale: 0.78       
@@ -4271,7 +4525,7 @@ susarailgunartillery:
 	AcceptsDeliveredExperience:
 		ValidTypes: USAPilot
 	Voiced:
-		VoiceSet: RailgunArtilleryVoice
+		VoiceSet: BattlemasterTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones
     RenderSprites:
         Scale: 0.7
@@ -4667,7 +4921,7 @@ susasheridan:
 		Range: 6c0
 	Turreted:
 		TurnSpeed: 8
-		Offset: -64,0,64
+		Offset: -64,0,128
 	Armament@Normal:
 		Weapon: SUSASheridan
 		Recoil: 128
@@ -4688,7 +4942,7 @@ susasheridan:
 		Modifier: 60
     RenderSprites:
         Image: susasheridan
-        Scale: 0.7
+        Scale: 0.6
     GrantConditionOnPrerequisite@susashilleighat:
         Condition: susashilleighat
         Prerequisites: susashilleighat
@@ -4697,7 +4951,7 @@ susahurricane:
 	Inherits: usattnk
 	UpdatesPlayerStatistics:
     Valued: 
-        Cost: 1750
+        Cost: 2000
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
@@ -4717,14 +4971,14 @@ susahurricane:
 		Speed: 90
 	RevealsShroud:
 		Range: 7c0
-    AttackTurreted
+    AttackTurreted:
     RenderSprites:
         Image: susahurricane
-        Scale: 0.6
+        Scale: 0.44
     Selectable:
         Bounds: 48,48
   	Turreted:
-		Offset: -250,0,50      
+		Offset: -250,0,110      
 	Armament@Normal:
 		Weapon: SUSAHurricane
     -ProductionCostMultiplier@selectusaairforce:
@@ -5490,7 +5744,7 @@ susaarmorranger:
         Weapon: SUSAArmorRangerMG
 	-Armament@SECONDARY:
     Voiced:
-        VoiceSet: ArmorRangerVoice
+        VoiceSet: USARangerVoice
         
 susasupplytruck:
 	Inherits: ^Vehicle
@@ -5529,6 +5783,7 @@ susasupplytruck:
 	Voiced:
 		VoiceSet: CHSupplyTruckVoice
     RenderSprites:
+        Scale: 0.8
     SelectionDecorations:
 	Selectable:
 		DecorationBounds: 36,36,0,0    
@@ -5536,6 +5791,7 @@ susasupplytruck:
 susawraith:
 	Inherits: susapala
     Inherits@focusingcrystal: ^upsusafocusingcrystal
+    Inherits@shadow: ^InfantryShadows
     Tooltip:
         Name: Wraith
 	Buildable:
@@ -5568,7 +5824,7 @@ susawraith:
 		Bounds: 40,40,0,8
         DecorationBounds: 40,40,0,8
     RenderSprites:
-        Scale: 0.8    
+        Scale: 0.68
     -Turreted@pointdefense:
 	-Armament@pointdefense:
 	-PointDefense:
@@ -5609,7 +5865,7 @@ susabradleyifv:
 	Repairable:
 		HpPerStep: 1999
     RenderSprites:
-        Scale: 0.9
+        Scale: 0.84
 	Armor:
 		Type: Medium
 	RevealsShroud:
@@ -5667,7 +5923,6 @@ susastarlifter:
 		BuildPaletteOrder: 10
 		Prerequisites: ~susa_armor, ~techlevel.medium, ~!botplayer
 		Description: Heavy Lift Transport.\nCan Transport multiple vehicles at once\n  Unarmed
-        IconPalette: ra2
 	Valued:
 		Cost: 1000			#1100
 	Tooltip:
@@ -5851,7 +6106,7 @@ susamammoth:
 	AcceptsDeliveredExperience:
 		ValidTypes: USAPilot
 	Voiced:
-		VoiceSet: MammothVoice
+		VoiceSet: BattlemasterTankVoice
     JamsMissiles:
         Range: 1c0
         Chance: 33
@@ -5863,6 +6118,8 @@ susamammoth:
         Condition: upsusasabremissiles
         Prerequisites: upsusasabremissiles
 	Inherits@ProducesDrones: ^ProducesDrones  
+    RenderSprites:  
+        Scale: 0.89
 
 susagladiator:
 	Inherits: ^Tank
@@ -5905,7 +6162,7 @@ susagladiator:
 	Armament:
         Name: primary
 		Weapon: SUSAGladiator
-		LocalOffset: 750,-250,0, 750,-125,0, 750,125,0, 750,250,0
+		LocalOffset: 750,-250,-90, 750,-125,-90, 750,125,-90, 750,250,-90
         MuzzleSequence: muzzle
  	Armament@2:
         Name: secondary
@@ -5934,6 +6191,7 @@ susagladiator:
 
 susatankdestroyer:
 	Inherits: susapala
+    Inherits@DRShadow: ^InfantryShadows
     Tooltip:
         Name: Tank Destroyer
 	Buildable:
@@ -5967,9 +6225,9 @@ susatankdestroyer:
 	Selectable:
 		DecorationBounds: 32,32
     RenderSprites:
-        Scale: 0.9
+        Scale: 0.75
     Voiced:
-        VoiceSet: TankDestroyerVoice
+        VoiceSet: BattlemasterTankVoice
 
 upsusatankdestroyer:
 	Inherits: ^upgrade.template
@@ -6197,7 +6455,7 @@ susastrykermedic:
 	Repairable:
 		HpPerStep: 1999
     RenderSprites:
-        Scale: 0.8
+        Scale: 0.74
 	Armor:
 		Type: Medium
 	RevealsShroud:
@@ -7059,6 +7317,356 @@ upsusaamdggrenadebarrage3:
 #########################################
 #           GLA GENERIC
 #########################################
+
+upsglksvk:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: KSVK Anti-Materiel Rifle
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: MarketUpgrades.GLA
+		Description: +10% Range\nAllows Jarmen Kell to snipe down Helicopters\nAllows Jarmen Kell to disable enemy structures
+		Prerequisites: ~!upsglksvk
+		IconPalette: ra2
+        BuildDuration: 1500
+        BuildDurationModifier: 100
+	Valued:
+		Cost: 1500
+	RenderSprites:
+        Image: upsglksvk
+	ProvidesPrerequisite:
+		Prerequisite: upsglksvk
+sglrebel:
+	Inherits: GLE1
+    Inherits@SHADOWS: ^Shadows
+    Inherits@injured: ^InfantryInjuries
+	Buildable:
+		Prerequisites: barracks, ~sgle1prereq, ~anysgla
+    RenderSprites: 
+        Image: sglrebel
+        Scale: 0.81
+        PlayerPalette: playerra2
+    WithInfantryBody:
+        IdleSequences: idle, idle2, idle3
+        StandSequences: stand
+        AttackSequences: shoot
+    WithMuzzleOverlay:
+    Armament@PRIMARY:	
+        Weapon: SGLRebelAK47
+        MuzzleSequence: muzzle
+        LocalOffset: 300,0,150
+    WithDeathAnimation:
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+    Selectable: 
+        DecorationBounds: 16,20,0,0
+    WithShadow:
+		Offset: 0, 96, 0
+		ZOffset: -512 
+        
+sglworker:
+    Inherits: glworker
+    Inherits@SHADOWS: ^Shadows
+	Inherits@toxinimmune: ^ToxinImmune
+	Tooltip:
+		RequiresCondition: !sgla_toxin
+	Tooltip@toxin:
+		Name: Toxin Worker
+		RequiresCondition: sgla_toxin
+	Buildable:
+		Prerequisites: barracks, ~anysgla
+	RenderSprites:
+		Image: sglworker
+        Scale: 0.82
+        PlayerPalette: playerra2
+    Harvester:
+        EmptyCondition: empty
+    WithInfantryBody:
+        StandSequences: stand-full
+        MoveSequence: run-full
+        RequiresCondition: !empty    
+    -WithSpriteBody:
+    QuantizeFacingsFromSequence:
+        Sequence: stand-full
+    WithFacingSpriteBody:
+        Sequence: stand
+        RequiresCondition: empty
+    WithIdleAnimation:
+        Sequences: idle
+        Interval: 125
+        RequiresCondition: empty && !moving
+    WithMoveAnimation:
+        MoveSequence: run
+        ValidMovementTypes: Horizontal, Turn    
+        RequiresCondition: empty
+    WithDeathAnimation:
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+    GrantConditionOnMovement@nomoving:
+        Condition: moving
+        ValidMovementTypes: Horizontal, Vertical, Turn
+    Selectable: 
+        DecorationBounds: 16,20,0,4
+    WithShadow:
+		Offset: 0, 96, 0
+		ZOffset: -512 
+	GrantConditionOnPrerequisite@sgla_toxin:
+		Prerequisites: sgla_toxin
+		Condition: sgla_toxin
+    Targetable@ToxinImmune:
+		RequiresCondition: sgla_toxin
+	
+sglrpgtrooper:
+	Inherits: GLE3
+    Inherits@SHADOWS: ^Shadows
+	Buildable:
+		Prerequisites: barracks, ~sgle3prereq
+    RenderSprites:
+        Image: sglrpgtrooper
+        Scale: 0.79
+        PlayerPalette: playerra2
+    WithInfantryBody:
+        IdleSequences: idle, idle2, idle3
+        StandSequences: stand
+        AttackSequences: shoot
+    WithDeathAnimation:
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+    Selectable: 
+        DecorationBounds: 16,20,0,-2
+    WithShadow:
+		Offset: 0, 96, 0
+		ZOffset: -512 	
+sglhijack:
+	Inherits: glhijack
+    Inherits@SHADOWS: ^Shadows
+	Buildable:
+		Prerequisites: glpalace, uphijack, ~sgle3prereq
+    RenderSprites:
+        Image: sglhijack
+        Scale: 0.84
+        PlayerPalette: playerra2
+    WithInfantryBody:
+        IdleSequences: idle
+    Selectable: 
+        DecorationBounds: 16,20,0,-2
+    WithDeathAnimation:
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+    WithShadow:
+		Offset: 0, 96, 0
+		ZOffset: -512 
+        
+sglkell:
+	Inherits: GLKELL
+    Inherits@injured: ^InfantryInjuries
+    Inherits@SHADOWS: ^Shadows
+    AttackFrontal:
+        Armaments: primary, secondary, tertiary, quadratiary
+	Buildable:
+		Prerequisites: barracks, glpalace, ~anysgla
+    GrantConditionOnPrerequisite@ksvk:
+        Prerequisites: upsglksvk
+        Condition: upsglksvk
+    RangeMultiplier@upsglksvk:
+        Modifier: 110
+        RequiresCondition: upsglksvk
+	Armament@PRIMARY:
+        MuzzleSequence: muzzle
+        LocalOffset: 450,0,225
+    Armament@SNIPEHELI:
+        Weapon: SGLKellSniperHelicopter
+        Name: quadratiary
+        MuzzleSequence: muzzle
+        LocalOffset: 450,0,225
+        RequiresCondition: upsglksvk
+    Armament@SNIPEBUILDING:
+        Weapon: SGLKellSniperDisableBuilding
+        Name: tertiary
+        MuzzleSequence: muzzle
+        LocalOffset: 450,0,225
+        RequiresCondition: upsglksvk       
+    ReloadArmamentsBar:
+        Armaments: primary, secondary, tertiary, quadratiary
+    RenderSprites:
+        Image: sgljarmen
+        Scale: 0.87
+        PlayerPalette: playerra2
+	Cloak:
+        Palette: ra2cloak
+    WithInfantryBody:
+        IdleSequences: idle, idle2, idle3
+    WithDeathAnimation:
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+    Selectable: 
+        DecorationBounds: 16,20,0,0
+    WithMuzzleOverlay:
+    WithShadow:
+		Offset: 0, 96, 0
+		ZOffset: -512 
+
+sglamob:
+	Inherits@1: glamob
+	Buildable:
+		Prerequisites: sglpalace, ~techlevel.medium, ~sgla_regular
+	MobSpawnerMaster:
+		Actors: sglaangrymob1, sglaangrymob1, sglaangrymob1, sglaangrymob1, sglaangrymob1, sglaangrymob1, sglaangrymob1, sglaangrymob2, sglaangrymob2, sglaangrymob2
+		ExitByBudding: false
+        
+sglaangrymob1:
+	Inherits: angrymob1
+    Inherits@SHADOWS: ^Shadows
+	AttackFrontal:
+    WithMuzzleOverlay:
+	GrantConditionOnPrerequisite@uparmthemob:
+		Condition: ak47upgrade
+		Prerequisites: uparmthemob
+	Armament:
+		Weapon: GLAngryMobPistol
+		PauseOnCondition: ak47upgrade
+        MuzzleSequence: muzzle
+        LocalOffset: 300,0,150
+	Armament@AK47:
+		Weapon: GLAngryMobAk47
+		PauseOnCondition: !ak47upgrade
+        MuzzleSequence: muzzle
+        LocalOffset: 300,0,150
+    RenderSprites:
+        Scale: 0.84
+        Image: sglaangrymob1
+        PlayerPalette: playerra2
+    WithInfantryBody:
+        IdleSequences: idle, idle2
+        StandSequences: stand
+        AttackSequences: shoot
+        MoveSequence: run
+        DefaultAttackSequence: shoot
+        RequiresCondition: !ak47upgrade
+    WithInfantryBody@ak:
+        IdleSequences: idle-ak, idle2-ak, idle3-ak
+        StandSequences: stand-ak
+        AttackSequences: shoot-ak
+        MoveSequence: run-ak
+        DefaultAttackSequence: shoot-ak
+        RequiresCondition: ak47upgrade
+    WithDeathAnimation:
+        DeathSequence: die
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+        RequiresCondition: !ak47upgrade
+    WithDeathAnimation@ak:
+        DeathSequence: die-ak
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+        RequiresCondition: ak47upgrade
+    Selectable: 
+        DecorationBounds: 12,16,0,-1
+    WithShadow:
+		Offset: 0, 96, 0
+		ZOffset: -512 
+        
+sglaangrymob2:
+	Inherits: angrymob2
+    Inherits@SHADOWS: ^Shadows
+	AttackFrontal:
+	GrantConditionOnPrerequisite@uparmthemob:
+		Condition: ak47upgrade
+		Prerequisites: uparmthemob
+	-Armament:
+	-Armament@AK47:
+	Armament@molotov:
+		Weapon: GLAngryMobMolotov
+		LocalOffset: 0,0,100
+		FireDelay: 15
+        RequiresCondition: !ak47upgrade
+	Armament@upmolotov:
+		Weapon: SGLAngryMobMolotov
+		LocalOffset: 0,0,100
+		FireDelay: 15
+        RequiresCondition: ak47upgrade 
+    RenderSprites:
+        Scale: 0.8
+        Image: sglaangrymob2
+        PlayerPalette: playerra2
+    WithInfantryBody:
+        IdleSequences: idle, idle2, idle3
+    Selectable: 
+        DecorationBounds: 12,16,0,-1
+    WithDeathAnimation:
+        DeathSequence: die
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+    WithShadow:
+		Offset: 0, 96, 0
+		ZOffset: -512
+sglaangrymob1_rocket:
+	Inherits: sglaangrymob1
+	Armament@AK47:
+		Weapon: GLTrooperRPGMissileG
+		PauseOnCondition: !ak47upgrade
+        MuzzleSequence: muzzle
+        LocalOffset: 300,0,150
+sglamob_demo:
+	Inherits@1: glamob
+	Buildable:
+		Prerequisites: sglpalace, ~techlevel.medium, ~sgla_demo
+	MobSpawnerMaster:
+		Actors: sglaangrymob1_rocket, sglaangrymob1_rocket, sglaangrymob1_rocket, sglaangrymob1_rocket, sglaangrymob1_rocket, sglaangrymob1_rocket, sglaangrymob1_rocket, sglaangrymob2, sglaangrymob2, sglaangrymob2
+		ExitByBudding: false
+sglterrorist:
+    Inherits: GLTERROR
+	Inherits@SHADOWS: ^Shadows
+	Buildable:
+		Prerequisites: sglsupply, ~sglaterroristprereq
+	Explodes:
+		Weapon: SGLTerrorist
+		EmptyWeapon: SGLTerrorist
+		RequiresCondition: !disabled
+	-Explodes@2
+	-Explodes@antraxbeta1
+    RenderSprites:
+        Scale: 0.81
+        Image: sglterrorist
+        PlayerPalette: playerra2
+    Armament@PRIMARY:
+		Name: primary
+	KillsSelf:
+		Delay: 16
+    WithDeathAnimation:
+        DeathSequence: die
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+    WithInfantryBody:
+        IdleSequences: idle, idle2
+        StandSequences: stand
+        DefaultAttackSequence: shoot
+        MoveSequence: run
+        RequiresCondition: !attacking && !triggered
+    WithInfantryBody@attacking:
+        IdleSequences: idle, idle2
+        StandSequences: stand
+        DefaultAttackSequence: shoot
+        MoveSequence: run-suicide
+        RequiresCondition: attacking && !triggered
+	WithSpriteBody:
+		Sequence: shoot
+		RequiresCondition: triggered && attacking
+    SpeedMultiplier@suicide:
+        Modifier: 130
+        RequiresCondition: attacking
+    ToggleConditionOnOrder: 
+        OrderName: AssaultMove
+        Condition: attacking
+    ToggleConditionOnOrder@aa-move: 
+        OrderName: AttackMove
+        Condition: attacking
+    ToggleConditionOnOrder@fa-move: 
+        OrderName: ForceAttack
+        Condition: attacking
+    WithShadow:
+		Offset: 0, 96, 0
+		ZOffset: -512
 sglcommand.hole:
 	Inherits: GLAHole3x3
 	TransformOnCondition@buildingrebirth:
@@ -7103,6 +7711,8 @@ sglsupply:
         Prerequisite: sglsupply
 	SpawnActorOnDeath@hole:
 		Actor: sglsupply.hole
+	FreeActor@1:
+		Actor: sglworker
         
 sglsupply.hole:
 	Inherits: GLAHole2x2
@@ -7154,15 +7764,6 @@ sglpalace.hole:
 	TransformOnCondition@buildingrebirth:
 		RequiresCondition: buildingrebirth
 		IntoActor: sglpalace
-
-sglstorm:
-    Inherits: glstorm
-    Buildable:
-        Queue: Building.Shockwave, RABuilding.Shockwave
-		Prerequisites: sglpalace, ~techlevel.high, ~anysgla, !scudstorm
-    RenderSprites:
-        Image: glstorm
-        
 sglstorm.hole:
 	Inherits: GLAHole4x3
 	TransformOnCondition@buildingrebirth:
@@ -7176,7 +7777,7 @@ sglblackmarket:
     Inherits: glblackmarket
     Buildable:
         Queue: Building.Shockwave, RABuilding.Shockwave
-        Prerequisites: sglpalace, ~anysgla
+        Prerequisites: sglpalace, ~sglblackmarketprereq
     ProvidesPrerequisite@generals:
         Prerequisite: glblackmarket
     ProvidesPrerequisite@shockwave:
@@ -7286,7 +7887,7 @@ sglairpad:
         Prerequisite: 
     SpawnActorOnDeath@hole:
 		Actor: sglairpad.hole    
-        
+	Reservable:
 sglairpad.hole:
 	Inherits: GLAHole4x3
 	TransformOnCondition@buildingrebirth:
@@ -7294,10 +7895,203 @@ sglairpad.hole:
 		IntoActor: sglairpad
 
 
+sglmoviledemo:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^FrontalEMP
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@snipe: ^DriverKillImmune
+	Buildable:
+		Queue: Infantry.GLA, RAInfantry.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 40
+		Prerequisites: ~techlevel.low, ~sgla_regular
+		Description: Suicide bomber vehicle.\nCloaked when stationary.
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Movile Demo Trap
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 15000
+	Armor:
+		Type: Light
+	Mobile:
+		TurnSpeed: 16
+		Speed: 180
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: 0,0,128
+	Armament@Normal:
+		Weapon: SuicideBomberTargeting
+		LocalOffset: 128,0,43
+	AttackFrontal:
+		FacingTolerance: 128
+	RenderSprites:
+		Scale: 0.83
+	Voiced:
+		VoiceSet: USASentryDroneVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Explodes:
+		Weapon: GLTerroristExplosive
+		EmptyWeapon: GLTerroristExplosive
+	Cloak:
+		InitialDelay: 30
+		CloakDelay: 30
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
+	GrantConditionOnAttack:
+		Condition: triggered
+	KillsSelf:
+		RequiresCondition: triggered && !disabled
+
 #########################################
 #           GLA REGULAR
 #########################################
 
+sgljunkfortification:
+    Inherits: chbunker
+	Tooltip:
+		Name: Junk Fortification
+	Valued:
+		Cost: 600
+    Buildable:
+        Queue: Defence.Shockwave, RADefence.Shockwave
+		Prerequisites: sglbarracks, ~sgla_regular, ~techlevel.low
+        IconPalette: ra2
+    RenderSprites:
+        Image: sgljunkfortification
+    WithIdleOverlay:
+    -WithMakeAnimation:
+    -WithDeathAnimation:
+        
+sgljunkfortification.e1:
+	Inherits: sgljunkfortification
+	Buildable:
+		Prerequisites: schbarracks, ~techlevel.low, ~botplayer, ~sgla_regular
+	Valued:
+		Cost: 900
+	Cargo:
+		InitialUnits: gle1, gle1, gle1, gle1, gle1, gle1
+
+sgljunkfortification.e2:
+	Inherits: sgljunkfortification.e1
+	Valued:
+		Cost: 1000
+	Cargo:
+		InitialUnits: gle1, gle1, gle3, gle3, gle3, gle3
+
+sgljunkfortification.e3:
+	Inherits: sgljunkfortification.e1
+	Valued:
+		Cost: 1100
+	Cargo:
+		InitialUnits: gle3, gle3, gle3, gle3, gle3, gle3
+        
+sglchameleon:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^FrontalEMP
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@demo: ^DemolitionUpgrade
+	Valued:
+		Cost: 640
+	Tooltip:
+		Name: Chameleon
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.medium, ~sgla_regular
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Light Tank Destroyer\n  Strong vs Vehicles\n  Weak vs Infantry
+        IconPalette: ra2
+    Mobile:
+		Locomotor: tracked
+		Speed: 134
+    Cloak:
+		InitialDelay: 60
+		CloakDelay: 60
+		UncloakOn: Attack, Damage, Move
+		IsPlayerPalette: true
+        CloakedCondition: cloaked        
+        PauseOnCondition: cloak-force-disabled || base-reveal
+	Health:
+		HP: 21000
+	Repairable:
+		HpPerStep: 864
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 225,0,185
+	Armament@Normal:
+		Weapon: SGLChameleonCannon
+		Name: secondary
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,40
+		MuzzleSequence: muzzle
+	Armament@MG:
+		Weapon: SGLChameleonMG
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 100,0,40
+		MuzzleSequence: muzzle2
+		RequiresCondition: scrap_create_bonus >= 1
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+        Scale: 1.06
+	Voiced:
+		VoiceSet: MarauderTankVoice
+	GrantConditionOnPrerequisite@uptoxinshells:
+		Condition: shellsupgrade
+		Prerequisites: uptoxinshells
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus >= 2
+		Modifier: 75
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+        
+upsglreconvehicletraining:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Recon Vehicle Training
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.GLA
+		Description: Trains technicals and Rocket Buggies as Veterans.
+		Prerequisites: !upsglreconvehicletraining, rank1, ~sgla_regular
+	RenderSprites:
+		Image: gltechnicaltraining
+	ProvidesPrerequisite:
+		Prerequisite: upsglreconvehicletraining
+        
 sglaquadbike:
 	Inherits: ^Vehicle
 	Inherits@harv: ^Harvester
@@ -7337,6 +8131,7 @@ sglaquadbike:
 	Voiced:
 		VoiceSet: WorkerVoice
     RenderSprites:
+        Scale: 0.82
     SelectionDecorations:
 	Selectable:
 		DecorationBounds: 28,28
@@ -7360,10 +8155,13 @@ sglbggy:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: sglweap, sglpalace, ~techlevel.medium, ~anysgla
+		Prerequisites: sglweap, sglpalace, ~techlevel.medium, ~sglbggyprereq
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		Description: Fast, long-range artillery.\n  Strong vs Vehicles, Buildings\n  Weak vs Aircraft
-	Mobile:
+	ProducibleWithLevel@upsglreconvehicletraining:
+		Prerequisites: upsglreconvehicletraining
+		InitialLevels: 3
+    Mobile:
 		Speed: 155
 	Health:
 		HP: 12000
@@ -7447,7 +8245,7 @@ sglballoon:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~techlevel.medium
+		Prerequisites: ~techlevel.medium, ~sglballoonprereq
 		Queue: Aircraft.GLA, RAAircraft.GLA, Aircraft.X_Aircrafts
 		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
 	Aircraft:
@@ -7511,6 +8309,8 @@ sglballoon:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 30,24
+    Voiced:
+        VoiceSet: MarauderTankVoice
 
 sglballoon.husk:
 	Inherits: ^HelicopterHusk
@@ -7532,11 +8332,845 @@ sglballoon.husk:
 	RenderSprites:
 		Image: sglballoon
         
-#########################################
-#           GLA STEALTH
-#########################################
+sglscrapboxdrop1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Scrap Box drop
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Promotions.GLA
+		Description: Allows calling a Paradrop.\nDrops 4 scrap crates
+		Prerequisites: ~!sglscrapboxdrop1, rank3, rank1, ~anysgla
+	RenderSprites:
+		Image: sglscrapboxdrop
+	ProvidesPrerequisite:
+		Prerequisite: sglscrapboxdrop1
+    ProvidesPrerequisite@generals:
+        Prerequisite: sglscrapboxdrop1
 
-sglcobra:
+sglscrapboxdrop2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Scrap Box drop 2
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Promotions.GLA
+		Description: Allows calling a Paradrop.\nDrops 8 scrap crates
+		Prerequisites: ~!sglscrapboxdrop2, rank3, rank1, ~anysgla, ~sglscrapboxdrop1
+	RenderSprites:
+		Image: sglscrapboxdrop
+	ProvidesPrerequisite:
+		Prerequisite: sglscrapboxdrop2
+
+sglscrapboxdrop3:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Scrap Box drop 3
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Promotions.GLA
+		Description: Allows calling a Paradrop.\nDrops 12 scrap crates
+		Prerequisites: ~!sglscrapboxdrop3, rank3, rank1, ~anysgla, ~sglscrapboxdrop2
+	RenderSprites:
+		Image: sglscrapboxdrop
+	ProvidesPrerequisite:
+		Prerequisite: sglscrapboxdrop3
+    ProvidesPrerequisite@generals:
+        Prerequisite: sglscrapboxdrop3
+#########################################
+#           GLA SALVAGE
+#########################################  
+
+sglkatyusha:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^FrontalEMP
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APBulletUpgrade
+	Inherits@cargo: ^CargoVehicle
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 25
+		Prerequisites: sglweap, ~techlevel.low, ~sgla_scrap, upsglkatyusha
+		Description: Rocket Artillery Armed with multiple long range rockets.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Katyusha
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 10000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 75
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Armament@Salvage1:
+		Name: primary
+		Weapon: SGLKatyushaBarrage
+		LocalOffset: 624,-128,208, 624,128,208
+		RequiresCondition: scrap_create_bonus < 2
+		PauseOnCondition: !ammo
+	Armament@Salvage2:
+		Name: primary
+		Weapon: SGLKatyushaBarrage_Max
+		LocalOffset: 624,-128,208, 624,128,208
+		RequiresCondition: scrap_create_bonus >= 2
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Armaments: primary
+		Ammo: 7
+		PipCount: 7
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 300
+		Count: 7
+	AttackFrontal:
+	WithFacingSpriteBody:
+		RequiresCondition: scrap_create_bonus < 2
+	WithFacingSpriteBody@max:
+		Sequence: idle-upgrade
+		RequiresCondition: scrap_create_bonus >= 2
+	DamageMultiplier@scrap_bonus:
+		Modifier: 40
+		RequiresCondition: scrap_create_bonus >= 3
+	RenderSprites:
+	Voiced:
+		VoiceSet: TechnicalVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 3
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+ 	RenderSprites:
+		Scale: 0.7
+        
+upsglkatyusha:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Katyusha
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.GLA
+		Description: Unlocks Katyusha
+		Prerequisites: !upsglkatyusha, rank1, ~sgla_scrap
+	RenderSprites:
+		Image: sglkatyusha
+	ProvidesPrerequisite:
+		Prerequisite: upsglkatyusha
+		
+sgldesertfly:
+	Inherits: usaraptor
+	Buildable:
+		Queue: Aircraft.GLA, RAAircraft.GLA, Aircraft.X_Aircrafts
+		BuildPaletteOrder: 50
+		Prerequisites: ~techlevel.high, ~sgla_scrap
+        Description: Heavy Attack Aircraft.\n  Strong vs Infantry, Vehicles, Buildings
+        IconPalette: ra2
+    Valued:
+        Cost: 1000
+    Tooltip:
+        Name: Desert Fly
+	Health:
+		HP: 24000
+  	Armament@AG:
+		Name: primary
+		Weapon: GLQuadCannonGround
+		LocalOffset: 0,-640,0, 0,640,0
+		LocalYaw: -40, 24
+		-PauseOnCondition
+  	Armament@bombs:
+		Name: secondary
+		Weapon: SCHDesertFlyBomb
+		PauseOnCondition: !ammo
+	-Armament@AA:
+	Aircraft:
+		CruiseAltitude: 2840
+		InitialFacing: 192
+		TurnSpeed: 5
+		Speed: 221
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+	AmmoPool:
+		ArmamentNames: secondary
+		Ammo: 3
+		AmmoCondition: ammo
+	Selectable:
+		Bounds: 36,28,0,2
+		DecorationBounds: 40,29,0,1
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	SpawnActorOnDeath:
+		Actor: sgldesertfly.husk
+	-ProductionCostMultiplier@selectusaairforce:
+    RenderSprites:        
+    Voiced:
+        VoiceSet: MarauderTankVoice
+		
+sgldesertfly.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Desert Fly
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	Aircraft:
+		TurnSpeed: 4
+		Speed: 223
+	SmokeTrailWhenDamaged:
+		Offset: -853,0,171
+		Interval: 2
+		MinDamage: Undamaged
+	RevealsShroud:
+		Range: 13c0
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 11c0
+		Type: GroundPosition
+	RenderSprites:
+		Image: sgldesertfly    
+		
+sglhornetnest:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EMP: ^TurretEMP
+	Inherits@gensound: ^GeneralsDamageBuilding
+    Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Hornet Nest
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: sglbarracks, ~techlevel.low, ~sgla_scrap
+		Queue: Defence.Shockwave, RADefence.Shockwave
+		BuildDurationModifier: 40
+		Description: Anti-ground base defense.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry, Aircraft
+        IconPalette: ra2
+    Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+    -WithMakeAnimation
+    -WithDeathAnimation
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 8
+		Offset: 600,0,50
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament@NORMAL:
+		Weapon: SGLHornetNest
+		LocalOffset: 250,0,100
+		LocalYaw: -100, 100
+		Recoil: 0
+	AttackTurreted:
+		PauseOnCondition: disabled
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !disabled
+	-RenderDetectionCircle:
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: CHGatlingCannonVoice
+	RenderSprites:
+		Image: sglhornetnest
+	SpawnActorOnDeath@hole:
+		Actor: sglhornetnest.hole
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+sglhornetnest.hole:
+	Inherits: GLAHole2x2Defense
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sglhornetnest
+sglsa2samsite:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EMP: ^TurretEMP
+	Inherits@gensound: ^GeneralsDamageBuilding
+    Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: SA2 SAM Site
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: sglbarracks, ~techlevel.low, ~sgla_scrap
+		Queue: Defence.Shockwave, RADefence.Shockwave
+		BuildDurationModifier: 40
+		Description: Anti-Air base defense.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry, Aircraft
+        IconPalette: ra2
+    Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+    -WithMakeAnimation
+    -WithDeathAnimation
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 8
+		Offset: 400,0,50
+	WithSpriteBody:
+	WithSpriteTurret:
+		RequiresCondition: ammo
+	WithSpriteTurret@empty:
+		Sequence: turret-empty
+		RequiresCondition: !ammo
+	Armament@NORMAL:
+		Weapon: SGLSA2SAMSite
+		LocalOffset: 250,0,100
+		LocalYaw: -100, 100
+		Recoil: 0
+		PauseOnCondition: !ammo
+	AttackTurreted:
+		PauseOnCondition: disabled
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !disabled
+	-RenderDetectionCircle:
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: CHGatlingCannonVoice
+	RenderSprites:
+		Image: sglsa2samsite
+	SpawnActorOnDeath@hole:
+		Actor: sglsa2samsite.hole
+	WithIdleOverlay:
+		Offset: 250,0,0
+    AmmoPool:
+		Ammo: 1
+		AmmoCondition: ammo
+        Armaments: primary
+        PipCount: 1
+    ReloadAmmoPool: 
+    	Delay: 120
+		Count: 1
+		ResetOnFire: false 
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+sglsa2samsite.hole:
+	Inherits: GLAHole2x2Defense
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sglsa2samsite
+sglcombatbuggy:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APRocketUpgrade
+	Inherits@demo: ^DemolitionUpgrade
+	Inherits@IFV: ^IFVConditions
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Combat Buggy
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.medium, ~sgla_scrap
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Fast attack vehicle.\nTakes on the weapon of passenger\nCan travel through cliffs
+        IconPalette: ra2
+	Mobile:
+		Speed: 146
+        Locomotor: glabike
+    Cargo:
+		Types: Infantry, Hacker, Fremen
+        MaxWeight: 1
+	Health:
+		HP: 15000
+	Repairable:
+		HpPerStep: 578
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 5c256
+	AttackTurreted:
+		TargetFrozenActors: True
+		ForceFireIgnoresActors: True
+	ProducibleWithLevel@upsglreconvehicletraining:
+		Prerequisites: upsglreconvehicletraining
+		InitialLevels: 3
+	Turreted:
+		Offset: -400,0,250
+	WithFacingSpriteBody:
+		RequiresCondition: scrap_create_bonus < 2   
+	WithFacingSpriteBody@armored:
+		Sequence: idle-max
+		RequiresCondition: scrap_create_bonus >= 2
+	WithSpriteTurret@rebel:
+		RequiresCondition: ifv-mg || ifv-litlaser || ifv-medlaser || ifv-greelaser || ifv-fire || ifv-chem || ifv-thrax
+		Sequence: turret-rebel
+	WithSpriteTurret@grenadier:
+		Sequence: turret-grenadier
+		RequiresCondition: ifv-cannon
+	WithSpriteTurret@jarmen:
+		Sequence: turret-jarmen
+		RequiresCondition: ifv-hero
+	WithSpriteTurret@tow:
+		Sequence: turret-tow 
+		RequiresCondition: ifv-miss && !attackaa
+	WithSpriteTurret@tow-aa:
+		Sequence: turret-tow-up 
+		RequiresCondition: ifv-miss && attackaa
+	WithSpriteTurret@flash:
+		Sequence: turret-flash
+		RequiresCondition: crew-flash
+	WithMuzzleOverlay:
+	AutoTarget:
+		InitialStanceAI: Defend
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Voiced:
+		VoiceSet: RocketBuggyVoice
+	RenderSprites:
+		Scale: 0.85
+	GrantConditionOnPrerequisite@selectglatoxin:
+		Condition: selectglatoxin
+		Prerequisites: selectglatoxin
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+        
+sgllatrun:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@emp: ^TurretEMP
+	Valued:
+		Cost: 1100
+	Tooltip:
+		Name: Latrun
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: sglweap, ~techlevel.high, ~sgla_scrap
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Agile Artillery armed with Long Range Cannon\n  Strong vs Ground\nWeak vs Air
+        IconPalette: ra2
+	Mobile:
+		Speed: 100
+        Locomotor: tracked
+        TurnSpeed: 8
+	Health:
+		HP: 15000
+	Repairable:
+		HpPerStep: 4000
+    RenderSprites:
+        Scale: 0.9
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 6c0
+    GrantConditionOnAttack@aa:
+        Condition: attacking
+	Armament:
+        Name: primary
+		Weapon: SGLLatrun
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade && scrap_create_bonus <= 1
+	Armament@Toxin:
+        Name: primary
+		Weapon: SGLLatrunToxin
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && scrap_create_bonus <= 1
+	Armament@Twins:
+        Name: primary
+		Weapon: SGLLatrunToxin
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade && scrap_create_bonus >= 2
+	Armament@TwinsToxin:
+        Name: primary
+		Weapon: SGLLatrunTwinToxin
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && scrap_create_bonus >= 2
+    WithSpriteTurret:
+        Sequence: turret
+        RequiresCondition: !attacking
+    WithSpriteTurret@2:
+        Sequence: turret-up
+        RequiresCondition: attacking
+    Turreted:
+        TurnSpeed: 6
+        Offset: 12,0,300
+	AttackTurreted:
+	SelectionDecorations:
+    WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 34,34
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:
+		ValidTypes: USAPilot
+	Voiced:
+		VoiceSet: RocketBuggyVoice
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 75
+	SpeedMultiplier@Salvaged2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 120
+	RangeMultiplier@Salvaged3:
+		RequiresCondition: scrap_create_bonus == 3
+		Modifier: 140
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 3
+	GrantConditionOnPrerequisite@uptoxinshells:
+		Condition: shellsupgrade
+		Prerequisites: uptoxinshells
+sglgadfly:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Gadfly
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: sglweap, ~techlevel.medium, ~sgla_scrap
+        Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+        IconPalette: ra2
+        Description: Anti-Air Artillery Vehicle.\nCannot move while firing
+	Mobile:
+		Speed: 75
+        PauseOnCondition: attacking
+	Health:
+		HP: 15000
+	Repairable:
+		HpPerStep: 634
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 6c0
+    WithSpriteTurret@full:
+        Sequence: turret-4
+        RequiresCondition: !attacking && ammo == 4
+    WithSpriteTurret@full-up:
+        Sequence: turret-4-up
+        RequiresCondition: attacking && ammo == 4
+    WithSpriteTurret@3:
+        Sequence: turret-3
+        RequiresCondition: !attacking && ammo == 3
+    WithSpriteTurret@3-up:
+        Sequence: turret-3-up
+        RequiresCondition: attacking && ammo == 3
+    WithSpriteTurret@2:
+        Sequence: turret-2
+        RequiresCondition: !attacking && ammo == 2
+    WithSpriteTurret@2-up:
+        Sequence: turret-2-up
+        RequiresCondition: attacking && ammo == 2
+    WithSpriteTurret@1:
+        Sequence: turret-1
+        RequiresCondition: !attacking && ammo == 1
+    WithSpriteTurret@1-up:
+        Sequence: turret-1-up
+        RequiresCondition: attacking && ammo == 1
+    WithSpriteTurret@empty:
+        Sequence: turret-0
+        RequiresCondition: !attacking && ammo == 0
+    WithSpriteTurret@empty-up:
+        Sequence: turret-0-up
+        RequiresCondition: attacking && ammo == 0
+	Turreted:
+		TurnSpeed: 6
+		Offset: 0,0,275
+    GrantConditionOnAttack:
+        Condition: attacking
+        RevokeDelay: 150
+	Armament@Normal:
+		Weapon: SGLGadFlyMissile
+		Recoil: 0
+		LocalOffset: 800,0,300
+        PauseOnCondition: !ammo
+    AmmoPool:
+		Ammo: 4
+		AmmoCondition: ammo
+        Armaments: primary
+        PipCount: 4
+    ReloadAmmoPool: 
+    	Delay: 375
+		Count: 1
+		ResetOnFire: false 
+	Voiced:
+		VoiceSet: GLSCUDLauncherVoice
+    RenderSprites:
+        Scale: 0.91
+	DamageMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 80
+	InaccuracyMultiplier@Salvaged2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 100
+	RangeMultiplier@Salvaged3:
+		RequiresCondition: scrap_create_bonus == 3
+		Modifier: 150
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 3
+		
+sglquadcannontank:
+	Inherits: sglsniperquadcannon
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.low, ~sgla_scrap
+	Valued:
+		Cost: 850
+	Tooltip:
+		Name: Quad Cannon Tank
+	Turreted:
+		TurnSpeed: 9
+		Offset: -175,0,375
+    RangeMultiplier:
+        Modifer: 85
+	Health:
+		HP: 52500
+	Mobile:
+		Speed: 89
+	RenderSprites:
+        Scale: 1
+	Armament@2:
+		LocalOffset: 550,128,200, 550,-128,200, 550,-128,43, 550,128,43
+	Armament@2AA:
+		LocalOffset: 550,128,200, 550,-128,200, 550,-128,43, 550,128,43
+    
+sglkrait:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APRocketUpgrade
+	Inherits@demo: ^DemolitionUpgrade
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Krait
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.medium, ~sgla_scrap
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: APC armed with toxin gun and phosphorus rockets.\nCan carry 2 passengers.\n  Strong vs Infantry\n  Weak vs Vehicles
+        IconPalette: ra2
+	Mobile:
+		Speed: 125
+	Health:
+		HP: 28500
+	Repairable:
+		HpPerStep: 2401
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 3
+        PipCount: 3
+		EjectOnDeath: false #desync
+	Turreted:
+		TurnSpeed: 7
+		Offset: 125,0,250
+	Armament@Normal:
+		Weapon: SGLKraitToxinGun
+		Recoil: 40
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+		Sequence: turret
+	WithSpriteTurret@Missile:
+		Sequence: turret2
+	WithFacingSpriteBody:
+		Sequence: idle
+	ReloadDelayMultiplier@collect_crate:
+		Modifier: 70
+		RequiresCondition: scrap_create_bonus >= 2
+	Armament@phosphorus:
+		Weapon: SGLKraitPhosphorusRocket
+		LocalOffset: -720,0,22
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: ScorpionTankVoice
+	GrantConditionOnPrerequisite@uptoxinshells:
+		Condition: shellsupgrade
+		Prerequisites: uptoxinshells
+	GrantConditionOnPrerequisite@upantraxbeta:
+		Condition: antraxbetaupgrade
+		Prerequisites: upantraxbeta
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus >= 1
+		Modifier: 75
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+		
+sglmobilesupplytruck:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@junk: ^JunkRepair
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Mobile Supply Stash
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.medium, ~sgla_scrap
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Mobile Drop off Point.
+        IconPalette: ra2
+	Mobile:
+		Speed: 108
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 1246
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: WorkerVoice
+	SpeedMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus >= 1
+		Modifier: 125
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Transforms:
+		IntoActor: sglmobilesupplytruck_deployed
+		Offset: -1,-1
+		Facing: 96
+		TransformSounds: uplace.wav
+		NoTransformNotification: BuildingCannotPlaceAudio  
+    RenderSprites:
+        Image: sglmobilesupplytruck
+        
+sglmobilesupplytruck_deployed:
+    Inherits: sglsupply
+    Inherits@shape: ^1x1Shape
+    Building:
+		Footprint: x
+		Dimensions: 1,1
+    Tooltip:
+		Name: Mobile Supply Stash
+    -Buildable
+	Transforms:
+		IntoActor: sglmobilesupplytruck_empty
+    RenderSprites:
+        Image: sglmobilesupplytruck
+    Cloak:
+		InitialDelay: 60
+		CloakDelay: 60
+		PauseOnCondition: cloak-force-disabled || base-reveal
+		IsPlayerPalette: true
+	-SpawnActorOnDeath@hole
+	-WithIdleOverlay@SMOKE
+    -WithMakeAnimation
+    -WithDeathAnimation
+	FreeActor@2:
+		Actor: sglworker
+		SpawnOffset: 1,1
+		Facing: 64
+		AllowRespawn: True
+	FreeActor@3:
+		Actor: sglworker
+		SpawnOffset: 1,1
+		Facing: 64
+		AllowRespawn: True
+    Voiced: 
+        VoiceSet: WorkerVoice
+    Selectable:
+        DecorationBounds: 32,32
+        
+sglmobilesupplytruck_empty:
+    Inherits: sglmobilesupplytruck
+    -Buildable
+	Transforms:
+		IntoActor: sglmobilesupplytruck_deployed_empty
+        
+sglmobilesupplytruck_deployed_empty:
+    Inherits: sglmobilesupplytruck_deployed
+    -FreeActor@1
+    -FreeActor@2
+    -FreeActor@3
+	Transforms:
+		IntoActor: sglmobilesupplytruck_empty
+        
+sglscarab:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@CLOAK: ^AcceptsCloakCrate
@@ -7551,93 +9185,206 @@ sglcobra:
 	Valued:
 		Cost: 800
 	Tooltip:
-		Name: Cobra Tank
+		Name: Scarab
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: sglweap, ~techlevel.medium, ~sgla_camo
+		Prerequisites: sglweap, ~techlevel.medium, ~sgla_scrap
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
-		Description: Fast, light tank.\nCan be upgraded with missiles.\n  Strong vs Vehicles\n  Weak vs Infantry
+		Description: Medium Tank.\n  Strong vs Vehicles\n  Weak vs Infantry
 	Mobile:
-		Speed: 140
+		Speed: 78
 	Health:
-		HP: 27000
+		HP: 44000
 	Repairable:
-		HpPerStep: 2273
+		HpPerStep: 2756
 	Armor:
 		Type: Heavy
 	RevealsShroud:
 		Range: 6c0
 	Turreted:
 		TurnSpeed: 7
-		Offset: 12,0,280
+		Offset: 60,0,200
 	Armament@Normal:
 		Weapon: GLScorpionShell
 		Recoil: 85
 		RecoilRecovery: 17
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
-		RequiresCondition: !shellsupgrade
+		RequiresCondition: !shellsupgrade && scrap_create_bonus <= 1
 	Armament@Toxin:
 		Weapon: GLScorpionShellToxin
 		Recoil: 85
 		RecoilRecovery: 17
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
-		RequiresCondition: shellsupgrade && !antraxbetaupgrade
-	Armament@ToxinBeta:
-		Weapon: GLScorpionShellToxinBeta
+		RequiresCondition: shellsupgrade && scrap_create_bonus <= 1
+	Armament@Twins:
+		Weapon: SGLScarabTwins
 		Recoil: 85
 		RecoilRecovery: 17
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
-		RequiresCondition: shellsupgrade && antraxbetaupgrade
-	AttackTurreted:
-	WithMuzzleOverlay:
-	WithSpriteTurret:
-	WithSpriteTurret@Missile:
-		Sequence: turret2
-		RequiresCondition: rocketupgrade
+		RequiresCondition: !shellsupgrade && scrap_create_bonus >= 2
+	Armament@TwinsToxin:
+		Weapon: SGLScarabToxinTwins
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && scrap_create_bonus >= 2
 	Armament@Missile:
 		Weapon: GlScorpionMissile
 		LocalOffset: 720,0,90
-		RequiresCondition: rocketupgrade && scrap_create_bonus <= 1
-	Armament@Missile2:
-		Weapon: GlScorpionMissileTwin
-		LocalOffset: 720,0,90
-		RequiresCondition: rocketupgrade && scrap_create_bonus >= 2
+		RequiresCondition: rocketupgrade
+	Armament@Smokers:
+		Weapon: SGLScarabSmokers
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,100,90, 720,-100,90, 720,-200,90, 720,-200,90
+		MuzzleSequence: muzzle
+		Name: secondary
+	ReloadArmamentsBar:
+		Armaments: secondary
+	GrantConditionOnPrerequisite@upscorpionrocket:
+		Condition: rocketupgrade
+		Prerequisites: upscorpionrocket
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+		Sequence: turret
+		RequiresCondition: scrap_create_bonus <= 1
+	WithSpriteTurret@Scrap1:
+		Sequence: turret2
+		RequiresCondition: scrap_create_bonus >= 2
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	RenderSprites:
-		Scale: 0.88
+		Scale: 0.9
 	Voiced:
 		VoiceSet: ScorpionTankVoice
-	GrantConditionOnPrerequisite@upscorpionrocket:
-		Condition: rocketupgrade
-		Prerequisites: upscorpionrocket
-	GrantConditionOnPrerequisite@uptoxinshells:
-		Condition: shellsupgrade
-		Prerequisites: uptoxinshells
-	GrantConditionOnPrerequisite@upantraxbeta:
-		Condition: antraxbetaupgrade
-		Prerequisites: upantraxbeta
-	GrantConditionOnPrerequisite@uparmorpiercingrocket:
-		Condition: rocketupgrade2
-		Prerequisites: uparmorpiercingrocket, upscorpionrocket
-	FirepowerMultiplier@uparmorpiercingrocket:
-		RequiresCondition: rocketupgrade2
-		Modifier: 105
 	ReloadDelayMultiplier@Salvaged1:
 		RequiresCondition: scrap_create_bonus >= 1
 		Modifier: 75
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-        
-#########################################
-#           GLA SALVAGE
-#########################################  
+    AmmoPool:
+        Armaments: secondary
+		Ammo: 4
+        PipCount: 0
+    ReloadAmmoPool:
+        Delay: 300
+        Count: 4
+        Sound: t28reload.wav
+sglradartank:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@junk: ^JunkRepair
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.low, ~sgla_scrap
+		Description: Detects cloaked units and provides radar\nDeflect missiles.\nJams enemy radars when close
+        IconPalette: ra2
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Radar Tank
+    JamsMissiles:
+        Range: 3c0
+        Chance: 66
+		DeflectionStances: Enemy, Neutral
+        RequiresCondition: !disabled && scrap_create_bonus <= 2
+    JamsMissiles@Salvaged3:
+        Range: 5c0
+        Chance: 100
+		DeflectionStances: Enemy, Neutral
+        RequiresCondition: !disabled && scrap_create_bonus == 3
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 46000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 83
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	RenderSprites:
+		Scale: 0.93
+	Voiced:
+		VoiceSet: CHRadarVanVoice
+	Inherits@EXT: ^ExternalConditions
+	WithIdleOverlay@SPINNER:
+		Sequence: spinner
+		Offset: -256,0,320
+	DamageMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 80
+	SpeedMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 120
+	ProximityExternalCondition@JAMMER:
+		Range: 5c0
+		ValidStances: Enemy, Neutral
+		Condition: jammed
+		RequiresCondition: !disabled && scrap_create_bonus == 0
+	WithRangeCircle@JAMMER:
+		Type: jammer
+		Range: 5c0
+		Color: 0000FF80
+		RequiresCondition: !disabled && scrap_create_bonus == 0
+	ProximityExternalCondition@JAMMER2:
+		Range: 8c0
+		ValidStances: Enemy, Neutral
+		Condition: jammed
+		RequiresCondition: !disabled && scrap_create_bonus >= 2
+	WithRangeCircle@JAMMER2:
+		Type: jammer
+		Range: 8c0
+		Color: 0000FF80
+		RequiresCondition: !disabled && scrap_create_bonus >= 2
+	DetectCloaked:
+		Range: 12c0
+		RequiresCondition: !disabled
+	RenderDetectionCircle:
+	ProvidesRadar:
+		RequiresCondition: !jammed && !disabled
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	SpawnActorPower@scan:
+		PauseOnCondition: disabled
+		RequiresCondition: radarvanscan
+		OrderName: SovietSpyPlane
+		Icon: radarvan
+		ChargeInterval: 2250
+		Description: Radar Van Scan
+		LongDesc: Reveals an area of the map\nand cloaked enemy units.
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		EndChargeSpeechNotification: SpyPlaneReady
+		Actor: camera.radarvan
+		LifeTime: 300
+		DeploySound: vradscan.wav
+		LaunchSound: vradscan.wav
+		IncomingSound: vradscan.wav
+		SupportPowerPaletteOrder: 10
+	GrantConditionOnPrerequisite@scan:
+		Condition: radarvanscan
+		Prerequisites: upradarvanscan
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 3
+		
 sglbadger:
 	Inherits: ^Vehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -7655,6 +9402,7 @@ sglbadger:
 		BuildPaletteOrder: 25
 		Prerequisites: sglweap, ~techlevel.low, ~sgla_scrap
 		Description: Fast scout & anti-infantry vehicle.\nCan carry infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+        IconPalette: ra2
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -7722,7 +9470,7 @@ sglbadger:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
  	RenderSprites:
-		Scale: 0.80
+		Scale: 0.71
 glsmaura:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -7735,14 +9483,14 @@ glsmaura:
 	Inherits@junk: ^JunkRepair
 	Inherits@demo: ^DemolitionUpgrade
 	Valued:
-		Cost: 800
+		Cost: 1000
 	Tooltip:
 		Name: Scrap Marauder Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: sglweap, upmarauder, ~techlevel.medium, ~sgla_scrap
+		Prerequisites: sglweap, ~techlevel.medium, ~sgla_scrap
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		Description: Medium tank.\n  Strong vs Vehicles\n  Weak vs Infantry
 	Mobile:
@@ -7863,6 +9611,7 @@ upsglbasilisk:
 		Queue: Promotions.GLA
 		Description: Allows production of the Basilisk
 		Prerequisites: !upsglbasilisk, ~techlevel.high, ~sgla_scrap, rank1
+		IconPalette: ra2
 	RenderSprites:
 		Image: sglbasilisk
 	ProvidesPrerequisite:
@@ -7889,7 +9638,8 @@ sglbasilisk:
 		BuildPaletteOrder: 30
 		Prerequisites: sglweap, upsglbasilisk, ~techlevel.medium, ~sgla_scrap
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
-		Description: Heavy tank.\n  Strong vs Vehicles\n  Weak vs Infantry
+		Description: Heavy tank destroyer.\n  Strong vs Vehicles\n  Weak vs Infantry
+        IconPalette: ra2
 	Mobile:
 		Locomotor: vehiclecrusher
 		Speed: 35
@@ -7920,6 +9670,14 @@ sglbasilisk:
 		LocalOffset: 720,0,90
 		MuzzleSequence: muzzle
 		RequiresCondition: shellsupgrade
+    AmmoPool:
+        Armaments: secondary
+		Ammo: 1
+        PipCount: 0
+    ReloadAmmoPool:
+        Delay: 180
+        Count: 1
+        Sound: t28reload.wav
 	ReloadArmamentsBar:
 		Armaments: secondary
 	Armament@MG:
@@ -7935,6 +9693,9 @@ sglbasilisk:
 		ValidTypes: vehicle								##########
 	RenderSprites:
 		Scale: 0.85
+    Explodes:
+        Weapon: GLBasiliskExplodes
+        EmptyWeapon: GLBasiliskExplodes
 	Voiced:
 		VoiceSet: MarauderTankVoice
 	GrantConditionOnPrerequisite@uptoxinshells:
@@ -7959,6 +9720,7 @@ sglhip:
 		Prerequisites: ~techlevel.medium, ~sgla_scrap
 		Queue: Aircraft.GLA, RAAircraft.GLA, Aircraft.X_Aircrafts
 		Description: Helicopter gunship upgradeable with addons.\n  Strong vs Infantry\n  Weak vs Aircraft
+        IconPalette: ra2
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -8135,10 +9897,436 @@ sglhip.husk:
 		Type: GroundPosition
 	RenderSprites:
 		Image: sglhip
+sglrpgtrooper_salvage:
+	Inherits: sglrpgtrooper
+    Inherits@SHADOWS: ^Shadows
+	Buildable:
+		Prerequisites: barracks, ~sgla_scrap
+	Armament@PRIMARY:							##########
+		Weapon: GLTrooperBurstRocketx2
+        RequiresCondition: !deployed
+	Armament@GARRISONED:						##########
+		Weapon: GLTrooperBurstRocketx2G
+        RequiresCondition: !deployed
+	Armament@PRIMARYToxin:							##########
+		Weapon: GLTrooperBurstRocketx4
+        RequiresCondition: deployed
+	Armament@GARRISONEDToxin:						##########
+		Weapon: GLTrooperBurstRocketx4G
+        RequiresCondition: deployed
+    GrantConditionOnDeploy:
+        DeployedCondition: deployed
+		UndeployOnMove: false
+		UndeployOnPickup: false        
+        RequiresCondition: !botmicro
+    WithDecoration@single:
+        Image: schberzerkermlrs
+        Sequence: icon_ss
+        RequiresCondition: !deployed
+        RequiresSelection: true
+    WithDecoration@multi:
+        Image: schberzerkermlrs
+        Sequence: icon_ms
+        RequiresCondition: deployed
+        RequiresSelection: true
+sglscrapyard:
+    Inherits: glblackmarket
+    Buildable:
+        Queue: Building.Shockwave, RABuilding.Shockwave
+        Prerequisites: sglpalace, ~sgla_scrap
+    ProvidesPrerequisite@generals:
+        Prerequisite: glblackmarket
+    ProvidesPrerequisite@shockwave:
+        Prerequisite: sglblackmarket
+    ProvidesPrerequisite@sglscrapyard:
+        Prerequisite: sglscrapyard
+	SpawnActorOnDeath@hole:
+		Actor: sglscrapyard.hole
+    RenderSprites:
+        Image: sglscrapyard 
+	RallyPoint:
+		Path: 1,4
+	Exit@1:
+		SpawnOffset: -1024,1024,0
+		Facing: 160
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 1024,1024,0
+		Facing: 224
+		ExitCell: 2,2
+	Exit@3:
+		SpawnOffset: -1024,-1024,0
+		Facing: 96
+		ExitCell: 0,0
+	Exit@4:
+		SpawnOffset: 1024,-1024,0
+		Facing: 32
+		ExitCell: 2,0
+	Tooltip:
+		Name: Scrap Yard
+sglscrapyard.hole:
+	Inherits: GLAHole2x2
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sglscrapyard
+sglscrapcar:
+	Inherits: glscrapcar
+	Buildable:
+		Queue: MarketUpgrades.GLA
+		BuildPaletteOrder: 40
+		Prerequisites: ~techlevel.low, ~sgla_scrap
+		Description: Suicide bomber vehicle.\nCloaked when stationary.
+	Valued:
+		Cost: 300
+    RenderSprites:
+        Image: glscrapcar 
+
+sglgrenadierterror:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Grenadier Terrorist
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: barracks, ~sgla_scrap
+		Queue: Infantry.GLA, RAInfantry.GLA
+		Description: Suicide bomber infantry.
+	Mobile:
+		Speed: 95
+	Health:
+		HP: 12000
+	AutoTarget:
+		ScanRadius: 4
+	Inherits@EXT: ^ExternalConditions					##########
+	Explodes:
+		Weapon: GLTerroristExplosive
+		EmptyWeapon: GLTerroristExplosive
+		RequiresCondition: !disabled
+	AttackFrontal:
+		FacingTolerance: 128
+	Armament@PRIMARY:							##########
+		Weapon: Grenade
+	KillsSelf:
+		RequiresCondition: triggered && !disabled
+	Voiced:
+		VoiceSet: GLATerroristVoice
+	DeliversCash:
+		Payload: 60
+	Cloneable:
+		Types: NormalInfantry
+	-TakeCover:
+    RenderSprites:
+        Scale: 0.81
+        Image: sglterrorist
+        PlayerPalette: playerra2
+    WithDeathAnimation:
+        DeathSequence: die
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+    WithInfantryBody:
+        IdleSequences: idle, idle2
+        StandSequences: stand
+        DefaultAttackSequence: shoot
+        MoveSequence: run
+        RequiresCondition: !attacking && !triggered
+    WithInfantryBody@attacking:
+        IdleSequences: idle, idle2
+        StandSequences: stand
+        DefaultAttackSequence: shoot
+        MoveSequence: run-suicide
+        RequiresCondition: attacking && !triggered
+sglscrapcrate:
+	Inherits: ^Crate
+	Tooltip:
+		Name: Scrap Crate
+	Buildable:
+		Queue: MarketUpgrades.GLA
+		BuildPaletteOrder: 60
+		Prerequisites: ~techlevel.low, ~sgla_scrap
+		Description: You can Buy upgrades for your GLA Vehicles.
+	Valued:
+		Cost: 200
+    RenderSprites:
+        Image: sglscrapbox 
+	Parachutable:							##########
+		FallRate: 20
+		KilledOnImpassableTerrain: true
+		GroundCorpseSequence:
+		GroundCorpsePalette:
+		WaterImpactSound: splash9.aud
+		WaterCorpseSequence: small_splash
+		ParachutingCondition: parachute
+	WithParachute:							##########
+		ShadowImage: parach-shadow
+		ShadowSequence: idle
+		Image: parach
+		Sequence: idle
+		OpeningSequence: open
+		Offset: 0,0,427
+		RequiresCondition: parachute
+	Passenger:
+		Weight: 1
+		CargoType: Scrapcrate
+sglsilo:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	Inherits@sw: ^PrimarySuperweapon
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Nuclear Silo
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 135
+		Prerequisites: sglpalace, ~techlevel.high, ~sgla_scrap, !sglnuke
+		Queue: Building.Shockwave, RABuilding.Shockwave
+		Description: Provides Nuclear Strike support power.\nRequires power to operate.
+	Building:
+		Footprint: xxx xxx
+		Dimensions: 3,2
+	SelectionDecorations:
+	Health:
+		HP: 210000
+	RevealsShroud:
+		Range: 6c0
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	NukePower@unlimited:
+		AllowMultiple: True
+		Prerequisites: ~techlevel.superweapons
+		PauseOnCondition: lowpower
+		Icon: chnuclear
+		Cursor: nuke
+		ChargeInterval: 12000
+		Description: Nuclear Strike
+		LongDesc: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		MissileWeapon: sglatomic
+		MissileDelay: 11
+		SpawnOffset: 3c0,0,-1c512
+		DisplayBeacon: True
+		BeaconPoster: raatomicon
+		DisplayTimerStances: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		CameraRange: 10c0
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		SupportPowerPaletteOrder: 30
+	WithBuildingBib:
+	WithNukeLaunchAnimation:
+		RequiresCondition: !build-incomplete
+	WithNukeLaunchOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: smoke
+	SupportPowerChargeBar:
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	Voiced:
+		VoiceSet: CHMissileSiloVoice
+	Explodes:
+		Weapon: GLBombTruckToxExplosive
+		EmptyWeapon: GLBombTruckToxExplosive
+		Type: CenterPosition
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
+	WithIdleOverlay@SMOKE2:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim3
+		Palette: placelinesegment
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: sglnuke
+	SpawnActorOnDeath@hole:
+		Actor: sglsilo.hole
+sglsilo.hole:
+	Inherits: GLAHole4x3
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth && !notransform
+		IntoActor: sglsilo
+	GrantConditionOnPrerequisite@notransform:
+		Condition: notransform
+		Prerequisites: scudstorm, global-swlimit
+
 #########################################
 #           GLA DEMO
 #########################################     
-
+sgldemorebel:
+	Inherits: sglrebel
+	Buildable:
+		Prerequisites: barracks, ~sgla_demo
+    Armament@PRIMARY:	
+        Weapon: SGLRebelAK47AP
+        MuzzleSequence: muzzle
+        LocalOffset: 300,0,150
+sglroach:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^FrontalEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 40
+		Prerequisites: sglpalace, ~techlevel.medium, ~sgla_demo
+		Description: Fire Support Vehicle with Long Range Missiles\Amphibious.\n  Strong vs ground and air
+        IconPalette: ra2
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Roach
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 24000
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 64
+        Locomotor: amphibius
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Armament:
+		Weapon: SGLRoachMissiles
+		LocalOffset: 750,0,200
+	AutoTarget:
+		ScanRadius: 10
+	AttackFrontal:
+		TargetFrozenActors: True
+		ForceFireIgnoresActors: True
+    GrantConditionOnAttack@deploy:
+        Condition: attacking
+        RevokeDelay: 60
+	WithFacingSpriteBody:
+        RequiresCondition: !attacking
+    WithFacingSpriteBody@2:
+        Sequence: idle2
+        RequiresCondition: attacking
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.90
+	Voiced:
+		VoiceSet: GLSCUDLauncherVoice
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	RangeMultiplier@Scrap1:
+		Modifier: 120
+		RequiresCondition: scrap_create_bonus == 1
+	RangeMultiplier@Scrap2:
+		Modifier: 140
+		RequiresCondition: scrap_create_bonus >= 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+        
+sglmantis:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APRocketUpgrade
+	Inherits@demo: ^DemolitionUpgrade
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Mantis
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.medium, ~sgla_demo
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Fast, light tank.\nCan be upgraded with missiles.\n  Strong vs Vehicles\n  Weak vs Infantry
+        IconPalette: ra2
+	Mobile:
+		Speed: 105
+	Health:
+		HP: 30800
+	Repairable:
+		HpPerStep: 2756
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 60,0,200
+	Armament@Normal:
+		Weapon: SCHWarmasterCannon
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	WithSpriteTurret@Missile:
+		Sequence: turret2
+		RequiresCondition: rocketupgrade
+	Armament@Missile:
+		Weapon: GlScorpionMissile
+		LocalOffset: 720,0,90
+		RequiresCondition: rocketupgrade && scrap_create_bonus <= 1
+	Armament@Missile2:
+		Weapon: GlScorpionMissileTwin
+		LocalOffset: 720,0,90
+		RequiresCondition: rocketupgrade && scrap_create_bonus >= 2
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: ScorpionTankVoice
+	GrantConditionOnPrerequisite@upscorpionrocket:
+		Condition: rocketupgrade
+		Prerequisites: upscorpionrocket
+	GrantConditionOnPrerequisite@uptoxinshells:
+		Condition: shellsupgrade
+		Prerequisites: uptoxinshells
+	GrantConditionOnPrerequisite@upantraxbeta:
+		Condition: antraxbetaupgrade
+		Prerequisites: upantraxbeta
+	GrantConditionOnPrerequisite@uparmorpiercingrocket:
+		Condition: rocketupgrade2
+		Prerequisites: uparmorpiercingrocket, upscorpionrocket
+	FirepowerMultiplier@uparmorpiercingrocket:
+		RequiresCondition: rocketupgrade2
+		Modifier: 105
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus >= 1
+		Modifier: 75
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+        
 sglsparka:
     Inherits: ^Vehicle
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -8153,7 +10341,7 @@ sglsparka:
 	Buildable:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 30
-		Prerequisites: glweap, ~techlevel.low
+		Prerequisites: sglweap, ~techlevel.low, ~sgla_demo
 		Description: Anti-air and anti-infantry vehicle.\n  Strong vs Aircraft, Infantry, Vehicles\n  Weak vs Tanks
         IconPalette: ra2
 	Valued:
@@ -8195,7 +10383,7 @@ sglsparka:
 		Sequence: turret2
 		RequiresCondition: !fireag
 	RenderSprites:
-        Scale: 0.75
+        Scale: 0.66
 	Voiced:
 		VoiceSet: QuadCannonVoice
 	Inherits@EXT: ^ExternalConditions					##########
@@ -8225,8 +10413,9 @@ sgltopol:
 	Buildable:
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		BuildPaletteOrder: 80
-		Prerequisites: upscudlauncher, sglpalace, ~techlevel.medium, ~sgla_demo
+		Prerequisites: upsgltopol, sglpalace, ~techlevel.medium, ~sgla_demo
 		Description: Long-range ballistic missile launcher.\n  Strong vs ground targets\n  Weak vs Aircraft
+        IconPalette: ra2
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -8271,7 +10460,7 @@ sgltopol:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	RenderSprites:
-		Scale: 0.92
+		Scale: 0.7
 	Voiced:
 		VoiceSet: GLSCUDLauncherVoice
 	ExternalCondition@SCRAP_CREATE_BONUS:
@@ -8308,6 +10497,21 @@ sgltopol.missile:
 		Weapon: SGLATOPOL
 		EmptyWeapon: SGLATOPOL
         
+upsgltopol:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: TOPOL Launcher
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.GLA
+		Description: Allows production of the TOPOL.
+		Prerequisites: !upsgltopol, rank1, ~sgla_demo
+        IconPalette: ra2
+	RenderSprites:
+		Image: sgltopol
+	ProvidesPrerequisite:
+		Prerequisite: upsgltopol
+
 sglbus:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -8326,7 +10530,7 @@ sglbus:
 		OverrideActor: glbbus
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: sglweap, sglpalace, ~anysgla, ~!sgla_scrap
+		Prerequisites: sglweap, sglpalace, ~sglbusprereq
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		Description: Mobile bunker vehicle.\n  Passengers can fire from within\n  Immobilized on heavy damage
 	Mobile:
@@ -8422,7 +10626,7 @@ sglbggyexp:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: sglweap, sglpalace, ~techlevel.medium, ~anysgla
+		Prerequisites: sglweap, sglpalace, ~techlevel.medium, ~sgla_demo
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
 		Description: Fast, long-range artillery.\n  Strong vs Vehicles, Buildings\n  Weak vs Aircraft
 	Armament@Normal:
@@ -8449,6 +10653,7 @@ sglcamel:
 		BuildPaletteOrder: 40
 		Prerequisites: upscudlauncher, sglpalace, ~techlevel.medium, ~sgla_demo
 		Description: Long-range ballistic missile launcher.\n  Strong vs ground targets\n  Weak vs Aircraft
+        IconPalette: ra2
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -8456,7 +10661,7 @@ sglcamel:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 18000
+		HP: 25000
 	Armor:
 		Type: Light
 	Mobile:
@@ -8486,18 +10691,418 @@ sglcamel:
 		Condition: scrap_create_bonus
 		TotalCap: 2
 	RangeMultiplier@Scrap1:
-		Modifier: 120
+		Modifier: 150
 		RequiresCondition: scrap_create_bonus == 1
 	RangeMultiplier@Scrap2:
-		Modifier: 140
+		Modifier: 200
 		RequiresCondition: scrap_create_bonus >= 2
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
     
+
+
+sgldemomaura:
+	Inherits: glmaura
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Demolition Marauder Tank
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: glweap, upmarauder, ~techlevel.medium, ~sgla_demo
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Medium tank.\n  Strong vs Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 80
+	Turreted:
+		TurnSpeed: 7
+		Offset: 225,0,185
+		Turret: primary
+	Armament@Normal:
+		Turret: primary
+	Armament@Toxin:
+		Turret: primary
+	Armament@ToxinBeta:
+		Turret: primary
+	Armament@NormalElite:
+		Turret: primary
+	Armament@ToxinElite:
+		Turret: primary
+	Armament@ToxinBetaElite:
+		Turret: primary
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: -400,0,428
+		TurnSpeed: 3
+	Armament@Rockets:
+		Name: secondary
+		Turret: secondary
+		Weapon: SGLHornetNest
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 171
+		RecoilRecovery: 34
+		MuzzleSequence: muzzle
+	WithSpriteTurret@Rockets:
+		Sequence: turretr
+		Turret: secondary
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	WithSpriteTurret:
+		Turret: primary
+	WithSpriteTurret@Scrap1:
+		Turret: primary
+	WithSpriteTurret@Scrap2:
+		Turret: primary
+glanthraxbomber.nuke:
+	Inherits: glanthraxbomber
+	Armament@Greem:
+		Weapon: SGLNukeParabomb
+		RequiresCondition: !antraxbetaupgrade && !upantraxgamma
+	Armament@Blue:
+		Weapon: SGLNukeParabomb
+		RequiresCondition: antraxbetaupgrade && !upantraxgamma
+	Armament@Purple:
+		Weapon: SGLNukeParabomb
+		RequiresCondition: upantraxgamma
+	RenderSprites:
+		Image: glabomber
+upblackmarketbomb:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Black Market Nuke
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Promotions.GLA
+		Description: Enables Anthrax Bomb strikes.
+		Prerequisites: !upblackmarketbomb, rank5, rank1, ~sgla_demo
+	RenderSprites:
+		Image: sglblackmarketbomb
+	ProvidesPrerequisite:
+		Prerequisite: upblackmarketbomb
+
+sglbombtruck:
+	Inherits: ^Vehicle
+	Inherits@EXT: ^ExternalConditions
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^FrontalEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@junk: ^JunkRepair
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Bomb Truck
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 40
+		Prerequisites: glweap, ~techlevel.medium, ~sgla_demo
+		Description: Suicide vehicle.\nCan be upgraded with different explosives.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
+	Health:
+		HP: 8000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 118
+	RevealsShroud:
+		Range: 4c0
+	Explodes@0:
+		Weapon: GLBombTruckSuperExplosive
+		EmptyWeapon: GLBombTruckExplosive
+		DamageSource: Killer
+		RequiresCondition: !upgraded && !chronobeamed
+	Explodes@1:
+		Weapon: SGLBombTruckNuke
+		EmptyWeapon: SGLBombTruckNuke
+		DamageSource: Killer
+		RequiresCondition: upgraded && !chronobeamed
+	AttackFrontal:
+		FacingTolerance: 128
+	Armament@PRIMARY:
+		Weapon: SuicideBomberTargeting
+	GrantConditionOnAttack:
+		Condition: triggered
+		PauseOnCondition: disabled
+	GrantConditionOnDeploy:
+		DeployedCondition: triggered
+		PauseOnCondition: disabled
+	-DamageMultiplier@IRONCURTAIN:
+	KillsSelf:
+		RequiresCondition: (invulnerability || triggered) && !disabled
+	ChronoshiftableWithSpriteEffect:
+		ExplodeInstead: True
+	Voiced:
+		VoiceSet: GLBombTruckVoice
+	SpeedMultiplier@selectglademo:
+		Modifier: 125
+	Production:
+		Produces: SBombtruck.GLA
+		RequiresCondition: !upgraded
+	ProductionQueue:
+		Type: SBombtruck.GLA
+		Group: Addon
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	ProvidesPrerequisite@techtreehack:
+		Prerequisite: hasaddonable
+	GrantConditionOnProduction@selectglatoxin:
+		Condition: upgraded
+		Actors: pscsglbombtruck1
+    RenderSprites:
+        Scale: 0.90
+	WithFacingSpriteBody:
+		Sequence: idle
+		RequiresCondition: !upgraded
+	WithFacingSpriteBody@Skin2:
+		Sequence: idle1
+		RequiresCondition: upgraded
+		Name: body2
+
+pscsglbombtruck1:
+	Tooltip:
+		Name: Atomic Bomb
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: SBombtruck.GLA
+		Description: Toxin Explosive upgrade.\n  Strong vs Infantry
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: sglblackmarketbomb
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+
+sgltrapdrop:
+	Inherits: ^Crate
+	RenderSprites:
+		Image: gltrap
+	ExplodeCrateAction@fire:
+		Weapon: GLBarrelExplode2
+		SelectionShares: 111
+	Cloak:
+		InitialDelay: 8
+		CloakDelay: 8
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled || triggered
+		IsPlayerPalette: true
+        UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+	Parachutable:							##########
+		FallRate: 20
+		KilledOnImpassableTerrain: true
+		GroundCorpseSequence:
+		GroundCorpsePalette:
+		WaterImpactSound: splash9.aud
+		WaterCorpseSequence: small_splash
+		ParachutingCondition: parachute
+	WithParachute:							##########
+		ShadowImage: parach-shadow
+		ShadowSequence: idle
+		Image: parach
+		Sequence: idle
+		OpeningSequence: open
+		Offset: 0,0,427
+		RequiresCondition: parachute
+	Passenger:
+		Weight: 1
+		CargoType: Scrapcrate
+	WithCrateBody:
+		XmasImages: sgltrapdrop
+sglfanatic:
+	Inherits: sglrebel
+	Buildable:
+		Prerequisites: barracks, ~sgle1prereq, ~disable
+    RenderSprites: 
+        Image: sglfanatic
+        Scale: 0.81
+        PlayerPalette: playerra2
+	RangeMultiplier@sglfanatic:
+		Modifier: 120
+	FirepowerMultiplier@sglfanatic:
+		Modifier: 110
+	ReloadDelayMultiplier@sglfanatic:
+		Modifier: 50
+    Armament@PRIMARY:	
+        Weapon: SGLRebelAK47AP
+        PauseOnCondition: deployed
+	Armament@c4:
+		Weapon: CHTankHunterAttach1
+		Cursor: c4
+		Name: secondary
+        RequiresCondition: deployed
+	Armament@c4b:
+		Weapon: CHTankHunterAttach2
+		Cursor: c4
+        Name: secondary
+        RequiresCondition: deployed
+    GrantConditionOnDeploy:
+        DeployedCondition: deployed
+		UndeployOnMove: false
+		UndeployOnPickup: false        
+        RequiresCondition: !botmicro
+    WithDecoration@c4:
+        Sequence: ammo_c4
+        RequiresCondition: deployed
+        RequiresSelection: true
+	Voiced:
+		VoiceSet: RA2TerroristVoice
+	VoiceAnnouncement:
+		Voice: Select
+sglstorm:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^4x3Shape
+	Inherits@sw: ^PrimarySuperweapon
+	Inherits@camo: ^BuildingCamoLevel2
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Demolition Scud Storm
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: glpalace, ~techlevel.high, ~sgla_demo, !sglscudstorm
+		Queue: Building.Shockwave, RABuilding.Shockwave
+		Description: Provides Scud Storm support power.\nRequires power to operate.
+	Building:
+		Footprint: xxxx xxxx xxxx
+		Dimensions: 4,3
+	SelectionDecorations:
+	Health:
+		HP: 210000
+	RevealsShroud:
+		Range: 6c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	Turreted:
+	AttackTurreted:
+		RequiresCondition: ammo
+		OpportunityFire: false
+		PersistentTargeting: false
+		ForceFireIgnoresActors: true
+	Armament@Power:
+		Weapon: SGLASCUDPOWER
+		LocalOffset: 900,900,340, 900,-900,340, -900,900,340, -900,-900,340
+		LocalYaw: 0,100
+	AmmoPool:
+		Ammo: 9
+		AmmoCondition: ammo
+		PipCount: 0
+	ReloadAmmoPool:
+		Count: 9
+		Delay: 100
+	AttackOrderPowerCA@PowerMulti:
+		OrderName: SGLAScudStorm
+		PauseOnCondition: disabled
+		AllowMultiple: True
+		Prerequisites: ~techlevel.superweapons
+		Cursor: attackmove
+		Icon: glscudstorm
+		ChargeInterval: 9000
+		Description: Scud Storm
+		LongDesc: Fires 9 Scud Missiles at the target.
+		EndChargeSpeechNotification:
+		SelectTargetSpeechNotification:
+		DisplayTimerStances: Ally, Neutral, Enemy
+	RejectsOrders:
+		Except: Sell
+	RenderRangeCircle:
+	SupportPowerChargeBar:
+	Voiced:
+		VoiceSet: GLSCUDStormVoice
+	SpawnActorOnDeath@hole:
+		Actor: sglstorm.hole
+	Explodes:
+		Weapon: GLBombTruckToxExplosive
+		EmptyWeapon: GLBombTruckToxExplosive
+		Type: CenterPosition
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
+	WithIdleOverlay@SMOKE2:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim3
+		Palette: placelinesegment
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: sglscudstorm
+
+sglstorm.hole:
+	Inherits: GLAHole4x3
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth && !notransform
+		IntoActor: sglstorm
+	GrantConditionOnPrerequisite@notransform:
+		Condition: notransform
+		Prerequisites: scudstorm, global-swlimit
+
 #########################################
 #           GLA TOXIN
 #########################################  
-
+sgltoxinrebel:
+	Inherits: GLE1toxin
+    Inherits@SHADOWS: ^Shadows
+    Inherits@injured: ^InfantryInjuries
+	Buildable:
+		Prerequisites: barracks, ~sgla_toxin
+	Armament@PRIMARY:							##########
+		Weapon: GLRebelToxin
+		LocalOffset: 256,43,341
+    WithInfantryBody:
+        IdleSequences: idle, idle2, idle3
+        StandSequences: stand
+        AttackSequences: shoot
+	RenderSprites:
+        Image: sgltoxinrebel
+        Scale: 0.81
+        PlayerPalette: playerra2
+    WithDeathAnimation:
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+    Selectable: 
+        DecorationBounds: 16,20,0,0
+        
+sgltoxinrebel_grey:
+    Inherits: sgltoxinrebel
+	Buildable:
+		Prerequisites: barracks, ~wip-content
+    RenderSprites:
+        Image: sgltoxinrebelgrey
+        
+sglrpgtrooper_toxin:
+	Inherits: sglrpgtrooper
+	Tooltip:
+		Name: Toxin RPG Trooper
+	Buildable:
+		Prerequisites: barracks, ~sgla_toxin
+	Armament@PRIMARYToxin:							##########
+		-RequiresCondition
+	Armament@GARRISONEDToxin:						##########
+		-RequiresCondition
+	-Armament@PRIMARY:							##########
+	-Armament@GARRISONED:	
+	
+sgltoxicpickup:
+	Inherits: glpickup
+	Buildable:
+		Prerequisites: sglweap, ~techlevel.low, ~sgla_toxin
+	Tooltip:
+		Name: Toxin Technical
+	Armament@Salvage:
+		Weapon: SGLTechnicalShellToxin
+	Armament@Salvage2:
+		Weapon: SGLTechnicalMissileToxin
+    RenderSprites:
+        Image: glpickup
+        
 sgltarantula:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -8539,7 +11144,7 @@ sgltarantula:
 		EjectOnDeath: false #desync
 	Turreted:
 		TurnSpeed: 7
-		Offset: 250,0,128
+		Offset: 250,0,175
 	Armament@Normal:
 		Weapon: GLScorpionShellToxinGamma
 		Recoil: 85
@@ -8600,9 +11205,810 @@ sgltarantula:
 		Modifier: 75
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+        
+sglscourge:
+    Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^TurretEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackTurretedVoice
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Scourge
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: sglweap, ~techlevel.medium, ~sgla_toxin, upsglscourge
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Long-range artillery.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
+        IconPalette: ra2
+    Mobile:
+		Speed: 60
+	Health:
+		HP: 9000
+	Repairable:
+		HpPerStep: 301
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 5c0
+    Turreted:
+        TurnSpeed: 3
+        Offset: -200,0,150
+	Armament@Normal:
+		Weapon: SGLScourgeMissile
+		LocalOffset: 624,0,208
+	AttackTurreted:
+		TargetFrozenActors: True
+		ForceFireIgnoresActors: True
+    WithSpriteTurret:
+        Sequence: turret
+        RequiresCondition: ammo == 2
+    WithSpriteTurret@1:
+        Sequence: turret2
+        RequiresCondition: ammo == 1
+    WithSpriteTurret@2:
+        Sequence: turret3
+        RequiresCondition: ammo == 0
+	AmmoPool:
+		Ammo: 2
+		AmmoCondition: ammo
+		PipCount: 0
+	ReloadAmmoPool:
+		Count: 1
+		Delay: 125
+	AutoTarget:
+        ScanRadius: 10
+	Explodes:
+		Weapon: V2Explode
+		EmptyWeapon: V2Explode
+		LoadedChance: 75
+        RequiresCondition: ammo || ammo2
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ProducibleWithLevel:
+		Prerequisites: upcharty
+		InitialLevels: 1
+	Voiced:
+		VoiceSet: CHInfernoCannonVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+    RenderSprites:
+        Scale: 0.6
+upsglscourge:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Scourge
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.GLA
+		Description: Allows production of the TOPOL.
+		Prerequisites: !upsglscourge, rank1, ~sgla_toxin
+        IconPalette: ra2
+	RenderSprites:
+		Image: sglscourge
+	ProvidesPrerequisite:
+		Prerequisite: upsglscourge
+sglpython:
+    Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APBulletUpgrade
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.low, ~sgla_toxin
+		Description: Anti-air and anti-infantry vehicle.\n  Strong vs Aircraft, Infantry, Vehicles\n  Weak vs Tanks
+        IconPalette: ra2
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Python
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 30000
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 83
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 7
+        Offset: 0,0,225
+    GrantConditionOnAttack@fireaa:
+        ArmamentNames: primary
+        Condition: fireag
+	Armament@2:
+		Weapon: SGLPython
+		Name: primary
+		MuzzleSequence: muzzle
+		LocalOffset: 600,0,0
+	Armament@2AA:
+		Weapon: SGLPythonAA
+		Name: secondary
+		MuzzleSequence: muzzle
+		LocalOffset: 600,0,225
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+		Sequence: turret
+		RequiresCondition: fireag
+	WithSpriteTurret@ag:
+		Sequence: turret2
+		RequiresCondition: !fireag
+	RenderSprites:
+        Scale: 1.05
+	Voiced:
+		VoiceSet: QuadCannonVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 75
+	ReloadDelayMultiplier@Salvaged2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 50
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+        
+sglbiotruck:
+	Inherits: ^Vehicle
+	Inherits@EXT: ^ExternalConditions
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^FrontalEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@junk: ^JunkRepair
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Bio Truck
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 40
+		Prerequisites: glweap, ~techlevel.medium, ~sgla_toxin
+		Description: Suicide vehicle.\nCan be upgraded with different explosives.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
+	Health:
+		HP: 8000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 118
+	RevealsShroud:
+		Range: 4c0
+	Explodes@0:
+		Weapon: GLBombTruckToxExplosive2
+		EmptyWeapon: GLBombTruckToxExplosive2
+		DamageSource: Killer
+		RequiresCondition: !chronobeamed
+	Explodes@1:
+		Weapon: GLBombTruckToxExplosive2
+		EmptyWeapon: GLBombTruckToxExplosive2
+		DamageSource: Killer
+		RequiresCondition: upantraxgamma && !chronobeamed
+	AttackFrontal:
+		FacingTolerance: 128
+	Armament@PRIMARY:
+		Weapon: SuicideBomberTargeting
+	GrantConditionOnAttack:
+		Condition: triggered
+		PauseOnCondition: disabled
+	GrantConditionOnDeploy:
+		DeployedCondition: triggered
+		PauseOnCondition: disabled
+	-DamageMultiplier@IRONCURTAIN:
+	KillsSelf:
+		RequiresCondition: (invulnerability || triggered) && !disabled
+	ChronoshiftableWithSpriteEffect:
+		ExplodeInstead: True
+	Voiced:
+		VoiceSet: GLBombTruckVoice
+	GrantConditionOnPrerequisite@upantraxgamma:
+		Condition: upantraxgamma
+		Prerequisites: upantraxgamma
+    RenderSprites:
+        Scale: 0.90
+sglamobtoxin:
+	Inherits: sglamob
+	Tooltip:
+		Name: Toxin Angry Mob
+	Buildable:
+		Prerequisites: sglpalace, ~techlevel.medium, ~sgla_toxin
+	MobSpawnerMaster:
+		Actors: sglaangrymob1, sglaangrymob1, sglaangrymob1, sglaangrymob1, sglaangrymob1, sglaangrymob1, sglaangrymob2_toxin, sglaangrymob2_toxin, sglaangrymob2_toxin, sglaangrymob2_toxin
+
+sglaangrymob2_toxin:
+	Inherits: sglaangrymob2
+	Armament@upmolotov:
+		Weapon: SGLAngryMobMolotovToxin
+		
+sglterrorist_toxin:
+	Inherits: sglterrorist
+	Tooltip:
+		Name: Toxin Terrorist
+	Buildable:
+		Prerequisites: sglsupply, ~sgla_toxin
+	Explodes:
+		Weapon: SGLToxinTerrorist
+		EmptyWeapon: SGLToxinTerrorist
 #########################################
 #           GLA STEALTH
 #########################################  
+
+sglassassin:
+	Inherits: susapath
+	Tooltip:
+		Name: Assassin
+	Valued:
+		Cost: 600
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Infantry.GLA, RAInfantry.GLA
+		Description: Sniper infantry.\nStealthed when not attacking\n  Strong vs Infantry\n  Weak vs Vehicles
+		Prerequisites: sglpalace, ~sgla_camo
+		IconPalette: ra2
+	RenderSprites:
+        Image: sglassassin
+    Armament@PRIMARY:
+		Weapon: SGLAAssassinAWP
+        LocalOffset: 275,0,0
+        MuzzleSequence: muzzle
+	
+sglfrogssm:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@EMP: ^FrontalEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 80
+		Prerequisites: glpalace, ~techlevel.medium, ~sgla_camo, ~upsglfrogssm
+		Description: Long-range ballistic missile launcher.\n  Strong vs ground targets\n  Weak vs Aircraft
+        IconPalette: ra2
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Frog SSM Launcher
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 16000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 65
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Armament:
+		Weapon: GLAScudLaunch
+	MissileSpawnerMaster@1:
+		Actors: sglfrogssm.missile
+		RespawnTicks: 250
+		LoadedCondition: expammo
+		RequiresCondition: undeployed
+	MissileSpawnerMaster@2:
+		Actors: sglfrogssm.missiletox
+		RespawnTicks: 250
+		LoadedCondition: toxammo
+		RequiresCondition: deployed
+	AutoTarget:
+		ScanRadius: 10
+	AttackFrontal:
+		TargetFrozenActors: True
+		ForceFireIgnoresActors: True
+	WithFacingSpriteBody:
+		RequiresCondition: (!deployed && expammo) || (deployed && toxammo)
+		Name: loaded
+	WithFacingSpriteBody@EMPTY:
+		RequiresCondition: (!deployed && !expammo) || (deployed && !toxammo)
+		Sequence: empty-idle
+		Name: reloading
+	Explodes:
+		Weapon: V2Explode
+	Selectable:
+		DecorationBounds: 28,28
+		Class: glscud
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: GLSCUDLauncherVoice
+	ProducibleWithLevel:
+		Prerequisites: selectglademo
+		InitialLevels: 2
+	WithTextDecoration@TOX:
+		Text: TOXIN
+		ReferencePoint: Bottom, Center
+		UsePlayerColor: True
+		RequiresCondition: deployed
+	WithTextDecoration@EX:
+		Text: EXPLOSIVE
+		ReferencePoint: Bottom, Center
+		UsePlayerColor: True
+		RequiresCondition: !deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: false
+		PauseOnCondition: disabled
+		Voice: Move
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	RangeMultiplier@Scrap1:
+		Modifier: 120
+		RequiresCondition: scrap_create_bonus == 1
+	RangeMultiplier@Scrap2:
+		Modifier: 140
+		RequiresCondition: scrap_create_bonus >= 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+
+sglfrogssm.missile:
+	Inherits: ^ShootableMissile
+    Inherits@SHADOWS: ^Shadows
+	Health:
+		HP: 12000
+	RenderSprites:
+		Image: sglfrogssmmiss
+	ShootableBallisticMissile:
+		LaunchAngle: 90
+	LeavesTrails:
+		Image: laserfire
+		MovingInterval: 5
+		Type: CenterPosition
+	WithShadow:
+		Offset: 43, 128, 0
+		ZOffset: -129
+	WithFacingSpriteBody:
+	MissileSpawnerSlave:
+	SpawnedExplodes:
+		Weapon: GLASCUD
+		EmptyWeapon: GLASCUD
+
+sglfrogssm.missiletox:
+	Inherits: sglfrogssm.missile
+	SpawnedExplodes:
+		Weapon: GLASCUDTOXIN
+		EmptyWeapon: GLASCUDTOXIN
+
+
+upsglfrogssm:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Frog SSM Launcher
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.GLA
+		Description: Allows production of the TOPOL.
+		Prerequisites: !upsglfrogssm, rank1, ~sgla_camo
+        IconPalette: ra2
+	RenderSprites:
+		Image: sglfrogssm
+	ProvidesPrerequisite:
+		Prerequisite: upsglfrogssm
+sglcamorebel:
+	Inherits: sglrebel
+	Buildable:
+		Prerequisites: barracks, ~sgla_camo
+    Armament@PRIMARY:	
+        Weapon: SGLRebelAK47
+        MuzzleSequence: muzzle
+        LocalOffset: 300,0,150
+	-Cloak:
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage
+		PauseOnCondition: cloak-force-disabled || base-reveal
+		RequiresCondition: camoupgrade
+		IsPlayerPalette: true
+
+sglcamorpgtrooper:
+	Inherits: sglrpgtrooper
+    Inherits@SHADOWS: ^Shadows
+	Buildable:
+		Prerequisites: barracks, ~sgla_camo
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage
+		PauseOnCondition: cloak-force-disabled || base-reveal
+		RequiresCondition: camoupgrade
+		IsPlayerPalette: true
+
+sglradartruck:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@junk: ^JunkRepair
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 30
+		Prerequisites: glweap, ~techlevel.low, ~sgla_camo
+		Description: Detects cloaked units and provides radar.\nJams enemy radars when close
+        IconPalette: ra2
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Radar Truck
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 18000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 150
+	RevealsShroud:
+		Range: 9c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	RenderSprites:
+		Scale: 1.01
+	Voiced:
+		VoiceSet: CHRadarVanVoice
+	Inherits@EXT: ^ExternalConditions
+	ProximityExternalCondition@JAMMER:
+		Range: 5c0
+		ValidStances: Enemy, Neutral
+		Condition: jammed
+		RequiresCondition: !disabled
+	WithRangeCircle@JAMMER:
+		Type: jammer
+		Range: 5c0
+		Color: 0000FF80
+		RequiresCondition: !disabled 
+	DetectCloaked:
+		Range: 8c0
+	RenderDetectionCircle:
+	ProvidesRadar:
+		RequiresCondition: !jammed && !disabled
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	Explodes:
+		Weapon: SGLRadarTruckHuskCluster
+		EmptyWeapon: SGLRadarTruckHuskCluster
+	SpawnActorPower@scan:
+		PauseOnCondition: disabled
+		RequiresCondition: radarvanscan
+		OrderName: SovietSpyPlane
+		Icon: radarvan
+		ChargeInterval: 3500
+		Description: Radar Van Scan
+		LongDesc: Reveals an area of the map\nand cloaked enemy units.
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		EndChargeSpeechNotification: SpyPlaneReady
+		Actor: camera.radarvan
+		LifeTime: 225
+		DeploySound: vradscan.wav
+		LaunchSound: vradscan.wav
+		IncomingSound: vradscan.wav
+		SupportPowerPaletteOrder: 10
+	GrantConditionOnPrerequisite@scan:
+		Condition: radarvanscan
+		Prerequisites: upradarvanscan
+	
+sglfundamentalist:
+	Inherits@1: glamob
+	Tooltip:
+		Name: Fundamentalist
+	Buildable:
+		Prerequisites: sglpalace, ~techlevel.medium, ~sgla_camo
+		Description: Civilian fighters armed with variety of small-arms weapons
+		Icon: icon_fundamentalist
+		IconPalette: ra2
+	Valued:
+		Cost: 800
+	MobSpawnerMaster:
+		Actors: sglfundamentalist1, sglfundamentalist1, sglfundamentalist1, sglfundamentalist2, sglfundamentalist2
+		ExitByBudding: false
+        
+sglfundamentalist1:
+	Inherits: angrymob1
+    Inherits@SHADOWS: ^Shadows
+	AttackFrontal:
+    WithMuzzleOverlay:
+	Tooltip:
+		Name: Fundamentalist
+	-GrantConditionOnPrerequisite@uparmthemob:
+	Armament:
+		Weapon: GLAngryMobPistol
+		-PauseOnCondition
+        MuzzleSequence: muzzle
+        LocalOffset: 300,0,150
+	-Armament@AK47:
+    RenderSprites:
+        Scale: 0.84
+        Image: sglaangrymob1
+        PlayerPalette: playerra2
+    WithInfantryBody:
+        IdleSequences: idle, idle2
+        StandSequences: stand
+        AttackSequences: shoot
+        MoveSequence: run
+        DefaultAttackSequence: shoot
+        RequiresCondition: !ak47upgrade
+    WithDeathAnimation:
+        DeathSequence: die
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+        RequiresCondition: !ak47upgrade
+    Selectable: 
+        DecorationBounds: 12,16,0,-1
+    WithShadow:
+		Offset: 0, 96, 0
+		ZOffset: -512 
+	DamageMultiplier:
+		Modifier: 70
+		
+sglfundamentalist2:
+	Inherits: angrymob1
+    Inherits@SHADOWS: ^Shadows
+	AttackFrontal:
+    WithMuzzleOverlay:
+	Tooltip:
+		Name: Fundamentalist
+	-GrantConditionOnPrerequisite@uparmthemob:
+	-Armament:
+	Armament@AK47:
+		Weapon: GLAngryMobAk47
+		-PauseOnCondition
+    RenderSprites:
+        Scale: 0.84
+        Image: sglaangrymob1
+        PlayerPalette: playerra2
+    WithInfantryBody:
+        IdleSequences: idle-ak, idle2-ak, idle3-ak
+        StandSequences: stand-ak
+        AttackSequences: shoot-ak
+        MoveSequence: run-ak
+        DefaultAttackSequence: shoot-ak
+    WithDeathAnimation:
+        DeathSequence: die-ak
+        DeathSequencePalette: playerra2
+        UseDeathTypeSuffix: false
+    Selectable: 
+        DecorationBounds: 12,16,0,-1
+    WithShadow:
+		Offset: 0, 96, 0
+		ZOffset: -512 
+	DamageMultiplier:
+		Modifier: 70
+		
+sglsniperquadcannon:
+	Inherits: glquad
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.low, ~sgla_camo
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Sniper Quad Cannon
+	Turreted:
+		TurnSpeed: 9
+		Offset: -370,0,225
+    RangeMultiplier:
+        Modifier: 140
+	RenderSprites:
+        Scale: 0.83
+	RangeMultiplier@Salvaged2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 125
+	Armament@2:
+		LocalOffset: 550,128,200, 550,-128,200, 550,-128,43, 550,128,43
+	Armament@2AA:
+		LocalOffset: 550,128,200, 550,-128,200, 550,-128,43, 550,128,43
+	-GrantConditionOnPrerequisite@selectglatoxin:
+	-ProductionCostMultiplier@selectglatoxin:
+	-ProductionCostMultiplier@selectglademo:
+    
+sglmgnest:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EMP: ^TurretEMP
+	Inherits@gensound: ^GeneralsDamageBuilding
+    Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Machinegun Nest
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: sglbarracks, ~techlevel.low, ~sgla_camo
+		Queue: Defence.Shockwave, RADefence.Shockwave
+		BuildDurationModifier: 40
+		Description: Anti-infantry base defense.\n  Strong vs Infantry, Vehicles\n  Weak vs Tanks, Aircraft
+        IconPalette: ra2
+    Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+    -WithMakeAnimation
+    -WithDeathAnimation
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 8
+		Offset: 0,0,50
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament@NORMAL:
+		Weapon: GLRebelAK47Garrison
+		LocalOffset: 100,0,100
+		LocalYaw: -100, 100
+		Recoil: 0
+	AttackTurreted:
+		PauseOnCondition: disabled
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !disabled
+	-RenderDetectionCircle:
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: CHGatlingCannonVoice
+	RenderSprites:
+		Image: sglmgnest
+	Cloak:
+		InitialDelay: 60
+		CloakDelay: 60
+		PauseOnCondition: cloak-force-disabled || base-reveal
+		IsPlayerPalette: true
+	SpawnActorOnDeath@hole:
+		Actor: sglmgnest.hole
+    WithIdleOverlay:
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+sglmgnest.hole:
+	Inherits: GLAHole2x2Defense
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sglmgnest
+sglcobra:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APRocketUpgrade
+	Inherits@demo: ^DemolitionUpgrade
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Cobra Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.medium, ~sgla_camo
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		Description: Fast, light tank.\nCan be upgraded with missiles.\n  Strong vs Vehicles\n  Weak vs Infantry
+        IconPalette: ra2
+	Mobile:
+		Speed: 140
+	Health:
+		HP: 27000
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 7
+		Offset: 12,0,280
+	Armament@Normal:
+		Weapon: GLScorpionShell
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade
+	Armament@Toxin:
+		Weapon: GLScorpionShellToxin
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && !antraxbetaupgrade
+	Armament@ToxinBeta:
+		Weapon: GLScorpionShellToxinBeta
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && antraxbetaupgrade
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	WithSpriteTurret@Missile:
+		Sequence: turret2
+		RequiresCondition: rocketupgrade
+	Armament@Missile:
+		Weapon: GlScorpionMissile
+		LocalOffset: 720,0,90
+		RequiresCondition: rocketupgrade && scrap_create_bonus <= 1
+	Armament@Missile2:
+		Weapon: GlScorpionMissileTwin
+		LocalOffset: 720,0,90
+		RequiresCondition: rocketupgrade && scrap_create_bonus >= 2
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Scale: 0.88
+	Voiced:
+		VoiceSet: ScorpionTankVoice
+	GrantConditionOnPrerequisite@upscorpionrocket:
+		Condition: rocketupgrade
+		Prerequisites: upscorpionrocket
+	GrantConditionOnPrerequisite@uptoxinshells:
+		Condition: shellsupgrade
+		Prerequisites: uptoxinshells
+	GrantConditionOnPrerequisite@upantraxbeta:
+		Condition: antraxbetaupgrade
+		Prerequisites: upantraxbeta
+	GrantConditionOnPrerequisite@uparmorpiercingrocket:
+		Condition: rocketupgrade2
+		Prerequisites: uparmorpiercingrocket, upscorpionrocket
+	FirepowerMultiplier@uparmorpiercingrocket:
+		RequiresCondition: rocketupgrade2
+		Modifier: 105
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus >= 1
+		Modifier: 75
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+        
 
 #########################################
 #           CHINA GENERIC
@@ -8842,7 +12248,6 @@ scharty:
 #########################################
 #           CHINA REGULAR
 #########################################
-
 upschnapalmstrike:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -9018,7 +12423,7 @@ schsiegesoldier:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
 	Voiced:
-		VoiceSet: SiegeSoldierVoice
+		VoiceSet: RedGuardVoice
 	RenderSprites:
 		Scale: 0.9
         Image: schsiegesoldier
@@ -9030,7 +12435,7 @@ schsiegesoldier:
 		UndeployOnPickup: false        
     AIDeployNotifier:
 		DeployChance: 50
-        DeployTriggers: Attack
+        DeployTriggers: Damage
         DeployTicks: 250
         UndeployTicks: 200
     WithDecoration@he:
@@ -9293,6 +12698,7 @@ schhackvan:
 		VoiceSet: ListeningOutpostVoice
     RenderSprites:
         Image: schhackvan
+        Scale: 0.88
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
         
@@ -9453,7 +12859,6 @@ schtiger:
         LocalOffset: 150,213,-120, 150,-213,-120
 	AutoTarget:
 		ScanRadius: 5
-    DeathSounds:
 	AttackAircraft:
 		FacingTolerance: 20
 		OpportunityFire: false
@@ -9477,7 +12882,7 @@ schtiger:
 	Selectable:
 		DecorationBounds: 30,24
 	Voiced:
-		VoiceSet: TigerVoice
+		VoiceSet: BattlemasterTankVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
     -ExternalCondition@EMP
@@ -9615,7 +13020,7 @@ schscoutcar:
 		Offset: -256,0,256
 		PauseOnCondition: disabled
 	Voiced:
-		VoiceSet: ECMTankVoice
+		VoiceSet: CustomScoutCarVoice
 	GrantConditionOnDeploy:
 		DeployedCondition: deployed
 		SkipMakeAnimation: true
@@ -9896,7 +13301,8 @@ schlargesupply:
 		Speed: 85
 	WithHarvesterSpriteBody:
 		ImageByFullness: schlargesupply, schlargesupplyfull, schlargesupplyfull
-        
+    RenderSprites:
+        Scale: 0.9
 schwarmaster:
     Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -9932,7 +13338,7 @@ schwarmaster:
 		Range: 6c0
 	Turreted:
 		TurnSpeed: 7
-        LocalOffset: -50,0,0
+        LocalOffset: -50,0,50
 	Armament@Normal:
 		Weapon: SCHWarmasterCannon
 		Recoil: 128
@@ -9977,6 +13383,8 @@ schwarmaster:
 		Modifier: 70
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+    RenderSprites:
+        Scale: 0.78
 
 upschreaper:
 	Inherits: ^upgrade.template
@@ -10053,7 +13461,7 @@ schreaper:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	Voiced:
-		VoiceSet: ReaperTankVoice
+		VoiceSet: BattlemasterTankVoice
 	GrantConditionOnPrerequisite@upuraniumshell:
 		Condition: urshellupgrade
 		Prerequisites: upuraniumshell
@@ -10068,7 +13476,8 @@ schreaper:
 		Modifier: 70
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-        
+    RenderSprites:
+        Scale: 0.9
 schramjet:
 	Inherits: ^Defense
 	Inherits@shape: ^2x2Shape
@@ -10902,7 +14311,7 @@ schberzerkermlrs:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	Voiced:
-		VoiceSet: BerzerkerVoice
+		VoiceSet: BattlemasterTankVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
     GrantConditionOnDeploy:
@@ -10918,6 +14327,8 @@ schberzerkermlrs:
         Sequence: icon_ms
         RequiresCondition: deployed
         RequiresSelection: true
+    RenderSprites:
+        Scale: 1.1
         
 upschberzerkermlrs:
 	Inherits: ^upgrade.template
@@ -11510,7 +14921,7 @@ schradtank:
 		RecoilRecovery: 0
 		LocalOffset: 512,0,90
 	Voiced:
-		VoiceSet: RADTankVoice
+		VoiceSet: BattlemasterTankVoice
 	PeriodicExplosion@barrels:
 		Weapon: RADTankDropBarrels
 		RequiresCondition: deployed
@@ -11575,6 +14986,8 @@ schsiegecannon:
 		LocalOffset: 1536,0,600
 	Voiced:
 		VoiceSet: BattlemasterTankVoice
+    RenderSprites: 
+        Scale: 0.82
 
 schnuclearoverlord:
 	Inherits: choverlord
@@ -11704,7 +15117,7 @@ schdevastator:
 	Armor:
 		Type: Heavy
     Voiced:
-        VoiceSet: DevastatorVoice
+        VoiceSet: BattlemasterTankVoice
 	Mobile:
 		TurnSpeed: 9
 		Speed: 40
@@ -11744,6 +15157,8 @@ schdevastator:
 		Intensity: 600
 	Selectable:
 		DecorationBounds: 32, 32, 0, 0
+    RenderSprites:
+        Scale: 1.1
         
 upschdevastator:
 	Inherits: ^upgrade.template
@@ -12064,6 +15479,8 @@ schravagetank:
 		LocalOffset: 400,200,90
 	Selectable:
 		DecorationBounds: 28,28
+    RenderSprites:
+        Scale: 0.9
 	-GrantConditionOnPrerequisite@upuraniumshell:
 	-FirepowerMultiplier@upuraniumshell:
 	-GrantConditionOnPrerequisite@upautoload:
@@ -12183,6 +15600,8 @@ schhammercannon:
 	AttackFrontal:
 	SelectionDecorations:
 	Selectable:
+        DecorationBounds: 48,48,0,-32
+        SelectionBounds: 48,48,0,-32
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
@@ -12218,6 +15637,8 @@ schhammercannon:
         DeployTriggers: Attack
         DeployTicks: 150
         UndeployTicks: 100
+    RenderSprites:
+        Scale: 1.1
 
 upschhammercannon:
 	Inherits: ^upgrade.template
@@ -12504,6 +15925,8 @@ schsupplyhelicopterleang:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
     Inherits@SHADOWS: ^Shadows
+    Targetable@helicopter:
+		TargetTypes: Helicopter
 	Buildable:
 		Queue: Aircraft.CHINA, RAAircraft.CHINA
 		BuildPaletteOrder: 10

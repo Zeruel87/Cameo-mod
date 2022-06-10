@@ -1158,6 +1158,58 @@ TSNASHWABIKE.cd:
     -Targetable
     -Capturable
         
+SCDVA:
+	Inherits: SCGOLIATH
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: DVA
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~Armory
+        BuildLimit: 1
+		Queue: Heroes
+	Mobile:
+		Speed: 99
+		Locomotor: tracked
+		RequiresCondition: !overload
+	Health:
+		HP: 88000
+	Armament@G1:
+		Weapon: InterceptorCannon
+		MuzzleSequence: muzzle
+		LocalOffset: 400,400,300
+	Armament@G2:
+		Weapon: InterceptorCannon
+		MuzzleSequence: muzzle
+		LocalOffset: 400,-400,300
+	Armament@G3:
+		Weapon: InterceptorCannon
+		MuzzleSequence: muzzle
+		LocalOffset: 400,-400,300
+	ReloadDelayMultiplier:
+		Modifier: 50
+	RangeMultiplier:
+		Modifier: 125
+	FirepowerMultiplier:
+		Modifier: 145
+    Voiced:
+        VoiceSet: SCDVAVoice
+	Explodes@OVERLOAD:
+		Weapon: PlasmaExplosion
+		EmptyWeapon: PlasmaExplosion
+		RequiresCondition: meltdown
+	GrantConditionOnDeploy@REACTOR:
+		DeployedCondition: overload
+		PauseOnCondition: overload
+	KillsSelf@MELTDOWN:
+		Delay: 180
+		RequiresCondition: overload
+		GrantsCondition: meltdown
+	FreeActor@soldier:
+		Actor: scmedic
+		SpawnOffset: 0,0
+		RequiresCondition: overload
 ancientvisceroid:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1270,7 +1322,220 @@ spawnedvisceroid:
 		InitialDelay: 170
     RenderSprites:  
         Image: tsvissml
+
+mutantseverus:
+    Inherits@HEROES: ^Heroes
+    Inherits: GNRL
+    Inherits@EXPERIENCE: ^GainsExperience
+    Buildable:
+		Queue: Heroes
+		BuildPaletteOrder: 120
+		Prerequisites: !1hero, ~faction.forgotten
+        Description: Unable to use his left hand and full of hatred - he is equipped with Tiberium Flachette SMG and\npowerful aura that spreads radiation which hurts enemies but heals allies
+        IconPalette: ra2
+        BuildDuration: 500
+        BuildDurationModifier: 100
+    Valued:
+		Cost: 2000
+    Tooltip:
+        Name: Mutant Severus
+    WithMuzzleOverlay:
+    Armament:
+        Weapon: SeverusFlachetteSMG
+        MuzzleSequence: muzzle
+        LocalOffset: 275,0,100
+        RequiresCondition: !deployed
+    PeriodicExplosion@circle:
+        Weapon: SeverusCircleDamage
+        RequiresCondition: !deployed
+    PeriodicExplosion@circleheal:
+        Weapon: SeverusCircleHeal
+        RequiresCondition: !deployed
+    PeriodicExplosion@circle2:
+        Weapon: SeverusCircleDamageBuff
+        RequiresCondition: deployed
+    PeriodicExplosion@circleheal2:
+        Weapon: SeverusCircleHealBuff
+        RequiresCondition: deployed
+    WithIdleOverlay@circle:
+        Sequence: circle
+        RequiresCondition: !deployed
+    WithIdleOverlay@circle_buffed:
+        Sequence: circle_buffed
+        RequiresCondition: deployed
+	GrantTimedConditionOnDeploy:
+		DeployedTicks: 300
+		CooldownTicks: 250
+		Facing: -1
+		DeployedCondition: deployed
+		DeployingCondition: deploying
+		ShowSelectionBar: false
+		Voice: Attack
+		PauseOnCondition: disabled
+    SpeedMultiplier@deployed:
+        Modifier: 150
+        RequiresCondition: deployed
+    Cloak@deployed:
+		InitialDelay: 0
+		CloakDelay: 0
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+        RequiresCondition: deployed
+		IsPlayerPalette: true
+    Health:
+        HP: 25000
+    Armor:
+        Type: None
+    RevealsShroud:
+        Range: 9c0
+    Mobile:
+        Speed: 75
+        PauseOnCondition: nocc
+    AttackFrontal:
+        Armaments: primary
+    WithInfantryBody:
+        IdleSequences: stand
+    RenderSprites:
+        Image: mutantseverus
+        Scale: 0.9
+    -Production
+    -ProductionQueue
+    -Crushable
+    -SelfHealing@healdefault:
+	-WithDecoration@healdefault:
+	-GrantConditionOnAttack@herohealblock
+	RevealsShroud:
+		Range: 5c0
+    Voiced:
+        VoiceSet: TSInfantry
+    Selectable:
+        DecorationBounds: 20,20,0,0
     
+severuscabal:
+    Inherits@HEROES: ^Heroes
+    Inherits: GNRL
+    Inherits@EXPERIENCE: ^GainsExperience
+    Buildable:
+		Queue: Heroes
+		BuildPaletteOrder: 120
+		Prerequisites: !1hero, ~faction.cabal
+        Description: Unable to use his left hand and full of hatred - he is equipped with Super Shotgun and\npowerful aura that spreads radiation which hurts enemies but heals allies
+        BuildDuration: 500
+        BuildDurationModifier: 100
+    Valued:
+		Cost: 2000
+    Tooltip:
+        Name: C-12
+    WithMuzzleOverlay:
+    Armament:
+        Weapon: DoomSuperShotgun
+        MuzzleSequence: muzzle
+        LocalOffset: 400,0,500
+        RequiresCondition: !deployed
+    PeriodicExplosion@circle:
+        Weapon: SeverusCircleDamageCABAL
+        RequiresCondition: !deployed && rank-veteran == 0
+    PeriodicExplosion@circleheal:
+        Weapon: SeverusCircleHealCABAL
+        RequiresCondition: !deployed && rank-veteran == 0
+    PeriodicExplosion@circle2:
+        Weapon: SeverusCircleDamageCABAL2
+        RequiresCondition: !deployed && rank-veteran == 1
+    PeriodicExplosion@circleheal2:
+        Weapon: SeverusCircleHealCABAL2
+        RequiresCondition: !deployed && rank-veteran == 1
+    PeriodicExplosion@circle3:
+        Weapon: SeverusCircleDamageCABAL3
+        RequiresCondition: !deployed && rank-veteran == 2
+    PeriodicExplosion@circleheal3:
+        Weapon: SeverusCircleHealCABAL3
+        RequiresCondition: !deployed && rank-veteran == 2
+    PeriodicExplosion@circle4:
+        Weapon: SeverusCircleDamageCABAL4
+        RequiresCondition: !deployed && rank-veteran == 3
+    PeriodicExplosion@circleheal4:
+        Weapon: SeverusCircleHealCABAL4
+        RequiresCondition: !deployed && rank-veteran == 3
+    PeriodicExplosion@circle5:
+        Weapon: SeverusCircleDamageCABAL5
+        RequiresCondition: !deployed && rank-elite
+    PeriodicExplosion@circleheal5:
+        Weapon: SeverusCircleHealCABAL5
+        RequiresCondition: !deployed && rank-elite
+    PeriodicExplosion@circle2:
+        Weapon: SeverusCircleDamageBuffCABAL
+        RequiresCondition: deployed
+    PeriodicExplosion@circleheal2:
+        Weapon: SeverusCircleHealBuffCABAL
+        RequiresCondition: deployed
+    WithIdleOverlay@circle:
+        Sequence: circle
+        RequiresCondition: !deployed
+    WithIdleOverlay@circle_buffed:
+        Sequence: circle_buffed
+        RequiresCondition: deployed
+	GrantTimedConditionOnDeploy:
+		DeployedTicks: 250
+		CooldownTicks: 300
+		Facing: -1
+		DeployedCondition: deployed
+		DeployingCondition: deploying
+		ShowSelectionBar: false
+		Voice: Attack
+		PauseOnCondition: disabled
+        RequiresCondition: rank-veteran == 0 && !rank-elite
+	GrantTimedConditionOnDeploy@ranked:
+		DeployedTicks: 300
+		CooldownTicks: 300
+		Facing: -1
+		DeployedCondition: deployed
+		DeployingCondition: deploying
+		ShowSelectionBar: false
+		Voice: Attack
+		PauseOnCondition: disabled
+        RequiresCondition: rank-veteran > 1 || rank-elite
+    SpeedMultiplier@deployed:
+        Modifier: 150
+        RequiresCondition: deployed
+    Cloak@deployed:
+		InitialDelay: 0
+		CloakDelay: 0
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+        RequiresCondition: deployed && rank-elite
+		IsPlayerPalette: true
+    Health:
+        HP: 100000
+    Armor:
+        Type: None
+    RevealsShroud:
+        Range: 8c0
+    Mobile:
+        Speed: 70
+        PauseOnCondition: nocc && deploy
+    AttackFrontal:
+        Armaments: primary
+    WithInfantryBody:
+        StandSequences: stand
+        MoveSequence: run
+        -IdleSequences
+        DefaultAttackSequence: shoot
+    -WithDeathAnimation      
+    RenderSprites:
+        Image: tsreinca
+        Scale: 0.6
+        PlayerPalette: playerra2
+    -Production
+    -ProductionQueue
+    -Crushable
+    -SelfHealing@healdefault:
+	-WithDecoration@healdefault:
+	-GrantConditionOnAttack@herohealblock
+	RevealsShroud:
+		Range: 5c0
+    Voiced:
+        VoiceSet: TSInfantry
+    Selectable:
+        DecorationBounds: 20,20,3,-5
+        
 JACK:
 	Inherits@HEROES: ^Heroes
 	Inherits@bot: ^BotMicromanageable

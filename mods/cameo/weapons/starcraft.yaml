@@ -231,7 +231,7 @@ HydraSpit:
 		Damage: 3200
 		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
 		Versus:
-			None: 25
+			None: 75
 			Wood: 25
 			Light: 100
             Medium: 85
@@ -479,20 +479,20 @@ MutaliskSpore:
 		Speed: 482
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 6000
+		Damage: 5500
 		Versus:
-			None: 100
-			Wood: 50
-			Light: 100
-            Medium: 85
-			Heavy: 75
+			None: 120
+			Wood: 30
+			Light: 120
+            Medium: 70
+			Heavy: 55
+			Concrete: 15
 		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
 	Warhead@3Eff: CreateEffect
 		Explosions: sczhsplash
 		ImpactActors: false
 		ImpactSounds: zquhit00.aud,zquhit01.aud
 	Warhead@shrapnel: FireShrapnel 
-		InvalidTargets: FireImmune
 		Weapon: MutaBounce1
 		AimChance: 100
 		AllowDirectHit: true
@@ -503,7 +503,7 @@ MutaBounce1:
 	Range: 1c512
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 3000
+		Damage: 2500
 	Warhead@shrapnel: FireShrapnel 
 		InvalidTargets: FireImmune
 		Weapon: MutaBounce2
@@ -513,9 +513,9 @@ MutaBounce2:
 	Range: 1c256
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 1500
+		Damage: 1200
 	-Warhead@shrapnel:
-
+	
 MutaliskAA:
 	Inherits: MutaliskSpore
 	ValidTargets: Air
@@ -526,10 +526,46 @@ MutaliskAA:
 		AllowSnapping: true
 	Warhead@1Dam: SpreadDamage
 		ValidTargets: Air
+		Versus:
+			None: 100
+			Light: 100
+            Medium: 80
+			Heavy: 75
 	Warhead@3Eff: CreateEffect
 		ValidTargets: Air
 	-Warhead@shrapnel:
+SCDevourerAA:
+	Inherits: MutaliskSpore
+	Inherits@Contaminated: TractorGLAnthraxPurple
+	Report: sc_devourer_attack.aud
+	ValidTargets: Air
+	Projectile: RadBeam
+		Amplitude: 120
+		WaveLength: 360
+		Color: 7400FF
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Air
+		Versus:
+			None: 100
+			Light: 100
+            Medium: 80
+			Heavy: 75
+	Warhead@3Eff: CreateEffect
+		ValidTargets: Air
+		Explosions: purplesplash
+		ImpactSounds: sc_devourer_hit.aud
+	-Warhead@shrapnel:
+	Warhead@1Cloud: SpawnSmokeParticle
+		Sequences: purple_toxins_small
+		Weapon: SCDevourerCloud
+		Count: 5
 
+SCDevourerCloud:
+	Inherits: AnthraxCloudPurple
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Air
+		Spread: 1c0
+		Damage: 3000
 PhotonCannon:
 	ReloadDelay: 30
 	Range: 8c768	#7c0
@@ -1037,6 +1073,47 @@ WraithRockets:
             Medium: 85
 			Heavy: 100
 
+ValkyrieRockets:
+	Inherits: WraithRockets
+	Range: 6c0
+	Burst: 4
+
+CorsairFlash:
+	Inherits: ScoutMG
+	ValidTargets: Air
+	Report: sc_corsair_attack.aud
+	ReloadDelay: 12
+	Warhead@1Dam: SpreadDamage
+		Spread: 42
+		Damage: 1500
+		ValidTargets: Air
+
+CorsairEMP:
+	ReloadDelay: 250
+	Range: 4c0
+	MinRange: 2c0
+	Report: plsecan2.aud
+	ValidTargets: Vehicle
+	Projectile: Bullet
+		Speed: 425
+		Blockable: false
+		LaunchAngle: 165
+		Image: tspulsball
+	Warhead@Cam: RevealShroud
+		Radius: 6c0
+		RevealGeneratedShroud: true
+		Duration: 360
+	Warhead@3Eff: CreateEffect
+		Explosions: pulse_explosion
+		ExplosionPalette: tseffect
+		ImpactSounds: ptesto00.aud
+		ImpactActors: false
+	Warhead@2Con: GrantExternalCondition
+		Condition: empdisable
+		Duration: 200
+		Range: 6c0
+		ValidTargets: Vehicle
+
 ZerglingClaw:
 	Report: zulhit00.aud
 	ReloadDelay: 10
@@ -1054,6 +1131,109 @@ ZerglingClaw:
 			Heavy: 50
 		DamageTypes: RippedApartDeath
 
+ZeratulSlice:
+	ReloadDelay: 30
+	Range: 2c0
+	Projectile: Bullet
+		Speed: 1c682
+	Warhead@1Dam: SpreadDamage
+		Spread: 321
+		Delay: 5
+		Damage: 3750
+		Versus:
+			None: 150
+			Wood: 75
+			Light: 120
+            Medium: 120
+			Heavy: 120
+		DamageTypes: RippedApartDeath
+	Warhead@3Eff: CreateEffect
+		ImpactSounds: pzehit00.aud
+		Delay: 5
+
+ScienceVesselIronCurtain:
+	Projectile: MissileCA
+		Blockable: false
+		Image: DRAGON
+		Shadow: true
+		TrailImage: smokey
+		Speed: 426
+		RangeLimit: 12c0
+		PointDefenseType: Missile
+	ValidTargets: Vehicle
+	ValidStances: Ally
+	InvalidTargets: OrganicAircraft, lockdowned
+	Range: 7c0
+	ReloadDelay: 260
+	TargetActorCenter: true
+	Warhead@1: TargetDamage
+	Warhead@2: GrantExternalCondition
+		Range: 0c768
+		Duration: 250
+		Condition: invulnerability
+		ValidTargets: Vehicle
+		ValidStances: Ally
+	Warhead@3Eff: CreateEffect
+		ImpactSounds: sc_defensivematrix.aud
+		ImpactActors: false
+ScienceVesselIronCurtainAA:
+	Inherits: ScienceVesselIronCurtain
+	ValidTargets: Air
+	Warhead@2: GrantExternalCondition
+		ValidTargets: Air
+
+ScienceVesselIrradiate:
+	Projectile: MissileCA
+		Blockable: false
+		Image: DRAGON
+		Shadow: true
+		TrailImage: smokey
+		Speed: 426
+		RangeLimit: 12c0
+		PointDefenseType: Missile
+	ValidTargets: Ground
+	InvalidTargets: OrganicAircraft, lockdowned
+	ValidStances: Enemy
+	Range: 7c0
+	ReloadDelay: 90
+	TargetActorCenter: true
+	Warhead@1: TargetDamage
+	Warhead@Radiation: CreateTintedCells
+		Spread: 0c512
+		Falloff: 100, 75, 50
+		Level: 75
+		LayerName: genradiation
+	Warhead@3Eff: CreateEffect
+		ImpactSounds: sc_irridate.aud
+		ImpactActors: false
+ScienceVesselEMP:
+	Projectile: MissileCA
+		Blockable: false
+		Image: DRAGON
+		Shadow: true
+		TrailImage: smokey
+		Speed: 426
+		RangeLimit: 12c0
+		PointDefenseType: Missile
+	ValidTargets: Vehicle
+	InvalidTargets: OrganicAircraft, lockdowned
+	ValidRelationships: Enemy
+	InvalidS: OrganicAircraft, lockdowned
+	Range: 7c0
+	ReloadDelay: 350
+	TargetActorCenter: true
+	Warhead@1: TargetDamage
+	Warhead@3Eff: CreateEffect
+		Explosions: pulse_explosion
+		ExplosionPalette: tseffect
+		ImpactSounds: ptesto00.aud
+		ImpactActors: false
+	Warhead@2Con: GrantExternalCondition
+		Condition: empdisable
+		Duration: 120
+		Range: 6c0
+		ValidTargets: Vehicle
+		ValidStances: Enemy
 # WORKER ATTACKS
 
 ^WorkerAttack:
@@ -1098,13 +1278,13 @@ DarkSwarmSpawn:
 
 DefilerPlague:
 	ValidTargets: Ground, Water, Air
-	ReloadDelay: 240
+	ReloadDelay: 250
 	Range: 9c512
 	Projectile: Bullet
 		Speed: 1c682
 	Warhead@1Dam: SpreadDamage
 		Spread: 468
-		Damage: 2000
+		Damage: 1500
 	#Warhead@2: GrantExternalCondition
 	#	Range: 3c512
 	#	ValidTargets: Ground, Air, Water

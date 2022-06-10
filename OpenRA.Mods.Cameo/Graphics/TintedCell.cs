@@ -58,6 +58,12 @@ namespace OpenRA.Mods.CA.Graphics
 		bool firstTime = true;
 		float3[] screen;
 		int alpha;
+
+		int tintedLeft = 0;
+		int tintedRight = 0;
+		int tintedBottom = 0;
+		int tintedTop = 0;
+
 		public void Render(WorldRenderer wr)
 		{
 			if (firstTime)
@@ -75,6 +81,26 @@ namespace OpenRA.Mods.CA.Graphics
 
 				var corners = map.Grid.CellCorners[ramp];
 				screen = corners.Select(c => wr.Screen3DPxPosition(wpos + c + new WVec(0, 0, ZOffset))).ToArray();
+
+				CPos neighborL = new CPos(cpos.X-1, cpos.Y);
+				CPos neighborR = new CPos(cpos.X+1, cpos.Y);
+				CPos neighborT = new CPos(cpos.X, cpos.Y-1);
+				CPos neighborB = new CPos(cpos.X, cpos.Y+1);
+
+				tintedLeft = 0;
+				tintedTop = 0;
+				tintedRight = 0;
+				tintedBottom = 0;
+
+				if (layer.GetTiles().ContainsKey(neighborL))
+					tintedLeft = layer.GetTiles()[neighborL].Level;
+				if (layer.GetTiles().ContainsKey(neighborR))
+					tintedRight = layer.GetTiles()[neighborR].Level;
+				if (layer.GetTiles().ContainsKey(neighborT))
+					tintedTop = layer.GetTiles()[neighborT].Level;
+				if (layer.GetTiles().ContainsKey(neighborB))
+					tintedBottom = layer.GetTiles()[neighborB].Level;
+
 				SetLevel(Level);
 				firstTime = false;
 			}
@@ -82,7 +108,53 @@ namespace OpenRA.Mods.CA.Graphics
 			if (Level == 0)
 				return;
 
-			Game.Renderer.WorldRgbaColorRenderer.FillRect(screen[0], screen[1], screen[2], screen[3], Color.FromArgb(alpha, layer.Info.Color));
+				var countTintedNeighbors = 0;
+				if (tintedTop != 0)
+					countTintedNeighbors++;
+				if (tintedRight != 0)
+					countTintedNeighbors++;
+				if (tintedLeft != 0)
+					countTintedNeighbors++;
+				if (tintedBottom != 0)
+					countTintedNeighbors++;
+
+				var center = new float3((screen[0].X + screen[1].X) / 2, (screen[1].Y + screen[2].Y)/2, screen[1].Z);
+				var selfLevel = 0;
+				if (layer.GetTiles().ContainsKey(cpos))
+					selfLevel = layer.GetTiles()[cpos].Level;
+
+				if (countTintedNeighbors >= 3) {
+					SetLevel((selfLevel + tintedTop) / 2);
+					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[1], Color.FromArgb(alpha, layer.Info.Color));
+					SetLevel((selfLevel + tintedRight) / 2);
+					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[1], screen[2], Color.FromArgb(alpha, layer.Info.Color));
+					SetLevel((selfLevel + tintedLeft) / 2);
+					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[3], Color.FromArgb(alpha, layer.Info.Color));
+					SetLevel((selfLevel + tintedBottom) / 2);
+					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[2], screen[3], Color.FromArgb(alpha, layer.Info.Color));
+				}
+				else {
+					if (tintedTop != 0)
+					{
+						SetLevel((selfLevel + tintedTop) / 2);
+						Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[1], Color.FromArgb(alpha, layer.Info.Color));
+					}
+					if (tintedRight != 0)
+					{
+						SetLevel((selfLevel + tintedRight) / 2);
+						Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[1], screen[2], Color.FromArgb(alpha, layer.Info.Color));
+					}
+					if (tintedLeft != 0)
+					{
+						SetLevel((selfLevel + tintedLeft) / 2);
+						Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[3], Color.FromArgb(alpha, layer.Info.Color));
+					}
+					if (tintedBottom != 0)
+					{
+						SetLevel((selfLevel + tintedBottom) / 2);
+						Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[2], screen[3], Color.FromArgb(alpha, layer.Info.Color));
+					}
+				}
 		}
 
 		public void SetLevel(int value)

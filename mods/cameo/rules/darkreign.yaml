@@ -34,7 +34,7 @@ World:
 		InternalName: aterrorist
         Game: Dark Reign               
 		Side: Factions
-		Description: Terrorists from Auran\nSupport powers: Nothing
+		Description: Terrorists from Auran\nSupport powers: Nothing\nSpecial Faction, uses Guerrilla Tactics.\nUnits evolve when they rank up
 		Selectable: False
 	FactionCA@eodaliens:
 		Name: Aliens EOD
@@ -43,6 +43,13 @@ World:
 		Side: Factions
 		Description: Aliens from DR EOD\nSupport powers: Nothing
 		Selectable: True
+	FactionCA@drdescendants:
+		Name: Descendants
+		InternalName: drdescendants
+        Game: Dark Reign               
+		Side: Factions
+		Description: Custom Faction based on Xenites\nSupport powers: Minevah Wildlife\nBased on Xenites, pre Freedom Guard Alliance,\n Uses recycled Imperial Technology\n Enemies: Shadowhand, Imperium
+		Selectable: False
     FactionCA@RandomDR:
 		Name: Any
 		InternalName: RandomDR
@@ -173,6 +180,25 @@ World:
 		Factions: eodaliens
 		BaseActor: mcv.eodalien
 		SupportActors: drramnoth,drramnoth,drramnoth,drramnoth,drramnoth,drsalamander,drdrednaut,drrouter,drrouter,drrouter
+	MPStartUnits@mcvonlydrdescendants:
+		Class: none
+		ClassName: MCV Only
+		Factions: drdescendants
+		BaseActor: mcv.descendants
+
+	MPStartUnits@defaultdrdescendants:
+		Class: light
+		ClassName: Light Support
+		Factions: drdescendants
+		BaseActor: mcv.descendants
+		SupportActors: drraid,drraid,drraid,drgant,drgant,drbiond,drbiond,drtrainer
+
+	MPStartUnits@heavydrdescendants:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: drdescendants
+		BaseActor: mcv.descendants
+		SupportActors: drraid,drraid,drraid,drgant,drgant,drbiond,drbiond,drgant,drptnkd,drptnkd,drtrainer
 
 ##############################################################################
 ##
@@ -330,13 +356,65 @@ drwaterl.freedom:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: anypower
-		Queue: Building.FreedomGuard, RABuilding.FreedomGuard, Building.Xenite, RABuilding.Xenite, Building.Togran, RABuilding.Togran
+		Queue: Building.FreedomGuard, RABuilding.FreedomGuard, Building.Xenite, RABuilding.Xenite, Building.Togran, RABuilding.Togran, Building.DRDescendants, RABuilding.DRDescendants
 		Description: Refines Ore and Gems\ninto credits.
 	RenderSprites:
 		Scale: 0.668
 		Image: drwaterl
 	FreeActor:
 		Actor: drfrigth.freedom
+drwaterextract.freedomguard:
+	Inherits: ^BaseBuilding
+	Inherits@2: ^CashTricklerMultipliers
+	Inherits@shape: ^2x2Shape
+    Inherits@lowpower: ^DisabledOverlay
+    Buildable:
+		Queue: Building.FreedomGuard, RABuilding.FreedomGuard, Building.Xenite, RABuilding.Xenite, Building.Togran, RABuilding.Togran, Building.DRDescendants, RABuilding.DRDescendants
+		BuildPaletteOrder: 120
+		Prerequisites: drfghq3, ~techlevel.medium
+		Description: Provides Passive income
+    Valued:
+        Cost: 5000
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 630,-300,0, 420,512,0, -420,-512,0, -630,300,0
+	Selectable:
+		Priority: 0
+		Bounds: 48,48
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 350000
+    UpdatesDerrickCount:    
+	RevealsShroud:
+		Range: 4c0
+	CaptureManager:
+	Capturable:
+		Types: building
+	EngineerRepairable:
+	CashTrickler:
+		Interval: 3750
+		Amount: 3000
+        PauseOnCondition: lowpower
+    CashTricklerBar:
+	Tooltip:
+		Name: Water Extractor
+    RenderSprites:
+        Image: drwaterextract
+    -WithDeathAnimation:
+    Power:
+        Amount: -50
+drwaterextract.imperium:
+	Inherits: drwaterextract.freedomguard
+	Buildable:
+		BuildPaletteOrder: 120
+		Prerequisites: drihq3, ~techlevel.medium
+		Queue: Building.Imperium, RABuilding.Imperium, Building.Shadowhand, RABuilding.Shadowhand
+		Description: Provides Passive income
+	RenderSprites:
+		Scale: 0.668
+		Image: drwaterextract
 drfrigth.imperium:
 	Inherits: HARV
     Inherits@DRShadow: ^InfantryShadows
@@ -362,7 +440,7 @@ drfrigth.freedom:
 		GenericName: Harvester
 	Buildable:
 		Prerequisites: drwaterl.freedom
-		Queue: Vehicle.FreedomGuard, Vehicle.Xenite, RAVehicle.FreedomGuard, RAVehicle.Xenite, Vehicle.Togran, RAVehicle.Togran
+		Queue: Vehicle.FreedomGuard, Vehicle.Xenite, RAVehicle.FreedomGuard, RAVehicle.Xenite, Vehicle.Togran, RAVehicle.Togran, Vehicle.DRDescendants, RAVehicle.DRDescendants
 	Selectable:
 		DecorationBounds: 36,36
 	RenderSprites:
@@ -504,7 +582,7 @@ drcamera:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: anypower
-		Queue: Defence.Imperium, RADefence.Imperium, Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Shadowhand, RADefence.Shadowhand, Defence.Xenite, RADefence.Xenite, Defence.EodAlien, RADefence.EodAlien, Defence.Actibliz, RADefence.Actibliz
+		Queue: Defence.Imperium, RADefence.Imperium, Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Shadowhand, RADefence.Shadowhand, Defence.Xenite, RADefence.Xenite, Defence.EodAlien, RADefence.EodAlien, Defence.Actibliz, RADefence.Actibliz, Defence.DRDescendants, RADefence.DRDescendants
 		BuildDurationModifier: 40
 		Description: Detection purpose Turret
 	RequiresBuildableArea:
@@ -806,7 +884,7 @@ dre6:
 	Buildable:
 		BuildPaletteOrder: 10000
 		Prerequisites: anypower
-		Queue: Infantry.Imperium, Infantry.FreedomGuard, RAInfantry.Imperium, RAInfantry.FreedomGuard, Infantry.Xenite, Infantry.Shadowhand, RAInfantry.Xenite, RAInfantry.Shadowhand, Infantry.Togran, RAInfantry.Togran, Infantry.EodAlien, RAInfantry.EodAlien, Infantry.Actibliz, RAInfantry.Actibliz
+		Queue: Infantry.Imperium, Infantry.FreedomGuard, RAInfantry.Imperium, RAInfantry.FreedomGuard, Infantry.Xenite, Infantry.Shadowhand, RAInfantry.Xenite, RAInfantry.Shadowhand, Infantry.Togran, RAInfantry.Togran, Infantry.EodAlien, RAInfantry.EodAlien, Infantry.Actibliz, RAInfantry.Actibliz, Infantry.DRDescendants, RAInfantry.DRDescendants
 		Icon: dricon
 	RenderSprites:
 		Image: e6
@@ -1009,7 +1087,7 @@ dribarr.imperium:
 		Queue: Building.Imperium, RABuilding.Imperium
 		Description: Produces infantry
 	Building:
-		Footprint: xxx xxx xx=
+		Footprint: xxx x=x x==
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Selectable:
@@ -2886,7 +2964,7 @@ drfgbarr.freedomguard:
 		Queue: Building.FreedomGuard, RABuilding.FreedomGuard
 		Description: Produces infantry
 	Building:
-		Footprint: xxx xxx xx=
+		Footprint: xxx x=x x==
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Selectable:
@@ -3113,7 +3191,7 @@ drlastur1:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: anypower
-		Queue: Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Xenite, RADefence.Xenite
+		Queue: Defence.FreedomGuard, RADefence.FreedomGuard, Defence.Xenite, RADefence.Xenite, Defence.DRDescendants, RADefence.DRDescendants
 		BuildDurationModifier: 40
 		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
 	RequiresBuildableArea:
@@ -3261,6 +3339,7 @@ drpplant1.freedomguard:
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^3x2Shape
 	Inherits@tech: ^IsTechnoBuilding
+	Inherits@AIDifficulties: ^AIDifficulties
 	Selectable:
 		Bounds: 72,72
 	Buildable:
@@ -3301,21 +3380,18 @@ drpplant1.freedomguard:
 		RespawnTicks: 750
 		ExitByBudding: false
 		AggregateHealth: false
-		RequiresCondition: lvl2 && !brutalbot && !hardbot && !normalbot && !easybot 
+		RequiresCondition: lvl2 && !cameogodbot && !unbeatablebot && !challengerbot && !brutalbot && !hardbot && !normalbot && !easybot && !easiestbot
 		PauseOnCondition: disabled
-	GrantConditionOnBotOwner@brutal:
-		Condition: brutalbot
-		Bots: brutal
 	MobSpawnerMaster@brutalbot:
 		Actors: drphasetran
 		RespawnTicks: 500
 		ExitByBudding: false
 		AggregateHealth: false
-		RequiresCondition: lvl2 && brutalbot
+		RequiresCondition: lvl2 && (brutalbot || challengerbot || unbeatablebot || cameogodbot)
 		PauseOnCondition: disabled
 	GrantConditionOnBotOwner@hard:
 		Condition: hardbot
-		Bots: hard
+		Bots: hard, brutal, challenger, unbeatable, cameogod
 	MobSpawnerMaster@hardbot:
 		Actors: drphasetran
 		RespawnTicks: 600
@@ -3325,7 +3401,7 @@ drpplant1.freedomguard:
 		PauseOnCondition: disabled
 	GrantConditionOnBotOwner@medium:
 		Condition: normalbot
-		Bots: medium
+		Bots: medium, hard
 	MobSpawnerMaster@normalbot:
 		Actors: drphasetran
 		RespawnTicks: 750
@@ -3335,7 +3411,7 @@ drpplant1.freedomguard:
 		PauseOnCondition: disabled
 	GrantConditionOnBotOwner@easy:
 		Condition: easybot
-		Bots: easy, airforce
+		Bots: easiest, easy, airforce
 	MobSpawnerMaster@easybot:
 		Actors: drphasetran
 		RespawnTicks: 750
@@ -3583,7 +3659,7 @@ drraid:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks
-		Queue: Infantry.FreedomGuard, RAInfantry.FreedomGuard, Infantry.Xenite, RAInfantry.Xenite
+		Queue: Infantry.FreedomGuard, RAInfantry.FreedomGuard, Infantry.Xenite, RAInfantry.Xenite, Infantry.DRDescendants, RAInfantry.DRDescendants
 		Description: Stalwart of the Freedom Guard cause, the Raider is armed with a laser rifle.\nOnce the Phasing Facility is constructed, the Raider gains the ability to phase underground.\n\nType: Walker\nSpeed: SLow\nWeapon: Laser Rifle\nRange: Short\nArmor: Light
 	Mobile:
 		Speed: 78
@@ -3634,7 +3710,7 @@ drscout:
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
-		Queue: Infantry.FreedomGuard, RAInfantry.FreedomGuard, Infantry.Xenite, RAInfantry.Xenite
+		Queue: Infantry.FreedomGuard, RAInfantry.FreedomGuard, Infantry.Xenite, RAInfantry.Xenite, Infantry.DRDescendants, RAInfantry.DRDescendants
 		Description: Used mainly for front line surveillance, the Scout is able to morph into\ninanimate objects such as trees and rocks to conceal her position. The Scout is relatively fast but wears\nno body armour, so combat is not her specialty\n\nType: Walker\nSpeed: Medium\nWeapon: None\nRange: N/A\nArmor: Light
 	Mobile:
 		Speed: 128
@@ -3736,7 +3812,7 @@ drsnipe:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: drfgbarr2
-		Queue: Infantry.FreedomGuard, RAInfantry.FreedomGuard, Infantry.Xenite, RAInfantry.Xenite
+		Queue: Infantry.FreedomGuard, RAInfantry.FreedomGuard, Infantry.Xenite, RAInfantry.Xenite, Infantry.DRDescendants, RAInfantry.DRDescendants
 		Description: With a long range electro-magnetic needle gun, the Sniper is lethal against\ninfantry targets. Like the Scout, the Sniper can morph into objects for camouflage.\n\nType: Walker\nSpeed: Medium\nWeapon: Sniper Rail\nRange: Long\nArmor: Light
 	Mobile:
 		Speed: 80
@@ -4926,7 +5002,7 @@ dribarr.shadowhand:
 		Queue: Building.Shadowhand, RABuilding.Shadowhand
 		Description: Produces infantry
 	Building:
-		Footprint: xxx xxx xx=
+		Footprint: xxx x=x x==
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Selectable:
@@ -5768,7 +5844,7 @@ drtrainer:
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
-		Queue: Infantry.Xenite, RAInfantry.Xenite
+		Queue: Infantry.Xenite, RAInfantry.Xenite, Infantry.DRDescendants, RAInfantry.DRDescendants
 		Description: Animal Control Infantry.\n  Strong vs Creatures\n  Weak vs Vehicles, Infantry\n Can Control Dinosaurs, Grendels, Gants and Other Creatures
 	Mobile:
 		Speed: 56
@@ -5811,7 +5887,7 @@ drgant:
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
-		Queue: Infantry.Xenite, RAInfantry.Xenite
+		Queue: Infantry.Xenite, RAInfantry.Xenite, Infantry.DRDescendants, RAInfantry.DRDescendants
 		Description: Melee Attack Unit.\n  Strong vs Infantry\n  Weak vs Aircraft, Heavy Vehicles\n Requires Control
 	Mobile:
 		Locomotor: critter
@@ -5883,7 +5959,7 @@ drgrendel:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: drbiocom2
-		Queue: Infantry.Xenite, RAInfantry.Xenite
+		Queue: Infantry.Xenite, RAInfantry.Xenite, Vehicle.DRDescendants, RAVehicle.DRDescendants
 		Description: Electric Attack Unit.\n  Strong vs Infantry\n  Weak vs Aircraft, Heavy Vehicles\n Requires Control
 	Mobile:
 		Locomotor: critter
@@ -5955,7 +6031,7 @@ drgrider:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: drbiocom2
-		Queue: Infantry.Xenite, RAInfantry.Xenite
+		Queue: Infantry.Xenite, RAInfantry.Xenite, Vehicle.DRDescendants, RAVehicle.DRDescendants
 		Description: Animal Control Unit.\n Electric Attack Unit.\n  Strong vs Infantry\n  Weak vs Aircraft, Heavy Vehicles
 	Mobile:
 		Locomotor: critter
@@ -6364,7 +6440,7 @@ dribarr.togran:
 		Queue: Building.Togran, RABuilding.Togran
 		Description: Produces infantry
 	Building:
-		Footprint: xxx xxx xx=
+		Footprint: xxx x=x x==
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Selectable:
@@ -9416,6 +9492,499 @@ drpboat:
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
 ##############################################################################
 ##
+##      Darkreign Descendants (Fanmade)
+##
+##      Credits: Activision, Dark Reign Rise of Shadowhand
+##
+##############################################################################
+drdpower:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+    Inherits@SHADOWS: ^Shadows
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 640,-384,0, 640,512,0, -710,-512,0, -710,512,0
+	Buildable:
+		Queue: Building.DRDescendants, RABuilding.DRDescendants
+		BuildPaletteOrder: 10
+		Description: Provides power for other structures
+	Valued:
+		Cost: 400			#300
+	Tooltip:
+		Name: Scrap Power Plant
+	ProvidesPrerequisite:
+		Prerequisite: anypower
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 80000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 150
+	StoresResources:
+		PipCount: 10
+		PipColor: Green
+		Capacity: 5000
+	Targetable:
+		TargetTypes: Ground, Structure, C4, DetonateAttack, SpyInfiltrate
+	ScalePowerWithHealth:
+	WithDeathAnimation:
+		DeathSequence: dead
+		UseDeathTypeSuffix: false
+	Inherits@EXPERIENCE: ^GainsExperience				##########
+	Inherits@POWERMULTIPLIER: ^PowerMultiplier			##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: building							##########
+	RenderSprites:
+		Scale: 0.668
+	WithShadow:
+		Offset: 192, 0, 0
+		ZOffset: -512
+mcv.descendants:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+    Inherits@conyard: ^Conyard
+    Inherits@DRShadow: ^InfantryShadows
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Construction Rig (Descendants)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: drfghq2, ~techlevel.medium
+		Queue: Building.DRDescendants, RABuilding.DRDescendants
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Selectable:
+		Priority: 4
+		DecorationBounds: 36,36
+	Mobile:
+		Speed: 71
+		Locomotor: heavywheeled
+	Health:
+		HP: 140000
+	Repairable:
+		HpPerStep: 2182
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Transforms:
+		IntoActor: drfghq.descendants
+		Offset: -1,-1
+		Facing: 108
+		TransformSounds: constru2.aud, hvydoor1.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: drrig
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmdescendants
+	Voiced:
+		VoiceSet: DRFGRigVoice
+drfghq.descendants:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+    Inherits@conyard: ^Conyard
+	Selectable:
+		Bounds: 72,48
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: HQ (Xenite)
+	Building:
+		Footprint: xxx xxx =xx
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 210000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building.DRDescendants, Defence.DRDescendants
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.DRDescendants, RADefence.DRDescendants
+		RequiresCondition: classicproductionqueues
+	ProductionQueue@GDIBuilding:
+		Type: Building.DRDescendants
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@GDIDefense:
+		Type: Defence.DRDescendants
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	ProductionBar@BuildingGDI:
+		ProductionType: Building.DRDescendants
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceGDI:
+		ProductionType: Defence.DRDescendants
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingGDI:
+		ProductionType: RABuilding.DRDescendants
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceGDI:
+		ProductionType: RADefence.DRDescendants
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 14c0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: drhq
+	Buildable:
+		Queue: Building.DRDescendants, RABuilding.DRDescendants
+		BuildPaletteOrder: 1000
+		Prerequisites: ~wip-content
+		Description: Builds structures
+	ProvidesPrerequisite@factiongdi:
+		Prerequisite: mmxenite
+	RenderSprites:
+		Image: drfghq
+		Scale: 0.67
+	Inherits@upgrade: ^UpgradesDRFGHQType
+	RallyPoint:							##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0		#-1323,1280,0
+		ExitCell: 0,2
+		Facing: 135
+drdweap.descendants:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,1024,0, 0,-1024,0
+		Type: Rectangle
+			TopLeft: -1536, -1024
+			BottomRight: 1536, 512
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Scrap Garage
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: drwaterl.freedom
+		Queue: Building.DRDescendants, RABuilding.DRDescendants
+		Description: Produces vehicles
+	Building:
+		Footprint: xxx === ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,64,0,-16
+	SelectionDecorations:
+	Health:
+		HP: 140000
+	RevealsShroud:
+		Range: 4c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -512,-512,0
+		ExitCell: 0,1
+		ExitDelay: 3
+	Production@NORMAL:
+		Produces: Vehicle.DRDescendants
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.DRDescendants
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Vehicle.DRDescendants
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLEGDI:
+		ProductionType: Vehicle.DRDescendants
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLEGDI:
+		ProductionType: RAVehicle.DRDescendants
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	WithIdleOverlay@TOP1:
+		Sequence: idle-top
+	WithIdleOverlay@BOTTOM1:
+		Sequence: idle-bottom
+	RenderSprites:
+		Image: drdweap
+		Scale: 0.67
+drdcamp.descendants:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@barr: ^IsBarrack
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,1024,0, 0,-1024,0
+		Type: Rectangle
+			TopLeft: -1536, -1024
+			BottomRight: 1536, 512
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Campament
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: drhq
+		Queue: Building.DRDescendants, RABuilding.DRDescendants
+		Description: Produces infantry
+	Building:
+		Footprint: _=_ xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,64,0,-16
+	SelectionDecorations:
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 4c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -512,-512,0
+		ExitCell: 0,1
+		ExitDelay: 3
+	Production@NORMAL:
+		Produces: Infantry.DRDescendants
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.DRDescendants
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry.DRDescendants
+		DisplayOrder: 3
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLEGDI:
+		ProductionType: Infantry.DRDescendants
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLEGDI:
+		ProductionType: RAInfantry.DRDescendants
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	RenderSprites:
+		Image: drdcamp
+		Scale: 0.67
+	ProximityExternalCondition:
+		Range: 7c0
+		Condition: trainercontrol
+	WithRangeCircle:
+		Range: 7c0
+drdsupport:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+    Inherits@SHADOWS: ^Shadows
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 640,-384,0, 640,512,0, -710,-512,0, -710,512,0
+	Buildable:
+		Queue: Building.DRDescendants, RABuilding.DRDescendants
+		BuildPaletteOrder: 40
+		Prerequisites: drfghq2
+		Description: Provides power for other structures
+	Valued:
+		Cost: 500			#300
+	Tooltip:
+		Name: Support Tent
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 80000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -20
+	ScalePowerWithHealth:
+	WithDeathAnimation:
+		DeathSequence: dead
+		UseDeathTypeSuffix: false
+	RenderSprites:
+		Scale: 0.668
+	WithShadow:
+		Offset: 192, 0, 0
+		ZOffset: -512
+	ProvidesPrerequisite@drihq2:
+		Prerequisite: drbiocom2
+	ProvidesPrerequisite@drfgbarr2:
+		Prerequisite: drfgbarr2
+	ProvidesPrerequisite@buildingname:
+driscrap:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+    Inherits@SHADOWS: ^Shadows
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 640,-384,0, 640,512,0, -710,-512,0, -710,512,0
+	Buildable:
+		Queue: Building.DRDescendants, RABuilding.DRDescendants
+		BuildPaletteOrder: 50
+		Prerequisites: drfghq2
+		Description: Provides power for other structures
+	Valued:
+		Cost: 1200			#300
+	Tooltip:
+		Name: Imperium Scrap
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 120000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -40
+	ScalePowerWithHealth:
+	WithDeathAnimation:
+		DeathSequence: dead
+		UseDeathTypeSuffix: false
+	RenderSprites:
+		Scale: 0.668
+	WithShadow:
+		Offset: 192, 0, 0
+		ZOffset: -512
+	ProvidesPrerequisite@drfgweap2:
+		Prerequisite: drfgweap2
+	ProvidesPrerequisite@buildingname:
+drbiond:
+	Inherits: drbion
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Rearmed Bion
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: driscrap
+		Queue: Infantry.DRDescendants, RAInfantry.DRDescendants
+		Description: A Rearmed bion, Maked with Scrap and Death Bions.\nThis one-man cyborg death squad carries a massive plasma rifle,\nand can fire at both ground and air units.\n\nType: Walker\nSpeed: Slow\nWeapon: Plasma Rifle\nRange: Short\nArmor: Medium
+        BuildDuration: 300
+        BuildDurationModifier: 100
+
+drptnkd:
+	Inherits: drptnk
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+    Inherits@DRShadow: ^InfantryShadows
+	Valued:
+		Cost: 800 
+	Tooltip:
+		Name: Rearmed Plasma Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: driscrap, ~techlevel.medium
+		Queue: Vehicle.DRDescendants, RAVehicle.DRDescendants
+		BuildDuration: 1020
+		BuildDurationModifier: 40
+		Description: Backbone of the Imperium war effort, the Plasma Tank\nis tough and packs a formidable plasma cannon. The Imperium overruns\nthe enemy with endless waves of these ruinous machines\n\nType: Hover\nSpeed: Medium\nWeapon: Plasma Canon\nRange: Medium\nArmor: Heavy
+	Mobile:
+		Locomotor: hover
+		TurnSpeed: 8
+		Speed: 80
+	Voiced:
+		VoiceSet: DRFreedomGuardVoice
+drmadd:
+	Inherits: drmad
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Rearmed MAD
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: driscrap, ~techlevel.medium
+		Queue: Vehicle.DRDescendants, RAVehicle.DRDescendants
+		Description: The M.A.D. fires bladed orbs at enemy air units.\nLike the Freedom Guard Flak Jack, it cannot fire at ground units and\nshould be defended against land attack\n\nType: Hover\nSpeed: Medium\nWeapon: Bladed Orbs\nRange: Long\nArmor: Light
+	Voiced:
+		VoiceSet: DRFreedomGuardVoice
+driaaturret.descendants:
+	Inherits: driaaturret
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: AA Defence Site
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: driscrap
+		Queue: Defence.DRDescendants, RADefence.DRDescendants
+		Description: Antiground defensive structure.\n  Strong vs Infantry, Tanks\n  Weak vs Aircraft
+	RenderSprites:
+		Image: driaaturret
+		Scale: 0.67
+drmechd:
+	Inherits: drmech
+	Buildable:
+		Queue: Infantry.FreedomGuard, RAInfantry.FreedomGuard, Infantry.Xenite, RAInfantry.Xenite
+		BuildPaletteOrder: 100
+		Prerequisites: drdsupport, ~techlevel.medium
+		Description: The Mechanic functions similarly to the Field Medic\nrepairing damaged vehicles in the field. The Mechanic has no attack capability\n\nType: Walker\nSpeed: Slow\nWeapon: None\nRange: N/A\nArmor: Light
+	RenderSprites:
+		Image: drmech
+		Scale: 0.67
+##############################################################################
+##
 ##      Darkreign Civilians or Misc
 ##
 ##############################################################################
@@ -9550,7 +10119,7 @@ drwaterextract:
 		Interval: 3750
 		Amount: 3000
 	GivesCashOnCapture:
-		Amount: 3000
+		Amount: 3000  
 
 drcivplant:
 	Inherits: ^TechBuilding
@@ -9651,7 +10220,7 @@ drarmciv:
 	RenderSprites:
 		Scale: 0.68
 	Voiced:
-		VoiceSet: DRFreedomGuardVoice
+		VoiceSet: DRArmedCivilian
 drzombie:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -9702,7 +10271,6 @@ drsatanclawz:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
     Inherits@DRShadow: ^InfantryShadows
-    Inherits@CrateSpawn: ^SpawnChristmasCrate
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -9791,7 +10359,7 @@ drsatanglobi:
 	AutoTarget:
 		ScanRadius: 10
 	Armament@PRIMARY:							##########
-		Weapon: DRSatanClawzMinionMG
+		Weapon: M16
 	Valued:
 		Cost: 75
 	Voiced:

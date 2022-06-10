@@ -253,6 +253,7 @@ Player:
 		CancelledAudio: Cancelled
 		SpeedUp: True
 		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+		BuildDurationModifier: 110
 	ClassicProductionQueue@RAVEHICLEZERG:
 		Type: RAVehicle.Zerg
 		DisplayOrder: 3
@@ -391,7 +392,11 @@ SCCOMMANDCENTER:
 		Condition: jammed
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmterran
-
+	Refinery:
+		DockOffset: 0,2
+	StoresResources:
+		PipCount: 10
+		Capacity: 1000
 SCSUPPLYDEPOT:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -460,7 +465,38 @@ SCREFINERY:
 		Capacity: 1000
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi
-
+	SeedsResource:
+		ResourceType: SCGas
+		Interval: 120
+		RequiresCondition: refineryup
+	Production:
+		Produces: Addon.upscrefinery1
+		RequiresCondition: !refineryup
+	ProductionQueue:
+		Type: Addon.upscrefinery1
+		Group: Unit
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@refineryup:
+		Condition: refineryup
+		Actors: pscupscrefinery1
+pscupscrefinery1:
+	Tooltip:
+		Name: Vespene Gas Collector
+	Buildable:
+		Prerequisites: anypower
+		BuildPaletteOrder: 10
+		Queue: Addon.upscrefinery1
+		Description: The Refinery generates Vespene gas Capsules
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: upscrefinery1
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
 SCBARRACKS:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -696,7 +732,9 @@ SCBUNKER:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 4
 		PipCount: 4
-		EjectOnDeath: false
+		EjectOnDeath: true
+	Explodes@healer:
+		Weapon: FakeHealtAPC
 	AttackGarrisoned:
 		Armaments: garrisoned
 		PortOffsets: -100,0,128, -500,-241,128, -900,-241,128, -1100,0,128, -900,241,128, -500,241,128
@@ -1071,7 +1109,11 @@ SCNEXUS:
 	-WithDeathAnimation:
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmprotoss
-
+	Refinery:
+		DockOffset: 0,2
+	StoresResources:
+		PipCount: 10
+		Capacity: 1000
 SCPYLON:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -1097,7 +1139,7 @@ SCPYLON:
 	RevealsShroud:
 		Range: 7c0
 	Power:
-		Amount: 100
+		Amount: 75
 	StoresResources:
 		PipCount: 6
 		Capacity: 1200
@@ -1105,7 +1147,7 @@ SCPYLON:
 		ValidTypes: building							##########
 	-WithDeathAnimation:
     PowerMultiplier@pylonupg:
-        Modifier: 250
+        Modifier: 200
         RequiresCondition: scpylonexpand          
     Production@pylonupg:
 		Produces: pylonupg.Protoss
@@ -1180,8 +1222,38 @@ SCASSIMILATOR:
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi
 	-WithDeathAnimation:
-	
-
+	SeedsResource:
+		ResourceType: SCGas2
+		Interval: 120
+		RequiresCondition: refineryup
+	Production:
+		Produces: Addon.upscrefinery2
+		RequiresCondition: !refineryup
+	ProductionQueue:
+		Type: Addon.upscrefinery2
+		Group: Unit
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@refineryup:
+		Condition: refineryup
+		Actors: pscupscrefinery2
+pscupscrefinery2:
+	Tooltip:
+		Name: Vespene Gas Collector
+	Buildable:
+		Prerequisites: anypower
+		BuildPaletteOrder: 10
+		Queue: Addon.upscrefinery2
+		Description: The Refinery generates Vespene gas Capsules
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: upscrefinery2
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
 SCGATEWAY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -1787,6 +1859,64 @@ SCARBITERTRIBUNAL:
 ####################################################################################################
 #		BUILDING ZERG
 ####################################################################################################
+zergsoilmaker:
+	AlwaysVisible:
+	Interactable:
+	Building:
+		BuildSounds: CHUNG.WAV
+		AllowInvalidPlacement: true
+        TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune  
+    D2kActorPreviewPlaceBuildingPreview:
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 4
+    RenderSprites:    
+   	LaysTerrain:
+		Template: 858
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune
+	KillsSelf:
+		RemoveInstead: true
+	Building:
+		Footprint: _xxxxxxx_ xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx _xxxxxxx_
+		Dimensions: 9,9
+	Tooltip:
+		Name: Soil Maker
+
+zergsoilmaker2:
+	Inherits: zergsoilmaker
+	Building:
+		Footprint: _xxxxxx_ xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx _xxxxxx_
+		Dimensions: 8,8
+
+^ZergAIProductionBoost:
+	ProductionTimeMultiplier@zergaiboostanybot:
+		Multiplier: 90
+		Prerequisites: botplayer
+	ProductionTimeMultiplier@zergaiboostunbeatable:
+		Multiplier: 95
+		Prerequisites: unbeatablebotplayer
+	ProductionTimeMultiplier@zergaiboostchallenger:
+		Multiplier: 90
+		Prerequisites: challengerbotplayer
+	ProductionTimeMultiplier@zergaiboostgod:
+		Multiplier: 85
+		Prerequisites: cameogodbotplayer
+	ProductionCostMultiplier@zergaiboostunbeatable:
+		Multiplier: 90
+		Prerequisites: unbeatablebotplayer
+	ProductionCostMultiplier@zergaiboostchallenger:
+		Multiplier: 80
+		Prerequisites: challengerbotplayer
+	ProductionCostMultiplier@zergaiboostgod:
+		Multiplier: 70
+		Prerequisites: cameogodbotplayer
+		
+^BaseBuildingZerg:
+    Inherits: ^BaseBuilding
+    Inherits@zergai: ^ZergAIProductionBoost
+	Building:
+		TerrainTypes: ZergSoil		##########
+
 ^SCBREEDFASTER:
     ExternalCondition@Fasterbreed:
         Condition: SCFASTERBREED
@@ -1799,12 +1929,11 @@ SCARBITERTRIBUNAL:
         Queue: Infantry.Zerg, RAInfantry.Zerg
         
 SCHATCHERY:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
     Inherits@conyard: ^Conyard
-	Inherits@supply: ^SCUnitProduction
 	Inherits@bot: ^BotMicromanageable
     Inherits@breedfaster: ^SCBREEDFASTER
 	Selectable:
@@ -1840,6 +1969,7 @@ SCHATCHERY:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: zchrdy00.aud
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil		##########
 	Health:
 		HP: 150000
 	DamageMultiplier@lair:
@@ -1858,12 +1988,6 @@ SCHATCHERY:
 	Production@CLASSICBUILDING:
 		Produces: RABuilding.Zerg, RADefence.Zerg
 		RequiresCondition: classicproductionqueues
-	Production@NORMAL:
-		Produces: Infantry.Zerg
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry.Zerg
-		RequiresCondition: classicproductionqueues
 	ProductionQueue@ZergBuilding:
 		Type: Building.Zerg
 		DisplayOrder: 0
@@ -1876,12 +2000,6 @@ SCHATCHERY:
 		Group: Vehicle
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
-	ProductionQueue@ZergInfantry:
-		Type: Infantry.Zerg
-		DisplayOrder: 2
-		Group: Infantry
-		QueuedAudio: Building
-		ReadyAudio: UnitReady
 	BaseBuilding:
 	ProductionBar@BuildingZerg:
 		ProductionType: Building.Zerg
@@ -1889,17 +2007,11 @@ SCHATCHERY:
 	ProductionBar@DefenceZerg:
 		ProductionType: Defence.Zerg
 		RequiresCondition: !classicproductionqueues
-	ProductionBar@InfantryZerg:
-		ProductionType: Infantry.Zerg
-		RequiresCondition: !classicproductionqueues
 	ProductionBar@RABuildingZerg:
 		ProductionType: RABuilding.Zerg
 		RequiresCondition: classicproductionqueues
 	ProductionBar@RADefenceZerg:
 		ProductionType: RADefence.Zerg
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RAInfantryZerg:
-		ProductionType: RAInfantry.Zerg
 		RequiresCondition: classicproductionqueues
 	BaseProvider:
 		Range: 14c0
@@ -1919,7 +2031,6 @@ SCHATCHERY:
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi, hatchery
 	-WithDeathAnimation:
-	
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmzerg
 	##########
@@ -2001,7 +2112,129 @@ SCHATCHERY:
         Actor: SCBROODLING   
     SpawnActorOnDeath@death5:
         Actor: SCBROODLING
-        
+	Refinery:
+		DockOffset: 0,2
+	StoresResources:
+		PipCount: 10
+		Capacity: 1000
+	FreeActor@soil:
+		Actor: zergsoilmaker
+		SpawnOffset: -3,-3
+   	LaysTerrain:
+		Template: 858
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune
+	MobSpawnerMaster@1:
+		Actors: sc_zerg_larva
+		Offset: 1000,255,0
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+	MobSpawnerMaster@2:
+		Actors: sc_zerg_larva
+		Offset: 0,255,0
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+	MobSpawnerMaster@3:
+		Actors: sc_zerg_larva
+		Offset: 2000,255,0
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+sc_zerg_larva:
+	Inherits: ^Soldier
+	Inherits@supply: ^SCUnitProduction
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Valued:
+		Cost: 50
+	Tooltip:
+		Name: Larvae
+	#Buildable:
+	#	BuildPaletteOrder: 130
+	#	Prerequisites:
+	#	Queue: Defence.Zerg, RADefence.Zerg, Infantry.X_Infantry
+	#	Description: Speedy Ling with powerful attack\nSpawns out ouf destroyed buildings
+	Mobile:
+		Speed: 0
+	Health:
+		HP: 7000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 4c0
+	WithInfantryBody:
+		IdleSequences: idle
+		DefaultAttackSequence: idle
+	WithDeathAnimation:
+		UseDeathTypeSuffix: False
+	Voiced:
+		VoiceSet: SCBroodlingVoice
+	-WithDeathAnimation:
+	-DamagedByTerrain:
+	-Crushable:
+	-TakeCover:
+    -ActorLostNotification:
+	MobSpawnerSlave:
+	-MapEditorData:
+	ProductionBar@InfantryZerg:
+		ProductionType: Infantry.Zerg
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAInfantryZerg:
+		ProductionType: RAInfantry.Zerg
+		RequiresCondition: classicproductionqueues
+    WithProductionOverlay@egg:
+		Queues: Infantry.Zerg, RAInfantry.Zerg
+		Sequence: makeunit
+		IsPlayerPalette: True
+		Offset: 0,0,0
+	Production@NORMAL:
+		Produces: Infantry.Zerg
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.Zerg
+		RequiresCondition: classicproductionqueues
+	ProductionQueue@ZergInfantry:
+		Type: Infantry.Zerg
+		DisplayOrder: 2
+		Group: Infantry
+		QueuedAudio: Building
+		ReadyAudio: UnitReady
+		BuildDurationModifier: 110
+	Exit@1:
+		SpawnOffset: -1,1,0		#-1323,1280,0
+		ExitCell: 0,0
+		Facing: 135
+	SpeedMultiplier@static:
+		Modifier: 0
+		RequiresCondition: stopmove
+	GrantConditionOnMovement@static:
+		ValidMovementTypes: Horizontal, Vertical, Turn
+		Condition: stopmove
+	Wanders:
+		MinMoveDelay: 150
+		MaxMoveDelay: 750
+	RenderSprites:
+		Scale: 0.67
+	GrantConditionOnProduction@producezergling:
+		Actors: sczergling
+		Condition: producezergling
+		Duration: 1
+	GrantConditionOnProduction@producescourge:
+		Actors: scscourge
+		Condition: producescourge
+		Duration: 1
+	FreeActor@sczergling:
+		Actor: sczergling
+		SpawnOffset: 0,0
+		Facing: 64
+		AllowRespawn: True
+		RequiresCondition: producezergling
+	FreeActor@scscourge:
+		Actor: scscourge
+		SpawnOffset: 0,0
+		Facing: 64
+		AllowRespawn: True
+		RequiresCondition: producescourge
 SCCREEPCOLONY:
 	Inherits: ^Defense
 	Inherits@shape: ^2x2Shape
@@ -2024,13 +2257,15 @@ SCCREEPCOLONY:
 		Prerequisite: Creep Colony
 	Buildable:
 		BuildPaletteOrder: 20
-		BuildDuration: 240
+		BuildDuration: 250
+		BuildDurationModifier: 100
 		Queue: Building.Zerg, RABuilding.Zerg
 		Description: Can be upgraded to Sunken or Spore Colonies.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
 		BuildSounds: zchrdy00.aud
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil		##########
 	Health:
 		HP: 60000
 	Armor:
@@ -2101,7 +2336,12 @@ SCCREEPCOLONY:
 		Type: CenterPosition
     SpawnActorOnDeath@death1:
         Actor: SCBROODLING
-        
+	FreeActor@soil:
+		Actor: zergsoilmaker2
+		SpawnOffset: -3,-3
+   	LaysTerrain:
+		Template: 858
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune
 SCBOTCREEPCOLONY:
 	Inherits: SCCREEPCOLONY
 	RenderSprites:
@@ -2111,7 +2351,7 @@ SCBOTCREEPCOLONY:
 		Queue: Defence.Zerg, RADefence.Zerg
 
 SCEXTRACTOR:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^3x2Shape
 	Inherits@ref: ^Refinery
 	Valued:
@@ -2145,7 +2385,7 @@ SCEXTRACTOR:
 		DockOffset: 0,2
 	StoresResources:
 		PipCount: 10
-		Capacity: 1000
+		Capacity: 1500
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi
 	-WithDeathAnimation:
@@ -2153,9 +2393,40 @@ SCEXTRACTOR:
         Actor: SCBROODLING
     SpawnActorOnDeath@death2:
         Actor: SCBROODLING    
-
+	SeedsResource:
+		ResourceType: SCGas3
+		Interval: 120
+		RequiresCondition: refineryup
+	Production:
+		Produces: Addon.upscrefinery3
+		RequiresCondition: !refineryup
+	ProductionQueue:
+		Type: Addon.upscrefinery3
+		Group: Unit
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@refineryup:
+		Condition: refineryup
+		Actors: pscupscrefinery3
+pscupscrefinery3:
+	Tooltip:
+		Name: Vespene Gas Collector
+	Buildable:
+		Prerequisites: anypower
+		BuildPaletteOrder: 10
+		Queue: Addon.upscrefinery3
+		Description: The Refinery generates Vespene gas Capsules
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: upscrefinery3
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
 SCSPAWNINGPOOL:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 800
@@ -2201,7 +2472,7 @@ SCSPAWNINGPOOL:
         Actor: SCBROODLING        
 
 SCEVOLUTIONCHAMBER:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 1000
@@ -2246,7 +2517,7 @@ SCEVOLUTIONCHAMBER:
         Actor: SCBROODLING        
 
 SCHYDRALISKDEN:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 800
@@ -2292,7 +2563,7 @@ SCHYDRALISKDEN:
         Actor: SCBROODLING        
         
 SCQUEENSNEST:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 2000
@@ -2328,7 +2599,7 @@ SCQUEENSNEST:
         Actor: SCBROODLING   
 
 SCSPIRE:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Inherits@bot: ^BotMicromanageable
 	Valued:
@@ -2418,7 +2689,7 @@ SCSPIRE:
         Actor: SCBROODLING   
         
 SCULTRALISKCAVERN:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 1400
@@ -2464,7 +2735,7 @@ SCULTRALISKCAVERN:
         Actor: SCBROODLING   
         
 SCDEFILERMOUND:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 1600
@@ -2493,7 +2764,7 @@ SCDEFILERMOUND:
 	
 
 SCNYDUSCANAL:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 800
@@ -2518,9 +2789,6 @@ SCNYDUSCANAL:
 		HP: 25000
 	RevealsShroud:
 		Range: 7c0
-	TeleportNetworkPrimaryExit:
-	TeleportNetwork:
-		Type: nydus
 	RallyPoint:
 		Path: 1,1
 		IsPlayerPalette: true
@@ -2557,6 +2825,7 @@ SCSUNKENCOLONY:
 		Footprint: xx xx
 		Dimensions: 2,2
 		BuildSounds: zchrdy00.aud
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil		##########
 	Health:
 		HP: 60000
 	Armor:
@@ -2601,6 +2870,7 @@ SCSPORECOLONY:
 		Footprint: xx xx
 		Dimensions: 2,2
 		BuildSounds: zchrdy00.aud
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil		##########
 	Health:
 		HP: 120000
 	Armor:
@@ -2622,7 +2892,7 @@ SCSPORECOLONY:
         Actor: SCBROODLING
         
 SCLAIR:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
@@ -2755,7 +3025,7 @@ SCLAIR:
         Actor: SCBROODLING    
         
 SCHIVE:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
@@ -2870,7 +3140,7 @@ SCHIVE:
         Actor: SCBROODLING    
         
 SCGREATERSPIRE:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 1600
@@ -2908,7 +3178,7 @@ SCGREATERSPIRE:
         Actor: SCBROODLING   	
 
 SCOVERMIND:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 1000
@@ -2943,7 +3213,7 @@ SCOVERMIND:
         Actor: SCBROODLING        	
 
 SCINFESTEDCOMMANDCENTER:
-	Inherits: ^BaseBuilding
+	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^3x2Shape
 	Inherits@SW: ^PrimarySuperweapon
 	Valued:
@@ -2963,6 +3233,7 @@ SCINFESTEDCOMMANDCENTER:
 		Footprint: xxx xxx
 		Dimensions: 3,2
 		BuildSounds: zchrdy00.aud
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil		##########
 	Selectable:
 		Bounds: 72,48
 		DecorationBounds: 72,53,0,-4
@@ -3761,6 +4032,69 @@ SCWRAITH:
 		Modifier: 133
 		RequiresCondition: upweapon
 
+SCVALKYRIE:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Valued:
+		Cost: 1250
+	Tooltip:
+		Name: Valkyrie
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~techlevel.medium
+		Queue: Aircraft.Terran, RAAircraft.Terran, Aircraft.X_Aircrafts
+		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Buildings, Vehicles
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 100
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 24400
+	RevealsShroud:
+		Range: 6c0
+		Type: GroundPosition
+	Armor:
+		Type: Light
+	Armament@SECONDARY1:
+		Weapon: ValkyrieRockets
+		LocalOffset: 400,400,0
+	Armament@SECONDARY2:
+		Weapon: ValkyrieRockets
+		LocalOffset: 400,-400,0
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	-SpawnActorOnDeath:
+	Explodes:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	Power:
+		Amount: -25
+	Voiced:
+		VoiceSet: SCValkyrieVoice
+	DeathSounds:
+	GrantConditionOnPrerequisite@sarmor:
+		Condition: uparmor
+		Prerequisites: upshiparmor
+	DamageMultiplier@armor:
+		Modifier: 66
+		RequiresCondition: uparmor
+	GrantConditionOnPrerequisite@weap:
+		Condition: upweapon
+		Prerequisites: upshipweapon
+	FirepowerMultiplier@weap:
+		Modifier: 133
+		RequiresCondition: upweapon
+
 SCDROPSHIP:
 	Inherits: ^Helicopter
 	Inherits@announce: ^AnnounceOnBuild
@@ -3911,7 +4245,105 @@ SCBATTLECRUISER:
 	FirepowerMultiplier@weap:
 		Modifier: 125
 		RequiresCondition: upweapon
-
+SCSCIENCEVESSEL:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeLarge
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@detect: ^GenericAirDetector
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Science Vessel
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: Science Facility, ~techlevel.high
+		Queue: Aircraft.Terran, RAAircraft.Terran, Aircraft.X_Aircrafts
+		Description: Terran capital ship.\n Strong vs Everything
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 66
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 40000
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armor:
+		Type: Light
+	Armament@IronCourtain:
+		Weapon: ScienceVesselIronCurtain
+		LocalOffset: 1,0,11
+		TargetStances: Ally
+		ForceTargetStances: None
+		PauseOnCondition: deployed
+	Armament@IronCourtainAA:
+		Weapon: ScienceVesselIronCurtainAA
+		LocalOffset: 1,0,11
+		TargetStances: Ally
+		ForceTargetStances: None
+		PauseOnCondition: deployed
+	Armament@Irradiate:
+		Weapon: ScienceVesselIrradiate
+		LocalOffset: 1,0,11
+		TargetStances: Enemy
+		PauseOnCondition: !deployed
+	Armament@EMP:
+		Weapon: ScienceVesselEMP
+		LocalOffset: 1,0,11
+		TargetStances: Enemy
+		PauseOnCondition: !deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployOnMove: false
+		UndeployOnPickup: false        
+		RequiresCondition: !botmicro
+	WithDecoration@deployed:
+		Image: crate-effects
+		Sequence: armor
+		RequiresCondition: deployed
+	WithDecoration@ndeployed:
+		Image: crate-effects
+		Sequence: nuke
+		RequiresCondition: !deployed
+	Turreted:
+	AttackTurreted:
+		PauseOnCondition: disabled
+	-AttackAircraft:
+	-SpawnActorOnDeath:
+	Explodes:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 42,42
+	Power:
+		Amount: -40
+	Voiced:
+		VoiceSet: SCScienceVesselVoice
+	DeathSounds:
+	GrantConditionOnPrerequisite@sarmor:
+		Condition: uparmor
+		Prerequisites: upshiparmor
+	DamageMultiplier@armor:
+		Modifier: 75
+		RequiresCondition: uparmor
+	GrantConditionOnPrerequisite@weap:
+		Condition: upweapon
+		Prerequisites: upshipweapon
+	FirepowerMultiplier@weap:
+		Modifier: 125
+		RequiresCondition: upweapon
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	DetectCloaked:
+		Range: 8c0
 SCTMCV:
 	Inherits: ^Vehicle
 	Inherits@EXT: ^ExternalConditions
@@ -3952,6 +4384,55 @@ SCTMCV:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+
+SCJIMRAYNOR:
+	Inherits: ^SCTINFANTRY
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@stim: ^Stimpackable
+	-WithIdleOverlay@Shadow
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Jim Raynor
+    Power:
+        Amount: -200
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Infantry.Terran, RAInfantry.Terran, Infantry.X_Infantry
+		Description: Heroic Terran Unit\nCan Stimpack\nExtremely Durable\n Strong vs Everything
+		IconPalette: ra2
+		BuildLimit: 1
+	Mobile:
+		Speed: 54
+	Health:
+		HP: 250000
+	RevealsShroud:
+		Range: 6c0
+	AutoTarget:
+		ScanRadius: 4
+	ReloadDelayMultiplier:
+		Modifier: 60
+	RangeMultiplier:
+		Modifier: 125
+	FirepowerMultiplier:
+		Modifier: 125
+	Armament@PRIMARY:
+		Weapon: MarineMG
+		LocalOffset: 200,0,184
+		MuzzleSequence: muzzle
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: MarineMGbunker
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	SelectionDecorations:
+		DecorationBounds: -24,0
+	Voiced:
+		VoiceSet: SCMarineVoice
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
 
 ####################################################################################################
 #		UNIT PROTOSS
@@ -4766,6 +5247,66 @@ SCSCOUT:
 	Voiced:
 		VoiceSet: SCScoutVoice
 
+SCCORSAIR:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@speed: ^GraviticUpgrade
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Corsair
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~techlevel.medium
+		Queue: Aircraft.Protoss, RAAircraft.Protoss, Aircraft.X_Aircrafts
+		Description: Protoss fighter aircraft.\n Strong vs Aircraft
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 125
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 30000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 9c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: CorsairEMP
+		LocalOffset: 400,0,0
+		Name: primary
+	Armament@SECONDARY1:
+		Weapon: CorsairFlash
+		LocalOffset: 400,400,0
+		Name: secondary
+	Armament@SECONDARY2:
+		Weapon: CorsairFlash
+		LocalOffset: 400,-400,0
+		Name: secondary
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+		Armaments: primary, secondary
+	WithAttackAnimation:
+		Armament: primary
+		Sequence: shoot
+	-SpawnActorOnDeath:
+	DeathSounds:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	Power:
+		Amount: -30
+	Voiced:
+		VoiceSet: SCCorsairVoice
+
 SCCARRIER:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -4963,12 +5504,58 @@ SCPMCV:
 		Offset: 128, 128, 0
 		ZOffset: -512
 
+SCZERATUL:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@protoss: ^BasicProtoss
+	Inherits@announce: ^AnnounceOnBuild
+	-WithIdleOverlay@Shadow
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Zeratul
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites:
+		Queue: Infantry.Protoss, RAInfantry.Protoss, Infantry.X_Infantry
+		Description: Protoss Hero. Is pretty mobile, durable and has powerful splash melee attack\n Strong vs Ground\n Weak vs Air
+		BuildLimit: 1
+		IconPalette: ra2
+	Mobile:
+		Speed: 106
+	Health:
+		HP: 135000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 6c0
+	AutoTarget:
+		ScanRadius: 6
+		InitialStance: AttackAnything
+	Armament:
+		Weapon: ZeratulSlice
+	AttackFrontal:
+	WithInfantryBody:
+	Power:
+		Amount: -200
+	Passenger:
+		Weight: 2
+		PipType: blue
+	Voiced:
+		VoiceSet: SCZealotVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry	
+
 ####################################################################################################
 #		UNIT ZERG
 ####################################################################################################
 
 ^BasicZerg:
 	Inherits: ^DefaultSoldier
+    Inherits@zergai: ^ZergAIProductionBoost
+	Inherits@botmicro: ^AIDifficulties
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 		CrushedSequence: die
@@ -4983,12 +5570,21 @@ SCPMCV:
 	DamageMultiplier@carapace:
 		Modifier: 75
 		RequiresCondition: upcarapace
-
+	DamageMultiplier@harderaisbuff:
+		Modifier: 85
+		RequiresCondition: brutalbot || challengerbot
+	DamageMultiplier@hardestaibuff:
+		Modifier: 70
+		RequiresCondition: unbeatablebot || cameogodbot
+	FirepowerMultiplier@cameogodbuff:
+		Modifier: 125
+		RequiresCondition: cameogodbot
+		
 ^LargeZerg:
 	Inherits: ^BasicZerg
 	Targetable@dog:
 		TargetTypes: DogImmune
-
+	
 ^VeryLargeZerg:
 	Inherits: ^LargeZerg
 	Inherits@2: ^IronCurtainable
@@ -5007,7 +5603,7 @@ SCPMCV:
 		RequiresCondition: !ivanbomb && !chronobeamed && !invulnerability
 	Passenger:
 		CargoType: Vehicle
-
+	
 ^AirZerg:
 	Inherits: ^Helicopter
 	-SpawnActorOnDeath:
@@ -5082,7 +5678,7 @@ SCZERGLING:
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@zerg: ^BasicZerg
 	Valued:
-		Cost: 75
+		Cost: 125
 	Tooltip:
 		Name: Zergling
 	Buildable:
@@ -5093,7 +5689,7 @@ SCZERGLING:
 	Mobile:
 		Speed: 108
 	Health:
-		HP: 8000
+		HP: 6500
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -5150,10 +5746,11 @@ SCOVERLORD:
 	ProvidesPrerequisite@anypower:
 		Prerequisite: anypower
 	Buildable:
-		BuildPaletteOrder: 30
-		BuildDurationModifier: 25
+		BuildPaletteOrder: 0
+		BuildDurationModifier: 100
+		BuildDuration: 300
 		Prerequisites: ~!botplayer
-		Queue: Building.Zerg, RABuilding.Zerg
+		Queue: Infantry.Zerg, RAInfantry.Zerg
 		Description: Provides supply and stores resources\nCan transport 8 units
 	Aircraft:
 		InitialFacing: 224
@@ -5214,11 +5811,14 @@ SCHYDRALISK:
 		BuildPaletteOrder: 40
 		Prerequisites: Hydralisk Den
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
-		Description: Zerg armored assault strain.\n Strong vs Vehicles, Aircraft\n Weak vs Infantry
+		Description: Zerg armored assault strain.\n Strong vs Infantry, Vehicles, Aircraft\n Weak vs Siege
 	Mobile:
 		Speed: 75
+		Locomotor: heroes
 	Health:
-		HP: 20000
+		HP: 16000
+	HitShape:
+		-Type:
 	RevealsShroud:
 		Range: 5c0
 	AutoTarget:
@@ -5236,6 +5836,7 @@ SCHYDRALISK:
 	AttackFrontal:
 	WithMuzzleOverlay:
 	WithInfantryBody:
+	-Crushable
 	Selectable:
 		Bounds: 15,20
 		DecorationBounds: 15,20
@@ -5274,6 +5875,8 @@ SCMUTALISK:
 		Prerequisites: Spire
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Aircraft.X_Aircrafts
 		Description: Airborne Zerg creature.\n Strong vs Infantry, Aircraft
+		BuildDuration: 375
+		BuildDurationModifier: 100
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
@@ -5281,7 +5884,7 @@ SCMUTALISK:
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
-		HP: 15000
+		HP: 17500
 	Armor:
 		Type: Medium
 	RevealsShroud:
@@ -5309,6 +5912,56 @@ SCMUTALISK:
 	FirepowerMultiplier@upattack:
 		Modifier: 133
 		RequiresCondition: upattack
+SCDEVOURER:
+	Inherits: ^AirZerg
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Devourer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: Greater Spire, ~techlevel.high
+		Queue: Infantry.Zerg, RAInfantry.Zerg, Aircraft.X_Aircrafts
+		Description: Airborne Zerg creature.\n Strong vs Aircraft
+		BuildDuration: 375
+		BuildDurationModifier: 100
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 40
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 36000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+		Type: GroundPosition
+	Armament@2:
+		Weapon: SCDevourerAA
+		LocalOffset: 0,0,0
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,30
+	Power:
+		Amount: -25
+	Voiced:
+		VoiceSet: SCDevourerVoice
+	GrantConditionOnPrerequisite@upattack:
+		Condition: upattack
+		Prerequisites: upflyerattack
+	FirepowerMultiplier@upattack:
+		Modifier: 133
+		RequiresCondition: upattack
 
 SCSCOURGE:
 	Inherits: ^AirZerg
@@ -5318,7 +5971,7 @@ SCSCOURGE:
 	Selectable:
 		DecorationBounds: 20,20
 	Valued:
-		Cost: 200
+		Cost: 350
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Tooltip:
@@ -5824,9 +6477,10 @@ SCBROODLING:
     -ActorLostNotification:
     
 SCKERRIGANZERG:
-	Inherits: ^Soldier
+	Inherits@: ^LargeZerg
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+    Inherits@AIDifficulties: ^AIDifficulties
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -5856,6 +6510,9 @@ SCKERRIGANZERG:
 		FireDelay: 3
 		MuzzleSequence: muzzle
 	AttackFrontal:
+    DamageMultiplier@hardandbrutalbot:
+        Modifier: 75
+        RequiresCondition: hardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot
 	WithInfantryBody:
 		IdleSequences: idle
 		DefaultAttackSequence: shoot
@@ -5868,10 +6525,6 @@ SCKERRIGANZERG:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-	-WithDeathAnimation:
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
 	GrantConditionOnDeploy:
 		DeployedCondition: summon
 		SkipMakeAnimation: true
@@ -5905,7 +6558,7 @@ SCZMCV:
 		Queue: Building.Zerg, RABuilding.Zerg
 		BuildPaletteOrder: 10
 		Description: Builds structures and provides radar.
-        BuildDuration: 1000
+        BuildDuration: 500
         BuildDurationModifier: 100
 	Tooltip:
 		Name: Mobile Construction Vehicle (Zerg)
@@ -6034,6 +6687,8 @@ PSCSPORECOLONY:
 		Queue: Colony.Zerg
 		Description: Anti-air base defense.
 		Prerequisites: Evolution Chamber
+		BuildDuration: 250
+		BuildDurationModifier: 100
 	Valued:
 		Cost: 200
 	RenderSprites:
@@ -6050,6 +6705,8 @@ PSCSUNKENCOLONY:
 		BuildPaletteOrder: 20
 		Queue: Colony.Zerg
 		Description: Ground base defense.
+		BuildDuration: 250
+		BuildDurationModifier: 100
 	Valued:
 		Cost: 200
 	RenderSprites:
@@ -6459,3 +7116,25 @@ scliftoff:
 		Image: scliftoff
 	ProvidesPrerequisite:
 		Prerequisite: scliftoff
+
+####################################################################################################
+#		XELNAGA BOSS
+####################################################################################################
+####################################################################################################
+#		Confederation
+####################################################################################################
+####################################################################################################
+#		Sons of Korhal
+####################################################################################################
+####################################################################################################
+#		Rebels of Raynor
+####################################################################################################
+####################################################################################################
+#		Dark Templars
+####################################################################################################
+####################################################################################################
+#		Templars
+####################################################################################################
+####################################################################################################
+#		Infested Colony
+####################################################################################################
