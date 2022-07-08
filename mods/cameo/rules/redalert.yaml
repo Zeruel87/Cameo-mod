@@ -576,7 +576,7 @@ RAE1:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: barracks
-		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.ModAllies, RAInfantry.ModAllies, Infantry.ModJapan, RAInfantry.ModJapan
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.ModAllies, RAInfantry.ModAllies
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
 		Speed: 56
@@ -679,7 +679,7 @@ RAE3:
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: barracks
-		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.camea, RAInfantry.camea, Infantry.ModAllies, RAInfantry.ModAllies, Infantry.ModJapan, RAInfantry.ModJapan
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.camea, RAInfantry.camea, Infantry.ModAllies, RAInfantry.ModAllies
 		Description: Anti-tank/Anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
 	Mobile:
 		Speed: 42
@@ -762,7 +762,7 @@ RAE4:
 	Valued:
 		Cost: 300
 	Buildable:
-		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.X_Infantry, Infantry.ModSoviet, RAInfantry.ModSoviet, Infantry.ModJapan, RAInfantry.ModJapan
+		Queue: Infantry.Soviet, RAInfantry.Soviet, Infantry.X_Infantry, Infantry.ModSoviet, RAInfantry.ModSoviet
 		BuildPaletteOrder: 45
 		Prerequisites: ftur
 		Description: Advanced anti-structure unit.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
@@ -1248,6 +1248,62 @@ SNIPER:
 	#ProducibleWithLevel:
 	#	Prerequisites: barracks.upgraded
     
+RASAMURAI:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+    Inherits@oldbuff: ^OldFactionBuff
+	Valued:
+		Cost: 250
+	Tooltip:
+		Name: Samurai
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Infantry.ModJapan, RAInfantry.ModJapan
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 6000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: SamuraiBlade
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: RAVulcan
+	AttackFrontal:
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	RenderSprites:
+		Image: rasamurai
+	Voiced:
+		VoiceSet: RAGenericVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Selectable:
+		Class: rasamurai
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+	ProvidesPrerequisite@modjapan:
+		Prerequisite: modjapan
+		Factions: modjapan
+	GrantConditionOnPrerequisite@modjapan:
+		Condition: modjapan
+		Prerequisites: modjapan
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage
+		PauseOnCondition: cloak-force-disabled || base-reveal
+		RequiresCondition: modjapan
+		IsPlayerPalette: true
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	Voiced:
+		VoiceSet: JapaneseVoice
 ####################################################################################################
 #		VEHICLES
 ####################################################################################################
@@ -4182,7 +4238,7 @@ RABGGYJ:
 		Image: BGGY
 	Buildable:
 		Queue: Vehicle.ModJapan, RAVehicle.ModJapan
-		Prerequisites: ~canbuildrabggy
+		Prerequisites: ~canbuildrabggy, ~disabled
 	Tooltip:
 		Name: Attack Buggy
 	Voiced:
@@ -4194,7 +4250,7 @@ MODBGGYJ:
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.ModJapan, RAVehicle.ModJapan
-		Prerequisites: ~canbuildrabggy
+		Prerequisites: ~canbuildrabggy, ~disabled
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
 	RenderSprites:
 		Image: modbggy
@@ -4238,7 +4294,7 @@ MODHOVER:
 		Prerequisites: barracks
 		Description: Tough infantry transport.\nEquipped with Machine gun and Missile launcher\n  Strong vs Infantry, Light armor, Air\n  Weak vs Tanks, Aircraft
 	Valued:
-		Cost: 1200
+		Cost: 1000
 	Tooltip:
 		Name: Hovercraft
 	UpdatesPlayerStatistics:
@@ -4724,6 +4780,140 @@ modcarr.bot1:
 		DeployTicks: 0
 	RenderSprites:
 		Image: modcarr
+modhovert:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@compositearmorusa: ^usa_composite_armor_upgrade
+    Inherits@oldbuff: ^OldFactionBuff
+	Buildable:
+		Queue: Vehicle.X_Vehicles, Vehicle.ModJapan, RAVehicle.ModJapan
+		BuildPaletteOrder: 120
+		Description: Japanese Hover Battle Tank.\n Shots Psionic Shells, acts like a Deviator.\n Also causes Damage and Control Enemies \n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+		Prerequisites: modjtek
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Hovercraft Tank
+		GenericName: Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 48000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Locomotor: hover
+		TurnSpeed: 8
+		Speed: 100
+		PauseOnCondition: notmobile || being-captured || disabled
+	Hovers:
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 5
+		Offset: -298,0,150
+	Armament:
+		Weapon: PsionicShells
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	#SpawnActorOnDeath:
+	#	Actor: 2TNK.Husk
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+modoitank:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@oldbuff: ^OldFactionBuff
+	Inherits@demo: ^DemolitionUpgrade
+    Inherits@compositearmorusa: ^usa_composite_armor_upgrade
+	Buildable:
+		Queue: Vehicle.X_Vehicles, Vehicle.ModJapan, RAVehicle.ModJapan
+		BuildPaletteOrder: 180
+		Prerequisites: rafix, modjtek, ~techlevel.high, ~normaltanksoviet
+		Description: Big and slow tank, with anti-air capability.\nCan crush concrete walls.\n  Strong vs Vehicles, Infantry, Aircraft\n  Weak vs Nothing
+    Valued:
+		Cost: 2400
+	Tooltip:
+		Name: OI Tank
+		GenericName: Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 90000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 50
+		Locomotor: heavytracked
+	Passenger:
+		Weight: 4
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 2
+		Offset: -150,0,200
+	Armament@PRIMARY:
+		Weapon: ra120mm
+		LocalOffset: 900,180,340, 900,-180,340
+		Recoil: 171
+		RecoilRecovery: 30
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: MammothTusk
+		LocalOffset: -85,384,340, -85,-384,340
+		LocalYaw: -100,100
+		Recoil: 43
+		MuzzleSequence: muzzle
+	Armament:
+		Weapon: RA2sabot
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	SelfHealing:
+		Step: 100
+		Delay: 3
+		HealIfBelow: 50
+		DamageCooldown: 150
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 44,38,0,-4
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
 ####################################################################################################
 #		Modded RA Greece
 ####################################################################################################
@@ -7948,7 +8138,7 @@ MODTENTJ:
 	ProductionBar@RAINFANTRYALLIES:
 		ProductionType: RAInfantry.ModJapan
 	RenderSprites:
-		Image: TENT
+		Image: modjbarr
     ProvidesPrerequisite@barracks:
 		Prerequisite: barr
     ProvidesPrerequisite@barracks2:
