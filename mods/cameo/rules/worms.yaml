@@ -94,6 +94,9 @@ World:
 WCON:
 	Inherits: ^WormsBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+    Inherits@conyard: ^Conyard
 	Selectable:
 		Bounds: 72,72
 	HitShape:
@@ -106,7 +109,7 @@ WCON:
 		Prerequisite: wcon
 	#Buildable:
 	#	BuildPaletteOrder: 5
-	#	Queue: Building.Worms
+	#	Queue: Building.Worms, RABuilding.Worms
 	#	BuildDuration: 330
 	#	Description: Builds worms buildings.
 	Building:
@@ -130,16 +133,27 @@ WCON:
 		ActorTypes: wormuzi
 	ScalePowerWithHealth:
 	BaseBuilding:
-	Production:
-		Produces: Building.Worms,Defence.Worms
-	ProductionBar@BuildingWorms:
+	Production@NORMAL:
+		Produces: Building.Worms, Defence.Worms
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.Worms, RADefence.Worms
+		RequiresCondition: classicproductionqueues
+	ProductionBar@BuildingGDI:
 		ProductionType: Building.Worms
-	ProductionBar@DefenceWorms:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceGDI:
 		ProductionType: Defence.Worms
-	ProductionQueue@WormsBuilding:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingGDI:
+		ProductionType: RABuilding.Worms
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceGDI:
+		ProductionType: RADefence.Worms
+		RequiresCondition: classicproductionqueues
+	ProductionQueue@GDIBuilding:
 		Type: Building.Worms
 		DisplayOrder: 0
-		Factions: worms
 		Group: Building
 		LowPowerModifier: 200
 		ReadyAudio: ConstructionComplete
@@ -148,12 +162,11 @@ WCON:
 		QueuedAudio: Building
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
-	ProductionQueue@WormsDefence:
+	ProductionQueue@GDIDefense:
 		Type: Defence.Worms
 		DisplayOrder: 1
-		Factions: worms
 		Group: Defence
-		LowPowerModifier: 200
+		LowPowerModifier: 300
 		ReadyAudio: ConstructionComplete
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -171,6 +184,7 @@ WCON:
 WNUKE:
 	Inherits: ^WormsBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@power: ^PowerPlant
 	Selectable:
 		Bounds: 48,48
 	HitShape:
@@ -184,7 +198,7 @@ WNUKE:
 	Buildable:
 		BuildPaletteOrder: 5
 		Prerequisites:
-		Queue: Building.Worms
+		Queue: Building.Worms, RABuilding.Worms
 		BuildDuration: 330
 		Description: Provides Power
 	Building:
@@ -207,6 +221,7 @@ WNUKE:
 WNUK2:
 	Inherits: ^WormsBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@power: ^PowerPlant
 	Selectable:
 		Bounds: 48,48
 	HitShape:
@@ -220,7 +235,7 @@ WNUK2:
 	Buildable:
 		BuildPaletteOrder: 80
 		Prerequisites: wnuke
-		Queue: Building.Worms
+		Queue: Building.Worms, RABuilding.Worms
 		Description: Provides more power, cheaper than the\nstandard Power Plant
 	Building:
 		Footprint: xX xx ==
@@ -258,7 +273,7 @@ WREF:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: wnuke
-		Queue: Building.Worms
+		Queue: Building.Worms, RABuilding.Worms
 		Description: Processes raw Tiberium\ninto useable resources
 	Building:
 		Footprint: _x_ xxx === ===
@@ -305,6 +320,9 @@ WREF:
 WHAND:
 	Inherits: ^WormsBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@barr: ^IsBarrack
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 630,-512,0, 355,512,0, -281,-512,0, -630,512,0
@@ -317,7 +335,7 @@ WHAND:
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: wnuke
-		Queue: Building.Worms
+		Queue: Building.Worms, RABuilding.Worms
 		Description: Trains infantry
 	Building:
 		Footprint: xx xx ==
@@ -332,8 +350,12 @@ WHAND:
 	Exit@1:
 		SpawnOffset: 512,1024,0
 		ExitCell: 1,2
-	Production:
+	Production@NORMAL:
 		Produces: Infantry.Worms
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.Worms
+		RequiresCondition: classicproductionqueues
 	ProductionQueue:
 		Type: Infantry.Worms
 		DisplayOrder: 2
@@ -345,8 +367,12 @@ WHAND:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
-	ProductionBar:
+	ProductionBar@INFANTRYNOD:
 		ProductionType: Infantry.Worms
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYNOD:
+		ProductionType: RAInfantry.Worms
+		RequiresCondition: classicproductionqueues
 	Power:
 		Amount: -20
 	ProvidesPrerequisite@buildingname:
@@ -356,10 +382,16 @@ WHAND:
 	SelectionDecorations:
 	WithIdleOverlay@FLIP:
 		Sequence: flip-overlay
-
+	ThrowsShrapnel:
+		Weapons: WormHusk
+		Pieces: 1, 1
+		Range: 2c0, 4c0
 WWEAP:
 	Inherits: ^WormsBuilding
 	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@weap: ^IsWeaponFactory
 	HitShape:
 		TargetableOffsets: 0,0,0, 0,1024,0, 0,-1024,0
 		Type: Rectangle
@@ -374,7 +406,7 @@ WWEAP:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: wref
-		Queue: Building.Worms
+		Queue: Building.Worms, RABuilding.Worms
 		Description: Produces vehicles
 	Building:
 		Footprint: xxx ===
@@ -397,8 +429,12 @@ WWEAP:
 		SpawnOffset: -512,-512,0
 		ExitCell: 0,1
 		ExitDelay: 3
-	Production:
+	Production@NORMAL:
 		Produces: Vehicle.Worms
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.Worms
+		RequiresCondition: classicproductionqueues
 	ProductionQueue:
 		Type: Vehicle.Worms
 		DisplayOrder: 3
@@ -410,15 +446,15 @@ WWEAP:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
-	ProductionBar:
+	ProductionBar@VEHICLEGDI:
 		ProductionType: Vehicle.Worms
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLEGDI:
+		ProductionType: RAVehicle.Worms
+		RequiresCondition: classicproductionqueues
 	Power:
 		Amount: -40
 	ProvidesPrerequisite@buildingname:
-	-ActorPreviewPlaceBuildingPreview:
-	SequencePlaceBuildingPreview:
-		Sequence: place
-		SequencePalette: placebuilding
 	WithIdleOverlay@CRATE:
 		Sequence: crate-overlay
 	WithIdleOverlay@CRATE2:
@@ -439,7 +475,7 @@ WSHEEPSTATUE:
 	Buildable:
 		BuildPaletteOrder: 45
 		Prerequisites: wweap
-		Queue: Building.Worms
+		Queue: Building.Worms, RABuilding.Worms
 		BuildDuration: 330
 		Description: Unlocks Sheeps, Skunks, and Moles.
 	Building:
@@ -467,11 +503,11 @@ WHQ:
 	Tooltip:
 		Name: Worms Communications Center
 	ProvidesPrerequisite:
-		Prerequisite: whq
+		Prerequisite: anyhq
 	Buildable:
 		BuildPaletteOrder: 70
 		Prerequisites: wref
-		Queue: Building.Worms
+		Queue: Building.Worms, RABuilding.Worms
 		Description: Provides radar.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
 	Building:
 		Footprint: X_ xx ==
@@ -500,7 +536,10 @@ WHQ:
 		Amount: -50
 	WithIdleOverlay@AIMING:
 		Sequence: aiming-overlay
-
+	ThrowsShrapnel:
+		Weapons: WormHusk2
+		Pieces: 1, 1
+		Range: 2c0, 4c0
 WSHEEPSTRIKECOMMAND:
 	Inherits: ^WormsBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -516,7 +555,7 @@ WSHEEPSTRIKECOMMAND:
 	Buildable:
 		BuildPaletteOrder: 70
 		Prerequisites: wref
-		Queue: Defence.Worms
+		Queue: Defence.Worms, RADefence.Worms
 		Description: Provides Sheep Strike power.\nRequires power to operate.
 	Building:
 		Footprint: xxx xxx xxx ===
@@ -585,7 +624,7 @@ WTIMEMACHINE:
 	Buildable:
 		BuildPaletteOrder: 70
 		Prerequisites: wref
-		Queue: Defence.Worms
+		Queue: Defence.Worms, RADefence.Worms
 		Description: Provides Chronosphere.\nRequires power to operate.
 	Building:
 		Footprint: x x
@@ -612,7 +651,45 @@ WTIMEMACHINE:
 		RequiresCondition: !lowpower
 	Power:
 		Amount: -50
-
+	ChronoshiftPower@chronoshift:
+		OrderName: Chronoshift
+		Prerequisites: !botplayer
+		PauseOnCondition: lowpower
+		Icon: chrono
+		ChargeInterval: 3000
+		Description: Chronoshift
+		LongDesc: Teleports a large group of units\nacross the map.
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: ChronosphereCharging
+		#EndChargeSpeechNotification: ChronosphereReady
+		Range: 2
+		Duration: 0
+		KillCargo: False
+		DisplayRadarPing: True
+		SelectionCursor: ability
+		TargetCursor: ability
+		SupportPowerPaletteOrder: 20
+		LaunchSound: chrono2.aud
+		IncomingSound: chrono2.aud
+	DetonateWeaponPower@aichrono:
+		OrderName: ChronoshiftAI
+		Prerequisites: botplayer
+		PauseOnCondition: lowpower
+		Icon: chrono
+		Cursor: ability
+		ChargeInterval: 3000
+		Description: Chronoshift
+		ActivationDelay: 25
+		LongDesc: Teleports a large group of units\nacross the map.
+		Weapon: WormsChronoAI
+		CameraActor: camera.placeholderhack
+		CameraRemoveDelay: 0
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		LaunchSound: chrono2.aud
+		IncomingSound: chrono2.aud
 WCONCRETEDONKEY:
 	Inherits: ^WormsBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -629,7 +706,7 @@ WCONCRETEDONKEY:
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: anyhq, ~techlevel.high
-		Queue: Defence.Worms
+		Queue: Defence.Worms, RADefence.Worms
 		Description: Provides Concrete Donkey support power.\nRequires power to operate.
 	Building:
 		Footprint: xxx xxx ===
@@ -693,7 +770,7 @@ WSILO:
 	Buildable:
 		BuildPaletteOrder: 35
 		Prerequisites: wref
-		Queue: Defence.Worms
+		Queue: Defence.Worms, RADefence.Worms
 		Description: Stores processed Tiberium
 	Building:
 		Footprint: xx
@@ -736,7 +813,7 @@ WSANTASSLEIGH:
 	Buildable:
 		BuildPaletteOrder: 35
 		Prerequisites: wref
-		Queue: Defence.Worms
+		Queue: Defence.Worms, RADefence.Worms
 		Description: Generates Cash
 	Building:
 		Footprint: xxx xxx
@@ -779,7 +856,7 @@ WGTWR:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: whand
-		Queue: Defence.Worms
+		Queue: Defence.Worms, RADefence.Worms
 		BuildDuration: 1440
 		BuildDurationModifier: 40
 		Description: Basic defensive structure.\n  Strong vs Infantry\n  Weak vs Tanks
@@ -808,7 +885,10 @@ WGTWR:
 		Amount: -10
 	WithIdleOverlay@CLUSTER:
 		Sequence: cluster-overlay
-
+	ThrowsShrapnel:
+		Weapons: WormHusk
+		Pieces: 1, 1
+		Range: 2c0, 4c0
 WORMS_AASITE:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAir
@@ -821,7 +901,7 @@ WORMS_AASITE:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: whand
-		Queue: Defence.Worms
+		Queue: Defence.Worms, RADefence.Worms
 		BuildDuration: 1440
 		BuildDurationModifier: 40
 		Description: Anti-Aircraft base defense.\n  Strong vs Aircraft\n  Cannot target Ground units.
@@ -863,7 +943,7 @@ WORMS_CANDLE:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: whand
-		Queue: Defence.Worms
+		Queue: Defence.Worms, RADefence.Worms
 		BuildDuration: 1440
 		BuildDurationModifier: 40
 		Description: Basic defensive structure.\n  Strong vs Infantry\n  Weak vs Tanks
@@ -901,8 +981,8 @@ LASPY:
 		Name: Laser Pyramid
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: whq
-		Queue: Defence.Worms
+		Prerequisites: anyhq
+		Queue: Defence.Worms, RADefence.Worms
 		BuildDuration: 3120
 		BuildDurationModifier: 40
 		Description: Advanced base defense.\nRequires power to operate.\n  Strong vs all Ground units\n  Cannot target Aircraft
@@ -938,6 +1018,72 @@ LASPY:
 		Amount: -90
 	Building:
 		BuildSounds: wormdrill.wav
+WORMS_WORMPAD:
+	Inherits: ^WormsBuilding
+	Inherits@shape: ^3x3Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@hpad: ^IsAircraftFactory
+	Selectable:
+		Bounds: 69,69
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Space Port
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: wref
+		Queue: Building.Worms, RABuilding.Worms
+		Description: Produces, rearms and\nrepairs helicopters
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	Health:
+		HP: 65000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Production@NORMAL:
+		Produces: Aircraft.Worms
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.Worms
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ProductionQueue:
+		Type: Aircraft.Worms
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AIRCRAFTGDI:
+		ProductionType: Aircraft.Worms
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFTGDI:
+		ProductionType: RAAircraft.Worms
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: hpad
+	RenderSprites:
+		Image: worms_wormpad
 ####################################################################################################
 #		UNIT WORMS
 ####################################################################################################
@@ -947,7 +1093,7 @@ WORMUZI:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Valued:
-		Cost: 100
+		Cost: 90
 	Tooltip:
 		Name: Uzi Worm
 	Voiced:
@@ -964,7 +1110,7 @@ WORMUZI:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 10000
+		HP: 12000
 	#Food
 	Power:
 		Amount: -1
@@ -977,6 +1123,9 @@ WORMUZI:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
+	Explodes:
+		Weapon: WormSuicideExplode
+		EmptyWeapon: WormSuicideExplode
 WORMGRENADE:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1000,7 +1149,7 @@ WORMGRENADE:
 	Mobile:
 		Speed: 71
 	Health:
-		HP: 5000
+		HP: 12000
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
@@ -1015,9 +1164,8 @@ WORMGRENADE:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
 	Explodes:
-		Weapon: GrenadierExplode
-		EmptyWeapon: GrenadierExplode
-		Chance: 50
+		Weapon: WormSuicideExplode
+		EmptyWeapon: WormSuicideExplode
 WORMBAZOOKA:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1041,7 +1189,7 @@ WORMBAZOOKA:
 	Mobile:
 		Speed: 42
 	Health:
-		HP: 4500
+		HP: 12000
 	AutoTarget:
 		ScanRadius: 6
 	Armament:
@@ -1062,6 +1210,9 @@ WORMBAZOOKA:
 		RequiresCondition: charging
 		SoundFiles: wormshoming.wav
 		Interval: 30, 40
+	Explodes:
+		Weapon: WormSuicideExplode
+		EmptyWeapon: WormSuicideExplode
 WORMFLAMER:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1085,7 +1236,7 @@ WORMFLAMER:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 9000
+		HP: 13000
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
@@ -1101,7 +1252,9 @@ WORMFLAMER:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		-IdleSequences: idle1,idle2,idle3,idle4
-
+	Explodes:
+		Weapon: WormSuicideExplode
+		EmptyWeapon: WormSuicideExplode
 WORMENGINEER:
 	Inherits: ^Soldier
 	Inherits@selection: ^SelectableSupportUnit
@@ -1123,7 +1276,7 @@ WORMENGINEER:
 	Mobile:
 		Speed: 48
 	Health:
-		HP: 3000
+		HP: 12000
 	Passenger:
 		PipType: Yellow
 	EngineerRepair:
@@ -1141,7 +1294,9 @@ WORMENGINEER:
 		-IdleSequences: idle1,idle2,idle3,idle4
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
-
+	Explodes:
+		Weapon: WormSuicideExplode
+		EmptyWeapon: WormSuicideExplode
 WORMDYNAMITE:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1182,7 +1337,9 @@ WORMDYNAMITE:
 		Condition: produced
 	Voiced:
 		VoiceSet: voiceWorm
-
+	Explodes:
+		Weapon: WormSuicideExplode
+		EmptyWeapon: WormSuicideExplode
 WHARV:
 	Inherits: ^Tank
 	Inherits@selection: ^SelectableEconomicUnit
@@ -1272,7 +1429,7 @@ WTRUCK:
 		Prerequisites: wsheepstatue
 		Description: Bahhh.
 	Valued:
-		Cost: 900
+		Cost: 1500
 	Tooltip:
 		Name: Sheep
 	Voiced:
@@ -1311,13 +1468,14 @@ WTRUCK:
 WORMS_MOLE:
 	Inherits: ^Vehicle
 	#Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@sub: ^SubterraneanVoxelVehicle
 	Buildable:
 		Queue: Vehicle.Worms
 		BuildPaletteOrder: 35
 		Prerequisites: wsheepstatue
 		Description: Jumps onto targets.
 	Valued:
-		Cost: 900
+		Cost: 2500
 	Tooltip:
 		Name: Mole
 	Voiced:
@@ -1327,7 +1485,10 @@ WORMS_MOLE:
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 128
+		Locomotor: subterranean
+		PauseOnCondition: loading || being-captured || disabled
+		TurnSpeed: 5
+		Speed: 50
 	RevealsShroud:
 		Range: 4c0
 	SpawnActorOnDeath:
@@ -1336,6 +1497,7 @@ WORMS_MOLE:
 		EffectiveOwnerFromOwner: true
 	WithInfantryBody:
 		MoveSequence: run
+		RequiresCondition: !submerged
 	-WithFacingSpriteBody:
 	Explodes:
 		Weapon: SheepExplode
@@ -1343,6 +1505,9 @@ WORMS_MOLE:
 		DamageSource: Killer
 	AttackFrontal:
 		FacingTolerance: 128
+	Targetable@garrisoned:
+		RequiresCondition: loaded && !submerged
+	-WithVoxelBody:
 	Armament@PRIMARY:
 		Weapon: DemoTruckTargeting
 	GrantConditionOnAttack:
@@ -1398,14 +1563,76 @@ WORMBUGGY:
 	WithSpriteTurret:
 	WithSpriteTurret@TURRET2:
 		Sequence: turret2
-	SpawnActorOnDeath:
-		Actor: BGGY.Husk
-		OwnerType: InternalName
-		EffectiveOwnerFromOwner: true
 	#WithIdleOverlay@AIMGUN:
 	#	Sequence: aimgun-overlay
 	Voiced:
 		VoiceSet: voiceWorm
+	ThrowsShrapnel:
+		Weapons: WormHusk
+		Pieces: 1, 1
+		Range: 2c0, 4c0
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 3
+		PipCount: 3
+		LoadingCondition: notmobile
+WORMS_MOAI:
+	Inherits: ^Vehicle
+	Inherits@@EXPERIENCE: ^GainsExperience
+	Inherits@CLOAK: ^AcceptsCloakCrate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Moai
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: wsheepstatue
+		Queue: Vehicle.Worms
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		TurnSpeed: 5
+		Speed: 22
+	Health:
+		HP: 450000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -100,0,622
+	Armament:
+		Weapon: WormsShotGun
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	Armament@Rock:
+		Weapon: WormsMoaiRock
+		LocalOffset: 171,0,43
+	#	MuzzleSequence@MUZZLE2: muzzle2
+	AttackTurreted:
+	WithMuzzleOverlay:
+	#WithMuzzleOverlay@MUZZLE2:
+	#	Sequence: muzzle2
+	#WithTurretAttackAnimation:
+	#	Armament: MachineGun
+	#	WithSpriteTurret: turret2
+	#	Sequence: uzifire
+	WithSpriteTurret:
+	WithSpriteTurret@TURRET2:
+		Sequence: turret2
+	#WithIdleOverlay@AIMGUN:
+	#	Sequence: aimgun-overlay
+	Voiced:
+		VoiceSet: wormMoai
+	ThrowsShrapnel:
+		Weapons: WormHusk
+		Pieces: 1, 1
+		Range: 2c0, 4c0
 WMTNK:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1491,10 +1718,6 @@ WTANK:
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
-	SpawnActorOnDeath:
-		Actor: MTNK.Husk
-		OwnerType: InternalName
-		EffectiveOwnerFromOwner: true
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 28,28
@@ -1545,21 +1768,21 @@ WCANNON:
 	Inherits@CLOAK: ^AcceptsCloakCrate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
-		Cost: 400
+		Cost: 250
 	Tooltip:
 		Name: Cannon
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: anyhq, ~techlevel.medium
+		Prerequisites: ~techlevel.medium
 		Queue: Vehicle.Worms
 		Description: Slow and Weak tank.\n  Strong vs all Ground units.
 	Mobile:
 		Speed: 30
 		TurnSpeed: 4
 	Health:
-		HP: 4000
+		HP: 11000
 	Repairable:
 		HpPerStep: 546
 	Armor:
@@ -1567,7 +1790,7 @@ WCANNON:
 	RevealsShroud:
 		Range: 5c0
 	Armament@PRIMARY:
-		Weapon: Worms120mm
+		Weapon: WormsPirateCannon
 		LocalOffset: 213,128,0, 213,-128,0
 	AttackFrontal:
 		TargetFrozenActors: True
@@ -1656,3 +1879,131 @@ WORMS_JETENGINEBOMBER:
 		Offset: 100,-800,0
 		TrailLength: 20
 	-MapEditorData:
+WORMS_UFO:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+    Inherits@AntiBuil: ^PrioritizeVehicle
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: UFO
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, anyhq, ~techlevel.medium
+		Queue: Aircraft.Worms, RAAircraft.Worms, Aircraft.X_Aircrafts
+		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		TurnSpeed: 7
+		Speed: 100
+	Health:
+		HP: 50000
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: RA2DiskLaser
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Weapon: RA2DiskLaser
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	Armament@SECONDARY2:
+		Weapon: WormsRockets
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	AmmoPool:
+		Ammo: 12
+		PipCount: 6
+		AmmoCondition: ammo
+	-SpawnActorOnDeath:
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	ReloadAmmoPool:
+		Delay: 120
+		Count: 2
+	Selectable:
+		DecorationBounds: 30,24
+	Voiced:
+		VoiceSet: voiceWorm
+WORMS_APACHE:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+    Inherits@AntiVeh: ^PrioritizeVehicle
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Apache
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: hpad, ~techlevel.medium
+		Queue: Aircraft.Worms, RAAircraft.Worms, Aircraft.X_Aircrafts
+		Description: Helicopter Gunship with Missiles.\n  Strong vs Infantry, Light Vehicles and\n  Aircraft\n  Weak vs Tanks
+	Aircraft:
+		TurnSpeed: 7
+		Speed: 180
+	Health:
+		HP: 15000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: Worms227mm
+		LocalOffset: 128,-213,-85, 128,213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: Worms227mm
+		LocalOffset: 128,-213,-85, 128,213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 4
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	AmmoPool:
+		Ammo: 10
+		PipCount: 5
+		AmmoCondition: ammo
+	WithIdleOverlay@ROTORAIR:
+		Offset: 0,0,130
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTORGROUND:
+		Offset: 0,0,130
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	WithMuzzleOverlay:
+	-SpawnActorOnDeath:
+	SelectionDecorations:
+	ReloadAmmoPool:
+		Delay: 45
+		Count: 1
+	Selectable:
+		DecorationBounds: 30,24
+	Voiced:
+		VoiceSet: voiceWorm
