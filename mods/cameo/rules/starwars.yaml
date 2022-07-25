@@ -1289,6 +1289,88 @@ sweproc:
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi
 
+swnurse:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^SWSpawnActorsOnSellEmpire
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Animal Nursery
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: anypower
+		Queue: Building.SWEMPIRE, RABuilding.SWEMPIRE
+		Description: Generates passive income, requires animals to work
+	Building:
+		Footprint: xX xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 66000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	Cargo:
+		MaxWeight: 8
+		PipCount: 8
+		Types: BreedingAnimals
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	ProvidesPrerequisite:
+		Prerequisite: swnurse
+swfood:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^SWSpawnActorsOnSellEmpire
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Food Proc Ctr
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: swproc
+		Queue: Building.SWEMPIRE, RABuilding.SWEMPIRE
+		Description: Generates farm tiles, requires Harversters to work
+	Building:
+		Footprint: xX xx
+		Dimensions: 2,2
+		LocalCenterOffset: 0,-256,0
+	Health:
+		HP: 66000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: swfood
+	SeedsResource@Rank0:
+		Interval: 110	#55
+		ResourceType: SWFarms
+		MaxRange: 2
+		RequiresCondition: !swupirrigation
+	SeedsResource@Rank1:
+		Interval: 77	#55
+		ResourceType: SWFarms
+		MaxRange: 3
+		RequiresCondition: swupirrigation
+	GrantConditionOnPrerequisite@swupirrigation:
+		Condition: swupirrigation
+		Prerequisites: swupirrigation
 ########################################################
 #	SW Rebels
 ########################################################
@@ -1503,7 +1585,7 @@ swweapre:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
-	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@sell: ^SWSpawnActorsOnSell
 	HitShape:
 		TargetableOffsets: 0,0,0, 0,1024,0, 0,-1024,0
 		Type: Rectangle
@@ -1574,6 +1656,7 @@ swweapre:
 		Prerequisite: starwarsscrapvehicles
 swhqre:
 	Inherits: swhq
+	Inherits@sell: ^SWSpawnActorsOnSell
 	Buildable:
 		BuildPaletteOrder: 70
 		Prerequisites: swproc, ~techlevel.medium
@@ -1622,6 +1705,7 @@ swhqre:
 		ProductionType: Upgrades.SWREBELS
 swreproc:
 	Inherits: sweproc
+	Inherits@sell: ^SWSpawnActorsOnSell
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: anypower
@@ -1629,6 +1713,21 @@ swreproc:
 		Description: Processes raw Minerals\ninto useable resources
 	FreeActor:
 		Actor: swreharv
+swnursere:
+	Inherits: swnurse
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Buildable:
+		Prerequisites: anypower
+		Queue: Building.SWREBELS, RABuilding.SWREBELS
+		Description: Generates passive income, requires animals to work
+
+swfoodre:
+	Inherits: swfood
+	Inherits@sell: ^SWSpawnActorsOnSell
+	Buildable:
+		Prerequisites: swproc
+		Queue: Building.SWREBELS, RABuilding.SWREBELS
+
 ########################################################
 #	SW Republic
 ########################################################
@@ -1761,12 +1860,7 @@ swpyler:
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
 	Inherits@sell: ^SWSpawnActorsOnSellRepublic
-	HitShape:
-		UseTargetableCellsOffsets: false
-		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
-		Type: Rectangle
-			TopLeft: -1024, -1024
-			BottomRight: 1024, 640
+	Inherits@shape: ^2x2Shape
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -1779,8 +1873,8 @@ swpyler:
 		Queue: Building.SWREPUBLIC, RABuilding.SWREPUBLIC
 		Description: Trains infantry
 	Building:
-		Footprint: xx xx ==
-		Dimensions: 2,3
+		Footprint: =x= xxx ===
+		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Health:
 		HP: 60000
@@ -1974,6 +2068,20 @@ swhqr:
 		DisallowPaused: true
 	ProductionBar@Upgrades:
 		ProductionType: Upgrades.SWREPUBLIC
+swnurser:
+	Inherits: swnurse
+	Inherits@sell: ^SWSpawnActorsOnSellRepublic
+	Buildable:
+		Prerequisites: anypower
+		Queue: Building.SWREPUBLIC, RABuilding.SWREPUBLIC
+		Description: Generates passive income, requires animals to work
+swfoodr:
+	Inherits: swfood
+	Inherits@sell: ^SWSpawnActorsOnSellRepublic
+	Buildable:
+		Prerequisites: swproc
+		Queue: Building.SWREPUBLIC, RABuilding.SWREPUBLIC
+
 ########################################################
 #	SW Trade Federation
 ########################################################
@@ -2260,6 +2368,84 @@ swdproc:
 		Description: Processes raw Minerals\ninto useable resources
 	FreeActor:
 		Actor: swdharv
+swnursed:
+	Inherits: swnurse
+	Inherits@sell: ^SWSpawnActorsOnSellDroid
+	Buildable:
+		Prerequisites: anypower
+		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST, Building.SWHUTT, RABuilding.SWHUTT
+		Description: Generates passive income, requires animals to work
+
+swbarrdroid:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^SWSpawnActorsOnSellDroid
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Droid Factory
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST
+		Description: Trains infantry.\nProduces droids
+	Building:
+		Footprint: =x= xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+	Production@NORMAL:
+		Produces: Infantry.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry.SWSEPARATIST
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYNOD:
+		ProductionType: Infantry.SWSEPARATIST
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYNOD:
+		ProductionType: RAInfantry.SWSEPARATIST
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 48,48
+		DecorationBounds: 48,68,0,-10
+	SelectionDecorations:
+	RenderSprites:
+		Image: swdbarr
+swfoodd:
+	Inherits: swfood
+	Inherits@sell: ^SWSpawnActorsOnSellDroid
+	Buildable:
+		Prerequisites: swproc
+		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST, Building.SWHUTT, RABuilding.SWHUTT
+		Description: Generates passive income, requires animals to work
+
 ########################################################
 #	SW Hutt Clan
 ########################################################
@@ -2482,71 +2668,6 @@ swpyleh:
 		Bounds: 48,42,0,-5
 	RenderSprites:
 		Image: barr
-swbarrdroid:
-	Inherits: ^BaseBuilding
-	Inherits@shape: ^2x2Shape
-	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@prod: ^ProducesUnits
-	Inherits@sell: ^TDSpawnActorsOnSell
-	HitShape:
-		UseTargetableCellsOffsets: false
-		TargetableOffsets: 0,0,0, 630,-512,0, 355,512,0, -281,-512,0, -630,512,0
-	Valued:
-		Cost: 500
-	Tooltip:
-		Name: Droid Factory
-	ProvidesPrerequisite:
-		Prerequisite: barracks
-	Buildable:
-		BuildPaletteOrder: 30
-		Prerequisites: anypower
-		Queue: Building.SWSEPARATIST, RABuilding.SWSEPARATIST
-		Description: Trains infantry.\nProduces droids
-	Building:
-		Footprint: xx xx ==
-		Dimensions: 2,3
-		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 60000
-	RevealsShroud:
-		Range: 5c0
-	WithBuildingBib:
-	RallyPoint:
-	Exit@1:
-		SpawnOffset: 512,1024,0
-		ExitCell: 1,2
-	Production@NORMAL:
-		Produces: Infantry.SWSEPARATIST
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry.SWSEPARATIST
-		RequiresCondition: classicproductionqueues
-	ProductionQueue:
-		Type: Infantry.SWSEPARATIST
-		DisplayOrder: 2
-		Group: Infantry
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-	ProductionBar@INFANTRYNOD:
-		ProductionType: Infantry.SWSEPARATIST
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAINFANTRYNOD:
-		ProductionType: RAInfantry.SWSEPARATIST
-		RequiresCondition: classicproductionqueues
-	Power:
-		Amount: -20
-	ProvidesPrerequisite@buildingname:
-	Selectable:
-		Bounds: 48,48
-		DecorationBounds: 48,68,0,-10
-	SelectionDecorations:
-	RenderSprites:
-		Image: swdbarr
 swafldh:
 	Inherits: ^BaseBuilding
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -4154,6 +4275,8 @@ swaddonupgrade3:
 
 swe1:
 	Inherits: E1
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -4187,6 +4310,8 @@ swe1:
 		Scale: 0.7
 swe1troop:
 	Inherits: E1
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -4214,6 +4339,8 @@ swe1troop:
 		Modifier: 85
 swe1dark:
 	Inherits: E1
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -4238,8 +4365,11 @@ swe1dark:
 
 swe1clone:
 	Inherits: E1
+	Inherits@clonesup: ^SWCloneUpgrades
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
-		Cost: 90
+		Cost: 100
 	Tooltip:
 		Name: Clone Trooper
 	Buildable:
@@ -4249,21 +4379,28 @@ swe1clone:
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Armament@PRIMARY:							##########
 		Weapon: SWLaserClone
+		RequiresCondition: !swupphase2clone
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: SWLaserCloneG
 		MuzzleSequence: garrison-muzzle
+		RequiresCondition: !swupphase2clone
+	Armament@A1:							##########
+		Weapon: SWLaserClonePhase2
+		RequiresCondition: swupphase2clone
+	Armament@A2:						##########
+		Name: garrisoned
+		Weapon: SWLaserClonePhase2G
+		MuzzleSequence: garrison-muzzle
+		RequiresCondition: swupphase2clone
 	Voiced:
 		VoiceSet: SWTrooperVoice
-	GrantConditionOnPrerequisite@upswe1clone:
-		Condition: upswe1clone
-		Prerequisites: upswe1clone
-	DamageMultiplier@upswe1clone:
-		RequiresCondition: upswe1clone
-		Modifier: 85
 
 swjumpjet:
 	Inherits: TSJUMPJET
+	Inherits@clonesup: ^SWCloneUpgrades
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -4284,6 +4421,8 @@ swjumpjet:
 swe1droid:
 	Inherits: E1
 	Inherits@MC: ^MCImmune
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWDroidUpgrades
 	Valued:
 		Cost: 25
 	Tooltip:
@@ -4335,6 +4474,8 @@ swddroid:
 	Inherits: E1
 	Inherits@MC: ^MCImmune
 	Inherits@SWShields: ^SWShields
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWDroidUpgrades
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -4385,6 +4526,8 @@ swddroid:
 swdroidb2:
 	Inherits: TSCYBORG
 	Inherits@MC: ^MCImmune
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWDroidUpgrades
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -4406,6 +4549,7 @@ swdroidb2:
 swjedi:
 	Inherits: E1
 	Inherits@MC: ^MCImmune
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -4439,6 +4583,7 @@ swjedi:
 swsith:
 	Inherits: E1
 	Inherits@MC: ^MCImmune
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -4472,6 +4617,8 @@ swvice:
 	Inherits: ^Viceroid
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@bounty: ^GlobalBounty			##########
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWDroidUpgrades
 	Valued:
 		Cost: 200
 	Health:
@@ -4502,6 +4649,7 @@ swvice:
 		VoiceSet: SWProbotVoice
 swe2:
 	Inherits: E2
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 180
 	Tooltip:
@@ -4522,6 +4670,8 @@ swe2:
 		Image: e2
 swe3:
 	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -4562,6 +4712,9 @@ swe3:
 		Scale: 0.7
 swe3troop:
 	Inherits: ^Soldier
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 420
 	Tooltip:
@@ -4592,6 +4745,9 @@ swe3troop:
 		Modifier: 85
 swe3clone:
 	Inherits: ^Soldier
+	Inherits@clonesup: ^SWCloneUpgrades
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 290
 	Tooltip:
@@ -4614,15 +4770,12 @@ swe3clone:
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: SWCloneBazookaG
-	GrantConditionOnPrerequisite@upswe1clone:
-		Condition: upswe1clone
-		Prerequisites: upswe1clone
-	DamageMultiplier@upswe1clone:
-		RequiresCondition: upswe1clone
-		Modifier: 85
 swe3droid:
 	Inherits: ^Soldier
 	Inherits@MC: ^MCImmune
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@infup: ^SWDroidUpgrades
 	Valued:
 		Cost: 350
 	Tooltip:
@@ -4677,6 +4830,7 @@ swe3droid:
 		Modifier: 85
 swe4:
 	Inherits: E4
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 200
 	Tooltip:
@@ -4690,6 +4844,7 @@ swe4:
 swe6:
 	Inherits: E6
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@infup: ^SWDroidUpgrades
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -4729,6 +4884,8 @@ swe6e:
 		VoiceSet: SWR2Voice
 swrmbo:
 	Inherits: RMBO
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -4750,6 +4907,8 @@ swrmbo:
 		VoiceSet: SWMercenaryVoice
 swgreedo:
 	Inherits: E1
+	Inherits@laserup: ^SWLaserUpgrades
+	Inherits@infup: ^SWInfantryUpgrades
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -4786,6 +4945,7 @@ swbike:
 	Inherits@@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -4843,6 +5003,7 @@ swbggy:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 350
 	Tooltip:
@@ -4903,6 +5064,7 @@ swjeep:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 450
 	Tooltip:
@@ -4949,6 +5111,7 @@ swspider:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -5112,6 +5275,7 @@ swhtnk:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Inherits@SWTargetableWalker: ^SWTargetableWalker
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 2500
 	Tooltip:
@@ -5230,6 +5394,7 @@ swheli:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@reload: ^RearmableAircraft
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -5287,6 +5452,7 @@ swdroidheli:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -5336,6 +5502,7 @@ swxwing:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@reload: ^RearmableAircraft
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -5400,6 +5567,7 @@ swstarfighter:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@reload: ^RearmableAircraft
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 1800
 	Tooltip:
@@ -5459,6 +5627,7 @@ swfalc:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@reload: ^RearmableAircraft
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 2500
 	Tooltip:
@@ -5871,6 +6040,7 @@ sw2tnk:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Inherits@MC: ^MCImmune
+	Inherits@laserup: ^SWLaserUpgrades
 	Buildable:
 		Queue: Vehicle.SWSEPARATIST, RAVehicle.SWSEPARATIST, Vehicle.X_Vehicles
 		BuildPaletteOrder: 110
@@ -5922,6 +6092,7 @@ swlaat:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@reload: ^RearmableAircraft
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -6041,6 +6212,7 @@ swc17player:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@detect: ^GenericAirDetector
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 4000
 	Tooltip:
@@ -6551,6 +6723,7 @@ swquad:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@SWShields: ^SWShields
+	Inherits@laserup: ^SWLaserUpgrades
 	Buildable:
 		Queue: Vehicle.SWREBELS, RAVehicle.SWREBELS, Vehicle.X_Vehicles
 		BuildPaletteOrder: 60
@@ -6690,6 +6863,7 @@ swaa:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@SWTargetableWalker: ^SWTargetableWalker
+	Inherits@laserup: ^SWLaserUpgrades
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -6953,8 +7127,6 @@ swpummel:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
-    Inherits@oldbuff: ^OldFactionBuff
-    Inherits@AntiInf: ^PrioritizeInfantry
     Inherits@AntiBuil: ^PrioritizeBuilding
 	Valued:
 		Cost: 750
@@ -7027,6 +7199,7 @@ swmsam:
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
+	Inherits@laserup: ^SWLaserUpgrades
 	Buildable:
 		Queue: Vehicle.SWEMPIRE, RAVehicle.SWEMPIRE, Vehicle.SWREPUBLIC, RAVehicle.SWREPUBLIC, Vehicle.X_Vehicles
 		BuildPaletteOrder: 110
@@ -7077,6 +7250,7 @@ sw1tnk:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@SWTargetableWalker: ^SWTargetableWalker
+	Inherits@laserup: ^SWLaserUpgrades
 	Buildable:
 		Queue: Vehicle.SWREPUBLIC, RAVehicle.SWREPUBLIC, Vehicle.X_Vehicles
 		BuildPaletteOrder: 120
@@ -7220,6 +7394,93 @@ swtran.e1:
 		Delay: 200
 	EditorOnlyTooltip:
 		Name: Loaded Lambda (E1)
+swbantha2:
+	Inherits: ^Tank
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Bantha
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: swnurse, ~techlevel.medium
+		Queue: Infantry.SWSEPARATIST, RAInfantry.SWSEPARATIST, Infantry.SWHUTT, RAInfantry.SWHUTT
+		Description: Livestock animal\n Used to obtain money.\n must be kept in a nursery
+	Mobile:
+		Speed: 45
+	Health:
+		HP: 20000
+	Repairable:
+		HpPerStep: 2046
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 3c0
+	Inherits@EXT: ^ExternalConditions					##########
+	CashTrickler@Rank0:
+		Interval: 20
+		Amount: 4
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && !swupstimulant
+	CashTrickler@Rank1:
+		Interval: 20
+		Amount: 6
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && swupstimulant && !swupgenetics
+	CashTrickler@Rank2:
+		Interval: 20
+		Amount: 8
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && swupgenetics && !swupcloning
+	CashTrickler@Rank3:
+		Interval: 20
+		Amount: 12
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && swupcloning
+	Passenger:
+		CargoType: BreedingAnimals
+		PipType: Blue
+		Weight: 1
+		CargoConditions:
+			swnurse: indoors
+			swnurser: indoors
+			swnursere: indoors
+			swnursed: indoors
+	Voiced:
+		VoiceSet: SWBanthaVoice
+	Targetable:
+		RequiresCondition: !parachute && !chronobeamed
+		TargetTypes: Ground, Infantry, Creep
+	GrantConditionOnPrerequisite@swupstimulant:
+		Condition: swupstimulant
+		Prerequisites: swupstimulant
+	GrantConditionOnPrerequisite@swupgenetics:
+		Condition: swupgenetics
+		Prerequisites: swupgenetics
+	GrantConditionOnPrerequisite@swupcloning:
+		Condition: swupcloning
+		Prerequisites: swupcloning
+swnerf:
+	Inherits: swbantha2
+	Tooltip:
+		Name: Nerf
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: swnurse, ~techlevel.medium
+		Queue: Infantry.SWREBELS, RAInfantry.SWREBELS, Infantry.SWEMPIRE, RAInfantry.SWEMPIRE, Infantry.SWREPUBLIC, RAInfantry.SWREPUBLIC
+		Description: Livestock animal\n Used to obtain money.\n must be kept in a nursery
+	Voiced:
+		VoiceSet: SWBanthaVoice
+	Passenger:
+		CargoType: BreedingAnimals
+		PipType: Blue
+		Weight: 1
+		CargoConditions:
+			swnurse: indoors
+			swnurser: indoors
+			swnursere: indoors
+			swnursed: indoors
 ########################################################
 #	SW Support
 ########################################################
@@ -7567,9 +7828,184 @@ swjabbaparty.e3:
 	DamageMultiplier@swupinfarmor1:
 		RequiresCondition: swupinfarmor1
 		Modifier: 90
+^SWDroidUpgrades:
+	GrantConditionOnPrerequisite@swupdroidarmor1:
+		Condition: swupdroidarmor1
+		Prerequisites: swupdroidarmor1
+	DamageMultiplier@swupdroidarmor1:
+		RequiresCondition: swupdroidarmor1
+		Modifier: 90
+
+^SWLaserUpgrades:
 	GrantConditionOnPrerequisite@swuplaser1:
 		Condition: swuplaser1
 		Prerequisites: swuplaser1
 	FirepowerMultiplier@swuplaser1:
 		RequiresCondition: swuplaser1
 		Modifier: 115
+
+^SWCloneUpgrades:
+	GrantConditionOnPrerequisite@swupphase2clone:
+		Condition: swupphase2clone
+		Prerequisites: swupphase2clone
+	ProducibleWithLevel@swupphase2clone:
+		Prerequisites: swupphase2clone
+		InitialLevels: 1
+	FirepowerMultiplier@swupphase2clone:
+		RequiresCondition: swupphase2clone
+		Modifier: 115
+swupinfarmor1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Infantry Armor
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades.SWHUTT, Upgrades.SWREBELS, Upgrades.SWREPUBLIC, Upgrades.SWEMPIRE
+		Description: Increases durability of all troopers.
+		Prerequisites: ~!swupinfarmor1
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: swupinfarmor1
+	ProvidesPrerequisite:
+		Prerequisite: swupinfarmor1
+
+swupveharmor1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Vehicle Armor
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades.SWHUTT, Upgrades.SWREBELS, Upgrades.SWREPUBLIC, Upgrades.SWEMPIRE, Upgrades.SWSEPARATIST
+		Description: Increases durability of all vehicles.
+		Prerequisites: ~!swupveharmor1
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: swupveharmor1
+	ProvidesPrerequisite:
+		Prerequisite: swupveharmor1
+swupvehspeed1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Vehicle Speed
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades.SWHUTT, Upgrades.SWREBELS, Upgrades.SWREPUBLIC, Upgrades.SWEMPIRE, Upgrades.SWSEPARATIST
+		Description: Increases speed of all vehicles.
+		Prerequisites: ~!swupvehspeed1
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: swupvehspeed1
+	ProvidesPrerequisite:
+		Prerequisite: swupvehspeed1
+swuplaser1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Laser Weapons Upgrade
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades.SWHUTT, Upgrades.SWREBELS, Upgrades.SWREPUBLIC, Upgrades.SWEMPIRE, Upgrades.SWSEPARATIST
+		Description: Increases damage of all laser weapons.
+		Prerequisites: ~!swuplaser1
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: swuplaser1
+	ProvidesPrerequisite:
+		Prerequisite: swuplaser1
+
+swupphase2clone:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Laser Weapons Upgrade
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades.SWREPUBLIC
+		Description: Increases veterancy of all Clones, upgrades clones arsenal.
+		Prerequisites: ~!swupphase2clone, sweye
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: swupphase2clone
+	ProvidesPrerequisite:
+		Prerequisite: swupphase2clone
+swupdroidarmor1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Droid Armor
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades.SWSEPARATIST
+		Description: Increases durability of all droids infantry, include R2 units.
+		Prerequisites: ~!swupdroidarmor1
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: swupdroidarmor1
+	ProvidesPrerequisite:
+		Prerequisite: swupdroidarmor1
+swupstimulant:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Stimulants
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades.SWHUTT, Upgrades.SWREBELS, Upgrades.SWREPUBLIC, Upgrades.SWEMPIRE, Upgrades.SWSEPARATIST
+		Description: Increases passive income from Banthas, and Nerfs in the Nursery.
+		Prerequisites: ~!swupstimulant, swnurse
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: swupstimulant
+	ProvidesPrerequisite:
+		Prerequisite: swupstimulant
+
+swupgenetics:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Genetics
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades.SWHUTT, Upgrades.SWREBELS, Upgrades.SWREPUBLIC, Upgrades.SWEMPIRE, Upgrades.SWSEPARATIST
+		Description: Increases passive income from Banthas, and Nerfs in the Nursery.
+		Prerequisites: ~!swupgenetics, swupstimulant, swnurse
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: swupgenetics
+	ProvidesPrerequisite:
+		Prerequisite: swupgenetics
+
+swupcloning:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Cloning
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades.SWHUTT, Upgrades.SWREBELS, Upgrades.SWREPUBLIC, Upgrades.SWEMPIRE, Upgrades.SWSEPARATIST
+		Description: Increases passive income from Banthas, and Nerfs in the Nursery.
+		Prerequisites: ~!swupcloning, swupgenetics, swnurse
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: swupcloning
+	ProvidesPrerequisite:
+		Prerequisite: swupcloning
+
+swupirrigation:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Irrigation
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades.SWHUTT, Upgrades.SWREBELS, Upgrades.SWREPUBLIC, Upgrades.SWEMPIRE, Upgrades.SWSEPARATIST
+		Description: Food Proc Center can make more farms.
+		Prerequisites: ~!swupirrigation, swfood
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: swupirrigation
+	ProvidesPrerequisite:
+		Prerequisite: swupirrigation

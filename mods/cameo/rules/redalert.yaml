@@ -609,13 +609,6 @@ RAE1:
 	GrantConditionOnPrerequisite@modjapan:
 		Condition: modjapan
 		Prerequisites: modjapan
-	Cloak:
-		InitialDelay: 90
-		CloakDelay: 90
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage
-		PauseOnCondition: cloak-force-disabled || base-reveal
-		RequiresCondition: modjapan
-		IsPlayerPalette: true
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 RARE1:
@@ -712,13 +705,6 @@ RAE3:
 	GrantConditionOnPrerequisite@modjapan:
 		Condition: modjapan
 		Prerequisites: modjapan
-	Cloak:
-		InitialDelay: 120
-		CloakDelay: 120
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage
-		PauseOnCondition: cloak-force-disabled || base-reveal
-		RequiresCondition: modjapan
-		IsPlayerPalette: true
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 RARE3:
@@ -821,7 +807,7 @@ E7:
 	Inherits@country: ^AffectedByCountryBonuses
     Inherits@oldbuff: ^OldFactionBuff
 	Buildable:
-		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.X_Infantry, Infantry.ModAllies, RAInfantry.ModAllies
+		Queue: Infantry.Allies, RAInfantry.Allies, Infantry.X_Infantry, Infantry.ModAllies, RAInfantry.ModAllies, Vehicle.ModUSAPad, RAVehicle.ModUSAPad
 		BuildPaletteOrder: 120
 		Prerequisites: atek, ~techlevel.high
 		BuildLimit: 1
@@ -1254,7 +1240,7 @@ RASAMURAI:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@oldbuff: ^OldFactionBuff
 	Valued:
-		Cost: 250
+		Cost: 270
 	Tooltip:
 		Name: Samurai
 	Buildable:
@@ -1304,6 +1290,30 @@ RASAMURAI:
 		Prerequisites: barracks.upgraded
 	Voiced:
 		VoiceSet: JapaneseVoice
+RAMAID:
+	Inherits: RAJE3
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Archer Maiden
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: barracks, anyhq
+		Queue: Infantry.ModJapan, RAInfantry.ModJapan
+		Description: Artillery archer infantry.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles
+	Mobile:
+		Speed: 65
+	Health:
+		HP: 5000
+	Armament@PRIMARY:							##########
+		Weapon: JapanMaidenBow
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: JapanMaidenBow
+	Voiced:
+		VoiceSet: JapaneseVoice
+	RenderSprites:
+		Image: ramaid
 ####################################################################################################
 #		VEHICLES
 ####################################################################################################
@@ -1621,7 +1631,7 @@ RAARTY:
 	Inherits@country: ^AffectedByCountryBonuses
 	Inherits@jammable: ^ArtilleryJammable
 	Buildable:
-		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies, Vehicle.ModJapan, RAVehicle.ModJapan
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies
 		BuildPaletteOrder: 70
 		Description: Long-range artillery.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
         BuildDuration: 400
@@ -2505,7 +2515,7 @@ RAMGG:
 	Inherits: ^Vehicle
     Inherits@oldbuff: ^OldFactionBuff
 	Buildable:
-		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.camea, RAVehicle.camea
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.camea, RAVehicle.camea, Vehicle.ModUSAPad, RAVehicle.ModUSAPad
 		BuildPaletteOrder: 150
 		Prerequisites: atek
 		BuildDurationModifier: 50
@@ -2985,7 +2995,22 @@ RAHELI:
 		VoiceSet: RAVehicleVoice
 	GainsExperience:
 		LevelUpNotification: LevelUpRA1
-
+	Parachutable:							##########
+		FallRate: 20
+		KilledOnImpassableTerrain: true
+		GroundCorpseSequence:
+		GroundCorpsePalette:
+		WaterImpactSound: splash9.aud
+		WaterCorpseSequence: small_splash
+		ParachutingCondition: parachute
+	WithParachute:							##########
+		ShadowImage: parach-shadow
+		ShadowSequence: idle
+		Image: parach
+		Sequence: idle
+		OpeningSequence: open
+		Offset: 0,0,427
+		RequiresCondition: parachute
 HIND:
 	Inherits: ^RAHelicopter
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -3171,7 +3196,22 @@ MH60:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA1
 
-
+	Parachutable:							##########
+		FallRate: 20
+		KilledOnImpassableTerrain: true
+		GroundCorpseSequence:
+		GroundCorpsePalette:
+		WaterImpactSound: splash9.aud
+		WaterCorpseSequence: small_splash
+		ParachutingCondition: parachute
+	WithParachute:							##########
+		ShadowImage: parach-shadow
+		ShadowSequence: idle
+		Image: parach
+		Sequence: idle
+		OpeningSequence: open
+		Offset: 0,0,427
+		RequiresCondition: parachute
 ####################################################################################################
 #		RA Aircraft Modded
 ####################################################################################################
@@ -4767,12 +4807,141 @@ MODCARR:
 	ReloadDelayMultiplier@GattlingSpeed:
 		RequiresCondition: !ammo
 		Modifier: 125
+MODNANO:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@oldbuff: ^OldFactionBuff
+	Inherits@cargo: ^CargoVehicle
+	Buildable:
+		Queue: Vehicle.ModJapan, RAVehicle.ModJapan, Vehicle.X_Vehicles
+		BuildPaletteOrder: 70
+		Prerequisites: anyhq, ~techlevel.low
+		Description: Mobile unit with mounted Flak cannon.\n  Strong vs Infantry, Light armor, Aircraft\n  Weak vs Tanks
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Nanodrone Buggy  
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: ftrk
+	Health:
+		HP: 15000
+	Armor:
+		Type: Heavy
+	Mobile:
+		TurnSpeed: 16
+		Speed: 100
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -198,0,128
+	Armament@AA:
+		Weapon: NanoArtilleryAG
+		Recoil: 85
+		LocalOffset: 212,0,72
+		MuzzleSequence: muzzle
+	Armament@AG:
+		Weapon: NanoArtilleryAA
+		Recoil: 85
+		LocalOffset: 512,0,192
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 2
+		PipCount: 2
+		LoadingCondition: notmobile
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Image: modnano
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+MODWAVE:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@country: ^AffectedByCountryBonuses
+    Inherits@oldbuff: ^OldFactionBuff
+	Inherits@cargo: ^CargoVehicle
+	Buildable:
+		Queue: Vehicle.ModJapan, RAVehicle.ModJapan, Vehicle.X_Vehicles
+		BuildPaletteOrder: 75
+		Prerequisites: modjtek, ~techlevel.low
+		Description: Mobile unit with mounted Flak cannon.\n  Strong vs Infantry, Light armor, Aircraft\n  Weak vs Tanks
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Wave Force Artillery
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: ftrk
+	Health:
+		HP: 48000
+	Armor:
+		Type: Heavy
+	Mobile:
+		TurnSpeed: 16
+		Speed: 72
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -12,0,33
+	Armament@AG:
+		Weapon: WaveArtilleryShell
+		Recoil: 85
+		LocalOffset: 512,0,192
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: WaveArtilleryShell
+		Recoil: 85
+		LocalOffset: 512,0,192
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 28,28
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	RenderSprites:
+		Image: modwave
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
 modcarr.bot1:
 	Inherits: MODCARR
 	Buildable:
 		Prerequisites: barracks, ~hardbotplayer
 	Cargo:
-		InitialUnits: rae1, rae1, rae3, rae3
+		InitialUnits: raje1, raje1, raje3, raje3
 	ProductionCostMultiplier:
 		Multiplier: 180
 	AIDeployNotifier:
@@ -4794,14 +4963,14 @@ modhovert:
 		Description: Japanese Hover Battle Tank.\n Shots Psionic Shells, acts like a Deviator.\n Also causes Damage and Control Enemies \n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 		Prerequisites: modjtek
 	Valued:
-		Cost: 1200
+		Cost: 1700
 	Tooltip:
 		Name: Hovercraft Tank
 		GenericName: Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 48000
+		HP: 45000
 	Armor:
 		Type: Heavy
 	Mobile:
@@ -4914,6 +5083,79 @@ modoitank:
 		ValidTypes: vehicle								##########
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
+modpillboxfort:
+	Inherits: modartyturret
+	Inherits@shape: ^1x1Shape
+    Buildable:
+		Queue: Defence.ModJapan, RADefence.ModJapan
+		BuildPaletteOrder: 90
+		Prerequisites: tent, ~techlevel.medium
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Pillbox Fortress
+	Health:
+		HP: 90000
+	Armament:
+		Weapon: NanoArtilleryAG
+		LocalOffset: 624,0,208
+		MuzzleSequence: muzzle
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 3
+		PipCount: 3
+    RenderSprites:
+        Image: modpillboxfort
+	Turreted:
+		TurnSpeed: 3
+		Offset: 0,0,300
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+modpillboxfort.bot1:
+	Inherits: modpillboxfort
+	Buildable:
+		Prerequisites: barracks, ~botplayer
+	Cargo:
+		InitialUnits: raje1, raje1, raje3
+
+modwavefort:
+	Inherits: modartyturret
+	Inherits@shape: ^1x1Shape
+    Buildable:
+		Queue: Defence.ModJapan, RADefence.ModJapan
+		BuildPaletteOrder: 90
+		Prerequisites: tent, ~techlevel.medium
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Pillbox Fortress
+	Health:
+		HP: 90000
+	Armament:
+		Weapon: WaveArtilleryShell
+		LocalOffset: 624,0,208
+		MuzzleSequence: muzzle
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 1
+		PipCount: 1
+    RenderSprites:
+        Image: modwavefort
+	Turreted:
+		TurnSpeed: 3
+		Offset: 0,0,300
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+modwavefort.bot1:
+	Inherits: modwavefort
+	Buildable:
+		Prerequisites: barracks, ~botplayer
+	Cargo:
+		InitialUnits: raje3
 ####################################################################################################
 #		Modded RA Greece
 ####################################################################################################
@@ -5132,6 +5374,60 @@ raapc.modusa:
 	AIDeployNotifier:
 		DeployChance: 100
 		DeployTicks: 0
+MOD2TNKU:
+	Inherits: 2TNK
+	Inherits@ifvbunk: ^IFVConditionsBunker
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies, Vehicle.ModUSAPad, RAVehicle.ModUSAPad
+		BuildPaletteOrder: 110
+		Prerequisites: ~usatankallies
+    Cargo:
+		Types: Infantry
+		MaxWeight: 1
+		PipCount: 1
+		EjectOnDeath: false
+	RenderSprites:
+		Image: 2TNK
+
+MOD1TNKU:
+	Inherits: 1TNK 
+	Inherits@ifvbunk: ^IFVConditionsBunker
+	Buildable:
+		Queue: Vehicle.Allies, RAVehicle.Allies, Vehicle.X_Vehicles, Vehicle.ModAllies, RAVehicle.ModAllies, Vehicle.ModUSAPad, RAVehicle.ModUSAPad
+		BuildPaletteOrder: 50
+		Prerequisites: ~techlevel.low, ~usatankallies
+		Description: Fast tank, good for scouting.\n  Strong vs Light armor\n  Weak vs Infantry, Tanks, Aircraft
+    Cargo:
+		Types: Infantry
+		MaxWeight: 1
+		PipCount: 1
+		EjectOnDeath: false
+	RenderSprites:
+		Image: 1TNK
+mod1tnku.bot1:
+	Inherits: MOD1TNKU
+	Buildable:
+		Prerequisites: barracks, ~botplayer
+	Cargo:
+		InitialUnits: rae1
+mod2tnku.bot1:
+	Inherits: MOD2TNKU
+	Buildable:
+		Prerequisites: barracks, ~botplayer
+	Cargo:
+		InitialUnits: rae1
+mod1tnku.bot2:
+	Inherits: MOD1TNKU
+	Buildable:
+		Prerequisites: barracks, ~botplayer
+	Cargo:
+		InitialUnits: rae3
+mod2tnku.bot2:
+	Inherits: MOD2TNKU
+	Buildable:
+		Prerequisites: barracks, ~botplayer
+	Cargo:
+		InitialUnits: rae3
 ####################################################################################################
 #		Modded RA Irak
 ####################################################################################################
@@ -6373,7 +6669,7 @@ HBOX.E3:
 	Inherits: HBOX
 	Building:
 	Buildable:
-		Queue: Defence.Allies, RADefence.Allies, Defence.ModAllies, RADefence.ModAllies, Defence.ModJapan, RADefence.ModJapan
+		Queue: Defence.Allies, RADefence.Allies, Defence.ModAllies, RADefence.ModAllies
 		BuildPaletteOrder: 50
 		Prerequisites: tent, ~techlevel.medium, ~botplayer
 		Description: Camouflaged static defense with a fireport\nfor a garrisoned soldier.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
@@ -6659,7 +6955,10 @@ RAWEAPA:
 		Prerequisite: raweapa
 	ProvidesPrerequisite@normaltankallies:
 		Prerequisite: normaltankallies 
-		Factions: allies, modusa
+		Factions: allies
+	ProvidesPrerequisite@usatankallies:
+		Prerequisite: usatankallies 
+		Factions: modusa
 	ProvidesPrerequisite@normalreconallies:
 		Prerequisite: normalreconallies
 		Factions: allies, modusa, modfrance, modgermany, modengland
@@ -7926,8 +8225,37 @@ MODSPACEPORT:
 	WithBuildingBib:
 	RallyPoint:
 	Exit@1:
-		SpawnOffset: 213,-128,0
+		SpawnOffset: -1024,1024,0
+		Facing: 160
 		ExitCell: 1,2
+	Exit@1b:
+		SpawnOffset: -1024,1024,0
+		Facing: 160
+		ExitCell: 2,1
+	Exit@1c:
+		SpawnOffset: -1024,1024,0
+		Facing: 160
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 1024,1024,0
+		Facing: 224
+		ExitCell: 2,2
+	Exit@3:
+		SpawnOffset: -1024,-1024,0
+		Facing: 96
+		ExitCell: 0,0
+	Exit@4:
+		SpawnOffset: 1024,-1024,0
+		Facing: 32
+		ExitCell: 2,0
+	Exit@5:
+		SpawnOffset: 1024,-1024,0
+		Facing: 32
+		ExitCell: 1,0
+	Exit@6:
+		SpawnOffset: 1024,-1024,0
+		Facing: 32
+		ExitCell: 0,1
 	ProductionParadrop@NORMAL:
 		Produces: Vehicle.ModUSAPad
 		RequiresCondition: !classicproductionqueues
@@ -7944,6 +8272,7 @@ MODSPACEPORT:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
+		BuildDurationModifier: 20
 	ProductionBar@VEHICLESOVIET:
 		ProductionType: Vehicle.ModUSAPad
 		RequiresCondition: !classicproductionqueues
@@ -8065,6 +8394,8 @@ MODRAFACT.SOVIET:
 		Factions: modchina
 MODRAFACT.JAPAN:
 	Inherits: RAFACT.SOVIET
+	Tooltip:
+		Name: Construction Yard (Japan)
 	Production@NORMAL:
 		Produces: Building.ModJapan, Defence.ModJapan
 	Production@CLASSICPRODUCTIONQUEUES:
@@ -8167,7 +8498,7 @@ MODRAWEAPA:
 		Prerequisite: raweapa
 	ProvidesPrerequisite@normaltankallies:
 		Prerequisite: normaltankallies 
-		Factions: allies, modusa
+		Factions: allies
 MODRAWEAP:
 	Inherits: RAWEAP
 	Buildable:
@@ -8343,7 +8674,7 @@ HBOXJ:
 	Buildable:
 		Queue: Defence.ModJapan, RADefence.ModJapan
 		BuildPaletteOrder: 50
-		Prerequisites: tent, ~techlevel.medium
+		Prerequisites: tent, ~disabled
 		Description: Camouflaged static defense with a fireport\nfor a garrisoned soldier.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 700
