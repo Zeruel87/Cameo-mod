@@ -10374,11 +10374,11 @@ wh40kchaospredator:
 		MuzzleSequence: muzzle
 		RequiresCondition: !lascannon
 	Armament@LASGUN1:
-		Weapon: WH40KPredatorLasgun
+		Weapon: WH40KPredatorLasgunChaos
 		LocalOffset: 890,80,300
 		RequiresCondition: lascannon
 	Armament@LASGUN2:
-		Weapon: WH40KPredatorLasgun
+		Weapon: WH40KPredatorLasgunChaos
 		LocalOffset: 900,-80,300
 		RequiresCondition: lascannon
 	Armament@SECONDARY:
@@ -10390,7 +10390,7 @@ wh40kchaospredator:
 		RequiresCondition: !lascannonb
 	Armament@LASGUN3:
 		Name: secondary
-		Weapon: WH40KPredatorLasgunSmall
+		Weapon: WH40KPredatorLasgunSmallChaos
 		LocalOffset: -85,444,110, -85,-444,110
 		LocalYaw: -100, 100
 		Recoil: 10
@@ -10546,7 +10546,7 @@ wh40kdefiler:
 		LocalOffset: 400,-400,700, 400,400,700, 400,-400,300, 400,400,300
 		PauseOnCondition: !ammo
 	Armament@PRIMARY:
-		Weapon: WH40KPredatorCannon
+		Weapon: WH40KLemanCannon
 		LocalOffset: 900,1,340, 900,-1,340
 		Recoil: 170
 		RecoilRecovery: 42
@@ -10671,7 +10671,7 @@ wh40khelltalon.toxins:
 wh40kchaosrhino.e2:
 	Inherits: wh40kchaosrhino
 	Buildable:
-		Prerequisites: barracks, wh40karmorym, ~hardbotplayer
+		Prerequisites: barracks, wh40karmorym, ~botplayer
 	Cargo:
 		InitialUnits: wh40kboltchaosmarine, wh40kboltchaosmarine, wh40kboltchaosmarine, wh40kboltchaosmarine, wh40kboltchaosmarine
 	ProductionCostMultiplier:
@@ -10865,7 +10865,7 @@ wh40kcultist:
 	Crushable:
 		CrushClasses: vehicle
 	Health:
-		HP: 9200
+		HP: 10200
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
@@ -11491,7 +11491,7 @@ wh40kprincedemon:
 	Valued:
 		Cost: 5000
 	Tooltip:
-		Name: bloodthirster
+		Name: Prince Demon
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -11781,7 +11781,8 @@ wh40kcultistmobslave:
 	Voiced:
 		VoiceSet: WH40KCultistVoice
 
-
+	Health:
+		HP: 14500
 #######################################
 # Chaos, Sargents
 #######################################
@@ -12770,6 +12771,119 @@ wh40kdaemonpit:
 		Prerequisite: vehicleproduction
 	RenderSprites:
 		Image: wh40kdaemonpit
+#######################################
+# Eldar Buildings
+#######################################
+wh40kwebway:
+	Inherits: ^BaseBuilding
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+    Inherits@conyard: ^Conyard
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Desecrated Stronghold
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	Health:
+		HP: 650000	#150000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	WithBuildingBib:
+	Production@NORMAL:
+		Produces: Defence.Eldar
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RADefence.Eldar
+		RequiresCondition: classicproductionqueues
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@AlliesBuilding:
+		Type: Building.Eldar
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+	ProductionQueue@AlliesDefense:
+		Type: Defence.Eldar
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+	BaseBuilding:
+	ProductionBar@BuildingAllies:
+		ProductionType: Building.Eldar
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceAllies:
+		ProductionType: Defence.Eldar
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingAllies:
+		ProductionType: RABuilding.Eldar
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceAllies:
+		ProductionType: RADefence.Eldar
+		RequiresCondition: classicproductionqueues
+	ProductionAirdropCA@NORMAL:
+		Produces: Building.Eldar
+		RequiresCondition: !classicproductionqueues
+		ActorType: wh40kthunderhawk
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	ProductionAirdropCA@CLASSIC:
+		Produces: RABuilding.Eldar
+		RequiresCondition: classicproductionqueues
+		ActorType: wh40kthunderhawk
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	BaseProvider:
+		Range: 8c0
+	WithBuildingPlacedAnimation:
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: wh30kcommand
+	Buildable:
+		Description: Builds structures
+	ProvidesPrerequisite@factionallies:
+		Prerequisite: mmchaos
+	RallyPoint:							##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0		#-1323,1280,0
+		ExitCell: 0,2
+		Facing: 135
+	GrantConditionOnPrerequisite@wh40kupregimentalcommand:
+		Condition: wh40kupregimentalcommand
+		Prerequisites: wh40kupregimentalcommand
+	DamageMultiplier@wh40kupguardarmor:
+		RequiresCondition: wh40kupregimentalcommand
+		Modifier: 75
+	GrantConditionOnPrerequisite@wh40kupbattlecommand:
+		Condition: wh40kupbattlecommand
+		Prerequisites: wh40kupbattlecommand
+	DamageMultiplier@wh40kupbattlecommand:
+		RequiresCondition: wh40kupbattlecommand
+		Modifier: 75
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	ProvidesRadar:
+		RequiresCondition: !jammed
+
 wh30kcommand:
     Tooltip:
         Name: Field Command
