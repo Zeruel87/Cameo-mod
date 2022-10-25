@@ -160,7 +160,23 @@ halloween_blackcitadel:
     SpawnActorOnDeath@death3:
         Actor: halloween_rockgolem_small
     SpawnActorOnDeath@death4:
-        Actor: halloween_rockgolem_small  
+        Actor: halloween_rockgolem_small
+	DetonateWeaponPower@roast:
+		OrderName: HalloweenSkeletonRoast
+		PauseOnCondition: lowpower
+		Icon: wh40ksluggaicon
+		Cursor: ability
+		ChargeInterval: 4500
+		Description: Skeleton Roasting
+		ActivationDelay: 25
+		LongDesc: Teleports a large group of units\nacross the map.
+		Weapon: halloween_skeleton_roasting
+		CameraActor: camera.placeholderhack
+		CameraRemoveDelay: 0
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		Prerequisites: halloween_upgrade.ghost
 halloween_crypto:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -604,8 +620,12 @@ halloween_cauldron:
 	DrawLineToTarget:
 	CustomSellValue:
 		Value: 500			#600
-	FreeActor:
-		Actor: RAHARV
+	FreeActor@1:
+		Actor: halloween_worm
+		SpawnOffset: 1,2
+		Facing: 64
+	FreeActor@2:
+		Actor: halloween_worm
 		SpawnOffset: 1,2
 		Facing: 64
 	WithBuildingBib:
@@ -738,7 +758,7 @@ halloween_skeleton:
     Mobile:
 		Speed: 59       
     RenderSprites:
-        Image: ra2doomskeleton       
+        Image: halloween_skeleton       
     -MobSpawnerSlave:
     -RejectsOrders:
     Voiced:
@@ -797,7 +817,7 @@ halloween_pinky:
 		Type: Light
     RenderSprites:
         Scale: 0.7
-        Image: PINKY
+        Image: halloween_pinky
    	Buildable:
 		Queue: HVehicle.Halloween, RAHVehicle.Halloween
 		BuildPaletteOrder: 20
@@ -959,7 +979,7 @@ halloween_franky:
 		Scale: 1.0
     -Crushable:  
     RenderSprites:
-        Image: wolfe3
+        Image: halloween_franky
     GrantConditionOnPrerequisite@ghost:
         Prerequisites: halloween_upgrade.ghost
         Condition: halloween_upgrade.ghost
@@ -1287,5 +1307,45 @@ halloween_upgrade.ghost:
 		Cost: 2500
 	RenderSprites:
         Palette: windows256
-        Image: upgrade.gholas
+        Image: halloween_upgrade.ghost
 	ProvidesPrerequisite@upgradename: 
+halloween_worm:
+	Inherits: ^Tank
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Harvester Worm
+		GenericName: Worm
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: halloween_cauldron
+		Queue: Infantry.Halloween, RAInfantry.Halloween
+		BuildDurationModifier: 40
+		Description: Collects Tiberium for processing.\n  Unarmed
+	Selectable:
+		DecorationBounds: 36,36
+	Harvester:
+		PipCount: 7
+		Capacity: 5
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 15
+		SearchFromHarvesterRadius: 8
+		EmptyCondition: no-tiberium
+	Mobile:
+		Speed: 120
+	Health:
+		HP: 20000
+	Repairable:
+		HpPerStep: 2537
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 4c0
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions					##########
+      

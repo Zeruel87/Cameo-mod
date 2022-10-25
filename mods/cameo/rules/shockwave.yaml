@@ -101,7 +101,14 @@ World:
         Game: Shockwave 
         Selectable: true
 		Side: GLA
-		Description: GLA Salvage General\nGeneral Mohmar "Deathstrike" demands the use of salvaged weapon systems left on battlefield to defeat his enemies\nSupport powers: Scud Storm, General's Powers    
+		Description: GLA Salvage General\nGeneral Mohmar "Deathstrike" demands the use of salvaged weapon systems left on battlefield to defeat his enemies\nSupport powers: Scud Storm, General's Powers
+    FactionCA@gla_extras_technical:
+		Name: Deathstrike SHW
+		InternalName: eglatechnic
+        Game: Special 
+        Selectable: true
+		Side: GLA
+		Description: GLA Technical General\nGeneral "Naga" demands the use of a lot of technicals, and modified civilian vehicles\nSupport powers: Scud Storm, General's Powers  
     FactionCA@RandomSHWSUSA:
 		Name: Any USA
 		InternalName: RandomSUSA
@@ -135,11 +142,11 @@ World:
 		Class: none
 		ClassName: MCV Only
 		BaseActor: shockwave_mcv
-		Factions: susa, schina, sgla, susasuper, susalsr, susaair, susaarmor, schinainf, schinatnk, schinaatom, sleang, sglacamo, sglademo, sglatoxin, sglascrap
+		Factions: susa, schina, sgla, susasuper, susalsr, susaair, susaarmor, schinainf, schinatnk, schinaatom, sleang, sglacamo, sglademo, sglatoxin, sglascrap, eglatechnic
 	MPStartUnits@lightshockwave:
 		Class: light
 		ClassName: Light Support
-		Factions: susa, schina, sgla, susasuper, susalsr, susaair, susaarmor, schinainf, schinatnk, schinaatom, sleang, sglacamo, sglademo, sglatoxin, sglascrap 
+		Factions: susa, schina, sgla, susasuper, susalsr, susaair, susaarmor, schinainf, schinatnk, schinaatom, sleang, sglacamo, sglademo, sglatoxin, sglascrap, eglatechnic
 		BaseActor: shockwave_mcv
 		SupportActors: light_inf
 		InnerSupportRadius: 3
@@ -147,7 +154,7 @@ World:
 	MPStartUnits@heavyshockwave:
 		Class: heavy
 		ClassName: Heavy Support
-		Factions: susa, schina, sgla, susasuper, susalsr, susaair, susaarmor, schinainf, schinatnk, schinaatom, sleang, sglacamo, sglademo, sglatoxin, sglascrap 
+		Factions: susa, schina, sgla, susasuper, susalsr, susaair, susaarmor, schinainf, schinatnk, schinaatom, sleang, sglacamo, sglademo, sglatoxin, sglascrap, eglatechnic
 		BaseActor: shockwave_mcv
 		SupportActors: light_inf
 		InnerSupportRadius: 3
@@ -207,10 +214,10 @@ Player:
         Factions: schina, schinaatom  
     ProvidesPrerequisite@anysgla:
 		Prerequisite: anysgla
-        Factions: sgla, sglatoxin, sglademo, sglacamo, sglascrap    
+        Factions: sgla, sglatoxin, sglademo, sglacamo, sglascrap, eglatechnic
     ProvidesPrerequisite@scrapcratesshockwave:
 		Prerequisite: scrapvehicles
-        Factions: sgla, sglatoxin, sglademo, sglacamo, sglascrap    
+        Factions: sgla, sglatoxin, sglademo, sglacamo, sglascrap, eglatechnic
     ProvidesPrerequisite@sgla:
 		Prerequisite: sgla_regular
         Factions: sgla    
@@ -225,7 +232,10 @@ Player:
         Factions: sglacamo  
     ProvidesPrerequisite@sgla_scrap:
         Prerequisite: sgla_scrap
-        Factions: sglascrap          
+        Factions: sglascrap
+    ProvidesPrerequisite@gla_extras_technical:
+        Prerequisite: eglatechnic
+        Factions: eglatechnic   
     ProvidesPrerequisite@sglaterrorist:
 		Prerequisite: sglaterroristprereq
         Factions: sgla, sglacamo, sglademo
@@ -290,7 +300,7 @@ Player:
 		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
     ProvidesPrerequisite@sglblackmarketprereq:
 		Prerequisite: sglblackmarketprereq
-        Factions: sgla, sglatoxin, sglademo, sglacamo
+        Factions: sgla, sglatoxin, sglademo, sglacamo, eglatechnic
     ClassicProductionQueue@RADARSHOCKWAVE:
 		Type: RadarAddon.Shockwave
 		DisplayOrder: 0
@@ -1785,6 +1795,7 @@ shockwave_mcv:
             sglademo: glmcv
             sglacamo: glmcv
             sglascrap: glmcv
+            eglatechnic: glmcv
   	Buildable:
 		BuildPaletteOrder: 200
 		Prerequisites: susastrategy, ~techlevel.high, ~disabled
@@ -1936,6 +1947,7 @@ shockwave_conyard:
             sglademo: glcommand
             sglatoxin: glcommand
             sglascrap: glcommand
+            eglatechnic: glcommand
 	RallyPoint:							##########
 		Path: 0,2
 	Exit@1:
@@ -12011,6 +12023,440 @@ sglcobra:
 		LevelUpNotification: LevelUpRA2
         
 
+#########################################
+#           GLA Technical
+#########################################
+eglradartechnical:
+	Inherits: sglradartruck
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.low, ~eglatechnic
+		Description: Detects cloaked units and provides radar.\nJams enemy radars when close
+        IconPalette: ra2
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Radar Technical
+	Health:
+		HP: 20000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 160
+    RenderSprites:
+        Image: sglradartruck
+
+eglpickupquad:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APBulletUpgrade
+	Inherits@cargo: ^CargoVehicle
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 20
+		Prerequisites: sglweap, ~techlevel.low, ~eglatechnic
+		Description: Faster than a Quad Cannon
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Quad Cannon Technical
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 18000
+	Armor:
+		Type: Light
+	Mobile:
+		TurnSpeed: 16
+		Speed: 140
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -200,0,195
+	Armament@2:
+		Weapon: GLQuadCannonGround
+		MuzzleSequence: muzzle
+		LocalOffset: 128,128,200, 128,-128,200, 128,-128,43, 128,128,43
+	Armament@2AA:
+		Weapon: GLQuadCannonAir
+		MuzzleSequence: muzzle
+		LocalOffset: 128,128,200, 128,-128,200, 128,-128,43, 128,128,43
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+		Sequence: turret
+		RequiresCondition: scrap_create_bonus == 0
+	WithSpriteTurret@Scrap1:
+		Sequence: turret2
+		RequiresCondition: scrap_create_bonus == 1
+	WithSpriteTurret@Scrap2:
+		Sequence: turret3
+		RequiresCondition: scrap_create_bonus >= 2
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 2
+		PipCount: 2
+		LoadingCondition: notmobile
+	Voiced:
+		VoiceSet: QuadCannonVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ProducibleWithLevel:
+		Prerequisites: uptechnical
+		InitialLevels: 1
+	ProducibleWithLevel@upsglreconvehicletraining:
+		Prerequisites: upsglreconvehicletraining
+		InitialLevels: 3
+	Explodes:
+		Weapon: GLTechnicalHuskCluster
+		EmptyWeapon: GLTechnicalHuskCluster
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 75
+	ReloadDelayMultiplier@Salvaged2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 50
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+
+eglpickuprokkit:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APBulletUpgrade
+	Inherits@cargo: ^CargoVehicle
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 20
+		Prerequisites: sglweap, ~techlevel.low, ~eglatechnic, sglpalace
+		Description: Uses a rocket launcher, is like the rocket buggy
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Rocket Technical
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 18000
+	Armor:
+		Type: Light
+	Mobile:
+		TurnSpeed: 16
+		Speed: 140
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -200,0,195
+	Armament@Normal:
+		Weapon: GLRocketBuggyMissiles
+		LocalOffset: 624,-128,208, 624,128,208
+		MuzzleSequence: muzzle
+	Armament@Extra:
+		Weapon: GLRocketBuggyMissiles
+		LocalOffset: 624,128,208, 624,-128,208
+		MuzzleSequence: muzzle
+		RequiresCondition: ammoupgrade
+	AttackTurreted:
+	WithMuzzleOverlay:
+	GrantConditionOnPrerequisite@upbuggyammo:
+		Condition: ammoupgrade
+		Prerequisites: upbuggyammo
+		Weapon: GLBuggyHuskCluster
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 2
+		PipCount: 2
+		LoadingCondition: notmobile
+	Voiced:
+		VoiceSet: RocketBuggyVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ProducibleWithLevel:
+		Prerequisites: uptechnical
+		InitialLevels: 1
+	ProducibleWithLevel@upsglreconvehicletraining:
+		Prerequisites: upsglreconvehicletraining
+		InitialLevels: 3
+	Explodes:
+		Weapon: GLTechnicalHuskCluster
+		EmptyWeapon: GLTechnicalHuskCluster
+	WithSpriteTurret@1:
+		Sequence: turret
+		RequiresCondition: !ammoupgrade
+	WithSpriteTurret@2:
+		Sequence: turret2
+		RequiresCondition: ammoupgrade
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+eglpickuptank:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APBulletUpgrade
+	Inherits@cargo: ^CargoVehicle
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.low, ~eglatechnic
+		Description: Faster than a Tank but very weak
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Tank Cannon Technical
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 22000
+	Armor:
+		Type: Medium
+	Mobile:
+		TurnSpeed: 16
+		Speed: 134
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -100,0,111
+	Armament@Normal:
+		Weapon: GLMarauderShell
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade && scrap_create_bonus <= 1
+	Armament@Toxin:
+		Weapon: GLMarauderShellToxin
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && !antraxbetaupgrade && scrap_create_bonus <= 1
+	Armament@ToxinBeta:
+		Weapon: GLScorpionShellToxinBeta
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && antraxbetaupgrade && scrap_create_bonus <= 1
+	Armament@NormalElite:
+		Weapon: GLTwinMarauderShell
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 900,180,340, 900,-180,340
+		MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade && scrap_create_bonus == 2
+	Armament@ToxinElite:
+		Weapon: GLTwinMarauderShellToxin
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 900,180,340, 900,-180,340
+		MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && !antraxbetaupgrade && scrap_create_bonus == 2
+	Armament@ToxinBetaElite:
+		Weapon: GLTwinMarauderShellToxinBeta
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 900,180,340, 900,-180,340
+		MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && antraxbetaupgrade && scrap_create_bonus == 2
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+		Sequence: turret
+		RequiresCondition: scrap_create_bonus == 0
+	WithSpriteTurret@Scrap1:
+		Sequence: turret2
+		RequiresCondition: scrap_create_bonus == 1
+	WithSpriteTurret@Scrap2:
+		Sequence: turret3
+		RequiresCondition: scrap_create_bonus >= 2
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 2
+		PipCount: 2
+		LoadingCondition: notmobile
+	Voiced:
+		VoiceSet: ScorpionTankVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ProducibleWithLevel:
+		Prerequisites: uptechnical
+		InitialLevels: 1
+	ProducibleWithLevel@upsglreconvehicletraining:
+		Prerequisites: upsglreconvehicletraining
+		InitialLevels: 3
+	Explodes:
+		Weapon: GLTechnicalHuskCluster
+		EmptyWeapon: GLTechnicalHuskCluster
+	GrantConditionOnPrerequisite@uptoxinshells:
+		Condition: shellsupgrade
+		Prerequisites: uptoxinshells
+	GrantConditionOnPrerequisite@upantraxbeta:
+		Condition: antraxbetaupgrade
+		Prerequisites: upantraxbeta
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus >= 1
+		Modifier: 75
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+eglpickuparty:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@EMP: ^TurretEMP
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APBulletUpgrade
+	Inherits@cargo: ^CargoVehicle
+	Inherits@demo: ^DemolitionUpgrade
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 30
+		Prerequisites: sglweap, ~techlevel.low, ~eglatechnic, sglpalace
+		Description: Faster than a Tank but very weak
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Artillery Cannon Technical
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 22000
+	Armor:
+		Type: Medium
+	Mobile:
+		TurnSpeed: 16
+		Speed: 124
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 8c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -100,0,111
+	Armament:
+        Name: primary
+		Weapon: SGLLatrun
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade && scrap_create_bonus <= 1
+	Armament@Toxin:
+        Name: primary
+		Weapon: SGLLatrunToxin
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && scrap_create_bonus <= 1
+	Armament@Twins:
+        Name: primary
+		Weapon: SGLLatrunToxin
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: !shellsupgrade && scrap_create_bonus >= 2
+	Armament@TwinsToxin:
+        Name: primary
+		Weapon: SGLLatrunTwinToxin
+		LocalOffset: 1250,0,400
+        MuzzleSequence: muzzle
+		RequiresCondition: shellsupgrade && scrap_create_bonus >= 2
+    WithSpriteTurret:
+        Sequence: turret
+        RequiresCondition: !attacking
+    WithSpriteTurret@2:
+        Sequence: turret-up
+        RequiresCondition: attacking
+	AttackTurreted:
+	WithMuzzleOverlay:
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 2
+		PipCount: 2
+		LoadingCondition: notmobile
+	Voiced:
+		VoiceSet: ScorpionTankVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	ProducibleWithLevel:
+		Prerequisites: uptechnical
+		InitialLevels: 1
+	ProducibleWithLevel@upsglreconvehicletraining:
+		Prerequisites: upsglreconvehicletraining
+		InitialLevels: 3
+	Explodes:
+		Weapon: GLTechnicalHuskCluster
+		EmptyWeapon: GLTechnicalHuskCluster
+	GrantConditionOnPrerequisite@uptoxinshells:
+		Condition: shellsupgrade
+		Prerequisites: uptoxinshells
+	GrantConditionOnPrerequisite@upantraxbeta:
+		Condition: antraxbetaupgrade
+		Prerequisites: upantraxbeta
+	ReloadDelayMultiplier@Salvaged1:
+		RequiresCondition: scrap_create_bonus == 1
+		Modifier: 75
+	SpeedMultiplier@Salvaged2:
+		RequiresCondition: scrap_create_bonus == 2
+		Modifier: 120
+	RangeMultiplier@Salvaged3:
+		RequiresCondition: scrap_create_bonus == 3
+		Modifier: 140
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+    GrantConditionOnAttack@aa:
+        Condition: attacking
 #########################################
 #           CHINA GENERIC
 #########################################
