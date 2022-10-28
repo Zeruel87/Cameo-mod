@@ -13,21 +13,21 @@ World:
 		Class: none
 		ClassName: MCV Only
 		Factions: halloween
-		BaseActor: halloween_blackcitadel
+		BaseActor: halloween_mcv
 	
 	MPStartUnits@defaulthalloween:
 		Class: light
 		ClassName: Light Support
 		Factions: halloween
-		BaseActor: halloween_blackcitadel
-		SupportActors: 
+		BaseActor: halloween_mcv
+		SupportActors: halloween_skeleton, halloween_skeleton, halloween_skeleton, halloween_skeleton_archer, halloween_skeleton_archer, halloween_dkghost_small, halloween_rockgolem_small
 	
 	MPStartUnits@heavyhalloween:
 		Class: heavy
 		ClassName: Heavy Support
 		Factions: halloween
-		BaseActor: halloween_blackcitadel
-		SupportActors: 
+		BaseActor: halloween_mcv
+		SupportActors: halloween_skeleton, halloween_skeleton, halloween_skeleton, halloween_skeleton_archer, halloween_skeleton_archer, halloween_dkghost_small, halloween_rockgolem_small, halloween_rockgolem_small, halloween_rockgolem_small, halloween_rockgolem
 
 Player:
     LobbyPrerequisiteCheckbox@halloween:
@@ -98,7 +98,7 @@ halloween_blackcitadel:
 		BuildPaletteOrder: 10
 		Queue: Building.Halloween, RABuilding.Halloween
 		Description: Enables buildings construction
-        Prerequisites: halloween_daemonpit
+        Prerequisites: halloween_daemonpit, ~disabled
 	Health:
 		HP: 250000
 	Armor:
@@ -166,7 +166,7 @@ halloween_blackcitadel:
 		PauseOnCondition: lowpower
 		Icon: wh40ksluggaicon
 		Cursor: ability
-		ChargeInterval: 4500
+		ChargeInterval: 14000
 		Description: Skeleton Roasting
 		ActivationDelay: 25
 		LongDesc: Teleports a large group of units\nacross the map.
@@ -177,6 +177,8 @@ halloween_blackcitadel:
 		InsufficientPowerSpeechNotification: InsufficientPower
 		DisplayRadarPing: True
 		Prerequisites: halloween_upgrade.ghost
+	Voiced:
+		VoiceSet: Halloween_Necropolis_Voice
 halloween_crypto:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -249,7 +251,9 @@ halloween_crypto:
     SpawnActorOnDeath@death1:
         Actor: halloween_rockgolem_small
     SpawnActorOnDeath@death2:
-        Actor: halloween_rockgolem_small  
+        Actor: halloween_rockgolem_small
+	Voiced:
+		VoiceSet: Halloween_Crypt_Voice
 halloween_clowntent:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -359,6 +363,43 @@ halloween_graveyard:
         Actor: halloween_dkghost_small
     SpawnActorOnDeath@death2:
         Actor: halloween_skeleton
+	WithIdleOverlay@top:
+		RequiresCondition: powerupgrade
+		Sequence: idle2
+	GrantConditionOnProduction@powerupgrade:
+		Condition: powerupgrade
+		Actors: halloween_graveyard.turbine
+	PowerMultiplier@upgrade:
+		Modifier: 200
+		RequiresCondition: powerupgrade
+	Production:
+		Produces: Turbine.Halloween
+		RequiresCondition: !powerupgrade
+	ProductionQueue:
+		Type: Turbine.Halloween
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	Voiced:
+		VoiceSet: Halloween_Tomb_Voice
+
+halloween_graveyard.turbine:
+	Tooltip:
+		Name: Tomb Expansion
+	Buildable:
+		Queue: Turbine.Halloween
+		Description: Increases power output
+	Valued:
+		Cost: 300
+	RenderSprites:
+		Image: halloween_graveyard
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+
 halloween_daemonpit:
 	Inherits: ^BunkerBaseBuilding
 	Inherits@shape: ^4x3Shape
@@ -469,6 +510,10 @@ halloween_tower:
   	Armament@aa:
 		Weapon: wc_tower_fire_aa   
 		LocalOffset: 0,0,896
+  	Armament@boiling:
+		Weapon: Flamethrower   
+		LocalOffset: 0,0,896
+        RequiresCondition: halloween_upgrade.boiling
 	AttackTesla:
 		RequiresCondition: !build-incomplete
 		PauseOnCondition: lowpower || disabled
@@ -483,6 +528,18 @@ halloween_tower:
 	ProvidesPrerequisite@buildingname:
     SpawnActorOnDeath@death1:
         Actor: halloween_rockgolem_small
+    GrantConditionOnPrerequisite@boiling:
+        Prerequisites: halloween_upgrade.boiling
+        Condition: halloween_upgrade.boiling
+    GrantConditionOnPrerequisite@bows:
+        Prerequisites: halloween_upgrade.bows
+        Condition: halloween_upgrade.bows
+	FirepowerMultiplier@bows:
+		Modifier: 125
+		RequiresCondition: halloween_upgrade.bows
+	RangeMultiplier@bows:
+		Modifier: 120
+		RequiresCondition: halloween_upgrade.bows
 halloween_spirittower:
 	Inherits: ^Defense
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -536,6 +593,17 @@ halloween_spirittower:
         Actor: halloween_rockgolem_small
     SpawnActorOnDeath@death1:
         Actor: halloween_rockgolem_small
+    GrantConditionOnPrerequisite@mana:
+        Prerequisites: halloween_upgrade.mana
+        Condition: halloween_upgrade.mana
+	FirepowerMultiplier@mana:
+		Modifier: 125
+		RequiresCondition: halloween_upgrade.mana
+	RangeMultiplier@mana:
+		Modifier: 120
+		RequiresCondition: halloween_upgrade.mana
+	Voiced:
+		VoiceSet: Halloween_SpiritTower_Voice
 halloween_carousel:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -581,6 +649,8 @@ halloween_carousel:
         Actor: halloween_clown
     SpawnActorOnDeath@death2:
         Actor: halloween_clown2
+	Voiced:
+		VoiceSet: Halloween_Carrousel_Voice
 halloween_cauldron:
 	Inherits: ^BaseBuilding
 	Inherits@ref: ^Refinery
@@ -650,7 +720,9 @@ halloween_cauldron:
     SpawnActorOnDeath@death1:
         Actor: halloween_rockgolem_small
     SpawnActorOnDeath@death2:
-        Actor: halloween_rockgolem_small  
+        Actor: halloween_rockgolem_small
+	Voiced:
+		VoiceSet: Halloween_Cauldron_Voice
 halloween_dkghost_small:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -735,6 +807,85 @@ halloween_dkghost_small:
 		EmptyWeapon: halloween_ghost_spawner
         RequiresCondition: halloween_upgrade.ghost
 		Chance: 45
+halloween_bat:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Bat
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Infantry.Halloween, RAInfantry.Halloween
+		Description: Can fly, spits blood
+	Mobile:
+		Locomotor: jumpjet
+		Speed: 70
+	Hovers:
+		RequiresCondition: (airborne || swimming) && !disabled
+	Explodes@airborne:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+		RequiresCondition: airborne
+	WithShadow@airborne:
+		Offset: 0, 128, 0
+		ZOffset: -128
+		RequiresCondition: airborne || swimming
+	GrantConditionOnJumpjetLayer:
+		Condition: airborne
+	GrantConditionOnTerrain@Water:
+		TerrainTypes: Water, River
+		Condition: swimming
+	Targetable:
+		RequiresCondition: !airborne && !chronobeamed
+	Targetable@AIRBORNE:
+		TargetTypes: Air, Aircraft
+		RequiresCondition: airborne && !chronobeamed
+	Crushable:
+		CrushClasses: vehicle
+	Health:
+		HP: 4500
+	Armor:
+		Type: Heavy
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: halloween_bat_blood
+	Armament@AA:							##########
+		Weapon: halloween_bat_blood_AA
+		RequiresCondition: airborne && !chronobeamed
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: HighV
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		AttackSequences:
+			primary: shoot
+			secondary: shoot
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+    Voiced:
+        VoiceSet: voiceskeleton
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Passenger:
+		Weight: 1
+	-TakeCover:
+   	Power:
+		Amount: -5
+    GrantConditionOnPrerequisite@ghost:
+        Prerequisites: halloween_upgrade.ghost
+        Condition: halloween_upgrade.ghost
+	Explodes@ghost:
+		Weapon: halloween_ghost_spawner
+		EmptyWeapon: halloween_ghost_spawner
+        RequiresCondition: halloween_upgrade.ghost
+		Chance: 45
 halloween_skeleton:
 	Inherits: wc_o_skeleton
     Inherits@upgrade_shields: ^wc_h_str_shield    
@@ -775,6 +926,12 @@ halloween_skeleton:
 		Weapon: halloween_ghost_spawner
 		EmptyWeapon: halloween_ghost_spawner
         RequiresCondition: halloween_upgrade.ghost
+    GrantConditionOnPrerequisite@sword:
+        Prerequisites: halloween_upgrade.sword
+        Condition: halloween_upgrade.sword
+	FirepowerMultiplier@sword:
+		Modifier: 125
+		RequiresCondition: halloween_upgrade.sword
 halloween_demon:
 	Inherits@WD: wc_o_demon
     Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -808,6 +965,24 @@ halloween_demon:
 		Weapon: halloween_ghost_spawner
 		EmptyWeapon: halloween_ghost_spawner
         RequiresCondition: halloween_upgrade.ghost
+    GrantConditionOnPrerequisite@sword:
+        Prerequisites: halloween_upgrade.sword
+        Condition: halloween_upgrade.sword
+	FirepowerMultiplier@sword:
+		Modifier: 125
+		RequiresCondition: halloween_upgrade.sword
+    GrantConditionOnPrerequisite@mana:
+        Prerequisites: halloween_upgrade.mana
+        Condition: halloween_upgrade.mana
+	FirepowerMultiplier@mana:
+		Modifier: 110
+		RequiresCondition: halloween_upgrade.mana
+	SpeedMultiplier@mana:
+		Modifier: 110
+		RequiresCondition: halloween_upgrade.mana
+	DamageMultiplier@mana:
+		Modifier: 75
+		RequiresCondition: halloween_upgrade.mana
 halloween_pinky:
 	Inherits: PINKY
     Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -841,6 +1016,61 @@ halloween_pinky:
 		Weapon: halloween_ghost_spawner_bigunit
 		EmptyWeapon: halloween_ghost_spawner_bigunit
         RequiresCondition: halloween_upgrade.ghost
+    GrantConditionOnPrerequisite@mana:
+        Prerequisites: halloween_upgrade.mana
+        Condition: halloween_upgrade.mana
+	FirepowerMultiplier@mana:
+		Modifier: 110
+		RequiresCondition: halloween_upgrade.mana
+	SpeedMultiplier@mana:
+		Modifier: 130
+		RequiresCondition: halloween_upgrade.mana
+	DamageMultiplier@mana:
+		Modifier: 75
+		RequiresCondition: halloween_upgrade.mana
+halloween_cow:
+	Inherits@WD: wc_o_demon
+    Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Tooltip:
+		Name: Giant Cow
+   	Buildable:
+		Queue: HInfantry.Halloween, RAHInfantry.Halloween, Infantry.X_Infantry
+		BuildPaletteOrder: 60
+		BuildDurationModifier: 50
+		Prerequisites: halloween_daemonpit
+		Description: Slow powerful cow. Attacks in close combat.     
+	Armament:
+		Weapon: demonSlice
+    Valued:
+        Cost: 1000
+    RenderSprites:
+        Image: halloween_cow
+    -ChangesHealth:
+    Mobile:
+		Speed: 30  
+    RenderSprites:
+        Scale: 0.8
+    Health:
+		HP: 95000             
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+    GrantConditionOnPrerequisite@ghost:
+        Prerequisites: halloween_upgrade.ghost
+        Condition: halloween_upgrade.ghost
+	Explodes@ghost:
+		Weapon: halloween_ghost_spawner
+		EmptyWeapon: halloween_ghost_spawner
+        RequiresCondition: halloween_upgrade.ghost
+	ReloadDelayMultiplier@cow:
+		Modifier: 60
+	Voiced:
+		VoiceSet: DRZombieVoice
+    GrantConditionOnPrerequisite@axe:
+        Prerequisites: halloween_upgrade.axe
+        Condition: halloween_upgrade.axe
+	FirepowerMultiplier@axe:
+		Modifier: 125
+		RequiresCondition: halloween_upgrade.axe
 halloween_cultist:
 	Inherits: wh40kcultistsquad
     Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -888,11 +1118,25 @@ halloween_rockgolem:
         RequiresCondition: halloween_upgrade.ghost
 	Selectable:
 		Bounds: 36,36
+    GrantConditionOnPrerequisite@mana:
+        Prerequisites: halloween_upgrade.mana
+        Condition: halloween_upgrade.mana
+	FirepowerMultiplier@mana:
+		Modifier: 110
+		RequiresCondition: halloween_upgrade.mana
+	SpeedMultiplier@mana:
+		Modifier: 110
+		RequiresCondition: halloween_upgrade.mana
+	DamageMultiplier@mana:
+		Modifier: 75
+		RequiresCondition: halloween_upgrade.mana
 halloween_rockgolem_small:
 	Inherits: RAPT
 	-Buildable:
+	Tooltip:
+		Name: Small Rock Golem
 	Health:
-		HP: 15000
+		HP: 25000
 	Mobile:
 		Locomotor: foot
 	Armor:
@@ -911,6 +1155,18 @@ halloween_rockgolem_small:
 		Weapon: halloween_ghost_spawner
 		EmptyWeapon: halloween_ghost_spawner
         RequiresCondition: halloween_upgrade.ghost
+    GrantConditionOnPrerequisite@mana:
+        Prerequisites: halloween_upgrade.mana
+        Condition: halloween_upgrade.mana
+	FirepowerMultiplier@mana:
+		Modifier: 110
+		RequiresCondition: halloween_upgrade.mana
+	SpeedMultiplier@mana:
+		Modifier: 110
+		RequiresCondition: halloween_upgrade.mana
+	DamageMultiplier@mana:
+		Modifier: 75
+		RequiresCondition: halloween_upgrade.mana
 halloween_spider:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1093,6 +1349,65 @@ halloween_clown2:
 		Weapon: halloween_ghost_spawner
 		EmptyWeapon: halloween_ghost_spawner
         RequiresCondition: halloween_upgrade.ghost
+halloween_clown3:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceGlobal
+	Valued:
+		Cost: 1000
+	Power:
+		Amount: -50
+	Tooltip:
+		Name: Bullet Hell Clown
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildLimit: 1
+		BuildPaletteOrder: 60
+		Prerequisites: halloween_daemonpit
+		Queue: HInfantry.Halloween, RAHInfantry.Halloween, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 100
+	Crushable:
+		CrushClasses: vehicle
+	Health:
+		HP: 120000
+	Armor:
+		Type: Wood
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: halloween_bullethell
+	Armament@SECOND:							##########
+		Weapon: halloween_bullethell2
+	Armament@TIRD:							##########
+		Weapon: halloween_bullethell3
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: Halloween_ClownBalloon
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	Voiced:
+		VoiceSet: Halloween_Clown3_Voice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Passenger:
+		Weight: 1
+	-TakeCover:
+    GrantConditionOnPrerequisite@ghost:
+        Prerequisites: halloween_upgrade.ghost
+        Condition: halloween_upgrade.ghost
+	Explodes@ghost:
+		Weapon: halloween_ghost_spawner
+		EmptyWeapon: halloween_ghost_spawner
+        RequiresCondition: halloween_upgrade.ghost
 halloween_sweettooth:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
@@ -1125,11 +1440,6 @@ halloween_sweettooth:
 		LocalOffset: -128, -170, 170
 		LocalYaw: 100, -100
 		MuzzleSequence: muzzle
-	Armament@2:
-		Weapon: HighV
-		LocalOffset: -128, 170, 170
-		LocalYaw: 100, -100
-		MuzzleSequence: muzzle
 	Armament@AA:
 		Weapon: D2K_TowerMissile
 		Recoil: 85
@@ -1143,10 +1453,63 @@ halloween_sweettooth:
     GrantConditionOnPrerequisite@ghost:
         Prerequisites: halloween_upgrade.ghost
         Condition: halloween_upgrade.ghost
+	Voiced:
+		VoiceSet: Halloween_Clowncar_Voice
 	Explodes@ghost:
 		Weapon: halloween_ghost_spawner_bigunit
 		EmptyWeapon: halloween_ghost_spawner_bigunit
         RequiresCondition: halloween_upgrade.ghost
+halloween_clowncar:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@cargo: ^CargoVehicle
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Clown Car
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: halloween_clowntent, ~!selectchinf
+		Queue: HInfantry.Halloween, RAHInfantry.Halloween
+		Description: Heavy infantry transport.\n Unarmed
+	Mobile:
+		Speed: 110
+		PauseOnCondition: notmobile || disabled
+	Health:
+		HP: 27500
+	Repairable:
+		HpPerStep: 1440
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 10
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 10
+		PipCount: 10
+		LoadingCondition: notmobile
+		EjectOnDeath: true
+		InitialUnits: halloween_clown,halloween_clown,halloween_clown,halloween_clown,halloween_clown,halloween_clown2,halloween_clown2,halloween_clown2,halloween_clown2,halloween_clown2
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	Voiced:
+		VoiceSet: Halloween_Clowncar_Voice
+	AIDeployNotifier:
+		DeployChance: 100
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+    RenderSprites:
+        Scale: 0.89
+	Explodes@healer:
+		Weapon: FakeHealtAPC
 halloween_pirateship:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
@@ -1176,7 +1539,7 @@ halloween_pirateship:
 		Range: 8c0
 		Type: GroundPosition
 	Armament@PRIMARY:
-		Weapon: RATurretGun
+		Weapon: halloween_pirateshipcannons
 		LocalOffset: 0,0,0
 	AutoTarget:
 		ScanRadius: 5
@@ -1289,6 +1652,120 @@ halloween_skeleton_archer:
 		Weapon: halloween_ghost_spawner
 		EmptyWeapon: halloween_ghost_spawner
         RequiresCondition: halloween_upgrade.ghost
+    GrantConditionOnPrerequisite@bows:
+        Prerequisites: halloween_upgrade.bows
+        Condition: halloween_upgrade.bows
+	FirepowerMultiplier@bows:
+		Modifier: 125
+		RequiresCondition: halloween_upgrade.bows
+	RangeMultiplier@bows:
+		Modifier: 120
+		RequiresCondition: halloween_upgrade.bows
+halloween_blob:
+	Inherits: ^Viceroid
+	Inherits@EXPERIENCE: ^GainsExperience
+	Buildable:
+		BuildLimit: 1
+		Queue: HVehicle.Halloween, RAHVehicle.Halloween
+		BuildPaletteOrder: 100
+		Description: Mutated abomination and eats everything.\n  Strong vs Infantry, Buildings\n  Weak vs Aircraft
+	Tooltip:
+		Name: Hungry Blob
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	ActorLostNotification:
+	Inherits@EXT: ^ExternalConditions					##########
+	-Armament:
+    Health:
+		HP: 250000
+	ReloadDelayMultiplier@cow:
+		Modifier: 20
+	Armament:
+		Weapon: halloween_SlimeChomp
+		LocalOffset: 384,0,0
+    Valued:
+        Cost: 2000
+	WithSpriteBody:
+		Sequence: idle
+		RequiresCondition: rank-veteran == 0
+	WithSpriteBody@level2:
+		Sequence: idle2
+		RequiresCondition: rank-veteran == 1
+	WithSpriteBody@level3:
+		Sequence: idle3
+		RequiresCondition: rank-veteran == 2
+	WithSpriteBody@level4:
+		Sequence: idle4
+		RequiresCondition: rank-veteran == 3
+	WithSpriteBody@level5:
+		Sequence: idle5
+		RequiresCondition: rank-veteran >= 4
+	SpeedMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 95
+	SpeedMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 90
+	SpeedMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 85
+	SpeedMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 60
+	DamageMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 75
+	DamageMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 50
+	DamageMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 40
+	DamageMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 25
+    SpawnActorOnDeath@1:
+        Actor: halloween_blob
+		RequiresCondition: rank-veteran >= 1
+    SpawnActorOnDeath@2:
+        Actor: halloween_blob
+		RequiresCondition: rank-veteran >= 2
+    SpawnActorOnDeath@3:
+        Actor: halloween_blob
+		RequiresCondition: rank-veteran >= 3
+    SpawnActorOnDeath@4:
+        Actor: halloween_blob
+		RequiresCondition: rank-veteran >= 4
+	SelfHealing@SelfHealing:
+		PercentageStep: 5
+		Delay: 50
+		HealIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: damaged
+    ThrowsShrapnel@zero:
+		Weapons: halloween_blob_debris
+		Pieces: 2, 3
+		Range: 1c512, 2c512
+    ThrowsShrapnel@1:
+		Weapons: halloween_blob_debris
+		Pieces: 2, 4
+		Range: 1c512, 2c512
+		RequiresCondition: rank-veteran >= 1
+    ThrowsShrapnel@2:
+		Weapons: halloween_blob_debris
+		Pieces: 2, 4
+		Range: 1c512, 2c512
+		RequiresCondition: rank-veteran >= 2
+    ThrowsShrapnel@3:
+		Weapons: halloween_blob_debris
+		Pieces: 2, 4
+		Range: 1c512, 2c512
+		RequiresCondition: rank-veteran >= 3
+    ThrowsShrapnel@4:
+		Weapons: halloween_blob_debris
+		Pieces: 2, 4
+		Range: 1c512, 2c512
+		RequiresCondition: rank-veteran >= 4
 halloween_upgrade.ghost:    
    	AlwaysVisible:
 	Interactable:
@@ -1306,8 +1783,102 @@ halloween_upgrade.ghost:
 	Valued:
 		Cost: 2500
 	RenderSprites:
-        Palette: windows256
         Image: halloween_upgrade.ghost
+	ProvidesPrerequisite@upgradename: 
+halloween_upgrade.boiling:    
+   	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Boiling Oil
+	Buildable:
+		BuildPaletteOrder: 250
+		Prerequisites: halloween_daemonpit
+		Queue: HVehicle.Halloween, RAHVehicle.Halloween
+		BuildLimit: 1
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: provides hot oil to towers, and kills melee infantry
+	Valued:
+		Cost: 500
+	RenderSprites:
+        Image: halloween_upgrade.boiling
+	ProvidesPrerequisite@upgradename: 
+halloween_upgrade.axe:    
+   	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: War Axes
+	Buildable:
+		BuildPaletteOrder: 250
+		Prerequisites: halloween_daemonpit
+		Queue: HVehicle.Halloween, RAHVehicle.Halloween
+		BuildLimit: 1
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: now cows carry more powerful axes, more damage
+	Valued:
+		Cost: 750
+	RenderSprites:
+        Image: halloween_upgrade.axe
+	ProvidesPrerequisite@upgradename: 
+halloween_upgrade.sword:    
+   	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: BroadSwords
+	Buildable:
+		BuildPaletteOrder: 250
+		Prerequisites: halloween_daemonpit
+		Queue: HVehicle.Halloween, RAHVehicle.Halloween
+		BuildLimit: 1
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: Skeletons and Demons uses more powerful swords
+	Valued:
+		Cost: 750
+	RenderSprites:
+        Image: halloween_upgrade.sword
+	ProvidesPrerequisite@upgradename: 
+halloween_upgrade.bows:    
+   	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Battle Bow
+	Buildable:
+		BuildPaletteOrder: 250
+		Prerequisites: halloween_daemonpit
+		Queue: HVehicle.Halloween, RAHVehicle.Halloween
+		BuildLimit: 1
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: Archer Skeletons and Towers are more powerful
+	Valued:
+		Cost: 750
+	RenderSprites:
+        Image: halloween_upgrade.bows
+	ProvidesPrerequisite@upgradename: 
+halloween_upgrade.mana:    
+   	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Mana
+	Buildable:
+		BuildPaletteOrder: 250
+		Prerequisites: halloween_daemonpit
+		Queue: HVehicle.Halloween, RAHVehicle.Halloween
+		BuildLimit: 1
+		BuildDuration: 1000
+		BuildDurationModifier: 100
+		Description: Adds more hp and attack to magic creatures\n affects to Golems, Ghosts, Demons and Spirit Tower
+	Valued:
+		Cost: 1500
+	RenderSprites:
+        Image: halloween_upgrade.mana
 	ProvidesPrerequisite@upgradename: 
 halloween_worm:
 	Inherits: ^Tank
@@ -1348,4 +1919,53 @@ halloween_worm:
 	WithDockingAnimation:
 	SelectionDecorations:
 	Inherits@EXT: ^ExternalConditions					##########
-      
+	Voiced:
+		VoiceSet: DRGathererVoice
+halloween_mcv:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+    Inherits@conyard: ^Conyard
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Mobile Construction Worm (Halloween)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: halloween_daemonpit
+		Queue: HVehicle.Halloween, RAHVehicle.Halloween
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Selectable:
+		Priority: 4
+		DecorationBounds: 36,36
+	Mobile:
+		Speed: 71
+		Locomotor: heavywheeled
+	Health:
+		HP: 120000
+	Repairable:
+		HpPerStep: 2182
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Transforms:
+		IntoActor: halloween_blackcitadel
+		Offset: -1,-1
+		Facing: 108
+		TransformSounds: constru2.aud, hvydoor1.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	#SpawnActorOnDeath:
+	#	Actor: MCV.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: halloween_mcv
+        Scale: 2.0
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmhalloween
+	Voiced:
+		VoiceSet: DRGathererVoice
