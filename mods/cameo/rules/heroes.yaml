@@ -2965,6 +2965,202 @@ Forcefield:
 	ProvidesPrerequisite:
 		Prerequisite: forcefield
 
+mdkkurt:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@HEROES: ^Heroes
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Kurt Hectic
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Heroes
+		Description: General-purpose infantry.\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks, Aircraft\n  Can deploy for increased firepower
+	Mobile:
+		Speed: 112
+		RequireForceMoveCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
+	Health:
+		HP: 100000
+	AutoTarget:
+		ScanRadius: 12
+	RevealOnFire:
+		ArmamentNames: primary, deployed
+	Armament@PRIMARY:							##########
+		Weapon: KurtMachinegun
+		RequiresCondition: !deployed && !mdkchaingun
+	Armament@PRIMARYU:							##########
+		Weapon: KurtMachinegunUpgraded
+		RequiresCondition: !deployed && mdkchaingun
+	Armament@Grenades:							##########
+		Weapon: KurtGrenade
+		RequiresCondition: !deployed && mdkgrenade
+	Armament@Grenades2:							##########
+		Weapon: KurtGrenade2
+		RequiresCondition: !deployed && mdkgrenade
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: KurtMachinegun
+		MuzzleSequence: garrison-muzzle
+	Armament@DEPLOYED:						##########
+		Name: deployed
+		Weapon: KurtSniper
+	Armament@MORTAR:						##########
+		Name: deployed
+		Weapon: KurtMortar
+	Armament@MISSILE:						##########
+		Name: deployed
+		Weapon: KurtMissile
+	AttackFrontal:
+		Armaments: primary
+		RequiresCondition: undeployed
+	AttackTurreted@deployed:
+		Armaments: deployed
+		Turrets: deploy
+		PauseOnCondition: disabled
+		RequiresCondition: deployed
+		Voice: Action
+	Turreted:
+		Turret: deploy
+		RealignDelay: -1
+		TurnSpeed: 1023
+		InitialFacing: 368
+	WithSpriteTurret@idle:
+		Turret: deploy
+		Sequence: deployed
+		RequiresCondition: deployed && !animate-turret
+	WithSpriteTurret@animated:
+		Turret: deploy
+		Sequence: shoot-deployed
+		RequiresCondition: deployed && animate-turret
+	WithSpriteBody:
+		Sequence: dot
+		Name: dot
+		RequiresCondition: !undeployed
+	GrantConditionOnAttack:
+		Condition: animate-turret
+		RevokeDelay: 10
+		ArmamentNames: deployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		Sequence: deploy
+		BodyNames: dot
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: deployed
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		DeploySounds: mdksnipermode1.wav
+		UndeploySounds: mdksnipermode2.wav
+		UndeployOnMove: true
+		RequiresCondition: !parachute
+		PauseOnCondition: disabled
+		Voice: Action
+	TakeCover:
+		RequiresCondition: undeployed
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 450
+		DeployTrigger: Attack
+	DeliversCash:
+		Payload: 75
+    ReloadDelayMultiplier@eliteplus:
+        Modifier: 80
+        RequiresCondition: rank-elite
+	AmbientSound:
+		SoundFiles: mdkbreath.wav
+		Interval: 160
+		RequiresCondition: deployed
+	GrantConditionOnPrerequisite@mdkgrenade:
+		Condition: mdkgrenade
+		Prerequisites: mdkgrenade
+	GrantConditionOnPrerequisite@mdkchaingun:
+		Condition: mdkchaingun
+		Prerequisites: mdkchaingun
+	GrantConditionOnPrerequisite@mdkmortar:
+		Condition: mdkmortar
+		Prerequisites: mdkmortar
+	GrantConditionOnPrerequisite@mdkmissile:
+		Condition: mdkmissile
+		Prerequisites: mdkmissile
+	Production:
+		Produces: Upgrade.Kurt
+	ProductionQueue:
+		Type: Upgrade.Kurt
+		DisplayOrder: 6
+		Group: Heroes
+
+mdkgrenade:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Grenades
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Upgrade.Kurt
+		Description: Kurt uses Grenades aganist tanks and buildings
+		Prerequisites: ~1hero
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: mdkgrenadeicon
+	ProvidesPrerequisite:
+		Prerequisite: mdkgrenade
+
+mdkchaingun:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: AP Bullets
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Upgrade.Kurt
+		Description: Kurt uses Upgrades the Chaingun with AP bullets
+		Prerequisites: ~1hero
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: mdkchaingunicon
+	ProvidesPrerequisite:
+		Prerequisite: mdkchaingun
+
+mdkmortar:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Mortar Sniper
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Upgrade.Kurt
+		Description: Kurt uses Mortar aganist buildings in Sniper Mode
+		Prerequisites: ~1hero
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: mdkmortaricon
+	ProvidesPrerequisite:
+		Prerequisite: mdkmortar
+mdkmissile:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Mortar Sniper
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Upgrade.Kurt
+		Description: Kurt uses Missiles aganist vehicles in Sniper Mode
+		Prerequisites: ~1hero
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: mdkmissileicon
+	ProvidesPrerequisite:
+		Prerequisite: mdkmissile
 ####################################################################################################
 #		HEROES TEMPLATES AND MISC
 ####################################################################################################

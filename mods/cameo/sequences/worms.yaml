@@ -17,6 +17,18 @@
 #		14 | Mole
 #		15 | Mad Cow
 #		16 | Sheep Strike
+#		17 | Santas Sleigh
+#		18 | Worm : Dynamite 	
+#		19 | Concrete Donkey
+#		20 | MCV
+#		21 | Missile Launcher
+#		22 | Helipad
+#		23 | Harvester
+#		24 | Cannon
+#		25 | Tank
+#		26 | Apache
+#		27 | UFO
+#		28 | Taxi
 #		# | 
 ####################################################################################################
 
@@ -25,11 +37,20 @@ icon:
 		AddExtension: False
 	sheepstrike: wormscameos.shp
 		Start: 16
+	concretedonkey: wormscameos.shp
+		Start: 19
 
 projectile_flamingsheep:
 	idle: worms_projectile_sheep_strike32
 		Length: *
 		ZOffset: 1023
+
+atomicdonkey:
+	Defaults:
+		Length: *
+		ZOffset: 1023
+	up: worms_donkey_projectile
+	down: worms_donkey_projectile
 
 ^DamagedFire:
 	flame1: smallBurn.png
@@ -56,7 +77,26 @@ wormrocket:
 	idle:
 		Facings: 8
 		ZOffset: 1023
-
+worms_moai_rock:
+	idle:
+		Length: *
+		ZOffset: 1023
+wormsmissile:
+	idle:
+		Facings: -32
+		ZOffset: 1023
+explosion:
+	Defaults:
+		Length: *
+		ZOffset: 2047
+	wormspiff: wormspiff
+	wormexp2: wormexp2
+	wormexp1: wormexp1
+wormfly:
+	idle:
+		Facings: 2
+		Length: 7
+		ZOffset: 1023
 ####################################################################################################
 #		BUILDING WORMS
 ####################################################################################################
@@ -189,7 +229,8 @@ wweap:
 		Start: 10
 		Length: 10
 		ZOffset: -1024
-	place: worms_rustycar
+	place: weapmake
+		Start: 19
 	make: worms_rustycar
 	bib: bib2
 		UseTilesetExtension: true
@@ -210,6 +251,20 @@ wsheepstatue:
 	#	Length: *
 	icon: wormscameos
 		Start: 7
+
+wconcretedonkey:
+	idle: worms_donkey_statue
+	damaged-idle: worms_donkey_statue
+		Start: 1
+	dead: worms_donkey_statue
+	make: worms_donkey_statue
+	active: worms_donkey_statue
+	bib: bib2
+		UseTilesetExtension: true
+		Length: *
+		Offset: 0,24
+	icon: wormscameos
+		Start: 19
 
 whq:
 	idle: worms_uplink
@@ -242,7 +297,7 @@ wtimemachine:
 	damaged-idle: worms_timemachine
 		Start: 1
 	dead: worms_timemachine
-	make: wtimemachine
+	make: worms_timemachine
 	icon: wormscameos
 		Start: 13
 
@@ -274,21 +329,26 @@ wsilo:
 		Tick: 70
 		Offset: 29,0
 		AddExtension: False
-wgtwr:
-	idle: gtwr
-	damaged-idle:
+
+wsantassleigh:
+	idle: worms_santas_sleigh
+		Start: 0
+	damaged-idle: worms_santas_sleigh
 		Start: 1
-	dead: gtwr
-		Start: 2
-		Tick: 800
-	make:
-		Combine:
-			gtwrmake:
-				Length: 17
-			gtwrmake:
-				Start: 19
-		Length: 18
-		Tick: 80
+	dead: worms_santas_sleigh
+	make: worms_santas_sleigh
+	bib: bib2
+		UseTilesetExtension: true
+		Length: *
+		Offset: 0,24
+	icon: wormscameos
+		Start: 17
+
+wgtwr:
+	idle: worm_gtwr
+	damaged-idle: worm_gtwr
+	dead: worm_gtwr
+	make: worm_gtwr
 	muzzle: minigun
 		Length: 6
 		Facings: 8
@@ -298,6 +358,8 @@ wgtwr:
 			WINTER: TEMPERAT
 			JUNGLE: TEMPERAT
 			SNOW: TEMPERAT
+			RA_SNOW: TEMPERAT
+			CAMEO: TEMPERAT
 		Length: *
 		Offset: 0,-2
 	icon: gtwricnh.tem
@@ -351,31 +413,32 @@ laspy:
 	Defaults:
 		Offset: 0,-12
 	idle: wormLaserPyramid.png
-		Length: 39
-		Tick: 50
+		Length: 1
+		Reverses: True
+		Tick: 100
 		AddExtension: False
 	damaged-idle: wormLaserPyramid.png
-		Length: 39
+		Length: 1
 		Tick: 50
 		AddExtension: False
 	active: wormLaserPyramid.png
 		Start: 0
 		Length: 39
-		Tick: 150
+		Tick: 50
 		AddExtension: False
 	damaged-active: wormLaserPyramid.png
 		Start: 0
-		Length: 39
+		Length: 1
 		Tick: 150
 		AddExtension: False
 	dead: wormLaserPyramid.png
 		Start: 0
-		Length: 39
+		Length: 1
 		Tick: 150
 		AddExtension: False
 	make: wormLaserPyramid.png
 		Start: 0
-		Length: 39
+		Length: 1
 		Tick: 150
 		AddExtension: False
 	icon: wormscameos
@@ -383,6 +446,21 @@ laspy:
 		Offset: 0,0
 
 
+worms_wormpad:
+	idle:
+		ZOffset: -1023
+	damaged-idle:
+		ZOffset: -1023
+	active:
+		ZOffset: -1023
+	damaged-active:
+		ZOffset: -1023
+	dead:
+		ZOffset: -1023
+		Tick: 800
+	make: worms_wormpad
+	icon: wormscameos
+		Start: 30
 ####################################################################################################
 #		UNIT WORMS
 ####################################################################################################
@@ -547,21 +625,40 @@ wormengineer:
 		AddExtension: False
 	icon: chromeWormEngineer.png
 		AddExtension: False
-wharv:
-	idle: harv
-		Facings: 32
-		UseClassicFacingFudge: True
-	harvest: harv
-		Start: 32
-		Length: 4
-		Facings: 8
-		Tick: 60
-	dock: harvdump
-		Length: 7
-	dock-loop: harvdump
-		Start: 7
-	icon: harvicnh.tem
+wormdynamite:
+	Inherits: ^WCInfantry
+	stand: wormrundynamite.png
+		Start: 0
+		Facings: -8
 		AddExtension: False
+	run: wormrundynamite.png
+		Start: 8
+		Length: 13
+		Facings: -8
+		Tick: 100
+		AddExtension: False
+	die: wormDie.png
+		Length: *
+		Tick: 80
+		AddExtension: False
+	die-crushed: wormCrush.png
+		Length: 33
+		Tick: 120
+		AddExtension: False
+	icon: wormscameos
+		Start: 18
+
+wharv:
+	idle: worms_harvester
+		Facings: -8
+	harvest: worms_harvester
+		Facings: -8
+	dock: worms_harvester
+		Facings: -8
+	dock-loop: worms_harvester
+		Facings: -8
+	icon: wormscameos
+		Start: 23
 wharv.destroyed:
 	idle: harv
 		Facings: 32
@@ -644,6 +741,7 @@ wtruck:
 		Tick: 80
 	icon: chromeWormSheep.png
 		AddExtension: False
+
 worms_mole:
 	idle: worms_mole_stand
 		Start: 0
@@ -667,9 +765,8 @@ worms_mole:
 		Start: 14
 
 wormbuggy:
-	idle: bggy
-		Facings: 32
-		UseClassicFacingFudge: True
+	idle: worms_taxi
+		Facings: -8
 	turret: bggy
 		Start: 32
 		Facings: 32
@@ -689,8 +786,37 @@ wormbuggy:
 		Length: 2
 		Offset: 0,-8
 		AddExtension: False
-	icon: chromeWormBuggy.png
+	icon: wormscameos
+		Start: 28
+	#aimgun-overlay: wormAimGunOverlay.png
+	#	Length: 6
+	#	Offset: 0,-13
+	#	Tick: 250
+	#	AddExtension: False
+worms_moai:
+	idle: worms_moai
+		Facings: 8
+	turret: bggy
+		Start: 32
+		Facings: 32
+		UseClassicFacingFudge: True
+	turret2: buggyTurretExtra.png
+		Frames: 0, 2, 4, 6, 8, 10, 12, 14
+		Facings: -8
+		Length: 1
+		Offset: 0,-8
 		AddExtension: False
+	muzzle: minigun
+		Length: 6
+		Facings: 8
+	uzifire: wormUzi.png
+		Start: 0
+		Facings: -8
+		Length: 2
+		Offset: 0,-8
+		AddExtension: False
+	icon: wormscameos
+		Start: 31
 	#aimgun-overlay: wormAimGunOverlay.png
 	#	Length: 6
 	#	Offset: 0,-13
@@ -724,6 +850,17 @@ wmtnk:
 		Offset: 0,-13
 		Tick: 125
 		AddExtension: False
+	
+wtank:
+	idle: worms_tank
+		Facings: -8
+	turret: worms_tank
+		Start: 8
+		Facings: -8
+	muzzle: gunfire2
+		Length: *
+	icon: wormscameos
+		Start: 25
 
 wmtnk.destroyed:
 	idle: mtnk
@@ -735,7 +872,25 @@ wmtnk.destroyed:
 		Facings: 32
 		UseClassicFacingFudge: True
 		ZOffset: -512
-		
+
+wmissilelauncher:
+	idle: worms_missile_launcher
+		Facings: -8
+	icon: wormscameos
+		Start: 21
+
+wcannon:
+	idle: worms_cannon
+		Facings: -8
+	icon: wormscameos
+		Start: 24
+
+worms_mcv:
+	idle: 
+		Facings: -8
+	icon: wormscameos
+		Start: 20
+
 ####################################################################################################
 #		AIRCRAFT WORMS
 ####################################################################################################
@@ -750,3 +905,26 @@ worms_jetenginebomber:
 		Facings: 8
 	icon: wormscameos
 		Start: 16
+worms_ufo:
+	idle:
+		Length: 4
+		Tick: 200
+	move:
+		Length: 4
+	icon: wormscameos
+		Start: 27
+worms_apache:
+	idle:
+		Facings: -8
+	rotor:
+		Start: 8
+		Length: 2
+	slow-rotor:
+		Start: 8
+		Length: 2
+		Tick: 200
+	muzzle: minigun
+		Length: 6
+		Facings: 8
+	icon: wormscameos
+		Start: 26
