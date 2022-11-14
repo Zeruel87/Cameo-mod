@@ -10,7 +10,7 @@ World:
 		InternalName: paradigm
 		Side: Factions
 		Game: Warzone 2100
-		Description: Campaign faction\nFeatures:\n- It has all the elements of Project outside of other chassis\n- Most units are vehicular\n- Buildings and defenses do not require power to operate\nSupport powers: Laser Satellite\nEarly Body Unlocks: Bug, Mantis, Scorpion\nPrice of NP vehicles will be cheaper but are more fragile to damage
+		Description: Campaign faction\nFeatures:\n- It has all the elements of Project outside of other chassis\n- Most units are vehicular\n- Buildings and defenses do not require power to operate\nSupport powers: Laser Satellite\nEarly Body Unlocks: Bug, Mantis, Scorpion\nPrice of NP vehicles will be cheaper but are more fragile to damage\n Access to mercenary chop shop
 	FactionCA@collective:
 		Name: The Collective 2100
 		InternalName: collective
@@ -93,6 +93,7 @@ World:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
+    Inherits@conyard: ^Conyard
 	Inherits@AP: ^2100BuildingArmorUpgrades
 	HitShape:
 		UseTargetableCellsOffsets: true
@@ -199,11 +200,11 @@ World:
 		BuildPaletteOrder: 10
 		BuildDuration: 750
 		Queue: Building.Alpha, RABuilding.Alpha
-		Description: Generates power\nStores Resources\nLimit: 4
-        BuildLimit: 4            
+		Description: Generates power\nStores Resources
+        
 	Building:
-		Footprint: xxx xxx ===
-		Dimensions: 3,3
+		Footprint: xxx ===
+		Dimensions: 3,2
 		LocalCenterOffset: 0,-512,0
 	Selectable:
 		Bounds: 72,48,0,0
@@ -247,7 +248,7 @@ World:
     Inherits@AIDifficulties: ^AIDifficulties
     Inherits@ai: ^BotMicromanageable
 	Valued:
-		Cost: 500
+		Cost: 250
 	Tooltip:
 		Name: Oil Derrick
 	Buildable:
@@ -263,8 +264,8 @@ World:
 	Power:
 		Amount: -25
 	CashTrickler@POWER:
-		Interval: 55
-		Amount: 15
+		Interval: 50
+		Amount: 25
 		ShowTicks: False
 		PauseOnCondition: disabled
 		UseResourceStorage: true
@@ -684,7 +685,7 @@ World:
 		Range: 5c0
 	IonCannonPower:
 		AllowMultiple: true
-		Prerequisites: ~techlevel.superweapons, ~up2100upsypnaticdata4
+		Prerequisites: ~techlevel.superweapons
 		Icon: ioncannon
 		Cursor: ioncannon
 		ChargeInterval: 4500
@@ -1076,7 +1077,7 @@ World:
 		BuildPaletteOrder: 40
 		Prerequisites: 2100FY1, ~up2100upwall1
 		Queue: Defence.Alpha, RADefence.Alpha
-		Description: Anti-Tank base defense.\n  Strong vs Vehicles\n  Weak vs Infantry
+		Description: Anti-infantry base defense.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Armament:
 		Weapon: 2100MachinegunTower
 		LocalOffset: 128,0,2
@@ -1240,7 +1241,7 @@ World:
 		BuildPaletteOrder: 50
 		Prerequisites: 2100fy1, ~techlevel.medium
 		Queue: Defence.Alpha, RADefence.Alpha
-		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Infantry\n  Weak vs Tanks
 	RequiresBuildableArea:
 		AreaTypes: building
 	Selectable:
@@ -1285,7 +1286,7 @@ World:
 		BuildPaletteOrder: 50
 		Prerequisites: 2100fy1, ~techlevel.medium
 		Queue: Defence.Alpha, RADefence.Alpha
-		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+		Description: Reveals shroud.\n  Unarmed
 	RequiresBuildableArea:
 		AreaTypes: building
 	Selectable:
@@ -1471,7 +1472,7 @@ World:
 		Queue: Defence.Alpha, RADefence.Alpha
 		BuildPaletteOrder: 110
 		Prerequisites: 2100FY1, ~techlevel.medium, ~up2100uphurricane1
-		Description: Anti-Air base defense.\n  Strong vs Aircraft\n  Weak vs Ground units
+		Description: Anti-Air base defense.\n  Strong vs Aircraft\n  Unable to attack ground units
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -1538,7 +1539,7 @@ psc2100factory1:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: FactoryUpgrade1.Alpha
-		Description: Increases power output.
+		Description: Allows building of medium class chassis.
 		Prerequisites: ~anypower, ~up2100upfactorymodule1
 	Valued:
 		Cost: 750
@@ -1554,7 +1555,7 @@ psc2100factory2:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: FactoryUpgrade2.Alpha
-		Description: Increases power output.
+		Description: allows building of heavy class chassis.
 		Prerequisites: ~2100fy2, ~up2100upfactorymodule1
 	Valued:
 		Cost: 1000
@@ -2494,6 +2495,7 @@ psc2100chopshop2:
 	AlwaysVisible:
 	KillsSelf:
 		RemoveInstead: true                  
+####################################################################################################
 #		2100 Driods Bodies
 ####################################################################################################
 ^2100ViperWheels:
@@ -3962,7 +3964,7 @@ psc2100chopshop2:
 	Buildable:
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		BuildPaletteOrder: 10
-		Description: Repairs structures.\nCan remove resources to make building space.
+		Description: Repairs structures and provides building area radius.\nCan remove resources to make building space.
 		Prerequisites: ~up2100upviper1
 	Valued:
 		Cost: 600
@@ -3975,6 +3977,11 @@ psc2100chopshop2:
 		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Structure
+    BaseProvider:
+		Range: 7c0
+        RequiresCondition: !littlebuilderenable
+    GivesBuildableArea:
+		AreaTypes: building
 2100HEALTRUCK:
 	Inherits@Body: ^2100ViperWheels
 	Inherits@@Turret: ^2100RepairHealer
@@ -4045,7 +4052,7 @@ psc2100chopshop2:
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
-		Description: Strong vs Vehicles, Aircraft
+		Description: Strong vs Infantry
 		Prerequisites: ~up2100upflamer1, ~up2100upviper1
 	Selectable:
 		Class: 2100fvw
@@ -4059,7 +4066,7 @@ psc2100chopshop2:
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
-		Description: Strong vs Vehicles, Aircraft
+		Description: Strong vs Vehicles
 		Prerequisites: ~up2100uplcannon1, ~up2100upviper1
 	Selectable:
 		Class: 2100lcvw
@@ -4321,10 +4328,28 @@ psc2100chopshop2:
 		Description: Buffs nearby allies and debuffs targeted enemies.\n Unarmed
 
 2100SUPPLYTRUCK:
-	Inherits: TRUCK
+    Inherits: TRUCK
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Tooltip:
+		Name: Armed Supply Truck
+	Valued:
+		Cost: 550
 	Buildable:
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
-		Prerequisites: 2100FY2
+		Prerequisites: 2100FY1
+		BuildPaletteOrder: 120
+		Description: Transports supplies to other players.\n Armed with self-defense HMG
+	Turreted:
+		TurnSpeed: 8
+		Offset: -10,0,150
+	Armament:
+		Weapon: 2100HeavyMachineGun
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+	AttackTurreted:
+	WithMuzzleOverlay:
 #		Cobra Hovercraft
 2100MCHOV:
 	Inherits: ^2100CobraHovercraft
@@ -4374,7 +4399,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Prerequisites: 2100vfy1, ~techlevel.medium, ~up2100uplrk1, ~up2100upviper1, ~up2100upvtols1
 		Queue: Aircraft.Alpha, RAAircraft.Alpha, Aircraft.X_Aircrafts
-		Description: Helicopter gunship armed\nwith dual chainguns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: Helicopter gunship armed\nwith MH.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -4387,7 +4412,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Prerequisites: 2100vfy1, ~techlevel.medium, ~up2100uplmg1, ~up2100upviper1, ~up2100upvtols1
 		Queue: Aircraft.Alpha, RAAircraft.Alpha, Aircraft.X_Aircrafts
-		Description: Helicopter gunship armed\nwith dual chainguns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: Helicopter gunship armed\nwith rocket pod.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -4399,7 +4424,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Prerequisites: 2100vfy2, ~techlevel.medium, ~up2100uplcannon1, ~up2100upcobra1, ~up2100upvtols1
 		Queue: Aircraft.Alpha, RAAircraft.Alpha, Aircraft.X_Aircrafts
-		Description: Helicopter gunship armed\nwith dual chainguns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: Helicopter gunship armed\nwith light cannon.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -4412,7 +4437,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Prerequisites: 2100vfy2, ~techlevel.medium, ~up2100uplancer1, ~up2100upcobra1, ~up2100upvtols1
 		Queue: Aircraft.Alpha, RAAircraft.Alpha, Aircraft.X_Aircrafts
-		Description: Helicopter gunship armed\nwith dual chainguns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: Helicopter gunship armed\nwith lancer.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -4458,7 +4483,7 @@ psc2100chopshop2:
 	Buildable:
 		BuildPaletteOrder: 40
 		Queue: Infantry.Alpha, RAInfantry.Alpha, Vehicle.X_Vehicles
-		Description: Strong vs Infantry
+		Description: Strong vs Vehicles
 		Prerequisites: ~up2100uplancer1, ~barracks
 	Selectable:
 		Class: 2100cylan
@@ -4475,7 +4500,7 @@ psc2100chopshop2:
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Infantry.Alpha, RAInfantry.Alpha, Vehicle.X_Vehicles
-		Description: Strong vs Infantry
+		Description: Strong vs Ground targets
 		Prerequisites: ~up2100upmortar1, ~barracks
 	Selectable:
 		Class: 2100cylan
@@ -4504,10 +4529,15 @@ psc2100chopshop2:
 	Buildable:
 		BuildPaletteOrder: 20
 		Queue: Infantry.Alpha, RAInfantry.Alpha, Vehicle.X_Vehicles
-		Description: Strong vs Infantry
+		Description: Repairs structures and provides building area radius
 		Prerequisites: ~barracks
 	Selectable:
 		Class: 2100cymg
+    BaseProvider:
+		Range: 4c0
+        RequiresCondition: !littlebuilderenable
+    GivesBuildableArea:
+		AreaTypes: building        
 ####################################################################################################
 #		2100 Vehicles Obsolete
 #   Is Obsolete, only Editor Purposes or AI
@@ -4608,7 +4638,7 @@ psc2100chopshop2:
 	Buildable:
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		BuildPaletteOrder: 10
-		Description: Repairs structures.\nCan remove resources to make building space.
+		Description: Repairs structures and provides building area radius.\nCan remove resources to make building space.
 		Prerequisites: ~up2100upbug1
 	Valued:
 		Cost: 550
@@ -4621,6 +4651,11 @@ psc2100chopshop2:
 		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Structure
+    BaseProvider:
+		Range: 7c0
+        RequiresCondition: !littlebuilderenable
+    GivesBuildableArea:
+		AreaTypes: building
 2100HEALTRUCKC:
 	Inherits@Body: ^2100BugWheels
 	Inherits@@Turret: ^2100RepairHealer
@@ -4693,7 +4728,7 @@ psc2100chopshop2:
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
-		Description: Strong vs Vehicles, Aircraft
+		Description: Strong vs Infantry
 		Prerequisites: ~up2100upflamer1, ~up2100upbug1
 	Selectable:
 		Class: 2100fvw
@@ -4933,7 +4968,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 80
 		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upmantis1, ~up2100uptracks1, ~up2100uphurricane1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
-		Description: Strong vs Infantry
+		Description: Strong vs Aircraft
 #		Scorpion Hovercraft
 2100MSCHOV:
 	Inherits: ^2100ScorpionHovercraft
@@ -5071,7 +5106,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Prerequisites: 2100vfy1, ~techlevel.medium, ~up2100uplrk1, ~up2100upbug1, ~up2100upvtols1
 		Queue: Aircraft.Alpha, RAAircraft.Alpha, Aircraft.X_Aircrafts
-		Description: Helicopter gunship armed\nwith dual chainguns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: Helicopter gunship armed\nwith MG.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 550
 	Tooltip:
@@ -5084,7 +5119,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Prerequisites: 2100vfy1, ~techlevel.medium, ~up2100uplmg1, ~up2100upbug1, ~up2100upvtols1
 		Queue: Aircraft.Alpha, RAAircraft.Alpha, Aircraft.X_Aircrafts
-		Description: Helicopter gunship armed\nwith dual chainguns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: Helicopter gunship armed\nwith rocket pod.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 850
 	Tooltip:
@@ -5096,7 +5131,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Prerequisites: 2100vfy2, ~techlevel.medium, ~up2100uplcannon1, ~up2100upscorpion1, ~up2100upvtols1
 		Queue: Aircraft.Alpha, RAAircraft.Alpha, Aircraft.X_Aircrafts
-		Description: Helicopter gunship armed\nwith dual chainguns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: Helicopter gunship armed\nwith light cannon.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -5109,7 +5144,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Prerequisites: 2100vfy2, ~techlevel.medium, ~up2100uplancer1, ~up2100upscorpion1, ~up2100upvtols1
 		Queue: Aircraft.Alpha, RAAircraft.Alpha, Aircraft.X_Aircrafts
-		Description: Helicopter gunship armed\nwith dual chainguns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: Helicopter gunship armed\nwith Lancer.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -5124,7 +5159,7 @@ psc2100chopshop2:
 	Buildable:
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		BuildPaletteOrder: 10
-		Description: Repairs structures.\nCan remove resources to make building space.
+		Description: Repairs structures and provides building area radius.\nCan remove resources to make building space.
 		Prerequisites: ~up2100upleopard1
 	Valued:
 		Cost: 650
@@ -5137,6 +5172,11 @@ psc2100chopshop2:
 		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Structure
+    BaseProvider:
+		Range: 7c0
+        RequiresCondition: !littlebuilderenable
+    GivesBuildableArea:
+		AreaTypes: building
 2100HEALTRUCKP:
 	Inherits@Body: ^2100LeopardWheels
 	Inherits@@Turret: ^2100RepairHealer
@@ -5537,6 +5577,11 @@ psc2100chopshop2:
 		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Structure
+    BaseProvider:
+		Range: 7c0
+        RequiresCondition: !littlebuilderenable
+    GivesBuildableArea:
+		AreaTypes: building
 2100HEALTRUCKN:
 	Inherits@Body: ^2100RetealiatonWheels
 	Inherits@@Turret: ^2100RepairHealer
@@ -6377,8 +6422,10 @@ psc2100chopshop2:
 	RenderSprites:
 		Scale: 0.60
 	BaseProvider:
-		Range: 5c0
-		RequiresCondition: littlebuilderenable
+		Range: 7c0
+        RequiresCondition: !littlebuilderenable
+    GivesBuildableArea:
+		AreaTypes: building
 	Production@NORMAL:
 		Produces: Building.Scavenger, Defence.Scavenger
 		RequiresCondition: !classicproductionqueues && littlebuilderenable 
@@ -6469,8 +6516,10 @@ psc2100chopshop2:
 	RenderSprites:
 		Scale: 0.60
 	BaseProvider:
-		Range: 5c0
-		RequiresCondition: littlebuilderenable
+		Range: 9c0
+        RequiresCondition: !littlebuilderenable
+    GivesBuildableArea:
+		AreaTypes: building
 	Production@NORMAL:
 		Produces: Building.Scavenger, Defence.Scavenger
 		RequiresCondition: !classicproductionqueues && littlebuilderenable 

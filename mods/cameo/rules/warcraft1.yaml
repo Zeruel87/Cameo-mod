@@ -504,7 +504,8 @@ wc_h_townhall:
   	BaseBuilding:         
 	Voiced:
 		VoiceSet: humantownhallvoice    
-        
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmwchuman
 wc_h_farm:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -1190,6 +1191,8 @@ wc_o_townhall:
 		Icon: wc_dark_vision
 		ChargeInterval: 1500
 		Description: Dark Vision
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmwcorc
 wc_o_farm:
 	Inherits@wc_h_farm: wc_h_farm
 	Buildable:
@@ -1512,7 +1515,78 @@ wc_h_peasant:
 		PipType: Blue
 		CargoConditions:
 			wc_goldmine: indoors
-    
+wc_h_peasant_engineer:
+	Inherits: ^Soldier
+	Inherits@WC1Infantry: ^WC1Infantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+    Inherits@upgrade_shields: ^wc_h_str_shield
+    Inherits@engineer: ^EngineerDefaultWeapons
+    Inherits@isengineer: ^IsEngineer
+	AutoTargetPriority@Repair:
+		ValidTargets: Repair, Repairing
+		ValidStances: Ally
+		Priority: 2
+	AutoTargetPriority@DEFAULT:
+		ValidStances: Enemy, Neutral
+	AutoTargetPriority@ATTACKANYTHING:
+		ValidStances: Enemy, Neutral
+	Valued:
+		Cost: 250
+	Tooltip:
+		Name: Engineer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: false
+	Buildable:
+		BuildPaletteOrder: 5
+		Queue: Infantry.human, RAInfantry.human
+		Description: Captures Buildings.
+        BuildDuration: 250
+        BuildDurationModifier: 100
+	Mobile:
+		Speed: 90
+	Health:
+		HP: 7200
+	#Food
+	Power:
+		Amount: -5
+	AutoTarget:
+		ScanRadius: 4
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+  	Inherits@EXT: ^ExternalConditions      
+	AttackFrontal:        
+    Voiced:
+		VoiceSet: voicehuman
+	WithInfantryBody:
+		DefaultAttackSequence: harvest
+		-IdleSequences: idle1,idle2,idle3,idle4        
+    -DamagedByTerrain:
+	WithInfantryBody@top:
+		StandSequences: top
+		MoveSequence: top
+	Passenger:
+		PipType: Yellow
+	EngineerRepair:
+	RepairsBridges:
+	CaptureManager:
+	GrantConditionOnPrerequisite@GLOBALREUSABLEENGINEER:
+		Condition: global-reusable-engineers
+		Prerequisites: global-reusable-engineers
+	Captures:
+		RequiresCondition: !global-reusable-engineers
+		CaptureTypes: building, defense, tech
+		PlayerExperience: 500
+		ConsumedByCapture: True
+	Captures@REUSABLE:
+		RequiresCondition: global-reusable-engineers
+		CaptureTypes: building, defense, tech
+		PlayerExperience: 500
+		CaptureDelay: 375
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
 wc_h_mcv:
 	Inherits: ^Soldier
     Inherits@WC1Infantry: ^WC1Infantry
@@ -1529,7 +1603,7 @@ wc_h_mcv:
 		Description: Tramsforms into another Town Hall
         Icon: townhall_icon
 	Tooltip:
-		Name: Mobile Construction Vehicle (Human)
+		Name: Mobile Construction Peasant (Human)
 	Selectable:
 		Priority: 4
 		DecorationBounds: 36,36
@@ -1556,7 +1630,8 @@ wc_h_mcv:
     RenderSprites:  
         Image: wc_h_peasant
         Scale: 1.3
-        
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmwchuman
 wc_o_mcv:
     Inherits: wc_h_mcv
   	Buildable:
@@ -1568,12 +1643,13 @@ wc_o_mcv:
    	Transforms:
 		IntoActor: wc_o_townhall    
   	Tooltip:
-		Name: Mobile Construction Vehicle (Orc)  
+		Name: Mobile Construction Orc (Orc)  
 	Voiced:
 		VoiceSet: voiceorc        
     RenderSprites:  
         Image: wc_o_peon
-        
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmwcorc
 wc_h_footman:
 	Inherits: ^Soldier
 	Inherits@WC1Infantry: ^WC1Infantry
@@ -2130,8 +2206,18 @@ wc_o_peon:
 	WithHarvesterSpriteBody:
 		ImageByFullness: wc_o_peon, wc_o_peon_full
     Voiced:
-		VoiceSet: voiceorc     
-        
+		VoiceSet: voiceorc
+
+wc_o_peon_engineer:
+	Inherits@wc_h_peasant: wc_h_peasant_engineer
+	Tooltip:
+		Name: Engineer
+	Buildable:
+		BuildPaletteOrder: 5
+		Queue: Infantry.orc, RAInfantry.orc
+		Description: Harvester.
+    Voiced:
+		VoiceSet: voiceorc
 wc_o_grunt:
 	Inherits@wc_h_footman: wc_h_footman
 	Tooltip:
