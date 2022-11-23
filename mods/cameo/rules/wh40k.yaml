@@ -1414,6 +1414,158 @@ wh40kstrategyc:
 	RangeMultiplier@Extrarange:
 		Modifier: 110
 	ProvidesPrerequisite@buildingname:
+
+wh40kstrategyt:
+	Inherits: ^ArmedBaseBuilding
+	Inherits@2: ^CashTricklerMultipliers
+	Inherits@shape: ^2x2Shape
+    Inherits@lowpower: ^DisabledOverlay
+    Buildable:
+		Queue: Building.Tau, RABuilding.Tau
+		BuildPaletteOrder: 120
+		Prerequisites: anypower, ~techlevel.medium
+		Description: Provides Passive income.\n Provides Base Area .\n Attacks when is Upgraded.\n  Upgradeable with Addons
+		BuildLimit: 5
+    Valued:
+        Cost: 1500
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 630,-300,0, 420,512,0, -420,-512,0, -630,300,0
+	Selectable:
+		Priority: 0
+		Bounds: 48,48
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 70000
+    UpdatesDerrickCount:    
+	RevealsShroud:
+		Range: 4c0
+	CaptureManager:
+	Capturable:
+		Types: building
+	EngineerRepairable:
+	CashTrickler:
+		Interval: 50
+		Amount: 6
+		RequiresCondition: !addon1
+	CashTrickler@lvl1:
+		Interval: 50
+		Amount: 12
+		RequiresCondition: addon1 && !upgrade1 && !addon2
+	CashTrickler@lvl2:
+		Interval: 50
+		Amount: 18
+		RequiresCondition: addon2 && !upgrade1 && !addon3
+	CashTrickler@lvl3:
+		Interval: 50
+		Amount: 24
+		RequiresCondition: addon3 && !upgrade1
+	CashTrickler@lvl1up1:
+		Interval: 50
+		Amount: 42
+		RequiresCondition: addon1 && upgrade1  && !upgrade2 && !addon2
+	CashTrickler@lvl2up1:
+		Interval: 50
+		Amount: 48
+		RequiresCondition: addon2 && upgrade1  && !upgrade2 && !addon3
+	CashTrickler@lvl3up1:
+		Interval: 50
+		Amount: 54
+		RequiresCondition: addon3 && upgrade1  && !upgrade2
+	CashTrickler@lvl1up2:
+		Interval: 50
+		Amount: 62
+		RequiresCondition: addon1 && upgrade2 && !addon2
+	CashTrickler@lvl2up2:
+		Interval: 50
+		Amount: 68
+		RequiresCondition: addon2 && upgrade2 && !addon3
+	CashTrickler@lvl3up2:
+		Interval: 50
+		Amount: 74
+		RequiresCondition: addon3 && upgrade2
+    CashTricklerBar:
+	Tooltip:
+		Name: Strategy Point
+    RenderSprites:
+        Image: wh40kstrategyc
+    -WithDeathAnimation:
+    Power:
+        Amount: -25     
+	Production@1:
+		Produces: WH40KStrategy.ImperialGuard1
+		RequiresCondition: !addon1
+	ProductionQueue@1:
+		Type: WH40KStrategy.ImperialGuard1
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@addon1:
+		Condition: addon1
+		Actors: pscwh40kstrategy1
+	Production@2:
+		Produces: WH40KStrategy.ImperialGuard2
+		RequiresCondition: !addon2 && addon1
+	ProductionQueue@2:
+		Type: WH40KStrategy.ImperialGuard2
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@addon2:
+		Condition: addon2
+		Actors: pscwh40kstrategy2
+	Production@3:
+		Produces: WH40KStrategy.ImperialGuard3
+		RequiresCondition: !addon3 && addon2
+	ProductionQueue@3:
+		Type: WH40KStrategy.ImperialGuard3
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@addon3:
+		Condition: addon3
+		Actors: pscwh40kstrategy3
+	DamageMultiplier@addon1:
+		RequiresCondition: addon1
+		Modifier: 90
+	DamageMultiplier@addon2:
+		RequiresCondition: addon2
+		Modifier: 90
+	DamageMultiplier@addon3:
+		RequiresCondition: addon3
+		Modifier: 90
+	GivesBuildableArea:
+		AreaTypes: building
+	BaseProvider:
+		Range: 5c0
+	Armament:
+		Weapon: WH40KSkyraygun
+		LocalOffset: 700,0,500
+		RequiresCondition: addon2
+	Armament@2:
+		Weapon: WH40KSkyraygun
+		LocalOffset: 700,0,500
+		RequiresCondition: addon3
+	WithIdleOverlay@addon1:
+		RequiresCondition: addon1
+		Sequence: idle2
+	WithIdleOverlay@addon2:
+		RequiresCondition: addon3
+		Sequence: idle3
+	WithSpriteTurret@addon2:
+		RequiresCondition: addon2
+		Sequence: turret1
+	RangeMultiplier@Extrarange:
+		Modifier: 110
+	ProvidesPrerequisite@buildingname:
 #######################################
 # Imperial Guard, TestBuildings
 #######################################
@@ -4483,7 +4635,7 @@ wh40kbaneblade:
 	Passenger:
 		Weight: 4
 	Health:
-		HP: 500000
+		HP: 600000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -7872,7 +8024,7 @@ wh40kpsyinquisition:
 	ProvidesPrerequisite:
 		Prerequisite: wh40kpsyinquisition
 #######################################
-# Imperial Guard, Rank Bonus
+# Marine, Rank Bonus
 #######################################
 wh40krankmarine:
 	Inherits: ^upgrade.template
@@ -7888,20 +8040,134 @@ wh40krankmarine:
 	ProvidesPrerequisite:
 		Prerequisite: wh40krankmarine
 
-wh40kranksentinel:
+wh40krankscout:
 	Inherits: ^upgrade.template
 	Tooltip:
-		Name: Honor Guard: Sentinel
+		Name: Honor Guard: Scout Marine Squad
 	Buildable:
 		BuildPaletteOrder: 200
 		Queue: Promotions.SpaceMarines
-		Description: A Sentinel spawn at your base.
-		Prerequisites: !wh40kranksentinel, rank3, rank1
+		Description: A Scout Marine Squad spawn at your base.
+		Prerequisites: !wh40krankscout, rank1
 	RenderSprites:
-		Image: wh40ksentinel
+		Image: wh40kmarine
 	ProvidesPrerequisite:
-		Prerequisite: wh40kranksentinel
+		Prerequisite: wh40krankscout
 
+wh40kranklandspeeder:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Honor Guard: Land Speeder
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.SpaceMarines
+		Description: A Senior Librarian Saribander spawn at your base.
+		Prerequisites: !wh40kranklandspeeder, rank3, rank1
+	RenderSprites:
+		Image: wh40klandspeed
+	ProvidesPrerequisite:
+		Prerequisite: wh40kranklandspeeder
+
+wh40kranklibrarian:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Honor Guard: Senior Librarian Saribander
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.SpaceMarines
+		Description: A Senior Librarian Saribander spawn at your base.
+		Prerequisites: !wh40kranklibrarian, rank3, rank1
+	RenderSprites:
+		Image: wh40klibrarian
+	ProvidesPrerequisite:
+		Prerequisite: wh40kranklibrarian
+
+wh40krankassault:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Honor Guard: Veteran Assault Marine
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.SpaceMarines
+		Description: A Senior Librarian Saribander spawn at your base.
+		Prerequisites: !wh40krankassault, rank3, rank1
+	RenderSprites:
+		Image: wh40kterminator2
+	ProvidesPrerequisite:
+		Prerequisite: wh40krankassault
+
+wh40krankdread:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Honor Guard: Dreadnought
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Promotions.SpaceMarines
+		Description: A Dreadnought spawn at your base.
+		Prerequisites: !wh40krankdread, rank3, rank1
+	RenderSprites:
+		Image: wh40kdread
+	ProvidesPrerequisite:
+		Prerequisite: wh40krankdread
+
+#######################################
+# Marine, Rank Units
+#######################################
+wh40kmarine_rank:
+	Inherits: wh40kmarine
+	Inherits@sargent: ^WH40KSargent
+	Tooltip:
+		Name: First Company Veteran
+	-Buildable:
+	RenderSprites:
+		Image: wh40kmarine
+	Health:
+		HP: 30000
+	Armament@GRENADE:							##########
+		Weapon: Wh40kMarineGrenade
+		RequiresCondition: wh40kupfraggrenade
+wh40kscoutsquad_rank:
+	Inherits@1: wh40kguardsquad
+	MobSpawnerMaster:
+		Actors: wh40kscoutmobslave_rank, wh40kscoutmobslave_rank, wh40kscoutmobslave_rank, wh40kscoutmobslave_rank, wh40kscoutmobslave_rank
+	-Buildable:
+	RenderSprites:
+		Image: wh40kguardsquad
+	Voiced:
+		VoiceSet: WH40KScoutMarineVoice
+	Tooltip:
+		Name: Scout Squad
+	Selectable:
+		Class: wh40kscoutsquad_rank
+
+wh40kscoutmobslave_rank:
+	Inherits: wh40kscout
+	Inherits@MC: ^MCImmune
+	Inherits@sargent: ^WH40KSargent
+	-ExternalCondition@TSCLOAK:
+	-Cloak@TScloak:
+	-GrantConditionOnDamageState@UNCLOAK:
+	-UpdatesPlayerStatistics:
+	-Buildable:
+	-Captures:
+	-Captures@DRIVER_KILL:
+	-ActorLostNotification:
+	-MapEditorData:
+	RejectsOrders:
+	Tooltip:
+		Name: Scout Squad
+	-Passenger:
+	MobSpawnerSlave:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Selectable:
+		Class: wh40kkarssquad_rank
+	RenderSprites:
+		Image: wh40kscout
+	Voiced:
+		VoiceSet: WH40KScoutMarineVoice
+	Health:
+		HP: 15000
 #######################################
 # Orkz, Building
 #######################################
@@ -14023,6 +14289,272 @@ wh40kkrootshapcenter:
 	DetectCloaked:
 		Range: 5c0
 		RequiresCondition: !lowpower
+wh40karmoryt:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Path to Enlightenment
+	ProvidesPrerequisite:
+		Prerequisite: usastrategy
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: barracks
+		Queue: Building.Tau, RABuilding.Tau
+		Description: Provides access to advanced American technologies.
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	SelectionDecorations:
+	Health:
+		HP: 200000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	ProvidesPrerequisite@buildingname:
+	Production@Upgrades:
+		Produces: Armoury.Tau
+	ProductionQueue@Upgrades:
+		Type: Armoury.Tau
+		DisplayOrder: 10
+		Group: Upgrade
+		ItemLimit: 1
+		DisallowPaused: true
+	Power:
+		Amount: -25
+	RenderSprites:
+		Image: wh40karmoryt
+wh40kvehiclebeacon:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@gensound: ^GeneralsDamageBuilding
+	Valued:
+		Cost: 2000
+	Power:
+		Amount: -50
+	Tooltip:
+		Name: Vehicle Beacon
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: wh40karmoryt, wh40kbarrt
+		Queue: Building.Tau, RABuilding.Tau
+		Description: Produces vehicles
+	Building:
+		Footprint: xxxx x++x ====
+		Dimensions: 4,3
+	SelectionDecorations:
+	Health:
+		HP: 200000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+		Path: 1,4
+	Exit@1:
+		SpawnOffset: 128,256,0
+		ExitCell: 1,1
+		ExitDelay: 3
+	Exit@2:
+		ExitCell: 2,1
+		ExitDelay: 3
+	#Production@Upgrades:
+	#	Produces: VehicleUpgrades.Tau
+	ProductionQueue:
+		Type: Vehicle.Tau
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 200
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionAirdropCA@NORMAL:
+		Produces: Vehicle.Tau
+		RequiresCondition: !classicproductionqueues
+		ActorType: wh40kthunderhawk
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	ProductionAirdropCA@CLASSIC:
+		Produces: RAVehicle.Tau
+		RequiresCondition: classicproductionqueues
+		ActorType: wh40kthunderhawk
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	ProductionBar@VEHICLESCAVENGER:
+		ProductionType: Vehicle.Tau
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLESCAVENGER:
+		ProductionType: RAVehicle.Tau
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@vehicleproduction:
+		Prerequisite: vehicleproduction
+	RenderSprites:
+		Image: wh40kvehiclebeacon
+wh40kkauyon:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@gensound: ^GeneralsDamageBuilding
+	Valued:
+		Cost: 2500
+	Power:
+		Amount: -100
+	Tooltip:
+		Name: Kauyon Command Post
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: wh40kvehiclebeacon
+		Queue: Building.Tau, RABuilding.Tau
+		Description: Unlocks Kroot Hi Tech
+	Building:
+		Footprint: xxxx xxxx ====
+		Dimensions: 4,3
+	SelectionDecorations:
+	Health:
+		HP: 250000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	ProvidesPrerequisite@buildingname:
+	RenderSprites:
+		Image: wh40kkauyon
+	ProvidesPrerequisite@tauhitech:
+		Prerequisite: tauhitech
+
+wh40kmontka:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@gensound: ^GeneralsDamageBuilding
+	Valued:
+		Cost: 2500
+	Power:
+		Amount: -100
+	Tooltip:
+		Name: Mont'ka Command Post
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: wh40kvehiclebeacon
+		Queue: Building.Tau, RABuilding.Tau
+		Description: Unlocks Tau Hi Tech
+	Building:
+		Footprint: xxxx xxxx ====
+		Dimensions: 4,3
+	SelectionDecorations:
+	Health:
+		HP: 250000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	ProvidesPrerequisite@buildingname:
+	RenderSprites:
+		Image: wh40kmontka
+	ProvidesPrerequisite@tauhitech:
+		Prerequisite: tauhitech
+
+wh40kcoalition:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@gensound: ^GeneralsDamageBuilding
+	Valued:
+		Cost: 2000
+	Power:
+		Amount: -50
+	Tooltip:
+		Name: Coalition Center
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: tauhitech
+		Queue: Building.Tau, RABuilding.Tau
+		Description: Unlocks Tau Ethereal, and Bodyguard,
+	Building:
+		Footprint: xxxx xxxx ====
+		Dimensions: 4,3
+	SelectionDecorations:
+	Health:
+		HP: 250000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	ProvidesPrerequisite@buildingname:
+	RenderSprites:
+		Image: wh40kcoalition
+
+wh40kproct:
+	Inherits: ^BaseBuilding
+	Inherits@ref: ^Refinery
+	Buildable:
+		Queue: Building.Tau, RABuilding.Tau
+		BuildPaletteOrder: 60
+		Prerequisites: anypower
+		Description: Refines Ore and Gems\ninto credits.
+	Valued:
+		Cost: 1500			#1400
+	Tooltip:
+		Name: Resource Pit
+	Building:
+		Footprint: _X_ xxx X== ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+        BuildDuration: 500
+        BuildDurationModifier: 100
+	Selectable:
+		Bounds: 72,50,0,12
+		DecorationBounds: 72,70,0,-2
+	SelectionDecorations:
+    Power:
+        Amount: -30
+	Health:
+		HP: 150000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Refinery:
+		DockAngle: 64
+		DockOffset: 1,2
+	StoresResources:
+		PipCount: 17
+		Capacity: 5000		#2000
+	DrawLineToTarget:
+	CustomSellValue:
+		Value: 500			#600
+	FreeActor:
+		Actor: wh40kharvt
+		SpawnOffset: 1,2
+		Facing: 64
+	WithBuildingBib:
+	ProvidesPrerequisite@buildingname:
+	HitShape:
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 853
+	HitShape@TOP:
+		Type: Rectangle
+			TopLeft: -512, -1450
+			BottomRight: 896, -512
+	GivesBuildableArea:					##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: wh40kproct
 #######################################
 # Tau Infantry
 #######################################
@@ -14082,6 +14614,21 @@ wh40kfirewarrior:
 		ConsumedByCapture: False
 		EnterCursor: ability
 		EnterBlockedCursor: move-blocked
+wh40kpathfinder:
+	Inherits: wh40kfirewarrior
+	Valued:
+		Cost: 250
+	Power:
+		Amount: -5
+	Tooltip:
+		Name: PathFinder
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: barracks
+		Queue: Infantry.Tau, RAInfantry.Tau, Infantry.X_Infantry
+		Description: Detection infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 60
 
 wh40kkroot:
 	Inherits: ^Soldier
@@ -14176,7 +14723,7 @@ wh40kkrootshaper:
 	Buildable:
 		Queue: HInfantry.Tau, RAHInfantry.Tau, Infantry.X_Infantry
 		BuildPaletteOrder: 100
-		Prerequisites: wh40karmoryc
+		Prerequisites: wh40karmoryt
 		BuildDurationModifier: 120
 		Description: Sargent unit for Marines
 		BuildLimit: 10
@@ -14255,7 +14802,7 @@ wh40kshavre:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: wh40karmoryc
+		Prerequisites: wh40karmoryt
 		BuildDurationModifier: 120
 		Description: Sargent unit for Marines
 		BuildLimit: 5
@@ -14267,6 +14814,32 @@ wh40kshavre:
 		Name: garrisoned
 		Weapon: WH40KShavreRifle
 		MuzzleSequence: garrison-muzzle
+wh40kfirewarriorsargent:
+	Inherits: wh40kfirewarrior
+	Inherits@sargent: ^WH40KSargent
+	Valued:
+		Cost: 850   
+	Tooltip:
+		Name: Sargent Bodyguard
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Infantry.Tau, RAInfantry.Tau, Infantry.X_Infantry
+		BuildPaletteOrder: 100
+		Prerequisites: wh40karmoryt
+		BuildDurationModifier: 120
+		Description: Sargent unit for Marines
+		BuildLimit: 5
+	RenderSprites:
+		Image: wh40kfirewarrior
+	MobSpawnerMaster:
+		Actors: wh40kdronesquadslav2
+		RespawnTicks: 300
+		ExitByBudding: false
+		AggregateHealth: false
+#######################################
+# Tau Vehicle
+#######################################
 wh40kdevilfish:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -14283,9 +14856,9 @@ wh40kdevilfish:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
-		Queue: Infantry.Tau, RAInfantry.Tau, Vehicle.X_Vehicles
+		Queue: Vehicle.Tau, RAVehicle.Tau, Vehicle.X_Vehicles
 		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings
-		Prerequisites: wh40kupbasiliskdepot
+		Prerequisites: wh40kvehiclebeacon
 	Mobile:
 		Locomotor: hover
 		TurnSpeed: 8
@@ -14340,9 +14913,9 @@ wh40kskyray:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
-		Queue: Infantry.Tau, RAInfantry.Tau, Vehicle.X_Vehicles
+		Queue: Vehicle.Tau, RAVehicle.Tau, Vehicle.X_Vehicles
 		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings
-		Prerequisites: wh40kupbasiliskdepot
+		Prerequisites: wh40kvehiclebeacon
 	Mobile:
 		Locomotor: hover
 		TurnSpeed: 8
@@ -14390,8 +14963,8 @@ wh40khammerhead:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: wh40kuplemanrussdepot
-		Queue: Infantry.Tau, RAInfantry.Tau, Vehicle.X_Vehicles
+		Prerequisites: wh40kmontka
+		Queue: Vehicle.Tau, RAVehicle.Tau, Vehicle.X_Vehicles
 		Description: Heavily armored Imperial Guard Tank.\nCan attack Aircraft.\n  Strong vs Everything
         BuildDuration: 2500
         BuildDurationModifier: 100
@@ -14450,9 +15023,9 @@ wh40kdronesquad:
 		DeathTypes: DefaultDeath
 	Buildable:
 		BuildPaletteOrder: 30
-		Queue: Infantry.Tau, RAInfantry.Tau
+		Queue: Vehicle.Tau, RAVehicle.Tau, Vehicle.X_Vehicles
 		Description: Basic Infantry Squad.\n  Equivalent to 8 guardsmens.\n Squad Nembers respawn after dead
-		Prerequisites: wh40karmoryc
+		Prerequisites: wh40kvehiclebeacon
 	Tooltip:
 		Name: Drone Squad
 	UpdatesPlayerStatistics:
@@ -14566,8 +15139,8 @@ wh40kdronehard:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: wh40kuplemanrussdepot
-		Queue: Infantry.Tau, RAInfantry.Tau, Vehicle.X_Vehicles
+		Prerequisites: wh40kvehiclebeacon
+		Queue: Vehicle.Tau, RAVehicle.Tau, Vehicle.X_Vehicles
 		Description: Heavily armored Imperial Guard Tank.\nCan attack Aircraft.\n  Strong vs Everything
         BuildDuration: 2500
         BuildDurationModifier: 100
@@ -14608,29 +15181,56 @@ wh40kdronehard:
 		ExitByBudding: false
 		AggregateHealth: false
 		SpawnAllAtOnce: false
-wh40kfirewarriorsargent:
-	Inherits: wh40kfirewarrior
-	Inherits@sargent: ^WH40KSargent
+wh40kharvt:
+	Inherits: ^Tank
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@upsquad: ^WH40KSquadcapChaosVeh
 	Valued:
-		Cost: 850   
+		Cost: 1000
 	Tooltip:
-		Name: Sargent Bodyguard
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
+		Name: Tau Harvester
+		GenericName: Harvester
 	Buildable:
-		Queue: Infantry.Tau, RAInfantry.Tau, Infantry.X_Infantry
-		BuildPaletteOrder: 100
-		Prerequisites: wh40karmoryc
-		BuildDurationModifier: 120
-		Description: Sargent unit for Marines
-		BuildLimit: 5
+		BuildPaletteOrder: 10
+		Prerequisites: wh40kproct
+		Queue: Vehicle.Tau, RAVehicle.Tau
+		BuildDurationModifier: 40
+		Description: Collects Resources for processing.\n  Unarmed
+	Selectable:
+		DecorationBounds: 36,36
+	Harvester:
+		PipCount: 9
+		Capacity: 35
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 15
+		SearchFromHarvesterRadius: 8
+		EmptyCondition: no-tiberium
+	Mobile:
+		Speed: 80
+	Health:
+		HP: 150000
+	Repairable:
+		HpPerStep: 2537
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 4c0
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	Explodes:
+		RequiresCondition: !no-tiberium
+		Weapon: TiberiumExplosion
+	Explodes@empty:
+		RequiresCondition: no-tiberium
+		Weapon: UnitExplodeHarvEmpty
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions					##########
 	RenderSprites:
-		Image: wh40kfirewarrior
-	MobSpawnerMaster:
-		Actors: wh40kdronesquadslav2
-		RespawnTicks: 300
-		ExitByBudding: false
-		AggregateHealth: false
+		Scale: 0.62
+	Voiced:
+		VoiceSet: WH40KChaosVehicleVoice
 #######################################
 # Necron Buildings
 #######################################
