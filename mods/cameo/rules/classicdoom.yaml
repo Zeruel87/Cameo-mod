@@ -1,3 +1,30 @@
+World:
+    FactionCA@wolfestein3d:
+		Name: Wolfestein Castle
+		InternalName: wolfestein3d
+        Game: Wolfestein 3d
+		Side: Other
+		Description: Enemies from Wolfestein 3d\nUses WW2 weapons, Armored Heros\nSupport powers: Demon Spawn
+	MPStartUnits@mcvonlywolfestein3d:
+		Class: none
+		ClassName: MCV Only
+		Factions: wolfestein3d
+		BaseActor: rafact.wolf
+
+	MPStartUnits@defaultwolfestein3d:
+		Class: light
+		ClassName: Light Support
+		Factions: wolfestein3d
+		BaseActor: rafact.wolf
+		SupportActors: wolfe1,wolfe1,wolfe1,wolfe2,wolfe2,wolfftrk,wolfftrk
+
+	MPStartUnits@heavywolfestein3d:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: wolfestein3d
+		BaseActor: rafact.wolf
+		SupportActors: wolfe1,wolfe1,wolfe1,wolfe2,wolfe2,wolfftrk,wolfftrk,wolfmtnk,wolfmtnk,wolfmtnk
+
 ########################################################
 #	Wolfestein Castle
 ########################################################
@@ -79,26 +106,514 @@ RAFACT.WOLF:
 	Buildable:
 		Description: Builds structures
 	ProvidesPrerequisite@factionallies:
-		Prerequisite: mmallies
+		Prerequisite: mmwolf
 	RenderSprites:
-		Image: rafact
+		Image: wolffact
+
+WOLFBARR:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^RASovietSpawnActorsOnSell
+	Inherits@barr: ^IsBarrack
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 490,-470,0, 355,512,0, -355,-512,0, -630,512,0
+	Buildable:
+		Queue: Building.Wolfestein, RABuilding.Wolfestein
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Description: Trains infantry.
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Wolfestein Barracks
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -170,810,0
+		ExitCell: 1,2
+	Exit@2:
+		SpawnOffset: -725,640,0
+		ExitCell: 0,2
+	Production@NORMAL:
+		Produces: Infantry.Wolfestein
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.Wolfestein
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry.Wolfestein
+		DisplayOrder: 2
+		Group: Infantry
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYSOVIET:
+		ProductionType: Infantry.Wolfestein
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYSOVIET:
+		ProductionType: RAInfantry.Wolfestein
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+
+WOLFKENN:
+	Inherits: ^BaseBuilding
+	Inherits@sell: ^RASovietSpawnActorsOnSell
+	Selectable:
+		Bounds: 24,24
+	Buildable:
+		Queue: Building.Wolfestein, RABuilding.Wolfestein
+		BuildPaletteOrder: 175
+		Prerequisites: anypower
+		Description: Trains Attack Dogs.
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Kennel
+	-GivesBuildableArea:
+	Health:
+		HP: 30000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	
+	Power:
+		Amount: -10
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: kenn
+	WithBuildingBib:
+		HasMinibib: true
+
+WOLFDOME:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^RASpawnActorsOnSell
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 630,-384,0, 630,384,0, -700,-512,0, -700,512,0
+	Buildable:
+		Queue: Building.Wolfestein, RABuilding.Wolfestein
+		BuildPaletteOrder: 90
+		Prerequisites: wolfproc, ~techlevel.medium
+		Description: Provides an overview\nof the battlefield.\nCan detect cloaked units.\nRequires power to operate.
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Radar Dome
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 100000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+		RequiresCondition: !lowpower
+		RevealGeneratedShroud: False
+	RevealsShroud@Offline:
+		Range: 5c0
+		RequiresCondition: lowpower
+	RevealsShroud@GAPGEN:
+		Range: 6c0
+		RequiresCondition: !lowpower
+	WithBuildingBib:
+	ProvidesRadar:
+		RequiresCondition: !jammed && !lowpower
+	InfiltrateForExploration:
+		Types: SpyInfiltrate
+	Power:
+		Amount: -40
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	ExternalCondition@JAMMED:
+		Condition: jammed
+
+WOLFPBOX:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: Pillbox
+	Building:
+		BuildSounds: placbldg.aud, build5.aud
+	Buildable:
+		Queue: Defence.Wolfestein, RADefence.Wolfestein
+		BuildPaletteOrder: 40
+		Prerequisites: wolfbarr, ~techlevel.low
+		Description: Static defense with a fireport for\na garrisoned soldier.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+	Valued:
+		Cost: 600
+	CustomSellValue:
+		Value: 400
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 255
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 1
+		PipCount: 1
+		InitialUnits: wolfe1
+	AttackGarrisoned:
+		RequiresCondition: !build-incomplete
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PortYaws: 0, 176, 341, 512, 682, 853
+		PortCones: 88, 88, 88, 88, 88, 88
+		PauseOnCondition: chronobeamed
+	RenderRangeCircle:
+		FallbackRange: 6c0
+	Power:
+		Amount: -20
+	DetectCloaked:
+		Range: 6c0
+
+WOLFGUN:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence.Wolfestein, RADefence.Wolfestein
+		BuildPaletteOrder: 70
+		Prerequisites: wolfbarr, ~techlevel.medium
+		Description: Anti-Armor base defense.\nCan detect cloaked units.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Turret
+	Building:
+		BuildSounds: placbldg.aud, build5.aud
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 12
+		InitialFacing: 56
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: WolfenTurretGun
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithMuzzleOverlay:
+	Power:
+		Amount: -40
+	DetectCloaked:
+		Range: 6c0
+	BodyOrientation:
+		UseClassicFacingFudge: True
+
+
+WOLFSILO:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Buildable:
+		Queue: Defence.Wolfestein, RADefence.Wolfestein
+		BuildPaletteOrder: 35
+		Prerequisites: wolfproc
+		Description: Stores excess refined\nOre and Gems.
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Treasure Vault
+	-GivesBuildableArea:
+	-MustBeDestroyed:
+	Health:
+		HP: 30000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+		HasMinibib: true
+	StoresResources:
+		PipCount: 5
+		Capacity: 3000
+	Power:
+		Amount: -10
+	Explodes:
+		Weapon: BuildingExplode
+		EmptyWeapon: BuildingExplode
+
+WOLFPOWR:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@power: ^PowerPlant
+	Inherits@sell: ^RASpawnActorsOnSell
+	Selectable:
+		Bounds: 48,48
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 640,-384,0, 640,512,0, -710,-512,0, -710,512,0
+	Buildable:
+		Queue: Building.Wolfestein, RABuilding.Wolfestein
+		BuildPaletteOrder: 10
+		Prerequisites: rafact
+		Description: Provides power for other structures.
+	Valued:
+		Cost: 500			#300
+	Tooltip:
+		Name: Power Plant
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000	#40000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: 120
+	ScalePowerWithHealth:
+	WithDeathAnimation:
+		DeathSequence: dead
+		UseDeathTypeSuffix: false
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: building							##########
+
+WOLFAPWR:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@power: ^PowerPlant
+	Inherits@sell: ^RASpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: -355,-1024,0
+	Buildable:
+		Queue: Building.Wolfestein, RABuilding.Wolfestein
+		BuildPaletteOrder: 110
+		Prerequisites: anyhq, ~techlevel.medium
+		Description: Provides double the power of\na standard Power Plant.
+	Valued:
+		Cost: 800			#500
+	Tooltip:
+		Name: Advanced Power Plant
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,48
+		DecorationBounds: 72,68,0,-10
+	SelectionDecorations:
+	Health:
+		HP: 70000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: 200
+	ScalePowerWithHealth:
+	WithDeathAnimation:
+		DeathSequence: dead
+		UseDeathTypeSuffix: false
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: building							##########
+
+WOLFWEAP:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^RASovietSpawnActorsOnSell
+	Inherits@weap: ^IsWeaponFactory
+	Selectable:
+		Bounds: 72,48
+	Buildable:
+		Queue: Building.Wolfestein, RABuilding.Wolfestein
+		BuildPaletteOrder: 80
+		Prerequisites: wolfproc, ~techlevel.low
+		Description: Produces vehicles.
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: War Factory
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 150000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	WithBuildingBib:
+	WithProductionDoorOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: build-top
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 213,-128,0
+		ExitCell: 1,2
+	Production@NORMAL:
+		Produces: Vehicle.Wolfestein
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.Wolfestein
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Vehicle.Wolfestein
+		DisplayOrder: 3
+		Group: Vehicle
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLESOVIET:
+		ProductionType: Vehicle.Wolfestein
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLESOVIET:
+		ProductionType: RAVehicle.Wolfestein
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -30
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+
+WOLFPROC:
+	Inherits: ^BaseBuilding
+	Inherits@ref: ^Refinery
+	Inherits@sell: ^RASpawnActorsOnSell
+	Buildable:
+		Queue: Building.Wolfestein, RABuilding.Wolfestein
+		BuildPaletteOrder: 60
+		Prerequisites: anypower
+		Description: Refines Ore and Gems\ninto credits.
+	Valued:
+		Cost: 1500			#1400
+	Tooltip:
+		Name: Ore Refinery
+	Building:
+		Footprint: _X_ xxx X== ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 72,50,0,12
+		DecorationBounds: 72,70,0,-2
+	SelectionDecorations:
+	Health:
+		HP: 90000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Refinery:
+		DockAngle: 64
+		DockOffset: 1,2
+	StoresResources:
+		PipCount: 17
+		Capacity: 1000		#2000
+	DrawLineToTarget:
+	CustomSellValue:
+		Value: 500			#600
+	FreeActor:
+		Actor: wolfharv
+		SpawnOffset: 1,2
+		Facing: 64
+	WithBuildingBib:
+	WithIdleOverlay@TOP:
+		Sequence: idle-top
+	Power:
+		Amount: -40			#-30
+	WithDeathAnimation:
+		DeathSequence: dead
+		UseDeathTypeSuffix: false
+	ProvidesPrerequisite@buildingname:
+	HitShape:
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 853
+	HitShape@TOP:
+		Type: Rectangle
+			TopLeft: -512, -1450
+			BottomRight: 896, -512
+	GivesBuildableArea:					##########
+		AreaTypes: building, cityi
 
 wolfe1:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 100
+		Cost: 90
 	Tooltip:
 		Name: Guard
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~cheatunit
-		Queue: MCVFools.Upgrade, Infantry.X_Infantry
-		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		Prerequisites: wolfbarr
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: Basic Guard Infantry.\n Effective vs Infantry
 	Mobile:
 		Speed: 56
 	Health:
@@ -121,12 +636,13 @@ wolfe1:
 	RenderSprites:
 		Scale: 0.6
 	Voiced:
-		VoiceSet: GerGenericVoice
+		VoiceSet: WolfGuardVoice
 wolfe2:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -135,9 +651,9 @@ wolfe2:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
-		Prerequisites: ~cheatunit
-		Queue: MCVFools.Upgrade, Infantry.X_Infantry
+		Description: Second Tier Infantry.\n Effective vs Infantry.\n Can Shoots air
+		Prerequisites: wolfbarr
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
 	Mobile:
 		Speed: 56
 	Health:
@@ -160,7 +676,7 @@ wolfe2:
 	RenderSprites:
 		Scale: 0.6
 	Voiced:
-		VoiceSet: GerGenericVoice
+		VoiceSet: WolfSSVoice
 wolfe3:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -175,9 +691,9 @@ wolfe3:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
-		Prerequisites: ~cheatunit
-		Queue: MCVFools.Upgrade, Infantry.X_Infantry
+		Description: Mutated Infantry.\n Effective vs Infantry
+		Prerequisites: wolfdome
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
 	Mobile:
 		Speed: 56
 	Health:
@@ -200,7 +716,7 @@ wolfe3:
 	RenderSprites:
 		Scale: 0.6
 	Voiced:
-		VoiceSet: GerGenericVoice
+		VoiceSet: WolfMutVoice
 	-DamagedByTerrain:
 
 wolfe4:
@@ -208,6 +724,7 @@ wolfe4:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 200
 	Tooltip:
@@ -216,8 +733,8 @@ wolfe4:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~cheatunit
-		Queue: MCVFools.Upgrade, Infantry.X_Infantry
+		Prerequisites: anyhq
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
 		Speed: 68
@@ -241,7 +758,410 @@ wolfe4:
 	RenderSprites:
 		Scale: 0.6
 	Voiced:
-		VoiceSet: GerCommandoVoice
+		VoiceSet: WolfOfficialVoice
+wolffake:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Official
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: anyhq
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Locomotor: drsuperhover
+		Speed: 77
+	Hovers:
+	Health:
+		HP: 5000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: FireballLauncher
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: FireballLauncher
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.6
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+wolfdog:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	Inherits@MC: ^MCImmune
+    Inherits@oldbuff: ^OldFactionBuff
+	Buildable:
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		BuildPaletteOrder: 29
+		Prerequisites: kenn
+		Description: Anti-infantry unit.\nCan detect cloaked units and spies.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Attack Dog
+		GenericName: Dog
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Selectable:
+		Bounds: 12,17,-1,-4
+		DecorationBounds: 12,17,-1,-4
+	SelectionDecorations:
+	Health:
+		HP: 1800
+	Mobile:
+		Speed: 99
+		Voice: Move
+		RequiresCondition: !attack-cooldown && !eating
+	Guard:
+		Voice: Move
+	Passenger:
+		Voice: Move
+	RevealsShroud:
+		Range: 5c512
+	DetectCloaked:
+		Range: 4c0
+		RequiresCondition: !disabled
+		CloakTypes: Cloak, Hijacker
+	Armament:
+		Weapon: DogJaw
+		ReloadingCondition: attack-cooldown
+	-AttackFrontal:
+	AttackLeap:
+		Voice: Attack
+		PauseOnCondition: attacking || attack-cooldown
+	AttackMove:
+		Voice: Move
+	GrantConditionOnAttack:
+		Condition: eating
+		RevokeDelay: 45
+	GrantConditionWhileAiming:
+		Condition: run
+	AutoTarget:
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry
+	Targetable:
+		TargetTypes: Ground, Infantry
+	WithInfantryBody:
+		MoveSequence: walk
+		StandSequences: stand
+		DefaultAttackSequence: eat
+		RequiresCondition: !run
+	WithInfantryBody@RUN:
+		MoveSequence: run
+		RequiresCondition: run
+	SpeedMultiplier:
+		Modifier: 150
+		RequiresCondition: run
+	IgnoresDisguise:
+	Voiced:
+		VoiceSet: WolfDogVoice
+	-TakeCover:
+	-Explodes@Mutate:
+	-Targetable@disguise:
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+	RenderSprites:
+		Image: dog
+wolfgroose:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Hans Groose
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: anyhq
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 35000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WolfenGrooseMinigun
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WolfenGrooseMinigun
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+wolfgretel:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Gretel Groose
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: anyhq
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 35000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WolfenGrooseMinigun
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WolfenGrooseMinigun
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+
+wolfotto:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Otto Giftmacher
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: anyhq
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 35000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WolfenMadOttoPistol
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WolfenMadOttoPistol
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+
+wolfgasps:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: General Fettgesicht
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: anyhq
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 35000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WolfenGrooseMinigun
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WolfenGrooseMinigun
+		MuzzleSequence: garrison-muzzle
+	Armament@PRIMARYPISTOL:							##########
+		Weapon: WolfenMadOttoPistol
+	Armament@GARRISONEDPISTOL:						##########
+		Name: garrisoned
+		Weapon: WolfenMadOttoPistol
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+
+wolfhetler1:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Mecha Hetler
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: anyhq
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 75000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WolfenMechaHetlerMinigun
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WolfenMechaHetlerMinigun
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+
+wolfschabbs:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Dr Schabbs
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: anyhq
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 35000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WolfenSchabbsMutate
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WolfenSchabbsMutate
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
 
 wolfmtnk:
 	Inherits: ^Tank
@@ -249,8 +1169,8 @@ wolfmtnk:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Buildable:
-		Prerequisites: ~cheatunit
-		Queue: MCVFools.Upgrade, Infantry.X_Vehicles
+		Prerequisites: anyhq
+		Queue: Vehicle.Wolfestein, RAVehicle.Wolfestein, Infantry.X_Vehicles
 		BuildPaletteOrder: 110
 		Description: Allies Main Battle Tank.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Valued:
@@ -273,7 +1193,7 @@ wolfmtnk:
 		Range: 4c0
 	Turreted:
 		TurnSpeed: 5
-		LocalOffset: 4,0,228
+		LocalOffset: 4,0,777
 	Armament:
 		Weapon: WolfenTigerGun
 		Recoil: 128
@@ -300,8 +1220,8 @@ wolfflak:
 	Inherits@EMP: ^TurretEMP
 	Inherits@cargo: ^CargoVehicle
 	Buildable:
-		Prerequisites: ~cheatunit
-		Queue: MCVFools.Upgrade, Infantry.X_Vehicles
+		Prerequisites: anyhq
+		Queue: Vehicle.Wolfestein, RAVehicle.Wolfestein, Infantry.X_Vehicles
 		BuildPaletteOrder: 60
 		Description: Mobile unit with mounted Flak cannon.\n  Strong vs Infantry, Light armor, Aircraft\n  Weak vs Tanks
 	Valued:
@@ -358,8 +1278,8 @@ wolfftrk:
 	Inherits@EMP: ^TurretEMP
 	Inherits@cargo: ^CargoVehicle
 	Buildable:
-		Prerequisites: ~cheatunit
-		Queue: MCVFools.Upgrade, Infantry.X_Vehicles
+		Prerequisites: wolfbarr
+		Queue: Vehicle.Wolfestein, RAVehicle.Wolfestein, Infantry.X_Vehicles
 		BuildPaletteOrder: 60
 		Description: Mobile unit with mounted Flak cannon.\n  Strong vs Infantry, Light armor, Aircraft\n  Weak vs Tanks
 	Valued:
@@ -410,6 +1330,68 @@ wolfftrk:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 
+wolfharv:
+	Inherits: ^Tank
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+    Inherits@compositearmorusa: ^usa_composite_armor_upgrade
+	Buildable:
+		Queue: Vehicle.Wolfestein, RAVehicle.Wolfestein
+		BuildPaletteOrder: 10
+		Prerequisites: wolfproc
+		Description: Collects Ore and Gems for processing.\n  Unarmed
+	Valued:
+		Cost: 1000			#1100
+	Tooltip:
+		Name: Ore Truck
+		GenericName: Harvester
+	Selectable:
+		Priority: 7
+		DecorationBounds: 42,42
+	SelectionDecorations:
+	Harvester:
+		Capacity: 20
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 15
+		SearchFromHarvesterRadius: 8
+		EmptyCondition: no-tiberium
+	Health:
+		HP: 60000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 85
+		Locomotor: heavywheeled
+	RevealsShroud:
+		Range: 4c0
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	GpsDot:
+		String: Harvester
+	SelfHealing:
+		Step: 100
+		Delay: 25
+		HealIfBelow: 50
+		DamageCooldown: 500
+	Explodes:
+		RequiresCondition: !no-tiberium
+		Weapon: OreExplosion
+	Explodes@empty:
+		RequiresCondition: no-tiberium
+		Weapon: UnitExplodeHarvEmpty
+	WithHarvesterSpriteBody:
+		ImageByFullness: wolfharv, wolfharv, wolfharv
+	-WithFacingSpriteBody:
+	Voiced:
+		VoiceSet: GerVehicleVoice
+	Inherits@EXT: ^ExternalConditions					##########
+	GrantConditionOnPrerequisite@usaupsupplylines:
+		Condition: usaupsupplylines
+		Prerequisites: usaupsupplylines
+	HarvesterResourceMultiplier@usaupsupplylines:
+		Modifier: 110
+		RequiresCondition: usaupsupplylines
 ########################################################
 #	UAC
 ########################################################
