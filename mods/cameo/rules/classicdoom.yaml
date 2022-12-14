@@ -28,12 +28,29 @@ World:
 ########################################################
 #	Wolfestein Castle
 ########################################################
+^WolfBuildingSmall:
+	Inherits@1: ^BaseBuilding
+	Building:
+		BuildSounds: BUILD1.WAV
+	SpawnActorsOnSell:
+		ActorTypes: wolfe1
+    SpawnActorOnDeath@death1:
+        Actor: wolfe1
+
+^WolfBuildingBig:
+	Inherits@1: ^WolfBuildingSmall
+	SpawnActorsOnSell:
+		ActorTypes: wolfe1, wolfe1, wolfe1, wolfe1, wolfe1, wolfe2, wolfe2, wolfe2, wolfe4
+    SpawnActorOnDeath@death2:
+        Actor: wolfe1
+    SpawnActorOnDeath@death3:
+        Actor: wolfe1  
+
 RAFACT.WOLF:
-	Inherits: ^BaseBuilding
+	Inherits: ^WolfBuildingBig
 	Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
     Inherits@conyard: ^Conyard
-	Inherits@sell: ^RASpawnActorsOnSell
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -109,13 +126,11 @@ RAFACT.WOLF:
 		Prerequisite: mmwolf
 	RenderSprites:
 		Image: wolffact
-
 WOLFBARR:
-	Inherits: ^BaseBuilding
+	Inherits: ^WolfBuildingBig
 	Inherits@shape: ^2x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
-	Inherits@sell: ^RASovietSpawnActorsOnSell
 	Inherits@barr: ^IsBarrack
 	Selectable:
 		Bounds: 48,48
@@ -181,7 +196,7 @@ WOLFBARR:
 	ProvidesPrerequisite@buildingname:
 
 WOLFKENN:
-	Inherits: ^BaseBuilding
+	Inherits: ^WolfBuildingSmall
 	Inherits@sell: ^RASovietSpawnActorsOnSell
 	Selectable:
 		Bounds: 24,24
@@ -211,10 +226,9 @@ WOLFKENN:
 		HasMinibib: true
 
 WOLFDOME:
-	Inherits: ^BaseBuilding
+	Inherits: ^WolfBuildingBig
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^2x2Shape
-	Inherits@sell: ^RASpawnActorsOnSell
 	Selectable:
 		Bounds: 48,48
 	HitShape:
@@ -389,10 +403,9 @@ WOLFSILO:
 		EmptyWeapon: BuildingExplode
 
 WOLFPOWR:
-	Inherits: ^BaseBuilding
+	Inherits: ^WolfBuildingBig
 	Inherits@shape: ^2x2Shape
 	Inherits@power: ^PowerPlant
-	Inherits@sell: ^RASpawnActorsOnSell
 	Selectable:
 		Bounds: 48,48
 	HitShape:
@@ -426,12 +439,14 @@ WOLFPOWR:
 		UseDeathTypeSuffix: false
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
-
+	WithIdleOverlay@BOX:
+		Sequence: box-overlay
+	WithIdleOverlay@BOX2:
+		Sequence: box-overlay2
 WOLFAPWR:
-	Inherits: ^BaseBuilding
+	Inherits: ^WolfBuildingBig
 	Inherits@shape: ^3x2Shape
 	Inherits@power: ^PowerPlant
-	Inherits@sell: ^RASpawnActorsOnSell
 	HitShape:
 		TargetableOffsets: -355,-1024,0
 	Buildable:
@@ -466,13 +481,15 @@ WOLFAPWR:
 		UseDeathTypeSuffix: false
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
-
+	WithIdleOverlay@BOX:
+		Sequence: box-overlay
+	WithIdleOverlay@BOX2:
+		Sequence: box-overlay2
 WOLFWEAP:
-	Inherits: ^BaseBuilding
+	Inherits: ^WolfBuildingBig
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
-	Inherits@sell: ^RASovietSpawnActorsOnSell
 	Inherits@weap: ^IsWeaponFactory
 	Selectable:
 		Bounds: 72,48
@@ -535,9 +552,8 @@ WOLFWEAP:
 		Prerequisite: vehicleproduction
 
 WOLFPROC:
-	Inherits: ^BaseBuilding
+	Inherits: ^WolfBuildingBig
 	Inherits@ref: ^Refinery
-	Inherits@sell: ^RASpawnActorsOnSell
 	Buildable:
 		Queue: Building.Wolfestein, RABuilding.Wolfestein
 		BuildPaletteOrder: 60
@@ -597,6 +613,145 @@ WOLFPROC:
 	GivesBuildableArea:					##########
 		AreaTypes: building, cityi
 
+WOLFSTEK:
+	Inherits: ^WolfBuildingBig
+	Inherits@shape: ^3x2Shape
+	Inherits@tech: ^IsTechnoBuilding
+	Selectable:
+		Bounds: 72,48
+	HitShape:
+		TargetableOffsets: 420,-768,0, 420,768,0, -770,-768,0, -770,768,0
+	Buildable:
+		Queue: Building.Wolfestein, RABuilding.Wolfestein
+		BuildPaletteOrder: 150
+		Prerequisites: vehicleproduction, anyhq, ~techlevel.high
+		Description: Provides advanced technologies.
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Tech Center
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 80000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: tek
+	Production@Upgrades:
+		Produces: Stek.Wolfestein
+WOLFSTATUE:
+	Inherits: ^WolfBuildingBig
+	Inherits@shape: ^3x2Shape
+	Inherits@tech: ^IsTechnoBuilding
+	Selectable:
+		Bounds: 72,48
+	HitShape:
+		TargetableOffsets: 420,-768,0, 420,768,0, -770,-768,0, -770,768,0
+	Buildable:
+		Queue: Building.Wolfestein, RABuilding.Wolfestein
+		BuildPaletteOrder: 150
+		Prerequisites: wolfstek, ~techlevel.high
+		Description: Provides advanced technologies.
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Demon Statue
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 80000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
+  	DetonateWeaponPower@aichrono:
+		OrderName: ChronoshiftAI
+		PauseOnCondition: lowpower
+		Icon: chrono
+		Cursor: ability
+		ChargeInterval: 4500
+		Description: Demon Chronoshift
+		ActivationDelay: 25
+		LongDesc: Chronoshifts five Demons anywhere on the map.
+		Weapon: WolfenChronoDemons
+		CameraActor: camera.placeholderhack
+		CameraRemoveDelay: 0
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		LaunchSound: chrono2.aud
+		IncomingSound: chrono2.aud
+        Prerequisites: RA2DOOM
+
+WOLFSPEAR:
+	Inherits: ^Defense
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Building:
+		BuildSounds: placbldg.aud, build5.aud
+	Buildable:
+		Queue: Defence.Wolfestein, RADefence.Wolfestein
+		BuildPaletteOrder: 80
+		Prerequisites: wolfstek, ~techlevel.medium
+		Description: Advanced base defense.\nRequires power to operate.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
+		BuildLimit: 1
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Spear of Destiny
+	Selectable:
+		Bounds: 24,24
+		DecorationBounds: 24,40,0,-8
+	SelectionDecorations:
+	Health:
+		HP: 75000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 12c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 6c0
+	WithBuildingBib:
+		HasMinibib: true
+	WithTeslaChargeAnimation:
+	Armament:
+		Weapon: SpearofDestiny
+		LocalOffset: 0,0,896
+	AttackTesla:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+		ChargeAudio: tslachg2.aud
+		MaxCharges: 9
+		ReloadDelay: 120
+	Power:
+		Amount: -100
+	DetectCloaked:
+		Range: 12c0
+		RequiresCondition: !lowpower
+	ProvidesPrerequisite@buildingname:
+
 wolfe1:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -604,7 +759,7 @@ wolfe1:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 90
+		Cost: 80
 	Tooltip:
 		Name: Guard
 	UpdatesPlayerStatistics:
@@ -644,7 +799,7 @@ wolfe2:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 300
+		Cost: 250
 	Tooltip:
 		Name: SS
 	UpdatesPlayerStatistics:
@@ -692,7 +847,7 @@ wolfe3:
 	Buildable:
 		BuildPaletteOrder: 30
 		Description: Mutated Infantry.\n Effective vs Infantry
-		Prerequisites: wolfdome
+		Prerequisites: anyhq
 		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
 	Mobile:
 		Speed: 56
@@ -759,6 +914,19 @@ wolfe4:
 		Scale: 0.6
 	Voiced:
 		VoiceSet: WolfOfficialVoice
+wolfe6:
+	Inherits: E6
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: barracks
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein
+	Voiced:
+		VoiceSet: WolfGuardVoice
+	RenderSprites:
+		Image: e6
+
 wolffake:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -773,7 +941,7 @@ wolffake:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: anyhq
+		Prerequisites: wolfstek
 		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
@@ -987,7 +1155,7 @@ wolfotto:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: anyhq
+		Prerequisites: wolfstek
 		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 		BuildLimit: 1
@@ -999,10 +1167,10 @@ wolfotto:
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:							##########
-		Weapon: WolfenMadOttoPistol
+		Weapon: 227mm.stnk
 	Armament@GARRISONED:						##########
 		Name: garrisoned
-		Weapon: WolfenMadOttoPistol
+		Weapon: 227mm.stnk
 		MuzzleSequence: garrison-muzzle
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
@@ -1033,7 +1201,7 @@ wolfgasps:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: anyhq
+		Prerequisites: wolfstek
 		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 		BuildLimit: 1
@@ -1051,10 +1219,10 @@ wolfgasps:
 		Weapon: WolfenGrooseMinigun
 		MuzzleSequence: garrison-muzzle
 	Armament@PRIMARYPISTOL:							##########
-		Weapon: WolfenMadOttoPistol
+		Weapon: 227mm.stnk
 	Armament@GARRISONEDPISTOL:						##########
 		Name: garrisoned
-		Weapon: WolfenMadOttoPistol
+		Weapon: 227mm.stnk
 		MuzzleSequence: garrison-muzzle
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
@@ -1085,7 +1253,7 @@ wolfhetler1:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: anyhq
+		Prerequisites: wolfstek, !wolfhetler
 		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 		BuildLimit: 1
@@ -1116,7 +1284,57 @@ wolfhetler1:
 	-TakeCover:
 	Crushable:
 		CrushClasses: vehicle
+	SpawnActorOnDeath:
+		Actor: wolfhetler2
+		OwnerType: Victim
 
+wolfhetler2:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Hetler
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~disabled
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 35000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WolfenGrooseMinigun
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WolfenGrooseMinigun
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+	ProvidesPrerequisite:
+		Prerequisite: wolfhetler
 wolfschabbs:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -1131,7 +1349,7 @@ wolfschabbs:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: anyhq
+		Prerequisites: wolfstek
 		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 		BuildLimit: 1
@@ -1163,6 +1381,187 @@ wolfschabbs:
 	Crushable:
 		CrushClasses: vehicle
 
+wolftrans:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Trans Groose
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: wolfstatue
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 48000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WolfenGrooseMinigun
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WolfenGrooseMinigun
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+
+wolfuber:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Uber Mutant
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: wolfstatue
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 48000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WolfenMechaHetlerMinigun
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WolfenMechaHetlerMinigun
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+wolfknight:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Death Knight
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: wolfstatue
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 55000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: WolfenMechaHetlerMinigun
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: WolfenMechaHetlerMinigun
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+wolfdemon:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Demon
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~disabled
+		Queue: Infantry.Wolfestein, RAInfantry.Wolfestein, Infantry.X_Infantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		BuildLimit: 1
+	Mobile:
+		Speed: 68
+		Locomotor: heroes
+	Health:
+		HP: 35000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							########## Requires Doom Hell Baron Projectile
+		Weapon: FireballLauncher
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: FireballLauncher
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+		DefaultAttackSequence: shoot
+	Parachutable:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Scale: 0.8
+	Voiced:
+		VoiceSet: WolfOfficialVoice
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
 wolfmtnk:
 	Inherits: ^Tank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience

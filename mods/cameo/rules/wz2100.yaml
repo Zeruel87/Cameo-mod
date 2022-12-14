@@ -88,7 +88,33 @@ World:
 ####################################################################################################
 #		2100 Structures
 ####################################################################################################
-
+^DisableOldTech2100:
+	GrantConditionOnDeploy:
+		DeployedCondition: d2100oldtechdisabled
+		UndeployedCondition: e2100oldtechenable
+		DeploySounds: target1.aud
+		UndeploySounds: target2.aud
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+	WithTextDecoration@enabled:
+		Text: old tech enabled
+		ReferencePoint: Bottom, Center
+		UsePlayerColor: True
+		ValidStances: Ally
+		RequiresCondition: e2100oldtechenable
+	WithTextDecoration@disable:
+		Text: old tech disable
+		ReferencePoint: Bottom, Center
+		UsePlayerColor: True
+		ValidStances: Ally
+		RequiresCondition: d2100oldtechdisabled
+	ProvidesPrerequisite@2100oldtechenable:
+		RequiresCondition: d2100oldtechdisabled
+		Prerequisite: 2100oldtechdisabled
+	ProvidesPrerequisite@2100oldtechenable2:
+		RequiresPrerequisites: up2100uptwinassaultmg1, up2100uphcannon1, up2100upacannon1
+		RequiresCondition: d2100oldtechdisabled
+		Prerequisite: 2100oldtechdisabled2
 2100HQ.ALPHA:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
@@ -606,6 +632,7 @@ World:
 	Inherits@shape: ^3x2Shape
 	Inherits@AP: ^2100BuildingArmorUpgrades
 	Inherits@tech: ^IsTechnoBuilding
+	Inherits@disabletech: ^DisableOldTech2100
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -660,17 +687,46 @@ World:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^3x2Shape
+	Inherits@AP: ^2100BuildingArmorUpgrades
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Command Relay Center
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: 2100RF, ~techlevel.high
+		Queue: Building.Alpha, RABuilding.Alpha
+		Description: \nUnlocks commander units
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	SelectionDecorations:
+	Health:
+		HP: 180000
+	RevealsShroud:
+		Range: 10c0
+	WithBuildingBib:
+	DetectCloaked:
+		Range: 5c0
+	ProvidesPrerequisite:
+		Prerequisite: 2100CRC
+	-WithDeathAnimation:
+2100LAS:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
 	Inherits@SW: ^PrimarySuperweapon
 	Inherits@AP: ^2100BuildingArmorUpgrades
 	Valued:
 		Cost: 2500
 	Tooltip:
-		Name: Command Relay Center
+		Name: Laser Satellite
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: 2100RF, ~techlevel.high, !nasda
+		Prerequisites: 2100RF, ~techlevel.high, !nasda, up2100upsypnaticdata4
 		Queue: Building.Alpha, RABuilding.Alpha
-		Description: Provides Laser Satellite support power.\nUnlocks higher-tech units and buildings.
+		Description: Provides Laser Satellite support power.\n
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -688,7 +744,7 @@ World:
 		Prerequisites: ~techlevel.superweapons
 		Icon: ioncannon
 		Cursor: ioncannon
-		ChargeInterval: 4500
+		ChargeInterval: 4000
 		Description: Laser Satellite
 		LongDesc: Initiate a Laser Satellite strike.\nApplies instant damage to a small area.
 		BeginChargeSpeechNotification: IonCannonCharging
@@ -700,8 +756,6 @@ World:
 		DisplayTimerStances: Ally, Neutral
 		CameraActor: camera.small
 	SupportPowerChargeBar:
-	ProvidesPrerequisite:
-		Prerequisite: 2100CRC
 	ProvidesPrerequisite@swlimit:
 		Prerequisite: nasda
 	-WithDeathAnimation:
@@ -1440,7 +1494,7 @@ World:
 		Name: Pepperpot Pit
 	Buildable:
 		BuildPaletteOrder: 90
-		Prerequisites: 2100CRC, ~techlevel.high
+		Prerequisites: up2100uppepper1, ~techlevel.high
 		Queue: Defence.Alpha, RADefence.Alpha
 		BuildDurationModifier: 20
 		Description: Long range defensive structure.\nFast-firing variant of the Mortar Pit.
@@ -2356,6 +2410,7 @@ psc2100factory2:
 	Inherits@shape: ^3x2Shape
 	Inherits@AP: ^2100BuildingArmorUpgrades
 	Inherits@tech: ^IsTechnoBuilding
+	Inherits@disabletech: ^DisableOldTech2100
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -2499,10 +2554,10 @@ psc2100chopshop2:
 #		2100 Driods Bodies
 ####################################################################################################
 ^2100ViperWheels:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		TurnSpeed: 16
 		Speed: 137
+		Locomotor: wheeled
 	Health:
 		HP: 26000
 	Armor:
@@ -2515,10 +2570,10 @@ psc2100chopshop2:
 	RenderSprites:
 		Scale: 0.56
 ^2100BugWheels:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		TurnSpeed: 18
 		Speed: 160
+		Locomotor: wheeled
 	Health:
 		HP: 19000
 	Armor:
@@ -2536,9 +2591,9 @@ psc2100chopshop2:
     Voiced:
 		VoiceSet: TSReaper    
 ^2100CobraHTracks:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 117
+		Locomotor: heavywheeled
 	Health:
 		HP: 35000
 	Armor:
@@ -2551,9 +2606,9 @@ psc2100chopshop2:
 	RenderSprites:
 		Scale: 0.70
 ^2100ScorpionHTracks:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 120
+		Locomotor: heavywheeled
 	Health:
 		HP: 30000
 	Armor:
@@ -2571,9 +2626,9 @@ psc2100chopshop2:
     Voiced:
 		VoiceSet: TSReaper
 ^2100PythonTracks:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 75
+		Locomotor: tracked
 	Health:
 		HP: 50000
 	Armor:
@@ -2586,9 +2641,9 @@ psc2100chopshop2:
 	RenderSprites:
 		Scale: 0.75
 ^2100MantisTracks:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 100
+		Locomotor: tracked
 	Health:
 		HP: 40000
 	Armor:
@@ -2606,7 +2661,6 @@ psc2100chopshop2:
     Voiced:
 		VoiceSet: TSReaper
 ^2100CyborgLegs:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		TurnSpeed: 99
 		Speed: 100
@@ -2624,15 +2678,14 @@ psc2100chopshop2:
 		Scale: 0.50
 	QuantizeFacingsFromSequence:
 		Sequence: stand
-	-WithFacingSpriteBody:
 	WithInfantryBody:
 	Voiced:
 		VoiceSet: TSCyborg
 ^2100LeopardWheels:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		TurnSpeed: 16
 		Speed: 130
+		Locomotor: wheeled
 	Health:
 		HP: 32000
 	Armor:
@@ -2650,9 +2703,9 @@ psc2100chopshop2:
 	Voiced:
 		VoiceSet: CollectiveVoice
 ^2100PantherHTracks:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 110
+		Locomotor: heavywheeled
 	Health:
 		HP: 50000
 	Armor:
@@ -2671,9 +2724,9 @@ psc2100chopshop2:
 		VoiceSet: CollectiveVoice
 
 ^2100TigerTracks:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 70
+		Locomotor: tracked
 	Health:
 		HP: 75000
 	Armor:
@@ -2692,10 +2745,10 @@ psc2100chopshop2:
 		VoiceSet: CollectiveVoice
 
 ^2100RetealiatonWheels:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		TurnSpeed: 16
 		Speed: 110
+		Locomotor: wheeled
 	Health:
 		HP: 52000
 	Armor:
@@ -2713,9 +2766,9 @@ psc2100chopshop2:
 	Voiced:
 		VoiceSet: 2100NexusVoice
 ^2100RetributionHTracks:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 100
+		Locomotor: heavywheeled
 	Health:
 		HP: 70000
 	Armor:
@@ -2733,9 +2786,9 @@ psc2100chopshop2:
 	Voiced:
 		VoiceSet: 2100NexusVoice
 ^2100VengeanceTracks:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 62
+		Locomotor: tracked
 	Health:
 		HP: 100000
 	Armor:
@@ -2756,7 +2809,6 @@ psc2100chopshop2:
 #		2100 Hovercraft Bodies
 ####################################################################################################
 ^2100CobraHovercraft:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 140
 		Locomotor: hover
@@ -2773,7 +2825,6 @@ psc2100chopshop2:
 	RenderSprites:
 		Scale: 0.70
 ^2100PythonHovercraft:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 90
 		Locomotor: hover
@@ -2790,7 +2841,6 @@ psc2100chopshop2:
 	RenderSprites:
 		Scale: 0.75
 ^2100ScorpionHovercraft:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 140
 		Locomotor: hover
@@ -2812,7 +2862,6 @@ psc2100chopshop2:
     Voiced:
 		VoiceSet: TSReaper
 ^2100MantisHovercraft:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 120
 		Locomotor: hover
@@ -2834,7 +2883,6 @@ psc2100chopshop2:
     Voiced:
 		VoiceSet: TSReaper
 ^2100PantherHovercraft:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 130
 		Locomotor: hover
@@ -2856,7 +2904,6 @@ psc2100chopshop2:
 	Voiced:
 		VoiceSet: CollectiveVoice
 ^2100TigerHovercraft:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 90
 		Locomotor: hover
@@ -2878,7 +2925,6 @@ psc2100chopshop2:
 	Voiced:
 		VoiceSet: CollectiveVoice
 ^2100RetributionHovercraft:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 115
 		Locomotor: hover
@@ -2900,7 +2946,6 @@ psc2100chopshop2:
 	Voiced:
 		VoiceSet: 2100NexusVoice
 ^2100VengeanceHovercraft:
-	Inherits: ^2100VEHICLE
 	Mobile:
 		Speed: 75
 		Locomotor: hover
@@ -3079,6 +3124,7 @@ psc2100chopshop2:
 #		2100 Droids Supports
 ####################################################################################################
 ^2100RepairHealer:
+	Inherits: ^2100VEHICLE
 	Armament:
 		Weapon: HealUnit
 		TargetStances: Ally
@@ -3092,6 +3138,7 @@ psc2100chopshop2:
 		TurnSpeed: 10
 		Offset: -128,0,128
 ^2100Constructor:
+	Inherits: ^2100VEHICLE
 	Inherits@selection: ^SelectableSupportUnit
 	Inherits@CPQ: ^CPQCondition
 	Armament:
@@ -3154,6 +3201,7 @@ psc2100chopshop2:
 		Factions: nexus
 	BaseBuilding:
 ^2100Commander:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@COMMANDOCALL: ^CommandoCall
@@ -3176,6 +3224,7 @@ psc2100chopshop2:
 	DetectCloaked:
 		Range: 6c0
 ^2100Radar:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@detect: ^GenericGroundDetector
@@ -3191,6 +3240,7 @@ psc2100chopshop2:
 		Weapon: 2100RadarGun
 		LocalOffset: 200,100,150
 ^2100NexusLink:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@detect: ^GenericGroundDetector
@@ -3215,6 +3265,7 @@ psc2100chopshop2:
 	AutoTarget:
 		RequiresCondition: controlling
 ^2100ConstructorCyborg:
+	Inherits: ^2100VEHICLE
 	Inherits@selection: ^SelectableSupportUnit
 	Inherits@CPQ: ^CPQCondition
 	Armament:
@@ -3271,6 +3322,7 @@ psc2100chopshop2:
 		Factions: nexus
 	BaseBuilding:
 ^2100AntiArty:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@detect: ^GenericGroundDetector
@@ -3293,6 +3345,7 @@ psc2100chopshop2:
 #		2100 Droids Weapons
 ####################################################################################################
 ^2100RocketPod:
+	Inherits: ^2100VEHICLE
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AP: ^2100RKWeaponsUpgrades
@@ -3303,6 +3356,7 @@ psc2100chopshop2:
 		ValidTypes: vehicle								##########
 
 ^2100LightMG:
+	Inherits: ^2100VEHICLE
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AP: ^2100MGWeaponsUpgrades
@@ -3326,6 +3380,7 @@ psc2100chopshop2:
 		ValidTypes: vehicle								##########
 
 ^2100HeavyMG:
+	Inherits: ^2100VEHICLE
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AP: ^2100MGWeaponsUpgrades
@@ -3348,6 +3403,7 @@ psc2100chopshop2:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 ^2100MediumCannon:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100CannonWeaponsUpgrades
@@ -3362,6 +3418,7 @@ psc2100chopshop2:
 	SpeedMultiplier@2100Tanks:
 		Modifier: 75
 ^2100AssaultMG:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AP: ^2100MGWeaponsUpgrades
@@ -3377,6 +3434,7 @@ psc2100chopshop2:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 ^2100TwinAssaultMG:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AP: ^2100MGWeaponsUpgrades
@@ -3392,6 +3450,7 @@ psc2100chopshop2:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 ^2100HeavyCannon:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100CannonWeaponsUpgrades
@@ -3406,6 +3465,7 @@ psc2100chopshop2:
 	SpeedMultiplier@2100Tanks:
 		Modifier: 60
 ^2100Lancer:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100RKWeaponsUpgrades
@@ -3416,6 +3476,7 @@ psc2100chopshop2:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 ^2100Tankiller:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100RKWeaponsUpgrades
@@ -3426,6 +3487,7 @@ psc2100chopshop2:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 ^2100BunkerBuster:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100RKWeaponsUpgrades
@@ -3438,6 +3500,7 @@ psc2100chopshop2:
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Defence, Defense, Wall
 ^2100LightFlamer:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100FlamerWeaponsUpgrades
@@ -3450,6 +3513,7 @@ psc2100chopshop2:
 	SpeedMultiplier@2100Tanks:
 		Modifier: 90
 ^2100InfernoFlamer:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100FlamerWeaponsUpgrades
@@ -3466,6 +3530,7 @@ psc2100chopshop2:
 	SpeedMultiplier@2100Tanks:
 		Modifier: 85
 ^2100Mortar:
+	Inherits: ^2100VEHICLEFRONTAL
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100MortarWeaponsUpgrades
@@ -3484,6 +3549,7 @@ psc2100chopshop2:
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Structure
 ^2100Bombard:
+	Inherits: ^2100VEHICLEFRONTAL
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100MortarWeaponsUpgrades
@@ -3501,7 +3567,65 @@ psc2100chopshop2:
 		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Structure
+^2100Pepper:
+	Inherits: ^2100VEHICLEFRONTAL
+	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AP: ^2100MortarWeaponsUpgrades
+	Inherits@jammable: ^ArtilleryJammable
+	Armament:
+		Weapon: PepperpotShell
+		MuzzleSequence: muzzle
+		LocalOffset: 600,0,0
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	SpeedMultiplier@2100Tanks:
+		Modifier: 45
+	AutoTarget:
+		ScanRadius: 7
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Structure
+^2100Hotwizer:
+	Inherits: ^2100VEHICLEFRONTAL
+	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AP: ^2100MortarWeaponsUpgrades
+	Inherits@jammable: ^ArtilleryJammable
+	Armament:
+		Weapon: 2100HotwizerShell
+		MuzzleSequence: muzzle
+		LocalOffset: 600,0,0
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	SpeedMultiplier@2100Tanks:
+		Modifier: 40
+	AutoTarget:
+		ScanRadius: 7
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Structure
+^2100Ripple:
+	Inherits: ^2100VEHICLEFRONTAL
+	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AP: ^2100MortarWeaponsUpgrades
+	Inherits@jammable: ^ArtilleryJammable
+	Armament:
+		Weapon: 2100RippleRocket
+		MuzzleSequence: muzzle
+		LocalOffset: 600,80,0, 600,-80,0, 600,160,0, 600,-160,0, 600,0,0
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+	SpeedMultiplier@2100Tanks:
+		Modifier: 35
+	AutoTarget:
+		ScanRadius: 9
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Structure
 ^2100IcendiaryMortar:
+	Inherits: ^2100VEHICLEFRONTAL
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100MortarWeaponsUpgrades
@@ -3520,6 +3644,7 @@ psc2100chopshop2:
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Structure
 ^2100LightCannon:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100CannonWeaponsUpgrades
@@ -3534,6 +3659,7 @@ psc2100chopshop2:
 	SpeedMultiplier@2100Tanks:
 		Modifier: 80
 ^2100RocketArray:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100RKWeaponsUpgrades
@@ -3548,6 +3674,7 @@ psc2100chopshop2:
 		Modifier: 90
         
 ^2100AssaultCannon:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100CannonWeaponsUpgrades
@@ -3562,6 +3689,7 @@ psc2100chopshop2:
 	SpeedMultiplier@2100Tanks:
 		Modifier: 75
 ^2100TwinAssaultCannon:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100CannonWeaponsUpgrades
@@ -3576,6 +3704,7 @@ psc2100chopshop2:
 	SpeedMultiplier@2100Tanks:
 		Modifier: 50
 ^2100Hurricane:
+	Inherits: ^2100VEHICLE
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AP: ^2100MGWeaponsUpgrades
@@ -3587,6 +3716,7 @@ psc2100chopshop2:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 ^2100HyperVelocityCannon:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AP: ^2100CannonWeaponsUpgrades
@@ -3606,6 +3736,7 @@ psc2100chopshop2:
 	SpeedMultiplier@2100Tanks:
 		Modifier: 80
 ^2100FlakCannonAA:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AP: ^2100CannonWeaponsUpgrades
@@ -3620,6 +3751,7 @@ psc2100chopshop2:
 	SpeedMultiplier@2100Tanks:
 		Modifier: 80
 ^2100NeedleGun:
+	Inherits: ^2100VEHICLE
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AP: ^2100CannonWeaponsUpgrades
@@ -3834,14 +3966,9 @@ psc2100chopshop2:
 ####################################################################################################
 #		2100 Vehicles TheProject
 ####################################################################################################
-
-^2100VEHICLE:
+^2100VEHICLEBASE:
 	Inherits: ^Vehicle
 	Inherits@EXT: ^ExternalConditions
-	Inherits@EMP: ^TurretEMP
-	AttackTurreted:
-	WithMuzzleOverlay:
-	WithSpriteTurret:
 	WithShadow:
 		Offset: 108, 48, 0
 		ZOffset: -512
@@ -3918,11 +4045,27 @@ psc2100chopshop2:
 		Weapons: Debris2, Debris3
 		Pieces: 1, 2
 		Range: 1c512, 2c768
+^2100VEHICLE:
+	Inherits: ^2100VEHICLEBASE
+	Inherits@EXT: ^ExternalConditions
+	Inherits@EMP: ^TurretEMP
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+
+^2100VEHICLEFRONTAL:
+	Inherits: ^2100VEHICLEBASE
+	Inherits@EXT: ^ExternalConditions
+	Inherits@EMP: ^FrontalEMP
+	AttackFrontal:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
 #		support
 2100MCV.ALPHA:
 	Inherits@Body: ^2100PythonTracks
+	Inherits@@Turret: ^2100Constructor
 	Inherits@mcv: ^MCV
-    Inherits@conyard: ^Conyard                          
+    Inherits@conyard: ^Conyard
 	Valued:
 		Cost: 3500
 	Tooltip:
@@ -4024,7 +4167,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Infantry
-		Prerequisites: ~up2100uplmg1, ~up2100upviper1
+		Prerequisites: ~up2100uplmg1, ~up2100upviper1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100mvw
 
@@ -4039,7 +4182,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Vehicles, Aircraft
-		Prerequisites: ~up2100uplrk1, ~up2100upviper1
+		Prerequisites: ~up2100uplrk1, ~up2100upviper1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100rvw
 2100FVW:
@@ -4053,7 +4196,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Infantry
-		Prerequisites: ~up2100upflamer1, ~up2100upviper1
+		Prerequisites: ~up2100upflamer1, ~up2100upviper1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100fvw
 2100LCVW:
@@ -4067,7 +4210,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Vehicles
-		Prerequisites: ~up2100uplcannon1, ~up2100upviper1
+		Prerequisites: ~up2100uplcannon1, ~up2100upviper1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100lcvw
 #		Cobra
@@ -4105,7 +4248,7 @@ psc2100chopshop2:
 		Name: Medium Cannon Cobra Half-tracks
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: 2100fy2, ~up2100upmcannon1, ~up2100upcobra1, ~techlevel.medium
+		Prerequisites: 2100fy2, ~up2100upmcannon1, ~up2100upcobra1, ~techlevel.medium, ~!2100oldtechdisabled2
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
 2100MGCH:
@@ -4117,7 +4260,7 @@ psc2100chopshop2:
 		Name: Heavy MG Cobra Half-tracks
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: 2100fy2, ~up2100upheavymg1, ~up2100upcobra1, ~techlevel.medium
+		Prerequisites: 2100fy2, ~up2100upheavymg1, ~up2100upcobra1, ~techlevel.medium, ~!2100oldtechdisabled2
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
 2100MOCH:
@@ -4253,6 +4396,18 @@ psc2100chopshop2:
 		Prerequisites: 2100fy2, ~up2100upmortar1, ~up2100upcobra1, ~techlevel.medium
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
+2100PEPPERCH:
+	Inherits: ^2100CobraHTracks
+	Inherits@Turret: ^2100Pepper
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Pepperpot Cobra Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100uppepper1, ~up2100upcobra1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 #		Python
 2100APT:
 	Inherits: ^2100PythonTracks
@@ -4350,6 +4505,30 @@ psc2100chopshop2:
 		LocalOffset: 720,0,90
 	AttackTurreted:
 	WithMuzzleOverlay:
+2100RIPPT:
+	Inherits: ^2100PythonTracks
+	Inherits@Turret: ^2100Ripple
+	Valued:
+		Cost: 2200
+	Tooltip:
+		Name: Ripple Rockets Python Tracks
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100uppython1, ~up2100uptracks1, ~up2100upa2cannon1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100HOTPT:
+	Inherits: ^2100PythonTracks
+	Inherits@Turret: ^2100Hotwizer
+	Valued:
+		Cost: 2200
+	Tooltip:
+		Name: Hotwizer Python Tracks
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100uppython1, ~up2100uptracks1, ~2100uphotwizer1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 #		Cobra Hovercraft
 2100MCHOV:
 	Inherits: ^2100CobraHovercraft
@@ -4697,7 +4876,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Infantry
-		Prerequisites: ~up2100uplmg1, ~up2100upbug1
+		Prerequisites: ~up2100uplmg1, ~up2100upbug1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100mvw
 	RenderSprites:
@@ -4713,7 +4892,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Vehicles, Aircraft
-		Prerequisites: ~up2100uplrk1, ~up2100upbug1
+		Prerequisites: ~up2100uplrk1, ~up2100upbug1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100rvw
 	RenderSprites:
@@ -4729,7 +4908,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Infantry
-		Prerequisites: ~up2100upflamer1, ~up2100upbug1
+		Prerequisites: ~up2100upflamer1, ~up2100upbug1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100fvw
 	RenderSprites:
@@ -4745,7 +4924,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Vehicles, Aircraft
-		Prerequisites: ~up2100rkarray1, ~up2100upbug1
+		Prerequisites: ~up2100rkarray1, ~up2100upbug1, ~!2100oldtechdisabled
 	RenderSprites:
 		Scale: 0.60
 #		Scorpion
@@ -4783,7 +4962,7 @@ psc2100chopshop2:
 		Name: Medium Cannon Scorpion Half-tracks
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: 2100fy2, ~up2100upmcannon1, ~up2100upscorpion1, ~techlevel.medium
+		Prerequisites: 2100fy2, ~up2100upmcannon1, ~up2100upscorpion1, ~techlevel.medium, ~!2100oldtechdisabled2
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
 2100MGSCH:
@@ -4819,7 +4998,7 @@ psc2100chopshop2:
 		Name: Light Cannon Scorpion Half-tracks
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upscorpion1, ~up2100uplcannon1
+		Prerequisites: 2100fy2, ~techlevel.medium, ~up2100upscorpion1, ~up2100uplcannon1, ~!2100oldtechdisabled2
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Vehicles, Buildings
 2100MOSCH:
@@ -4881,6 +5060,30 @@ psc2100chopshop2:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: 2100fy2, ~up2100upneedle, ~up2100upscorpion1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100BNKSCH:
+	Inherits: ^2100ScorpionHTracks
+	Inherits@Turret: ^2100BunkerBuster
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Bunker Buster Scorpion Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upbunkerbuster1, ~up2100upscorpion1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100PEPPERCH:
+	Inherits: ^2100ScorpionHTracks
+	Inherits@Turret: ^2100Pepper
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: Pepperpot Scorpion Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100uppepper1, ~up2100upscorpion1, ~techlevel.medium
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
 #		Mantis
@@ -4969,6 +5172,30 @@ psc2100chopshop2:
 		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upmantis1, ~up2100uptracks1, ~up2100uphurricane1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Aircraft
+2100RIPMAT:
+	Inherits: ^2100MantisTracks
+	Inherits@Turret: ^2100Ripple
+	Valued:
+		Cost: 2100
+	Tooltip:
+		Name: Ripple Rockets Mantis Tracks
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upmantis1, ~up2100uptracks1, ~up2100upa2cannon1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100HOTMAT:
+	Inherits: ^2100MantisTracks
+	Inherits@Turret: ^2100Hotwizer
+	Valued:
+		Cost: 2100
+	Tooltip:
+		Name: Hotwizer Mantis Tracks
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upmantis1, ~up2100uptracks1, ~2100uphotwizer1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 #		Scorpion Hovercraft
 2100MSCHOV:
 	Inherits: ^2100ScorpionHovercraft
@@ -5218,7 +5445,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Infantry
-		Prerequisites: ~up2100uplmg1, ~up2100upleopard1
+		Prerequisites: ~up2100uplmg1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100mvw
 	RenderSprites:
@@ -5234,7 +5461,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Vehicles, Aircraft
-		Prerequisites: ~up2100uplrk1, ~up2100upleopard1
+		Prerequisites: ~up2100uplrk1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100rvw
 	RenderSprites:
@@ -5250,7 +5477,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Vehicles, Aircraft
-		Prerequisites: ~up2100upflamer1, ~up2100upleopard1
+		Prerequisites: ~up2100upflamer1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100fvw
 	RenderSprites:
@@ -5266,7 +5493,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Vehicles, Aircraft
-		Prerequisites: ~up2100rkarray1, ~up2100upleopard1
+		Prerequisites: ~up2100rkarray1, ~!2100oldtechdisabled
 	RenderSprites:
 		Scale: 0.60
 #		Panther
@@ -5303,7 +5530,7 @@ psc2100chopshop2:
 		Name: Medium Cannon Panther Half-tracks
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: 2100fy2, ~up2100upmcannon1, ~up2100uppanther1, ~techlevel.medium
+		Prerequisites: 2100fy2, ~up2100upmcannon1, ~up2100uppanther1, ~techlevel.medium, ~!2100oldtechdisabled2
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
 2100MGPHH:
@@ -5391,6 +5618,30 @@ psc2100chopshop2:
 		Prerequisites: 2100fy2, ~up2100upneedle, ~up2100uppanther1, ~techlevel.medium
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
+2100BNKPHH:
+	Inherits: ^2100PantherHTracks
+	Inherits@Turret: ^2100BunkerBuster
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Bunker Buster Panther Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100upbunkerbuster1, ~up2100uppanther1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100PEPPERPHH:
+	Inherits: ^2100PantherHTracks
+	Inherits@Turret: ^2100Pepper
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Pepperpot Panther Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100uppepper1, ~up2100uppanther1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 #		Tiger
 2100ATIT:
 	Inherits: ^2100TigerTracks
@@ -5464,6 +5715,30 @@ psc2100chopshop2:
 		Prerequisites: 2100CRC, ~techlevel.high, ~up2100uptiger1, ~up2100uptracks1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Buffs nearby allies and debuffs targeted enemies.\n Unarmed
+2100RIPTIT:
+	Inherits: ^2100TigerTracks
+	Inherits@Turret: ^2100Ripple
+	Valued:
+		Cost: 2300
+	Tooltip:
+		Name: Ripple Rockets Tiger Tracks
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100uptiger1, ~up2100uptracks1, ~up2100upa2cannon1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100HOTTIT:
+	Inherits: ^2100TigerTracks
+	Inherits@Turret: ^2100Hotwizer
+	Valued:
+		Cost: 2300
+	Tooltip:
+		Name: Hotwizer Tiger Tracks
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100uptiger1, ~up2100uptracks1, ~2100uphotwizer1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 #		Panther Hovercraft
 2100MPHHOV:
 	Inherits: ^2100PantherHovercraft
@@ -5622,7 +5897,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 20
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Infantry
-		Prerequisites: ~up2100uplmg1, ~up2100upretaliaton1
+		Prerequisites: ~up2100uplmg1, ~up2100upretaliaton1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100mvw
 	RenderSprites:
@@ -5638,7 +5913,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Vehicles, Aircraft
-		Prerequisites: ~up2100uplrk1, ~up2100upretaliaton1
+		Prerequisites: ~up2100uplrk1, ~up2100upretaliaton1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100rvw
 	RenderSprites:
@@ -5654,7 +5929,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
 		Description: Strong vs Vehicles, Aircraft
-		Prerequisites: ~up2100upflamer1, ~up2100upretaliaton1
+		Prerequisites: ~up2100upflamer1, ~up2100upretaliaton1, ~!2100oldtechdisabled
 	Selectable:
 		Class: 2100fvw
 	RenderSprites:
@@ -5693,7 +5968,7 @@ psc2100chopshop2:
 		Name: Medium Cannon Retribution Half-tracks
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~2100fy2, ~up2100upmcannon1, ~up2100upretribution1, ~techlevel.medium
+		Prerequisites: ~2100fy2, ~up2100upmcannon1, ~up2100upretribution1, ~techlevel.medium, ~!2100oldtechdisabled2
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
 2100MGRTH:
@@ -5779,6 +6054,18 @@ psc2100chopshop2:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: 2100fy2, ~up2100upneedle, ~up2100upretribution1, ~techlevel.medium
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100PEPPERRTH:
+	Inherits: ^2100RetributionHTracks
+	Inherits@Turret: ^2100Pepper
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Pepperpot Retribution Half-tracks
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: 2100fy2, ~up2100uppepper1, ~up2100upretribution1, ~techlevel.medium
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs ground targets
 #		Vengeance
@@ -5879,6 +6166,30 @@ psc2100chopshop2:
 		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upvengeance1, ~up2100uptracks1, ~up2100uptwinassaultmg1
 		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
 		Description: Strong vs Infantry
+2100RIPVET:
+	Inherits: ^2100VengeanceTracks
+	Inherits@Turret: ^2100Ripple
+	Valued:
+		Cost: 2400
+	Tooltip:
+		Name: Ripple Rockets Vengeance Tracks
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upvengeance1, ~up2100uptracks1, ~up2100upa2cannon1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
+2100HOTTIT:
+	Inherits: ^2100VengeanceTracks
+	Inherits@Turret: ^2100Hotwizer
+	Valued:
+		Cost: 2400
+	Tooltip:
+		Name: Hotwizer Vengeance Tracks
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~2100fy3, ~techlevel.high, ~up2100upvengeance1, ~up2100uptracks1, ~2100uphotwizer1
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Vehicle.X_Vehicles
+		Description: Strong vs ground targets
 #		Retribution Hovercraft
 2100MRTHOV:
 	Inherits: ^2100RetributionHovercraft
@@ -6566,7 +6877,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Fast scout and anti-infantry vehicle.\nCan detect cloaked units.\n  Strong vs Infantry\n  Weak vs Tanks
-		Prerequisites: up2100uplmg1
+		Prerequisites: up2100uplmg1, ~2100oldtechenable
 	AttackTurreted:
 	WithMuzzleOverlay:
 	Inherits@EXT: ^ExternalConditions					##########
@@ -6583,7 +6894,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Fast scout and anti-infantry vehicle.\nCan detect cloaked units.\n  Strong vs Infantry\n  Weak vs Tanks
-		Prerequisites: up2100uplmg1
+		Prerequisites: up2100uplmg1, ~!2100oldtechdisabled
 	AttackTurreted:
 	WithMuzzleOverlay:
 	Inherits@EXT: ^ExternalConditions					##########
@@ -6600,7 +6911,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 30
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Fast scout and anti-infantry vehicle.\nCan detect cloaked units.\n  Strong vs Infantry\n  Weak vs Tanks
-		Prerequisites: up2100uplrk1
+		Prerequisites: up2100uplrk1, ~!2100oldtechdisabled
 	AttackTurreted:
 	WithSpriteTurret:
 	WithMuzzleOverlay:
@@ -6618,7 +6929,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 40
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
-		Prerequisites: up2100upengine1, up2100uparmor1
+		Prerequisites: up2100upengine1, up2100uparmor1, ~!2100oldtechdisabled
 	AttackTurreted:
 	WithMuzzleOverlay:
 	Inherits@EXT: ^ExternalConditions					##########
@@ -6644,7 +6955,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 50
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Fast scout vehicle, armed with\nrockets.\nCan attack Aircraft.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
-		Prerequisites: up2100upengine1, up2100rkarray1, up2100uparmor1
+		Prerequisites: up2100upengine1, up2100rkarray1, up2100uparmor1, ~!2100oldtechdisabled
 	Armament:
 		Weapon: ScavJeepRK
 		LocalOffset: 171,16,43, 171,-16,43
@@ -6669,7 +6980,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 40
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
-		Prerequisites: up2100upengine1, up2100uplmg1
+		Prerequisites: up2100upengine1, up2100uplmg1, ~!2100oldtechdisabled
 	AttackTurreted:
 	WithMuzzleOverlay:
 	Inherits@EXT: ^ExternalConditions					##########
@@ -6695,7 +7006,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 50
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Fast scout vehicle, armed with\nrockets.\nCan attack Aircraft.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
-		Prerequisites: up2100upengine1, up2100rkarray1
+		Prerequisites: up2100upengine1, up2100rkarray1, ~!2100oldtechdisabled
 	Armament:
 		Weapon: ScavBuggyRK
 		LocalOffset: 171,16,43, 171,-16,43
@@ -6721,7 +7032,7 @@ psc2100chopshop2:
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		BuildDurationModifier: 40
 		Description: Fast armed transport.\n  Strong vs light vehicles\n  Weak vs Infantry, Tanks\n Can transport 3 infantry
-		Prerequisites: up2100uparmor2, up2100uplcannon1, ~techlevel.medium, 2100chopshop2
+		Prerequisites: up2100uparmor2, up2100uplcannon1, ~techlevel.medium, 2100chopshop2, ~!2100oldtechdisabled2
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -6738,7 +7049,7 @@ psc2100chopshop2:
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		BuildDurationModifier: 40
 		Description: Fast armed transport.\n  Strong vs light vehicles\n  Weak vs Infantry, Tanks\n Can transport 3 infantry
-		Prerequisites: up2100uparmor2, up2100uplrk1, ~techlevel.medium, 2100chopshop2
+		Prerequisites: up2100uparmor2, up2100uplrk1, ~techlevel.medium, 2100chopshop2, ~!2100oldtechdisabled2
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -6805,7 +7116,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 70
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Flamethrower vehicle.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
-		Prerequisites: up2100upengine1, up2100upflamer1
+		Prerequisites: up2100upengine1, up2100upflamer1, ~!2100oldtechdisabled2
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -6822,7 +7133,7 @@ psc2100chopshop2:
 		BuildPaletteOrder: 70
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
 		Description: Flamethrower vehicle.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
-		Prerequisites: up2100upengine1, up2100upheavymg1
+		Prerequisites: up2100upengine1, up2100upheavymg1, ~!2100oldtechdisabled2
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -6840,7 +7151,7 @@ psc2100chopshop2:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
-		Prerequisites: up2100uparmor3, up2100uplcannon1, ~techlevel.medium, 2100chopshop2
+		Prerequisites: up2100uparmor3, up2100uplcannon1, ~techlevel.medium, 2100chopshop2, ~!2100oldtechdisabled2
 		Description: Large armored transport.\n  Strong vs light vehicles\n  Weak vs infantry, tanks\n Can transport 6 infantry
 	AttackTurreted:
 	WithMuzzleOverlay:
@@ -6888,7 +7199,7 @@ psc2100chopshop2:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Vehicle.X_Vehicles
-		Prerequisites: up2100uparmor3, up2100uphycannon, ~techlevel.medium, 2100chopshop2, up2100upassaultmg1
+		Prerequisites: up2100uparmor3, up2100uphycannon, ~techlevel.medium, 2100chopshop2, up2100upassaultmg1, ~!2100oldtechdisabled2
 		Description: Large armored transport.\n  Strong vs light vehicles\n  Weak vs infantry, tanks\n Can transport 6 infantry
 	AttackTurreted:
 	WithMuzzleOverlay:
@@ -7331,6 +7642,7 @@ psc2100chopshop2:
 		VoiceSet: 2100ScavengerVoice1
 
 2100SCAVTANK:
+	Inherits: ^Vehicle
 	Inherits@Body: ^2100ViperWheels
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@@EXPERIENCE: ^GainsExperienceVehicle
@@ -9200,6 +9512,36 @@ up2100upbombard1:
 		Image: 2100upbombard
 	ProvidesPrerequisite:
 		Prerequisite: up2100upbombard1
+up2100uppepper1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Pepperpot Research
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Unlock Bombard Weapon
+		Prerequisites: ~!up2100uppepper1, ~up2100upmortar2, ~up2100uparmor1
+	Valued:
+		Cost: 750
+	RenderSprites:
+		Image: 2100uppeppericon
+	ProvidesPrerequisite:
+		Prerequisite: up2100uppepper1
+2100uphotwizer1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Hotwizer Research
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Research.Alpha, Research.Scavenger
+		Description: Unlock Bombard Weapon
+		Prerequisites: ~!2100uphotwizer1, ~up2100upmortar3, ~up2100uparmor1
+	Valued:
+		Cost: 750
+	RenderSprites:
+		Image: 2100uphotwizer
+	ProvidesPrerequisite:
+		Prerequisite: 2100uphotwizer1
 up2100uptracks1:
 	Inherits: ^upgrade.template
 	Tooltip:
