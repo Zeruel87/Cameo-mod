@@ -9,24 +9,32 @@ World:
 		Class: none
 		ClassName: MCV Only
 		Factions: wolfestein3d
-		BaseActor: rafact.wolf
+		BaseActor: ramcv.wolf
 
 	MPStartUnits@defaultwolfestein3d:
 		Class: light
 		ClassName: Light Support
 		Factions: wolfestein3d
-		BaseActor: rafact.wolf
+		BaseActor: ramcv.wolf
 		SupportActors: wolfe1,wolfe1,wolfe1,wolfe2,wolfe2,wolfftrk,wolfftrk
 
 	MPStartUnits@heavywolfestein3d:
 		Class: heavy
 		ClassName: Heavy Support
 		Factions: wolfestein3d
-		BaseActor: rafact.wolf
+		BaseActor: ramcv.wolf
 		SupportActors: wolfe1,wolfe1,wolfe1,wolfe2,wolfe2,wolfftrk,wolfftrk,wolfmtnk,wolfmtnk,wolfmtnk
 
+Player:
+	ClassicProductionQueue@Stek.Wolfestein:
+		Type: Stek.Wolfestein
+		DisplayOrder: 10
+		Group: Upgrade
+		ItemLimit: 1
+		SpeedUp: false
+		DisallowPaused: true
 ########################################################
-#	Wolfestein Castle
+#	Wolfestein Structures
 ########################################################
 ^WolfBuildingSmall:
 	Inherits@1: ^BaseBuilding
@@ -45,6 +53,50 @@ World:
         Actor: wolfe1
     SpawnActorOnDeath@death3:
         Actor: wolfe1  
+
+RAMCV.WOLF:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+    Inherits@conyard: ^Conyard
+	Buildable:
+		Queue: Vehicle.Wolfestein, RAVehicle.Wolfestein
+		BuildPaletteOrder: 210
+		Prerequisites: anyhq, ~techlevel.medium
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Mobile Construction Vehicle (Wolfestein)
+	Selectable:
+		Priority: 4
+		DecorationBounds: 42,42
+	SelectionDecorations:
+	Health:
+		HP: 60000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 71
+		Locomotor: heavywheeled
+	RevealsShroud:
+		Range: 8c0	#4c0
+	Transforms:
+		IntoActor: rafact.wolf
+		Offset: -1,-1
+		Facing: 96
+		TransformSounds: placbldg.aud, build5.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	#SpawnActorOnDeath:
+	#	Actor: RAMCV.Husk
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: ramcv
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmallies
 
 RAFACT.WOLF:
 	Inherits: ^WolfBuildingBig
@@ -77,7 +129,7 @@ RAFACT.WOLF:
 		Produces: RABuilding.Wolfestein, RADefence.Wolfestein
 		RequiresCondition: classicproductionqueues
 	Transforms:
-		IntoActor: ramcv.allies
+		IntoActor: ramcv.wolf
 		Offset: 1,1
 		Facing: 108
 		RequiresCondition: factundeploy
@@ -378,9 +430,9 @@ WOLFSILO:
 		Queue: Defence.Wolfestein, RADefence.Wolfestein
 		BuildPaletteOrder: 35
 		Prerequisites: wolfproc
-		Description: Stores excess refined\nOre and Gems.
+		Description: Stores excess refined\nOre and Gems.\nCan generate money with Upgrades
 	Valued:
-		Cost: 150
+		Cost: 500
 	Tooltip:
 		Name: Treasure Vault
 	-GivesBuildableArea:
@@ -397,11 +449,42 @@ WOLFSILO:
 		PipCount: 5
 		Capacity: 3000
 	Power:
-		Amount: -10
+		Amount: -25
 	Explodes:
 		Weapon: BuildingExplode
 		EmptyWeapon: BuildingExplode
-
+	GrantConditionOnPrerequisite@wolfuptreasure1:
+		Condition: wolfuptreasure1
+		Prerequisites: wolfuptreasure1
+	GrantConditionOnPrerequisite@wolfuptreasure2:
+		Condition: wolfuptreasure2
+		Prerequisites: wolfuptreasure2
+	GrantConditionOnPrerequisite@wolfuptreasure3:
+		Condition: wolfuptreasure3
+		Prerequisites: wolfuptreasure3
+	GrantConditionOnPrerequisite@wolfuptreasure4:
+		Condition: wolfuptreasure4
+		Prerequisites: wolfuptreasure4
+	CashTrickler@Rank0:
+		Interval: 60
+		Amount: 6
+		PauseOnCondition: disabled
+		RequiresCondition: wolfuptreasure1 && !wolfuptreasure2
+	CashTrickler@Rank1:
+		Interval: 60
+		Amount: 7
+		PauseOnCondition: disabled
+		RequiresCondition: wolfuptreasure1 && wolfuptreasure2 && !wolfuptreasure3
+	CashTrickler@Rank2:
+		Interval: 60
+		Amount: 8
+		PauseOnCondition: disabled
+		RequiresCondition: wolfuptreasure1 && wolfuptreasure2 && wolfuptreasure3 && !wolfuptreasure4
+	CashTrickler@Rank3:
+		Interval: 60
+		Amount: 10
+		PauseOnCondition: disabled
+		RequiresCondition: wolfuptreasure1 && wolfuptreasure2 && wolfuptreasure3 && wolfuptreasure4
 WOLFPOWR:
 	Inherits: ^WolfBuildingBig
 	Inherits@shape: ^2x2Shape
@@ -752,12 +835,41 @@ WOLFSPEAR:
 		RequiresCondition: !lowpower
 	ProvidesPrerequisite@buildingname:
 
+########################################################
+#	Wolfestein Units
+########################################################
+^WolfInfantryUpgrade:
+	GrantConditionOnPrerequisite@wolfupfood:
+		Condition: wolfupfood
+		Prerequisites: wolfupfood
+	GrantConditionOnPrerequisite@wolfupmedikit:
+		Condition: wolfupmedikit
+		Prerequisites: wolfupmedikit
+	GrantConditionOnPrerequisite@wolfupguns:
+		Condition: wolfupguns
+		Prerequisites: wolfupguns
+	GrantConditionOnPrerequisite@wolfupmonition:
+		Condition: wolfupmonition
+		Prerequisites: wolfupmonition
+	DamageMultiplier@wolfupfood:
+		RequiresCondition: wolfupfood
+		Modifier: 90
+	DamageMultiplier@wolfupmedikit:
+		RequiresCondition: wolfupmedikit
+		Modifier: 80
+	FirepowerMultiplier@wolfupguns:
+		RequiresCondition: wolfupguns
+		Modifier: 120
+	ReloadDelayMultiplier@wolfupmonition:
+		RequiresCondition: wolfupmonition
+		Modifier: 80
 wolfe1:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 80
 	Tooltip:
@@ -798,6 +910,7 @@ wolfe2:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 250
 	Tooltip:
@@ -838,6 +951,7 @@ wolfe3:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@tibheal: ^TibHealable
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 450
 	Tooltip:
@@ -880,6 +994,7 @@ wolfe4:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 200
 	Tooltip:
@@ -933,6 +1048,7 @@ wolffake:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -1050,12 +1166,19 @@ wolfdog:
 		LevelUpNotification: LevelUpRA1
 	RenderSprites:
 		Image: dog
+	GrantConditionOnPrerequisite@wolfupdogfood:
+		Condition: wolfupdogfood
+		Prerequisites: wolfupdogfood
+	DamageMultiplier@wolfupdogfood:
+		RequiresCondition: wolfupdogfood
+		Modifier: 75
 wolfgroose:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -1091,7 +1214,7 @@ wolfgroose:
 	RenderSprites:
 		Scale: 0.8
 	Voiced:
-		VoiceSet: WolfOfficialVoice
+		VoiceSet: WolfBoss1Voice
 	-TakeCover:
 	Crushable:
 		CrushClasses: vehicle
@@ -1101,6 +1224,7 @@ wolfgretel:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -1147,6 +1271,7 @@ wolfotto:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -1193,6 +1318,7 @@ wolfgasps:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -1245,6 +1371,7 @@ wolfhetler1:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -1294,6 +1421,7 @@ wolfhetler2:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -1341,6 +1469,7 @@ wolfschabbs:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -1376,7 +1505,7 @@ wolfschabbs:
 	RenderSprites:
 		Scale: 0.8
 	Voiced:
-		VoiceSet: WolfOfficialVoice
+		VoiceSet: WolfBoss2Voice
 	-TakeCover:
 	Crushable:
 		CrushClasses: vehicle
@@ -1387,6 +1516,7 @@ wolftrans:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -1433,6 +1563,7 @@ wolfuber:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -1478,6 +1609,7 @@ wolfknight:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -1567,6 +1699,7 @@ wolfmtnk:
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Buildable:
 		Prerequisites: anyhq
 		Queue: Vehicle.Wolfestein, RAVehicle.Wolfestein, Infantry.X_Vehicles
@@ -1618,6 +1751,7 @@ wolfflak:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@cargo: ^CargoVehicle
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Buildable:
 		Prerequisites: anyhq
 		Queue: Vehicle.Wolfestein, RAVehicle.Wolfestein, Infantry.X_Vehicles
@@ -1676,6 +1810,7 @@ wolfftrk:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@cargo: ^CargoVehicle
+	Inherits@upgradex: ^WolfInfantryUpgrade
 	Buildable:
 		Prerequisites: wolfbarr
 		Queue: Vehicle.Wolfestein, RAVehicle.Wolfestein, Infantry.X_Vehicles
@@ -1791,6 +1926,147 @@ wolfharv:
 	HarvesterResourceMultiplier@usaupsupplylines:
 		Modifier: 110
 		RequiresCondition: usaupsupplylines
+########################################################
+#	Wolfestein Upgrades
+########################################################
+wolfupdogfood:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Dog Food
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Stek.Wolfestein
+		Description: Upgrades Dogs HP.
+		Prerequisites: ~!wolfupdogfood
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: wolfupdogfood
+	ProvidesPrerequisite:
+		Prerequisite: wolfupdogfood
+wolfupfood:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Food
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Stek.Wolfestein
+		Description: Upgrades Infantry HP.
+		Prerequisites: ~!wolfupfood
+	Valued:
+		Cost: 800
+	RenderSprites:
+		Image: wolfupfood
+	ProvidesPrerequisite:
+		Prerequisite: wolfupfood
+wolfupmedikit:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Food
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Stek.Wolfestein
+		Description: Upgrades Infantry HP.
+		Prerequisites: ~!wolfupmedikit
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: wolfupmedikit
+	ProvidesPrerequisite:
+		Prerequisite: wolfupmedikit
+wolfupmonition:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Food
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Stek.Wolfestein
+		Description: Upgrades Infantry Reload.
+		Prerequisites: ~!wolfupmonition
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: wolfupmonition
+	ProvidesPrerequisite:
+		Prerequisite: wolfupmonition
+wolfupguns:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Food
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Stek.Wolfestein
+		Description: Upgrades Infantry Damage.
+		Prerequisites: ~!wolfupguns
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wolfupguns
+	ProvidesPrerequisite:
+		Prerequisite: wolfupguns
+wolfuptreasure1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Valuable Treasures 1
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Stek.Wolfestein
+		Description: Treasure Vaults generate money.
+		Prerequisites: ~!wolfuptreasure1
+	Valued:
+		Cost: 200
+	RenderSprites:
+		Image: wolfuptreasure1
+	ProvidesPrerequisite:
+		Prerequisite: wolfuptreasure1
+
+wolfuptreasure2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Valuable Treasures 2
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Stek.Wolfestein
+		Description: Treasure Vaults generate money.
+		Prerequisites: ~!wolfuptreasure2, wolfuptreasure1
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: wolfuptreasure2
+	ProvidesPrerequisite:
+		Prerequisite: wolfuptreasure2
+
+wolfuptreasure3:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Valuable Treasures 3
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Stek.Wolfestein
+		Description: Treasure Vaults generate money.
+		Prerequisites: ~!wolfuptreasure3, wolfuptreasure2
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: wolfuptreasure3
+	ProvidesPrerequisite:
+		Prerequisite: wolfuptreasure3
+
+wolfuptreasure4:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Valuable Treasures 4
+	Buildable:
+		BuildPaletteOrder: 250
+		Queue: Stek.Wolfestein
+		Description: Treasure Vaults generate money.
+		Prerequisites: ~!wolfuptreasure4, wolfuptreasure3
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: wolfuptreasure4
+	ProvidesPrerequisite:
+		Prerequisite: wolfuptreasure4
 ########################################################
 #	UAC
 ########################################################
