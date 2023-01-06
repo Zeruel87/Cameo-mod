@@ -35,7 +35,7 @@ World:
 		RandomFactionMembers: alpha, collective, paradigm, nexus, scavenger
         Game: Warzone 2100
 		Side: Random
-		Description: Random Faction\nA random faction from Warzone 2100 will be chosen when the game starts.               
+		Description: Random Faction\nA random faction from Warzone 2100 will be chosen when the game starts.
         
 	####################################################################################################
 	#		2100
@@ -84,6 +84,13 @@ World:
 		Factions: scavenger
 		BaseActor: 2100mcv.scavenger
 		SupportActors: 2100camper,2100jeepmsl,2100jeep,2100Trike,2100crane,2100scav,2100scav,2100scav,2100bus,2100scav,2100Trike,2100tractor
+
+Player:
+    ExternalCondition@BuildingsOwned:
+        Condition: BuildingsOwned
+    ProvidesPrerequisite@BuildingsOwned
+        Prerequisite: allowsMCV
+        RequiresCondition: BuildingsOwned < 5
         
 ####################################################################################################
 #		2100 Structures
@@ -116,6 +123,8 @@ World:
 		RequiresCondition: d2100oldtechdisabled
 		Prerequisite: 2100oldtechdisabled2
 2100HQ.ALPHA:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
@@ -139,7 +148,7 @@ World:
 		Footprint: xxx xxx xxx
 		Dimensions: 3,3
 	Health:
-		HP: 300000
+		HP: 500000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -274,45 +283,30 @@ World:
     Inherits@AIDifficulties: ^AIDifficulties
     Inherits@ai: ^BotMicromanageable
 	Valued:
-		Cost: 250
+		Cost: 1000
 	Tooltip:
 		Name: Oil Derrick
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: anypower
 		Queue: Building.Alpha, Building.Scavenger, RABuilding.Alpha, RABuilding.Scavenger
-		BuildDuration: 360
+		BuildDurationModifier: 25
 		Description: Provides resources
 	Health:
-		HP: 60000
+		HP: 50000
 	RevealsShroud:
 		Range: 4c0
 	Power:
-		Amount: -25
+		Amount: -50
 	CashTrickler@POWER:
 		Interval: 50
-		Amount: 25
-		ShowTicks: False
+		Amount: 50
+		ShowTicks: True
 		PauseOnCondition: disabled
 		UseResourceStorage: true
     CashTricklerMultiplier@lowpower:
-        Modifier: 60
+        Modifier: 50
         RequiresCondition: lowpower
-	CashTricklerMultiplier@easyai:
-		Modifier: 135
-		RequiresCondition: easybot
-	CashTricklerMultiplier@mediumai:
-		Modifier: 160
-		RequiresCondition: normalbot
-	CashTricklerMultiplier@hardai:
-		Modifier: 200
-		RequiresCondition: hardbot
-	CashTricklerMultiplier@brutalai:
-		Modifier: 280
-		RequiresCondition: brutalbot || hardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot
-	CashTricklerMultiplier@aiplus:
-		Modifier: 350
-		RequiresCondition: challengerbot || unbeatablebot || cameogodbot
 	ProvidesPrerequisite:
 		Prerequisite: 2100OIL
 	-WithDeathAnimation:
@@ -326,14 +320,12 @@ World:
 	Buildable:
 		BuildPaletteOrder: 120
 		Prerequisites: anypower, ~botplayer
-		Queue: Defence.Alpha, Defence.Scavenger, RADefence.Alpha, RADefence.Scavenger
-		BuildLimit: 6
+		Queue: Building.Alpha, Building.Scavenger, RABuilding.Alpha, RABuilding.Scavenger #Defence.Alpha, Defence.Scavenger, RADefence.Alpha, RADefence.Scavenger
 	RenderSprites:
 		Image: 2100oil
 	Selectable:
 		Class: 2100oil
 	-MapEditorData:
-	-Power
 
 2100RR:
 	Inherits: ^BaseBuilding
@@ -1624,6 +1616,8 @@ psc2100factory2:
 ####################################################################################################
 
 2100HQ.SCAVENGER:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
@@ -1647,7 +1641,7 @@ psc2100factory2:
 		Footprint: xxx xxx xxx
 		Dimensions: 3,3
 	Health:
-		HP: 300000
+		HP: 500000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -4074,9 +4068,13 @@ psc2100chopshop2:
 		BuildPaletteOrder: 100
 		Prerequisites: 2100RF, ~techlevel.medium, 2100RR
 		Queue: Vehicle.Alpha, RAVehicle.Alpha
-		BuildDuration: 3750
-		BuildDurationModifier: 40
+		BuildDurationModifier: 35
 		Description: Deploys into another Construction Yard.\n  Automaticaly Repairs Structures in a 3 Tile Radius
+	Mobile:
+		Speed: 100
+		Locomotor: tracked
+	Health:
+		HP: 250000
 	Selectable:
 		Priority: 4
 		DecorationBounds: 36,36
@@ -4100,6 +4098,18 @@ psc2100chopshop2:
 		Prerequisite: mmalpha
 	RenderSprites:
 		Scale: 0.75
+
+2100MCV.ALPHA.Bot:
+    Inherits: 2100MCV.ALPHA
+	Valued:
+		Cost: 350
+	Buildable:
+		BuildPaletteOrder: 100
+		Queue: Vehicle.Alpha, RAVehicle.Alpha, Building.Alpha, RABuilding.Alpha, Defence.Alpha, RADefence.Alpha
+		BuildLimit: 1
+		Prerequisites: ~botplayer, allowsMCV
+	RenderSprites:
+		Image: 2100mcv
 
 2100REPAIRTRUCK:
 	Inherits@Body: ^2100ViperWheels
@@ -6647,16 +6657,15 @@ psc2100chopshop2:
 		BuildPaletteOrder: 100
 		Prerequisites: 2100RF, ~techlevel.medium, 2100RR
 		Queue: Vehicle.Scavenger, RAVehicle.Scavenger
-		BuildDuration: 3750
-		BuildDurationModifier: 40
+		BuildDurationModifier: 35
 		Description: Deploys into another Construction Yard.\n  Automaticaly Repairs Structures in a 3 Tile Radius
 	Selectable:
 		Priority: 4
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 100
 	Health:
-		HP: 120000
+		HP: 250000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -6681,6 +6690,18 @@ psc2100chopshop2:
 		Prerequisite: mmscavenger
 	Voiced:
 		VoiceSet: 2100ScavengerVoice1
+
+2100MCV.SCAVENGER.Bot:
+    Inherits: 2100MCV.SCAVENGER
+	Valued:
+		Cost: 350
+	Buildable:
+		Queue: Vehicle.Scavenger, RAVehicle.Scavenger, Building.Scavenger, RABuilding.Scavenger, Defence.Scavenger, RADefence.Scavenger
+		BuildPaletteOrder: 100
+		BuildLimit: 1
+		Prerequisites: ~botplayer, allowsMCV
+	RenderSprites:
+		Image: 2100crane2
 
 2100CRANE:
 	Inherits: ^Vehicle

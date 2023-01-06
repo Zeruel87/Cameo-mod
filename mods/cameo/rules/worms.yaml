@@ -83,6 +83,11 @@ World:
 		SellSounds: wormdrill.wav
 		
 Player:
+    ExternalCondition@BuildingsOwned:
+        Condition: BuildingsOwned
+    ProvidesPrerequisite@BuildingsOwned
+        Prerequisite: allowsMCV
+        RequiresCondition: BuildingsOwned < 5
     ClassicProductionQueue@RABUILDINGWORMS:
 		Type: RABuilding.Worms
 		DisplayOrder: 0
@@ -154,6 +159,8 @@ Player:
 ####################################################################################################
 
 WCON:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: ^WormsBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@CPQ: ^CPQCondition
@@ -741,7 +748,7 @@ WTIMEMACHINE:
 		PauseOnCondition: lowpower
 		Icon: chrono
 		Cursor: ability
-		ChargeInterval: 3000
+		ChargeInterval: 7500
 		Description: Chronoshift
 		ActivationDelay: 25
 		LongDesc: Teleports a large group of units\nacross the map.
@@ -1887,19 +1894,32 @@ WORMS_MCV:
 		VoiceSet: voiceWorm
 	ProvidesPrerequisite@factiongdi:
 		Prerequisite: mmworms
+
+WORMS_MCV.Bot:
+    Inherits: WORMS_MCV
+	Buildable:
+		BuildPaletteOrder: 100
+        BuildLimit: 1
+		Prerequisites: ~botplayer, allowsMCV
 ####################################################################################################
 #		AIRCRAFT WORMS
 ####################################################################################################
 WORMS_JETENGINEBOMBER:
-	Inherits: ^Plane
+	Inherits: ^RANeutralPlane
 	Interactable:
+	Huntable:
+	RejectsOrders:
 	Tooltip:
 		Name: Jet Engine Bomber
 	Valued:
-		Cost: 2000
+		Cost: 3500
+	Health:
+		HP: 35000
+	Armor:
+		Type: Medium
 	Aircraft:
 		TurnSpeed: 4
-		Speed: 150
+		Speed: 135
 		Repulsable: False
 	AttackBomber:
 		Armaments: bombs
@@ -1921,6 +1941,9 @@ WORMS_JETENGINEBOMBER:
 		Offset: 100,-800,0
 		TrailLength: 20
 	-MapEditorData:
+	SpawnActorOnDeath:
+		Actor: BADR.Husk
+
 WORMS_UFO:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
