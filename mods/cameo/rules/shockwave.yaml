@@ -161,6 +161,11 @@ World:
 		OuterSupportRadius: 5
         
 Player:
+    ExternalCondition@BuildingsOwned:
+        Condition: BuildingsOwned
+    ProvidesPrerequisite@BuildingsOwned
+        Prerequisite: allowsMCV
+        RequiresCondition: BuildingsOwned < 5
     ProvidesPrerequisite@anysusa:
         Prerequisite: anysusa
         Factions: susa, susaarmor, susasuper, susalsr, susaair   
@@ -208,6 +213,9 @@ Player:
         Factions: schinaatom
     ProvidesPrerequisite@schina_leang:
         Prerequisite: schina_leang
+        Factions: sleang
+    ProvidesPrerequisite@schina_leang_powerplant:
+        Prerequisite: schina_leang_powerplant
         Factions: sleang
     ProvidesPrerequisite@schina_nr:
         Prerequisite: schina_nr
@@ -1833,6 +1841,17 @@ shockwave_mcv_usa:
 		Prerequisites: susastrategy, ~techlevel.medium, ~anysusa
 	Voiced:
 		VoiceSet: USAMCCVoice
+
+shockwave_mcv_usa.bot:
+    Inherits: shockwave_mcv_usa
+  	Buildable:
+		BuildPaletteOrder: 200
+        BuildLimit: 1
+		Prerequisites: susastrategy, ~techlevel.medium, ~anysusa, ~botplayer, allowsMCV
+    RenderSprites:
+		Image: usamcv  
+	Voiced:
+		VoiceSet: USAMCCVoice
         
 shockwave_mcv_china:
     Inherits: shockwave_mcv
@@ -1840,7 +1859,18 @@ shockwave_mcv_china:
 		BuildPaletteOrder: 200
 		Prerequisites: chpropaganda, ~techlevel.medium, ~anyschina
 	Voiced:
-		VoiceSet: PRCMCCVoice 
+		VoiceSet: PRCMCCVoice
+
+shockwave_mcv_china.bot:
+    Inherits: shockwave_mcv_china
+  	Buildable:
+		BuildPaletteOrder: 200
+        BuildLimit: 1
+		Prerequisites: chpropaganda, ~techlevel.medium, ~anyschina, ~botplayer, allowsMCV
+    RenderSprites:
+		Image: chmcv  
+    Voiced:
+		VoiceSet: PRCMCCVoice
 
 shockwave_mcv_gla:
     Inherits: shockwave_mcv
@@ -1850,7 +1880,20 @@ shockwave_mcv_gla:
 	Voiced:
 		VoiceSet: WorkerVoice
         
+shockwave_mcv_gla.bot:
+    Inherits: shockwave_mcv_gla
+  	Buildable:
+		BuildPaletteOrder: 200
+        BuildLimit: 1
+		Prerequisites: glpalace, ~techlevel.medium, ~anysgla, ~botplayer, allowsMCV
+    RenderSprites:
+		Image: glmcv 
+	Voiced:
+		VoiceSet: WorkerVoice
+        
 shockwave_conyard:
+    GrantExternalConditionToOwner@BuildingsOwned:
+        Condition: BuildingsOwned
     Inherits: ^BaseBuilding
 	Inherits@shape: ^3x3Shape
 	Inherits@CPQ: ^CPQConditionWithPrimary
@@ -5679,7 +5722,7 @@ susabluearrowdefender:
         
 susaradardome:
 	Inherits: ^BaseBuilding
-	Inherits@shape: ^3x4Shape
+	Inherits@shape: ^3x3Shape
 	Inherits@prod: ^ProducesUnits
 	Inherits@gensound: ^GeneralsDamageBuilding
 	Buildable:
@@ -5695,8 +5738,8 @@ susaradardome:
 	Tooltip:
 		Name: Radar Dome
 	Building:
-		Footprint: ___ xxx xxx xxx
-		Dimensions: 3,4
+		Footprint: === xxx xxx
+		Dimensions: 3,3
 	Health:
 		HP: 80000
 	Armor:
@@ -5704,9 +5747,6 @@ susaradardome:
 	RevealsShroud:
 		Range: 7c0
 		RevealGeneratedShroud: False
-    Selectable:
-        Bounds: 55,45,0,-50
-        DecorationBounds: 64,45,0,-50
 	RevealsShroud@GAPGEN:
 		Range: 4c0
     WithIdleOverlay@anim:
@@ -6943,7 +6983,7 @@ susaconcreteslab:
 		Range: 10c0
 		RequiresCondition: adt
 	DetectCloaked@adt:
-		Range: 6c0
+		Range: 8c0
 		RequiresCondition: adt && !disabled
 	AmmoPool:
         Armaments: vvt
@@ -12495,7 +12535,7 @@ schpower3:
 	Inherits@power: ^PowerPlant
 	Inherits@mines: ^MinefieldUpgrade
 	Buildable:
-		Queue: Building.CHINA, RABuilding.CHINA
+		Queue: Building.Shockwave, RABuilding.Shockwave
 		BuildPaletteOrder: 10
 		Prerequisites: ~schina_leang
 		Description: Provides power.\nCan be deployed to overcharge at expense of damage to self.\nExplodes violently when destroyed
@@ -12666,13 +12706,25 @@ schinternetcenter:
     Inherits: chinternetcenter
     Buildable:
         Queue: Building.Shockwave, RABuilding.Shockwave
-		Prerequisites: schweap, ~anyschina
+		Prerequisites: schweap, ~anyschina, !~botplayer
     RenderSprites:
         Image: chinternetcenter
     ProvidesPrerequisite@generals:
         Prerequisite: chinternetcenter
     ProvidesPrerequisite@shockwave:
         Prerequisite: schinternetcenter
+        
+schinternetcenter2:
+    Inherits: schinternetcenter
+    Buildable:
+        Prerequisites: schweap, ~anyschina, ~botplayer
+    RenderSprites:
+		Image: chinternetcenter
+	Valued:
+		Cost: 5000
+	CashTrickler:
+		Interval: 60
+		Amount: 150
         
 schsilo:
     Inherits: chsilo

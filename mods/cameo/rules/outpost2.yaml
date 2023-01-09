@@ -87,12 +87,101 @@ PLYMOUTH_MINV:
 		StartIfBelow: 101
 	Targetable@plymouth_minv:
 		TargetTypes: plymouth_minv
+op2_rareore_beacon_3bar:
+	Inherits@1: ^TibTree
+	Tooltip:
+		Name: Ore Spawn
+	RadarColorFromTerrain:
+		Terrain: Ore
+	SeedsResource:
+		ResourceType: OP2Ore
+		Interval: 55
+	-WithMakeAnimation
+op2_commonore_beacon_3bar:
+	Inherits@1: ^TibTree
+	Tooltip:
+		Name: Rare Ore Spawn
+	RadarColorFromTerrain:
+		Terrain: Ore
+	SeedsResource:
+		ResourceType: OP2Ore2
+		Interval: 75
+	-WithMakeAnimation
+
+Player:
+    ClassicProductionQueue@RABUILDINGPLYMOUTHL:
+		Type: RABuilding.Plymouthl
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10 
+    ClassicProductionQueue@RADEFENCEPLYMOUTHL:
+		Type: RADefence.Plymouthl
+		DisplayOrder: 0
+		Group: Defence
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10      
+    ClassicProductionQueue@RAINFANTRYPLYMOUTHL:
+		Type: RAInfantry.Plymouthl
+		DisplayOrder: 0
+		Group: Infantry
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10       
+    ClassicProductionQueue@RAVEHICLEPLYMOUTHL:
+		Type: RAVehicle.Plymouthl
+		DisplayOrder: 0
+		Group: Vehicle
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10                     
+    ClassicProductionQueue@RAAIRCRAFTPLYMOUTHL:
+		Type: RAAircraft.Plymouthl
+		DisplayOrder: 0
+		Group: Aircraft
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10       
+
 ####################################################################################################
 #		BUILDINGS PLYMOUTH
 ####################################################################################################
 PCC:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@CPQ: ^CPQCondition
 	Inherits@STATUS: ^OP2Building
 	Selectable:
 		Bounds: 128,96
@@ -126,12 +215,24 @@ PCC:
 	#WithBuildingBib:
 	ScalePowerWithHealth:
 	BaseBuilding:
-	Production:
+	Production@NORMAL:
 		Produces: Building.Plymouthl, Defence.Plymouthl
-	ProductionBar@BuildingPlymouthl:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.Plymouthl, RADefence.Plymouthl
+		RequiresCondition: classicproductionqueues
+	ProductionBar@BuildingGDI:
 		ProductionType: Building.Plymouthl
-	ProductionBar@DefencePlymouthl:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceGDI:
 		ProductionType: Defence.Plymouthl
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingGDI:
+		ProductionType: RABuilding.Plymouthl
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceGDI:
+		ProductionType: RADefence.Plymouthl
+		RequiresCondition: classicproductionqueues
 	BaseProvider:
 		Cooldown: 75
 		Range: 20c0
@@ -177,7 +278,7 @@ PLYMOUTH_TOKAMAK:
 		Prerequisite: PLYMOUTH_TOKAMAK
 	Buildable: 
 		BuildPaletteOrder: 10
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Description: Generates power\nReleases Emp Shockwave on\nDeath
 	Building:
 		Footprint: xX xx ==
@@ -213,7 +314,7 @@ PLYMOUTH_SMELTER_COMMON:
 		Prerequisite: PLYMOUTH_SMELTER_COMMON
 	Buildable: 
 		BuildPaletteOrder: 20
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_TOKAMAK
 		Description: Processes resources
 	FreeActor:
@@ -262,7 +363,7 @@ PLYMOUTH_AGRIDOME:
 		Prerequisite: PLYMOUTH_AGRIDOME
 	Buildable: 
 		BuildPaletteOrder: 30
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_TOKAMAK
 		BuildDuration: 200
 		Description: Needed with Residence for Vehicle Factory
@@ -296,7 +397,7 @@ PLYMOUTH_RESIDENCE:
 		Prerequisite: PLYMOUTH_RESIDENCE
 	Buildable: 
 		BuildPaletteOrder: 40
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_TOKAMAK
 		BuildDuration: 200
 		Description: Needed with Agridome for Vehicle Factory\nProvides Radar
@@ -318,6 +419,7 @@ PLYMOUTH_RESIDENCE:
 
 PLYMOUTH_FACTORY_VEHICLE:
 	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@shape: ^2x2Shape
 	Inherits@STATUS: ^OP2Building
 	Selectable:
@@ -334,7 +436,7 @@ PLYMOUTH_FACTORY_VEHICLE:
 	#	Prerequisite:
 	Buildable: 
 		BuildPaletteOrder: 50
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_RESIDENCE, PLYMOUTH_AGRIDOME
 		Description: Constructs Vehicles
 	Building:
@@ -356,22 +458,29 @@ PLYMOUTH_FACTORY_VEHICLE:
 	Exit@2:
 		SpawnOffset: 1500,298,0
 		ExitCell: 4,4
-	Production:
+	Production@NORMAL:
 		Produces: Vehicle.Plymouthl
-	ProductionBar@VehiclePlymouthl:
-		ProductionType: Vehicle.Plymouthl
-	ProductionQueue@VehiclePlymouthl:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.Plymouthl
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
 		Type: Vehicle.Plymouthl
-		DisplayOrder: 1
-		Factions: plymouthl
+		DisplayOrder: 3
 		Group: Vehicle
-		LowPowerModifier: 200
+		LowPowerModifier: 300
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
+		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
+	ProductionBar@VEHICLEPLYMOUTHL:
+		ProductionType: Vehicle.Plymouthl
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLEPLYMOUTHL:
+		ProductionType: RAVehicle.Plymouthl
+		RequiresCondition: classicproductionqueues
 
 PLYMOUTH_NURSERY:
 	Inherits: ^BaseBuilding
@@ -389,7 +498,7 @@ PLYMOUTH_NURSERY:
 		Prerequisite: PLYMOUTH_NURSERY
 	Buildable: 
 		BuildPaletteOrder: 60
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_RESIDENCE
 		BuildDuration: 200
 		Description: Needed with University for Standard Lab
@@ -423,7 +532,7 @@ PLYMOUTH_UNIVERSITY:
 		Prerequisite: PLYMOUTH_UNIVERSITY
 	Buildable: 
 		BuildPaletteOrder: 70
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_RESIDENCE
 		BuildDuration: 200
 		Description: Needed with Nursery for Standard Lab
@@ -459,7 +568,7 @@ PLYMOUTH_LAB_STANDARD:
 		Prerequisite: PLYMOUTH_LAB_STANDARD
 	Buildable: 
 		BuildPaletteOrder: 80
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_NURSERY,PLYMOUTH_UNIVERSITY
 		Description: Needed for DIRT, Arachnid Factory, GORF, and Advanced Lab
 	Building:
@@ -495,7 +604,7 @@ PLYMOUTH_DIRT:
 		Prerequisite: 
 	Buildable: 
 		BuildPaletteOrder: 90
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_LAB_STANDARD
 		Description: Provides Force Shield
 	Building:
@@ -514,6 +623,7 @@ PLYMOUTH_DIRT:
 
 PLYMOUTH_FACTORY_ARACHNID:
 	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@shape: ^2x2Shape
 	Inherits@STATUS: ^OP2Building
 	Selectable:
@@ -528,7 +638,7 @@ PLYMOUTH_FACTORY_ARACHNID:
 	#	Prerequisite:
 	Buildable: 
 		BuildPaletteOrder: 100
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_LAB_STANDARD
 		Description: Constructs Arachnids
 	Building:
@@ -551,22 +661,29 @@ PLYMOUTH_FACTORY_ARACHNID:
 	Exit@2:
 		SpawnOffset: 298,298,0
 		ExitCell: 2,2
-	Production:
+	Production@NORMAL:
 		Produces: Infantry.Plymouthl
-	ProductionBar@InfantryPlymouthl:
-		ProductionType: Infantry.Plymouthl
-	ProductionQueue@InfantryPlymouthl:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.Plymouthl
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
 		Type: Infantry.Plymouthl
-		DisplayOrder: 1
-		Factions: plymouthl
+		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 200
+		LowPowerModifier: 300
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
+		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYPLYMOUTHL:
+		ProductionType: Infantry.Plymouthl
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYPLYMOUTHL:
+		ProductionType: RAInfantry.Plymouthl
+		RequiresCondition: classicproductionqueues
 
 PLYMOUTH_GORF:
 	Inherits: ^BaseBuilding
@@ -586,7 +703,7 @@ PLYMOUTH_GORF:
 		Prerequisite: PLYMOUTH_GORF
 	Buildable: 
 		BuildPaletteOrder: 110
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_LAB_STANDARD
 		Description: Increases income from Common Ore Smelter
 	Building:
@@ -624,7 +741,7 @@ PLYMOUTH_LAB_ADVANCED:
 		Prerequisite: PLYMOUTH_LAB_ADVANCED
 	Buildable: 
 		BuildPaletteOrder: 120
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_LAB_STANDARD
 		Description: Needed for Space Port, Rare Ore Smelter
 	Building:
@@ -663,7 +780,7 @@ PLYMOUTH_SPACEPORT:
 		Prerequisite: PLYMOUTH_SPACEPORT
 	Buildable: 
 		BuildPaletteOrder: 130
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_LAB_ADVANCED
 		Description: Needed for Solar Power Array\nLaunches Supernova Missiles.
 	Building:
@@ -724,7 +841,7 @@ PLYMOUTH_SOLARARRAY:
 		Prerequisite: 
 	Buildable: 
 		BuildPaletteOrder: 140
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_SPACEPORT
 		Description: Generates power\nReleases Emp Shockwave on\nDeath
 	Building:
@@ -761,7 +878,7 @@ PLYMOUTH_SMELTER_RARE:
 		Prerequisite: PLYMOUTH_SMELTER_RARE
 	Buildable: 
 		BuildPaletteOrder: 150
-		Queue: Building.Plymouthl
+		Queue: Building.Plymouthl, RABuilding.Plymouthl
 		Prerequisites: PLYMOUTH_LAB_ADVANCED
 		Description: Needed for Tigers
 	Building:
@@ -799,7 +916,7 @@ PLYMOUTH_MINE_COMMON:
 		Prerequisite: 
 	Buildable: 
 		BuildPaletteOrder: 110
-		Queue: Defence.Plymouthl
+		Queue: Defence.Plymouthl, RADefence.Plymouthl
 		Prerequisites: PLYMOUTH_TOKAMAK
 		Description: Provides passive income
 	Building:
@@ -829,7 +946,7 @@ PLYMOUTH_STORAGE_COMMON:
 	Buildable:
 		BuildPaletteOrder: 5
 		Prerequisites: PLYMOUTH_SMELTER_COMMON
-		Queue: Defence.Plymouthl
+		Queue: Defence.Plymouthl, RADefence.Plymouthl
 		Description: Stores processed Tiberium
 	Building:
 		Footprint: x
@@ -872,7 +989,7 @@ PLYMOUTH_GP_MICROWAVE:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: PLYMOUTH_TOKAMAK
-		Queue: Defence.Plymouthl
+		Queue: Defence.Plymouthl, RADefence.Plymouthl
 		BuildDuration: 1440
 		BuildDurationModifier: 40
 		Description: Microwave defense.\n  Strong vs Tanks, vehicles\n  Weak vs Infantry
@@ -918,7 +1035,7 @@ PLYMOUTH_GP_STICKYFOAM:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: PLYMOUTH_TOKAMAK
-		Queue: Defence.Plymouthl
+		Queue: Defence.Plymouthl, RADefence.Plymouthl
 		BuildDuration: 1440
 		BuildDurationModifier: 40
 		Description: Stickyfoam defense.\n  Strong vs Tanks, vehicles\n  Weak vs Infantry
@@ -964,7 +1081,7 @@ PLYMOUTH_GP_RPG:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: PLYMOUTH_TOKAMAK
-		Queue: Defence.Plymouthl
+		Queue: Defence.Plymouthl, RADefence.Plymouthl
 		BuildDuration: 1440
 		BuildDurationModifier: 40
 		Description: RPG defense.\n  Strong vs Tanks, vehicles\n  Doubles as Anti-air
@@ -1012,7 +1129,7 @@ PCONVECCOMMANDCENTER:
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: 
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		BuildDuration: 3750
 		BuildDurationModifier: 40
 		Description: Deploys into another Command Center.\n  Unarmed
@@ -1056,7 +1173,7 @@ PLYMOUTH_CARGOTRUCK_EMPTY:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: 
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		BuildDurationModifier: 40
 		Description: Collects Tiberium for processing.\n  Unarmed
 	Selectable:
@@ -1102,7 +1219,7 @@ PLYMOUTH_SCOUT:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: 
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		BuildDuration: 500
 		BuildDurationModifier: 40
 		Description: Unarmed scout
@@ -1135,7 +1252,7 @@ PLYMOUTH_SPIDER:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: 
-		Queue: Infantry.Plymouthl
+		Queue: Infantry.Plymouthl, RAInfantry.Plymouthl
 		BuildDuration: 500
 		BuildDurationModifier: 40
 		Description: Arachnid capable of repair and capturing vehicles
@@ -1182,7 +1299,7 @@ PLYMOUTH_SCORPION:
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: PLYMOUTH_LAB_ADVANCED
-		Queue: Infantry.Plymouthl
+		Queue: Infantry.Plymouthl, RAInfantry.Plymouthl
 		BuildDuration: 500
 		BuildDurationModifier: 40
 		Description: Arachnid armed with laser
@@ -1254,7 +1371,7 @@ PLMICROWAVE:
 		BuildDuration: 300
 		BuildPaletteOrder: 50
 		Prerequisites:
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Fast microwave vehicle
 	Mobile:
 		TurnSpeed: 10
@@ -1292,7 +1409,7 @@ PLYMOUTH_TIGER_MICROWAVE:
 		BuildDuration: 300
 		BuildPaletteOrder: 100
 		Prerequisites: PLYMOUTH_SMELTER_RARE
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Slow and strong microwave vehicle
 	Mobile:
 		TurnSpeed: 10
@@ -1324,7 +1441,7 @@ PLYMOUTH_LYNX_RPG:
 		BuildDuration: 300
 		BuildPaletteOrder: 60
 		Prerequisites:
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Fast rpg vehcile
 	Mobile:
 		TurnSpeed: 10
@@ -1363,7 +1480,7 @@ PLYMOUTH_TIGER_RPG:
 		BuildDuration: 300
 		BuildPaletteOrder: 110
 		Prerequisites: PLYMOUTH_SMELTER_RARE
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Slow and strong RPG vehicle
 	Mobile:
 		TurnSpeed: 10
@@ -1395,7 +1512,7 @@ PLYMOUTH_LYNX_EMP:
 		BuildDuration: 300
 		BuildPaletteOrder: 60
 		Prerequisites: PLYMOUTH_LAB_STANDARD
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Fast EMP vehcile
 	Mobile:
 		TurnSpeed: 10
@@ -1434,7 +1551,7 @@ PLYMOUTH_TIGER_EMP:
 		BuildDuration: 300
 		BuildPaletteOrder: 120
 		Prerequisites: PLYMOUTH_SMELTER_RARE, PLYMOUTH_LAB_STANDARD
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Slow and strong EMP vehicle
 	Mobile:
 		TurnSpeed: 10
@@ -1466,7 +1583,7 @@ PLYMOUTH_LYNX_STICKYFOAM:
 		BuildDuration: 300
 		BuildPaletteOrder: 60
 		Prerequisites: PLYMOUTH_RESIDENCE
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Fast EMP vehcile
 	Mobile:
 		TurnSpeed: 10
@@ -1505,7 +1622,7 @@ PLYMOUTH_TIGER_STICKYFOAM:
 		BuildDuration: 300
 		BuildPaletteOrder: 130
 		Prerequisites: PLYMOUTH_SMELTER_RARE, PLYMOUTH_RESIDENCE
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Slow and strong Stickyfoam vehicle
 	Mobile:
 		TurnSpeed: 10
@@ -1537,7 +1654,7 @@ PLYMOUTH_LYNX_ESG:
 		BuildDuration: 300
 		BuildPaletteOrder: 60
 		Prerequisites: PLYMOUTH_LAB_ADVANCED
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Fast EMP vehcile
 	Mobile:
 		TurnSpeed: 10
@@ -1576,7 +1693,7 @@ PLYMOUTH_TIGER_ESG:
 		BuildDuration: 300
 		BuildPaletteOrder: 140
 		Prerequisites: PLYMOUTH_SMELTER_RARE, PLYMOUTH_LAB_ADVANCED
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Slow and strong ESG vehicle
 	Mobile:
 		TurnSpeed: 10
@@ -1608,7 +1725,7 @@ PLYMOUTH_LYNX_STARFLARE:
 		BuildDuration: 300
 		BuildPaletteOrder: 80
 		Prerequisites: PLYMOUTH_GORF
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Fast starflare vehicle
 	Mobile:
 		TurnSpeed: 10
@@ -1641,6 +1758,8 @@ PLYMOUTH_LYNX_STARFLARE:
 		EmptyWeapon: GLBarrelExplode
 		DamageSource: Killer
 		RequiresCondition: !disabled
+	KillsSelf:
+		RequiresCondition: !disabled && (invulnerability || triggered)
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -1657,7 +1776,7 @@ PLYMOUTH_TIGER_STARFLARE:
 		BuildDuration: 300
 		BuildPaletteOrder: 150
 		Prerequisites: PLYMOUTH_SMELTER_RARE, PLYMOUTH_GORF
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Slow and strong Starflare vehicle
 	Mobile:
 		TurnSpeed: 10
@@ -1689,7 +1808,7 @@ PLYMOUTH_LYNX_SUPERNOVA:
 		BuildDuration: 300
 		BuildPaletteOrder: 90
 		Prerequisites: PLYMOUTH_LAB_ADVANCED
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Fast supernova vehicle
 	Mobile:
 		TurnSpeed: 10
@@ -1721,6 +1840,8 @@ PLYMOUTH_LYNX_SUPERNOVA:
 		EmptyWeapon: MiniNova
 		DamageSource: Killer
 		RequiresCondition: !disabled
+	KillsSelf:
+		RequiresCondition: !disabled && (invulnerability || triggered)
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -1737,7 +1858,7 @@ PLYMOUTH_TIGER_SUPERNOVA:
 		BuildDuration: 300
 		BuildPaletteOrder: 160
 		Prerequisites: PLYMOUTH_SMELTER_RARE, PLYMOUTH_LAB_ADVANCED
-		Queue: Vehicle.Plymouthl
+		Queue: Vehicle.Plymouthl, RAVehicle.Plymouthl
 		Description: Slow and strong Supernova vehicle
 	Mobile:
 		TurnSpeed: 10

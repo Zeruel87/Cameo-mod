@@ -10919,17 +10919,17 @@ d2k_tent_c:
     ExternalCondition@d2kvordelproxy2:
         Condition: d2kvordelproxy2
     KillsSelf@vordel:
-        RequiresCondition: !d2kvordelproxy && !d2kvordelproxy2 || criticalpower
-        Delay: 125
+        RequiresCondition: !d2kvordelproxy || criticalpower
+        Delay: 256
 	ProximityExternalCondition@JAMMER:
 		Range: 7c0
 		ValidStances: Enemy, Neutral
 		Condition: jammed
 		RequiresCondition: !disabled
-    FirepowerMultiplier@vordel:
-        Modifier: 50
+	FirepowerMultiplier@vordel:
+        Modifier: 125
     DamageMultiplier@vordel:
-        Modifier: 200
+        Modifier: 50
     ProductionCostMultiplier@vordel:
         Multiplier: 75
     Passenger:
@@ -10951,7 +10951,24 @@ d2k_tent_c:
     DamageMultiplier@vordellowpower:
         Modifier: 80
         RequiresCondition: d2kvordelproxy
-        
+	WithDecoration@dissapear:
+		Image: poweroff
+		Sequence: offline
+		ReferencePoint: Right, Top
+		RequiresCondition: !d2kvordelproxy || criticalpower
+		BlinkInterval: 22
+		BlinkPattern: On, Off, On, Off
+	GrantConditionOnPrerequisite@botplayer:
+		Prerequisites: botplayer
+		Condition: botplayer
+    ProximityExternalCondition@botplayer:
+        Condition: d2kvordelproxy
+        Range: 4c0
+        RequiresCondition: !lowpower && !disabled && botplayer
+    WithRangeCircle@d2kvordelproxy:
+        Range: 4c0
+        RequiresCondition: !lowpower && !disabled && botplayer
+	ProvidesPrerequisite@unitname:
 ^D2KVordelAbsorbed:
     WithIdleOverlay@absorbedeffect:
         Image: vordel_effect_1
@@ -11172,10 +11189,10 @@ construction_yard_vordel:
         -RequiresCondition
     ProximityExternalCondition@d2kvordelproxy:
         Condition: d2kvordelproxy
-        Range: 15c0
+        Range: 25c0
         RequiresCondition: !lowpower && !disabled
     WithRangeCircle@d2kvordelproxy:
-        Range: 15c0
+        Range: 25c0
         RequiresCondition: !lowpower && !disabled
  	Production:
 		Produces: VordelResearch.d2k
@@ -11185,6 +11202,7 @@ construction_yard_vordel:
 light_inf_vordel:
     Inherits: light_inf
     Inherits@vordelproxy: ^D2KVordelProxyUnit
+    Inherits@MC: ^MCImmune
     Buildable:
         -Prerequisites:
         Queue: VordelUnits.d2k
@@ -11207,7 +11225,8 @@ light_inf_vordel_2:
     Tooltip:
         Name: Absorbed Light Infantry
     Buildable:
-        -Queue:
+        Prerequisites: light_inf_vordel, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
     ReloadDelayMultiplier@mk2:
         Modifier: 66
     FirepowerMultiplier@mk2:
@@ -11216,6 +11235,7 @@ light_inf_vordel_2:
 trooper_vordel:
     Inherits: trooper
     Inherits@vordelproxy: ^D2KVordelProxyUnit
+    Inherits@MC: ^MCImmune
     Buildable:
         -Prerequisites:
         Queue: VordelUnits.d2k
@@ -11233,11 +11253,15 @@ trooper_vordel_2:
     Tooltip:
         Name: Absorbed Trooper
     Buildable:
-        -Queue:
+        Prerequisites: trooper_vordel, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 
 trike_vordel:
     Inherits: trike
     Inherits@vordelproxy: ^D2KVordelProxyUnit
+    Inherits@MC: ^MCImmune 
+    Inherits@snipe: ^DriverKillImmune
+    Inherits@ND: ^NotDevourable
     Buildable:
         -Prerequisites:
         Queue: VordelUnits.d2k, RAVordelUnits.d2k
@@ -11248,15 +11272,16 @@ trike_vordel:
         Palette: shadow
     Voiced:
         VoiceSet: D2KVordelVoice
-    -Explodes  
-    
+    -Explodes
+
 trike_vordel_2:
     Inherits: trike_vordel
     Inherits@absorbed: ^D2KVordelAbsorbed
     Tooltip:
         Name: Absorbed Trike
     Buildable:
-        -Queue:
+        Prerequisites: trike_vordel, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 
 trike_vordel_3:
     Inherits: trike_vordel_2
@@ -11264,10 +11289,16 @@ trike_vordel_3:
     Tooltip: 
         Name: Overwhelmed Trike
     -KillsSelf@vordel
-    
+    Buildable:
+        Prerequisites: trike_vordel_2, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
+
 quad_vordel:
     Inherits: quad
     Inherits@vordelproxy: ^D2KVordelProxyUnit
+    Inherits@MC: ^MCImmune 
+    Inherits@snipe: ^DriverKillImmune
+    Inherits@ND: ^NotDevourable
     Power:
         Amount: -20
     Buildable:
@@ -11286,7 +11317,8 @@ quad_vordel_2:
     Tooltip:
         Name: Absorbed Quad
     Buildable:
-        -Queue:
+        Prerequisites: quad_vordel, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 
 quad_vordel_3:
     Inherits: quad_vordel_2
@@ -11294,10 +11326,15 @@ quad_vordel_3:
     Tooltip: 
         Name: Overwhelmed Quad
     -KillsSelf@vordel
-    
+    Buildable:
+        Prerequisites: quad_vordel_2, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 combat_tank_vordel:
     Inherits: combat_tank_o
     Inherits@vordelproxy: ^D2KVordelProxyUnit
+    Inherits@MC: ^MCImmune 
+    Inherits@snipe: ^DriverKillImmune
+    Inherits@ND: ^NotDevourable
     Power:
         Amount: -30
     Buildable:
@@ -11317,7 +11354,8 @@ combat_tank_vordel_2:
     Tooltip:
         Name: Absorbed Combat Tank 
     Buildable:
-        -Queue:
+        Prerequisites: combat_tank_vordel, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
     
 combat_tank_vordel_3:
     Inherits: combat_tank_vordel_2
@@ -11325,10 +11363,16 @@ combat_tank_vordel_3:
     Tooltip: 
         Name: Overwhelmed Combat Tank
     -KillsSelf@vordel
-    
+    Buildable:
+        Prerequisites: combat_tank_vordel_2, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
+
 siege_tank_vordel:
     Inherits: siege_tank
     Inherits@vordelproxy: ^D2KVordelProxyUnit
+    Inherits@MC: ^MCImmune 
+    Inherits@snipe: ^DriverKillImmune
+    Inherits@ND: ^NotDevourable
     Power:
         Amount: -35
     Buildable:
@@ -11348,18 +11392,23 @@ siege_tank_vordel_2:
     Tooltip:
         Name: Absorbed Siege Tank 
     Buildable:
-        -Queue:
-
+        Prerequisites: siege_tank_vordel, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 siege_tank_vordel_3:
     Inherits: siege_tank_vordel_2
     Inherits@absorbed: ^D2KVordelAbsorbed2
     Tooltip: 
         Name: Overwhelmed Siege Tank
     -KillsSelf@vordel
-    
+    Buildable:
+        Prerequisites: siege_tank_vordel_2, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 missile_tank_vordel:
     Inherits: missile_tank
     Inherits@vordelproxy: ^D2KVordelProxyUnit
+    Inherits@MC: ^MCImmune 
+    Inherits@snipe: ^DriverKillImmune
+    Inherits@ND: ^NotDevourable
     Power:
         Amount: -35
     Buildable:
@@ -11379,7 +11428,8 @@ missile_tank_vordel_2:
     Tooltip:
         Name: Absorbed Missile Tank 
     Buildable:
-        -Queue:
+        Prerequisites: missile_tank_vordel, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
         
 missile_tank_vordel_3:
     Inherits: missile_tank_vordel_2
@@ -11387,12 +11437,17 @@ missile_tank_vordel_3:
     Tooltip: 
         Name: Overwhelmed Missile Tank
     -KillsSelf@vordel
-
+    Buildable:
+        Prerequisites: missile_tank_vordel_2, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 projection_outpost_vordel:
 	Inherits: ^D2KVehicle
 	Inherits@EXPERIENCE: ^GainsExperience
+    Inherits@MC: ^MCImmune 
+    Inherits@snipe: ^DriverKillImmune
+    Inherits@ND: ^NotDevourable
 	Valued:
-		Cost: 2000
+		Cost: 1500
 	Tooltip:
 		Name: Projection Outpost
 	UpdatesPlayerStatistics:
@@ -11403,7 +11458,7 @@ projection_outpost_vordel:
 		Description: Prevents nearby Delusion units from vanishing\nDeploy to become static but increase effective range\nProvides Power\nProvides Radar upon deploying
         IconPalette: ra2
         BuildDuration: 100
-        BuildDurationModifier: 1000
+        BuildDurationModifier: 900
     WithFacingSpriteBody:
         RequiresCondition: !deployed
     WithSpriteBody@deployed:
@@ -11442,14 +11497,14 @@ projection_outpost_vordel:
     GrantConditionOnDeploy:
         DeployedCondition: deployed
     ProximityExternalCondition@d2kvordelproxy:
-        Condition: d2kvordelproxy2
+        Condition: d2kvordelproxy
         Range: 7c0
         RequiresCondition: !deployed
     WithRangeCircle@d2kvordelproxy:
         Range: 7c0
         RequiresCondition: !deployed
     ProximityExternalCondition@d2kvordelproxy2:
-        Condition: d2kvordelproxy2
+        Condition: d2kvordelproxy
         Range: 15c0
         RequiresCondition: deployed
     WithRangeCircle@d2kvordelproxy2:
@@ -11461,7 +11516,10 @@ projection_outpost_vordel:
     PowerMultiplier@deployed:
         Modifier: 200
         RequiresCondition: deployed
-        
+	AIDeployNotifier:
+		DeployChance: 100
+		DeployTicks: 450
+		DeployTrigger: Attack
 research.missile_tank_vordel:
 	Inherits: ^upgrade.template
 	Tooltip:
@@ -11544,6 +11602,9 @@ d2k_apparition:
     Inherits@vordelproxy: ^D2KVordelProxyUnit
     Inherits@AntiVeh: ^PrioritizeVehicle
     Inherits@AntiAir: ^PrioritizeAir
+    Inherits@MC: ^MCImmune 
+    Inherits@snipe: ^DriverKillImmune
+    Inherits@ND: ^NotDevourable
 	Buildable:
 		Queue: VordelUnits.d2k, RAVordelUnits.d2k
 		BuildPaletteOrder: 80
@@ -11610,7 +11671,8 @@ d2k_apparition_vordel_2:
     Tooltip:
         Name: Absorbed Apparition
     Buildable:
-        -Queue:
+        Prerequisites: d2k_apparition, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 
 d2k_apparition_vordel_3:
     Inherits: d2k_apparition_vordel_2
@@ -11618,7 +11680,9 @@ d2k_apparition_vordel_3:
     Tooltip: 
         Name: Overwhelmed Apparition
     -KillsSelf@vordel
-    
+    Buildable:
+        Prerequisites: d2k_apparition_vordel_2, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 d2k_aircraft_eater:
 	Inherits: ^RANeutralPlane
 	Inherits@AUTOTARGET: ^AutoTargetAir
@@ -11706,15 +11770,17 @@ d2k_aircraft_eater_vordel_2:
     Tooltip:
         Name: Absorbed Aircraft Eater
     Buildable:
-        -Queue:
-
+        Prerequisites: d2k_aircraft_eater, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 d2k_aircraft_eater_vordel_3:
     Inherits: d2k_aircraft_eater_vordel_2
     Inherits@absorbed: ^D2KVordelAbsorbed2
     Tooltip: 
         Name: Overwhelmed Aircraft Eater
     -KillsSelf@vordel 
-
+    Buildable:
+        Prerequisites: d2k_aircraft_eater_vordel_2, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 d2k_defender:
 	Inherits: ^RANeutralPlane
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -11796,7 +11862,8 @@ d2k_defender_vordel_2:
     Tooltip:
         Name: Absorbed Defender
     Buildable:
-        -Queue:
+        Prerequisites: d2k_defender, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 
 d2k_defender_vordel_3:
     Inherits: d2k_defender_vordel_2
@@ -11804,6 +11871,9 @@ d2k_defender_vordel_3:
     Tooltip: 
         Name: Overwhelmed Defender
     -KillsSelf@vordel 
+    Buildable:
+        Prerequisites: d2k_defender_vordel_2, ~botplayer
+        Queue: VordelUnits.d2k, RAVordelUnits.d2k
 ##############################################
 #                CREEPS
 ##############################################

@@ -233,6 +233,11 @@ OILB.td:
 		Description: Provides Passive income
 
 Player:
+    ExternalCondition@BuildingsOwned:
+        Condition: BuildingsOwned
+    ProvidesPrerequisite@BuildingsOwned
+        Prerequisite: allowsMCV
+        RequiresCondition: BuildingsOwned < 5
 	#####	MODGDI	#####
 	ClassicProductionQueue@RABUILDINGMODGDI:
 		Type: RABuilding.MODGDI
@@ -424,7 +429,7 @@ E2:
 		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.X_Infantry, Infantry.DTRUSSIA, RAInfantry.DTRUSSIA, Infantry.MODGDI, RAInfantry.MODGDI
 		Description: Fast infantry armed with grenades. \n  Strong vs Buildings, slow-moving targets
 	Mobile:
-		Speed: 71
+		Speed: 75
 	Health:
 		HP: 5000
 	AutoTarget:
@@ -631,6 +636,7 @@ RMBO:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@announce: ^AnnounceGlobal
+	Inherits@oldbuff: ^OldFactionBuff
 	Inherits@MC: ^MCImmune
     Inherits@AntiInf: ^PrioritizeInfantry
     Inherits@AntiBuil: ^PrioritizeBuilding
@@ -648,7 +654,7 @@ RMBO:
         BuildDuration: 375
         BuildDurationModifier: 100
     Mobile:
-		Speed: 71
+		Speed: 75
 		Voice: Move
 	Guard:
 		Voice: Move
@@ -699,10 +705,10 @@ MCV:
 	Selectable:
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 75
 		Locomotor: heavywheeled
 	Health:
-		HP: 120000
+		HP: 150000
 	Repairable:
 		HpPerStep: 2182
 	Armor:
@@ -724,6 +730,13 @@ MCV:
 	#	EffectiveOwnerFromOwner: true
 	SelectionDecorations:
 
+MCV.Bot:
+    Inherits: MCV
+	Buildable:
+		BuildPaletteOrder: 100
+        BuildLimit: 1
+		Prerequisites: anyhq, ~techlevel.medium, fix, ~botplayer, allowsMCV
+
 MCV.GDI:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
@@ -743,10 +756,10 @@ MCV.GDI:
 		Priority: 4
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 75
 		Locomotor: heavywheeled
 	Health:
-		HP: 120000
+		HP: 150000
 	Repairable:
 		HpPerStep: 2182
 	Armor:
@@ -770,6 +783,13 @@ MCV.GDI:
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmgdi
 
+MCV.GDI.Bot:
+    Inherits: MCV.GDI
+	Buildable:
+		BuildPaletteOrder: 100
+        BuildLimit: 1
+		Prerequisites: anyhq, ~techlevel.medium, fix, ~botplayer, allowsMCV
+
 MCV.NOD:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
@@ -789,10 +809,10 @@ MCV.NOD:
 		Priority: 4
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 75
 		Locomotor: heavywheeled
 	Health:
-		HP: 120000
+		HP: 150000
 	Repairable:
 		HpPerStep: 2182
 	Armor:
@@ -815,6 +835,13 @@ MCV.NOD:
 		Image: mcv
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmnod
+
+MCV.NOD.Bot:
+    Inherits: MCV.NOD
+	Buildable:
+		BuildPaletteOrder: 100
+        BuildLimit: 1
+		Prerequisites: anyhq, ~techlevel.medium, fix, ~botplayer, allowsMCV
 
 HARV:
 	Inherits: ^Tank
@@ -880,6 +907,7 @@ APC:
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@cargo: ^CargoVehicle
     Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@oldbuff: ^OldFactionBuff
 	Valued:
 		Cost: 450
 	Tooltip:
@@ -966,6 +994,7 @@ ARTY:
 	Inherits@jammable: ^ArtilleryJammable
     Inherits@AntiInf: ^PrioritizeInfantry
     Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@oldbuff: ^OldFactionBuff
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -1301,6 +1330,7 @@ HTNK:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
     Inherits@AntiTank: ^PrioritizeTank
+	Inherits@oldbuff: ^OldFactionBuff
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -1488,6 +1518,7 @@ MSSM:
 	Inherits: MLRS
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
     Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@oldbuff: ^OldFactionBuff
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -1622,7 +1653,7 @@ HDTRUCK:
 	Buildable:
 		Queue: Vehicle.GDI, Vehicle.Nod, RAVehicle.GDI, RAVehicle.Nod
 		BuildPaletteOrder: 1000
-		Prerequisites: vehicleproduction
+		Prerequisites: ~disabled
 		BuildDuration: 300
 		Description: Transports cash to other players.\n  Unarmed
 	Valued:
@@ -2003,6 +2034,8 @@ ORCA.Husk:
 		Image: orca
 
 FACT:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Selectable:
@@ -2016,7 +2049,7 @@ FACT:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 210000
+		HP: 300000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -2111,6 +2144,8 @@ FACT:
 		Description: Builds structures
 
 FACT.GDI:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQ: ^CPQCondition
@@ -2128,7 +2163,7 @@ FACT.GDI:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 210000
+		HP: 300000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -2217,6 +2252,8 @@ FACT.GDI:
 		Image: fact
 
 FACT.NOD:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQ: ^CPQCondition
@@ -2234,7 +2271,7 @@ FACT.NOD:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 210000
+		HP: 300000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -3904,10 +3941,10 @@ MCV.MODGDI:
 		Priority: 4
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 75
 		Locomotor: heavywheeled
 	Health:
-		HP: 120000
+		HP: 150000
 	Repairable:
 		HpPerStep: 2182
 	Armor:
@@ -3931,6 +3968,13 @@ MCV.MODGDI:
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmgdi
 
+MCV.MODGDI.Bot:
+    Inherits: MCV.MODGDI
+	Buildable:
+		BuildPaletteOrder: 100
+        BuildLimit: 1
+		Prerequisites: anyhq, ~techlevel.medium, fix, ~botplayer, allowsMCV
+
 MCV.MODNOD:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
@@ -3950,10 +3994,10 @@ MCV.MODNOD:
 		Priority: 4
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 75
 		Locomotor: heavywheeled
 	Health:
-		HP: 120000
+		HP: 150000
 	Repairable:
 		HpPerStep: 2182
 	Armor:
@@ -3977,8 +4021,17 @@ MCV.MODNOD:
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmnod
 
+MCV.MODNOD.Bot:
+    Inherits: MCV.MODNOD
+	Buildable:
+		BuildPaletteOrder: 100
+        BuildLimit: 1
+		Prerequisites: anyhq, ~techlevel.medium, fix, ~botplayer, allowsMCV
+
 
 FACT.MODGDI:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: FACT.GDI
 	Tooltip:
 		Name: Construction Yard (GDI)
@@ -4021,7 +4074,10 @@ FACT.MODGDI:
 	ProvidesPrerequisite@gdiallies:
 		Prerequisite: gdiallies
 		Factions: gdiallies
+
 fact.modnod:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: FACT.NOD
 	Production@NORMAL:
 		Produces: Building.MODNod, Defence.MODNod
@@ -4063,7 +4119,10 @@ fact.modnod:
 	ProvidesPrerequisite@stealthnod:
 		Prerequisite: stealthnod
 		Factions: stealthnod
+
 fact.modnod2:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: fact.modnod
 	Transforms:
 		IntoActor: mcv.nod
@@ -4873,22 +4932,41 @@ modrmbosquad6:
 	Voiced:
 		VoiceSet: TanyaVoice
 tdshotgunner:
-    Inherits: shotgunner
-    Valued:
-        Cost: 80
-    Tooltip:
-        Name: Shotgunner
-    Buildable:
-		BuildPaletteOrder: 20
-		Queue: Infantry.MODGDI, RAInfantry.MODGDI
-		Description: General-purpose infantry equipped with shotgun\nDeals massive damage up front.\nVery Short Range\n  Strong vs Infantry, Vehicles\n  Weak vs Siege   
-        Prerequisites: ~gdispecialf
-        BuildDuration: 90
-        BuildDurationModifier: 100
-    Voiced:
-		VoiceSet: D2KShotgunner
-	RenderSprites:
-		Image: shotgunner
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+    Inherits@oldbuff: ^OldFactionBuff
+    Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Shotgunner
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks, ~gdispecialf
+		Queue: Infantry.GDI, RAInfantry.GDI, Infantry.MODGDI, RAInfantry.MODGDI
+		Description: General-purpose infantry.\n Stronger in close combat vs Multiple Units.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 5000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:							##########
+		Weapon: TDShotgun
+	Armament@GARRISONED:						##########
+		Name: garrisoned
+		Weapon: TDShotgunG
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+
 ####################################################################################################
 #		Tiberian Dawn Expansion Chemical Nod
 ####################################################################################################
@@ -4913,8 +4991,8 @@ e1officernod:
 	Tooltip:
 		Name: Officer
 	Buildable:
-		Prerequisites: barracks, anyhq
-		Queue: Infantry.Nod, RAInfantry.Nod
+		Prerequisites: barracks, anyhq, ~modblackhand
+		Queue: Infantry.MODNod, RAInfantry.MODNod
         Description: General-purpose Infantry\n Has better Equipement
 	RenderSprites:
 		Image: e1officernod
@@ -5100,6 +5178,48 @@ TDMH60:
 ####################################################################################################
 #		Tiberian Dawn Expansion Steel Talons
 ####################################################################################################
+MODEXOSUIT:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@EXT: ^ExternalConditions
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Exosuit
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Vehicle.MODGDI, RAVehicle.MODGDI, Vehicle.X_Vehicles
+		BuildPaletteOrder: 20
+        BuildDuration: 250
+        BuildDurationModifier: 100
+		Prerequisites: vehicleproduction, ~techlevel.low, ~modsteel
+		Description: Anti-personnel walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
+	Mobile:
+		TurnSpeed: 20
+		Speed: 95
+		Locomotor: wheeled
+	Health:
+		HP: 15000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 6c0
+	AttackFrontal:
+	Armament:
+		Weapon: TDShotgunG
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	WithFacingSpriteBody:
+		Sequence: stand
+	WithAttackAnimation:
+		Sequence: shoot
+	WithMoveAnimation:
+		MoveSequence: walk
+		ValidMovementTypes: Horizontal, Turn
+
 MODEGG:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
@@ -6221,6 +6341,8 @@ IOKHOLE.IOKSCUDTEMPLE:
 ####################################################################################################
 
 FACTIOK:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQ: ^CPQCondition
@@ -6243,6 +6365,10 @@ FACTIOK:
 		Type: Wood
 	RevealsShroud:
 		Range: 10c0
+	FreeActor:
+		Actor: iokworker
+		SpawnOffset: 1,2
+		Facing: 64  
 	Production@NORMAL:
 		Produces: Building.IOK, Defence.IOK
 		RequiresCondition: !classicproductionqueues
@@ -6400,6 +6526,10 @@ IOKBARRACKS:
 		HP: 60000
 	RevealsShroud:
 		Range: 5c0
+	FreeActor:
+		Actor: iokworker
+		SpawnOffset: 1,2
+		Facing: 64   
 	WithBuildingBib:
 	RallyPoint:
 	Exit@1:
@@ -6543,6 +6673,10 @@ IOKAFLD:
 		HP: 110000
 	RevealsShroud:
 		Range: 7c0
+	FreeActor:
+		Actor: iokworker
+		SpawnOffset: 1,2
+		Facing: 64  
 	RallyPoint:
 	Exit@1:
 		SpawnOffset: -1024,0,0
@@ -6666,6 +6800,10 @@ iokblackmarket:
 		Type: Wood
 	RevealsShroud:
 		Range: 4c0
+	FreeActor:
+		Actor: iokworker
+		SpawnOffset: 1,2
+		Facing: 64 
 	WithBuildingBib:
 	Power:
 		Amount: 0
@@ -6739,6 +6877,10 @@ iokpalace:
 		Type: Wood
 	RevealsShroud:
 		Range: 5c0
+	FreeActor:
+		Actor: iokworker
+		SpawnOffset: 1,2
+		Facing: 64
 	WithBuildingBib:
 	Cargo:
 		Types: Infantry, Hacker
@@ -6800,6 +6942,10 @@ iokscudtemple:
 		HP: 210000
 	RevealsShroud:
 		Range: 6c0
+	FreeActor:
+		Actor: iokworker
+		SpawnOffset: 1,2
+		Facing: 64          
 	Power:
 		Amount: 100
 	ProvidesPrerequisite@buildingname:
@@ -8097,10 +8243,10 @@ MCV.IOK:
 		Priority: 4
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 75
 		Locomotor: heavywheeled
 	Health:
-		HP: 120000
+		HP: 150000
 	Repairable:
 		HpPerStep: 2182
 	Armor:
@@ -8123,6 +8269,14 @@ MCV.IOK:
 		Image: mcv
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmnod
+
+MCV.IOK.Bot:
+    Inherits: MCV.IOK
+	Buildable:
+		BuildPaletteOrder: 100
+        BuildLimit: 1
+		Prerequisites: ~techlevel.medium, ~botplayer, allowsMCV
+
 ####################################################################################################
 #		IOK - AIRCRAFT
 ####################################################################################################

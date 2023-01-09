@@ -97,6 +97,16 @@ World:
 		SupportActors: sczergling, sczergling, sczergling, sczergling, sczergling, sczergling, sczergling, sczergling, schydralisk, schydralisk, schydralisk, schydralisk
         
 Player:
+    ExternalCondition@BuildingsOwned:
+        Condition: BuildingsOwned
+    ProvidesPrerequisite@BuildingsOwned
+        Prerequisite: allowsMCV
+        RequiresCondition: BuildingsOwned < 5
+    ExternalCondition@BuildingsOwnedZ:
+        Condition: BuildingsOwnedZ
+    ProvidesPrerequisite@BuildingsOwnedZ
+        Prerequisite: allowsZMCV
+        RequiresCondition: BuildingsOwnedZ < 10
 	ClassicProductionQueue@RABUILDINGTERRAN:
 		Type: RABuilding.Terran
 		DisplayOrder: 0
@@ -312,6 +322,8 @@ Player:
 ####################################################################################################
 
 SCCOMMANDCENTER:
+    GrantExternalConditionToOwner@BuildingsOwned:
+        Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -327,7 +339,7 @@ SCCOMMANDCENTER:
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: tscupd00.aud
 	Health:
-		HP: 150000
+		HP: 250000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -482,6 +494,11 @@ SCREFINERY:
 	GrantConditionOnProduction@refineryup:
 		Condition: refineryup
 		Actors: pscupscrefinery1
+    CashTrickler@player:
+		RequiresCondition: refineryup
+		Interval: 50
+		Amount: 50
+		ShowTicks: True
 pscupscrefinery1:
 	Tooltip:
 		Name: Vespene Gas Collector
@@ -491,7 +508,7 @@ pscupscrefinery1:
 		Queue: Addon.upscrefinery1
 		Description: The Refinery generates Vespene gas Capsules
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	RenderSprites:
 		Image: upscrefinery1
 	Interactable:
@@ -617,6 +634,7 @@ SCMISSILETURRET:
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@shape: ^2x2Shape
 	Inherits@EMP: ^TurretEMP
+	Inherits@EXPERIENCE: ^GainsExperienceBuildings
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -1022,7 +1040,6 @@ SCBUNKERD:
 	Buildable:
 		Queue: Defence.Terran, RADefence.Terran
 		BuildPaletteOrder: 1000
-		BuildDuration: 400
 		Prerequisites: barracks, ~techlevel.low, ~botplayer
 	Valued:
 		Cost: 1000
@@ -1036,6 +1053,8 @@ SCBUNKERD:
 ####################################################################################################
 
 SCNEXUS:
+    GrantExternalConditionToOwner@BuildingsOwned:
+        Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -1055,7 +1074,7 @@ SCNEXUS:
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
 	Health:
-		HP: 150000
+		HP: 200000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -1149,22 +1168,20 @@ SCPYLON:
 	-WithDeathAnimation:
     PowerMultiplier@pylonupg:
         Modifier: 200
-        RequiresCondition: scpylonexpand          
-    Production@pylonupg:
+        RequiresCondition: pylonupg          
+	Production:
 		Produces: pylonupg.Protoss
-        RequiresCondition: !scpylonexpand
-	ProductionBar@pylonupg:
-		ProductionType: pylonupg.Protoss
-	ProductionQueue@pylonupg:
+		RequiresCondition: !pylonupg
+	ProductionQueue:
 		Type: pylonupg.Protoss
 		DisplayOrder: 0
-		Group: Addon
+		Group: Unit #Addon
 		LowPowerModifier: 200
-        QueueLimit: 1
-		ItemLimit: 1      
+		QueueLimit: 1
+		ItemLimit: 1  
 	GrantConditionOnProduction@pylonupg:
-		Condition: scpylonexpand
-		Actors: scpylonexpand           
+		Condition: pylonupg
+		Actors: scpylonexpand    
         
 SCPYLONEXPAND:
 	Tooltip:
@@ -1239,6 +1256,11 @@ SCASSIMILATOR:
 	GrantConditionOnProduction@refineryup:
 		Condition: refineryup
 		Actors: pscupscrefinery2
+    CashTrickler@player:
+		RequiresCondition: refineryup
+		Interval: 50
+		Amount: 50
+		ShowTicks: True
 pscupscrefinery2:
 	Tooltip:
 		Name: Vespene Gas Collector
@@ -1248,7 +1270,7 @@ pscupscrefinery2:
 		Queue: Addon.upscrefinery2
 		Description: The Refinery generates Vespene gas Capsules
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	RenderSprites:
 		Image: upscrefinery2
 	Interactable:
@@ -1363,23 +1385,23 @@ SCPHOTONCANNON:
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
+	Inherits@EXPERIENCE: ^GainsExperienceBuildings
 	Valued:
-		Cost: 600
+		Cost: 2000
 	Tooltip:
 		Name: Photon Cannon
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: Forge
 		Queue: Defence.Protoss, RADefence.Protoss
-		BuildDuration: 1700
-		BuildDurationModifier: 40
+		BuildDurationModifier: 50
 		Description: Protoss base defense, can attack ground\nand air.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
 		BuildSounds: pshbld03.aud
 	Health:
-		HP: 80000
+		HP: 100000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -1889,6 +1911,44 @@ zergsoilmaker2:
 		Footprint: _xxxxxx_ xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx _xxxxxx_
 		Dimensions: 8,8
 
+zergsoilkiller:
+	AlwaysVisible:
+	Interactable:
+	Building:
+		BuildSounds: CHUNG.WAV
+		AllowInvalidPlacement: true
+        TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune  
+    D2kActorPreviewPlaceBuildingPreview:
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 4
+    RenderSprites:    
+   	LaysTerrain:
+		Template: 859
+		TerrainTypes: ZergSoil
+	KillsSelf:
+		RemoveInstead: true
+	Building:
+		Footprint: _xxxxxxx_ xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx _xxxxxxx_
+		Dimensions: 9,9
+	Tooltip:
+		Name: Soil Maker
+
+zergsoilkiller2:
+	Inherits: zergsoilkiller
+	Building:
+		Footprint: _xxxxxx_ xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx _xxxxxx_
+		Dimensions: 8,8
+zergsoilkiller3:
+	Inherits: zergsoilkiller
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+zergsoilkiller4:
+	Inherits: zergsoilkiller
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
 ^ZergAIProductionBoost:
 	ProductionTimeMultiplier@zergaiboostanybot:
 		Multiplier: 90
@@ -1917,7 +1977,9 @@ zergsoilmaker2:
     Inherits@zergai: ^ZergAIProductionBoost
 	Building:
 		TerrainTypes: ZergSoil		##########
-
+	Explodes@remover:
+		Weapon: CreepRemover
+		EmptyWeapon: CreepRemover
 ^SCBREEDFASTER:
     ExternalCondition@Fasterbreed:
         Condition: SCFASTERBREED
@@ -1930,6 +1992,8 @@ zergsoilmaker2:
         Queue: Infantry.Zerg, RAInfantry.Zerg
         
 SCHATCHERY:
+    GrantExternalConditionToOwner@BuildingsOwnedZ:
+        Condition: BuildingsOwnedZ
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -2142,6 +2206,9 @@ SCHATCHERY:
 		RespawnTicks: 500
 		ExitByBudding: false
 		AggregateHealth: false
+    SpawnActorOnDeath@zergsoilkilled:
+        Actor: zergsoilkiller
+
 sc_zerg_larva:
 	Inherits: ^Soldier
 	Inherits@supply: ^ProducesUnits
@@ -2241,6 +2308,7 @@ SCCREEPCOLONY:
 	Inherits: ^Defense
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EXPERIENCE: ^GainsExperienceBuildings
 	Selectable:
 		Bounds: 44,44
 		Class: sccreepcolony
@@ -2264,8 +2332,9 @@ SCCREEPCOLONY:
 		Queue: Building.Zerg, RABuilding.Zerg
 		Description: Can be upgraded to Sunken or Spore Colonies.
 	Building:
-		Footprint: xx xx
-		Dimensions: 2,2
+		Footprint: xX xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
 		BuildSounds: zchrdy00.aud
 		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil		##########
 	Health:
@@ -2344,6 +2413,10 @@ SCCREEPCOLONY:
    	LaysTerrain:
 		Template: 858
 		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune
+	Explodes@remover:
+		Weapon: CreepRemover
+		EmptyWeapon: CreepRemover
+
 SCBOTCREEPCOLONY:
 	Inherits: SCCREEPCOLONY
 	RenderSprites:
@@ -2411,6 +2484,13 @@ SCEXTRACTOR:
 	GrantConditionOnProduction@refineryup:
 		Condition: refineryup
 		Actors: pscupscrefinery3
+    SpawnActorOnDeath@zergsoilkilled:
+        Actor: zergsoilkiller3
+    CashTrickler@player:
+		RequiresCondition: refineryup
+		Interval: 50
+		Amount: 50
+		ShowTicks: True
 pscupscrefinery3:
 	Tooltip:
 		Name: Vespene Gas Collector
@@ -2420,7 +2500,7 @@ pscupscrefinery3:
 		Queue: Addon.upscrefinery3
 		Description: The Refinery generates Vespene gas Capsules
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	RenderSprites:
 		Image: upscrefinery3
 	Interactable:
@@ -2472,7 +2552,8 @@ SCSPAWNINGPOOL:
         Actor: SCBROODLING    
     SpawnActorOnDeath@death3:
         Actor: SCBROODLING        
-
+    SpawnActorOnDeath@zergsoilkilled:
+        Actor: zergsoilkiller4
 SCEVOLUTIONCHAMBER:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
@@ -2517,7 +2598,8 @@ SCEVOLUTIONCHAMBER:
         Actor: SCBROODLING    
     SpawnActorOnDeath@death3:
         Actor: SCBROODLING        
-
+    SpawnActorOnDeath@zergsoilkilled:
+        Actor: zergsoilkiller4
 SCHYDRALISKDEN:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
@@ -2563,7 +2645,8 @@ SCHYDRALISKDEN:
         Actor: SCBROODLING    
     SpawnActorOnDeath@death3:
         Actor: SCBROODLING        
-        
+    SpawnActorOnDeath@zergsoilkilled:
+        Actor: zergsoilkiller4
 SCQUEENSNEST:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
@@ -2599,7 +2682,8 @@ SCQUEENSNEST:
         Actor: SCBROODLING        
     SpawnActorOnDeath@death4:
         Actor: SCBROODLING   
-
+    SpawnActorOnDeath@zergsoilkilled:
+        Actor: zergsoilkiller4
 SCSPIRE:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
@@ -2689,7 +2773,8 @@ SCSPIRE:
         Actor: SCBROODLING        
     SpawnActorOnDeath@death4:
         Actor: SCBROODLING   
-        
+    SpawnActorOnDeath@zergsoilkilled:
+        Actor: zergsoilkiller4
 SCULTRALISKCAVERN:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
@@ -2735,7 +2820,8 @@ SCULTRALISKCAVERN:
         Actor: SCBROODLING        
     SpawnActorOnDeath@death4:
         Actor: SCBROODLING   
-        
+    SpawnActorOnDeath@zergsoilkilled:
+        Actor: zergsoilkiller4
 SCDEFILERMOUND:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
@@ -2763,7 +2849,8 @@ SCDEFILERMOUND:
 	RevealsShroud:
 		Range: 7c0
 	-WithDeathAnimation:
-	
+    SpawnActorOnDeath@zergsoilkilled:
+        Actor: zergsoilkiller4
 
 SCNYDUSCANAL:
 	Inherits: ^BaseBuildingZerg
@@ -2808,10 +2895,11 @@ SCSUNKENCOLONY:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@shape: ^2x2Shape
 	Inherits@EMP: ^TurretEMP
+	Inherits@EXPERIENCE: ^GainsExperienceBuildings
 	Selectable:
 		Bounds: 44,44
 	Valued:
-		Cost: 200
+		Cost: 500
 	Tooltip:
 		Name: Sunken Colony
 	ProvidesPrerequisite:
@@ -2831,7 +2919,7 @@ SCSUNKENCOLONY:
 	Health:
 		HP: 60000
 	Armor:
-		Type: Heavy
+		Type: Concrete
 	RevealsShroud:
 		Range: 9c0
 	DetectCloaked:
@@ -2853,10 +2941,11 @@ SCSPORECOLONY:
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@shape: ^2x2Shape
 	Inherits@EMP: ^TurretEMP
+	Inherits@EXPERIENCE: ^GainsExperienceBuildings
 	Selectable:
 		Bounds: 44,44
 	Valued:
-		Cost: 200
+		Cost: 500
 	Tooltip:
 		Name: Spore Colony
 	ProvidesPrerequisite:
@@ -2904,7 +2993,7 @@ SCLAIR:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
 	Valued:
-		Cost: 1400
+		Cost: 3000
 	Tooltip:
 		Name: Lair
 	ProvidesPrerequisite@1:
@@ -2922,7 +3011,7 @@ SCLAIR:
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: zchrdy00.aud
 	Health:
-		HP: 180000
+		HP: 300000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -3037,7 +3126,7 @@ SCHIVE:
 		Bounds: 72,48
 		DecorationBounds: 72,54,0,-3
 	Valued:
-		Cost: 2000
+		Cost: 4500
 	Tooltip:
 		Name: Hive
 	ProvidesPrerequisite@1:
@@ -3057,7 +3146,7 @@ SCHIVE:
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: zchrdy00.aud
 	Health:
-		HP: 250000
+		HP: 450000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -3285,7 +3374,8 @@ SCINFESTEDCOMMANDCENTER:
         Actor: SCBROODLING        
     SpawnActorOnDeath@death6:
         Actor: SCBROODLING   
-        
+    SpawnActorOnDeath@zergsoilkilled:
+        Actor: zergsoilkiller3
 ####################################################################################################
 #		UNIT TERRAN
 ####################################################################################################
@@ -3476,7 +3566,7 @@ SCMARINE:
 
 SCFIREBAT:
 	Inherits: ^SCTINFANTRY
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@stim: ^Stimpackable
@@ -3693,7 +3783,7 @@ SCSIEGETANK:
 	Inherits@EMP: ^TurretEMP
     Inherits@SHADOWS: ^Shadows
 	Valued:
-		Cost: 1200
+		Cost: 3000
 	Tooltip:
 		Name: Siege Tank
 	Buildable:
@@ -3705,7 +3795,7 @@ SCSIEGETANK:
 		Locomotor: tracked
 		RequireForceMoveCondition: !undeployed
 	Health:
-		HP: 50000
+		HP: 80000
 	RevealsShroud:
 		Range: 9c0
 	RevealOnFire:
@@ -3713,7 +3803,7 @@ SCSIEGETANK:
 	Armor:
 		Type: Heavy
     Power:
-        Amount: -50
+        Amount: -100
 	Turreted:
 		TurnSpeed: 10
 		Offset: -256,0,256
@@ -3731,6 +3821,7 @@ SCSIEGETANK:
 	Armament@DEPLOYED:
 		Name: deployed
 		Weapon: SiegeTankSiegeCanon
+		LocalOffset: 600,0,0
 		RequiresCondition: deployed
 	AttackTurreted:
 		Turrets: primary,deployed
@@ -3767,9 +3858,9 @@ SCSIEGETANK:
 		RequiresCondition: !deployed
 	AIDeployNotifier:
 		DeployTrigger: Attack
-		DeployChance: 50
+		DeployChance: 75
 		DeployTicks: 1000
-		UndeployTicks: 1000
+		UndeployTicks: 3000
 	Voiced:
 		VoiceSet: SCSiegeTankVoice
 	DeathSounds:
@@ -4193,7 +4284,7 @@ SCBATTLECRUISER:
 	Inherits@explode: ^HeliExplodeLarge
 	Inherits@announce: ^AnnounceGlobal
 	Valued:
-		Cost: 2000
+		Cost: 5000
 	Tooltip:
 		Name: Battlecruiser
 	UpdatesPlayerStatistics:
@@ -4206,11 +4297,11 @@ SCBATTLECRUISER:
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
-		Speed: 40
+		Speed: 50
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
-		HP: 80000
+		HP: 100000
 	RevealsShroud:
 		Range: 10c0
 		Type: GroundPosition
@@ -4231,7 +4322,7 @@ SCBATTLECRUISER:
 	Selectable:
 		DecorationBounds: 60,48
 	Power:
-		Amount: -100
+		Amount: -200
 	Voiced:
 		VoiceSet: SCBattleCruiserVoice
 	DeathSounds:
@@ -4386,6 +4477,13 @@ SCTMCV:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+        
+SCTMCV.bot:
+    Inherits: SCTMCV
+	Buildable:
+		BuildPaletteOrder: 100
+        BuildLimit: 1
+		Prerequisites: Factory, ~botplayer, allowsMCV
 
 SCJIMRAYNOR:
 	Inherits: ^SCTINFANTRY
@@ -4401,11 +4499,12 @@ SCJIMRAYNOR:
     Power:
         Amount: -200
 	Buildable:
-		BuildPaletteOrder: 10
+		BuildPaletteOrder: 50
 		Queue: Infantry.Terran, RAInfantry.Terran, Infantry.X_Infantry
 		Description: Heroic Terran Unit\nCan Stimpack\nExtremely Durable\n Strong vs Everything
 		IconPalette: ra2
 		BuildLimit: 1
+		Prerequisites: Academy, ~techlevel.medium
 	Mobile:
 		Speed: 54
 	Health:
@@ -4589,7 +4688,7 @@ SCPROBE:
 		Types: thiefproof
 
 SCZEALOT:
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
@@ -4604,7 +4703,7 @@ SCZEALOT:
 		Queue: Infantry.Protoss, RAInfantry.Protoss, Infantry.X_Infantry
 		Description: Protoss infantry, attacks in close combat.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft\n Uncrushable
 	Mobile:
-		Speed: 95
+		Speed: 100
 	Health:
 		HP: 22500
 	Armor:
@@ -4620,7 +4719,7 @@ SCZEALOT:
 	AttackFrontal:
 	WithInfantryBody:
 	Power:
-		Amount: -15
+		Amount: -20
 	Passenger:
 		Weight: 2
 		PipType: blue
@@ -4641,7 +4740,7 @@ SCDRAGOON:
 		Bounds: 24,24
 		DecorationBounds: 24,24
 	Valued:
-		Cost: 600
+		Cost: 1000
 	Tooltip:
 		Name: Dragoon
 	Buildable:
@@ -4654,7 +4753,7 @@ SCDRAGOON:
 		TurnSpeed: 255
 		Locomotor: wheeled
 	Health:
-		HP: 45000
+		HP: 65000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -4677,7 +4776,7 @@ SCDRAGOON:
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	Power:
-		Amount: -20
+		Amount: -30
 	Passenger:
 		Weight: 4
 		PipType: blue
@@ -4697,7 +4796,7 @@ SCDRAGOON:
 		RequiresCondition: updragoonrange
 
 SCHIGHTEMPLAR:
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
@@ -4715,7 +4814,7 @@ SCHIGHTEMPLAR:
 		Speed: 75
 		Locomotor: hover
 	Health:
-		HP: 12000
+		HP: 12500
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -4730,7 +4829,7 @@ SCHIGHTEMPLAR:
 		MinIdleDelay: 1
 		MaxIdleDelay: 2
 	Power:
-		Amount: -30
+		Amount: -50
 	-Crushable:
 	Passenger:
 		Weight: 2
@@ -4744,13 +4843,13 @@ SCHIGHTEMPLAR:
 		InitialStance: HoldFire
 
 SCDARKTEMPLAR:
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
 	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 900
+		Cost: 1000
 	Tooltip:
 		Name: Dark Templar
 	Buildable:
@@ -4759,9 +4858,9 @@ SCDARKTEMPLAR:
 		Queue: Infantry.Protoss, RAInfantry.Protoss, Infantry.X_Infantry
 		Description: Protoss stealth warrior, attacks in close combat.\n Strong vs ground targets\n Uncrushable
 	Mobile:
-		Speed: 108
+		Speed: 125
 	Health:
-		HP: 18900
+		HP: 25000
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -4777,13 +4876,13 @@ SCDARKTEMPLAR:
 	WithIdleOverlay@Shadow:
 		Offset: 0,0,-360
 	Cloak:
-		InitialDelay: 60
-		CloakDelay: 60
+		InitialDelay: 50
+		CloakDelay: 50
 		UncloakOn: None
 		IsPlayerPalette: true
         PauseOnCondition: cloak-force-disabled || base-reveal
 	Power:
-		Amount: -30
+		Amount: -50
 	-Crushable:
 	Passenger:
 		Weight: 2
@@ -4800,7 +4899,7 @@ SCSHUTTLE:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@speed: ^GraviticUpgrade
 	Valued:
-		Cost: 600
+		Cost: 750
 	Tooltip:
 		Name: Shuttle
 	UpdatesPlayerStatistics:
@@ -4811,13 +4910,13 @@ SCSHUTTLE:
 		Description: Fast transport for all ground units.\n  Unarmed
 	Aircraft:
 		TurnSpeed: 5
-		Speed: 105
+		Speed: 125
 		InitialFacing: 224
 		AltitudeVelocity: 1c512
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
-		HP: 16800
+		HP: 17500
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -4836,7 +4935,7 @@ SCSHUTTLE:
 		DecorationBounds: 36,32
 		Class: scshuttle
 	Power:
-		Amount: -20
+		Amount: -25
 	Voiced:
 		VoiceSet: SCShuttleVoice
 	DeathSounds:
@@ -4860,11 +4959,11 @@ scshuttle.reaver:
 		DeployChance: 100
 		DeployTicks: 100
 	ProductionCostMultiplier:
-		Multiplier: 300
+		Multiplier: 200
 	KillsSelf:
 		RemoveInstead: true
 		RequiresCondition: !loaded && botmicro
-		Delay: 200
+		Delay: 500
 	EditorOnlyTooltip:
 		Name: Loaded Shuttle (Reaver)
 
@@ -4875,7 +4974,7 @@ scshuttle.reaver2:
 	Cargo:
 		InitialUnits: screaver, screaver
 	ProductionCostMultiplier:
-		Multiplier: 500
+		Multiplier: 1000
 	EditorOnlyTooltip:
 		Name: Loaded Shuttle (2 Reavers)
 
@@ -4884,20 +4983,20 @@ scshuttle.hightemplar:
 	Buildable:
 		Prerequisites: Templar Archives, ~hardbotplayer
 	Cargo:
-		InitialUnits: schightemplar, schightemplar
+		InitialUnits: schightemplar, schightemplar, schightemplar
 	ProductionCostMultiplier:
-		Multiplier: 400
+		Multiplier: 300
 	EditorOnlyTooltip:
-		Name: Loaded Shuttle (2 High Templar)
+		Name: Loaded Shuttle (3 High Templar)
 
 scshuttle.darktemplar:
 	Inherits: scshuttle.reaver
 	Buildable:
 		Prerequisites: Citadel of Adun, ~hardbotplayer
 	Cargo:
-		InitialUnits: scdarktemplar, scdarktemplar, scdarktemplar, scdarktemplar
+		InitialUnits: scdarktemplar, scdarktemplar, scdarktemplar, scdarktemplar, scdarktemplar
 	ProductionCostMultiplier:
-		Multiplier: 700
+		Multiplier: 500
 	EditorOnlyTooltip:
 		Name: Loaded Shuttle (4 Dark Templar)
 
@@ -4914,7 +5013,7 @@ SCREAVER:
 	Selectable:
 		DecorationBounds: 28,28
 	Valued:
-		Cost: 1200
+		Cost: 4000
 	Tooltip:
 		Name: Reaver
 	Buildable:
@@ -4923,42 +5022,42 @@ SCREAVER:
 		Queue: Vehicle.Protoss, RAVehicle.Protoss, Vehicle.X_Vehicles
 		Description: Long-range rocket artillery.\n Strong vs Vehicles, Buildings\n Weak vs Aircraft
 	Mobile:
-		Speed: 35
-    Power:
-        Amount: -50
+		Speed: 40
 	Health:
-		HP: 50000
+		HP: 40000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
 		Range: 9c0
 		RevealGeneratedShroud: False
-	Armament:
+	Armament@primary:
+		Name: primary
 		Weapon: ScarabLaunch
-	CarrierMaster:
-		SpawnIsMissile: true
-		Actors: scscarab,scscarab,scscarab,scscarab,scscarab
-		RespawnTicks: 300
-		SpawnAllAtOnce: false
+		PauseOnCondition: !ammo
+	Armament@secondary:
+		Name: secondary
+		Weapon: ScarabLaunchDummy
 		RequiresCondition: !upcapacity
-	CarrierMaster@2:
-		SpawnIsMissile: true
-		Actors: scscarab,scscarab,scscarab,scscarab,scscarab,scscarab,scscarab,scscarab,scscarab,scscarab
-		RespawnTicks: 300
-		SpawnAllAtOnce: false
-		RequiresCondition: upcapacity
+		PauseOnCondition: !ammo
 	AutoTarget:
-		ScanRadius: 10
+		ScanRadius: 15
 	AttackFrontal:
 	WithFacingSpriteBody:
 	WithMoveAnimation:
 	SelectionDecorations:
 	DeathSounds:
 	Power:
-		Amount: -40
+		Amount: -75
 	Passenger:
 		Weight: 4
 		PipType: blue
+	AmmoPool:
+		Ammo: 10
+		PipCount: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 400
+		Count: 1
 	Voiced:
 		VoiceSet: SCReaverVoice
 	Inherits@EXT: ^ExternalConditions					##########
@@ -4970,35 +5069,40 @@ SCREAVER:
 	GrantConditionOnPrerequisite@capacity:
 		Condition: upcapacity
 		Prerequisites: upreavercapacity
+	GrantConditionOnPrerequisite@weap:
+		Prerequisites: upreaverdamage
+		Condition: upreaverdamage
+	FirepowerMultiplier@weap:
+		Modifier: 150
+		RequiresCondition: upreaverdamage
 
 screaver2:
 	Inherits: SCREAVER
 	Buildable:
 		Prerequisites: ~wip-content
 		Description: Test for alternative reaver implementation
-	-CarrierMaster:
-	-CarrierMaster@2:
+	#-CarrierMaster:
+	#-CarrierMaster@2:
 	Mobile:
-	Armament:
+	Armament@1:
+		Weapon: ScarabLaunch
 		PauseOnCondition: !ammo || firing
 	Armament@2:
-		Weapon: ScarabLaunch
-		Name: secondary
+		#Weapon: ScarabLaunch
+		#Name: secondary
+		Weapon: ScarabLaunchDummy
+		RequiresCondition: upcapacity
+		LocalOffset: 624,0,208
+		MuzzleSequence: muzzle
 	MobSpawnerMaster:
 		Actors: scscarab2
 		RespawnTicks: 80
 		AggregateHealth: false
 		RequiresCondition: firing
 		ArmamentNames: primary, secondary
-	AmmoPool:
-		Ammo: 5
-		AmmoCondition: ammo
-		Armaments: primary
-	ReloadAmmoPool:
-		Delay: 500
 	GrantConditionOnAttack:
 		Condition: firing
-		RevokeDelay: 160
+		RevokeDelay: 50
 	RenderSprites:
 		Image: screaver
 
@@ -5125,7 +5229,7 @@ SCOBSERVER:
 		RequiresCondition: botmicro
 
 SCARCHON:
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@explode: ^UnitExplodeSmallProtoss
 	Inherits@protoss: ^LargeProtoss
@@ -5139,7 +5243,7 @@ SCARCHON:
 		IsPlayerPalette: true
 		PauseOnCondition: chronobeamed
 	Valued:
-		Cost: 1500
+		Cost: 3000
 	Tooltip:
 		Name: Archon
 	Buildable:
@@ -5151,7 +5255,7 @@ SCARCHON:
 		Speed: 75
 		Locomotor: hover
 	Health:
-		HP: 85000
+		HP: 75000
 	Armor:
 		Type: Heavy
 	Targetable:
@@ -5177,7 +5281,7 @@ SCARCHON:
 	-HitShape:
 	HitShape:
 	Power:
-		Amount: -60
+		Amount: -100
 	Passenger:
 		Weight: 4
 		PipType: blue
@@ -5197,7 +5301,7 @@ SCSCOUT:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@speed: ^GraviticUpgrade
 	Valued:
-		Cost: 1000
+		Cost: 1250
 	Tooltip:
 		Name: Scout
 	UpdatesPlayerStatistics:
@@ -5214,7 +5318,7 @@ SCSCOUT:
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
-		HP: 30000
+		HP: 33333
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -5245,7 +5349,7 @@ SCSCOUT:
 	Selectable:
 		DecorationBounds: 30,24
 	Power:
-		Amount: -30
+		Amount: -35
 	Voiced:
 		VoiceSet: SCScoutVoice
 
@@ -5316,7 +5420,7 @@ SCCARRIER:
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@announce: ^AnnounceGlobal
 	Valued:
-		Cost: 2500
+		Cost: 4000
 	Tooltip:
 		Name: Carrier
 	UpdatesPlayerStatistics:
@@ -5328,13 +5432,13 @@ SCCARRIER:
 		Description: Heavy protoss warship, deploys\n5 interceptor craft.\n Strong vs Vehicles, Aircraft
 	Aircraft:
 		InitialFacing: 224
-		TurnSpeed: 7
-		Speed: 50
+		TurnSpeed: 8
+		Speed: 64
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 		CruiseAltitude: 1c512
 	Health:
-		HP: 60000
+		HP: 80000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -5348,7 +5452,7 @@ SCCARRIER:
 	CarrierMaster:
 		Actors: SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR
 		RearmTicks: 10
-		RespawnTicks: 300
+		RespawnTicks: 200
 		InstaRepair: true
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
@@ -5358,7 +5462,7 @@ SCCARRIER:
 	Selectable:
 		DecorationBounds: 60,48
 	Power:
-		Amount: -100
+		Amount: -200
 	Voiced:
 		VoiceSet: SCCarrierVoice
 
@@ -5373,8 +5477,8 @@ SCINTERCEPTOR:
 		Name: Interceptor
 	Aircraft:
 		InitialFacing: 224
-		TurnSpeed: 7
-		Speed: 180
+		TurnSpeed: 8
+		Speed: 200
 		Repulsable: false
 		VTOL: true
 		CruiseAltitude: 1c256
@@ -5505,9 +5609,16 @@ SCPMCV:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+        
+SCPMCV.bot:
+    Inherits: SCPMCV
+	Buildable:
+		BuildPaletteOrder: 100
+        BuildLimit: 1
+		Prerequisites: Robotics Facility, ~botplayer, allowsMCV
 
 SCZERATUL:
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
@@ -5518,12 +5629,12 @@ SCZERATUL:
 	Tooltip:
 		Name: Zeratul
 	Buildable:
-		BuildPaletteOrder: 10
-		Prerequisites:
+		BuildPaletteOrder: 50
 		Queue: Infantry.Protoss, RAInfantry.Protoss, Infantry.X_Infantry
 		Description: Protoss Hero. Is pretty mobile, durable and has powerful splash melee attack\n Strong vs Ground\n Weak vs Air
 		BuildLimit: 1
 		IconPalette: ra2
+		Prerequisites: Citadel of Adun, ~techlevel.medium
 	Mobile:
 		Speed: 106
 	Health:
@@ -5675,7 +5786,7 @@ SCDRONE:
 		Class: scdrone
 
 SCZERGLING:
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@zerg: ^BasicZerg
@@ -6032,7 +6143,7 @@ SCQUEEN:
 	Aircraft:
 		InitialFacing: 224
 		TurnSpeed: 7
-		Speed: 35
+		Speed: 102
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
@@ -6047,12 +6158,7 @@ SCQUEEN:
 		AttackType: Hover
 	SelectionDecorations:
     Armament:
-		Weapon: QueenSpine
-		LocalOffset: 0,0,200
-		FireDelay: 2
-		MuzzleSequence: muzzle
-	Armament@2:
-		Weapon: QueenSpineAA
+		Weapon: QueenBroodling
 		LocalOffset: 0,0,200
 		FireDelay: 2
 		MuzzleSequence: muzzle   
@@ -6086,7 +6192,7 @@ SCQUEEN:
 		DeployChance: 100      
         
 SCULTRALISK:
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@zerg: ^VeryLargeZerg
     Inherits@MC: ^MCImmune
@@ -6097,7 +6203,7 @@ SCULTRALISK:
 		Bounds: 24,24
 		DecorationBounds: 24,24
 	Valued:
-		Cost: 1500
+		Cost: 2000
 	Tooltip:
 		Name: Ultralisk
 	Buildable:
@@ -6353,7 +6459,7 @@ SCDEFILER:
 	Inherits@EXT: ^ExternalConditions
     Inherits@SHADOWS: ^Shadows
 	Valued:
-		Cost: 1200
+		Cost: 1500
 	Tooltip:
 		Name: Defiler
 	Buildable:
@@ -6362,11 +6468,11 @@ SCDEFILER:
 		Queue: Infantry.Zerg, RAInfantry.Zerg, Infantry.X_Infantry
 		Description: Zerg support strain.\nAttack reduces targets' health over time\n Strong vs clustered units\n Special Ability: Dark Swarm
 	Mobile:
-		Speed: 60
+		Speed: 50
 	Health:
-		HP: 20000
+		HP: 10000
 	Armor:
-		Type: Light
+		Type: none
 	RevealsShroud:
 		Range: 9c0
 	Armament:
@@ -6389,8 +6495,8 @@ SCDEFILER:
 	-ExternalCondition@DarkSwarm:
 	AIDeployNotifier:
 		DeployTrigger: Damage
-		DeployChance: 50
-		DeployTicks: 1000
+		DeployChance: 33
+		DeployTicks: 333
 		UndeployTicks: 0
 	Voiced:
 		VoiceSet: SCDefilerVoice					##########
@@ -6411,7 +6517,7 @@ DARKSWARM:
 		AlwaysVisibleStances: None
 		Type: GroundPosition
 	Health:
-		HP: 100
+		HP: 33
 	HitShape:
 	Aircraft:
 		Repulsable: false
@@ -6432,7 +6538,7 @@ DARKSWARM:
 
 SCBROODLING:
 	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
 		Cost: 50
@@ -6564,7 +6670,7 @@ SCZMCV:
 		Description: Builds structures and provides radar.
         BuildDuration: 500
         BuildDurationModifier: 100
-		Prerequisites: ~mmzerg
+		Prerequisites: ~mmzerg, Evolution Chamber
 	Tooltip:
 		Name: Mobile Construction Vehicle (Zerg)
 	Selectable:
@@ -6592,6 +6698,14 @@ SCZMCV:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+        
+SCZMCV.bot:
+    Inherits: SCZMCV
+	Buildable:
+		BuildPaletteOrder: 100
+        BuildLimit: 2
+		Prerequisites: ~mmzerg, Evolution Chamber, ~botplayer, allowsZMCV
+        
 
 SCZTRUCK:
 	Inherits: TRUCK
