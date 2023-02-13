@@ -30,7 +30,7 @@ namespace OpenRA.Mods.CA.Traits
 	public class CashTransferToAlliesInfo : PausableConditionalTraitInfo
 	{
 		[Desc("Duration between cash transfers.")]
-		public readonly int ChargeDuration = 15;
+		public readonly int ChargeDuration = 5;
 
 		[Desc("Whether to show the cash tick indicators rising from the actor.")]
 		public readonly bool ShowTicks = true;

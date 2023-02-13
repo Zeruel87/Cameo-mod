@@ -122,6 +122,8 @@ Player:
  	ClassicProductionQueue@UPGRADEPOLICECITY:
 		Type: Policeupg.SimCity
 		DisplayOrder: 3
+		QueueLimit: 1
+		ItemLimit: 1
 		Group: Addon
 		LowPowerModifier: 300
 		ReadyAudio: UnitReady
@@ -129,30 +131,84 @@ Player:
 		LimitedAudio: BuildingInProgress
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled   
+		CancelledAudio: Cancelled
         
 ^SimCity_BPV:
-    GrantConditionOnPrerequisite@bpv:
-        Condition: simcity_bpv
-        Prerequisites: simcity_bpv
-    DamageMultiplier@bpv:
-        Modifier: 75
-        RequiresCondition: simcity_bpv
+	GrantConditionOnPrerequisite@bpv:
+		Condition: simcity_bpv
+		Prerequisites: simcity_bpv
+	DamageMultiplier@bpv:
+		Modifier: 75
+		RequiresCondition: simcity_bpv
+
+SimCityUnitLevelUp:
+	GrantConditionOnPrerequisite@InstructorLevel1:
+		Prerequisites: InstructorLevel1
+		Condition: InstructorLevel1
+	GrantConditionOnPrerequisite@InstructorLevel2:
+		Prerequisites: InstructorLevel2
+		Condition: InstructorLevel2
+	ProducibleWithLevel:
+		InitialLevels: 1
+		Prerequisites: InstructorLevel3
+	ExperienceTrickler@InstructorLevel1:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: InstructorLevel1
+	ExperienceTrickler@InstructorLevel2:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: InstructorLevel2
+	GainsExperienceMultiplier:
+		Modifier: 200
+		RequiresCondition: InstructorLevel2
+		
+SimCityBuildingLevelUp:
+	GrantConditionOnPrerequisite@ArchitectLevel1:
+		Prerequisites: ArchitectLevel1
+		Condition: ArchitectLevel1
+	GrantConditionOnPrerequisite@ArchitectLevel2:
+		Prerequisites: ArchitectLevel2
+		Condition: ArchitectLevel2
+	ProducibleWithLevel:
+		InitialLevels: 1
+		Prerequisites: ArchitectLevel3
+	ExperienceTrickler@ArchitectLevel1:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: ArchitectLevel1
+	ExperienceTrickler@ArchitectLevel2:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: ArchitectLevel2
+	GainsExperienceMultiplier:
+		Modifier: 200
+		RequiresCondition: ArchitectLevel2
 
 ####################################################################################################
 #		VEHICLE
 ####################################################################################################
 
 CITYMCV:
+	Inherits: SimCityUnitLevelUp
 	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXT: ^ExternalConditions
 	Inherits@mcv: ^MCV
     Inherits@conyard: ^Conyard
 	Inherits@shadow: ^ScavShadow
-    Buildable:
+	Buildable:
 		Queue: Defence.SimCity, RADefence.SimCity
 		BuildPaletteOrder: 30
-        Prerequisites: anypower
+		Prerequisites: anypower
 		Description: Deploys into Mayor's house.\n\nMayor's house\nBuffs units and buildings.\nCan be upgraded with Architects
 		Icon: cityicon
 	Valued:
@@ -163,10 +219,10 @@ CITYMCV:
 		Priority: 4
 		DecorationBounds: 36,36
 	Mobile:
-		Speed: 71
+		Speed: 75
 		Locomotor: heavywheeled
 	Health:
-		HP: 120000
+		HP: 125000
 	Repairable:
 		HpPerStep: 2182
 	Armor:
@@ -190,8 +246,17 @@ CITYMCV:
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmsimcity
 
+CITYMCV.bot:
+	Inherits: CITYMCV
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildLimit: 1
+		Prerequisites: anypower, ~botplayer, allowsMCV
+
 CITYHARVESTER:
+	Inherits: SimCityUnitLevelUp
 	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXT: ^ExternalConditions
 	Inherits@harv: ^Harvester
 	Buildable:
@@ -275,7 +340,9 @@ CITYTRUCKXXL:
 		Scale: 1.1
 
 CITYAMBULANCE:
+	Inherits: SimCityUnitLevelUp
 	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
 	Inherits@EMP: ^TurretEMP
 	Inherits@shadow: ^ScavShadow
@@ -318,6 +385,7 @@ CITYAMBULANCE:
 		Scale: 0.8
 
 CITYFIRETRUCK:
+	Inherits: SimCityUnitLevelUp
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -333,6 +401,7 @@ CITYFIRETRUCK:
 		Name: Fire Truck
 	Buildable:
 		BuildPaletteOrder: 20
+		BuildDurationModifier: 50
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		Description: Truck armed with a water cannon.\n Strong vs Infantry, Buildings\n Increases damage resistance of nearby allied units\nResistant against fire
 	Mobile:
@@ -366,10 +435,11 @@ CITYFIRETRUCK:
         InitialUnits: CITYFIREFIGHTER, CITYFIREFIGHTER, CITYFIREFIGHTER, CITYFIREFIGHTER
 		Types: Infantry
 		LoadingCondition: notmobile
-    AIDeployNotifier:
-		DeployChance: 100 
+	AIDeployNotifier:
+		DeployChance: 100
         
 CITYPOLICECAR:
+	Inherits: SimCityUnitLevelUp
 	Inherits: ^Tank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -381,8 +451,7 @@ CITYPOLICECAR:
 	Buildable:
 		Queue: Vehicle.SimCity, RAVehicle.SimCity
 		BuildPaletteOrder: 20
-        BuildDuration: 300
-        BuildDurationModifier: 100
+		BuildDurationModifier: 35
 		Description: Light vehicle that drives police officers to their destination.\nEquipped with Taser\nCan carry up to 2 units\nIncreases damage output of nearby allied units
 	Valued:
 		Cost: 800
@@ -424,37 +493,39 @@ CITYPOLICECAR:
         InitialUnits: CITYPOLICEOFFICER, CITYPOLICEOFFICER
 		Types: Infantry
 		LoadingCondition: notmobile
-    AIDeployNotifier:
+	AIDeployNotifier:
 		DeployChance: 100 
 
 CITYSWATVAN:
-    Inherits: CITYPOLICECAR
-    Buildable:
-        Description: Heavy police vehicle driving S.W.A.T. to their destination\nEquipped with Taser.\nCan carry up to 4 units\nSWAT Units inside are equipped with tasers
-        Prerequisites: citylibrary, citybank, ~techlevel.high
-        BuildDuration: 600
-        BuildDurationModifier: 100
-  	Valued:
-		Cost: 3000    
-  	Health:
+	Inherits: CITYPOLICECAR
+	Buildable:
+		Description: Heavy police vehicle driving S.W.A.T. to their destination\nEquipped with Taser.\nCan carry up to 4 units\nSWAT Units inside are equipped with tasers
+		Prerequisites: citylibrary, citybank, ~techlevel.high
+		BuildDurationModifier: 25
+	Valued:
+		Cost: 2000    
+	Health:
 		HP: 60000
-  	Tooltip:
+	Tooltip:
 		Name: S.W.A.T. Van      
 	Armor:
 		Type: Medium      
   	Mobile:
 		Speed: 90      
-    Cargo:
-        PipCount: 4
-        MaxWeight: 4
-        InitialUnits: CITYSWATS, CITYSWATS, CITYSWATS, CITYSWATS
+	Cargo:
+		PipCount: 4
+		MaxWeight: 4
+		InitialUnits: CITYSWATS, CITYSWATS, CITYSWATS, CITYSWATS
 		Types: Infantry 
   	RenderSprites:
 		Scale: 0.8      
-    ReloadDelayMultiplier@taserswat:
-        RequiresCondition: simcity_taser
-        Modifier: 60
+	ReloadDelayMultiplier@taserswat:
+		RequiresCondition: simcity_taser
+		Modifier: 60
     -WithShadow:
+	AIDeployNotifier:
+		DeployTrigger: Damage
+		DeployChance: 100
     
 CITYBOTTRUCK:
 	Inherits: TRUCK
@@ -474,6 +545,9 @@ CITYBOTTRUCK:
 ####################################################################################################
 
 CITYMAYOR:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
+	Inherits: SimCityBuildingLevelUp
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@CPQ: ^CPQCondition
@@ -561,8 +635,18 @@ CITYMAYOR:
 		PipColor: Green
 		PipCount: 6
 		Capacity: 3000
+	RallyPoint:							##########
+	Exit@1:
+		SpawnOffset: -512,1536,0
+		ExitCell: 0,2
+		Facing: 130
+	Exit@2:
+		SpawnOffset: 512,1536,0
+		ExitCell: 1,2
+		Facing: 130
 
 CITYR:
+	Inherits: SimCityBuildingLevelUp
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^2x2Shape
@@ -574,16 +658,16 @@ CITYR:
 	Selectable:
 		Bounds: 48,48
 	Valued:
-		Cost: 100
+		Cost: 500
 	Tooltip:
 		Name: Residential
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: anypower
 		Queue: Building.SimCity, RABuilding.SimCity
-		BuildDuration: 200
-		Description: Generates tax revenue\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n Limit: 20
-		BuildLimit: 20
+		BuildDurationModifier: 25
+		Description: Generates tax revenue\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n #Limit: 20
+		#BuildLimit: 20
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -599,11 +683,14 @@ CITYR:
 	ProvidesPrerequisite@2:
 		Prerequisite: MoneyIncome
 	ExperienceTrickler:
-		Amount: 500
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
 		PauseOnCondition: lowpower
 		RequiresCondition: city-veteran <= 3
 
 CITYC:
+	Inherits: SimCityBuildingLevelUp
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^2x2Shape
@@ -614,16 +701,16 @@ CITYC:
 	Selectable:
 		Bounds: 48,48
 	Valued:
-		Cost: 100
+		Cost: 500
 	Tooltip:
 		Name: Commercial
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: anypower
 		Queue: Building.SimCity, RABuilding.SimCity
-		BuildDuration: 200
-		Description: Increases tax revenue from nearby Residentials\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n Limit: 5
-		BuildLimit: 5
+		BuildDurationModifier: 25
+		Description: Increases tax revenue from nearby Residentials\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n #Limit: 5
+		#BuildLimit: 5
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -636,16 +723,32 @@ CITYC:
 		Amount: -10
 	WithRangeCircle:
 		Range: 7c0
+		RequiresCondition: city-veteran == 0
+	WithRangeCircle@RANK1:
+		Range: 7c5
+		RequiresCondition: city-veteran == 1
+	WithRangeCircle@RANK2:
+		Range: 8c0
+		RequiresCondition: city-veteran == 2
+	WithRangeCircle@RANK3:
+		Range: 8c5
+		RequiresCondition: city-veteran == 3
+	WithRangeCircle@RANK4:
+		Range: 9c0
+		RequiresCondition: city-elite
 	ProvidesPrerequisite:
 		Prerequisite: Commercial
 	GivesBuildableArea:
 		AreaTypes: building, cityc
 	ExperienceTrickler:
-		Amount: 500
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
 		PauseOnCondition: lowpower
 		RequiresCondition: city-veteran <= 3
 
 CITYI:
+	Inherits: SimCityBuildingLevelUp
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@shape: ^2x2Shape
@@ -656,16 +759,16 @@ CITYI:
 	Selectable:
 		Bounds: 48,48
 	Valued:
-		Cost: 100
+		Cost: 500
 	Tooltip:
 		Name: Industrial
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: anypower
 		Queue: Building.SimCity, RABuilding.SimCity
-		BuildDuration: 200
-		Description: Increases speed of nearby units\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n Limit: 10
-		BuildLimit: 10
+		BuildDurationModifier: 25
+		Description: Increases speed of nearby units\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n #Limit: 10
+		#BuildLimit: 10
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -678,15 +781,30 @@ CITYI:
 		Amount: -10
 	WithRangeCircle:
 		Range: 9c0
-	
+		RequiresCondition: city-veteran == 0
+	WithRangeCircle@RANK1:
+		Range: 10c0
+		RequiresCondition: city-veteran == 1
+	WithRangeCircle@RANK2:
+		Range: 11c0
+		RequiresCondition: city-veteran == 2
+	WithRangeCircle@RANK3:
+		Range: 12c0
+		RequiresCondition: city-veteran == 3
+	WithRangeCircle@RANK4:
+		Range: 13c0
+		RequiresCondition: city-elite
 	ProvidesPrerequisite:
 		Prerequisite: Industrial
 	ExperienceTrickler:
-		Amount: 500
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
 		PauseOnCondition: lowpower
 		RequiresCondition: city-veteran <= 3
 
 CITYFD:
+	Inherits: SimCityBuildingLevelUp
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -694,17 +812,18 @@ CITYFD:
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCallStructure
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Selectable:
 		Bounds: 48,48
 	Valued:
-		Cost: 1200
+		Cost: 1500
 	Tooltip:
 		Name: Fire Department
 	Buildable:
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildPaletteOrder: 40
 		Prerequisites: MoneyIncome
-		BuildDuration: 500
+		BuildDurationModifier: 50
 		Description: Produces fire department units, Architects, and Instructors.\nDefense structure, can attack aircraft\nRequires power to operate
 	Building:
 		Footprint: xx xx ==
@@ -773,6 +892,7 @@ CITYFD:
 		Range: 7c0
 
 CITYPD:
+	Inherits: SimCityBuildingLevelUp
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
@@ -780,17 +900,18 @@ CITYPD:
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCallStructure
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Selectable:
 		Bounds: 48,48
 	Valued:
-		Cost: 1200
+		Cost: 1500
 	Tooltip:
 		Name: Police Department
 	Buildable:
 		Queue: Building.SimCity, RABuilding.SimCity
 		BuildPaletteOrder: 50
 		Prerequisites: MoneyIncome
-		BuildDuration: 500
+		BuildDurationModifier: 50
 		Description: Produces police units and dozers.\nDefense structure.\nRequires power to operate
 	Building:
 		Footprint: xx xx ==
@@ -863,6 +984,8 @@ CITYPD:
 		Prerequisite: vehicleproduction
 
 CITYHARBOR:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@ref: ^Refinery
 	Selectable:
@@ -915,6 +1038,7 @@ CITYHARBOR:
 		AreaTypes: building, cityi, citybot
 
 CITYCOAL:
+	Inherits: SimCityBuildingLevelUp
 	Inherits: ^BaseBuilding
 	Inherits@power: ^PowerPlant
 	AcceptsDeliveredExperience:
@@ -945,6 +1069,7 @@ CITYCOAL:
 	
 
 CITYNUKE:
+	Inherits: SimCityBuildingLevelUp
 	Inherits: ^BaseBuilding
 	Inherits@power: ^PowerPlant
 	AcceptsDeliveredExperience:
@@ -975,6 +1100,8 @@ CITYNUKE:
 	
 
 CITYAIRPORT:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@SW: ^PrimarySuperweapon
@@ -1124,6 +1251,8 @@ CITYAIRPORT:
 		Prerequisite: cityair
 
 CITYLIBRARY:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Selectable:
@@ -1153,6 +1282,8 @@ CITYLIBRARY:
 	
 
 CITYBANK:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Selectable:
@@ -1192,6 +1323,8 @@ CITYBANK:
 		Types: SpyInfiltrate, ThiefInfiltrate
 
 CITYPARK:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Selectable:
@@ -1221,6 +1354,8 @@ CITYPARK:
 		MaxRange: 2
 
 CITYFOUNTAIN:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Selectable:
@@ -1250,6 +1385,8 @@ CITYFOUNTAIN:
 		MaxRange: 2
 
 CITYSTADIUM:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	HitShape:
 		UseTargetableCellsOffsets: true
@@ -1277,6 +1414,8 @@ CITYSTADIUM:
 	
 
 CITYEXPO:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Selectable:
@@ -1302,6 +1441,8 @@ CITYEXPO:
 	
 
 CITYSTATION:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -1356,6 +1497,8 @@ CITYSTATION:
 	
 
 CITYMARIO:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Selectable:
@@ -1383,6 +1526,8 @@ CITYMARIO:
 	
 
 CITYCASINO:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@2: ^CashTricklerMultipliers
 	Inherits@shape: ^2x2Shape
@@ -1412,6 +1557,7 @@ CITYCASINO:
 	CashTrickler:
 		Interval: 600
 		Amount: 1000
+	CashTricklerBar:	
 	ProvidesPrerequisite@buildingname:
 	AirstrikePower@casino:
 		PauseOnCondition: lowpower
@@ -1440,6 +1586,8 @@ CITYCASINO:
 	
 
 CITYWINDMILL:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Selectable:
@@ -1464,6 +1612,8 @@ CITYWINDMILL:
 	
 
 CITYAMUSE:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Selectable:
@@ -1488,6 +1638,8 @@ CITYAMUSE:
 	
 
 CITYZOO:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -1548,6 +1700,7 @@ CITYZOO:
 	Inherits@EXT: ^ExternalConditions
 
 CITYFIREFIGHTER:
+	Inherits: SimCityUnitLevelUp
 	Inherits: ^CITYINFANTRY
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
@@ -1587,6 +1740,7 @@ CITYFIREFIGHTER:
 		ValidTypes: infantry							##########
 
 CITYPOLICEOFFICER:
+	Inherits: SimCityUnitLevelUp
 	Inherits: ^CITYINFANTRY
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
@@ -1641,12 +1795,18 @@ CITYPOLICEOFFICER:
 CITYARCHITECT:
 	Inherits: ^CITYINFANTRY
 	Inherits@selection: ^SelectableSupportUnit
+	ProvidesPrerequisite@ArchitectLevel1:
+		Prerequisite: ArchitectLevel1
+	ProvidesPrerequisite@ArchitectLevel3:
+		Prerequisite: ArchitectLevel3
 	Buildable:
+		BuildLimit: 1
+		BuildDurationModifier: 50
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 40
-		Description: Upgrades buildings by 1 rank.
+		Description: Upgrades a small area of buildings by 1 rank.\n Limit: 1
 	Valued:
-		Cost: 1000
+		Cost: 1500
 	Tooltip:
 		Name: Architect
 	Passenger:
@@ -1668,12 +1828,12 @@ CITYARCHITECT:
 		Icon: architect1
 		AllowMultiple: true
 		Description: Architect
-		LongDesc: Upgrades buildings by 1 rank.
+		LongDesc: Upgrades a small area of buildings by 1 rank.\n Limit: 1
 		SelectTargetSpeechNotification: SelectTarget
 		OnFireSound: text2.aud
-		ChargeInterval: 600
+		ChargeInterval: 1500
 		Duration: 0
-		Range: 3
+		Range: 4
 		DisplayRadarPing: True
 		Condition: city-veteran
 		SupportPowerPaletteOrder: 10
@@ -1681,14 +1841,20 @@ CITYARCHITECT:
 CITYELITEARCHITECT:
 	Inherits: ^CITYINFANTRY
 	Inherits@selection: ^SelectableSupportUnit
+	ProvidesPrerequisite@ArchitectLevel2:
+		Prerequisite: ArchitectLevel2
+	ProvidesPrerequisite@ArchitectLevel3:
+		Prerequisite: ArchitectLevel3
 	Buildable:
+		BuildLimit: 1
+		BuildDurationModifier: 50
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 70
 		Prerequisites: Library
-		Description: Upgrades buildings to Rank 4 (Elite).
+		Description: Upgrades a large area of buildings by 1 rank.\n Limit: 1
 		Icon: eliteicon
 	Valued:
-		Cost: 2000
+		Cost: 3000
 	Tooltip:
 		Name: Elite Architect
 	Passenger:
@@ -1712,25 +1878,31 @@ CITYELITEARCHITECT:
 		Icon: architect2
 		AllowMultiple: true
 		Description: Elite Architect
-		LongDesc: Upgrades buildings to Rank 4 (Elite).
+		LongDesc: Upgrades a large area of buildings by 1 rank.\n Limit: 1
 		SelectTargetSpeechNotification: SelectTarget
 		OnFireSound: text2.aud
-		ChargeInterval: 900
+		ChargeInterval: 3000
 		Duration: 0
-		Range: 3
+		Range: 5
 		DisplayRadarPing: True
-		Condition: city-elite
+		Condition: city-veteran
 		SupportPowerPaletteOrder: 10
 
 CITYINSTRUCTOR:
 	Inherits: ^CITYINFANTRY
 	Inherits@selection: ^SelectableSupportUnit
+	ProvidesPrerequisite@InstructorLevel1:
+		Prerequisite: InstructorLevel1
+	ProvidesPrerequisite@InstructorLevel3:
+		Prerequisite: InstructorLevel3
 	Buildable:
+		BuildLimit: 1
+		BuildDurationModifier: 50
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 50
-		Description: Upgrades units by 1 rank.
+		Description: Upgrades a small group of units by 1 rank.\n Limit: 1
 	Valued:
-		Cost: 1200
+		Cost: 1500
 	Tooltip:
 		Name: Instructor
 	Passenger:
@@ -1756,10 +1928,10 @@ CITYINSTRUCTOR:
 		Icon: instructor1
 		AllowMultiple: true
 		Description: Instructor
-		LongDesc: Upgrades a group of units by 1 rank.
+		LongDesc: Upgrades a small group of units by 1 rank.\n Limit: 1
 		SelectTargetSpeechNotification: SelectTarget
 		OnFireSound: text2.aud
-		ChargeInterval: 600
+		ChargeInterval: 1500
 		Duration: 0
 		Range: 2
 		DisplayRadarPing: True
@@ -1769,14 +1941,20 @@ CITYINSTRUCTOR:
 
 CITYELITEINSTRUCTOR:
 	Inherits: CITYINSTRUCTOR
+	ProvidesPrerequisite@InstructorLevel2:
+		Prerequisite: InstructorLevel2
+	ProvidesPrerequisite@InstructorLevel3:
+		Prerequisite: InstructorLevel3
 	Buildable:
+		BuildLimit: 1
+		BuildDurationModifier: 50
 		Queue: Infantry.SimCity, RAInfantry.SimCity
 		BuildPaletteOrder: 80
 		Prerequisites: Library
-		Description: Upgrades units to Rank 4 (Elite).
+		Description: Upgrades a large group of units by 1 rank.\n Limit: 1
 		Icon: eliteicon
 	Valued:
-		Cost: 2000
+		Cost: 3000
 	Tooltip:
 		Name: Elite Instructor
 	ProducibleWithLevel:
@@ -1786,14 +1964,14 @@ CITYELITEINSTRUCTOR:
 		Icon: instructor2
 		AllowMultiple: true
 		Description: Elite Instructor
-		LongDesc: Upgrades a group of units to elite rank.
+		LongDesc: Upgrades a large group of units by 1 rank.\n Limit: 1
 		SelectTargetSpeechNotification: SelectTarget
 		OnFireSound: text2.aud
-		ChargeInterval: 900
+		ChargeInterval: 3000
 		Duration: 0
-		Range: 2
+		Range: 3
 		DisplayRadarPing: True
-		Condition: rank-elite
+		Condition: rank-veteran
 		SupportPowerPaletteOrder: 10
 	RenderSprites:
 		Image: cityinstructor
@@ -1858,7 +2036,8 @@ CITYSWAT:
 		DeathTypes: DefaultDeath
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: citylibrary, citybank, ~techlevel.high, Police.sc2k
+		BuildDurationModifier: 40
+		Prerequisites: citylibrary, citybank, ~techlevel.high
 		Queue: Vehicle.SimCity, RAVehicle.SimCity
 		Description: Elite law enforcement Team armed with silenced\nsubmachine guns and EMP grenades.\n Strong vs ground targets\n Weak vs Aircraft
 	Tooltip:
@@ -1866,14 +2045,14 @@ CITYSWAT:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Valued:
-		Cost: 2000
+		Cost: 2500
 	Health:
 		HP: 100
 	Mobile:
-		Speed: 71
+		Speed: 75
 		Locomotor: foot  
-    Power:
-        Amount: -50
+	Power:
+		Amount: -50
 	Guardable:
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
@@ -1910,6 +2089,7 @@ CITYSWAT:
         VoiceSet: CommandoVoice
         
 CITYSWAT1:
+	Inherits: SimCityUnitLevelUp
 	Inherits: ^CITYINFANTRY
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -1918,12 +2098,14 @@ CITYSWAT1:
 	Tooltip:
 		Name: S.W.A.T. Officer
 	Mobile:
-		Speed: 71
+		Speed: 75
 		Voice: Move
 	Guard:
 		Voice: Move
 	Health:
-		HP: 9000
+		HP: 12500
+	Valued:
+		Cost: 500
 	Passenger:
 		PipType: green
 		Voice: Move
@@ -1945,13 +2127,11 @@ CITYSWAT1:
 		IdleSequences: idle1,idle2,idle3
 	Voiced:
 		VoiceSet: CommandoVoice
-	ProducibleWithLevel:
-		InitialLevels: 4
-    RenderSprites:
-        Image: CITYSWAT
-    MobSpawnerSlave:
-    -MapEditorData:   
-    -Passenger:
+	RenderSprites:
+		Image: CITYSWAT
+	MobSpawnerSlave:
+	-MapEditorData:   
+	-Passenger:
     
 CITYSWAT2:
     Inherits: CITYSWAT1
@@ -1960,48 +2140,50 @@ CITYSWAT2:
 		LocalOffset: -200,0,300
 
 CITYSWATS:
-    Inherits: CITYSWAT1
-    -MobSpawnerSlave:
-    Passenger:
-        CargoType: Infantry
-    Armament@SMG:
+	Inherits: CITYSWAT1
+	-MobSpawnerSlave:
+	Passenger:
+		CargoType: Infantry
+	Armament@SMG:
 		Weapon: TaserSWAT
 	Armament@GARRISONED:						##########
 		Name: garrisoned
 		Weapon: TaserSWAT
-    GrantConditionOnPrerequisite@taser:
-        Condition: simcity_taser
-        Prerequisites: simcity_taser    
-    ReloadDelayMultiplier@taserupg:
-        Modifier: 80
-        RequiresCondition: simcity_taser 
+	GrantConditionOnPrerequisite@taser:
+		Condition: simcity_taser
+		Prerequisites: simcity_taser    
+	ReloadDelayMultiplier@taserupg:
+		Modifier: 80
+		RequiresCondition: simcity_taser 
+
 CITYSWATGL:
+	Inherits: SimCityUnitLevelUp
 	Inherits: ^CITYINFANTRY
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-    Inherits@BPV: ^SimCity_BPV  
-    Inherits@MC: ^MCImmune
-    Buildable:
+	Inherits@BPV: ^SimCity_BPV  
+	Inherits@MC: ^MCImmune
+	Buildable:
+		BuildLimit: 1
 		BuildPaletteOrder: 30
 		Prerequisites: citylibrary, citybank, cityairport, ~techlevel.high
-        BuildDuration: 480
-        BuildDurationModifier: 100
+		BuildDurationModifier: 50
 		Queue: Vehicle.SimCity, RAVehicle.SimCity, Police.sc2k
 		Description: Stealth Elite law enforcement equipped with silenced Sniper Rifle\nCan he upgraded to get Grenade Launcher\nStrong vs Infantry, Air
         Icon: iconcomm
 	Tooltip:
 		Name: S.W.A.T. Specialist
-    Valued:
-        Cost: 1200
+	Valued:
+		Cost: 3000
 	Mobile:
 		Speed: 80
 		Voice: Move
-    Power:
-        Amount: -20
+	Power:
+		Amount: -20
 	Guard:
 		Voice: Move
 	Health:
-		HP: 10000
+		HP: 50000
 	Passenger:
 		PipType: green
 		Voice: Move
@@ -2011,15 +2193,15 @@ CITYSWATGL:
 		ScanRadius: 8
 	Armament@Sniper:
 		Weapon: SwatSniper
-        LocalOffset: 0,0,25
-  	Armament@GL:
+		LocalOffset: 0,0,25
+	Armament@GL:
 		Weapon: SwatGL
-        LocalOffset: 0,0,25     
-        RequiresCondition: SwatGL
-    -Passenger:
-    GrantConditionOnPrerequisite@gl:
-        Condition: SwatGL
-        Prerequisites: simcity_gl        
+		LocalOffset: 0,0,25     
+		RequiresCondition: SwatGL
+	-Passenger:
+	GrantConditionOnPrerequisite@gl:
+		Condition: SwatGL
+		Prerequisites: simcity_gl        
 	AttackFrontal:
 		Voice: Attack
 	AttackMove:
@@ -2029,8 +2211,6 @@ CITYSWATGL:
 		IdleSequences: idle1,idle2,idle3
 	Voiced:
 		VoiceSet: CommandoVoice
-	ProducibleWithLevel:
-		InitialLevels: 4
   	Cloak:
 		InitialDelay: 80
 		CloakDelay: 60
@@ -2039,9 +2219,9 @@ CITYSWATGL:
 		UncloakOn: Attack, Unload, Demolish, Damage
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled || base-reveal      
-    RenderSprites:
-        Image: cityswat
-        Scale: 1.1
+	RenderSprites:
+		Image: cityswat
+		Scale: 1.1
 CITYE6:
 	Inherits: E6
 	Buildable:
