@@ -11,6 +11,12 @@ World:
 		Game: SimCity
         Side: Factions
 		Description: SimCity from PC\nFeatures:\n- Generates revenue through taxation of Residential Zones\n- Use disasters as units.
+	FactionCA@sc2ka:
+		Name: SimCity 2000 (Alternative)
+		InternalName: sc2ka
+		Game: SimCity
+        Side: Factions
+		Description: Alternative Simcity 2000\nCustom Rules by Commando\nFeatures:\n- Disasters arent controlled\n- All units are based on law or military\n- Deleted some limits
     FactionCA@RandomCity:
 		Name: Any
 		InternalName: RandomCity
@@ -49,20 +55,20 @@ World:
 	MPStartUnits@mcvonlycity2k:
 		Class: none
 		ClassName: MCV Only
-		Factions: sc2k
+		Factions: sc2k, sc2ka
 		BaseActor: sc2kmcv
 
 	MPStartUnits@defaultcity2k:
 		Class: light
 		ClassName: Light Support
-		Factions: sc2k
+		Factions: sc2k, sc2ka
 		BaseActor: sc2kmcv
 		#SupportActors: cityambulance,cityfiretruck,citypolicecar
 
 	MPStartUnits@heavycity2k:
 		Class: heavy
 		ClassName: Heavy Support
-		Factions: sc2k
+		Factions: sc2k, sc2ka
 		BaseActor: sc2kmcv
 		#SupportActors: cityambulance,cityambulance,cityfiretruck,cityfiretruck,citypolicecar,citypolicecar
         
@@ -243,7 +249,7 @@ CITYHARVESTER:
 CITYTRUCK:
 	Inherits: TRUCK
 	Buildable:
-		Queue: Vehicle.SimCity, RAVehicle.SimCity
+		Queue: Vehicle.SimCity, RAVehicle.SimCity, Vehicle.sc2k, RAVehicle.sc2k
 		BuildPaletteOrder: 40
 		Prerequisites: Police Department
 	Tooltip:
@@ -255,9 +261,9 @@ CITYTRUCKXXL:
 	Inherits: TRUCK
 	Inherits@EXPERIENCE: ^GainsExperience
 	Buildable:
-		Queue: Vehicle.SimCity, RAVehicle.SimCity
+		Queue: Vehicle.SimCity, RAVehicle.SimCity, Vehicle.sc2k, RAVehicle.sc2k
 		BuildPaletteOrder: 70
-		Prerequisites: Bank
+		Prerequisites: Bank, Police Department
 		BuildDuration: 500
 	Valued:
 		Cost: 2000
@@ -327,6 +333,8 @@ CITYFIRETRUCK:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@shadow: ^ScavShadow
     Inherits@FireImmune: ^FireImmune
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 1500	#800
 	Tooltip:
@@ -368,7 +376,8 @@ CITYFIRETRUCK:
 		LoadingCondition: notmobile
     AIDeployNotifier:
 		DeployChance: 100 
-        
+    Voiced:
+        VoiceSet: FireFighterVoice
 CITYPOLICECAR:
 	Inherits: ^Tank
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
@@ -378,6 +387,8 @@ CITYPOLICECAR:
 	Inherits@EXT: ^ExternalConditions
 	Inherits@EMP: ^FrontalEMP
 	Inherits@shadow: ^ScavShadow
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
 	Buildable:
 		Queue: Vehicle.SimCity, RAVehicle.SimCity
 		BuildPaletteOrder: 20
@@ -400,8 +411,6 @@ CITYPOLICECAR:
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
 		Range: 6c0
-	Voiced:
-		VoiceSet: RAVehicleVoice
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
 	WithRangeCircle:
@@ -426,7 +435,8 @@ CITYPOLICECAR:
 		LoadingCondition: notmobile
     AIDeployNotifier:
 		DeployChance: 100 
-
+    Voiced:
+        VoiceSet: CopVehicleVoice
 CITYSWATVAN:
     Inherits: CITYPOLICECAR
     Buildable:
@@ -1561,7 +1571,7 @@ CITYFIREFIGHTER:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Queue: Infantry.SimCity, RAInfantry.SimCity, Infantry.X_Infantry, Police.sc2k  
+		Queue: Infantry.SimCity, RAInfantry.SimCity, Infantry.X_Infantry, FireDept.sc2k, RAFireDept.sc2k
 		Description: Emergency worker armed with a fire hose.\nStuns Vehicles and Cyborgs\nDeals bonus damage to cyborgs\nResistant against fire\n Strong vs Infantry, Buildings\n Weak vs Vehicles, Aircraft
 	Mobile:
 		Speed: 56
@@ -1585,13 +1595,16 @@ CITYFIREFIGHTER:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: infantry							##########
-
+    Voiced:
+        VoiceSet: FireFighterVoice
 CITYPOLICEOFFICER:
 	Inherits: ^CITYINFANTRY
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
     Inherits@BPV: ^SimCity_BPV
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -1602,7 +1615,7 @@ CITYPOLICEOFFICER:
 		BuildPaletteOrder: 10
         BuildDuration: 55
         BuildDurationModifier: 100
-		Queue: Vehicle.SimCity, RAVehicle.SimCity, Infantry.X_Infantry, Police.sc2k
+		Queue: Vehicle.SimCity, RAVehicle.SimCity, Infantry.X_Infantry, Police.sc2k, RAPolice.sc2k
 		Description: Law enforcement armed with a pistol.\nCan be upgraded to have pistol replaced with Submachine gun\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
 		Speed: 56
@@ -1637,7 +1650,8 @@ CITYPOLICEOFFICER:
 		IdleSequences: stand
 		DefaultAttackSequence: shoot
 	-TakeCover:
-
+    Voiced:
+        VoiceSet: CopVoice
 CITYARCHITECT:
 	Inherits: ^CITYINFANTRY
 	Inherits@selection: ^SelectableSupportUnit
@@ -1858,7 +1872,7 @@ CITYSWAT:
 		DeathTypes: DefaultDeath
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: citylibrary, citybank, ~techlevel.high, Police.sc2k
+		Prerequisites: citylibrary, citybank, ~techlevel.high, Police.sc2k, RAPolice.sc2k
 		Queue: Vehicle.SimCity, RAVehicle.SimCity
 		Description: Elite law enforcement Team armed with silenced\nsubmachine guns and EMP grenades.\n Strong vs ground targets\n Weak vs Aircraft
 	Tooltip:
@@ -2047,7 +2061,7 @@ CITYE6:
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites:
-		Queue: Infantry.SimCity, RAInfantry.SimCity
+		Queue: Infantry.SimCity, RAInfantry.SimCity, FireDept.sc2k
 		Icon: cityicon
 	RenderSprites:
 		Image: e6
