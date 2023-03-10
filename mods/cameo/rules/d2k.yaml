@@ -277,7 +277,39 @@ World:
         Factions: smugglers, ixian, emperor
 
 Player:
-    Inherits@dufactionprereqs: ^DuneUniverseFactionPrereqs
+	ExternalCondition@BuildingsOwned:
+		Condition: BuildingsOwned
+	ProvidesPrerequisite@BuildingsOwnedVordel
+		Prerequisite: allowsVordelMCV
+		RequiresCondition: BuildingsOwned < 10
+	ProvidesPrerequisite@vordel2:
+		Prerequisite: vordel2
+		RequiresCondition: (BuildingsOwned >= 2)
+	ProvidesPrerequisite@vordel3:
+		Prerequisite: vordel3
+		RequiresCondition: (BuildingsOwned >= 3)
+	ProvidesPrerequisite@vordel4:
+		Prerequisite: vordel4
+		RequiresCondition: (BuildingsOwned >= 4)
+	ProvidesPrerequisite@vordel5:
+		Prerequisite: vordel5
+		RequiresCondition: (BuildingsOwned >= 5)
+	ProvidesPrerequisite@vordel6:
+		Prerequisite: vordel6
+		RequiresCondition: (BuildingsOwned >= 6)
+	ProvidesPrerequisite@vordel7:
+		Prerequisite: vordel7
+		RequiresCondition: (BuildingsOwned >= 7)
+	ProvidesPrerequisite@vordel8:
+		Prerequisite: vordel8
+		RequiresCondition: (BuildingsOwned >= 8)
+	ProvidesPrerequisite@vordel9:
+		Prerequisite: vordel9
+		RequiresCondition: (BuildingsOwned >= 9)
+	ProvidesPrerequisite@vordel10:
+		Prerequisite: vordel10
+		RequiresCondition: (BuildingsOwned >= 10)
+	Inherits@dufactionprereqs: ^DuneUniverseFactionPrereqs
     ClassicProductionQueue@RABUILDINGD2K:
 		Type: RABuilding.d2k
 		DisplayOrder: 0
@@ -5775,7 +5807,7 @@ d2k_light_tank:
 		LocalOffset: 575, 75, 175   
         PauseOnCondition: !ammo
 	AttackTurreted:
-        Armaments: primary, secondary, aa
+		Armaments: primary, secondary, aa
 	WithMuzzleOverlay:
 	WithSpriteTurret:
         Palette: player
@@ -5805,27 +5837,32 @@ d2k_lion_king:
 	Tooltip:
 		Name: Lion King
     Valued:
-		Cost: 4000
+		Cost: 5000
     Health:
-		HP: 60000
+		HP: 125000
 	Buildable:
 		Queue: Starport.d2k, RAStarport.d2k, Vehicle.X_Vehicles
 		BuildPaletteOrder: 150
-		BuildDuration: 1000
+		BuildDurationModifier: 50
 		Prerequisites: ~faction.corrino, upgrade.light, ~techlevel.medium
-		Description: Ultimate Transport Vehicle\nCan carry 8 passengers quickly\nLimit: 1   
+		Description: Ultimate Transport Vehicle\nCan carry 12 passengers quickly\nLimit: 1   
         BuildLimit: 1
     Cargo:
-        MaxWeight: 8
+        MaxWeight: 12
 		Types: Infantry
-		PipCount: 8
-        InitialUnits: plasma_infantry, plasma_infantry, plasma_infantry, plasma_infantry, plasma_infantry, plasma_infantry, plasma_infantry, plasma_infantry
-   	-Armament@MGround:
-	-Armament@MAA:
-	Armament:
+		PipCount: 12
+        InitialUnits: plasma_infantry, plasma_infantry, plasma_infantry, plasma_infantry, plasma_infantry, plasma_infantry, sardaukar, mpsardaukar, d2k_sardaukar_assassin, d2k_sardaukar_elite, emperor_sardaukar_elite, emperor_sardaukar_chief
+	Armament@tertiary:
+		Name: tertiary
 		Weapon: 80mm_H
-    AttackTurreted:
-        Armaments: primary
+	Armament@deploy:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: loaded
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 15
+	AttackTurreted:
+		Armaments: primary, secondary, tertiary, aa
     WithSpriteTurret:
         Palette: playerd2k
     -AmmoPool
@@ -6475,7 +6512,7 @@ d2k_mcv:
 	Armor:
 		Type: Heavy
 	Mobile:
-		Speed: 31
+		Speed: 40
 	RevealsShroud:
 		Range: 2c768
 	MustBeDestroyed:
@@ -7741,10 +7778,11 @@ d2k_rocket_buggy:
         VoiceSet: D2KRPGQuad
         
 d2k_transport_buggy:  
-	Inherits: ^D2KVehicle
+	Inherits: d2k_rocket_buggy
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
  	Inherits@EXT: ^ExternalConditions 
-    Inherits@starport: ^Starport
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@starport: ^Starport
 	Buildable:
 		Queue: Vehicle.d2k, RAVehicle.d2k, Starport.d2k, RAStarport.d2k
 		Prerequisites: ~faction.corrino, upgrade.light, ~techlevel.low
@@ -7759,18 +7797,24 @@ d2k_transport_buggy:
 		Name: Transport Buggy
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
-    Cargo:
+	Armament@deploy:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: loaded
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 15
+	Cargo:
 		Types: Infantry
 		MaxWeight: 4
 		LoadingCondition: notmobile
-        PipCount: 4
+		PipCount: 4
 	Health:
 		HP: 30000
 	Armor:
 		Type: Light
 	Mobile:
-		TurnSpeed: 28
-		Speed: 124
+		TurnSpeed: 30
+		Speed: 150
 	RevealsShroud:
 		Range: 6c0
 	Explodes:
@@ -7806,22 +7850,26 @@ d2k_transport_buggy.bot2:
         InitialUnits: trooper, trooper, trooper, trooper
         
 d2k_sardaukar_buggy:
-    Inherits: d2k_transport_buggy
-    Valued:
-		Cost: 3000
-    Tooltip:
+	Inherits: d2k_transport_buggy
+	Valued:
+		Cost: 3200
+	Tooltip:
 		Name: Sardaukar Transport
-    Mobile:
-		TurnSpeed: 26
-		Speed: 116
-    Buildable:
+	Mobile:
+		TurnSpeed: 25
+		Speed: 125
+	Cargo:
+		Types: Infantry
+		MaxWeight: 6
+		LoadingCondition: notmobile
+		PipCount: 6
+	Buildable:
 		Queue: Starport.d2k, RAStarport.d2k
-        Description: Transport unit with 6 spaces\nFilled with Sardaukars\nLimit: 3
-        BuildLimit: 3
+        Description: Transport unit with 6 spaces\nFilled with Sardaukars
         Icon: icon_sard
         BuildPaletteOrder: 140
     Cargo:
-        InitialUnits: mpsardaukar, mpsardaukar, mpsardaukar, mpsardaukar, mpsardaukar, mpsardaukar
+        InitialUnits: sardaukar, mpsardaukar, d2k_sardaukar_assassin, d2k_sardaukar_elite, emperor_sardaukar_elite, emperor_sardaukar_chief
 
         
 d2k_combat_buggy:  
@@ -11000,26 +11048,26 @@ mcv_vordel:
 	Inherits@EXT: ^ExternalConditions    
     Inherits@starport: ^Starport
 	Buildable:
-		Prerequisites: ~techlevel.medium
+		Prerequisites: ~techlevel.medium, allowsVordelMCV
 		Queue: VordelUnits.d2k, RAVordelUnits.d2k
 		BuildPaletteOrder: 110
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: Deploys into another Projections Base\nProjections Base produces units and also enables combinations\n\nCombinating:\nPut 3 regular units of same type inside Projections Base to create 1 Absorbed unit\n2 Absorbed units of same type to create 1 Overwhelmed unit
-        IconPalette: d2kunit            
+		BuildDurationModifier: 50
+		BuildLimit: 1
+		Description: Deploys into another Projections Base\nProjections Base produces units and also enables combinations\n\nCombinating:\nPut 3 regular units of same type inside Projections Base to create 1 Absorbed unit\n2 Absorbed units of same type to create 1 Overwhelmed unit\nLimit of 10 Projection Bases
+		IconPalette: d2kunit
 	Valued:
-		Cost: 2000
+		Cost: 3000
 	Tooltip:
 		Name: Mobile Projector Vehicle
 	Selectable:
 		Class: mcv
 		DecorationBounds: 45, 32
 	Health:
-		HP: 400000
+		HP: 300000
 	Armor:
 		Type: Heavy
 	Mobile:
-		Speed: 31
+		Speed: 50
 	RevealsShroud:
 		Range: 2c768
 	MustBeDestroyed:
@@ -11054,6 +11102,8 @@ mcv_vordel:
         Palette: shadow
         
 construction_yard_vordel:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits@D2kBLD: ^D2KBuilding
     Inherits@shape: ^3x3Shape
     Inherits@D2KSprite: ^D2KPaletteRender
@@ -11076,12 +11126,69 @@ construction_yard_vordel:
 	Exit@3:
 		SpawnOffset: -704,768,0
 		ExitCell: 0,3
-	CashTrickler:
-		Interval: 375
+	GrantConditionOnPrerequisite@botplayer:
+		Prerequisites: ~botplayer
+		Condition: botplayer
+	GrantConditionOnPrerequisite@vordel2:
+		Prerequisites: vordel2
+		Condition: vordel2
+	GrantConditionOnPrerequisite@vordel3:
+		Prerequisites: vordel3
+		Condition: vordel3
+	GrantConditionOnPrerequisite@vordel4:
+		Prerequisites: vordel4
+		Condition: vordel4
+	GrantConditionOnPrerequisite@vordel5:
+		Prerequisites: vordel5
+		Condition: vordel5
+	GrantConditionOnPrerequisite@vordel6:
+		Prerequisites: vordel6
+		Condition: vordel6
+	GrantConditionOnPrerequisite@vordel7:
+		Prerequisites: vordel7
+		Condition: vordel7
+	GrantConditionOnPrerequisite@vordel8:
+		Prerequisites: vordel8
+		Condition: vordel8
+	GrantConditionOnPrerequisite@vordel9:
+		Prerequisites: vordel9
+		Condition: vordel9
+	GrantConditionOnPrerequisite@vordel10:
+		Prerequisites: vordel10
+		Condition: vordel10
+	CashTrickler@max:
+		Interval: 400
 		Amount: 400
-        PauseOnCondition: lowpower
-    CashTricklerBar:
-    RallyPoint:
+		PauseOnCondition: lowpower && !botplayer
+	CashTricklerBar:
+	CashTricklerMultiplier@vordel2:
+		Modifier: 90
+		RequiresCondition: vordel2
+	CashTricklerMultiplier@vordel3:
+		Modifier: 90
+		RequiresCondition: vordel3
+	CashTricklerMultiplier@vordel4:
+		Modifier: 90
+		RequiresCondition: vordel4
+	CashTricklerMultiplier@vordel5:
+		Modifier: 90
+		RequiresCondition: vordel5
+	CashTricklerMultiplier@vordel6:
+		Modifier: 90
+		RequiresCondition: vordel6
+	CashTricklerMultiplier@vordel7:
+		Modifier: 90
+		RequiresCondition: vordel7
+	CashTricklerMultiplier@vordel8:
+		Modifier: 91
+		RequiresCondition: vordel8
+	CashTricklerMultiplier@vordel9:
+		Modifier: 91
+		RequiresCondition: vordel9
+	CashTricklerMultiplier@vordel10:
+		Modifier: 91 #This will give Vordel 4x the income of a single Projector Base on having a total of 10 Projector Bases
+		RequiresCondition: vordel10
+	RallyPoint:
 	Buildable:
 		Description: Produces units and vehicles of Vordel.\nUnits must stay within range of this building. Otherwise they will disappear.
 	Building:
@@ -11100,11 +11207,11 @@ construction_yard_vordel:
 	Production@NORMAL:
 		Produces: VordelUnits.d2k
         RequiresCondition: !classicproductionqueues   
-        PauseOnCondition: lowpower
+        PauseOnCondition: lowpower && !botplayer
   	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RAVordelUnits.d2k
         RequiresCondition: classicproductionqueues        
-        PauseOnCondition: lowpower
+        PauseOnCondition: lowpower && !botplayer
     Cargo:
         PipCount: 10
         MaxWeight: 10
@@ -11112,30 +11219,30 @@ construction_yard_vordel:
 	CargoTransformer:
 		TransformSound: tesla1.aud
 		Combinations:
-            light_inf_vordel_2: light_inf_vordel, light_inf_vordel, light_inf_vordel
-            trooper_vordel_2: trooper_vordel, trooper_vordel, trooper_vordel
-            trike_vordel_2: trike_vordel, trike_vordel, trike_vordel
-            quad_vordel_2: quad_vordel, quad_vordel, quad_vordel
-            siege_tank_vordel_2: siege_tank_vordel, siege_tank_vordel, siege_tank_vordel
-            missile_tank_vordel_2: missile_tank_vordel, missile_tank_vordel, missile_tank_vordel
-            combat_tank_vordel_2: combat_tank_vordel, combat_tank_vordel, combat_tank_vordel
-            trike_vordel_3: trike_vordel_2, trike_vordel_2
-            quad_vordel_3: quad_vordel_2, quad_vordel_2
-            siege_tank_vordel_3: siege_tank_vordel_2, siege_tank_vordel_2
-            missile_tank_vordel_3: missile_tank_vordel_2, missile_tank_vordel_2
-            combat_tank_vordel_3: combat_tank_vordel_2, combat_tank_vordel_2
-            d2k_apparition_vordel_2: d2k_apparition, d2k_apparition, d2k_apparition 
-            d2k_apparition_vordel_3: d2k_apparition_vordel_2, d2k_apparition_vordel_2
-            d2k_defender_vordel_2: d2k_defender, d2k_defender, d2k_defender
-            d2k_defender_vordel_3: d2k_defender_vordel_2, d2k_defender_vordel_2
-            d2k_aircraft_eater_vordel_2: d2k_aircraft_eater, d2k_aircraft_eater, d2k_aircraft_eater
-            d2k_aircraft_eater_vordel_3: d2k_aircraft_eater_vordel_2, d2k_aircraft_eater_vordel_2
-    Valued:	
-        Cost: 2000
+			light_inf_vordel_2: light_inf_vordel, light_inf_vordel, light_inf_vordel
+			trooper_vordel_2: trooper_vordel, trooper_vordel, trooper_vordel
+			trike_vordel_2: trike_vordel, trike_vordel, trike_vordel
+			quad_vordel_2: quad_vordel, quad_vordel, quad_vordel
+			siege_tank_vordel_2: siege_tank_vordel, siege_tank_vordel, siege_tank_vordel
+			missile_tank_vordel_2: missile_tank_vordel, missile_tank_vordel, missile_tank_vordel
+			combat_tank_vordel_2: combat_tank_vordel, combat_tank_vordel, combat_tank_vordel
+			trike_vordel_3: trike_vordel_2, trike_vordel_2
+			quad_vordel_3: quad_vordel_2, quad_vordel_2
+			siege_tank_vordel_3: siege_tank_vordel_2, siege_tank_vordel_2
+			missile_tank_vordel_3: missile_tank_vordel_2, missile_tank_vordel_2
+			combat_tank_vordel_3: combat_tank_vordel_2, combat_tank_vordel_2
+			d2k_apparition_vordel_2: d2k_apparition, d2k_apparition, d2k_apparition 
+			d2k_apparition_vordel_3: d2k_apparition_vordel_2, d2k_apparition_vordel_2
+			d2k_defender_vordel_2: d2k_defender, d2k_defender, d2k_defender
+			d2k_defender_vordel_3: d2k_defender_vordel_2, d2k_defender_vordel_2
+			d2k_aircraft_eater_vordel_2: d2k_aircraft_eater, d2k_aircraft_eater, d2k_aircraft_eater
+			d2k_aircraft_eater_vordel_3: d2k_aircraft_eater_vordel_2, d2k_aircraft_eater_vordel_2
+	Valued:	
+		Cost: 5000
 	Tooltip:
 		Name: Projections Base
 	CustomSellValue:
-		Value: 2000
+		Value: 5000
 	SpawnActorsOnSell:
 		ActorTypes: light_inf_vordel_spawned, light_inf_vordel_spawned, light_inf_vordel_spawned, light_inf_vordel_spawned
 	BaseBuilding:   
@@ -11146,7 +11253,7 @@ construction_yard_vordel:
 		ProductionType: RAVordelUnits.d2k 
         RequiresCondition: classicproductionqueues      
 	Power:
-		Amount: 50
+		Amount: 100
 	RenderSprites:
 		Image: conyard.ordos
         Palette: shadow
@@ -11200,24 +11307,27 @@ construction_yard_vordel:
 		ProductionType: VordelResearch.d2k
 
 light_inf_vordel:
-    Inherits: light_inf
-    Inherits@vordelproxy: ^D2KVordelProxyUnit
-    Inherits@MC: ^MCImmune
-    Buildable:
-        -Prerequisites:
-        Queue: VordelUnits.d2k
-    RenderSprites:
-        Image: light_inf
-        Palette: shadow
-    Power:
-        Amount: -5
-    Voiced:
-        VoiceSet: D2KVordelVoice
+	Inherits: light_inf
+	Inherits@vordelproxy: ^D2KVordelProxyUnit
+	Inherits@MC: ^MCImmune
+	Buildable:
+		Prerequisites: construction_yard_vordel
+		Queue: VordelUnits.d2k
+		Description: General-purpose vordel infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	RenderSprites:
+		Image: light_inf
+		Palette: shadow
+	Power:
+		Amount: -5
+	Voiced:
+		VoiceSet: D2KVordelVoice
 
 light_inf_vordel_spawned:
-    Inherits: light_inf_vordel
-    Power:
-        Amount: 0
+	Inherits: light_inf_vordel
+	Buildable:
+		Prerequisites: ~botplayer
+	Power:
+		Amount: 0
         
 light_inf_vordel_2:
     Inherits: light_inf_vordel
@@ -11257,22 +11367,23 @@ trooper_vordel_2:
         Queue: VordelUnits.d2k, RAVordelUnits.d2k
 
 trike_vordel:
-    Inherits: trike
-    Inherits@vordelproxy: ^D2KVordelProxyUnit
-    Inherits@MC: ^MCImmune 
-    Inherits@snipe: ^DriverKillImmune
-    Inherits@ND: ^NotDevourable
-    Buildable:
-        -Prerequisites:
-        Queue: VordelUnits.d2k, RAVordelUnits.d2k
-    Power:
-        Amount: -15
-    RenderSprites:
-        Image: trike
-        Palette: shadow
-    Voiced:
-        VoiceSet: D2KVordelVoice
-    -Explodes
+	Inherits: trike
+	Inherits@vordelproxy: ^D2KVordelProxyUnit
+	Inherits@MC: ^MCImmune 
+	Inherits@snipe: ^DriverKillImmune
+	Inherits@ND: ^NotDevourable
+	Buildable:
+		BuildPaletteOrder: 10
+		-Prerequisites:
+		Queue: VordelUnits.d2k, RAVordelUnits.d2k
+	Power:
+		Amount: -15
+	RenderSprites:
+		Image: trike
+		Palette: shadow
+	Voiced:
+		VoiceSet: D2KVordelVoice
+	-Explodes
 
 trike_vordel_2:
     Inherits: trike_vordel
@@ -11443,9 +11554,10 @@ missile_tank_vordel_3:
 projection_outpost_vordel:
 	Inherits: ^D2KVehicle
 	Inherits@EXPERIENCE: ^GainsExperience
-    Inherits@MC: ^MCImmune 
-    Inherits@snipe: ^DriverKillImmune
-    Inherits@ND: ^NotDevourable
+	Inherits@MC: ^MCImmune 
+	Inherits@snipe: ^DriverKillImmune
+	Inherits@ND: ^NotDevourable
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -11456,9 +11568,8 @@ projection_outpost_vordel:
 		BuildPaletteOrder: 30
 		Queue: VordelUnits.d2k, RAVordelUnits.d2k
 		Description: Prevents nearby Delusion units from vanishing\nDeploy to become static but increase effective range\nProvides Power\nProvides Radar upon deploying
-        IconPalette: ra2
-        BuildDuration: 100
-        BuildDurationModifier: 900
+		IconPalette: ra2
+		BuildDurationModifier: 50
     WithFacingSpriteBody:
         RequiresCondition: !deployed
     WithSpriteBody@deployed:
@@ -11471,7 +11582,7 @@ projection_outpost_vordel:
     Power:
         Amount: 50
 	Mobile:
-		Speed: 90
+		Speed: 75
         PauseOnCondition: deployed
     ProvidesRadar:
         RequiresCondition: !disabled && !jammed && deployed
@@ -11516,6 +11627,13 @@ projection_outpost_vordel:
     PowerMultiplier@deployed:
         Modifier: 200
         RequiresCondition: deployed
+	Armament@Deploy:
+		Weapon: deploytargeting.10c0
+		Name: primary
+	AttackFrontal:
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 15
 	AIDeployNotifier:
 		DeployChance: 100
 		DeployTicks: 450

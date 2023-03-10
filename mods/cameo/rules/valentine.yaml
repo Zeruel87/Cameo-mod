@@ -2,7 +2,7 @@ World:
     FactionCA@valentine:
 		Name: Valentines
 		InternalName: valentine
-        Game: Special
+		Game: Special
 		Side: Factions
 		Description: Satan Clawz\nUnleash the Doom of Christmas\n\nEvil Satan Clawz is here to destroy the Christmas\nBuild army of Elves and unleash Satan himself from\nhis House to finnish this nonsense once in for all\n\nSupport Powers: Satan Clawz
     ####################################################################################################
@@ -13,23 +13,28 @@ World:
 		Class: none
 		ClassName: MCV Only
 		Factions: valentine
-		BaseActor: valentine_base
+		BaseActor: valentines_mcv
 	
 	MPStartUnits@defaultvalentine:
 		Class: light
 		ClassName: Light Support
 		Factions: valentine
-		BaseActor: valentine_base
+		BaseActor: valentines_mcv
 		SupportActors: 
 	
 	MPStartUnits@heavyvalentine:
 		Class: heavy
 		ClassName: Heavy Support
 		Factions: valentine
-		BaseActor: valentine_base
+		BaseActor: valentines_mcv
 		SupportActors: 
 
 Player:
+    ExternalCondition@BuildingsOwned:
+        Condition: BuildingsOwned
+    ProvidesPrerequisite@BuildingsOwned:
+        Prerequisite: allowsMCV
+        RequiresCondition: BuildingsOwned < 5
     LobbyPrerequisiteCheckbox@valentine:
         ID: valentine
         Label: Valentines Day
@@ -79,6 +84,20 @@ Player:
 		CancelledAudio: Cancelled
 		SpeedUp: True
 		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+	ClassicProductionQueue@RANAVALVALENTINES:
+		Type: RANaval.Valentines
+		DisplayOrder: 2
+		Group: Naval
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
 LOVECRATE:
 	Inherits: ^Crate
 	Crate:
@@ -113,6 +132,8 @@ LOVECRATE:
 	####################################################################################################
 
 valentine_base:   
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^4x3Shape
 	Inherits@CPQ: ^CPQConditionWithPrimary
@@ -129,15 +150,38 @@ valentine_base:
 		BuildPaletteOrder: 10
 		Queue: Building.Valentines, RABuilding.Valentines
 		Description: Enables buildings construction
-        Prerequisites: valentine_church_workshop
+		Prerequisites: valentine_church_workshop
 	Health:
 		HP: 250000
 	Power:
-		Amount: 100
+		Amount: 200
 	Armor:
 		Type: Wood
 	RevealsShroud:
 		Range: 9c0
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: valentines_mcv
+		Offset: 1,1
+		Facing: 108
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransformsIntoRepairable:
+		RequiresCondition: factundeploy
+		RepairActors: fix
+		RequiresForceMove: true
+	TransformsIntoTransforms:
+		RequiresCondition: factundeploy && build-incomplete
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
 	Production@NORMAL:
 		Produces: Building.Valentines, Defence.Valentines
 		RequiresCondition: !classicproductionqueues
@@ -150,12 +194,14 @@ valentine_base:
 		Group: Building
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
+		LowPowerModifier: 200
 	ProductionQueue@AlphaDefense:
 		Type: Defence.Valentines
 		DisplayOrder: 1
 		Group: Defence
 		QueuedAudio: Building
 		ReadyAudio: ConstructionComplete
+		LowPowerModifier: 200
 	BaseBuilding:
 	ProductionBar@Building:
 		ProductionType: Building.Valentines
@@ -172,6 +218,7 @@ valentine_base:
 	BaseProvider:
 		Range: 12c0
 	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
 	ProvidesRadar:
 		RequiresCondition: !jammed && !disabled
 	ExternalCondition@JAMMED:
@@ -181,16 +228,66 @@ valentine_base:
 		SpawnOffset: -1024,1024,0		#-1323,1280,0
 		ExitCell: 0,2 
 		Facing: 135   
-    -WithMakeAnimation
+	-WithMakeAnimation
 	RenderSprites:
 		Image: valentine_base
+
+valentines_mcv:
+	Inherits: MCV
+	Inherits@selection: ^SelectableSupportUnit
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Mobile Construction Vehicle
+	Buildable:
+		Queue: Vehicle.Valentines, RAVehicle.Valentines
+		BuildPaletteOrder: 250
+		Prerequisites: valentine_church_workshop, ~techlevel.medium
+		BuildDurationModifier: 40
+		Description: Deploys into another Valentine Base.\n  Unarmed
+	Selectable:
+		DecorationBounds: 36,36
+	Mobile:
+		Speed: 75
+		Locomotor: heavywheeled
+	Health:
+		HP: 200000
+	Repairable:
+		HpPerStep: 2182
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Transforms:
+		IntoActor: valentine_base
+		Offset: -1,-1
+		Facing: 108
+		TransformSounds: constru2.aud, hvydoor1.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	MustBeDestroyed:
+		RequiredForShortGame: true
+	BaseBuilding:
+	#SpawnActorOnDeath:
+	#	Actor: MCV.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	SelectionDecorations:
+	RenderSprites:
+		Scale: 1.00
+
+valentines_mcv_bot:
+	Inherits: valentines_mcv
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildLimit: 1
+		Prerequisites: valentine_church_workshop, ~techlevel.medium, ~botplayer, allowsMCV
 
 valentine_chocolate_refinery:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@ref: ^Refinery
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	Tooltip:
 		Name: Chocolate Refinery
 	Armor:
@@ -202,6 +299,7 @@ valentine_chocolate_refinery:
 	Building:
 		Footprint: xxx ===
 		Dimensions: 3,2
+		LocalCenterOffset: 0,-256,0
 	Health:
 		HP: 150000
 	RevealsShroud:
@@ -230,6 +328,16 @@ valentine_chocolate_refinery:
 		SpawnOffset: 1,1
 		Facing: 64
 		AllowRespawn: True
+	FreeActor@4:
+		Actor: valentine_glworker
+		SpawnOffset: 1,1
+		Facing: 64
+		AllowRespawn: True
+	FreeActor@5:
+		Actor: valentine_glworker
+		SpawnOffset: 1,1
+		Facing: 64
+		AllowRespawn: True
 	Power:
 		Amount: 100
 	ProvidesPrerequisite@buildingname:
@@ -247,20 +355,20 @@ valentine_chocolate_refinery:
 		Probability: 100
 	SpawnActorOnDeath@Santa2:
 		Actor: EVILCRATE
-		Probability: 90
+		Probability: 75
 	SpawnActorOnDeath@Santa3:
 		Actor: EVILCRATE
-		Probability: 80
+		Probability: 50
 	SpawnActorOnDeath@Santa4:
 		Actor: EVILCRATE
-		Probability: 70
+		Probability: 25
 	RenderSprites:
 		Image: valentine_chocolate_refinery
 
 valentine_power:
 	Inherits: ^BaseBuilding
+	Inherits@power: ^PowerPlant
 	Inherits@shape: ^3x2Shape
-	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -285,7 +393,8 @@ valentine_power:
 		Condition: lowpower
 		ValidPowerStates: Low, Critical
 	Power:
-		Amount: 500
+		Amount: 300
+	ScalePowerWithHealth:
 	ProvidesPrerequisite@buildingname:
 	Voiced:
 		VoiceSet: voice_valentines_power_plant
@@ -334,11 +443,9 @@ valentine_ladies_house:
 	Production@NORMAL:
 		Produces: Infantry.Valentines
 		RequiresCondition: !classicproductionqueues
-        PauseOnCondition: lowpower
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RAInfantry.Valentines
 		RequiresCondition: classicproductionqueues
-        PauseOnCondition: lowpower
 	ProductionQueue:
 		Type: Infantry.Valentines
 		DisplayOrder: 2
@@ -407,7 +514,7 @@ valentine_church_workshop:
 		Type: Infantry.Valentines
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 300
+		LowPowerModifier: 200
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -458,7 +565,7 @@ valentine_airfield:
 		Footprint: ____ xxxx xx== xx==
 		Dimensions: 4,4
 	Health:
-		HP: 150000
+		HP: 200000
 	Power:
 		Amount: -100
 	Armor:
@@ -472,6 +579,17 @@ valentine_airfield:
 	Exit@1:
 		ExitCell: 1,1
 		Facing: 192
+	Exit@2:
+		SpawnOffset: 512,512,0
+		ExitCell: 0,3
+		ExitDelay: 3
+	Exit@3:
+		ExitCell: 2,2
+		Facing: 192
+	Exit@4:
+		SpawnOffset: -512,-512,0
+		ExitCell: 3,0
+		ExitDelay: 3
 	RallyPoint:
 	#Production@Upgrades:
 	#	Produces: AirUpgrades.Valentines
@@ -508,7 +626,7 @@ valentine_cupido_house:
 	Inherits@shape: ^4x2Shape
 	Inherits@SW: ^PrimarySuperweapon
 	Valued:
-		Cost: 4000
+		Cost: 5000
 	Tooltip:
 		Name: House of Cupido and Love
 	ProvidesPrerequisite:
@@ -518,16 +636,18 @@ valentine_cupido_house:
 		Prerequisites: valentine_church_workshop, ~techlevel.high, !satanclawzhouse
 		Queue: Building.Valentines, RABuilding.Valentines
 		Description: House of Cupido himself.
-        IconPalette: ra2
+		IconPalette: ra2
+		BuildLimit: 1
+		BuildDuration: 1500
 	Building:
 		Footprint: xxxx xxxx
 		Dimensions: 4,2
 	Selectable:
 	SelectionDecorations:
 	Health:
-		HP: 200000
+		HP: 500000
 	Power:
-		Amount: -200
+		Amount: -300
 	RevealsShroud:
 		Range: 6c0
 	RallyPoint:
@@ -541,52 +661,52 @@ valentine_cupido_house:
 	DetectCloaked:
 		Range: 5c0
 		RequiresCondition: !lowpower
-    Production@satan:
+	Production@satan:
 		Produces: satanclawz.Xmas
     Production@special:
-        Produces: Special.Xmas
-    ProduceActorPowerCA@satan:
+		Produces: Special.Xmas
+	ProduceActorPowerCA@satan:
 		PauseOnCondition: disabled
-        AllowMultiple: True
-        AutoFire: true
+		AllowMultiple: True
+		AutoFire: true
 		OrderName: xmas_satanclawz
-        Icon: swcupidoicon
-        IconPalette: ra2
+		Icon: swcupidoicon
+		IconPalette: ra2
 		ChargeInterval: 7500
 		Description: Cupido
-    	IncomingSpeechNotification: EnemyUnitsApproaching    
-        DisplayTimerStances: Ally, Neutral, Enemy
+		IncomingSpeechNotification: EnemyUnitsApproaching    
+		DisplayTimerStances: Ally, Neutral, Enemy
 		LongDesc: Summons Cupido to break Hearts
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		Actors: giantcupido
-        Type: satanclawz.Xmas
+		Type: satanclawz.Xmas
 		SupportPowerPaletteOrder: 10      
-        DeploySound: doom_christmas_support_power.wav
+		DeploySound: doom_christmas_support_power.wav
 		LaunchSound: doom_christmas_support_power.wav
 		IncomingSound: doom_christmas_support_power.wav
-        Prerequisites: !xmas_satanclawz, !botplayer
-    ProduceActorPowerCA@satanbot:
+		Prerequisites: !xmas_satanclawz, !botplayer
+	ProduceActorPowerCA@satanbot:
 		PauseOnCondition: disabled
-        AllowMultiple: True
-        AutoFire: true
+		AllowMultiple: True
+		AutoFire: true
 		OrderName: xmas_satanclawz_ai
-        Icon: swcupidoicon
-        IconPalette: ra2
+		Icon: swcupidoicon
+		IconPalette: ra2
 		ChargeInterval: 7500
 		Description: Cupido
-    	IncomingSpeechNotification: EnemyUnitsApproaching    
-        DisplayTimerStances: Ally, Neutral, Enemy
+		IncomingSpeechNotification: EnemyUnitsApproaching    
+		DisplayTimerStances: Ally, Neutral, Enemy
 		LongDesc: Summons Cupido to break Hearts
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		Actors: giantcupido
-        Type: satanclawz.Xmas
+		Type: satanclawz.Xmas
 		SupportPowerPaletteOrder: 10      
-        DeploySound: doom_christmas_support_power.wav
+		DeploySound: doom_christmas_support_power.wav
 		LaunchSound: doom_christmas_support_power.wav
 		IncomingSound: doom_christmas_support_power.wav
-        Prerequisites: botplayer
+		Prerequisites: botplayer
 	ProductionQueue:
 		Type: Special.Xmas
 		DisplayOrder: 2
@@ -608,14 +728,97 @@ valentine_cupido_house:
 		VoiceSet: USAParticleCannonVoice
 	ProvidesPrerequisite@swlimit:
 		Prerequisite: satanclawzhouse
-    -WithMakeAnimation
-    -WithDeathAnimation
+	-WithMakeAnimation
+	-WithDeathAnimation
 	RenderSprites:
 		Image: hq
-^SpawnChristmasCrate:
-	SpawnActorOnDeath@Santa:
-		Actor: EVILCRATE
-		Probability: 75
+
+valentines_sc2kmarina:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Selectable:
+		Bounds: 72,72
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Valentines Marina
+	Buildable:
+		BuildPaletteOrder: 57
+		Prerequisites: 
+		Queue: Building.Valentines, RABuilding.Valentines
+		Description: Produces, and\nrepairs boats
+	Building:
+		Footprint: =+= +++ =+=
+		Dimensions: 3,3
+		TerrainTypes: Water
+	RequiresBuildableArea:
+		Adjacent: 8
+	-GivesBuildableArea:
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: -1024,1024,0
+		Facing: 160
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 1024,1024,0
+		Facing: 224
+		ExitCell: 2,2
+	Exit@3:
+		SpawnOffset: -1024,-1024,0
+		Facing: 96
+		ExitCell: 0,0
+	Exit@4:
+		SpawnOffset: 1024,-1024,0
+		Facing: 32
+		ExitCell: 2,0
+	Production@NORMAL:
+		Produces: Naval.Valentines
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval.Valentines
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	RallyPoint:
+	ProductionQueue:
+		Type: Naval.Valentines
+		DisplayOrder: 5
+		Group: Naval
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NAVALVALENTINES:
+		ProductionType: Naval.Valentines
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RANAVALVALENTINES:
+		ProductionType: RANaval.Valentines
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -50
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea:					##########
+		AreaTypes: building, cityi
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
 
     ####################################################################################################
 	#		Defenses
@@ -641,17 +844,18 @@ valentines_netflix_n_chill:
 		Queue: Defence.Valentines, RADefence.Valentines
 		Prerequisites: 
 		Description: Provides passive income
+		BuildDurationModifier: 50
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 60000
+		HP: 100000
 	RevealsShroud:
 		Range: 4c0
 	CashTrickler:
-		Interval: 100
-		Amount: 100
+		Interval: 77
+		Amount: 123
 	CashTricklerBar:	
 	Power:
 		Amount: -100
@@ -660,7 +864,7 @@ valentines_netflix_n_chill:
 	RenderSprites:
 		Scale: 0.80
 
-valetines_silo:
+valentines_silo:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Selectable:
@@ -680,12 +884,13 @@ valetines_silo:
 		Queue: Defence.Valentines, RADefence.Valentines
 		Prerequisites: 
 		Description: Provides lots of storage
+		BuildDurationModifier: 100
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 750000
+		HP: 500000
 	RevealsShroud:
 		Range: 4c0
 	StoresResources:
@@ -700,40 +905,123 @@ valetines_silo:
 		Scale: 1.00
 
 VAL_PBOX:
-	Inherits: PBOX
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Selectable:
+		Bounds: 40,40
+	Valued:
+		Cost: 1000
 	Tooltip:
 		Name: Sweet Hearts
-	Buildable: 
-		BuildPaletteOrder: 130
+	Buildable:
+		BuildPaletteOrder: 5
+		Prerequisites: 
 		Queue: Defence.Valentines, RADefence.Valentines
-		Prerequisites: power
-	#RenderSprites:
-	#	Image: pbox
-
+		BuildDurationModifier: 50
+		Description: Very durable anti-Ground building\nDetector
+	Building:
+		Footprint: x
+		Dimensions: 1,1   
+	RenderDetectionCircle: 
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 15       
+	Health:
+		HP: 100000
+	Armor:
+		Type: Wood
+	DetectCloaked:
+		Range: 5c0
+	RevealsShroud:
+		Range: 10c0
+	Turreted:
+		TurnSpeed: 6
+		InitialFacing: 56
+	WithSpriteBody:
+		Scale: 0.6
+    -MustBeDestroyed:  
+	Armament:
+		Weapon: sweetHeartsFire         
+	AttackTurreted:
+		Voice:
+	WithMuzzleOverlay:
+	WithDeathAnimation:
+	Power:
+		Amount: -25
+	WithMakeAnimation:     
+	Voiced:
+		VoiceSet: humanguardtowervoice
+	RenderSprites:
+		Scale: 0.5
+		
 VAL_AGUN:
-	Inherits: AGUN
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAir 
+	Selectable:
+		Bounds: 40,40
+	Valued:
+		Cost: 2500
 	Tooltip:
 		Name: Plan B
-	Buildable: 
-		BuildPaletteOrder: 150
+	Buildable:
+		BuildPaletteOrder: 5
+		Prerequisites: 
 		Queue: Defence.Valentines, RADefence.Valentines
-		Prerequisites: power
-	#RenderSprites:
-	#	Image: agun
+		BuildDuration: 1125
+		Description: Powerful Anti Air Defender!\nDetector
+	Building:
+		Footprint: x
+		Dimensions: 1,1   
+	RenderDetectionCircle: 
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 15       
+	Health:
+		HP: 25000
+	Armor:
+		Type: Wood
+	DetectCloaked:
+		Range: 5c0
+	RevealsShroud:
+		Range: 10c0
+	Turreted:
+		TurnSpeed: 6
+		InitialFacing: 56
+		Offset: 0,0,1150
+	WithSpriteBody:
+		Scale: 0.6
+	-MustBeDestroyed:  
+	Armament:
+		Weapon: planBFire         
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+	WithMuzzleOverlay:
+	WithDeathAnimation:
+	Power:
+		Amount: -75
+	WithMakeAnimation:     
+	Voiced:
+		VoiceSet: humanguardtowervoice
+	RenderSprites:
+		Scale: 0.5
 
 valentine_tower_ballista:
+	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	Tooltip:
 		Name: Ballista Tower
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: valentine_chocolate_refinery, ~techlevel.medium
 		Queue: Defence.Valentines, RADefence.Valentines
-		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Infantry\n  Weak vs Tanks
+		BuildDuration: 750
 	RequiresBuildableArea:
 		AreaTypes: building
 	Selectable:
@@ -757,6 +1045,8 @@ valentine_tower_ballista:
 	Armament@AA:
 		Weapon: LovebowFireAAB
 	AttackTurreted:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
 	WithSpriteTurret:
 	DetectCloaked:
 		Range: 5c0
@@ -764,20 +1054,26 @@ valentine_tower_ballista:
 	-WithDeathAnimation:
 	RangeMultiplier@Extrarange:
 		Modifier: 125
+	ReloadDelayMultiplier:
+		Modifier: 50
+	FirepowerMultiplier:
+		Modifier: 150
 
 valentine_tower_double:
+	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1500
+		Cost: 3000
 	Tooltip:
-		Name: Double Tower
+		Name: Double Lovelaser Tower
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: valentine_airfield, ~techlevel.medium
 		Queue: Defence.Valentines, RADefence.Valentines
-		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+		Description: Powerful Ground Defense.\n Strong vs everything. 
+		BuildDuration: 1500
 	RequiresBuildableArea:
 		AreaTypes: building
 	Selectable:
@@ -800,6 +1096,8 @@ valentine_tower_double:
 		Weapon: ValentineTowerDouble
 		LocalOffset: 900,180,340, 900,-180,340
 	AttackTurreted:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
 	WithSpriteTurret:
 	DetectCloaked:
 		Range: 5c0
@@ -819,7 +1117,7 @@ valentine_e7:
 		BuildLimit: 1
 		Description: Elite waifu commando infantry. Armed with\ndual pistols and C4.\nCan detect cloaked units.\nMaximum 1 can be trained.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Destroy Building with C4
 	Valued:
-		Cost: 1200
+		Cost: 1000
 	Tooltip:
 		Name: Waifu Tanya
 	Armament@PRIMARY:
@@ -833,6 +1131,11 @@ valentine_e7:
 	Armament@c4:
 		Weapon: GenericC4
 		Cursor: c4
+	Power:
+		Amount: -50
+	Explodes:
+		Weapon: GLTerroristExplosive2
+		EmptyWeapon: GLTerroristExplosive2
 
 valentine_ra2tany:
 	Inherits: RA2TANY
@@ -843,7 +1146,7 @@ valentine_ra2tany:
 		BuildLimit: 1
 		Description: Elite amphibious waifu commando infantry.\nCan plant timed bombs on vehicles\nCan demolish buildings with C4\nMaximum 1 can be trained\n Strong vs Infantry, Buildings, Vehicles\n Weak vs Aircraft
 	Valued:
-		Cost: 1200
+		Cost: 2000
 	Tooltip:
 		Name: Waifu Tanya II
 	Armament@PRIMARY:
@@ -859,11 +1162,16 @@ valentine_ra2tany:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2DoublePistols
+	Power:
+		Amount: -100
+	Explodes:
+		Weapon: GLTerroristExplosive2
+		EmptyWeapon: GLTerroristExplosive2
 
 valentine_chlotus:
 	Inherits: chlotus
 	Valued:
-		Cost: 1500
+		Cost: 1000
 	Tooltip:
 		Name: Waifu Black Lotus
 		RequiresCondition: !selectchinf
@@ -876,11 +1184,16 @@ valentine_chlotus:
 		Prerequisites: valentine_church_workshop, ~techlevel.high
 		Queue: Infantry.Valentines, RAInfantry.Valentines
 		Description: Elite waifu.\n Can take control of buildings\n Can disable vehicles
+	Power:
+		Amount: -50
+	Explodes:
+		Weapon: GLTerroristExplosive
+		EmptyWeapon: GLTerroristExplosive
 
 valentine_glworker:
 	Inherits: glworker
 	Tooltip:
-		Name: Simp
+		Name: Friendzoned Simp
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: valentine_chocolate_refinery
@@ -892,18 +1205,66 @@ valentine_glworker:
 		LevelUpNotification: LevelUpRA2
 
 valentine_315amanda:
-	Inherits: 315amanda
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@MC: ^MCImmune
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
 	Tooltip:
 		Name: Waifu Amanda
+	Valued:
+		Cost: 5000
 	Buildable:
 		Queue: Infantry.Valentines, RAInfantry.Valentines
 		BuildPaletteOrder: 120
-		Prerequisites: valentine_church_workshop, ~techlevel.high, Disabled
+		Prerequisites: valentine_church_workshop, ~techlevel.high
 		BuildLimit: 1
+	Mobile:
+		Speed: 100
+	Health:
+		HP: 100000
+	Armament@PRIMARY:							##########
+		Weapon: ValentineTowerDouble
+		LocalOffset: 400,-100,400, 400,100,400
 	RenderSprites:
 		Image: 315amanda
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+	Voiced:
+		VoiceSet: DRRelmnothVoice
+	Cloak:
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakTypes: Cloak, Thief
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
+	AutoTarget:
+		ScanRadius: 8
+	Passenger:
+		PipType: Red
+	RevealsShroud:
+		Range: 7c512
+	RangeMultiplier@Extrarange:
+		Modifier: 75
+	ReloadDelayMultiplier:
+		Modifier: 50
+	FirepowerMultiplier:
+		Modifier: 200
+	Power:
+		Amount: -200
+	SelfHealing@Shield:
+		PercentageStep: 3
+		Delay: 33
+		HealIfBelow: 100
+		DamageCooldown: 33
+	Explodes:
+		Weapon: GLTerroristExplosive
+		EmptyWeapon: GLTerroristExplosive
 
 lovebaby:
 	Inherits: ^Soldier
@@ -911,9 +1272,9 @@ lovebaby:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@MC: ^MCImmune
-    Inherits@SHADOWS: ^Shadows
+	Inherits@SHADOWS: ^Shadows
 	Valued:
-		Cost: 250
+		Cost: 1000
 	Tooltip:
 		Name: Angel Baby
 	UpdatesPlayerStatistics:
@@ -952,6 +1313,11 @@ lovebaby:
 		RequiresCondition: !controlling
 	Voiced:
 		VoiceSet: DRRelmnothVoice
+	Power:
+		Amount: -50
+	Explodes:
+		Weapon: GLAnthraxPurpleLarge
+		EmptyWeapon: GLAnthraxPurpleLarge
 
 lovebaby2:
 	Inherits: ^Soldier
@@ -959,7 +1325,7 @@ lovebaby2:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@MC: ^MCImmune
-    Inherits@SHADOWS: ^Shadows
+	Inherits@SHADOWS: ^Shadows
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -995,6 +1361,11 @@ lovebaby2:
 		RequiresCondition: !controlling
 	Voiced:
 		VoiceSet: DRRelmnothVoice
+	Power:
+		Amount: -25
+	Explodes:
+		Weapon: GLAnthraxBlueLarge
+		EmptyWeapon: GLAnthraxBlueLarge
 
 loveballista:
 	Inherits: ^Vehicle
@@ -1002,7 +1373,7 @@ loveballista:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 750
+		Cost: 500
 	Tooltip:
 		Name: Ballista Gattling Tank
 	UpdatesPlayerStatistics:
@@ -1047,6 +1418,11 @@ loveballista:
 	ReloadDelayMultiplier@GattlingSpeed:
 		RequiresCondition: !ammo
 		Modifier: 75
+	Power:
+		Amount: -25
+	Explodes:
+		Weapon: RA2Terrorist
+		EmptyWeapon: RA2Terrorist
 
 valovecraft:
 	Inherits: ^RAPlane
@@ -1059,7 +1435,7 @@ valovecraft:
 		Prerequisites: valentine_airfield, ~techlevel.high
 		Description: Multirole jet fighter.\n  Strong vs Aircraft, Vehicles\n  Weak vs Infantry
 	Valued:
-		Cost: 1250
+		Cost: 1500
 	Tooltip:
 		Name: Love Aircraft
 	UpdatesPlayerStatistics:
@@ -1084,7 +1460,7 @@ valovecraft:
 		LocalYaw: -40, 24
 		PauseOnCondition: !ammo
 	FirepowerMultiplier:
-		Modifier: 250
+		Modifier: 333
 	AttackAircraft:
 		FacingTolerance: 20
 		PersistentTargeting: false
@@ -1099,7 +1475,8 @@ valovecraft:
 		InitialStance: HoldFire
 		InitialStanceAI: HoldFire
 	AmmoPool:
-		Ammo: 24
+		Ammo: 50
+		PipCount: 10
 		AmmoCondition: ammo
 		ReloadCount: 1
 	Selectable:
@@ -1120,8 +1497,11 @@ valovecraft:
 	Voiced:
 		VoiceSet: RussianVehicleVoice
 	ReloadAmmoPool:
-		Delay: 12
+		Delay: 50
 		Count: 1
+	Power:
+		Amount: -25
+
 valovecraft.Husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -1146,6 +1526,9 @@ valovecraft.Husk:
 		Type: GroundPosition
 	RenderSprites:
 		Image: valovecraft
+	Explodes:
+		Weapon: RA2Terrorist
+		EmptyWeapon: RA2Terrorist
 
 loveletter:
 	Inherits: SC2KJETPLANE
@@ -1158,6 +1541,8 @@ loveletter:
 		Name: Love Letter
 	SpawnActorOnDeath:
 		Actor: loveletter.Husk
+	Power:
+		Amount: -25
 loveletter.Husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -1182,6 +1567,9 @@ loveletter.Husk:
 		Type: GroundPosition
 	RenderSprites:
 		Image: loveletter
+	Explodes:
+		Weapon: GLTerroristExplosive2
+		EmptyWeapon: GLTerroristExplosive2
 
 giantcupido:
 	Inherits: ^RAPlane
@@ -1193,7 +1581,7 @@ giantcupido:
 		BuildPaletteOrder: 50
 		Prerequisites: valentine_airfield, ~techlevel.high
 		Description: Multirole jet fighter.\n  Strong vs Aircraft, Vehicles\n  Weak vs Infantry
-		BuildDurationModifier: 25
+		BuildDuration: 3000
 		BuildLimit: 1
 	Valued:
 		Cost: 10000
@@ -1226,13 +1614,13 @@ giantcupido:
 		LocalYaw: -40, 24
 		PauseOnCondition: !ammo
 	AttackAircraft:
-		FacingTolerance: 20
+		FacingTolerance: 25
 		PersistentTargeting: false
 	Aircraft:
 		CruiseAltitude: 2560
 		InitialFacing: 192
-		TurnSpeed: 10
-		Speed: 200
+		TurnSpeed: 5
+		Speed: 150
 		RepulsionSpeed: 25
 		MaximumPitch: 50
 	AutoTarget:
@@ -1264,7 +1652,12 @@ giantcupido:
 		Delay: 12
 		Count: 1
 	Power:
-		Amount: -100
+		Amount: -200
+	SelfHealing@Shield:
+		PercentageStep: 1
+		Delay: 33
+		HealIfBelow: 100
+		DamageCooldown: 33
 
 giantcupido.Husk:
 	Inherits: ^PlaneHusk
@@ -1290,6 +1683,24 @@ giantcupido.Husk:
 		Type: GroundPosition
 	RenderSprites:
 		Image: giantcupido
+	Explodes@bomb:
+		Weapon: RA2DemoBomb
+		EmptyWeapon: RA2DemoBomb
+	Explodes@1:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
+	Explodes@2:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
+	Explodes@3:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
+	Explodes@4:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
+	Explodes@5:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
 
 lovealienmob:
 	Inherits@1: ^ExistsInWorld
@@ -1306,15 +1717,15 @@ lovealienmob:
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Infantry.Valentines, RAInfantry.Valentines
-		Description: Large Alien crowd, armed with Clawz.\n  Strong vs Buildings, Infantry\n  Weak vs Vehicles, Aircraft
+		Description: Large Furry crowd, armed with Clawz.\n  Strong vs Everything. \n Quickly rengerates
 		Prerequisites: valentine_airfield, ~techlevel.medium
 		BuildDurationModifier: 50
 	Tooltip:
-		Name: Alien Mob
+		Name: Angry Furries
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Valued:
-		Cost: 2000
+		Cost: 3000
 	Health:
 		HP: 10000
 	Mobile:
@@ -1328,7 +1739,7 @@ lovealienmob:
 	AttackMove:
 	DrawLineToTarget:
 	MobSpawnerMaster:
-		Actors: svsmalien1, svsmalien1, svsmalien1, svsmalien2, svsmalien2, svsmalien2, svsmalien3, svsmalien3, svsmalien3, svsmalien4, svsmalien4, svsmalien4, svsmalien5, svsmalien5, svsmalien5
+		Actors: svsmalien1, svsmalien1, svsmalien1, svsmalien2, svsmalien2, svsmalien2, svsmalien3, svsmalien3, svsmalien3, svsmalien4, svsmalien4, svsmalien4, svsmalien5, svsmalien5, svsmalien6
 		RespawnTicks: 500
 		ExitByBudding: false
 	AttackTurreted:
@@ -1354,6 +1765,14 @@ lovealienmob:
 		Image: svsmalien1
 	Voiced:
 		VoiceSet: SvsMAlienVoice
+	Power:
+		Amount: -50
+	SelfHealing@Shield:
+		PercentageStep: 3
+		Delay: 33
+		HealIfBelow: 100
+		DamageCooldown: 33
+
 ^default.alien_mob:
 	Inherits: E1
 	Inherits@MC: ^MCImmune
@@ -1372,14 +1791,12 @@ lovealienmob:
 	-MapEditorData:
 	RejectsOrders:
 	Valued:
-		Cost: 250
+		Cost: 300
 	Tooltip:
-		Name: Alien Mob
+		Name: Angry Furries
 	-Passenger:
 	Health:
 		HP: 10000
-	Mobile:
-		Speed: 50
 	MobSpawnerSlave:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
@@ -1395,33 +1812,63 @@ lovealienmob:
 		Weapon: AlienMobClawz
 	Mobile:
 		Speed: 125
+	SelfHealing@Shield:
+		PercentageStep: 3
+		Delay: 33
+		HealIfBelow: 100
+		DamageCooldown: 33
+
 svsmalien1:
 	Inherits: ^default.alien_mob
 	AttackFrontal:
+	Explodes:
+		Weapon: GLAnthraxGreen
+		EmptyWeapon: GLAnthraxGreen
 
 svsmalien2:
 	Inherits: ^default.alien_mob
 	AttackFrontal:
 	RenderSprites:
 		Image: svsmalien2
+	Explodes:
+		Weapon: GLAnthraxBlue
+		EmptyWeapon: GLAnthraxBlue
 
 svsmalien3:
 	Inherits: ^default.alien_mob
 	AttackFrontal:
 	RenderSprites:
 		Image: svsmalien3
+	Explodes:
+		Weapon: GLAnthraxPurple
+		EmptyWeapon: GLAnthraxPurple
 
 svsmalien4:
 	Inherits: ^default.alien_mob
 	AttackFrontal:
 	RenderSprites:
 		Image: svsmalien4
+	Explodes:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
 
 svsmalien5:
 	Inherits: ^default.alien_mob
 	AttackFrontal:
 	RenderSprites:
 		Image: svsmalien5
+	Explodes:
+		Weapon: GLAnthraxBlueLarge
+		EmptyWeapon: GLAnthraxBlueLarge
+
+svsmalien6:
+	Inherits: ^default.alien_mob
+	AttackFrontal:
+	RenderSprites:
+		Image: svsmalien5
+	Explodes:
+		Weapon: GLAnthraxPurpleLarge
+		EmptyWeapon: GLAnthraxPurpleLarge
 
 svsgreen:
 	Inherits: ^Tank
@@ -1430,28 +1877,38 @@ svsgreen:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@jammable: ^ArtilleryJammable
 	Valued:
-		Cost: 1000
+		Cost: 5000
 	Tooltip:
-		Name: Artillery Martian
+		Name: Ballbuster
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
 		Queue: Vehicle.Valentines, RAVehicle.Valentines, Vehicle.X_Vehicles
-		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings
-		BuildDurationModifier: 50
+		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings.\n Regenerates quickly!
+		BuildDuration: 1500
+		BuildLimit: 1
 	Mobile:
-		Speed: 33
+		Speed: 50
 	Health:
-		HP: 33333
+		HP: 50000
 	Repairable:
-		HpPerStep: 3333
+		HpPerStep: 5000
 	Armor:
-		Type: Light
+		Type: Medium
 	RevealsShroud:
 		Range: 5c0
-	Armament:
-		Weapon: GreenMartianAcid
+	Armament@PRIMARY:							##########
+		Weapon: valentine_bullethell
+		LocalOffset: 624,0,208
+	Armament@SECOND:							##########
+		Weapon: valentine_bullethell2
+		LocalOffset: 624,0,208
+	Armament@Third:							##########
+		Weapon: valentine_bullethell3
+		LocalOffset: 624,0,208
+	Armament@Fourth:							##########
+		Weapon: valentine_bullethell4
 		LocalOffset: 624,0,208
 	AttackFrontal:
 		TargetFrozenActors: True
@@ -1467,6 +1924,39 @@ svsgreen:
 		ValidTypes: vehicle								##########
 	Voiced:
 		VoiceSet: SvsMAlienVoice
+	SelfHealing@Shield:
+		PercentageStep: 1
+		Delay: 3
+		HealIfBelow: 100
+		DamageCooldown: 1
+	RangeMultiplier@Extrarange:
+		Modifier: 150
+	ReloadDelayMultiplier:
+		Modifier: 100
+	FirepowerMultiplier:
+		Modifier: 333
+	InaccuracyMultiplier:
+		Modifier: 33
+	Power:
+		Amount: -100
+	Explodes@bomb:
+		Weapon: RA2DemoBomb
+		EmptyWeapon: RA2DemoBomb
+	Explodes@1:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
+	Explodes@2:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
+	Explodes@3:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
+	Explodes@4:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
+	Explodes@5:
+		Weapon: GLAnthraxLarge
+		EmptyWeapon: GLAnthraxLarge
 
 valentine_mod4tnkgirl:
 	Inherits: mod4tnkgirl
@@ -1480,6 +1970,16 @@ valentine_mod4tnkgirl:
 		BuildDurationModifier: 50
 	RenderSprites:
 		Image: mod4tnkgirl
+	Power:
+		Amount: -50
+	SelfHealing@Shield:
+		PercentageStep: 1
+		Delay: 33
+		HealIfBelow: 100
+		DamageCooldown: 33
+	Explodes:
+		Weapon: RA2Terrorist
+		EmptyWeapon: RA2Terrorist
 
 valentines_teletubby_po:
 	Inherits: ^Soldier
@@ -1501,21 +2001,21 @@ valentines_teletubby_po:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 10
 		Prerequisites: 
-		Queue: Infantry.Valentines, RAInfantry.Valentines
+		Queue: Vehicle.Valentines, RAVehicle.Valentines
+		BuildPaletteOrder: 200
 		Description: Walking television, has lasers.
 		BuildLimit: 1
-		BuildDurationModifier: 25
+		BuildDuration: 3000
 	Mobile:
 		Speed: 50
 	Health:
-		HP: 500000      
+		HP: 1000000      
 	Armor:
 		Type: light     
 	#Food
 	Power:
-		Amount: -100
+		Amount: -200
 	AutoTarget:
 		ScanRadius: 10
 		InitialStance: AttackAnything
@@ -1530,3 +2030,290 @@ valentines_teletubby_po:
     Voiced:
 		VoiceSet: voicehuman           
     -Crushable:
+	SelfHealing@Shield:
+		PercentageStep: 1
+		Delay: 33
+		HealIfBelow: 100
+		DamageCooldown: 33
+	Explodes@1:
+		Weapon: RA2Atomic
+		EmptyWeapon: RA2Atomic
+
+valentines_white_knight:
+	Inherits: wc_h_knight
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: White Knight
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: valentine_church_workshop, ~techlevel.high
+		Queue: Infantry.Valentines, RAInfantry.Valentines
+		Description: Protects women in online discussions.
+		BuildLimit: 1
+		BuildDurationModifier: 50
+   	RevealsShroud:
+		Range: 5c0     
+    AttackFrontal:
+	Mobile:
+		Speed: 100
+  	Armor:
+		Type: Medium      
+	Health:
+		HP: 100000
+	Power:
+		Amount: -50
+	AutoTarget:
+		ScanRadius: 7
+		InitialStance: AttackAnything
+	Armament:
+		Weapon: knightSlice
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+    WithMoveAnimation:
+		MoveSequence: run
+	Voiced:
+		VoiceSet: voicehuman     
+	Targetable@HEAL:
+		RequiresCondition: !parachute && !untargetable && damaged
+		TargetTypes: Heal, Healing
+	SelfHealing@Shield:
+		PercentageStep: 1
+		Delay: 25
+		HealIfBelow: 100
+		DamageCooldown: 25
+	ReloadDelayMultiplier:
+		Modifier: 75
+	FirepowerMultiplier:
+		Modifier: 125
+	Explodes:
+		Weapon: GLTerroristExplosive2
+		EmptyWeapon: GLTerroristExplosive2
+
+	####################################################################################################
+	#		Naval
+	####################################################################################################
+
+valentines_dd:
+	Inherits: DD
+	Tooltip:
+		Name: Heart Destroyer
+	Valued:
+		Cost: 2000
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 50000
+	Buildable:
+		BuildPaletteOrder: 2
+		Prerequisites: valentines_sc2kmarina
+		Queue: Naval.Valentines, RANaval.Valentines
+		Description: Destroys the hearts of those in love.
+		BuildDurationModifier: 50
+	RenderSprites:
+		Image: valentines_dd
+		PlayerColorPalette: ra
+	Armament:
+		Weapon: CupidoAK47
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 64, -64
+		PauseOnCondition: !ammo
+	Armament@2:
+		Weapon: LovebowFireB
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 64, -64
+		PauseOnCondition: !ammo
+	Armament@AA:
+		Weapon: CupidoAK47AA
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 64, -64
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 32
+		PipCount: 8
+		AmmoCondition: ammo
+		ReloadCount: 1
+	ReloadAmmoPool:
+		Delay: 8
+		Count: 1
+	RangeMultiplier@Extrarange:
+		Modifier: 75
+	ReloadDelayMultiplier:
+		Modifier: 125
+	FirepowerMultiplier:
+		Modifier: 75
+	Power:
+		Amount: -50
+
+valentines_ca:
+	Inherits: CA
+	Tooltip:
+		Name: Breakup Cruiser
+	Valued:
+		Cost: 3000
+	Mobile:
+		Speed: 50
+	Health:
+		HP: 150000
+	Buildable:
+		BuildPaletteOrder: 3
+		Prerequisites: valentines_sc2kmarina
+		Queue: Naval.Valentines, RANaval.Valentines
+		Description: Fires Hearts and Poison Pills at the same time.
+		BuildDurationModifier: 50
+	RenderSprites:
+		Image: valentines_ca
+		Palette: ra
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -896,0,128
+		TurnSpeed: 3
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 768,0,128
+		TurnSpeed: 3
+	Armament@PRIMARY:
+		Turret: primary
+		Weapon: valentine_bullethell
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 25
+		RecoilRecovery: 25
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Turret: secondary
+		Weapon: valentine_bullethell3
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 25
+		RecoilRecovery: 25
+		MuzzleSequence: muzzle
+	Armament@Third:
+		Turret: primary
+		Weapon: valentine_bullethell2
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 175
+		RecoilRecovery: 33
+		MuzzleSequence: muzzle
+	Armament@Fourth:
+		Name: secondary
+		Turret: secondary
+		Weapon: valentine_bullethell4
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 175
+		RecoilRecovery: 33
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		Turrets: primary, secondary
+	RangeMultiplier@Extrarange:
+		Modifier: 125
+	ReloadDelayMultiplier:
+		Modifier: 100
+	FirepowerMultiplier:
+		Modifier: 200
+	InaccuracyMultiplier:
+		Modifier: 100
+	Power:
+		Amount: -50
+
+valentines_pt:
+	Inherits: PT
+	Tooltip:
+		Name: Lovelaser Corvette
+	Valued:
+		Cost: 1000
+	Mobile:
+		Speed: 100
+	Health:
+		HP: 75000
+	Buildable:
+		BuildPaletteOrder: 1
+		Prerequisites: valentines_sc2kmarina
+		Queue: Naval.Valentines, RANaval.Valentines
+		Description: Fires a powerful lovelaser.
+		BuildDurationModifier: 50
+	RenderSprites:
+		Image: valentines_pt
+		Palette: ra
+	Armament@PRIMARY:
+		Weapon: ValentineTowerDouble
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+	RangeMultiplier@Extrarange:
+		Modifier: 80
+	ReloadDelayMultiplier:
+		Modifier: 120
+	FirepowerMultiplier:
+		Modifier: 80
+	Power:
+		Amount: -25
+
+valentines_lst:
+	Inherits: RALST
+	Tooltip:
+		Name: Valentines Transport
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: valentines_sc2kmarina
+		Queue: Naval.Valentines, RANaval.Valentines
+		Description: Valentines Transport.
+		BuildDurationModifier: 50
+	RenderSprites:
+		Image: valentines_lst
+		Palette: ra
+
+valentines_swan:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EXT: ^ExternalConditions
+	Buildable:
+		BuildPaletteOrder: 4
+		Prerequisites: 
+		Queue: Naval.Valentines, RANaval.Valentines
+		Description: Swan filled with explosives.
+		BuildDurationModifier: 100
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: White Swan
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 50
+	Explodes@bomb:
+		Weapon: MiniNuke
+		EmptyWeapon: MiniNuke
+		DamageSource: Killer
+		RequiresCondition: !disabled
+	AttackFrontal:
+		FacingTolerance: 128
+	Armament@PRIMARY:
+		Weapon: SwanAttack
+	AutoTarget:
+	GrantConditionOnAttack:
+		Condition: triggered
+	GrantConditionOnDeploy:
+		DeployedCondition: triggered
+		PauseOnCondition: disabled
+	KillsSelf:
+		RequiresCondition: !disabled && (invulnerability || triggered)
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	SelectionDecorations:
+	DetectCloaked:
+		CloakTypes: Underwater
+		Range: 4c0
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	Power:
+		Amount: -50

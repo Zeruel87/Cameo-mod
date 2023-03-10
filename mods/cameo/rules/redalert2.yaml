@@ -535,6 +535,12 @@ Player:
 	InaccuracyMultiplier@RANK-ELITE:
 		RequiresCondition: rank-elite
 		Modifier: 20
+	ChangesHealth@eliteplus:
+		PercentageStep: 1
+		Delay: 25
+		StartIfBelow: 100
+		DamageCooldown: 25
+		RequiresCondition: rank-elite
         
 ^RA2Country.template.allies:
 	Inherits: ^upgrade.template
@@ -1949,10 +1955,11 @@ ra2atesla:
 	Buildable:
 		Queue: Defence.AlliesRA2, RADefence.AlliesRA2
 		BuildPaletteOrder: 80
+		BuildDuration: 1125
 		Prerequisites: anyhq, ~CountryChoosedAlliesRA2
 		Description: Advanced base defense.\nRequires power to operate.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
 	Valued:
-		Cost: 1500
+		Cost: 3000
 	Tooltip:
 		Name: Prism Tower
 	Selectable:
@@ -2043,7 +2050,7 @@ ra2atesla:
 		ShowSelectionBar: false
 		SelectionBarColor: 00ff00
 	Power:
-		Amount: -75
+		Amount: -100
 	Sellable:
 	DetectCloaked:
 		Range: 7c0
@@ -2069,14 +2076,14 @@ ra2gtgcan:
 		Prerequisites: anyhq, ~RA2French, ~CountryChoosedAlliesRA2
 		Description: Long range anti-ground defense.\nRequires power to operate
 	Valued:
-		Cost: 2000
+		Cost: 3000
 	Tooltip:
 		Name: Grand Cannon
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
 	Health:
-		HP: 90000
+		HP: 100000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -2446,7 +2453,7 @@ ra2nanrct:
 	Selectable:
 		Bounds: 72,72
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	Tooltip:
 		Name: Nuclear Reactor
 	Buildable:
@@ -2617,6 +2624,7 @@ ra2naradr:
 		Prerequisite: anyhq
 	Buildable:
 		BuildPaletteOrder: 70
+		BuildDurationModifier: 50
 		Prerequisites: ra2narefn, ~CountryChoosedSovietRA2, ~!RA2DOOM
 		Queue: Building.SovietRA2, RABuilding.SovietRA2
 		Description: Provides radar and Spy Plane support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
@@ -2847,6 +2855,7 @@ ra2natech:
 	Buildable:
 		Queue: Building.SovietRA2, RABuilding.SovietRA2
 		BuildPaletteOrder: 150
+		BuildDurationModifier: 50
 		Prerequisites: ra2naweap, ra2naradr, ~techlevel.high, ~CountryChoosedSovietRA2
 		Description: Provides Soviet advanced technologies and support power.
 	Valued:
@@ -3069,6 +3078,7 @@ ra2tesla:
 	Buildable:
 		Queue: Defence.SovietRA2, RADefence.SovietRA2
 		BuildPaletteOrder: 80
+		BuildDuration: 750
 		Prerequisites: anyhq, ~CountryChoosedSovietRA2
 		Description: Advanced base defense.\nCan be charged by tesla troopers.\nRequires power or at least 1 charge to operate.\nIncreases range and damage with each charge up to a maximum of 3.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
 	Valued:
@@ -3109,7 +3119,7 @@ ra2tesla:
 		PauseOnCondition: disabled
 		ChargeAudio: btespow.wav
 		MaxCharges: 1
-		ReloadDelay: 50
+		ReloadDelay: 75
 	Power:
 		Amount: -100
 	DetectCloaked:
@@ -3156,6 +3166,9 @@ ra2tesla:
 	Production:
 		Produces: ra2tesla.upgrade
 		RequiresCondition: !teslaChargeUpgrade
+	ProductionBar:
+		ProductionType: ra2tesla.upgrade
+	ProductionBar:
 	ProductionQueue:
 		Type: ra2tesla.upgrade
 		DisplayOrder: 0
@@ -3167,48 +3180,13 @@ ra2tesla:
 		Condition: teslaChargeUpgrade
 		Actors: ra2teslaUpgrade
 
-ra2tesla.bot:
-	Inherits: ra2tesla
-	Buildable:
-		BuildPaletteOrder: 120
-		Prerequisites: anyhq, ~CountryChoosedSovietRA2, ~botplayer
-	MobSpawnerMaster@4:
-		Actors: ra2shk.bot
-		Offset: 1000,750,0
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
-		SpawnAllAtOnce: false
-		InitialActorCount: 0
-		RequiresCondition: !teslaChargeUpgrade
-	MobSpawnerMaster@5:
-		Actors: ra2shk.bot
-		Offset: 750,-1000,0
-		RespawnTicks: 1000
-		ExitByBudding: false
-		AggregateHealth: false
-		SpawnAllAtOnce: false
-		InitialActorCount: 0
-		RequiresCondition: !teslaChargeUpgrade
-	MobSpawnerMaster@6:
-		Actors: ra2shk.bot
-		Offset: -750,1000,0
-		RespawnTicks: 1500
-		ExitByBudding: false
-		AggregateHealth: false
-		SpawnAllAtOnce: false
-		InitialActorCount: 0
-		RequiresCondition: !teslaChargeUpgrade
-	RenderSprites:
-		Image: ra2tesla
-
-ra2teslaUpgrade:
+ra2teslaupgrade:
 	Tooltip:
 		Name: Tesla Coil Charging Squad
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: ra2tesla.upgrade
-		BuildDurationModifier: 50
+		BuildDuration: 750
 		Description: A group of Tesla Troopers will charge this Tesla Coil
 	Valued:
 		Cost: 2000
@@ -3287,7 +3265,7 @@ yrngbnkr.bot:
 	RenderSprites:
 		Image: yrngbnkr
 	Cargo:
-		InitialUnits: ra2e2,ra2e2,ra2e2,ra2e2,ra2flakt,ra2flakt
+		InitialUnits: ra2e2,ra2e2,ra2shk,ra2shk,ra2flakt,ra2flakt
 	EditorOnlyTooltip:
 		Name: Loaded Battle Bunker
 
@@ -3303,7 +3281,7 @@ yrschd:
 	Selectable:
 		Bounds: 24,24
 	Valued:
-		Cost: 1200
+		Cost: 2000
 	Tooltip:
 		Name: Siege Chopper (Deployed)
 	Selectable:
@@ -3316,27 +3294,35 @@ yrschd:
 		Dimensions: 1, 1
 		UndeploySounds: vchodepa.wav
 	Health:
-		HP: 32500
+		HP: 33333
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 7c0
+		Range: 7c5
 	Turreted:
 		TurnSpeed: 10
 		InitialFacing: 224
 		Offset: 160,5,3
 	AttackTurreted:
 		Voice: DeployedAttack
+	Armament@Deploy:
+		Weapon: deploytargeting.10c0
+		Name: primary
 	Armament:
-        Name: primary
-		Weapon: RA160mmE
-		LocalOffset: 410,0,1386
-        RequiresCondition: !rank-elite
+		Name: primary
+		Weapon: RA160mm
+		LocalOffset: 410,0,650
+		RequiresCondition: !rank-elite
 	Armament@elite:
-        Name: primary
+		Name: primary
 		Weapon: RA160mmE_elite
-		LocalOffset: 410,0,1386
-        RequiresCondition: rank-elite        
+		LocalOffset: 410,0,650
+		RequiresCondition: rank-elite
+	AIDeployNotifier:
+		DeployTrigger: Attack, Damage
+		DeployChance: 50
+		DeployTicks: 250
+		UndeployTicks: 500
 	BodyOrientation:
 		QuantizedFacings: 16
 	WithVoxelTurret:
@@ -3381,7 +3367,7 @@ yrngindp:
 		BuildPaletteOrder: 200
 		Prerequisites: ra2natech, ~CountryChoosedSovietRA2, ~!RA2Psicorps
 		Queue: Building.SovietRA2, RABuilding.SovietRA2
-		BuildDuration: 330
+		BuildDurationModifier: 25
 		BuildLimit: 1
 		Description: Reduces cost of vehicles by 25%.
 	Building:
@@ -4975,11 +4961,11 @@ RA2TANY:
 		BuildLimit: 1
 		Description: Elite amphibious commando infantry.\nCan plant timed bombs on vehicles\nCan demolish buildings with C4\nMaximum 1 can be trained\n Strong vs Infantry, Buildings, Vehicles\n Weak vs Aircraft
 	Valued:
-		Cost: 1200
+		Cost: 2000
 	Tooltip:
 		Name: Tanya II
 	Health:
-		HP: 10000
+		HP: 50000
 	Mobile:
 		Speed: 75
 	RevealsShroud:
@@ -5024,10 +5010,20 @@ RA2TANY:
 		PercentageStep: 5
 		Delay: 40
 		StartIfBelow: 100
-        RequiresCondition: rank-elite      
-    ReloadDelayMultiplier@eliteplus:
-        RequiresCondition: rank-elite
-        Modifier: 80
+	SelfHealing:
+		Step: 500
+		Delay: 25
+		HealIfBelow: 100
+		DamageCooldown: 25
+	ChangesHealth@eliteplus:
+		PercentageStep: 4
+		Delay: 25
+		StartIfBelow: 100
+		DamageCooldown: 25
+		RequiresCondition: rank-elite      
+	ReloadDelayMultiplier@eliteplus:
+		RequiresCondition: rank-elite
+		Modifier: 80
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 RA2SEAL:
@@ -5137,7 +5133,7 @@ YRBORIS:
 		BuildLimit: 1
 		Description: Elite commando infantry.\nCan detect cloaked units.\nMaximum 1 can be trained.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft\n  #Special Ability: Airstrike
 	Valued:
-		Cost: 1200
+		Cost: 2000
 	Tooltip:
 		Name: Boris
 	Health:
@@ -5178,27 +5174,47 @@ YRBORIS:
 		Payload: 600
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-	AirstrikeMaster:
+	AirstrikeMaster@1:
 		Actors: yrbpln
 		SquadSize: 1
-		RespawnTicks: 150
+		RespawnTicks: 75
 		SlaveDisposalOnKill: KillSlaves
-        SpawnAllAtOnce: true
-		SpawnerArmamentName: secondary        
-    RangeMultiplier@eliteplus:
-        Modifier: 110
-        RequiresCondition: rank-elite       
-    ReloadDelayMultiplier@eliteplus:
-        Modifier: 85
-        RequiresCondition: rank-elite     
-    DamageMultiplier@eliteplus:
-        Modifier: 90
-        RequiresCondition: rank-elite              
-    ChangesHealth@eliteplus:
-		PercentageStep: 4
-		Delay: 50
+		SpawnAllAtOnce: false
+		SpawnerArmamentName: secondary
+	AirstrikeMaster@2:
+		Actors: yrbpln1
+		SquadSize: 1
+		RespawnTicks: 100
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		SpawnerArmamentName: secondary
+	AirstrikeMaster@3:
+		Actors: yrbpln2
+		SquadSize: 1
+		RespawnTicks: 125
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+		SpawnerArmamentName: secondary
+	RangeMultiplier@eliteplus:
+		Modifier: 110
+		RequiresCondition: rank-elite       
+	ReloadDelayMultiplier@eliteplus:
+		Modifier: 85
+		RequiresCondition: rank-elite     
+	DamageMultiplier@eliteplus:
+		Modifier: 90
+		RequiresCondition: rank-elite              
+	ChangesHealth@eliteplus:
+		PercentageStep: 2
+		Delay: 25
 		StartIfBelow: 100
-        RequiresCondition: rank-elite
+		DamageCooldown: 25
+		RequiresCondition: rank-elite
+	SelfHealing:
+		Step: 350
+		Delay: 25
+		HealIfBelow: 100
+		DamageCooldown: 25
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 RA2E2:
@@ -6523,12 +6539,14 @@ RA2AMCV:
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmalliesra2
 
-RA2AMCV.Bot:
-    Inherits: RA2AMCV
+ra2amcv.bot:
+	Inherits: RA2AMCV
 	Buildable:
 		BuildPaletteOrder: 100
-        BuildLimit: 1
+		BuildLimit: 1
 		Prerequisites: ~techlevel.medium, ra2gadept, ~botplayer, allowsMCV
+	RenderSprites:
+		Image: RA2AMCV
 
 RA2CMIN:
 	Inherits: HARV
@@ -6741,15 +6759,14 @@ RA2TNKD:
 		Prerequisites: anyhq, ~techlevel.medium, ~RA2German
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
 		Description: Allied anti-tank vehicle.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
-        BuildDuration: 375
-        BuildDurationModifier: 100
+		BuildDurationModifier: 25
 	Mobile:
 		Locomotor: tracked
 		Speed: 75
 	Health:
 		HP: 75000
 	Repairable:
-		HpPerStep: 2637
+		HpPerStep: 5000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -7042,7 +7059,7 @@ RA2SREF:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1500
+		Cost: 2000
 	Tooltip:
 		Name: Prism Tank
 	Buildable:
@@ -7050,6 +7067,7 @@ RA2SREF:
 		Prerequisites: ra2gatech, ~techlevel.high
 		Queue: Vehicle.AlliesRA2, RAVehicle.AlliesRA2
 		Description: Advanced Allied tank armed with\na prism cannon.\n Strong vs Infantry, Buildings\n Weak vs Aircraft, Vehicles
+		BuildDuration: 1500
 	Mobile:
 		Locomotor: tracked
 		Speed: 75
@@ -7064,17 +7082,19 @@ RA2SREF:
 	Turreted:
 		TurnSpeed: 5	#3
 	Armament:
-        Name: primary
+		Name: primary
 		Weapon: RA2Comet
+		LocalOffset: 410,0,650
 		Recoil: 128
 		RecoilRecovery: 26
-        RequiresCondition: !rank-elite
-  	Armament@elite:
-        Name: primary
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
 		Weapon: RA2Comet_elite
+		LocalOffset: 410,0,650
 		Recoil: 128
 		RecoilRecovery: 26    
-        RequiresCondition: rank-elite        
+		RequiresCondition: rank-elite        
 	AttackTurreted:
 	SelectionDecorations:
 	Selectable:
@@ -7343,12 +7363,14 @@ RA2SMCV:
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmsovietra2
 
-RA2SMCV.Bot:
-    Inherits: RA2SMCV
+ra2smcv.bot:
+	Inherits: RA2SMCV
 	Buildable:
 		BuildPaletteOrder: 100
-        BuildLimit: 1
+		BuildLimit: 1
 		Prerequisites: ~techlevel.medium, ra2nadept, ~botplayer, allowsMCV
+	RenderSprites:
+		Image: RA2SMCV
 
 RA2HTNK:
 	Inherits: ^Tank
@@ -7371,7 +7393,7 @@ RA2HTNK:
 		Locomotor: tracked
 		Speed: 90
 	Health:
-		HP: 50000
+		HP: 60000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -7525,6 +7547,8 @@ RA2APOC:
 		Name: Apocalypse Tank
 	Buildable:
 		BuildPaletteOrder: 60
+		#BuildDuration: 1500
+		BuildDurationModifier: 85
 		Prerequisites: ra2naweap, ra2natech, ~techlevel.high, ~!RA2DOOM
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 		Description: Heavily armored Soviet tank.\nCan attack aircraft.\n  Strong vs Everything
@@ -7597,18 +7621,19 @@ RA2APOC:
     DamageMultiplier@eliteplus:
         Modifier: 90
         RequiresCondition: rank-elite         
-    ChangesHealth@eliteplus:
+	ChangesHealth@eliteplus:
 		PercentageStep: 1
-		Delay: 10
+		Delay: 12
 		StartIfBelow: 100
-        RequiresCondition: rank-elite          
+		DamageCooldown: 12
+		RequiresCondition: rank-elite          
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
 	SelfHealing:
-		Step: 200
-		Delay: 10
+		Step: 35
+		Delay: 1
 		HealIfBelow: 100
-		DamageCooldown: 100
+		DamageCooldown: 1
 RA2V3:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
@@ -7712,7 +7737,7 @@ RA2TTNK:
 	Inherits@EMP: ^TurretEMP
     Inherits@SHADOWS: ^Shadows
 	Valued:
-		Cost: 1100
+		Cost: 1250
 	Tooltip:
 		Name: Tesla Tank
 	Buildable:
@@ -7720,10 +7745,11 @@ RA2TTNK:
 		Prerequisites: ra2naweap, anyhq, ~techlevel.high, ~RA2Russia
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 		Description: Tank armed with tesla coils.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
+		BuildDurationModifier: 60
 	Mobile:
 		Speed: 75
 	Health:
-		HP: 40000
+		HP: 50000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -7931,12 +7957,14 @@ YRPCV:
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmyuri
 
-YRPCV.Bot:
-    Inherits: YRPCV
+yrpcv.bot:
+	Inherits: YRPCV
 	Buildable:
 		BuildPaletteOrder: 100
-        BuildLimit: 1
+		BuildLimit: 1
 		Prerequisites: ~techlevel.medium, yryggrnd, ~botplayer, allowsMCV
+	RenderSprites:
+		Image: YRPCV
 
 YRSMIN:
 	Inherits: ^Vehicle
@@ -9174,13 +9202,14 @@ RA2ZEP:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceGlobal
 	Valued:
-		Cost: 1600
+		Cost: 3000
 	Tooltip:
 		Name: Kirov Airship
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 99
+		BuildDurationModifier: 50
 		Prerequisites: ra2naweap, anyhq, ra2natech, ~!RA2DOOM
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2, Aircraft.X_Aircrafts
 		Description: Heavy bomber airship.\n  Strong vs Buildings, Infantry\n  Weak vs Aircraft
@@ -9190,7 +9219,7 @@ RA2ZEP:
 		Speed: 30
 		RepulsionSpeed: 10
 	Health:
-		HP: 72400
+		HP: 300000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -9199,6 +9228,11 @@ RA2ZEP:
 	Armament@PRIMARY:
 		Weapon: RA2KirovBomb
 		LocalOffset: 0,0,0
+		RequiresCondition: !rank-elite
+	Armament@PRIMARYELITE:
+		Weapon: RA2KirovBombElite
+		LocalOffset: 0,0,0
+		RequiresCondition: rank-elite  
 	AutoTarget:
 		ScanRadius: 5
 	AttackAircraft:
@@ -9215,18 +9249,18 @@ RA2ZEP:
 		VoiceSet: KirovVoice
 	DeathSounds:
 	SelfHealing:
-		Step: 100
-		Delay: 3
-		HealIfBelow: 50
-		DamageCooldown: 150
+		Step: 1000
+		Delay: 10
+		HealIfBelow: 100
+		DamageCooldown: 10
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-    DamageMultiplier@eliteplus:
-        Modifier: 80
-        RequiresCondition: rank-elite    
-    SpeedMultiplier@eliteplus:
-        Modifier: 125
-        RequiresCondition: rank-elite   
+	DamageMultiplier@eliteplus:
+		Modifier: 50
+		RequiresCondition: rank-elite    
+	SpeedMultiplier@eliteplus:
+		Modifier: 125
+		RequiresCondition: rank-elite   
 	ProducibleWithLevel:
 		Prerequisites: aircraft.upgraded
 RA2ZEPDOOM:
@@ -9270,7 +9304,7 @@ yrschp:
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@detect: ^GenericAirDetector
 	Valued:
-		Cost: 1200
+		Cost: 2000
 	Tooltip:
 		Name: Siege Chopper
 	UpdatesPlayerStatistics:
@@ -9279,34 +9313,42 @@ yrschp:
 		BuildPaletteOrder: 98
 		Prerequisites: ra2naweap, anyhq, ~!RA2Psicorps, ~!RA2DOOM
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2, Aircraft.X_Aircrafts
-        BuildDuration: 800
-        BuildDurationModifier: 100
+		#BuildDuration: 800
+		BuildDurationModifier: 56
 		Description: Helicopter gunship that can deploy into a cannon.\n  Strong vs Buildings, Infantry\n  Weak vs Aircraft
 	Aircraft:
 		InitialFacing: 224
-		TurnSpeed: 6
-		Speed: 162
-		AltitudeVelocity: 120
+		TurnSpeed: 5
+		Speed: 150
+		AltitudeVelocity: 100
 		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice
 		VTOL: true
 		RepulsionSpeed: 10
 		Voice: Move
 	Health:
-		HP: 35000
+		HP: 50000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 8c0
+		Range: 10c0
 		Type: GroundPosition
 	Armament@PRIMARY:
 		Weapon: BlackHawkCannon
 		LocalOffset: 0,0,0
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
+	Armament@Deploy:
+		Weapon: deploytargeting.5c0
+		Name: deploy
+	AIDeployNotifier:
+		DeployTrigger: Attack, Damage
+		DeployChance: 50
+		DeployTicks: 250
+		UndeployTicks: 500
 	AutoTarget:
-		ScanRadius: 5
+		ScanRadius: 15
 	AttackAircraft:
-		FacingTolerance: 20
+		FacingTolerance: 15
 		Voice: Attack
 		AttackType: Hover
 	-WithShadow:
@@ -9335,8 +9377,8 @@ yrschp:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
     ReloadDelayMultiplier@eliteplus:
-        Modifier: 80
-        RequiresCondition: rank-elite           
+		Modifier: 80
+		RequiresCondition: rank-elite           
 	ProducibleWithLevel:
 		Prerequisites: aircraft.upgraded
 RA2FALC:
@@ -10007,7 +10049,8 @@ ra2cplane:
 yrbpln:
 	Inherits: ^RANeutralPlane
 	Inherits@Voxel: ^RenderVoxel
-	-Selectable:
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Selectable:
 	-UpdatesPlayerStatistics:
     -GrantConditionOnPrerequisite@GLOBALBOUNTY
     -GrantConditionOnPrerequisite@ONESHOT
@@ -10016,18 +10059,26 @@ yrbpln:
 	Interactable:
 	Tooltip:
 		Name: MiG Bomber
+	Valued:
+		Cost: 1000
 	Health:
-		HP: 30000
+		HP: 33333
+	SelfHealing:
+		Step: 333
+		Delay: 3
+		HealIfBelow: 100
+		DamageCooldown: 3
 	HitShape:
 	-Voiced:
 	Aircraft:
-		TurnSpeed: 4
-		Speed: 373
+		TurnSpeed: 3
+		Speed: 333
 		Repulsable: False
-		RepulsionSpeed: 10
+		RepulsionSpeed: 3
 	AttackAircraft:
+		FacingTolerance: 25
 	Armament:
-        Name: primary
+		Name: primary
 		Weapon: MigMissiles
 		LocalOffset: 0,-256,-43, 0,256,-43
 	WithMuzzleOverlay:
@@ -10048,6 +10099,25 @@ yrbpln:
 	-ExternalCondition@STASIS:
 	-DelayedWeaponAttachable@lockdown:
 	-ExternalCondition@EMP:
+
+yrbpln1:
+	Inherits: yrbpln
+	Aircraft:
+		Speed: 350
+	RenderSprites:
+		Image: yrbpln
+	RenderVoxels:
+		Image: yrbpln
+
+yrbpln2:
+	Inherits: yrbpln
+	Aircraft:
+		Speed: 367
+	RenderSprites:
+		Image: yrbpln
+	RenderVoxels:
+		Image: yrbpln
+
 
 ####################################################################################################
 #		Red Alert 2 TechBuilding

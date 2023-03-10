@@ -30,10 +30,7 @@ namespace OpenRA.Mods.CA.Traits
 	public class CashTransferToAlliesInfo : PausableConditionalTraitInfo
 	{
 		[Desc("Duration between cash transfers.")]
-		public readonly int ChargeDuration = 75;
-
-		[Desc("Max cash per transfer.")]
-		public readonly int Maximum = 10000;
+		public readonly int ChargeDuration = 5;
 
 		[Desc("Whether to show the cash tick indicators rising from the actor.")]
 		public readonly bool ShowTicks = true;
@@ -71,7 +68,15 @@ namespace OpenRA.Mods.CA.Traits
 				if (allies.Count() == 0)
 					return;
 
-				var toTake = Math.Min(info.Maximum, ownResources.Cash / 20);
+				foreach (var player in allies)
+				{
+					var allyResources = player.PlayerActor.Trait<PlayerResources>();
+					var toTakeFromAlly = allyResources.Cash / (99 * allies.Count());
+					allyResources.TakeCash(toTakeFromAlly);
+					ownResources.GiveCash(toTakeFromAlly);
+				}
+
+				var toTake = ownResources.Cash / 100;
 				var toGive = toTake / allies.Count();
 
 				foreach (var player in allies)
@@ -81,6 +86,7 @@ namespace OpenRA.Mods.CA.Traits
 				}
 
 				ownResources.TakeCash(toGive*allies.Count());
+			
 			}
 		}
 	}
