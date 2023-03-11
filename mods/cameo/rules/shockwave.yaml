@@ -103,9 +103,9 @@ World:
 		Side: GLA
 		Description: GLA Salvage General\nGeneral Mohmar "Deathstrike" demands the use of salvaged weapon systems left on battlefield to defeat his enemies\nSupport powers: Scud Storm, General's Powers
     FactionCA@gla_extras_technical:
-		Name: Deathstrike SHW
+		Name: Naga Custom General
 		InternalName: eglatechnic
-        Game: Special 
+        Game: Shockwave
         Selectable: true
 		Side: GLA
 		Description: GLA Technical General\nGeneral "Naga" demands the use of a lot of technicals, and modified civilian vehicles\nSupport powers: Scud Storm, General's Powers  
@@ -246,7 +246,7 @@ Player:
         Factions: eglatechnic   
     ProvidesPrerequisite@sglaterrorist:
 		Prerequisite: sglaterroristprereq
-        Factions: sgla, sglacamo, sglademo
+        Factions: sgla, sglacamo, sglademo, eglatechnic
     ProvidesPrerequisite@shockwavenoradar:
         Prerequisite: noradar
         Factions: sgla,sglacamo,sglatoxin,sglascrap,sglademo,susaarmor
@@ -279,7 +279,7 @@ Player:
         Factions: sgla
     ProvidesPrerequisite@sgle3prereq:
         Prerequisite: sgle3prereq
-        Factions: sgla_camo, sgla, sglademo
+        Factions: sgla_camo, sgla, sglademo, sglademo, eglatechnic
 	ClassicProductionQueue@RABUILDINGSHOCKWAVE:
 		Type: RABuilding.Shockwave
 		DisplayOrder: 0
@@ -12496,6 +12496,165 @@ eglpickuparty:
 		LevelUpNotification: LevelUpRA2
     GrantConditionOnAttack@aa:
         Condition: attacking
+eglrajeep:
+	Inherits: RAJEEP
+	Inherits@junk: ^JunkRepair
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 20
+		Prerequisites: sglweap, ~techlevel.low, ~eglatechnic
+		Description: Jeep GLA Variant.\nDelete carry because has a grenadier in the back.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Ranger
+	Armament:
+		Weapon: GLCamelWeapons
+	-Cargo:
+	SpawnActorOnDeath@Grenadier:
+		Actor: sglgrenadierterror
+	RenderSprites:
+		Image: rajeep
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	RangeMultiplier@Scrap1:
+		Modifier: 150
+		RequiresCondition: scrap_create_bonus == 1
+	RangeMultiplier@Scrap2:
+		Modifier: 200
+		RequiresCondition: scrap_create_bonus >= 2
+eglahumvee:
+	Inherits: usajeep
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GeneralsVehicle: ^GeneralsVehicle
+	Inherits@training: ^AdvancedTrainingUpgrade
+	Inherits@EMP: ^FrontalEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@cargo: ^CargoVehicle
+	Inherits@junk: ^JunkRepair
+	Inherits@AP: ^APBulletUpgrade
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Stealed Humvee
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: usajeep
+	Buildable:
+		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildPaletteOrder: 40
+		Prerequisites: sglweap, ~techlevel.low, ~eglatechnic, sglpalace
+		Description: Replaces Battle Bus.\nScorpion Missiles replaces Tow Missile.\nSame salvage upgrades of other Technicals.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		TurnSpeed: 10
+		Speed: 130
+	Selectable:
+		Class: usajeep
+	Health:
+		HP: 35000
+	Repairable:
+		HpPerStep: 1819
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 10
+		Offset: -85,0,128
+	Armament@Normal:
+		Weapon: GLTechnicalMG
+		MuzzleSequence: muzzle
+		LocalOffset: 171,0,85
+		RequiresCondition: scrap_create_bonus == 0
+	Armament@Salvage:
+		Weapon: GLTechnicalShell
+		MuzzleSequence: muzzle
+		LocalOffset: 171,0,85
+		RequiresCondition: scrap_create_bonus == 1
+	Armament@Salvage2:
+		Weapon: GLTechnicalMissile
+		LocalOffset: 171,0,85
+		RequiresCondition: scrap_create_bonus >= 2
+	AttackTurreted:
+        Armaments: primary, secondary, tertiary, tertiaryup
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Inherits@EXT: ^ExternalConditions					##########
+    Inherits@IFV: ^IFVConditionsBunker
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 5
+		PipCount: 5
+		LoadingCondition: notmobile
+	Armament@mg:
+		Weapon: USARangerMGGarrison  
+	Armament@mg2:
+		Weapon: USARangerMGGarrison          
+    Armament@mg3:
+		Weapon: USARangerMGGarrison  
+ 	Armament@mg4:
+		Weapon: USARangerMGGarrison         
+   	Armament@mg5:
+		Weapon: USARangerMGGarrison       
+   	Armament@missile:     
+        Weapon: USAMissileDefenderGarrisoned
+   	Armament@missile2:     
+        Weapon: USAMissileDefenderGarrisoned        
+    Armament@missile3:     
+        Weapon: USAMissileDefenderGarrisoned       
+   	Armament@missile4:     
+        Weapon: USAMissileDefenderGarrisoned        
+   	Armament@missile5:     
+        Weapon: USAMissileDefenderGarrisoned        
+	Armament@Tow:
+		Weapon: GlScorpionMissile
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+		RequiresCondition: rocketupgrade
+	Inherits@ProducesDrones: ^ProducesDrones
+	Voiced:
+		VoiceSet: USAHumveeVoice
+	GrantConditionOnPrerequisite@upscorpionrocket:
+		Condition: rocketupgrade
+		Prerequisites: upscorpionrocket  
+	RenderSprites:
+		Image: glahumvee
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+    GainsExperienceMultiplier: 
+        Modifier: 15
+  	ProductionCostMultiplier@selectusaairforce:
+		Multiplier: 107
+		Prerequisites: selectusaairforce      
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+eglahumvee.e1:
+	Inherits: eglahumvee
+	Inherits@bot: ^BotMicromanageable
+	ProductionCostMultiplier:
+		Multiplier: 150
+	Buildable:
+		Prerequisites: glweap, ~hardbotplayer, ~eglatechnic, sglpalace
+	Cargo:
+		InitialUnits: gle1, gle1, gle1, gle1
+	AIDeployNotifier:
+		DeployChance: 25
+		RequiresCondition: damagedslow
+	SpeedMultiplier@bunker:
+		Modifier: 0
+		RequiresCondition: damagedslow && botmicro
+
+eglahumvee.e2:
+	Inherits: eglahumvee.e1
+	ProductionCostMultiplier:
+		Multiplier: 200
+	Cargo:
+		InitialUnits: gle1, gle3, gle3, gle3
+
 #########################################
 #           CHINA GENERIC
 #########################################

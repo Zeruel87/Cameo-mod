@@ -1,0 +1,1061 @@
+World:
+	FactionCA@mindustryc:
+		Name: Mindustry
+		InternalName: mindustryc
+		Side: Classic
+		Game: Mindustry
+		Description: USA: Hit and Run\nSpecial Unit: Grenade Buggies
+
+	MPStartUnits@mcvonlymindustryc:
+		Class: none
+		ClassName: MCV Only
+		Factions: mindustryc
+		BaseActor: mindclass_core
+
+	MPStartUnits@defaultmindustryc:
+		Class: light
+		ClassName: Light Support
+		Factions: mindustryc
+		BaseActor: mindclass_core
+		SupportActors: rae1,rae1,rae1,rae3,rae3,rajeep,1tnk
+
+	MPStartUnits@heavymindustryc:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: mindustryc
+		BaseActor: mindclass_core
+		SupportActors: rae1,rae1,rae1,rae3,rae3,rajeep,1tnk,2tnk,2tnk,2tnk
+
+mindclass_core:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+    Inherits@conyard: ^Conyard
+	Selectable:
+		Bounds: 72,48
+	Valued:
+		Cost: 4000
+	Tooltip:
+		Name: Core
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 650000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building.MindustryClassic, Defence.MindustryClassic
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.MindustryClassic, RADefence.MindustryClassic
+		RequiresCondition: classicproductionqueues
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@GDIBuilding:
+		Type: Building.MindustryClassic
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@GDIDefense:
+		Type: Defence.MindustryClassic
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	ProductionBar@BuildingGDI:
+		ProductionType: Building.MindustryClassic
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceGDI:
+		ProductionType: Defence.MindustryClassic
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingGDI:
+		ProductionType: RABuilding.MindustryClassic
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceGDI:
+		ProductionType: RADefence.MindustryClassic
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 14c0
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: mindclass_core
+	Buildable:
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		BuildPaletteOrder: 1000
+		Prerequisites: ~wip-content
+		Description: Builds structures
+	ProvidesPrerequisite@factiongdi:
+		Prerequisite: mmcmindustry
+	RenderSprites:
+		Image: mindclass_core
+	ProximityExternalCondition@mind_core_conected:
+		Range: 4c0
+		Condition: mindcore_conected
+	RenderSprites:
+		Scale: 1.2
+
+mindclass_turret_1:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Turret
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: mindclass_drill1
+		Queue: Defence.MindustryClassic, RADefence.MindustryClassic
+		BuildDurationModifier: 40
+		Description: Basic cheap defense.\n  Uses stone munition
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 8
+	Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+	Health:
+		HP: 55000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,110
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament:
+		Weapon: CMindustry_Single
+		PauseOnCondition: !ammo
+	Armament@AA:
+		Weapon: CMindustry_SingleAA
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 10
+		PipCount: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 10
+		Count: 1
+		RequiresCondition: mind_drill1_conected
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 3c0
+	RenderDetectionCircle:
+	Power:
+		Amount: 0
+	RenderSprites:
+		Scale: 1.2
+	ExternalCondition@mindclass_drill1:
+		Condition: mind_drill1_conected
+		TotalCap: 1
+	WithDecoration@empy:
+		Image: mindclass_items
+		Sequence: empy
+		ReferencePoint: center, center
+		RequiresCondition: !ammo
+		ZOffset: 256
+		BlinkInterval: 20
+		BlinkPattern: Off, On
+mindclass_turret_2:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Double Turret
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: mindclass_drill1
+		Queue: Defence.MindustryClassic, RADefence.MindustryClassic
+		BuildDurationModifier: 40
+		Description: Twin gun defense.\n  Uses stone munition
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 8
+	Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+	Health:
+		HP: 55000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,10
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament:
+		Weapon: CMindustry_Double
+		PauseOnCondition: !ammo
+	Armament@AA:
+		Weapon: CMindustry_DoubleAA
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 20
+		PipCount: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 10
+		Count: 1
+		RequiresCondition: mind_drill1_conected
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 3c0
+	RenderDetectionCircle:
+	Power:
+		Amount: 0
+	RenderSprites:
+		Scale: 1.2
+	ExternalCondition@mindclass_drill1:
+		Condition: mind_drill1_conected
+		TotalCap: 1
+	WithDecoration@empy:
+		Image: mindclass_items
+		Sequence: empy
+		ReferencePoint: center, center
+		RequiresCondition: !ammo
+		ZOffset: 256
+		BlinkInterval: 20
+		BlinkPattern: Off, On
+mindclass_turret_3:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@LowpowerReload: ^DRSlowAttackLowpower
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Gattling
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: mindclass_drill2
+		Queue: Defence.MindustryClassic, RADefence.MindustryClassic
+		BuildDurationModifier: 40
+		Description: Basic cheap defense.\n  Uses iron munition
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 8
+	Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+	Health:
+		HP: 66000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,10
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament:
+		Weapon: CMindustry_Gattling
+		PauseOnCondition: !ammo
+	Armament@AA:
+		Weapon: CMindustry_GattlingAA
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 10
+		PipCount: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 10
+		Count: 1
+		RequiresCondition: mind_drill2_conected
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 3c0
+	RenderDetectionCircle:
+	Power:
+		Amount: 0
+	RenderSprites:
+		Scale: 1.2
+	ExternalCondition@mindclass_drill2:
+		Condition: mind_drill2_conected
+		TotalCap: 1
+	WithDecoration@empy:
+		Image: mindclass_items
+		Sequence: empy
+		ReferencePoint: center, center
+		RequiresCondition: !ammo
+		ZOffset: 256
+		BlinkInterval: 20
+		BlinkPattern: Off, On
+mindclass_turret_4:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@LowpowerReload: ^DRSlowAttackLowpower
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Splitter
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: mindclass_drill2
+		Queue: Defence.MindustryClassic, RADefence.MindustryClassic
+		BuildDurationModifier: 40
+		Description: Twin gun defense.\n  Uses iron munition
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 8
+	Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+	Health:
+		HP: 77000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,10
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament:
+		Weapon: CMindustry_Splitter
+		PauseOnCondition: !ammo
+	Armament@AA:
+		Weapon: CMindustry_SplitterAA
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 20
+		PipCount: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 10
+		Count: 2
+		RequiresCondition: mind_drill2_conected
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 3c0
+	RenderDetectionCircle:
+	Power:
+		Amount: 0
+	RenderSprites:
+		Scale: 1.2
+	ExternalCondition@mindclass_drill2:
+		Condition: mind_drill2_conected
+		TotalCap: 1
+	WithDecoration@empy:
+		Image: mindclass_items
+		Sequence: empy
+		ReferencePoint: center, center
+		RequiresCondition: !ammo
+		ZOffset: 256
+		BlinkInterval: 20
+		BlinkPattern: Off, On
+mindclass_turret_5:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@LowpowerReload: ^DRSlowAttackLowpower
+	Valued:
+		Cost: 850
+	Tooltip:
+		Name: Flamer
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: mindclass_drill3, mindclass_furnace
+		Queue: Defence.MindustryClassic, RADefence.MindustryClassic
+		BuildDurationModifier: 40
+		Description: Twin gun defense.\n  Uses coal munition
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 8
+	Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+	Health:
+		HP: 77000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,10
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament:
+		Weapon: CMindustry_Flamer
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 20
+		PipCount: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 10
+		Count: 2
+		RequiresCondition: mind_drill3_conected
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 3c0
+	RenderDetectionCircle:
+	Power:
+		Amount: 0
+	RenderSprites:
+		Scale: 1.2
+	ExternalCondition@mindclass_drill2:
+		Condition: mind_drill3_conected
+		TotalCap: 1
+	WithDecoration@empy:
+		Image: mindclass_items
+		Sequence: empy
+		ReferencePoint: center, center
+		RequiresCondition: !ammo
+		ZOffset: 256
+		BlinkInterval: 20
+		BlinkPattern: Off, On
+mindclass_turret_6:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@LowpowerReload: ^DRSlowAttackLowpower
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Railgun
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: mindclass_furnace
+		Queue: Defence.MindustryClassic, RADefence.MindustryClassic
+		BuildDurationModifier: 40
+		Description: Twin gun defense.\n  Uses steel munition
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 8
+	Selectable:
+		Bounds: 24,24
+	SelectionDecorations:
+	Health:
+		HP: 77000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0
+	Turreted:
+		TurnSpeed: 12
+		Offset: 0,0,10
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament:
+		Weapon: CMindustry_Railgun
+		PauseOnCondition: !ammo
+	Armament@AA:
+		Weapon: CMindustry_Railgun_AA
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 20
+		PipCount: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 15
+		Count: 1
+		RequiresCondition: mind_furnace_conected
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 4c0
+	RenderDetectionCircle:
+	Power:
+		Amount: 0
+	RenderSprites:
+		Scale: 1.2
+	ExternalCondition@mindclass_drill2:
+		Condition: mind_furnace_conected
+		TotalCap: 1
+	WithDecoration@empy:
+		Image: mindclass_items
+		Sequence: empy
+		ReferencePoint: center, center
+		RequiresCondition: !ammo
+		ZOffset: 256
+		BlinkInterval: 20
+		BlinkPattern: Off, On
+mindclass_router:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 75
+	Tooltip:
+		Name: Router
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mindclass_core
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		Description: Connects the Resources to Turrets and Core
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 10000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProximityExternalCondition@mindcore_conected:
+		Range: 2c0
+		Condition: mindcore_conected
+		RequiresCondition: mindcore_conected
+	ExternalCondition@mindcore_conected:
+		Condition: mindcore_conected
+		TotalCap: 1
+	ProximityExternalCondition@mind_drill2_conected:
+		Range: 2c0
+		Condition: mind_drill2_conected
+		RequiresCondition: mind_drill2_conected
+	ExternalCondition@mind_drill2_conected:
+		Condition: mind_drill2_conected
+		TotalCap: 1
+	ProximityExternalCondition@mind_drill1_conected:
+		Range: 2c0
+		Condition: mind_drill1_conected
+		RequiresCondition: mind_drill1_conected
+	ExternalCondition@mind_drill1_conected:
+		Condition: mind_drill1_conected
+		TotalCap: 1
+	ProximityExternalCondition@mind_drill3_conected:
+		Range: 2c0
+		Condition: mind_drill3_conected
+		RequiresCondition: mind_drill3_conected
+	ExternalCondition@mind_drill3_conected:
+		Condition: mind_drill3_conected
+		TotalCap: 1
+	ProximityExternalCondition@mind_drill4_conected:
+		Range: 2c0
+		Condition: mind_drill4_conected
+		RequiresCondition: mind_drill4_conected
+	ExternalCondition@mind_drill4_conected:
+		Condition: mind_drill4_conected
+		TotalCap: 1
+	ProximityExternalCondition@mind_drill5_conected:
+		Range: 2c0
+		Condition: mind_drill5_conected
+		RequiresCondition: mind_drill5_conected
+	ExternalCondition@mind_drill5_conected:
+		Condition: mind_drill5_conected
+		TotalCap: 1
+	ProximityExternalCondition@mind_furnace_conected:
+		Range: 2c0
+		Condition: mind_furnace_conected
+		RequiresCondition: mind_furnace_conected
+	ExternalCondition@mind_furnace_conected:
+		Condition: mind_furnace_conected
+		TotalCap: 1
+	ProximityExternalCondition@mind_crucible_conected:
+		Range: 2c0
+		Condition: mind_crucible_conected
+		RequiresCondition: mind_crucible_conected
+	ExternalCondition@mind_crucible_conected:
+		Condition: mind_crucible_conected
+		TotalCap: 1
+	-WithSpriteBody:
+	-WithMakeAnimation:
+	WithWallSpriteBody:
+		Type: mindclass_router_advanced
+	LineBuildNode:
+		Types: mindclass_router_advanced
+	RenderSprites:
+		Image: mindclass_router_advanced
+		Scale: 1.2
+	WithDecoration@mind_drill1_conected:
+		Image: mindclass_items
+		Sequence: stone
+		ReferencePoint: center, center
+		RequiresCondition: mind_drill1_conected
+		ZOffset: 256
+		BlinkInterval: 32
+		BlinkPattern: On, Off, Off, Off, Off, Off, Off
+	WithDecoration@mind_drill2_conected:
+		Image: mindclass_items
+		Sequence: iron
+		ReferencePoint: center, center
+		RequiresCondition: mind_drill2_conected
+		ZOffset: 256
+		BlinkInterval: 32
+		BlinkPattern: Off, On, Off, Off, Off, Off, Off
+	WithDecoration@mind_drill3_conected:
+		Image: mindclass_items
+		Sequence: coal
+		ReferencePoint: center, center
+		RequiresCondition: mind_drill3_conected
+		ZOffset: 256
+		BlinkInterval: 32
+		BlinkPattern: Off, Off, On, Off, Off, Off, Off
+	WithDecoration@mind_furnace_conected:
+		Image: mindclass_items
+		Sequence: steel
+		ReferencePoint: center, center
+		RequiresCondition: mind_furnace_conected
+		ZOffset: 256
+		BlinkInterval: 32
+		BlinkPattern: Off, Off, Off, On, Off, Off, Off
+	WithDecoration@mind_drill4_conected:
+		Image: mindclass_items
+		Sequence: titanium
+		ReferencePoint: center, center
+		RequiresCondition: mind_drill4_conected
+		ZOffset: 256
+		BlinkInterval: 32
+		BlinkPattern: Off, Off, Off, Off, On, Off, Off
+	WithDecoration@mind_crucible_conected:
+		Image: mindclass_items
+		Sequence: dirium
+		ReferencePoint: center, center
+		RequiresCondition: mind_crucible_conected
+		ZOffset: 256
+		BlinkInterval: 32
+		BlinkPattern: Off, Off, Off, Off, Off, On, Off
+	WithDecoration@mind_drill5_conected:
+		Image: mindclass_items
+		Sequence: uranium
+		ReferencePoint: center, center
+		RequiresCondition: mind_drill5_conected
+		ZOffset: 256
+		BlinkInterval: 32
+		BlinkPattern: Off, Off, Off, Off, Off, On, Off
+
+mindclass_drill1:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Stone Drill
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mindclass_core
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		Description: Produces Resources and Stone
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@mindclass_drill1:
+		Prerequisite: mindclass_drill1
+	CashTrickler@Rank0:
+		Interval: 60
+		Amount: 2
+		RequiresCondition: mindcore_conected
+	UpdatesDerrickCount:
+	ProximityExternalCondition@mind_drill1_conected:
+		Range: 2c0
+		Condition: mind_drill1_conected
+		RequiresCondition: !disabled
+	WithRangeCircle:
+		Range: 2c0
+		Type: mind_drill1_conected
+		RequiresCondition: !disabled
+	ExternalCondition@mindcore_conected:
+		Condition: mindcore_conected
+		TotalCap: 1
+	RenderSprites:
+		Scale: 1.2
+mindclass_drill2:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Iron Drill
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mindclass_drill1
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		Description: Produces Resources and Iron
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@mindclass_drill2:
+		Prerequisite: mindclass_drill2
+	CashTrickler@Rank0:
+		Interval: 60
+		Amount: 5
+		RequiresCondition: mindcore_conected
+    UpdatesDerrickCount:
+	ProximityExternalCondition@mind_drill1_conected:
+		Range: 2c0
+		Condition: mind_drill2_conected
+		RequiresCondition: !disabled
+	WithRangeCircle:
+		Range: 2c0
+		Type: mind_drill2_conected
+		RequiresCondition: !disabled
+	ExternalCondition@mindcore_conected:
+		Condition: mindcore_conected
+		TotalCap: 1
+	RenderSprites:
+		Scale: 1.2
+mindclass_drill3:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Coal Drill
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mindclass_drill2
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		Description: Produces Resources and Coal
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@mindclass_drill3:
+		Prerequisite: mindclass_drill3
+	CashTrickler@Rank0:
+		Interval: 60
+		Amount: 5
+		RequiresCondition: mindcore_conected
+    UpdatesDerrickCount:
+	ProximityExternalCondition@mind_drill3_conected:
+		Range: 2c0
+		Condition: mind_drill3_conected
+		RequiresCondition: !disabled
+	WithRangeCircle:
+		Range: 2c0
+		Type: mind_drill3_conected
+		RequiresCondition: !disabled
+	ExternalCondition@mindcore_conected:
+		Condition: mindcore_conected
+		TotalCap: 1
+	RenderSprites:
+		Scale: 1.2
+mindclass_drill4:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Titanium Drill
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mindclass_furnace
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		Description: Produces Resources and Titanium
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@mindclass_drill4:
+		Prerequisite: mindclass_drill4
+	CashTrickler@Rank0:
+		Interval: 60
+		Amount: 20
+		RequiresCondition: mindcore_conected
+    UpdatesDerrickCount:
+	ProximityExternalCondition@mind_drill4_conected:
+		Range: 2c0
+		Condition: mind_drill4_conected
+		RequiresCondition: !disabled
+	WithRangeCircle:
+		Range: 2c0
+		Type: mind_drill4_conected
+		RequiresCondition: !disabled
+	ExternalCondition@mindcore_conected:
+		Condition: mindcore_conected
+		TotalCap: 1
+
+	RenderSprites:
+		Scale: 1.2
+mindclass_drill5:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Uranium Drill
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mindclass_furnace
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		Description: Produces Resources and Uranium
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@mindclass_drill5:
+		Prerequisite: mindclass_drill5
+	CashTrickler@Rank0:
+		Interval: 60
+		Amount: 10
+		RequiresCondition: mindcore_conected
+    UpdatesDerrickCount:
+	ProximityExternalCondition@mind_drill5_conected:
+		Range: 2c0
+		Condition: mind_drill5_conected
+		RequiresCondition: !disabled
+	WithRangeCircle:
+		Range: 2c0
+		Type: mind_drill5_conected
+		RequiresCondition: !disabled
+	ExternalCondition@mindcore_conected:
+		Condition: mindcore_conected
+		TotalCap: 1
+	RenderSprites:
+		Scale: 1.2
+mindclass_furnace:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Furnace
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mindclass_drill2
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		Description: Produces Resources and Steel .\n Requires Coal and Iron connection to work
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@mindclass_furnace:
+		Prerequisite: mindclass_furnace
+	CashTrickler@Rank0:
+		Interval: 60
+		Amount: 20
+		RequiresCondition: mindcore_conected && mind_drill3_conected && mind_drill2_conected
+    UpdatesDerrickCount:
+	ProximityExternalCondition@mind_furnace_conected:
+		Range: 4c0
+		Condition: mind_furnace_conected
+		RequiresCondition: mind_drill3_conected && mind_drill2_conected
+	ExternalCondition@mindcore_conected:
+		Condition: mindcore_conected
+		TotalCap: 1
+	ExternalCondition@mind_drill3_conected:
+		Condition: mind_drill3_conected
+		TotalCap: 1
+	ExternalCondition@mind_drill2_conected:
+		Condition: mind_drill2_conected
+		TotalCap: 1
+	RenderSprites:
+		Scale: 1.2
+	WithDecoration@empy:
+		Image: mindclass_items
+		Sequence: empy
+		ReferencePoint: center, center
+		RequiresCondition: !mind_drill3_conected || !mind_drill2_conected
+		ZOffset: 256
+		BlinkInterval: 20
+		BlinkPattern: Off, On
+mindclass_crucible:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Crucible
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mindclass_furnace, mindclass_drill4
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		Description: Produces Resources and Dirium .\n Requires Titanium, Steel and Coal connection to work
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@mindclass_crucible:
+		Prerequisite: mindclass_crucible
+	CashTrickler@Rank0:
+		Interval: 60
+		Amount: 45
+		RequiresCondition: mindcore_conected && mind_drill3_conected && mindclass_furnace && mindclass_drill4
+    UpdatesDerrickCount:
+	ProximityExternalCondition@mind_crucible_conected:
+		Range: 2c0
+		Condition: mind_crucible_conected
+		RequiresCondition: mind_drill3_conected && mindclass_furnace && mindclass_drill4
+	ExternalCondition@mindcore_conected:
+		Condition: mindcore_conected
+		TotalCap: 1
+	ExternalCondition@mind_drill3_conected:
+		Condition: mind_drill3_conected
+		TotalCap: 1
+	ExternalCondition@mindclass_furnace:
+		Condition: mindclass_furnace
+		TotalCap: 1
+	ExternalCondition@mindclass_drill4:
+		Condition: mindclass_drill4
+		TotalCap: 1
+	RenderSprites:
+		Scale: 1.2
+	WithDecoration@empy:
+		Image: mindclass_items
+		Sequence: empy
+		ReferencePoint: center, center
+		RequiresCondition: !mind_drill3_conected || !mindclass_furnace || !mindclass_drill4
+		ZOffset: 256
+		BlinkInterval: 20
+		BlinkPattern: Off, On
+mindclass_coal_power:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Coal Generator
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mindclass_drill2
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		Description: Produces Power Energy .\n Requires Coal to generate power
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 100
+		RequiresCondition: mind_drill3_conected
+	ProvidesPrerequisite@mindclass_coal_power:
+		Prerequisite: mindclass_coal_power
+	ProximityExternalCondition@powerplant_conected:
+		Range: 2c0
+		Condition: powerplant_conected
+		RequiresCondition: mind_drill3_conected
+	ExternalCondition@mind_drill3_conected:
+		Condition: mind_drill3_conected
+		TotalCap: 1
+	RenderSprites:
+		Scale: 1.2
+	WithDecoration@empy:
+		Image: mindclass_items
+		Sequence: empy
+		ReferencePoint: center, center
+		RequiresCondition: !mind_drill3_conected
+		ZOffset: 256
+		BlinkInterval: 20
+		BlinkPattern: Off, On
+
+mindclass_rtg_power:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: RTG Generator
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mindclass_drill4, mindclass_drill5
+		Queue: Building.MindustryClassic, RABuilding.MindustryClassic
+		Description: Produces Power Energy .\n Requires Uranium to generate power
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 500
+		RequiresCondition: mind_drill5_conected
+	ProvidesPrerequisite@mindclass_rtg_power:
+		Prerequisite: mindclass_rtg_power
+	ProximityExternalCondition@powerplant_conected:
+		Range: 4c0
+		Condition: powerplant_conected
+		RequiresCondition: mind_drill5_conected
+	ExternalCondition@mind_drill5_conected:
+		Condition: mind_drill5_conected
+		TotalCap: 1
+	RenderSprites:
+		Scale: 1.2
+	WithDecoration@empy:
+		Image: mindclass_items
+		Sequence: empy
+		ReferencePoint: center, center
+		RequiresCondition: !mind_drill5_conected
+		ZOffset: 256
+		BlinkInterval: 20
+		BlinkPattern: Off, On

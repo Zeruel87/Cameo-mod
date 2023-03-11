@@ -89,7 +89,20 @@ Player:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 		SpeedUp: True
-		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10                     
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+    ClassicProductionQueue@RAMILISC2K:
+		Type: RAMilitary.sc2k
+		DisplayOrder: 0
+		Group: Vehicle
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10          
     ClassicProductionQueue@RAFIREDEPTSC2K:
 		Type: RAFireDept.sc2k
 		DisplayOrder: 0
@@ -102,13 +115,17 @@ Player:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 		SpeedUp: True
-		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10     
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
 
 
 
 
-
-
+    ProvidesPrerequisite@regular-simcity2000:
+		Prerequisite: selectsimcity2000
+        Factions: sc2k
+    ProvidesPrerequisite@regular-usimcity2000-a:
+		Prerequisite: selectsimcity2000a
+        Factions: sc2ka
 ####################################################################################################
 #		SC2K - ABANDONED
 ####################################################################################################
@@ -595,7 +612,9 @@ SC2KFACTORYSTRUCTURE:
 		Capacity: 3000
 	SpawnActorOnDeath@hole:
 		Actor: sc2kabandoned.factorystructure
-
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
 SC2KPOWERCOAL:
 	Inherits: ^BaseBuilding
 	Inherits@power: ^PowerPlant
@@ -883,7 +902,7 @@ SC2KFACTORYDISASTER:
 	Buildable:
 		Queue: Building.sc2k, RABuilding.sc2k
 		BuildPaletteOrder: 40
-		Prerequisites: Coal Power Plant
+		Prerequisites: Coal Power Plant, ~selectsimcity2000
 		BuildDuration: 500
 		Description: Produces disasters to use on enemy players.
 	Building:
@@ -1398,7 +1417,7 @@ SC2KMISSILESILO:
 	Buildable:
 		Queue: Defence.sc2k, RADefence.sc2k
 		BuildPaletteOrder: 90
-		Prerequisites: Trade Center
+		Prerequisites: Trade Center, ~selectsimcity2000
 		Description: Nuke silo.
 	Building:
 		Footprint: xxxx xxxx
@@ -1476,7 +1495,7 @@ SC2KPOLICEDEPT:
 	Buildable:
 		Queue: Building.sc2k, RABuilding.sc2k
 		BuildPaletteOrder: 50
-		Prerequisites: Observatory
+		Prerequisites: Observatory, ~selectsimcity2000
 		Description: Calls in Police Forces
 	Building:
 		Footprint: xxx xxx xxx
@@ -1534,7 +1553,7 @@ SC2KFIREDEPT:
 	Buildable:
 		Queue: Building.sc2k, RABuilding.sc2k
 		BuildPaletteOrder: 50
-		Prerequisites: Observatory
+		Prerequisites: Observatory, ~selectsimcity2000
 		Description: Calls in Firefighters
 	Building:
 		Footprint: xxx xxx xxx
@@ -1553,7 +1572,9 @@ SC2KFIREDEPT:
 	Exit@1:
 		SpawnOffset: -512,1024,0
 		ExitCell: 1,2
-    ProvidesPrerequisite@buildingname: 
+    ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@2:
+		Prerequisite: barracks
 	Production@NORMAL:
 		Produces: FireDept.sc2k
 		RequiresCondition: !classicproductionqueues
@@ -1589,7 +1610,7 @@ SC2KHOSPITAL:
 	Buildable:
 		Queue: Building.sc2k, RABuilding.sc2k
 		BuildPaletteOrder: 50
-		Prerequisites: Observatory
+		Prerequisites: Observatory, ~selectsimcity2000
 		Description: Heals nearby units
 	Building:
 		Footprint: xxx xxx xxx
@@ -2132,6 +2153,7 @@ SC2KPOLICECAR:
 	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
 	Inherits@POLICECALL: ^PoliceCall
 	Inherits@EXT: ^ExternalConditions
+	Inherits@announce: ^AnnounceOnBuild
 	Buildable:
 		Queue: Police.sc2k, RAPolice.sc2k
 		BuildPaletteOrder: 20
@@ -2192,7 +2214,8 @@ SC2KPOLICECAR:
         Condition: bailout
         ValidDamageStates: Critical
         GrantPermanently: true
-        
+    Voiced:
+        VoiceSet: CopVehicleVoice
 SC2KFIRETRUCK:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -2201,6 +2224,8 @@ SC2KFIRETRUCK:
 	Inherits@FIRECALL: ^FireCall
 	Inherits@EXT: ^ExternalConditions
 	Inherits@EMP: ^FrontalEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 1200	#800
 	Tooltip:
@@ -2249,7 +2274,8 @@ SC2KFIRETRUCK:
 		LoadingCondition: notmobile
     AIDeployNotifier:
 		DeployChance: 100 
-
+    Voiced:
+        VoiceSet: FireFighterVoice
 ####################################################################################################
 #		SC2K - DEFENCE
 ####################################################################################################
@@ -2262,7 +2288,7 @@ SC2KBEACONPOLICE:
 	Buildable:
 		Queue: Defence.sc2k, RADefence.sc2k
 		BuildPaletteOrder: 80
-		Prerequisites: Observatory
+		Prerequisites: Observatory, ~selectsimcity2000
 		Description: Advanced base defense.\nRequires power to operate.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
 	HitShape:
 		UseTargetableCellsOffsets: true
@@ -2351,7 +2377,7 @@ SC2KBEACONFIRE:
 	Buildable:
 		Queue: Defence.sc2k, RADefence.sc2k
 		BuildPaletteOrder: 80
-		Prerequisites: Coal Power Plant
+		Prerequisites: Coal Power Plant, ~selectsimcity2000
 		Description: Advanced base defense.\nRequires power to operate.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
 	HitShape:
 		UseTargetableCellsOffsets: true
@@ -2422,7 +2448,7 @@ SC2KBEACONARMY:
 	Buildable:
 		Queue: Defence.sc2k, RADefence.sc2k
 		BuildPaletteOrder: 80
-		Prerequisites: Recycling Center
+		Prerequisites: Recycling Center, ~selectsimcity2000
 		Description: AA defense.\nCan detect cloaked units.\n  Strong vs Aircraft
 	HitShape:
 		UseTargetableCellsOffsets: true
@@ -2639,3 +2665,1451 @@ sc2ktank.defense:
 		Class: sc2kbeaconarmy
 	RenderSprites:
 		Image: mtnk
+####################################################################################################
+#		SC2K - ALTERNATIVE
+####################################################################################################
+^Residential2k:
+	CashTricklerMultiplier@COMMERCIAL1:
+		Modifier: 120
+		RequiresCondition: CommercialCash1
+	CashTricklerMultiplier@COMMERCIAL2:
+		Modifier: 140
+		RequiresCondition: CommercialCash2
+	CashTricklerMultiplier@COMMERCIAL3:
+		Modifier: 160
+		RequiresCondition: CommercialCash3
+	CashTricklerMultiplier@COMMERCIAL4:
+		Modifier: 200
+		RequiresCondition: CommercialCash4
+	CashTricklerMultiplier@COMMERCIAL1b:
+		Modifier: 220
+		RequiresCondition: CommercialCash1B
+	CashTricklerMultiplier@COMMERCIAL2b:
+		Modifier: 240
+		RequiresCondition: CommercialCash2B
+	CashTricklerMultiplier@COMMERCIAL3b:
+		Modifier: 260
+		RequiresCondition: CommercialCash3B
+	CashTricklerMultiplier@COMMERCIAL4b:
+		Modifier: 300
+		RequiresCondition: CommercialCash4B
+	CashTricklerMultiplier@COMMERCIAL1C:
+		Modifier: 320
+		RequiresCondition: CommercialCash1C
+	CashTricklerMultiplier@COMMERCIAL2C:
+		Modifier: 340
+		RequiresCondition: CommercialCash2C
+	CashTricklerMultiplier@COMMERCIAL3C:
+		Modifier: 360
+		RequiresCondition: CommercialCash3C
+	CashTricklerMultiplier@COMMERCIAL4C:
+		Modifier: 400
+		RequiresCondition: CommercialCash4C
+SC2KDOMICILEA1:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits@Residential: ^Residential2k
+	Inherits@shape: ^1x1Shape
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -750, -750
+			BottomRight: 750, 750
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Low Class Domicile
+		RequiresCondition: city-veteran == 0
+	Tooltip@2:
+		Name: Middle Class Domicile
+		RequiresCondition: city-veteran == 1
+	Tooltip@3:
+		Name: Upper Class Domicile
+		RequiresCondition: city-veteran >= 2
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 10
+		Prerequisites: Coal Power Plant, ~selectsimcity2000a
+		Description: Living quarters.\n Provides income.
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 20000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -5
+	ExperienceTrickler:
+		Interval: 50
+		Amount: 220
+		PauseOnCondition: disabled
+	CashTrickler@Rank0:
+		Interval: 100
+		Amount: 6
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 0
+	CashTrickler@Rank1:
+		Interval: 100
+		Amount: 7
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 1
+	CashTrickler@Rank2:
+		Interval: 100
+		Amount: 8
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 2
+	CashTrickler@Rank3:
+		Interval: 100
+		Amount: 10
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 3
+	CashTrickler@Rank4:
+		Interval: 100
+		Amount: 12
+		PauseOnCondition: disabled
+		RequiresCondition: city-elite
+	ProvidesPrerequisite@buildingname:
+	SpawnActorOnDeath@hole:
+		Actor: sc2kabandoned.sc2kdomicilea1
+	GrantRandomCondition@:
+		Conditions: skin1, skin2, skin3
+	WithIdleOverlay@skin1:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin1
+		Sequence: skin1
+	WithIdleOverlay@skin2:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin2
+		Sequence: skin2
+	WithIdleOverlay@skin3:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin3
+		Sequence: skin3
+	WithIdleOverlay@skin1b:
+		RequiresCondition: !build-incomplete && city-veteran == 1 && skin1
+		Sequence: skin1b
+	WithIdleOverlay@skin2b:
+		RequiresCondition: !build-incomplete && city-veteran == 1 && skin2
+		Sequence: skin2b
+	WithIdleOverlay@skin3b:
+		RequiresCondition: !build-incomplete && city-veteran == 1 && skin3
+		Sequence: skin3b
+	WithIdleOverlay@skin1c:
+		RequiresCondition: !build-incomplete && city-veteran >= 2 && skin1
+		Sequence: skin1c
+	WithIdleOverlay@skin2c:
+		RequiresCondition: !build-incomplete && city-veteran >= 2 && skin2
+		Sequence: skin2c
+	WithIdleOverlay@skin3c:
+		RequiresCondition: !build-incomplete && city-veteran >= 2 && skin3
+		Sequence: skin3c
+	SelectionDecorations:
+SC2KDOMICILEB1:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits@Residential: ^Residential2k
+	Inherits@shape: ^2x2Shape
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -750, -750
+			BottomRight: 750, 750
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Medium Domicile
+		RequiresCondition: city-veteran == 0
+	Tooltip@2:
+		Name: Big Domicile
+		RequiresCondition: city-veteran == 1
+	Tooltip@3:
+		Name: Dense Domicile
+		RequiresCondition: city-veteran >= 2
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 10
+		Prerequisites: sc2kdomicilea1, Natural Gas Power Plant, ~selectsimcity2000a
+		Description: Living quarters.\n Provides income.
+	Building:
+		Footprint: xx ==
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 45000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -25
+	ExperienceTrickler:
+		Interval: 50
+		Amount: 230
+		PauseOnCondition: disabled
+	CashTrickler@Rank0:
+		Interval: 100
+		Amount: 13
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 0
+	CashTrickler@Rank1:
+		Interval: 100
+		Amount: 16
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 1
+	CashTrickler@Rank2:
+		Interval: 100
+		Amount: 18
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 2
+	CashTrickler@Rank3:
+		Interval: 100
+		Amount: 25
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 3
+	CashTrickler@Rank4:
+		Interval: 100
+		Amount: 30
+		PauseOnCondition: disabled
+		RequiresCondition: rank-elite
+	ProvidesPrerequisite@buildingname:
+	SpawnActorOnDeath@hole:
+		Actor: sc2kabandoned.sc2kdomicileb1
+	GrantRandomCondition@:
+		Conditions: skin1, skin2, skin3
+	WithIdleOverlay@skin1:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin1
+		Sequence: skin1
+	WithIdleOverlay@skin2:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin2
+		Sequence: skin2
+	WithIdleOverlay@skin3:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin3
+		Sequence: skin3
+	WithIdleOverlay@skin1b:
+		RequiresCondition: !build-incomplete && city-veteran == 1 && skin1
+		Sequence: skin1b
+	WithIdleOverlay@skin2b:
+		RequiresCondition: !build-incomplete && city-veteran == 1 && skin2
+		Sequence: skin2b
+	WithIdleOverlay@skin3b:
+		RequiresCondition: !build-incomplete && city-veteran == 1 && skin3
+		Sequence: skin3b
+	WithIdleOverlay@skin1c:
+		RequiresCondition: !build-incomplete && city-veteran >= 2 && skin1
+		Sequence: skin1c
+	WithIdleOverlay@skin2c:
+		RequiresCondition: !build-incomplete && city-veteran >= 2 && skin2
+		Sequence: skin2c
+	WithIdleOverlay@skin3c:
+		RequiresCondition: !build-incomplete && city-veteran >= 2 && skin3
+		Sequence: skin3c
+	SelectionDecorations:
+
+SC2KDOMICILEC1:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits@Residential: ^Residential2k
+	Inherits@shape: ^3x3Shape
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -750, -750
+			BottomRight: 750, 750
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Departament Domicile
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 10
+		Prerequisites: sc2kdomicileb1, Natural Gas Power Plant, ~selectsimcity2000a
+		Description: Living quarters.\n Provides income.
+	Building:
+		Footprint: =x= xxx ===
+		Dimensions: 3,3
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 90000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -40
+	ExperienceTrickler:
+		Interval: 50
+		Amount: 250
+		PauseOnCondition: disabled
+	CashTrickler@Rank0:
+		Interval: 100
+		Amount: 26
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 0
+	CashTrickler@Rank1:
+		Interval: 100
+		Amount: 32
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 1
+	CashTrickler@Rank2:
+		Interval: 100
+		Amount: 36
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 2
+	CashTrickler@Rank3:
+		Interval: 100
+		Amount: 50
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 3
+	CashTrickler@Rank4:
+		Interval: 100
+		Amount: 60
+		PauseOnCondition: disabled
+		RequiresCondition: rank-elite
+	ProvidesPrerequisite@buildingname:
+	SpawnActorOnDeath@hole:
+		Actor: sc2kabandoned.sc2kdomicilec1
+	GrantRandomCondition@:
+		Conditions: skin1, skin2, skin3, skin4
+	WithIdleOverlay@skin1:
+		RequiresCondition: !build-incomplete && skin1
+		Sequence: skin1
+	WithIdleOverlay@skin2:
+		RequiresCondition: !build-incomplete && skin2
+		Sequence: skin2
+	WithIdleOverlay@skin3:
+		RequiresCondition: !build-incomplete && skin3
+		Sequence: skin3
+	WithIdleOverlay@skin4:
+		RequiresCondition: !build-incomplete && skin4
+		Sequence: skin4
+	SelectionDecorations:
+
+SC2KCOMMERCIALA1:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits@shape: ^1x1Shape
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -750, -750
+			BottomRight: 750, 750
+	Selectable:
+		Bounds: 24,24
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Small Comercial
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 20
+		Prerequisites: SC2KDOMICILEA1, ~selectsimcity2000a
+		Description: Living quarters.\n Provides income.
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 20000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -10
+	ExperienceTrickler:
+		Interval: 50
+		Amount: 220
+		PauseOnCondition: disabled
+	ProvidesPrerequisite@buildingname:
+	SpawnActorOnDeath@hole:
+		Actor: sc2kabandoned.sc2kcommerciala1
+	GrantRandomCondition@:
+		Conditions: skin1, skin2, skin3, skin4
+	WithIdleOverlay@skin1:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin1
+		Sequence: skin1
+	WithIdleOverlay@skin2:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin2
+		Sequence: skin2
+	WithIdleOverlay@skin3:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin3
+		Sequence: skin3
+	WithIdleOverlay@skin4:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin4
+		Sequence: skin4
+	WithIdleOverlay@skin1b:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin1
+		Sequence: skin1b
+	WithIdleOverlay@skin2b:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin2
+		Sequence: skin2b
+	WithIdleOverlay@skin3b:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin3
+		Sequence: skin3b
+	WithIdleOverlay@skin4b:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin4
+		Sequence: skin4b
+	SelectionDecorations:
+	ProximityExternalCondition@RANK-1:
+		Range: 5c0
+		Condition: CommercialCash1
+		RequiresCondition: city-veteran == 1 && !city-elite
+	ProximityExternalCondition@RANK-2:
+		Range: 5c0
+		Condition: CommercialCash2
+		RequiresCondition: city-veteran == 2 && !city-elite
+	ProximityExternalCondition@RANK-3:
+		Range: 5c0
+		Condition: CommercialCash3
+		RequiresCondition: city-veteran == 3 && !city-elite
+	ProximityExternalCondition@RANK-4:
+		Range: 5c0
+		Condition: CommercialCash4
+		RequiresCondition: city-elite
+SC2KCOMMERCIALB1:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits@Residential: ^Residential2k
+	Inherits@shape: ^2x2Shape
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -750, -750
+			BottomRight: 750, 750
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Medium Domicile
+		RequiresCondition: city-veteran == 0
+	Tooltip@2:
+		Name: Big Domicile
+		RequiresCondition: city-veteran == 1
+	Tooltip@3:
+		Name: Dense Domicile
+		RequiresCondition: city-veteran >= 2
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 20
+		Prerequisites: SC2KCOMMERCIALA1, Natural Gas Power Plant, ~selectsimcity2000a
+		Description: Living quarters.\n Provides income.
+	Building:
+		Footprint: xx ==
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 45000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -30
+	ExperienceTrickler:
+		Interval: 50
+		Amount: 230
+		PauseOnCondition: disabled
+	ProvidesPrerequisite@buildingname:
+	SpawnActorOnDeath@hole:
+		Actor: sc2kabandoned.sc2kdomicileb1
+	GrantRandomCondition@:
+		Conditions: skin1, skin2, skin3, skin4
+	WithIdleOverlay@skin1:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin1
+		Sequence: skin1
+	WithIdleOverlay@skin2:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin2
+		Sequence: skin2
+	WithIdleOverlay@skin3:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin3
+		Sequence: skin3
+	WithIdleOverlay@skin4:
+		RequiresCondition: !build-incomplete && city-veteran == 0 && skin4
+		Sequence: skin4
+	WithIdleOverlay@skin1b:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin1
+		Sequence: skin1b
+	WithIdleOverlay@skin2b:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin2
+		Sequence: skin2b
+	WithIdleOverlay@skin3b:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin3
+		Sequence: skin3b
+	WithIdleOverlay@skin4b:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin4
+		Sequence: skin4b
+	WithIdleOverlay@skin1c:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin1
+		Sequence: skin1c
+	WithIdleOverlay@skin2c:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin2
+		Sequence: skin2c
+	WithIdleOverlay@skin3c:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin3
+		Sequence: skin3c
+	WithIdleOverlay@skin4c:
+		RequiresCondition: !build-incomplete && city-veteran >= 1 && skin4
+		Sequence: skin4c
+	SelectionDecorations:
+	ProximityExternalCondition@RANK-1:
+		Range: 7c0
+		Condition: CommercialCash1B
+		RequiresCondition: city-veteran == 1 && !city-elite
+	ProximityExternalCondition@RANK-2:
+		Range: 7c0
+		Condition: CommercialCash2B
+		RequiresCondition: city-veteran == 2 && !city-elite
+	ProximityExternalCondition@RANK-3:
+		Range: 7c0
+		Condition: CommercialCash3B
+		RequiresCondition: city-veteran == 3 && !city-elite
+	ProximityExternalCondition@RANK-4:
+		Range: 7c0
+		Condition: CommercialCash4B
+		RequiresCondition: city-elite
+SC2KDOMICILEC1:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits@Residential: ^Residential2k
+	Inherits@shape: ^3x3Shape
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -750, -750
+			BottomRight: 750, 750
+	Selectable:
+		Bounds: 48,48
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Departament Domicile
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 10
+		Prerequisites: sc2kdomicileb1, Natural Gas Power Plant, ~selectsimcity2000a
+		Description: Living quarters.\n Provides income.
+	Building:
+		Footprint: =x= xxx ===
+		Dimensions: 3,3
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 90000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -40
+	ExperienceTrickler:
+		Interval: 50
+		Amount: 250
+		PauseOnCondition: disabled
+	CashTrickler@Rank0:
+		Interval: 100
+		Amount: 26
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 0
+	CashTrickler@Rank1:
+		Interval: 100
+		Amount: 32
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 1
+	CashTrickler@Rank2:
+		Interval: 100
+		Amount: 36
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 2
+	CashTrickler@Rank3:
+		Interval: 100
+		Amount: 50
+		PauseOnCondition: disabled
+		RequiresCondition: city-veteran == 3
+	CashTrickler@Rank4:
+		Interval: 100
+		Amount: 60
+		PauseOnCondition: disabled
+		RequiresCondition: rank-elite
+	ProvidesPrerequisite@buildingname:
+	SpawnActorOnDeath@hole:
+		Actor: sc2kabandoned.sc2kdomicilec1
+	GrantRandomCondition@:
+		Conditions: skin1, skin2, skin3, skin4
+	WithIdleOverlay@skin1:
+		RequiresCondition: !build-incomplete && skin1
+		Sequence: skin1
+	WithIdleOverlay@skin2:
+		RequiresCondition: !build-incomplete && skin2
+		Sequence: skin2
+	WithIdleOverlay@skin3:
+		RequiresCondition: !build-incomplete && skin3
+		Sequence: skin3
+	WithIdleOverlay@skin4:
+		RequiresCondition: !build-incomplete && skin4
+		Sequence: skin4
+	SelectionDecorations:
+
+SC2KABANDONED.SC2KDOMICILEA1:
+	Inherits: ^SC2KABANDONED
+	RenderSprites:
+		Image: sc2kabandonedsmall_1
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sc2kdomicilea1
+		SkipMakeAnims: false
+SC2KABANDONED.SC2KDOMICILEB1:
+	Inherits: ^SC2KABANDONED
+	RenderSprites:
+		Image: sc2kabandonedmedium_1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 1024
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sc2kdomicileb1
+		SkipMakeAnims: false
+
+SC2KABANDONED.SC2KDOMICILEC1:
+	Inherits: ^SC2KABANDONED
+	RenderSprites:
+		Image: sc2kabandonedlarge_1
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1786, -1536
+			BottomRight: 1786, 1536
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sc2kdomicilec1
+		SkipMakeAnims: false
+	
+SC2KABANDONED.SC2KCOMMERCIALA1:
+	Inherits: ^SC2KABANDONED
+	RenderSprites:
+		Image: sc2kabandonedsmall_1
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sc2kcommerciala1
+		SkipMakeAnims: false
+SC2KABANDONED.SC2KCOMMERCIALB1:
+	Inherits: ^SC2KABANDONED
+	RenderSprites:
+		Image: sc2kabandonedmedium_1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 1024
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sc2kcommercialb1
+		SkipMakeAnims: false
+
+SC2KPOLICEDEPTA:
+	Inherits: SC2KPOLICEDEPT
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 50
+		Prerequisites: Trade Center, ~selectsimcity2000a
+		Description: Calls in Police Forces
+	RenderSprites:
+		Image: sc2kpolicedept
+		Scale: 1
+SC2KFIREDEPTA:
+	Inherits: SC2KFIREDEPT
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 50
+		Prerequisites: Recycling Center, ~selectsimcity2000a
+		Description: Calls in Firefighters
+	RenderSprites:
+		Image: sc2kfiredept
+		Scale: 1
+    
+SC2KHOSPITALA:
+	Inherits: SC2KHOSPITAL
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 50
+		Prerequisites: sc2kfiredepta, ~selectsimcity2000a
+		Description: Heals nearby units
+	RenderSprites:
+		Image: sc2khospital
+		Scale: 1
+sc2k_armyhq:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+    Inherits@shape: ^2x2Shape
+    ProductionFromMapEdge@NORMAL:
+		Produces: Military.sc2k
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Army HQ
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 50
+		Prerequisites: sc2kpolicedepta, ~selectsimcity2000a
+		Description: Calls Military
+	Building:
+		Footprint: xx ==
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 8c0
+	Power:
+		Amount: -30
+	RenderSprites:
+		Image: sc2k_armyhq
+		Scale: 1
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+    ProvidesPrerequisite@buildingname:
+	Production@NORMAL:
+		Produces: Military.sc2k
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAMilitary.sc2k
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Military.sc2k
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYPOLICE:
+		ProductionType: Military.sc2k
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYPOLICE:
+		ProductionType: RAMilitary.sc2k
+		RequiresCondition: classicproductionqueues   
+    -WithDeathAnimation
+
+sc2k_armyvehicle:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+    Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Army Vehicle Deposite
+	Buildable:
+		Queue: Defence.sc2k, RADefence.sc2k
+		BuildPaletteOrder: 50
+		Prerequisites: sc2k_armyhq, ~selectsimcity2000a
+		Description: Calls Military
+	Building:
+		Footprint: xx ==
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 8c0
+	Power:
+		Amount: -20
+	RenderSprites:
+		Image: sc2k_armyvehicle
+		Scale: 1
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+    ProvidesPrerequisite@buildingname:
+SC2KBEACONPOLICEA:
+	Inherits: SC2KBEACONPOLICE
+	Buildable:
+		Queue: Defence.sc2k, RADefence.sc2k
+		BuildPaletteOrder: 80
+		Prerequisites: sc2kpolicedepta, ~selectsimcity2000a
+	RenderSprites:
+		Image: sc2kbeaconpolice
+
+SC2KBEACONFIREA:
+	Inherits: SC2KBEACONFIRE
+	Buildable:
+		Queue: Defence.sc2k, RADefence.sc2k
+		BuildPaletteOrder: 80
+		Prerequisites: sc2kfiredepta, ~selectsimcity2000a
+	RenderSprites:
+		Image: sc2kbeaconfire
+
+SC2KBEACONARMYA:
+	Inherits: SC2KBEACONARMY
+	Buildable:
+		Queue: Defence.sc2k, RADefence.sc2k
+		BuildPaletteOrder: 80
+		Prerequisites: sc2k_armyhq, ~selectsimcity2000a
+	RenderSprites:
+		Image: sc2kbeaconarmy
+SC2KMISSILESILOA:
+	Inherits: SC2KMISSILESILO
+	Buildable:
+		Queue: Defence.sc2k, RADefence.sc2k
+		BuildPaletteOrder: 90
+		Prerequisites: sc2k_armyhq, ~selectsimcity2000
+		Description: Nuke silo.
+	RenderSprites:
+		Image: sc2kmissilesilo
+        
+sc2k_storage:
+	Inherits: ^BaseBuilding
+    Inherits@shape: ^1x1Shape
+	Selectable:
+		Bounds: 24,24
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -750, -750
+			BottomRight: 750, 750
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Small Warehouse
+	Buildable:
+		Queue: Defence.sc2k, RADefence.sc2k
+		BuildPaletteOrder: 10
+		Prerequisites: Recycling Center
+		Description: Stores excess refined\nOre and Gems.
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 20000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -10
+	StoresResources:
+		PipCount: 5
+		Capacity: 3000
+	ProvidesPrerequisite@buildingname:
+	SpawnActorOnDeath@hole:
+		Actor: sc2kabandoned.sc2k_storage
+	GrantRandomCondition@:
+		Conditions: skin1, skin2
+	WithIdleOverlay@skin1:
+		RequiresCondition: !build-incomplete && skin1
+		Sequence: skin1
+	WithIdleOverlay@skin2:
+		RequiresCondition: !build-incomplete && skin2
+		Sequence: skin2
+sc2kabandoned.sc2k_storage:
+	Inherits: ^SC2KABANDONED
+	RenderSprites:
+		Image: sc2kabandonedsmall_1
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sc2k_storage
+		SkipMakeAnims: false
+
+SC2KFACTORYDISASTERA:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x3Shape
+	#Inherits@FIRECALL: ^FireCall
+	Inherits@MAYORCALL: ^ExternalConditionsMayorCallStructure
+	#Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@IDISABLE: ^DisabledOverlay
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -2730, -6181
+			BottomRight: 2730, 2181
+	Selectable:
+		Bounds: 128,192
+	Valued:
+		Cost: 6000
+	Tooltip:
+		Name: Disaster Arco
+	Buildable:
+		Queue: Building.sc2k, RABuilding.sc2k
+		BuildPaletteOrder: 40
+		Prerequisites: Observatory, SC2KDOMICILEC1, ~selectsimcity2000a
+		BuildDuration: 2500
+		Description: Produces disasters to use on enemy players.
+		BuildLimit: 1
+	Building:
+		Footprint: xxxxxx xxxxxx ======
+		Dimensions: 6,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 150000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 7c0
+	#WithBuildingBib:
+	ProvidesPrerequisite@1:
+		Prerequisite: Disaster Factory
+	ProvidesPrerequisite@2:
+		Prerequisite: barracks
+	ProvidesPrerequisite@3:
+		Prerequisite: cityairport
+	#WithIdleOverlay@HQ:
+	#	RequiresCondition: MayorCall
+	#	Sequence: hq
+	Power:
+		Amount: -400
+	#CashTrickler:
+	#		Amount: -10
+	#		Interval: 200
+	-CommandBarBlacklist:
+	WithRangeCircle:
+		Range: 7c0
+	SpawnActorOnDeath@hole:
+		Actor: sc2kabandoned.factorydisastera
+	DetonateWeaponPower@mob:
+		OrderName: SC2KSpawnActor_SimcityMob
+		Cursor: ability
+		PauseOnCondition: lowpower
+		Icon: chromesc2kmob
+		Description: Mob Disaster
+		LongDesc: Deploys the fire disaster in enemies base
+		DisplayRadarPing: True
+		ChargeInterval: 4000
+		Weapon: SpawnActor_SimcityMob
+		CameraActor: camera.small
+		CameraRemoveDelay: 60
+	DetonateWeaponPower@fire:
+		OrderName: SC2KSpawnActor_Fire
+		Cursor: ability
+		PauseOnCondition: lowpower
+		Icon: chromesc2kfire
+		Description: Fire Disaster
+		LongDesc: Deploys the fire disaster in enemies base
+		DisplayRadarPing: True
+		ChargeInterval: 4000
+		Weapon: SpawnActor_Fire
+		CameraActor: camera.small
+		CameraRemoveDelay: 60
+	DetonateWeaponPower@tornado:
+		OrderName: SC2KSpawnActor_Tornado
+		Cursor: ability
+		PauseOnCondition: lowpower
+		Icon: chromesc2ktornado
+		Description: Tornado Disaster
+		LongDesc: Deploys the tornado disaster with enemies aircraft
+		DisplayRadarPing: True
+		ChargeInterval: 4500
+		Weapon: SpawnActor_Tornado
+		CameraActor: camera.small
+		CameraRemoveDelay: 60
+	DetonateWeaponPower@thunder:
+		OrderName: SC2KSpawnActor_Thundercloud
+		Cursor: ability
+		PauseOnCondition: lowpower
+		Icon: chromesc2kthundercloud
+		Description: Thundercloud Disaster
+		LongDesc: Deploys the Thundercloud disaster in enemies base
+		DisplayRadarPing: True
+		ChargeInterval: 5000
+		Weapon: SpawnActor_Thundercloud
+		CameraActor: camera.small
+		CameraRemoveDelay: 60
+	DetonateWeaponPower@ufo:
+		OrderName: SC2KSpawnActor_SimcityUFO
+		Cursor: ability
+		PauseOnCondition: lowpower
+		Icon: chromesc2krobot
+		Description: UFO Disaster
+		LongDesc: Deploys the Thundercloud disaster in enemies base
+		DisplayRadarPing: True
+		ChargeInterval: 8500
+		Weapon: SpawnActor_SimcityUFO
+		CameraActor: camera.small
+		CameraRemoveDelay: 60
+	RenderSprites:
+		Image: sc2kfactorydisaster
+SC2KABANDONED.FACTORYDISASTERA:
+	Inherits: ^SC2KABANDONED
+	RenderSprites:
+		Image: sc2kabandonedlarge_2
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1786, -2036
+			BottomRight: 1786, 1536
+	Building:
+		Footprint: xxxxxx xxxxxx ======
+		Dimensions: 6,3
+	TransformOnCondition@buildingrebirth:
+		RequiresCondition: buildingrebirth
+		IntoActor: sc2kfactorydisastera
+		SkipMakeAnims: false
+
+####################################################################################################
+#		SC2K - ALTERNATIVE UNITS
+####################################################################################################
+sc2kae1:
+	Inherits: E1
+	Valued:
+		Cost: 50
+	Tooltip:
+		Name: Soldier
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: sc2k_armyhq
+		Queue: Military.sc2k, RAMilitary.sc2k
+	RenderSprites:
+		Image: e1
+
+sc2kae3:
+	Inherits: E3
+	Valued:
+		Cost: 200
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: sc2k_armyhq
+		Queue: Military.sc2k, RAMilitary.sc2k
+	RenderSprites:
+		Image: e3
+
+sc2kajeep:
+	Inherits: JEEP
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Humvee
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Military.sc2k, RAMilitary.sc2k
+		Prerequisites: sc2k_armyvehicle, ~selectsimcity2000a
+	RenderSprites:
+		Image: jeep
+
+sc2kamtnk:
+	Inherits: MTNK
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: M1 Abrams
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Military.sc2k, RAMilitary.sc2k
+		Description: General-Purpose Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+		Prerequisites: sc2k_armyvehicle, ~selectsimcity2000a
+	RenderSprites:
+		Image: mtnk
+
+SC2KFIREA:
+	Inherits: SC2KFIRE
+	-Buildable:
+	RenderSprites:
+		Image: sc2kfire
+	Wanders:
+		MinMoveDelay: 25
+		MaxMoveDelay: 100
+	RejectsOrders:
+
+SC2KTORNADOA:
+	Inherits: SC2KTORNADO
+	-Buildable:
+	RenderSprites:
+		Image: sc2ktornado
+	Wanders:
+		MinMoveDelay: 25
+		MaxMoveDelay: 100
+	RejectsOrders:
+	Health:
+		HP: 250000
+
+SC2K_THUNDERCLOUD_MAINA:
+	Inherits: SC2K_THUNDERCLOUD_MAIN
+	-Buildable:
+	RenderSprites:
+		Image: sc2k_thundercloud_main
+	Wanders:
+		MinMoveDelay: 25
+		MaxMoveDelay: 100
+	RejectsOrders:
+	Health:
+		HP: 250000
+
+sc2k_ufo:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+    Inherits@AntiBuil: ^PrioritizeBuilding
+	Valued:
+		Cost: 4000
+	Tooltip:
+		Name: UFO
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~disabled, ~techlevel.medium
+		Queue: Infantry.sc2k, RAInfantry.sc2k
+		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		TurnSpeed: 7
+		Speed: 75
+	Health:
+		HP: 1600000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 10c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: TSCoreLaser
+		LocalOffset: 427,-171,-213, 427,171,-213
+	Armament@SECONDARY:
+		Weapon: TSCoreLaser
+		LocalOffset: 427,-171,-213, 427,171,-213
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	WithIdleOverlay@ROTORAIR:
+		Offset: 0,0,1
+		Sequence: sc2k_ufo_legs_front
+	WithIdleOverlay@ROTORGROUND:
+		Offset: 0,0,-1
+		Sequence: sc2k_ufo_legs_back
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	Wanders:
+		MinMoveDelay: 25
+		MaxMoveDelay: 100
+	RejectsOrders:
+	-SpawnActorOnDeath:
+####################################################################################################
+#		SC2K - Streets of Simcity
+####################################################################################################
+^SimcityCar:
+	GrantConditionOnPrerequisite@chromesc2karmor:
+		Condition: chromesc2karmor
+		Prerequisites: chromesc2karmor
+	DamageMultiplier@chromesc2karmor:
+		Modifier: 85
+		RequiresCondition: chromesc2karmor
+	GrantConditionOnPrerequisite@chromesc2kshield:
+		Condition: chromesc2kshield
+		Prerequisites: chromesc2kshield
+	DamageMultiplier@chromesc2kshield:
+		Modifier: 75
+		RequiresCondition: chromesc2kshield
+	GrantConditionOnPrerequisite@chromesc2kengine1:
+		Condition: chromesc2kengine1
+		Prerequisites: chromesc2kengine1
+	SpeedMultiplier@chromesc2kengine1:
+		Modifier: 110
+		RequiresCondition: chromesc2kengine1
+	GrantConditionOnPrerequisite@chromesc2kengine2:
+		Condition: chromesc2kengine2
+		Prerequisites: chromesc2kengine2
+	SpeedMultiplier@chromesc2kengine2:
+		Modifier: 110
+		RequiresCondition: chromesc2kengine2
+	GrantConditionOnPrerequisite@chromesc2kengine3:
+		Condition: chromesc2kengine3
+		Prerequisites: chromesc2kengine3
+	SpeedMultiplier@chromesc2kengine3:
+		Modifier: 120
+		RequiresCondition: chromesc2kengine3
+	GrantConditionOnPrerequisite@chromesc2kmachinegun:
+		Condition: chromesc2kmachinegun
+		Prerequisites: chromesc2kmachinegun
+	GrantConditionOnPrerequisite@chromesc2kmissile:
+		Condition: chromesc2kmissile
+		Prerequisites: chromesc2kmissile
+	Armament@chromesc2kmissile:
+		Weapon: StreetSimcity_Missile
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+		RequiresCondition: chromesc2kmissile
+  	Armament@chromesc2kmachinegun:
+		Weapon: RAVulcan
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+		RequiresCondition: chromesc2kmachinegun
+  	Armament@crash:
+		Weapon: StreetSimcity_Crash
+		RequiresCondition: !chromesc2kmachinegun && !chromesc2kmissile
+sc2k_streetrat:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+    Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@Weapons: ^SimcityCar
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Street Rat
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		BuildLimit: 1
+		Prerequisites: Trade Center
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Fast car, armed and upgradable\nupgradable with rockets.\nupgradable with machineguns
+	Mobile:
+		TurnSpeed: 16
+		Speed: 213
+	Health:
+		HP: 44000
+	Repairable:
+		HpPerStep: 1000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0    
+	AttackFrontal:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+
+sc2k_utilityvan:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+    Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@Weapons: ^SimcityCar
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Utility Van
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		BuildLimit: 1
+		Prerequisites: Trade Center
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Tanky Truck, armed and upgradable\nupgradable with rockets.\nupgradable with machineguns
+	Mobile:
+		TurnSpeed: 8
+		Speed: 105
+	Health:
+		HP: 88000
+	Repairable:
+		HpPerStep: 1000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 8c0    
+	AttackFrontal:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+
+sc2k_j57:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+    Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@Weapons: ^SimcityCar
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: J57
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		BuildLimit: 1
+		Prerequisites: Trade Center
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Faster Classic car, armed and upgradable\nupgradable with rockets.\nupgradable with machineguns
+	Mobile:
+		TurnSpeed: 16
+		Speed: 240
+	Health:
+		HP: 44000
+	Repairable:
+		HpPerStep: 1000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0    
+	AttackFrontal:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+sc2k_airhawk:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+    Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@Weapons: ^SimcityCar
+	Valued:
+		Cost: 1700
+	Tooltip:
+		Name: Airhawk
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		BuildLimit: 1
+		Prerequisites: Trade Center
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Faster Muscle car, armed and upgradable\nupgradable with rockets.\nupgradable with machineguns
+	Mobile:
+		TurnSpeed: 15
+		Speed: 220
+	Health:
+		HP: 56000
+	Repairable:
+		HpPerStep: 1000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 8c0    
+	AttackFrontal:
+	Inherits@EXT: ^ExternalConditions					##########
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: vehicle								##########
+
+chromesc2kengine1:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Small Engine
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Increases speed of simcity cars.
+		Prerequisites: Trade Center
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: chromesc2kengine1
+	ProvidesPrerequisite:
+		Prerequisite: chromesc2kengine1
+
+chromesc2kengine2:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Medium Engine
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Increases speed of simcity cars.
+		Prerequisites: chromesc2kengine1
+	Valued:
+		Cost: 750
+	RenderSprites:
+		Image: chromesc2kengine2
+	ProvidesPrerequisite:
+		Prerequisite: chromesc2kengine2
+
+chromesc2kengine3:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Big Engine
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Increases speed of simcity cars.
+		Prerequisites: chromesc2kengine2
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: chromesc2kengine3
+	ProvidesPrerequisite:
+		Prerequisite: chromesc2kengine3
+
+chromesc2karmor:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Armor
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Increases health of simcity cars.
+		Prerequisites: Trade Center
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: chromesc2karmor
+	ProvidesPrerequisite:
+		Prerequisite: chromesc2karmor
+
+chromesc2kshield:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Shield
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Increases health of simcity cars.
+		Prerequisites: Trade Center
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: chromesc2kshield
+	ProvidesPrerequisite:
+		Prerequisite: chromesc2kshield
+
+chromesc2kmachinegun:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Machinegun
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Adds a Machinegun to simcity cars.
+		Prerequisites: Trade Center
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: chromesc2kmachinegun
+	ProvidesPrerequisite:
+		Prerequisite: chromesc2kmachinegun
+
+chromesc2kmissile:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Missile
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Vehicle.sc2k, RAVehicle.sc2k
+		Description: Adds a Missile Launcher to simcity cars.
+		Prerequisites: Trade Center
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: chromesc2kmissile
+	ProvidesPrerequisite:
+		Prerequisite: chromesc2kmissile
