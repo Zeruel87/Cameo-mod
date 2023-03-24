@@ -417,7 +417,7 @@ SCSUPPLYDEPOT:
 	Inherits@shape: ^2x2Shape
 	Inherits@power: ^Power
 	Valued:
-		Cost: 400
+		Cost: 500
 	Tooltip:
 		Name: Supply Depot
 	ProvidesPrerequisite@supplydepot:
@@ -436,12 +436,48 @@ SCSUPPLYDEPOT:
 	RevealsShroud:
 		Range: 7c0
 	Power:
-		Amount: 200
+		Amount: 100
 	StoresResources:
 		PipCount: 10
 		Capacity: 1000
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
+	PowerMultiplier@supplydepotupg:
+		Modifier: 200
+		RequiresCondition: supplydepotupg          
+	Production:
+		Produces: supplydepotupg.terran
+		RequiresCondition: !supplydepotupg
+	ProductionBar:
+		ProductionType: supplydepotupg.terran
+	ProductionQueue:
+		Type: supplydepotupg.terran
+		DisplayOrder: 0
+		Group: Unit #Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1  
+	GrantConditionOnProduction@supplydepotupg:
+		Condition: supplydepotupg
+		Actors: supplydepotexpand    
+        
+supplydepotexpand:
+	Tooltip:
+		Name: Growing Psionic Force
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: supplydepotupg.terran
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: Increase the size of the supply depot by 100%
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: scsupplydepot
+	Interactable:
+	AlwaysVisible:
+  	KillsSelf:
+		RemoveInstead: true  	
 
 SCREFINERY:
 	Inherits: ^BaseBuilding
@@ -1163,16 +1199,16 @@ SCPYLON:
 	RevealsShroud:
 		Range: 7c0
 	Power:
-		Amount: 75
+		Amount: 100
 	StoresResources:
 		PipCount: 6
 		Capacity: 1200
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
 	-WithDeathAnimation:
-    PowerMultiplier@pylonupg:
-        Modifier: 200
-        RequiresCondition: pylonupg          
+	PowerMultiplier@pylonupg:
+		Modifier: 200
+		RequiresCondition: pylonupg          
 	Production:
 		Produces: pylonupg.Protoss
 		RequiresCondition: !pylonupg
@@ -1195,14 +1231,14 @@ SCPYLONEXPAND:
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: pylonupg.Protoss
-        BuildDuration: 1500
-        BuildDurationModifier: 100
+		BuildDuration: 1500
+		BuildDurationModifier: 100
 		Description: Psionic enhancement of this pylon will provide more supply
 	Valued:
-		Cost: 1000
+		Cost: 500
 	RenderSprites:
 		Image: scpylon
-    Interactable:
+	Interactable:
 	AlwaysVisible:
   	KillsSelf:
 		RemoveInstead: true  	
@@ -3549,7 +3585,7 @@ SCMARINE:
 		Queue: Infantry.Terran, RAInfantry.Terran, Infantry.X_Infantry
 		Description: Basic Terran infantry.\n Strong vs Infantry\n Weak vs Vehicles\n Can attack aircraft\n Uncrushable
 	Mobile:
-		Speed: 71
+		Speed: 75
 	Health:
 		HP: 12000
 	RevealsShroud:
@@ -3590,7 +3626,7 @@ SCFIREBAT:
 		Queue: Infantry.Terran, RAInfantry.Terran, Infantry.X_Infantry
 		Description: Terran flamethrower infantry.\n Strong vs Infantry, Buildings\n Weak vs Vehicles\n Uncrushable
 	Mobile:
-		Speed: 71
+		Speed: 65
 	Health:
 		HP: 14000	#7900
 	RevealsShroud:
@@ -3626,6 +3662,52 @@ SCFIREBAT:
 		ValidTypes: infantry							##########
     Power:
         Amount: -15
+
+scmaurader:
+	Inherits: ^SCTINFANTRY
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	#Inherits@announce: ^AnnounceOnBuild
+	Inherits@stim: ^Stimpackable
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Marauder
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: Academy, ~techlevel.medium
+		Queue: Infantry.Terran, RAInfantry.Terran, Infantry.X_Infantry
+		Description: Terran flamethrower infantry.\n Strong vs Infantry, Buildings\n Weak vs Vehicles\n Uncrushable
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 20000	#7900
+	RevealsShroud:
+		Range: 6c0
+	AutoTarget:
+		ScanRadius: 4
+	Armament@1:
+		Weapon: MammothMissiles
+		LocalOffset: 341,-120,128
+		FireDelay: 3
+		MuzzleSequence: muzzle
+	Armament@GARRISONED1:
+		Name: garrisoned
+		Weapon: MammothMissiles
+		LocalOffset: 341,120,128
+		FireDelay: 3
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	Voiced:
+		VoiceSet: SCFirebatVoice
+	AcceptsDeliveredExperience:							##########
+		ValidTypes: infantry							##########
+	RenderSprites:
+		Image: scmaurader
+	Power:
+		Amount: -25
+	FirepowerMultiplier:
+		Modifier: 200
         
 SCGHOST:
 	Inherits: ^SCTINFANTRY
@@ -3743,7 +3825,7 @@ SCVULTURE:
 	Inherits@EMP: ^FrontalEMP
     Inherits@SHADOWS: ^Shadows
 	Valued:
-		Cost: 225
+		Cost: 250
 	Tooltip:
 		Name: Vulture
 	Buildable:
@@ -3753,7 +3835,9 @@ SCVULTURE:
 		Speed: 160
 		Locomotor: hover
 	Health:
-		HP: 18000
+		HP: 25000
+	Power:
+		Amount: -25
 	RevealsShroud:
 		Range: 7c0
 	Armor:
@@ -3797,26 +3881,28 @@ SCSIEGETANK:
 	Tooltip:
 		Name: Siege Tank
 	Buildable:
-		BuildPaletteOrder: 20
+		BuildPaletteOrder: 30
 		Prerequisites: Engineering Bay
+		BuildDuration: 1500
+		BuildDurationModifier: 100
 		Description: Terran mobile artillery.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\nCan deploy for increased range and splash damage
 	Mobile:
 		Speed: 60
 		Locomotor: tracked
 		RequireForceMoveCondition: !undeployed
 	Health:
-		HP: 80000
+		HP: 100000
 	RevealsShroud:
 		Range: 9c0
 	RevealOnFire:
 		ArmamentNames: primary, deployed
 	Armor:
 		Type: Heavy
-    Power:
-        Amount: -100
+	Power:
+		Amount: -100
 	Turreted:
 		TurnSpeed: 10
-		Offset: -256,0,256
+		Offset: -256,256,256
 		RequiresCondition: undeployed
 	Turreted@deployed:
 		Turret: deployed
@@ -3826,12 +3912,12 @@ SCSIEGETANK:
 	Armament:
 		Weapon: SiegeTankCanon
 		MuzzleSequence: muzzle
-		LocalOffset: 600,0,0
+		LocalOffset: 512,256,0
 		RequiresCondition: undeployed
 	Armament@DEPLOYED:
 		Name: deployed
 		Weapon: SiegeTankSiegeCanon
-		LocalOffset: 600,0,0
+		LocalOffset: 512,256,0
 		RequiresCondition: deployed
 	AttackTurreted:
 		Turrets: primary,deployed
@@ -3889,6 +3975,11 @@ SCSIEGETANK:
 	FirepowerMultiplier@mechweap:
 		Modifier: 200
 		RequiresCondition: upmechweapon
+	SelfHealing:
+		Step: 40
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 1
 
 SCGOLIATH:
 	Inherits: ^Walker
@@ -3898,22 +3989,24 @@ SCGOLIATH:
 	Inherits@EMP: ^TurretEMP
     Inherits@SHADOWS: ^Shadows
 	Valued:
-		Cost: 800
+		Cost: 1200
 	Tooltip:
 		Name: Goliath
 	Buildable:
-		BuildPaletteOrder: 30
+		BuildPaletteOrder: 20
 		Prerequisites: Armory
+		BuildDuration: 500
+		BuildDurationModifier: 100
 		Description: Versatile Terran combat walker, armed with\nautocannons and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Vehicles
 	Mobile:
-		Speed: 70
+		Speed: 75
 		Locomotor: tracked
 	Health:
-		HP: 31000
+		HP: 50000
 	RevealsShroud:
 		Range: 7c0
 	Armor:
-		Type: Heavy
+		Type: Medium
 	Turreted:
 		TurnSpeed: 10
 		Offset: 0,0,0
@@ -3938,8 +4031,8 @@ SCGOLIATH:
 	Passenger:
 		Weight: 2
 		PipType: blue
-    Power:
-        Amount: -30
+	Power:
+		Amount: -50
 	Voiced:
 		VoiceSet: SCGoliathVoice
 	WithShadow:
@@ -4348,6 +4441,11 @@ SCBATTLECRUISER:
 	FirepowerMultiplier@weap:
 		Modifier: 125
 		RequiresCondition: upweapon
+	SelfHealing:
+		Step: 40
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 1
 SCSCIENCEVESSEL:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -5475,6 +5573,11 @@ SCCARRIER:
 		Amount: -200
 	Voiced:
 		VoiceSet: SCCarrierVoice
+	SelfHealing:
+		Step: 32
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 1
 
 SCINTERCEPTOR:
 	Inherits: ^Plane
