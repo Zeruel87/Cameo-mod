@@ -30,6 +30,11 @@ World:
 		SupportActors: halloween_skeleton, halloween_skeleton, halloween_skeleton, halloween_skeleton_archer, halloween_skeleton_archer, halloween_dkghost_small, halloween_rockgolem_small, halloween_rockgolem_small, halloween_rockgolem_small, halloween_rockgolem
 
 Player:
+    ExternalCondition@BuildingsOwned:
+        Condition: BuildingsOwned
+    ProvidesPrerequisite@BuildingsOwned:
+        Prerequisite: allowsMCV
+        RequiresCondition: BuildingsOwned < 5
     LobbyPrerequisiteCheckbox@halloween:
         ID: halloween
         Label: Halloween
@@ -121,6 +126,8 @@ Player:
 
 
 halloween_blackcitadel:   
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
     Inherits: ^BaseBuilding
 	Inherits@shape: ^4x3Shape
 	Inherits@CPQ: ^CPQConditionWithPrimary
@@ -1395,7 +1402,7 @@ halloween_clown3:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@announce: ^AnnounceGlobal
 	Valued:
-		Cost: 2500
+		Cost: 3333
 	Power:
 		Amount: -50
 	Tooltip:
@@ -1404,21 +1411,23 @@ halloween_clown3:
 		AddToArmyValue: true
 	Buildable:
 		BuildLimit: 1
+		BuildDuration: 1500
+		BuildDurationModifier: 100
 		BuildPaletteOrder: 60
 		Prerequisites: halloween_daemonpit
 		Queue: HInfantry.Halloween, RAHInfantry.Halloween, Infantry.X_Infantry
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
-		Speed: 75
+		Speed: 88
 	Crushable:
 		CrushClasses: vehicle
 	Health:
-		HP: 75000
+		HP: 88888
 	SelfHealing:
-		Step: 750
-		Delay: 25
+		Step: 33
+		Delay: 1
 		HealIfBelow: 100
-		DamageCooldown: 25
+		DamageCooldown: 1
 	ChangesHealth:
 		PercentageStep: 1
 		Delay: 25
@@ -1719,6 +1728,8 @@ halloween_blob:
 		BuildLimit: 1
 		Queue: HVehicle.Halloween, RAHVehicle.Halloween
 		BuildPaletteOrder: 100
+		BuildDuration: 1500
+		BuildDurationModifier: 100
 		Description: Mutated abomination and eats everything.\n  Strong vs Infantry, Buildings\n  Weak vs Aircraft
 	Tooltip:
 		Name: Hungry Blob
@@ -1727,15 +1738,19 @@ halloween_blob:
 	ActorLostNotification:
 	Inherits@EXT: ^ExternalConditions					##########
 	-Armament:
-    Health:
-		HP: 200000
 	ReloadDelayMultiplier@cow:
 		Modifier: 20
 	Armament:
 		Weapon: halloween_SlimeChomp
 		LocalOffset: 384,0,0
 	Valued:
-		Cost: 2000
+		Cost: 5000
+	Health:
+		HP: 250000
+	Mobile:
+		Speed: 75
+	Armor:
+		Type: Medium
 	WithSpriteBody:
 		Sequence: idle
 		RequiresCondition: rank-veteran == 0
@@ -1775,6 +1790,18 @@ halloween_blob:
 	DamageMultiplier@RANK-ELITE:
 		RequiresCondition: rank-elite
 		Modifier: 40
+	FirepowerMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 125
+	FirepowerMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 150
+	FirepowerMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 175
+	FirepowerMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 200
     SpawnActorOnDeath@1:
         Actor: halloween_blob
 		RequiresCondition: rank-veteran >= 1
@@ -1787,36 +1814,35 @@ halloween_blob:
     SpawnActorOnDeath@4:
         Actor: halloween_blob
 		RequiresCondition: rank-veteran >= 4
-	SelfHealing@SelfHealing:
-		PercentageStep: 1
-		Delay: 10
-		HealIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: damaged
-    ThrowsShrapnel@zero:
+	ThrowsShrapnel@zero:
 		Weapons: halloween_blob_debris
 		Pieces: 2, 3
 		Range: 1c512, 2c512
-    ThrowsShrapnel@1:
+	ThrowsShrapnel@1:
 		Weapons: halloween_blob_debris
-		Pieces: 2, 4
+		Pieces: 3, 4
 		Range: 1c512, 2c512
 		RequiresCondition: rank-veteran >= 1
-    ThrowsShrapnel@2:
+	ThrowsShrapnel@2:
 		Weapons: halloween_blob_debris
-		Pieces: 2, 4
+		Pieces: 4, 5
 		Range: 1c512, 2c512
 		RequiresCondition: rank-veteran >= 2
-    ThrowsShrapnel@3:
+	ThrowsShrapnel@3:
 		Weapons: halloween_blob_debris
-		Pieces: 2, 4
+		Pieces: 5, 6
 		Range: 1c512, 2c512
 		RequiresCondition: rank-veteran >= 3
-    ThrowsShrapnel@4:
+	ThrowsShrapnel@4:
 		Weapons: halloween_blob_debris
-		Pieces: 2, 4
+		Pieces: 6, 7
 		Range: 1c512, 2c512
 		RequiresCondition: rank-veteran >= 4
+	SelfHealing:
+		Step: 100
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 1
 halloween_upgrade.ghost:    
    	AlwaysVisible:
 	Interactable:
@@ -1972,6 +1998,7 @@ halloween_worm:
 	Inherits@EXT: ^ExternalConditions					##########
 	Voiced:
 		VoiceSet: DRGathererVoice
+
 halloween_mcv:
 	Inherits: ^Vehicle
 	Inherits@selection: ^SelectableSupportUnit
@@ -2020,3 +2047,10 @@ halloween_mcv:
 		Prerequisite: mmhalloween
 	Voiced:
 		VoiceSet: DRGathererVoice
+
+halloween_mcv_bot:
+	Inherits: halloween_mcv
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildLimit: 1
+		Prerequisites: halloween_daemonpit, ~techlevel.medium, ~botplayer, allowsMCV

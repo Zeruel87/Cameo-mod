@@ -1,48 +1,6627 @@
-^WC2_Shadow:
-    Inherits@SHADOWS: ^Shadows
-   	WithShadow:
+# Warcraft 2 rules
+
+# HP, Armor, and Cost values taken directly from ingame, since every wiki and website has discrepancies/errors.
+
+# Hitpoints (Starting Armor is added as hitpoints here, but armor upgrades are implemented as DamageMultiplier)
+# 1 HP WC2 = 200 HP ORA
+# 1 Starting Armor WC1 = +1200 HP ORA
+# 0 Starting Armor WC1 = Armor type "None" ORA
+# 2 Starting Armor WC2 = Armor type "Light" ORA
+# > 4 Starting Armor WC2 = Armor Type "Heavy" ORA
+
+# Damage
+# For WC2 damage, we take the high roll from the unit stats and use the formula:
+# 1 DMG WC2 = 225 ORA
+# So for a footman's basic attack, which is 2-9 damage, we take 9 and multiply it
+# by 225 to come to a final value of 2025.
+# p.s. apparently damage calculation in WC2 is all kinds of whack.
+
+# Upgrades
+# Upgrades are implemented as FirePowerMultipliers and DamageMultipliers.
+# Not perfectly authentic to WC2 but hey, this is cameo lol.
+
+# Total Cost (Gold * 0.25) + (Wood * 0.5) + (Oil * 0.5) WC2 = ORA Cost
+
+World:
+	FactionCA@human2:
+		Name: Human WC2
+		InternalName: human2
+		Game: Warcraft 2
+		Side: Factions
+		Description: Human\nLeaders of the Alliance\nMighty and intelligent.\nSupport Powers: Holy Vision, Blizzard
+		Selectable: True
+	FactionCA@orc2:
+		Name: Orc WC2
+		InternalName: orc2
+		Game: Warcraft 2
+		Side: Factions
+		Description: Orc\nLeaders of the Horde\nBrutish and crafty.\nSupport Powers: Eye of Kilrogg, Death and Decay 
+		Selectable: True 
+	FactionCA@RandomWC2:
+		Name: Any WC2
+		InternalName: RandomWC2
+		RandomFactionMembers: human2, orc2
+		Game: Warcraft 2
+		Side: Random
+		Description: Random Faction\nA random faction from Warcraft 2 will be chosen when the game starts.	  
+	####################################################################################################
+	#	   Warcraft 2
+	####################################################################################################
+	MPStartUnits@mcvonlyhuman2:
+		Class: none
+		ClassName: MCV Only
+		Factions: human2
+		BaseActor: wc2_human_mcv
+	MPStartUnits@mcvonlyorc2:
+		Class: none
+		ClassName: MCV Only
+		Factions: orc2
+		BaseActor: wc2_orc_mcv
+	MPStartUnits@defaulthuman2a:
+		Class: light
+		ClassName: Light Support
+		Factions: human2
+		BaseActor: wc2_human_mcv
+		SupportActors: 
+	MPStartUnits@defaultorc2a:
+		Class: light
+		ClassName: Light Support
+		Factions: orc2
+		BaseActor: wc2_orc_mcv
+		SupportActors: 
+	MPStartUnits@heavyhuman2a:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: human2
+		BaseActor: wc2_human_mcv
+		SupportActors:
+	MPStartUnits@heavyorc2a:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: orc2
+		BaseActor: wc2_orc_mcv
+		SupportActors:
+
+Player:
+    ExternalCondition@BuildingsOwned:
+        Condition: BuildingsOwned
+    ProvidesPrerequisite@BuildingsOwned
+        Prerequisite: allowsMCV
+        RequiresCondition: BuildingsOwned < 5
+
+	# Human structures
+	ClassicProductionQueue@RABUILDINGHUMAN2:
+		Type: RABuilding.human2
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc structures
+	ClassicProductionQueue@RABUILDINGORC2:
+		Type: RABuilding.orc2
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human defenses
+	ClassicProductionQueue@RADEFENCEHUMAN2:
+		Type: RADefence.human2
+		DisplayOrder: 0
+		Group: Defence
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc defenses
+	ClassicProductionQueue@RADEFENCEORC2:
+		Type: RADefence.orc2
+		DisplayOrder: 0
+		Group: Defence
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human infantry (barracks)
+	ClassicProductionQueue@RAINFANTRYHUMAN2:
+		Type: RAInfantry.human2
+		DisplayOrder: 0
+		Group: Infantry
+		LowPowerModifier: 99999
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc infantry (barracks)
+	ClassicProductionQueue@RAINFANTRYORC2:
+		Type: RAInfantry.orc2
+		DisplayOrder: 0
+		Group: Infantry
+		LowPowerModifier: 99999
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human gnomish inventor
+	ClassicProductionQueue@RAVEHICLEHUMAN2:
+		Type: RAVehicle.human2
+		DisplayOrder: 0
+		Group: Vehicle
+		LowPowerModifier: 99999
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc goblin alchemist
+	ClassicProductionQueue@RAVEHICLEORC2:
+		Type: RAVehicle.orc2
+		DisplayOrder: 0
+		Group: Vehicle
+		LowPowerModifier: 99999
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human ships
+	ClassicProductionQueue@RANAVALHUMAN2:
+		Type: RANaval.human2
+		DisplayOrder: 0
+		Group: Ship
+		LowPowerModifier: 99999
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc ships
+	ClassicProductionQueue@RANAVALORC2:
+		Type: RANaval.orc2
+		DisplayOrder: 0
+		Group: Ship
+		LowPowerModifier: 99999
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human gryphon aviary
+	ClassicProductionQueue@RAAIRCRAFTHUMAN2:
+		Type: RAAircraft.human2
+		DisplayOrder: 0
+		Group: Aircraft
+		LowPowerModifier: 99999
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc dragon roost
+	ClassicProductionQueue@RAAIRCRAFTEORC2:
+		Type: RAAircraft.orc2
+		DisplayOrder: 0
+		Group: Aircraft
+		LowPowerModifier: 99999
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human lumber mill
+	ClassicProductionQueue@RALUMBERUPGHUMAN2:
+		Type: RAlumberupg.human2
+		DisplayOrder: 0
+		Group: Upgrade
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc lumber mill
+	ClassicProductionQueue@RALUMBERUPGORC2:
+		Type: RAlumberupg.orc2
+		DisplayOrder: 0
+		Group: Upgrade
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human blacksmith
+	ClassicProductionQueue@RABLACKSMITHHUMAN2:
+		Type: RAblacksmithupg.human2
+		DisplayOrder: 0
+		Group: Upgrade
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc blacksmith
+	ClassicProductionQueue@RABLACKSMITHORC2:
+		Type: RAblacksmithupg.orc2
+		DisplayOrder: 0
+		Group: Upgrade
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human stables (this queue is currently unused and so commented out)
+	# ClassicProductionQueue@RASTABLEHUMAN2:
+	# 	Type: RAstablesupg.human2
+	# 	DisplayOrder: 0
+	# 	Group: Upgrade
+	# 	LowPowerModifier: 200
+	# 	ReadyAudio: ConstructionComplete
+	# 	BlockedAudio: NoBuild
+	# 	LimitedAudio: BuildingInProgress
+	# 	QueuedAudio: Training
+	# 	OnHoldAudio: OnHold
+	# 	CancelledAudio: Cancelled
+	# 	SpeedUp: True
+	# 	BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc ogre mound (this queue is currently unused and so commented out)
+	# ClassicProductionQueue@RAOGREMOUNDORC2:
+	# 	Type: RAogremoundupg.orc2
+	# 	DisplayOrder: 0
+	# 	Group: Upgrade
+	# 	LowPowerModifier: 200
+	# 	ReadyAudio: ConstructionComplete
+	# 	BlockedAudio: NoBuild
+	# 	LimitedAudio: BuildingInProgress
+	# 	QueuedAudio: Training
+	# 	OnHoldAudio: OnHold
+	# 	CancelledAudio: Cancelled
+	# 	SpeedUp: True
+	# 	BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human church
+	ClassicProductionQueue@RACHURCHHUMAN2:
+		Type: RAchurchupg.human2
+		DisplayOrder: 0
+		Group: Upgrade
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc altar of storms
+	ClassicProductionQueue@RAALTARORC2:
+		Type: RAaltarupg.orc2
+		DisplayOrder: 0
+		Group: Upgrade
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human mage tower
+	ClassicProductionQueue@RAMINFANTRYHUMAN2:
+		Type: RAMInfantry.human2
+		DisplayOrder: 0
+		Group: Infantry
+		LowPowerModifier: 99999
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc temple of the damned
+	ClassicProductionQueue@RADINFANTRYORC2:
+		Type: RADInfantry.orc2
+		DisplayOrder: 0
+		Group: Infantry
+		LowPowerModifier: 99999
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Human foundry
+	ClassicProductionQueue@RAFOUNDRYHUMAN2:
+		Type: RAfoundryupg.human2
+		DisplayOrder: 0
+		Group: Upgrade
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+
+	# Orc foundry
+	ClassicProductionQueue@RAFOUNDRYORC2:
+		Type: RAfoundryupg.orc2
+		DisplayOrder: 0
+		Group: Upgrade
+		LowPowerModifier: 100
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		SpeedUp: True
+		BuildTimeSpeedReduction: 100, 50, 33, 25, 20, 17, 14, 12, 11, 10
+	
+	SupportPowerBotModuleCA:
+		Decisions:
+			wc2_holyvision:
+				OrderName: wc2_holyvision
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			wc2_spy_of_kilrogg:
+				OrderName: wc2_spy_of_kilrogg
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			wc2_healing:
+				OrderName: wc2_healing
+				MinimumAttractiveness: 3000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Ally
+					Types: Heal, Healing
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+			wc2_bloodlust:
+				OrderName: wc2_bloodlust
+				MinimumAttractiveness: 3000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Ally
+					Types: Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+			wc2_haste:
+				OrderName: wc2_haste
+				MinimumAttractiveness: 3000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Ally
+					Types: Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+			wc2_slow:
+				OrderName: wc2_slow
+				MinimumAttractiveness: 3000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+			wc2_invisibility:
+				OrderName: wc2_invisibility
+				MinimumAttractiveness: 3000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Ally
+					Types: Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+			wc2_blizzard:
+				OrderName: wc2_blizzard
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			wc2_deathanddecay:
+				OrderName: wc2_deathanddecay
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+
+###############################################################
+# WC2 BASE CLASSSES AND INHERITABLES
+###############################################################
+
+^WC2Shadow:
+	Inherits@SHADOWS: ^Shadows
+	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512 
-        
-wc2_mech_critter:
-    Inherits: ^Soldier
-    #Inherits@WC1Infantry: ^WC1Infantry
-    Inherits@EXPERIENCE: ^GainsExperience
-    Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-    Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-    Inherits@SHADOW: ^WC2_Shadow
-    Valued:
-        Cost: 200
-    IgnoresDisguise:    
-    DisguiseTooltip:
-		Name: Face Dancer
-		GenericName: Soldier
-    Disguise:
-		DisguisedCondition: disguise
-	-WithInfantryBody:
-	WithDisguisingInfantryBody:
+
+^WC2Building:
+	SoundOnDamageTransition:
+		DestroyedSounds: wc2_bldexpl1.aud, wc2_bldexpl2.aud, wc2_bldexpl3.aud
+	Explodes:
+		Type: CenterPosition
+		Weapon: wc2buildingexplode
+		EmptyWeapon: wc2buildingexplode
+	GrantConditionOnDamageState:
+		ValidDamageStates: Medium
+		Condition: isBurning
+	GrantConditionOnDamageState@2:
+		ValidDamageStates: Heavy, Critical
+		Condition: isBurning2
+	WithIdleOverlay:
+		RequiresCondition: isBurning
+		Sequence: burn1	
+		Palette: player
+	WithIdleOverlay@2:
+		RequiresCondition: isBurning2
+		Sequence: burn2
+		Palette: player
+	ActorPreviewPlaceBuildingPreview:
+		Palette: player
+	Building:
+		BuildSounds: wc2_constrct.aud
+	GrantTimedCondition:
+		Condition: wc2cond_playsound
+		Duration: 50
+		RequiresCondition: !build-incomplete
+	AmbientSound:
+		SoundFiles:
+		Interval: 100
+		RequiresCondition: wc2cond_playsound
+	RenderSprites:
+		PlayerPalette: player
+		Scale: 0.8
+
+^WC2HumanBuilding:
+	Inherits: ^BaseBuilding
+	Inherits: ^WC2Building
+	-WithDeathAnimation:
+	AmbientSound:
+		SoundFiles: pswrkdon.aud
+
+^WC2OrcBuilding:
+	Inherits: ^BaseBuilding
+	Inherits: ^WC2Building
+	-WithDeathAnimation:
+	AmbientSound:
+		SoundFiles: owrkdone.aud
+
+^WC2HumanDefense:
+	Inherits: ^Defense
+	Inherits: ^WC2Building
+	-WithDeathAnimation:
+	AmbientSound:
+		SoundFiles: pswrkdon.aud
+	-AutoTarget:
+
+^WC2OrcDefense:
+	Inherits: ^Defense
+	Inherits: ^WC2Building
+	-WithDeathAnimation:
+	AmbientSound:
+		SoundFiles: owrkdone.aud
+	-AutoTarget:
+
+^WC2Infantry:
+	Inherits: ^Soldier
+	Inherits@ANNOUNCE: ^AnnounceOnBuild
+	Inherits@EXT: ^ExternalConditions
+	Mobile:
+		Speed: 72
+	Crushable:
+	WithDeathAnimation:
+		DeathSequence: die
+		CrushedSequence: die-crushed
+		CrushedSequencePalette: player
+		CrushedPaletteIsPlayerPalette: true
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		IdleSequences: idle-n, idle-ne, idle-e, idle-se, idle-s, idle-sw, idle-w, idle-nw
+		StandSequences: stand
+		DefaultAttackSequence: shoot
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	RenderSprites:
+		PlayerPalette: player
+		Scale: 0.6
+	TakeCover:
+		SpeedModifier: 100
+	Inherits@WC2BLOODLUST: ^wc2_o_bloodlust_status
+	Inherits@WC2HASTE: ^wc2_o_haste_status
+	Inherits@WC2SLOW: ^wc2_h_slow_status
+	Inherits@WC2POLYMORPH: ^wc2_h_polymorph_status
+	Inherits@WC2INVISIBILITY: ^wc2_h_invisibility_status
+
+^WC2Vehicle:
+	Inherits: ^Vehicle
+	Inherits@ANNOUNCE: ^AnnounceOnBuild
+	Inherits@EXT: ^ExternalConditions
+	Mobile:
+		TurnSpeed: 512
+	DeathSounds:
+	-Explodes:
+	AttackFrontal:
+	WithMoveAnimation:
+		MoveSequence: run
+	WithAttackAnimation:
+		Sequence: shoot
+	WithDeathAnimation:
+		DeathSequence: die
+		UseDeathTypeSuffix: false
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	RenderSprites:
+		PlayerPalette: player
+		Scale: 0.6
+	Inherits@WC2BLOODLUST: ^wc2_o_bloodlust_status
+	Inherits@WC2HASTE: ^wc2_o_haste_status
+	Inherits@WC2SLOW: ^wc2_h_slow_status
+	Inherits@WC2POLYMORPH: ^wc2_h_polymorph_status
+	Inherits@WC2INVISIBILITY: ^wc2_h_invisibility_status
+
+^WC2Worker:
+	Harvester:
+		PipCount: 3
+		Capacity: 6
+		BaleLoadDelay: 3
+		BaleUnloadDelay: 0
+		BaleUnloadAmount: 2
+		FullyLoadedSpeed: 100
+		MaxUnloadQueue: 9
+	WithHarvestAnimation:
+	WithDockingAnimation:
+
+^WC2Ship:
+	Inherits: ^BoatUnit
+	Inherits@ANNOUNCE: ^AnnounceOnBuild
+	Inherits@EXT: ^ExternalConditions
+	DeathSounds:
+	-Explodes:
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithDeathAnimation@Bubbles:
+		UseDeathTypeSuffix: false
+		DeathSequence: bubbles
+		Delay: 80
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	RenderSprites:
+		Scale: 0.6
+
+^WC2AirUnit:
+	Inherits: ^Helicopter
+	Inherits@ANNOUNCE: ^AnnounceOnBuild
+	Inherits@EXT: ^ExternalConditions
+	-SpawnActorOnDeath:
+	-Explodes:
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	DeathSounds:
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	RenderSprites:
+		Scale: 0.6
+	Inherits@WC2BLOODLUST: ^wc2_o_bloodlust_status
+	Inherits@WC2HASTE: ^wc2_o_haste_status
+	Inherits@WC2SLOW: ^wc2_h_slow_status
+	Inherits@WC2POLYMORPH: ^wc2_h_polymorph_status
+	Inherits@WC2INVISIBILITY: ^wc2_h_invisibility_status
+
+^WC2Critter:
+	Inherits: ^WC2Infantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 99
+		Prerequisites: ~disabled
+		Queue: Infantry.human2, RAInfantry.human2, Infantry.orc2, RAInfantry.orc2
+		Description: Critter
+	Mobile:
+		Speed: 56
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 5000
+	Armor:
+		Type: None
+	Valued:
+		Cost: 100
+	WithInfantryBody:
 		IdleSequences: stand
-        StandSequences: stand
-    Tooltip:
-        Name: Mechanical Critter
-    UpdatesPlayerStatistics:
-        AddToArmyValue: true
-    Buildable:
-        BuildPaletteOrder: 10
-        Queue: WC.Neutral
-        Description: Spy unit.
-    Mobile:
-        Speed: 110
-    Health:
-        HP: 10000
-    #Food
-    Power:
-        Amount: 0
-    AutoTarget:
-        ScanRadius: 6
-    WithDeathAnimation:
-        UseDeathTypeSuffix: false
-    RenderSprites:
-        Scale: 0.75
-    Voiced:
-        VoiceSet: wc2_mech_critter
+	Crushable:
+	RejectsOrders:
+	Wanders:
+		MinMoveDelay: 60
+		MaxMoveDelay: 240
+	RenderSprites:
+		Scale: 0.6
+
+^WC2UnitProduction:
+	Inherits@prod: ^ProducesUnits
+	GrantConditionOnPowerState@supply:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	Production@NORMAL:
+		PauseOnCondition: lowpower
+	#Production@CLASSICPRODUCTIONQUEUES:
+	#	PauseOnCondition: lowpower
+
+^WC2FourStateDeploy:
+	### This simulates a Master Slave JK Flip Flop via conditions.
+	## This allows us to have four deploy states.
+	## The deploy toggle on and off is used as the clock signal here.
+	## The commented out FF1_INPUTS stuff are always true, so no need to actually include them.
+	
+	## Input and Clock
+	#GrantCondition@FF1_INPUTS:
+	#	Condition: cond_FF1_INPUTS
+	GrantConditionOnDeploy@Clock:
+		DeployedCondition: FSD_cond_CLK
+	
+	### First Half ###
+	GrantCondition@FF1_NAND1:
+		Condition: FSD_cond_FF1_NAND1
+		RequiresCondition: !(FSD_cond_CLK && FSD_cond_FF1_NAND8)
+	GrantCondition@FF1_NAND2:
+		Condition: FSD_cond_FF1_NAND2
+		RequiresCondition: !(FSD_cond_CLK && FSD_cond_FF1_NAND7)
+	GrantCondition@FF1_NAND3:
+		Condition: FSD_cond_FF1_NAND3
+		RequiresCondition: !(FSD_cond_FF1_NAND1 && FSD_cond_FF1_NAND4)
+	GrantCondition@FF1_NAND4:
+		Condition: FSD_cond_FF1_NAND4
+		RequiresCondition: !(FSD_cond_FF1_NAND2 && FSD_cond_FF1_NAND3)
+	### Second Half ###
+	GrantCondition@FF1_NAND5:
+		Condition: FSD_cond_FF1_NAND5
+		RequiresCondition: !(FSD_cond_FF1_NAND3 && !FSD_cond_CLK)
+	GrantCondition@FF1_NAND6:
+		Condition: FSD_cond_FF1_NAND6
+		RequiresCondition: !(FSD_cond_FF1_NAND4 && !FSD_cond_CLK)
+	GrantCondition@FF1_NAND7:
+		Condition: FSD_cond_FF1_NAND7
+		RequiresCondition: !(FSD_cond_FF1_NAND5 && FSD_cond_FF1_NAND8)
+	GrantCondition@FF1_NAND8:
+		Condition: FSD_cond_FF1_NAND8
+		RequiresCondition: !(FSD_cond_FF1_NAND6 && FSD_cond_FF1_NAND7)
+
+	### Final Conditions ###
+	GrantCondition@Cond1:
+		Condition: FSD_cond_1
+		RequiresCondition: !FSD_cond_CLK && FSD_cond_FF1_NAND8
+	GrantCondition@Cond2:
+		Condition: FSD_cond_2
+		RequiresCondition: FSD_cond_CLK && FSD_cond_FF1_NAND8
+	GrantCondition@Cond3:
+		Condition: FSD_cond_3
+		RequiresCondition: !FSD_cond_CLK && !FSD_cond_FF1_NAND8
+	GrantCondition@Cond4:
+		Condition: FSD_cond_4
+		RequiresCondition: FSD_cond_CLK && !FSD_cond_FF1_NAND8
+
+^WC2Exits_3x3:
+	Exit@1:
+		SpawnOffset: -2048,-1024,0
+		ExitCell: -1,0
+	Exit@2:
+		SpawnOffset: -2048,0,0
+		ExitCell: -1,1
+	Exit@3:
+		SpawnOffset: -2048,1024,0
+		ExitCell: -1,2
+	Exit@4:
+		SpawnOffset: -2048,2048,0
+		ExitCell: -1,3
+	Exit@5:
+		SpawnOffset: -1024,2048,0
+		ExitCell: 0,3
+	Exit@6:
+		SpawnOffset: 0,2048,0
+		ExitCell: 1,3
+	Exit@7:
+		SpawnOffset: 1024,2048,0
+		ExitCell: 2,3
+	Exit@8:
+		SpawnOffset: 2048,2048,0
+		ExitCell: 3,3
+	Exit@9:
+		SpawnOffset: 2048,1024,0
+		ExitCell: 3,2
+	Exit@10:
+		SpawnOffset: 2048,0,0
+		ExitCell: 3,1
+	Exit@11:
+		SpawnOffset: 2048,-1024,0
+		ExitCell: 3,0
+	Exit@12:
+		SpawnOffset: 2048,-2048,0
+		ExitCell: 3,-1
+	Exit@13:
+		SpawnOffset: 1024,-2048,0
+		ExitCell: 2,-1
+	Exit@14:
+		SpawnOffset: 0,-2048,0
+		ExitCell: 1,-1
+	Exit@15:
+		SpawnOffset: -1024,-2048,0
+		ExitCell: 0,-1
+	Exit@16:
+		SpawnOffset: -2048,-2048,0
+		ExitCell: -1,-1
+
+###############################################################
+# WC2 HUMAN INHERITABLES
+###############################################################
+
+^wc2_h_str_sword:
+	GrantConditionOnPrerequisite@WC2SwordUpg:
+		Condition: wc2sword_upg
+		Prerequisites: wc2_h_str_sword
+	GrantConditionOnPrerequisite@WC2SwordUpg2:
+		Condition: wc2sword_upg2
+		Prerequisites: wc2_h_str_sword2
+	FirepowerMultiplier@WC2SwordUpg:
+		Modifier: 130
+		RequiresCondition: wc2sword_upg
+	FirepowerMultiplier@WC2SwordUpg2:
+		Modifier: 130
+		RequiresCondition: wc2sword_upg2
+
+^wc2_h_str_shield:
+	GrantConditionOnPrerequisite@WC2HShieldUpg:
+		Condition: wc2hshield_upg
+		Prerequisites: wc2_h_str_shield
+	GrantConditionOnPrerequisite@WC2HShieldUpg2:
+		Condition: wc2hshield_upg2
+		Prerequisites: wc2_h_str_shield2
+	DamageMultiplier@WC2HShieldUpg:
+		Modifier: 75
+		RequiresCondition: wc2hshield_upg
+	DamageMultiplier@WC2HShieldUpg2:
+		Modifier: 75
+		RequiresCondition: wc2hshield_upg2
+
+^wc2_h_str_arrow:
+	GrantConditionOnPrerequisite@WC2ArrowUpg:
+		Condition: wc2arrow_upg	
+		Prerequisites: wc2_h_str_arrow
+	GrantConditionOnPrerequisite@WC2ArrowUpg2:
+		Condition: wc2arrow_upg2
+		Prerequisites: wc2_h_str_arrow2
+	FirepowerMultiplier@WC2ArrowUpg:
+		Modifier: 140
+		RequiresCondition: wc2arrow_upg
+	FirepowerMultiplier@WC2ArrowUpg2:
+		Modifier: 140
+		RequiresCondition: wc2arrow_upg2
+
+^wc2_h_str_ballista:
+	GrantConditionOnPrerequisite@BallUpg:
+		Condition: ballista_upg
+		Prerequisites: wc2_h_str_ballista
+	GrantConditionOnPrerequisite@BallUpg2:
+		Condition: ballista_upg2
+		Prerequisites: wc2_h_str_ballista2
+	FirepowerMultiplier@BallUpg:
+		Modifier: 140
+		RequiresCondition: ballista_upg
+	FirepowerMultiplier@BallUpg2:
+		Modifier: 140
+		RequiresCondition: ballista_upg2
+
+^wc2_h_str_cannon:
+	GrantConditionOnPrerequisite@HCannonUpg:
+		Condition: hcannon_upg
+		Prerequisites: wc2_h_str_cannon
+	GrantConditionOnPrerequisite@HCannonUpg2:
+		Condition: hcannon_upg2
+		Prerequisites: wc2_h_str_cannon2
+	FirepowerMultiplier@HCannonUpg:
+		Modifier: 140
+		RequiresCondition: hcannon_upg
+	FirepowerMultiplier@HCannonUpg2:
+		Modifier: 140
+		RequiresCondition: hcannon_upg2
+
+^wc2_h_str_navyshield:
+	GrantConditionOnPrerequisite@HNavySUpg:
+		Condition: hnavyshield_upg
+		Prerequisites: wc2_h_str_navyshield
+	GrantConditionOnPrerequisite@HNavySUpg2:
+		Condition: hnavyshield_upg2
+		Prerequisites: wc2_h_str_navyshield2
+	DamageMultiplier@HNavySUpg:
+		Modifier: 75
+		RequiresCondition: hnavyshield_upg
+	DamageMultiplier@HNavySUpg2:
+		Modifier: 75
+		RequiresCondition: hnavyshield_upg2
+
+^wc2_h_rangerupg:
+	GrantConditionOnPrerequisite@RangerUpg:
+		Condition: ranger_upg
+		Prerequisites: wc2_h_rangerupg
+	DamageMultiplier@RangerUpg:
+		Modifier: 90
+		RequiresCondition: ranger_upg
+
+^wc2_h_ranger_longbow:
+	GrantConditionOnPrerequisite@RLongBowUpg:
+		Condition: rangerlb_upg
+		Prerequisites: wc2_h_ranger_longbow
+	RangeMultiplier@RLongBowUpg:
+		Modifier: 120
+		RequiresCondition: rangerlb_upg
+
+^wc2_h_ranger_scouting:
+	GrantConditionOnPrerequisite@RScoutUpg:
+		Condition: rangersc_upg
+		Prerequisites: wc2_h_ranger_scouting
+	RevealsShroudMultiplier@RScoutUpg:
+		Modifier: 150
+		RequiresCondition: rangersc_upg
+
+^wc2_h_ranger_marksman:
+	GrantConditionOnPrerequisite@RMarksmanUpg:
+		Condition: rangermm_upg
+		Prerequisites: wc2_h_ranger_marksman
+	FirepowerMultiplier@RMarksmanUpg:
+		Modifier: 115
+		RequiresCondition: rangermm_upg
+
+^wc2_h_paladinupg:
+	GrantConditionOnPrerequisite@PalUpg:
+		Condition: paladin_upg
+		Prerequisites: wc2_h_paladinupg
+	DamageMultiplier@PalUpg:
+		Modifier: 80
+		RequiresCondition: paladin_upg
+	FirepowerMultiplier@PalUpg:
+		Modifier: 120
+		RequiresCondition: paladin_upg
+	SpeedMultiplier@PalUpg:
+		Modifier: 125
+		RequiresCondition: paladin_upg
+
+^wc2_h_paladin_healing:
+	GrantConditionOnPrerequisite@PHealingUpg:
+		Condition: paladinhealing_upg
+		Prerequisites: wc2_h_healingupg
+
+^wc2_h_paladin_exorcism:
+	GrantConditionOnPrerequisite@PExorcismUpg:
+		Condition: paladinexorcism_upg
+		Prerequisites: wc2_h_exorcismupg
+
+^wc2_h_mage_slow:
+	GrantConditionOnPrerequisite@MSlowUpg:
+		Condition: mageslow_upg
+		Prerequisites: wc2_h_slowupg
+
+^wc2_h_mage_polymorph:
+	GrantConditionOnPrerequisite@MPolymorphUpg:
+		Condition: magepolymorph_upg
+		Prerequisites: wc2_h_polymorphupg
+
+^wc2_h_mage_blizzard:
+	GrantConditionOnPrerequisite@MBlizzardUpg:
+		Condition: mageblizzard_upg
+		Prerequisites: wc2_h_blizzardupg
+
+###############################################################
+# WC2 ORC INHERITABLES
+###############################################################
+
+^wc2_o_str_axe:
+	GrantConditionOnPrerequisite@WC2AxeUpg:
+		Condition: wc2axe_upg
+		Prerequisites: wc2_o_str_axe
+	GrantConditionOnPrerequisite@WC2AxeUpg2:
+		Condition: wc2axe_upg2
+		Prerequisites: wc2_o_str_axe2
+	FirepowerMultiplier@WC2AxeUpg:
+		Modifier: 130
+		RequiresCondition: wc2axe_upg
+	FirepowerMultiplier@WC2AxeUpg2:
+		Modifier: 130
+		RequiresCondition: wc2axe_upg2
+
+^wc2_o_str_shield:
+	GrantConditionOnPrerequisite@WC2OShieldUpg:
+		Condition: wc2oshield_upg
+		Prerequisites: wc2_o_str_shield
+	GrantConditionOnPrerequisite@WC2OShieldUpg2:
+		Condition: wc2oshield_upg2
+		Prerequisites: wc2_o_str_shield2
+	DamageMultiplier@WC2OShieldUpg:
+		Modifier: 75
+		RequiresCondition: wc2oshield_upg
+	DamageMultiplier@WC2OShieldUpg2:
+		Modifier: 75
+		RequiresCondition: wc2oshield_upg2
+
+^wc2_o_str_throwaxe:
+	GrantConditionOnPrerequisite@TAxeUpg:
+		Condition: throwaxe_upg	
+		Prerequisites: wc2_o_str_throwaxe
+	GrantConditionOnPrerequisite@TAxeUpg2:
+		Condition: throwaxe_upg2
+		Prerequisites: wc2_o_str_throwaxe2
+	FirepowerMultiplier@TAxeUpg:
+		Modifier: 140
+		RequiresCondition: throwaxe_upg
+	FirepowerMultiplier@TAxeUpg2:
+		Modifier: 140
+		RequiresCondition: throwaxe_upg2
+
+^wc2_o_str_catapult:
+	GrantConditionOnPrerequisite@CatUpg:
+		Condition: cat_upg
+		Prerequisites: wc2_o_str_catapult
+	GrantConditionOnPrerequisite@CatUpg2:
+		Condition: cat_upg2
+		Prerequisites: wc2_o_str_catapult2
+	FirepowerMultiplier@CatUpg:
+		Modifier: 140
+		RequiresCondition: cat_upg
+	FirepowerMultiplier@CatUpg2:
+		Modifier: 140
+		RequiresCondition: cat_upg2
+
+^wc2_o_str_cannon:
+	GrantConditionOnPrerequisite@OCannonUpg:
+		Condition: ocannon_upg
+		Prerequisites: wc2_o_str_cannon
+	GrantConditionOnPrerequisite@OCannonUpg2:
+		Condition: ocannon_upg2
+		Prerequisites: wc2_o_str_cannon2
+	FirepowerMultiplier@OCannonUpg:
+		Modifier: 140
+		RequiresCondition: ocannon_upg
+	FirepowerMultiplier@OCannonUpg2:
+		Modifier: 140
+		RequiresCondition: ocannon_upg2
+
+^wc2_o_str_navyshield:
+	GrantConditionOnPrerequisite@ONavySUpg:
+		Condition: onavyshield_upg
+		Prerequisites: wc2_o_str_navyshield
+	GrantConditionOnPrerequisite@ONavySUpg2:
+		Condition: onavyshield_upg2
+		Prerequisites: wc2_o_str_navyshield2
+	DamageMultiplier@ONavySUpg:
+		Modifier: 75
+		RequiresCondition: onavyshield_upg
+	DamageMultiplier@ONavySUpg2:
+		Modifier: 75
+		RequiresCondition: onavyshield_upg2
+
+^wc2_o_berserkerupg:
+	GrantConditionOnPrerequisite@BerserkerUpg:
+		Condition: berserker_upg
+		Prerequisites: wc2_o_berserkerupg
+	DamageMultiplier@BerserkerUpg:
+		Modifier: 80
+		RequiresCondition: berserker_upg
+
+^wc2_o_berserker_lighteraxes:
+	GrantConditionOnPrerequisite@BLighterUpg:
+		Condition: berserkerla_upg
+		Prerequisites: wc2_o_berserker_lighteraxes
+	RangeMultiplier@BLighterUpg:
+		Modifier: 120
+		RequiresCondition: berserkerla_upg
+
+^wc2_o_berserker_scouting:
+	GrantConditionOnPrerequisite@BScoutUpg:
+		Condition: berserkersc_upg
+		Prerequisites: wc2_o_berserker_scouting
+	RevealsShroudMultiplier@BScoutUpg:
+		Modifier: 150
+		RequiresCondition: berserkersc_upg
+
+^wc2_o_berserker_regen:
+	GrantConditionOnPrerequisite@BRegenUpg:
+		Condition: berserkerregen_upg
+		Prerequisites: wc2_o_berserker_regen
+	ChangesHealth@BRegenUpg:
+		PercentageStep: 5
+		Delay: 10
+		StartIfBelow: 100
+		DamageCooldown: 150
+		RequiresCondition: berserkerregen_upg
+
+^wc2_o_ogremageupg:
+	GrantConditionOnPrerequisite@OMUpg:
+		Condition: ogremage_upg
+		Prerequisites: wc2_o_ogremageupg
+	DamageMultiplier@OMUpg:
+		Modifier: 90
+		RequiresCondition: ogremage_upg
+	FirepowerMultiplier@OMUpg:
+		Modifier: 130
+		RequiresCondition: ogremage_upg
+
+^wc2_o_ogremage_bloodlust:
+	GrantConditionOnPrerequisite@OBloodlustUpg:
+		Condition: ogremagebloodlust_upg
+		Prerequisites: wc2_o_bloodlustupg
+
+^wc2_o_ogremage_runes:
+	GrantConditionOnPrerequisite@ORunesUpg:
+		Condition: ogremagerunes_upg
+		Prerequisites: wc2_o_runesupg
+
+^wc2_o_deathknight_haste:
+	GrantConditionOnPrerequisite@DHasteUpg:
+		Condition: deathknighthaste_upg
+		Prerequisites: wc2_o_hasteupg
+		
+^wc2_o_deathknight_deathanddecay:
+	GrantConditionOnPrerequisite@DDeathAndDecayUpg:
+		Condition: deathknightdeathanddecay_upg
+		Prerequisites: wc2_o_deathanddecayupg
+		
+^wc2_o_deathknight_raisedead:
+	GrantConditionOnPrerequisite@DRaiseDeadUpg:
+		Condition: deathknightraisedead_upg
+		Prerequisites: wc2_o_raisedeadupg
+
+####################################################################################################
+# WC2 SPELL/STATUS EFFECT INHERITABLES
+####################################################################################################
+
+^wc2_o_bloodlust_status:
+	ExternalCondition@WC2BLOODLUST:
+		Condition: wc2_cond_bloodlust
+	WithDecoration@WC2BLOODLUST:
+		Sequence: bloodlust_status_icon
+		ReferencePoint: Top, Right
+		RequiresCondition: wc2_cond_bloodlust
+	FirepowerMultiplier@WC2BLOODLUST:
+		Modifier: 200
+		RequiresCondition: wc2_cond_bloodlust
+	Targetable@WC2BLOODLUST:
+		TargetTypes: bloodlust_target
+		RequiresCondition: !wc2_cond_bloodlust
+
+^wc2_o_haste_status:
+	ExternalCondition@WC2HASTE:
+		Condition: wc2_cond_haste
+	WithDecoration@WC2HASTE:
+		Sequence: haste_status_icon
+		ReferencePoint: Top, Right
+		RequiresCondition: wc2_cond_haste
+	SpeedMultiplier@WC2HASTE:
+		Modifier: 150
+		RequiresCondition: wc2_cond_haste
+	ReloadDelayMultiplier@WC2HASTE:
+		Modifier: 66
+		RequiresCondition: wc2_cond_haste
+	Targetable@WC2HASTE:
+		TargetTypes: haste_target
+		RequiresCondition: !wc2_cond_haste
+
+^wc2_h_slow_status:
+	ExternalCondition@WC2SLOW:
+		Condition: wc2_cond_slow
+	WithDecoration@WC2SLOW:
+		Sequence: slow_status_icon
+		ReferencePoint: Top, Right
+		RequiresCondition: wc2_cond_slow
+	SpeedMultiplier@WC2SLOW:
+		Modifier: 66
+		RequiresCondition: wc2_cond_slow
+	ReloadDelayMultiplier@WC2SLOW:
+		Modifier: 150
+		RequiresCondition: wc2_cond_slow
+
+^wc2_h_polymorph_status:
+	ExternalCondition@WC2POLYMORPH:
+		Condition: wc2_cond_polymorph
+	KillsSelf@WC2POLYMORPH:
+		RemoveInstead: False
+		RequiresCondition: wc2_cond_polymorph
+	GrantRandomCondition@WC2POLYMORPH:
+		Conditions: wc2_cond_sheep, wc2_cond_seal, wc2_cond_boar, wc2_cond_helboar
+	SpawnActorOnDeath@WC2POLYMORPH_SHEEP:
+		Actor: wc2_critter_sheep
+		OwnerType: InternalName
+		RequiresCondition: wc2_cond_polymorph && wc2_cond_sheep
+	SpawnActorOnDeath@WC2POLYMORPH_SEAL:
+		Actor: wc2_critter_seal
+		OwnerType: InternalName
+		RequiresCondition: wc2_cond_polymorph && wc2_cond_seal
+	SpawnActorOnDeath@WC2POLYMORPH_BOAR:
+		Actor: wc2_critter_boar
+		OwnerType: InternalName
+		RequiresCondition: wc2_cond_polymorph && wc2_cond_boar
+	SpawnActorOnDeath@WC2POLYMORPH_HELBOAR:
+		Actor: wc2_critter_helboar
+		OwnerType: InternalName
+		RequiresCondition: wc2_cond_polymorph && wc2_cond_helboar
+
+^wc2_h_invisibility_status:
+	ExternalCondition@WC2INVISIBILITY:
+		Condition: wc2_cond_invisibility
+	Cloak@WC2INVISIBILITY:
+		InitialDelay: 15
+		CloakDelay: 90
+		UncloakOn: Damage
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		RequiresCondition: wc2_cond_invisibility
+		IsPlayerPalette: true
+
+^ExternalConditionsAll:
+	Inherits@WC2BLOODLUST: ^wc2_o_bloodlust_status
+	Inherits@WC2HASTE: ^wc2_o_haste_status
+	Inherits@WC2SLOW: ^wc2_h_slow_status
+	Inherits@WC2POLYMORPH: ^wc2_h_polymorph_status
+	Inherits@WC2INVISIBILITY: ^wc2_h_invisibility_status
+	-WithDecoration@WC2BLOODLUST:
+	-WithDecoration@WC2HASTE:
+	-WithDecoration@WC2SLOW:
+
+####################################################################################################
+# WC2 BUILDING TEMPLATES
+####################################################################################################
+
+^wc2_townhall:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
+	Inherits@shape: ^3x4Shape
+	Inherits@exits: ^WC2Exits_3x3
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@ai: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Inherits@ref: ^Refinery
+	Valued:
+		Cost: 3000
+	Building:
+		Footprint: xxx xxx xxx ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 200000
+	RevealsShroud:
+		Range: 4c0
+	RallyPoint:
+	Power:
+		Amount: 8
+	ScalePowerWithHealth:
+	BaseBuilding:
+	BaseProvider:
+		Cooldown: 75
+		Range: 14c0
+	Refinery:
+		DockAngle: 112
+		DockOffset: 1,3
+		IsDragRequired: False
+		DragOffset: -554,512,0
+		DragLength: 12
+		TickRate: 15
+	StoresResources:
+		PipColor: Green
+		PipCount: 10
+		Capacity: 1000
+	ProvidesPrerequisite@buildingname:
+	Production@NORMAL:
+		PauseOnCondition: lowpower
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		PauseOnCondition: lowpower
+		RequiresCondition: classicproductionqueues
+	ProductionBar@Building:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuilding:
+		RequiresCondition: classicproductionqueues
+	ProductionBar@Defence:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RADefence:
+		RequiresCondition: classicproductionqueues  
+	ProductionQueue@Building:
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@Defence:
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 200
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+
+^wc2_farm:
+	Inherits@shape: ^2x2Shape
+	StoresResources:
+		PipColor: Green
+		PipCount: 5
+		Capacity: 500
+	Valued:
+		Cost: 500
+	Buildable:
+		BuildPaletteOrder: 11
+		BuildDuration: 160
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		LocalCenterOffset: 0,0,0
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 65000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 6
+	ScalePowerWithHealth:
+	ProvidesPrerequisite@buildingname:
+	
+	### AI Stuff ###
+	GrantConditionOnBotOwner@AIPowerBoost:
+		Condition: wc2_cond_bot_owner
+		Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce, defenseai
+	GrantTimedCondition@AIPowerBoost:
+		Condition: wc2_cond_ai_power_boost
+		Duration: 2000
+		RequiresCondition: wc2_cond_bot_owner
+	PowerMultiplier@AIPowerBoost:
+		Modifier: 300
+		RequiresCondition: wc2_cond_ai_power_boost
+	# WithTextDecoration:
+	# 	Text: Power Boost
+	# 	RequiresCondition: wc2_cond_ai_power_boost
+
+^wc2_barracks:
+	Inherits@shape: ^3x3Shape
+	Inherits@exits: ^WC2Exits_3x3
+	Inherits@wcprod: ^WCUnitProduction
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Valued:
+		Cost: 800
+	Buildable:
+		BuildPaletteOrder: 12
+		BuildDuration: 200
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		LocalCenterOffset: -32,-32,0
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 5c0
+	RallyPoint:
+	GrantExternalConditionToProduced:
+		Condition: produced
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@barracks:
+		Prerequisite: barracks
+	Production@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 9999
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+
+^wc2_lumber_mill:
+	Inherits@shape: ^2x2Shape
+	Inherits@ref: ^Refinery
+	Inherits@CPQWP: ^CPQCondition
+	Valued:
+		Cost: 750
+	Buildable:
+		BuildPaletteOrder: 13
+		BuildDuration: 200
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,0,0
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 6c0
+	Power:
+		Amount: 0
+	Production@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		DisplayOrder: 2
+		Group: Upgrade
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+	Refinery:
+		DockAngle: 112
+		DockOffset: 0,2
+		IsDragRequired: False
+		DragOffset: -554,512,0
+		DragLength: 12
+		TickRate: 15
+	StoresResources:
+		PipColor: Green
+		PipCount: 10
+		Capacity: 1000
+	Selectable:
+		Bounds: 64,64
+	CustomSellValue:
+		Value: 500
+	WithResourceLevelOverlay:
+		RequiresCondition: !build-incomplete
+	ProvidesPrerequisite:
+		Prerequisite: Refinery
+	ProvidesPrerequisite@buildingname:
+	SelectionDecorations:
+	FreeActor:
+		SpawnOffset: 1,2
+		Facing: 64
+
+^wc2_blacksmith:
+	Inherits@shape: ^3x3Shape
+	Inherits@CPQWP: ^CPQCondition
+	Valued:
+		Cost: 950
+	Buildable:
+		BuildPaletteOrder: 14
+		BuildDuration: 400
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,0,0
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 75000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@blacksmith:
+		Prerequisite: wc_blacksmith
+	Production@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		DisplayOrder: 2
+		Group: Upgrade
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+
+^wc2_inventor:
+	Inherits@shape: ^3x3Shape
+	Inherits@exits: ^WC2Exits_3x3
+	Inherits@wcprod: ^WCUnitProduction
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Valued:
+		Cost: 1100
+	Buildable:
+		BuildPaletteOrder: 16
+		BuildDuration: 400
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		LocalCenterOffset: 0,0,0
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 75000
+	RevealsShroud:
+		Range: 4c0
+	RallyPoint:
+	Power:
+		Amount: 0
+	ProvidesRadar:
+	ProvidesPrerequisite@buildingname:
+	GrantExternalConditionToProduced:
+		Condition: produced
+	Production@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		DisplayOrder: 2
+		Group: Vehicle
+		LowPowerModifier: 9999
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+
+^wc2_stables:
+	Inherits@shape: ^3x3Shape  
+	Inherits@CPQWP: ^CPQCondition
+	Valued:
+		Cost: 800
+	Buildable:
+		BuildPaletteOrder: 15
+		BuildDuration: 400
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,0,0
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 75000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	# Production@NORMAL:
+	# 	RequiresCondition: !classicproductionqueues
+	# Production@CLASSICPRODUCTIONQUEUES:
+	# 	RequiresCondition: classicproductionqueues	   
+	# ProductionQueue:
+	# 	DisplayOrder: 2
+	# 	Group: Addon
+	# 	LowPowerModifier: 9999
+	# 	ReadyAudio: UnitReady
+	# 	BlockedAudio: NoBuild
+	# 	LimitedAudio: BuildingInProgress
+	# 	QueuedAudio: Training
+	# 	OnHoldAudio: OnHold
+	# 	CancelledAudio: Cancelled
+	# ProductionBar@NORMAL:
+	# 	RequiresCondition: !classicproductionqueues
+	# ProductionBar@CLASSICPRODUCTIONQUEUES:
+	# 	RequiresCondition: classicproductionqueues
+
+^wc2_church:
+	Inherits@shape: ^3x3Shape 
+	Inherits@CPQWP: ^CPQCondition
+	Valued:
+		Cost: 950
+	Buildable:
+		BuildPaletteOrder: 17
+		BuildDuration: 400
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		LocalCenterOffset: 0,0,0
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 75000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	Production@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		DisplayOrder: 2
+		Group: Upgrade
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+
+^wc2_temple:
+	Inherits@shape: ^3x3Shape
+	Inherits@exits: ^WC2Exits_3x3
+	Inherits@wcprod: ^WCUnitProduction  
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Valued:
+		Cost: 1500
+	Buildable:
+		BuildPaletteOrder: 18
+		BuildDuration: 400
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		LocalCenterOffset: 0,0,0
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 75000
+	RevealsShroud:
+		Range: 4c0
+	RallyPoint:
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	GrantExternalConditionToProduced:
+		Condition: produced
+	Production@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 9999
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+
+^wc2_nest:
+	Inherits@shape: ^3x3Shape
+	Inherits@exits: ^WC2Exits_3x3
+	Inherits@wcprod: ^WCUnitProduction
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Valued:
+		Cost: 900
+	Buildable:
+		BuildPaletteOrder: 19
+		BuildDuration: 400
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		LocalCenterOffset: 0,0,0
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 75000
+	RevealsShroud:
+		Range: 4c0
+	RallyPoint:
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	GrantExternalConditionToProduced:
+		Condition: produced
+	Production@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		DisplayOrder: 2
+		Group: Aircraft
+		LowPowerModifier: 9999
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+
+^wc2_shipyard:
+	Inherits@shape: ^3x3Shape
+	Inherits@exits: ^WC2Exits_3x3
+	Inherits@wcprod: ^WCUnitProduction
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Valued:
+		Cost: 850
+	Buildable:
+		BuildPaletteOrder: 50
+	Building:
+		Footprint: =+= +++ =+=
+		Dimensions: 3,3
+		TerrainTypes: Water
+	RequiresBuildableArea:
+		Adjacent: 8
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 5c0
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	RallyPoint:
+	Power:
+		Amount: 0
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
+	ProvidesPrerequisite@buildingname:
+	Production@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		DisplayOrder: 5
+		Group: Ship
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+
+^wc2_foundry:
+	Inherits@shape: ^3x3Shape
+	Inherits@CPQWP: ^CPQCondition
+	Valued:
+		Cost: 1150
+	Buildable:
+		BuildPaletteOrder: 50
+	Building:
+		Footprint: =+= +++ =+=
+		Dimensions: 3,3
+		TerrainTypes: Water
+	RequiresBuildableArea:
+		Adjacent: 8
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 5c0
+	Power:
+		Amount: 0
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
+	ProvidesPrerequisite@buildingname:
+	Production@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		DisplayOrder: 2
+		Group: Upgrade
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		RequiresCondition: classicproductionqueues
+
+^wc2_oil_refinery:
+	Inherits@shape: ^3x3Shape
+	Valued:
+		Cost: 950
+	Buildable:
+		BuildPaletteOrder: 50
+	Building:
+		Footprint: =+= +++ =+=
+		Dimensions: 3,3
+		TerrainTypes: Water
+	RequiresBuildableArea:
+		Adjacent: 8
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 5c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
+
+^wc2_oil_platform:
+	Inherits@shape: ^3x3Shape
+	Valued:
+		Cost: 2400
+	Buildable:
+		BuildPaletteOrder: 50
+	Building:
+		Footprint: =+= +++ =+=
+		Dimensions: 3,3
+		TerrainTypes: Water
+	RequiresBuildableArea:
+		Adjacent: 8
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 5c0
+	Reservable:
+	Power:
+		Amount: -2
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
+	ProvidesPrerequisite@buildingname:
+	Cargo:
+		MaxWeight: 5
+		Types: Tanker
+		PipCount: 5
+		LoadedCondition: cond_loaded
+	WithSpriteBody:
+		RequiresCondition: !cond_loaded
+	WithSpriteBody@Loaded:
+		Sequence: idle-loaded
+		RequiresCondition: cond_loaded
+	CashTrickler@Rank0:
+		Interval: 80
+		Amount: 100
+	CashTrickler@bot:
+		Interval: 80
+		Amount: 100
+		RequiresCondition: botmicro
+		UseResourceStorage: true
+
+^wc2_watch_tower:
+	Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 800
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 1500
+		BuildDurationModifier: 15
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 60000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Power:
+		Amount: 0
+	DetectCloaked:
+		DetectionTypes: Cloak, Underwater
+		Range: 9c0
+	ProvidesPrerequisite@buildingname:
+	Turreted:
+		TurnSpeed: 6
+		InitialFacing: 56
+	AttackTurreted:
+		Voice:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: chronobeamed
+
+^wc2_goldmine:
+	Inherits@shape: ^3x3Shape
+	Valued:
+		Cost: 2400
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 375
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 100000
+	Power:
+		Amount: -8
+	ProvidesPrerequisite@buildingname:
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 5c0
+	Cargo:
+		MaxWeight: 5
+		Types: Worker
+		PipCount: 5
+		LoadedCondition: cond_loaded
+	WithSpriteBody:
+		RequiresCondition: !cond_loaded
+	WithSpriteBody@Loaded:
+		Sequence: idle-loaded
+		RequiresCondition: cond_loaded
+	WithMakeAnimation:  
+	WithDeathAnimation:
+
+####################################################################################################
+# WC2 UNIT TEMPLATES
+####################################################################################################
+
+^wc2_mcv:
+	Inherits@mcv: ^MCV
+	Inherits@conyard: ^Conyard
+	Valued:
+		Cost: 3000
+	Buildable:
+		BuildPaletteOrder: 10
+		BuildDuration: 750
+		BuildDurationModifier: 100
+	Selectable:
+		Priority: 4
+		DecorationBounds: 36,36
+	Mobile:
+		Speed: 95
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 30000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 7c0
+	#Food
+	Power:
+		Amount: -8
+	SelectionDecorations:
+	RenderSprites:
+		Scale: 1.3
+
+^wc2_peasant:
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@worker: ^WC2Worker
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 200
+	Buildable:
+		BuildPaletteOrder: 10
+		BuildDuration: 100
+		BuildDurationModifier: 100
+	AutoTargetPriority@Repair:
+		ValidTargets: Repair, Repairing
+		ValidStances: Ally
+		Priority: 2
+	AutoTargetPriority@DEFAULT:
+		ValidStances: Enemy, Neutral
+	AutoTargetPriority@ATTACKANYTHING:
+		ValidStances: Enemy, Neutral
+	Mobile:
+		Speed: 90
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 7200
+	#Food
+	Power:
+		Amount: -1
+	WithInfantryBody:
+		DefaultAttackSequence: harvest
+	# Goldmine stuff
+	ExperienceTrickler:
+		Interval: 75
+		Amount: 400
+		RequiresCondition: indoors
+		PauseOnCondition: disabled
+	CashTrickler@Rank0:
+		Interval: 75
+		Amount: 18
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 0
+		UseResourceStorage: true
+	CashTrickler@Rank1:
+		Interval: 75
+		Amount: 22
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 1
+		UseResourceStorage: true
+	CashTrickler@Rank2:
+		Interval: 75
+		Amount: 27
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 2
+		UseResourceStorage: true
+	CashTrickler@Rank3:
+		Interval: 75
+		Amount: 33
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 3
+		UseResourceStorage: true
+	CashTrickler@Rank4:
+		Interval: 75
+		Amount: 40
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-elite 
+		UseResourceStorage: true
+	Passenger:
+		CargoType: Worker
+		PipType: Blue
+		CargoConditions:
+			wc2_human_goldmine: indoors
+			wc2_orc_goldmine: indoors
+
+^wc2_footman:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 300
+	Buildable:
+		BuildPaletteOrder: 10
+		BuildDuration: 80
+		BuildDurationModifier: 100
+	Mobile:
+		Speed: 86
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 14400
+	Armor:
+		Type: Light
+	#Food
+	Power:
+		Amount: -1
+	AutoTarget:
+		ScanRadius: 9
+
+^wc2_archer:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 300
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 120
+		BuildDurationModifier: 100
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 10400
+	Armor:
+		Type: Light
+	#Food
+	Power:
+		Amount: -1
+
+^wc2_knight:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 500
+	Buildable:
+		BuildPaletteOrder: 30
+		BuildDuration: 300
+		BuildDurationModifier: 100
+	Mobile:
+		Speed: 108
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 22800
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 5c0
+	#Food
+	Power:
+		Amount: -2
+
+^wc2_catapult:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 750
+	Buildable:
+		BuildPaletteOrder: 40
+		BuildDuration: 400
+		BuildDurationModifier: 100
+	RevealsShroud:
+		Range: 5c0
+	Mobile:
+		Speed: 40
+	Armor:
+		Type: None
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 22000
+	#Food
+	Power:
+		Amount: -2
+	Explodes:
+		Weapon: wc2visualexplode
+		EmptyWeapon: wc2visualexplode
+	GrantConditionOnAttack@CatapultCooldown:
+		Condition: cond_catapult_cooldown
+		RevokeDelay: 34
+	Mobile:
+		PauseOnCondition: cond_catapult_cooldown || disabled || stickyfoam
+
+^wc2_demolitioner:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 600
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 80
+		BuildDurationModifier: 100
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 8000
+	Armor:
+		Type: None
+	Mobile:
+		Speed: 79
+	#Food
+	Power:
+		Amount: -1
+	AutoTarget:
+		ScanRadius: 6
+
+^wc2_mage:
+	Inherits@FOURSTATEDEPLOY: ^WC2FourStateDeploy
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 600
+	Buildable:
+		BuildPaletteOrder: 10
+		BuildDuration: 340
+		BuildDurationModifier: 100
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 12000
+	Armor:
+		Type: None
+	Mobile:
+		Speed: 65
+	#Food
+	Power:
+		Amount: -2
+	RevealsShroud:
+		Range: 8c0
+	DetectCloaked:
+		Range: 6c0
+
+^wc2_supplier:
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 500
+	Buildable:
+		BuildPaletteOrder: 30
+		BuildDuration: 100
+		BuildDurationModifier: 100
+	Mobile:
+		Speed: 90
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 7200
+	#Food
+	Power:
+		Amount: -1
+	WithInfantryBody:
+		-DefaultAttackSequence:
+	DeliversCash:
+		Payload: 500
+		Type: NormalCash
+		PlayerExperience: 50
+		-Sounds:
+	SpawnActorOnDeath:
+		Actor: moneycrate
+		OwnerType: InternalName
+
+^wc2_engineer:
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@engineer: ^EngineerDefaultWeapons
+	Inherits@isengineer: ^IsEngineer
+	Valued:
+		Cost: 500
+	Buildable:
+		BuildPaletteOrder: 40
+		BuildDuration: 250
+		BuildDurationModifier: 100
+	Mobile:
+		Speed: 90
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 7200
+	#Food
+	Power:
+		Amount: -1
+	AutoTargetPriority@Repair:
+		ValidTargets: Repair, Repairing
+		ValidStances: Ally
+		Priority: 2
+	AutoTargetPriority@DEFAULT:
+		ValidStances: Enemy, Neutral
+	AutoTargetPriority@ATTACKANYTHING:
+		ValidStances: Enemy, Neutral
+	AutoTarget:
+		ScanRadius: 4
+	WithInfantryBody:
+		-DefaultAttackSequence:
+	Passenger:
+		PipType: Yellow
+	EngineerRepair:
+	RepairsBridges:
+	CaptureManager:
+	GrantConditionOnPrerequisite@GLOBALREUSABLEENGINEER:
+		Condition: global-reusable-engineers
+		Prerequisites: global-reusable-engineers
+	Captures:
+		RequiresCondition: !global-reusable-engineers
+		CaptureTypes: building, defense, tech
+		PlayerExperience: 500
+		ConsumedByCapture: True
+	Captures@REUSABLE:
+		RequiresCondition: global-reusable-engineers
+		CaptureTypes: building, defense, tech
+		PlayerExperience: 500
+		CaptureDelay: 375
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+	UpdatesPlayerStatistics:
+		AddToArmyValue: false
+
+####################################################################################################
+# WC2 SHIP TEMPLATES
+####################################################################################################
+
+^wc2_oil_tanker:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Buildable:
+		BuildPaletteOrder: 10
+	Valued:
+		Cost: 400
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 18000
+	Armor:
+		Type: None
+	Mobile:
+		Speed: 128
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	#Food
+	Power:
+		Amount: -1
+	DetectCloaked:
+		CloakTypes: Underwater
+		Range: 4c0
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+	# Oil platform stuff
+	ExperienceTrickler:
+		Interval: 80
+		Amount: 400
+		RequiresCondition: indoors
+		PauseOnCondition: disabled
+	CashTrickler@Rank0:
+		Interval: 80
+		Amount: 10
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 0
+		UseResourceStorage: true
+	CashTrickler@Rank1:
+		Interval: 80
+		Amount: 13
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 1
+		UseResourceStorage: true
+	CashTrickler@Rank2:
+		Interval: 80
+		Amount: 17
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 2
+		UseResourceStorage: true
+	CashTrickler@Rank3:
+		Interval: 80
+		Amount: 21
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-veteran == 3
+		UseResourceStorage: true
+	CashTrickler@Rank4:
+		Interval: 80
+		Amount: 25
+		PauseOnCondition: disabled
+		RequiresCondition: indoors && rank-elite 
+		UseResourceStorage: true
+	Passenger:
+		CargoType: Tanker 
+		PipType: Blue
+		Weight: 1
+		CargoConditions:
+			wc2_human_oil_platform: indoors
+			wc2_orc_oil_platform: indoors
+
+^wc2_destroyer:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		BuildPaletteOrder: 20
+	Valued:
+		Cost: 1400
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 32000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 128
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	#Food
+	Power:
+		Amount: -2
+	DetectCloaked:
+		CloakTypes: Underwater
+		Range: 4c0
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+
+^wc2_transport:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Buildable:
+		BuildPaletteOrder: 30
+	Valued:
+		Cost: 1000
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 30000
+	Armor:
+		Type: None
+	Mobile:
+		Speed: 128
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	#Food
+	Power:
+		Amount: -1
+	DetectCloaked:
+		CloakTypes: Underwater
+		Range: 4c0
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 12
+		PipCount: 12
+		PassengerFacing: 0
+		LoadingCondition: notmobile
+
+^wc2_battleship:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		BuildPaletteOrder: 40
+	Valued:
+		Cost: 2000
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 48000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 77
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	#Food
+	Power:
+		Amount: -4
+	DetectCloaked:
+		CloakTypes: Underwater
+		Range: 4c0
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+
+^wc2_submarine:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@Submarine: ^Submarine
+	Buildable:
+		BuildPaletteOrder: 50
+	Valued:
+		Cost: 1450
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 12000
+	Armor:
+		Type: None
+	Mobile:
+		Speed: 90
+	RevealsShroud:
+		Range: 7c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 5c0
+	#Food
+	Power:
+		Amount: -2
+	DetectCloaked:
+		CloakTypes: Underwater
+		Range: 4c0
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 36,36
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 90
+		UncloakOn: Damage
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
+
+####################################################################################################
+# WC2 AIR UNIT TEMPLATES
+####################################################################################################
+
+^wc2_airscout:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 350
+	Buildable:
+		BuildPaletteOrder: 10
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 165
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 32400
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 9c0
+		Type: GroundPosition
+	Selectable:
+		DecorationBounds: 60,48
+	Power:
+		Amount: -1
+	DetectCloaked:
+		CloakTypes: Cloak, Underwater
+		Range: 9c0
+	RenderDetectionCircle:
+
+^wc2_dragon:
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 1250
+	Buildable:
+		BuildPaletteOrder: 20
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 145
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 26000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+		Type: GroundPosition
+	Selectable:
+		DecorationBounds: 30,24
+	Power:
+		Amount: -4
+	DetectCloaked:
+		CloakTypes: Cloak, Underwater
+		Range: 6c0
+	AutoTarget:
+		ScanRadius: 9
+	# Heal target type
+	Targetable@HEAL:
+		RequiresCondition: damaged
+		TargetTypes: Heal
+
+####################################################################################################
+# WC2 HUMAN BUILDINGS
+####################################################################################################
+
+wc2_human_townhall:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_townhall: ^wc2_townhall
+	Tooltip:
+		Name: Town Hall
+	Production@NORMAL:
+		Produces: Building.human2, Defence.human2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.human2, RADefence.human2
+	ProductionBar@Building:
+		ProductionType: Building.human2
+	ProductionBar@RABuilding:
+		ProductionType: RABuilding.human2
+	ProductionBar@Defence:
+		ProductionType: Defence.human2
+	ProductionBar@RADefence:
+		ProductionType: RADefence.human2
+	ProductionQueue@Building:
+		Type: Building.human2
+	ProductionQueue@Defence:
+		Type: Defence.human2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_human_footman
+	Voiced:
+		VoiceSet: humantownhallvoice
+		
+	### AI related stuff ###
+	GrantConditionOnBotOwner@AIFarms:
+		Condition: wc2_cond_bot_owner
+		Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce, defenseai
+	ProvidesPrerequisite@AIFarms:
+		Prerequisite: wc2_human_farm_ai
+		RequiresCondition: wc2_cond_bot_owner
+	
+	### Upgrade stuff ###
+
+	# Un upgraded sprite
+	WithSpriteBody:
+		RequiresCondition: !humankeepupg && !humancastleupg
+	
+	# Keep upgrade
+	Production@keep:
+		Produces: keepupgrade.human2
+		RequiresCondition: !humankeepupg && !humancastleupg
+	ProductionBar@keep:
+		ProductionType: keepupgrade.human2
+		RequiresCondition: !humankeepupg && !humancastleupg
+	ProductionQueue@keep:
+		Type: keepupgrade.human2
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		RequiresCondition: !humankeepupg && !humancastleupg
+	GrantConditionOnProduction@keep:
+		Condition: humankeepupg
+		Actors: wc2_human_keep
+	ProvidesPrerequisite@keep:
+		Prerequisite: wc2_human_keep
+		RequiresCondition: humankeepupg
+	WithSpriteBody@keep:
+		Sequence: wc2_human_keep
+		RequiresCondition: humankeepupg && !humancastleupg
+	DamageMultiplier@keep:
+		Modifier: 86
+		RequiresCondition: humankeepupg && !humancastleupg
+	# WithTextDecoration@keep:
+	# 	Text: humankeepupg
+	# 	RequiresCondition: humankeepupg
+	
+	# Castle Upgrade
+	Production@castle:
+		Produces: castleupgrade.human2
+		RequiresCondition: humankeepupg && !humancastleupg
+	ProductionBar@castle:
+		ProductionType: castleupgrade.human2
+	ProductionQueue@castle:
+		Type: castleupgrade.human2
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+	GrantConditionOnProduction@castle:
+		Condition: humancastleupg
+		Actors: wc2_human_castle
+	ProvidesPrerequisite@castle:
+		Prerequisite: wc2_human_castle
+		RequiresCondition: humancastleupg
+	WithSpriteBody@castle:
+		Sequence: wc2_human_castle
+		RequiresCondition: humancastleupg
+	DamageMultiplier@castle:
+		Modifier: 75
+		RequiresCondition: humancastleupg
+	# WithTextDecoration@castle:
+	# 	Text: humancastleupg
+	# 	RequiresCondition: humancastleupg
+	# 	Position: BottomLeft
+
+wc2_human_keep:
+	Tooltip:
+		Name: Keep  
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: wc2_human_barracks
+		Queue: keepupgrade.human2
+		BuildDuration: 1125
+		BuildDurationModifier: 100
+		Description: Unlocks more advanced buildings.
+		Icon: icon
+	Valued:
+		Cost: 2000
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+	RenderSprites:
+
+wc2_human_castle:
+	Tooltip:
+		Name: Castle 
+	Buildable:
+		BuildPaletteOrder: 21
+		Prerequisites: wc2_human_elven_lumber_mill, wc2_human_blacksmith, wc2_human_stables
+		Queue: castleupgrade.human2
+		BuildDuration: 1125
+		BuildDurationModifier: 100
+		Description: Unlocks even more advanced buildings.
+		Icon: icon
+	Valued:
+		Cost: 2000
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+	RenderSprites:
+
+wc2_human_farm:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_farm: ^wc2_farm
+	Tooltip:
+		Name: Farm
+	Buildable:
+		Prerequisites: wc2_human_townhall
+		Queue: Building.human2, RABuilding.human2
+		Description: Provides 6 Food (Power)\nCan store up to 500 resources.
+	SpawnActorsOnSell:
+		ActorTypes: wc2_human_footman
+	Voiced:
+		VoiceSet: wc2humanfarmvoice
+	### Upgrade stuff ###
+
+	# Un upgraded sprite
+	WithSpriteBody:
+		RequiresCondition: !humanbetterfarmupg && !humanbestfarmupg
+	StoresResources@2:
+		PipColor: Red
+		PipCount: 5
+		Capacity: 500
+	
+	# Better Farm Upgrade
+	Production@betterfarm:
+		Produces: betterfarmupgrade.human2
+		RequiresCondition: !humanbetterfarmupg && !humanbestfarmupg
+	ProductionBar@betterfarm:
+		ProductionType: betterfarmupgrade.human2
+		RequiresCondition: !humanbetterfarmupg && !humanbestfarmupg
+	ProductionQueue@betterfarm:
+		Type: betterfarmupgrade.human2
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		RequiresCondition: !humanbetterfarmupg && !humanbestfarmupg
+	GrantConditionOnProduction@betterfarm:
+		Condition: humanbetterfarmupg
+		Actors: wc2_human_betterfarm
+	ProvidesPrerequisite@betterfarm:
+		Prerequisite: wc2_human_betterfarm
+		RequiresCondition: humanbetterfarmupg
+	WithSpriteBody@betterfarm:
+		Sequence: wc2_human_betterfarm
+		RequiresCondition: humanbetterfarmupg && !humanbestfarmupg
+	PowerMultiplier@betterfarm:
+		Modifier: 200
+		RequiresCondition: humanbetterfarmupg && !humanbestfarmupg
+	DamageMultiplier@betterfarm:
+		Modifier: 66
+		RequiresCondition: humanbetterfarmupg && !humanbestfarmupg
+	
+	# Best Farm Upgrade
+	Production@bestfarm:
+		Produces: bestfarmupgrade.human2
+		RequiresCondition: humanbetterfarmupg && !humanbestfarmupg
+	ProductionBar@bestfarm:
+		ProductionType: bestfarmupgrade.human2
+	ProductionQueue@bestfarm:
+		Type: bestfarmupgrade.human2
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+	GrantConditionOnProduction@bestfarm:
+		Condition: humanbestfarmupg
+		Actors: wc2_human_bestfarm
+	ProvidesPrerequisite@bestfarm:
+		Prerequisite: wc2_human_bestfarm
+		RequiresCondition: humanbestfarmupg
+	WithSpriteBody@bestfarm:
+		Sequence: wc2_human_bestfarm
+		RequiresCondition: humanbestfarmupg
+	PowerMultiplier@bestfarm:
+		Modifier: 400
+		RequiresCondition: humanbestfarmupg
+	DamageMultiplier@bestfarm:
+		Modifier: 50
+		RequiresCondition: humanbestfarmupg
+	SpawnActorsOnSell@bestfarm:
+		ActorTypes: wc2_critter_sheep
+		ValuePercent: 4
+		RequiresCondition: humanbestfarmupg
+
+wc2_human_betterfarm:
+	Tooltip:
+		Name: Better Farm
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: wc2_human_farm
+		Queue: betterfarmupgrade.human2
+		BuildDuration: 800
+		BuildDurationModifier: 100
+		Description: Farm Upgrade\n Gives +6 food (12 total)\n Gives +50% hp (150% total)
+		Icon: icon
+	Valued:
+		Cost: 1000
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+	RenderSprites:
+
+wc2_human_bestfarm:
+	Tooltip:
+		Name: Best Farm
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: wc2_human_farm
+		Queue: bestfarmupgrade.human2
+		BuildDuration: 1600
+		BuildDurationModifier: 100
+		Description: Farm Upgrade\n Gives +12 food (24 total)\n Gives +50% hp (200% total)
+		Icon: icon
+	Valued:
+		Cost: 2000
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+	RenderSprites:
+
+wc2_human_barracks:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_barracks: ^wc2_barracks
+	Tooltip:
+		Name: Barracks
+	Buildable:
+		Queue: Building.human2, RABuilding.human2
+		Description: Warriors of the Alliance live and train here.\nProduces many Human units.
+		Prerequisites: wc2_human_farm
+	Production@NORMAL:
+		Produces: Infantry.human2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.human2
+	ProductionQueue:
+		Type: Infantry.human2
+	ProductionBar@NORMAL:
+		ProductionType: Infantry.human2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAInfantry.human2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_human_footman
+	Voiced:
+		VoiceSet: humanbarracksvoice
+
+wc2_human_elven_lumber_mill:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_lumber_mill: ^wc2_lumber_mill
+	Tooltip:
+		Name: Elven Lumber Mill
+	Buildable:
+		Prerequisites: wc2_human_farm
+		Queue: Building.human2, RABuilding.human2
+		Description: Dropoff point for gold. (Tiberium)\nCan store up to 1000 resources.\nProduces bows enabling Archers.\nProvides arrow upgrades for archers and guard towers.
+	Production@NORMAL:
+		Produces: lumberupg.human2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAlumberupg.human2
+	ProductionQueue:
+		Type: lumberupg.human2
+	ProductionBar@NORMAL:
+		ProductionType: lumberupg.human2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAlumberupg.human2
+	FreeActor:
+		Actor: wc2_human_peasant
+	SpawnActorsOnSell:
+		ActorTypes: wc2_human_elven_archer
+	Voiced:
+		VoiceSet: wc2humanlumbermillvoice
+
+wc2_human_blacksmith:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_blacksmith: ^wc2_blacksmith
+	Tooltip:
+		Name: Blacksmith
+	Buildable:
+		Prerequisites: wc2_human_barracks
+		Queue: Building.human2, RABuilding.human2
+		Description: Enables Ballista and upgrading Scout Towers to Cannon Towers.\nEnables upgrades to units.
+	Production@NORMAL:
+		Produces: blacksmithupg.human2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAblacksmithupg.human2
+	ProductionQueue:
+		Type: blacksmithupg.human2
+	ProductionBar@NORMAL:
+		ProductionType: blacksmithupg.human2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAblacksmithupg.human2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_human_footman
+	Voiced:
+		VoiceSet: humanblacksmithvoice
+
+wc2_human_gnomish_inventor:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_inventor: ^wc2_inventor
+	Tooltip:
+		Name: Gnomish Inventor
+	Buildable:
+		Prerequisites: wc2_human_keep
+		Queue: Building.human2, RABuilding.human2
+		Description: Here Dwarves and Gnomes invent marvels.\nProvides Radar.\nTrains Demo Squads and Gnomish Flying Machines.
+	Production@NORMAL:
+		Produces: Vehicle.human2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.human2
+	ProductionQueue:
+		Type: Vehicle.human2
+	ProductionBar@NORMAL:
+		ProductionType: Vehicle.human2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAVehicle.human2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_human_footman
+	Voiced:
+		VoiceSet: wc2gnomishinventorvoice
+
+wc2_human_stables:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_stables: ^wc2_stables
+	Tooltip:
+		Name: Stables
+	Buildable:
+		Prerequisites: wc2_human_keep
+		Queue: Building.human2, RABuilding.human2
+		Description: Stables the horses for Knights, allowing their production in the Barracks.
+	# Production@NORMAL:
+	# 	Produces: stablesupg.human2
+	# Production@CLASSICPRODUCTIONQUEUES:
+	# 	Produces: RAstablesupg.human2   
+	# ProductionQueue:
+	# 	Type: stablesupg.human2
+	# ProductionBar@NORMAL:
+	# 	ProductionType: stablesupg.human2
+	# ProductionBar@CLASSICPRODUCTIONQUEUES:
+	# 	ProductionType: RAstablesupg.human2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_human_footman
+	Voiced:
+		VoiceSet: humanstablevoice
+
+wc2_human_church:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_church: ^wc2_church
+	Tooltip:
+		Name: Church
+	Buildable:
+		Prerequisites: wc2_human_castle
+		Queue: Building.human2, RABuilding.human2
+		Description: Allows Knights to upgrade to Paladins and trains them in holy magicks.
+	Production@NORMAL:
+		Produces: churchupg.human2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAchurchupg.human2
+	ProductionQueue:
+		Type: churchupg.human2
+	ProductionBar@NORMAL:
+		ProductionType: churchupg.human2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAchurchupg.human2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_human_footman
+	Voiced:
+		VoiceSet: humanchurchvoice
+	# Support powers
+	# Holy vision comsat
+	IonCannonPower@HOLYVISION:
+		OrderName: wc2_holyvision
+		PauseOnCondition: lowpower
+		Icon: holyvision
+		Cursor: ability
+		ChargeInterval: 3750
+		Description: Holy Vision
+		LongDesc: Reveals an area of the map\nand cloaked enemy units.
+		EndChargeSpeechNotification: SpyPlaneReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: wc2_spell.aud
+		DisplayTimerStances: Ally, Neutral
+		DisplayRadarPing: True
+		CameraActor: wc2_camera_scanner
+		CameraRemoveDelay: 250
+		SupportPowerPaletteOrder: 10
+		Weapon: wc2holyvisionSuper
+		WeaponDelay: 15
+		Effect: wc2_effect_sparkle
+		EffectSequence: idle-longer
+	# Healing support power.
+	IonCannonPower@HEALING:
+		OrderName: wc2_healing
+		PauseOnCondition: lowpower
+		Icon: healing
+		Cursor: ability
+		ChargeInterval: 3750
+		Description: Healing
+		LongDesc: Heals a group of units.
+		EndChargeSpeechNotification: AirstrikeReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: wc2_spell.aud
+		DisplayTimerStances: Ally, Neutral
+		DisplayRadarPing: True
+		CameraActor: camera.small
+		SupportPowerPaletteOrder: 20
+		Weapon: wc2healingSuper
+		WeaponDelay: 15
+		Effect: wc2_effect_sparkle
+		EffectSequence: idle-longer
+
+# Used for holyvision support power.
+wc2_camera_scanner:
+	Inherits: camera.scan
+	-RenderSprites:
+	-WithSpriteBody:
+	ConditionManager:
+	RevealsShroud:
+		Range: 2c0
+	DetectCloaked:
+		RequiresCondition: cond_timer
+	GrantPeriodicCondition:
+		Condition: cond_timer
+		ActiveDuration: 250
+		CooldownDuration: 15
+		StartsGranted: False
+
+wc2_human_mage_tower:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_temple: ^wc2_temple
+	Tooltip:
+		Name: Mage Tower
+	Buildable:
+		Prerequisites: wc2_human_castle
+		Queue: Building.human2, RABuilding.human2
+		Description: Teaches men in arcane magicks.\nTrains Mages.\nUnlocks Blizzard superweapon.
+	Production@NORMAL:
+		Produces: MInfantry.human2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAMInfantry.human2
+	ProductionQueue:
+		Type: MInfantry.human2
+	ProductionBar@NORMAL:
+		ProductionType: MInfantry.human2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAMInfantry.human2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_human_footman
+	Voiced:
+		VoiceSet: wc2magetowervoice
+	# Support powers
+	# Slow
+	GrantExternalConditionPower@SLOW:
+		OrderName: wc2_slow
+		#PauseOnCondition: lowpower
+		Icon: slow
+		ChargeInterval: 3000
+		Description: Slow
+		LongDesc: Decreases movement speed and attack rate.
+		Range: 2
+		Duration: 500
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: wc2_cond_slow
+		OnFireSound: wc2_slow.aud
+		#IncomingSound: ironcur9.aud
+		SupportPowerPaletteOrder: 20
+		ValidStances: Enemy, Neutral, Ally
+	# Invisibility
+	GrantExternalConditionPower@INVISIBILITY:
+		OrderName: wc2_invisibility
+		#PauseOnCondition: lowpower
+		Icon: invisibility
+		ChargeInterval: 3000
+		Description: Invisibility
+		LongDesc: Cloaks units.
+		Range: 2
+		Duration: 500
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: wc2_cond_invisibility
+		OnFireSound: wc2_invisibl.aud
+		#IncomingSound: ironcur9.aud
+		SupportPowerPaletteOrder: 30
+		ValidStances: Enemy, Neutral, Ally
+	# Blizzard super weapon
+	IonCannonPower@BLIZZARD:
+		OrderName: wc2_blizzard
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: blizzard
+		Cursor: ioncannon
+		ChargeInterval: 5500
+		Description: Blizzard
+		LongDesc: Rain down icy death in a large area.
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: wc2_icestorm.aud
+		DisplayTimerStances: Ally, Neutral
+		DisplayRadarPing: True
+		CameraActor: camera.small
+		SupportPowerPaletteOrder: 90
+		Weapon: wc2blizzardSuper
+		WeaponDelay: 0
+		Effect: wc2_effect_blizzard
+		EffectSequence: hit
+
+wc2_human_gryphon_aviary:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_nest: ^wc2_nest
+	Tooltip:
+		Name: Gryphon Aviary
+	Buildable:
+		Prerequisites: wc2_human_castle
+		Queue: Building.human2, RABuilding.human2
+		Description: A great Gryphon Matriarch lives here.\nTrains formidable Gryphon Riders.
+	Production@NORMAL:
+		Produces: Aircraft.human2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.human2
+	ProductionQueue:
+		Type: Aircraft.human2
+	ProductionBar@NORMAL:
+		ProductionType: Aircraft.human2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAAircraft.human2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_human_footman
+	Voiced:
+		VoiceSet: wc2gryphonaviaryvoice
+
+wc2_human_shipyard:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_shipyard: ^wc2_shipyard
+	Tooltip:
+		Name: Shipyard
+	Buildable:
+		Prerequisites: wc2_human_elven_lumber_mill
+		Queue: Building.human2, RABuilding.human2
+		Description: Produces and repairs ships.
+	Production@NORMAL:
+		Produces: Naval.human2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval.human2
+	ProductionQueue:
+		Type: Naval.human2
+	ProductionBar@NORMAL:
+		ProductionType: Naval.human2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RANaval.human2
+	Voiced:
+		VoiceSet: wc2orcshipyardvoice
+
+wc2_human_foundry:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_foundry: ^wc2_foundry
+	Tooltip:
+		Name: Foundry
+	Buildable:
+		Prerequisites: wc2_human_shipyard
+		Queue: Building.human2, RABuilding.human2
+		Description: Unlocks production of the Transport and the Battleship\nProvides upgrades for naval units.
+	Production@NORMAL:
+		Produces: foundryupg.human2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAfoundryupg.human2
+	ProductionQueue:
+		Type: foundryupg.human2
+	ProductionBar@NORMAL:
+		ProductionType: foundryupg.human2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAfoundryupg.human2
+	Voiced:
+		VoiceSet: wc2orcoilfoundryvoice
+
+wc2_human_oil_refinery:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_oil_refinery: ^wc2_oil_refinery
+	Tooltip:
+		Name: Oil Refinery
+	Buildable:
+		Prerequisites: wc2_human_shipyard
+		Queue: Building.human2, RABuilding.human2
+		Description: Unlocks the construction of Oil Platforms for passive income.
+	Voiced:
+		VoiceSet: wc2orcoilrefineryvoice
+
+wc2_human_oil_platform:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_oil_platform: ^wc2_oil_platform
+	Tooltip:
+		Name: Oil Platform
+	Buildable:
+		Prerequisites: wc2_human_oil_refinery
+		Queue: Building.human2, RABuilding.human2
+		Description: Provides passive income.\nOil tankers can drill here for further income boost.
+	Voiced:
+		VoiceSet: wc2orcoilplatformvoice
+
+wc2_human_scout_tower:
+	Inherits@WC2BUILDING: ^WC2HumanDefense
+	Inherits@wc2_watch_tower: ^wc2_watch_tower
+	# Don't declare AutoTarget stuff before AttackBase stuff or an annoying bug with WithSpriteBody will occur.
+	#Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: Scout Tower
+	Buildable:
+		Prerequisites: wc2_human_barracks
+		Queue: Defence.human2, RADefence.human2
+		Description: Upgradable defense building\nDetector
+	Voiced:
+		VoiceSet: humanguardtowervoice
+	Armament@guardtower:
+		Weapon: wc2_tower_arrow
+		RequiresCondition: humanguardtowerupg
+	Armament@guardtoweraa:
+		Weapon: wc2_tower_arrow_aa
+		RequiresCondition: humanguardtowerupg
+	Armament@cannontower:
+		Weapon: wc2cannontowerFire
+		RequiresCondition: humancannontowerupg
+	WithRangeCircle:
+		Range: 3072
+		RequiresCondition: humancannontowerupg
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	### Upgrade stuff ###
+	Production:
+		Produces: Towerupgrade.human2
+		RequiresCondition: !humanguardtowerupg && !humancannontowerupg
+	ProductionBar:
+		ProductionType: Towerupgrade.human2
+	ProductionQueue:
+		Type: Towerupgrade.human2
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+	GrantConditionOnProduction@guardtower:
+		Condition: humanguardtowerupg
+		Actors: wc2_human_guard_tower
+	GrantConditionOnProduction@cannontower:
+		Condition: humancannontowerupg
+		Actors: wc2_human_cannon_tower
+	WithSpriteBody:
+		RequiresCondition: !humanguardtowerupg && !humancannontowerupg 
+	WithSpriteBody@guardtower:
+		Sequence: wc2_human_guard_tower
+		RequiresCondition: humanguardtowerupg
+	WithSpriteBody@cannontower:
+		Sequence: wc2_human_cannon_tower
+		RequiresCondition: humancannontowerupg
+	DamageMultiplier@guardtower:
+		Modifier: 77
+		RequiresCondition: humanguardtowerupg
+	DamageMultiplier@cannontower:
+		Modifier: 63
+		RequiresCondition: humancannontowerupg
+
+wc2_human_guard_tower:
+	Tooltip:
+		Name: Guard Tower
+	Buildable:
+		BuildPaletteOrder: 1
+		Prerequisites: wc2_human_elven_lumber_mill
+		Queue: Towerupgrade.human2
+		BuildDuration: 3500
+		BuildDurationModifier: 12
+		Description: Guard tower, attacks land, sea, and air.
+	Valued:
+		Cost: 800
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+	RenderSprites:
+		Scale: 0.8
+
+wc2_human_cannon_tower:
+	Tooltip:
+		Name: Cannon Tower
+	Buildable:
+		BuildPaletteOrder: 1
+		Prerequisites: wc2_human_blacksmith
+		Queue: Towerupgrade.human2
+		BuildDuration: 4750
+		BuildDurationModifier: 12
+		Description: Cannon tower, attacks land.
+	Valued:
+		Cost: 1600
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+	RenderSprites:
+		Scale: 0.8
+
+wc2_human_wall:
+	Inherits: ^Wall
+	Valued:
+		Cost: 300
+	CustomSellValue:
+		Value: 0
+	Tooltip:
+		Name: Wall
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: wc2_human_townhall
+		Queue: Defence.human2, RADefence.human2
+		Description: Stops infantry and most tanks.\nBlocks some projectiles.
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 25000
+	Armor:
+		Type: Heavy
+	BlocksProjectiles:
+	Crushable:
+		CrushClasses: heavywall
+		-CrushSound:
+	SoundOnDamageTransition:
+		DestroyedSounds: crumble.aud
+	# WithMakeAnimation:
+	# 	Condition: build-incomplete
+	LineBuild:
+		NodeTypes: wc2_human_wall
+	LineBuildNode:
+		Types: wc2_human_wall
+	WithWallSpriteBody:
+		Type: wc2_human_wall
+		RequiresCondition: !cond_timer
+	WithIdleOverlay@wc2walltimer:
+		Sequence: make
+		RequiresCondition: cond_timer
+	GrantTimedCondition@wc2walltimer:
+		Condition: cond_timer
+		Duration: 30
+	RenderSprites:
+		Scale: 0.8
+	RenderSprites:
+		Palette: player
+
+wc2_human_goldmine:
+	Inherits@WC2BUILDING: ^WC2HumanBuilding
+	Inherits@wc2_goldmine: ^wc2_goldmine
+	Tooltip:
+		Name: Gold Mine
+	Buildable:
+		Queue: Building.human2, RABuilding.human2
+		Description: Send workers inside to provide passive income.\nMiners progressively get experience and work more efficiently.
+		Prerequisites: wc2_human_blacksmith
+	Voiced:
+		VoiceSet: neutralgoldminevoice
+
+wc2_human_goldmine.bot:
+	Inherits@WC2BUILDING: wc2_human_goldmine
+	Inherits@bot: ^GainsExperienceCity
+	Tooltip:
+		Name: Gold Mine (Bot)
+	Valued:
+		Cost: 3750
+	CashTrickler@bot:
+		Amount: 90
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 0 && !lowpower && !city-elite
+	CashTrickler@RANK-1:
+		Amount: 110
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
+	CashTrickler@RANK-2:
+		Amount: 135
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
+	CashTrickler@RANK-3:
+		Amount: 165
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
+	CashTrickler@RANK-4:
+		Amount: 200
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: city-elite && !lowpower
+	ExperienceTrickler:
+		Amount: 200
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3
+	RenderSprites:
+		Image: wc2_human_goldmine
+
+####################################################################################################
+# WC2 HUMAN UNITS
+####################################################################################################
+
+wc2_human_mcv:
+	Inherits@WC2INFANTRY: ^WC2Vehicle
+	Inherits@WC2Template: ^wc2_mcv
+	Buildable:
+		Queue: Building.human2, RABuilding.human2
+		Description: Transforms into a Town Hall.
+	Tooltip:
+		Name: Mobile Construction Vehicle (Human)
+	Transforms:
+		IntoActor: wc2_human_townhall
+		Offset: -1,-1
+		Facing: 108
+		TransformSounds:
+		NoTransformNotification: BuildingCannotPlaceAudio
+	Voiced:
+		VoiceSet: wc2voicehumanpeasant
+	# Animation stuff
+	-WithFacingSpriteBody:
+	-WithMoveAnimation:
+	-WithAttackAnimation:
+	WithInfantryBody:
+		IdleSequences: idle-n, idle-ne, idle-e, idle-se, idle-s, idle-sw, idle-w, idle-nw
+		StandSequences: idle
+		MoveSequence: run
+
+wc2_human_mcv.bot:
+	Inherits: wc2_human_mcv
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildLimit: 1
+		Prerequisites: ~techlevel.medium, ~botplayer, allowsMCV
+	RenderSprites:
+		Image: wc2_human_mcv
+
+wc2_human_peasant:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_peasant
+	Inherits@WC2HShieldUpg: ^wc2_h_str_shield
+	Tooltip:
+		Name: Peasant
+	Buildable:
+		Queue: Defence.human2, RADefence.human2
+		Description: Harvester.
+	Armament:
+		Weapon: wc2peasantsmack
+		FireDelay: 7
+	WithHarvesterSpriteBody:
+		ImageByFullness: wc2_human_peasant, wc2_human_peasantgold
+	Voiced:
+		VoiceSet: wc2voicehumanpeasant
+	-DamagedByTerrain:
+
+wc2_human_footman:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_footman
+	Inherits@WC2SwordUpg: ^wc2_h_str_sword
+	Inherits@WC2HShieldUpg: ^wc2_h_str_shield
+	Tooltip:
+		Name: Footman
+	Buildable:
+		Prerequisites: wc2_human_barracks
+		Queue: Infantry.human2, RAInfantry.human2
+		Description: Basic melee infantry. Slow but can take some damage.
+	Armament:
+		Weapon: wc2footmanslice
+		FireDelay: 7
+	Voiced:
+		VoiceSet: wc2voicehumanfootman
+
+# Arhcer also has built-in ranger stuff so that ranger's upgrades and spells will be applied to already-built archers, just as in WC2.
+wc2_human_elven_archer:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_archer
+	Inherits@WC2HShieldUpg: ^wc2_h_str_shield
+	Inherits@WC2ArrowUpg: ^wc2_h_str_arrow
+	Inherits@RLongBowUpg: ^wc2_h_ranger_longbow
+	Inherits@RScoutUpg: ^wc2_h_ranger_scouting
+	Inherits@RMarksmanUpg: ^wc2_h_ranger_marksman
+	Inherits@RangerUpg: ^wc2_h_rangerupg
+	Tooltip:
+		Name: Elven Archer
+	Buildable:
+		Prerequisites: wc2_human_elven_lumber_mill, ~!wc2_h_rangerupg
+		Queue: Infantry.human2, RAInfantry.human2
+		Description: Basic ranged infantry. Not as durable as Footman.\nCan attack air.
+	Armament:
+		Weapon: wc2arrowFire
+		FireDelay: 7
+	Armament@aa:
+		Weapon: wc2arrowFireAA
+		FireDelay: 7
+	Voiced:
+		VoiceSet: wc2voicehumanelvenarcher
+	# Animation and upgrade stuff
+	# Archer body
+	WithInfantryBody:
+		RequiresCondition: !ranger_upg
+	# Ranger body
+	WithInfantryBody@Ranger:
+		IdleSequences: idle-ranger
+		StandSequences: idle-ranger
+		MoveSequence: run-ranger
+		DefaultAttackSequence: shoot-ranger
+		RequiresCondition: ranger_upg
+
+# Separate actor for ranger because otherwise we can't change the build icon (cameo) or tooltip.
+wc2_human_elven_ranger:
+	Inherits@wc2_human_elven_archer: wc2_human_elven_archer
+	Tooltip:
+		Name: Elven Ranger
+	Buildable:
+		Prerequisites: ~wc2_h_rangerupg, wc2_human_elven_lumber_mill
+		Description: Elite ranged infantry. Not as durable as Footman.\nCan attack air.
+	Selectable:
+		Class: wc2_human_elven_archer
+	-WithInfantryBody@Ranger:
+	WithInfantryBody:
+		-RequiresCondition:
+	# Ranger should always be considered to have the ranger upgrade researched.
+	GrantCondition@Ranger:
+		Condition: ranger_upg
+
+# Knight also has built-in paladin stuff so that paladin's upgrades and spells will be applied to already-built knights, just as in WC2.
+wc2_human_knight:
+	Inherits@WC2VEHICLE: ^WC2Vehicle
+	Inherits@WC2Template: ^wc2_knight
+	Inherits@WC2SwordUpg: ^wc2_h_str_sword
+	Inherits@WC2HShieldUpg: ^wc2_h_str_shield
+	Inherits@FOURSTATEDEPLOY: ^WC2FourStateDeploy
+	Inherits@PalUpg: ^wc2_h_paladinupg
+	Inherits@paladin_healing_upgrade: ^wc2_h_paladin_healing
+	Inherits@paladin_exorcism_upgrade: ^wc2_h_paladin_exorcism
+	Tooltip:
+		Name: Knight
+	Buildable:
+		Prerequisites: wc2_human_stables, ~!wc2_h_paladinupg
+		Queue: Infantry.human2, RAInfantry.human2
+		Description: Mounted infantry. Fast and durable.
+	Voiced:
+		VoiceSet: wc2voicehumanknight
+	# Animation and upgrade stuff
+	-WithFacingSpriteBody:
+	-WithMoveAnimation:
+	-WithAttackAnimation:
+	# Knight body
+	WithInfantryBody:
+		IdleSequences: idle-n, idle-ne, idle-e, idle-se, idle-s, idle-sw, idle-w, idle-nw
+		StandSequences: idle
+		MoveSequence: run
+		DefaultAttackSequence: shoot
+		RequiresCondition: !paladin_upg
+	# Paladin body
+	WithInfantryBody@Paladin:
+		IdleSequences: idle-paladin-n, idle-paladin-ne, idle-paladin-e, idle-paladin-se, idle-paladin-s, idle-paladin-sw, idle-paladin-w, idle-paladin-nw
+		StandSequences: idle-paladin
+		MoveSequence: run-paladin
+		DefaultAttackSequence: shoot-paladin
+		RequiresCondition: paladin_upg
+	#Weapons
+	Inherits@attacks_and_spells: ^wc2_knight_paladin_attacks_spells
+
+# Separate actor for paladin because otherwise we can't change the build icon (cameo) or tooltip.
+wc2_human_paladin:
+	Inherits@wc2_human_knight: wc2_human_knight
+	Tooltip:
+		Name: Paladin
+	Buildable:
+		Prerequisites: ~wc2_h_paladinupg, wc2_human_church, wc2_human_stables
+		Description: Mounted holy infantry. Very fast and quite durable.\nCan cast healing magicks.
+	Voiced:
+		VoiceSet: wc2voicehumanpaladin
+	Selectable:
+		Class: wc2_human_knight
+	-WithInfantryBody@Paladin:
+	WithInfantryBody:
+		-RequiresCondition:
+	# Paladin should always be considered to have the paladin upgrade researched.
+	GrantCondition@Paladin:
+		Condition: paladin_upg
+	#Weapons
+	Inherits@attacks_and_spells: ^wc2_knight_paladin_attacks_spells
+
+^wc2_knight_paladin_attacks_spells:
+	# Only the knight upgraded to a paladin, or the separate paladin actor should be able to deploy.
+	GrantConditionOnDeploy@Clock:
+		RequiresCondition: paladin_upg
+	AttackFrontal:
+		Armaments: primary, holyvision, healing, exorcism
+	AutoTargetPriority@DEFAULT:
+		RequiresCondition: !stance-attackanything && !assault-move && !FSD_cond_2
+	AutoTargetPriority@ATTACKANYTHING:
+		RequiresCondition: (stance-attackanything || assault-move) && !FSD_cond_2
+	AutoTarget:
+		ScanRadius: 7
+	Armament:
+		Weapon: wc2knightslice
+		FireDelay: 7
+		RequiresCondition: (FSD_cond_1 && !wc2_cond_bot_owner) || (FSD_cond_1_AI && wc2_cond_bot_owner) || (FSD_cond_3 && !paladinhealing_upg) || (FSD_cond_4 && !paladinexorcism_upg)
+	Armament@HOLYVISION:
+		Name: holyvision
+		Weapon: wc2paladinholyvision
+		FireDelay: 7
+		RequiresCondition: FSD_cond_2
+		PauseOnCondition: mana < 70
+	Armament@HEAL:
+		Name: healing
+		Weapon: wc2paladinhealing
+		FireDelay: 7
+		TargetStances: Ally
+		RequiresCondition: FSD_cond_3 && paladinhealing_upg
+		PauseOnCondition: mana < 60
+	Armament@EXORCISM:
+		Name: exorcism
+		Weapon: wc2paladinexorcism
+		FireDelay: 7
+		RequiresCondition: FSD_cond_4 && paladinexorcism_upg
+		PauseOnCondition: mana < 40
+	# "Mana" (ammopool)
+	GrantConditionOnAttack@HOLYVISION:
+		Condition: cond_holyvision_drain
+		ArmamentNames: holyvision
+		MaximumInstances: 1
+		RevokeDelay: 2
+	GrantConditionOnAttack@HEALING:
+		Condition: cond_healing_drain
+		ArmamentNames: healing
+		MaximumInstances: 1
+		RevokeDelay: 2
+	GrantConditionOnAttack@EXORCISM:
+		Condition: cond_exorcism_drain
+		ArmamentNames: exorcism
+		MaximumInstances: 1
+		RevokeDelay: 2
+	AmmoPoolCA:
+		Armaments: holyvision, healing, exorcism
+		Ammo: 255
+		PipCount: 10
+		AmmoCondition: mana
+	ReloadAmmoPoolCA@PassiveRegen:
+		Delay: 10
+		Count: 1
+		ShowSelectionBar: false
+	ReloadAmmoPoolCA@HolyVision:
+		Delay: 1
+		Count: -70
+		RequiresCondition: cond_holyvision_drain
+	ReloadAmmoPoolCA@Healing:
+		Delay: 1
+		Count: -60
+		RequiresCondition: cond_healing_drain
+	ReloadAmmoPoolCA@Exorcism:
+		Delay: 1
+		Count: -40
+		RequiresCondition: cond_exorcism_drain
+	
+	### Visual indicator of mode for four state deploy ###
+	WithDecoration@Mode_Holy_Vision:
+		Sequence: holyvision_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_2
+	WithDecoration@Mode_Healing:
+		Sequence: healing_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_3 && paladinhealing_upg
+	WithDecoration@Mode_Healing_Locked:
+		Sequence: locked_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_3 && !paladinhealing_upg
+	WithDecoration@Mode_Exorcism:
+		Sequence: exorcism_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_4 && paladinexorcism_upg
+	WithDecoration@Mode_Exorcism_Locked:
+		Sequence: locked_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_4 && !paladinexorcism_upg
+	
+	### Starting spell randomizer for AI.
+	GrantConditionOnBotOwner@wc2magebotcontrol:
+		Condition: wc2_cond_bot_owner
+		Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce, defenseai
+	GrantRandomCondition@wc2magebotcontrol:
+		Conditions: FSD_cond_1_AI, FSD_cond_1_AI, FSD_cond_1_AI, FSD_cond_1_AI, FSD_cond_1_AI, FSD_cond_1_AI, FSD_cond_2_AI, FSD_cond_3_AI, FSD_cond_3_AI, FSD_cond_4_AI
+	# FSD_Cond_1 is always granted at start due to the four state deploy.
+	GrantCondition@Cond2AI:
+		Condition: FSD_cond_2
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_2_AI
+	GrantCondition@Cond3AI:
+		Condition: FSD_cond_3
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_3_AI
+	GrantCondition@Cond4AI:
+		Condition: FSD_cond_4
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_4_AI
+
+wc2_human_ballista:
+	Inherits@WC2VEHICLE: ^WC2Vehicle
+	Inherits@wc2_catapult: ^wc2_catapult
+	Inherits@BallUpg: ^wc2_h_str_ballista
+	Tooltip:
+		Name: Ballista
+	Buildable:
+		Prerequisites: wc2_human_blacksmith
+		Queue: Infantry.human2, RAInfantry.human2
+		Description: Powerful long range siege unit.
+	AttackFrontal:
+		PauseOnCondition: disabled
+	Armament:
+		Weapon: wc2ballistaFire
+		FireDelay: 20
+	Voiced:
+		VoiceSet: wc2voicehumanballista
+	-WithDeathAnimation:
+
+wc2_human_demolitionsquad:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_demolitioner
+	Inherits@WC2SwordUpg: ^wc2_h_str_sword
+	Inherits@WC2HShieldUpg: ^wc2_h_str_shield
+	Tooltip:
+		Name: Demolition Squad
+	Buildable:
+		Prerequisites: wc2_human_gnomish_inventor
+		Queue: Vehicle.human2, RAVehicle.human2
+		Description: Explosive suicide infantry. Can attack normally.
+	#Weapons and demolition
+	AttackFrontal:
+		Armaments: detonate, primary
+	Armament:
+		Name: detonate
+		Weapon: wc2demolitionsquadTargeting
+		RequiresCondition: !cond_deployed
+	Armament@Melee:
+		Weapon: wc2demolitionsquadMelee
+		RequiresCondition: cond_deployed
+	GrantConditionOnAttack:
+		Condition: cond_detonate
+		ArmamentNames: detonate
+		RequiresCondition: !cond_deployed
+	Explodes:
+		Weapon: wc2demolitionsquadTrigger
+		EmptyWeapon: wc2demolitionsquadTrigger
+		RequiresCondition: !chronobeamed
+	GrantConditionOnDeploy:
+		DeployedCondition: cond_deployed
+	KillsSelf:
+		RequiresCondition: cond_detonate
+	Voiced:
+		VoiceSet: wc2voicehumandemolitionsquad
+
+wc2_human_mage:
+	Inherits@WC2Infantry: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_mage
+	Inherits@WC2HShieldUpg: ^wc2_h_str_shield
+	Inherits@wc2_h_mage_slow: ^wc2_h_mage_slow
+	Inherits@wc2_h_mage_polymorph: ^wc2_h_mage_polymorph
+	Inherits@wc2_h_mage_blizzard: ^wc2_h_mage_blizzard
+	Tooltip:
+		Name: Mage
+	Buildable:
+		Prerequisites: wc2_human_mage_tower
+		Queue: MInfantry.human2, RAMInfantry.human2
+		Description: Wise, old, grumpy spell caster.\nCan attack air.\nDetector.
+	Voiced:
+		VoiceSet: wc2voicehumanmage
+	#Weapons
+	AttackFrontal:
+		Armaments: primary, fireball, slow, polymorph, blizzard
+	Armament:
+		Weapon: wc2mageFire
+		FireDelay: 7
+		RequiresCondition: (FSD_cond_1 && !wc2_cond_bot_owner) || (FSD_cond_1_AI && wc2_cond_bot_owner) || (FSD_cond_2 && !mageslow_upg) || (FSD_cond_3 && !magepolymorph_upg) || (FSD_cond_4 && !mageblizzard_upg)
+	Armament@FIREBALL_VISIBLE:
+		Name: fireball
+		Weapon: wc2mageFireballVisible
+		LocalOffset: 400,0,0
+		FireDelay: 7
+		RequiresCondition: (FSD_cond_1 && !wc2_cond_bot_owner) || (FSD_cond_1_AI && wc2_cond_bot_owner)
+		PauseOnCondition: mana < 100
+	Armament@FIREBALL_EXPLOSIONS:
+		Weapon: wc2mageFireballExplosion
+		LocalOffset: 400,0,0
+		FireDelay: 7
+		RequiresCondition: (FSD_cond_1 && !wc2_cond_bot_owner) || (FSD_cond_1_AI && wc2_cond_bot_owner)
+		PauseOnCondition: mana < 100
+	Armament@SLOW:
+		Name: slow
+		Weapon: wc2mageSlow
+		LocalOffset: 400,0,0
+		FireDelay: 7
+		RequiresCondition: FSD_cond_2 && mageslow_upg
+		PauseOnCondition: mana < 50
+	Armament@POLYMORPH:
+		Name: polymorph
+		Weapon: wc2magePolymorph
+		LocalOffset: 400,0,0
+		FireDelay: 7
+		RequiresCondition: FSD_cond_3 && magepolymorph_upg
+		PauseOnCondition: mana < 200
+	Armament@BLIZZARD:
+		Name: blizzard
+		Weapon: wc2mageBlizzard
+		LocalOffset: 400,0,0
+		FireDelay: 7
+		RequiresCondition: FSD_cond_4 && mageblizzard_upg
+		PauseOnCondition: mana < 25
+	# "Mana" (ammopool)
+	GrantConditionOnAttack@FIREBALL:
+		Condition: cond_fireball_drain
+		ArmamentNames: fireball
+		MaximumInstances: 1
+		RevokeDelay: 2
+	GrantConditionOnAttack@SLOW:
+		Condition: cond_slow_drain
+		ArmamentNames: slow
+		MaximumInstances: 1
+		RevokeDelay: 2
+	GrantConditionOnAttack@POLYMORPH:
+		Condition: cond_polymorph_drain
+		ArmamentNames: polymorph
+		MaximumInstances: 1
+		RevokeDelay: 2
+	GrantConditionOnAttack@BLIZZARD:
+		Condition: cond_blizzard_drain
+		ArmamentNames: blizzard
+		MaximumInstances: 1
+		RevokeDelay: 2
+	AmmoPoolCA:
+		Armaments:
+		Ammo: 255
+		PipCount: 10
+		AmmoCondition: mana
+	ReloadAmmoPoolCA@PassiveRegen:
+		Delay: 10
+		Count: 1
+		ShowSelectionBar: false
+	ReloadAmmoPoolCA@Fireball:
+		Delay: 1
+		Count: -100
+		RequiresCondition: cond_fireball_drain
+	ReloadAmmoPoolCA@Slow:
+		Delay: 1
+		Count: -50
+		RequiresCondition: cond_slow_drain
+	ReloadAmmoPoolCA@Polymorph:
+		Delay: 1
+		Count: -200
+		RequiresCondition: cond_polymorph_drain
+	ReloadAmmoPoolCA@Blizzard:
+		Delay: 1
+		Count: -25
+		RequiresCondition: cond_blizzard_drain
+	
+	### Visual indicator of mode ###
+	WithDecoration@Mode_Fireball:
+		Sequence: fireball_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_1
+	WithDecoration@Mode_Slow:
+		Sequence: slow_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_2 && mageslow_upg
+	WithDecoration@Mode_Slow_Locked:
+		Sequence: locked_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_2 && !mageslow_upg
+	WithDecoration@Mode_Polymorph:
+		Sequence: polymorph_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_3 && magepolymorph_upg
+	WithDecoration@Mode_Polymorph_Locked:
+		Sequence: locked_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_3 && !magepolymorph_upg
+	WithDecoration@Mode_Blizzard:
+		Sequence: blizzard_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_4 && mageblizzard_upg
+	WithDecoration@Mode_Blizzard_Locked:
+		Sequence: locked_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_4 && !mageblizzard_upg
+	
+	### Starting spell randomizer for AI.
+	GrantConditionOnBotOwner@wc2magebotcontrol:
+		Condition: wc2_cond_bot_owner
+		Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce, defenseai
+	GrantRandomCondition@wc2magebotcontrol:
+		Conditions: FSD_cond_1_AI, FSD_cond_2_AI, FSD_cond_3_AI, FSD_cond_4_AI
+	# FSD_Cond_1 is always granted at start due to the four state deploy.
+	GrantCondition@Cond2AI:
+		Condition: FSD_cond_2
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_2_AI
+	GrantCondition@Cond3AI:
+		Condition: FSD_cond_3
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_3_AI
+	GrantCondition@Cond4AI:
+		Condition: FSD_cond_4
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_4_AI
+
+wc2_human_peasantlumber:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_supplier
+	Inherits@WC2HShieldUpg: ^wc2_h_str_shield
+	Tooltip:
+		Name: Supplier Peasant
+	Buildable:
+		Queue: Vehicle.human2, RAVehicle.human2
+		Description: Supply Truck.
+	Voiced:
+		VoiceSet: wc2voicehumanpeasant
+	-DamagedByTerrain:
+
+wc2_human_engineer:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_engineer
+	Inherits@WC2HShieldUpg: ^wc2_h_str_shield
+	Tooltip:
+		Name: Engineer
+	Buildable:
+		Queue: Vehicle.human2, RAVehicle.human2
+		Description: Standard Engineer. Captures buildings, etc.
+	Voiced:
+		VoiceSet: wc2voicehumanpeasant
+	-DamagedByTerrain:
+
+####################################################################################################
+# WC2 HUMAN SHIPS
+####################################################################################################
+
+wc2_human_oil_tanker:
+	Inherits@WC2Ship: ^WC2Ship
+	Inherits@WC2Template: ^wc2_oil_tanker
+	Inherits@HNavySUpg: ^wc2_h_str_navyshield
+	Buildable:
+		Prerequisites:
+		Queue: Naval.human2, RANaval.human2
+		Description: Drills inside Oil Platforms for income.
+	Tooltip:
+		Name: Oil Tanker
+	Voiced:
+		VoiceSet: wc2voicehumanoiltanker
+
+wc2_human_elven_destroyer:
+	Inherits@WC2SHIP: ^WC2Ship
+	Inherits@WC2Template: ^wc2_destroyer
+	Inherits@HCannonUpg: ^wc2_h_str_cannon
+	Inherits@HNavySUpg: ^wc2_h_str_navyshield
+	Buildable:
+		Queue: Naval.human2, RANaval.human2
+		Description: Light scout & support ship. Can attack air units.
+	Tooltip:
+		Name: Elven Destroyer
+	Turreted:
+		TurnSpeed: 7
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: wc2lightshipFire
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: wc2voicehumanship
+
+wc2_human_transport:
+	Inherits@WC2Ship: ^WC2Ship
+	Inherits@WC2Template: ^wc2_transport
+	Inherits@HNavySUpg: ^wc2_h_str_navyshield
+	Buildable:
+		Prerequisites: wc2_human_foundry
+		Queue: Naval.human2, RANaval.human2
+		Description: Transport ship.
+	Tooltip:
+		Name: Transport
+	Voiced:
+		VoiceSet: wc2voicehumanship
+
+wc2_human_battleship:
+	Inherits@WC2Ship: ^WC2Ship
+	Inherits@WC2Template: ^wc2_battleship
+	Inherits@HCannonUpg: ^wc2_h_str_cannon
+	Inherits@HNavySUpg: ^wc2_h_str_navyshield
+	Buildable:
+		Prerequisites: wc2_human_foundry, wc2_human_blacksmith ##once keep/castle are fixed, prereq will be wc2_human_keep, wc2_human_foundry
+		Queue: Naval.human2, RANaval.human2
+		Description: Heavy artillery ship.
+	Tooltip:
+		Name: Battleship
+	Turreted:
+		TurnSpeed: 7
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: wc2heavyshipFire
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: wc2voicehumanship
+
+wc2_human_gnomish_submarine:
+	Inherits@WC2Ship: ^WC2Ship
+	Inherits@WC2Template: ^wc2_submarine
+	Inherits@HCannonUpg: ^wc2_h_str_cannon
+	Inherits@HNavySUpg: ^wc2_h_str_navyshield
+	Buildable:
+		Prerequisites: wc2_human_foundry, wc2_human_gnomish_inventor
+		Queue: Naval.human2, RANaval.human2
+		Description: Stealthed attack vessel.
+	Tooltip:
+		Name: Gnomish Submarine
+	Armament@PRIMARY:
+		Weapon: wc2submarineFire
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+		FireDelay: 7
+	WithAttackAnimation:
+		Armament: primary
+		Sequence: shoot
+	AttackFrontal:
+	Voiced:
+		VoiceSet: wc2voicehumansub
+	-WithDeathAnimation:
+	WithDeathAnimation@Bubbles:
+		Delay: 0
+
+####################################################################################################
+# WC2 HUMAN AIR UNITS
+####################################################################################################
+
+wc2_human_gnomish_flying_machine:
+	Inherits@WC2AirUnit: ^WC2AirUnit
+	Inherits@WC2Template: ^wc2_airscout
+	Tooltip:
+		Name: Flying Machine
+	Buildable:
+		Prerequisites: wc2_human_gnomish_inventor
+		Queue: Vehicle.human2, RAVehicle.human2
+		Description: Flying scout unit. He's got a flying machine!\nDetector.
+	Voiced:
+		VoiceSet: wc2voicehumanflyingmachine
+
+wc2_human_gryphon_rider:
+	Inherits@WC2AirUnit: ^WC2AirUnit
+	Inherits@WC2Template: ^wc2_dragon
+	Tooltip:
+		Name: Gryphon Rider
+	Buildable:
+		Prerequisites: wc2_human_gryphon_aviary
+		Queue: Aircraft.human2, RAAircraft.human2, Aircraft.X_Aircrafts
+		Description: Flying attacker unit.\nMagical hammer can hit multiple targets in a line.\nStrong vs air units.
+	Armament@VISIBLE:
+		Weapon: wc2gryphonFireVisible
+		LocalOffset: 400,0,0
+		Name: primary
+		FireDelay: 7
+	Armament@EXPLOSIONS:
+		Weapon: wc2gryphonFireExplosion
+		LocalOffset: 400,0,0
+		Name: secondary
+		FireDelay: 7
+	AttackAircraft:
+		FacingTolerance: 0
+		AttackType: Hover
+		Armaments: primary, secondary
+	WithAttackAnimation:
+		Armament: primary
+		Sequence: shoot
+	WithAttackAnimation@haste:
+		Body: body-haste
+		Armament: primary
+		Sequence: shoot
+	WithAttackAnimation@slow:
+		Body: body-slow
+		Armament: primary
+		Sequence: shoot
+	Voiced:
+		VoiceSet: wc2voicehumangryphonrider
+	WithFacingSpriteBody:
+		RequiresCondition: (!wc2_cond_haste && !wc2_cond_slow) || (wc2_cond_haste && wc2_cond_slow)
+	WithFacingSpriteBody@Haste:
+		Name: body-haste
+		Sequence: idle-haste
+		RequiresCondition: wc2_cond_haste && !wc2_cond_slow
+	WithFacingSpriteBody@Slow:
+		Name: body-slow
+		Sequence: idle-slow
+		RequiresCondition: wc2_cond_slow && !wc2_cond_haste
+
+####################################################################################################
+# WC2 ORC BUILDINGS
+####################################################################################################
+
+wc2_orc_greathall:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_townhall: ^wc2_townhall
+	Tooltip:
+		Name: Great Hall
+	Production@NORMAL:
+		Produces: Building.orc2, Defence.orc2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding.orc2, RADefence.orc2   
+	ProductionBar@Building:
+		ProductionType: Building.orc2
+	ProductionBar@RABuilding:
+		ProductionType: RABuilding.orc2
+	ProductionBar@Defence:
+		ProductionType: Defence.orc2
+	ProductionBar@RADefence:
+		ProductionType: RADefence.orc2 
+	ProductionQueue@Building:
+		Type: Building.orc2
+	ProductionQueue@Defence:
+		Type: Defence.orc2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_orc_grunt
+	Voiced:
+		VoiceSet: orctownhallvoice
+	### Upgrade stuff ###
+
+	# Un upgraded sprite
+	WithSpriteBody:
+		RequiresCondition: !orcstrongholdupg && !orcfortressupg
+	
+	# Stronghold upgrade
+	Production@stronghold:
+		Produces: strongholdupgrade.orc2
+		RequiresCondition: !orcstrongholdupg && !orcfortressupg
+	ProductionBar@stronghold:
+		ProductionType: strongholdupgrade.orc2
+		RequiresCondition: !orcstrongholdupg && !orcfortressupg
+	ProductionQueue@stronghold:
+		Type: strongholdupgrade.orc2
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		RequiresCondition: !orcstrongholdupg && !orcfortressupg
+	GrantConditionOnProduction@stronghold:
+		Condition: orcstrongholdupg
+		Actors: wc2_orc_stronghold
+	ProvidesPrerequisite@stronghold:
+		Prerequisite: wc2_orc_stronghold
+		RequiresCondition: orcstrongholdupg
+	WithSpriteBody@stronghold:
+		Sequence: wc2_orc_stronghold
+		RequiresCondition: orcstrongholdupg && !orcfortressupg
+	DamageMultiplier@stronghold:
+		Modifier: 86
+		RequiresCondition: orcstrongholdupg && !orcfortressupg
+	# WithTextDecoration@stronghold:
+	# 	Text: orcstrongholdupg
+	# 	RequiresCondition: orcstrongholdupg
+	
+	# Fortress Upgrade
+	Production@fortress:
+		Produces: fortressupgrade.orc2
+		RequiresCondition: orcstrongholdupg && !orcfortressupg
+	ProductionBar@fortress:
+		ProductionType: fortressupgrade.orc2
+	ProductionQueue@fortress:
+		Type: fortressupgrade.orc2
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+	GrantConditionOnProduction@fortress:
+		Condition: orcfortressupg
+		Actors: wc2_orc_fortress
+	ProvidesPrerequisite@fortress:
+		Prerequisite: wc2_orc_fortress
+		RequiresCondition: orcfortressupg
+	WithSpriteBody@fortress:
+		Sequence: wc2_orc_fortress
+		RequiresCondition: orcfortressupg
+	DamageMultiplier@fortress:
+		Modifier: 75
+		RequiresCondition: orcfortressupg
+	# WithTextDecoration@fortress:
+	# 	Text: orcfortressupg
+	# 	RequiresCondition: orcfortressupg
+	# 	Position: BottomLeft
+
+wc2_orc_stronghold:
+	Inherits@wc2_human_keep: wc2_human_keep
+	Tooltip:
+		Name: Stronghold
+	Buildable:
+		Prerequisites: wc2_orc_barracks
+		Queue: strongholdupgrade.orc2
+		Description: Unlocks more advanced buildings.
+
+wc2_orc_fortress:
+	Inherits@wc2_human_castle: wc2_human_castle
+	Tooltip:
+		Name: Fortress
+	Buildable:
+		Prerequisites: wc2_orc_troll_lumber_mill, wc2_orc_blacksmith, wc2_orc_ogre_mound
+		Queue: fortressupgrade.orc2
+		Description: Unlocks even more advanced buildings.
+
+wc2_orc_pigfarm:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_farm: ^wc2_farm
+	Tooltip:
+		Name: Pigfarm
+	Buildable:
+		Prerequisites: wc2_orc_greathall
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Provides 100 Food (Power)\nCan store up to 500 resources.
+	SpawnActorsOnSell:
+		ActorTypes: wc2_orc_grunt
+	Voiced:
+		VoiceSet: wc2orcfarmvoice
+	### Upgrade stuff ###
+
+	# Un upgraded sprite
+	WithSpriteBody:
+		RequiresCondition: !orcbetterfarmupg && !orcbestfarmupg
+	
+	# Better Farm Upgrade
+	Production@betterfarm:
+		Produces: betterfarmupgrade.orc2
+		RequiresCondition: !orcbetterfarmupg && !orcbestfarmupg
+	ProductionBar@betterfarm:
+		ProductionType: betterfarmupgrade.orc2
+		RequiresCondition: !orcbetterfarmupg && !orcbestfarmupg
+	ProductionQueue@betterfarm:
+		Type: betterfarmupgrade.orc2
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+		RequiresCondition: !orcbetterfarmupg && !orcbestfarmupg
+	GrantConditionOnProduction@betterfarm:
+		Condition: orcbetterfarmupg
+		Actors: wc2_orc_betterfarm
+	ProvidesPrerequisite@betterfarm:
+		Prerequisite: wc2_orc_betterfarm
+		RequiresCondition: orcbetterfarmupg
+	WithSpriteBody@betterfarm:
+		Sequence: wc2_orc_betterfarm
+		RequiresCondition: orcbetterfarmupg && !orcbestfarmupg
+	PowerMultiplier@betterfarm:
+		Modifier: 200
+		RequiresCondition: orcbetterfarmupg && !orcbestfarmupg
+	DamageMultiplier@betterfarm:
+		Modifier: 66
+		RequiresCondition: orcbetterfarmupg && !orcbestfarmupg
+	
+	# Best Farm Upgrade
+	Production@bestfarm:
+		Produces: bestfarmupgrade.orc2
+		RequiresCondition: orcbetterfarmupg && !orcbestfarmupg
+	ProductionBar@bestfarm:
+		ProductionType: bestfarmupgrade.orc2
+	ProductionQueue@bestfarm:
+		Type: bestfarmupgrade.orc2
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+	GrantConditionOnProduction@bestfarm:
+		Condition: orcbestfarmupg
+		Actors: wc2_orc_bestfarm
+	ProvidesPrerequisite@bestfarm:
+		Prerequisite: wc2_orc_bestfarm
+		RequiresCondition: orcbestfarmupg
+	WithSpriteBody@bestfarm:
+		Sequence: wc2_orc_bestfarm
+		RequiresCondition: orcbestfarmupg
+	PowerMultiplier@bestfarm:
+		Modifier: 400
+		RequiresCondition: orcbestfarmupg
+	DamageMultiplier@bestfarm:
+		Modifier: 50
+		RequiresCondition: orcbestfarmupg
+	SpawnActorsOnSell@bestfarm:
+		ActorTypes: wc2_critter_boar
+		ValuePercent: 4
+		RequiresCondition: orcbestfarmupg
+
+wc2_orc_betterfarm:
+	Tooltip:
+		Name: Better Farm
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: wc2_orc_pigfarm
+		Queue: betterfarmupgrade.orc2
+		BuildDuration: 800
+		BuildDurationModifier: 100
+		Description: Farm Upgrade\n Gives +6 food (12 total)\n Gives +50% hp (150% total)
+		Icon: icon
+	Valued:
+		Cost: 1000
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+	RenderSprites:
+
+wc2_orc_bestfarm:
+	Tooltip:
+		Name: Best Farm
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: wc2_orc_pigfarm
+		Queue: bestfarmupgrade.orc2
+		BuildDuration: 1600
+		BuildDurationModifier: 100
+		Description: Farm Upgrade\n Gives +12 food (24 total)\n Gives +50% hp (200% total)
+		Icon: icon
+	Valued:
+		Cost: 2000
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+	RenderSprites:
+
+wc2_orc_barracks:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_barracks: ^wc2_barracks
+	Tooltip:
+		Name: Barracks
+	Buildable:
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Warriors of the Horde live and train here.\nProduces many Orcish units.
+		Prerequisites: wc2_orc_pigfarm
+	Production@NORMAL:
+		Produces: Infantry.orc2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry.orc2
+	ProductionQueue:
+		Type: Infantry.orc2 
+	ProductionBar@NORMAL:
+		ProductionType: Infantry.orc2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAInfantry.orc2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_orc_grunt
+	Voiced:
+		VoiceSet: orcbarracksvoice
+
+wc2_orc_troll_lumber_mill:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_lumber_mill: ^wc2_lumber_mill
+	Tooltip:
+		Name: Troll Lumbermill
+	Buildable:
+		Prerequisites: wc2_orc_pigfarm
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Dropoff point for gold. (Tiberium)\nCan store up to 1000 resource\nProduces axes enabling Axethrowers.\nProvides upgrades for Axethrowers.\nUnlocks Guard Tower upgrade.
+	Production@NORMAL:
+		Produces: lumberupg.orc2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAlumberupg.orc2	  
+	ProductionQueue:
+		Type: lumberupg.orc2 
+	ProductionBar@NORMAL:
+		ProductionType: lumberupg.orc2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAlumberupg.orc2
+	FreeActor:
+		Actor: wc2_orc_peon
+	SpawnActorsOnSell:
+		ActorTypes: wc2_orc_troll_axethrower
+	Voiced:
+		VoiceSet: wc2orclumbermillvoice
+
+wc2_orc_blacksmith:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_blacksmith: ^wc2_blacksmith
+	Tooltip:
+		Name: Blacksmith
+	Buildable:
+		Prerequisites: wc2_orc_barracks
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Enables Catapults and upgrading Scout Towers to Cannon Towers.\nEnables upgrades to units.
+	Production@NORMAL:
+		Produces: blacksmithupg.orc2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAblacksmithupg.orc2
+	ProductionQueue:
+		Type: blacksmithupg.orc2
+	ProductionBar@NORMAL:
+		ProductionType: blacksmithupg.orc2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAblacksmithupg.orc2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_orc_grunt
+	Voiced:
+		VoiceSet: wc2orcblacksmithvoice
+
+wc2_orc_goblin_alchemist:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_inventor: ^wc2_inventor
+	Tooltip:
+		Name: Golbin Alchemist
+	Buildable:
+		Prerequisites: wc2_orc_stronghold
+		Queue: Building.orc2, RABuilding.orc2	
+		Description: Ingenious goblins dabble in alchemy and invention.\nProvides Radar.\nTrains Sappers & Zeppelins.
+	Production@NORMAL:
+		Produces: Vehicle.orc2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle.orc2
+	ProductionQueue:
+		Type: Vehicle.orc2
+	ProductionBar@NORMAL:
+		ProductionType: Vehicle.orc2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAVehicle.orc2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_orc_grunt
+	Voiced:
+		VoiceSet: wc2orcgoblinalchemist
+
+wc2_orc_ogre_mound:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_stables: ^wc2_stables
+	Tooltip:
+		Name: Ogre Mound
+	Buildable:
+		Prerequisites: wc2_orc_stronghold
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Unlocks production of Ogres.\nThis place smells bad!
+	# Production@NORMAL:
+	# 	Produces: ogremoundupg.orc2
+	# Production@CLASSICPRODUCTIONQUEUES:
+	# 	Produces: RAogremoundupg.orc2
+	# ProductionQueue:
+	# 	Type: ogremoundupg.orc2
+	# ProductionBar@NORMAL:
+	# 	ProductionType: ogremoundupg.orc2
+	# ProductionBar@CLASSICPRODUCTIONQUEUES:
+	# 	ProductionType: RAogremoundupg.orc2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_orc_grunt
+	Voiced:
+		VoiceSet: wc2orcogremound
+
+wc2_orc_altar_of_storms:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_church: ^wc2_church
+	Tooltip:
+		Name: Altar of Storms
+	Buildable:
+		Prerequisites: wc2_orc_fortress
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Teaches Ogres how to read and cast dark magicks.\nUnlocks Ogre Mage upgrade for Ogres.
+	Production@NORMAL:
+		Produces: altarupg.orc2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAaltarupg.orc2
+	ProductionQueue:
+		Type: altarupg.orc2
+	ProductionBar@NORMAL:
+		ProductionType: altarupg.orc2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAaltarupg.orc2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_orc_grunt
+	Voiced:
+		VoiceSet: wc2orcaltarofstorms
+	# Support powers
+	# Spy of Kilrogg support power.
+	AirstrikePower@SPYOFKILROGG:
+		OrderName: wc2_spy_of_kilrogg
+		Icon: kilrogg
+		ChargeInterval: 3750
+		Description: Spy of Kilrogg
+		LongDesc: Reveals an area of the map\nand cloaked enemy units.
+		SelectTargetSpeechNotification: SelectTarget
+		EndChargeSpeechNotification: SpyPlaneReady
+		CameraActor: camera.spyplane
+		CameraRemoveDelay: 150
+		UnitType: wc2_support_orc_eye_of_kilrogg
+		QuantizedFacings: 8
+		DisplayBeacon: true
+		BeaconImage: icon
+		BeaconPoster: kilrogg_beacon
+		ArrowSequence: wc2_arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: wc2_airstrikedirection
+		SupportPowerPaletteOrder: 10
+	# Bloodlust support power.
+	GrantExternalConditionPower@BLOODLUST:
+		OrderName: wc2_bloodlust
+		#PauseOnCondition: lowpower
+		Icon: bloodlust
+		ChargeInterval: 3000
+		Description: Bloodlust
+		LongDesc: Triples damage output of units.
+		Range: 2
+		Duration: 500
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: wc2_cond_bloodlust
+		OnFireSound: wc2_blodlust.aud
+		IncomingSound: ironcur9.aud
+		SupportPowerPaletteOrder: 20
+		ValidStances: Enemy, Neutral, Ally
+	# Runes support power.
+	IonCannonPower@RUNES:
+		OrderName: wc2_runes
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: runes
+		Cursor: ability
+		ChargeInterval: 4500
+		Description: Runes
+		LongDesc: Deploy OgreMage runes anywhere on the map.\nThese are land mines.\nUse with caution.\nDisappears after a while.
+		EndChargeSpeechNotification: AirstrikeReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: wc2_spell.aud
+		DisplayTimerStances: Ally, Neutral
+		DisplayRadarPing: True
+		CameraActor: camera.small
+		SupportPowerPaletteOrder: 30
+		Weapon: wc2runesSuper
+		WeaponDelay: 15
+		Effect: wc2_effect_sparkle
+		EffectSequence: idle-longer
+
+wc2_orc_temple_of_the_damned:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_temple: ^wc2_temple
+	Tooltip:
+		Name: Temple of the Damned
+	Buildable:
+		Prerequisites: wc2_orc_fortress
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Terrible rituals are performed here.\nTrains Death Knights and raise Skeletons.\nUnlocks Death & Decay superweapon.
+	Production@NORMAL:
+		Produces: DInfantry.orc2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RADInfantry.orc2
+	ProductionQueue:
+		Type: DInfantry.orc2
+	ProductionBar@NORMAL:
+		ProductionType: DInfantry.orc2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RADInfantry.orc2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_orc_grunt
+	Voiced:
+		VoiceSet: wc2orctempleofthedamnedvoice
+	# Support powers
+	# Haste
+	GrantExternalConditionPower@HASTE:
+		OrderName: wc2_haste
+		#PauseOnCondition: lowpower
+		Icon: haste
+		ChargeInterval: 3000
+		Description: Haste
+		LongDesc: Increases movement speed and attack rate.
+		Range: 2
+		Duration: 500
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: IronCurtainCharging
+		#EndChargeSpeechNotification: IronCurtainReady
+		DisplayRadarPing: True
+		Condition: wc2_cond_haste
+		OnFireSound: wc2_haste.aud
+		#IncomingSound: ironcur9.aud
+		SupportPowerPaletteOrder: 30
+		ValidStances: Enemy, Neutral, Ally
+	# Death and decay super weapon
+	IonCannonPower@DEATHANDDECAY:
+		OrderName: wc2_deathanddecay
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: deathanddecay
+		Cursor: ioncannon
+		ChargeInterval: 5500
+		Description: Death and decay
+		LongDesc: Rots and kills in a large area.
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: wc2_decay.aud
+		DisplayTimerStances: Ally, Neutral
+		DisplayRadarPing: True
+		CameraActor: camera.small
+		SupportPowerPaletteOrder: 90
+		Weapon: wc2deathanddecaySuper
+		WeaponDelay: 0
+		Effect: wc2_effect_death_and_decay
+		EffectSequence: idle
+
+wc2_orc_dragon_roost:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_nest: ^wc2_nest
+	Tooltip:
+		Name: Dragon Roost
+	Buildable:
+		Prerequisites: wc2_orc_fortress
+		Queue: Building.orc2, RABuilding.orc2
+		Description: A captured dragon is forced to lay eggs for the Horde.\nTrains mighty Dragons.
+	Production@NORMAL:
+		Produces: Aircraft.orc2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft.orc2
+	ProductionQueue:
+		Type: Aircraft.orc2
+	ProductionBar@NORMAL:
+		ProductionType: Aircraft.orc2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAAircraft.orc2
+	SpawnActorsOnSell:
+		ActorTypes: wc2_orc_grunt
+	Voiced:
+		VoiceSet: wc2orcdragonroost
+
+wc2_orc_shipyard:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_shipyard: ^wc2_shipyard
+	Tooltip:
+		Name: Shipyard
+	Buildable:
+		Prerequisites: wc2_orc_troll_lumber_mill
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Produces and repairs ships.
+	-GivesBuildableArea:
+	Production@NORMAL:
+		Produces: Naval.orc2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval.orc2
+	ProductionQueue:
+		Type: Naval.orc2
+	ProductionBar@NORMAL:
+		ProductionType: Naval.orc2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RANaval.orc2
+	Voiced:
+		VoiceSet: wc2orcshipyardvoice
+
+wc2_orc_foundry:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_foundry: ^wc2_foundry
+	Tooltip:
+		Name: Foundry
+	Buildable:
+		Prerequisites: wc2_orc_shipyard
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Unlocks production of the Transport and the Juggernaught.\nProvides upgrades for naval units.
+	-GivesBuildableArea:
+	Production@NORMAL:
+		Produces: foundryupg.orc2
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAfoundryupg.orc2
+	ProductionQueue:
+		Type: foundryupg.orc2
+	ProductionBar@NORMAL:
+		ProductionType: foundryupg.orc2
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAfoundryupg.orc2
+	Voiced:
+		VoiceSet: wc2orcoilfoundryvoice
+
+wc2_orc_oil_refinery:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_oil_refinery: ^wc2_oil_refinery
+	Tooltip:
+		Name: Oil Refinery
+	Buildable:
+		Prerequisites: wc2_orc_shipyard
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Unlocks the construction of Oil Platforms for passive income.
+	Voiced:
+		VoiceSet: wc2orcoilrefineryvoice
+
+wc2_orc_oil_platform:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_oil_platform: ^wc2_oil_platform
+	Tooltip:
+		Name: Oil Platform
+	Buildable:
+		Prerequisites: wc2_orc_oil_refinery
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Provides passive income.\nOil tankers can drill here for further income boost.
+	Voiced:
+		VoiceSet: wc2orcoilplatformvoice
+
+wc2_orc_watch_tower:
+	Inherits@WC2BUILDING: ^WC2OrcDefense
+	Inherits@wc2_watch_tower: ^wc2_watch_tower
+	# Don't declare AutoTarget stuff before AttackBase stuff or an annoying bug with WithSpriteBody will occur.
+	#Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: Watch Tower
+	Buildable:
+		Prerequisites: wc2_orc_barracks
+		Queue: Defence.orc2, RADefence.orc2
+		Description: Upgradable defense building\nDetector
+	Voiced:
+		VoiceSet: orcguardtowervoice
+	Armament@guardtower:
+		Weapon: wc2_tower_axe
+		RequiresCondition: orcguardtowerupg
+	Armament@guardtoweraa:
+		Weapon: wc2_tower_axe_aa
+		RequiresCondition: orcguardtowerupg
+	Armament@cannontower:
+		Weapon: wc2cannontowerFire
+		RequiresCondition: orccannontowerupg
+	WithRangeCircle:
+		Range: 3072
+		RequiresCondition: orccannontowerupg
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	### Upgrade stuff ###
+	Production:
+		Produces: Towerupgrade.orc2
+		RequiresCondition: !orcguardtowerupg && !orccannontowerupg
+	ProductionBar:
+		ProductionType: Towerupgrade.orc2
+	ProductionQueue:
+		Type: Towerupgrade.orc2
+		DisplayOrder: 0
+		Group: Addon
+		LowPowerModifier: 200
+		QueueLimit: 1
+		ItemLimit: 1
+	GrantConditionOnProduction@guardtower:
+		Condition: orcguardtowerupg
+		Actors: wc2_orc_guard_tower
+	GrantConditionOnProduction@cannontower:
+		Condition: orccannontowerupg
+		Actors: wc2_orc_cannon_tower
+	WithSpriteBody:
+		RequiresCondition: !orcguardtowerupg && !orccannontowerupg
+	WithSpriteBody@guardtower:
+		Sequence: wc2_orc_guard_tower
+		RequiresCondition: orcguardtowerupg
+	WithSpriteBody@cannontower:
+		Sequence: wc2_orc_cannon_tower
+		RequiresCondition: orccannontowerupg
+	DamageMultiplier@guardtower:
+		Modifier: 77
+		RequiresCondition: orcguardtowerupg
+	DamageMultiplier@cannontower:
+		Modifier: 63
+		RequiresCondition: orccannontowerupg
+
+wc2_orc_guard_tower:
+	Tooltip:
+		Name: Guard Tower
+	Buildable:
+		BuildPaletteOrder: 1
+		Prerequisites: wc2_orc_troll_lumber_mill
+		Queue: Towerupgrade.orc2
+		BuildDuration: 3500
+		BuildDurationModifier: 15
+		Description: Guard tower, attacks land, sea, and air.
+	Valued:
+		Cost: 800
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+	RenderSprites:
+		Scale: 0.8
+
+wc2_orc_cannon_tower:
+	Tooltip:
+		Name: Cannon Tower
+	Buildable:
+		BuildPaletteOrder: 1
+		Prerequisites: wc2_orc_blacksmith
+		Queue: Towerupgrade.orc2
+		BuildDuration: 4750
+		BuildDurationModifier: 15
+		Description: Cannon tower, attacks land.
+	Valued:
+		Cost: 1600
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+	RenderSprites:
+		Scale: 0.8
+
+wc2_orc_wall:
+	Inherits: wc2_human_wall
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: wc2_orc_greathall
+		Queue: Defence.orc2, RADefence.orc2
+	LineBuild:
+		NodeTypes: wc2_orc_wall
+	LineBuildNode:
+		Types: wc2_orc_wall
+	WithWallSpriteBody:
+		Type: wc2_orc_wall
+	RenderSprites:
+		Palette: player
+
+wc2_orc_goldmine:
+	Inherits@WC2BUILDING: ^WC2OrcBuilding
+	Inherits@wc2_goldmine: ^wc2_goldmine
+	Tooltip:
+		Name: Gold Mine
+	Buildable:
+		Queue: Building.orc2, RABuilding.orc2
+		Description: Send workers inside to provide passive income.\nMiners progressively get experience and work more efficiently.
+		Prerequisites: wc2_orc_blacksmith
+	Voiced:
+		VoiceSet: neutralgoldminevoice
+
+wc2_orc_goldmine.bot:
+	Inherits@WC2BUILDING: wc2_orc_goldmine
+	Inherits@bot: ^GainsExperienceCity
+	Tooltip:
+		Name: Gold Mine (Bot)
+	Valued:
+		Cost: 3750
+	CashTrickler@bot:
+		Amount: 90
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 0 && !lowpower && !city-elite
+	CashTrickler@RANK-1:
+		Amount: 110
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
+	CashTrickler@RANK-2:
+		Amount: 135
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
+	CashTrickler@RANK-3:
+		Amount: 165
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
+	CashTrickler@RANK-4:
+		Amount: 200
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: city-elite && !lowpower
+	ExperienceTrickler:
+		Amount: 200
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3
+	RenderSprites:
+		Image: wc2_orc_goldmine
+
+####################################################################################################
+# WC2 ORC UNITS
+####################################################################################################
+
+wc2_orc_mcv:
+	Inherits@WC2INFANTRY: ^WC2Vehicle
+	Inherits@WC2Template: ^wc2_mcv
+	Buildable:
+		Description: Transforms into a Great Hall.
+		Queue: Building.orc2, RABuilding.orc2
+	Tooltip:
+		Name: Mobile Construction Vehicle (Orc)
+	Transforms:
+		IntoActor: wc2_orc_greathall
+		Offset: -1,-1
+		Facing: 108
+		TransformSounds:
+		NoTransformNotification: BuildingCannotPlaceAudio
+	Voiced:
+		VoiceSet: wc2voiceorcpeongrunt
+	# Animation stuff
+	-WithFacingSpriteBody:
+	-WithMoveAnimation:
+	-WithAttackAnimation:
+	WithInfantryBody:
+		IdleSequences: idle-n, idle-ne, idle-e, idle-se, idle-s, idle-sw, idle-w, idle-nw
+		StandSequences: idle
+		MoveSequence: run
+
+wc2_orc_mcv.bot:
+	Inherits: wc2_orc_mcv
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildLimit: 1
+		Prerequisites: ~techlevel.medium, ~botplayer, allowsMCV
+	RenderSprites:
+		Image: wc2_orc_mcv
+
+wc2_orc_peon:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_peasant
+	Inherits@WC2OShieldUpg: ^wc2_o_str_shield
+	Tooltip:
+		Name: Peon
+	Buildable:
+		Queue: Defence.orc2, RADefence.orc2
+		Description: Harvester. Zug zug!
+	Armament:
+		Weapon: wc2peasantsmack
+		FireDelay: 7
+	WithHarvesterSpriteBody:
+		ImageByFullness: wc2_orc_peon, wc2_orc_peon_full
+	Voiced:
+		VoiceSet: wc2voiceorcpeongrunt
+	-DamagedByTerrain:
+
+wc2_orc_grunt:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_footman
+	Inherits@WC2AxeUpg: ^wc2_o_str_axe
+	Inherits@WC2OShieldUpg: ^wc2_o_str_shield
+	Tooltip:
+		Name: Grunt
+	Buildable:
+		Prerequisites: wc2_orc_barracks
+		Queue: Infantry.orc2, RAInfantry.orc2
+		Description: Basic melee infantry. Slow but can take some damage. Lok'tar!
+	Armament:
+		Weapon: wc2footmanslice
+		FireDelay: 7
+	Voiced:
+		VoiceSet: wc2voiceorcpeongrunt
+
+# Axethrower also has built-in berserker stuff so that berserker's upgrades and spells will be applied to already-built axethrwoers, just as in WC2.
+wc2_orc_troll_axethrower:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_archer
+	Inherits@TAxeUpg: ^wc2_o_str_throwaxe
+	Inherits@WC2OShieldUpg: ^wc2_o_str_shield
+	Inherits@BLighterUpg: ^wc2_o_berserker_lighteraxes
+	Inherits@BScoutUpg: ^wc2_o_berserker_scouting
+	Inherits@BRegenUpg: ^wc2_o_berserker_regen
+	Inherits@BerserkerUpg: ^wc2_o_berserkerupg
+	Tooltip:
+		Name: Troll Axethrower
+	Buildable:
+		Prerequisites: wc2_orc_troll_lumber_mill, ~!wc2_o_berserkerupg
+		Queue: Infantry.orc2, RAInfantry.orc2
+		Description: Basic ranged infantry.\nNot as durable as Grunt.\nCan attack air.
+	Armament:
+		Weapon: wc2axeFire
+		FireDelay: 7
+	Armament@aa:
+		Weapon: wc2axeFireAA
+		FireDelay: 7
+	Voiced:
+		VoiceSet: wc2voiceorctrollaxethrower
+	# Animation and upgrade stuff
+	# Axethrower body
+	WithInfantryBody:
+		RequiresCondition: !berserker_upg
+	# Berserker body
+	WithInfantryBody@Berserker:
+		IdleSequences: idle-berserker
+		StandSequences: idle-berserker
+		MoveSequence: run-berserker
+		DefaultAttackSequence: shoot-berserker
+		RequiresCondition: berserker_upg
+
+# Separate actor for berserker because otherwise we can't change the build icon (cameo) or tooltip.
+wc2_orc_troll_berserker:
+	Inherits@wc2_orc_troll_axethrower: wc2_orc_troll_axethrower
+	Tooltip:
+		Name: Troll Berserker
+	Buildable:
+		Prerequisites: wc2_orc_troll_lumber_mill, ~wc2_o_berserkerupg
+		Description: Elite ranged infantry.\nNot as durable as Grunt.\nCan attack air.
+	Selectable:
+		Class: wc2_orc_troll_axethrower
+	-WithInfantryBody@Berserker:
+	WithInfantryBody:
+		-RequiresCondition:
+	# Berserker should always be considered to have the ranger upgrade researched.
+	GrantCondition@Berserker:
+		Condition: berserker_upg
+
+# Ogre also has built-in ogremage stuff so that ogremage's upgrades and spells will be applied to already-built ogres, just as in WC2.
+wc2_orc_ogre:
+	Inherits: ^WC2Vehicle
+	Inherits@WC2Template: ^wc2_knight
+	Inherits@WC2AxeUpg: ^wc2_o_str_axe
+	Inherits@WC2OShieldUpg: ^wc2_o_str_shield
+	Inherits@FOURSTATEDEPLOY: ^WC2FourStateDeploy
+	Inherits@OgremageUpg: ^wc2_o_ogremageupg
+	Inherits@ogremage_bloodlust_upgrade: ^wc2_o_ogremage_bloodlust
+	Inherits@ogremage_runes_upgrade: ^wc2_o_ogremage_runes
+	Tooltip:
+		Name: Ogre
+	Buildable:
+		Prerequisites: wc2_orc_ogre_mound, ~!wc2_o_ogremageupg
+		Queue: Infantry.orc2, RAInfantry.orc2
+		Description: Improved melee infantry.\nStinky, fast, dumb and dangerous!
+	Voiced:
+		VoiceSet: wc2voiceorcogre
+	# Animation and upgrade stuff
+	-WithFacingSpriteBody:
+	-WithMoveAnimation:
+	-WithAttackAnimation:
+	WithInfantryBody:
+		IdleSequences: idle-n, idle-ne, idle-e, idle-se, idle-s, idle-sw, idle-w, idle-nw
+		StandSequences: idle
+		MoveSequence: run
+		DefaultAttackSequence: shoot
+		RequiresCondition: !ogremage_upg
+	WithInfantryBody@Ogremage:
+		IdleSequences: idle-ogremage-n, idle-ogremage-ne, idle-ogremage-e, idle-ogremage-se, idle-ogremage-s, idle-ogremage-sw, idle-ogremage-w, idle-ogremage-nw
+		StandSequences: idle-ogremage
+		MoveSequence: run-ogremage
+		DefaultAttackSequence: shoot-ogremage
+		RequiresCondition: ogremage_upg
+	WithDeathAnimation:
+		RequiresCondition: !ogremage_upg
+	WithDeathAnimation@Ogremage:
+		DeathSequence: die-ogremage
+		CrushedSequence: die-crushed-ogremage
+		CrushedSequencePalette: player
+		CrushedPaletteIsPlayerPalette: true
+		UseDeathTypeSuffix: false
+		RequiresCondition: ogremage_upg
+	#Weapons
+	Inherits@attacks_and_spells: ^wc2_ogre_ogremage_attacks_spells
+
+# Separate actor for ogremage because otherwise we can't change the build icon (cameo) or tooltip.
+wc2_orc_ogremage:
+	Inherits@wc2_orc_ogre: wc2_orc_ogre
+	Tooltip:
+		Name: Ogre-Mage
+	Buildable:
+		Prerequisites: ~wc2_o_ogremageupg, wc2_orc_ogre_mound, wc2_orc_altar_of_storms
+		Description: Improved magickal melee infantry.\nStinky, very fast, smart, and dangerous!
+	Voiced:
+		VoiceSet: wc2voiceorcogremage
+	Selectable:
+		Class: wc2_orc_ogre
+	-WithInfantryBody@Ogremage:
+	WithInfantryBody:
+		-RequiresCondition:
+	WithDeathAnimation:
+		-RequiresCondition:
+	-WithDeathAnimation@Ogremage:
+	# Ogremage should always be considered to have the ogremage upgrade researched.
+	GrantCondition@Ogremage:
+		Condition: ogremage_upg
+	#Weapons
+	Inherits@attacks_and_spells: ^wc2_ogre_ogremage_attacks_spells
+
+^wc2_ogre_ogremage_attacks_spells:
+	# Only the ogre upgraded to an ogremage, or the separate ogremage actor should be able to deploy.
+	GrantConditionOnDeploy@Clock:
+		RequiresCondition: ogremage_upg
+	AttackFrontal:
+		Armaments: primary, eyeofkilrogg, bloodlust, runes
+	AutoTarget:
+		ScanRadius: 7
+	AutoTargetPriority@DEFAULT:
+		RequiresCondition: !stance-attackanything && !assault-move && !FSD_cond_3
+	AutoTargetPriority@ATTACKANYTHING:
+		RequiresCondition: (stance-attackanything || assault-move) && !FSD_cond_3
+	AutoTargetPriority@ATTACKANYTHING_HASTE:
+		RequiresCondition: (stance-attackanything || assault-move) && FSD_cond_3
+		ValidTargets: bloodlust_target
+		InvalidTargets: NoAutoTarget
+	Armament:
+		Weapon: wc2ogrepunch
+		FireDelay: 7
+		RequiresCondition: (FSD_cond_1 && !wc2_cond_bot_owner) || (FSD_cond_1_AI && wc2_cond_bot_owner) || (FSD_cond_3 && !ogremagebloodlust_upg) || (FSD_cond_4 && !ogremagerunes_upg)
+	Armament@EYEOFKILROGG:
+		Name: eyeofkilrogg
+		Weapon: wc2ogremageEyeOfKilrogg
+		FireDelay: 7
+		RequiresCondition: FSD_cond_2
+		PauseOnCondition: mana < 70
+	Armament@BLOODLUST:
+		Name: bloodlust
+		Weapon: wc2ogremageBloodlust
+		FireDelay: 7
+		TargetStances: Ally
+		RequiresCondition: FSD_cond_3 && ogremagebloodlust_upg
+		PauseOnCondition: mana < 50
+	Armament@RUNES:
+		Name: runes
+		Weapon: wc2ogremageRunes
+		FireDelay: 7
+		RequiresCondition: FSD_cond_4 && ogremagerunes_upg
+		PauseOnCondition: mana < 200
+	# "Mana" (ammopool)
+	GrantConditionOnAttack@EYEOFKILROGG:
+		Condition: cond_eyeofkilrogg_drain
+		ArmamentNames: eyeofkilrogg
+		MaximumInstances: 1
+		RevokeDelay: 2
+	GrantConditionOnAttack@BLOODLUST:
+		Condition: cond_bloodlust_drain
+		ArmamentNames: bloodlust
+		MaximumInstances: 1
+		RevokeDelay: 2
+	GrantConditionOnAttack@EXORCISM:
+		Condition: cond_runes_drain
+		ArmamentNames: runes
+		MaximumInstances: 1
+		RevokeDelay: 2
+	AmmoPoolCA:
+		Armaments: eyeofkilrogg, bloodlust, runes
+		Ammo: 255
+		PipCount: 10
+		AmmoCondition: mana
+	ReloadAmmoPoolCA@PassiveRegen:
+		Delay: 10
+		Count: 1
+		ShowSelectionBar: false
+	ReloadAmmoPoolCA@EyeOfKilrogg:
+		Delay: 1
+		Count: -70
+		RequiresCondition: cond_eyeofkilrogg_drain
+	ReloadAmmoPoolCA@Bloodlust:
+		Delay: 1
+		Count: -50
+		RequiresCondition: cond_bloodlust_drain
+	ReloadAmmoPoolCA@Runes:
+		Delay: 1
+		Count: -200
+		RequiresCondition: cond_runes_drain
+
+	### Visual indicator of mode for four state deploy ###
+	WithDecoration@Mode_Eye_Of_Kilrogg:
+		Sequence: eyeofkilrogg_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_2
+	WithDecoration@Mode_Bloodlust:
+		Sequence: bloodlust_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_3 && ogremagebloodlust_upg
+	WithDecoration@Mode_Bloodlust_Locked:
+		Sequence: locked_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_3 && !ogremagebloodlust_upg
+	WithDecoration@Mode_Runes:
+		Sequence: runes_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_4 && ogremagerunes_upg
+	WithDecoration@Mode_Runes_Locked:
+		Sequence: locked_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_4 && !ogremagerunes_upg
+	
+	### Starting spell randomizer for AI.
+	GrantConditionOnBotOwner@wc2magebotcontrol:
+		Condition: wc2_cond_bot_owner
+		Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce, defenseai
+	GrantRandomCondition@wc2magebotcontrol:
+		Conditions: FSD_cond_1_AI, FSD_cond_1_AI, FSD_cond_1_AI, FSD_cond_1_AI, FSD_cond_1_AI, FSD_cond_1_AI, FSD_cond_2_AI, FSD_cond_3_AI, FSD_cond_3_AI, FSD_cond_4_AI
+	# FSD_Cond_1 is always granted at start due to the four state deploy.
+	GrantCondition@Cond2AI:
+		Condition: FSD_cond_2
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_2_AI
+	GrantCondition@Cond3AI:
+		Condition: FSD_cond_3
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_3_AI
+	GrantCondition@Cond4AI:
+		Condition: FSD_cond_4
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_4_AI
+
+wc2_runes:
+	Inherits: ^Mine
+	RenderSprites:
+		Image: wc2_effect_runes
+	-WithSpriteBody:
+	GrantPeriodicCondition:
+		Condition: cond_show
+		ActiveDuration: 14
+		CooldownDuration: 138
+		StartsGranted: True
+	WithIdleOverlay:
+		Sequence: idle
+		RequiresCondition: cond_show
+	Explodes:
+		Weapon: wc2ogremageRunes_Hit
+	Mine:
+		AvoidFriendly: false
+		BlockFriendly: false
+	-Immobile:
+	Mobile:
+		Locomotor: wheeled
+		Speed: 1
+		PauseOnCondition: dontmove
+	GrantCondition@dontmove:
+		Condition: dontmove
+	RejectsOrders:
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 10000
+	KillsSelf:
+		Delay: 1000
+		RemoveInstead: true
+	DamageMultiplier@Runes:
+		Modifier: 0
+
+wc2_orc_catapult:
+	Inherits@WC2VEHICLE: ^WC2Vehicle
+	Inherits@wc2_catapult: ^wc2_catapult
+	Inherits@CatUpg: ^wc2_o_str_catapult
+	Tooltip:
+		Name: Catapult
+	Buildable:
+		Prerequisites: wc2_orc_blacksmith
+		Queue: Infantry.orc2, RAInfantry.orc2
+		Description: Powerful long range siege unit.
+	AttackFrontal:
+		PauseOnCondition: disabled
+	Armament:
+		Weapon: wc2catapultFire
+		FireDelay: 5
+	Voiced:
+		VoiceSet: wc2orccatapult
+	-WithDeathAnimation:
+	WithAttackAnimation@After:
+		Sequence: after-shoot
+		Delay: 11
+		DelayRelativeTo: Attack
+
+wc2_orc_goblin_sappers:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_demolitioner
+	Inherits@WC2AxeUpg: ^wc2_o_str_axe
+	Inherits@WC2OShieldUpg: ^wc2_o_str_shield
+	Tooltip:
+		Name: Goblin Sappers
+	Buildable:
+		Prerequisites: wc2_orc_goblin_alchemist
+		Queue: Vehicle.orc2, RAVehicle.orc2
+		Description: Explosive suicide infantry. Can attack normally.
+	#Weapons and demolition
+	AttackFrontal:
+		Armaments: detonate, primary
+	Armament:
+		Name: detonate
+		Weapon: wc2demolitionsquadTargeting
+		RequiresCondition: !cond_deployed
+	Armament@Melee:
+		Weapon: wc2demolitionsquadMelee
+		RequiresCondition: cond_deployed
+	GrantConditionOnAttack:
+		Condition: cond_detonate
+		ArmamentNames: detonate
+		RequiresCondition: !cond_deployed
+	Explodes:
+		Weapon: wc2demolitionsquadTrigger
+		EmptyWeapon: wc2demolitionsquadTrigger
+		RequiresCondition: !chronobeamed
+	GrantConditionOnDeploy:
+		DeployedCondition: cond_deployed
+	KillsSelf:
+		RequiresCondition: cond_detonate
+	Voiced:
+		VoiceSet: wc2voiceorcgoblinsappers
+
+wc2_orc_deathknight:
+	Inherits@WC2Infantry: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_mage
+	Inherits@WC2OShieldUpg: ^wc2_o_str_shield
+	Inherits@wc2_o_deathknight_haste: ^wc2_o_deathknight_haste
+	Inherits@wc2_o_deathknight_deathanddecay: ^wc2_o_deathknight_deathanddecay
+	Inherits@wc2_o_deathknight_raisedead: ^wc2_o_deathknight_raisedead
+	Tooltip:
+		Name: Death Knight
+	Buildable:
+		Prerequisites: wc2_orc_temple_of_the_damned
+		Queue: DInfantry.orc2, RADInfantry.orc2
+		Description: Powerful undead spell caster.\nCan attack Air.\nDetector
+	Voiced:
+		VoiceSet: wc2voiceorcdeathknight
+	# Undead target type
+	Targetable@UNDEAD:
+		TargetTypes: undeadtarget
+	#Weapons
+	AttackFrontal:
+		Armaments: primary, deathcoil, haste, deathanddecay, raisedead
+	AutoTargetPriority@DEFAULT:
+		RequiresCondition: !stance-attackanything && !assault-move && !FSD_cond_2
+	AutoTargetPriority@ATTACKANYTHING:
+		RequiresCondition: (stance-attackanything || assault-move) && !FSD_cond_2
+	AutoTargetPriority@ATTACKANYTHING_HASTE:
+		RequiresCondition: (stance-attackanything || assault-move) && FSD_cond_2
+		ValidTargets: haste_target
+		InvalidTargets: NoAutoTarget
+	ChangesHealth@DEATHCOILHEAL:
+		PercentageStep: 83
+		Delay: 0
+		StartIfBelow: 110
+		RequiresCondition: cond_deathcoil_drain
+	Armament:
+		Weapon: wc2deathknightFire
+		FireDelay: 7
+		RequiresCondition: (FSD_cond_1 && !wc2_cond_bot_owner) || (FSD_cond_1_AI && wc2_cond_bot_owner) || (FSD_cond_2 && !deathknighthaste_upg) || (FSD_cond_3 && !deathknightdeathanddecay_upg) || (FSD_cond_4 && !deathknightraisedead_upg)
+	Armament@DEATHCOIL:
+		Name: deathcoil
+		Weapon: wc2deathknightDeathCoil
+		FireDelay: 7
+		RequiresCondition: (FSD_cond_1 && !wc2_cond_bot_owner) || (FSD_cond_1_AI && wc2_cond_bot_owner)
+		PauseOnCondition: mana < 100
+	Armament@DEATHCOILSCATTER1:
+		Weapon: wc2deathknightDeathCoilScatter_Left
+		FireDelay: 7
+		RequiresCondition: (FSD_cond_1 && !wc2_cond_bot_owner) || (FSD_cond_1_AI && wc2_cond_bot_owner)
+		PauseOnCondition: mana < 100
+	Armament@DEATHCOILSCATTER2:
+		Weapon: wc2deathknightDeathCoilScatter_Right
+		FireDelay: 7
+		RequiresCondition: (FSD_cond_1 && !wc2_cond_bot_owner) || (FSD_cond_1_AI && wc2_cond_bot_owner)
+		PauseOnCondition: mana < 100
+	Armament@HASTE:
+		Name: haste
+		Weapon: wc2deathknightHaste
+		FireDelay: 7
+		TargetStances: Ally
+		RequiresCondition: FSD_cond_2 && deathknighthaste_upg
+		PauseOnCondition: mana < 50
+	Armament@DEATHANDDECAY:
+		Name: deathanddecay
+		Weapon: wc2deathknightDeathAndDecay
+		FireDelay: 7
+		RequiresCondition: FSD_cond_3 && deathknightdeathanddecay_upg
+		PauseOnCondition: mana < 25
+	Armament@RAISEDEAD:
+		Name: raisedead
+		Weapon: wc2deathknightRaiseDead
+		FireDelay: 7
+		RequiresCondition: FSD_cond_4 && deathknightraisedead_upg
+		PauseOnCondition: mana < 50
+	# "Mana" (ammopool)
+	GrantConditionOnAttack@DEATHCOIL:
+		Condition: cond_deathcoil_drain
+		ArmamentNames: deathcoil
+		MaximumInstances: 1
+		RevokeDelay: 2
+	GrantConditionOnAttack@HASTE:
+		Condition: cond_haste_drain
+		ArmamentNames: haste
+		MaximumInstances: 1
+		RevokeDelay: 2
+	GrantConditionOnAttack@DEATHANDDECAY:
+		Condition: cond_deathanddecay_drain
+		ArmamentNames: deathanddecay
+		MaximumInstances: 1
+		RevokeDelay: 2
+	GrantConditionOnAttack@RAISEDEAD:
+		Condition: cond_raisedead_drain
+		ArmamentNames: raisedead
+		MaximumInstances: 1
+		RevokeDelay: 2
+	AmmoPoolCA:
+		Armaments:
+		Ammo: 255
+		PipCount: 10
+		AmmoCondition: mana
+	ReloadAmmoPoolCA@PassiveRegen:
+		Delay: 10
+		Count: 1
+		ShowSelectionBar: false
+	ReloadAmmoPoolCA@DEATHCOIL:
+		Delay: 1
+		Count: -100
+		RequiresCondition: cond_deathcoil_drain
+	ReloadAmmoPoolCA@HASTE:
+		Delay: 1
+		Count: -50
+		RequiresCondition: cond_haste_drain
+	ReloadAmmoPoolCA@DEATHANDDECAY:
+		Delay: 1
+		Count: -25
+		RequiresCondition: cond_deathanddecay_drain
+	ReloadAmmoPoolCA@RAISEDEAD:
+		Delay: 1
+		Count: -50
+		RequiresCondition: cond_raisedead_drain
+	
+	### Visual indicator of mode ###
+	WithDecoration@Mode_Deathcoil:
+		Sequence: deathcoil_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_1
+	WithDecoration@Mode_Haste:
+		Sequence: haste_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_2 && deathknighthaste_upg
+	WithDecoration@Mode_Haste_Locked:
+		Sequence: locked_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_2 && !deathknighthaste_upg
+	WithDecoration@Mode_DeathAndDecay:
+		Sequence: deathanddecay_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_3 && deathknightdeathanddecay_upg
+	WithDecoration@Mode_DeathAndDecay_Locked:
+		Sequence: locked_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_3 && !deathknightdeathanddecay_upg
+	WithDecoration@Mode_RaiseDead:
+		Sequence: raisedead_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_4 && deathknightraisedead_upg
+	WithDecoration@Mode_RaiseDead_Locked:
+		Sequence: locked_status_icon
+		ReferencePoint: Bottom, Right
+		RequiresCondition: FSD_cond_4 && !deathknightraisedead_upg
+	
+	### Starting spell randomizer for AI.
+	GrantConditionOnBotOwner@wc2magebotcontrol:
+		Condition: wc2_cond_bot_owner
+		Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce, defenseai
+	GrantRandomCondition@wc2magebotcontrol:
+		Conditions: FSD_cond_1_AI, FSD_cond_2_AI, FSD_cond_3_AI, FSD_cond_4_AI
+	# FSD_Cond_1 is always granted at start due to the four state deploy.
+	GrantCondition@Cond2AI:
+		Condition: FSD_cond_2
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_2_AI
+	GrantCondition@Cond3AI:
+		Condition: FSD_cond_3
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_3_AI
+	GrantCondition@Cond4AI:
+		Condition: FSD_cond_4
+		RequiresCondition: wc2_cond_bot_owner && FSD_cond_4_AI
+
+wc2_orc_skeleton:
+	Inherits@wc2_human_footman: wc2_human_footman
+	Inherits@WC2AxeUpg: ^wc2_o_str_axe
+	Tooltip:
+		Name: Skeleton
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~disabled
+		Queue: DInfantry.orc2, RADInfantry.orc2
+		Description: Undead melee infantry. Spooky!
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 9600
+	Armament:
+		Weapon: wc2skeletonpunch
+	Voiced:
+		VoiceSet: voiceskeleton
+	Power:
+		Amount: 0
+	# Undead target type
+	Targetable@UNDEAD:
+		TargetTypes: undeadtarget
+
+wc2_orc_peonlumber:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_supplier
+	Inherits@WC2HShieldUpg: ^wc2_h_str_shield
+	Tooltip:
+		Name: Supplier Peon
+	Buildable:
+		Queue: Vehicle.orc2, RAVehicle.orc2
+		Description: Supply Truck.
+	Voiced:
+		VoiceSet: wc2voiceorcpeongrunt
+	-DamagedByTerrain:
+
+wc2_orc_engineer:
+	Inherits@WC2INFANTRY: ^WC2Infantry
+	Inherits@WC2Template: ^wc2_engineer
+	Inherits@WC2HShieldUpg: ^wc2_h_str_shield
+	Tooltip:
+		Name: Engineer
+	Buildable:
+		Queue: Vehicle.orc2, RAVehicle.orc2
+		Description: Standard Engineer. Captures buildings, etc.
+	Voiced:
+		VoiceSet: wc2voiceorcpeongrunt
+	-DamagedByTerrain:
+
+####################################################################################################
+# WC2 ORC SHIPS
+####################################################################################################
+
+wc2_orc_oil_tanker:
+	Inherits@WC2Ship: ^WC2Ship
+	Inherits@WC2Template: ^wc2_oil_tanker
+	Inherits@ONavySUpg: ^wc2_o_str_navyshield
+	Buildable:
+		Prerequisites:
+		Queue: Naval.orc2, RANaval.orc2
+		Description: Drills oil inside Oil Platforms for income.
+	Tooltip:
+		Name: Oil Tanker
+	Voiced:
+		VoiceSet: wc2voiceorcship
+
+wc2_orc_trolldestroyer:
+	Inherits@WC2SHIP: ^WC2Ship
+	Inherits@WC2Template: ^wc2_destroyer
+	Inherits@OCannonUpg: ^wc2_o_str_cannon
+	Inherits@ONavySUpg: ^wc2_o_str_navyshield
+	Buildable:
+		Queue: Naval.orc2, RANaval.orc2
+		Description: Light scout & support ship.
+	Tooltip:
+		Name: Troll Destroyer
+	Turreted:
+		TurnSpeed: 7
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: wc2lightshipFire
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: wc2voiceorcship
+
+wc2_orc_transport:
+	Inherits@WC2Ship: ^WC2Ship
+	Inherits@WC2Template: ^wc2_transport
+	Inherits@ONavySUpg: ^wc2_o_str_navyshield
+	Buildable:
+		Prerequisites: wc2_orc_foundry
+		Queue: Naval.orc2, RANaval.orc2
+		Description: Transport ship.
+	Tooltip:
+		Name: Transport
+	Voiced:
+		VoiceSet: wc2voiceorcship
+
+wc2_orc_ogre_juggernaught:
+	Inherits@WC2Ship: ^WC2Ship
+	Inherits@WC2Template: ^wc2_battleship
+	Inherits@OCannonUpg: ^wc2_o_str_cannon
+	Inherits@ONavySUpg: ^wc2_o_str_navyshield
+	Buildable:
+		Prerequisites: wc2_orc_foundry, wc2_orc_blacksmith ##once stronghold/fortress are fixed, prereq will be wc2_orc_stronghold, wc2_orc_foundry
+		Queue: Naval.orc2, RANaval.orc2
+		Description: Heavy artillery ship.
+	Tooltip:
+		Name: Ogre Juggernaught
+	Turreted:
+		TurnSpeed: 7
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: wc2heavyshipFire
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: wc2voiceorcship
+
+wc2_orc_giant_turtle:
+	Inherits@WC2Ship: ^WC2Ship
+	Inherits@WC2Template: ^wc2_submarine
+	Inherits@OCannonUpg: ^wc2_o_str_cannon
+	Inherits@ONavySUpg: ^wc2_o_str_navyshield
+	Buildable:
+		Prerequisites: wc2_orc_foundry, wc2_orc_goblin_alchemist
+		Queue: Naval.orc2, RANaval.orc2
+		Description: Turtle go grrr.\nStealthed attack submarine.
+	Tooltip:
+		Name: Giant Turtle
+	Armament@PRIMARY:
+		Weapon: wc2submarineFire
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+		FireDelay: 7
+	WithAttackAnimation:
+		Armament: primary
+		Sequence: shoot
+	AttackFrontal:
+	Voiced:
+		VoiceSet: wc2voiceorcsub
+	-WithDeathAnimation:
+	WithDeathAnimation@Bubbles:
+		Delay: 0
+
+####################################################################################################
+# WC2 ORC AIR UNITS
+####################################################################################################
+
+wc2_orc_goblin_zeppelin:
+	Inherits@WC2AirUnit: ^WC2AirUnit
+	Inherits@WC2Template: ^wc2_airscout
+	Tooltip:
+		Name: Goblin Zeppelin
+	Buildable:
+		Prerequisites: wc2_orc_goblin_alchemist
+		Queue: Vehicle.orc2, RAVehicle.orc2
+		Description: Flying scout unit. He can see your house!\nDetector.
+	Voiced:
+		VoiceSet: wc2voiceorcgoblinzeppelin
+
+wc2_orc_dragon:
+	Inherits@WC2AirUnit: ^WC2AirUnit
+	Inherits@WC2Template: ^wc2_dragon
+	Tooltip:
+		Name: Dragon
+	Buildable:
+		Prerequisites: wc2_orc_dragon_roost
+		Queue: Aircraft.orc2, RAAircraft.orc2, Aircraft.X_Aircrafts
+		Description: Flying ranged attacker.\nFire breath can hit multiple targets in a line.\nStrong vs Aircraft
+	Armament@VISIBLE:
+		Weapon: wc2dragonFireVisible
+		LocalOffset: 400,0,0
+		Name: primary
+		FireDelay: 7
+	Armament@EXPLOSIONS:
+		Weapon: wc2gryphonFireExplosion
+		LocalOffset: 400,0,0
+		Name: secondary
+		FireDelay: 7
+	AttackAircraft:
+		FacingTolerance: 0
+		AttackType: Hover
+		Armaments: primary, secondary
+	WithAttackAnimation:
+		Armament: primary
+		Sequence: shoot
+	WithAttackAnimation@haste:
+		Body: body-haste
+		Armament: primary
+		Sequence: shoot
+	WithAttackAnimation@slow:
+		Body: body-slow
+		Armament: primary
+		Sequence: shoot
+	Voiced:
+		VoiceSet: wc2voiceorcdragon
+	WithFacingSpriteBody:
+		RequiresCondition: (!wc2_cond_haste && !wc2_cond_slow) || (wc2_cond_haste && wc2_cond_slow)
+	WithFacingSpriteBody@Haste:
+		Name: body-haste
+		Sequence: idle-haste
+		RequiresCondition: wc2_cond_haste && !wc2_cond_slow
+	WithFacingSpriteBody@Slow:
+		Name: body-slow
+		Sequence: idle-slow
+		RequiresCondition: wc2_cond_slow && !wc2_cond_haste
+
+wc2_orc_eye_of_kilrogg:
+	Inherits: ^WC2AirUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Eye of Kilrogg
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~disabled
+		Queue: DInfantry.orc2, RADInfantry.orc2
+		Description: Fast, weak scouting unit.
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 512
+		Speed: 350
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 30000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 15c0
+		Type: GroundPosition
+	Selectable:
+		DecorationBounds: 30,24
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: wc2voiceorceyeofkillrog
+	# Die after a short while
+	GrantTimedCondition@EyeOfKilrogg:
+		Condition: wc2_cond_eyeofkilrogg_timer
+		Duration: 480
+	ChangesHealth@EyeOfKilrogg:
+		PercentageStep: -10
+		Delay: 5
+		StartIfBelow: 110
+		RequiresCondition: !wc2_cond_eyeofkilrogg_timer
+	-WithDeathAnimation:
+
+wc2_support_orc_eye_of_kilrogg:
+	Inherits: ^RANeutralPlane
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	Health:
+		HP: 200000
+	Tooltip:
+		Name: Eye of Kilrogg
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 7
+		Speed: 373
+		Repulsable: False
+		MaximumPitch: 56
+	AttackBomber:
+	-Selectable:
+	SelectionDecorations:
+		RenderSelectionBars: False
+	-Voiced:
+	-Targetable@AIRBORNE:
+	Contrail@1:
+		Offset: -512,0,128
+	-SpawnActorOnDeath:
+	SmokeTrailWhenDamaged:
+		Offset: -1c43,0,0
+		Interval: 2
+	RejectsOrders:
+	Interactable:
+
+####################################################################################################
+# WC2 NEUTRAL STUFF
+####################################################################################################
+
+wc2_critter_sheep:
+	Inherits: ^WC2Critter
+	Tooltip:
+		Name: Sheep
+	Voiced:
+		VoiceSet: wc2voicecrittersheep
+
+wc2_critter_seal:
+	Inherits: ^WC2Critter
+	Tooltip:
+		Name: Seal
+	Voiced:
+		VoiceSet: wc2voicecritterseal
+
+wc2_critter_boar:
+	Inherits: ^WC2Critter
+	Tooltip:
+		Name: Boar
+	Voiced:
+		VoiceSet: wc2voicecritterboar
+
+wc2_critter_helboar:
+	Inherits: ^WC2Critter
+	Tooltip:
+		Name: Boar
+	Voiced:
+		VoiceSet: wc2voicecritterboar
+
+wc2_neutral_daemon:
+	Inherits: ^WC2AirUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Daemon
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 99
+		Prerequisites: ~disabled
+		Queue: Infantry.human2, RAInfantry.human2, Infantry.orc2, RAInfantry.orc2
+		Description: Daemonic flying attacker.
+	Aircraft:
+		InitialFacing: 224
+		TurnSpeed: 7
+		Speed: 125
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	DamageMultiplier@DamageReduction:
+		Modifier: 88
+	FirepowerMultiplier@FirepowerIncrease:
+		Modifier: 111
+	Health:
+		HP: 30000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 9c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: wc2daemonFire
+		LocalOffset: 400,0,0
+		Name: primary
+		FireDelay: 7
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+		Armaments: primary
+	WithAttackAnimation:
+		Armament: primary
+		Sequence: shoot
+	DeathSounds:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 30,24
+	Power:
+		Amount: -30
+	Voiced:
+		VoiceSet: wc2voiceorcdragon
+
+####################################################################################################
+# WC2 HUMAN UPGRADES
+####################################################################################################
+
+^Upgrade:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Buildable:
+		Queue: Upgrade
+		BuildLimit: 1
+		BuildDurationModifier: 100
+	ProvidesPrerequisite@upgradename:
+
+wc2_h_str_sword:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Sword Strength
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: blacksmithupg.human2, RAblacksmithupg.human2
+		BuildDuration: 1500
+		Description: Increases melee damage by 30%.
+		Prerequisites: ~!wc2_h_str_sword
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_sword
+
+wc2_h_str_sword2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Sword Strength II
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: blacksmithupg.human2, RAblacksmithupg.human2
+		BuildDuration: 1500
+		Description: Increases melee damage by further 30%.
+		Prerequisites: ~!wc2_h_str_sword2, ~wc2_h_str_sword
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_sword2
+
+wc2_h_str_shield:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Armor Strength
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: blacksmithupg.human2, RAblacksmithupg.human2
+		BuildDuration: 1500
+		Description: Increases damage resistance of all land units by 25%.
+		Prerequisites: ~!wc2_h_str_shield
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_shield
+
+wc2_h_str_shield2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Armor Strength II
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: blacksmithupg.human2, RAblacksmithupg.human2
+		BuildDuration: 1500
+		Description: Increases damage resistance of all land units by further 25%.
+		Prerequisites: ~!wc2_h_str_shield2, ~wc2_h_str_shield
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_shield2
+
+wc2_h_str_arrow:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Arrow Strength
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: lumberupg.human2, RAlumberupg.human2
+		BuildDuration: 1500
+		Description: Increases arrow damage dealt by Archers and Guard Towers by 40%.
+		Prerequisites: ~!wc2_h_str_arrow
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_arrow
+
+wc2_h_str_arrow2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Arrow Strength II
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: lumberupg.human2, RAlumberupg.human2
+		BuildDuration: 1500
+		Description: Increases arrow damage by Archers and Guard Towers by further 40%.
+		Prerequisites: ~!wc2_h_str_arrow2, ~wc2_h_str_arrow
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_arrow2
+
+wc2_h_rangerupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Ranger
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: lumberupg.human2, RAlumberupg.human2
+		BuildDuration: 1500
+		Description: Intense training is given to Elven Archers.\nIncreases damage resistance by 10% and unlocks upgrades for the Ranger.
+		Prerequisites: ~!wc2_h_rangerupg ## when keep/castle are fixed, will require Castle
+	Valued:
+		Cost: 5000
+	RenderSprites:
+		Image: wc2_h_rangerupg
+
+wc2_h_ranger_longbow:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Ranger Longbow
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: lumberupg.human2, RAlumberupg.human2
+		BuildDuration: 1500
+		Description: Increases range of Rangers by 20%.
+		Prerequisites: ~!wc2_h_ranger_longbow, ~wc2_h_rangerupg
+	Valued:
+		Cost: 4000
+	RenderSprites:
+		Image: wc2_h_ranger_longbow
+
+wc2_h_ranger_scouting:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Ranger Scouting
+	Buildable:
+		BuildPaletteOrder: 3
+		Queue: lumberupg.human2, RAlumberupg.human2
+		BuildDuration: 1500
+		Description: Increases vision range of Rangers by 50%.
+		Prerequisites: ~!wc2_h_ranger_scouting, ~wc2_h_rangerupg
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: wc2_h_ranger_scouting
+
+wc2_h_ranger_marksman:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Ranger Marksman
+	Buildable:
+		BuildPaletteOrder: 4
+		Queue: lumberupg.human2, RAlumberupg.human2
+		BuildDuration: 1500
+		Description: Increases arrow damage of Rangers by 15%.
+		Prerequisites: ~!wc2_h_ranger_marksman, ~wc2_h_rangerupg
+	Valued:
+		Cost: 4500
+	RenderSprites:
+		Image: wc2_h_ranger_marksman
+
+wc2_h_str_ballista:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Ballista Strength
+	Buildable:
+		BuildPaletteOrder: 3
+		Queue: blacksmithupg.human2, RAblacksmithupg.human2
+		BuildDuration: 1500
+		Description: Increases ballista damage dealt by Ballista by 40%
+		Prerequisites: ~!wc2_h_str_ballista
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_ballista
+
+wc2_h_str_ballista2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Ballista Strength II
+	Buildable:
+		BuildPaletteOrder: 3
+		Queue: blacksmithupg.human2, RAblacksmithupg.human2
+		BuildDuration: 1500
+		Description: Increases ballista damage dealt by Ballista by further 40%
+		Prerequisites: ~!wc2_h_str_ballista2, ~wc2_h_str_ballista
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_ballista2
+
+wc2_h_str_cannon:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Cannon Damage
+	Buildable:
+		BuildPaletteOrder: 4
+		Queue: foundryupg.human2, RAfoundryupg.human2
+		BuildDuration: 1500
+		Description: Increases Cannon Damage dealt by Naval Vessels and Cannon Towers by 40%
+		Prerequisites: ~!wc2_h_str_cannon
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_cannon
+
+wc2_h_str_cannon2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Cannon Damage II
+	Buildable:
+		BuildPaletteOrder: 4
+		Queue: foundryupg.human2, RAfoundryupg.human2
+		BuildDuration: 1500
+		Description: Increases Cannon Damage dealt by Naval Vessels and Cannon Towers by further 40%
+		Prerequisites: ~!wc2_h_str_cannon2, ~wc2_h_str_cannon
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_cannon2
+
+wc2_h_str_navyshield:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Naval Armor
+	Buildable:
+		BuildPaletteOrder: 5
+		Queue: foundryupg.human2, RAfoundryupg.human2
+		BuildDuration: 1500
+		Description: Increases damage resistance of all Naval Vessels by 25%
+		Prerequisites: ~!wc2_h_str_navyshield
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_navyshield
+
+wc2_h_str_navyshield2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Naval Armor II
+	Buildable:
+		BuildPaletteOrder: 5
+		Queue: foundryupg.human2, RAfoundryupg.human2
+		BuildDuration: 1500
+		Description: Increases damage resistance of all Naval Vessels by further 25%
+		Prerequisites: ~!wc2_h_str_navyshield2, ~wc2_h_str_navyshield
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_str_navyshield2
+
+wc2_h_paladinupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Paladin
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: churchupg.human2, RAchurchupg.human2
+		BuildDuration: 1500
+		Description: Perform holy rituals to turn your noble Knights into righteous Paladins!\nPaladins are more powerful and can cast Heal.\nIncreases damage resistance by 20%.\nIncreases melee damage by 10%.
+		Prerequisites: ~!wc2_h_paladinupg
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_paladinupg
+
+wc2_h_healingupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Healing
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: churchupg.human2, RAchurchupg.human2
+		BuildDuration: 1500
+		Description: Paladins can now heal.\nToggle Paladin's modes by deploying them.\nHealing uses mana.
+		Prerequisites: ~wc2_h_paladinupg, ~!wc2_h_healingupg
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_h_healingupg
+		
+wc2_h_exorcismupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Exorcism
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: churchupg.human2, RAchurchupg.human2
+		BuildDuration: 1500
+		Description: Paladins can now exorcise.\nToggle Paladin's modes by deploying them.\nExorcism only affects undead units.\nGood vs Orc Death Knight and Skeleton.
+		Prerequisites: ~wc2_h_paladinupg, ~!wc2_h_exorcismupg
+	Valued:
+		Cost: 4000
+	RenderSprites:
+		Image: wc2_h_exorcismupg
+
+wc2_h_slowupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Slow
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: MInfantry.human2, RAMInfantry.human2
+		BuildDuration: 1500
+		Description: Allows Mages to cast Slow.\nToggle Mage's modes by deploying them.\nSlows down affected target.\nAffects movement and attack speed.\nUses 50 mana.
+		Prerequisites: ~!wc2_h_slowupg
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: wc2_h_slowupg
+
+wc2_h_polymorphupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Polymorph
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: MInfantry.human2, RAMInfantry.human2
+		BuildDuration: 1500
+		Description: Allows Mages to cast Polymorph.\nToggle Mage's modes by deploying them.\nTurns target into a\nharmless critter.\nUses 200 mana.
+		Prerequisites: ~!wc2_h_polymorphupg
+	Valued:
+		Cost: 4000
+	RenderSprites:
+		Image: wc2_h_polymorphupg
+
+wc2_h_blizzardupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Blizzard
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: MInfantry.human2, RAMInfantry.human2
+		BuildDuration: 1500
+		Description: Allows Mages to cast Blizzard.\nToggle Mage's modes by deploying them.\nAOE damage spell.\nUses 25 mana.
+		Prerequisites: ~!wc2_h_blizzardupg
+	Valued:
+		Cost: 4000
+	RenderSprites:
+		Image: wc2_h_blizzardupg
+
+####################################################################################################
+# WC2 ORC UPGRADES
+####################################################################################################
+
+wc2_o_str_axe:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Axe Strength
+	Buildable:
+		BuildPaletteOrder: 1
+		BuildLimit: 1
+		Queue: blacksmithupg.orc2, RAblacksmithupg.orc2
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: Increases melee damage by 30%.
+		Prerequisites: ~!wc2_o_str_axe
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_axe
+
+wc2_o_str_axe2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Axe Strength II
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: blacksmithupg.orc2, RAblacksmithupg.orc2
+		BuildDuration: 1500
+		Description: Increases melee damage by further 30%.
+		Prerequisites: ~!wc2_o_str_axe2, ~wc2_o_str_axe
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_axe2
+
+wc2_o_str_shield:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Armor Strength
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: blacksmithupg.orc2, RAblacksmithupg.orc2
+		BuildDuration: 1500
+		Description: Increases damage resistance of all land units by 25%.
+		Prerequisites: ~!wc2_o_str_shield
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_shield
+
+wc2_o_str_shield2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Armor Strength II
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: blacksmithupg.orc2, RAblacksmithupg.orc2
+		BuildDuration: 1500
+		Description: Increases damage resistance of all land units by further 25%.
+		Prerequisites: ~!wc2_o_str_shield2, ~wc2_o_str_shield
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_shield2  
+
+wc2_o_str_throwaxe:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Throwing Axe Strength
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: lumberupg.orc2, RAlumberupg.orc2
+		BuildDuration: 1500
+		Description: Increases ranged damage dealt by Axethrowers and Guard Towers by 40%.
+		Prerequisites: ~!wc2_o_str_throwaxe
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_throwaxe
+
+wc2_o_str_throwaxe2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Throwing Axe Strength II
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: lumberupg.orc2, RAlumberupg.orc2
+		BuildDuration: 1500
+		Description: Increases ranged damage by Axethrowers and Guard Towers by further 40%
+		Prerequisites: ~!wc2_o_str_throwaxe2, ~wc2_o_str_throwaxe
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_throwaxe2
+
+wc2_o_berserkerupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Berserker
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: lumberupg.orc2, RAlumberupg.orc2
+		BuildDuration: 1500
+		Description: Troll Axethrowers are driven into a mad frenzy.\nIncreases damage resistance by 20% and unlocks upgrades for the Berserker.
+		Prerequisites: ~!wc2_o_berserkerupg
+	Valued:
+		Cost: 5000
+	RenderSprites:
+		Image: wc2_o_berserkerupg
+
+wc2_o_berserker_lighteraxes:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Berserker Light Axes
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: lumberupg.orc2, RAlumberupg.orc2
+		BuildDuration: 1500
+		Description: Increases throwing range of Berserker axes by 20%.
+		Prerequisites: ~!wc2_o_berserker_lighteraxes, ~wc2_o_berserkerupg
+	Valued:
+		Cost: 4000
+	RenderSprites:
+		Image: wc2_o_berserker_lighteraxes
+
+wc2_o_berserker_scouting:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Berserker Scouting
+	Buildable:
+		BuildPaletteOrder: 3
+		Queue: lumberupg.orc2, RAlumberupg.orc2
+		BuildDuration: 1500
+		Description: Increases vision range of Berserkers by 25%.
+		Prerequisites: ~!wc2_o_berserker_scouting, ~wc2_o_berserkerupg
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: wc2_o_berserker_scouting
+
+wc2_o_berserker_regen:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Berserker Regeneration
+	Buildable:
+		BuildPaletteOrder: 4
+		Queue: lumberupg.orc2, RAlumberupg.orc2
+		BuildDuration: 1500
+		Description: Berserkers heal over time.
+		Prerequisites: ~!wc2_o_berserker_regen, ~wc2_o_berserkerupg
+	Valued:
+		Cost: 4500
+	RenderSprites:
+		Image: wc2_o_berserker_regen
+
+wc2_o_str_catapult:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Catapult Strength
+	Buildable:
+		BuildPaletteOrder: 3
+		Queue: blacksmithupg.orc2, RAblacksmithupg.orc2
+		BuildDuration: 1500
+		Description: Increases Catapult damage by 40%
+		Prerequisites: ~!wc2_o_str_catapult
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_catapult
+
+wc2_o_str_catapult2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Catapult Strength II
+	Buildable:
+		BuildPaletteOrder: 3
+		Queue: blacksmithupg.orc2, RAblacksmithupg.orc2
+		BuildDuration: 1500
+		Description: Increases Catapult damage by 40%
+		Prerequisites: ~!wc2_o_str_catapult2, ~wc2_o_str_catapult
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_catapult2
+
+wc2_o_str_cannon:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Cannon Damage
+	Buildable:
+		BuildPaletteOrder: 4
+		BuildLimit: 1
+		Queue: foundryupg.orc2, RAfoundryupg.orc2
+		BuildDuration: 1500
+		BuildDurationModifier: 100	   
+		Description: Increases cannon damage dealt by Naval Vessels and Cannon Towers by 40%
+		Prerequisites: ~!wc2_o_str_cannon
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_cannon
+
+wc2_o_str_cannon2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Cannon Damage II
+	Buildable:
+		BuildPaletteOrder: 4
+		Queue: foundryupg.orc2, RAfoundryupg.orc2
+		BuildDuration: 1500
+		Description: Increases cannon damage dealt by Naval Vessels and Cannon Towers by further 40%
+		Prerequisites: ~!wc2_o_str_cannon2, ~wc2_o_str_cannon
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_cannon2
+
+wc2_o_str_navyshield:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Naval Armor
+	Buildable:
+		BuildPaletteOrder: 5
+		Queue: foundryupg.orc2, RAfoundryupg.orc2
+		BuildDuration: 1500
+		Description: Increases damage resistance of all Naval Vessels by 25%.
+		Prerequisites: ~!wc2_o_str_navyshield
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_navyshield
+
+wc2_o_str_navyshield2:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Naval Armor II
+	Buildable:
+		BuildPaletteOrder: 5
+		Queue: foundryupg.orc2, RAfoundryupg.orc2
+		BuildDuration: 1500
+		Description: Increases damage resistance of all Naval Vessels by further 25%.
+		Prerequisites: ~!wc2_o_str_navyshield2, ~wc2_o_str_navyshield
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_str_navyshield2
+
+wc2_o_ogremageupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Ogre-Mage
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: altarupg.orc2, RAaltarupg.orc2
+		BuildDuration: 1500
+		Description: Perform mysterious rituals to transform your Ogres into Ogre-Magi!\nOgre-Magi are more powerful and can cast Bloodlust.\nBloodlust makes your units hit harder for a short time.\nIncreases damage resistance by 10%.\nIncreases melee damage by 20%.
+		Prerequisites: ~!wc2_o_ogremageupg
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_ogremageupg
+
+wc2_o_bloodlustupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Bloodlust
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: altarupg.orc2, RAaltarupg.orc2
+		BuildDuration: 1500
+		Description: Allows Ogre-Magi to cast bloodlust.\nToggle Oger-Mage's modes by deploying them.\nTriples damage output of affected unit.\nUses 50 mana.
+		Prerequisites: ~wc2_o_ogremageupg, ~!wc2_o_bloodlustupg
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_bloodlustupg
+
+wc2_o_runesupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Runes
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: altarupg.orc2, RAaltarupg.orc2
+		BuildDuration: 1500
+		Description: Allows Ogre-Magi to cast runes.\nToggle Oger-Mage's modes by deploying them.\nDeploys five land mines in a + shape.\nUses 200 mana.
+		Prerequisites: ~wc2_o_ogremageupg, ~!wc2_o_runesupg
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: wc2_o_runesupg
+
+wc2_o_hasteupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Haste
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: DInfantry.orc2, RADInfantry.orc2
+		BuildDuration: 1500
+		Description: Allows Death Knights to cast haste.\nToggle Death Knight's modes by deploying them.\nSpeeds up affected target.\nAffects movement and attack speed.\nUses 50 mana.
+		Prerequisites: ~!wc2_o_hasteupg
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: wc2_o_hasteupg
+
+wc2_o_deathanddecayupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Death and Decay
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: DInfantry.orc2, RADInfantry.orc2
+		BuildDuration: 1500
+		Description: Allows Death Knights to cast death and decay.\nToggle Death Knight's modes by deploying them.\nAOE damage spell.\nUses 25 mana.
+		Prerequisites: ~!wc2_o_deathanddecayupg
+	Valued:
+		Cost: 4000
+	RenderSprites:
+		Image: wc2_o_deathanddecayupg
+
+wc2_o_raisedeadupg:
+	Inherits: ^Upgrade
+	Tooltip:
+		Name: Raise Dead
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: DInfantry.orc2, RADInfantry.orc2
+		BuildDuration: 1500
+		Description: Allows Death Knights to cast raise dead.\nToggle Death Knight's modes by deploying them.\nSummons a skeleton.\nUses 50 mana.
+		Prerequisites: ~!wc2_o_raisedeadupg
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: wc2_o_raisedeadupg

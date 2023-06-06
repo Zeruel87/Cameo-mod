@@ -5952,15 +5952,17 @@ ra2shk:
 		Queue: Infantry.SovietRA2, RAInfantry.SovietRA2
 		BuildPaletteOrder: 20
 		Description: Infantry with portable Tesla coils.\nCan charge tesla coils.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
+		BuildDuration: 300
+		BuildDurationModifier: 100
 	Valued:
-		Cost: 400
+		Cost: 600
 	Tooltip:
 		Name: Tesla Trooper
 	Health:
-		HP: 9000
+		HP: 12500
 	Mobile:
 		Voice: Move
-		Speed: 48
+		Speed: 40
 	RevealsShroud:
 		Range: 5c0
 	Armament@PRIMARY:
@@ -6604,7 +6606,7 @@ RA2MTNK:
 	Repairable:
 		HpPerStep: 2637
 	Armor:
-		Type: Heavy
+		Type: Medium
 	RevealsShroud:
 		Range: 6c0
 	Turreted:
@@ -7082,7 +7084,7 @@ RA2SREF:
 	Repairable:
 		HpPerStep: 2637
 	Armor:
-		Type: Heavy
+		Type: Light
 	RevealsShroud:
 		Range: 6c0
 	Turreted:
@@ -7131,7 +7133,7 @@ RA2MGTK:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 850
+		Cost: 800
 	Tooltip:
 		Name: Mirage Tank
 		RequiresCondition: !tree
@@ -7149,17 +7151,17 @@ RA2MGTK:
 		BuildDurationModifier: 100
 	Mobile:
 		Locomotor: tracked
-		Speed: 105
+		Speed: 111
 	Health:
 		HP: 40000
 	Repairable:
-		HpPerStep: 2637
+		HpPerStep: 3000
 	Armor:
-		Type: Heavy
+		Type: Medium
 	RevealsShroud:
 		Range: 6c0
 	Turreted:
-		TurnSpeed: 255
+		TurnSpeed: 3
 	Armament:
 		Name: primary
 		Weapon: RA2MirageGun
@@ -7396,8 +7398,8 @@ RA2HTNK:
 		Name: Rhino Heavy Tank
 	Buildable:
 		BuildPaletteOrder: 60
-        BuildDuration: 375
-        BuildDurationModifier: 100
+		BuildDuration: 375
+		BuildDurationModifier: 100
 		Prerequisites: ra2naweap, ~techlevel.medium, ~!RA2DOOM
 		Queue: Vehicle.SovietRA2, RAVehicle.SovietRA2
 		Description: Soviet main battle tank.\n Strong vs Vehicles\n Weak vs Infantry, Aircraft
@@ -7663,11 +7665,11 @@ RA2V3:
 	Tooltip:
 		Name: V3 Rocket Launcher
 	Health:
-		HP: 16000
+		HP: 25000
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 85
+		Speed: 75
 	RevealsShroud:
 		Range: 5c0
 		RevealGeneratedShroud: False
@@ -7675,10 +7677,20 @@ RA2V3:
 		Range: 4c0
 	Armament:
 		Weapon: V3Launch
-	MissileSpawnerMaster:
+		RequiresCondition: !rank-elite
+	Armament@PRIMARYELITE:
+		Weapon: V3LaunchElite
+		RequiresCondition: rank-elite  
+	MissileSpawnerMaster@1:
 		Actors: ra2v3rocket
-		RespawnTicks: 200
+		RespawnTicks: 250
 		LoadedCondition: ammo
+		RequiresCondition: !rank-elite
+	MissileSpawnerMaster@2:
+		Actors: ra2v3rocketelite
+		RespawnTicks: 200
+		LoadedCondition: ammoelite
+		RequiresCondition: rank-elite  
 	FirepowerMultiplier@RANK-1:
 		Modifier: 125
 	FirepowerMultiplier@RANK-2:
@@ -7698,38 +7710,45 @@ RA2V3:
 	Inherits@EXT: ^ExternalConditions					##########
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: vehicle								##########
-	WithFacingSpriteBody:
-		RequiresCondition: ammo
+	WithFacingSpriteBody@normal:
+		RequiresCondition: ammo && !rank-elite
 		Name: loaded
+	WithFacingSpriteBody@elite:
+		RequiresCondition: ammoelite && rank-elite  
+		Name: loadedelite
 	WithFacingSpriteBody@EMPTY:
-		RequiresCondition: !ammo
+		RequiresCondition: !ammo && !rank-elite
 		Sequence: empty-idle
 		Name: reloading
+	WithFacingSpriteBody@EMPTYelite:
+		RequiresCondition: !ammoelite && rank-elite
+		Sequence: empty-idle
+		Name: reloadingelite
 	DeliversCash:
-		Payload: 450
+		Payload: 500
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-    RangeMultiplier@eliteplus:
-        Modifier: 115
-        RequiresCondition: rank-elite       
-    ReloadDelayMultiplier@eliteplus:
-        Modifier: 80
-        RequiresCondition: rank-elite        
-    ChangesHealth@eliteplus:
-		PercentageStep: 6
-		Delay: 50
+	RangeMultiplier@eliteplus:
+		Modifier: 125
+		RequiresCondition: rank-elite       
+	ReloadDelayMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite        
+	ChangesHealth@eliteplus:
+		PercentageStep: 5
+		Delay: 25
 		StartIfBelow: 100
-        RequiresCondition: rank-elite        
+		RequiresCondition: rank-elite        
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
-RA2V3ROCKET:
+ra2v3rocket:
 	Inherits: ^ShootableMissile
 	Inherits@Voxel: ^RenderVoxel
 	Health:
-		HP: 5000
+		HP: 10000
 	ShootableBallisticMissile:
-		LaunchAngle: 62
-		Speed: 200
+		LaunchAngle: 75
+		Speed: 250
 		AirborneCondition: airborne
 		#LaunchSounds: vv3latta.wav, vv3lattb.wav
 	LeavesTrails:
@@ -7740,6 +7759,27 @@ RA2V3ROCKET:
 	SpawnedExplodes:
 		Weapon: RA2Scud
 		EmptyWeapon: RA2Scud
+ra2v3rocketelite:
+	Inherits: ra2v3rocket
+	Health:
+		HP: 20000
+	ShootableBallisticMissile:
+		LaunchAngle: 75
+		Speed: 200
+		AirborneCondition: airborne
+		#LaunchSounds: vv3latta.wav, vv3lattb.wav
+	LeavesTrails:
+		Image: smokey
+		MovingInterval: 3
+		Type: CenterPosition
+	MissileSpawnerSlave:
+	SpawnedExplodes:
+		Weapon: RA2SCUDELITE
+		EmptyWeapon: RA2SCUDELITE
+	RenderSprites:
+		Image: ra2v3rocket
+	RenderVoxels:
+		Image: ra2v3rocket
 
 RA2TTNK:
 	Inherits: ^Tank
@@ -9023,7 +9063,7 @@ ra2dred:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
 ra2dmisl:
-	Inherits: RA2V3ROCKET
+	Inherits: ra2v3rocket
 	ShootableBallisticMissile:
 		LaunchAngle: 60
 		Speed: 225
@@ -9190,7 +9230,7 @@ yrbsub:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
 yrbsubmisl:
-	Inherits: RA2V3ROCKET
+	Inherits: ra2v3rocket
 	ShootableBallisticMissile:
 		LaunchAngle: 90
 		Speed: 255
