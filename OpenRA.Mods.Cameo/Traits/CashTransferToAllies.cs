@@ -63,7 +63,7 @@ namespace OpenRA.Mods.CA.Traits
 				ticks = info.ChargeDuration;
 
 				var ownResources = self.Owner.PlayerActor.Trait<PlayerResources>();
-				var allies = self.Owner.World.Players.Where(p => p.IsAlliedWith(self.Owner) && p != self.Owner && p.InternalName != "Everyone");
+				var allies = self.World.Players.Where(p => !p.NonCombatant && p != self.Owner && p.InternalName != "Everyone" && p.IsAlliedWith(self.Owner));
 
 				if (allies.Count() == 0)
 					return;

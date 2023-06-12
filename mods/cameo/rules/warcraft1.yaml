@@ -1547,8 +1547,8 @@ wc_h_peasant:
 		DefaultAttackSequence: harvest
 		-IdleSequences: idle1,idle2,idle3,idle4        
     -DamagedByTerrain:   
-    Passenger:
-        CargoType: Worker 
+	Passenger:
+		CargoType: Worker 
 		PipType: Blue
 		CargoConditions:
 			wc_goldmine: indoors
@@ -2254,9 +2254,9 @@ wc_n_portal:
         
 wc_goldmine:
 	Inherits: ^BaseBuilding
-    Inherits@shape: ^3x3Shape    
-    Inherits@bot: ^BotMicromanageable
-    Inherits@BURNABLE: ^WC1Building
+	Inherits@shape: ^3x3Shape    
+	Inherits@bot: ^BotMicromanageable
+	Inherits@BURNABLE: ^WC1Building
 	Selectable:
 		Bounds: 40,40
 	Valued:
@@ -2266,12 +2266,12 @@ wc_goldmine:
 	Buildable:
 		BuildPaletteOrder: 15
 		Queue: Building.human, RABuilding.human, Building.orc, RABuilding.orc
-        BuildDuration: 375
-        BuildDurationModifier: 100
+		BuildDuration: 375
+		BuildDurationModifier: 100
 		Description: Send workers inside to provide passive income\nMiners progressively get experience and work more efficiently
-        Prerequisites: wc_blacksmith
+		Prerequisites: wc_blacksmith
 	Building:
-    	Footprint: xxx xxx xxx
+		Footprint: xxx xxx xxx
 		Dimensions: 3,3      
 	GivesBuildableArea:
 		AreaTypes: building
@@ -2279,66 +2279,105 @@ wc_goldmine:
 		Modifier: 88
 	Health:
 		HP: 100000
-    Power:
-        Amount: -60
+	Power:
+		Amount: -60
 	Armor:
 		Type: Concrete
 	RevealsShroud:
 		Range: 5c0
-    Cargo:
-        MaxWeight: 5
-        Types: Worker
-        PipCount: 5
+	Cargo:
+		MaxWeight: 5
+		Types: Worker
+		PipCount: 5
+		LoadedCondition: cond_loaded
 	WithSpriteBody:
-    RenderSprites:
-    CashTrickler@bot:
+	RenderSprites:
+	CashTrickler@1:
+		Amount: 24
 		Interval: 75
-		Amount: 200
+		UseResourceStorage: true
+		RequiresCondition: cond_loaded == 1
+	CashTrickler@2:
+		Amount: 48
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: cond_loaded == 2
+	CashTrickler@3:
+		Amount: 72
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: cond_loaded == 3
+	CashTrickler@4:
+		Amount: 96
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: cond_loaded == 4
+	CashTrickler@5:
+		Amount: 120
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: cond_loaded == 5
+	CashTricklerMultiplier@RANK-1:
+		Modifier: 125
+		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-2:
+		Modifier: 150
+		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-3:
+		Modifier: 175
+		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-4:
+		Modifier: 200
+		RequiresCondition: city-elite && !lowpower
+	CashTricklerMultiplier@BOT: #necessary because the loaded condition doesn't work for InitialUnits
+		Modifier: 500
 		RequiresCondition: botmicro
-		UseResourceStorage: true       
-    WithMakeAnimation:  
-    WithDeathAnimation:
-    Voiced:
-		VoiceSet: neutralgoldminevoice 
+	ExperienceTrickler@1:
+		Amount: 60
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && cond_loaded == 1 && !botmicro
+	ExperienceTrickler@2:
+		Amount: 120
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && cond_loaded == 2 && !botmicro
+	ExperienceTrickler@3:
+		Amount: 180
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && cond_loaded == 3 && !botmicro
+	ExperienceTrickler@4:
+		Amount: 240
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && cond_loaded == 4 && !botmicro
+	ExperienceTrickler@5:
+		Amount: 300
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && cond_loaded == 5 && !botmicro
+	ExperienceTrickler@BOT: #necessary because the bot version is more expensive
+		Amount: 400
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && botmicro
 
 wc_goldmine.bot:
 	Inherits@WC2BUILDING: wc_goldmine
 	Inherits@bot: ^GainsExperienceCity
-	Tooltip:
-		Name: Gold Mine (Bot)
 	Valued:
-		Cost: 3750
-	CashTrickler@bot:
-		Amount: 90
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 0 && !lowpower && !city-elite
-	CashTrickler@RANK-1:
-		Amount: 110
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
-	CashTrickler@RANK-2:
-		Amount: 135
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
-	CashTrickler@RANK-3:
-		Amount: 165
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
-	CashTrickler@RANK-4:
-		Amount: 200
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-elite && !lowpower
-	ExperienceTrickler:
-		Amount: 200
-		Interval: 1
-		InitialDelay: 1
-		PauseOnCondition: lowpower
-		RequiresCondition: city-veteran <= 3
+		Cost: 4000
+	Buildable:
+		Prerequisites: wc_blacksmith, ~botplayer
+	Cargo:
+		InitialUnits: wc_o_peon, wc_h_peasant, wc_o_peon, wc_h_peasant, wc_o_peon
 	RenderSprites:
 		Image: wc_goldmine
 		

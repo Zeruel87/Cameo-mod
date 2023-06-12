@@ -1993,8 +1993,10 @@ Player:
 
 ^wc2_goldmine:
 	Inherits@shape: ^3x3Shape
+	Inherits@Bot: ^BotMicromanageable
+	Inherits@XP: ^GainsExperienceCity
 	Valued:
-		Cost: 2400
+		Cost: 3000
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildDuration: 375
@@ -2025,6 +2027,82 @@ Player:
 		RequiresCondition: cond_loaded
 	WithMakeAnimation:  
 	WithDeathAnimation:
+	CashTrickler@1:
+		Amount: 24
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: cond_loaded == 1
+	CashTrickler@2:
+		Amount: 48
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: cond_loaded == 2
+	CashTrickler@3:
+		Amount: 72
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: cond_loaded == 3
+	CashTrickler@4:
+		Amount: 96
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: cond_loaded == 4
+	CashTrickler@5:
+		Amount: 120
+		Interval: 75
+		UseResourceStorage: true
+		RequiresCondition: cond_loaded == 5
+	CashTricklerMultiplier@RANK-1:
+		Modifier: 125
+		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-2:
+		Modifier: 150
+		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-3:
+		Modifier: 175
+		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-4:
+		Modifier: 200
+		RequiresCondition: city-elite && !lowpower
+	CashTricklerMultiplier@BOT: #necessary because the loaded condition doesn't work for InitialUnits
+		Modifier: 500
+		RequiresCondition: botmicro
+	ExperienceTrickler@1:
+		Amount: 60
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && cond_loaded == 1 && !botmicro
+	ExperienceTrickler@2:
+		Amount: 120
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && cond_loaded == 2 && !botmicro
+	ExperienceTrickler@3:
+		Amount: 180
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && cond_loaded == 3 && !botmicro
+	ExperienceTrickler@4:
+		Amount: 240
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && cond_loaded == 4 && !botmicro
+	ExperienceTrickler@5:
+		Amount: 300
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && cond_loaded == 5 && !botmicro
+	ExperienceTrickler@BOT: #necessary because the bot version is more expensive
+		Amount: 400
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3 && botmicro
 
 ####################################################################################################
 # WC2 UNIT TEMPLATES
@@ -3484,42 +3562,12 @@ wc2_human_goldmine:
 
 wc2_human_goldmine.bot:
 	Inherits@WC2BUILDING: wc2_human_goldmine
-	Inherits@bot: ^GainsExperienceCity
-	Tooltip:
-		Name: Gold Mine (Bot)
 	Valued:
-		Cost: 3750
-	CashTrickler@bot:
-		Amount: 90
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 0 && !lowpower && !city-elite
-	CashTrickler@RANK-1:
-		Amount: 110
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
-	CashTrickler@RANK-2:
-		Amount: 135
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
-	CashTrickler@RANK-3:
-		Amount: 165
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
-	CashTrickler@RANK-4:
-		Amount: 200
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-elite && !lowpower
-	ExperienceTrickler:
-		Amount: 200
-		Interval: 1
-		InitialDelay: 1
-		PauseOnCondition: lowpower
-		RequiresCondition: city-veteran <= 3
+		Cost: 4000
+	Buildable:
+		Prerequisites: wc2_human_blacksmith, ~botplayer
+	Cargo:
+		InitialUnits: wc2_human_peasant, wc2_human_peasant, wc2_human_peasant, wc2_human_peasant, wc2_human_peasant
 	RenderSprites:
 		Image: wc2_human_goldmine
 
@@ -4954,41 +5002,12 @@ wc2_orc_goldmine:
 wc2_orc_goldmine.bot:
 	Inherits@WC2BUILDING: wc2_orc_goldmine
 	Inherits@bot: ^GainsExperienceCity
-	Tooltip:
-		Name: Gold Mine (Bot)
 	Valued:
-		Cost: 3750
-	CashTrickler@bot:
-		Amount: 90
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 0 && !lowpower && !city-elite
-	CashTrickler@RANK-1:
-		Amount: 110
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
-	CashTrickler@RANK-2:
-		Amount: 135
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
-	CashTrickler@RANK-3:
-		Amount: 165
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
-	CashTrickler@RANK-4:
-		Amount: 200
-		Interval: 75
-		UseResourceStorage: true
-		RequiresCondition: city-elite && !lowpower
-	ExperienceTrickler:
-		Amount: 200
-		Interval: 1
-		InitialDelay: 1
-		PauseOnCondition: lowpower
-		RequiresCondition: city-veteran <= 3
+		Cost: 4000
+	Buildable:
+		Prerequisites: wc2_orc_blacksmith, ~botplayer
+	Cargo:
+		InitialUnits: wc2_orc_peon, wc2_orc_peon, wc2_orc_peon, wc2_orc_peon, wc2_orc_peon
 	RenderSprites:
 		Image: wc2_orc_goldmine
 
