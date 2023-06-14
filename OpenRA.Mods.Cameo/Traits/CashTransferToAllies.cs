@@ -30,7 +30,7 @@ namespace OpenRA.Mods.CA.Traits
 	public class CashTransferToAlliesInfo : PausableConditionalTraitInfo
 	{
 		[Desc("Duration between cash transfers.")]
-		public readonly int ChargeDuration = 5;
+		public readonly int ChargeDuration = 1;
 
 		[Desc("Whether to show the cash tick indicators rising from the actor.")]
 		public readonly bool ShowTicks = true;
@@ -71,18 +71,17 @@ namespace OpenRA.Mods.CA.Traits
 				foreach (var player in allies)
 				{
 					var allyResources = player.PlayerActor.Trait<PlayerResources>();
-					var toTakeFromAlly = allyResources.Cash / (99 * allies.Count());
+					var toTakeFromAlly = allyResources.Cash;
 					allyResources.TakeCash(toTakeFromAlly);
-					ownResources.GiveCash(toTakeFromAlly);
+					ownResources.Cash += toTakeFromAlly;
 				}
 
-				var toTake = ownResources.Cash / 100;
-				var toGive = toTake / allies.Count();
+				var toGive = ownResources.Cash / (allies.Count()+1);
 
 				foreach (var player in allies)
 				{
 					var allyResources = player.PlayerActor.Trait<PlayerResources>();
-					allyResources.GiveCash(toGive);
+					allyResources.Cash += toGive;
 				}
 
 				ownResources.TakeCash(toGive*allies.Count());
