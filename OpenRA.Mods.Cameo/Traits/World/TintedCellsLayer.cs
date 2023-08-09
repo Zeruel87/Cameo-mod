@@ -101,7 +101,6 @@ namespace OpenRA.Mods.CA.Traits
 			return tiles;
 		}
 
-
 		void ITick.Tick(Actor self)
 		{
 			var remove = new List<CPos>();

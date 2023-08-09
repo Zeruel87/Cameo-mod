@@ -1,4 +1,5 @@
 #region Copyright & License Information
+
 /*
  * Copyright 2007-2020 The OpenRA Developers (see AUTHORS)
  * This file is part of OpenRA, which is free software. It is made
@@ -7,9 +8,9 @@
  * the License, or (at your option) any later version. For more
  * information, see COPYING.
  */
+
 #endregion
 
-using System.Linq;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
@@ -28,7 +29,10 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Minimum Duration of Bot Player under Threshold until Insurance is active.")]
 		public readonly int ThresholdDuration = 250;
 
-		public object Create(ActorInitializer init) { return new BotInsurance(this); }
+		public object Create(ActorInitializer init)
+		{
+			return new BotInsurance(this);
+		}
 	}
 
 	public class BotInsurance : INotifyCreated, INotifyOwnerChanged, ITick
@@ -66,13 +70,11 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		void ITick.Tick(Actor self)
-		{	
-
+		{
 			if (playerResources.Cash >= info.Threshold)
 			{
 				ticks = info.ThresholdDuration;
 			}
-
 			else
 			{
 				--ticks;
@@ -86,7 +88,6 @@ namespace OpenRA.Mods.Common.Traits
 				conditionToken = conditionManager.GrantCondition(self, info.Condition);
 			else if (!enabled && conditionToken != ConditionManager.InvalidConditionToken)
 				conditionToken = conditionManager.RevokeCondition(self, conditionToken);
-			
 		}
 	}
 }

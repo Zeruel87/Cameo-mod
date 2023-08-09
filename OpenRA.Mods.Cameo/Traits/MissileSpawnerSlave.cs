@@ -12,11 +12,6 @@
  */
 #endregion
 
-using System.Linq;
-using OpenRA.Mods.Common.Activities;
-using OpenRA.Mods.Common.Traits;
-using OpenRA.Traits;
-
 /*
 Works without base engine modification.
 However, Mods.Common\Activities\Air\Land.cs is modified to support the air units to land "mid air!"

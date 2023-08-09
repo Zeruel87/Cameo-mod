@@ -11,7 +11,6 @@
 
 using System.Collections.Generic;
 using OpenRA.Mods.CA.Traits;
-using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Orders

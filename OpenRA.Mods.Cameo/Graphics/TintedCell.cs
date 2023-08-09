@@ -1,4 +1,5 @@
 ﻿#region Copyright & License Information
+
 /*
  * Copyright 2015- OpenRA.Mods.AS Developers (see AUTHORS)
  * This file is a part of a third-party plugin for OpenRA, which is
@@ -6,6 +7,7 @@
  * GNU General Public License as published by the Free Software
  * Foundation. For more information, see COPYING.
  */
+
 #endregion
 
 using System.Collections.Generic;
@@ -25,7 +27,11 @@ namespace OpenRA.Mods.CA.Graphics
 		readonly WPos wpos;
 
 		public int Level { get; private set; }
-		public int ZOffset { get { return layer.Info.ZOffset; } }
+
+		public int ZOffset
+		{
+			get { return layer.Info.ZOffset; }
+		}
 
 		public TintedCell(TintedCellsLayer layer, CPos cpos, WPos wpos)
 		{
@@ -43,17 +49,45 @@ namespace OpenRA.Mods.CA.Graphics
 			wpos = src.wpos;
 		}
 
-		public IRenderable WithPalette(PaletteReference newPalette) { return this; }
-		public IRenderable WithZOffset(int newOffset) { return this; }
-		public IRenderable OffsetBy(WVec vec) { return this; }
-		public IRenderable AsDecoration() { return this; }
+		public IRenderable WithPalette(PaletteReference newPalette)
+		{
+			return this;
+		}
 
-		public PaletteReference Palette { get { return null; } }
-		public bool IsDecoration { get { return false; } }
+		public IRenderable WithZOffset(int newOffset)
+		{
+			return this;
+		}
 
-		WPos IRenderable.Pos { get { return wpos; } }
+		public IRenderable OffsetBy(WVec vec)
+		{
+			return this;
+		}
 
-		IFinalizedRenderable IRenderable.PrepareRender(WorldRenderer wr) { return this; }
+		public IRenderable AsDecoration()
+		{
+			return this;
+		}
+
+		public PaletteReference Palette
+		{
+			get { return null; }
+		}
+
+		public bool IsDecoration
+		{
+			get { return false; }
+		}
+
+		WPos IRenderable.Pos
+		{
+			get { return wpos; }
+		}
+
+		IFinalizedRenderable IRenderable.PrepareRender(WorldRenderer wr)
+		{
+			return this;
+		}
 
 		bool firstTime = true;
 		float3[] screen;
@@ -82,10 +116,10 @@ namespace OpenRA.Mods.CA.Graphics
 				var corners = map.Grid.CellCorners[ramp];
 				screen = corners.Select(c => wr.Screen3DPxPosition(wpos + c + new WVec(0, 0, ZOffset))).ToArray();
 
-				CPos neighborL = new CPos(cpos.X-1, cpos.Y);
-				CPos neighborR = new CPos(cpos.X+1, cpos.Y);
-				CPos neighborT = new CPos(cpos.X, cpos.Y-1);
-				CPos neighborB = new CPos(cpos.X, cpos.Y+1);
+				CPos neighborL = new CPos(cpos.X - 1, cpos.Y);
+				CPos neighborR = new CPos(cpos.X + 1, cpos.Y);
+				CPos neighborT = new CPos(cpos.X, cpos.Y - 1);
+				CPos neighborB = new CPos(cpos.X, cpos.Y + 1);
 
 				tintedLeft = 0;
 				tintedTop = 0;
@@ -108,53 +142,66 @@ namespace OpenRA.Mods.CA.Graphics
 			if (Level == 0)
 				return;
 
-				var countTintedNeighbors = 0;
+			var countTintedNeighbors = 0;
+			if (tintedTop != 0)
+				countTintedNeighbors++;
+			if (tintedRight != 0)
+				countTintedNeighbors++;
+			if (tintedLeft != 0)
+				countTintedNeighbors++;
+			if (tintedBottom != 0)
+				countTintedNeighbors++;
+
+			var center = new float3((screen[0].X + screen[1].X) / 2, (screen[1].Y + screen[2].Y) / 2, screen[1].Z);
+			var selfLevel = 0;
+			if (layer.GetTiles().ContainsKey(cpos))
+				selfLevel = layer.GetTiles()[cpos].Level;
+
+			if (countTintedNeighbors >= 3)
+			{
+				SetLevel((selfLevel + tintedTop) / 2);
+				Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[1],
+					Color.FromArgb(alpha, layer.Info.Color));
+				SetLevel((selfLevel + tintedRight) / 2);
+				Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[1], screen[2],
+					Color.FromArgb(alpha, layer.Info.Color));
+				SetLevel((selfLevel + tintedLeft) / 2);
+				Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[3],
+					Color.FromArgb(alpha, layer.Info.Color));
+				SetLevel((selfLevel + tintedBottom) / 2);
+				Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[2], screen[3],
+					Color.FromArgb(alpha, layer.Info.Color));
+			}
+			else
+			{
 				if (tintedTop != 0)
-					countTintedNeighbors++;
-				if (tintedRight != 0)
-					countTintedNeighbors++;
-				if (tintedLeft != 0)
-					countTintedNeighbors++;
-				if (tintedBottom != 0)
-					countTintedNeighbors++;
-
-				var center = new float3((screen[0].X + screen[1].X) / 2, (screen[1].Y + screen[2].Y)/2, screen[1].Z);
-				var selfLevel = 0;
-				if (layer.GetTiles().ContainsKey(cpos))
-					selfLevel = layer.GetTiles()[cpos].Level;
-
-				if (countTintedNeighbors >= 3) {
+				{
 					SetLevel((selfLevel + tintedTop) / 2);
-					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[1], Color.FromArgb(alpha, layer.Info.Color));
+					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[1],
+						Color.FromArgb(alpha, layer.Info.Color));
+				}
+
+				if (tintedRight != 0)
+				{
 					SetLevel((selfLevel + tintedRight) / 2);
-					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[1], screen[2], Color.FromArgb(alpha, layer.Info.Color));
+					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[1], screen[2],
+						Color.FromArgb(alpha, layer.Info.Color));
+				}
+
+				if (tintedLeft != 0)
+				{
 					SetLevel((selfLevel + tintedLeft) / 2);
-					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[3], Color.FromArgb(alpha, layer.Info.Color));
+					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[3],
+						Color.FromArgb(alpha, layer.Info.Color));
+				}
+
+				if (tintedBottom != 0)
+				{
 					SetLevel((selfLevel + tintedBottom) / 2);
-					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[2], screen[3], Color.FromArgb(alpha, layer.Info.Color));
+					Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[2], screen[3],
+						Color.FromArgb(alpha, layer.Info.Color));
 				}
-				else {
-					if (tintedTop != 0)
-					{
-						SetLevel((selfLevel + tintedTop) / 2);
-						Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[1], Color.FromArgb(alpha, layer.Info.Color));
-					}
-					if (tintedRight != 0)
-					{
-						SetLevel((selfLevel + tintedRight) / 2);
-						Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[1], screen[2], Color.FromArgb(alpha, layer.Info.Color));
-					}
-					if (tintedLeft != 0)
-					{
-						SetLevel((selfLevel + tintedLeft) / 2);
-						Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[0], screen[3], Color.FromArgb(alpha, layer.Info.Color));
-					}
-					if (tintedBottom != 0)
-					{
-						SetLevel((selfLevel + tintedBottom) / 2);
-						Game.Renderer.WorldRgbaColorRenderer.FillTriangle(center, screen[2], screen[3], Color.FromArgb(alpha, layer.Info.Color));
-					}
-				}
+			}
 		}
 
 		public void SetLevel(int value)
@@ -171,9 +218,22 @@ namespace OpenRA.Mods.CA.Graphics
 			alpha = layer.Info.Darkest + (layer.TintLevel * level) / 255;
 		}
 
-		public void RenderDebugGeometry(WorldRenderer wr) { }
-		public Rectangle ScreenBounds(WorldRenderer wr) { return Rectangle.Empty; }
-		public void Tick(World world) { }
-		IEnumerable<IRenderable> IEffect.Render(WorldRenderer r) { yield return this; }
+		public void RenderDebugGeometry(WorldRenderer wr)
+		{
+		}
+
+		public Rectangle ScreenBounds(WorldRenderer wr)
+		{
+			return Rectangle.Empty;
+		}
+
+		public void Tick(World world)
+		{
+		}
+
+		IEnumerable<IRenderable> IEffect.Render(WorldRenderer r)
+		{
+			yield return this;
+		}
 	}
 }

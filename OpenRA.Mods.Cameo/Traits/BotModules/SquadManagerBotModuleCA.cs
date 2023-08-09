@@ -10,13 +10,10 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Mods.CA.Traits.BotModules.Squads;
-using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
-using OpenRA.Support;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Traits

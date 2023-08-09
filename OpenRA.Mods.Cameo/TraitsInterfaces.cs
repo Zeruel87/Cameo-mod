@@ -9,13 +9,8 @@
  */
 #endregion
 
-using System;
-using System.Collections.Generic;
-using OpenRA.Activities;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
-using OpenRA.Mods.Common.Activities;
-using OpenRA.Mods.Common.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 

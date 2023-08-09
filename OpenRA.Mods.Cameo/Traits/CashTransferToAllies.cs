@@ -9,19 +9,9 @@
  */
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using OpenRA.GameRules;
-using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
-using OpenRA.Primitives;
 using OpenRA.Traits;
-
-using OpenRA.Mods.Common.Effects;
-
-using OpenRA.Graphics;
-using OpenRA.Mods.Common.Traits.Render;
 
 namespace OpenRA.Mods.CA.Traits
 {
@@ -76,7 +66,7 @@ namespace OpenRA.Mods.CA.Traits
 					ownResources.Cash += toTakeFromAlly;
 				}
 
-				var toGive = ownResources.Cash / (allies.Count()+1);
+				var toGive = ownResources.Cash / (allies.Count() + 1);
 
 				foreach (var player in allies)
 				{
@@ -84,8 +74,7 @@ namespace OpenRA.Mods.CA.Traits
 					allyResources.Cash += toGive;
 				}
 
-				ownResources.TakeCash(toGive*allies.Count());
-			
+				ownResources.TakeCash(toGive * allies.Count());
 			}
 		}
 	}

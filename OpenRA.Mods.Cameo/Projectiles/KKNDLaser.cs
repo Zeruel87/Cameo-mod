@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
 using OpenRA.Mods.CA.Graphics;
-using OpenRA.Mods.Common.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Support;
 using OpenRA.Traits;
