@@ -166,25 +166,15 @@ camea_conyard:
         
 POWR.camea:
 	Inherits: POWR
+	Tooltip:
+		Name: Power Plant
 	Buildable:
 		Queue: Building.camea, RABuilding.camea
 		BuildPaletteOrder: 10
 		Prerequisites: camea_conyard
 		Description: Provides power for other structures.
-	Valued:
-		Cost: 500			#300
-	Tooltip:
-		Name: Power Plant
-	Health:
-		HP: 55000	#40000
-	Armor:
-		Type: Wood
-	RevealsShroud:
-		Range: 4c0
-	Power:
-		Amount: 120
-    RenderSprites:
-        Image: POWR
+	RenderSprites:
+		Image: POWR
         
 HAND.camea:
 	Inherits: ^BaseBuilding
@@ -463,8 +453,6 @@ NUK2.camea:
 		Bounds: 48,48
 	HitShape:
 		TargetableOffsets: 630,299,0
-	Valued:
-		Cost: 800
 	Tooltip:
 		Name: Advanced Power Plant
 	Buildable:
@@ -472,14 +460,8 @@ NUK2.camea:
 		Prerequisites: anyhq, ~techlevel.medium
 		Queue: Building.camea, RABuilding.camea
 		Description: Provides more power, cheaper than the\nstandard Power Plant
-	Health:
-		HP: 70000
-	RevealsShroud:
-		Range: 4c0
-	Power:
-		Amount: 250
-    RenderSprites:
-        Image: NUK2       
+	RenderSprites:
+		Image: NUK2       
         
 stek.camea:
 	Inherits: STEK
@@ -724,14 +706,16 @@ OILB.camea:
 	Inherits: ^BaseBuilding
 	Inherits@2: ^CashTricklerMultipliers
 	Inherits@shape: ^2x2Shape
-    Inherits@lowpower: ^DisabledOverlay
-    Buildable:
+	Inherits@lowpower: ^DisabledOverlay
+	Inherits@Bot: ^BotMicromanageable
+	Inherits@XP: ^GainsExperienceCity
+	Buildable:
 		Queue: Building.camea, RABuilding.camea
 		BuildPaletteOrder: 120
 		Prerequisites: stek.camea, ~techlevel.medium
 		Description: Provides Passive income
-    Valued:
-        Cost: 2500
+	Valued:
+		Cost: 2500
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 630,-300,0, 420,512,0, -420,-512,0, -630,300,0
@@ -742,8 +726,8 @@ OILB.camea:
 		Footprint: xx xx
 		Dimensions: 2,2
 	Health:
-		HP: 80000
-    UpdatesDerrickCount:    
+		HP: 100000
+	UpdatesDerrickCount:
 	RevealsShroud:
 		Range: 4c0
 	CaptureManager:
@@ -753,15 +737,33 @@ OILB.camea:
 	CashTrickler:
 		Interval: 250
 		Amount: 250
-        PauseOnCondition: lowpower
-    CashTricklerBar:
+		PauseOnCondition: lowpower
+	CashTricklerBar:
+	CashTricklerMultiplier@RANK-1:
+		Modifier: 125
+		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-2:
+		Modifier: 150
+		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-3:
+		Modifier: 175
+		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-4:
+		Modifier: 200
+		RequiresCondition: city-elite && !lowpower
+	ExperienceTrickler@1:
+		Amount: 250
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3
 	Tooltip:
 		Name: Oil Derrick
-    RenderSprites:
-        Image: OILB
-    -WithDeathAnimation:
-    Power:
-        Amount: -50     
+	RenderSprites:
+		Image: OILB
+	-WithDeathAnimation:
+	Power:
+		Amount: -50
         
 HOSP.camea:
 	Inherits: ^BaseBuilding

@@ -224,6 +224,7 @@ World:
 		ClassName: Heavy Support
 		Factions: tiberiump
 		BaseActor: fact.tiberiump
+
 OILB.td:
 	Inherits: OILB.camea
     Buildable:
@@ -233,11 +234,11 @@ OILB.td:
 		Description: Provides Passive income
 
 Player:
-    ExternalCondition@BuildingsOwned:
-        Condition: BuildingsOwned
-    ProvidesPrerequisite@BuildingsOwned
-        Prerequisite: allowsMCV
-        RequiresCondition: BuildingsOwned < 5
+	ExternalCondition@BuildingsOwned:
+		Condition: BuildingsOwned
+	ProvidesPrerequisite@BuildingsOwned:
+		Prerequisite: allowsMCV
+		RequiresCondition: BuildingsOwned < 5
 	#####	MODGDI	#####
 	ClassicProductionQueue@RABUILDINGMODGDI:
 		Type: RABuilding.MODGDI
@@ -417,7 +418,7 @@ E2:
     Inherits@AntiInf: ^PrioritizeInfantry
     Inherits@AntiBuil: ^PrioritizeBuilding
 	Valued:
-		Cost: 160
+		Cost: 150
 	Tooltip:
 		Name: Grenadier
 	UpdatesPlayerStatistics:
@@ -940,9 +941,9 @@ APC:
 		RecoilRecovery: 18
 		LocalOffset: 85,85,299, 85,-85,299
 		MuzzleSequence: muzzle
-    Armament@ROCKET:
-        Weapon: APCRocket.AA
-        LocalOffset: 85,125,299
+	Armament@ROCKET:
+		Weapon: APCRocket.AA
+		LocalOffset: 85,125,299
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -1421,12 +1422,6 @@ MSAM:
 		Weapon: 227mm
 		LocalOffset: 213,128,0, 213,-128,0
 	Armament@SECONDARY:
-		Weapon: 227mmAA
-		LocalOffset: 213,-128,0, 213,128,0
-	Armament@Third:
-		Weapon: 227mm
-		LocalOffset: 213,128,0, 213,-128,0
-	Armament@Fourth:
 		Weapon: 227mmAA
 		LocalOffset: 213,-128,0, 213,128,0
 	AttackFrontal:
@@ -2374,12 +2369,12 @@ NUKE:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 55000
+		HP: 75000
 	RevealsShroud:
 		Range: 4c0
 	WithBuildingBib:
 	Power:
-		Amount: 120
+		Amount: 125
 	ScalePowerWithHealth:
 	AcceptsDeliveredExperience:							##########
 		ValidTypes: building							##########
@@ -2394,7 +2389,7 @@ NUK2:
 	HitShape:
 		TargetableOffsets: 630,299,0
 	Valued:
-		Cost: 800
+		Cost: 1000
 	Tooltip:
 		Name: Advanced Power Plant
 	Buildable:
@@ -2407,7 +2402,7 @@ NUK2:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 70000
+		HP: 150000
 	RevealsShroud:
 		Range: 4c0
 	WithBuildingBib:
@@ -3290,7 +3285,7 @@ GUN:
 		Description: Basic Anti-Tank base defense.\n  Strong vs Tanks, vehicles\n  Weak vs Infantry
 	Building:
 	Health:
-		HP: 41000
+		HP: 50000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -3416,6 +3411,8 @@ OBLI:
 		RequiresCondition: !lowpower
 	Power:
 		Amount: -75
+	RangeMultiplier@LaserUpgrade:
+		Modifier: 111
 
 GTWR:
 	Inherits: ^Defense
@@ -3684,18 +3681,6 @@ CNCSPEN:
 		Image: raspen
 	-ProductionBar@NAVALSOVIET:
 	-ProductionBar@RANAVALSOVIET:
- 
- PVICE:
-	Inherits: ^Viceroid
-	Buildable:
-		Queue: Biolab
-		BuildPaletteOrder: 40
-		Description: Mutated abomination that spits liquid Tiberium.\n  Strong vs Infantry, Buildings\n  Weak vs Aircraft
-	Tooltip:
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	ActorLostNotification:
-	Inherits@EXT: ^ExternalConditions					##########
 
 STEG:
 	Inherits: ^DINO
@@ -3719,32 +3704,6 @@ steg.citydrop:
 		Type: Light
 	RenderSprites:
 		Image: steg
-
-TREX:
-	Inherits: ^DINO
-	Tooltip:
-		Name: Tyrannosaurus rex
-	Armament:
-		Weapon: teeth
-	Selectable:
-		Bounds: 48,36,2,1
-		DecorationBounds: 52,38
-	SelectionDecorations:
-	Buildable:
-		Description: Bipedal carnivore with a massive skull
-	Inherits@EXT: ^ExternalConditions					##########
-
-trex.citydrop:
-	Inherits: TREX
-	-Buildable:
-	Mobile:
-		Speed: 130
-	Health:
-		HP: 26000
-	Armor:
-		Type: Light
-	RenderSprites:
-		Image: trex
 
 TRIC:
 	Inherits: ^DINO
@@ -3792,9 +3751,10 @@ rapt.citydrop:
 Zombie:
 	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-    Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@Infect: ^InfectionGamemode
 	Valued:
-		Cost: 100
+		Cost: 250
 	Tooltip:
 		Name: Zombie
 	UpdatesPlayerStatistics:
@@ -3802,13 +3762,16 @@ Zombie:
 	Buildable:
 		Queue: RaBiolab, Biolab
 		BuildPaletteOrder: 200
+		BuildDuration: 250
+		BuildDurationModifier: 100
 		Description: Slow undead. Attacks in close combat.
 	Health:
 		HP: 25000
 	Mobile:
 		Speed: 42
 	AutoTarget:
-		ScanRadius: 5
+		ScanRadius: 10
+		InitialStance: AttackAnything
 	WithInfantryBody:
 		DefaultAttackSequence: bite
 		IdleSequences: idle1
@@ -3819,12 +3782,14 @@ Zombie:
 	-TakeCover:
 	Inherits@EXT: ^ExternalConditions					##########
 
+
 Ant:
 	Inherits: ^Infantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-    Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@Infect: ^InfectionGamemode
 	Valued:
-		Cost: 300
+		Cost: 1000
 	Tooltip:
 		Name: Giant Ant
 		GenericName: Ant
@@ -3833,20 +3798,25 @@ Ant:
 	Buildable:
 		Queue: RaBiolab, Biolab
 		BuildPaletteOrder: 1954
+		BuildDuration: 250
+		BuildDurationModifier: 100
 		Description: Irradiated insect that grew oversize.
 	Selectable:
 		Bounds: 24,24,0,-5
 		DecorationBounds: 30,30,0,-2
 	SelectionDecorations:
 	Health:
-		HP: 75000
+		HP: 100000
+	Armor:
+		Type: Heavy
 	Mobile:
-		Speed: 99
+		Speed: 100
 		TurnSpeed: 12
 		Locomotor: lighttracked
 	-Crushable:
 	AutoTarget:
-		ScanRadius: 5
+		ScanRadius: 10
+		InitialStance: AttackAnything
 	AttackFrontal:
 	WithInfantryBody:
 		DefaultAttackSequence: bite
@@ -3863,53 +3833,68 @@ Ant:
 			Radius: 469
 	Inherits@EXT: ^ExternalConditions					##########
 
-FireAnt:
-	Inherits: Ant
+trex:
+	Inherits: ^DINO
+	Inherits@Infect: ^InfectionGamemode
 	Tooltip:
-		Name: Fire Ant
-		GenericVisibility: none
-	Mobile:
-		Speed: 80
-	Armament:
-		Weapon: AntFireball
-	Health:
-		HP: 7500
-	Armor:
-		Type: Heavy
+		Name: Tyrannosaurus Rex
 	Buildable:
-		Prerequisites: ~wip-content
-
-ScoutAnt:
-	Inherits: Ant
-	Tooltip:
-		Name: Scout Ant
-		GenericVisibility: none
+		Queue: Biolab
+		BuildPaletteOrder: 40
+		Prerequisites: bio, upzombiemutate3
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: Giant dinosaur with powerful melee attack.\n  Strong vs Infantry, Buildings\n  Weak vs Aircraft
+	Armament:
+		Weapon: teeth
+	Valued:
+		Cost: 2000
 	Health:
-		HP: 8500
+		HP: 50000
 	Armor:
 		Type: Light
-	AutoTarget:
-		ScanRadius: 7
+	DamageMultiplier:
+		Modifier: 50
+	FirepowerMultiplier:
+		Modifier: 200
+	Selectable:
+		Bounds: 48,36,2,1
+		DecorationBounds: 52,38
+	SelectionDecorations:
 	Buildable:
-		Prerequisites: ~wip-content
+		Description: Bipedal carnivore with a massive skull
+	Inherits@EXT: ^ExternalConditions					##########
 
-WarriorAnt:
-	Inherits: Ant
-	Tooltip:
-		Name: Warrior Ant
-		GenericVisibility: none
+trex.citydrop:
+	Inherits: trex
+	-Buildable:
 	Mobile:
-		Speed: 65
+		Speed: 130
 	Health:
-		HP: 12500
+		HP: 26000
 	Armor:
-		Type: Heavy
-	Armament:
-		Weapon: MandibleHeavy
-	Buildable:
-		Prerequisites: ~wip-content
+		Type: Light
 	RenderSprites:
-		Image: Ant
+		Image: trex
+
+PVICE:
+	Inherits: ^Viceroid
+	Inherits@Infect: ^InfectionGamemode
+	Buildable:
+		Queue: Biolab
+		BuildPaletteOrder: 40
+		BuildDuration: 250
+		BuildDurationModifier: 100
+		Description: Mutated abomination that spits liquid Tiberium.\n  Strong vs Infantry, Buildings\n  Weak vs Aircraft
+	Tooltip:
+	Valued:
+		Cost: 1000
+	Health:
+		HP: 50000
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	ActorLostNotification:
+	Inherits@EXT: ^ExternalConditions					##########
 
 ####################################################################################################
 #		Tiberian Dawn Expansion Buildings
@@ -3926,7 +3911,7 @@ MCV.MODGDI:
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: anyhq, ~techlevel.medium, fix
-		Queue: Vehicle.MODGDI, RAVehicle.MODGDI
+		Queue: Vehicle.MODGDI, RAVehicle.MODGDI, Vehicle.MODGDIR, RAVehicle.MODGDIR
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
 	Selectable:
@@ -3979,7 +3964,7 @@ MCV.MODNOD:
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: anyhq, ~techlevel.medium, fix
-		Queue: Vehicle.MODNod, RAVehicle.MODNod
+		Queue: Vehicle.MODNod, RAVehicle.MODNod, Vehicle.MODNodR, RAVehicle.MODNodR
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
 	Selectable:
@@ -6447,7 +6432,7 @@ IOKNUKE:
 	HitShape:
 		TargetableOffsets: 630,299,0
 	Valued:
-		Cost: 500
+		Cost: 400
 	Tooltip:
 		Name: Power Plant
 	Buildable:
@@ -6460,7 +6445,7 @@ IOKNUKE:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 55000
+		HP: 60000
 	RevealsShroud:
 		Range: 4c0
 	WithBuildingBib:
@@ -6749,7 +6734,7 @@ IOKNUK2:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 70000
+		HP: 120000
 	RevealsShroud:
 		Range: 4c0
 	WithBuildingBib:
@@ -6768,6 +6753,7 @@ IOKNUK2:
 		VoiceSet: USAColdFusionReactorVoice
 		
 iokblackmarket:
+	Inherits: OILB.camea
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@camo: ^BuildingCamoLevel2
@@ -6790,7 +6776,7 @@ iokblackmarket:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 55000
+		HP: 75000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -6814,22 +6800,9 @@ iokblackmarket:
 	GrantConditionOnPrerequisite@upglabounty3:
 		Condition: upglabounty3
 		Prerequisites: upglabounty3
-	CashTrickler@Rank0:
-		Interval: 100
-		Amount: 10
-		#RequiresCondition: !upglabounty1
-	#CashTrickler@Rank1:
-	#	Interval: 20
-	#	Amount: 25
-	#	RequiresCondition: upglabounty1 && !upglabounty2
-	#CashTrickler@Rank2:
-	#	Interval: 20
-	#	Amount: 30
-	#	RequiresCondition: upglabounty2 && !upglabounty3
-	#CashTrickler@Rank3:
-	#	Interval: 20
-	#	Amount: 40
-	#	RequiresCondition: upglabounty3
+	CashTrickler:
+		Interval: 25
+		Amount: 25
 	Production@Upgrades:
 		Produces: MarketUpgrades.GLA
 	Voiced:
@@ -7224,6 +7197,8 @@ IOKOBLI:
 		Image: obli
 	SpawnActorOnDeath@hole:
 		Actor: iokhole.iokobli
+	RangeMultiplier@LaserUpgrade:
+		Modifier: 111
 		
 ####################################################################################################
 #		IOK - INFANTRY
