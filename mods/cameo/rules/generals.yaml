@@ -2795,7 +2795,7 @@ glpalace:
 		AreaTypes: building
 	SelectionDecorations:
 	Health:
-		HP: 130000
+		HP: 150000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -2804,8 +2804,8 @@ glpalace:
 	ProvidesPrerequisite@buildingname:
 	Cargo:
 		Types: Infantry, Hacker, Fremen
-		MaxWeight: 5
-		PipCount: 5
+		MaxWeight: 6
+		PipCount: 6
 		EjectOnDeath: false
 	AttackOpenTopped:
 		Armaments: garrisoned
@@ -2820,6 +2820,8 @@ glpalace:
 		Modifier: 175
 	Production@Upgrades:
 		Produces: PalaceUpgrades.GLA
+	ProductionBar@Upgrades:
+		ProductionType: PalaceUpgrades.GLA
 	DetectCloaked:
 		Range: 2c0
 	-RenderDetectionCircle:
@@ -2959,7 +2961,7 @@ glblackmarket:
 	Selectable:
 		Bounds: 48,48
 	Buildable:
-		Queue: Building.GLA, RABuilding.GLA
+		Queue: Building.GLA, RABuilding.GLA, Building.LEANG, RABuilding.LEANG
 		BuildPaletteOrder: 70
 		Prerequisites: glpalace, ~glaselected
 		Description: Unlock upgrades for GLA weaponry.\nProvides a cash supply.
@@ -3000,6 +3002,8 @@ glblackmarket:
     UpdatesDerrickCount:
 	Production@Upgrades:
 		Produces: MarketUpgrades.GLA
+	ProductionBar@Upgrades:
+		ProductionType: MarketUpgrades.GLA
 	Voiced:
 		VoiceSet: GLBlackMarketVoice
 	SpawnActorOnDeath@hole:
@@ -3242,7 +3246,7 @@ gltrap:
 		Prerequisites: glbarracks, ~glaselected
 		Queue: Defence.GLA, RADefence.GLA
 		BuildDurationModifier: 100
-        BuildDuration: 375
+		BuildDuration: 375
 		Description: Explosive defensive structure.
 	Building:
 	Health:
@@ -3994,35 +3998,49 @@ glbggy:
 		BuildPaletteOrder: 30
 		Prerequisites: glweap, glpalace, ~techlevel.medium, ~glaselected
 		Queue: Vehicle.GLA, RAVehicle.GLA, Vehicle.X_Vehicles
+		BuildDuration: 500
+		BuildDurationModifier: 100
 		Description: Fast, long-range artillery.\n  Strong vs Vehicles, Buildings\n  Weak vs Aircraft
 	Mobile:
-		Speed: 155
+		Speed: 175
 	Health:
-		HP: 12000
+		HP: 12500
 	Repairable:
 		HpPerStep: 569
 	Armor:
 		Type: Light
 	RevealsShroud:
 		Range: 5c0
-	Armament@Normal:
-		Weapon: GLRocketBuggyMissiles
-		LocalOffset: 624,-128,208, 624,128,208
-		MuzzleSequence: muzzle
-		RequiresCondition: !selectglatoxin
-	Armament@Extra:
-		Weapon: GLRocketBuggyMissiles
-		LocalOffset: 624,128,208, 624,-128,208
-		MuzzleSequence: muzzle
-		RequiresCondition: ammoupgrade
 	Armament@Toxin:
 		Weapon: GLRocketBuggyMissilesToxin
 		LocalOffset: 624,-128,208, 624,128,208
 		MuzzleSequence: muzzle
 		RequiresCondition: selectglatoxin
+	Armament@Demo:
+		Weapon: GLRocketBuggyMissilesExplosive
+		LocalOffset: 624,-128,208, 624,128,208
+		MuzzleSequence: muzzle
+		RequiresCondition: selectglademo
+	Armament@Normal:
+		Weapon: GLRocketBuggyMissiles
+		LocalOffset: 624,-128,208, 624,128,208
+		MuzzleSequence: muzzle
+		RequiresCondition: !selectglatoxin && !selectglademo
+	Armament@Extra:
+		Weapon: GLRocketBuggyMissiles
+		LocalOffset: 624,128,208, 624,-128,208
+		MuzzleSequence: muzzle
+		RequiresCondition: ammoupgrade || scrap_create_bonus >= 1
+		FireDelay: 2
+	ReloadDelayMultiplier@ExtraSalvage:
+		RequiresCondition: (ammoupgrade && scrap_create_bonus >= 1) || (!ammoupgrade && scrap_create_bonus == 2)
+		Modifier: 50
+	ReloadDelayMultiplier@ExtraSalvage2:
+		RequiresCondition: ammoupgrade && scrap_create_bonus == 2
+		Modifier: 50
 	AttackTurreted:
 		TargetFrozenActors: True
-		ForceFireIgnoresActors: True
+		#ForceFireIgnoresActors: True
 	ProducibleWithLevel@upsglreconvehicletraining:
 		Prerequisites: upsglreconvehicletraining
 		InitialLevels: 3
@@ -4033,7 +4051,13 @@ glbggy:
 		RequiresCondition: !ammoupgrade
 	WithSpriteTurret@2:
 		Sequence: turret2
-		RequiresCondition: ammoupgrade
+		RequiresCondition: (ammoupgrade && scrap_create_bonus == 0) || (!ammoupgrade && scrap_create_bonus == 1)
+	WithSpriteTurret@3:
+		Sequence: turret3
+		RequiresCondition: (ammoupgrade && scrap_create_bonus == 1) || (!ammoupgrade && scrap_create_bonus == 2)
+	WithSpriteTurret@4:
+		Sequence: turret4
+		RequiresCondition: ammoupgrade && scrap_create_bonus == 2
 	WithMuzzleOverlay:
 	AutoTarget:
 		InitialStanceAI: Defend
@@ -4053,8 +4077,35 @@ glbggy:
 	GrantConditionOnPrerequisite@selectglatoxin:
 		Condition: selectglatoxin
 		Prerequisites: selectglatoxin
+	GrantConditionOnPrerequisite@selectglademo:
+		Condition: selectglademo
+		Prerequisites: selectglademo
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
+	ExternalCondition@SCRAP_CREATE_BONUS:
+		Condition: scrap_create_bonus
+		TotalCap: 2
+	ProductionTimeMultiplier@selectglatoxin:
+		Multiplier: 150
+		Prerequisites: selectglatoxin
+	ProductionCostMultiplier@selectglatoxin:
+		Multiplier: 200
+		Prerequisites: selectglatoxin
+	ProductionTimeMultiplier@selectglademo:
+		Multiplier: 125
+		Prerequisites: selectglademo
+	ProductionCostMultiplier@selectglademo:
+		Multiplier: 150
+		Prerequisites: selectglademo
+	FirepowerMultiplier@selectglanottoxindemo:
+		Modifier: 50
+		RequiresCondition: !selectglatoxin && !selectglademo
+	FirepowerMultiplier@selectgltoxindemo:
+		Modifier: 33
+		RequiresCondition: selectglatoxin || selectglademo
+	RenderSprites:
+		Image: sglbggy
+
 glbbus:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -6751,6 +6802,8 @@ chpropaganda:
 	ProvidesPrerequisite@buildingname:
 	Production@Upgrades:
 		Produces: PropagandaUpgrades.CHINA
+	ProductionBar@Upgrades:
+		ProductionType: PropagandaUpgrades.CHINA
 	Power:
 		Amount: -40
 	Voiced:
@@ -6816,7 +6869,7 @@ chinternetcenter:
 	Tooltip:
 		Name: Internet Center
 	Buildable:
-		Queue: Building.CHINA, RABuilding.CHINA
+		Queue: Building.CHINA, RABuilding.CHINA, Building.LEANG, RABuilding.LEANG
 		BuildPaletteOrder: 70
 		BuildDurationModifier: 100
 		BuildDuration: 1500
@@ -7090,6 +7143,8 @@ chsilo:
 		RequiresCondition: !lowpower
 	Production@Upgrades:
 		Produces: NukeUpgrades.CHINA
+	ProductionBar@Upgrades:
+		ProductionType: NukeUpgrades.CHINA
 	NukePower@unlimited:
 		AllowMultiple: True
 		Prerequisites: ~techlevel.superweapons
@@ -7645,7 +7700,7 @@ chbattle:
     Inherits@upschnucleartanks: ^upschnucleartanks
     Inherits@upschreactivearmor: ^ReactiveArmorUpgrade
 	Valued:
-		Cost: 1000
+		Cost: 800
 	Tooltip:
 		Name: Battlemaster Tank
 	UpdatesPlayerStatistics:
@@ -7654,6 +7709,8 @@ chbattle:
 		BuildPaletteOrder: 40
 		Prerequisites: chweap, ~techlevel.medium, ~!selectchinf
 		Queue: Vehicle.CHINA, RAVehicle.CHINA, Vehicle.X_Vehicles
+		BuildDuration: 375
+		BuildDurationModifier: 100
 		Description: Chinese main battle tank.\n  Strong vs Vehicles\n  Weak vs Infantry
 	Mobile:
 		Speed: 80
@@ -7682,29 +7739,29 @@ chbattle:
 		LocalOffset: 768,0,90
 		MuzzleSequence: muzzle
 		RequiresCondition: urshellupgrade && !upschadvancedautoloader && !upschautoload
-    Armament@upschadvancedautoloader:
-        Weapon: CHBattlemasterCannonAuto
+	Armament@upschadvancedautoloader:
+		Weapon: CHBattlemasterCannonAuto
 		Recoil: 128
 		RecoilRecovery: 26
 		LocalOffset: 768,0,90
 		MuzzleSequence: muzzle
 		RequiresCondition: !urshellupgrade && upschadvancedautoloader
-    Armament@upschadvancedautoloadernuke:
-        Weapon: CHBattlemasterCannonNuclearAuto
+	Armament@upschadvancedautoloadernuke:
+		Weapon: CHBattlemasterCannonNuclearAuto
 		Recoil: 128
 		RecoilRecovery: 26
 		LocalOffset: 768,0,90
 		MuzzleSequence: muzzle
 		RequiresCondition: urshellupgrade && upschadvancedautoloader
-    Armament@upschautoload:
-        Weapon: SCHBattlemasterCannonAuto
+	Armament@upschautoload:
+		Weapon: SCHBattlemasterCannonAuto
 		Recoil: 128
 		RecoilRecovery: 26
 		LocalOffset: 768,0,90
 		MuzzleSequence: muzzle
 		RequiresCondition: !urshellupgrade && upschautoload && !upschadvancedautoloader
-    Armament@upschautoloadnuke:
-        Weapon: SCHBattlemasterCannonNuclearAuto
+	Armament@upschautoloadnuke:
+		Weapon: SCHBattlemasterCannonNuclearAuto
 		Recoil: 128
 		RecoilRecovery: 26
 		LocalOffset: 768,0,90
@@ -7735,7 +7792,7 @@ chbattle:
 		Prerequisites: upschautoload
 	ReloadDelayMultiplier@upautoload:
 		RequiresCondition: upautoload
-		Modifier: 70
+		Modifier: 75
 	ProducibleWithLevel:
 		Prerequisites: selectchtanks
 		InitialLevels: 1
@@ -7746,12 +7803,12 @@ chbattle:
 		Multiplier: 90
 		Prerequisites: selectchtanks
 		Queue: Vehicle.CHINA, RAVehicle.CHINA
-    ProductionCostMultiplier@upschmassproduction:
-		Multiplier: 80
+	ProductionCostMultiplier@upschmassproduction:
+		Multiplier: 75
 		Prerequisites: upschmassproduction
 		Queue: Vehicle.CHINA, RAVehicle.CHINA
-    ProductionTimeMultiplier@upschmassproduction:
-		Multiplier: 85
+	ProductionTimeMultiplier@upschmassproduction:
+		Multiplier: 60
 		Prerequisites: upschmassproduction
 		Queue: Vehicle.CHINA, RAVehicle.CHINA
 	GainsExperience:
@@ -9219,7 +9276,7 @@ CHMIG:
 		PauseOnCondition: !ammo
 		RequiresCondition: !flameupgrade
 	Armament@2:
-		Weapon: HellfireAA
+		Weapon: Hellfire
 		LocalOffset: 0,640,0, 0,-640,0
 		LocalYaw: -40, 24
 		PauseOnCondition: !ammo
@@ -9231,7 +9288,7 @@ CHMIG:
 		PauseOnCondition: !ammo
 		RequiresCondition: flameupgrade
 	Armament@2b:
-		Weapon: HellfireAA
+		Weapon: Hellfire
 		LocalOffset: 0,640,0, 0,-640,0
 		LocalYaw: -40, 24
 		PauseOnCondition: !ammo
@@ -9253,6 +9310,9 @@ CHMIG:
 		PipCount: 4
 		AmmoCondition: ammo
 		ReloadDelay: 25
+	ReloadAmmoPool:
+		Delay: 25
+		Count: 1
 	Selectable:
 		Bounds: 36,28,0,2
 		DecorationBounds: 40,29,0,1
@@ -10744,8 +10804,8 @@ usattnk:
 	Inherits@EMP: ^TurretEMP
 	Inherits@Announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackTurretedVoice
-    Inherits@switchableupgrades: ^usa_switchable_upgrades
-    Inherits@compositearmorusa: ^usa_composite_armor_upgrade
+	Inherits@switchableupgrades: ^usa_switchable_upgrades
+	Inherits@compositearmorusa: ^usa_composite_armor_upgrade
 	Valued:
 		Cost: 1100
 	Tooltip:
@@ -10799,9 +10859,7 @@ usattnk:
 	RenderSprites:
 		Scale: 0.85
 	Inherits@ProducesDrones: ^ProducesDrones
-	DamageMultiplier@usauparmor:
-		Modifier: 60
-    ProductionCostMultiplier@selectusaairforce:
+	ProductionCostMultiplier@selectusaairforce:
 		Multiplier: 125
 		Prerequisites: selectusaairforce
         
@@ -10842,11 +10900,13 @@ usacrusader:
 		BuildPaletteOrder: 40
 		Prerequisites: usaweap, ~techlevel.medium, ~!selectusalaser, ~!selectusaairforce, ~!selectusasuper, ~!susa_super, ~!susa_laser, ~!susa_armor, ~!susa_air
 		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
+		BuildDuration: 750
+		BuildDurationModifier: 100
 		Description: General-purpose USA tank.\n  Strong vs Vehicles\n  Weak vs Infantry
 	Mobile:
 		Speed: 85
 	Health:
-		HP: 48000
+		HP: 50000
 	Repairable:
 		HpPerStep: 2557
 	Armor:
@@ -10874,8 +10934,6 @@ usacrusader:
 	Voiced:
 		VoiceSet: USACrusaderTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones
-	DamageMultiplier@usauparmor:
-		Modifier: 60
 
 usacrusader2:
 	Inherits: usacrusader
@@ -10911,8 +10969,6 @@ usacrusader2:
 		PauseOnCondition: disabled || lowpower
 	Voiced:
 		VoiceSet: USALaserTankVoice
-	DamageMultiplier@usauparmor:
-		Modifier: 80
         
 usapala:
 	Inherits: ^Tank
@@ -10923,10 +10979,10 @@ usapala:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@PLD: ^PointLaserDefenseSystem
-    Inherits@switchableupgrades: ^usa_switchable_upgrades
-    Inherits@compositearmorusa: ^usa_composite_armor_upgrade
+	Inherits@switchableupgrades: ^usa_switchable_upgrades
+	Inherits@compositearmorusa: ^usa_composite_armor_upgrade
 	Valued:
-		Cost: 1100
+		Cost: 1200
 	Tooltip:
 		Name: Paladin Tank
 	UpdatesPlayerStatistics:
@@ -10937,11 +10993,11 @@ usapala:
 		Queue: Vehicle.USA, RAVehicle.USA, Vehicle.X_Vehicles
 		Description: Heavy USA tank.\n  Strong vs Vehicles\n  Weak vs Infantry
 	Mobile:
-		Speed: 71
+		Speed: 60
 	Passenger:
 		Weight: 4
 	Health:
-		HP: 50000
+		HP: 100000
 	Repairable:
 		HpPerStep: 2557
 	Armor:
@@ -10974,10 +11030,13 @@ usapala:
 	Voiced:
 		VoiceSet: USAPaladinTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones
-	DamageMultiplier@usauparmor:
-		Modifier: 60
-    RenderSprites:
-        Scale: 0.9
+	RenderSprites:
+		Scale: 0.9
+	SelfHealing:
+		Step: 40
+		Delay: 1
+		HealIfBelow: 100
+		DamageCooldown: 1
         
 usasentry:
 	Inherits: ^Vehicle
@@ -11231,8 +11290,8 @@ usamicro:
 	Inherits@emp: ^TurretEMP
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@vo: ^AttackTurretedVoice
-    Inherits@switchableupgrades: ^usa_switchable_upgrades
-    Inherits@compositearmorusa: ^usa_composite_armor_upgrade
+	Inherits@switchableupgrades: ^usa_switchable_upgrades
+	Inherits@compositearmorusa: ^usa_composite_armor_upgrade
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -11284,13 +11343,11 @@ usamicro:
 	Voiced:
 		VoiceSet: USAMicrowaveTankVoice
 	Inherits@ProducesDrones: ^ProducesDrones
-	DamageMultiplier@usauparmor:
-		Modifier: 60
- 	ProductionCostMultiplier@selectusaairforce:
+	ProductionCostMultiplier@selectusaairforce:
 		Multiplier: 125
 		Prerequisites: selectusaairforce
-    RenderSprites:
-        Scale: 0.87
+	RenderSprites:
+		Scale: 0.87
         
 USAMCV:
 	Inherits: ^Vehicle
@@ -12147,21 +12204,23 @@ usastrategy:
 		Prerequisites: usaweap, !usastrategy, ~usaselected
 		Queue: Building.USA, RABuilding.USA
 		Description: Provides access to advanced American technologies.\nBuild Limit: 1
-        BuildLimit: 1
+		BuildLimit: 1
 	Building:
 		Footprint: xxxx x===
 		Dimensions: 4,2
 	SelectionDecorations:
 	Health:
-		HP: 110000
+		HP: 125000
 	RevealsShroud:
 		Range: 5c0
 	WithBuildingBib:
 	ProvidesPrerequisite@buildingname:
 	Production@Upgrades:
 		Produces: StrategyUpgrades.USA
+	ProductionBar@Upgrades:
+		ProductionType: StrategyUpgrades.USA
 	Power:
-		Amount: -40
+		Amount: -50
 	Voiced:
 		VoiceSet: USAStrategyCenterVoice
 	AirstrikePower@carpet:
@@ -12299,7 +12358,7 @@ usadropzone:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 640,-384,0, 640,512,0, -710,-512,0, -710,512,0
 	Buildable:
-		Queue: Building.USA, RABuilding.USA
+		Queue: Building.USA, RABuilding.USA, Building.LEANG, RABuilding.LEANG
 		BuildPaletteOrder: 70
 		Prerequisites: usastrategy, ~usaselected
 		Description: Provides a cash supply.
@@ -12691,6 +12750,9 @@ usaraptor:
 	AmmoPool:
 		Ammo: 4
 		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 25
+		Count: 1
 	Selectable:
 		Bounds: 36,28,0,2
 		DecorationBounds: 40,29,0,1
@@ -12732,6 +12794,9 @@ usaraptor2:
 	AmmoPool:
 		Ammo: 6
 		ReloadCount: 2
+	ReloadAmmoPool:
+		Delay: 25
+		Count: 1
 	AttackAircraft:
 		FacingTolerance: 128
 		Armaments: primary, secondary, pointdefense
@@ -12945,7 +13010,7 @@ usaaurora:
 		CruiseAltitude: 2560
 		InitialFacing: 192
 		TurnSpeed: 4
-		Speed: 140
+		Speed: 150
 		IdealSeparation: 256
 		Repulsable: false
 		RepulsionSpeed: 40
@@ -12964,7 +13029,10 @@ usaaurora:
 	AmmoPool:
 		Ammo: 1
 		AmmoCondition: ammo
-        ReloadDelay: 300
+		ReloadDelay: 250
+	ReloadAmmoPool:
+		Delay: 250
+		Count: 1
 	Selectable:
 		Bounds: 36,28,0,2
 		DecorationBounds: 40,29,0,1
@@ -14387,6 +14455,8 @@ leangstorm:
 	Inherits: glstorm
 	Production@Upgrades:
 		Produces: GLAUpgrades.LEANG
+	ProductionBar@Upgrades:
+		ProductionType: GLAUpgrades.LEANG
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: chairport, leangweap, ~techlevel.superweapons, !scudstorm
@@ -14400,6 +14470,8 @@ leangsilo:
 	Inherits: chsilo
 	Production@Upgrades:
 		Produces: ChinaUpgrades.LEANG
+	ProductionBar@Upgrades:
+		ProductionType: ChinaUpgrades.LEANG
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: chairport, leangweap, ~techlevel.high, !chinanuke
@@ -14411,6 +14483,8 @@ leangcannon:
 	Inherits: usacannon
 	Production@Upgrades:
 		Produces: USAUpgrades.LEANG
+	ProductionBar@Upgrades:
+		ProductionType: USAUpgrades.LEANG
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites: chairport, leangweap, ~techlevel.superweapons, !particlecannon
@@ -14650,7 +14724,7 @@ leangbggy:
 		Prerequisites: usauparmor
 	DamageMultiplier@usauparmor:
 		RequiresCondition: usauparmor
-		Modifier: 90
+		Modifier: 80
 
 leangbiker:
 	Inherits: glbiker
@@ -14664,7 +14738,7 @@ leangbiker:
 		Prerequisites: usauparmor
 	DamageMultiplier@usauparmor:
 		RequiresCondition: usauparmor
-		Modifier: 90
+		Modifier: 80
 
 leangsneakattack:
 	Inherits: upsneakattack

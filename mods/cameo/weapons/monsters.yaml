@@ -10,7 +10,7 @@ ZClaw1:
 			None: 97
 			Wood: 30		#10
 			Light: 50		#30
-            Medium: 40
+			Medium: 40
 			Heavy: 30		#10
 			Concrete: 10
 		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
@@ -44,7 +44,7 @@ ZClaw3:
 			None: 97
 			Wood: 30		#10
 			Light: 50		#30
-            Medium: 40
+			Medium: 40
 			Heavy: 30		#10
 			Concrete: 10
 		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
@@ -53,29 +53,31 @@ Spit:
 	Inherits: ^FireWeapon
 	ValidTargets: Ground, Water
 	Range: 6c6
-	BurstDelays: 66
+	ReloadDelay: 66
+	Burst: 1
 	Projectile: MissileCA
 		Speed: 333
-		LaunchAngle: 120
+		LaunchAngle: 123
 		TrailImage: spittrail
 		Image: spit
-		RangeLimit: 9999
+		RangeLimit: 12345
 		HorizontalRateOfTurn: 33
 	Warhead@1Dam: SpreadDamage
 		Damage: 3333
 		Spread: 333
+		Falloff: 123, 33, 12, 3, 0
 		Versus:
 			None: 88
-			Wood: 44
-			Light: 77
-			Medium: 66
-			Heavy: 55
-			Concrete: 33
+			Wood: 77
+			Light: 123
+			Medium: 111
+			Heavy: 99
+			Concrete: 66
 		ValidTargets: Ground, Water
 	Warhead@2Dam: HealthPercentageDamage
-		Damage: 9
-		Spread: 999
-		Delay: 9
+		Damage: 5
+		Spread: 555
+		Delay: 5
 		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
 		Versus:
 			None: 99
@@ -88,6 +90,16 @@ Spit:
 	Warhead@3Eff: CreateEffect
 		Explosions: chemball
 		ImpactSounds: firebl3.aud
+	Warhead@Cloud: SpawnSmokeParticle
+		Count: 1
+		Duration: 50
+		Speed: 12, 25
+		TurnRate: 12
+		Image: ra2txgasg
+		Sequences: idle
+		Palette: ra2effect
+		Weapon: RA2Cloud
+		InvalidTargets: Water
 
 SpitAA:
 	Inherits: Spit
@@ -103,27 +115,29 @@ SpitAA:
 		ValidTargets: Air
 
 Mandible:
-	Inherits: ZClaw3
+	Inherits: InfectZClaw1
+	Report: antbite.aud
+	ReloadDelay: 20
+	Warhead@1Dam: SpreadDamage
+		Damage: 10000
+		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+
+MandibleMedium:
+	Inherits: InfectZClaw2
+	Report: antbite.aud
 	ReloadDelay: 15
 	Warhead@1Dam: SpreadDamage
-		Damage: 4000
+		Damage: 15000
 		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
 
 MandibleHeavy:
-	Inherits: Claw
-	ReloadDelay: 15
-	Burst: 2
-	BurstDelays: 20
-	StartBurstReport: antbite.aud
+	Inherits: InfectZClaw3
+	Report: antbite.aud
+	ReloadDelay: 10
 	Warhead@1Dam: SpreadDamage
-		Damage: 10000
-		Versus:
-			None: 100
-			Light: 90
-            Medium: 60
-			Heavy: 35
-			Concrete: 20
+		Damage: 20000
 		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+
 SuperMandible:
 	Inherits: MandibleHeavy
 	Warhead@1Dam: SpreadDamage
@@ -144,16 +158,21 @@ MandibleAA:
 			Heavy: 35
 			Concrete: 20
 		ValidTargets: Air
+
 AntFireball:
-	Inherits: FireballLauncher
+	Inherits: ^FireWeapon
 	Report: antbite.aud
-	ReloadDelay: 50
-	Range: 5c0
+	ReloadDelay: 100
+	Range: 10c0
 	Projectile: Bullet
 		Speed: 250
+		LaunchAngle: 125
+		Image: FB1
+		TrailImage: fb2
 	Warhead@1Dam: SpreadDamage
-		Spread: 500
-		Damage: 5000
+		Spread: 1000
+		Damage: 10000
+		Falloff: 100, 50, 25, 0
 		Versus:
 			None: 100
 			Wood: 60
@@ -164,6 +183,7 @@ AntFireball:
 	Warhead@2Dam: HealthPercentageDamage
 		Damage: 10
 		Spread: 1000
+		Falloff: 100, 50, 25, 0
 		Delay: 10
 		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
 		Versus:
@@ -174,6 +194,97 @@ AntFireball:
 			Heavy: 70
 			Concrete: 50
 		ValidTargets: Ground, Water, Trees
+	Warhead@4Eff: CreateEffect
+		Explosions: large_napalm
+		Delay: 5
+
+SuperAntTeslaZap:
+	Inherits: TeslaZap
+	Range: 5c0
+	Burst: 5
+	BurstDelays: 5
+	ReloadDelay: 50
+	Report: btesat1a.wav
+	ValidTargets: Ground, Water
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Ground, Water
+		Damage: 5000
+		Spread: 500
+		Falloff: 100, 50, 25, 0
+		Versus:
+			None: 500
+			Wood: 40
+			Light: 100
+			Medium: 80
+			Heavy: 60
+			Concrete: 20
+	Warhead@Percentage: HealthPercentageDamage
+		Damage: 5
+		Spread: 500
+		Falloff: 100, 50, 25, 0
+		Delay: 5
+		Versus:
+			None: 100
+			Wood: 10
+			Light: 30
+			Medium: 40
+			Heavy: 50
+			Concrete: 20
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+		ValidTargets: Ground, Water
+
+AntNeedles:
+	Inherits: ^AntiGroundMissile
+	ReloadDelay: 32
+	Range: 6c6
+	MinRange: 1c256
+	Burst: 4
+	BurstDelays: 2
+	Report: vrocweaa.wav, vrocweab.wav, vrocweac.wav, vrocwead.wav, vrocweae.wav, vrocweaf.wav
+	ValidTargets: Ground, Air, Water
+	TargetActorCenter: true
+	Projectile: MissileCA
+		LockOnProbability: 50
+		LockOnInaccuracy: 2c256
+		MinimumLaunchAngle: 25
+		MaximumLaunchAngle: 100
+		MinimumLaunchSpeed: 200
+		MaximumLaunchSpeed: 250
+		RangeLimit: 12c512
+		#Speed: 250
+		ContrailColor: 33FF33
+		ContrailLength: 50
+		Width: 0c3
+		#Inaccuracy: 1c512
+		HorizontalRateOfTurn: 25
+		TrailImage: green_smokey
+	Warhead@Cloud: SpawnSmokeParticle
+		Count: 1
+		Duration: 50
+		Speed: 4, 16
+		TurnRate: 10
+		Image: ra2txgasg
+		Sequences: idle
+		Palette: ra2effect
+		Weapon: RA2Cloud
+		InvalidTargets: Water
+	Warhead@1Dam: SpreadDamage
+		Spread: 100
+		Damage: 1000
+		Falloff: 1000, 333, 123, 55, 22, 11, 0
+		Versus:
+			None: 99
+			Wood: 111
+			Light: 88
+			Medium: 77
+			Heavy: 66
+			Concrete: 55
+		ValidTargets: Ground, Air, Water
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: chemball
+	Warhead@3Smu: LeaveSmudge
+		SmudgeType: Scorch
 
 Tail2:
 	ReloadDelay: 30

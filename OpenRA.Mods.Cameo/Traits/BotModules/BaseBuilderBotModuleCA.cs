@@ -60,7 +60,7 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly int MaxBaseRadius = 20;
 
 		[Desc("Maximum number of refineries to build.")]
-		public readonly int MaxRefineries = 4;
+		public readonly int MaxRefineries = 10;
 
 		[Desc("Minimum excess power the AI should try to maintain.")]
 		public readonly int MinimumExcessPower = 0;
