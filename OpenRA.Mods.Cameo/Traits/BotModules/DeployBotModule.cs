@@ -10,12 +10,13 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.Mods.CA.Traits;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.CA.Traits
+namespace OpenRA.Mods.Cameo.Traits.BotModules
 {
-	[Desc("Allows the AI to issue the orders the AIDeployNotifier traits trigger.")]
+	[Desc("Allows the AI to issue the orders the AutoDeployer traits trigger.")]
 	public class DeployBotModuleInfo : ConditionalTraitInfo
 	{
 		public override object Create(ActorInitializer init) { return new DeployBotModule(init.Self, this); }
@@ -23,7 +24,7 @@ namespace OpenRA.Mods.CA.Traits
 
 	public class DeployBotModule : ConditionalTrait<DeployBotModuleInfo>, IBotTick
 	{
-		readonly HashSet<TraitPair<AIDeployNotifier>> active = new HashSet<TraitPair<AIDeployNotifier>>();
+		readonly HashSet<TraitPair<AutoDeployer>> active = new HashSet<TraitPair<AutoDeployer>>();
 		readonly HashSet<Order> undeployOrders = new HashSet<Order>();
 		readonly World world;
 
@@ -33,7 +34,7 @@ namespace OpenRA.Mods.CA.Traits
 			world = self.World;
 		}
 
-		public void AddEntry(TraitPair<AIDeployNotifier> entry)
+		public void AddEntry(TraitPair<AutoDeployer> entry)
 		{
 			active.Add(entry);
 		}
@@ -59,7 +60,7 @@ namespace OpenRA.Mods.CA.Traits
 					bot.QueueOrder(order);
 
 				if (entry.Trait.PrimaryBuilding)
-					bot.QueueOrder(new Order(AIDeployNotifier.PrimaryBuildingOrderID, entry.Actor, false));
+					bot.QueueOrder(new Order(AutoDeployer.PrimaryBuildingOrderID, entry.Actor, false));
 			}
 
 			active.Clear();

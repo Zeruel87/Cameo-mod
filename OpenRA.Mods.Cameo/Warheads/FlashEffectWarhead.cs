@@ -9,10 +9,11 @@
 #endregion
 
 using OpenRA.GameRules;
+using OpenRA.Mods.CA.Warheads;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.CA.Warheads
+namespace OpenRA.Mods.Cameo.Warheads
 {
 	[Desc("This warhead activates the global flash effect when detonated.")]
 	public class FlashEffectWarhead : WarheadAS
@@ -21,7 +22,7 @@ namespace OpenRA.Mods.CA.Warheads
 		[Desc("Corresponds to `Type` from `FlashPaletteEffect` on the world actor.")]
 		public readonly string FlashType = null;
 
-		public override void DoImpact(Target target, WarheadArgs args)
+		public override void DoImpact(in Target target, WarheadArgs args)
 		{
 			var firedBy = args.SourceActor;
 			if (!target.IsValidFor(firedBy))

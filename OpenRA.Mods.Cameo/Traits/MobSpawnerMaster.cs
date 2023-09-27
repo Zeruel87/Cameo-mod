@@ -13,11 +13,12 @@
 #endregion
 
 using System.Linq;
+using OpenRA.Mods.CA.Traits;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.CA.Traits
+namespace OpenRA.Mods.Cameo.Traits
 {
 	// What to do when master is killed or mind controlled
 	public enum MobMemberDisposal
@@ -28,7 +29,7 @@ namespace OpenRA.Mods.CA.Traits
 	}
 
 	[Desc("This actor can spawn actors.")]
-	public class MobSpawnerMasterInfo : BaseSpawnerMasterBInfo
+	public class MobSpawnerMasterInfo : BaseSpawnerMasterInfo
 	{
 		[Desc("Spawn at a member, not the nexus?")]
 		public readonly bool ExitByBudding = true;
@@ -61,9 +62,9 @@ namespace OpenRA.Mods.CA.Traits
 		public override object Create(ActorInitializer init) { return new MobSpawnerMaster(init, this); }
 	}
 
-	public class MobSpawnerMaster : BaseSpawnerMasterB, INotifyCreated, INotifyOwnerChanged, ITick, IResolveOrder, INotifyAttack
+	public class MobSpawnerMaster : BaseSpawnerMaster, INotifyCreated, INotifyOwnerChanged, ITick, IResolveOrder, INotifyAttack
 	{
-		class MobSpawnerSlaveEntry : BaseSpawnerSlaveEntryB
+		class MobSpawnerSlaveEntry : BaseSpawnerSlaveEntry
 		{
 			public new MobSpawnerSlave SpawnerSlave;
 			public Health Health;
@@ -72,7 +73,6 @@ namespace OpenRA.Mods.CA.Traits
 		public new MobSpawnerMasterInfo Info { get; private set; }
 
 		MobSpawnerSlaveEntry[] slaveEntries;
-		ConditionManager conditionManager;
 
 		// bool hasSpawnedInitialLoad = false;
 		int spawnReplaceTicks = 0;
@@ -94,7 +94,6 @@ namespace OpenRA.Mods.CA.Traits
 			aircraft = self.TraitOrDefault<Aircraft>();
 
 			base.Created(self); // Base class does the initial spawning
-			conditionManager = self.Trait<ConditionManager>();
 
 			// Spawn initial load.
 			var burst = Info.InitialActorCount == -1 ? Info.Actors.Length : Info.InitialActorCount;
@@ -112,7 +111,7 @@ namespace OpenRA.Mods.CA.Traits
 			SpawnReplenishedSlaves(self);
 		}
 
-		public override BaseSpawnerSlaveEntryB[] CreateSlaveEntries(BaseSpawnerMasterBInfo info)
+		public override BaseSpawnerSlaveEntry[] CreateSlaveEntries(BaseSpawnerMasterInfo info)
 		{
 			slaveEntries = new MobSpawnerSlaveEntry[info.Actors.Length]; // For this class to use
 
@@ -122,7 +121,7 @@ namespace OpenRA.Mods.CA.Traits
 			return slaveEntries; // For the base class to use
 		}
 
-		public override void InitializeSlaveEntry(Actor slave, BaseSpawnerSlaveEntryB entry)
+		public override void InitializeSlaveEntry(Actor slave, BaseSpawnerSlaveEntry entry)
 		{
 			var se = entry as MobSpawnerSlaveEntry;
 			base.InitializeSlaveEntry(slave, se);
@@ -155,11 +154,11 @@ namespace OpenRA.Mods.CA.Traits
 			}
 		}
 
-		void INotifyAttack.PreparingAttack(Actor self, Target target, Armament a, Barrel barrel)
+		void INotifyAttack.PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel)
 		{
 		}
 
-		void INotifyAttack.Attacking(Actor self, Target target, Armament a, Barrel barrel)
+		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
 		{
 			if (Info.SlavesHaveFreeWill)
 				return;
@@ -221,7 +220,7 @@ namespace OpenRA.Mods.CA.Traits
 		public override void SpawnIntoWorld(Actor self, Actor slave, WPos centerPosition)
 		{
 			var exit = self.RandomExitOrDefault(self.World, null);
-			SetSpawnedFacing(slave, self, null);
+			SetSpawnedFacing(slave, null);
 
 			self.World.AddFrameEndTask(w =>
 			{
@@ -336,7 +335,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (aircraft == null)
 				position.SetPosition(self, newPos); // breaks arrival detection of the aircraft if we set position.
 
-			position.SetVisualPosition(self, newPos);
+			position.SetCenterPosition(self, newPos);
 		}
 
 		int aggregateHealthUpdateTicks = 0;

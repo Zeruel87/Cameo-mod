@@ -14,6 +14,7 @@
 
 using System;
 using System.Linq;
+using OpenRA.Mods.CA.Traits;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
@@ -22,15 +23,15 @@ using OpenRA.Traits;
  * Needs base engine modification. (Because MobSpawner.cs mods it)
  */
 
-namespace OpenRA.Mods.CA.Traits
+namespace OpenRA.Mods.Cameo.Traits
 {
 	[Desc("Can be slaved to a Mob spawner.")]
-	public class MobSpawnerSlaveInfo : BaseSpawnerSlaveBInfo
+	public class MobSpawnerSlaveInfo : BaseSpawnerSlaveInfo
 	{
 		public override object Create(ActorInitializer init) { return new MobSpawnerSlave(init, this); }
 	}
 
-	public class MobSpawnerSlave : BaseSpawnerSlaveB, INotifySelected
+	public class MobSpawnerSlave : BaseSpawnerSlave, INotifySelected
 	{
 		public MobSpawnerSlaveInfo Info { get; private set; }
 		readonly Actor self;
@@ -74,7 +75,7 @@ namespace OpenRA.Mods.CA.Traits
 			Positionable = positionables.First();
 		}
 
-		public override void LinkMaster(Actor self, Actor master, BaseSpawnerMasterB spawnerMaster)
+		public override void LinkMaster(Actor self, Actor master, BaseSpawnerMaster spawnerMaster)
 		{
 			base.LinkMaster(self, master, spawnerMaster);
 			this.spawnerMaster = spawnerMaster as MobSpawnerMaster;

@@ -10,9 +10,10 @@
 #endregion
 
 using OpenRA.GameRules;
+using OpenRA.Mods.CA.Warheads;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.CA.Warheads
+namespace OpenRA.Mods.Cameo.Warheads
 {
 	[Desc("Makes the screen shake.")]
 	public class ShakeScreenWarhead : WarheadAS
@@ -26,7 +27,7 @@ namespace OpenRA.Mods.CA.Warheads
 		[Desc("Shake multipliers by the X and Y axis, comma-separated.")]
 		public readonly float2 Multiplier = new float2(0, 0);
 
-		public override void DoImpact(Target target, WarheadArgs args)
+		public override void DoImpact(in Target target, WarheadArgs args)
 		{
 			args.SourceActor.World.WorldActor.Trait<ScreenShaker>().AddEffect(Duration, target.CenterPosition, Intensity, Multiplier);
 		}

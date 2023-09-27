@@ -1,30 +1,30 @@
 World:
-    FactionCA@infection:
+	FactionCA@infection:
 		Name: Zombie Infection
 		InternalName: infection
 		Side: Factions
 		Game: Special
 		Description: The Player starts with a group of zombies\nEnemies has to destroy all the zombies to defeat the zombie player\nThis faction has no economy, no buildings
-    MPStartUnits@mcvonlyinfection:
+	StartingUnits@mcvonlyinfection:
 		Class: none
 		ClassName: MCV Only
 		Factions: infection
 		BaseActor: bio
 		SupportActors: civzombie.infect, civzombie.infect, civzombie.infect, civzombie.infect, civzombie.infect, zombie1.infect, zombie1.infect, zombie2.infect
-
-	MPStartUnits@defaultinfection:
+	StartingUnits@defaultinfection:
 		Class: light
 		ClassName: Light Support
 		Factions: infection
 		BaseActor: bio
 		SupportActors: civzombie.infect, civzombie.infect, civzombie.infect, civzombie.infect, civzombie.infect, zombie1.infect, zombie1.infect, zombie1.infect, zombie1.infect, zombie2.infect, zombie1.infect, zombie1.infect, zombie2.infect, zombie2.infect
-
-	MPStartUnits@heavyinfection:
+	StartingUnits@heavyinfection:
 		Class: heavy
 		ClassName: Heavy Support
 		Factions: infection
 		BaseActor: bio
 		SupportActors: civzombie.infect, civzombie.infect, civzombie.infect, civzombie.infect, civzombie.infect, zombie1.infect, zombie1.infect, zombie1.infect, zombie1.infect, civzombie.infect, civzombie.infect, zombie1.infect, zombie2.infect, zombie2.infect, zombie1.infect, zombie1.infect, zombie2.infect, zombie2.infect, zombie2.infect
+
+
 
 Player:
 	ExternalCondition@ZombieHordesOwned:
@@ -65,8 +65,8 @@ Player:
 		OrderName: ZombieToxins
 		Cursor: ability
 		Icon: glanthraxbomb
-		Description: Corona Virus
-		LongDesc: Spreads Covid-19 to turn humans into Zombies.
+		Name: Corona Virus
+		Description: Spreads Covid-19 to turn humans into Zombies.
 		IncomingSpeechNotification: EnemyUnitsApproaching
 		SelectTargetSpeechNotification: SelectTarget
 		DisplayRadarPing: True
@@ -87,8 +87,8 @@ Player:
 		OrderName: ZombieAmbush
 		Cursor: ability
 		Icon: glambush3
-		Description: Aircraft Crash
-		LongDesc: Spawns a large Zombie squad.
+		Name: Aircraft Crash
+		Description: Spawns a large Zombie squad.
 		IncomingSpeechNotification: EnemyUnitsApproaching
 		SelectTargetSpeechNotification: SelectTarget
 		DisplayRadarPing: True
@@ -109,8 +109,8 @@ Player:
 		OrderName: ZombieAmbush2
 		Cursor: ability
 		Icon: glambush3
-		Description: SpaceShip Crash
-		LongDesc: Spawns a large Zombie and Monster squad.
+		Name: SpaceShip Crash
+		Description: Spawns a large Zombie and Monster squad.
 		IncomingSpeechNotification: EnemyUnitsApproaching
 		SelectTargetSpeechNotification: SelectTarget
 		DisplayRadarPing: True
@@ -128,17 +128,17 @@ Player:
 		RequiresCondition: upzmsquad3
 		DisplayTimerStances: Ally, Neutral, Enemy
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
-	SelfHealing:
+	ChangesHealth:
 		Step: 10
 		Delay: 1
-		HealIfBelow: 100
+		StartIfBelow: 100
 		DamageCooldown: 1
 	ChangesHealth:
 		PercentageStep: 1
 		Delay: 10
 		StartIfBelow: 100
 	AutoTarget:
-		ScanRadius: 25
+		ScanRadius: 10
 		InitialStance: AttackAnything
 	GrantConditionOnPrerequisite@upzombiemutate1:
 		Condition: upzombiemutate1
@@ -194,6 +194,8 @@ Player:
 	SpeedMultiplier@upzintelligence3:
 		RequiresCondition: upzintelligence3
 		Modifier: 111
+	Targetable:
+		TargetTypes: Ground, Ant, Cyborg
 civzombie.infect:
 	Inherits: civzombie
 	Inherits@Infect: ^InfectionGamemode
@@ -215,7 +217,7 @@ zombie1.infect:
 	FreeActor@1:
 		Actor: civzombie.infect
 		SpawnOffset: 0,0
-		Facing: 64
+		Facing: 256
 zombie2.infect:
 	Inherits: ZOMBIE2
 	Inherits@Infect: ^InfectionGamemode
@@ -234,7 +236,7 @@ zombie2.infect:
 	FreeActor@1:
 		Actor: civzombie.infect
 		SpawnOffset: 0,0
-		Facing: 64
+		Facing: 256
 zombie.squad:
 	GrantExternalConditionToOwner@ZombieHordesOwned:
 		Condition: ZombieHordesOwned
@@ -266,19 +268,19 @@ zombie.squad:
 		BuildLimit: 8
 	Health:
 		HP: 100
-	SelfHealing:
+	ChangesHealth:
 		Step: -100
 		Delay: 1
-		HealIfBelow: 1000
+		StartIfBelow: 1000
 		DamageCooldown: 1
 	Mobile:
 		Speed: 75
-		Locomotor: foot  
+		Locomotor: foot
 	Guardable:
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
-		Bounds: 48,48
+		Bounds: 87381, 87381
 	AttackMove:
 	DrawLineToTarget:
 	GrantConditionOnPrerequisite@upzmsquad1:
@@ -322,7 +324,7 @@ zombie.squad:
 	AttackTurreted:
 		PersistentTargeting: false
 	Turreted:
-		TurnSpeed: 255
+		TurnSpeed: 1023
 	Armament:
 		Weapon: AngryMobTargeting
 	AutoTarget:
@@ -460,14 +462,14 @@ zombie1.horde:
 	Valued:
 		Cost: 125
 	Passenger:
-		PipType: green
+		CustomPipType: green
 	RevealsShroud:
 		Range: 7c0
 	AutoTarget:
 		ScanRadius: 10
 	Armament@SMG:
 		Weapon: InfectZClaw2
-	Armament@GARRISONED:						##########
+	Armament@GARRISONED: ##########
 		Name: garrisoned
 		Weapon: InfectZClaw2
 	WithInfantryBody:
@@ -478,7 +480,7 @@ zombie1.horde:
 	RenderSprites:
 		Image: civzombie
 	MobSpawnerSlave:
-	-MapEditorData:   
+	-MapEditorData:
 	-Passenger:
 
 zombie2.horde:
@@ -498,14 +500,14 @@ zombie2.horde:
 	Valued:
 		Cost: 250
 	Passenger:
-		PipType: green
+		CustomPipType: green
 	RevealsShroud:
 		Range: 7c0
 	AutoTarget:
 		ScanRadius: 10
 	Armament@SMG:
 		Weapon: InfectZClaw1
-	Armament@GARRISONED:						##########
+	Armament@GARRISONED: ##########
 		Name: garrisoned
 		Weapon: InfectZClaw1
 	WithInfantryBody:
@@ -516,7 +518,7 @@ zombie2.horde:
 	RenderSprites:
 		Image: civzombie
 	MobSpawnerSlave:
-	-MapEditorData:   
+	-MapEditorData:
 	-Passenger:
 
 zombie3.horde:
@@ -526,7 +528,7 @@ zombie3.horde:
 	FreeActor@1:
 		Actor: civzombie.infect
 		SpawnOffset: 0,0
-		Facing: 64
+		Facing: 256
 	Armament:
 		Weapon: InfectZClaw2
 	Health:
@@ -538,13 +540,13 @@ zombie3.horde:
 	FreeActor@1:
 		Actor: civzombie.infect
 		SpawnOffset: 0,0
-		Facing: 64
+		Facing: 256
 	RenderSprites:
 		Image: zombiee6
 	Tooltip:
 		Name: Zombie Engineer
 	MobSpawnerSlave:
-	-MapEditorData:   
+	-MapEditorData:
 	-Passenger:
 
 zombie4.horde:
@@ -555,7 +557,7 @@ zombie4.horde:
 	FreeActor@1:
 		Actor: civzombie.infect
 		SpawnOffset: 0,0
-		Facing: 64
+		Facing: 256
 	Health:
 		HP: 40000
 	Valued:
@@ -565,7 +567,7 @@ zombie4.horde:
 	Armament:
 		Weapon: InfectZClaw3
 	MobSpawnerSlave:
-	-MapEditorData:   
+	-MapEditorData:
 	-Passenger:
 
 zombie5.horde:
@@ -575,11 +577,11 @@ zombie5.horde:
 	FreeActor@1:
 		Actor: civzombie.infect
 		SpawnOffset: 0,0
-		Facing: 64
+		Facing: 256
 	RenderSprites:
 		Image: spitter
 	MobSpawnerSlave:
-	-MapEditorData:   
+	-MapEditorData:
 	-Passenger:
 
 zombie6.horde:
@@ -589,11 +591,11 @@ zombie6.horde:
 	FreeActor@1:
 		Actor: civzombie.infect
 		SpawnOffset: 0,0
-		Facing: 64
+		Facing: 256
 	RenderSprites:
 		Image: tnkzombie
 	MobSpawnerSlave:
-	-MapEditorData:   
+	-MapEditorData:
 	-Passenger:
 
 zombie7.horde:
@@ -603,11 +605,11 @@ zombie7.horde:
 	FreeActor@1:
 		Actor: civzombie.infect
 		SpawnOffset: 0,0
-		Facing: 64
+		Facing: 256
 	RenderSprites:
 		Image: zombiechan
 	MobSpawnerSlave:
-	-MapEditorData:   
+	-MapEditorData:
 	-Passenger:
 
 zombie8.horde:
@@ -617,11 +619,11 @@ zombie8.horde:
 	FreeActor@1:
 		Actor: civzombie.infect
 		SpawnOffset: 0,0
-		Facing: 64
+		Facing: 256
 	RenderSprites:
 		Image: civzombie
 	MobSpawnerSlave:
-	-MapEditorData:   
+	-MapEditorData:
 	-Passenger:
 
 upzombiemutate1:
@@ -862,15 +864,16 @@ tnkzombie.infect:
 	AutoTarget:
 		ScanRadius: 25
 		InitialStance: AttackAnything
-	Armament@PRIMARY:							##########
+	Armament@PRIMARY: ##########
 		Weapon: ZBrutePunch
-	Armament@GARRISONED:						##########
+	Armament@GARRISONED: ##########
 		Name: garrisoned
 		Weapon: ZBrutePunch
 	AttackFrontal:
-	Inherits@EXT: ^ExternalConditions					##########
-	AcceptsDeliveredExperience:							##########
-		ValidTypes: infantry							##########
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: infantry ##########
 	Voiced:
 		VoiceSet: BruteVoice
 	DeliversCash:
@@ -883,10 +886,10 @@ tnkzombie.infect:
 	Targetable@dog:
 		TargetTypes: DogImmune
 	GainsExperience:
-		LevelUpNotification: LevelUpRA2 
+		LevelUpNotification: LevelUpRA2
 	FirepowerMultiplier@eliteplus:
 		Modifier: 200
-		RequiresCondition: rank-elite              
+		RequiresCondition: rank-elite
 	ChangesHealth@eliteplus:
 		PercentageStep: 5
 		Delay: 25
@@ -905,7 +908,7 @@ zombie6.infect:
 	FreeActor@1:
 		Actor: civzombie.infect
 		SpawnOffset: 0,0
-		Facing: 64
+		Facing: 256
 	RenderSprites:
 		Image: zombiee6
 	Tooltip:
@@ -960,7 +963,7 @@ jumpzombie.infect:
 		RequiresCondition: !disabled
 	KillsSelf:
 		RequiresCondition: triggered && !disabled
-        
+		
 ####################################################################################################
 #		ZOMBIES & MONSTERS
 ####################################################################################################
@@ -974,7 +977,7 @@ civzombie:
 	Valued:
 		Cost: 100
 	Health:
-		HP: 5000	#25000
+		HP: 5000 #25000
 	Mobile:
 		Speed: 50
 	AutoTarget:
@@ -996,13 +999,14 @@ ZOMBIE1:
 		Name: Zombie
 		GenericName: Zombie
 	Health:
-		HP: 15000	#25000
+		HP: 15000 #25000
 	Mobile:
 		Speed: 33
 	AutoTarget:
 		ScanRadius: 25
 		InitialStance: AttackAnything
 	AttackFrontal:
+		FacingTolerance: 0
 	WithInfantryBody:
 		DefaultAttackSequence: bite
 		IdleSequences: idle1
@@ -1010,14 +1014,13 @@ ZOMBIE1:
 		Weapon: InfectZClaw2
 	Voiced:
 		VoiceSet: AntVoice
-	-TakeCover
-	-DamagedByTerrain
+	-TakeCover:
+	-DamagedByTerrain:
 	RenderSprites:
 		Image: zombie
-		Scale: 0.7
 	Cloneable:
 		Types: zombie
-        
+		
 ZOMBIE2:
 	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -1034,13 +1037,14 @@ ZOMBIE2:
 		Prerequisites: xhosp
 		Description: Slow undead. Attacks in close combat.
 	Health:
-		HP: 25000	#25000
+		HP: 25000 #25000
 	Mobile:
-		Speed: 25	#42
+		Speed: 25 #42
 	AutoTarget:
 		ScanRadius: 25
 		InitialStance: AttackAnything
 	AttackFrontal:
+		FacingTolerance: 0
 	WithInfantryBody:
 		DefaultAttackSequence: bite
 		IdleSequences: idle1
@@ -1048,15 +1052,15 @@ ZOMBIE2:
 		Weapon: InfectZClaw3
 	Voiced:
 		VoiceSet: AntVoice
-	-TakeCover
-	-DamagedByTerrain
+	-TakeCover:
+	-DamagedByTerrain:
 	RenderSprites:
 		Image: zombie
 
 spitter:
 	Inherits: ^Viceroid
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@bounty: ^GlobalBounty			##########
+	Inherits@bounty: ^GlobalBounty ##########
 	Inherits@Infect: ^InfectionGamemode
 	Valued:
 		Cost: 1000
@@ -1083,12 +1087,11 @@ spitter:
 	Armament@AA:
 		Weapon: SpitAA
 		LocalOffset: 384,0,0
-	-WithMuzzleOverlay
-	-DamagedByTerrain
+	-WithMuzzleOverlay:
+	-DamagedByTerrain:
 	Selectable:
-		Bounds: 14,14
+		Bounds: 25472, 25472
 	RenderSprites:
-		Scale: 0.9
 
 ANT2:
 	Inherits: ^Infantry
@@ -1109,23 +1112,22 @@ ANT2:
 		ScanRadius: 25
 		InitialStance: AttackAnything
 	Selectable:
-		Bounds: 24,24,0,-5
-		DecorationBounds: 30,30,0,-2
+		Bounds: 43690, 43690, 0, -9088
+		DecorationBounds: 54613, 54613, 0, -3626
 	SelectionDecorations:
 	Health:
-		HP: 50000	#75000
+		HP: 50000 #75000
 	Mobile:
 		Speed: 100
-		TurnSpeed: 12
+		TurnSpeed: 48
 		Locomotor: lighttracked
 	-Crushable:
 	AttackFrontal:
+		FacingTolerance: 0
 	WithInfantryBody:
 		DefaultAttackSequence: bite
 	Armament:
 		Weapon: mandible
-	Targetable:
-		TargetTypes: Ground, Infantry, Ant
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	Voiced:
@@ -1138,11 +1140,11 @@ ANT2:
 
 STEG2:
 	Inherits: STEG
-	Inherits@bounty: ^GlobalBounty			##########
+	Inherits@bounty: ^GlobalBounty ##########
 	Health:
-		HP: 50000		#100000
+		HP: 50000 #100000
 	Armor:
-		Type: Light		#Wood
+		Type: Light #Wood
 	Valued:
 		Cost: 1000
 	Armament:
@@ -1153,20 +1155,20 @@ STEG2:
 		BuildDurationModifier: 70
 		Prerequisites: xbio
 	Mobile:
-		Speed: 60	#113
+		Speed: 60 #113
 	RenderSprites:
 		Image: STEG
 
 TREX2:
 	Inherits: trex
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@bounty: ^GlobalBounty			##########
+	Inherits@bounty: ^GlobalBounty ##########
 	Health:
 		HP: 100000
 	Armor:
-		Type: Heavy		#Wood
+		Type: Heavy #Wood
 	Valued:
-		Cost: 1500		#1000
+		Cost: 1500 #1000
 	Armament:
 		Weapon: Teeth2
 	Buildable:
@@ -1175,17 +1177,17 @@ TREX2:
 		BuildDurationModifier: 70
 		Prerequisites: xbio
 	Mobile:
-		Speed: 60	#113
+		Speed: 60 #113
 	RenderSprites:
 		Image: TREX
 
 TRIC2:
 	Inherits: TRIC
-	Inherits@bounty: ^GlobalBounty			##########
+	Inherits@bounty: ^GlobalBounty ##########
 	Health:
-		HP: 50000		#100000
+		HP: 50000 #100000
 	Armor:
-		Type: Heavy		#Wood
+		Type: Heavy #Wood
 	Valued:
 		Cost: 1000
 	Armament:
@@ -1196,19 +1198,19 @@ TRIC2:
 		BuildDurationModifier: 70
 		Prerequisites: xbio
 	Mobile:
-		Speed: 60	#113
+		Speed: 60 #113
 	RenderSprites:
 		Image: TRIC
 
 RAPT2:
 	Inherits: RAPT
-	Inherits@bounty: ^GlobalBounty			##########
+	Inherits@bounty: ^GlobalBounty ##########
 	Health:
-		HP: 40000		#100000
+		HP: 40000 #100000
 	Armor:
-		Type: Light		#Wood
+		Type: Light #Wood
 	Valued:
-		Cost: 800		#1000
+		Cost: 800 #1000
 	Armament:
 		Weapon: Claw2
 	Buildable:

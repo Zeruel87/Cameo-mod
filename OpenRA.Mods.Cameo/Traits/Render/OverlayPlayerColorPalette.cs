@@ -13,10 +13,10 @@ using OpenRA.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.CA.Traits.Render
+namespace OpenRA.Mods.Cameo.Traits.Render
 {
 	[Desc("More beautiful variant of the PlayerColorPalette by using the overlay blend mode.")]
-	public class OverlayPlayerColorPaletteInfo : ITraitInfo
+	public class OverlayPlayerColorPaletteInfo : TraitInfo
 	{
 		[Desc("The name of the palette to base off.")]
 		[PaletteReference]
@@ -35,7 +35,7 @@ namespace OpenRA.Mods.CA.Traits.Render
 		[Desc("Lowers brightness range.")]
 		public readonly float Ramp = 0;
 
-		public object Create(ActorInitializer init) { return new OverlayPlayerColorPalette(this); }
+		public override object Create(ActorInitializer init) { return new OverlayPlayerColorPalette(this); }
 	}
 
 	public class OverlayPlayerColorPalette : ILoadsPlayerPalettes

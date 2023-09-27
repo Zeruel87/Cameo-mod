@@ -14,8 +14,9 @@ using System.Linq;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
+using AIUtils = OpenRA.Mods.CA.AIUtils;
 
-namespace OpenRA.Mods.CA.Traits
+namespace OpenRA.Mods.Cameo.Traits.BotModules
 {
 	[Desc("Manages bot support power handling.")]
 	public class SupportPowerBotModuleCAInfo : ConditionalTraitInfo, Requires<SupportPowerManagerInfo>
@@ -41,7 +42,7 @@ namespace OpenRA.Mods.CA.Traits
 	public class SupportPowerBotModuleCA : ConditionalTrait<SupportPowerBotModuleCAInfo>, IBotTick, IGameSaveTraitData
 	{
 		readonly World world;
-		readonly Player player;
+		readonly OpenRA.Player player;
 		readonly Dictionary<SupportPowerInstance, int> waitingPowers = new Dictionary<SupportPowerInstance, int>();
 		readonly Dictionary<string, SupportPowerDecision> powerDecisions = new Dictionary<string, SupportPowerDecision>();
 		readonly List<SupportPowerInstance> stalePowers = new List<SupportPowerInstance>();

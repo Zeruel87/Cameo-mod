@@ -11,12 +11,13 @@
 
 #endregion
 
+using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.Common.Traits
+namespace OpenRA.Mods.Cameo.Traits
 {
 	[Desc("Grants a condition to this actor when the player has stored resources.")]
-	public class BotInsuranceInfo : ITraitInfo
+	public class BotInsuranceInfo : TraitInfo
 	{
 		[FieldLoader.Require]
 		[GrantedConditionReference]
@@ -29,7 +30,7 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Minimum Duration of Bot Player under Threshold until Insurance is active.")]
 		public readonly int ThresholdDuration = 250;
 
-		public object Create(ActorInitializer init)
+		public override object Create(ActorInitializer init)
 		{
 			return new BotInsurance(this);
 		}
@@ -40,8 +41,7 @@ namespace OpenRA.Mods.Common.Traits
 		readonly BotInsuranceInfo info;
 		PlayerResources playerResources;
 
-		ConditionManager conditionManager;
-		int conditionToken = ConditionManager.InvalidConditionToken;
+		int conditionToken = Actor.InvalidConditionToken;
 
 		[Sync]
 		int ticks;
@@ -61,10 +61,9 @@ namespace OpenRA.Mods.Common.Traits
 			// it refers to the same actor as self.Owner.PlayerActor
 			var playerActor = self.Info.Name == "player" ? self : self.Owner.PlayerActor;
 			playerResources = playerActor.Trait<PlayerResources>();
-			conditionManager = self.TraitOrDefault<ConditionManager>();
 		}
 
-		void INotifyOwnerChanged.OnOwnerChanged(Actor self, Player oldOwner, Player newOwner)
+		void INotifyOwnerChanged.OnOwnerChanged(Actor self, OpenRA.Player oldOwner, OpenRA.Player newOwner)
 		{
 			playerResources = newOwner.PlayerActor.Trait<PlayerResources>();
 		}
@@ -80,14 +79,14 @@ namespace OpenRA.Mods.Common.Traits
 				--ticks;
 			}
 
-			if (string.IsNullOrEmpty(info.Condition) || conditionManager == null)
+			if (string.IsNullOrEmpty(info.Condition))
 				return;
 
 			var enabled = (playerResources.Cash < info.Threshold && ticks < 0);
-			if (enabled && conditionToken == ConditionManager.InvalidConditionToken)
-				conditionToken = conditionManager.GrantCondition(self, info.Condition);
-			else if (!enabled && conditionToken != ConditionManager.InvalidConditionToken)
-				conditionToken = conditionManager.RevokeCondition(self, conditionToken);
+			if (enabled && conditionToken == Actor.InvalidConditionToken)
+				conditionToken = self.GrantCondition(info.Condition);
+			else if (!enabled && conditionToken != Actor.InvalidConditionToken)
+				conditionToken = self.RevokeCondition(conditionToken);
 		}
 	}
 }

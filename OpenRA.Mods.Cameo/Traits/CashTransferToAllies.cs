@@ -13,7 +13,7 @@ using System.Linq;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.CA.Traits
+namespace OpenRA.Mods.Cameo.Traits
 {
 	[Desc("Explodes a weapon at the actor's position when enabled."
 		+ "Reload/BurstDelays are used as explosion intervals.")]

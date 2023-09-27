@@ -18,7 +18,7 @@ using OpenRA.Mods.Cnc.FileFormats;
 using OpenRA.Primitives;
 using FS = OpenRA.FileSystem.FileSystem;
 
-namespace OpenRA.Mods.Cnc.FileSystem
+namespace OpenRA.Mods.Cameo.FileSystem
 {
 	public class AudioBagLoader : IPackageLoader
 	{

@@ -3,9 +3,11 @@
 @echo on
 
 set Name="Dedicated Server"
+set Map=""
 set ListenPort=1234
 set AdvertiseOnline=True
 set Password=""
+set RecordReplays=False
 
 set RequireAuthentication=False
 set ProfileIDBlacklist=""
@@ -15,6 +17,12 @@ set EnableSingleplayer=False
 set EnableSyncReports=False
 set EnableGeoIP=True
 set ShareAnonymizedIPs=True
+
+set FloodLimitJoinCooldown=5000
+
+set QueryMapRepository=True
+
+set SupportDir=""
 
 @echo off
 setlocal EnableDelayedExpansion
@@ -28,12 +36,12 @@ if "!MOD_ID!" == "" goto badconfig
 if "!ENGINE_VERSION!" == "" goto badconfig
 if "!ENGINE_DIRECTORY!" == "" goto badconfig
 
-if not exist %ENGINE_DIRECTORY%\OpenRA.Game.exe goto noengine
+if not exist %ENGINE_DIRECTORY%\bin\OpenRA.exe goto noengine
 >nul find %ENGINE_VERSION% %ENGINE_DIRECTORY%\VERSION || goto noengine
 cd %ENGINE_DIRECTORY%
 
 :loop
-OpenRA.Server.exe Game.Mod=%MOD_ID% Server.Name=%Name% Server.ListenPort=%ListenPort% Server.AdvertiseOnline=%AdvertiseOnline% Server.EnableSingleplayer=%EnableSingleplayer% Server.Password=%Password% Server.RequireAuthentication=%RequireAuthentication% Server.ProfileIDBlacklist=%ProfileIDBlacklist% Server.ProfileIDWhitelist=%ProfileIDWhitelist% Server.EnableSyncReports=%EnableSyncReports% Server.EnableGeoIP=%EnableGeoIP% Server.ShareAnonymizedIPs=%ShareAnonymizedIPs% Engine.SupportDir=%SupportDir%
+bin\OpenRA.Server.exe Game.Mod=%MOD_ID% Engine.EngineDir=".." Server.Name=%Name% Server.Map=%Map% Server.ListenPort=%ListenPort% Server.AdvertiseOnline=%AdvertiseOnline% Server.EnableSingleplayer=%EnableSingleplayer% Server.Password=%Password% Server.RecordReplays=%RecordReplays% Server.RequireAuthentication=%RequireAuthentication% Server.ProfileIDBlacklist=%ProfileIDBlacklist% Server.ProfileIDWhitelist=%ProfileIDWhitelist% Server.EnableSyncReports=%EnableSyncReports% Server.EnableGeoIP=%EnableGeoIP% Server.ShareAnonymizedIPs=%ShareAnonymizedIPs% Server.FloodLimitJoinCooldown=%FloodLimitJoinCooldown% Server.QueryMapRepository=%QueryMapRepository% Engine.SupportDir=%SupportDir%
 goto loop
 
 :noengine
