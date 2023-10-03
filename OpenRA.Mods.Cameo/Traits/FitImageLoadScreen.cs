@@ -1,4 +1,5 @@
 #region Copyright & License Information
+
 /*
  * Copyright 2007-2020 The OpenRA Developers (see AUTHORS)
  * This file is part of OpenRA, which is free software. It is made
@@ -7,19 +8,19 @@
  * the License, or (at your option) any later version. For more
  * information, see COPYING.
  */
+
 #endregion
 
-using System;
 using System.Collections.Generic;
 using OpenRA.Graphics;
-using OpenRA.Mods.Common.Widgets;
+using OpenRA.Mods.Common.LoadScreens;
 using OpenRA.Primitives;
 
-namespace OpenRA.Mods.Common.LoadScreens
+namespace OpenRA.Mods.Cameo.Traits
 {
 	public sealed class FitImageLoadScreen : SheetLoadScreen
 	{
-		//Rectangle stripeRect;
+		// Rectangle stripeRect;
 		float2 scale;
 		float2 logoPos;
 		Sprite logo;
@@ -47,12 +48,15 @@ namespace OpenRA.Mods.Common.LoadScreens
 
 				lastDensity = density;
 
-				scale = new float2((float) r.Resolution.Width / (float) s.Size.Width, (float) r.Resolution.Height / (float) s.Size.Height );
+				scale = new float2(r.Resolution.Width / (float)s.Size.Width,
+					(float)r.Resolution.Height / (float)s.Size.Height);
 
-				if (scale.X > scale.Y) {
+				if (scale.X > scale.Y)
+				{
 					logo = new Sprite(s, rect, TextureChannel.RGBA, scale.Y * 1f);
 				}
-				else {
+				else
+				{
 					logo = new Sprite(s, rect, TextureChannel.RGBA, scale.X * 1f);
 				}
 			}
@@ -61,11 +65,13 @@ namespace OpenRA.Mods.Common.LoadScreens
 			{
 				lastResolution = r.Resolution;
 
-				if (scale.X > scale.Y) {
-					logoPos = new float2((r.Resolution.Width - s.Size.Width*scale.Y) / 2, 0);
+				if (scale.X > scale.Y)
+				{
+					logoPos = new float2((r.Resolution.Width - s.Size.Width * scale.Y) / 2, 0);
 				}
-				else {
-					logoPos = new float2(0, (-s.Size.Height*scale.X + r.Resolution.Height) / 2);
+				else
+				{
+					logoPos = new float2(0, (-s.Size.Height * scale.X + r.Resolution.Height) / 2);
 				}
 			}
 
@@ -76,7 +82,9 @@ namespace OpenRA.Mods.Common.LoadScreens
 			{
 				var text = messages.Random(Game.CosmeticRandom);
 				var textSize = r.Fonts["Bold"].Measure(text);
-				r.Fonts["Bold"].DrawText(text, new float2(r.Resolution.Width - textSize.X - 20, r.Resolution.Height - textSize.Y - 20), Color.White);
+				r.Fonts["Bold"].DrawText(text,
+					new float2(r.Resolution.Width - textSize.X - 20, r.Resolution.Height - textSize.Y - 20),
+					Color.White);
 			}
 		}
 	}
