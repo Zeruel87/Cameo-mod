@@ -8,6 +8,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
@@ -65,7 +66,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (info.OccupiesSpace)
 				occupied = new[] { (TopLeft, SubCell.FullCell) };
 			else
-				occupied = new (CPos, SubCell)[0];
+				occupied = Array.Empty<(CPos, SubCell)>();
 
 			Facing = init.GetValue<FacingInit, WAngle>(info.GetInitialFacing());
 		}

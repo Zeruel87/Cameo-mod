@@ -43,11 +43,6 @@ TickPromotions = function()
 			UserInterface.SetMissionText(PromotionsText, TextColors[player.InternalName])
 		end
 
-		if localPlayerIsNull then
-			PromotionsText = ""
-			UserInterface.SetMissionText(PromotionsText)
-		end
-
 		if Points[player.InternalName] > 0 and not PointActorExists[player.InternalName] then
 			HasPointsActors[player.InternalName] = Actor.Create("hack.has_points", true, { Owner = player })
 
@@ -64,14 +59,14 @@ TickPromotions = function()
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[2]
 
-			
+
 		end
 
 		if player.Experience >= RankXPs[3] and not (Levels[player.InternalName] > 1) then
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[3]
 
-			
+
 			Actor.Create("hack.rank_3", true, { Owner = player })
 		end
 
@@ -79,14 +74,14 @@ TickPromotions = function()
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[4]
 
-			
+
 		end
 
 		if player.Experience >= RankXPs[5] and not (Levels[player.InternalName] > 3) then
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[5]
 
-			
+
 			Actor.Create("hack.rank_5", true, { Owner = player })
 		end
 	end

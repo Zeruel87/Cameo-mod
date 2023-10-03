@@ -33,7 +33,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		[FieldLoader.Require]
 		[Desc("Locations to place the mines, from top-left of the building.")]
-		public readonly CVec[] Locations = { };
+		public readonly CVec[] Locations = System.Array.Empty<CVec>();
 
 		[Desc("Initial delay to create the mines.")]
 		public readonly int InitialDelay = 1;

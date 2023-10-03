@@ -44,10 +44,10 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly string MaxControlledCondition;
 
 		[Desc("The sound played when target is mind controlled.")]
-		public readonly string[] ControlSounds = { };
+		public readonly string[] ControlSounds = Array.Empty<string>();
 
 		[Desc("The sound played when slave is released.")]
-		public readonly string[] ReleaseSounds = { };
+		public readonly string[] ReleaseSounds = Array.Empty<string>();
 
 		[Desc("If true, mind control start sound is only played to the controlling player.")]
 		public readonly bool ControlSoundControllerOnly = false;
@@ -56,7 +56,7 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly bool ReleaseSoundControllerOnly = false;
 
 		[Desc("The sound played (to the controlling player only) when beginning mind control process.")]
-		public readonly string[] InitSounds = { };
+		public readonly string[] InitSounds = Array.Empty<string>();
 
 		[Desc("If true, mind control start sound is only played to the controlling player.")]
 		public readonly bool InitSoundControllerOnly = false;
@@ -210,7 +210,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (capacity == 0)
 				return;
 
-			if (slaves.Count() >= capacity)
+			if (slaves.Count >= capacity)
 				GrantMaxControlledCondition(self);
 			else
 				RevokeMaxControlledCondition(self);
@@ -337,7 +337,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (mindControllable.IsTraitDisabled || mindControllable.IsTraitPaused)
 				return;
 
-			if (capacity > 0 && !Info.DiscardOldest && slaves.Count() >= capacity)
+			if (capacity > 0 && !Info.DiscardOldest && slaves.Count >= capacity)
 				return;
 
 			if (mindControllable.Master != null)
@@ -350,7 +350,7 @@ namespace OpenRA.Mods.CA.Traits
 			StackControllingCondition(self, Info.ControllingCondition);
 			mindControllable.LinkMaster(currentTarget.Actor, self);
 
-			if (capacity > 0 && Info.DiscardOldest && slaves.Count() > capacity)
+			if (capacity > 0 && Info.DiscardOldest && slaves.Count > capacity)
 				slaves[0].Trait<MindControllable>().RevokeMindControl(slaves[0], 0);
 
 			ControlComplete(self);
@@ -463,7 +463,7 @@ namespace OpenRA.Mods.CA.Traits
 
 			capacity = Math.Max(newCapacity, 1);
 
-			var currentSlaveCount = slaves.Count();
+			var currentSlaveCount = slaves.Count;
 			var numSlavesToRemove = currentSlaveCount - capacity;
 			for (var i = numSlavesToRemove; i > 0; i--)
 				slaves[i].Trait<MindControllable>().RevokeMindControl(slaves[i], 0);

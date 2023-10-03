@@ -148,7 +148,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		public void Stop()
 		{
-			if (attackBases.Count() == 0)
+			if (attackBases.Length == 0)
 				return;
 
 			self.CancelActivity();
@@ -157,7 +157,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		public void Attack(Target target, bool force)
 		{
-			if (attackBases.Count() == 0)
+			if (attackBases.Length == 0)
 				return;
 
 			if (!TargetSwitched(lastTarget, target))

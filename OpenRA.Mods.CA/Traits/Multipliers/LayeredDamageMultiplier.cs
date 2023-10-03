@@ -47,7 +47,7 @@ namespace OpenRA.Mods.CA.Traits
 			: base(info)
 		{
 			Info = info;
-			maxLayers = layersRemaining = Info.Layers.Count();
+			maxLayers = layersRemaining = Info.Layers.Length;
 		}
 
 		int IDamageModifier.GetDamageModifier(Actor attacker, Damage damage)

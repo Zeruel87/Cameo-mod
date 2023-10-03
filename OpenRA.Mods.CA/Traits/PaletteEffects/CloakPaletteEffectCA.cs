@@ -23,9 +23,9 @@ namespace OpenRA.Mods.CA.Traits
 		[PaletteReference]
 		public readonly string Palette = "cloak";
 
-		public readonly int[] SkipIndexes = new int[] { 0, 4 };
+		public readonly int[] SkipIndexes = { 0, 4 };
 
-		public readonly int[] EraseIndexes = new int[] { };
+		public readonly int[] EraseIndexes = System.Array.Empty<int>();
 
 		public override object Create(ActorInitializer init) { return new CloakPaletteEffectCA(init, this); }
 	}

@@ -173,8 +173,8 @@ namespace OpenRA.Mods.CA.Widgets.Logic
 
 					var factionLabel = item.Get<LabelWidget>("FACTION");
 					factionLabel.GetText = () => factionName;
-					// End custom CA section for revealing random factions
 
+					// End custom CA section for revealing random factions
 					var scoreCache = new CachedTransform<int, string>(s => s.ToString());
 					item.Get<LabelWidget>("SCORE").GetText = () => scoreCache.Update(p.PlayerStatistics?.Experience ?? 0);
 

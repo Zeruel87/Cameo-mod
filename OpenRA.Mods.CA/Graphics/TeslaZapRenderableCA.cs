@@ -19,8 +19,8 @@ namespace OpenRA.Mods.CA.Graphics
 	[Desc("Exact copy of base version to get around protection level in TelsaZapCA.")]
 	class TeslaZapRenderableCA : IPalettedRenderable, IFinalizedRenderable
 	{
-		static readonly int[][] Steps = new[]
-		{
+		static readonly int[][] Steps =
+        {
 			new int[] { 8, 8, 4, 4, 0 },
 			new int[] { -8, -8, -4, -4, 0 },
 			new int[] { 8, 0, 4, 4, 1 },
@@ -29,7 +29,7 @@ namespace OpenRA.Mods.CA.Graphics
 			new int[] { 0, -8, 4, -4, 2 },
 			new int[] { -8, 8, -4, 4, 3 },
 			new int[] { 8, -8, 4, -4, 3 }
-		};
+        };
 
 		readonly WPos pos;
 		readonly int zOffset;

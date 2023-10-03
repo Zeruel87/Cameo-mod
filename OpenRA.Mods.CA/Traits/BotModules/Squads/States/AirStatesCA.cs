@@ -231,7 +231,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			var buildableInfo = leader.Info.TraitInfoOrDefault<BuildableInfo>();
 			var limitOne = buildableInfo != null && buildableInfo.BuildLimit == 1;
 			var canBuildMoreOfAircraft = leader != null ? !limitOne && owner.SquadManager.CanBuildMoreOfAircraft(leader.Info) : false;
-			var waitingCount = owner.WaitingUnits.Count();
+			var waitingCount = owner.WaitingUnits.Count;
 
 			var waitingPatience = 99;
 			if (waitingCount > 7)

@@ -24,7 +24,7 @@ namespace OpenRA.Mods.CA.Traits
 		[ActorReference]
 		[FieldLoader.Require]
 		[Desc("List of Random Actors to pick from to spawn.")]
-		public readonly string[] Actors = { };
+		public readonly string[] Actors = System.Array.Empty<string>();
 
 		[Desc("Probability the actor spawns.")]
 		public readonly int Probability = 100;

@@ -8,6 +8,7 @@
  */
 #endregion
 
+using System;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.CA.Traits;
@@ -33,10 +34,10 @@ namespace OpenRA.Mods.CA.Warheads
 		public readonly int MaxTargets = 1;
 
 		[Desc("List of sounds that can be played on attaching.")]
-		public readonly string[] AttachSounds = new string[0];
+		public readonly string[] AttachSounds = Array.Empty<string>();
 
 		[Desc("List of sounds that can be played if attaching is not possible.")]
-		public readonly string[] MissSounds = new string[0];
+		public readonly string[] MissSounds = Array.Empty<string>();
 
 		public override void DoImpact(in Target target, WarheadArgs args)
 		{

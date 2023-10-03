@@ -33,10 +33,10 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly WAngle Facing = new WAngle(384);
 
 		[Desc("Sounds to play when transforming.")]
-		public readonly string[] TransformSounds = { };
+		public readonly string[] TransformSounds = System.Array.Empty<string>();
 
 		[Desc("Sounds to play when the transformation is blocked.")]
-		public readonly string[] NoTransformSounds = { };
+		public readonly string[] NoTransformSounds = System.Array.Empty<string>();
 
 		[NotificationReference("Speech")]
 		[Desc("Notification to play when transforming.")]

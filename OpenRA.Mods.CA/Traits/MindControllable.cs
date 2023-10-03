@@ -19,7 +19,7 @@ namespace OpenRA.Mods.CA.Traits
 	public class MindControllableInfo : PausableConditionalTraitInfo
 	{
 		[Desc("The sound played when the mindcontrol is revoked.")]
-		public readonly string[] RevokeControlSounds = { };
+		public readonly string[] RevokeControlSounds = System.Array.Empty<string>();
 
 		[Desc("Map player to transfer this actor to if the owner lost the game.")]
 		public readonly string FallbackOwner = "Creeps";

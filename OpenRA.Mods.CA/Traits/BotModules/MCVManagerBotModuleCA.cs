@@ -237,14 +237,14 @@ namespace OpenRA.Mods.CA.Traits
 			var enemies = world.FindActorsInCircle(wPos, newBaseRadius)
 				.Where(a => !a.Disposed && player.RelationshipWith(a.Owner) == PlayerRelationship.Enemy && a.Info.HasTraitInfo<BuildingInfo>());
 
-			if (enemies.Count() > 0)
+			if (enemies.Any())
 				return null;
 
 			var self = world.FindActorsInCircle(wPos, newBaseRadius)
 				.Where(a => !a.Disposed && a.Owner == player
 					&& (Info.McvTypes.Contains(a.Info.Name) || (Info.ConstructionYardTypes.Contains(a.Info.Name) && a.Info.HasTraitInfo<BuildingInfo>())));
 
-			if (self.Count() > 0)
+			if (self.Any())
 				return null;
 
 			return baseCenter;

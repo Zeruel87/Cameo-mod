@@ -22,7 +22,7 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly string Prerequisite = null;
 
 		[Desc("Only grant this prerequisite when you have these prerequisites.")]
-		public readonly string[] RequiresPrerequisites = { };
+		public readonly string[] RequiresPrerequisites = System.Array.Empty<string>();
 
 		[Desc("Only grant this prerequisite for certain factions.")]
 		public readonly HashSet<string> Factions = new HashSet<string>();

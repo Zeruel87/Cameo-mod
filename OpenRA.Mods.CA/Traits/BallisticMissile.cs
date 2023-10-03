@@ -60,7 +60,7 @@ namespace OpenRA.Mods.CA.Traits
 	public class BallisticMissile : ISync, IFacing, IMove, IPositionable,
 		INotifyCreated, INotifyAddedToWorld, INotifyRemovedFromWorld, IOccupySpace
 	{
-		static readonly (CPos, SubCell)[] NoCells = { };
+		static readonly (CPos, SubCell)[] NoCells = System.Array.Empty<(CPos, SubCell)>();
 
 		public readonly BallisticMissileInfo Info;
 		readonly Actor self;

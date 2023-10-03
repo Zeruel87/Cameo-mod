@@ -8,6 +8,7 @@
  */
 #endregion
 
+using System;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.CA.Activities;
@@ -28,7 +29,7 @@ namespace OpenRA.Mods.CA.Warheads
 		public readonly int Range = 10;
 
 		[Desc("Actors to spawn.")]
-		public readonly string[] Actors = { };
+		public readonly string[] Actors = Array.Empty<string>();
 
 		[Desc("Try to parachute the actors. When unset, actors will just fall down visually using FallRate."
 			+ " Requires the Parachutable trait on all actors if set.")]
@@ -58,7 +59,7 @@ namespace OpenRA.Mods.CA.Warheads
 		public readonly string Palette = "effect";
 
 		[Desc("List of sounds that can be played at the spawning location.")]
-		public readonly string[] Sounds = new string[0];
+		public readonly string[] Sounds = Array.Empty<string>();
 
 		[Desc("For non-positionable actors only, whether to avoid spawning on top of existing actors.")]
 		public readonly bool AvoidActors = false;

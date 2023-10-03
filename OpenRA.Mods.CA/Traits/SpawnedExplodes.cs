@@ -8,6 +8,7 @@
  */
 #endregion
 
+using System;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.Common.Traits;
@@ -66,11 +67,11 @@ namespace OpenRA.Mods.CA.Traits
 				CurrentMuzzleFacing = () => WAngle.Zero,
 
 				DamageModifiers = !spawner.IsDead ? spawner.TraitsImplementing<IFirepowerModifier>()
-						.Select(a => a.GetFirepowerModifier()).ToArray() : new int[0],
+						.Select(a => a.GetFirepowerModifier()).ToArray() : Array.Empty<int>(),
 
-				InaccuracyModifiers = new int[0],
+				InaccuracyModifiers = Array.Empty<int>(),
 
-				RangeModifiers = new int[0],
+				RangeModifiers = Array.Empty<int>(),
 
 				Source = self.CenterPosition,
 				CurrentSource = () => self.CenterPosition,

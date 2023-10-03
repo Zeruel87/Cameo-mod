@@ -22,7 +22,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		[FieldLoader.Require]
 		[Desc("List of required prerequisites.")]
-		public readonly string[] Prerequisites = { };
+		public readonly string[] Prerequisites = System.Array.Empty<string>();
 
 		public override object Create(ActorInitializer init) { return new GrantConditionOnPrerequisiteCA(init.Self, this); }
 	}

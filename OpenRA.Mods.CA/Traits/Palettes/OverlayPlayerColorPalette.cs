@@ -28,7 +28,7 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly string BaseName = "player";
 
 		[Desc("Remap these indices to player colors.")]
-		public readonly int[] RemapIndex = { };
+		public readonly int[] RemapIndex = System.Array.Empty<int>();
 
 		[Desc("Allow palette modifiers to change the palette.")]
 		public readonly bool AllowModifiers = true;
