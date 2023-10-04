@@ -106,7 +106,7 @@ ChronoshiftRedUnits = function()
 	local cells = Utils.ExpandFootprint({ SovietChrono.Location }, false)
 	local units = { }
 	for i = 1, #cells do
-		local unit = Actor.Create("scgoliath", true, { Owner = red, Facing = 0 })
+		local unit = Actor.Create("scgoliath", true, { Owner = red})
 		BindActorTriggers(unit)
 		units[unit] = cells[i]
 	end
