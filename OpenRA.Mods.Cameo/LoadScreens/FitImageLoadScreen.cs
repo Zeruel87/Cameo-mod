@@ -11,12 +11,14 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.LoadScreens;
 using OpenRA.Primitives;
+using OpenRA.Support;
 
-namespace OpenRA.Mods.Cameo.Traits
+namespace OpenRA.Mods.Cameo.LoadScreens
 {
 	public sealed class FitImageLoadScreen : SheetLoadScreen
 	{
@@ -37,6 +39,17 @@ namespace OpenRA.Mods.Cameo.Traits
 
 			if (info.ContainsKey("Text"))
 				messages = info["Text"].Split(',');
+		}
+
+		public override void Display()
+		{
+			if (Info["Image"].Contains(","))
+			{
+				var images = Info["Image"].Split(',');
+				Info["Image"] = images[new Random().Next(images.Length)];
+			}
+
+			base.Display();
 		}
 
 		public override void DisplayInner(Renderer r, Sheet s, int density)
