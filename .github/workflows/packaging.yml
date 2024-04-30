@@ -3,38 +3,12 @@ name: Release Packaging
 on:
   push:
     tags:
-    - 'release-*'
-    - 'playtest-*'
-    - 'devtest-*'
+    - '*'
 
 permissions:
   contents: write  #  for release creation (svenstaro/upload-release-action)
 
 jobs:
-  source:
-    name: Source Tarball
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Clone Repository
-        uses: actions/checkout@v3
-
-      - name: Prepare Environment
-        run: echo "GIT_TAG=${GITHUB_REF#refs/tags/}" >> ${GITHUB_ENV}
-
-      - name: Package Source
-        run: |
-          mkdir -p build/source
-          ./packaging/source/buildpackage.sh "${GIT_TAG}" "${PWD}/build/source"
-
-      - name: Upload Packages
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
-          file: build/source/*
-
   linux:
     name: Linux AppImages
     runs-on: ubuntu-22.04
@@ -50,8 +24,9 @@ jobs:
       - name: Prepare Environment
         run: echo "GIT_TAG=${GITHUB_REF#refs/tags/}" >> ${GITHUB_ENV}
 
-      - name: Package AppImages
+      - name: Package AppImage
         run: |
+          make engine
           mkdir -p build/linux
           sudo apt install libfuse2
           ./packaging/linux/buildpackage.sh "${GIT_TAG}" "${PWD}/build/linux"
@@ -88,6 +63,7 @@ jobs:
           MACOS_DEVELOPER_USERNAME: ${{ secrets.MACOS_DEVELOPER_USERNAME }}
           MACOS_DEVELOPER_PASSWORD: ${{ secrets.MACOS_DEVELOPER_PASSWORD }}
         run: |
+          make engine
           mkdir -p build/macos
           ./packaging/macos/buildpackage.sh "${GIT_TAG}" "${PWD}/build/macos"
 
@@ -120,6 +96,7 @@ jobs:
 
       - name: Package Installers
         run: |
+          make engine
           mkdir -p build/windows
           ./packaging/windows/buildpackage.sh "${GIT_TAG}" "${PWD}/build/windows"
 
