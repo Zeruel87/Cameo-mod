@@ -160,7 +160,7 @@ MCV.TOMORROW:
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 8c0
+		Range: 7c0
 	Transforms:
 		IntoActor: fact.tomorrow
 		Offset: -1,-1
@@ -213,7 +213,7 @@ MCV.ANSWER:
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 8c0
+		Range: 7c0
 	Transforms:
 		IntoActor: fact.answer
 		Offset: -1,-1
@@ -266,7 +266,7 @@ MCV.DTUSA:
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 8c0
+		Range: 7c0
 	Transforms:
 		IntoActor: fact.dtusa
 		Offset: -1,-1
@@ -308,7 +308,7 @@ RAMCV.DTRUSSIA:
 		Name: Mobile Construction Vehicle (Russia)
 	Selectable:
 		Priority: 4
-		DecorationBounds: 76458, 76458
+		DecorationBounds: 1536, 1536
 	SelectionDecorations:
 	Health:
 		HP: 150000
@@ -318,7 +318,7 @@ RAMCV.DTRUSSIA:
 		Speed: 75
 		Locomotor: heavywheeled
 	RevealsShroud:
-		Range: 8c0 #4c0
+		Range: 7c0 #4c0
 	Transforms:
 		IntoActor: rafact.dtrussia
 		Offset: -1,-1
@@ -370,7 +370,7 @@ MCV.DTJAPAN:
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 8c0
+		Range: 7c0
 	Transforms:
 		IntoActor: fact.dtjapan
 		Offset: -1,-1
@@ -1435,6 +1435,7 @@ DOME.DTRUSSIA:
 		Description: Unlocks higher-tech units and buildings.\nRequires power to operate.
 	RenderSprites:
 		Image: DOME
+
 DTSTRIKE:
 	Inherits: ^BaseBuilding
 	Inherits@IDISABLE: ^DisabledOverlay
@@ -1475,42 +1476,33 @@ DTSTRIKE:
 	DetectCloaked:
 		Range: 5c0
 		RequiresCondition: !lowpower
-	ClassicAirstrikePower@A10CA:
-		Squad:
-			A10CA:
-				SpawnOffset: 0,0,0
-				TargetOffset: 0,0,0
-			A10CA:
-				SpawnOffset: -1024,1024,0
-				TargetOffset: -1024,1024,0
-			A10CA:
-				SpawnOffset: 1024,1024,0
-				TargetOffset: 1024,1024,0
+	AirstrikePower:
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
 		Icon: airstrike
 		ChargeInterval: 4500
+		SquadSize: 5
+		QuantizedFacings: 8
 		Name: Air Strike
-		Description: A10 Warhog hit the target with bombs and heavy machine guns
+		Description: Deploy an aerial napalm strike.\nBurns buildings and infantry along a line.
+		EndChargeSpeechNotification: AirstrikeReady
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		IncomingSpeechNotification: EnemyPlanesApproaching
-		QuantizedFacings: 8
+		UnitType: a10
 		DisplayBeacon: True
 		AllowMultiple: True
 		BeaconPoster: airstrike
 		BeaconPosterPalette: beaconposter
 		DisplayRadarPing: True
 		CameraActor: camera
-		CameraRemoveDelay: 150
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
-		DisplayTimerStances: Ally, Neutral, Enemy
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
-		Strikes: 3
-		CircleDelay: 25
-		OrderName: AnswerA10Strike
-		SupportPowerPaletteOrder: 20
+		SupportPowerPaletteOrder: 10
+		DisplayTimerStances: Ally, Neutral, Enemy
 	ProvidesPrerequisite@buildingname:
 	SupportPowerChargeBar:
 	Power:
@@ -1616,6 +1608,8 @@ DTPROPAGANDA:
 	Power:
 		Amount: -40
 	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@techcenter:
+		Prerequisite: techcenter
 	ProximityExternalCondition@PROPAGANDA:
 		Range: 6c0
 		Condition: propaganda
@@ -2145,13 +2139,6 @@ HPAD.DTJAPAN:
 		Prerequisite: hpad
 	RenderSprites:
 		Image: hpad
-OILB.tomorrow:
-	Inherits: OILB.camea
-	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 120
-		Prerequisites: anyhq, ~techlevel.medium
-		Description: Provides Passive income
 SAM.TOMORROW:
 	Inherits: SAM
 	Buildable:
@@ -2217,14 +2204,11 @@ DTBIO:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 300000
+		HP: 400000
 	Armor:
 		Type: Wood
 	RevealsShroud:
 		Range: 5c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 6c0
 	WithBuildingBib:
 	Power:
 		Amount: -200
@@ -2288,9 +2272,6 @@ ATEK.ANSWER:
 		Type: Wood
 	RevealsShroud:
 		Range: 5c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 6c0
 	WithBuildingBib:
 	GpsPower:
 		Icon: gps
@@ -2309,6 +2290,8 @@ ATEK.ANSWER:
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@tek:
 		Prerequisite: tek
+	ProvidesPrerequisite@techcenter:
+		Prerequisite: techcenter
 	RenderSprites:
 		Image: ATEK
 DTWOOD:
@@ -2444,7 +2427,7 @@ DTEYE:
 	WithSpriteBody:
 		PauseOnCondition: lowpower
 	Health:
-		HP: 130000
+		HP: 400000
 	RevealsShroud:
 		Range: 10c0
 	WithBuildingBib:
@@ -2718,7 +2701,7 @@ dtover:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 8c0
+		Range: 7c0
 	Turreted:
 		TurnSpeed: 40
 		Offset: -43,0,128
@@ -3002,9 +2985,6 @@ v2rl.tomorrow:
 		Speed: 75
 	RevealsShroud:
 		Range: 7c5
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 5c0
 	Armament@AG:
 		Weapon: DTMissileCrawler
 		ReloadingCondition: reloading
@@ -3198,7 +3178,7 @@ dtorca:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 10c0
+		Range: 7c0
 		Type: GroundPosition
 	Armament@PRIMARY:
 		Weapon: HonestJohn
@@ -3223,7 +3203,7 @@ dtorca:
 		Delay: 100
 		Count: 2
 	Selectable:
-		DecorationBounds: 54613, 43690	
+		DecorationBounds: 1280, 1024	
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
@@ -3234,9 +3214,6 @@ dtorca.husk:
 	Aircraft:
 		TurnSpeed: 16
 		Speed: 186
-	RevealsShroud:
-		Range: 10c0
-		Type: GroundPosition
 	RenderSprites:
 		Image: dtorca
 
@@ -3793,7 +3770,7 @@ dtfbik:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 8c0
+		Range: 7c0
 	Armament:
 		Weapon: BigFlamer
 		LocalOffset: 512,1,42, 512,-1,42

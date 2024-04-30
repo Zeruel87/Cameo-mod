@@ -1,0 +1,937 @@
+Player:
+	ExternalCondition@AntHillsOwned:
+		Condition: AntHillsOwned
+	ProvidesPrerequisite@AntHillsOwned:
+		Prerequisite: allowsQueenAnts
+		RequiresCondition: AntHillsOwned < 7		
+
+World:
+	FactionCA@modants:
+		Name: Ants RA
+		InternalName: modants
+		Game: Special
+		Side: Factions
+		Description: Ants: Ants\nSpecial Ability: Ants\nSpecial Unit: Ants
+	StartingUnits@mcvonlyramodant:
+		Class: none
+		ClassName: MCV Only
+		Factions: modants
+		BaseActor: qant
+	StartingUnits@defaultmodant:
+		Class: light
+		ClassName: Light Support
+		Factions: modants
+		BaseActor: qant
+		SupportActors: dant,dant,dant,modant,modant,fant,antdoggie
+	StartingUnits@heavymodant:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: modants
+		BaseActor: qant
+		SupportActors: dant,dant,dant,modant,modant,fant,antdoggie,tant,tant
+
+####################################################################################################
+#		ANTS
+####################################################################################################
+QANT:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+	Inherits@conyard: ^Conyard
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Buildable:
+		Queue: Building, RABuilding, Infantry, RAInfantry, Vehicle, RAVehicle
+		BuildPaletteOrder: 210
+		Prerequisites: breednest, tinynest, evo
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Queen Ant
+	Selectable:
+		Priority: 4
+		DecorationBounds: 1536, 1536
+	SelectionDecorations:
+	Health:
+		HP: 500000
+	Armor:
+		Type: Wood
+	Mobile:
+		Speed: 100
+		Locomotor: heavywheeled
+	RevealsShroud:
+		Range: 7c0 #4c0
+	Transforms:
+		IntoActor: qnest
+		Offset: -1,-1
+		Facing: 384
+		TransformSounds: placbldg.aud, build5.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: qant
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmmodant
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+	Voiced:
+		VoiceSet: AntVoice
+
+qant.bot:
+	Inherits: QANT
+	Buildable:
+		BuildPaletteOrder: 800
+		BuildLimit: 1
+		Prerequisites: breednest, tinynest, evo, ~botplayer, allowsQueenAnts
+		Description: Maked for Expand bots
+	RenderSprites:
+		Image: qant
+
+tinyant:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 250
+	Tooltip:
+		Name: Drone
+		GenericName: Harvester
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: mmmodant
+		BuildDuration: 250
+		Queue: Defence, RADefence
+		Description: Collects resources.
+	Mobile:
+		Locomotor: foot
+		TurnSpeed: 1000
+		Speed: 110
+	Health:
+		HP: 10000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 6c0
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	#WithMoveAnimation:
+	AttackFrontal:
+		FacingTolerance: 0
+	Armament:
+		Weapon: ZClaw2
+	Voiced:
+		VoiceSet: AntVoice
+	Inherits@EXT: ^ExternalConditions ##########
+	WithFacingSpriteBody:
+	WithInfantryBody:
+	Harvester:
+		PipCount: 3
+		Capacity: 3
+		BaleLoadDelay: 3
+		BaleUnloadDelay: 3
+		BaleUnloadAmount: 3
+		FullyLoadedSpeed: 55
+		MaxUnloadQueue: 11
+	-Explodes:
+	WithShadow:
+		Offset: 128, 128, 0
+		ZOffset: -512
+	Capturable:
+		Types: thiefproof
+	Selectable:
+		Class: tinyant
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	Power:
+		Amount: -5
+
+modant:
+	Inherits: ^Infantry
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@Infect: ^InfectionGamemode
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Giant Ant
+		GenericName: Ant
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 1954
+		BuildDuration: 700
+		BuildDurationModifier: 100
+		Description: Irradiated insect that grew oversize.
+		Prerequisites: breednest, tinynest
+	Selectable:
+		Bounds: 1280, 1280, 0, -64
+	SelectionDecorations:
+	Health:
+		HP: 80000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 85
+		TurnSpeed: 48
+		Locomotor: lighttracked
+	-Crushable:
+	AutoTarget:
+		ScanRadius: 25
+	AttackFrontal:
+		FacingTolerance: 0
+	WithInfantryBody:
+		DefaultAttackSequence: bite
+	Armament:
+		Weapon: MandibleMedium
+	Targetable:
+		TargetTypes: Ground, Ant
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	Voiced:
+		VoiceSet: AntVoice
+	HitShape:
+		Type: Circle
+			Radius: 469
+	Inherits@EXT: ^ExternalConditions ##########
+	RenderSprites:
+		Image: Ant
+	Power:
+		Amount: -15
+	ProvidesPrerequisite@buildingname:
+
+modant2:
+	Inherits: modant
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Scout Ant
+		GenericName: Ant
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 1954
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: Irradiated insect that grew oversize.
+		Prerequisites: breednest
+	Health:
+		HP: 60000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 95
+	Armament:
+		Weapon: mandible
+	Voiced:
+		VoiceSet: AntVoice
+	RenderSprites:
+		Image: modant2
+	Power:
+		Amount: -5
+
+modant3:
+	Inherits: modant
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Warrior Ant
+		GenericName: Ant
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 1954
+		BuildDuration: 900
+		BuildDurationModifier: 100
+		Description: Irradiated insect that grew oversize.
+		Prerequisites: breednest, tinynest, evo
+	Health:
+		HP: 100000
+	Armor:
+		Type: Concrete
+	Mobile:
+		Speed: 75
+	Armament:
+		Weapon: MandibleHeavy
+	Voiced:
+		VoiceSet: AntVoice
+	RenderSprites:
+		Image: modant3
+	Power:
+		Amount: -25
+
+antdoggie:
+	Inherits: TSDOGGIE
+	Inherits@bounty: ^GlobalBounty ##########
+	Inherits@anim: ^TSInfantry
+	Inherits@autotarget: ^AutoTargetAllAssaultMove
+	Inherits@tibheal: ^TibHealable
+	Inherits@Infect: ^InfectionGamemode
+	Health:
+		HP: 25000
+	Armor:
+		Type: Light
+	DamageMultiplier:
+		Modifier: 250
+	FirepowerMultiplier:
+		Modifier: 250
+	Targetable:
+		TargetTypes: Ground, Ant
+	Valued:
+		Cost: 2500
+	Armament:
+		Weapon: TSFiendShard
+	Buildable:
+		BuildPaletteOrder: 25
+		BuildDuration: 2500
+		BuildDurationModifier: 25
+		Prerequisites: evo
+		Queue: Defence, RADefence
+	RenderSprites:
+		Image: tsdoggie
+	Power:
+		Amount: -25
+
+fant:
+	Inherits: modant
+	Tooltip:
+		Name: Fire Ant
+		GenericVisibility: none
+	Valued:
+		Cost: 1000
+	Mobile:
+		Speed: 100
+	Armament:
+		Weapon: AntFireball
+	Health:
+		HP: 50000
+	Armor:
+		Type: none
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 1954
+		BuildDuration: 600
+		BuildDurationModifier: 100
+		Description: Irradiated insect that grew oversize.
+		Prerequisites: breednest, tinynest, evo
+	RenderSprites:
+		Image: fant
+	Power:
+		Amount: -10
+
+chant:
+	Inherits: modant
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Chemical Ant
+		GenericName: Ant
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 1954
+		BuildDuration: 800
+		BuildDurationModifier: 100
+		Description: Irradiated insect that grew oversize.
+		Prerequisites: breednest, tinynest, evo
+	Health:
+		HP: 70000
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 90
+	Armament:
+		Weapon: Spit
+		LocalOffset: 384,0,0
+	Armament@AA:
+		Weapon: SpitAA
+		LocalOffset: 384,0,0
+	FirepowerMultiplier:
+		Modifier: 200
+	ReloadDelayMultiplier:
+		Modifier: 50
+	Voiced:
+		VoiceSet: AntVoice
+	RenderSprites:
+		Image: sant
+	Power:
+		Amount: -20
+
+sant:
+	Inherits: modant
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Tesla Ant
+		GenericVisibility: none
+	Mobile:
+		Speed: 80
+	Health:
+		HP: 90000
+	Armor:
+		Type: Wood
+	Armament:
+		Weapon: SuperAntTeslaZap
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 1954
+		BuildDuration: 1000
+		BuildDurationModifier: 100
+		Description: Irradiated insect that grew oversize.
+		Prerequisites: breednest, tinynest, evo
+	RenderSprites:
+		Image: hant
+	Power:
+		Amount: -30
+
+crab:
+	Inherits: ^Infantry
+	Inherits@selection: ^SelectableSupportUnit
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Infester
+		GenericName: Ant
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 1954
+		BuildDuration: 250
+		BuildDurationModifier: 100
+		Description: Parasitic insect, capable of capturing buildings and vehicles
+		Prerequisites: breednest, tinynest
+	Selectable:
+		Bounds: 512, 512, 0, -32
+	SelectionDecorations:
+	Health:
+		HP: 10000
+	Mobile:
+		Speed: 100
+		TurnSpeed: 48
+		Locomotor: lighttracked
+	-Crushable:
+	WithInfantryBody:
+		DefaultAttackSequence: bite
+	Targetable:
+		TargetTypes: Ground, Infantry, Ant
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	Voiced:
+		VoiceSet: AntVoice
+	HitShape:
+		Type: Circle
+			Radius: 469
+	Inherits@EXT: ^ExternalConditions ##########
+	RenderSprites:
+		Image: crab
+	Captures:
+		RequiresCondition: !global-reusable-engineers
+		CaptureTypes: building, defense, tech, vehicle, vehicles
+		PlayerExperience: 500
+		ConsumedByCapture: True
+	Captures@REUSABLE:
+		RequiresCondition: global-reusable-engineers
+		CaptureTypes: building, defense, tech, vehicle, vehicles
+		PlayerExperience: 500
+		CaptureDelay: 375
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+	Passenger:
+		CustomPipType: yellow
+	EngineerRepair:
+	RepairsBridges:
+	CaptureManager:
+	GrantConditionOnPrerequisite@GLOBALREUSABLEENGINEER:
+		Condition: global-reusable-engineers
+		Prerequisites: global-reusable-engineers
+
+####################################################################################################
+#		BUILDINGS
+####################################################################################################
+qnest:
+	Inherits: RAFACT.ALLIES
+	GrantExternalConditionToOwner@AntHillsOwned:
+		Condition: AntHillsOwned
+	Inherits@ref: ^Refinery
+	Tooltip:
+		Name: Ant Hill
+	Health:
+		HP: 1000000
+	Armor:
+		Type: Concrete
+	Valued:
+		Cost: 5000
+	Production@NORMAL:
+		Produces: Building, Defence, Infantry, Vehicle
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence, RAInfantry, RAVehicle
+	Transforms:
+		IntoActor: qant
+	ProductionQueue@AlliesBuilding:
+		Type: Building
+	ProductionQueue@AlliesDefense:
+		Type: Defence
+	BaseBuilding:
+	ProductionBar@BuildingAllies:
+		ProductionType: Building
+	ProductionBar@DefenceAllies:
+		ProductionType: Defence
+	ProductionBar@RABuildingAllies:
+		ProductionType: RABuilding
+	ProductionBar@RADefenceAllies:
+		ProductionType: RADefence
+	ProductionQueue@I:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@Ic:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@Inc:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	ProductionQueue@V:
+		Type: Vehicle
+		DisplayOrder: 2
+		Group: Vehicle
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@Vc:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@Vnc:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 213,-128,0
+		ExitCell: 1,2
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmmodant
+	Refinery:
+		DockAngle: 256
+		DockOffset: 1,3
+	StoresResources:
+		Capacity: 10000 #2000
+	RenderSprites:
+		Image: qnest
+	Voiced:
+		VoiceSet: AntVoice
+	Power:
+		Amount: 200
+	CashTrickler:
+		Interval: 125
+		Amount: 125
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 17
+		FullSequence: pip-yellow
+
+breednest:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@power: ^PowerPlant
+	HitShape:
+		TargetableOffsets: -355,-1024,0
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 110
+		Prerequisites: mmmodant
+		BuildDurationModifier: 500
+		BuildDuration: 100
+		Description: Provides double the power of\na standard Power Plant.
+	Valued:
+		Cost: 1000 #500
+	Tooltip:
+		Name: Breeding Nest
+	Building:
+		Footprint: === =x= ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 3072, 3072, 0, -512
+	SelectionDecorations:
+	Health:
+		HP: 100000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 200
+	CashTrickler:
+		Interval: 250
+		Amount: 25
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: building ##########
+	ProvidesPrerequisite@buildingname:
+
+tinynest:
+	Inherits: ^BaseBuilding
+	Inherits@ref: ^Refinery
+	Inherits@sell: ^RASpawnActorsOnSell
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 60
+		Prerequisites: breednest
+		BuildDurationModifier: 500
+		BuildDuration: 100
+		Description: Refines Ore and Gems\ninto credits.
+	Valued:
+		Cost: 1000 #1400
+	Tooltip:
+		Name: Resource Hole
+	Building:
+		Footprint: ___ =x= === ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 3072, 3072, 0, -512
+	SelectionDecorations:
+	Health:
+		HP: 100000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+	Refinery:
+		DockAngle: 256
+		DockOffset: 1,2
+	StoresResources:
+		Capacity: 1000 #2000
+	CashTrickler:
+		Interval: 250
+		Amount: 25
+	DrawLineToTarget:
+	CustomSellValue:
+		Value: 500 #600
+	FreeActor:
+		Actor: tinyant
+		SpawnOffset: 1,2
+		Facing: 256
+	ProvidesPrerequisite@buildingname:
+	HitShape:
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 853
+	HitShape@TOP:
+		Type: Rectangle
+			TopLeft: -512, -1450
+			BottomRight: 896, -512
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	SpawnActorOnDeath@hole:
+		Actor: tinyant
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+		FullSequence: pip-yellow
+
+tinynest2:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@shape: ^2x2Shape
+	Inherits@disabledoverlay: ^DisabledOverlay
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Defence Nest
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: tinynest, breednest, ~techlevel.medium
+		Queue: Building, RABuilding
+		BuildDurationModifier: 750
+		BuildDuration: 100
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	Selectable:
+		Bounds: 3072, 3072, 0, -512
+	SelectionDecorations:
+	Health:
+		HP: 100000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 1023
+	Armament:
+		Weapon: GLStingerTargeting
+	Armament@AG:
+		Weapon: Spit
+		LocalOffset: 384,0,0
+		PauseOnCondition: lowpower || disabled
+	Armament@AA:
+		Weapon: SpitAA
+		LocalOffset: 384,0,0
+		PauseOnCondition: lowpower || disabled
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	MobSpawnerMaster@1:
+		Actors: defenseant, defenseant
+		Offset: 255,255,0
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		SpawnAllAtOnce: false
+		InitialActorCount: 0
+		#RequiresCondition: !disabled
+	MobSpawnerMaster@2:
+		Actors: defenseant, defenseant
+		Offset: 255,-255,0
+		RespawnTicks: 750
+		ExitByBudding: false
+		AggregateHealth: false
+		SpawnAllAtOnce: false
+		InitialActorCount: 0
+		#RequiresCondition: !disabled
+	MobSpawnerMaster@3:
+		Actors: defenseant, defenseant
+		Offset: -255,255,0
+		RespawnTicks: 1000
+		ExitByBudding: false
+		AggregateHealth: false
+		SpawnAllAtOnce: false
+		InitialActorCount: 0
+		#RequiresCondition: !disabled
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !disabled
+		DetectionTypes: Cloak, Hijacker
+	Power:
+		Amount: -40
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Voiced:
+		VoiceSet: GLStingerSiteVoice
+	SpawnActorOnDeath@hole:
+		Actor: tinyant
+	RangeMultiplier:
+		Modifier: 150
+	ReloadDelayMultiplier:
+		Modifier: 75
+
+defenseant:
+	Inherits: ^Infantry
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Defender Ant
+		GenericName: Ant
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Selectable:
+		Bounds: 512, 512, 0, -32
+	SelectionDecorations:
+	Health:
+		HP: 25000
+	Mobile:
+		Speed: 125
+		TurnSpeed: 48
+	Crushable:
+	AutoTarget:
+		ScanRadius: 25
+	WithInfantryBody:
+		DefaultAttackSequence: bite
+	Armament:
+		Weapon: mandible
+	Targetable:
+		TargetTypes: Ground, Infantry, Ant
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	Voiced:
+		VoiceSet: AntVoice
+	HitShape:
+		Type: Circle
+			Radius: 469
+	Inherits@EXT: ^ExternalConditions ##########
+	RenderSprites:
+		Image: tinyant
+	-MapEditorData:
+	-ActorLostNotification:
+	AutoTarget:
+		AllowMovement: false
+		InitialStanceAI: Defend
+		EnableStances: false
+	AttackFrontal:
+		OutsideRangeRequiresForceFire: true
+		FacingTolerance: 0
+	MobSpawnerSlave:
+	RejectsOrders:
+flyant:
+	Inherits: ^Helicopter
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+	Inherits@Infect: ^InfectionGamemode
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Fighter Ant
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: breednest, evo
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Queue: Infantry, RAInfantry
+		Description: Flying Ant.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		TurnSpeed: 28
+		Speed: 100
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 50000
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: AntNeedles
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	Armament@AG:
+		Weapon: Spit
+		LocalOffset: 384,0,0
+	Armament@AA:
+		Weapon: SpitAA
+		LocalOffset: 384,0,0
+	AutoTarget:
+		ScanRadius: 15
+	AttackAircraft:
+		FacingTolerance: 80
+		OpportunityFire: true
+		PersistentTargeting: false
+		AttackType: Hover
+	AmmoPool:
+		Ammo: 16
+		AmmoCondition: ammo
+	-SpawnActorOnDeath:
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	ReloadAmmoPool:
+		Delay: 100
+		Count: 4
+	Selectable:
+		DecorationBounds: 1280, 1024
+	RenderSprites:
+	Power:
+		Amount: -50	
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 4
+
+EVO:
+	Inherits: ^BaseBuilding
+	Inherits@CPQ: ^CPQCondition
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: breednest, tinynest
+		Queue: Building, RABuilding
+		BuildDurationModifier: 1000
+		BuildDuration: 100
+		Description: Provides advanced mutations for ants.\nCan combine units.\n Drone + Drone = Scout.\n Scout + Scout = Giant.\n Giant + Giant = Fire.\n Fire + Fire = Warrior.\n Warrior + Warrior = Super.\nSuper + Super = HyperInfester + Infester = Queen
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Burrow
+	Building:
+		Footprint: ___ xxx
+		Dimensions: 3,2
+	Health:
+		HP: 50000
+	Armor:
+		Type: Wood
+	Production@NORMAL:
+		Produces: Defence
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RADefence
+		RequiresCondition: classicproductionqueues
+	ProductionQueue@NORMAL:
+		Type: Defence
+		DisplayOrder: 2
+		Group: Defence
+		LowPowerModifier: 300
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+	ProductionBar@NORMAL:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	Exit@1:
+		SpawnOffset: 213,-128,0
+		ExitCell: 1,2
+	RallyPoint:
+	RevealsShroud:
+		Range: 5c0
+	ProvidesPrerequisite@buildingname:
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 512
+
+TEVO:
+	Inherits: ^BaseBuilding
+	Buildable:
+		BuildPaletteOrder: 120
+		Prerequisites: breednest, evo
+		Queue: Building, RABuilding
+		BuildDuration: 330
+		Description: Provides advanced weapons for ants.\nCan combine units.\n Fire + Fire = Chemical.\n Warrior + Warrior = Missile.\n Giant + Giant = Tant.\n Super + Super = Mammoth Tant.\n Tant + Tant = Heavy Tant.\n Hyper + Hyper = Tesla Tant
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Tech Evolution Chamber
+	Building:
+		Footprint: ___ xxx
+		Dimensions: 3,2
+	Health:
+		HP: 60000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+	ProvidesPrerequisite@buildingname:
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 512
+	RenderSprites:
+		Image: tevo
+	ProvidesRadar:
+		RequiresCondition: !jammed && !lowpower
+	InfiltrateForExploration:
+		Types: SpyInfiltrate
+		

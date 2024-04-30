@@ -93,15 +93,13 @@ namespace OpenRA.Mods.CA.Traits
 		public override object Create(ActorInitializer init) { return new Mirage(init, this); }
 	}
 
-	public class Mirage : PausableConditionalTrait<MirageInfo>, INotifyDamage, IEffectiveOwner, INotifyUnload, INotifyDemolition, INotifyInfiltration,
+	public class Mirage : PausableConditionalTrait<MirageInfo>, INotifyDamage, IEffectiveOwner, INotifyDemolition, INotifyInfiltration,
 		INotifyAttack, ITick, INotifyCreated, INotifyHarvesterAction
 	{
 		[Sync]
 		private int remainingTime;
 
 		Actor self;
-
-		bool isDocking;
 
 		ActorInfo[] targetTypes;
 
@@ -179,7 +177,7 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			if (!IsTraitDisabled && !IsTraitPaused)
 			{
-				if (remainingTime > 0 && !isDocking)
+				if (remainingTime > 0)
 					remainingTime--;
 
 				if (Info.RevealOn.HasFlag(MirageRevealType.Move) && (lastPos == null || lastPos.Value != self.Location))
@@ -218,26 +216,6 @@ namespace OpenRA.Mods.CA.Traits
 		void INotifyHarvesterAction.MovementCancelled(Actor self) { }
 
 		void INotifyHarvesterAction.Harvested(Actor self, string resourceType) { }
-
-		void INotifyHarvesterAction.Docked()
-		{
-			if (Info.RevealOn.HasFlag(MirageRevealType.Dock))
-			{
-				isDocking = true;
-				Reveal();
-			}
-		}
-
-		void INotifyHarvesterAction.Undocked()
-		{
-			isDocking = false;
-		}
-
-		void INotifyUnload.Unloading(Actor self)
-		{
-			if (Info.RevealOn.HasFlag(MirageRevealType.Unload))
-				Reveal();
-		}
 
 		void INotifyDemolition.Demolishing(Actor self)
 		{

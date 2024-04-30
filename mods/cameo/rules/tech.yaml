@@ -60,7 +60,7 @@ HOSP:
 		Actor: HOSP.Husk
 		OwnerType: InternalName
 	WithBuildingBib:
-		HasMinibib: true
+		#HasMinibib: true
 	ProvidesPrerequisite@buildingname:
 	GpsDot:
 		String: Hospital
@@ -73,77 +73,39 @@ HOSP.Husk:
 	Tooltip:
 		Name: Hospital (Destroyed)
 	WithBuildingBib:
-		HasMinibib: true
+		#HasMinibib: true
 	TransformOnCapture:
 		IntoActor: HOSP
 	GpsDot:
 		String: Hospital
 
 bio:
-	#Inherits: ^BaseBuilding
-	Inherits: ^Defense
-	Inherits@AUTOTARGET: ^AutoTargetAir
-	Inherits@CPQ: ^CPQConditionWithPrimary
-	Inherits@aicash: ^AIConyardCash
-	Inherits@conyard: ^Conyard
+	Inherits: ^TechBuilding
 	Inherits@shape: ^2x2Shape
-	BaseBuilding:
-	MustBeDestroyed:
-		RequiredForShortGame: true
+	Selectable:
+		Bounds: 48,48
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
-	Valued:
-		Cost: 5000
 	Health:
-		HP: 500000
-	DamageMultiplier@Armor:
-		Modifier: 50
-	Power:
-		Amount: 5000
-	ChangesHealth:
-		Step: 200
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
-	CashTrickler:
-		Interval: 250
-		Amount: 1000
-	Armor:
-		Type: Concrete
-	BaseProvider:
-		Range: 15c0
-	ProvidesRadar:
-		RequiresCondition: !jammed
-	ExternalCondition@JAMMED:
-		Condition: jammed
-	-WithDeathAnimation:
+		HP: 250000
 	Tooltip:
 		Name: Biological Lab
 	TooltipDescription@ally:
 		Description: Produces Bio-Lab units.
-		ValidRelationships: Ally
+		ValidStances: Ally
 	TooltipDescription@other:
 		Description: Capture to produce Bio-Lab units.
-		ValidRelationships: Neutral, Enemy
+		ValidStances: Neutral, Enemy
 	Exit@1:
 		SpawnOffset: 0,-426,0
 		ExitCell: 0,-1
-	Exit@2:
-		SpawnOffset: 0,-426,0
-		ExitCell: 1,1
-	Exit@3:
-		SpawnOffset: 0,-426,0
-		ExitCell: 0,1
-	Exit@4:
-		SpawnOffset: 0,-426,0
-		ExitCell: 1,0
 	Production:
-		Produces: Infantry
+		Produces: Biolab
 	ProductionQueue:
-		Type: Infantry
+		Type: Biolab
 		Group: Infantry
-		LowPowerModifier: 200
+		LowPowerModifier: 300
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -151,53 +113,13 @@ bio:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 	ProductionBar:
-		ProductionType: Infantry
+		ProductionType: Biolab
 	RallyPoint:
+	SpawnActorOnDeath:
+		Actor: bio.Husk
 	ProvidesPrerequisite@buildingname:
-	RenderSprites:
-		Image: bio
 	GpsDot:
 		String: Biohazard
-	Explodes@1:
-		Weapon: RA2Atomic
-		EmptyWeapon: RA2Atomic
-	Explodes@bomb:
-		Weapon: RA2DemoBomb
-		EmptyWeapon: RA2DemoBomb
-	Explodes@2:
-		Weapon: GLAnthraxGreen
-		EmptyWeapon: GLAnthraxGreen
-	Explodes@3:
-		Weapon: GLAnthraxBlue
-		EmptyWeapon: GLAnthraxBlue
-	Explodes@4:
-		Weapon: GLAnthraxPurple
-		EmptyWeapon: GLAnthraxPurple
-	Explodes@5:
-		Weapon: GLAnthraxLarge
-		EmptyWeapon: GLAnthraxLarge
-	Explodes@6:
-		Weapon: GLAnthraxBlueLarge
-		EmptyWeapon: GLAnthraxBlueLarge
-	Explodes@6:
-		Weapon: GLAnthraxPurpleLarge
-		EmptyWeapon: GLAnthraxPurpleLarge
-	AttackTurreted:
-	Turreted:
-		TurnSpeed: 120
-		InitialFacing: 0
-	Armament@AA:
-		Weapon: SpitAA
-		LocalOffset: 384,0,0
-	RenderRangeCircle:
-	DetectCloaked:
-		Range: 10c0
-	RangeMultiplier:
-		Modifier: 333
-	FirepowerMultiplier:
-		Modifier: 333
-	ReloadDelayMultiplier@WC2HASTE:
-		Modifier: 33
 
 bio.Husk:
 	Inherits: ^TechBuildingHusk
@@ -224,9 +146,6 @@ MISS:
 		HP: 60000
 	RevealsShroud:
 		Range: 15c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 10c0
 	Armor:
 		Type: Wood
 	Tooltip:
@@ -239,7 +158,7 @@ MISS:
 		ValidRelationships: Neutral, Enemy
 	WithBuildingBib:
 		HasMinibib: true
-	EngineerRepairable:
+	InstantlyRepairable:
 	SpawnActorOnDeath:
 		Actor: MISS.Husk
 		OwnerType: InternalName
@@ -288,9 +207,6 @@ FCOM:
 		ValidRelationships: Neutral, Enemy
 	RevealsShroud:
 		Range: 5c0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 4c0
 	WithBuildingBib:
 	CaptureManager:
 	Capturable:
@@ -299,7 +215,7 @@ FCOM:
 		AreaTypes: building
 	BaseProvider:
 		Range: 8c0
-	EngineerRepairable:
+	InstantlyRepairable:
 	Power:
 		Amount: 0
 	ProvidesPrerequisite@buildingname:
@@ -348,11 +264,14 @@ BARL:
 	-CapturableProgressBlink:
 	-CaptureNotification:
 	-GpsDot:
-	-EngineerRepairable:
+	-InstantlyRepairable:
 	MapEditorData:
 		Categories: Decoration
 	Interactable:
 		Bounds: 1024, 1024
+	TerrainLightSource:
+		Range: 3333
+		Intensity: 0.03
 
 BRL3:
 	Inherits: ^TechBuilding
@@ -377,12 +296,15 @@ BRL3:
 	-CapturableProgressBar:
 	-CapturableProgressBlink:
 	-CaptureNotification:
-	-EngineerRepairable:
+	-InstantlyRepairable:
 	-GpsDot:
 	MapEditorData:
 		Categories: Decoration
 	Interactable:
 		Bounds: 1024, 1024
+	TerrainLightSource:
+		Range: 3333
+		Intensity: 0.03
 
 RAMISS:
 	Inherits: MISS
@@ -413,7 +335,7 @@ OILB:
 	CaptureManager:
 	Capturable:
 		Types: building
-	EngineerRepairable:
+	InstantlyRepairable:
 	CashTrickler:
 		Interval: 375
 		Amount: 100
@@ -540,7 +462,7 @@ C2KFIREDEPARTMENT:
 	AttackTurreted:
 	Turreted:
 	RevealsShroud:
-		Range: 8c0 #7c0
+		Range: 7c0 #7c0
 	GpsDot:
 		String: Communications
 	WithRangeCircle:
@@ -568,7 +490,7 @@ C2KPOLICEDEPARTMENT:
 	Health:
 		HP: 180000 #90000
 	RevealsShroud:
-		Range: 8c0 #7c0
+		Range: 7c0 #7c0
 	GpsDot:
 		String: Communications
 	WithRangeCircle:

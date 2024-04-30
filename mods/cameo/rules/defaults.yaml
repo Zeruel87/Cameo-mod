@@ -6,7 +6,7 @@
 		PlayerExperienceModifier: 100
 	ScriptTriggers:
 	RenderDebugState:
-		
+
 
 ^SpriteActor:
 	BodyOrientation:
@@ -163,7 +163,7 @@
 		Prerequisites: enable-shadows
 	WithShadow:
 		RequiresCondition: enable-shadows
-		
+
 ^InfantryShadows:
 	Inherits@SHADOWS: ^Shadows
 	WithShadow:
@@ -191,31 +191,32 @@
 		Sequence: idle
 		RequiresCondition: xmas-setting
 		Offset: -150,0,0
-		
+
 ^Conyard:
 	CashTransferToAllies:
 	Inherits@susaintelligence: ^susaintelligence
-	#Inherits@xmas-decorations: ^Xmas_Decorations
 	ProvidesPrerequisite@conyard:
 		Prerequisite: conyard
 
 ^Base-reveal:
 	RevealsShroud@base-reveal:
 		Range: 2c0
+		#MoveRecalculationThreshold: 0
 		ValidRelationships: Neutral, Enemy
 		RequiresCondition: base-reveal
 	GrantConditionOnPrerequisite@base-reveal:
 		Prerequisites: base-reveal, !conyard
 		Condition: base-reveal
-		
+
 ^susaintelligence:
 	ExternalCondition@susaintelligence:
 		Condition: susaintelligence
 	RevealsShroud@susaintelligence:
 		Range: 5c0
+		#MoveRecalculationThreshold: 0
 		ValidRelationships: Neutral, Enemy
 		RequiresCondition: susaintelligence
-		
+
 ^GainsExperience:
 	GainsExperience:
 		LevelUpNotification: LevelUp
@@ -307,10 +308,10 @@
 		RequiresCondition: rank-elite
 		Modifier: 50
 	ChangesHealth@ELITE:
-		PercentageStep: 2
+		PercentageStep: 1
 		Delay: 25
 		StartIfBelow: 100
-		DamageCooldown: 25
+		DamageCooldown: 1
 		RequiresCondition: rank-elite
 	WithDecoration@RANK-1:
 		Image: rank
@@ -404,10 +405,10 @@
 		RequiresCondition: rank-elite
 		Modifier: 65
 	ChangesHealth@ELITE:
-		PercentageStep: 5
-		Delay: 25
+		PercentageStep: 1
+		Delay: 10
 		StartIfBelow: 100
-		DamageCooldown: 100
+		DamageCooldown: 1
 		RequiresCondition: rank-elite && damaged
 	WithDecoration@RANK-1:
 		Image: rank
@@ -513,10 +514,10 @@
 		RequiresCondition: rank-elite
 		Modifier: 50
 	ChangesHealth@ELITE:
-		PercentageStep: 5
-		Delay: 25
+		PercentageStep: 1
+		Delay: 15
 		StartIfBelow: 100
-		DamageCooldown: 100
+		DamageCooldown: 1
 		RequiresCondition: rank-elite && damaged
 	WithDecoration@RANK-1:
 		Image: rank
@@ -552,7 +553,7 @@
 		OwnerType: Killer
 		DeathType: EnforcerPlasmaBall
 		RequiresCondition: unstableeffexternal > 5
-		
+
 ^InfantryExperienceHospitalHazmatOverrides:
 	WithDecoration@RANK-1:
 		BlinkInterval: 32
@@ -590,7 +591,7 @@
 		AttackAnythingCondition: stance-attackanything
 	AutoTargetPriority@DEFAULT:
 		RequiresCondition: !stance-attackanything
-		ValidTargets: Infantry, Vehicle, Ant, Creep, Water, Defense, Ground
+		ValidTargets: Infantry, Vehicle, Ant, Creep, Water, Defense
 		InvalidTargets: NoAutoTarget
 	AutoTargetPriority@ATTACKANYTHING:
 		RequiresCondition: stance-attackanything
@@ -604,6 +605,7 @@
 	AutoTargetPriority@ATTACKANYTHING:
 		RequiresCondition: stance-attackanything || assault-move
 	AttackMove:
+		Voice: Action
 		AssaultMoveCondition: assault-move
 
 ^AutoTargetGroundAssaultMoveMelee:
@@ -622,7 +624,7 @@
 		AttackAnythingCondition: stance-attackanything
 	AutoTargetPriority@DEFAULT:
 		RequiresCondition: !stance-attackanything
-		ValidTargets: Infantry, Vehicle, Ant, Creep, Water, Air, Defense, Ground
+		ValidTargets: Infantry, Vehicle, Ant, Creep, Water, Air, Defense
 		InvalidTargets: NoAutoTarget
 	AutoTargetPriority@ATTACKANYTHING:
 		RequiresCondition: stance-attackanything
@@ -636,6 +638,7 @@
 	AutoTargetPriority@ATTACKANYTHING:
 		RequiresCondition: stance-attackanything || assault-move
 	AttackMove:
+		Voice: Action
 		AssaultMoveCondition: assault-move
 
 #Target types for Smart Auto-Targetting
@@ -643,48 +646,56 @@
 ^PrioritizeInfantry:
 	AutoTargetPriority@ENGINEER:
 		ValidTargets: Engineer
-		Priority: 50
+		Priority: 40
 	AutoTargetPriority@INFANTRY:
 		ValidTargets: Infantry
-		Priority: 15
+		Priority: 30
 
 ^PrioritizeVehicle:
 	AutoTargetPriority@VEHICLE:
 		ValidTargets: Vehicle
-		Priority: 20
+		Priority: 50
 
 ^PrioritizeTank:
 	AutoTargetPriority@TANK:
 		ValidTargets: Tank
-		Priority: 25
+		Priority: 70
 
 ^PrioritizeAir:
 	AutoTargetPriority@AIR:
 		ValidTargets: Air
-		Priority: 30
+		Priority: 80
 
 ^PrioritizeShip:
 	AutoTargetPriority@AIR:
 		ValidTargets: Ship
-		Priority: 30
-		
+		Priority: 60
+
 ^PrioritizeBuilding:
 	AutoTargetPriority@BUILDING:
 		ValidTargets: Building
-		Priority: 10
+		Priority: 20
 
 ^PrioritizeDefence:
 	AutoTargetPriority@DEFENCE:
 		ValidTargets: Defense
-		Priority: 15
+		Priority: 90
 
-##
+^PrioritizePsionic:
+	AutoTargetPriority@PSIONIC:
+		ValidTargets: Psionic
+		Priority: 100
 
-^PrioritizeMindControl:
-	AutoTargetPriority@MINDCONTROL:
-		ValidTargets: MindControl
-		Priority: 30
-		
+^PrioritizeEpic:
+	AutoTargetPriority@EPIC:
+		ValidTargets: Epic
+		Priority: 100
+
+^PrioritizeMonster:
+	AutoTargetPriority@MONSTER:
+		ValidTargets: Monster
+		Priority: 100
+
 ^AcceptsCloakCrate:
 	Cloak@TDcloak:
 		InitialDelay: 15
@@ -693,24 +704,24 @@
 		UncloakSound: trans1.aud
 		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
 		RequiresCondition: cloak-crate-collected
-		IsPlayerPalette: true
+		#IsPlayerPalette: true
 	ExternalCondition@CLOAK:
 		Condition: cloak-crate-collected
-		
+
 ^VehicleRadiation:
 	DamagedByTintedCells@rad:
-		Damage: 400
-		DamageInterval: 16
+		Damage: 25
+		DamageInterval: 1
 		DamageTypes: DefaultDeath
 		LayerName: ra2radiation
 	DamagedByTintedCells@genrad:
-		Damage: 75
-		DamageInterval: 24
+		Damage: 5
+		DamageInterval: 1
 		DamageTypes: DefaultDeath
 		LayerName: genradiation
 	DamagedByTintedCells@tib:
-		Damage: 400
-		DamageInterval: 16
+		Damage: 25
+		DamageInterval: 1
 		DamageTypes: TiberiumDeath
 		LayerName: tibradiation
 
@@ -725,7 +736,8 @@
 		Condition: empdisable
 		Color: FFFFFF
 	WithColoredOverlay@disabled:
-		RequiresCondition: (empdisable || GhostLockdown || diskdrain || leaflet) && !invulnerability
+		Color: 000000AA
+		RequiresCondition: disabled
 	DelayedWeaponAttachable@lockdown:
 		Type: lockdown
 		Condition: GhostLockdown
@@ -736,9 +748,6 @@
 	ExternalCondition@STASIS:
 		TotalCap: 1
 		Condition: chronobeamed
-	ExternalCondition@DRAIN:
-		TotalCap: 1
-		Condition: diskdrain
 	ExternalCondition@LEAFLET:
 		TotalCap: 1
 		Condition: leaflet
@@ -747,19 +756,20 @@
 		Color: FFFFFF
 	WithColoredOverlay@stickyfoam:
 		RequiresCondition: stickyfoam
+		Color: 44FF44AA
 	ExternalCondition@stickyfoam:
 		TotalCap: 1
 		Condition: stickyfoam
 	Targetable@stickyfoam:
 		TargetTypes: StickyFoamed
 		RequiresCondition: stickyfoam
-	WithDecoration@stickyfoam:
-		Image: explosion
-		Sequence: op2_stickyfoam_goo
-		Position: Center
-		RequiresCondition: stickyfoam
-		RequiresSelection: False
-		ValidRelationships: Ally, Neutral, Enemy
+	# WithDecoration@stickyfoam:
+	# 	Image: explosion
+	# 	Sequence: op2_stickyfoam_goo
+	# 	Position: Center
+	# 	RequiresCondition: stickyfoam
+	# 	RequiresSelection: False
+	# 	ValidRelationships: Ally, Neutral, Enemy
 
 ^Poisonable:
 	ChangesHealth@poison:
@@ -794,7 +804,420 @@
 		Probability: 100
 		InternalOwner: Creeps
 		RequiresCondition: LeechEggLaid && !LeechEggKill
-		
+
+####################################################################################################
+#		Unit Templates
+####################################################################################################
+
+^GainsExperienceVehicle:
+	Inherits@GainsExperience: ^GainsExperience
+	ProducibleWithLevel@spyvehicles:
+		Prerequisites: vehicles.upgraded
+
+^GainsExperienceAircraft:
+	Inherits@GainsExperience: ^GainsExperience
+	ProducibleWithLevel@spyaircraft:
+		Prerequisites: aircraft.upgraded
+
+^GainsExperienceInfantry:
+	Inherits@GainsExperience: ^GainsExperience
+	ProducibleWithLevel@spyinfantry:
+		Prerequisites: infantry.upgraded
+
+^GainsExperienceShips:
+	Inherits@GainsExperience: ^GainsExperience
+	ProducibleWithLevel@spyships:
+		Prerequisites: ships.upgraded
+
+^ScoutInfantryTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceInfantry
+	Inherits@EXT: ^ExternalConditions
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 6000
+	DetectCloaked:
+		Range: 3000
+	RenderDetectionCircle:
+	AutoTarget:
+		ScanRadius: 6
+	Buildable:
+		BuildDurationModifier: 60
+
+^LightInfantryTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceInfantry
+	Inherits@EXT: ^ExternalConditions
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 5000
+	AutoTarget:
+		ScanRadius: 6
+	Buildable:
+		BuildDurationModifier: 60
+
+^AntiTankAntiAirInfantryTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceInfantry
+	Inherits@EXT: ^ExternalConditions
+	Armor:
+		Type: Flak
+	RevealsShroud:
+		Range: 5500
+	AutoTarget:
+		ScanRadius: 7
+	Buildable:
+		BuildDurationModifier: 60
+
+^HeavyInfantryTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceInfantry
+	Inherits@EXT: ^ExternalConditions
+	Armor:
+		Type: Plate
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	RevealsShroud:
+		Range: 6500
+	AutoTarget:
+		ScanRadius: 7
+	Crushable:
+		CrushClasses: vehicle
+	Buildable:
+		BuildDurationModifier: 50
+
+^MeleeInfantryTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
+	Inherits@EXT: ^ExternalConditions
+	ProducibleWithLevel@spyinfantry:
+		Prerequisites: infantry.upgraded
+	Armor:
+		Type: Plate
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	RevealsShroud:
+		Range: 6000
+	AutoTarget:
+		ScanRadius: 10
+	Crushable:
+		CrushClasses: vehicle
+	Buildable:
+		BuildDurationModifier: 50
+
+^SniperInfantryTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceInfantry
+	Inherits@EXT: ^ExternalConditions
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 8000
+	AutoTarget:
+		ScanRadius: 10
+	Buildable:
+		BuildDurationModifier: 50
+
+^HeroInfantryTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceInfantry
+	Inherits@EXT: ^ExternalConditions
+	Targetable@Epic:
+		TargetTypes: Epic
+	Armor:
+		Type: Heroic
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	RevealsShroud:
+		Range: 8000
+	DetectCloaked:
+		Range: 4000
+	RenderDetectionCircle:
+	AutoTarget:
+		ScanRadius: 10
+	Crushable:
+		CrushClasses: vehicle
+	Buildable:
+		BuildDurationModifier: 30
+
+^ScoutVehicleTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@EXT: ^ExternalConditions
+	Armor:
+		Type: Scout
+	RevealsShroud:
+		Range: 10000
+	DetectCloaked:
+		Range: 5000
+	RenderDetectionCircle:
+	AutoTarget:
+		ScanRadius: 10
+	Buildable:
+		BuildDurationModifier: 30
+
+^SupportVehicleTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@EXT: ^ExternalConditions
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	RevealsShroud:
+		Range: 8000
+	DetectCloaked:
+		Range: 4000
+	RenderDetectionCircle:
+	Buildable:
+		BuildDurationModifier: 50
+
+^HarvesterTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@EXT: ^ExternalConditions
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	RevealsShroud:
+		Range: 5000
+	Buildable:
+		BuildDuration: 500
+		BuildDurationModifier: 100
+
+^MainBattleTankTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@EXT: ^ExternalConditions
+	RevealsShroud:
+		Range: 6000
+	AutoTarget:
+		ScanRadius: 6
+	Buildable:
+		BuildDurationModifier: 40
+
+^HighTechTankTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@EXT: ^ExternalConditions
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	RevealsShroud:
+		Range: 7000
+	AutoTarget:
+		ScanRadius: 7
+	Buildable:
+		BuildDurationModifier: 50
+
+^LineBreakerTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceMelee
+	Inherits@EXT: ^ExternalConditions
+	ProducibleWithLevel@spyvehicles:
+		Prerequisites: vehicles.upgraded
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	RevealsShroud:
+		Range: 6000
+	AutoTarget:
+		ScanRadius: 10
+	Buildable:
+		BuildDurationModifier: 60
+
+^FireSupportTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@EXT: ^ExternalConditions
+	RevealsShroud:
+		Range: 8000
+	AutoTarget:
+		ScanRadius: 10
+	Buildable:
+		BuildDurationModifier: 70
+
+^ArtilleryTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@EXT: ^ExternalConditions
+	Inherits@jammable: ^ArtilleryJammable
+	RenderRangeCircle:
+	RevealsShroud:
+		Range: 9000
+	Buildable:
+		BuildDurationModifier: 80
+
+^EpicVehicleTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@EXT: ^ExternalConditions
+	Inherits@jammable: ^ArtilleryJammable
+	Targetable@Epic:
+		TargetTypes: Epic
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	RevealsShroud:
+		Range: 8000
+	DetectCloaked:
+		Range: 4000
+	RenderDetectionCircle:
+	AutoTarget:
+		InitialStance: Defend
+		InitialStanceAI: AttackAnything
+		ScanRadius: 10
+	Buildable:
+		BuildDurationModifier: 30
+
+^AircraftBuff:
+	DamageMultiplier@AircraftBuff:
+		Modifier: 80
+	FirepowerMultiplier@AircraftBuff:
+		Modifier: 200
+	RangeMultiplier@AircraftBuff:
+		Modifier: 125
+	ReloadAmmoDelayMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 85
+	ReloadAmmoDelayMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 70
+	ReloadAmmoDelayMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 55
+	ReloadAmmoDelayMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 40
+
+^FighterTemplate:
+	Inherits@AircraftBuff: ^AircraftBuff
+	Inherits@EXPERIENCE: ^GainsExperienceAircraft
+	Inherits@EXT: ^ExternalConditions
+	Inherits@jammable: ^ArtilleryJammable
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	Aircraft:
+		CruiseAltitude: 2500
+		RepulsionSpeed: 40
+		MaximumPitch: 50
+		IdealSeparation: 2000
+	Armor:
+		Type: Fighter
+	RevealsShroud:
+		Range: 10000
+		Type: GroundPosition
+	AutoTarget:
+		InitialStance: Defend
+		InitialStanceAI: AttackAnything
+		ScanRadius: 12
+	Buildable:
+		BuildDurationModifier: 40
+
+^BomberTemplate:
+	Inherits@AircraftBuff: ^AircraftBuff
+	Inherits@EXPERIENCE: ^GainsExperienceAircraft
+	Inherits@EXT: ^ExternalConditions
+	Inherits@jammable: ^ArtilleryJammable
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	Aircraft:
+		CruiseAltitude: 2500
+		RepulsionSpeed: 40
+		MaximumPitch: 50
+		IdealSeparation: 2000
+	Armor:
+		Type: Bomber
+	RevealsShroud:
+		Range: 8000
+		Type: GroundPosition
+	AutoTarget:
+		InitialStance: Defend
+		InitialStanceAI: AttackAnything
+		ScanRadius: 12
+	Buildable:
+		BuildDurationModifier: 60
+
+^HelicopterTemplate:
+	Inherits@AircraftBuff: ^AircraftBuff
+	Inherits@EXPERIENCE: ^GainsExperienceAircraft
+	Inherits@EXT: ^ExternalConditions
+	Inherits@jammable: ^ArtilleryJammable
+	Inherits@detect: ^GenericAirDetector
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	Aircraft:
+		CruiseAltitude: 1250
+		RepulsionSpeed: 40
+		MaximumPitch: 50
+		IdealSeparation: 2000
+	Armor:
+		Type: Helicopter
+	RevealsShroud:
+		Range: 9000
+		Type: GroundPosition
+	AutoTarget:
+		InitialStance: Defend
+		InitialStanceAI: AttackAnything
+		ScanRadius: 10
+	Buildable:
+		BuildDurationModifier: 50
+
+^BasicDefenseTemplate:
+	Inherits@DisabledOverlay: ^DisabledBaseBuildingOverlay
+	Armor:
+		Type: Concrete
+	Buildable:
+		BuildDurationModifier: 100
+
+^AntiAirDefenseTemplate:
+	Inherits@DisabledOverlay: ^DisabledOverlay
+	Armor:
+		Type: Concrete
+	DetectCloaked:
+		RequiresCondition: !disabled && !lowpower
+	Buildable:
+		BuildDurationModifier: 60
+
+^AdvancedDefenseTemplate:
+	Inherits@DisabledOverlay: ^DisabledOverlay
+	Armor:
+		Type: Steel
+	DetectCloaked:
+		RequiresCondition: !disabled && !lowpower
+	Buildable:
+		BuildDurationModifier: 80
+
+^PromotionUnitBuff:
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	DamageMultiplier@PromotionUnit:
+		Modifier: 90
+	SpeedMultiplier@PromotionUnit:
+		Modifier: 108
+	RangeMultiplier@PromotionUnit:
+		Modifier: 105
+	FirepowerMultiplier@PromotionUnit:
+		Modifier: 112
+	ReloadDelayMultiplier@PromotionUnit:
+		Modifier: 94
+
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^IronCurtainable
@@ -818,6 +1241,8 @@
 	Inherits@unstableeffect: ^UnstableEffect
 	Inherits@base-reveal: ^Base-reveal
 	Inherits@LeechEggLayable: ^LeechEggLayable
+	Inherits@GDIOfficerLeadershipBuff: ^GDIOfficerLeadershipBuff
+	Inherits@Shroudable: ^Shroudable
 	TemporaryOwnerManager:
 	Huntable:
 	OwnerLostAction:
@@ -855,6 +1280,7 @@
 	ActorLostNotification:
 	HiddenUnderFog:
 	AttackMove:
+		Voice: Action
 	DrawLineToTarget:
 	WithDamageOverlay:
 	WithFacingSpriteBody:
@@ -932,6 +1358,11 @@
 	RevealOnFire:
 		Duration: 50
 	RevealOnDeath:
+	RevealsShroud:
+		#MoveRecalculationThreshold: 0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
 	GpsDot:
 		String: Vehicle
 	TeleportNetworkTransportable:
@@ -959,6 +1390,9 @@
 		DeathType: QueenChilds
 ^Tank:
 	Inherits: ^Vehicle
+	Targetable:
+		RequiresCondition: !parachute && !untargetable
+		TargetTypes: Ground, Vehicle, Tank
 	Passenger:
 		Weight: 8
 	Mobile:
@@ -1025,6 +1459,7 @@
 	Inherits@fix: ^Repairable
 	Inherits@EMP: ^UnitDisable
 	Inherits@mag: ^Magnefreezable
+	Inherits@Shroudable: ^Shroudable
 	Inherits@SHADOWS: ^Shadows
 	Inherits@base-reveal: ^Base-reveal
 	Huntable:
@@ -1070,6 +1505,7 @@
 	HiddenUnderFog:
 		Type: GroundPosition
 	AttackMove:
+		Voice: Action
 	Guard:
 	Guardable:
 	ProximityCaptor:
@@ -1101,6 +1537,12 @@
 	Explodes@2:
 		Weapon: UnitExplode
 		RequiresCondition: !airborne && !chronobeamed
+	RevealsShroud:
+		Range: 5c0
+		#MoveRecalculationThreshold: 0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
 	RevealOnFire:
 	RevealOnDeath:
 	Targetable@chrono:
@@ -1163,6 +1605,7 @@
 		Condition: ReaperTrap
 	WithColoredOverlay@REAPERTRAP:
 		RequiresCondition: ReaperTrap
+		Color: 000000AA
 	ExternalCondition@STASIS:
 		TotalCap: 1
 		Condition: chronobeamed
@@ -1174,6 +1617,7 @@
 		RequiresCondition: ReaperTrap || chronobeamed || leaflet || stickyfoam
 	WithColoredOverlay@leaflet:
 		RequiresCondition: leaflet
+		Color: 000000AA
 	Mobile:
 		PauseOnCondition: disabled
 	ExternalCondition@stickyfoam:
@@ -1184,14 +1628,15 @@
 		RequiresCondition: stickyfoam
 	WithColoredOverlay@stickyfoam:
 		RequiresCondition: stickyfoam
-	WithDecoration@stickyfoam:
-		Image: explosion
-		Sequence: op2_stickyfoam_goo
-		Position: Center
-		RequiresCondition: stickyfoam
-		RequiresSelection: False
-		ValidRelationships: Ally, Neutral, Enemy
-		
+		Color: 44FF44AA
+	# WithDecoration@stickyfoam:
+	# 	Image: explosion
+	# 	Sequence: op2_stickyfoam_goo
+	# 	Position: Center
+	# 	RequiresCondition: stickyfoam
+	# 	RequiresSelection: False
+	# 	ValidRelationships: Ally, Neutral, Enemy
+
 ^DefaultInfantry:
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
@@ -1205,6 +1650,8 @@
 	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
 	Inherits@poisonable: ^Poisonable
 	Inherits@unstableeffect: ^UnstableEffect
+	Inherits@GDIOfficerLeadershipBuff: ^GDIOfficerLeadershipBuff
+	Inherits@Shroudable: ^Shroudable
 	Inherits@base-reveal: ^Base-reveal
 	TemporaryOwnerManager:
 	Huntable:
@@ -1216,6 +1663,10 @@
 		Type: None
 	RevealsShroud:
 		Range: 5c0
+		#MoveRecalculationThreshold: 0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
 	Mobile:
 		Locomotor: foot
 	SelectionDecorations:
@@ -1249,6 +1700,7 @@
 		DefaultAttackSequence: shoot
 	WithDeathAnimation:
 	AttackMove:
+		Voice: Action
 	DrawLineToTarget:
 	Passenger:
 		CargoType: Infantry
@@ -1289,20 +1741,20 @@
 		Offset: 0,0,427
 		RequiresCondition: parachute
 	DamagedByTintedCells@rad:
-		Damage: 2000
-		DamageInterval: 16
+		Damage: 125
+		DamageInterval: 1
 		DamageTypes: DefaultDeath
 		LayerName: ra2radiation
 		RequiresCondition: !parachute
 	DamagedByTintedCells@genrad:
-		Damage: 750
-		DamageInterval: 16
+		Damage: 25
+		DamageInterval: 1
 		DamageTypes: DefaultDeath
 		LayerName: genradiation
 		RequiresCondition: !parachute
 	DamagedByTintedCells@tib:
-		Damage: 500
-		DamageInterval: 16
+		Damage: 125
+		DamageInterval: 1
 		DamageTypes: TiberiumDeath
 		LayerName: tibradiation
 		RequiresCondition: !parachute
@@ -1349,7 +1801,7 @@
 		Pieces: 1, 4
 		Range: 0c256, 2c0
 		RequiresCondition: unitgore
-		
+
 ^Infantry: #Human units only
 	Inherits: ^DefaultInfantry
 	WithDeathAnimation:
@@ -1473,11 +1925,12 @@
 	Inherits: ^DefaultSoldier
 	Inherits@2: ^Infantry
 	TakeCover:
-		SpeedModifier: 60
+		SpeedModifier: 75
 		DamageModifiers:
 			Prone50Percent: 50
 			Prone60Percent: 60
 			Prone70Percent: 70
+			Prone75Percent: 75
 			Prone80Percent: 80
 			Prone100Percent: 100
 		DamageTriggers: TriggerProne
@@ -1554,7 +2007,11 @@
 	Armor:
 		Type: None
 	RevealsShroud:
+		#MoveRecalculationThreshold: 0
 		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
 	SelectionDecorations:
 	Selectable:
 		Bounds: 1024, 1024, 0, -170
@@ -1584,7 +2041,7 @@
 		Voice: Action
 	WithMuzzleOverlay:
 	Targetable:
-		TargetTypes: Ground, Vehicle
+		TargetTypes: Ground, Vehicle, Monster
 	WithDeathAnimation:
 		DeathSequencePalette: spidercostume
 		DeathPaletteIsPlayerPalette: False
@@ -1632,9 +2089,6 @@
 		Weapon: LeechDisinfect
 		TargetRelationships: Ally
 		ForceTargetRelationships: None
-	Armament@driller:
-		Weapon: KeeperSmallDriller
-		TargetRelationships: Enemy
 
 ^MechanicDefaultWeapons:
 	Armament@repair:
@@ -1643,7 +2097,7 @@
 		#OutsideRangeCursor: repair
 		TargetRelationships: Ally
 		ForceTargetRelationships: None
-		
+
 ^DINO:
 	Inherits: ^DefaultInfantry
 	Health:
@@ -1663,7 +2117,6 @@
 	RevealOnFire:
 	RevealOnDeath:
 	Mobile:
-		Locomotor: critter
 		Speed: 113
 		Voice: Move
 	Targetable:
@@ -1721,7 +2174,6 @@
 	Mobile:
 		Voice: Move
 		Speed: 75
-		Locomotor: critter
 	Targetable:
 		TargetTypes: Ground, Creep
 	AutoTarget:
@@ -1763,6 +2215,20 @@
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
 	Inherits@SHADOWS: ^Shadows
+	Selectable:
+		Bounds: 1280, 1280
+	SelectionDecorations:
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -512, -512
+			BottomRight: 512, 512
+	Health:
+		HP: 30000
+	Armor:
+		Type: Medium
+	Targetable:
+		TargetTypes: Air, Aircraft
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -1778,6 +2244,10 @@
 		ZOffset: -129
 	WithFacingSpriteBody:
 	RejectsOrders:
+	Valued:
+		Cost: 2000
+	GivesExperience:
+		Experience: 1000
 	Aircraft:
 		CruiseAltitude: 2560
 		IdleBehavior: LeaveMap
@@ -1820,6 +2290,12 @@
 		Categories: Naval
 	GpsDot:
 		String: Ship
+	RevealsShroud:
+		Range: 5c0
+		#MoveRecalculationThreshold: 0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
 
 ^Building:
 	Inherits@1: ^ExistsInWorld
@@ -1834,7 +2310,7 @@
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Targetable:
-		TargetTypes: Ground, C4, Structure
+		TargetTypes: Ground, C4, Structure, Building
 	AttractsWorms:
 		Intensity: 200
 	Armor:
@@ -1889,6 +2365,12 @@
 	GrantConditionOnPrerequisite@BLDDURABLE:
 		Prerequisites: global-durable-buildings
 		Condition: blddurable
+	RevealsShroud:
+		Range: 5c0
+		#MoveRecalculationThreshold: 0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
 ^BotProductionBehavior:
 	GrantPeriodicCondition@activeai:
 		Condition: activeai
@@ -1898,25 +2380,25 @@
 		Prerequisite: activeai
 		RequiresCondition: activeai
 	ProductionTimeMultiplier@easiestbotplayer:
-		Multiplier: 120
+		Multiplier: 130
 		Prerequisites: easiestbotplayer
 	ProductionTimeMultiplier@easybotplayer:
-		Multiplier: 110
+		Multiplier: 115
 		Prerequisites: easybotplayer || defensebot
 	ProductionTimeMultiplier@hardbotplayer:
-		Multiplier: 90
+		Multiplier: 85
 		Prerequisites: hardbotplayer, activeai
 	ProductionTimeMultiplier@brutalbotplayer:
-		Multiplier: 80
+		Multiplier: 70
 		Prerequisites: brutalbotplayer, activeai
 	ProductionTimeMultiplier@challengerbotplayer:
-		Multiplier: 70
+		Multiplier: 55
 		Prerequisites: challengerbotplayer, activeai
 	ProductionTimeMultiplier@unbeatablebotplayer:
-		Multiplier: 60
+		Multiplier: 40
 		Prerequisites: unbeatablebotplayer, activeai
 	ProductionTimeMultiplier@cameogodbotplayer:
-		Multiplier: 50
+		Multiplier: 25
 		Prerequisites: cameogodbotplayer, activeai
 	ProductionCostMultiplier@easiestbotplayer:
 		Multiplier: 120
@@ -1939,33 +2421,48 @@
 	ProductionCostMultiplier@cameogodbotplayer:
 		Multiplier: 50
 		Prerequisites: cameogodbotplayer, activeai
+
 ^BaseBuilding:
 	Inherits: ^Building
 	Inherits@2: ^IronCurtainable
 	Inherits@bot: ^BotProductionBehavior
 	Inherits@mindcontrol: ^MindControllableStructure
-	Inherits@EMP: ^UnitDisable
 	Inherits@chrono: ^ChronoBeamable
 	Inherits@cloak: ^StealthGenCloakable
 	Inherits@forceshield: ^ForceShieldable
 	Inherits@commandodebuff: ^CommandoDebuff
+	Inherits@Shroudable: ^Shroudable
 	Inherits@ivan: ^BombAttachable
 	Inherits@trap: ^BoobyTrappable
 	Inherits@base-reveal: ^Base-reveal
+	Inherits@bounty: ^GlobalBounty
+	Inherits@DisabledOverlay: ^DisabledBaseBuildingOverlay
 	Building:
 		RequiresBaseProvider: true
-		BuildSounds: constru2.aud, hvydoor1.aud
+		BuildSounds: constru2.aud, hvydoor1.aud, placbldg.aud, build5.aud
 		UndeploySounds: cashturn.aud
 		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune ##########
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 4
+		Adjacent: 3
+	Selectable:
+		Priority: 3
+	WithSpriteControlGroupDecoration:
+	CaptureNotification:
+	ShakeOnDeath:
+	FrozenUnderFog:
+	FrozenUnderFogUpdatedByGps:
+	CommandBarBlacklist:
+	SoundOnDamageTransition:
+		DamagedSounds: kaboom1.wav
+		DestroyedSounds: kaboom22.aud
 	MustBeDestroyed:
 		RequiredForShortGame: true
 	RepairableBuilding:
-		RepairPercent: 40
-		RepairStep: 1400
-		PlayerExperience: 0
+		RepairPercent: 50
+		RepairInterval: 1
+		RepairStep: 100
+		PlayerExperience: 10
 		RepairingNotification: Repairing
 	WithDeathAnimation:
 		DeathSequence: dead
@@ -1980,7 +2477,7 @@
 		Types: building
 	CapturableProgressBar:
 	CapturableProgressBlink:
-	EngineerRepairable:
+	InstantlyRepairable:
 	Demolishable:
 		Condition: being-demolished
 		RequiresCondition: !build-incomplete && !untargetable
@@ -1988,7 +2485,7 @@
 		Condition: untargetable
 		RequiresCondition: chronobeamed || invulnerability || forceshield
 	Targetable:
-		TargetTypes: Ground, C4, Structure, BaseBuilding
+		TargetTypes: Ground, C4, Structure, Building, BaseBuilding
 		RequiresCondition: !untargetable
 	Targetable@ivan:
 		TargetTypes: ivanattachable, demolishable
@@ -2000,6 +2497,9 @@
 		RequiresCondition: !invulnerability && !forceshield
 	Explodes:
 		RequiresCondition: !chronobeamed
+		Type: Footprint
+		Weapon: BuildingExplode
+		EmptyWeapon: BuildingExplode
 	Warpable:
 	Sellable:
 		RequiresCondition: !build-incomplete && !being-captured && !being-demolished && !ivanbomb && !untargetable
@@ -2016,6 +2516,19 @@
 		Condition: BorisFlare
 	WithColoredOverlay@Boris:
 		RequiresCondition: BorisFlare
+		Color: FF0000AA
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: (empdisable || chronobeamed || diskdrain || being-captured) && !invulnerability
+	ExternalCondition@EMP:
+		TotalCap: 1
+		Condition: empdisable
+	TimedConditionBar@EMP:
+		Condition: empdisable
+		Color: FFFFFF
+	WithColoredOverlay@disabled:
+		Color: 000000AA
+		RequiresCondition: (empdisable || diskdrain) && !invulnerability
 	GpsDot:
 		String: Structure
 	RevealOnDeath:
@@ -2024,6 +2537,12 @@
 	RevealsShroud@spybase:
 		Range: 3c0
 		RequiresCondition: spybase
+	RevealsShroud:
+		Range: 5c0
+		#MoveRecalculationThreshold: 0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
 	SpawnActorOnDeath@ZombieInfect:
 		Actor: zombie1.infect
 		Probability: 99
@@ -2035,6 +2554,11 @@
 	GrantConditionOnBotOwner@defensebot:
 		Condition: defensebot
 		Bots: defenseai
+	RepairableBuilding:
+		RepairCondition: repairing
+	WithBuildingRepairDecoration:
+		Offsets:
+			powerdown: -10, 0
 
 ^CivBuilding:
 	Inherits: ^Building
@@ -2045,6 +2569,14 @@
 	FrozenUnderFog:
 	MapEditorData:
 		Categories: Civilian building
+	RenderSprites:
+		Palette: ra_temperat
+	TerrainLightSource:
+		Range: 3333
+		Intensity: 0.1
+		RedTint: 0.2
+		GreenTint: 0.1
+		BlueTint: 0.05
 
 ^CivBuildingHusk:
 	Inherits@1: ^SpriteActor
@@ -2062,6 +2594,14 @@
 	ScriptTriggers:
 	MapEditorData:
 		Categories: Husk
+	RenderSprites:
+		Palette: ra_temperat
+	TerrainLightSource:
+		Range: 3333
+		Intensity: 0.1
+		RedTint: 0.2
+		GreenTint: 0.1
+		BlueTint: 0.05
 
 ^TechBuilding:
 	Inherits: ^CivBuilding
@@ -2085,7 +2625,7 @@
 		RepairStep: 1400
 		PlayerExperience: 0
 		RepairingNotification: Repairing
-	EngineerRepairable:
+	InstantlyRepairable:
 	RevealsShroud:
 		Range: 3c0
 	Tooltip:
@@ -2101,13 +2641,21 @@
 		IsPlayerPalette: True
 	GpsDot:
 		String: Forward
-		
+	RenderSprites:
+		Palette: ra_temperat
+	TerrainLightSource:
+		Range: 3333
+		Intensity: 0.1
+		RedTint: 0.2
+		GreenTint: 0.1
+		BlueTint: 0.05
+
 
 ^TechBuildingHusk:
 	Inherits: ^TechBuilding
 	Targetable:
 		TargetTypes: TechHusk
-	-EngineerRepairable:
+	-InstantlyRepairable:
 	-Demolishable:
 	Capturable:
 		Types: tech
@@ -2129,7 +2677,7 @@
 	-SoundOnDamageTransition:
 	-Demolishable:
 	RenderSprites:
-		Palette: terrain
+		Palette: ra_temperat
 
 ^CivFieldHusk:
 	Inherits@1: ^SpriteActor
@@ -2142,13 +2690,13 @@
 		Name: Field (Destroyed)
 		GenericVisibility: None
 		ShowOwnerRow: false
-	RenderSprites:
-		Palette: terrain
 	WithSpriteBody:
 	FrozenUnderFog:
 	ScriptTriggers:
 	MapEditorData:
 		Categories: Husk
+	RenderSprites:
+		Palette: ra_temperat
 
 ^Wall:
 	Inherits@1: ^SpriteActor
@@ -2199,6 +2747,8 @@
 		Categories: Wall
 	Cloak@TScloak:
 		PauseOnCondition: cloak-force-disabled || base-reveal
+	RenderSprites:
+		Palette: ra_temperat
 
 
 ^Tree:
@@ -2208,7 +2758,7 @@
 		Name: Tree
 		ShowOwnerRow: false
 	RenderSprites:
-		Palette: staticterrain
+		Palette: ra_temperat
 	WithSpriteBody:
 	Building:
 		Footprint: __ x_
@@ -2251,6 +2801,8 @@
 	Inherits@1: ^SpriteActor
 	Interactable:
 	AppearsOnRadar:
+	RenderSprites:
+		Palette: ra_temperat
 	RadarColorFromTerrain:
 		Terrain: Tree
 	AppearsOnMapPreview:
@@ -2276,7 +2828,7 @@
 		Name: Blossom Tree
 		ShowOwnerRow: false
 	RenderSprites:
-		Palette: staticterrain
+		Palette: ra2buildinghack
 	WithSpriteBody:
 	Building:
 		Footprint: x
@@ -2349,6 +2901,7 @@
 	Tooltip:
 		GenericName: Destroyed Vehicle
 	WithColoredOverlay@IDISABLE:
+		Color: 000000AA
 	ScriptTriggers:
 	Explodes:
 		Weapon: UnitExplodeSmall
@@ -2383,6 +2936,18 @@
 	Tooltip:
 		GenericName: Destroyed Helicopter
 	-MapEditorData:
+
+^SmallHelicopterHusk:
+	Inherits: ^HelicopterHusk
+	FallsToEarth:
+		Moves: False
+		Explosion: SmallHeliCrash
+
+^LargeHelicopterHusk:
+	Inherits: ^HelicopterHusk
+	FallsToEarth:
+		Moves: False
+		Explosion: LargeHeliCrash
 
 ^Bridge:
 	Inherits@shape: ^1x1Shape
@@ -2420,8 +2985,8 @@
 	Crate:
 		TerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice
 	RenderSprites:
-		Palette: effect
-		Image: crate
+		Palette: ra_temperat #effect
+		Image: scrate
 	WithCrateBody:
 		XmasImages: xcratea, xcrateb, xcratec, xcrated
 	MapEditorData:
@@ -2477,13 +3042,70 @@
 	AutoTarget:
 		InitialStance: AttackAnything
 		InitialStanceAI: AttackAnything
+	ToggleConditionOnOrder:
+		DisabledSound: EnablePower
+		EnabledSound: DisablePower
+		Condition: powerdown
+		OrderName: PowerDown
 
 ^DisabledOverlay:
 	GrantConditionOnPowerState@LOWPOWER:
 		Condition: lowpower
 		ValidPowerStates: Low, Critical
 	WithColoredOverlay@IDISABLE:
-		RequiresCondition: lowpower
+		RequiresCondition: lowpower || disabled
+		Color: 000000AA
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: (empdisable || powerdown || chronobeamed || diskdrain || being-captured) && !invulnerability
+	ExternalCondition@EMP:
+		TotalCap: 1
+		Condition: empdisable
+	TimedConditionBar@EMP:
+		Condition: empdisable
+		Color: FFFFFF
+	ExternalCondition@DRAIN:
+		TotalCap: 1
+		Condition: diskdrain
+	WithDecoration@POWERDOWN:
+		Image: poweroff
+		Sequence: offline
+		Palette: chrome
+		RequiresCondition: powerdown
+		Position: Center
+		Offsets:
+			repairing: 10, 0
+	PowerMultiplier@POWERDOWN:
+		RequiresCondition: powerdown
+		Modifier: 0
+
+^DisabledBaseBuildingOverlay:
+	WithColoredOverlay@IDISABLE:
+		RequiresCondition: disabled
+		Color: 000000AA
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: (empdisable || powerdown || chronobeamed || diskdrain || being-captured) && !invulnerability
+	ExternalCondition@EMP:
+		TotalCap: 1
+		Condition: empdisable
+	TimedConditionBar@EMP:
+		Condition: empdisable
+		Color: FFFFFF
+	ExternalCondition@DRAIN:
+		TotalCap: 1
+		Condition: diskdrain
+	WithDecoration@POWERDOWN:
+		Image: poweroff
+		Sequence: offline
+		Palette: chrome
+		RequiresCondition: powerdown
+		Position: Center
+		Offsets:
+			repairing: 10, 0
+	PowerMultiplier@POWERDOWN:
+		RequiresCondition: powerdown
+		Modifier: 0
 
 ^SelectableCombatUnit:
 	Selectable:
@@ -2515,6 +3137,7 @@
 	GivesBounty:
 		RequiresCondition: global-bounty
 	WithColoredOverlay@BOUNTY:
+		Color: FFFF00BB
 		RequiresCondition: glabounty1 || glabounty2 || glabounty3
 	ExternalCondition@glabounty1:
 		Condition: glabounty1
@@ -2534,6 +3157,23 @@
 	GivesBounty@gla3:
 		Percentage: 40
 		RequiresCondition: glabounty3
+
+####################################################################################################
+#		TD
+####################################################################################################
+
+^GDIOfficerLeadershipBuff:
+	ExternalCondition@GDIOfficerLeadership:
+		Condition: GDIOfficerLeadership
+	SpeedMultiplier@GDIOfficerLeadership:
+		Modifier: 120
+		RequiresCondition: GDIOfficerLeadership
+	ReloadDelayMultiplier@GDIOfficerLeadership:
+		Modifier: 80
+		RequiresCondition: GDIOfficerLeadership
+	WithColoredOverlay@GDIOfficerLeadership:
+		RequiresCondition: GDIOfficerLeadership
+		Color: FF880066
 
 ####################################################################################################
 #		RA
@@ -2583,6 +3223,12 @@
 	MapEditorData:
 		Categories: Building
 	CommandBarBlacklist:
+	RevealsShroud:
+		Range: 5c0
+		#MoveRecalculationThreshold: 0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
 
 ^IronCurtainable:
 	WithColoredOverlay@IRONCURTAIN:
@@ -2706,6 +3352,16 @@
 	-CaptureNotification:
 	-GpsDot:
 
+^CommandoSkull:
+	WithDecoration@COMMANDOSKULL:
+		Image: pips
+		Sequence: pip-skull
+		Palette: effect
+		Position: TopLeft
+		ValidRelationships: Ally, Enemy, Neutral
+	Selectable:
+		Bounds: 768, 768, 0, -256
+		DecorationBounds: 768, 768, 0, -256
 
 ^FakeBuilding:
 	Inherits: ^Building
@@ -2754,50 +3410,70 @@
 		Condition: CommandoDebuff
 	WithColoredOverlay@COMMANDODEBUFF:
 		RequiresCondition: CommandoDebuff
+		Color: 0088FF88
 	DamageMultiplier@COMMANDODEBUFF:
-		Modifier: 120
+		Modifier: 150
 		RequiresCondition: CommandoDebuff
 	SpeedMultiplier@COMMANDODEBUFF:
-		Modifier: 80
+		Modifier: 75
 		RequiresCondition: CommandoDebuff
-	InaccuracyMultiplier@COMMANDODEBUFF:
-		Modifier: 200
-		RequiresCondition: CommandoDebuff
-	WithDecoration@COMMANDODEBUFF:
-		Image: 2100commandodebuff
-		Sequence: idle
-		Position: Center
-		RequiresCondition: CommandoDebuff
-		ValidRelationships: Enemy, Neutral, Ally
+	# WithDecoration@COMMANDODEBUFF:
+	# 	Image: 2100commandodebuff
+	# 	Sequence: idle
+	# 	Position: Center
+	# 	RequiresCondition: CommandoDebuff
+	# 	ValidRelationships: Enemy, Neutral, Ally
 
 ^CommandoCallable:
 	ExternalCondition@CommandoCall:
 		Condition: CommandoCall
 		TotalCap: 1
 	DamageMultiplier@COMMANDOCALL:
-		Modifier: 90
+		Modifier: 75
 		RequiresCondition: CommandoCall
 	SpeedMultiplier@COMMANDOCALL:
-		Modifier: 110
+		Modifier: 125
 		RequiresCondition: CommandoCall
 	InaccuracyMultiplier@COMMANDOCALL:
 		Modifier: 50
 		RequiresCondition: CommandoCall
-	WithDecoration@CommandoCall:
-		Image: 2100commandocall
-		Sequence: idle
-		Position: TopRight
-		Offsets:
-			CommandoCall: -6,-2
-		RequiresCondition: CommandoCall
+	# WithDecoration@CommandoCall:
+	# 	Image: 2100commandocall
+	# 	Sequence: idle
+	# 	Position: TopRight
+	# 	Offsets:
+	# 		CommandoCall: -6,-2
+	# 	RequiresCondition: CommandoCall
 
 ^ArtilleryJammable:
+	ExternalCondition@artilleryjammer:
+		Condition: artilleryjammer
+	WithColoredOverlay@artilleryjammer:
+		RequiresCondition: artilleryjammer
+		Color: ABCD1234
 	InaccuracyMultiplier@artilleryjammer:
-		Modifier: 5
+		Modifier: 1000
 		RequiresCondition: artilleryjammer
-	DamageMultiplier@artilleryjammer:
+	# WithDecoration@COMMANDODEBUFF:
+	# 	Image: 2100commandodebuff
+	# 	Sequence: idle
+	# 	Position: Center
+	# 	RequiresCondition: artilleryjammer
+	# 	ValidRelationships: Enemy
+
+^Shroudable:
+	ExternalCondition@shrouded:
+		Condition: shrouded
+	WithColoredOverlay@shrouded:
+		RequiresCondition: shrouded
+		Color: 6666FF66
+	RangeMultiplier@shrouded:
 		Modifier: 75
-		RequiresCondition: artilleryjammer
+		RequiresCondition: shrouded
+	RevealsShroudMultiplier@shrouded:
+		Modifier: 75
+		RequiresCondition: shrouded
+
 ####################################################################################################
 #		CITY
 ####################################################################################################
@@ -3095,41 +3771,41 @@
 	SpeedMultiplier@RANK-4:
 		Modifier: 104
 		RequiresCondition: IndustrySpeed4
-	WithDecoration@IndustrySpeed0:
-		Image: cityspeed
-		Sequence: speed0
-		Position: TopRight
-		RequiresCondition: IndustrySpeed0
-		BlinkInterval: 32
-		BlinkPattern: On, Off, Off, Off
-	WithDecoration@IndustrySpeed1:
-		Image: cityspeed
-		Sequence: speed1
-		Position: TopRight
-		RequiresCondition: IndustrySpeed1
-		BlinkInterval: 32
-		BlinkPattern: On, Off, Off, Off
-	WithDecoration@IndustrySpeed2:
-		Image: cityspeed
-		Sequence: speed2
-		Position: TopRight
-		RequiresCondition: IndustrySpeed2
-		BlinkInterval: 32
-		BlinkPattern: On, Off, Off, Off
-	WithDecoration@IndustrySpeed3:
-		Image: cityspeed
-		Sequence: speed3
-		Position: TopRight
-		RequiresCondition: IndustrySpeed3
-		BlinkInterval: 32
-		BlinkPattern: On, Off, Off, Off
-	WithDecoration@IndustrySpeed4:
-		Image: cityspeed
-		Sequence: speed4
-		Position: TopRight
-		RequiresCondition: IndustrySpeed4
-		BlinkInterval: 32
-		BlinkPattern: On, Off, Off, Off
+	# WithDecoration@IndustrySpeed0:
+	# 	Image: cityspeed
+	# 	Sequence: speed0
+	# 	Position: TopRight
+	# 	RequiresCondition: IndustrySpeed0
+	# 	BlinkInterval: 32
+	# 	BlinkPattern: On, Off, Off, Off
+	# WithDecoration@IndustrySpeed1:
+	# 	Image: cityspeed
+	# 	Sequence: speed1
+	# 	Position: TopRight
+	# 	RequiresCondition: IndustrySpeed1
+	# 	BlinkInterval: 32
+	# 	BlinkPattern: On, Off, Off, Off
+	# WithDecoration@IndustrySpeed2:
+	# 	Image: cityspeed
+	# 	Sequence: speed2
+	# 	Position: TopRight
+	# 	RequiresCondition: IndustrySpeed2
+	# 	BlinkInterval: 32
+	# 	BlinkPattern: On, Off, Off, Off
+	# WithDecoration@IndustrySpeed3:
+	# 	Image: cityspeed
+	# 	Sequence: speed3
+	# 	Position: TopRight
+	# 	RequiresCondition: IndustrySpeed3
+	# 	BlinkInterval: 32
+	# 	BlinkPattern: On, Off, Off, Off
+	# WithDecoration@IndustrySpeed4:
+	# 	Image: cityspeed
+	# 	Sequence: speed4
+	# 	Position: TopRight
+	# 	RequiresCondition: IndustrySpeed4
+	# 	BlinkInterval: 32
+	# 	BlinkPattern: On, Off, Off, Off
 
 ^CityCombatCallable:
 	ExternalCondition@FireCall:
@@ -3144,20 +3820,20 @@
 	FirepowerMultiplier@POLICECALL:
 		Modifier: 125
 		RequiresCondition: PoliceCall
-	WithDecoration@FireCall:
-		Image: cityfirecall
-		Sequence: idle
-		Position: TopRight
-		RequiresCondition: FireCall
-		BlinkInterval: 32
-		BlinkPattern: Off, On, Off, Off
-	WithDecoration@PoliceCall:
-		Image: citypolicecall
-		Sequence: idle
-		Position: TopRight
-		RequiresCondition: PoliceCall
-		BlinkInterval: 32
-		BlinkPattern: Off, Off, On, Off
+	# WithDecoration@FireCall:
+	# 	Image: cityfirecall
+	# 	Sequence: idle
+	# 	Position: TopRight
+	# 	RequiresCondition: FireCall
+	# 	BlinkInterval: 32
+	# 	BlinkPattern: Off, On, Off, Off
+	# WithDecoration@PoliceCall:
+	# 	Image: citypolicecall
+	# 	Sequence: idle
+	# 	Position: TopRight
+	# 	RequiresCondition: PoliceCall
+	# 	BlinkInterval: 32
+	# 	BlinkPattern: Off, Off, On, Off
 
 ^ExternalConditionsAll:
 	Inherits@commando: ^CommandoDebuff
@@ -3505,20 +4181,20 @@ CPQDEBUGDUMMY:
 		Actor: CPQDEBUGDUMMY
 	GrantExternalConditionToProduced:
 		Condition: produced
-		
+
 ^AIConyardCash:
 	Inherits@AIDifficulties: ^AIDifficulties
 	Inherits@FS: ^AIForceShield
 	BotInsurance@minimum:
 		Condition: botinsurance
-		Threshold: 1000
+		Threshold: 10000
 		ThresholdDuration: 250
 	ExternalCondition:
 		Condition: noinsurance
 		RequiresCondition: noinsurance
 	CashTrickler@cameogod:
-		Interval: 25
-		Amount: 100
+		Interval: 1
+		Amount: 5
 		ShowTicks: False
 		RequiresCondition: cameogodbot && botinsurance
 	ResourcePurifier@cameogod:
@@ -3526,80 +4202,75 @@ CPQDEBUGDUMMY:
 		ShowTicks: False
 		RequiresCondition: cameogodbot && botinsurance
 	CashTrickler@unbeatable:
-		Interval: 25
-		Amount: 90
+		Interval: 1
+		Amount: 4
 		ShowTicks: False
 		RequiresCondition: unbeatablebot && botinsurance
 	ResourcePurifier@unbeatable:
-		Modifier: 90
+		Modifier: 85
 		ShowTicks: False
 		RequiresCondition: unbeatablebot && botinsurance
 	CashTrickler@challenger:
-		Interval: 25
-		Amount: 80
+		Interval: 1
+		Amount: 3
 		ShowTicks: False
 		RequiresCondition: challengerbot && botinsurance
 	ResourcePurifier@challenger:
-		Modifier: 80
+		Modifier: 70
 		ShowTicks: False
 		RequiresCondition: challengerbot && botinsurance
 	CashTrickler@brutal:
-		Interval: 25
-		Amount: 70
+		Interval: 1
+		Amount: 2
 		ShowTicks: False
 		RequiresCondition: brutalbot && botinsurance
 	ResourcePurifier@brutal:
-		Modifier: 70
+		Modifier: 55
 		ShowTicks: False
 		RequiresCondition: brutalbot && botinsurance
 	CashTrickler@hard:
-		Interval: 25
-		Amount: 60
+		Interval: 1
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: hardbot && botinsurance
 	ResourcePurifier@hard:
-		Modifier: 60
+		Modifier: 40
 		ShowTicks: False
 		RequiresCondition: hardbot && botinsurance
 	CashTrickler@medium:
-		Interval: 25
-		Amount: 50
+		Interval: 2
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: normalbot && botinsurance
 	ResourcePurifier@medium:
-		Modifier: 50
+		Modifier: 25
 		ShowTicks: False
 		RequiresCondition: normalbot && botinsurance
 	CashTrickler@easy:
-		Interval: 25
-		Amount: 40
+		Interval: 3
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: easybot && botinsurance
 	ResourcePurifier@easy:
-		Modifier: 40
+		Modifier: 10
 		ShowTicks: False
 		RequiresCondition: easybot && botinsurance
 	CashTrickler@easiest:
-		Interval: 25
-		Amount: 30
+		Interval: 4
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: easiestbot && botinsurance
 	ResourcePurifier@easiest:
-		Modifier: 30
+		Modifier: 5
 		ShowTicks: False
 		RequiresCondition: easiestbot && botinsurance
-	CashTrickler@bot:
-		Interval: 25
-		Amount: 25
-		ShowTicks: False
-		RequiresCondition: easiestbot || easybot || normalbot || hardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot || defensebot
-		
+
 ^Harvester:
 	Inherits@MC: ^MCImmune
 	Inherits@snipe: ^DriverKillImmune
 	Harvester:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, GESupplies, SWPCarbon, SWRCarbon, SWDCarbon, SWPNova, SWCNova, SWPMin, SWCMin, Spice, SCGas, SCGas2, SCGas3, SCMineralsChunk, SCRMinerals, DRWater, DRTaelon, FarmCrops, FarmBush, D2Spice, D2SpiceDense, SWFarms, OP2Ore2, OP2Ore
-		DeliveryBuildings: proc, raproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_townhall, wc_o_townhall, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc, 315refin, 315proc, awcity, awcitybm, awcityyc, awcityge, awcitybh, awcityids, susasupply, susasupply_air, susasupply_armor, sglsupply, schsupply, drlife.eodalien, sc2krecyclingcenter, orefinery, schsupply_tank, qnest, tinynest, schsupply_leang, iokproc, xmas_elves_refinery, dtproc, tagdiref, tanodref, tamutref, drwaterl.actibliz, n64procgdi, n64procnod, sglmobilesupplytruck_deployed, sglmobilesupplytruck_deployed_empty, dunerefin, valentine_chocolate_refinery, valentine_base, schatchery, scnexus, sccommandcenter, wh40kproco, wh40kprocm, drterwaterl.terror, sweproc, swreproc, swrproc, swdproc, wref, wh40kprocc, plymouth_smelter_common, halloween_cauldron, wh40kproct, wolfproc, wc2_human_elven_lumber_mill, wc2_orc_troll_lumber_mill, wc2_human_townhall, wc2_orc_greathall, win98_recyclebin
+		DeliveryBuildings: proc, raproc, jproc, cityharbor, ra2garefn, ra2narefn, yryarefn, yryarefn.empy, tsproc, screfinery, scassimilator, scextractor, c1proc, c2proc, c1raproc, c2raproc, cra2narefn, cra2garefn, cyryarefn, cyryarefn.empy, cscrefinery, cscassimilator, cscextractor, ccityharbor, glsupply, chsupply, usasupply, leangsupply, drwaterl.imperium, drwaterl.freedom, drpowr, swproc, wc_h_townhall, wc_o_townhall, wc_h_lumbermill, wc_o_lumbermill, refinery, d2k_silo_tleilaxu, ra2narefndoom, raproc.camea, wh40kproc, 315refin, 315proc, awcity, awcitybm, awcityyc, awcityge, awcitybh, awcityids, susasupply, susasupply_air, susasupply_armor, sglsupply, schsupply, drlife.eodalien, sc2krecyclingcenter, orefinery, schsupply_tank, qnest, tinynest, schsupply_leang, iokproc, xmas_elves_refinery, dtproc, tagdiref, tanodref, tamutref, drwaterl.actibliz, n64procgdi, n64procnod, sglmobilesupplytruck_deployed, sglmobilesupplytruck_deployed_empty, dunerefin, valentine_chocolate_refinery, valentine_base, schatchery, scnexus, sccommandcenter, wh40kproco, wh40kprocm, drterwaterl.terror, sweproc, swreproc, swrproc, swdproc, wref, wh40kprocc, plymouth_smelter_common, halloween_cauldron, wh40kproct, wolfproc, wc2_human_elven_lumber_mill, wc2_orc_troll_lumber_mill, wc2_human_townhall, wc2_orc_greathall, win98_recyclebin
 		FullyLoadedSpeed: 100
 	GpsDot:
 		String: Harvester
@@ -3622,10 +4293,6 @@ CPQDEBUGDUMMY:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 7
-	WithHarvesterPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 7
 
 ^RearmableAircraft:
 	Rearmable:
@@ -3635,7 +4302,7 @@ CPQDEBUGDUMMY:
 
 ^Repairable:
 	Repairable:
-		RepairActors: fix,rafix,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix,rafix.camea,drirep,repair_pad,orepair_pad,d2k_silo_tleilaxu,susaweap,tagdidept,tanoddept,drirep.actibliz,n64fixgdi,n64fixnod,drterrep,zfix
+		RepairActors: fix.gdi,fix.nod,rafix.allies,rafix.soviet,rafix.japan,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix,rafix.camea,drirep,repair_pad,orepair_pad,d2k_silo_tleilaxu,susaweap,tagdidept,tanoddept,drirep.actibliz,n64fixgdi,n64fixnod,drterrep,zfix
 
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
@@ -3717,11 +4384,11 @@ CPQDEBUGDUMMY:
 ^MCImmune:
 	Targetable@MC:
 		TargetTypes: MCImmune
-		
+
 ^NotDevourable:
 	Targetable@ND:
 		TargetTypes: DevourImmune
-		
+
 ^BombAttachable:
 	DelayedWeaponAttachable@ivan:
 		Type: ivanbomb
@@ -3752,6 +4419,7 @@ CPQDEBUGDUMMY:
 	RejectsOrders@chaos:
 		RequiresCondition: chaosgas && !untargetable
 	WithColoredOverlay@chaos:
+		Color: 880088BB
 		RequiresCondition: chaosgas && !untargetable
 	TimedConditionBar@chaos:
 		Color: 880088
@@ -3770,14 +4438,15 @@ CPQDEBUGDUMMY:
 		DamageTypes: ChronoDeath
 		ScaleWithCurrentHealthPercentage: true
 		ShowSelectionBar: true
-		SelectionBarColor: 40FFFF
+		SelectionBarColor: 44FFFF
 	GrantCondition@chrono:
 		Condition: chronobeamed
 		RequiresCondition: being-warped
 	TimedConditionBar@chrono:
 		Condition: being-warped
-		Color: bfe6ff
+		Color: BBEEFF
 	WithColoredOverlay@ChronoDisable:
+		Color: BBEEFFEE
 		RequiresCondition: chronobeamed
 	Targetable@chrono:
 		TargetTypes: Chronobeamable
@@ -3808,13 +4477,13 @@ CPQDEBUGDUMMY:
 	Targetable@plague:
 		TargetTypes: plagued
 		RequiresCondition: DefilerPlague && !chronobeamed
-	WithDecoration@Plague:
-		Image: plagueunit
-		Sequence: overlay
-		Position: Center
-		RequiresCondition: DefilerPlague
-		RequiresSelection: False
-		ValidRelationships: Ally, Neutral, Enemy
+	# WithDecoration@Plague:
+	# 	Image: plagueunit
+	# 	Sequence: overlay
+	# 	Position: Center
+	# 	RequiresCondition: DefilerPlague
+	# 	RequiresSelection: False
+	# 	ValidRelationships: Ally, Neutral, Enemy
 	ChangesHealth@SCPlague:
 		Step: -500
 		PercentageStep: -2
@@ -3862,12 +4531,11 @@ CPQDEBUGDUMMY:
 		BuildDurationModifier: 25
 	Targetable@BotArchitect:
 		TargetTypes: Power
-	ProvidesPrerequisite@anypower:
-		Prerequisite: anypower
 
 ^PowerPlant:
 	Inherits: ^Power
 	WithColoredOverlay@OUTAGE:
+		Color: 000000AA
 		RequiresCondition: powerdisabled
 	GrantCondition@OUTAGE:
 		RequiresCondition: power-outage
@@ -3939,26 +4607,6 @@ CPQDEBUGDUMMY:
 		Proxy: aircraft.upgraded
 		Types: SpyInfiltrate
 
-^GainsExperienceVehicle:
-	Inherits@GainsExperience: ^GainsExperience
-	ProducibleWithLevel@spyvehicles:
-		Prerequisites: vehicles.upgraded
-
-^GainsExperienceAircraft:
-	Inherits@GainsExperience: ^GainsExperience
-	ProducibleWithLevel@spyaircraft:
-		Prerequisites: aircraft.upgraded
-
-^GainsExperienceInfantry:
-	Inherits@GainsExperience: ^GainsExperience
-	ProducibleWithLevel@spyinfantry:
-		Prerequisites: infantry.upgraded
-
-^GainsExperienceShips:
-	Inherits@GainsExperience: ^GainsExperience
-	ProducibleWithLevel@spyships:
-		Prerequisites: ships.upgraded
-
 ^AnnounceOnBuild:
 	ExternalCondition@PRODUCED:
 		Condition: produced
@@ -3977,8 +4625,11 @@ CPQDEBUGDUMMY:
 	Inherits@snipe: ^DriverKillImmune
 	MustBeDestroyed:
 		RequiredForShortGame: true
+	ProvidesPrerequisite@conyard:
+		Prerequisite: conyard
 	BaseBuilding:
 	WithTextDecoration:
+		Position: Top
 		Text: MCV
 		UsePlayerColor: True
 		ValidRelationships: Ally, Enemy, Neutral
@@ -3988,12 +4639,20 @@ CPQDEBUGDUMMY:
 		Weight: 6
 	Crushable:
 		CrushClasses: hugevehicle
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Selectable:
+		Priority: 4
+		DecorationBounds: 1536, 1536
 
 ^AttackVoice:
 	Mobile:
 		Voice: Move
 	AttackMove:
-		Voice: Move
+		Voice: Action
 	Passenger:
 		Voice: Move
 	Guard:
@@ -4030,7 +4689,7 @@ CPQDEBUGDUMMY:
 ^PopupTurretEMP:
 	AttackPopupTurreted:
 		PauseOnCondition: disabled
-		
+
 ^WithSwimsuit:
 	Mobile:
 		Locomotor: swimsuit
@@ -4082,6 +4741,7 @@ CPQDEBUGDUMMY:
 		Prerequisites: global-swreveal
 	RevealsShroud@SWReveal:
 		Range: 2c0
+		#MoveRecalculationThreshold: 0
 		ValidRelationships: Neutral, Enemy
 		RequiresCondition: swreveal
 
@@ -4108,7 +4768,7 @@ CPQDEBUGDUMMY:
 
 ^VehicleCrusher:
 	Mobile:
-		Locomotor: vehiclecrusher
+		Locomotor: heavytracked
 	Crushable:
 		CrushClasses: hugevehicle
 
@@ -4153,10 +4813,10 @@ CPQDEBUGDUMMY:
 
 ^TechStructureHealable:
 	ChangesHealth@HOSPITAL:
-		PercentageStep: 10
-		Delay: 100
-		StartIfBelow: 150
-		DamageCooldown: 100
+		PercentageStep: 1
+		Delay: 10
+		StartIfBelow: 100
+		DamageCooldown: 1
 		RequiresCondition: hospitalheal && damaged
 	GrantConditionOnDamageState@HOSPITAL:
 		Condition: damaged
@@ -4195,13 +4855,14 @@ CPQDEBUGDUMMY:
 	ExternalCondition@FORCESHIELD:
 		Condition: forceshield
 	WithColoredOverlay@FORCESHIELD:
+		Color: 2277EEAA
 		RequiresCondition: forceshield && !invulnerability
 	DamageMultiplier@FORCESHIELD:
 		RequiresCondition: forceshield
 		Modifier: 0
 	TimedConditionBar@FORCESHIELD:
 		Condition: forceshield
-		Color: 2f74e2
+		Color: 2277EE
 	#ProvidesPrerequisite@FSdrain:
 	#	Prerequisite: forceshielddrain
 	#	RequiresCondition: forceshield
@@ -4236,7 +4897,7 @@ CPQDEBUGDUMMY:
 ^IsEngineer:
 	Targetable@ENGINEER:
 		TargetTypes: Engineer
-		
+
 #Structures Based
 
 ^IsBarrack:
@@ -4256,6 +4917,7 @@ CPQDEBUGDUMMY:
 		Probability: 99
 		Actor: 2100artifact
 		DeathType: 2100ResearchSteal
+
 ^IsAircraftFactory:
 	InfiltrateForSupportPower@SpyInfiltrate:
 		Proxy: aircraft.upgraded
@@ -4266,6 +4928,7 @@ CPQDEBUGDUMMY:
 		Probability: 99
 		Actor: 2100artifact
 		DeathType: 2100ResearchSteal
+
 ^IsTechnoBuilding:
 	InfiltrateForSupportPower@SpyInfiltrate:
 		Proxy: techbuilding.upgraded
@@ -4297,13 +4960,13 @@ CPQDEBUGDUMMY:
 	Targetable@DRIVERKILL:
 		TargetTypes: DriverKill
 		RequiresCondition: !driver-dead && !untargetable
-	WithDecoration@DRIVERKILL:
-		Image: gendriverdead
-		Sequence: idle
-		Position: TopRight
-		RequiresCondition: driver-dead
-		BlinkInterval: 32
-		BlinkPattern: On, Off, Off, Off
+	# WithDecoration@DRIVERKILL:
+	# 	Image: gendriverdead
+	# 	Sequence: idle
+	# 	Position: TopRight
+	# 	RequiresCondition: driver-dead
+	# 	BlinkInterval: 32
+	# 	BlinkPattern: On, Off, Off, Off
 	RejectsOrders@DRIVERKILL:
 		RequiresCondition: driver-dead
 	SpawnActorOnDeath@ZombieInfect:
@@ -4387,6 +5050,7 @@ CPQDEBUGDUMMY:
 
 ^FrenzyPower:
 	WithColoredOverlay@FRENZY:
+		Color: FF8800BB
 		RequiresCondition: frenzypower1 || frenzypower2 || frenzypower3
 	FirepowerMultiplier@FRENZY1:
 		RequiresCondition: frenzypower1
@@ -4399,13 +5063,13 @@ CPQDEBUGDUMMY:
 		Modifier: 130
 	TimedConditionBar@FRENZY1:
 		Condition: frenzypower1
-		Color: FF8000
+		Color: FF8800
 	TimedConditionBar@FRENZY2:
 		Condition: frenzypower2
-		Color: FF8000
+		Color: FF8800
 	TimedConditionBar@FRENZY3:
 		Condition: frenzypower3
-		Color: FF8000
+		Color: FF8800
 	ExternalCondition@FRENZY1:
 		Condition: frenzypower1
 		TotalCap: 1
@@ -4510,17 +5174,15 @@ CPQDEBUGDUMMY:
 		AmmoCondition: pdammo
 	ReloadAmmoPool@pld:
 		AmmoPool: pointdefense
-		Delay: 240
-		Count: 12
+		Delay: 20
+		Count: 1
 		ResetOnFire: True
 		PauseOnCondition: disabled
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
 		FullSequence: pip-red
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
+		PipCount: 6
 
 ^CashTricklerMultipliers:
 	GrantConditionOnPrerequisite@purifier:
@@ -4539,9 +5201,8 @@ CPQDEBUGDUMMY:
 ^AvengerGuidable:
 	ExternalCondition@Avenger:
 		Condition: avengerguided
-		TotalCap: 1
 	FirepowerMultiplier@Avenger:
-		Modifier: 120
+		Modifier: 125
 		RequiresCondition: avengerguided
 	InaccuracyMultiplier@Avenger:
 		Modifier: 50
@@ -4624,11 +5285,11 @@ CPQDEBUGDUMMY:
 		WarpOutSequence: warpout
 		RequiresCondition: !untargetable
 		Palette: ra2effect
-		
+
 ^Promotions:
 	FreeActor@selectedhack:
 		Actor: CPQDEBUGDUMMY
-		
+
 ^IFVConditions:
 	Cargo:
 		PassengerConditions:
@@ -4700,6 +5361,7 @@ CPQDEBUGDUMMY:
 			ra2shk: ifv-tesla
 			e4: ifv-fire
 			rae4: ifv-fire
+			raje4: ifv-fire
 			yrinit: ifv-fire
 			scfirebat: ifv-fire
 			e5: ifv-chem
@@ -4874,7 +5536,8 @@ CPQDEBUGDUMMY:
 			wh40kchaosmarinechamp: ifv-hero
 			raje1: ifv-mg
 			raje3: ifv-miss
-			ramaid: ifv-sniper
+			ramaid: ifv-archermaiden
+			sniper: ifv-sniper
 			wc_h_footman: ifv-archer
 			wc_h_archer: ifv-archer
 			wc_o_grunt: ifv-archer
@@ -5243,3 +5906,18 @@ CPQDEBUGDUMMY:
 	Armament@fremen5:
 		Weapon: Fremen_L
 		RequiresCondition: ifv-fremen >= 5
+	Armament@archermaiden1:
+		Weapon: JapanMaidenBow
+		RequiresCondition: ifv-archermaiden >= 1
+	Armament@archermaiden2:
+		Weapon: JapanMaidenBow
+		RequiresCondition: ifv-archermaiden >= 2
+	Armament@archermaiden3:
+		Weapon: JapanMaidenBow
+		RequiresCondition: ifv-archermaiden >= 3
+	Armament@archermaiden4:
+		Weapon: JapanMaidenBow
+		RequiresCondition: ifv-archermaiden >= 4
+	Armament@archermaiden5:
+		Weapon: JapanMaidenBow
+		RequiresCondition: ifv-archermaiden >= 5

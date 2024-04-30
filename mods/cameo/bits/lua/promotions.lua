@@ -11,16 +11,16 @@ PromotionsText = ""
 
 Seconds = 0
 
-PointsPerRank = { 1, 1, 1, 1, 3 }
+PointsPerRank = { 0, 1, 1, 1, 1, 1, 1, 2}
 
 PointActorExists = { }
 Points = { }
-HasPointsActors =  { }
+HasPointsActors = { }
 Levels = { }
-TextColors ={ }
+TextColors = { }
 
-Ranks = { "OF-1", "OF-2", "OF-3", "OF-4", "OF-5" }
-RankXPs = { 0, 12500, 25000, 50000, 100000 }
+Ranks = { "Level 1", "Level 2", "Level 3", "Level 4", "Level 5" , "Level 6", "Level 7", "Level 8" }
+RankXPs = { 0, 5000, 15000, 30000, 50000, 75000, 115000, 140000 }
 
 ReducePoints = function(player)
 	Trigger.OnProduction(player.GetActorsByType("player")[1], function()
@@ -35,7 +35,7 @@ TickPromotions = function()
 	for _,player in pairs(players) do
 		if player.IsLocalPlayer then
 			localPlayerIsNull = false;
-			if Levels[player.InternalName] < 4 then
+			if Levels[player.InternalName] < 7 then
 				PromotionsText = "Current Rank: " .. Ranks[Levels[player.InternalName] + 1] .. "\nPromotion Points: " .. Points[player.InternalName] .. "\nProgress to Next Rank: " .. player.Experience - RankXPs[Levels[player.InternalName] + 1] .. "/" .. RankXPs[Levels[player.InternalName] + 2] - RankXPs[Levels[player.InternalName] + 1] .. "\n\n"
 			else
 				PromotionsText = "Current Rank: " .. Ranks[Levels[player.InternalName] + 1] .. "\nPromotion Points: " .. Points[player.InternalName] .. "\n\n"
@@ -84,6 +84,27 @@ TickPromotions = function()
 
 			Actor.Create("hack.rank_5", true, { Owner = player })
 		end
+
+		if player.Experience >= RankXPs[6] and not (Levels[player.InternalName] > 4) then
+			Levels[player.InternalName] = Levels[player.InternalName] + 1
+			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[6]
+
+
+		end
+
+		if player.Experience >= RankXPs[7] and not (Levels[player.InternalName] > 5) then
+			Levels[player.InternalName] = Levels[player.InternalName] + 1
+			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[7]
+
+
+		end
+
+		if player.Experience >= RankXPs[8] and not (Levels[player.InternalName] > 6) then
+			Levels[player.InternalName] = Levels[player.InternalName] + 1
+			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[8]
+
+
+		end
 	end
 end
 
@@ -92,10 +113,20 @@ Second = function()
 		Seconds = Seconds + 1
 
 		for _,player in pairs(players) do
-			if Points[player.InternalName] > 0 and Seconds % 2 == 0 then
-				TextColors[player.InternalName] = HSLColor.White
-			else
+			if Points[player.InternalName] > 0 and Seconds % 6 == 0 then
 				TextColors[player.InternalName] = player.Color
+			elseif Points[player.InternalName] > 0 and Seconds % 6 == 1 then
+				TextColors[player.InternalName] = HSLColor.Yellow
+			elseif Points[player.InternalName] > 0 and Seconds % 6 == 2 then
+				TextColors[player.InternalName] = HSLColor.Orange
+			elseif Points[player.InternalName] > 0 and Seconds % 6 == 3 then
+				TextColors[player.InternalName] = HSLColor.Red
+			elseif Points[player.InternalName] > 0 and Seconds % 6 == 4 then
+				TextColors[player.InternalName] = HSLColor.Magenta
+			elseif Points[player.InternalName] > 0 and Seconds % 6 == 5 then
+				TextColors[player.InternalName] = HSLColor.Blue
+			else
+				TextColors[player.InternalName] = HSLColor.White
 			end
 		end
 
@@ -116,6 +147,7 @@ end
 WorldLoadedGeneralsPromotions = function()
 	players = Player.GetPlayers(function(p) return not p.IsNonCombatant end)
 	SetUpDefaults()
+	Second()
 
 	for _,player in pairs(players) do
 		ReducePoints(player)

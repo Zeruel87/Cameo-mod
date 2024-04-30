@@ -82,7 +82,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		public void MovingToRefinery(Actor self, Actor refineryActor)
 		{
-			var deliverypos = refineryActor.Location + refineryActor.Trait<IAcceptResources>().DeliveryOffset;
+			var deliverypos = refineryActor.Location;
 
 			if (destination != null && destination.Value != deliverypos)
 				ticksTillCheck = 0;

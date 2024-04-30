@@ -50,7 +50,7 @@ namespace OpenRA.Mods.Cameo.Traits
 			base.RulesetLoaded(rules, ai);
 
 			if (Actors == null || Actors.Length == 0)
-				throw new YamlException("Actors is null or empty for MobSpawner for actor type {0}!".F(ai.Name));
+				throw new YamlException("Actors is null or empty for MobSpawner for actor type {ai.Name}!");
 
 			if (InitialActorCount > Actors.Length || InitialActorCount < -1)
 				throw new YamlException("MobSpawner can't have more InitialActorCount than the actors defined!");

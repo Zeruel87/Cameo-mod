@@ -70,7 +70,7 @@ namespace OpenRA.Mods.Cameo.Traits
 
 			var positionables = self.TraitsImplementing<IPositionable>();
 			if (positionables.Count() != 1)
-				throw new InvalidOperationException("Actor {0} has multiple (or no) traits implementing IPositionable.".F(self));
+				throw new InvalidOperationException("Actor {self} has multiple (or no) traits implementing IPositionable.");
 
 			Positionable = positionables.First();
 		}
