@@ -1225,6 +1225,8 @@ ra2gagap:
 	-RenderRangeCircle:
 	-RenderDetectionCircle:
 	-AutoTarget:
+	Targetable:
+		TargetTypes: Ground, C4, Structure, Defense, DiskDrain
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -1418,8 +1420,12 @@ ra2gacsph:
 
 ra2gapill:
 	Inherits: ^Defense
-	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@shadow: ^RA2Building
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Targetable:
+		TargetTypes: Ground, C4, Structure, Defense, DiskDrain
 	Selectable:
 		Bounds: 1024, 1024
 	Tooltip:
@@ -1435,11 +1441,7 @@ ra2gapill:
 	CustomSellValue:
 		Value: 400
 	Health:
-		HP: 51000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
+		HP: 75000
 	Turreted:
 		TurnSpeed: 1023
 	-QuantizeFacingsFromSequence:
@@ -1447,46 +1449,50 @@ ra2gapill:
 		QuantizedFacings: 8
 	Cargo:
 		Types: Infantry
-		MaxWeight: 1
-		InitialUnits: ra2e1
+		MaxWeight: 2
+		InitialUnits: ra2e1, ra2e1
 	AttackGarrisoned:
 		Armaments: garrisoned
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
 		PauseOnCondition: disabled
-	RenderRangeCircle:
-		FallbackRange: 6c0
+	FirepowerMultiplier:
+		Modifier: 200
+	RevealsShroud:
+		Range: 6666
 	DetectCloaked:
-		Range: 3c0
+		Range: 3333
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
 
 ra2nasam:
-	Inherits: ^RA2Building
 	Inherits: ^Defense
+	Inherits: ^RA2Building
+	Inherits@Template: ^AntiAirDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@RenderVoxel: ^RenderVoxel
 	Inherits@sell: ^RA2ASpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
 	Inherits@IDISABLE: ^DisabledOverlay
+	Targetable:
+		TargetTypes: Ground, C4, Structure, Defense, DiskDrain
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
 		Prerequisites: ~ra2gacnst, ra2gaairc
 		Description: Anti-aircraft defense.\nRequires power to operate
 	Valued:
-		Cost: 1000
+		Cost: 800
 	Tooltip:
 		Name: Patriot Missile System
 	Building:
 		Footprint: x
 		Dimensions: 1,1
 	Health:
-		HP: 80000
-	Armor:
-		Type: Heavy
+		HP: 90000
 	RevealsShroud:
 		Range: 7c0
 	Selectable:
@@ -1495,36 +1501,43 @@ ra2nasam:
 		TurnSpeed: 40
 		InitialFacing: 896
 		Offset: -200,25,10
+		RealignDelay: -1
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: lowpower || disabled
 	Armament:
 		Weapon: RA2Patriot
-		LocalOffset: 768,85,90, 768,-85,90
+		LocalOffset: 450,150,450, 450,-150,450
+		MuzzleSequence: muzzle
 	BodyOrientation:
 		QuantizedFacings: 16
 	RenderVoxels:
 		NormalsPalette: ts-normals
 	WithVoxelTurret:
 		RequiresCondition: !build-incomplete
+	WithMuzzleOverlay:
 	WithRangeCircle:
-		Range: 6c0
-		Type: pillbox
 	AutoTarget:
-	DetectCloaked:
-		Range: 3c0
-	Power:
-		Amount: -50
 	-WithVoxelBody:
 	-Cloak@TDcloak:
+	Power:
+		Amount: -40
+	RevealsShroud:
+		Range: 14000
+	DetectCloaked:
+		Range: 7000
 
 ra2atesla:
 	Inherits: ^Defense
 	Inherits: ^RA2Building
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2ASpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
+	Targetable:
+		TargetTypes: Ground, C4, Structure, Defense, DiskDrain
 	AutoTargetPriority@DEFAULT:
 		InvalidTargets: NoAutoTarget, PrismTower
 	AutoTargetPriority@ATTACKANYTHING:
@@ -1539,8 +1552,6 @@ ra2atesla:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 80
-		BuildDuration: 1125
-		BuildDurationModifier: 125
 		Prerequisites: ~ra2gacnst, ra2gatech
 		Description: Advanced base defense.\nRequires power to operate.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
 	Valued:
@@ -1551,60 +1562,68 @@ ra2atesla:
 		Bounds: 1024, 2304, 0, -640
 	SelectionDecorations:
 	Health:
-		HP: 60000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-	WithSpriteBody:
-		Sequence: idle
+		HP: 135000
+	WithSpriteBody@charged:
 		PauseOnCondition: disabled || lowpower
-		RequiresCondition: !charging # && !build-incomplete
+		RequiresCondition: !charging && !build-incomplete
 	WithSpriteBody@charging:
 		Sequence: active
 		Name: bodyactive
-		RequiresCondition: charging
+		RequiresCondition: charging && !build-incomplete
 	GrantCondition@charging:
 		Condition: charging
 		RequiresCondition: !fired && !ammo
-	Armament:
-		Weapon: RA2Prism
-		LocalOffset: 128,0,1280
-		PauseOnCondition: !ammo && !powercharged
 	Armament@Charge:
 		Name: secondary
 		Weapon: PrismCharge
-		LocalOffset: 128,0,1280
+		LocalOffset: 256,0,1280
 		TargetRelationships: Ally
 		ForceTargetRelationships: Ally
 		PauseOnCondition: fired && !powercharged
 		RequiresCondition: ammo
+	Armament:
+		Name: primary
+		Weapon: RA2Prism
+		LocalOffset: 256,0,1280
+		PauseOnCondition: !ammo && !powercharged
+	Armament@EnemyPrism:
+		Name: EnemyPrism
+		Weapon: RA2EnemyPrism
+		LocalOffset: 256,0,1280
+		TargetRelationships: Enemy, Neutral
+		ForceTargetRelationships: Enemy, Neutral
+		PauseOnCondition: !ammo && !powercharged
 	Turreted:
 		TurnSpeed: 1023
+		Offset: 0,0,128
+		RealignDelay: -1
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: lowpower || disabled
 	GrantConditionOnAttack@primary:
-		ArmamentNames: primary
+		ArmamentNames: primary, EnemyPrism
 		Condition: fired
 		MaximumInstances: 1
-		RevokeDelay: 40
+		RevokeDelay: 50
 	AmbientSound:
 		RequiresCondition: charging
 		SoundFiles: bpripow.wav
 		Interval: 30, 40
-	GrantConditionOnAttack@secondary:
-		ArmamentNames: secondary
-		Condition: fired
-		MaximumInstances: 1
-		RevokeDelay: 40
 	ExternalCondition@POWERCHARGED:
 		Condition: powercharged
+	ProximityExternalCondition@aiming:
+		Condition: aiming
+		Range: 9000
+		RequiresCondition: aiming && !fired
+	ExternalCondition@aiming:
+		Condition: aiming
+	GrantConditionWhileAiming:
+		Condition: aiming
 	AmmoPool:
 		Name: primary
 		Ammo: 5
 		InitialAmmo: 1
-		Armaments: primary, secondary
+		Armaments: primary, secondary, EnemyPrism
 		AmmoCondition: ammo
 	ReloadAmmoPoolCA@autocharge:
 		Delay: 25
@@ -1613,13 +1632,13 @@ ra2atesla:
 		RequiresCondition: ammo < 1 && !fired
 		ShowSelectionBar: false
 		SelectionBarColor: 0000ff
-	ReloadAmmoPoolCA@discharge:
-		Delay: 15
-		Count: -1
-		ResetOnFire: False
-		RequiresCondition: ammo > 1
-		ShowSelectionBar: false
-		SelectionBarColor: ff0000
+	# ReloadAmmoPoolCA@discharge:
+	# 	Delay: 25
+	# 	Count: -1
+	# 	ResetOnFire: True
+	# 	RequiresCondition: ammo > 1
+	# 	ShowSelectionBar: false
+	# 	SelectionBarColor: ff0000
 	ReloadAmmoPoolCA@powercharge:
 		AmmoPool: primary
 		Delay: 1
@@ -1627,17 +1646,15 @@ ra2atesla:
 		RequiresCondition: powercharged
 		ShowSelectionBar: false
 		SelectionBarColor: 00ff00
-	Power:
-		Amount: -100
+	# FirepowerMultiplier@powercharge:
+	# 	Modifier: 400
+	# 	RequiresCondition: powercharged
 	Sellable:
-	DetectCloaked:
-		Range: 7c0
-		RequiresCondition: !lowpower && !disabled
 	ProvidesPrerequisite@buildingname:
 	WithIdleOverlay@normal:
 		Sequence: idle-normal
 		PauseOnCondition: lowpower
-		#RequiresCondition: !build-incomplete
+		RequiresCondition: !build-incomplete
 	WithMakeAnimation:
 	WithDeathAnimation:
 		DeathSequencePalette: playerra2
@@ -1645,23 +1662,29 @@ ra2atesla:
 		Position: BottomLeft
 		RequiresSelection: true
 		FullSequence: pip-red
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
+	Power:
+		Amount: -150
+	RevealsShroud:
+		Range: 9000
+	DetectCloaked:
+		Range: 4500
 
 ra2gtgcan:
 	Inherits: ^Defense
 	Inherits: ^RA2Building
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@RenderVoxel: ^RenderVoxel
 	Inherits@sell: ^RA2ASpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
 	Inherits@IDISABLE: ^DisabledOverlay
+	Targetable:
+		TargetTypes: Ground, C4, Structure, Defense, DiskDrain
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 50
-		BuildDuration: 3120
 		Prerequisites: ~ra2gacnst, ra2gatech
 		Description: Long range anti-ground defense.\nRequires power to operate
 	Valued:
@@ -1672,23 +1695,20 @@ ra2gtgcan:
 		Footprint: xx xx
 		Dimensions: 2,2
 	Health:
-		HP: 100000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
+		HP: 300000
 	Selectable:
 		Bounds: 2048, 2048
 	Turreted:
 		TurnSpeed: 12
 		InitialFacing: 896
-		Offset: -600,1,1
+		Offset: -700,1,1
+		RealignDelay: -1
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: lowpower || disabled
 	Armament:
 		Weapon: RA2GrandCannonWeapon
-		LocalOffset: 1200,0,450
+		LocalOffset: 1500,0,500
 	BodyOrientation:
 		QuantizedFacings: 16
 	RenderVoxels:
@@ -1698,13 +1718,15 @@ ra2gtgcan:
 	WithVoxelBarrel:
 		RequiresCondition: !build-incomplete
 	WithRangeCircle:
-		Range: 5c0
-		Type: pillbox
 	AutoTarget:
-	DetectCloaked:
-		Range: 10c0
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
 	Power:
-		Amount: -100
+		Amount: -200
+	RevealsShroud:
+		Range: 15000
+	DetectCloaked:
+		Range: 7500
 	-WithVoxelBody:
 	-Cloak@TDcloak:
 
@@ -3808,6 +3830,7 @@ yrygyard:
 ##############################################
 RA2E1:
 	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -3815,7 +3838,7 @@ RA2E1:
 	Inherits@editorhack: ^DeployableInfantryEditor
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 150
+		Cost: 200
 	Tooltip:
 		Name: G.I.
 	Buildable:
@@ -3829,21 +3852,25 @@ RA2E1:
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
-		HP: 8000
-	AutoTarget:
-		ScanRadius: 4
+		HP: 25000
 	RevealOnFire:
 		ArmamentNames: primary, deployed
+	RangeMultiplier@deployed:
+		Modifier: 110
+		RequiresCondition: deployed
+	WithRangeCircle:
+		Range: 7333
+		RequiresCondition: deployed
 	Armament@PRIMARY:
 		Weapon: RA2M60
 		RequiresCondition: !deployed
+	Armament@DEPLOYED:
+		Name: deployed
+		Weapon: RA2para
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2vulcan2
 		MuzzleSequence: garrison-muzzle
-	Armament@DEPLOYED:
-		Name: deployed
-		Weapon: RA2para
 	AttackFrontal:
 		Armaments: primary
 		RequiresCondition: undeployed
@@ -3857,7 +3884,7 @@ RA2E1:
 	Turreted:
 		Turret: deploy
 		RealignDelay: -1
-		TurnSpeed: 4092
+		TurnSpeed: 40
 		InitialFacing: 1472
 	WithSpriteTurret@idle:
 		Turret: deploy
@@ -3880,10 +3907,9 @@ RA2E1:
 	WithMakeAnimation:
 		Sequence: deploy
 		BodyNames: dot
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: deployed
-	Inherits@EXT: ^ExternalConditions
+	# RejectsOrders@deployment:
+	# 	Reject: Move
+	# 	RequiresCondition: deployed
 	AcceptsDeliveredExperience:
 		ValidTypes: infantry
 	GrantConditionOnDeploy:
@@ -3897,9 +3923,14 @@ RA2E1:
 		Voice: Move
 	TakeCover:
 		RequiresCondition: undeployed
+	Crushable:
+		RequiresCondition: undeployed
+	Crushable@deployed:
+		CrushClasses: vehicle
+		RequiresCondition: !undeployed
 	AutoDeployer:
 		DeployChance: 100
-		DeployTicks: 450
+		DeployTicks: 500
 		DeployTrigger: Attack
 	Voiced:
 		VoiceSet: GIVoice
@@ -3907,14 +3938,12 @@ RA2E1:
 		Payload: 75
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-	ReloadDelayMultiplier@eliteplus:
-		Modifier: 75
-		RequiresCondition: rank-elite
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 
 YRGGI:
 	Inherits: ^Soldier
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -3923,7 +3952,7 @@ YRGGI:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@bot: ^BotMicromanageable
 	Valued:
-		Cost: 300
+		Cost: 500
 	Tooltip:
 		Name: Guardian
 	Buildable:
@@ -3937,21 +3966,27 @@ YRGGI:
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
-		HP: 10000
-	AutoTarget:
-		ScanRadius: 4
+		HP: 30000
+	RangeMultiplier@deployed:
+		Modifier: 111
+		RequiresCondition: deployed
+	WithRangeCircle:
+		Range: 7777
+		RequiresCondition: deployed
 	RevealOnFire:
 		ArmamentNames: primary, deployed
 	Armament@PRIMARY:
 		Weapon: GuardianGIMG
+		RequiresCondition: !deployed
 	Armament@BOTAA:
-		Weapon: aadeploytargeting.6c0
+		Weapon: aadeploytargeting.8c0
 		Name: targeting
 		RequiresCondition: botmicro
 	Armament@DEPLOYED:
 		Name: deployed
 		Weapon: RA2GIRocketsG
-		RequiresCondition: !rank-elite
+		LocalOffset: 384,64,384
+		RequiresCondition: !rank-elite && deployed
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2GIRocketsG
@@ -3959,7 +3994,7 @@ YRGGI:
 	Armament@DEPLOYEDELITE:
 		Name: deployed
 		Weapon: RA2GIRocketsG_elite
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && deployed
 	Armament@GARRISONEDELITE:
 		Name: garrisoned
 		Weapon: RA2GIRocketsG_elite
@@ -3969,7 +4004,7 @@ YRGGI:
 		RequiresCondition: undeployed
 		FacingTolerance: 0
 	AttackTurreted@deployed:
-		Armaments: garrisoned
+		Armaments: deployed
 		Turrets: deploy
 		PauseOnCondition: disabled
 		RequiresCondition: deployed
@@ -3977,7 +4012,7 @@ YRGGI:
 	Turreted:
 		Turret: deploy
 		RealignDelay: -1
-		TurnSpeed: 4092
+		TurnSpeed: 40
 		InitialFacing: 1472
 	WithSpriteTurret@idle:
 		Turret: deploy
@@ -3993,8 +4028,8 @@ YRGGI:
 		RequiresCondition: !undeployed
 	GrantConditionOnAttack:
 		Condition: animate-turret
-		RevokeDelay: 10
-		ArmamentNames: garrisoned
+		RevokeDelay: 5
+		ArmamentNames: deployed
 	WithInfantryBody:
 		AttackSequences:
 			primary: shoot
@@ -4002,9 +4037,9 @@ YRGGI:
 	WithMakeAnimation:
 		Sequence: deploy
 		BodyNames: dot
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: deployed
+	# RejectsOrders@deployment:
+	# 	Reject: AttackMove, AssaultMove
+	# 	RequiresCondition: deployed
 	Inherits@EXT: ^ExternalConditions
 	AcceptsDeliveredExperience:
 		ValidTypes: infantry
@@ -4026,7 +4061,7 @@ YRGGI:
 		RequiresCondition: !undeployed
 	AutoDeployer:
 		DeployChance: 100
-		DeployTicks: 450
+		DeployTicks: 500
 		DeployTrigger: Attack
 	Voiced:
 		VoiceSet: GGIVoice
@@ -4034,11 +4069,10 @@ YRGGI:
 		Payload: 150
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
-	ReloadDelayMultiplier@elite:
-		Modifier: 90
-		RequiresCondition: rank-elite
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
+	QuantizeFacingsFromSequence:
+		Sequence: shoot-deployed
 
 RA2CLEG:
 	Inherits: ^Soldier
@@ -4109,13 +4143,14 @@ RA2CLEG:
 
 RA2SNIPE:
 	Inherits: ^Soldier
+	Inherits@Template: ^SniperInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 800
+		Cost: 600
 	Tooltip:
 		Name: Sniper
 	Buildable:
@@ -4126,7 +4161,7 @@ RA2SNIPE:
 	Mobile:
 		Speed: 50
 	Health:
-		HP: 7500
+		HP: 20000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -5392,6 +5427,7 @@ RA2CMIN:
 
 RA2MTNK:
 	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
@@ -5411,16 +5447,17 @@ RA2MTNK:
 	Mobile:
 		Locomotor: tracked
 		Speed: 120
+		TurnSpeed: 24
 	Health:
-		HP: 40000
+		HP: 100000
 	Repairable:
-		HpPerStep: 2637
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
 	Armor:
 		Type: Medium
-	RevealsShroud:
-		Range: 6c0
 	Turreted:
-		TurnSpeed: 20 #3
+		TurnSpeed: 24 #3
 	Armament:
 		Name: primary
 		Weapon: RA2105mm
@@ -5474,6 +5511,7 @@ RA2MTNK:
 
 YRROBO:
 	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
@@ -5558,6 +5596,7 @@ YRROBO:
 
 RA2TNKD:
 	Inherits: ^Tank
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@SHADOWS: ^InfantryShadows
@@ -5572,13 +5611,12 @@ RA2TNKD:
 		Prerequisites: ~ra2gaairc
 		Queue: Vehicle, RAVehicle
 		Description: Allied anti-tank vehicle.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
-		BuildDuration: 500
-		BuildDurationModifier: 100
 	Mobile:
 		Locomotor: tracked
-		Speed: 60
+		Speed: 65
+		TurnSpeed: 13
 	Health:
-		HP: 90000
+		HP: 100000
 	Repairable:
 		HpPerStep: 3000
 	Armor:
@@ -5869,10 +5907,13 @@ RA2FVBOTCHRONO:
 
 RA2SREF:
 	Inherits: ^Tank
+	Inherits@Template: ^ArtilleryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	AutoTargetPriority@charge:
+		ValidTargets: PrismTower
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -5882,27 +5923,43 @@ RA2SREF:
 		Prerequisites: ~ra2gatech
 		Queue: Vehicle, RAVehicle
 		Description: Advanced Allied tank armed with\na prism cannon.\n Strong vs Infantry, Buildings\n Weak vs Aircraft, Vehicles
-		BuildDuration: 1000
-		BuildDurationModifier: 100
 	Mobile:
 		Locomotor: tracked
 		Speed: 75
+		TurnSpeed: 15
 	Health:
-		HP: 25000
+		HP: 40000
 	Repairable:
-		HpPerStep: 2637
+		HpPerStep: 2000
 	Armor:
 		Type: Light
-	RevealsShroud:
-		Range: 6c0
 	Turreted:
-		TurnSpeed: 20 #3
+		TurnSpeed: 15 #3
+	Armament@Charge:
+		Name: secondary
+		Weapon: PrismTankCharge
+		LocalOffset: 410,0,650
+		Recoil: 128
+		RecoilRecovery: 26
+		TargetRelationships: Ally
+		ForceTargetRelationships: Ally
+		RequiresCondition: !rank-elite
+	Armament@EliteCharge:
+		Name: secondary
+		Weapon: PrismTankChargeE
+		LocalOffset: 410,0,650
+		Recoil: 128
+		RecoilRecovery: 26
+		TargetRelationships: Ally
+		ForceTargetRelationships: Ally
+		RequiresCondition: rank-elite
 	Armament:
 		Name: primary
 		Weapon: RA2Comet
 		LocalOffset: 410,0,650
 		Recoil: 128
 		RecoilRecovery: 26
+		TargetRelationships: Enemy, Neutral
 		RequiresCondition: !rank-elite
 	Armament@elite:
 		Name: primary
@@ -5910,6 +5967,7 @@ RA2SREF:
 		LocalOffset: 410,0,650
 		Recoil: 128
 		RecoilRecovery: 26
+		TargetRelationships: Enemy, Neutral
 		RequiresCondition: rank-elite
 	AttackTurreted:
 	SelectionDecorations:
@@ -6667,6 +6725,9 @@ RA2TTNK:
 		RequiresCondition: rank-elite
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
+	RenderSprites:
+		PlayerPalette: playerra2
+
 RA2HARV:
 	Inherits: HARV
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
@@ -7010,6 +7071,8 @@ YRYTNK:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 6
+	RenderSprites:
+		PlayerPalette: playerra2
 
 YRLTNK:
 	Inherits: RA2MTNK
@@ -7058,7 +7121,6 @@ YRTELE:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@detect: ^GenericGroundDetector
@@ -7097,14 +7159,13 @@ YRTELE:
 	Armament@Flash:
 		Weapon: RA2MagnetFlash
 	AttackTurreted:
+	WithSpriteTurret:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1280
 	Inherits@EXT: ^ExternalConditions
 	AcceptsDeliveredExperience:
 		ValidTypes: vehicle
-	WithVoxelBody:
-	WithVoxelTurret:
 	Voiced:
 		VoiceSet: MagnetronVoice
 	Armament@GARRISONED:
@@ -7122,6 +7183,8 @@ YRTELE:
 		RequiresCondition: rank-elite
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
+	RenderSprites:
+		PlayerPalette: playerra2
 
 YRCAOS:
 	Inherits: ^Vehicle
@@ -7172,6 +7235,8 @@ YRCAOS:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2Dronegas
+	WithRangeCircle:
+		Range: 5000
 	DeliversCash:
 		Payload: 250
 	-TemporaryOwnerManager:
@@ -9777,6 +9842,8 @@ RA2ZEP.Husk:
 		Velocity: 43
 		Explosion: KirovExplode
 	WithShadow:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2hornet.Husk:
 	Inherits: ^PlaneHusk
@@ -9801,6 +9868,8 @@ ra2hornet.Husk:
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 RA2FALC.Husk:
 	Inherits: ^PlaneHusk
@@ -9825,6 +9894,8 @@ RA2FALC.Husk:
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2beag.Husk:
 	Inherits: ^PlaneHusk
@@ -9849,6 +9920,8 @@ ra2beag.Husk:
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 YRDISK.Husk:
 	Inherits: ^HelicopterHusk
@@ -9860,6 +9933,8 @@ YRDISK.Husk:
 	RenderSprites:
 		Image: yrdisk
 	Turreted:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2asw.Husk:
 	Inherits: ^HelicopterHusk
@@ -9876,6 +9951,8 @@ ra2asw.Husk:
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 yrschp.Husk:
 	Inherits: ^HelicopterHusk
@@ -9892,6 +9969,8 @@ yrschp.Husk:
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2shad.Husk:
 	Inherits: ^HelicopterHusk
@@ -9908,6 +9987,8 @@ ra2shad.Husk:
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 yrbpln.husk:
 	Inherits: ^PlaneHusk
@@ -9932,6 +10013,8 @@ yrbpln.husk:
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2cplane.Husk:
 	Inherits: ^PlaneHusk
@@ -9964,6 +10047,8 @@ ra2cplane.Husk:
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 yrspyp.husk:
 	Inherits: ^PlaneHusk
@@ -9988,6 +10073,8 @@ yrspyp.husk:
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 #######################################
 # RA2 Special Infantry
