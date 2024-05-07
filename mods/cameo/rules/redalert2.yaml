@@ -8152,11 +8152,12 @@ yrschp:
 		BuildDurationModifier: 56
 		Description: Helicopter gunship that can deploy into a cannon.\n  Strong vs Buildings, Infantry\n  Weak vs Aircraft
 	Aircraft:
+		CanForceLand: false
 		InitialFacing: 896
 		TurnSpeed: 20
 		Speed: 150
 		AltitudeVelocity: 100
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice
+		#LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice
 		VTOL: true
 		RepulsionSpeed: 10
 		Voice: Move
@@ -8169,12 +8170,25 @@ yrschp:
 		Type: GroundPosition
 	Armament@PRIMARY:
 		Weapon: BlackHawkCannon
-		LocalOffset: 0,0,0
+		LocalOffset: 320,-256,0, 320,256,0
 		MuzzleSequence: muzzle
+		RequiresCondition: undeployed
 	WithMuzzleOverlay:
-	Armament@Deploy:
+	Armament@DeployTargeter:
 		Weapon: deploytargeting.5c0
 		Name: deploy
+	Armament@Deployed:
+		Name: primary
+		Weapon: RA160mm
+		LocalOffset: 410,0,650
+		RequiresCondition: !rank-elite && deployed
+	Armament@DeployedElite:
+		Name: primary
+		Weapon: RA160mmE_elite
+		LocalOffset: 410,0,650
+		RequiresCondition: rank-elite && deployed
+	Turreted:
+		TurnSpeed: 80
 	AutoDeployer:
 		DeployTrigger: Attack, Damage
 		DeployChance: 50
@@ -8182,10 +8196,28 @@ yrschp:
 		UndeployTicks: 500
 	AutoTarget:
 		ScanRadius: 15
-	AttackAircraft:
-		FacingTolerance: 60
-		Voice: Attack
-		AttackType: Hover
+	-AttackAircraft:
+	AttackTurreted:
+		Armaments: primary, deployed
+		Voice: DeployedAttack
+		PauseOnCondition: disabled
+	HeliGrantConditionOnDeploy:
+		DeployAnimation: deploy
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		DeploySound: vchodepa.wav
+		UndeploySound: vchodepa.wav
+		AllowedTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice, ZergSoil
+		DeployVoice: Deploy
+		UndeployVoice: Move
+		CanDeployOnRamps: true
+		SynchronizeDeployment: True
+		PauseOnCondition: disabled
+	RejectsOrders@deployment:
+		Reject: Move
+		RequiresCondition: !undeployed && !airborne
+	RejectsOrders@wierdtakeoff:
+		RequiresCondition: !undeployed && airborne
 	-WithShadow:
 	WithMoveAnimation:
 		MoveSequence: move
@@ -8194,18 +8226,16 @@ yrschp:
 		DecorationBounds: 1536, 1536
 	SpawnActorOnDeath:
 		Actor: yrschp.Husk
-	-WithVoxelBody:
+	RenderSprites:
+		PlayerPalette: ra2buildinghack
+	WithVoxelBody:
+		Sequence: deployed
+		RequiresCondition: deployed
+	WithVoxelTurret:
+		RequiresCondition: deployed
 	WithVoxelWalkerBody:
 		TickRate: 1
-	Voiced:
-		VoiceSet: SiegeChopperVoice
-	Transforms:
-		IntoActor: yrschd
-		Offset: 0,0
-		Facing: 8
-		NoTransformNotification: BuildingCannotPlaceAudio
-		PauseOnCondition: disabled
-		TransformSounds: vchodepa.wav
+		RequiresCondition: undeployed
 	Voiced:
 		VoiceSet: SiegeChopperVoice
 	DeathSounds:
