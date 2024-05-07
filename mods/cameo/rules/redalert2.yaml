@@ -839,7 +839,7 @@ ra2garefn:
 		Queue: Building, RABuilding
 		Description: Processes raw Tiberium\ninto useable resources
 	Building:
-		Footprint: =xx= xxx= =x==
+		Footprint: xxx= xxx= x+==
 		Dimensions: 4,3
 	Health:
 		HP: 300000
@@ -1534,18 +1534,6 @@ ra2atesla:
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2ASpawnActorsOnSell
-	Inherits@EMP: ^TurretEMP
-	AutoTargetPriority@DEFAULT:
-		InvalidTargets: NoAutoTarget, PrismTower
-	AutoTargetPriority@ATTACKANYTHING:
-		InvalidTargets: NoAutoTarget, PrismTower
-	Targetable@prism:
-		TargetTypes: PrismTower
-	AutoTargetPriority@charge:
-		ValidTargets: PrismTower
-	Targetable@PrismTowerChargeable:
-		TargetTypes: PrismTowerChargeable
-		RequiresCondition: !ammo
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 80
@@ -1560,94 +1548,54 @@ ra2atesla:
 	SelectionDecorations:
 	Health:
 		HP: 135000
-	WithSpriteBody@charged:
-		PauseOnCondition: disabled || lowpower
-		RequiresCondition: !charging && !build-incomplete
-	WithSpriteBody@charging:
-		Sequence: active
-		Name: bodyactive
-		RequiresCondition: charging && !build-incomplete
-	GrantCondition@charging:
-		Condition: charging
-		RequiresCondition: !fired && !ammo
-	Armament@Charge:
-		Name: secondary
-		Weapon: PrismCharge
-		LocalOffset: 256,0,1280
-		TargetRelationships: Ally
-		ForceTargetRelationships: Ally
-		PauseOnCondition: fired && !powercharged
-		RequiresCondition: ammo
-	Armament:
-		Name: primary
-		Weapon: RA2Prism
-		LocalOffset: 256,0,1280
-		PauseOnCondition: !ammo && !powercharged
-	Armament@EnemyPrism:
-		Name: EnemyPrism
-		Weapon: RA2EnemyPrism
-		LocalOffset: 256,0,1280
-		TargetRelationships: Enemy, Neutral
-		ForceTargetRelationships: Enemy, Neutral
-		PauseOnCondition: !ammo && !powercharged
-	Turreted:
-		TurnSpeed: 1023
-		Offset: 0,0,128
-		RealignDelay: -1
-	AttackTurreted:
-		Voice: Attack
+	Targetable@PrismTower:
+		TargetTypes: PrismTower
+	WithSpriteBody:
 		PauseOnCondition: lowpower || disabled
-	GrantConditionOnAttack@primary:
-		ArmamentNames: primary, EnemyPrism
-		Condition: fired
-		MaximumInstances: 1
-		RevokeDelay: 50
-	AmbientSound:
+	WithPrismChargeAnimation:
+		ChargeSequence: active
+	Armament@Charge:
+		Name: support
+		Weapon: PrismCharge
+		LocalOffset: 0,0,1280
+	#Armament@beam1:
+	#	Weapon: RA2PrismBeam
+	#	LocalOffset: 0,0,1280
+	#	PauseOnCondition: prism-stack
+	#Armament@beam2:
+	#	Weapon: RA2PrismBeam2
+	#	LocalOffset: 0,0,1280
+	#	PauseOnCondition: !(prism-stack >= 1 || powercharged) || prism-stack <= 4
+	#Armament@beam3:
+	#	Weapon: RA2PrismBeam3
+	#	LocalOffset: 0,0,1280
+	#	PauseOnCondition: prism-stack < 4
+	Armament:
+		Weapon: RA2Prism
+		LocalOffset: 0,0,1280
+	AttackPrismSupported:
+		MaxCharges: 1
+		MaxHops: 32
+		MaxSupportersPerAttacker: 32
+		ReloadDelay: 40
+		ReceiverOffset: 0,0,1280
+		ChargeAudio: bpripow.wav
+		SupportArmament: support
+		CanSupportAllies: true
+		BuffCondition: prism-stack
+		Modifier: 50
+		ChargingCondition: charging
+		PauseOnCondition: lowpower || disabled
+		RequiresCondition: !build-incomplete
+	Targetable@POWERCHARGING:
+		TargetTypes: PrismTowerChargeable
 		RequiresCondition: charging
-		SoundFiles: bpripow.wav
-		Interval: 30, 40
 	ExternalCondition@POWERCHARGED:
 		Condition: powercharged
-	ProximityExternalCondition@aiming:
-		Condition: aiming
-		Range: 9000
-		RequiresCondition: aiming && !fired
-	ExternalCondition@aiming:
-		Condition: aiming
-	GrantConditionWhileAiming:
-		Condition: aiming
-	AmmoPool:
-		Name: primary
-		Ammo: 5
-		InitialAmmo: 1
-		Armaments: primary, secondary, EnemyPrism
-		AmmoCondition: ammo
-	ReloadAmmoPoolCA@autocharge:
-		Delay: 25
-		Count: 1
-		ResetOnFire: False
-		RequiresCondition: ammo < 1 && !fired
-		ShowSelectionBar: false
-		SelectionBarColor: 0000ff
-	# ReloadAmmoPoolCA@discharge:
-	# 	Delay: 25
-	# 	Count: -1
-	# 	ResetOnFire: True
-	# 	RequiresCondition: ammo > 1
-	# 	ShowSelectionBar: false
-	# 	SelectionBarColor: ff0000
-	ReloadAmmoPoolCA@powercharge:
-		AmmoPool: primary
-		Delay: 1
-		Count: 1
+	FirepowerMultiplier@POWERCHARGED:
+		Modifier: 200
 		RequiresCondition: powercharged
-		ShowSelectionBar: false
-		SelectionBarColor: 00ff00
-	# FirepowerMultiplier@powercharge:
-	# 	Modifier: 400
-	# 	RequiresCondition: powercharged
 	Sellable:
-	ProvidesPrerequisite@buildingname:
 	WithIdleOverlay@normal:
 		Sequence: idle-normal
 		PauseOnCondition: lowpower
@@ -1655,10 +1603,10 @@ ra2atesla:
 	WithMakeAnimation:
 	WithDeathAnimation:
 		DeathSequencePalette: playerra2
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		FullSequence: pip-red
+	#WithAmmoPipsDecoration:
+	#	Position: BottomLeft
+	#	RequiresSelection: true
+	#	FullSequence: pip-red
 	Power:
 		Amount: -150
 	RevealsShroud:
@@ -1728,14 +1676,7 @@ ra2gayard:
 	Inherits: ^RA2Building
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -1536, -1536
-			BottomRight: 1536, 1536
-	Selectable:
-		Bounds: 131072, 131072
-		DecorationBounds: 131072, 145621, 0, -7253
+	Inherits@shape: ^3x3Shape
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
@@ -2494,16 +2435,12 @@ yrngbnkr:
 		InitialUnits: ra2e2
 		EjectOnDeath: false
 	WithSpriteBody:
-		RequiresCondition: !loaded
-	WithSpriteBody@Bunkered:
+	WithIdleOverlay@Bunkered:
 		Sequence: idle-bunkered
 		RequiresCondition: loaded
-		Name: bunkeredS
-	AttackGarrisoned:
+	AttackOpenTopped:
 		Armaments: garrisoned
 		PortOffsets: 768,0,512, 448,-682,512, -448,-682,512, -768,0,512, -448,682,512, 448,682,512
-		PortYaws: 0, 176, 341, 512, 682, 853
-		PortCones: 88, 88, 88, 88, 88, 88
 		PauseOnCondition: chronobeamed
 	RenderRangeCircle:
 		FallbackRange: 6c0
@@ -2529,7 +2466,7 @@ yrngbnkr.bot:
 
 ra2nalasr:
 	Inherits: ^RA2Building
-	Inherits: ^Defense
+	Inherits@defense: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@RenderVoxel: ^RenderVoxel
 	Inherits@sell: ^RA2SSpawnActorsOnSell
@@ -2578,7 +2515,7 @@ ra2nalasr:
 
 ra2naflak:
 	Inherits: ^RA2Building
-	Inherits: ^Defense
+	Inherits@2: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@RenderVoxel: ^RenderVoxel
 	Inherits@sell: ^RA2SSpawnActorsOnSell
@@ -2627,8 +2564,8 @@ ra2naflak:
 	-Cloak@TDcloak:
 
 ra2tesla:
-	Inherits: ^Defense
 	Inherits: ^RA2Building
+	Inherits@2: ^Defense
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2SSpawnActorsOnSell
@@ -2674,6 +2611,7 @@ ra2tesla:
 		ChargeAudio: btespow.wav
 		MaxCharges: 1
 		ReloadDelay: 75
+		RequiresCondition: !build-incomplete
 	Power:
 		Amount: -100
 	DetectCloaked:
@@ -2688,6 +2626,7 @@ ra2tesla:
 		RequiresCondition: (lowpower && TeslaCoilCharge < 1) || disabled
 	Targetable@TeslaCoil:
 		TargetTypes: TeslaCoil
+		RequiresCondition: !build-incomplete && !chronobeamed
 	ExternalCondition@TeslaCoilCharge:
 		Condition: TeslaCoilCharge
 		SourceCap: 1
@@ -3098,7 +3037,7 @@ yryarefn:
 		Queue: Building, RABuilding
 		Description: Processes raw Tiberium into useable resources\nArmed with a machine-gun for self-defense
 	Building:
-		Footprint: xx ==
+		Footprint: xx x+
 		Dimensions: 2,2
 		LocalCenterOffset: 0,-512,0
 	Power:
@@ -3110,7 +3049,7 @@ yryarefn:
 	RevealsShroud:
 		Range: 6c0
 	Refinery:
-		DockAngle: 448
+		DockAngle: 640
 		DockOffset: 1,1
 		IsDragRequired: False
 		DragOffset: -554,512,0
@@ -3477,7 +3416,8 @@ yryggntc:
 	SupportPowerChargeBar:
 
 yrngtbnk:
-	Inherits: ^Defense
+	#Inherits: ^RA2Building
+	Inherits@2: ^Defense
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@sell: ^RA2YSpawnActorsOnSell
@@ -3487,6 +3427,8 @@ yrngtbnk:
 	Tooltip:
 		Name: Tank Bunker
 	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 40
@@ -3509,12 +3451,18 @@ yrngtbnk:
 		QuantizedFacings: 8
 	Cargo:
 		Types: Vehicle
-		MaxWeight: 3
+		MaxWeight: 4
 		LoadedCondition: bunkerup
 		PassengerFacing: 0
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	WithCargoBuilding:
+		Facing: 384
+		DisplayTypes: Vehicle
 	-SpawnActorsOnSell:
 	AttackGarrisoned:
-		Armaments: primary
+		Armaments: primary, secondary
 		PortOffsets: 192,0,128, 112,-170,128, -112,-170,128, -192,0,128, -112,170,128, 112,170,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
@@ -3527,16 +3475,13 @@ yrngtbnk:
 	DetectCloaked:
 		Range: 3c0
 	WithSpriteBody:
-		RequiresCondition: !bunkerup
-	WithSpriteBody@Bunkered:
+	WithIdleOverlay@Garrisoned:
 		Sequence: idle-bunkered
-		RequiresCondition: bunkerup
-		Name: bunkered
+		RequiresCondition: !build-incomplete && bunkerup
+	WithIdleOverlay@GarrisonedFront:
+		Sequence: idle-bunkered-front
+		RequiresCondition: !build-incomplete && bunkerup
 	WithMakeAnimation:
-		BodyNames: body, bunkered
-	Building:
-		Footprint: xx xx
-		Dimensions: 2,2
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -3583,7 +3528,7 @@ yrngtbnk.magnet:
 
 YRygggun:
 	Inherits: ^RA2Building
-	Inherits: ^Defense
+	Inherits@2: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@RenderVoxel: ^RenderVoxel
 	Inherits@sell: ^RA2YSpawnActorsOnSell
@@ -3728,13 +3673,7 @@ yrygyard:
 	Inherits: ^RA2Building
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -1536, -1536
-			BottomRight: 1536, 1536
-	Selectable:
-		Bounds: 131072, 131072
+	Inherits@shape: ^3x3Shape
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
@@ -3878,8 +3817,8 @@ RA2E1:
 	Turreted:
 		Turret: deploy
 		RealignDelay: -1
-		TurnSpeed: 40
-		InitialFacing: 1472
+		TurnSpeed: 1023
+		InitialFacing: 368
 	WithSpriteTurret@idle:
 		Turret: deploy
 		Sequence: deployed
@@ -3911,10 +3850,13 @@ RA2E1:
 		UndeployedCondition: undeployed
 		DeploySounds: igidepa.wav,igidepb.wav
 		UndeploySounds: igidepa.wav,igidepb.wav
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		Facing: 384
 		UndeployOnMove: true
 		RequiresCondition: !parachute
 		PauseOnCondition: disabled
-		Voice: Move
+		Voice: Deploy
 	TakeCover:
 		RequiresCondition: undeployed
 	Crushable:
@@ -3979,6 +3921,7 @@ YRGGI:
 	Armament@DEPLOYED:
 		Name: deployed
 		Weapon: RA2GIRocketsG
+		Turret: deploy
 		LocalOffset: 384,64,384
 		RequiresCondition: !rank-elite && deployed
 	Armament@GARRISONED:
@@ -3988,6 +3931,8 @@ YRGGI:
 	Armament@DEPLOYEDELITE:
 		Name: deployed
 		Weapon: RA2GIRocketsG_elite
+		Turret: deploy
+		LocalOffset: 384,64,384
 		RequiresCondition: rank-elite && deployed
 	Armament@GARRISONEDELITE:
 		Name: garrisoned
@@ -3996,7 +3941,7 @@ YRGGI:
 	AttackFrontal:
 		Armaments: primary, targeting
 		RequiresCondition: undeployed
-		FacingTolerance: 0
+		FacingTolerance: 2
 	AttackTurreted@deployed:
 		Armaments: deployed
 		Turrets: deploy
@@ -4006,8 +3951,8 @@ YRGGI:
 	Turreted:
 		Turret: deploy
 		RealignDelay: -1
-		TurnSpeed: 40
-		InitialFacing: 1472
+		TurnSpeed: 1023
+		InitialFacing: 368
 	WithSpriteTurret@idle:
 		Turret: deploy
 		Sequence: deployed
@@ -4040,6 +3985,9 @@ YRGGI:
 	GrantConditionOnDeploy:
 		DeployedCondition: deployed
 		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		Facing: 384
 		DeploySounds: iggidepa.wav
 		UndeploySounds: iggidepa.wav
 		UndeployOnMove: true
@@ -4066,7 +4014,7 @@ YRGGI:
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 	QuantizeFacingsFromSequence:
-		Sequence: shoot-deployed
+		Sequence: stand
 
 RA2CLEG:
 	Inherits: ^Soldier
@@ -4794,6 +4742,13 @@ ra2shk:
 		InvalidTargets: NoAutoTarget, TeslaCoil
 	AutoTargetPriority@ATTACKANYTHING:
 		InvalidTargets: NoAutoTarget, TeslaCoil
+	AutoTargetPriority@TESLANORMAL:
+		RequiresCondition: !assault-move && !attack-move
+		ValidTargets: TeslaCoil
+	AutoTargetPriority@TESLAAMOVE:
+		RequiresCondition: assault-move || attack-move
+		ValidTargets: TeslaCoil
+		ValidRelationships: Enemy
 	Buildable:
 		Prerequisites: ~ra2nahand
 		Queue: Infantry, RAInfantry
@@ -4864,8 +4819,7 @@ ra2shk:
 		Prerequisites: barracks.upgraded
 ra2shk.bot:
 	Inherits: ra2shk
-	Buildable:
-		Prerequisites: ~botplayer
+	-Buildable:
 	Tooltip:
 		Name: Tesla Coil Charger
 	AutoTargetPriority@DEFAULT:
@@ -5125,7 +5079,7 @@ YRSLAV:
 		BaleLoadDelay: 10
 		BaleUnloadDelay: 0
 		BaleUnloadAmount: 1
-		FullyLoadedSpeed: 75
+		FullyLoadedSpeed: 100
 		MaxUnloadQueue: 10
 		SearchFromProcRadius: 30
 		SearchFromHarvesterRadius: 20
@@ -5887,8 +5841,8 @@ RA2SREF:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
-	AutoTargetPriority@charge:
-		ValidTargets: PrismTower
+	AutoTargetPriority@TESLAAMOVE:
+		ValidTargets: PrismTowerChargeable
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -5911,7 +5865,7 @@ RA2SREF:
 	Turreted:
 		TurnSpeed: 15 #3
 	Armament@Charge:
-		Name: secondary
+		#Name: secondary
 		Weapon: PrismTankCharge
 		LocalOffset: 410,0,650
 		Recoil: 128
@@ -5920,7 +5874,7 @@ RA2SREF:
 		ForceTargetRelationships: Ally
 		RequiresCondition: !rank-elite
 	Armament@EliteCharge:
-		Name: secondary
+		#Name: secondary
 		Weapon: PrismTankChargeE
 		LocalOffset: 410,0,650
 		Recoil: 128
@@ -5929,20 +5883,20 @@ RA2SREF:
 		ForceTargetRelationships: Ally
 		RequiresCondition: rank-elite
 	Armament:
-		Name: primary
+		#Name: primary
 		Weapon: RA2Comet
 		LocalOffset: 410,0,650
 		Recoil: 128
 		RecoilRecovery: 26
-		TargetRelationships: Enemy, Neutral
+		TargetRelationships: Enemy
 		RequiresCondition: !rank-elite
 	Armament@elite:
-		Name: primary
+		#Name: primary
 		Weapon: RA2Comet_elite
 		LocalOffset: 410,0,650
 		Recoil: 128
 		RecoilRecovery: 26
-		TargetRelationships: Enemy, Neutral
+		TargetRelationships: Enemy
 		RequiresCondition: rank-elite
 	AttackTurreted:
 	SelectionDecorations:
@@ -6078,7 +6032,7 @@ yrbfrt:
 	Mobile:
 		Speed: 75
 	Passenger:
-		Weight: 6
+		Weight: 4
 	Health:
 		HP: 125000
 	Repairable:
@@ -6420,7 +6374,7 @@ RA2APOC:
 		Locomotor: heavytracked
 		Speed: 55
 	Passenger:
-		Weight: 6
+		Weight: 4
 	Health:
 		HP: 175000
 	Repairable:
@@ -7391,8 +7345,8 @@ ra2sqd:
 		FacingTolerance: 0
 	AutoTarget:
 		InitialStance: AttackAnything
-	Selectable:
-		Bounds: 81920, 32768
+	#Selectable:
+	#	Bounds: 81920, 32768
 	Inherits@EXT: ^ExternalConditions
 	AcceptsDeliveredExperience:
 		ValidTypes: vehicle
@@ -7461,8 +7415,8 @@ ra2dlph:
 		LocalOffset: 208,0,48
 	AttackFrontal:
 		FacingTolerance: 0
-	Selectable:
-		Bounds: 81920, 32768
+	#Selectable:
+	#	Bounds: 81920, 32768
 	Inherits@EXT: ^ExternalConditions
 	AcceptsDeliveredExperience:
 		ValidTypes: vehicle

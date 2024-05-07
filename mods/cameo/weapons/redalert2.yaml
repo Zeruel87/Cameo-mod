@@ -280,14 +280,13 @@ BlackEagleMissiles_elite:
 		InvalidTargets: Ship, Structure, Bridge
 
 PrismCharge:
-	ReloadDelay: 49
+	ReloadDelay: 3
 	Range: 9000
-	ValidTargets: PrismTowerChargeable
+	ValidTargets: Ground, Water, Air
+	Report: bpriat1a.wav
 	Projectile: PlasmaBeam
 		Width: 75
 		Duration: 50
-		StartOffset: -256,0,1408
-		TargetActorCenter: false
 		ZOffset: 2047
 		UsePlayerColor: true
 		SecondaryBeamWidth: 50
@@ -297,34 +296,36 @@ PrismCharge:
 		CenterBeamWidth: 50
 		CenterBeamColor: CCCCCCCC
 		SecondaryCenterBeam: true
-		CenterBeamWidth: 25
 		SecondaryCenterBeamColor: FFFFFFFF
 		# Distortion: 10
 		# DistortionAnimation: 10
 		# DistortionAnimation: 10
-	Warhead@charge: GrantExternalCondition
-		Range: 256
-		Duration: 1
-		Condition: powercharged
-		ValidRelationships: Ally
-		ValidTargets: PrismTower
+	Warhead@1Dum: Dummy
 
 PrismTankCharge:
 	Inherits: PrismCharge
 	ReloadDelay: 100
 	Range: 12500
+	ValidTargets: PrismTowerChargeable
+	Projectile: PlasmaBeam
+		StartOffset: -256,0,1408
+		TargetActorCenter: false
+	Warhead@charge: GrantExternalCondition
+		Range: 256
+		Duration: 40
+		Condition: powercharged
+		ValidRelationships: Ally
+		ValidTargets: PrismTowerChargeable
 
 PrismTankChargeE:
-	Inherits: PrismCharge
+	Inherits: PrismTankCharge
+	#ValidTargets: PrismTowerChargeable
 	ReloadDelay: 100
 	Range: 15000
 
-RA2Prism:
-	Inherits: ^LaserWeapon
-	ReloadDelay: 1
+RA2PrismBeam:
+	ReloadDelay: 3
 	Range: 9000
-	Report: bpriat1a.wav
-	InvalidTargets: PrismTower
 	Projectile: LaserZapCA
 		Width: 128
 		Duration: 48
@@ -336,6 +337,11 @@ RA2Prism:
 		SecondaryBeamZOffset: 2047
 		SecondaryBeamColor: FFFFFFFF
 		SecondaryBeamUsePlayerColor: false
+
+RA2Prism:
+	Inherits: ^LaserWeapon
+	Inherits@Effects: RA2PrismBeam
+	Report: bpriat1a.wav
 	Warhead@LaserWeapon: SpreadDamage
 		Damage: 16000
 	Warhead@LaserWeaponPercentage: HealthPercentageDamage
@@ -346,11 +352,17 @@ RA2Prism:
 		AimChance: 50
 		AimTargetStances: Enemy, Neutral
 
-RA2EnemyPrism:
-	Inherits: RA2Prism
-	-InvalidTargets: PrismTower
-	ValidTargets: PrismTower
-	ReloadDelay: 50
+RA2PrismBeam2:
+	Inherits: RA2PrismBeam
+	Projectile: LaserZapCA
+		Width: 192
+		SecondaryBeamWidth: 96
+
+RA2PrismBeam3:
+	Inherits: RA2PrismBeam
+	Projectile: LaserZapCA
+		Width: 256
+		SecondaryBeamWidth: 128
 
 PrismScatter:
 	Inherits: RA2Prism
@@ -1559,14 +1571,12 @@ RA2OPCoilBolt3:
 		Spread: 123
 
 RA2TeslaCoilCharge:
-	Inherits: ^TeslaWeapon
 	ReloadDelay: 25
 	Range: 3c333
 	Report: iteschaa.wav
-	Warhead@1Dam: SpreadDamage
-		Damage: 0
 	ValidTargets: TeslaCoil
-	Warhead@2Con: GrantExternalCondition
+	Projectile: TeslaZap
+	Warhead@Con: GrantExternalCondition
 		Condition: TeslaCoilCharge
 		Duration: 75
 		Range: 0c172
@@ -1576,13 +1586,6 @@ RA2TeslaCoilCharge:
 		Spread: 100
 		Delay: 5
 		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
-		Versus:
-			None: 100
-			Wood: 100
-			Light: 100
-			Medium: 100
-			Heavy: 100
-			Concrete: 100
 
 RA2PortaTesla:
 	Inherits: PortaTesla

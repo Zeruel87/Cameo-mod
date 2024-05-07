@@ -1,4 +1,4 @@
-﻿#region Copyright & License Information
+#region Copyright & License Information
 /**
  * Copyright (c) The OpenRA Combined Arms Developers (see CREDITS).
  * This file is part of OpenRA Combined Arms, which is free software.
@@ -20,7 +20,7 @@ using OpenRA.Traits;
  * I tried implementing distance vector routing algorithm
  * but now I think it is an overkill,
  * because they take memory for each actor and they need to eachange information.
- * Also, C&C games, people just sell towers when they are done with it so
+ * Also people just sell towers when they are done with it so
  * that makes these overheads less worthy.
  */
 
@@ -67,13 +67,23 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Condition stack to grant upon receiving the buffs.")]
 		public readonly string BuffCondition = "prism-stack";
 
+		[Desc("Percentage modifier to apply for each buff.")]
+		public readonly int Modifier = 100;
+
+		[GrantedConditionReference]
+		[Desc("The condition to grant to self while the charge level is greater than zero.")]
+		public readonly string ChargingCondition = null;
+
 		public override object Create(ActorInitializer init) { return new AttackPrismSupported(init.Self, this); }
 	}
 
-	public class AttackPrismSupported : AttackPrism, ITick, INotifyAttack, INotifyBecomingIdle
+	public class AttackPrismSupported : AttackPrism, ITick, INotifyAttack, INotifyBecomingIdle, IFirepowerModifier
 	{
 		readonly AttackPrismSupportedInfo info;
 		readonly Stack<int> buffTokens = new Stack<int>();
+		int chargingToken = Actor.InvalidConditionToken;
+
+		int IFirepowerModifier.GetFirepowerModifier() { return IsTraitDisabled ? 100 : 100 + buffTokens.Count * info.Modifier ; }
 
 		public AttackPrismSupported(Actor self, AttackPrismSupportedInfo info)
 			: base(self, info)
@@ -165,6 +175,9 @@ namespace OpenRA.Mods.CA.Traits
 		void INotifyBecomingIdle.OnBecomingIdle(Actor self)
 		{
 			ClearBuffStack(self);
+
+			if (chargingToken != Actor.InvalidConditionToken)
+				chargingToken = self.RevokeCondition(chargingToken);
 		}
 
 		class ChargeSupportedAttack : Activity
@@ -201,7 +214,7 @@ namespace OpenRA.Mods.CA.Traits
 				var maxHops = 0;
 
 				queue.Enqueue(self);
-				while (queue.Count > 0)
+				while (queue.Count() > 0)
 				{
 					var node = queue.Dequeue();
 					foreach (var adjacent in GetValidNeighborSupporters(node, candidates))
@@ -216,7 +229,7 @@ namespace OpenRA.Mods.CA.Traits
 						if (maxHops < hops[adjacent])
 							maxHops = hops[adjacent];
 
-						if (isVisited.Count > supportInfo.MaxSupportersPerAttacker)
+						if (isVisited.Count() > supportInfo.MaxSupportersPerAttacker)
 						{
 							queue.Clear(); // terminate the search
 							break;
@@ -266,6 +279,9 @@ namespace OpenRA.Mods.CA.Traits
 
 				foreach (var notify in self.TraitsImplementing<INotifyPrismCharging>())
 					notify.Charging(self, target);
+
+				if (attack.chargingToken == Actor.InvalidConditionToken)
+					attack.chargingToken = self.GrantCondition(attack.info.ChargingCondition);
 
 				if (!string.IsNullOrEmpty(attack.info.ChargeAudio))
 					Game.Sound.Play(SoundType.World, attack.info.ChargeAudio, self.CenterPosition);
@@ -398,6 +414,10 @@ namespace OpenRA.Mods.CA.Traits
 
 				attack.DoAttack(self, target);
 				attack.ClearBuffStack(self);
+
+				if (attack.chargingToken != Actor.InvalidConditionToken)
+					attack.chargingToken = self.RevokeCondition(attack.chargingToken);
+
 				QueueChild(new Wait(attack.info.ChargeDelay));
 				return false;
 			}
