@@ -1,4 +1,4 @@
-﻿#region Copyright & License Information
+#region Copyright & License Information
 /**
  * Copyright (c) The OpenRA Combined Arms Developers (see CREDITS).
  * This file is part of OpenRA Combined Arms, which is free software.
