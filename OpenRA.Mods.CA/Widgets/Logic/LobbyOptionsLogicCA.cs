@@ -54,7 +54,7 @@ namespace OpenRA.Mods.CA.Widgets.Logic
 			dropdownRowTemplate = optionsContainer.Get("DROPDOWN_ROW_TEMPLATE");
 
 			var logDir = Platform.SupportDir + "Logs";
-			savedOptionsFilePath = Path.Combine(logDir, "ca-lobbyoptions.log");
+			savedOptionsFilePath = Path.Combine(logDir, "cameo-lobbyoptions.log");
 			hasSavedOptions = File.Exists(savedOptionsFilePath);
 			var loadOptions = widget.Parent.Get<ButtonWidget>("LOAD_OPTIONS");
 			var saveOptions = widget.Parent.Get<ButtonWidget>("SAVE_OPTIONS");

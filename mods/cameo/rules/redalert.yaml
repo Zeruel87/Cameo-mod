@@ -8096,8 +8096,8 @@ ROCKETANGEL:
 		TurnSpeed: 32
 		Speed: 160
 		IdealSeparation: 900
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice, RoughDune
 		VTOL: true
+		Voice: Move
 	Health:
 		HP: 25000
 	ChangesHealth@SelfHealing:
@@ -8117,18 +8117,29 @@ ROCKETANGEL:
 		Actor: ROCKETANGEL.husk
 	SelectionDecorations:
 	AttackMove:
-		Voice: Move
+		Voice: AttackMove
 	DeathSounds:
 		Voice: Die
 	Voiced:
 		VoiceSet: RocketAngelVoice
 	AnnounceOnKill:
-	-WithFacingSpriteBody:
 	WithInfantryBody:
-		IdleSequences: idle1, idle2
-		DefaultAttackSequence: flying-attack
-		StandSequences: run
+		IdleSequences: idle2
+		DefaultAttackSequence: attack
+		RequiresCondition: !airborne
+	WithFacingSpriteBody:
+		Sequence: stand
+		RequiresCondition: airborne
+	WithMoveAnimation:
 		MoveSequence: flying
+		RequiresCondition: airborne
+	WithAttackAnimation:
+		Sequence: flying-attack
+		RequiresCondition: airborne
+	WithIdleAnimation:
+		Sequences: idle1
+		Interval: 200
+		RequiresCondition: airborne
 	Selectable:
 		Bounds: 1024, 1024, 0, -512
 	Explodes:
@@ -8169,6 +8180,7 @@ hakurei:
 	Inherits@AntiMonster: ^PrioritizeMonster
 	Inherits@MC: ^MCImmune
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@announce: ^AnnounceGlobal
 	Valued:
 		Cost: 4000
 	Tooltip:
@@ -8199,12 +8211,17 @@ hakurei:
 		Name: garrisoned
 		Weapon: Hakureiring
 		MuzzleSequence: garrison-muzzle
+	AnnounceOnKill:
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: infantry ##########
 	Voiced:
-		VoiceSet: JapaneseArcherVoice
+		VoiceSet: ReimuVoice
+	Explodes:
+		EmptyWeapon: THMiss
+		Weapon: THMiss
+		RequiresCondition: !chronobeamed
 
 MODCARR:
 	Inherits: ^Vehicle
