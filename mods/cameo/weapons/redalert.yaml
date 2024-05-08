@@ -1045,12 +1045,16 @@ WaveforceCannon:
 	Inherits: ^RailgunWeapon
 	ReloadDelay: 80
 	Range: 8000
+	Projectile: Railgun
+		DamageActorsInLine: true
 	Warhead@RailgunWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Trees
 		Damage: 60000
+		ValidRelationships: Enemy, Neutral
 	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Trees
 		Damage: 30
+		ValidRelationships: Enemy, Neutral
 
 OISmallCannon:
 	Inherits: ^MediumCannon
@@ -2297,7 +2301,11 @@ WaveArtilleryShell:
 	ReloadDelay: 69
 	Range: 12345
 	Report: WaveforceCannon.wav
-	Projectile: Bullet
+	Projectile: WarheadTrailProjectile
+		Weapon: WaveArtilleryImpact
+		FireMode: Line
+		KillProjectilesWhenReachedTargetLocation: true
+		ImpactInterval: 1
 		Image: waveforcebullet
 		ContrailStartColor: 77CCFF
 		TrailImage: blue_smokey
@@ -2310,7 +2318,7 @@ WaveArtilleryShell:
 		ContrailEndColorUsePlayerColor: true
 		ContrailEndColor: FFFFFF
 		Speed: 333
-		Inaccuracy: 333
+		Inaccuracy: 256
 	Warhead@TeslaWeapon: SpreadDamage
 		Damage: 16000
 		Spread: 500
@@ -2329,31 +2337,18 @@ WaveArtilleryShell:
 	Warhead@Effect: CreateEffect
 		ImpactSounds: psahit00.aud
 		Explosions: blueartexp
-	Warhead@CommandoDebuff: GrantExternalCondition
-		Condition: CommandoDebuff
-		Duration: 123
-		Range: 1234
-		ValidTargets: Ground, Water, Structure, Wall
 
 WaveTurretShell:
-	Inherits: ^TeslaWeapon
-	Inherits: ^Grenade
-	Inherits: ^RailgunWeapon
+	Inherits: WaveArtilleryShell
 	ReloadDelay: 100
 	Range: 10000
 	MinRange: 1000
-	Report: WaveforceCannon.wav
-	Projectile: Bullet
+	Projectile: WarheadTrailProjectile
+		Weapon: WaveTurretImpact
 		Image: scphotonbullet
 		ContrailStartColor: 77CCFF
-		TrailImage: blue_smokey
-		TrailInterval: 1
-		Blockable: true
-		LaunchAngle: 0
 		ContrailLength: 10
 		ContrailStartWidth: 100
-		ContrailEndColorUsePlayerColor: true
-		ContrailEndColor: FFFFFF
 		Speed: 1000
 		Inaccuracy: 0
 	Warhead@TeslaWeapon: SpreadDamage
@@ -2362,31 +2357,55 @@ WaveTurretShell:
 	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
 		Damage: 10
 		Spread: 500
+	Warhead@Effect: CreateEffect
+		Explosions: blue_building
 	Warhead@Grenade: SpreadDamage
 		Damage: 20000
 		Spread: 500
-	Warhead@GrenadeFriendlyFire: SpreadDamage
+	Warhead@GrenadeFriendlyFire:
 		Damage: 10000
 		Spread: 500
 	Warhead@GrenadePercentage: HealthPercentageDamage
 		Damage: 10
 		Spread: 500
+
+WaveArtilleryImpact:
+	Inherits: ^RailgunWeapon
+	ReloadDelay: 69
+	Range: 12345
+	Projectile: InstantHit
 	Warhead@RailgunWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Trees
+		Damage: 10000
+		Spread: 250
+		ValidRelationships: Enemy, Neutral
+	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 5
+		Spread: 250
+		ValidRelationships: Enemy, Neutral
+	Warhead@CommandoDebuff: GrantExternalCondition
+		Condition: CommandoDebuff
+		Duration: 123
+		Range: 1234
+		ValidRelationships: Enemy, Neutral
+		ValidTargets: Ground, Water, Structure, Wall
+
+WaveTurretImpact:
+	Inherits: WaveArtilleryImpact
+	ReloadDelay: 100
+	Range: 10000
+	MinRange: 1000
+	Projectile: InstantHit
+	Warhead@RailgunWeapon: SpreadDamage
 		Damage: 20000
 		Spread: 500
 	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Trees
 		Damage: 10
 		Spread: 500
-	Warhead@Effect: CreateEffect
-		ImpactSounds: psahit00.aud
-		Explosions: blue_building
 	Warhead@CommandoDebuff: GrantExternalCondition
-		Condition: CommandoDebuff
 		Duration: 150
 		Range: 1500
-		ValidTargets: Ground, Water, Structure, Wall
 
 2Inch:
 	Inherits: ^Cannon
