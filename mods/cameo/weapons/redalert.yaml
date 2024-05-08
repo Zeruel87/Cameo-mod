@@ -363,11 +363,11 @@ RocketAngelRockets:
 
 Hakureiring:
 	Inherits: ^MagicWeapon
-	Report: 2100rotlsr.wav
+	Report: thattack1.wav, thattack2.wav, thattack3.wav
 	InvalidTargets: Epic, Psionic, Monster
 	ReloadDelay: 30
 	Burst: 3
-	BurstDelays: 3
+	BurstDelays: 10
 	Range: 6666
 	Projectile: MissileCA
 		HorizontalRateOfTurn: 33
@@ -411,6 +411,10 @@ Hakureiring:
 		ValidTargets: Epic
 		Duration: 3
 		Range: 1000
+	Warhead@Effect: CreateEffect
+		Explosions: tsring
+		ExplosionPalette: tseffect
+		ImpactSounds: 
 
 #		TODO "Hakureiring2" uses MCImmune like a placeholder, in the future will be replaced with Mind Controllers and Magic Monsters
 
@@ -418,22 +422,82 @@ Hakureiring2:
 	Inherits: Hakureiring
 	-InvalidTargets:
 	ValidTargets: Epic, Psionic, Monster
-	Report: 2100rotlsr.wav
 	Projectile: MissileCA
 		Image: hakureiring2
 		ContrailStartColor: FFCC77
 		TrailImage: red_smokey
 	Warhead@MagicWeapon: SpreadDamage
 		Damage: 24000
+		ValidTargets: Air, Ground, Water
 	Warhead@MagicWeaponPercentage: HealthPercentageDamage
 		Damage: 12
+
+ReimuYinYangOrb:
+	Inherits: Hakureiring2
+	ValidTargets: Air, Ground, Water
+	Range: 9000
+	Projectile: MissileCA
+		Speed: 128
+		Acceleration: 64
+		CruiseAltitude: 1c0
+	Warhead@MagicWeapon: SpreadDamage
+		Damage: 48000
+		ValidTargets: Air, Ground, Water
+	Warhead@MagicWeaponPercentage: HealthPercentageDamage
+		Damage: 24
 	Warhead@Effect: CreateEffect
-		Explosions: med_napalm
-		ImpactSounds: firebl3.aud
+		ImpactSounds: thgun.wav
+
+ReimuOrbLauncher:
+	ReloadDelay: 100
+	ValidTargets: Air
+	Projectile: MissileCA
+		Image: hakureiring2
+		ContrailStartColor: FFCC77
+		TrailImage: red_smokey
+		CruiseAltitude: 2c0
+	Warhead@Shrapnel: FireShrapnel
+		Weapon: ReimuYinYangOrb
+		ImpactActors: true
+		AimChance: 100
+		Amount: 1
+		AimTargetStances: Enemy
+		ValidTargets: Air, Ground, Water
+		Delay: 100
+	Warhead@4: CreateEffect
+		Image: hakureiring2
+
+ReimuDreamSeal:
+	ReloadDelay: 150
+	Range: 3c0
+	Report: thbomb.wav
+	Warhead@Damage: SpreadDamage
+		Spread: 6c0
+		Falloff: 100, 100
+		Damage: 100000
+		ValidTargets: Infantry, Vehicle, Building, Aircraft
+		InvalidTargets: Epic
+		ValidRelationships: Enemy, Neutral
+		DamageTypes: FireDeath
+		Delay: 5
+	Warhead@Shrapnel: FireShrapnel
+		Weapon: ReimuYinYangOrb
+		ImpactActors: true
+		AimChance: 100
+		Amount: 8
+		AimTargetStances: Enemy
+		ValidTargets: Air, Ground, Water
+		Delay: 60
+	Warhead@Effect: CreateEffect
+		ImpactActors: false
+		AffectsParent: true
+		Explosions: ionring
+		ExplosionPalette: tseffect
 
 THMiss:
 	Warhead@Effect: CreateEffect
-		Explosions: blue_big_frag #TODO: make exorcist drop point pickups
+		Explosions: tsring #TODO: make exorcist drop point pickups
+		ExplosionPalette: tseffect
 		ImpactSounds: thmiss.wav
 		ImpactActors: false
 
@@ -2136,9 +2200,12 @@ NanoArtilleryAG:
 	Projectile: Bullet
 		Speed: 277
 		Blockable: false
-		LaunchAngle: 77
+		LaunchAngle: 0
 		Inaccuracy: 777
-		ContrailLength: 77
+		#ContrailLength: 0
+		TrailInterval: 1
+		Image: black_smokey
+		TrailImage: black_smokey
 	Warhead@Grenade: SpreadDamage
 		Spread: 777
 		Damage: 7777
@@ -2150,24 +2217,60 @@ NanoArtilleryAG:
 		Damage: 7
 	Warhead@Effect: CreateEffect
 		Explosions: flak_explosion_ground
+		-ImpactSounds:
 		ValidTargets: Air, Ground, Water, Trees
-	Warhead@Cluster: FireCluster
+	Warhead@Cluster: FireShrapnel
 		Weapon: NanoSmokeAG
-		Dimensions: 3,3
-		Delay: 1
-		Footprint: _x_ xxx _x_
+		ImpactActors: false
+		AimChance: 100
+		Amount: 5
+		#TargetActorCenter: true
+		ThrowWithoutTarget: true
+	Warhead@BackEffect: BackFireShrapnel
+		Weapon: NanoReturn
+		ImpactActors: false
+		AirThreshold: 8c0
+		ValidTargets: Air, Ground, Water
+
+NanoReturn:
+	ReloadDelay: 60
+	Range: 10c0
+	ValidTargets: Ground, Water, Air
+	TargetActorCenter: true
+	Projectile: Bullet
+		Image: black_smokey
+		TrailImage: black_smokey
+		TrailInterval: 2
+		Speed: 277
+	Warhead@Heal: TargetDamage
+
+NanoReturnHeal:
+	Inherits: NanoReturn
+	Warhead@Heal: SpreadDamage
+		Spread: 3c0
+		Falloff: 100, 100
+		Damage: -5000
+		ValidRelationships: Ally
+	Warhead@Effect: CreateEffect
+		Explosions: ra2_emp_fx
+		ExplosionPalette: ra2effect
+		#ValidTargets: Vehicle
+		ImpactSounds: vifvrepa.wav
 
 NanoSmokeAG:
 	Inherits: ^LightFlameWeapon
-	ValidTargets: Ground, Water
-	ReloadDelay: 3
-	Range: 3333
+	ValidTargets: Infantry, Vehicle, Building
+	ReloadDelay: 20
+	Range: 2c0
+	-Report:
 	Projectile: Bullet
-		Speed: 33
+		Speed: 277
 		Blockable: false
 		LaunchAngle: 33
 		Inaccuracy: 3333
 		Image: black_smokey
+		TrailImage: black_smokey
+		TrailInterval: 5
 	Warhead@LightFlameWeapon: SpreadDamage
 		ValidTargets: Ground, Water
 		Spread: 333
@@ -2179,8 +2282,14 @@ NanoSmokeAG:
 	Warhead@LightFlameWeaponPercentage: HealthPercentageDamage
 		Spread: 333
 		Damage: 3
-	Warhead@Effect1: CreateEffect
+	Warhead@Effect: CreateEffect
 		Explosions: flak_explosion_ground
+		-ImpactSounds:
+	Warhead@BackEffect: BackFireShrapnel
+		Weapon: NanoReturnHeal
+		ImpactActors: false
+		AirThreshold: 8c0
+		ValidTargets: Air, Ground, Water
 
 WaveArtilleryShell:
 	Inherits: ^TeslaWeapon
