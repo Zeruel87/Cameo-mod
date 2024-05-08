@@ -805,6 +805,37 @@
 		InternalOwner: Creeps
 		RequiresCondition: LeechEggLaid && !LeechEggKill
 
+^TerrorDronable:
+	InfectableRV:
+		RequiresCondition: !chronobeamed
+		KillInfectorDamageTypes: KillsDrone
+		BeingInfectedCondition: beingterrordroned
+		InfectedCondition: terrordroned
+	Targetable@DRONE:
+		TargetTypes: TerrorDronable
+		RequiresCondition: !untargetable
+	Targetable@BEINGDRONED:
+		TargetTypes: terrordroned, Repair
+		RequiresCondition: terrordroned
+	RevealsShroud@DRONE:
+		Range: 2c0
+		ValidRelationships: Enemy, Neutral
+		RequiresCondition: terrordroned
+	WithIdleOverlay@dronesparks:
+		RequiresCondition: terrordroned
+		Image: explosion
+		Sequence: ra2_emp_fx
+		Palette: ra2effect
+		LocalOffset: 0,0,384
+	SpeedMultiplier@DRONE:
+		RequiresCondition: beingterrordroned
+		Modifier: 0
+
+^TerrorDronableAircraft:
+	Inherits: ^TerrorDronable
+	RevealsShroud@DRONE:
+		Type: CenterPosition
+
 ####################################################################################################
 #		Unit Templates
 ####################################################################################################
@@ -1281,6 +1312,7 @@
 	Inherits@bot: ^BotProductionBehavior
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@rad: ^VehicleRadiation
+	Inherits@terrordrone: ^TerrorDronable
 	Inherits@fix: ^Repairable
 	Inherits@EMP: ^UnitDisable
 	Inherits@mag: ^Magnefreezable
@@ -1513,6 +1545,7 @@
 	Inherits@fix: ^Repairable
 	Inherits@EMP: ^UnitDisable
 	Inherits@mag: ^Magnefreezable
+	Inherits@terrordrone: ^TerrorDronableAircraft
 	Inherits@Shroudable: ^Shroudable
 	Inherits@SHADOWS: ^Shadows
 	Inherits@base-reveal: ^Base-reveal
@@ -1700,6 +1733,7 @@
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@disable: ^InfantryDisable
 	Inherits@heal: ^HospitalHealable
+	Inherits@terrordrone: ^TerrorDronable
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
 	Inherits@poisonable: ^Poisonable
@@ -4462,7 +4496,7 @@ CPQDEBUGDUMMY:
 		TargetTypes: ivanattachable
 		RequiresCondition: !ivanbomb && !chronobeamed
 	Targetable@ivaned:
-		TargetTypes: ivanattached
+		TargetTypes: ivanattached, Repair
 		RequiresCondition: ivanbomb && !chronobeamed
 	AmbientSound@IVANBOMB:
 		SoundFiles: icraloop.wav
@@ -4690,6 +4724,8 @@ CPQDEBUGDUMMY:
 		Text: MCV
 		UsePlayerColor: True
 		ValidRelationships: Ally, Enemy, Neutral
+	Transforms:
+		PauseOnCondition: disabled || terrordroned
 	TransferTimedExternalConditionOnTransform:
 		Condition: invulnerability
 	Passenger:
@@ -5978,3 +6014,8 @@ CPQDEBUGDUMMY:
 	Armament@archermaiden5:
 		Weapon: JapanMaidenBow
 		RequiresCondition: ifv-archermaiden >= 5
+
+^RepairsUnits:
+	RepairsUnits:
+		RepairDamageTypes: KillsDrone
+		PauseOnCondition: disabled
