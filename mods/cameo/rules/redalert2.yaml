@@ -8176,6 +8176,7 @@ yrschp:
 		VTOL: true
 		RepulsionSpeed: 10
 		Voice: Move
+		#PauseOnCondition: !undeployed || disabled
 	Health:
 		HP: 50000
 	Armor:
@@ -8187,7 +8188,7 @@ yrschp:
 		Weapon: BlackHawkCannon
 		LocalOffset: 320,-256,0, 320,256,0
 		MuzzleSequence: muzzle
-		RequiresCondition: undeployed
+		RequiresCondition: undeployed || (deployed && airborne)
 	WithMuzzleOverlay:
 	Armament@DeployTargeter:
 		Weapon: deploytargeting.5c0
@@ -8196,12 +8197,12 @@ yrschp:
 		Name: primary
 		Weapon: RA160mm
 		LocalOffset: 410,0,650
-		RequiresCondition: !rank-elite && deployed
+		RequiresCondition: !rank-elite && deployed && !airborne
 	Armament@DeployedElite:
 		Name: primary
 		Weapon: RA160mmE_elite
 		LocalOffset: 410,0,650
-		RequiresCondition: rank-elite && deployed
+		RequiresCondition: rank-elite && deployed && !airborne
 	Turreted:
 		TurnSpeed: 80
 	AutoDeployer:
@@ -8245,12 +8246,12 @@ yrschp:
 		PlayerPalette: ra2buildinghack
 	WithVoxelBody:
 		Sequence: deployed
-		RequiresCondition: deployed
+		RequiresCondition: deployed && !airborne
 	WithVoxelTurret:
-		RequiresCondition: deployed
+		RequiresCondition: deployed && !airborne
 	WithVoxelWalkerBody:
 		TickRate: 1
-		RequiresCondition: undeployed
+		RequiresCondition: undeployed || (deployed && airborne)
 	Voiced:
 		VoiceSet: SiegeChopperVoice
 	DeathSounds:
@@ -8773,7 +8774,7 @@ ra2rock:
 		IdealSeparation: 512
 		Voice: Move
 	Health:
-		HP: 6000
+		HP: 20000
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -8794,18 +8795,24 @@ ra2rock:
 		VoiceSet: RocketeerVoice
 	DeathSounds:
 	-WithFacingSpriteBody:
+	WithInfantryBody@Air:
+		StandSequences: fly
+		MoveSequence: fly
+		DefaultAttackSequence: shoot-air
+		IdleSequences: idle-air
+		RequiresCondition: airborne
 	WithInfantryBody:
-		AttackSequences: shoot
-		IdleSequences: idle
-		StandSequences: idle
-		MoveSequence: idle
+		IdleSequences: idle1, idle2
+		DefaultAttackSequence: shoot
+		RequiresCondition: !airborne
 	Selectable:
-		Bounds: 1024, 1024, 0, -512
+		Bounds: 512, 768
 	-WithShadow:
 	WithSpriteBody@shadow:
 		Name: shadow
 		Sequence: shadow
 		ForceToGround: true
+		RequiresCondition: airborne
 	Targetable@GROUND:
 		TargetTypes: Ground, Infantry
 	Targetable@REPAIR:
@@ -8819,10 +8826,12 @@ ra2rock:
 		Prerequisites: aircraft.upgraded
 	RenderSprites:
 		PlayerPalette: playerra2
+
 ra2rock.husk:
 	Inherits: ^HelicopterHusk
 	RenderSprites:
 		Image: ra2rock
+		PlayerPalette: playerra2
 	Tooltip:
 		Name: Rocketeer
 	Aircraft:
@@ -8834,7 +8843,7 @@ ra2rock.husk:
 		Range: 4c0
 		Type: GroundPosition
 	WithFacingSpriteBody:
-		Sequence: die
+		Sequence: die-air
 	WithSpriteBody@shadow:
 		Name: shadow
 		Sequence: shadow
