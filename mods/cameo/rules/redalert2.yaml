@@ -319,26 +319,86 @@ Player:
 
 ^RA2InfantryShadow:
 	RenderSprites:
-		PlayerPalette: ra2infantry
-	WithDeathAnimation:
-		DeathSequencePalette: ra2infantry
-	Crushable:
-		CrushSound: igensqua.wav
-
-^RA2Infantry:
-	Inherits@shadow: ^RA2InfantryShadow
-	RenderSprites:
 		PlayerPalette: playerra2
+
+^RA2InfantryDeathAnimations:
 	WithDeathAnimation:
-		DeathSequencePalette: ra2infantry
+		DeathSequencePalette: playerra2
 		DeathTypes:
 			DefaultDeath: 1
 			BulletDeath: 1
-			RippedApartDeath: 2
 			SmallExplosionDeath: 2
 			ExplosionDeath: 2
-			TiberiumDeath: 1
-			RA2VirusDeath: 1
+			RippedApartDeath: 2
+	WithDeathAnimation@effect:
+		DeathSequencePalette: ra2effect
+		DeathPaletteIsPlayerPalette: False
+		DeathTypes:
+			RadiationDeath: 4
+			PsychicDeath: 5
+			TiberiumDeath: 7
+			ElectricityDeath: 6
+			#RA2VirusDeath: 7
+	SpawnActorOnDeath@Flameguy:
+		Probability: 100
+		Actor: RA2Flameguy
+		DeathType: FireDeath
+	Explodes@Corpse:
+		DeathTypes: DefaultDeath, ExplosionDeath, BulletDeath, RippedApartDeath
+		Weapon: RA2CorpseSpawner
+		EmptyWeapon: RA2CorpseSpawner
+		RequiresCondition: !chronobeamed
+
+^RA2Infantry:
+	Inherits@shadow: ^RA2InfantryDeathAnimations
+	RenderSprites:
+		PlayerPalette: playerra2
+	Crushable:
+		CrushSound: igensqua.wav
+	DeathSounds@NORMAL:
+		DeathTypes: DefaultDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, RippedApartDeath
+		RequiresCondition: !chronobeamed
+	DeathSounds@ZAPPED:
+		Voice: Zapped
+		DeathTypes: ElectricityDeath
+		RequiresCondition: !chronobeamed
+	DeathSounds@radiation:
+		Voice: Poisoned
+		DeathTypes: RadiationDeath, TiberiumDeath
+		RequiresCondition: !chronobeamed
+	DeathSounds@radiation:
+		Voice: PsyCrush
+		DeathTypes: PsychicDeath
+		RequiresCondition: !chronobeamed
+	#DeathSounds@virus:
+	#	Voice: Virus
+	#	DeathTypes: RA2VirusDeath
+	#	RequiresCondition: !chronobeamed
+
+RA2Flameguy:
+	Inherits@1: ^ExistsInWorld
+	Inherits@2: ^SpriteActor
+	Mobile:
+		Speed: 71
+		Locomotor: foot
+	HiddenUnderFog:
+	RenderSprites:
+		Palette: ra2effect
+	WithInfantryBody:
+		IdleSequences: run
+	Health:
+		HP: 160
+	ChangesHealth:
+		Step: -10
+		StartIfBelow: 101
+	ScaredyCat:
+		PanicSequencePrefix:
+	WithDeathAnimation:
+		FallbackSequence: die
+		UseDeathTypeSuffix: false
+		DeathSequencePalette: ra2effect
+		DeathPaletteIsPlayerPalette: false
+	HitShape:
 
 ^RA2Building:
 	Inherits@BB: ^BaseBuilding
@@ -3549,31 +3609,37 @@ YRygggun:
 		PauseOnCondition: ammo < 40
 		LocalOffset: 500,140,550, 500,-150,550
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	Armament@2:
 		Weapon: RA2GattlingMG2
 		PauseOnCondition: ammo < 20 && ammo >= 40
 		LocalOffset: 500,140,550, 500,-150,550
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-1
+		MuzzlePalette: ra2effect
 	Armament@3:
 		Weapon: RA2GattlingMG3
 		PauseOnCondition: ammo >= 20
 		LocalOffset: 500,140,550, 500,-150,550
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
 	Armament@1AA:
 		Weapon: RA2GattlingMG1AA
 		PauseOnCondition: ammo < 40
 		LocalOffset: 500,140,550, 500,-150,550
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	Armament@2AA:
 		Weapon: RA2GattlingMG2AA
 		PauseOnCondition: ammo < 20 && ammo >= 40
 		LocalOffset: 500,140,550, 500,-150,550
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-1
+		MuzzlePalette: ra2effect
 	Armament@3AA:
 		Weapon: RA2GattlingMG3AA
 		PauseOnCondition: ammo >= 20
 		LocalOffset: 500,140,550, 500,-150,550
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
@@ -3778,7 +3844,8 @@ RA2E1:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2vulcan2
-		MuzzleSequence: garrison-muzzle
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	AttackFrontal:
 		Armaments: primary
 		RequiresCondition: undeployed
@@ -4221,10 +4288,19 @@ RA2TANY:
 
 
 RA2SEAL:
-	Inherits: RMBO
+	Inherits: ^Soldier
+	Inherits@Template: ^HeroInfantryTemplate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
+	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Inherits@anim: ^RA2Infantry
 	Inherits@swim: ^WithSwimsuit
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -4256,7 +4332,7 @@ RA2SEAL:
 		Payload: 1000
 	Voiced:
 		VoiceSet: SealVoice
-	-AnnounceOnKill:
+	AnnounceOnKill:
 	ReloadDelayMultiplier@eliteplus:
 		RequiresCondition: rank-elite
 		Modifier: 75
@@ -4266,27 +4342,56 @@ RA2SEAL:
 		Prerequisites: barracks.upgraded
 	RenderSprites:
 		PlayerPalette: playerra2
+
 RA2SPY:
-	Inherits: RASPY
+	Inherits: ^Soldier
 	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 90
 		Prerequisites: ~ra2gaairc
 		Description: Infiltrates enemy structures for intel or\nsabotage. Exact effect depends on the\nbuilding infiltrated.\n  Special Ability: Disguise
+	Valued:
+		Cost: 500
+	-Tooltip:
+	DisguiseTooltip:
+		Name: Spy
+		GenericName: Soldier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	-Guard:
+	Health:
+		HP: 5000
+	Mobile:
+		Speed: 60
+	Passenger:
+		CustomPipType: blue
 	WithDisguisingInfantryBody:
 		StandSequences: stand
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2
+	WithDecoration@disguise:
+		Image: pips
+		Sequence: pip-disguise
+		Palette: effect
+		Position: TopRight
+		RequiresCondition: disguise
+	Infiltrates:
+		Types: SpyInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 50
+	-AttackFrontal:
+	IgnoresDisguise:
 	Voiced:
 		VoiceSet: RA2SpyVoice
-	-Armament:
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
 	RenderSprites:
 		PlayerPalette: playerra2
 
 RA2ADOG:
-	Inherits: DOG
-	-GainsExperience:
+	Inherits: ^Soldier
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@MC: ^MCImmune
 	Inherits@anim: ^RA2Infantry
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Buildable:
@@ -4294,8 +4399,72 @@ RA2ADOG:
 		BuildPaletteOrder: 29
 		Prerequisites: ~RA2Barracks
 		Description: Anti-infantry unit.\nCan detect cloaked units and spies.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Attack Dog
+		GenericName: Dog
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Selectable:
+		Bounds: 512, 768, -48, -172
 	DeliversCash:
 		Payload: 100
+	SelectionDecorations:
+	Health:
+		HP: 2500
+	ChangesHealth@SelfHealing:
+		Step: 1
+	Mobile:
+		Speed: 100
+		Voice: Move
+		RequiresCondition: !attack-cooldown && !eating
+	Guard:
+		Voice: Move
+	Passenger:
+		Voice: Move
+	DetectCloaked:
+		Range: 6000
+		RequiresCondition: !disabled
+		DetectionTypes: Cloak, Hijacker
+	Armament:
+		Weapon: DogJaw
+		ReloadingCondition: attack-cooldown
+	-AttackFrontal:
+	-SpawnActorOnDeath@Flameguy:
+	AttackLeap:
+		Voice: Attack
+		PauseOnCondition: attacking || attack-cooldown
+	AttackMove:
+		Voice: Move
+	GrantConditionOnAttack:
+		Condition: eating
+		RevokeDelay: 25
+	GrantConditionWhileAiming:
+		Condition: run
+	AutoTarget:
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry
+	Targetable:
+		TargetTypes: Ground, Infantry
+	WithInfantryBody:
+		MoveSequence: walk
+		StandSequences: stand
+		DefaultAttackSequence: eat
+		RequiresCondition: !run
+	WithInfantryBody@RUN:
+		MoveSequence: run
+		RequiresCondition: run
+	SpeedMultiplier:
+		Modifier: 150
+		RequiresCondition: run
+	IgnoresDisguise:
+	Voiced:
+		VoiceSet: DogVoice
+	-TakeCover:
+	-Explodes@Mutate:
+	-Targetable@disguise:
 	Cloneable:
 		Types: NormalInfantry
 	Voiced:
@@ -4429,7 +4598,8 @@ RA2E2:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2vulcan2
-		MuzzleSequence: garrison-muzzle
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	AttackFrontal:
 		FacingTolerance: 0
 	Inherits@EXT: ^ExternalConditions
@@ -4476,35 +4646,52 @@ RA2flakt:
 	Armament@PRIMARY:
 		Name: primary
 		Weapon: RA2CRFlakGuyGun
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@PRIMARYAA:
 		Name: primary
 		Weapon: RA2FLAKAA
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2CRFlakGuyGun
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@GARRISONEDAA:
 		Name: garrisoned
 		Weapon: RA2FLAKAA
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@PRIMARYE:
 		Name: primary
 		Weapon: RA2CRFlakGuyGun_elite
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: rank-elite
 	Armament@PRIMARYAAE:
 		Name: primary
 		Weapon: RA2FLAKAA_elite
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: rank-elite
 	Armament@GARRISONEDE:
 		Name: garrisoned
 		Weapon: RA2CRFlakGuyGun_elite
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: rank-elite
 	Armament@GARRISONEDAAE:
 		Name: garrisoned
 		Weapon: RA2FLAKAA_elite
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: rank-elite
+	WithMuzzleOverlay:
 	AttackFrontal:
 		FacingTolerance: 2
 	Inherits@EXT: ^ExternalConditions
@@ -4545,7 +4732,6 @@ RA2DESO:
 	Health:
 		HP: 9000
 	AutoTarget:
-		ScanRadius: 4
 	Armament@PRIMARY:
 		Weapon: RA2RadBeamWeapon
 		LocalOffset: 256,43,341
@@ -4662,7 +4848,6 @@ RA2IVAN:
 	Health:
 		HP: 6000
 	AutoTarget:
-		ScanRadius: 4
 	AttackFrontal:
 		FacingTolerance: 0
 	Inherits@EXT: ^ExternalConditions
@@ -4903,7 +5088,6 @@ YRINIT:
 	Health:
 		HP: 8000
 	AutoTarget:
-		ScanRadius: 4
 	Armament@PRIMARY:
 		Name: primary
 		Weapon: RA2PsychicJab
@@ -5379,6 +5563,7 @@ RA2MTNK:
 		RecoilRecovery: 38
 		LocalOffset: 720,0,80
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@elite:
 		Name: primary
@@ -5386,7 +5571,8 @@ RA2MTNK:
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 720,0,80
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
 		RequiresCondition: rank-elite
 	AttackTurreted:
 	WithMuzzleOverlay:
@@ -5462,6 +5648,7 @@ YRROBO:
 		RecoilRecovery: 25
 		LocalOffset: 768,0,90
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@elite:
 		Name: primary
@@ -5469,7 +5656,8 @@ YRROBO:
 		Recoil: 85
 		RecoilRecovery: 25
 		LocalOffset: 768,0,90
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
 		RequiresCondition: rank-elite
 	AttackTurreted:
 		PauseOnCondition: !robotcontrol || disabled
@@ -5624,6 +5812,7 @@ RA2FV:
 		Weapon: RA2CRM60
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlemg
+		MuzzlePalette: ra2effect
 		RequiresCondition: ifv-mg
 	Armament@repair:
 		Weapon: RA2IFVRepair
@@ -5635,11 +5824,13 @@ RA2FV:
 		Weapon: RA2AWPG
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlemg
+		MuzzlePalette: ra2effect
 		RequiresCondition: ifv-sniper
 	Armament@hero:
 		Weapon: BorisAKM
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlemg
+		MuzzlePalette: ra2effect
 		RequiresCondition: ifv-hero
 	Armament@tesla:
 		Weapon: TTankZap
@@ -5649,11 +5840,13 @@ RA2FV:
 		RequiresCondition: ifv-flak
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlefl
+		MuzzlePalette: ra2effect
 	Armament@cannon:
 		Weapon: RA2MirageGun
 		RequiresCondition: ifv-cannon
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlemm
+		MuzzlePalette: ra2effect
 	Armament@fire:
 		Weapon: BigFlamer
 		RequiresCondition: ifv-fire
@@ -5690,7 +5883,7 @@ RA2FV:
 	###################
 	WithSpriteTurret@default:
 		Sequence: turret-missile
-		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss && !ifv-deso && !ifv-demo && !ifv-chrono && !ifv-plasma && !ifv-litlaser && !ifv-medlaser && !ifv-greelaser && !ifv-misslaser && !ifv-chem && !ifv-thrax && !ifv-sonic && !ifv-fremen && !ifv-healer && !ifv-spy && !ifv-thief
+		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-deso && !ifv-demo && !ifv-chrono && !ifv-plasma && !ifv-litlaser && !ifv-medlaser && !ifv-greelaser && !ifv-misslaser && !ifv-chem && !ifv-thrax && !ifv-sonic && !ifv-fremen && !ifv-healer && !ifv-spy && !ifv-thief
 	WithSpriteTurret@mg:
 		Sequence: turret-mg
 		RequiresCondition: ifv-mg || ifv-sniper || ifv-flak || ifv-hero || ifv-cannon || ifv-plasma || ifv-litlaser || ifv-medlaser || ifv-greelaser || ifv-chem || ifv-fremen || ifv-thief
@@ -5702,7 +5895,7 @@ RA2FV:
 		RequiresCondition: ifv-repair
 	WithSpriteTurret@hitech:
 		Sequence: turret-hitech
-		RequiresCondition: ifv-miss || ifv-chrono || ifv-misslaser || ifv-sonic || ifv-healer || ifv-spy
+		RequiresCondition: ifv-chrono || ifv-misslaser || ifv-sonic || ifv-healer || ifv-spy
 	WithSpriteTurret@tesla:
 		Sequence: turret-tesla
 		RequiresCondition: ifv-tesla
@@ -6197,6 +6390,7 @@ RA2HTNK:
 		RecoilRecovery: 38
 		LocalOffset: 720,0,80
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@elite:
 		Name: primary
@@ -6204,7 +6398,8 @@ RA2HTNK:
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 720,0,80
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
 		RequiresCondition: rank-elite
 	AttackTurreted:
 	WithMuzzleOverlay:
@@ -6274,9 +6469,14 @@ RA2HTK:
 	Armament@AA:
 		Weapon: RA2FlakTrackAAGun
 		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	Armament@AG:
 		Weapon: RA2FlakTrackGun
 		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
 	AttackTurreted:
 	Selectable:
 		DecorationBounds: 1280, 1280
@@ -6363,6 +6563,7 @@ RA2APOC:
 		RecoilRecovery: 38
 		LocalOffset: 768,85,90, 768,-85,90
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@SECONDARY:
 		Name: secondary
@@ -6377,7 +6578,8 @@ RA2APOC:
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 768,85,90, 768,-85,90
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
 		RequiresCondition: rank-elite
 	Armament@SECONDARYELITE:
 		Name: secondary
@@ -6640,6 +6842,9 @@ RA2HARV:
 		TurnSpeed: 12
 	Armament@PRIMARY:
 		Weapon: RA220mmrapid
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
 	AttackTurreted:
 	WithSpriteTurret:
 	WithDockingAnimation:
@@ -6871,6 +7076,7 @@ YRSMIN:
 		Weapon: RA220mmrapid
 		LocalOffset: 640,0,384
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	WithMuzzleOverlay:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
@@ -6931,31 +7137,37 @@ YRYTNK:
 		PauseOnCondition: ammo < 40
 		LocalOffset: 85,90,299, 85,-90,299
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	Armament@2:
 		Weapon: RA2GattlingMG2
 		PauseOnCondition: ammo < 20 && ammo >= 40
 		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-1
+		MuzzlePalette: ra2effect
 	Armament@3:
 		Weapon: RA2GattlingMG3
 		PauseOnCondition: ammo >= 20
 		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
 	Armament@1AA:
 		Weapon: RA2GattlingMG1AA
 		PauseOnCondition: ammo < 40
 		LocalOffset: 85,90,299, 85,-90,299
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	Armament@2AA:
 		Weapon: RA2GattlingMG2AA
 		PauseOnCondition: ammo < 20 && ammo >= 40
 		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-1
+		MuzzlePalette: ra2effect
 	Armament@3AA:
 		Weapon: RA2GattlingMG3AA
 		PauseOnCondition: ammo >= 20
 		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
 	AttackTurreted:
 	WithMuzzleOverlay:
 	SelectionDecorations:
@@ -7010,10 +7222,14 @@ YRLTNK:
 		Name: garrisoned
 		Weapon: RA2LashmmG
 		RequiresCondition: !rank-elite
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	Armament@GARRISONEDELITE:
 		Name: garrisoned
 		Weapon: RA2Lashmm_elite
 		RequiresCondition: rank-elite
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
 	SpeedMultiplier@eliteplus:
 		Modifier: 125
 		RequiresCondition: rank-elite
@@ -7785,10 +8001,12 @@ ra2hyd:
 		Weapon: RA2TURRETFLAKAA
 		Recoil: 85
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	Armament@AG:
 		Weapon: RA2FlakTrackGun
 		Recoil: 85
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	WithMuzzleOverlay:
 	AttackFrontal:
 		Voice: Attack
@@ -8492,6 +8710,7 @@ ra2shad:
 		LocalOffset: 128,-213,-85, 128,213,-85
 		PauseOnCondition: !ammo
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	WithMuzzleOverlay:
 	Cargo:
 		Types: Infantry, Hacker, Fremen
@@ -9875,8 +10094,8 @@ YRDISK.Husk:
 	RenderSprites:
 		Image: yrdisk
 	Turreted:
-	RenderSprites:
-		PlayerPalette: playerra2
+	#RenderSprites:
+	#	PlayerPalette: playerra2
 
 ra2asw.Husk:
 	Inherits: ^HelicopterHusk

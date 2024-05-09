@@ -1831,13 +1831,13 @@
 	DamagedByTintedCells@rad:
 		Damage: 125
 		DamageInterval: 1
-		DamageTypes: DefaultDeath
+		DamageTypes: RadiationDeath
 		LayerName: ra2radiation
 		RequiresCondition: !parachute
 	DamagedByTintedCells@genrad:
 		Damage: 25
 		DamageInterval: 1
-		DamageTypes: DefaultDeath
+		DamageTypes: RadiationDeath
 		LayerName: genradiation
 		RequiresCondition: !parachute
 	DamagedByTintedCells@tib:
@@ -1892,21 +1892,6 @@
 
 ^Infantry: #Human units only
 	Inherits: ^DefaultInfantry
-	WithDeathAnimation:
-		DeathTypes:
-			DefaultDeath: 1
-			BruteMutate: 1
-			BulletDeath: 1
-			RippedApartDeath: 2
-			SmallExplosionDeath: 3
-			ExplosionDeath: 4
-			FireDeath: 5
-			TiberiumDeath: 6
-			RA2VirusDeath: 6
-			ElectricityDeath: 7
-			ContaminatorMutate: 1
-			QuestionMutate: 1
-		CrushedSequence: die-crushed
 	DamagedByTerrain:
 		Terrain: Tiberium, BlueTiberium
 		Damage: 200
@@ -1934,34 +1919,20 @@
 		InternalOwner: Creeps
 		DeathType: TiberiumDeath
 		RequiresLobbyCreeps: true
-	DeathSounds@NORMAL:
-		DeathTypes: DefaultDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, RippedApartDeath
-		RequiresCondition: !chronobeamed
-	DeathSounds@BURNED:
-		Voice: Burned
-		DeathTypes: FireDeath
-		RequiresCondition: !chronobeamed
-	DeathSounds@POISONED:
-		Voice: Poisoned
-		DeathTypes: TiberiumDeath, RA2VirusDeath
-		RequiresCondition: !chronobeamed
-	DeathSounds@ZAPPED: ##########
-		Voice: Zapped
-		DeathTypes: ElectricityDeath
-		RequiresCondition: !chronobeamed
 	Explodes@Mutate:
 		Weapon: MutateEffect
 		EmptyWeapon: MutateEffect
 		DeathTypes: BruteMutate
+		DamageSource: Killer
+	Explodes@Virus:
+		Weapon: RA2VirusExplode
+		EmptyWeapon: RA2VirusExplode
+		DeathTypes: RA2VirusDeath
+		DamageSource: Killer
 	Explodes@QuestionMutate:
 		Weapon: MutateEffect
 		EmptyWeapon: MutateEffect
 		DeathTypes: QuestionMutate
-	SpawnActorOnDeath@RA2Virus:
-		Actor: ra2txgasg
-		Probability: 50
-		OwnerType: Killer
-		DeathType: RA2VirusDeath
 	SpawnActorOnDeath@Contaminator:
 		Actor: contaminator
 		Probability: 80
@@ -1997,6 +1968,7 @@
 		Probability: 50
 		OwnerType: Killer
 		DeathType: WolfesteinMutate
+
 ^DefaultSoldier:
 	Inherits: ^DefaultInfantry
 	MustBeDestroyed:
@@ -2026,13 +1998,51 @@
 	WithInfantryBody:
 		IdleSequences: idle1, idle2
 		StandSequences: stand, stand2
+	DeathSounds@NORMAL:
+		RequiresCondition: !chronobeamed
 	SpawnActorOnDeath@ZombieInfect:
 		Actor: zombie1.infect
 		Probability: 99
 		OwnerType: Killer
 		DeathType: ZombieInfection
+
+^TDRAInfantry:
+	WithDeathAnimation:
+		DeathTypes:
+			DefaultDeath: 1
+			BruteMutate: 1
+			BulletDeath: 1
+			RippedApartDeath: 2
+			SmallExplosionDeath: 3
+			ExplosionDeath: 4
+			FireDeath: 5
+			PsychicDeath: 5
+			TiberiumDeath: 6
+			RadiationDeath: 6
+			#RA2VirusDeath: 6
+			ElectricityDeath: 7
+			ContaminatorMutate: 1
+			QuestionMutate: 1
+		CrushedSequence: die-crushed
+	DeathSounds@NORMAL:
+		DeathTypes: DefaultDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, RippedApartDeath
+		RequiresCondition: !chronobeamed
+	DeathSounds@BURNED:
+		Voice: Burned
+		DeathTypes: FireDeath, PsychicDeath
+		RequiresCondition: !chronobeamed
+	DeathSounds@POISONED:
+		Voice: Poisoned
+		DeathTypes: TiberiumDeath, RA2VirusDeath
+		RequiresCondition: !chronobeamed
+	DeathSounds@ZAPPED: ##########
+		Voice: Zapped
+		DeathTypes: ElectricityDeath
+		RequiresCondition: !chronobeamed
+
 ^CivInfantry:
 	Inherits: ^Infantry
+	Inherits@2: ^TDRAInfantry
 	-RevealsShroud@base-reveal:
 	-GrantConditionOnPrerequisite@base-reveal:
 	Valued:

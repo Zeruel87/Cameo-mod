@@ -614,6 +614,8 @@ RA2MirageGun:
 	Warhead@HeavyCannonPercentage: HealthPercentageDamage
 		Damage: 3
 	Warhead@Effect:
+		Explosions: ra2_iron_fx
+		-ImpactSounds:
 	Warhead@EffectWater:
 
 RA2MirageGun_elite:
@@ -714,7 +716,7 @@ RA2KirovBomb:
 		Damage: 12
 		Spread: 2c512
 		Delay: 6
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath, Incendiary
 		Versus:
 			None: 70
 			Wood: 60
@@ -736,14 +738,25 @@ RA2KirovBombElite:
 	Inherits: RA2KirovBomb
 	Warhead@Effect1: CreateEffect
 		Delay: 0
-		Explosions: ra2_terrorist_explosion
+		Explosions: ra2_kirovtesla
 		ImpactSounds: gexpapoa.wav
 		ValidTargets: Ground, Ship, Trees
-	Warhead@Radiation: CreateTintedCells
-		Spread: 1c512
-		Falloff: 100, 66, 33
-		Level: 300
-		LayerName: ra2radiation
+	Warhead@Condition: GrantExternalCondition
+		Condition: empdisable
+		ValidTargets: Vehicle, Cyborg, Structure
+		Duration: 25
+		Range: 3c0
+	Warhead@Shrapnel: FireShrapnel
+		InvalidTargets: FireImmune
+		Weapon: TeslaFragment
+		Amount: 3
+		AimChance: 100
+		AimTargetStances: Enemy, Neutral
+	#Warhead@Radiation: CreateTintedCells
+	#	Spread: 1c512
+	#	Falloff: 100, 66, 33
+	#	Level: 300
+	#	LayerName: ra2radiation
 
 RA2IMPAA:
 	Inherits: RA2IMP
@@ -1085,7 +1098,7 @@ RA2120xmm:
 		Damage: 3
 		Spread: 333
 		Delay: 3
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath, Incendiary
 		Versus:
 			None: 70
 			Wood: 60
@@ -1414,7 +1427,7 @@ RA2CoilBolt:
 		Damage: 3
 		Spread: 33
 		Delay: 3
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Incendiary
 		Versus:
 			None: 70
 			Wood: 60
@@ -1522,7 +1535,7 @@ RA2TeslaCoilCharge:
 		Damage: -1
 		Spread: 100
 		Delay: 5
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Incendiary
 
 RA2PortaTesla:
 	Inherits: PortaTesla
@@ -1542,7 +1555,7 @@ RA2PortaTesla:
 		Damage: 5
 		Spread: 55
 		Delay: 5
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Incendiary
 		Versus:
 			None: 70
 			Wood: 60
@@ -1579,7 +1592,7 @@ RA2TankBolt:
 		Damage: 7
 		Spread: 75
 		Delay: 7
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Incendiary
 		Versus:
 			None: 70
 			Wood: 60
@@ -1760,16 +1773,16 @@ RA2RadBeamWeapon:
 	Warhead@HeavyChemicalWeapon: SpreadDamage
 		Spread: 123
 		Damage: 12345
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath
+		DamageTypes: Prone100Percent, TriggerProne, RadiationDeath
 	Warhead@HeavyChemicalWeaponFriendlyFire: SpreadDamage
 		Spread: 123
 		Damage: 12345
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath
+		DamageTypes: Prone100Percent, TriggerProne, RadiationDeath
 	Warhead@HeavyChemicalWeaponPercentage: HealthPercentageDamage
 		Damage: 5
 		Spread: 55
 		Delay: 5
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+		DamageTypes: Prone100Percent, TriggerProne, RadiationDeath, Incendiary
 		Versus:
 			None: 70
 			Wood: 60
@@ -1833,7 +1846,7 @@ PsiWave:
 		Falloff: 100, 100
 		Damage: 40000
 		ValidTargets: Infantry
-		DamageTypes: FireDeath
+		DamageTypes: PsychicDeath
 		Delay: 5
 	Warhead@2Eff: CreateEffect
 		ImpactActors: false
@@ -2017,7 +2030,7 @@ MigMissiles:
 		Damage: 20
 		Spread: 2c512
 		Delay: 5
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath, Incendiary
+		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath, Incendiary
 		Versus:
 			None: 70
 			Wood: 60
@@ -2245,8 +2258,9 @@ RA2M1Carbine:
 	Inherits: ^RA2Chaingun
 	ReloadDelay: 25
 	Report: iconatta.wav, iconattb.wav, iconattc.wav, iconattd.wav, iconatte.wav
-	Warhead@SmallArms: SpreadDamage
+	Warhead@Chaingun: SpreadDamage
 		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, BulletDeath
 
 RA2ZOMBIE:
 	ReloadDelay: 45
@@ -2593,14 +2607,21 @@ RA2VirusExplode:
 	ReloadDelay: 100
 	ValidTargets: Ground
 	Projectile: InstantExplode
-	Warhead@1Dam: SpreadDamage
-		Spread: 1c0
-		Damage: 2000
-		DamageTypes: Prone50Percent, TriggerProne, RA2VirusDeath
-	Warhead@2Eff: CreateEffect
-		Explosions: chemball
-	Warhead@3Smu: LeaveSmudge
-		SmudgeType: Scorch
+	Warhead@Effect: CreateEffect
+		Explosions: virus
+		ExplosionPalette: ra2effect
+		ImpactSounds: gvirexpa.wav, gvirexpb.wav
+		ValidTargets: Ground, Air
+	Warhead@Cloud: SpawnSmokeParticle
+		Count: 1
+		Duration: 150
+		Speed: 4, 16
+		TurnRate: 10
+		Image: ra2txgasg
+		Sequences: idle
+		Palette: ra2effect
+		Weapon: RA2Cloud
+		InvalidTargets: Water
 
 RA2Cloud:
 	Warhead@1Dam: SpreadDamage
@@ -2710,7 +2731,7 @@ RA2DemoBomb:
 			Medium: 133
 			Heavy: 100
 			Concrete: 125
-		DamageTypes: Prone50Percent, TriggerProne, FireDeath
+		DamageTypes: Prone50Percent, TriggerProne, RadiationDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: demotruck_explosion
 		ExplosionPalette: ra2effect
@@ -2761,6 +2782,18 @@ RA2Terrorist3:
 RA2Atomic:
 	Inherits: Atomic
 	Report: snuklaun.wav
+	Warhead@1Dam_impact:
+		DamageTypes: Prone75Percent, TriggerProne, RadiationDeath, Incendiary
+	Warhead@4Dam_areanuke1: SpreadDamage
+		DamageTypes: Prone75Percent, TriggerProne, RadiationDeath, Incendiary
+	Warhead@7Dam_areanuke2: SpreadDamage
+		DamageTypes: Prone75Percent, TriggerProne, RadiationDeath, Incendiary
+	Warhead@8Dam_areanuke2: SpreadDamage	
+		DamageTypes: Prone75Percent, TriggerProne, RadiationDeath, Incendiary
+	Warhead@10Dam_areanuke3: SpreadDamage
+		DamageTypes: Prone75Percent, TriggerProne, RadiationDeath, Incendiary
+	Warhead@11Dam_areanuke3: SpreadDamage
+		DamageTypes: Prone75Percent, TriggerProne, RadiationDeath, Incendiary
 	Warhead@2Eff_impact: CreateEffect
 		Explosions: ra2nuke
 		ExplosionPalette: ra2effect
@@ -3120,3 +3153,12 @@ KirovExplode:
 		ExplosionPalette: ra2effect
 		ImpactSounds: expnew09.wav
 		ValidTargets: Ground, Water, Air
+
+RA2CorpseSpawner:
+	Projectile: InstantExplode
+	Warhead@Effect: CreateEffect
+		Image: ra2corpse
+		Explosions: death_a, death_b, death_c, death_d, death_e, death_f
+		ExplosionPalette: ra2effect
+		ValidTargets: Ground
+		Delay: 12
