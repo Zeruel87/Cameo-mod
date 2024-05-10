@@ -80,7 +80,7 @@ WorldLoaded = function ()
 	Trigger.AfterDelay(DateTime.Seconds(1), function ()
 		Notification("We'll need to get set up quickly before the Nitro's communications network comes back online.")
 		Media.PlaySpeechNotification(Penta, "MissionTimerInitialised")
-		DateTime.TimeLimit = DateTime.Minutes(3) + DateTime.Seconds(20)
+		DateTime.TimeLimit = DateTime.Minutes(3)
 
 		Trigger.OnTimerExpired(function ()
 			Notification("The Nitro communications grid is back online. They're going to attack soon!")
@@ -99,19 +99,6 @@ WorldLoaded = function ()
 		Reinforcements.Reinforce(Shade, Boats, {ShadeSpawnOne.Location, ShadeNavalPointOne.Location})
 		Reinforcements.Reinforce(Shade, Boats, {ShadeSpawnTwo.Location, ShadeNavalPointTwo.Location})
 		Reinforcements.Reinforce(Shade, Boats, {ShadeSpawnThree.Location, ShadeNavalPointThree.Location})
-		
-		Trigger.AfterDelay(DateTime.Seconds(30), function ()
-			Media.PlaySpeechNotification(Penta, "ReinforcementsArrived")
-			Media.PlaySpeechNotification(Shade, "ReinforcementsArrived")
-			Media.DisplayMessage("Reinforcements have arrived.", "Player 1", HSLColor.SkyBlue)
-			Reinforcements.Reinforce(Penta, Boats, {PentaSpawnOne.Location, PentaNavalPointOne.Location})
-			Reinforcements.Reinforce(Penta, Boats, {PentaSpawnTwo.Location, PentaNavalPointTwo.Location})
-			Reinforcements.Reinforce(Penta, Boats, {PentaSpawnThree.Location, PentaNavalPointThree.Location})
-			Media.DisplayMessage("Reinforcements have arrived.", "Player 2", HSLColor.SkyBlue)
-			Reinforcements.Reinforce(Shade, Boats, {ShadeSpawnOne.Location, ShadeNavalPointOne.Location})
-			Reinforcements.Reinforce(Shade, Boats, {ShadeSpawnTwo.Location, ShadeNavalPointTwo.Location})
-			Reinforcements.Reinforce(Shade, Boats, {ShadeSpawnThree.Location, ShadeNavalPointThree.Location})
-		end)
 	end)
 
 	Trigger.OnAllRemovedFromWorld(BeachheadOne, function ()
@@ -152,7 +139,7 @@ Tick = function ()
 		Penta.MarkFailedObjective(PlayerOneClear)
 	end
 
-	if (Shade.HasNoRequiredUnits()) then
+	if Shade.HasNoRequiredUnits() then
 		Shade.MarkFailedObjective(PlayerTwoObjective)
 		Shade.MarkFailedObjective(PlayerTwoClear)
 	end
@@ -160,21 +147,5 @@ Tick = function ()
 	if NitroIdle.HasNoRequiredUnits() and NitroActive.HasNoRequiredUnits() then
 		Penta.MarkCompletedObjective(PlayerOneClear)
 		Shade.MarkCompletedObjective(PlayerTwoClear)
-	end
-
-	if MCVone == false and #Penta.GetActorsByType("rafact.allies") > 0 then
-		MCVone = true
-		Media.DisplayMessage("Reinforcements have arrived.", "Player 1", HSLColor.SkyBlue)
-		Media.PlaySpeechNotification(Penta, "ReinforcementsArrived")
-		Reinforcements.ReinforceWithTransport(Penta, "ra2lcrf", TaskForceTwo, {PentaSpawnOne.Location, PentaDestOne.Location}, {PentaSpawnOne.Location})
-		Reinforcements.ReinforceWithTransport(Penta, "ra2lcrf", TaskForceTwo, {PentaSpawnThree.Location, PentaDestThree.Location}, {PentaSpawnThree.Location})
-	end
-
-	if MCVtwo == false and #Shade.GetActorsByType("rafact.allies") > 0 then
-		MCVtwo = true
-		Media.DisplayMessage("Reinforcements have arrived.", "Player 2", HSLColor.SkyBlue)
-		Media.PlaySpeechNotification(Shade, "ReinforcementsArrived")
-		Reinforcements.ReinforceWithTransport(Shade, "ra2lcrf", TaskForceTwo, {ShadeSpawnOne.Location, ShadeDestOne.Location}, {ShadeSpawnOne.Location})
-		Reinforcements.ReinforceWithTransport(Shade, "ra2lcrf", TaskForceTwo, {ShadeSpawnThree.Location, ShadeDestThree.Location}, {ShadeSpawnThree.Location})
 	end
 end
