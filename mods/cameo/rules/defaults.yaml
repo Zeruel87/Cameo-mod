@@ -737,7 +737,7 @@
 		Color: FFFFFF
 	WithColoredOverlay@disabled:
 		Color: 000000AA
-		RequiresCondition: disabled
+		RequiresCondition: disabled && !chronobeamed
 	DelayedWeaponAttachable@lockdown:
 		Type: lockdown
 		Condition: GhostLockdown
@@ -1369,6 +1369,7 @@
 		Voice: Action
 	DrawLineToTarget:
 	WithDamageOverlay:
+		Palette: player
 	WithFacingSpriteBody:
 	Explodes:
 		Weapon: UnitExplodeSmall
@@ -2626,7 +2627,7 @@
 		Color: FFFFFF
 	WithColoredOverlay@disabled:
 		Color: 000000AA
-		RequiresCondition: (empdisable || diskdrain) && !invulnerability
+		RequiresCondition: (empdisable || diskdrain) && !(invulnerability || chronobeamed)
 	GpsDot:
 		String: Structure
 	RevealOnDeath:
@@ -3157,7 +3158,7 @@
 		Condition: lowpower
 		ValidPowerStates: Low, Critical
 	WithColoredOverlay@IDISABLE:
-		RequiresCondition: lowpower || disabled
+		RequiresCondition: (lowpower || disabled) && !chronobeamed
 		Color: 000000AA
 	GrantCondition@disable:
 		Condition: disabled
@@ -3185,7 +3186,7 @@
 
 ^DisabledBaseBuildingOverlay:
 	WithColoredOverlay@IDISABLE:
-		RequiresCondition: disabled
+		RequiresCondition: disabled && !chronobeamed
 		Color: 000000AA
 	GrantCondition@disable:
 		Condition: disabled
@@ -4455,7 +4456,7 @@ CPQDEBUGDUMMY:
 		Sequence: overlay
 		Palette: ra2effect
 		Position: Top
-		RequiresCondition: controlled
+		RequiresCondition: controlled || prevent-mindcontrol
 		RequiresSelection: False
 		ValidRelationships: Ally, Neutral, Enemy
 	Targetable@MC:
@@ -4631,105 +4632,6 @@ CPQDEBUGDUMMY:
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical
-
-^Power:
-	Inherits: ^PowerMultiplier
-	Buildable:
-		BuildDurationModifier: 25
-	Targetable@BotArchitect:
-		TargetTypes: Power
-
-^PowerPlant:
-	Inherits: ^Power
-	WithColoredOverlay@OUTAGE:
-		Color: 000000AA
-		RequiresCondition: powerdisabled
-	GrantCondition@OUTAGE:
-		RequiresCondition: power-outage
-		Condition: powerdisabled
-	AffectedByPowerOutage:
-		Condition: power-outage
-	InfiltrateForPowerOutage:
-		Types: SpyInfiltrate
-	Targetable@infiltrate:
-		TargetTypes: SpyInfiltrate, DiskDrain
-		RequiresCondition: !chronobeamed
-	Power:
-		RequiresCondition: !powerdisabled && !forceshielddrain && !disabled
-	PowerMultiplier@FSDRAIN:
-		Modifier: 0
-		RequiresCondition: forceshielddrain
-	GrantConditionOnPrerequisite@forceshielddrain:
-		Condition: forceshielddrain
-		Prerequisites: forceshielddrain
-	ExternalCondition@acumulatorbonus:
-		Condition: acumulatorbonus
-		TotalCap: 1
-	PowerMultiplier@acumulatorbonus:
-		Modifier: 150
-		RequiresCondition: acumulatorbonus
-
-^Refinery:
-	CashHackable:
-	Buildable:
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		BuildPaletteOrder: 20
-	Targetable@infiltrate:
-		TargetTypes: SpyInfiltrate, ThiefInfiltrate, DiskSteal
-		RequiresCondition: !untargetable
-	InfiltrateForCash:
-		Percentage: 50
-		Types: SpyInfiltrate, ThiefInfiltrate
-
-^StoresResources:
-	StoresResources:
-		Capacity: 2000
-	Targetable@infiltrate:
-		TargetTypes: ThiefInfiltrate, DiskSteal
-		RequiresCondition: !untargetable
-	WithResourceStoragePipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 5
-		FullSequence: pip-yellow
-	InfiltrateForCash:
-		Percentage: 50
-		Types: ThiefInfiltrate
-
-^InfiltrateForSupportPowerReset:
-	Targetable@infiltrate:
-		TargetTypes: SpyInfiltrate
-		RequiresCondition: !untargetable
-	InfiltrateForSupportPowerReset:
-		Types: SpyInfiltrate
-		InfiltratedNotification: BuildingInfiltrated
-		InfiltrationNotification: BuildingInfiltrated
-
-^ProducesUnits:
-	Buildable:
-		BuildDurationModifier: 25
-^SpyBarracks:
-	Targetable@SpyInfiltrate:
-		TargetTypes: SpyInfiltrate
-	InfiltrateForSupportPower:
-		Proxy: infantry.upgraded
-		Types: SpyInfiltrate
-
-^SpyVehicleFactory:
-	Targetable@SpyInfiltrate:
-		TargetTypes: SpyInfiltrate
-	InfiltrateForSupportPower:
-		Proxy: vehicles.upgraded
-		Types: SpyInfiltrate
-
-
-^SpyAircraftFactory:
-	Targetable@SpyInfiltrate:
-		TargetTypes: SpyInfiltrate
-	InfiltrateForSupportPower:
-		Proxy: aircraft.upgraded
-		Types: SpyInfiltrate
 
 ^AnnounceOnBuild:
 	ExternalCondition@PRODUCED:
@@ -5025,6 +4927,105 @@ CPQDEBUGDUMMY:
 		TargetTypes: Engineer
 
 #Structures Based
+
+^Power:
+	Inherits: ^PowerMultiplier
+	Buildable:
+		BuildDurationModifier: 25
+	Targetable@BotArchitect:
+		TargetTypes: Power
+
+^PowerPlant:
+	Inherits: ^Power
+	WithColoredOverlay@OUTAGE:
+		Color: 000000AA
+		RequiresCondition: powerdisabled
+	GrantCondition@OUTAGE:
+		RequiresCondition: power-outage
+		Condition: powerdisabled
+	AffectedByPowerOutage:
+		Condition: power-outage
+	InfiltrateForPowerOutage:
+		Types: SpyInfiltrate
+	Targetable@infiltrate:
+		TargetTypes: SpyInfiltrate, DiskDrain
+		RequiresCondition: !chronobeamed
+	Power:
+		RequiresCondition: !powerdisabled && !forceshielddrain && !disabled
+	PowerMultiplier@FSDRAIN:
+		Modifier: 0
+		RequiresCondition: forceshielddrain
+	GrantConditionOnPrerequisite@forceshielddrain:
+		Condition: forceshielddrain
+		Prerequisites: forceshielddrain
+	ExternalCondition@acumulatorbonus:
+		Condition: acumulatorbonus
+		TotalCap: 1
+	PowerMultiplier@acumulatorbonus:
+		Modifier: 150
+		RequiresCondition: acumulatorbonus
+
+^Refinery:
+	CashHackable:
+	Buildable:
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		BuildPaletteOrder: 20
+	Targetable@infiltrate:
+		TargetTypes: SpyInfiltrate, ThiefInfiltrate, DiskSteal
+		RequiresCondition: !untargetable
+	InfiltrateForCash:
+		Percentage: 50
+		Types: SpyInfiltrate, ThiefInfiltrate
+
+^StoresResources:
+	StoresResources:
+		Capacity: 2000
+	Targetable@infiltrate:
+		TargetTypes: ThiefInfiltrate, DiskSteal
+		RequiresCondition: !untargetable
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 5
+		FullSequence: pip-yellow
+	InfiltrateForCash:
+		Percentage: 50
+		Types: ThiefInfiltrate
+
+^InfiltrateForSupportPowerReset:
+	Targetable@infiltrate:
+		TargetTypes: SpyInfiltrate
+		RequiresCondition: !untargetable
+	InfiltrateForSupportPowerReset:
+		Types: SpyInfiltrate
+		InfiltratedNotification: BuildingInfiltrated
+		InfiltrationNotification: BuildingInfiltrated
+
+^ProducesUnits:
+	Buildable:
+		BuildDurationModifier: 25
+
+^SpyBarracks:
+	Targetable@SpyInfiltrate:
+		TargetTypes: SpyInfiltrate
+	InfiltrateForSupportPower:
+		Proxy: infantry.upgraded
+		Types: SpyInfiltrate
+
+^SpyVehicleFactory:
+	Targetable@SpyInfiltrate:
+		TargetTypes: SpyInfiltrate
+	InfiltrateForSupportPower:
+		Proxy: vehicles.upgraded
+		Types: SpyInfiltrate
+
+^SpyAircraftFactory:
+	Targetable@SpyInfiltrate:
+		TargetTypes: SpyInfiltrate
+	InfiltrateForSupportPower:
+		Proxy: aircraft.upgraded
+		Types: SpyInfiltrate
 
 ^IsBarrack:
 	Buildable:
