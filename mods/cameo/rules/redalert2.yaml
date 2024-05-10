@@ -328,7 +328,7 @@ Player:
 			DefaultDeath: 1
 			BulletDeath: 1
 			SmallExplosionDeath: 2
-			#ExplosionDeath: 2
+			ExplosionDeath: 2
 			RippedApartDeath: 2
 	WithDeathAnimation@effect:
 		DeathSequencePalette: ra2effect
@@ -348,11 +348,11 @@ Player:
 		Weapon: RA2CorpseSpawner
 		EmptyWeapon: RA2CorpseSpawner
 		RequiresCondition: !chronobeamed
-	Explodes@CorpseThrow:
-		DeathTypes: ExplosionDeath
-		Weapon: RA2CorpseThrower
-		EmptyWeapon: RA2CorpseThrower
-		RequiresCondition: !chronobeamed
+	#Explodes@CorpseThrow:
+	#	DeathTypes: ExplosionDeath
+	#	Weapon: RA2CorpseThrower
+	#	EmptyWeapon: RA2CorpseThrower
+	#	RequiresCondition: !chronobeamed
 
 ^RA2Infantry:
 	Inherits@shadow: ^RA2InfantryDeathAnimations
@@ -419,6 +419,10 @@ RA2Flameguy:
 		Sequences: ra2_building, ra2_large_bang, ra2_large_brnl, ra2_verylarge_clsn, ra2_large_tumu
 	ThrowsShrapnel:
 		Weapons: RA2LargeDebris
+		RequiresCondition: !chronobeamed
+	ThrowsShrapnel@body:
+		Weapons: RA2CorpseThrower
+		Pieces: 0, 2
 		RequiresCondition: !chronobeamed
 	SoundOnDamageTransition:
 		DamagedSounds: gdamag1a.wav, gdamag1b.wav, gdamag1c.wav, gdamag1d.wav, gdamag1e.wav
@@ -893,7 +897,6 @@ ra2gapile:
 	WithIdleOverlay@flag:
 		Sequence: idle-flag
 		RequiresCondition: !build-incomplete
-	WithBuildingBib:
 	WithDeathAnimation:
 		DeathSequencePalette: playerra2
 
@@ -1532,6 +1535,7 @@ ra2gapill:
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
 		PauseOnCondition: disabled
+		MuzzlePalette: ra2effect
 	FirepowerMultiplier:
 		Modifier: 200
 	RevealsShroud:
@@ -2067,7 +2071,6 @@ ra2nahand:
 	ProvidesPrerequisite@buildingname:
 	GivesBuildableArea:
 		AreaTypes: building, cityi
-	WithBuildingBib:
 
 ra2narefn:
 	Inherits: ^RA2Building
@@ -2565,6 +2568,10 @@ ra2nalasr:
 		Voice: Attack
 	Armament:
 		Weapon: RA2vulcan
+		LocalOffset: 350,128,400, 350,-128,400
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
 	WithVoxelTurret:
@@ -3075,7 +3082,6 @@ yryabrck:
 	ProvidesPrerequisite@buildingname:
 	GivesBuildableArea:
 		AreaTypes: building, cityi
-	WithBuildingBib:
 
 yryarefn:
 	Inherits@2: ^Defense
@@ -3524,6 +3530,7 @@ yrngtbnk:
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
 		PauseOnCondition: chronobeamed
+		MuzzlePalette: ra2effect #TODO: tanks with other palettes will render incorrectly
 	Targetable@garrisoned:
 		TargetTypes: LoadedTankBunker
 		RequiresCondition: loaded
@@ -4399,11 +4406,11 @@ RA2SPY:
 		PlayerPalette: playerra2
 
 RA2ADOG:
-	Inherits: ^Soldier
+	Inherits: ^DefaultInfantry
+	Inherits@2: ^AffectedByTiberium
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@Template: ^MeleeInfantryTemplate
 	Inherits@MC: ^MCImmune
-	Inherits@anim: ^RA2Infantry
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Buildable:
 		Queue: Infantry, RAInfantry
@@ -4441,10 +4448,27 @@ RA2ADOG:
 	Armament:
 		Weapon: DogJaw
 		ReloadingCondition: attack-cooldown
-	-AttackFrontal:
-	-SpawnActorOnDeath@Flameguy:
-	-Explodes@Corpse:
-	-Explodes@CorpseThrow:
+	RenderSprites:
+		PlayerPalette: playerra2
+	Crushable:
+		CrushSound: igensqua.wav
+	WithDeathAnimation:
+		DeathSequencePalette: playerra2
+		DeathTypes:
+			DefaultDeath: 1
+			BruteMutate: 1
+			BulletDeath: 1
+			RippedApartDeath: 2
+			SmallExplosionDeath: 2
+			ExplosionDeath: 2
+			FireDeath: 2
+			PsychicDeath: 1
+			TiberiumDeath: 1
+			RadiationDeath: 1
+			RA2VirusDeath: 1
+			ElectricityDeath: 2
+			ContaminatorMutate: 1
+			QuestionMutate: 1
 	AttackLeap:
 		Voice: Attack
 		PauseOnCondition: attacking || attack-cooldown
@@ -4463,6 +4487,7 @@ RA2ADOG:
 		TargetTypes: Ground, Infantry
 	WithInfantryBody:
 		MoveSequence: walk
+		IdleSequences: idle1, idle2
 		StandSequences: stand
 		DefaultAttackSequence: eat
 		RequiresCondition: !run
@@ -4473,10 +4498,6 @@ RA2ADOG:
 		Modifier: 150
 		RequiresCondition: run
 	IgnoresDisguise:
-	Voiced:
-		VoiceSet: DogVoice
-	-TakeCover:
-	-Explodes@Mutate:
 	-Targetable@disguise:
 	Cloneable:
 		Types: NormalInfantry
@@ -6172,7 +6193,7 @@ RA2MGTK:
 		RevealDelay: 25
 		RevealOn: Attack, Move
 		MirageCondition: tree
-		DefaultTargetTypes: t08, t18, t10, t03, t02
+		DefaultTargetTypes: t08, t10, t03, t02
 	WithMuzzleOverlay:
 	RenderSprites:
 		PlayerPalette: playerra2
@@ -6191,7 +6212,7 @@ RA2MGTK:
 		Name: tree
 		RequiresCondition: tree
 		IsPlayerPalette: false
-		Palette: terrain
+		Palette: ra_temperat
 	Voiced:
 		VoiceSet: MirageTankVoice
 	DeliversCash:
