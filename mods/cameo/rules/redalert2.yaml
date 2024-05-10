@@ -344,10 +344,15 @@ Player:
 		Actor: RA2Flameguy
 		DeathType: FireDeath
 	Explodes@Corpse:
-		DeathTypes: DefaultDeath, ExplosionDeath, BulletDeath, RippedApartDeath
+		DeathTypes: DefaultDeath, BulletDeath, RippedApartDeath
 		Weapon: RA2CorpseSpawner
 		EmptyWeapon: RA2CorpseSpawner
 		RequiresCondition: !chronobeamed
+	#Explodes@CorpseThrow:
+	#	DeathTypes: ExplosionDeath
+	#	Weapon: RA2CorpseThrower
+	#	EmptyWeapon: RA2CorpseThrower
+	#	RequiresCondition: !chronobeamed
 
 ^RA2Infantry:
 	Inherits@shadow: ^RA2InfantryDeathAnimations
@@ -410,7 +415,15 @@ RA2Flameguy:
 		BuildSounds: uplace.wav
 	Explodes:
 		Weapon: RA2BuildingExplode
+		EmptyWeapon: RA2BuildingExplode
 		Sequences: ra2_building, ra2_large_bang, ra2_large_brnl, ra2_verylarge_clsn, ra2_large_tumu
+	ThrowsShrapnel:
+		Weapons: RA2LargeDebris
+		RequiresCondition: !chronobeamed
+	ThrowsShrapnel@body:
+		Weapons: RA2CorpseThrower
+		Pieces: 0, 2
+		RequiresCondition: !chronobeamed
 	SoundOnDamageTransition:
 		DamagedSounds: gdamag1a.wav, gdamag1b.wav, gdamag1c.wav, gdamag1d.wav, gdamag1e.wav
 		DestroyedSounds: bgendiea.wav, bgendieb.wav, bgendiec.wav, bgendied.wav, bgendiee.wav, bgendief.wav
@@ -423,6 +436,15 @@ RA2Flameguy:
 	-AcceptsDeliveredCash:
 	-DamageMultiplier@BLDDURABLE:
 	-GrantConditionOnPrerequisite@BLDDURABLE:
+
+^RA2Vehicle:
+	Explodes:
+		Weapon: RA2UnitExplode
+		EmptyWeapon: RA2UnitExplode
+		RequiresCondition: !chronobeamed
+	ThrowsShrapnel:
+		Weapons: RA2Debris
+		RequiresCondition: !chronobeamed
 
 ^RenderVoxel:
 	BodyOrientation:
@@ -654,6 +676,7 @@ ra2gacnst:
 		Description: Builds structures
 	WithIdleOverlay@fans:
 		Sequence: idle-fans
+		RequiresCondition: !build-incomplete
 	Exit@1:
 		SpawnOffset: 213,-128,0
 		ExitCell: 1,2
@@ -874,7 +897,6 @@ ra2gapile:
 	WithIdleOverlay@flag:
 		Sequence: idle-flag
 		RequiresCondition: !build-incomplete
-	WithBuildingBib:
 	WithDeathAnimation:
 		DeathSequencePalette: playerra2
 
@@ -1837,8 +1859,10 @@ ra2nacnst:
 	-WithIdleOverlay@fans:
 	WithIdleOverlay@top:
 		Sequence: idle-top
+		RequiresCondition: !build-incomplete
 	WithIdleOverlay@normal:
 		Sequence: idle-normal
+		RequiresCondition: !build-incomplete
 	WithBuildingPlacedOverlay:
 		Sequence: build
 	GrantConditionOnPrerequisite@RUSSIA:
@@ -2044,7 +2068,6 @@ ra2nahand:
 	ProvidesPrerequisite@buildingname:
 	GivesBuildableArea:
 		AreaTypes: building, cityi
-	WithBuildingBib:
 
 ra2narefn:
 	Inherits: ^RA2Building
@@ -2538,6 +2561,10 @@ ra2nalasr:
 		Voice: Attack
 	Armament:
 		Weapon: RA2vulcan
+		LocalOffset: 350,128,400, 350,-128,400
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
 	WithVoxelTurret:
@@ -2611,6 +2638,7 @@ ra2tesla:
 	Inherits@IDISABLE: ^DisabledOverlay
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@Template: ^AdvancedDefenseTemplate
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 80
@@ -3052,7 +3080,6 @@ yryabrck:
 	ProvidesPrerequisite@buildingname:
 	GivesBuildableArea:
 		AreaTypes: building, cityi
-	WithBuildingBib:
 
 yryarefn:
 	Inherits@2: ^Defense
@@ -3449,7 +3476,7 @@ yryggntc:
 
 yrngtbnk:
 	#Inherits: ^RA2Building
-	Inherits@2: ^Defense
+	Inherits@2: ^RA2Defense
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetAll
@@ -3460,6 +3487,8 @@ yrngtbnk:
 		Class: yrngtbnk
 	Tooltip:
 		Name: Tank Bunker
+	RenderSprites:
+		PlayerPalette: player
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -3499,6 +3528,7 @@ yrngtbnk:
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
 		PauseOnCondition: chronobeamed
+		MuzzlePalette: ra2effect #TODO: tanks with other palettes will render incorrectly
 	Targetable@garrisoned:
 		TargetTypes: LoadedTankBunker
 		RequiresCondition: loaded
@@ -3559,14 +3589,12 @@ yrngtbnk.magnet:
 		Name: Loaded Tank Bunker (Magnetron)
 
 YRygggun:
-	Inherits: ^RA2Building
-	Inherits@2: ^Defense
+	Inherits: ^RA2Defense
 	Inherits@Template: ^AntiAirDefenseTemplate
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@RenderVoxel: ^RenderVoxel
 	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
-	Inherits@IDISABLE: ^DisabledOverlay
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
@@ -3657,9 +3685,8 @@ YRygggun:
 		PipCount: 6
 
 yrygpsyt:
-	Inherits: ^Defense
-	Inherits@Template: ^BasicDefenseTemplate
-	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits: ^RA2Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Buildable:
@@ -4377,10 +4404,11 @@ RA2SPY:
 		PlayerPalette: playerra2
 
 RA2ADOG:
-	Inherits: ^Soldier
+	Inherits: ^DefaultInfantry
+	Inherits@2: ^AffectedByTiberium
+	Inherits@detect: ^GenericGroundDetector
 	Inherits@Template: ^MeleeInfantryTemplate
 	Inherits@MC: ^MCImmune
-	Inherits@anim: ^RA2Infantry
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Buildable:
 		Queue: Infantry, RAInfantry
@@ -4418,9 +4446,27 @@ RA2ADOG:
 	Armament:
 		Weapon: DogJaw
 		ReloadingCondition: attack-cooldown
-	-AttackFrontal:
-	-SpawnActorOnDeath@Flameguy:
-	-Explodes@Corpse:
+	RenderSprites:
+		PlayerPalette: playerra2
+	Crushable:
+		CrushSound: igensqua.wav
+	WithDeathAnimation:
+		DeathSequencePalette: playerra2
+		DeathTypes:
+			DefaultDeath: 1
+			BruteMutate: 1
+			BulletDeath: 1
+			RippedApartDeath: 2
+			SmallExplosionDeath: 2
+			ExplosionDeath: 2
+			FireDeath: 2
+			PsychicDeath: 1
+			TiberiumDeath: 1
+			RadiationDeath: 1
+			RA2VirusDeath: 1
+			ElectricityDeath: 2
+			ContaminatorMutate: 1
+			QuestionMutate: 1
 	AttackLeap:
 		Voice: Attack
 		PauseOnCondition: attacking || attack-cooldown
@@ -4439,6 +4485,7 @@ RA2ADOG:
 		TargetTypes: Ground, Infantry
 	WithInfantryBody:
 		MoveSequence: walk
+		IdleSequences: idle1, idle2
 		StandSequences: stand
 		DefaultAttackSequence: eat
 		RequiresCondition: !run
@@ -4449,10 +4496,6 @@ RA2ADOG:
 		Modifier: 150
 		RequiresCondition: run
 	IgnoresDisguise:
-	Voiced:
-		VoiceSet: DogVoice
-	-TakeCover:
-	-Explodes@Mutate:
 	-Targetable@disguise:
 	Cloneable:
 		Types: NormalInfantry
@@ -4562,6 +4605,7 @@ YRBORIS:
 
 RA2E2:
 	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -4613,6 +4657,7 @@ RA2E2:
 
 RA2flakt:
 	Inherits: ^Soldier
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -4702,6 +4747,7 @@ RA2flakt:
 
 RA2DESO:
 	Inherits: ^Soldier
+	Inherits@Template: ^HeavyInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -4816,6 +4862,7 @@ RA2TERROR:
 
 RA2IVAN:
 	Inherits: ^Soldier
+	Inherits@Template: ^MeleeInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -4868,6 +4915,7 @@ RA2IVAN:
 		RequiresCondition: rank-elite
 ra2shk:
 	Inherits: ^Soldier
+	Inherits@Template: ^HeavyInfantryTemplate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
@@ -5057,6 +5105,7 @@ RA2YURI:
 ##############################################
 YRINIT:
 	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -5116,6 +5165,7 @@ YRINIT:
 
 YRBRUTE:
 	Inherits: ^Soldier
+	Inherits@Template: ^MeleeInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -5248,6 +5298,7 @@ YRSLAV:
 
 YRVIRUS:
 	Inherits: ^Soldier
+	Inherits@Template: ^SniperInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -5486,6 +5537,7 @@ ra2amcv.bot:
 
 RA2CMIN:
 	Inherits: HARV
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@SHADOWS: ^Shadows
 	Valued:
@@ -5514,6 +5566,7 @@ RA2CMIN:
 
 RA2MTNK:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -5600,6 +5653,7 @@ RA2MTNK:
 
 YRROBO:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@Template: ^HighTechTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -5681,6 +5735,7 @@ YRROBO:
 
 RA2TNKD:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@Template: ^FireSupportTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -5741,6 +5796,7 @@ RA2TNKD:
 
 RA2FV:
 	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
@@ -5985,6 +6041,7 @@ RA2FVBOTCHRONO:
 
 RA2SREF:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@Template: ^ArtilleryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -6075,6 +6132,7 @@ RA2SREF:
 
 RA2MGTK:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@Template: ^HighTechTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -6135,7 +6193,7 @@ RA2MGTK:
 		RevealDelay: 25
 		RevealOn: Attack, Move
 		MirageCondition: tree
-		DefaultTargetTypes: t08, t18, t10, t03, t02
+		DefaultTargetTypes: t08, t10, t03, t02
 	WithMuzzleOverlay:
 	RenderSprites:
 		PlayerPalette: playerra2
@@ -6154,7 +6212,7 @@ RA2MGTK:
 		Name: tree
 		RequiresCondition: tree
 		IsPlayerPalette: false
-		Palette: terrain
+		Palette: ra_temperat
 	Voiced:
 		VoiceSet: MirageTankVoice
 	DeliversCash:
@@ -6166,6 +6224,7 @@ RA2MGTK:
 
 yrbfrt:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
@@ -6295,6 +6354,7 @@ yrbfrt.bot3:
 RA2SMCV:
 	Inherits: ^Vehicle
 	Inherits@mcv: ^MCV
+	Inherits@anim: ^RA2Vehicle
 	Inherits@conyard: ^Conyard
 	Inherits@SHADOWS: ^Shadows
 	Valued:
@@ -6347,6 +6407,8 @@ ra2smcv.bot:
 
 RA2HTNK:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
@@ -6371,8 +6433,6 @@ RA2HTNK:
 		HpPerStep: 2637
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
 	Turreted:
 		TurnSpeed: 20 #3
 		Offset: -100,0,5
@@ -6425,12 +6485,13 @@ RA2HTNK:
 
 RA2HTK:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@cargo: ^CargoVehicle
-	Inherits@detect: ^GenericGroundDetector
+	Inherits@Template: ^ScoutVehicleTemplate
 	Inherits@bot: ^BotAutoDeployTransport
 	Valued:
 		Cost: 700
@@ -6455,8 +6516,6 @@ RA2HTK:
 		HpPerStep: 2637
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
 	Turreted:
 		TurnSpeed: 60
 		Offset: -150,0,100
@@ -6517,10 +6576,12 @@ ra2htk.bot2:
 
 RA2APOC:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@Template: ^HighTechTankTemplate
 	Valued:
 		Cost: 1750
 	Tooltip:
@@ -6543,8 +6604,6 @@ RA2APOC:
 		HpPerStep: 3333
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
 	Turreted:
 		TurnSpeed: 12
 	Armament@PRIMARY:
@@ -6621,10 +6680,12 @@ RA2APOC:
 
 RA2V3:
 	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
+	Inherits@Template: ^ArtilleryTemplate
 	Inherits@SHADOWS: ^InfantryShadows
 	Buildable:
 		Queue: Vehicle, RAVehicle
@@ -6641,8 +6702,6 @@ RA2V3:
 		Type: Light
 	Mobile:
 		Speed: 75
-	RevealsShroud:
-		Range: 5c0
 	Armament:
 		Weapon: V3Launch
 		LocalOffset: -512,0,128
@@ -6748,10 +6807,12 @@ ra2v3rocketelite:
 
 RA2TTNK:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@Template: ^HighTechTankTemplate
 	Inherits@SHADOWS: ^Shadows
 	Valued:
 		Cost: 1250
@@ -6771,8 +6832,6 @@ RA2TTNK:
 		HpPerStep: 2637
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
 	Turreted:
 		TurnSpeed: 12
 	Armament@PRIMARY:
@@ -6814,6 +6873,7 @@ RA2TTNK:
 
 RA2HARV:
 	Inherits: HARV
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
@@ -6858,6 +6918,7 @@ RA2HARV:
 
 ra2dtruck:
 	Inherits: DTRK
+	Inherits@anim: ^RA2Vehicle
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@EMP: ^FrontalEMP
@@ -6911,7 +6972,7 @@ ra2dron:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 4c0
+		Range: 6c0
 	Passenger:
 		CargoType: Infantry
 		Weight: 2
@@ -6950,8 +7011,8 @@ ra2dron:
 	DeliversCash:
 		Payload: 200
 	Explodes:
-		Weapon: CosmeticExplodeSmall
-		EmptyWeapon: CosmeticExplodeSmall
+		Weapon: RA2UnitExplodeSmall
+		EmptyWeapon: RA2UnitExplodeSmall
 	Targetable@vehicleexplodedamage:
 		TargetTypes: TerrorDrone
 	Targetable@dog:
@@ -6963,6 +7024,7 @@ ra2dron:
 ##############################################
 YRPCV:
 	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
 	Inherits@mcv: ^MCV
 	Inherits@conyard: ^Conyard
 	Inherits@SHADOWS: ^Shadows
@@ -7016,6 +7078,7 @@ yrpcv.bot:
 
 YRSMIN:
 	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
@@ -7090,10 +7153,12 @@ yrsmin.empy:
 
 YRYTNK:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@Template: ^ScoutVehicleTemplate
 	Inherits@SHADOWS: ^Shadows
 	Valued:
 		Cost: 600
@@ -7112,8 +7177,6 @@ YRYTNK:
 		HpPerStep: 2637
 	Armor:
 		Type: Light
-	RevealsShroud:
-		Range: 6c0
 	Turreted:
 		TurnSpeed: 16
 	AmmoPool:
@@ -7237,11 +7300,12 @@ YRLTNK:
 
 YRTELE:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
-	Inherits@detect: ^GenericGroundDetector
+	Inherits@Template: ^HighTechTankTemplate
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -7262,8 +7326,6 @@ YRTELE:
 		HpPerStep: 2637
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
 	Turreted:
 		TurnSpeed: 12
 	Armament@Normal:
@@ -7306,6 +7368,7 @@ YRTELE:
 
 YRCAOS:
 	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
@@ -7365,11 +7428,13 @@ YRCAOS:
 
 YRMIND:
 	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@Template: ^HighTechTankTemplate
 	Inherits@MC: ^MCImmune
 	Valued:
 		Cost: 1500
@@ -7389,8 +7454,6 @@ YRMIND:
 		HpPerStep: 2637
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
 	Turreted:
 		TurnSpeed: 2000
 	Armament@PRIMARY:
@@ -8259,6 +8322,7 @@ yrbsubmisl:
 
 RA2ZEP:
 	Inherits: ^Helicopter
+	Inherits@Template: ^BomberTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceGlobal
@@ -8334,6 +8398,7 @@ RA2ZEP:
 
 yrschp:
 	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
@@ -8820,6 +8885,7 @@ ra2hind:
 
 YRDISK:
 	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceGlobal
@@ -8844,8 +8910,6 @@ YRDISK:
 		RepulsionSpeed: 10
 	Health:
 		HP: 50000
-	Armor:
-		Type: Light
 	RevealsShroud:
 		Range: 7c0
 		Type: GroundPosition
@@ -8911,6 +8975,7 @@ YRDISK:
 
 ra2rock:
 	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@heal: ^HospitalHealable
@@ -8932,9 +8997,9 @@ ra2rock:
 		IdealSeparation: 512
 		Voice: Move
 	Health:
-		HP: 20000
-	Armor:
-		Type: None
+		HP: 10000
+	#Armor:
+	#	Type: None
 	RevealsShroud:
 		Range: 7c0
 		Type: GroundPosition
