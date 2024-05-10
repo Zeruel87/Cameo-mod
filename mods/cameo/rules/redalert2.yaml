@@ -366,10 +366,10 @@ Player:
 		Voice: Poisoned
 		DeathTypes: RadiationDeath, TiberiumDeath
 		RequiresCondition: !chronobeamed
-	DeathSounds@radiation:
-		Voice: PsyCrush
-		DeathTypes: PsychicDeath
-		RequiresCondition: !chronobeamed
+	#DeathSounds@psychic:
+	#	Voice: PsyCrush
+	#	DeathTypes: PsychicDeath
+	#	RequiresCondition: !chronobeamed
 	#DeathSounds@virus:
 	#	Voice: Virus
 	#	DeathTypes: RA2VirusDeath
@@ -2449,6 +2449,7 @@ yrngbnkr:
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@gar: ^ClearableGarrisonNeutronOnly
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
 	Tooltip:
 		Name: Battle Bunker
 	Building:
@@ -3459,6 +3460,7 @@ yrngtbnk:
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@sell: ^RA2YSpawnActorsOnSell
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
 	Selectable:
 		Bounds: 2048, 2048
 		Class: yrngtbnk
@@ -3488,7 +3490,7 @@ yrngtbnk:
 	Cargo:
 		Types: Vehicle
 		MaxWeight: 4
-		LoadedCondition: bunkerup
+		LoadedCondition: loaded
 		PassengerFacing: 0
 		AfterLoadDelay: 0
 		BeforeUnloadDelay: 0
@@ -3505,7 +3507,7 @@ yrngtbnk:
 		PauseOnCondition: chronobeamed
 	Targetable@garrisoned:
 		TargetTypes: LoadedTankBunker
-		RequiresCondition: bunkerup
+		RequiresCondition: loaded
 	RenderRangeCircle:
 		FallbackRange: 6c0
 	DetectCloaked:
@@ -3513,10 +3515,10 @@ yrngtbnk:
 	WithSpriteBody:
 	WithIdleOverlay@Garrisoned:
 		Sequence: idle-bunkered
-		RequiresCondition: !build-incomplete && bunkerup
+		RequiresCondition: !build-incomplete && loaded
 	WithIdleOverlay@GarrisonedFront:
 		Sequence: idle-bunkered-front
-		RequiresCondition: !build-incomplete && bunkerup
+		RequiresCondition: !build-incomplete && loaded
 	WithMakeAnimation:
 	WithCargoPipsDecoration:
 		Position: BottomLeft
@@ -3811,6 +3813,7 @@ RA2E1:
 	Inherits@anim: ^RA2Infantry
 	Inherits@editorhack: ^DeployableInfantryEditor
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@bot: ^BotAutoDeploySwitchMode
 	Valued:
 		Cost: 200
 	Tooltip:
@@ -3906,10 +3909,6 @@ RA2E1:
 	Crushable@deployed:
 		CrushClasses: vehicle
 		RequiresCondition: !undeployed
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 500
-		DeployTrigger: Attack
 	Voiced:
 		VoiceSet: GIVoice
 	DeliversCash:
@@ -3928,7 +3927,7 @@ YRGGI:
 	Inherits@anim: ^RA2Infantry
 	Inherits@editorhack: ^DeployableInfantryEditor
 	Inherits@vo: ^AttackFrontalVoice
-	Inherits@bot: ^BotMicromanageable
+	Inherits@bot: ^BotAutoDeploySwitchMode
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -4043,10 +4042,6 @@ YRGGI:
 	Crushable@deployed:
 		CrushClasses: vehicle
 		RequiresCondition: !undeployed
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 500
-		DeployTrigger: Attack
 	Voiced:
 		VoiceSet: GGIVoice
 	DeliversCash:
@@ -4332,7 +4327,6 @@ RA2SEAL:
 		Payload: 1000
 	Voiced:
 		VoiceSet: SealVoice
-	AnnounceOnKill:
 	ReloadDelayMultiplier@eliteplus:
 		RequiresCondition: rank-elite
 		Modifier: 75
@@ -4432,6 +4426,7 @@ RA2ADOG:
 		ReloadingCondition: attack-cooldown
 	-AttackFrontal:
 	-SpawnActorOnDeath@Flameguy:
+	-Explodes@Corpse:
 	AttackLeap:
 		Voice: Attack
 		PauseOnCondition: attacking || attack-cooldown
@@ -4718,6 +4713,7 @@ RA2DESO:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@bot: ^BotAutoDeployOnLowHealth
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -4775,9 +4771,6 @@ RA2DESO:
 		Payload: 300
 	Cloneable:
 		Types: NormalInfantry
-	AutoDeployer:
-		DeployTrigger: Damage
-		DeployChance: 10
 	-DamagedByTintedCells@rad:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
@@ -4998,6 +4991,7 @@ RA2YURI:
 	Inherits@anim: ^RA2Infantry
 	Inherits@MC: ^MCImmune
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@bot: ^BotAutoDeployOnLowHealth
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -5374,6 +5368,7 @@ YRYURIX:
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Inherits@Template: ^HeroInfantryTemplate
+	Inherits@bot: ^BotAutoDeployOnLowHealth
 	Selectable:
 		DecorationBounds: 512, 1440, 0, -512
 	Valued:
@@ -5758,6 +5753,7 @@ RA2FV:
 	Inherits@EMP: ^TurretEMP
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@IFV: ^IFVConditions
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -6180,6 +6176,7 @@ yrbfrt:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@crush: ^VehicleCrusher
 	Inherits@cargo: ^CargoVehicle
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -6438,6 +6435,7 @@ RA2HTK:
 	Inherits@EMP: ^TurretEMP
 	Inherits@cargo: ^CargoVehicle
 	Inherits@detect: ^GenericGroundDetector
+	Inherits@bot: ^BotAutoDeployTransport
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -6513,9 +6511,6 @@ ra2htk.bot1:
 		InitialUnits: ra2shk, ra2shk, ra2shk, ra2shk, ra2shk
 	ProductionCostMultiplier:
 		Multiplier: 300
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 0
 	EditorOnlyTooltip:
 		Name: Loaded Flak Track
 
@@ -8347,6 +8342,7 @@ yrschp:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@detect: ^GenericAirDetector
+	Inherits@bot: ^BotAutoDeploySwitchMode50
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -8399,11 +8395,6 @@ yrschp:
 		RequiresCondition: rank-elite && deployed && !airborne
 	Turreted:
 		TurnSpeed: 80
-	AutoDeployer:
-		DeployTrigger: Attack, Damage
-		DeployChance: 50
-		DeployTicks: 250
-		UndeployTicks: 500
 	AutoTarget:
 		ScanRadius: 15
 	-AttackAircraft:
@@ -8506,11 +8497,6 @@ yrschd:
 		Weapon: RA160mmE_elite
 		LocalOffset: 410,0,650
 		RequiresCondition: rank-elite
-	AutoDeployer:
-		DeployTrigger: Attack, Damage
-		DeployChance: 50
-		DeployTicks: 250
-		UndeployTicks: 500
 	BodyOrientation:
 		QuantizedFacings: 16
 	WithVoxelTurret:
@@ -8664,22 +8650,13 @@ RA2BEAG:
 	DamageMultiplier@eliteplus:
 		Modifier: 75
 		RequiresCondition: rank-elite
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 4
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 ra2shad:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
+	Inherits@bot: ^BotAutoDeployTransport
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -8767,13 +8744,6 @@ ra2shad.bot1:
 		InitialUnits: ra2seal, yrggi, yrggi, yrggi, ra2seal
 	ProductionCostMultiplier:
 		Multiplier: 200
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 100
-	KillsSelf:
-		RemoveInstead: true
-		RequiresCondition: !loaded && botmicro
-		Delay: 200
 
 ra2shad.bot2:
 	Inherits: ra2shad.bot1

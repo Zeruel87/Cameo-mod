@@ -5354,6 +5354,58 @@ CPQDEBUGDUMMY:
 		Condition: botmicro
 		Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce
 
+^BotAutoDeployTransport:
+	Inherits: ^BotMicromanageable
+	AutoDeployer:
+		DeployChance: 100
+		DeployTicks: 100
+		RequiresCondition: loaded && botmicro
+
+^BotAutoDeployUnarmedAirTransport:
+	Inherits: ^BotAutoDeployTransport
+	KillsSelf:
+		RemoveInstead: true
+		RequiresCondition: !loaded && botmicro
+		Delay: 100
+
+^BotAutoDeployOnAttack:
+	Inherits: ^BotMicromanageable
+	AutoDeployer:
+		DeployTrigger: Attack
+		DeployChance: 100
+		DeployTicks: 0
+		RequiresCondition: botmicro
+
+^BotAutoDeploySwitchMode:
+	Inherits: ^BotAutoDeployOnAttack
+	AutoDeployer:
+		DeployChance: 100
+		DeployTicks: 500
+
+^BotAutoDeploySwitchMode50:
+	Inherits: ^BotAutoDeploySwitchMode
+	AutoDeployer:
+		DeployChance: 50
+		DeployTicks: 250
+		UndeployTicks: 500
+
+^BotAutoDeployOnLowHealth:
+	Inherits: ^BotMicromanageable
+	GrantConditionOnDamageState@UseBomb:
+		Condition: usebomb
+		ValidDamageStates: Heavy, Critical
+	AutoDeployer:
+		DeployChance: 100
+		DeployTicks: 500
+		DeployTrigger: Attack, Damage
+		RequiresCondition: usebomb && botmicro
+
+^BotAutoDeployEvacuateCargo:
+	Inherits: ^BotAutoDeployOnLowHealth
+	AutoDeployer:
+		DeployTrigger: Damage
+		RequiresCondition: usebomb && botmicro && loaded
+
 ^upgrade.template:
 	Buildable:
 		BuildLimit: 1
