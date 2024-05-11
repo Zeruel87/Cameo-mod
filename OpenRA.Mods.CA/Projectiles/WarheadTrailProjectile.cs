@@ -244,7 +244,7 @@ namespace OpenRA.Mods.CA.Projectiles
 				var facing = (offsetTargetPos - offsetSourcePos).Yaw;
 				var projectileArgs = new ProjectileArgs
 				{
-					Weapon = info.WeaponInfo,
+					// Weapon = info.WeaponInfo,
 					DamageModifiers = args.DamageModifiers,
 					Facing = facing,
 					Source = offsetSourcePos,
@@ -254,7 +254,7 @@ namespace OpenRA.Mods.CA.Projectiles
 					PassiveTarget = target.CenterPosition
 				};
 
-				projectiles[i] = new WarheadTrailProjectileEffect(info, projectileArgs, lifespan, estimatedLifespan, info.ForceAtGroundLevel);
+				projectiles[i] = new WarheadTrailProjectileEffect(info, args.Weapon, projectileArgs, lifespan, estimatedLifespan, info.ForceAtGroundLevel);
 			}
 
 			foreach (var p in projectiles)
@@ -277,8 +277,9 @@ namespace OpenRA.Mods.CA.Projectiles
 
 			if (ticks >= lifespan)
 			{
-				foreach (var projectile in projectiles)
-					projectile.Explode(world);
+				/*foreach (var projectile in projectiles)
+					if (projectile.DetonateSelf)
+						projectile.Explode(world);*/
 
 				world.AddFrameEndTask(w => w.Remove(this));
 			}
@@ -291,7 +292,7 @@ namespace OpenRA.Mods.CA.Projectiles
 			// Trigger all so-far-untriggered explosions.
 			foreach (var projectile in projectiles)
 				if (!projectile.DetonateSelf)
-					projectile.Impact();
+					projectile.Impact(info.WeaponInfo);
 		}
 
 		public IEnumerable<IRenderable> Render(WorldRenderer wr)
