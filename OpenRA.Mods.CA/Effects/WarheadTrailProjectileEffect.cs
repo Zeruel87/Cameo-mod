@@ -25,6 +25,7 @@ namespace OpenRA.Mods.CA.Effects
 	public class WarheadTrailProjectileEffect : IEffect, ISync
 	{
 		readonly WarheadTrailProjectileInfo info;
+		readonly WeaponInfo parentWeapon;
 		readonly ProjectileArgs args;
 		readonly Animation anim;
 		readonly string trailPalette;
@@ -47,9 +48,10 @@ namespace OpenRA.Mods.CA.Effects
 		public bool DetonateSelf { get; private set; }
 		public WPos Position { get { return projectilepos; } }
 
-		public WarheadTrailProjectileEffect(WarheadTrailProjectileInfo info, ProjectileArgs args, int lifespan, int estimatedlifespan, bool forceToGround)
+		public WarheadTrailProjectileEffect(WarheadTrailProjectileInfo info, WeaponInfo parentWeapon, ProjectileArgs args, int lifespan, int estimatedlifespan, bool forceToGround)
 		{
 			this.info = info;
+			this.parentWeapon = parentWeapon;
 			this.args = args;
 			this.lifespan = lifespan;
 			this.estimatedlifespan = estimatedlifespan;
@@ -161,7 +163,7 @@ namespace OpenRA.Mods.CA.Effects
 
 		public void Explode(World world)
 		{
-			Impact();
+			Impact(parentWeapon);
 
 			if (info.ContrailLength > 0)
 				world.AddFrameEndTask(w => w.Add(new ContrailFader(projectilepos, contrail)));
@@ -169,16 +171,17 @@ namespace OpenRA.Mods.CA.Effects
 			world.AddFrameEndTask(w => w.Remove(this));
 		}
 
-		public void Impact()
+		public void Impact(WeaponInfo weapon)
 		{
 			var pos = forceToGround ? projectilepos - new WVec(0, 0, world.Map.DistanceAboveTerrain(projectilepos).Length) : projectilepos;
 			var warheadArgs = new WarheadArgs(args)
 			{
+				Weapon = weapon,
 				ImpactOrientation = new WRot(WAngle.Zero, Common.Util.GetVerticalAngle(lastPos, projectilepos), args.Facing),
 				ImpactPosition = pos,
 			};
 
-			args.Weapon.Impact(Target.FromPos(pos), warheadArgs);
+			weapon.Impact(Target.FromPos(pos), warheadArgs);
 		}
 	}
 }
