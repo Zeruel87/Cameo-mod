@@ -2545,16 +2545,16 @@ EYE:
 	Inherits@tech: ^IsTechnoBuilding
 	Inherits@shape: ^2x2Shape
 	Valued:
-		Cost: 3000
+		Cost: 1500
 	Tooltip:
 		Name: Advanced Communications Center
 	ProvidesPrerequisite:
 		Prerequisite: anytdhq
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ~fact.gdi, hq.gdi, !ionc
+		Prerequisites: ~fact.gdi, hq.gdi
 		Queue: Building, RABuilding
-		Description: Provides radar and Orbital Ion Cannon support power.\nRequires power to operate.
+		Description: Provides access to advanced GDI technologies.\nCan be upgraded with an ion cannon uplink.
 	Building:
 		Footprint: X_ xx ==
 		Dimensions: 2,3
@@ -2563,7 +2563,7 @@ EYE:
 	WithSpriteBody:
 		PauseOnCondition: lowpower
 	Health:
-		HP: 600000
+		HP: 300000
 	Armor:
 		Type: Concrete
 	WithBuildingBib:
@@ -2582,6 +2582,7 @@ EYE:
 	IonCannonPower:
 		AllowMultiple: True
 		PauseOnCondition: lowpower
+		RequiresCondition: ionc
 		Prerequisites: ~techlevel.superweapons
 		Icon: ioncannon
 		Cursor: ioncannon
@@ -2601,32 +2602,49 @@ EYE:
 		SupportPowerPaletteOrder: 20
 	SupportPowerChargeBar:
 	Power:
-		Amount: -200
+		Amount: -100
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@swlimit:
 		Prerequisite: ionc
+		RequiresCondition: ionc
+	RevealsShroud@SWReveal:
+		RequiresCondition: swreveal && ionc
 	ProvidesPrerequisite@techcenter:
 		Prerequisite: techcenter
 	ProvidesPrerequisite@tdtechcenter:
 		Prerequisite: tdtechcenter
 	ExternalCondition@JAMMED:
 		Condition: jammed
+	DamageMultiplier@ionc:
+		Modifier: 50
+		RequiresCondition: ionc
+	PowerMultiplier@ionc:
+		Modifier: 200
+		RequiresCondition: ionc
+	Pluggable:
+		Offset: 1,0
+		Conditions:
+			eye: ionc
+		Requirements:
+			eye: !build-incomplete && !ionc
 
-
-EYE2:
-	Inherits: EYE
+eye.ionc:
+	Inherits: ^BuildingPlug
+	Valued:
+		Cost: 1500
 	Tooltip:
-		Name: Advanced Communications Center (Without Ion Cannon)
+		Name: Ion Cannon Uplink
 	Buildable:
-		Prerequisites: ~fact.gdi, hq.gdi
-	-IonCannonPower:
-	-ProvidesPrerequisite@swlimit:
-	-GrantConditionOnPrerequisite@SWReveal:
-	-RevealsShroud@SWReveal:
-	ProvidesPrerequisite:
-		Prerequisite: eye
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 100
+		Prerequisites: ~fact.gdi, eye, !ionc
+		Description: Grants Ion Cannon access to an Advanced Comms Center.\nEnables Ion Cannon support power.\nDoubles the Advanced Comms Center's durability.
+	Power:
+		Amount: -100
+	Plug:
+		Type: eye
 	RenderSprites:
-		Image: EYE
+		Image: eye
 
 TMPL:
 	Inherits: ^BaseBuilding
@@ -2636,16 +2654,16 @@ TMPL:
 	Inherits@sell: ^TDSpawnActorsOnSell
 	Inherits@tech: ^IsTechnoBuilding
 	Valued:
-		Cost: 3000
+		Cost: 1500
 	Tooltip:
 		Name: Temple of Nod
 	ProvidesPrerequisite:
 		Prerequisite: anytdhq
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ~fact.nod, hq.nod, !nodnuke
+		Prerequisites: ~fact.nod, hq.nod
 		Queue: Building, RABuilding
-		Description: Provides Nuclear Strike support power.\nUnlocks Stealth Tank, Chem. Warrior and Obelisk of Light.\nRequires power to operate.
+		Description: Provides advanced Nod technologies.\nCan be upgraded with a nuclear missile silo.
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -2654,7 +2672,7 @@ TMPL:
 		Bounds: 3072, 3072, 0, -512
 	SelectionDecorations:
 	Health:
-		HP: 600000
+		HP: 300000
 	Armor:
 		Type: Concrete
 	RevealsShroud:
@@ -2670,6 +2688,7 @@ TMPL:
 	NukePowerCA:
 		AllowMultiple: True
 		PauseOnCondition: lowpower
+		RequiresCondition: nuke
 		Prerequisites: ~techlevel.superweapons
 		Icon: abomb
 		Cursor: nuke
@@ -2704,29 +2723,48 @@ TMPL:
 		Sequence: smoke
 	SupportPowerChargeBar:
 	Power:
-		Amount: -200
+		Amount: -100
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@swlimit:
 		Prerequisite: nodnuke
+		RequiresCondition: nuke
+	RevealsShroud@SWReveal:
+		RequiresCondition: swreveal && nuke
 	ProvidesPrerequisite@techcenter:
 		Prerequisite: techcenter
 	ProvidesPrerequisite@tdtechcenter:
 		Prerequisite: tdtechcenter
+	DamageMultiplier@nuke:
+		Modifier: 50
+		RequiresCondition: nuke
+	PowerMultiplier@nuke:
+		Modifier: 200
+		RequiresCondition: nuke
+	Pluggable:
+		Offset: 1,0
+		Conditions:
+			tmpl: nuke
+		Requirements:
+			tmpl: !build-incomplete && !nuke
 
-TMPL2:
-	Inherits: TMPL
+tmpl.nuke:
+	Inherits: ^BuildingPlug
+	Valued:
+		Cost: 1500
 	Tooltip:
-		Name: Temple of Nod  (Without Nuclear Missile)
+		Name: Nuclear Missile Silo
 	Buildable:
-		Prerequisites: ~fact.nod, hq.nod
-	-NukePowerCA:
-	-ProvidesPrerequisite@swlimit:
-	-GrantConditionOnPrerequisite@SWReveal:
-	-RevealsShroud@SWReveal:
-	ProvidesPrerequisite:
-		Prerequisite: tmpl
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 100
+		Prerequisites: ~fact.nod, tmpl, !nodnuke
+		Description: Installs a nuclear missile silo at a Temple of Nod.\nEnables Nuclear Strike support power.\nDoubles the Temple of Nod's durability.
+	Power:
+		Amount: -100
+	Plug:
+		Type: tmpl
 	RenderSprites:
 		Image: TMPL
+
 # TD Naval
 
 CNCSYRD:
