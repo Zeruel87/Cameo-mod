@@ -62,12 +62,16 @@ end
 JPPoints = {JPSpawn.Location, JPDeploy.Location}
 SecondMCVSpawn = {EnemySpawnThree.Location, SecondBaseDeploy.Location}
 
-NitroTaskForceSmall = {"ftrk", "ftrk", "3tnk"}
-NitroTaskForceMedium = {"ftrk", "ftrk", "ftrk", "3tnk", "3tnk", "v2rl"}
-NitroTaskForceLarge = {"3tnk", "3tnk", "3tnk", "3tnk", "3tnk", "v2rl", "v2rl", "4tnk"}
+NitroTaskForceSmall = { "ftrk", "ftrk", "3tnk" }
+NitroTaskForceMedium = { "ftrk", "ftrk", "ftrk", "3tnk", "3tnk", "v2rl" }
+NitroTaskForceLarge = { "3tnk", "3tnk", "3tnk", "3tnk", "3tnk", "v2rl", "v2rl", "4tnk" }
+HailMaryWave = { "modoitank", "modoitank", "modoitank", "exorcistoitank" }
 
-NavySmall = {"ss"}
-NavyLarge = {"ss", "msub"}
+SankalpaHeli = { "modhip" }
+SankalpaDefenseForce = { "nodftnk2", "nodftnk2", "chemssm", "chemssm" }
+
+NavySmall = { "ss" }
+NavyLarge = { "ss", "msub" }
 
 WorldLoaded = function ()
 	NewHopeOne = Player.GetPlayer("NewHopeOne")
@@ -91,6 +95,7 @@ WorldLoaded = function ()
 	end)
 	
 	Trigger.AfterDelay(DateTime.Seconds(10), RegularAttackWaves)
+	Trigger.AfterDelay(DateTime.Seconds(60), SeaAttackWaves)
 
 	Trigger.AfterDelay(DateTime.Minutes(3), function()
 		Reinforcements.Reinforce(NitroJP, {"ramcv.japan"}, JPPoints, 0, function (mcv)
@@ -108,17 +113,19 @@ WorldLoaded = function ()
 		end)
 	end)
 
-	Trigger.OnKilled(PlayerOneMCV, function ()
+	Trigger.OnRemovedFromWorld(PlayerOneMCV, function ()
 		NewHopeOne.MarkFailedObjective(NewHopeObjectives[1])
 		NewHopeTwo.MarkFailedObjective(NewHopeObjectives[2])
 	end)
 
-	Trigger.OnKilled(PlayerTwoMCV, function ()
+	Trigger.OnRemovedFromWorld(PlayerTwoMCV, function ()
 		NewHopeOne.MarkFailedObjective(NewHopeObjectives[1])
 		NewHopeTwo.MarkFailedObjective(NewHopeObjectives[2])
 	end)
 
 	Trigger.OnTimerExpired(function ()
+		-- More to be added later --
+		
 		NewHopeOne.MarkCompletedObjective(NewHopeObjectives[1])
 		NewHopeTwo.MarkCompletedObjective(NewHopeObjectives[2])
 	end)
@@ -133,19 +140,23 @@ RegularAttackWaves = function ()
 	else
 		SendLargeWaves()
 	end
+	if DateTime.GameTime > DateTime.Minutes(19) + DateTime.Seconds(50) then
+		Reinforcements.Reinforce(Nitro, HailMaryWave, {EnemySpawnOne.Location}, 0, UnitHunt)
+	end
 	Trigger.AfterDelay(DateTime.Seconds(60), RegularAttackWaves)
 end
 
 SeaAttackWaves = function ()
 	if DateTime.GameTime < DateTime.Minutes(12) then
 		Reinforcements.Reinforce(Nitro, NavySmall, {EnemyNavySpawnOne.Location}, 0, UnitHunt)
-		Reinforcements.Reinforce(Nitro, NavySmall, {EnemyNavySpawnTwo.Location}, 0, UnitHunt)
 		Reinforcements.Reinforce(Nitro, NavySmall, {EnemyNavySpawnThree.Location}, 0, UnitHunt)
 	else
 		Reinforcements.Reinforce(Nitro, NavyLarge, {EnemyNavySpawnOne.Location}, 0, UnitHunt)
 		Reinforcements.Reinforce(Nitro, NavyLarge, {EnemyNavySpawnTwo.Location}, 0, UnitHunt)
 		Reinforcements.Reinforce(Nitro, NavyLarge, {EnemyNavySpawnThree.Location}, 0, UnitHunt)
 	end
+
+	Trigger.AfterDelay(DateTime.Seconds(90), SeaAttackWaves)
 end
 
 SendSmallWaves = function ()
