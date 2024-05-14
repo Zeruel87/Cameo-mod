@@ -18,15 +18,15 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Cameo.Activities
 {
-	class InfectRV : Enter
+	class InfectCA : Enter
 	{
-		readonly AttackInfectRV infector;
-		readonly AttackInfectRVInfo info;
+		readonly AttackInfectCA infector;
+		readonly AttackInfectCAInfo info;
 		readonly Target target;
 
 		bool jousting;
 
-		public InfectRV(Actor self, Target target, AttackInfectRV infector, AttackInfectRVInfo info, Color? targetLineColor)
+		public InfectCA(Actor self, Target target, AttackInfectCA infector, AttackInfectCAInfo info, Color? targetLineColor)
 			: base(self, target, targetLineColor)
 		{
 			this.target = target;
@@ -59,17 +59,14 @@ namespace OpenRA.Mods.Cameo.Activities
 
 				infector.DoAttack(self, target);
 
-				var infectable = targetActor.TraitOrDefault<InfectableRV>();
-				if (infectable == null || infectable.IsTraitDisabled || infectable.Infector != null)
+				var infectable = targetActor.TraitOrDefault<InfectableCA>();
+				if (infectable == null || infectable.IsTraitDisabled || (infectable.Info.InfectorLimit > 0 && infectable.Infectors.Count >= infectable.Info.InfectorLimit))
 					return;
 
 				w.Remove(self);
 
-				infectable.Infector = Tuple.Create(self, infector, info);
-				infectable.FirepowerMultipliers = self.TraitsImplementing<IFirepowerModifier>()
-					.Select(a => a.GetFirepowerModifier()).ToArray();
-				infectable.Ticks = info.DamageInterval;
-				infectable.GrantCondition(targetActor);
+				infectable.Infectors.Add(new InfectorCA(self, infector, info));
+				infectable.GrantCondition(targetActor, self);
 				infectable.RevokeCondition(targetActor, self);
 			});
 		}
@@ -88,8 +85,11 @@ namespace OpenRA.Mods.Cameo.Activities
 			if (target.Actor.IsDead)
 				return;
 
-			var infectable = target.Actor.TraitOrDefault<InfectableRV>();
-			if (infectable == null || infectable.IsTraitDisabled || infectable.Infector != null)
+			var infectable = target.Actor.TraitOrDefault<InfectableCA>();
+			if (infectable == null || infectable.IsTraitDisabled)
+				return;
+
+			if (infectable.Info.InfectorLimit > 0 && infectable.Infectors.Count >= infectable.Info.InfectorLimit)
 				return;
 
 			infectable.RevokeCondition(target.Actor, self);
@@ -106,8 +106,8 @@ namespace OpenRA.Mods.Cameo.Activities
 			if (!target.IsValidFor(self) || !infector.HasAnyValidWeapons(target))
 				return false;
 
-			var infectable = targetActor.TraitOrDefault<InfectableRV>();
-			if (infectable == null || infectable.IsTraitDisabled || infectable.Infector != null)
+			var infectable = targetActor.TraitOrDefault<InfectableCA>();
+			if (infectable == null || infectable.IsTraitDisabled || (infectable.Info.InfectorLimit > 0 && infectable.Infectors.Count >= infectable.Info.InfectorLimit))
 				return false;
 
 			return true;
@@ -119,7 +119,7 @@ namespace OpenRA.Mods.Cameo.Activities
 				return false;
 
 			// IsValidInfection validated the lookup, no need to check here.
-			var infectable = targetActor.Trait<InfectableRV>();
+			var infectable = targetActor.Trait<InfectableCA>();
 			return infectable.TryStartInfecting(targetActor, self);
 		}
 
@@ -136,6 +136,11 @@ namespace OpenRA.Mods.Cameo.Activities
 			if (infector.Armaments.All(a => a.IsReloading))
 				return false;
 
+			if (jousting)
+			{
+				infector.RevokeJoustCondition(self);
+				jousting = false;
+			}
 			return true;
 		}
 

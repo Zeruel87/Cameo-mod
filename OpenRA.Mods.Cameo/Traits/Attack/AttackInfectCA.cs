@@ -17,7 +17,7 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.Cameo.Traits
 {
 	[Desc("Move onto the target then execute the attack.")]
-	public class AttackInfectRVInfo : AttackFrontalInfo, Requires<MobileInfo>
+	public class AttackInfectCAInfo : AttackFrontalInfo, Requires<MobileInfo>
 	{
 		public readonly string Name = "primary";
 
@@ -57,16 +57,16 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Damage types which allows the infector survive when it's host dies.")]
 		public readonly BitSet<DamageType> SurviveHostDamageTypes = default;
 
-		public override object Create(ActorInitializer init) { return new AttackInfectRV(init.Self, this); }
+		public override object Create(ActorInitializer init) { return new AttackInfectCA(init.Self, this); }
 	}
 
-	public class AttackInfectRV : AttackFrontal
+	public class AttackInfectCA : AttackFrontal
 	{
-		public readonly AttackInfectRVInfo InfectInfo;
+		public readonly AttackInfectCAInfo InfectInfo;
 
 		int joustToken = Actor.InvalidConditionToken;
 
-		public AttackInfectRV(Actor self, AttackInfectRVInfo info)
+		public AttackInfectCA(Actor self, AttackInfectCAInfo info)
 			: base(self, info)
 		{
 			InfectInfo = info;
@@ -97,7 +97,7 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		public override Activity GetAttackActivity(Actor self, AttackSource source, in Target newTarget, bool allowMove, bool forceAttack, Color? targetLineColor)
 		{
-			return new InfectRV(self, newTarget, this, InfectInfo, targetLineColor);
+			return new InfectCA(self, newTarget, this, InfectInfo, targetLineColor);
 		}
 	}
 }
