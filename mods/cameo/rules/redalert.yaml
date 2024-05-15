@@ -1493,6 +1493,7 @@ RAAPC:
 	Inherits@cargo: ^CargoVehicle
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@botmicro: ^BotAutoDeployTransport
 	Valued:
 		Cost: 600
 	ProductionCostMultiplier:
@@ -1534,7 +1535,6 @@ RAAPC:
 	Cargo:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 6
-		LoadingCondition: notmobile
 		InitialUnits: rae1, rae1, rae1, rae3, rae3, rae3
 	RenderSprites:
 		Image: apc
@@ -1550,12 +1550,6 @@ RAAPC:
 		LevelUpNotification: LevelUpRA1
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 0
 
 MNLY:
 	Inherits: ^Tank
@@ -1667,6 +1661,7 @@ FTRK:
 	Inherits@cargo: ^CargoVehicle
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@botmicro: ^BotAutoDeployTransport
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 60
@@ -1689,7 +1684,6 @@ FTRK:
 	Mobile:
 		Speed: 125
 		TurnSpeed: 25
-		PauseOnCondition: notmobile || disabled
 	RevealsShroud:
 		Range: 6c0
 	Turreted:
@@ -1711,7 +1705,6 @@ FTRK:
 	Cargo:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 3
-		LoadingCondition: notmobile
 		InitialUnits: rare1, rae2, rare3
 	SelectionDecorations:
 	Selectable:
@@ -1727,9 +1720,6 @@ FTRK:
 		Image: ftrk
 	GainsExperience:
 		LevelUpNotification: LevelUpRA1
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 	RenderSprites:
 		PlayerPalette: raplayer
 
@@ -2446,7 +2436,8 @@ HIND:
 
 RATRAN:
 	Inherits: ^RAHelicopter
-	Inherits@bot: ^BotMicromanageable
+	Inherits@cargo: ^CargoAircraft
+	Inherits@bot: ^BotAutoDeployUnarmedAirTransport
 	Inherits@CM: ^CountermeasuresUpgrade
 	Buildable:
 		Queue: Aircraft, RAAircraft
@@ -2511,7 +2502,6 @@ RATRAN:
 		AfterLoadDelay: 0
 		BeforeUnloadDelay: 0
 		AfterUnloadDelay: 10
-		LoadedCondition: loaded
 	SpawnActorOnDeath:
 		Actor: RATRAN.Husk
 	SelectionDecorations:
@@ -2523,16 +2513,6 @@ RATRAN:
 	RenderSprites:
 		Image: ratran
 		PlayerPalette: raplayer
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 100
-	KillsSelf:
-		RemoveInstead: true
-		RequiresCondition: !loaded && botmicro
-		Delay: 10
 	Explodes:
 		Weapon: LargeHeliExplode
 
@@ -2610,9 +2590,6 @@ modhip:
 	RenderSprites:
 		Image: modhip
 		PlayerPalette: player
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 	GrantConditionOnDamageState@SmokeTrail:
 		Condition: enable-smoke
 	Explodes:
@@ -2883,6 +2860,7 @@ MODHOVER:
 	Inherits@cargo: ^CargoVehicle
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@botmicro: ^BotAutoDeployTransport
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 120
@@ -2929,7 +2907,6 @@ MODHOVER:
 	Cargo:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 5
-		LoadingCondition: notmobile
 		InitialUnits: raje1, raje3, raje4, ramaid, rasamurai
 	RenderSprites:
 		Image: modhover
@@ -2946,9 +2923,6 @@ MODHOVER:
 		LevelUpNotification: LevelUpRA1
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 MODCORE:
 	Inherits: ^Vehicle
@@ -3431,6 +3405,7 @@ MSUB:
 
 RALST:
 	Inherits: ^BoatUnit
+	Inherits@2: ^CargoVehicle
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -3443,7 +3418,6 @@ RALST:
 		Queue: Naval, RANaval
 	Mobile:
 		Speed: 113
-		RequiresCondition: !notmobile && !disabled
 		Locomotor: lcraft
 	Health:
 		HP: 35000
@@ -3465,12 +3439,8 @@ RALST:
 		AfterLoadDelay: 0
 		BeforeUnloadDelay: 0
 		AfterUnloadDelay: 0
-		LoadingCondition: notmobile
 	Voiced:
 		VoiceSet: RAVehicleVoice
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 ####################################################################################################
 #		BUILDINGS
@@ -5023,6 +4993,7 @@ MSLO:
 		Range: 5c0
 		RequiresCondition: lowpower
 	NukePowerCA:
+		OrderName: NukePowerInfoOrder
 		AllowMultiple: True
 		PauseOnCondition: lowpower
 		Prerequisites: ~techlevel.superweapons
@@ -6150,6 +6121,8 @@ SAPC:
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@cargo: ^CargoVehicle
+	Inherits@botmicro: ^BotAutoDeployTransport
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 130
@@ -6186,11 +6159,7 @@ SAPC:
 	Cargo:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 5
-		LoadingCondition: notmobile
 		InitialUnits: alliedmachinegunner, alliedmachinegunner, rae3, rae3, rae3
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 0
 	Cloak:
 		InitialDelay: 125
 		CloakDelay: 75
@@ -6221,9 +6190,6 @@ SAPC:
 		LevelUpNotification: LevelUpRA1
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 MODTIGER:
 	Inherits: 2TNK
@@ -6373,9 +6339,6 @@ CTNK:
 	AttackFrontal:
 		FacingTolerance: 0
 	WithMuzzleOverlay:
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 0
 	PortableChrono:
 		ChargeDelay: 250
 		HasDistanceLimit: false
@@ -7081,7 +7044,6 @@ MODGTNK:
 	Mobile:
 		Speed: 75
 		TurnSpeed: 15
-		PauseOnCondition: notmobile || disabled
 	Turreted:
 		TurnSpeed: 30
 		Offset: -128,0,0
@@ -7444,6 +7406,7 @@ MODBTR:
 	Inherits@cargo: ^CargoVehicle
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@botmicro: ^BotAutoDeployTransport
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 120
@@ -7457,9 +7420,6 @@ MODBTR:
 		Name: BTR-80
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 0
 	Health:
 		HP: 65000
 	Repairable:
@@ -7482,7 +7442,6 @@ MODBTR:
 	Cargo:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 8
-		LoadingCondition: notmobile
 		InitialUnits: rare1, rare1, rae2, rae2, rare3, rare3, rae4, rae4
 	RenderSprites:
 		Image: modbtr
@@ -7498,9 +7457,6 @@ MODBTR:
 		LevelUpNotification: LevelUpRA1
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 Kotin:
 	Inherits: ^Tank
@@ -8269,6 +8225,7 @@ MODCARR:
 	Inherits@cargo: ^CargoVehicle
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@botmicro: ^BotAutoDeployTransport
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 60
@@ -8313,7 +8270,6 @@ MODCARR:
 	Cargo:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 3
-		LoadingCondition: notmobile
 		InitialUnits: raje1, raje3, raje4
 	SelectionDecorations:
 	Selectable:
@@ -8341,9 +8297,6 @@ MODCARR:
 	RangeMultiplier@GattlingSpeed:
 		RequiresCondition: ammo < 6
 		Modifier: 125
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 typechiha:
 	Inherits: MODTYPEJ

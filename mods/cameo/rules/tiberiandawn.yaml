@@ -76,6 +76,22 @@ Player:
 	ProvidesPrerequisite@BuildingsOwned:
 		Prerequisite: allowsMCV
 		RequiresCondition: BuildingsOwned < 5
+	PlugSpawnerBotModule@ionc:
+		Plug: eye.ionc
+		Pluggables: eye
+		Interval: 1000
+		RequiresCondition: boteye
+	GrantConditionOnPrerequisite@ionc:
+		Condition: boteye
+		Prerequisites: eye, botplayer, techlevel.superweapons
+	PlugSpawnerBotModule@nodnuke:
+		Plug: tmpl.nuke
+		Pluggables: templ
+		Interval: 1000
+		RequiresCondition: bottmpl
+	GrantConditionOnPrerequisite@nodnuke:
+		Condition: bottmpl
+		Prerequisites: tmpl, botplayer, techlevel.superweapons
 ####################################################################################################
 #		Tiberian Dawn
 ####################################################################################################
@@ -614,7 +630,6 @@ APC:
 		InitialUnits: e1, e1, e1, e1, e2, e2, e3, e3
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 8
-		LoadingCondition: notmobile
 	Explodes:
 		Weapon: UnitExplode
 	#SpawnActorOnDeath:
@@ -627,9 +642,6 @@ APC:
 		Class: apc
 	RenderSprites:
 		Image: apc
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 ARTY:
 	Inherits: ^Tank
@@ -1231,6 +1243,7 @@ STNK:
 
 TRAN:
 	Inherits: ^Helicopter
+	Inherits@cargo: ^CargoAircraft
 	Inherits@bot: ^BotAutoDeployUnarmedAirTransport
 	Valued:
 		Cost: 1000
@@ -1295,7 +1308,6 @@ TRAN:
 		AfterLoadDelay: 0
 		BeforeUnloadDelay: 0
 		AfterUnloadDelay: 10
-		LoadedCondition: loaded
 	SpawnActorOnDeath:
 		Actor: TRAN.Husk
 	SelectionDecorations:
@@ -1305,9 +1317,6 @@ TRAN:
 	RenderSprites:
 		Image: tran
 		PlayerPalette: raplayer
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 	Explodes:
 		Weapon: LargeHeliExplode
 
@@ -1320,7 +1329,6 @@ tran.gdi:
 		Queue: Aircraft, RAAircraft
 	Cargo:
 		InitialUnits: e1, e1, e1, e1, e2, e2, e2, e3, e3, e3
-		LoadedCondition: loaded
 	EditorOnlyTooltip:
 		Name: Loaded Chinook (GDI)
 
@@ -2637,7 +2645,7 @@ eye.ionc:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 100
-		Prerequisites: ~fact.gdi, eye, !ionc
+		Prerequisites: ~fact.gdi, eye, !ionc, ~techlevel.superweapons
 		Description: Grants Ion Cannon access to an Advanced Comms Center.\nEnables Ion Cannon support power.\nDoubles the Advanced Comms Center's durability.
 	Power:
 		Amount: -100
@@ -2686,6 +2694,7 @@ TMPL:
 		RequiresCondition: !lowpower
 	RenderDetectionCircle:
 	NukePowerCA:
+		OrderName: NukePowerInfoOrder
 		AllowMultiple: True
 		PauseOnCondition: lowpower
 		RequiresCondition: nuke
@@ -2758,7 +2767,7 @@ tmpl.nuke:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 100
-		Prerequisites: ~fact.nod, tmpl, !nodnuke
+		Prerequisites: ~fact.nod, tmpl, !nodnuke, ~techlevel.superweapons
 		Description: Installs a nuclear missile silo at a Temple of Nod.\nEnables Nuclear Strike support power.\nDoubles the Temple of Nod's durability.
 	Power:
 		Amount: -100
@@ -3411,6 +3420,7 @@ CNCRSS:
 	Inherits: ^BoatUnit
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@sub: ^Submarine
+	Inherits@cargo: ^CargoVehicle
 	Valued:
 		Cost: 650
 	Tooltip:
@@ -3446,15 +3456,11 @@ CNCRSS:
 		AfterLoadDelay: 0
 		BeforeUnloadDelay: 0
 		AfterUnloadDelay: 0
-		LoadingCondition: notmobile
 	GrantConditionOnTerrain@underwater:
 		Condition: cancloak
 		TerrainTypes: Water
 	Cloak@underwater:
 		PauseOnCondition: disabled || !cancloak
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 CNCSS:
 	Inherits: SS
@@ -3480,6 +3486,7 @@ CNCMSUB:
 
 CNCLST:
 	Inherits: ^BoatUnit
+	Inherits@cargo: ^CargoVehicle
 	Inherits@EXPERIENCE: ^GainsExperience
 	Valued:
 		Cost: 700
@@ -3515,12 +3522,8 @@ CNCLST:
 		AfterLoadDelay: 0
 		BeforeUnloadDelay: 0
 		AfterUnloadDelay: 0
-		LoadingCondition: notmobile
 	RenderSprites:
 		Image: lst
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 	####################################################################################################
 	#		Promotions Nod
@@ -3940,10 +3943,6 @@ nodbuggy2:
 		InitialUnits: e1, e3, e4
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 3
-		LoadingCondition: notmobile
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 	Explodes:
 		Weapon: UnitExplodeSmall
 
@@ -4804,6 +4803,8 @@ gdiassaultapc:
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@cargo: ^CargoVehicle
+	Inherits@botmicro: ^BotAutoDeployEvacuateCargo
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -4852,9 +4853,6 @@ gdiassaultapc:
 		Weapon: MachineGunHumvee2AA
 		LocalOffset: 171,0,43
 		MuzzleSequence: muzzle
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 	Voiced:
 		VoiceSet: BattleFortressVoice
 	Selectable:
@@ -4907,10 +4905,6 @@ gdihumvee:
 		InitialUnits: e1, e2, e3
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 3
-		LoadingCondition: notmobile
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 	Explodes:
 		Weapon: UnitExplodeSmall
 

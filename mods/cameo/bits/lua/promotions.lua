@@ -9,6 +9,14 @@
 
 PromotionsText = ""
 
+PromotionNotificationText = {
+	"You have been promoted. Review the Promotions tab for access to new technologies.",
+	"Congratulations on your field promotion! Purchase a Promotional upgrade to bolster your forces.",
+	"Your successes have granted you access to an exclusive field technology or ability of your choice.",
+	"You've been authorized to purchase a Promotional upgrade. Fight on to earn more points and expand your arsenal.",
+	"A Promotional upgrade is now available to you. Unlock new units and powers or augment your existing ones."
+}
+
 Seconds = 0
 
 PointsPerRank = { 0, 1, 1, 1, 1, 1, 1, 2}
@@ -21,6 +29,10 @@ TextColors = { }
 
 Ranks = { "Level 1", "Level 2", "Level 3", "Level 4", "Level 5" , "Level 6", "Level 7", "Level 8" }
 RankXPs = { 0, 5000, 15000, 30000, 50000, 75000, 115000, 140000 }
+
+NotifyPromotion = function(player)
+	Media.DisplayMessageToPlayer(player, Utils.Random(PromotionNotificationText), "General Staff", player.Color)
+end
 
 ReducePoints = function(player)
 	Trigger.OnProduction(player.GetActorsByType("player")[1], function()
@@ -59,14 +71,14 @@ TickPromotions = function()
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[2]
 
-
+			NotifyPromotion(player)
 		end
 
 		if player.Experience >= RankXPs[3] and not (Levels[player.InternalName] > 1) then
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[3]
 
-
+			NotifyPromotion(player)
 			Actor.Create("hack.rank_3", true, { Owner = player })
 		end
 
@@ -74,14 +86,14 @@ TickPromotions = function()
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[4]
 
-
+			NotifyPromotion(player)
 		end
 
 		if player.Experience >= RankXPs[5] and not (Levels[player.InternalName] > 3) then
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[5]
 
-
+			NotifyPromotion(player)
 			Actor.Create("hack.rank_5", true, { Owner = player })
 		end
 
@@ -89,21 +101,21 @@ TickPromotions = function()
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[6]
 
-
+			NotifyPromotion(player)
 		end
 
 		if player.Experience >= RankXPs[7] and not (Levels[player.InternalName] > 5) then
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[7]
 
-
+			NotifyPromotion(player)
 		end
 
 		if player.Experience >= RankXPs[8] and not (Levels[player.InternalName] > 6) then
 			Levels[player.InternalName] = Levels[player.InternalName] + 1
 			Points[player.InternalName] = Points[player.InternalName] + PointsPerRank[8]
 
-
+			NotifyPromotion(player)
 		end
 	end
 end
