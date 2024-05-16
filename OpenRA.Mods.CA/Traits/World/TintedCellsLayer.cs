@@ -96,6 +96,11 @@ namespace OpenRA.Mods.CA.Traits
 			TintLevel = 255 * (info.Brightest - info.Darkest) / (info.MaxLevel - 1);
 		}
 
+		public Dictionary<CPos, TintedCell> GetTiles()
+		{
+			return tiles;
+		}
+
 		void ITick.Tick(Actor self)
 		{
 			var remove = new List<CPos>();
