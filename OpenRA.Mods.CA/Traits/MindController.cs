@@ -18,7 +18,7 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("This actor can mind control other actors.")]
-	public class MindControllerInfo : PausableConditionalTraitInfo, Requires<ArmamentInfo>, Requires<HealthInfo>
+	public class MindControllerInfo : PausableConditionalTraitInfo, Requires<HealthInfo>
 	{
 		[Desc("Name of the armaments that grant this condition.")]
 		public readonly HashSet<string> ArmamentNames = new HashSet<string>() { "primary" };
@@ -184,7 +184,7 @@ namespace OpenRA.Mods.CA.Traits
 			UpdateProgressBar(self, currentTarget);
 
 			if (controlTicks == Info.TicksToControl)
-				AddSlave(self);
+				AddSlave(self, currentTarget.Actor);
 		}
 
 		public void GrantProgressCondition(Actor self)
@@ -311,10 +311,10 @@ namespace OpenRA.Mods.CA.Traits
 				return;
 			}
 
-			AddSlave(self);
+			AddSlave(self, currentTarget.Actor);
 		}
 
-		void AddSlave(Actor self)
+		public void AddSlave(Actor self, Actor target)
 		{
 			if (IsTraitDisabled || IsTraitPaused)
 				return;
@@ -322,15 +322,15 @@ namespace OpenRA.Mods.CA.Traits
 			if (controlTicks < Info.TicksToControl)
 				return;
 
-			if (self.Owner.RelationshipWith(currentTarget.Actor.Owner) == PlayerRelationship.Ally)
+			if (self.Owner.RelationshipWith(target.Owner) == PlayerRelationship.Ally)
 				return;
 
-			var mindControllable = currentTarget.Actor.TraitOrDefault<MindControllable>();
+			var mindControllable = target.TraitOrDefault<MindControllable>();
 
 			if (mindControllable == null)
 			{
 				throw new InvalidOperationException(
-					"`{self.Info.Name}` tried to mindcontrol `{currentTarget.Actor.Info.Name}`, but the latter does not have the necessary trait!");
+					"`{self.Info.Name}` tried to mindcontrol `{target.Info.Name}`, but the latter does not have the necessary trait!");
 			}
 
 			if (mindControllable.IsTraitDisabled || mindControllable.IsTraitPaused)
@@ -345,9 +345,9 @@ namespace OpenRA.Mods.CA.Traits
 				return;
 			}
 
-			slaves.Add(currentTarget.Actor);
+			slaves.Add(target);
 			StackControllingCondition(self, Info.ControllingCondition);
-			mindControllable.LinkMaster(currentTarget.Actor, self);
+			mindControllable.LinkMaster(target, self);
 
 			if (capacity > 0 && Info.DiscardOldest && slaves.Count > capacity)
 				slaves[0].Trait<MindControllable>().RevokeMindControl(slaves[0], 0);

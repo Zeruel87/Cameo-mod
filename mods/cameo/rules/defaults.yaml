@@ -816,10 +816,22 @@
 		KillInfectorDamageTypes: KillsDrone
 		BeingInfectedCondition: beingterrordroned
 		InfectedCondition: terrordroned
-		KillInfectorsCount: 1
 	Targetable@DRONE:
 		TargetTypes: TerrorDronable
 		RequiresCondition: !untargetable
+	SpeedMultiplier@DRONE:
+		RequiresCondition: beingterrordroned
+		Modifier: 0
+
+^TerrorDronableInfantry:
+	Inherits: ^TerrorDronable
+	InfectableCA:
+		InfectorLimit: 1
+
+^TerrorDronableVehicle:
+	Inherits: ^TerrorDronable
+	InfectableCA:
+		KillInfectorsCount: 1
 	Targetable@BEINGDRONED:
 		TargetTypes: terrordroned, Repair
 		RequiresCondition: terrordroned
@@ -833,9 +845,6 @@
 		Sequence: ra2_emp_fx
 		Palette: ra2effect
 		LocalOffset: 0,0,384
-	SpeedMultiplier@DRONE:
-		RequiresCondition: beingterrordroned
-		Modifier: 0
 
 ^TerrorDronableAircraft:
 	Inherits: ^TerrorDronable
@@ -1321,7 +1330,7 @@
 	Inherits@bot: ^BotProductionBehavior
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@rad: ^VehicleRadiation
-	Inherits@terrordrone: ^TerrorDronable
+	Inherits@terrordrone: ^TerrorDronableVehicle
 	Inherits@fix: ^Repairable
 	Inherits@EMP: ^UnitDisable
 	Inherits@mag: ^Magnefreezable
@@ -1743,7 +1752,7 @@
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@disable: ^InfantryDisable
 	Inherits@heal: ^HospitalHealable
-	Inherits@terrordrone: ^TerrorDronable
+	Inherits@terrordrone: ^TerrorDronableInfantry
 	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
 	Inherits@poisonable: ^Poisonable
@@ -4457,8 +4466,9 @@ CPQDEBUGDUMMY:
 			ra2yuri: controlled
 			yrmind: controlled
 			yrygpsyt: controlled
+			yrygppet: controlled
 		RevokeControlSounds: gmindcle.wav
-		PauseOnCondition: prevent-mindcontrol || untargetable
+		PauseOnCondition: untargetable
 	WithMindControlArc:
 		UsePlayerColor: true
 		Transparency: 255
@@ -4478,7 +4488,8 @@ CPQDEBUGDUMMY:
 	ExternalCondition@prevent-mindcontrol:
 		Condition: prevent-mindcontrol
 	MindControllable:
-		Condition: controlled
+		ControlledConditions:
+			yryurix: controlled
 		PauseOnCondition: prevent-mindcontrol || untargetable
 	WithMindControlArc:
 		UsePlayerColor: true
@@ -4486,17 +4497,15 @@ CPQDEBUGDUMMY:
 		Offset: 0,0,511
 		Angle: 32
 		Width: 108
-	WithDecoration@MC:
+	WithIdleOverlay@MC:
 		Image: yuricntl
 		Sequence: overlay
 		Palette: ra2effect
-		Position: Top
-		RequiresCondition: controlled
-		RequiresSelection: False
-		ValidRelationships: Ally, Neutral, Enemy
+		RequiresCondition: controlled || prevent-mindcontrol
 	Targetable@MCStructure:
 		TargetTypes: MindControlStructure
 		RequiresCondition: !controlled && !prevent-mindcontrol && !untargetable
+
 ^MCImmune:
 	Targetable@MC:
 		TargetTypes: MCImmune

@@ -125,6 +125,12 @@ namespace OpenRA.Mods.Cameo.Activities
 
 		protected override bool TryStartEnter(Actor self, Actor targetActor)
 		{
+			if (jousting)
+			{
+				infector.RevokeJoustCondition(self);
+				jousting = false;
+			}
+
 			var canStartInfect = CanStartInfect(self, targetActor);
 			if (canStartInfect == false)
 			{
@@ -136,11 +142,6 @@ namespace OpenRA.Mods.Cameo.Activities
 			if (infector.Armaments.All(a => a.IsReloading))
 				return false;
 
-			if (jousting)
-			{
-				infector.RevokeJoustCondition(self);
-				jousting = false;
-			}
 			return true;
 		}
 

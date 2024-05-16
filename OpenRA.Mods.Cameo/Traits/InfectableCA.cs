@@ -90,7 +90,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		public List<InfectorCA> Infectors = new();
 
 		int beingInfectedToken = Actor.InvalidConditionToken;
-		Actor enteringInfector;
+		public Actor enteringInfector;
 
 		Stack<int> infectedTokens = new();
 		Dictionary<string, Stack<int>> infectedByTokens = new();
