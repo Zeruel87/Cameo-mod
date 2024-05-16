@@ -120,7 +120,9 @@ namespace OpenRA.Mods.CA.Graphics
 				countTintedNeighbors++;
 
 			var center = new float3((screen[0].X + screen[1].X) / 2, (screen[1].Y + screen[2].Y) / 2, screen[1].Z);
-			var selfLevel = layer.GetTiles()[cpos].Level;
+			var selfLevel = 0;
+			if (layer.GetTiles().ContainsKey(cpos))
+				selfLevel = layer.GetTiles()[cpos].Level;
 
 			if (countTintedNeighbors >= 3) {
 				SetLevel((selfLevel + tintedTop) / 2);
