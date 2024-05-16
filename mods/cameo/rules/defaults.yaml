@@ -1280,27 +1280,27 @@
 		BuildDurationModifier: 75
 
 ^BasicDefenseTemplate:
-	Inherits@DisabledOverlay: ^DisabledBaseBuildingOverlay
+	Inherits@DisabledOverlay: ^DisabledOverlay
 	Armor:
 		Type: Concrete
 	Buildable:
 		BuildDurationModifier: 100
 
 ^AntiAirDefenseTemplate:
-	Inherits@DisabledOverlay: ^DisabledOverlay
+	Inherits@DisabledOverlay: ^DisableOnLowPowerOrPowerDown
 	Armor:
 		Type: Concrete
 	DetectCloaked:
-		RequiresCondition: !disabled && !lowpower
+		RequiresCondition: !disabled
 	Buildable:
 		BuildDurationModifier: 60
 
 ^AdvancedDefenseTemplate:
-	Inherits@DisabledOverlay: ^DisabledOverlay
+	Inherits@DisabledOverlay: ^DisableOnLowPowerOrPowerDown
 	Armor:
 		Type: Steel
 	DetectCloaked:
-		RequiresCondition: !disabled && !lowpower
+		RequiresCondition: !disabled
 	Buildable:
 		BuildDurationModifier: 80
 
@@ -2550,7 +2550,7 @@
 	Inherits@trap: ^BoobyTrappable
 	Inherits@base-reveal: ^Base-reveal
 	Inherits@bounty: ^GlobalBounty
-	Inherits@DisabledOverlay: ^DisabledBaseBuildingOverlay
+	Inherits@DisabledOverlay: ^DisabledOverlay
 	Building:
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud, placbldg.aud, build5.aud
@@ -3150,11 +3150,6 @@
 	AutoTarget:
 		InitialStance: AttackAnything
 		InitialStanceAI: AttackAnything
-	ToggleConditionOnOrder:
-		DisabledSound: EnablePower
-		EnabledSound: DisablePower
-		Condition: powerdown
-		OrderName: PowerDown
 
 ^Defense:
 	Inherits: ^BaseBuilding
@@ -3166,52 +3161,36 @@
 	-GrantConditionOnPrerequisite@BLDDURABLE:
 
 ^DisabledOverlay:
+	WithColoredOverlay@IDISABLE:
+		RequiresCondition: disabled && !chronobeamed && !build-incomplete
+		Color: 000000b4
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: ((empdisable || chronobeamed || diskdrain || being-captured) && !invulnerability) || build-incomplete
+	ExternalCondition@EMP:
+		TotalCap: 1
+		Condition: empdisable
+	TimedConditionBar@EMP:
+		Condition: empdisable
+		Color: FFFFFF
+	ExternalCondition@DRAIN:
+		TotalCap: 1
+		Condition: diskdrain
+
+^DisableOnLowPower:
+	Inherits: ^DisabledOverlay
 	GrantConditionOnPowerState@LOWPOWER:
 		Condition: lowpower
 		ValidPowerStates: Low, Critical
-	WithColoredOverlay@IDISABLE:
-		RequiresCondition: (lowpower || disabled) && !chronobeamed
-		Color: 000000b4
 	GrantCondition@disable:
 		Condition: disabled
-		RequiresCondition: (empdisable || powerdown || chronobeamed || diskdrain || being-captured) && !invulnerability
-	ExternalCondition@EMP:
-		TotalCap: 1
-		Condition: empdisable
-	TimedConditionBar@EMP:
-		Condition: empdisable
-		Color: FFFFFF
-	ExternalCondition@DRAIN:
-		TotalCap: 1
-		Condition: diskdrain
-	WithDecoration@POWERDOWN:
-		Image: poweroff
-		Sequence: offline
-		Palette: chrome
-		RequiresCondition: powerdown
-		Position: Center
-		Offsets:
-			repairing: 10, 0
-	PowerMultiplier@POWERDOWN:
-		RequiresCondition: powerdown
-		Modifier: 0
+		RequiresCondition: ((empdisable || chronobeamed || diskdrain || being-captured) && !invulnerability) || lowpower || build-incomplete
 
-^DisabledBaseBuildingOverlay:
-	WithColoredOverlay@IDISABLE:
-		RequiresCondition: disabled && !chronobeamed
-		Color: 000000b4
+^DisableOnLowPowerOrPowerDown:
+	Inherits: ^DisableOnLowPower
 	GrantCondition@disable:
 		Condition: disabled
-		RequiresCondition: (empdisable || powerdown || chronobeamed || diskdrain || being-captured) && !invulnerability
-	ExternalCondition@EMP:
-		TotalCap: 1
-		Condition: empdisable
-	TimedConditionBar@EMP:
-		Condition: empdisable
-		Color: FFFFFF
-	ExternalCondition@DRAIN:
-		TotalCap: 1
-		Condition: diskdrain
+		RequiresCondition: ((empdisable || chronobeamed || diskdrain || being-captured) && !invulnerability) || (lowpower || powerdown) || build-incomplete
 	WithDecoration@POWERDOWN:
 		Image: poweroff
 		Sequence: offline
@@ -3223,6 +3202,11 @@
 	PowerMultiplier@POWERDOWN:
 		RequiresCondition: powerdown
 		Modifier: 0
+	ToggleConditionOnOrder:
+		DisabledSound: EnablePower
+		EnabledSound: DisablePower
+		Condition: powerdown
+		OrderName: PowerDown
 
 ^SelectableCombatUnit:
 	Selectable:
@@ -5101,6 +5085,25 @@ CPQDEBUGDUMMY:
 		Probability: 50
 		Actor: 2100artifact
 		DeathType: 2100ResearchSteal
+
+^RadarBuilding:
+	RevealsShroud:
+		Range: 10c0
+		RequiresCondition: !disabled
+	RevealsShroud@Offline:
+		Range: 5c0
+		RequiresCondition: disabled
+	DetectCloaked:
+		Range: 10c0
+		RequiresCondition: !disabled
+	RenderDetectionCircle:
+	ProvidesRadar:
+		RequiresCondition: !jammed && !disabled
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	InfiltrateForExploration:
+		Types: SpyInfiltrate
+
 ####################################################################################################
 #		Generals
 ####################################################################################################

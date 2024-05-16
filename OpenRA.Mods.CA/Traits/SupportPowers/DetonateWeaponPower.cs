@@ -66,7 +66,7 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly WDist AirburstAltitude = WDist.Zero;
 
 		[Desc("Range circle color.")]
-		public readonly Color CircleColor = Color.FromArgb(128, Color.Red);
+		public readonly Color[] CircleColors = new[] { Color.FromArgb(128, Color.Red) };
 
 		[Desc("Range circle width in pixel.")]
 		public readonly float CircleWidth = 1;
@@ -91,6 +91,10 @@ namespace OpenRA.Mods.CA.Traits
 			base.RulesetLoaded(rules, ai);
 
 			WeaponInfo = rules.Weapons[Weapon.ToLowerInvariant()];
+
+			if (CircleRanges != null && CircleRanges.Length != CircleColors.Length)
+				throw new YamlException("A color must be defined for each range circle.");
+
 		}
 	}
 
@@ -244,12 +248,12 @@ namespace OpenRA.Mods.CA.Traits
 				yield break;
 
 			var centerPosition = wr.World.Map.CenterOfCell(wr.Viewport.ViewToWorld(Viewport.LastMousePos));
-			foreach (var range in power.Info.CircleRanges)
+			for (var i = 0; i < power.Info.CircleRanges.Length; i++)
 				yield return new RangeCircleAnnotationRenderable(
 					centerPosition,
-					range,
+					power.Info.CircleRanges[i],
 					0,
-					power.Info.CircleColor,
+					power.Info.CircleColors[i],
 					power.Info.CircleWidth,
 					power.Info.CircleBorderColor,
 					power.Info.CircleBorderWidth);

@@ -8,7 +8,6 @@
  */
 #endregion
 
-using System;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.CA.Traits;
@@ -22,9 +21,6 @@ namespace OpenRA.Mods.Cameo.Warheads
 	[Desc("Enslaves affected targets to the firer.")]
 	public class MindControlWarhead : WarheadAS
 	{
-		[Desc("The condition to apply. Must be included in the target actor's ExternalConditions list.")]
-		public readonly string Condition = null;
-
 		public readonly WDist Range = WDist.FromCells(1);
 
 		[Desc("What types of targets are affected.")]
@@ -46,7 +42,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 			//	return;
 
 			var mc = firedBy.Trait<MindController>();
-			if (mc == null || mc.IsTraitDisabled || mc.IsTraitPaused) return;
+			if (firedBy.IsDead || mc.IsTraitDisabled || mc.IsTraitPaused) return;
 
             var actors = firedBy.World.FindActorsInCircle(target.CenterPosition, Range);
 
