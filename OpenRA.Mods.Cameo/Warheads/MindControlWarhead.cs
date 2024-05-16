@@ -8,6 +8,7 @@
  */
 #endregion
 
+using System;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.CA.Traits;
@@ -41,8 +42,8 @@ namespace OpenRA.Mods.Cameo.Warheads
 			if (!target.IsValidFor(firedBy))
 				return;
 
-			if (!IsValidImpact(target.CenterPosition, firedBy))
-				return;
+			//if (!IsValidImpact(target.CenterPosition, firedBy))
+			//	return;
 
 			var mc = firedBy.Trait<MindController>();
 			if (mc == null || mc.IsTraitDisabled || mc.IsTraitPaused) return;
@@ -52,6 +53,12 @@ namespace OpenRA.Mods.Cameo.Warheads
 			foreach (var a in actors)
 			{
 				if (!IsValidForOwnerChange(a, firedBy))
+					continue;
+
+				var capturable = a.TraitsImplementing<MindControllable>()
+					.FirstOrDefault(c => !c.IsTraitDisabled);
+
+				if (a.IsDead || capturable == null)
 					continue;
 
 				mc.AddSlave(firedBy, a);
