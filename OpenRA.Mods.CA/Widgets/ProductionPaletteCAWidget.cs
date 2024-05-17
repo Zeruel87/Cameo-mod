@@ -10,6 +10,8 @@
 #endregion
 
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Orders;
+using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Widgets;
 using OpenRA.Network;
 using OpenRA.Widgets;
@@ -20,13 +22,36 @@ namespace OpenRA.Mods.CA.Widgets
 	{
 		public string Cursor = ChromeMetrics.Get<string>("ButtonCursor");
 
+		readonly WorldRenderer worldRenderer;
+
 		[ObjectCreator.UseCtor]
 		public ProductionPaletteCAWidget(ModData modData, OrderManager orderManager, World world, WorldRenderer worldRenderer)
-			: base(modData, orderManager, world, worldRenderer) { }
+			: base(modData, orderManager, world, worldRenderer) {
+			this.worldRenderer = worldRenderer;
+		}
 
 		public override string GetCursor(int2 pos)
 		{
 			return Cursor;
+		}
+
+		public new void PickUpCompletedBuilding()
+		{
+			var item = CurrentQueue.CurrentItem();
+			if (item == null) return; 
+			PickUpCompletedBuildingIcon(item);
+		}
+
+		protected bool PickUpCompletedBuildingIcon(ProductionItem item)
+		{
+			var actor = World.Map.Rules.Actors[item.Item];
+
+			if (item != null && item.Done && actor.HasTraitInfo<BuildingInfo>())
+			{
+				World.OrderGenerator = new PlaceBuildingOrderGenerator(CurrentQueue, item.Item, worldRenderer);
+				return true;
+			}
+			return false;
 		}
 	}
 }
