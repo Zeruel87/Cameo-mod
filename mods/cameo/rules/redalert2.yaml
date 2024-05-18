@@ -3311,7 +3311,7 @@ yrygppet:
 		PauseOnCondition: disabled
 		Icon: ra2domin
 		Cursor: ability
-		ChargeInterval: 9000
+		ChargeInterval: 10500
 		ActivationDelay: 20
 		Name: Psychic Dominator
 		Description: Unleashes a wave of psychic energy.\nApplies heavy damage over a large area.\nTakes control of units in proximity.\nUnits will be freed if the Psychic Dominator is destroyed or disabled
@@ -4480,11 +4480,16 @@ YRBORIS:
 		CustomPipType: red
 	Armament@PRIMARY:
 		Weapon: BorisAKM
+	Armament@AntiBuilding:
+		Weapon: BorisAKM2
+		RequiresCondition: !canflare || ammo < 3
 	Armament@SECONDARY:
 		Name: secondary
 		Weapon: MigTarget
 		LocalOffset: 32,0,256
 		RequiresCondition: canflare
+		AmmoUsage: 3
+		PauseOnCondition: ammo < 3
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: BorisAKM
@@ -4521,6 +4526,17 @@ YRBORIS:
 		SpawnAllAtOnce: false
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
+	AmmoPool:
+		Ammo: 9
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 25
+		Count: 1
+		ResetOnFire: true
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 9
 	KeepsDistance:
 
 RA2E2:
@@ -4841,16 +4857,16 @@ ra2shk:
 		BuildPaletteOrder: 20
 		Description: Infantry with portable Tesla coils.\nCan charge tesla coils.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
 	Valued:
-		Cost: 700
+		Cost: 600
 	Tooltip:
 		Name: Tesla Trooper
 	Health:
-		HP: 35000
+		HP: 32500
 	ChangesHealth@SelfHealing:
-		Step: 14
+		Step: 13
 	Mobile:
 		Voice: Move
-		Speed: 46
+		Speed: 41
 	Armament@PRIMARY:
 		Weapon: RA2PortaTesla
 		LocalOffset: 427,0,341
@@ -4919,90 +4935,6 @@ ra2shk.bot:
 	MobSpawnerSlave:
 	RejectsOrders:
 	WithInfantryBody:
-
-RA2YURI:
-	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Inherits@anim: ^RA2Infantry
-	Inherits@MC: ^MCImmune
-	Inherits@vo: ^AttackFrontalVoice
-	Inherits@bot: ^BotAutoDeployOnLowHealth
-	Valued:
-		Cost: 800
-	Tooltip:
-		Name: Psi-Corps Trooper
-	Buildable:
-		BuildPaletteOrder: 99
-		Prerequisites: ~ra2natech
-		Queue: Infantry, RAInfantry
-		Description: Psychic infantry.\nCan control enemy units.\nCan deploy to unleash a psychic blast.\n Weak vs Aircraft, Robots
-	Mobile:
-		Speed: 50
-	Health:
-		HP: 4500
-	Armament@PRIMARY:
-		Weapon: RA2MindControl
-	Armament@GARRISONED:
-		Name: garrisoned
-		Weapon: RA2MindControl
-	Passenger:
-	MindController:
-		ArmamentNames: primary
-		Capacity: 1
-		RequiresCondition: !disabled
-		ControllingCondition: controlling
-	ReloadArmamentsBar:
-	AutoTarget:
-		RequiresCondition: !controlling
-	AttackFrontal:
-		FacingTolerance: 0
-	WithInfantryBody:
-		RequiresCondition: !deployed && !deploying
-	WithSpriteBody@deployed:
-		Sequence: deployed
-		RequiresCondition: deployed || deploying
-	PeriodicExplosion:
-		Weapon: PsiWave
-		RequiresCondition: deployed && !disabled
-	GrantTimedConditionOnDeploy:
-		DeployedTicks: 50
-		CooldownTicks: 0
-		Facing: 96
-		DeployedCondition: deployed
-		DeployingCondition: deploying
-		DeployAnimation: deploy
-		UndeployAnimation: undeploy
-		ShowSelectionBar: false
-		Voice: Attack
-		PauseOnCondition: disabled
-	WithRangeCircle@PsiWave:
-		Range: 3c0
-		Type: psiwave
-		Color: ff0000b0
-	WithRangeCircle@MC:
-		Range: 5c0
-		Type: mindcontrol
-		Color: 663399b0
-	Inherits@EXT: ^ExternalConditions
-	AcceptsDeliveredExperience:
-		ValidTypes: infantry
-	Voiced:
-		VoiceSet: YuriVoice
-	ProximityCaptor@MC:
-		Types: Infantry
-	DeliversCash:
-		Payload: 400
-	Cloneable:
-		Types: NormalInfantry
-	IgnoresDisguise:
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-	ProducibleWithLevel:
-		Prerequisites: barracks.upgraded
-	KeepsDistance:
-
 ##############################################
 #   Red Alert 2 Yuri Infantry
 ##############################################
@@ -5026,7 +4958,7 @@ YRINIT:
 	Mobile:
 		Speed: 60
 	Health:
-		HP: 8000
+		HP: 17500
 	AutoTarget:
 	Armament@PRIMARY:
 		Name: primary
@@ -5082,8 +5014,9 @@ YRBRUTE:
 	Crushable:
 		CrushClasses: vehicle
 	Health:
-		HP: 30000
-		InitialStance: AttackAnything
+		HP: 45000
+	ChangesHealth@SelfHealing:
+		Step: 18
 	Armament@PRIMARY:
 		Weapon: RA2BrutePunch
 	Armament@GARRISONED:
@@ -5133,6 +5066,8 @@ YRSLAV:
 		Locomotor: infantryharvester
 	Health:
 		HP: 10000
+	ChangesHealth@SelfHealing:
+		Step: 4
 	Armament@PRIMARY:
 		Weapon: RA2Shovel
 	Armament@GARRISONED:
@@ -5157,11 +5092,6 @@ YRSLAV:
 		SearchFromHarvesterRadius: 20
 		#UnloadQueueCostModifier: 100
 		#QueueFullLoad: true
-	ChangesHealth:
-		Step: 4
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	WithSpriteBody:
 	WithInfantryBody:
 		IdleSequences: idle
@@ -5201,7 +5131,7 @@ YRVIRUS:
 	Mobile:
 		Speed: 50
 	Health:
-		HP: 5000
+		HP: 10000
 	Armament@PRIMARY:
 		Weapon: RA2Virusgun
 	Armament@GARRISONED:
@@ -5211,7 +5141,6 @@ YRVIRUS:
 		FacingTolerance: 0
 	AutoTargetPriority:
 		ValidTargets: Infantry
-	Inherits@EXT: ^ExternalConditions
 	AcceptsDeliveredExperience:
 		ValidTypes: infantry
 	Voiced:
@@ -5264,26 +5193,94 @@ YRVIRUS:
 # 		Prerequisites: barracks.upgraded
 
 YRYURI:
-	Inherits: RA2YURI
+	Inherits: ^Soldier
+	Inherits@Template: ^LightInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@MC: ^MCImmune
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@bot: ^BotAutoDeployOnLowHealth
 	Valued:
-		Cost: 600
+		Cost: 500
 	Tooltip:
 		Name: Yuri Clone
 	Buildable:
 		BuildPaletteOrder: 45
 		Prerequisites: ~ra2napsis
 		Queue: Infantry, RAInfantry
-	RenderSprites:
-		Image: RA2YURI
+		Description: Psychic infantry.\nCan control enemy units.\nCan deploy to unleash a psychic blast.\n Weak vs Aircraft, Robots
+	Mobile:
+		Speed: 50
 	Health:
 		HP: 5000
+	Armament@PRIMARY:
+		Weapon: RA2MindControl
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2MindControl
+	Passenger:
+	MindController:
+		ArmamentNames: primary
+		Capacity: 1
+		RequiresCondition: !disabled
+		ControllingCondition: controlling
+	ReloadArmamentsBar:
+	AutoTarget:
+		RequiresCondition: !controlling
+	AttackFrontal:
+		FacingTolerance: 0
+	WithInfantryBody:
+		RequiresCondition: !deployed && !deploying
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		RequiresCondition: deployed || deploying
+	PeriodicExplosion:
+		Weapon: PsiWave
+		RequiresCondition: deployed && !disabled
+	GrantTimedConditionOnDeploy:
+		DeployedTicks: 125
+		CooldownTicks: 0
+		Facing: 96
+		DeployedCondition: deployed
+		DeployingCondition: deploying
+		DeployAnimation: deploy
+		UndeployAnimation: undeploy
+		ShowSelectionBar: false
+		Voice: Attack
+		PauseOnCondition: disabled
+	WithRangeCircle@PsiWave:
+		Range: 2500
+		Type: psiwave
+		Color: ff0000b0
+	WithRangeCircle@MC:
+		Range: 6000
+		Type: mindcontrol
+		Color: 663399b0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: infantry
+	Voiced:
+		VoiceSet: YuriVoice
+	ProximityCaptor@MC:
+		Types: Infantry
+	DeliversCash:
+		Payload: 400
+	Cloneable:
+		Types: NormalInfantry
+	IgnoresDisguise:
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
+	KeepsDistance:
+	RenderSprites:
+		Image: RA2YURI
 
 YRYURIX:
 	Inherits: ^Soldier
+	Inherits@Template: ^HeroInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -5292,12 +5289,11 @@ YRYURIX:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@COMMANDOSKULL: ^CommandoSkull
-	Inherits@Template: ^HeroInfantryTemplate
 	Inherits@bot: ^BotAutoDeployOnLowHealth
 	Selectable:
 		DecorationBounds: 512, 1440, 0, -512
 	Valued:
-		Cost: 1500
+		Cost: 2000
 	Tooltip:
 		Name: Yuri Prime
 	Buildable:
@@ -5310,7 +5306,9 @@ YRYURIX:
 		Speed: 100
 		Locomotor: hover
 	Health:
-		HP: 12000
+		HP: 20000
+	ChangesHealth@SelfHealing:
+		Step: 8
 	Armament@PRIMARY:
 		Weapon: RA2XMindControl
 		ReloadingCondition: reload-structure
@@ -5368,7 +5366,7 @@ YRYURIX:
 		Weapon: PsiWaveX
 		RequiresCondition: deployed && !disabled
 	GrantTimedConditionOnDeploy:
-		DeployedTicks: 50
+		DeployedTicks: 250
 		CooldownTicks: 0
 		Facing: 96
 		DeployedCondition: deployed
@@ -5379,13 +5377,13 @@ YRYURIX:
 		Voice: Attack
 		PauseOnCondition: disabled || (controlling >= 10)
 	WithRangeCircle@PsiWave:
-		Range: 4c0
+		Range: 5000
 		Type: psiwave
 		Color: ff0000b0
 	WithRangeCircle@MC:
-		Range: 8c0
+		Range: 8000
 		Type: mindcontrol
-		Color: 663399b0
+		Color: 663399bb
 	AcceptsDeliveredExperience:
 		ValidTypes: infantry
 	Voiced:
@@ -5401,7 +5399,7 @@ YRYURIX:
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 	KeepsDistance:
-	
+
 
 ##############################################
 #   Red Alert 2 Allies Vehicles
@@ -5469,9 +5467,27 @@ RA2CMIN:
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@SHADOWS: ^Shadows
 	Valued:
-		Cost: 1200
+		Cost: 1000
 	Tooltip:
 		Name: Chrono Miner
+	Harvester:
+		PipCount: 10
+		Capacity: 10
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 25
+		SearchFromHarvesterRadius: 10
+		EmptyCondition: no-tiberium
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 90
 	Buildable:
 		Prerequisites: ~ra2garefn
 		Queue: Vehicle, RAVehicle
@@ -5490,6 +5506,7 @@ RA2CMIN:
 	DeliversCash:
 		Payload: 1000
 	RenderSprites:
+		Image: RA2CMIN
 		PlayerPalette: playerra2
 
 RA2MTNK:
@@ -6578,11 +6595,11 @@ RA2V3:
 		TurnSpeed: 15
 	Armament:
 		Weapon: V3Launch
-		LocalOffset: -512,0,128
+		LocalOffset: -1024,0,512
 		RequiresCondition: !rank-elite
 	Armament@PRIMARYELITE:
 		Weapon: V3LaunchElite
-		LocalOffset: -512,0,128
+		LocalOffset: -1024,0,512
 		RequiresCondition: rank-elite
 	MissileSpawnerMaster@1:
 		Actors: ra2v3rocket
@@ -6634,10 +6651,10 @@ RA2V3:
 ra2v3rocket:
 	Inherits: ^ShootableMissile
 	Health:
-		HP: 10000
+		HP: 25000
 	BallisticMissile:
-		LaunchAngle: 75
-		Speed: 250
+		LaunchAngle: 100
+		Speed: 150
 		AirborneCondition: airborne
 		LaunchSounds: vv3latta.wav, vv3lattb.wav
 	LeavesTrailsCA:
@@ -6645,7 +6662,7 @@ ra2v3rocket:
 		Palette: ra2effect
 		MovingInterval: 1
 		Type: CenterPosition
-		Offsets: -200, 0, 0
+		Offsets: -450, 0, 0
 	MissileSpawnerSlave:
 	SpawnedExplodes:
 		Weapon: RA2Scud
@@ -6658,10 +6675,7 @@ ra2v3rocket:
 ra2v3rocketelite:
 	Inherits: ra2v3rocket
 	Health:
-		HP: 20000
-	BallisticMissile:
-		LaunchAngle: 75
-		Speed: 200
+		HP: 50000
 	SpawnedExplodes:
 		Weapon: RA2SCUDELITE
 		EmptyWeapon: RA2SCUDELITE
