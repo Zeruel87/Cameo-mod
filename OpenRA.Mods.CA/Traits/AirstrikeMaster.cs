@@ -46,6 +46,9 @@ namespace OpenRA.Mods.CA.Traits
 			"Condition can stack.")]
 		public readonly string SlaveAvailableCondition = null;
 
+		[Desc("Cancel the airstrike on a stop order")]
+		public readonly bool CancelOnStop = false;
+
 		[Desc("Conditions to grant when specified actors are contained inside the transport.",
 			"A dictionary of [actor id]: [condition].")]
 		public readonly Dictionary<string, string> SpawnContainConditions = new Dictionary<string, string>();
@@ -325,7 +328,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		public void ResolveOrder(Actor self, Order order)
 		{
-			if (order.OrderString == "Stop")
+			if (AirstrikeMasterInfo.CancelOnStop && order.OrderString == "Stop")
 				Recall();
 		}
 
