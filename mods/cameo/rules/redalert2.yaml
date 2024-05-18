@@ -4484,9 +4484,15 @@ YRBORIS:
 		Name: secondary
 		Weapon: MigTarget
 		LocalOffset: 32,0,256
+		RequiresCondition: canflare
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: BorisAKM
+	#GrantConditionOnAttack@flare:
+	#	Condition: flared
+	#	ArmamentNames: secondary
+	#	RequiredShotsPerInstance: 3
+	#	RevokeDelay: 100
 	AttackFrontal:
 		FacingTolerance: 0
 	WithInfantryBody:
@@ -4508,7 +4514,9 @@ YRBORIS:
 		Actors: yrbpln, yrbpln, yrbpln
 		SquadSize: 3
 		InitialActorCount: -1
-		RespawnTicks: 25
+		RespawnTicks: 10
+		RearmTicks: 10
+		SlaveAvailableCondition: canflare
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
 	ProducibleWithLevel:
@@ -5303,14 +5311,50 @@ YRYURIX:
 		HP: 12000
 	Armament@PRIMARY:
 		Weapon: RA2XMindControl
+		ReloadingCondition: reload-structure
+		PauseOnCondition: reload-splash
+	Armament@Splash:
+		Weapon: RA2XMindControlSplash
+		Name: secondary
+		ReloadingCondition: reload-splash
+		PauseOnCondition: reload-structure
 	MindController:
 		ArmamentNames: primary
-		Capacity: 1
+		Capacity: 0
 		RequiresCondition: !disabled
 		ControllingCondition: controlling
+	SpeedMultiplier@MC1:
+		Modifier: 90
+		RequiresCondition: controlling == 1
+	SpeedMultiplier@MC2:
+		Modifier: 80
+		RequiresCondition: controlling == 2
+	SpeedMultiplier@MC3:
+		Modifier: 70
+		RequiresCondition: controlling == 3
+	SpeedMultiplier@MC4:
+		Modifier: 60
+		RequiresCondition: controlling == 4
+	SpeedMultiplier@MC5:
+		Modifier: 50
+		RequiresCondition: controlling == 5
+	SpeedMultiplier@MC6:
+		Modifier: 40
+		RequiresCondition: controlling == 6
+	SpeedMultiplier@MC7:
+		Modifier: 30
+		RequiresCondition: controlling == 7
+	SpeedMultiplier@MC8:
+		Modifier: 20
+		RequiresCondition: controlling == 8
+	SpeedMultiplier@MC9:
+		Modifier: 10
+		RequiresCondition: controlling == 9
+	SpeedMultiplier@MC10:
+		Modifier: 0
+		RequiresCondition: controlling >= 10
 	ReloadArmamentsBar:
 	AutoTarget:
-		RequiresCondition: !controlling
 	AttackFrontal:
 		FacingTolerance: 0
 	WithInfantryBody:
@@ -5331,7 +5375,7 @@ YRYURIX:
 		UndeployAnimation: undeploy
 		ShowSelectionBar: false
 		Voice: Attack
-		PauseOnCondition: disabled
+		PauseOnCondition: disabled || (controlling >= 10)
 	WithRangeCircle@PsiWave:
 		Range: 4c0
 		Type: psiwave
@@ -5355,6 +5399,8 @@ YRYURIX:
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 	KeepsDistance:
+	
+
 ##############################################
 #   Red Alert 2 Allies Vehicles
 ##############################################
@@ -5847,6 +5893,16 @@ RA2FV:
 	Tooltip@CHRONO:
 		Name: Chrono IFV
 		RequiresCondition: ifv-chrono
+	GuardsSelection@HEAL:
+		ValidTargets: Infantry
+		RequiresCondition: ifv-healer && !stance-attackanything
+	GuardsSelection@REPAIR:
+		ValidTargets: Vehicle
+		RequiresCondition: ifv-repair && !stance-attackanything
+	GuardsSelection@SPY:
+		RequiresCondition: ifv-spy
+	KeepsDistance:
+		RequiresCondition: ifv-repair || ifv-healer || ifv-spy
 	AttackTurreted:
 	SelectionDecorations:
 	Selectable:
@@ -6160,9 +6216,6 @@ yrbfrt:
 		Delay: 1
 		StartIfBelow: 100
 		DamageCooldown: 1
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 yrbfrt.bot:
 	Inherits: yrbfrt

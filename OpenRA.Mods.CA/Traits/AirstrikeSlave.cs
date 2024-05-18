@@ -9,6 +9,7 @@
 #endregion
 
 using OpenRA.Mods.CA.Activities;
+using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Traits
@@ -26,7 +27,7 @@ namespace OpenRA.Mods.CA.Traits
 		public override object Create(ActorInitializer init) { return new AirstrikeSlave(init, this); }
 	}
 
-	public class AirstrikeSlave : BaseSpawnerSlave, INotifyIdle
+	public class AirstrikeSlave : BaseSpawnerSlave, INotifyIdle, INotifyKilled
 	{
 		public readonly AirstrikeSlaveInfo Info;
 
@@ -34,11 +35,13 @@ namespace OpenRA.Mods.CA.Traits
 		WVec spawnOffset;
 
 		AirstrikeMaster spawnerMaster;
+		bool isBusy;
 
 		public AirstrikeSlave(ActorInitializer init, AirstrikeSlaveInfo info)
 			: base(init, info)
 		{
 			Info = info;
+			isBusy = false;
 		}
 
 		public void SetSpawnInfo(WPos finishEdge, WVec spawnOffset)
@@ -52,6 +55,12 @@ namespace OpenRA.Mods.CA.Traits
 			// Hopefully, self will be disposed shortly afterwards by SpawnerSlaveDisposal policy.
 			if (Master == null || Master.IsDead)
 				return;
+
+			if (isBusy)
+			{
+				isBusy = false;
+				spawnerMaster.MarkSlaveAvailable(Master);
+			}
 
 			// Proceed with enter, if already at it.
 			if (self.CurrentActivity is ReturnAirstrikeMaster)
@@ -67,9 +76,30 @@ namespace OpenRA.Mods.CA.Traits
 			this.spawnerMaster = spawnerMaster as AirstrikeMaster;
 		}
 
+		public override void Attack(Actor self, Target target)
+		{
+			base.Attack(self, target);
+			if (!isBusy)
+			{
+				isBusy = true;
+				spawnerMaster.MarkSlaveUnavailable(Master);
+			}
+		}
+
 		void INotifyIdle.TickIdle(Actor self)
 		{
 			LeaveMap(self);
+		}
+
+		void INotifyKilled.Killed(Actor self, AttackInfo e)
+		{
+			if (Master == null || Master.IsDead)
+				return;
+
+			spawnerMaster.OnSlaveKilled(Master, self);
+
+			if (!isBusy)
+				spawnerMaster.MarkSlaveUnavailable(Master);
 		}
 	}
 }

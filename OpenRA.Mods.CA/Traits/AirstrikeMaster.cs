@@ -41,6 +41,11 @@ namespace OpenRA.Mods.CA.Traits
 			"Condition can stack with multiple spawns.")]
 		public readonly string LoadedCondition = null;
 
+		[GrantedConditionReference]
+		[Desc("The condition to grant to self while spawned units are free.",
+			"Condition can stack.")]
+		public readonly string SlaveAvailableCondition = null;
+
 		[Desc("Conditions to grant when specified actors are contained inside the transport.",
 			"A dictionary of [actor id]: [condition].")]
 		public readonly Dictionary<string, string> SpawnContainConditions = new Dictionary<string, string>();
@@ -72,6 +77,7 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly AirstrikeMasterInfo AirstrikeMasterInfo;
 
 		readonly Stack<int> loadedTokens = new Stack<int>();
+		Stack<int> busyTokens = new Stack<int>();
 
 		WPos finishEdge;
 		WVec spawnOffset;
@@ -216,6 +222,7 @@ namespace OpenRA.Mods.CA.Traits
 		public override void OnSlaveKilled(Actor self, Actor slave)
 		{
 			// Set clock so that regen happens.
+
 			if (respawnTicks <= 0) // Don't interrupt an already running timer!
 				respawnTicks = Util.ApplyPercentageModifiers(Info.RespawnTicks, reloadModifiers.Select(rm => rm.GetReloadModifier()));
 		}
@@ -264,12 +271,10 @@ namespace OpenRA.Mods.CA.Traits
 			if (respawnTicks > 0)
 			{
 				respawnTicks--;
-
 				// Time to respawn someting.
 				if (respawnTicks <= 0)
 				{
 					Replenish(self, SlaveEntries);
-
 					// If there's something left to spawn, restart the timer.
 					if (SelectEntryToSpawn(SlaveEntries) != null)
 						respawnTicks = Util.ApplyPercentageModifiers(Info.RespawnTicks, reloadModifiers.Select(rm => rm.GetReloadModifier()));
@@ -285,6 +290,34 @@ namespace OpenRA.Mods.CA.Traits
 			}
 		}
 
+		public new void Replenish(Actor self, BaseSpawnerSlaveEntry[] slaveEntries)
+		{
+			if (Info.SpawnAllAtOnce)
+			{
+				foreach (var se in slaveEntries)
+				{
+					if (!se.IsValid)
+						Replenish(self, se);
+				}
+			}
+			else
+			{
+				var entry = SelectEntryToSpawn(slaveEntries);
+
+				// All are alive and well.
+				if (entry == null)
+					return;
+
+				Replenish(self, entry);
+			}
+		}
+
+		public override void Replenish(Actor self, BaseSpawnerSlaveEntry entry)
+		{
+			base.Replenish(self, entry);
+			MarkSlaveAvailable(self);
+		}
+
 		protected override void TraitPaused(Actor self)
 		{
 			Recall();
@@ -294,6 +327,16 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			if (order.OrderString == "Stop")
 				Recall();
+		}
+
+		public void MarkSlaveAvailable(Actor self)
+		{
+			busyTokens.Push(self.GrantCondition(AirstrikeMasterInfo.SlaveAvailableCondition));
+		}
+
+		public void MarkSlaveUnavailable(Actor self)
+		{
+			self.RevokeCondition(busyTokens.Pop());
 		}
 	}
 }
