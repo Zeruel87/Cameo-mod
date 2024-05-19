@@ -32,6 +32,7 @@ namespace OpenRA.Mods.Cameo.Activities
 			this.target = target;
 			this.infector = infector;
 			this.info = info;
+			IsInterruptible = false;
 		}
 
 		protected override void OnFirstRun(Actor self)
@@ -53,8 +54,8 @@ namespace OpenRA.Mods.Cameo.Activities
 
 				if (jousting)
 				{
-					infector.RevokeJoustCondition(self);
 					jousting = false;
+					infector.RevokeJoustCondition(self);
 				}
 
 				infector.DoAttack(self, target);
@@ -66,8 +67,8 @@ namespace OpenRA.Mods.Cameo.Activities
 				w.Remove(self);
 
 				infectable.Infectors.Add(new InfectorCA(self, infector, info));
+				infectable.RevokeInfectingCondition(targetActor, self);
 				infectable.GrantCondition(targetActor, self);
-				infectable.RevokeCondition(targetActor, self);
 			});
 		}
 
@@ -75,10 +76,10 @@ namespace OpenRA.Mods.Cameo.Activities
 		{
 			if (jousting)
 			{
-				infector.RevokeJoustCondition(self);
 				jousting = false;
+				infector.RevokeJoustCondition(self);
 			}
-
+			
 			if (target.Type != TargetType.Actor)
 				return;
 
@@ -89,10 +90,7 @@ namespace OpenRA.Mods.Cameo.Activities
 			if (infectable == null || infectable.IsTraitDisabled)
 				return;
 
-			if (infectable.Info.InfectorLimit > 0 && infectable.Infectors.Count >= infectable.Info.InfectorLimit)
-				return;
-
-			infectable.RevokeCondition(target.Actor, self);
+			infectable.RevokeInfectingCondition(target.Actor, self);
 		}
 
 		bool IsValidInfection(Actor self, Actor targetActor)
@@ -107,7 +105,7 @@ namespace OpenRA.Mods.Cameo.Activities
 				return false;
 
 			var infectable = targetActor.TraitOrDefault<InfectableCA>();
-			if (infectable == null || infectable.IsTraitDisabled || (infectable.Info.InfectorLimit > 0 && infectable.Infectors.Count >= infectable.Info.InfectorLimit))
+			if (infectable == null || infectable.IsTraitDisabled || (infectable.Infectors.Count > 0))
 				return false;
 
 			return true;

@@ -88,9 +88,9 @@ namespace OpenRA.Mods.Cameo.Traits
 		readonly Health health;
 
 		public List<InfectorCA> Infectors = new();
+		public Actor enteringInfector;
 
 		int beingInfectedToken = Actor.InvalidConditionToken;
-		public Actor enteringInfector;
 
 		Stack<int> infectedTokens = new();
 		Dictionary<string, Stack<int>> infectedByTokens = new();
@@ -105,15 +105,12 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			if (infector != null)
 			{
-				if (enteringInfector == null)
-				{
-					enteringInfector = infector;
+				enteringInfector = infector;
 
-					if (beingInfectedToken == Actor.InvalidConditionToken && !string.IsNullOrEmpty(Info.BeingInfectedCondition))
-						beingInfectedToken = self.GrantCondition(Info.BeingInfectedCondition);
+				if (beingInfectedToken == Actor.InvalidConditionToken && !string.IsNullOrEmpty(Info.BeingInfectedCondition))
+					beingInfectedToken = self.GrantCondition(Info.BeingInfectedCondition);
 
-					return true;
-				}
+				return true;
 			}
 
 			return false;
@@ -128,33 +125,33 @@ namespace OpenRA.Mods.Cameo.Traits
 				infectedByTokens.GetOrAdd(Infector.Info.Name).Push(self.GrantCondition(infectedByCondition));
 		}
 
-		public void RevokeCondition(Actor self, Actor infector)
+		public void RevokeInfectingCondition(Actor self, Actor infector)
 		{
-			if (enteringInfector == infector)
-			{
-				enteringInfector = null;
+			if (self.IsDead)
+				return;
 
-				if (beingInfectedToken != Actor.InvalidConditionToken)
-					beingInfectedToken = self.RevokeCondition(beingInfectedToken);
-			}
-			else
-			{
-				if (infectedTokens.Count > 0)
-					self.RevokeCondition(infectedTokens.Pop());
+			enteringInfector = null;
 
-				if (infectedByTokens.TryGetValue(infector.Info.Name, out var infectedByToken) && infectedByToken.Count > 0)
-					self.RevokeCondition(infectedByToken.Pop());
-			}
+			if (beingInfectedToken != Actor.InvalidConditionToken)
+				beingInfectedToken = self.RevokeCondition(beingInfectedToken);
+		}
+		
+		public void RevokeInfectedCondition(Actor self, Actor infector) {
+			if (infectedTokens.Count > 0)
+				self.RevokeCondition(infectedTokens.Pop());
+
+			if (infectedByTokens.TryGetValue(infector.Info.Name, out var infectedByToken) && infectedByToken.Count > 0)
+				self.RevokeCondition(infectedByToken.Pop());
 		}
 
 		void RemoveInfector(Actor self, InfectorCA Infector, bool kill, AttackInfo e)
 		{
+			if (Infector == null || Infector.actor.IsDead)
+				return;
+
 			Infector.actor.TraitOrDefault<IPositionable>().SetPosition(Infector.actor, self.CenterPosition);
 			self.World.AddFrameEndTask(w =>
 			{
-				if (Infector == null || Infector.actor.IsDead)
-					return;
-
 				w.Add(Infector.actor);
 
 				if (kill)
@@ -173,13 +170,7 @@ namespace OpenRA.Mods.Cameo.Traits
 					}
 				}
 
-				if (infectedByTokens.TryGetValue(Infector.info.Name, out var infectedByToken) && infectedByToken.Count > 0)
-					self.RevokeCondition(infectedByToken.Pop());
-
-				if (infectedTokens.Count > 0)
-					self.RevokeCondition(infectedTokens.Pop());
-
-				RevokeCondition(self, Infector.actor);
+				RevokeInfectedCondition(self, Infector.actor);
 				Infectors.Remove(Infector);
 			});
 		}
