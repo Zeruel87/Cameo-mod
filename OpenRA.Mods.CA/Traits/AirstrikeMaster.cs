@@ -205,6 +205,8 @@ namespace OpenRA.Mods.CA.Traits
 					if (!slave.IsInWorld)
 						w.Add(slave);
 
+					slave.Trait<IPositionable>().SetCenterPosition(slave, startEdge + spawnOffset);
+
 					var attack = slave.Trait<AttackAircraft>();
 					attack.AttackTarget(Target.FromPos(target + targetOffset), AttackSource.Default, false, true);
 				});
