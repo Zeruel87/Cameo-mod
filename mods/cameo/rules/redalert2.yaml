@@ -1476,6 +1476,7 @@ ra2gapill:
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@AntiInf: ^PrioritizeInfantry
 	Selectable:
 		Bounds: 1024, 1024
 	Tooltip:
@@ -1500,6 +1501,7 @@ ra2gapill:
 		MaxWeight: 2
 		InitialUnits: ra2e1, ra2e1
 	AttackGarrisoned:
+		RequiresCondition: !build-incomplete
 		Armaments: garrisoned
 		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
 		PortYaws: 0, 176, 341, 512, 682, 853
@@ -2470,6 +2472,8 @@ yrngbnkr:
 
 yrngbnkr.bot:
 	Inherits: yrngbnkr
+	ProductionCostMultiplier:
+		Multiplier: 350
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: ra2nahand, anyhq, ~botplayer, ~techlevel.low, ~CountryChoosedSovietRA2
@@ -2488,6 +2492,7 @@ ra2nalasr:
 	Inherits@RenderVoxel: ^RenderVoxel
 	Inherits@sell: ^RA2SSpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
@@ -3037,7 +3042,7 @@ yryarefn:
 	Inherits@ref: ^Refinery
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1200
+		Cost: 2000
 	Tooltip:
 		Name: Slave Miner
 	Buildable:
@@ -3470,7 +3475,7 @@ yrngtbnk:
 		DisplayTypes: Vehicle
 	-SpawnActorsOnSell:
 	AttackGarrisoned:
-		Armaments: primary, secondary
+		Armaments: primary, secondary, garrisoned
 		PortOffsets: 192,0,128, 112,-170,128, -112,-170,128, -192,0,128, -112,170,128, 112,170,128
 		PortYaws: 0, 176, 341, 512, 682, 853
 		PortCones: 88, 88, 88, 88, 88, 88
@@ -3571,7 +3576,7 @@ yrygggun:
 		Ammo: 60
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 5
+		Delay: 4
 		Count: 1
 		ResetOnFire: True
 	Armament@1:
@@ -3928,7 +3933,10 @@ YRGGI:
 		ArmamentNames: primary, deployed
 	Armament@PRIMARY:
 		Weapon: GuardianGIMG
-		RequiresCondition: !deployed
+		RequiresCondition: !deployed && !rank-elite
+	Armament@ELITE:
+		Weapon: GuardianGIMGE
+		RequiresCondition: !deployed && rank-elite
 	Armament@BOTAA:
 		Weapon: aadeploytargeting.8c0
 		Name: targeting
@@ -4044,9 +4052,9 @@ RA2CLEG:
 		Queue: Infantry, RAInfantry
 		Description: Elite infantry unit.\nFreezes units and buildings in time.\n Strong vs single targets\n Weak vs Aircraft
 	Mobile:
-		Speed: 40
+		Speed: 35
 	Health:
-		HP: 7000
+		HP: 35000
 	Passenger:
 		CustomPipType: blue
 	Armament@sound:
@@ -4065,6 +4073,12 @@ RA2CLEG:
 		Name: garrisoned
 		Weapon: ChronoBeam
 		LocalOffset: 256,43,256
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: ChronoBeam_elite
+		LocalOffset: 256,43,256
+		RequiresCondition: rank-elite
 	AttackFrontal:
 		FacingTolerance: 0
 	Inherits@EXT: ^ExternalConditions
@@ -4117,9 +4131,18 @@ RA2SNIPE:
 		HP: 20000
 	Armament@PRIMARY:
 		Weapon: RA2AWP
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2AWPE
+		RequiresCondition: rank-elite
 	Armament@GARRISONED:
 		Name: garrisoned
-		Weapon: RA2AWPG
+		Weapon: RA2AWP
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: RA2AWPE
+		RequiresCondition: rank-elite
 	AttackFrontal:
 		FacingTolerance: 0
 	Inherits@EXT: ^ExternalConditions
@@ -4199,8 +4222,10 @@ RA2TANY:
 		CustomPipType: red
 	Armament@PRIMARY:
 		Weapon: RA2DoublePistols
-	# Armament@SECONDARY:
-	# 	Weapon: RA2DoublePistols
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2DoublePistolsE
+		RequiresCondition: rank-elite
 	Armament@c4:
 		Weapon: TanyaAttach
 		Cursor: c4
@@ -4212,6 +4237,11 @@ RA2TANY:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2DoublePistols
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: RA2DoublePistolsE
+		RequiresCondition: rank-elite
 	AttackFrontal:
 		FacingTolerance: 0
 	WithInfantryBody:
@@ -4232,7 +4262,6 @@ RA2TANY:
 		Prerequisites: barracks.upgraded
 	RenderSprites:
 		PlayerPalette: playerra2
-
 
 RA2SEAL:
 	Inherits: ^Soldier
@@ -4261,10 +4290,20 @@ RA2SEAL:
 		BuildPaletteOrder: 120
 		Prerequisites: ~ra2gatech
 		Description: Amphibious commando infantry.\nCan plant timed bombs on ships\nCan demolish buildings with C4\n Strong vs Infantry, Buildings, Ships\n Weak vs Vehicles, Aircraft
-	Armament:
+	Armament@PRIMARY:
 		Weapon: RA2MP5
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2MP5E
+		RequiresCondition: rank-elite
 	Armament@GARRISONED:
+		Name: garrisoned
 		Weapon: RA2MP5
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: RA2MP5E
+		RequiresCondition: rank-elite
 	# Armament@c4:
 	# 	Weapon: GenericC4
 	# 	Cursor: c4
@@ -4369,9 +4408,9 @@ RA2ADOG:
 		Payload: 100
 	SelectionDecorations:
 	Health:
-		HP: 2500
+		HP: 5000
 	ChangesHealth@SelfHealing:
-		Step: 1
+		Step: 2
 	Mobile:
 		Speed: 100
 		Voice: Move
@@ -4480,6 +4519,10 @@ YRBORIS:
 		CustomPipType: red
 	Armament@PRIMARY:
 		Weapon: BorisAKM
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: BorisAKME
+		RequiresCondition: rank-elite
 	Armament@AntiBuilding:
 		Weapon: BorisAKM2
 		RequiresCondition: !canflare || ammo < 3
@@ -4493,6 +4536,11 @@ YRBORIS:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: BorisAKM
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: BorisAKME
+		RequiresCondition: rank-elite
 	#GrantConditionOnAttack@flare:
 	#	Condition: flared
 	#	ArmamentNames: secondary
@@ -4562,6 +4610,10 @@ RA2E2:
 		HP: 12500
 	Armament@PRIMARY:
 		Weapon: RA2M1Carbine
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2M1CarbineE
+		RequiresCondition: rank-elite
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2vulcan2
@@ -4698,6 +4750,11 @@ RA2DESO:
 	Armament@PRIMARY:
 		Weapon: RA2RadBeamWeapon
 		LocalOffset: 256,43,341
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2RadBeamWeaponE
+		LocalOffset: 256,43,341
+		RequiresCondition: rank-elite
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2RadBeamWeapon
@@ -4760,9 +4817,9 @@ RA2TERROR:
 		Queue: Infantry, RAInfantry
 		Description: Suicide bomber infantry.\n  Strong vs Infantry, Vehicles\n  Weak vs Defence, Aircraft\nExplodes when killed
 	Mobile:
-		Speed: 100
+		Speed: 75
 	Health:
-		HP: 10000
+		HP: 15000
 	Inherits@EXT: ^ExternalConditions
 	Explodes:
 		Weapon: RA2Terrorist
@@ -5018,6 +5075,10 @@ YRBRUTE:
 		Step: 18
 	Armament@PRIMARY:
 		Weapon: RA2BrutePunch
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2BrutePunchE
+		RequiresCondition: rank-elite
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2BrutePunch
@@ -5133,9 +5194,18 @@ YRVIRUS:
 		HP: 10000
 	Armament@PRIMARY:
 		Weapon: RA2Virusgun
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2VirusgunE
+		RequiresCondition: rank-elite
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2Virusgun
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: RA2VirusgunE
+		RequiresCondition: rank-elite
 	AttackFrontal:
 		FacingTolerance: 0
 	AutoTargetPriority:
@@ -5152,6 +5222,8 @@ YRVIRUS:
 		LevelUpNotification: LevelUpRA2
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
+	# FirepowerMultiplier@CloudCompensation:
+	# 	Modifier: 5
 
 # YRJULIA:
 # 	Inherits: ^Soldier
@@ -5352,6 +5424,36 @@ YRYURIX:
 	SpeedMultiplier@MC10:
 		Modifier: 0
 		RequiresCondition: controlling >= 10
+	ReloadDelayMultiplier@MC1:
+		Modifier: 120
+		RequiresCondition: controlling == 1
+	ReloadDelayMultiplier@MC2:
+		Modifier: 140
+		RequiresCondition: controlling == 2
+	ReloadDelayMultiplier@MC3:
+		Modifier: 160
+		RequiresCondition: controlling == 3
+	ReloadDelayMultiplier@MC4:
+		Modifier: 180
+		RequiresCondition: controlling == 4
+	ReloadDelayMultiplier@MC5:
+		Modifier: 200
+		RequiresCondition: controlling == 5
+	ReloadDelayMultiplier@MC6:
+		Modifier: 220
+		RequiresCondition: controlling == 6
+	ReloadDelayMultiplier@MC7:
+		Modifier: 240
+		RequiresCondition: controlling == 7
+	ReloadDelayMultiplier@MC8:
+		Modifier: 260
+		RequiresCondition: controlling == 8
+	ReloadDelayMultiplier@MC9:
+		Modifier: 280
+		RequiresCondition: controlling == 9
+	ReloadDelayMultiplier@MC10:
+		Modifier: 300
+		RequiresCondition: controlling == 10
 	ReloadArmamentsBar:
 	AutoTarget:
 	AttackFrontal:
@@ -5391,6 +5493,7 @@ YRYURIX:
 		Payload: 600
 	IgnoresDisguise:
 	-DamagedByTerrain:
+	-Cloneable:
 	Crushable:
 		CrushClasses: vehicle
 	GainsExperience:
@@ -5724,12 +5827,12 @@ RA2TNKD:
 
 RA2FV:
 	Inherits: ^Vehicle
+	Inherits@Template: ^SupportVehicleTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
-	Inherits@detect: ^GenericGroundDetector
 	Inherits@IFV: ^IFVConditions
 	Inherits@bot: ^BotAutoDeployEvacuateCargo
 	Valued:
@@ -5745,17 +5848,16 @@ RA2FV:
 	Mobile:
 		Locomotor: wheeled
 		Speed: 150
+		TurnSpeed: 30
 		PauseOnCondition: notmobile || disabled
 	Health:
 		HP: 25000
 	Repairable:
-		HpPerStep: 2500
+		HpPerStep: 1250
 	Armor:
 		Type: Light
-	RevealsShroud:
-		Range: 6c0
 	Turreted:
-		TurnSpeed: 12
+		TurnSpeed: 30
 	###################
 	#	Infantry
 	###################
@@ -5793,7 +5895,7 @@ RA2FV:
 		TargetRelationships: Ally
 		ForceTargetRelationships: None
 	Armament@sniper:
-		Weapon: RA2AWPG
+		Weapon: LightSniper
 		LocalOffset: 171,0,255
 		MuzzleSequence: muzzlemg
 		MuzzlePalette: ra2effect
@@ -5963,6 +6065,9 @@ RA2FVBOTMS:
 
 RA2FVBOTREP:
 	Inherits: RA2FVBOTMG
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~botplayer, ra2gapile, ra2gadept
 	Cargo:
 		InitialUnits: ra2engineer
 
@@ -6152,6 +6257,7 @@ RA2MGTK:
 
 yrbfrt:
 	Inherits: ^Tank
+	Inherits@Template: ^HighTechTankTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -6161,7 +6267,7 @@ yrbfrt:
 	Inherits@cargo: ^CargoVehicle
 	Inherits@bot: ^BotAutoDeployEvacuateCargo
 	Valued:
-		Cost: 2000
+		Cost: 3000
 	Tooltip:
 		Name: Battle Fortress
 	UpdatesPlayerStatistics:
@@ -6172,17 +6278,18 @@ yrbfrt:
 		Queue: Vehicle, RAVehicle
 		Description: Heavily armored Allied transport.\nMust be garrisoned with infantry to attack.\n Strong vs Everything
 	Mobile:
-		Speed: 75
+		Speed: 60
+		TurnSpeed: 12
 	Passenger:
 		Weight: 4
 	Health:
 		HP: 125000
 	Repairable:
-		HpPerStep: 2637
+		HpPerStep: 2500
+	ChangesHealth@SelfHealing:
+		Step: 50
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
 	#Turreted:
 	#	TurnSpeed: 1023
 	-QuantizeFacingsFromSequence:
@@ -6229,11 +6336,6 @@ yrbfrt:
 		LevelUpNotification: LevelUpRA2
 	ProducibleWithLevel:
 		Prerequisites: vehicles.upgraded
-	ChangesHealth:
-		Step: 50
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 
 yrbfrt.bot:
 	Inherits: yrbfrt
@@ -6258,18 +6360,6 @@ yrbfrt.bot2:
 		InitialUnits: ra2cleg,ra2cleg,ra2cleg,ra2cleg,ra2cleg,ra2cleg
 	ProductionCostMultiplier:
 		Multiplier: 300
-
-yrbfrt.bot3:
-	Inherits: yrbfrt.bot2
-	Tooltip:
-		Name: Tanya Battle Fortress
-	Buildable:
-		Prerequisites: ra2gatech, ra2gapile, ~botplayer
-		BuildLimit: 1
-	Cargo:
-		InitialUnits: ra2tany,ra2seal,ra2snipe,ra2e1,yrggi,yrggi
-	ProductionCostMultiplier:
-		Multiplier: 200
 
 ##############################################
 #   Red Alert 2 Soviet Vehicles
@@ -6437,6 +6527,16 @@ RA2HTK:
 		MuzzlePalette: ra2effect
 	Armament@AG:
 		Weapon: RA2FlakTrackGun
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AAE:
+		Weapon: RA2FlakTrackAAGunE
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AGE:
+		Weapon: RA2FlakTrackGunE
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
@@ -6970,7 +7070,7 @@ YRSMIN:
 	ProvidesPrerequisite:
 		Prerequisite: yryarefn
 	Valued:
-		Cost: 1200
+		Cost: 2000
 	Tooltip:
 		Name: Mobile Slave Miner
 	Buildable:
@@ -6986,7 +7086,6 @@ YRSMIN:
 	Mobile:
 		Speed: 50
 		TurnSpeed: 10
-		Locomotor: heavywheeled
 	Health:
 		HP: 200000
 	Repairable:
@@ -7031,7 +7130,7 @@ YRSMIN:
 yrsmin.empy:
 	Inherits: YRSMIN
 	Valued:
-		Cost: 1200
+		Cost: 2000
 	Tooltip:
 		Name: Mobile Slave Miner
 	-Buildable:
@@ -7074,7 +7173,7 @@ YRYTNK:
 		Ammo: 60
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 5
+		Delay: 4
 		Count: 1
 		ResetOnFire: True
 	Armament@1:
@@ -7125,7 +7224,7 @@ YRYTNK:
 		VoiceSet: GattlingTankVoice
 	Armament@GARRISONED:
 		Name: garrisoned
-		Weapon: RA2GattlingMG2
+		Weapon: RA2GattlingMGG
 	DeliversCash:
 		Payload: 300
 	GainsExperience:
@@ -7198,12 +7297,12 @@ YRLTNK:
 
 YRTELE:
 	Inherits: ^Tank
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
-	Inherits@Template: ^HighTechTankTemplate
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -7230,13 +7329,16 @@ YRTELE:
 	Armament@Normal:
 		Name: primary
 		Weapon: RA2Magnet
+		LocalOffset: 400,0,300
 		RequiresCondition: !rank-elite
 	Armament@elite:
 		Name: primary
 		Weapon: RA2Magnet_elite
+		LocalOffset: 400,0,300
 		RequiresCondition: rank-elite
 	Armament@Flash:
 		Weapon: RA2MagnetFlash
+		LocalOffset: 400,0,300
 	AttackTurreted:
 	WithSpriteTurret:
 	SelectionDecorations:
@@ -7250,6 +7352,7 @@ YRTELE:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2Magnet
+	RenderRangeCircle:
 	DeliversCash:
 		Payload: 500
 	GainsExperience:
@@ -7284,7 +7387,7 @@ YRCAOS:
 	Health:
 		HP: 12000
 	Repairable:
-		HpPerStep: 2637
+		HpPerStep: 600
 	Armor:
 		Type: Light
 	Turreted:
@@ -7320,13 +7423,13 @@ YRCAOS:
 
 YRMIND:
 	Inherits: ^Tank
+	Inherits@Template: ^HighTechTankTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
-	Inherits@Template: ^HighTechTankTemplate
 	Inherits@MC: ^MCImmune
 	Valued:
 		Cost: 1500
@@ -7343,10 +7446,12 @@ YRMIND:
 		TurnSpeed: 24
 	Health:
 		HP: 100000
+	ChangesHealth@SelfHealing:
+		Step: 40
 	Repairable:
-		HpPerStep: 2637
+		HpPerStep: 5000
 	Armor:
-		Type: Medium
+		Type: Heavy
 	Turreted:
 		TurnSpeed: 2000
 	Armament@PRIMARY:
@@ -7357,25 +7462,30 @@ YRMIND:
 		ControllingCondition: slaves
 		RequiresCondition: !disabled
 	ChangesHealth@1:
-		Step: -50
+		Step: -10
+		Delay: 1
+		StartIfBelow: 101
+		RequiresCondition: slaves > 1
+	ChangesHealth@2:
+		Step: -20
+		Delay: 1
+		StartIfBelow: 101
+		RequiresCondition: slaves > 2
+	ChangesHealth@3:
+		Step: -30
 		Delay: 1
 		StartIfBelow: 101
 		RequiresCondition: slaves > 3
-	ChangesHealth@2:
-		Step: -50
+	ChangesHealth@4:
+		Step: -40
 		Delay: 1
 		StartIfBelow: 101
 		RequiresCondition: slaves > 4
-	ChangesHealth@3:
+	ChangesHealth@5:
 		Step: -50
 		Delay: 1
 		StartIfBelow: 101
 		RequiresCondition: slaves > 5
-	ChangesHealth@4:
-		Step: -100
-		Delay: 1
-		StartIfBelow: 101
-		RequiresCondition: slaves > 6
 	ReloadArmamentsBar:
 	RenderRangeCircle:
 		RangeCircleType: mindcontrol
@@ -8224,7 +8334,7 @@ RA2ZEP:
 		InitialFacing: 896
 		TurnSpeed: 20
 		Speed: 30
-		RepulsionSpeed: 10
+		RepulsionSpeed: 15
 		CanSlide: False
 		IdealSeparation: 3000
 	Health:
@@ -8673,25 +8783,23 @@ YRDISK:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
-		BuildDuration: 750
-		BuildDurationModifier: 100
 		Prerequisites: ~yrygtech
 		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
 		Description: Flying saucer armed with lasers.\nCan shut down power plants and defenses when overhead\nCan steal resources from refineries and silos\n  Strong vs Everything
 	Aircraft:
 		InitialFacing: 896
 		TurnSpeed: 1023
-		Speed: 100
-		RepulsionSpeed: 10
+		Speed: 75
+		RepulsionSpeed: 25
+		IdealSeparation: 2000
 	Health:
-		HP: 50000
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+		HP: 75000
+	ChangesHealth@SelfHealing:
+		Step: 30
 	Armament@PRIMARY:
 		Name: primary
 		Weapon: RA2DiskLaser
-		LocalOffset: 427,-171,-213, 427,171,-213
+		LocalOffset: 800,0,0
 		PauseOnCondition: !ammo
 	Armament@SECOND:
 		Name: secondary
@@ -8709,7 +8817,7 @@ YRDISK:
 		FacingTolerance: 512
 	AmmoPool:
 		Armaments: primary
-		Ammo: 2
+		Ammo: 1
 		AmmoCondition: ammo
 	WithShadow:
 	WithMoveAnimation:
@@ -8726,12 +8834,8 @@ YRDISK:
 	Turreted:
 	Voiced:
 		VoiceSet: DiskVoice
+	RenderRangeCircle:
 	DeathSounds:
-	ChangesHealth:
-		Step: 100
-		Delay: 3
-		StartIfBelow: 50
-		DamageCooldown: 150
 	GainsExperience:
 		LevelUpNotification: LevelUpRA2
 	ProducibleWithLevel:
