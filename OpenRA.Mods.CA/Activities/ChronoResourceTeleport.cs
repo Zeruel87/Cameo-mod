@@ -44,6 +44,10 @@ namespace OpenRA.Mods.CA.Activities
 			if (info.WarpInSound != null && (info.AudibleThroughFog || !self.World.FogObscures(sourcepos)))
 				Game.Sound.Play(SoundType.World, info.WarpInSound, self.CenterPosition, info.SoundVolume);
 
+			if (info.ExposeInfectors)
+				foreach (var i in self.TraitsImplementing<IRemoveInfector>())
+					i.RemoveInfector(self, false);
+
 			self.Trait<IPositionable>().SetPosition(self, destination);
 			self.Generation++;
 

@@ -94,6 +94,9 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Cooldown between jumps (irrespective of charge).")]
 		public readonly int Cooldown = 0;
 
+		[Desc("Should parasites be removed?")]
+		public readonly bool ExposeInfectors = true;
+
 		public readonly bool ShowSelectionBar = true;
 		public readonly bool ShowSelectionBarWhenFull = true;
 
@@ -226,6 +229,10 @@ namespace OpenRA.Mods.CA.Traits
 				var cell = self.World.Map.CellContaining(order.Target.CenterPosition);
 				if (maxDistance != null)
 					self.QueueActivity(move.MoveWithinRange(order.Target, WDist.FromCells(maxDistance.Value), targetLineColor: Info.TargetLineColor));
+
+				if (Info.ExposeInfectors)
+					foreach (var i in self.TraitsImplementing<IRemoveInfector>())
+						i.RemoveInfector(self, false);
 
 				self.QueueActivity(new TeleportCA(self, cell, maxDistance, Info.KillCargo, Info.FlashScreen, Info.ChronoshiftSound));
 				self.QueueActivity(move.MoveTo(cell, 5, targetLineColor: Info.TargetLineColor));

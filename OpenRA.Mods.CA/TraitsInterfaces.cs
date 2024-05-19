@@ -68,4 +68,7 @@ namespace OpenRA.Mods.CA.Traits
 
 	[RequireExplicitImplementation]
 	public interface INotifyFallDown { void OnLanded(Actor self); }
+
+	[RequireExplicitImplementation]
+	public interface IRemoveInfector { void RemoveInfector(Actor self, bool kill, AttackInfo e = null); }
 }

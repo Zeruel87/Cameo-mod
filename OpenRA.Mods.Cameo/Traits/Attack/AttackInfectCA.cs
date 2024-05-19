@@ -10,11 +10,11 @@
 
 using OpenRA.Activities;
 using OpenRA.Mods.Common.Traits;
-using OpenRA.Mods.Cameo.Activities;
+using OpenRA.Mods.CA.Activities;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.Cameo.Traits
+namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("Move onto the target then execute the attack.")]
 	public class AttackInfectCAInfo : AttackFrontalInfo, Requires<MobileInfo>

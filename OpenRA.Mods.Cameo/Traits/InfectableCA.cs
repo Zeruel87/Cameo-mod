@@ -16,7 +16,7 @@ using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.Cameo.Traits
+namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("Handle infection by infector units.")]
 	public class InfectableCAInfo : ConditionalTraitInfo, Requires<HealthInfo>
@@ -83,12 +83,11 @@ namespace OpenRA.Mods.Cameo.Traits
 		}
 	}
 
-	public class InfectableCA : ConditionalTrait<InfectableCAInfo>, ISync, ITick, INotifyDamage, INotifyKilled
+	public class InfectableCA : ConditionalTrait<InfectableCAInfo>, ISync, ITick, INotifyDamage, INotifyKilled, IRemoveInfector
 	{
 		readonly Health health;
 
 		public List<InfectorCA> Infectors = new();
-		public Actor enteringInfector;
 
 		int beingInfectedToken = Actor.InvalidConditionToken;
 
@@ -105,8 +104,6 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			if (infector != null)
 			{
-				enteringInfector = infector;
-
 				if (beingInfectedToken == Actor.InvalidConditionToken && !string.IsNullOrEmpty(Info.BeingInfectedCondition))
 					beingInfectedToken = self.GrantCondition(Info.BeingInfectedCondition);
 
@@ -130,8 +127,6 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (self.IsDead)
 				return;
 
-			enteringInfector = null;
-
 			if (beingInfectedToken != Actor.InvalidConditionToken)
 				beingInfectedToken = self.RevokeCondition(beingInfectedToken);
 		}
@@ -146,7 +141,7 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		void RemoveInfector(Actor self, InfectorCA Infector, bool kill, AttackInfo e)
 		{
-			if (Infector == null || Infector.actor.IsDead)
+			if (Infector == null || Infector.actor.IsDead || Infector.actor.IsInWorld)
 				return;
 
 			Infector.actor.TraitOrDefault<IPositionable>().SetPosition(Infector.actor, self.CenterPosition);
@@ -230,6 +225,12 @@ namespace OpenRA.Mods.Cameo.Traits
 					}
 				}
 			}
+		}
+
+		void IRemoveInfector.RemoveInfector(Actor self, bool kill, AttackInfo e)
+		{
+			foreach (var Infector in Infectors)
+				RemoveInfector(self, Infector, kill, e);
 		}
 	}
 }

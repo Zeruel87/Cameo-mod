@@ -47,6 +47,9 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Volume the WarpInSound and WarpOutSound played at.")]
 		public readonly float SoundVolume = 1;
 
+		[Desc("Should parasites be removed?")]
+		public readonly bool ExposeInfectors = true;
+
 		public override object Create(ActorInitializer init) { return new ChronoResourceDelivery(init.Self, this); }
 	}
 
