@@ -9,72 +9,144 @@
  */
 #endregion
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using OpenRA.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Cameo.Traits
 {
-	[Desc("Explodes a weapon at the actor's position when enabled."
-		+ "Reload/BurstDelays are used as explosion intervals.")]
-	public class CashTransferToAlliesInfo : PausableConditionalTraitInfo
+	[Desc("Shares cash across each team. Attach this to the world actor.")]
+	public class CashTransferToAlliesInfo : TraitInfo, ILobbyOptions
 	{
 		[Desc("Duration between cash transfers.")]
 		public readonly int ChargeDuration = 1;
 
-		[Desc("Whether to show the cash tick indicators rising from the actor.")]
-		public readonly bool ShowTicks = true;
+		[TranslationReference]
+		[Desc("Descriptive label for the creeps checkbox in the lobby.")]
+		public readonly string CheckboxLabel = "Team Cash Sharing";
+
+		[TranslationReference]
+		[Desc("Tooltip description for the creeps checkbox in the lobby.")]
+		public readonly string CheckboxDescription = "Automatically share cash among teammates";
+
+		[Desc("Default value of the creeps checkbox in the lobby.")]
+		public readonly bool CheckboxEnabled = true;
+
+		[Desc("Prevent the creeps state from being changed in the lobby.")]
+		public readonly bool CheckboxLocked = false;
+
+		[Desc("Whether to display the creeps checkbox in the lobby.")]
+		public readonly bool CheckboxVisible = true;
+
+		[Desc("Display order for the creeps checkbox in the lobby.")]
+		public readonly int CheckboxDisplayOrder = 0;
+
+		IEnumerable<LobbyOption> ILobbyOptions.LobbyOptions(MapPreview map)
+		{
+			yield return new LobbyBooleanOption(map, "cashtransfer", CheckboxLabel, CheckboxDescription, CheckboxVisible, CheckboxDisplayOrder, CheckboxEnabled, CheckboxLocked);
+		}
 
 		public override object Create(ActorInitializer init) { return new CashTransferToAllies(init.Self, this); }
 	}
 
-	class CashTransferToAllies : PausableConditionalTrait<PausableConditionalTraitInfo>, ITick
+	class CashTransferToAllies : ITick, IWorldLoaded, INotifyCreated
 	{
 		readonly CashTransferToAlliesInfo info;
+		public bool Enabled { get; private set; }
 
 		[Sync]
 		int ticks;
 
+		Dictionary<int, List<PlayerResources>> teams;
+
 		public CashTransferToAllies(Actor self, CashTransferToAlliesInfo info)
-			: base(info)
 		{
 			this.info = info;
-
 			ticks = info.ChargeDuration;
+		}
+
+		void INotifyCreated.Created(Actor self)
+		{
+			Enabled = self.World.LobbyInfo.GlobalSettings
+				.OptionOrDefault("cashtransfer", info.CheckboxEnabled);
+		}
+
+		void IWorldLoaded.WorldLoaded(World world, WorldRenderer wr)
+		{
+			if (!Enabled) return;
+
+			teams = new Dictionary<int, List<PlayerResources>>();
+			var playersToTeam = world.Players.Where(p => !p.NonCombatant && p.InternalName != "Everyone").ToList();
+
+			// Console.WriteLine("Finding teams for " + playersToTeam.Count());
+
+			int teamId = 0;
+			while (playersToTeam.Count() > 0)
+			{
+				var currentTeam = new List<OpenRA.Player>();
+				var firstTeam = playersToTeam[0];
+				currentTeam.Add(firstTeam);
+				playersToTeam.RemoveAt(0);
+
+				for (int i = playersToTeam.Count - 1; i >= 0; i--)
+				{
+					bool isAllied = true;
+					foreach (var player in currentTeam)
+					{
+						if (!player.IsAlliedWith(playersToTeam[i]))
+						{
+							isAllied = false;
+							break;
+						}
+					}
+
+					if (isAllied)
+					{
+						currentTeam.Add(playersToTeam[i]);
+						playersToTeam.RemoveAt(i);
+					}
+				}
+
+				if (currentTeam.Count() <= 1)
+					continue;
+
+				var currentTeamResources = new List<PlayerResources>();
+				foreach (var player in currentTeam)
+					currentTeamResources.Add(player.PlayerActor.Trait<PlayerResources>());
+
+				// Console.WriteLine("Team assigned with " + currentTeam.Count() + "members");
+
+				teams[teamId++] = currentTeamResources;
+			}
 		}
 
 		void ITick.Tick(Actor self)
 		{
-			if (IsTraitDisabled || IsTraitPaused)
-				return;
+			if (!Enabled) return;
 
 			if (--ticks < 0)
 			{
 				ticks = info.ChargeDuration;
 
-				var ownResources = self.Owner.PlayerActor.Trait<PlayerResources>();
-				var allies = self.World.Players.Where(p => !p.NonCombatant && p != self.Owner && p.InternalName != "Everyone" && p.IsAlliedWith(self.Owner));
-
-				if (allies.Count() == 0)
-					return;
-
-				foreach (var player in allies)
+				foreach (var team in teams.Values)
 				{
-					var allyResources = player.PlayerActor.Trait<PlayerResources>();
-					var toTakeFromAlly = allyResources.Cash;
-					allyResources.TakeCash(toTakeFromAlly);
-					ownResources.Cash += toTakeFromAlly;
+					var teamTotal = 0;
+
+					if (team.Count <= 1)
+						continue;
+
+					foreach (var playerResources in team)
+						teamTotal += playerResources.Cash + playerResources.Resources;
+
+					var cashMean = teamTotal / team.Count;
+
+					foreach (var playerResources in team)
+						playerResources.ChangeCash(cashMean - (playerResources.Cash + playerResources.Resources));
+
 				}
-
-				var toGive = ownResources.Cash / (allies.Count() + 1);
-
-				foreach (var player in allies)
-				{
-					var allyResources = player.PlayerActor.Trait<PlayerResources>();
-					allyResources.Cash += toGive;
-				}
-
-				ownResources.TakeCash(toGive * allies.Count());
 			}
 		}
 	}
