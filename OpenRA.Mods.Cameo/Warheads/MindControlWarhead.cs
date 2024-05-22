@@ -57,7 +57,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 				if (a.IsDead || capturable == null)
 					continue;
 
-				mc.AddSlave(firedBy, a);
+				mc.AddSlave(firedBy, a, false);
 
 				// Stop shooting, you have new enemies
 				a.CancelActivity();
