@@ -35,16 +35,13 @@ namespace OpenRA.Mods.Cameo.Warheads
 		public override void DoImpact(in Target target, WarheadArgs args)
 		{
 			var firedBy = args.SourceActor;
-			if (!target.IsValidFor(firedBy))
+			if (!target.IsValidFor(firedBy) || firedBy.IsDead || !firedBy.IsInWorld)
 				return;
 
-			//if (!IsValidImpact(target.CenterPosition, firedBy))
-			//	return;
-
 			var mc = firedBy.Trait<MindController>();
-			if (firedBy.IsDead || mc.IsTraitDisabled || mc.IsTraitPaused) return;
+			if (mc.IsTraitDisabled || mc.IsTraitPaused) return;
 
-            var actors = firedBy.World.FindActorsInCircle(target.CenterPosition, Range);
+			var actors = firedBy.World.FindActorsInCircle(target.CenterPosition, Range);
 
 			foreach (var a in actors)
 			{
