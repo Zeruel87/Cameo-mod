@@ -212,7 +212,7 @@ RA2Patriot:
 
 HarrierMissiles:
 	Inherits: ^RA2MediumMissile
-	ReloadDelay: 100
+	ReloadDelay: 50
 	Burst: 4
 	BurstDelays: 2
 	Range: 7000
@@ -220,8 +220,10 @@ HarrierMissiles:
 	MinRange: 1000
 	Warhead@MediumMissile: SpreadDamage
 		Damage: 8000
+		ValidRelationships: Neutral, Enemy
 	Warhead@MediumMissilePercentage: HealthPercentageDamage
 		Damage: 4
+		ValidRelationships: Neutral, Enemy
 
 HarrierMissiles_elite:
 	Inherits: HarrierMissiles
@@ -718,10 +720,11 @@ RA2KirovBomb:
 		Explosions: large_splash
 		ImpactSounds: gexpwasa.wav
 		ValidTargets: Water, Underwater
-	Warhead@Effect1: CreateEffect
+	Warhead@Effect: CreateEffect
 		Explosions: ra2_medium_clsn
 		ExplosionPalette: ra2effect
 		ImpactSounds: gexp14a.wav
+	-Warhead@Effect1:
 	-Warhead@Effect2:
 
 RA2KirovBombElite:
@@ -1175,7 +1178,7 @@ RA2DiskLaser:
 	Range: 6000
 	Report: vfloatta.wav
 	ValidTargets: Ground, Water, Air
-	InvalidTargets: DiskDrain, DiskSteal
+	InvalidTargets: DiskSteal
 	Projectile: LaserZap
 		Width: 50
 		Duration: 15
@@ -1193,21 +1196,81 @@ RA2DiskLaser:
 		DamageTypes: Prone75Percent, TriggerProne, RadiationDeath
 
 RA2DiskDrain:
-	ReloadDelay: 8
-	Range: 128
+	Inherits: ^MagicWeapon
+	Inherits: ^TeslaWeapon
+	ReloadDelay: 5
+	Range: 125
 	MinRange: 1
+	Report: vflolo5a.wav, vflolo5b.wav
+	ValidTargets: Ground, Water
+	InvalidTargets: DiskDrain
+	TargetActorCenter: true
+	Projectile: InstantHit
+	Warhead@drain: GrantExternalCondition
+		ValidTargets: Ground, Water
+		Range: 250
+		Duration: 5
+		Condition: diskdrain
+	Warhead@MagicWeapon: SpreadDamage
+		ValidTargets: Ground, Water
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
+	Warhead@MagicWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
+	Warhead@TeslaWeapon: SpreadDamage
+		ValidTargets: Ground, Water
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
+	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
+	-Warhead@Effect:
+
+RA2DiskDrain2:
+	Inherits: ^MagicWeapon
+	Inherits: ^TeslaWeapon
+	Inherits: ^HeavyBomb
+	ReloadDelay: 5
+	Range: 125
+	MinRange: 1
+	Report: vflolo6a.wav
 	ValidTargets: DiskDrain
 	TargetActorCenter: true
 	Projectile: InstantHit
 	Warhead@drain: GrantExternalCondition
 		ValidTargets: DiskDrain
-		Range: 256
-		Duration: 64
+		Range: 250
+		Duration: 50
 		Condition: diskdrain
-	Warhead@LaserWeapon: SpreadDamage
-		Damage: 10000
-		Spread: 1000
+	Warhead@MagicWeapon: SpreadDamage
+		ValidTargets: Ground, Water
+		Damage: 2000
 		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
+	Warhead@MagicWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
+	Warhead@TeslaWeapon: SpreadDamage
+		ValidTargets: Ground, Water
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
+	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
+	Warhead@HeavyBomb: SpreadDamage
+		ValidTargets: Ground, Water
+		Damage: 2000
+	Warhead@HeavyBombPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
+	-Warhead@Effect:
+	-Warhead@Effect1:
+	-Warhead@Effect2:
 
 RA2DiskSteal:
 	ReloadDelay: 5
@@ -3297,7 +3360,7 @@ RA2BuildingExplode:
 		ImpactSounds: expnew13.wav #expnew03.wav, expnew06.wav, expnew09.wav, expnew11.wav, expnew12.wav, expnew13.wav, expnew14.wav, expnew15.wav
 
 KirovExplode:
-	Inherits: ^DamagingExplosionHE
+	Inherits: RA2KirovBomb
 	Warhead@Effect: CreateEffect
 		Explosions: ra2_verylarge_twlt
 		ExplosionPalette: ra2effect

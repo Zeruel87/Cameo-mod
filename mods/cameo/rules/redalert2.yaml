@@ -3066,7 +3066,7 @@ yryarefn:
 	Tooltip:
 		Name: Slave Miner
 	Buildable:
-		BuildDuration: 750
+		BuildDuration: 925
 		BuildDurationModifier: 100
 		Prerequisites: ~yrnacnst, yryapowr
 		Queue: Building, RABuilding
@@ -7922,7 +7922,7 @@ yrbsubmisl:
 RA2ZEP:
 	Inherits: ^Helicopter
 	Inherits@Template: ^LineBreakerTemplate
-	Inherits@Template: ^BomberTemplate
+	Inherits@Template: ^SpcaceshipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceGlobal
@@ -8118,7 +8118,7 @@ RA2FALC:
 		Weapon: HarrierMissiles
 		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
 		LocalYaw: 100, -100, 50, -50
-		PauseOnCondition: ammo < 3
+		PauseOnCondition: !ammo
 		RequiresCondition: !rank-elite
 	Armament@PRIMARYELITE:
 		Name: primary
@@ -8131,7 +8131,7 @@ RA2FALC:
 		Ammo: 8
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 12
+		Delay: 50
 		Count: 1
 	SpawnActorOnDeath:
 		Actor: RA2FALC.Husk
@@ -8150,13 +8150,14 @@ RA2FALC:
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
-		PipCount: 4
+		PipCount: 8
 	RenderSprites:
 		PlayerPalette: playerra2
 
 RA2BEAG:
 	Inherits: RA2FALC
 	Inherits@Template: ^BomberTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
 		Cost: 2000
@@ -8185,7 +8186,7 @@ RA2BEAG:
 		Weapon: BlackEagleMissiles
 		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
 		LocalYaw: 50, -50, 25, -25
-		PauseOnCondition: ammo < 3
+		PauseOnCondition: !ammo
 		RequiresCondition: !rank-elite
 	Armament@PRIMARYELITE:
 		Name: primary
@@ -8194,13 +8195,18 @@ RA2BEAG:
 		LocalYaw: 50, -50, 25, -25
 		PauseOnCondition: !ammo
 		RequiresCondition: rank-elite
+	Selectable:
+		DecorationBounds: 1536, 1280
 	AmmoPool:
-		Ammo: 16
+		Ammo: 4
 		AmmoCondition: ammo
-		ReloadCount: 2
 	ReloadAmmoPool:
-		Delay: 12
+		Delay: 100
 		Count: 1
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 4
 	SpawnActorOnDeath:
 		Actor: ra2beag.Husk
 	Voiced:
@@ -8336,15 +8342,16 @@ ra2hind:
 
 YRDISK:
 	Inherits: ^Helicopter
-	Inherits@Template: ^HelicopterTemplate
+	Inherits@Template: ^SpcaceshipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@detect: ^GenericAirDetector
+	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
 		Cost: 2000
 	Tooltip:
-		Name: Floating Disc
+		Name: Floating Disk
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -8354,9 +8361,9 @@ YRDISK:
 		Description: Flying saucer armed with lasers.\nCan shut down power plants and defenses when overhead\nCan steal resources from refineries and silos\n  Strong vs Everything
 	Aircraft:
 		InitialFacing: 896
-		TurnSpeed: 1023
+		TurnSpeed: 2000
 		Speed: 80
-		RepulsionSpeed: 25
+		RepulsionSpeed: 40
 		IdealSeparation: 2000
 	Health:
 		HP: 125000
@@ -8370,6 +8377,12 @@ YRDISK:
 	Armament@SECOND:
 		Name: secondary
 		Weapon: RA2DiskDrain
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		PauseOnCondition: stealing
+	Armament@THIRD:
+		Name: secondary
+		Weapon: RA2DiskDrain2
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	Armament@Steal:
@@ -8415,8 +8428,17 @@ YRDISK:
 		RequiresCondition: !stealing
 	GrantConditionOnAttack:
 		Condition: stealing
-		RevokeDelay: 6
+		RevokeDelay: 5
 		ArmamentNames: secondary
+	DamageMultiplier@stealing:
+		Modifier: 50
+		RequiresCondition: stealing
+	ChangesHealth@stealing:
+		Step: 100
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+		RequiresCondition: stealing
 
 ra2rock:
 	Inherits: ^Helicopter
