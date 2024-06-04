@@ -1277,13 +1277,13 @@ RAMCV:
 		DecorationBounds: 1536, 1536
 	SelectionDecorations:
 	Health:
-		HP: 150000
+		HP: 300000
 	Repairable:
-		HpPerStep: 7500
+		HpPerStep: 15000
 	ChangesHealth@SelfHealing:
-		Step: 60
+		Step: 120
 	Armor:
-		Type: Light
+		Type: Medium
 	Mobile:
 		Speed: 75
 		Locomotor: heavywheeled
@@ -1331,13 +1331,13 @@ RAMCV.ALLIES:
 		DecorationBounds: 1536, 1536
 	SelectionDecorations:
 	Health:
-		HP: 150000
+		HP: 300000
 	Repairable:
-		HpPerStep: 7500
+		HpPerStep: 15000
 	ChangesHealth@SelfHealing:
-		Step: 60
+		Step: 120
 	Armor:
-		Type: Light
+		Type: Medium
 	Mobile:
 		Speed: 75
 		Locomotor: heavywheeled
@@ -1621,7 +1621,7 @@ TTNK:
 
 FTRK:
 	Inherits: ^Vehicle
-	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@Template: ^SupportVehicleTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
@@ -1635,7 +1635,7 @@ FTRK:
 		Prerequisites: ~raweap, ~!upgtnk, ~!upbtr
 		Description: Mobile unit with mounted Flak cannon.\n  Strong vs Infantry, Light armor, Aircraft\n  Weak vs Tanks
 	Valued:
-		Cost: 600
+		Cost: 700
 	AutoDeployer:
 		DeployChance: 100
 		DeployTicks: 0
@@ -1648,13 +1648,15 @@ FTRK:
 		HP: 30000
 	Repairable:
 		HpPerStep: 1500
+	ChangesHealth@SelfHealing:
+		Step: 12
 	Mobile:
-		Speed: 125
-		TurnSpeed: 25
+		Speed: 130
+		TurnSpeed: 26
 	RevealsShroud:
 		Range: 6c0
 	Turreted:
-		TurnSpeed: 50
+		TurnSpeed: 52
 		Offset: -298,0,298
 	Armament@AA:
 		Weapon: FLAK-23-AA
@@ -6012,6 +6014,8 @@ MODSPACEPORT:
 	Inherits@prod: ^ProducesUnits
 	Inherits@sell: ^RASovietSpawnActorsOnSell
 	Inherits@weap: ^IsWeaponFactory
+	Inherits@2: ^CashTricklerMultipliers
+	Inherits@XP: ^GainsExperienceCity
 	Buildable:
 		Queue: Building, RABuilding
 		BuildLimit: 1
@@ -6021,7 +6025,7 @@ MODSPACEPORT:
 		Prerequisites: atek, ~upmodspaceport
 		Description: Produces vehicles.
 	Valued:
-		Cost: 4000
+		Cost: 5000
 	Tooltip:
 		Name: Reinforcement Pad
 	Building:
@@ -6133,6 +6137,28 @@ MODSPACEPORT:
 		DirectionArrowAnimation: airstrikedirection
 		DisplayTimerRelationships: Ally, Neutral, Enemy
 	SupportPowerChargeBar:
+	CashTrickler:
+		Interval: 125
+		Amount: 250
+		PauseOnCondition: lowpower
+	CashTricklerMultiplier@RANK-1:
+		Modifier: 125
+		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-2:
+		Modifier: 150
+		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-3:
+		Modifier: 175
+		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-4:
+		Modifier: 200
+		RequiresCondition: city-elite && !lowpower
+	ExperienceTrickler@1:
+		Amount: 500
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3
 
 SAPC:
 	Inherits: ^Vehicle
@@ -6608,6 +6634,7 @@ modartyturret:
 MRJ:
 	Inherits: ^Vehicle
 	Inherits@Template: ^SupportVehicleTemplate
+	-ExternalCondition@AdvancedTargeting:
 	Valued:
 		Cost: 5000
 	Tooltip:
@@ -6636,7 +6663,7 @@ MRJ:
 		Sequence: spinner
 		Offset: -256,0,256
 	ProximityExternalCondition@JAMMER:
-		Range: 20c0
+		Range: 24000
 		ValidRelationships: Enemy, Neutral
 		Condition: jammed
 		RequiresCondition: !disabled
@@ -6646,17 +6673,24 @@ MRJ:
 		RequiresCondition: !disabled
 	DetectCloaked:
 		Range: 16000
+		RequiresCondition: !disabled
 	WithRangeCircle@JAMMER:
 		Type: jammer
-		Range: 16000
+		Range: 24000
 		Color: 0000FF80
 	RenderJammerCircle:
 	Explodes:
 		Weapon: UnitExplode
 	ProximityExternalCondition@AntiArty:
-		Range: 16000
-		ValidRelationships: Enemy
+		Range: 24000
+		ValidRelationships: Neutral, Enemy
 		Condition: artilleryjammer
+		RequiresCondition: !disabled
+	ProximityExternalCondition@AdvancedTargeting:
+		Range: 8000
+		ValidRelationships: Ally
+		Condition: AdvancedTargeting
+		RequiresCondition: !disabled
 	RevealsShroud:
 		Range: 16000
 	Voiced:
@@ -8731,6 +8765,7 @@ exorcistoitank:
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
+	-WithColoredOverlay@GDIOfficerLeadership:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 180
@@ -8838,17 +8873,17 @@ exorcistoitank:
 		Turret: back
 		Sequence: turret2
 	ProximityExternalCondition@Leadership:
-		Range: 5000
+		Range: 6000
 		ValidRelationships: Ally
 		Condition: GDIOfficerLeadership
 	ProximityExternalCondition@propaganda:
-		Range: 5000
+		Range: 6000
 		ValidRelationships: Ally
 		Condition: propaganda
 	WithRangeCircle@propaganda:
-		Range: 5000
+		Range: 6000
 		Type: propaganda
-		Color: ffb357
+		Color: FFBB55
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 2048, 2048, 0, -256
