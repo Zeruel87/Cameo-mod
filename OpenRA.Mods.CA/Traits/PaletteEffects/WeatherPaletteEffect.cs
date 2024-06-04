@@ -29,6 +29,9 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Measured in ticks.")]
 		public readonly int Length = 40;
 
+		[Desc("Time (in ticks) to ramp effect")]
+		public readonly int RampLength = 10;
+
 		public readonly Color Color = Color.LightGray;
 
 		[Desc("Set this when using multiple independent flash effects.")]
@@ -42,6 +45,10 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly WeatherPaletteEffectInfo Info;
 
 		int remainingFrames;
+		int startRamp;
+		int endRamp;
+		float Ratio;
+		float RatioPerRamp;
 
 		public WeatherPaletteEffect(WeatherPaletteEffectInfo info)
 		{
@@ -54,6 +61,10 @@ namespace OpenRA.Mods.CA.Traits
 				remainingFrames = Info.Length;
 			else
 				remainingFrames = ticks;
+
+			startRamp = remainingFrames - Info.RampLength;
+			endRamp = Info.RampLength;
+			RatioPerRamp = Info.Ratio / Info.RampLength;
 		}
 
 		void ITick.Tick(Actor self)
@@ -67,6 +78,11 @@ namespace OpenRA.Mods.CA.Traits
 			if (remainingFrames == 0)
 				return;
 
+			if (remainingFrames > startRamp)
+				Ratio += RatioPerRamp;
+			else if (remainingFrames < endRamp)
+				Ratio -= RatioPerRamp;
+
 			foreach (var palette in palettes)
 			{
 				if (Info.ExcludePalette.Contains(palette.Key))
@@ -77,7 +93,7 @@ namespace OpenRA.Mods.CA.Traits
 					var orig = palette.Value.GetColor(x);
 					var c = Info.Color;
 					var color = Color.FromArgb(orig.A, ((int)c.R).Clamp(0, 255), ((int)c.G).Clamp(0, 255), ((int)c.B).Clamp(0, 255));
-					var final = Util.PremultipliedColorLerp(Info.Ratio, orig, Util.PremultiplyAlpha(Color.FromArgb(orig.A, color)));
+					var final = Util.PremultipliedColorLerp(Ratio, orig, Util.PremultiplyAlpha(Color.FromArgb(orig.A, color)));
 					palette.Value.SetColor(x, final);
 				}
 			}
