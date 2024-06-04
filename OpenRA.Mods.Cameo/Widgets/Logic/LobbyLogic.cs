@@ -100,7 +100,10 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 		bool updateDiscordStatus = true;
 		Dictionary<int, SpawnOccupant> spawnOccupants = new();
 
-		readonly string chatLineSound = ChromeMetrics.Get<string>("ChatLineSound");
+		readonly string chatLineSound;
+		readonly string playerJoinedSound;
+		readonly string playerLeftSound;
+		readonly string lobbyOptionChangedSound;
 
 		bool MapIsPlayable => (mapStatus & Session.MapStatus.Playable) == Session.MapStatus.Playable;
 
@@ -164,6 +167,11 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 			Game.BeforeGameStart += OnGameStart;
 			Game.ConnectionStateChanged += ConnectionStateChanged;
 
+			ChromeMetrics.TryGet("ChatLineSound", out chatLineSound);
+			ChromeMetrics.TryGet("PlayerJoinedSound", out playerJoinedSound);
+			ChromeMetrics.TryGet("PlayerLeftSound", out playerLeftSound);
+			ChromeMetrics.TryGet("LobbyOptionChangedSound", out lobbyOptionChangedSound);
+
 			var name = lobby.GetOrNull<LabelWidget>("SERVER_NAME");
 			if (name != null)
 				name.GetText = () => orderManager.LobbyInfo.GlobalSettings.ServerName;
@@ -179,6 +187,15 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 				{ "getSpawnOccupants", (Func<Dictionary<int, SpawnOccupant>>)(() => spawnOccupants) },
 				{ "getDisabledSpawnPoints", (Func<HashSet<int>>)(() => orderManager.LobbyInfo.DisabledSpawnPoints) },
 				{ "showUnoccupiedSpawnpoints", true },
+				{ "mapUpdatesEnabled", true },
+				{
+					"onMapUpdate", (Action<string>)(uid =>
+					{
+						orderManager.IssueOrder(Order.Command("map " + uid));
+						Game.Settings.Server.Map = uid;
+						Game.Settings.Save();
+					})
+				},
 			});
 
 			mapContainer.IsVisible = () => panel != PanelType.Servers;
@@ -234,6 +251,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 					Ui.OpenWindow("MAPCHOOSER_PANEL", new WidgetArgs()
 					{
 						{ "initialMap", modData.MapCache.PickLastModifiedMap(MapVisibility.Lobby) ?? map.Uid },
+						{ "remoteMapPool", orderManager.ServerMapPool },
 						{ "initialTab", MapClassification.System },
 						{ "onExit", Game.IsHost ? UpdateSelectedMap : modData.MapCache.UpdateMaps },
 						{ "onSelect", Game.IsHost ? onSelect : null },
@@ -599,7 +617,21 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 			if (scrolledToBottom)
 				lobbyChatPanel.ScrollToBottom(smooth: true);
 
-			Game.Sound.PlayNotification(modRules, null, "Sounds", chatLineSound, null);
+			switch (notification.Pool)
+			{
+				case TextNotificationPool.Chat:
+					Game.Sound.PlayNotification(modRules, null, "Sounds", chatLineSound, null);
+					break;
+				case TextNotificationPool.System:
+					Game.Sound.PlayNotification(modRules, null, "Sounds", lobbyOptionChangedSound, null);
+					break;
+				case TextNotificationPool.Join:
+					Game.Sound.PlayNotification(modRules, null, "Sounds", playerJoinedSound, null);
+					break;
+				case TextNotificationPool.Leave:
+					Game.Sound.PlayNotification(modRules, null, "Sounds", playerLeftSound, null);
+					break;
+			}
 		}
 
 		void UpdateCurrentMap()

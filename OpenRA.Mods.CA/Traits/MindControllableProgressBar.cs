@@ -23,7 +23,7 @@ namespace OpenRA.Mods.CA.Traits
 	}
 
 	[Desc("Visualize capture progress.")]
-	class MindControllableProgressBarInfo : ConditionalTraitInfo, Requires<MindControllableInfo>
+	class MindControllableProgressBarInfo : ConditionalTraitInfo, Requires<MindControllableCAInfo>
 	{
 		public readonly Color Color = Color.Orange;
 

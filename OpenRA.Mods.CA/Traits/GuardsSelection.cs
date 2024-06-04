@@ -83,7 +83,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (guardActors.Length == 0)
 				return;
 
-			var mainGuardActor = guardActors.ClosestTo(order.Target.CenterPosition);
+			var mainGuardActor = guardActors.ClosestToIgnoringPath(order.Target.CenterPosition);
 			if (mainGuardActor == null)
 				return;
 

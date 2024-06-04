@@ -17,12 +17,12 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Activities
 {
-	class EnterAirstrikeMaster : Activity
+	class EnterAirstrikeMasterCA : Activity
 	{
 		readonly Actor master;
-		readonly AirstrikeMaster spawnerMaster;
+		readonly AirstrikeMasterCA spawnerMaster;
 
-		public EnterAirstrikeMaster(Actor master, AirstrikeMaster spawnerMaster)
+		public EnterAirstrikeMasterCA(Actor master, AirstrikeMasterCA spawnerMaster)
 		{
 			this.master = master;
 			this.spawnerMaster = spawnerMaster;
@@ -62,10 +62,10 @@ namespace OpenRA.Mods.CA.Activities
 	class ReturnAirstrikeMaster : Activity
 	{
 		readonly Actor master;
-		readonly AirstrikeMaster spawnerMaster;
+		readonly AirstrikeMasterCA spawnerMaster;
 		readonly WPos edgePos;
 
-		public ReturnAirstrikeMaster(Actor master, AirstrikeMaster spawnerMaster, WPos edgePos)
+		public ReturnAirstrikeMaster(Actor master, AirstrikeMasterCA spawnerMaster, WPos edgePos)
 		{
 			this.master = master;
 			this.spawnerMaster = spawnerMaster;
@@ -81,7 +81,7 @@ namespace OpenRA.Mods.CA.Activities
 			else
 			{
 				QueueChild(new Fly(self, Target.FromPos(edgePos)));
-				QueueChild(new EnterAirstrikeMaster(master, spawnerMaster));
+				QueueChild(new EnterAirstrikeMasterCA(master, spawnerMaster));
 			}
 		}
 	}

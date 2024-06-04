@@ -79,7 +79,7 @@ namespace OpenRA.Mods.CA.Traits
 			Ticks = info.DamageInterval;
 
 			FirepowerMultipliers = actor.TraitsImplementing<IFirepowerModifier>()
-					.Select(a => a.GetFirepowerModifier()).ToArray();
+					.Select(a => a.GetFirepowerModifier(null)).ToArray();
 		}
 	}
 
@@ -158,11 +158,7 @@ namespace OpenRA.Mods.CA.Traits
 				}
 				else
 				{
-					var mobile = Infector.actor.TraitOrDefault<Mobile>();
-					if (mobile != null)
-					{
-						mobile.Nudge(Infector.actor);
-					}
+					Infector.actor.QueueActivity(false, new Nudge(Infector.actor));
 				}
 
 				RevokeInfectedCondition(self, Infector.actor);

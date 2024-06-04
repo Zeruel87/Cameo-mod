@@ -1,10 +1,11 @@
-﻿#region Copyright & License Information
-/**
- * Copyright (c) The OpenRA Combined Arms Developers (see CREDITS).
- * This file is part of OpenRA Combined Arms, which is free software.
- * It is made available to you under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version. For more information, see COPYING.
+#region Copyright & License Information
+/*
+ * Copyright (c) The OpenRA Developers and Contributors
+ * This file is part of OpenRA, which is free software. It is made
+ * available to you under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version. For more
+ * information, see COPYING.
  */
 #endregion
 
@@ -57,13 +58,15 @@ namespace OpenRA.Mods.CA.Traits
 		None = 0,
 		Attack = 1,
 		Move = 2,
-		Unload = 4,
-		Infiltrate = 8,
-		Demolish = 16,
-		Damage = 32,
-		Heal = 64,
-		SelfHeal = 128,
-		Dock = 256
+		Load = 4,
+		Unload = 8,
+		Infiltrate = 16,
+		Demolish = 32,
+		Damage = 64,
+		Heal = 128,
+		SelfHeal = 256,
+		Dock = 512,
+		SupportPower = 1024,
 	}
 
 	[Desc("This actor can appear as a different actor in specific situations.")]
@@ -93,15 +96,16 @@ namespace OpenRA.Mods.CA.Traits
 		public override object Create(ActorInitializer init) { return new Mirage(init, this); }
 	}
 
-	public class Mirage : PausableConditionalTrait<MirageInfo>, INotifyDamage, IEffectiveOwner, INotifyDemolition, INotifyInfiltration,
-		INotifyAttack, ITick, INotifyCreated, INotifyHarvesterAction
+	public class Mirage : PausableConditionalTrait<MirageInfo>, INotifyDamage, IEffectiveOwner, INotifyUnloadCargo, INotifyLoadCargo, INotifyDemolition, INotifyInfiltration,
+		INotifyAttack, ITick, INotifyCreated, INotifyDockClient, INotifySupportPower
 	{
+		readonly Actor self;
+		readonly ActorInfo[] targetTypes;
+
 		[Sync]
-		private int remainingTime;
+		int remainingTime;
 
-		Actor self;
-
-		ActorInfo[] targetTypes;
+		bool isDocking;
 
 		CPos? lastPos;
 		bool wasMirage = false;
@@ -109,17 +113,8 @@ namespace OpenRA.Mods.CA.Traits
 
 		public bool Disguised { get { return IsMirage; } }
 
-		public ActorInfo ActorType { get; private set; }
-		public Player Owner
-		{
-			get
-			{
-				if (Info.EffectiveOwner == "Self")
-					return self.Owner;
-
-				return IsMirage ? self.World.Players.First(p => p.InternalName == Info.EffectiveOwner) : null;
-			}
-		}
+		public ActorInfo ActorType { get; }
+		public Player Owner { get { return IsMirage ? self.World.Players.First(p => p.InternalName == Info.EffectiveOwner) : null; } }
 
 		public Mirage(ActorInitializer init, MirageInfo info)
 			: base(info)
@@ -177,7 +172,7 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			if (!IsTraitDisabled && !IsTraitPaused)
 			{
-				if (remainingTime > 0)
+				if (remainingTime > 0 && !isDocking)
 					remainingTime--;
 
 				if (Info.RevealOn.HasFlag(MirageRevealType.Move) && (lastPos == null || lastPos.Value != self.Location))
@@ -209,13 +204,31 @@ namespace OpenRA.Mods.CA.Traits
 
 		protected override void TraitDisabled(Actor self) { Reveal(); }
 
-		void INotifyHarvesterAction.MovingToResources(Actor self, CPos targetCell) { }
+		void INotifyDockClient.Docked(Actor self, Actor host)
+		{
+			if (Info.RevealOn.HasFlag(MirageRevealType.Dock))
+			{
+				isDocking = true;
+				Reveal();
+			}
+		}
 
-		void INotifyHarvesterAction.MovingToRefinery(Actor self, Actor refineryActor) { }
+		void INotifyDockClient.Undocked(Actor self, Actor host)
+		{
+			isDocking = false;
+		}
 
-		void INotifyHarvesterAction.MovementCancelled(Actor self) { }
+		void INotifyLoadCargo.Loading(Actor self)
+		{
+			if (Info.RevealOn.HasFlag(MirageRevealType.Load))
+				Reveal();
+		}
 
-		void INotifyHarvesterAction.Harvested(Actor self, string resourceType) { }
+		void INotifyUnloadCargo.Unloading(Actor self)
+		{
+			if (Info.RevealOn.HasFlag(MirageRevealType.Unload))
+				Reveal();
+		}
 
 		void INotifyDemolition.Demolishing(Actor self)
 		{
@@ -226,6 +239,14 @@ namespace OpenRA.Mods.CA.Traits
 		void INotifyInfiltration.Infiltrating(Actor self)
 		{
 			if (Info.RevealOn.HasFlag(MirageRevealType.Infiltrate))
+				Reveal();
+		}
+
+		void INotifySupportPower.Charged(Actor self) { }
+
+		void INotifySupportPower.Activated(Actor self)
+		{
+			if (Info.RevealOn.HasFlag(MirageRevealType.SupportPower))
 				Reveal();
 		}
 	}

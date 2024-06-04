@@ -14,7 +14,7 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("This actor can mind control other actors.")]
-	public class MindControllerCapacityModifierInfo : ConditionalTraitInfo, Requires<MindControllerInfo>
+	public class MindControllerCapacityModifierInfo : ConditionalTraitInfo, Requires<MindControllerCAInfo>
 	{
 		[Desc("Number to increase mind control capacity by (negative to reduce).")]
 		public readonly int Amount = 1;
@@ -25,13 +25,13 @@ namespace OpenRA.Mods.CA.Traits
 	public class MindControllerCapacityModifier : ConditionalTrait<MindControllerCapacityModifierInfo>
 	{
 		readonly MindControllerCapacityModifierInfo info;
-		readonly MindController mindController;
+		readonly MindControllerCA mindController;
 
 		public MindControllerCapacityModifier(Actor self, MindControllerCapacityModifierInfo info)
 			: base(info)
 		{
 			this.info = info;
-			mindController = self.Trait<MindController>();
+			mindController = self.Trait<MindControllerCA>();
 		}
 
 		public int Amount { get { return IsTraitDisabled ? 0 : info.Amount; } }

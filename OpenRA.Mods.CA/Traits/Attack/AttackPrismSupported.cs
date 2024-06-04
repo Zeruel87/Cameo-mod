@@ -83,7 +83,7 @@ namespace OpenRA.Mods.CA.Traits
 		readonly Stack<int> buffTokens = new Stack<int>();
 		int chargingToken = Actor.InvalidConditionToken;
 
-		int IFirepowerModifier.GetFirepowerModifier() { return IsTraitDisabled ? 100 : 100 + buffTokens.Count * info.Modifier ; }
+		int IFirepowerModifier.GetFirepowerModifier(string armamentName) { return IsTraitDisabled ? 100 : 100 + buffTokens.Count * info.Modifier ; }
 
 		public AttackPrismSupported(Actor self, AttackPrismSupportedInfo info)
 			: base(self, info)

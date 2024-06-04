@@ -10,6 +10,7 @@
 
 using OpenRA.GameRules;
 using OpenRA.Mods.Cnc.Traits;
+using OpenRA.Mods.AS.Warheads;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Warheads
@@ -27,7 +28,7 @@ namespace OpenRA.Mods.CA.Warheads
 				return;
 
 			if (target.IsValidFor(firedBy))
-				foreach (var a in firedBy.World.ActorsWithTrait<ChronoshiftPaletteEffect>())
+				foreach (var a in firedBy.World.ActorsWithTrait<ChronoshiftPostProcessEffect>())
 					a.Trait.Enable();
 		}
 	}

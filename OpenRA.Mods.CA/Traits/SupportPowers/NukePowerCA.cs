@@ -11,24 +11,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
-using OpenRA.Mods.Common.Activities;
+using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Effects;
 using OpenRA.Mods.Common.Graphics;
-using OpenRA.Mods.Common.Orders;
-using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Traits
 {
-	public class NukePowerCAInfo : SupportPowerInfo, IRulesetLoaded
+	public class NukePowerCAInfo : SupportPowerInfo
 	{
-		[WeaponReference]
+		// [WeaponReference]
 		[FieldLoader.Require]
 		[Desc("Weapon to use for the impact.")]
-		public readonly string MissileWeapon = "";
+		public readonly Dictionary<int, string> MissileWeapons = new();
 
 		[Desc("Delay (in ticks) after launch until the missile is spawned.")]
 		public readonly int MissileDelay = 0;
@@ -36,11 +35,11 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Image to use for the missile.")]
 		public readonly string MissileImage = null;
 
-		[SequenceReference(nameof(MissileImage))]
+		[SequenceReference(nameof(MissileImage), allowNullImage: true)]
 		[Desc("Sprite sequence for the ascending missile.")]
 		public readonly string MissileUp = "up";
 
-		[SequenceReference(nameof(MissileImage))]
+		[SequenceReference(nameof(MissileImage), allowNullImage: true)]
 		[Desc("Sprite sequence for the descending missile.")]
 		public readonly string MissileDown = "down";
 
@@ -93,10 +92,6 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Amount of time before detonation to remove the beacon.")]
 		public readonly int BeaconRemoveAdvance = 25;
 
-		[ActorReference]
-		[Desc("Actor to spawn at beacon")]
-		public readonly string BeaconActor = null;
-
 		[Desc("Range of cells the camera should reveal around target cell.")]
 		public readonly WDist CameraRange = WDist.Zero;
 
@@ -115,6 +110,9 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Range circle color.")]
 		public readonly Color CircleColor = Color.FromArgb(128, Color.Red);
 
+		[Desc("Use player color for circle rather than `CircleColor`.")]
+		public readonly bool CircleUsePlayerColor = false;
+
 		[Desc("Range circle width in pixel.")]
 		public readonly float CircleWidth = 1;
 
@@ -125,9 +123,9 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly float CircleBorderWidth = 3;
 
 		[Desc("Render circles based on these distance ranges while targeting.")]
-		public readonly WDist[] CircleRanges = null;
+		public readonly Dictionary<int, WDist[]> CircleRanges;
 
-		public WeaponInfo WeaponInfo { get; private set; }
+		public readonly Dictionary<int, WeaponInfo> WeaponInfos = new();
 
 		public override object Create(ActorInitializer init) { return new NukePowerCA(init.Self, this); }
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
@@ -135,25 +133,29 @@ namespace OpenRA.Mods.CA.Traits
 			if (!string.IsNullOrEmpty(TrailImage) && TrailSequences.Length == 0)
 				throw new YamlException("At least one entry in TrailSequences must be defined when TrailImage is defined.");
 
-			var weaponToLower = (MissileWeapon ?? string.Empty).ToLowerInvariant();
-			if (!rules.Weapons.TryGetValue(weaponToLower, out var weapon))
-				throw new YamlException($"Weapons Ruleset does not contain an entry '{weaponToLower}'");
+			foreach (var missileWeapon in MissileWeapons)
+			{
+				var weaponToLower = missileWeapon.Value.ToLowerInvariant();
+				if (!rules.Weapons.TryGetValue(weaponToLower, out var weaponInfo))
+					throw new YamlException($"Weapons Ruleset does not contain an entry '{weaponToLower}'");
 
-			WeaponInfo = weapon;
+				if (!WeaponInfos.ContainsKey(missileWeapon.Key))
+					WeaponInfos.Add(missileWeapon.Key, rules.Weapons[weaponToLower]);
+			}
 
 			base.RulesetLoaded(rules, ai);
 		}
 	}
 
-	sealed class NukePowerCA : SupportPower
+	public class NukePowerCA : SupportPower
 	{
-		readonly NukePowerCAInfo info;
+		public new readonly NukePowerCAInfo Info;
 		BodyOrientation body;
 
 		public NukePowerCA(Actor self, NukePowerCAInfo info)
 			: base(self, info)
 		{
-			this.info = info;
+			Info = info;
 		}
 
 		protected override void Created(Actor self)
@@ -172,25 +174,26 @@ namespace OpenRA.Mods.CA.Traits
 
 		public void Activate(Actor self, WPos targetPosition)
 		{
-			var palette = info.IsPlayerPalette ? info.MissilePalette + self.Owner.InternalName : info.MissilePalette;
-			var skipAscent = info.SkipAscent || body == null;
-			var launchPos = skipAscent ? WPos.Zero : self.CenterPosition + body.LocalToWorld(info.SpawnOffset);
+			var palette = Info.IsPlayerPalette ? Info.MissilePalette + self.Owner.InternalName : Info.MissilePalette;
+			var skipAscent = Info.SkipAscent || body == null;
+			var launchPos = skipAscent ? WPos.Zero : self.CenterPosition + body.LocalToWorld(Info.SpawnOffset);
 
-			var missile = new NukeLaunch(self.Owner, info.MissileImage, info.WeaponInfo, palette, info.MissileUp, info.MissileDown,
+			var weaponInfo = Info.WeaponInfos.First(wi => wi.Key == GetLevel()).Value;
+			var missile = new NukeLaunch(self.Owner, Info.MissileImage, weaponInfo, palette, Info.MissileUp, Info.MissileDown,
 				launchPos,
-				targetPosition, info.DetonationAltitude, info.RemoveMissileOnDetonation,
-				info.FlightVelocity, info.MissileDelay, info.FlightDelay, skipAscent,
-				info.TrailImage, info.TrailSequences, info.TrailPalette, info.TrailUsePlayerPalette, info.TrailDelay, info.TrailInterval);
+				targetPosition, Info.DetonationAltitude, Info.RemoveMissileOnDetonation,
+				Info.FlightVelocity, Info.MissileDelay, Info.FlightDelay, skipAscent,
+				Info.TrailImage, Info.TrailSequences, Info.TrailPalette, Info.TrailUsePlayerPalette, Info.TrailDelay, Info.TrailInterval);
 
 			self.World.AddFrameEndTask(w => w.Add(missile));
 
-			if (info.CameraRange != WDist.Zero)
+			if (Info.CameraRange != WDist.Zero)
 			{
-				var type = info.RevealGeneratedShroud ? Shroud.SourceType.Visibility
+				var type = Info.RevealGeneratedShroud ? Shroud.SourceType.Visibility
 					: Shroud.SourceType.PassiveVisibility;
 
-				self.World.AddFrameEndTask(w => w.Add(new RevealShroudEffect(targetPosition, info.CameraRange, type, self.Owner, info.CameraRelationships,
-					info.FlightDelay - info.CameraSpawnAdvance, info.CameraSpawnAdvance + info.CameraRemoveDelay)));
+				self.World.AddFrameEndTask(w => w.Add(new RevealShroudEffect(targetPosition, Info.CameraRange, type, self.Owner, Info.CameraRelationships,
+					Info.FlightDelay - Info.CameraSpawnAdvance, Info.CameraSpawnAdvance + Info.CameraRemoveDelay)));
 			}
 
 			if (Info.DisplayBeacon)
@@ -201,7 +204,7 @@ namespace OpenRA.Mods.CA.Traits
 					Info.BeaconPaletteIsPlayerPalette,
 					Info.BeaconPalette,
 					Info.BeaconImage,
-					Info.BeaconPoster,
+					Info.BeaconPosters.First(bp => bp.Key == GetLevel()).Value,
 					Info.BeaconPosterPalette,
 					Info.BeaconSequence,
 					Info.ArrowSequence,
@@ -209,58 +212,47 @@ namespace OpenRA.Mods.CA.Traits
 					Info.ClockSequence,
 					() => missile.FractionComplete,
 					Info.BeaconDelay,
-					info.FlightDelay - info.BeaconRemoveAdvance);
+					Info.FlightDelay - Info.BeaconRemoveAdvance);
 
 				self.World.AddFrameEndTask(w => w.Add(beacon));
 			}
-
-			self.World.AddFrameEndTask(w =>
-			{
-				var actor = w.CreateActor(info.BeaconActor, new TypeDictionary
-					{
-						new LocationInit(self.World.Map.CellContaining(targetPosition)),
-						new OwnerInit(self.Owner),
-					});
-
-				if (info.CameraRemoveDelay > -1)
-				{
-					actor.QueueActivity(new Wait(info.FlightDelay + info.CameraRemoveDelay));
-					actor.QueueActivity(new RemoveSelf());
-				}
-			});
 		}
 
 		public override void SelectTarget(Actor self, string order, SupportPowerManager manager)
 		{
-			self.World.OrderGenerator = new SelectNukePowerTarget(order, manager, info, MouseButton.Left);
+			self.World.OrderGenerator = new SelectNukePowerTarget(order, manager, this, MouseButton.Left);
 		}
 	}
 
 	public class SelectNukePowerTarget : SelectGenericPowerTarget
 	{
-		readonly NukePowerCAInfo info;
+		readonly NukePowerCA power;
 
-		public SelectNukePowerTarget(string order, SupportPowerManager manager, NukePowerCAInfo info, MouseButton button)
-			: base(order, manager, info.Cursor, button)
+		public SelectNukePowerTarget(string order, SupportPowerManager manager, NukePowerCA power, MouseButton button)
+			: base(order, manager, power.Info, button)
 		{
-			this.info = info;
+			this.power = power;
 		}
 
 		protected override IEnumerable<IRenderable> RenderAnnotations(WorldRenderer wr, World world)
 		{
-			if (info.CircleRanges == null)
+			if (power.Info.CircleRanges == null)
+				yield break;
+
+			var level = power.GetLevel();
+			if (level == 0)
 				yield break;
 
 			var centerPosition = wr.World.Map.CenterOfCell(wr.Viewport.ViewToWorld(Viewport.LastMousePos));
-			foreach (var range in info.CircleRanges)
+			foreach (var range in power.Info.CircleRanges[level])
 				yield return new RangeCircleAnnotationRenderable(
 					centerPosition,
 					range,
 					0,
-					info.CircleColor,
-					info.CircleWidth,
-					info.CircleBorderColor,
-					info.CircleBorderWidth);
+					power.Info.CircleUsePlayerColor ? power.Self.Owner.Color : power.Info.CircleColor,
+					power.Info.CircleWidth,
+					power.Info.CircleBorderColor,
+					power.Info.CircleBorderWidth);
 		}
 	}
 }

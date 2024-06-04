@@ -8,10 +8,10 @@
  */
 #endregion
 
-using System;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.Common.Traits;
+using OpenRA.Mods.AS.Traits;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Traits
@@ -58,7 +58,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (weapon.Report != null && weapon.Report.Length > 0)
 				Game.Sound.Play(SoundType.World, weapon.Report.Random(self.World.SharedRandom), self.CenterPosition);
 
-			var spawner = self.Trait<BaseSpawnerSlave>().Master;
+			var spawner = self.Trait<BaseSpawnerSlave>().Master ?? self;
 
 			var args = new ProjectileArgs
 			{
@@ -67,11 +67,11 @@ namespace OpenRA.Mods.CA.Traits
 				CurrentMuzzleFacing = () => WAngle.Zero,
 
 				DamageModifiers = !spawner.IsDead ? spawner.TraitsImplementing<IFirepowerModifier>()
-						.Select(a => a.GetFirepowerModifier()).ToArray() : Array.Empty<int>(),
+						.Select(a => a.GetFirepowerModifier(null)).ToArray() : new int[0],
 
-				InaccuracyModifiers = Array.Empty<int>(),
+				InaccuracyModifiers = new int[0],
 
-				RangeModifiers = Array.Empty<int>(),
+				RangeModifiers = new int[0],
 
 				Source = self.CenterPosition,
 				CurrentSource = () => self.CenterPosition,

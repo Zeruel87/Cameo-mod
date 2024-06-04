@@ -257,7 +257,7 @@ namespace OpenRA.Mods.CA.Traits
 							SourceActor = self,
 							WeaponTarget = target,
 							DamageModifiers = self.TraitsImplementing<IFirepowerModifier>()
-								.Select(a => a.GetFirepowerModifier()).ToArray()
+								.Select(a => a.GetFirepowerModifier(null)).ToArray()
 						};
 
 						// Use .FromPos since this actor is killed. Cannot use Target.FromActor
@@ -289,7 +289,7 @@ namespace OpenRA.Mods.CA.Traits
 					new LocationInit(self.Location),
 					new OwnerInit(self.Owner)
 				});
-				driver.TraitOrDefault<Mobile>()?.Nudge(driver);
+				driver.QueueActivity(new Nudge(driver));
 			}
 		}
 	}

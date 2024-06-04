@@ -11,7 +11,7 @@
 
 using System;
 using OpenRA.GameRules;
-using OpenRA.Mods.CA.Warheads;
+using OpenRA.Mods.AS.Warheads;
 using OpenRA.Mods.Common.Effects;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;

@@ -13,6 +13,7 @@ using System.Linq;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
+using OpenRA.Mods.AS.Traits;
 
 namespace OpenRA.Mods.CA.Traits
 {
@@ -65,7 +66,7 @@ namespace OpenRA.Mods.CA.Traits
 			var killer = e.Attacker;
 			if (killer != null)
 			{
-				var mindControllables = killer.TraitsImplementing<MindControllable>();
+				var mindControllables = killer.TraitsImplementing<MindControllableCA>();
 				foreach (var mindControllable in mindControllables)
 					if (mindControllable.Master != null)
 						GiveExperience(mindControllable.Master, exp);

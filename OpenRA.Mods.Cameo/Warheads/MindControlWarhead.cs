@@ -11,7 +11,7 @@
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.CA.Traits;
-using OpenRA.Mods.CA.Warheads;
+using OpenRA.Mods.AS.Warheads;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
@@ -38,7 +38,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 			if (!target.IsValidFor(firedBy) || firedBy.IsDead || !firedBy.IsInWorld)
 				return;
 
-			var mc = firedBy.Trait<MindController>();
+			var mc = firedBy.Trait<MindControllerCA>();
 			if (mc.IsTraitDisabled || mc.IsTraitPaused) return;
 
 			var actors = firedBy.World.FindActorsInCircle(target.CenterPosition, Range);
@@ -48,7 +48,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 				if (!IsValidForOwnerChange(a, firedBy))
 					continue;
 
-				var capturable = a.TraitsImplementing<MindControllable>()
+				var capturable = a.TraitsImplementing<MindControllableCA>()
 					.FirstOrDefault(c => !c.IsTraitDisabled);
 
 				if (a.IsDead || capturable == null)

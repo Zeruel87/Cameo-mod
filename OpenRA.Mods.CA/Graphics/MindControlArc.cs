@@ -10,13 +10,14 @@
 
 using System.Collections.Generic;
 using OpenRA.Graphics;
+using OpenRA.Mods.AS.Graphics;
 using OpenRA.Mods.CA.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Graphics
 {
-	public class WithMindControlArcInfo : TraitInfo
+	public class WithMindControlArcCAInfo : TraitInfo
 	{
 		[Desc("Color of the arc")]
 		public readonly Color Color = Color.Red;
@@ -40,24 +41,24 @@ namespace OpenRA.Mods.CA.Graphics
 		[Desc("The width of the zap.")]
 		public readonly WDist Width = new WDist(43);
 
-		public override object Create(ActorInitializer init) { return new WithMindControlArc(init.Self, this); }
+		public override object Create(ActorInitializer init) { return new WithMindControlArcCA(init.Self, this); }
 	}
 
-	public class WithMindControlArc : IRenderAboveShroudWhenSelected, INotifySelected, INotifyCreated
+	public class WithMindControlArcCA : IRenderAboveShroudWhenSelected, INotifySelected, INotifyCreated
 	{
-		readonly WithMindControlArcInfo info;
-		MindController mindController;
-		MindControllable mindControllable;
+		readonly WithMindControlArcCAInfo info;
+		MindControllerCA mindController;
+		MindControllableCA mindControllable;
 
-		public WithMindControlArc(Actor self, WithMindControlArcInfo info)
+		public WithMindControlArcCA(Actor self, WithMindControlArcCAInfo info)
 		{
 			this.info = info;
 		}
 
 		void INotifyCreated.Created(Actor self)
 		{
-			mindController = self.TraitOrDefault<MindController>();
-			mindControllable = self.TraitOrDefault<MindControllable>();
+			mindController = self.TraitOrDefault<MindControllerCA>();
+			mindControllable = self.TraitOrDefault<MindControllableCA>();
 		}
 
 		void INotifySelected.Selected(Actor a) { }

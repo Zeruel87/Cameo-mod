@@ -11,11 +11,12 @@
 using OpenRA.Mods.CA.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
+using OpenRA.Mods.AS.Traits;
 
 namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("Can be slaved to a spawner.")]
-	public class AirstrikeSlaveInfo : BaseSpawnerSlaveInfo
+	public class AirstrikeSlaveCAInfo : BaseSpawnerSlaveInfo
 	{
 		[Desc("Move this close to the spawner, before entering it.")]
 		public readonly WDist LandingDistance = new WDist(5 * 1024);
@@ -24,21 +25,21 @@ namespace OpenRA.Mods.CA.Traits
 			"This allows the spawned unit to enter the spawner while the spawner is moving.")]
 		public readonly WDist CloseEnoughDistance = new WDist(128);
 
-		public override object Create(ActorInitializer init) { return new AirstrikeSlave(init, this); }
+		public override object Create(ActorInitializer init) { return new AirstrikeSlaveCA(init, this); }
 	}
 
-	public class AirstrikeSlave : BaseSpawnerSlave, INotifyIdle, INotifyKilled
+	public class AirstrikeSlaveCA : BaseSpawnerSlave, INotifyIdle, INotifyKilled
 	{
-		public readonly AirstrikeSlaveInfo Info;
+		public readonly AirstrikeSlaveCAInfo Info;
 
 		WPos finishEdge;
 		WVec spawnOffset;
 
-		AirstrikeMaster spawnerMaster;
+		AirstrikeMasterCA spawnerMaster;
 		bool isBusy;
 
-		public AirstrikeSlave(ActorInitializer init, AirstrikeSlaveInfo info)
-			: base(init, info)
+		public AirstrikeSlaveCA(ActorInitializer init, AirstrikeSlaveCAInfo info)
+			: base(info)
 		{
 			Info = info;
 			isBusy = false;
@@ -73,7 +74,7 @@ namespace OpenRA.Mods.CA.Traits
 		public override void LinkMaster(Actor self, Actor master, BaseSpawnerMaster spawnerMaster)
 		{
 			base.LinkMaster(self, master, spawnerMaster);
-			this.spawnerMaster = spawnerMaster as AirstrikeMaster;
+			this.spawnerMaster = spawnerMaster as AirstrikeMasterCA;
 		}
 
 		public override void Attack(Actor self, Target target)

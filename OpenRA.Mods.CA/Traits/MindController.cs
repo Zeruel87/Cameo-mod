@@ -19,7 +19,7 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("This actor can mind control other actors.")]
-	public class MindControllerInfo : PausableConditionalTraitInfo, Requires<HealthInfo>
+	public class MindControllerCAInfo : PausableConditionalTraitInfo, Requires<HealthInfo>
 	{
 		[Desc("Name of the armaments that grant this condition.")]
 		public readonly HashSet<string> ArmamentNames = new HashSet<string>() { "primary" };
@@ -89,17 +89,17 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Percentage of targets cost gained as XP when successfully mind controlled.")]
 		public readonly int ExperienceFromControl = 0;
 
-		public override object Create(ActorInitializer init) { return new MindController(init.Self, this); }
+		public override object Create(ActorInitializer init) { return new MindControllerCA(init.Self, this); }
 	}
 
-	public class MindController : PausableConditionalTrait<MindControllerInfo>, INotifyAttack, INotifyKilled, INotifyActorDisposing, INotifyCreated, IIssueOrder, IResolveOrder, ITick
+	public class MindControllerCA : PausableConditionalTrait<MindControllerCAInfo>, INotifyAttack, INotifyKilled, INotifyActorDisposing, INotifyCreated, IIssueOrder, IResolveOrder, ITick
 	{
 		readonly List<Actor> slaves = new List<Actor>();
 		readonly Stack<int> controllingTokens = new Stack<int>();
 
 		public IEnumerable<Actor> Slaves { get { return slaves; } }
 
-		MindControllerInfo info;
+		MindControllerCAInfo info;
 		int capacity;
 		IEnumerable<MindControllerCapacityModifier> capacityModifiers;
 		bool refreshCapacity;
@@ -115,7 +115,7 @@ namespace OpenRA.Mods.CA.Traits
 		HashSet<Actor> slaveHistory;
 		GainsExperience gainsExperience;
 
-		public MindController(Actor self, MindControllerInfo info)
+		public MindControllerCA(Actor self, MindControllerCAInfo info)
 			: base(info)
 		{
 			this.info = info;
@@ -249,7 +249,7 @@ namespace OpenRA.Mods.CA.Traits
 				if (order.Target.Type != TargetType.Actor)
 					return;
 
-				order.Target.Actor.Trait<MindControllable>().RevokeMindControl(order.Target.Actor, 0);
+				order.Target.Actor.Trait<MindControllableCA>().RevokeMindControl(order.Target.Actor, 0);
 
 				if (Info.ReleaseSounds.Length > 0)
 				{
@@ -333,7 +333,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (self.Owner.RelationshipWith(target.Owner) == PlayerRelationship.Ally)
 				return;
 
-			var mindControllable = target.TraitOrDefault<MindControllable>();
+			var mindControllable = target.TraitOrDefault<MindControllableCA>();
 
 			if (mindControllable == null)
 			{
@@ -358,7 +358,7 @@ namespace OpenRA.Mods.CA.Traits
 			mindControllable.LinkMaster(target, self);
 
 			if (capacity > 0 && Info.DiscardOldest && slaves.Count > capacity)
-				slaves[0].Trait<MindControllable>().RevokeMindControl(slaves[0], 0);
+				slaves[0].Trait<MindControllableCA>().RevokeMindControl(slaves[0], 0);
 
 			GiveExperience(target);
 			ControlComplete(self);
@@ -392,7 +392,7 @@ namespace OpenRA.Mods.CA.Traits
 				if (s.IsDead || s.Disposed)
 					continue;
 
-				s.Trait<MindControllable>().RevokeMindControl(s, ticks);
+				s.Trait<MindControllableCA>().RevokeMindControl(s, ticks);
 			}
 
 			slaves.Clear();
@@ -474,7 +474,7 @@ namespace OpenRA.Mods.CA.Traits
 			var currentSlaveCount = slaves.Count;
 			var numSlavesToRemove = currentSlaveCount - capacity;
 			for (var i = numSlavesToRemove; i > 0; i--)
-				slaves[i].Trait<MindControllable>().RevokeMindControl(slaves[i], 0);
+				slaves[i].Trait<MindControllableCA>().RevokeMindControl(slaves[i], 0);
 
 			MaxControlledCheck(self);
 		}

@@ -34,7 +34,7 @@ namespace OpenRA.Mods.CA.Traits
 		public override object Create(ActorInitializer init) { return new HarvesterBalancer(this); }
 	}
 
-	public class HarvesterBalancer : ConditionalTrait<HarvesterBalancerInfo>, INotifyCreated, ITick, INotifyHarvesterAction, INotifyDamage
+	public class HarvesterBalancer : ConditionalTrait<HarvesterBalancerInfo>, INotifyCreated, ITick, INotifyHarvestAction, INotifyDamage
 	{
 		int conditionToken = Actor.InvalidConditionToken;
 		Actor destinationRefinery;

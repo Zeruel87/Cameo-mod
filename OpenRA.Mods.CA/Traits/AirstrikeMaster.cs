@@ -14,12 +14,15 @@ using System.Linq;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
+using OpenRA.Mods.AS.Traits;
 
 namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("This actor can send in other actors to deliver an airstrike.")]
-	public class AirstrikeMasterInfo : BaseSpawnerMasterInfo
+	public class AirstrikeMasterCAInfo : BaseSpawnerMasterInfo
 	{
+		public readonly string Name = "primary";
+
 		[Desc("Just send the spawnee and forget it.")]
 		public readonly bool SendAndForget = false;
 
@@ -65,22 +68,22 @@ namespace OpenRA.Mods.CA.Traits
 		[GrantedConditionReference]
 		public IEnumerable<string> LinterSpawnContainConditions { get { return SpawnContainConditions.Values; } }
 
-		public override object Create(ActorInitializer init) { return new AirstrikeMaster(init, this); }
+		public override object Create(ActorInitializer init) { return new AirstrikeMasterCA(init, this); }
 	}
 
-	public class AirstrikeMaster : BaseSpawnerMaster, ITick, INotifyAttack, IResolveOrder
+	public class AirstrikeMasterCA : BaseSpawnerMaster, ITick, INotifyAttack, IResolveOrder
 	{
 		class AirstrikeSlaveEntry : BaseSpawnerSlaveEntry
 		{
 			public int RearmTicks = 0;
-			public new AirstrikeSlave SpawnerSlave;
+			public new AirstrikeSlaveCA SpawnerSlave;
 		}
 
-		readonly Dictionary<string, Stack<int>> spawnContainTokens = new Dictionary<string, Stack<int>>();
-		public readonly AirstrikeMasterInfo AirstrikeMasterInfo;
+		readonly Dictionary<string, Stack<int>> spawnContainTokens = new();
+		public readonly AirstrikeMasterCAInfo AirstrikeMasterInfo;
 
-		readonly Stack<int> loadedTokens = new Stack<int>();
-		Stack<int> busyTokens = new Stack<int>();
+		readonly Stack<int> loadedTokens = new();
+		Stack<int> busyTokens = new();
 
 		WPos finishEdge;
 		WVec spawnOffset;
@@ -90,7 +93,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		int respawnTicks = 0;
 
-		public AirstrikeMaster(ActorInitializer init, AirstrikeMasterInfo info)
+		public AirstrikeMasterCA(ActorInitializer init, AirstrikeMasterCAInfo info)
 			: base(init, info)
 		{
 			AirstrikeMasterInfo = info;
@@ -123,7 +126,7 @@ namespace OpenRA.Mods.CA.Traits
 
 			se.RearmTicks = 0;
 			se.IsLaunched = false;
-			se.SpawnerSlave = slave.Trait<AirstrikeSlave>();
+			se.SpawnerSlave = slave.Trait<AirstrikeSlaveCA>();
 		}
 
 		void INotifyAttack.PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel) { }
@@ -132,7 +135,7 @@ namespace OpenRA.Mods.CA.Traits
 		// invokes Attacking()
 		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
 		{
-			if (IsTraitDisabled || IsTraitPaused || !Info.ArmamentNames.Contains(a.Info.Name))
+			if (target.Type == TargetType.Invalid || IsTraitDisabled || IsTraitPaused || !Info.ArmamentNames.Contains(a.Info.Name))
 				return;
 
 			// Issue retarget order for already launched ones
@@ -229,7 +232,7 @@ namespace OpenRA.Mods.CA.Traits
 			// Set clock so that regen happens.
 
 			if (respawnTicks <= 0) // Don't interrupt an already running timer!
-				respawnTicks = Util.ApplyPercentageModifiers(Info.RespawnTicks, reloadModifiers.Select(rm => rm.GetReloadModifier()));
+				respawnTicks = Util.ApplyPercentageModifiers(Info.RespawnTicks, reloadModifiers.Select(rm => rm.GetReloadModifier(AirstrikeMasterInfo.Name)));
 		}
 
 		AirstrikeSlaveEntry GetLaunchable()
@@ -260,7 +263,7 @@ namespace OpenRA.Mods.CA.Traits
 			slaveEntry.IsLaunched = false;
 
 			// setup rearm
-			slaveEntry.RearmTicks = Util.ApplyPercentageModifiers(AirstrikeMasterInfo.RearmTicks, reloadModifiers.Select(rm => rm.GetReloadModifier()));
+			slaveEntry.RearmTicks = Util.ApplyPercentageModifiers(AirstrikeMasterInfo.RearmTicks, reloadModifiers.Select(rm => rm.GetReloadModifier(AirstrikeMasterInfo.Name)));
 
 			if (AirstrikeMasterInfo.SpawnContainConditions.TryGetValue(a.Info.Name, out var spawnContainCondition))
 				spawnContainTokens.GetOrAdd(a.Info.Name).Push(self.GrantCondition(spawnContainCondition));
@@ -282,7 +285,7 @@ namespace OpenRA.Mods.CA.Traits
 					Replenish(self, SlaveEntries);
 					// If there's something left to spawn, restart the timer.
 					if (SelectEntryToSpawn(SlaveEntries) != null)
-						respawnTicks = Util.ApplyPercentageModifiers(Info.RespawnTicks, reloadModifiers.Select(rm => rm.GetReloadModifier()));
+						respawnTicks = Util.ApplyPercentageModifiers(Info.RespawnTicks, reloadModifiers.Select(rm => rm.GetReloadModifier(AirstrikeMasterInfo.Name)));
 				}
 			}
 
