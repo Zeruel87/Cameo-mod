@@ -24,6 +24,10 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Duration between cash transfers.")]
 		public readonly int ChargeDuration = 1;
 
+		[FieldLoader.Require]
+		[Desc("Percentage value of the resource difference to send as cash.")]
+		public readonly int Modifier = 1;
+
 		[TranslationReference]
 		[Desc("Descriptive label for the creeps checkbox in the lobby.")]
 		public readonly string CheckboxLabel = "Team Cash Sharing";
@@ -54,6 +58,7 @@ namespace OpenRA.Mods.Cameo.Traits
 
 	class CashTransferToAllies : ITick, IWorldLoaded, INotifyCreated
 	{
+		readonly int[] modifier;
 		readonly CashTransferToAlliesInfo info;
 		public bool Enabled { get; private set; }
 
@@ -66,6 +71,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			this.info = info;
 			ticks = info.ChargeDuration;
+			modifier = new int[] { info.Modifier };
 		}
 
 		void INotifyCreated.Created(Actor self)
@@ -144,7 +150,7 @@ namespace OpenRA.Mods.Cameo.Traits
 					var cashMean = teamTotal / team.Count;
 
 					foreach (var playerResources in team)
-						playerResources.ChangeCash(cashMean - (playerResources.Cash + playerResources.Resources));
+						playerResources.ChangeCash(OpenRA.Mods.Common.Util.ApplyPercentageModifiers((cashMean - (playerResources.Cash + playerResources.Resources)), modifier));
 
 				}
 			}
