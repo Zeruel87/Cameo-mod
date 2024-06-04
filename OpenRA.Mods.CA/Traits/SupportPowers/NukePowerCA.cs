@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Effects;
 using OpenRA.Mods.Common.Graphics;
@@ -88,6 +89,10 @@ namespace OpenRA.Mods.CA.Traits
 
 		[Desc("Descend immediately on the target.")]
 		public readonly bool SkipAscent = false;
+
+		[ActorReference]
+		[Desc("Actor to spawn at beacon")]
+		public readonly string BeaconActor = null;
 
 		[Desc("Amount of time before detonation to remove the beacon.")]
 		public readonly int BeaconRemoveAdvance = 25;
@@ -214,7 +219,22 @@ namespace OpenRA.Mods.CA.Traits
 					Info.BeaconDelay,
 					Info.FlightDelay - Info.BeaconRemoveAdvance);
 
-				self.World.AddFrameEndTask(w => w.Add(beacon));
+				self.World.AddFrameEndTask(w =>
+				{
+					w.Add(beacon);
+
+					var actor = w.CreateActor(Info.BeaconActor, new TypeDictionary
+						{
+							new LocationInit(self.World.Map.CellContaining(targetPosition)),
+							new OwnerInit(self.Owner),
+						});
+
+					if (Info.CameraRemoveDelay > -1)
+					{
+						actor.QueueActivity(new Wait(Info.FlightDelay + Info.CameraRemoveDelay));
+						actor.QueueActivity(new RemoveSelf());
+					}
+				});
 			}
 		}
 
