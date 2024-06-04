@@ -150,7 +150,7 @@ namespace OpenRA.Mods.Cameo.Traits
 					var cashMean = teamTotal / team.Count;
 
 					foreach (var playerResources in team)
-						playerResources.ChangeCash(OpenRA.Mods.Common.Util.ApplyPercentageModifiers((cashMean - (playerResources.Cash + playerResources.Resources)), modifier));
+						playerResources.ChangeCash(Common.Util.ApplyPercentageModifiers((cashMean - (playerResources.Cash + playerResources.Resources)), modifier));
 
 				}
 			}
