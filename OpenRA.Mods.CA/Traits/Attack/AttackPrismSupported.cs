@@ -13,6 +13,7 @@ using System.Linq;
 using OpenRA.Activities;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
+using OpenRA.Mods.AS.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
@@ -27,7 +28,7 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("Implements the charge-then-burst attack logic specific to the RA tesla coil.")]
-	public class AttackPrismSupportedInfo : AttackPrismInfo
+	public class AttackPrismSupportedCAInfo : AttackPrismInfo
 	{
 		// These props are inherited automatically:
 		/*
@@ -74,18 +75,18 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("The condition to grant to self while the charge level is greater than zero.")]
 		public readonly string ChargingCondition = null;
 
-		public override object Create(ActorInitializer init) { return new AttackPrismSupported(init.Self, this); }
+		public override object Create(ActorInitializer init) { return new AttackPrismSupportedCA(init.Self, this); }
 	}
 
-	public class AttackPrismSupported : AttackPrism, ITick, INotifyAttack, INotifyBecomingIdle, IFirepowerModifier
+	public class AttackPrismSupportedCA : AttackPrism, ITick, INotifyAttack, INotifyBecomingIdle, IFirepowerModifier
 	{
-		readonly AttackPrismSupportedInfo info;
+		readonly AttackPrismSupportedCAInfo info;
 		readonly Stack<int> buffTokens = new Stack<int>();
 		int chargingToken = Actor.InvalidConditionToken;
 
 		int IFirepowerModifier.GetFirepowerModifier(string armamentName) { return IsTraitDisabled ? 100 : 100 + buffTokens.Count * info.Modifier ; }
 
-		public AttackPrismSupported(Actor self, AttackPrismSupportedInfo info)
+		public AttackPrismSupportedCA(Actor self, AttackPrismSupportedCAInfo info)
 			: base(self, info)
 		{
 			this.info = info;
@@ -116,7 +117,7 @@ namespace OpenRA.Mods.CA.Traits
 				return false;
 
 			// Check traits
-			return info.SupportType == receiver.Trait<AttackPrismSupported>().info.SupportType;
+			return info.SupportType == receiver.Trait<AttackPrismSupportedCA>().info.SupportType;
 		}
 
 		void ITick.Tick(Actor self)
@@ -143,7 +144,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (!CanAttack(self, target))
 				return;
 
-			var receiverTrait = buffReceiver.Trait<AttackPrismSupported>();
+			var receiverTrait = buffReceiver.Trait<AttackPrismSupportedCA>();
 			var offsetedTarget = Target.FromPos(target.CenterPosition + receiverTrait.info.ReceiverOffset);
 
 			var supportArmament = self.TraitsImplementing<Armament>().First(a => a.Info.Name == info.SupportArmament);
@@ -182,17 +183,17 @@ namespace OpenRA.Mods.CA.Traits
 
 		class ChargeSupportedAttack : Activity
 		{
-			readonly AttackPrismSupported attack;
+			readonly AttackPrismSupportedCA attack;
 			readonly Target target;
 			readonly bool forceAttack;
 			readonly Color? targetLineColor;
-			readonly AttackPrismSupportedInfo supportInfo;
+			readonly AttackPrismSupportedCAInfo supportInfo;
 
 			public ChargeSupportedAttack(
-				AttackPrismSupported attack,
+				AttackPrismSupportedCA attack,
 				in Target target,
 				bool forceAttack,
-				AttackPrismSupportedInfo supportInfo,
+				AttackPrismSupportedCAInfo supportInfo,
 				Color? targetLineColor = null)
 			{
 				this.attack = attack;
@@ -206,7 +207,7 @@ namespace OpenRA.Mods.CA.Traits
 			// Returns (supporter, relay, hops) triplets
 			public IEnumerable<(Actor, Actor, int)> RecruitSupporters(Actor self)
 			{
-				var candidates = self.World.ActorsHavingTrait<AttackPrismSupported>();
+				var candidates = self.World.ActorsHavingTrait<AttackPrismSupportedCA>();
 				var isVisited = new HashSet<Actor>() { self };
 				var hops = new Dictionary<Actor, int>() { { self, 0 } };
 				var parent = new Dictionary<Actor, Actor>() { { self, null } };
@@ -258,7 +259,7 @@ namespace OpenRA.Mods.CA.Traits
 					if (cand == self)
 						continue;
 
-					var candAttack = cand.Trait<AttackPrismSupported>();
+					var candAttack = cand.Trait<AttackPrismSupportedCA>();
 
 					if (!candAttack.MaySupport(cand, self, true))
 						continue;
@@ -293,7 +294,7 @@ namespace OpenRA.Mods.CA.Traits
 				{
 					foreach ((var supporter, var relay, var hop) in relays)
 					{
-						var attack = supporter.Trait<AttackPrismSupported>();
+						var attack = supporter.Trait<AttackPrismSupportedCA>();
 						if (!attack.MaySupport(supporter, relay, true))
 							continue;
 
@@ -315,11 +316,11 @@ namespace OpenRA.Mods.CA.Traits
 
 		class ChargeAndFireSupportWeapon : Activity
 		{
-			readonly AttackPrismSupported attack;
+			readonly AttackPrismSupportedCA attack;
 			readonly Target target;
 			readonly Actor buffReceiver;
 
-			public ChargeAndFireSupportWeapon(AttackPrismSupported attack, in Target target, Actor buffReceiver)
+			public ChargeAndFireSupportWeapon(AttackPrismSupportedCA attack, in Target target, Actor buffReceiver)
 			{
 				this.attack = attack;
 				this.target = target;
@@ -347,13 +348,13 @@ namespace OpenRA.Mods.CA.Traits
 
 		class FireSupportingWeapon : Activity
 		{
-			readonly AttackPrismSupported attack;
+			readonly AttackPrismSupportedCA attack;
 			readonly Target target;
 			readonly Actor buffReceiver; // buff receiver is NOT target, as the buff may travel multiple hops.
 			readonly int hopDelay;
 			readonly Color? targetLineColor;
 
-			public FireSupportingWeapon(AttackPrismSupported attack, Target target, Actor buffReceiver, int hopDelay, Color? targetLineColor = null)
+			public FireSupportingWeapon(AttackPrismSupportedCA attack, Target target, Actor buffReceiver, int hopDelay, Color? targetLineColor = null)
 			{
 				this.attack = attack;
 				this.target = target;
@@ -393,10 +394,10 @@ namespace OpenRA.Mods.CA.Traits
 
 		protected class ChargeFireBuffed : Activity
 		{
-			readonly AttackPrismSupported attack;
+			readonly AttackPrismSupportedCA attack;
 			readonly Target target;
 
-			public ChargeFireBuffed(AttackPrismSupported attack, in Target target)
+			public ChargeFireBuffed(AttackPrismSupportedCA attack, in Target target)
 			{
 				this.attack = attack;
 				this.target = target;
