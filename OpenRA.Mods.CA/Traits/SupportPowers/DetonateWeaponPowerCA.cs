@@ -34,7 +34,7 @@ namespace OpenRA.Mods.CA.Traits
 		public readonly int ActivationDelay = 10;
 
 		[Desc("Palette effect on the world actor.")]
-		public readonly string PaletteEffectType = null;
+		public readonly string PostProcessEffectType = null;
 
 		[ActorReference]
 		[Desc("Actor to spawn at beacon")]
@@ -127,11 +127,11 @@ namespace OpenRA.Mods.CA.Traits
 			{
 				w.Add(new DelayedAction(Info.ActivationDelay, () => self.World.AddFrameEndTask(w => weapon.Impact(Target.FromPos(targetPosition), self))));
 
-				if (!string.IsNullOrEmpty(Info.PaletteEffectType))
+				if (!string.IsNullOrEmpty(Info.PostProcessEffectType))
 				{
-					var paletteEffects = w.WorldActor.TraitsImplementing<WeatherPaletteEffect>().Where(p => p.Info.Type == Info.PaletteEffectType);
-					foreach (var paletteEffect in paletteEffects)
-						paletteEffect.Enable(-1);
+					var postProcessEffects = w.WorldActor.TraitsImplementing<WeatherPostProcessEffect>().Where(p => p.Info.Type == Info.PostProcessEffectType);
+					foreach (var postProcessEffect in postProcessEffects)
+						postProcessEffect.Enable(-1);
 				}
 
 				var actor = w.CreateActor(Info.BeaconActor, new TypeDictionary
