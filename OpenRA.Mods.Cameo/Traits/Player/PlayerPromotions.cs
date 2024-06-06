@@ -75,6 +75,12 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Default option key in the `Values` list.")]
 		public readonly string PointsPerRankDefault = null;
 
+		[TranslationReference]
+		public readonly string[] FlavorTextNotifications = null;
+
+		[TranslationReference]
+		public readonly string FlavorTextPrefix = null;
+
 		[Desc("Prevent the option from being changed from its default value.")]
 		public readonly bool Locked = false;
 
@@ -174,6 +180,8 @@ namespace OpenRA.Mods.Cameo.Traits
 			}
 			else
 				IsMaxLevel = true;
+
+			if (Info.FlavorTextNotifications != null && currentLevel > 1) TextNotify();
 		}
 
 		void GivePoint(int pointsToGive)
@@ -190,6 +198,14 @@ namespace OpenRA.Mods.Cameo.Traits
 
 			if (Points <= 0 && hasPointsToken != Actor.InvalidConditionToken)
 				hasPointsToken = self.RevokeCondition(hasPointsToken);
+		}
+
+		void TextNotify()
+		{
+			if (self.Owner != self.Owner.World.LocalPlayer) return;
+
+			var notification = Info.FlavorTextNotifications.Random(self.World.LocalRandom);
+			TextNotificationsManager.AddMissionLine(Info.FlavorTextPrefix, notification, self.Owner.Color);
 		}
 	}
 }
