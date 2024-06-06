@@ -50,6 +50,16 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Random number of up to this many units is added to squad size when creating an attack squad.")]
 		public readonly int SquadSizeRandomBonus = 30;
 
+		[ActorReference]
+		[Desc("Units that form a guerrilla squad.")]
+		public readonly HashSet<string> GuerrillaTypes = new();
+
+		[Desc("Possibility of units in GuerrillaTypes to join Guerrilla.")]
+		public readonly int JoinGuerrilla = 50;
+
+		[Desc("Max number of units AI has in guerrilla squad")]
+		public readonly int MaxGuerrillaSize = 10;
+
 		[Desc("Delay (in ticks) between giving out orders to units.")]
 		public readonly int AssignRolesInterval = 50;
 
@@ -394,9 +404,18 @@ namespace OpenRA.Mods.CA.Traits
 					!Info.ExcludeFromSquadsTypes.Contains(a.Info.Name) &&
 					!activeUnits.Contains(a));
 
+			var guerrillaForce = GetSquadOfType(SquadCAType.Assault);
+			var guerrillaUpdate = guerrillaForce == null || (guerrillaForce.Units.Count <= Info.MaxGuerrillaSize && (World.LocalRandom.Next(100) >= Info.JoinGuerrilla));
+
 			foreach (var a in newUnits)
 			{
-				if (Info.AirUnitsTypes.Contains(a.Info.Name))
+				if (Info.GuerrillaTypes.Contains(a.Info.Name) && guerrillaUpdate)
+				{
+					guerrillaForce ??= RegisterNewSquad(bot, SquadCAType.Assault);
+
+					guerrillaForce.Units.Add(new UnitWposWrapper(a));
+				}
+				else if (Info.AirUnitsTypes.Contains(a.Info.Name))
 				{
 					var airSquads = Squads.Where(s => s.Type == SquadCAType.Air);
 					var matchingAirSquadFound = false;
