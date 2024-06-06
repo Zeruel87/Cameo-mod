@@ -26,7 +26,7 @@ namespace OpenRA.Mods.CA.Projectiles
 	}
 
 	[Desc("Detonates all warheads attached to Weapon each ExplosionInterval ticks.")]
-	public class WarheadTrailProjectileInfo : IProjectileInfo, IRulesetLoaded<WeaponInfo>
+	public class WarheadTrailProjectileCAInfo : IProjectileInfo, IRulesetLoaded<WeaponInfo>
 	{
 		[Desc("Warhead explosion offsets")]
 		public readonly WVec[] Offsets = { new(0, 1, 0) };
@@ -140,7 +140,7 @@ namespace OpenRA.Mods.CA.Projectiles
 		[Desc("If projectile touches an actor with one of these stances during or after the first bounce, trigger explosion.")]
 		public readonly PlayerRelationship ValidBounceBlockerPlayerRelationships = PlayerRelationship.Enemy | PlayerRelationship.Neutral | PlayerRelationship.Ally;
 
-		public IProjectile Create(ProjectileArgs args) { return new WarheadTrailProjectile(this, args); }
+		public IProjectile Create(ProjectileArgs args) { return new WarheadTrailProjectileCA(this, args); }
 
 		void IRulesetLoaded<WeaponInfo>.RulesetLoaded(Ruleset rules, WeaponInfo info)
 		{
@@ -150,9 +150,9 @@ namespace OpenRA.Mods.CA.Projectiles
 		}
 	}
 
-	public class WarheadTrailProjectile : IProjectile, ISync
+	public class WarheadTrailProjectileCA : IProjectile, ISync
 	{
-		readonly WarheadTrailProjectileInfo info;
+		readonly WarheadTrailProjectileCAInfo info;
 		readonly ProjectileArgs args;
 
 		[Sync]
@@ -165,7 +165,7 @@ namespace OpenRA.Mods.CA.Projectiles
 		[Sync]
 		readonly WPos projectilepos, targetpos, sourcepos, offsetTargetPos = WPos.Zero;
 
-		readonly WarheadTrailProjectileEffect[] projectiles; // offset projectiles
+		readonly WarheadTrailProjectileCAEffect[] projectiles; // offset projectiles
 
 		readonly WPos offsetSourcePos = WPos.Zero;
 		readonly World world;
@@ -174,7 +174,7 @@ namespace OpenRA.Mods.CA.Projectiles
 
 		public Actor SourceActor { get { return args.SourceActor; } }
 
-		public WarheadTrailProjectile(WarheadTrailProjectileInfo info, ProjectileArgs args)
+		public WarheadTrailProjectileCA(WarheadTrailProjectileCAInfo info, ProjectileArgs args)
 		{
 			this.info = info;
 			this.args = args;
@@ -195,7 +195,7 @@ namespace OpenRA.Mods.CA.Projectiles
 
 			mindelay = args.Weapon.MinRange.Length / speed.Length;
 
-			projectiles = new WarheadTrailProjectileEffect[info.Offsets.Length];
+			projectiles = new WarheadTrailProjectileCAEffect[info.Offsets.Length];
 			var range = Common.Util.ApplyPercentageModifiers(args.Weapon.Range.Length, args.RangeModifiers);
 			var mainFacing = (targetpos - sourcepos).Yaw.Facing + 64;
 
@@ -254,7 +254,7 @@ namespace OpenRA.Mods.CA.Projectiles
 					PassiveTarget = target.CenterPosition
 				};
 
-				projectiles[i] = new WarheadTrailProjectileEffect(info, args.Weapon, projectileArgs, lifespan, estimatedLifespan, info.ForceAtGroundLevel);
+				projectiles[i] = new WarheadTrailProjectileCAEffect(info, args.Weapon, projectileArgs, lifespan, estimatedLifespan, info.ForceAtGroundLevel);
 			}
 
 			foreach (var p in projectiles)

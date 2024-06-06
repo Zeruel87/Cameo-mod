@@ -22,9 +22,9 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Effects
 {
-	public class WarheadTrailProjectileEffect : IEffect, ISync
+	public class WarheadTrailProjectileCAEffect : IEffect, ISync
 	{
-		readonly WarheadTrailProjectileInfo info;
+		readonly WarheadTrailProjectileCAInfo info;
 		readonly WeaponInfo parentWeapon;
 		readonly ProjectileArgs args;
 		readonly Animation anim;
@@ -48,7 +48,7 @@ namespace OpenRA.Mods.CA.Effects
 		public bool DetonateSelf { get; private set; }
 		public WPos Position { get { return projectilepos; } }
 
-		public WarheadTrailProjectileEffect(WarheadTrailProjectileInfo info, WeaponInfo parentWeapon, ProjectileArgs args, int lifespan, int estimatedlifespan, bool forceToGround)
+		public WarheadTrailProjectileCAEffect(WarheadTrailProjectileCAInfo info, WeaponInfo parentWeapon, ProjectileArgs args, int lifespan, int estimatedlifespan, bool forceToGround)
 		{
 			this.info = info;
 			this.parentWeapon = parentWeapon;
