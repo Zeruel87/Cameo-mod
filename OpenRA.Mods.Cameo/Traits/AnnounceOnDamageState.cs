@@ -25,6 +25,12 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Chance of voice line to play.")]
 		public readonly int Chance = 25;
 
+		[Desc("Player relationships who can hear this voice.")]
+		public readonly PlayerRelationship ValidRelationships = PlayerRelationship.None;
+
+		[Desc("Play the voice to the owning player even if Stance.Ally is not included in ValidStances.")]
+		public readonly bool PlayToOwner = true;
+
 		[Desc("Levels of damage at which to grant the condition.")]
 		public readonly DamageState ValidDamageStates = DamageState.Heavy | DamageState.Critical;
 
@@ -40,12 +46,25 @@ namespace OpenRA.Mods.Cameo.Traits
 			this.info = info;
 		}
 
+		void Trigger(Actor self)
+		{
+			if (self.World.LocalRandom.Next(0, 100) > info.Chance)
+				return;
+
+			var player = self.World.LocalPlayer ?? self.World.RenderPlayer;
+			if (player == null)
+				return;
+
+			if (info.ValidRelationships.HasRelationship(self.Owner.RelationshipWith(player)))
+				self.PlayVoice(info.Voice);
+			else if (info.PlayToOwner && self.Owner == player)
+				self.PlayVoice(info.Voice);
+		}
+
 		void INotifyDamageStateChanged.DamageStateChanged(Actor self, AttackInfo e)
 		{
-			if (info.ValidDamageStates.HasFlag(e.DamageState)
-				&& !info.ValidDamageStates.HasFlag(e.PreviousDamageState)
-				&& self.World.LocalRandom.Next(0, 100) < info.Chance)
-				self.PlayVoice(info.Voice);
+			if (info.ValidDamageStates.HasFlag(e.DamageState) && !info.ValidDamageStates.HasFlag(e.PreviousDamageState))
+				Trigger(self);
 		}
 	}
 }
