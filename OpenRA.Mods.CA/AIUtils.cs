@@ -46,15 +46,14 @@ namespace OpenRA.Mods.CA
 			return world.ActorsHavingTrait<T>();
 		}
 
-		public static int CountActorsWithTrait<T>(string actorName, Player owner)
+		public static int CountActorsWithNameAndTrait<T>(string actorName, Player owner)
 		{
-			return GetActorsWithTrait<T>(owner.World).Count(a => a.Owner == owner && a.Info.Name == actorName);
+			return owner.World.ActorsHavingTrait<T>().Count(a => a.Owner == owner && a.Info.Name == actorName);
 		}
 
-		public static int CountActorByCommonName(HashSet<string> commonNames, Player owner)
+		public static int CountActorByCommonName<T>(ActorIndex.OwnerAndNamesAndTrait<T> actorIndex)
 		{
-			return owner.World.Actors.Count(a => !a.IsDead && a.Owner == owner &&
-				commonNames.Contains(a.Info.Name));
+			return actorIndex.Actors.Count(a => !a.IsDead);
 		}
 
 		public static int CountBuildingByCommonName(HashSet<string> buildings, Player owner)
@@ -78,6 +77,24 @@ namespace OpenRA.Mods.CA
 		{
 			if (Game.Settings.Debug.BotDebug)
 				TextNotificationsManager.Debug(s, args);
+		}
+
+		public static bool PathExist(Actor unit, CPos destination, Actor ignoreActor, BlockedByActor blockedByActor = BlockedByActor.Immovable)
+		{
+			var mobile = unit.TraitOrDefault<Mobile>();
+			if (mobile == null)
+			{
+				// We consider other IMove ignore all blockers
+				if (unit.TraitsImplementing<IMove>().Any())
+					return true;
+				else
+					return false;
+			}
+
+			if (mobile.PathFinder.FindPathToTargetCell(unit, new List<CPos> { unit.Location }, destination, blockedByActor, ignoreActor: ignoreActor, laneBias: false).Count > 0)
+				return true;
+			else
+				return false;
 		}
 	}
 }
