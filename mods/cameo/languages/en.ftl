@@ -15,3 +15,8 @@ label-minimal-stats-player-header = Player
 label-minimal-stats-cash-header = Cash
 label-minimal-stats-power-header = Power
 label-minimal-stats-harvesters-header = Harv.
+
+promotion-counter =
+    .rank = Current Rank: 
+    .points = Promotion Points:
+    .progress = Progress to next rank: 

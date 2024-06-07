@@ -204,8 +204,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			if (self.Owner != self.Owner.World.LocalPlayer) return;
 
-			var notification = Info.FlavorTextNotifications.Random(self.World.LocalRandom);
-			TextNotificationsManager.AddMissionLine(Info.FlavorTextPrefix, notification, self.Owner.Color);
+			var notification = TranslationProvider.GetString(Info.FlavorTextNotifications.Random(self.World.LocalRandom));
+			TextNotificationsManager.AddMissionLine(TranslationProvider.GetString(Info.FlavorTextPrefix), notification, self.Owner.Color);
 		}
 	}
 }
