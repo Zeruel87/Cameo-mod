@@ -92,7 +92,7 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		IEnumerable<LobbyOption> ILobbyOptions.LobbyOptions(MapPreview map)
 		{
-			var startingPoints = PointsPerRank.ToDictionary(p => p.Key, p => string.Join(",", p.Value));
+			var startingPoints = PointsPerRank.ToDictionary(p => p.Key, p => string.Join(", ", p.Value));
 
 			yield return new LobbyOption(map, ID, Label, Description, Visible, DisplayOrder,
 				startingPoints, PointsPerRankDefault, Locked);
@@ -146,6 +146,9 @@ namespace OpenRA.Mods.Cameo.Traits
 				Ranks = Info.Ranks[faction];
 			else
 				Ranks = Info.Ranks[Info.RanksDefault];
+
+			for (int i = 0; i < Ranks.Count; ++i)
+				Ranks[i] = TranslationProvider.GetString(Ranks[i]);
 
 			GiveExperience(Info.InitialProgress);
 		}
@@ -204,8 +207,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			if (self.Owner != self.Owner.World.LocalPlayer) return;
 
-			var notification = Info.FlavorTextNotifications.Random(self.World.LocalRandom);
-			TextNotificationsManager.AddMissionLine(Info.FlavorTextPrefix, notification, self.Owner.Color);
+			var notification = TranslationProvider.GetString(Info.FlavorTextNotifications.Random(self.World.LocalRandom));
+			TextNotificationsManager.AddMissionLine(TranslationProvider.GetString(Info.FlavorTextPrefix), notification, self.Owner.Color);
 		}
 	}
 }
