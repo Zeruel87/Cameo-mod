@@ -58,7 +58,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 		{
 			var rankText = TranslationProvider.GetString(RankText) + " " + playerPromotions.currentRank;
 			var pointsText = TranslationProvider.GetString(PointsText) + " " + playerPromotions.Points;
-			var progressText = playerPromotions.IsMaxLevel ? null : TranslationProvider.GetString(ProgressText) + " " + playerPromotions.Experience + (playerPromotions.IsMaxLevel ? null : "/" + playerPromotions.nextLevelXpRequired);
+			var progressText = playerPromotions.IsMaxLevel ? "" : TranslationProvider.GetString(ProgressText) + " " + playerPromotions.Experience + (playerPromotions.IsMaxLevel ? null : "/" + playerPromotions.nextLevelXpRequired);
 
 			Texts = new string[] { rankText, pointsText, progressText };
 
