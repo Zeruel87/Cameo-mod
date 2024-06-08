@@ -27,6 +27,10 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Percentage value of the resource difference to send as cash.")]
 		public readonly int Modifier = 1;
 
+		[FieldLoader.Require]
+		[Desc("Money Threshold for sending cash.")]
+		public readonly int Threshold = 1000;
+
 		[TranslationReference]
 		[Desc("Descriptive label for the creeps checkbox in the lobby.")]
 		public readonly string CheckboxLabel = "Team Cash Sharing";
@@ -58,6 +62,7 @@ namespace OpenRA.Mods.Cameo.Traits
 	class CashTransferToAllies : ITick, IWorldLoaded, INotifyCreated
 	{
 		readonly int[] modifier;
+		readonly int threshold;
 		readonly CashTransferToAlliesInfo info;
 		public bool Enabled { get; private set; }
 
@@ -71,6 +76,7 @@ namespace OpenRA.Mods.Cameo.Traits
 			this.info = info;
 			ticks = info.ChargeDuration;
 			modifier = new int[] { info.Modifier };
+			threshold = info.Threshold;
 		}
 
 		void INotifyCreated.Created(Actor self)
@@ -139,17 +145,36 @@ namespace OpenRA.Mods.Cameo.Traits
 				foreach (var team in teams.Values)
 				{
 					var teamTotal = 0;
+					var playerMoney = 0;
 
 					if (team.Count <= 1)
 						continue;
 
 					foreach (var playerResources in team)
-						teamTotal += playerResources.GetCashAndResources();
+					{
+						playerMoney = playerResources.GetCashAndResources();
+
+						if (playerMoney <= threshold)
+						{
+							playerMoney = 0;
+						}
+
+						teamTotal += playerMoney;
+					}
 
 					var cashMean = teamTotal / team.Count;
 
 					foreach (var playerResources in team)
-						playerResources.ChangeCash(Common.Util.ApplyPercentageModifiers((cashMean - playerResources.GetCashAndResources()), modifier));
+					{
+						playerMoney = playerResources.GetCashAndResources();
+
+						if (playerMoney <= threshold)
+						{
+							playerMoney = 0;
+						}
+
+						playerResources.ChangeCash(Common.Util.ApplyPercentageModifiers((cashMean - (playerMoney)), modifier));
+					}
 
 				}
 			}
