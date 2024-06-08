@@ -59,6 +59,10 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("The condition to grant to self while deployed.")]
 		public readonly string DeployedCondition = null;
 
+		public readonly string DeployType = null;
+
+		public readonly bool ExclusiveDeploy = false;
+
 		public WeaponInfo ThumpDamageWeaponInfo { get; private set; }
 
 		public WeaponInfo DetonationWeaponInfo { get; private set; }
@@ -130,7 +134,26 @@ namespace OpenRA.Mods.CA.Traits
 			return new Order("Detonate", self, queued);
 		}
 
-		bool IIssueDeployOrder.CanIssueDeployOrder(Actor self, bool queued) { return !(self.CurrentActivity is DetonationSequence); }
+		bool IIssueDeployOrder.CanIssueDeployOrder(Actor self, bool queued) { return !(self.CurrentActivity is DetonationSequence) && IsGroupDeployNeeded(self); }
+
+		bool IsGroupDeployNeeded(Actor self)
+		{
+			if (!Info.ExclusiveDeploy)
+				return true;
+
+			var actors = self.World.Selection.Actors;
+
+			foreach (var a in actors)
+			{
+				MadTankCA madTank = null;
+				if (!a.IsDead && a.IsInWorld)
+					madTank = a.TraitOrDefault<MadTankCA>();
+
+				if (madTank == null || madTank.Info.DeployType != Info.DeployType) return false;
+			}
+
+			return true;
+		}
 
 		string IOrderVoice.VoicePhraseForOrder(Actor self, Order order)
 		{
