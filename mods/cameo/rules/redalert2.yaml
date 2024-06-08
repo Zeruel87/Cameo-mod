@@ -1871,10 +1871,7 @@ RA2BRIK:
 	Inherits: BRIK
 	RenderSprites:
 		Image: BRIK
-	Buildable:
-		BuildPaletteOrder: 10
-		Prerequisites: anypower
-		Queue: Defence, RADefence
+	-MapEditorData:
 
 ##############################################
 #   Red Alert 2 Soviet Structures
@@ -2737,31 +2734,10 @@ ra2tesla:
 	ExternalCondition@TeslaCoilCharge:
 		Condition: TeslaCoilCharge
 		SourceCap: 1
-	MobSpawnerMaster@1:
-		Actors: ra2shk.bot
-		Offset: 1000,750,0
+	DroneSpawnerMasterCA:
+		Actors: ra2shk.bot, ra2shk.bot, ra2shk.bot
+		SpawnOffset: 511,511,0, -511,-511,0, -511,511,0
 		RespawnTicks: 250
-		ExitByBudding: false
-		AggregateHealth: false
-		SpawnAllAtOnce: false
-		InitialActorCount: 0
-		RequiresCondition: teslaChargeUpgrade
-	MobSpawnerMaster@2:
-		Actors: ra2shk.bot
-		Offset: 750,-1000,0
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
-		SpawnAllAtOnce: false
-		InitialActorCount: 0
-		RequiresCondition: teslaChargeUpgrade
-	MobSpawnerMaster@3:
-		Actors: ra2shk.bot
-		Offset: -750,1000,0
-		RespawnTicks: 750
-		ExitByBudding: false
-		AggregateHealth: false
-		SpawnAllAtOnce: false
 		InitialActorCount: 0
 		RequiresCondition: teslaChargeUpgrade
 	Production:
@@ -3198,6 +3174,7 @@ yryarefn:
 		PauseOnCondition: being-demolished
 		IntoActor: yrsmin.empy
 		Facing: 0
+		Voice: Undeploy
 	Turreted:
 		TurnSpeed: 90
 	AttackTurreted:
@@ -5023,13 +5000,22 @@ ra2shk.bot:
 	-Armament@PRIMARY:
 	-Armament@Elite:
 	Armament@TeslaCoilCharge:
+	Mobile:
+		CanTurnWhileDisabled: true
+		ImmovableCondition: disable_movement
+		RequireForceMoveCondition: disable_movement
+	RejectsMoveToAttack:
+	GrantConditionAfterDelay:
+		Condition: disable_movement
+		ShowSelectionBar: false
+		Delay: 10
 	AutoTarget:
 		AllowMovement: false
 	AttackFrontal:
 		FacingTolerance: 0
 	Selectable:
 		Priority: 4
-	MobSpawnerSlave:
+	DroneSpawnerSlave:
 	RejectsOrders:
 	WithInfantryBody:
 ##############################################
@@ -5164,6 +5150,7 @@ YRSLAV:
 	Voiced:
 		VoiceSet: SlaveWorkerVoice
 	Harvester:
+		Voice: Harvest
 		BaleLoadDelay: 10
 		BaleUnloadDelay: 0
 		BaleUnloadAmount: 1
@@ -5550,7 +5537,11 @@ RA2CMIN:
 		Prerequisites: ~ra2garefn
 		Queue: Vehicle, RAVehicle
 		Description: Harvests resources and teleports to refinery\nwhen full.
+	Harvester:
+		Voice: Harvest
 	WithDockingAnimation:
+	DockClientManager:
+		Voice: Deliver
 	ChronoResourceDelivery:
 		TeleportType: PortableChrono
 		RequiresCondition: !disabled
@@ -6732,6 +6723,7 @@ RA2HARV:
 	ChangesHealth@SelfHealing:
 		Step: 50
 	Harvester:
+		Voice: Harvest
 		BaleLoadDelay: 4
 		BaleUnloadDelay: 1
 		SearchFromProcRadius: 25
@@ -6952,6 +6944,7 @@ YRSMIN:
 		TransformSounds: uplace.wav
 		NoTransformNotification: BuildingCannotPlaceAudio
 		PauseOnCondition: disabled || terrordroned
+		Voice: Deploy
 	SelectionDecorations:
 	Voiced:
 		VoiceSet: SlaveMinerVoice
