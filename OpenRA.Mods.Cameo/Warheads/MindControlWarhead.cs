@@ -12,7 +12,6 @@ using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.CA.Traits;
 using OpenRA.Mods.AS.Warheads;
-using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 

@@ -9,7 +9,6 @@
  */
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
@@ -145,12 +144,12 @@ namespace OpenRA.Mods.Cameo.Traits
 						continue;
 
 					foreach (var playerResources in team)
-						teamTotal += playerResources.Cash + playerResources.Resources;
+						teamTotal += playerResources.GetCashAndResources();
 
 					var cashMean = teamTotal / team.Count;
 
 					foreach (var playerResources in team)
-						playerResources.ChangeCash(Common.Util.ApplyPercentageModifiers((cashMean - (playerResources.Cash + playerResources.Resources)), modifier));
+						playerResources.ChangeCash(Common.Util.ApplyPercentageModifiers((cashMean - playerResources.GetCashAndResources()), modifier));
 
 				}
 			}

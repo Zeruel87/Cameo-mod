@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.LoadScreens;
 using OpenRA.Primitives;
-using OpenRA.Support;
 
 namespace OpenRA.Mods.Cameo.LoadScreens
 {
