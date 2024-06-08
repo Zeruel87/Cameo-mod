@@ -31,6 +31,7 @@ namespace OpenRA.Mods.Cameo.LoadScreens
 		Size lastResolution;
 
 		string[] messages = { "Loading..." };
+		string text;
 
 		public override void Init(ModData modData, Dictionary<string, string> info)
 		{
@@ -38,6 +39,8 @@ namespace OpenRA.Mods.Cameo.LoadScreens
 
 			if (info.ContainsKey("Text"))
 				messages = info["Text"].Split(',');
+
+			text = messages.Random(Game.CosmeticRandom);
 		}
 
 		public override void Display()
@@ -92,11 +95,10 @@ namespace OpenRA.Mods.Cameo.LoadScreens
 
 			if (r.Fonts != null)
 			{
-				var text = messages.Random(Game.CosmeticRandom);
 				var textSize = r.Fonts["Bold"].Measure(text);
-				r.Fonts["Bold"].DrawText(text,
+				r.Fonts["Bold"].DrawTextWithContrast(text,
 					new float2(r.Resolution.Width - textSize.X - 20, r.Resolution.Height - textSize.Y - 20),
-					Color.White);
+					Color.White, Color.Black, 2);
 			}
 		}
 	}
