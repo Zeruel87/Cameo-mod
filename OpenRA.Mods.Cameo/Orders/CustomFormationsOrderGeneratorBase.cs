@@ -1229,7 +1229,7 @@ namespace OpenRA.Mods.Cameo.Orders
 		public static List<Actor> AssignUnitsToTargets(List<Actor> inActors, List<Target> inTargets)
 		{
 			int goalcount = Math.Min(inActors.Count, inTargets.Count);
-			if (inActors == null)
+			if (inActors == null || goalcount == 0)
 			{
 				return new List<Actor>();
 			}
