@@ -156,7 +156,7 @@ namespace OpenRA.Mods.Cameo.Traits
 
 						if (playerMoney <= threshold)
 						{
-							playerMoney = 0;
+							playerMoney = Common.Util.ApplyPercentageModifiers(playerMoney, modifier);
 						}
 
 						teamTotal += playerMoney;
@@ -170,7 +170,7 @@ namespace OpenRA.Mods.Cameo.Traits
 
 						if (playerMoney <= threshold)
 						{
-							playerMoney = 0;
+							playerMoney = Common.Util.ApplyPercentageModifiers(playerMoney, modifier);
 						}
 
 						playerResources.ChangeCash(Common.Util.ApplyPercentageModifiers((cashMean - (playerMoney)), modifier));
