@@ -2332,7 +2332,7 @@ yrngindp:
 		BuildPaletteOrder: 200
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Prerequisites: ~ra2nacnst, ra2natech
+		Prerequisites: ~ra2nacnst, ra2natech, upyrngindp
 		Queue: Building, RABuilding
 		BuildLimit: 1
 		Description: Reduces cost of vehicles by 25%.
@@ -2679,6 +2679,7 @@ ra2tesla:
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@arc: ^RA2ArcTesla
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 80
@@ -2694,22 +2695,33 @@ ra2tesla:
 	Health:
 		HP: 120000
 	WithTeslaChargeAnimation:
+	GrantConditionOnPrerequisite@EMPTesla:
+		Condition: emptesla
+		Prerequisites: upemptesla
 	Armament:
 		Weapon: RA2CoilBolt
 		LocalOffset: 120,0,1100
-		RequiresCondition: (!unpowered && TeslaCoilCharge == 0) || (unpowered && TeslaCoilCharge == 1)
+		RequiresCondition: (!TeslaCoilCharge || (TeslaCoilCharge == 1 && unpowered)) && !emptesla && !arctesla
+	Armament@2:
+		Weapon: RA2CoilBolt2
+		LocalOffset: 120,0,1100
+		RequiresCondition: (!TeslaCoilCharge || (TeslaCoilCharge == 1 && unpowered)) && emptesla && !arctesla
+	Armament@3:
+		Weapon: RA2CoilBolt3
+		LocalOffset: 120,0,1100
+		RequiresCondition: (!TeslaCoilCharge || (TeslaCoilCharge == 1 && unpowered)) && emptesla && arctesla
 	Armament@Charged1:
 		Weapon: RA2OPCoilBolt1
 		LocalOffset: 120,0,1100
-		RequiresCondition: (!unpowered && TeslaCoilCharge == 1) || (unpowered && TeslaCoilCharge == 2)
+		RequiresCondition: ((TeslaCoilCharge && !unpowered) || (TeslaCoilCharge > 1 && unpowered)) && !emptesla && !arctesla
 	Armament@Charged2:
 		Weapon: RA2OPCoilBolt2
 		LocalOffset: 120,0,1100
-		RequiresCondition: (!unpowered && TeslaCoilCharge == 2) || (unpowered && TeslaCoilCharge >= 3)
+		RequiresCondition: ((TeslaCoilCharge && !unpowered) || (TeslaCoilCharge > 1 && unpowered)) && emptesla && !arctesla
 	Armament@Charged3:
 		Weapon: RA2OPCoilBolt3
 		LocalOffset: 120,0,1100
-		RequiresCondition: (!unpowered && TeslaCoilCharge >= 3)
+		RequiresCondition: ((TeslaCoilCharge && !unpowered) || (TeslaCoilCharge > 1 && unpowered)) && emptesla && arctesla
 	AttackTesla:
 		PauseOnCondition: disabled
 		ChargeAudio: btespow.wav
@@ -2732,6 +2744,18 @@ ra2tesla:
 	ExternalCondition@TeslaCoilCharge:
 		Condition: TeslaCoilCharge
 		SourceCap: 1
+	RangeMultiplier@Charge2:
+		Modifier: 110
+		RequiresCondition: (TeslaCoilCharge == 2 && !unpowered) || (TeslaCoilCharge == 3 && unpowered)
+	RangeMultiplier@Charge3:
+		Modifier: 120
+		RequiresCondition: (TeslaCoilCharge == 3 && !unpowered) || TeslaCoilCharge > 3
+	FirepowerMultiplier@Charge2:
+		Modifier: 125
+		RequiresCondition: (TeslaCoilCharge == 2 && !unpowered) || (TeslaCoilCharge == 3 && unpowered)
+	FirepowerMultiplier@Charge3:
+		Modifier: 150
+		RequiresCondition: (TeslaCoilCharge == 3 && !unpowered) || TeslaCoilCharge > 3
 	DroneSpawnerMasterCA:
 		Actors: ra2shk.bot, ra2shk.bot, ra2shk.bot
 		SpawnOffset: 511,511,0, -511,-511,0, -511,511,0
@@ -2754,6 +2778,9 @@ ra2tesla:
 	GrantConditionOnProduction@teslaChargeUpgrade:
 		Condition: teslaChargeUpgrade
 		Actors: ra2teslaUpgrade
+	GrantConditionOnPrerequisite@teslaChargeUpgrade:
+		Condition: teslaChargeUpgrade
+		Prerequisites: upcoilchargers
 	Power:
 		Amount: -100
 	RevealsShroud:
@@ -2770,6 +2797,7 @@ ra2teslaupgrade:
 		Queue: ra2tesla.upgrade
 		BuildDuration: 750
 		BuildDurationModifier: 100
+		Prerequisites: !upcoilchargers
 		Description: A group of Tesla Troopers will charge this Tesla Coil
 	Valued:
 		Cost: 2000
@@ -4777,7 +4805,7 @@ RA2DESO:
 		Name: Desolator
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~ra2naradr
+		Prerequisites: ~ra2naradr, upra2deso
 		Queue: Infantry, RAInfantry
 		Description: Radiological anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles\n Special Ability: Irradiation
 	Mobile:
@@ -4848,7 +4876,7 @@ RA2TERROR:
 		Name: Terrorist
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~ra2nahand
+		Prerequisites: ~ra2nahand, upra2terror
 		Queue: Infantry, RAInfantry
 		Description: Suicide bomber infantry.\n  Strong vs Infantry, Vehicles\n  Weak vs Defence, Aircraft\nExplodes when killed
 	Mobile:
@@ -4922,6 +4950,7 @@ ra2shk:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Inherits@tesla: ^RA2ArcTesla
 	AutoTargetPriority@DEFAULT:
 		InvalidTargets: NoAutoTarget, TeslaCoil
 	AutoTargetPriority@ATTACKANYTHING:
@@ -4952,7 +4981,15 @@ ra2shk:
 	Armament@PRIMARY:
 		Weapon: RA2PortaTesla
 		LocalOffset: 427,0,341
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !emptesla && !arctesla
+	Armament@PRIMARY2:
+		Weapon: RA2PortaTesla2
+		LocalOffset: 427,0,341
+		RequiresCondition: !rank-elite && emptesla && !arctesla
+	Armament@PRIMARY3:
+		Weapon: RA2PortaTesla3
+		LocalOffset: 427,0,341
+		RequiresCondition: !rank-elite && emptesla && arctesla
 	Armament@Elite:
 		Weapon: RA2PortaTeslaE
 		LocalOffset: 427,0,341
@@ -4965,8 +5002,18 @@ ra2shk:
 		LocalOffset: 427,0,341
 	Armament@GARRISONED:
 		Name: garrisoned
-		Weapon: RA2PortaTesla
-		RequiresCondition: !rank-elite
+		Weapon: RA2PortaTesla2
+		RequiresCondition: !rank-elite && !emptesla && !arctesla
+	Armament@GARRISONED2:
+		Name: garrisoned
+		Weapon: RA2PortaTesla2
+		LocalOffset: 427,0,341
+		RequiresCondition: !rank-elite && emptesla && !arctesla
+	Armament@GARRISONED3:
+		Name: garrisoned
+		Weapon: RA2PortaTesla3
+		LocalOffset: 427,0,341
+		RequiresCondition: !rank-elite && emptesla && arctesla
 	Armament@GARRISONEDELITE:
 		Name: garrisoned
 		Weapon: RA2PortaTeslaE
@@ -4983,6 +5030,9 @@ ra2shk:
 		Payload: 250
 	Selectable:
 		Class: ra2shk
+	GrantConditionOnPrerequisite@EMPTesla:
+		Condition: emptesla
+		Prerequisites: upemptesla
 
 ra2shk.bot:
 	Inherits: ra2shk
@@ -4997,6 +5047,7 @@ ra2shk.bot:
 		InvalidTargets: NoAutoTarget
 		ValidTargets: TeslaCoil
 	-Armament@PRIMARY:
+	-Armament@PRIMARY2:
 	-Armament@Elite:
 	Armament@TeslaCoilCharge:
 	Mobile:
@@ -6264,6 +6315,7 @@ RA2SMCV:
 	Inherits@anim: ^RA2Vehicle
 	Inherits@mcv: ^MCV
 	Inherits@SHADOWS: ^Shadows
+	Inherits@updrone: ^TerrorDroneSurprise
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -6311,6 +6363,8 @@ RA2HTNK:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@updrone: ^TerrorDroneSurprise
+	Inherits@rad: ^RA2RadShells
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -6342,7 +6396,7 @@ RA2HTNK:
 		LocalOffset: 1024,0,80
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upradshells
 	Armament@elite:
 		Name: primary
 		Weapon: RA2120mm_elite
@@ -6351,7 +6405,25 @@ RA2HTNK:
 		LocalOffset: 1024,0,80
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && !upradshells
+	Armament@rad:
+		Name: primary
+		Weapon: RA2120mm_rad
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite && upradshells
+	Armament@radelite:
+		Name: primary
+		Weapon: RA2120mm_elite_rad
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite && upradshells
 	AttackTurreted:
 	WithMuzzleOverlay:
 	SelectionDecorations:
@@ -6375,6 +6447,7 @@ RA2HTK:
 	Inherits@EMP: ^TurretEMP
 	Inherits@cargo: ^CargoVehicle
 	Inherits@bot: ^BotAutoDeployTransport
+	Inherits@updrone: ^TerrorDroneSurprise
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -6467,6 +6540,8 @@ RA2APOC:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@updrone: ^TerrorDroneSurprise
+	Inherits@rad: ^RA2RadShells
 	Valued:
 		Cost: 1750
 	Tooltip:
@@ -6500,7 +6575,16 @@ RA2APOC:
 		LocalOffset: 768,85,90, 768,-85,90
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upradshells
+	Armament@PRIMARYRAD:
+		Name: primary
+		Weapon: RA2120xmm_rad
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 768,85,90, 768,-85,90
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite && upradshells
 	Armament@SECONDARY:
 		Name: secondary
 		Weapon: RA2MammothTusk
@@ -6516,7 +6600,16 @@ RA2APOC:
 		LocalOffset: 768,85,90, 768,-85,90
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && upradshells
+	Armament@PRIMARYELITERAD:
+		Name: primary
+		Weapon: RA2120xmm_elite_rad
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 768,85,90, 768,-85,90
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite && upradshells
 	Armament@SECONDARYELITE:
 		Name: secondary
 		Weapon: RA2MammothTusk_elite
@@ -6546,6 +6639,7 @@ RA2V3:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Inherits@SHADOWS: ^InfantryShadows
+	Inherits@updrone: ^TerrorDroneSurprise
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 80
@@ -6612,6 +6706,7 @@ RA2V3:
 
 ra2v3rocket:
 	Inherits: ^ShootableMissile
+	Inherits@rad: ^RA2RadShells
 	Health:
 		HP: 25000
 	BallisticMissile:
@@ -6633,6 +6728,11 @@ ra2v3rocket:
 	SpawnedExplodes:
 		Weapon: RA2Scud
 		EmptyWeapon: RA2Scud
+		RequiresCondition: !upradshells
+	SpawnedExplodes@rad:
+		Weapon: RA2Scud_rad
+		EmptyWeapon: RA2Scud_rad
+		RequiresCondition: upradshells
 	RenderSprites:
 		Image: ra2v3rocket
 		PlayerPalette: playerra2
@@ -6645,6 +6745,8 @@ ra2v3rocketelite:
 	SpawnedExplodes:
 		Weapon: RA2SCUDELITE
 		EmptyWeapon: RA2SCUDELITE
+		-RequiresCondition:
+	-SpawnedExplodes@rad:
 
 RA2TTNK:
 	Inherits: ^Tank
@@ -6655,13 +6757,15 @@ RA2TTNK:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@SHADOWS: ^Shadows
+	Inherits@updrone: ^TerrorDroneSurprise
+	Inherits@tesla: ^RA2ArcTesla
 	Valued:
 		Cost: 1200
 	Tooltip:
 		Name: Tesla Tank
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~ra2naradr
+		Prerequisites: ~ra2naradr, upra2ttnk
 		Queue: Vehicle, RAVehicle
 		Description: Tank armed with tesla coils.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
 	Mobile:
@@ -6680,7 +6784,13 @@ RA2TTNK:
 		LocalOffset: 600,200,200, 600,-200,200
 		Recoil: 170
 		RecoilRecovery: 42
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !arctesla
+	Armament@PRIMARY2:
+		Weapon: RA2TankBolt2
+		LocalOffset: 600,200,200, 600,-200,200
+		Recoil: 170
+		RecoilRecovery: 42
+		RequiresCondition: !rank-elite && arctesla
 	Armament@ELITE:
 		Weapon: RA2TankBoltE
 		LocalOffset: 600,200,200, 600,-200,200
@@ -6707,6 +6817,7 @@ RA2HARV:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@SHADOWS: ^Shadows
+	Inherits@updrone: ^TerrorDroneSurprise
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -6764,7 +6875,7 @@ ra2dtruck:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 180
-		Prerequisites: ~ra2naradr
+		Prerequisites: ~ra2naradr, upra2dtruck
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -8076,6 +8187,7 @@ RA2ZEP:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@priority: ^PrioritizeBuilding
+	Inherits@rad: ^RA2RadShells
 	Valued:
 		Cost: 4000
 	Tooltip:
@@ -8095,17 +8207,25 @@ RA2ZEP:
 		CanSlide: False
 		IdealSeparation: 3000
 	Health:
-		HP: 1000000
+		HP: 500000
 	ChangesHealth@SelfHealing:
 		Step: 400
 	Armament@PRIMARY:
 		Weapon: RA2KirovBomb
 		LocalOffset: 256,0,-512
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upradshells
+	Armament@PRIMARYRAD:
+		Weapon: RA2KirovBomb_rad
+		LocalOffset: 256,0,-512
+		RequiresCondition: !rank-elite && upradshells
 	Armament@PRIMARYELITE:
 		Weapon: RA2KirovBombElite
 		LocalOffset: 0,0,0
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && !upradshells
+	Armament@PRIMARYELITERAD:
+		Weapon: RA2KirovBombElite_rad
+		LocalOffset: 0,0,0
+		RequiresCondition: rank-elite && upradshells
 	AttackAircraft:
 		Voice: Attack
 		AttackType: Strafe #Hover
@@ -8122,6 +8242,12 @@ RA2ZEP:
 	DeathSounds:
 	RenderSprites:
 		PlayerPalette: playerra2
+	GrantConditionOnPrerequisite@SuperKirov:
+		Condition: superkirov
+		Prerequisites: upsuperkirov
+	DamageMultiplier@superkirov:
+		Modifier: 50
+		RequiresCondition: superkirov
 
 yrschp:
 	Inherits: ^Helicopter
@@ -8131,6 +8257,7 @@ yrschp:
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@detect: ^GenericAirDetector
 	Inherits@bot: ^BotAutoDeploySwitchMode50
+	Inherits@rad: ^RA2RadShells
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -8173,13 +8300,25 @@ yrschp:
 		Name: primary
 		Weapon: RA160mm
 		LocalOffset: 410,0,650
-		RequiresCondition: !rank-elite && deployed
+		RequiresCondition: !rank-elite && deployed && !upradshells
 		Voice: DeployedAttack
 	Armament@DeployedElite:
 		Name: primary
 		Weapon: RA160mmE_elite
 		LocalOffset: 410,0,650
-		RequiresCondition: rank-elite && deployed
+		RequiresCondition: rank-elite && deployed && !upradshells
+		Voice: DeployedAttack
+	Armament@Deployedrad:
+		Name: primary
+		Weapon: RA160mm_rad
+		LocalOffset: 410,0,650
+		RequiresCondition: !rank-elite && deployed && upradshells
+		Voice: DeployedAttack
+	Armament@DeployedEliterad:
+		Name: primary
+		Weapon: RA160mmE_elite_rad
+		LocalOffset: 410,0,650
+		RequiresCondition: rank-elite && deployed && upradshells
 		Voice: DeployedAttack
 	RenderRangeCircle:
 		RangeCircleType: vehicle
@@ -8891,7 +9030,7 @@ yrbpln:
 	Tooltip:
 		Name: MiG Bomber
 	Valued:
-		Cost: 3000
+		Cost: 1500
 	Health:
 		HP: 100000
 	ChangesHealth@SelfHealing:
@@ -8922,9 +9061,15 @@ yrbpln:
 	Contrail@1:
 		Offset: -640,171,0
 		TrailLength: 15
+		StartWidth: 0c96
+		StartColor: DD0000
+		StartColorUsePlayerColor: false
 	Contrail@2:
 		Offset: -640,-171,0
 		TrailLength: 15
+		StartWidth: 0c96
+		StartColor: DD0000
+		StartColorUsePlayerColor: false
 	AirstrikeSlaveCA:
 		LandingDistance: 1c0
 	SpawnActorOnDeath:
@@ -8939,23 +9084,69 @@ yrbpln:
 	-ExternalCondition@EMP:
 
 yrbpln1:
-	Inherits: yrbpln
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^BomberTemplate
+	-BodyOrientation:
+	Inherits@Voxel: ^RenderVoxel
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Selectable:
+	Tooltip:
+		Name: MiG Bomber
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~ra2naweap, ra2naradr, upra2mig
+		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
+		#BuildDuration: 800
+		Description: Jet bomber.
+	Valued:
+		Cost: 2000
+	Health:
+		HP: 75000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	HitShape:
+	Voiced:
+		VoiceSet: MiGVoice
+	DeathSounds:
 	Aircraft:
-		Speed: 350
-	RenderSprites:
-		Image: yrbpln
+		TurnSpeed: 17
+		Speed: 250
+		IdleTurnSpeed: 17
+		IdleSpeed: 180
+		RepulsionSpeed: 3
+	AttackAircraft:
+		Voice: Attack
+		FacingTolerance: 100
+	Armament:
+		Name: primary
+		Weapon: MigMissiles
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 50, -50, 25, -25
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 4
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 66
+		Count: 1
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 4
+	WithMuzzleOverlay:
+	Contrail@1:
+		Offset: -640,171,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -640,-171,0
+		TrailLength: 15
+	SpawnActorOnDeath:
+		Actor: yrbpln.husk
+	WithVoxelBody:
+	-WithShadow:
 	RenderVoxels:
 		Image: yrbpln
-
-yrbpln2:
-	Inherits: yrbpln
-	Aircraft:
-		Speed: 367
-	RenderSprites:
-		Image: yrbpln
-	RenderVoxels:
-		Image: yrbpln
-
 
 ####################################################################################################
 #		Red Alert 2 TechBuilding
@@ -11034,3 +11225,185 @@ ra2shkhero:
 		Delay: 50
 		StartIfBelow: 100
 		DamageCooldown: 125
+
+# RA2 Promotions
+## Soviets
+### Tesla tree
+
+upemptesla:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: EMP Tesla Weapons
+	Buildable:
+		BuildPaletteOrder: 61
+		Queue: Promotions
+		Description: Tesla weapons will shut down vehicles.
+		Prerequisites: ~ra2nacnst, !upemptesla, rank1
+	RenderSprites:
+		Image: ra2shk
+	ProvidesPrerequisite:
+
+upra2ttnk:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Tesla Tank
+	Buildable:
+		BuildPaletteOrder: 64
+		Queue: Promotions
+		Description: Allows construction of the Tesla Tank.
+		Prerequisites: ~ra2nacnst, upemptesla, !upra2ttnk, rank1
+	RenderSprites:
+		Image: ra2ttnk
+	ProvidesPrerequisite:
+
+uparctesla:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Tesla Arcing
+	Buildable:
+		BuildPaletteOrder: 67
+		Queue: Promotions
+		Description: Allows tesla bolts to jump to nearby targets.
+		Prerequisites: ~ra2nacnst, upra2ttnk, rank1
+	RenderSprites:
+		Image: ra2ttnk
+	ProvidesPrerequisite:
+
+^RA2ArcTesla:
+	GrantConditionOnPrerequisite@TeslaArc:
+		Condition: arctesla
+		Prerequisites: uparctesla
+
+upcoilchargers:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Tesla Coil Chargers
+	Buildable:
+		BuildPaletteOrder: 70
+		Queue: Promotions
+		Description: Provide all Tesla Coils with chargers.
+		Prerequisites: ~ra2nacnst, uparctesla, rank1
+	RenderSprites:
+		Image: ra2tesla
+	ProvidesPrerequisite:
+
+### Radiation tree
+
+upra2terror:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Terrorist
+	Buildable:
+		BuildPaletteOrder: 62
+		Queue: Promotions
+		Description: Allows training of the Terrorist.
+		Prerequisites: ~ra2nacnst, !upterrorist, rank1
+	RenderSprites:
+		Image: ra2terror
+	ProvidesPrerequisite:
+
+upra2deso:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Desolator
+	Buildable:
+		BuildPaletteOrder: 65
+		Queue: Promotions
+		Description: Allows training of the Desolator. Infantry becomes immune to radiation.
+		Prerequisites: ~ra2nacnst, upterrorist, !upra2deso, rank1
+	RenderSprites:
+		Image: ra2deso
+	ProvidesPrerequisite:
+
+upra2dtruck:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Demo Truck
+	Buildable:
+		BuildPaletteOrder: 68
+		Queue: Promotions
+		Description: Allows construction of the Demo Truck.
+		Prerequisites: ~ra2nacnst, upra2deso, !upra2dtruck, rank1
+	RenderSprites:
+		Image: ra2dtruck
+	ProvidesPrerequisite:
+
+upradshells:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Nuclear Munitions
+	Buildable:
+		BuildPaletteOrder: 71
+		Queue: Promotions
+		Description: Soviet vehicle weapons leave radiation.
+		Prerequisites: ~ra2nacnst, upra2dtruck, rank1
+	RenderSprites:
+	ProvidesPrerequisite:
+
+^RA2RadShells:
+	GrantConditionOnPrerequisite@DroneSurprise:
+		Condition: upradshells
+		Prerequisites: upradshells
+
+### Industry tree
+
+upra2mig:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock MiG Bomber
+	Buildable:
+		BuildPaletteOrder: 63
+		Queue: Promotions
+		Description: Allows construction of the MiG Bomber.
+		Prerequisites: ~ra2nacnst, !upra2mig, rank1
+	RenderSprites:
+		Image: mig
+	ProvidesPrerequisite:
+
+updronesurprise:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Terror Drone Surprise
+	Buildable:
+		BuildPaletteOrder: 66
+		Queue: Promotions
+		Description: Vehicles have a chance of releasing a Terror Drone on destruction.
+		Prerequisites: ~ra2nacnst, upra2mig, !updronesurprise, rank1
+	RenderSprites:
+		Image: ra2dron
+	ProvidesPrerequisite:
+
+^TerrorDroneSurprise:
+	GrantConditionOnPrerequisite@DroneSurprise:
+		Condition: dronesurprise
+		Prerequisites: updronesurprise
+	SpawnActorOnDeath@DroneSurprise:
+		Probability: 50
+		Actor: ra2dron
+		RequiresCondition: dronesurprise && !chronobeamed
+
+upyrngindp:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Industrial Plant
+	Buildable:
+		BuildPaletteOrder: 69
+		Queue: Promotions
+		Description: Enables construction of the Industrial Plant.
+		Prerequisites: ~ra2nacnst, upra2mig, rank1
+	RenderSprites:
+		Image: yrngindp
+	ProvidesPrerequisite:
+
+upsuperkirov:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Super Kirov
+	Buildable:
+		BuildPaletteOrder: 72
+		Queue: Promotions
+		Description: Upgrades the Kirov to have increased armor and AA capability.
+		Prerequisites: ~ra2nacnst, upyrngindp, rank1
+	RenderSprites:
+		Image: ra2zep
+	ProvidesPrerequisite:
