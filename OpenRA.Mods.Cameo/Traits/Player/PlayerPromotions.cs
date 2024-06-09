@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Mods.Common.Traits;
@@ -17,9 +18,7 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.Cameo.Traits
 {
 	[TraitLocation(SystemActors.Player)]
-	[Desc("This trait can be used to track player experience based on units killed with the `" + nameof(GivesPromotionProgress) + "` trait.",
-		"It can also be used as a point score system in scripted maps, for example.",
-		"Attach this to the player actor.")]
+	[Desc("Tracks player experience and grants points based on levels.")]
 	public class PlayerPromotionsInfo : TraitInfo, ILobbyOptions
 	{
 		[FieldLoader.Require]
@@ -34,9 +33,6 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		[GrantedConditionReference]
 		public IEnumerable<string> LinterConditions => Conditions.Values;
-
-		[Desc("Initial experience to start with.")]
-		public readonly int InitialProgress = 0;
 
 		[Desc("Image for the level up sprite.")]
 		public readonly string LevelUpImage = null;
@@ -101,7 +97,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		public override object Create(ActorInitializer init) { return new PlayerPromotions(init, this); }
 	}
 
-	public class PlayerPromotions : INotifyCreated, ISync
+	public class PlayerPromotions : INotifyCreated, ISync, INotifyPlayerExperience
 	{
 		readonly Actor self;
 		readonly PlayerPromotionsInfo Info;
@@ -150,12 +146,12 @@ namespace OpenRA.Mods.Cameo.Traits
 			for (int i = 0; i < Ranks.Count; ++i)
 				Ranks[i] = TranslationProvider.GetString(Ranks[i]);
 
-			GiveExperience(Info.InitialProgress);
+			LevelUp();
 		}
 
-		public void GiveExperience(int num)
+		void INotifyPlayerExperience.OnGainsExperience(OpenRA.Actor player, int exp)
 		{
-			Experience += num;
+			Experience += exp;
 			while (currentLevel < MaxLevel && Experience >= nextLevel[currentLevel].RequiredExperience)
 			{
 				LevelUp();
