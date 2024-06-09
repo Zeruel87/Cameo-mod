@@ -146,6 +146,7 @@ namespace OpenRA.Mods.Cameo.Traits
 				{
 					var teamTotal = 0;
 					var playerMoney = 0;
+					var comeBack = 0;
 
 					if (team.Count <= 1)
 						continue;
@@ -167,13 +168,15 @@ namespace OpenRA.Mods.Cameo.Traits
 					foreach (var playerResources in team)
 					{
 						playerMoney = playerResources.GetCashAndResources();
+						comeBack = 0;
 
 						if (playerMoney <= threshold)
 						{
 							playerMoney = Common.Util.ApplyPercentageModifiers(playerMoney, modifier);
+							comeBack = 1;
 						}
 
-						playerResources.ChangeCash(Common.Util.ApplyPercentageModifiers((cashMean - (playerMoney)), modifier));
+						playerResources.ChangeCash(Common.Util.ApplyPercentageModifiers((cashMean - (playerMoney)), modifier)+comeBack);
 					}
 
 				}
