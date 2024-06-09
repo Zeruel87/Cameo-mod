@@ -4965,6 +4965,20 @@ CPQDEBUGDUMMY:
 		InfiltratedNotification: BuildingInfiltrated
 		InfiltrationNotification: BuildingInfiltrated
 
+^InfiltrateForDisable:
+	GrantConditionOnInfiltration:
+		Types: SpyInfiltrate
+		Condition: infiltrated
+		Duration: 500
+	GrantCondition@INFILTRATED:
+		RequiresCondition: infiltrated
+		Condition: disabled
+	TimedConditionBar@INFILTRATED:
+		Condition: infiltrated
+		Color: 0088FF
+	Targetable@SpyInfiltrate:
+		TargetTypes: SpyInfiltrate
+
 ^ProducesUnits:
 	Buildable:
 		BuildDurationModifier: 25
@@ -5032,20 +5046,21 @@ CPQDEBUGDUMMY:
 		DeathType: 2100ResearchSteal
 
 ^IsTechnoBuilding:
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Inherits@SPY: ^InfiltrateForDisable
 	Buildable:
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-	InfiltrateForSupportPower@SpyInfiltrate:
-		Proxy: techbuilding.upgraded
-		Types: SpyInfiltrate
-	Targetable@SpyInfiltrate:
-		TargetTypes: SpyInfiltrate
+	ProvidesPrerequisite@buildingname:
+		RequiresCondition: !(lowpower || powerdown || infiltrated)
 	SpawnActorOnDeath@2100ResearchSteal:
 		Probability: 50
 		Actor: 2100artifact
 		DeathType: 2100ResearchSteal
 
 ^RadarBuilding:
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Inherits@SPY: ^InfiltrateForDisable
 	RevealsShroud:
 		Range: 10c0
 		RequiresCondition: !disabled
@@ -5060,6 +5075,8 @@ CPQDEBUGDUMMY:
 		RequiresCondition: !jammed && !disabled
 	ExternalCondition@JAMMED:
 		Condition: jammed
+	ProvidesPrerequisite@buildingname:
+		RequiresCondition: !(lowpower || powerdown || infiltrated)
 
 ####################################################################################################
 #		Generals
