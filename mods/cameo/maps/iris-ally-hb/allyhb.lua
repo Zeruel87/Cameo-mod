@@ -80,7 +80,7 @@ WorldLoaded = function ()
 	Nitro = Player.GetPlayer("Nitro")
 	NitroJP = Player.GetPlayer("NitroJP")
 	Neutral = Player.GetPlayer("Neutral")
-	WorldLoadedGeneralsPromotions()
+	-- WorldLoadedGeneralsPromotions()
 
 	InitObjectives(NewHopeOne)
 	InitObjectives(NewHopeTwo)
@@ -178,5 +178,5 @@ SendLargeWaves = function ()
 end
 
 Tick = function ()
-	TickPromotions()
+	-- TickPromotions()
 end
