@@ -3130,11 +3130,8 @@
 		Condition: disabled
 		RequiresCondition: ((empdisable || chronobeamed || diskdrain || being-captured) && !invulnerability) || lowpower || build-incomplete
 
-^DisableOnLowPowerOrPowerDown:
-	Inherits: ^DisableOnLowPower
-	GrantCondition@disable:
-		Condition: disabled
-		RequiresCondition: ((empdisable || chronobeamed || diskdrain || being-captured) && !invulnerability) || (lowpower || powerdown) || build-incomplete
+^DisableOnPowerDown:
+	Inherits: ^DisabledOverlay
 	WithDecoration@POWERDOWN:
 		Image: poweroff
 		Sequence: offline
@@ -3151,6 +3148,16 @@
 		EnabledSound: DisablePower
 		Condition: powerdown
 		OrderName: PowerDown
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: ((empdisable || chronobeamed || diskdrain || being-captured) && !invulnerability) || powerdown || build-incomplete
+
+^DisableOnLowPowerOrPowerDown:
+	Inherits: ^DisableOnLowPower
+	Inherits@2: ^DisableOnPowerDown
+	GrantCondition@disable:
+		Condition: disabled
+		RequiresCondition: ((empdisable || chronobeamed || diskdrain || being-captured) && !invulnerability) || (lowpower || powerdown) || build-incomplete
 
 ^SelectableCombatUnit:
 	Selectable:
@@ -5046,13 +5053,13 @@ CPQDEBUGDUMMY:
 		DeathType: 2100ResearchSteal
 
 ^IsTechnoBuilding:
-	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Inherits@IDISABLE: ^DisableOnPowerDown
 	Inherits@SPY: ^InfiltrateForDisable
 	Buildable:
 		BuildDuration: 1500
 		BuildDurationModifier: 100
 	ProvidesPrerequisite@buildingname:
-		RequiresCondition: !(lowpower || powerdown || infiltrated)
+		RequiresCondition: !(powerdown || infiltrated)
 	SpawnActorOnDeath@2100ResearchSteal:
 		Probability: 50
 		Actor: 2100artifact
@@ -5076,7 +5083,7 @@ CPQDEBUGDUMMY:
 	ExternalCondition@JAMMED:
 		Condition: jammed
 	ProvidesPrerequisite@buildingname:
-		RequiresCondition: !(lowpower || powerdown || infiltrated)
+		RequiresCondition: !(powerdown || infiltrated)
 
 ####################################################################################################
 #		Generals
