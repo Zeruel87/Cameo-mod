@@ -148,10 +148,9 @@ namespace OpenRA.Mods.CA.Traits
 			var offsetedTarget = Target.FromPos(target.CenterPosition + receiverTrait.info.ReceiverOffset);
 
 			var supportArmament = self.TraitsImplementing<Armament>().First(a => a.Info.Name == info.SupportArmament);
-			supportArmament.CheckFire(self, facing, offsetedTarget);
 
-			// Grant the buff condition
-			receiverTrait.AddBuffStack(buffReceiver);
+			if (supportArmament.CheckFire(self, facing, offsetedTarget))
+				receiverTrait.AddBuffStack(buffReceiver);
 		}
 
 		// Check if self can reach target with the support armament.

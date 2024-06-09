@@ -1038,7 +1038,7 @@ ra2gaairc:
 	ParatroopersPower@ra2paratroopers:
 		PauseOnCondition: disabled
 		Prerequisites:
-			1: RA2America
+			1: upra2airborne
 		OrderName: USA Paratroopers
 		Icons:
 			1: paratroopers
@@ -1113,7 +1113,7 @@ ra2gaorep:
 		BuildPaletteOrder: 120
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Prerequisites: ~ra2gacnst, ra2gatech
+		Prerequisites: ~ra2gacnst, ra2gatech, ~ra2gaorep
 		Queue: Building, RABuilding
 		Description: Increases income from minerals by 25%.
 		BuildLimit: 1
@@ -1188,6 +1188,7 @@ ra2gatech:
 	Inherits@shape: ^3x2Shape
 	Inherits@sell: ^RA2ASpawnActorsOnSell
 	Inherits@tech: ^IsTechnoBuilding
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Selectable:
 		Bounds: 3072, 2048, 0, -256
 	Buildable:
@@ -1216,6 +1217,35 @@ ra2gatech:
 		Prerequisite: ra2tek
 	WithIdleOverlay@lights:
 		Sequence: idle-lights
+	GrantExternalConditionPower@forceshield:
+		OrderName: ForceShield
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: upforceshield
+		Icons:
+			1: forceshield
+		ChargeInterval: 4500
+		Names:
+			1: Force Shield
+		Descriptions:
+			1: Makes selected buildings invulnerable.
+		Durations:
+			1: 375
+		Conditions:
+			1: forceshield
+		Dimensions:
+			1: 7,7
+		Footprints:
+			1: ___x___ __xxx__ _xxxxx_ xxxxxxx _xxxxx_ __xxx__ ___x___
+		OnFireSound: sforceon.wav
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		EndChargeSpeechNotification: 
+		EndChargeTextNotification: Force shield ready.
+		LaunchSpeechNotification: 
+		LaunchTextNotification: Warning: Force shield activated.
+		IncomingSpeechNotification: 
+		IncomingTextNotification: Warning: Force shield activated.
 
 yrgarobo:
 	Inherits: ^RA2Building
@@ -1229,7 +1259,7 @@ yrgarobo:
 		BuildPaletteOrder: 140
 		BuildDuration: 750
 		BuildDurationModifier: 100
-		Prerequisites: ~ra2gacnst, ra2gatech
+		Prerequisites: ~ra2gacnst, ra2gatech, ~upyrrobo
 		Description: Unlocks and controls Robot Tanks.
 	Valued:
 		Cost: 1000
@@ -1658,10 +1688,14 @@ ra2atesla:
 		PauseOnCondition: disabled
 	WithPrismChargeAnimation:
 		ChargeSequence: active
+	GrantConditionOnPrerequisite@prismcharge:
+		Condition: upprismchain
+		Prerequisites: upprismchain
 	Armament@Charge:
 		Name: support
 		Weapon: PrismCharge
 		LocalOffset: 0,0,1280
+		RequiresCondition: upprismchain
 	#Armament@beam1:
 	#	Weapon: RA2PrismBeam
 	#	LocalOffset: 0,0,1280
@@ -1730,7 +1764,7 @@ ra2gtgcan:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 50
-		Prerequisites: ~ra2gacnst, ra2gatech
+		Prerequisites: ~ra2gacnst, ra2gatech, ~upra2gtgcan
 		Description: Long range anti-ground defense.\nRequires power to operate
 	Valued:
 		Cost: 4000
@@ -2263,11 +2297,12 @@ ra2natech:
 	Inherits@shape: ^3x3Shape
 	Inherits@sell: ^RA2SSpawnActorsOnSell
 	Inherits@tech: ^IsTechnoBuilding
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 150
 		Prerequisites: ~ra2nacnst, ra2naradr
-		Description: Provides Soviet advanced technologies and support power.
+		Description: Provides Soviet advanced technologies and paratroopers.
 	Valued:
 		Cost: 4000
 	Tooltip:
@@ -3943,9 +3978,15 @@ RA2E1:
 	WithRangeCircle:
 		Range: 7333
 		RequiresCondition: deployed
+	GrantConditionOnPrerequisite@upgrade:
+		Condition: upra2gi
+		Prerequisites: upra2gi
 	Armament@PRIMARY:
 		Weapon: RA2M60
-		RequiresCondition: !deployed
+		RequiresCondition: !deployed && !upra2gi
+	Armament@PRIMARY2:
+		Weapon: RA2para
+		RequiresCondition: !deployed && upra2gi
 	Armament@DEPLOYED:
 		Name: deployed
 		Weapon: RA2para
@@ -3964,6 +4005,12 @@ RA2E1:
 		PauseOnCondition: disabled
 		RequiresCondition: deployed
 		Voice: Attack
+	RangeMultiplier@deployed:
+		Modifier: 133
+		RequiresCondition: deployed
+	DamageMultiplier@deployed:
+		Modifier: 75
+		RequiresCondition: deployed && upra2gi
 	Turreted:
 		Turret: deploy
 		RealignDelay: -1
@@ -4010,10 +4057,10 @@ RA2E1:
 	TakeCover:
 		RequiresCondition: undeployed
 	Crushable:
-		RequiresCondition: undeployed
+		RequiresCondition: undeployed || (deployed && !upra2gi)
 	Crushable@deployed:
 		CrushClasses: vehicle
-		RequiresCondition: !undeployed
+		RequiresCondition: !undeployed && upra2gi
 	Voiced:
 		VoiceSet: GIVoice
 	DeliversCash:
@@ -4055,12 +4102,18 @@ YRGGI:
 		RequiresCondition: deployed
 	RevealOnFire:
 		ArmamentNames: primary, deployed
+	GrantConditionOnPrerequisite@upgrade:
+		Condition: upra2gi
+		Prerequisites: upra2gi
 	Armament@PRIMARY:
+		Weapon: RA2M60
+		RequiresCondition: !deployed && !rank-elite && !upra2gi
+	Armament@PRIMARY2:
 		Weapon: GuardianGIMG
-		RequiresCondition: !deployed && !rank-elite
-	Armament@ELITE:
+		RequiresCondition: !deployed && ((rank-elite && !upra2gi) || upra2gi)
+	Armament@ELITE2:
 		Weapon: GuardianGIMGE
-		RequiresCondition: !deployed && rank-elite
+		RequiresCondition: !deployed && rank-elite && upra2gi
 	Armament@BOTAA:
 		Weapon: aadeploytargeting.8c0
 		Name: targeting
@@ -4148,6 +4201,9 @@ YRGGI:
 	Crushable@deployed:
 		CrushClasses: vehicle
 		RequiresCondition: !undeployed
+	DamageMultiplier@deployed:
+		Modifier: 75
+		RequiresCondition: deployed && upra2gi
 	Voiced:
 		VoiceSet: GGIVoice
 	DeliversCash:
@@ -4242,7 +4298,7 @@ RA2SNIPE:
 		Name: Sniper
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~ra2gaairc
+		Prerequisites: ~ra2gaairc, ~upra2snipe
 		Queue: Infantry, RAInfantry
 		Description: Special anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
 	Mobile:
@@ -4396,7 +4452,7 @@ RA2SEAL:
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 120
-		Prerequisites: ~ra2gatech
+		Prerequisites: ~ra2gatech, ~upra2seal
 		Description: Amphibious commando infantry.\nCan plant timed bombs on ships\nCan demolish buildings with C4\n Strong vs Infantry, Buildings, Ships\n Weak vs Vehicles, Aircraft
 	Armament@PRIMARY:
 		Weapon: RA2MP5
@@ -4805,7 +4861,7 @@ RA2DESO:
 		Name: Desolator
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~ra2naradr, upra2deso
+		Prerequisites: ~ra2naradr, ~upra2deso
 		Queue: Infantry, RAInfantry
 		Description: Radiological anti-infantry unit.\n  Strong vs Infantry\n  Weak vs Vehicles\n Special Ability: Irradiation
 	Mobile:
@@ -4876,7 +4932,7 @@ RA2TERROR:
 		Name: Terrorist
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~ra2nahand, upra2terror
+		Prerequisites: ~ra2nahand, ~upra2terror
 		Queue: Infantry, RAInfantry
 		Description: Suicide bomber infantry.\n  Strong vs Infantry, Vehicles\n  Weak vs Defence, Aircraft\nExplodes when killed
 	Mobile:
@@ -5765,7 +5821,7 @@ RA2TNKD:
 		Name: Tank Destroyer
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~ra2gaairc
+		Prerequisites: ~upra2tnkd, #~ra2gaairc
 		Queue: Vehicle, RAVehicle
 		Description: Allied anti-tank vehicle.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
 	Mobile:
@@ -6765,7 +6821,7 @@ RA2TTNK:
 		Name: Tesla Tank
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~ra2naradr, upra2ttnk
+		Prerequisites: ~ra2naradr, ~upra2ttnk
 		Queue: Vehicle, RAVehicle
 		Description: Tank armed with tesla coils.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
 	Mobile:
@@ -6875,7 +6931,7 @@ ra2dtruck:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 180
-		Prerequisites: ~ra2naradr, upra2dtruck
+		Prerequisites: ~ra2naradr, ~upra2dtruck
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -8456,7 +8512,7 @@ RA2BEAG:
 	Tooltip:
 		Name: Black Eagle
 	Buildable:
-		Prerequisites: ~ra2gatech
+		Prerequisites: ~ra2gatech, ~upra2beag
 	Aircraft:
 		CruiseAltitude: 2560
 		TurnSpeed: 10
@@ -8795,6 +8851,15 @@ ra2rock:
 		Modifier: 40
 	RenderSprites:
 		PlayerPalette: playerra2
+	ReloadDelayMultiplier@upgrade:
+		Modifier: 66
+		RequiresCondition: upra2rock
+	DamageMultiplier@upgrade:
+		Modifier: 75
+		RequiresCondition: upra2rock
+	GrantConditionOnPrerequisite@Upgrade:
+		Condition: upra2rock
+		Prerequisites: upra2rock
 
 ra2rock.husk:
 	Inherits: ^HelicopterHusk
@@ -9095,7 +9160,7 @@ yrbpln1:
 		Name: MiG Bomber
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ~ra2naweap, ra2naradr, upra2mig
+		Prerequisites: ~ra2naweap, ~ra2naradr, ~upra2mig
 		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
 		#BuildDuration: 800
 		Description: Jet bomber.
@@ -11297,7 +11362,7 @@ upra2terror:
 		BuildPaletteOrder: 62
 		Queue: Promotions
 		Description: Allows training of the Terrorist.
-		Prerequisites: ~ra2nacnst, !upterrorist, rank1
+		Prerequisites: ~ra2nacnst, !upra2terror, rank1
 	RenderSprites:
 		Image: ra2terror
 	ProvidesPrerequisite:
@@ -11310,7 +11375,7 @@ upra2deso:
 		BuildPaletteOrder: 65
 		Queue: Promotions
 		Description: Allows training of the Desolator. Infantry becomes immune to radiation.
-		Prerequisites: ~ra2nacnst, upterrorist, !upra2deso, rank1
+		Prerequisites: ~ra2nacnst, upra2terror, !upra2deso, rank1
 	RenderSprites:
 		Image: ra2deso
 	ProvidesPrerequisite:
@@ -11390,7 +11455,7 @@ upyrngindp:
 		BuildPaletteOrder: 69
 		Queue: Promotions
 		Description: Enables construction of the Industrial Plant.
-		Prerequisites: ~ra2nacnst, upra2mig, rank1
+		Prerequisites: ~ra2nacnst, updronesurprise, rank1
 	RenderSprites:
 		Image: yrngindp
 	ProvidesPrerequisite:
@@ -11406,4 +11471,170 @@ upsuperkirov:
 		Prerequisites: ~ra2nacnst, upyrngindp, rank1
 	RenderSprites:
 		Image: ra2zep
+	ProvidesPrerequisite:
+
+## Allies
+
+### Infantry tree
+
+upra2airborne:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Airborne
+	Buildable:
+		BuildPaletteOrder: 73
+		Icon: paratroopers
+		Queue: Promotions
+		Description: Allows paratroopers to be accessed from the Airforce Command.
+		Prerequisites: ~ra2gacnst, !upra2airborne, rank1
+	RenderSprites:
+		Image: icon
+	ProvidesPrerequisite:
+
+upra2seal:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock SEAL
+	Buildable:
+		BuildPaletteOrder: 76
+		Queue: Promotions
+		Description: Allows training of SEALs.
+		Prerequisites: ~ra2gacnst, upra2airborne, rank1
+	RenderSprites:
+		Image: ra2seal
+	ProvidesPrerequisite:
+
+upra2snipe:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Sniper
+	Buildable:
+		BuildPaletteOrder: 79
+		Queue: Promotions
+		Description: Allows training of Snipers.
+		Prerequisites: ~ra2gacnst, upra2seal, rank1
+	RenderSprites:
+		Image: ra2snipe
+	ProvidesPrerequisite:
+
+upra2gi:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Upgrade GIs
+	Buildable:
+		BuildPaletteOrder: 82
+		Queue: Promotions
+		Description: Upgrade GI undeployed weapons and deployment armor.
+		Prerequisites: ~ra2gacnst, upra2snipe, rank1
+	RenderSprites:
+		Image: ra2e1
+	ProvidesPrerequisite:
+
+### Offensive tree
+
+upra2tnkd:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Tank Destroyer
+	Buildable:
+		BuildPaletteOrder: 74
+		Queue: Promotions
+		Description: Allows construction of the Tank Destroyer.
+		Prerequisites: ~ra2gacnst, !upra2tnkd, rank1
+	RenderSprites:
+		Image: ra2tnkd
+	ProvidesPrerequisite:
+
+upra2rock:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Upgrade Rocketeers
+	Buildable:
+		BuildPaletteOrder: 77
+		Queue: Promotions
+		Description: Upgrades the Rocketeer to fire faster and take less damage.
+		Prerequisites: ~ra2gacnst, upra2tnkd, rank1
+	RenderSprites:
+		Image: ra2rock
+	ProvidesPrerequisite:
+
+upyrrobo:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Robot Tanks
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Promotions
+		Description: Enables the Robot Control Center and Robot Tanks.
+		Prerequisites: ~ra2gacnst, upra2rock, rank1
+	RenderSprites:
+		Image: yrrobo
+	ProvidesPrerequisite:
+
+upra2beag:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Black Eagle
+	Buildable:
+		BuildPaletteOrder: 83
+		Queue: Promotions
+		Description: Allows construction of the Black Eagle.
+		Prerequisites: ~ra2gacnst, upyrrobo, rank1
+	RenderSprites:
+		Image: ra2beag
+	ProvidesPrerequisite:
+
+### Defensive tree
+
+upprismchain:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Prism Chaining
+	Buildable:
+		BuildPaletteOrder: 75
+		Queue: Promotions
+		Description: Allows Prism Towers to chain, boosting damage.
+		Prerequisites: ~ra2gacnst, !upprismchain, rank1
+	RenderSprites:
+		Image: ra2atesla
+	ProvidesPrerequisite:
+
+upforceshield:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Force Shield
+	Buildable:
+		Icon: forceshield
+		BuildPaletteOrder: 78
+		Queue: Promotions
+		Description: Enables the Force Shield power from the Battle Lab.
+		Prerequisites: ~ra2gacnst, upprismchain, rank1
+	RenderSprites:
+		Image: icon
+	ProvidesPrerequisite:
+
+upra2gaorep:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Ore Purifier
+	Buildable:
+		BuildPaletteOrder: 81
+		Queue: Promotions
+		Description: Allows construction of the Ore Purifier.
+		Prerequisites: ~ra2gacnst, upforceshield, rank1
+	RenderSprites:
+		Image: ra2gaorep
+	ProvidesPrerequisite:
+
+upra2gtgcan:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Grand Cannon
+	Buildable:
+		BuildPaletteOrder: 84
+		Queue: Promotions
+		Description: Allows construction of the Grand Cannon.
+		Prerequisites: ~ra2gacnst, upra2gaorep, rank1
+	RenderSprites:
+		Image: ra2gtgcan
 	ProvidesPrerequisite:
