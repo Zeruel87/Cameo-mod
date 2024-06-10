@@ -3292,6 +3292,12 @@ ra2napsis:
 	SupportPowerChargeBar:
 	Power:
 		Amount: -50
+	GrantConditionOnPrerequisite@upgrade:
+		Condition: mindread
+		Prerequisites: upyrnapsis
+	RangedGpsProvider:
+		Range: 25c0
+		RequiresCondition: mindread && !disabled
 
 yuriinvisibleplane:
 	Inherits: U2
@@ -3341,7 +3347,7 @@ ra2yclon:
 	Tooltip:
 		Name: Yuri Cloning Vats
 	Buildable:
-		Prerequisites: ~yrnacnst, yrygtech
+		Prerequisites: ~yrnacnst, yrygtech, ~upyryaclon
 		Queue: Building, RABuilding
 	Production:
 		Produces: Clone.Yuri
@@ -3633,6 +3639,7 @@ yrygggun:
 	Inherits@RenderVoxel: ^RenderVoxel
 	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
+	Inherits@UpGat: ^YuriGatlingUpgrade
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
@@ -3734,6 +3741,7 @@ yrygpsyt:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Inherits@turret: ^TurretEMP
+	Inherits@mccap: ^MindControlCap
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 80
@@ -3757,6 +3765,14 @@ yrygpsyt:
 		TicksToControl: 30
 		Capacity: 3
 		RequiresCondition: !disabled
+	MindControllerCapacityModifier@MCCap:
+		Amount: 3
+	ReloadDelayMultiplier@MCCap:
+		Modifier: 75
+		RequiresCondition: upmccap
+	RangeMultiplier@MCCap:
+		Modifier: 114
+		RequiresCondition: upmccap
 	RenderRangeCircle:
 		RangeCircleType: mindcontrol
 		Color: 663399b0
@@ -5105,6 +5121,12 @@ YRINIT:
 		VoiceSet: InitiateVoice
 	DeliversCash:
 		Payload: 100
+	GrantConditionOnPrerequisite@upgrade:
+		Condition: upyrinit
+		Prerequisites: upyrinit
+	RangeMultiplier@upgrade:
+		Modifier: 120
+		RequiresCondition: upyrinit
 
 YRBRUTE:
 	Inherits: ^Soldier
@@ -5127,7 +5149,7 @@ YRBRUTE:
 	Mobile:
 		Speed: 80
 	Health:
-		HP: 45000
+		HP: 40000
 	ChangesHealth@SelfHealing:
 		Step: 18
 	Armament@PRIMARY:
@@ -5150,6 +5172,12 @@ YRBRUTE:
 	-TakeCover:
 	Targetable@dog:
 		TargetTypes: DogImmune
+	DamageMultiplier@upgrade:
+		Modifier: 80
+		RequiresCondition: upyrbrute
+	GrantConditionOnPrerequisite@upgrade:
+		Condition: upyrbrute
+		Prerequisites: upyrbrute
 
 YRSLAV:
 	Inherits: ^Soldier
@@ -5242,14 +5270,21 @@ YRVIRUS:
 		HP: 10000
 	Armament@PRIMARY:
 		Weapon: RA2Virusgun
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upyrvirus
+	Armament@PRIMARY2:
+		Weapon: RA2Virusgun2
+		RequiresCondition: !rank-elite && upyrvirus
 	Armament@ELITE:
 		Weapon: RA2VirusgunE
 		RequiresCondition: rank-elite
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: RA2Virusgun
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upyrvirus
+	Armament@GARRISONED2:
+		Name: garrisoned
+		Weapon: RA2Virusgun2
+		RequiresCondition: !rank-elite && upyrvirus
 	Armament@GARRISONEDELITE:
 		Name: garrisoned
 		Weapon: RA2VirusgunE
@@ -5262,6 +5297,9 @@ YRVIRUS:
 		VoiceSet: VirusVoice
 	DeliversCash:
 		Payload: 350
+	GrantConditionOnPrerequisite@viruscloud:
+		Condition: upyrvirus
+		Prerequisites: upyrvirus
 	# FirepowerMultiplier@CloudCompensation:
 	# 	Modifier: 5
 
@@ -5275,6 +5313,7 @@ YRYURI:
 	Inherits@MC: ^MCImmune
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@bot: ^BotAutoDeployOnLowHealth
+	Inherits@mccap: ^MindControlCap
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -5290,9 +5329,9 @@ YRYURI:
 		HP: 5000
 	Armament@PRIMARY:
 		Weapon: RA2MindControl
-	Armament@GARRISONED:
-		Name: garrisoned
-		Weapon: RA2MindControl
+	#Armament@GARRISONED:
+	#	Name: garrisoned
+	#	Weapon: RA2MindControl
 	Passenger:
 	MindControllerCA:
 		ArmamentNames: primary
@@ -5303,7 +5342,7 @@ YRYURI:
 		ControllingCondition: controlling
 	ReloadArmamentsBar:
 	AutoTarget:
-		RequiresCondition: !controlling
+		RequiresCondition: (!controlling && !upmccap) || (controlling < 3 && upmccap)
 	AttackFrontal:
 		FacingTolerance: 0
 	WithInfantryBody:
@@ -5343,6 +5382,12 @@ YRYURI:
 	KeepsDistance:
 	RenderSprites:
 		Image: RA2YURI
+	GrantConditionOnPrerequisite@upgrade:
+		Condition: upyryuri
+		Prerequisites: upyryuri
+	RangeMultiplier@upgrade:
+		Modifier: 116
+		RequiresCondition: upyryuri
 
 YRYURIX:
 	Inherits: ^Soldier
@@ -7091,6 +7136,8 @@ YRYTNK:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@SHADOWS: ^Shadows
+	Inherits@chaos: ^ChaosGasSurprise
+	Inherits@UpGat: ^YuriGatlingUpgrade
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -7175,6 +7222,7 @@ YRYTNK:
 
 YRLTNK:
 	Inherits: RA2MTNK
+	Inherits@chaos: ^ChaosGasSurprise
 	Tooltip:
 		Name: Lasher Tank
 	Valued:
@@ -7221,6 +7269,7 @@ YRTELE:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@chaos: ^ChaosGasSurprise
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -7248,7 +7297,12 @@ YRTELE:
 		Name: primary
 		Weapon: RA2Magnet
 		LocalOffset: 400,0,300
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upyrtele
+	Armament@Upgraded:
+		Name: primary
+		Weapon: RA2Magnet2
+		LocalOffset: 400,0,300
+		RequiresCondition: !rank-elite && upyrtele
 	Armament@elite:
 		Name: primary
 		Weapon: RA2Magnet_elite
@@ -7270,6 +7324,9 @@ YRTELE:
 		Payload: 500
 	RenderSprites:
 		PlayerPalette: playerra2
+	GrantConditionOnPrerequisite@Upgrade:
+		Condition: upyrtele
+		Prerequisites: upyrtele
 
 YRCAOS:
 	Inherits: ^Vehicle
@@ -7335,6 +7392,8 @@ YRMIND:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@MC: ^MCImmune
+	Inherits@chaos: ^ChaosGasSurprise
+	Inherits@mccap: ^MindControlCap
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -7360,6 +7419,8 @@ YRMIND:
 		TurnSpeed: 2000
 	Armament@PRIMARY:
 		Weapon: RA2SMindControl
+	MindControllerCapacityModifier@MCCap:
+		Amount: 0
 	MindControllerCA:
 		ArmamentNames: primary
 		TicksToControl: 30
@@ -7371,27 +7432,27 @@ YRMIND:
 		Step: -10
 		Delay: 1
 		StartIfBelow: 101
-		RequiresCondition: slaves > 1
+		RequiresCondition: (slaves > 3 && !upmccap) || (slaves > 6 && upmccap)
 	ChangesHealth@2:
 		Step: -20
 		Delay: 1
 		StartIfBelow: 101
-		RequiresCondition: slaves > 2
+		RequiresCondition: (slaves > 4 && !upmccap) || (slaves > 7 && upmccap)
 	ChangesHealth@3:
 		Step: -30
 		Delay: 1
 		StartIfBelow: 101
-		RequiresCondition: slaves > 3
+		RequiresCondition: (slaves > 5 && !upmccap) || (slaves > 8 && upmccap)
 	ChangesHealth@4:
 		Step: -40
 		Delay: 1
 		StartIfBelow: 101
-		RequiresCondition: slaves > 4
+		RequiresCondition: (slaves > 6 && !upmccap) || (slaves > 9 && upmccap)
 	ChangesHealth@5:
 		Step: -50
 		Delay: 1
 		StartIfBelow: 101
-		RequiresCondition: slaves > 5
+		RequiresCondition: (slaves > 7 && !upmccap) || (slaves > 10 && upmccap)
 	ReloadArmamentsBar:
 	RenderRangeCircle:
 		RangeCircleType: mindcontrol
@@ -7403,7 +7464,7 @@ YRMIND:
 		DecorationBounds: 1280, 1280, 0, -128
 	WithVoxelBody:
 	VoiceAnnouncement@Overload:
-		RequiresCondition: slaves > 3
+		RequiresCondition: (slaves > 3 && !upmccap) || (slaves > 6 && upmccap)
 		Voice: Overload
 		ValidRelationships: None
 	Voiced:
@@ -8369,6 +8430,7 @@ RA2FALC:
 	Inherits@Template: ^FighterTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@upgrade: ^RA2AdvancedAeronautics
 	Valued:
 		Cost: 2100
 	Tooltip:
@@ -8385,7 +8447,7 @@ RA2FALC:
 		TurnSpeed: 12
 		Speed: 175
 		IdleTurnSpeed: 10
-		IdleSpeed: 125
+		IdleSpeed: 100
 		CruisingCondition: cruising
 		TakeoffSounds: orcaup1.aud
 		LandingSounds: orcadwn1.aud
@@ -8461,7 +8523,7 @@ RA2BEAG:
 		CanSlide: false
 		Voice: Move
 	Health:
-		HP: 100000
+		HP: 90000
 	ChangesHealth@SelfHealing:
 		Step: 40
 	Armament@PRIMARY:
@@ -8652,6 +8714,9 @@ YRDISK:
 		HP: 125000
 	ChangesHealth@SelfHealing:
 		Step: 50
+	GrantConditionOnPrerequisite@Upgrade:
+		Condition: upyrdisk
+		Prerequisites: upyrdisk
 	Armament@PRIMARY:
 		Name: primary
 		Weapon: RA2DiskLaser
@@ -8662,6 +8727,7 @@ YRDISK:
 		Weapon: RA2DiskDrain
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		RequiresCondition: upyrdisk
 	Armament@Steal:
 		Name: secondary
 		Weapon: RA2DiskSteal
@@ -8737,7 +8803,7 @@ ra2rock:
 		BuildPaletteOrder: 20
 		Prerequisites: ~ra2gaairc
 		Queue: Infantry, RAInfantry
-		Description: Allied flying infantry.\n  Strong vs Aircraft, Buildings, Infantry\n  Weak vs AA
+		Description: Flying infantry.\n  Strong vs Aircraft, Buildings, Infantry\n  Weak vs AA
 	Aircraft:
 		TurnSpeed: 36
 		Speed: 180
@@ -8770,6 +8836,8 @@ ra2rock:
 		IdleSequences: idle1, idle2
 		DefaultAttackSequence: shoot
 		RequiresCondition: !airborne
+	QuantizeFacingsFromSequence:
+		Sequence: stand
 	Selectable:
 		Bounds: 512, 768
 	-WithShadow:
@@ -8811,6 +8879,8 @@ ra2rock.husk:
 	RevealsShroud:
 		Range: 4c0
 		Type: GroundPosition
+	QuantizeFacingsFromSequence:
+		Sequence: stand
 	WithFacingSpriteBody:
 		Sequence: die-air
 	WithSpriteBody@shadow:
@@ -8819,23 +8889,44 @@ ra2rock.husk:
 		ForceToGround: true
 	-WithShadow:
 
+yrlunr:
+	Inherits: ra2rock
+	Tooltip:
+		Name: Cosmonaut
+	Buildable:
+		Prerequisites: ~ra2napsis, ~upyrlunr
+	Armament@PRIMARY:
+		Weapon: RA2CosmonautLaser
+		LocalOffset: 128,196,128, 128,-196,128
+	SpawnActorOnDeath:
+		Actor: yrlunr.husk
+	Voiced:
+		VoiceSet: CosmonautVoice
+
+yrlunr.husk:
+	Inherits: ra2rock.husk
+	RenderSprites:
+		Image: yrlunr
+	Tooltip:
+		Name: Cosmonaut
+
 ra2hornet:
 	Inherits: ^RANeutralPlane
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^RenderVoxel
+	Inherits@upgrade: ^RA2AdvancedAeronautics
 	Selectable:
 	Valued:
 		Cost: 350
 	Tooltip:
 		Name: Hornet
 	Aircraft:
-		CruiseAltitude: 2560
+		AltitudeVelocity: 240
 		InitialFacing: 768
 		TurnSpeed: 32
-		Speed: 223
+		Speed: 210
 		Repulsable: false
-		MaximumPitch: 56
 	Health:
 		HP: 7000
 	Armor:
@@ -8866,7 +8957,7 @@ ra2hornet:
 	Rearmable:
 		RearmActors: ra2carrier
 	CarrierSlave:
-		LandingDistance: 2c0
+		LandingDistance: 8c0
 	AutoTarget:
 		InitialStanceAI: AttackAnything
 		InitialStance: AttackAnything
@@ -8874,6 +8965,7 @@ ra2hornet:
 	-ActorLostNotification:
 	-WithShadow:
 	-MapEditorData:
+	RejectsOrders:
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -8886,10 +8978,10 @@ ra2asw:
 	Tooltip:
 		Name: Osprey
 	Aircraft:
-		CruiseAltitude: 1400
+		AltitudeVelocity: 240
 		InitialFacing: 768
-		TurnSpeed: 16
-		Speed: 223
+		TurnSpeed: 32
+		Speed: 210
 		MaximumPitch: 56
 	Health:
 		HP: 7000
@@ -11399,7 +11491,7 @@ upsuperkirov:
 	Buildable:
 		BuildPaletteOrder: 72
 		Queue: Promotions
-		Description: Upgrades the Kirov to have increased armor and AA capability.
+		Description: Doubles the Kirov's durability.
 		Prerequisites: ~ra2nacnst, upyrngindp, rank1
 	RenderSprites:
 		Image: ra2zep
@@ -11480,10 +11572,10 @@ upra2tnkd:
 upra2rock:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Upgrade Rocketeers
+		Name: Unlock Rocketeers
 	Buildable:
 		BuildPaletteOrder: 77
-		Queue: Promotions
+		-Queue: #Promotions
 		Description: Upgrades the Rocketeer to fire faster and take less damage.
 		Prerequisites: ~ra2gacnst, upra2tnkd, rank1
 	RenderSprites:
@@ -11495,10 +11587,10 @@ upyrrobo:
 	Tooltip:
 		Name: Unlock Robot Tanks
 	Buildable:
-		BuildPaletteOrder: 80
+		BuildPaletteOrder: 77
 		Queue: Promotions
 		Description: Enables the Robot Control Center and Robot Tanks.
-		Prerequisites: ~ra2gacnst, upra2rock, rank1
+		Prerequisites: ~ra2gacnst, upra2tnkd, rank1
 	RenderSprites:
 		Image: yrrobo
 	ProvidesPrerequisite:
@@ -11508,13 +11600,39 @@ upra2beag:
 	Tooltip:
 		Name: Unlock Black Eagle
 	Buildable:
-		BuildPaletteOrder: 83
+		BuildPaletteOrder: 80
 		Queue: Promotions
 		Description: Allows construction of the Black Eagle.
 		Prerequisites: ~ra2gacnst, upyrrobo, rank1
 	RenderSprites:
 		Image: ra2beag
 	ProvidesPrerequisite:
+
+upra2aeronautics:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Advanced Aeronautics
+	Buildable:
+		BuildPaletteOrder: 83
+		Queue: Promotions
+		Description: Allied jets receive speed and armor bonuses when attacking.
+		Prerequisites: ~ra2gacnst, upra2beag, rank1
+	RenderSprites:
+		Image: ra2falc
+	ProvidesPrerequisite:
+
+^RA2AdvancedAeronautics:
+	GrantConditionOnPrerequisite@supersonic:
+		Condition: upaeronautics
+		Prerequisites: upra2aeronautics
+	GrantConditionOnActivity@supersonic:
+		Condition: supersonic
+	SpeedMultiplier@supersonic:
+		Modifier: 120
+		RequiresCondition: supersonic && ammo && upaeronautics
+	DamageMultiplier@supersonic:
+		RequiresCondition: supersonic && ammo && upaeronautics
+		Modifier: 85
 
 ### Defensive tree
 
@@ -11570,3 +11688,193 @@ upra2gtgcan:
 	RenderSprites:
 		Image: ra2gtgcan
 	ProvidesPrerequisite:
+
+## Yuri promotions
+### Biological tree
+
+upyrvirus:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Upgrade Virus
+	Buildable:
+		BuildPaletteOrder: 85
+		Queue: Promotions
+		Description: Allows Viruses to attack vehicles and leave toxin clouds with every shot.
+		Prerequisites: ~yryacnst, !upyrvirus, rank1
+	RenderSprites:
+		Image: yrvirus
+	ProvidesPrerequisite:
+
+upyrbrute:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Upgrade Brute
+	Buildable:
+		BuildPaletteOrder: 88
+		Queue: Promotions
+		Description: Makes Brutes more resilient.
+		Prerequisites: ~yryacnst, upyrvirus, rank1
+	RenderSprites:
+		Image: yrbrute
+	ProvidesPrerequisite:
+
+upyryaclon:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Cloning Vats
+	Buildable:
+		BuildPaletteOrder: 91
+		Queue: Promotions
+		Description: Allows construction of the Cloning Vats.
+		Prerequisites: ~yryacnst, upyrbrute, rank1
+	RenderSprites:
+		Image: ra2naclon
+	ProvidesPrerequisite:
+
+upchaossurprise:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Chaos Gas Surprise
+	Buildable:
+		BuildPaletteOrder: 94
+		Queue: Promotions
+		Description: Vehicles have a chance of releasing chaos gas on destruction.
+		Prerequisites: ~yryacnst, upyryaclon, rank1
+	RenderSprites:
+		Image: yrcaos
+	ProvidesPrerequisite:
+
+^ChaosGasSurprise:
+	GrantConditionOnPrerequisite@ChaosSurprise:
+		Condition: chaossurprise
+		Prerequisites: upchaossurprise
+	Explodes@ChaosSurprise:
+		Weapon: RA2Dronegas
+		EmptyWeapon: RA2Dronegas
+		Chance: 50
+		RequiresCondition: chaossurprise && !chronobeamed
+
+### Psychic tree
+
+upyrinit:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Upgrade Initiate
+	Buildable:
+		BuildPaletteOrder: 86
+		Queue: Promotions
+		Description: Increases the range of Initiates.
+		Prerequisites: ~yryacnst, !upyrinit, rank1
+	RenderSprites:
+		Image: yrinit
+	ProvidesPrerequisite:
+
+upyryuri:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Upgrade Yuri Clone
+	Buildable:
+		BuildPaletteOrder: 89
+		Queue: Promotions
+		Description: Increases the range of Yuri Clones.
+		Prerequisites: ~yryacnst, upyrinit, rank1
+	RenderSprites:
+		Image: ra2yuri
+	ProvidesPrerequisite:
+
+upyrnapsis:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Upgrade Psychic Sensor
+	Buildable:
+		BuildPaletteOrder: 91
+		Queue: Promotions
+		Description: Allows Psychic Sensors to detect nearby unit positions.
+		Prerequisites: ~yryacnst, upyryuri, rank1
+	RenderSprites:
+		Image: ra2napsis
+	ProvidesPrerequisite:
+
+upmindcontrolcap:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Mind Control Capacity
+	Buildable:
+		BuildPaletteOrder: 94
+		Queue: Promotions
+		Description: Increases mind controllers' capacities (Yuri Prime excluded).
+		Prerequisites: ~yryacnst, upyrnapsis, rank1
+	RenderSprites:
+		Image: yrmind
+	ProvidesPrerequisite:
+
+^MindControlCap:
+	GrantConditionOnPrerequisite@MCCap:
+		Condition: upmccap
+		Prerequisites: upmindcontrolcap
+	MindControllerCapacityModifier@MCCap:
+		Amount: 2
+		RequiresCondition: upmccap
+
+### Lunar tree
+
+upyrtele:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Upgrade Magnetron
+	Buildable:
+		BuildPaletteOrder: 87
+		Queue: Promotions
+		Description: Makes Magnetrons damage vehicles.
+		Prerequisites: ~yryacnst, !upyrtele, rank1
+	RenderSprites:
+		Image: yrtele
+	ProvidesPrerequisite:
+
+upyrdisk:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Upgrade Floating Discs
+	Buildable:
+		BuildPaletteOrder: 90
+		Queue: Promotions
+		Description: Makes Floating Discs able to destroy units and buildings underneath.
+		Prerequisites: ~yryacnst, upyrtele, rank1
+	RenderSprites:
+		Image: yrdisk
+	ProvidesPrerequisite:
+
+upyrlunr:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Cosmonaut
+	Buildable:
+		BuildPaletteOrder: 93
+		Queue: Promotions
+		Description: Allows training of Cosmonauts.
+		Prerequisites: ~yryacnst, upyrdisk, rank1
+	RenderSprites:
+		Image: yrlunr
+	ProvidesPrerequisite:
+
+upyrgat:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Chainguns
+	Buildable:
+		BuildPaletteOrder: 96
+		Queue: Promotions
+		Description: Uprades Gatling weapons to become more powerful.
+		Prerequisites: ~yryacnst, upyrlunr, rank1
+	RenderSprites:
+		Image: yrygggun
+	ProvidesPrerequisite:
+
+^YuriGatlingUpgrade:
+	GrantConditionOnPrerequisite@upgrade:
+		Condition: upyrgat
+		Prerequisites: upyrgat
+	FirepowerMultiplier@upgrade:
+		Modifier: 120
+		RequiresCondition: upyrgat
+	
