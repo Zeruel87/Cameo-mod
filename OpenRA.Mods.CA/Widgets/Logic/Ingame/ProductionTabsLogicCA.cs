@@ -35,7 +35,7 @@ namespace OpenRA.Mods.CA.Widgets.Logic
 				tabs.PickUpCompletedBuilding();
 			};
 
-			button.IsDisabled = () => !tabs.Groups[button.ProductionGroup].Tabs.Any(t => t.Queue.BuildableItems().Any());
+			button.IsDisabled = () => !tabs.Groups[button.ProductionGroup].Tabs.Any(t => t.Queue.BuildableItems().Any() || t.Queue.AlwaysVisible);
 			button.OnMouseUp = mi => selectTab(mi.Modifiers.HasModifier(Modifiers.Shift));
 			button.OnKeyPress = e => selectTab(e.Modifiers.HasModifier(Modifiers.Shift));
 			button.IsHighlighted = () => tabs.QueueGroup == button.ProductionGroup;
