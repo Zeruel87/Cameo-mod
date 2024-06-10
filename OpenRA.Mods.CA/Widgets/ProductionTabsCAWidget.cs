@@ -183,7 +183,7 @@ namespace OpenRA.Mods.CA.Widgets
 
 		public IEnumerable<ProductionTabCA> GetTabs()
 		{
-			return Groups[queueGroup].Tabs.Where(t => t.Queue.BuildableItems().Any());
+			return Groups[queueGroup].Tabs.Where(t => t.Queue.BuildableItems().Any() || t.Queue.AlwaysVisible);
 		}
 
 		public override void Draw()
