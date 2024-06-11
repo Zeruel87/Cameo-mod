@@ -1552,7 +1552,7 @@ ra2nasam:
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
-		BuildPaletteOrder: 20
+		BuildPaletteOrder: 40
 		Prerequisites: ~ra2gacnst, ra2gaairc
 		Description: Anti-aircraft defense.\nRequires power to operate
 	Valued:
@@ -2601,7 +2601,7 @@ ra2naflak:
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
-		BuildPaletteOrder: 20
+		BuildPaletteOrder: 40
 		Prerequisites: ~ra2nacnst, ra2naradr
 		Description: Anti-aircraft defense.\nRequires power to operate
 	Valued:
@@ -2663,22 +2663,22 @@ ra2tesla:
 	SelectionDecorations:
 	Health:
 		HP: 120000
-	WithTeslaChargeAnimation:
+	WithTeslaChargeOverlay:
 	GrantConditionOnPrerequisite@EMPTesla:
 		Condition: emptesla
 		Prerequisites: upemptesla
 	Armament:
 		Weapon: RA2CoilBolt
 		LocalOffset: 120,0,1100
-		RequiresCondition: (!TeslaCoilCharge || (TeslaCoilCharge == 1 && unpowered)) && !emptesla && !arctesla
+		RequiresCondition: ((!TeslaCoilCharge && !unpowered) || (TeslaCoilCharge == 1 && unpowered)) && !emptesla && !arctesla
 	Armament@2:
 		Weapon: RA2CoilBolt2
 		LocalOffset: 120,0,1100
-		RequiresCondition: (!TeslaCoilCharge || (TeslaCoilCharge == 1 && unpowered)) && emptesla && !arctesla
+		RequiresCondition: ((!TeslaCoilCharge && !unpowered) || (TeslaCoilCharge == 1 && unpowered)) && emptesla && !arctesla
 	Armament@3:
 		Weapon: RA2CoilBolt3
 		LocalOffset: 120,0,1100
-		RequiresCondition: (!TeslaCoilCharge || (TeslaCoilCharge == 1 && unpowered)) && emptesla && arctesla
+		RequiresCondition: ((!TeslaCoilCharge && !unpowered) || (TeslaCoilCharge == 1 && unpowered)) && arctesla
 	Armament@Charged1:
 		Weapon: RA2OPCoilBolt1
 		LocalOffset: 120,0,1100
@@ -2690,14 +2690,13 @@ ra2tesla:
 	Armament@Charged3:
 		Weapon: RA2OPCoilBolt3
 		LocalOffset: 120,0,1100
-		RequiresCondition: ((TeslaCoilCharge && !unpowered) || (TeslaCoilCharge > 1 && unpowered)) && emptesla && arctesla
+		RequiresCondition: ((TeslaCoilCharge && !unpowered) || (TeslaCoilCharge > 1 && unpowered)) && arctesla
 	AttackTesla:
+		RequiresCondition: !build-incomplete
 		PauseOnCondition: disabled
 		ChargeAudio: btespow.wav
 		MaxCharges: 1
 		ReloadDelay: 75
-		RequiresCondition: !build-incomplete
-	ProvidesPrerequisite@buildingname:
 	WithMakeAnimation:
 	WithIdleOverlay@powered:
 		Sequence: idle-powered
@@ -2730,13 +2729,16 @@ ra2tesla:
 		SpawnOffset: 511,511,0, -511,-511,0, -511,511,0
 		RespawnTicks: 250
 		InitialActorCount: 0
+		SlavesTargetSelf: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		LoadedCondition: TeslaCoilCharge
 		PauseOnCondition: !teslaChargeUpgrade
 	Production:
 		Produces: ra2tesla.upgrade
 		RequiresCondition: !teslaChargeUpgrade
 	ProductionBar:
 		ProductionType: ra2tesla.upgrade
-	ProductionBar:
 	ProductionQueue:
 		Type: ra2tesla.upgrade
 		DisplayOrder: 0
@@ -4994,7 +4996,7 @@ ra2shk:
 	Armament@PRIMARY3:
 		Weapon: RA2PortaTesla3
 		LocalOffset: 427,0,341
-		RequiresCondition: !rank-elite && emptesla && arctesla
+		RequiresCondition: !rank-elite && arctesla
 	Armament@Elite:
 		Weapon: RA2PortaTeslaE
 		LocalOffset: 427,0,341
@@ -5016,7 +5018,7 @@ ra2shk:
 	Armament@GARRISONED3:
 		Name: garrisoned
 		Weapon: RA2PortaTesla3
-		RequiresCondition: !rank-elite && emptesla && arctesla
+		RequiresCondition: !rank-elite && arctesla
 	Armament@GARRISONEDELITE:
 		Name: garrisoned
 		Weapon: RA2PortaTeslaE
@@ -5041,6 +5043,7 @@ ra2shk.bot:
 	Inherits: ra2shk
 	-Buildable:
 	-MapEditorData:
+	-UpdatesPlayerStatistics:
 	Tooltip:
 		Name: Tesla Coil Charger
 	AutoTargetPriority@DEFAULT:
@@ -5053,6 +5056,7 @@ ra2shk.bot:
 	-Armament@PRIMARY2:
 	-Armament@Elite:
 	Armament@TeslaCoilCharge:
+		Weapon: RA2TeslaCoilCharge_cosmetic
 	Mobile:
 		CanTurnWhileDisabled: true
 		ImmovableCondition: disable_movement
@@ -5069,6 +5073,11 @@ ra2shk.bot:
 	Selectable:
 		Priority: 4
 	DroneSpawnerSlave:
+		MasterDeadCondition: nocoil
+		DamageTypes: DefaultDeath
+	TransformOnCondition:
+		IntoActor: ra2shk
+		RequiresCondition: nocoil
 	RejectsOrders:
 	WithInfantryBody:
 ##############################################
@@ -5593,6 +5602,9 @@ YRGTRP:
 		RequiresCondition: gatling == 1
 	ReloadDelayMultiplier@gat2:
 		Modifier: 33
+		RequiresCondition: gatling > 1
+	RangeMultiplier@gat2:
+		Modifier: 110
 		RequiresCondition: gatling > 1
 	GrantConditionOnAttack@gatling:
 		Condition: gatling
@@ -7277,37 +7289,37 @@ YRYTNK:
 		TurnSpeed: 44
 	Armament@1:
 		Weapon: RA2GattlingMG1
-		PauseOnCondition: gatling
+		RequiresCondition: !gatling
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	Armament@2:
 		Weapon: RA2GattlingMG2
-		PauseOnCondition: gatling != 1
+		RequiresCondition: gatling == 1
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle-1
 		MuzzlePalette: ra2effect
 	Armament@3:
 		Weapon: RA2GattlingMG3
-		PauseOnCondition: gatling < 2
+		RequiresCondition: gatling > 1
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
 	Armament@1AA:
 		Weapon: RA2GattlingMG1AA
-		PauseOnCondition: gatling
+		RequiresCondition: !gatling
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	Armament@2AA:
 		Weapon: RA2GattlingMG2AA
-		PauseOnCondition: gatling != 1
+		RequiresCondition: gatling == 1
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle-1
 		MuzzlePalette: ra2effect
 	Armament@3AA:
 		Weapon: RA2GattlingMG3AA
-		PauseOnCondition: gatling < 2
+		RequiresCondition: gatling > 1
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
@@ -8960,6 +8972,8 @@ ra2rock:
 	GrantConditionOnPrerequisite@Upgrade:
 		Condition: upra2rock
 		Prerequisites: upra2rock
+	ProducibleWithLevel@spyinfantry:
+		Prerequisites: barracks.upgraded
 
 ra2rock.husk:
 	Inherits: ^HelicopterHusk

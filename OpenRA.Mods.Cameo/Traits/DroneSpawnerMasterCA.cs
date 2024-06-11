@@ -13,6 +13,7 @@ using OpenRA.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.AS.Traits;
 using OpenRA.Traits;
+using System.Collections.Generic;
 
 namespace OpenRA.Mods.Cameo.Traits
 {
@@ -31,8 +32,23 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("After master attack, slaves will stop and follow master in this many tick. Mainly used for long-range attack also use drone")]
 		public readonly int FollowAfterAttackDelay = 0;
 
+		[Desc("Always make slaves target self instead.")]
+		public readonly bool SlavesTargetSelf = false;
+
 		[Desc("Spawn initial load all at once?")]
 		public readonly bool ShouldSpawnInitialLoad = true;
+
+		[GrantedConditionReference]
+		[Desc("The condition to grant to self while spawned units are loaded.",
+			"Condition can stack with multiple spawns.")]
+		public readonly string LoadedCondition = null;
+
+		[Desc("Conditions to grant when specified actors are contained inside the transport.",
+			"A dictionary of [actor id]: [condition].")]
+		public readonly Dictionary<string, string> SpawnContainConditions = new();
+
+		[GrantedConditionReference]
+		public IEnumerable<string> LinterSpawnContainConditions { get { return SpawnContainConditions.Values; } }
 
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
@@ -73,6 +89,9 @@ namespace OpenRA.Mods.Cameo.Traits
 		int remainingIdleCheckTick;
 		bool isAircraft;
 		bool hasSpawnInitialLoad;
+
+		readonly Dictionary<string, Stack<int>> spawnContainTokens = new();
+		readonly Stack<int> loadedTokens = new();
 
 		public DroneSpawnerMasterCA(ActorInitializer init, DroneSpawnerMasterCAInfo info)
 			: base(init, info)
@@ -138,7 +157,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			// Drone Master only pause attack when trait is Disabled
 			// HACK: If Armament hits instantly and kills the target, the target will become invalid
-			if (target.Type == TargetType.Invalid || (Info.ArmamentNames.Count > 0 && !Info.ArmamentNames.Contains(a.Info.Name)) || Info.SlavesHaveFreeWill || IsTraitDisabled)
+			if (target.Type == TargetType.Invalid || (Info.ArmamentNames.Count > 0 && !Info.ArmamentNames.Contains(a.Info.Name)) || Info.SlavesHaveFreeWill || Info.SlavesTargetSelf || IsTraitDisabled)
 				return;
 
 			AssignTargetsToSlaves(self, target);
@@ -194,13 +213,23 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			foreach (var se in slaveEntries)
 				if (se.IsValid && !se.Actor.IsInWorld)
+				{
 					SpawnIntoWorld(self, se.Actor, self.CenterPosition + se.Offset.Rotate(self.Orientation));
+					if (Info.SlavesTargetSelf)
+						se.SpawnerSlave.Attack(se.Actor, Target.FromActor(self));
+				}
 		}
 
 		public override void OnSlaveKilled(Actor self, Actor slave)
 		{
 			if (spawnReplaceTicks <= 0)
 				spawnReplaceTicks = Info.RespawnTicks;
+
+			if (spawnContainTokens.TryGetValue(slave.Info.Name, out var spawnContainToken) && spawnContainToken.Count > 0)
+				self.RevokeCondition(spawnContainToken.Pop());
+
+			if (loadedTokens.Count > 0 && Info.LoadedCondition != null)
+				self.RevokeCondition(loadedTokens.Pop());
 		}
 
 		public override void SpawnIntoWorld(Actor self, Actor slave, WPos centerPosition)
@@ -224,6 +253,12 @@ namespace OpenRA.Mods.Cameo.Traits
 
 				w.Add(slave);
 				slave.QueueActivity(false, new Nudge(slave));
+
+				if (Info.SpawnContainConditions.TryGetValue(slave.Info.Name, out var spawnContainCondition))
+					spawnContainTokens.GetOrAdd(slave.Info.Name).Push(self.GrantCondition(spawnContainCondition));
+
+				if (!string.IsNullOrEmpty(Info.LoadedCondition))
+					loadedTokens.Push(self.GrantCondition(Info.LoadedCondition));
 			});
 		}
 
