@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using OpenRA.Mods.CA.Orders;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
@@ -102,6 +103,8 @@ namespace OpenRA.Mods.CA.Traits
 		MindControllerCAInfo info;
 		int capacity;
 		IEnumerable<MindControllerCapacityModifier> capacityModifiers;
+		int ticksToControl;
+		IEnumerable<MindControllerDelayModifier> delayModifiers;
 		bool refreshCapacity;
 		int maxControlledToken = Actor.InvalidConditionToken;
 
@@ -123,6 +126,7 @@ namespace OpenRA.Mods.CA.Traits
 			gainsExperience = self.TraitOrDefault<GainsExperience>();
 			ResetProgress(self);
 			capacityModifiers = self.TraitsImplementing<MindControllerCapacityModifier>();
+			delayModifiers = self.TraitsImplementing<MindControllerDelayModifier>();
 			UpdateCapacity(self);
 		}
 
@@ -162,7 +166,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (refreshCapacity)
 				UpdateCapacity(self);
 
-			if (Info.TicksToControl == 0)
+			if (ticksToControl == 0)
 				return;
 
 			if (currentTarget.Type != TargetType.Actor)
@@ -176,7 +180,7 @@ namespace OpenRA.Mods.CA.Traits
 				return;
 			}
 
-			if (controlTicks < Info.TicksToControl)
+			if (controlTicks < ticksToControl)
 				controlTicks++;
 
 			GrantProgressCondition(self);
@@ -191,7 +195,7 @@ namespace OpenRA.Mods.CA.Traits
 
 			UpdateProgressBar(self, currentTarget);
 
-			if (controlTicks == Info.TicksToControl)
+			if (controlTicks == ticksToControl)
 				AddSlave(self, currentTarget.Actor);
 		}
 
@@ -273,7 +277,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		void ResetProgress(Actor self)
 		{
-			if (Info.TicksToControl == 0)
+			if (ticksToControl == 0)
 				return;
 
 			controlTicks = 0;
@@ -290,7 +294,7 @@ namespace OpenRA.Mods.CA.Traits
 			var targetWatchers = target.Actor.TraitsImplementing<IMindControlProgressWatcher>().ToArray();
 
 			foreach (var w in targetWatchers)
-				w.Update(target.Actor, self, target.Actor, controlTicks, Info.TicksToControl);
+				w.Update(target.Actor, self, target.Actor, controlTicks, ticksToControl);
 		}
 
 		void INotifyAttack.PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel) { }
@@ -309,7 +313,7 @@ namespace OpenRA.Mods.CA.Traits
 			lastTarget = currentTarget;
 			currentTarget = target;
 
-			if (TargetChanged() && Info.TicksToControl > 0)
+			if (TargetChanged() && ticksToControl > 0)
 			{
 				ResetProgress(self);
 
@@ -327,7 +331,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (IsTraitDisabled || IsTraitPaused)
 				return;
 
-			if (requireControlTicks && controlTicks < Info.TicksToControl)
+			if (requireControlTicks && controlTicks < ticksToControl)
 				return;
 
 			if (self.Owner.RelationshipWith(target.Owner) == PlayerRelationship.Ally)
@@ -460,6 +464,10 @@ namespace OpenRA.Mods.CA.Traits
 		void UpdateCapacity(Actor self)
 		{
 			refreshCapacity = false;
+			var newDelayModifiers = delayModifiers.Select(m => m.Modifier);
+
+			ticksToControl = Util.ApplyPercentageModifiers(Info.TicksToControl, newDelayModifiers);
+
 			var newCapacity = info.Capacity;
 
 			// Modifiers have no effect if the base capacity is unlimited.

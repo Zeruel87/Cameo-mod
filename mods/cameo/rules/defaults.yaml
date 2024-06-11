@@ -282,6 +282,18 @@
 	RangeMultiplier@RANK-ELITE:
 		RequiresCondition: rank-elite
 		Modifier: 135
+	DetectCloakedMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 105
+	DetectCloakedMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 115
+	DetectCloakedMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 125
+	DetectCloakedMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 135
 	InaccuracyMultiplier@RANK-1:
 		RequiresCondition: rank-veteran == 1
 		Modifier: 90
@@ -413,6 +425,14 @@
 	RangeMultiplier@RANK-3:
 		Modifier: 115
 	RangeMultiplier@RANK-ELITE:
+		Modifier: 120
+	DetectCloakedMultiplier@RANK-1:
+		Modifier: 105
+	DetectCloakedMultiplier@RANK-2:
+		Modifier: 110
+	DetectCloakedMultiplier@RANK-3:
+		Modifier: 115
+	DetectCloakedMultiplier@RANK-ELITE:
 		Modifier: 120
 	InaccuracyMultiplier@RANK-1:
 		Modifier: 90
@@ -583,6 +603,7 @@
 
 ^AcceptsCloakCrate:
 	Cloak@TDcloak:
+		CloakType: GroundCloak
 		InitialDelay: 15
 		CloakDelay: 90
 		CloakSound: trans1.aud
@@ -870,6 +891,7 @@
 	RevealsShroud:
 		Range: 8000
 	DetectCloaked:
+		DetectionTypes: AirCloak, GroundCloak
 		Range: 4000
 	RenderDetectionCircle:
 	RenderRangeCircle:
@@ -1214,10 +1236,9 @@
 
 ^AntiAirDefenseTemplate:
 	Inherits@DisabledOverlay: ^DisableOnLowPowerOrPowerDown
+	Inherits@Detect: ^GenericAirDetector
 	Armor:
 		Type: Concrete
-	DetectCloaked:
-		RequiresCondition: !disabled
 	Buildable:
 		BuildDurationModifier: 60
 
@@ -1225,8 +1246,6 @@
 	Inherits@DisabledOverlay: ^DisableOnLowPowerOrPowerDown
 	Armor:
 		Type: Steel
-	DetectCloaked:
-		RequiresCondition: !disabled
 	Buildable:
 		BuildDurationModifier: 80
 	IgnoresDisguise:
@@ -1619,6 +1638,10 @@
 		Types: vehicle
 		ValidRelationships: Enemy, Neutral
 		RequiresCondition: !untargetable && !airborne
+	Cloak@TDcloak:
+		CloakType: AirCloak
+	Cloak@TScloak:
+		CloakType: AirCloak
 
 ^Helicopter:
 	Inherits@1: ^RANeutralPlane
@@ -1789,7 +1812,7 @@
 	DetectCloaked:
 		Range: 1c512
 		RequiresCondition: !disabled
-		DetectionTypes: Cloak, Hijacker
+		DetectionTypes: GroundCloak, Hijacker
 	DeathSounds@NORMAL:
 	Voiced:
 		VoiceSet: GenericVoice
@@ -1851,17 +1874,6 @@
 	RangedGpsDot:
 		Sequence: Infantry
 	TeleportNetworkTransportable:
-	GrantConditionOnPrerequisite@EXTRAGORE:
-		Prerequisites: global-gore
-		Condition: unitgore
-	Explodes@ONESHOT:
-		Weapon: instagib
-		RequiresCondition: unitgore
-	ThrowsShrapnel@ONESHOT:
-		Weapons: instagib1, instagib2, instagib3, instagib4, instagib5, instagib6, instagib7, instagib8
-		Pieces: 1, 4
-		Range: 0c256, 2c0
-		RequiresCondition: unitgore
 
 ^AffectedByTiberium:
 	DamagedByTerrain:
@@ -3085,7 +3097,6 @@
 	Inherits@AdvancedTargeting: ^AdvancedTargeting
 	RenderRangeCircle:
 		RangeCircleType: defense
-	RenderDetectionCircle:
 	RevealOnFire:
 		Duration: 50
 		ArmamentNames: primary, secondary, deployed, garrisoned
@@ -3552,6 +3563,9 @@
 		RequiresCondition: shrouded
 		Color: 6666FF66
 	RangeMultiplier@shrouded:
+		Modifier: 75
+		RequiresCondition: shrouded
+	DetectCloakedMultiplier@shrouded:
 		Modifier: 75
 		RequiresCondition: shrouded
 	RevealsShroudMultiplier@shrouded:
@@ -4631,6 +4645,7 @@ CPQDEBUGDUMMY:
 
 ^StealthGenCloakable:
 	Cloak@TScloak:
+		CloakType: GroundCloak
 		InitialDelay: 15
 		CloakDelay: 90
 		CloakSound: cloak5.aud
@@ -4815,21 +4830,28 @@ CPQDEBUGDUMMY:
 	DetectCloaked:
 		Range: 5000
 		RequiresCondition: !disabled
-		DetectionTypes: Cloak, Hijacker
+		DetectionTypes: GroundCloak, Hijacker
 	RenderDetectionCircle:
 
 ^EliteDetector:
 	DetectCloaked:
 		Range: 7c512
 		RequiresCondition: rank-elite && !disabled
-		DetectionTypes: Cloak, Hijacker
+		DetectionTypes: AirCloak, GroundCloak, Hijacker
 	RenderDetectionCircle:
 
 ^GenericAirDetector:
 	DetectCloaked:
 		Range: 6000
 		RequiresCondition: !disabled
-		DetectionTypes: Cloak, Hijacker
+		DetectionTypes: AirCloak, Hijacker
+	RenderDetectionCircle:
+
+^GenericAllDetector:
+	DetectCloaked:
+		Range: 6000
+		RequiresCondition: !disabled
+		DetectionTypes: AirCloak, GroundCloak, Hijacker
 	RenderDetectionCircle:
 
 ^TibHealable:
