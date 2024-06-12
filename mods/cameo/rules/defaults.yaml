@@ -1812,6 +1812,9 @@
 		CargoType: Infantry
 		CargoConditions:
 			susamedivacblackhawk: hospitalheal
+			fcom: garrisoned
+			miss: garrisoned
+			ramiss: garrisoned
 	SharedPassenger:
 		CargoType: Infantry
 	Garrisoner:
@@ -2478,6 +2481,11 @@
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
 		Range: 4c0
+	ExternalCondition@Boris:
+		Condition: BorisFlare
+	WithColoredOverlay@Boris:
+		RequiresCondition: BorisFlare
+		Color: FF0000AA
 
 ^BotProductionBehavior:
 	ProductionTimeMultiplier@easiestbotplayer:
@@ -2630,11 +2638,6 @@
 		Position: Center
 		Palette: player
 		IsPlayerPalette: True
-	ExternalCondition@Boris:
-		Condition: BorisFlare
-	WithColoredOverlay@Boris:
-		RequiresCondition: BorisFlare
-		Color: FF0000AA
 	GrantCondition@disable:
 		Condition: disabled
 		RequiresCondition: (empdisable || chronobeamed || diskdrain || being-captured) && !invulnerability
@@ -2681,6 +2684,7 @@
 	-CommandBarBlacklist:
 	Selectable:
 		-Bounds:
+		Class: civbuilding
 	Tooltip:
 		Name: Civilian Building
 		GenericName: Civilian Building
@@ -2730,7 +2734,7 @@
 	Targetable:
 		TargetTypes: TechHusk
 	TooltipDescription:
-		Description: Capture to restore to working condition.
+		Description: Capture to enable garrisoning.
 	TransformOnCapture:
 		CaptureTypes: building
 	RequiresSpecificOwners:
@@ -2784,6 +2788,23 @@
 		RedTint: 0.2
 		GreenTint: 0.1
 		BlueTint: 0.05
+
+^TechBuildingGarrisonable:
+	Inherits: ^TechBuilding
+	Inherits@Garrison: ^ClearableGarrisonNeutronOnly
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	-CommandBarBlacklist:
+	Health:
+		HP: 80000
+	Armor:
+		Type: Concrete
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 8
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 768,0,256, 448,-682,256, -448,-682,256, -768,0,256, -448,682,256, 448,682,256
+		PauseOnCondition: chronobeamed
 
 ^TechBuildingHusk:
 	Inherits: ^TechBuilding
@@ -3162,8 +3183,6 @@
 		HP: 60000
 	Armor:
 		Type: Heavy
-	DamageMultiplier:
-		Modifier: 0 #tile ID overlap
 	SoundOnDamageTransition:
 		DamagedSounds: xplos.aud
 		DestroyedSounds: xplobig4.aud
@@ -3175,6 +3194,8 @@
 		Intensity: 6
 	RequiresSpecificOwners:
 		ValidOwnerNames: Neutral
+	DamageMultiplier:
+		Modifier: 0 #tile ID overlap
 
 ^Crate:
 	Inherits@1: ^SpriteActor
