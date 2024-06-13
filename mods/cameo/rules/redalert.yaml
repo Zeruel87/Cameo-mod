@@ -230,6 +230,7 @@ RAE1:
 	Armament@GARRISONED: ##########
 		Name: garrisoned
 		Weapon: M1Carbine
+		MuzzleSequence: garrison-muzzle
 	AttackFrontal:
 		FacingTolerance: 0
 	WithInfantryBody:
@@ -438,6 +439,7 @@ SNIPER:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@cloak: ^CloakedVehicle
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -455,7 +457,6 @@ SNIPER:
 	Mobile:
 		Speed: 60
 	Passenger:
-		CustomPipType: red
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Infantry
 	Armament@PRIMARY:
@@ -467,16 +468,6 @@ SNIPER:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	Cloak:
-		InitialDelay: 125
-		CloakDelay: 75
-		CloakSound:
-		UncloakSound:
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
-		#IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
-	GrantConditionOnDamageState@UNCLOAK:
-		Condition: cloak-force-disabled
-		ValidDamageStates: Critical
 	RenderSprites:
 		Image: e1sniper
 		PlayerPalette: playerra
@@ -529,7 +520,6 @@ E7:
 	Guard:
 		Voice: Move
 	Passenger:
-		CustomPipType: red
 		Voice: Move
 	Armament@PRIMARY:
 		Weapon: Colt45
@@ -564,6 +554,7 @@ E7:
 MEDI:
 	Inherits: ^Soldier
 	Inherits@anim: ^TDRAInfantry
+	Inherits@pip: ^WithSpecialCargoPip
 	Buildable:
 		Prerequisites: ~tent
 		Queue: Infantry, RAInfantry
@@ -581,8 +572,6 @@ MEDI:
 		Speed: 50
 	RevealsShroud:
 		Range: 5000
-	Passenger:
-		CustomPipType: blue
 	Armament:
 		Weapon: Heal
 		#Cursor: heal
@@ -612,6 +601,7 @@ MECH:
 	Inherits: ^Soldier
 	Inherits@mechanic: ^MechanicDefaultWeapons
 	Inherits@anim: ^TDRAInfantry
+	Inherits@pip: ^WithSpecialCargoPip
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 100
@@ -631,7 +621,6 @@ MECH:
 	RevealsShroud:
 		Range: 5000
 	Passenger:
-		CustomPipType: blue
 		Voice: Move
 	RenderRangeCircle:
 		RangeCircleType: repair
@@ -716,6 +705,7 @@ RASPY:
 	Inherits: ^Soldier
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@anim: ^TDRAInfantry
+	Inherits@pip: ^WithSpecialCargoPip
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 25
@@ -738,7 +728,6 @@ RASPY:
 	RevealsShroud:
 		Range: 5000
 	Passenger:
-		CustomPipType: blue
 		Voice: Move
 	Disguise:
 		DisguisedCondition: disguise
@@ -4259,32 +4248,7 @@ RAHPAD:
 	WithBuildingBib:
 	Exit@1:
 		SpawnOffset: 0,-256,0
-	RallyPoint:
-	Production@NORMAL:
-		Produces: Aircraft
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAAircraft
-		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
-		Type: Aircraft
-		DisplayOrder: 4
-		Group: Aircraft
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
 	Reservable:
-	ProductionBar@AIRCRAFTALLIES:
-		ProductionType: Aircraft
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAAIRCRAFTALLIES:
-		ProductionType: RAAircraft
-		RequiresCondition: classicproductionqueues
 	Power:
 		Amount: -30
 	ProvidesPrerequisite@buildingname:
@@ -4323,31 +4287,6 @@ RAAFLD:
 	Exit@1:
 		ExitCell: 1,1
 		Facing: 768
-	RallyPoint:
-	Production@NORMAL:
-		Produces: Aircraft
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAAircraft
-		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
-		Type: Aircraft
-		DisplayOrder: 4
-		Group: Aircraft
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@Aircraft:
-		ProductionType: Aircraft
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAAircraft:
-		ProductionType: RAAircraft
-		RequiresCondition: classicproductionqueues
 	Reservable:
 	AirstrikePower@spyplane:
 		OrderName: SovietSpyPlane
@@ -6000,10 +5939,9 @@ MODSPACEPORT:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
-	Inherits@sell: ^RASovietSpawnActorsOnSell
+	Inherits@sell: ^RASpawnActorsOnSell
 	Inherits@weap: ^IsWeaponFactory
-	Inherits@2: ^CashTricklerMultipliers
-	Inherits@XP: ^GainsExperienceCity
+	Inherits@cash: ^CashTricklerWithExperience
 	Buildable:
 		Queue: Building, RABuilding
 		BuildLimit: 1
@@ -6125,28 +6063,6 @@ MODSPACEPORT:
 		DirectionArrowAnimation: airstrikedirection
 		DisplayTimerRelationships: Ally, Neutral, Enemy
 	SupportPowerChargeBar:
-	CashTrickler:
-		Interval: 125
-		Amount: 250
-		PauseOnCondition: lowpower
-	CashTricklerMultiplier@RANK-1:
-		Modifier: 125
-		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
-	CashTricklerMultiplier@RANK-2:
-		Modifier: 150
-		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
-	CashTricklerMultiplier@RANK-3:
-		Modifier: 175
-		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
-	CashTricklerMultiplier@RANK-4:
-		Modifier: 200
-		RequiresCondition: city-elite && !lowpower
-	ExperienceTrickler@1:
-		Amount: 500
-		Interval: 1
-		InitialDelay: 1
-		PauseOnCondition: lowpower
-		RequiresCondition: city-veteran <= 3
 
 SAPC:
 	Inherits: ^Vehicle
@@ -6159,6 +6075,7 @@ SAPC:
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@cargo: ^CargoVehicle
 	Inherits@botmicro: ^BotAutoDeployTransport
+	Inherits@cloak: ^CloakedVehicle
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 130
@@ -6201,11 +6118,6 @@ SAPC:
 		CloakDelay: 75
 		CloakSound: appear1.aud
 		UncloakSound: appear1.aud
-		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
-		#IsPlayerPalette: true
-	GrantConditionOnDamageState@UNCLOAK:
-		Condition: cloak-force-disabled
-		ValidDamageStates: Critical
 	Voiced:
 		VoiceSet: RAVehicleVoice
 	WithMuzzleOverlay:
@@ -6387,6 +6299,7 @@ HBOX:
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@cloak: ^CloakedVehicle
 	Tooltip:
 		Name: Camo Pillbox
 	Building:
@@ -6403,12 +6316,6 @@ HBOX:
 	Cloak:
 		InitialDelay: 125
 		CloakDelay: 75
-		RequiresCondition: !cloak-force-disabled
-		#IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
-	GrantConditionOnDamageState@UNCLOAK:
-		Condition: cloak-force-disabled
-		ValidDamageStates: Critical
 	Turreted:
 		TurnSpeed: 1023
 	-QuantizeFacingsFromSequence:
@@ -6614,9 +6521,6 @@ modartyturret:
 		Image: modartyturret
 		PlayerPalette: player_rgba
 	-WithDeathAnimation:
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 	WithRangeCircle:
 		Color: FFFF0088
 		Range: 13333
@@ -7959,6 +7863,7 @@ RASAMURAI:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@cloak: ^CloakedVehicle
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -7987,12 +7892,6 @@ RASAMURAI:
 	RenderSprites:
 		Image: rasamurai
 	Cloak:
-		InitialDelay: 125
-		CloakDelay: 75
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage
-		PauseOnCondition: cloak-force-disabled || base-reveal
-		RequiresCondition: modjapan
-		IsPlayerPalette: true
 	Voiced:
 		VoiceSet: SamuraiVoice
 		Volume: 3
@@ -8122,6 +8021,8 @@ ROCKETANGEL:
 	RenderSprites:
 		Image: rocketangel
 		PlayerPalette: playerra2
+	ProducibleWithLevel@spyinfantry:
+		Prerequisites: barracks.upgraded
 
 ROCKETANGEL.husk:
 	Inherits: ^SmallHelicopterHusk

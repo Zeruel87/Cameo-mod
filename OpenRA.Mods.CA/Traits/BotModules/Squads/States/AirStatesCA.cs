@@ -247,6 +247,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			foreach (var a in owner.Units)
 			{
 				var currentActivity = a.Actor.CurrentActivity;
+				if (currentActivity == null) continue;
 				var activityType = currentActivity.GetType();
 				var nextActivity = currentActivity.NextActivity;
 

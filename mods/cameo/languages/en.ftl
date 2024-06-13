@@ -1,3 +1,5 @@
+button-tab-container-asengine = Attacque Supérior
+
 options-observer-stats =
     .minimal = Minimal
     .none = Information: None

@@ -275,11 +275,11 @@ Player:
 
 ^RA2InfantryShadow:
 	RenderSprites:
-		PlayerPalette: playerra2
+		PlayerPalette: ra2infantry
 
 ^RA2InfantryDeathAnimations:
 	WithDeathAnimation:
-		DeathSequencePalette: playerra2
+		DeathSequencePalette: ra2infantry
 		DeathTypes:
 			DefaultDeath: 1
 			BulletDeath: 1
@@ -313,7 +313,7 @@ Player:
 ^RA2Infantry:
 	Inherits@shadow: ^RA2InfantryDeathAnimations
 	RenderSprites:
-		PlayerPalette: playerra2
+		PlayerPalette: ra2infantry
 	Crushable:
 		CrushSound: igensqua.wav
 	DeathSounds@NORMAL:
@@ -529,7 +529,7 @@ RA2Flameguy:
 
 OILB.RA2:
 	Inherits: ^RA2Building
-	Inherits: OILB.Building
+	Inherits@2: OILB.Building
 	Tooltip:
 		Name: RA2 Oil Derrick
 	Buildable:
@@ -539,10 +539,11 @@ OILB.RA2:
 		Prerequisites: ~ra2tek, ~techlevel.medium
 	WithIdleOverlay@idle-pump:
 		Sequence: idle-pump
-		RequiresCondition: !damaged && !build-incomplete
-	WithIdleOverlay@damaged-idle-pump:
-		Sequence: damaged-idle-pump
-		RequiresCondition: damaged && !build-incomplete
+		PauseOnCondition: lowpower
+		RequiresCondition: !build-incomplete
+	#WithIdleOverlay@damaged-idle-pump:
+	#	Sequence: damaged-idle-pump
+	#	RequiresCondition: damaged && !build-incomplete
 	-RenderSprites:
 	RenderSprites:
 		Image: ra2caoild
@@ -921,6 +922,7 @@ ra2gaairc:
 	Inherits@radar: ^RadarBuilding
 	Inherits@sell: ^RA2ASpawnActorsOnSell
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@hpad: ^IsAircraftFactory
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 130
@@ -942,35 +944,10 @@ ra2gaairc:
 	Exit@1:
 		ExitCell: 1,1
 		Facing: 768
-	RallyPoint:
 	Reservable:
 	LaysMinefield:
 		Mines: ra2gaairc.dock
 		Locations: 0,1, 2,1, 1,0
-	Production@NORMAL:
-		Produces: Aircraft
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAAircraft
-		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
-		Type: Aircraft
-		DisplayOrder: 4
-		Group: Aircraft
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@Aircraft:
-		ProductionType: Aircraft
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAAircraft:
-		ProductionType: RAAircraft
-		RequiresCondition: classicproductionqueues
 	ParatroopersPower@ra2paratroopers:
 		PauseOnCondition: disabled
 		Prerequisites:
@@ -1010,11 +987,11 @@ ra2gaairc:
 	GivesBuildableArea:
 		AreaTypes: building, cityi
 	WithIdleOverlay@top:
-		Sequence: idletop
+		Sequence: idle-top
 		PauseOnCondition: disabled
 		RequiresCondition: !build-incomplete
 	WithIdleOverlay@bottom:
-		Sequence: idlebottom
+		Sequence: idle-bottom
 		PauseOnCondition: disabled
 	WithIdleOverlay@mid:
 		Sequence: idle-mid
@@ -1552,7 +1529,7 @@ ra2nasam:
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
-		BuildPaletteOrder: 20
+		BuildPaletteOrder: 40
 		Prerequisites: ~ra2gacnst, ra2gaairc
 		Description: Anti-aircraft defense.\nRequires power to operate
 	Valued:
@@ -2290,6 +2267,48 @@ ra2natech:
 			1: !RA2DOOM
 		DirectionArrowAnimation: airstrikedirection
 
+ra2naairf:
+	Inherits: ^RA2Building
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@shape: ^4x3Shape
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@hpad: ^IsAircraftFactory
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Soviet Airfield
+	Buildable:
+		BuildPaletteOrder: 130
+		Prerequisites: ~ra2nacnst, ra2naradr
+		Queue: Building, RABuilding
+		Description: Produces aircraft.
+	Building:
+		Footprint: =xxx xxxx xxx=
+		Dimensions: 4,3
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Exit@1:
+		ExitCell: 1,1
+		Facing: 384
+	RevealsShroud:
+		Range: 7c0
+	Power:
+		Amount: -30
+	WithIdleOverlay@top:
+		Sequence: idle-top
+		PauseOnCondition: disabled
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@bottom:
+		Sequence: idle-bottom
+		PauseOnCondition: disabled
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: disabled
+	ProvidesPrerequisite@buildingname:
+
 yrngindp:
 	Inherits: ^RA2Building
 	Inherits@shape: ^4x3Shape
@@ -2515,7 +2534,7 @@ yrngbnkr:
 		RequiresCondition: loaded
 	AttackOpenTopped:
 		Armaments: garrisoned
-		PortOffsets: 768,0,512, 448,-682,512, -448,-682,512, -768,0,512, -448,682,512, 448,682,512
+		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
 		PauseOnCondition: chronobeamed
 	DamageMultiplier@2x2Shape:
 		Modifier: 50
@@ -2523,9 +2542,6 @@ yrngbnkr:
 		Range: 6666
 	Selectable:
 		Class: yrngbnkr
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 yrngbnkr.bot:
 	Inherits: yrngbnkr
@@ -2601,7 +2617,7 @@ ra2naflak:
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
-		BuildPaletteOrder: 20
+		BuildPaletteOrder: 40
 		Prerequisites: ~ra2nacnst, ra2naradr
 		Description: Anti-aircraft defense.\nRequires power to operate
 	Valued:
@@ -2663,22 +2679,22 @@ ra2tesla:
 	SelectionDecorations:
 	Health:
 		HP: 120000
-	WithTeslaChargeAnimation:
+	WithTeslaChargeOverlay:
 	GrantConditionOnPrerequisite@EMPTesla:
 		Condition: emptesla
 		Prerequisites: upemptesla
 	Armament:
 		Weapon: RA2CoilBolt
 		LocalOffset: 120,0,1100
-		RequiresCondition: (!TeslaCoilCharge || (TeslaCoilCharge == 1 && unpowered)) && !emptesla && !arctesla
+		RequiresCondition: ((!TeslaCoilCharge && !unpowered) || (TeslaCoilCharge == 1 && unpowered)) && !emptesla && !arctesla
 	Armament@2:
 		Weapon: RA2CoilBolt2
 		LocalOffset: 120,0,1100
-		RequiresCondition: (!TeslaCoilCharge || (TeslaCoilCharge == 1 && unpowered)) && emptesla && !arctesla
+		RequiresCondition: ((!TeslaCoilCharge && !unpowered) || (TeslaCoilCharge == 1 && unpowered)) && emptesla && !arctesla
 	Armament@3:
 		Weapon: RA2CoilBolt3
 		LocalOffset: 120,0,1100
-		RequiresCondition: (!TeslaCoilCharge || (TeslaCoilCharge == 1 && unpowered)) && emptesla && arctesla
+		RequiresCondition: ((!TeslaCoilCharge && !unpowered) || (TeslaCoilCharge == 1 && unpowered)) && arctesla
 	Armament@Charged1:
 		Weapon: RA2OPCoilBolt1
 		LocalOffset: 120,0,1100
@@ -2690,14 +2706,13 @@ ra2tesla:
 	Armament@Charged3:
 		Weapon: RA2OPCoilBolt3
 		LocalOffset: 120,0,1100
-		RequiresCondition: ((TeslaCoilCharge && !unpowered) || (TeslaCoilCharge > 1 && unpowered)) && emptesla && arctesla
+		RequiresCondition: ((TeslaCoilCharge && !unpowered) || (TeslaCoilCharge > 1 && unpowered)) && arctesla
 	AttackTesla:
+		RequiresCondition: !build-incomplete
 		PauseOnCondition: disabled
 		ChargeAudio: btespow.wav
 		MaxCharges: 1
 		ReloadDelay: 75
-		RequiresCondition: !build-incomplete
-	ProvidesPrerequisite@buildingname:
 	WithMakeAnimation:
 	WithIdleOverlay@powered:
 		Sequence: idle-powered
@@ -2730,13 +2745,16 @@ ra2tesla:
 		SpawnOffset: 511,511,0, -511,-511,0, -511,511,0
 		RespawnTicks: 250
 		InitialActorCount: 0
+		SlavesTargetSelf: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		LoadedCondition: TeslaCoilCharge
 		PauseOnCondition: !teslaChargeUpgrade
 	Production:
 		Produces: ra2tesla.upgrade
 		RequiresCondition: !teslaChargeUpgrade
 	ProductionBar:
 		ProductionType: ra2tesla.upgrade
-	ProductionBar:
 	ProductionQueue:
 		Type: ra2tesla.upgrade
 		DisplayOrder: 0
@@ -2922,6 +2940,9 @@ yrnacnst:
 		RequiresCondition: !build-incomplete
 	WithIdleOverlay@normal:
 		Sequence: idle-normal
+		RequiresCondition: !build-incomplete
+	-WithBuildingPlacedOverlay:
+	WithBuildingPlacedAnimation:
 		RequiresCondition: !build-incomplete
 
 yrygweap:
@@ -3179,7 +3200,7 @@ yryarefn:
 		RequiresCondition: !build-incomplete && !disabled
 		PauseOnCondition: being-demolished
 		IntoActor: yrsmin.empy
-		Facing: 0
+		Facing: 128
 		Voice: Undeploy
 	Turreted:
 		TurnSpeed: 90
@@ -3349,6 +3370,42 @@ yrygtech:
 	WithIdleOverlay@critical:
 		Sequence: idle-critical
 		RequiresCondition: !build-incomplete
+
+yrygcomd:
+	Inherits: ^RA2Building
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Inherits@sell: ^RA2YSpawnActorsOnSell
+	Inherits@shape: ^4x3Shape
+	Inherits@hpad: ^IsAircraftFactory
+	Inherits@cash: ^CashTricklerWithExperience
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Lunar Command Center
+	Buildable:
+		BuildPaletteOrder: 130
+		BuildLimit: 1
+		Prerequisites: ~yrnacnst, yrygtech
+		Queue: Building, RABuilding
+		Description: Produces aircraft.
+	Building:
+		Footprint: =xx= xxxx xxxx
+		Dimensions: 4,3
+	WithSpriteBody:
+	Health:
+		HP: 250000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 7c0
+	Power:
+		Amount: -100
+	Exit@1:
+		SpawnOffset: 1536, 1024, 0
+		ExitCell: 3,2
+		Facing: 640
+	ProvidesPrerequisite@buildingname:
 
 ra2yclon:
 	Inherits: ra2naclon
@@ -4183,7 +4240,6 @@ RA2CLEG:
 	Health:
 		HP: 35000
 	Passenger:
-		CustomPipType: blue
 	Armament@sound:
 		Weapon: RA2ChronoTele
 	Armament@PRIMARY:
@@ -4338,7 +4394,6 @@ RA2TANY:
 	Mobile:
 		Speed: 75
 	Passenger:
-		CustomPipType: red
 	Armament@PRIMARY:
 		Weapon: RA2DoublePistols
 		RequiresCondition: !rank-elite
@@ -4446,6 +4501,7 @@ RA2SPY:
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Inherits@pip: ^WithSpecialCargoPip
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 90
@@ -4465,7 +4521,6 @@ RA2SPY:
 	Mobile:
 		Speed: 60
 	Passenger:
-		CustomPipType: blue
 	Disguise:
 		DisguisedCondition: disguise
 	Cloak:
@@ -4544,7 +4599,7 @@ RA2ADOG:
 	Crushable:
 		CrushSound: igensqua.wav
 	WithDeathAnimation:
-		DeathSequencePalette: playerra2
+		DeathSequencePalette: ra2infantry
 		DeathTypes:
 			DefaultDeath: 1
 			BruteMutate: 1
@@ -4625,7 +4680,6 @@ YRBORIS:
 	Mobile:
 		Speed: 60
 	Passenger:
-		CustomPipType: red
 	Armament@PRIMARY:
 		Weapon: BorisAKM
 		RequiresCondition: !rank-elite
@@ -4704,13 +4758,11 @@ RA2E2:
 		RequiresCondition: rank-elite
 	Armament@GARRISONED:
 		Name: garrisoned
-		Weapon: RA2vulcan2
+		Weapon: RA2vulcan3
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	AttackFrontal:
 		FacingTolerance: 0
-	AcceptsDeliveredExperience:
-		ValidTypes: infantry
 	Voiced:
 		VoiceSet: ConscriptVoice
 	DeliversCash:
@@ -4994,7 +5046,7 @@ ra2shk:
 	Armament@PRIMARY3:
 		Weapon: RA2PortaTesla3
 		LocalOffset: 427,0,341
-		RequiresCondition: !rank-elite && emptesla && arctesla
+		RequiresCondition: !rank-elite && arctesla
 	Armament@Elite:
 		Weapon: RA2PortaTeslaE
 		LocalOffset: 427,0,341
@@ -5016,7 +5068,7 @@ ra2shk:
 	Armament@GARRISONED3:
 		Name: garrisoned
 		Weapon: RA2PortaTesla3
-		RequiresCondition: !rank-elite && emptesla && arctesla
+		RequiresCondition: !rank-elite && arctesla
 	Armament@GARRISONEDELITE:
 		Name: garrisoned
 		Weapon: RA2PortaTeslaE
@@ -5041,6 +5093,7 @@ ra2shk.bot:
 	Inherits: ra2shk
 	-Buildable:
 	-MapEditorData:
+	-UpdatesPlayerStatistics:
 	Tooltip:
 		Name: Tesla Coil Charger
 	AutoTargetPriority@DEFAULT:
@@ -5053,6 +5106,7 @@ ra2shk.bot:
 	-Armament@PRIMARY2:
 	-Armament@Elite:
 	Armament@TeslaCoilCharge:
+		Weapon: RA2TeslaCoilCharge_cosmetic
 	Mobile:
 		CanTurnWhileDisabled: true
 		ImmovableCondition: disable_movement
@@ -5064,11 +5118,19 @@ ra2shk.bot:
 		Delay: 10
 	AutoTarget:
 		AllowMovement: false
-	AttackFrontal:
-		FacingTolerance: 0
+		RequiresCondition: nocoil
+	Turreted:
+	-AttackFrontal:
+	AttackFollowFrontal: #TODO
+		MustFaceTarget: true
 	Selectable:
 		Priority: 4
 	DroneSpawnerSlave:
+		MasterDeadCondition: nocoil
+		DamageTypes: DefaultDeath
+	TransformOnCondition:
+		IntoActor: ra2shk
+		RequiresCondition: nocoil
 	RejectsOrders:
 	WithInfantryBody:
 ##############################################
@@ -5322,6 +5384,7 @@ YRYURI:
 	Inherits@bot: ^BotAutoDeployOnLowHealth
 	Inherits@mccap: ^MindControlCap
 	Inherits@genemod: ^YuriGeneMod
+	Inherits@pip: ^WithSpecialCargoPip
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -5349,7 +5412,7 @@ YRYURI:
 		Capacity: 1
 		RequiresCondition: !disabled
 		ControllingCondition: controlling
-	#ReloadArmamentsBar:
+	ReloadArmamentsBar:
 	AutoTarget:
 		RequiresCondition: (!controlling && !upmccap) || (controlling < 3 && upmccap)
 	AttackFrontal:
@@ -5594,6 +5657,9 @@ YRGTRP:
 	ReloadDelayMultiplier@gat2:
 		Modifier: 33
 		RequiresCondition: gatling > 1
+	RangeMultiplier@gat2:
+		Modifier: 110
+		RequiresCondition: gatling > 1
 	GrantConditionOnAttack@gatling:
 		Condition: gatling
 		RequiredShotsPerInstance: 6, 12
@@ -5617,6 +5683,7 @@ yrbiot:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@genemod: ^YuriGeneMod
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
@@ -5624,7 +5691,7 @@ yrbiot:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 100
 		Prerequisites: ~yryabrck, ra2napsis
-		Description: Armed with a chemspray. Strong vs Infantry, Buildings
+		Description: Armed with a toxin spray. Strong vs Infantry, Buildings
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -5639,7 +5706,7 @@ yrbiot:
 		Speed: 66
 	Armament@PRIMARY:
 		Weapon: RA2Chemspray
-		LocalOffset: 600,0,256
+		LocalOffset: 600,0,512
 		FireDelay: 5
 	Armament@Garrison:
 		Name: garrisoned
@@ -5648,8 +5715,8 @@ yrbiot:
 	AttackFrontal:
 	Voiced:
 		VoiceSet: RA2DesolatorVoice
-	RenderSprites:
-		Image: ra2deso
+	Selectable:
+		DecorationBounds: 768, 900, 0, -256
 
 ##############################################
 #   Red Alert 2 Allies Vehicles
@@ -6260,8 +6327,6 @@ RA2SREF:
 	AttackTurreted:
 	SelectionDecorations:
 	Selectable:
-	#WithVoxelBody:
-	#WithVoxelTurret:
 	WithSpriteTurret:
 	Voiced:
 		VoiceSet: PrismTankVoice
@@ -6416,7 +6481,6 @@ yrbfrt:
 	Selectable:
 		DecorationBounds: 1440, 1440, 0, -128
 		Class: yrbfrt
-	#WithVoxelBody:
 	Voiced:
 		VoiceSet: BattleFortressVoice
 	DeliversCash:
@@ -7075,9 +7139,9 @@ ra2dron:
 	WithFacingSpriteBody:
 		Sequence: shoot
 		RequiresCondition: jousting
-	WithTextDecoration@jousting:
-		Text: Jousting
-		RequiresCondition: jousting
+	#WithTextDecoration@jousting:
+	#	Text: Jousting
+	#	RequiresCondition: jousting
 	Armament:
 		Weapon: RA2DroneJump
 		RequiresCondition: !rank-elite
@@ -7192,6 +7256,7 @@ YRSMIN:
 	Mobile:
 		Speed: 50
 		TurnSpeed: 10
+		Locomotor: heavywheeled
 	Health:
 		HP: 200000
 	Repairable:
@@ -7204,7 +7269,7 @@ YRSMIN:
 		Type: Heavy
 	Transforms:
 		IntoActor: yryarefn
-		Facing: 0
+		Facing: 128
 		TransformSounds: uplace.wav
 		NoTransformNotification: BuildingCannotPlaceAudio
 		PauseOnCondition: disabled || terrordroned
@@ -7277,37 +7342,37 @@ YRYTNK:
 		TurnSpeed: 44
 	Armament@1:
 		Weapon: RA2GattlingMG1
-		PauseOnCondition: gatling
+		RequiresCondition: !gatling
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	Armament@2:
 		Weapon: RA2GattlingMG2
-		PauseOnCondition: gatling != 1
+		RequiresCondition: gatling == 1
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle-1
 		MuzzlePalette: ra2effect
 	Armament@3:
 		Weapon: RA2GattlingMG3
-		PauseOnCondition: gatling < 2
+		RequiresCondition: gatling > 1
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
 	Armament@1AA:
 		Weapon: RA2GattlingMG1AA
-		PauseOnCondition: gatling
+		RequiresCondition: !gatling
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	Armament@2AA:
 		Weapon: RA2GattlingMG2AA
-		PauseOnCondition: gatling != 1
+		RequiresCondition: gatling == 1
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle-1
 		MuzzlePalette: ra2effect
 	Armament@3AA:
 		Weapon: RA2GattlingMG3AA
-		PauseOnCondition: gatling < 2
+		RequiresCondition: gatling > 1
 		LocalOffset: 700,90,400, 700,-90,400
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
@@ -7493,7 +7558,6 @@ YRMIND:
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@MC: ^MCImmune
@@ -7565,7 +7629,6 @@ YRMIND:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1280, 0, -128
-	WithVoxelBody:
 	VoiceAnnouncement@Overload:
 		RequiresCondition: (slaves > 3 && !upmccap) || (slaves > 6 && upmccap)
 		Voice: Overload
@@ -7574,62 +7637,9 @@ YRMIND:
 		VoiceSet: MasterMindVoice
 	DeliversCash:
 		Payload: 875
+	RenderSprites:
+		PlayerPalette: playerra2
 
-##############################################
-#   Red Alert 2 Beta Vehicles
-##############################################
-RA2LTNK:
-	Inherits: LTNK
-	Inherits@Voxel: ^RenderVoxel
-	Tooltip:
-		Name: Beta Light Tank
-	-Buildable:
-	Health:
-		HP: 45000
-	Armament:
-		Weapon: RA2Robotmm
-	AttackTurreted:
-	WithMuzzleOverlay:
-	WithSpriteTurret:
-	Inherits@EXT: ^ExternalConditions
-	AcceptsDeliveredExperience:
-		ValidTypes: vehicle
-	RenderVoxels:
-		NormalsPalette: ts-normals
-		Scale: 5.4
-	WithVoxelBody:
-	WithVoxelTurret:
-	WithVoxelBarrel:
-	Voiced:
-		VoiceSet: RA2SovietVehicleVoice
-	DeliversCash:
-		Payload: 300
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-
-ra2howi:
-	Inherits: ARTY
-	Inherits@Voxel: ^RenderVoxel
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: ra2gadept, ~techlevel.medium, ~RA2KoreaAddon
-		Queue: Vehicle, RAVehicle
-		Description: Korean Main Artillery.\n Strong vs Structures.\n Weak vs Aircraft, Infantry, Vehicles.
-	Valued:
-		Cost: 800
-	Tooltip:
-		Name: Beta Howitzer
-	Health:
-		HP: 40000
-	Voiced:
-		VoiceSet: RA2AlliesVehicleVoice
-	RenderVoxels:
-		NormalsPalette: ts-normals
-	WithVoxelBody:
-	DeliversCash:
-		Payload: 400
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
 ############################################
 #   Red Alert 2 Naval
 ############################################
@@ -7941,18 +7951,6 @@ ra2aegis:
 	Voiced:
 		VoiceSet: AegisVoice
 
-ra2cdest:
-	Inherits: ra2dest
-	-Buildable:
-	Valued:
-		Cost: 800
-	DeliversCash:
-		Payload: 400
-	Tooltip:
-		Name: Coast Guard Boat
-	Armor:
-		Type: Light
-
 ra2sapc:
 	Inherits: ^BoatUnit
 	Inherits@cargo: ^CargoVehicle
@@ -8170,25 +8168,6 @@ ra2dmisl:
 		Weapon: DredMissile
 		EmptyWeapon: DredMissile
 
-ra2vlad:
-	Inherits: ra2dred
-	Valued:
-		Cost: 3000
-	Tooltip:
-		Name: Vladimir Dreadnought
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	-Buildable:
-	Mobile:
-		Speed: 50
-	Health:
-		HP: 40000
-	RevealsShroud:
-		Range: 10c0
-		RevealGeneratedShroud: False
-	DetectCloaked:
-		Range: 8c0
-
 ra2carrier:
 	Inherits: ^BoatUnit
 	Inherits@Voxel: ^RenderVoxel
@@ -8350,8 +8329,8 @@ RA2ZEP:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 99
-		Prerequisites: ~ra2natech
-		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
+		Prerequisites: ~ra2naairf, ra2natech
+		Queue: Aircraft, RAAircraft
 		Description: Heavy bomber airship.\n  Strong vs Buildings, Infantry\n  Weak vs Aircraft
 	Aircraft:
 		InitialFacing: 896
@@ -8413,9 +8392,8 @@ yrschp:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 98
-		Prerequisites: ~ra2naweap, ~ra2naradr
-		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
-		#BuildDuration: 800
+		Prerequisites: ~ra2naairf
+		Queue: Aircraft, RAAircraft
 		Description: Helicopter gunship that can deploy into a cannon.\n  Strong vs Buildings, Infantry\n  Weak vs Aircraft
 	Aircraft:
 		CanForceLand: false
@@ -8514,13 +8492,10 @@ yrschp:
 	Voiced:
 		VoiceSet: SiegeChopperVoice
 	DeathSounds:
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
 	FirepowerMultiplier@FirerateCompensation:
 		Modifier: 33
 	FirepowerMultiplier@RadShells:
 		Types: deployed
-
 
 RA2FALC:
 	Inherits: ^Helicopter
@@ -8583,6 +8558,12 @@ RA2FALC:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
+	Contrail@1:
+		Offset: -100,256,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -100,-256,0
+		TrailLength: 15
 	Voiced:
 		VoiceSet: HarrierVoice
 	DeathSounds:
@@ -8677,7 +8658,6 @@ ra2shad:
 	Aircraft:
 		TurnSpeed: 20
 		Speed: 120
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice
 		AltitudeVelocity: 0c100
 		RepulsionSpeed: 10
 	Health:
@@ -8729,62 +8709,74 @@ ra2shad.bot1:
 
 ra2hind:
 	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@cargo: ^CargoAircraft
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
 	Valued:
 		Cost: 1000
 	Tooltip:
 		Name: Hind Transport
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~ra2naairf
+		Queue: Aircraft, RAAircraft
+		IconPalette: ra2cameo
+		Description: Carryall helicopter armed with a machine gun.
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Aircraft:
 		TurnSpeed: 20
 		Speed: 150
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice
 		AltitudeVelocity: 0c100
 		RepulsionSpeed: 10
 	Health:
-		HP: 16500
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+		HP: 27500
+	ChangesHealth@SelfHealing:
+		Step: 11
 	Armament@PRIMARY:
 		Weapon: BlackHawkCannon
 		LocalOffset: 128,-213,-85, 128,213,-85
-		PauseOnCondition: !ammo
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
 	AttackAircraft:
 		FacingTolerance: 80
-	AmmoPool:
-		Ammo: 10
-		AmmoCondition: ammo
-	-SpawnActorOnDeath:
-	-WithShadow:
-	SelectionDecorations:
-	ReloadAmmoPool:
-		Delay: 40
-		Count: 2
+	WithIdleOverlay@ROTORAIR:
+		Offset: 0,0,85
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTORGROUND:
+		Offset: 0,0,85
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	SpawnActorOnDeath:
+		Actor: ra2hind.husk
 	Selectable:
 		DecorationBounds: 1280, 1024
 	Carryall:
-	RenderVoxels:
-		NormalsPalette: ts-normals
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 5
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
+	Voiced:
+		VoiceSet: SiegeChopperVoice
+	DeathSounds:
+	RenderSprites:
+		PlayerPalette: playerra2
+
+ra2hind.husk:
+	Inherits: ^LargeHelicopterHusk
+	Tooltip:
+		Name: Hind Transport
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 150
+	RenderSprites:
+		Image: ra2hind
+		PlayerPalette: playerra2
 
 YRDISK:
 	Inherits: ^Helicopter
-	Inherits@Template: ^SpcaceshipTemplate
+	Inherits@Template: ^SpaceshipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceGlobal
@@ -8798,8 +8790,8 @@ YRDISK:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~yrygtech
-		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
+		Prerequisites: ~yrygcomd
+		Queue: Aircraft, RAAircraft
 		Description: Flying saucer armed with lasers.\nCan shut down power plants and defenses when overhead\nCan steal resources from refineries and silos\n  Strong vs Everything
 	Aircraft:
 		InitialFacing: 896
@@ -8881,6 +8873,8 @@ YRDISK:
 		StartIfBelow: 100
 		DamageCooldown: 1
 		RequiresCondition: stealing
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2rock:
 	Inherits: ^Helicopter
@@ -8960,6 +8954,8 @@ ra2rock:
 	GrantConditionOnPrerequisite@Upgrade:
 		Condition: upra2rock
 		Prerequisites: upra2rock
+	ProducibleWithLevel@spyinfantry:
+		Prerequisites: barracks.upgraded
 
 ra2rock.husk:
 	Inherits: ^HelicopterHusk
@@ -8991,7 +8987,7 @@ yrlunr:
 	Tooltip:
 		Name: Cosmonaut
 	Buildable:
-		Prerequisites: ~ra2napsis, ~upyrlunr
+		Prerequisites: yrygcomd, ~upyrlunr
 	Armament@PRIMARY:
 		Weapon: RA2CosmonautLaser
 		LocalOffset: 128,196,128, 128,-196,128
@@ -9313,8 +9309,8 @@ yrbpln1:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ~ra2naweap, ra2naradr, ~upra2mig
-		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
+		Prerequisites:  ~ra2naairf, ~upra2mig
+		Queue: Aircraft, RAAircraft
 		Description: Jet bomber.
 	Armament:
 		PauseOnCondition: !ammo
@@ -10067,7 +10063,6 @@ ra2hornet.Husk:
 
 RA2FALC.Husk:
 	Inherits: ^PlaneHusk
-	Inherits@Voxel: ^RenderVoxel
 	Tooltip:
 		Name: Harrier
 	Aircraft:
@@ -10083,17 +10078,12 @@ RA2FALC.Husk:
 		Type: CenterPosition
 	RenderSprites:
 		Image: ra2falc
-	RenderVoxels:
-		Image: ra2falc
 	-WithShadow:
-	-Cloak@TDcloak:
-	-Cloak@TScloak:
 	RenderSprites:
 		PlayerPalette: playerra2
 
 ra2beag.Husk:
 	Inherits: ^PlaneHusk
-	Inherits@Voxel: ^RenderVoxel
 	Tooltip:
 		Name: Black Eagle
 	Aircraft:
@@ -10109,11 +10099,7 @@ ra2beag.Husk:
 		Type: CenterPosition
 	RenderSprites:
 		Image: ra2beag
-	RenderVoxels:
-		Image: ra2beag
 	-WithShadow:
-	-Cloak@TDcloak:
-	-Cloak@TScloak:
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -10126,9 +10112,7 @@ YRDISK.Husk:
 		Speed: 100
 	RenderSprites:
 		Image: yrdisk
-	Turreted:
-	#RenderSprites:
-	#	PlayerPalette: playerra2
+		PlayerPalette: playerra2
 
 ra2asw.Husk:
 	Inherits: ^HelicopterHusk
@@ -10270,1090 +10254,6 @@ yrspyp.husk:
 	RenderSprites:
 		PlayerPalette: playerra2
 
-#######################################
-# RA2 Special Infantry
-#######################################
-
-YRARND:
-	Inherits: ^Soldier
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Arnnie Frankenfurter
-	Health:
-		HP: 16000
-	Mobile:
-		Speed: 71
-		Voice: Move
-	Guard:
-		Voice: Move
-	RevealsShroud:
-		Range: 6c0
-	Demolition:
-		DetonationDelay: 45
-		Voice: Demolish
-	Passenger:
-		CustomPipType: red
-		Voice: Move
-	AmmoPool:
-		Ammo: 96
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 15
-		Count: 1
-	Armament@1:
-		Weapon: RA2GattlingMG1
-		PauseOnCondition: ammo <= 64
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@2:
-		Weapon: RA2GattlingMG2
-		PauseOnCondition: ammo <= 8 && ammo >= 65
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@3:
-		Weapon: RA2GattlingMG3
-		PauseOnCondition: ammo >= 9
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@1AA:
-		Weapon: RA2GattlingMG1AA
-		PauseOnCondition: ammo <= 64
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@2AA:
-		Weapon: RA2GattlingMG2AA
-		PauseOnCondition: ammo <= 8 && ammo >= 65
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@3AA:
-		Weapon: RA2GattlingMG3AA
-		PauseOnCondition: ammo >= 9
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@GARRISONED:
-		Name: garrisoned
-		Weapon: RA2DoublePistols
-	AttackFrontal:
-		FacingTolerance: 0
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-		StandSequences: stand
-	DetectCloaked:
-		DetectionTypes: Cloak, Hijacker
-	Voiced:
-		VoiceSet: GIVoice
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@EXT: ^ExternalConditions
-	AcceptsDeliveredExperience:
-		ValidTypes: infantry
-	DeliversCash:
-		Payload: 600
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-
-YRSTLN:
-	Inherits: ^Soldier
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Sammy Stallion
-	Health:
-		HP: 16000
-	Mobile:
-		Speed: 71
-		Voice: Move
-	Guard:
-		Voice: Move
-	RevealsShroud:
-		Range: 6c0
-	Demolition:
-		DetonationDelay: 45
-		Voice: Demolish
-	Passenger:
-		CustomPipType: red
-		Voice: Move
-	AmmoPool:
-		Ammo: 96
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 15
-		Count: 1
-	Armament@1:
-		Weapon: RA2CRM60
-	Armament@GARRISONED:
-		Name: garrisoned
-		Weapon: RA2DoublePistols
-	AttackFrontal:
-		FacingTolerance: 0
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
-		StandSequences: stand
-	DetectCloaked:
-		DetectionTypes: Cloak, Hijacker
-	Voiced:
-		VoiceSet: GIVoice
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@EXT: ^ExternalConditions
-	AcceptsDeliveredExperience:
-		ValidTypes: infantry
-	DeliversCash:
-		Payload: 600
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-
-RA2CAR:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Sedan Car
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 10000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-	RenderVoxels:
-		Scale: 5.9
-
-RA2BUS:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 600
-	Tooltip:
-		Name: School Bus
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 20000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 300
-	Cargo:
-		Types: Infantry
-		MaxWeight: 12
-		EjectOnDeath: false
-	Mobile:
-		Speed: 80
-	RenderVoxels:
-		Scale: 5.9
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 6
-
-RA2COP:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Police Car
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 10000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-	RenderVoxels:
-		Scale: 5.9
-
-RA2EUROC:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Citroen CV2
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 10000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-	RenderVoxels:
-		NormalsPalette: ts-normals
-		Scale: 6.0
-
-RA2LIMO:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 500
-	Tooltip:
-		Name: Limousine
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 15000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 250
-	Cargo:
-		Types: Infantry
-		MaxWeight: 6
-	Mobile:
-		Speed: 95
-	RenderVoxels:
-		Scale: 6.0
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-
-RA2PTRUCK:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Chevy C10
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 12000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-	Mobile:
-		Speed: 95
-	RenderVoxels:
-		Scale: 6.0
-
-RA2PROPA:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Propaganda Truck
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 18000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-	Mobile:
-		Speed: 95
-	RenderVoxels:
-		Scale: 5.9
-
-RA2STANG:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 500
-	Tooltip:
-		Name: Mustang
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 10000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 250
-	Mobile:
-		Speed: 120
-	RenderVoxels:
-		NormalsPalette: ts-normals
-		Scale: 6.0
-
-RA2SUVB:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 450
-	Tooltip:
-		Name: SUV
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 12000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 225
-	Mobile:
-		Speed: 101
-	RenderVoxels:
-		Scale: 6.0
-
-RA2SUVW:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 450
-	Tooltip:
-		Name: SUV
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 12000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 225
-	Mobile:
-		Speed: 101
-	RenderVoxels:
-		Scale: 5.9
-
-RA2TAXI:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Taxi
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 10000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-	RenderVoxels:
-		NormalsPalette: ts-normals
-		Scale: 6.0
-
-RA2TRUCKA:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Truck
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 18000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-	Mobile:
-		Speed: 95
-
-RA2TRUCKB:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Truck
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 18000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-	Mobile:
-		Speed: 95
-
-RA2TUG:
-	Inherits: ^CivVehicle
-	Inherits: ^BoatUnit
-	Valued:
-		Cost: 800
-	Tooltip:
-		Name: Civilian Boat
-	Health:
-		HP: 28000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 400
-	Mobile:
-		Speed: 50
-	RenderVoxels:
-		NormalsPalette: ts-normals
-
-YRDOLY:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 10000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-
-YRJEEP:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Civilian Jeep
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 10000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-
-RA2TRACTOR:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Tractor
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 18000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 200
-	Mobile:
-		Speed: 50
-	RenderVoxels:
-		NormalsPalette: ts-normals
-		Scale: 6.0
-
-ra2flata:
-	Inherits: ^CivVehicle
-	Valued:
-		Cost: 600
-	Tooltip:
-		Name: V3 Rocket Trailer
-	Mobile:
-		Locomotor: wheeled
-	Health:
-		HP: 18000
-	RevealsShroud:
-		Range: 6c0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: CivilianMaleVoice
-	DeliversCash:
-		Payload: 300
-	Mobile:
-		Speed: 90
-	Explodes:
-		Weapon: FlametankExplode
-		EmptyWeapon: FlametankExplode
-	RenderVoxels:
-		NormalsPalette: ts-normals
-
-#######################################
-# RA2 Vehicles Addon
-#######################################
-
-RA2MODFV:
-	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
-	Valued:
-		Cost: 800
-	Tooltip:
-		Name: Heavy Missile IFV
-	Mobile:
-		Locomotor: tracked
-		Speed: 115
-		TurnSpeed: 20
-	Health:
-		HP: 30000
-	Repairable:
-		HpPerStep: 2637
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-	Turreted:
-		TurnSpeed: 20 #3
-	Armament@Missile:
-		Weapon: RA2HoverMissile
-		Recoil: 128
-		RecoilRecovery: 26
-	Armament@Flak:
-		Weapon: RA2FlakTrackGun
-		Recoil: 128
-		RecoilRecovery: 26
-	AttackTurreted:
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	AcceptsDeliveredExperience:
-		ValidTypes: vehicle
-	WithVoxelBody:
-	WithVoxelTurret:
-	Voiced:
-		VoiceSet: RA2AlliesVehicleVoice
-	Armament:
-		Weapon: RA2105mm
-	DeliversCash:
-		Payload: 375
-	RenderVoxels:
-		Scale: 0.50
-	Cargo:
-		Types: Infantry
-		MaxWeight: 2
-		LoadingCondition: notmobile
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-RA2MODHTK:
-	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
-	Valued:
-		Cost: 750
-	Tooltip:
-		Name: Gattling Halftrack
-	Mobile:
-		Locomotor: tracked
-		Speed: 115
-		TurnSpeed: 20
-	Health:
-		HP: 33333
-	Repairable:
-		HpPerStep: 2637
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-	Turreted:
-		TurnSpeed: 20 #3
-	Armament@MG:
-		Weapon: RA2MODHIFVMG
-		Recoil: 128
-		RecoilRecovery: 26
-	AttackTurreted:
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	AcceptsDeliveredExperience:
-		ValidTypes: vehicle
-	WithVoxelBody:
-	WithVoxelTurret:
-	Voiced:
-		VoiceSet: FlakTrackVoice
-	Armament:
-		Weapon: RA2MODTrackMG
-	DeliversCash:
-		Payload: 375
-	RenderVoxels:
-		Scale: 0.50
-	Cargo:
-		Types: Infantry
-		MaxWeight: 4
-		LoadingCondition: notmobile
-		EjectOnDeath: false
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-RA2MODHTNK:
-	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
-	Valued:
-		Cost: 1200
-	Tooltip:
-		Name: Heavy Tank
-	Mobile:
-		Locomotor: tracked
-		Speed: 65
-		TurnSpeed: 20
-	Health:
-		HP: 75000
-	Repairable:
-		HpPerStep: 2637
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-	Turreted:
-		TurnSpeed: 12
-	Armament@PRIMARY:
-		Weapon: RA2120xmm
-		LocalOffset: 900,85,340, 900,-85,340
-		Recoil: 170
-		RecoilRecovery: 42
-	AttackTurreted:
-	SelectionDecorations:
-	Selectable:
-		DecorationBounds: 1280, 1280
-	Inherits@EXT: ^ExternalConditions
-	AcceptsDeliveredExperience:
-		ValidTypes: vehicle
-	RenderVoxels:
-		Scale: 5.75
-	WithVoxelBody:
-	WithVoxelTurret:
-	WithVoxelBarrel:
-	Voiced:
-		VoiceSet: ApocalypseTankVoice
-	DeliversCash:
-		Payload: 600
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-RA2MODSLTNK:
-	Inherits: RA2MTNK
-	Tooltip:
-		Name: Short Tank
-	-Buildable:
-	Voiced:
-		VoiceSet: RA2SovietVehicleVoice
-	Armament:
-		Weapon: RA2Lashmm
-	Armament@GARRISONED:
-		Name: garrisoned
-		Weapon: RA2LashmmG
-	Mobile:
-		Locomotor: tracked
-		Speed: 110
-		TurnSpeed: 24
-	Health:
-		HP: 30000
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-RA2MODYSREF:
-	Inherits: RA2SREF
-	Valued:
-		Cost: 800
-	Tooltip:
-		Name: Laser Tank
-	-Buildable:
-	Armament:
-		Weapon: RA2DiskLaser
-		Recoil: 128
-		RecoilRecovery: 26
-	Voiced:
-		VoiceSet: MagnetronVoice
-	DeliversCash:
-		Payload: 400
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-RA2MODOAPOC:
-	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Mammoth Tank
-	Mobile:
-		Locomotor: heavytracked
-		Speed: 50
-		TurnSpeed: 12
-	Health:
-		HP: 150000
-	Repairable:
-		HpPerStep: 2637
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-	Turreted:
-		TurnSpeed: 12
-	Armament@PRIMARY:
-		Weapon: RA2120xmm
-		LocalOffset: 900,85,340, 900,-85,340
-		Recoil: 170
-		RecoilRecovery: 42
-	Armament@SECONDARY:
-		Name: secondary
-		Weapon: RA2MammothTusk
-		LocalOffset: -85,90,340, -85,-90,340
-		LocalYaw: -100, 100
-		Recoil: 10
-	AttackTurreted:
-	SelectionDecorations:
-	Selectable:
-		DecorationBounds: 1280, 1280
-	Inherits@EXT: ^ExternalConditions
-	AcceptsDeliveredExperience:
-		ValidTypes: vehicle
-	RenderVoxels:
-		Scale: 0.50
-	WithVoxelBody:
-	WithVoxelTurret:
-	WithVoxelBarrel:
-	Voiced:
-		VoiceSet: TankDestroyerVoice
-	DeliversCash:
-		Payload: 900
-	ChangesHealth:
-		Step: 500
-		Delay: 10
-		StartIfBelow: 50
-		DamageCooldown: 200
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-RA2MODMAMMO:
-	Inherits: RA2MODOAPOC
-	Valued:
-		Cost: 2100
-	Voiced:
-		VoiceSet: ApocalypseTankVoice
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-RA2MODYHTK:
-	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
-	Valued:
-		Cost: 600
-	Tooltip:
-		Name: Gattling Truck
-	Mobile:
-		Locomotor: lighttracked
-		Speed: 120
-		TurnSpeed: 20
-		RequiresCondition: !notmobile
-	Health:
-		HP: 20000
-	Repairable:
-		HpPerStep: 2637
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-	Turreted:
-		TurnSpeed: 60
-	AmmoPool:
-		Ammo: 96
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 14
-		Count: 1
-	Armament@1:
-		Weapon: RA2GattlingMG1
-		PauseOnCondition: ammo <= 64
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@2:
-		Weapon: RA2GattlingMG2
-		PauseOnCondition: ammo <= 8 && ammo >= 65
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@3:
-		Weapon: RA2GattlingMG2
-		PauseOnCondition: ammo >= 9
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@1AA:
-		Weapon: RA2GattlingMG1AA
-		PauseOnCondition: ammo <= 64
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@2AA:
-		Weapon: RA2GattlingMG2AA
-		PauseOnCondition: ammo <= 8 && ammo >= 65
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	Armament@3AA:
-		Weapon: RA2GattlingMG2
-		PauseOnCondition: ammo >= 9
-		LocalOffset: 85,90,299, 85,-90,299
-		MuzzleSequence: muzzle
-	AttackTurreted:
-	SelectionDecorations:
-	Selectable:
-		DecorationBounds: 1280, 1280
-	Inherits@EXT: ^ExternalConditions
-	AcceptsDeliveredExperience:
-		ValidTypes: vehicle
-	RenderSprites:
-	WithVoxelTurret:
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: GattlingTankVoice
-	DeliversCash:
-		Payload: 250
-	Cargo:
-		Types: Infantry
-		MaxWeight: 2
-		LoadingCondition: notmobile
-	RenderVoxels:
-		NormalsPalette: ts-normals
-		Scale: 0.49
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-
-RA2MODYHTNK:
-	Inherits: RA2HTNK
-	Valued:
-		Cost: 900
-	Tooltip:
-		Name: Yuri Heavy Tank
-	-Buildable:
-	Voiced:
-		VoiceSet: LasherTankVoice
-	DeliversCash:
-		Payload: 450
-	RenderVoxels:
-		NormalsPalette: ts-normals
-# 		Scale: 0.49
-
-# RA2MODVULK:
-# 	Inherits: ^Tank
-# 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-# 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-# 	Inherits@Voxel: ^RenderVoxel
-# 	Valued:
-# 		Cost: 1100
-# 	Tooltip:
-# 		Name: Vulkan Tank
-# 	Mobile:
-# 		Locomotor: tracked
-# 		Speed: 105
-# 		TurnSpeed: 20
-# 	Health:
-# 		HP: 40000
-# 	Repairable:
-# 		HpPerStep: 2637
-# 	Armor:
-# 		Type: Heavy
-# 	RevealsShroud:
-# 		Range: 6c0
-# 	Turreted:
-# 		TurnSpeed: 16
-# 	AmmoPool:
-# 		Ammo: 96
-# 		AmmoCondition: ammo
-# 	ReloadAmmoPool:
-# 		Delay: 15
-# 		Count: 1
-# 	Armament@1:
-# 		Weapon: RA2TGattlingMG1
-# 		PauseOnCondition: ammo <= 64
-# 		LocalOffset: 85,90,299, 85,-90,299
-# 		MuzzleSequence: muzzle
-# 	Armament@2:
-# 		Weapon: RA2TGattlingMG2
-# 		PauseOnCondition: ammo <= 8 && ammo >= 65
-# 		LocalOffset: 85,90,299, 85,-90,299
-# 		MuzzleSequence: muzzle
-# 	Armament@3:
-# 		Weapon: RA2TGattlingMG3
-# 		PauseOnCondition: ammo >= 9
-# 		LocalOffset: 85,90,299, 85,-90,299
-# 		MuzzleSequence: muzzle
-# 	Armament@1AA:
-# 		Weapon: RA2TGattlingMG1AA
-# 		PauseOnCondition: ammo <= 64
-# 		LocalOffset: 85,90,299, 85,-90,299
-# 		MuzzleSequence: muzzle
-# 	Armament@2AA:
-# 		Weapon: RA2TGattlingMG2AA
-# 		PauseOnCondition: ammo <= 8 && ammo >= 65
-# 		LocalOffset: 85,90,299, 85,-90,299
-# 		MuzzleSequence: muzzle
-# 	Armament@3AA:
-# 		Weapon: RA2TGattlingMG3AA
-# 		PauseOnCondition: ammo >= 9
-# 		LocalOffset: 85,90,299, 85,-90,299
-# 		MuzzleSequence: muzzle
-# 	AttackTurreted:
-# 	WithMuzzleOverlay:
-# 	SelectionDecorations:
-# 	Selectable:
-# 	Inherits@EXT: ^ExternalConditions
-# 	AcceptsDeliveredExperience:
-# 		ValidTypes: vehicle
-# 	WithVoxelBody:
-# 	WithVoxelTurret:
-# 	Voiced:
-# 		VoiceSet: GattlingTankVoice
-# 	Armament@GARRISONED:
-# 		Name: garrisoned
-# 		Weapon: RA2GattlingMG2
-# 	DeliversCash:
-# 		Payload: 500
-# 	RenderVoxels:
-# 		Scale: 0.50
-# 	GainsExperience:
-# 		LevelUpNotification: LevelUpRA2
-# 	WithAmmoPipsDecoration:
-# 		Position: BottomLeft
-# 		RequiresSelection: true
-
-RA2MODROBO:
-	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
-	Valued:
-		Cost: 850
-	Tooltip:
-		Name: Heavy Robot Tank
-	Mobile:
-		Locomotor: hover
-		Speed: 80
-		TurnSpeed: 60
-	Health:
-		HP: 60000
-	Repairable:
-		HpPerStep: 2637
-	Armor:
-		Type: Heavy
-	Armament:
-		Weapon: RA2105mm
-		Recoil: 128
-		RecoilRecovery: 26
-	AttackFrontal:
-		FacingTolerance: 0
-	SelectionDecorations:
-	Selectable:
-	Inherits@EXT: ^ExternalConditions
-	AcceptsDeliveredExperience:
-		ValidTypes: vehicle
-	WithVoxelBody:
-	Voiced:
-		VoiceSet: RobotTankVoice
-	Hovers:
-	DeliversCash:
-		Payload: 300
-	-TemporaryOwnerManager:
-	GrantConditionOnPrerequisite:
-		Condition: robotcontrol
-		Prerequisites: robotcontrol
-	SpeedMultiplier@Deadctivate:
-		RequiresCondition: !robotcontrol
-		Modifier: 0
-	ReloadDelayMultiplier@Deadctivate:
-		RequiresCondition: !robotcontrol
-		Modifier: 999
-	RenderVoxels:
-		Scale: 0.50
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
 RA2TXGASG:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
@@ -11543,7 +10443,7 @@ upra2mig:
 		Description: Allows construction of the MiG Bomber.
 		Prerequisites: ~ra2nacnst, !upra2mig, rank1
 	RenderSprites:
-		Image: mig
+		Image: yrbpln
 	ProvidesPrerequisite:
 
 updronesurprise:

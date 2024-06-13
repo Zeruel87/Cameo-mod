@@ -603,7 +603,7 @@
 
 ^AcceptsCloakCrate:
 	Cloak@TDcloak:
-		CloakType: GroundCloak
+		DetectionTypes: GroundCloak
 		InitialDelay: 15
 		CloakDelay: 90
 		CloakSound: trans1.aud
@@ -832,8 +832,10 @@
 	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@EXT: ^ExternalConditions
 	Inherits@AntiInf: ^PrioritizeInfantry
-	Inherits@AntiInf: ^PrioritizeTank
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	AutoTargetPriority@INFANTRY:
+		ValidTargets: Infantry
+		Priority: 50
 	ProducibleWithLevel@spyinfantry:
 		Prerequisites: infantry.upgraded
 	Armor:
@@ -902,6 +904,10 @@
 		BuildDurationModifier: 25
 	Cloneable:
 		Types: Hero
+	Passenger:
+		CustomPipType: hero
+	Garrisoner:
+		CustomPipType: hero
 
 ^ScoutVehicleTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
@@ -1162,7 +1168,7 @@
 	Buildable:
 		BuildDurationModifier: 50
 
-^SpcaceshipTemplate:
+^SpaceshipTemplate:
 	Inherits@AircraftBuff: ^AircraftBuff
 	Inherits@EXPERIENCE: ^GainsExperienceAircraft
 	Inherits@EXT: ^ExternalConditions
@@ -1355,6 +1361,7 @@
 	Guard:
 	Guardable:
 	Tooltip:
+		Name: Vehicle
 		GenericName: Vehicle
 	MustBeDestroyed:
 	Voiced:
@@ -1594,6 +1601,7 @@
 	RangedGpsDot:
 		Sequence: Plane
 	Tooltip:
+		Name: Plane
 		GenericName: Plane
 	WithShadow:
 		Offset: 43, 128, 0
@@ -1639,9 +1647,12 @@
 		ValidRelationships: Enemy, Neutral
 		RequiresCondition: !untargetable && !airborne
 	Cloak@TDcloak:
-		CloakType: AirCloak
+		DetectionTypes: AirCloak
 	Cloak@TScloak:
-		CloakType: AirCloak
+		DetectionTypes: AirCloak
+	Parachutable:
+		FallRate: 20
+		KilledOnImpassableTerrain: false
 
 ^Helicopter:
 	Inherits@1: ^RANeutralPlane
@@ -1803,6 +1814,17 @@
 		CargoType: Infantry
 		CargoConditions:
 			susamedivacblackhawk: hospitalheal
+			fcom: garrisoned
+			miss: garrisoned
+			ramiss: garrisoned
+	SharedPassenger:
+		CargoType: Infantry
+	Garrisoner:
+		GarrisonType: Infantry
+		GarrisonCondition: garrisoned
+	RangeMultiplier@Garrisoned:
+		Modifier: 115
+		RequiresCondition: garrisoned
 	HiddenUnderFog:
 	ActorLostNotification:
 	Crushable:
@@ -1961,6 +1983,7 @@
 	Inherits: ^DefaultInfantry
 	MustBeDestroyed:
 	Tooltip:
+		Name: Soldier
 		GenericName: Soldier
 	Guard:
 	RevealOnFire:
@@ -2047,7 +2070,9 @@
 	RevealsShroud:
 		Range: 2c0
 	Passenger:
-		CustomPipType: gray
+		CustomPipType: civilian
+	Garrisoner:
+		CustomPipType: civilian
 	ScaredyCat:
 	Crushable:
 		CrushSound: squish2.aud
@@ -2063,6 +2088,8 @@
 		Probability: 99
 		OwnerType: Killer
 		DeathType: ZombieInfection
+	Passenger:
+		CustomPipType: civilian
 
 ^Monster:
 	Inherits@1: ^ExistsInWorld
@@ -2081,6 +2108,7 @@
 		BuildPaletteOrder: 10
 		Prerequisites: ~wip-content
 	Tooltip:
+		Name: Monster
 		GenericName: Monster
 	Mobile:
 		SharesCell: false
@@ -2373,6 +2401,7 @@
 	Guard:
 	Guardable:
 	Tooltip:
+		Name: Ship
 		GenericName: Ship
 	Voiced:
 		VoiceSet: VehicleVoice
@@ -2430,6 +2459,7 @@
 	Guardable:
 		Range: 3c0
 	Tooltip:
+		Name: Structure
 		GenericName: Structure
 	FrozenUnderFog:
 	FrozenUnderFogUpdatedByGps:
@@ -2457,6 +2487,11 @@
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
 		Range: 4c0
+	ExternalCondition@Boris:
+		Condition: BorisFlare
+	WithColoredOverlay@Boris:
+		RequiresCondition: BorisFlare
+		Color: FF0000AA
 
 ^BotProductionBehavior:
 	ProductionTimeMultiplier@easiestbotplayer:
@@ -2575,6 +2610,7 @@
 	CapturableProgressBar:
 	CapturableProgressBlink:
 	InstantlyRepairable:
+		Types: building
 	Demolishable:
 		Condition: being-demolished
 		RequiresCondition: !build-incomplete && !untargetable
@@ -2609,11 +2645,6 @@
 		Position: Center
 		Palette: player
 		IsPlayerPalette: True
-	ExternalCondition@Boris:
-		Condition: BorisFlare
-	WithColoredOverlay@Boris:
-		RequiresCondition: BorisFlare
-		Color: FF0000AA
 	GrantCondition@disable:
 		Condition: disabled
 		RequiresCondition: (empdisable || chronobeamed || diskdrain || being-captured) && !invulnerability
@@ -2656,11 +2687,16 @@
 
 ^CivBuilding:
 	Inherits: ^Building
+	Inherits@Garrison: ^GarrisonableBuilding
+	-CommandBarBlacklist:
+	Selectable:
+		-Bounds:
+		Class: civbuilding
 	Tooltip:
 		Name: Civilian Building
 		GenericName: Civilian Building
 		GenericStancePrefix: false
-		ShowOwnerRow: false
+		ShowOwnerRow: true
 	FrozenUnderFog:
 	MapEditorData:
 		Categories: Civilian building
@@ -2675,7 +2711,7 @@
 
 ^CivBuildingHusk:
 	Inherits@1: ^SpriteActor
-	Interactable:
+	Selectable:
 	AppearsOnRadar:
 	Building:
 		Dimensions: 1,1
@@ -2698,9 +2734,18 @@
 		RedTint: 0.2
 		GreenTint: 0.1
 		BlueTint: 0.05
+	CaptureManager:
+	Capturable:
+		Types: none #tech
+		ValidRelationships: Enemy, Neutral, Ally
+	#Targetable:
+	#	TargetTypes: TechHusk
+	TransformOnCapture:
+	RequiresSpecificOwners:
+		ValidOwnerNames: Neutral
 
 ^TechBuilding:
-	Inherits: ^CivBuilding
+	Inherits: ^Building
 	Inherits@trap: ^BoobyTrappable
 	Selectable:
 		Priority: 0
@@ -2722,6 +2767,7 @@
 		PlayerExperience: 0
 		RepairingNotification: Repairing
 	InstantlyRepairable:
+		Types: tech
 	RevealsShroud:
 		Range: 3c0
 	Tooltip:
@@ -2738,7 +2784,6 @@
 	GpsDot:
 		String: Forward
 	RenderSprites:
-		-Palette:
 		PlayerPalette: playerra
 	WithSpriteBody:
 		#IsPlayerPalette: true
@@ -2749,6 +2794,28 @@
 		GreenTint: 0.1
 		BlueTint: 0.05
 
+^TechBuildingGarrisonable:
+	Inherits: ^TechBuilding
+	Inherits@Garrison: ^ClearableGarrisonNeutronOnly
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	-CommandBarBlacklist:
+	Health:
+		HP: 80000
+	Armor:
+		Type: Concrete
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 8
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 768,0,256, 448,-682,256, -448,-682,256, -768,0,256, -448,682,256, 448,682,256
+		PauseOnCondition: chronobeamed
+	ChangesHealth@regen:
+		PercentageStep: 1
+		Delay: 30
+		DamageCooldown: 250
+		StartIfBelow: 101
+		RequiresCondition: loaded
 
 ^TechBuildingHusk:
 	Inherits: ^TechBuilding
@@ -2762,21 +2829,32 @@
 	TooltipDescription:
 		Description: Capture to restore to working condition.
 	TransformOnCapture:
-		CaptureTypes: building
 
 ^CivField:
-	Inherits: ^CivBuilding
+	Inherits: ^Building
+	Tooltip:
+		Name: Field
+		GenericName: Field
+		GenericStancePrefix: false
+		ShowOwnerRow: false
+	FrozenUnderFog:
+	MapEditorData:
+		Categories: Civilian building
 	-Selectable:
 	-SelectionDecorations:
 	Interactable:
-	Tooltip:
-		GenericName: Field
 	-Explodes:
 	-ShakeOnDeath:
 	-SoundOnDamageTransition:
 	-Demolishable:
 	RenderSprites:
 		Palette: ra_temperat
+	TerrainLightSource:
+		Range: 3333
+		Intensity: 0.1
+		RedTint: 0.2
+		GreenTint: 0.1
+		BlueTint: 0.05
 
 ^CivFieldHusk:
 	Inherits@1: ^SpriteActor
@@ -2796,6 +2874,75 @@
 		Categories: Husk
 	RenderSprites:
 		Palette: ra_temperat
+
+^GarrisonableBuilding:
+	Inherits@selection: ^SelectableCombatBuilding
+	Inherits@Shroudable: ^Shroudable
+	Inherits@AdvancedTargeting: ^AdvancedTargeting
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	OwnerLostAction:
+		Action: ChangeOwner
+	RenderRangeCircle:
+		RangeCircleType: defense
+	RevealsShroud:
+		Range: 8000
+		RequiresCondition: loaded
+	RevealOnFire:
+		Duration: 50
+		ArmamentNames: primary, secondary, deployed, garrisoned
+	MustBeDestroyed:
+		RequiredForShortGame: false
+	Health:
+		HP: 80000
+	Armor:
+		Type: Wood
+	WithColoredSelectionBox:
+		ColorSource: Player
+		ValidRelationships: Enemy, Neutral, Ally
+		RequiresCondition: loaded
+	ChangeOwnerOnGarrisoner:
+		EnterSounds: ugarris.wav
+		ExitSounds: ugarris.wav
+	Garrisonable:
+		Types: Infantry
+		MaxWeight: 6
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+		EjectOnDeath: true
+		OwnerChangedAffectsGarrisoners: false
+		LoadedCondition: loaded
+		RequiresCondition: !damaged
+	GrantConditionOnDamageState@DAMAGED:
+		Condition: damaged
+		ValidDamageStates: Critical
+	WithGarrisonPipsDecoration:
+		Position: BottomLeft
+		Margin: 4, 3
+		RequiresSelection: true
+		CustomPipSequences:
+			civilian: pip-gray
+			engineer: pip-yellow
+			special: pip-blue
+			hero: pip-red
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 768,0,256, 448,-682,256, -448,-682,256, -768,0,256, -448,682,256, 448,682,256
+		RequiresCondition: !chronobeamed
+	Targetable@garrisoned:
+		TargetTypes: Garrisoned, Defense
+		RequiresCondition: loaded && !untargetable
+	InstantlyRepairable:
+		Types: civ
+		RequiresCondition: damaged
+	ChangesHealth@regen:
+		PercentageStep: 1
+		Delay: 30
+		DamageCooldown: 250
+		StartIfBelow: 101
+	DamageMultiplier@husk:
+		Modifier: 0
+		RequiresCondition: damaged
 
 ^Wall:
 	Inherits@1: ^SpriteActor
@@ -2997,6 +3144,7 @@
 	TransformOnCapture:
 		ForceHealthPercentage: 25
 	Tooltip:
+		Name: Destroyed Vehicle
 		GenericName: Destroyed Vehicle
 	WithColoredOverlay@IDISABLE:
 		Color: 000000b4
@@ -3032,6 +3180,7 @@
 		Moves: False
 		Explosion: HeliCrash
 	Tooltip:
+		Name: Destroyed Helicopter
 		GenericName: Destroyed Helicopter
 	-MapEditorData:
 
@@ -3071,6 +3220,8 @@
 		Intensity: 6
 	RequiresSpecificOwners:
 		ValidOwnerNames: Neutral
+	#DamageMultiplier:
+	#	Modifier: 0 #tile ID overlap
 
 ^Crate:
 	Inherits@1: ^SpriteActor
@@ -3108,12 +3259,6 @@
 		Categories: Defense
 	Capturable:
 		Types: defense
-	FirepowerMultiplier@NTRPSRS:
-		Modifier: 200
-		RequiresCondition: global-notrespassers
-	DamageMultiplier@NTRPSRS:
-		Modifier: 50
-		RequiresCondition: global-notrespassers
 	GrantConditionOnPrerequisite@regen-turrets:
 		Prerequisites: regen-turrets
 		Condition: regen-turrets
@@ -3312,6 +3457,7 @@
 	FrozenUnderFog:
 	FrozenUnderFogUpdatedByGps:
 	Tooltip:
+		Name: Structure
 		GenericName: Structure
 	Demolishable:
 	MapEditorData:
@@ -3395,7 +3541,7 @@
 		Offset: 43, 128, 0
 		ZOffset: -129
 	Tooltip:
-		Name:
+		Name: Destroyed Plane
 		GenericName: Destroyed Plane
 	Aircraft:
 	FallsToEarth:
@@ -4480,7 +4626,6 @@ CPQDEBUGDUMMY:
 		ControlledConditions:
 			yryuri: controlled
 			yryurix: controlled
-			ra2yuri: controlled
 			yrmind: controlled
 			yrygpsyt: controlled
 			yrygppet: controlled
@@ -4645,7 +4790,7 @@ CPQDEBUGDUMMY:
 
 ^StealthGenCloakable:
 	Cloak@TScloak:
-		CloakType: GroundCloak
+		DetectionTypes: GroundCloak
 		InitialDelay: 15
 		CloakDelay: 90
 		CloakSound: cloak5.aud
@@ -4691,6 +4836,7 @@ CPQDEBUGDUMMY:
 		Condition: invulnerability
 	Passenger:
 		Weight: 6
+		CustomPipType: engineer
 	Crushable:
 		CrushClasses: hugevehicle
 	Buildable:
@@ -4816,6 +4962,10 @@ CPQDEBUGDUMMY:
 		RequiresCondition: !cloak-force-disabled
 		IsPlayerPalette: true
 		UncloakSound: subshow1.aud
+	WithColoredSelectionBox:
+		ColorSource: Player
+		ValidRelationships: Ally
+		RequiresCondition: underwater
 	Targetable@Underwater:
 		TargetTypes: Submarine, Underwater
 		RequiresCondition: underwater
@@ -5123,6 +5273,33 @@ CPQDEBUGDUMMY:
 		Probability: 99
 		Actor: 2100artifact
 		DeathType: 2100ResearchSteal
+	Production@NORMAL:
+		Produces: Aircraft
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ParallelProductionQueue:
+		Type: Aircraft
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@Aircraft:
+		ProductionType: Aircraft
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAircraft:
+		ProductionType: RAAircraft
+		RequiresCondition: classicproductionqueues
+	RallyPoint:
 
 ^IsTechnoBuilding:
 	Inherits@IDISABLE: ^DisableOnPowerDown
@@ -5360,6 +5537,14 @@ CPQDEBUGDUMMY:
 	Cargo:
 		LoadedCondition: loaded
 		EjectOnDeathDamage: 0
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		CustomPipSequences:
+			engineer: pip-yellow
+			special: pip-blue
+			hero: pip-red
+			civilian: pip-grey
 	WithCargoSounds:
 		EnterSounds: ugarris.wav
 		ExitSounds: ugarris.wav
@@ -5427,6 +5612,36 @@ CPQDEBUGDUMMY:
 	GrantConditionOnInternalOwner:
 		Condition: neutral
 		InternalOwners: Neutral
+
+^CashTricklerWithExperience:
+	Inherits: ^CashTricklerMultipliers
+	Inherits@2: ^GainsExperienceCity
+	GrantConditionOnPowerState@LOWPOWER:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	CashTrickler:
+		Interval: 250
+		Amount: 500
+		PauseOnCondition: lowpower
+	CashTricklerBar:
+	CashTricklerMultiplier@RANK-1:
+		Modifier: 125
+		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-2:
+		Modifier: 150
+		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-3:
+		Modifier: 175
+		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-4:
+		Modifier: 200
+		RequiresCondition: city-elite && !lowpower
+	ExperienceTrickler@1:
+		Amount: 500
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3
 
 ^AvengerGuidable:
 	ExternalCondition@Avenger:
@@ -5533,13 +5748,18 @@ CPQDEBUGDUMMY:
 		AfterUnloadDelay: 0
 		LoadedCondition: loaded
 		LoadingCondition: notmobile
-		EjectOnDeathDamage: 50
+		EjectOnDeathDamage: 0
 	WithCargoSounds:
 		EnterSounds: genter1a.wav
 		ExitSounds: gexit1a.wav
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
+		CustomPipSequences:
+			engineer: pip-yellow
+			special: pip-blue
+			hero: pip-red
+			civilian: pip-grey
 
 ^CargoVehicle:
 	Inherits: ^Cargo
@@ -5548,6 +5768,12 @@ CPQDEBUGDUMMY:
 
 ^CargoAircraft:
 	Inherits: ^Cargo
+
+^WithSpecialCargoPip:
+	Passenger:
+		CustomPipType: special
+	Garrisoner:
+		CustomPipType: special
 
 ^BoobyTrappable:
 	WithDecoration@boobytrapped:
@@ -6289,3 +6515,24 @@ CPQDEBUGDUMMY:
 		Chance: 25
 		ValidDamageStates: Heavy, Critical
 		ValidRelationships: None
+
+^CloakedVehicle:
+	Cloak:
+		DetectionTypes: GroundCloak
+		CloakedCondition: cloaked
+		InitialDelay: 125
+		CloakDelay: 75
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
+	WithColoredSelectionBox:
+		ColorSource: Player
+		ValidRelationships: Ally
+		RequiresCondition: cloaked
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
+
+^CloakedAircraft:
+	Inherits: ^CloakedVehicle
+	Cloak:
+		DetectionTypes: AirCloak
