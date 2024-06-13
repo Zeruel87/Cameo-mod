@@ -3226,7 +3226,7 @@ CNCPT:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: cncsyrd
+		Prerequisites: ~cncsyrd
 		Queue: Naval, RANaval
 		Description: Light scout & support ship.\nCan detect submarines.
 	Mobile:
@@ -3275,7 +3275,7 @@ CNCCA:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: eye
+		Prerequisites: ~eye
 		Queue: Naval, RANaval
 		Description: Very slow long-range ship.\n  Strong vs surface, air targets\n  Weak vs Submarines
 	Mobile:
@@ -3386,7 +3386,7 @@ CNCRSS:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: cncspen
+		Prerequisites: ~cncspen
 		Queue: Naval, RANaval
 	Mobile:
 		Speed: 50
@@ -3417,26 +3417,123 @@ CNCRSS:
 		PauseOnCondition: disabled || !cancloak
 
 CNCSS:
-	Inherits: SS
+	Inherits: ^BoatUnit
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Nod Attack Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: cncspen
+		Prerequisites: ~cncspen
 		Queue: Naval, RANaval
-	RenderSprites:
-		Image: rass
+		Description: Submerged anti-ship unit\narmed with torpedoes.\nCan detect other submarines.\n  Strong vs Naval units\n  Weak vs Ground units, Aircraft
+	Mobile:
+		Speed: 80
+		TurnSpeed: 16
+	Health:
+		HP: 160000
+	ChangesHealth@SelfHealing:
+		Step: 64
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 28
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: NodTorpTube
+		LocalOffset: 256,0,0
+	RenderRangeCircle:
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+	AttackFrontal:
+		FacingTolerance: 0
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 475
 	Voiced:
 		VoiceSet: VehicleVoice
+	Cloak@underwater:
+		Palette: racloak
+	RenderSprites:
+		Image: cncss
+		PlayerPalette: player_rgba
 
-CNCMSUB:
-	Inherits: MSUB
+nodlasercorvette:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Nod Laser Corvette
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: tmpl
+		Prerequisites: ~tmpl
 		Queue: Naval, RANaval
+		Description: Very slow long-range ship.\n  Strong vs surface, air targets\n  Weak vs Submarines
+	Mobile:
+		Speed: 50
+		TurnSpeed: 10
+	Health:
+		HP: 175000
+	ChangesHealth@SelfHealing:
+		Step: 70
+	Armor:
+		Type: Superheavy
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -1200,-50,200
+		TurnSpeed: 10
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 900,-50,200
+		TurnSpeed: 10
+	Armament@PRIMARY:
+		Turret: primary
+		Weapon: LaserObelisk
+		LocalOffset: 0,-85,1280
+	Armament@SECONDARY:
+		Turret: secondary
+		Weapon: GDIBattleshipRailgun
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 175
+		RecoilRecovery: 35
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		Turrets: secondary
+	AttackTurretedCharged:
+		Turrets: primary
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: disabled
+		ChargeLevel: 50
+		ChargingCondition: charging
+	AmbientSound:
+		RequiresCondition: charging
+		SoundFiles: obelpowr.aud
+		Interval: 30, 40
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 2048, 2048
+	WithSpriteTurret@SECONDARY:
+		Turret: secondary
+	DeliversCash:
+		Payload: 500
 	RenderSprites:
-		Image: ramsub
-	Voiced:
-		VoiceSet: VehicleVoice
+		PlayerPalette: player_rgba
 
 CNCLST:
 	Inherits: ^BoatUnit
@@ -3448,7 +3545,7 @@ CNCLST:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		Prerequisites: cncsyrd
+		Prerequisites: ~cncsyrd
 		BuildPaletteOrder: 10
 		Queue: Naval, RANaval
 	Mobile:
