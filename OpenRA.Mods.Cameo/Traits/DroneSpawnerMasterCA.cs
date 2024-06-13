@@ -215,8 +215,6 @@ namespace OpenRA.Mods.Cameo.Traits
 				if (se.IsValid && !se.Actor.IsInWorld)
 				{
 					SpawnIntoWorld(self, se.Actor, self.CenterPosition + se.Offset.Rotate(self.Orientation));
-					if (Info.SlavesTargetSelf)
-						se.SpawnerSlave.Attack(se.Actor, Target.FromActor(self));
 				}
 		}
 
@@ -253,6 +251,12 @@ namespace OpenRA.Mods.Cameo.Traits
 
 				w.Add(slave);
 				slave.QueueActivity(false, new Nudge(slave));
+
+				if (Info.SlavesTargetSelf)
+				{
+					var attack = slave.Trait<AttackBase>();
+					attack.AttackTarget(Target.FromActor(self), AttackSource.Default, false, true);
+				}
 
 				if (Info.SpawnContainConditions.TryGetValue(slave.Info.Name, out var spawnContainCondition))
 					spawnContainTokens.GetOrAdd(slave.Info.Name).Push(self.GrantCondition(spawnContainCondition));

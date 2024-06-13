@@ -2829,7 +2829,6 @@
 	TooltipDescription:
 		Description: Capture to restore to working condition.
 	TransformOnCapture:
-		CaptureTypes: building
 
 ^CivField:
 	Inherits: ^Building
@@ -5274,6 +5273,33 @@ CPQDEBUGDUMMY:
 		Probability: 99
 		Actor: 2100artifact
 		DeathType: 2100ResearchSteal
+	Production@NORMAL:
+		Produces: Aircraft
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ParallelProductionQueue:
+		Type: Aircraft
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@Aircraft:
+		ProductionType: Aircraft
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAircraft:
+		ProductionType: RAAircraft
+		RequiresCondition: classicproductionqueues
+	RallyPoint:
 
 ^IsTechnoBuilding:
 	Inherits@IDISABLE: ^DisableOnPowerDown
@@ -5586,6 +5612,36 @@ CPQDEBUGDUMMY:
 	GrantConditionOnInternalOwner:
 		Condition: neutral
 		InternalOwners: Neutral
+
+^CashTricklerWithExperience:
+	Inherits: ^CashTricklerMultipliers
+	Inherits@2: ^GainsExperienceCity
+	GrantConditionOnPowerState@LOWPOWER:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	CashTrickler:
+		Interval: 250
+		Amount: 500
+		PauseOnCondition: lowpower
+	CashTricklerBar:
+	CashTricklerMultiplier@RANK-1:
+		Modifier: 125
+		RequiresCondition: city-veteran == 1 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-2:
+		Modifier: 150
+		RequiresCondition: city-veteran == 2 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-3:
+		Modifier: 175
+		RequiresCondition: city-veteran == 3 && !lowpower && !city-elite
+	CashTricklerMultiplier@RANK-4:
+		Modifier: 200
+		RequiresCondition: city-elite && !lowpower
+	ExperienceTrickler@1:
+		Amount: 500
+		Interval: 1
+		InitialDelay: 1
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3
 
 ^AvengerGuidable:
 	ExternalCondition@Avenger:

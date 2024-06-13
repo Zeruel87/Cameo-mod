@@ -529,7 +529,7 @@ RA2Flameguy:
 
 OILB.RA2:
 	Inherits: ^RA2Building
-	Inherits: OILB.Building
+	Inherits@2: OILB.Building
 	Tooltip:
 		Name: RA2 Oil Derrick
 	Buildable:
@@ -539,10 +539,11 @@ OILB.RA2:
 		Prerequisites: ~ra2tek, ~techlevel.medium
 	WithIdleOverlay@idle-pump:
 		Sequence: idle-pump
-		RequiresCondition: !damaged && !build-incomplete
-	WithIdleOverlay@damaged-idle-pump:
-		Sequence: damaged-idle-pump
-		RequiresCondition: damaged && !build-incomplete
+		PauseOnCondition: lowpower
+		RequiresCondition: !build-incomplete
+	#WithIdleOverlay@damaged-idle-pump:
+	#	Sequence: damaged-idle-pump
+	#	RequiresCondition: damaged && !build-incomplete
 	-RenderSprites:
 	RenderSprites:
 		Image: ra2caoild
@@ -921,6 +922,7 @@ ra2gaairc:
 	Inherits@radar: ^RadarBuilding
 	Inherits@sell: ^RA2ASpawnActorsOnSell
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@hpad: ^IsAircraftFactory
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 130
@@ -942,35 +944,10 @@ ra2gaairc:
 	Exit@1:
 		ExitCell: 1,1
 		Facing: 768
-	RallyPoint:
 	Reservable:
 	LaysMinefield:
 		Mines: ra2gaairc.dock
 		Locations: 0,1, 2,1, 1,0
-	Production@NORMAL:
-		Produces: Aircraft
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAAircraft
-		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
-		Type: Aircraft
-		DisplayOrder: 4
-		Group: Aircraft
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@Aircraft:
-		ProductionType: Aircraft
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAAircraft:
-		ProductionType: RAAircraft
-		RequiresCondition: classicproductionqueues
 	ParatroopersPower@ra2paratroopers:
 		PauseOnCondition: disabled
 		Prerequisites:
@@ -1010,11 +987,11 @@ ra2gaairc:
 	GivesBuildableArea:
 		AreaTypes: building, cityi
 	WithIdleOverlay@top:
-		Sequence: idletop
+		Sequence: idle-top
 		PauseOnCondition: disabled
 		RequiresCondition: !build-incomplete
 	WithIdleOverlay@bottom:
-		Sequence: idlebottom
+		Sequence: idle-bottom
 		PauseOnCondition: disabled
 	WithIdleOverlay@mid:
 		Sequence: idle-mid
@@ -2290,6 +2267,48 @@ ra2natech:
 			1: !RA2DOOM
 		DirectionArrowAnimation: airstrikedirection
 
+ra2naairf:
+	Inherits: ^RA2Building
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@shape: ^4x3Shape
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@hpad: ^IsAircraftFactory
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Soviet Airfield
+	Buildable:
+		BuildPaletteOrder: 130
+		Prerequisites: ~ra2nacnst, ra2naradr
+		Queue: Building, RABuilding
+		Description: Produces aircraft.
+	Building:
+		Footprint: =xxx xxxx xxx=
+		Dimensions: 4,3
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Exit@1:
+		ExitCell: 1,1
+		Facing: 384
+	RevealsShroud:
+		Range: 7c0
+	Power:
+		Amount: -30
+	WithIdleOverlay@top:
+		Sequence: idle-top
+		PauseOnCondition: disabled
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@bottom:
+		Sequence: idle-bottom
+		PauseOnCondition: disabled
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: disabled
+	ProvidesPrerequisite@buildingname:
+
 yrngindp:
 	Inherits: ^RA2Building
 	Inherits@shape: ^4x3Shape
@@ -2922,6 +2941,9 @@ yrnacnst:
 	WithIdleOverlay@normal:
 		Sequence: idle-normal
 		RequiresCondition: !build-incomplete
+	-WithBuildingPlacedOverlay:
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
 
 yrygweap:
 	Inherits: ^RA2DefaultWeap
@@ -3348,6 +3370,42 @@ yrygtech:
 	WithIdleOverlay@critical:
 		Sequence: idle-critical
 		RequiresCondition: !build-incomplete
+
+yrygcomd:
+	Inherits: ^RA2Building
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Inherits@sell: ^RA2YSpawnActorsOnSell
+	Inherits@shape: ^4x3Shape
+	Inherits@hpad: ^IsAircraftFactory
+	Inherits@cash: ^CashTricklerWithExperience
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Lunar Command Center
+	Buildable:
+		BuildPaletteOrder: 130
+		BuildLimit: 1
+		Prerequisites: ~yrnacnst, yrygtech
+		Queue: Building, RABuilding
+		Description: Produces aircraft.
+	Building:
+		Footprint: =xx= xxxx xxxx
+		Dimensions: 4,3
+	WithSpriteBody:
+	Health:
+		HP: 250000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 7c0
+	Power:
+		Amount: -100
+	Exit@1:
+		SpawnOffset: 1536, 1024, 0
+		ExitCell: 3,2
+		Facing: 640
+	ProvidesPrerequisite@buildingname:
 
 ra2yclon:
 	Inherits: ra2naclon
@@ -5060,8 +5118,11 @@ ra2shk.bot:
 		Delay: 10
 	AutoTarget:
 		AllowMovement: false
-	AttackFrontal:
-		FacingTolerance: 0
+		RequiresCondition: nocoil
+	Turreted:
+	-AttackFrontal:
+	AttackFollowFrontal: #TODO
+		MustFaceTarget: true
 	Selectable:
 		Priority: 4
 	DroneSpawnerSlave:
@@ -8268,8 +8329,8 @@ RA2ZEP:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 99
-		Prerequisites: ~ra2natech
-		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
+		Prerequisites: ~ra2naairf, ra2natech
+		Queue: Aircraft, RAAircraft
 		Description: Heavy bomber airship.\n  Strong vs Buildings, Infantry\n  Weak vs Aircraft
 	Aircraft:
 		InitialFacing: 896
@@ -8331,9 +8392,8 @@ yrschp:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 98
-		Prerequisites: ~ra2naweap, ~ra2naradr
-		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
-		#BuildDuration: 800
+		Prerequisites: ~ra2naairf
+		Queue: Aircraft, RAAircraft
 		Description: Helicopter gunship that can deploy into a cannon.\n  Strong vs Buildings, Infantry\n  Weak vs Aircraft
 	Aircraft:
 		CanForceLand: false
@@ -8659,8 +8719,8 @@ ra2hind:
 		Name: Hind Transport
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~ra2naweap, ~ra2naradr
-		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
+		Prerequisites: ~ra2naairf
+		Queue: Aircraft, RAAircraft
 		IconPalette: ra2cameo
 		Description: Carryall helicopter armed with a machine gun.
 	UpdatesPlayerStatistics:
@@ -8730,8 +8790,8 @@ YRDISK:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~yrygtech
-		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
+		Prerequisites: ~yrygcomd
+		Queue: Aircraft, RAAircraft
 		Description: Flying saucer armed with lasers.\nCan shut down power plants and defenses when overhead\nCan steal resources from refineries and silos\n  Strong vs Everything
 	Aircraft:
 		InitialFacing: 896
@@ -8927,7 +8987,7 @@ yrlunr:
 	Tooltip:
 		Name: Cosmonaut
 	Buildable:
-		Prerequisites: ~ra2napsis, ~upyrlunr
+		Prerequisites: yrygcomd, ~upyrlunr
 	Armament@PRIMARY:
 		Weapon: RA2CosmonautLaser
 		LocalOffset: 128,196,128, 128,-196,128
@@ -9249,8 +9309,8 @@ yrbpln1:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ~ra2naweap, ra2naradr, ~upra2mig
-		Queue: Vehicle, RAVehicle, Aircraft, RAAircraft
+		Prerequisites:  ~ra2naairf, ~upra2mig
+		Queue: Aircraft, RAAircraft
 		Description: Jet bomber.
 	Armament:
 		PauseOnCondition: !ammo
