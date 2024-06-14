@@ -25,6 +25,27 @@ promotion-counter =
     .points = Promotion Points:
     .progress = Progress to next rank: 
 
+actor-stats-label-prefix =
+    .armor = Armor:
+    .sight = Sight:
+    .speed = Speed:
+    .power = Power:
+    .mindcontrol = Mind Control:
+    .damage = Damage:
+    .spread = Spread:
+    .rof = Reload Delay:
+    .range = Range:
+    .resource = Resources:
+    .cashtrickler = Income:
+    .periodicproducer = Production:
+    .cargo = Passengers:
+    .garrison = Garrisoners:
+    .sharedcargo = Passengers:
+    .carrier = Carrier:
+    .mob = Mob:
+    .drone = Drones:
+    .kills = Kills:
+
 label-armor-class =
     .None = None
     .Flak = Flak
