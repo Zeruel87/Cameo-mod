@@ -1,0 +1,2336 @@
+World:
+	FactionCA@city:
+		Name: SimCity
+		InternalName: city
+		Game: SimCity
+		Side: Factions
+		Description: SimCity from SNES\nFeatures:\n- Generates revenue through taxation of Residential Zones\n- Units gain massive bonuses near Mayor's House\n- Variety of support powers to assist teammates\n- Great Stun Powers\nSupport powers: Mininuke Parabomb, various others
+	FactionCA@sc2k:
+		Name: SimCity 2000
+		InternalName: sc2k
+		Game: SimCity
+		Side: Factions
+		Description: SimCity from PC\nFeatures:\n- Generates revenue through taxation of Residential Zones\n- Use disasters as units.
+	#FactionCA@sc2ka:
+	# Name: SimCity 2000 (Alternative)
+	# InternalName: sc2ka
+	# Game: SimCity
+	# Side: Factions
+	# Description: Alternative Simcity 2000\nCustom Rules by Commando\nFeatures:\n- Disasters arent controlled\n- All units are based on law or military\n- Deleted some limits
+	FactionCA@RandomCity:
+		Name: Any
+		InternalName: RandomCity
+		RandomFactionMembers: city, sc2k
+		Game: SimCity
+		Side: Random
+		Description: Random Faction\nA random faction from Simcity will be chosen when the game starts.
+	####################################################################################################
+	#		CITY
+	####################################################################################################
+	StartingUnits@mcvonlycity:
+		Class: none
+		ClassName: MCV Only
+		Factions: city
+		BaseActor: citymcv
+	StartingUnits@defaultcity:
+		Class: light
+		ClassName: Light Support
+		Factions: city
+		BaseActor: citymcv
+		SupportActors: cityambulance,cityfiretruck,citypolicecar
+	StartingUnits@heavycity:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: city
+		BaseActor: citymcv
+		SupportActors: cityambulance,cityambulance,cityfiretruck,cityfiretruck,citypolicecar,citypolicecar
+		
+	####################################################################################################
+	#		SC2K
+	####################################################################################################
+	StartingUnits@mcvonlycity2k:
+		Class: none
+		ClassName: MCV Only
+		Factions: sc2k, sc2ka
+		BaseActor: sc2kmcv
+	StartingUnits@defaultcity2k:
+		Class: light
+		ClassName: Light Support
+		Factions: sc2k, sc2ka
+		BaseActor: sc2kmcv
+		#SupportActors: cityambulance,cityfiretruck,citypolicecar
+	StartingUnits@heavycity2k:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: sc2k, sc2ka
+		BaseActor: sc2kmcv
+		#SupportActors: cityambulance,cityambulance,cityfiretruck,cityfiretruck,citypolicecar,citypolicecar
+		
+^SimCity_BPV:
+	GrantConditionOnPrerequisite@bpv:
+		Condition: simcity_bpv
+		Prerequisites: simcity_bpv
+	DamageMultiplier@bpv:
+		Modifier: 75
+		RequiresCondition: simcity_bpv
+
+SimCityUnitLevelUp:
+	GrantConditionOnPrerequisite@InstructorLevel1:
+		Prerequisites: InstructorLevel1
+		Condition: InstructorLevel1
+	GrantConditionOnPrerequisite@InstructorLevel2:
+		Prerequisites: InstructorLevel2
+		Condition: InstructorLevel2
+	ProducibleWithLevel:
+		InitialLevels: 1
+		Prerequisites: InstructorLevel3
+	ExperienceTrickler@InstructorLevel1:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: InstructorLevel1
+	ExperienceTrickler@InstructorLevel2:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: InstructorLevel2
+	GainsExperienceMultiplier:
+		Modifier: 200
+		RequiresCondition: InstructorLevel2
+		
+SimCityBuildingLevelUp:
+	GrantConditionOnPrerequisite@ArchitectLevel1:
+		Prerequisites: ArchitectLevel1
+		Condition: ArchitectLevel1
+	GrantConditionOnPrerequisite@ArchitectLevel2:
+		Prerequisites: ArchitectLevel2
+		Condition: ArchitectLevel2
+	ProducibleWithLevel:
+		InitialLevels: 1
+		Prerequisites: ArchitectLevel3
+	ExperienceTrickler@ArchitectLevel1:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: ArchitectLevel1
+	ExperienceTrickler@ArchitectLevel2:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: ArchitectLevel2
+	GainsExperienceMultiplier:
+		Modifier: 200
+		RequiresCondition: ArchitectLevel2
+
+####################################################################################################
+#		VEHICLE
+####################################################################################################
+
+CITYMCV:
+	Inherits: SimCityUnitLevelUp
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	Inherits@mcv: ^MCV
+	Inherits@conyard: ^Conyard
+	Inherits@shadow: ^ScavShadow
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Description: Deploys into Mayor's house.\n\nMayor's house\nBuffs units and buildings.\nCan be upgraded with Architects
+		Icon: cityicon
+	Valued:
+		Cost: 3500
+	Tooltip:
+		Name: Mobile Construction Vehicle (SimCity)
+	Selectable:
+		Priority: 4
+		DecorationBounds: 1536, 1536
+	Mobile:
+		Speed: 75
+		Locomotor: heavywheeled
+	Health:
+		HP: 125000
+	Repairable:
+		HpPerStep: 2182
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Transforms:
+		IntoActor: citymayor
+		Offset: -1,-1
+		Facing: 432
+		TransformSounds: citybuild.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	#SpawnActorOnDeath:
+	#	Actor: MCV.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	SelectionDecorations:
+	RenderSprites:
+		Image: citypolicecar
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmsimcity
+
+CITYMCV.bot:
+	Inherits: CITYMCV
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildLimit: 1
+		Prerequisites: anypower, ~botplayer, allowsMCV
+
+CITYHARVESTER:
+	Inherits: SimCityUnitLevelUp
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	Inherits@harv: ^Harvester
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 60
+		Description: Collects resources for processing.\n  Unarmed
+		Icon: cityicon
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Dozer
+		GenericName: Harvester
+	Selectable:
+		Priority: 7
+		DecorationBounds: 1280, 1280
+	SelectionDecorations:
+	Harvester:
+		Capacity: 12
+		BaleLoadDelay: 16 #14
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 30
+		PipCount: 5
+		MaxUnloadQueue: 4
+		EmptyCondition: no-tiberium
+	Health:
+		HP: 30000 #60000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 65 #85
+		TurnSpeed: 60
+	RevealsShroud:
+		Range: 4c0
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	#HarvesterHuskModifier:
+	#	FullnessThreshold: 50
+	Explodes:
+		RequiresCondition: !no-tiberium
+		Weapon: TiberiumExplosion
+	Explodes@empty:
+		RequiresCondition: no-tiberium
+		Weapon: UnitExplode
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	RenderSprites:
+		Image: raharv
+
+CITYTRUCK:
+	Inherits: TRUCK
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 40
+		Prerequisites: Police Department
+	Tooltip:
+		Name: Money Truck
+	RenderSprites:
+		Image: citytruck
+
+CITYTRUCKXXL:
+	Inherits: TRUCK
+	Inherits@EXPERIENCE: ^GainsExperience
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 70
+		Prerequisites: Bank, Police Department
+		BuildDuration: 500
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Money Truck XXL
+	DeliversCash:
+		Payload: 2000
+		PlayerExperience: 50
+	SpawnActorOnDeath:
+		Actor: moneycrate.large
+	ProducibleWithLevel:
+		InitialLevels: 4
+	RenderSprites:
+		Image: citytruckxxl
+
+CITYAMBULANCE:
+	Inherits: SimCityUnitLevelUp
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
+	Inherits@EMP: ^TurretEMP
+	Inherits@shadow: ^ScavShadow
+	Inherits@cargo: ^CargoVehicle
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 30
+		Description: Heals units.\n Can transport 4 infantry
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Ambulance
+	Health:
+		HP: 25000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 100
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 6c0
+	Armament:
+		Weapon: AmbulanceHeal
+		TargetRelationships: Ally
+		LocalOffset: 250,0,100
+	AttackTurreted:
+	AutoTarget:
+		ScanRadius: 7
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry, Vehicle
+	Turreted:
+	Cargo:
+		Types: Infantry, Hacker
+		MaxWeight: 4
+		LoadingCondition: notmobile
+	Inherits@EXT: ^ExternalConditions ##########
+	RenderSprites:
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+
+CITYFIRETRUCK:
+	Inherits: SimCityUnitLevelUp
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
+	Inherits@FIRECALL: ^FireCall
+	Inherits@EXT: ^ExternalConditions
+	Inherits@EMP: ^FrontalEMP
+	Inherits@shadow: ^ScavShadow
+	Inherits@FireImmune: ^FireImmune
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 1500 #800
+	Tooltip:
+		Name: Fire Truck
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDurationModifier: 50
+		Queue: Infantry, RAInfantry
+		Description: Truck armed with a water cannon.\n Strong vs Infantry, Buildings\n Increases damage resistance of nearby allied units\nResistant against fire
+	Mobile:
+		Locomotor: heavywheeled
+		Speed: 80
+	Health:
+		HP: 50000
+	Repairable:
+		HpPerStep: 1364
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 7c0
+	Armament@PATRIOT:
+		Weapon: PatriotFireTruck
+		LocalOffset: 50,0,200
+	AttackFrontal:
+		FacingTolerance: 0
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	-ExternalCondition@FireCall:
+	-ExternalCondition@PoliceCall:
+	WithRangeCircle:
+		Range: 7c0
+	RenderSprites:
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	Cargo:
+		MaxWeight: 4
+		InitialUnits: CITYFIREFIGHTER, CITYFIREFIGHTER, CITYFIREFIGHTER, CITYFIREFIGHTER
+		Types: Infantry
+		LoadingCondition: notmobile
+	AutoDeployer:
+		DeployChance: 100
+	Voiced:
+		VoiceSet: FireFighterVoice
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+CITYPOLICECAR:
+	Inherits: SimCityUnitLevelUp
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
+	Inherits@POLICECALL: ^PoliceCall
+	Inherits@EXT: ^ExternalConditions
+	Inherits@EMP: ^FrontalEMP
+	Inherits@shadow: ^ScavShadow
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 20
+		BuildDurationModifier: 35
+		Description: Light vehicle that drives police officers to their destination.\nEquipped with Taser\nCan carry up to 2 units\nIncreases damage output of nearby allied units
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Police Car
+	Health:
+		HP: 25000
+	Armor:
+		Type: Light
+	Mobile:
+		Locomotor: wheeled
+		Speed: 125
+	RevealsShroud:
+		Range: 7c0
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	WithRangeCircle:
+		Range: 7c0
+	-ExternalCondition@FireCall:
+	-ExternalCondition@PoliceCall:
+	RenderSprites:
+	Armament@taser:
+		Weapon: TaserCar
+	GrantConditionOnPrerequisite@taser:
+		Condition: simcity_taser
+		Prerequisites: simcity_taser
+	ReloadDelayMultiplier@taserupg:
+		Modifier: 80
+		RequiresCondition: simcity_taser
+	Cargo:
+		MaxWeight: 2
+		InitialUnits: CITYPOLICEOFFICER, CITYPOLICEOFFICER
+		Types: Infantry
+		LoadingCondition: notmobile
+	AutoDeployer:
+		DeployChance: 100
+	Voiced:
+		VoiceSet: CopVehicleVoice
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+CITYSWATVAN:
+	Inherits: CITYPOLICECAR
+	Buildable:
+		Description: Heavy police vehicle driving S.W.A.T. to their destination\nEquipped with Taser.\nCan carry up to 4 units\nSWAT Units inside are equipped with tasers
+		Prerequisites: citylibrary, citybank, ~techlevel.high
+		BuildDurationModifier: 25
+	Valued:
+		Cost: 2000
+	Health:
+		HP: 60000
+	Tooltip:
+		Name: S.W.A.T. Van
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 90
+	Cargo:
+		MaxWeight: 4
+		InitialUnits: CITYSWATS, CITYSWATS, CITYSWATS, CITYSWATS
+		Types: Infantry
+	RenderSprites:
+	ReloadDelayMultiplier@taserswat:
+		RequiresCondition: simcity_taser
+		Modifier: 60
+	-WithShadow:
+	AutoDeployer:
+		DeployTrigger: Damage
+		DeployChance: 100
+	
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+CITYBOTTRUCK:
+	Inherits: TRUCK
+	Buildable:
+		Queue: CityV.SimCity
+		BuildPaletteOrder: 20
+		Prerequisites: ~botcity
+		BuildLimit: 1
+	Tooltip:
+		Name: Money Truck
+	RenderSprites:
+		Image: citytruck
+	-MapEditorData:
+
+####################################################################################################
+#		BUILDINGS
+####################################################################################################
+
+CITYMAYOR:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
+	Inherits: SimCityBuildingLevelUp
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits@MAYORCALL: ^MayorCall
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	AcceptsDeliveredExperience:
+		ValidTypes: building
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 3500
+	Tooltip:
+		Name: Mayor's House
+	#Buildable:
+	#	BuildPaletteOrder: 30
+	#	Prerequisites: #
+	#	Queue: Defence, RADefence
+	#	Description: Builds structures.\nBuffs units and buildings.\nCan be upgraded with Architects
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 275000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building, Defence
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence
+		RequiresCondition: classicproductionqueues
+	ProductionQueue@SimCityBuilding:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		LimitedAudio: BuildingInProgress
+	ProductionQueue@SimCityDefense:
+		Type: Defence
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		LimitedAudio: BuildingInProgress
+	BaseBuilding:
+	ProductionBar@BuildingSimCity:
+		ProductionType: Building
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceSimCity:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingSimCity:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceSimCity:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 14c0
+	WithRangeCircle:
+		Range: 14c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	ProvidesRadar:
+		RequiresCondition: !jammed
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	GivesBuildableArea: ##########
+		AreaTypes: building, citybot
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmsimcity
+	#ExperienceTrickler:
+	#	Amount: 10000
+	#	RequiresCondition: !city-elite
+	StoresResources:
+		Capacity: 3000
+	RallyPoint: ##########
+	Exit@1:
+		SpawnOffset: -512,1536,0
+		ExitCell: 0,2
+		Facing: 520
+	Exit@2:
+		SpawnOffset: 512,1536,0
+		ExitCell: 1,2
+		Facing: 520
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 6
+
+CITYR:
+	Inherits: SimCityBuildingLevelUp
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^2x2Shape
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits@RESIDENTIAL: ^Residential
+	Inherits@2: ^CashTricklerMultipliers
+	AcceptsDeliveredExperience:
+		ValidTypes: building
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Residential
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: anypower
+		Queue: Building, RABuilding
+		BuildDurationModifier: 25
+		Description: Generates tax revenue\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n #Limit: 20
+		#BuildLimit: 20
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 50000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -10
+	ProvidesPrerequisite@1:
+		Prerequisite: Residential
+	ProvidesPrerequisite@2:
+		Prerequisite: MoneyIncome
+	ExperienceTrickler:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3
+
+CITYC:
+	Inherits: SimCityBuildingLevelUp
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^2x2Shape
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits@COMMERCIAL: ^Commercial
+	AcceptsDeliveredExperience:
+		ValidTypes: building
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Commercial
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Building, RABuilding
+		BuildDurationModifier: 25
+		Description: Increases tax revenue from nearby Residentials\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n #Limit: 5
+		#BuildLimit: 5
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 50000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -10
+	WithRangeCircle:
+		Range: 7c0
+		RequiresCondition: city-veteran == 0
+	WithRangeCircle@RANK1:
+		Range: 7c5
+		RequiresCondition: city-veteran == 1
+	WithRangeCircle@RANK2:
+		Range: 8c0
+		RequiresCondition: city-veteran == 2
+	WithRangeCircle@RANK3:
+		Range: 8c5
+		RequiresCondition: city-veteran == 3
+	WithRangeCircle@RANK4:
+		Range: 9c0
+		RequiresCondition: city-elite
+	ProvidesPrerequisite:
+		Prerequisite: Commercial
+	GivesBuildableArea:
+		AreaTypes: building, cityc
+	ExperienceTrickler:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3
+
+CITYI:
+	Inherits: SimCityBuildingLevelUp
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^2x2Shape
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits@INDUSTRIAL: ^Industrial
+	AcceptsDeliveredExperience:
+		ValidTypes: building
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Industrial
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building, RABuilding
+		BuildDurationModifier: 25
+		Description: Increases speed of nearby units\nCan be upgraded with Architects\nAutomatically self-upgrades\n\n #Limit: 10
+		#BuildLimit: 10
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 50000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -10
+	WithRangeCircle:
+		Range: 9c0
+		RequiresCondition: city-veteran == 0
+	WithRangeCircle@RANK1:
+		Range: 10c0
+		RequiresCondition: city-veteran == 1
+	WithRangeCircle@RANK2:
+		Range: 11c0
+		RequiresCondition: city-veteran == 2
+	WithRangeCircle@RANK3:
+		Range: 12c0
+		RequiresCondition: city-veteran == 3
+	WithRangeCircle@RANK4:
+		Range: 13c0
+		RequiresCondition: city-elite
+	ProvidesPrerequisite:
+		Prerequisite: Industrial
+	ExperienceTrickler:
+		Amount: 100
+		Interval: 1
+		InitialDelay: 100
+		PauseOnCondition: lowpower
+		RequiresCondition: city-veteran <= 3
+
+CITYFD:
+	Inherits: SimCityBuildingLevelUp
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@FIRECALL: ^FireCall
+	Inherits@MAYORCALL: ^ExternalConditionsMayorCallStructure
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Fire Department
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 40
+		Prerequisites: MoneyIncome
+		BuildDurationModifier: 50
+		Description: Produces fire department units, Architects, and Instructors.\nDefense structure, can attack aircraft\nRequires power to operate
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 60000
+	Armor:
+		Type: Wood
+	AttackTurreted:
+		PauseOnCondition: disabled || lowpower
+	Turreted:
+	Armament@PATRIOT:
+		Weapon: PatriotFireTruck
+		LocalOffset: 1024,0,0
+	RevealsShroud:
+		Range: 7c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -512,1536,0
+		ExitCell: 0,2
+		Facing: 520
+	Exit@2:
+		SpawnOffset: 512,1536,0
+		ExitCell: 1,2
+		Facing: 520
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYSIMCITY:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYSIMCITY:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@1:
+		Prerequisite: Fire Department
+	ProvidesPrerequisite@2:
+		Prerequisite: barracks
+	WithIdleOverlay@HQ:
+		RequiresCondition: MayorCall
+		Sequence: hq
+	Power:
+		Amount: -20
+	CashTrickler:
+		Amount: -10
+		Interval: 200
+	-CommandBarBlacklist:
+	WithRangeCircle:
+		Range: 7c0
+
+CITYPD:
+	Inherits: SimCityBuildingLevelUp
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@POLICECALL: ^PoliceCall
+	Inherits@MAYORCALL: ^ExternalConditionsMayorCallStructure
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Police Department
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 50
+		Prerequisites: MoneyIncome
+		BuildDurationModifier: 50
+		Description: Produces police units and dozers.\nDefense structure.\nRequires power to operate
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 100000
+	Armor:
+		Type: Wood
+	AttackTurreted:
+		PauseOnCondition: disabled || lowpower
+	Turreted:
+	Armament:
+		Weapon: Taser
+		LocalOffset: 1024,0,0
+	RevealsShroud:
+		Range: 7c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -512,1536,0
+		ExitCell: 0,2
+		Facing: 520
+	Exit@2:
+		SpawnOffset: 512,1536,0
+		ExitCell: 1,2
+		Facing: 520
+	Production@NORMAL:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle
+		RequiresCondition: classicproductionqueues
+	Production@UPGRADEPOLICECITY:
+		Produces: Upgrades
+	ProductionQueue:
+		Type: Vehicle
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLESIMCITY:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLESIMCITY:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
+	ProductionBar@UPGRADEPOLICECITY:
+		ProductionType: Upgrades
+	ProvidesPrerequisite:
+		Prerequisite: Police Department
+	WithIdleOverlay@HQ:
+		RequiresCondition: MayorCall
+		Sequence: hq
+	Power:
+		Amount: -20
+	CashTrickler:
+		Amount: -10
+		Interval: 200
+	-CommandBarBlacklist:
+	WithRangeCircle:
+		Range: 7c0
+	ProvidesPrerequisite@vehicleproduction:
+		Prerequisite: vehicleproduction
+
+CITYHARBOR:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@ref: ^Refinery
+	Selectable:
+		Bounds: 131072, 131072
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Harbor
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 60
+		Prerequisites: anypower
+		Description: Refines resources\ninto credits.
+	Building:
+		Footprint: xxx xxx xxx ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 120000
+	RevealsShroud:
+		Range: 4c0
+	Refinery:
+		DockAngle: 256
+		DockOffset: 0,3
+	StoresResources:
+		Capacity: 5000
+	DrawLineToTarget:
+	FreeActor@1:
+		Actor: CITYHARVESTER
+		SpawnOffset: 1,3
+		Facing: 256
+	FreeActor@2:
+		Actor: CITYHARVESTER
+		SpawnOffset: 0,3
+		Facing: 256
+	WithBuildingBib:
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@2:
+		Prerequisite: MoneyIncome
+	Power:
+		Amount: -20
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi, citybot
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+		FullSequence: pip-yellow
+
+CITYCOAL:
+	Inherits: SimCityBuildingLevelUp
+	Inherits: ^BaseBuilding
+	Inherits@power: ^PowerPlant
+	AcceptsDeliveredExperience:
+		ValidTypes: building
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Coal Power Plant
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 70
+		Description: Generates power.\n\nUpgradeable:\n each upgrade increases power output by 25% up to 100%.
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 100
+	
+
+CITYNUKE:
+	Inherits: SimCityBuildingLevelUp
+	Inherits: ^BaseBuilding
+	Inherits@power: ^PowerPlant
+	AcceptsDeliveredExperience:
+		ValidTypes: building
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Nuclear Power Plant
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 80
+		Description: Provides triple the power of\na standard Power Plant.\n\nUpgradeable:\n each upgrade increases power output by 25% up to 100%.
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 300
+	
+
+CITYAIRPORT:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@SW: ^PrimarySuperweapon
+	Selectable:
+		Bounds: 174762, 174762
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -2048, -2048
+			BottomRight: 2048, 2048
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Airport
+	Buildable:
+		BuildPaletteOrder: 90
+		Prerequisites: Fire Department, Police Department, ~techlevel.high, !cityair
+		Queue: Building, RABuilding
+		Description: Provides airborne support powers.
+	Building:
+		Footprint: xxxx xxxx xxxx xxxx
+		Dimensions: 4,4
+		BuildSounds: citybuild.aud
+	ProvidesPrerequisite:
+		Prerequisite: cityairport
+	Health:
+		HP: 210000
+	RevealsShroud:
+		Range: 4c0
+	SupportPowerChargeBar:
+	Power:
+		Amount: -50
+	AirstrikePower@spyplane:
+		PauseOnCondition: lowpower
+		OrderName: SovietSpyPlane
+		Icon: spyplane
+		ChargeInterval: 1500
+		Name: Spy Plane
+		Description: Reveals an area of the map\nand cloaked enemy units.
+		SelectTargetSpeechNotification: SelectTarget
+		EndChargeSpeechNotification: SpyPlaneReady
+		CameraActor: camera.spyplane
+		CameraRemoveDelay: 150
+		UnitType: u2
+		QuantizedFacings: 8
+		DisplayBeacon: true
+		BeaconPoster: racamicon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 10
+	AirstrikePower@greenbombs:
+		PauseOnCondition: lowpower
+		OrderName: Tiberium Seeds
+		Prerequisites: citypark
+		Icon: citygreenbombsicon
+		ChargeInterval: 3750 #5000
+		Name: Tiberium Seeds
+		Description: A cargo plane seeds Tiberium on your target.\n Does no damage
+		SelectTargetSpeechNotification: SelectTarget
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		UnitType: greenbomber
+		QuantizedFacings: 8
+		DisplayBeacon: true
+		BeaconPoster: citygreenbombsbeacon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 20
+	AirstrikePower@bluebombs:
+		PauseOnCondition: lowpower
+		OrderName: Blue Tiberium Seeds
+		Prerequisites: cityfountain
+		Icon: citybluebombsicon
+		ChargeInterval: 7500
+		Name: Blue Tiberium Seeds
+		Description: A cargo plane seeds Blue Tiberium on your target.\n Does no damage
+		SelectTargetSpeechNotification: SelectTarget
+		CameraActor: racamera
+		CameraRemoveDelay: 150
+		UnitType: bluebomber
+		QuantizedFacings: 8
+		DisplayBeacon: true
+		BeaconPoster: citybluebombsbeacon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 30
+	AirstrikePower@mininuke:
+		PauseOnCondition: lowpower
+		OrderName: Parachuted Mininuke
+		AllowMultiple: true
+		Prerequisites: ~techlevel.superweapons
+		Icon: abomb
+		Cursor: nuke
+		ChargeInterval: 4500
+		Name: Mininuke Parabomb
+		Description: A cargo plane drops a parachuted mininuke on your target.\n Can be intercepted
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		CameraActor: racamera
+		CameraRemoveDelay: 150
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		DisplayRadarPing: true
+		UnitType: mininukebomber
+		DisplayBeacon: true
+		BeaconPoster: atomic
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 40
+	ParatroopersPower@SWAT:
+		Prerequisites: Police Department, Library, Bank, ~techlevel.superweapons
+		OrderName: SWATDrop
+		Icon: paratroopers
+		ChargeInterval: 4500
+		Name: Search Warrant
+		Description: A squad of cargo planes drops 5 Police Cars\nanywhere on the map.
+		DropItems: CITYPOLICECAR, CITYPOLICECAR, CITYPOLICECAR, CITYPOLICECAR, CITYPOLICECAR
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: rapinficon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		UnitType: C17.Paradrop
+		SquadSize: 3
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: cityair
+
+CITYLIBRARY:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Library
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: Fire Department
+		Queue: Defence, RADefence
+		Description: Unlocks Elite Architect & Elite Instructor.\n\n Limit: 1
+		BuildLimit: 1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 4c0
+	ProvidesPrerequisite:
+		Prerequisite: Library
+	Power:
+		Amount: -10
+	
+
+CITYBANK:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Bank
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: Police Department
+		Queue: Defence, RADefence
+		Description: Unlocks Money Truck XXL and Casino.\n\n Limit: 1
+		BuildLimit: 1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 4c0
+	ProvidesPrerequisite:
+		Prerequisite: Bank
+	Power:
+		Amount: -10
+	StoresResources:
+		Capacity: 15000
+	CashHackable:
+	Targetable@infiltrate:
+		TargetTypes: SpyInfiltrate, ThiefInfiltrate
+		RequiresCondition: !untargetable
+	InfiltrateForCash:
+		Percentage: 50
+		Types: SpyInfiltrate, ThiefInfiltrate
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+
+CITYPARK:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Park
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: citylibrary
+		Queue: Defence, RADefence
+		Description: Seeds Tiberium.\n\n Limit: 1
+		BuildLimit: 1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 4c0
+	
+	SeedsResource:
+		Interval: 10 #55
+		ResourceType: Tiberium
+		MaxRange: 3
+
+CITYFOUNTAIN:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Fountain
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: citybank
+		Queue: Defence, RADefence
+		Description: Seeds Blue Tiberium.\n\n Limit: 1
+		BuildLimit: 1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 4c0
+	
+	SeedsResource:
+		Interval: 20 #110
+		ResourceType: BlueTiberium
+		MaxRange: 3
+
+CITYSTADIUM:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Stadium
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~wip-content
+		BuildLimit: 1
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 120000
+	RevealsShroud:
+		Range: 4c0
+	
+
+CITYEXPO:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Expo
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~wip-content
+		BuildLimit: 1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 4c0
+	
+
+CITYSTATION:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@IDISABLE: ^DisabledOverlay
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Rail Station
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		Description: Provides Railway Gun support power.
+		Prerequisites: Fire Department, Police Department, Industrial, cityharbor, ~techlevel.superweapons
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Power:
+		Amount: -20
+	AttackTurreted:
+		RequiresCondition: ammo
+		OpportunityFire: false
+		PersistentTargeting: false
+		ForceFireIgnoresActors: true
+	Turreted:
+	Armament:
+		Weapon: RailStationArty
+		LocalOffset: 212,0,1768
+		LocalYaw: 0,100
+		ReloadingCondition: reloading
+	AmmoPool:
+		Ammo: 3
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+	AttackOrderPower:
+		OrderName: RailArty
+		PauseOnCondition: disabled || lowpower
+		Cursor: attackmove
+		Icon: emp
+		ChargeInterval: 1500
+		Name: Railway Gun
+		Description: An unseen underground bullet train\nfires heavy artillery at the target.
+		EndChargeSpeechNotification:
+		SelectTargetSpeechNotification:
+	RejectsOrders:
+		Except: Sell
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+		WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+
+CITYMARIO:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Monument
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~wip-content, Fire Department, Police Department, Commercial, Library, Bank, ~techlevel.superweapons
+		BuildLimit: 1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Power:
+		Amount: -20
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 4c0
+	
+
+CITYCASINO:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@2: ^CashTricklerMultipliers
+	Inherits@shape: ^2x2Shape
+	Inherits@IDISABLE: ^DisabledOverlay
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Casino
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		Description: Generates revenue\nProvides Casino Crate support power
+		Prerequisites: Library, Commercial, Bank
+		BuildLimit: 1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Power:
+		Amount: -50
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 4c0
+	CashTrickler:
+		Interval: 600
+		Amount: 1000
+	CashTricklerBar:
+	ProvidesPrerequisite@buildingname:
+	AirstrikePower@casino:
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Icon: airstrike
+		ChargeInterval: 1500
+		QuantizedFacings: 8
+		Name: Casino Crates
+		Description: Drop 3 Casino Crates at target.\nCan provide massive benefits or penalties.
+		EndChargeSpeechNotification:
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification:
+		UnitType: casinocratebomber
+		DisplayBeacon: True
+		BeaconPoster: airstrike
+		BeaconPosterPalette: beaconposter
+		DisplayRadarPing: True
+		CameraActor: camera
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 50
+	
+
+CITYWINDMILL:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Windmill
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~wip-content
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	
+
+CITYAMUSE:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Amusement Park
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		Description: TBA
+		Prerequisites: ~wip-content
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	
+
+CITYZOO:
+	Inherits: SimCityBuildingLevelUp
+	Inherits@EXPCITY: ^GainsExperienceCity
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@spy: ^InfiltrateForSupportPowerReset
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Zoo
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		Description: Provides Dinosaur Drop support power.
+		Prerequisites: Library, Bank, citypark, ~techlevel.superweapons
+		BuildLimit: 1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Power:
+		Amount: -40
+	Health:
+		HP: 70000
+	RevealsShroud:
+		Range: 4c0
+	ProvidesPrerequisite@buildingname:
+	ParatroopersPower@dino:
+		PauseOnCondition: lowpower
+		OrderName: DinoDrop
+		Icon: paratroopers
+		ChargeInterval: 2250
+		Name: Dinosaur Drop
+		Description: A squad of cargo planes drops dinosaurs\nanywhere on the map.
+		DropItems: steg.citydrop, trex.citydrop, tric.citydrop, rapt.citydrop, rapt.citydrop
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: rapinficon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		UnitType: C17.Paradrop
+		SquadSize: 3
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		
+####################################################################################################
+#		INFANTRY
+####################################################################################################
+
+^CITYINFANTRY:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+
+CITYFIREFIGHTER:
+	Inherits: SimCityUnitLevelUp
+	Inherits: ^CITYINFANTRY
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@FireImmune: ^FireImmune
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Firefighter
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Infantry, RAInfantry
+		Description: Emergency worker armed with a fire hose.\nStuns Vehicles and Cyborgs\nDeals bonus damage to cyborgs\nResistant against fire\n Strong vs Infantry, Buildings\n Weak vs Vehicles, Aircraft
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 12000
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: WaterThrower
+		LocalOffset: 341,0,256
+		FireDelay: 3
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: WaterThrower
+	TakeCover:
+		ProneOffset: 190,0,-198
+	Voiced:
+		VoiceSet: RAGenericVoice
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: infantry ##########
+	Voiced:
+		VoiceSet: FireFighterVoice
+CITYPOLICEOFFICER:
+	Inherits: SimCityUnitLevelUp
+	Inherits: ^CITYINFANTRY
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@MAYORCALL: ^ExternalConditionsMayorCall
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@BPV: ^SimCity_BPV
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Police Officer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		BuildDuration: 55
+		BuildDurationModifier: 100
+		Queue: Vehicle, RAVehicle
+		Description: Law enforcement armed with a pistol.\nCan be upgraded to have pistol replaced with Submachine gun\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 6000
+	AutoTarget:
+		ScanRadius: 4
+	GrantConditionOnPrerequisite@smg:
+		Condition: simcity_smg
+		Prerequisites: simcity_smg
+	Armament@PRIMARY:
+		Weapon: PolicePistol
+		RequiresCondition: !simcity_smg
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: PolicePistol
+		RequiresCondition: !simcity_smg
+	Armament@SMG:
+		Weapon: PoliceSMG
+		RequiresCondition: simcity_smg
+	Armament@GARRISONEDSMG: ##########
+		Name: garrisoned
+		Weapon: PoliceSMG
+		RequiresCondition: simcity_smg
+	Passenger:
+		CustomPipType: blue
+	Crushable:
+		CrushSound: squish2.aud
+	Voiced:
+		VoiceSet: RAGenericVoice
+	WithInfantryBody:
+		IdleSequences: stand
+		DefaultAttackSequence: shoot
+	-TakeCover:
+	Voiced:
+		VoiceSet: CopVoice
+CITYARCHITECT:
+	Inherits: ^CITYINFANTRY
+	Inherits@selection: ^SelectableSupportUnit
+	ProvidesPrerequisite@ArchitectLevel1:
+		Prerequisite: ArchitectLevel1
+	ProvidesPrerequisite@ArchitectLevel3:
+		Prerequisite: ArchitectLevel3
+	Buildable:
+		BuildLimit: 1
+		BuildDurationModifier: 50
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 40
+		Description: Upgrades a small area of buildings by 1 rank.\n Limit: 1
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Architect
+	Passenger:
+		CustomPipType: yellow
+	Health:
+		HP: 3000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 48
+	RevealsShroud:
+		Range: 4c0
+	#DeliversExperience:
+	#	Type: building
+	ProducibleWithLevel:
+		InitialLevels: 1
+	GrantExternalConditionPower@LEVELUP1:
+		OrderName: UpgradeBuilding
+		Icon: architect1
+		AllowMultiple: true
+		Name: Architect
+		Description: Upgrades a small area of buildings by 1 rank.\n Limit: 1
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 1500
+		Duration: 0
+		DisplayRadarPing: True
+		Condition: city-veteran
+		SupportPowerPaletteOrder: 10
+		Dimensions: 9, 9
+		Footprint: ____x____ ___xxx___ __xxxxx__ _xxxxxxx_ xxxxxxxxx _xxxxxxx_ __xxxxx__ ___xxx___ ____x____
+
+CITYELITEARCHITECT:
+	Inherits: ^CITYINFANTRY
+	Inherits@selection: ^SelectableSupportUnit
+	ProvidesPrerequisite@ArchitectLevel2:
+		Prerequisite: ArchitectLevel2
+	ProvidesPrerequisite@ArchitectLevel3:
+		Prerequisite: ArchitectLevel3
+	Buildable:
+		BuildLimit: 1
+		BuildDurationModifier: 50
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 70
+		Prerequisites: Library
+		Description: Upgrades a large area of buildings by 1 rank.\n Limit: 1
+		Icon: eliteicon
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Elite Architect
+	Passenger:
+		CustomPipType: yellow
+	Health:
+		HP: 3000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 48
+	RevealsShroud:
+		Range: 4c0
+	#DeliversExperience:
+	#	Type: building
+	ProducibleWithLevel:
+		InitialLevels: 4
+	RenderSprites:
+		Image: cityarchitect
+	GrantExternalConditionPower@LEVELUP1:
+		OrderName: UpgradeBuilding2
+		Icon: architect2
+		AllowMultiple: true
+		Name: Elite Architect
+		Description: Upgrades a large area of buildings by 1 rank.\n Limit: 1
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 3000
+		Duration: 0
+		DisplayRadarPing: True
+		Condition: city-veteran
+		SupportPowerPaletteOrder: 10
+		Dimensions: 11, 11
+		Footprint: _____x_____ ____xxx____ ___xxxxx___ __xxxxxxx__ _xxxxxxxxx_ xxxxxxxxxxx _xxxxxxxxx_ __xxxxxxx__ ___xxxxx___ ____xxx____ _____x_____
+
+CITYINSTRUCTOR:
+	Inherits: ^CITYINFANTRY
+	Inherits@selection: ^SelectableSupportUnit
+	ProvidesPrerequisite@InstructorLevel1:
+		Prerequisite: InstructorLevel1
+	ProvidesPrerequisite@InstructorLevel3:
+		Prerequisite: InstructorLevel3
+	Buildable:
+		BuildLimit: 1
+		BuildDurationModifier: 50
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 50
+		Description: Upgrades a small group of units by 1 rank.\n Limit: 1
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Instructor
+	Passenger:
+		CustomPipType: blue
+	Health:
+		HP: 3000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 48
+	RevealsShroud:
+		Range: 4c0
+	WithInfantryBody:
+		IdleSequences: idle
+		DefaultAttackSequence: repair
+		StandSequences: stand
+	#DeliversExperience:
+	#	Type: infantry
+	ProducibleWithLevel:
+		InitialLevels: 1
+	GrantExternalConditionPower@LEVELUP2:
+		OrderName: UpgradeVeteran
+		Icon: instructor1
+		AllowMultiple: true
+		Name: Instructor
+		Description: Upgrades a small group of units by 1 rank.\n Limit: 1
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 1500
+		Duration: 0
+		DisplayRadarPing: True
+		Condition: rank-veteran
+		SupportPowerPaletteOrder: 10
+		Dimensions: 5, 5
+		Footprint: __x__ _xxx_ xxxxx _xxx_ __x__
+	RenderSprites:
+
+CITYELITEINSTRUCTOR:
+	Inherits: CITYINSTRUCTOR
+	ProvidesPrerequisite@InstructorLevel2:
+		Prerequisite: InstructorLevel2
+	ProvidesPrerequisite@InstructorLevel3:
+		Prerequisite: InstructorLevel3
+	Buildable:
+		BuildLimit: 1
+		BuildDurationModifier: 50
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 80
+		Prerequisites: Library
+		Description: Upgrades a large group of units by 1 rank.\n Limit: 1
+		Icon: eliteicon
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Elite Instructor
+	ProducibleWithLevel:
+		InitialLevels: 4
+	GrantExternalConditionPower@LEVELUP2:
+		OrderName: UpgradeElite
+		Icon: instructor2
+		AllowMultiple: true
+		Name: Elite Instructor
+		Description: Upgrades a large group of units by 1 rank.\n Limit: 1
+		SelectTargetSpeechNotification: SelectTarget
+		OnFireSound: text2.aud
+		ChargeInterval: 3000
+		Duration: 0
+		DisplayRadarPing: True
+		Condition: rank-veteran
+		SupportPowerPaletteOrder: 10
+		Dimensions: 7, 7
+		Footprint: ___x___ __xxx__ _xxxxx_ xxxxxxx _xxxxx_ __xxx__ ___x___
+	RenderSprites:
+		Image: cityinstructor
+
+CITYEXPERT:
+	Inherits: ^CITYINFANTRY
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 50
+		Prerequisites: ~wip-content
+		BuildDuration: 160
+		Description: Upgrades a Vehicle by 1 Rank.
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Expert
+	Passenger:
+		CustomPipType: red
+	Health:
+		HP: 3000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 48
+	RevealsShroud:
+		Range: 4c0
+	WithInfantryBody:
+		IdleSequences: idle
+		StandSequences: stand
+		DefaultAttackSequence: heal
+	DeliversExperience:
+		Type: vehicle
+	ProducibleWithLevel:
+		InitialLevels: 1
+
+CITYELITEEXPERT:
+	Inherits: CITYEXPERT
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 80
+		Prerequisites: ~wip-content #Bank
+		BuildDuration: 400
+		Description: Upgrades a Vehicle to Rank 4 (Elite).
+		Icon: eliteicon
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Elite Expert
+	ProducibleWithLevel:
+		InitialLevels: 4
+	RenderSprites:
+		Image: cityexpert
+
+CITYSWAT:
+	Inherits@1: ^ExistsInWorld
+	Inherits@3: ^SpriteActor
+	Inherits@selection: ^SelectableCombatUnit
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	-AppearsOnRadar:
+	OwnerLostAction:
+		Action: Kill
+		DeathTypes: DefaultDeath
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: citylibrary, citybank, ~techlevel.high, Police.sc2k, RAPolice.sc2k
+		Queue: Vehicle, RAVehicle
+		Description: Elite law enforcement Team armed with silenced\nsubmachine guns and EMP grenades.\n Strong vs ground targets\n Weak vs Aircraft
+	Tooltip:
+		Name: S.W.A.T Team
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Valued:
+		Cost: 2500
+	Health:
+		HP: 100
+	Mobile:
+		Speed: 75
+		Locomotor: foot
+	Power:
+		Amount: -50
+	Guardable:
+	SelectionDecorations:
+	WithSpriteControlGroupDecoration:
+	Selectable:
+		Bounds: 2048, 2048
+	AttackMove:
+	DrawLineToTarget:
+	MobSpawnerMaster:
+		Actors: CITYSWAT1,CITYSWAT1,CITYSWAT1,CITYSWAT2
+		RespawnTicks: 600
+		ExitByBudding: false
+	AttackTurreted:
+		PersistentTargeting: false
+	Turreted:
+		TurnSpeed: 1023
+	Armament:
+		Weapon: AngryMobTargeting
+	AutoTarget:
+		ScanRadius: 10
+	WithSpriteBody:
+		Sequence: dot
+	HitShape:
+	HiddenUnderFog:
+		Type: CenterPosition
+	RevealsShroud:
+		Type: CenterPosition
+	SpeedMultiplier@Generic:
+		Modifier: 200
+	DamageMultiplier@INVINCIBLE:
+		Modifier: 0
+	RenderSprites:
+		Image: CITYSWAT
+	Voiced:
+		VoiceSet: CommandoVoice
+		
+CITYSWAT1:
+	Inherits: SimCityUnitLevelUp
+	Inherits: ^CITYINFANTRY
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@BPV: ^SimCity_BPV
+	Inherits@MC: ^MCImmune
+	Tooltip:
+		Name: S.W.A.T. Officer
+	Mobile:
+		Speed: 75
+		Voice: Move
+	Guard:
+		Voice: Move
+	Health:
+		HP: 12500
+	Valued:
+		Cost: 500
+	Passenger:
+		CustomPipType: green
+		Voice: Move
+	RevealsShroud:
+		Range: 7c0
+	AutoTarget:
+		ScanRadius: 8
+	Armament@SMG:
+		Weapon: SwatSMG
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: SwatSMG
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	AttackMove:
+		Voice: Attack
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2,idle3
+	Voiced:
+		VoiceSet: CommandoVoice
+	RenderSprites:
+		Image: CITYSWAT
+	MobSpawnerSlave:
+	-MapEditorData:
+	-Passenger:
+	
+CITYSWAT2:
+	Inherits: CITYSWAT1
+	Armament@GRENADE:
+		Weapon: SwatGrenade
+		LocalOffset: -200,0,300
+
+CITYSWATS:
+	Inherits: CITYSWAT1
+	-MobSpawnerSlave:
+	Passenger:
+		CargoType: Infantry
+	Armament@SMG:
+		Weapon: TaserSWAT
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: TaserSWAT
+	GrantConditionOnPrerequisite@taser:
+		Condition: simcity_taser
+		Prerequisites: simcity_taser
+	ReloadDelayMultiplier@taserupg:
+		Modifier: 80
+		RequiresCondition: simcity_taser
+
+CITYSWATGL:
+	Inherits: SimCityUnitLevelUp
+	Inherits: ^CITYINFANTRY
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@BPV: ^SimCity_BPV
+	Inherits@MC: ^MCImmune
+	Buildable:
+		BuildLimit: 1
+		BuildPaletteOrder: 30
+		Prerequisites: citylibrary, citybank, cityairport, ~techlevel.high
+		BuildDurationModifier: 50
+		Queue: Vehicle, RAVehicle
+		Description: Stealth Elite law enforcement equipped with silenced Sniper Rifle\nCan he upgraded to get Grenade Launcher\nStrong vs Infantry, Air
+		Icon: iconcomm
+	Tooltip:
+		Name: S.W.A.T. Specialist
+	Valued:
+		Cost: 3000
+	Mobile:
+		Speed: 80
+		Voice: Move
+	Power:
+		Amount: -20
+	Guard:
+		Voice: Move
+	Health:
+		HP: 50000
+	Passenger:
+		CustomPipType: green
+		Voice: Move
+	RevealsShroud:
+		Range: 7c0
+	AutoTarget:
+		ScanRadius: 8
+	Armament@Sniper:
+		Weapon: SwatSniper
+		LocalOffset: 0,0,25
+	Armament@GL:
+		Weapon: SwatGL
+		LocalOffset: 0,0,25
+		RequiresCondition: SwatGL
+	-Passenger:
+	GrantConditionOnPrerequisite@gl:
+		Condition: SwatGL
+		Prerequisites: simcity_gl
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	AttackMove:
+		Voice: Attack
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2,idle3
+	Voiced:
+		VoiceSet: CommandoVoice
+	Cloak:
+		InitialDelay: 80
+		CloakDelay: 60
+		CloakSound:
+		UncloakSound:
+		UncloakOn: Attack, Unload, Demolish, Damage
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+	RenderSprites:
+		Image: cityswat
+CITYE6:
+	Inherits: E6
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites:
+		Queue: Infantry, RAInfantry
+		Icon: cityicon
+	RenderSprites:
+		Image: e6
+
+########################################
+#           UPGRADES
+########################################
+
+simcity_smg:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Submachine Guns
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Upgrades
+		BuildDuration: 3000
+		BuildDurationModifier: 100
+		Description: Law Enforcements gets Low Accurate Submachine Guns instead of Handguns\nIncreases damage against Vehicles but decreases damage against Infantry
+		Prerequisites: ~!simcity_smg, citylibrary
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: simcity_smg
+	ProvidesPrerequisite@upgradename:
+	
+simcity_bpv:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Bulletproof vests
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Upgrades
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: All units produced at Police Departments gets Bulletproof vests reducing damage taken
+		Prerequisites: ~!simcity_bpv, citybank
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: simcity_bpv
+	ProvidesPrerequisite@upgradename:
+	
+simcity_gl:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Grenade Launcher
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Upgrades
+		BuildDuration: 3000
+		BuildDurationModifier: 100
+		Description: S.W.A.T Specialists will get Grenade Launcher that can Siege Buildings and other static targets
+		Prerequisites: ~!simcity_gl, citylibrary, citybank, cityairport
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: simcity_gl
+	ProvidesPrerequisite@upgradename:
+	
+simcity_taser:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Taser Speed
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Upgrades
+		BuildDuration: 4500
+		BuildDurationModifier: 100
+		Description: Police Cars and SWAT Vans will shoot their tasers 50% faster
+		Prerequisites: ~!simcity_taser, citylibrary, citybank, cityairport
+	Valued:
+		Cost: 3000
+	RenderSprites:
+		Image: simcity_taser
+	ProvidesPrerequisite@upgradename:
+	
+####################################################################################################
+#		AIRCRAFT
+####################################################################################################
+
+GreenBomber:
+	Inherits: C17.Bomber
+	AttackBomber:
+		FacingTolerance: 32
+	Armament:
+		Weapon: GreenBomb
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 20
+		Speed: 149
+		Repulsable: False
+		MaximumPitch: 56
+	AmmoPool:
+		Ammo: 5	
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+
+BlueBomber:
+	Inherits: C17.Bomber
+	AttackBomber:
+		FacingTolerance: 32
+	Armament:
+		Weapon: BlueBomb
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 20
+		Speed: 149
+		Repulsable: False
+		MaximumPitch: 56
+	AmmoPool:
+		Ammo: 5	
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+
+MininukeBomber:
+	Inherits: C17.Bomber
+	AttackBomber:
+		FacingTolerance: 32
+	Armament:
+		Weapon: MininukeParaBomb
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 20
+		Speed: 149
+		Repulsable: False
+		MaximumPitch: 56
+	AmmoPool:
+		Ammo: 1	
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+
+CasinoCrateBomber:
+	Inherits: C17.Bomber
+	AttackBomber:
+		FacingTolerance: 32
+	Armament:
+		Weapon: CasinoCrateCluster
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 20
+		Speed: 149
+		Repulsable: False
+		MaximumPitch: 56
+	AmmoPool:
+		Ammo: 1	
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True

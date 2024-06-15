@@ -1,0 +1,1993 @@
+World:
+	FactionCA@win98:
+		Name: Windows 98
+		InternalName: win98
+		Game: Special
+		Side: Factions
+		Description: The OG Windows 98
+		Selectable: True
+
+	StartingUnits@mcvonlywin98:
+		Class: none
+		ClassName: MCV Only
+		Factions: win98
+		BaseActor: win98_mcv
+	StartingUnits@defaultwin8a:
+		Class: light
+		ClassName: Light Support
+		Factions: win98
+		BaseActor: win98_mcv
+		SupportActors:
+	StartingUnits@heavywin98a:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: win98
+		BaseActor: win98_mcv
+		SupportActors:
+
+^WIN98UnitProduction:
+	Inherits@prod: ^ProducesUnits
+	GrantConditionOnPowerState@supply:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	Production@NORMAL:
+		PauseOnCondition: lowpower
+
+####################################################################################################
+#       WIN98 BUILDINGS
+####################################################################################################
+WIN98_MYCOMPUTER:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQCondition
+	Inherits@ai: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Selectable:
+		Bounds: 116480, 116480
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: My Computer
+	ProvidesPrerequisite:
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+		-BuildSounds:
+	Health:
+		HP: 200000
+	RevealsShroud:
+		Range: 4c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Power:
+		Amount: 50
+	#SpawnActorsOnSell:
+	#	ActorTypes: wc_h_footman
+	ScalePowerWithHealth:
+	BaseBuilding:
+	Production@NORMAL:
+		Produces: Building, Defence
+		PauseOnCondition: lowpower
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence
+		PauseOnCondition: lowpower
+		RequiresCondition: classicproductionqueues
+	ProductionBar@Building:
+		ProductionType: Building
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuilding:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues
+	ProductionBar@Defence:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RADefence:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	ProductionQueue@Building:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@Defence:
+		Type: Defence
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 200
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseProvider:
+		Cooldown: 75
+		Range: 14c0
+	BaseBuilding:
+	Voiced:
+		VoiceSet: mycomputervoice
+
+WIN98_POWERPLANT:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 2048, 2048
+	HitShape:
+		TargetableOffsets: 630,299,0
+	StoresResources:
+		Capacity: 500
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: 8MB Ram
+	ProvidesPrerequisite:
+		Prerequisite: WIN98_POWERPLANT
+	Buildable:
+		BuildPaletteOrder: 11
+		Prerequisites:
+		Queue: Building, RABuilding
+		BuildDuration: 160
+		BuildDurationModifier: 100
+		Description: Provides 100 Power
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+		-BuildSounds:
+	Health:
+		HP: 65000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 100
+	SpawnActorsOnSell:
+		ActorTypes: win98_user
+	ScalePowerWithHealth:
+	Voiced:
+		VoiceSet: 8mbramvoice
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 5
+
+WIN98_BARRACKS:
+	Inherits: ^BaseBuilding
+	Inherits@win98pro: ^WIN98UnitProduction
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Scanner
+	Buildable:
+		BuildPaletteOrder: 12
+		Queue: Building, RABuilding
+		Description: Trains infantry Windows 98 units
+		BuildDuration: 200
+		BuildDurationModifier: 100
+		Prerequisites: WIN98_POWERPLANT
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 5c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 9999
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	SpawnActorsOnSell:
+		ActorTypes: win98_user
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: WIN98_BARRACKS
+	Selectable:
+		Bounds: 87381, 76458, 0, -9088
+	Voiced:
+		VoiceSet: win98barracksvoice
+
+WIN98_RECYCLEBIN:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@ref: ^Refinery
+	Selectable:
+		Bounds: 2048, 2048
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Refinery:
+		DockAngle: 448
+		DockOffset: 0,2
+		IsDragRequired: False
+		DragOffset: -554,512,0
+		DragLength: 12
+		TickRate: 15
+	StoresResources:
+		Capacity: 1000
+	Selectable:
+		Bounds: 116480, 116480
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Recycle Bin
+	ProvidesPrerequisite:
+		Prerequisite: WIN98_RECYCLEBIN
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: WIN98_POWERPLANT
+		Queue: Building, RABuilding
+		BuildDuration: 160
+		BuildDurationModifier: 100
+		Description: Refinery
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+		-BuildSounds:
+	Health:
+		HP: 65000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -40
+	FreeActor:
+		Actor: win98_harvester
+	SpawnActorsOnSell:
+		ActorTypes: win98_user
+	ProvidesPrerequisite@buildingname:
+	ScalePowerWithHealth:
+	Voiced:
+		VoiceSet: recyclebinvoice
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+
+WIN98_INPUT_DEVICES:
+	Inherits: ^BaseBuilding
+	Inherits@win98pro: ^WIN98UnitProduction
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Input Devices
+	ProvidesPrerequisite:
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Building, RABuilding
+		Description: Trains vehicle Windows 98 units
+		BuildDuration: 200
+		BuildDurationModifier: 100
+		Prerequisites: win98_recyclebin
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 5c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Vehicle
+		DisplayOrder: 2
+		Group: Vehicle
+		LowPowerModifier: 9999
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	SpawnActorsOnSell:
+		ActorTypes: win98_user
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: WIN98_INPUT_DEVICES
+	Selectable:
+		Bounds: 87381, 76458, 0, -9088
+	Voiced:
+		VoiceSet: inputdevicesvoice
+
+WIN98_POWERPLANTADVANCED:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 2048, 2048
+	HitShape:
+		TargetableOffsets: 630,299,0
+	StoresResources:
+		Capacity: 500
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: 32MB Ram
+	ProvidesPrerequisite:
+		Prerequisite: WIN98_POWERPLANT
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: win98_recyclebin
+		Queue: Building, RABuilding
+		BuildDuration: 160
+		BuildDurationModifier: 100
+		Description: Provides 200 Power
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+		-BuildSounds:
+	Health:
+		HP: 65000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 200
+	SpawnActorsOnSell:
+		ActorTypes: win98_user
+	ProvidesPrerequisite@buildingname:
+	ScalePowerWithHealth:
+	Voiced:
+		VoiceSet: 32mbramvoice
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 5
+
+WIN98_AQUANET:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Selectable:
+		Bounds: 131072, 131072
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Aqua.net
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: win98_recyclebin
+		Queue: Building, RABuilding
+		Description: Produces, and\nrepairs boats
+	Building:
+		Footprint: =+= +++ =+=
+		Dimensions: 3,3
+		TerrainTypes: Water
+	RequiresBuildableArea:
+		Adjacent: 8
+	-GivesBuildableArea:
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: -1024,1024,0
+		Facing: 640
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 1024,1024,0
+		Facing: 896
+		ExitCell: 2,2
+	Exit@3:
+		SpawnOffset: -1024,-1024,0
+		Facing: 384
+		ExitCell: 0,0
+	Exit@4:
+		SpawnOffset: 1024,-1024,0
+		Facing: 128
+		ExitCell: 2,0
+	Production@NORMAL:
+		Produces: Naval
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	RallyPoint:
+	ProductionQueue:
+		Type: Naval
+		DisplayOrder: 5
+		Group: Naval
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NAVALWIN98:
+		ProductionType: Naval
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RANAVALWIN98:
+		ProductionType: RANaval
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -30
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
+	Voiced:
+		VoiceSet: aquanetvoice
+
+WIN98_RADAR:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^RASpawnActorsOnSell
+	Selectable:
+		Bounds: 2048, 2048
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 630,-384,0, 630,384,0, -700,-512,0, -700,512,0
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 90
+		Prerequisites: win98_input_devices
+		Description: Provides an overview\nof the battlefield.\nCan detect cloaked units.\nRequires power to operate.\nProvides Sector Scan and Turbo Button support powers.
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Network Connections
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 100000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+		RequiresCondition: !lowpower
+	RevealsShroud@Offline:
+		Range: 5c0
+		RequiresCondition: lowpower
+	ProvidesRadar:
+		RequiresCondition: !jammed && !lowpower
+	AirstrikePower@spyplane:
+		OrderName: SovietSpyPlane
+		Icon: sectorscan_icon
+		ChargeInterval: 3750
+		Name: Sector Scan
+		Description: Reveals an area of the map\nand cloaked enemy units.
+		SelectTargetSpeechNotification: SelectTarget
+		EndChargeSpeechNotification: SpyPlaneReady
+		CameraActor: camera.spyplane
+		CameraRemoveDelay: 150
+		UnitType: win98_sectorscanner
+		QuantizedFacings: 8
+		DisplayBeacon: true
+		BeaconPoster: racamicon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 60
+	GrantExternalConditionPower@Frenzy:
+		OrderName: FrenzyPower
+		PauseOnCondition: lowpower
+		Icon: turbobutton_icon
+		ChargeInterval: 3000
+		Name: Turbo Button
+		Description: Increases the firepower of selected vehicles.
+		Duration: 750
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: sfrenzya.wav
+		DisplayRadarPing: True
+		Condition: frenzypower1
+		StartFullyCharged: true
+		Dimensions: 7, 7
+		Footprint: ___x___ __xxx__ _xxxxx_ xxxxxxx _xxxxx_ __xxx__ ___x___
+	InfiltrateForExploration:
+		Types: SpyInfiltrate
+	Power:
+		Amount: -40
+	SpawnActorsOnSell:
+		ActorTypes: win98_user
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: WIN98_RADAR
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	Voiced:
+		VoiceSet: win98radarvoice
+
+WIN98_AERIAL_UPLINK:
+	Inherits: ^BaseBuilding
+	Inherits@win98pro: ^WIN98UnitProduction
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Aerial Uplink
+	ProvidesPrerequisite:
+	Buildable:
+		BuildPaletteOrder: 100
+		Queue: Building, RABuilding
+		Description: Trains air Windows 98 units
+		BuildDuration: 200
+		BuildDurationModifier: 100
+		Prerequisites: win98_radar
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 5c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Aircraft
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Aircraft
+		DisplayOrder: 2
+		Group: Aircraft
+		LowPowerModifier: 9999
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NORMAL:
+		ProductionType: Aircraft
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@CLASSICPRODUCTIONQUEUES:
+		ProductionType: RAAircraft
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -60
+	SpawnActorsOnSell:
+		ActorTypes: win98_user
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 87381, 76458, 0, -9088
+	Voiced:
+		VoiceSet: aerialuplinkvoice
+
+####################################################################################################
+#       WIN98 DEFENSE
+####################################################################################################
+WIN98_CRT_WALL:
+	Inherits: ^Wall
+	Valued:
+		Cost: 100
+	CustomSellValue:
+		Value: 0
+	Tooltip:
+		Name: CRT Wall
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: WIN98_BARRACKS
+		Queue: Defence, RADefence
+		Description: Stops infantry and light vehicles.\nCan be crushed by tanks.
+	Health:
+		HP: 25000
+	Armor:
+		Type: Heavy
+	LineBuild:
+		Range: 8
+		NodeTypes: sandbag
+	LineBuildNode:
+		Types: sandbag
+	WithWallSpriteBody:
+		Type: sandbag
+
+WIN98_SETTINGS_GEAR:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 1024, 1024
+	ProvidesPrerequisite:
+		Prerequisite: WIN98_SETTINGS_GEAR
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 35
+		Prerequisites: WIN98_RECYCLEBIN
+		Description: Stores excess refined\nOre and Gems.
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Partition
+	-GivesBuildableArea:
+	-MustBeDestroyed:
+	Health:
+		HP: 30000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	StoresResources:
+		Capacity: 3000
+	Power:
+		Amount: -10
+	Explodes:
+		Weapon: BuildingExplode
+		EmptyWeapon: BuildingExplode
+	Voiced:
+		VoiceSet: settingsgearvoice
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 5
+		FullSequence: pip-yellow
+
+WIN98_PROCESSOR:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: Processor
+	Building:
+		BuildSounds: placbldg.aud, build5.aud
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 40
+		Prerequisites: WIN98_BARRACKS
+		Description: Static defense with a fireport for\na garrisoned soldier.\nCan detect cloaked units.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+	Valued:
+		Cost: 600
+	CustomSellValue:
+		Value: 400
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithBuildingBib:
+		HasMinibib: true
+	Armament:
+		Weapon: win98_directx
+	Turreted:
+		TurnSpeed: 24
+		InitialFacing: 224
+	AttackTurreted:
+		Voice:
+	WithMuzzleOverlay:
+	RenderRangeCircle:
+		FallbackRange: 6c0
+	Power:
+		Amount: -20
+	DetectCloaked:
+		Range: 6c0
+	Voiced:
+		VoiceSet: processorvoice
+
+WIN98_JOYSTICK:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Valued:
+		Cost: 800
+	CustomSellValue:
+		Value: 400
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithBuildingBib:
+		HasMinibib: true
+	Tooltip:
+		Name: Joystick
+	Building:
+		BuildSounds: placbldg.aud, build5.aud
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 40
+		Prerequisites: WIN98_INPUT_DEVICES
+		Description: Telsa defense tower
+	Armament:
+		Weapon: Laser
+		LocalOffset: 0,0,896
+	AttackCharges:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+		ChargeLevel: 50
+		ChargingCondition: charging
+	AmbientSound:
+		RequiresCondition: charging
+		SoundFiles: obelpowr.aud
+		Interval: 30, 40
+	WithMuzzleOverlay:
+	RenderRangeCircle:
+		FallbackRange: 6c0
+	Power:
+		Amount: -50
+	DetectCloaked:
+		Range: 6c0
+	Voiced:
+		VoiceSet: joystickvoice
+
+WIN98_PAINT:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: Paint Bucket
+	Building:
+		BuildSounds: placbldg.aud, build5.aud
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 40
+		Prerequisites: WIN98_BARRACKS
+		Description: Anti Air defense, shoots paintbrushes
+	Valued:
+		Cost: 900
+	CustomSellValue:
+		Value: 400
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithBuildingBib:
+		HasMinibib: true
+	Armament:
+		Weapon: paintbrushfire
+	Turreted:
+		TurnSpeed: 24
+		InitialFacing: 224
+	AttackTurreted:
+		Voice:
+	WithMuzzleOverlay:
+	RenderRangeCircle:
+		FallbackRange: 6c0
+	Power:
+		Amount: -15
+	DetectCloaked:
+		Range: 6c0
+	Voiced:
+		VoiceSet: paintvoice
+
+WIN98_DEFRAG:
+	Inherits: ^BaseBuilding
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 1536
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Defrag
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 55
+		Prerequisites: WIN98_RECYCLEBIN
+		Description: Produces Bits that can be harvested (wip).\nProvides income.
+	Building:
+		Footprint: xx ==
+		Dimensions: 2,2
+		BuildSounds: citybuild.aud
+	Health:
+		HP: 20000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -20
+	CashTrickler:
+		Amount: 50
+		Interval: 200
+	Voiced:
+		VoiceSet: defragvoice
+	SeedsResource:
+		Interval: 25 #110
+		ResourceType: BlueTiberium
+		MaxRange: 2
+
+WIN98_HARDWARE:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@SW: ^PrimarySuperweapon
+	Selectable:
+		Bounds: 2048, 2048
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: 1X CDR
+	Buildable:
+		BuildPaletteOrder: 90
+		Prerequisites: WIN98_INPUT_DEVICES
+		Queue: Defence, RADefence
+		BuildLimit: 1
+		BuildDuration: 900
+		BuildDurationModifier: 100
+		Description: Provides Demo Disk Strike support power.
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 150000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -50
+	SpawnActorsOnSell:
+		ActorTypes: win98_user
+	ScalePowerWithHealth:
+	SpawnActorPower:
+		AllowMultiple: True
+		OrderName: demodiskstrike
+		Icon: demodiskstrike_icon
+		Name: Demo Disk Strike
+		Description: AOL demo disks, for everyone!
+		Prerequisites: ~techlevel.superweapons
+		ChargeInterval: 9000
+		LifeTime: -1
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		Actor: win98_cd
+		SupportPowerPaletteOrder: 20
+		EffectSequence: idle
+	Voiced:
+		VoiceSet: joystickvoice
+	ProvidesPrerequisite@portalprereq:
+		Prerequisite: win98_hardware
+	Voiced:
+		VoiceSet: hardwarevoice
+
+win98_cd:
+	Inherits@1: ^ExistsInWorld
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bot: ^BotMicromanageable
+	-UpdatesPlayerStatistics:
+	BodyOrientation:
+		QuantizedFacings: 1
+	OwnerLostAction:
+		Action: Kill
+	HiddenUnderFog:
+		Type: CenterPosition
+	HitShape:
+	Aircraft:
+		CruiseAltitude: 7000
+		Speed: 1000
+		MaximumPitch: 2000
+		Repulsable: false
+		VTOL: true
+		CanHover: true
+		CanSlide: true
+		CanForceLand: false
+	Armament:
+		Weapon: demodiskstrike
+		LocalOffset: 200,4000,90, -900,-4200,90, 900,10000,30, 4000,-800,60, -2600,500,-30, 6600,500,40, 500,500,60, 1000,1300,50
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 9999
+	AttackMove:
+	AttackOmni:
+		ForceFireIgnoresActors: true
+	AttackWander:
+		WanderMoveRadius: 9999
+	KillsSelf:
+		RemoveInstead: true
+		Delay: 600
+
+WIN98_XBOX:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Selectable:
+		Bounds: 131072, 131072
+	HitShape:
+		TargetableOffsets: 630,299,0
+	StoresResources:
+		Capacity: 500
+	Valued:
+		Cost: 4000
+	Tooltip:
+		Name: Xbox
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: WIN98_RADAR
+		Queue: Defence, RADefence
+		BuildLimit: 1
+		BuildDurationModifier: 100
+		Description: Provides Red Ring of Death Superweapon.
+	Building:
+		Footprint: xxx xxx xxx ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+		-BuildSounds:
+	Health:
+		HP: 65000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -100
+	SpawnActorPower:
+		AllowMultiple: True
+		OrderName: redringofdeath
+		Icon: redringofdeath_icon
+		IconPalette: windows256
+		Name: Red Ring of Death
+		Description: Red Rings of Death dissolve\nany mortal composition.
+		Prerequisites: ~techlevel.superweapons
+		ChargeInterval: 9000
+		LifeTime: -1
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		Actor: win98_redringofdeath
+		SupportPowerPaletteOrder: 20
+		EffectSequence: idle
+	SpawnActorsOnSell:
+		ActorTypes: win98_user
+	ScalePowerWithHealth:
+	WithIdleOverlay@SMOKE:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-anim2
+		Palette: placelinesegment
+	Voiced:
+		VoiceSet: xboxvoice
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 5
+
+win98_redringofdeath:
+	Inherits@1: ^ExistsInWorld
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bot: ^BotMicromanageable
+	-UpdatesPlayerStatistics:
+	BodyOrientation:
+		QuantizedFacings: 1
+	OwnerLostAction:
+		Action: Kill
+	HiddenUnderFog:
+		Type: CenterPosition
+	Aircraft:
+		CruiseAltitude: 7000
+		Speed: 1000
+		MaximumPitch: 2000
+		Repulsable: false
+		VTOL: true
+		CanHover: true
+		CanSlide: true
+		CanForceLand: false
+	HitShape:
+	Armament:
+		LocalOffset: 200,4000,90, -900,-4200,90, 900,10000,30, 4000,-800,60, -2600,500,-30, 6600,500,40, 500,500,60, 1000,1300,50
+		Weapon: redringofdeathweapon
+	AutoTarget:
+		InitialStance: AttackAnything
+		ScanRadius: 9999
+	AttackMove:
+	AttackOmni:
+		ForceFireIgnoresActors: true
+	AttackWander:
+		WanderMoveRadius: 9999
+	KillsSelf:
+		RemoveInstead: true
+		Delay: 1000
+
+####################################################################################################
+#       WIN98 INFANTRY
+####################################################################################################
+
+WIN98_USER:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Selectable:
+		Bounds: 58240, 58240
+		DecorationBounds: 1536, 1536
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: User
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: WIN98_BARRACKS
+		Queue: Infantry, RAInfantry
+		Description: Basic Melee Infantry. Slow but can take some damage.
+		BuildDuration: 80
+		BuildDurationModifier: 100
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 14400
+	DamageMultiplier@armor:
+		Modifier: 60
+	Armor:
+		Type: None
+	AutoTarget:
+		ScanRadius: 6
+		InitialStance: AttackAnything
+	Armament:
+		Weapon: footmanSlice
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+	Voiced:
+		VoiceSet: win98uservoice
+
+WIN98_ERASE:
+	Inherits: E3
+	Selectable:
+		Bounds: 58240, 58240
+		DecorationBounds: 1536, 1536
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Deleter
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: WIN98_BARRACKS
+		Queue: Infantry, RAInfantry
+		Description: Rocket soldier.
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+	Voiced:
+		VoiceSet: win98deletervoice
+
+WIN98_HARVESTER:
+	Inherits: ^Soldier
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@worker: ^WCWorker
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Selectable:
+		Bounds: 58240, 58240
+		DecorationBounds: 1536, 1536
+	AutoTargetPriority@Repair:
+		ValidTargets: Repair, Repairing
+		ValidRelationships: Ally
+		Priority: 2
+	AutoTargetPriority@DEFAULT:
+		ValidRelationships: Enemy, Neutral
+	AutoTargetPriority@ATTACKANYTHING:
+		ValidRelationships: Enemy, Neutral
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Win98 Harvester
+	UpdatesPlayerStatistics:
+		AddToArmyValue: false
+	Buildable:
+		BuildPaletteOrder: 25
+		Queue: Infantry, RAInfantry
+		Description: Harvester.
+		BuildDuration: 100
+		BuildDurationModifier: 100
+	Mobile:
+		Speed: 90
+	Health:
+		HP: 7200
+	#Food
+	AutoTarget:
+		ScanRadius: 4
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithHarvesterSpriteBody:
+		ImageByFullness: win98_harvester, win98_harvester_full
+	Inherits@EXT: ^ExternalConditions
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: win98uservoice
+	WithInfantryBody:
+		DefaultAttackSequence: harvest
+		-IdleSequences: idle1,idle2,idle3,idle4
+	-DamagedByTerrain:
+
+WIN98_FREECELL:
+	Inherits: E6
+	Selectable:
+		Bounds: 58240, 58240
+		DecorationBounds: 1536, 1536
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Free Cell
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: WIN98_BARRACKS
+		Queue: Infantry, RAInfantry
+		Description: Captures structures.
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+	Voiced:
+		VoiceSet: win98freecellvoice
+
+WIN98_AGENT:
+	Inherits: ^Soldier
+	Inherits@EXT: ^ExternalConditions
+	Selectable:
+		Bounds: 58240, 58240
+		DecorationBounds: 1536, 1536
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Agent
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: WIN98_RADAR
+		Queue: Infantry, RAInfantry
+		Description: Hijacks vehicles.
+	Mobile:
+		Speed: 71
+	Health:
+		HP: 6000
+	Passenger:
+		CustomPipType: blue
+	Mirage:
+		RequiresCondition: !disabled
+		InitialDelay: 100
+		RevealDelay: 20
+		RevealOn: Attack, Infiltrate, Damage
+		MirageCondition: disguise
+		DefaultTargetTypes: t08, t18, t10, t03, t02
+	CaptureManager:
+	Captures@CAPTURES:
+		CaptureTypes: vehicle
+		PlayerExperience: 50
+		ConsumedByCapture: true
+	Crushable:
+		WarnProbability: 95
+	Cloak:
+		InitialDelay: 250
+		CloakDelay: 120
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move
+		DetectionTypes: Cloak, Thief
+		PauseOnCondition: cloak-force-disabled || base-reveal
+		IsPlayerPalette: true
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+	Voiced:
+		VoiceSet: win98agentvoice
+	-DamagedByTerrain:
+
+WIN98_SPIDER:
+	Inherits: ^Soldier
+	Inherits@EXT: ^ExternalConditions
+	Inherits@mechanic: ^MechanicDefaultWeapons
+	Selectable:
+		Bounds: 58240, 58240
+		DecorationBounds: 1536, 1536
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 100
+		Prerequisites: WIN98_SETTINGS_GEAR
+		Description: Repairs nearby vehicles.\n  Unarmed
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Spider
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 8000
+	Mobile:
+		Speed: 50
+		Voice: Move
+	RevealsShroud:
+		Range: 3c0
+	Passenger:
+		CustomPipType: blue
+		Voice: Move
+	RenderRangeCircle:
+	AttackFrontal:
+		Voice: Action
+		FacingTolerance: 0
+	CaptureManager:
+	Captures:
+		CaptureTypes: husk
+		PlayerExperience: 25
+	WithInfantryBody:
+		IdleSequences: idle
+		DefaultAttackSequence: repair
+		StandSequences: stand
+	Voiced:
+		VoiceSet: win98uservoice
+	AutoTarget:
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Vehicle, lockdowned, ivanattached
+
+WIN98_CLIPPY:
+	Inherits: ^Soldier
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
+	Selectable:
+		Bounds: 58240, 58240
+		DecorationBounds: 1536, 1536
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 120
+		Prerequisites: win98_hardware
+		BuildLimit: 1
+		Description: Elite commando infantry. Armed with\ndual pistols and C4.\nCan detect cloaked units.\nMaximum 1 can be trained.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Destroy Building with C4
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Clippy
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 10000
+	Mobile:
+		Speed: 71
+		Voice: Move
+	Guard:
+		Voice: Move
+	RevealsShroud:
+		Range: 6c0
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !disabled
+		DetectionTypes: Cloak, Hijacker
+	Passenger:
+		CustomPipType: red
+		Voice: Move
+	Armament@PRIMARY:
+		Weapon: Colt45
+	Armament@SECONDARY:
+		Weapon: Colt45
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Colt45
+		MuzzleSequence: garrison-muzzle
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		StandSequences: stand
+	AnnounceOnKill:
+	Voiced:
+		VoiceSet: win98clippyvoice
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	Inherits@EXPERIENCE: ^GainsExperience ##########
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: infantry ##########
+	ProvidesPrerequisite:
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+
+####################################################################################################
+#       WIN98 VEHICLES
+####################################################################################################
+
+WIN98_MCV:
+	Inherits: ^Soldier
+	Inherits@EXT: ^ExternalConditions
+	Inherits@mcv: ^MCV
+	Inherits@conyard: ^Conyard
+	Valued:
+		Cost: 1500
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Building, RABuilding
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: Tramsforms into another My Computer
+		Icon: mycomputer_icon
+	Tooltip:
+		Name: Mobile Construction Vehicle (Win98)
+	Selectable:
+		Priority: 4
+		DecorationBounds: 1536, 1536
+	Mobile:
+		Speed: 95
+	Health:
+		HP: 30000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 7c0
+	-Crushable:
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		-DefaultAttackSequence: shoot
+		-IdleSequences: idle1,idle2,idle3,idle4
+	Transforms:
+		IntoActor: win98_mycomputer
+		Offset: -1,-1
+		Facing: 432
+		TransformSounds: win98_startup.wav
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Voiced:
+		VoiceSet: win98uservoice
+	RenderSprites:
+		Image: win98_mcv
+
+WIN98_MOUSE:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 50
+		Prerequisites:
+		Description: Fast tank, good for scouting.\n  Strong vs Light armor\n  Weak vs Infantry, Tanks, Aircraft
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Mouse
+		GenericName: Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 28000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 118
+	RevealsShroud:
+		Range: 5c0
+	Turreted:
+		TurnSpeed: 28
+	Armament:
+		Weapon: 25mm
+		Recoil: 85
+		RecoilRecovery: 25
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: win98uservoice
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+
+WIN98_MINE:
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
+	Inherits@MC: ^MCImmune
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@snipe: ^DriverKillAndNeutronImmune
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Mine
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites:
+		Queue: Vehicle, RAVehicle
+		Description: Hovering mine that can deploy\ninto the ground.
+	Mobile:
+		Locomotor: hover
+		Speed: 166
+		RequireForceMoveCondition: deployed
+	Health:
+		HP: 11500
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Inherits@EXT: ^ExternalConditions ##########
+	Voiced:
+		VoiceSet: RobotTankVoice
+	DeliversCash:
+		Payload: 75
+	Hovers:
+		RequiresCondition: !disabled && undeployed
+	Turreted:
+	AttackTurreted:
+		RequiresCondition: deployed
+	Armament:
+		Weapon: WIN98MINEDemolitionExplode
+	RenderVoxels:
+		Scale: 7.2
+	-TemporaryOwnerManager:
+	Capturable:
+		Types: thiefproof
+	WithMakeAnimation:
+		BodyNames: deployed
+	GrantConditionOnDeploy:
+		UndeployedCondition: undeployed
+		DeployedCondition: deployed
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		DeploySounds: place2.aud
+		UndeploySounds: place2.aud
+	WithFacingSpriteBody:
+		RequiresCondition: undeployed
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	GrantConditionOnAttack:
+		Condition: triggered
+	KillsSelf@EMP:
+		RequiresCondition: (empdisable && !untargetable) || triggered
+		DamageTypes: DefaultDeath
+	DetectCloaked:
+		Range: 6c0
+		RequiresCondition: deployed && !disabled
+	Cloak:
+		InitialDelay: 30
+		CloakDelay: 30
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+
+WIN98_KEYBOARD:
+	Inherits: SCREAVER
+	Tooltip:
+		Name: Mechanical Keyboard
+	Buildable:
+		BuildPaletteOrder: 110
+		Prerequisites: WIN98_RADAR
+		Queue: Vehicle, RAVehicle
+		Description: Artillery unit.
+	Voiced:
+		VoiceSet: win98mechanicalkeyboardvoice
+
+WIN98_BITCOIN:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Selectable:
+		Bounds: 58240, 58240
+		DecorationBounds: 1536, 1536
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Bitcoin
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 120
+		Prerequisites:
+		Queue: Vehicle, RAVehicle
+		Description: Delivers 500 credits.
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 14400
+	DamageMultiplier@armor:
+		Modifier: 60
+	Armor:
+		Type: None
+	WithInfantryBody:
+		-DefaultAttackSequence:
+	DeliversCash:
+		Payload: 500
+		Type: NormalCash
+		PlayerExperience: 50
+		-Sounds:
+	SpawnActorOnDeath:
+		Actor: moneycrate
+		OwnerType: InternalName
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		-IdleSequences: idle1,idle2,idle3,idle4
+	Voiced:
+		VoiceSet: win98uservoice
+
+####################################################################################################
+#       WIN98 AIRCRAFT
+####################################################################################################
+
+WIN98_MSN_BUTTERFLY:
+	Inherits: ^RAPlane
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 20
+		Description: Crashes into ground targets.
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: MSN Butterfly
+	Health:
+		HP: 16000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	RevealsShroud@GAPGEN:
+		Range: 6c0
+	AttackAircraft:
+		FacingTolerance: 512
+	Armament@PRIMARY:
+		Weapon: JetExplosion
+	GrantConditionOnAttack:
+		Condition: triggered
+	WithDeathAnimation:
+		UseDeathTypeSuffix: False
+	KillsSelf:
+		RequiresCondition: triggered
+	AttackAircraft:
+		FacingTolerance: 80
+	Aircraft:
+		CruiseAltitude: 2560
+		InitialFacing: 768
+		TurnSpeed: 40
+		Speed: 223
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	Voiced:
+		VoiceSet: sc2kjet
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	WithRangeCircle:
+		Range: 7c0
+	#-ExternalCondition@FireCall:
+	#-ExternalCondition@PoliceCall:
+	RenderSprites:
+	SpawnActorOnDeath:
+		Actor: WIN98_MSN_BUTTERFLY.Husk
+	EjectOnDeath:
+		PilotActor: glterror
+
+WIN98_MSN_BUTTERFLY.HUSK:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: MSN Butterfly
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 93
+		#186
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: win98_msn_butterfly
+
+WIN98_EXPLORER:
+	Inherits: ^RAHelicopter
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 30
+		Description: Fast Infantry Transport Helicopter.\n  Unarmed
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Explorer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: ratran
+	Health:
+		HP: 18000
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 128
+		AltitudeVelocity: 0c58
+	WithIdleOverlay@ROTOR1AIR:
+		Offset: 597,0,213
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTOR1GROUND:
+		Offset: 597,0,213
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTOR2AIR:
+		Offset: -597,0,341
+		Sequence: rotor2
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTOR2GROUND:
+		Offset: -597,0,341
+		Sequence: slow-rotor2
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 8
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	SpawnActorOnDeath:
+		Actor: TRAN.Husk
+	SelectionDecorations:
+	Selectable:
+		Class: ratran
+		DecorationBounds: 72789, 65536
+	Voiced:
+		VoiceSet: win98explorervoice
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+
+WIN98_REGEDIT:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeProtoss
+	Inherits@announce: ^AnnounceGlobal
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Regedit
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites:
+		Queue: Aircraft, RAAircraft
+		Description: Heavy win98 warship, deploys\n5 interceptor craft.\n Strong vs Vehicles, Aircraft
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 28
+		Speed: 50
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+		CruiseAltitude: 1c512
+	Health:
+		HP: 60000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	Armament:
+		Weapon: InterceptorLauncher
+	AttackAircraft:
+		FacingTolerance: 80
+		AttackType: Hover
+	CarrierMaster:
+		Actors: WIN98_REGEDIT_INTERCEPTOR, WIN98_REGEDIT_INTERCEPTOR, WIN98_REGEDIT_INTERCEPTOR, WIN98_REGEDIT_INTERCEPTOR, WIN98_REGEDIT_INTERCEPTOR
+		RearmTicks: 10
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	-SpawnActorOnDeath:
+	DeathSounds:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 2048, 2048
+	Power:
+		Amount: -100
+	Voiced:
+		VoiceSet: win98regeditvoice
+
+WIN98_REGEDIT_INTERCEPTOR:
+	Inherits: ^Plane
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@explode: ^HeliExplodeProtoss
+	Valued:
+		Cost: 50
+	Tooltip:
+		Name: Regedit Interceptor
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 28
+		Speed: 180
+		Repulsable: false
+		VTOL: true
+		CruiseAltitude: 1c256
+	Targetable:
+		TargetTypes: Air
+	CarrierSlave:
+		LandingDistance: 2c0
+	Health:
+		HP: 10000
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 6c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: RegeditInterceptorCannon
+		LocalOffset: 200,0,0
+	AttackAircraft:
+		FacingTolerance: 80
+	DeathSounds:
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: SCCarrierVoice
+	-ActorLostNotification:
+	-UpdatesPlayerStatistics:
+	HitShape:
+	-MapEditorData:
+
+WIN98_SECTORSCANNER:
+	Inherits: ^RANeutralPlane
+	Health:
+		HP: 200000
+	Tooltip:
+		Name: Sector Scanner
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 28
+		Speed: 373
+		Repulsable: False
+		MaximumPitch: 56
+	AttackBomber:
+		FacingTolerance: 32
+	-Selectable:
+	SelectionDecorations:
+	-Voiced:
+	-Targetable@AIRBORNE:
+	Contrail@1:
+		Offset: -725,683,0
+	Contrail@2:
+		Offset: -725,-683,0
+	SpawnActorOnDeath:
+		Actor: U2.Husk
+	LeavesTrails:
+		Offsets: -1c43,0,0
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+		RequiresCondition: enable-smoke
+	RejectsOrders:
+	GrantConditionOnDamageState@SmokeTrail:
+		Condition: enable-smoke
+
+####################################################################################################
+#       WIN98 NAVAL
+####################################################################################################
+
+WIN98_EMAIL_RAFT:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EXT: ^ExternalConditions
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: WIN98_POWERPLANT
+		Queue: Naval, RANaval
+		Description: Light scout & support ship.\nHardly floats.\nCan detect submarines.
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Email Raft
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 20000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 128
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 28
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: 2Inch
+		LocalOffset: 208,0,48
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: DepthCharge
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	WithSpriteTurret:
+	DetectCloaked:
+		DetectionTypes: Underwater
+		Range: 4c0
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 250
+	Voiced:
+		VoiceSet: win98uservoice
+
+WIN98_BENCHY:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Benchy
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: WIN98_POWERPLANT
+		Queue: Naval, RANaval
+		Description: Fast multi-role ship.\nCan detect submarines.\n  Strong vs Naval units, Vehicles, Aircraft
+	Mobile:
+		Speed: 85
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 28
+		Offset: 469,0,128
+	Armament:
+		Weapon: Stinger
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 64, -64
+	Armament@AA:
+		Weapon: StingerAA
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 64, -64
+	Armament@DC:
+		Weapon: DepthCharge
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 80, -80
+	AttackTurreted:
+	WithSpriteTurret:
+	DetectCloaked:
+		Range: 4c0
+		DetectionTypes: Underwater
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 69162, 69162
+	Inherits@EXT: ^ExternalConditions
+	DeliversCash:
+		Payload: 500
+	Voiced:
+		VoiceSet: win98uservoice

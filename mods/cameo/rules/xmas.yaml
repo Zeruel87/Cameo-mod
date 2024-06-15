@@ -1,0 +1,1447 @@
+World:
+	FactionCA@xmas:
+		Name: Satan Clawz
+		InternalName: xmas
+		Game: Special
+		Side: Factions
+		Description: Satan Clawz\nUnleash the Doom of Christmas\n\nEvil Satan Clawz is here to destroy the Christmas\nBuild army of Elves and unleash Satan himself from\nhis House to finnish this nonsense once in for all\n\nSupport Powers: Satan Clawz
+	####################################################################################################
+	#		XMAS
+	####################################################################################################
+	
+	StartingUnits@mcvonlyxmas:
+		Class: none
+		ClassName: MCV Only
+		Factions: xmas
+		BaseActor: xmas_tree
+	
+	StartingUnits@defaultxmas:
+		Class: light
+		ClassName: Light Support
+		Factions: xmas
+		BaseActor: xmas_tree
+		SupportActors:
+	
+	StartingUnits@heavyxmas:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: xmas
+		BaseActor: xmas_tree
+		SupportActors:
+
+Player:
+	LobbyPrerequisiteCheckbox@XMAS:
+		ID: xmas
+		Label: X-Mas
+		Enabled: False
+		Description: Every killed unit has a chance to drop a Christmas Gift
+		DisplayOrder: 24
+		Prerequisites: xmas-setting
+	ProvidesPrerequisite@faction_satanclawz:
+		Prerequisite: faction_satanclawz
+		Factions: xmas
+		
+XMASCRATE:
+	Inherits: ^Crate
+	Crate:
+		Duration: 5000
+	GiveCashCrateAction:
+		Amount: 2000
+		SelectionShares: 5
+	GiveCashCrateAction@1:
+		Amount: 500
+		SelectionShares: 10
+	GiveCashCrateAction@1:
+		Amount: 250
+		SelectionShares: 15
+	GiveUnitCrateAction@redelf:
+		Units: xmas_red_elf
+		SelectionShares: 5
+	GiveUnitCrateAction@greenelf:
+		Units: xmas_green_elf
+		SelectionShares: 5
+	GiveUnitCrateAction@worker:
+		Units: xmas_green_elf_worker
+		SelectionShares: 5
+	GiveUnitCrateAction@yourgoblin:
+		SelectionShares: 6
+		Units: drsatanglobievent
+	LevelUpCrateAction:
+		Levels: 4
+		SelectionShares: 12
+		
+EVILCRATE:
+	Inherits: ^Crate
+	Crate:
+		Duration: 5000
+	GiveCashCrateAction:
+		Amount: -25
+		SelectionShares: 75
+		Prerequisites: !faction_satanclawz
+	ExplodeCrateAction@fire:
+		Weapon: xmas_suicide
+		SelectionShares: 50
+		Prerequisites: !faction_satanclawz
+	GiveUnitCrateAction@elf:
+		Units: xmas_red_elf
+		Owner: Creeps
+		SelectionShares: 5
+		Prerequisites: !faction_satanclawz
+	GiveUnitCrateAction:
+		Units: xmas_green_elf
+		Owner: Creeps
+		SelectionShares: 15
+		Prerequisites: !faction_satanclawz
+	GiveUnitCrateAction:
+		Units: xmas_main_battle_sledge
+		Owner: Creeps
+		SelectionShares: 1
+		Prerequisites: !faction_satanclawz
+	GiveUnitCrateAction@redelfxmas:
+		Units: xmas_red_elf
+		SelectionShares: 80
+		Prerequisites: faction_satanclawz
+	GiveUnitCrateAction@sledgexmas:
+		Units: xmas_main_battle_sledge
+		SelectionShares: 1
+		Prerequisites: faction_satanclawz
+	GiveUnitCrateAction@greenelfxmas:
+		Units: xmas_green_elf
+		SelectionShares: 30
+		Prerequisites: faction_satanclawz
+	GiveCashCrateAction@cashxmas:
+		Amount: 200
+		SelectionShares: 60
+		Prerequisites: faction_satanclawz
+xmas_tree:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@CPQ: ^CPQConditionWithPrimary
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Christmas Tree
+	Building:
+		Footprint: xxx xxx xxx xxx
+		Dimensions: 4,3
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Building, RABuilding
+		Description: Enables buildings construction
+		IconPalette: ra2
+		Prerequisites: xmas_elf_workshop
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 7c0
+	Production@NORMAL:
+		Produces: Building, Defence
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence
+		RequiresCondition: classicproductionqueues
+	ProductionQueue@AlphaBuilding:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+	ProductionQueue@AlphaDefense:
+		Type: Defence
+		DisplayOrder: 1
+		Group: Defence
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+	BaseBuilding:
+	ProductionBar@BuildingAlpha:
+		ProductionType: Building
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceAlpha:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingAlpha:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceAlpha:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 12c0
+	ProvidesPrerequisite@buildingname:
+	ProvidesRadar:
+		RequiresCondition: !jammed && !disabled
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	CashTrickler:
+		Interval: 100
+		Amount: 100
+	CashTricklerBar:
+	Power:
+		Amount: 100
+	-WithDeathAnimation:
+	Exit@1:
+		SpawnOffset: -1024,1024,0 #-1323,1280,0
+		ExitCell: 0,2
+		Facing: 540
+	-WithMakeAnimation:
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 90
+	SpawnActorOnDeath@Santa4:
+		Actor: EVILCRATE
+		Probability: 80
+	SpawnActorOnDeath@Santa5:
+		Actor: EVILCRATE
+		Probability: 70
+	SpawnActorOnDeath@Santa6:
+		Actor: EVILCRATE
+		Probability: 60
+xmas_elves_refinery:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@ref: ^Refinery
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Refinery
+	Armor:
+		Type: Wood
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Building, RABuilding
+		Description: Processes gifts into actually useful resources
+		IconPalette: ra2
+	Building:
+		Footprint: xxx ===
+		Dimensions: 3,2
+	Health:
+		HP: 140000
+	RevealsShroud:
+		Range: 6c0
+	Refinery:
+		DockAngle: 512
+		DockOffset: 1,1
+	StoresResources:
+		Capacity: 4000 #2000
+	DrawLineToTarget:
+	CustomSellValue:
+		Value: 500
+	FreeActor@1:
+		Actor: xmas_green_elf_worker
+		SpawnOffset: 1,1
+		Facing: 256
+		AllowRespawn: True
+	FreeActor@2:
+		Actor: xmas_green_elf_worker
+		SpawnOffset: 1,1
+		Facing: 256
+		AllowRespawn: True
+	FreeActor@3:
+		Actor: xmas_green_elf_worker
+		SpawnOffset: 1,1
+		Facing: 256
+		AllowRespawn: True
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	SelectionDecorations:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	Targetable@Steal:
+		TargetTypes: ThiefInfiltrate, SpyInfiltrate
+	Voiced:
+		VoiceSet: PRCSupplyVoice
+	-WithMakeAnimation:
+	-WithDeathAnimation:
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 90
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 80
+	SpawnActorOnDeath@Santa4:
+		Actor: EVILCRATE
+		Probability: 70
+		
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 20
+		FullSequence: pip-yellow
+xmas_elves_house:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Elves House
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Building, RABuilding
+		Description: Trains Elves\nProvides energy to build more units
+		IconPalette: ra2
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Armor:
+		Type: Wood
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 5c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	GrantConditionOnPowerState@supply:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: lowpower
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: lowpower
+	ProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: 100
+	ProvidesPrerequisite@buildingname:
+	Voiced:
+		VoiceSet: USABarracksVoice
+	-WithMakeAnimation:
+	-WithDeathAnimation:
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 80
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 70
+	SpawnActorOnDeath@Santa4:
+		Actor: EVILCRATE
+		Probability: 60
+		
+xmas_elf_workshop:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Elf Workshop
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Building, RABuilding
+		Description: Unlocks advanced units
+		Prerequisites: xmas_elves_house
+		IconPalette: ra2
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	Voiced:
+		VoiceSet: USABarracksVoice
+	-WithMakeAnimation:
+	-WithDeathAnimation:
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 70
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 60
+	SpawnActorOnDeath@Santa4:
+		Actor: EVILCRATE
+		Probability: 50
+		
+xmas_santas_house:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^4x2Shape
+	Inherits@SW: ^PrimarySuperweapon
+	Valued:
+		Cost: 4000
+	Tooltip:
+		Name: House of Satan Clawz
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: xmas_elf_workshop, ~techlevel.high, !satanclawzhouse
+		Queue: Building, RABuilding
+		Description: House of Satan Clawz himself.
+		IconPalette: ra2
+	Building:
+		Footprint: xxxx xxxx
+		Dimensions: 4,2
+	Selectable:
+	SelectionDecorations:
+	Health:
+		HP: 140000
+	RevealsShroud:
+		Range: 6c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	Production@satan:
+		Produces: satanclawz.Xmas
+	Production@special:
+		Produces: Special.Xmas
+	ProduceActorPowerCA@satan:
+		PauseOnCondition: disabled
+		AllowMultiple: True
+		AutoFire: true
+		OrderName: xmas_satanclawz
+		Icon: xmas_satan_clawz_ride_icon
+		IconPalette: ra2
+		ChargeInterval: 7500
+		Name: Satan Clawz
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		DisplayTimerStances: Ally, Neutral, Enemy
+		Description: Summons Satan Clawz to unleash doom upon Christmas
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		Actors: xmas_satanclawz
+		Type: satanclawz.Xmas
+		SupportPowerPaletteOrder: 10
+		DeploySound: doom_christmas_support_power.wav
+		LaunchSound: doom_christmas_support_power.wav
+		IncomingSound: doom_christmas_support_power.wav
+		Prerequisites: !xmas_satanclawz, !botplayer
+	ProduceActorPowerCA@satanbot:
+		PauseOnCondition: disabled
+		AllowMultiple: True
+		AutoFire: true
+		OrderName: xmas_satanclawz_ai
+		Icon: xmas_satan_clawz_ride_icon
+		IconPalette: ra2
+		ChargeInterval: 7500
+		Name: Satan Clawz
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		DisplayTimerStances: Ally, Neutral, Enemy
+		Description: Summons Satan Clawz to unleash doom upon Christmas
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		Actors: xmas_satan_clawz_ride.bot
+		Type: satanclawz.Xmas
+		SupportPowerPaletteOrder: 10
+		DeploySound: doom_christmas_support_power.wav
+		LaunchSound: doom_christmas_support_power.wav
+		IncomingSound: doom_christmas_support_power.wav
+		Prerequisites: botplayer
+	ProductionQueue:
+		Type: Special.Xmas
+		DisplayOrder: 2
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar:
+		ProductionType: Special.Xmas
+	WithSupportPowerActivationAnimation:
+		RequiresCondition: !build-incomplete
+	SupportPowerChargeBar:
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	Voiced:
+		VoiceSet: USAParticleCannonVoice
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: satanclawzhouse
+	-WithMakeAnimation:
+	-WithDeathAnimation:
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa4:
+		Actor: EVILCRATE
+		Probability: 80
+		
+^SpawnChristmasCrate:
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 75
+	
+xmas_green_elf:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DRShadow: ^InfantryShadows
+	Inherits@CrateSpawn: ^SpawnChristmasCrate
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Green Elf
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 5
+		Prerequisites: xmas_elves_house
+		Queue: Infantry, RAInfantry
+		Description: Basic Combat Unit.\nEquipped with pickaxe and Christmas Ornament
+		BuildDuration: 150
+		BuildDurationModifier: 100
+		IconPalette: ra2
+	Armor:
+		Type: None
+	Mobile:
+		Speed: 84
+	Health:
+		HP: 11000
+	Crushable:
+	Power:
+		Amount: -5
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: xmas_pickaxe
+	Armament@nade:
+		Weapon: xmas_grenade
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	WithInfantryBody:
+		StandSequences: idle
+		DefaultAttackSequence: shoot
+		-IdleSequences:
+		AttackSequences:
+			primary: shoot
+			secondary: shoot2
+	Voiced:
+		VoiceSet: voiceorc
+	Passenger:
+		CargoType: xmaself
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 30
+		
+xmas_red_elf:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DRShadow: ^InfantryShadows
+	Inherits@CrateSpawn: ^SpawnChristmasCrate
+	Valued:
+		Cost: 50
+	Tooltip:
+		Name: Red Elf
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 5
+		Prerequisites: xmas_elves_house
+		Queue: Infantry, RAInfantry
+		Description: Suicidal Unit.
+		BuildDuration: 150
+		BuildDurationModifier: 100
+		IconPalette: ra2
+	Armor:
+		Type: None
+	Mobile:
+		Speed: 102
+	Health:
+		HP: 10000
+	Crushable:
+	Power:
+		Amount: -3
+	AutoTarget:
+		ScanRadius: 4
+	Armament:
+		Weapon: SuicideBomberTargeting
+	Explodes@2:
+		Weapon: xmas_suicide
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+		RequiresCondition: !suicide
+	WithInfantryBody:
+		StandSequences: idle
+		DefaultAttackSequence: die
+		-IdleSequences:
+	GrantConditionOnAttack:
+		Condition: suicide
+	KillsSelf:
+		RequiresCondition: suicide
+		Delay: 20
+	Voiced:
+		VoiceSet: voiceorc
+	Passenger:
+		CargoType: xmaself
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 80
+		
+xmas_green_elf_worker:
+	Inherits: ^Soldier
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DRShadow: ^InfantryShadows
+	Inherits@CrateSpawn: ^SpawnChristmasCrate
+	AutoTargetPriority@Repair:
+		ValidTargets: Repair, Repairing
+		ValidRelationships: Ally
+		Priority: 2
+	WithSpriteBody:
+		Sequence: empty-harvest
+	AutoTargetPriority@DEFAULT:
+		ValidRelationships: Enemy, Neutral
+	AutoTargetPriority@ATTACKANYTHING:
+		ValidRelationships: Enemy, Neutral
+	Valued:
+		Cost: 90
+	Tooltip:
+		Name: Green Elf Worker
+	UpdatesPlayerStatistics:
+		AddToArmyValue: false
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: Infantry, RAInfantry
+		Description: Harvester.
+		BuildDuration: 100
+		BuildDurationModifier: 100
+		IconPalette: ra2
+		Prerequisites: xmas_elves_refinery
+	Mobile:
+		Speed: 90
+	Health:
+		HP: 7500
+	Passenger:
+		CargoType: xmaself
+	Power:
+		Amount: -2
+	Armament:
+		Weapon: xmas_pickaxe
+	AutoTarget:
+		ScanRadius: 4
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+	Inherits@EXT: ^ExternalConditions
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: voiceorc
+	WithInfantryBody:
+		StandSequences: idle
+		DefaultAttackSequence: shoot
+		-IdleSequences:
+	RenderSprites:
+		Image: xmas_green_elf
+	-DamagedByTerrain:
+	Harvester:
+		PipCount: 3
+		Capacity: 3
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 0
+		BaleUnloadAmount: 2
+		FullyLoadedSpeed: 100
+		MaxUnloadQueue: 9
+	WithDockingAnimation:
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 40
+		
+xmas_satanclawz:
+	Inherits: drsatanclawz
+	Inherits@CrateSpawn: ^SpawnChristmasCrate
+	Buildable:
+		Queue: satanclawz.Xmas
+		BuildPaletteOrder: 80
+		Prerequisites: ~disabled
+		Description: N/A
+		BuildDuration: 1
+		BuildDurationModifier: 100
+	Parachutable:
+	Mobile:
+		Speed: 44
+	Health:
+		HP: 105000
+	Armor:
+		Type: None
+	RenderSprites:
+		Image: drsatanclawz
+	Passenger:
+		CargoType: xmassatan
+		CargoConditions:
+			xmas_santas_house: respawnride
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa4:
+		Actor: EVILCRATE
+		Probability: 75
+	SpawnActorOnDeath@Santa5:
+		Actor: EVILCRATE
+		Probability: 65
+	ProvidesPrerequisite@satan:
+		Prerequisite: xmas_satanclawz
+xmas_satangoblin:
+	Inherits: drsatanglobi
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Tooltip:
+		Name: Satan Goblin
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Infantry
+		Description: Light infantry equipped with gun
+	Mobile:
+		Speed: 90
+	Health:
+		HP: 9000
+	AutoTarget:
+		ScanRadius: 10
+	Armament@PRIMARY: ##########
+		Weapon: DRSatanClawzMinionMG
+	Valued:
+		Cost: 75
+	Power:
+		Amount: -4
+	Voiced:
+		VoiceSet: AntVoice
+	RenderSprites:
+		Image: drsatanglobi
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 50
+		
+xmas_reindeer:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EXT: ^ExternalConditions
+	Mobile:
+		TurnSpeed: 64
+		Speed: 180
+		Locomotor: jumpjet
+		RequiresCondition: loaded_green || loaded_red
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 22500
+	WithFacingSpriteBody:
+		Sequence: idle-empty
+		RequiresCondition: !loaded_green && !loaded_red
+	WithFacingSpriteBody@green:
+		Sequence: idle-green
+		RequiresCondition: loaded_green && !loaded_red && !movement
+	WithFacingSpriteBody@red:
+		Sequence: idle-red
+		RequiresCondition: !loaded_green && loaded_red && !movement
+	WithFacingSpriteBody@green-move:
+		Sequence: run-green
+		RequiresCondition: movement && loaded_green
+	WithFacingSpriteBody@red-move:
+		Sequence: run-red
+		RequiresCondition: movement && loaded_red
+	Armament@green:
+		Weapon: xmas_grenade_reindeer
+		LocalOffset: 175,0,100
+		RequiresCondition: loaded_green
+	Armament@red:
+		Weapon: SuicideBomberTargeting
+		LocalOffset: 175,0,100
+		RequiresCondition: loaded_red
+	Explodes@suicide:
+		Weapon: xmas_suicide_big
+		RequiresCondition: loaded_red
+	GrantConditionOnAttack:
+		Condition: suicide
+		RequiresCondition: loaded_red
+	KillsSelf:
+		RequiresCondition: suicide && loaded_red
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 5c0
+	AttackFrontal:
+		FacingTolerance: 0
+	AttractsWorms:
+		Intensity: 300
+		RequiresCondition: !airborne
+	Targetable:
+		RequiresCondition: !airborne && !chronobeamed
+	Targetable@AIRBORNE:
+		TargetTypes: Air, Aircraft
+		RequiresCondition: airborne && !chronobeamed
+	WithShadow@ground:
+		Offset: 128, 128, 0
+		ZOffset: -512
+		RequiresCondition: !airborne && (loaded_green || loaded_red)
+	WithShadow@airborne:
+		Offset: 0, 128, 0
+		ZOffset: -128
+		RequiresCondition: airborne
+	GrantConditionOnJumpjetLayer:
+		Condition: airborne
+	GrantConditionOnMovement:
+		Condition: movement
+		RequiresCondition: loaded_green || loaded_red
+	RenderSprites:
+		Image: xmas_reindeer
+	Cargo:
+		MaxWeight: 1
+		Types: xmaself
+		PassengerConditions:
+			xmas_green_elf: loaded_green
+			xmas_green_elf_worker: loaded_green
+			xmas_red_elf: loaded_red
+	SpawnActorOnDeath@Santar:
+		Actor: EVILCRATE
+		Probability: 60
+		
+xmas_reindeer_green:
+	Inherits: xmas_reindeer
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 20
+		Prerequisites: xmas_elf_workshop
+		BuildDuration: 225
+		BuildDurationModifier: 100
+		Description: Reindeer with Green Elf.\nThrows Andorments.
+		IconPalette: ra2
+		Icon: icon_green
+	Power:
+		Amount: -15
+	Valued:
+		Cost: 550
+	Tooltip:
+		Name: Reindeer (Green Elf)
+	Cargo:
+		InitialUnits: xmas_green_elf
+	SpawnActorOnDeath@Santa6:
+		Actor: EVILCRATE
+		Probability: 70
+		
+xmas_reindeer_red:
+	Inherits: xmas_reindeer
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 20
+		Prerequisites: xmas_elf_workshop
+		BuildDuration: 200
+		BuildDurationModifier: 100
+		Description: Reindeer with Red Elf.\nQuick Suicide Unit.
+		IconPalette: ra2
+		Icon: icon_red
+	Power:
+		Amount: -15
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Reindeer (Red Elf)
+	Cargo:
+		InitialUnits: xmas_red_elf
+	SpawnActorOnDeath@Santa5:
+		Actor: EVILCRATE
+		Probability: 70
+		
+xmas_satan_clawz_ride:
+	Inherits: ^RANeutralPlane
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EXT: ^ExternalConditions
+	Buildable:
+		Queue: Special.Xmas
+		BuildPaletteOrder: 20
+		Prerequisites: xmas_satanclawz
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: Fly high up in the skies to deliver explosively good gifts to naughty kids.
+		IconPalette: ra2
+		BuildLimit: 1
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Clawz's Sledge
+	Aircraft:
+		CruiseAltitude: 1920
+		Speed: 180
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+		Repulsable: true
+		CanHover: false
+		AirborneCondition: airborne
+		TurnSpeed: 32
+		RequiresCondition: loaded
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 175000
+	WithFacingSpriteBody:
+		Sequence: idle-empty
+		RequiresCondition: !loaded
+	WithFacingSpriteBody@full:
+		Sequence: idle
+		RequiresCondition: loaded && !movement
+	WithFacingSpriteBody@moving:
+		Sequence: run
+		RequiresCondition: loaded && movement
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	AttackAircraft:
+		AttackType: Strafe
+		Armaments: primary
+		StrafeRunLength: 6c0
+		PersistentTargeting: False
+		FacingTolerance: 80
+	Armament:
+		Weapon: xmas_satan_bomb
+	Selectable:
+		DecorationBounds: 2048, 2048
+	Targetable:
+		RequiresCondition: !airborne && !chronobeamed
+	Targetable@AIRBORNE:
+		TargetTypes: Air, Aircraft
+		RequiresCondition: airborne && !chronobeamed
+	WithFacingSpriteBody@movement:
+		Sequence: run
+		RequiresCondition: loaded && movement
+	GrantConditionOnMovement:
+		Condition: movement
+		RequiresCondition: loaded
+	RenderSprites:
+		Image: xmas_satan_clawz_ride
+	Cargo:
+		MaxWeight: 1
+		Types: xmassatan
+		LoadedCondition: loaded
+		EjectOnDeath: true
+	Voiced:
+		VoiceSet: DRSantaVoice
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath:
+		Actor: xmas_satan_clawz_ride.husk
+	ProvidesPrerequisite@satan:
+		Prerequisite: xmas_satanclawz
+		RequiresCondition: loaded
+xmas_satan_clawz_ride.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Satan Clawz
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 202
+	LeavesTrails@0:
+		Offsets: -432,560,0
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	LeavesTrails@1:
+		Offsets: -432,-560,0
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: xmas_satan_clawz_ride
+	-RevealOnDeath:
+	SpawnActorOnDeath@satan:
+		Actor: xmas_satanclawz
+
+xmas_satan_clawz_ride.bot:
+	Inherits: xmas_satan_clawz_ride
+	Cargo:
+		InitialUnits: xmas_satanclawz
+	Buildable:
+		Queue: satanclawz.Xmas
+		BuildPaletteOrder: 80
+		Prerequisites: ~disabled
+		Description: N/A
+		BuildDuration: 1
+		BuildDurationModifier: 100
+		
+xmas_artillery:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DRShadow: ^InfantryShadows
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Snowball Artillery
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: xmas_elf_workshop, ~techlevel.medium
+		Queue: Infantry, RAInfantry
+		Description: Long Range Artillery\n  Weak vs Infantry, Aircraft
+		IconPalette: ra2
+		BuildDuration: 600
+		BuildDurationModifier: 100
+	Mobile:
+		Locomotor: wheeled
+		TurnSpeed: 80
+		Speed: 64
+	Power:
+		Amount: -60
+	Health:
+		HP: 10000
+	Repairable:
+		HpPerStep: 800
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Armament@PRIMARY:
+		Weapon: xmas_snowball_artillery
+		LocalOffset: 600,0,200
+	AttackFrontal:
+		FacingTolerance: 0
+	SelectionDecorations:
+	Selectable:
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: TSVehicle
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 70
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 40
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 20
+		
+xmas_rocket_sledge:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Spike Sledge
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: xmas_elf_workshop, ~techlevel.medium
+		Queue: Infantry, RAInfantry
+		Description: Fast vehicle armed with Ice Spikes\n\n  Strong vs Infantry, Air\n  Weak vs Tanks
+		IconPalette: ra2
+	Mobile:
+		Locomotor: wheeled
+		TurnSpeed: 80
+		Speed: 162
+	Health:
+		HP: 22000
+	Repairable:
+		HpPerStep: 1100
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 6c0
+	Armament@PRIMARY:
+		Weapon: xmas_icespike
+		LocalOffset: 300,-204,300, 300,204,300
+	Armament@AA:
+		Weapon: xmas_icespike_aa
+		LocalOffset: 300,-204,300, 300,204,300
+	AttackFrontal:
+		FacingTolerance: 0
+	SelectionDecorations:
+	Selectable:
+	RenderSprites:
+	Power:
+		Amount: -20
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	Voiced:
+		VoiceSet: TSVehicle
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 80
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 60
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 20
+	SpawnActorOnDeath@Santa4:
+		Actor: EVILCRATE
+		Probability: 5
+		
+xmas_main_battle_sledge:
+	Inherits: ^Vehicle
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Main Battle Sledge
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: xmas_elf_workshop, ~techlevel.medium
+		Queue: Infantry, RAInfantry
+		Description: Quick vehicle with snowball cannon\n\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry, Aircraft
+		IconPalette: ra2
+	Mobile:
+		Locomotor: wheeled
+		TurnSpeed: 64
+		Speed: 138
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 1200
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Power:
+		Amount: -20
+	Armament@PRIMARY:
+		Weapon: xmas_snowball_small
+		LocalOffset: 300,-200,200, 300,200,200
+	AttackFrontal:
+		FacingTolerance: 0
+	SelectionDecorations:
+	RenderSprites:
+	Selectable:
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	Voiced:
+		VoiceSet: TSVehicle
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 70
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 50
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 40
+	SpawnActorOnDeath@Santa4:
+		Actor: EVILCRATE
+		Probability: 20
+xmas_snowman_snowball:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@elemental: ^IceActor
+	Inherits@shape: ^1x2Shape
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Snowy
+	Building:
+		Footprint: x x
+		Dimensions: 1,2
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: xmas_elves_house, ~techlevel.low
+		Queue: Defence, RADefence
+		BuildDurationModifier: 40
+		Description: Anti-Ground Short-Ranged Base Defense.\nStarts melting when power is low\n\n  Strong vs Infantry, Vehicles\n  Weak vs Tanks, Air
+		IconPalette: ra2
+	Selectable:
+		Bounds: 1024, 1024
+	SelectionDecorations:
+	Health:
+		HP: 60000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 32
+		Offset: 0,0,400
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament@NORMAL:
+		Weapon: xmas_snowball_snowy
+		LocalOffset: 500,400,340, 500,-400,340
+		LocalYaw: -100, 100
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	-RenderDetectionCircle:
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: voiceSnowman
+	RenderSprites:
+	-WithMakeAnimation:
+	-WithDeathAnimation:
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 80
+	ChangesHealth:
+		PercentageStep: -1
+		Step: 0
+		Delay: 17
+		StartIfBelow: 101
+		RequiresCondition: lowpower
+		
+xmas_snowman_cannon:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@elemental: ^IceActor
+	Inherits@shape: ^2x1Shape
+	Valued:
+		Cost: 1000
+	Building:
+		Footprint: x x
+		Dimensions: 1,2
+	Tooltip:
+		Name: Powder
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: xmas_elf_workshop, ~techlevel.medium
+		Queue: Defence, RADefence
+		BuildDurationModifier: 50
+		Description: Long Range Anti-Ground Defense with high area of effect.\nStarts melting when power is low\nDetector\n\n  Strong vs Vehicles, Tanks\n  Weak vs Air
+		IconPalette: ra2
+	Selectable:
+		Bounds: 1024, 1024
+	SelectionDecorations:
+	Health:
+		HP: 105000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 32
+		Offset: 0,0,400
+	WithSpriteBody:
+	WithSpriteTurret:
+	Armament@NORMAL:
+		Weapon: xmas_snowball_cannon
+		LocalOffset: 500,250,340, 500,-250,340
+		LocalYaw: -100, 100
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 5c0
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: voiceSnowman
+	RenderSprites:
+	-WithMakeAnimation:
+	-WithDeathAnimation:
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 90
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 70
+	ChangesHealth:
+		PercentageStep: -1
+		Step: 0
+		Delay: 17
+		StartIfBelow: 101
+		RequiresCondition: lowpower
+		
+xmas_snowman_elite:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@elemental: ^IceActor
+	Inherits@shape: ^2x1Shape
+	Valued:
+		Cost: 1000
+	Building:
+		Footprint: x x
+		Dimensions: 1,2
+	Tooltip:
+		Name: Avalanche
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: xmas_elf_workshop, ~techlevel.medium
+		Queue: Defence, RADefence
+		BuildDurationModifier: 40
+		Description: Anti-Air and Infantry Defense.\nStarts melting when power is low\nDetector\n\n  Strong vs Infantry, Vehicles, Air\n  Weak vs Tanks
+		IconPalette: ra2
+	Selectable:
+		Bounds: 1024, 1024
+	SelectionDecorations:
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 32
+		Offset: 0,0,400
+	GrantConditionOnAttack@aa:
+		Condition: airattack
+		ArmamentNames: secondary
+	WithSpriteTurret@aa:
+		Sequence: turretaa
+		RequiresCondition: airattack
+	WithSpriteBody:
+	WithSpriteTurret:
+		RequiresCondition: !airattack
+	Armament@NORMAL:
+		Weapon: xmas_avalanche
+		Name: primary
+		LocalOffset: 500,250,340, 500,-250,340
+		LocalYaw: -100, 100
+	Armament@AA:
+		Weapon: xmas_avalanche_aa
+		Name: secondary
+		LocalOffset: 500,120,340, 500,-120,340
+		LocalYaw: -100, 100
+	AttackTurreted:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 5c0
+	Power:
+		Amount: 0
+	Voiced:
+		VoiceSet: voiceSnowman
+	RenderSprites:
+	-WithMakeAnimation:
+	-WithDeathAnimation:
+	SpawnActorOnDeath@Santa:
+		Actor: EVILCRATE
+		Probability: 100
+	SpawnActorOnDeath@Santa2:
+		Actor: EVILCRATE
+		Probability: 90
+	SpawnActorOnDeath@Santa3:
+		Actor: EVILCRATE
+		Probability: 70
+	SpawnActorOnDeath@Santa4:
+		Actor: EVILCRATE
+		Probability: 30
+	ChangesHealth:
+		PercentageStep: -1
+		Step: 0
+		Delay: 17
+		StartIfBelow: 101
+		RequiresCondition: lowpower

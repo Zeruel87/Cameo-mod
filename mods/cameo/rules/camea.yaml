@@ -1,0 +1,1071 @@
+World:
+	FactionCA@camea:
+		Name: Camea
+		InternalName: camea
+		Game: Boss
+		Side: Boss Factions
+		Description: Camea\nGeneral having forces of GDI, NOD, Allies and Soviets at her disposal\nSupport powers: Spy Plane, Airstrike, Chronosphere, Paratroopers, Nuclear Strike
+
+	StartingUnits@mcvonlycamea:
+		Class: none
+		ClassName: MCV Only
+		Factions: camea
+		BaseActor: mcv.camea
+	StartingUnits@defaultcamea:
+		Class: light
+		ClassName: Light Support
+		Factions: camea
+		BaseActor: mcv.camea
+		SupportActors: e1,e1,e1,e1,e1,e3,e3,jeep
+	StartingUnits@heavycamea:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: camea
+		BaseActor: mcv.camea
+		SupportActors: e1,e1,e1,e1,e3,e3,jeep,mtnk,mtnk
+
+Player:
+	ExternalCondition@BuildingsOwned:
+		Condition: BuildingsOwned
+	ProvidesPrerequisite@BuildingsOwned:
+		Prerequisite: allowsMCV
+		RequiresCondition: BuildingsOwned < 5
+
+
+##############################################
+#                  BUILDINGS
+##############################################
+
+mcv.camea:
+	Inherits@MCV: MCV.GDI
+	Valued:
+		Cost: 2000
+	Transforms:
+		IntoActor: camea_conyard
+	Tooltip:
+		Name: Mobile Construction Vehicle
+	Buildable:
+		BuildPaletteOrder: 10
+		Description: Transforms into Construction Yard
+		Queue: Vehicle, RAVehicle
+		Prerequisites: RAFIX.camea
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmgdi
+	RenderSprites:
+		Image: MCV
+
+mcv.camea.bot:
+	Inherits: mcv.camea
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildLimit: 1
+		Prerequisites: RAFIX.camea, ~botplayer, allowsMCV
+
+camea_conyard:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
+	Inherits: ^BaseBuilding
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Inherits@shape: ^3x3Shape
+	Inherits@BotMicro: ^BotMicromanageable
+	Inherits@lowpower: ^DisabledOverlay
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Construction Yard
+	Armor:
+		Type: Wood
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 300000 #60000
+	RevealsShroud:
+		Range: 12c0
+	BaseProvider:
+		Range: 12c0
+	Exit@1:
+		SpawnOffset: 200,-485,0
+		ExitCell: 4,2
+	#Exit@2:
+	#	SpawnOffset: 298,298,0
+	#	ExitCell: 200,200
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: conyard
+	Production@NORMAL:
+		Produces: Building, Defence
+		RequiresCondition: !classicproductionqueues
+	Production@classicproductionqueues:
+		Produces: RABuilding, RADefence
+		RequiresCondition: classicproductionqueues
+	ProductionQueue@Building:
+		Type: Building
+		Group: Building
+		DisplayOrder: 0
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		LowPowerModifier: 200
+	ProductionQueue@Defence:
+		Type: Defence
+		DisplayOrder: 1
+		Group: Defence
+		QueuedAudio: Building
+		ReadyAudio: ConstructionComplete
+		LowPowerModifier: 200
+	BaseBuilding:
+	ProductionBar@Building:
+		ProductionType: Building
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@Defence:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuilding:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefence:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: 75
+	WithBuildingBib:
+	WithMakeAnimation:
+		Condition: build-incomplete
+	-WithBuildingRepairDecoration:
+	RenderSprites:
+		Image: fact
+	ProvidesPrerequisite@camea:
+		Prerequisite: faction.camea
+	AirstrikePower@spyplane:
+		OrderName: SovietSpyPlane
+		Icon: spyplane
+		ChargeInterval: 3750
+		Name: Spy Plane
+		Description: Reveals an area of the map\nand cloaked enemy units.
+		SelectTargetSpeechNotification: SelectTarget
+		EndChargeSpeechNotification: SpyPlaneReady
+		CameraActor: camera.spyplane
+		CameraRemoveDelay: 150
+		UnitType: u2
+		QuantizedFacings: 8
+		DisplayBeacon: true
+		BeaconPoster: racamicon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 60
+
+POWR.camea:
+	Inherits: POWR
+	Tooltip:
+		Name: Power Plant
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 10
+		Prerequisites: camea_conyard
+		Description: Provides power for other structures.
+	RenderSprites:
+		Image: POWR
+
+HAND.camea:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 630,-512,0, 355,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Barracks
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower
+		Queue: Building, RABuilding
+		Description: Trains infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRY:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRY:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	SelectionDecorations:
+	RenderSprites:
+		Image: HAND
+
+RAPROC.camea:
+	Inherits: RAPROC
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 60
+		Prerequisites: anypower
+		Description: Refines Ore and Gems\ninto credits.
+	Valued:
+		Cost: 1500 #1400
+	Tooltip:
+		Name: Refinery
+	Health:
+		HP: 90000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	StoresResources:
+		Capacity: 1000 #2000
+	CustomSellValue:
+		Value: 500 #600
+	FreeActor:
+		Actor: HARV.camea
+		SpawnOffset: 1,2
+		Facing: 256
+	Power:
+		Amount: -40 #-30
+	RenderSprites:
+		Image: RAPROC
+	ProvidesPrerequisite@buildingname:
+
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 17
+		FullSequence: pip-yellow
+RAWEAPA.camea:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^RASpawnActorsOnSell
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 80
+		Prerequisites: raproc.camea, ~techlevel.low
+		Description: Produces vehicles.
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: War Factory
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	SelectionDecorations:
+	Health:
+		HP: 150000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	WithProductionDoorOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: build-top
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 213,-128,0
+		ExitCell: 1,2
+	Production@NORMAL:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Vehicle
+		DisplayOrder: 3
+		Group: Vehicle
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLE:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLE:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -30
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	RenderSprites:
+		Image: raweap
+
+HQ.camea:
+	Inherits: HQ
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Communications Center
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: raproc.camea, ~techlevel.medium
+		Queue: Building, RABuilding
+		Description: Provides radar and Air Strike support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 10c0
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	ParatroopersPower@army:
+		PauseOnCondition: lowpower
+		OrderName: DinoDrop
+		Icon: paratroopers
+		ChargeInterval: 2250
+		Name: Paratroopers
+		Description: A squad of cargo planes drops soldiers\nanywhere on the map.
+		DropItems: e1.para, e1.para, e1.para, e1.para, e1.para, e1.para, e1.para, e1.para, e1.para, e1.para
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPoster: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		UnitType: C17.Paradrop
+		SquadSize: 3
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+	AirstrikePower@air:
+		PauseOnCondition: lowpower
+		Prerequisites: stek.camea, ~techlevel.superweapons
+		Icon: airstrike
+		ChargeInterval: 6000
+		SquadSize: 3
+		QuantizedFacings: 8
+		Name: Air Strike
+		Description: Deploy an aerial napalm strike.\nBurns buildings and infantry along a line.
+		EndChargeSpeechNotification: AirstrikeReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: EnemyPlanesApproaching
+		UnitType: a10
+		DisplayBeacon: True
+		BeaconPoster: airstrike
+		BeaconPosterPalette: beaconposter
+		DisplayRadarPing: True
+		CameraActor: camera
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 10
+	Power:
+		Amount: -50
+	RenderSprites:
+		Image: HQ
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@myself:
+		Prerequisite: hq.camea
+
+RAFIX.camea:
+	Inherits: RAFIX
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 100
+		Prerequisites: vehicleproduction, ~techlevel.medium
+		Description: Repairs vehicles for credits.
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Service Depot
+	Health:
+		HP: 80000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 7
+		StartRepairingNotification: Repairing
+		PlayerExperience: 15
+	Power:
+		Amount: -30
+	RenderSprites:
+		Image: RAFIX
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@rafix:
+		Prerequisite: RAFIX.camea
+NUK2.camea:
+	Inherits: NUK2
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Tooltip:
+		Name: Advanced Power Plant
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: anyhq, ~techlevel.medium
+		Queue: Building, RABuilding
+		Description: Provides more power, cheaper than the\nstandard Power Plant
+	RenderSprites:
+		Image: NUK2
+
+stek.camea:
+	Inherits: STEK
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 150
+		Prerequisites: vehicleproduction, anyhq, ~techlevel.high
+		Description: Provides Soviet advanced technologies.
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Soviet Tech Center
+	Health:
+		HP: 80000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	Power:
+		Amount: -100
+	RenderSprites:
+		Image: STEK
+	ProvidesPrerequisite@atek:
+		Prerequisite: atek
+	ProvidesPrerequisite@techcenter:
+		Prerequisite: techcenter
+	ProvidesPrerequisite@buildingname:
+
+HPAD.camea:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Helipad
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: raproc.camea
+		Queue: Building, RABuilding
+		Description: Produces, rearms and\nrepairs helicopters
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	ProductionFromMapEdge@NORMAL:
+		Produces: Aircraft
+		RequiresCondition: !classicproductionqueues
+	ProductionFromMapEdge@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ProductionQueue:
+		Type: Aircraft
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@AIRCRAFT:
+		ProductionType: Aircraft
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFT:
+		ProductionType: RAAircraft
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -10
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: hpad
+	RenderSprites:
+		Image: hpad
+
+SILO.camea:
+	Inherits: SILO
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Tiberium Silo
+	Buildable:
+		BuildPaletteOrder: 35
+		Prerequisites: raproc.camea
+		Queue: Defence, RADefence
+		Description: Stores processed Tiberium
+	Health:
+		HP: 50000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -10
+	RenderSprites:
+		Image: silo
+
+mslo.camea:
+	Inherits: MSLO
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Missile Silo
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 140
+		Prerequisites: stek.camea, ~techlevel.superweapons, !abomb
+		Description: Provides an atomic bomb.\nRequires power to operate.\n  Special Ability: Atom Bomb
+	Health:
+		HP: 100000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 6c0
+		RequiresCondition: !lowpower
+		RequiresCondition: !lowpower
+	NukePower:
+		AllowMultiple: True
+		PauseOnCondition: lowpower
+		Prerequisites: ~techlevel.superweapons
+		Cursor: nuke
+		Icon: abomb
+		ChargeInterval: 9000
+		Name: Atom Bomb
+		Description: Launches a devastating atomic bomb\nat a target location.
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		MissileWeapon: raatomic
+		MissileDelay: 5
+		SpawnOffset: 1c0,427,0
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		DisplayBeacon: True
+		DisplayRadarPing: True
+		BeaconPoster: raatomicon
+		CameraRange: 10c0
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		SupportPowerPaletteOrder: 70
+		MissileImage: raatomic
+	Power:
+		Amount: -150
+	RenderSprites:
+		Image: MSLO
+	ProvidesPrerequisite@buildingname:
+
+PDOX.camea:
+	Inherits: PDOX
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 120
+		Prerequisites: stek.camea, ~techlevel.superweapons
+		BuildLimit: 1
+		Description: Teleports a group of units across the map.\nRequires power to operate.\nMaximum 1 can be built.\n  Special Ability: Chronoshift
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Chronosphere
+	Health:
+		HP: 100000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 6c0
+		RequiresCondition: !lowpower
+	ChronoshiftPower@chronoshift:
+		OrderName: Chronoshift
+		Prerequisites: !botplayer
+		PauseOnCondition: lowpower
+		Icon: chrono
+		ChargeInterval: 3000
+		Name: Chronoshift
+		Description: Teleports a large group of units\nacross the map.
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		#BeginChargeSpeechNotification: ChronosphereCharging
+		#EndChargeSpeechNotification: ChronosphereReady
+		Duration: 0
+		KillCargo: False
+		DisplayRadarPing: True
+		SelectionCursor: ability
+		TargetCursor: ability
+		SupportPowerPaletteOrder: 20
+		LaunchSound: chrono2.aud
+		IncomingSound: chrono2.aud
+		Dimensions: 5, 5
+		Footprint: __x__ _xxx_ xxxxx _xxx_ __x__
+	DetonateWeaponPower@aichrono:
+		OrderName: ChronoshiftAI
+		Prerequisites: botplayer
+		PauseOnCondition: lowpower
+		Icon: chrono
+		Cursor: ability
+		ChargeInterval: 3000
+		Name: Chronoshift
+		ActivationDelay: 25
+		Description: Teleports a large group of units\nacross the map.
+		Weapon: ChronoAI
+		CameraActor: camera.placeholderhack
+		CameraRemoveDelay: 0
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		LaunchSound: chrono2.aud
+		IncomingSound: chrono2.aud
+	Power:
+		Amount: -200
+	RenderSprites:
+		Image: PDOX
+
+HOSP.camea:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 2500
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 120
+		Prerequisites: stek.camea, ~techlevel.medium
+		BuildLimit: 1
+		Description: Heals nearby infantry\nLimit: 1
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 150000
+	Tooltip:
+		Name: Hospital
+	WithBuildingBib:
+		HasMinibib: true
+	ProvidesPrerequisite@hosp:
+		Prerequisite: hosp
+	RenderSprites:
+		Image: HOSP
+	-WithDeathAnimation:
+
+ATWR.camea:
+	Inherits: ATWR
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: vehicleproduction, ~techlevel.high
+		Queue: Defence, RADefence
+	RenderSprites:
+		Image: ATWR
+
+OBLI.camea:
+	Inherits: OBLI
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: vehicleproduction, ~techlevel.high
+		Queue: Defence, RADefence
+	RenderSprites:
+		Image: OBLI
+
+TSLA.camea:
+	Inherits: TSLA
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: vehicleproduction, ~techlevel.high
+		Queue: Defence, RADefence
+	RenderSprites:
+		Image: TSLA
+
+RAGUN.camea:
+	Inherits: RAGUN
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 50
+		Prerequisites: barracks, ~techlevel.medium
+	RenderSprites:
+		Image: RAGUN
+
+HBOX.camea:
+	Inherits: HBOX
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 50
+		Prerequisites: barracks, ~techlevel.medium
+	RenderSprites:
+		Image: HBOX
+
+RASAM.camea:
+	Inherits: RASAM
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 100
+		Prerequisites: hq.camea, ~techlevel.medium
+		Description: Anti-Air base defense.\nRequires power to operate.\n  Strong vs Aircraft\n  Weak vs Ground units
+	RenderSprites:
+		Image: RASAM
+
+GAP.camea:
+	Inherits: GAP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 110
+		Prerequisites: stek.camea, ~techlevel.medium
+		Description: Obscures the enemy's view with shroud.\nRequires power to operate.
+	RenderSprites:
+		Image: GAP
+
+MAMMOTHBUNKER.camea:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: stek.camea, ~techlevel.high
+		Queue: Defence, RADefence
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Mammoth Bunker
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 7c0
+	DetectCloaked:
+		Range: 3c0
+	Turreted:
+		TurnSpeed: 8
+	Armament@PRIMARY:
+		Weapon: ra120mm
+		LocalOffset: 900,180,340, 900,-180,340
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: MammothTusk
+		LocalOffset: -85,384,340, -85,-384,340
+		LocalYaw: -100,100
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	WithRangeCircle:
+		Range: 5c910
+		Color: FFFF0080
+	RangeMultiplier:
+		Modifier: 120
+	RenderSprites:
+		Image: MAMMOTHBUNKER
+	-WithMakeAnimation:
+	-WithDeathAnimation:
+
+###############################################
+#                   UNITS
+###############################################
+
+E7.camea:
+	Inherits: E7
+	Buildable:
+		Queue: Infantry, RAInfantry
+		Prerequisites: stek.camea, ~techlevel.high
+	RenderSprites:
+		Image: E7
+
+SHOK.camea:
+	Inherits: SHOK
+	Buildable:
+		Queue: Infantry, RAInfantry
+		Prerequisites: stek.camea, ~techlevel.high
+	RenderSprites:
+		Image: SHOK
+
+E1.para:
+	Inherits: E1
+	-Buildable:
+	GrantConditionOnPrerequisite@camea:
+		Prerequisites: faction.camea
+		Condition: faction.camea
+	RenderSprites:
+		Image: E1
+
+RMBO.camea:
+	Inherits: RMBO
+	Buildable:
+		Prerequisites: stek.camea, ~techlevel.high
+		Queue: Infantry, RAInfantry
+	RenderSprites:
+		Image: RMBO
+
+MECH.camea:
+	Inherits: MECH
+	Buildable:
+		Queue: Infantry, RAInfantry
+		Prerequisites: hq.camea, ~techlevel.medium
+	RenderSprites:
+		Image: MECH
+
+JEEP.camea:
+	Inherits: JEEP
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: ~techlevel.medium
+	RenderSprites:
+		Image: JEEP
+
+BIKE.camea:
+	Inherits: BIKE
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: ~techlevel.medium
+	RenderSprites:
+		Image: BIKE
+
+1TNK.camea:
+	Inherits: 1TNK
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: ~techlevel.medium
+	RenderSprites:
+		Image: 1TNK
+
+MTNK.camea:
+	Inherits: MTNK
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: ~techlevel.medium
+	RenderSprites:
+		Image: MTNK
+
+3TNK.camea:
+	Inherits: 3TNK
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: ~techlevel.medium
+	RenderSprites:
+		Image: 3TNK
+
+V2RL.camea:
+	Inherits: V2RL
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: hq.camea, ~techlevel.medium
+	RenderSprites:
+		Image: V2RL
+
+FTNK.camea:
+	Inherits: FTNK
+	Buildable:
+		Prerequisites: ~techlevel.medium
+		Queue: Vehicle, RAVehicle
+	RenderSprites:
+		Image: FTNK
+
+HTNK.camea:
+	Inherits: HTNK
+	Buildable:
+		Prerequisites: stek.camea
+		Queue: Vehicle, RAVehicle
+	RenderSprites:
+		Image: HTNK
+
+STNK.camea:
+	Inherits: STNK
+	Buildable:
+		Prerequisites: stek.camea
+		Queue: Vehicle, RAVehicle
+	RenderSprites:
+		Image: STNK
+
+TTNK.camea:
+	Inherits: TTNK
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: hq.camea, ~techlevel.high
+	RenderSprites:
+		Image: TTNK
+
+CTNK.camea:
+	Inherits: CTNK
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: stek.camea, ~techlevel.high
+	RenderSprites:
+		Image: CTNK
+
+raapc.camea:
+	Inherits: RAAPC
+	Valued:
+		Cost: 2000
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: barracks
+	Cargo:
+		InitialUnits: SHOK.camea, SHOK.camea, SHOK.camea, SHOK.camea, medi
+	AutoDeployer:
+		DeployChance: 100
+		DeployTicks: 0
+
+DTRK.camea:
+	Inherits: DTRK
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: mslo.camea, ~techlevel.high
+	RenderSprites:
+		Image: DTRK
+
+MSAM.camea:
+	Inherits: MSAM
+	Buildable:
+		Prerequisites: stek.camea
+		Queue: Vehicle, RAVehicle
+	RenderSprites:
+		Image: MSAM
+
+RAARTY.camea:
+	Inherits: RAARTY
+	Buildable:
+		Queue: Vehicle, RAVehicle
+	RenderSprites:
+		Image: RAARTY
+
+MSSM.camea:
+	Inherits: MSSM
+	Buildable:
+		Prerequisites: stek.camea
+		Queue: Vehicle, RAVehicle
+		Icon: icon
+	RenderSprites:
+		Image: mlrs
+
+RAHELI.camea:
+	Inherits: RAHELI
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		Prerequisites: ~techlevel.medium
+	RenderSprites:
+		Image: RAHELI
+
+HIND.camea:
+	Inherits: HIND
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		Prerequisites: ~techlevel.medium
+	RenderSprites:
+		Image: HIND
+
+ORCA.camea:
+	Inherits: ORCA
+	Buildable:
+		Prerequisites: ~techlevel.medium
+		Queue: Aircraft, RAAircraft
+	RenderSprites:
+		Image: ORCA
+
+YAK.camea:
+	Inherits: YAK
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		Prerequisites: ~techlevel.medium
+	RenderSprites:
+		Image: YAK
+
+MIG.camea:
+	Inherits: MIG
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		Prerequisites: stek.camea, ~techlevel.high
+	RenderSprites:
+		Image: MIG
+
+TRAN.camea:
+	Inherits: TRAN
+	Inherits@bot: ^BotMicromanageable
+	Buildable:
+		Prerequisites: ~techlevel.medium
+		Queue: Aircraft, RAAircraft
+		Description: Fast Infantry Transport Helicopter.\nAlready with 12 crewmen on board\n  Unarmed
+	Cargo:
+		InitialUnits: e1, e1, e2, e2, e4, e4, e5, e5, rae4, rae4, shok, shok
+		LoadedCondition: loaded
+	Armament:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: botmicro && loaded
+	AutoDeployer:
+		DeployChance: 100
+		DeployTicks: 100
+	KillsSelf:
+		RemoveInstead: true
+		RequiresCondition: !loaded && botmicro
+		Delay: 200
+	RenderSprites:
+		Image: tran
+	Valued:
+		Cost: 3000
+
+HARV.camea:
+	Inherits: HARV
+	Buildable:
+		Prerequisites: raproc.camea
+		Queue: Vehicle, RAVehicle
+	RenderSprites:
+		Image: HARV

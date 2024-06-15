@@ -1,0 +1,2614 @@
+####################################################################################################
+#		Dune 2 World
+####################################################################################################
+World:
+	FactionCA@d2atreides:
+		Name: Atreides D2
+		InternalName: d2atreides
+		Game: Dune 2
+		Side: Houses
+		Description: Atreides from Dune 2\nSupport powers: Fremen\nBonus Stats: Concrete Slabs are 3x3\nSpecial Units: Fremen, Sonic Tank
+	FactionCA@d2harkonnen:
+		Name: Harkonnen D2
+		InternalName: d2harkonnen
+		Game: Dune 2
+		Side: Houses
+		Description: Harkonnen from Dune 2\nSupport powers: BlackHand\nBonus Stats: 20% armor bonus, 20% speed debuff\nSpecial Units: Devastator
+	FactionCA@d2ordos:
+		Name: Ordos D2
+		InternalName: d2ordos
+		Game: Dune 2
+		Side: Houses
+		Description: Ordos from Dune 2\nSupport powers: Saboteur\nBonus Stats: 20% speed bonus, 20% armor debuff\nSpecial Units: Saboteur, Deviator, Raider
+	FactionCA@d2corrino:
+		Name: Corrino D2
+		InternalName: d2corrino
+		Game: Dune 2
+		Side: Houses
+		Description: Corrino from Dune 2\nSupport powers: Release of Sardaukars\nBonus Stats: infantry 30% stronger\nSpecial Units: Sardaukars
+	FactionCA@RandomD2:
+		Name: Any
+		InternalName: RandomD2
+		RandomFactionMembers: d2atreides, d2harkonnen, d2harkonnen, d2corrino
+		Game: Dune 2
+		Side: Random
+		Description: Random Faction\nA random faction from Dune 2 will be chosen when the game starts.
+	####################################################################################################
+	#		MPSTARTUNITS
+	####################################################################################################
+	StartingUnits@mcvonlydune2:
+		Class: none
+		ClassName: MCV Only
+		Factions: d2atreides, d2harkonnen, d2ordos, d2corrino
+		BaseActor: dunemcv
+	StartingUnits@defaultdune2:
+		Class: light
+		ClassName: Light Support
+		Factions: d2atreides, d2harkonnen, d2ordos, d2corrino
+		BaseActor: dunemcv
+		SupportActors: dunee1,dunee1,dunee1,dunee1,dunee1,dunee3,dunee3,dunequad
+	StartingUnits@heavydune2:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: d2atreides, d2harkonnen, d2ordos, d2corrino
+		BaseActor: dunemcv
+		SupportActors: dunee1,dunee1,dunee1,dunee1,dunee3,dunee3,dunequad,dunemtnk,dunemtnk
+
+
+
+
+
+
+
+
+
+Player:
+	ProvidesPrerequisite@d2atreides:
+		Prerequisite: faction.d2atreides
+		Factions: d2atreides
+	ProvidesPrerequisite@d2harkonnen:
+		Prerequisite: faction.d2harkonnen
+		Factions: d2harkonnen
+	ProvidesPrerequisite@d2ordos:
+		Prerequisite: faction.d2ordos
+		Factions: d2ordos
+	ProvidesPrerequisite@d2corrino:
+		Prerequisite: faction.d2corrino
+		Factions: d2corrino
+
+####################################################################################################
+#		Dune 2 Bonus
+####################################################################################################
+#
+#   Harkonnen 20 armor bonus, 20 speed debuff
+#   atreides no bonus, no debuff
+#   Ordos 20 speed bonus, 20 armor debuff
+#   Corrino 30 speed infantry bonus, 30 infantry armor bonus, 10 vehicle armor debuff
+#
+####################################################################################################
+^Dune2UnitBonuses:
+	DamageMultiplier@selectharkonnen:
+		RequiresCondition: selectharkonnen
+		Modifier: 80
+	SpeedMultiplier@selectharkonnen:
+		RequiresCondition: selectharkonnen
+		Modifier: 80
+	DamageMultiplier@selectordos:
+		RequiresCondition: selectordos
+		Modifier: 120
+	SpeedMultiplier@selectordos:
+		RequiresCondition: selectordos
+		Modifier: 120
+^Dune2CorrinoDebuff:
+	DamageMultiplier@selectcorrino:
+		RequiresCondition: selectcorrino
+		Modifier: 110
+
+^Dune2CorrinoBuff:
+	DamageMultiplier@selectcorrino:
+		RequiresCondition: selectcorrino
+		Modifier: 130
+	SpeedMultiplier@selectordos:
+		RequiresCondition: selectordos
+		Modifier: 130
+####################################################################################################
+#		Dune 2 Infantry
+####################################################################################################
+^D2IsRenegadeUnit:
+	DamageMultiplier@renegadedriverbuff:
+		Modifier: 80
+	FirepowerMultiplier@renegadedriverbuff:
+		Modifier: 110
+	Wanders:
+		MinMoveDelay: 12
+		MaxMoveDelay: 24
+		WanderMoveRadius: 16
+	RejectsOrders:
+	AutoTarget:
+		InitialStance: AttackAnything
+	DetectCloaked:
+		Range: 3c0
+		RequiresCondition: !disabled
+	RevealsShroud:
+		Range: 3c512
+	ScaredyCat:
+		PanicChance: 80
+		PanicSpeedModifier: 112
+		AttackPanicChance: 75
+		PanicDuration: 150
+^D2IsRenegadeUnitInfantry:
+	DamageMultiplier@renegadedriverbuff:
+		Modifier: 50
+	FirepowerMultiplier@renegadedriverbuff:
+		Modifier: 120
+	ReloadDelayMultiplier@renegadedriverbuff:
+		Modifier: 80
+	Wanders:
+		MinMoveDelay: 12
+		MaxMoveDelay: 22
+		WanderMoveRadius: 5
+	RejectsOrders:
+	AutoTarget:
+		InitialStance: AttackAnything
+
+dunee1:
+	Inherits: light_inf
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoBuff
+	Valued:
+		Cost: 50
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Infantry, RAInfantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		IconPalette: chrome
+		Prerequisites: barracks
+	Armament@PRIMARY: ##########
+		Weapon: Dune2Laser
+	RenderSprites:
+		Image: dunee1
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+	GrantConditionOnPrerequisite@capturebuilding:
+		Condition: upcapture
+		Prerequisites: upgecapture
+	Captures:
+		RequiresCondition: upcapture
+		CaptureTypes: building, tech
+		PlayerExperience: 500
+		CaptureDelay: 375
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+		Voice: Capture
+
+dunee3:
+	Inherits: trooper
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoBuff
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		IconPalette: chrome
+	Valued:
+		Cost: 80
+	Tooltip:
+		Name: Trooper
+	Mobile:
+		Speed: 31
+	Armament:
+		Weapon: Dune2Trooper
+		LocalOffset: 128,0,256
+	-Armament@aa:
+	RenderSprites:
+		Image: dunee3
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+	GrantConditionOnPrerequisite@capturebuilding:
+		Condition: upcapture
+		Prerequisites: upgecapture
+	Captures:
+		RequiresCondition: upcapture
+		CaptureTypes: building, tech
+		PlayerExperience: 500
+		CaptureDelay: 375
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+		Voice: Capture
+dunee2:
+	Inherits: fremen
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoBuff
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 20
+		Prerequisites: barracks, ~selectfremen, d2_hbarrupgrade1
+		IconPalette: chrome
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Fremen
+	Mobile:
+		Speed: 31
+	Armament@PRIMARY:
+		Weapon: Dune2Trooper
+	Armament@SECONDARY:
+		Weapon: Dune2Trooper
+	RenderSprites:
+		Image: dunee2
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+dunee2.renegade:
+	Inherits: dunee2
+	Inherits@renegaded: ^D2IsRenegadeUnitInfantry
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Tooltip:
+		Name: Independent Fremen
+	Buildable:
+		Prerequisites: ~selectatreides, dunepalace, d2_lbarrupgrade1
+		Queue: Infantry, RAInfantry
+	RenderSprites:
+		Image: dunee2
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+dunee4:
+	Inherits: trooper
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoBuff
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 20
+		Prerequisites: anyhq, ~selectcorrino, d2_hbarrupgrade1
+		IconPalette: chrome
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Sardaukar
+	Mobile:
+		Speed: 40
+	Armament:
+		Weapon: Dune2TrooperDual
+		LocalOffset: 128,0,256
+	Armament@aa:
+		Weapon: Dune2SardaAA
+	RenderSprites:
+		Image: dunee4
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+dunee1mob:
+	Inherits@1: ^ExistsInWorld
+	Inherits@3: ^SpriteActor
+	Inherits@selection: ^SelectableCombatUnit
+	Inherits@bot: ^BotProductionBehavior
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	-AppearsOnRadar:
+	OwnerLostAction:
+		Action: Kill
+		DeathTypes: DefaultDeath
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Infantry, RAInfantry
+		Description: Massive Spam Purpose Squad.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+		Prerequisites: barracks, d2_lbarrupgrade2
+	Tooltip:
+		Name: Infantry Squad
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Valued:
+		Cost: 300
+	Health:
+		HP: 100
+	Mobile:
+		Speed: 48
+		Locomotor: foot
+	Guardable:
+	SelectionDecorations:
+	WithSpriteControlGroupDecoration:
+	Selectable:
+		Bounds: 2048, 2048
+	AttackMove:
+	DrawLineToTarget:
+	MobSpawnerMaster:
+		Actors: dunee1mobslave, dunee1mobslave, dunee1mobslave, dunee1mobslave, dunee1mobslave
+		RespawnTicks: 850
+		ExitByBudding: false
+	AttackTurreted:
+		PersistentTargeting: false
+	Turreted:
+		TurnSpeed: 1023
+	Armament:
+		Weapon: AngryMobTargeting
+	AutoTarget:
+		ScanRadius: 6
+	WithSpriteBody:
+		Sequence: dot
+	HitShape:
+	HiddenUnderFog:
+		Type: CenterPosition
+	RevealsShroud:
+		Type: CenterPosition
+	SpeedMultiplier@Generic:
+		Modifier: 200
+	DamageMultiplier@INVINCIBLE:
+		Modifier: 0
+	RenderSprites:
+		Image: dunee1mob
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+dunee1mobslave:
+	Inherits: dunee1
+	Inherits@MC: ^MCImmune
+	-ExternalCondition@TSCLOAK:
+	-Cloak@TScloak:
+	-GrantConditionOnDamageState@UNCLOAK:
+	-UpdatesPlayerStatistics:
+	-Buildable:
+	-CaptureManager:
+	-Captures@CAPTURES:
+	-Captures@DRIVER_KILL:
+	-TakeCover:
+	-ActorLostNotification:
+	-MapEditorData:
+	-Captures:
+	RejectsOrders:
+	Valued:
+		Cost: 50
+	Tooltip:
+		Name: Infantry Squad
+	-Passenger:
+	MobSpawnerSlave:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Selectable:
+		Class: dunee1mob
+	RenderSprites:
+		Image: dunee1mob
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+dunee3mob:
+	Inherits@1: ^ExistsInWorld
+	Inherits@3: ^SpriteActor
+	Inherits@selection: ^SelectableCombatUnit
+	Inherits@bot: ^BotProductionBehavior
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	-AppearsOnRadar:
+	OwnerLostAction:
+		Action: Kill
+		DeathTypes: DefaultDeath
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Infantry, RAInfantry
+		Description: Massive Spam Purpose Squad.\n  Strong vs Vehicles\n  Weak vs Infantry
+		Prerequisites: barracks, d2_hbarrupgrade2
+	Tooltip:
+		Name: Troopers Squad
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Valued:
+		Cost: 500
+	Health:
+		HP: 100
+	Mobile:
+		Speed: 48
+		Locomotor: foot
+	Guardable:
+	SelectionDecorations:
+	WithSpriteControlGroupDecoration:
+	Selectable:
+		Bounds: 2048, 2048
+	AttackMove:
+	DrawLineToTarget:
+	MobSpawnerMaster:
+		Actors: dunee3mobslave, dunee3mobslave, dunee3mobslave, dunee3mobslave, dunee3mobslave
+		RespawnTicks: 850
+		ExitByBudding: false
+	AttackTurreted:
+		PersistentTargeting: false
+	Turreted:
+		TurnSpeed: 1023
+	Armament:
+		Weapon: AngryMobTargeting
+	AutoTarget:
+		ScanRadius: 6
+	WithSpriteBody:
+		Sequence: dot
+	HitShape:
+	HiddenUnderFog:
+		Type: CenterPosition
+	RevealsShroud:
+		Type: CenterPosition
+	SpeedMultiplier@Generic:
+		Modifier: 200
+	DamageMultiplier@INVINCIBLE:
+		Modifier: 0
+	RenderSprites:
+		Image: dunee3mob
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+dunee3mobslave:
+	Inherits: dunee3
+	Inherits@MC: ^MCImmune
+	-ExternalCondition@TSCLOAK:
+	-Cloak@TScloak:
+	-GrantConditionOnDamageState@UNCLOAK:
+	-UpdatesPlayerStatistics:
+	-Buildable:
+	-CaptureManager:
+	-Captures@CAPTURES:
+	-Captures@DRIVER_KILL:
+	-TakeCover:
+	-ActorLostNotification:
+	-MapEditorData:
+	-Captures:
+	RejectsOrders:
+	Valued:
+		Cost: 50
+	Tooltip:
+		Name: Troopers Squad
+	-Passenger:
+	MobSpawnerSlave:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Selectable:
+		Class: dunee3mob
+	RenderSprites:
+		Image: dunee3mob
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+dunee4mob:
+	Inherits@1: ^ExistsInWorld
+	Inherits@3: ^SpriteActor
+	Inherits@selection: ^SelectableCombatUnit
+	Inherits@bot: ^BotProductionBehavior
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	-AppearsOnRadar:
+	OwnerLostAction:
+		Action: Kill
+		DeathTypes: DefaultDeath
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Infantry, RAInfantry
+		Description: Massive Spam Purpose Squad.\n  Strong vs Vehicles\n  Weak vs Infantry
+		Prerequisites: barracks, anyhq, ~selectcorrino, d2_hbarrupgrade2
+	Tooltip:
+		Name: Sardaukars Squad
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Valued:
+		Cost: 2000
+	Health:
+		HP: 100
+	Mobile:
+		Speed: 48
+		Locomotor: foot
+	Guardable:
+	SelectionDecorations:
+	WithSpriteControlGroupDecoration:
+	Selectable:
+		Bounds: 2048, 2048
+	AttackMove:
+	DrawLineToTarget:
+	MobSpawnerMaster:
+		Actors: dunee5mobslave, dunee4mobslave, dunee4mobslave, dunee4mobslave, dunee4mobslave
+		RespawnTicks: 850
+		ExitByBudding: false
+	AttackTurreted:
+		PersistentTargeting: false
+	Turreted:
+		TurnSpeed: 1023
+	Armament:
+		Weapon: AngryMobTargeting
+	AutoTarget:
+		ScanRadius: 6
+	WithSpriteBody:
+		Sequence: dot
+	HitShape:
+	HiddenUnderFog:
+		Type: CenterPosition
+	RevealsShroud:
+		Type: CenterPosition
+	SpeedMultiplier@Generic:
+		Modifier: 200
+	DamageMultiplier@INVINCIBLE:
+		Modifier: 0
+	RenderSprites:
+		Image: dunee4mob
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+dunee4mobslave:
+	Inherits: dunee4
+	Inherits@MC: ^MCImmune
+	-ExternalCondition@TSCLOAK:
+	-Cloak@TScloak:
+	-GrantConditionOnDamageState@UNCLOAK:
+	-UpdatesPlayerStatistics:
+	-Buildable:
+	-CaptureManager:
+	-Captures@CAPTURES:
+	-Captures@DRIVER_KILL:
+	-TakeCover:
+	-ActorLostNotification:
+	-MapEditorData:
+	RejectsOrders:
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Sardaukars Squad
+	-Passenger:
+	MobSpawnerSlave:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Selectable:
+		Class: dunee4mob
+	RenderSprites:
+		Image: dunee4mob
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+dunee5mobslave:
+	Inherits: sardaukar
+	Inherits@MC: ^MCImmune
+	-ExternalCondition@TSCLOAK:
+	-Cloak@TScloak:
+	-GrantConditionOnDamageState@UNCLOAK:
+	-UpdatesPlayerStatistics:
+	-Buildable:
+	-CaptureManager:
+	-Captures@CAPTURES:
+	-Captures@DRIVER_KILL:
+	-TakeCover:
+	-ActorLostNotification:
+	-MapEditorData:
+	RejectsOrders:
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Sardaukar Bashar
+	-Passenger:
+	MobSpawnerSlave:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Selectable:
+		Class: dunee4mob
+	RenderSprites:
+		Image: dunee5mob
+	Voiced:
+		VoiceSet: Dune2InfantryVoice
+updunecapture:
+	Inherits: ^upgrade.template
+	Tooltip:
+		Name: Capture Building
+	Buildable:
+		BuildPaletteOrder: 30
+		Queue: Infantry, RAInfantry
+		Description: Allow anti-personnel infantry to capture base buildings.\nAlt-click to capture enemy base buildings.
+		Prerequisites: barracks, ~!upgecapture, ~!susa_air, ~!susa_armor
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: genbuildcaptureicon
+	ProvidesPrerequisite:
+		Prerequisite: upgecapture
+
+####################################################################################################
+#		Dune 2 Vehicles
+####################################################################################################
+dunemcv:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+	Inherits@conyard: ^Conyard
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Mobile Construction Vehicle (Dune 2)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.medium
+		Queue: Vehicle, RAVehicle
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Selectable:
+		Priority: 4
+		DecorationBounds: 1536, 1536
+	Mobile:
+		Speed: 71
+		Locomotor: heavywheeled
+	Health:
+		HP: 120000
+	Repairable:
+		HpPerStep: 2182
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Transforms:
+		IntoActor: duneconyard
+		Offset: -1,-1
+		Facing: 432
+		TransformSounds: constru2.aud, hvydoor1.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: dunemcv
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmdune2
+	RenderSprites:
+	Voiced:
+		VoiceSet: Dune2VehicleVoice
+duneharv:
+	Inherits: ^Tank
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	-Carryable:
+	AutoCarryable:
+		CarriedCondition: notmobile
+		ReservedCondition: carryall-reserved
+		LockedCondition: notmobile
+	WithDecoration@CARRYALL:
+		Image: d2k_pips
+		Sequence: pickup-indicator
+		RequiresCondition: carryall-reserved
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Harvester
+		GenericName: Harvester
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: dunerefin
+		Queue: Vehicle, RAVehicle
+		BuildDurationModifier: 40
+		Description: Collects Tiberium for processing.\n  Unarmed
+	Selectable:
+		DecorationBounds: 1536, 1536
+	Harvester:
+		PipCount: 7
+		Capacity: 20
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 15
+		SearchFromHarvesterRadius: 8
+		EmptyCondition: no-tiberium
+	Mobile:
+		Speed: 85
+	Health:
+		HP: 62500
+	Repairable:
+		HpPerStep: 2537
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 4c0
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	Explodes:
+		RequiresCondition: !no-tiberium
+		Weapon: TiberiumExplosion
+	Explodes@empty:
+		RequiresCondition: no-tiberium
+		Weapon: UnitExplodeHarvEmpty
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions ##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: Dune2VehicleVoice
+dunetrike:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoDebuff
+	Valued:
+		Cost: 250
+	Tooltip:
+		Name: Trike
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: vehicleproduction, ~d2unlocktrike
+		Queue: Vehicle, RAVehicle
+		Description: Fast scout vehicle, armed with\nlasers.\nStrong vs Infantry\n  Weak vs Vehicles, Tanks
+	Mobile:
+		TurnSpeed: 64
+		Speed: 213
+	Health:
+		HP: 11000
+	Repairable:
+		HpPerStep: 1000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Armament:
+		Weapon: Dune2TrikeLaser
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: Dune2VehicleVoice
+dunetrike2:
+	Inherits: dunetrike
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Raider
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: vehicleproduction, ~d2unlockraider
+		Queue: Vehicle, RAVehicle
+		Description: Fast scout vehicle, armed with\nlasers.\nStrong vs Infantry\n  Weak vs Vehicles, Tanks.\nSpecial: Can Stealth
+	RenderSprites:
+		Image: duneraider
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		PauseOnCondition: cloak-force-disabled || base-reveal || disabled
+		IsPlayerPalette: true
+dunequad:
+	Inherits: ^Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoDebuff
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Quad
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: vehicleproduction, d2_lweapupgrade
+		Queue: Vehicle, RAVehicle
+		Description: Fast heavy scout vehicle, armed with\nlasers and Rockets.\nStrong vs Infantry, Aircraft\n  Weak vs Vehicles, Tanks
+	Mobile:
+		TurnSpeed: 32
+		Speed: 190
+	Health:
+		HP: 22000
+	Repairable:
+		HpPerStep: 1000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	GrantConditionOnPrerequisite@corrino:
+		Condition: d2corrino
+		Prerequisites: faction.d2corrino
+	GrantConditionOnPrerequisite@hark:
+		Condition: d2harkonnen
+		Prerequisites: faction.d2harkonnen
+	Armament:
+		Weapon: Dune2QuadLaser
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+		RequiresCondition: d2harkonnen || d2corrino
+	Armament@hark:
+		Weapon: Dune2HarkQuadLaser
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+		RequiresCondition: !d2harkonnen && !d2corrino
+	Armament@AA:
+		Weapon: Dune2QuadAA
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: Dune2VehicleVoice
+dunemtnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoDebuff
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Battle Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle, RAVehicle
+		Description: Generic Dune Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+		Prerequisites: vehicleproduction
+	Mobile:
+		Speed: 85
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 20
+	Armament:
+		Weapon: Dune2Tank
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplodeBig
+		EmptyWeapon: UnitExplodeBig
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: Dune2VehicleVoice
+dunertnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoDebuff
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Missile Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle, RAVehicle
+		Description: Artillery and AA Tank.\n  Strong vs Tanks, Vehicles, Aircraft\n  Weak vs Infantry
+		Prerequisites: duneixhouse, d2_hweapupgrade1
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 35000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 20
+	Armament:
+		Weapon: Dune2MissileTank
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,100,90, 768,-100,90
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: Dune2MissileTankAA
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,100,90, 768,-100,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplodeBig
+		EmptyWeapon: UnitExplodeBig
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: Dune2VehicleVoice
+dunedtnk:
+	Inherits: dunertnk
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Deviator Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle, RAVehicle
+		Description: Ordos Special Tank.\n Can Control enemy units\n  Weak vs Aircraft
+		Prerequisites: duneixhouse, ~selectordos, d2_hweapupgrade2
+	Armament:
+		Weapon: oDeviatorMissile
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,100,90, 768,-100,90
+		MuzzleSequence: muzzle
+	-Armament@AA:
+	RenderSprites:
+		Image: dunedtnk
+dunesiege:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoDebuff
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Siege Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle, RAVehicle
+		Description: Heavy Artillery Tank.\n  Strong vs Ground Targets\n  Weak vs Aircraft
+		Prerequisites: anyhq, d2_hweapupgrade1
+	Mobile:
+		Speed: 70
+	Health:
+		HP: 35000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 20
+	Armament:
+		Weapon: Dune2Artillery
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,1,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplodeBig
+		EmptyWeapon: UnitExplodeBig
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: Dune2VehicleVoice
+dunestnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoDebuff
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: Sonic Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle, RAVehicle
+		Description: Fires sonic shocks\n  Strong vs Infantry, Vehicles\n  Weak vs Tanks, Artillery
+		Prerequisites: duneixhouse, ~selectatreides, d2_hweapupgrade2
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 35000
+	Repairable:
+		HpPerStep: 2557
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 20
+	Armament:
+		Weapon: Dune2oSound
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,1,90
+	AttackTurreted:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplodeBig
+		EmptyWeapon: UnitExplodeBig
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: Dune2VehicleVoice
+dunehtnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@Dune2Bonus: ^Dune2UnitBonuses
+	Inherits@CorrinoBonus: ^Dune2CorrinoDebuff
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Devastator
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: duneixhouse, ~selectharkonnen, d2_hweapupgrade2
+		Queue: Vehicle, RAVehicle
+		Description: Heavily armored Harkonnen Tank\n  Strong vs Ground
+		BuildDuration: 500
+		BuildDurationModifier: 100
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 56
+		TurnSpeed: 32
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 12
+	Armament@PRIMARY:
+		Weapon: Dune2TankDual
+		LocalOffset: 900,180,340, 900,-180,340
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	ChangesHealth:
+		Step: 500
+		Delay: 10
+		StartIfBelow: 50
+		DamageCooldown: 200
+	Explodes:
+		Weapon: UnitExplodeMech
+		EmptyWeapon: UnitExplodeMech
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 61866, 61866, 0, -5461
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	RenderSprites:
+	Voiced:
+		VoiceSet: Dune2VehicleVoice
+####################################################################################################
+#		Dune 2 Structures
+####################################################################################################
+^dune2concrete:
+	AlwaysVisible:
+	Interactable:
+	Building:
+		BuildSounds: dune2place.aud
+		AllowInvalidPlacement: true
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune
+	D2kActorPreviewPlaceBuildingPreview:
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 4
+	RenderSprites:
+	Tooltip:
+		Name: Concrete
+		GenericName: Structure
+	KillsSelf:
+		RemoveInstead: true
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 10
+		Description: Provides a strong foundation that regenerates buildings on top of it.
+
+dune2concretea:
+	Inherits: ^dune2concrete
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Tooltip:
+		Name: Concrete Slab
+	Valued:
+		Cost: 20
+	Buildable:
+		BuildPaletteOrder: 110
+		BuildDuration: 5
+		BuildDurationModifier: 100
+		Prerequisites: ~!selectatreides
+
+dune2concreteb:
+	Inherits: ^dune2concrete
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	Tooltip:
+		Name: Large Concrete Slab
+	Valued:
+		Cost: 25
+	Buildable:
+		BuildPaletteOrder: 110
+		Prerequisites: ~selectatreides
+		BuildDuration: 5
+		BuildDurationModifier: 100
+
+duneconyard:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Selectable:
+		Bounds: 131072, 87381
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Construction Yard
+	Building:
+		Footprint: xX xx
+		Dimensions: 2,2
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 210000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building, Defence
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@d2_lweapupgrade_hark_corr:
+		Prerequisite: d2_lweapupgrade
+		Factions: d2harkonnen, d2corrino
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: dunemcv
+		Offset: 1,1
+		Facing: 432
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@GDIBuilding:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@GDIDefense:
+		Type: Defence
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	Production@upgrade:
+		Produces: Addons
+	ProductionBar@BuildingGDI:
+		ProductionType: Building
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceGDI:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingGDI:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenseGDI:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	ProductionBar@upgrade:
+		ProductionType: Addons
+	BaseProvider:
+		Range: 14c0
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 1000
+		Prerequisites: ~wip-content
+		Description: Builds structures
+	ProvidesPrerequisite@factiongdi:
+		Prerequisite: mmdune2
+	RenderSprites:
+		Image: duneconyard
+	ProvidesPrerequisite@d2unlockwor:
+		Prerequisite: d2unlockwor
+		Factions: d2ordos, d2harkonnen, d2corrino
+	ProvidesPrerequisite@d2unlockbarr:
+		Prerequisite: d2unlockbarr
+		Factions: d2ordos, d2atreides
+	ProvidesPrerequisite@selectatreides:
+		Prerequisite: selectatreides
+		Factions: d2atreides
+	ProvidesPrerequisite@selectharkonnen:
+		Prerequisite: selectharkonnen
+		Factions: d2harkonnen
+	ProvidesPrerequisite@selectordos:
+		Prerequisite: selectordos
+		Factions: d2ordos
+	ProvidesPrerequisite@selectcorrino:
+		Prerequisite: selectcorrino
+		Factions: d2corrino
+	FreeActor@CPQDEBUGDUMMY:
+		-RequiresCondition:
+
+dunepower:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@power: ^PowerPlant
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Selectable:
+		Bounds: 2048, 2048
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Windtrap
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: fact
+		Queue: Building, RABuilding
+		Description: Generates power
+	Building:
+		Footprint: xX xx
+		Dimensions: 2,2
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 55000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 175
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: building ##########
+
+dunerefin:
+	Inherits: ^BaseBuilding
+	Inherits@ref: ^Refinery
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 853
+	HitShape@TOP:
+		Type: Rectangle
+			TopLeft: -512, -1450
+			BottomRight: 896, -512
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Spice Refinery
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: anypower
+		Queue: Building, RABuilding
+		Description: Processes raw Tiberium\ninto useable resources
+	Building:
+		Footprint: xx= xx=
+		Dimensions: 3,2
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 6c0
+	Refinery:
+		DockAngle: 720
+		DockOffset: 2,1
+		IsDragRequired: True
+		DragOffset: 320,0,0
+		DragLength: 12
+		TickRate: 15
+	StoresResources:
+		Capacity: 1000
+	Selectable:
+		Bounds: 131072, 101930
+		DecorationBounds: 132864, 131072
+	CustomSellValue:
+		Value: 500
+	FreeActorWithDelivery@1:
+		Actor: duneharv
+		DeliveryOffset: 2,2
+		DeliveringActor: dunecarryall.reinforce
+		Facing: 160
+	WithBuildingBib:
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	SelectionDecorations:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+dunebarr:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@barr: ^IsBarrack
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: WOR
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower, ~d2unlockwor
+		Queue: Building, RABuilding
+		Description: Trains Heavy infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 87381, 76458, 0, -9088
+dunebarr2:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@barr: ^IsBarrack
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Barracks
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: anypower, ~d2unlockbarr
+		Queue: Building, RABuilding
+		Description: Trains Light infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 87381, 76458, 0, -9088
+dunelweap:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@barr: ^IsBarrack
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 840,-256,0, 840,512,0, 210,-512,0, -71,512,0
+		Type: Rectangle
+			TopLeft: -1024, -1024
+			BottomRight: 1024, 640
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Light Factory
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: dunerefin
+		Queue: Building, RABuilding
+		Description: You can make Light Vehicles
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 60000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Vehicle
+		DisplayOrder: 2
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -30
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 87381, 76458, 0, -9088
+	ProvidesPrerequisite@d2unlocktrike:
+		Prerequisite: d2unlocktrike
+		Factions: d2atreides
+	ProvidesPrerequisite@d2unlockraider:
+		Prerequisite: d2unlockraider
+		Factions: d2ordos
+dunehweap:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@barr: ^IsBarrack
+	Inherits@shape: ^3x2Shape
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Heavy Factory
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: dunelweap
+		Queue: Building, RABuilding
+		Description: You can make Heavy Vehicles
+	Building:
+		Footprint: xxx === ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Vehicle
+		DisplayOrder: 2
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 87381, 76458, 0, -9088
+dunehitech:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@barr: ^IsBarrack
+	Inherits@shape: ^3x2Shape
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Hitech Factory
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: dunelweap
+		Queue: Building, RABuilding
+		Description: You can make Aircraft
+	Building:
+		Footprint: xxx === ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Aircraft
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft
+		RequiresCondition: classicproductionqueues
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ProductionQueue:
+		Type: Aircraft
+		DisplayOrder: 2
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Aircraft
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAAircraft
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	Selectable:
+		Bounds: 87381, 76458, 0, -9088
+
+duneradar:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,512,0, 420,-598,256
+		Type: Rectangle
+			TopLeft: -1024, -384
+			BottomRight: 1024, 1024
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Outpost
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: dunerefin, ~techlevel.medium
+		Queue: Building, RABuilding
+		Description: Provides radar and Air Strike support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: dune2place.aud
+	Selectable:
+		Bounds: 87381, 72789, 0, 16384
+		DecorationBounds: 87381, 96469, 0, -7253
+	SelectionDecorations:
+	WithSpriteBody:
+		PauseOnCondition: lowpower
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 15c0
+	ProvidesRadar:
+		RequiresCondition: !jammed && !lowpower
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	Power:
+		Amount: -50
+	ExternalCondition@JAMMED:
+		Condition: jammed
+duneixhouse:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,512,0, 420,-598,256
+		Type: Rectangle
+			TopLeft: -1024, -384
+			BottomRight: 1024, 1024
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: IX House
+	ProvidesPrerequisite:
+		Prerequisite: duneixhouse
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: anyhq, ~techlevel.medium
+		Queue: Building, RABuilding
+		Description: Provides radar and Air Strike support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: dune2place.aud
+	Selectable:
+		Bounds: 87381, 72789, 0, 16384
+		DecorationBounds: 87381, 96469, 0, -7253
+	SelectionDecorations:
+	WithSpriteBody:
+		PauseOnCondition: lowpower
+	Health:
+		HP: 80000
+	RevealsShroud:
+		Range: 5c0
+	Power:
+		Amount: -50
+dunetrade:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 1024, 1024
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 222
+		Prerequisites: dunerefin, anyhq
+		Description: Stores excess refined\nOre and Gems.
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Trade Center
+	-MustBeDestroyed:
+	Health:
+		HP: 45000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -40
+	Explodes:
+		Weapon: BuildingExplode
+		EmptyWeapon: BuildingExplode
+	CashTrickler:
+		Interval: 375
+		Amount: 150
+		PauseOnCondition: lowpower
+	Building:
+		BuildSounds: dune2place.aud
+
+duneturret:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
+	Selectable:
+		Bounds: 1024, 1024
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Turret
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: barracks
+		Queue: Defence, RADefence
+		Description: Basic Anti-Tank base defense.\n  Strong vs Tanks, vehicles\n  Weak vs Infantry
+	Building:
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 41000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 48
+		InitialFacing: 224
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: Dune2TurretGun
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	DetectCloaked:
+		Range: 3c0
+	Power:
+		Amount: -20
+	BodyOrientation:
+duneturret2:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Selectable:
+		Bounds: 1024, 1024
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Advanced Turret
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: barracks, anyhq
+		Queue: Defence, RADefence
+		Description: Basic Anti-Tank base defense.\n  Strong vs Tanks, vehicles\n  Weak vs Infantry
+	Building:
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 42000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 48
+		InitialFacing: 224
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: Dune2TurretGun
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	Armament@AG:
+		Weapon: Dune2MissileTank
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,100,90, 768,-100,90
+	Armament@AA:
+		Weapon: Dune2MissileTankAA
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,100,90, 768,-100,90
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	DetectCloaked:
+		Range: 3c0
+	Power:
+		Amount: -40
+	BodyOrientation:
+dunespaceport:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@weap: ^IsWeaponFactory
+	Selectable:
+		Bounds: 174762, 87381
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,-512,256, 0,-1451,384, 0,512,128, 0,1536,85
+		Type: Rectangle
+			TopLeft: -2048, -1024
+			BottomRight: 2048, 1024
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Starport
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: anyhq
+		Queue: Building, RABuilding
+		Description: Provides a dropzone\nfor vehicle reinforcements
+	Building:
+		Footprint: +XX +=x ===
+		Dimensions: 3,3
+		BuildSounds: dune2place.aud
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 7c0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -1024,0,0
+		ExitCell: 2,2
+	ProductionAirdropCA@NORMAL:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+		ActorType: dunecarryall.starport
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	ProductionAirdropCA@CLASSIC:
+		Produces: RAVehicle
+		RequiresCondition: classicproductionqueues
+		ActorType: dunecarryall.starport
+		EntryType: DropSiteClosestEdge
+		ExitType: StraightAhead
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+	WithBuildingBib:
+	ProductionQueue:
+		Type: Vehicle
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@VEHICLENOD:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLENOD:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
+	SpawnActorPower@carry:
+		PauseOnCondition: disabled
+		OrderName: Dune2Reinforcement
+		Icon: dune2carry
+		ChargeInterval: 3000
+		Name: Reinforcement
+		Description: Spawns a Carryall with Vehicles.
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		EndChargeSpeechNotification: SpyPlaneReady
+		Actor: dunedelivery.dunemtnk
+		LifeTime: 333
+		DeploySound: vradscan.wav
+		LaunchSound: vradscan.wav
+		IncomingSound: vradscan.wav
+		SupportPowerPaletteOrder: 10
+		EffectSequence: idle
+dunepalace:
+	Inherits: ^BaseBuilding
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@tech: ^IsTechnoBuilding
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 0,-896,0, 0,896,0, 840,0,0, -706,0,0, -706,-768,0, -706,640,0
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Palace
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: anyhq, ~techlevel.high, !dunepalacesw
+		Queue: Building, RABuilding
+		Description: Provides Nuclear Strike support power.\nUnlocks Stealth Tank, Chem. Warrior and Obelisk of Light.\nRequires power to operate.
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		BuildSounds: dune2place.aud
+	Selectable:
+		Bounds: 131072, 87381
+		DecorationBounds: 131072, 123776, 0, -21845
+	SelectionDecorations:
+	Health:
+		HP: 210000
+	RevealsShroud:
+		Range: 6c0
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	NukePower:
+		Cursor: nuke
+		Icon: dune2deadhand
+		PauseOnCondition: disabled
+		OrderName: odeathhand
+		RequiresCondition: harkonnen
+		Prerequisites: ~techlevel.superweapons
+		ChargeInterval: 7500
+		Name: Death Hand
+		Description: Launches an atomic missile at a target location
+		BeginChargeSpeechNotification: DeathHandCharging
+		InsufficientPowerSpeechNotification: InsufficientPower
+		EndChargeSpeechNotification: DeathHandAvailable
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		MissilePalette: d2kunit
+		TrailPalette: d2kunit
+		MissileWeapon: oDeathHand
+		MissileDelay: 18
+		SpawnOffset: 32,816,0
+		DetonationAltitude: 3c0
+		RemoveMissileOnDetonation: False
+		DisplayBeacon: True
+		DisplayRadarPing: True
+		CameraRange: 10c0
+		ArrowSequence: arrow
+		CircleSequence: circles
+		FlightVelocity: 384
+		TrailInterval: 0
+		TrailImage: large_trail
+		TrailSequences: idle
+		SupportPowerPaletteOrder: 40
+		MissileImage: oDeathHand
+	ProduceActorPowerCA@fremen:
+		Name: Recruit Fremen
+		Description: Elite infantry unit armed with assault rifles and rockets\n  Strong vs Infantry, Vehicles\n  Weak vs Artillery\n  Special Ability: Invisibility
+		Icon: dune2fremen
+		PauseOnCondition: disabled
+		RequiresCondition: atreides
+		Prerequisites: ~techlevel.superweapons
+		Actors: dunee2.renegade, dunee2.renegade, dunee2.renegade
+		Type: Fremen
+		ChargeInterval: 2250
+		ReadyAudio: Reinforce
+		BlockedAudio: NoBuild
+		OrderName: ProduceActorPower.Fremen
+		SupportPowerPaletteOrder: 20
+		AutoFire: true
+		LaunchSound: A_FSEL1.AUD
+	Exit@1:
+		SpawnOffset: -704,768,0
+		ExitCell: -1,2
+	Exit@2:
+		SpawnOffset: -704,768,0
+		ExitCell: -1,3
+	Exit@3:
+		SpawnOffset: -704,768,0
+		ExitCell: 0,3
+	Exit@4:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@5:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@Atreides:
+		Produces: Fremen.od2k
+		RequiresCondition: atreides
+	Production@Ordos:
+		Produces: Saboteur.od2k
+		RequiresCondition: ordos
+	GrantConditionOnFaction@Atreides:
+		Condition: atreides
+		Factions: d2atreides
+	GrantConditionOnFaction@Harkonnen:
+		Condition: harkonnen
+		Factions: d2harkonnen
+	GrantConditionOnFaction@Ordos:
+		Condition: ordos
+		Factions: d2ordos
+	WithSupportPowerActivationAnimation:
+		RequiresCondition: !build-incomplete
+	WithSupportPowerActivationOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: smoke
+	SupportPowerChargeBar:
+	Power:
+		Amount: -150
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: dunepalacesw
+
+####################################################################################################
+#		Dune 2 Aircraft
+####################################################################################################
+dunecarryall.starport:
+	Inherits: ^Plane
+	Tooltip:
+		Name: Carryall
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 326
+		Repulsable: False
+		MaximumPitch: 36
+	HiddenUnderFog:
+		AlwaysVisibleRelationships: None
+		Type: CenterPosition
+	Cargo:
+		MaxWeight: 10
+		LoadedCondition: withcargo
+	WithFacingSpriteBody@withcargo:
+		Sequence: idle-cargo
+		RequiresCondition: withcargo
+	WithFacingSpriteBody:
+		Sequence: idle
+		RequiresCondition: !withcargo
+	DamageMultiplier@INVULNERABLE:
+		Modifier: 0
+	-MapEditorData:
+	RenderSprites:
+		Image: dunecarryall
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+dunecarryall.reinforce:
+	Inherits: ^D2KPlane
+	Inherits@EXT: ^ExternalConditions
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Autonomous Carryall
+	Health:
+		HP: 160000
+	Armor:
+		Type: Heavy
+	Aircraft:
+		CruiseAltitude: 2160
+		CruisingCondition: cruising
+		InitialFacing: 0
+		Speed: 156
+		TurnSpeed: 24
+		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice
+		Repulsable: False
+		AirborneCondition: airborne
+		CanSlide: True
+		VTOL: true
+		IdleTurnSpeed: 4
+	Targetable@GROUND:
+		TargetTypes: Ground, Vehicle
+		RequiresCondition: !airborne
+	Targetable@AIRBORNE:
+		TargetTypes: Air
+		RequiresCondition: airborne
+	SpawnActorOnDeath@CRUISING:
+		Actor: dunecarryall.huskair
+		RequiresCondition: cruising
+	SpawnActorOnDeath@LANDING:
+		Actor: dunecarryall.husk
+		RequiresCondition: !cruising
+	Carryall:
+		BeforeLoadDelay: 45
+		BeforeUnloadDelay: 45
+		LocalOffset: 0, 0, -128
+	RenderSprites:
+		Image: dunecarryall
+	ChangesHealth:
+		Step: 50
+		Delay: 3
+		StartIfBelow: 75
+	Buildable:
+		BuildDuration: 2250
+		BuildDurationModifier: 100
+		Description: Large winged, planet-bound ship\n  Automatically lifts harvesters from and to Spice.\n  Lifts vehicles to Repair Pads when ordered.\nLimit: 10
+		BuildLimit: 10
+	HitShape:
+		Type: Circle
+			Radius: 256
+	RejectsOrders:
+	GrantConditionOnPrerequisite@ixianharv:
+		Prerequisites: faction.ixian
+		Condition: carryall_cloak
+	Cloak:
+		InitialDelay: 80
+		CloakDelay: 80
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
+		Palette: d2kcloak
+		CloakedCondition: cloaked
+		RequiresCondition: carryall_cloak
+	SpeedMultiplier@ordos-stealth-bonus:
+		Modifier: 130
+		RequiresCondition: faction.guild
+	GrantConditionOnPrerequisite@ordos:
+		Prerequisites: faction.guild
+		Condition: faction.guild
+dunecarryall.buy:
+	Inherits: dunecarryall.reinforce
+	-Carryall:
+	AutoCarryall:
+		BeforeLoadDelay: 10
+		BeforeUnloadDelay: 15
+		LocalOffset: 0, 0, -128
+	Aircraft:
+		MinAirborneAltitude: 400
+	RevealsShroud@lifting_low:
+		Range: 2c512
+		Type: GroundPosition
+		RequiresCondition: !airborne
+	RevealsShroud@lifting_high:
+		Range: 1c256
+		Type: GroundPosition
+		RequiresCondition: !cruising
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 120
+		Prerequisites: anyhq
+dunecarryall.husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Carryall
+	Aircraft:
+		TurnSpeed: 16
+		Speed: 149
+	LeavesTrails:
+		Offsets: -427,0,0
+		Image: smokey
+		MovingInterval: 3
+		StationaryInterval: 3
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: dunecarryall
+dunecarryall.huskair:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Carryall
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 186
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: dunecarryall
+duneorni:
+	Inherits: ^RAPlane
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@reload: ^RearmableAircraft
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 30
+		Prerequisites: duneixhouse, ~disabled
+		Description: Attack Plane armed with\ndual machine guns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Ornihopter
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 20000
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: Dune2QuadLaser
+		LocalOffset: 256,-213,0
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: Dune2QuadLaser
+		LocalOffset: 256,213,0
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	Armament@Bomb:
+		Name: secondary
+		Weapon: Dune2OrniBomb
+		LocalOffset: 256,1,0
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 80
+		PersistentTargeting: false
+	Aircraft:
+		CruiseAltitude: 2560
+		InitialFacing: 768
+		TurnSpeed: 40
+		Speed: 178
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	AmmoPool:
+		Ammo: 18
+		ReloadDelay: 11
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 50
+		Count: 4
+	SelectionDecorations:
+	WithMuzzleOverlay:
+	Contrail:
+		Offset: -853,0,0
+	SpawnActorOnDeath:
+		Actor: duneorni.husk
+	LeavesTrails:
+		Offsets: -853,0,0
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+		RequiresCondition: enable-smoke
+	ProducibleWithLevel:
+		Prerequisites: aircraft.upgraded
+	Selectable:
+		DecorationBounds: 54613, 50944, 0, 3626
+	Voiced:
+		VoiceSet: Dune2VehicleVoice
+	RenderSprites:
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 6
+	GrantConditionOnDamageState@SmokeTrail:
+		Condition: enable-smoke
+
+duneorni.renegade:
+	Inherits: duneorni
+	Inherits@renegaded: ^D2IsRenegadeUnitInfantry
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 30
+		Prerequisites: duneixhouse
+		Description: Attack Plane armed with\ndual machine guns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+	RenderSprites:
+		Image: duneorni
+duneorni.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Ornihopter
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 186
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: duneorni
+
+####################################################################################################
+#		Dune 2 Reinforcement Carryalls
+####################################################################################################
+dunedelivery.dunemtnk:
+	RenderSprites:
+		Image: camera.scan
+		Palette: effect
+	Interactable:
+	EditorOnlyTooltip:
+		Name: (Delivery Target)
+	HiddenUnderFog:
+		Type: CenterPosition
+	Immobile:
+		OccupiesSpace: false
+	RevealsShroud:
+		Range: 5c0
+		Type: CenterPosition
+	DetectCloaked:
+		Range: 3c0
+	BodyOrientation:
+		QuantizedFacings: 1
+	WithSpriteBody:
+	MapEditorData:
+		Categories: System
+	FreeActorWithDelivery@1:
+		Actor: dunemtnk
+		DeliveryOffset: 1,1
+		DeliveringActor: dunecarryall.reinforce
+		Facing: 160
+	FreeActorWithDelivery@3:
+		Actor: dunequad
+		DeliveryOffset: -1,-1
+		DeliveringActor: dunecarryall.reinforce
+		Facing: 160
+####################################################################################################
+#		Dune 2 Starport Units
+####################################################################################################
+dunetrike3:
+	Inherits: dunetrike2
+	Inherits@starport: ^Starport
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: dunespaceport
+		Queue: Vehicle, RAVehicle
+	RenderSprites:
+		Image: duneraider
+
+####################################################################################################
+#		Dune 2 Upgrades
+####################################################################################################
+
+d2_lbarrupgrade1:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Barracks Upgrade 1
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~dunebarr2, ~!d2_lbarrupgrade1
+		Queue: Addons
+		BuildLimit: 1
+		BuildDuration: 375
+		BuildDurationModifier: 100
+		Description: Enables Access to further technologies
+	Valued:
+		Cost: 250
+	RenderSprites:
+		Image: dunebarr2
+	ProvidesPrerequisite@upgradename:
+
+d2_lbarrupgrade2:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Barracks Upgrade 2
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~dunebarr2, ~d2_lbarrupgrade1, ~!d2_lbarrupgrade2
+		Queue: Addons
+		BuildLimit: 1
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: Enables Access to further technologies
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: dunebarr2
+	ProvidesPrerequisite@upgradename:
+
+d2_hbarrupgrade1:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: WOR Upgrade 1
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~dunebarr, ~!d2_hbarrupgrade1
+		Queue: Addons
+		BuildLimit: 1
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: Enables Access to further technologies
+	Valued:
+		Cost: 375
+	RenderSprites:
+		Image: dunebarr
+	ProvidesPrerequisite@upgradename:
+
+d2_hbarrupgrade2:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: WOR Upgrade 2
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~dunebarr, ~d2_hbarrupgrade1, ~!d2_hbarrupgrade2
+		Queue: Addons
+		BuildLimit: 1
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: Enables Access to further technologies
+	Valued:
+		Cost: 750
+	RenderSprites:
+		Image: dunebarr
+	ProvidesPrerequisite@upgradename:
+
+d2_lweapupgrade:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Light Factory Upgrade
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~dunelweap, ~!d2_lweapupgrade
+		Queue: Addons
+		BuildLimit: 1
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: Enables Access to further technologies
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: dunelweap
+	ProvidesPrerequisite@upgradename:
+
+d2_hweapupgrade1:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Heavy Factory Upgrade 1
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~dunehweap, ~!d2_hweapupgrade1
+		Queue: Addons
+		BuildLimit: 1
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: Enables Access to further technologies
+	Valued:
+		Cost: 750
+	RenderSprites:
+		Image: dunehweap
+	ProvidesPrerequisite@upgradename:
+
+d2_hweapupgrade2:
+	AlwaysVisible:
+	Interactable:
+	ScriptTriggers:
+	Tooltip:
+		Name: Heavy Factory Upgrade 2
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~dunehweap, ~d2_hweapupgrade1, ~!d2_hweapupgrade2
+		Queue: Addons
+		BuildLimit: 1
+		BuildDuration: 1250
+		BuildDurationModifier: 100
+		Description: Enables Access to further technologies
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: dunehweap
+	ProvidesPrerequisite@upgradename:

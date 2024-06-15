@@ -1,0 +1,1522 @@
+Player:
+	ExternalCondition@BuildingsOwned:
+		Condition: BuildingsOwned
+	ExternalCondition@BarracksOwned:
+		Condition: BarracksOwned
+	ExternalCondition@FactoryOwned:
+		Condition: FactoryOwned
+	ProvidesPrerequisite@BuildingsOwned:
+		Prerequisite: allowsMCV
+		RequiresCondition: BuildingsOwned < 5
+	ProvidesPrerequisite@BarracksOwned:
+		Prerequisite: allowsMCVZ1
+		RequiresCondition: BarracksOwned >= 5
+	ProvidesPrerequisite@FactoryOwned:
+		Prerequisite: allowsMCVZ2
+		RequiresCondition: FactoryOwned >= 5
+
+World:
+	FactionCA@zrobots:
+		Name: Z Sector
+		InternalName: zrobots
+		Game: Special
+		Side: Factions
+		Description: Z Sector\nFeatures:\n- Mechanized infantry, not affects by tiberium\n- All Units, Structures are free\n- Buildings and defenses do not require power to operate\n- The units only has time production\n-Support powers: Nothing
+	####################################################################################################
+	#		RA
+	####################################################################################################
+	StartingUnits@mcvonlyzrobots:
+		Class: none
+		ClassName: MCV Only
+		Factions: zrobots
+		BaseActor: zmcv
+	StartingUnits@defaultzrobots:
+		Class: light
+		ClassName: Light Support
+		Factions: zrobots
+		BaseActor: zmcv
+		SupportActors: zgrunt,zgrunt,zgrunt,ztough,ztough,zjeep,zpsyco
+	StartingUnits@heavyzrobots:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: zrobots
+		BaseActor: zmcv
+		SupportActors: zgrunt,zgrunt,zgrunt,ztough,ztough,zjeep,zpsyco,zlaser,zlaser,zlaser
+^ZRobotU:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 1
+	Tooltip:
+		Name: Robot
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: barracks
+		Queue: Infantry, RAInfantry
+		Description: General-purpose robot
+	Mobile:
+		Speed: 56
+	Health:
+		HP: 5000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY: ##########
+		Weapon: M16
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: HighV
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: infantry ##########
+	Armament@Grenade:
+		Weapon: ZGrenade
+		LocalOffset: 720,0,90
+		RequiresCondition: zgrenades
+	-DamagedByTerrain:
+	-SpawnActorOnDeath:
+	-TakeCover:
+	ExternalCondition@EMP:
+		TotalCap: 1
+		Condition: empdisable
+	TimedConditionBar@EMP:
+		Condition: empdisable
+		Color: FFFFFF
+	GrantCondition@disable:
+		RequiresCondition: ReaperTrap || chronobeamed || leaflet || empdisable
+	WithColoredOverlay@leaflet:
+		RequiresCondition: leaflet || empdisable
+	Targetable@HEAL:
+		TargetTypes: Heal, Repair, Healing
+	Targetable:
+		TargetTypes: Ground, Infantry, Cyborg
+	Voiced:
+		VoiceSet: ZRobotVoice
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	ExternalCondition@zgrenades:
+		Condition: zgrenades
+^ZArmedBaseBuilding:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	GivesBuildableArea:
+		AreaTypes: building
+	AcceptsDeliveredCash:
+		ValidTypes: NormalCash
+	Capturable:
+		Types: building
+	MustBeDestroyed:
+		RequiredForShortGame: true
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	Turreted:
+		TurnSpeed: 1023
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	RangeMultiplier@Extrarange:
+		Modifier: 115
+	DetectCloaked:
+		Range: 10c0
+		RequiresCondition: !lowpower
+
+zgrunt:
+	Inherits: ^ZRobotU
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 75
+	Tooltip:
+		Name: Grunt
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: zfort
+		BuildDuration: 100
+		Queue: Infantry, RAInfantry
+	Mobile:
+		Speed: 70
+	Health:
+		HP: 5000
+	Armament@PRIMARY: ##########
+		Weapon: ZGruntGun
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: ZGruntGunG
+		MuzzleSequence: garrison-muzzle
+	RenderSprites:
+		Image: zgrunt
+	Voiced:
+		VoiceSet: ZGruntVoice
+
+zpsyco:
+	Inherits: ^ZRobotU
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Psyco
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		BuildDuration: 200
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 12500
+	AutoTarget:
+		ScanRadius: 6
+	Armament@PRIMARY: ##########
+		Weapon: ZPsycoGun
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: ZPsycoGunG
+		MuzzleSequence: garrison-muzzle
+	RenderSprites:
+		Image: zpsyco
+	Voiced:
+		VoiceSet: ZPsycoVoice
+
+zlaser:
+	Inherits: ^ZRobotU
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Laser
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		BuildDuration: 500
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 7500
+	AutoTarget:
+		ScanRadius: 6
+	Armament@PRIMARY: ##########
+		Weapon: ZLaserGun
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: ZLaserGun
+		MuzzleSequence: garrison-muzzle
+	RenderSprites:
+		Image: zlaser
+	Voiced:
+		VoiceSet: ZLaserVoice
+
+zsniper:
+	Inherits: ^ZRobotU
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Sniper
+	Buildable:
+		BuildPaletteOrder: 25
+		Prerequisites: barracks
+		BuildDuration: 250
+	Mobile:
+		Speed: 60
+	Health:
+		HP: 2500
+	AutoTarget:
+		ScanRadius: 6
+	Armament@PRIMARY: ##########
+		Weapon: ZSniper
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: ZSniper
+		MuzzleSequence: garrison-muzzle
+	RenderSprites:
+		Image: zsniper
+	Voiced:
+		VoiceSet: ZSniperVoice
+
+zpyro:
+	Inherits: ^ZRobotU
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Pyro
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		BuildDuration: 300
+	Mobile:
+		Speed: 65
+	Health:
+		HP: 10000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY: ##########
+		Weapon: ZFlamer
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: ZFlamerG
+		MuzzleSequence: garrison-muzzle
+	RenderSprites:
+		Image: zpyro
+	Voiced:
+		VoiceSet: ZPyroVoice
+
+ztough:
+	Inherits: ^ZRobotU
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Tough
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: barracks
+		BuildDuration: 400
+		Queue: Infantry, RAInfantry
+	Mobile:
+		Speed: 50
+	Health:
+		HP: 15000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY: ##########
+		Weapon: ZToughMissile
+	Armament@AA: ##########
+		Weapon: ZToughMissileAA
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: ZToughMissile
+		MuzzleSequence: garrison-muzzle
+	Armament@GARRISONEDAA: ##########
+		Name: garrisoned
+		Weapon: ZToughMissileAA
+	RenderSprites:
+		Image: ztough
+	Voiced:
+		VoiceSet: ZPyroVoice
+
+zjeep:
+	Inherits: ^Vehicle
+	Inherits@GainsExperienceVehicle: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@cargo: ^CargoVehicle
+	Inherits@detect: ^GenericGroundDetector
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 30
+		BuildDurationModifier: 100
+		BuildDuration: 250
+		Prerequisites: barracks
+		Description: Fast scout & anti-infantry vehicle.\nCan carry one infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
+	Valued:
+		Cost: 250
+	Tooltip:
+		Name: Jeep
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 20000
+	Armor:
+		Type: Light
+	Mobile:
+		TurnSpeed: 64
+		Speed: 200
+		PauseOnCondition: notmobile || disabled
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 40
+		Offset: -100,0,128
+	Armament:
+		Weapon: ZJeepGun
+		MuzzleSequence: muzzle
+		LocalOffset: 128,0,43
+	AttackTurreted:
+	WithMuzzleOverlay:
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 1
+		LoadingCondition: notmobile
+	Voiced:
+		VoiceSet: ZRobotVoice
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	WithInfantryBody:
+	WithInfantryBody@top:
+		StandSequences: top
+		MoveSequence: top
+	-WithFacingSpriteBody:
+	WithSpriteTurret:
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 5, 10
+		Range: 2c0, 3c0, 4c0
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+
+zltnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Light Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle, RAVehicle
+		BuildDurationModifier: 100
+		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+		BuildDuration: 500
+	Mobile:
+		Speed: 100
+	Health:
+		HP: 33333
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 28
+		Offset: -1,0,256
+	Armament:
+		Weapon: ZLTCannon
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	Voiced:
+		VoiceSet: ZRobotVoice
+	ThrowsShrapnel:
+		Weapons: ZLTNK_DEBRIS
+		Pieces: 1, 1
+		Range: 2c0, 4c0
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 10, 15
+		Range: 2c0, 3c0, 4c0
+zmtnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Medium Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle, RAVehicle
+		BuildDurationModifier: 100
+		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+		BuildDuration: 750
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 66666
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 28
+		Offset: -1,0,256
+	Armament:
+		Weapon: ZMDCannon
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	Voiced:
+		VoiceSet: ZRobotVoice
+	ThrowsShrapnel:
+		Weapons: ZMTNK_DEBRIS
+		Pieces: 1, 1
+		Range: 2c0, 4c0
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 10, 15
+		Range: 2c0, 3c0, 4c0
+zhtnk:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Heavy Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle, RAVehicle
+		BuildDurationModifier: 100
+		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+		BuildDuration: 1000
+		Prerequisites: zhq
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 50
+		TurnSpeed: 32
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 28
+		Offset: -1,0,256
+	Armament:
+		Weapon: ZHVCannon
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	Voiced:
+		VoiceSet: ZRobotVoice
+	ThrowsShrapnel:
+		Weapons: ZHTNK_DEBRIS
+		Pieces: 1, 1
+		Range: 2c0, 4c0
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 10, 15
+		Range: 2c0, 3c0, 4c0
+zapc:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@cargo: ^CargoVehicle
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: APC
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle, RAVehicle
+		BuildDurationModifier: 100
+		Description: Can Carry one Infantry, changes weapons depend on infantry
+		BuildDuration: 500
+	Mobile:
+		Speed: 100
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 28
+		Offset: -1,0,256
+	Armament:
+		Weapon: ZLTCannon
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 1
+		LoadingCondition: notmobile
+		InitialUnits: zgrunt
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PauseOnCondition: chronobeamed
+	RevealOnFire:
+		ArmamentNames: primary, garrisoned
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 10, 15
+		Range: 2c0, 3c0, 4c0
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+
+zapc.zpsyco:
+	Inherits: zapc
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~botplayer, zbarracks
+	UpdatesPlayerStatistics:
+		OverrideActor: zapc
+	RenderSprites:
+		Image: zapc
+	Cargo:
+		EjectOnDeath: false
+		InitialUnits: zpsyco
+
+zapc.zpyro:
+	Inherits: zapc.zpsyco
+	Cargo:
+		InitialUnits: zpyro
+
+zapc.ztough:
+	Inherits: zapc.zpsyco
+	Cargo:
+		InitialUnits: ztough
+
+zapc.zsniper:
+	Inherits: zapc.zpsyco
+	Cargo:
+		InitialUnits: zsniper
+
+zapc.zlaser:
+	Inherits: zapc.zpsyco
+	Cargo:
+		InitialUnits: zlaser
+
+zmlrs:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Missile Launcher
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Queue: Vehicle, RAVehicle
+		BuildDurationModifier: 100
+		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+		BuildDuration: 1250
+		Prerequisites: zhq
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 2273
+	Armor:
+		Type: Medium
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 28
+		Offset: -122,0,256
+	Armament:
+		Weapon: ZRLMissile
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,-50,90, 720,0,90, 720,50,90
+	Armament@AA:
+		Weapon: ZRLMissileAA
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,-50,90, 720,0,90, 720,50,90
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 10, 15
+		Range: 2c0, 3c0, 4c0
+zgattlingcan:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiTank: ^PrioritizeInfantry
+	Selectable:
+		Bounds: 1024, 1024
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Gattling Cannon
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: barracks
+		Queue: Defence, RADefence
+		Description: Basic Defence.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles
+		BuildDuration: 650
+	Building:
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 48
+		InitialFacing: 224
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: ZGattling
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: ZGattlingAA
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	DetectCloaked:
+		Range: 3c0
+	Power:
+		Amount: 0
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 10, 15
+		Range: 2c0, 3c0, 4c0
+zguncan:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiTank: ^PrioritizeInfantry
+	Selectable:
+		Bounds: 1024, 1024
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Gun Cannon
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: barracks
+		Queue: Defence, RADefence
+		Description: Basic Defence.\n  Strong vs Vehicles\n  Weak vs Infantry
+		BuildDuration: 650
+	Building:
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 48
+		InitialFacing: 224
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: ZDFCannon
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	DetectCloaked:
+		Range: 3c0
+	Power:
+		Amount: 0
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 10, 15
+		Range: 2c0, 3c0, 4c0
+zhotwizer:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiTank: ^PrioritizeInfantry
+	Selectable:
+		Bounds: 1024, 1024
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Howitzer
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: barracks, zhq
+		Queue: Defence, RADefence
+		Description: Long Range Defence.\n  Strong vs Ground\n  Weak vs Aircraft
+		BuildDuration: 900
+	Building:
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 48
+		InitialFacing: 224
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: ZHWCannon
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	DetectCloaked:
+		Range: 3c0
+	Power:
+		Amount: 0
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 10, 15
+		Range: 2c0, 3c0, 4c0
+zmissilecan:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiTank: ^PrioritizeInfantry
+	Selectable:
+		Bounds: 1024, 1024
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Missile Gun
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: barracks, zhq
+		Queue: Defence, RADefence
+		Description: Anti Tank Defence.\n  Strong vs Vehicles, Aircraft\n  Weak vs Aircraft
+		BuildDuration: 850
+	Building:
+	Health:
+		HP: 50000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 48
+		InitialFacing: 224
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: ZCANMissile
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: ZCANMissileAA
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	DetectCloaked:
+		Range: 3c0
+	Power:
+		Amount: 0
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 10, 15
+		Range: 2c0, 3c0, 4c0
+zgrenadebox:
+	Inherits: ^BaseBuilding
+	Selectable:
+		Bounds: 1024, 1024
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 175
+		Prerequisites: zbarracks
+		Description: Trains Attack Dogs.
+		BuildDuration: 400
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Grenade Box
+	-GivesBuildableArea:
+	Health:
+		HP: 30000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	ProximityExternalCondition@zgrenades:
+		Range: 6c0
+		Condition: zgrenades
+		RequiresCondition: !disabled && !lowpower
+	WithRangeCircle:
+		Range: 6c0
+		Type: zgrenades
+		RequiresCondition: !disabled
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: zgrenadebox
+	WithBuildingBib:
+		HasMinibib: true
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	ThrowsShrapnel@2:
+		Weapons: ZSPARK1, ZSPARK2, ZSPARK3
+		Pieces: 10, 15
+		Range: 2c0, 3c0, 4c0
+zmcv:
+	Inherits: ^Vehicle
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+	Inherits@conyard: ^Conyard
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Construction Crane (Z)
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: zweap, zfix
+		Queue: Building, RABuilding
+		BuildDurationModifier: 100
+		Description: Deploys into another Construction Yard.\n  Unarmed
+		BuildDuration: 4500
+	Selectable:
+		Priority: 4
+		DecorationBounds: 1536, 1536
+	Mobile:
+		Speed: 71
+		Locomotor: heavywheeled
+	Health:
+		HP: 300000
+	Repairable:
+		HpPerStep: 2182
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Transforms:
+		IntoActor: zfort
+		Offset: -1,-1
+		Facing: 432
+		TransformSounds: constru2.aud, hvydoor1.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: zmcv
+	-WithFacingSpriteBody:
+	WithInfantryBody:
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmzrobots
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	Voiced:
+		VoiceSet: ZRobotVoice
+
+zmcv_bot:
+	Inherits: zmcv
+	Buildable:
+		BuildLimit: 1
+		Prerequisites: zweap, zfix, ~botplayer, allowsMCV, allowsMCVZ1, allowsMCVZ2
+	RenderSprites:
+		Image: zmcv
+
+zfort:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
+	Inherits: ^ZArmedBaseBuilding
+	Inherits@shape: ^5x4Shape
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Selectable:
+		Bounds: 218453, 174762
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Fort
+	Building:
+		Footprint: xxxxx xxxxx xxxxx xxxxx x===x
+		Dimensions: 5,5
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 500000
+	Armor:
+		Type: Concrete
+	DamageMultiplier@armor:
+		Modifier: 50
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building, Defence
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence
+		RequiresCondition: classicproductionqueues
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@GDIBuilding:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionQueue@GDIDefense:
+		Type: Defence
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	BaseBuilding:
+	ProductionBar@BuildingGDI:
+		ProductionType: Building
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceGDI:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingGDI:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceGDI:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 20c0
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: zfort
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 1000
+		Prerequisites: ~wip-content
+		Description: Builds structures
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@factiongdi:
+		Prerequisite: mmzrobots
+	RenderSprites:
+		Image: zfort
+	RallyPoint:
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 2,4
+	Production:
+		Produces: Addon.Zfort
+		RequiresCondition: !zgattlingcan && !zguncan && !zhotwizer && !zmissilecan
+	ProductionQueue:
+		Type: Addon.Zfort
+		Group: Addon
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@zgattlingcan:
+		Condition: zgattlingcan
+		Actors: zfort.zgattlingcan
+	GrantConditionOnProduction@zguncan:
+		Condition: zguncan
+		Actors: zfort.zguncan
+	GrantConditionOnProduction@zhotwizer:
+		Condition: zhotwizer
+		Actors: zfort.zhotwizer
+	GrantConditionOnProduction@zmissilecan:
+		Condition: zmissilecan
+		Actors: zfort.zmissilecan
+	Turreted:
+		Turret: primary
+		TurnSpeed: 20
+		Offset: 555,1800,128
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 555,-1800,128
+		TurnSpeed: 20
+	WithSpriteTurret@PRIMARY:
+		Sequence: turret
+		Turret: primary
+		RequiresCondition: zgattlingcan
+	WithSpriteTurret@SECONDARY:
+		Sequence: turret
+		Turret: secondary
+		RequiresCondition: zgattlingcan
+	WithSpriteTurret@zguncan1:
+		Sequence: zguncan
+		Turret: primary
+		RequiresCondition: zguncan
+	WithSpriteTurret@zguncan2:
+		Sequence: zguncan
+		Turret: secondary
+		RequiresCondition: zguncan
+	WithSpriteTurret@zhotwizer1:
+		Sequence: zhotwizer
+		Turret: primary
+		RequiresCondition: zhotwizer
+	WithSpriteTurret@zhotwizer2:
+		Sequence: zhotwizer
+		Turret: secondary
+		RequiresCondition: zhotwizer
+	WithSpriteTurret@zmissilecan1:
+		Sequence: zmissilecan
+		Turret: primary
+		RequiresCondition: zmissilecan
+	WithSpriteTurret@zmissilecan2:
+		Sequence: zmissilecan
+		Turret: secondary
+		RequiresCondition: zmissilecan
+	Armament:
+		Weapon: ZGattling
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zgattlingcan
+		Turret: primary
+	Armament@AA:
+		Weapon: ZGattlingAA
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zgattlingcan
+		Turret: primary
+	Armament@2:
+		Weapon: ZGattling
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zgattlingcan
+		Name: secondary
+		Turret: secondary
+	Armament@AA2:
+		Weapon: ZGattlingAA
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zgattlingcan
+		Name: secondary
+		Turret: secondary
+	Armament@can:
+		Weapon: ZDFCannon
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zguncan
+		Turret: primary
+	Armament@can2:
+		Weapon: ZDFCannon
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zguncan
+		Name: secondary
+		Turret: secondary
+	Armament@miss:
+		Weapon: ZCANMissile
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zmissilecan
+		Turret: primary
+	Armament@missAA:
+		Weapon: ZCANMissileAA
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zmissilecan
+		Turret: primary
+	Armament@miss2:
+		Weapon: ZCANMissile
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zmissilecan
+		Name: secondary
+		Turret: secondary
+	Armament@missAA2:
+		Weapon: ZCANMissileAA
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zmissilecan
+		Name: secondary
+		Turret: secondary
+	Armament@hot:
+		Weapon: ZHWCannon
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zhotwizer
+		Turret: primary
+	Armament@hot2:
+		Weapon: ZHWCannon
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+		RequiresCondition: zhotwizer
+		Name: secondary
+		Turret: secondary
+zfort.zgattlingcan:
+	Tooltip:
+		Name: Gattling Cannon
+	Buildable:
+		Prerequisites: barracks
+		BuildPaletteOrder: 10
+		Queue: Addon.Zfort
+		Description: Adds Gattling Cannons to Fort
+		BuildDurationModifier: 100
+		BuildDuration: 1000
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: zgattlingcan
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+zfort.zguncan:
+	Tooltip:
+		Name: Gun Lascannon
+	Buildable:
+		Prerequisites: barracks
+		BuildPaletteOrder: 10
+		Queue: Addon.Zfort
+		Description: Adds Gattling Gun to Fort
+		BuildDurationModifier: 100
+		BuildDuration: 1000
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: zguncan
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+zfort.zhotwizer:
+	Tooltip:
+		Name: Howitzer
+	Buildable:
+		Prerequisites: barracks
+		BuildPaletteOrder: 10
+		Queue: Addon.Zfort
+		Description: Adds Hotwizers to Fort
+		BuildDurationModifier: 100
+		BuildDuration: 1500
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: zhotwizer
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+zfort.zmissilecan:
+	Tooltip:
+		Name: Missiles Gun
+	Buildable:
+		Prerequisites: barracks
+		BuildPaletteOrder: 10
+		Queue: Addon.Zfort
+		Description: Adds Missiles Guns to Fort
+		BuildDurationModifier: 100
+		BuildDuration: 1500
+	Valued:
+		Cost: 0
+	RenderSprites:
+		Image: zmissilecan
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+zbarracks:
+	GrantExternalConditionToOwner@BarracksOwned:
+		Condition: BarracksOwned
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@gensound: ^GeneralsDamageBuilding
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Robot Factory
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: zfort
+		Queue: Building, RABuilding
+		Description: Trains infantry
+		BuildDurationModifier: 100
+		BuildDuration: 750
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	#Production@Upgrades:
+	#	Produces: InfantryUpgrades.ZROBOTS
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+
+zweap:
+	GrantExternalConditionToOwner@FactoryOwned:
+		Condition: FactoryOwned
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@gensound: ^GeneralsDamageBuilding
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Vehicle Factory
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: zbarracks
+		Queue: Building, RABuilding
+		Description: Trains infantry
+		BuildDurationModifier: 100
+		BuildDuration: 1500
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 200000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	#Production@Upgrades:
+	#	Produces: InfantryUpgrades.ZROBOTS
+	Production@NORMAL:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle
+		RequiresCondition: classicproductionqueues
+	ProductionQueue:
+		Type: Vehicle
+		DisplayOrder: 2
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+zhq:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@spy: ^InfiltrateForSupportPowerReset
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Communications Center
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: zweap
+		Queue: Building, RABuilding
+		Description: Provides radar and Air Strike support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	SelectionDecorations:
+	WithSpriteBody:
+		PauseOnCondition: lowpower
+	Health:
+		HP: 150000
+	RevealsShroud:
+		Range: 10c0
+	ProvidesRadar:
+		RequiresCondition: !jammed && !lowpower
+	RenderDetectionCircle:
+	DetectCloaked:
+		Range: 5c0
+		RequiresCondition: !lowpower
+	Power:
+		Amount: 0
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	ProductionCostMultiplier@free:
+		Multiplier: 0
+	ProvidesPrerequisite@buildingname:
+	WithIdleOverlay@DISH:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-dish
+
+zfix:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Repair Facility
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: zweap
+		Queue: Building, RABuilding
+		Description: Repairs vehicles
+		BuildDurationModifier: 100
+		BuildDuration: 1500
+	Building:
+		Footprint: xxx x+x +++
+		Dimensions: 3,3
+	Selectable:
+		Bounds: 116480, 61866, 0, 5461
+		DecorationBounds: 131072, 87381
+	SelectionDecorations:
+	Health:
+		HP: 150000
+	RevealsShroud:
+		Range: 5c0
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 15
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	RallyPoint:
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	ProductionCostMultiplier@free:
+		Multiplier: 0

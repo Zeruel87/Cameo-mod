@@ -1,0 +1,5425 @@
+World:
+	FactionCA@gdi:
+		Name: GDI TD #faction-td-gdi.name
+		InternalName: gdi
+		Game: Tiberian Dawn
+		Side: GDI
+		Description: GDI from Tiberian Dawn#faction-td-gdi.description
+	FactionCA@nod:
+		Name: Nod TD #faction-td-nod.name
+		InternalName: nod
+		Game: Tiberian Dawn
+		Side: Nod
+		Description: Nod from Tiberian Dawn #faction-td-nod.description
+	FactionCA@Randomcnc:
+		Name: Random #faction-td-random.name
+		InternalName: Randomcnc
+		RandomFactionMembers: gdi, nod
+		Game: Tiberian Dawn
+		Side: Random
+		Description: Random Tiberian Dawn faction #faction-td-random.description
+
+	####################################################################################################
+	#		MPSTARTUNITS
+	####################################################################################################
+
+	StartingUnits@mcvonlygdi:
+		Class: none
+		ClassName: MCV Only
+		Factions: gdi
+		BaseActor: mcv.gdi
+	StartingUnits@defaultgdia:
+		Class: light
+		ClassName: Light Support
+		Factions: gdi
+		BaseActor: mcv.gdi
+		SupportActors: e1,e1,e1,e1,e1,e3,e3,jeep
+	StartingUnits@heavygdia:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: gdi
+		BaseActor: mcv.gdi
+		SupportActors: e1,e1,e1,e1,e3,e3,jeep,mtnk,mtnk
+	StartingUnits@heavygdib:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: gdi
+		BaseActor: mcv.gdi
+		SupportActors: e1,e1,e1,e1,e1,e2,e2,e2,e3,e3,apc,mtnk
+	StartingUnits@mcvonlynod:
+		Class: none
+		ClassName: MCV Only
+		Factions: nod
+		BaseActor: mcv.nod
+	StartingUnits@defaultnoda:
+		Class: light
+		ClassName: Light Support
+		Factions: nod
+		BaseActor: mcv.nod
+		SupportActors: e1,e1,e1,e1,e1,e1,e3,e3,bggy
+	StartingUnits@heavynoda:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: nod
+		BaseActor: mcv.nod
+		SupportActors: e1,e1,e1,e1,e3,e3,ltnk,ltnk,ftnk
+	StartingUnits@heavynodb:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: nod
+		BaseActor: mcv.nod
+		SupportActors: e1,e1,e1,e1,e1,e3,e3,e3,ftnk,ftnk
+
+Player:
+	ExternalCondition@BuildingsOwned:
+		Condition: BuildingsOwned
+	ProvidesPrerequisite@BuildingsOwned:
+		Prerequisite: allowsMCV
+		RequiresCondition: BuildingsOwned < 5
+	PlugSpawnerBotModule@ionc:
+		Plug: eye.ionc
+		Pluggables: eye
+		Interval: 1000
+		RequiresCondition: boteye
+	GrantConditionOnPrerequisite@ionc:
+		Condition: boteye
+		Prerequisites: eye, botplayer, techlevel.superweapons
+	PlugSpawnerBotModule@nodnuke:
+		Plug: tmpl.nuke
+		Pluggables: tmpl
+		Interval: 1000
+		RequiresCondition: bottmpl
+	GrantConditionOnPrerequisite@nodnuke:
+		Condition: bottmpl
+		Prerequisites: tmpl, botplayer, techlevel.superweapons
+
+^GainsExperienceTD:
+	GainsExperience:
+		LevelUpNotification: LevelUp
+		Conditions:
+			200: rank-veteran
+			400: rank-veteran
+			600: rank-veteran
+			800: rank-veteran
+
+^GainsExperienceTDBuilding:
+	GainsExperience:
+		LevelUpNotification: LevelUp
+		Conditions:
+			250: rank-veteran
+			500: rank-veteran
+			750: rank-veteran
+			1000: rank-veteran
+
+####################################################################################################
+#		Tiberian Dawn
+####################################################################################################
+
+E1:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: actor-e1.tdname
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~cncbarracks, ~!upgdishotgunner
+		Queue: Infantry, RAInfantry
+		Description: actor-e1.description
+	Mobile:
+		Speed: 60
+	Health:
+		HP: 13000
+	Armament@PRIMARY: ##########
+		Weapon: M16
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: M16
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+	RenderSprites:
+		PlayerPalette: raplayer
+
+E1R1:
+	Inherits: E1
+	-Buildable:
+	ProducibleWithLevel:
+		InitialLevels: 1
+	UpdatesPlayerStatistics:
+		OverrideActor: e1
+	RenderSprites:
+		Image: e1
+	-MapEditorData:
+
+E2:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^LightInfantryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: actor-e2.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~pyle, ~!upgdiempgrenadier
+		Queue: Infantry, RAInfantry
+		Description: actor-e2.description
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 8000
+	Armament:
+		Weapon: Grenade
+		LocalOffset: 0,0,427
+		FireDelay: 15
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Grenade
+	TakeCover:
+		ProneOffset: 300,0,-227
+	WithInfantryBody:
+		DefaultAttackSequence: throw
+	Explodes:
+		Weapon: Grenade
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+	RenderSprites:
+		PlayerPalette: raplayer
+
+E3:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: actor-e3.tdname
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~cncbarracks, ~!upchemicalrocket, ~!upgdimissilesoldier
+		Queue: Infantry, RAInfantry
+		Description: actor-e3.description
+	Mobile:
+		Speed: 50
+	Health:
+		HP: 9000
+	Armament@PRIMARY: ##########
+		Weapon: Rockets
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: Rockets
+	TakeCover:
+		ProneOffset: 180,0,-200
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+	RenderSprites:
+		PlayerPalette: raplayer
+
+E4:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: actor-e4.tdname
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~hq.nod, ~!upblackhandflamer
+		Queue: Infantry, RAInfantry
+		Description: actor-e4.description
+	Mobile:
+		Speed: 70
+	Health:
+		HP: 15000
+	ChangesHealth@SelfHealing:
+		Step: 6
+	Armament:
+		Weapon: Flamethrower
+		LocalOffset: 341,0,256
+		FireDelay: 3
+		MuzzleSequence: muzzle
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Flamethrower
+		MuzzleSequence: muzzle
+	Explodes:
+		Weapon: Flamethrower
+	TakeCover:
+		ProneOffset: 190,0,-198
+	WithMuzzleOverlay:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+	RenderSprites:
+		PlayerPalette: raplayer
+
+E5:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Chemical Warrior
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~tmpl
+		Queue: Infantry, RAInfantry
+		Description: Advanced general-purpose infantry.\n  Strong vs all Ground units
+	Mobile:
+		Speed: 65
+		Locomotor: chem
+	Health:
+		HP: 30000
+	ChangesHealth@SelfHealing:
+		Step: 12
+	Armament:
+		Weapon: Chemspray
+		LocalOffset: 341,0,256
+		FireDelay: 3
+		MuzzleSequence: muzzle
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Chemspray
+		MuzzleSequence: muzzle
+	Explodes:
+		Weapon: SmallTiberiumExplosion
+		EmptyWeapon: SmallTiberiumExplosion
+		Chance: 100
+	TakeCover:
+		ProneOffset: 190,0,-190
+	WithMuzzleOverlay:
+	-DamagedByTerrain:
+	Targetable@Immune:
+		TargetTypes: ToxinImmune
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2,idle3,idle4
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+	RenderSprites:
+		PlayerPalette: raplayer
+
+E6:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@engineer: ^EngineerDefaultWeapons
+	Inherits@isengineer: ^IsEngineer
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Engineer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		BuildDuration: 250
+		BuildDurationModifier: 100
+		Prerequisites: ~cncbarracks
+		Queue: Infantry, RAInfantry
+		Description: Infiltrates and captures enemy structures.\nRemoves attached explosives from units.\n  Unarmed
+	Mobile:
+		Speed: 50
+	Health:
+		HP: 5000
+	Passenger:
+		CustomPipType: engineer
+	Garrisoner:
+		CustomPipType: engineer
+	InstantlyRepairs:
+		Types: building
+		EnterBehaviour: Dispose
+		RepairSound: urepair.wav
+	InstantlyRepairs@Tech:
+		Types: tech
+		EnterBehaviour: Dispose
+		RepairSound: urepair.wav
+	InstantlyRepairs@Civ:
+		Types: civ
+		ValidRelationships: Ally, Neutral
+		EnterBehaviour: Dispose
+		RepairSound: urepair.wav
+	RepairsBridges:
+		EnterBehaviour: Exit
+	CaptureManager:
+	GrantConditionOnPrerequisite@GLOBALREUSABLEENGINEER:
+		Condition: global-reusable-engineers
+		Prerequisites: global-reusable-engineers
+	Captures:
+		RequiresCondition: !global-reusable-engineers
+		CaptureTypes: building, defense, tech
+		PlayerExperience: 500
+		ConsumedByCapture: True
+	Captures@REUSABLE:
+		RequiresCondition: global-reusable-engineers
+		CaptureTypes: building, defense, tech
+		PlayerExperience: 500
+		CaptureDelay: 375
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+	Selectable:
+		Priority: 5
+		Class: e6
+	Voiced:
+		VoiceSet: EngineerVoice
+	AttackFrontal:
+		FacingTolerance: 0
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+	RenderSprites:
+		PlayerPalette: raplayer
+
+RMBO:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^HeroInfantryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
+	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Commando
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildLimit: 1
+		BuildPaletteOrder: 50
+		Prerequisites: ~tdtechcenter, ~!upnodvenom, ~!upgdihavoc
+		Queue: Infantry, RAInfantry
+		Description: template-commando.description
+	Mobile:
+		Speed: 70
+		Voice: Move
+	Guard:
+		Voice: Move
+	Health:
+		HP: 50000
+	ChangesHealth@SelfHealing:
+		Step: 20
+	Passenger:
+		Voice: Move
+	Armament:
+		Weapon: Sniper
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: Sniper
+	Armament@c4:
+		Weapon: TanyaAttach
+		Name: secondary
+		Cursor: c4
+		OutsideRangeCursor: c4
+		Voice: Demolish
+	Armament@c4building:
+		Weapon: GenericC4
+		Name: secondary
+		Cursor: c4
+		OutsideRangeCursor: c4
+		Voice: Demolish
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	AttackMove:
+		Voice: Attack
+	WithInfantryBody:
+		-DefaultAttackSequence:
+		AttackSequences:
+			primary: shoot
+		IdleSequences: idle1,idle2,idle3
+	AnnounceOnKill:
+	ProvidesPrerequisite@rmbo:
+	Voiced:
+		VoiceSet: CommandoVoice
+
+MCV:
+	Inherits: ^Vehicle
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@mcv: ^MCV
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Mobile Construction Vehicle
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~disabled
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Selectable:
+		DecorationBounds: 1536, 1536
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+		Locomotor: heavywheeled
+	Health:
+		HP: 300000
+	Repairable:
+		HpPerStep: 15000
+	ChangesHealth@SelfHealing:
+		Step: 120
+	Armor:
+		Type: Medium
+	Transforms:
+		IntoActor: fact
+		Offset: -1,-1
+		Facing: 432
+		TransformSounds: constru2.aud, hvydoor1.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	MustBeDestroyed:
+		RequiredForShortGame: true
+	BaseBuilding:
+	Explodes:
+		Weapon: UnitExplodeBig
+	#SpawnActorOnDeath:
+	#	Actor: MCV.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	SelectionDecorations:
+
+MCV.GDI:
+	Inherits@mcv: MCV
+	Tooltip:
+		Name: GDI Mobile Construction Vehicle
+	Buildable:
+		Prerequisites: ~fix.gdi
+		Queue: Vehicle, RAVehicle
+	Transforms:
+		IntoActor: fact.gdi
+	RenderSprites:
+		Image: mcv
+
+MCV.NOD:
+	Inherits@mcv: MCV
+	Tooltip:
+		Name: Nod Mobile Construction Vehicle
+	Buildable:
+		Prerequisites: ~fix.nod
+		Queue: Vehicle, RAVehicle
+	Transforms:
+		IntoActor: fact.nod
+	RenderSprites:
+		Image: mcv
+
+HARV:
+	Inherits: ^Tank
+	Inherits@Template: ^HarvesterTemplate
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Harvester
+		GenericName: Harvester
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~proc, ~!upstealthsoldier
+		Queue: Vehicle, RAVehicle
+		Description: Collects Tiberium for processing.\n  Unarmed
+	Selectable:
+		Priority: 7
+		DecorationBounds: 1536, 1536
+	Harvester:
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 25
+		SearchFromHarvesterRadius: 10
+		EmptyCondition: no-tiberium
+	StoresResources:
+		Capacity: 30
+	Mobile:
+		Speed: 60
+		TurnSpeed: 12
+	Health:
+		HP: 150000
+	Repairable:
+		HpPerStep: 7500
+	ChangesHealth@SelfHealing:
+		Step: 60
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 5000
+	#SpawnActorOnDeath:
+	#	Actor: HARV.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	WithHarvestAnimation:
+	WithDockingAnimation:
+	Explodes:
+		RequiresCondition: !no-tiberium
+		Weapon: TiberiumExplosion
+	Explodes@empty:
+		RequiresCondition: no-tiberium
+		Weapon: UnitExplodeHarvEmpty
+	SelectionDecorations:
+	WithStoresResourcesPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+
+APC:
+	Inherits: ^Tank
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@cargo: ^CargoVehicle
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@botmicro: ^BotAutoDeployTransport
+	Valued:
+		Cost: 600
+	ProductionCostMultiplier:
+		Multiplier: 200
+	Tooltip:
+		Name: GDI APC
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: apc
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~pyle, ~!upgdiassaultapc
+		Queue: Vehicle, RAVehicle
+		Description: Armed infantry transport.\nCan attack Aircraft.\n  Strong vs Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 125
+		TurnSpeed: 25
+	Health:
+		HP: 40000
+	Repairable:
+		HpPerStep: 2000
+	ChangesHealth@SelfHealing:
+		Step: 16
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 25
+	Armament@PRIMARY:
+		Weapon: APCGun
+		Recoil: 96
+		RecoilRecovery: 18
+		LocalOffset: 85,85,299, 85,-85,299
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: APCGun.AA
+		Recoil: 96
+		RecoilRecovery: 18
+		LocalOffset: 85,85,299, 85,-85,299
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Cargo:
+		InitialUnits: e1, e1, e1, e1, e2, e2, e3, e3
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 8
+	Explodes:
+		Weapon: UnitExplode
+	#SpawnActorOnDeath:
+	#	Actor: APC.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	Selectable:
+		Class: apc
+	RenderSprites:
+		Image: apc
+
+ARTY:
+	Inherits: ^Tank
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Nod Artillery
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~hq.nod, ~!upnodspecter
+		Queue: Vehicle, RAVehicle
+		Description: Long-range artillery.\n  Strong vs Infantry, Vehicles and Buildings
+	Mobile:
+		Speed: 55
+		TurnSpeed: 11
+		Locomotor: lighttracked
+	Health:
+		HP: 16000
+	Repairable:
+		HpPerStep: 800
+	Armor:
+		Type: Light
+	Armament:
+		Weapon: ArtilleryShell
+		LocalOffset: 624,0,208
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		TargetFrozenActors: True
+		FacingTolerance: 0
+	WithMuzzleOverlay:
+	AutoTarget:
+		InitialStanceAI: Defend
+	#SpawnActorOnDeath:
+	#	Actor: ARTY.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	Explodes:
+		Weapon: ArtilleryShell
+
+FTNK:
+	Inherits: ^Tank
+	Inherits@Template: ^LineBreakerTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Flame Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~hq.nod, ~!upnodftnk2
+		Queue: Vehicle, RAVehicle
+		Description: Heavily armored flame-throwing vehicle.\n  Strong vs Infantry, Buildings and Vehicles\n  Weak vs Tanks
+	Mobile:
+		Speed: 85
+		TurnSpeed: 17
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	Armor:
+		Type: Heavy
+	Armament:
+		Weapon: BigFlamer
+		LocalOffset: 512,128,42, 512,-128,42
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	WithMuzzleOverlay:
+	Explodes:
+		Weapon: FlametankExplode
+	#SpawnActorOnDeath:
+	#	Actor: FTNK.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+
+BGGY:
+	Inherits: ^Vehicle
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Nod Buggy
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~afld, ~!upnodbuggy2
+		Queue: Vehicle, RAVehicle
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		Speed: 200
+		TurnSpeed: 40
+	Health:
+		HP: 20000
+	Repairable:
+		HpPerStep: 1000
+	Turreted:
+		TurnSpeed: 40
+		Offset: -43,0,128
+	Armament:
+		Weapon: MachineGun
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplodeSmall
+	#SpawnActorOnDeath:
+	#	Actor: BGGY.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+
+JEEP:
+	Inherits: ^Vehicle
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Humvee
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~weap, ~!upgdihumvee
+		Queue: Vehicle, RAVehicle
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Mobile:
+		Speed: 150
+		TurnSpeed: 30
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 1250
+	Turreted:
+		TurnSpeed: 30
+		Offset: -85,0,192
+	Armament:
+		Weapon: MachineGunH
+		LocalOffset: 171,0,85
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplodeSmall
+	#SpawnActorOnDeath:
+	#	Actor: JEEP.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+
+BIKE:
+	Inherits: ^Vehicle
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Recon Bike
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~afld, ~!upchemicalbike
+		Queue: Vehicle, RAVehicle
+		Description: Fast scout vehicle, armed with\nrockets.\nCan attack Aircraft.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+	Mobile:
+		Speed: 200
+		TurnSpeed: 40
+	Health:
+		HP: 11000
+	Repairable:
+		HpPerStep: 550
+	Armor:
+		Type: Light
+	Armament:
+		Weapon: BikeRockets
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: BikeRocketsAA
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	WithMuzzleOverlay:
+	Explodes:
+		Weapon: UnitExplodeSmall
+	#SpawnActorOnDeath:
+	#	Actor: BIKE.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+
+LTNK:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Nod Light Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~afld, ~!upnodltnk2
+		Queue: Vehicle, RAVehicle
+		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+	Mobile:
+		Speed: 110
+		TurnSpeed: 22
+	Health:
+		HP: 80000
+	Repairable:
+		HpPerStep: 4000
+	ChangesHealth@SelfHealing:
+		Step: 32
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 22
+	Armament:
+		Weapon: 70mm
+		Recoil: 85
+		RecoilRecovery: 17
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplode
+	#SpawnActorOnDeath:
+	#	Actor: LTNK.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	Selectable:
+		DecorationBounds: 786, 786, 0, 0
+
+MTNK:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: GDI Medium Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~weap, ~!upgdipredator
+		Queue: Vehicle, RAVehicle
+		Description: General-Purpose GDI Tank.\n  Strong vs Tanks, Vehicles\n  Weak vs Infantry
+	Mobile:
+		Speed: 80
+		TurnSpeed: 16
+	Health:
+		HP: 120000
+	Repairable:
+		HpPerStep: 6000
+	ChangesHealth@SelfHealing:
+		Step: 48
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 16
+	Armament:
+		Weapon: 120mm
+		Recoil: 128
+		RecoilRecovery: 26
+		LocalOffset: 768,0,90
+		MuzzleSequence: muzzle
+	Armament@Missile:
+		Weapon: M1A1Missiles
+		Recoil: 64
+		RecoilRecovery: 32
+		LocalOffset: 512,256,128
+		MuzzleSequence: muzzle
+		FireDelay: 10
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: UnitExplode
+	#SpawnActorOnDeath:
+	#	Actor: MTNK.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+
+HTNK:
+	Inherits: ^Tank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: GDI Mammoth Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~eye, ~!upgdimammoth3
+		Queue: Vehicle, RAVehicle
+		Description: Heavily armored GDI Tank.\nCan attack Aircraft.\n  Strong vs Everything
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 60
+		TurnSpeed: 12
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 160000
+	Repairable:
+		HpPerStep: 8000
+	ChangesHealth@SelfHealing:
+		Step: 72
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 12
+	Armament@PRIMARY:
+		Weapon: 120mmDual
+		LocalOffset: 900,180,340, 900,-180,340
+		Recoil: 170
+		RecoilRecovery: 35
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: MammothMissiles
+		LocalOffset: -85,384,340, -85,-384,340
+		LocalYaw: -75, 75
+		Recoil: 40
+		RecoilRecovery: 20
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Name: secondary
+		Weapon: MammothMissilesAA
+		LocalOffset: -85,384,340, -85,-384,340
+		LocalYaw: -75, 75
+		Recoil: 40
+		RecoilRecovery: 20
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	Explodes:
+		Weapon: UnitExplodeBig
+	#SpawnActorOnDeath:
+	#	Actor: HTNK.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1536, 1536, 0, -128
+
+MLRS:
+	Inherits: ^Tank
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Rocket Launcher
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~hq.gdi
+		Queue: Vehicle, RAVehicle
+		Description: Long range rocket artillery.\nCan also target air units.\nStrong vs Everything.
+	Mobile:
+		Speed: 80
+		TurnSpeed: 16
+	Health:
+		HP: 24000
+	Repairable:
+		HpPerStep: 900
+	Armor:
+		Type: Light
+	Turreted:
+		TurnSpeed: 16
+		Offset: -256,0,128
+	Armament@PRIMARY:
+		Weapon: 227mm
+		LocalOffset: 213,128,0, 213,-128,0
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Weapon: 227mmAA
+		LocalOffset: 213,-128,0, 213,128,0
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithSpriteTurret:
+	WithMuzzleOverlay:
+	Explodes:
+		Weapon: ArtilleryShell
+	#SpawnActorOnDeath:
+	#	Actor: MSAM.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	RenderSprites:
+		Image: msam
+	WithTurretAimAnimation:
+		Sequence: aim
+	GrantConditionOnAttack:
+		Condition: firing
+		RevokeDelay: 5
+	SpeedMultiplier@firing:
+		RequiresCondition: firing
+		Modifier: 50
+
+MSSM:
+	Inherits: ^Tank
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: SSM Launcher
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~tmpl, ~!upchemicalssmlauncher
+		Queue: Vehicle, RAVehicle
+		Description: Long-range rocket artillery.\n  Strong vs Buildings\n  Weak vs Aircraft
+		Icon: icon
+	Mobile:
+		Speed: 100
+		TurnSpeed: 20
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 1364
+	Armor:
+		Type: Light
+	Turreted:
+		TurnSpeed: 20
+		Offset: -128,0,128
+		RealignDelay: 0
+	Armament:
+		Weapon: HonestJohn
+		LocalOffset: 0,171,0, 0,-171,0
+		MuzzleSequence: muzzle
+	AmmoPool:
+		Ammo: 2
+		AmmoCondition: ammo
+	AttackTurreted:
+	WithSpriteTurret:
+		RequiresCondition: ammo > 1
+	WithSpriteTurret@OneMissile:
+		RequiresCondition: ammo == 1
+		Sequence: turret1
+	WithSpriteTurret@NoMissiles:
+		RequiresCondition: !ammo
+		Sequence: turret0
+	WithMuzzleOverlay:
+	#SpawnActorOnDeath:
+	#	Actor: MLRS.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	ReloadAmmoPool:
+		Delay: 125
+		Count: 1
+	RenderSprites:
+		Image: mlrs
+	Explodes:
+		Weapon: HonestJohn
+		EmptyWeapon: ArtilleryShell
+	RenderRangeCircle:
+		RangeCircleType: vehicle
+	KeepsDistance:
+		Distance: 8
+
+STNK:
+	Inherits: ^Vehicle
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@cloak: ^CloakedVehicle
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Stealth Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 90
+		Prerequisites: ~tmpl, ~!upchemicalstealthtank
+		Queue: Vehicle, RAVehicle
+		Description: Long-range missile tank that can cloak.\nCan attack Aircraft.\nHas weak armor. Can be spotted by infantry and defense structures.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry.
+	Mobile:
+		Locomotor: heavywheeled
+		Speed: 150
+		TurnSpeed: 30
+	Health:
+		HP: 26000
+	Repairable:
+		HpPerStep: 1300
+	Armor:
+		Type: Light
+	Cloak:
+		InitialDelay: 100
+		CloakDelay: 50
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+	Armament:
+		Weapon: StealthTankMissiles
+		LocalOffset: 213,43,128, 213,-43,128
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: StealthTankMissilesAA
+		LocalOffset: 213,43,128, 213,-43,128
+		MuzzleSequence: muzzle
+	AttackFrontal:
+	# 	FacingTolerance: 0
+	# AutoTarget:
+	# 	InitialStance: HoldFire
+	# 	InitialStanceAI: ReturnFire
+	#SpawnActorOnDeath:
+	#	Actor: STNK.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	WithMuzzleOverlay:
+	Explodes:
+		Weapon: UnitExplode
+	-MustBeDestroyed:
+
+TRAN:
+	Inherits: ^Helicopter
+	Inherits@cargo: ^CargoAircraft
+	Inherits@bot: ^BotAutoDeployUnarmedAirTransport
+	Valued:
+		Cost: 1000
+	ProductionCostMultiplier:
+		Multiplier: 150
+	Tooltip:
+		Name: Chinook Transport
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: tran
+	Buildable:
+		BuildPaletteOrder: 10
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Prerequisites: ~hpad, ~botplayer
+		Queue: Aircraft, RAAircraft
+		Description: Fast Infantry Transport Helicopter.\n  Unarmed
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 150
+		AltitudeVelocity: 0c100
+	AttackAircraft:
+		FacingTolerance: 512
+	Health:
+		HP: 100000
+	Armor:
+		Type: Light
+	Armament:
+		Weapon: deploytargeting.5c0
+		RequiresCondition: botmicro && loaded
+	AutoTarget:
+		InitialStance: Defend
+		InitialStanceAI: AttackAnything
+		ScanRadius: 20
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	WithIdleOverlay@ROTOR1AIR:
+		Offset: 597,0,85
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTOR1GROUND:
+		Offset: 597,0,85
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTOR2AIR:
+		Offset: -597,0,171
+		Sequence: rotor2
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTOR2GROUND:
+		Offset: -597,0,171
+		Sequence: slow-rotor2
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	Cargo:
+		InitialUnits: e1, e1, e1, e1, e1, e3, e3, e3, e3, e3
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 10
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 10
+	SpawnActorOnDeath:
+		Actor: TRAN.Husk
+	SelectionDecorations:
+	Selectable:
+		Class: tran
+		DecorationBounds: 1920, 1920
+	RenderSprites:
+		Image: tran
+		PlayerPalette: raplayer
+	Explodes:
+		Weapon: LargeHeliExplode
+
+tran.gdi:
+	Inherits: TRAN
+	ProductionCostMultiplier:
+		Multiplier: 160
+	Buildable:
+		Prerequisites: ~hpad.gdi
+		Queue: Aircraft, RAAircraft
+	Cargo:
+		InitialUnits: e1, e1, e1, e1, e2, e2, e2, e3, e3, e3
+	EditorOnlyTooltip:
+		Name: Loaded Chinook (GDI)
+
+tran.gdi.rmbo:
+	Inherits: TRAN
+	Buildable:
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		BuildLimit: 1
+		Prerequisites: hpad.gdi, eye, !rmbo, !upgdihavoc, ~botplayer
+	Cargo:
+		InitialUnits: rmbo,e1,e2,e3,e6,gdimissilesoldier,gdiempgrenadier,gdisniper,gdishotgunner,gdiofficer
+	ProductionCostMultiplier:
+		Multiplier: 300
+
+tran.nod:
+	Inherits: TRAN
+	ProductionCostMultiplier:
+		Multiplier: 230
+	Buildable:
+		Prerequisites: ~hpad.nod
+		Queue: Aircraft, RAAircraft
+	Cargo:
+		InitialUnits: e1, e1, e1, e3, e3, e3, e4, e4, e5, e5
+	EditorOnlyTooltip:
+		Name: Loaded Chinook (Nod)
+	ProductionCostMultiplier:
+		Multiplier: 250
+
+tran.nod.rmbo:
+	Inherits: TRAN
+	Buildable:
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		BuildLimit: 1
+		Prerequisites: hpad.nod, tmpl, !rmbo, !upnodvenom, ~botplayer
+	Cargo:
+		InitialUnits: rmbo, e1, e3, e4, e5, e6, cheme3, tsblackhandlaser, tsstealthsoldier, tsblackhandflamer
+	ProductionCostMultiplier:
+		Multiplier: 300
+
+HELI:
+	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiDef: ^PrioritizeDefence
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Apache
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~hpad.nod
+		Queue: Aircraft, RAAircraft
+		Description: Helicopter Gunship with Chainguns.\n  Strong vs Infantry, Light Vehicles and\n  Aircraft\n  Weak vs Tanks
+	Aircraft:
+		Speed: 160
+		TurnSpeed: 32
+	Health:
+		HP: 40000
+	ChangesHealth@SelfHealing:
+		Step: 16
+	Armament@PRIMARY:
+		Weapon: HeliAGGun
+		LocalOffset: 128,-213,-85, 128,213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: HeliAAGun
+		LocalOffset: 128,-213,-85, 128,213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	WithIdleOverlay@ROTORAIR:
+		Offset: 0,0,85
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTORGROUND:
+		Offset: 0,0,85
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	WithMuzzleOverlay:
+	SpawnActorOnDeath:
+		Actor: HELI.Husk
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	AmmoPool:
+		Ammo: 3
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 8
+		Count: 1
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 3
+
+ORCA:
+	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Orca
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Prerequisites: ~hpad.gdi
+		Queue: Aircraft, RAAircraft
+		Description: Helicopter Gunship with AG Missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		Speed: 200
+		TurnSpeed: 40
+	Health:
+		HP: 25000
+	ChangesHealth@SelfHealing:
+		Step: 10
+	Armament@PRIMARY:
+		Weapon: OrcaAGMissiles
+		LocalOffset: 427,-171,-213, 427,171,-213
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Weapon: OrcaAAMissiles
+		LocalOffset: 427,-171,-213, 427,171,-213
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	SpawnActorOnDeath:
+		Actor: ORCA.Husk
+	WithMoveAnimation:
+		MoveSequence: move
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1024
+	AmmoPool:
+		Ammo: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 20
+		Count: 1
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 5
+
+C17:
+	Inherits: ^Plane
+	-Targetable:
+	Tooltip:
+		Name: Supply Aircraft
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 326
+		Repulsable: False
+		MaximumPitch: 36
+	HiddenUnderFog:
+		AlwaysVisibleRelationships: None
+		Type: CenterPosition
+	Cargo:
+		MaxWeight: 10
+	DamageMultiplier@INVULNERABLE:
+		Modifier: 0
+	Contrail@1:
+		Offset: -261,-650,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -85,-384,0
+		TrailLength: 16
+	Contrail@3:
+		Offset: -85,384,0
+		TrailLength: 16
+	Contrail@4:
+		Offset: -261,650,0
+		TrailLength: 15
+	DynamicSpeedMultiplier:
+	-MapEditorData:
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+
+A10:
+	Inherits: ^RANeutralPlane
+	Tooltip:
+		Name: A10 Bomber
+	Valued:
+		Cost: 3000
+	Health:
+		HP: 30000
+	Armor:
+		Type: Medium
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 300
+		Repulsable: False
+	AttackBomber:
+		Armaments: gun, bombs
+		FacingTolerance: 32
+	Armament@GUNS:
+		Name: gun
+		Weapon: Vulcan
+		LocalOffset: 1024,0,-85
+	WithMuzzleOverlay:
+	Armament@BOMBS:
+		Name: bombs
+		Weapon: Napalm
+		LocalOffset: 0,-256,-43, 0,256,-43
+	Contrail@1:
+		Offset: -640,171,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -640,-171,0
+		TrailLength: 15
+	SpawnActorOnDeath:
+		Actor: A10.Husk
+	GivesExperience:
+		Experience: 3000
+	RejectsOrders:
+	-MapEditorData:
+
+TRAN.Husk:
+	Inherits: ^LargeHelicopterHusk
+	Tooltip:
+		Name: Chinook Transport
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 140
+	WithIdleOverlay@ROTOR1:
+		Offset: 597,0,85
+		Sequence: rotor
+	WithIdleOverlay@ROTOR2:
+		Offset: -597,0,171
+		Sequence: rotor2
+	RenderSprites:
+		Image: tran
+		PlayerPalette: raplayer
+
+HELI.Husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Apache Longbow
+	Aircraft:
+		TurnSpeed: 16
+		Speed: 186
+	WithIdleOverlay:
+		Offset: 0,0,85
+		Sequence: rotor
+	RenderSprites:
+		Image: heli
+
+ORCA.Husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Orca
+	Aircraft:
+		TurnSpeed: 16
+		Speed: 186
+	RenderSprites:
+		Image: orca
+
+FACT:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Construction Yard
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 1000000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building, Defence
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: mcv
+		Offset: 1,1
+		Facing: 432
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransformsIntoRepairable:
+		RequiresCondition: factundeploy
+		RepairActors: fix
+		RequiresForceMove: true
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@Building:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionQueue@Defense:
+		Type: Defence
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@BuildingGDI:
+		ProductionType: Building
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DefenceGDI:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuildingGDI:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefenceGDI:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	BaseBuilding:
+	BaseProvider:
+		Range: 15c0
+	WithBuildingBib:
+	WithBuildingPlacedAnimation:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+
+FACT.GDI:
+	Inherits: FACT
+	Tooltip:
+		Name: GDI Construction Yard
+	Transforms:
+		IntoActor: mcv.gdi
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 1000
+		Prerequisites: ~wip-content
+		Description: Builds structures
+	ProvidesPrerequisite@fact.gdi:
+		Prerequisite: fact.gdi
+	ProvidesPrerequisite@concretebarrier:
+		Prerequisite: concretebarrier
+	RenderSprites:
+		Image: gdifact
+
+FACT.NOD:
+	Inherits: FACT
+	Tooltip:
+		Name: Nod Construction Yard
+	Transforms:
+		IntoActor: mcv.nod
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: fact
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 1000
+		Prerequisites: ~wip-content
+		Description: Builds structures
+	ProvidesPrerequisite@fact.gdi:
+		Prerequisite: fact.nod
+	ProvidesPrerequisite@concretebarrier:
+		Prerequisite: concretebarrier
+	RenderSprites:
+		Image: nodfact
+
+NUKE:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@power: ^PowerPlant
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Power Plant
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~fact
+		Queue: Building, RABuilding
+		Description: Generates power
+	Building:
+		Footprint: xX xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 150000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: 125
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: building ##########
+	ProvidesPrerequisite@buildingname:
+
+NUK2:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@power: ^PowerPlant
+	Inherits@sell: ^TDSpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: 630,299,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Advanced Power Plant
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: ~fact, anytdhq
+		Queue: Building, RABuilding
+		Description: Provides more power, cheaper than the\nstandard Power Plant
+	Building:
+		Footprint: xX xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 300000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: 250
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: building ##########
+	ProvidesPrerequisite@buildingname:
+		Prerequisite: nuk
+
+PROC:
+	Inherits: ^BaseBuilding
+	Inherits@ref: ^Refinery
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@shape: ^3x3Shape
+	HitShape:
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 853
+	HitShape@TOP:
+		Type: Rectangle
+			TopLeft: -512, -1450
+			BottomRight: 896, -512
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Tiberium Refinery
+	Buildable:
+		Prerequisites: ~fact, nuke
+		Queue: Building, RABuilding
+		Description: Processes raw Tiberium\ninto useable resources
+	Building:
+		Footprint: _x_ xxx === ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 300000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 6c0
+	Refinery:
+	DockHost:
+		DockAngle: 448
+		DockOffset: -1c0, 1c0, 0
+		IsDragRequired: True
+		DragOffset: -554,512,0
+		DragLength: 12
+	GrantConditionOnPrerequisite@Normal:
+		Condition: normalharvester
+		Prerequisites: !upstealthsoldier
+	GrantConditionOnPrerequisite@Stealth:
+		Condition: stealthharvester
+		Prerequisites: upstealthsoldier
+	FreeActor@Normal:
+		Actor: HARV
+		SpawnOffset: 1,2
+		Facing: 256
+		RequiresCondition: normalharvester
+	FreeActor@Stealth:
+		Actor: tanodharv
+		SpawnOffset: 1,2
+		Facing: 256
+		RequiresCondition: stealthharvester
+	WithBuildingBib:
+	WithResourceLevelOverlay:
+		RequiresCondition: !build-incomplete
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	SelectionDecorations:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 20
+
+SILO:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x1Shape
+	Inherits@storage: ^StoresResources
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Tiberium Silo
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~fact, proc
+		Queue: Defence, RADefence
+		Description: Stores processed Tiberium
+	Building:
+		Footprint: xx
+		Dimensions: 2,1
+	-GivesBuildableArea:
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+		HasMinibib: true
+	-WithSpriteBody:
+	WithResourceLevelSpriteBody:
+		Sequence: stages
+	StoresPlayerResources:
+		Capacity: 4000
+	Power:
+		Amount: -10
+	MustBeDestroyed:
+		RequiredForShortGame: false
+	SelectionDecorations:
+	-AcceptsDeliveredCash:
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+
+PYLE:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@barr: ^IsBarrack
+	Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Barracks
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		Prerequisites: ~fact.gdi, nuke
+		Queue: Building, RABuilding
+		Description: Trains infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 150000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -426,85,0
+		ExitCell: 0,1
+	Exit@2:
+		SpawnOffset: 298,298,0
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	GrantExternalConditionToProduced:
+		Condition: produced
+	ParallelProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@INFANTRYGDI:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYGDI:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: cncbarracks
+
+
+HAND:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@barr: ^IsBarrack
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Hand of Nod
+	ProvidesPrerequisite:
+		Prerequisite: barracks
+	Buildable:
+		Prerequisites: ~fact.nod, nuke
+		Queue: Building, RABuilding
+		Description: Trains infantry
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 150000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	RallyPoint:
+	Selectable:
+		Bounds: 2048, 2560, 0, -128
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ParallelProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@INFANTRYNOD:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRYNOD:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: cncbarracks
+
+AFLD:
+	Inherits: ^BaseBuilding
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@weap: ^IsWeaponFactory
+	Inherits@shape: ^4x2Shape
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,-512,256, 0,-1451,384, 0,512,128, 0,1536,85
+		Type: Rectangle
+			TopLeft: -2048, -1024
+			BottomRight: 2048, 1024
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Airstrip
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		BuildDuration: 250
+		BuildDurationModifier: 100
+		Prerequisites: ~fact.nod, proc
+		Queue: Building, RABuilding
+		Description: Provides a dropzone\nfor vehicle reinforcements
+	Building:
+		Footprint: XXX+ xxx+ ====
+		Dimensions: 4,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 300000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 7c0
+	RallyPoint:
+	Exit@1:
+		ExitCell: 1,1
+		Facing: 768
+	Exit@2:
+		ExitCell: 2,1
+		Facing: 768
+	Exit@3:
+		ExitCell: 1,2
+		Facing: 768
+	Exit@4:
+		ExitCell: 2,2
+		Facing: 768
+	ProductionAirdropCA@NORMAL:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+		ActorType: c17
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+		SpawnType: ClosestEdgeToDestination
+		ProportionalSpeed: true
+		PauseOnCondition: disabled
+	ProductionAirdropCA@CLASSIC:
+		Produces: RAVehicle
+		RequiresCondition: classicproductionqueues
+		ActorType: c17
+		LandingFacing: 64
+		ReadyAudio: ReinforcementsArrived
+		SpawnType: ClosestEdgeToDestination
+		ProportionalSpeed: true
+		PauseOnCondition: disabled
+	WithBuildingBib:
+	WithIdleOverlay@DISH:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-dish
+	WithDeliveryAnimation:
+		RequiresCondition: !build-incomplete
+	ParallelProductionQueue:
+		Type: Vehicle
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@VEHICLENOD:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLENOD:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+
+WEAP:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x3Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@weap: ^IsWeaponFactory
+	HitShape:
+		TargetableOffsets: 0,0,0, 0,1024,0, 0,-1024,0
+		Type: Rectangle
+			TopLeft: -1536, -1536
+			BottomRight: 1536, 512
+	Selectable:
+		Bounds: 3072, 3072, 0, -512
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Weapons Factory
+	ProvidesPrerequisite:
+		Prerequisite: vehicleproduction
+	Buildable:
+		Prerequisites: ~fact.gdi, proc
+		Queue: Building, RABuilding
+		Description: Produces vehicles
+	Building:
+		Footprint: xxx === ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	SelectionDecorations:
+	Health:
+		HP: 300000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	WithProductionDoorOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: build-top
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -512,-512,0
+		ExitCell: 0,1
+		ExitDelay: 3
+	Production@NORMAL:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ParallelProductionQueue:
+		Type: Vehicle
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@VEHICLEGDI:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLEGDI:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	-ActorPreviewPlaceBuildingPreview:
+	SequencePlaceBuildingPreview:
+		Sequence: place
+
+HPAD.GDI:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@hpad: ^IsAircraftFactory
+	Inherits@repair: ^RepairsUnits
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: GDI Helipad
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~fact.gdi, hq.gdi
+		Queue: Building, RABuilding
+		Description: Produces, rearms and\nrepairs helicopters
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 150000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Production@NORMAL:
+		Produces: Aircraft
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ParallelProductionQueue:
+		Type: Aircraft
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@AIRCRAFTGDI:
+		ProductionType: Aircraft
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFTGDI:
+		ProductionType: RAAircraft
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -30
+	ProvidesPrerequisite@hpad:
+		Prerequisite: hpad
+	ProvidesPrerequisite@hpad.gdi:
+		Prerequisite: hpad.gdi
+	RenderSprites:
+		Image: hpad
+
+HPAD.NOD:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@hpad: ^IsAircraftFactory
+	Inherits@repair: ^RepairsUnits
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Nod Helipad
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~fact.nod, hq.nod
+		Queue: Building, RABuilding
+		Description: Produces, rearms and\nrepairs helicopters
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 150000
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Production@NORMAL:
+		Produces: Aircraft
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	RallyPoint:
+	ParallelProductionQueue:
+		Type: Aircraft
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@AIRCRAFTNOD:
+		ProductionType: Aircraft
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAIRCRAFTNOD:
+		ProductionType: RAAircraft
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -30
+	ProvidesPrerequisite@hpad:
+		Prerequisite: hpad
+	ProvidesPrerequisite@hpad.nod:
+		Prerequisite: hpad.nod
+	RenderSprites:
+		Image: hpad
+
+HQ:
+	Inherits: ^BaseBuilding
+	Inherits@radar: ^RadarBuilding
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@spy: ^InfiltrateForSupportPowerReset
+	Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Communications Center
+	ProvidesPrerequisite@anytdhq:
+		Prerequisite: anytdhq
+	Buildable:
+		BuildPaletteOrder: 70
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Prerequisites: proc
+		#Queue: Building, RABuilding
+		Description: Provides radar and Air Strike support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+	Building:
+		Footprint: X_ xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	SelectionDecorations:
+	WithSpriteBody:
+		PauseOnCondition: lowpower
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	WithBuildingBib:
+	Power:
+		Amount: -50
+	RenderSprites:
+		Image: HQ
+
+HQ.GDI:
+	Inherits: HQ
+	Tooltip:
+		Name: GDI Communications Center
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: ~fact.gdi, proc
+		Queue: Building, RABuilding
+		Description: Provides radar and Air Strike support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+	ProvidesPrerequisite@hq.gdi:
+		Prerequisite: hq.gdi
+	AirstrikePower:
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
+		Icons:
+			1: airstrike
+		ChargeInterval: 6000
+		SquadSizes:
+			1: 3
+		QuantizedFacings: 32
+		Names:
+			1: Air Strike
+		Descriptions:
+			1: Deploy an aerial napalm strike.\nBurns buildings and infantry along a line.
+		EndChargeSpeechNotification: AirstrikeReady
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: EnemyPlanesApproaching
+		UnitTypes:
+			1: a10
+		DisplayBeacon: True
+		BeaconPosters:
+			1: airstrike
+		BeaconPosterPalette: beaconposter
+		DisplayRadarPing: True
+		CameraActor: camera
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 10
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+	SupportPowerChargeBar:
+
+HQ.Nod:
+	Inherits: HQ
+	Tooltip:
+		Name: Nod Communications Center
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: ~fact.nod, proc
+		Queue: Building, RABuilding
+		Description: Provides radar.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+	ProvidesPrerequisite@hq.nod:
+		Prerequisite: hq.nod
+
+FIX:
+	Inherits: ^BaseBuilding
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@shape: ^3x3Shape
+	Inherits@repair: ^RepairsUnits
+	HitShape:
+		TargetableOffsets: 840,0,0, 598,-640,0, 598,640,0, -1060,0,0, -768,-640,0, -768,640,0
+		Type: Polygon
+			Points: -1536,-256, -341,-940, 341,-940, 1536,-256, 1536,341, 341,1110, -341,1110, -1536,341
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Repair Facility
+	Buildable:
+		BuildPaletteOrder: 60
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Prerequisites: vehicleproduction
+		#Queue: Building, RABuilding
+		Description: Repairs vehicles
+	Building:
+		Footprint: _+_ +++ _+_
+		Dimensions: 3,3
+	SelectionDecorations:
+	Health:
+		HP: 200000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 5c0
+	WithBuildingBib:
+		HasMinibib: true
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 10
+		PlayerExperience: 100
+		StartRepairingNotification: Repairing
+	RallyPoint:
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: FIX
+
+FIX.GDI:
+	Inherits: FIX
+	Tooltip:
+		Name: GDI Repair Facility
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: ~fact.gdi, weap
+		Queue: Building, RABuilding
+		Description: Repairs vehicles
+	ProvidesPrerequisite:
+		Prerequisite: fix.gdi
+
+FIX.Nod:
+	Inherits: FIX
+	Tooltip:
+		Name: Nod Repair Facility
+	Buildable:
+		BuildPaletteOrder: 70
+		Prerequisites: ~fact.nod, afld
+		Queue: Building, RABuilding
+		Description: Repairs vehicles
+	ProvidesPrerequisite:
+		Prerequisite: fix.nod
+
+EYE:
+	Inherits: ^BaseBuilding
+	Inherits@radar: ^RadarBuilding
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@tech: ^IsTechnoBuilding
+	Inherits@shape: ^2x2Shape
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Advanced Communications Center
+	ProvidesPrerequisite:
+		Prerequisite: anytdhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~fact.gdi, hq.gdi
+		Queue: Building, RABuilding
+		Description: Provides access to advanced GDI technologies.\nCan be upgraded with an ion cannon uplink.
+	Building:
+		Footprint: X_ xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	SelectionDecorations:
+	WithSpriteBody:
+		PauseOnCondition: lowpower
+	Health:
+		HP: 500000
+	Armor:
+		Type: Concrete
+	WithBuildingBib:
+	IonCannonPower:
+		AllowMultiple: True
+		PauseOnCondition: disabled
+		RequiresCondition: ionc
+		Prerequisites:
+			1: ~techlevel.superweapons
+		Icons:
+			1: ioncannon
+		Cursor:	ioncannon
+		ChargeInterval: 6000
+		WeaponDelay: 0
+		Weapon: IonCannon
+		Names:
+			1: Ion Cannon
+		Descriptions:
+			1: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		EndChargeTextNotification: Ion Cannon ready.
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: ion1.aud
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		CameraRemoveDelay: 125
+		CameraActor: CAMERA.small
+		SupportPowerPaletteOrder: 20
+	SupportPowerChargeBar:
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: ionc
+		RequiresCondition: ionc
+	RevealsShroud@SWReveal:
+		RequiresCondition: swreveal && ionc
+	ProvidesPrerequisite@techcenter:
+		Prerequisite: techcenter
+	ProvidesPrerequisite@tdtechcenter:
+		Prerequisite: tdtechcenter
+	DamageMultiplier@ionc:
+		Modifier: 50
+		RequiresCondition: ionc
+	PowerMultiplier@ionc:
+		Modifier: 200
+		RequiresCondition: ionc
+	Pluggable:
+		Offset: 1,0
+		Conditions:
+			eye: ionc
+		Requirements:
+			eye: !build-incomplete && !ionc
+
+eye.ionc:
+	Inherits: ^BuildingPlug
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Ion Cannon Uplink
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 100
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~fact.gdi, eye, !ionc, ~techlevel.superweapons
+		Description: Grants Ion Cannon access to an Advanced Comms Center.\nEnables Ion Cannon support power.\nDoubles the Advanced Comms Center's durability.
+	Power:
+		Amount: -100
+	Plug:
+		Type: eye
+	RenderSprites:
+		Image: eye
+
+TMPL:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x3Shape
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Inherits@tech: ^IsTechnoBuilding
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Temple of Nod
+	ProvidesPrerequisite:
+		Prerequisite: anytdhq
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~fact.nod, hq.nod
+		Queue: Building, RABuilding
+		Description: Provides advanced Nod technologies.\nCan be upgraded with a nuclear missile silo.
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 3072, 3072, 0, -512
+	SelectionDecorations:
+	Health:
+		HP: 500000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 10c0
+		RequiresCondition: !disabled
+	RevealsShroud@Offline:
+		Range: 5c0
+		RequiresCondition: disabled
+	DetectCloaked:
+		Range: 10c0
+		RequiresCondition: !disabled
+	RenderDetectionCircle:
+	NukePowerCA:
+		OrderName: NukePowerInfoOrder
+		AllowMultiple: True
+		PauseOnCondition: disabled
+		RequiresCondition: nuke
+		Prerequisites:
+			1: ~techlevel.superweapons
+		Icons:
+			1: abomb
+		Cursor: nuke
+		ChargeInterval: 9000
+		Names:
+			1: Nuclear Strike
+		Descriptions:
+			1: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		EndChargeTextNotification: Nuclear Missile ready.
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		LaunchTextNotification: Warning: Nuclear Missile launched.
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		IncomingTextNotification: Warning: Nuclear Missile launched.
+		MissileWeapons:
+			1: atomic
+		MissileDelay: 11
+		SpawnOffset: 3c0,0,-1c512
+		DisplayBeacon: True
+		BeaconPosters:
+			1: atomic
+		BeaconPosterPalette: beaconposter
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		CameraRange: 10000
+		ArrowSequence: arrow
+		CircleRanges:
+			1: 10000
+		ClockSequence: clock
+		CircleSequence: circles
+		SupportPowerPaletteOrder: 30
+		MissileImage: atomic
+		BeaconActor: BLASTRADIUS.atomic
+	WithBuildingBib:
+	WithSupportPowerActivationAnimation:
+		RequiresCondition: !build-incomplete && nuke
+	WithSupportPowerActivationOverlay:
+		RequiresCondition: !build-incomplete && nuke
+		Sequence: smoke
+	SupportPowerChargeBar:
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: nodnuke
+		RequiresCondition: nuke
+	RevealsShroud@SWReveal:
+		RequiresCondition: swreveal && nuke
+	ProvidesPrerequisite@techcenter:
+		Prerequisite: techcenter
+	ProvidesPrerequisite@tdtechcenter:
+		Prerequisite: tdtechcenter
+	DamageMultiplier@nuke:
+		Modifier: 50
+		RequiresCondition: nuke
+	PowerMultiplier@nuke:
+		Modifier: 200
+		RequiresCondition: nuke
+	Pluggable:
+		Offset: 1,0
+		Conditions:
+			tmpl: nuke
+		Requirements:
+			tmpl: !build-incomplete && !nuke
+
+tmpl.nuke:
+	Inherits: ^BuildingPlug
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Nuclear Missile Silo
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 100
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~fact.nod, tmpl, !nodnuke, ~techlevel.superweapons
+		Description: Installs a nuclear missile silo at a Temple of Nod.\nEnables Nuclear Strike support power.\nDoubles the Temple of Nod's durability.
+	Power:
+		Amount: -100
+	Plug:
+		Type: tmpl
+	RenderSprites:
+		Image: TMPL
+
+# TD Naval
+
+CNCSYRD:
+	Inherits: RA1SYRD
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~fact.gdi, proc
+		Queue: Building, RABuilding
+	Production@NORMAL:
+		Produces: Naval
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ParallelProductionQueue:
+		Type: Naval
+		DisplayOrder: 5
+		Group: Naval
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@NAVALGDI:
+		ProductionType: Naval
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RANAVALGDI:
+		ProductionType: RANaval
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: ra1syrd
+	-ProductionBar@NAVALALLIES:
+	-ProductionBar@RANAVALALLIES:
+
+CNCSPEN:
+	Inherits: RASPEN
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~fact.nod, proc
+		Queue: Building, RABuilding
+	Production@NORMAL:
+		Produces: Naval
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ParallelProductionQueue:
+		Type: Naval
+		DisplayOrder: 5
+		Group: Naval
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@NAVALNOD:
+		ProductionType: Naval
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RANAVALNOD:
+		ProductionType: RANaval
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: raspen
+	-ProductionBar@NAVALSOVIET:
+	-ProductionBar@RANAVALSOVIET:
+
+GUN:
+	Inherits: ^Defense
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@exp: ^GainsExperienceTDBuilding
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@AntiTank: ^PrioritizeVehicle
+	Inherits@shape: ^1x1Shape
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Nod Gun Turret
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: ~fact.nod, hand
+		Queue: Defence, RADefence
+		Description: Basic Anti-Tank base defense.\n  Strong vs Tanks, vehicles\n  Weak vs Infantry
+	Building:
+	Health:
+		HP: 130000
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 224
+		RealignDelay: -1
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: TurretGun
+		LocalOffset: 512,0,112
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: disabled
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	Power:
+		Amount: -30
+	RevealsShroud:
+		Range: 6850
+	UpdatesPlayerStatistics:
+		AddToArmyValue: false
+
+NodLaserTurret:
+	Inherits: ^Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@exp: ^GainsExperienceTDBuilding
+	Inherits@DisabledOverlay: ^DisableOnLowPowerOrPowerDown
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@shape: ^1x1Shape
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Nod Laser Turret
+	Buildable:
+		BuildPaletteOrder: 45
+		Prerequisites: ~fact.nod, hand
+		Queue: Defence, RADefence
+		Description: Basic Anti-Infantry base defense.\n  Strong vs Infantry, vehicles\n  Weak vs Tanks
+	Building:
+	Health:
+		HP: 68000
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 30
+		InitialFacing: 0
+		RealignDelay: -1
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: NodTurretLaser
+		LocalOffset: 500,-80,140, 500,80,140
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: disabled
+	WithMuzzleOverlay:
+	-WithDeathAnimation:
+	RenderSprites:
+		PlayerPalette: player_rgba
+	Power:
+		Amount: -50
+	RevealsShroud:
+		Range: 6666
+
+SAM:
+	Inherits: ^Defense
+	Inherits@Template: ^AntiAirDefenseTemplate
+	Inherits@exp: ^GainsExperienceTDBuilding
+	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@shape: ^2x1Shape
+	Inherits@AntiAir: ^PrioritizeAir
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Nod SAM Site
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~fact.nod, hand, hq.nod
+		Queue: Defence, RADefence
+		Description: Anti-Aircraft base defense.\n  Strong vs Aircraft\n  Cannot target Ground units.
+	Building:
+		Footprint: xx
+		Dimensions: 2,1
+	Health:
+		HP: 100000
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 0
+		#RealignDelay: -1
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: Dragon
+		LocalOffset: 0,-64,320, 0,64,320
+		MuzzleSequence: muzzle
+	AttackPopupTurreted:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+	WithMuzzleOverlay:
+	Power:
+		Amount: -40
+	-ActorPreviewPlaceBuildingPreview:
+	SequencePlaceBuildingPreview:
+		Sequence: place
+	DamageMultiplier@2x1Shape:
+		Modifier: 75
+	RevealsShroud:
+		Range: 15000
+	DetectCloaked:
+		Range: 7500
+
+OBLI:
+	Inherits: ^Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@exp: ^GainsExperienceTDBuilding
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@AntiTank: ^PrioritizeTank
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Obelisk of Light
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~fact.nod, tmpl
+		Queue: Defence, RADefence
+		Description: Advanced base defense.\nRequires power to operate.\n  Strong vs all Ground units\n  Cannot target Aircraft
+	Selectable:
+		Bounds: 1024, 1792, 0, -512
+	SelectionDecorations:
+	Health:
+		HP: 210000
+	WithBuildingBib:
+		HasMinibib: true
+	-WithSpriteBody:
+	WithChargeSpriteBody:
+		Sequence: active
+	Armament:
+		Weapon: LaserObelisk
+		LocalOffset: 0,-85,1280
+	AttackCharges:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+		ChargeLevel: 50
+		ChargingCondition: charging
+	AmbientSound:
+		RequiresCondition: charging
+		SoundFiles: obelpowr.aud
+		Interval: 30, 40
+	Power:
+		Amount: -75
+	RevealsShroud:
+		Range: 9600
+	DetectCloaked:
+		Range: 4800
+
+GTWR:
+	Inherits: ^Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@exp: ^GainsExperienceTDBuilding
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@shape: ^1x1Shape
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Guard Tower
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~fact.gdi, pyle
+		Queue: Defence, RADefence
+		Description: Basic defensive structure.\n  Strong vs Infantry\n  Weak vs Tanks
+	Building:
+	Health:
+		HP: 60000
+	WithBuildingBib:
+		HasMinibib: true
+	Armament:
+		Weapon: HighV
+		LocalOffset: 256,0,256
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	BodyOrientation:
+		QuantizedFacings: 8
+	WithMuzzleOverlay:
+	Turreted:
+		TurnSpeed: 1023
+	Power:
+		Amount: -25
+	RevealsShroud:
+		Range: 6666
+
+ATWR:
+	Inherits: ^Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@exp: ^GainsExperienceTDBuilding
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@detect: ^GenericAllDetector
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiTank: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@shape: ^1x1Shape
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Advanced Guard Tower
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~fact.gdi, hq.gdi
+		Queue: Defence, RADefence
+		Description: All-purpose defensive structure.\n  Strong vs Aircraft, Tanks\n  Weak vs Infantry
+	Selectable:
+		Bounds: 1024, 2048, 0, -512
+	SelectionDecorations:
+	Health:
+		HP: 140000
+	WithBuildingBib:
+		HasMinibib: true
+	Turreted:
+		TurnSpeed: 1023
+		Offset: 128,128,384
+	Armament@PRIMARY:
+		Weapon: TowerMissile
+		LocalOffset: 256,128,0, 256,-128,0
+		LocalYaw: -100,100
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Weapon: TowerAAMissile
+		LocalOffset: 256,128,0, 256,-128,0
+		LocalYaw: -100,100
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: lowpower || disabled
+	BodyOrientation:
+		QuantizedFacings: 8
+	WithMuzzleOverlay:
+	Power:
+		Amount: -50
+	RevealsShroud:
+		Range: 8000
+	DetectCloaked:
+		Range: 4000
+
+SBAG:
+	Inherits: ^Wall
+	Valued:
+		Cost: 25
+	CustomSellValue:
+		Value: 0
+	Tooltip:
+		Name: Sandbag Barrier
+	Buildable:
+		BuildPaletteOrder: 0
+		Prerequisites: ~fact.gdi
+		Queue: Defence, RADefence
+		Description: Stops infantry and light vehicles.\nCan be crushed by tanks.
+	Armor:
+		Type: Medium
+	LineBuild:
+		NodeTypes: sandbag
+	LineBuildNode:
+		Types: sandbag
+	WithWallSpriteBody:
+		Type: sandbag
+
+CYCL:
+	Inherits: ^Wall
+	Valued:
+		Cost: 25
+	CustomSellValue:
+		Value: 0
+	Tooltip:
+		Name: Chain Link Barrier
+	Buildable:
+		BuildPaletteOrder: 0
+		Prerequisites: ~fact.nod
+		Queue: Defence, RADefence
+		Description: Stops infantry and light vehicles.\nCan be crushed by tanks.
+	Armor:
+		Type: Light
+	LineBuild:
+		NodeTypes: chain
+	LineBuildNode:
+		Types: chain
+	WithWallSpriteBody:
+		Type: chain
+
+BRIK:
+	Inherits: ^Wall
+	Valued:
+		Cost: 150
+	CustomSellValue:
+		Value: 0
+	Tooltip:
+		Name: Concrete Barrier
+	Buildable:
+		BuildPaletteOrder: 0
+		Prerequisites: ~concretebarrier
+		Queue: Defence, RADefence
+		Description: Stops infantry and most tanks.\nBlocks some projectiles.
+	Health:
+		HP: 25000
+	Armor:
+		Type: Concrete
+	BlocksProjectiles:
+	Crushable:
+		CrushClasses: heavywall
+		-CrushSound:
+	SoundOnDamageTransition:
+		DestroyedSounds: crumble.aud
+	LineBuild:
+		NodeTypes: concrete
+	LineBuildNode:
+		Types: concrete
+	WithWallSpriteBody:
+		Type: concrete
+
+CNCPT:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiAir: ^PrioritizeAir
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Missile Cruiser
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~cncsyrd
+		Queue: Naval, RANaval
+		Description: Light scout & support ship.\nCan detect submarines.
+	Mobile:
+		Speed: 100
+		TurnSpeed: 20
+	Health:
+		HP: 75000
+	ChangesHealth@SelfHealing:
+		Step: 30
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 20
+		Offset: 384,0,64
+	Armament@Ground:
+		Weapon: GunboatMissile
+		LocalOffset: 100,-100,0, 100,100,0
+	Armament@AA:
+		Weapon: GunboatMissileAA
+		LocalOffset: 100,-100,0, 100,100,0
+	Armament@DC:
+		Weapon: DepthCharge
+		LocalOffset: 100,-100,0, 100,100,0
+		LocalYaw: 80, -80
+	AttackTurreted:
+	WithSpriteTurret:
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 1536, 1536
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	DeliversCash:
+		Payload: 250
+
+CNCCA:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Railgun Battleship
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~eye
+		Queue: Naval, RANaval
+		Description: Very slow long-range ship.\n  Strong vs surface, air targets\n  Weak vs Submarines
+	Mobile:
+		Speed: 50
+		TurnSpeed: 10
+	Health:
+		HP: 175000
+	ChangesHealth@SelfHealing:
+		Step: 70
+	Armor:
+		Type: Superheavy
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -1200,-50,200
+		TurnSpeed: 10
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 900,-50,200
+		TurnSpeed: 10
+	Armament@PRIMARY:
+		Turret: primary
+		Weapon: GDIBattleshipRailgun
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 175
+		RecoilRecovery: 35
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Turret: secondary
+		Weapon: GDIBattleshipRailgun
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 175
+		RecoilRecovery: 35
+		MuzzleSequence: muzzle
+	# Armament@PRIMARYAA:
+	# 	Turret: primary
+	# 	Weapon: NewBoatMissile2AA
+	# 	LocalOffset: 480,-100,40, 480,100,40
+	# 	Recoil: 171
+	# 	RecoilRecovery: 34
+	# 	MuzzleSequence: muzzle
+	# Armament@SECONDARYAA:
+	# 	Name: secondary
+	# 	Turret: secondary
+	# 	Weapon: NewBoatMissile2AA
+	# 	LocalOffset: 480,-100,40, 480,100,40
+	# 	Recoil: 171
+	# 	RecoilRecovery: 34
+	# 	MuzzleSequence: muzzle
+	AttackTurreted:
+		Turrets: primary, secondary
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 2048, 2048
+	WithSpriteTurret@PRIMARY:
+		Turret: primary
+	WithSpriteTurret@SECONDARY:
+		Turret: secondary
+	DeliversCash:
+		Payload: 500
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+LST:
+	Inherits: ^Ship
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Landing Craft
+	Buildable:
+		#Queue: Vehicle.GDI
+		BuildPaletteOrder: 1000
+		Prerequisites: ~wip-content
+	Mobile:
+		Locomotor: lcraft
+		InitialFacing: 0
+		Speed: 142
+		PauseOnCondition: notmobile
+	Health:
+		HP: 40000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	WithFacingSpriteBody:
+	Selectable:
+		Bounds: 2048, 2048
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 5
+		PassengerFacing: 0
+		LoadingCondition: notmobile
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+
+CNCRSS:
+	Inherits: ^BoatUnit
+	Inherits@sub: ^Submarine
+	Inherits@cargo: ^CargoVehicle
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Transport Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~cncspen
+		Queue: Naval, RANaval
+	Mobile:
+		Speed: 50
+		RequiresCondition: !notmobile && !disabled
+		Locomotor: lcraft
+	Health:
+		HP: 15000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 325
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 5
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	GrantConditionOnTerrain@underwater:
+		Condition: cancloak
+		TerrainTypes: Water
+	Cloak@underwater:
+		PauseOnCondition: disabled || !cancloak
+
+CNCSS:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Nod Attack Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~cncspen
+		Queue: Naval, RANaval
+		Description: Submerged anti-ship unit\narmed with torpedoes.\nCan detect other submarines.\n  Strong vs Naval units\n  Weak vs Ground units, Aircraft
+	Mobile:
+		Speed: 80
+		TurnSpeed: 16
+	Health:
+		HP: 160000
+	ChangesHealth@SelfHealing:
+		Step: 64
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 28
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: NodTorpTube
+		LocalOffset: 256,0,0
+	RenderRangeCircle:
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+	AttackFrontal:
+		FacingTolerance: 0
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 475
+	Voiced:
+		VoiceSet: VehicleVoice
+	Cloak@underwater:
+		Palette: racloak
+	RenderSprites:
+		Image: cncss
+		PlayerPalette: player_rgba
+
+nodlasercorvette:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Nod Laser Corvette
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~tmpl
+		Queue: Naval, RANaval
+		Description: Very slow long-range ship.\n  Strong vs surface, air targets\n  Weak vs Submarines
+	Mobile:
+		Speed: 50
+		TurnSpeed: 10
+	Health:
+		HP: 175000
+	ChangesHealth@SelfHealing:
+		Step: 70
+	Armor:
+		Type: Superheavy
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -1200,-50,200
+		TurnSpeed: 10
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 900,-50,200
+		TurnSpeed: 10
+	Armament@PRIMARY:
+		Turret: primary
+		Name: primary
+		Weapon: LaserObelisk
+		LocalOffset: 0,-85,1280
+	Armament@SECONDARY:
+		Turret: secondary
+		Name: secondary
+		Weapon: GDIBattleshipRailgun
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 175
+		RecoilRecovery: 35
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		Turrets: secondary
+		Armaments: secondary
+	AttackTurretedCharged:
+		Turrets: primary
+		Armaments: primary
+		RequiresCondition: !build-incomplete
+		PauseOnCondition: disabled
+		ChargeLevel: 50
+		ChargingCondition: charging
+	AmbientSound:
+		RequiresCondition: charging
+		SoundFiles: obelpowr.aud
+		Interval: 30, 40
+	RenderRangeCircle:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 2048, 2048
+	WithSpriteTurret@SECONDARY:
+		Turret: secondary
+	DeliversCash:
+		Payload: 500
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+CNCLST:
+	Inherits: ^BoatUnit
+	Inherits@cargo: ^CargoVehicle
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Landing Craft
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Prerequisites: ~cncsyrd
+		BuildPaletteOrder: 10
+		Queue: Naval, RANaval
+	Mobile:
+		Speed: 113
+		RequiresCondition: !notmobile && !disabled
+		Locomotor: lcraft
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 250
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 10
+		PassengerFacing: 0
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	RenderSprites:
+		Image: lst
+
+	####################################################################################################
+	#		Promotions Nod
+	####################################################################################################
+
+upchemicalrocket:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Chemical Rocket Soldier
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Promotions
+		Description: Allows training of Chemical Rocket Soldiers.
+		Prerequisites: ~fact.nod, !upchemicalrocket, rank1
+	RenderSprites:
+		Image: e3chem
+	ProvidesPrerequisite:
+		Prerequisite: upchemicalrocket
+
+upchemicalbike:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Chemical Attack Bike
+	Buildable:
+		BuildPaletteOrder: 4
+		Queue: Promotions
+		Description: Allows construction of Chemical Rocket Bikes.
+		Prerequisites: ~fact.nod, !upchemicalbike, upchemicalrocket, rank1
+	RenderSprites:
+		Image: chembike
+	ProvidesPrerequisite:
+		Prerequisite: upchemicalbike
+
+upchemicalstealthtank:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Chemical Stealth Tank
+	Buildable:
+		BuildPaletteOrder: 7
+		Queue: Promotions
+		Description: Allows construction of Chemical Stealth Tanks.
+		Prerequisites: ~fact.nod, !upchemicalstealthtank, upchemicalbike, rank1
+	RenderSprites:
+		Image: chemstnk
+	ProvidesPrerequisite:
+		Prerequisite: upchemicalstealthtank
+
+upchemicalssmlauncher:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Chemical SSM Launcher
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Promotions
+		Description: Allows construction of Chemical SSM Launchers.
+		Prerequisites: ~fact.nod, !upchemicalssmlauncher, upchemicalstealthtank, rank1
+	RenderSprites:
+		Image: chemssm
+	ProvidesPrerequisite:
+		Prerequisite: upchemicalssmlauncher
+
+upnodbuggy2:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Buggy Mk. II
+	Buildable:
+		BuildPaletteOrder: 2
+		Queue: Promotions
+		Description: Allows training of the Buggy Mk. II.
+		Prerequisites: ~fact.nod, !upnodbuggy2, rank1
+	RenderSprites:
+		Image: nodbuggy2
+	ProvidesPrerequisite:
+		Prerequisite: upnodbuggy2
+
+upnodltnk2:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Light Tank Mk. II
+	Buildable:
+		BuildPaletteOrder: 5
+		Queue: Promotions
+		Description: Allows training of the Light Tank Mk. II.
+		Prerequisites: ~fact.nod, !upnodltnk2, upnodbuggy2, rank1
+	RenderSprites:
+		Image: nodltnk2
+	ProvidesPrerequisite:
+		Prerequisite: upnodltnk2
+
+upnodftnk2:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Flame Tank Mk. II
+	Buildable:
+		BuildPaletteOrder: 8
+		Queue: Promotions
+		Description: Allows training of the Flame Tank Mk. II.
+		Prerequisites: ~fact.nod, !upnodftnk2, upnodltnk2, rank1
+	RenderSprites:
+		Image: nodftnk2
+	ProvidesPrerequisite:
+		Prerequisite: upnodftnk2
+
+upblackhandlaser:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Laser Trooper
+	Buildable:
+		BuildPaletteOrder: 11
+		Queue: Promotions
+		Description: Allows training of Laser Troopers.
+		Prerequisites: ~fact.nod, !upblackhandlaser, upnodftnk2, rank1
+	RenderSprites:
+		Image: tsblackhandlaser
+	ProvidesPrerequisite:
+		Prerequisite: upblackhandlaser
+
+upblackhandflamer:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Black Hand Flamer
+	Buildable:
+		BuildPaletteOrder: 3
+		Queue: Promotions
+		Description: Allows training of Black Hand Flamers.
+		Prerequisites: ~fact.nod, !upblackhandflamer, rank1
+	RenderSprites:
+		Image: tsblackhandflamer
+	ProvidesPrerequisite:
+		Prerequisite: upblackhandflamer
+
+upstealthsoldier:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Stealth Tech
+	Buildable:
+		BuildPaletteOrder: 6
+		Queue: Promotions
+		Description: Allows training of Stealth Soldiers\nand construction of Stealth Harvesters.
+		Prerequisites: ~fact.nod, !upstealthsoldier, upblackhandflamer, rank1
+	RenderSprites:
+		Image: stealthtech
+	ProvidesPrerequisite:
+		Prerequisite: upstealthsoldier
+
+upnodspecter:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Specter
+	Buildable:
+		BuildPaletteOrder: 9
+		Queue: Promotions
+		Description: Allows construction of the Specter Stealth Artillery.
+		Prerequisites: ~fact.nod, !upnodspecter, upstealthsoldier, rank1
+	RenderSprites:
+		Image: nodspecter
+	ProvidesPrerequisite:
+		Prerequisite: upnodspecter
+
+upnodvenom:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Venom and Laser Commando
+	Buildable:
+		BuildPaletteOrder: 12
+		Queue: Promotions
+		Description: Allows construction of the Venom Gunship\nand training of Laser Commando.
+		Prerequisites: ~fact.nod, !upnodvenom, upnodspecter, rank1
+	RenderSprites:
+		Image: nodvenomlaser
+	ProvidesPrerequisite:
+		Prerequisite: upnodvenom
+
+	####################################################################################################
+	#		Promotion Units Nod
+	####################################################################################################
+
+cheme3:
+	Inherits: E3
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Chemical Rocket Soldier
+	Health:
+		HP: 10000
+	ChangesHealth@SelfHealing:
+		Step: 4
+	Mobile:
+		Speed: 59
+		Locomotor: chem
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~upchemicalrocket
+		Queue: Infantry, RAInfantry
+		Description: Soldier armed with volatile Tiberium rockets.\nCan walk over Tiberium unharmed.\nPowerful against infantry and tanks
+	Armament@PRIMARY: ##########
+		Weapon: ChemRockets
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: ChemRockets
+	Explodes:
+		Weapon: ChemRocketsExplosion
+	Targetable@Immune:
+		TargetTypes: ToxinImmune
+	-DamagedByTerrain:
+	RenderSprites:
+		Image: e3chem
+
+chembike:
+	Inherits: ^Vehicle
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits: ^GenericGroundDetector
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Chemical Attack Bike
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~upchemicalbike
+		Queue: Vehicle, RAVehicle
+		Description: Fast scout vehicle, armed with\nrockets.\nCan attack Aircraft.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+	Mobile:
+		Speed: 225
+		TurnSpeed: 45
+	Health:
+		HP: 12500
+	Repairable:
+		HpPerStep: 625
+	ChangesHealth@SelfHealing:
+		Step: 5
+	Armor:
+		Type: Light
+	Armament:
+		Weapon: ChemicalBikeRockets
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: ChemicalBikeRocketsAA
+		LocalOffset: -128, -170, 170, -128, 170, 170
+		LocalYaw: 100, -100
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	AttackFrontal:
+		FacingTolerance: 0
+	RenderSprites:
+		Image: chembike
+	Voiced:
+		VoiceSet: TSVehicle
+	Explodes:
+		Weapon: SmallTiberiumExplosion
+
+chemstnk:
+	Inherits: STNK
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Valued:
+		Cost: 1200
+	Mobile:
+		Locomotor: heavywheeled
+		Speed: 125
+		TurnSpeed: 25
+	Health:
+		HP: 40000
+	Repairable:
+		HpPerStep: 2000
+	ChangesHealth@SelfHealing:
+		Step: 32
+	Armor:
+		Type: Medium
+	Tooltip:
+		Name: Chemical Stealth Tank
+	Buildable:
+		Prerequisites: tmpl, ~upchemicalstealthtank
+		Queue: Vehicle, RAVehicle
+		BuildDuration: 750
+		BuildDurationModifier: 100
+	Armament:
+		Weapon: ChemicalStealthTankMissiles
+		LocalOffset: -128,0,256
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: ChemicalStealthTankMissilesAA
+		LocalOffset: -128,0,256
+		MuzzleSequence: muzzle
+	RenderSprites:
+		Image: chemstnk
+	WithMuzzleOverlay:
+	Explodes:
+		Weapon: TiberiumExplosion
+	-AttackFrontal:
+	AttackTurreted:
+	Turreted:
+		TurnSpeed: 25
+		Offset: -128,0,128
+		RealignDelay: 0
+	WithSpriteTurret:
+	Cloak:
+		InitialDelay: 125
+		CloakDelay: 75
+
+chemssm:
+	Inherits: ^Vehicle
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
+	Buildable:
+		BuildPaletteOrder: 100
+		Queue: Vehicle, RAVehicle
+		Description: Long-range chemical rocket artillery.\nStrong vs Infantry, Buildings\nWeak vs Aircraft
+		Prerequisites: tmpl, ~upchemicalssmlauncher
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Chemical SSM Launcher
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 30000
+	Repairable:
+		HpPerStep: 1500
+	ChangesHealth@SelfHealing:
+		Step: 12
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+	Armament:
+		Weapon: ChemicalHonestJohn
+		LocalOffset: -128,0,128
+		ReloadingCondition: reloading
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		TargetFrozenActors: True
+		FacingTolerance: 0
+	WithFacingSpriteBody:
+		RequiresCondition: !reloading
+		Name: loaded
+	WithFacingSpriteBody@EMPTY:
+		RequiresCondition: reloading
+		Sequence: empty-idle
+		Name: reloading
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		Image: chemssm
+	Explodes:
+		Weapon: BigTiberiumExplosion
+		EmptyWeapon: TiberiumExplosion
+
+nodbuggy2:
+	Inherits: BGGY
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@cargo: ^CargoVehicle
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@bot: ^BotAutoDeployTransport
+	Tooltip:
+		Name: Nod Buggy Mk2
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 50
+		Prerequisites: ~upnodbuggy2
+	Valued:
+		Cost: 600
+	Mobile:
+		Speed: 150
+		TurnSpeed: 30
+	Health:
+		HP: 30000
+	Repairable:
+		HpPerStep: 1500
+	ChangesHealth@SelfHealing:
+		Step: 12
+	RenderSprites:
+		Image: nodbuggy2
+	Turreted:
+		TurnSpeed: 60
+	Armament:
+		Weapon: MachineGunBuggy2
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: MachineGunBuggy2AA
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	Cargo:
+		InitialUnits: e1, e3, e4
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 3
+	Explodes:
+		Weapon: UnitExplodeSmall
+
+nodltnk2:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@PLD: ^PointLaserDefenseSystem
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Light Tank Mk2
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 50
+		Prerequisites: ~upnodltnk2
+		Description: Fast, light tank.\n  Strong vs Vehicles, Tanks\n  Weak vs Infantry
+	Mobile:
+		Speed: 100
+		TurnSpeed: 20
+	Health:
+		HP: 80000
+	Repairable:
+		HpPerStep: 4000
+	ChangesHealth@SelfHealing:
+		Step: 64
+	Armor:
+		Type: Medium
+	RenderRangeCircle:
+		RangeCircleType: pointdefense
+		Color: FF000088
+	Turreted:
+		TurnSpeed: 20
+	AttackTurreted:
+	Armament:
+		Weapon: LightTank2Cannon
+		Recoil: 85
+		RecoilRecovery: 25
+		LocalOffset: 720,0,90
+		MuzzleSequence: muzzle
+	RenderSprites:
+		Image: nodltnk2
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	#SpawnActorOnDeath:
+	#	Actor: LTNK.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	ReloadAmmoDelayMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 85
+	ReloadAmmoDelayMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 70
+	ReloadAmmoDelayMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 55
+	ReloadAmmoDelayMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 40
+	Explodes:
+		Weapon: UnitExplode
+
+nodftnk2:
+	Inherits: ^Tank
+	Inherits@Template: ^LineBreakerTemplate
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Valued:
+		Cost: 1300
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Tooltip:
+		Name: Flame Tank Mk2
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 50
+		Prerequisites: hq.nod, ~upnodftnk2
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+	Health:
+		HP: 150000
+	Repairable:
+		HpPerStep: 7500
+	ChangesHealth@SelfHealing:
+		Step: 120
+	Selectable:
+		DecorationBounds: 1280, 1280, 0, -128
+	Armor:
+		Type: Superheavy
+	Turreted:
+		TurnSpeed: 15
+	Armament:
+		Weapon: BigFlamer2
+		LocalOffset: 600,250,250, 600,-250,250
+		MuzzleSequence: muzzle
+	RenderSprites:
+		Image: nodftnk2
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: FlametankExplode2
+
+tsblackhandlaser:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 100
+		Prerequisites: tmpl, ~upblackhandlaser
+		Description: Elite Black Hand Laser Troopers.\nStrong vs. Tanks, Buildings, Infantry
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Laser Trooper
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 50000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Mobile:
+		Speed: 60
+	Armament@PRIMARY:
+		Weapon: BlackHandLaser
+		LocalOffset: 600,0,450
+		FireDelay: 5
+	Armament@Garrison:
+		Name: garrisoned
+		Weapon: BlackHandLaser
+	WithInfantryBody:
+		IdleSequences: idle1,idle2
+	AttackFrontal:
+		FacingTolerance: 0
+	WithSplitAttackPaletteInfantryBody:
+		DefaultAttackSequence: shoot
+	-WithInfantryBody:
+	RenderSprites:
+
+tsblackhandflamer:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@cloak: ^CloakedVehicle
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 100
+		Prerequisites: hq.nod, ~upblackhandflamer
+		Description: Elite Stealth Flamer.n\Strong vs. Infantry, Buildings
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Black Hand Flamer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 37500
+	ChangesHealth@SelfHealing:
+		Step: 30
+	Mobile:
+		Speed: 66
+	Armament@PRIMARY:
+		Weapon: TSFireballLauncher
+		LocalOffset: 384,0,256
+		FireDelay: 5
+	Armament@Garrison:
+		Name: garrisoned
+		Weapon: TSFireballLauncher
+	WithInfantryBody:
+		IdleSequences: idle1,idle2
+	AttackFrontal:
+		FacingTolerance: 0
+	WithSplitAttackPaletteInfantryBody:
+		DefaultAttackSequence: attack
+	-WithInfantryBody:
+	RenderSprites:
+		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: playerra2
+	Cloak:
+		UncloakOn: Attack, Damage
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		IsPlayerPalette: true
+		Palette: ra2cloak
+
+tsstealthsoldier:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@cloak: ^CloakedVehicle
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 100
+		Prerequisites: tmpl, ~upstealthsoldier
+		Description: Stealth Soldier with EMP missiles.\nStrong vs. Infantry
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Stealth Soldier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 25000
+	ChangesHealth@SelfHealing:
+		Step: 20
+	Mobile:
+		Speed: 72
+	Armament@PRIMARY:
+		Weapon: BHRedDarts
+		LocalOffset: 450,0,350
+		FireDelay: 5
+	Armament@AA:
+		Weapon: BHRedDartsAA
+		LocalOffset: 450,0,350
+		FireDelay: 5
+	Armament@Garrison:
+		Name: garrisoned
+		Weapon: BHRedDarts
+	WithInfantryBody:
+		IdleSequences: idle1,idle2
+	AttackFrontal:
+		FacingTolerance: 0
+	WithSplitAttackPaletteInfantryBody:
+		DefaultAttackSequence: shoot
+	-WithInfantryBody:
+	RenderSprites:
+	Cloak:
+		UncloakOn: Attack, Damage
+		CloakSound: trans1.aud
+		UncloakSound: trans1.aud
+		IsPlayerPalette: true
+
+tanodharv:
+	Inherits: HARV
+	Inherits@cloak: ^CloakedVehicle
+	Tooltip:
+		Name: Stealth Harvester
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+	Health:
+		HP: 125000
+	Repairable:
+		HpPerStep: 6250
+	ChangesHealth@SelfHealing:
+		Step: 50
+	Harvester:
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+	StoresResources:
+		Capacity: 25
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~upstealthsoldier
+		Queue: Vehicle, RAVehicle
+	RenderSprites:
+		Image: tanodharv
+
+nodspecter:
+	Inherits: ^Tank
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@cloak: ^CloakedVehicle
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Specter
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Prerequisites: hq.nod, ~upnodspecter
+		BuildPaletteOrder: 60
+		Queue: Vehicle, RAVehicle
+		Description: Long-range stealth artillery.\nStrong vs Infantry, Buildings.\nWeak vs Aircraft
+	Mobile:
+		Speed: 100
+		TurnSpeed: 20
+	Health:
+		HP: 22500
+	Repairable:
+		HpPerStep: 1125
+	ChangesHealth@SelfHealing:
+		Step: 9
+	Armor:
+		Type: Light
+	Armament:
+		Weapon: SpecterArtilleryShell
+		LocalOffset: 500,0,500
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		TargetFrozenActors: True
+		FacingTolerance: 0
+	WithMuzzleOverlay:
+	AutoTarget:
+		InitialStanceAI: Defend
+	Explodes:
+		Weapon: SpecterArtilleryShell
+	RenderSprites:
+		Image: nodspecter
+	Voiced:
+		VoiceSet: TSVehicle
+	Cloak:
+		UncloakOn: Attack, Damage
+
+nodvenom:
+	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@cloak: ^CloakedAircraft
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Venom
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: tmpl, ~upnodvenom
+		Queue: Aircraft, RAAircraft
+		Description: Gunship with Laser.\nCan attack both ground and air.
+	Aircraft:
+		TurnSpeed: 48
+		Speed: 240
+	Health:
+		HP: 22500
+	ChangesHealth@SelfHealing:
+		Step: 18
+	Armament@PRIMARY:
+		Weapon: VenomLaser
+		LocalOffset: 750,0,-250
+		PauseOnCondition: !ammo
+	Armament@AA:
+		Weapon: VenomLaserAA
+		LocalOffset: 750,0,-250
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 80
+		OpportunityFire: false
+		PersistentTargeting: false
+		AttackType: Hover
+	AmmoPool:
+		Ammo: 3
+		AmmoCondition: ammo
+	SpawnActorOnDeath:
+		Actor: nodvenom.husk
+	SelectionDecorations:
+	ReloadAmmoPool:
+		Delay: 40
+		Count: 1
+	Selectable:
+		DecorationBounds: 1280, 1024
+	RenderSprites:
+		Image: nodvenom
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 3
+	Cloak:
+		UncloakOn: Attack, Damage
+
+nodvenom.husk:
+	Inherits: ^SmallHelicopterHusk
+	Tooltip:
+		Name: Venom
+	Aircraft:
+		TurnSpeed: 16
+		Speed: 186
+	RenderSprites:
+		Image: nodvenom
+
+nodlasercommando:
+	Inherits: ^Soldier
+	Inherits@deathanim: ^RA2InfantryDeathAnimations
+	Inherits@Template: ^HeroInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
+	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@PD: ^PointLaserDefenseSystem
+	Inherits@cloak: ^CloakedVehicle
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Laser Commando
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildLimit: 1
+		BuildPaletteOrder: 50
+		Prerequisites: tmpl, ~upnodvenom
+		Queue: Infantry, RAInfantry
+		Description: The Laser Comamndo is armed with a powerful Laser Gun\nthat can also shoot down enemy missiles.\nShe also has a mobile stealth generator\nand can plant C4 charges.\nStrong vs Everything
+	RenderSprites:
+		PlayerPalette: playerra2
+	Mobile:
+		Speed: 80
+		Voice: Move
+	Guard:
+		Voice: Move
+	Health:
+		HP: 40000
+	ChangesHealth@SelfHealing:
+		Step: 32
+	Passenger:
+		Voice: Move
+	AttackMove:
+		Voice: Action
+	RenderRangeCircle:
+		RangeCircleType: pointdefense
+		Color: FF000088
+	ProducibleWithLevel:
+		InitialLevels: 1
+	Cloak:
+		UncloakOn: Attack, Damage
+		Palette: ra2cloak
+	Armament:
+		Name: primary
+		Weapon: NodCommandoLaser
+		LocalOffset: 256,64,512
+		PauseOnCondition: !pdammo
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: NodCommandoLaser
+	Armament@c4:
+		Weapon: GenericC4
+		Cursor: c4
+		OutsideRangeCursor: c4
+	PointDefense:
+	Armament@pointdefense:
+		Weapon: NodCommandoLaser
+	AmmoPool@pld:
+		Ammo: 25
+		Armaments: primary, pointdefense
+	ReloadAmmoPool@pld:
+		Delay: 10
+		Count: 1
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	AttackMove:
+		Voice: Attack
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		IdleSequences: idle1,idle2,idle3
+	AnnounceOnKill:
+	Voiced:
+		VoiceSet: LaserCommandoVoice
+		Volume: 1.5
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: infantry ##########
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		FullSequence: pip-red
+		PipCount: 5
+	ReloadAmmoDelayMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 85
+	ReloadAmmoDelayMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 70
+	ReloadAmmoDelayMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 55
+	ReloadAmmoDelayMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 40
+
+	####################################################################################################
+	#		Promotions GDI
+	####################################################################################################
+
+upgdimissilesoldier:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Missile Soldier
+	Buildable:
+		BuildPaletteOrder: 13
+		Queue: Promotions
+		Description: Allows training of Missile Soldiers.
+		Prerequisites: ~fact.gdi, !upgdimissilesoldier, rank1
+	RenderSprites:
+		Image: gdimissilesoldier
+	ProvidesPrerequisite:
+		Prerequisite: upgdimissilesoldier
+
+upgdiempgrenadier:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock EMP Grenadier
+	Buildable:
+		BuildPaletteOrder: 16
+		Queue: Promotions
+		Description: Allows training of EMP Grenadiers.
+		Prerequisites: ~fact.gdi, !upgdiempgrenadier, upgdimissilesoldier, rank1
+	RenderSprites:
+		Image: gdiempgrenadier
+	ProvidesPrerequisite:
+		Prerequisite: upgdiempgrenadier
+
+upgdisniper:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Sniper
+	Buildable:
+		BuildPaletteOrder: 19
+		Queue: Promotions
+		Description: Allows training of Snipers.
+		Prerequisites: ~fact.gdi, !upgdisniper, upgdiempgrenadier, rank1
+	RenderSprites:
+		Image: gdisniper
+	ProvidesPrerequisite:
+		Prerequisite: upgdisniper
+
+upgdiassaultapc:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Assault APC
+	Buildable:
+		BuildPaletteOrder: 22
+		Queue: Promotions
+		Description: Allows construction of the Assault APC.
+		Prerequisites: ~fact.gdi, !upgdiassaultapc, upgdisniper, rank1
+	RenderSprites:
+		Image: gdiassaultapc
+	ProvidesPrerequisite:
+		Prerequisite: upgdiassaultapc
+
+upgdihumvee:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Humvee Mk. II
+	Buildable:
+		BuildPaletteOrder: 14
+		Queue: Promotions
+		Description: Allows construction of the Humvee Mk. II.
+		Prerequisites: ~fact.gdi, !upgdihumvee, rank1
+	RenderSprites:
+		Image: newhumvee
+	ProvidesPrerequisite:
+		Prerequisite: upgdihumvee
+
+upgdipredator:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Predator Tank
+	Buildable:
+		BuildPaletteOrder: 17
+		Queue: Promotions
+		Description: Allows construction of the Predator Tank.
+		Prerequisites: ~fact.gdi, !upgdipredator, upgdihumvee, rank1
+	RenderSprites:
+		Image: gdipredator
+	ProvidesPrerequisite:
+		Prerequisite: upgdipredator
+
+upgdimammoth3:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Mammoth Tank Mk3
+	Buildable:
+		BuildPaletteOrder: 20
+		Queue: Promotions
+		Description: Allows construction of the Mammoth Tank Mk3.
+		Prerequisites: ~fact.gdi, !upgdimammoth3, upgdipredator, rank1
+	RenderSprites:
+		Image: gdimammoth3
+	ProvidesPrerequisite:
+		Prerequisite: upgdimammoth3
+
+upgdiexosuit:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Experimental Exosuit
+	Buildable:
+		BuildPaletteOrder: 23
+		Queue: Promotions
+		Description: Allows construction of the Experimental Exosuit.
+		Prerequisites: ~fact.gdi, !upgdiexosuit, upgdimammoth3, rank1
+	RenderSprites:
+		Image: gdiexosuit
+	ProvidesPrerequisite:
+		Prerequisite: upgdiexosuit
+
+upgdishotgunner:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Shotgunner
+	Buildable:
+		BuildPaletteOrder: 15
+		Queue: Promotions
+		Description: Allows training of Shotgunners.
+		Prerequisites: ~fact.gdi, !upgdishotgunner, rank1
+	RenderSprites:
+		Image: gdishotgunner
+	ProvidesPrerequisite:
+		Prerequisite: upgdishotgunner
+
+upgdiofficer:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock GDI Officer
+	Buildable:
+		BuildPaletteOrder: 18
+		Queue: Promotions
+		Description: Allows training of GDI Officers.
+		Prerequisites: ~fact.gdi, !upgdiofficer, upgdishotgunner, rank1
+	RenderSprites:
+		Image: gdiofficer
+	ProvidesPrerequisite:
+		Prerequisite: upgdiofficer
+
+upgdihavoc:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Havoc
+	Buildable:
+		BuildPaletteOrder: 21
+		Queue: Promotions
+		Description: Allows training of Havoc.
+		Prerequisites: ~fact.gdi, !upgdihavoc, upgdiofficer, rank1
+	RenderSprites:
+		Image: gdihavoc
+	ProvidesPrerequisite:
+		Prerequisite: upgdihavoc
+
+upgdifirehawk:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Firehawk
+	Buildable:
+		BuildPaletteOrder: 24
+		Queue: Promotions
+		Description: Allows construction of the Firehawk.
+		Prerequisites: ~fact.gdi, !upgdifirehawk, upgdihavoc, rank1
+	RenderSprites:
+		Image: gdifirehawk
+	ProvidesPrerequisite:
+		Prerequisite: upgdifirehawk
+
+	####################################################################################################
+	#		Promotion Units GDI
+	####################################################################################################
+
+gdimissilesoldier:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Sonic Missile Soldier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~upgdimissilesoldier
+		Queue: Infantry, RAInfantry
+		Description: Advanced Anti-tank/Anti-aircraft infantry.\nStrong vs Tanks, Aircraft\nWeak vs Infantry
+	Mobile:
+		Speed: 51
+	Health:
+		HP: 12500
+	ChangesHealth@SelfHealing:
+		Step: 10
+	AutoTarget:
+		ScanRadius: 7
+	Armament@PRIMARY: ##########
+		Weapon: MissileSoldierWeapon
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: MissileSoldierWeapon
+	TakeCover:
+		ProneOffset: 180,0,-200
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+	RenderSprites:
+		PlayerPalette: raplayer
+
+gdiempgrenadier:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: EMP Grenadier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~upgdiempgrenadier
+		Queue: Infantry, RAInfantry
+		Description: Fast infantry armed with grenades.\nStrong vs Buildings, slow-moving targets
+	Mobile:
+		Speed: 66
+	Health:
+		HP: 16000
+	ChangesHealth@SelfHealing:
+		Step: 12
+	AutoTarget:
+		ScanRadius: 5
+	Armament:
+		Weapon: EMPGrenade
+		LocalOffset: 0,0,427
+		FireDelay: 5
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: EMPGrenade
+		FireDelay: 5
+	TakeCover:
+		ProneOffset: 300,0,-227
+	WithInfantryBody:
+		DefaultAttackSequence: throw
+	Explodes:
+		Weapon: EMPGrenade
+		EmptyWeapon: EMPGrenade
+		Chance: 100
+	Voiced:
+		VoiceSet: TSInfantry
+
+gdisniper:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^SniperInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: GDI Sniper
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: hq.gdi, ~upgdisniper
+		Queue: Infantry, RAInfantry
+		Description: Advanced anti-infantry unit.\nArmed with an anti material rifle.\nCan also damage Vehicles and Structures.\nStrong vs Infantry, Light Vehicles.\nWeak vs Aircraft
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 15000
+	ChangesHealth@SelfHealing:
+		Step: 6
+	Armament:
+		Weapon: GDISniperRifle
+		LocalOffset: 0,0,427
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: GDISniperRifle
+	TakeCover:
+		ProneOffset: 300,0,-227
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	Voiced:
+		VoiceSet: TSUmagon
+
+gdiassaultapc:
+	Inherits: ^Tank
+	Inherits@Template: ^LineBreakerTemplate
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@cargo: ^CargoVehicle
+	Inherits@botmicro: ^BotAutoDeployEvacuateCargo
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Assault APC
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 40
+		Prerequisites: eye, ~upgdiassaultapc
+	Mobile:
+		Speed: 125
+		TurnSpeed: 25
+	Health:
+		HP: 125000
+	Repairable:
+		HpPerStep: 2000
+	ChangesHealth@SelfHealing:
+		Step: 100
+	Armor:
+		Type: Heavy
+	RenderSprites:
+		Image: gdiassaultapc
+	WithMuzzleOverlay:
+	AttackFrontal:
+		FacingTolerance: 0
+	Turreted:
+		TurnSpeed: 25
+		Offset: 100,0,250
+	Cargo:
+		UnloadVoice: Move
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 8
+		InitialUnits: e1,e2,e3,gdimissilesoldier,gdiempgrenadier,gdishotgunner,gdiofficer,gdisniper
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, 224,341,128, 0,-341,128, 0,341,128, -224,-341,128, -224,341,128, -384,0,128
+		PauseOnCondition: chronobeamed
+	RevealOnFire:
+		ArmamentNames: primary, garrisoned
+	Armament:
+		Weapon: MachineGunHumvee2
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: MachineGunHumvee2AA
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	Voiced:
+		VoiceSet: BattleFortressVoice
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Explodes:
+		Weapon: UnitExplodeBig
+
+gdihumvee:
+	Inherits: JEEP
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@cargo: ^CargoVehicle
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@bot: ^BotAutoDeployTransport
+	Tooltip:
+		Name: Humvee Mk2
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 375
+		BuildDurationModifier: 100
+		Prerequisites: ~upgdihumvee
+		Queue: Vehicle, RAVehicle
+		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
+	Valued:
+		Cost: 700
+	Mobile:
+		Speed: 125
+		TurnSpeed: 25
+	Health:
+		HP: 40000
+	Repairable:
+		HpPerStep: 2000
+	ChangesHealth@SelfHealing:
+		Step: 16
+	Turreted:
+		TurnSpeed: 50
+		Offset: -150,0,300
+	Armament:
+		Weapon: MachineGunHumvee2
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: MachineGunHumvee2AA
+		LocalOffset: 171,0,43
+		MuzzleSequence: muzzle
+	RenderSprites:
+		Image: newhumvee
+	Cargo:
+		InitialUnits: e1, e2, e3
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 3
+	Explodes:
+		Weapon: UnitExplodeSmall
+
+gdipredator:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Predator Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~upgdipredator
+		Queue: Vehicle, RAVehicle
+		Description: Heavily armored GDI Tank.\nCan attack Aircraft.\n  Strong vs Everything
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 90
+		TurnSpeed: 18
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 140000
+	Repairable:
+		HpPerStep: 7000
+	ChangesHealth@SelfHealing:
+		Step: 112
+	Armor:
+		Type: Heavy
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 18
+	Armament@PRIMARY:
+		Weapon: GDIPredatorTankCannon
+		LocalOffset: 900,0,350
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: GDIPredatorTankMissiles
+		LocalOffset: 512,-256,128
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle
+		FireDelay: 10
+	Armament@Lights:
+		Weapon: GDIPredatorBlueLaser
+		LocalOffset: 512,128,128
+	AttackTurreted:
+	WithMuzzleOverlay:
+	Explodes:
+		Weapon: UnitExplodeMech
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		Image: gdipredator
+	Voiced:
+		VoiceSet: TSVehicle
+
+gdimammoth3:
+	Inherits: ^Tank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Mammoth Tank Mk3
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: eye, ~upgdimammoth3
+		Queue: Vehicle, RAVehicle
+		Description: Heavily armored GDI Tank.\nCan attack Aircraft.\n  Strong vs Everything
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 55
+		TurnSpeed: 11
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 300000
+	Repairable:
+		HpPerStep: 15000
+	ChangesHealth@SelfHealing:
+		Step: 240
+	Armor:
+		Type: Superheavy
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 11
+	Armament@PRIMARY:
+		Weapon: MammothTank3Cannons
+		LocalOffset: 900,200,350, 900,-200,350
+		Recoil: 170
+		RecoilRecovery: 42
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: MammothTank3Missiles
+		LocalOffset: -90,400,350, -90,-400,350
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Name: secondary
+		Weapon: MammothTank3MissilesAA
+		LocalOffset: -90,400,350, -90,-400,350
+		LocalYaw: -100, 100
+		Recoil: 10
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	Explodes:
+		Weapon: UnitExplodeBig
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1536, 1536
+	RenderSprites:
+		Image: gdimammoth3
+	Voiced:
+		VoiceSet: TSVehicle
+
+gdiexosuit:
+	Inherits: ^Vehicle
+	Inherits@Template: ^EpicVehicleTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiDef: ^PrioritizeDefence
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Experimental Exosuit
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildLimit: 1
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 20
+		Prerequisites: eye, ~upgdiexosuit
+		Description: Anti-personnel walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
+	Mobile:
+		TurnSpeed: 20
+		Speed: 100
+		Locomotor: wheeled
+	Health:
+		HP: 200000
+	ChangesHealth@SelfHealing:
+		Step: 160
+	Armor:
+		Type: Medium
+	AttackFrontal:
+		FacingTolerance: 0
+	# Armament:
+	# 	Weapon: TDShotgunG
+	# 	LocalOffset: -200, 200, 200, -200, -200, 200
+	# 	LocalYaw: 100, -100
+	Armament@Railgun:
+		Weapon: ExosuitRailgun
+		LocalOffset: 300, 300, 300, 300, -300, 300
+		LocalYaw: 100, -100
+	# Armament@AA:
+	# 	Weapon: MachineGunH.AA
+	# 	LocalOffset: -200, 200, 200, -200, -200, 200
+	# 	LocalYaw: 100, -100
+	# Armament@ROCKET:
+	# 	Weapon: APCRocket.AA
+	# 	LocalOffset: -200, 200, 200, -200, -200, 200
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	WithFacingSpriteBody:
+		Sequence: stand
+	WithAttackAnimation:
+		Sequence: shoot
+	WithMoveAnimation:
+		MoveSequence: walk
+		ValidMovementTypes: Horizontal, Turn
+	Explodes:
+		Weapon: UnitExplodeMech
+
+gdishotgunner:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Shotgunner
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~upgdishotgunner
+		Queue: Infantry, RAInfantry
+		Description: General-purpose infantry.\n Stronger in close combat vs Multiple Units.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 76
+	Health:
+		HP: 20000
+	ChangesHealth@SelfHealing:
+		Step: 16
+	Armament@PRIMARY: ##########
+		Weapon: TDShotgun
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: TDShotgun
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	RenderSprites:
+		Image: gdishotgunner
+
+gdiofficer:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^LightInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	-ExternalCondition@GDIOfficerLeadership:
+	Tooltip:
+		Name: GDI Officer
+	Valued:
+		Cost: 700
+	Mobile:
+		Speed: 77
+	Health:
+		HP: 15000
+	ChangesHealth@SelfHealing:
+		Step: 6
+	Buildable:
+		Prerequisites: hq.gdi, ~upgdiofficer
+		Queue: Infantry, RAInfantry
+		Description: Officer with a heavy machine gun.\nGives morale boost to nearby units to increase movement speed and firerate by 20%.\nCan attack Air units
+	Armament@PRIMARY:
+		Weapon: OfficerMachineGun
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: OfficerMachineGun
+		MuzzleSequence: garrison-muzzle
+	ProducibleWithLevel:
+		InitialLevels: 1
+	ProximityExternalCondition@Leadership:
+		Range: 3333
+		ValidRelationships: Ally
+		Condition: GDIOfficerLeadership
+	ProximityExternalCondition@propaganda:
+		Range: 3333
+		ValidRelationships: Ally
+		Condition: propaganda
+	WithRangeCircle:
+		Range: 3333
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: infantry ##########
+	WithDecoration@CARRYALL:
+		Image: d2k_pips
+		Sequence: pickup-indicator
+		ValidRelationships: Ally, Enemy, Neutral
+
+gdihavoc:
+	Inherits: ^Soldier
+	Inherits@anim: ^RA2InfantryDeathAnimations
+	Inherits@Template: ^HeroInfantryTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@MC: ^MCImmune
+	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Havoc
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildLimit: 1
+		BuildPaletteOrder: 50
+		Prerequisites: eye, ~upgdihavoc
+		Queue: Infantry, RAInfantry
+		Description: Havoc is a one man army.\nHe is armed with a sniper, a heavy machine gun, \na rocket launcher, a grenade launcher and C4 charges.\nStrong vs Everything
+	RenderSprites:
+		PlayerPalette: playerra2
+	Mobile:
+		Speed: 71
+		Voice: Move
+	Crushable:
+		CrushClasses: vehicle
+	Guard:
+		Voice: Move
+	Health:
+		HP: 100000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	Passenger:
+		Voice: Move
+	ProducibleWithLevel:
+		InitialLevels: 1
+	Armament@Sniper:
+		Weapon: CommandoSniper
+		LocalOffset: 256,64,512
+		AmmoUsage: 5
+		PauseOnCondition: ammo < 5
+	Armament@Rocket:
+		Weapon: CommandoRocketLauncher
+		LocalOffset: 128,64,384
+		AmmoUsage: 5
+		PauseOnCondition: ammo < 5
+	Armament@Grenade:
+		Weapon: CommandoGrenadeLauncher
+		LocalOffset: 128,0,384
+		AmmoUsage: 5
+		PauseOnCondition: ammo < 5
+	Armament@M16:
+		Weapon: CommandoM16
+		LocalOffset: 256,64,512
+		PauseOnCondition: ammo < 5
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: CommandoM16
+	Armament@c4:
+		Weapon: GenericC4
+		Name: secondary
+		Cursor: c4
+		OutsideRangeCursor: c4
+		Voice: Demolish
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	AttackMove:
+		Voice: Attack
+	WithInfantryBody:
+		-DefaultAttackSequence:
+		AttackSequences:
+			primary: shoot
+		IdleSequences: idle1,idle2,idle3
+	AnnounceOnKill:
+	Voiced:
+		VoiceSet: CommandoVoice
+	AmmoPool:
+		Ammo: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 2
+		Count: 1
+		ResetOnFire: true
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+	ReloadAmmoDelayMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 90
+	ReloadAmmoDelayMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 80
+	ReloadAmmoDelayMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 65
+	ReloadAmmoDelayMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 50
+
+gdifirehawk:
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^BomberTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 50
+		Prerequisites: eye, ~upgdifirehawk
+		Description: Durable bomber with additional Anti Air Missiles.\nStrong vs Everything
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Firehawk
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 150000
+	ChangesHealth@SelfHealing:
+		Step: 120
+	Armament:
+		Weapon: FirehawkMissiles
+		LocalOffset: 0,-960,0, 0,960,0, 0,-480,0, 0,480,0
+		LocalYaw: 50, -50, 25, -25
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	Armament@BOMBS:
+		Weapon: FirehawkBomb
+		LocalOffset: 0,-256,-64, 0,256,-64
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 80
+		StrafeRunLength: 2500
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 225
+		IdealSeparation: 2500
+	Selectable:
+		Bounds: 1280, 1280, 0, 64
+	SelectionDecorations:
+	WithMuzzleOverlay:
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	SpawnActorOnDeath:
+		Actor: gdifirehawk.Husk
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+		RequiresCondition: enable-smoke
+	Voiced:
+		VoiceSet: TSVehicle
+	AmmoPool:
+		Ammo: 8
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 100
+		Count: 2
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 4
+	GrantConditionOnDamageState@SmokeTrail:
+		Condition: enable-smoke
+
+gdifirehawk.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Firehawk
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	Aircraft:
+		TurnSpeed: 22
+		Speed: 176
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: gdifirehawk
