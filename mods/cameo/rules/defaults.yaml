@@ -4,6 +4,8 @@
 	CombatDebugOverlay:
 	GivesExperience:
 		PlayerExperienceModifier: 100
+	GivesExperienceToMasterOrTransport:
+		ActorExperienceModifierOnTransport: 10000
 	ScriptTriggers:
 	RenderDebugState:
 
@@ -351,6 +353,8 @@
 	SpeedMultiplier@RANK-ELITE:
 		RequiresCondition: rank-elite
 		Modifier: 135
+	ActorStatValues:
+		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Kills
 
 ^GainsExperienceMelee:
 	Inherits: ^GainsExperienceMobile
@@ -763,29 +767,21 @@
 	Inherits@GainsExperience: ^GainsExperienceMobile
 	ProducibleWithLevel@spyvehicles:
 		Prerequisites: vehicles.upgraded
-	ActorStatValues:
-		Stats: Armor, Sight, Speed, None, ReloadDelay, MaxRange
 
 ^GainsExperienceAircraft:
 	Inherits@GainsExperience: ^GainsExperienceMobile
 	ProducibleWithLevel@spyaircraft:
 		Prerequisites: aircraft.upgraded
-	ActorStatValues:
-		Stats: Armor, Sight, Speed, None, ReloadDelay, MaxRange
 
 ^GainsExperienceInfantry:
 	Inherits@GainsExperience: ^GainsExperienceMobile
 	ProducibleWithLevel@spyinfantry:
 		Prerequisites: infantry.upgraded
-	ActorStatValues:
-		Stats: Armor, Sight, Speed, None, ReloadDelay, MaxRange
 
 ^GainsExperienceShips:
 	Inherits@GainsExperience: ^GainsExperienceMobile
 	ProducibleWithLevel@spyships:
 		Prerequisites: ships.upgraded
-	ActorStatValues:
-		Stats: Armor, Sight, Speed, None, ReloadDelay, MaxRange
 
 ^ScoutInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
@@ -865,7 +861,7 @@
 	Buildable:
 		BuildDurationModifier: 50
 	ActorStatValues:
-		Stats: Armor, Sight, Speed, None, ReloadDelay
+		Stats: Armor, Sight, Speed, Damage, ReloadDelay, Kills
 
 ^SniperInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
@@ -964,9 +960,7 @@
 		BuildDuration: 500
 		BuildDurationModifier: 100
 
-^MainBattleTankTemplate:
-	Inherits@EXPERIENCE: ^GainsExperienceVehicle
-	Inherits@EXT: ^ExternalConditions
+^MBTBuff:
 	DamageMultiplier@MBTBuff:
 		Modifier: 80
 	FirepowerMultiplier@MBTBuff:
@@ -976,23 +970,20 @@
 		Delay: 1
 		StartIfBelow: 100
 		DamageCooldown: 1
-	RevealsShroud:
-		Range: 6000
 	Buildable:
 		BuildDurationModifier: 40
+
+^MainBattleTankTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceVehicle
+	Inherits@EXT: ^ExternalConditions
+	Inherits@buff: ^MBTBuff
+	RevealsShroud:
+		Range: 6000
 
 ^HighTechTankTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
-	DamageMultiplier@HighTechBuff:
-		Modifier: 80
-	FirepowerMultiplier@HighTechBuff:
-		Modifier: 125
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
+	Inherits@buff: ^MBTBuff
 	RevealsShroud:
 		Range: 7000
 	Buildable:
@@ -2705,7 +2696,7 @@
 		Offsets:
 			powerdown: -10, 0
 	ActorStatValues:
-		Stats: Armor, Sight, None, None, None, None, None, Power
+		Stats: Armor, Sight, Power
 
 ^CivBuilding:
 	Inherits: ^Building
@@ -2730,6 +2721,8 @@
 		RedTint: 0.2
 		GreenTint: 0.1
 		BlueTint: 0.05
+	Targetable:
+		RequiresCondition: !damaged && !untargetable
 
 ^CivBuildingHusk:
 	Inherits@1: ^SpriteActor
@@ -2808,7 +2801,6 @@
 	RenderSprites:
 		PlayerPalette: playerra
 	WithSpriteBody:
-		#IsPlayerPalette: true
 	TerrainLightSource:
 		Range: 3333
 		Intensity: 0.1
@@ -2941,7 +2933,10 @@
 	WithGarrisonPipsDecoration:
 		Position: BottomLeft
 		Margin: 4, 3
+		PipStride: 4, 0
 		RequiresSelection: true
+		Image: garpips
+		Palette: ra_temperat
 		CustomPipSequences:
 			civilian: pip-gray
 			engineer: pip-yellow
@@ -2959,14 +2954,21 @@
 		RequiresCondition: damaged
 	ChangesHealth@regen:
 		PercentageStep: 1
-		Delay: 30
-		DamageCooldown: 250
+		Delay: 60
+		DamageCooldown: 1000
 		StartIfBelow: 101
 	DamageMultiplier@husk:
 		Modifier: 0
 		RequiresCondition: damaged
+	WithIdleOverlay@flag:
+		Image: garrison_flag
+		Sequence: idle
+		Offset: 0,0,-512
+		Palette: playerra
+		IsPlayerPalette: true
+		RequiresCondition: loaded
 	ActorStatValues:
-		Stats: Armor, Sight, None, None, ReloadDelay, MaxRange, Cargo
+		Stats: Armor, Sight, Cargo
 
 ^Wall:
 	Inherits@1: ^SpriteActor
@@ -3307,6 +3309,8 @@
 	AutoTarget:
 		InitialStance: AttackAnything
 		InitialStanceAI: AttackAnything
+	ActorStatValues:
+		Stats: Armor, Sight, Damage, ReloadDelay, MaxRange, Power, Kills
 
 ^Defense:
 	Inherits: ^BaseBuilding
@@ -3314,8 +3318,6 @@
 	-GivesBuildableArea:
 	-CommandBarBlacklist:
 	-AcceptsDeliveredCash:
-	ActorStatValues:
-		Stats: Armor, Sight, Speed, None, ReloadDelay, MaxRange, None, Power
 
 ^DisabledOverlay:
 	WithColoredOverlay@IDISABLE:
@@ -4604,7 +4606,7 @@ CPQDEBUGDUMMY:
 	HarvesterBalancer:
 		Condition: harv-balance
 	ActorStatValues:
-		Stats: Armor, Sight, Speed, None, None, None, Harvester
+		Stats: Armor, Sight, Speed, None, Harvester
 
 ^RearmableAircraft:
 	Rearmable:
@@ -5192,7 +5194,7 @@ CPQDEBUGDUMMY:
 		Modifier: 150
 		RequiresCondition: acumulatorbonus
 	ActorStatValues:
-		Stats: Armor, Sight, None, None, None, None, None, Power
+		Stats: Armor, Sight, Power
 
 ^Refinery:
 	CashHackable:
@@ -5590,7 +5592,7 @@ CPQDEBUGDUMMY:
 			engineer: pip-yellow
 			special: pip-blue
 			hero: pip-red
-			civilian: pip-grey
+			civilian: pip-gray
 	WithCargoSounds:
 		EnterSounds: ugarris.wav
 		ExitSounds: ugarris.wav
@@ -5606,7 +5608,7 @@ CPQDEBUGDUMMY:
 	Targetable@garrisoned:
 		TargetTypes: GarrisonedNBC
 	ActorStatValues:
-		Stats: Armor, Sight, None, None, ReloadDelay, MaxRange, Cargo, Power
+		Stats: Armor, Sight, Cargo, ReloadDelay, MaxRange, Power, Kills
 
 ^PointLaserDefenseSystem:
 	#Turreted@pointdefense:
@@ -5719,6 +5721,8 @@ CPQDEBUGDUMMY:
 		RemoveInstead: true
 		RequiresCondition: !loaded && botmicro
 		Delay: 100
+	ActorStatValues:
+		Stats: Armor, Sight, Speed, Cargo
 
 ^BotAutoDeployOnAttack:
 	Inherits: ^BotMicromanageable
@@ -5753,10 +5757,10 @@ CPQDEBUGDUMMY:
 		RequiresCondition: usebomb && botmicro
 
 ^BotAutoDeployEvacuateCargo:
-	Inherits: ^BotAutoDeployOnLowHealth
-	AutoDeployer:
-		DeployTrigger: Damage
-		RequiresCondition: usebomb && botmicro && loaded
+	#Inherits: ^BotAutoDeployOnLowHealth
+	#AutoDeployer:
+	#	DeployTrigger: Damage
+	#	RequiresCondition: usebomb && botmicro && loaded
 
 ^upgrade.template:
 	Buildable:
@@ -5807,19 +5811,19 @@ CPQDEBUGDUMMY:
 			engineer: pip-yellow
 			special: pip-blue
 			hero: pip-red
-			civilian: pip-grey
+			civilian: pip-gray
 
 ^CargoVehicle:
 	Inherits: ^Cargo
 	Mobile:
 		PauseOnCondition: disabled || notmobile
 	ActorStatValues:
-		Stats: Armor, Sight, Speed, None, ReloadDelay, MaxRange, Cargo
+		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Cargo, Kills
 
 ^CargoAircraft:
 	Inherits: ^Cargo
 	ActorStatValues:
-		Stats: Armor, Sight, Speed, None, ReloadDelay, MaxRange, Cargo
+		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Cargo, Kills
 
 ^WithSpecialCargoPip:
 	Passenger:

@@ -171,6 +171,9 @@ namespace OpenRA.Mods.CA.Traits
 		int protectionForceTicks;
 		int minAttackForceDelayTicks;
 
+		int protectOwnTicks;
+		Actor protectOwnFrom;
+
 		int desiredAttackForceValue;
 		int desiredAttackForceSize;
 
@@ -383,6 +386,9 @@ namespace OpenRA.Mods.CA.Traits
 				unitsHangingAroundTheBase.RemoveAll(u => unitCannotBeOrdered(u.Actor));
 				CreateAttackForce(bot);
 			}
+
+			if (--protectOwnTicks <= 0 && protectOwnFrom != null)
+				ProtectOwn(protectOwnFrom);
 		}
 
 		public void SetAirStrikeTarget(Actor target)
@@ -468,16 +474,6 @@ namespace OpenRA.Mods.CA.Traits
 			// Notifying here rather than inside the loop, should be fine and saves a bunch of notification calls
 			foreach (var n in notifyIdleBaseUnits)
 				n.UpdatedIdleBaseUnits(unitsHangingAroundTheBase);
-
-			var protectSq = GetSquadOfType(SquadCAType.Protection);
-			if (protectSq != null)
-			{
-				protectSq.Units = unitsHangingAroundTheBase;
-				return;
-			}
-
-			protectSq = RegisterNewSquad(bot, SquadCAType.Protection, null);
-			protectSq.Units = unitsHangingAroundTheBase;
 		}
 
 		void CreateAttackForce(IBot bot)
@@ -521,13 +517,25 @@ namespace OpenRA.Mods.CA.Traits
 
 		void ProtectOwn(Actor attacker)
 		{
-			foreach (var s in Squads.Where(s => s.IsValid))
-			{
-				if (s.Type != SquadCAType.Protection && (s.CenterPosition - attacker.CenterPosition).LengthSquared > WDist.FromCells(Info.ProtectUnitScanRadius).LengthSquared)
-					continue;
+			protectOwnFrom = null;
+			protectOwnTicks = Info.ProtectInterval;
 
-				s.TargetActor = attacker;
+			var protectSq = GetSquadOfType(SquadCAType.Protection);
+			if (protectSq == null)
+				protectSq = RegisterNewSquad(bot, SquadCAType.Protection, attacker);
+
+			if (!protectSq.IsValid)
+			{
+				var ownUnits = World.FindActorsInCircle(World.Map.CenterOfCell(GetRandomBaseCenter()), WDist.FromCells(Info.ProtectUnitScanRadius))
+					.Where(unit => unit.Owner == Player && unit.Info.HasTraitInfo<AttackBaseInfo>() && !unit.Info.HasTraitInfo<BuildingInfo>()
+						&& !unit.Info.HasTraitInfo<HarvesterInfo>() && !unit.Info.HasTraitInfo<AircraftInfo>());
+
+				foreach (var a in ownUnits)
+					protectSq.Units.Add(new UnitWposWrapper(a));
 			}
+
+			if (protectSq.IsValid && !protectSq.IsTargetValid)
+				protectSq.TargetActor = attacker;
 		}
 
 		void IBotPositionsUpdated.UpdatedBaseCenter(CPos newLocation)
