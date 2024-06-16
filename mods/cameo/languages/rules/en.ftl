@@ -141,6 +141,10 @@ actor-hq-gdi =
       Requires power to operate.
    .name = GDI Communications Center
 
+power-td-airstrike =
+   .description = A-10 planes strafe and bomb the target.
+   .name = Air Strike
+
 actor-eye =
    .description = Provides advanced GDI technologies.
       Can be upgraded with an ion cannon uplink.
@@ -386,11 +390,9 @@ actor-dtrk =
    .name = Demolition Truck
 
 actor-ctnk =
-   .description = Armed with anti-ground missiles.
+   .description = Armed with missiles.
     Can teleport anywhere.
-      Strong vs Vehicles, Buildings
-      Weak vs Infantry, Aircraft
-      Special ability: Can teleport
+      Strong vs Everything
    .name = Chrono Tank
 
 actor-qtnk =
@@ -429,6 +431,11 @@ actor-sapc =
       Strong vs Light armor
       Weak vs Infantry, Tanks, Aircraft
    .name = Phase Transport
+
+actor-rapierjumpjet =
+   .description = Fast multirole fighter-bomber.
+      Strong vs Aircraft, Buildings
+   .name = Rapier Jumpjet
 
 actor-mortarsoldier =
    .name = Mortar Soldier
@@ -828,6 +835,13 @@ actor-flakt =
       Strong vs Infantry, Aircraft
       Weak vs Vehicles
 
+actor-shk =
+   .description = Heavy infantry with portable Tesla coils.
+      Can charge tesla coils.
+      Strong vs Infantry, Vehicles
+      Weak vs Aircraft
+   .name = Tesla Trooper
+
 actor-ra2harv =
    .name = War Miner
    .description = Collects resources.
@@ -985,6 +999,14 @@ actor-gtgcan =
    Requires power to operate.
       Strong vs Ground
 
+actor-gaorep =
+   .name = Ore Purifier
+   .description = Increases income from minerals by 25%.
+
+actor-garobo =
+   .name = Robot Control Center
+   .description = Unlocks and controls Robot Tanks.
+
 actor-gaweat =
    .name = Weather Control Center
    .description = Provides Lightning Storm power.
@@ -1086,6 +1108,16 @@ power-mutate =
    .name = Genetic Mutator
    .description = Mutates infantry in an area
       into Brutes.
+
+power-forceshield =
+   .name = Force Shield
+   .description = Makes selected buildings temporarily invulnerable.
+
+actor-oilb =
+   .name = Oil Derrick
+   .description = Provides passive income.
+      Levels up over time.
+      Build limit: 10
 
 template-mcv =
    .description = Deploys into another Construction Yard.
