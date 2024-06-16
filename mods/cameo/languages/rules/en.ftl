@@ -187,6 +187,7 @@ actor-nalasr =
 actor-sam =
    .tdname = Nod SAM Site
    .raname = Soviet SAM Site
+   .ra2name = Patriot Missile System
    .description = Anti-aircraft defense.
       Requires power to operate.
 
@@ -583,7 +584,7 @@ actor-hbox =
     Can detect cloaked units.
 
 actor-agun =
-   .description = Anti-Air base defense.
+   .description = Anti-air base defense.
     Requires power to operate.
    .name = AA Gun
 
@@ -651,15 +652,9 @@ actor-hakurei =
    .name = Exorcist
 
 actor-typeigo =
-   .description = Japanese medium tank.
-      Strong vs Vehicles
-      Weak vs Infantry, Aircraft
    .name = I-Go Medium Tank
 
 actor-typechiha =
-   .description = Japanese heavy tank.
-      Strong vs Vehicles
-      Weak vs Infantry, Aircraft
    .name = Chi-Ha Heavy Tank
 
 actor-nanobggy = 
@@ -740,6 +735,358 @@ actor-oitank =
    an onboard exorcist.
       Strong vs Everything
 
+actor-ra2e1 =
+   .name = G. I.
+   .description = General-purpose infantry.
+   Can deploy for additional firepower.
+      Strong vs Infantry
+      Weak vs Air
+
+actor-ggi =
+   .name = Guardian GI
+   .description = Anti-vehicle infantry.
+   Can deploy to use anti-tank
+   and anti-air missiles.
+      Strong vs Vehicles
+      Weak vs Infantry
+
+actor-cleg =
+   .name = Chrono Legionnaire
+   .description = Freezes targets in time
+   and erases them.
+      Strong vs single targets
+      Weak vs Aircraft
+
+actor-ra2snipe =
+   .name = Sniper
+   .description = Strong vs Infantry
+
+actor-seal =
+   .name = SEAL 
+   .description = Elite amphibious infantry.
+      Can demolish buildings and ships.
+
+actor-ra2spy =
+   .description = Infiltrates enemy structures for intel or
+    sabotage. Exact effect depends on the
+    building infiltrated.
+    Can detect spies.
+   .name = Spy
+
+actor-ra2rock =
+   .description = Flying infantry.
+      Strong vs Infantry, Aircraft
+      Weak vs Air Defense
+   .name = Rocketeer
+
+actor-cmin =
+   .name = Chrono Miner
+   .description = Collects resources and teleports to refinery when full.
+
+actor-robo =
+   .name = Robot Tank
+   .description = Light unmanned tank.
+      Can hover over water.
+      Immune to mind control.
+      Requires Robot Control to operate.
+
+actor-fv =
+   .name = Infantry Fighting Vehicle
+   .description = Changes turret with passenger.
+
+actor-sref =
+   .name = Prism Tank
+   .description = Armed with a prism cannon.
+      Strong vs Infantry, Buildings
+      Weak vs Tanks, Aircraft
+
+actor-mgtk =
+   .name = Mirage Tank
+   .description = Disguises when stationary.
+      Strong vs Infantry, Vehicles
+      Weak vs Aircraft
+
+actor-ra2tnkd =
+   .name = Tank Destroyer
+   .description = Strong vs Vehicles
+
+actor-falc =
+   .name = Harrier
+   .description = VTOL fighter armed with missiles.
+      Strong vs Vehicles, Aircraft
+      Weak vs Air Defense
+
+actor-beag =
+   .name = Black Eagle
+   .description = VTOL heavy bomber.
+      Strong vs Ground
+      Weak vs Aircraft, Air Defense
+
+actor-flakt =
+   .name = Flak Trooper
+   .description = Anti-air infantry.
+      Strong vs Infantry, Aircraft
+      Weak vs Vehicles
+
+actor-ra2harv =
+   .name = War Miner
+   .description = Collects resources.
+      Armed with a machinegun.
+
+actor-deso =
+   .name = Desolator
+   .description = Armed with a radiation weapon.
+      Can deploy to irradiate area.
+      Strong vs Infantry
+
+actor-terror =
+   .name = Terrorist
+   .description = Suicide bomber.
+      Explodes when killed
+
+actor-ivan =
+   .name = Crazy Ivan
+   .description = Plants time bombs on targets.
+      Explodes when killed
+
+actor.shk =
+   .name = Tesla Trooper
+   .description = Armed with portable tesla coils.
+      Can charge tesla coils.
+      Strong vs Infantry, Vehicles
+      Weak vs Aircraft
+
+actor-boris =
+   .name = Boris
+   .description = Commando armed with a rifle.
+      Can send airstrikes against buildings.
+      Strong vs Ground
+
+actor-htk =
+   .name = Flak Track
+   .description = Troop transport armed with a flak cannon.
+      Strong vs Infantry, Aircraft
+      Weak vs Vehicles
+
+actor-v3 =
+   .name = V3 Rocket Launcher
+   .description = Long-range rocket artillery.
+      Rockets can be shot down
+
+actor-dron =
+   .name = Terror Drone
+   .description = Infects and damages vehicles.
+      Instantly kills infantry.
+
+actor-schp =
+   .name = Siege Chopper
+   .description = Helicopter that can deploy into a cannon.
+      Strong vs Infantry
+      Weak vs Air
+
+actor-zep =
+   .name = Kirov Airship
+   .description = Heavy bomber airship.
+      Strong vs Ground
+      Weak vs Air
+
+actor-bpln =
+   .name = MiG Bomber
+   .description = Fast jet bomber.
+      Strong vs Ground
+      Weak vs Aircraft, Air Defense
+
+actor-brute =
+   .name = Brute
+   .description = Melee infantry.
+      Strong vs Infantry, Vehicles
+
+actor-virus =
+   .name = Virus
+   .description = Armed with a toxin rifle.
+      Victims explode and release toxins
+      Strong vs Infantry
+
+actor-yuri =
+   .name = Yuri Clone
+   .description = Can mind-control enemy units.
+      Can deploy to unleash a psychic blast.
+      Weak vs Aircraft, Robots
+
+actor-yurix =
+   .name = Yuri Prime
+   .description = Can mind-control enemy units and buildings.
+      Can deploy to unleash a psychic blast.
+      Weak vs Aircraft, Robots
+
+actor-gtrp =
+   .name = Gatling Trooper
+   .description = Armed with a gatling gun.
+      Strong vs Infantry, Aircraft
+
+actor-biot =
+   .name = Bio Trooper
+   .description = Armed with a toxin spray.
+      Strong vs Infantry, Buildings
+
+actor-ytnk =
+   .name = Gatling Tank
+   .description = Tank armed with dual gatling cannons.
+      Firepower increases during sustained firing
+      Strong vs Infantry, Aircraft
+      Weak vs heavy vehicles
+
+actor-tele =
+   .name = Magnetron
+   .description = Immobilizes and disables vehicles.
+      Strong vs Vehicles, Buildings
+      Weak vs Infantry, Aircraft
+
+actor-caos =
+   .name = Chaos Drone
+   .description = Releases a gas that causes units
+      to go berserk and attack each other.
+
+actor-mind =
+   .name = Master Mind
+   .description = Can mind control up to 3 units
+      without damaging self.
+
+actor-disk =
+   .name = Floating Disc
+   .description = Flying saucer armed with lasers.
+      Can shut down power plants and defenses when overhead 
+      Can steal resources from refineries and silos
+      Strong vs Everything
+
+actor-smin =
+   .name = Mobile Slave Miner
+   .description = Deploys into a Slave Miner.
+      Armed with a machine-gun.
+
+actor-yarefn =
+   .name = Slave Miner
+   .description = Processes resources.
+      Armed with a machine-gun.
+
+actor-gaairc =
+   .name = Airforce Command HQ
+   .description = Produces aircraft and provides radar.
+
+actor-atesla =
+   .name = Prism Tower
+   .description = Advanced base defense.
+   Requires power to operate.
+      Strong vs Ground
+
+actor-gtgcan =
+   .name = Grand Cannon
+   .description = Long-range base defense.
+   Requires power to operate.
+      Strong vs Ground
+
+actor-gaweat =
+   .name = Weather Control Center
+   .description = Provides Lightning Storm power.
+      Requires power to operate.
+
+actor-gaspysat =
+   .name = Spy Satellite Uplink
+   .description = Provides Spy Satellite scans.
+
+actor-nanrct =
+   .name = Nuclear Reactor
+   .description = Generates power.
+      Explodes violently when destroyed.
+
+actor-nabnkr =
+   .name = Battle Bunker
+   .description = Defense with fireports for
+      6 garrisoned soldiers.
+
+actor-ra2tesla =
+   .name = Tesla Coil
+   .description = Advanced base defense.
+      Can be charged by up to 3 tesla troopers.
+      Strong vs Ground
+
+actor-namisl =
+   .name = Nuclear Missile Silo
+   .description = Provides a nuclear missile.
+      Requires power to operate.
+
+actor-yapowr =
+   .name = Bio Reactor
+   .description = Generates power.
+      Can be loaded to increase output.
+      Explodes violently if destroyed when loaded.
+
+actor-napsis =
+   .name = Psychic Sensor
+   .description = Provides radar and Psychic Reveal power.
+      Requires power to operate.
+
+actor-natbnk =
+   .name = Tank Bunker
+   .description = Defense with a fireport for a
+      garrisoned tank.
+
+actor-yaggun =
+   .name = Gatling Cannon
+   .description = Anti-infantry and anti-aircraft defense.
+      Requires power to operate
+
+actor-yapsyt =
+   .name = Psychic Tower
+   .description = Can mind-control units.
+      Can detect cloaked units.
+      Requires power to operate.
+
+actor-yappet =
+   .name = Psychic Dominator
+   .description = Provides Psychic Dominator power.
+      Requires power to operate.
+
+actor-yagntc =
+   .name = Genetic Mutator
+   .description = Provides Genetic Mutator power.
+      Requires power to operate.
+
+power-ra2spysat =
+   .name = Spy Satellite
+   .description = Periodically reveals the entire map.
+   Activated automatically.
+
+power-ra2spyplane =
+   .name = Spy Plane
+   .description = Reveals area along a line.
+      Does not detect cloaked units.
+
+power-ra2psireveal =
+   .name = Psychic Reveal
+   .description = Reveals an area of the map and cloaked enemy units.
+
+power-lightningstorm =
+   .name = Lightning Storm
+   .description = Creates a lightning storm.
+      Applies heavy damage over a large area.
+
+power-ra2nuke =
+   .name = Nuclear Missile
+   .description = Launches a devastating nuclear missile.
+      Applies heavy damage and radiation over a large area.
+
+power-psychicdominator =
+   .name = Psychic Dominator
+   .description = Unleashes a wave of psionic energy.
+      Applies heavy damage to buildings.
+      Mind-controls units.
+
+power-mutate =
+   .name = Genetic Mutator
+   .description = Mutates infantry in an area
+      into Brutes.
+
 template-mcv =
    .description = Deploys into another Construction Yard.
       Unarmed
@@ -756,11 +1103,16 @@ template-refinery =
    .tdname = Tiberium Refinery
    .raname = Ore Refinery
    .ra-japan = Japanese Ore Refinery
+   .ra2-allies = Allied Ore Refinery
+   .ra2-soviet = Soviet Ore Refinery
 
 template-silo =
    .description = Stores excess resources.
    .tdname = Tiberium Silo
    .raname = Silo
+
+template-power =
+   .description = Generates power.
 
 template-barracks =
    .description = Trains infantry.
@@ -779,6 +1131,9 @@ template-factory =
    .ra-allies = Allied War Factory
    .ra-soviet = Soviet War Factory
    .ra-japan = Japanese War Factory
+   .ra2-allies = Allied War Factory
+   .ra2-soviet = Soviet War Factory
+   .ra2-yuri = Yuri War Factory
 
 template-radar =
    .description = Provides radar and advanced technologies.
@@ -810,16 +1165,27 @@ template-tech-center =
    .ra-allies = Allied Tech Center
    .ra-soviet = Soviet Tech Center
    .ra-japan = Japanese Tech Center
+   .ra2-allies = Allied Battle Lab
+   .ra2-soviet = Soviet Battle Lab
+   .ra2-yuri = Yuri Battle Lab
 
 template-anti-infantry-defense =
    .description = Anti-infantry defense.
       Strong vs Infantry
       Weak vs Tanks
 
+template-anti-aircraft-defense =
+   .description = Anti-aircraft defense.
+
 template-scout-infantry =
    .description = General-purpose infantry.
       Strong vs Infantry
       Weak vs Vehicles, Aircraft
+
+template-mbt =
+   .description = Main battle tank.
+      Strong vs Vehicles
+      Weak vs Infantry, Aircraft
 
 template-commando =
    .description = Elite commando infantry.
