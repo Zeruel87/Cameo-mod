@@ -3098,6 +3098,7 @@ DD:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
+	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -3215,6 +3216,156 @@ CA:
 	RenderSprites:
 		Image: raca
 		PlayerPalette: raplayer
+
+japanspeedboat:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiAir: ^PrioritizeAir
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~ra1jsyrd
+		Queue: Naval, RANaval
+		Description: Light scout & support ship.\nCan detect submarines.
+	Valued:
+		Cost: 1100
+	Tooltip:
+		Name: Japanese Speedboat
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 40000
+	ChangesHealth@SelfHealing:
+		Step: 32
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 140
+		TurnSpeed: 28
+	Turreted:
+		TurnSpeed: 56
+		Offset: 200,0,200
+	Armament@AG:
+		Weapon: JapanSpeedBoatGun
+		Recoil: 85
+		LocalOffset: 400,-100,300, 400,100,300
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: JapanSpeedBoatGunAA
+		Recoil: 85
+		LocalOffset: 400,-100,300, 400,100,300
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	WithSpriteTurret:
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 250
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
+	RenderSprites:
+		Image: japanspeedboat
+		PlayerPalette: player_rgba
+	AmmoPool:
+		Ammo: 10
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 10
+		Count: 1
+		ResetOnFire: True
+	ReloadDelayMultiplier@GattlingSpeed:
+		RequiresCondition: !ammo
+		Modifier: 50
+	RangeMultiplier@GattlingSpeed:
+		RequiresCondition: ammo < 6
+		Modifier: 125
+
+yamatobattleship:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@jammable: ^ArtilleryJammable
+	Valued:
+		Cost: 3200
+	Tooltip:
+		Name: Yamato Battleship
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~modjtek
+		Queue: Naval, RANaval
+		Description: Very slow long-range ship.\n  Strong vs Buildings, Ground units\n  Weak vs Naval units, Aircraft
+	Mobile:
+		Speed: 35
+		TurnSpeed: 7
+	Health:
+		HP: 250000
+	ChangesHealth@SelfHealing:
+		Step: 100
+	Armor:
+		Type: Superheavy
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -896,0,128
+		TurnSpeed: 7
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 768,0,128
+		TurnSpeed: 7
+	Turreted@AA:
+		Turret: flak
+		Offset: 256,0,128
+		TurnSpeed: 14
+		FacingTolerance: 90
+	Armament@PRIMARY:
+		Turret: primary
+		Weapon: YamatoCannon
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 200
+		RecoilRecovery: 25
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Turret: secondary
+		Weapon: YamatoCannon
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 200
+		RecoilRecovery: 25
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Turret: flak
+		Weapon: YamatoFlak
+		LocalOffset: 240,-100,40, 240,100,40
+		Recoil: 50
+		RecoilRecovery: 10
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		Turrets: primary, secondary, flak
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Selectable:
+		DecorationBounds: 2048, 2048
+	WithSpriteTurret@PRIMARY:
+		Turret: primary
+	WithSpriteTurret@SECONDARY:
+		Turret: secondary
+	WithSpriteTurret@AA:
+		Turret: flak
+		Sequence: turret2
+	DeliversCash:
+		Payload: 500
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
+	RenderSprites:
+		Image: yamatobattleship
+		PlayerPalette: player_rgba
 
 SS:
 	Inherits: ^BoatUnit
@@ -4742,10 +4893,10 @@ RA1SYRD:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 		InfiniteBuildLimit: 10
-	ProductionBar@NAVALALLIES:
+	ProductionBar@NAVAL:
 		ProductionType: Naval
 		RequiresCondition: !classicproductionqueues
-	ProductionBar@RANAVALALLIES:
+	ProductionBar@RANAVAL:
 		ProductionType: RANaval
 		RequiresCondition: classicproductionqueues
 	Power:
@@ -4761,6 +4912,45 @@ RA1SYRD:
 		PlayerPalette: raplayer
 	WithDeathAnimation:
 		DeathSequencePalette: raplayer
+
+RA1JSYRD:
+	Inherits: RA1SYRD
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~rafact.japan, jproc
+		Queue: Building, RABuilding
+	Production@NORMAL:
+		Produces: Naval
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ParallelProductionQueue:
+		Type: Naval
+		DisplayOrder: 5
+		Group: Naval
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@NAVAL:
+		ProductionType: Naval
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RANAVAL:
+		ProductionType: RANaval
+		RequiresCondition: classicproductionqueues
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: ra1jsyrd
+		PlayerPalette: player_rgba
 
 RASPEN:
 	Inherits: ^BaseBuilding
@@ -4830,10 +5020,10 @@ RASPEN:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 		InfiniteBuildLimit: 10
-	ProductionBar@NAVALSOVIET:
+	ProductionBar@NAVAL:
 		ProductionType: Naval
 		RequiresCondition: !classicproductionqueues
-	ProductionBar@RANAVALSOVIET:
+	ProductionBar@RANAVAL:
 		ProductionType: RANaval
 		RequiresCondition: classicproductionqueues
 	Power:
