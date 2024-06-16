@@ -498,94 +498,56 @@ aa_cgmiac:
 		Prerequisite: vehicles.upgraded
 	Voiced:
 		VoiceSet: CHPropagandaCenterVoice
+
+
+
+
 aa_cgrail:
-	Inherits: ^RA2Building
-	Inherits: ^Defense
-	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits: ^RA2Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@detect: ^GenericGroundDetector
 	Inherits@sell: ^AASpawnActorsOnSell
-	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 80
-		BuildDuration: 1125
-		BuildDurationModifier: 125
 		Prerequisites: ~aa_cgcnst, aa_cgtech
-		Description: Advanced base defense.\nRequires power to operate.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
+		Description: actor-atesla.description
 	Valued:
-		Cost: 2500
+		Cost: 2000
 	Tooltip:
 		Name: Rail Tower
 	Selectable:
-		Bounds: 1024, 1024
+		Bounds: 1024, 2304, 0, -640
+	SelectionDecorations:
 	Health:
-		HP: 60000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
+		HP: 135000
 	WithSpriteBody:
-		Sequence: idle
-		PauseOnCondition: disabled || lowpower
-		RequiresCondition: !charging
-	WithSpriteBody@charging:
-		Sequence: active
-		Name: bodyactive
-		RequiresCondition: charging
-	WithMakeAnimation:
-	GrantCondition@charging:
-		Condition: charging
-		RequiresCondition: !fired && !ammo
+		PauseOnCondition: disabled
 	Armament:
 		Weapon: AsianRailgun
-		LocalOffset: 128,0,1280
-		PauseOnCondition: !ammo && !powercharged
-	Turreted:
-		TurnSpeed: 1023
+		LocalOffset: 0,0,1280
 	AttackTurreted:
-		Voice: Attack
-		PauseOnCondition: lowpower || disabled
-	GrantConditionOnAttack@primary:
-		ArmamentNames: primary
-		Condition: fired
-		MaximumInstances: 1
-		RevokeDelay: 40
-	AmbientSound:
-		RequiresCondition: charging
-		SoundFiles: bpripow.wav
-		Interval: 30, 40
-	ExternalCondition@POWERCHARGED:
-		Condition: powercharged
-	AmmoPool:
-		Name: primary
-		Ammo: 5
-		InitialAmmo: 1
-		Armaments: primary, secondary
-		AmmoCondition: ammo
-	ReloadAmmoPoolCA@autocharge:
-		Delay: 30
-		Count: 1
-	Power:
-		Amount: -100
+	Turreted:
 	Sellable:
-	DetectCloaked:
-		Range: 7c0
-		RequiresCondition: !lowpower && !disabled
-	ProvidesPrerequisite@buildingname:
 	WithIdleOverlay@normal:
 		Sequence: idle-normal
 		PauseOnCondition: lowpower
+		RequiresCondition: !build-incomplete
+	WithMakeAnimation:
 	WithDeathAnimation:
-		DeathSequencePalette: ra2buildinghack
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		FullSequence: pip-red
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-
-
+		DeathSequencePalette: playerra2
+	#WithAmmoPipsDecoration:
+	#	Position: BottomLeft
+	#	RequiresSelection: true
+	#	FullSequence: pip-red
+	Power:
+		Amount: -100
+	RevealsShroud:
+		Range: 9000
+	DetectCloaked:
+		Range: 4500
 aa_cgairf:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
@@ -652,21 +614,30 @@ aa_cgairf:
 	ProductionBar@RAAircraft:
 		ProductionType: RAAircraft
 		RequiresCondition: classicproductionqueues
+
 	AirstrikePower@cluster:
 		OrderName: AAClusterBomb
+		Prerequisites:
+			1: aa_cgweap
 		IconImage: aa_tankmine
-		Icon: icon
+		Icons:
+			1: icon
 		ChargeInterval: 6000
-		Name: Anti Tank Mines
-		Description: A bomber deploys cluster mines at the target.
+		Names:
+			1: Anti Tank Mines
+		Descriptions:
+			1: A bomber deploys cluster mines at the target.
 		SelectTargetSpeechNotification: SelectTarget
 		CameraActor: camera
 		CameraRemoveDelay: 150
-		UnitTypes: aa_bomber.minebomb
-		QuantizedFacings: 8
+		UnitTypes:
+			1: aa_bomber.minebomb
+		QuantizedFacings: 16
 		DisplayBeacon: true
-		BeaconPoster: airstrike
-		SquadSizes: 1
+		BeaconPosters:
+			1: airstrike
+		SquadSizes:
+			1: 1
 		SquadOffset: 1792,1792,0
 		ArrowSequence: arrow
 		ClockSequence: clock
@@ -674,23 +645,30 @@ aa_cgairf:
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
-		Prerequisites: aa_cgweap
-		StartFullyCharged: false
+		DisplayTimerRelationships: Ally, Neutral, Enemy
 	AirstrikePower@cluster2:
 		OrderName: AAClusterBomb2
+		Prerequisites:
+			1: upaa_chaomine
 		IconImage: aa_chaomine
-		Icon: icon
+		Icons:
+			1: icon
 		ChargeInterval: 6000
-		Name: Chaos Mines
-		Description: A bomber deploys cluster mines at the target.
+		Names:
+			1: Chaos Mines
+		Descriptions:
+			1: A bomber deploys cluster mines at the target.
 		SelectTargetSpeechNotification: SelectTarget
 		CameraActor: camera
 		CameraRemoveDelay: 150
-		UnitTypes: aa_bomber.minebomb2
-		QuantizedFacings: 8
+		UnitTypes:
+			1: aa_bomber.minebomb2
+		QuantizedFacings: 16
 		DisplayBeacon: true
-		BeaconPoster: airstrike
-		SquadSizes: 1
+		BeaconPosters:
+			1: airstrike
+		SquadSizes:
+			1: 1
 		SquadOffset: 1792,1792,0
 		ArrowSequence: arrow
 		ClockSequence: clock
@@ -698,8 +676,7 @@ aa_cgairf:
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
-		Prerequisites: upaa_chaomine
-		StartFullyCharged: true
+		DisplayTimerRelationships: Ally, Neutral, Enemy
 	ParatroopersPower@ra2paratroopers:
 		PauseOnCondition: disabled
 		Prerequisites:
@@ -801,7 +778,6 @@ aa_cgpnch:
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGround
-	Inherits@sell: ^AASpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
@@ -848,12 +824,12 @@ aa_cgpnch:
 		DetectionTypes: Underwater
 		Range: 5c0
 aa_cgpuls:
-	Inherits: ^RA2Building
-	Inherits: ^Defense
-	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits: ^RA2Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@detect: ^GenericGroundDetector
 	Inherits@sell: ^AASpawnActorsOnSell
-	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 70
@@ -866,81 +842,38 @@ aa_cgpuls:
 		Name: Pulsar
 	Selectable:
 		Bounds: 1024, 1024
+	SelectionDecorations:
 	Health:
 		HP: 50000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
 	WithSpriteBody:
-		Sequence: idle
-		PauseOnCondition: disabled || lowpower
-		RequiresCondition: !charging
-	WithSpriteBody@charging:
-		Sequence: active
-		Name: bodyactive
-		RequiresCondition: charging
-	WithMakeAnimation:
-	GrantCondition@charging:
-		Condition: charging
-		RequiresCondition: !fired && !ammo
+		PauseOnCondition: disabled
 	Armament:
 		Weapon: AsianPhotonCannon
-		LocalOffset: 128,0,1280
-		PauseOnCondition: !ammo && !powercharged
-	Turreted:
-		TurnSpeed: 1023
+		LocalOffset: 0,0,400
 	AttackTurreted:
-		Voice: Attack
-		PauseOnCondition: lowpower || disabled
-	GrantConditionOnAttack@primary:
-		ArmamentNames: primary
-		Condition: fired
-		MaximumInstances: 1
-		RevokeDelay: 40
-	AmbientSound:
-		RequiresCondition: charging
-		SoundFiles: bpripow.wav
-		Interval: 30, 40
-	ExternalCondition@POWERCHARGED:
-		Condition: powercharged
-	AmmoPool:
-		Name: primary
-		Ammo: 5
-		InitialAmmo: 1
-		Armaments: primary, secondary
-		AmmoCondition: ammo
-	ReloadAmmoPoolCA@autocharge:
-		Delay: 32
-		Count: 1
-	Power:
-		Amount: -50
+	Turreted:
 	Sellable:
-	DetectCloaked:
-		Range: 7c0
-		RequiresCondition: !lowpower && !disabled
-	ProvidesPrerequisite@buildingname:
 	WithIdleOverlay@normal:
 		Sequence: idle-normal
 		PauseOnCondition: lowpower
+		RequiresCondition: !build-incomplete
+	WithMakeAnimation:
 	WithDeathAnimation:
-		DeathSequencePalette: ra2buildinghack
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		FullSequence: pip-red
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-
+		DeathSequencePalette: playerra2
+	Power:
+		Amount: -50
+	RevealsShroud:
+		Range: 9000
+	DetectCloaked:
+		Range: 4500
 
 aa_cgchtw:
-	Inherits: ^RA2Building
-	Inherits: ^Defense
-	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits: ^RA2Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@detect: ^GenericGroundDetector
 	Inherits@sell: ^AASpawnActorsOnSell
-	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 80
@@ -953,71 +886,36 @@ aa_cgchtw:
 	Tooltip:
 		Name: Chaos Tower
 	Selectable:
-		Bounds: 1024, 1024
+		Bounds: 1024, 2304, 0, -640
+	SelectionDecorations:
 	Health:
-		HP: 60000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
+		HP: 135000
 	WithSpriteBody:
-		Sequence: idle
-		PauseOnCondition: disabled || lowpower
-		RequiresCondition: !charging
-	WithMakeAnimation:
-	GrantCondition@charging:
-		Condition: charging
-		RequiresCondition: !fired && !ammo
-	Armament:
-		Weapon: AsianChaosTurret
-		LocalOffset: 128,0,1280
-		PauseOnCondition: !ammo && !powercharged
+		PauseOnCondition: disabled
+	Selectable:
+		Bounds: 1024, 1024
 	Turreted:
-		TurnSpeed: 512
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
 	AttackTurreted:
 		Voice: Attack
-		PauseOnCondition: lowpower || disabled
-	GrantConditionOnAttack@primary:
-		ArmamentNames: primary
-		Condition: fired
-		MaximumInstances: 1
-		RevokeDelay: 70
-	AmbientSound:
-		RequiresCondition: charging
-		SoundFiles: bpripow.wav
-		Interval: 30, 40
-	ExternalCondition@POWERCHARGED:
-		Condition: powercharged
-	AmmoPool:
-		Name: primary
-		Ammo: 5
-		InitialAmmo: 1
-		Armaments: primary, secondary
-		AmmoCondition: ammo
-	ReloadAmmoPoolCA@autocharge:
-		Delay: 25
-		Count: 1
-	Power:
-		Amount: -100
-	Sellable:
-	DetectCloaked:
-		Range: 7c0
-		RequiresCondition: !lowpower && !disabled
-	ProvidesPrerequisite@buildingname:
-	WithIdleOverlay@normal:
-		Sequence: idle-normal
-		PauseOnCondition: lowpower
-	WithDeathAnimation:
-		DeathSequencePalette: ra2buildinghack
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		FullSequence: pip-red
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
+	Armament:
+		Weapon: AsianChaosTurret
+		LocalOffset: 0,0,1000
+	WithMuzzleOverlay:
+	BodyOrientation:
+		QuantizedFacings: 16
 	WithSpriteTurret:
-
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -25
+	RevealsShroud:
+		Range: 6666
+	DetectCloaked:
+		Range: 3333
+	ProvidesPrerequisite@buildingname:
 aa_cgtnkr:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
@@ -1210,25 +1108,34 @@ aa_cgchao:
 		Amount: -200
 	DetonateWeaponPower@Chaos:
 		OrderName: AsianChaosSuperweapon
-		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
 		IconImage: aa_cgchao
-		Icon: icon2
+		Icons:
+			1: icon2
 		Cursor: ioncannon
 		ChargeInterval: 7500
 		ActivationDelay: 10
-		Name: Genetic Mutator
-		Weapons: AsianChaosSuperweapon
-		Description: Transforms infantry in a small area into Brutes.
+		ActivationSequence:
+		Names:
+			1: power-mutate.name
+		Weapons:
+			1: AsianChaosSuperweapon
+		Descriptions:
+			1: power-mutate.description
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
 		EndChargeSound: sgenopen.wav
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral
+		DisplayTimerRelationships: Ally, Neutral, Enemy
 		CameraActor: camera.small
 		CameraRemoveDelay: 300
+		TargetCircleRanges:
+			1: 4000
+		TargetCircleColor: ff000080
 		LaunchSound: sgenopen.wav
 		IncomingSound: sgenopen.wav
 	SupportPowerChargeBar:
@@ -1263,35 +1170,39 @@ aa_cgionc:
 	RevealsShroud@Offline:
 		Range: 5c0
 		RequiresCondition: lowpower
-	DetonateWeaponPower:
+	DetonateWeaponPower@Ion:
 		AllowMultiple: true
 		OrderName: IonCannon
-		PauseOnCondition: lowpower
-		Prerequisites: ~techlevel.superweapons
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
 		IconImage: aa_cgionc
-		Icon: icon2
-		Cursor: ability
+		Icons:
+			1: icon2
+		Cursor: ioncannon
 		ChargeInterval: 9000
 		ActivationDelay: 50
-		Name: Ion Cannon
-		Description: Creates a lightning storm.\nApplies heavy damage over a large area.
-		Weapons: AsianTSIonCannon
+		ActivationSequence:
+		Names:
+			1: Creates a lightning storm.\nApplies heavy damage over a large area.
+		Weapons:
+			1: AsianTSIonCannon
+		Descriptions:
+			1: power-mutate.description
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
-		EndChargeTextNotification: Lightning Storm ready.
-		EndChargeSound: swearead.wav
+		EndChargeSound: sgenopen.wav
 		SelectTargetSpeechNotification: SelectTarget
-		SelectTargetTextNotification: Select target.
+		InsufficientPowerSpeechNotification: InsufficientPower
 		DisplayRadarPing: True
-		DisplayTimerStances: Ally, Neutral, Enemy
-		CameraActor: camera
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		CameraActor: camera.small
 		CameraRemoveDelay: 300
-		Duration: 350
-		ActiveCondition: active
-		TargetCircleRange: 6c0
+		TargetCircleRanges:
+			1: 6c0
 		TargetCircleColor: ff000080
-		LaunchSound: sweaintr.wav
-		IncomingSound: sweaintr.wav
+		LaunchSound: sgenopen.wav
+		IncomingSound: sgenopen.wav
 	SupportPowerChargeBar:
 	Power:
 		Amount: -200
@@ -1952,8 +1863,6 @@ ra2engineer.asian:
 		Queue: Infantry, RAInfantry
 	RenderSprites:
 		Image: ra2engineer
-	Voiced:
-		VoiceSet: CHHackerVoice
 aa_alligator:
 	Inherits: ^Soldier
 	Inherits@Template: ^MeleeInfantryTemplate
