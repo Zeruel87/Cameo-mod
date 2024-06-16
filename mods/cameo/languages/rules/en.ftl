@@ -75,6 +75,8 @@ actor-bike =
 
 actor-ltnk =
    .description = Fast, light tank.
+      Strong vs Vehicles
+      Weak vs Infantry
    .tdname = Nod Light Tank
    .raname = Allied Light Tank
 
@@ -226,6 +228,11 @@ actor-brik =
    .name = Concrete Barrier
    .description = Stops infantry and most tanks.
       Blocks some projectiles.
+   
+upgrade-upnodstealth =
+   .name = Unlock Stealth Technology
+   .description = Allows training of Stealth Soldiers
+      and construction of Stealth Harvesters.
 
 upgrade-upnodvenom =
    .name = Unlock Venom and Laser Commando
@@ -241,6 +248,7 @@ actor-cheme3 =
 actor-ltnk2 =
    .name = Light Tank Mk. II
    .description = Light tank with point defense lasers.
+      Strong vs Infantry, Vehicles
 
 actor-blackhandlaser =
    .name = Laser Trooper
@@ -432,10 +440,21 @@ actor-sapc =
       Weak vs Infantry, Tanks, Aircraft
    .name = Phase Transport
 
+actor-sheridan =
+   .description = General-purpose light tank.
+      Can attack air with missiles.
+      Strong vs Infantry, vehicles
+   .name = Sheridan
+
 actor-rapierjumpjet =
    .description = Fast multirole fighter-bomber.
       Strong vs Aircraft, Buildings
    .name = Rapier Jumpjet
+
+upgrade-gapgen =
+   .description = Allows construction of the Gap Generator
+      and the Mobile Gap Generator.
+   .name = Unlock Gap Generator Technology
 
 actor-mortarsoldier =
    .name = Mortar Soldier
@@ -504,6 +523,11 @@ actor-yak =
       Strong vs infantry, Light armor
       Weak vs air defenses
    .name = Yak
+
+actor-su57 =
+   .description = Multirole fighter-bomber.
+      Strong vs Everything
+   .name = Su-57 Attack Bomber
 
 actor-raheli =
    .description = Helicopter gunship armed
@@ -817,6 +841,10 @@ actor-ra2tnkd =
    .name = Tank Destroyer
    .description = Strong vs Vehicles
 
+actor-shad =
+   .name = Night Hawk
+   .description = Transport helicopter armed with a machine gun.
+
 actor-falc =
    .name = Harrier
    .description = VTOL fighter armed with missiles.
@@ -863,13 +891,6 @@ actor-ivan =
    .description = Plants time bombs on targets.
       Explodes when killed
 
-actor.shk =
-   .name = Tesla Trooper
-   .description = Armed with portable tesla coils.
-      Can charge tesla coils.
-      Strong vs Infantry, Vehicles
-      Weak vs Aircraft
-
 actor-boris =
    .name = Boris
    .description = Commando armed with a rifle.
@@ -895,8 +916,13 @@ actor-dron =
 actor-schp =
    .name = Siege Chopper
    .description = Helicopter that can deploy into a cannon.
-      Strong vs Infantry
-      Weak vs Air
+      Strong vs Infantry when airborne
+      Strong vs Buildings when deployed
+      Weak vs Aircraft, Air Defense
+
+actor-ra2hind =
+   .name = Hind Transport
+   .description = Carryall helicopter armed with a machine gun.
 
 actor-zep =
    .name = Kirov Airship
