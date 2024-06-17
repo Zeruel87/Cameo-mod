@@ -320,6 +320,13 @@ actor-firehawk =
    .description = Advanced fighter-bomber aircraft.
       Strong vs Everything
 
+actor-nodlasercorvette =
+   .description = Fast multi-role ship.
+    Can detect submarines.
+      Strong vs Naval units, Vehicles, Aircraft
+      Weak vs Infantry
+   .name = Nod Laser Corvette
+
 actor-dog =
    .name = Attack Dog 
    .description = Can detect cloaked and disguised units.
@@ -572,6 +579,10 @@ power-paratroopers =
    .description = Drops infantry at the targeted location.
    .name = Paratroopers
 
+power-reinforcements =
+   .description = Drops infantry and vehicles at the targeted location.
+   .name = Rapid Reinforcements
+
 power-parabombs =
    .description = Badgers drop bombs at the targeted location.
    .name = Parabombs
@@ -765,6 +776,48 @@ actor-oitank =
    .description-exorcist = Superheavy mobile shrine powered by
    an onboard exorcist.
       Strong vs Everything
+
+actor-ss =
+   .description = Submerged anti-ship unit
+    armed with torpedoes.
+    Can detect other submarines.
+      Strong vs Naval units
+      Weak vs Ground units, Aircraft
+   .name = Submarine
+
+actor-msub =
+   .description = Submerged anti-ground siege unit
+    with anti-air capabilities.
+    Can detect other submarines.
+      Strong vs Buildings, Ground units, Aircraft
+      Weak vs Naval units
+   .name = Missile Submarine
+
+actor-dd =
+   .description = Fast multi-role ship.
+    Can detect submarines.
+      Strong vs Naval units, Vehicles, Aircraft
+      Weak vs Infantry
+   .name = Destroyer
+
+actor-ca =
+   .description = Very slow long-range ship.
+      Strong vs Buildings, Ground units
+      Weak vs Naval units, Aircraft
+   .name = Cruiser
+
+actor-lst =
+   .description = General-purpose naval transport.
+    Can carry infantry and tanks.
+      Unarmed
+   .name = Transport
+
+actor-pt =
+   .description = Light scout & support ship.
+    Can detect submarines.
+      Strong vs Naval units
+      Weak vs Ground units, Aircraft
+   .name = Gunboat
 
 actor-ra2e1 =
    .name = G. I.
@@ -1217,6 +1270,16 @@ template-airfield =
    .td-gdi = GDI Helipad
    .td-nod = Nod Helipad
    .ra-allies = Allied Helipad
+
+template-shipyard =
+   .description = Produces and repairs ships.
+   .td-gdi = GDI Naval Yard
+   .td-nod = Nod Sub Pen
+   .ra-soviet = Soviet Sub Pen
+   .ra-allies = Allied Naval Yard
+   .ra2-allies = Allied Naval Yard
+   .ra2-soviet = Soviet Shipyard
+   .ra2-yuri = Yuri Sub Pen
 
 template-tech-center =
    .description = Provides advanced technologies.
