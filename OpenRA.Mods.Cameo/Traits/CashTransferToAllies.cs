@@ -23,11 +23,12 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Duration between cash transfers.")]
 		public readonly int ChargeDuration = 1;
 
-		[FieldLoader.Require]
-		[Desc("Percentage value of the resource difference to send as cash.")]
-		public readonly int Modifier = 1;
+		[Desc("Percentage value of the resource difference to send as cash when above the threshold.")]
+		public readonly int ModifierAboveThreshold = 1;
 
-		[FieldLoader.Require]
+		[Desc("Permillage value of the resource difference to send as cash when below the threshold.")]
+		public readonly int ModifierBelowThreshold = 1;
+
 		[Desc("Money Threshold for sending cash.")]
 		public readonly int Threshold = 1000;
 
@@ -61,8 +62,8 @@ namespace OpenRA.Mods.Cameo.Traits
 
 	class CashTransferToAllies : ITick, IWorldLoaded, INotifyCreated
 	{
-		readonly int[] modifier;
-		readonly int threshold;
+		readonly int[] modifierAboveThreshold;
+		readonly int[] modifierBelowThreshold;
 		readonly CashTransferToAlliesInfo info;
 		public bool Enabled { get; private set; }
 
@@ -75,8 +76,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			this.info = info;
 			ticks = info.ChargeDuration;
-			modifier = new int[] { info.Modifier };
-			threshold = info.Threshold;
+			modifierAboveThreshold = new int[] { info.ModifierAboveThreshold };
+			modifierBelowThreshold = new int[] { info.ModifierBelowThreshold };
 		}
 
 		void INotifyCreated.Created(Actor self)
@@ -146,7 +147,6 @@ namespace OpenRA.Mods.Cameo.Traits
 				{
 					var teamTotal = 0;
 					var playerMoney = 0;
-					var comeBack = 0;
 
 					if (team.Count <= 1)
 						continue;
@@ -155,10 +155,8 @@ namespace OpenRA.Mods.Cameo.Traits
 					{
 						playerMoney = playerResources.GetCashAndResources();
 
-						if (playerMoney <= threshold)
-						{
-							playerMoney = Common.Util.ApplyPercentageModifiers(10*playerMoney, modifier);
-						}
+						if (playerMoney <= info.Threshold)
+							playerMoney = Common.Util.ApplyPercentageModifiers(10 * playerMoney, modifierBelowThreshold);
 
 						teamTotal += playerMoney;
 					}
@@ -168,15 +166,11 @@ namespace OpenRA.Mods.Cameo.Traits
 					foreach (var playerResources in team)
 					{
 						playerMoney = playerResources.GetCashAndResources();
-						comeBack = 0;
 
-						if (playerMoney <= threshold)
-						{
-							playerMoney = Common.Util.ApplyPercentageModifiers(10*playerMoney, modifier);
-							comeBack = 1;
-						}
+						if (playerMoney <= info.Threshold)
+							playerMoney = Common.Util.ApplyPercentageModifiers(10 * playerMoney, modifierBelowThreshold);
 
-						playerResources.ChangeCash(Common.Util.ApplyPercentageModifiers((cashMean - (playerMoney)), modifier)+comeBack);
+						playerResources.ChangeCash(Common.Util.ApplyPercentageModifiers((cashMean - (playerMoney)), modifierAboveThreshold));
 					}
 
 				}
