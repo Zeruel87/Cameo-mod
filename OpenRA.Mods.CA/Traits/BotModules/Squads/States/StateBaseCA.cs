@@ -304,20 +304,29 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			if (!squad.IsValid)
 				return null;
 
-			var nonAircraft = new UnitWposWrapper(null); // HACK: Becuase Mobile is always affected by terrain, so we always select a nonAircraft as leader
+			// var nonAircraft = new UnitWposWrapper(null); // HACK: Becuase Mobile is always affected by terrain, so we always select a nonAircraft as leader
+			var squadUnits = new List<Actor>();
 			foreach (var u in squad.Units)
 			{
 				var mt = u.Actor.TraitsImplementing<Mobile>().FirstOrDefault(t => !t.IsTraitDisabled && !t.IsTraitPaused);
 				if (mt != null)
 				{
-					nonAircraft = u;
+					// nonAircraft = u;
 					if (locomotorTypes.Contains(mt.Info.Locomotor))
-						return u;
+						squadUnits.Add(u.Actor);
 				}
 			}
 
-			if (nonAircraft.Actor != null)
-				return nonAircraft;
+			// if (nonAircraft.Actor != null)
+			//	return nonAircraft;
+
+			// TODO just identify closest unit within the locomotor search
+			if (squadUnits.Count > 0)
+			{
+				return squad.TargetActor != null
+					? new UnitWposWrapper(squadUnits.ClosestToIgnoringPath(squad.TargetActor))
+					: new UnitWposWrapper(squadUnits[0]);
+			}
 
 			return squad.Units[0];
 		}

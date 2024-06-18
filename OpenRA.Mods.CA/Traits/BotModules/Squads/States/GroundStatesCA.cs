@@ -71,11 +71,11 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			if (!owner.IsValid)
 				return;
 
-			if (owner.SquadManager.unitCannotBeOrdered(leader))
-				leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedGroundLeaderLocomotor).Actor;
-
 			if (!owner.IsTargetValid && !FindNewTarget(owner, true))
 				return;
+
+			if (owner.SquadManager.unitCannotBeOrdered(leader))
+				leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedGroundLeaderLocomotor).Actor;
 
 			var enemyUnits = owner.World.FindActorsInCircle(owner.TargetActor.CenterPosition, WDist.FromCells(owner.SquadManager.Info.IdleScanRadius))
 				.Where(owner.SquadManager.IsPreferredEnemyUnit).ToList();

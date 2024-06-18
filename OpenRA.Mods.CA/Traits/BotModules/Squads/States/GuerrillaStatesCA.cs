@@ -30,19 +30,19 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			if (!owner.IsValid)
 				return;
 
-			if (owner.SquadManager.unitCannotBeOrdered(leader) || squadsize != owner.Units.Count)
-			{
-				leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedGroundLeaderLocomotor).Actor;
-				squadsize = owner.Units.Count;
-			}
-
 			if (!owner.IsTargetValid)
 			{
-				var closestEnemy = owner.SquadManager.FindClosestEnemy(leader);
+				var closestEnemy = owner.SquadManager.FindClosestEnemy(owner.Units[0].Actor);
 				if (closestEnemy == null)
 					return;
 
 				owner.TargetActor = closestEnemy;
+			}
+
+			if (owner.SquadManager.unitCannotBeOrdered(leader) || squadsize != owner.Units.Count)
+			{
+				leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedGroundLeaderLocomotor).Actor;
+				squadsize = owner.Units.Count;
 			}
 
 			var enemyUnits = owner.World.FindActorsInCircle(owner.TargetActor.CenterPosition, WDist.FromCells(owner.SquadManager.Info.IdleScanRadius))

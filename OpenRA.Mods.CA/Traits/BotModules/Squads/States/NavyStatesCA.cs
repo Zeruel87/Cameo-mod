@@ -64,16 +64,16 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			if (!owner.IsValid)
 				return;
 
-			leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedNavyLeaderLocomotor).Actor;
-
 			if (!owner.IsTargetValid)
 			{
-				var closestEnemy = owner.SquadManager.FindClosestEnemy(leader);
+				var closestEnemy = owner.SquadManager.FindClosestEnemy(owner.Units[0].Actor);
 				if (closestEnemy == null)
 					return;
 
 				owner.TargetActor = closestEnemy;
 			}
+
+			leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedNavyLeaderLocomotor).Actor;
 
 			var enemyUnits = owner.World.FindActorsInCircle(owner.TargetActor.CenterPosition, WDist.FromCells(owner.SquadManager.Info.IdleScanRadius))
 				.Where(owner.SquadManager.IsPreferredEnemyUnit).ToList();
