@@ -9,7 +9,6 @@
 	ScriptTriggers:
 	RenderDebugState:
 
-
 ^SpriteActor:
 	BodyOrientation:
 	QuantizeFacingsFromSequence:
@@ -210,6 +209,7 @@
 		#MoveRecalculationThreshold: 0
 		ValidRelationships: Enemy
 		RequiresCondition: base-reveal
+		Type: CenterPosition
 	GrantConditionOnPrerequisite@base-reveal:
 		Prerequisites: base-reveal, !conyard
 		Condition: base-reveal
@@ -647,7 +647,7 @@
 		Color: FFFFFF
 	WithColoredOverlay@disabled:
 		Color: 000000b4
-		RequiresCondition: disabled && !chronodisabled
+		RequiresCondition: empdisable || GhostLockdown || diskdrain || leaflet
 	DelayedWeaponAttachable@lockdown:
 		Type: lockdown
 		Condition: GhostLockdown
@@ -760,22 +760,21 @@
 		Type: CenterPosition
 
 ^SquidGrabbable:
-	Infectable:
+	InfectableOld:
 		RequiresCondition: !chronobeamed
 		RemoveInfectorDamageTypes: RemovesSquid
 		RemoveInfectorTeleportTypes: RA2ChronoPower
 		BeingInfectedCondition: beinggrabbed
 		InfectedByConditions:
 			ra2sqd: squid
-	RevealsShroud@SQUID:
-		Range: 5c0
-		ValidRelationships: Enemy, Neutral
-		RequiresCondition: squid
 	Targetable@SQUID:
-		TargetTypes: SquidInfection
-		RequiresCondition: !chronobeamed
+		TargetTypes: SquidGrab
+		RequiresCondition: !untargetable
+	Targetable@SQUIDGRABBED:
+		TargetTypes: SquidGrabbed
+		RequiresCondition: squid
 	SpeedMultiplier@SQUID:
-		RequiresCondition: beinggrabbed
+		RequiresCondition: beinggrabbed || (squid && !invulnerability)
 		Modifier: 0
 
 ####################################################################################################
@@ -1293,13 +1292,51 @@
 	ReloadDelayMultiplier@PromotionUnit:
 		Modifier: 94
 
-^Vehicle:
+^BasicUnit:
 	Inherits@1: ^ExistsInWorld
-	Inherits@2: ^IronCurtainable
-	Inherits@3: ^SpriteActor
-	Inherits@selection: ^SelectableCombatUnit
+	Inherits@2: ^SpriteActor
 	Inherits@bounty: ^GlobalBounty
+	Inherits@selection: ^SelectableCombatUnit
 	Inherits@bot: ^BotProductionBehavior
+	Inherits@cloak: ^AcceptsCloakCrate
+	Inherits@Shroudable: ^Shroudable
+	Inherits@AdvancedTargeting: ^AdvancedTargeting
+	Inherits@ivan: ^BombAttachable
+	Inherits@cloak: ^StealthGenCloakable
+	Inherits@chrono: ^ChronoBeamable
+	Inherits@base-reveal: ^Base-reveal
+	Huntable:
+	OwnerLostAction:
+		Action: Kill
+	DrawLineToTarget:
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	WithSpriteControlGroupDecoration:
+	SelectionDecorations:
+		MinimumZoom: 0.5
+	Selectable:
+		Bounds: 1024, 1024
+	Guard:
+	Guardable:
+	MustBeDestroyed:
+	Health:
+	HitShape:
+	HiddenUnderFog:
+	ActorLostNotification:
+	RevealsShroud:
+		Range: 5c0
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	RevealOnFire:
+		Duration: 50
+	RevealOnDeath:
+	ActorStatValues:
+		Stats: Armor, Sight, Speed
+
+^Vehicle:
+	Inherits: ^BasicUnit
+	Inherits@2: ^IronCurtainable
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@rad: ^VehicleRadiation
 	Inherits@terrordrone: ^TerrorDronableVehicle
@@ -1315,18 +1352,9 @@
 	Inherits@emergencyrepair: ^EmergencyRepairable
 	Inherits@chrono: ^Chronoshiftable
 	Inherits@unstableeffect: ^UnstableEffect
-	Inherits@base-reveal: ^Base-reveal
 	Inherits@LeechEggLayable: ^LeechEggLayable
 	Inherits@GDIOfficerLeadershipBuff: ^GDIOfficerLeadershipBuff
-	Inherits@ivan: ^BombAttachable
-	Inherits@cloakgen: ^StealthGenCloakable
-	Inherits@chronobeam: ^ChronoBeamable
-	Inherits@Shroudable: ^Shroudable
-	Inherits@AdvancedTargeting: ^AdvancedTargeting
 	TemporaryOwnerManager:
-	Huntable:
-	OwnerLostAction:
-		Action: Kill
 	Mobile:
 		Locomotor: wheeled
 		TurnSpeed: 40
@@ -1334,9 +1362,6 @@
 		RequiresCondition: !driver-dead && !being-captured && !beingterrordroned
 		ImmovableCondition: driver-dead
 		CanMoveBackward: false
-	SelectionDecorations:
-		MinimumZoom: 0.5
-	WithSpriteControlGroupDecoration:
 	Selectable:
 		Bounds: 1024, 1024
 	GrantCondition@untargetable:
@@ -1353,7 +1378,6 @@
 	DamageMultiplier@parachute:
 		Modifier: 75
 		RequiresCondition: parachute
-	Warpable:
 	Targetable@chrono:
 		RequiresCondition: !invulnerability
 	Passenger:
@@ -1367,11 +1391,6 @@
 	RangeMultiplier@tankbunker:
 		Modifier: 150
 		RequiresCondition: tankbunkered
-	ActorLostNotification:
-	HiddenUnderFog:
-	AttackMove:
-		Voice: Action
-	DrawLineToTarget:
 	WithDamageOverlay:
 		Palette: player
 	WithFacingSpriteBody:
@@ -1379,16 +1398,11 @@
 		Weapon: UnitExplodeSmall
 		EmptyWeapon: UnitExplodeSmall
 		RequiresCondition: !chronobeamed
-	Guard:
-	Guardable:
 	Tooltip:
 		Name: Vehicle
 		GenericName: Vehicle
-	MustBeDestroyed:
 	Voiced:
 		VoiceSet: VehicleVoice
-	#ClassicFacingBodyOrientation:
-	HitShape:
 	MapEditorData:
 		Categories: Vehicle
 	Targetable@REPAIR:
@@ -1446,15 +1460,7 @@
 	Crushable:
 		WarnProbability: 0
 		CrushClasses: vehicle
-		RequiresCondition: !invulnerability
-	RevealOnFire:
-		Duration: 50
-	RevealOnDeath:
-	RevealsShroud:
-		#MoveRecalculationThreshold: 0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 4c0
+		RequiresCondition: !untargetable
 	GpsDot:
 		String: Vehicle
 	RangedGpsDot:
@@ -1482,6 +1488,8 @@
 		Probability: 99
 		OwnerType: Killer
 		DeathType: QueenChilds
+	ActorStatValues:
+		Stats: Armor, Sight, Speed
 
 ^Tank:
 	Inherits: ^Vehicle
@@ -1528,11 +1536,9 @@
 		TargetTypes: Ground, Water, Ship, Repair
 	Passenger:
 		CargoType: None
-	ExternalCondition@SQUIDTRAP:
-		Condition: SquidTrap
 	GrantCondition@disable:
 		Condition: disabled
-		RequiresCondition: (empdisable || GhostLockdown || chronodisabled || diskdrain || Magnet || SquidTrap ) && !invulnerability
+		RequiresCondition: (empdisable || GhostLockdown || chronodisabled || diskdrain || leaflet || Magnet || squid) && !invulnerability
 	ProductionCostMultiplier@Industrial:
 		Multiplier: 75
 		Prerequisites: yrngindp
@@ -1542,7 +1548,6 @@
 		Weapon: UnitExplodeShip
 		EmptyWeapon: UnitExplodeShip
 		RequiresCondition: !chronobeamed
-	RevealOnDeath:
 	-Repairable:
 	RepairableNear:
 		RepairActors: yrygyard, ra2nayard, ra2gayard, ra1syrd, cncsyrd, raspen, cncspen, tsntyard, tsntyard2, tsgtyard, tsgtyard2, cra2gayard, cra2nayard, craspen, ccncspen, cra1syrd, ccncsyrd
@@ -1561,37 +1566,83 @@
 		ValidRelationships: Ally, Neutral, Enemy
 		RequiresCondition: underbridge
 
+^SeaCreature:
+	Inherits: ^BasicUnit
+	Inherits@mindcontrol: ^MindControllable
+	Inherits@heal: ^TechStructureHealable
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
+	Inherits@FrenzyPower: ^FrenzyPower
+	Inherits@chrono: ^Chronoshiftable
+	Inherits@unstableeffect: ^UnstableEffect
+	Inherits@LeechEggLayable: ^LeechEggLayable
+	Inherits@GDIOfficerLeadershipBuff: ^GDIOfficerLeadershipBuff
+	TemporaryOwnerManager:
+	Mobile:
+		Locomotor: naval
+		TurnSpeed: 40
+		PauseOnCondition: disabled
+	Selectable:
+		Bounds: 1024, 1024
+	WithInfantryBody:
+	GrantCondition@untargetable:
+		Condition: untargetable
+		RequiresCondition: chronobeamed
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Infantry
+		RequiresCondition: untargetable
+	MapEditorData:
+		Categories: Infantry
+	Targetable@HEAL:
+		RequiresCondition: !untargetable && damaged
+		TargetTypes: Heal, Healing
+	GrantConditionOnDamageState@DAMAGED:
+		Condition: damaged
+		ValidDamageStates: Light, Medium, Heavy, Critical
+	DamagedByTintedCells@rad:
+		Damage: 125
+		DamageInterval: 1
+		DamageTypes: RadiationDeath
+		LayerName: ra2radiation
+	DamagedByTintedCells@genrad:
+		Damage: 25
+		DamageInterval: 1
+		DamageTypes: RadiationDeath
+		LayerName: genradiation
+	DamagedByTintedCells@tib:
+		Damage: 125
+		DamageInterval: 1
+		DamageTypes: TiberiumDeath
+		LayerName: tibradiation
+	GpsDot:
+		String: Infantry
+	RangedGpsDot:
+		Sequence: Infantry
+	GrantConditionOnTerrain@bridge:
+		Condition: underbridge
+		TerrainTypes: Bridge
+	WithAlpha@bridge:
+		Alpha: 0
+		RequiresCondition: underbridge
+	WithColoredSelectionBox@UnderBridge:
+		ColorSource: Player
+		ValidRelationships: Ally, Neutral, Enemy
+		RequiresCondition: underbridge
+
 ^RANeutralPlane: #for actual air units
-	Inherits@1: ^ExistsInWorld
-	Inherits@2: ^SpriteActor
-	Inherits@bounty: ^GlobalBounty
-	Inherits@selection: ^SelectableCombatUnit
+	Inherits@1: ^BasicUnit
 	Inherits@ext: ^ExternalConditionsAll
 	Inherits@IC: ^IronCurtainable
-	Inherits@cloak: ^AcceptsCloakCrate
-	Inherits@bot: ^BotProductionBehavior
 	Inherits@fix: ^Repairable
 	Inherits@EMP: ^UnitDisable
 	Inherits@mag: ^Magnefreezable
 	Inherits@terrordrone: ^TerrorDronableAircraft
-	Inherits@Shroudable: ^Shroudable
-	Inherits@AdvancedTargeting: ^AdvancedTargeting
 	Inherits@SHADOWS: ^Shadows
-	Inherits@ivan: ^BombAttachable
-	Inherits@cloak: ^StealthGenCloakable
-	Inherits@chrono: ^ChronoBeamable
-	Inherits@base-reveal: ^Base-reveal
-	Huntable:
-	OwnerLostAction:
-		Action: Kill
-	DrawLineToTarget:
 	Armor:
 		Type: Light
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	AppearsOnRadar:
 		UseLocation: true
-	WithSpriteControlGroupDecoration:
 	Selectable:
 		Bounds: 1024, 1024
 	SelectionDecorations:
@@ -1609,7 +1660,7 @@
 		RequiresCondition: airborne && !untargetable
 		TargetTypes: Air
 	Targetable@ALL:
-		RequiresCondition: !chronobeamed
+		RequiresCondition: !untargetable
 		TargetTypes: Aircraft
 	Targetable@REPAIR:
 		RequiresCondition: !airborne && !untargetable && damaged
@@ -1626,8 +1677,6 @@
 		Type: GroundPosition
 	AttackMove:
 		Voice: Action
-	Guard:
-	Guardable:
 	ProximityCaptor:
 		Types: Plane
 	GpsDot:
@@ -1641,16 +1690,13 @@
 		Offset: 43, 128, 0
 		ZOffset: -129
 	WithFacingSpriteBody:
-	MustBeDestroyed:
 	Voiced:
 		VoiceSet: VehicleVoice
-	HitShape:
 	ProductionCostMultiplier@Industrial:
 		Multiplier: 75
 		Prerequisites: yrngindp
 	MapEditorData:
 		Categories: Aircraft
-	ActorLostNotification:
 	SpawnActorOnDeath:
 		RequiresCondition: airborne
 	Explodes:
@@ -1662,15 +1708,9 @@
 		RequiresCondition: !airborne && !chronobeamed
 	RevealsShroud:
 		Type: GroundPosition
-		Range: 5c0
-		#MoveRecalculationThreshold: 0
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
-		Range: 4c0
 		Type: GroundPosition
-	RevealOnFire:
-		Duration: 50
-	RevealOnDeath:
 	Targetable@chrono:
 		TargetTypes: Chronobeamable
 		RequiresCondition: !airborne
@@ -1708,6 +1748,86 @@
 		Sequence: Helicopter
 	Targetable@helicopter:
 		TargetTypes: Helicopter
+
+^JumpjetInfantry:
+	Inherits: ^BasicUnit
+	Inherits@ext: ^ExternalConditionsAll
+	Inherits@TechStructureHealable: ^TechStructureHealable
+	Inherits@EMP: ^InfantryDisable
+	Inherits@SHADOWS: ^Shadows
+	Armor:
+		Type: Helicopter
+	AppearsOnRadar:
+		UseLocation: true
+	Selectable:
+		Bounds: 768, 768, 0, -256
+		DecorationBounds: 512, 725, 0, -256
+	Aircraft:
+		CanHover: true
+		CanSlide: true
+		TakeOffOnResupply: true
+		VTOL: true
+		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice, ZergSoil
+		Crushes: crate
+		AirborneCondition: airborne
+		CruisingCondition: cruising
+	Hovers@CRUISING:
+		RequiresCondition: cruising && !disabled
+	GrantCondition@untargetable:
+		Condition: untargetable
+		RequiresCondition: chronobeamed || invulnerability
+	Targetable@GROUND:
+		RequiresCondition: !airborne && !untargetable
+		TargetTypes: Ground, Infantry
+	Targetable@AIRBORNE:
+		RequiresCondition: airborne && !untargetable
+		TargetTypes: Air
+	Targetable@ALL:
+		RequiresCondition: !chronobeamed
+		TargetTypes: Aircraft
+	Targetable@Heal:
+		RequiresCondition: !airborne && !untargetable && damaged
+		TargetTypes: Heal, Healing
+	AttackAircraft:
+		PauseOnCondition: disabled
+	GrantConditionOnDamageState@DAMAGED:
+		Condition: damaged
+		ValidDamageStates: Light, Medium, Heavy, Critical
+	SpeedMultiplier@disable:
+		Modifier: 0
+		RequiresCondition: disabled
+	HiddenUnderFog:
+		Type: GroundPosition
+	MapEditorData:
+		Categories: Infantry
+	SpawnActorOnDeath:
+		RequiresCondition: airborne
+	Explodes:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+		RequiresCondition: airborne
+	Explodes@2:
+		Weapon: UnitExplode
+		RequiresCondition: !airborne && !chronobeamed
+	RevealsShroud:
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Range: 4c0
+	Targetable@chrono:
+		TargetTypes: Chronobeamable
+		RequiresCondition: !airborne
+	Cloak@TDcloak:
+		DetectionTypes: AirCloak
+	Cloak@TScloak:
+		DetectionTypes: AirCloak
+	Parachutable:
+		FallRate: 20
+		KilledOnImpassableTerrain: false
+	GpsDot:
+		String: Infantry
+	RangedGpsDot:
+		Sequence: Infantry
 
 ^RAPlane:
 	Inherits: ^RANeutralPlane
@@ -1753,8 +1873,6 @@
 	WithColoredOverlay@leaflet:
 		RequiresCondition: leaflet
 		Color: 000000b4
-	Mobile:
-		PauseOnCondition: disabled
 	ExternalCondition@stickyfoam:
 		TotalCap: 1
 		Condition: stickyfoam
@@ -1773,11 +1891,7 @@
 	# 	ValidRelationships: Ally, Neutral, Enemy
 
 ^DefaultInfantry:
-	Inherits@1: ^ExistsInWorld
-	Inherits@3: ^SpriteActor
-	Inherits@selection: ^SelectableCombatUnit
-	Inherits@bounty: ^GlobalBounty
-	Inherits@bot: ^BotProductionBehavior
+	Inherits@1: ^BasicUnit
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@disable: ^InfantryDisable
 	Inherits@heal: ^HospitalHealable
@@ -1787,32 +1901,16 @@
 	Inherits@poisonable: ^Poisonable
 	Inherits@unstableeffect: ^UnstableEffect
 	Inherits@GDIOfficerLeadershipBuff: ^GDIOfficerLeadershipBuff
-	Inherits@Shroudable: ^Shroudable
-	Inherits@AdvancedTargeting: ^AdvancedTargeting
-	Inherits@ivan: ^BombAttachable
-	Inherits@cloak: ^StealthGenCloakable
-	Inherits@chrono: ^ChronoBeamable
-	Inherits@base-reveal: ^Base-reveal
 	TemporaryOwnerManager:
-	Huntable:
 	OwnerLostAction:
 		Action: Kill
 		DeathTypes: DefaultDeath
-	Health:
 	Armor:
 		Type: None
-	RevealsShroud:
-		Range: 5c0
-		#MoveRecalculationThreshold: 0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 4c0
 	Mobile:
 		Locomotor: foot
+		PauseOnCondition: disabled
 		RequiresCondition: !beingterrordroned
-	SelectionDecorations:
-		MinimumZoom: 0.5
-	WithSpriteControlGroupDecoration:
 	Selectable:
 		Bounds: 768, 768, 0, -256
 		DecorationBounds: 512, 725, 0, -256
@@ -1843,7 +1941,6 @@
 	WithDeathAnimation:
 	AttackMove:
 		Voice: Action
-	DrawLineToTarget:
 	Passenger:
 		CargoType: Infantry
 		CargoConditions:
@@ -1859,12 +1956,9 @@
 	RangeMultiplier@Garrisoned:
 		Modifier: 115
 		RequiresCondition: garrisoned
-	HiddenUnderFog:
-	ActorLostNotification:
 	Crushable:
 		WarnProbability: 75
 		CrushSound: squish2.aud
-	Guardable:
 	DetectCloaked:
 		Range: 1c512
 		RequiresCondition: !disabled
@@ -1930,6 +2024,8 @@
 	RangedGpsDot:
 		Sequence: Infantry
 	TeleportNetworkTransportable:
+	ActorStatValues:
+		Stats: Armor, Sight, Speed
 
 ^AffectedByTiberium:
 	DamagedByTerrain:
@@ -2361,95 +2457,6 @@
 		Categories: Critter
 	GpsDot:
 		String: Infantry
-
-^Plane: #Not for actual air units
-	Inherits@1: ^ExistsInWorld
-	Inherits@2: ^SpriteActor
-	Inherits@SHADOWS: ^Shadows
-	Selectable:
-		Bounds: 1280, 1280
-	SelectionDecorations:
-		MinimumZoom: 0.5
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -512, -512
-			BottomRight: 512, 512
-	Health:
-		HP: 30000
-	Armor:
-		Type: Medium
-	Targetable:
-		TargetTypes: Air, Aircraft
-	Huntable:
-	OwnerLostAction:
-		Action: Kill
-	AppearsOnRadar:
-		UseLocation: true
-	HiddenUnderFog:
-		Type: GroundPosition
-		AlwaysVisibleRelationships: None
-	ActorLostNotification:
-	AttackMove:
-	WithShadow:
-		Offset: 43, 128, 0
-		ZOffset: -129
-	WithFacingSpriteBody:
-	RejectsOrders:
-	Valued:
-		Cost: 2000
-	GivesExperience:
-		Experience: 1000
-	Aircraft:
-		CruiseAltitude: 2560
-		IdleBehavior: LeaveMap
-	MapEditorData:
-		Categories: Aircraft
-	GpsDot:
-		String: Plane
-
-^Ship:
-	Inherits@1: ^ExistsInWorld
-	Inherits@3: ^SpriteActor
-	Inherits@selection: ^SelectableCombatUnit
-	Inherits@bot: ^BotProductionBehavior
-	Inherits@mindcontrol: ^MindControllable
-	Inherits@rad: ^VehicleRadiation
-	Huntable:
-	OwnerLostAction:
-		Action: Kill
-	SelectionDecorations:
-		MinimumZoom: 0.5
-	WithSpriteControlGroupDecoration:
-	Selectable:
-	Targetable:
-		TargetTypes: Ground, Water
-	HiddenUnderFog:
-	ActorLostNotification:
-	AttackMove:
-	DrawLineToTarget:
-	WithDamageOverlay:
-	Explodes:
-		Weapon: UnitExplodeShip
-		EmptyWeapon: UnitExplodeShip
-	Guard:
-	Guardable:
-	Tooltip:
-		Name: Ship
-		GenericName: Ship
-	Voiced:
-		VoiceSet: VehicleVoice
-	HitShape:
-	MapEditorData:
-		Categories: Naval
-	GpsDot:
-		String: Ship
-	RevealsShroud:
-		Range: 5c0
-		#MoveRecalculationThreshold: 0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 4c0
 
 ^Building:
 	Inherits@1: ^ExistsInWorld
@@ -3465,62 +3472,6 @@
 		RequiresCondition: GDIOfficerLeadership
 		Color: FF880066
 
-####################################################################################################
-#		RA
-####################################################################################################
-
-^BasicBuilding:
-	Inherits@1: ^ExistsInWorld
-	Inherits@2: ^IronCurtainable
-	Inherits@3: ^SpriteActor
-	Inherits@shape: ^1x1Shape
-	Inherits@bounty: ^GlobalBounty
-	SelectionDecorations:
-	WithSpriteControlGroupDecoration:
-	Selectable:
-		Priority: 3
-	Targetable:
-		TargetTypes: Ground, C4, Structure
-	Building:
-		Dimensions: 1,1
-		Footprint: x
-		TerrainTypes: Clear,Road
-		RequiresBaseProvider: True
-		BuildSounds: placbldg.aud, build5.aud
-		UndeploySounds: cashturn.aud
-	ActorPreviewPlaceBuildingPreview:
-	RequiresBuildableArea:
-		AreaTypes: building
-	SoundOnDamageTransition:
-		DamagedSounds: kaboom1.aud
-		DestroyedSounds: kaboom22.aud
-	WithSpriteBody:
-	Explodes:
-		Type: Footprint
-		Weapon: BuildingExplode
-		EmptyWeapon: BuildingExplode
-	CaptureNotification:
-	ShakeOnDeath:
-	ProximityCaptor:
-		Types: Building
-	Guardable:
-		Range: 3c0
-	FrozenUnderFog:
-	FrozenUnderFogUpdatedByGps:
-	Tooltip:
-		Name: Structure
-		GenericName: Structure
-	Demolishable:
-	MapEditorData:
-		Categories: Building
-	CommandBarBlacklist:
-	RevealsShroud:
-		Range: 5c0
-		#MoveRecalculationThreshold: 0
-		RevealGeneratedShroud: False
-	RevealsShroud@GAPGEN:
-		Range: 4c0
-
 ^IronCurtainable:
 	WithColoredOverlay@IRONCURTAIN:
 		RequiresCondition: invulnerability
@@ -3568,7 +3519,6 @@
 		RequiresCondition: trap-neutralized
 	MapEditorData:
 		Categories: System
-
 
 ^BasicHusk:
 	Inherits@1: ^SpriteActor
@@ -5124,6 +5074,7 @@ CPQDEBUGDUMMY:
 		Prerequisites: hosp
 	Repairable:
 		RepairActors: drfghosp, drihosp, drihosp.actibliz, drterhosp
+
 ^MachineShopRepairable:
 	Inherits: ^TechStructureHealable
 	ChangesHealth@HOSPITAL:
@@ -5744,6 +5695,8 @@ CPQDEBUGDUMMY:
 	GrantConditionOnInternalOwner:
 		Condition: neutral
 		InternalOwners: Neutral
+	ActorStatValues:
+		Stats: Armor, Sight, CashTrickler
 
 ^CashTricklerWithExperience:
 	Inherits: ^CashTricklerMultipliers
@@ -5774,6 +5727,8 @@ CPQDEBUGDUMMY:
 		InitialDelay: 1
 		PauseOnCondition: lowpower
 		RequiresCondition: city-veteran <= 3
+	ActorStatValues:
+		Stats: Armor, Sight, CashTrickler, Power, Experience
 
 ^AvengerGuidable:
 	ExternalCondition@Avenger:
@@ -5900,12 +5855,22 @@ CPQDEBUGDUMMY:
 	Mobile:
 		PauseOnCondition: disabled || notmobile
 	ActorStatValues:
-		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Cargo, Kills
+		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Cargo, Experience
+
+^UnarmedCargoVehicle:
+	Inherits: ^CargoVehicle
+	ActorStatValues:
+		Stats: Armor, Sight, Speed, Cargo
 
 ^CargoAircraft:
 	Inherits: ^Cargo
 	ActorStatValues:
-		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Cargo, Kills
+		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Cargo, Experience
+
+^UnarmedCargoAircraft:
+	Inherits: ^CargoAircraft
+	ActorStatValues:
+		Stats: Armor, Sight, Speed, Cargo
 
 ^WithSpecialCargoPip:
 	Passenger:

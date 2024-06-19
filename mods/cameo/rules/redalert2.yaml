@@ -2494,7 +2494,7 @@ yrngbnkr:
 	Selectable:
 		Class: yrngbnkr
 	ActorStatValues:
-		Stats: Armor, Sight, Cargo, Kills
+		Stats: Armor, Sight, Cargo, Kills, Experience
 
 yrngbnkr.bot:
 	Inherits: yrngbnkr
@@ -7187,6 +7187,8 @@ YRSMIN:
 	RenderSprites:
 		PlayerPalette: playerra2
 		Image: yrsmin
+	ActorStatValues:
+		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Kills
 
 yrsmin.empy:
 	Inherits: YRSMIN
@@ -7545,12 +7547,12 @@ YRMIND:
 ############################################
 
 ra2sqd:
-	Inherits: ^BoatUnit
+	Inherits: ^SeaCreature
 	Inherits@Template: ^BattleShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@sub: ^Submarine
-	Inherits@heal: ^HospitalHealable
+	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -7589,15 +7591,16 @@ ra2sqd:
 		UncloakSound: vnavupa.wav
 	Targetable:
 		TargetTypes: Ground, Water, Ship, Submarine, Squid, Infantry
-	-WithFacingSpriteBody:
 	WithInfantryBody:
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
 		DefaultAttackSequence: shoot
 		IdleSequences: idle
-		StandSequences: idle
-		MoveSequence: idle
-	AttackInfect:
-		Types: Squid
-		Damage: 1500
+		StandSequences: stand
+	AttackFrontal:
+	InfectorOld:
+		Types: SquidGrab
+		Damage: 50000
 		DamageInterval: 20
 		DamageTypes: DefaultDeath
 		DamageSounds: gexpwama.wav, gexpwamb.wav
@@ -7605,29 +7608,20 @@ ra2sqd:
 		Voice: Attack
 		StartSequence: grabing
 		Sequence: grab
-		Palette: player
+		Palette: playerra2
 		IsPlayerPalette: true
-		PauseOnCondition: disabled
 	Voiced:
 		VoiceSet: GiantSquidVoice
 	DeathSounds:
-	-ExternalCondition@CLOAK:
-	-ExternalCondition@EMP:
-	-DelayedWeaponAttachable@lockdown:
-	-ExternalCondition@Magnetron:
-	-RepairableNear:
-	-GrantConditionOnPrerequisite@MACHINESHOP:
-	-ExternalCondition@INVULNERABILITY:
 	RenderSprites:
 		PlayerPalette: playerra2
 
 ra2dlph:
-	Inherits: ^BoatUnit
+	Inherits: ^SeaCreature
 	Inherits@Template: ^BattleShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@sub: ^Submarine
-	Inherits@heal: ^HospitalHealable
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 500
@@ -7651,18 +7645,21 @@ ra2dlph:
 		Type: Light
 	RevealsShroud:
 		Range: 7c0
-	Turreted:
-		TurnSpeed: 28
-		Offset: 512,0,0
 	Armament@PRIMARY:
 		Weapon: SonicZap
 		LocalOffset: 208,0,48
+	Armament@SECONDARY:
+		Weapon: SonicZapFriendly
+		LocalOffset: 208,0,48
+		TargetRelationships: Ally
 	AttackFrontal:
 		FacingTolerance: 0
-	#Selectable:
-	#	Bounds: 81920, 32768
-	DeliversCash:
-		Payload: 250
+	WithInfantryBody:
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
+		IdleSequences: idle
+		StandSequences: stand
+		DefaultAttackSequence: shoot
 	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
@@ -7672,14 +7669,6 @@ ra2dlph:
 	Voiced:
 		VoiceSet: DolphinVoice
 	DeathSounds:
-	-ExternalCondition@CLOAK:
-	-ExternalCondition@EMP:
-	-DelayedWeaponAttachable@lockdown:
-	-ExternalCondition@Magnetron:
-	-GrantConditionOnPrerequisite@MACHINESHOP:
-	-ExternalCondition@INVULNERABILITY:
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
 	RenderSprites:
 		PlayerPalette: playerra2
 	FirepowerMultiplier@Dolphin:
@@ -7687,7 +7676,7 @@ ra2dlph:
 
 ra2lcrf:
 	Inherits: ^BoatUnit
-	Inherits@cargo: ^CargoVehicle
+	Inherits@cargo: ^UnarmedCargoVehicle
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -7725,7 +7714,7 @@ ra2lcrf:
 
 ra2sapc:
 	Inherits: ^BoatUnit
-	Inherits@cargo: ^CargoVehicle
+	Inherits@cargo: ^UnarmedCargoVehicle
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -7763,7 +7752,7 @@ ra2sapc:
 
 yrhovr:
 	Inherits: ^BoatUnit
-	Inherits@cargo: ^CargoVehicle
+	Inherits@cargo: ^UnarmedCargoVehicle
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -7816,6 +7805,8 @@ ra2dest:
 		Prerequisites: ~ra2gayard
 		Queue: Naval, RANaval
 		Description: Allied warship armed with naval gun.\nCan deploy an Osprey against submarines\n Strong vs. Ships, Submarines
+	Selectable:
+		DecorationBounds: 2048, 2048
 	Mobile:
 		Speed: 80
 		TurnSpeed: 16
@@ -7883,6 +7874,8 @@ ra2aegis:
 		Prerequisites: ~ra2gaairc
 		Queue: Naval, RANaval
 		Description: Heavy Allied anti-aircraft warship.\n Strong vs. Aircraft
+	Selectable:
+		DecorationBounds: 2048, 2048
 	Mobile:
 		Speed: 90
 	Health:
@@ -8027,6 +8020,8 @@ ra2dred:
 		Prerequisites: ~ra2natech
 		Queue: Naval, RANaval
 		Description: Heavy naval siege unit.\n Strong vs. Buildings\n Weak vs. Ships, Submarines, Aircraft
+	Selectable:
+		DecorationBounds: 2048, 2048
 	Mobile:
 		TurnSpeed: 32
 		Speed: 42
@@ -8108,6 +8103,8 @@ ra2carrier:
 		Prerequisites: ~ra2gatech
 		Queue: Naval, RANaval
 		Description: Heavy Allied warship that can deploy\n3 attack aircraft.\n Strong vs ground targets\n Weak vs Ships, Submarines
+	Selectable:
+		DecorationBounds: 2048, 2048
 	Mobile:
 		TurnSpeed: 32
 		Speed: 42
@@ -8171,10 +8168,12 @@ yrbsub:
 		Weapon: YRBoomerTorpedo
 		LocalOffset: 200,-100,0, 200,100,0
 		FireDelay: 2
-	Armament@Secondary:
+	Armament@LAUNCH:
 		Weapon: BoomerLaunch
 		LocalOffset: 208,-24,48, 208,24,48
+		Voice: AttackLand
 	MissileSpawnerMasterCA:
+		#ArmamentNames: primary
 		Actors: yrbsubmisl, yrbsubmisl
 		RespawnTicks: 125
 		SpawnAllAtOnce: true
@@ -8218,7 +8217,7 @@ yrbsubmisl:
 		HP: 25000
 	CruiseMissile:
 		MaxAltitude: 2500
-		MinAirborneAltitude: 128
+		MinAirborneAltitude: 0
 		LaunchAngle: 192
 		Speed: 200
 		TurnSpeed: 25
@@ -8834,11 +8833,10 @@ YRDISK:
 		Upgrades: upyrdisk
 
 ra2rock:
-	Inherits: ^Helicopter
+	Inherits: ^JumpjetInfantry
 	Inherits@Template: ^HelicopterTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@heal: ^HospitalHealable
 	Inherits@detect: ^GenericAirDetector
 	Inherits@VOICES: ^WithFeedbackVoiceLines
 	Valued:
@@ -8869,11 +8867,10 @@ ra2rock:
 		AttackType: Hover
 	SpawnActorOnDeath:
 		Actor: ra2rock.husk
-	SelectionDecorations:
 	Voiced:
 		VoiceSet: RocketeerVoice
 	DeathSounds:
-	-WithFacingSpriteBody:
+	-WithShadow:
 	WithInfantryBody@Air:
 		StandSequences: fly
 		MoveSequence: fly
@@ -8888,16 +8885,11 @@ ra2rock:
 		Sequence: stand
 	Selectable:
 		Bounds: 512, 768
-	-WithShadow:
 	WithSpriteBody@shadow:
 		Name: shadow
 		Sequence: shadow
 		ForceToGround: true
 		RequiresCondition: airborne
-	Targetable@GROUND:
-		TargetTypes: Ground, Infantry
-	Targetable@REPAIR:
-		TargetTypes: Heal, Healing
 	FirepowerMultiplier@FirerateCompensation:
 		Modifier: 40
 	RenderSprites:
