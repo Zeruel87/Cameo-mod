@@ -45,7 +45,7 @@ actor-stats-label-prefix =
     .mob = Mob:
     .drone = Drones:
     .kills = Kills:
-    .experience = EXP:
+    .experience = Experience:
 
 label-armor-class =
     .None = None

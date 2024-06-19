@@ -47,7 +47,7 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		void INotifyOwnerChanged.OnOwnerChanged(Actor self, OpenRA.Player oldOwner, OpenRA.Player newOwner)
 		{
-			throw new System.NotImplementedException();
+			playerResources = newOwner.PlayerActor.Trait<PlayerResources>();
 		}
 
 		void ITick.Tick(Actor self)
