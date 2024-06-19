@@ -1124,7 +1124,7 @@ MLRS:
 	Health:
 		HP: 24000
 	Repairable:
-		HpPerStep: 900
+		HpPerStep: 1200
 	Armor:
 		Type: Light
 	Turreted:
@@ -1182,7 +1182,7 @@ MSSM:
 	Health:
 		HP: 25000
 	Repairable:
-		HpPerStep: 1364
+		HpPerStep: 1250
 	Armor:
 		Type: Light
 	Turreted:
@@ -3183,13 +3183,13 @@ CNCSPEN:
 
 CNCPT:
 	Inherits: ^BoatUnit
-	Inherits@Template: ^BattleShipTemplate
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
-		Cost: 1000
+		Cost: 1100
 	Tooltip:
 		Name: Missile Cruiser
 	UpdatesPlayerStatistics:
@@ -3238,7 +3238,7 @@ CNCCA:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 3000
+		Cost: 2100
 	Tooltip:
 		Name: Railgun Battleship
 	UpdatesPlayerStatistics:
@@ -3299,7 +3299,6 @@ CNCCA:
 		Turrets: primary, secondary
 	WithMuzzleOverlay:
 	WithSpriteTurret:
-	RenderDetectionCircle:
 	Selectable:
 		DecorationBounds: 2048, 2048
 	WithSpriteTurret@PRIMARY:
@@ -3311,54 +3310,9 @@ CNCCA:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
-LST:
-	Inherits: CNCLST
-
-CNCRSS:
-	Inherits: ^BoatUnit
-	Inherits@sub: ^Submarine
-	Inherits@cargo: ^CargoVehicle
-	Valued:
-		Cost: 650
-	Tooltip:
-		Name: Transport Submarine
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~cncspen
-		Queue: Naval, RANaval
-	Mobile:
-		Speed: 50
-		RequiresCondition: !notmobile && !disabled
-		Locomotor: lcraft
-	Health:
-		HP: 15000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 7c0
-	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
-	Selectable:
-		DecorationBounds: 1536, 1536
-	DeliversCash:
-		Payload: 325
-	Cargo:
-		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 5
-		AfterLoadDelay: 0
-		BeforeUnloadDelay: 0
-		AfterUnloadDelay: 0
-	GrantConditionOnTerrain@underwater:
-		Condition: cancloak
-		TerrainTypes: Water
-	Cloak@underwater:
-		PauseOnCondition: disabled || !cancloak
-
 CNCSS:
 	Inherits: ^BoatUnit
-	Inherits@Template: ^BattleShipTemplate
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
@@ -3406,6 +3360,73 @@ CNCSS:
 		Image: cncss
 		PlayerPalette: player_rgba
 
+ssmsub:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^ArtilleryShipTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 2800
+	Tooltip:
+		Name: Ballistic Missile Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~hq.nod
+		Queue: Naval, RANaval
+		Description: actor-msub.description
+	Mobile:
+		Speed: 60
+		TurnSpeed: 12
+	Health:
+		HP: 200000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	Armor:
+		Type: Medium
+	Armament:
+		Weapon: HonestJohn
+		LocalOffset: 800,200,0, 800,-200,0
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+	AttackFrontal:
+		FacingTolerance: 0
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 1000
+	Cloak@underwater:
+		CloakDelay: 100
+	Voiced:
+		VoiceSet: VehicleVoice
+	FirepowerMultiplier@BallisticMissileSubBuff:
+		Modifier: 200
+	Explodes:
+		Weapon: ArtilleryShell
+	AmmoPool:
+		Ammo: 2
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 125
+		Count: 1
+	WithFacingSpriteBody:
+		Sequence: idle
+		RequiresCondition: ammo == 2
+	WithFacingSpriteBody@OneMissile:
+		Sequence: idle-one
+		RequiresCondition: ammo == 1
+	WithFacingSpriteBody@NoMissiles:
+		Sequence: idle-empty
+		RequiresCondition: !ammo
+	RenderSprites:
+		Image: ssmsub
+
 nodlasercorvette:
 	Inherits: ^BoatUnit
 	Inherits@Template: ^BattleShipTemplate
@@ -3413,7 +3434,7 @@ nodlasercorvette:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 3000
+		Cost: 2200
 	Tooltip:
 		Name: actor-nodlasercorvette.name
 	UpdatesPlayerStatistics:
@@ -3468,7 +3489,6 @@ nodlasercorvette:
 		Interval: 30, 40
 	RenderRangeCircle:
 	WithMuzzleOverlay:
-	RenderDetectionCircle:
 	Selectable:
 		DecorationBounds: 2048, 2048
 	WithSpriteTurret@SECONDARY:
@@ -3478,6 +3498,51 @@ nodlasercorvette:
 		Payload: 500
 	RenderSprites:
 		PlayerPalette: player_rgba
+
+LST:
+	Inherits: CNCLST
+
+CNCRSS:
+	Inherits: ^BoatUnit
+	Inherits@sub: ^Submarine
+	Inherits@cargo: ^CargoVehicle
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Transport Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~cncspen
+		Queue: Naval, RANaval
+	Mobile:
+		Speed: 50
+		RequiresCondition: !notmobile && !disabled
+		Locomotor: lcraft
+	Health:
+		HP: 15000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 325
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 5
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	GrantConditionOnTerrain@underwater:
+		Condition: cancloak
+		TerrainTypes: Water
+	Cloak@underwater:
+		PauseOnCondition: disabled || !cancloak
 
 CNCLST:
 	Inherits: ^BoatUnit
