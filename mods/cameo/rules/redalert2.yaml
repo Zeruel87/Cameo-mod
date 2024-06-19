@@ -80,11 +80,6 @@ World:
 		SupportActors: yrinit,yrinit,yrinit,yrbrute,yrbrute,yrslav,yrytnk,yrltnk,yrltnk,yrltnk,yrltnk,yrytnk
 
 Player:
-	ExternalCondition@BuildingsOwned:
-		Condition: BuildingsOwned
-	ProvidesPrerequisite@BuildingsOwned:
-		Prerequisite: allowsMCV
-		RequiresCondition: BuildingsOwned < 5
 	ProvidesPrerequisite@anyallies:
 		Prerequisite: anyallies
 		Factions: ra2america #, ra2french, ra2german, ra2british, ra2korea, ra2koreaaddon
@@ -401,6 +396,12 @@ RA2Flameguy:
 		Weapons: RA2Debris
 		RequiresCondition: !chronobeamed
 
+^RA2VehicleBig:
+	Inherits: ^RA2Vehicle
+	Explodes:
+		Weapon: RA2UnitExplodeBig
+		EmptyWeapon: RA2UnitExplodeBig
+
 ^RenderVoxel:
 	BodyOrientation:
 		QuantizedFacings: 32
@@ -529,30 +530,40 @@ RA2Flameguy:
 
 OILB.RA2:
 	Inherits: ^RA2Building
-	Inherits@2: OILB.Building
+	Inherits@2: ^CashTricklerWithExperience
+	Inherits@3: ^CashTricklerLimited
+	Inherits@shape: ^2x2Shape
+	Inherits@lowpower: ^DisabledOverlay
+	Inherits@Bot: ^BotMicromanageable
 	Tooltip:
 		Name: RA2 Oil Derrick
 	Buildable:
 		BuildLimit: 10
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 999
-		Prerequisites: ~ra2tek, ~techlevel.medium
+		Prerequisites: ~ra2tek, ~techlevel.medium, derricklimit
+		Description: actor-oilb.description
+	Valued:
+		Cost: 5000
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 200000
+	RevealsShroud:
+		Range: 5000
 	WithIdleOverlay@idle-pump:
 		Sequence: idle-pump
 		PauseOnCondition: lowpower
 		RequiresCondition: !build-incomplete
-	#WithIdleOverlay@damaged-idle-pump:
-	#	Sequence: damaged-idle-pump
-	#	RequiresCondition: damaged && !build-incomplete
-	-RenderSprites:
 	RenderSprites:
 		Image: ra2caoild
 		PlayerPalette: playerra2
-	WithMakeAnimation:
+	-WithDeathAnimation:
+	Power:
+		Amount: -100
 
 ra2gacnst:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: ^RA2Building
 	Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
@@ -864,6 +875,7 @@ ra2gapile:
 		RequiresCondition: !build-incomplete
 	WithDeathAnimation:
 		DeathSequencePalette: playerra2
+		DeathPaletteIsPlayerPalette: true
 
 ra2garefn:
 	Inherits: ^RA2Building
@@ -1018,6 +1030,7 @@ ra2gaorep:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
 	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@cashlimit: ^CashTricklerLimited
 	Valued:
 		Cost: 2500
 	Tooltip:
@@ -1653,6 +1666,7 @@ ra2atesla:
 	WithMakeAnimation:
 	WithDeathAnimation:
 		DeathSequencePalette: playerra2
+		DeathPaletteIsPlayerPalette: true
 	#WithAmmoPipsDecoration:
 	#	Position: BottomLeft
 	#	RequiresSelection: true
@@ -1776,8 +1790,6 @@ RA2BRIK:
 #   Red Alert 2 Soviet Structures
 ##############################################
 ra2nacnst:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: ra2gacnst
 	Inherits@sell: ^RA2SSpawnActorsOnSell
 	Tooltip:
@@ -2832,8 +2844,6 @@ ra2nayard:
 #   Red Alert 2 Yuri Structures
 ##############################################
 yrnacnst:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: ra2gacnst
 	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Tooltip:
@@ -3289,6 +3299,7 @@ yrygcomd:
 	Inherits@shape: ^4x3Shape
 	Inherits@hpad: ^IsAircraftFactory
 	Inherits@cash: ^CashTricklerWithExperience
+	Inherits@cashlimit: ^CashTricklerLimited
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -6378,20 +6389,18 @@ yrbfrt:
 
 yrbfrt.bot:
 	Inherits: yrbfrt
-	Tooltip:
-		Name: Guardian Battle Fortress
+	EditorOnlyTooltip:
+		Name: Battle Fortress (Empty)
 	Buildable:
 		Prerequisites: ra2gatech, ra2gapile, ~botplayer
 	Cargo:
-		InitialUnits: ra2seal,yrggi,yrggi,yrggi,yrggi,yrggi
+		-InitialUnits:
 	ProductionCostMultiplier:
-		Multiplier: 150
-	EditorOnlyTooltip:
-		Name: Loaded Battle Fortress
+		Multiplier: 66
 
 yrbfrt.bot2:
-	Inherits: yrbfrt.bot
-	Tooltip:
+	Inherits: yrbfrt
+	EditorOnlyTooltip:
 		Name: Chrono Battle Fortress
 	Buildable:
 		Prerequisites: ra2gatech, ra2gapile, ~botplayer
@@ -7790,6 +7799,7 @@ yrhovr:
 
 ra2dest:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
 	Inherits@Template: ^BattleShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -7858,6 +7868,7 @@ ra2dest:
 
 ra2aegis:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@Template: ^BattleShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
@@ -7897,6 +7908,7 @@ ra2aegis:
 
 ra2sub:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
 	Inherits@Template: ^BattleShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -7957,6 +7969,7 @@ ra2sub:
 
 ra2hyd:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
 	Inherits@Template: ^BattleShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -8005,6 +8018,7 @@ ra2hyd:
 
 ra2dred:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2VehicleBig
 	Inherits@Template: ^ArtilleryShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -8088,6 +8102,7 @@ ra2dmisl:
 
 ra2carrier:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2VehicleBig
 	Inherits@Template: ^ArtilleryShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -8135,6 +8150,7 @@ ra2carrier:
 
 yrbsub:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
 	Inherits@Template: ^ArtilleryShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -8217,7 +8233,7 @@ yrbsubmisl:
 		HP: 25000
 	CruiseMissile:
 		MaxAltitude: 2500
-		MinAirborneAltitude: 0
+		MinAirborneAltitude: 128
 		LaunchAngle: 192
 		Speed: 200
 		TurnSpeed: 25
@@ -8235,6 +8251,7 @@ yrbsubmisl:
 	SpawnedExplodes:
 		Weapon: YRBoomerSCUD
 		EmptyWeapon: YRBoomerSCUD
+		RequiresCondition: !airborne
 	MissileSpawnerSlave:
 	RenderSprites:
 		PlayerPalette: playerra2

@@ -49,7 +49,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 					return nearest;
 			}
 
-			return owner.SquadManager.FindClosestEnemy(first);
+			return owner.SquadManager.FindClosestEnemy(first, WDist.FromCells(owner.SquadManager.Info.NavalScanRadius));
 		}
 	}
 
@@ -66,14 +66,15 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 
 			if (!owner.IsTargetValid)
 			{
-				var closestEnemy = owner.SquadManager.FindClosestEnemy(owner.Units[0].Actor);
+				var closestEnemy = FindClosestEnemy(owner);
 				if (closestEnemy == null)
 					return;
 
 				owner.TargetActor = closestEnemy;
 			}
 
-			leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedNavyLeaderLocomotor).Actor;
+			if (owner.SquadManager.unitCannotBeOrdered(leader))
+				leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedNavyLeaderLocomotor).Actor;
 
 			var enemyUnits = owner.World.FindActorsInCircle(owner.TargetActor.CenterPosition, WDist.FromCells(owner.SquadManager.Info.IdleScanRadius))
 				.Where(owner.SquadManager.IsPreferredEnemyUnit).ToList();
@@ -98,6 +99,8 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 
 	class NavyUnitsAttackMoveStateCA : NavyStateBaseCA, IState
 	{
+		UnitWposWrapper leader = new(null);
+
 		const int MaxMakeWayPossibility = 4;
 		const int MaxSquadStuckPossibility = 6;
 		const int MakeWayTicks = 3;
@@ -117,12 +120,12 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			if (!owner.IsValid)
 				return;
 
-			// Initialize leader. Optimize pathfinding by using leader.
-			var leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedNavyLeaderLocomotor);
+			if (owner.SquadManager.unitCannotBeOrdered(leader.Actor))
+				leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedNavyLeaderLocomotor);
 
 			if (!owner.IsTargetValid || !CheckReachability(leader.Actor, owner.TargetActor))
 			{
-				var targetActor = owner.SquadManager.FindClosestEnemy(leader.Actor);
+				var targetActor = FindClosestEnemy(owner);
 				if (targetActor != null)
 					owner.TargetActor = targetActor;
 				else
@@ -323,7 +326,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 
 			if (closestEnemy == null)
 			{
-				owner.TargetActor = owner.SquadManager.FindClosestEnemy(leader);
+				owner.TargetActor = FindClosestEnemy(owner);
 				owner.FuzzyStateMachine.ChangeState(owner, new NavyUnitsAttackMoveStateCA(), false);
 				return;
 			}

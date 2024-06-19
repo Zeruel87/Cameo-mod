@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.Mods.AS.Traits;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
@@ -26,6 +27,9 @@ namespace OpenRA.Mods.CA.Traits
 
 		[Desc("Damage types that kills the infector.")]
 		public readonly BitSet<DamageType> KillInfectorDamageTypes = default;
+
+		[Desc("Teleport types that removes the infector.")]
+		public readonly HashSet<string> RemoveInfectorTeleportTypes = default;
 
 		[GrantedConditionReference]
 		[Desc("The condition to grant to self while infected by any actor.")]
@@ -83,9 +87,10 @@ namespace OpenRA.Mods.CA.Traits
 		}
 	}
 
-	public class InfectableCA : ConditionalTrait<InfectableCAInfo>, ISync, ITick, INotifyDamage, INotifyKilled, IRemoveInfector
+	public class InfectableCA : ConditionalTrait<InfectableCAInfo>, ISync, ITick, INotifyDamage, INotifyKilled, IRemoveInfector, IOnSuccessfulTeleportRA2
 	{
 		readonly Health health;
+		readonly Actor self;
 
 		public List<InfectorCA> Infectors = new();
 
@@ -97,6 +102,7 @@ namespace OpenRA.Mods.CA.Traits
 		public InfectableCA(Actor self, InfectableCAInfo info)
 			: base(info)
 		{
+			this.self = self;
 			health = self.Trait<Health>();
 		}
 
@@ -227,6 +233,13 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			foreach (var Infector in Infectors)
 				RemoveInfector(self, Infector, kill, e);
+		}
+
+		void IOnSuccessfulTeleportRA2.OnSuccessfulTeleport(string type, WPos oldPos, WPos newPos)
+		{
+			if (Info.RemoveInfectorTeleportTypes.Contains(type))
+				foreach (var Infector in Infectors)
+					RemoveInfector(self, Infector, false, null);
 		}
 	}
 }

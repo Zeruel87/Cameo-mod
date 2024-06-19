@@ -95,6 +95,9 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Radius in cells that protecting squads should scan for enemies around their position.")]
 		public readonly int ProtectionScanRadius = 8;
 
+		[Desc("Radius in cells that naval squads should scan for targets.")]
+		public readonly int NavalScanRadius = 8;
+
 		[Desc("Enemy target types to never target.")]
 		public readonly BitSet<TargetableType> IgnoredEnemyTargetTypes = default(BitSet<TargetableType>);
 
