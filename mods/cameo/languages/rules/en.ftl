@@ -1,119 +1,124 @@
 actor-e1 =
    .description = General-purpose infantry.
-      Strong vs Infantry
-      Weak vs Vehicles, Aircraft
-   .description-jp = JGSDF infantryman from Gate armed with a battle rifle.
-      Strong vs Infantry
-      Weak vs Vehicles, Aircraft
+        Strong vs Infantry
+        Weak vs Vehicles, Aircraft
+   .description-jp = JGSDF infantryman from Gate armed
+      with a battle rifle.
+        Strong vs Infantry
+        Weak vs Vehicles, Aircraft
    .raname = Rifle Infantry
    .tdname = Minigunner
    .jpname = Imperial Scoutsman
 
 actor-e2 =
    .description = Fast infantry armed with grenades.
-      Strong vs Buildings, slow-moving targets
+        Strong vs Buildings, slow-moving targets
    .name = Grenadier
 
 actor-e3 =
    .description = Anti-tank/Anti-aircraft infantry.
-      Strong vs Tanks, Aircraft
-      Weak vs Infantry
+        Strong vs Tanks, Aircraft
+        Weak vs Infantry
    .raname = RA Rocket Soldier
    .tdname = TD Rocket Soldier
 
 actor-e4 =
    .description = Advanced anti-structure unit.
-      Strong vs Infantry, Buildings
-      Weak vs Vehicles, Aircraft
+        Strong vs Infantry, Buildings
+        Weak vs Vehicles, Aircraft
    .raname = Soviet Flamethrower
    .tdname = Nod Flamethrower
    .jpname = Japanese Flamethrower
 
 actor-e5 =
    .description = Advanced general-purpose infantry.
-      Strong vs all Ground units
+        Strong vs all Ground units
    .name = Chemical Warrior
 
 actor-e6 = 
    .description = Infiltrates and captures enemy structures.
       Removes attached explosives from units.
-      Unarmed
+        Unarmed
    .name = Engineer
 
 actor-apc =
    .description = Armed infantry transport.
-      Can attack Aircraft.
+        Can attack Aircraft.
    .tdname = GDI APC 
    .raname = Allied APC
 
 actor-arty =
    .description = Long-range artillery.
+        Strong vs Buildings
+        Weak vs Air
    .tdname = Nod artillery
    .raname = Allied Artillery
 
 actor-ftnk =
    .description = Heavily armored flame-throwing vehicle.
-      Strong vs Infantry, Buildings
+        Strong vs Infantry, Buildings
    .name = Flame Tank
 
 actor-bggy =
    .description = Scout vehicle armed with a machine gun.
-      Strong vs Infantry
+        Strong vs Infantry
    .name = Nod Buggy
 
 actor-jeep =
    .description = Scout vehicle armed with a machine gun.
-      Strong vs Infantry
+        Strong vs Infantry
    .name = Humvee
    .raname = Ranger
 
 actor-bike =
    .description = Scout vehicle armed with rockets.
       Can attack aircraft.
-      Strong vs Vehicles
+        Strong vs Vehicles
    .name = Recon Bike
 
 actor-ltnk =
    .description = Fast, light tank.
+        Strong vs Vehicles
+        Weak vs Infantry
    .tdname = Nod Light Tank
    .raname = Allied Light Tank
 
 actor-mtnk =
    .description = Main battle tank.
       Can attack aircraft with a missile launcher.
-      Strong vs Vehicles
+        Strong vs Vehicles
    .name = GDI Battle Tank
 
 actor-htnk =
    .description = Heavily armored tank.
       Can attack aircraft.
-      Strong vs Everything
+        Strong vs Everything
    .name = GDI Mammoth Tank
    .raname = Soviet Mammoth Tank
 
 actor-mlrs =
    .description = Long range rocket artillery.
-      Can attack aircraft.
+        Can attack aircraft.
    .name = Rocket Launcher
 
 actor-mssm =
    .description = Long range rocket artillery.
-      Strong vs Buildings
+        Strong vs Buildings
    .name = SSM Launcher
 
 actor-stnk =
    .description = Cloaked tank armed with missiles.
-      Can attack aircraft.
+        Can attack aircraft.
    .name = Stealth Tank
 
 actor-tran =
    .description = Infantry transport helicopter.
-      Unarmed
+        Unarmed
    .name = Chinook Transport
 
 actor-heli =
    .description = Helicopter armed with chainguns.
-      Strong vs Infantry, Light Vehicles, Aircraft
+        Strong vs Infantry, Light Vehicles, Aircraft
    .name = Apache
 
 actor-orca =
@@ -140,6 +145,10 @@ actor-hq-gdi =
       and Air Strike support power.
       Requires power to operate.
    .name = GDI Communications Center
+
+power-td-airstrike =
+   .description = A-10 planes strafe and bomb the target.
+   .name = Air Strike
 
 actor-eye =
    .description = Provides advanced GDI technologies.
@@ -176,13 +185,13 @@ actor-gun =
    .tdname = Nod Gun Turret
    .raname = Allied Gun Turret
    .description = Anti-tank base defense.
-      Strong vs Vehicles
+        Strong vs Vehicles
    
 actor-nalasr =
    .name = Nod Laser Turret
    .description = Anti-infantry defense.
       Requires power to operate.
-      Strong vs Infantry
+        Strong vs Infantry
 
 actor-sam =
    .tdname = Nod SAM Site
@@ -195,7 +204,7 @@ actor-obli =
    .name = Obelisk of Light
    .description = Advanced anti-ground defense.
       Requires power to operate.
-      Strong vs Ground targets
+        Strong vs Ground targets
 
 actor-gtwr =
    .name = Guard Tower
@@ -205,8 +214,8 @@ actor-atwr =
    .description = All-purpose defensive structure.
       Can attack aircraft.
       Requires power to operate.
-      Strong vs Aircraft, Tanks
-      Weak vs Infantry
+        Strong vs Aircraft, Tanks
+        Weak vs Infantry
 
 actor-sbag =
    .name = Sandbag Barrier
@@ -222,6 +231,11 @@ actor-brik =
    .name = Concrete Barrier
    .description = Stops infantry and most tanks.
       Blocks some projectiles.
+   
+upgrade-upnodstealth =
+   .name = Unlock Stealth Technology
+   .description = Allows training of Stealth Soldiers
+      and construction of Stealth Harvesters.
 
 upgrade-upnodvenom =
    .name = Unlock Venom and Laser Commando
@@ -232,71 +246,75 @@ actor-cheme3 =
    .name = Chemical Rocket Soldier
    .description = Soldier armed with volatile Tiberium rockets.
       Can walk over Tiberium unharmed.
-      Powerful against infantry and tanks
+        Strong vs Vehicles, Aircraft
 
 actor-ltnk2 =
    .name = Light Tank Mk. II
    .description = Light tank with point defense lasers.
+        Strong vs Infantry, Vehicles
 
 actor-blackhandlaser =
    .name = Laser Trooper
    .description = Elite infantry armed with lasers.
-      Strong vs ground targets
+        Strong vs ground targets
 
 actor-blackhandflamer =
    .name = Black Hand Flamer
    .description = Elite stealth flamethrower.
-      Strong vs Infantry, Buildings
+        Strong vs Infantry, Buildings
 
 actor-stealthsoldier =
    .name = Stealth Soldier
    .description = Cloaked infantry armed with EMP missiles.
-      Strong vs Vehicles
+        Strong vs Vehicles
 
 actor-specter =
    .name = Specter
    .description = Long-range stealth artillery.
+        Strong vs Buildings
+        Weak vs Air
 
 actor-venom =
    .name = Venom
    .description = Gunship armed with lasers.
+        Strong vs Infantry, Air
 
 actor-lasercommando =
    .name = Laser Commando
    .description = Stealth commando armed with lasers.
       Can shoot down missiles.
       Can demolish buildings.
-      Strong vs Everything
+        Strong vs Everything
 
 actor-empgrenadier =
    .name = EMP Grenadier
    .description = Can throw grenades that disable vehicles.
-      Strong vs Ground
+        Strong vs Ground
 
 actor-gdisniper =
    .name = GDI Sniper
    .description = Sniper armed with an anti-materiel rifle.
       Can attack air.
-      Strong vs Infantry
+        Strong vs Infantry, Air
 
 actor-gdipredator =
    .name = Predator Tank
    .description = Tank that can paint enemies with a targeting laser,
       making them take increased damage.
       Can attack air.
-      Strong vs Everything
+        Strong vs Everything
 
 actor-exosuit =
    .name = Experimental Exosuit
    .description = Walker armed with railguns.
-      Strong vs Ground
+        Strong vs Ground
 
 actor-gdiofficer =
    .name = GDI Officer
    .description = Officer with a heavy machine gun.
       Gives morale boost to nearby units to increase
       movement speed and fire-rate by 20%.
-      Can attack Air units
+        Can attack air
 
 actor-havoc =
    .name = Havoc 
@@ -308,6 +326,12 @@ actor-firehawk =
    .description = Advanced fighter-bomber aircraft.
       Strong vs Everything
 
+actor-nodlasercorvette =
+   .description = Multi-role heavy warship.
+      Can attack air.
+        Strong vs Everything
+   .name = Nod Laser Corvette
+
 actor-dog =
    .name = Attack Dog 
    .description = Can detect cloaked and disguised units.
@@ -316,11 +340,11 @@ actor-dog =
 actor-rasniper =
    .name = Allied Sniper
    .description = Camouflaged soldier that can detect cloaked units.
-      Strong vs Infantry
+        Strong vs Infantry
    
 actor-medi =
    .description = Heals nearby infantry.
-      Unarmed
+        Unarmed
    .name = Medic
 
 actor-mech =
@@ -386,11 +410,9 @@ actor-dtrk =
    .name = Demolition Truck
 
 actor-ctnk =
-   .description = Armed with anti-ground missiles.
+   .description = Armed with missiles.
     Can teleport anywhere.
-      Strong vs Vehicles, Buildings
-      Weak vs Infantry, Aircraft
-      Special ability: Can teleport
+      Strong vs Everything
    .name = Chrono Tank
 
 actor-qtnk =
@@ -404,14 +426,14 @@ actor-qtnk =
 actor-mgg =
    .description = Regenerates the shroud nearby,
     obscuring the area.
-      Unarmed
+        Unarmed
    .name = Mobile Gap Generator
 
 actor-mrj =
    .name = Mobile Radar Jammer
    .description = Jams nearby enemy radar domes
     and deflects incoming missiles.
-      Unarmed
+        Unarmed
 
 actor-tiger =
    .name = Tiger Heavy Tank
@@ -421,38 +443,54 @@ actor-tiger =
 actor-tnkd =
    .name = Tank Destroyer
    .description = Strong vs Vehicles
-      Weak vs Infantry, Aircraft
+        Weak vs Infantry, Aircraft
 
 actor-sapc =
    .description = Lightly armored infantry transport which
     can cloak. Armed with anti-ground missiles.
-      Strong vs Light armor
-      Weak vs Infantry, Tanks, Aircraft
+        Strong vs Light armor
+        Weak vs Infantry, Tanks, Aircraft
    .name = Phase Transport
+
+actor-sheridan =
+   .description = General-purpose light tank.
+      Can attack air with missiles.
+        Strong vs Infantry, vehicles
+   .name = Sheridan
+
+actor-rapierjumpjet =
+   .description = Fast multirole fighter-bomber.
+     Strong vs Aircraft, Buildings
+   .name = Rapier Jumpjet
+
+upgrade-gapgen =
+   .description = Allows construction of the Gap Generator
+      and the Mobile Gap Generator.
+   .name = Unlock Gap Generator Technology
 
 actor-mortarsoldier =
    .name = Mortar Soldier
    .description = Long range siege infantry.
-      Strong vs Infantry, Buildings
-      Weak vs Aircraft
+        Strong vs Infantry, Buildings
+        Weak vs Aircraft
 
 actor-shok =
    .description = Elite infantry with portable Tesla coils.
-      Strong vs Infantry, Vehicles
-      Weak vs Aircraft
+        Strong vs Infantry, Vehicles
+        Weak vs Aircraft
    .name = Shock Trooper
 
 actor-volkov =
    .description = Soviet Experimental Cyborg Super Soldier
    armed with a magnetic pistol and exploding bullets.
-      Strong vs Infantry, Vehicles
-      Weak vs Aircraft
+        Strong vs Infantry, Vehicles
+        Weak vs Aircraft
    .name = Volkov
 
 actor-gtnk =
    .description = Mobile unit with mounted gatling cannon.
-      Strong vs Infantry, Light armor, Aircraft
-      Weak vs Tanks
+        Strong vs Infantry, Light armor, Aircraft
+        Weak vs Tanks
    .name = Gatling Tank
 
 actor-ttnk2 =
@@ -465,7 +503,7 @@ actor-monstertank =
    .description = Remote-controlled supertank, armed
       with nuclear cannons and heavy missiles.
       Almost indestructible.
-      Strong vs Everything
+        Strong vs Everything
    .name = Monster Tank
 
 actor-btr =
@@ -477,12 +515,12 @@ actor-btr =
 actor-kotin =
    .description = Tank armed with nuclear shells.
       Attacks leave radiation.
-      Strong vs Vehicles
+        Strong vs Vehicles
    .name = Kotin Nuclear Tank
 
 actor-mignuke =
    .description = Fast nuclear bomber.
-      Strong vs Buildings
+        Strong vs Buildings
    .name = Supersonic Nuclear Bomber
 
 actor-mig =
@@ -497,6 +535,11 @@ actor-yak =
       Strong vs infantry, Light armor
       Weak vs air defenses
    .name = Yak
+
+actor-su57 =
+   .description = Multirole fighter-bomber.
+        Strong vs Everything
+   .name = Su-57 Attack Bomber
 
 actor-raheli =
    .description = Helicopter gunship armed
@@ -540,6 +583,10 @@ power-spyplane =
 power-paratroopers =
    .description = Drops infantry at the targeted location.
    .name = Paratroopers
+
+power-reinforcements =
+   .description = Drops infantry and vehicles at the targeted location.
+   .name = Rapid Reinforcements
 
 power-parabombs =
    .description = Badgers drop bombs at the targeted location.
@@ -615,40 +662,41 @@ actor-bastion =
 actor-mgnest =
    .description = Basic base defense.
       Can attack aircraft.
-      Strong vs Infantry, Aircraft
-      Weak vs Tanks
+        Strong vs Infantry, Aircraft
+        Weak vs Tanks
    .name = MG Nest
 
 actor-waveforceturret =
    .description = Advanced base defense that
       damages enemies in a line.
-      Strong vs Ground
+        Strong vs Ground
    .name = Waveforce Turret
 
 actor-rasamurai =
    .description = Melee warrior armed with a katana.
-      Strong vs Infantry
-      Weak vs Aircraft
+        Strong vs Infantry
+        Weak vs Aircraft
    .name = Samurai
 
 actor-ramaid =
    .description = Artillery and anti-air infantry.
-      Strong vs Infantry, Aircraft
-      Weak vs Tanks
+        Strong vs Infantry, Aircraft
+        Weak vs Tanks
    .name = Archer Maiden
 
 actor-rocketangel =
    .description = Airborne soldier.
-      Strong vs Infantry, Aircraft
-      Weak vs air defenses
+        Strong vs Infantry, Aircraft
+        Weak vs air defenses
    .name = Rocket Angel
 
 actor-hakurei =
    .description = Shrine maiden specializing in
    exterminating youkai.
-   Can deploy to cast a spell card and
-   gain temporary invulnerability.
-      Strong vs Heroes
+   Can deploy to cast a spell card
+   and gain temporary
+   invulnerability.
+     Strong vs Heroes
    .name = Exorcist
 
 actor-typeigo =
@@ -660,8 +708,8 @@ actor-typechiha =
 actor-nanobggy = 
    .description = Remote control vehicle for a nanite swarm.
    Attacks bounce and heal nearby units.
-      Strong vs Infantry
-      Weak vs Tanks, Aircraft
+        Strong vs Infantry
+        Weak vs Tanks, Aircraft
    .name = Nanodrone Buggy
 
 actor-jphover =
@@ -728,34 +776,91 @@ actor-jpbomber =
 actor-oitank =
    .name = O-I Tank
    .description = Superheavy tank with multiple turrets.
-      Strong vs Ground Targets
-      Weak vs Aircraft
+        Strong vs Ground Targets
+        Weak vs Aircraft
    .name-exorcist = Exorcist O-I Tank
    .description-exorcist = Superheavy mobile shrine powered by
    an onboard exorcist.
-      Strong vs Everything
+        Strong vs Everything
+
+actor-ss =
+   .description = Submerged anti-ship unit
+    armed with torpedoes.
+    Can detect other submarines.
+      Strong vs Naval units
+      Weak vs Ground units, Aircraft
+   .name = Submarine
+
+actor-msub =
+   .description = Submerged anti-ground siege unit
+    with anti-air capabilities.
+    Can detect other submarines.
+      Strong vs Buildings, Ground units, Aircraft
+      Weak vs Naval units
+   .name = Missile Submarine
+
+actor-dd =
+   .description = Fast multi-role ship.
+    Can detect submarines.
+      Strong vs Naval units, Vehicles, Aircraft
+      Weak vs Infantry
+   .name = Destroyer
+
+actor-ca =
+   .description = Very slow long-range ship.
+      Strong vs Buildings, Ground units
+      Weak vs Naval units, Aircraft
+   .name = Cruiser
+
+actor-lst =
+   .description = General-purpose naval transport.
+    Can carry infantry and tanks.
+      Unarmed
+   .name = Transport
+
+actor-pt =
+   .description = Light scout & support ship.
+    Can detect submarines.
+      Strong vs Naval units
+      Weak vs Ground units, Aircraft
+   .name = Gunboat
+
+actor-jpspeedboat =
+   .description = Fast attack craft armed with
+      gatling cannons.
+      Can attack air.
+        Strong vs Aircraft
+        Weak vs Ships
+   .name = Japanese Speedboat
+
+actor-yamatobattleship =
+   .description = Very slow long-range ship.
+      Can attack air.
+        Strong vs Buildings, Ground units
+        Weak vs Naval units, Aircraft
+   .name = Yamato Battleship
 
 actor-ra2e1 =
    .name = G. I.
    .description = General-purpose infantry.
    Can deploy for additional firepower.
-      Strong vs Infantry
-      Weak vs Air
+        Strong vs Infantry
+        Weak vs Air
 
 actor-ggi =
    .name = Guardian GI
    .description = Anti-vehicle infantry.
    Can deploy to use anti-tank
    and anti-air missiles.
-      Strong vs Vehicles
-      Weak vs Infantry
+        Strong vs Vehicles
+        Weak vs Infantry
 
 actor-cleg =
    .name = Chrono Legionnaire
    .description = Freezes targets in time
    and erases them.
-      Strong vs single targets
-      Weak vs Aircraft
+        Strong vs single targets
+        Weak vs Aircraft
 
 actor-ra2snipe =
    .name = Sniper
@@ -765,6 +870,8 @@ actor-seal =
    .name = SEAL 
    .description = Elite amphibious infantry.
       Can demolish buildings and ships.
+        Strong vs Infantry, Buildings, Ships
+        Weak vs Vehicles
 
 actor-ra2spy =
    .description = Infiltrates enemy structures for intel or
@@ -775,8 +882,8 @@ actor-ra2spy =
 
 actor-ra2rock =
    .description = Flying infantry.
-      Strong vs Infantry, Aircraft
-      Weak vs Air Defense
+        Strong vs Infantry, Aircraft
+        Weak vs Air Defense
    .name = Rocketeer
 
 actor-cmin =
@@ -789,6 +896,7 @@ actor-robo =
       Can hover over water.
       Immune to mind control.
       Requires Robot Control to operate.
+        Strong vs Vehicles
 
 actor-fv =
    .name = Infantry Fighting Vehicle
@@ -797,36 +905,73 @@ actor-fv =
 actor-sref =
    .name = Prism Tank
    .description = Armed with a prism cannon.
-      Strong vs Infantry, Buildings
-      Weak vs Tanks, Aircraft
+        Strong vs Infantry, Buildings
+        Weak vs Tanks, Aircraft
 
 actor-mgtk =
    .name = Mirage Tank
    .description = Disguises when stationary.
-      Strong vs Infantry, Vehicles
-      Weak vs Aircraft
+        Strong vs Infantry, Vehicles
+        Weak vs Aircraft
 
 actor-ra2tnkd =
    .name = Tank Destroyer
-   .description = Strong vs Vehicles
+   .description = Armed with a sabot cannon.
+        Strong vs Vehicles
+
+actor-shad =
+   .name = Night Hawk
+   .description = Transport helicopter armed with a machine gun.
 
 actor-falc =
    .name = Harrier
    .description = VTOL fighter armed with missiles.
-      Strong vs Vehicles, Aircraft
-      Weak vs Air Defense
+        Strong vs Vehicles, Aircraft
+        Weak vs Air Defense
 
 actor-beag =
    .name = Black Eagle
    .description = VTOL heavy bomber.
       Strong vs Ground
-      Weak vs Aircraft, Air Defense
+        Weak vs Aircraft, Air Defense
+   
+actor-dest =
+   .name = Destroyer
+   .description = Armed with a cannon.
+      Can deploy an Osprey against submarines.
+        Strong vs Ships
+        Weak vs Air
+
+actor-aegis =
+   .name = Aegis Cruiser
+   .description = Anti-aircraft missile warship.
+        Strong vs Air
+        Weak vs Ships
+
+actor-ra2carrier =
+   .name = Aircraft Carrier
+   .description = Deploys fighters against targets.
+        Strong vs Ground
+        Weak vs Aircraft, Ships
+
+actor-dlph =
+   .name = Dolphin
+   .description = Armed with a sonic beam.
+      Can remove squids from ships.
+        Strong vs Ships
 
 actor-flakt =
    .name = Flak Trooper
    .description = Anti-air infantry.
-      Strong vs Infantry, Aircraft
-      Weak vs Vehicles
+        Strong vs Infantry, Aircraft
+        Weak vs Vehicles
+
+actor-shk =
+   .description = Heavy infantry with portable Tesla coils.
+      Can charge tesla coils.
+        Strong vs Infantry, Vehicles
+        Weak vs Aircraft
+   .name = Tesla Trooper
 
 actor-ra2harv =
    .name = War Miner
@@ -837,7 +982,7 @@ actor-deso =
    .name = Desolator
    .description = Armed with a radiation weapon.
       Can deploy to irradiate area.
-      Strong vs Infantry
+        Strong vs Infantry
 
 actor-terror =
    .name = Terrorist
@@ -849,29 +994,24 @@ actor-ivan =
    .description = Plants time bombs on targets.
       Explodes when killed
 
-actor.shk =
-   .name = Tesla Trooper
-   .description = Armed with portable tesla coils.
-      Can charge tesla coils.
-      Strong vs Infantry, Vehicles
-      Weak vs Aircraft
-
 actor-boris =
    .name = Boris
    .description = Commando armed with a rifle.
       Can send airstrikes against buildings.
-      Strong vs Ground
+        Strong vs Ground
 
 actor-htk =
    .name = Flak Track
    .description = Troop transport armed with a flak cannon.
-      Strong vs Infantry, Aircraft
-      Weak vs Vehicles
+        Strong vs Infantry, Aircraft
+        Weak vs Vehicles
 
 actor-v3 =
    .name = V3 Rocket Launcher
    .description = Long-range rocket artillery.
       Rockets can be shot down
+        Strong vs Buildings
+        Weak vs Air
 
 actor-dron =
    .name = Terror Drone
@@ -881,66 +1021,94 @@ actor-dron =
 actor-schp =
    .name = Siege Chopper
    .description = Helicopter that can deploy into a cannon.
-      Strong vs Infantry
-      Weak vs Air
+        Strong vs Infantry when airborne
+        Strong vs Buildings when deployed
+        Weak vs Aircraft, Air Defense
+
+actor-ra2hind =
+   .name = Hind Transport
+   .description = Carryall helicopter armed with a machine gun.
 
 actor-zep =
    .name = Kirov Airship
    .description = Heavy bomber airship.
-      Strong vs Ground
-      Weak vs Air
+        Strong vs Ground
+        Weak vs Air
 
 actor-bpln =
    .name = MiG Bomber
    .description = Fast jet bomber.
-      Strong vs Ground
-      Weak vs Aircraft, Air Defense
+        Strong vs Ground
+        Weak vs Aircraft, Air Defense
+
+actor-ra2sub =
+   .name = Typhoon Attack Sub
+   .description = Armed with torpedoes.
+        Strong vs Ships
+
+actor-hyd =
+   .name = Sea Scorpion
+   .description = Armed with a flak cannon.
+        Strong vs Air
+        Weak vs Ships
+
+actor-dred =
+   .name = Dreadnought
+   .description = Siege warship armed with missiles.
+      Missiles can be shot down.
+        Strong vs Ground
+        Weak vs Ships, Air
+
+actor-sqd =
+   .name = Giant Squid
+   .description = Can entangle ships.
+        Strong vs Ships
 
 actor-brute =
    .name = Brute
    .description = Melee infantry.
-      Strong vs Infantry, Vehicles
+        Strong vs Infantry, Vehicles
 
 actor-virus =
    .name = Virus
    .description = Armed with a toxin rifle.
       Victims explode and release toxins
-      Strong vs Infantry
+        Strong vs Infantry
 
 actor-yuri =
    .name = Yuri Clone
    .description = Can mind-control enemy units.
       Can deploy to unleash a psychic blast.
-      Weak vs Aircraft, Robots
+        Weak vs Aircraft, Robots
 
 actor-yurix =
    .name = Yuri Prime
    .description = Can mind-control enemy units and buildings.
       Can deploy to unleash a psychic blast.
-      Weak vs Aircraft, Robots
+        Weak vs Aircraft, Robots
 
 actor-gtrp =
    .name = Gatling Trooper
    .description = Armed with a gatling gun.
-      Strong vs Infantry, Aircraft
+        Strong vs Infantry, Aircraft
 
 actor-biot =
    .name = Bio Trooper
    .description = Armed with a toxin spray.
-      Strong vs Infantry, Buildings
+        Strong vs Infantry, Buildings
 
 actor-ytnk =
    .name = Gatling Tank
    .description = Tank armed with dual gatling cannons.
       Firepower increases during sustained firing
-      Strong vs Infantry, Aircraft
-      Weak vs heavy vehicles
+        Strong vs Infantry, Aircraft
+        Weak vs heavy vehicles
 
 actor-tele =
    .name = Magnetron
    .description = Immobilizes and disables vehicles.
-      Strong vs Vehicles, Buildings
-      Weak vs Infantry, Aircraft
+        Strong vs Vehicles, Buildings
+        Weak vs Infantry, Aircraft
 
 actor-caos =
    .name = Chaos Drone
@@ -957,7 +1125,14 @@ actor-disk =
    .description = Flying saucer armed with lasers.
       Can shut down power plants and defenses when overhead 
       Can steal resources from refineries and silos
-      Strong vs Everything
+        Strong vs Everything
+
+actor-bsub =
+   .name = Boomer
+   .description = Submarine armed with torpedoes
+      and cruise missiles.
+      Missiles can be shot down.
+        Strong vs Everything
 
 actor-smin =
    .name = Mobile Slave Miner
@@ -977,13 +1152,21 @@ actor-atesla =
    .name = Prism Tower
    .description = Advanced base defense.
    Requires power to operate.
-      Strong vs Ground
+        Strong vs Ground
 
 actor-gtgcan =
    .name = Grand Cannon
    .description = Long-range base defense.
    Requires power to operate.
-      Strong vs Ground
+        Strong vs Ground
+
+actor-gaorep =
+   .name = Ore Purifier
+   .description = Increases income from minerals by 25%.
+
+actor-garobo =
+   .name = Robot Control Center
+   .description = Unlocks and controls Robot Tanks.
 
 actor-gaweat =
    .name = Weather Control Center
@@ -1087,6 +1270,16 @@ power-mutate =
    .description = Mutates infantry in an area
       into Brutes.
 
+power-forceshield =
+   .name = Force Shield
+   .description = Makes selected buildings temporarily invulnerable.
+
+actor-oilb =
+   .name = Oil Derrick
+   .description = Provides passive income.
+      Levels up over time.
+      Build limit: 10
+
 template-mcv =
    .description = Deploys into another Construction Yard.
       Unarmed
@@ -1159,6 +1352,16 @@ template-airfield =
    .td-gdi = GDI Helipad
    .td-nod = Nod Helipad
    .ra-allies = Allied Helipad
+
+template-shipyard =
+   .description = Produces and repairs ships.
+   .td-gdi = GDI Naval Yard
+   .td-nod = Nod Sub Pen
+   .ra-soviet = Soviet Sub Pen
+   .ra-allies = Allied Naval Yard
+   .ra2-allies = Allied Naval Yard
+   .ra2-soviet = Soviet Shipyard
+   .ra2-yuri = Yuri Sub Pen
 
 template-tech-center =
    .description = Provides advanced technologies.

@@ -80,11 +80,6 @@ World:
 		SupportActors: yrinit,yrinit,yrinit,yrbrute,yrbrute,yrslav,yrytnk,yrltnk,yrltnk,yrltnk,yrltnk,yrytnk
 
 Player:
-	ExternalCondition@BuildingsOwned:
-		Condition: BuildingsOwned
-	ProvidesPrerequisite@BuildingsOwned:
-		Prerequisite: allowsMCV
-		RequiresCondition: BuildingsOwned < 5
 	ProvidesPrerequisite@anyallies:
 		Prerequisite: anyallies
 		Factions: ra2america #, ra2french, ra2german, ra2british, ra2korea, ra2koreaaddon
@@ -401,6 +396,12 @@ RA2Flameguy:
 		Weapons: RA2Debris
 		RequiresCondition: !chronobeamed
 
+^RA2VehicleBig:
+	Inherits: ^RA2Vehicle
+	Explodes:
+		Weapon: RA2UnitExplodeBig
+		EmptyWeapon: RA2UnitExplodeBig
+
 ^RenderVoxel:
 	BodyOrientation:
 		QuantizedFacings: 32
@@ -529,30 +530,40 @@ RA2Flameguy:
 
 OILB.RA2:
 	Inherits: ^RA2Building
-	Inherits@2: OILB.Building
+	Inherits@2: ^CashTricklerWithExperience
+	Inherits@3: ^CashTricklerLimited
+	Inherits@shape: ^2x2Shape
+	Inherits@lowpower: ^DisabledOverlay
+	Inherits@Bot: ^BotMicromanageable
 	Tooltip:
 		Name: RA2 Oil Derrick
 	Buildable:
 		BuildLimit: 10
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 999
-		Prerequisites: ~ra2tek, ~techlevel.medium
+		Prerequisites: ~ra2tek, ~techlevel.medium, derricklimit
+		Description: actor-oilb.description
+	Valued:
+		Cost: 5000
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 200000
+	RevealsShroud:
+		Range: 5000
 	WithIdleOverlay@idle-pump:
 		Sequence: idle-pump
 		PauseOnCondition: lowpower
 		RequiresCondition: !build-incomplete
-	#WithIdleOverlay@damaged-idle-pump:
-	#	Sequence: damaged-idle-pump
-	#	RequiresCondition: damaged && !build-incomplete
-	-RenderSprites:
 	RenderSprites:
 		Image: ra2caoild
 		PlayerPalette: playerra2
-	WithMakeAnimation:
+	-WithDeathAnimation:
+	Power:
+		Amount: -100
 
 ra2gacnst:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: ^RA2Building
 	Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
@@ -864,6 +875,7 @@ ra2gapile:
 		RequiresCondition: !build-incomplete
 	WithDeathAnimation:
 		DeathSequencePalette: playerra2
+		DeathPaletteIsPlayerPalette: true
 
 ra2garefn:
 	Inherits: ^RA2Building
@@ -1018,17 +1030,18 @@ ra2gaorep:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
 	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@cashlimit: ^CashTricklerLimited
 	Valued:
 		Cost: 2500
 	Tooltip:
-		Name: Ore Purifier
+		Name: actor-gaorep.name
 	Buildable:
 		BuildPaletteOrder: 120
 		BuildDuration: 1500
 		BuildDurationModifier: 100
 		Prerequisites: ~ra2gacnst, ra2gatech, ~upra2gaorep
 		Queue: Building, RABuilding
-		Description: Increases income from minerals by 25%.
+		Description: actor-gaorep.description
 		BuildLimit: 1
 	Building:
 		Footprint: xxx xxx
@@ -1139,9 +1152,9 @@ ra2gatech:
 			1: forceshield
 		ChargeInterval: 4500
 		Names:
-			1: Force Shield
+			1: power-forceshield.name
 		Descriptions:
-			1: Makes selected buildings invulnerable.
+			1: power-forceshield.description
 		Durations:
 			1: 375
 		Conditions:
@@ -1173,11 +1186,11 @@ yrgarobo:
 		BuildDuration: 750
 		BuildDurationModifier: 100
 		Prerequisites: ~ra2gacnst, ra2gatech, ~upyrrobo
-		Description: Unlocks and controls Robot Tanks.
+		Description: actor-garobo.description
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Robot Control Center
+		Name: actor-garobo.name
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -1518,6 +1531,10 @@ ra2gapill:
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
+	ActorStatValues:
+		Damage: 120
+		ReloadDelay: 25
+		Range: 6666
 
 ra2nasam:
 	Inherits: ^RA2Defense
@@ -1653,6 +1670,7 @@ ra2atesla:
 	WithMakeAnimation:
 	WithDeathAnimation:
 		DeathSequencePalette: playerra2
+		DeathPaletteIsPlayerPalette: true
 	#WithAmmoPipsDecoration:
 	#	Position: BottomLeft
 	#	RequiresSelection: true
@@ -1725,22 +1743,18 @@ ra2gtgcan:
 
 ra2gayard:
 	Inherits: ^RA2Building
-	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@prod: ^ProducesUnits
+	Inherits@shipyard: ^IsShipyard
 	Inherits@shape: ^3x3Shape
-	Inherits@repair: ^RepairsUnits
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Naval Yard
+		Name: template-shipyard.ra2-allies
 	Buildable:
-		BuildPaletteOrder: 50
 		Prerequisites: ~ra2gacnst, ra2garefn
 		Queue: Building, RABuilding
-		Description: Produces, and\nrepairs boats
 	Building:
 		Footprint: =+= +++ =+=
 		Dimensions: 3,3
@@ -1752,53 +1766,8 @@ ra2gayard:
 		HP: 100000
 	RevealsShroud:
 		Range: 5c0
-	Exit@1:
-		SpawnOffset: -1024,1024,0
-		Facing: 640
-		ExitCell: 0,2
-	Exit@2:
-		SpawnOffset: 1024,1024,0
-		Facing: 896
-		ExitCell: 2,2
-	Exit@3:
-		SpawnOffset: -1024,-1024,0
-		Facing: 384
-		ExitCell: 0,0
-	Exit@4:
-		SpawnOffset: 1024,-1024,0
-		Facing: 128
-		ExitCell: 2,0
-	Production@NORMAL:
-		Produces: Naval
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RANaval
-		RequiresCondition: classicproductionqueues
-	Reservable:
-	RepairsUnits:
-		HpPerStep: 1000
-		PlayerExperience: 25
-		StartRepairingNotification: Repairing
 	#WithResupplyAnimation:
 	#	Sequence: repair
-	RallyPoint:
-	ProductionQueue:
-		Type: Naval
-		DisplayOrder: 5
-		Group: Aircraft
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-	ProductionBar@NAVALALLIESRA2:
-		ProductionType: Naval
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RANAVALALLIESRA2:
-		ProductionType: RANaval
-		RequiresCondition: classicproductionqueues
 	Power:
 		Amount: -30
 	ProvidesPrerequisite@buildingname:
@@ -1825,8 +1794,6 @@ RA2BRIK:
 #   Red Alert 2 Soviet Structures
 ##############################################
 ra2nacnst:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: ra2gacnst
 	Inherits@sell: ^RA2SSpawnActorsOnSell
 	Tooltip:
@@ -2531,7 +2498,7 @@ yrngbnkr:
 	WithSpriteBody:
 	WithIdleOverlay@Bunkered:
 		Sequence: idle-bunkered
-		RequiresCondition: loaded
+		RequiresCondition: loaded && !build-incomplete
 	AttackOpenTopped:
 		Armaments: garrisoned
 		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
@@ -2543,7 +2510,7 @@ yrngbnkr:
 	Selectable:
 		Class: yrngbnkr
 	ActorStatValues:
-		Stats: Armor, Sight, Cargo, Kills
+		Stats: Armor, Sight, Cargo, Kills, Experience
 
 yrngbnkr.bot:
 	Inherits: yrngbnkr
@@ -2644,6 +2611,7 @@ ra2naflak:
 		Weapon: RA2TURRETFLAKAA
 		LocalOffset: 500,0,550
 		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	BodyOrientation:
 		QuantizedFacings: 16
 	WithVoxelTurret:
@@ -2838,22 +2806,18 @@ ra2naclon:
 
 ra2nayard:
 	Inherits: ^RA2Building
-	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@prod: ^ProducesUnits
+	Inherits@shipyard: ^IsShipyard
 	Inherits@shape: ^3x3Shape
-	Inherits@repair: ^RepairsUnits
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Naval Yard
+		Name: template-shipyard.ra2-soviet
 	Buildable:
-		BuildPaletteOrder: 50
 		Prerequisites: ~ra2nacnst, ra2narefn
 		Queue: Building, RABuilding
-		Description: Produces, and\nrepairs boats
 	Building:
 		Footprint: =+= +++ =+=
 		Dimensions: 3,3
@@ -2865,53 +2829,8 @@ ra2nayard:
 		HP: 100000
 	RevealsShroud:
 		Range: 5c0
-	Exit@1:
-		SpawnOffset: -1024,1024,0
-		Facing: 640
-		ExitCell: 0,2
-	Exit@2:
-		SpawnOffset: 1024,1024,0
-		Facing: 896
-		ExitCell: 2,2
-	Exit@3:
-		SpawnOffset: -1024,-1024,0
-		Facing: 384
-		ExitCell: 0,0
-	Exit@4:
-		SpawnOffset: 1024,-1024,0
-		Facing: 128
-		ExitCell: 2,0
-	Production@NORMAL:
-		Produces: Naval
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RANaval
-		RequiresCondition: classicproductionqueues
-	Reservable:
-	RepairsUnits:
-		HpPerStep: 1000
-		PlayerExperience: 25
-		StartRepairingNotification: Repairing
 	#WithResupplyAnimation:
 	#	Sequence: repair
-	RallyPoint:
-	ProductionQueue:
-		Type: Naval
-		DisplayOrder: 5
-		Group: Aircraft
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-	ProductionBar@NAVALSOVIETRA2:
-		ProductionType: Naval
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RANAVALSOVIETRA2:
-		ProductionType: RANaval
-		RequiresCondition: classicproductionqueues
 	Power:
 		Amount: -30
 	ProvidesPrerequisite@buildingname:
@@ -2930,8 +2849,6 @@ ra2nayard:
 #   Red Alert 2 Yuri Structures
 ##############################################
 yrnacnst:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: ra2gacnst
 	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Tooltip:
@@ -3387,6 +3304,7 @@ yrygcomd:
 	Inherits@shape: ^4x3Shape
 	Inherits@hpad: ^IsAircraftFactory
 	Inherits@cash: ^CashTricklerWithExperience
+	Inherits@cashlimit: ^CashTricklerLimited
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -3667,51 +3585,6 @@ yrngtbnk:
 		DisplayCargoRelationships: Ally, Neutral, Enemy
 		Stats: Armor, Sight, Cargo, Kills
 
-yrngtbnk.ltnk:
-	Inherits: yrngtbnk
-	Tooltip:
-		Name: Loaded Tank Bunker (Lasher)
-	Valued:
-		Cost: 1500
-	Building:
-	Buildable:
-		Prerequisites: ~yrnacnst, yrygweap, ~botplayer
-		BuildAtProductionType: Vehicle
-	RenderSprites:
-		Image: yrngtbnk
-	Cargo:
-		InitialUnits: yrltnk
-
-yrngtbnk.ytnk:
-	Inherits: yrngtbnk
-	Tooltip:
-		Name: Loaded Tank Bunker (Gatling)
-	Valued:
-		Cost: 1600
-	Building:
-	Buildable:
-		Prerequisites: ~yrnacnst, yrygweap, ~botplayer
-		BuildAtProductionType: Vehicle
-	RenderSprites:
-		Image: yrngtbnk
-	Cargo:
-		InitialUnits: yrytnk
-
-yrngtbnk.magnet:
-	Inherits: yrngtbnk
-	Tooltip:
-		Name: Loaded Tank Bunker (Magnetron)
-	Valued:
-		Cost: 2300
-	Building:
-	Buildable:
-		Prerequisites: ~yrnacnst, yrygweap, ~botplayer
-		BuildAtProductionType: Vehicle
-	RenderSprites:
-		Image: yrngtbnk
-	Cargo:
-		InitialUnits: yrtele
-
 yrygggun:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^AntiAirDefenseTemplate
@@ -3863,22 +3736,18 @@ yrygpsyt:
 
 yrygyard:
 	Inherits: ^RA2Building
-	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@prod: ^ProducesUnits
+	Inherits@shipyard: ^IsShipyard
 	Inherits@shape: ^3x3Shape
-	Inherits@repair: ^RepairsUnits
 	HitShape:
 		UseTargetableCellsOffsets: false
 		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Sub Pen
+		Name: template-shipyard.ra2-yuri
 	Buildable:
-		BuildPaletteOrder: 50
 		Prerequisites: ~yryarefn
 		Queue: Building, RABuilding
-		Description: Produces, and\nrepairs boats
 	Building:
 		Footprint: =+= +++ =+=
 		Dimensions: 3,3
@@ -3890,53 +3759,8 @@ yrygyard:
 		HP: 100000
 	RevealsShroud:
 		Range: 5c0
-	Exit@1:
-		SpawnOffset: -1024,1024,0
-		Facing: 640
-		ExitCell: 0,2
-	Exit@2:
-		SpawnOffset: 1024,1024,0
-		Facing: 896
-		ExitCell: 2,2
-	Exit@3:
-		SpawnOffset: -1024,-1024,0
-		Facing: 384
-		ExitCell: 0,0
-	Exit@4:
-		SpawnOffset: 1024,-1024,0
-		Facing: 128
-		ExitCell: 2,0
-	Production@NORMAL:
-		Produces: Naval
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RANaval
-		RequiresCondition: classicproductionqueues
-	Reservable:
-	RepairsUnits:
-		HpPerStep: 1000
-		PlayerExperience: 25
-		StartRepairingNotification: Repairing
 	#WithResupplyAnimation:
 	#	Sequence: repair
-	RallyPoint:
-	ProductionQueue:
-		Type: Naval
-		DisplayOrder: 5
-		Group: Ship
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-	ProductionBar@NAVALYURI:
-		ProductionType: Naval
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RANAVALYURI:
-		ProductionType: RANaval
-		RequiresCondition: classicproductionqueues
 	Power:
 		Amount: -30
 	ProvidesPrerequisite@buildingname:
@@ -4508,6 +4332,7 @@ RA2SPY:
 	Inherits: ^Soldier
 	Inherits@anim: ^RA2Infantry
 	Inherits@template: ^LightInfantryTemplate
+	Inherits@disguise: ^SpyDisguise
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@VOICES: ^WithFeedbackVoiceLines
 	Inherits@pip: ^WithSpecialCargoPip
@@ -4531,25 +4356,11 @@ RA2SPY:
 		Speed: 60
 	Passenger:
 	Disguise:
-		DisguisedCondition: disguise
-	Cloak:
-		InitialDelay: 100
-		CloakDelay: 50
-		# CloakSound: trans1.aud
-		# UncloakSound: trans1.aud
-		RequiresCondition: disguise
-		IsPlayerPalette: false
 	-WithInfantryBody:
 	WithDisguisingInfantryBody:
 		StandSequences: stand
 		DefaultAttackSequence: shoot
 		IdleSequences: idle1,idle2
-	WithDecoration@disguise:
-		Image: pips
-		Sequence: pip-disguise
-		Palette: effect
-		Position: TopRight
-		RequiresCondition: disguise
 	Infiltrates:
 		Types: SpyInfiltrate
 		Notification: BuildingInfiltrated
@@ -4805,12 +4616,14 @@ RA2flakt:
 		Weapon: RA2CRFlakGuyGun
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		LocalOffset: 256,0,512
 		RequiresCondition: !rank-elite
 	Armament@PRIMARYAA:
 		Name: primary
 		Weapon: RA2FLAKAA
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		LocalOffset: 256,0,512
 		RequiresCondition: !rank-elite
 	Armament@GARRISONED:
 		Name: garrisoned
@@ -4829,12 +4642,14 @@ RA2flakt:
 		Weapon: RA2CRFlakGuyGun_elite
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		LocalOffset: 256,0,256
 		RequiresCondition: rank-elite
 	Armament@PRIMARYAAE:
 		Name: primary
 		Weapon: RA2FLAKAA_elite
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		LocalOffset: 256,0,256
 		RequiresCondition: rank-elite
 	Armament@GARRISONEDE:
 		Name: garrisoned
@@ -6525,20 +6340,18 @@ yrbfrt:
 
 yrbfrt.bot:
 	Inherits: yrbfrt
-	Tooltip:
-		Name: Guardian Battle Fortress
+	EditorOnlyTooltip:
+		Name: Battle Fortress (Empty)
 	Buildable:
 		Prerequisites: ra2gatech, ra2gapile, ~botplayer
 	Cargo:
-		InitialUnits: ra2seal,yrggi,yrggi,yrggi,yrggi,yrggi
+		-InitialUnits:
 	ProductionCostMultiplier:
-		Multiplier: 150
-	EditorOnlyTooltip:
-		Name: Loaded Battle Fortress
+		Multiplier: 66
 
 yrbfrt.bot2:
-	Inherits: yrbfrt.bot
-	Tooltip:
+	Inherits: yrbfrt
+	EditorOnlyTooltip:
 		Name: Chrono Battle Fortress
 	Buildable:
 		Prerequisites: ra2gatech, ra2gapile, ~botplayer
@@ -6913,16 +6726,18 @@ RA2V3:
 		Weapon: V3LaunchElite
 		LocalOffset: -1024,0,512
 		RequiresCondition: rank-elite
-	MissileSpawnerMaster@1:
+	MissileSpawnerMasterCA@1:
 		Actors: ra2v3rocket
 		RespawnTicks: 250
 		LoadedCondition: ammo
 		RequiresCondition: !rank-elite
-	MissileSpawnerMaster@2:
+		SpawnOffset: 0,640,300
+	MissileSpawnerMasterCA@2:
 		Actors: ra2v3rocketelite
 		RespawnTicks: 200
 		LoadedCondition: ammoelite
 		RequiresCondition: rank-elite
+		SpawnOffset: 0,640,300
 	FirepowerMultiplier@RANK-1:
 		Modifier: 125
 	FirepowerMultiplier@RANK-2:
@@ -6960,12 +6775,9 @@ ra2v3rocket:
 	Inherits@rad: ^RA2RadShells
 	Health:
 		HP: 25000
-	BallisticMissile:
-		CreateAngle: 64
-		PrepareTick: 25
+	BallisticMissileCA:
 		LaunchAngle: 160
 		Speed: 200
-		LazyCurve: true
 		AirborneCondition: airborne
 		LaunchSounds: vv3latta.wav, vv3lattb.wav
 	LeavesTrails:
@@ -6979,11 +6791,11 @@ ra2v3rocket:
 	SpawnedExplodes:
 		Weapon: RA2Scud
 		EmptyWeapon: RA2Scud
-		RequiresCondition: !upradshells
+		RequiresCondition: !upradshells && !airborne
 	SpawnedExplodes@rad:
 		Weapon: RA2Scud_rad
 		EmptyWeapon: RA2Scud_rad
-		RequiresCondition: upradshells
+		RequiresCondition: upradshells  && !airborne
 	RenderSprites:
 		Image: ra2v3rocket
 		PlayerPalette: playerra2
@@ -7335,6 +7147,8 @@ YRSMIN:
 	RenderSprites:
 		PlayerPalette: playerra2
 		Image: yrsmin
+	ActorStatValues:
+		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Kills
 
 yrsmin.empy:
 	Inherits: YRSMIN
@@ -7692,39 +7506,150 @@ YRMIND:
 #   Red Alert 2 Naval
 ############################################
 
-ra2sqd:
+
+ra2lcrf:
 	Inherits: ^BoatUnit
+	Inherits@cargo: ^UnarmedCargoVehicle
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Amphibious Transport
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~ra2gayard
+		Queue: Naval, RANaval
+		Description: Amphibious transport for ground units.
+	Mobile:
+		Speed: 90
+		Locomotor: hover
+		RequiresCondition: !notmobile && !disabled
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 450
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 12
+		PassengerFacing: 0
+	Hovers:
+	Voiced:
+		VoiceSet: AlliedLander
+	RenderSprites:
+		PlayerPalette: playerra2
+
+ra2sapc:
+	Inherits: ^BoatUnit
+	Inherits@cargo: ^UnarmedCargoVehicle
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Amphibious Transport
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~ra2nayard
+		Queue: Naval, RANaval
+		Description: Amphibious transport for ground units.
+	Mobile:
+		Speed: 90
+		Locomotor: hover
+		RequiresCondition: !notmobile && !disabled
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 450
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 12
+		PassengerFacing: 0
+	Hovers:
+	Voiced:
+		VoiceSet: SovietLander
+	RenderSprites:
+		PlayerPalette: playerra2
+
+yrhovr:
+	Inherits: ^BoatUnit
+	Inherits@cargo: ^UnarmedCargoVehicle
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Hover Transport
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~yrygyard
+		Queue: Naval, RANaval
+		Description: Amphibious transport for ground units.
+	Mobile:
+		Speed: 90
+		Locomotor: hover
+		RequiresCondition: !notmobile && !disabled
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 450
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 12
+		PassengerFacing: 0
+	Hovers:
+	Voiced:
+		VoiceSet: YuriLander
+	RenderSprites:
+		PlayerPalette: playerra2
+
+ra2sqd:
+	Inherits: ^SeaCreature
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@sub: ^Submarine
-	Inherits@heal: ^HospitalHealable
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Giant Squid
+		Name: actor-sqd.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 80
-		Prerequisites: ~ra2natech
+		Prerequisites: ~yrygyard
 		Queue: Naval, RANaval
-		Description: Fast Soviet naval scout.\nCan immobilize targets\n Strong vs. Ships
+		Description: actor-sqd.description
 	Mobile:
-		TurnSpeed: 80
 		Speed: 120
+		TurnSpeed: 24
 	Health:
-		HP: 21000
+		HP: 30000
+	ChangesHealth@SelfHealing:
+		Step: 12
 	Armor:
-		Type: Light
-	ChangesHealth:
-		PercentageStep: 2
-		Delay: 50
-		DamageCooldown: 125
-	RevealsShroud:
-		Range: 7c0
+		Type: Medium
 	Turreted:
-		TurnSpeed: 28
+		TurnSpeed: 24
 		Offset: 512,0,0
 	Armament@PRIMARY:
 		Weapon: SquidPunch
@@ -7739,204 +7664,135 @@ ra2sqd:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-	DetectCloaked:
-		Range: 4c0
-		DetectionTypes: Underwater
 	Targetable:
-		TargetTypes: Ground, Water, Ship, Squid, Infantry
-	-WithFacingSpriteBody:
+		TargetTypes: Ground, Water, Ship, Submarine, Squid, Infantry
 	WithInfantryBody:
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
 		DefaultAttackSequence: shoot
 		IdleSequences: idle
-		StandSequences: idle
-		MoveSequence: idle
+		StandSequences: stand
+	AttackFrontal:
+	InfectorOld:
+		Types: SquidGrab
+		Damage: 10000
+		DamageInterval: 20
+		DamageTypes: DefaultDeath
+		DamageSounds: gexpwama.wav, gexpwamb.wav
+		KillState: Critical
+		Voice: Attack
+		StartSequence: grabing
+		Sequence: grab
+		Palette: playerra2
+		IsPlayerPalette: true
 	Voiced:
 		VoiceSet: GiantSquidVoice
 	DeathSounds:
-	-ExternalCondition@CLOAK:
-	-ExternalCondition@EMP:
-	-DelayedWeaponAttachable@lockdown:
-	-ExternalCondition@Magnetron:
-	-RepairableNear:
-	-GrantConditionOnPrerequisite@MACHINESHOP:
-	-ExternalCondition@INVULNERABILITY:
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2dlph:
-	Inherits: ^BoatUnit
+	Inherits: ^SeaCreature
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@sub: ^Submarine
-	Inherits@heal: ^HospitalHealable
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
 		Cost: 500
 	Tooltip:
-		Name: Dolphin
+		Name: actor-dlph.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: ~ra2gatech
 		Queue: Naval, RANaval
-		Description: Fast Allied naval scout.\n Strong vs. Ships
+		Description: actor-dlph.description
 	Mobile:
-		TurnSpeed: 80
+		TurnSpeed: 24
 		Speed: 120
 	Health:
 		HP: 20000
+	ChangesHealth@SelfHealing:
+		Step: 8
 	Armor:
 		Type: Light
 	RevealsShroud:
 		Range: 7c0
-	Turreted:
-		TurnSpeed: 28
-		Offset: 512,0,0
 	Armament@PRIMARY:
 		Weapon: SonicZap
 		LocalOffset: 208,0,48
+	Armament@SECONDARY:
+		Weapon: SonicZapFriendly
+		LocalOffset: 208,0,48
+		TargetRelationships: Ally
 	AttackFrontal:
 		FacingTolerance: 0
-	#Selectable:
-	#	Bounds: 81920, 32768
-	DeliversCash:
-		Payload: 250
+	WithInfantryBody:
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
+		IdleSequences: idle
+		StandSequences: stand
+		DefaultAttackSequence: shoot
 	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-	DetectCloaked:
-		Range: 4c0
-		DetectionTypes: Underwater
 	Targetable:
-		TargetTypes: Ground, Water, Ship, Infantry
+		TargetTypes: Ground, Water, Ship, Submarine, Infantry
 	Voiced:
 		VoiceSet: DolphinVoice
 	DeathSounds:
-	-ExternalCondition@CLOAK:
-	-ExternalCondition@EMP:
-	-DelayedWeaponAttachable@lockdown:
-	-ExternalCondition@Magnetron:
-	-GrantConditionOnPrerequisite@MACHINESHOP:
-	-ExternalCondition@INVULNERABILITY:
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
-
-ra2lcrf:
-	Inherits: ^BoatUnit
-	Inherits@Voxel: ^RenderVoxel
-	Inherits@cargo: ^CargoVehicle
-	Valued:
-		Cost: 900
-	Tooltip:
-		Name: Amphibious Transport
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 10
-		Prerequisites: ra2gayard
-		Queue: Naval, RANaval
-		Description: Amphibious transport for ground units.
-	Mobile:
-		Speed: 90
-		Locomotor: hover
-		RequiresCondition: !notmobile && !disabled
-	Health:
-		HP: 35000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-	Selectable:
-		DecorationBounds: 1536, 1536
-	DeliversCash:
-		Payload: 450
-	Cargo:
-		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 12
-		PassengerFacing: 0
-	WithVoxelBody:
-	Hovers:
-	Voiced:
-		VoiceSet: AlliedLander
-
-yrhovr:
-	Inherits: ^BoatUnit
-	Inherits@Voxel: ^RenderVoxel
-	Inherits@cargo: ^CargoVehicle
-	Valued:
-		Cost: 900
-	Tooltip:
-		Name: Hover Transport
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 10
-		Prerequisites:
-		Queue: Naval, RANaval
-		Description: Amphibious transport for ground units.
-	Mobile:
-		Speed: 90
-		Locomotor: hover
-		RequiresCondition: !notmobile && !disabled
-	Health:
-		HP: 35000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-	Selectable:
-		DecorationBounds: 1536, 1536
-	DeliversCash:
-		Payload: 450
-	Cargo:
-		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 12
-		PassengerFacing: 0
-	WithVoxelBody:
-	Hovers:
-	Voiced:
-		VoiceSet: YuriLander
+	RenderSprites:
+		PlayerPalette: playerra2
+	FirepowerMultiplier@Dolphin:
+		Modifier: 25
 
 ra2dest:
 	Inherits: ^BoatUnit
-	Inherits@Voxel: ^RenderVoxel
-	Inherits@Template: ^BattleShipTemplate
+	Inherits@effects: ^RA2Vehicle
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Destroyer
+		Name: actor-dest.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ra2gayard
+		Prerequisites: ~ra2gayard
 		Queue: Naval, RANaval
-		Description: Allied warship armed with naval gun.\nCan deploy an Osprey against submarines\n Strong vs. Ships, Submarines
+		Description: actor-dest.description
+	Selectable:
+		DecorationBounds: 2048, 2048
 	Mobile:
-		Speed: 90
+		Speed: 80
+		TurnSpeed: 16
 	Health:
-		HP: 60000
+		HP: 160000
+	ChangesHealth@SelfHealing:
+		Step: 64
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-	Armament:
+	Armament@PRIMARY:
 		Weapon: RA2155mm
-		LocalOffset: 0,-100,0, 0,100,0
-		LocalYaw: 64, -64
+		LocalOffset: 1100,0,100
 		Name: secondary
 		MuzzleSequence: muzzle
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2155mm_elite
+		LocalOffset: 1100,0,100
+		Name: secondary
+		MuzzleSequence: muzzle
+		RequiresCondition: rank-elite
 	Armament@GenerateOsprey:
 		Weapon: RA2OspreyTarget
 	WithMuzzleOverlay:
-	DetectCloaked:
-		Range: 8c0
-		DetectionTypes: Underwater
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -7944,7 +7800,6 @@ ra2dest:
 	Selectable:
 	DeliversCash:
 		Payload: 500
-	WithVoxelBody:
 	Voiced:
 		VoiceSet: AlliesNavalVoice
 	CarrierMaster:
@@ -7954,15 +7809,18 @@ ra2dest:
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: true
 		LoadedCondition: osprey-loaded
-		#ArmamentNames: osprey
-	WithVoxelBody:
+		ArmamentNames: primary
+	WithFacingSpriteBody:
 		RequiresCondition: osprey-loaded
-	WithVoxelBody@Empy:
-		Sequence: idle-empy
+	WithFacingSpriteBody@empty:
+		Sequence: idle-empty
 		RequiresCondition: !osprey-loaded
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2aegis:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
 	Inherits@Voxel: ^RenderVoxel
 	Inherits@Template: ^BattleShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
@@ -7971,14 +7829,16 @@ ra2aegis:
 	Valued:
 		Cost: 1200
 	Tooltip:
-		Name: Aegis Cruiser
+		Name: actor-aegis.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: ~ra2gaairc
 		Queue: Naval, RANaval
-		Description: Heavy Allied anti-aircraft warship.\n Strong vs. Aircraft
+		Description: actor-aegis.description
+	Selectable:
+		DecorationBounds: 2048, 2048
 	Mobile:
 		Speed: 90
 	Health:
@@ -7998,80 +7858,97 @@ ra2aegis:
 	Voiced:
 		VoiceSet: AegisVoice
 
-ra2sapc:
+ra2carrier:
 	Inherits: ^BoatUnit
-	Inherits@cargo: ^CargoVehicle
-	Inherits@Voxel: ^RenderVoxel
+	Inherits@effects: ^RA2VehicleBig
+	Inherits@Template: ^ArtilleryShipTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 900
+		Cost: 2500
 	Tooltip:
-		Name: Amphibious Transport
+		Name: actor-ra2carrier.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 10
-		Prerequisites: ~ra2nayard
+		BuildPaletteOrder: 30
+		Prerequisites: ~ra2gatech
 		Queue: Naval, RANaval
-		Description: Amphibious transport for ground units.
+		Description: actor-ra2carrier.description
+	Selectable:
+		DecorationBounds: 2048, 2048
 	Mobile:
-		Speed: 90
-		Locomotor: hover
-		RequiresCondition: !notmobile && !disabled
+		TurnSpeed: 32
+		Speed: 42
 	Health:
 		HP: 35000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
 		Range: 7c0
-	Selectable:
-		DecorationBounds: 1536, 1536
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
 	DeliversCash:
 		Payload: 450
-	Cargo:
-		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 12
-		PassengerFacing: 0
-	WithVoxelBody:
-	Hovers:
+	CarrierMaster:
+		Actors: ra2hornet, ra2hornet, ra2hornet
+		RearmTicks: 150
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Armament@PRIMARY:
+		Weapon: RA2CarrierTarget
+		Damage: 1440
+		ReloadDelay: 150
 	Voiced:
-		VoiceSet: SovietLander
+		VoiceSet: AircraftCarrierVoice
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2sub:
 	Inherits: ^BoatUnit
-	Inherits@Voxel: ^RenderVoxel
-	Inherits@Template: ^BattleShipTemplate
+	Inherits@effects: ^RA2Vehicle
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Inherits@sub: ^Submarine
 	Valued:
-		Cost: 1000
+		Cost: 1500
 	Tooltip:
-		Name: Typhoon Attack Sub
+		Name: actor-ra2sub.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~ra2nayard
 		Queue: Naval, RANaval
-		Description: Attack submarine armed with torpedoes.\n Strong vs. Ships
+		Description: actor-ra2sub.description
 	Mobile:
-		Speed: 60
+		Speed: 90
+		TurnSpeed: 18
 	Health:
-		HP: 60000
+		HP: 120000
+	ChangesHealth@SelfHealing:
+		Step: 48
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
 	Turreted:
-		TurnSpeed: 28
+		TurnSpeed: 18
 		Offset: 512,0,0
 	Armament@PRIMARY:
-		Weapon: TorpTube
-		LocalOffset: 208,0,48
+		Weapon: RA2TorpTube
+		LocalOffset: 256,0,0
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2TorpTube_elite
+		LocalOffset: 256,0,0
+		RequiresCondition: rank-elite
 	Targetable:
 		TargetTypes: Ground, Water, Ship, Submarine, Repair
-		RequiresCondition: !underwater
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -8087,17 +7964,14 @@ ra2sub:
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
 		Palette: voxelcloak
-	DetectCloaked:
-		DetectionTypes: Underwater
-		Range: 4c0
-	WithVoxelBody:
 	Voiced:
 		VoiceSet: TyphoonSubVoice
-	-ExternalCondition@CLOAK:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2hyd:
 	Inherits: ^BoatUnit
-	Inherits@Voxel: ^RenderVoxel
+	Inherits@effects: ^RA2Vehicle
 	Inherits@Template: ^BattleShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -8105,14 +7979,14 @@ ra2hyd:
 	Valued:
 		Cost: 600
 	Tooltip:
-		Name: Sea Scorpion
+		Name: actor-hyd.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: ~ra2naradr
 		Queue: Naval, RANaval
-		Description: Fast naval scout.\n Strong vs. Aircraft
+		Description: actor-hyd.description
 	Mobile:
 		Speed: 120
 	Health:
@@ -8126,26 +8000,29 @@ ra2hyd:
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		LocalOffset: 256,0,400
 	Armament@AG:
 		Weapon: RA2FlakTrackGun
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		LocalOffset: 256,0,400
 	WithMuzzleOverlay:
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
 	Selectable:
-		DecorationBounds: 72789, 72789
+		DecorationBounds: 1024, 1024
 	DeliversCash:
 		Payload: 450
-	WithVoxelBody:
 	Voiced:
 		VoiceSet: SeaScorpionVoice
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2dred:
 	Inherits: ^BoatUnit
-	Inherits@Voxel: ^RenderVoxel
+	Inherits@effects: ^RA2VehicleBig
 	Inherits@Template: ^ArtilleryShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -8153,14 +8030,16 @@ ra2dred:
 	Valued:
 		Cost: 2500
 	Tooltip:
-		Name: Dreadnought
+		Name: actor-dred.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: ~ra2natech
 		Queue: Naval, RANaval
-		Description: Heavy naval siege unit.\n Strong vs. Buildings\n Weak vs. Ships, Submarines, Aircraft
+		Description: actor-dred.description
+	Selectable:
+		DecorationBounds: 2048, 2048
 	Mobile:
 		TurnSpeed: 32
 		Speed: 42
@@ -8173,8 +8052,11 @@ ra2dred:
 	Armament@AG:
 		Weapon: DreadnoughtLaunch
 		Recoil: 85
-	MissileSpawnerMaster:
+		Damage: 1800
+		ReloadDelay: 120
+	MissileSpawnerMasterCA:
 		Actors: ra2dmisl, ra2dmisl
+		SpawnOffset: 172,-120,128, -172,-120,128
 		SpawnAllAtOnce: true
 		RespawnTicks: 120
 		LoadedCondition: ammo
@@ -8189,120 +8071,89 @@ ra2dred:
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
-	AcceptsDeliveredExperience:
-		ValidTypes: vehicle
 	DeliversCash:
 		Payload: 450
-	WithVoxelBody:
-		RequiresCondition: ammo
-	WithVoxelBody@empty:
-		Sequence: empty
-		RequiresCondition: !ammo
 	Voiced:
 		VoiceSet: SovietNavalVoice
+	WithFacingSpriteBody:
+		RequiresCondition: ammo
+	WithFacingSpriteBody@empty:
+		Sequence: idle-empty
+		RequiresCondition: !ammo
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2dmisl:
-	Inherits: ra2v3rocket
-	BallisticMissile:
+	Inherits: ^ShootableMissile
+	BallisticMissileCA:
 		LaunchAngle: 192
 		Speed: 250
-		LaunchAcceleration: 16
-		HitAcceleration: 30
-		#LaunchSounds: vdreatta.wav, vdreattb.wav
+		LaunchSounds: vdreatta.wav, vdreattb.wav
+		AirborneCondition: airborne
 	LeavesTrails:
+		Image: ra2_smokey
+		Palette: ra2effect
+		MovingInterval: 1
+		Type: CenterPosition
+		SpawnAtLastPosition: false
+		Offsets: -450, 0, 0
 	MissileSpawnerSlave:
 	SpawnedExplodes:
 		Weapon: DredMissile
 		EmptyWeapon: DredMissile
-
-ra2carrier:
-	Inherits: ^BoatUnit
-	Inherits@Voxel: ^RenderVoxel
-	Inherits@Template: ^ArtilleryShipTemplate
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EMP: ^FrontalEMP
-	Valued:
-		Cost: 2500
-	Tooltip:
-		Name: Carrier
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 30
-		Prerequisites: ~ra2gatech
-		Queue: Naval, RANaval
-		Description: Heavy Allied warship that can deploy\n3 attack aircraft.\n Strong vs ground targets\n Weak vs Ships, Submarines
-	Mobile:
-		TurnSpeed: 32
-		Speed: 42
-	Health:
-		HP: 35000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-	AttackFrontal:
-		Voice: Attack
-		FacingTolerance: 0
-	DeliversCash:
-		Payload: 450
-	WithVoxelBody:
-	CarrierMaster:
-		Actors: ra2hornet, ra2hornet, ra2hornet
-		RearmTicks: 150
-		RespawnTicks: 300
-		InstaRepair: true
-		SlaveDisposalOnKill: KillSlaves
-		SpawnAllAtOnce: false
-	Armament@PRIMARY:
-		Weapon: RA2CarrierTarget
-	Voiced:
-		VoiceSet: AircraftCarrierVoice
+	RenderSprites:
+		Image: ra2dmisl
+		PlayerPalette: playerra2
+	WithFacingSpriteBody:
 
 yrbsub:
 	Inherits: ^BoatUnit
-	Inherits@Voxel: ^RenderVoxel
+	Inherits@effects: ^RA2Vehicle
 	Inherits@Template: ^ArtilleryShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Inherits@sub: ^Submarine
 	Valued:
-		Cost: 2000
+		Cost: 2500
 	Tooltip:
-		Name: Boomer
+		Name: actor-bsub.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~ra2napsis
 		Queue: Naval, RANaval
-		Description: Versatile Yuri submarine, armed with\nmissiles and torpedoes.\n Strong vs ground, naval targets\n  Weak vs Aircraft
+		Description: actor-bsub.description
 	Mobile:
-		TurnSpeed: 32
-		Speed: 75
+		Speed: 50
+		TurnSpeed: 10
 	Health:
-		HP: 65000
+		HP: 80000
+	ChangesHealth@SelfHealing:
+		Step: 32
 	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
+		Type: Medium
 	Turreted:
-		TurnSpeed: 28
+		TurnSpeed: 10
 		Offset: 512,0,0
 	Armament@PRIMARY:
 		Name: secondary
 		Weapon: YRBoomerTorpedo
-		LocalOffset: 208,-24,48, 208,24,48
+		LocalOffset: 200,-100,0, 200,100,0
 		FireDelay: 2
-	Armament@Secondary:
+	Armament@LAUNCH:
 		Weapon: BoomerLaunch
 		LocalOffset: 208,-24,48, 208,24,48
-	MissileSpawnerMaster:
+		Voice: AttackLand
+		Damage: 800
+		ReloadDelay: 125
+	MissileSpawnerMasterCA:
+		#ArmamentNames: primary
 		Actors: yrbsubmisl, yrbsubmisl
-		RespawnTicks: 120
+		RespawnTicks: 125
 		SpawnAllAtOnce: true
+		SpawnOffset: 100,-100,100, 100,100,100
 	FirepowerMultiplier@RANK-1:
 		Modifier: 125
 	FirepowerMultiplier@RANK-2:
@@ -8328,31 +8179,43 @@ yrbsub:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-		Palette: voxelcloak
 	DetectCloaked:
 		DetectionTypes: Underwater
-		Range: 4c0
-	WithVoxelBody:
+		Range: 5000
 	Voiced:
 		VoiceSet: BoomerVoice
-	-ExternalCondition@CLOAK:
+	RenderSprites:
+		PlayerPalette: playerra2
 
 yrbsubmisl:
-	Inherits: ra2v3rocket
-	BallisticMissile:
-		CreateAngle: 255
-		LaunchAngle: 255
-		PrepareTick: 25
+	Inherits: ^ShootableMissile
+	Health:
+		HP: 25000
+	CruiseMissile:
+		MaxAltitude: 2500
+		MinAirborneAltitude: 128
+		LaunchAngle: 192
+		Speed: 200
 		TurnSpeed: 25
-		Speed: 300
-		LaunchAcceleration: 16
-		HitAcceleration: 30
-		#LaunchSounds: vbooat1a.wav
+		LaunchSounds: vbooat1a.wav
+		MaxTargetMovement: 10000
+		TrackTarget: true
+		AirborneCondition: airborne
 	LeavesTrails:
-	MissileSpawnerSlave:
+		Image: ra2_smokey
+		Palette: ra2effect
+		MovingInterval: 1
+		Type: CenterPosition
+		SpawnAtLastPosition: false
+		Offsets: -450, 0, 0
 	SpawnedExplodes:
 		Weapon: YRBoomerSCUD
 		EmptyWeapon: YRBoomerSCUD
+		RequiresCondition: !airborne
+	MissileSpawnerSlave:
+	RenderSprites:
+		PlayerPalette: playerra2
+	WithFacingSpriteBody:
 
 ####################################################################################################
 #		Red Alert 2 Aircraft
@@ -8376,8 +8239,8 @@ RA2ZEP:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 99
-		Prerequisites: ~ra2naairf, ra2natech
-		Queue: Aircraft, RAAircraft
+		Prerequisites: ~ra2natech
+		Queue: Vehicle, Aircraft, RAAircraft
 		Description: actor-zep.description
 	Aircraft:
 		InitialFacing: 896
@@ -8442,8 +8305,8 @@ yrschp:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 98
-		Prerequisites: ~ra2naairf
-		Queue: Aircraft, RAAircraft
+		Prerequisites: ~ra2naradr
+		Queue: Vehicle, Aircraft, RAAircraft
 		Description: actor-schp.description
 	Aircraft:
 		CanForceLand: false
@@ -8694,12 +8557,11 @@ ra2shad:
 	Inherits@cargo: ^CargoAircraft
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
 	Inherits@bot: ^BotAutoDeployTransport
 	Valued:
 		Cost: 2000
 	Tooltip:
-		Name: Night Hawk
+		Name: actor-shad.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 		OverrideActor: ra2shad
@@ -8707,7 +8569,7 @@ ra2shad:
 		BuildPaletteOrder: 20
 		Prerequisites: ~ra2gaairc
 		Queue: Aircraft, RAAircraft
-		Description: Transport helicopter armed with a machine-gun.
+		Description: actor-shad.description
 	Aircraft:
 		TurnSpeed: 20
 		Speed: 120
@@ -8723,6 +8585,26 @@ ra2shad:
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	WithMuzzleOverlay:
+	WithIdleOverlay@ROTOR1AIR:
+		Offset: 197,0,180
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTOR1GROUND:
+		Offset: 197,0,180
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTOR2AIR:
+		Offset: -1097,0,200
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTOR2GROUND:
+		Offset: -1097,0,200
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
 	Cargo:
 		InitialUnits: ra2e1, ra2e1, yrggi, yrggi
 		Types: Infantry, Hacker, Fremen
@@ -8739,14 +8621,9 @@ ra2shad:
 	Selectable:
 		Class: ra2shad
 		DecorationBounds: 1280, 1024
-	WithVoxelHelicopterBody:
-		TickRate: 1
-	-WithShadow:
-	-WithVoxelBody:
-	RenderVoxels:
-		Image: ra2shad
 	RenderSprites:
 		Image: ra2shad
+		PlayerPalette: playerra2
 	Voiced:
 		VoiceSet: NighthawkVoice
 	DeathSounds:
@@ -8769,13 +8646,13 @@ ra2hind:
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Hind Transport
+		Name: actor-ra2hind.name
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~ra2naairf
-		Queue: Aircraft, RAAircraft
+		Prerequisites: ~ra2naradr
+		Queue: Vehicle, Aircraft, RAAircraft
 		IconPalette: ra2cameo
-		Description: Carryall helicopter armed with a machine gun.
+		Description: actor-ra2hind.description
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Aircraft:
@@ -8796,12 +8673,12 @@ ra2hind:
 	AttackAircraft:
 		FacingTolerance: 80
 	WithIdleOverlay@ROTORAIR:
-		Offset: 0,0,85
+		Offset: 0,0,20
 		Sequence: rotor
 		RequiresCondition: airborne
 		PauseOnCondition: disabled
 	WithIdleOverlay@ROTORGROUND:
-		Offset: 0,0,85
+		Offset: 0,0,20
 		Sequence: slow-rotor
 		RequiresCondition: !airborne
 		PauseOnCondition: disabled
@@ -8810,6 +8687,7 @@ ra2hind:
 	Selectable:
 		DecorationBounds: 1280, 1024
 	Carryall:
+		LocalOffset: 0,0,-256
 	Voiced:
 		VoiceSet: SiegeChopperVoice
 	DeathSounds:
@@ -8843,8 +8721,8 @@ YRDISK:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~yrygcomd
-		Queue: Aircraft, RAAircraft
+		Prerequisites: ~yrygtech
+		Queue: Vehicle, Aircraft, RAAircraft
 		Description: actor-disk.description
 	Aircraft:
 		InitialFacing: 896
@@ -8932,11 +8810,10 @@ YRDISK:
 		Upgrades: upyrdisk
 
 ra2rock:
-	Inherits: ^Helicopter
+	Inherits: ^JumpjetInfantry
 	Inherits@Template: ^HelicopterTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@heal: ^HospitalHealable
 	Inherits@detect: ^GenericAirDetector
 	Inherits@VOICES: ^WithFeedbackVoiceLines
 	Valued:
@@ -8967,11 +8844,10 @@ ra2rock:
 		AttackType: Hover
 	SpawnActorOnDeath:
 		Actor: ra2rock.husk
-	SelectionDecorations:
 	Voiced:
 		VoiceSet: RocketeerVoice
 	DeathSounds:
-	-WithFacingSpriteBody:
+	-WithShadow:
 	WithInfantryBody@Air:
 		StandSequences: fly
 		MoveSequence: fly
@@ -8986,16 +8862,11 @@ ra2rock:
 		Sequence: stand
 	Selectable:
 		Bounds: 512, 768
-	-WithShadow:
 	WithSpriteBody@shadow:
 		Name: shadow
 		Sequence: shadow
 		ForceToGround: true
 		RequiresCondition: airborne
-	Targetable@GROUND:
-		TargetTypes: Ground, Infantry
-	Targetable@REPAIR:
-		TargetTypes: Heal, Healing
 	FirepowerMultiplier@FirerateCompensation:
 		Modifier: 40
 	RenderSprites:
@@ -9061,10 +8932,9 @@ yrlunr.husk:
 ra2hornet:
 	Inherits: ^RANeutralPlane
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
 	Inherits@upgrade: ^RA2AdvancedAeronautics
-	Selectable:
+	-Selectable:
+	Interactable:
 	Valued:
 		Cost: 350
 	Tooltip:
@@ -9075,6 +8945,9 @@ ra2hornet:
 		TurnSpeed: 32
 		Speed: 210
 		Repulsable: false
+		TakeoffSounds: vhortaka.wav, vhortakb.wav
+		LandingSounds: vhorlana.wav, vhorlanb.wav
+		TakeUpCellWhenLand: false
 	Health:
 		HP: 7000
 	Armor:
@@ -9091,24 +8964,18 @@ ra2hornet:
 		AmmoCondition: ammo
 	SpawnActorOnDeath:
 		Actor: ra2hornet.Husk
-	WithMoveAnimation:
-		MoveSequence: move
-	RenderVoxels:
-		NormalsPalette: ts-normals
-		Scale: 6.0
-	WithVoxelBody:
 	Voiced:
 		VoiceSet: NighthawkVoice
 	AttackAircraft:
 		FacingTolerance: 80
 		PersistentTargeting: false
-	Rearmable:
-		RearmActors: ra2carrier
+		RequiresCondition: ammo
 	CarrierSlave:
 		LandingDistance: 8c0
 	AutoTarget:
 		InitialStanceAI: AttackAnything
 		InitialStance: AttackAnything
+	HasParent:
 	-UpdatesPlayerStatistics:
 	-ActorLostNotification:
 	-WithShadow:
@@ -9118,6 +8985,8 @@ ra2hornet:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 1
+	RenderSprites:
+		PlayerPalette: playerra2
 
 ra2asw:
 	Inherits: ra2hornet
@@ -9131,27 +9000,30 @@ ra2asw:
 		TurnSpeed: 32
 		Speed: 210
 		MaximumPitch: 56
+		TakeoffSounds: vospstaa.wav
+		LandingSounds: vosplana.wav
 	Health:
-		HP: 7000
+		HP: 25000
 	Armor:
-		Type: Light
+		Type: Fighter
 	Armament@PRIMARY:
 		Weapon: RA2DepthCharge
 		LocalOffset: 427,-171,-213, 427,171,-213
 		PauseOnCondition: !ammo
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 40
 		PersistentTargeting: false
-	Rearmable:
-		RearmActors: ra2dest
+	AmmoPool:
+		Ammo: 5
 	DetectCloaked:
-		Range: 6c0
+		Range: 5000
 		DetectionTypes: Underwater
 	RenderDetectionCircle:
+	FirepowerMultiplier@ScoutShip:
+		Modifier: 25
 	SpawnActorOnDeath:
 		Actor: ra2asw.Husk
-	GainsExperience:
-		LevelUpNotification: LevelUpRA2
+
 yrspyp:
 	Inherits: ^RANeutralPlane
 	Inherits@Voxel: ^RenderVoxel
@@ -9359,22 +9231,30 @@ yrbpln.boris:
 
 yrbpln1:
 	Inherits: yrbpln
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites:  ~ra2naairf, ~upra2mig
 		Queue: Aircraft, RAAircraft
 		Description: actor-bpln.description
 	Armament:
+		Weapon: MigMissiles_AG
 		PauseOnCondition: !ammo
 	Armament@rad:
+		Weapon: MigMissiles_AG_rad
+		PauseOnCondition: !ammo
+	Armament@aa:
+		Name: secondary
+		Weapon: MigMissiles_AA
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 50, -50, 25, -25
 		PauseOnCondition: !ammo
 	AmmoPool:
 		Ammo: 4
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 66
-		Count: 1
+		Delay: 120
+		Count: 2
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
@@ -10090,7 +9970,6 @@ RA2ZEP.Husk:
 
 ra2hornet.Husk:
 	Inherits: ^PlaneHusk
-	Inherits@Voxel: ^RenderVoxel
 	Tooltip:
 		Name: Hornet
 	Aircraft:
@@ -10106,11 +9985,6 @@ ra2hornet.Husk:
 		Type: CenterPosition
 	RenderSprites:
 		Image: ra2hornet
-	RenderVoxels:
-		Image: ra2hornet
-	-WithShadow:
-	-Cloak@TDcloak:
-	-Cloak@TScloak:
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -10169,7 +10043,6 @@ YRDISK.Husk:
 
 ra2asw.Husk:
 	Inherits: ^HelicopterHusk
-	Inherits@Voxel: ^RenderVoxel
 	Tooltip:
 		Name: Osprey
 	Aircraft:
@@ -10177,11 +10050,6 @@ ra2asw.Husk:
 		Speed: 223
 	RenderSprites:
 		Image: ra2asw
-	RenderVoxels:
-		Image: ra2asw
-	-WithShadow:
-	-Cloak@TDcloak:
-	-Cloak@TScloak:
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -10205,7 +10073,6 @@ yrschp.Husk:
 
 ra2shad.Husk:
 	Inherits: ^HelicopterHusk
-	Inherits@Voxel: ^RenderVoxel
 	Tooltip:
 		Name: Night Hawk
 	Aircraft:
@@ -10213,12 +10080,6 @@ ra2shad.Husk:
 		Speed: 223
 	RenderSprites:
 		Image: ra2shad
-	RenderVoxels:
-		Image: ra2shad
-	-WithShadow:
-	-Cloak@TDcloak:
-	-Cloak@TScloak:
-	RenderSprites:
 		PlayerPalette: playerra2
 
 yrbpln.husk:

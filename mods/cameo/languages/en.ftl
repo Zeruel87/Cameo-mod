@@ -31,7 +31,7 @@ actor-stats-label-prefix =
     .speed = Speed:
     .power = Power:
     .mindcontrol = Mind Control:
-    .damage = DPS:
+    .damage = Damage:
     .spread = Spread:
     .rof = Reload Delay:
     .range = Range:
@@ -45,6 +45,7 @@ actor-stats-label-prefix =
     .mob = Mob:
     .drone = Drones:
     .kills = Kills:
+    .experience = Experience:
 
 label-armor-class =
     .None = None

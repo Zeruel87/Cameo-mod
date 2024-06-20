@@ -1,10 +1,3 @@
-Player:
-	ExternalCondition@BuildingsOwned:
-		Condition: BuildingsOwned
-	ProvidesPrerequisite@BuildingsOwned:
-		Prerequisite: allowsMCV
-		RequiresCondition: BuildingsOwned < 5
-
 World:
 	FactionCA@allies:
 		Name: Allies RA #faction-ra-allies.name
@@ -235,6 +228,10 @@ RAE1:
 		FacingTolerance: 0
 	WithInfantryBody:
 		IdleSequences: idle1,idle2
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
 	RenderSprites:
 		Image: rae1
 		PlayerPalette: raplayer
@@ -327,6 +324,11 @@ RAE3:
 		ProneOffset: 180,0,-200
 	AttackFrontal:
 		FacingTolerance: 0
+	WithInfantryBody:
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
 	RenderSprites:
 		Image: rae3
 		PlayerPalette: raplayer
@@ -423,7 +425,6 @@ RAJE4:
 		Prerequisites: ~dome.japan
 		Queue: Infantry, RAInfantry
 	UpdatesPlayerStatistics:
-		OverrideActor: rae4
 	Selectable:
 		Class: rae4
 	RenderSprites:
@@ -710,6 +711,7 @@ RASPY:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@anim: ^TDRAInfantry
 	Inherits@template: ^LightInfantryTemplate
+	Inherits@disguise: ^SpyDisguise
 	Inherits@pip: ^WithSpecialCargoPip
 	Buildable:
 		Queue: Infantry, RAInfantry
@@ -734,8 +736,6 @@ RASPY:
 		Range: 5000
 	Passenger:
 		Voice: Move
-	Disguise:
-		DisguisedCondition: disguise
 	Infiltrates:
 		Types: SpyInfiltrate
 		Notification: BuildingInfiltrated
@@ -744,17 +744,12 @@ RASPY:
 		InitialStance: HoldFire
 		InitialStanceAI: HoldFire
 		ScanRadius: 5
+	Disguise:
 	-WithInfantryBody:
 	WithDisguisingInfantryBody:
 		DefaultAttackSequence: shoot
 		IdleSequences: idle1,idle2
 		StandSequences: stand,stand2
-	WithDecoration@disguise:
-		Image: pips
-		Sequence: pip-disguise
-		Palette: effect
-		Position: TopRight
-		RequiresCondition: disguise
 	IgnoresDisguise:
 	Armament:
 		Weapon: SilencedPPK
@@ -1416,47 +1411,6 @@ RAJEEP:
 		VoiceSet: RAVehicleVoice
 	RenderSprites:
 		PlayerPalette: raplayer
-
-# RAJEEP2:
-# 	Inherits: ^Vehicle
-# 	Inherits@Template: ^ScoutVehicleTemplate
-# 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-# 	Inherits@EMP: ^TurretEMP
-# 	Inherits@AntiInf: ^PrioritizeInfantry
-# 	Buildable:
-# 		Queue: Vehicle, RAVehicle
-# 		BuildPaletteOrder: 30
-# 		Prerequisites: ~raweapa
-# 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry\n  Weak vs Tanks
-# 	Valued:
-# 		Cost: 300
-# 	Tooltip:
-# 		Name: Ranger
-# 	UpdatesPlayerStatistics:
-# 		AddToArmyValue: true
-# 	Health:
-# 		HP: 22500
-# 	Mobile:
-# 		Speed: 175
-# 		TurnSpeed: 35
-# 	Turreted:
-# 		TurnSpeed: 35
-# 		Offset: 0,0,128
-# 	Armament:
-# 		Weapon: M60mg
-# 		MuzzleSequence: muzzle
-# 		LocalOffset: 128,0,43
-# 	AttackTurreted:
-# 	WithMuzzleOverlay:
-# 	WithSpriteTurret:
-# 	Voiced:
-# 		VoiceSet: RAVehicleVoice
-# 	AcceptsDeliveredExperience: ##########
-# 		ValidTypes: vehicle ##########
-# 	GainsExperience:
-# 		LevelUpNotification: LevelUpRA1
-# 	RenderSprites:
-# 		PlayerPalette: player_rgba
 
 RAAPC:
 	Inherits: ^Tank
@@ -2394,19 +2348,19 @@ RATRAN:
 		TurnSpeed: 25
 		Speed: 125
 		AltitudeVelocity: 0c100
-	AttackAircraft:
-		FacingTolerance: 512
+	#AttackAircraft:
+	#	FacingTolerance: 512
 	Health:
 		HP: 125000
 	Armor:
 		Type: Medium
-	Armament:
-		Weapon: deploytargeting.5c0
-		RequiresCondition: botmicro && loaded
-	AutoTarget:
-		InitialStance: Defend
-		InitialStanceAI: AttackAnything
-		ScanRadius: 20
+	#Armament:
+	#	Weapon: deploytargeting.5c0
+	#	RequiresCondition: botmicro && loaded
+	#AutoTarget:
+	#	InitialStance: Defend
+	#	InitialStanceAI: AttackAnything
+	#	ScanRadius: 20
 	RevealsShroud:
 		Range: 7c0
 		Type: GroundPosition
@@ -2470,7 +2424,7 @@ modhip:
 		BuildDurationModifier: 100
 		Prerequisites: ~raafld
 		Queue: Aircraft, RAAircraft
-		Description: Heavy Infantry Transport Helicopter.\n  Unarmed
+		Description: actor-tran.description
 	Valued:
 		Cost: 1400
 	ProductionCostMultiplier:
@@ -3041,7 +2995,7 @@ MODCORE7:
 
 PT:
 	Inherits: ^BoatUnit
-	Inherits@Template: ^BattleShipTemplate
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
@@ -3049,24 +3003,24 @@ PT:
 		BuildPaletteOrder: 20
 		Prerequisites: ~ra1syrd
 		Queue: Naval, RANaval
-		Description: Light scout & support ship.\nCan detect submarines.
+		Description: actor-pt.description
 	Valued:
-		Cost: 850
+		Cost: 1300
 	Tooltip:
-		Name: Gunboat
+		Name: actor-pt.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 50000
+		HP: 60000
 	ChangesHealth@SelfHealing:
-		Step: 40
+		Step: 24
 	Armor:
 		Type: Medium
 	Mobile:
-		Speed: 125
-		TurnSpeed: 25
+		Speed: 120
+		TurnSpeed: 24
 	Turreted:
-		TurnSpeed: 25
+		TurnSpeed: 24
 		Offset: 512,0,0
 	Armament@PRIMARY:
 		Weapon: 2Inch
@@ -3096,17 +3050,18 @@ DD:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
+	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
-		Cost: 2000
+		Cost: 1600
 	Tooltip:
-		Name: Destroyer
+		Name: actor-dd.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: ~dome.allies
 		Queue: Naval, RANaval
-		Description: Fast multi-role ship.\nCan detect submarines.\n  Strong vs Naval units, Vehicles, Aircraft
+		Description: actor-dd.description
 	Mobile:
 		Speed: 85
 		TurnSpeed: 17
@@ -3129,10 +3084,16 @@ DD:
 		LocalOffset: 100,-100,0, 100,100,0
 		LocalYaw: 64, -64
 		MuzzleSequence: muzzle
-	Armament@DC:
+	Armament@DC1:
 		Weapon: DepthCharge
 		LocalOffset: 100,-100,0, 100,100,0
 		LocalYaw: 80, -80
+		MuzzleSequence: muzzle
+	Armament@DC2:
+		Weapon: DepthCharge
+		LocalOffset: 100,100,0, 100,-100,0
+		LocalYaw: 80, -80
+		MuzzleSequence: muzzle
 	AttackTurreted:
 	WithSpriteTurret:
 	WithMuzzleOverlay:
@@ -3142,6 +3103,10 @@ DD:
 		Payload: 500
 	Voiced:
 		VoiceSet: RAVehicleVoice
+	DetectCloaked:
+		Range: 5000
+		DetectionTypes: Underwater
+	RenderDetectionCircle:
 	RenderSprites:
 		Image: radd
 		PlayerPalette: raplayer
@@ -3156,14 +3121,14 @@ CA:
 	Valued:
 		Cost: 3000
 	Tooltip:
-		Name: Cruiser
+		Name: actor-ca.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: ~atek
 		Queue: Naval, RANaval
-		Description: Very slow long-range ship.\n  Strong vs Buildings, Ground units\n  Weak vs Naval units, Aircraft
+		Description: actor-ca.description
 	Mobile:
 		Speed: 40
 		TurnSpeed: 8
@@ -3214,9 +3179,171 @@ CA:
 		Image: raca
 		PlayerPalette: raplayer
 
-SS:
+japanspeedboat:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^ScoutShipTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiAir: ^PrioritizeAir
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~ra1jsyrd
+		Queue: Naval, RANaval
+		Description: actor-jpspeedboat.description
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: actor-jpspeedboat.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 40000
+	ChangesHealth@SelfHealing:
+		Step: 16
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 140
+		TurnSpeed: 28
+	Turreted:
+		TurnSpeed: 56
+		Offset: 200,0,200
+	Armament@AG:
+		Weapon: JapanSpeedBoatGun
+		Recoil: 85
+		LocalOffset: 400,-100,300, 400,100,300
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: JapanSpeedBoatGunAA
+		Recoil: 85
+		LocalOffset: 400,-100,300, 400,100,300
+		MuzzleSequence: muzzle
+	Armament@DC1:
+		Weapon: DepthCharge
+		LocalOffset: 400,-100,300, 400,100,300
+		LocalYaw: 80, -80
+		MuzzleSequence: muzzle
+	Armament@DC2:
+		Weapon: DepthCharge
+		LocalOffset: 400,100,300, 400,-100,300
+		LocalYaw: 80, -80
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	WithSpriteTurret:
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 250
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
+	RenderSprites:
+		Image: japanspeedboat
+		PlayerPalette: player_rgba
+	GrantConditionOnAttack@gatling:
+		Condition: gatling
+		ArmamentNames: primary
+		RequiredShotsPerInstance: 5, 10
+		MaximumInstances: 2
+		RevokeDelay: 25
+		RevokeAll: true
+		IsCyclic: false
+		RevokeOnNewTarget: false
+	ReloadDelayMultiplier@GattlingSpeed:
+		RequiresCondition: gatling >= 2
+		Modifier: 50
+	RangeMultiplier@GattlingSpeed:
+		RequiresCondition: gatling
+		Modifier: 125
+
+yamatobattleship:
 	Inherits: ^BoatUnit
 	Inherits@Template: ^BattleShipTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@jammable: ^ArtilleryJammable
+	Valued:
+		Cost: 2200
+	Tooltip:
+		Name: actor-yamatobattleship.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~modjtek
+		Queue: Naval, RANaval
+		Description: actor-yamatobattleship.description
+	Mobile:
+		Speed: 35
+		TurnSpeed: 7
+	Health:
+		HP: 250000
+	ChangesHealth@SelfHealing:
+		Step: 100
+	Armor:
+		Type: Superheavy
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: -896,0,128
+		TurnSpeed: 7
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 768,0,128
+		TurnSpeed: 7
+	Turreted@AA:
+		Turret: flak
+		Offset: 256,0,128
+		TurnSpeed: 14
+		FacingTolerance: 90
+	Armament@PRIMARY:
+		Turret: primary
+		Weapon: YamatoCannon
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 200
+		RecoilRecovery: 25
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Name: secondary
+		Turret: secondary
+		Weapon: YamatoCannon
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 200
+		RecoilRecovery: 25
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Turret: flak
+		Weapon: YamatoFlak
+		LocalOffset: 240,-100,40, 240,100,40
+		Recoil: 50
+		RecoilRecovery: 10
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		Turrets: primary, secondary, flak
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Selectable:
+		DecorationBounds: 2048, 2048
+	WithSpriteTurret@PRIMARY:
+		Turret: primary
+	WithSpriteTurret@SECONDARY:
+		Turret: secondary
+	WithSpriteTurret@AA:
+		Turret: flak
+		Sequence: turret2
+	DeliversCash:
+		Payload: 500
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
+	RenderSprites:
+		Image: yamatobattleship
+		PlayerPalette: player_rgba
+
+SS:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
@@ -3224,14 +3351,14 @@ SS:
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Submarine
+		Name: actor-ss.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~raspen
 		Queue: Naval, RANaval
-		Description: Submerged anti-ship unit\narmed with torpedoes.\nCan detect other submarines.\n  Strong vs Naval units\n  Weak vs Ground units, Aircraft
+		Description: actor-ss.description
 	Mobile:
 		Speed: 75
 		TurnSpeed: 15
@@ -3242,7 +3369,7 @@ SS:
 	Armor:
 		Type: Heavy
 	Turreted:
-		TurnSpeed: 28
+		TurnSpeed: 15
 		Offset: 512,0,0
 	Armament@PRIMARY:
 		Weapon: TorpTube
@@ -3272,17 +3399,18 @@ MSUB:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Inherits@sub: ^Submarine
+	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
 		Cost: 2000
 	Tooltip:
-		Name: Missile Submarine
+		Name: actor-msub.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: ~stek
 		Queue: Naval, RANaval
-		Description: Submerged anti-ground siege unit\nwith anti-air capabilities.\nCan detect other submarines.\n  Strong vs Buildings, Ground units, Aircraft\n  Weak vs Naval units
+		Description: actor-msub.description
 	Mobile:
 		Speed: 60
 		TurnSpeed: 12
@@ -3361,8 +3489,6 @@ RALST:
 ####################################################################################################
 
 RAFACT:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
 	HitShape:
@@ -3471,8 +3597,6 @@ RAFACT:
 		DeathSequencePalette: raplayer
 
 RAFACT.ALLIES:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
 	Inherits@aicash: ^AIConyardCash
@@ -3573,8 +3697,6 @@ RAFACT.ALLIES:
 		DeathSequencePalette: raplayer
 
 RAFACT.SOVIET:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: RAFACT.ALLIES
 	Tooltip:
 		Name: Soviet Construction Yard
@@ -3582,8 +3704,6 @@ RAFACT.SOVIET:
 		IntoActor: ramcv.soviet
 
 RAFACT.Japan:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: RAFACT.ALLIES
 	Tooltip:
 		Name: Japanese Construction Yard
@@ -4349,16 +4469,26 @@ RAAFLD:
 	ParatroopersPower@paratroopers:
 		OrderName: SovietParatroopers
 		Prerequisites:
-			1:
+			1: raafld
+			2: upfirerocketsoldier
+			3: upshocktrooper
 		Icons:
 			1: paratroopers
+			2: paratroopers
+			3: paratroopers
 		Names:
 			1: power-paratroopers.name
+			2: power-paratroopers.name
+			3: power-paratroopers.name
 		ChargeInterval: 4500
 		Descriptions:
 			1: power-paratroopers.description
+			2: power-paratroopers.description
+			3: power-paratroopers.description
 		DropItems:
-			1: rare1, rae2, rare3, rae4, shok, rare1, rae2, rare3, rae4, shok, rare1, rae2, rare3, rae4, shok
+			1: rare1, rae2, rare3, rae4, rare1, rae2, rare3, rae4, rare1, rae2, rare3, rae4
+			2: rare1, rae2, e3flamer, rae4, rare1, rae2, e3flamer, rae4, rare1, rae2, e3flamer, rae4
+			3: rare1, rae2, e3flamer, rae4, shok, rare1, rae2, e3flamer, rae4, shok, rare1, rae2, e3flamer, rae4, shok
 		SelectTargetSpeechNotification: SelectTarget
 		AllowImpassableCells: false
 		QuantizedFacings: 16
@@ -4366,6 +4496,8 @@ RAAFLD:
 		DisplayBeacon: true
 		BeaconPosters:
 			1: pinficon
+			2: pinficon
+			3: pinficon
 		ArrowSequence: arrow
 		ClockSequence: clocklarge
 		CircleSequence: circles
@@ -4373,8 +4505,12 @@ RAAFLD:
 		DirectionArrowAnimation: airstrikedirection
 		UnitTypes:
 			1: badr
+			2: badr
+			3: badr
 		SquadSizes:
 			1: 3
+			2: 3
+			3: 3
 		SquadOffset: 1792,1792,0
 	SupportPowerChargeBar:
 	Power:
@@ -4397,7 +4533,6 @@ MODRAAFLD:
 		BuildDurationModifier: 100
 	-AirstrikePower@spyplane:
 	-AirstrikePower@parabombs:
-	-ParatroopersPower@paratroopers:
 	AirstrikePower@JapanSuperBomber:
 		OrderName: JapanSuperBomber
 		Prerequisites:
@@ -4428,35 +4563,29 @@ MODRAAFLD:
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 40
 		DisplayTimerRelationships: Ally, Neutral, Enemy
-	ParatroopersPower@japanparatroopers:
+	ParatroopersPower@paratroopers:
 		OrderName: japanparatroopers
 		Prerequisites:
-			1:
+			1: modraafld
+			2: upsamurai
+			3: uparchermaiden
 		Icons:
 			1: paratroopers
+			2: paratroopers
+			3: paratroopers
 		Names:
 			1: power-paratroopers.name
+			2: power-paratroopers.name
+			3: power-paratroopers.name
 		ChargeInterval: 4500
 		Descriptions:
 			1: power-paratroopers.description
+			2: power-paratroopers.description
+			3: power-paratroopers.description
 		DropItems:
-			1: raje1, raje3, raje4, ramaid, rasamurai, raje1, raje3, raje4, ramaid, rasamurai, raje1, raje3, raje4, ramaid, rasamurai
-		SelectTargetSpeechNotification: SelectTarget
-		AllowImpassableCells: false
-		QuantizedFacings: 16
-		CameraActor: camera.paradrop
-		DisplayBeacon: true
-		BeaconPosters:
-			1: pinficon
-		ArrowSequence: arrow
-		ClockSequence: clocklarge
-		CircleSequence: circles
-		UseDirectionalTarget: True
-		DirectionArrowAnimation: airstrikedirection
-		UnitTypes:
-			1: badr
-		SquadSizes:
-			1: 3
+			1: raje1, raje3, raje4, raje1, raje3, raje4, raje1, raje3, raje4
+			2: raje1, raje3, raje4, rasamurai, raje1, raje3, raje4, rasamurai, raje1, raje3, raje4, rasamurai
+			3: raje1, raje3, raje4, ramaid, rasamurai, raje1, raje3, raje4, ramaid, rasamurai, raje1, raje3, raje4, ramaid, rasamurai
 		SquadOffset: 1792,1792,0
 	ProvidesPrerequisite@buildingname:
 	RenderSprites:
@@ -4497,6 +4626,8 @@ ATEK:
 	RenderDetectionCircle:
 	WithBuildingBib:
 	GpsPower:
+		Prerequisites:
+			1:
 		Icons:
 			1: gps
 		OneShot: true
@@ -4674,19 +4805,17 @@ RAFIX.Japan:
 
 RA1SYRD:
 	Inherits: ^BaseBuilding
-	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@prod: ^ProducesUnits
+	Inherits@shipyard: ^IsShipyard
 	Inherits@shape: ^3x3Shape
-	Inherits@repair: ^RepairsUnits
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Naval Yard
+		Name: template-shipyard.ra-allies
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: ~rafact.allies, raproc
 		Queue: Building, RABuilding
-		Description: Produces, and\nrepairs boats
+		Description: template-shipyard.description
 	Building:
 		Footprint: =+= +++ =+=
 		Dimensions: 3,3
@@ -4700,52 +4829,6 @@ RA1SYRD:
 		Type: Concrete
 	RevealsShroud:
 		Range: 5c0
-	Exit@1:
-		SpawnOffset: -1024,1024,0
-		Facing: 640
-		ExitCell: 0,2
-	Exit@2:
-		SpawnOffset: 1024,1024,0
-		Facing: 896
-		ExitCell: 2,2
-	Exit@3:
-		SpawnOffset: -1024,-1024,0
-		Facing: 384
-		ExitCell: 0,0
-	Exit@4:
-		SpawnOffset: 1024,-1024,0
-		Facing: 128
-		ExitCell: 2,0
-	Production@NORMAL:
-		Produces: Naval
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RANaval
-		RequiresCondition: classicproductionqueues
-	Reservable:
-	RepairsUnits:
-		HpPerStep: 1000
-		PlayerExperience: 25
-		StartRepairingNotification: Repairing
-	RallyPoint:
-	ParallelProductionQueue:
-		Type: Naval
-		DisplayOrder: 5
-		Group: Naval
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@NAVALALLIES:
-		ProductionType: Naval
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RANAVALALLIES:
-		ProductionType: RANaval
-		RequiresCondition: classicproductionqueues
 	Power:
 		Amount: -30
 	ProvidesPrerequisite@buildingname:
@@ -4760,21 +4843,29 @@ RA1SYRD:
 	WithDeathAnimation:
 		DeathSequencePalette: raplayer
 
+RA1JSYRD:
+	Inherits: RA1SYRD
+	Buildable:
+		Prerequisites: ~rafact.japan, jproc
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: ra1jsyrd
+		PlayerPalette: player_rgba
+
 RASPEN:
 	Inherits: ^BaseBuilding
-	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@prod: ^ProducesUnits
+	Inherits@shipyard: ^IsShipyard
 	Inherits@shape: ^3x3Shape
-	Inherits@repair: ^RepairsUnits
 	Valued:
 		Cost: 800
 	Tooltip:
-		Name: Sub Pen
+		Name: template-shipyard.ra-soviet
 	Buildable:
-		BuildPaletteOrder: 50
 		Prerequisites: ~rafact.soviet, raproc
 		Queue: Building, RABuilding
-		Description: Produces and\nrepairs submarines
+		Description: template-shipyard.description
 	Building:
 		Footprint: =+= +++ =+=
 		Dimensions: 3,3
@@ -4788,52 +4879,6 @@ RASPEN:
 		Type: Concrete
 	RevealsShroud:
 		Range: 5c0
-	Exit@1:
-		SpawnOffset: -1024,1024,0
-		Facing: 640
-		ExitCell: 0,2
-	Exit@2:
-		SpawnOffset: 1024,1024,0
-		Facing: 896
-		ExitCell: 2,2
-	Exit@3:
-		SpawnOffset: -1024,-1024,0
-		Facing: 384
-		ExitCell: 0,0
-	Exit@4:
-		SpawnOffset: 1024,-1024,0
-		Facing: 128
-		ExitCell: 2,0
-	Production@NORMAL:
-		Produces: Naval
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RANaval
-		RequiresCondition: classicproductionqueues
-	Reservable:
-	RepairsUnits:
-		HpPerStep: 1000
-		PlayerExperience: 25
-		StartRepairingNotification: Repairing
-	RallyPoint:
-	ParallelProductionQueue:
-		Type: Naval
-		DisplayOrder: 5
-		Group: Naval
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@NAVALSOVIET:
-		ProductionType: Naval
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RANAVALSOVIET:
-		ProductionType: RANaval
-		RequiresCondition: classicproductionqueues
 	Power:
 		Amount: -30
 	ProvidesPrerequisite@buildingname:
@@ -5194,6 +5239,10 @@ PBOX:
 	Power:
 		Amount: -20
 	RevealsShroud:
+		Range: 6666
+	ActorStatValues:
+		Damage: 200
+		ReloadDelay: 38
 		Range: 6666
 
 RAGUN:
@@ -5669,11 +5718,11 @@ uphbox:
 upgapgenerator:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Gap Generator Technology
+		Name: upgrade-gapgen.name
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Promotions
-		Description: Allows construction of the Gap Generator\nand the Mobile Gap Generator.
+		Description: upgrade-gapgen.description
 		Prerequisites: ~rafact.allies, !upgapgenerator, uphbox, rank1
 	RenderSprites:
 		Image: ramgg
@@ -5753,14 +5802,14 @@ sheridan:
 	Valued:
 		Cost: 600
 	Tooltip:
-		Name: Sheridan
+		Name: actor-sheridan.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: ~upsheridan
 		Queue: Vehicle, RAVehicle
-		Description: General-Purpose Allied Light Tank.\nStrong vs Infantry, Vehicles\nWeak vs Aircraft
+		Description: actor-sheridan.description
 	Mobile:
 		Speed: 90
 		TurnSpeed: 18
@@ -5833,11 +5882,11 @@ rapierjumpjet:
 		Queue: Aircraft, RAAircraft
 		BuildPaletteOrder: 30
 		Prerequisites: atek, ~uprapierjumpjet
-		Description: Attack Plane armed with\ndual machine guns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+		Description: actor-rapierjumpjet.description
 	Valued:
 		Cost: 1500
 	Tooltip:
-		Name: Rapier Jumpjet
+		Name: actor-rapierjumpjet.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
@@ -5939,6 +5988,7 @@ MODSPACEPORT:
 	Inherits@sell: ^RASpawnActorsOnSell
 	Inherits@weap: ^IsWeaponFactory
 	Inherits@cash: ^CashTricklerWithExperience
+	Inherits@cashlimit: ^CashTricklerLimited
 	Buildable:
 		Queue: Building, RABuilding
 		BuildLimit: 1
@@ -6032,13 +6082,13 @@ MODSPACEPORT:
 		Icons:
 			1: paratroopers
 		Names:
-			1: Rapid Reinforcements
+			1: power-reinforcements.name
 		OrderName: rapidreinforcements
 		Prerequisites:
 			1:
 		ChargeInterval: 7500
 		Descriptions:
-			1: A Squad of Badgers drops a squad of infantry\nanywhere on the map.
+			1: power-reinforcements.description
 		DropItems:
 			1: alliedmachinegunner,sheridan,rae3,alliedmachinegunner,sheridan,rae3,alliedmachinegunner,sheridan,rae3,alliedmachinegunner,sheridan,rae3,alliedmachinegunner,sheridan,rae3,alliedmachinegunner,sheridan,rae3,alliedmachinegunner,sheridan,rae3,alliedmachinegunner,sheridan,rae3,alliedmachinegunner,sheridan,rae3
 		SelectTargetSpeechNotification: SelectTarget
@@ -6342,6 +6392,10 @@ HBOX:
 		Range: 6666
 	DetectCloaked:
 		Range: 3333
+	ActorStatValues:
+		Damage: 440
+		ReloadDelay: 38
+		Range: 6666
 
 RAMGG:
 	Inherits: ^Vehicle
@@ -6634,7 +6688,7 @@ upshocktrooper:
 	Buildable:
 		BuildPaletteOrder: 43
 		Queue: Promotions
-		Description: Allows training of Fire Shock Troopers.
+		Description: Allows training of Shock Troopers.
 		Prerequisites: ~rafact.soviet, !upshocktrooper, upmortarsoldier, rank1
 	RenderSprites:
 		Image: shok
@@ -6801,6 +6855,8 @@ e3flamer:
 		Weapon: FireRockets
 	RenderSprites:
 		Image: e3flamer
+	Voiced:
+		VoiceSet: RussianVoice
 
 mortarsoldier:
 	Inherits: ^Soldier
@@ -7593,11 +7649,11 @@ su57:
 		Queue: Aircraft, RAAircraft
 		BuildPaletteOrder: 50
 		Prerequisites: ~stek, ~upmignukebomber
-		Description: Multirole jet fighter-bomber.\n  Strong vs Aircraft, Vehicles\n  Weak vs Infantry
+		Description: actor-su57.description
 	Valued:
 		Cost: 2500
 	Tooltip:
-		Name: Su-57 Attack Bomber
+		Name: actor-su57.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
@@ -7934,19 +7990,16 @@ RAMAID:
 		Modifier: 50
 
 ROCKETANGEL:
-	Inherits: ^Helicopter
+	Inherits: ^JumpjetInfantry
 	Inherits@Template: ^HelicopterTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@TechStructureHealable: ^TechStructureHealable
-	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@AntiDef: ^PrioritizeDefence
-	#Inherits@vo: ^AttackFrontalVoice
 	Inherits@announce: ^AnnounceGlobal
 	Valued:
 		Cost: 900

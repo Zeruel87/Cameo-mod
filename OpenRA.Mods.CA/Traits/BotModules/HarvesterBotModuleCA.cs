@@ -40,6 +40,9 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Interval (in ticks) between checking whether to produce new harvesters.")]
 		public readonly int ProduceHarvestersInterval = 375;
 
+		[Desc("Additional harvesters to build.")]
+		public readonly int AdditionalHarvesters = 0;
+
 		[Desc("Avoid enemy actors nearby when searching for a new resource patch. Should be somewhere near the max weapon range.")]
 		public readonly WDist HarvesterEnemyAvoidanceRadius = WDist.FromCells(8);
 
@@ -168,7 +171,7 @@ namespace OpenRA.Mods.CA.Traits
 				if (numHarvesters >= Info.MaxHarvesters)
 					return;
 
-				var harvCountTooLow = numHarvesters < AIUtils.CountActorByCommonName(refineries) * Info.HarvestersPerRefinery;
+				var harvCountTooLow = numHarvesters < AIUtils.CountActorByCommonName(refineries) * Info.HarvestersPerRefinery + Info.AdditionalHarvesters;
 				if (harvCountTooLow && unitBuilder.RequestedProductionCount(bot, harvInfo.Name) == 0)
 					unitBuilder.RequestUnitProduction(bot, harvInfo.Name);
 			}

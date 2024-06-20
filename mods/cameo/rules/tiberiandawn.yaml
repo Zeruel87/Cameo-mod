@@ -71,11 +71,6 @@ World:
 		SupportActors: e1,e1,e1,e1,e1,e3,e3,e3,ftnk,ftnk
 
 Player:
-	ExternalCondition@BuildingsOwned:
-		Condition: BuildingsOwned
-	ProvidesPrerequisite@BuildingsOwned:
-		Prerequisite: allowsMCV
-		RequiresCondition: BuildingsOwned < 5
 	PlugSpawnerBotModule@ionc:
 		Plug: eye.ionc
 		Pluggables: eye
@@ -146,6 +141,10 @@ E1:
 		MuzzleSequence: garrison-muzzle
 	WithInfantryBody:
 		IdleSequences: idle1,idle2
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
 	WithDeathAnimation:
 		DeathSequencePalette: raplayer
 	RenderSprites:
@@ -197,6 +196,10 @@ E2:
 		ProneOffset: 300,0,-227
 	WithInfantryBody:
 		DefaultAttackSequence: throw
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
 	Explodes:
 		Weapon: Grenade
 	WithDeathAnimation:
@@ -238,6 +241,11 @@ E3:
 		Weapon: Rockets
 	TakeCover:
 		ProneOffset: 180,0,-200
+	WithInfantryBody:
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
 	WithDeathAnimation:
 		DeathSequencePalette: raplayer
 	RenderSprites:
@@ -284,6 +292,10 @@ E4:
 	WithMuzzleOverlay:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
 	WithDeathAnimation:
 		DeathSequencePalette: raplayer
 	RenderSprites:
@@ -410,6 +422,12 @@ E6:
 		FacingTolerance: 0
 	WithDeathAnimation:
 		DeathSequencePalette: raplayer
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
 	RenderSprites:
 		PlayerPalette: raplayer
 	ActorStatValues:
@@ -1106,7 +1124,7 @@ MLRS:
 	Health:
 		HP: 24000
 	Repairable:
-		HpPerStep: 900
+		HpPerStep: 1200
 	Armor:
 		Type: Light
 	Turreted:
@@ -1164,7 +1182,7 @@ MSSM:
 	Health:
 		HP: 25000
 	Repairable:
-		HpPerStep: 1364
+		HpPerStep: 1250
 	Armor:
 		Type: Light
 	Turreted:
@@ -1287,19 +1305,19 @@ TRAN:
 		TurnSpeed: 20
 		Speed: 150
 		AltitudeVelocity: 0c100
-	AttackAircraft:
-		FacingTolerance: 512
+	#AttackAircraft:
+	#	FacingTolerance: 512
 	Health:
 		HP: 100000
 	Armor:
 		Type: Light
-	Armament:
-		Weapon: deploytargeting.5c0
-		RequiresCondition: botmicro && loaded
-	AutoTarget:
-		InitialStance: Defend
-		InitialStanceAI: AttackAnything
-		ScanRadius: 20
+	#Armament:
+	#	Weapon: deploytargeting.5c0
+	#	RequiresCondition: botmicro && loaded
+	#AutoTarget:
+	#	InitialStance: Defend
+	#	InitialStanceAI: AttackAnything
+	#	ScanRadius: 20
 	RevealsShroud:
 		Range: 7c0
 		Type: GroundPosition
@@ -1324,7 +1342,6 @@ TRAN:
 		RequiresCondition: !airborne
 		PauseOnCondition: disabled
 	Cargo:
-		InitialUnits: e1, e1, e1, e1, e1, e3, e3, e3, e3, e3
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 10
 		AfterLoadDelay: 0
@@ -1522,22 +1539,35 @@ ORCA:
 		PipCount: 5
 
 C17:
-	Inherits: ^Plane
-	-Targetable:
+	Inherits@1: ^ExistsInWorld
+	Inherits@2: ^SpriteActor
 	Tooltip:
 		Name: Supply Aircraft
+	Interactable:
 	Aircraft:
 		TurnSpeed: 20
 		Speed: 326
 		Repulsable: False
 		MaximumPitch: 36
+		CruiseAltitude: 2560
+		IdleBehavior: LeaveMap
+	OwnerLostAction:
+		Action: Kill
 	HiddenUnderFog:
 		AlwaysVisibleRelationships: None
 		Type: CenterPosition
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -512, -512
+			BottomRight: 512, 512
+	Health:
+		HP: 30000
 	Cargo:
 		MaxWeight: 10
 	DamageMultiplier@INVULNERABLE:
 		Modifier: 0
+	WithFacingSpriteBody:
 	Contrail@1:
 		Offset: -261,-650,0
 		TrailLength: 15
@@ -1551,10 +1581,6 @@ C17:
 		Offset: -261,650,0
 		TrailLength: 15
 	DynamicSpeedMultiplier:
-	-MapEditorData:
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 A10:
 	Inherits: ^RANeutralPlane
@@ -1636,8 +1662,6 @@ ORCA.Husk:
 		Image: orca
 
 FACT:
-	GrantExternalConditionToOwner@BuildingsOwned:
-		Condition: BuildingsOwned
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@aicash: ^AIConyardCash
@@ -2407,7 +2431,6 @@ HQ:
 		BuildDurationModifier: 100
 		Prerequisites: proc
 		#Queue: Building, RABuilding
-		Description: Provides radar and Air Strike support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
 	Building:
 		Footprint: X_ xx ==
 		Dimensions: 2,3
@@ -2447,9 +2470,9 @@ HQ.GDI:
 			1: 3
 		QuantizedFacings: 32
 		Names:
-			1: Air Strike
+			1: power-td-airstrike.name
 		Descriptions:
-			1: Deploy an aerial napalm strike.\nBurns buildings and infantry along a line.
+			1: power-td-airstrike.description
 		EndChargeSpeechNotification: AirstrikeReady
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
@@ -2788,88 +2811,6 @@ tmpl.nuke:
 		Type: tmpl
 	RenderSprites:
 		Image: TMPL
-
-# TD Naval
-
-CNCSYRD:
-	Inherits: RA1SYRD
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: ~fact.gdi, proc
-		Queue: Building, RABuilding
-	Production@NORMAL:
-		Produces: Naval
-		RequiresCondition: !classicproductionqueues
-		PauseOnCondition: disabled
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RANaval
-		RequiresCondition: classicproductionqueues
-		PauseOnCondition: disabled
-	ParallelProductionQueue:
-		Type: Naval
-		DisplayOrder: 5
-		Group: Naval
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@NAVALGDI:
-		ProductionType: Naval
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RANAVALGDI:
-		ProductionType: RANaval
-		RequiresCondition: classicproductionqueues
-	ProvidesPrerequisite@buildingname:
-	GivesBuildableArea: ##########
-		AreaTypes: building, cityi
-	RenderSprites:
-		Image: ra1syrd
-	-ProductionBar@NAVALALLIES:
-	-ProductionBar@RANAVALALLIES:
-
-CNCSPEN:
-	Inherits: RASPEN
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: ~fact.nod, proc
-		Queue: Building, RABuilding
-	Production@NORMAL:
-		Produces: Naval
-		RequiresCondition: !classicproductionqueues
-		PauseOnCondition: disabled
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RANaval
-		RequiresCondition: classicproductionqueues
-		PauseOnCondition: disabled
-	ParallelProductionQueue:
-		Type: Naval
-		DisplayOrder: 5
-		Group: Naval
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@NAVALNOD:
-		ProductionType: Naval
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RANAVALNOD:
-		ProductionType: RANaval
-		RequiresCondition: classicproductionqueues
-	ProvidesPrerequisite@buildingname:
-	GivesBuildableArea: ##########
-		AreaTypes: building, cityi
-	RenderSprites:
-		Image: raspen
-	-ProductionBar@NAVALSOVIET:
-	-ProductionBar@RANAVALSOVIET:
 
 GUN:
 	Inherits: ^Defense
@@ -3213,15 +3154,42 @@ BRIK:
 	WithWallSpriteBody:
 		Type: concrete
 
+# TD Naval
+
+CNCSYRD:
+	Inherits: RA1SYRD
+	Tooltip:
+		Name: template-shipyard.td-gdi
+	Buildable:
+		Prerequisites: ~fact.gdi, proc
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: ra1syrd
+
+CNCSPEN:
+	Inherits: RASPEN
+	Tooltip:
+		Name: template-shipyard.td-nod
+	Buildable:
+		Prerequisites: ~fact.nod, proc
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi
+	RenderSprites:
+		Image: cncspen
+		PlayerPalette: player_rgba
+
 CNCPT:
 	Inherits: ^BoatUnit
-	Inherits@Template: ^BattleShipTemplate
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
-		Cost: 1000
+		Cost: 1100
 	Tooltip:
 		Name: Missile Cruiser
 	UpdatesPlayerStatistics:
@@ -3230,7 +3198,7 @@ CNCPT:
 		BuildPaletteOrder: 20
 		Prerequisites: ~cncsyrd
 		Queue: Naval, RANaval
-		Description: Light scout & support ship.\nCan detect submarines.
+		Description: actor-pt.description
 	Mobile:
 		Speed: 100
 		TurnSpeed: 20
@@ -3270,7 +3238,7 @@ CNCCA:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 3000
+		Cost: 2100
 	Tooltip:
 		Name: Railgun Battleship
 	UpdatesPlayerStatistics:
@@ -3279,7 +3247,7 @@ CNCCA:
 		BuildPaletteOrder: 50
 		Prerequisites: ~eye
 		Queue: Naval, RANaval
-		Description: Very slow long-range ship.\n  Strong vs surface, air targets\n  Weak vs Submarines
+		Description: actor-ca.description
 	Mobile:
 		Speed: 50
 		TurnSpeed: 10
@@ -3331,7 +3299,6 @@ CNCCA:
 		Turrets: primary, secondary
 	WithMuzzleOverlay:
 	WithSpriteTurret:
-	RenderDetectionCircle:
 	Selectable:
 		DecorationBounds: 2048, 2048
 	WithSpriteTurret@PRIMARY:
@@ -3343,38 +3310,197 @@ CNCCA:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
-LST:
-	Inherits: ^Ship
+CNCSS:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^ScoutShipTemplate
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
 	Valued:
-		Cost: 300
+		Cost: 1600
 	Tooltip:
-		Name: Landing Craft
+		Name: Nod Attack Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
-		#Queue: Vehicle.GDI
-		BuildPaletteOrder: 1000
-		Prerequisites: ~wip-content
+		BuildPaletteOrder: 20
+		Prerequisites: ~cncspen
+		Queue: Naval, RANaval
+		Description: actor-ss.description
 	Mobile:
-		Locomotor: lcraft
-		InitialFacing: 0
-		Speed: 142
-		PauseOnCondition: notmobile
+		Speed: 80
+		TurnSpeed: 16
 	Health:
-		HP: 40000
+		HP: 160000
+	ChangesHealth@SelfHealing:
+		Step: 64
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-	WithFacingSpriteBody:
+	Turreted:
+		TurnSpeed: 16
+		Offset: 512,0,0
+	Armament@PRIMARY:
+		Weapon: NodTorpTube
+		LocalOffset: 256,128,0, 256,-128,0
+	RenderRangeCircle:
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+	AttackFrontal:
+		FacingTolerance: 0
 	Selectable:
-		Bounds: 2048, 2048
-	Cargo:
-		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 5
-		PassengerFacing: 0
-		LoadingCondition: notmobile
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 475
+	Voiced:
+		VoiceSet: VehicleVoice
+	Cloak@underwater:
+		Palette: racloak
+	RenderSprites:
+		Image: cncss
+		PlayerPalette: player_rgba
+
+ssmsub:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^ArtilleryShipTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 2800
+	Tooltip:
+		Name: Ballistic Missile Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~hq.nod
+		Queue: Naval, RANaval
+		Description: actor-msub.description
+	Mobile:
+		Speed: 60
+		TurnSpeed: 12
+	Health:
+		HP: 200000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	Armor:
+		Type: Medium
+	Armament:
+		Weapon: HonestJohn
+		LocalOffset: 800,200,0, 800,-200,0
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+	AttackFrontal:
+		FacingTolerance: 0
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 1000
+	Cloak@underwater:
+		CloakDelay: 100
+	Voiced:
+		VoiceSet: VehicleVoice
+	FirepowerMultiplier@BallisticMissileSubBuff:
+		Modifier: 200
+	Explodes:
+		Weapon: ArtilleryShell
+	AmmoPool:
+		Ammo: 2
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 125
+		Count: 1
+	WithFacingSpriteBody:
+		Sequence: idle
+		RequiresCondition: ammo == 2
+	WithFacingSpriteBody@OneMissile:
+		Sequence: idle-one
+		RequiresCondition: ammo == 1
+	WithFacingSpriteBody@NoMissiles:
+		Sequence: idle-empty
+		RequiresCondition: !ammo
+	RenderSprites:
+		Image: ssmsub
+
+nodlasercorvette:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 2200
+	Tooltip:
+		Name: actor-nodlasercorvette.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~tmpl
+		Queue: Naval, RANaval
+		Description: actor-nodlasercorvette.description
+	Mobile:
+		Speed: 60
+		TurnSpeed: 12
+	Health:
+		HP: 150000
+	ChangesHealth@SelfHealing:
+		Step: 60
+	Armor:
+		Type: Medium
+	Turreted@PRIMARY:
+		Turret: primary
+		Offset: 0,0,0
+		TurnSpeed: 1000
+	Turreted@SECONDARY:
+		Turret: secondary
+		Offset: 900,0,200
+		TurnSpeed: 24
+	Armament@PRIMARY:
+		Turret: primary
+		Name: primary
+		Weapon: CorvetteLaserObelisk
+		LocalOffset: 0,0,800
+	Armament@SECONDARY:
+		Turret: secondary
+		Name: secondary
+		Weapon: CorvetteDragon
+		LocalOffset: 480,-100,40, 480,100,40
+		Recoil: 175
+		RecoilRecovery: 35
+		MuzzleSequence: muzzle
+	AttackTurreted:
+		Turrets: secondary
+		Armaments: secondary
+	AttackTurretedCharged:
+		Turrets: primary
+		Armaments: primary
+		PauseOnCondition: disabled
+		ChargeLevel: 50
+		ChargingCondition: charging
+	AmbientSound:
+		RequiresCondition: charging
+		SoundFiles: obelpowr.aud
+		Interval: 30, 40
+	RenderRangeCircle:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 2048, 2048
+	WithSpriteTurret@SECONDARY:
+		Turret: secondary
+		Palette: ra_temperat
+	DeliversCash:
+		Payload: 500
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+LST:
+	Inherits: CNCLST
 
 CNCRSS:
 	Inherits: ^BoatUnit
@@ -3418,130 +3544,6 @@ CNCRSS:
 	Cloak@underwater:
 		PauseOnCondition: disabled || !cancloak
 
-CNCSS:
-	Inherits: ^BoatUnit
-	Inherits@Template: ^BattleShipTemplate
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@EMP: ^FrontalEMP
-	Inherits@sub: ^Submarine
-	Valued:
-		Cost: 1600
-	Tooltip:
-		Name: Nod Attack Submarine
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~cncspen
-		Queue: Naval, RANaval
-		Description: Submerged anti-ship unit\narmed with torpedoes.\nCan detect other submarines.\n  Strong vs Naval units\n  Weak vs Ground units, Aircraft
-	Mobile:
-		Speed: 80
-		TurnSpeed: 16
-	Health:
-		HP: 160000
-	ChangesHealth@SelfHealing:
-		Step: 64
-	Armor:
-		Type: Heavy
-	Turreted:
-		TurnSpeed: 28
-		Offset: 512,0,0
-	Armament@PRIMARY:
-		Weapon: NodTorpTube
-		LocalOffset: 256,0,0
-	RenderRangeCircle:
-	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
-	AttackFrontal:
-		FacingTolerance: 0
-	Selectable:
-		DecorationBounds: 1536, 1536
-	DeliversCash:
-		Payload: 475
-	Voiced:
-		VoiceSet: VehicleVoice
-	Cloak@underwater:
-		Palette: racloak
-	RenderSprites:
-		Image: cncss
-		PlayerPalette: player_rgba
-
-nodlasercorvette:
-	Inherits: ^BoatUnit
-	Inherits@Template: ^BattleShipTemplate
-	Inherits@exp: ^GainsExperienceTD
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EMP: ^TurretEMP
-	Valued:
-		Cost: 3000
-	Tooltip:
-		Name: Nod Laser Corvette
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: ~tmpl
-		Queue: Naval, RANaval
-		Description: Very slow long-range ship.\n  Strong vs surface, air targets\n  Weak vs Submarines
-	Mobile:
-		Speed: 50
-		TurnSpeed: 10
-	Health:
-		HP: 175000
-	ChangesHealth@SelfHealing:
-		Step: 70
-	Armor:
-		Type: Superheavy
-	Turreted@PRIMARY:
-		Turret: primary
-		Offset: -1200,-50,200
-		TurnSpeed: 10
-	Turreted@SECONDARY:
-		Turret: secondary
-		Offset: 900,-50,200
-		TurnSpeed: 10
-	Armament@PRIMARY:
-		Turret: primary
-		Name: primary
-		Weapon: LaserObelisk
-		LocalOffset: 0,-85,1280
-	Armament@SECONDARY:
-		Turret: secondary
-		Name: secondary
-		Weapon: GDIBattleshipRailgun
-		LocalOffset: 480,-100,40, 480,100,40
-		Recoil: 175
-		RecoilRecovery: 35
-		MuzzleSequence: muzzle
-	AttackTurreted:
-		Turrets: secondary
-		Armaments: secondary
-	AttackTurretedCharged:
-		Turrets: primary
-		Armaments: primary
-		RequiresCondition: !build-incomplete
-		PauseOnCondition: disabled
-		ChargeLevel: 50
-		ChargingCondition: charging
-	AmbientSound:
-		RequiresCondition: charging
-		SoundFiles: obelpowr.aud
-		Interval: 30, 40
-	RenderRangeCircle:
-	WithMuzzleOverlay:
-	WithSpriteTurret:
-	RenderDetectionCircle:
-	Selectable:
-		DecorationBounds: 2048, 2048
-	WithSpriteTurret@SECONDARY:
-		Turret: secondary
-	DeliversCash:
-		Payload: 500
-	RenderSprites:
-		PlayerPalette: player_rgba
-
 CNCLST:
 	Inherits: ^BoatUnit
 	Inherits@cargo: ^CargoVehicle
@@ -3578,7 +3580,6 @@ CNCLST:
 		AfterUnloadDelay: 0
 	RenderSprites:
 		Image: lst
-
 	####################################################################################################
 	#		Promotions Nod
 	####################################################################################################
@@ -3646,7 +3647,7 @@ upnodbuggy2:
 	Buildable:
 		BuildPaletteOrder: 2
 		Queue: Promotions
-		Description: Allows training of the Buggy Mk. II.
+		Description: Allows construction of the Buggy Mk. II.
 		Prerequisites: ~fact.nod, !upnodbuggy2, rank1
 	RenderSprites:
 		Image: nodbuggy2
@@ -3660,7 +3661,7 @@ upnodltnk2:
 	Buildable:
 		BuildPaletteOrder: 5
 		Queue: Promotions
-		Description: Allows training of the Light Tank Mk. II.
+		Description: Allows construction of the Light Tank Mk. II.
 		Prerequisites: ~fact.nod, !upnodltnk2, upnodbuggy2, rank1
 	RenderSprites:
 		Image: nodltnk2
@@ -3674,7 +3675,7 @@ upnodftnk2:
 	Buildable:
 		BuildPaletteOrder: 8
 		Queue: Promotions
-		Description: Allows training of the Flame Tank Mk. II.
+		Description: Allows construction of the Flame Tank Mk. II.
 		Prerequisites: ~fact.nod, !upnodftnk2, upnodltnk2, rank1
 	RenderSprites:
 		Image: nodftnk2
@@ -3712,11 +3713,11 @@ upblackhandflamer:
 upstealthsoldier:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Stealth Tech
+		Name: upgrade-upnodstealth.name
 	Buildable:
 		BuildPaletteOrder: 6
 		Queue: Promotions
-		Description: Allows training of Stealth Soldiers\nand construction of Stealth Harvesters.
+		Description: upgrade-upnodstealth.description
 		Prerequisites: ~fact.nod, !upstealthsoldier, upblackhandflamer, rank1
 	RenderSprites:
 		Image: stealthtech
@@ -4008,7 +4009,7 @@ nodltnk2:
 	Valued:
 		Cost: 800
 	Tooltip:
-		Name: actor-ltnk.name
+		Name: actor-ltnk2.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -4469,6 +4470,7 @@ nodlasercommando:
 		Weapon: GenericC4
 		Cursor: c4
 		OutsideRangeCursor: c4
+		Voice: Demolish
 	PointDefense:
 	Armament@pointdefense:
 		Weapon: NodCommandoLaser
@@ -4481,8 +4483,6 @@ nodlasercommando:
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
-	AttackMove:
-		Voice: Attack
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		IdleSequences: idle1,idle2,idle3
@@ -4490,8 +4490,6 @@ nodlasercommando:
 	Voiced:
 		VoiceSet: LaserCommandoVoice
 		Volume: 1.5
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true

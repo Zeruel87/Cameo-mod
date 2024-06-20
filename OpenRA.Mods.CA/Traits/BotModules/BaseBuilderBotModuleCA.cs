@@ -63,8 +63,11 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Radius in cells around the center of the base to expand.")]
 		public readonly int MaxBaseRadius = 20;
 
-		[Desc("Maximum number of extra refineries to build (in addition to 2 per construction yard).")]
+		[Desc("Maximum number of extra refineries to build (in addition to RefineriesPerBase per construction yard).")]
 		public readonly int MaxExtraRefineries = 1;
+
+		[Desc("Number of refineries per construction yard.")]
+		public readonly int RefineriesPerBase = 2;
 
 		[Desc("Minimum excess power the AI should try to maintain.")]
 		public readonly int MinimumExcessPower = 0;
@@ -423,7 +426,7 @@ namespace OpenRA.Mods.CA.Traits
 				}
 
 				var currentConstructionYardCount = AIUtils.CountActorByCommonName(constructionYardBuildings);
-				return currentRefineryCount >= currentConstructionYardCount * 2 + Info.MaxExtraRefineries;
+				return currentRefineryCount >= currentConstructionYardCount * Info.RefineriesPerBase + Info.MaxExtraRefineries;
 			}
 		}
 

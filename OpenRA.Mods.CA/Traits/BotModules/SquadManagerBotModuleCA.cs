@@ -18,6 +18,7 @@ using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.AS.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
+using static OpenRA.GameInformation;
 
 namespace OpenRA.Mods.CA.Traits
 {
@@ -49,6 +50,9 @@ namespace OpenRA.Mods.CA.Traits
 
 		[Desc("Random number of up to this many units is added to squad size when creating an attack squad.")]
 		public readonly int SquadSizeRandomBonus = 30;
+
+		[Desc("Maximum number of units AI can have idle.")]
+		public readonly int MaxIdleUnits = 36;
 
 		[ActorReference]
 		[Desc("Units that form a guerrilla squad.")]
@@ -90,6 +94,9 @@ namespace OpenRA.Mods.CA.Traits
 
 		[Desc("Radius in cells that protecting squads should scan for enemies around their position.")]
 		public readonly int ProtectionScanRadius = 8;
+
+		[Desc("Radius in cells that naval squads should scan for targets.")]
+		public readonly int NavalScanRadius = 8;
 
 		[Desc("Enemy target types to never target.")]
 		public readonly BitSet<TargetableType> IgnoredEnemyTargetTypes = default(BitSet<TargetableType>);
@@ -267,38 +274,8 @@ namespace OpenRA.Mods.CA.Traits
 
 		internal Actor FindClosestEnemy(Actor sourceActor)
 		{
-			var findVisible = false;
-			var bestDist = long.MaxValue;
-			Actor bestTarget = null;
-			foreach (var a in World.Actors.Where(a => IsPreferredEnemyUnit(a)))
-			{
-				var dist = (a.CenterPosition - sourceActor.CenterPosition).LengthSquared;
-
-				if (findVisible)
-				{
-					if (IsNotHiddenUnit(a) && dist < bestDist)
-					{
-						bestTarget = a;
-						bestDist = dist;
-					}
-				}
-				else
-				{
-					if (IsNotHiddenUnit(a))
-					{
-						findVisible = true;
-						bestTarget = a;
-						bestDist = dist;
-					}
-					else if (dist < bestDist)
-					{
-						bestTarget = a;
-						bestDist = dist;
-					}
-				}
-			}
-
-			return bestTarget;
+			var units = World.Actors.Where(IsPreferredEnemyUnit);
+			return units.Where(IsNotHiddenUnit).ClosestToIgnoringPath(sourceActor.CenterPosition) ?? units.Where(IsPreferredEnemyBuilding).ClosestToIgnoringPath(sourceActor.CenterPosition) ?? units.ClosestToIgnoringPath(sourceActor.CenterPosition);
 		}
 
 		internal Actor FindHighValueTarget(WPos pos)
@@ -309,7 +286,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		internal Actor FindClosestEnemy(Actor sourceActor, WDist radius)
 		{
-			return World.FindActorsInCircle(sourceActor.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a)).ClosestToWithPathFrom(sourceActor);
+			return World.FindActorsInCircle(sourceActor.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a)).ClosestToIgnoringPath(sourceActor);
 		}
 
 		void CleanSquads()
@@ -420,6 +397,7 @@ namespace OpenRA.Mods.CA.Traits
 					guerrillaForce ??= RegisterNewSquad(bot, SquadCAType.Assault);
 
 					guerrillaForce.Units.Add(new UnitWposWrapper(a));
+					AIUtils.BotDebug("AI ({0}): Added {1} to squad {2}", Player.ClientIndex, a, guerrillaForce.Type);
 				}
 				else if (Info.AirUnitsTypes.Contains(a.Info.Name))
 				{
@@ -492,12 +470,12 @@ namespace OpenRA.Mods.CA.Traits
 				}
 			}
 
-			if (idleUnitsValue >= desiredAttackForceValue && unitsHangingAroundTheBase.Count >= desiredAttackForceSize)
+			if (unitsHangingAroundTheBase.Count >= Info.MaxIdleUnits || (idleUnitsValue >= desiredAttackForceValue && unitsHangingAroundTheBase.Count >= desiredAttackForceSize))
 			{
 				var attackForce = RegisterNewSquad(bot, SquadCAType.Rush);
 
 				attackForce.Units.AddRange(unitsHangingAroundTheBase);
-
+				AIUtils.BotDebug("AI ({0}): Added {1} units to squad {2}", Player.ClientIndex, unitsHangingAroundTheBase.Count, attackForce.Type);
 				unitsHangingAroundTheBase.Clear();
 				foreach (var n in notifyIdleBaseUnits)
 					n.UpdatedIdleBaseUnits(unitsHangingAroundTheBase);
