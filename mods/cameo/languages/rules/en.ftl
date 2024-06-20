@@ -35,7 +35,7 @@ actor-e5 =
         Strong vs all Ground units
    .name = Chemical Warrior
 
-actor-e6 = 
+actor-e6 =
    .description = Infiltrates and captures enemy structures.
       Removes attached explosives from units.
         Unarmed
@@ -44,7 +44,7 @@ actor-e6 =
 actor-apc =
    .description = Armed infantry transport.
         Can attack Aircraft.
-   .tdname = GDI APC 
+   .tdname = GDI APC
    .raname = Allied APC
 
 actor-arty =
@@ -164,7 +164,7 @@ power-ioncannon =
    .name = Ion Cannon
    .description = Initiate an Ion Cannon strike.
       Applies instant damage to a small area.
-   
+
 actor-tmpl =
    .description = Provides advanced Nod technologies.
       Can be upgraded with a missile silo.
@@ -180,13 +180,13 @@ power-nuke =
    .raname = Atomic Bomb
    .description = Launches a nuclear missile.
       Applies heavy damage over a large area.
-   
+
 actor-gun =
    .tdname = Nod Gun Turret
    .raname = Allied Gun Turret
    .description = Anti-tank base defense.
         Strong vs Vehicles
-   
+
 actor-nalasr =
    .name = Nod Laser Turret
    .description = Anti-infantry defense.
@@ -231,7 +231,7 @@ actor-brik =
    .name = Concrete Barrier
    .description = Stops infantry and most tanks.
       Blocks some projectiles.
-   
+
 upgrade-upnodstealth =
    .name = Unlock Stealth Technology
    .description = Allows training of Stealth Soldiers
@@ -317,7 +317,7 @@ actor-gdiofficer =
         Can attack air
 
 actor-havoc =
-   .name = Havoc 
+   .name = Havoc
    .description = Commando armed with numerous weapons.
       Strong vs Everything
 
@@ -333,7 +333,7 @@ actor-nodlasercorvette =
    .name = Nod Laser Corvette
 
 actor-dog =
-   .name = Attack Dog 
+   .name = Attack Dog
    .description = Can detect cloaked and disguised units.
       Strong vs Infantry
 
@@ -341,7 +341,7 @@ actor-rasniper =
    .name = Allied Sniper
    .description = Camouflaged soldier that can detect cloaked units.
         Strong vs Infantry
-   
+
 actor-medi =
    .description = Heals nearby infantry.
         Unarmed
@@ -439,7 +439,7 @@ actor-tiger =
    .name = Tiger Heavy Tank
    .description = Advanced main battle tank.
       Immune to EMP.
-   
+
 actor-tnkd =
    .name = Tank Destroyer
    .description = Strong vs Vehicles
@@ -705,7 +705,7 @@ actor-typeigo =
 actor-typechiha =
    .name = Chi-Ha Heavy Tank
 
-actor-nanobggy = 
+actor-nanobggy =
    .description = Remote control vehicle for a nanite swarm.
    Attacks bounce and heal nearby units.
         Strong vs Infantry
@@ -789,7 +789,7 @@ actor-ss =
     Can detect other submarines.
       Strong vs Naval units
       Weak vs Ground units, Aircraft
-   .name = Submarine
+   .name = Soviet Submarine
 
 actor-msub =
    .description = Submerged anti-ground siege unit
@@ -867,7 +867,7 @@ actor-ra2snipe =
    .description = Strong vs Infantry
 
 actor-seal =
-   .name = SEAL 
+   .name = SEAL
    .description = Elite amphibious infantry.
       Can demolish buildings and ships.
         Strong vs Infantry, Buildings, Ships
@@ -934,7 +934,7 @@ actor-beag =
    .description = VTOL heavy bomber.
       Strong vs Ground
         Weak vs Aircraft, Air Defense
-   
+
 actor-dest =
    .name = Destroyer
    .description = Armed with a cannon.
@@ -1123,7 +1123,7 @@ actor-mind =
 actor-disk =
    .name = Floating Disc
    .description = Flying saucer armed with lasers.
-      Can shut down power plants and defenses when overhead 
+      Can shut down power plants and defenses when overhead
       Can steal resources from refineries and silos
         Strong vs Everything
 
@@ -1390,7 +1390,7 @@ template-barracks =
    .ra2-allies = Allied Barracks
    .ra2-yuri = Yuri Barracks
 
-template-factory = 
+template-factory =
    .description = Produces vehicles.
    .td-gdi = Weapons Factory
    .ra-allies = Allied War Factory
@@ -1413,7 +1413,7 @@ template-service-depot =
    .description = Repairs vehicles.
    .td-gdi = GDI Repair Facility
    .td-nod = Nod Repair Facility
-   .ra-allies = Allied Service Depot 
+   .ra-allies = Allied Service Depot
    .ra-soviet = Soviet Service Depot
    .ra-japan = Japanese Service Depot
    .ra2-allies = Allied Service Depot
