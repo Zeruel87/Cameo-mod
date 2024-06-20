@@ -1274,6 +1274,78 @@ power-forceshield =
    .name = Force Shield
    .description = Makes selected buildings temporarily invulnerable.
 
+actor-aashinobi =
+   .description = Stealth soldier.
+      Can infiltrate buildings.
+
+actor-alligator =
+   .description = Large reptile.
+       Strong vs Infantry
+
+actor-aaquas =
+   .description = Light scout vehicle.
+      Can attack aircraft.
+       Strong vs Infantry, Air
+
+actor-aapulv =
+   .description = Armed with a gatling cannon.
+
+actor-aahowi =
+   .description = Mobile heavy artillery.
+
+actor-aaviper =
+   .description = Hovercraft armed with chemical cannons.
+
+actor-aamecha =
+   .description = Robot armed with machine guns.
+      Can attack air.
+
+actor-aapanth =
+   .description = Amphibious transport armed with a cannon.
+
+actor-aapelican =
+   .description = Helicopter armed with missiles.
+      Can attack air.
+
+actor-aagunb =
+   .description = Fast gunboat armed with a cannon and a flak gun.
+      Can attack air.
+
+actor-aaquasfrig =
+   .description = Warship armed with plasma cannons.
+      Can attack air.
+
+actor-aacarrier =
+   .description = Aircraft carrier that deploys 4 fighters
+      armed with machine guns.
+
+actor-aatsun =
+   .description = Aircraft carrier that deploys 3 fighters
+      armed with chemical bombs.
+
+actor-aaksub =
+   .description = Suicide bomber submarine.
+
+actor-cgchtw =
+   .description = Defense that dispenses chaos gas.
+      Requires power to operate
+
+actor-cgplas =
+   .description = Long range anti-ground defense.
+      Requires power to operate
+
+actor-cgchao =
+   .description = Provides Chaos Storm support power.
+      Requires power to operate.
+
+actor-cgionc =
+   .description = Provides Ion Cannon support power.
+      Requires power to operate.
+
+power-chaos =
+   .name = Chaos Storm
+   .description = Releases chaos gas on a target area.
+
 actor-oilb =
    .name = Oil Derrick
    .description = Provides passive income.
@@ -1377,13 +1449,30 @@ template-anti-infantry-defense =
       Strong vs Infantry
       Weak vs Tanks
 
+template-anti-vehicle-defense =
+   .description = Anti-vehicle defense.
+
 template-anti-aircraft-defense =
    .description = Anti-aircraft defense.
+
+template-anti-aircraft-power-defense =
+   .description = Anti-aircraft defense.
+      Requires power to operate.
 
 template-scout-infantry =
    .description = General-purpose infantry.
       Strong vs Infantry
       Weak vs Vehicles, Aircraft
+
+template-antitank-antiair-infantry =
+   .description = Anti-vehicle infantry.
+      Strong vs Vehicles, Aircraft
+      Weak vs Infantry
+
+template-antitank-infantry =
+   .description = Anti-vehicle infantry.
+      Strong vs Vehicles
+      Weak vs Infantry, Aircraft
 
 template-mbt =
    .description = Main battle tank.
@@ -1398,6 +1487,9 @@ template-commando =
 
 template-opentopped =
    .description = Transport with fireports for passengers.
+
+template-unarmed-transport =
+   .description = Unarmed troop transport.
 
 promotions =
    .lobby-label = Promotion Points per Rank
