@@ -1534,6 +1534,7 @@ ra2gapill:
 	ActorStatValues:
 		Damage: 120
 		ReloadDelay: 25
+		Range: 6666
 
 ra2nasam:
 	Inherits: ^RA2Defense
@@ -2497,7 +2498,7 @@ yrngbnkr:
 	WithSpriteBody:
 	WithIdleOverlay@Bunkered:
 		Sequence: idle-bunkered
-		RequiresCondition: loaded
+		RequiresCondition: loaded && !build-incomplete
 	AttackOpenTopped:
 		Armaments: garrisoned
 		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
@@ -4331,6 +4332,7 @@ RA2SPY:
 	Inherits: ^Soldier
 	Inherits@anim: ^RA2Infantry
 	Inherits@template: ^LightInfantryTemplate
+	Inherits@disguise: ^SpyDisguise
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@VOICES: ^WithFeedbackVoiceLines
 	Inherits@pip: ^WithSpecialCargoPip
@@ -4354,25 +4356,11 @@ RA2SPY:
 		Speed: 60
 	Passenger:
 	Disguise:
-		DisguisedCondition: disguise
-	Cloak:
-		InitialDelay: 100
-		CloakDelay: 50
-		# CloakSound: trans1.aud
-		# UncloakSound: trans1.aud
-		RequiresCondition: disguise
-		IsPlayerPalette: false
 	-WithInfantryBody:
 	WithDisguisingInfantryBody:
 		StandSequences: stand
 		DefaultAttackSequence: shoot
 		IdleSequences: idle1,idle2
-	WithDecoration@disguise:
-		Image: pips
-		Sequence: pip-disguise
-		Palette: effect
-		Position: TopRight
-		RequiresCondition: disguise
 	Infiltrates:
 		Types: SpyInfiltrate
 		Notification: BuildingInfiltrated
@@ -7878,14 +7866,16 @@ ra2carrier:
 	Valued:
 		Cost: 2500
 	Tooltip:
-		Name: Carrier
+		Name: actor-ra2carrier.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: ~ra2gatech
 		Queue: Naval, RANaval
-		Description: Heavy Allied warship that can deploy\n3 attack aircraft.\n Strong vs ground targets\n Weak vs Ships, Submarines
+		Description: actor-ra2carrier.description
+	Selectable:
+		DecorationBounds: 2048, 2048
 	Mobile:
 		Speed: 40
 		TurnSpeed: 8
@@ -7909,6 +7899,8 @@ ra2carrier:
 		SpawnAllAtOnce: false
 	Armament@PRIMARY:
 		Weapon: RA2CarrierTarget
+		Damage: 1440
+		ReloadDelay: 150
 	Voiced:
 		VoiceSet: AircraftCarrierVoice
 	RenderSprites:
@@ -8056,7 +8048,7 @@ ra2dred:
 	Armament@AG:
 		Weapon: DreadnoughtLaunch
 		Recoil: 85
-		Damage: 600
+		Damage: 2500
 		ReloadDelay: 125
 	MissileSpawnerMasterCA:
 		Actors: ra2dmisl, ra2dmisl
@@ -8936,9 +8928,9 @@ yrlunr.husk:
 ra2hornet:
 	Inherits: ^RANeutralPlane
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@upgrade: ^RA2AdvancedAeronautics
-	Selectable:
+	-Selectable:
+	Interactable:
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -9237,22 +9229,30 @@ yrbpln.boris:
 
 yrbpln1:
 	Inherits: yrbpln
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites:  ~ra2naairf, ~upra2mig
 		Queue: Aircraft, RAAircraft
 		Description: actor-bpln.description
 	Armament:
+		Weapon: MigMissiles_AG
 		PauseOnCondition: !ammo
 	Armament@rad:
+		Weapon: MigMissiles_AG_rad
+		PauseOnCondition: !ammo
+	Armament@aa:
+		Name: secondary
+		Weapon: MigMissiles_AA
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 50, -50, 25, -25
 		PauseOnCondition: !ammo
 	AmmoPool:
 		Ammo: 4
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 66
-		Count: 1
+		Delay: 120
+		Count: 2
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
