@@ -1,0 +1,3578 @@
+World:
+	FactionCA@asianalliance:
+		Name: Asian Alliance #faction-ra2-yuri.name
+		InternalName: asianalliance
+		Game: Red Alert 2
+		Side: Mod
+		Description: Asian Alliance from Eagle Red Mod #faction-ra2-yuri.description
+	StartingUnits@mcvasianalliance:
+		Class: none
+		ClassName: MCV Only
+		Factions: asianalliance
+		BaseActor: aa_acv
+	StartingUnits@defaultasianalliance:
+		Class: light
+		ClassName: Light Support
+		Factions: asianalliance
+		BaseActor: aa_acv
+		SupportActors: aa_gren,aa_gren,aa_gren,aa_tkiller,aa_tkiller,aa_quas,aa_lynx
+	StartingUnits@heavyasianalliance:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: asianalliance
+		BaseActor: aa_acv
+		SupportActors: aa_gren,aa_gren,aa_gren,aa_tkiller,aa_tkiller,aa_quas,aa_lynx,aa_lynx,aa_lynx,aa_ptnk,aa_quas
+##############################################
+#   Red Alert 2 Asian Structures
+##############################################
+^AASpawnActorsOnSell:
+	SpawnActorsOnSell:
+		ActorTypes: ra2engineer.asian, aa_gren, aa_gren, aa_tkiller
+
+aa_cgcnst:
+	GrantExternalConditionToOwner@BuildingsOwned:
+		Condition: BuildingsOwned
+	Inherits: ^RA2Building
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Inherits@shape: ^4x3Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Asian Construction Yard
+	Building:
+		Footprint: xxxx xxxx xxxx
+		Dimensions: 4,3
+	Health:
+		HP: 1000000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Production@NORMAL:
+		Produces: Building, Defence
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	Transforms:
+		IntoActor: aa_acv
+		Offset: 1,1
+		Facing: 432
+		RequiresCondition: factundeploy
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	ProductionQueue@Building:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionQueue@Defense:
+		Type: Defence
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	BaseBuilding:
+	ProductionBar@Building:
+		ProductionType: Building
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@Defence:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABuilding:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefence:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	BaseProvider:
+		Range: 15c0
+	WithBuildingPlacedOverlay:
+	Power:
+		Amount: 0
+	ProvidesPrerequisite@buildingname:
+	Buildable:
+		Description: Builds structures
+	WithIdleOverlay@fans:
+		Sequence: idle-fans
+	Exit@1:
+		SpawnOffset: 213,-128,0
+		ExitCell: 1,2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2buildinghack
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	Voiced:
+		VoiceSet: PRCCommandCenterVoice
+aa_cgapwr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@power: ^PowerPlant
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Asian Petrol Plant
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Building, RABuilding
+		Description: Generates power
+		Prerequisites: ~aa_cgcnst
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 200000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 200
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience:
+		ValidTypes: building
+	WithIdleOverlay@glow:
+		Sequence: idle-glow
+	ProvidesPrerequisite@buildingname:
+
+aa_cgbrck:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Asian Barracks
+	Buildable:
+		BuildPaletteOrder: 30
+		BuildDuration: 250
+		BuildDurationModifier: 100
+		Prerequisites: ~aa_cgcnst, aa_cgapwr
+		Queue: Building, RABuilding
+		Description: Trains infantry
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 150000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+	RallyPoint:
+		Path: 0,2
+	Exit@1:
+		ExitCell: 0,1
+	Exit@2:
+		ExitCell: 1,1
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+	ParallelProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@Infantry:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAInfantry:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithBuildingBib:
+	WithDeathAnimation:
+		DeathSequencePalette: ra2buildinghack
+	Voiced:
+		VoiceSet: PRCBarracksVoice
+aa_cgrefn:
+	Inherits: ^RA2Building
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@ref: ^Refinery
+	Inherits@shape: ^4x3Shape
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Asian Ore Refinery
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Prerequisites: ~aa_cgcnst, aa_cgapwr
+		Queue: Building, RABuilding
+		Description: Processes raw Tiberium\ninto useable resources
+	Building:
+		Footprint: xxx= xxx= xxx=
+		Dimensions: 4,3
+	Health:
+		HP: 300000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 6c0
+	Refinery:
+		DockAngle: 768
+		DockOffset: 3,2
+	DockHost:
+		Type: Unload
+		DockAngle: 640
+		DockOffset: 1086,1086,0
+	StoresResources:
+		Capacity: 4000 #2000
+	DrawLineToTarget:
+	CustomSellValue:
+		Value: 500 #600
+	FreeActor@1:
+		Actor: aa_drmn
+		SpawnOffset: 2,2
+		Facing: 256
+	FreeActor@2:
+		Actor: aa_drmn
+		SpawnOffset: 2,2
+		Facing: 256
+	FreeActor@3:
+		Actor: aa_drmn
+		SpawnOffset: 2,2
+		Facing: 256
+	FreeActor@4:
+		Actor: aa_drmn
+		SpawnOffset: 2,2
+		Facing: 256
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 20
+		FullSequence: pip-yellow
+	WithIdleOverlay@bib:
+		Sequence: idle-bib
+	Voiced:
+		VoiceSet: PRCSupplyVoice
+aa_cgweap:
+	Inherits: ^RA2DefaultWeap
+	Inherits@sell: ^AASpawnActorsOnSell
+	Tooltip:
+		Name: Asian War Factory
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 40
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: Produces vehicles.
+		Prerequisites: ~aa_cgcnst, aa_cgrefn
+	WithIdleOverlay@flag:
+		Sequence: idle-flag
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@bib:
+		Sequence: bib
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@ramp:
+		Sequence: build-ramp
+		RequiresCondition: !build-incomplete
+	Voiced:
+		VoiceSet: PRCWarFactoryVoice
+aa_cgdept:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x3Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	HitShape:
+		TargetableOffsets: 840,0,0, 598,-640,0, 598,640,0, -1060,0,0, -768,-640,0, -768,640,0
+		Type: Polygon
+			Points: -1536,-256, -341,-940, 341,-940, 1536,-256, 1536,341, 341,1110, -341,1110, -1536,341
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Asian Service Depot
+	Buildable:
+		BuildPaletteOrder: 60
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Prerequisites: ~aa_cgcnst, aa_cgweap
+		Queue: Building, RABuilding
+		Description: Repairs vehicles
+	Building:
+		Footprint: Xx_ === _=_
+		Dimensions: 3,3
+	SelectionDecorations:
+	Health:
+		HP: 200000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 5c0
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 10
+		PlayerExperience: 100
+		StartRepairingNotification: Repairing
+	RallyPoint:
+	WithIdleOverlay@side:
+		Sequence: idle-side
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@bib:
+		Sequence: bib
+		RequiresCondition: !build-incomplete
+	WithResupplyAnimation:
+		Sequence: repair
+	Power:
+		Amount: -30
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+
+aa_cgradr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^2x2Shape
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@sell: ^AASpawnActorsOnSell
+	Selectable:
+		Bounds: 2048, 2560, 0, -256
+	SelectionDecorations:
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Asian Radar
+	ProvidesPrerequisite:
+		Prerequisite: anyhq
+	Buildable:
+		BuildPaletteOrder: 70
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~aa_cgcnst, aa_cgrefn
+		Queue: Building, RABuilding
+		Description: Provides radar and Spy Plane support power.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	ProvidesPrerequisite@buildingname:
+	WithSpriteBody:
+		PauseOnCondition: lowpower
+	Health:
+		HP: 200000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+		RequiresCondition: !lowpower
+	RevealsShroud@Offline:
+		Range: 5c0
+		RequiresCondition: lowpower
+	DetectCloaked:
+		Range: 10c0
+		RequiresCondition: !lowpower
+	RenderDetectionCircle:
+	WithIdleOverlay@dish:
+		Sequence: idle-dish
+		PauseOnCondition: lowpower
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@flag:
+		Sequence: idle-flag
+		PauseOnCondition: lowpower
+		RequiresCondition: !build-incomplete
+	ProvidesRadar:
+		RequiresCondition: !jammed && !lowpower
+	SupportPowerChargeBar:
+	Power:
+		Amount: -50
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	Voiced:
+		VoiceSet: CHSpeakerTowerVoice
+aa_cgtech:
+	Inherits: ^RA2Building
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Selectable:
+		Bounds: 3072, 2048, 0, -256
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 140
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~aa_cgcnst, aa_cgradr
+		Description: Provides Asian advanced technologies.
+	Valued:
+		Cost: 4000
+	Tooltip:
+		Name: Asian Battle Lab
+	Building:
+		Footprint: xx xx xx
+		Dimensions: 3,2
+	Health:
+		HP: 300000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	SupportPowerChargeBar:
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: ra2tek
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+aa_cgmiac:
+	Inherits: ^RA2Building
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Selectable:
+		Bounds: 3072, 2048, 0, -256
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 140
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~aa_cgcnst, aa_cgtech, ~upaa_cgmiac
+		Description: Upgrades the Veterancy of Troops.
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Military Academy
+	Building:
+		Footprint: xx xx xx
+		Dimensions: 3,2
+	Health:
+		HP: 300000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	SupportPowerChargeBar:
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+	ProvidesPrerequisite@infantry:
+		Prerequisite: infantry.upgraded
+	ProvidesPrerequisite@infantry2:
+		Prerequisite: barracks.upgraded
+	ProvidesPrerequisite@vehicles:
+		Prerequisite: vehicles.upgraded
+	Voiced:
+		VoiceSet: CHPropagandaCenterVoice
+
+
+
+
+aa_cgrail:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@sell: ^AASpawnActorsOnSell
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		Prerequisites: ~aa_cgcnst, aa_cgtech
+		Description: actor-atesla.description
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Rail Tower
+	Selectable:
+		Bounds: 1024, 2304, 0, -640
+	SelectionDecorations:
+	Health:
+		HP: 135000
+	WithSpriteBody:
+		PauseOnCondition: disabled
+	Armament:
+		Weapon: AsianRailgun
+		LocalOffset: 0,0,1280
+	AttackTurreted:
+	Turreted:
+	Sellable:
+	WithIdleOverlay@normal:
+		Sequence: idle-normal
+		PauseOnCondition: lowpower
+		RequiresCondition: !build-incomplete
+	WithMakeAnimation:
+	WithDeathAnimation:
+		DeathSequencePalette: playerra2
+	#WithAmmoPipsDecoration:
+	#	Position: BottomLeft
+	#	RequiresSelection: true
+	#	FullSequence: pip-red
+	Power:
+		Amount: -100
+	RevealsShroud:
+		Range: 9000
+	DetectCloaked:
+		Range: 4500
+aa_cgairf:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 130
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~aa_cgcnst, aa_cgrefn
+		Description: Produces and reloads aircraft.\nProvides radar
+	Valued:
+		Cost: 1250
+	Tooltip:
+		Name: Asian Airforce Command
+	Building:
+		Footprint: x== ===
+		Dimensions: 3,2
+	Health:
+		HP: 200000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+		RequiresCondition: !lowpower
+	RevealsShroud@Offline:
+		Range: 5c0
+		RequiresCondition: lowpower
+	DetectCloaked:
+		Range: 10c0
+		RequiresCondition: !lowpower
+	RenderDetectionCircle:
+	Exit@1:
+		ExitCell: 1,1
+		Facing: 768
+	RallyPoint:
+	Reservable:
+	LaysMinefield:
+		Mines: ra2gaairc.dock
+		Locations: 0,1, 2,1, 1,0
+	Production@NORMAL:
+		Produces: Aircraft
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAAircraft
+		RequiresCondition: classicproductionqueues
+	ParallelProductionQueue:
+		Type: Aircraft
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@Aircraft:
+		ProductionType: Aircraft
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAAircraft:
+		ProductionType: RAAircraft
+		RequiresCondition: classicproductionqueues
+
+	AirstrikePower@cluster:
+		OrderName: AAClusterBomb
+		Prerequisites:
+			1: aa_cgweap
+		IconImage: aa_tankmine
+		Icons:
+			1: icon
+		ChargeInterval: 6000
+		Names:
+			1: Anti Tank Mines
+		Descriptions:
+			1: A bomber deploys cluster mines at the target.
+		SelectTargetSpeechNotification: SelectTarget
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		UnitTypes:
+			1: aa_bomber.minebomb
+		QuantizedFacings: 16
+		DisplayBeacon: true
+		BeaconPosters:
+			1: airstrike
+		SquadSizes:
+			1: 1
+		SquadOffset: 1792,1792,0
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 40
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+	AirstrikePower@cluster2:
+		OrderName: AAClusterBomb2
+		Prerequisites:
+			1: upaa_chaomine
+		IconImage: aa_chaomine
+		Icons:
+			1: icon
+		ChargeInterval: 6000
+		Names:
+			1: Chaos Mines
+		Descriptions:
+			1: A bomber deploys cluster mines at the target.
+		SelectTargetSpeechNotification: SelectTarget
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		UnitTypes:
+			1: aa_bomber.minebomb2
+		QuantizedFacings: 16
+		DisplayBeacon: true
+		BeaconPosters:
+			1: airstrike
+		SquadSizes:
+			1: 1
+		SquadOffset: 1792,1792,0
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 40
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+	ParatroopersPower@ra2paratroopers:
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: upaa_airborne
+		OrderName: Fanatic Paratroopers
+		Icons:
+			1: paratroopers
+		ChargeInterval: 5000
+		Names:
+			1: Airborne
+		Descriptions:
+			1: Cargo planes drop a squad of infantry\nanywhere on the map.
+		DropItems:
+			1: aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif,aa_japrif
+		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
+		SelectTargetSpeechNotification: SelectTarget
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		AllowImpassableCells: false
+		QuantizedFacings: 8
+		CameraActor: camera.paradrop
+		DisplayBeacon: true
+		BeaconPosters:
+			1: pinficon
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		UnitTypes:
+			1: ra2cplane
+		SquadSizes:
+			1: 3
+		CircleSequence: circles
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+	SupportPowerChargeBar:
+	Power:
+		Amount: -30
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithIdleOverlay@bottom:
+		Sequence: idlebottom
+		PauseOnCondition: lowpower
+	WithIdleOverlay@mid:
+		Sequence: idle-mid
+		PauseOnCondition: lowpower
+	WithIdleOverlay@dish:
+		Sequence: idle-dish
+		PauseOnCondition: lowpower
+	Voiced:
+		VoiceSet: PRCAirfieldVoice
+aa_cgflam:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgcnst, aa_cgbrck
+		Description: Automated anti-infantry defense.
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Sentry Flamer
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 60000
+	Selectable:
+		Bounds: 1024, 1024
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: AsianFlamerTurret
+		LocalOffset: 350,128,400, 350,-128,400
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -25
+	RevealsShroud:
+		Range: 6666
+	DetectCloaked:
+		Range: 3333
+	ProvidesPrerequisite@buildingname:
+aa_cgpnch:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgcnst, aa_cgbrck
+		Description: Coastal Guard Defense, Buildable on water.
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Punisher
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+		TerrainTypes: Water
+	Health:
+		HP: 75000
+	Selectable:
+		Bounds: 1024, 1024
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: AsianPunisherAG
+		LocalOffset: 350,22,100, 350,-22,100
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -50
+	RevealsShroud:
+		Range: 6666
+	ProvidesPrerequisite@buildingname:
+	Targetable@Water:
+		TargetTypes: Water
+	DetectCloaked:
+		DetectionTypes: Underwater
+		Range: 5c0
+aa_cgpuls:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@sell: ^AASpawnActorsOnSell
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 70
+		BuildDurationModifier: 125
+		Prerequisites: ~aa_cgcnst, aa_cgweap
+		Description: Anti-aircraft defense.\nRequires power to operate
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Pulsar
+	Selectable:
+		Bounds: 1024, 1024
+	SelectionDecorations:
+	Health:
+		HP: 50000
+	WithSpriteBody:
+		PauseOnCondition: disabled
+	Armament:
+		Weapon: AsianPhotonCannon
+		LocalOffset: 0,0,400
+	AttackTurreted:
+	Turreted:
+	Sellable:
+	WithIdleOverlay@normal:
+		Sequence: idle-normal
+		PauseOnCondition: lowpower
+		RequiresCondition: !build-incomplete
+	WithMakeAnimation:
+	WithDeathAnimation:
+		DeathSequencePalette: playerra2
+	Power:
+		Amount: -50
+	RevealsShroud:
+		Range: 9000
+	DetectCloaked:
+		Range: 4500
+
+aa_cgchtw:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@sell: ^AASpawnActorsOnSell
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		BuildDuration: 1125
+		BuildDurationModifier: 125
+		Prerequisites: ~aa_cgcnst, aa_cgtech, ~upaa_cgchao
+		Description: Advanced base defense.\nRequires power to operate.\nCan detect cloaked units.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Chaos Tower
+	Selectable:
+		Bounds: 1024, 2304, 0, -640
+	SelectionDecorations:
+	Health:
+		HP: 135000
+	WithSpriteBody:
+		PauseOnCondition: disabled
+	Selectable:
+		Bounds: 1024, 1024
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: AsianChaosTurret
+		LocalOffset: 0,0,1000
+	WithMuzzleOverlay:
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -25
+	RevealsShroud:
+		Range: 6666
+	DetectCloaked:
+		Range: 3333
+	ProvidesPrerequisite@buildingname:
+aa_cgtnkr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@power: ^PowerPlant
+	Selectable:
+		Bounds: 3072, 2048, 0, -256
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Oil Reactor
+	ProvidesPrerequisite:
+		Prerequisite: aa_cgtnkr
+	Buildable:
+		BuildPaletteOrder: 60
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Queue: Building, RABuilding
+		Description: Fill with Oil Trucks to generate More Power.
+		Prerequisites: ~aa_cgcnst, aa_cgtech
+	Building:
+		Footprint: xxx =x=
+		Dimensions: 3,2
+	Health:
+		HP: 250000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 5c0
+	Cargo:
+		Types: OilTruck
+		MaxWeight: 12
+		EjectOnDeath: false
+		LoadedCondition: PowerLoad
+	Power@0:
+		Amount: 500
+		RequiresCondition: PowerLoad == 0
+	Power@1:
+		Amount: 1000
+		RequiresCondition: PowerLoad == 1
+	Power@2:
+		Amount: 1500
+		RequiresCondition: PowerLoad == 2
+	Power@3:
+		Amount: 2000
+		RequiresCondition: PowerLoad == 3
+	Power@4:
+		Amount: 2500
+		RequiresCondition: PowerLoad == 4
+	Power@5:
+		Amount: 3000
+		RequiresCondition: PowerLoad >= 5
+aa_cgplas:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Inherits@IDISABLE: ^DisabledOverlay
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 50
+		Prerequisites: ~aa_cgcnst, aa_cgtech, ~upaa_cgplas
+		Description: Long range anti-ground defense.\nRequires power to operate
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Plasma Cannon
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 300000
+	Selectable:
+		Bounds: 2048, 2048
+	Turreted:
+		TurnSpeed: 12
+		InitialFacing: 896
+		Offset: -1,1,1
+		RealignDelay: -1
+	AttackTurreted:
+		Voice: Attack
+		PauseOnCondition: lowpower || disabled
+	Armament:
+		Weapon: AsianTurretPlasma
+		LocalOffset: 1200,333,500, 1200,-333,500
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	WithRangeCircle:
+	AutoTarget:
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
+	Power:
+		Amount: -200
+	RevealsShroud:
+		Range: 15000
+	DetectCloaked:
+		Range: 7500
+
+aa_cghype:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgcnst, aa_cgradr, ~upaa_cghype
+		Description: Automated anti-infantry defense.
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Hymperion
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 57000
+	Selectable:
+		Bounds: 1024, 1024
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
+	AttackTurreted:
+		Voice: Attack
+	Armament@Normal:
+		Name: primary
+		Weapon: AAHymperionMagnet
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: AAHymperionMagnet_elite
+		RequiresCondition: rank-elite
+	Armament@Flash:
+		Weapon: AAHymperionMagnetFlash
+	WithMuzzleOverlay:
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -25
+	RevealsShroud:
+		Range: 6666
+	DetectCloaked:
+		Range: 3333
+	ProvidesPrerequisite@buildingname:
+
+aa_cgchao:
+	Inherits: ^RA2Building
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@SW: ^Superweapon
+	Inherits@shape: ^3x3Shape
+	SelectionDecorations:
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Chaos Storm Inductor
+	Buildable:
+		BuildPaletteOrder: 130
+		BuildLimit: 1
+		Prerequisites: ~aa_cgcnst, aa_cgtech
+		Queue: Defence, RADefence
+		Description: Provides Genetic Mutator support power.\nRequires power to operate.
+	Building:
+		Footprint: =x= xxx xxx
+		Dimensions: 3,3
+	WithSpriteBody:
+		PauseOnCondition: lowpower
+	Health:
+		HP: 600000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 10c0
+		RequiresCondition: !lowpower
+	RevealsShroud@Offline:
+		Range: 5c0
+		RequiresCondition: lowpower
+	Power:
+		Amount: -200
+	DetonateWeaponPower@Chaos:
+		OrderName: AsianChaosSuperweapon
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
+		IconImage: aa_cgchao
+		Icons:
+			1: icon2
+		Cursor: ioncannon
+		ChargeInterval: 7500
+		ActivationDelay: 10
+		ActivationSequence:
+		Names:
+			1: power-mutate.name
+		Weapons:
+			1: AsianChaosSuperweapon
+		Descriptions:
+			1: power-mutate.description
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		EndChargeSound: sgenopen.wav
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		CameraActor: camera.small
+		CameraRemoveDelay: 300
+		TargetCircleRanges:
+			1: 4000
+		TargetCircleColor: ff000080
+		LaunchSound: sgenopen.wav
+		IncomingSound: sgenopen.wav
+	SupportPowerChargeBar:
+
+aa_cgionc:
+	Inherits: ^RA2Building
+	Inherits@IDISABLE: ^DisabledOverlay
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@shape: ^3x3Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 120
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~aa_cgcnst, aa_cgtech, !aa_cgionc
+		Description: Provides Lightning Storm support power.\nRequires power to operate.
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Advanced Communication Center
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	Health:
+		HP: 600000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 10c0
+		RequiresCondition: !lowpower
+	RevealsShroud@Offline:
+		Range: 5c0
+		RequiresCondition: lowpower
+	DetonateWeaponPower@Ion:
+		AllowMultiple: true
+		OrderName: IonCannon
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
+		IconImage: aa_cgionc
+		Icons:
+			1: icon2
+		Cursor: ioncannon
+		ChargeInterval: 9000
+		ActivationDelay: 50
+		ActivationSequence:
+		Names:
+			1: Creates a lightning storm.\nApplies heavy damage over a large area.
+		Weapons:
+			1: AsianTSIonCannon
+		Descriptions:
+			1: power-mutate.description
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		EndChargeSound: sgenopen.wav
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		CameraActor: camera.small
+		CameraRemoveDelay: 300
+		TargetCircleRanges:
+			1: 6c0
+		TargetCircleColor: ff000080
+		LaunchSound: sgenopen.wav
+		IncomingSound: sgenopen.wav
+	SupportPowerChargeBar:
+	Power:
+		Amount: -200
+	MustBeDestroyed:
+		RequiredForShortGame: false
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: aa_cgionc
+
+aa_tankmine:
+	Inherits: ^Mine
+	RenderSprites:
+		Image: aa_tankmine
+		PlayerPalette: playerra2
+	Explodes:
+		Weapon: RA2sabot_elite
+	Mine:
+		AvoidFriendly: true
+		BlockFriendly: false
+	-Immobile:
+	Mobile:
+		Locomotor: wheeled
+		Speed: 1
+		PauseOnCondition: dontmove
+	GrantCondition@dontmove:
+		Condition: dontmove
+	RejectsOrders:
+	Health:
+		HP: 20000
+aa_chaomine:
+	Inherits: ^Mine
+	RenderSprites:
+		Image: aa_chaomine
+		PlayerPalette: playerra2
+	Explodes:
+		Weapon: AsianChaosTurret
+	Mine:
+		AvoidFriendly: true
+		BlockFriendly: false
+	-Immobile:
+	Mobile:
+		Locomotor: wheeled
+		Speed: 1
+		PauseOnCondition: dontmove
+	GrantCondition@dontmove:
+		Condition: dontmove
+	RejectsOrders:
+	Health:
+		HP: 20000
+aa_bomber.minebomb:
+	Inherits: BADR
+	AttackBomber:
+		PauseOnCondition: !ammo
+		FacingTolerance: 8
+	GrantConditionOnPrerequisite@neutron:
+		Condition: upschneutronclustermine
+		Prerequisites: upschneutronclustermine
+	Armament:
+		Weapon: AsianMineBomb
+	AmmoPool:
+		Ammo: 1
+	Tooltip:
+		Name: Asian Bomber
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+	RenderSprites:
+		Image: aa_bomber
+		PlayerPalette: playerra2
+aa_bomber.minebomb2:
+	Inherits: BADR
+	AttackBomber:
+		PauseOnCondition: !ammo
+		FacingTolerance: 8
+	GrantConditionOnPrerequisite@neutron:
+		Condition: upschneutronclustermine
+		Prerequisites: upschneutronclustermine
+	Armament:
+		Weapon: AsianMineBomb2
+	AmmoPool:
+		Ammo: 1
+	Tooltip:
+		Name: Asian Bomber
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+	RenderSprites:
+		Image: aa_bomber
+		PlayerPalette: playerra2
+aa_cgyard:
+	Inherits: ^RA2Building
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@shape: ^3x3Shape
+	Inherits@repair: ^RepairsUnits
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Naval Yard
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~aa_cgcnst, aa_cgrefn
+		Queue: Building, RABuilding
+		Description: Produces, and\nrepairs boats
+	Building:
+		Footprint: =+= +++ =+=
+		Dimensions: 3,3
+		TerrainTypes: Water
+	RequiresBuildableArea:
+		Adjacent: 8
+	-GivesBuildableArea:
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 5c0
+	Exit@1:
+		SpawnOffset: -1024,1024,0
+		Facing: 640
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 1024,1024,0
+		Facing: 896
+		ExitCell: 2,2
+	Exit@3:
+		SpawnOffset: -1024,-1024,0
+		Facing: 384
+		ExitCell: 0,0
+	Exit@4:
+		SpawnOffset: 1024,-1024,0
+		Facing: 128
+		ExitCell: 2,0
+	Production@NORMAL:
+		Produces: Naval
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval
+		RequiresCondition: classicproductionqueues
+	Reservable:
+	RepairsUnits:
+		HpPerStep: 1000
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
+	#WithResupplyAnimation:
+	#	Sequence: repair
+	RallyPoint:
+	ProductionQueue:
+		Type: Naval
+		DisplayOrder: 5
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+	ProductionBar@NAVALSOVIETRA2:
+		ProductionType: Naval
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RANAVALSOVIETRA2:
+		ProductionType: RANaval
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -30
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithIdleOverlay@crane:
+		Sequence: idle-crane
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@waves:
+		Sequence: idle-waves
+		RequiresCondition: !build-incomplete
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
+
+##############################################
+##############################################
+#   Red Alert 2 Asian Infantry
+##############################################
+^KamikazeMode:
+	GrantConditionOnDamageState@angry:
+		ValidDamageStates: Medium
+		Condition: KamikazeAngry
+	DamageMultiplier@KamikazeAngry:
+		RequiresCondition: KamikazeAngry
+		Modifier: 6
+	RangeMultiplier@KamikazeAngry:
+		RequiresCondition: KamikazeAngry
+		Modifier: 80
+	FirepowerMultiplier@KamikazeAngry:
+		RequiresCondition: KamikazeAngry
+		Modifier: 150
+	SpeedMultiplier@KamikazeAngry:
+		RequiresCondition: KamikazeAngry
+		Modifier: 165
+	GrantConditionOnDamageState@kamikaze:
+		ValidDamageStates: Critical, Heavy
+		Condition: KamikazeCritical
+	DamageMultiplier@KamikazeCritical:
+		RequiresCondition: KamikazeCritical
+		Modifier: 4
+	RangeMultiplier@KamikazeCritical:
+		RequiresCondition: KamikazeCritical
+		Modifier: 75
+	FirepowerMultiplier@KamikazeCritical:
+		RequiresCondition: KamikazeCritical
+		Modifier: 200
+	SpeedMultiplier@KamikazeCritical:
+		RequiresCondition: KamikazeCritical
+		Modifier: 220
+	WithDecoration@KamikazeAngry:
+		Image: aa_banzai
+		Sequence: idle
+		Position: TopRight
+		BlinkInterval: 32
+		BlinkPattern: On, On, On, On
+		RequiresCondition: KamikazeAngry
+	WithDecoration@KamikazeCritical:
+		Image: aa_banzai
+		Sequence: idle2
+		Position: TopRight
+		BlinkInterval: 32
+		BlinkPattern: On, On, On, On
+		RequiresCondition: KamikazeCritical
+	RejectsOrders@KamikazeCritical:
+		RequiresCondition: KamikazeCritical || KamikazeAngry
+
+aa_gren:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Asian Militia
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~aa_cgbrck
+		Queue: Infantry, RAInfantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 52
+	Health:
+		HP: 6000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:
+		Weapon: RA2AsianShotgun
+	Armament@GRENADE:
+		Weapon: AsianGrenade
+		RequiresCondition: upaa_gren
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2AsianShotgunG
+		MuzzleSequence: garrison-muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: infantry
+	Voiced:
+		VoiceSet: RedGuardVoice
+	DeliversCash:
+		Payload: 60
+	Cloneable:
+		Types: NormalInfantry
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ReloadDelayMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite
+	DamageMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	GrantConditionOnPrerequisite@Grenadier:
+		Condition: upaa_gren
+		Prerequisites: upaa_gren
+aa_tkiller:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Tank Killer
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgbrck
+		Queue: Infantry, RAInfantry
+		Description: Anti-air infantry.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles
+	Mobile:
+		Speed: 48
+	Health:
+		HP: 5000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:
+		Name: primary
+		Weapon: RA2GIRocketsG
+		RequiresCondition: !rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2GIRocketsG
+		RequiresCondition: !rank-elite
+	Armament@PRIMARYE:
+		Name: primary
+		Weapon: RA2GIRocketsG_elite
+		RequiresCondition: rank-elite
+	Armament@GARRISONEDE:
+		Name: garrisoned
+		Weapon: RA2GIRocketsG_elite
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: infantry
+	Voiced:
+		VoiceSet: TankHunterVoice
+	DeliversCash:
+		Payload: 125
+	Cloneable:
+		Types: NormalInfantry
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	RangeMultiplier@eliteplus:
+		Modifier: 125
+		RequiresCondition: rank-elite
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	-TakeCover:
+
+aa_plast:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Plasma Trooper
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~aa_cgtech
+		Queue: Infantry, RAInfantry
+		Description: Anti-air infantry.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles
+	Mobile:
+		Speed: 48
+	Health:
+		HP: 5000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:
+		Name: primary
+		Weapon: AsianSinglePlasma
+		RequiresCondition: !rank-elite
+	Armament@PRIMARYE:
+		Name: primary
+		Weapon: AsianSinglePlasma
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: infantry
+	Voiced:
+		VoiceSet: TankHunterVoice
+	DeliversCash:
+		Payload: 250
+	Cloneable:
+		Types: NormalInfantry
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	RangeMultiplier@eliteplus:
+		Modifier: 125
+		RequiresCondition: rank-elite
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+aa_flam:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Flame Trooper
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgflam
+		Queue: Infantry, RAInfantry
+		Description: Anti-air infantry.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles
+	Mobile:
+		Speed: 48
+	Health:
+		HP: 7000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:
+		Name: primary
+		Weapon: AsianFlamerTroop
+		RequiresCondition: !rank-elite
+	Armament@PRIMARYE:
+		Name: primary
+		Weapon: AsianFlamerTurret
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: infantry
+	Voiced:
+		VoiceSet: AsianFlametroopVoice
+	DeliversCash:
+		Payload: 250
+	Cloneable:
+		Types: NormalInfantry
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	RangeMultiplier@eliteplus:
+		Modifier: 125
+		RequiresCondition: rank-elite
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	-TakeCover:
+	Crushable:
+		CrushClasses: vehicle
+
+aa_japrif:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@kami: ^KamikazeMode
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Japanese Fanatic
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~aa_cgbrck, ~upaa_japrif
+		Queue: Infantry, RAInfantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 62
+	Health:
+		HP: 9000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:
+		Weapon: RA2AsianShotgun
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2AsianShotgunG
+		MuzzleSequence: garrison-muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: infantry
+	Voiced:
+		VoiceSet: AsianKamiVoice
+	DeliversCash:
+		Payload: 60
+	Cloneable:
+		Types: NormalInfantry
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ReloadDelayMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite
+	DamageMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	-TakeCover:
+aa_samurai:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@kami: ^KamikazeMode
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Japanese Samurai
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~aa_cgbrck, ~upaa_samurai
+		Queue: Infantry, RAInfantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 72
+	Health:
+		HP: 10500
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:
+		Weapon: AsianSamuraiSword
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: AsianSamuraiSword
+		MuzzleSequence: garrison-muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: infantry
+	Voiced:
+		VoiceSet: AsianSamuVoice
+	DeliversCash:
+		Payload: 60
+	Cloneable:
+		Types: NormalInfantry
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ReloadDelayMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite
+	DamageMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	-TakeCover:
+aa_archer:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@kami: ^KamikazeMode
+	Valued:
+		Cost: 450
+	Tooltip:
+		Name: Veteran Archer
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~aa_cgbrck, ~upaa_archer
+		Queue: Infantry, RAInfantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 60
+	Health:
+		HP: 9000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:
+		Weapon: AsianMaidenBow
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: AsianMaidenBow
+		MuzzleSequence: garrison-muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: infantry
+	Voiced:
+		VoiceSet: AsianMaidVoice
+	DeliversCash:
+		Payload: 60
+	Cloneable:
+		Types: NormalInfantry
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ReloadDelayMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite
+	DamageMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	-TakeCover:
+aa_shinobi:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Shinobi
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~aa_cgbrck, aa_cgradr
+		Queue: Infantry, RAInfantry
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 62
+	Health:
+		HP: 9000
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:
+		Weapon: AsianNinjaStar
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: AsianNinjaStar
+		MuzzleSequence: garrison-muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: infantry
+	Voiced:
+		VoiceSet: AsianShinobiVoice
+	DeliversCash:
+		Payload: 60
+	Cloneable:
+		Types: NormalInfantry
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ReloadDelayMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite
+	DamageMultiplier@eliteplus:
+		Modifier: 75
+		RequiresCondition: rank-elite
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	-TakeCover:
+	Infiltrates:
+		Types: SpyInfiltrate
+		Notification: BuildingInfiltrated
+		PlayerExperience: 50
+	Cloak:
+		CloakDelay: 75
+		CloakSound: vnavupa.wav
+		UncloakSound: vnavupa.wav
+		Palette: voxelcloak
+ra2engineer.asian:
+	Inherits: RA2ENGINEER
+	Buildable:
+		Prerequisites: ~aa_cgbrck
+		Queue: Infantry, RAInfantry
+	RenderSprites:
+		Image: ra2engineer
+aa_alligator:
+	Inherits: ^Soldier
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Alligator
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgbrck
+		Queue: Infantry, RAInfantry
+		Description: Melee infantry.\n  Strong vs Infantry, Vehicles\n  Weak vs Aircraft
+	Mobile:
+		Speed: 125
+	Crushable:
+		CrushClasses: vehicle
+	Health:
+		HP: 20000
+		InitialStance: AttackAnything
+	Armament@PRIMARY:
+		Weapon: AsianCrocBite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: AsianCrocBite
+	AttackFrontal:
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: infantry
+	Voiced:
+		VoiceSet: AsianCrocVoice
+	DeliversCash:
+		Payload: 250
+	Cloneable:
+		Types: NormalInfantry
+	Passenger:
+		Weight: 2
+	-TakeCover:
+	Targetable@dog:
+		TargetTypes: DogImmune
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+
+##############################################
+#   Red Alert 2 Asian Tanks
+##############################################
+aa_quas:
+	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 450
+	Tooltip:
+		Name: Quasar
+	UpdatesPlayerStatistics:
+		OverrideActor: aa_quas
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~aa_cgweap
+		Queue: Vehicle, RAVehicle
+		Description: Light scout and transport vehicle.\nCan attack aircraft.\n  Strong vs Infantry, Aircraft\n Weak vs Vehicles\n Can transport infantry
+	Mobile:
+		Locomotor: lighttracked
+		Speed: 110
+		TurnSpeed: 24
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2000
+	Armament@AG:
+		Weapon: AsianQuasarAG
+		LocalOffset: -400,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AA:
+		Weapon: AsianQuasarAA
+		LocalOffset: -400,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+		Class: aa_quas
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	RenderSprites:
+		Image: aa_quas
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: AsianQuasarVoice
+	DeliversCash:
+		Payload: 250
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+aa_dragonfly:
+	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@cargo: ^CargoVehicle
+	Inherits@bot: ^BotAutoDeployTransport
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Dragonfly
+	UpdatesPlayerStatistics:
+		OverrideActor: aa_dragonfly
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~aa_cgweap
+		Queue: Vehicle, RAVehicle
+		Description: Light scout and transport vehicle.\nUnarmed
+	Mobile:
+		Locomotor: hover
+		Speed: 140
+		TurnSpeed: 24
+	Health:
+		HP: 30000
+	Repairable:
+		HpPerStep: 2000
+	Selectable:
+		DecorationBounds: 1280, 1280
+		Class: aa_dragonfly
+	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		Image: aa_dragonfly
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: TroopCrawlerVoice
+	DeliversCash:
+		Payload: 250
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 4
+		EjectOnDeath: false
+		InitialUnits: aa_gren, aa_gren, aa_gren, aa_tkiller
+	Hovers:
+	AttackFrontal:
+aa_lynx:
+	Inherits: RA2MTNK
+	Tooltip:
+		Name: Lynx Tank
+	Valued:
+		Cost: 550
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~aa_cgweap
+		Queue: Vehicle, RAVehicle
+		Description: Yuri main battle tank.\n Strong vs Vehicles\n Weak vs Infantry, Aircraft
+	Voiced:
+		VoiceSet: AsianAllianceVehicleVoice
+	Armament:
+		Name: primary
+		Weapon: RA2Lashmm
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: RA2Lashmm_elite
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2LashmmG
+		RequiresCondition: !rank-elite
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: RA2Lashmm_elite
+		RequiresCondition: rank-elite
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+	Armament@MG:
+		Weapon: AsianLynxMG
+		RequiresCondition: upaa_lynx
+		MuzzleSequence: muzzle-mg
+		MuzzlePalette: ra2effect
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	RenderSprites:
+		PlayerPalette: playerra2
+	GrantConditionOnPrerequisite@MG:
+		Condition: upaa_lynx
+		Prerequisites: upaa_lynx
+aa_oilt:
+	Inherits: DTRK
+	Inherits@anim: ^RA2Vehicle
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@EMP: ^FrontalEMP
+	Inherits@SHADOWS: ^Shadows
+	Health:
+		HP: 20000
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 180
+		Prerequisites: ~aa_cgradr
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Oil Truck
+	Voiced:
+		VoiceSet: AsianAllianceOilTruckVoice
+	GrantConditionOnDeploy:
+		Voice: Attack
+	Explodes@bomb:
+		Weapon: AsianOilBomb
+		EmptyWeapon: AsianOilBomb
+	DeathSounds:
+		RequiresCondition: !chronobeamed
+	RenderSprites:
+		PlayerPalette: playerra2
+	Passenger:
+		CargoType: OilTruck
+		CustomPipType: red
+aa_acv:
+	Inherits: ^Vehicle
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@mcv: ^MCV
+	Inherits@SHADOWS: ^Shadows
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Asian Mobile Construction Vehicle
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~aa_cgdept
+		Queue: Vehicle, RAVehicle
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Selectable:
+		Priority: 4
+		DecorationBounds: 1536, 1536
+	Mobile:
+		Speed: 75
+		Locomotor: heavywheeled
+	Health:
+		HP: 150000
+	Repairable:
+		HpPerStep: 7500
+	ChangesHealth@SelfHealing:
+		Step: 60
+	Armor:
+		Type: Light
+	Transforms:
+		IntoActor: aa_cgcnst
+		Offset: -1,-1
+		Facing: 384
+		TransformSounds: uplace.wav
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Inherits@EXT: ^ExternalConditions
+	Voiced:
+		VoiceSet: PRCMCCVoice
+	DeliversCash:
+		Payload: 1750
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmalliance
+	RenderSprites:
+		PlayerPalette: playerra2
+aa_drmn:
+	Inherits: HARV
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Valued:
+		Cost: 450
+	Tooltip:
+		Name: Drone Miner
+	Buildable:
+		Prerequisites: ~aa_cgrefn
+		Queue: Vehicle, RAVehicle
+		Description: Harvests resources and teleports to refinery\nwhen full.
+	WithDockingAnimation:
+	Voiced:
+		VoiceSet: AsianDroneVoice
+	DeliversCash:
+		Payload: 225
+	RenderSprites:
+		PlayerPalette: playerra2
+	Harvester:
+		PipCount: 5
+		Capacity: 6
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 25
+		SearchFromHarvesterRadius: 10
+		EmptyCondition: no-tiberium
+	Mobile:
+		Locomotor: wheeled
+	Health:
+		HP: 20000
+aa_pulv:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@SHADOWS: ^Shadows
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Pulverizer
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~aa_cgradr
+		Queue: Vehicle, RAVehicle
+		Description: Tank armed with a huge gatling cannon.\nFirepower increases during sustained firing\n Strong vs Infantry, Aircraft\n Weak vs heavy vehicles
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 60000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Light
+	Turreted:
+		TurnSpeed: 16
+	AmmoPool:
+		Ammo: 60
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 5
+		Count: 1
+		ResetOnFire: True
+	Armament@1:
+		Weapon: AsianPulvMG1
+		PauseOnCondition: ammo < 40
+		LocalOffset: 400,90,299, 400,-45,299
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@2:
+		Weapon: AsianPulvMG2
+		PauseOnCondition: ammo < 20 && ammo >= 40
+		LocalOffset: 400,45,299, 400,-45,299
+		MuzzleSequence: muzzle-1
+		MuzzlePalette: ra2effect
+	Armament@3:
+		Weapon: AsianPulvMG3
+		PauseOnCondition: ammo >= 20
+		LocalOffset: 400,45,299, 400,-45,299
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+	Armament@1AA:
+		Weapon: AsianPulvMG1AA
+		PauseOnCondition: ammo < 40
+		LocalOffset: 400,45,299, 400,-45,299
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@2AA:
+		Weapon: AsianPulvMG2AA
+		PauseOnCondition: ammo < 20 && ammo >= 40
+		LocalOffset: 400,45,299, 400,-45,299
+		MuzzleSequence: muzzle-1
+		MuzzlePalette: ra2effect
+	Armament@3AA:
+		Weapon: AsianPulvMG3AA
+		PauseOnCondition: ammo >= 20
+		LocalOffset: 400,45,299, 400,-45,299
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: CHGatlingTankVoice
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2GattlingMG2
+	DeliversCash:
+		Payload: 600
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 6
+	RenderSprites:
+		PlayerPalette: playerra2
+aa_ptnk:
+	Inherits: ^Tank
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@SHADOWS: ^Shadows
+	Valued:
+		Cost: 1100
+	Tooltip:
+		Name: Plasma Tank
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~aa_cgtech
+		Queue: Vehicle, RAVehicle
+		Description: Tank armed with twin plasma guns.\n  Strong vs Vehicles, Infantry\n  Weak vs Aircraft
+	Mobile:
+		Speed: 100
+		TurnSpeed: 15
+	Health:
+		HP: 60000
+	Repairable:
+		HpPerStep: 3000
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 15
+	Armament@PRIMARY:
+		Weapon: AsianTwinPlasma
+		LocalOffset: 900,80,340, 900,-80,340
+		Recoil: 170
+		RecoilRecovery: 42
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: AsianTwinPlasmaE
+		LocalOffset: 900,80,340, 900,-80,340
+		Recoil: 170
+		RecoilRecovery: 42
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: AsianPlasmaVoice
+	DeliversCash:
+		Payload: 600
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	RenderSprites:
+		PlayerPalette: playerra2
+aa_hotwi:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@SHADOWS: ^Shadows
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: Hotwizer
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~aa_cgradr, aa_cgtech
+		Queue: Vehicle, RAVehicle
+		Description: Allied main battle tank.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
+	Mobile:
+		Locomotor: tracked
+		Speed: 60
+		TurnSpeed: 12
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 12 #3
+	Armament:
+		Name: primary
+		Weapon: AsianHotwizerCannonWeapon
+		Recoil: 256
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: AsianAllianceHotwizerVoice
+	DeliversCash:
+		Payload: 350
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	RenderSprites:
+		PlayerPalette: playerra2
+
+aa_viper:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Viper
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~aa_cgradr
+		Queue: Vehicle, RAVehicle
+		Description: Light artillery and hovercraft vehicle\n  Strong vs Infantry\n Weak vs Vehicles
+	Mobile:
+		Locomotor: hover
+		Speed: 130
+		TurnSpeed: 26
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2000
+	Armament@AG:
+		Weapon: AsianChemical
+		LocalOffset: -400,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+		Class: aa_viper
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	RenderSprites:
+		Image: aa_viper
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: AsianAllianceViperVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Hovers:
+
+aa_ftnk:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Flame Tank
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~aa_cgweap, aa_cgflam
+		Queue: Vehicle, RAVehicle
+		Description: Light artillery and hovercraft vehicle\n  Strong vs Infantry\n Weak vs Vehicles
+	Mobile:
+		Speed: 100
+		TurnSpeed: 26
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2000
+	Armament@AG:
+		Weapon: AsianFlamerTank
+		LocalOffset: 300,0,200
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	RenderSprites:
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: CHDragonTankVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	Explodes@flame:
+		Weapon: AsianOilBombFragments
+		EmptyWeapon: AsianOilBombFragments
+aa_mecha:
+	Inherits: ^Tank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Selectable:
+		Bounds: 1024, 1024
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Pulverizer Mecha
+	Buildable:
+		BuildPaletteOrder: 120
+		Prerequisites: ~aa_cgtech
+		Queue: Vehicle, RAVehicle
+		Description: Protoss assault walker.\n Strong vs Vehicles\n Weak vs Infantry
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 66
+		TurnSpeed: 11
+	Health:
+		HP: 275000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	AutoTarget:
+		ScanRadius: 5
+	Armament@1:
+		Weapon: AsianPulvMG3
+	Armament@2:
+		Weapon: AsianPulvMG1
+	Armament@1AA:
+		Weapon: AsianPulvMG3AA
+	Armament@2AA:
+		Weapon: AsianPulvMG1AA
+	AttackFrontal:
+	WithInfantryBody:
+		IdleSequences: idle
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
+		DefaultAttackSequence: shoot
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	WithDeathAnimation:
+		UseDeathTypeSuffix: false
+		DeathSequencePalette: playerra2
+	Passenger:
+		Weight: 4
+	Voiced:
+		VoiceSet: AsianAllianceRobotVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+aa_panth:
+	Inherits: ^BoatUnit
+	Inherits@cargo: ^CargoVehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 1050
+	Tooltip:
+		Name: Enforcer Transport
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~aa_cgyard
+		Queue: Naval, RANaval
+		Description: Amphibious transport for ground units.
+	Mobile:
+		Speed: 90
+		Locomotor: hover
+		RequiresCondition: !notmobile && !disabled
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Selectable:
+		DecorationBounds: 1536, 1536
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	DeliversCash:
+		Payload: 450
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 12
+		PassengerFacing: 0
+	Hovers:
+	Voiced:
+		VoiceSet: AsianAllianceVehicleVoice
+	Armament:
+		Name: primary
+		Weapon: RA2120mm
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: RA2120mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 720,0,80
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 24 #3
+	RenderSprites:
+		PlayerPalette: playerra2
+aa_railt:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@SHADOWS: ^InfantryShadows
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Rail Tank
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~aa_cgtech
+		Queue: Vehicle, RAVehicle
+		Description: Allied anti-tank vehicle.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
+	Mobile:
+		Locomotor: tracked
+		Speed: 65
+		TurnSpeed: 13
+	Health:
+		HP: 115000
+	Repairable:
+		HpPerStep: 5750
+	Armor:
+		Type: Heavy
+	Armament:
+		Name: primary
+		Weapon: AsianRailTank
+		RecoilRecovery: 38
+		LocalOffset: 750,0,80
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	Voiced:
+		VoiceSet: AsianAllianceVehicleVoice
+	DeliversCash:
+		Payload: 450
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ProducibleWithLevel:
+		Prerequisites: vehicles.upgraded
+	RenderSprites:
+		PlayerPalette: playerra2
+aa_railt2:
+	Inherits: aa_railt
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Heavy Rail Tank
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~aa_cgtech
+		Queue: Vehicle, RAVehicle
+		Description: Allied anti-tank vehicle.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
+	Mobile:
+		Locomotor: tracked
+		Speed: 65
+		TurnSpeed: 13
+	Health:
+		HP: 175000
+	Repairable:
+		HpPerStep: 7500
+	Armor:
+		Type: Heavy
+	Armament:
+		Name: primary
+		Weapon: AsianRailTank
+		RecoilRecovery: 38
+		LocalOffset: 750,0,80
+		MuzzleSequence: muzzle
+aa_phoenix:
+	Inherits: ^Helicopter
+	Inherits@Template: ^FighterTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Phoenix
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgairf
+		Queue: Aircraft, RAAircraft
+		Description: VTOL fighter armed with AG missiles.\n  Strong vs Buildings, Tanks\n  Weak vs Infantry
+	Aircraft:
+		CruiseAltitude: 2560
+		TurnSpeed: 12
+		Speed: 185
+		IdleTurnSpeed: 10
+		IdleSpeed: 125
+		CruisingCondition: cruising
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		CanHover: false
+		CanSlide: false
+		Voice: Move
+	Health:
+		HP: 60000
+	ChangesHealth@SelfHealing:
+		Step: 20
+	Armament@PRIMARY:
+		Name: primary
+		Weapon: AsianPhoenixRocket
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 100, -100, 50, -50
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 2
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 40
+		Count: 2
+	SpawnActorOnDeath:
+		Actor: RA2FALC.Husk
+	-WithShadow:
+	GrantConditionOnMovement@Turn:
+		Condition: Aircraft-Turning
+		ValidMovementTypes: Turn
+	GrantConditionOnMovement@H:
+		ValidMovementTypes: Horizontal
+		Condition: Aircraft-Horizontal
+	GrantConditionOnMovement@V:
+		ValidMovementTypes: Vertical
+		Condition: Aircraft-Vertical
+	WithMoveAnimation@Turn-L:
+		MoveSequence: move-l
+		RequiresCondition: Aircraft-Turning && Aircraft-Horizontal
+	WithMoveAnimation@Turn-R:
+		MoveSequence: move-r
+		RequiresCondition: Aircraft-Turning && Aircraft-Vertical
+	WithMoveAnimation:
+		MoveSequence: move
+		Condition: !Aircraft-Turning
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1024
+	Voiced:
+		VoiceSet: CHMiGVoice
+	AttackAircraft:
+		Voice: Attack
+		AttackType: Strafe
+		FacingTolerance: 80
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ProducibleWithLevel:
+		Prerequisites: aircraft.upgraded
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 4
+	RenderSprites:
+		PlayerPalette: playerra2
+aa_pelican:
+	Inherits: ^RAHelicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgweap
+		Description: Helicopter gunship armed\nwith dual chainguns.\n  Strong vs Infantry, Light armor\n  Weak vs Tanks, Aircraft
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: Pelican
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 80000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armament@PRIMARY:
+		Weapon: AsianPelicanMissile
+		LocalOffset: 85,-213,-85, 85,213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: AsianPelicanMissile
+		LocalOffset: 85,213,-85, 85,-213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 80
+		PersistentTargeting: false
+		AttackType: Hover
+	Aircraft:
+		TurnSpeed: 24
+		Speed: 120
+	WithIdleOverlay@ROTORAIR:
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTORGROUND:
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	SelectionDecorations:
+	WithMuzzleOverlay:
+	SpawnActorOnDeath:
+		Actor: HIND.Husk
+	EjectOnDeath:
+		PilotActor: aa_gren
+	LeavesTrails:
+		Offsets: -427,0,0
+		Image: smokey
+		MovingInterval: 3
+		StationaryInterval: 3
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+		RequiresCondition: enable-smoke
+	ProducibleWithLevel:
+		Prerequisites: aircraft.upgraded
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+	GrantConditionOnDamageState@SmokeTrail:
+		Condition: enable-smoke
+	AmmoPool:
+		Ammo: 12
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 156
+		Count: 4
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 6
+	Explodes:
+		Weapon: LargeHeliExplode
+	RenderSprites:
+		PlayerPalette: playerra2
+
+aa_gunb:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Gun Boat
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: aa_cgyard
+		Queue: Naval, RANaval
+		Description: Allied warship armed with naval gun.\nCan deploy an Osprey against submarines\n Strong vs. Ships, Submarines
+	Mobile:
+		Speed: 90
+	Health:
+		HP: 60000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Armament:
+		Weapon: RA2155mm
+		LocalOffset: 0,-100,0, 0,100,0
+		LocalYaw: 64, -64
+		Name: secondary
+		MuzzleSequence: muzzle
+	Armament@AA:
+		Weapon: RA2FlakTrackAAGun
+	WithMuzzleOverlay:
+	DetectCloaked:
+		Range: 8c0
+		DetectionTypes: Underwater
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	RenderDetectionCircle:
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	DeliversCash:
+		Payload: 500
+	Voiced:
+		VoiceSet: AsianShipVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	RenderSprites:
+		PlayerPalette: playerra2
+
+aa_lsub:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Leviathan
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgradr
+		Queue: Naval, RANaval
+		Description: Attack submarine armed with torpedoes.\n Strong vs. Ships
+	Mobile:
+		Speed: 60
+	Health:
+		HP: 120000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 28
+		Offset: 512,0,0
+	Armament@Torp:
+		Weapon: AsianSmallTorpedo
+		LocalOffset: 256,0,0
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+		RequiresCondition: !underwater
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 1536, 1536
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	DeliversCash:
+		Payload: 475
+	Cloak@underwater:
+		CloakDelay: 75
+		CloakSound: vnavupa.wav
+		UncloakSound: vnavupa.wav
+		Palette: voxelcloak
+	DetectCloaked:
+		DetectionTypes: Underwater
+		Range: 4c0
+	Voiced:
+		VoiceSet: AsianShipVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+aa_quasfrig:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Quasar Frigate
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: aa_cgyard
+		Queue: Naval, RANaval
+		Description: Allied warship armed with naval gun.\nCan deploy an Osprey against submarines\n Strong vs. Ships, Submarines
+	Mobile:
+		Speed: 90
+	Health:
+		HP: 60000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Armament:
+		Weapon: AsianQuasarBoatAG
+		LocalOffset: 75,0,0, 150,0,0, 250,0,0
+		Name: secondary
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AA:
+		Weapon: AsianQuasarBoatAA
+		LocalOffset: 75,0,0, 150,0,0, 250,0,0
+		Name: secondary
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
+	DetectCloaked:
+		Range: 8c0
+		DetectionTypes: Underwater
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	RenderDetectionCircle:
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	DeliversCash:
+		Payload: 500
+	Voiced:
+		VoiceSet: AsianShipVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	RenderSprites:
+		PlayerPalette: playerra2
+aa_karrier:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Kamkaze Carrier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~aa_cgtech
+		Queue: Naval, RANaval
+		Description: Heavy Allied warship that can deploy\n4 attack aircraft.\n Strong vs ground targets\n Weak vs Ships, Submarines
+	Mobile:
+		TurnSpeed: 32
+		Speed: 42
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	DeliversCash:
+		Payload: 450
+	RenderSprites:
+		PlayerPalette: playerra2
+	CarrierMaster:
+		Actors: aa_kami, aa_kami, aa_kami, aa_kami
+		RearmTicks: 150
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Armament@PRIMARY:
+		Weapon: RA2CarrierTarget
+	Voiced:
+		VoiceSet: AsianShipVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+
+aa_kami:
+	Inherits: ^RANeutralPlane
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Selectable:
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Kamikaze
+	Aircraft:
+		CruiseAltitude: 2560
+		InitialFacing: 768
+		TurnSpeed: 32
+		Speed: 223
+		Repulsable: false
+		MaximumPitch: 56
+	Health:
+		HP: 8000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: RA2CRM60
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 24
+		AmmoCondition: ammo
+	SpawnActorOnDeath:
+		Actor: aa_kami.Husk
+	WithMoveAnimation:
+		MoveSequence: move
+	RenderVoxels:
+		NormalsPalette: ts-normals
+		Scale: 6.0
+	Voiced:
+		VoiceSet: NighthawkVoice
+	AttackAircraft:
+		FacingTolerance: 80
+		PersistentTargeting: false
+	Rearmable:
+		RearmActors: ra2carrier
+	CarrierSlave:
+		LandingDistance: 2c0
+	AutoTarget:
+		InitialStanceAI: AttackAnything
+		InitialStance: AttackAnything
+	-UpdatesPlayerStatistics:
+	-ActorLostNotification:
+	-MapEditorData:
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	ProducibleWithLevel:
+		Prerequisites: aircraft.upgraded
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 2
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	RenderSprites:
+		PlayerPalette: playerra2
+	GrantConditionOnMovement@Turn:
+		Condition: Aircraft-Turning
+		ValidMovementTypes: Turn
+	GrantConditionOnMovement@H:
+		ValidMovementTypes: Horizontal
+		Condition: Aircraft-Horizontal
+	GrantConditionOnMovement@V:
+		ValidMovementTypes: Vertical
+		Condition: Aircraft-Vertical
+	WithMoveAnimation@Turn-L:
+		MoveSequence: move-l
+		RequiresCondition: Aircraft-Turning && Aircraft-Horizontal
+	WithMoveAnimation@Turn-R:
+		MoveSequence: move-r
+		RequiresCondition: Aircraft-Turning && Aircraft-Vertical
+	WithMoveAnimation:
+		MoveSequence: move
+		Condition: !Aircraft-Turning
+
+aa_kami_chemical:
+	Inherits: aa_kami
+	Selectable:
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Chemical Kamikaze
+	Armament@PRIMARY:
+		Weapon: AsianChemicalBombs
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	RenderSprites:
+		Image: aa_kami
+	SpawnActorOnDeath:
+		Actor: aa_kami_chemical.Husk
+aa_tsun:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Tsunami Carrier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~aa_cgtech
+		Queue: Naval, RANaval
+		Description: Heavy Allied warship that can deploy\n2 chemical kamikazes.\n Strong vs ground targets\n Weak vs Ships, Submarines
+	Mobile:
+		TurnSpeed: 32
+		Speed: 42
+	Health:
+		HP: 35000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	DeliversCash:
+		Payload: 450
+	RenderSprites:
+		PlayerPalette: playerra2
+	CarrierMaster:
+		Actors: aa_kami_chemical, aa_kami_chemical
+		RearmTicks: 150
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Armament@PRIMARY:
+		Weapon: RA2CarrierTarget
+	Voiced:
+		VoiceSet: AsianTsunamiVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+
+aa_ksub:
+	Inherits: ^BoatUnit
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Kamikaze Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgyard
+		Queue: Naval, RANaval
+		Description: Attack submarine armed with torpedoes.\n Strong vs. Ships
+	Mobile:
+		Speed: 100
+	Health:
+		HP: 30000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	Turreted:
+		TurnSpeed: 28
+		Offset: 512,0,11
+	Armament@PRIMARY:
+		Weapon: AsianDemoSubTargeting
+		LocalOffset: 208,0,80
+	AutoTarget:
+		InitialStance: Defend
+		InitialStanceAI: AttackAnything
+		ScanRadius: 10
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine, Repair
+		RequiresCondition: !underwater
+	GrantConditionOnAttack:
+		Condition: triggered
+	GrantConditionOnDeploy:
+		DeployedCondition: triggered
+		PauseOnCondition: disabled
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 512
+	RenderDetectionCircle:
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
+	DeliversCash:
+		Payload: 475
+	Cloak@underwater:
+		CloakDelay: 75
+		CloakSound: vnavupa.wav
+		UncloakSound: vnavupa.wav
+		Palette: voxelcloak
+	KillsSelf:
+		RequiresCondition: !disabled && triggered
+	DetectCloaked:
+		DetectionTypes: Underwater
+		Range: 4c0
+	Voiced:
+		VoiceSet: AsianAllianceRobotVoice
+	GainsExperience:
+		LevelUpNotification: LevelUpRA2
+	Explodes@bomb:
+		Weapon: AsianSubmarineBomb
+		DamageSource: Killer
+		RequiresCondition: !disabled
+	RenderSprites:
+		PlayerPalette: playerra2
+aa_wtrt:
+	Inherits: ^Tank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@cargo: ^CargoVehicle
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
+	Valued:
+		Cost: 3500
+	Tooltip:
+		Name: War Turtle
+	UpdatesPlayerStatistics:
+		OverrideActor: yrbfrt
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~aa_cgtech
+		Queue: Vehicle, RAVehicle
+		Description: template-opentopped.description
+	Mobile:
+		Speed: 60
+		TurnSpeed: 12
+		Locomotor: hover
+	Hovers:
+	Passenger:
+		Weight: 4
+	Health:
+		HP: 125000
+	Repairable:
+		HpPerStep: 2500
+	ChangesHealth@SelfHealing:
+		Step: 50
+	Armor:
+		Type: Heavy
+	#Turreted:
+	#	TurnSpeed: 1023
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 32
+	Armament:
+		Weapon: AsianGrenade
+	AttackFrontal:
+		FacingTolerance: 0
+	Cargo:
+		UnloadVoice: Move
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 6
+		InitialUnits: aa_gren,aa_gren,aa_gren,aa_tkiller,aa_tkiller,aa_tkiller
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PauseOnCondition: chronobeamed
+	RevealOnFire:
+		ArmamentNames: primary, garrisoned
+	AutoTarget:
+		AllowMovement: true
+	Selectable:
+		DecorationBounds: 1440, 1440, 0, -128
+		Class: aa_wtrt
+	Voiced:
+		VoiceSet: AsianAllianceVehicleVoice
+	DeliversCash:
+		Payload: 1000
+	RenderSprites:
+		Image: aa_wtrt
+		PlayerPalette: playerra2
+	#RenderVoxels:
+	#	Image: yrbfrt
+
+#######################################
+# RA2 Asian Husks
+#######################################
+aa_kami.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Kamikaze
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 55
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 1
+		Image: smokey
+		StationaryInterval: 1
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: aa_kami
+	RenderSprites:
+		PlayerPalette: playerra2
+	Explodes@bomb:
+		Weapon: AsianSmallOilBomb
+		EmptyWeapon: AsianSmallOilBomb
+
+aa_kami_chemical.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Chemical Kamikaze
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 55
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 1
+		Image: smokey
+		StationaryInterval: 1
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: aa_kami
+	RenderSprites:
+		PlayerPalette: playerra2
+	Explodes@bomb:
+		Weapon: AsianChemical
+		EmptyWeapon: AsianChemical
+#######################################
+# RA2 Asian Commander Tree
+#######################################
+
+### Infantry tree
+
+upaa_airborne:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Fanatic Airborne
+	Buildable:
+		BuildPaletteOrder: 61
+		Icon: paratroopers
+		Queue: Promotions
+		Description: Allows paratroopers to be accessed from the Airforce Command.
+		Prerequisites: ~aa_cgcnst, !upaa_airborne, rank1
+	RenderSprites:
+		Image: icon
+	ProvidesPrerequisite:
+
+upaa_japrif:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Fanatic
+	Buildable:
+		BuildPaletteOrder: 64
+		Queue: Promotions
+		Description: Allows training of Fanatics.
+		Prerequisites: ~aa_cgcnst, upaa_airborne, rank1
+	RenderSprites:
+		Image: aa_japrif
+	ProvidesPrerequisite:
+
+upaa_archer:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Veteran Archers
+	Buildable:
+		BuildPaletteOrder: 67
+		Queue: Promotions
+		Description: Allows training of Veteran Archers.
+		Prerequisites: ~aa_cgcnst, upaa_japrif, rank1
+	RenderSprites:
+		Image: aa_archer
+	ProvidesPrerequisite:
+
+upaa_samurai:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Samurais
+	Buildable:
+		BuildPaletteOrder: 70
+		Queue: Promotions
+		Description: Allows training ofSamurais.
+		Prerequisites: ~aa_cgcnst, upaa_archer, rank1
+	RenderSprites:
+		Image: aa_samurai
+	ProvidesPrerequisite:
+
+### Defensive tree
+
+upaa_cghype:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Hymperion AA
+	Buildable:
+		BuildPaletteOrder: 62
+		Queue: Promotions
+		Description: Allows to use Hymperion AA.
+		Prerequisites: ~aa_cgcnst, !upaa_cghype, rank1
+	RenderSprites:
+		Image: aa_cghype
+	ProvidesPrerequisite:
+
+upaa_cgchao:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Chaos Turrets
+	Buildable:
+		BuildPaletteOrder: 65
+		Queue: Promotions
+		Description: Allows to use Chaos Turrets.
+		Prerequisites: ~aa_cgcnst, upaa_cghype, rank1
+	RenderSprites:
+		Image: aa_cgchtw
+	ProvidesPrerequisite:
+
+upaa_chaomine:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Chaos Mines
+	Buildable:
+		BuildPaletteOrder: 68
+		Queue: Promotions
+		Description: Allows the support power of Chaos Mines.
+		Prerequisites: ~aa_cgcnst, upaa_cgchao, rank1
+	RenderSprites:
+		Image: aa_chaomine
+	ProvidesPrerequisite:
+
+upaa_cgplas:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Plasma Cannon
+	Buildable:
+		BuildPaletteOrder: 71
+		Queue: Promotions
+		Description: Allows construction of the Plasma Cannons.
+		Prerequisites: ~aa_cgcnst, upaa_chaomine, rank1
+	RenderSprites:
+		Image: aa_cgplas
+	ProvidesPrerequisite:
+### Military tree
+
+upaa_gren:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Grenadier Training
+	Buildable:
+		BuildPaletteOrder: 63
+		Queue: Promotions
+		Description: Now Militias uses Grenades.
+		Prerequisites: ~aa_cgcnst, !aa_gren, rank1
+	RenderSprites:
+		Image: aa_gren
+	ProvidesPrerequisite:
+
+upaa_railt2:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Heavy Railgun Tank
+	Buildable:
+		BuildPaletteOrder: 66
+		Queue: Promotions
+		Description: Vehicles have a chance of releasing a Terror Drone on destruction.
+		Prerequisites: ~aa_cgcnst, upaa_gren, !upaa_railt2, rank1
+	RenderSprites:
+		Image: aa_railt2
+	ProvidesPrerequisite:
+
+upaa_cgmiac:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Military Academy
+	Buildable:
+		BuildPaletteOrder: 69
+		Queue: Promotions
+		Description: Enables construction of the Industrial Plant.
+		Prerequisites: ~aa_cgcnst, upaa_railt2, rank1
+	RenderSprites:
+		Image: aa_cgmiac
+	ProvidesPrerequisite:
+
+upaa_lynx:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Lynx Machinegun
+	Buildable:
+		BuildPaletteOrder: 72
+		Queue: Promotions
+		Description: Lynx now uses a Machinegun.
+		Prerequisites: ~aa_cgcnst, upaa_cgmiac, rank1
+	RenderSprites:
+		Image: aa_lynx
+	ProvidesPrerequisite:
