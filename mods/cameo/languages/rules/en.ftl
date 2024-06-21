@@ -380,6 +380,12 @@ actor-2tnk =
       Weak vs Infantry, Aircraft
    .name = Allied Medium Tank
 
+actor-heavyaatank =
+   .description = Allied heavy anti air tank.
+      Strong vs Aircraft
+      Weak vs Tanks
+   .name = Allied Heavy AA Tank
+
 actor-3tnk =
    .description = Soviet main battle tank armed with dual cannons.
       Strong vs Vehicles
