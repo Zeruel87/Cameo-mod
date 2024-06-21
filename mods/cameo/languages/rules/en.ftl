@@ -1037,9 +1037,9 @@ actor-zep =
 
 actor-bpln =
    .name = MiG Bomber
-   .description = Fast jet bomber.
-        Strong vs Ground
-        Weak vs Aircraft, Air Defense
+   .description = Fast multirole fighter-bomber.
+        Strong vs Ground, Aircraft
+        Weak vs Air Defense
 
 actor-ra2sub =
    .name = Typhoon Attack Sub
@@ -1305,6 +1305,10 @@ actor-aapanth =
 
 actor-aapelican =
    .description = Helicopter armed with missiles.
+      Can attack air.
+
+actor-aaphoenix =
+   .description = Multirole fighter-bomber.
       Can attack air.
 
 actor-aagunb =

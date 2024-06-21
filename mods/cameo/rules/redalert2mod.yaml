@@ -167,7 +167,7 @@ aa_cgbrck:
 		BuildDurationModifier: 100
 		Prerequisites: ~aa_cgcnst, aa_cgapwr
 		Queue: Building, RABuilding
-		Description: Trains infantry
+		Description: template-barracks.description
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -214,7 +214,6 @@ aa_cgbrck:
 	SelectionDecorations:
 	GivesBuildableArea:
 		AreaTypes: building, cityi
-	WithBuildingBib:
 	WithDeathAnimation:
 		DeathSequencePalette: ra2buildinghack
 	Voiced:
@@ -416,7 +415,7 @@ aa_cgtech:
 	Inherits@sell: ^AASpawnActorsOnSell
 	Inherits@tech: ^IsTechnoBuilding
 	Selectable:
-		Bounds: 3072, 2048, 0, -256
+		Bounds: 3072, 2048, 0, 0
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 140
@@ -493,6 +492,7 @@ aa_cgrail:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 80
@@ -782,11 +782,12 @@ aa_cgpnch:
 
 aa_cgpuls:
 	Inherits: ^RA2Defense
-	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@Template: ^AntiAirDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 70
@@ -831,6 +832,7 @@ aa_cgchtw:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 80
@@ -925,6 +927,9 @@ aa_cgtnkr:
 	Power@5:
 		Amount: 3000
 		RequiresCondition: PowerLoad >= 5
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
 
 aa_cgplas:
 	Inherits: ^RA2Defense
@@ -1123,7 +1128,7 @@ aa_cgionc:
 		Range: 10c0
 	DetonateWeaponPower@Ion:
 		AllowMultiple: true
-		OrderName: IonCannon
+		OrderName: IonCannonPowerInfoOrder
 		PauseOnCondition: disabled
 		Prerequisites:
 			1: ~techlevel.superweapons
@@ -1142,7 +1147,7 @@ aa_cgionc:
 			1: power-ioncannon.description
 		BeginChargeSpeechNotification: IonCannonCharging
 		EndChargeSpeechNotification: IonCannonReady
-		EndChargeSound: sgenopen.wav
+		EndChargeSound:
 		SelectTargetSpeechNotification: SelectTarget
 		InsufficientPowerSpeechNotification: InsufficientPower
 		DisplayRadarPing: True
@@ -1152,8 +1157,8 @@ aa_cgionc:
 		TargetCircleRanges:
 			1: 6c0
 		TargetCircleColor: ff000080
-		LaunchSound: sgenopen.wav
-		IncomingSound: sgenopen.wav
+		LaunchSound:
+		IncomingSound:
 	SupportPowerChargeBar:
 	Power:
 		Amount: -200
@@ -1292,7 +1297,7 @@ aa_cgyard:
 ##############################################
 ^KamikazeMode:
 	GrantConditionOnDamageState@angry:
-		ValidDamageStates: Medium
+		ValidDamageStates: Heavy
 		Condition: KamikazeAngry
 	DamageMultiplier@KamikazeAngry:
 		RequiresCondition: KamikazeAngry
@@ -1307,7 +1312,7 @@ aa_cgyard:
 		RequiresCondition: KamikazeAngry
 		Modifier: 165
 	GrantConditionOnDamageState@kamikaze:
-		ValidDamageStates: Critical, Heavy
+		ValidDamageStates: Critical
 		Condition: KamikazeCritical
 	DamageMultiplier@KamikazeCritical:
 		RequiresCondition: KamikazeCritical
@@ -1335,8 +1340,8 @@ aa_cgyard:
 		BlinkInterval: 32
 		BlinkPattern: On, On, On, On
 		RequiresCondition: KamikazeCritical
-	RejectsOrders@KamikazeCritical:
-		RequiresCondition: KamikazeCritical || KamikazeAngry
+	#RejectsOrders@KamikazeCritical:
+	#	RequiresCondition: KamikazeCritical
 
 aa_gren:
 	Inherits: ^Soldier
@@ -1358,9 +1363,7 @@ aa_gren:
 	Mobile:
 		Speed: 52
 	Health:
-		HP: 6000
-	AutoTarget:
-		ScanRadius: 4
+		HP: 12500
 	Armament@PRIMARY:
 		Weapon: RA2AsianShotgun
 	Armament@GRENADE:
@@ -1400,9 +1403,7 @@ aa_tkiller:
 	Mobile:
 		Speed: 48
 	Health:
-		HP: 5000
-	AutoTarget:
-		ScanRadius: 4
+		HP: 10000
 	Armament@PRIMARY:
 		Name: primary
 		Weapon: RA2GIRocketsG
@@ -1425,8 +1426,6 @@ aa_tkiller:
 		VoiceSet: TankHunterVoice
 	DeliversCash:
 		Payload: 125
-	ProducibleWithLevel:
-		Prerequisites: barracks.upgraded
 	-TakeCover:
 
 aa_plast:
@@ -1442,19 +1441,18 @@ aa_plast:
 	Tooltip:
 		Name: Plasma Trooper
 	Buildable:
-		BuildPaletteOrder: 30
+		BuildPaletteOrder: 50
 		Prerequisites: ~aa_cgtech
 		Queue: Infantry, RAInfantry
 		Description: template-antitank-infantry.description
 	Mobile:
 		Speed: 48
 	Health:
-		HP: 5000
-	AutoTarget:
-		ScanRadius: 4
+		HP: 30000
 	Armament@PRIMARY:
 		Name: primary
 		Weapon: AsianSinglePlasma
+		LocalOffset: 427,0,341
 	AttackFrontal:
 		FacingTolerance: 0
 	Voiced:
@@ -1476,23 +1474,23 @@ aa_flam:
 	Tooltip:
 		Name: Flame Trooper
 	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~aa_cgbrck, aa_cgflam
+		BuildPaletteOrder: 40
+		Prerequisites: ~aa_cgbrck, aa_cgradr
 		Queue: Infantry, RAInfantry
 		Description: actor-e4.description
 	Mobile:
 		Speed: 48
 	Health:
-		HP: 7000
-	AutoTarget:
-		ScanRadius: 4
+		HP: 30000
 	Armament@PRIMARY:
 		Name: primary
 		Weapon: AsianFlamerTroop
+		LocalOffset: 427,0,341
 		RequiresCondition: !rank-elite
 	Armament@PRIMARYE:
 		Name: primary
 		Weapon: AsianFlamerTurret
+		LocalOffset: 427,0,341
 		RequiresCondition: rank-elite
 	AttackFrontal:
 		FacingTolerance: 0
@@ -1505,6 +1503,7 @@ aa_flam:
 aa_japrif:
 	Inherits: ^Soldier
 	Inherits@Template: ^LightInfantryTemplate
+	Inherits@buff: ^PromotionUnitBuff
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -1512,7 +1511,7 @@ aa_japrif:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@kami: ^KamikazeMode
 	Valued:
-		Cost: 200
+		Cost: 300
 	Tooltip:
 		Name: Japanese Fanatic
 	Buildable:
@@ -1523,9 +1522,7 @@ aa_japrif:
 	Mobile:
 		Speed: 62
 	Health:
-		HP: 9000
-	AutoTarget:
-		ScanRadius: 4
+		HP: 25000
 	Armament@PRIMARY:
 		Weapon: RA2AsianShotgun
 	Armament@GARRISONED:
@@ -1539,6 +1536,10 @@ aa_japrif:
 	DeliversCash:
 		Payload: 60
 	-TakeCover:
+	FirepowerMultiplier@PromotionUnit:
+		Modifier: 200
+	ReloadDelayMultiplier@PromotionUnit:
+		Modifier: 75
 
 aa_samurai:
 	Inherits: ^Soldier
@@ -1561,9 +1562,7 @@ aa_samurai:
 	Mobile:
 		Speed: 72
 	Health:
-		HP: 10500
-	AutoTarget:
-		ScanRadius: 4
+		HP: 30000
 	Armament@PRIMARY:
 		Weapon: AsianSamuraiSword
 	Armament@GARRISONED:
@@ -1600,8 +1599,6 @@ aa_archer:
 		Speed: 60
 	Health:
 		HP: 9000
-	AutoTarget:
-		ScanRadius: 4
 	Armament@PRIMARY:
 		Weapon: AsianMaidenBow
 	Armament@GARRISONED:
@@ -1637,9 +1634,7 @@ aa_shinobi:
 	Mobile:
 		Speed: 62
 	Health:
-		HP: 9000
-	AutoTarget:
-		ScanRadius: 4
+		HP: 20000
 	Armament@PRIMARY:
 		Weapon: AsianNinjaStar
 	Armament@GARRISONED:
@@ -1667,12 +1662,13 @@ ra2engineer.asian:
 		Image: ra2engineer
 
 aa_alligator:
-	Inherits: ^Soldier
+	Inherits: ^DefaultInfantry
+	Inherits@2: ^AffectedByTiberium
 	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@detect: ^GenericGroundDetector
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Inherits@anim: ^RA2Infantry
 	Inherits@MC: ^MCImmune
 	Valued:
 		Cost: 300
@@ -1701,9 +1697,31 @@ aa_alligator:
 		Payload: 250
 	Passenger:
 		Weight: 2
-	-TakeCover:
 	Targetable@dog:
 		TargetTypes: DogImmune
+	RenderSprites:
+		PlayerPalette: playerra2
+	Crushable:
+		CrushSound: igensqua.wav
+	WithDeathAnimation:
+		DeathSequencePalette: ra2infantry
+		DeathTypes:
+			DefaultDeath: 1
+			BruteMutate: 1
+			BulletDeath: 1
+			RippedApartDeath: 2
+			SmallExplosionDeath: 2
+			ExplosionDeath: 2
+			FireDeath: 2
+			PsychicDeath: 1
+			TiberiumDeath: 1
+			RadiationDeath: 1
+			RA2VirusDeath: 1
+			ElectricityDeath: 2
+			ContaminatorMutate: 1
+			QuestionMutate: 1
+	IgnoresDisguise:
+	-Targetable@disguise:
 
 ##############################################
 #   Red Alert 2 Asian Tanks
@@ -1852,7 +1870,6 @@ aa_oilt:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@EMP: ^FrontalEMP
-	Inherits@SHADOWS: ^Shadows
 	Health:
 		HP: 20000
 	Buildable:
@@ -1883,7 +1900,6 @@ aa_acv:
 	Inherits@Template: ^SupportVehicleTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@mcv: ^MCV
-	Inherits@SHADOWS: ^Shadows
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -1929,6 +1945,8 @@ aa_drmn:
 	Inherits: HARV
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Selectable:
+		Bounds: 512, 512
 	Valued:
 		Cost: 450
 	Tooltip:
@@ -1945,15 +1963,14 @@ aa_drmn:
 	RenderSprites:
 		PlayerPalette: playerra2
 	Harvester:
-		PipCount: 5
-		Capacity: 6
 		BaleLoadDelay: 4
 		BaleUnloadDelay: 1
 		SearchFromProcRadius: 25
 		SearchFromHarvesterRadius: 10
-		EmptyCondition: no-tiberium
+	StoresResources:
+		Capacity: 5
 	Mobile:
-		Locomotor: wheeled
+		Locomotor: chem
 	Health:
 		HP: 20000
 
@@ -1965,7 +1982,6 @@ aa_pulv:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@Template: ^ScoutVehicleTemplate
-	Inherits@SHADOWS: ^Shadows
 	Inherits@UpGat: ^YuriGatlingUpgrade
 	Valued:
 		Cost: 1200
@@ -2043,7 +2059,6 @@ aa_ptnk:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
-	Inherits@SHADOWS: ^Shadows
 	Valued:
 		Cost: 1100
 	Tooltip:
@@ -2058,6 +2073,8 @@ aa_ptnk:
 		TurnSpeed: 15
 	Health:
 		HP: 60000
+	Armor:
+		Type: Heavy
 	Repairable:
 		HpPerStep: 3000
 	Turreted:
@@ -2089,12 +2106,11 @@ aa_ptnk:
 aa_hotwi:
 	Inherits: ^Tank
 	Inherits@anim: ^RA2Vehicle
-	Inherits@Template: ^FireSupportTemplate
+	Inherits@Template: ^ArtilleryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
-	Inherits@SHADOWS: ^Shadows
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -2109,7 +2125,9 @@ aa_hotwi:
 		Speed: 60
 		TurnSpeed: 12
 	Health:
-		HP: 100000
+		HP: 40000
+	Armor:
+		Type: Heavy
 	Repairable:
 		HpPerStep: 5000
 	ChangesHealth@SelfHealing:
@@ -2157,6 +2175,8 @@ aa_viper:
 		TurnSpeed: 26
 	Health:
 		HP: 45000
+	Armor:
+		Type: Medium
 	Repairable:
 		HpPerStep: 2000
 	Armament@AG:
@@ -2197,6 +2217,8 @@ aa_ftnk:
 		TurnSpeed: 26
 	Health:
 		HP: 45000
+	Armor:
+		Type: Medium
 	Repairable:
 		HpPerStep: 2000
 	Armament@AG:
@@ -2241,13 +2263,11 @@ aa_mecha:
 		Speed: 66
 		TurnSpeed: 11
 	Health:
-		HP: 275000
+		HP: 60000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
 		Range: 7c0
-	AutoTarget:
-		ScanRadius: 5
 	Armament@1:
 		Weapon: AsianPulvMG3
 	Armament@2:
@@ -2386,6 +2406,7 @@ aa_railt:
 
 aa_railt2:
 	Inherits: aa_railt
+	Inherits@buff: ^PromotionUnitBuff
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -2412,7 +2433,7 @@ aa_railt2:
 		MuzzleSequence: muzzle
 
 aa_phoenix:
-	Inherits: ^Helicopter
+	Inherits: ^RANeutralPlane
 	Inherits@Template: ^FighterTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -2426,18 +2447,15 @@ aa_phoenix:
 		BuildPaletteOrder: 20
 		Prerequisites: ~aa_cgairf
 		Queue: Aircraft, RAAircraft
-		Description: actor-falc.description
+		Description: actor-aaphoenix.description
 	Aircraft:
 		CruiseAltitude: 2560
 		TurnSpeed: 12
 		Speed: 185
 		IdleTurnSpeed: 10
 		IdleSpeed: 125
-		CruisingCondition: cruising
-		TakeoffSounds: orcaup1.aud
-		LandingSounds: orcadwn1.aud
-		CanHover: false
-		CanSlide: false
+		TakeoffSounds: vintupa.wav
+		LandingSounds: vintdna.wav
 		Voice: Move
 	Health:
 		HP: 60000
@@ -2456,8 +2474,7 @@ aa_phoenix:
 		Delay: 40
 		Count: 2
 	SpawnActorOnDeath:
-		Actor: RA2FALC.Husk
-	-WithShadow:
+		Actor: aa_phoenix.Husk
 	GrantConditionOnMovement@Turn:
 		Condition: Aircraft-Turning
 		ValidMovementTypes: Turn
@@ -2497,7 +2514,6 @@ aa_pelican:
 	Inherits@Template: ^HelicopterTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
 	Buildable:
 		Queue: Aircraft, RAAircraft
@@ -2537,9 +2553,7 @@ aa_pelican:
 	SelectionDecorations:
 	WithMuzzleOverlay:
 	SpawnActorOnDeath:
-		Actor: HIND.Husk
-	EjectOnDeath:
-		PilotActor: aa_gren
+		Actor: aa_pelican.Husk
 	LeavesTrails:
 		Offsets: -427,0,0
 		Image: smokey
@@ -2572,6 +2586,7 @@ aa_pelican:
 
 aa_gunb:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
 	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -2591,8 +2606,6 @@ aa_gunb:
 		Speed: 90
 	Health:
 		HP: 60000
-	Armor:
-		Type: Heavy
 	RevealsShroud:
 		Range: 6c0
 	Armament:
@@ -2620,6 +2633,7 @@ aa_gunb:
 
 aa_lsub:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
 	Inherits@Template: ^BattleShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -2640,8 +2654,6 @@ aa_lsub:
 		Speed: 60
 	Health:
 		HP: 120000
-	Armor:
-		Type: Heavy
 	RevealsShroud:
 		Range: 6c0
 	Turreted:
@@ -2675,6 +2687,8 @@ aa_lsub:
 
 aa_quasfrig:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
@@ -2693,8 +2707,6 @@ aa_quasfrig:
 		Speed: 90
 	Health:
 		HP: 60000
-	Armor:
-		Type: Heavy
 	RevealsShroud:
 		Range: 6c0
 	Armament:
@@ -2734,7 +2746,7 @@ aa_karrier:
 	Valued:
 		Cost: 2500
 	Tooltip:
-		Name: Kamkaze Carrier
+		Name: Kamikaze Carrier
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -2747,8 +2759,6 @@ aa_karrier:
 		Speed: 42
 	Health:
 		HP: 35000
-	Armor:
-		Type: Heavy
 	RevealsShroud:
 		Range: 7c0
 	AttackFrontal:
@@ -2789,8 +2799,6 @@ aa_kami:
 		TakeUpCellWhenLand: false
 	Health:
 		HP: 8000
-	Armor:
-		Type: Light
 	RevealsShroud:
 		Range: 7c0
 		Type: GroundPosition
@@ -2881,8 +2889,6 @@ aa_tsun:
 		Speed: 42
 	Health:
 		HP: 35000
-	Armor:
-		Type: Heavy
 	RevealsShroud:
 		Range: 7c0
 	AttackFrontal:
@@ -2906,6 +2912,8 @@ aa_tsun:
 
 aa_ksub:
 	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
@@ -2925,8 +2933,6 @@ aa_ksub:
 		Speed: 100
 	Health:
 		HP: 30000
-	Armor:
-		Type: Heavy
 	RevealsShroud:
 		Range: 6c0
 	Turreted:
@@ -2946,12 +2952,12 @@ aa_ksub:
 	GrantConditionOnDeploy:
 		DeployedCondition: triggered
 		PauseOnCondition: disabled
+		ExclusiveDeploy: true
+		DeployType: Detonate
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 512
 	RenderDetectionCircle:
-	AcceptsDeliveredExperience:
-		ValidTypes: vehicle
 	DeliversCash:
 		Payload: 475
 	Cloak@underwater:
@@ -2986,22 +2992,20 @@ aa_wtrt:
 		Cost: 3500
 	Tooltip:
 		Name: War Turtle
-	UpdatesPlayerStatistics:
-		OverrideActor: yrbfrt
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: ~aa_cgtech
 		Queue: Vehicle, RAVehicle
 		Description: template-opentopped.description
 	Mobile:
-		Speed: 60
+		Speed: 70
 		TurnSpeed: 12
 		Locomotor: hover
 	Hovers:
 	Passenger:
 		Weight: 4
 	Health:
-		HP: 125000
+		HP: 105000
 	Repairable:
 		HpPerStep: 2500
 	ChangesHealth@SelfHealing:
@@ -3090,6 +3094,38 @@ aa_kami_chemical.Husk:
 	Explodes@bomb:
 		Weapon: AsianChemical
 		EmptyWeapon: AsianChemical
+
+aa_phoenix.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Phoenix
+	Aircraft:
+		TurnSpeed: 80
+		Speed: 185
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: aa_phoenix
+	RenderSprites:
+		PlayerPalette: playerra2
+
+aa_pelican.Husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Pelican
+	Aircraft:
+		TurnSpeed: 24
+		Speed: 120
+	RenderSprites:
+		Image: aa_pelican
+		PlayerPalette: playerra2
+
 #######################################
 # RA2 Asian Commander Tree
 #######################################
@@ -3101,7 +3137,7 @@ upaa_airborne:
 	Tooltip:
 		Name: Unlock Fanatic Airborne
 	Buildable:
-		BuildPaletteOrder: 61
+		BuildPaletteOrder: 97
 		Icon: paratroopers
 		Queue: Promotions
 		Description: Allows paratroopers to be accessed from the Airforce Command.
@@ -3115,7 +3151,7 @@ upaa_japrif:
 	Tooltip:
 		Name: Unlock Fanatic
 	Buildable:
-		BuildPaletteOrder: 64
+		BuildPaletteOrder: 100
 		Queue: Promotions
 		Description: Allows training of Fanatics.
 		Prerequisites: ~aa_cgcnst, upaa_airborne, rank1
@@ -3128,7 +3164,7 @@ upaa_archer:
 	Tooltip:
 		Name: Unlock Veteran Archers
 	Buildable:
-		BuildPaletteOrder: 67
+		BuildPaletteOrder: 103
 		Queue: Promotions
 		Description: Allows training of Veteran Archers.
 		Prerequisites: ~aa_cgcnst, upaa_japrif, rank1
@@ -3139,11 +3175,11 @@ upaa_archer:
 upaa_samurai:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Samurais
+		Name: Unlock Samurai
 	Buildable:
-		BuildPaletteOrder: 70
+		BuildPaletteOrder: 106
 		Queue: Promotions
-		Description: Allows training ofSamurais.
+		Description: Allows training of Samurai.
 		Prerequisites: ~aa_cgcnst, upaa_archer, rank1
 	RenderSprites:
 		Image: aa_samurai
@@ -3154,11 +3190,11 @@ upaa_samurai:
 upaa_cghype:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Hymperion AA
+		Name: Hyperion AA
 	Buildable:
-		BuildPaletteOrder: 62
+		BuildPaletteOrder: 98
 		Queue: Promotions
-		Description: Allows to use Hymperion AA.
+		Description: Enables construction of Hyperion AA.
 		Prerequisites: ~aa_cgcnst, !upaa_cghype, rank1
 	RenderSprites:
 		Image: aa_cghype
@@ -3169,7 +3205,7 @@ upaa_cgchao:
 	Tooltip:
 		Name: Chaos Turrets
 	Buildable:
-		BuildPaletteOrder: 65
+		BuildPaletteOrder: 101
 		Queue: Promotions
 		Description: Enables construction of Chaos Turrets.
 		Prerequisites: ~aa_cgcnst, upaa_cghype, rank1
@@ -3182,7 +3218,7 @@ upaa_chaomine:
 	Tooltip:
 		Name: Unlock Chaos Mines
 	Buildable:
-		BuildPaletteOrder: 68
+		BuildPaletteOrder: 104
 		Queue: Promotions
 		Description: Unlocks Chaos Mines support power.
 		Prerequisites: ~aa_cgcnst, upaa_cgchao, rank1
@@ -3195,13 +3231,14 @@ upaa_cgplas:
 	Tooltip:
 		Name: Unlock Plasma Cannon
 	Buildable:
-		BuildPaletteOrder: 71
+		BuildPaletteOrder: 107
 		Queue: Promotions
 		Description: Allows construction of the Plasma Cannon.
 		Prerequisites: ~aa_cgcnst, upaa_chaomine, rank1
 	RenderSprites:
 		Image: aa_cgplas
 	ProvidesPrerequisite:
+
 ### Military tree
 
 upaa_gren:
@@ -3209,7 +3246,7 @@ upaa_gren:
 	Tooltip:
 		Name: Grenadier Training
 	Buildable:
-		BuildPaletteOrder: 63
+		BuildPaletteOrder: 99
 		Queue: Promotions
 		Description: Equips Militias with Grenades.
 		Prerequisites: ~aa_cgcnst, !aa_gren, rank1
@@ -3222,7 +3259,7 @@ upaa_railt2:
 	Tooltip:
 		Name: Unlock Heavy Railgun Tank
 	Buildable:
-		BuildPaletteOrder: 66
+		BuildPaletteOrder: 102
 		Queue: Promotions
 		Description: Enables construction of the Heavy Railgun Tank.
 		Prerequisites: ~aa_cgcnst, upaa_gren, !upaa_railt2, rank1
@@ -3235,7 +3272,7 @@ upaa_cgmiac:
 	Tooltip:
 		Name: Unlock Military Academy
 	Buildable:
-		BuildPaletteOrder: 69
+		BuildPaletteOrder: 105
 		Queue: Promotions
 		Description: Enables construction of the Military Academy.
 		Prerequisites: ~aa_cgcnst, upaa_railt2, rank1
@@ -3248,7 +3285,7 @@ upaa_lynx:
 	Tooltip:
 		Name: Lynx Machinegun
 	Buildable:
-		BuildPaletteOrder: 72
+		BuildPaletteOrder: 108
 		Queue: Promotions
 		Description: Lynx now uses a Machinegun.
 		Prerequisites: ~aa_cgcnst, upaa_cgmiac, rank1
