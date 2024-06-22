@@ -739,7 +739,7 @@ aa_cgpnch:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
 		Prerequisites: ~aa_cgcnst, aa_cgbrck
-		Description: Coastal Guard Defense, Buildable on water.
+		Description: actor-cgpnch.description
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -892,7 +892,7 @@ aa_cgtnkr:
 		BuildDuration: 750
 		BuildDurationModifier: 100
 		Queue: Building, RABuilding
-		Description: Fill with Oil Trucks to generate More Power.
+		Description: actor-cgtnkr.description
 		Prerequisites: ~aa_cgcnst, aa_cgtech
 	Building:
 		Footprint: xxx =x=
@@ -990,7 +990,7 @@ aa_cghype:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
 		Prerequisites: ~aa_cgcnst, aa_cgradr, ~upaa_cghype
-		Description: template-anti-aircraft-power-defense.description
+		Description: actor-cghype.description
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -1016,8 +1016,6 @@ aa_cghype:
 		Name: primary
 		Weapon: AAHymperionMagnet_elite
 		RequiresCondition: rank-elite
-	Armament@Flash:
-		Weapon: AAHymperionMagnetFlash
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
@@ -1300,7 +1298,7 @@ aa_cgyard:
 		Condition: KamikazeAngry
 	DamageMultiplier@KamikazeAngry:
 		RequiresCondition: KamikazeAngry
-		Modifier: 6
+		Modifier: 66
 	RangeMultiplier@KamikazeAngry:
 		RequiresCondition: KamikazeAngry
 		Modifier: 80
@@ -1315,7 +1313,7 @@ aa_cgyard:
 		Condition: KamikazeCritical
 	DamageMultiplier@KamikazeCritical:
 		RequiresCondition: KamikazeCritical
-		Modifier: 4
+		Modifier: 33
 	RangeMultiplier@KamikazeCritical:
 		RequiresCondition: KamikazeCritical
 		Modifier: 75
@@ -1385,6 +1383,8 @@ aa_gren:
 	GrantConditionOnPrerequisite@Grenadier:
 		Condition: upaa_gren
 		Prerequisites: upaa_gren
+	ActorStatValues:
+		Upgrades: upaa_gren
 
 aa_tkiller:
 	Inherits: ^Soldier
@@ -1890,6 +1890,7 @@ aa_oilt:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 180
 		Prerequisites: ~aa_cgradr
+		Description: actor-aaoilt.description
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -2454,7 +2455,7 @@ aa_phoenix:
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	Tooltip:
 		Name: Phoenix
 	UpdatesPlayerStatistics:
@@ -2483,32 +2484,37 @@ aa_phoenix:
 		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
 		LocalYaw: 100, -100, 50, -50
 		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: primary
+		Weapon: AsianPhoenixRocketAA
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 100, -100, 50, -50
+		PauseOnCondition: !ammo
 	AmmoPool:
-		Ammo: 2
+		Ammo: 4
 		AmmoCondition: ammo
 	ReloadAmmoPool:
 		Delay: 40
 		Count: 2
 	SpawnActorOnDeath:
 		Actor: aa_phoenix.Husk
-	GrantConditionOnMovement@Turn:
-		Condition: Aircraft-Turning
-		ValidMovementTypes: Turn
-	GrantConditionOnMovement@H:
-		ValidMovementTypes: Horizontal
-		Condition: Aircraft-Horizontal
-	GrantConditionOnMovement@V:
-		ValidMovementTypes: Vertical
-		Condition: Aircraft-Vertical
+	#GrantConditionOnMovement@Turn:
+	#	Condition: Aircraft-Turning
+	#	ValidMovementTypes: Turn
+	#GrantConditionOnMovement@H:
+	#	ValidMovementTypes: Horizontal
+	#	Condition: Aircraft-Horizontal
+	#GrantConditionOnMovement@V:
+	#	ValidMovementTypes: Vertical
+	#	Condition: Aircraft-Vertical
 	WithMoveAnimation@Turn-L:
 		MoveSequence: move-l
-		RequiresCondition: Aircraft-Turning && Aircraft-Horizontal
+		ValidMovementTypes: Horizontal, Turn
 	WithMoveAnimation@Turn-R:
 		MoveSequence: move-r
-		RequiresCondition: Aircraft-Turning && Aircraft-Vertical
+		ValidMovementTypes: Vertical, Turn
 	WithMoveAnimation:
 		MoveSequence: move
-		Condition: !Aircraft-Turning
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
@@ -2516,7 +2522,6 @@ aa_phoenix:
 		VoiceSet: CHMiGVoice
 	AttackAircraft:
 		Voice: Attack
-		AttackType: Strafe
 		FacingTolerance: 80
 	WithAmmoPipsDecoration:
 		Position: BottomLeft

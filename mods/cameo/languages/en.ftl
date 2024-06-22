@@ -48,6 +48,7 @@ actor-stats-label-prefix =
     .experience = Experience:
 
 label-armor-class =
+    .no-armor = None
     .None = None
     .Flak = Flak
     .Plate = Plate

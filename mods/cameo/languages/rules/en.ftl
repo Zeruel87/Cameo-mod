@@ -1286,7 +1286,8 @@ actor-aashinobi =
 
 actor-alligator =
    .description = Large reptile.
-       Strong vs Infantry
+       Strong vs Infantry, Vehicles
+       Weak vs Defenses, Aircraft
 
 actor-aaquas =
    .description = Light scout vehicle.
@@ -1308,6 +1309,10 @@ actor-aamecha =
 
 actor-aapanth =
    .description = Amphibious transport armed with a cannon.
+
+actor-aaoilt =
+   .description = Truck carrying fuel.
+      Explodes violently when destroyed or deployed.
 
 actor-aapelican =
    .description = Helicopter armed with missiles.
@@ -1335,6 +1340,19 @@ actor-aatsun =
 
 actor-aaksub =
    .description = Suicide bomber submarine.
+
+actor-cgpnch =
+   .description = Defense buildable on water.
+      Can detect submarines.
+       Strong vs Ships, Submarines
+
+actor-cghype =
+   .description = Anti-aircraft tractor beam.
+      Requires power to operate.
+       Strong vs Air
+
+actor-cgtnkr =
+   .description = Fill with Oil Trucks to generate more power.
 
 actor-cgchtw =
    .description = Defense that dispenses chaos gas.
