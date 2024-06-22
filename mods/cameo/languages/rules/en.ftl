@@ -1296,12 +1296,14 @@ actor-aaquas =
 
 actor-aapulv =
    .description = Armed with a gatling cannon.
+       Strong vs Infantry, Air
 
 actor-aahowi =
    .description = Mobile heavy artillery.
 
 actor-aaviper =
-   .description = Hovercraft armed with chemical cannons.
+   .description = Hovering mobile artillery.
+      Attacks leave toxin clouds.
 
 actor-aamecha =
    .description = Robot armed with machine guns.
