@@ -46,7 +46,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 			if (palette == null)
 				return r;
 			else
-				return r.Select(a => !a.IsDecoration && a is IPalettedRenderable pr ? pr.WithPalette(palette) : a);
+				// Hack: shadows always have alpha of 1
+				return r.Select(a => (!a.IsDecoration || a is SpriteRenderable sprite && sprite.Alpha == 1f) && a is IPalettedRenderable pr ? pr.WithPalette(palette) : a);
 		}
 
 		IEnumerable<Rectangle> IRenderModifier.ModifyScreenBounds(Actor self, WorldRenderer wr, IEnumerable<Rectangle> bounds)

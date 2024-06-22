@@ -23,8 +23,8 @@ namespace OpenRA.Mods.Cameo.Traits
 	{
 		public readonly string Name = "primary";
 
-		[FieldLoader.Require]
-		public readonly BitSet<TargetableType> Types;
+		[Desc("Name of the armaments that trigger infection.")]
+		public readonly HashSet<string> ArmamentNames = new() { "primary" };
 
 		[FieldLoader.Require]
 		[Desc("How much damage to deal.")]
@@ -72,15 +72,6 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Custom palette is a player palette BaseName")]
 		public readonly bool IsPlayerPalette = false;
 
-		[VoiceReference]
-		[Desc("Voice string when ordered to infect an actor.")]
-		public readonly string Voice = "Action";
-
-		public readonly PlayerRelationship TargetRelationships = PlayerRelationship.Enemy | PlayerRelationship.Neutral;
-		public readonly PlayerRelationship ForceTargetRelationships = PlayerRelationship.Enemy | PlayerRelationship.Neutral | PlayerRelationship.Ally;
-
-		public readonly string Cursor = "attack";
-
 		[GrantedConditionReference]
 		[Desc("The condition to grant to self while infecting any actor.")]
 		public readonly string InfectingCondition = null;
@@ -88,48 +79,12 @@ namespace OpenRA.Mods.Cameo.Traits
 		public override object Create(ActorInitializer init) { return new InfectorOld(this); }
 	}
 
-	public class InfectorOld : ConditionalTrait<InfectorOldInfo>, IIssueOrder, IResolveOrder, IOrderVoice
+	public class InfectorOld : ConditionalTrait<InfectorOldInfo>, INotifyAttack
 	{
 		int token = Actor.InvalidConditionToken;
 
 		public InfectorOld(InfectorOldInfo info)
 			: base(info) { }
-
-		public IEnumerable<IOrderTargeter> Orders
-		{
-			get
-			{
-				if (IsTraitDisabled)
-					yield break;
-
-				yield return new InfectionOrderTargeter(Info);
-			}
-		}
-
-		public Order IssueOrder(Actor self, IOrderTargeter order, in Target target, bool queued)
-		{
-			if (order.OrderID != "Infect")
-				return null;
-
-			return new Order(order.OrderID, self, target, queued);
-		}
-
-		public void ResolveOrder(Actor self, Order order)
-		{
-			if (order.OrderString != "Infect" || IsTraitDisabled)
-				return;
-
-			if (!order.Queued)
-				self.CancelActivity();
-
-			self.QueueActivity(new InfectOld(self, order.Target, this));
-			self.ShowTargetLines();
-		}
-
-		public string VoicePhraseForOrder(Actor self, Order order)
-		{
-			return order.OrderString == "Infect" ? Info.Voice : null;
-		}
 
 		public void GrantCondition(Actor self)
 		{
@@ -143,41 +98,20 @@ namespace OpenRA.Mods.Cameo.Traits
 				token = self.RevokeCondition(token);
 		}
 
-		class InfectionOrderTargeter : UnitOrderTargeter
+		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
 		{
-			readonly InfectorOldInfo info;
+			if (!Info.ArmamentNames.Contains(a.Info.Name))
+				return;
 
-			public InfectionOrderTargeter(InfectorOldInfo info)
-				: base("Infect", 7, info.Cursor, true, true)
-			{
-				this.info = info;
-			}
+			if (IsTraitDisabled)
+				return;
 
-			public override bool CanTargetActor(Actor self, Actor target, TargetModifiers modifiers, ref string cursor)
-			{
-				// Obey force moving onto bridges
-				if (modifiers.HasModifier(TargetModifiers.ForceMove))
-					return false;
+			self.CancelActivity();
 
-				var relationship = self.Owner.RelationshipWith(target.Owner);
-				if (!info.TargetRelationships.HasRelationship(relationship) && !modifiers.HasModifier(TargetModifiers.ForceAttack))
-					return false;
-				if (!info.ForceTargetRelationships.HasRelationship(relationship) && modifiers.HasModifier(TargetModifiers.ForceAttack))
-					return false;
-
-				return info.Types.Overlaps(target.GetAllTargetTypes());
-			}
-
-			public override bool CanTargetFrozenActor(Actor self, FrozenActor target, TargetModifiers modifiers, ref string cursor)
-			{
-				var relationship = self.Owner.RelationshipWith(target.Owner);
-				if (!info.TargetRelationships.HasRelationship(relationship) && !modifiers.HasModifier(TargetModifiers.ForceAttack))
-					return false;
-				if (!info.ForceTargetRelationships.HasRelationship(relationship) && modifiers.HasModifier(TargetModifiers.ForceAttack))
-					return false;
-
-				return info.Types.Overlaps(target.Info.GetAllTargetTypes());
-			}
+			self.QueueActivity(new InfectOld(self, target, this));
+			self.ShowTargetLines();
 		}
+
+		void INotifyAttack.PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel) { }
 	}
 }

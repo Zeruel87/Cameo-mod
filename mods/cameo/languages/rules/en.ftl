@@ -35,7 +35,7 @@ actor-e5 =
         Strong vs all Ground units
    .name = Chemical Warrior
 
-actor-e6 = 
+actor-e6 =
    .description = Infiltrates and captures enemy structures.
       Removes attached explosives from units.
         Unarmed
@@ -44,7 +44,7 @@ actor-e6 =
 actor-apc =
    .description = Armed infantry transport.
         Can attack Aircraft.
-   .tdname = GDI APC 
+   .tdname = GDI APC
    .raname = Allied APC
 
 actor-arty =
@@ -164,7 +164,7 @@ power-ioncannon =
    .name = Ion Cannon
    .description = Initiate an Ion Cannon strike.
       Applies instant damage to a small area.
-   
+
 actor-tmpl =
    .description = Provides advanced Nod technologies.
       Can be upgraded with a missile silo.
@@ -180,13 +180,13 @@ power-nuke =
    .raname = Atomic Bomb
    .description = Launches a nuclear missile.
       Applies heavy damage over a large area.
-   
+
 actor-gun =
    .tdname = Nod Gun Turret
    .raname = Allied Gun Turret
    .description = Anti-tank base defense.
         Strong vs Vehicles
-   
+
 actor-nalasr =
    .name = Nod Laser Turret
    .description = Anti-infantry defense.
@@ -231,7 +231,7 @@ actor-brik =
    .name = Concrete Barrier
    .description = Stops infantry and most tanks.
       Blocks some projectiles.
-   
+
 upgrade-upnodstealth =
    .name = Unlock Stealth Technology
    .description = Allows training of Stealth Soldiers
@@ -317,7 +317,7 @@ actor-gdiofficer =
         Can attack air
 
 actor-havoc =
-   .name = Havoc 
+   .name = Havoc
    .description = Commando armed with numerous weapons.
       Strong vs Everything
 
@@ -333,7 +333,7 @@ actor-nodlasercorvette =
    .name = Nod Laser Corvette
 
 actor-dog =
-   .name = Attack Dog 
+   .name = Attack Dog
    .description = Can detect cloaked and disguised units.
       Strong vs Infantry
 
@@ -341,7 +341,7 @@ actor-rasniper =
    .name = Allied Sniper
    .description = Camouflaged soldier that can detect cloaked units.
         Strong vs Infantry
-   
+
 actor-medi =
    .description = Heals nearby infantry.
         Unarmed
@@ -379,6 +379,12 @@ actor-2tnk =
       Strong vs Vehicles
       Weak vs Infantry, Aircraft
    .name = Allied Medium Tank
+
+actor-heavyaatank =
+   .description = Allied heavy anti air tank.
+      Strong vs Aircraft
+      Weak vs Tanks
+   .name = Allied Heavy AA Tank
 
 actor-3tnk =
    .description = Soviet main battle tank armed with dual cannons.
@@ -439,7 +445,7 @@ actor-tiger =
    .name = Tiger Heavy Tank
    .description = Advanced main battle tank.
       Immune to EMP.
-   
+
 actor-tnkd =
    .name = Tank Destroyer
    .description = Strong vs Vehicles
@@ -705,7 +711,7 @@ actor-typeigo =
 actor-typechiha =
    .name = Chi-Ha Heavy Tank
 
-actor-nanobggy = 
+actor-nanobggy =
    .description = Remote control vehicle for a nanite swarm.
    Attacks bounce and heal nearby units.
         Strong vs Infantry
@@ -789,7 +795,7 @@ actor-ss =
     Can detect other submarines.
       Strong vs Naval units
       Weak vs Ground units, Aircraft
-   .name = Submarine
+   .name = Soviet Submarine
 
 actor-msub =
    .description = Submerged anti-ground siege unit
@@ -867,7 +873,7 @@ actor-ra2snipe =
    .description = Strong vs Infantry
 
 actor-seal =
-   .name = SEAL 
+   .name = SEAL
    .description = Elite amphibious infantry.
       Can demolish buildings and ships.
         Strong vs Infantry, Buildings, Ships
@@ -934,7 +940,7 @@ actor-beag =
    .description = VTOL heavy bomber.
       Strong vs Ground
         Weak vs Aircraft, Air Defense
-   
+
 actor-dest =
    .name = Destroyer
    .description = Armed with a cannon.
@@ -1037,9 +1043,9 @@ actor-zep =
 
 actor-bpln =
    .name = MiG Bomber
-   .description = Fast jet bomber.
-        Strong vs Ground
-        Weak vs Aircraft, Air Defense
+   .description = Fast multirole fighter-bomber.
+        Strong vs Ground, Aircraft
+        Weak vs Air Defense
 
 actor-ra2sub =
    .name = Typhoon Attack Sub
@@ -1123,7 +1129,7 @@ actor-mind =
 actor-disk =
    .name = Floating Disc
    .description = Flying saucer armed with lasers.
-      Can shut down power plants and defenses when overhead 
+      Can shut down power plants and defenses when overhead
       Can steal resources from refineries and silos
         Strong vs Everything
 
@@ -1274,6 +1280,82 @@ power-forceshield =
    .name = Force Shield
    .description = Makes selected buildings temporarily invulnerable.
 
+actor-aashinobi =
+   .description = Stealth soldier.
+      Can infiltrate buildings.
+
+actor-alligator =
+   .description = Large reptile.
+       Strong vs Infantry
+
+actor-aaquas =
+   .description = Light scout vehicle.
+      Can attack aircraft.
+       Strong vs Infantry, Air
+
+actor-aapulv =
+   .description = Armed with a gatling cannon.
+
+actor-aahowi =
+   .description = Mobile heavy artillery.
+
+actor-aaviper =
+   .description = Hovercraft armed with chemical cannons.
+
+actor-aamecha =
+   .description = Robot armed with machine guns.
+      Can attack air.
+
+actor-aapanth =
+   .description = Amphibious transport armed with a cannon.
+
+actor-aapelican =
+   .description = Helicopter armed with missiles.
+      Can attack air.
+
+actor-aaphoenix =
+   .description = Multirole fighter-bomber.
+      Can attack air.
+
+actor-aagunb =
+   .description = Fast gunboat armed with a cannon and a flak gun.
+      Can attack air.
+
+actor-aaquasfrig =
+   .description = Warship armed with plasma cannons.
+      Can attack air.
+
+actor-aacarrier =
+   .description = Aircraft carrier that deploys 4 fighters
+      armed with machine guns.
+
+actor-aatsun =
+   .description = Aircraft carrier that deploys 3 fighters
+      armed with chemical bombs.
+
+actor-aaksub =
+   .description = Suicide bomber submarine.
+
+actor-cgchtw =
+   .description = Defense that dispenses chaos gas.
+      Requires power to operate
+
+actor-cgplas =
+   .description = Long range anti-ground defense.
+      Requires power to operate
+
+actor-cgchao =
+   .description = Provides Chaos Storm support power.
+      Requires power to operate.
+
+actor-cgionc =
+   .description = Provides Ion Cannon support power.
+      Requires power to operate.
+
+power-chaos =
+   .name = Chaos Storm
+   .description = Releases chaos gas on a target area.
+
 actor-oilb =
    .name = Oil Derrick
    .description = Provides passive income.
@@ -1318,7 +1400,7 @@ template-barracks =
    .ra2-allies = Allied Barracks
    .ra2-yuri = Yuri Barracks
 
-template-factory = 
+template-factory =
    .description = Produces vehicles.
    .td-gdi = Weapons Factory
    .ra-allies = Allied War Factory
@@ -1341,7 +1423,7 @@ template-service-depot =
    .description = Repairs vehicles.
    .td-gdi = GDI Repair Facility
    .td-nod = Nod Repair Facility
-   .ra-allies = Allied Service Depot 
+   .ra-allies = Allied Service Depot
    .ra-soviet = Soviet Service Depot
    .ra-japan = Japanese Service Depot
    .ra2-allies = Allied Service Depot
@@ -1377,13 +1459,30 @@ template-anti-infantry-defense =
       Strong vs Infantry
       Weak vs Tanks
 
+template-anti-vehicle-defense =
+   .description = Anti-vehicle defense.
+
 template-anti-aircraft-defense =
    .description = Anti-aircraft defense.
+
+template-anti-aircraft-power-defense =
+   .description = Anti-aircraft defense.
+      Requires power to operate.
 
 template-scout-infantry =
    .description = General-purpose infantry.
       Strong vs Infantry
       Weak vs Vehicles, Aircraft
+
+template-antitank-antiair-infantry =
+   .description = Anti-vehicle infantry.
+      Strong vs Vehicles, Aircraft
+      Weak vs Infantry
+
+template-antitank-infantry =
+   .description = Anti-vehicle infantry.
+      Strong vs Vehicles
+      Weak vs Infantry, Aircraft
 
 template-mbt =
    .description = Main battle tank.
@@ -1398,6 +1497,9 @@ template-commando =
 
 template-opentopped =
    .description = Transport with fireports for passengers.
+
+template-unarmed-transport =
+   .description = Unarmed troop transport.
 
 promotions =
    .lobby-label = Promotion Points per Rank

@@ -725,6 +725,10 @@
 		BeingInfectedCondition: beingterrordroned
 		InfectedCondition: terrordroned
 		RemoveInfectorTeleportTypes: RA2ChronoPower, PortableChrono
+	RevealsShroud@DRONE:
+		Range: 2c0
+		ValidRelationships: Enemy, Neutral
+		RequiresCondition: terrordroned
 	Targetable@DRONE:
 		TargetTypes: TerrorDronable
 		RequiresCondition: !untargetable
@@ -768,9 +772,13 @@
 		BeingInfectedCondition: beinggrabbed
 		InfectedByConditions:
 			ra2sqd: squid
+	RevealsShroud@SQUID:
+		Range: 2c0
+		ValidRelationships: Enemy, Neutral
+		RequiresCondition: squid
 	Targetable@SQUID:
 		TargetTypes: SquidGrab
-		RequiresCondition: !untargetable
+		RequiresCondition: !untargetable && !beinggrabbed && !squid
 	Targetable@SQUIDGRABBED:
 		TargetTypes: SquidGrabbed
 		RequiresCondition: squid
@@ -1586,6 +1594,42 @@
 		ValidRelationships: Ally, Neutral, Enemy
 		RequiresCondition: underbridge
 
+^Submarine:
+	Targetable:
+	Cloak@underwater:
+		DetectionTypes: Underwater
+		InitialDelay: 0
+		CloakDelay: 50
+		CloakedCondition: underwater
+		PauseOnCondition: disabled
+		RequiresCondition: !cloak-force-disabled && !underbridge
+		IsPlayerPalette: true
+		UncloakSound: subshow1.aud
+	Cloak@underbridge:
+		DetectionTypes: Underwater
+		InitialDelay: 0
+		CloakDelay: 0
+		CloakedCondition: underwater
+		PauseOnCondition: disabled
+		RequiresCondition: !cloak-force-disabled && underbridge
+		CloakStyle: Alpha
+		MinCloakedAlpha: 0
+		MaxCloakedAlpha: 0
+		CloakAlphaChangeInterval: 1000
+		UncloakSound: subshow1.aud
+	WithColoredSelectionBox:
+		ColorSource: Player
+		ValidRelationships: Ally
+		RequiresCondition: underwater
+	WithColoredSelectionBox@UnderBridge:
+		RequiresCondition: underbridge && !underwater
+	Targetable@Underwater:
+		TargetTypes: Submarine, Underwater
+		RequiresCondition: underwater
+	DamageMultiplier@Underwater:
+		Modifier: 50
+		RequiresCondition: underwater
+
 ^SeaCreature:
 	Inherits: ^BasicUnit
 	Inherits@mindcontrol: ^MindControllable
@@ -1609,7 +1653,7 @@
 		RequiresCondition: chronobeamed
 	Targetable:
 		TargetTypes: Ground, Water, Ship, Infantry
-		RequiresCondition: untargetable
+		RequiresCondition: !untargetable
 	MapEditorData:
 		Categories: Infantry
 	Targetable@HEAL:
@@ -4982,42 +5026,6 @@ CPQDEBUGDUMMY:
 	ProvidesPrerequisite@swlimit:
 		RequiresPrerequisites: global-swlimit
 
-^Submarine:
-	Targetable:
-	Cloak@underwater:
-		DetectionTypes: Underwater
-		InitialDelay: 0
-		CloakDelay: 50
-		CloakedCondition: underwater
-		PauseOnCondition: disabled
-		RequiresCondition: !cloak-force-disabled && !underbridge
-		IsPlayerPalette: true
-		UncloakSound: subshow1.aud
-	Cloak@underbridge:
-		DetectionTypes: Underwater
-		InitialDelay: 0
-		CloakDelay: 0
-		CloakedCondition: underwater
-		PauseOnCondition: disabled
-		RequiresCondition: !cloak-force-disabled && underbridge
-		CloakStyle: Alpha
-		MinCloakedAlpha: 0
-		MaxCloakedAlpha: 0
-		CloakAlphaChangeInterval: 1000
-		UncloakSound: subshow1.aud
-	WithColoredSelectionBox:
-		ColorSource: Player
-		ValidRelationships: Ally
-		RequiresCondition: underwater
-	WithColoredSelectionBox@UnderBridge:
-		RequiresCondition: underbridge && !underwater
-	Targetable@Underwater:
-		TargetTypes: Submarine, Underwater
-		RequiresCondition: underwater
-	DamageMultiplier@Underwater:
-		Modifier: 50
-		RequiresCondition: underwater
-
 ^VehicleCrusher:
 	Mobile:
 		Locomotor: heavytracked
@@ -5480,6 +5488,7 @@ CPQDEBUGDUMMY:
 		Probability: 40
 		OwnerType: Killer
 		DeathType: ZombieInfection
+
 ^GenericSalvageBonus:
 	DamageMultiplier@scrap1:
 		RequiresCondition: scrap_create_bonus == 1
@@ -5973,6 +5982,7 @@ CPQDEBUGDUMMY:
 			rare1: ifv-mg
 			ra2e1: ifv-mg
 			ra2e2: ifv-mg
+			aa_gren: ifv-mg
 			2100scav: ifv-mg
 			2100scav2: ifv-mg
 			scmarine: ifv-mg
@@ -5993,6 +6003,7 @@ CPQDEBUGDUMMY:
 			sglrebel: ifv-mg
 			sglcamorebel: ifv-mg
 			sgldemorebel: ifv-mg
+			aa_japrif: ifv-mg
 			e2: ifv-cannon
 			rae2: ifv-cannon
 			tse2: ifv-cannon
@@ -6000,6 +6011,7 @@ CPQDEBUGDUMMY:
 			tsmutant3: ifv-cannon
 			che2: ifv-cannon
 			leange2: ifv-cannon
+			aa_plast: ifv-cannon
 			e6: ifv-repair
 			rae6: ifv-repair
 			medi: ifv-healer
@@ -6023,6 +6035,7 @@ CPQDEBUGDUMMY:
 			rae3: ifv-miss
 			rare3: ifv-miss
 			yrggi: ifv-miss
+			aa_tkiller: ifv-miss
 			tse3: ifv-miss
 			gle3: ifv-miss
 			che3: ifv-miss
@@ -6039,6 +6052,7 @@ CPQDEBUGDUMMY:
 			rae4: ifv-fire
 			raje4: ifv-fire
 			yrinit: ifv-fire
+			aa_flam: ifv-fire
 			scfirebat: ifv-fire
 			e5: ifv-chem
 			ra2deso: ifv-chem
@@ -6062,6 +6076,7 @@ CPQDEBUGDUMMY:
 			yrvirus: ifv-sniper
 			raspy: ifv-spy
 			ra2spy: ifv-spy
+			aa_shinobi: ifv-spy
 			tschamspy: ifv-sniper
 			tsumagon: ifv-sniper
 			glkell: ifv-sniper
@@ -6213,6 +6228,7 @@ CPQDEBUGDUMMY:
 			raje1: ifv-mg
 			raje3: ifv-miss
 			ramaid: ifv-archermaiden
+			aa_archer: ifv-archermaiden
 			sniper: ifv-sniper
 			wc_h_footman: ifv-archer
 			wc_h_archer: ifv-archer
@@ -6342,6 +6358,8 @@ CPQDEBUGDUMMY:
 		PauseOnCondition: disabled
 		RequiresCondition: ifv-spy
 		OrderName: SovietSpyPlane
+		Prerequisites:
+			1:
 		Icons:
 			1: radarvan
 		ChargeInterval: 3500
