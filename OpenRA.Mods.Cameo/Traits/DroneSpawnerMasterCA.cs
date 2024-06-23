@@ -216,6 +216,9 @@ namespace OpenRA.Mods.Cameo.Traits
 				{
 					SpawnIntoWorld(self, se.Actor, self.CenterPosition + se.Offset.Rotate(self.Orientation));
 				}
+
+			if (Info.SlavesTargetSelf)
+				AssignTargetsToSlaves(self, Target.FromActor(self));
 		}
 
 		public override void OnSlaveKilled(Actor self, Actor slave)
@@ -241,22 +244,17 @@ namespace OpenRA.Mods.Cameo.Traits
 					return;
 
 				var spawnOffset = exit == null ? WVec.Zero : exit.Info.SpawnOffset;
-				slave.Trait<IPositionable>().SetPosition(slave, centerPosition + spawnOffset);
-
 				var positionable = slave.Trait<IPositionable>();
 				positionable.SetPosition(slave, centerPosition + spawnOffset.Rotate(self.Orientation));
 				positionable.SetCenterPosition(slave, centerPosition + spawnOffset.Rotate(self.Orientation));
 
-				var location = self.World.Map.CellContaining(centerPosition + spawnOffset);
+				var location = self.World.Map.CellContaining(centerPosition + spawnOffset.Rotate(self.Orientation));
+
+				var mv = slave.Trait<IMove>();
+
+				slave.QueueActivity(mv.MoveTo(location, 0));
 
 				w.Add(slave);
-				slave.QueueActivity(false, new Nudge(slave));
-
-				if (Info.SlavesTargetSelf)
-				{
-					var attack = slave.Trait<AttackBase>();
-					attack.AttackTarget(Target.FromActor(self), AttackSource.Default, false, true);
-				}
 
 				if (Info.SpawnContainConditions.TryGetValue(slave.Info.Name, out var spawnContainCondition))
 					spawnContainTokens.GetOrAdd(slave.Info.Name).Push(self.GrantCondition(spawnContainCondition));
