@@ -192,7 +192,7 @@ namespace OpenRA.Mods.CA.Traits
 		readonly BaseBuilderQueueManagerCA[] builders;
 		int currentBuilderIndex = 0;
 
-		readonly ActorIndex.OwnerAndNamesAndTrait<Building> refineryBuildings;
+		readonly ActorIndex.OwnerAndNamesAndTrait<Refinery> refineryBuildings;
 		readonly ActorIndex.OwnerAndNamesAndTrait<Building> powerBuildings;
 		readonly ActorIndex.OwnerAndNamesAndTrait<Building> constructionYardBuildings;
 		readonly ActorIndex.OwnerAndNamesAndTrait<Building> barracksBuildings;
@@ -204,7 +204,7 @@ namespace OpenRA.Mods.CA.Traits
 			world = self.World;
 			player = self.Owner;
 			builders = new BaseBuilderQueueManagerCA[info.BuildingQueues.Count + info.DefenseQueues.Count];
-			refineryBuildings = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.RefineryTypes, player);
+			refineryBuildings = new ActorIndex.OwnerAndNamesAndTrait<Refinery>(world, info.RefineryTypes, player);
 			powerBuildings = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.PowerTypes, player);
 			constructionYardBuildings = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.ConstructionYardTypes, player);
 			barracksBuildings = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.BarracksTypes, player);

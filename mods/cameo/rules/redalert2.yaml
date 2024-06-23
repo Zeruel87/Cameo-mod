@@ -364,6 +364,7 @@ RA2Flameguy:
 		DeathSequencePalette: playerra2
 	Building:
 		BuildSounds: uplace.wav
+		UndeploySounds: uselbuil.wav
 	Explodes:
 		Weapon: RA2BuildingExplode
 		EmptyWeapon: RA2BuildingExplode
@@ -3073,7 +3074,7 @@ yryarefn:
 		BuildDuration: 925
 		BuildDurationModifier: 100
 		Prerequisites: ~yrnacnst, yryapowr
-		Queue: Building, RABuilding
+		#Queue: Building, RABuilding
 		Description: actor-yarefn.description
 	Building:
 		Footprint: xx x+
@@ -3101,26 +3102,26 @@ yryarefn:
 	Selectable:
 		Bounds: 2048, 2048
 		Class: yryarefn
-	FreeActor@1:
-		Actor: yrslav
-		SpawnOffset: 1,1
-		Facing: 256
-		AllowRespawn: True
-	FreeActor@2:
-		Actor: yrslav
-		SpawnOffset: 1,1
-		Facing: 256
-		AllowRespawn: True
-	FreeActor@3:
-		Actor: yrslav
-		SpawnOffset: 1,1
-		Facing: 256
-		AllowRespawn: True
-	FreeActor@4:
-		Actor: yrslav
-		SpawnOffset: 1,1
-		Facing: 256
-		AllowRespawn: True
+	#FreeActor@1:
+	#	Actor: yrslav
+	#	SpawnOffset: 1,1
+	#	Facing: 256
+	#	AllowRespawn: True
+	#FreeActor@2:
+	#	Actor: yrslav
+	#	SpawnOffset: 1,1
+	#	Facing: 256
+	#	AllowRespawn: True
+	#FreeActor@3:
+	#	Actor: yrslav
+	#	SpawnOffset: 1,1
+	#	Facing: 256
+	#	AllowRespawn: True
+	#FreeActor@4:
+	#	Actor: yrslav
+	#	SpawnOffset: 1,1
+	#	Facing: 256
+	#	AllowRespawn: True
 	ProvidesPrerequisite@buildingname:
 	SelectionDecorations:
 	BodyOrientation:
@@ -3149,16 +3150,38 @@ yryarefn:
 		FullSequence: pip-yellow
 
 yryarefn.empy:
-	Inherits@2: yryarefn
-	-Buildable:
-	-FreeActor@1:
-	-FreeActor@2:
-	-FreeActor@3:
-	-FreeActor@4:
+	Selectable:
+		Bounds: 2048, 2048
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: actor-yarefn.name
+	Buildable:
+		BuildPaletteOrder: 20
+		BuildDuration: 925
+		BuildDurationModifier: 100
+		Prerequisites: ~yrnacnst, yryapowr
+		Queue: Building, RABuilding
+		Description: actor-yarefn.description
+	Building:
+		Footprint: xx x+
+		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune 
+	RequiresBuildableArea:
+		AreaTypes: building
+		Adjacent: 3	
+	ActorPreviewPlaceBuildingPreview:
 	RenderSprites:
 		Image: yryarefn
 	ProvidesPrerequisite@yryarefn:
 		Prerequisite: yryarefn
+	FreeActorWithCondition:
+		Actor: yrsmin
+		Condition: placed
+		Facing: 128
+	KillsSelf:
+		RemoveInstead: true
 
 yryggrnd:
 	Inherits: ^RA2Building
@@ -3808,6 +3831,7 @@ RA2E1:
 	Mobile:
 		Speed: 50
 		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
@@ -3932,6 +3956,7 @@ YRGGI:
 	Mobile:
 		Speed: 50
 		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
@@ -5096,14 +5121,18 @@ YRSLAV:
 		Cost: 200
 	Tooltip:
 		Name: Slave
+		RequiresCondition: !freed
+	Tooltip@Freed:
+		Name: Freed Slave
+		RequiresCondition: freed
 	Buildable:
 		BuildPaletteOrder: 25
 		Prerequisites: ~yryabrck
-		Queue: Infantry, RAInfantry
+		#Queue: Infantry, RAInfantry
 		Description: Yuri resource collector.
 	Mobile:
 		Speed: 75
-		Locomotor: foot #infantryharvester
+		Locomotor: chem
 	Health:
 		HP: 10000
 	ChangesHealth@SelfHealing:
@@ -5117,6 +5146,24 @@ YRSLAV:
 		FacingTolerance: 0
 	Voiced:
 		VoiceSet: SlaveWorkerVoice
+		RequiresCondition: !freed
+	Voiced@2:
+		VoiceSet: FreedSlaveVoice
+		RequiresCondition: freed
+	SlaveMinerSpawnerSlave:
+		FreedCondition: freed
+		FreeingRelationships: Neutral, Enemy
+		FreedSound: isl1lia.wav
+		AllowOwnerChange: true
+	DamageMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 25
+	FirepowerMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 400
+	SpeedMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 220
 	Harvester:
 		Voice: Harvest
 		BaleLoadDelay: 10
@@ -5125,8 +5172,7 @@ YRSLAV:
 		FullyLoadedSpeed: 100
 		SearchFromProcRadius: 25
 		SearchFromHarvesterRadius: 10
-		#UnloadQueueCostModifier: 100
-		#QueueFullLoad: true
+		EmptyCondition: no-tiberium
 	StoresResources:
 		Capacity: 5
 	DockClientManager:
@@ -5139,8 +5185,19 @@ YRSLAV:
 	WithInfantryBody:
 		IdleSequences: idle
 		DefaultAttackSequence: shoot
-		RequiresCondition: !harvesting
+		RequiresCondition: no-tiberium && !harvesting
+	WithInfantryBody@full:
+		IdleSequences: idle1,idle2
+		StandSequences: stand
+		MoveSequence: full-run
+		DefaultAttackSequence: shoot
+		RequiresCondition: !no-tiberium && !harvesting
+	WithEnabledAnimation:
+		Sequence: cheer
+		RequiresCondition: freed
 	WithDockingAnimation:
+		DockSequence: idle
+		DockLoopSequence: idle
 	-DamagedByTerrain:
 	-TakeCover:
 	WithStoresResourcesPipsDecoration:
@@ -7099,17 +7156,23 @@ YRSMIN:
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
-	Inherits@SHADOWS: ^Shadows
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@ref: ^Refinery
+	Inherits@MC: ^MindControllableStructure
 	ProvidesPrerequisite:
 		Prerequisite: yryarefn
 	Valued:
 		Cost: 2000
 	Tooltip:
 		Name: actor-smin.name
+		RequiresCondition: !deployed
+	Tooltip@Deployed:
+		Name: actor-yarefn.name
+		RequiresCondition: deployed
 	Buildable:
+		BuildPaletteOrder: 10
 		BuildDuration: 750
 		BuildDurationModifier: 100
-		BuildPaletteOrder: 100
 		Prerequisites: ~yrygweap
 		Queue: Vehicle, RAVehicle
 		Description: actor-smin.description
@@ -7121,6 +7184,9 @@ YRSMIN:
 		Speed: 50
 		TurnSpeed: 10
 		Locomotor: heavywheeled
+		RequiresForceMoveCondition: deployed
+		RequiresCondition: !driver-dead && !being-captured && !beingterrordroned && !deployed
+		ImmovableCondition: driver-dead || deployed
 	Health:
 		HP: 200000
 	Repairable:
@@ -7131,14 +7197,54 @@ YRSMIN:
 		Amount: 0
 	Armor:
 		Type: Heavy
-	Transforms:
-		IntoActor: yryarefn
+	#Transforms:
+	#	IntoActor: yryarefn
+	#	Facing: 128
+	#	TransformSounds: uplace.wav
+	#	NoTransformNotification: BuildingCannotPlaceAudio
+	#	PauseOnCondition: disabled || terrordroned
+	#	Voice: Deploy
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
 		Facing: 128
-		TransformSounds: uplace.wav
-		NoTransformNotification: BuildingCannotPlaceAudio
+		DeploySounds: uplace.wav
+		UndeploySounds: uselbuil.wav
+		UndeployOnMove: true
+		UndeployOnPickup: true
 		PauseOnCondition: disabled || terrordroned
+		RequiresCondition: !parachute
 		Voice: Deploy
-	SelectionDecorations:
+	DockHost:
+		Type: Unload
+		DockAngle: 640
+		DockOffset: 0,724,0
+		MaxQueueLength: 6
+		RequiresCondition: deployed
+	SlaveMinerSpawnerMaster:
+		Actors: yrslav, yrslav, yrslav, yrslav
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: GiveSlavesToAttacker
+		SlaveDisposalOnOwnerChange: GiveSlavesToAttacker
+		SpawnOffset: 511,511,0, 511,511,0, 511,511,0, 511,511,0
+		PauseOnCondition: !deployed
+	ProvidesPrerequisite@yryarefn:
+		Prerequisite: yryarefn
+	ExternalCondition@placed:
+		Condition: placed
+	DeployOnCondition@produced:
+		RequiresCondition: placed
+	Targetable@deployed:
+		TargetTypes: Building
+		RequiresCondition: deployed
+	Targetable@infiltrate:
+		RequiresCondition: deployed
+	Targetable@DiskDrain:
+		RequiresCondition: deployed
+	Targetable@ivan2:
+		TargetTypes: ivanattachable, demolishable
+		RequiresCondition: !ivanbomb && !untargetable && deployed
 	Voiced:
 		VoiceSet: SlaveMinerVoice
 	DeliversCash:
@@ -7154,26 +7260,31 @@ YRSMIN:
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	WithMuzzleOverlay:
+	AutoTarget:
+		AllowMovement: false
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: deployed
+	RejectsMoveToAttack:
+		RequiresCondition: deployed
 	RenderSprites:
 		PlayerPalette: playerra2
 		Image: yrsmin
 	ActorStatValues:
 		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Kills
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+		FullSequence: pip-yellow
 
 yrsmin.empy:
 	Inherits: YRSMIN
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Mobile Slave Miner
 	-Buildable:
-	Transforms:
-		IntoActor: yryarefn.empy
-	DeliversCash:
-		Payload: 500
 	RenderSprites:
 		PlayerPalette: playerra2
 		Image: yrsmin
+	-MapEditorData:
 
 YRYTNK:
 	Inherits: ^Tank
