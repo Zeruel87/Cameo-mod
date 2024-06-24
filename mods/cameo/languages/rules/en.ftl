@@ -69,6 +69,7 @@ actor-jeep =
         Strong vs Infantry
    .name = Humvee
    .raname = Ranger
+   .recon = Recon Ranger
 
 actor-bike =
    .description = Scout vehicle armed with rockets.
@@ -471,7 +472,7 @@ actor-rapierjumpjet =
 
 upgrade-gapgen =
    .description = Allows construction of the Gap Generator
-      and the Mobile Gap Generator.
+      and the Mobile Gap Generator and the Phase Transport.
    .name = Unlock Gap Generator Technology
 
 actor-mortarsoldier =
