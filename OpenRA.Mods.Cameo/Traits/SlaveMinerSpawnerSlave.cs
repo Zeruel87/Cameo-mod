@@ -101,12 +101,29 @@ namespace OpenRA.Mods.Cameo.Traits
 		}
 		void INotifyAddedToWorld.AddedToWorld(Actor self)
 		{
-			if (masterActor == null) return;
+			UpdateMasterDock(self);
+		}
+
+		void UpdateMasterDock(Actor self)
+		{
+			if (masterActor == null)
+			{
+				masterDock = null;
+				return;
+			}
 			var dock = dockClient.AvailableDockHosts(masterActor, true, true).ClosestDock(self, dockClient);
 			if (dock.HasValue)
+			{
 				masterDock = dock.Value.Trait;
+				dockClient.ReserveHost(masterActor, masterDock);
+			}
+		}
 
-			dockClient.ReserveHost(masterActor, masterDock);
+		public void UpdateOnTransform(Actor self)
+		{
+			UpdateMasterDock(self);
+			self.CancelActivity();
+			self.QueueActivity(new FindAndDeliverResources(self));
 		}
 
 		public void Move(Actor self, CPos location)
@@ -128,8 +145,8 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		void INotifyDockClientMoving.MovingToDock(Actor self, Actor hostActor, IDockHost host, bool forceEnter)
 		{
-			if (masterActor != null)
-				self.QueueActivity(new MoveToDock(self, masterActor, masterDock, true));
+			if (DeliverToMaster(self))
+				return;
 			else if (hostActor == null)
 			{
 				harvestedField = self.World.Map.CellContaining(self.CenterPosition);
@@ -151,9 +168,14 @@ namespace OpenRA.Mods.Cameo.Traits
 			DeliverToMaster(self);
 		}
 
-		void DeliverToMaster(Actor self)
+		bool DeliverToMaster(Actor self)
 		{
-			self.QueueActivity(new MoveToDock(self, masterActor, masterDock, true));
+			if (masterActor != null && masterDock != null)
+			{
+				self.QueueActivity(new MoveToDock(self, masterActor, masterDock, true));
+				return true;
+			}
+			return false;
 		}
 
 		public override void OnMasterKilled(Actor self, Actor attacker, SpawnerSlaveDisposal disposal)

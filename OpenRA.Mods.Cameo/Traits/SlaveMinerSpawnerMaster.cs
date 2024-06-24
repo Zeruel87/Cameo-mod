@@ -10,7 +10,9 @@
 
 using System;
 using OpenRA.Activities;
+using OpenRA.Mods.AS.Activities;
 using OpenRA.Mods.AS.Traits;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
@@ -49,7 +51,7 @@ namespace OpenRA.Mods.Cameo.Traits
 	}
 
 	public class SlaveMinerSpawnerMaster : BaseSpawnerMaster, INotifyOwnerChanged, ITick,
-		IResolveOrder
+		IResolveOrder, INotifyTransform, INotifyActorDisposing
 	{
 		class SlaveMinerSpawnerSlaveEntry : BaseSpawnerSlaveEntry
 		{
@@ -70,6 +72,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		int remainingIdleCheckTick;
 		bool isAircraft;
 		bool hasSpawnInitialLoad;
+
+		bool transforming;
 
 		public SlaveMinerSpawnerMaster(ActorInitializer init, SlaveMinerSpawnerMasterInfo info)
 			: base(init, info)
@@ -278,6 +282,33 @@ namespace OpenRA.Mods.Cameo.Traits
 
 			preState = effectiveActivity == null ? ActivityType.Undefined : effectiveActivity.ActivityType;
 			preLoc = self.CenterPosition;
+		}
+
+		void INotifyTransform.BeforeTransform(Actor self) { }
+
+		void INotifyTransform.OnTransform(Actor self) { transforming = true; }
+
+		void INotifyTransform.AfterTransform(Actor toActor)
+		{
+			var harvesterMaster = toActor.Trait<SlaveMinerSpawnerMaster>();
+			foreach (var se in slaveEntries)
+			{
+				if (!se.IsValid) continue;
+				var slave = se.Actor;
+				se.SpawnerSlave.LinkMaster(slave, toActor, harvesterMaster);
+				se.SpawnerSlave.UpdateOnTransform(slave);
+			}
+
+			harvesterMaster.SlaveEntries = SlaveEntries;
+			harvesterMaster.slaveEntries = slaveEntries;
+		}
+
+		void INotifyActorDisposing.Disposing(Actor self)
+		{
+			// Just dispose them regardless of slave disposal options.
+			foreach (var slaveEntry in SlaveEntries)
+				if (slaveEntry.IsValid && !transforming)
+					slaveEntry.SpawnerSlave.OnMasterKilled(slaveEntry.Actor, null, Info.SlaveDisposalOnKill);
 		}
 
 		/* Debug

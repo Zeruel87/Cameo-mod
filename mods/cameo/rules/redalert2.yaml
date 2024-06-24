@@ -531,8 +531,8 @@ RA2Flameguy:
 
 OILB.RA2:
 	Inherits: ^RA2Building
-	Inherits@cashtrickler: ^CashTricklerWithExperience
-	Inherits@cashtricklerlimit: ^CashTricklerLimited
+	Inherits@2: ^CashTricklerWithExperience
+	Inherits@3: ^CashTricklerLimited
 	Inherits@shape: ^2x2Shape
 	Inherits@lowpower: ^DisabledOverlay
 	Inherits@Bot: ^BotMicromanageable
@@ -3074,7 +3074,7 @@ yryarefn:
 		BuildDuration: 925
 		BuildDurationModifier: 100
 		Prerequisites: ~yrnacnst, yryapowr
-		#Queue: Building, RABuilding
+		Queue: Building, RABuilding
 		Description: actor-yarefn.description
 	Building:
 		Footprint: xx x+
@@ -3102,33 +3102,18 @@ yryarefn:
 	Selectable:
 		Bounds: 2048, 2048
 		Class: yryarefn
-	#FreeActor@1:
-	#	Actor: yrslav
-	#	SpawnOffset: 1,1
-	#	Facing: 256
-	#	AllowRespawn: True
-	#FreeActor@2:
-	#	Actor: yrslav
-	#	SpawnOffset: 1,1
-	#	Facing: 256
-	#	AllowRespawn: True
-	#FreeActor@3:
-	#	Actor: yrslav
-	#	SpawnOffset: 1,1
-	#	Facing: 256
-	#	AllowRespawn: True
-	#FreeActor@4:
-	#	Actor: yrslav
-	#	SpawnOffset: 1,1
-	#	Facing: 256
-	#	AllowRespawn: True
+	SlaveMinerSpawnerMaster:
+		Actors: yrslav, yrslav, yrslav, yrslav
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: GiveSlavesToAttacker
+		SlaveDisposalOnOwnerChange: GiveSlavesToAttacker
+		SpawnOffset: 511,511,0, 511,511,0, 511,511,0, 511,511,0
 	ProvidesPrerequisite@buildingname:
 	SelectionDecorations:
 	BodyOrientation:
 	Transforms:
 		RequiresCondition: !build-incomplete && !disabled
-		PauseOnCondition: being-demolished
-		IntoActor: yrsmin.empy
+		IntoActor: yrsmin
 		Facing: 128
 		Voice: Undeploy
 	Turreted:
@@ -3148,40 +3133,6 @@ yryarefn:
 		RequiresSelection: true
 		PipCount: 20
 		FullSequence: pip-yellow
-
-yryarefn.empy:
-	Selectable:
-		Bounds: 2048, 2048
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: actor-yarefn.name
-	Buildable:
-		BuildPaletteOrder: 20
-		BuildDuration: 925
-		BuildDurationModifier: 100
-		Prerequisites: ~yrnacnst, yryapowr
-		Queue: Building, RABuilding
-		Description: actor-yarefn.description
-	Building:
-		Footprint: xx x+
-		Dimensions: 2,2
-		LocalCenterOffset: 0,-512,0
-		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune 
-	RequiresBuildableArea:
-		AreaTypes: building
-		Adjacent: 3	
-	ActorPreviewPlaceBuildingPreview:
-	RenderSprites:
-		Image: yryarefn
-	ProvidesPrerequisite@yryarefn:
-		Prerequisite: yryarefn
-	FreeActorWithCondition:
-		Actor: yrsmin
-		Condition: placed
-		Facing: 128
-	KillsSelf:
-		RemoveInstead: true
 
 yryggrnd:
 	Inherits: ^RA2Building
@@ -3331,8 +3282,8 @@ yrygcomd:
 	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Inherits@shape: ^4x3Shape
 	Inherits@hpad: ^IsAircraftFactory
-	Inherits@cashtrickler: ^CashTricklerWithExperience
-	Inherits@cashtricklerlimit: ^CashTricklerLimited
+	Inherits@cash: ^CashTricklerWithExperience
+	Inherits@cashlimit: ^CashTricklerLimited
 	Valued:
 		Cost: 5000
 	Tooltip:
@@ -7157,18 +7108,12 @@ YRSMIN:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@selection: ^SelectableEconomicUnit
-	Inherits@ref: ^Refinery
-	Inherits@MC: ^MindControllableStructure
 	ProvidesPrerequisite:
 		Prerequisite: yryarefn
 	Valued:
 		Cost: 2000
 	Tooltip:
 		Name: actor-smin.name
-		RequiresCondition: !deployed
-	Tooltip@Deployed:
-		Name: actor-yarefn.name
-		RequiresCondition: deployed
 	Buildable:
 		BuildPaletteOrder: 10
 		BuildDuration: 750
@@ -7197,31 +7142,13 @@ YRSMIN:
 		Amount: 0
 	Armor:
 		Type: Heavy
-	#Transforms:
-	#	IntoActor: yryarefn
-	#	Facing: 128
-	#	TransformSounds: uplace.wav
-	#	NoTransformNotification: BuildingCannotPlaceAudio
-	#	PauseOnCondition: disabled || terrordroned
-	#	Voice: Deploy
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
+	Transforms:
+		IntoActor: yryarefn
 		Facing: 128
-		DeploySounds: uplace.wav
-		UndeploySounds: uselbuil.wav
-		UndeployOnMove: true
-		UndeployOnPickup: true
+		TransformSounds: uplace.wav
+		NoTransformNotification: BuildingCannotPlaceAudio
 		PauseOnCondition: disabled || terrordroned
-		RequiresCondition: !parachute
 		Voice: Deploy
-	DockHost:
-		Type: Unload
-		DockAngle: 640
-		DockOffset: 0,724,0
-		MaxQueueLength: 6
-		RequiresCondition: deployed
 	SlaveMinerSpawnerMaster:
 		Actors: yrslav, yrslav, yrslav, yrslav
 		SlavesHaveFreeWill: true
@@ -7231,20 +7158,6 @@ YRSMIN:
 		PauseOnCondition: !deployed
 	ProvidesPrerequisite@yryarefn:
 		Prerequisite: yryarefn
-	ExternalCondition@placed:
-		Condition: placed
-	DeployOnCondition@produced:
-		RequiresCondition: placed
-	Targetable@deployed:
-		TargetTypes: Building
-		RequiresCondition: deployed
-	Targetable@infiltrate:
-		RequiresCondition: deployed
-	Targetable@DiskDrain:
-		RequiresCondition: deployed
-	Targetable@ivan2:
-		TargetTypes: ivanattachable, demolishable
-		RequiresCondition: !ivanbomb && !untargetable && deployed
 	Voiced:
 		VoiceSet: SlaveMinerVoice
 	DeliversCash:
@@ -7260,23 +7173,11 @@ YRSMIN:
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	WithMuzzleOverlay:
-	AutoTarget:
-		AllowMovement: false
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: deployed
-	RejectsMoveToAttack:
-		RequiresCondition: deployed
 	RenderSprites:
 		PlayerPalette: playerra2
 		Image: yrsmin
 	ActorStatValues:
 		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Kills
-	WithResourceStoragePipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 10
-		FullSequence: pip-yellow
 
 yrsmin.empy:
 	Inherits: YRSMIN
@@ -7632,7 +7533,7 @@ ra2lcrf:
 	Inherits: ^BoatUnit
 	Inherits@cargo: ^UnarmedCargoVehicle
 	Valued:
-		Cost: 750
+		Cost: 900
 	Tooltip:
 		Name: Amphibious Transport
 	UpdatesPlayerStatistics:
@@ -7643,22 +7544,22 @@ ra2lcrf:
 		Queue: Naval, RANaval
 		Description: Amphibious transport for ground units.
 	Mobile:
-		Speed: 75
+		Speed: 90
 		Locomotor: hover
 		RequiresCondition: !notmobile && !disabled
 	Health:
-		HP: 150000
+		HP: 35000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 7500
+		Range: 7c0
 	Selectable:
 		DecorationBounds: 1536, 1536
 	DeliversCash:
 		Payload: 450
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 15
+		MaxWeight: 12
 		PassengerFacing: 0
 	Hovers:
 	Voiced:
@@ -7670,7 +7571,7 @@ ra2sapc:
 	Inherits: ^BoatUnit
 	Inherits@cargo: ^UnarmedCargoVehicle
 	Valued:
-		Cost: 750
+		Cost: 900
 	Tooltip:
 		Name: Amphibious Transport
 	UpdatesPlayerStatistics:
@@ -7681,22 +7582,22 @@ ra2sapc:
 		Queue: Naval, RANaval
 		Description: Amphibious transport for ground units.
 	Mobile:
-		Speed: 75
+		Speed: 90
 		Locomotor: hover
 		RequiresCondition: !notmobile && !disabled
 	Health:
-		HP: 150000
+		HP: 35000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 7500
+		Range: 7c0
 	Selectable:
 		DecorationBounds: 1536, 1536
 	DeliversCash:
 		Payload: 450
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 15
+		MaxWeight: 12
 		PassengerFacing: 0
 	Hovers:
 	Voiced:
@@ -7708,7 +7609,7 @@ yrhovr:
 	Inherits: ^BoatUnit
 	Inherits@cargo: ^UnarmedCargoVehicle
 	Valued:
-		Cost: 750
+		Cost: 900
 	Tooltip:
 		Name: Hover Transport
 	UpdatesPlayerStatistics:
@@ -7719,22 +7620,22 @@ yrhovr:
 		Queue: Naval, RANaval
 		Description: Amphibious transport for ground units.
 	Mobile:
-		Speed: 75
+		Speed: 90
 		Locomotor: hover
 		RequiresCondition: !notmobile && !disabled
 	Health:
-		HP: 150000
+		HP: 35000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 7500
+		Range: 7c0
 	Selectable:
 		DecorationBounds: 1536, 1536
 	DeliversCash:
 		Payload: 450
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 15
+		MaxWeight: 12
 		PassengerFacing: 0
 	Hovers:
 	Voiced:
