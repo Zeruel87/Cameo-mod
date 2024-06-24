@@ -194,7 +194,6 @@ namespace OpenRA.Mods.CA.Traits
 			}
 
 			bot.QueueOrder(new Order("DeployTransform", mcv, true));
-			bot.QueueOrder(new Order("GrantConditionOnDeploy", mcv, true));
 		}
 
 		CPos? ChooseMcvDeployLocation(string actorType, CVec offset, bool distanceToBaseIsImportant)

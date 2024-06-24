@@ -217,8 +217,8 @@ namespace OpenRA.Mods.Cameo.Traits
 					self.Kill(self, Info.DamageTypes);
 					break;
 				case SpawnerSlaveDisposal.GiveSlavesToAttacker:
-					self.CancelActivity();
 					self.ChangeOwner(newOwner);
+					UpdateOnTransform(self);
 					break;
 				case SpawnerSlaveDisposal.DoNothing:
 					masterActor = null;
@@ -230,7 +230,7 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		public override void OnOwnerChanged(Actor self, OpenRA.Player oldOwner, OpenRA.Player newOwner)
 		{
-			if (Master == null || !Master.IsDead || Info.AllowOwnerChange)
+			if (Master == null || !Master.IsDead)
 			{
 				masterActor = null;
 				return;
@@ -241,6 +241,12 @@ namespace OpenRA.Mods.Cameo.Traits
 			// In this case, do nothing.
 			if (Master.Owner == newOwner)
 				return;
+
+			if (Info.AllowOwnerChange)
+			{
+				masterActor = null;
+				return;
+			}
 
 			self.Kill(self, Info.DamageTypes);
 		}
