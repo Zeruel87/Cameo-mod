@@ -14,6 +14,7 @@ using System.Linq;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
+using OpenRA.Mods.AS.Traits;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Traits
@@ -86,7 +87,7 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			world = self.World;
 			player = self.Owner;
-			unitCannotBeOrdered = a => a.Owner != self.Owner || a.IsDead || !a.IsInWorld;
+			unitCannotBeOrdered = a => a.Owner != self.Owner || a.IsDead || !a.IsInWorld || a.Info.HasTraitInfo<BaseSpawnerSlaveInfo>();
 			refineries = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.RefineryTypes, player);
 			harvestersIndex = new ActorIndex.OwnerAndNamesAndTrait<Harvester>(world, info.HarvesterTypes, player);
 		}
@@ -112,13 +113,13 @@ namespace OpenRA.Mods.CA.Traits
 			if (resourceLayer == null || resourceLayer.IsEmpty)
 				return;
 
-			if (--scanForIdleHarvestersTicks > 0)
+			if (--scanForIdleHarvestersTicks <= 0)
 			{
 				OrderHarvesters(bot);
 				scanForIdleHarvestersTicks = Info.ScanForIdleHarvestersInterval;
 			}
 
-			if (--scanForEnoughHarvestersTicks > 0)
+			if (--scanForEnoughHarvestersTicks <= 0)
 			{
 				ProduceHarvesters(bot);
 				scanForEnoughHarvestersTicks = Info.ProduceHarvestersInterval;
