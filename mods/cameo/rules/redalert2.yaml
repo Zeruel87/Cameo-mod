@@ -364,6 +364,7 @@ RA2Flameguy:
 		DeathSequencePalette: playerra2
 	Building:
 		BuildSounds: uplace.wav
+		UndeploySounds: uselbuil.wav
 	Explodes:
 		Weapon: RA2BuildingExplode
 		EmptyWeapon: RA2BuildingExplode
@@ -530,8 +531,8 @@ RA2Flameguy:
 
 OILB.RA2:
 	Inherits: ^RA2Building
-	Inherits@2: ^CashTricklerWithExperience
-	Inherits@3: ^CashTricklerLimited
+	Inherits@cashtrickler: ^CashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
 	Inherits@shape: ^2x2Shape
 	Inherits@lowpower: ^DisabledOverlay
 	Inherits@Bot: ^BotMicromanageable
@@ -2717,7 +2718,7 @@ ra2tesla:
 		RequiresCondition: (TeslaCoilCharge == 3 && !unpowered) || TeslaCoilCharge > 3
 	DroneSpawnerMasterCA:
 		Actors: ra2shk.bot, ra2shk.bot, ra2shk.bot
-		SpawnOffset: 511,511,0, -511,-511,0, -511,511,0
+		SpawnOffset: 511,1c0,0, -511,-1c0,0, -1c0,1c0,0
 		RespawnTicks: 250
 		InitialActorCount: 0
 		SlavesTargetSelf: true
@@ -3101,33 +3102,18 @@ yryarefn:
 	Selectable:
 		Bounds: 2048, 2048
 		Class: yryarefn
-	FreeActor@1:
-		Actor: yrslav
-		SpawnOffset: 1,1
-		Facing: 256
-		AllowRespawn: True
-	FreeActor@2:
-		Actor: yrslav
-		SpawnOffset: 1,1
-		Facing: 256
-		AllowRespawn: True
-	FreeActor@3:
-		Actor: yrslav
-		SpawnOffset: 1,1
-		Facing: 256
-		AllowRespawn: True
-	FreeActor@4:
-		Actor: yrslav
-		SpawnOffset: 1,1
-		Facing: 256
-		AllowRespawn: True
+	SlaveMinerSpawnerMaster:
+		Actors: yrslav, yrslav, yrslav, yrslav
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: GiveSlavesToAttacker
+		SlaveDisposalOnOwnerChange: GiveSlavesToAttacker
+		SpawnOffset: 511,511,0, 511,511,0, 511,511,0, 511,511,0
 	ProvidesPrerequisite@buildingname:
 	SelectionDecorations:
 	BodyOrientation:
 	Transforms:
 		RequiresCondition: !build-incomplete && !disabled
-		PauseOnCondition: being-demolished
-		IntoActor: yrsmin.empy
+		IntoActor: yrsmin
 		Facing: 128
 		Voice: Undeploy
 	Turreted:
@@ -3147,18 +3133,6 @@ yryarefn:
 		RequiresSelection: true
 		PipCount: 20
 		FullSequence: pip-yellow
-
-yryarefn.empy:
-	Inherits@2: yryarefn
-	-Buildable:
-	-FreeActor@1:
-	-FreeActor@2:
-	-FreeActor@3:
-	-FreeActor@4:
-	RenderSprites:
-		Image: yryarefn
-	ProvidesPrerequisite@yryarefn:
-		Prerequisite: yryarefn
 
 yryggrnd:
 	Inherits: ^RA2Building
@@ -3308,8 +3282,8 @@ yrygcomd:
 	Inherits@sell: ^RA2YSpawnActorsOnSell
 	Inherits@shape: ^4x3Shape
 	Inherits@hpad: ^IsAircraftFactory
-	Inherits@cash: ^CashTricklerWithExperience
-	Inherits@cashlimit: ^CashTricklerLimited
+	Inherits@cashtrickler: ^CashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
 	Valued:
 		Cost: 5000
 	Tooltip:
@@ -3808,6 +3782,7 @@ RA2E1:
 	Mobile:
 		Speed: 50
 		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
@@ -3932,6 +3907,7 @@ YRGGI:
 	Mobile:
 		Speed: 50
 		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
@@ -4544,7 +4520,7 @@ YRBORIS:
 		Payload: 600
 	AirstrikeMasterCA@1:
 		ArmamentNames: secondary
-		Actors: yrbpln.boris, yrbpln.boris, yrbpln.boris
+		Actors: yrbpln, yrbpln, yrbpln
 		SquadSize: 3
 		InitialActorCount: -1
 		RespawnTicks: 10
@@ -4937,6 +4913,7 @@ ra2shk.bot:
 		ValidTargets: TeslaCoil
 	-Armament@PRIMARY:
 	-Armament@PRIMARY2:
+	-Armament@PRIMARY3:
 	-Armament@Elite:
 	Armament@TeslaCoilCharge:
 		Weapon: RA2TeslaCoilCharge_cosmetic
@@ -5095,14 +5072,18 @@ YRSLAV:
 		Cost: 200
 	Tooltip:
 		Name: Slave
+		RequiresCondition: !freed
+	Tooltip@Freed:
+		Name: Freed Slave
+		RequiresCondition: freed
 	Buildable:
 		BuildPaletteOrder: 25
 		Prerequisites: ~yryabrck
-		Queue: Infantry, RAInfantry
+		#Queue: Infantry, RAInfantry
 		Description: Yuri resource collector.
 	Mobile:
 		Speed: 75
-		Locomotor: foot #infantryharvester
+		Locomotor: chem
 	Health:
 		HP: 10000
 	ChangesHealth@SelfHealing:
@@ -5113,9 +5094,33 @@ YRSLAV:
 		Name: garrisoned
 		Weapon: RA2Shovel
 	AttackFrontal:
-		FacingTolerance: 0
+		FacingTolerance: 2
+	AutoTarget:
+		ScanRadius: 10
+		RequiresCondition: freed
 	Voiced:
 		VoiceSet: SlaveWorkerVoice
+		RequiresCondition: !freed
+	Voiced@2:
+		VoiceSet: FreedSlaveVoice
+		RequiresCondition: freed
+	SlaveMinerSpawnerSlave:
+		FreedCondition: freed
+		FreeingRelationships: Neutral, Enemy
+		FreedSound: isl1lia.wav
+		AllowOwnerChange: true
+	DamageMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 25
+	FirepowerMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 1000
+	ReloadDelayMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 20
+	SpeedMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 200
 	Harvester:
 		Voice: Harvest
 		BaleLoadDelay: 10
@@ -5124,8 +5129,7 @@ YRSLAV:
 		FullyLoadedSpeed: 100
 		SearchFromProcRadius: 25
 		SearchFromHarvesterRadius: 10
-		#UnloadQueueCostModifier: 100
-		#QueueFullLoad: true
+		EmptyCondition: no-tiberium
 	StoresResources:
 		Capacity: 5
 	DockClientManager:
@@ -5138,8 +5142,19 @@ YRSLAV:
 	WithInfantryBody:
 		IdleSequences: idle
 		DefaultAttackSequence: shoot
-		RequiresCondition: !harvesting
+		RequiresCondition: no-tiberium && !harvesting
+	WithInfantryBody@full:
+		IdleSequences: idle1,idle2
+		StandSequences: stand
+		MoveSequence: full-run
+		DefaultAttackSequence: shoot
+		RequiresCondition: !no-tiberium && !harvesting
+	WithEnabledAnimation:
+		Sequence: cheer
+		RequiresCondition: freed
 	WithDockingAnimation:
+		DockSequence: idle
+		DockLoopSequence: idle
 	-DamagedByTerrain:
 	-TakeCover:
 	WithStoresResourcesPipsDecoration:
@@ -7098,7 +7113,7 @@ YRSMIN:
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
-	Inherits@SHADOWS: ^Shadows
+	Inherits@selection: ^SelectableEconomicUnit
 	ProvidesPrerequisite:
 		Prerequisite: yryarefn
 	Valued:
@@ -7106,9 +7121,9 @@ YRSMIN:
 	Tooltip:
 		Name: actor-smin.name
 	Buildable:
+		BuildPaletteOrder: 10
 		BuildDuration: 750
 		BuildDurationModifier: 100
-		BuildPaletteOrder: 100
 		Prerequisites: ~yrygweap
 		Queue: Vehicle, RAVehicle
 		Description: actor-smin.description
@@ -7120,6 +7135,9 @@ YRSMIN:
 		Speed: 50
 		TurnSpeed: 10
 		Locomotor: heavywheeled
+		RequiresForceMoveCondition: deployed
+		RequiresCondition: !driver-dead && !being-captured && !beingterrordroned && !deployed
+		ImmovableCondition: driver-dead || deployed
 	Health:
 		HP: 200000
 	Repairable:
@@ -7137,7 +7155,15 @@ YRSMIN:
 		NoTransformNotification: BuildingCannotPlaceAudio
 		PauseOnCondition: disabled || terrordroned
 		Voice: Deploy
-	SelectionDecorations:
+	SlaveMinerSpawnerMaster:
+		Actors: yrslav, yrslav, yrslav, yrslav
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: GiveSlavesToAttacker
+		SlaveDisposalOnOwnerChange: GiveSlavesToAttacker
+		SpawnOffset: 511,511,0, 511,511,0, 511,511,0, 511,511,0
+		PauseOnCondition: !deployed
+	ProvidesPrerequisite@yryarefn:
+		Prerequisite: yryarefn
 	Voiced:
 		VoiceSet: SlaveMinerVoice
 	DeliversCash:
@@ -7161,18 +7187,11 @@ YRSMIN:
 
 yrsmin.empy:
 	Inherits: YRSMIN
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Mobile Slave Miner
 	-Buildable:
-	Transforms:
-		IntoActor: yryarefn.empy
-	DeliversCash:
-		Payload: 500
 	RenderSprites:
 		PlayerPalette: playerra2
 		Image: yrsmin
+	-MapEditorData:
 
 YRYTNK:
 	Inherits: ^Tank
@@ -7334,10 +7353,10 @@ YRTELE:
 		Name: primary
 		Weapon: RA2Magnet
 		LocalOffset: 400,0,300
-		RequiresCondition: !rank-elite && !upyrtele
+		RequiresCondition: !rank-elite
 	Armament@Upgraded:
-		Name: primary
-		Weapon: RA2Magnet2
+		Name: secondary
+		Weapon: RA2MagnetAA
 		LocalOffset: 400,0,300
 		RequiresCondition: !rank-elite && upyrtele
 	Armament@elite:
@@ -7345,6 +7364,11 @@ YRTELE:
 		Weapon: RA2Magnet_elite
 		LocalOffset: 400,0,300
 		RequiresCondition: rank-elite
+	Armament@elite_aa:
+		Name: secondary
+		Weapon: RA2MagnetAA_elite
+		LocalOffset: 400,0,300
+		RequiresCondition: rank-elite && upyrtele
 	Armament@Flash:
 		Weapon: RA2MagnetFlash
 		LocalOffset: 400,0,300
@@ -7364,6 +7388,9 @@ YRTELE:
 	GrantConditionOnPrerequisite@Upgrade:
 		Condition: upyrtele
 		Prerequisites: upyrtele
+	RangeMultiplier@Upgrade:
+		Modifier: 125
+		RequiresCondition: upyrtele
 	ActorStatValues:
 		Upgrades: upyrtele, upchaossurprise
 
@@ -7520,7 +7547,7 @@ ra2lcrf:
 	Inherits: ^BoatUnit
 	Inherits@cargo: ^UnarmedCargoVehicle
 	Valued:
-		Cost: 900
+		Cost: 750
 	Tooltip:
 		Name: Amphibious Transport
 	UpdatesPlayerStatistics:
@@ -7531,22 +7558,22 @@ ra2lcrf:
 		Queue: Naval, RANaval
 		Description: Amphibious transport for ground units.
 	Mobile:
-		Speed: 90
+		Speed: 75
 		Locomotor: hover
 		RequiresCondition: !notmobile && !disabled
 	Health:
-		HP: 35000
+		HP: 150000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 7c0
+		Range: 7500
 	Selectable:
 		DecorationBounds: 1536, 1536
 	DeliversCash:
 		Payload: 450
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 12
+		MaxWeight: 15
 		PassengerFacing: 0
 	Hovers:
 	Voiced:
@@ -7558,7 +7585,7 @@ ra2sapc:
 	Inherits: ^BoatUnit
 	Inherits@cargo: ^UnarmedCargoVehicle
 	Valued:
-		Cost: 900
+		Cost: 750
 	Tooltip:
 		Name: Amphibious Transport
 	UpdatesPlayerStatistics:
@@ -7569,22 +7596,22 @@ ra2sapc:
 		Queue: Naval, RANaval
 		Description: Amphibious transport for ground units.
 	Mobile:
-		Speed: 90
+		Speed: 75
 		Locomotor: hover
 		RequiresCondition: !notmobile && !disabled
 	Health:
-		HP: 35000
+		HP: 150000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 7c0
+		Range: 7500
 	Selectable:
 		DecorationBounds: 1536, 1536
 	DeliversCash:
 		Payload: 450
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 12
+		MaxWeight: 15
 		PassengerFacing: 0
 	Hovers:
 	Voiced:
@@ -7596,7 +7623,7 @@ yrhovr:
 	Inherits: ^BoatUnit
 	Inherits@cargo: ^UnarmedCargoVehicle
 	Valued:
-		Cost: 900
+		Cost: 750
 	Tooltip:
 		Name: Hover Transport
 	UpdatesPlayerStatistics:
@@ -7607,22 +7634,22 @@ yrhovr:
 		Queue: Naval, RANaval
 		Description: Amphibious transport for ground units.
 	Mobile:
-		Speed: 90
+		Speed: 75
 		Locomotor: hover
 		RequiresCondition: !notmobile && !disabled
 	Health:
-		HP: 35000
+		HP: 150000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 7c0
+		Range: 7500
 	Selectable:
 		DecorationBounds: 1536, 1536
 	DeliversCash:
 		Payload: 450
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 12
+		MaxWeight: 15
 		PassengerFacing: 0
 	Hovers:
 	Voiced:
@@ -7772,7 +7799,7 @@ ra2dest:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 1000
+		Cost: 1600
 	Tooltip:
 		Name: actor-dest.name
 	UpdatesPlayerStatistics:
@@ -7842,7 +7869,7 @@ ra2aegis:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 2200
+		Cost: 1200
 	Tooltip:
 		Name: actor-aegis.name
 	UpdatesPlayerStatistics:
@@ -9036,7 +9063,7 @@ ra2asw:
 		DetectionTypes: Underwater
 	RenderDetectionCircle:
 	FirepowerMultiplier@ScoutShip:
-		Modifier: 25
+		Modifier: 33
 	SpawnActorOnDeath:
 		Actor: ra2asw.Husk
 
@@ -9150,7 +9177,7 @@ ra2cplane:
 		Condition: enable-smoke
 
 yrbpln:
-	Inherits: ^RANeutralPlane
+	Inherits: ^AirstrikePlane
 	Inherits@Template: ^BomberTemplate
 	-BodyOrientation:
 	Inherits@Voxel: ^RenderVoxel
@@ -9162,7 +9189,7 @@ yrbpln:
 	Valued:
 		Cost: 2000
 	Health:
-		HP: 75000
+		HP: 100000
 	ChangesHealth@SelfHealing:
 		Step: 80
 	HitShape:
@@ -9190,6 +9217,10 @@ yrbpln:
 		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
 		LocalYaw: 50, -50, 25, -25
 		RequiresCondition: upradshells
+	Rearmable:
+		RearmActors: YRBORIS
+	AmmoPool:
+		Ammo: 4
 	WithMuzzleOverlay:
 	Contrail@1:
 		Offset: -640,171,0
@@ -9199,33 +9230,6 @@ yrbpln:
 		TrailLength: 15
 	SpawnActorOnDeath:
 		Actor: yrbpln.husk
-	WithVoxelBody:
-	-WithShadow:
-	RenderSprites:
-		Image: yrbpln
-	RenderVoxels:
-		Image: yrbpln
-
-yrbpln.boris:
-	Inherits: yrbpln
-	Selectable:
-	-UpdatesPlayerStatistics:
-	-GrantConditionOnPrerequisite@enable-shadows:
-	-GrantConditionOnPrerequisite@base-reveal:
-	Health:
-		HP: 100000
-	Aircraft:
-		TurnSpeed: 15
-		Speed: 250
-		Repulsable: False
-		RepulsionSpeed: 3
-		#IdleBehavior: Land
-	AttackAircraft:
-		FacingTolerance: 100
-	Rearmable:
-		RearmActors: YRBORIS
-	AmmoPool:
-		Ammo: 4
 	Contrail@1:
 		Offset: -640,171,0
 		TrailLength: 15
@@ -9244,25 +9248,60 @@ yrbpln.boris:
 		Actor: yrbpln.husk
 	RejectsOrders:
 	GivesExperienceToMaster:
-	-MapEditorData:
-	-ExternalCondition@STASIS:
-	-DelayedWeaponAttachable@lockdown:
-	-ExternalCondition@EMP:
+	WithVoxelBody:
+	-WithShadow:
+	RenderSprites:
+		Image: yrbpln
+	RenderVoxels:
+		Image: yrbpln
 
 yrbpln1:
-	Inherits: yrbpln
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^BomberTemplate
+	-BodyOrientation:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@Voxel: ^RenderVoxel
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@rad: ^RA2RadShells
+	Selectable:
+	Tooltip:
+		Name: actor-bpln.name
+	Valued:
+		Cost: 2000
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites:  ~ra2naairf, ~upra2mig
 		Queue: Aircraft, RAAircraft
 		Description: actor-bpln.description
+	Health:
+		HP: 75000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	HitShape:
+	Voiced:
+		VoiceSet: MiGVoice
+	DeathSounds:
+	Aircraft:
+		TurnSpeed: 17
+		Speed: 250
+		IdleTurnSpeed: 17
+		IdleSpeed: 180
+		RepulsionSpeed: 3
+	AttackAircraft:
+		Voice: Attack
+		FacingTolerance: 100
 	Armament:
+		Name: primary
 		Weapon: MigMissiles_AG
-		PauseOnCondition: !ammo
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 50, -50, 25, -25
+		RequiresCondition: !upradshells
 	Armament@rad:
+		Name: primary
 		Weapon: MigMissiles_AG_rad
-		PauseOnCondition: !ammo
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 50, -50, 25, -25
+		RequiresCondition: upradshells
 	Armament@aa:
 		Name: secondary
 		Weapon: MigMissiles_AA
@@ -9279,6 +9318,21 @@ yrbpln1:
 		Position: BottomLeft
 		RequiresSelection: True
 		PipCount: 4
+	WithMuzzleOverlay:
+	Contrail@1:
+		Offset: -640,171,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -640,-171,0
+		TrailLength: 15
+	SpawnActorOnDeath:
+		Actor: yrbpln.husk
+	WithVoxelBody:
+	-WithShadow:
+	RenderSprites:
+		Image: yrbpln
+	RenderVoxels:
+		Image: yrbpln
 
 ####################################################################################################
 #		Red Alert 2 TechBuilding
@@ -10806,7 +10860,7 @@ upyrtele:
 	Buildable:
 		BuildPaletteOrder: 87
 		Queue: Promotions
-		Description: Makes Magnetrons damage vehicles.
+		Description: Makes Magnetrons attack air and gain range.
 		Prerequisites: ~yrnacnst, !upyrtele, rank1
 	RenderSprites:
 		Image: yrtele

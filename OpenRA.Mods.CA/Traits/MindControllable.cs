@@ -135,7 +135,7 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			self.CancelActivity();
 
-			if (creatorOwner.WinState == WinState.Lost)
+			if (creatorOwner.WinState == WinState.Lost || !creatorOwner.PlayerActor.IsInWorld)
 				self.ChangeOwner(self.World.Players.First(p => p.InternalName == info.FallbackOwner));
 			else
 				self.ChangeOwner(creatorOwner);

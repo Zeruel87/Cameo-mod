@@ -10,15 +10,16 @@
 
 using System;
 using OpenRA.Activities;
-using OpenRA.Mods.Common.Traits;
+using OpenRA.Mods.AS.Activities;
 using OpenRA.Mods.AS.Traits;
+using OpenRA.Mods.Common.Activities;
+using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
-using System.Collections.Generic;
 
 namespace OpenRA.Mods.Cameo.Traits
 {
 	[Desc("This actor can spawn actors. Disable this trait to disable drone control, Pause this trait to stop drone spawning")]
-	public class DroneSpawnerMasterCAInfo : BaseSpawnerMasterInfo
+	public class SlaveMinerSpawnerMasterInfo : BaseSpawnerMasterInfo
 	{
 		[Desc("Can the slaves be controlled independently?")]
 		public readonly bool SlavesHaveFreeWill = false;
@@ -29,56 +30,38 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("When idle and not moving, master check slaves and gathers them in this many tick. Set it properly can save performance")]
 		public readonly int IdleCheckTick = 103;
 
-		[Desc("After master attack, slaves will stop and follow master in this many tick. Mainly used for long-range attack also use drone")]
-		public readonly int FollowAfterAttackDelay = 0;
-
-		[Desc("Always make slaves target self instead.")]
-		public readonly bool SlavesTargetSelf = false;
-
 		[Desc("Spawn initial load all at once?")]
 		public readonly bool ShouldSpawnInitialLoad = true;
-
-		[GrantedConditionReference]
-		[Desc("The condition to grant to self while spawned units are loaded.",
-			"Condition can stack with multiple spawns.")]
-		public readonly string LoadedCondition = null;
-
-		[Desc("Conditions to grant when specified actors are contained inside the transport.",
-			"A dictionary of [actor id]: [condition].")]
-		public readonly Dictionary<string, string> SpawnContainConditions = new();
-
-		[GrantedConditionReference]
-		public IEnumerable<string> LinterSpawnContainConditions { get { return SpawnContainConditions.Values; } }
 
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
 			base.RulesetLoaded(rules, ai);
 
 			if (Actors == null || Actors.Length == 0)
-				throw new YamlException($"Actors is null or empty for DroneSpawner for actor type {ai.Name}!");
+				throw new YamlException($"Actors is null or empty for SlaveMinerSpawner for actor type {ai.Name}!");
 
 			if (InitialActorCount > Actors.Length || InitialActorCount < -1)
-				throw new YamlException("DroneSpawner can't have more InitialActorCount than the actors defined!");
+				throw new YamlException("SlaveMinerSpawner can't have more InitialActorCount than the actors defined!");
 
 			if (GatherCell.Length > Actors.Length)
 				throw new YamlException($"Length of GatherOffsetCell can't be larger than the actors defined! (Actor type = {ai.Name})");
 		}
 
-		public override object Create(ActorInitializer init) { return new DroneSpawnerMasterCA(init, this); }
+		public override object Create(ActorInitializer init) { return new SlaveMinerSpawnerMaster(init, this); }
 	}
 
-	public class DroneSpawnerMasterCA : BaseSpawnerMaster, INotifyOwnerChanged, ITick,
-		IResolveOrder, INotifyAttack
+	public class SlaveMinerSpawnerMaster : BaseSpawnerMaster, INotifyOwnerChanged, ITick,
+		IResolveOrder, INotifyTransform, INotifyActorDisposing
 	{
-		class DroneSpawnerSlaveEntry : BaseSpawnerSlaveEntry
+		class SlaveMinerSpawnerSlaveEntry : BaseSpawnerSlaveEntry
 		{
-			public new DroneSpawnerSlave SpawnerSlave;
+			public new SlaveMinerSpawnerSlave SpawnerSlave;
 			public CVec GatherOffsetCell = CVec.Zero;
 		}
 
-		public new DroneSpawnerMasterCAInfo Info { get; }
+		public new SlaveMinerSpawnerMasterInfo Info { get; }
 
-		DroneSpawnerSlaveEntry[] slaveEntries;
+		SlaveMinerSpawnerSlaveEntry[] slaveEntries;
 		int spawnReplaceTicks;
 		int followTick;
 
@@ -90,10 +73,9 @@ namespace OpenRA.Mods.Cameo.Traits
 		bool isAircraft;
 		bool hasSpawnInitialLoad;
 
-		readonly Dictionary<string, Stack<int>> spawnContainTokens = new();
-		readonly Stack<int> loadedTokens = new();
+		bool transforming;
 
-		public DroneSpawnerMasterCA(ActorInitializer init, DroneSpawnerMasterCAInfo info)
+		public SlaveMinerSpawnerMaster(ActorInitializer init, SlaveMinerSpawnerMasterInfo info)
 			: base(init, info)
 		{
 			Info = info;
@@ -120,20 +102,20 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		public override BaseSpawnerSlaveEntry[] CreateSlaveEntries(BaseSpawnerMasterInfo info)
 		{
-			slaveEntries = new DroneSpawnerSlaveEntry[info.Actors.Length]; // For this class to use
+			slaveEntries = new SlaveMinerSpawnerSlaveEntry[info.Actors.Length]; // For this class to use
 
 			for (var i = 0; i < slaveEntries.Length; i++)
-				slaveEntries[i] = new DroneSpawnerSlaveEntry();
+				slaveEntries[i] = new SlaveMinerSpawnerSlaveEntry();
 
 			return slaveEntries; // For the base class to use
 		}
 
 		public override void InitializeSlaveEntry(Actor slave, BaseSpawnerSlaveEntry entry)
 		{
-			var se = entry as DroneSpawnerSlaveEntry;
+			var se = entry as SlaveMinerSpawnerSlaveEntry;
 			base.InitializeSlaveEntry(slave, se);
 
-			se.SpawnerSlave = slave.Trait<DroneSpawnerSlave>();
+			se.SpawnerSlave = slave.Trait<SlaveMinerSpawnerSlave>();
 		}
 
 		public void ResolveOrder(Actor self, Order order)
@@ -151,25 +133,12 @@ namespace OpenRA.Mods.Cameo.Traits
 			}
 		}
 
-		void INotifyAttack.PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel) { }
-
-		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
-		{
-			// Drone Master only pause attack when trait is Disabled
-			// HACK: If Armament hits instantly and kills the target, the target will become invalid
-			if (target.Type == TargetType.Invalid || (Info.ArmamentNames.Count > 0 && !Info.ArmamentNames.Contains(a.Info.Name)) || Info.SlavesHaveFreeWill || Info.SlavesTargetSelf || IsTraitDisabled)
-				return;
-
-			AssignTargetsToSlaves(self, target);
-			followTick = Info.FollowAfterAttackDelay;
-		}
-
 		void ITick.Tick(Actor self)
 		{
 			if (!self.IsInWorld)
 				return;
 
-			if (!hasSpawnInitialLoad)
+			if (!IsTraitPaused && !hasSpawnInitialLoad)
 			{
 				// Spawn initial load.
 				var burst = Info.InitialActorCount == -1 ? Info.Actors.Length : Info.InitialActorCount;
@@ -213,71 +182,13 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			foreach (var se in slaveEntries)
 				if (se.IsValid && !se.Actor.IsInWorld)
-				{
 					SpawnIntoWorld(self, se.Actor, self.CenterPosition + se.Offset.Rotate(self.Orientation));
-				}
-
-			if (Info.SlavesTargetSelf)
-				AssignTargetsToSlaves(self, Target.FromActor(self));
 		}
 
 		public override void OnSlaveKilled(Actor self, Actor slave)
 		{
 			if (spawnReplaceTicks <= 0)
 				spawnReplaceTicks = Info.RespawnTicks;
-
-			if (spawnContainTokens.TryGetValue(slave.Info.Name, out var spawnContainToken) && spawnContainToken.Count > 0)
-				self.RevokeCondition(spawnContainToken.Pop());
-
-			if (loadedTokens.Count > 0 && Info.LoadedCondition != null)
-				self.RevokeCondition(loadedTokens.Pop());
-		}
-
-		public override void SpawnIntoWorld(Actor self, Actor slave, WPos centerPosition)
-		{
-			var exit = self.RandomExitOrDefault(self.World, null);
-			SetSpawnedFacing(slave, null);
-
-			self.World.AddFrameEndTask(w =>
-			{
-				if (self.IsDead)
-					return;
-
-				var spawnOffset = exit == null ? WVec.Zero : exit.Info.SpawnOffset;
-				var positionable = slave.Trait<IPositionable>();
-				positionable.SetPosition(slave, centerPosition + spawnOffset.Rotate(self.Orientation));
-				positionable.SetCenterPosition(slave, centerPosition + spawnOffset.Rotate(self.Orientation));
-
-				var location = self.World.Map.CellContaining(centerPosition + spawnOffset.Rotate(self.Orientation));
-
-				var mv = slave.Trait<IMove>();
-
-				slave.QueueActivity(mv.MoveTo(location, 0));
-
-				w.Add(slave);
-
-				if (Info.SpawnContainConditions.TryGetValue(slave.Info.Name, out var spawnContainCondition))
-					spawnContainTokens.GetOrAdd(slave.Info.Name).Push(self.GrantCondition(spawnContainCondition));
-
-				if (!string.IsNullOrEmpty(Info.LoadedCondition))
-					loadedTokens.Push(self.GrantCondition(Info.LoadedCondition));
-			});
-		}
-
-		void AssignTargetsToSlaves(Actor self, Target target)
-		{
-			foreach (var se in slaveEntries)
-			{
-				if (!se.IsValid)
-					continue;
-				if (se.SpawnerSlave.Info.AttackCallBackDistance.LengthSquared > (self.CenterPosition - target.CenterPosition).HorizontalLengthSquared)
-					se.SpawnerSlave.Attack(se.Actor, target);
-				else if (preLoc != self.CenterPosition)
-				{
-					MoveSlaves(self);
-					remainingIdleCheckTick = Info.IdleCheckTick;
-				}
-			}
 		}
 
 		void MoveSlaves(Actor self)
@@ -371,6 +282,33 @@ namespace OpenRA.Mods.Cameo.Traits
 
 			preState = effectiveActivity == null ? ActivityType.Undefined : effectiveActivity.ActivityType;
 			preLoc = self.CenterPosition;
+		}
+
+		void INotifyTransform.BeforeTransform(Actor self) { }
+
+		void INotifyTransform.OnTransform(Actor self) { transforming = true; }
+
+		void INotifyTransform.AfterTransform(Actor toActor)
+		{
+			var harvesterMaster = toActor.Trait<SlaveMinerSpawnerMaster>();
+			foreach (var se in slaveEntries)
+			{
+				if (!se.IsValid) continue;
+				var slave = se.Actor;
+				se.SpawnerSlave.LinkMaster(slave, toActor, harvesterMaster);
+				se.SpawnerSlave.UpdateOnTransform(slave);
+			}
+
+			harvesterMaster.SlaveEntries = SlaveEntries;
+			harvesterMaster.slaveEntries = slaveEntries;
+		}
+
+		void INotifyActorDisposing.Disposing(Actor self)
+		{
+			// Just dispose them regardless of slave disposal options.
+			foreach (var slaveEntry in SlaveEntries)
+				if (slaveEntry.IsValid && !transforming)
+					slaveEntry.SpawnerSlave.OnMasterKilled(slaveEntry.Actor, null, Info.SlaveDisposalOnKill);
 		}
 
 		/* Debug

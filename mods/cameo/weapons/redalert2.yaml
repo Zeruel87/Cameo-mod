@@ -231,6 +231,7 @@ HarrierMissiles:
 	Range: 7000
 	Report: vintatta.wav
 	MinRange: 1000
+	Projectile: Missile
 	Warhead@MediumMissile: SpreadDamage
 		Damage: 8000
 		ValidRelationships: Neutral, Enemy
@@ -727,8 +728,10 @@ RA2TURRETFLAKAA:
 RA2DepthCharge:
 	Inherits: DepthCharge
 	Report: vospatta.wav
-	ReloadDelay: 20
+	ReloadDelay: 25
 	Range: 3000
+	Burst: 5
+	BurstDelays: 3
 	Projectile: Missile
 		Speed: 256
 		Image: BOMB
@@ -1373,8 +1376,7 @@ RA2DiskSteal:
 RA2Magnet:
 	Inherits: ^RA2LaserWeapon
 	Range: 7500
-	ValidTargets: Structure
-	InvalidTargets: Air
+	ValidTargets: Vehicle, Structure
 	ReloadDelay: 120
 	Report: vmagatta.wav
 	TargetActorCenter: true
@@ -1398,7 +1400,6 @@ RA2Magnet:
 
 RA2Magnet2:
 	Inherits: RA2Magnet
-	ValidTargets: Vehicle, Structure
 
 RA2Magnet_elite:
 	Inherits: RA2Magnet2
@@ -1414,7 +1415,6 @@ RA2Magnet_elite:
 
 RA2MagnetFlash:
 	ValidTargets: Vehicle
-	InvalidTargets: Air
 	ReloadDelay: 120
 	Range: 7500
 	Report: vmagat2a.wav
@@ -1434,6 +1434,25 @@ RA2MagnetAA:
 	ValidTargets: Air
 	Warhead@LaserWeapon: SpreadDamage
 		ValidTargets: Air
+	Warhead@LaserWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Air
+	Warhead@2Con: GrantExternalCondition
+		Condition: Magnet
+		Duration: 50
+		Range: 500
+		ValidTargets: Air
+
+RA2MagnetAA_elite:
+	Inherits: RA2MagnetAA
+	Projectile: LaserZap
+		Color: e6000045
+	Range: 8500
+	Warhead@LaserWeapon: SpreadDamage
+		Falloff: 120, 100
+		Damage: 60000
+	Warhead@LaserWeaponPercentage: HealthPercentageDamage
+		Falloff: 120, 100
+		Damage: 30
 
 RA2MagnetFlashAA:
 	Inherits: RA2MagnetFlash
@@ -1938,6 +1957,7 @@ RA2Dronegas:
 		ImpactActors: false
 	Warhead@2: SpreadDamage
 		Range: 5000
+		Falloff: 100, 100
 	Warhead@3: GrantExternalCondition
 		Range: 5000
 		Condition: chaosgas
@@ -2030,8 +2050,8 @@ RA2XMindControlSplash:
 		Range: 2000
 		Delay: 30
 		ChangeOwnerValidRelationships: Neutral, Enemy
-		ChangeOwnerValidTargets: Infantry, Vehicle, Ship
-		ChangeOwnerInvalidTargets: Structure
+		ChangeOwnerValidTargets: Infantry, Vehicle, Ship, Submarine
+		ChangeOwnerInvalidTargets: Structure, MCImmune
 
 RA2XMindControlSplash2:
 	Inherits: RA2XMindControlSplash
@@ -2121,7 +2141,7 @@ RA2PSIAtomic:
 	Warhead@2Own: MindControl
 		Range: 5000
 		ChangeOwnerValidRelationships: Neutral, Enemy
-		ChangeOwnerValidTargets: Infantry, Vehicle
+		ChangeOwnerValidTargets: Infantry, Vehicle, Ship, Submarine
 		ChangeOwnerInvalidTargets: Hero, MCImmune
 		Delay: 50
 		ValidTargets: Ground, Air, Water
@@ -2238,7 +2258,7 @@ MigMissiles:
 	Projectile: Missile
 		Speed: 400
 		Arm: 2
-		Inaccuracy: 1c512
+		Inaccuracy: 1000
 		RangeLimit: 15c0
 		Image: d2k_missile2
 		Palette: d2keffect
@@ -3088,7 +3108,7 @@ RA2Virusgun:
 
 RA2Virusgun2:
 	Inherits: RA2Virusgun
-	ValidTargets: Infantry, Vehicle
+	ValidTargets: Ground, Ship
 
 RA2VirusgunE:
 	Inherits: RA2Virusgun2
@@ -3577,9 +3597,7 @@ SEALAttach:
 	Range: 1500
 	Warhead@1: AttachDelayedWeapon
 		Weapon: SealBomb
-		TriggerTime: 10
-		ScaleTriggerTimeWithValue: true
-
+		TriggerTime: 75
 
 TanyaAttach:
 	Inherits: SEALAttach
@@ -3589,7 +3607,6 @@ TanyaAttach:
 	Warhead@1: AttachDelayedWeapon
 		Weapon: TanyaBomb
 		TriggerTime: 50
-		ScaleTriggerTimeWithValue: false
 
 IvanBomb:
 	Warhead@1Dam: SpreadDamage

@@ -176,6 +176,7 @@ namespace OpenRA.Mods.CA.Traits
 				// Check if Building is a plug for other Building
 				var actorInfo = world.Map.Rules.Actors[currentBuilding.Item];
 				var plugInfo = actorInfo.TraitInfoOrDefault<PlugInfo>();
+				var distanceToBaseIsImportant = true;
 				if (plugInfo != null)
 				{
 					var possibleBuilding = world.ActorsWithTrait<Pluggable>().FirstOrDefault(a =>
@@ -190,7 +191,16 @@ namespace OpenRA.Mods.CA.Traits
 				else
 				{
 					// Check if Building is a defense and if we should place it towards the enemy or not.
-					if (world.Map.Rules.Actors[currentBuilding.Item].HasTraitInfo<AttackBaseInfo>())
+					if (baseBuilder.Info.RefineryTypes.Contains(world.Map.Rules.Actors[currentBuilding.Item].Name))
+					{
+						type = BuildingType.Refinery;
+					}
+					else if (baseBuilder.Info.FragileTypes.Contains(world.Map.Rules.Actors[currentBuilding.Item].Name))
+					{
+						type = BuildingType.Fragile;
+						// distanceToBaseIsImportant = false;
+					}
+					else if (world.Map.Rules.Actors[currentBuilding.Item].HasTraitInfo<AttackBaseInfo>())
 					{
 						if (baseBuilder.Info.AntiAirTypes.Contains(world.Map.Rules.Actors[currentBuilding.Item].Name))
 							placeDefenseTowardsEnemyChance = (int)Math.Ceiling(placeDefenseTowardsEnemyChance / 1.5);
@@ -198,13 +208,9 @@ namespace OpenRA.Mods.CA.Traits
 						if (world.LocalRandom.Next(100) < placeDefenseTowardsEnemyChance)
 							type = BuildingType.Defense;
 					}
-					else if (baseBuilder.Info.RefineryTypes.Contains(world.Map.Rules.Actors[currentBuilding.Item].Name))
-					{
-						type = BuildingType.Refinery;
-					}
 				}
 
-				if (orderString != "PlacePlug") { location = ChooseBuildLocation(currentBuilding.Item, true, queue.Actor, type); }
+				if (orderString != "PlacePlug") { location = ChooseBuildLocation(currentBuilding.Item, distanceToBaseIsImportant, queue.Actor, type); }
 
 				if (location == null)
 				{
@@ -471,13 +477,13 @@ namespace OpenRA.Mods.CA.Traits
 				return null;
 
 			// Find the buildable cell that is closest to pos and centered around center
-			Func<CPos, CPos, int, int, CPos?> findPos = (center, target, minRange, maxRange) =>
+			Func<CPos, CPos, int, int, bool, CPos?> findPos = (center, target, minRange, maxRange, sortMax) =>
 			{
 				var cells = world.Map.FindTilesInAnnulus(center, minRange, maxRange);
 
 				// Sort by distance to target if we have one
 				if (center != target)
-					cells = cells.OrderBy(c => (c - target).LengthSquared);
+					cells = sortMax ? cells.OrderByDescending(c => (c - target).LengthSquared) : cells.OrderBy(c => (c - target).LengthSquared);
 				else
 					cells = cells.Shuffle(world.LocalRandom);
 
@@ -507,7 +513,12 @@ namespace OpenRA.Mods.CA.Traits
 						.ClosestToIgnoringPath(world.Map.CenterOfCell(baseBuilder.DefenseCenter));
 
 					var targetCell = closestEnemy != null ? closestEnemy.Location : baseCenter;
-					return findPos(baseBuilder.DefenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius);
+					return findPos(baseBuilder.DefenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius, false);
+
+				case BuildingType.Fragile:
+					// Build away from where enemy last attacked
+					return findPos(baseCenter, baseBuilder.DefenseCenter, baseBuilder.Info.MinBaseRadius,
+						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange, true);
 
 				case BuildingType.Refinery:
 
@@ -520,18 +531,18 @@ namespace OpenRA.Mods.CA.Traits
 
 						foreach (var r in nearbyResources)
 						{
-							var found = findPos(baseCenter, r, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius);
+							var found = findPos(baseCenter, r, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius, false);
 							if (found != null)
 								return found;
 						}
 					}
 
 					// Try and find a free spot somewhere else in the base
-					return findPos(baseCenter, baseCenter, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius);
+					return findPos(baseCenter, baseCenter, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius, false);
 
 				case BuildingType.Building:
 					return findPos(baseCenter, baseCenter, baseBuilder.Info.MinBaseRadius,
-						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange);
+						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange, false);
 			}
 
 			// Can't find a build location

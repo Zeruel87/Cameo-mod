@@ -1006,6 +1006,8 @@
 	Inherits@buff: ^MBTBuff
 	RevealsShroud:
 		Range: 6000
+	Armor:
+		Type: Medium
 
 ^HighTechTankTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
@@ -1015,6 +1017,8 @@
 		Range: 7000
 	Buildable:
 		BuildDurationModifier: 50
+	Armor:
+		Type: Medium
 
 ^LineBreakerTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceMelee
@@ -1030,6 +1034,8 @@
 		Delay: 1
 		StartIfBelow: 100
 		DamageCooldown: 1
+	Armor:
+		Type: Heavy
 	RevealsShroud:
 		Range: 5500
 	AutoTarget:
@@ -1051,6 +1057,8 @@
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
 	Inherits@jammable: ^ArtilleryJammable
+	Armor:
+		Type: Medium
 	RenderRangeCircle:
 		RangeCircleType: vehicle
 	RevealsShroud:
@@ -1073,6 +1081,8 @@
 		Delay: 1
 		StartIfBelow: 100
 		DamageCooldown: 1
+	Armor:
+		Type: Superheavy
 	RevealsShroud:
 		Range: 8000
 	DetectCloaked:
@@ -1236,6 +1246,8 @@
 		Delay: 1
 		StartIfBelow: 100
 		DamageCooldown: 1
+	Armor:
+		Type: Medium
 	RevealsShroud:
 		Range: 10000
 	DetectCloaked:
@@ -1257,6 +1269,8 @@
 		Delay: 1
 		StartIfBelow: 100
 		DamageCooldown: 1
+	Armor:
+		Type: Heavy
 	RevealsShroud:
 		Range: 12500
 	Buildable:
@@ -1273,6 +1287,8 @@
 		Delay: 1
 		StartIfBelow: 100
 		DamageCooldown: 1
+	Armor:
+		Type: Medium
 	RevealsShroud:
 		Range: 15000
 	RangeMultiplier@ArtilleryShipBuff:
@@ -1791,6 +1807,61 @@
 	Parachutable:
 		FallRate: 20
 		KilledOnImpassableTerrain: false
+
+^AirstrikePlane:
+	Inherits@1: ^BasicUnit
+	Inherits@SHADOWS: ^Shadows
+	Armor:
+		Type: Light
+	AppearsOnRadar:
+		UseLocation: true
+	Selectable:
+		Bounds: 1024, 1024
+	SelectionDecorations:
+		MinimumZoom: 0.5
+	Aircraft:
+		IdleTurnSpeed: 8
+		AirborneCondition: airborne
+	GrantCondition@untargetable:
+		Condition: untargetable
+		RequiresCondition: chronobeamed
+	Targetable:
+		RequiresCondition: !untargetable
+		TargetTypes: Air, Aircraft
+	HiddenUnderFog:
+		Type: GroundPosition
+	GpsDot:
+		String: Plane
+	RangedGpsDot:
+		Sequence: Plane
+	Tooltip:
+		Name: Plane
+		GenericName: Plane
+	WithShadow:
+		Offset: 43, 128, 0
+		ZOffset: -129
+	WithFacingSpriteBody:
+	SpawnActorOnDeath:
+		RequiresCondition: airborne
+	Explodes:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+		RequiresCondition: airborne
+	Explodes@2:
+		Weapon: UnitExplode
+		RequiresCondition: !airborne && !chronobeamed
+	RevealsShroud:
+		Type: GroundPosition
+		RevealGeneratedShroud: False
+	RevealsShroud@GAPGEN:
+		Type: GroundPosition
+	Targetable@chrono:
+		TargetTypes: Chronobeamable
+		RequiresCondition: !airborne
+	Cloak@TDcloak:
+		DetectionTypes: AirCloak
+	Cloak@TScloak:
+		DetectionTypes: AirCloak
 
 ^Helicopter:
 	Inherits@1: ^RANeutralPlane
@@ -2817,6 +2888,9 @@
 		BlueTint: 0.05
 	Targetable:
 		RequiresCondition: !damaged && !untargetable
+	Targetable@destroyed:
+		TargetTypes: TechHusk
+		RequiresCondition: damaged
 
 ^CivBuildingHusk:
 	Inherits@1: ^SpriteActor
@@ -4657,7 +4731,11 @@ CPQDEBUGDUMMY:
 
 ^Repairable:
 	Repairable:
-		RepairActors: fix.gdi,fix.nod,rafix.allies,rafix.soviet,rafix.japan,ra2nadept,ra2gadept,c1fix,c2fix,c1rafix,c2rafix,cra2nadept,cra2gadept,tsgtdept,scshieldbattery,cscshieldbattery,2100rr,c12100rr,c22100rr,chweap,usaweap,glweap,leangweap,drfgrep,swfix,rafix.camea,drirep,repair_pad,orepair_pad,d2k_silo_tleilaxu,susaweap,tagdidept,tanoddept,drirep.actibliz,n64fixgdi,n64fixnod,drterrep,zfix
+		RepairActors: fix.gdi, fix.nod, rafix.allies, rafix.soviet, rafix.japan, ra2nadept, ra2gadept, aa_cgdept
+
+^RearmAtServiceDepot:
+	Rearmable:
+		RearmActors: fix.gdi, fix.nod, rafix.allies, rafix.soviet, rafix.japan, ra2nadept, ra2gadept, aa_cgdept
 
 ^ShootableMissile:
 	Inherits@1: ^ExistsInWorld
@@ -4752,7 +4830,7 @@ CPQDEBUGDUMMY:
 		ValidRelationships: Ally, Neutral, Enemy
 	Targetable@ivan:
 		TargetTypes: ivanattachable
-		RequiresCondition: !ivanbomb && !chronobeamed
+		RequiresCondition: !ivanbomb && !untargetable
 	Targetable@ivaned:
 		TargetTypes: ivanattached, Repair
 		RequiresCondition: ivanbomb && !chronobeamed
@@ -5896,6 +5974,9 @@ CPQDEBUGDUMMY:
 
 ^UnarmedCargoVehicle:
 	Inherits: ^CargoVehicle
+	Selectable:
+		Priority: 6
+		PriorityModifiers: Ctrl, Alt
 	ActorStatValues:
 		Stats: Armor, Sight, Speed, Cargo
 

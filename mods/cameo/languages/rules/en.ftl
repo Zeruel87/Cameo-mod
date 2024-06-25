@@ -69,6 +69,7 @@ actor-jeep =
         Strong vs Infantry
    .name = Humvee
    .raname = Ranger
+   .recon = Recon Ranger
 
 actor-bike =
    .description = Scout vehicle armed with rockets.
@@ -471,7 +472,7 @@ actor-rapierjumpjet =
 
 upgrade-gapgen =
    .description = Allows construction of the Gap Generator
-      and the Mobile Gap Generator.
+      and the Mobile Gap Generator and the Phase Transport.
    .name = Unlock Gap Generator Technology
 
 actor-mortarsoldier =
@@ -1286,7 +1287,8 @@ actor-aashinobi =
 
 actor-alligator =
    .description = Large reptile.
-       Strong vs Infantry
+       Strong vs Infantry, Vehicles
+       Weak vs Defenses, Aircraft
 
 actor-aaquas =
    .description = Light scout vehicle.
@@ -1295,12 +1297,14 @@ actor-aaquas =
 
 actor-aapulv =
    .description = Armed with a gatling cannon.
+       Strong vs Infantry, Air
 
 actor-aahowi =
    .description = Mobile heavy artillery.
 
 actor-aaviper =
-   .description = Hovercraft armed with chemical cannons.
+   .description = Hovering mobile artillery.
+      Attacks leave toxin clouds.
 
 actor-aamecha =
    .description = Robot armed with machine guns.
@@ -1308,6 +1312,10 @@ actor-aamecha =
 
 actor-aapanth =
    .description = Amphibious transport armed with a cannon.
+
+actor-aaoilt =
+   .description = Truck carrying fuel.
+      Explodes violently when destroyed or deployed.
 
 actor-aapelican =
    .description = Helicopter armed with missiles.
@@ -1335,6 +1343,19 @@ actor-aatsun =
 
 actor-aaksub =
    .description = Suicide bomber submarine.
+
+actor-cgpnch =
+   .description = Defense buildable on water.
+      Can detect submarines.
+       Strong vs Ships, Submarines
+
+actor-cghype =
+   .description = Anti-aircraft tractor beam.
+      Requires power to operate.
+       Strong vs Air
+
+actor-cgtnkr =
+   .description = Fill with Oil Trucks to generate more power.
 
 actor-cgchtw =
    .description = Defense that dispenses chaos gas.

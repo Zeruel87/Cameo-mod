@@ -368,10 +368,13 @@ aa_cgtech:
 
 aa_cgmiac:
 	Inherits: ^RA2Building
-	Inherits@shape: ^3x2Shape
+	Inherits@cashtrickler: ^CashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
+	Inherits@shape: ^3x3Shape
 	Inherits@sell: ^AASpawnActorsOnSell
-	Selectable:
-		Bounds: 3072, 2048, 0, -256
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@barr: ^IsBarrack
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 140
@@ -380,18 +383,50 @@ aa_cgmiac:
 		Prerequisites: ~aa_cgcnst, aa_cgtech, ~upaa_cgmiac
 		Description: Upgrades the Veterancy of Troops.
 	Valued:
-		Cost: 2500
+		Cost: 5000
 	Tooltip:
 		Name: Military Academy
 	Building:
-		Footprint: xx xx xx
-		Dimensions: 3,2
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
 	Health:
 		HP: 300000
 	Armor:
-		Type: Wood
+		Type: Concrete
 	RevealsShroud:
-		Range: 10c0
+		Range: 7500
+	RallyPoint:
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -500,750,0
+		ExitCell: 1,2
+	Exit@2:
+		SpawnOffset: -750,500,0
+		ExitCell: 2,1
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+	ParallelProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@Infantry:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAInfantry:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
 	SupportPowerChargeBar:
 	Power:
 		Amount: -100
@@ -464,12 +499,12 @@ aa_cgairf:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 130
-		BuildDuration: 1500
+		BuildDuration: 375
 		BuildDurationModifier: 100
 		Prerequisites: ~aa_cgcnst, aa_cgradr
 		Description: template-airfield.description
 	Valued:
-		Cost: 1250
+		Cost: 1000
 	Tooltip:
 		Name: Asian Airforce Command
 	Building:
@@ -661,7 +696,7 @@ aa_cgpnch:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
 		Prerequisites: ~aa_cgcnst, aa_cgbrck
-		Description: Coastal Guard Defense, Buildable on water.
+		Description: actor-cgpnch.description
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -782,7 +817,6 @@ aa_cgchtw:
 		Voice: Attack
 	Armament:
 		Weapon: AsianChaosTurret
-		LocalOffset: 0,0,1000
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
@@ -814,7 +848,7 @@ aa_cgtnkr:
 		BuildDuration: 750
 		BuildDurationModifier: 100
 		Queue: Building, RABuilding
-		Description: Fill with Oil Trucks to generate More Power.
+		Description: actor-cgtnkr.description
 		Prerequisites: ~aa_cgcnst, aa_cgtech
 	Building:
 		Footprint: xxx =x=
@@ -912,7 +946,7 @@ aa_cghype:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
 		Prerequisites: ~aa_cgcnst, aa_cgradr, ~upaa_cghype
-		Description: template-anti-aircraft-power-defense.description
+		Description: actor-cghype.description
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -938,8 +972,6 @@ aa_cghype:
 		Name: primary
 		Weapon: AAHymperionMagnet_elite
 		RequiresCondition: rank-elite
-	Armament@Flash:
-		Weapon: AAHymperionMagnetFlash
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
@@ -1217,50 +1249,53 @@ aa_cgyard:
 #   Red Alert 2 Asian Infantry
 ##############################################
 ^KamikazeMode:
+	GrantConditionOnPrerequisite@MilitaryAcedemy:
+		Condition: MilitaryAcedemy
+		Prerequisites: aa_cgmiac
 	GrantConditionOnDamageState@angry:
 		ValidDamageStates: Heavy
 		Condition: KamikazeAngry
 	DamageMultiplier@KamikazeAngry:
-		RequiresCondition: KamikazeAngry
-		Modifier: 6
+		RequiresCondition: KamikazeAngry && MilitaryAcedemy
+		Modifier: 66
 	RangeMultiplier@KamikazeAngry:
-		RequiresCondition: KamikazeAngry
-		Modifier: 80
+		RequiresCondition: KamikazeAngry && MilitaryAcedemy
+		Modifier: 75
 	FirepowerMultiplier@KamikazeAngry:
-		RequiresCondition: KamikazeAngry
+		RequiresCondition: KamikazeAngry && MilitaryAcedemy
 		Modifier: 150
 	SpeedMultiplier@KamikazeAngry:
-		RequiresCondition: KamikazeAngry
-		Modifier: 165
+		RequiresCondition: KamikazeAngry && MilitaryAcedemy
+		Modifier: 150
 	GrantConditionOnDamageState@kamikaze:
 		ValidDamageStates: Critical
 		Condition: KamikazeCritical
 	DamageMultiplier@KamikazeCritical:
-		RequiresCondition: KamikazeCritical
-		Modifier: 4
+		RequiresCondition: KamikazeCritical && MilitaryAcedemy
+		Modifier: 33
 	RangeMultiplier@KamikazeCritical:
-		RequiresCondition: KamikazeCritical
-		Modifier: 75
+		RequiresCondition: KamikazeCritical && MilitaryAcedemy
+		Modifier: 50
 	FirepowerMultiplier@KamikazeCritical:
-		RequiresCondition: KamikazeCritical
+		RequiresCondition: KamikazeCritical && MilitaryAcedemy
 		Modifier: 200
 	SpeedMultiplier@KamikazeCritical:
-		RequiresCondition: KamikazeCritical
-		Modifier: 220
+		RequiresCondition: KamikazeCritical && MilitaryAcedemy
+		Modifier: 200
 	WithDecoration@KamikazeAngry:
 		Image: aa_banzai
 		Sequence: idle
 		Position: TopRight
 		BlinkInterval: 32
 		BlinkPattern: On, On, On, On
-		RequiresCondition: KamikazeAngry
+		RequiresCondition: KamikazeAngry && MilitaryAcedemy
 	WithDecoration@KamikazeCritical:
 		Image: aa_banzai
 		Sequence: idle2
 		Position: TopRight
 		BlinkInterval: 32
 		BlinkPattern: On, On, On, On
-		RequiresCondition: KamikazeCritical
+		RequiresCondition: KamikazeCritical && MilitaryAcedemy
 	#RejectsOrders@KamikazeCritical:
 	#	RequiresCondition: KamikazeCritical
 
@@ -1272,6 +1307,7 @@ aa_gren:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@kami: ^KamikazeMode
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -1307,6 +1343,8 @@ aa_gren:
 	GrantConditionOnPrerequisite@Grenadier:
 		Condition: upaa_gren
 		Prerequisites: upaa_gren
+	ActorStatValues:
+		Upgrades: upaa_gren
 
 aa_tkiller:
 	Inherits: ^Soldier
@@ -1316,6 +1354,7 @@ aa_tkiller:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@kami: ^KamikazeMode
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -1361,6 +1400,7 @@ aa_plast:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@kami: ^KamikazeMode
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -1397,6 +1437,7 @@ aa_flam:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@kami: ^KamikazeMode
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -1558,6 +1599,7 @@ aa_shinobi:
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@CLOAK: ^CloakedVehicle
+	Inherits@kami: ^KamikazeMode
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -1812,6 +1854,7 @@ aa_oilt:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 180
 		Prerequisites: ~aa_cgradr
+		Description: actor-aaoilt.description
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -1885,13 +1928,19 @@ aa_drmn:
 		Bounds: 512, 512
 		DecorationBounds: 512, 512
 	Valued:
-		Cost: 450
+		Cost: 250
 	Tooltip:
 		Name: Drone Miner
 	Buildable:
 		Prerequisites: ~aa_cgrefn
 		Queue: Vehicle, RAVehicle
 		Description: template-harvester.description
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 1250
+	ChangesHealth@SelfHealing:
+		Step: 10
 	WithDockingAnimation:
 	Voiced:
 		VoiceSet: AsianDroneVoice
@@ -1899,6 +1948,9 @@ aa_drmn:
 		Payload: 225
 	RenderSprites:
 		PlayerPalette: playerra2
+	Mobile:
+		Speed: 90
+		TurnSpeed: 18
 	Harvester:
 		BaleLoadDelay: 4
 		BaleUnloadDelay: 1
@@ -1908,8 +1960,6 @@ aa_drmn:
 		Capacity: 5
 	Mobile:
 		Locomotor: chem
-	Health:
-		HP: 20000
 
 aa_pulv:
 	Inherits: ^Tank
@@ -2091,7 +2141,7 @@ aa_hotwi:
 
 aa_viper:
 	Inherits: ^Tank
-	Inherits@Template: ^LineBreakerTemplate
+	Inherits@Template: ^ArtilleryTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -2376,7 +2426,7 @@ aa_phoenix:
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	Tooltip:
 		Name: Phoenix
 	UpdatesPlayerStatistics:
@@ -2405,32 +2455,43 @@ aa_phoenix:
 		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
 		LocalYaw: 100, -100, 50, -50
 		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: primary
+		Weapon: AsianPhoenixRocketAA
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 100, -100, 50, -50
+		PauseOnCondition: !ammo
 	AmmoPool:
-		Ammo: 2
+		Ammo: 4
 		AmmoCondition: ammo
 	ReloadAmmoPool:
 		Delay: 40
 		Count: 2
 	SpawnActorOnDeath:
 		Actor: aa_phoenix.Husk
-	GrantConditionOnMovement@Turn:
-		Condition: Aircraft-Turning
-		ValidMovementTypes: Turn
-	GrantConditionOnMovement@H:
-		ValidMovementTypes: Horizontal
-		Condition: Aircraft-Horizontal
-	GrantConditionOnMovement@V:
-		ValidMovementTypes: Vertical
-		Condition: Aircraft-Vertical
+	#GrantConditionOnMovement@Turn:
+	#	Condition: Aircraft-Turning
+	#	ValidMovementTypes: Turn
+	#GrantConditionOnMovement@H:
+	#	ValidMovementTypes: Horizontal
+	#	Condition: Aircraft-Horizontal
+	#GrantConditionOnMovement@V:
+	#	ValidMovementTypes: Vertical
+	#	Condition: Aircraft-Vertical
 	WithMoveAnimation@Turn-L:
 		MoveSequence: move-l
-		RequiresCondition: Aircraft-Turning && Aircraft-Horizontal
+		ValidMovementTypes: Horizontal, Turn
 	WithMoveAnimation@Turn-R:
 		MoveSequence: move-r
-		RequiresCondition: Aircraft-Turning && Aircraft-Vertical
+		ValidMovementTypes: Vertical, Turn
 	WithMoveAnimation:
 		MoveSequence: move
-		Condition: !Aircraft-Turning
+	Contrail@1:
+		Offset: -100,256,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -100,-256,0
+		TrailLength: 15
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
@@ -2438,7 +2499,6 @@ aa_phoenix:
 		VoiceSet: CHMiGVoice
 	AttackAircraft:
 		Voice: Attack
-		AttackType: Strafe
 		FacingTolerance: 80
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
@@ -3191,15 +3251,28 @@ upaa_gren:
 		Image: aa_gren
 	ProvidesPrerequisite:
 
+upaa_lynx:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Lynx Machinegun
+	Buildable:
+		BuildPaletteOrder: 102
+		Queue: Promotions
+		Description: Lynx now uses a Machinegun.
+		Prerequisites: ~aa_cgcnst, upaa_gren, !upaa_lynx, rank1
+	RenderSprites:
+		Image: aa_lynx
+	ProvidesPrerequisite:
+
 upaa_railt2:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
 		Name: Unlock Heavy Railgun Tank
 	Buildable:
-		BuildPaletteOrder: 102
+		BuildPaletteOrder: 105
 		Queue: Promotions
 		Description: Enables construction of the Heavy Railgun Tank.
-		Prerequisites: ~aa_cgcnst, upaa_gren, !upaa_railt2, rank1
+		Prerequisites: ~aa_cgcnst, upaa_lynx, !upaa_railt2, rank1
 	RenderSprites:
 		Image: aa_railt2
 	ProvidesPrerequisite:
@@ -3209,23 +3282,10 @@ upaa_cgmiac:
 	Tooltip:
 		Name: Unlock Military Academy
 	Buildable:
-		BuildPaletteOrder: 105
-		Queue: Promotions
-		Description: Enables construction of the Military Academy.
-		Prerequisites: ~aa_cgcnst, upaa_railt2, rank1
-	RenderSprites:
-		Image: aa_cgmiac
-	ProvidesPrerequisite:
-
-upaa_lynx:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Lynx Machinegun
-	Buildable:
 		BuildPaletteOrder: 108
 		Queue: Promotions
-		Description: Lynx now uses a Machinegun.
-		Prerequisites: ~aa_cgcnst, upaa_cgmiac, rank1
+		Description: Enables construction of the Military Academy.
+		Prerequisites: ~aa_cgcnst, upaa_railt2, !upaa_cgmiac, rank1
 	RenderSprites:
-		Image: aa_lynx
+		Image: aa_cgmiac
 	ProvidesPrerequisite:
