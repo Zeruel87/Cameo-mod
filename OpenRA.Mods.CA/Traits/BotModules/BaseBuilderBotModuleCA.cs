@@ -51,6 +51,9 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Tells the AI what building types are considered silos (resource storage).")]
 		public readonly HashSet<string> SiloTypes = new HashSet<string>();
 
+		[Desc("Tells the AI what building types are considered fragile.")]
+		public readonly HashSet<string> FragileTypes = new HashSet<string>();
+
 		[Desc("Production queues AI uses for buildings.")]
 		public readonly HashSet<string> BuildingQueues = new HashSet<string> { "Building" };
 
