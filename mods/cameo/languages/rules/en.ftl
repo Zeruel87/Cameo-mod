@@ -840,6 +840,13 @@ actor-jpspeedboat =
         Weak vs Ships
    .name = Japanese Speedboat
 
+actor-japancarrier =
+   .description = Very slow long-range ship.
+      Can attack air.
+        Strong vs Buildings, Ground units
+        Weak vs Naval units, Aircraft
+   .name = Japanese Aircraft Carrier
+
 actor-yamatobattleship =
    .description = Very slow long-range ship.
       Can attack air.
