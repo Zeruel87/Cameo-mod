@@ -13,7 +13,7 @@ using OpenRA.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.Example.Rendering
+namespace OpenRA.Mods.Cameo.Traits
 {
 	[TraitLocation(SystemActors.World | SystemActors.EditorWorld)]
 	[Desc("Add color shifts to player palettes. Use to add RGBA compatibility to PlayerColorPalette.")]
