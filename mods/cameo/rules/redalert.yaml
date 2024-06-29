@@ -1290,7 +1290,6 @@ RAHARV:
 		DecorationBounds: 1536, 1536
 	SelectionDecorations:
 	Harvester:
-		PipCount: 10
 		BaleLoadDelay: 4
 		BaleUnloadDelay: 1
 		SearchFromProcRadius: 25
@@ -1335,60 +1334,6 @@ RAHARV:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 10
-	RenderSprites:
-		PlayerPalette: raplayer
-
-RAMCV:
-	Inherits: ^Vehicle
-	Inherits@Template: ^SupportVehicleTemplate
-	Inherits@selection: ^SelectableSupportUnit
-	Inherits@mcv: ^MCV
-	Buildable:
-		#Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 90
-		Prerequisites: ~rafix
-		BuildDuration: 1500
-		BuildDurationModifier: 100
-		Description: template-mcv.description
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Mobile Construction Vehicle
-	Selectable:
-		Priority: 4
-		DecorationBounds: 1536, 1536
-	SelectionDecorations:
-	Health:
-		HP: 300000
-	Repairable:
-		HpPerStep: 15000
-	ChangesHealth@SelfHealing:
-		Step: 120
-	Armor:
-		Type: Medium
-	Mobile:
-		Speed: 75
-		Locomotor: heavywheeled
-	Transforms:
-		IntoActor: rafact
-		Offset: -1,-1
-		Facing: 384
-		TransformSounds: placbldg.aud, build5.aud
-		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
-	Explodes:
-		Weapon: UnitExplodeBig
-	#SpawnActorOnDeath:
-	#	Actor: RAMCV.Husk
-	Voiced:
-		VoiceSet: RAVehicleVoice
-	WithTextDecoration:
-		Text: MCV
-		Position: BottomLeft
-		UsePlayerColor: True
-		ValidRelationships: Ally, Enemy, Neutral
 	RenderSprites:
 		PlayerPalette: raplayer
 
@@ -3696,114 +3641,6 @@ RALST:
 #		BUILDINGS
 ####################################################################################################
 
-RAFACT:
-	Inherits: ^BaseBuilding
-	Inherits@CPQ: ^CPQCondition
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -1536, -1536
-			BottomRight: 1536, 1536
-	Selectable:
-		Bounds: 3072, 3072, 0, -128
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Construction Yard
-	Building:
-		Footprint: xxx xxx xxx
-		Dimensions: 3,3
-	Health:
-		HP: 300000 #150000
-	Armor:
-		Type: Wood
-	RevealsShroud:
-		Range: 10c0
-	WithBuildingBib:
-	Production@NORMAL:
-		Produces: Building, Defence, Building, Defence
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence, RABuilding, RADefence
-		RequiresCondition: classicproductionqueues
-	Transforms:
-		IntoActor: ramcv
-		Offset: 1,1
-		Facing: 432
-		RequiresCondition: factundeploy
-	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
-		Condition: factundeploy
-		Prerequisites: global-factundeploy
-	ProductionQueue@AlliesBuilding:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		LowPowerModifier: 200
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@SovietBuilding:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		LowPowerModifier: 200
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@AlliesDefense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Defence
-		LowPowerModifier: 300
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@SovietDefense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Defence
-		LowPowerModifier: 300
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	BaseBuilding:
-	ProductionBar@BuildingAllies:
-		ProductionType: Building
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@DefenceSoviet:
-		ProductionType: Defence
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@BuildingSoviet:
-		ProductionType: Building
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@DefenceSoviet:
-		ProductionType: Defence
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RABuildingAllies:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RADefenceSoviet:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RABuildingSoviet:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RADefenceSoviet:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
-	BaseProvider:
-		Range: 14c0
-	WithBuildingPlacedAnimation:
-	Power:
-		Amount: 0
-	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite@factionallies:
-		Prerequisite: mmallies
-		Factions: allies
-	ProvidesPrerequisite@factionsoviet:
-		Prerequisite: mmsoviet
-		Factions: soviet
-	RenderSprites:
-		PlayerPalette: raplayer
-	WithDeathAnimation:
-		DeathSequencePalette: raplayer
-
 RAFACT.ALLIES:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
@@ -3825,6 +3662,8 @@ RAFACT.ALLIES:
 		HP: 1000000
 	Armor:
 		Type: Concrete
+	Power:
+		Amount: 100
 	RevealsShroud:
 		Range: 10c0
 	WithBuildingBib:
@@ -3886,8 +3725,6 @@ RAFACT.ALLIES:
 	BaseProvider:
 		Range: 15c0
 	WithBuildingPlacedAnimation:
-	Power:
-		Amount: 0
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 1000
@@ -3941,7 +3778,7 @@ POWR:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 120000 #40000
+		HP: 125000 #40000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -3983,11 +3820,11 @@ APWR:
 		Bounds: 3072, 3072, 0, -512
 	SelectionDecorations:
 	Health:
-		HP: 240000
+		HP: 250000
 	Armor:
 		Type: Wood
 	RevealsShroud:
-		Range: 4c0
+		Range: 5c0
 	WithBuildingBib:
 	Power:
 		Amount: 300
@@ -6203,7 +6040,7 @@ MODSPACEPORT:
 		BuildPaletteOrder: 120
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Prerequisites: atek, ~upmodspaceport
+		Prerequisites: atek, ~upmodspaceport, derricklimit
 		Description: Produces vehicles.
 	Valued:
 		Cost: 5000
@@ -6263,7 +6100,7 @@ MODSPACEPORT:
 		SpawnType: ClosestEdgeToDestination
 		ProportionalSpeed: true
 		RequiresCondition: classicproductionqueues
-	ProductionQueue:
+	ParallelProductionQueue:
 		Type: Vehicle
 		DisplayOrder: 3
 		Group: Vehicle
