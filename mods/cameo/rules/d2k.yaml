@@ -650,7 +650,7 @@ concretea:
 		BuildPaletteOrder: 110
 		BuildDuration: 15
 		BuildDurationModifier: 100
-		Prerequisites: ~d2k_prereq_no_tleilaxu
+		Prerequisites: ~construction_yard
 
 concreteb:
 	Inherits: ^concrete
@@ -663,7 +663,7 @@ concreteb:
 		Cost: 80
 	Buildable:
 		BuildPaletteOrder: 110
-		Prerequisites: upgrade.conyard, ~d2k_prereq_no_tleilaxu
+		Prerequisites: ~upgrade.conyard
 		BuildDuration: 25
 		BuildDurationModifier: 100
 
@@ -674,7 +674,7 @@ OILB.d2k:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 200
-		Prerequisites: research_centre.ixian, derricklimit
+		Prerequisites: ~research_centre, derricklimit
 		Description: Absorbs Spice obtained by the wind flow\nFilters out the sand\nProvides Passive income
 		IconPalette: d2kunit
 	Tooltip:
@@ -973,16 +973,18 @@ d2k_barracks.ixian:
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RAInfantry
 		RequiresCondition: classicproductionqueues
-	ProductionQueue:
+	ParallelProductionQueue:
 		Type: Infantry
+		DisplayOrder: 2
 		Group: Infantry
+		LowPowerModifier: 300
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
-		LowPowerModifier: 250
 		LimitedAudio: BuildingInProgress
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
 	ProductionBar@infantry:
 		ProductionType: Infantry
 		RequiresCondition: !classicproductionqueues
@@ -1158,10 +1160,10 @@ refinery.atreides:
 	Inherits: ^D2KBuilding
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@ref: ^Refinery
+	Inherits@shape: ^3x3Shape
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, wind_trap.atreides
 		Queue: Building, RABuilding
-		BuildPaletteOrder: 130
 		Description: Harvesters unload Spice here for processing.
 		IconPalette: d2kunit
 	Valued:
@@ -1185,7 +1187,7 @@ refinery.atreides:
 			TopLeft: -1536, 0
 			BottomRight: 512, 1024
 	RevealsShroud:
-		Range: 5c0
+		Range: 6c0
 	Refinery:
 	DockHost:
 		DockAngle: 640
@@ -1257,8 +1259,6 @@ d2k_silo.atreides:
 	-WithSpriteBody:
 	WithResourceLevelSpriteBody:
 		Sequence: stages
-	StoresResources:
-		Capacity: 4000
 	Power:
 		Amount: -10
 	MustBeDestroyed:
@@ -1537,16 +1537,18 @@ d2k_munitions.ixian:
 # 	Production@CLASSICPRODUCTIONQUEUES:
 # 		Produces: RAVehicle
 # 		RequiresCondition: classicproductionqueues
-# 	ProductionQueue:
-# 		Type: Vehicle
-# 		Group: Vehicle
-# 		ReadyAudio: UnitReady
-# 		LowPowerModifier: 250
-# 		BlockedAudio: NoBuild
-# 		LimitedAudio: BuildingInProgress
-# 		QueuedAudio: Building
-# 		OnHoldAudio: OnHold
-# 		BuildDurationModifier: 200
+	# ParallelProductionQueue:
+	# 	Type: Vehicle
+	# 	DisplayOrder: 3
+	# 	Group: Vehicle
+	# 	LowPowerModifier: 300
+	# 	ReadyAudio: UnitReady
+	# 	BlockedAudio: NoBuild
+	# 	LimitedAudio: BuildingInProgress
+	# 	QueuedAudio: Training
+	# 	OnHoldAudio: OnHold
+	# 	CancelledAudio: Cancelled
+	# 	InfiniteBuildLimit: 10
 # 	ProductionBar@vehicle:
 # 		ProductionType: Vehicle
 # 		RequiresCondition: !classicproductionqueues
@@ -1991,6 +1993,8 @@ research_centre.ixian:
 	Power:
 		Amount: -100
 	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@research_centre:
+		Prerequisite: research_centre
 	-WithDeathAnimation:
 	ThrowsShrapnel:
 		Weapons: Debris2, Debris3
@@ -2170,7 +2174,7 @@ wall:
 		Action: ChangeOwner
 	Buildable:
 		Queue: Defence, RADefence
-		Prerequisites: d2k_barracks, upgrade.conyard, ~techlevel.low, ~d2k_prereq_no_tleilaxu
+		Prerequisites: ~upgrade.conyard
 		BuildPaletteOrder: 410
 		BuildDuration: 62
 		BuildDurationModifier: 100
@@ -2230,119 +2234,6 @@ wall:
 		Categories: Defense
 	Replaceable:
 		Types: Tower
-
-medium_gun_turret.ixian:
-	Inherits: ^D2KDefense
-	Inherits@exp: ^GainsExperienceRABuilding
-	Inherits@buff: ^MBTBuff
-	Inherits@AUTOTARGET: ^AutoTargetGround
-	Inherits@EMP: ^TurretEMP
-	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@shape: ^1x1Shape
-	Buildable:
-		Queue: Defence, RADefence
-		Prerequisites: ~construction_yard.ixian, d2k_barracks.ixian
-		BuildPaletteOrder: 550
-		Description: Defensive structure.\nDetector.\n  Strong vs Tanks\n  Weak vs Infantry, Aircraft
-		IconPalette: d2kunit
-	Valued:
-		Cost: 800
-	Tooltip:
-		Name: Gun Turret
-	WithMakeAnimation:
-	Health:
-		HP: 100000
-	BodyOrientation:
-		QuantizedFacings: 32
-	WithMuzzleOverlay:
-	WithSpriteBody:
-		Name: make
-		Sequence: invisible
-	WithMakeAnimation:
-		Condition: build-incomplete
-		BodyNames: make
-	Turreted:
-		TurnSpeed: 96
-		InitialFacing: 2048
-		RealignDelay: -1
-	Armament:
-		Weapon: 110mm_Gun
-		LocalOffset: 512,0,432
-		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
-	Power:
-		Amount: -50
-	Replacement:
-		ReplaceableTypes: Tower
-	WithWallSpriteBody:
-		RequiresCondition: !build-incomplete
-	WithSpriteTurret:
-		RequiresCondition: !build-incomplete
-	AttackTurreted:
-		RequiresCondition: !build-incomplete
-	-WithDeathAnimation:
-	ThrowsShrapnel:
-		Weapons: Debris2, Debris3
-		Pieces: 2, 4
-		Range: 1c512, 2c768
-	SpawnActorOnDeath@death1:
-		Actor: light_inf
-	RenderSprites:
-		Image: medium_gun_turret
-	Power:
-		Amount: -40
-	RevealsShroud:
-		Range: 7500
-
-# artillery_platform:
-# 	Inherits: medium_gun_turret
-# 	Inherits@AntiInf: ^PrioritizeInfantry
-# 	AutoTargetPriority@INFANTRY:
-# 		Priority: 50
-# 	Buildable:
-# 		Queue: Defence, RADefence
-# 		Prerequisites: ~anyordos, d2k_barracks, upgrade.barracks, ~!faction.smugglers, ~!faction.tleilaxu
-# 		BuildPaletteOrder: 510
-# 		Description: Defensive structure.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
-# 	Health:
-# 		HP: 32500
-# 	Valued:
-# 		Cost: 800
-# 	Tooltip:
-# 		Name: Artillery Platform
-# 	Armament:
-# 		Weapon: D2K_155mm_turret
-# 		LocalOffset: 512,0,640
-# 		Recoil: 150
-# 		RecoilRecovery: 19
-# 	-DetectCloaked:
-
-# autogun_turret:
-# 	Inherits: medium_gun_turret
-# 	Inherits@AntiInf: ^PrioritizeInfantry
-# 	-AutoTargetPriority@VEHICLE:
-# 	Buildable:
-# 		Queue: Defence, RADefence
-# 		Prerequisites: ~autogun_prereq, d2k_barracks, upgrade.barracks
-# 		BuildPaletteOrder: 510
-# 		Description: Defensive structure.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
-# 		IconPalette: chrome
-# 	Health:
-# 		HP: 35000
-# 	Valued:
-# 		Cost: 800
-# 	Tooltip:
-# 		Name: Autogun Turret
-# 	Armament:
-# 		Weapon: autogun_turret
-# 		LocalOffset: 500,-150,400, 500,150,400
-# 		MuzzleSequence: muzzle
-# 		MuzzlePalette: d2keffect
-# 	-DetectCloaked:
-# 	WithSpriteTurret:
-# 		Palette: player
-# 		IsPlayerPalette: True
 
 machine_gun_turret:
 	Inherits: ^D2KDefense
@@ -2405,6 +2296,117 @@ machine_gun_turret:
 	RevealsShroud:
 		Range: 6666
 
+medium_gun_turret.ixian:
+	Inherits: ^D2KDefense
+	Inherits@exp: ^GainsExperienceRABuilding
+	Inherits@buff: ^MBTBuff
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@shape: ^1x1Shape
+	Buildable:
+		Queue: Defence, RADefence
+		Prerequisites: ~upgrade.conyard, d2k_barracks.ixian
+		BuildPaletteOrder: 550
+		Description: Defensive structure.\nDetector.\n  Strong vs Tanks\n  Weak vs Infantry, Aircraft
+		IconPalette: d2kunit
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Gun Turret
+	WithMakeAnimation:
+	Health:
+		HP: 125000
+	BodyOrientation:
+		QuantizedFacings: 32
+	WithMuzzleOverlay:
+	WithSpriteBody:
+		Name: make
+		Sequence: invisible
+	WithMakeAnimation:
+		Condition: build-incomplete
+		BodyNames: make
+	Turreted:
+		TurnSpeed: 96
+		InitialFacing: 2048
+		RealignDelay: -1
+	Armament:
+		Weapon: 110mm_Gun
+		LocalOffset: 512,0,432
+		MuzzleSequence: muzzle
+		MuzzlePalette: d2keffect
+	Replacement:
+		ReplaceableTypes: Tower
+	WithWallSpriteBody:
+		RequiresCondition: !build-incomplete
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	-WithDeathAnimation:
+	ThrowsShrapnel:
+		Weapons: Debris2, Debris3
+		Pieces: 2, 4
+		Range: 1c512, 2c768
+	SpawnActorOnDeath@death1:
+		Actor: light_inf
+	RenderSprites:
+		Image: medium_gun_turret
+	Power:
+		Amount: -50
+	RevealsShroud:
+		Range: 7400
+
+# artillery_platform:
+# 	Inherits: medium_gun_turret
+# 	Inherits@AntiInf: ^PrioritizeInfantry
+# 	AutoTargetPriority@INFANTRY:
+# 		Priority: 50
+# 	Buildable:
+# 		Queue: Defence, RADefence
+# 		Prerequisites: ~anyordos, d2k_barracks, upgrade.barracks, ~!faction.smugglers, ~!faction.tleilaxu
+# 		BuildPaletteOrder: 510
+# 		Description: Defensive structure.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
+# 	Health:
+# 		HP: 32500
+# 	Valued:
+# 		Cost: 800
+# 	Tooltip:
+# 		Name: Artillery Platform
+# 	Armament:
+# 		Weapon: D2K_155mm_turret
+# 		LocalOffset: 512,0,640
+# 		Recoil: 150
+# 		RecoilRecovery: 19
+# 	-DetectCloaked:
+
+# autogun_turret:
+# 	Inherits: medium_gun_turret
+# 	Inherits@AntiInf: ^PrioritizeInfantry
+# 	-AutoTargetPriority@VEHICLE:
+# 	Buildable:
+# 		Queue: Defence, RADefence
+# 		Prerequisites: ~autogun_prereq, d2k_barracks, upgrade.barracks
+# 		BuildPaletteOrder: 510
+# 		Description: Defensive structure.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
+# 		IconPalette: chrome
+# 	Health:
+# 		HP: 35000
+# 	Valued:
+# 		Cost: 800
+# 	Tooltip:
+# 		Name: Autogun Turret
+# 	Armament:
+# 		Weapon: autogun_turret
+# 		LocalOffset: 500,-150,400, 500,150,400
+# 		MuzzleSequence: muzzle
+# 		MuzzlePalette: d2keffect
+# 	-DetectCloaked:
+# 	WithSpriteTurret:
+# 		Palette: player
+# 		IsPlayerPalette: True
+
 # flame_turret:
 # 	Inherits: medium_gun_turret
 # 	Inherits@AntiInf: ^PrioritizeInfantry
@@ -2426,84 +2428,11 @@ machine_gun_turret:
 # 	Armament:
 # 		Weapon: d2kFlameTurret
 
-storm_lasher:
-	Inherits: ^D2KDefense
-	Inherits@exp: ^GainsExperienceRABuilding
-	Inherits@selection: ^AdvancedDefenseTemplate
-	Inherits@AUTOTARGET: ^AutoTargetGround
-	Inherits@EMP: ^TurretEMP
-	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@AntiTank: ^PrioritizeTank
-	Inherits@shape: ^2x2Shape
-	Inherits@detect: ^GenericGroundDetector
-	Buildable:
-		Queue: Defence, RADefence
-		Prerequisites: ~construction_yard.ixian, research_centre.ixian
-		BuildPaletteOrder: 750
-		Description: Advanced Defensive structure.\nLong reload with huge range and impact\nDetector.\n  Strong vs Infantry, Vehicles, Tanks\n  Weak vs Siege
-		IconPalette: player
-	Valued:
-		Cost: 2500
-	Tooltip:
-		Name: Storm Lasher
-	Building:
-		Footprint: xx xx
-		Dimensions: 2,2
-	WithMakeAnimation:
-	Health:
-		HP: 200000
-	BodyOrientation:
-		QuantizedFacings: 32
-	WithMuzzleOverlay:
-	WithSpriteBody:
-		Name: make
-		Sequence: invisible
-	WithMakeAnimation:
-		Condition: build-incomplete
-		BodyNames: make
-	Turreted:
-		TurnSpeed: 96
-		InitialFacing: 2048
-		RealignDelay: -1
-	Armament:
-		Weapon: d2kStormLasher
-		-MuzzleSequence:
-	Replacement:
-		ReplaceableTypes: Tower
-	WithWallSpriteBody:
-		RequiresCondition: !build-incomplete
-	WithSpriteTurret:
-		RequiresCondition: !build-incomplete
-	AttackTurreted:
-		RequiresCondition: !build-incomplete
-	WithSpriteBody:
-		Sequence: idle
-	WithMakeAnimation:
-	-WithDeathAnimation:
-	-WithSpriteTurret:
-	-WithWallSpriteBody:
-	WithIdleOverlay@lasher:
-		Sequence: idle-overlay
-		RequiresCondition: !build-incomplete && !severe-damaged
-	GrantConditionOnDamageState@stoplasher:
-		Condition: severe-damaged
-	ThrowsShrapnel:
-		Weapons: Debris2, Debris3
-		Pieces: 2, 4
-		Range: 1c512, 2c768
-	SpawnActorOnDeath@death1:
-		Actor: light_inf
-	Power:
-		Amount: -125
-	RevealsShroud:
-		Range: 12500
-	DetectCloaked:
-		Range: 6250
-
 large_gun_turret:
 	Inherits: ^D2KDefense
 	Inherits@exp: ^GainsExperienceRABuilding
 	Inherits@Template: ^AntiAirDefenseTemplate
+	Inherits@detect: ^GenericAllDetector
 	Inherits@IDISABLE: ^D2KDisableOnLowPowerOrPowerDown
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@D2KSprite: ^D2KPaletteRender
@@ -2514,12 +2443,12 @@ large_gun_turret:
 		PauseOnCondition: disabled
 	Buildable:
 		Queue: Defence, RADefence
-		Prerequisites: ~construction_yard.ixian, outpost.ixian
+		Prerequisites: ~upgrade.conyard, outpost.ixian
 		BuildPaletteOrder: 610
 		Description: Defensive structure.\nDetector.\n  Strong vs Infantry, Aircraft\n  Weak vs Tanks\n\n  Requires power to operate.
 		IconPalette: d2kunit
 	Valued:
-		Cost: 1000
+		Cost: 1500
 	Tooltip:
 		Name: Rocket Turret
 	Health:
@@ -2559,6 +2488,84 @@ large_gun_turret:
 		Range: 10000
 	DetectCloaked:
 		Range: 5000
+
+storm_lasher:
+	Inherits: ^D2KDefense
+	Inherits@exp: ^GainsExperienceRABuilding
+	Inherits@selection: ^AdvancedDefenseTemplate
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@shape: ^2x2Shape
+	Inherits@detect: ^GenericGroundDetector
+	Buildable:
+		Queue: Defence, RADefence
+		Prerequisites: ~upgrade.conyard, research_centre.ixian
+		BuildPaletteOrder: 750
+		Description: Advanced Defensive structure.\nLong reload with huge range and impact\nDetector.\n  Strong vs Infantry, Vehicles, Tanks\n  Weak vs Siege
+		IconPalette: player
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Storm Lasher
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	WithMakeAnimation:
+	Health:
+		HP: 200000
+	BodyOrientation:
+		QuantizedFacings: 32
+	WithMuzzleOverlay:
+	WithSpriteBody:
+		Name: make
+		Sequence: invisible
+	WithMakeAnimation:
+		Condition: build-incomplete
+		BodyNames: make
+	Turreted:
+		TurnSpeed: 96
+		InitialFacing: 2048
+		RealignDelay: -1
+	Armament:
+		Weapon: d2kStormLasher
+		#LocalOffset: 0,0,512
+		MuzzleSequence: muzzle
+	Replacement:
+		ReplaceableTypes: Tower
+	WithWallSpriteBody:
+		RequiresCondition: !build-incomplete
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithSpriteBody:
+		Sequence: idle
+	WithMuzzleOverlay:
+	WithMakeAnimation:
+	-WithDeathAnimation:
+	-WithSpriteTurret:
+	-WithWallSpriteBody:
+	WithIdleOverlay@lasher:
+		Sequence: idle-overlay
+		RequiresCondition: !build-incomplete && !severe-damaged
+	GrantConditionOnDamageState@stoplasher:
+		Condition: severe-damaged
+	ThrowsShrapnel:
+		Weapons: Debris2, Debris3
+		Pieces: 2, 4
+		Range: 1c512, 2c768
+	SpawnActorOnDeath@death1:
+		Actor: light_inf
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
+	Power:
+		Amount: -125
+	RevealsShroud:
+		Range: 12500
+	DetectCloaked:
+		Range: 6250
 
 # d2k_mine_ap:
 # 	Inherits: ^D2KMine
@@ -3344,6 +3351,22 @@ light_inf:
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: infantry ##########
 
+engineer:
+	Inherits: E6
+	Inherits: ^D2KInfantry
+	Inherits@anim: ^D2KPaletteRenderInfantry
+	Buildable:
+		Prerequisites: ~d2k_barracks
+		Description: Infiltrates and captures enemy and neutral structures\n  Strong vs Buildings\n  Weak vs Everything
+		IconPalette: d2kunit
+	GrantCondition@d2k_personal_shield_disabled:
+		RequiresCondition: d2k_personal_shield && SmallCaliberShieldHits > 3
+	RenderSprites:
+		Image: engineer
+	Voiced:
+		VoiceSet: D2KEngineerVoice
+	-AttackFrontal:
+
 # submachinegunner:
 # 	Inherits: light_inf
 # 	Valued:
@@ -3399,6 +3422,43 @@ light_inf:
 # 	Voiced:
 # 		VoiceSet: D2KShotgunner
 
+trooper:
+	Inherits: ^D2KInfantry
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@anim: ^D2KPaletteRenderInfantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildPaletteOrder: 20
+		Prerequisites: ~upgrade.barracks
+		BuildDuration: 80
+		BuildDurationModifier: 100
+		Description: Anti-tank infantry\nCan Attack air.\n  Strong vs Tanks\n  Weak vs Infantry, Artillery
+		IconPalette: d2kunit
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Rocket Trooper
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 20000
+	Mobile:
+		Speed: 52
+	Armament:
+		Weapon: D2K_Rocket_Trooper
+		LocalOffset: 128,0,256
+	Armament@aa:
+		Weapon: D2K_Rocket_Trooper_AA
+		LocalOffset: 128,0,256
+	TakeCover:
+		ProneOffset: 324,0,-204
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+
 shock_infantry:
 	Inherits: ^D2KInfantry
 	Inherits@Template: ^HeavyInfantryTemplate
@@ -3418,7 +3478,7 @@ shock_infantry:
 		Queue: Infantry, RAInfantry
 		Description: General-purpose infantry equipped with a long range Shock Gun\nDeals high damage in a line with a long time to reload.\nStrong vs Infantry, Vehicles\n  Weak vs Siege
 		IconPalette: d2kunit
-		Prerequisites: ~d2k_barracks
+		Prerequisites: ~upgrade.barracks, research_centre.ixian
 	Mobile:
 		Speed: 45
 	Health:
@@ -3481,59 +3541,6 @@ shock_infantry:
 # 		DeathSequencePalette: raplayer
 # 		CrushedSequencePalette: raplayer
 # 		CrushedPaletteIsPlayerPalette: True
-
-engineer:
-	Inherits: E6
-	Inherits: ^D2KInfantry
-	Inherits@anim: ^D2KPaletteRenderInfantry
-	Buildable:
-		Prerequisites: ~upgrade.barracks
-		Description: Infiltrates and captures enemy and neutral structures\n  Strong vs Buildings\n  Weak vs Everything
-		IconPalette: d2kunit
-	GrantCondition@d2k_personal_shield_disabled:
-		RequiresCondition: d2k_personal_shield && SmallCaliberShieldHits > 3
-	RenderSprites:
-		Image: engineer
-	Voiced:
-		VoiceSet: D2KEngineerVoice
-	-AttackFrontal:
-
-trooper:
-	Inherits: ^D2KInfantry
-	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@anim: ^D2KPaletteRenderInfantry
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@EXT: ^ExternalConditions
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Buildable:
-		Queue: Infantry, RAInfantry
-		BuildPaletteOrder: 20
-		Prerequisites: ~upgrade.barracks
-		BuildDuration: 80
-		BuildDurationModifier: 100
-		Description: Anti-tank infantry\nCan Attack air.\n  Strong vs Tanks\n  Weak vs Infantry, Artillery
-		IconPalette: d2kunit
-	Valued:
-		Cost: 600
-	Tooltip:
-		Name: Rocket Trooper
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 20000
-	Mobile:
-		Speed: 52
-	Armament:
-		Weapon: D2K_Rocket_Trooper
-		LocalOffset: 128,0,256
-	Armament@aa:
-		Weapon: D2K_Rocket_Trooper_AA
-		LocalOffset: 128,0,256
-	TakeCover:
-		ProneOffset: 324,0,-204
-	WithInfantryBody:
-		DefaultAttackSequence: shoot
 
 # thumper:
 # 	Inherits: ^D2KInfantry
@@ -5719,7 +5726,7 @@ d2k_mcv.ixian:
 	Inherits@conyard: ^Conyard
 	Inherits@EXT: ^ExternalConditions
 	Buildable:
-		Prerequisites: repair_pad.ixian
+		Prerequisites: ~repair_pad.ixian
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 110
 		BuildDuration: 1500
@@ -6261,6 +6268,18 @@ d2k_air_drone:
 		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
 		CloakedCondition: cloaked
 
+d2k_air_drone.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Air Drone
+	Aircraft:
+		TurnSpeed: 8
+		Speed: 196
+	RenderSprites:
+		Image: d2k_air_drone.husk
+	FallsToEarth:
+		Explosion: D2KUnitExplodeSmall
+
 # phoenix:
 # 	Inherits: ^RANeutralPlane
 # 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -6352,17 +6371,6 @@ d2k_air_drone:
 # 		Image: d2k_gunship.husk
 # 	FallsToEarth:
 # 		Explosion: D2KUnitExplodeMed
-# d2k_air_drone.husk:
-# 	Inherits: ^PlaneHusk
-# 	Tooltip:
-# 		Name: Air Drone
-# 	Aircraft:
-# 		TurnSpeed: 8
-# 		Speed: 196
-# 	RenderSprites:
-# 		Image: d2k_air_drone.husk
-# 	FallsToEarth:
-# 		Explosion: D2KUnitExplodeSmall
 
 # d2k_combat_fleet:
 # 	Inherits: ^Helicopter
@@ -6708,11 +6716,11 @@ harvester:
 		DecorationBounds: 1536, 1536
 	Harvester:
 		HarvestFacings: 8
-		BaleUnloadDelay: 10
-		SearchFromProcRadius: 30
-		SearchFromHarvesterRadius: 15
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 25
+		SearchFromHarvesterRadius: 10
 	StoresResources:
-		Capacity: 40
+		Capacity: 45
 	CarryableHarvester:
 	Health:
 		HP: 200000
@@ -7384,7 +7392,7 @@ siege_tank_ixian:
 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Inherits@SHADOWS: ^Shadows
 	Buildable:
-		Prerequisites: upgrade.heavy, outpost.ixian
+		Prerequisites: ~upgrade.heavy, outpost.ixian
 		Description: Stealth Siege Artillery with turnable turret\nthat can shoot burst up to 3 shots in\na row at a higher range.\nLess accurate than regular version and with long reload times\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Everything
 		IconPalette: ra2
 	Health:
@@ -7579,7 +7587,7 @@ missile_tank:
 missile_tank_ixian:
 	Inherits: missile_tank
 	Buildable:
-		Prerequisites: upgrade.heavy, research_centre.ixian
+		Prerequisites: ~upgrade.heavy, research_centre.ixian
 		Description: Stealth Rocket Artillery\nCan shoot up to 10 rockets in a row at much higher distance\nLess accurate than regular version and with long reload times\n  Strong vs Vehicles, Buildings, Tanks\n  Weak vs Everything
 	Health:
 		HP: 50000
@@ -8071,64 +8079,62 @@ missile_tank_ixian:
 # 	RenderSprites:
 # 		Image: d2k_tyrant
 
-raider:
-	Inherits@D2KV: ^D2KVehicle
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
-	Inherits@CARGO: ^CargoVehicle
-	Inherits@EMP: ^FrontalEMP
-	Inherits@AntiInf: ^PrioritizeInfantry
-	Buildable:
-		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 10
-		Prerequisites: ~wip, ~faction.ordos
-		BuildDuration: 150
-		BuildDurationModifier: 100
-		Description: Improved Scout\nCan carry a passenger\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
-		IconPalette: d2kunit
-	Cargo:
-		Types: Infantry
-		MaxWeight: 1
-		LoadingCondition: notmobile
-	AutoDeployer:
-		DeployChance: 100
-	Valued:
-		Cost: 275
-	Tooltip:
-		Name: Raider
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 30000
-	Armor:
-		Type: Light
-	Mobile:
-		TurnSpeed: 160
-		Speed: 155
-	RevealsShroud:
-		Range: 4c768
-	WithMuzzleOverlay:
-	Armament@damage:
-		Weapon: HMGo
-		LocalOffset: 170,0,0
-		MuzzlePalette: d2keffect
-		MuzzleSequence: muzzle
-	AttackFrontal:
-		FacingTolerance: 0
-	Explodes:
-		Weapon: D2KUnitExplodeSmall
-		EmptyWeapon: D2KUnitExplodeSmall
-	AttractsWorms:
-		Intensity: 420
-	Cloak@TDcloak:
-		Palette: d2kcloak
-	Voiced:
-		VoiceSet: D2KRaider
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
+# raider:
+# 	Inherits@D2KV: ^D2KVehicle
+# 	Inherits@GAINSEXPERIENCE: ^GainsExperience
+# 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+# 	Inherits@D2KSprite: ^D2KPaletteRender
+# 	Inherits@EXT: ^ExternalConditions
+# 	Inherits@CARGO: ^CargoVehicle
+# 	Inherits@EMP: ^FrontalEMP
+# 	Inherits@AntiInf: ^PrioritizeInfantry
+# 	Buildable:
+# 		Queue: Vehicle, RAVehicle
+# 		BuildPaletteOrder: 10
+# 		Prerequisites: ~wip, ~faction.ordos
+# 		Description: Improved Scout\nCan carry a passenger\n  Strong vs Infantry, Light Vehicles\n  Weak vs Tanks
+# 		IconPalette: d2kunit
+# 	Cargo:
+# 		Types: Infantry
+# 		MaxWeight: 1
+# 		LoadingCondition: notmobile
+# 	AutoDeployer:
+# 		DeployChance: 100
+# 	Valued:
+# 		Cost: 400
+# 	Tooltip:
+# 		Name: Raider
+# 	UpdatesPlayerStatistics:
+# 		AddToArmyValue: true
+# 	Health:
+# 		HP: 30000
+# 	Armor:
+# 		Type: Light
+# 	Mobile:
+# 		TurnSpeed: 160
+# 		Speed: 155
+# 	RevealsShroud:
+# 		Range: 4c768
+# 	WithMuzzleOverlay:
+# 	Armament@damage:
+# 		Weapon: HMGo
+# 		LocalOffset: 170,0,0
+# 		MuzzlePalette: d2keffect
+# 		MuzzleSequence: muzzle
+# 	AttackFrontal:
+# 		FacingTolerance: 0
+# 	Explodes:
+# 		Weapon: D2KUnitExplodeSmall
+# 		EmptyWeapon: D2KUnitExplodeSmall
+# 	AttractsWorms:
+# 		Intensity: 420
+# 	Cloak@TDcloak:
+# 		Palette: d2kcloak
+# 	Voiced:
+# 		VoiceSet: D2KRaider
+# 	WithCargoPipsDecoration:
+# 		Position: BottomLeft
+# 		RequiresSelection: true
 
 # raider.bot:
 # 	Inherits: raider
@@ -8140,58 +8146,6 @@ raider:
 # 		InitialUnits: trooper
 # 	RenderSprites:
 # 		Image: raider
-
-shock_raider:
-	Inherits@D2KV: ^D2KVehicle
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
-	Inherits@CARGO: ^CargoVehicle
-	Inherits@EMP: ^FrontalEMP
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiInf: ^PrioritizeInfantry
-	Buildable:
-		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 10
-		Prerequisites: ~upgrade.heavy, research_centre.ixian
-		BuildDuration: 500
-		BuildDurationModifier: 100
-		Description: Fast Vehicle with Powerful Gauss Gun on top\n  Strong vs Tanks
-		IconPalette: player
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Shock Raider
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 50000
-	Armor:
-		Type: Light
-	Mobile:
-		TurnSpeed: 160
-		Speed: 140
-	RevealsShroud:
-		Range: 4c768
-	WithMuzzleOverlay:
-	Turreted:
-		TurnSpeed: 160
-	WithSpriteTurret:
-	Armament@damage:
-		Weapon: D2K_ShockGun
-		LocalOffset: 170,0,0
-	AttackFrontal:
-		FacingTolerance: 0
-	Explodes:
-		Weapon: D2KUnitExplodeSmall
-		EmptyWeapon: D2KUnitExplodeSmall
-	AttractsWorms:
-		Intensity: 420
-	Cloak@TDcloak:
-		Palette: d2kcloak
-	Voiced:
-		VoiceSet: D2KShockRaider
 
 # stealth_raider:
 # 	Inherits: raider
@@ -8228,42 +8182,150 @@ shock_raider:
 # 		InitialStanceAI: ReturnFire
 # 	-MustBeDestroyed:
 
-rocket_raider:
-	Inherits: raider
+# rocket_raider:
+# 	Inherits@D2KV: ^D2KVehicle
+# 	Inherits@bot: ^BotMicromanageable
+# 	Inherits@GAINSEXPERIENCE: ^GainsExperience
+# 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+# 	Inherits@D2KSprite: ^D2KPaletteRender
+# 	Inherits@EXT: ^ExternalConditions
+# 	Inherits@CARGO: ^CargoVehicle
+# 	Inherits@EMP: ^FrontalEMP
+# 	Inherits@AntiVeh: ^PrioritizeVehicle
+# 	Inherits@AntiAir: ^PrioritizeAir
+# 	Buildable:
+# 		Prerequisites: ~wip, ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.rocket_raider, ~techlevel.medium
+# 		Queue: Vehicle, RAVehicle
+# 		BuildPaletteOrder: 10
+# 		Description: Invisible Raider Trike with Rockets\nMust resupply at Resource Center\nCan Carrry up to 2 passengers\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
+# 		IconPalette: d2kunit
+# 	Valued:
+# 		Cost: 1500
+# 	Tooltip:
+# 		Name: Stealth Rocket Raider
+# 	UpdatesPlayerStatistics:
+# 		AddToArmyValue: true
+# 	Health:
+# 		HP: 30000
+# 	Armor:
+# 		Type: Medium
+# 	AmmoPool:
+# 		Ammo: 24
+# 		AmmoCondition: ammo
+# 	ReloadAmmoPool:
+# 		Delay: 10
+# 		Count: 1
+# 		ResetOnFire: true
+# 	Mobile:
+# 		TurnSpeed: 160
+# 		Speed: 155
+# 	RevealsShroud:
+# 		Range: 4c768
+# 	WithMuzzleOverlay:
+# 	AttackFrontal:
+# 		FacingTolerance: 0
+# 	Explodes:
+# 		Weapon: D2KUnitExplodeSmall
+# 		EmptyWeapon: D2KUnitExplodeSmall
+# 	AttractsWorms:
+# 		Intensity: 420
+# 	Cloak@TDcloak:
+# 		Palette: d2kcloak
+# 	Voiced:
+# 		VoiceSet: D2KRaider
+# 	Cargo:
+# 		Types: Infantry
+# 		MaxWeight: 2
+# 		LoadingCondition: notmobile
+# 	AutoDeployer:
+# 		DeployChance: 100
+# 	Cloak:
+# 		InitialDelay: 45
+# 		CloakDelay: 40
+# 		UncloakOn: Attack, Unload
+# 		IsPlayerPalette: true
+# 		Palette: d2kcloak
+# 		CloakedCondition: cloaked
+# 		PauseOnCondition: cloak-force-disabled || base-reveal
+# 	Armament@damage:
+# 		Weapon: D2K_Bazooka2
+# 		LocalOffset: 170,0,0
+# 		PauseOnCondition: !ammo
+# 		MuzzleSequence: muzzle
+# 	RenderSprites:
+# 		Image: stealth_raider
+# 	WithAmmoPipsDecoration:
+# 		Position: BottomLeft
+# 		RequiresSelection: true
+# 		PipCount: 8
+
+# rocket_raider.bot:
+# 	Inherits: rocket_raider
+# 	Buildable:
+# 		Prerequisites: ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.rocket_raider, ~techlevel.medium, ~botplayer
+# 	ProductionCostMultiplier:
+# 		Multiplier: 110
+# 	Cargo:
+# 		InitialUnits: facedancer, facedancer
+
+rocket_raider_ixian:
+	Inherits@D2KV: ^D2KVehicle
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@exp: ^GainsExperienceRA
 	Inherits@bot: ^BotMicromanageable
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	-AutoTargetPriority@INFANTRY:
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@EXT: ^ExternalConditions
+	Inherits@CARGO: ^CargoVehicle
+	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiAir: ^PrioritizeAir
-	Valued:
-		Cost: 1500
-	Tooltip:
-		Name: Stealth Rocket Raider
 	Buildable:
-		Prerequisites: ~wip, ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.rocket_raider, ~techlevel.medium
 		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 10
-		BuildDuration: 275
-		BuildDurationModifier: 100
-		Description: Invisible Raider Trike with Rockets\nMust resupply at Resource Center\nCan Carrry up to 2 passengers\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
-		IconPalette: d2kunit
+		Prerequisites: ~heavy_factory.ixian
+		Description: Invisible Raider Trike with Rockets\nCan carry up to 4 passengers\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
+	Cargo:
+		Types: Infantry
+		MaxWeight: 4
+		LoadingCondition: notmobile
+	AutoDeployer:
+		DeployChance: 100
+	Tooltip:
+		Name: Ix Raider
+	Valued:
+		Cost: 800
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 25000
 	Armor:
 		Type: Medium
 	AmmoPool:
-		Ammo: 24
+		Ammo: 8
 		AmmoCondition: ammo
+		Name: primary
 	ReloadAmmoPool:
-		Delay: 10
+		Delay: 25
 		Count: 1
-		ResetOnFire: true
-	-WithMuzzleOverlay:
-	Cargo:
-		Types: Infantry
-		MaxWeight: 2
-		LoadingCondition: notmobile
+		ResetOnFire: false
+	Mobile:
+		TurnSpeed: 32
+		Speed: 160
+	WithMuzzleOverlay:
+	AttackFrontal:
+		FacingTolerance: 0
+	Explodes:
+		Weapon: D2KUnitExplodeSmall
+		EmptyWeapon: D2KUnitExplodeSmall
+	AttractsWorms:
+		Intensity: 420
+	Cloak@TDcloak:
+		Palette: d2kcloak
+	Voiced:
+		VoiceSet: D2KRaider
 	Cloak:
-		InitialDelay: 45
-		CloakDelay: 40
+		InitialDelay: 75
+		CloakDelay: 50
 		UncloakOn: Attack, Unload
 		IsPlayerPalette: true
 		Palette: d2kcloak
@@ -8273,55 +8335,70 @@ rocket_raider:
 		Weapon: D2K_Bazooka2
 		LocalOffset: 170,0,0
 		PauseOnCondition: !ammo
-		-MuzzleSequence:
-	RenderSprites:
-		Image: stealth_raider
+		MuzzleSequence: muzzle
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 8
+	RenderSprites:
+		Image: shock_raider
 
-rocket_raider.bot:
-	Inherits: rocket_raider
-	Buildable:
-		Prerequisites: ~faction.tleilaxu, d2k_tleilaxu_tech, upgrade.rocket_raider, ~techlevel.medium, ~botplayer
-	ProductionCostMultiplier:
-		Multiplier: 110
-	Cargo:
-		InitialUnits: facedancer, facedancer
-
-rocket_raider_ixian:
-	Inherits: rocket_raider
-	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
-	Tooltip:
-		Name: Ix Raider
-	Valued:
-		Cost: 500
-	Power:
-		Amount: 0
-	AmmoPool:
-		Ammo: 4
-		AmmoCondition: ammo
-		Name: primary
-	ReloadAmmoPool:
-		Delay: 25
-		Count: 1
-		ResetOnFire: false
+shock_raider:
+	Inherits@D2KV: ^D2KVehicle
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@EXT: ^ExternalConditions
+	Inherits@CARGO: ^CargoVehicle
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiInf: ^PrioritizeInfantry
 	Buildable:
 		Queue: Vehicle, RAVehicle
-		Prerequisites: ~heavy_factory.ixian
-		Description: Invisible Raider Trike with Rockets\nCan carry up to 4 passengers\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
-	Cargo:
-		Types: Infantry
-		MaxWeight: 4
-		LoadingCondition: notmobile
+		BuildPaletteOrder: 10
+		Prerequisites: ~upgrade.heavy, research_centre.ixian
+		Description: Fast Vehicle with Powerful Gauss Gun on top\n  Strong vs Tanks
+		IconPalette: player
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: Shock Raider
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 40000
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 120
+		TurnSpeed: 24
+	WithMuzzleOverlay:
+	Turreted:
+		TurnSpeed: 24
+	WithSpriteTurret:
 	Armament@damage:
-		PauseOnCondition: !ammo
+		Weapon: D2K_ShockGun
+		LocalOffset: 170,0,0
+	AttackFrontal:
+		FacingTolerance: 0
+	Explodes:
+		Weapon: D2KUnitExplodeSmall
+		EmptyWeapon: D2KUnitExplodeSmall
+	AttractsWorms:
+		Intensity: 420
+	Cloak:
+		InitialDelay: 75
+		CloakDelay: 50
+		UncloakOn: Attack, Unload
+		IsPlayerPalette: true
+		Palette: d2kcloak
+		CloakedCondition: cloaked
+		PauseOnCondition: cloak-force-disabled || base-reveal
+	Voiced:
+		VoiceSet: D2KShockRaider
 	RenderSprites:
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-
+		Image: stealth_raider
 
 # rocket_raider_ixian.bot1:
 # 	Inherits: rocket_raider_ixian
@@ -8416,59 +8493,59 @@ rocket_raider_ixian:
 # 	Voiced:
 # 		VoiceSet: D2KDeviator
 
-^combat_tank:
-	Inherits@D2KT: ^D2KTank
-	Inherits@Template: ^MainBattleTankTemplate
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
-	Inherits@EMP: ^TurretEMP
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Buildable:
-		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 40
-		Description: Main Battle Tank\n  Strong vs Tanks\n  Weak vs Infantry
-		IconPalette: d2kunit
-	Valued:
-		Cost: 600
-	Tooltip:
-		Name: Combat Tank
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 100000
-	Armor:
-		Type: Medium
-	Mobile:
-		Speed: 75
-		TurnSpeed: 15
-	Turreted:
-		TurnSpeed: 15
-	Armament:
-		Weapon: 80mm_A
-		Recoil: 128
-		RecoilRecovery: 32
-		LocalOffset: 256,0,0
-		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
-	AttackTurreted:
-	WithMuzzleOverlay:
-	WithSpriteTurret:
-	Explodes:
-		Weapon: D2KUnitExplodeMed
-		EmptyWeapon: D2KUnitExplodeMed
-	Selectable:
-		Class: combat
-	AttractsWorms:
-		Intensity: 520
-	SpawnActorOnDeath:
-		OwnerType: InternalName
-		EffectiveOwnerFromOwner: true
-	Cloak@TDcloak:
-		Palette: d2kcloak
-	Voiced:
-		VoiceSet: D2KCombatTank
+# ^combat_tank:
+# 	Inherits@D2KT: ^D2KTank
+# 	Inherits@Template: ^MainBattleTankTemplate
+# 	Inherits@exp: ^GainsExperienceRA
+# 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+# 	Inherits@D2KSprite: ^D2KPaletteRender
+# 	Inherits@EXT: ^ExternalConditions
+# 	Inherits@EMP: ^TurretEMP
+# 	Inherits@AntiVeh: ^PrioritizeVehicle
+# 	Buildable:
+# 		Queue: Vehicle, RAVehicle
+# 		BuildPaletteOrder: 40
+# 		Description: Main Battle Tank\n  Strong vs Tanks\n  Weak vs Infantry
+# 		IconPalette: d2kunit
+# 	Valued:
+# 		Cost: 600
+# 	Tooltip:
+# 		Name: Combat Tank
+# 	UpdatesPlayerStatistics:
+# 		AddToArmyValue: true
+# 	Health:
+# 		HP: 100000
+# 	Armor:
+# 		Type: Medium
+# 	Mobile:
+# 		Speed: 75
+# 		TurnSpeed: 15
+# 	Turreted:
+# 		TurnSpeed: 15
+# 	Armament:
+# 		Weapon: 80mm_A
+# 		Recoil: 128
+# 		RecoilRecovery: 32
+# 		LocalOffset: 256,0,0
+# 		MuzzleSequence: muzzle
+# 		MuzzlePalette: d2keffect
+# 	AttackTurreted:
+# 	WithMuzzleOverlay:
+# 	WithSpriteTurret:
+# 	Explodes:
+# 		Weapon: D2KUnitExplodeMed
+# 		EmptyWeapon: D2KUnitExplodeMed
+# 	Selectable:
+# 		Class: combat
+# 	AttractsWorms:
+# 		Intensity: 520
+# 	SpawnActorOnDeath:
+# 		OwnerType: InternalName
+# 		EffectiveOwnerFromOwner: true
+# 	Cloak@TDcloak:
+# 		Palette: d2kcloak
+# 	Voiced:
+# 		VoiceSet: D2KCombatTank
 
 # combat_tank_a:
 # 	Inherits: ^combat_tank
@@ -8479,18 +8556,60 @@ rocket_raider_ixian:
 # 	SpawnActorOnDeath:
 # 		Actor: combat_tank_a.husk
 
-combat_tank_h:
-	Inherits: ^combat_tank
-	Buildable:
-		Prerequisites: ~heavy.harkonnen_combat, ~techlevel.medium, ~!faction.guild, ~!faction.corrino
-	Armament:
-		Weapon: 80mm_H
-	Mobile:
-		Speed: 64
-	Health:
-		HP: 70000
-	SpawnActorOnDeath:
-		Actor: combat_tank_h.husk
+# combat_tank_h:
+# 	Inherits@D2KT: ^D2KTank
+# 	Inherits@Template: ^MainBattleTankTemplate
+# 	Inherits@exp: ^GainsExperienceRA
+# 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+# 	Inherits@D2KSprite: ^D2KPaletteRender
+# 	Inherits@EXT: ^ExternalConditions
+# 	Inherits@EMP: ^TurretEMP
+# 	Inherits@AntiVeh: ^PrioritizeVehicle
+# 	Buildable:
+# 		Queue: Vehicle, RAVehicle
+# 		BuildPaletteOrder: 40
+# 		Description: Main Battle Tank\n  Strong vs Tanks\n  Weak vs Infantry
+# 		IconPalette: d2kunit
+# 		Prerequisites: ~heavy.harkonnen_combat, ~techlevel.medium, ~!faction.guild, ~!faction.corrino
+# 	Valued:
+# 		Cost: 600
+# 	Tooltip:
+# 		Name: Combat Tank
+# 	UpdatesPlayerStatistics:
+# 		AddToArmyValue: true
+# 	Health:
+# 		HP: 70000
+# 	Armor:
+# 		Type: Medium
+# 	Mobile:
+# 		Speed: 65
+# 		TurnSpeed: 13
+# 	Turreted:
+# 		TurnSpeed: 13
+# 	Armament:
+# 		Weapon: 80mm_H
+# 		Recoil: 128
+# 		RecoilRecovery: 32
+# 		LocalOffset: 256,0,0
+# 		MuzzleSequence: muzzle
+# 		MuzzlePalette: d2keffect
+# 	AttackTurreted:
+# 	WithMuzzleOverlay:
+# 	WithSpriteTurret:
+# 	Explodes:
+# 		Weapon: D2KUnitExplodeMed
+# 		EmptyWeapon: D2KUnitExplodeMed
+# 	Selectable:
+# 		Class: combat
+# 	AttractsWorms:
+# 		Intensity: 520
+# 	SpawnActorOnDeath:
+# 		OwnerType: InternalName
+# 		EffectiveOwnerFromOwner: true
+# 	Cloak@TDcloak:
+# 		Palette: d2kcloak
+# 	Voiced:
+# 		VoiceSet: D2KCombatTank
 
 # combat_tank_o:
 # 	Inherits: ^combat_tank
@@ -8560,18 +8679,60 @@ combat_tank_h:
 # 		PauseOnCondition: cloak-force-disabled || base-reveal
 
 combat_tank_ixian:
-	Inherits: combat_tank_h
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@EXT: ^ExternalConditions
 	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 40
+		Description: Ixian Main Battle Tank\nCombines the best of the base variants with Ixian quick fire cannon\n  Strong vs Tanks\n  Weak vs Infantry
+		IconPalette: d2kunit
+		Prerequisites: ~heavy_factory.ixian, ~!d2k_duelist_tank_upgrade
 	Valued:
-		Cost: 800
+		Cost: 600
 	Tooltip:
 		Name: Ix Combat Tank
-	Buildable:
-		Prerequisites: ~heavy_factory.ixian
-		Description: Ixian Main Battle Tank\nCombines the best of the base variants with Ixian quick fire cannon\n  Strong vs Tanks\n  Weak vs Infantry
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 65000
+	Repairable:
+		HpPerStep: 3250
+	ChangesHealth@SelfHealing:
+		Step: 26
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 65
+		TurnSpeed: 13
+	Turreted:
+		TurnSpeed: 13
 	Armament:
 		Weapon: 80mm_OUP
-	-SpawnActorOnDeath:
+		Recoil: 128
+		RecoilRecovery: 32
+		LocalOffset: 256,0,0
+		MuzzleSequence: muzzle
+		MuzzlePalette: d2keffect
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	Selectable:
+		Class: combat
+	AttractsWorms:
+		Intensity: 520
+	Cloak@TDcloak:
+		Palette: d2kcloak
+	Voiced:
+		VoiceSet: D2KCombatTank
 
 # combat_tank_corrino:
 # 	Inherits: combat_tank_h
@@ -8761,29 +8922,37 @@ combat_tank_ixian:
 # 		Delay: 20
 
 combat_siege_tank:
-	Inherits: ^combat_tank
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@EXT: ^ExternalConditions
 	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
-	Armor:
-		Type: Medium
-	Tooltip:
-		Name: Ix Combat Siege
-	Health:
-		HP: 80000
-	Cargo:
-		MaxWeight: 2
-		InitialUnits: shock_infantry, shock_infantry
-	Mobile:
-		Speed: 80
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 40
+		IconPalette: d2kunit
+		Description: Siege tank with autoloader system.\nCan carry up to 2 passengers\n  Strong vs Tanks\n  Weak vs Infantry
+		Prerequisites: ~d2k_combat_siege_upgrade, research_centre.ixian
 	Valued:
 		Cost: 800
-	Buildable:
-		BuildPaletteOrder: 40
-		Description: Siege tank with autoloader system.\nCan shoot 3 shots at once with longer reloading time\nCan carry up to 2 passengers\n  Strong vs Tanks\n  Weak vs Infantry
-		Prerequisites: ~d2k_combat_siege_upgrade, research_centre.ixian
-	AttackTurreted:
-	WithSpriteTurret:
+	Tooltip:
+		Name: Ix Combat Siege
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 80000
+	Repairable:
+		HpPerStep: 4000
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 80
+		TurnSpeed: 16
 	Turreted:
-		TurnSpeed: 80
+		TurnSpeed: 16
 		Offset: 0,0,0
 	Armament:
 		Weapon: D2K_155mm3
@@ -8792,7 +8961,24 @@ combat_siege_tank:
 		LocalOffset: 256,0,320
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
-	-SpawnActorOnDeath:
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	RenderRangeCircle:
+	Explodes:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	Selectable:
+		Class: combat
+	AttractsWorms:
+		Intensity: 520
+	Cloak@TDcloak:
+		Palette: d2kcloak
+	Voiced:
+		VoiceSet: D2KCombatTank
+	Cargo:
+		MaxWeight: 2
+		InitialUnits: shock_infantry, shock_infantry
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -8910,25 +9096,67 @@ quake_tank_deployed.husk:
 		Delay: 8
 
 duelist_tank:
-	Inherits: ^combat_tank
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@EXT: ^ExternalConditions
+	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
 	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 40
+		IconPalette: d2kunit
 		Prerequisites: ~d2k_duelist_tank_upgrade
 		Description: Durable and with long range higher calibre gun, this tank is very dangerous opponent to face\n  Strong vs Tanks\n  Weak vs Infantry
+	Valued:
+		Cost: 2000
 	Tooltip:
 		Name: Ix Duelist Tank
-	Valued:
-		Cost: 1350
-	Armament:
-		Weapon: 100mm_A
-	SpawnActorOnDeath:
-		Actor: duelist_tank.husk
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Health:
 		HP: 135000
+	Repairable:
+		HpPerStep: 6750
+	ChangesHealth@SelfHealing:
+		Step: 54
+	Armor:
+		Type: Heavy
 	Mobile:
 		Speed: 65
 		TurnSpeed: 13
+	Turreted:
+		TurnSpeed: 13
+		Offset: 0,0,0
+	Armament:
+		Weapon: 100mm_A
+		Recoil: 150
+		RecoilRecovery: 19
+		LocalOffset: 256,0,320
+		MuzzleSequence: muzzle
+		MuzzlePalette: d2keffect
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	Explodes:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	Selectable:
+		Class: combat
+	AttractsWorms:
+		Intensity: 520
+	Cloak@TDcloak:
+		Palette: d2kcloak
 	Voiced:
 		VoiceSet: D2KDuelistTank
+	Cargo:
+		MaxWeight: 2
+		InitialUnits: shock_infantry, shock_infantry
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
 
 carryall.reinforce:
 	Inherits: ^D2KPlane

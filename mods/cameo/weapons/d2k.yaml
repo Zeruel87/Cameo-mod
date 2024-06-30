@@ -103,16 +103,21 @@ Debris4:
 		Damage: 1000
 
 110mm_Gun:
+	Inherits: ^HeavyCannon
 	Inherits: ^D2K_Cannon
-	ReloadDelay: 40
-	Range: 7500
+	ReloadDelay: 42
+	Range: 7400
 	Report: TURRET1.WAV
 	Projectile: Bullet
 		Speed: 750
+	Warhead@HeavyCannon: SpreadDamage
+		Damage: 10000
+	Warhead@HeavyCannonPercentage: HealthPercentageDamage
+		Damage: 5
 	Warhead@MediumCannon: SpreadDamage
-		Damage: 20000
+		Damage: 10000
 	Warhead@MediumCannonPercentage: HealthPercentageDamage
-		Damage: 10
+		Damage: 5
 
 80mm_A:
 	Inherits: ^D2K_Cannon
@@ -134,10 +139,15 @@ Debris4:
 		Damage: 5
 
 100mm_A:
+	Inherits: ^HeavyCannon
 	Inherits: ^D2K_Cannon
 	Range: 7000
 	ReloadDelay: 70
 	Report: d2khc.wav
+	Warhead@HeavyCannon: SpreadDamage
+		Damage: 14000
+	Warhead@HeavyCannonPercentage: HealthPercentageDamage
+		Damage: 7
 	Warhead@MediumCannon: SpreadDamage
 		Damage: 14000
 	Warhead@MediumCannonPercentage: HealthPercentageDamage
@@ -383,14 +393,14 @@ D2K_Bazooka:
 
 D2K_Bazooka2:
 	Inherits: ^D2KMissile
-	Range: 5c768
+	Range: 6666
 	ReloadDelay: 50
-	BurstDelays: 6
-	Burst: 3
+	BurstDelays: 5
+	Burst: 4
 	ValidTargets: Ground, Air
 	Projectile: Missile
 		Blockable: false
-		RangeLimit: 10c0
+		RangeLimit: 10000
 		Speed: 333
 		Inaccuracy: 33
 		InaccuracyType: PerCellIncrement
@@ -399,9 +409,10 @@ D2K_Bazooka2:
 		TrailImage: bazooka_trail2
 		TrailPalette: effect75alpha
 		TrailInterval: 1
-	Warhead@1Dam: SpreadDamage
-		ValidTargets: Ground, Air
-		Damage: 4500
+	Warhead@HeavyMissile: SpreadDamage
+		Damage: 6000
+	Warhead@HeavyMissilePercentage: HealthPercentageDamage
+		Damage: 3
 
 D2K_Rocket:
 	Inherits: ^D2KRocket
@@ -482,10 +493,10 @@ D2K_TowerMissile:
 	BurstDelays: 5
 	Warhead@HeavyMissile: SpreadDamage
 		ValidTargets: Ground, Water, Trees
-		Damage: 6000
+		Damage: 12000
 	Warhead@HeavyMissilePercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Trees
-		Damage: 3
+		Damage: 6
 
 mtank_pri:
 	Inherits: ^D2KMissile
@@ -1491,14 +1502,14 @@ d2k_munitions_explosion:
 		Delay: 20
 		Damage: 40000
 		Spread: 2000
-		Falloff: 100, 50
+		Falloff: 100, 50, 25, 0
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 		DamageCalculationType: ClosestTargetablePosition
 	Warhead@MagicWeaponPercentage: HealthPercentageDamage
 		Delay: 20
 		Damage: 20
 		Spread: 2000
-		Falloff: 100, 50
+		Falloff: 100, 50, 25, 0
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 		DamageCalculationType: ClosestTargetablePosition
 	Warhead@Smudge: LeaveSmudge
@@ -2062,17 +2073,45 @@ d2kFlameTurret:
 		Damage: 800
 
 d2kStormLasher:
-	Inherits: d2k_munitions_explosion
+	Inherits: ^TeslaWeapon
+	Inherits: ^MagicWeapon
 	Range: 12500
 	ReloadDelay: 250
 	Projectile: InstantHit
 		Speed: 1250
-	Warhead@3Eff: CreateEffect
-		ImpactSounds: stormlashr.wav
+	Warhead@MagicWeapon: SpreadDamage
+		Damage: 80000
+		Spread: 2000
+		Falloff: 100, 50, 25, 0
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		DamageCalculationType: ClosestTargetablePosition
+	Warhead@MagicWeaponPercentage: HealthPercentageDamage
+		Damage: 40
+		Spread: 2000
+		Falloff: 100, 50, 25, 0
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		DamageCalculationType: ClosestTargetablePosition
+	Warhead@TeslaWeapon: SpreadDamage
+		Damage: 80000
+		Spread: 2000
+		Falloff: 100, 50, 25, 0
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		DamageCalculationType: ClosestTargetablePosition
+	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
+		Damage: 40
+		Spread: 2000
+		Falloff: 100, 50, 25, 0
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		DamageCalculationType: ClosestTargetablePosition
 	Warhead@Smudge: LeaveSmudge
-		Delay: 0
+		SmudgeType: SandCrater
 	Warhead@Effect: CreateEffect
-		Delay: 0
+		Explosions: d2k_munitions_explosion
+		ImpactSounds: d2k_munitions_explosion.wav
+		ExplosionPalette: d2keffect
+	Warhead@Effect2: CreateEffect
+		Explosions: wclbolt1,wclbolt2,wclbolt3
+		ImpactSounds: stormlashr.wav
 
 d2k_flame_tank:
 	Inherits: Flamer
@@ -2115,15 +2154,18 @@ D2K_ShockGun:
 		Duration: 15
 		Blockable: true
 		DamageActorsInLine: true
-		BeamColor: 0080FFC8
+		BeamColor: 0088FFCC
+		BeamWidth: 100
 	Warhead@RailgunWeapon: SpreadDamage
 		Range: 0, 32
-		Falloff: 100, 100
-		Damage: 100000
+		Falloff: 100, 50
+		Damage: 40000
+		ValidRelationships: Enemy, Neutral
 	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
 		Range: 0, 32
-		Falloff: 100, 100
-		Damage: 50
+		Falloff: 100, 50
+		Damage: 20
+		ValidRelationships: Enemy, Neutral
 
 D2K_ShockGunInf:
 	Inherits: ^RailgunWeapon
@@ -2137,6 +2179,7 @@ D2K_ShockGunInf:
 		Range: 0, 25, 50, 100
 		Falloff: 100, 50, 25, 0
 		Damage: 24000
+		ValidRelationships: Enemy, Neutral
 	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
 		Range: 0, 25, 50, 100
 		Falloff: 100, 50, 25, 0
@@ -2390,6 +2433,15 @@ d2k_farasha_drone:
 	ReloadDelay: 25
 	Range: 2500
 	Report: d2k_alfayrus.wav
+	ValidTargets: Ground, Water, Air
+	Warhead@LaserWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
+	Warhead@LaserWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
 
 d2k_chemgun:
 	InvalidTargets: Structure, Water
