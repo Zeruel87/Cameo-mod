@@ -38,6 +38,9 @@ namespace OpenRA.Mods.Cameo.Traits
 		public readonly string LevelUpImage = null;
 
 		[NotificationReference("Sounds")]
+		public readonly string NotificationType = "Sounds";
+
+		[NotificationReference("Sounds")]
 		public readonly string LevelUpNotification = null;
 
 		[TranslationReference(optional: true)]
@@ -164,7 +167,7 @@ namespace OpenRA.Mods.Cameo.Traits
 
 			PromoteToRank(currentLevel);
 
-			Game.Sound.PlayNotification(self.World.Map.Rules, self.Owner, "Speech", Info.LevelUpNotification, self.Owner.Faction.InternalName);
+			Game.Sound.PlayNotification(self.World.Map.Rules, self.Owner, Info.NotificationType, Info.LevelUpNotification, self.Owner.Faction.InternalName);
 			TextNotificationsManager.AddTransientLine(self.Owner, string.Format(Info.LevelUpTextNotification, currentLevel));
 		}
 
