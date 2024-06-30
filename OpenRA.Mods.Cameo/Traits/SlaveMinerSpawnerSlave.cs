@@ -122,8 +122,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		public void UpdateOnTransform(Actor self)
 		{
 			UpdateMasterDock(self);
-			self.CancelActivity();
-			self.QueueActivity(new FindAndDeliverResources(self));
+			self.QueueActivity(false, new FindAndDeliverResources(self));
 		}
 
 		public void Move(Actor self, CPos location)
@@ -163,6 +162,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		void INotifyHarvestAction.MovementCancelled(Actor self) { Reset(self); }
 
 		void INotifyHarvestAction.Harvested(Actor self, string resourceType) { }
+
 		void Reset(Actor self)
 		{
 			DeliverToMaster(self);
@@ -173,6 +173,7 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (masterActor != null && masterDock != null)
 			{
 				self.QueueActivity(new MoveToDock(self, masterActor, masterDock, true));
+				self.QueueActivity(new FindAndDeliverResources(self));
 				return true;
 			}
 			return false;
