@@ -1469,6 +1469,7 @@ template-shipyard =
    .td-nod = Nod Sub Pen
    .ra-soviet = Soviet Sub Pen
    .ra-allies = Allied Naval Yard
+   .ra-japan = Japanese Naval Yard
    .ra2-allies = Allied Naval Yard
    .ra2-soviet = Soviet Shipyard
    .ra2-yuri = Yuri Sub Pen
