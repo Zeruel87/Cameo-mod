@@ -8,6 +8,7 @@
  */
 #endregion
 
+using System.Linq;
 using OpenRA.Mods.CA.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
@@ -89,6 +90,14 @@ namespace OpenRA.Mods.CA.Traits
 
 		void INotifyIdle.TickIdle(Actor self)
 		{
+			if (!spawnerMaster.SlaveEntries.Select(se => se.Actor).Contains(self))
+			{
+				if (!isBusy)
+					spawnerMaster.MarkSlaveUnavailable(Master);
+				self.Dispose();
+				return;
+			}
+
 			LeaveMap(self);
 		}
 

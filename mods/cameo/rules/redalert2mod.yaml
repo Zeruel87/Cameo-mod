@@ -459,7 +459,7 @@ aa_cgmiac:
 		BuildPaletteOrder: 140
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Prerequisites: ~aa_cgcnst, aa_cgtech, ~upaa_cgmiac, derricklimit
+		Prerequisites: ~aa_cgcnst, aa_cgtech, derricklimit
 		Description: Upgrades the Veterancy of Troops.
 	Valued:
 		Cost: 5000
@@ -482,6 +482,8 @@ aa_cgmiac:
 	Exit@2:
 		SpawnOffset: -750,500,0
 		ExitCell: 2,1
+	Production@Upgrades:
+		Produces: Upgrades
 	Production@NORMAL:
 		Produces: Infantry
 		RequiresCondition: !classicproductionqueues
@@ -520,7 +522,7 @@ aa_cgmiac:
 	ParatroopersPower@ra2paratroopers:
 		PauseOnCondition: disabled
 		Prerequisites:
-			1:
+			1: upaa_asdf
 		OrderName: ASDFParatroopers
 		Icons:
 			1: paratroopers
@@ -1379,7 +1381,7 @@ aa_cgyard:
 ^KamikazeMode:
 	GrantConditionOnPrerequisite@MilitaryAcedemy:
 		Condition: MilitaryAcedemy
-		Prerequisites: aa_cgmiac
+		Prerequisites: upaa_banzai
 	GrantConditionOnDamageState@angry:
 		ValidDamageStates: Heavy
 		Condition: KamikazeAngry
@@ -1621,7 +1623,7 @@ aa_japrif:
 	Valued:
 		Cost: 300
 	Tooltip:
-		Name: Japanese Fanatic
+		Name: Fanatic
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: ~aa_cgbrck, ~upaa_japrif
@@ -1853,7 +1855,7 @@ aa_asdf:
 		Name: ASDF
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~aa_cgmiac
+		Prerequisites: ~aa_cgmiac, ~upaa_asdf
 		Queue: Infantry, RAInfantry
 		Description: actor-boris.description
 	Health:
@@ -1886,6 +1888,7 @@ aa_asdf:
 		InitialActorCount: -1
 		RespawnTicks: 10
 		RearmTicks: 10
+		SpawnDistance: 60c0
 		SlaveAvailableCondition: canflare
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
@@ -1955,6 +1958,7 @@ aa_dragonfly:
 	Inherits@anim: ^RA2Vehicle
 	Inherits@cargo: ^CargoVehicle
 	Inherits@bot: ^BotAutoDeployTransport
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -1987,8 +1991,16 @@ aa_dragonfly:
 	Cargo:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 4
-		EjectOnDeath: false
 		InitialUnits: aa_gren, aa_gren, aa_gren, aa_tkiller
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PauseOnCondition: chronobeamed
+		RequiresCondition: upaa_dragonfly
+	GrantConditionOnPrerequisite@Fireports:
+		Condition: upaa_dragonfly
+		Prerequisites: upaa_dragonfly
 	Hovers:
 
 aa_lynx:
@@ -2169,7 +2181,7 @@ aa_pulv:
 		Name: Pulverizer
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~aa_cgradr
+		Prerequisites: ~aa_cgradr, ~!upaa_mecha
 		Queue: Vehicle, RAVehicle
 		Description: actor-aapulv.description
 	Mobile:
@@ -2297,7 +2309,7 @@ aa_hotwi:
 		Name: Howitzer
 	Buildable:
 		BuildPaletteOrder: 70
-		Prerequisites: ~aa_cgradr, aa_cgtech
+		Prerequisites: ~aa_cgtech
 		Queue: Vehicle, RAVehicle
 		Description: actor-aahowi.description
 	Mobile:
@@ -2389,7 +2401,7 @@ aa_ftnk:
 		Name: Flame Tank
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~aa_cgweap, aa_cgflam
+		Prerequisites: ~aa_cgweap, ~upaa_ftnk
 		Queue: Vehicle, RAVehicle
 		Description: actor-ftnk.description
 	Mobile:
@@ -2435,7 +2447,7 @@ aa_mecha:
 		Name: Pulverizer Mecha
 	Buildable:
 		BuildPaletteOrder: 75
-		Prerequisites: ~aa_cgtech
+		Prerequisites: ~aa_cgradr, ~upaa_mecha
 		Queue: Vehicle, RAVehicle
 		Description: actor-aamecha.description
 	Mobile:
@@ -2648,6 +2660,7 @@ aa_phoenix:
 		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
 		LocalYaw: 100, -100, 50, -50
 		PauseOnCondition: !ammo
+		Voice: AttackGround
 	Armament@SECONDARY:
 		Name: primary
 		Weapon: AsianPhoenixRocketAA
@@ -2693,10 +2706,13 @@ aa_phoenix:
 	AttackAircraft:
 		Voice: Attack
 		FacingTolerance: 80
+	AttackMove:
+		Voice: AttackMove
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 4
+	DeathSounds:
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -3468,30 +3484,43 @@ upaa_cgplas:
 
 ### Military tree
 
-upaa_gren:
+upaa_ftnk:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Grenadier Training
+		Name: Unlock Flame Tank
 	Buildable:
 		BuildPaletteOrder: 99
 		Queue: Promotions
-		Description: Equips Militias with Grenades.
-		Prerequisites: ~aa_cgcnst, !aa_gren, rank1
+		Description: Enables construction of the Flame Tank.
+		Prerequisites: ~aa_cgcnst, !upaa_ftnk, rank1
 	RenderSprites:
-		Image: aa_gren
+		Image: aa_ftnk
 	ProvidesPrerequisite:
 
-upaa_lynx:
+upaa_mecha:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Lynx Machinegun
+		Name: Unlock Pulverizer Mecha
 	Buildable:
 		BuildPaletteOrder: 102
 		Queue: Promotions
-		Description: Lynx now uses a Machinegun.
-		Prerequisites: ~aa_cgcnst, upaa_gren, !upaa_lynx, rank1
+		Description: Enables construction of the Pulverizer Mecha.
+		Prerequisites: ~aa_cgcnst, upaa_ftnk, !upaa_mecha, rank1
 	RenderSprites:
-		Image: aa_lynx
+		Image: aa_mecha
+	ProvidesPrerequisite:
+
+upaa_asdf:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock ASDF
+	Buildable:
+		BuildPaletteOrder: 105
+		Queue: Promotions
+		Description: Enables training ASDF.
+		Prerequisites: ~aa_cgcnst, upaa_mecha, !upaa_asdf, rank1
+	RenderSprites:
+		Image: aa_asdf
 	ProvidesPrerequisite:
 
 upaa_railt2:
@@ -3499,23 +3528,72 @@ upaa_railt2:
 	Tooltip:
 		Name: Unlock Heavy Railgun Tank
 	Buildable:
-		BuildPaletteOrder: 105
+		BuildPaletteOrder: 108
 		Queue: Promotions
 		Description: Enables construction of the Heavy Railgun Tank.
-		Prerequisites: ~aa_cgcnst, upaa_lynx, !upaa_railt2, rank1
+		Prerequisites: ~aa_cgcnst, upaa_asdf, !upaa_railt2, rank1
 	RenderSprites:
 		Image: aa_railt2
 	ProvidesPrerequisite:
 
-upaa_cgmiac:
-	Inherits: ^promotion_upgrade.template
+### Researches
+
+upaa_gren:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
-		Name: Unlock Military Academy
+		Name: Grenadier Training
+	Valued:
+		Cost: 1000
 	Buildable:
-		BuildPaletteOrder: 108
-		Queue: Promotions
-		Description: Enables construction of the Military Academy.
-		Prerequisites: ~aa_cgcnst, upaa_railt2, !upaa_cgmiac, rank1
+		BuildPaletteOrder: 50
+		Queue: Upgrades
+		Description: Equips Militias with Grenades.
+		Prerequisites: ~aa_cgmiac, !upaa_gren
 	RenderSprites:
-		Image: aa_cgmiac
+		Image: aa_gren
+	ProvidesPrerequisite:
+
+upaa_lynx:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Lynx Machinegun
+	Valued:
+		Cost: 1500
+	Buildable:
+		BuildPaletteOrder: 60
+		Queue: Upgrades
+		Description: Lynx now uses a Machinegun.
+		Prerequisites: ~aa_cgmiac, !upaa_lynx
+	RenderSprites:
+		Image: aa_lynx
+	ProvidesPrerequisite:
+
+upaa_dragonfly:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Dragonfly Fireports
+	Valued:
+		Cost: 1500
+	Buildable:
+		BuildPaletteOrder: 70
+		Queue: Upgrades
+		Description: Passengers can shoot out from Dragonflies.
+		Prerequisites: ~aa_cgmiac, !upaa_dragonfly
+	RenderSprites:
+		Image: aa_dragonfly
+	ProvidesPrerequisite:
+
+upaa_banzai:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Banzai Mode
+	Valued:
+		Cost: 2000
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Upgrades
+		Description: Infantry enter Banzai Mode on low health.
+		Prerequisites: ~aa_cgmiac, !upaa_banzai
+	RenderSprites:
+		Image: aa_japrif
 	ProvidesPrerequisite:

@@ -191,7 +191,7 @@ Player:
 	Guardable:
 	DetectCloaked:
 		Range: 1c768
-	DeathSounds:
+	DeathSounds@NORMAL:
 		DeathTypes: ExplosionDeath, SoundDeath, SmallExplosionDeath, BulletDeath
 	MustBeDestroyed:
 	TerrainModifiesDamage:
@@ -231,11 +231,6 @@ Player:
 		DeathSequencePalette: player
 		CrushedSequencePalette: player
 		CrushedPaletteIsPlayerPalette: True
-
-^D2KPlane:
-	Inherits@plane: ^RANeutralPlane
-	Aircraft:
-		IdleBehavior: None
 
 ^D2KBuilding:
 	Inherits@1: ^BaseBuilding
@@ -328,6 +323,7 @@ Player:
 		Step: -100
 		StartIfBelow: 101
 		Delay: 6
+
 ^D2KPaletteRenderInfantry:
 	Inherits: ^D2KPaletteRender
 	Crushable:
@@ -336,44 +332,6 @@ Player:
 		DeathSequencePalette: playerd2k
 		CrushedSequencePalette: playerd2k
 		CrushedPaletteIsPlayerPalette: True
-
-^D2KDisableOnLowPowerOrPowerDown:
-	Inherits: ^D2KDisableOnLowPower
-	GrantCondition@IDISABLE:
-		RequiresCondition: lowpower || powerdown
-		Condition: disabled
-	ToggleConditionOnOrder:
-		DisabledSound: EnablePower
-		EnabledSound: DisablePower
-		Condition: powerdown
-		OrderName: PowerDown
-	WithDecoration@POWERDOWN:
-		Image: poweroff
-		Sequence: offline
-		Palette: chrome
-		RequiresCondition: powerdown
-		Position: Center
-		Offsets:
-			repairing: 10, 0
-	PowerMultiplier@POWERDOWN:
-		RequiresCondition: powerdown
-		Modifier: 0
-	RepairableBuilding:
-		RepairCondition: repairing
-	WithBuildingRepairDecoration:
-		Offsets:
-			powerdown: -10, 0
-
-^D2KDisableOnLowPower:
-	WithColoredOverlay@IDISABLE:
-		RequiresCondition: disabled
-		Color: 000000B4
-	GrantConditionOnPowerState@LOWPOWER:
-		Condition: lowpower
-		ValidPowerStates: Low, Critical
-	GrantCondition@IDISABLE:
-		RequiresCondition: lowpower
-		Condition: disabled
 
 ^D2KVehicle:
 	Inherits@vehicle: ^Vehicle
@@ -452,6 +410,7 @@ Player:
 	Cloak@TDcloak:
 		Palette: d2kcloak
 		IsPlayerPalette: true
+
 ^D2KPrereqs:
 	ProvidesPrerequisite@atreides:
 		Factions: atreides, ixian, fremen
@@ -497,6 +456,9 @@ Player:
 		Categories: Defense
 	-CommandBarBlacklist:
 	-ActorPreviewPlaceBuildingPreview:
+	ActorStatValues:
+		Stats: Armor, Sight, Power, Damage, ReloadDelay, MaxRange, Kills, Experience
+
 ^D2KMine:
 	Inherits: ^SpriteActor
 	Interactable:
@@ -617,7 +579,8 @@ Player:
 ^concrete:
 	AlwaysVisible:
 	Interactable:
-	Building:
+	D2kBuilding:
+		ConcreteTemplate: 856
 		BuildSounds: CHUNG.WAV
 		AllowInvalidPlacement: true
 		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune
@@ -639,7 +602,7 @@ Player:
 
 concretea:
 	Inherits: ^concrete
-	Building:
+	D2kBuilding:
 		Footprint: xx xx
 		Dimensions: 2,2
 	Tooltip:
@@ -654,7 +617,7 @@ concretea:
 
 concreteb:
 	Inherits: ^concrete
-	Building:
+	D2kBuilding:
 		Footprint: xxx xxx xxx
 		Dimensions: 3,3
 	Tooltip:
@@ -1680,7 +1643,7 @@ heavy_factory:
 		Sequence: idle-top
 	WithProductionOverlay@WELDING:
 		RequiresCondition: !build-incomplete
-		Queues: Vehicle
+		Queues: Vehicle, RAVehicle
 		Sequence: production-welding
 	Power:
 		Amount: -30
@@ -1789,7 +1752,6 @@ repair_pad.ixian:
 outpost.ixian:
 	Inherits: ^D2KBuilding
 	Inherits@radar: ^RadarBuilding
-	Inherits@IDISABLE: ^D2KDisableOnLowPowerOrPowerDown
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@shape: ^3x2Shape
 	Buildable:
@@ -1812,9 +1774,6 @@ outpost.ixian:
 		HP: 250000
 	Armor:
 		Type: Wood
-	EnemyWatcher:
-		ScanInterval: 25
-		NotificationInterval: 500
 	RenderSprites:
 		Image: outpost.atreides
 	WithIdleOverlay@DISH:
@@ -2435,14 +2394,12 @@ large_gun_turret:
 	Inherits@exp: ^GainsExperienceRABuilding
 	Inherits@Template: ^AntiAirDefenseTemplate
 	Inherits@detect: ^GenericAllDetector
-	Inherits@IDISABLE: ^D2KDisableOnLowPowerOrPowerDown
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@AntiTank: ^PrioritizeTank
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@shape: ^1x1Shape
-	AttackTurreted:
-		PauseOnCondition: disabled
+	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
 		Prerequisites: ~upgrade.conyard, outpost.ixian
@@ -2464,6 +2421,7 @@ large_gun_turret:
 		TurnSpeed: 128
 		InitialFacing: 2048
 		RealignDelay: -1
+	AttackTurreted:
 	WithWallSpriteBody:
 		RequiresCondition: !build-incomplete
 	WithSpriteTurret:
@@ -3343,15 +3301,13 @@ light_inf:
 		Weapon: LMG
 	Armament@GARRISONED: ##########
 		Name: garrisoned
-		Weapon: HighV
+		Weapon: LMG
 		MuzzleSequence: garrison-muzzle
 		MuzzlePalette: d2keffect
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
 		DefaultAttackSequence: shoot
 	Parachutable:
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 
 engineer:
 	Inherits: E6
@@ -3430,7 +3386,6 @@ trooper:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@anim: ^D2KPaletteRenderInfantry
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@EXT: ^ExternalConditions
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Buildable:
 		Queue: Infantry, RAInfantry
@@ -3456,6 +3411,12 @@ trooper:
 	Armament@aa:
 		Weapon: D2K_Rocket_Trooper_AA
 		LocalOffset: 128,0,256
+	Armament@garrisoned:
+		Name: garrisoned
+		Weapon: D2K_Rocket_Trooper
+	Armament@garrisonedaa:
+		Name: garrisoned
+		Weapon: D2K_Rocket_Trooper_AA
 	TakeCover:
 		ProneOffset: 324,0,-204
 	WithInfantryBody:
@@ -3490,15 +3451,13 @@ shock_infantry:
 		LocalOffset: 135,0,200
 	Armament@GARRISONED: ##########
 		Name: garrisoned
-		Weapon: HighV
+		Weapon: D2K_ShockGunInf
 		MuzzleSequence: garrison-muzzle
 		MuzzlePalette: d2keffect
 	WithInfantryBody:
 		-IdleSequences: idle1,idle2
 		DefaultAttackSequence: shoot
 	Parachutable:
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	Voiced:
 		VoiceSet: D2KGenericVoice
 	RenderSprites:
@@ -5726,7 +5685,6 @@ d2k_mcv.ixian:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@mcv: ^MCV
 	Inherits@conyard: ^Conyard
-	Inherits@EXT: ^ExternalConditions
 	Buildable:
 		Prerequisites: ~repair_pad.ixian
 		Queue: Vehicle, RAVehicle
@@ -5771,8 +5729,6 @@ d2k_mcv.ixian:
 	AttractsWorms:
 		Intensity: 700
 	-RevealOnFire:
-	Cloak@TDcloak:
-		Palette: d2kcloak
 	Voiced:
 		VoiceSet: D2KMCV
 	RenderSprites:
@@ -6190,9 +6146,10 @@ d2k_mcv.ixian:
 
 d2k_air_drone:
 	Inherits: ^RANeutralPlane
-	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@CLOAK: ^CloakedAircraft
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -6217,6 +6174,9 @@ d2k_air_drone:
 		Delay: 100
 		Count: 1
 		ResetOnFire: false
+	WithAmmoPipsDecoration:
+ 		Position: BottomLeft
+ 		RequiresSelection: true
 	AttackAircraft:
 		FacingTolerance: 256
 	Armament:
@@ -6232,22 +6192,11 @@ d2k_air_drone:
 		MaximumPitch: 56
 		Repulsable: true
 		CanHover: false
-		AirborneCondition: airborne
 		TurnSpeed: 40
-	Guard:
-		Voice: Guard
-	Guardable:
-	Targetable:
-		TargetTypes: Air, Plane
 	WithFacingSpriteBody:
-		RequiresCondition: airborne
-	WithFacingSpriteBody@LANDED:
-		Sequence: idle
-		RequiresCondition: !airborne
 	Selectable:
 		Class: d2k_air_drone
 		Bounds: 1536, 1280, 0, 0
-	SelectionDecorations:
 	SpawnActorOnDeath:
 		Actor: d2k_air_drone.husk
 	Voiced:
@@ -6265,10 +6214,7 @@ d2k_air_drone:
 	Cloak:
 		InitialDelay: 150
 		CloakDelay: 150
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
-		CloakedCondition: cloaked
 
 d2k_air_drone.husk:
 	Inherits: ^PlaneHusk
@@ -6704,7 +6650,7 @@ harvester:
 	Inherits@Template: ^HarvesterTemplate
 	Inherits@selection: ^SelectableEconomicUnit
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
+	Inherits@CLOAK: ^CloakedVehicle
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		Prerequisites: ~spice_refinery
@@ -6767,13 +6713,9 @@ harvester:
 	AttractsWorms:
 		Intensity: 750
 	-RevealOnFire:
-	Cloak@TDcloak:
-		Palette: d2kcloak
 	Cloak:
 		InitialDelay: 80
 		CloakDelay: 80
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
 		Palette: d2kcloak
 		CloakedCondition: cloaked
@@ -7328,7 +7270,6 @@ siege_tank:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
 	Inherits@EMP: ^FrontalEMP
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiBuil: ^PrioritizeBuilding
@@ -7380,8 +7321,6 @@ siege_tank:
 		EffectiveOwnerFromOwner: true
 	AttractsWorms:
 		Intensity: 600
-	Cloak@TDcloak:
-		Palette: d2kcloak
 	GrantConditionOnPrerequisite@d2k_siege_range_upgrade:
 		Condition: d2k_siege_range_upgrade
 		Prerequisites: d2k_siege_range_upgrade
@@ -7395,6 +7334,7 @@ siege_tank_ixian:
 	Inherits: siege_tank
 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Inherits@SHADOWS: ^Shadows
+	Inherits@CLOAK: ^CloakedVehicle
 	Buildable:
 		Prerequisites: ~upgrade.heavy, outpost.ixian
 		Description: Stealth Siege Artillery with turnable turret\nthat can shoot burst up to 3 shots in\na row at a higher range.\nLess accurate than regular version and with long reload times\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Everything
@@ -7431,10 +7371,7 @@ siege_tank_ixian:
 	Cloak:
 		InitialDelay: 80
 		CloakDelay: 80
-		UncloakOn: Attack, infiltrate, damage
-		IsPlayerPalette: true
-		CloakedCondition: cloaked
-		PauseOnCondition: cloak-force-disabled || base-reveal
+		UncloakOn: Attack, Damage
 	-WithSpriteTurret:
 	-SpawnActorOnDeath:
 	WithShadow:
@@ -7539,7 +7476,6 @@ missile_tank:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Tooltip:
@@ -7630,15 +7566,6 @@ missile_tank_ixian:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 5
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
 
 # d2k_flame_tank:
 # 	Inherits: ^D2KVehicle
@@ -8279,8 +8206,8 @@ rocket_raider_ixian:
 	Inherits@bot: ^BotMicromanageable
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
 	Inherits@CARGO: ^CargoVehicle
+	Inherits@CLOAK: ^CloakedVehicle
 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiAir: ^PrioritizeAir
@@ -8323,27 +8250,21 @@ rocket_raider_ixian:
 		EmptyWeapon: D2KUnitExplodeSmall
 	AttractsWorms:
 		Intensity: 420
-	Cloak@TDcloak:
-		Palette: d2kcloak
 	Voiced:
 		VoiceSet: D2KRaider
 	Cloak:
 		InitialDelay: 75
 		CloakDelay: 50
 		UncloakOn: Attack, Unload
-		IsPlayerPalette: true
-		Palette: d2kcloak
-		CloakedCondition: cloaked
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	Armament@damage:
 		Weapon: D2K_Bazooka2
 		LocalOffset: 170,0,0
 		PauseOnCondition: !ammo
 		MuzzleSequence: muzzle
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 8
+	#WithAmmoPipsDecoration:
+	#	Position: BottomLeft
+	#	RequiresSelection: true
+	#	PipCount: 8
 	RenderSprites:
 		Image: shock_raider
 
@@ -8353,8 +8274,8 @@ shock_raider:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
 	Inherits@CARGO: ^CargoVehicle
+	Inherits@CLOAK: ^CloakedVehicle
 	Inherits@EMP: ^FrontalEMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiInf: ^PrioritizeInfantry
@@ -8395,10 +8316,6 @@ shock_raider:
 		InitialDelay: 75
 		CloakDelay: 50
 		UncloakOn: Attack, Unload
-		IsPlayerPalette: true
-		Palette: d2kcloak
-		CloakedCondition: cloaked
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	Voiced:
 		VoiceSet: D2KShockRaider
 	RenderSprites:
@@ -8688,7 +8605,6 @@ combat_tank_ixian:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
 	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Buildable:
@@ -8733,8 +8649,6 @@ combat_tank_ixian:
 		Class: combat
 	AttractsWorms:
 		Intensity: 520
-	Cloak@TDcloak:
-		Palette: d2kcloak
 	Voiced:
 		VoiceSet: D2KCombatTank
 
@@ -8931,7 +8845,7 @@ combat_siege_tank:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
+	Inherits@CARGO: ^CargoVehicle
 	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Buildable:
@@ -8976,8 +8890,6 @@ combat_siege_tank:
 		Class: combat
 	AttractsWorms:
 		Intensity: 520
-	Cloak@TDcloak:
-		Palette: d2kcloak
 	Voiced:
 		VoiceSet: D2KCombatTank
 	Cargo:
@@ -9052,10 +8964,6 @@ quake_tank:
 	SpawnActorOnDeath@deployed:
 		Actor: quake_tank_deployed.husk
 		RequiresCondition: deployed || botmicro
-	Cloak@STEALTH:
-		Palette: racloak
-		IsPlayerPalette: true
-		UncloakOn: Damage, Infiltrate
 	RenderSprites:
 		PlayerPalette: raplayer
 
@@ -9105,9 +9013,9 @@ duelist_tank:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
 	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@Cargo: ^CargoVehicle
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 40
@@ -9163,15 +9071,14 @@ duelist_tank:
 		RequiresSelection: true
 
 carryall.reinforce:
-	Inherits: ^D2KPlane
+	Inherits: ^AirstrikePlane
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EXT: ^ExternalConditions
 	Valued:
 		Cost: 2000
 	Tooltip:
 		Name: Autonomous Carryall
 	Health:
-		HP: 200000
+		HP: 500000
 	Armor:
 		Type: Heavy
 	Selectable:
@@ -9183,18 +9090,10 @@ carryall.reinforce:
 		InitialFacing: 0
 		Speed: 156
 		TurnSpeed: 24
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice
 		Repulsable: False
-		AirborneCondition: airborne
 		CanSlide: True
 		VTOL: true
 		IdleTurnSpeed: 4
-	Targetable@GROUND:
-		TargetTypes: Ground, Vehicle
-		RequiresCondition: !airborne
-	Targetable@AIRBORNE:
-		TargetTypes: Air
-		RequiresCondition: airborne
 	-SpawnActorOnDeath:
 	SpawnActorOnDeath@CRUISING:
 		Actor: carryall.husk
@@ -9247,6 +9146,8 @@ carryall.reinforce:
 
 carryall:
 	Inherits: carryall.reinforce
+	Health:
+		HP: 200000
 	-Carryall:
 	AutoCarryall:
 		BeforeLoadDelay: 10
@@ -9278,11 +9179,15 @@ carryall.paradrop:
 
 frigate:
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits: ^RANeutralPlane
+	Inherits: ^AirstrikePlane
 	ParaDrop:
 		DropRange: 1c0
 	Tooltip:
 		Name: Frigate
+	Health:
+		HP: 500000
+	Armor:
+		Type: Spaceship
 	Aircraft:
 		IdleBehavior: LeaveMap
 		Speed: 189
@@ -9540,9 +9445,7 @@ carryall.huskVTOL:
 ###########################
 
 upgrade.conyard:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Construction Yard Upgrade
 	Buildable:
@@ -9558,12 +9461,9 @@ upgrade.conyard:
 		Cost: 750
 	RenderSprites:
 		Image: conyard.ordos
-	ProvidesPrerequisite@upgradename:
 
 upgrade.barracks:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Barracks Upgrade
 	Buildable:
@@ -9579,12 +9479,9 @@ upgrade.barracks:
 		Cost: 500
 	RenderSprites:
 		Image: barracks.ordos
-	ProvidesPrerequisite@upgradename:
 
 upgrade.light:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Light Factory Upgrade
 	Buildable:
@@ -9600,12 +9497,9 @@ upgrade.light:
 		Cost: 750
 	RenderSprites:
 		Image: light.ordos
-	ProvidesPrerequisite@upgradename:
 
 upgrade.heavy:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Heavy Factory Upgrade
 	Buildable:
@@ -9621,12 +9515,9 @@ upgrade.heavy:
 		Cost: 1500
 	RenderSprites:
 		Image: heavy.ordos
-	ProvidesPrerequisite@upgradename:
 
 upgrade.hightech:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: High Tech Factory Upgrade
 	Buildable:
@@ -9642,12 +9533,9 @@ upgrade.hightech:
 		Cost: 3000
 	RenderSprites:
 		Image: hightech.atreides
-	ProvidesPrerequisite@upgradename:
 
 upgrade.contaminator:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Contaminator Unlock
 	Buildable:
@@ -9662,12 +9550,9 @@ upgrade.contaminator:
 		Cost: 500
 	RenderSprites:
 		Image: contaminator
-	ProvidesPrerequisite@upgradename:
 
 upgrade.leech:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Leech Unlock
 	Buildable:
@@ -9683,11 +9568,9 @@ upgrade.leech:
 		Cost: 1000
 	RenderSprites:
 		Image: d2k_leech
-	ProvidesPrerequisite@upgradename:
+
 upgrade.emperorworm:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Emperor Worm Unlock
 	Buildable:
@@ -9702,11 +9585,9 @@ upgrade.emperorworm:
 		Cost: 2000
 	RenderSprites:
 		Image: d2k_emperor_worm
-	ProvidesPrerequisite@upgradename:
+
 upgrade.rocketeer:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Rocketeer Unlock
 	Buildable:
@@ -9723,12 +9604,9 @@ upgrade.rocketeer:
 	RenderSprites:
 		Image: rocketeer
 		PlayerPalette: ra2player
-	ProvidesPrerequisite@upgradename:
 
 upgrade.rocket_raider:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Rocket Raider Unlock
 	Buildable:
@@ -9744,12 +9622,9 @@ upgrade.rocket_raider:
 		Cost: 500
 	RenderSprites:
 		Image: raider
-	ProvidesPrerequisite@upgradename:
 
 upgrade.mg_quad:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: MG Quad Unlock
 	Buildable:
@@ -9765,12 +9640,9 @@ upgrade.mg_quad:
 		Cost: 500
 	RenderSprites:
 		Image: quad
-	ProvidesPrerequisite@upgradename:
 
 upgrade.mcv:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: MCV Unlock
 	Buildable:
@@ -9786,12 +9658,9 @@ upgrade.mcv:
 		Cost: 1500
 	RenderSprites:
 		Image: d2k_mcv
-	ProvidesPrerequisite@upgradename:
 
 upgrade.basq:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Basq Unlock
 	Buildable:
@@ -9809,12 +9678,9 @@ upgrade.basq:
 		Image: d2k_basq
 		Palette: ra2
 		PlayerPalette: ra2player
-	ProvidesPrerequisite@upgradename:
 
 upgrade.tleilaxueyes:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Tleilaxu Eyes
 	Buildable:
@@ -9830,11 +9696,9 @@ upgrade.tleilaxueyes:
 		Cost: 1000
 	RenderSprites:
 		Palette: windows256
-	ProvidesPrerequisite@upgradename:
+
 upgrade.gholas:
-	AlwaysVisible:
-	Interactable:
-	ScriptTriggers:
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Tleilaxu Gholas
 	Buildable:
@@ -9849,10 +9713,9 @@ upgrade.gholas:
 		Cost: 2500
 	RenderSprites:
 		Palette: windows256
-	ProvidesPrerequisite@upgradename:
 
 d2k_personal_shield:
-	Inherits: ^upgrade.template
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Personal Shield
 	Valued:
@@ -9861,22 +9724,20 @@ d2k_personal_shield:
 		BuildPaletteOrder: 250
 		Queue: Upgrades
 		Description: Shield protects infantry from small caliber weapons\nExhausts under heavy fire and leaves unit vulnerable\nPersonal Shields attracts sandworms
-		Prerequisites: ~!d2k_personal_shield
+		Prerequisites: ~research_centre, ~!d2k_personal_shield
 		IconPalette: ra2
 		BuildDuration: 1500
 		BuildDurationModifier: 100
 	RenderSprites:
 		Image: d2k_personal_shield_icon
-	ProvidesPrerequisite:
-		Prerequisite: d2k_personal_shield
 
 d2k_combat_siege_upgrade:
-	Inherits: ^upgrade.template
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Combat Siege
 	Buildable:
 		BuildPaletteOrder: 200
-		Prerequisites: ~!d2k_combat_siege_upgrade
+		Prerequisites: ~research_centre, ~!d2k_combat_siege_upgrade
 		Queue: Upgrades
 		BuildDuration: 1500
 		BuildDurationModifier: 100
@@ -9886,15 +9747,14 @@ d2k_combat_siege_upgrade:
 		Cost: 2500
 	RenderSprites:
 		Image: combat_tank_o
-	ProvidesPrerequisite@upgradename:
 
 d2k_quake_tank_upgrade:
-	Inherits: ^upgrade.template
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Quake Tank
 	Buildable:
 		BuildPaletteOrder: 200
-		Prerequisites: ~!d2k_quake_tank_upgrade
+		Prerequisites: ~research_centre, ~!d2k_quake_tank_upgrade
 		Queue: Upgrades
 		BuildDuration: 1500
 		BuildDurationModifier: 100
@@ -9904,15 +9764,14 @@ d2k_quake_tank_upgrade:
 		Cost: 2500
 	RenderSprites:
 		Image: quake_tank
-	ProvidesPrerequisite@upgradename:
 
 d2k_duelist_tank_upgrade:
-	Inherits: ^upgrade.template
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Duelist Tank
 	Buildable:
 		BuildPaletteOrder: 200
-		Prerequisites: ~!d2k_duelist_tank_upgrade
+		Prerequisites: ~research_centre, ~!d2k_duelist_tank_upgrade
 		Queue: Upgrades
 		BuildDuration: 1500
 		BuildDurationModifier: 100
@@ -9922,15 +9781,14 @@ d2k_duelist_tank_upgrade:
 		Cost: 2500
 	RenderSprites:
 		Image: duelist_tank
-	ProvidesPrerequisite@upgradename:
 
 d2k_spice_sifter_upgrade:
-	Inherits: ^upgrade.template
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Efficient Filtering
 	Buildable:
 		BuildPaletteOrder: 200
-		Prerequisites: ~!d2k_spice_sifter_upgrade
+		Prerequisites: ~research_centre, ~!d2k_spice_sifter_upgrade
 		Queue: Upgrades
 		BuildDuration: 1500
 		BuildDurationModifier: 100
@@ -9940,15 +9798,14 @@ d2k_spice_sifter_upgrade:
 		Cost: 2500
 	RenderSprites:
 		Image: d2k_spice_sifter
-	ProvidesPrerequisite@upgradename:
 
 d2k_siege_range_upgrade:
-	Inherits: ^upgrade.template
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Reinforced barrel
 	Buildable:
 		BuildPaletteOrder: 200
-		Prerequisites: ~!d2k_siege_range_upgrade
+		Prerequisites: ~research_centre, ~!d2k_siege_range_upgrade
 		Queue: Upgrades
 		BuildDuration: 1500
 		BuildDurationModifier: 100
@@ -9957,10 +9814,9 @@ d2k_siege_range_upgrade:
 		Cost: 2000
 	RenderSprites:
 		Image: d2k_siege_tank_higher_range
-	ProvidesPrerequisite@upgradename:
 
 d2k_ornithopter_upgrade:
-	Inherits: ^upgrade.template
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Ornithopter Missiles
 	Buildable:
@@ -9974,7 +9830,6 @@ d2k_ornithopter_upgrade:
 		Cost: 2500
 	RenderSprites:
 		Image: d2k_ornithopter_upgrade
-	ProvidesPrerequisite@upgradename:
 
 #######################################
 #       HUSKS
