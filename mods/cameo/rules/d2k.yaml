@@ -2414,8 +2414,11 @@ large_gun_turret:
 		HP: 150000
 	BodyOrientation:
 		QuantizedFacings: 32
-	Armament:
+	Armament@PRIMARY:
 		Weapon: D2K_TowerMissile
+		LocalOffset: 256,384,768, 256,-384,768
+	Armament@SECONDARY:
+		Weapon: D2K_TowerMissileAA
 		LocalOffset: 256,384,768, 256,-384,768
 	Turreted:
 		TurnSpeed: 128
@@ -6146,42 +6149,44 @@ d2k_mcv.ixian:
 
 d2k_air_drone:
 	Inherits: ^RANeutralPlane
+	Inherits@Template: ^BomberTemplate
+	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@CLOAK: ^CloakedAircraft
 	Valued:
-		Cost: 750
+		Cost: 1000
 	Tooltip:
-		Name: Air Drone
+		Name: Ixian Air Drone
 	Buildable:
 		Queue: Aircraft, RAAircraft
 		BuildPaletteOrder: 10
 		Prerequisites: ~high_tech_factory.ixian
-		BuildDuration: 450
-		BuildDurationModifier: 100
 		Description: Stealthed and Light air unit that is used for defence against other air units.\nCarries an AA missile launcher that automatically fires\nat any air unit within range. Due to it's light armor,\nit is easily destroyed from enemy AA fire.\nDetector
 		IconPalette: windows256
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
 		HP: 25000
+	ChangesHealth@SelfHealing:
+		Step: 10
 	AmmoPool:
 		Name: primary
 		Ammo: 2
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 100
+		Delay: 50
 		Count: 1
 		ResetOnFire: false
 	WithAmmoPipsDecoration:
- 		Position: BottomLeft
- 		RequiresSelection: true
+		Position: BottomLeft
+		RequiresSelection: true
 	AttackAircraft:
 		FacingTolerance: 256
 	Armament:
 		Weapon: d2k_air_drone
-		LocalOffset: 0,0,0
+		LocalOffset: 0,-256,0, 0,256,0
+		LocalYaw: 64, -64
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
 		PauseOnCondition: !ammo
@@ -6192,7 +6197,7 @@ d2k_air_drone:
 		MaximumPitch: 56
 		Repulsable: true
 		CanHover: false
-		TurnSpeed: 40
+		TurnSpeed: 15
 	WithFacingSpriteBody:
 	Selectable:
 		Class: d2k_air_drone
@@ -6212,8 +6217,8 @@ d2k_air_drone:
 		Pieces: 1, 2
 		Range: 1c0, 3c0
 	Cloak:
-		InitialDelay: 150
-		CloakDelay: 150
+		InitialDelay: 75
+		CloakDelay: 50
 		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
 
 d2k_air_drone.husk:
@@ -7264,50 +7269,113 @@ harvester:
 # 	Cargo:
 # 		InitialUnits: facedancer, facedancer, facedancer
 
-siege_tank:
+# siege_tank:
+# 	Inherits@D2KT: ^D2KTank
+# 	Inherits@Template: ^ArtilleryTemplate
+# 	Inherits@exp: ^GainsExperienceRA
+# 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+# 	Inherits@D2KSprite: ^D2KPaletteRender
+# 	Inherits@EMP: ^FrontalEMP
+# 	Inherits@AntiInf: ^PrioritizeInfantry
+# 	Inherits@AntiBuil: ^PrioritizeBuilding
+# 	Buildable:
+# 		Queue: Vehicle, RAVehicle
+# 		Prerequisites: ~wip, upgrade.heavy, ~techlevel.medium, ~!faction.tleilaxu, ~!faction.ixian, ~!faction.emperor
+# 		BuildPaletteOrder: 50
+# 		Description: Siege Artillery\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
+# 		IconPalette: d2kunit
+# 	Valued:
+# 		Cost: 600
+# 	Tooltip:
+# 		Name: Siege Tank
+# 	UpdatesPlayerStatistics:
+# 		AddToArmyValue: true
+# 	Health:
+# 		HP: 40000
+# 	Armor:
+# 		Type: Light
+# 	Mobile:
+# 		Speed: 43
+# 		TurnSpeed: 48
+# 	RevealsShroud:
+# 		Range: 6c768
+# 	Turreted:
+# 		Offset: 32,16,0
+# 		TurnSpeed: 48
+# 	Armament:
+# 		Weapon: D2K_155mm
+# 		Recoil: 150
+# 		RecoilRecovery: 19
+# 		LocalOffset: 512,0,320
+# 		MuzzleSequence: muzzle
+# 		MuzzlePalette: d2keffect
+# 	AttackFrontal:
+# 		FacingTolerance: 0
+# 	WithMuzzleOverlay:
+# 	WithSpriteTurret:
+# 	Explodes:
+# 		Weapon: D2KUnitExplodeMed
+# 		EmptyWeapon: D2KUnitExplodeMed
+# 	AutoTarget:
+# 		InitialStanceAI: Defend
+# 	Selectable:
+# 		Class: siegetank
+# 	SpawnActorOnDeath:
+# 		Actor: siege_tank.husk
+# 		OwnerType: InternalName
+# 		EffectiveOwnerFromOwner: true
+# 	AttractsWorms:
+# 		Intensity: 600
+# 	GrantConditionOnPrerequisite@d2k_siege_range_upgrade:
+# 		Condition: d2k_siege_range_upgrade
+# 		Prerequisites: d2k_siege_range_upgrade
+# 	RangeMultiplier@d2k_siege_range_upgrade:
+# 		Modifier: 150
+# 		RequiresCondition: d2k_siege_range_upgrade
+# 	Voiced:
+# 		VoiceSet: D2KSiegeTank
+
+siege_tank_ixian:
 	Inherits@D2KT: ^D2KTank
 	Inherits@Template: ^ArtilleryTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EMP: ^FrontalEMP
+	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@SHADOWS: ^Shadows
+	Inherits@CLOAK: ^CloakedVehicle
 	Buildable:
 		Queue: Vehicle, RAVehicle
-		Prerequisites: ~wip, upgrade.heavy, ~techlevel.medium, ~!faction.tleilaxu, ~!faction.ixian, ~!faction.emperor
 		BuildPaletteOrder: 50
-		Description: Siege Artillery\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
-		IconPalette: d2kunit
+		Prerequisites: ~upgrade.heavy, outpost.ixian
+		Description: Stealth Siege Artillery with turnable turret\nthat can shoot burst up to 3 shots in\na row at a higher range.\nLess accurate than regular version and with long reload times\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Everything
+		IconPalette: ra2
+	Health:
+		HP: 60000
 	Valued:
-		Cost: 600
+		Cost: 1600
+	Mobile:
+		Speed: 60
+		TurnSpeed: 12
 	Tooltip:
-		Name: Siege Tank
+		Name: Ix Siege Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
-	Health:
-		HP: 40000
 	Armor:
-		Type: Light
-	Mobile:
-		Speed: 43
-		TurnSpeed: 48
-	RevealsShroud:
-		Range: 6c768
-	Turreted:
-		Offset: 32,16,0
-		TurnSpeed: 48
+		Type: Medium
 	Armament:
-		Weapon: D2K_155mm
+		Weapon: D2K_155mm2
+		PauseOnCondition: !ammo
+		LocalOffset: 600,0,600
 		Recoil: 150
-		RecoilRecovery: 19
-		LocalOffset: 512,0,320
+		RecoilRecovery: 25
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
 	AttackFrontal:
 		FacingTolerance: 0
 	WithMuzzleOverlay:
-	WithSpriteTurret:
 	Explodes:
 		Weapon: D2KUnitExplodeMed
 		EmptyWeapon: D2KUnitExplodeMed
@@ -7315,39 +7383,6 @@ siege_tank:
 		InitialStanceAI: Defend
 	Selectable:
 		Class: siegetank
-	SpawnActorOnDeath:
-		Actor: siege_tank.husk
-		OwnerType: InternalName
-		EffectiveOwnerFromOwner: true
-	AttractsWorms:
-		Intensity: 600
-	GrantConditionOnPrerequisite@d2k_siege_range_upgrade:
-		Condition: d2k_siege_range_upgrade
-		Prerequisites: d2k_siege_range_upgrade
-	RangeMultiplier@d2k_siege_range_upgrade:
-		Modifier: 145
-		RequiresCondition: d2k_siege_range_upgrade
-	Voiced:
-		VoiceSet: D2KSiegeTank
-
-siege_tank_ixian:
-	Inherits: siege_tank
-	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
-	Inherits@SHADOWS: ^Shadows
-	Inherits@CLOAK: ^CloakedVehicle
-	Buildable:
-		Prerequisites: ~upgrade.heavy, outpost.ixian
-		Description: Stealth Siege Artillery with turnable turret\nthat can shoot burst up to 3 shots in\na row at a higher range.\nLess accurate than regular version and with long reload times\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Everything
-		IconPalette: ra2
-	Health:
-		HP: 120000
-	Valued:
-		Cost: 1200
-	Mobile:
-		Speed: 60
-		TurnSpeed: 12
-	Armor:
-		Type: Medium
 	AmmoPool:
 		Ammo: 3
 		AmmoCondition: ammo
@@ -7355,25 +7390,23 @@ siege_tank_ixian:
 		Delay: 40
 		Count: 1
 		ResetOnFire: true
-	Tooltip:
-		Name: Ix Siege Tank
-	-Turreted:
-	-WithMuzzleOverlay:
-	Armament:
-		Weapon: D2K_155mm2
-		PauseOnCondition: !ammo
-		LocalOffset: 1024,0,400
-		-MuzzleSequence:
-		-MuzzlePalette:
+	AttractsWorms:
+		Intensity: 600
+	GrantConditionOnPrerequisite@d2k_siege_range_upgrade:
+		Condition: d2k_siege_range_upgrade
+		Prerequisites: d2k_siege_range_upgrade
+	RangeMultiplier@d2k_siege_range_upgrade:
+		Modifier: 150
+		RequiresCondition: d2k_siege_range_upgrade
+	Voiced:
+		VoiceSet: D2KSiegeTank
+	Cloak:
+		InitialDelay: 75
+		CloakDelay: 50
+		UncloakOn: Attack, Damage
 	RenderSprites:
 		Image: ix_siege_tank
 		PlayerPalette: player
-	Cloak:
-		InitialDelay: 80
-		CloakDelay: 80
-		UncloakOn: Attack, Damage
-	-WithSpriteTurret:
-	-SpawnActorOnDeath:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
@@ -7470,7 +7503,57 @@ siege_tank_ixian:
 # 	Voiced:
 # 		VoiceSet: D2KAutoGunTank
 
-missile_tank:
+# missile_tank:
+# 	Inherits@D2KT: ^D2KTank
+# 	Inherits@Template: ^ArtilleryTemplate
+# 	Inherits@exp: ^GainsExperienceRA
+# 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+# 	Inherits@D2KSprite: ^D2KPaletteRender
+# 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
+# 	Inherits@AntiVeh: ^PrioritizeVehicle
+# 	Tooltip:
+# 		Name: Missile Tank
+# 	UpdatesPlayerStatistics:
+# 		AddToArmyValue: true
+# 	Buildable:
+# 		Queue: Vehicle, RAVehicle
+# 		Prerequisites: ~wip, ~heavy.missile_tank, upgrade.heavy, research_centre, ~techlevel.high, ~!faction.ixian, ~!faction.guild
+# 		BuildPaletteOrder: 60
+# 		Description: Rocket Artillery\n  Strong vs Vehicles, Buildings, Aircraft\n  Weak vs Infantry\nDetector
+# 		IconPalette: d2kunit
+# 	Valued:
+# 		Cost: 750
+# 	Mobile:
+# 		Speed: 64
+# 		TurnSpeed: 80
+# 	Health:
+# 		HP: 50000
+# 	Armor:
+# 		Type: Medium
+# 	RevealsShroud:
+# 		Range: 6c768
+# 	Armament:
+# 		Weapon: mtank_pri
+# 		LocalOffset: -128,128,171, -128,-128,171
+# 	AttackFrontal:
+# 		FacingTolerance: 0
+# 	AutoTarget:
+# 		InitialStanceAI: Defend
+# 	Explodes:
+# 		Weapon: D2KUnitExplodeMed
+# 		EmptyWeapon: D2KUnitExplodeMed
+# 	Selectable:
+# 		Class: missiletank
+# 	AttractsWorms:
+# 		Intensity: 600
+# 	Cloak@TDcloak:
+# 		Palette: d2kcloak
+# 	DetectCloaked:
+# 		Range: 4c0
+# 	Voiced:
+# 		VoiceSet: D2KMissileTank
+
+missile_tank_ixian:
 	Inherits@D2KT: ^D2KTank
 	Inherits@Template: ^ArtilleryTemplate
 	Inherits@exp: ^GainsExperienceRA
@@ -7479,29 +7562,32 @@ missile_tank:
 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Tooltip:
-		Name: Missile Tank
+		Name: Ix Missile Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle, RAVehicle
-		Prerequisites: ~wip, ~heavy.missile_tank, upgrade.heavy, research_centre, ~techlevel.high, ~!faction.ixian, ~!faction.guild
+		Prerequisites: ~upgrade.heavy, research_centre.ixian
 		BuildPaletteOrder: 60
-		Description: Rocket Artillery\n  Strong vs Vehicles, Buildings, Aircraft\n  Weak vs Infantry\nDetector
+		Description: Stealth Rocket Artillery\nCan shoot up to 10 rockets in a row at much higher distance\nLess accurate than regular version and with long reload times\n  Strong vs Vehicles, Buildings, Tanks\n  Weak vs Everything
 		IconPalette: d2kunit
 	Valued:
-		Cost: 750
+		Cost: 2500
 	Mobile:
-		Speed: 64
-		TurnSpeed: 80
+		Speed: 50
+		TurnSpeed: 28
 	Health:
 		HP: 50000
 	Armor:
-		Type: Medium
-	RevealsShroud:
-		Range: 6c768
+		Type: Light
 	Armament:
-		Weapon: mtank_pri
+		Weapon: mtank_pri2
 		LocalOffset: -128,128,171, -128,-128,171
+		PauseOnCondition: !ammo
+	Armament@AA:
+		Weapon: mtank_pri2AA
+		LocalOffset: -128,128,171, -128,-128,171
+		PauseOnCondition: !ammo
 	AttackFrontal:
 		FacingTolerance: 0
 	AutoTarget:
@@ -7511,28 +7597,12 @@ missile_tank:
 		EmptyWeapon: D2KUnitExplodeMed
 	Selectable:
 		Class: missiletank
-	SpawnActorOnDeath:
-		Actor: missile_tank.husk
-		OwnerType: InternalName
-		EffectiveOwnerFromOwner: true
 	AttractsWorms:
 		Intensity: 600
 	Cloak@TDcloak:
 		Palette: d2kcloak
-	DetectCloaked:
-		Range: 4c0
 	Voiced:
 		VoiceSet: D2KMissileTank
-
-missile_tank_ixian:
-	Inherits: missile_tank
-	Buildable:
-		Prerequisites: ~upgrade.heavy, research_centre.ixian
-		Description: Stealth Rocket Artillery\nCan shoot up to 10 rockets in a row at much higher distance\nLess accurate than regular version and with long reload times\n  Strong vs Vehicles, Buildings, Tanks\n  Weak vs Everything
-	Health:
-		HP: 50000
-	Armor:
-		Type: Light
 	AmmoPool:
 		Ammo: 10
 		AmmoCondition: ammo
@@ -7540,28 +7610,15 @@ missile_tank_ixian:
 		Delay: 25
 		Count: 1
 		ResetOnFire: true
-	Valued:
-		Cost: 2500
-	Mobile:
-		Speed: 50
-		TurnSpeed: 28
-	Armament:
-		Weapon: mtank_pri2
-		LocalOffset: -128,128,171, -128,-128,171
-		PauseOnCondition: !ammo
-	Tooltip:
-		Name: Ix Missile Tank
 	Cloak:
 		InitialDelay: 75
-		CloakDelay: 75
+		CloakDelay: 50
 		UncloakOn: Attack, infiltrate, damage
 		IsPlayerPalette: true
 		CloakedCondition: cloaked
 	RenderSprites:
 		Image: ix_missile_tank
 		PlayerPalette: player
-	-SpawnActorOnDeath:
-	-DetectCloaked:
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -8893,8 +8950,8 @@ combat_siege_tank:
 	Voiced:
 		VoiceSet: D2KCombatTank
 	Cargo:
-		MaxWeight: 2
-		InitialUnits: shock_infantry, shock_infantry
+		MaxWeight: 3
+		InitialUnits: light_inf, trooper, shock_infantry
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -9009,6 +9066,7 @@ quake_tank_deployed.husk:
 
 duelist_tank:
 	Inherits@D2KT: ^D2KTank
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@Template: ^HighTechTankTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -9045,7 +9103,7 @@ duelist_tank:
 	Armament:
 		Weapon: 100mm_A
 		Recoil: 150
-		RecoilRecovery: 19
+		RecoilRecovery: 15
 		LocalOffset: 256,0,320
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
@@ -9064,8 +9122,8 @@ duelist_tank:
 	Voiced:
 		VoiceSet: D2KDuelistTank
 	Cargo:
-		MaxWeight: 2
-		InitialUnits: shock_infantry, shock_infantry
+		MaxWeight: 3
+		InitialUnits: light_inf, trooper, shock_infantry
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true

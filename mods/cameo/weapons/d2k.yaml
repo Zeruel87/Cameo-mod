@@ -297,6 +297,7 @@ D2K_155mm_turret:
 		Speed: 228
 
 D2K_155mm2:
+	Inherits: ^Grenade
 	Inherits: ^HeavyCannon
 	Inherits: D2K_155mm
 	Range: 12000
@@ -307,6 +308,12 @@ D2K_155mm2:
 		Inaccuracy: 120
 		InaccuracyType: PerCellIncrement
 		Speed: 120
+	Warhead@Grenade: SpreadDamage
+		Damage: 12000
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		Damage: 6000
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		Damage: 6
 	Warhead@HeavyCannon: SpreadDamage
 		Damage: 12000
 	Warhead@HeavyCannonPercentage: HealthPercentageDamage
@@ -324,13 +331,13 @@ D2K_155mm3:
 	Projectile: Bullet
 		Speed: 240
 	Warhead@HeavyCannon: SpreadDamage
-		Damage: 12000
+		Damage: 8000
 	Warhead@HeavyCannonPercentage: HealthPercentageDamage
-		Damage: 6
+		Damage: 4
 	Warhead@MediumCannon: SpreadDamage
-		Damage: 12000
+		Damage: 8000
 	Warhead@MediumCannonPercentage: HealthPercentageDamage
-		Damage: 6
+		Damage: 4
 
 #############################
 #       MISSILES
@@ -369,13 +376,13 @@ D2K_155mm3:
 	Projectile: Missile
 		Shadow: true
 		HorizontalRateOfTurn: 80
-		RangeLimit: 16c512
 		CruiseAltitude: 1c0
 		MinimumLaunchAngle: 64
 		Image: d2k_missile2
 		Palette: d2keffect
 		TrailImage: large_trail
 		Speed: 333
+		Acceleration: 3
 	Warhead@Concrete: DamagesConcrete
 		Damage: 750
 	Warhead@Effect: CreateEffect
@@ -400,9 +407,10 @@ D2K_Bazooka2:
 	ValidTargets: Ground, Air
 	Projectile: Missile
 		Blockable: false
-		RangeLimit: 10000
+		RangeLimit: 33333
 		Speed: 333
 		Inaccuracy: 33
+		Acceleration: 3
 		InaccuracyType: PerCellIncrement
 		Image: d2k_RPG
 		Palette: d2keffect
@@ -491,12 +499,21 @@ D2K_TowerMissile:
 	Burst: 2
 	Range: 10000
 	BurstDelays: 5
+	ValidTargets: Ground, Water, Trees
 	Warhead@HeavyMissile: SpreadDamage
 		ValidTargets: Ground, Water, Trees
 		Damage: 12000
 	Warhead@HeavyMissilePercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Trees
 		Damage: 6
+
+D2K_TowerMissileAA:
+	Inherits: D2K_TowerMissile
+	ValidTargets: Air
+	Warhead@HeavyMissile: SpreadDamage
+		ValidTargets: Air
+	Warhead@HeavyMissilePercentage: HealthPercentageDamage
+		ValidTargets: Air
 
 mtank_pri:
 	Inherits: ^D2KMissile
@@ -515,25 +532,53 @@ mtank_pri:
 		Damage: 1000
 
 mtank_pri2:
+	Inherits: ^Grenade
 	Inherits: ^D2KMissile
 	ReloadDelay: 100
 	Burst: 10
 	BurstDelays: 5
 	Range: 15000
-	ValidTargets: Ground, Air
+	ValidTargets: Ground, Water, Trees
 	Projectile: Missile
-		RangeLimit: 45c0
+		RangeLimit: 45000
 		InaccuracyType: PerCellIncrement
 		Inaccuracy: 150
-		HorizontalRateOfTurn: 20
-		VerticalRateOfTurn: 20
+		HorizontalRateOfTurn: 25
+		VerticalRateOfTurn: 25
 		Speed: 250
+	Warhead@Grenade: SpreadDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 10000
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 5000
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 5
 	Warhead@HeavyMissile: SpreadDamage
+		ValidTargets: Ground, Water, Trees
 		Damage: 10000
 	Warhead@HeavyMissilePercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees
 		Damage: 5
 	Warhead@Effect: CreateEffect
 		Explosions: d2k_med_explosion
+
+mtank_pri2AA:
+	Inherits: mtank_pri2
+	Projectile: Missile
+		Inaccuracy: 15
+	ValidTargets: Air
+	Warhead@Grenade: SpreadDamage
+		ValidTargets: Air
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		ValidTargets: Air
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		ValidTargets: Air
+	Warhead@HeavyMissile: SpreadDamage
+		ValidTargets: Air
+	Warhead@HeavyMissilePercentage: HealthPercentageDamage
+		ValidTargets: Air
 
 d2k_tyrant:
 	Inherits: ^D2KMissile
@@ -2246,21 +2291,36 @@ PhoenixRocket:
 
 PhoenixRocketShrapnel:
 	Inherits: Flamer
-	#Inherits@Rad: CHFlameRadiation
-	Burst: 1
-	Range: 1c512
-	Warhead@1Dam: TargetDamage
+	Inherits@Rad: CHFlameRadiation
+	Burst: 3
+	Range: 3333
 	Projectile: InstantHit
 		Inaccuracy: 512
+	Warhead@LightFlameWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 2000
+	Warhead@LightFlameWeaponFriendlyFire: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 1000
+	Warhead@LightFlameWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 1
+
 
 d2k_air_drone:
 	Inherits: ^D2KMissile
+	Burst: 2
 	Range: 8000
 	ReloadDelay: 50
+	Projectile: Missile
+		HorizontalRateOfTurn: 40
+		RangeLimit: 24000
+		Speed: 400
+		Acceleration: 4
 	Warhead@HeavyMissile: SpreadDamage
-		Damage: 10000
+		Damage: 4000
 	Warhead@HeavyMissilePercentage: HealthPercentageDamage
-		Damage: 5
+		Damage: 2
 	Warhead@Shrapnel: FireShrapnel
 		Weapon: PhoenixRocketShrapnel
 		Amount: 3
