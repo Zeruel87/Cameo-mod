@@ -39,6 +39,7 @@ namespace OpenRA.Mods.CA.Traits
 		int minCashRequirement;
 
 		bool itemQueuedThisTick = false;
+		bool limitBuildRadius = false;
 
 		WaterCheck waterState = WaterCheck.NotChecked;
 		readonly Dictionary<string, int> activeBuildingIntervals = new Dictionary<string, int>();
@@ -58,6 +59,7 @@ namespace OpenRA.Mods.CA.Traits
 			minCashRequirement = baseBuilder.Info.DefenseQueues.Contains(Category) ? baseBuilder.Info.DefenseProductionMinCashRequirement : baseBuilder.Info.BuildingProductionMinCashRequirement;
 			if (baseBuilder.Info.NavalProductionTypes.Count == 0)
 				waterState = WaterCheck.DontCheck;
+			limitBuildRadius = world.WorldActor.TraitOrDefault<MapBuildRadius>().BuildRadiusEnabled;
 		}
 
 		public void Tick(IBot bot)
@@ -176,6 +178,7 @@ namespace OpenRA.Mods.CA.Traits
 				// Check if Building is a plug for other Building
 				var actorInfo = world.Map.Rules.Actors[currentBuilding.Item];
 				var plugInfo = actorInfo.TraitInfoOrDefault<PlugInfo>();
+				var valueInfo = actorInfo.TraitInfoOrDefault<ValuedInfo>();
 				var distanceToBaseIsImportant = true;
 				if (plugInfo != null)
 				{
@@ -208,6 +211,8 @@ namespace OpenRA.Mods.CA.Traits
 						if (world.LocalRandom.Next(100) < placeDefenseTowardsEnemyChance)
 							type = BuildingType.Defense;
 					}
+					else if (!limitBuildRadius && valueInfo.Cost < baseBuilder.Info.BaseCrawlCostThreshold && world.LocalRandom.Next(100) < baseBuilder.Info.BaseCrawlChance)
+						type = BuildingType.BaseCrawl;
 				}
 
 				if (orderString != "PlacePlug") { location = ChooseBuildLocation(currentBuilding.Item, distanceToBaseIsImportant, queue.Actor, type); }
@@ -469,38 +474,41 @@ namespace OpenRA.Mods.CA.Traits
 			return null;
 		}
 
-		CPos? ChooseBuildLocation(string actorType, bool distanceToBaseIsImportant, Actor producer, BuildingType type)
+		// Find the buildable cell that is closest to pos and centered around center
+		CPos? findPos(string actorType, bool distanceToBaseIsImportant, Actor producer, CPos center, CPos target, int minRange, int maxRange, int distanceRequirement = 0, bool sortMax = false)
 		{
 			var actorInfo = world.Map.Rules.Actors[actorType];
 			var bi = actorInfo.TraitInfoOrDefault<BuildingInfo>();
 			if (bi == null)
 				return null;
 
-			// Find the buildable cell that is closest to pos and centered around center
-			Func<CPos, CPos, int, int, bool, CPos?> findPos = (center, target, minRange, maxRange, sortMax) =>
+			var cells = world.Map.FindTilesInAnnulus(center, minRange, maxRange);
+
+			// Sort by distance to target if we have one
+			if (center != target)
+				cells = sortMax ? cells.OrderByDescending(c => (c - target).LengthSquared) : cells.OrderBy(c => (c - target).LengthSquared);
+			else
+				cells = cells.Shuffle(world.LocalRandom);
+
+			foreach (var cell in cells)
 			{
-				var cells = world.Map.FindTilesInAnnulus(center, minRange, maxRange);
+				if (!world.CanPlaceBuilding(cell, actorInfo, bi, null))
+					continue;
 
-				// Sort by distance to target if we have one
-				if (center != target)
-					cells = sortMax ? cells.OrderByDescending(c => (c - target).LengthSquared) : cells.OrderBy(c => (c - target).LengthSquared);
-				else
-					cells = cells.Shuffle(world.LocalRandom);
+				if (distanceToBaseIsImportant && !bi.IsCloseEnoughToBase(world, player, actorInfo, producer, cell))
+					continue;
 
-				foreach (var cell in cells)
-				{
-					if (!world.CanPlaceBuilding(cell, actorInfo, bi, null))
-						continue;
+				if (distanceRequirement > 0 && (cell - target).LengthSquared > distanceRequirement * distanceRequirement)
+					continue;
 
-					if (distanceToBaseIsImportant && !bi.IsCloseEnoughToBase(world, player, actorInfo, producer, cell))
-						continue;
+				return cell;
+			}
 
-					return cell;
-				}
+			return null;
+		}
 
-				return null;
-			};
-
+		CPos? ChooseBuildLocation(string actorType, bool distanceToBaseIsImportant, Actor producer, BuildingType type)
+		{
 			var baseCenter = baseBuilder.GetRandomBaseCenter();
 
 			switch (type)
@@ -513,12 +521,12 @@ namespace OpenRA.Mods.CA.Traits
 						.ClosestToIgnoringPath(world.Map.CenterOfCell(baseBuilder.DefenseCenter));
 
 					var targetCell = closestEnemy != null ? closestEnemy.Location : baseCenter;
-					return findPos(baseBuilder.DefenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius, false);
+					return findPos(actorType, distanceToBaseIsImportant, producer, baseBuilder.DefenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius);
 
 				case BuildingType.Fragile:
 					// Build away from where enemy last attacked
-					return findPos(baseCenter, baseBuilder.DefenseCenter, baseBuilder.Info.MinBaseRadius,
-						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange, true);
+					return findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, baseBuilder.DefenseCenter, baseBuilder.Info.MinBaseRadius,
+						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange, sortMax: true);
 
 				case BuildingType.Refinery:
 
@@ -531,18 +539,43 @@ namespace OpenRA.Mods.CA.Traits
 
 						foreach (var r in nearbyResources)
 						{
-							var found = findPos(baseCenter, r, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius, false);
+							var found = findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, r, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius, baseBuilder.Info.MaximumRefineryRadius);
 							if (found != null)
 								return found;
 						}
 					}
 
 					// Try and find a free spot somewhere else in the base
-					return findPos(baseCenter, baseCenter, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius, false);
+					return findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, baseCenter, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius);
+
+				case BuildingType.BaseCrawl:
+
+					// Try and place the refinery near a resource field
+					if (resourceLayer != null)
+					{
+						var nearbyResources = world.Map.FindTilesInAnnulus(baseCenter, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.BaseCrawlRadius)
+							.Where(a => resourceLayer.GetResource(a).Type != null)
+							.Shuffle(world.LocalRandom).Take(baseBuilder.Info.MaxResourceCellsToCheck);
+
+						foreach (var r in nearbyResources)
+						{
+							var found = findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, r, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius);
+							if (found != null)
+								return found;
+						}
+					}
+
+					// Try and find a free spot somewhere else in the base
+					closestEnemy = world.ActorsHavingTrait<Building>()
+						.Where(a => !a.Disposed && player.RelationshipWith(a.Owner) == PlayerRelationship.Enemy)
+						.ClosestToIgnoringPath(world.Map.CenterOfCell(baseBuilder.DefenseCenter));
+
+					targetCell = closestEnemy != null ? closestEnemy.Location : baseCenter;
+					return findPos(actorType, distanceToBaseIsImportant, producer, baseBuilder.DefenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius);
 
 				case BuildingType.Building:
-					return findPos(baseCenter, baseCenter, baseBuilder.Info.MinBaseRadius,
-						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange, false);
+					return findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, baseCenter, baseBuilder.Info.MinBaseRadius,
+						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange);
 			}
 
 			// Can't find a build location

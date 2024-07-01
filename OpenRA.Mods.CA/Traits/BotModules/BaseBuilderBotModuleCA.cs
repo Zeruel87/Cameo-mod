@@ -117,11 +117,23 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Chance that the AI will place the defenses in the direction of the closest enemy building.")]
 		public readonly int PlaceDefenseTowardsEnemyChance = 100;
 
+		[Desc("Chance that the AI will place buildings to crawl toward resource patches.")]
+		public readonly int BaseCrawlChance = 50;
+
+		[Desc("Maximum range at which to basecrawl.")]
+		public readonly int BaseCrawlRadius = 50;
+
+		[Desc("Structures cheaper than this will be used to basecrawl.")]
+		public readonly int BaseCrawlCostThreshold = 1000;
+
 		[Desc("Minimum range at which to build defensive structures near a combat hotspot.")]
 		public readonly int MinimumDefenseRadius = 5;
 
 		[Desc("Maximum range at which to build defensive structures near a combat hotspot.")]
 		public readonly int MaximumDefenseRadius = 20;
+
+		[Desc("Maximum range at which to build refineries from a resource patch.")]
+		public readonly int MaximumRefineryRadius = 12;
 
 		[Desc("Try to build another production building if there is too much cash.")]
 		public readonly int NewProductionCashThreshold = 10000;

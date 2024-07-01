@@ -16,7 +16,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA
 {
-	public enum BuildingType { Building, Defense, Refinery, Fragile }
+	public enum BuildingType { Building, Defense, Refinery, Fragile, BaseCrawl }
 
 	public enum WaterCheck { NotChecked, EnoughWater, NotEnoughWater, DontCheck }
 
