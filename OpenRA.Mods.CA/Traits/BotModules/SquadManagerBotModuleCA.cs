@@ -184,6 +184,9 @@ namespace OpenRA.Mods.CA.Traits
 		int desiredAttackForceValue;
 		int desiredAttackForceSize;
 
+		BotLimits botLimits;
+		int initialAttackDelay;
+
 		public SquadManagerBotModuleCA(Actor self, SquadManagerBotModuleCAInfo info)
 			: base(info)
 		{
@@ -251,6 +254,10 @@ namespace OpenRA.Mods.CA.Traits
 			notifyPositionsUpdated = self.Owner.PlayerActor.TraitsImplementing<IBotPositionsUpdated>().ToArray();
 			notifyIdleBaseUnits = self.Owner.PlayerActor.TraitsImplementing<IBotNotifyIdleBaseUnits>().ToArray();
 			aircraftBuilders = self.Owner.PlayerActor.TraitsImplementing<IBotAircraftBuilder>().ToArray();
+			botLimits = self.Owner.PlayerActor.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
+
+			if (botLimits != null)
+				initialAttackDelay = botLimits.Info.InitialAttackDelay;
 		}
 
 		protected override void TraitEnabled(Actor self)
@@ -259,7 +266,7 @@ namespace OpenRA.Mods.CA.Traits
 			assignRolesTicks = World.LocalRandom.Next(0, Info.AssignRolesInterval);
 			attackForceTicks = World.LocalRandom.Next(0, Info.AttackForceInterval);
 			protectionForceTicks = World.LocalRandom.Next(0, Info.ProtectInterval);
-			minAttackForceDelayTicks = World.LocalRandom.Next(0, Info.MinimumAttackForceDelay);
+			minAttackForceDelayTicks = World.LocalRandom.Next(0, Info.MinimumAttackForceDelay) + initialAttackDelay;
 		}
 
 		void IBotEnabled.BotEnabled(IBot bot)

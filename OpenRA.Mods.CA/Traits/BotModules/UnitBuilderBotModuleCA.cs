@@ -88,6 +88,8 @@ namespace OpenRA.Mods.CA.Traits
 		BotLimits botLimits;
 
 		int ticks;
+		int unitDelayModifier = 100;
+		int unitIntervalModifier = 100;
 
 		public UnitBuilderBotModuleCA(Actor self, UnitBuilderBotModuleCAInfo info)
 			: base(info)
@@ -106,6 +108,11 @@ namespace OpenRA.Mods.CA.Traits
 			requestPause = self.TraitsImplementing<IBotRequestPauseUnitProduction>().ToArray();
 			playerResources = self.Owner.PlayerActor.Trait<PlayerResources>();
 			botLimits = self.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
+			if (botLimits != null)
+			{
+				unitDelayModifier = botLimits.Info.UnitDelayModifier;
+				unitIntervalModifier = botLimits.Info.UnitIntervalModifier;
+			}
 		}
 
 		void IBotNotifyIdleBaseUnits.UpdatedIdleBaseUnits(List<UnitWposWrapper> idleUnits)
@@ -232,7 +239,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (Info.UnitIntervals == null || !Info.UnitIntervals.ContainsKey(name))
 				return;
 
-			activeUnitIntervals[name] = Info.UnitIntervals[name];
+			activeUnitIntervals[name] = Info.UnitIntervals[name] * unitIntervalModifier / 100;
 		}
 
 		bool ShouldBuild(string name, bool ignoreUnitsToBuild)
@@ -242,7 +249,7 @@ namespace OpenRA.Mods.CA.Traits
 
 			if (Info.UnitDelays != null &&
 				Info.UnitDelays.ContainsKey(name) &&
-				Info.UnitDelays[name] > world.WorldTick)
+				Info.UnitDelays[name] * unitDelayModifier / 100 > world.WorldTick)
 				return false;
 
 			if (Info.UnitIntervals != null &&

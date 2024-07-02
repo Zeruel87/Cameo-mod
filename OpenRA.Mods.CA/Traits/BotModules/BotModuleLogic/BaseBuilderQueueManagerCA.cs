@@ -46,6 +46,9 @@ namespace OpenRA.Mods.CA.Traits
 		readonly Dictionary<string, int> activeBuildingIntervals = new Dictionary<string, int>();
 
 		BotLimits botLimits;
+		int productionTypeLimit = 0;
+		int buildingDelayModifier = 100;
+		int buildingIntervalModifier = 100;
 
 		public BaseBuilderQueueManagerCA(BaseBuilderBotModuleCA baseBuilder, string category, Player p, PowerManager pm,
 			PlayerResources pr, IResourceLayer rl)
@@ -64,6 +67,12 @@ namespace OpenRA.Mods.CA.Traits
 				waterState = WaterCheck.DontCheck;
 			limitBuildRadius = world.WorldActor.TraitOrDefault<MapBuildRadius>().BuildRadiusEnabled;
 			botLimits = p.PlayerActor.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
+			if (botLimits != null)
+			{
+				productionTypeLimit = botLimits.Info.ProductionTypeLimit;
+				buildingDelayModifier = botLimits.Info.BuildingDelayModifier;
+				buildingIntervalModifier = botLimits.Info.BuildingIntervalModifier;
+			}
 		}
 
 		public void Tick(IBot bot)
@@ -354,7 +363,7 @@ namespace OpenRA.Mods.CA.Traits
 			{
 				var production = GetProducibleBuilding(baseBuilder.Info.ProductionTypes, buildableThings);
 
-				if (production != null && (botLimits == null || playerBuildings.Count(a => a.Info.Name == production.Name) > botLimits.Info.ProductionTypeLimit))
+				if (production != null && (productionTypeLimit <= 0 || playerBuildings.Count(a => a.Info.Name == production.Name) > productionTypeLimit))
 				{
 					if (HasSufficientPowerForActor(production))
 					{
@@ -414,7 +423,7 @@ namespace OpenRA.Mods.CA.Traits
 				// Does this building have initial delay, if so have we passed it?
 				if (baseBuilder.Info.BuildingDelays != null &&
 					baseBuilder.Info.BuildingDelays.ContainsKey(name) &&
-					baseBuilder.Info.BuildingDelays[name] * (botLimits == null ? 1 : botLimits.Info.BuildingDelayModifier / 100) > world.WorldTick)
+					baseBuilder.Info.BuildingDelays[name] * (buildingDelayModifier / 100) > world.WorldTick)
 					continue;
 
 				// Does this building have an interval which hasn't elapsed yet?
@@ -601,7 +610,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (baseBuilder.Info.BuildingIntervals == null || !baseBuilder.Info.BuildingIntervals.ContainsKey(name))
 				return;
 
-			activeBuildingIntervals[name] = baseBuilder.Info.BuildingIntervals[name];
+			activeBuildingIntervals[name] = baseBuilder.Info.BuildingIntervals[name] * buildingIntervalModifier / 100;
 		}
 	}
 }
