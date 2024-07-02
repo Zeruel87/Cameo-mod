@@ -90,6 +90,8 @@ namespace OpenRA.Mods.CA.Traits
 		int scanInterval;
 		bool firstTick = true;
 
+		BotLimits botLimits;
+
 		public McvManagerBotModuleCA(Actor self, McvManagerBotModuleCAInfo info)
 			: base(info)
 		{
@@ -109,6 +111,7 @@ namespace OpenRA.Mods.CA.Traits
 			// for bot modules always to the Player actor.
 			notifyPositionsUpdated = self.TraitsImplementing<IBotPositionsUpdated>().ToArray();
 			requestUnitProduction = self.TraitsImplementing<IBotRequestUnitProduction>().ToArray();
+			botLimits = self.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
 		}
 
 		protected override void TraitEnabled(Actor self)
@@ -156,7 +159,7 @@ namespace OpenRA.Mods.CA.Traits
 				return false;
 
 			// Build MCV if we don't have the desired number of construction yards, unless we have no factory (can't build it).
-			return AIUtils.CountActorByCommonName(constructionYards) < Info.MinimumConstructionYardCount &&
+			return (botLimits == null || AIUtils.CountActorByCommonName(constructionYards) < botLimits.Info.ConstructionYardLimit) && AIUtils.CountActorByCommonName(constructionYards) < Info.MinimumConstructionYardCount &&
 				AIUtils.CountActorByCommonName(mcvFactories) > 0;
 		}
 

@@ -85,6 +85,7 @@ namespace OpenRA.Mods.CA.Traits
 		int idleUnitCount;
 		int currentQueueIndex = 0;
 		PlayerResources playerResources;
+		BotLimits botLimits;
 
 		int ticks;
 
@@ -104,6 +105,7 @@ namespace OpenRA.Mods.CA.Traits
 			// for bot modules always to the Player actor.
 			requestPause = self.TraitsImplementing<IBotRequestPauseUnitProduction>().ToArray();
 			playerResources = self.Owner.PlayerActor.Trait<PlayerResources>();
+			botLimits = self.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
 		}
 
 		void IBotNotifyIdleBaseUnits.UpdatedIdleBaseUnits(List<UnitWposWrapper> idleUnits)
