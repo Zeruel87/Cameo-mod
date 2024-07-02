@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
@@ -44,6 +45,11 @@ namespace OpenRA.Mods.CA.Traits
 		WaterCheck waterState = WaterCheck.NotChecked;
 		readonly Dictionary<string, int> activeBuildingIntervals = new Dictionary<string, int>();
 
+		BotLimits botLimits;
+		int productionTypeLimit = 0;
+		int buildingDelayModifier = 100;
+		int buildingIntervalModifier = 100;
+
 		public BaseBuilderQueueManagerCA(BaseBuilderBotModuleCA baseBuilder, string category, Player p, PowerManager pm,
 			PlayerResources pr, IResourceLayer rl)
 		{
@@ -60,6 +66,13 @@ namespace OpenRA.Mods.CA.Traits
 			if (baseBuilder.Info.NavalProductionTypes.Count == 0)
 				waterState = WaterCheck.DontCheck;
 			limitBuildRadius = world.WorldActor.TraitOrDefault<MapBuildRadius>().BuildRadiusEnabled;
+			botLimits = p.PlayerActor.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
+			if (botLimits != null)
+			{
+				productionTypeLimit = botLimits.Info.ProductionTypeLimit;
+				buildingDelayModifier = botLimits.Info.BuildingDelayModifier;
+				buildingIntervalModifier = botLimits.Info.BuildingIntervalModifier;
+			}
 		}
 
 		public void Tick(IBot bot)
@@ -349,16 +362,20 @@ namespace OpenRA.Mods.CA.Traits
 			if (baseBuilder.Info.NewProductionCashThreshold > 0 && playerResources.GetCashAndResources() > baseBuilder.Info.NewProductionCashThreshold)
 			{
 				var production = GetProducibleBuilding(baseBuilder.Info.ProductionTypes, buildableThings);
-				if (production != null && HasSufficientPowerForActor(production))
-				{
-					AIUtils.BotDebug("{0} decided to build {1}: Priority override (production)", queue.Actor.Owner, production.Name);
-					return production;
-				}
 
-				if (power != null && production != null && !HasSufficientPowerForActor(production))
+				if (production != null && (productionTypeLimit <= 0 || playerBuildings.Count(a => a.Info.Name == production.Name) > productionTypeLimit))
 				{
-					AIUtils.BotDebug("{0} decided to build {1}: Priority override (would be low power)", queue.Actor.Owner, power.Name);
-					return power;
+					if (HasSufficientPowerForActor(production))
+					{
+						AIUtils.BotDebug("{0} decided to build {1}: Priority override (production)", queue.Actor.Owner, production.Name);
+						return production;
+					}
+
+					if (power != null && !HasSufficientPowerForActor(production))
+					{
+						AIUtils.BotDebug("{0} decided to build {1}: Priority override (would be low power)", queue.Actor.Owner, power.Name);
+						return power;
+					}
 				}
 			}
 
@@ -406,7 +423,7 @@ namespace OpenRA.Mods.CA.Traits
 				// Does this building have initial delay, if so have we passed it?
 				if (baseBuilder.Info.BuildingDelays != null &&
 					baseBuilder.Info.BuildingDelays.ContainsKey(name) &&
-					baseBuilder.Info.BuildingDelays[name] > world.WorldTick)
+					baseBuilder.Info.BuildingDelays[name] * (buildingDelayModifier / 100) > world.WorldTick)
 					continue;
 
 				// Does this building have an interval which hasn't elapsed yet?
@@ -429,6 +446,12 @@ namespace OpenRA.Mods.CA.Traits
 				// Do we want to build this structure?
 				if (count * 100 > frac.Value * playerBuildings.Length)
 					continue;
+
+				if (botLimits != null && baseBuilder.Info.ProductionTypes.Contains(name) && count >= botLimits.Info.ProductionTypeLimit)
+				{
+					AIUtils.BotDebug("{0} decided to build {1} but limit of {2} already reached)", queue.Actor.Owner, name, botLimits.Info.ProductionTypeLimit);
+					continue;
+				}
 
 				if (baseBuilder.Info.BuildingLimits.ContainsKey(name) && count >= baseBuilder.Info.BuildingLimits[name])
 				{
@@ -587,7 +610,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (baseBuilder.Info.BuildingIntervals == null || !baseBuilder.Info.BuildingIntervals.ContainsKey(name))
 				return;
 
-			activeBuildingIntervals[name] = baseBuilder.Info.BuildingIntervals[name];
+			activeBuildingIntervals[name] = baseBuilder.Info.BuildingIntervals[name] * buildingIntervalModifier / 100;
 		}
 	}
 }
