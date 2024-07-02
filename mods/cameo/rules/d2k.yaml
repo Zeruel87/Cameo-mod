@@ -1809,7 +1809,7 @@ high_tech_factory.ixian:
 	Inherits@UPGRADEABLE: ^D2kUpgradeable
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@orni: ^DU_OrnithopterSupportPower
+	#Inherits@orni: ^DU_OrnithopterSupportPower
 	Inherits@shape: ^3x3Shape
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, outpost.ixian
@@ -6464,7 +6464,7 @@ d2k_air_drone.husk:
 
 d2k_farasha:
 	Inherits: ^Helicopter
-	Inherits@Template: ^BomberTemplate
+	Inherits@Template: ^SpaceshipTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@MC: ^MCImmune
@@ -6483,19 +6483,21 @@ d2k_farasha:
 		IconPalette: ra2
 	Aircraft:
 		InitialFacing: 896
-		TurnSpeed: 24
-		Speed: 35
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		TurnSpeed: 15
+		Speed: 45
+		IdealSeparation: 1500
+		RepulsionSpeed: 15
 	CarrierMaster:
-		Actors: d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone
+		Actors: d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone
 		RearmTicks: 10
-		RespawnTicks: 375
+		RespawnTicks: 100
 		InstaRepair: true
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
 	Health:
 		HP: 500000
+	ChangesHealth@SelfHealing:
+		Step: 200
 	Armament@drones:
 		Weapon: d2k_dronelauncher
 	Armament:
@@ -7587,7 +7589,7 @@ missile_tank_ixian:
 		Cost: 2500
 	Mobile:
 		Speed: 50
-		TurnSpeed: 28
+		TurnSpeed: 10
 	Health:
 		HP: 50000
 	Armor:
@@ -7622,19 +7624,31 @@ missile_tank_ixian:
 		Delay: 25
 		Count: 1
 		ResetOnFire: true
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
 	Cloak:
 		InitialDelay: 75
 		CloakDelay: 50
 		UncloakOn: Attack, infiltrate, damage
 		IsPlayerPalette: true
 		CloakedCondition: cloaked
+	ReloadAmmoDelayMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 95
+	ReloadAmmoDelayMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 90
+	ReloadAmmoDelayMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 85
+	ReloadAmmoDelayMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 75
 	RenderSprites:
 		Image: ix_missile_tank
 		PlayerPalette: player
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 5
 
 # d2k_flame_tank:
 # 	Inherits: ^D2KVehicle
@@ -8308,6 +8322,10 @@ rocket_raider_ixian:
 		Delay: 25
 		Count: 1
 		ResetOnFire: false
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 8
 	Mobile:
 		TurnSpeed: 32
 		Speed: 160
@@ -8327,13 +8345,22 @@ rocket_raider_ixian:
 		UncloakOn: Attack, Unload
 	Armament@damage:
 		Weapon: D2K_Bazooka2
-		LocalOffset: 170,0,0
+		LocalOffset: 64,-64,0, 64,64,0
+		LocalYaw: 64, -64
 		PauseOnCondition: !ammo
 		MuzzleSequence: muzzle
-	#WithAmmoPipsDecoration:
-	#	Position: BottomLeft
-	#	RequiresSelection: true
-	#	PipCount: 8
+	ReloadAmmoDelayMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 95
+	ReloadAmmoDelayMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 90
+	ReloadAmmoDelayMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 85
+	ReloadAmmoDelayMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 75
 	RenderSprites:
 		Image: shock_raider
 
@@ -8683,7 +8710,7 @@ combat_tank_ixian:
 		IconPalette: d2kunit
 		Prerequisites: ~heavy_factory.ixian, ~!d2k_duelist_tank_upgrade
 	Valued:
-		Cost: 600
+		Cost: 700
 	Tooltip:
 		Name: Ix Combat Tank
 	UpdatesPlayerStatistics:
@@ -8962,6 +8989,7 @@ combat_siege_tank:
 	Voiced:
 		VoiceSet: D2KCombatTank
 	Cargo:
+		Types: Infantry, Hacker, Fremen
 		MaxWeight: 3
 		InitialUnits: light_inf, trooper, shock_infantry
 	WithCargoPipsDecoration:
@@ -8969,31 +8997,39 @@ combat_siege_tank:
 		RequiresSelection: true
 
 quake_tank:
-	Inherits@BotMicro: ^BotMicromanageable
 	Inherits: ^D2KTank
+	Inherits@Template: ^LineBreakerTemplate
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 90
 		Prerequisites: ~d2k_combat_siege_upgrade, research_centre.ixian
-		BuildDuration: 500
-		BuildDurationModifier: 100
 		Description: Suicidal Unit\nOnce deployed, Deals seismic damage to nearby vehicles\nand structures\nDeals massive damage after exploding\nSummons all worms on map once detonated - keeps luring Worms even after its death\nOnly one can be built at a time\n  Strong vs Ground targets
 		IconPalette: d2kunit
 	Valued:
-		Cost: 1800
+		Cost: 3000
 	Tooltip:
 		Name: Ix Quake Tank
 	Health:
-		HP: 100000
+		HP: 500000
 	Armor:
-		Type: Heavy
+		Type: Superheavy
 	Mobile:
-		Speed: 34
+		Speed: 50
+		TurnSpeed: 10
 		Locomotor: heavytracked
 		RequiresCondition: !deployed
-	RevealsShroud:
-		Range: 5c128
+	AttackFrontal:
+		FacingTolerance: 512
+	Armament@PRIMARY:
+		Weapon: MADTankTargeting
+	AutoDeployer:
+		DeployTrigger: Attack
+		DeployChance: 100
+		DeployTicks: 0
 	MadTankCA:
 		ThumpInterval: 25
 		ChargeDelay: 125
@@ -9008,14 +9044,10 @@ quake_tank:
 		Spread: 9999c0
 		Range: 9999c0
 		RequiresCondition: deployed
-	Explodes@player:
+	Explodes:
 		Weapon: D2KUnitExplodeLarge
 		EmptyWeapon: D2KUnitExplodeLarge
 		RequiresCondition: !botmicro
-	Explodes@ai:
-		Weapon: d2k_quake_boom
-		EmptyWeapon: d2k_quake_boom
-		RequiresCondition: botmicro
 	Selectable:
 		Class: quake_tank
 		DecorationBounds: 2048, 2048, 0, -128
@@ -9027,54 +9059,8 @@ quake_tank:
 	WithRangeCircle:
 		Color: FFFF0080
 		Range: 8c0
-	SpawnActorOnDeath:
-		Actor: quake_tank.husk
-		RequiresCondition: !deployed && !botmicro
-	SpawnActorOnDeath@deployed:
-		Actor: quake_tank_deployed.husk
-		RequiresCondition: deployed || botmicro
 	RenderSprites:
 		PlayerPalette: raplayer
-
-quake_tank.husk:
-	Inherits: ^D2KVehicleHusk
-	Health:
-		HP: 20000
-	Tooltip:
-		Name: Ix Quake Tank (Destroyed)
-	TransformOnCapture:
-		IntoActor: quake_tank
-	InfiltrateForTransform:
-		IntoActor: quake_tank
-	RenderSprites:
-		PlayerPalette: raplayer
-
-quake_tank_deployed.husk:
-	Inherits: ^D2KVehicleHusk
-	Health:
-		HP: 50000
-	-TransformOnCapture:
-	Tooltip:
-		Name: Ix Quake Tank (Destroyed, Luring Worms)
-	RenderSprites:
-		PlayerPalette: raplayer
-	AttractsWorms@thumping:
-		Intensity: 2000
-		Falloff: 1000, 1000, 250, 111, 60, 40, 30, 20, 10, 0
-		Spread: 9999c0
-		Range: 9999c0
-	WithIdleOverlay@deployed:
-		Sequence: piston
-		Palette: raplayer
-		IsPlayerPalette: true
-	WithIdleOverlay@Burns:
-		Image: fire
-		Sequence: 1
-		IsDecoration: True
-	ChangesHealth:
-		Step: -1
-		StartIfBelow: 101
-		Delay: 8
 
 duelist_tank:
 	Inherits@D2KT: ^D2KTank
@@ -9134,6 +9120,7 @@ duelist_tank:
 	Voiced:
 		VoiceSet: D2KDuelistTank
 	Cargo:
+		Types: Infantry, Hacker, Fremen
 		MaxWeight: 3
 		InitialUnits: light_inf, trooper, shock_infantry
 	WithCargoPipsDecoration:
@@ -9150,7 +9137,7 @@ carryall.reinforce:
 	Health:
 		HP: 500000
 	Armor:
-		Type: Heavy
+		Type: Helicopter
 	Selectable:
 		Bounds: 1440, 1440
 		DecorationBounds: 1440, 1440
@@ -9604,185 +9591,185 @@ upgrade.hightech:
 	RenderSprites:
 		Image: hightech.atreides
 
-upgrade.contaminator:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Contaminator Unlock
-	Buildable:
-		BuildPaletteOrder: 10
-		Prerequisites: ~d2k_tleilaxu_tech, ~faction.tleilaxu
-		Queue: Addons
-		BuildLimit: 1
-		BuildDuration: 375
-		BuildDurationModifier: 100
-		Description: Unlocks Contaminator
-	Valued:
-		Cost: 500
-	RenderSprites:
-		Image: contaminator
+# upgrade.contaminator:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Contaminator Unlock
+# 	Buildable:
+# 		BuildPaletteOrder: 10
+# 		Prerequisites: ~d2k_tleilaxu_tech, ~faction.tleilaxu
+# 		Queue: Addons
+# 		BuildLimit: 1
+# 		BuildDuration: 375
+# 		BuildDurationModifier: 100
+# 		Description: Unlocks Contaminator
+# 	Valued:
+# 		Cost: 500
+# 	RenderSprites:
+# 		Image: contaminator
 
-upgrade.leech:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Leech Unlock
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~d2k_tleilaxu_tech, upgrade.contaminator, ~faction.tleilaxu
-		Queue: Addons
-		BuildLimit: 1
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: Unlocks Leech
-		IconPalette: player
-	Valued:
-		Cost: 1000
-	RenderSprites:
-		Image: d2k_leech
+# upgrade.leech:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Leech Unlock
+# 	Buildable:
+# 		BuildPaletteOrder: 20
+# 		Prerequisites: ~d2k_tleilaxu_tech, upgrade.contaminator, ~faction.tleilaxu
+# 		Queue: Addons
+# 		BuildLimit: 1
+# 		BuildDuration: 750
+# 		BuildDurationModifier: 100
+# 		Description: Unlocks Leech
+# 		IconPalette: player
+# 	Valued:
+# 		Cost: 1000
+# 	RenderSprites:
+# 		Image: d2k_leech
 
-upgrade.emperorworm:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Emperor Worm Unlock
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~d2k_tleilaxu_tech, upgrade.leech, ~faction.tleilaxu
-		Queue: Addons
-		BuildLimit: 1
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: Unlocks Emperor Worm
-	Valued:
-		Cost: 2000
-	RenderSprites:
-		Image: d2k_emperor_worm
+# upgrade.emperorworm:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Emperor Worm Unlock
+# 	Buildable:
+# 		BuildPaletteOrder: 20
+# 		Prerequisites: ~d2k_tleilaxu_tech, upgrade.leech, ~faction.tleilaxu
+# 		Queue: Addons
+# 		BuildLimit: 1
+# 		BuildDuration: 750
+# 		BuildDurationModifier: 100
+# 		Description: Unlocks Emperor Worm
+# 	Valued:
+# 		Cost: 2000
+# 	RenderSprites:
+# 		Image: d2k_emperor_worm
 
-upgrade.rocketeer:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Rocketeer Unlock
-	Buildable:
-		BuildPaletteOrder: 40
-		Prerequisites: ~d2k_tleilaxu_tech, upgrade.rocket_raider, ~faction.tleilaxu
-		Queue: Addons
-		BuildLimit: 1
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: Unlocks Rocketeer
-		IconPalette: d2kunit
-	Valued:
-		Cost: 1000
-	RenderSprites:
-		Image: rocketeer
-		PlayerPalette: ra2player
+# upgrade.rocketeer:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Rocketeer Unlock
+# 	Buildable:
+# 		BuildPaletteOrder: 40
+# 		Prerequisites: ~d2k_tleilaxu_tech, upgrade.rocket_raider, ~faction.tleilaxu
+# 		Queue: Addons
+# 		BuildLimit: 1
+# 		BuildDuration: 750
+# 		BuildDurationModifier: 100
+# 		Description: Unlocks Rocketeer
+# 		IconPalette: d2kunit
+# 	Valued:
+# 		Cost: 1000
+# 	RenderSprites:
+# 		Image: rocketeer
+# 		PlayerPalette: ra2player
 
-upgrade.rocket_raider:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Rocket Raider Unlock
-	Buildable:
-		BuildPaletteOrder: 30
-		Prerequisites: ~d2k_tleilaxu_tech, ~faction.tleilaxu
-		Queue: Addons
-		BuildLimit: 1
-		BuildDuration: 375
-		BuildDurationModifier: 100
-		Description: Unlocks Rocket Raider
-		IconPalette: d2kunit
-	Valued:
-		Cost: 500
-	RenderSprites:
-		Image: raider
+# upgrade.rocket_raider:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Rocket Raider Unlock
+# 	Buildable:
+# 		BuildPaletteOrder: 30
+# 		Prerequisites: ~d2k_tleilaxu_tech, ~faction.tleilaxu
+# 		Queue: Addons
+# 		BuildLimit: 1
+# 		BuildDuration: 375
+# 		BuildDurationModifier: 100
+# 		Description: Unlocks Rocket Raider
+# 		IconPalette: d2kunit
+# 	Valued:
+# 		Cost: 500
+# 	RenderSprites:
+# 		Image: raider
 
-upgrade.mg_quad:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: MG Quad Unlock
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: ~d2k_tleilaxu_tech, ~faction.tleilaxu
-		Queue: Addons
-		BuildLimit: 1
-		BuildDuration: 375
-		BuildDurationModifier: 100
-		Description: Unlocks MG Quad
-		IconPalette: d2kunit
-	Valued:
-		Cost: 500
-	RenderSprites:
-		Image: quad
+# upgrade.mg_quad:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: MG Quad Unlock
+# 	Buildable:
+# 		BuildPaletteOrder: 50
+# 		Prerequisites: ~d2k_tleilaxu_tech, ~faction.tleilaxu
+# 		Queue: Addons
+# 		BuildLimit: 1
+# 		BuildDuration: 375
+# 		BuildDurationModifier: 100
+# 		Description: Unlocks MG Quad
+# 		IconPalette: d2kunit
+# 	Valued:
+# 		Cost: 500
+# 	RenderSprites:
+# 		Image: quad
 
-upgrade.mcv:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: MCV Unlock
-	Buildable:
-		BuildPaletteOrder: 70
-		Prerequisites: ~d2k_tleilaxu_tech, ~faction.tleilaxu
-		Queue: Addons
-		BuildLimit: 1
-		BuildDuration: 1125
-		BuildDurationModifier: 100
-		Description: Unlocks Mobile Construction Vehicle
-		IconPalette: d2kunit
-	Valued:
-		Cost: 1500
-	RenderSprites:
-		Image: d2k_mcv
+# upgrade.mcv:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: MCV Unlock
+# 	Buildable:
+# 		BuildPaletteOrder: 70
+# 		Prerequisites: ~d2k_tleilaxu_tech, ~faction.tleilaxu
+# 		Queue: Addons
+# 		BuildLimit: 1
+# 		BuildDuration: 1125
+# 		BuildDurationModifier: 100
+# 		Description: Unlocks Mobile Construction Vehicle
+# 		IconPalette: d2kunit
+# 	Valued:
+# 		Cost: 1500
+# 	RenderSprites:
+# 		Image: d2k_mcv
 
-upgrade.basq:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Basq Unlock
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: ~d2k_tleilaxu_tech, upgrade.mg_quad, ~faction.tleilaxu
-		Queue: Addons
-		BuildLimit: 1
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: Unlocks Basq
-		IconPalette: ra2
-	Valued:
-		Cost: 1000
-	RenderSprites:
-		Image: d2k_basq
-		Palette: ra2
-		PlayerPalette: ra2player
+# upgrade.basq:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Basq Unlock
+# 	Buildable:
+# 		BuildPaletteOrder: 60
+# 		Prerequisites: ~d2k_tleilaxu_tech, upgrade.mg_quad, ~faction.tleilaxu
+# 		Queue: Addons
+# 		BuildLimit: 1
+# 		BuildDuration: 750
+# 		BuildDurationModifier: 100
+# 		Description: Unlocks Basq
+# 		IconPalette: ra2
+# 	Valued:
+# 		Cost: 1000
+# 	RenderSprites:
+# 		Image: d2k_basq
+# 		Palette: ra2
+# 		PlayerPalette: ra2player
 
-upgrade.tleilaxueyes:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Tleilaxu Eyes
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: ~d2k_tleilaxu_tech, upgrade.mg_quad, ~faction.tleilaxu
-		Queue: Addons
-		BuildLimit: 1
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: Gives Face Dancers longer view distance and detector capabilities
-		IconPalette: windows256
-	Valued:
-		Cost: 1000
-	RenderSprites:
-		Palette: windows256
+# upgrade.tleilaxueyes:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Tleilaxu Eyes
+# 	Buildable:
+# 		BuildPaletteOrder: 60
+# 		Prerequisites: ~d2k_tleilaxu_tech, upgrade.mg_quad, ~faction.tleilaxu
+# 		Queue: Addons
+# 		BuildLimit: 1
+# 		BuildDuration: 750
+# 		BuildDurationModifier: 100
+# 		Description: Gives Face Dancers longer view distance and detector capabilities
+# 		IconPalette: windows256
+# 	Valued:
+# 		Cost: 1000
+# 	RenderSprites:
+# 		Palette: windows256
 
-upgrade.gholas:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Tleilaxu Gholas
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: ~d2k_tleilaxu_tech, upgrade.tleilaxueyes, ~faction.tleilaxu
-		Queue: Addons
-		BuildLimit: 1
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: Facedancers Respawn when are Killed
-	Valued:
-		Cost: 2500
-	RenderSprites:
-		Palette: windows256
+# upgrade.gholas:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Tleilaxu Gholas
+# 	Buildable:
+# 		BuildPaletteOrder: 60
+# 		Prerequisites: ~d2k_tleilaxu_tech, upgrade.tleilaxueyes, ~faction.tleilaxu
+# 		Queue: Addons
+# 		BuildLimit: 1
+# 		BuildDuration: 750
+# 		BuildDurationModifier: 100
+# 		Description: Facedancers Respawn when are Killed
+# 	Valued:
+# 		Cost: 2500
+# 	RenderSprites:
+# 		Palette: windows256
 
 d2k_personal_shield:
 	Inherits: ^researched_upgrade.template
@@ -9885,21 +9872,21 @@ d2k_siege_range_upgrade:
 	RenderSprites:
 		Image: d2k_siege_tank_higher_range
 
-d2k_ornithopter_upgrade:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Ornithopter Missiles
-	Buildable:
-		BuildPaletteOrder: 200
-		Prerequisites: ~du_ornithopter, ~!d2k_ornithopter_upgrade
-		Queue: Upgrades
-		BuildDuration: 1500
-		BuildDurationModifier: 100
-		Description: Ornithopters will have bombs replaced by guided missiles
-	Valued:
-		Cost: 2500
-	RenderSprites:
-		Image: d2k_ornithopter_upgrade
+# d2k_ornithopter_upgrade:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Ornithopter Missiles
+# 	Buildable:
+# 		BuildPaletteOrder: 200
+# 		Prerequisites: ~du_ornithopter, ~!d2k_ornithopter_upgrade
+# 		Queue: Upgrades
+# 		BuildDuration: 1500
+# 		BuildDurationModifier: 100
+# 		Description: Ornithopters will have bombs replaced by guided missiles
+# 	Valued:
+# 		Cost: 2500
+# 	RenderSprites:
+# 		Image: d2k_ornithopter_upgrade
 
 #######################################
 #       HUSKS
