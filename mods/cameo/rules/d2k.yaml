@@ -123,20 +123,15 @@ Player:
 		RegenAmount: 100
 		RegenInterval: 5
 		ShieldsUpCondition: d2k_shielded
-		RequiresCondition: d2k_personal_shield
+		RequiresCondition: d2k_personal_shield && !disabled
 	Armor:
 		RequiresCondition: !d2k_shielded
 	Armor@shielded:
 		Type: Plate
 		RequiresCondition: d2k_shielded
-	ExternalCondition@ShieldDeplete:
-		Condition: SmallCaliberShieldHits
 	Targetable@PersonalShielded:
 		TargetTypes: PersonalShielded
 		RequiresCondition: d2k_shielded
-	GrantCondition@d2k_personal_shield_disabled:
-		Condition: d2k_personal_shield_disabled
-		RequiresCondition: d2k_personal_shield && SmallCaliberShieldHits > 5
 	DamageMultiplier@d2k_personal_shield:
 		Modifier: 150
 		RequiresCondition: d2k_personal_shield && !d2k_shielded
@@ -3342,8 +3337,6 @@ engineer:
 	Buildable:
 		Prerequisites: ~d2k_barracks
 		IconPalette: d2kunit
-	GrantCondition@d2k_personal_shield_disabled:
-		RequiresCondition: d2k_personal_shield && SmallCaliberShieldHits > 3
 	RenderSprites:
 		Image: engineer
 	Voiced:
@@ -6479,6 +6472,7 @@ d2k_farasha:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@MC: ^MCImmune
+	Inherits@COMMANDOSKULL: ^CommandoSkull
 	#Inherits@guildtele: ^Guild_teleport
 	Valued:
 		Cost: 5000
@@ -6489,6 +6483,7 @@ d2k_farasha:
 	Buildable:
 		BuildPaletteOrder: 180
 		Prerequisites: ~research_centre.ixian
+		BuildLimit: 1
 		Queue: Aircraft, RAAircraft
 		Description: actor-farasha.description
 		IconPalette: ra2
@@ -6499,6 +6494,7 @@ d2k_farasha:
 		IdealSeparation: 1500
 		RepulsionSpeed: 15
 	CarrierMaster:
+		ArmamentNames: primary
 		Actors: d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone
 		RearmTicks: 10
 		RespawnTicks: 100
@@ -6506,17 +6502,62 @@ d2k_farasha:
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
 	Health:
-		HP: 500000
+		HP: 250000
 	ChangesHealth@SelfHealing:
 		Step: 200
 	Armament@drones:
+		Name: primary
 		Weapon: d2k_dronelauncher
+	Armament@charge:
+		Name: charge
+		Weapon: d2k_farasha_charge
+		LocalOffset: 750,0,0
+		PauseOnCondition: discharged
 	Armament:
+		Name: secondary
 		Weapon: d2k_farasha
 		LocalOffset: 750,0,0
+		PauseOnCondition: !charged
+		ReloadingCondition: discharged
+	AmmoPool:
+		Armaments: secondary
+		Ammo: 10
+		InitialAmmo: 0
+		AmmoCondition: charged
+	ReloadAmmoPoolCA@charged:
+		Count: 10
+		Delay: 60
+		RequiresCondition: charging
+	ReloadAmmoPoolCA@discharge:
+		Count: -10
+		Delay: 15
+		RequiresCondition: charged && !charging
+	GrantConditionOnAttack@charged:
+		Condition: charging
+		RequiredShotsPerInstance: 1
+		ArmamentNames: charge
+		RevokeDelay: 60
+		RevokeOnNewTarget: true
+	WithAmmoPipsDecoration:
+		PipCount: 1
+		FullSequence: pip-red
+		Position: BottomLeft
+		RequiresSelection: true
 	Turreted:
 	AttackAircraft:
+		Armaments: primary, secondary, charge
 		FacingTolerance: 120
+	RenderRangeCircle:
+	Shielded:
+		MaxStrength: 250000
+		RegenDelay: 200
+		RegenAmount: 500
+		RegenInterval: 5
+		ShieldsUpCondition: d2k_shielded
+		RequiresCondition: !disabled
+	Armor@shielded:
+		Type: Shield
+		RequiresCondition: d2k_shielded
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 2048, 2048

@@ -65,3 +65,4 @@ label-armor-class =
     .Medium = Medium
     .Heavy = Heavy
     .Superheavy = Superheavy
+    .Shield = Shield
