@@ -16,10 +16,13 @@ namespace OpenRA.Mods.CA.Traits
 	public class BotLimitsInfo : ConditionalTraitInfo
 	{
 		public readonly int ProductionTypeLimit = 1;
+		public readonly int RefineryLimit = 4;
 		public readonly int ConstructionYardLimit = 1;
 
 		public readonly int BuildingDelayModifier = 100;
 		public readonly int BuildingIntervalModifier = 100;
+
+		public readonly int HarvesterLimit = 8;
 
 		public readonly int UnitDelayModifier = 100;
 		public readonly int UnitIntervalModifier = 100;

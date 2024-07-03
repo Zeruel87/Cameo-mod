@@ -82,6 +82,9 @@ namespace OpenRA.Mods.CA.Traits
 		int scanForIdleHarvestersTicks;
 		int scanForEnoughHarvestersTicks;
 
+		BotLimits botLimits;
+		int harvesterLimit;
+
 		public HarvesterBotModuleCA(Actor self, HarvesterBotModuleCAInfo info)
 			: base(info)
 		{
@@ -101,6 +104,12 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			resourceLayer = world.WorldActor.TraitOrDefault<IResourceLayer>();
 			claimLayer = world.WorldActor.TraitOrDefault<ResourceClaimLayer>();
+
+			botLimits = self.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
+			if (botLimits != null)
+			{
+				harvesterLimit = botLimits.Info.HarvesterLimit;
+			}
 
 			// Avoid all AIs scanning for idle harvesters on the same tick, randomize their initial scan delay.
 			scanForIdleHarvestersTicks = world.LocalRandom.Next(Info.ScanForIdleHarvestersInterval, Info.ScanForIdleHarvestersInterval * 2);
@@ -169,7 +178,7 @@ namespace OpenRA.Mods.CA.Traits
 				var harvInfo = AIUtils.GetInfoByCommonName(Info.HarvesterTypes, player);
 				var numHarvesters = AIUtils.CountActorByCommonName(harvestersIndex);
 
-				if (numHarvesters >= Info.MaxHarvesters)
+				if ((harvesterLimit > 0 && numHarvesters >= harvesterLimit) || numHarvesters >= Info.MaxHarvesters)
 					return;
 
 				var harvCountTooLow = numHarvesters < AIUtils.CountActorByCommonName(refineries) * Info.HarvestersPerRefinery + Info.AdditionalHarvesters;

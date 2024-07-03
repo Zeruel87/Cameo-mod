@@ -15,6 +15,7 @@ using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.AS.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
+using System;
 
 namespace OpenRA.Mods.CA.Traits
 {
@@ -213,6 +214,9 @@ namespace OpenRA.Mods.CA.Traits
 		readonly ActorIndex.OwnerAndNamesAndTrait<Building> barracksBuildings;
 		readonly ActorIndex.OwnerAndNamesAndTrait<Building> factoryBuildings;
 
+		BotLimits botLimits;
+		int refineryLimit;
+
 		public BaseBuilderBotModuleCA(Actor self, BaseBuilderBotModuleCAInfo info)
 			: base(info)
 		{
@@ -256,6 +260,12 @@ namespace OpenRA.Mods.CA.Traits
 		protected override void TraitEnabled(Actor self)
 		{
 			var i = 0;
+
+			botLimits = self.Owner.PlayerActor.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
+			if (botLimits != null)
+			{
+				refineryLimit = botLimits.Info.RefineryLimit;
+			}
 
 			foreach (var building in Info.BuildingQueues)
 			{
@@ -434,6 +444,9 @@ namespace OpenRA.Mods.CA.Traits
 			{
 				var currentRefineryCount = AIUtils.CountActorByCommonName(refineryBuildings);
 
+				if (refineryLimit != 0 && currentRefineryCount >= refineryLimit)
+					return true;
+
 				foreach (var r in Info.RefineryTypes)
 				{
 					if (BuildingsBeingProduced != null && BuildingsBeingProduced.ContainsKey(r))
@@ -441,6 +454,7 @@ namespace OpenRA.Mods.CA.Traits
 				}
 
 				var currentConstructionYardCount = AIUtils.CountActorByCommonName(constructionYardBuildings);
+
 				return currentRefineryCount >= currentConstructionYardCount * Info.RefineriesPerBase + Info.MaxExtraRefineries;
 			}
 		}
@@ -450,6 +464,9 @@ namespace OpenRA.Mods.CA.Traits
 			get
 			{
 				var desiredAmount = HasAdequateBarracksCount && HasAdequateFactoryCount ? Info.NormalMinimumRefineryCount : Info.InitialMinimumRefineryCount;
+
+				if (refineryLimit != 0 && refineryLimit < desiredAmount)
+					desiredAmount = refineryLimit;
 
 				// Require at least one refinery, unless we can't build it.
 				return AIUtils.CountActorByCommonName(refineryBuildings) >= desiredAmount ||

@@ -111,11 +111,12 @@ namespace OpenRA.Mods.CA.Traits
 			// for bot modules always to the Player actor.
 			notifyPositionsUpdated = self.TraitsImplementing<IBotPositionsUpdated>().ToArray();
 			requestUnitProduction = self.TraitsImplementing<IBotRequestUnitProduction>().ToArray();
-			botLimits = self.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
 		}
 
 		protected override void TraitEnabled(Actor self)
 		{
+			botLimits = self.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
+
 			// Avoid all AIs reevaluating assignments on the same tick, randomize their initial evaluation delay.
 			scanInterval = world.LocalRandom.Next(Info.ScanForNewMcvInterval, Info.ScanForNewMcvInterval * 2);
 		}
