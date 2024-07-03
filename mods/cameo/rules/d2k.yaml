@@ -6479,6 +6479,7 @@ d2k_farasha:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@MC: ^MCImmune
+	Inherits@COMMANDOSKULL: ^CommandoSkull
 	#Inherits@guildtele: ^Guild_teleport
 	Valued:
 		Cost: 5000
@@ -6489,6 +6490,7 @@ d2k_farasha:
 	Buildable:
 		BuildPaletteOrder: 180
 		Prerequisites: ~research_centre.ixian
+		BuildLimit: 1
 		Queue: Aircraft, RAAircraft
 		Description: actor-farasha.description
 		IconPalette: ra2
@@ -6499,6 +6501,7 @@ d2k_farasha:
 		IdealSeparation: 1500
 		RepulsionSpeed: 15
 	CarrierMaster:
+		ArmamentNames: primary
 		Actors: d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone
 		RearmTicks: 10
 		RespawnTicks: 100
@@ -6510,12 +6513,44 @@ d2k_farasha:
 	ChangesHealth@SelfHealing:
 		Step: 200
 	Armament@drones:
+		Name: primary
 		Weapon: d2k_dronelauncher
+	Armament@charge:
+		Name: charge
+		Weapon: d2k_farasha_charge
+		LocalOffset: 750,0,0
+		PauseOnCondition: discharged
 	Armament:
+		Name: secondary
 		Weapon: d2k_farasha
 		LocalOffset: 750,0,0
+		PauseOnCondition: !charged
+		ReloadingCondition: discharged
+	AmmoPool:
+		Armaments: secondary
+		InitialAmmo: 0
+		AmmoCondition: charged
+	ReloadAmmoPoolCA@charged:
+		Count: 1
+		Delay: 60
+		RequiresCondition: charging
+	ReloadAmmoPoolCA@discharge:
+		Count: -1
+		Delay: 10
+		RequiresCondition: charged && !charging
+	GrantConditionOnAttack@charged:
+		Condition: charging
+		RequiredShotsPerInstance: 1
+		ArmamentNames: charge
+		RevokeDelay: 60
+		RevokeOnNewTarget: true
+	WithAmmoPipsDecoration:
+		FullSequence: pip-red
+		Position: BottomLeft
+		RequiresSelection: true
 	Turreted:
 	AttackAircraft:
+		Armaments: primary, secondary, charge
 		FacingTolerance: 120
 	SelectionDecorations:
 	Selectable:
