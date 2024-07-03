@@ -27,8 +27,8 @@ World:
 		Name: Ixian DU
 		InternalName: ixian
 		Game: Dune Universe
-		Side: Houses
-		Description: House Ixian\nThese fascist arms dealers have access to terrifying technologies -- and they're happy to pass them along if the price is right.\nAnd with Arrakis at the center of an intergalactic struggle, the ambitious Ix only stand to profit.\nTheir Technology is expansive and rare, they have to focus on good control of limited amount of assets. Bigger losses are unacceptable.\nBonuses: Inconspicuous Harvesting\nSupport Power: None
+		Side: Dune
+		Description: Ixians
 	# FactionCA@RandomDU:
 	# 	Name: Any
 	# 	InternalName: RandomDU
@@ -117,29 +117,41 @@ Player:
 		RequiresCondition: d2k_rearm >= 5
 
 ^D2KPersonalShield:
+	Shielded:
+		MaxStrength: 10000
+		RegenDelay: 200
+		RegenAmount: 100
+		RegenInterval: 5
+		ShieldsUpCondition: d2k_shielded
+		RequiresCondition: d2k_personal_shield
+	Armor:
+		RequiresCondition: !d2k_shielded
+	Armor@shielded:
+		Type: Plate
+		RequiresCondition: d2k_shielded
 	ExternalCondition@ShieldDeplete:
 		Condition: SmallCaliberShieldHits
-	Targetable@BulletImmune:
-		RequiresCondition: d2k_personal_shield && !d2k_personal_shield_disabled
 	Targetable@PersonalShielded:
 		TargetTypes: PersonalShielded
-		RequiresCondition: d2k_personal_shield && !d2k_personal_shield_disabled
+		RequiresCondition: d2k_shielded
 	GrantCondition@d2k_personal_shield_disabled:
 		Condition: d2k_personal_shield_disabled
 		RequiresCondition: d2k_personal_shield && SmallCaliberShieldHits > 5
 	DamageMultiplier@d2k_personal_shield:
 		Modifier: 150
-		RequiresCondition: d2k_personal_shield && d2k_personal_shield_disabled
+		RequiresCondition: d2k_personal_shield && !d2k_shielded
 	SpeedMultiplier@d2k_personal_shield:
 		Modifier: 80
-		RequiresCondition: d2k_personal_shield && d2k_personal_shield_disabled
+		RequiresCondition: d2k_personal_shield && !d2k_shielded
 	GrantConditionOnPrerequisite@d2k_personal_shield:
 		Condition: d2k_personal_shield
 		Prerequisites: d2k_personal_shield
+	ActorStatValues:
+		Upgrades: d2k_personal_shield
 
 ^BulletImmune:
-	Targetable@BulletImmune:
-		TargetTypes: BulletImmune
+	#Targetable@BulletImmune:
+	#	TargetTypes: BulletImmune
 
 ^D2KInfantry:
 	Inherits@inf: ^Infantry
@@ -638,7 +650,7 @@ OILB.d2k:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 200
 		Prerequisites: ~research_centre, derricklimit
-		Description: Absorbs Spice obtained by the wind flow\nFilters out the sand\nProvides Passive income
+		Description: actor-oilb.description
 		IconPalette: d2kunit
 	Tooltip:
 		Name: Spice Sifter
@@ -799,7 +811,7 @@ wind_trap.atreides:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 10
-		Description: Provides power for other structures.
+		Description: template-power.description
 		IconPalette: d2kunit
 		Prerequisites: ~construction_yard.ixian
 	Valued:
@@ -911,7 +923,7 @@ d2k_barracks.ixian:
 		Prerequisites: ~construction_yard.ixian, wind_trap.atreides
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 220
-		Description: Trains infantry.
+		Description: template-barracks.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 400
@@ -1133,7 +1145,7 @@ refinery.atreides:
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, wind_trap.atreides
 		Queue: Building, RABuilding
-		Description: Harvesters unload Spice here for processing.
+		Description: template-refinery.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2000
@@ -1213,7 +1225,7 @@ d2k_silo.atreides:
 		Prerequisites: ~construction_yard.ixian, refinery.atreides
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 310
-		Description: Stores excess harvested Spice.
+		Description: template-silo.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 150
@@ -1412,7 +1424,7 @@ d2k_munitions.ixian:
 		Prerequisites: ~construction_yard.ixian, d2k_barracks.ixian
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 310
-		Description: Refills ammo to nearby units\nUnits fire faster when near (Stacks multiple times)\nExplodes upon taking critical damage\nCauses chain reaction when built close together
+		Description: actor-d2k_munitions.description
 		IconPalette: player
 	D2kActorPreviewPlaceBuildingPreview:
 	Valued:
@@ -1690,7 +1702,7 @@ heavy_factory.ixian:
 		Image: heavy.mercenary
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, refinery.atreides
-		Description: Produces heavy vehicles.\nComes with Heavy Factory Upgrade
+		Description: template-factory.description
 		IconPalette: player
 	ProvidesPrerequisite@missiletank:
 		Prerequisite: heavy.missile_tank
@@ -1708,7 +1720,7 @@ repair_pad.ixian:
 		BuildPaletteOrder: 430
 		BuildDuration: 750
 		BuildDurationModifier: 100
-		Description: Repairs vehicles.\n Allows construction of MCVs
+		Description: template-service-depot.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 1000
@@ -1768,7 +1780,7 @@ outpost.ixian:
 		BuildPaletteOrder: 320
 		BuildDuration: 750
 		BuildDurationModifier: 100
-		Description: Provides a radar map of the battlefield.\n  Requires power to operate.
+		Description: template-radar.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2000
@@ -1817,7 +1829,7 @@ high_tech_factory.ixian:
 		BuildPaletteOrder: 420
 		BuildDuration: 375
 		BuildDurationModifier: 100
-		Description: Unlocks advanced technology.\nAllows production of Air units
+		Description: actor-high_tech_factory.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2000
@@ -2218,7 +2230,7 @@ machine_gun_turret:
 		Queue: Defence, RADefence
 		Prerequisites: ~construction_yard.ixian, d2k_barracks.ixian
 		BuildPaletteOrder: 550
-		Description: Defensive structure.\nDetector.\n  Strong vs Infantry\n  Weak vs Tanks
+		Description: template-anti-infantry-defense.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 600
@@ -2280,7 +2292,7 @@ medium_gun_turret.ixian:
 		Queue: Defence, RADefence
 		Prerequisites: ~upgrade.conyard, d2k_barracks.ixian
 		BuildPaletteOrder: 550
-		Description: Defensive structure.\nDetector.\n  Strong vs Tanks\n  Weak vs Infantry, Aircraft
+		Description: template-anti-vehicle-defense.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 1000
@@ -2414,7 +2426,7 @@ large_gun_turret:
 		Queue: Defence, RADefence
 		Prerequisites: ~upgrade.conyard, outpost.ixian
 		BuildPaletteOrder: 610
-		Description: Defensive structure.\nDetector.\n  Strong vs Infantry, Aircraft\n  Weak vs Tanks\n\n  Requires power to operate.
+		Description: actor-large_gun_turret.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 1500
@@ -2476,7 +2488,7 @@ storm_lasher:
 		Queue: Defence, RADefence
 		Prerequisites: ~upgrade.conyard, research_centre.ixian
 		BuildPaletteOrder: 750
-		Description: Advanced Defensive structure.\nLong reload with huge range and impact\nDetector.\n  Strong vs Infantry, Vehicles, Tanks\n  Weak vs Siege
+		Description: actor-storm_lasher.description
 		IconPalette: player
 	Valued:
 		Cost: 2500
@@ -3303,7 +3315,7 @@ light_inf:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Infantry, RAInfantry
-		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+		Description: template-scout-infantry.description
 		IconPalette: d2kunit
 		Prerequisites: ~d2k_barracks
 	Mobile:
@@ -3329,7 +3341,6 @@ engineer:
 	Inherits@anim: ^D2KPaletteRenderInfantry
 	Buildable:
 		Prerequisites: ~d2k_barracks
-		Description: Infiltrates and captures enemy and neutral structures\n  Strong vs Buildings\n  Weak vs Everything
 		IconPalette: d2kunit
 	GrantCondition@d2k_personal_shield_disabled:
 		RequiresCondition: d2k_personal_shield && SmallCaliberShieldHits > 3
@@ -3406,7 +3417,7 @@ trooper:
 		Prerequisites: ~upgrade.barracks
 		BuildDuration: 80
 		BuildDurationModifier: 100
-		Description: Anti-tank infantry\nCan Attack air.\n  Strong vs Tanks\n  Weak vs Infantry, Artillery
+		Description: template-antitank-antiair-infantry.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 600
@@ -3452,7 +3463,7 @@ shock_infantry:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Infantry, RAInfantry
-		Description: General-purpose infantry equipped with a long range Shock Gun\nDeals high damage in a line with a long time to reload.\nStrong vs Infantry, Vehicles\n  Weak vs Siege
+		Description: actor-shock_infantry.description
 		IconPalette: d2kunit
 		Prerequisites: ~upgrade.barracks, research_centre.ixian
 	Mobile:
@@ -5704,7 +5715,7 @@ d2k_mcv.ixian:
 		BuildPaletteOrder: 110
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Description: Deploys into another Construction Yard\n  Unarmed
+		Description: template-mcv.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2000
@@ -6172,7 +6183,7 @@ d2k_air_drone:
 		Queue: Aircraft, RAAircraft
 		BuildPaletteOrder: 10
 		Prerequisites: ~high_tech_factory.ixian
-		Description: Stealthed and Light air unit that is used for defence against other air units.\nCarries an AA missile launcher that automatically fires\nat any air unit within range. Due to it's light armor,\nit is easily destroyed from enemy AA fire.\nDetector
+		Description: template-air_drone.description
 		IconPalette: windows256
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
@@ -6479,7 +6490,7 @@ d2k_farasha:
 		BuildPaletteOrder: 180
 		Prerequisites: ~research_centre.ixian
 		Queue: Aircraft, RAAircraft
-		Description: Carrier spaceship.\nUses Alfayrus drones to attack
+		Description: actor-farasha.description
 		IconPalette: ra2
 	Aircraft:
 		InitialFacing: 896
@@ -6672,7 +6683,7 @@ harvester:
 		Queue: Vehicle, RAVehicle
 		Prerequisites: ~spice_refinery
 		BuildPaletteOrder: 10
-		Description: Collects Spice for processing\n  Unarmed
+		Description: template-harvester.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 1000
@@ -7362,7 +7373,7 @@ siege_tank_ixian:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 50
 		Prerequisites: ~upgrade.heavy, outpost.ixian
-		Description: Stealth Siege Artillery with turnable turret\nthat can shoot burst up to 3 shots in\na row at a higher range.\nLess accurate than regular version and with long reload times\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Everything
+		Description: actor-siege_tank.description
 		IconPalette: ra2
 	Health:
 		HP: 60000
@@ -7583,7 +7594,7 @@ missile_tank_ixian:
 		Queue: Vehicle, RAVehicle
 		Prerequisites: ~upgrade.heavy, research_centre.ixian
 		BuildPaletteOrder: 60
-		Description: Stealth Rocket Artillery\nCan shoot up to 10 rockets in a row at much higher distance\nLess accurate than regular version and with long reload times\n  Strong vs Vehicles, Buildings, Tanks\n  Weak vs Everything
+		Description: actor-missile_tank.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2500
@@ -8297,7 +8308,7 @@ rocket_raider_ixian:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		Prerequisites: ~heavy_factory.ixian
-		Description: Invisible Raider Trike with Rockets\nCan carry up to 4 passengers\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
+		Description: actor-rocket_raider.description
 	Cargo:
 		Types: Infantry
 		MaxWeight: 4
@@ -8379,7 +8390,7 @@ shock_raider:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 10
 		Prerequisites: ~upgrade.heavy, research_centre.ixian
-		Description: Fast Vehicle with Powerful Gauss Gun on top\n  Strong vs Tanks
+		Description: actor-shock_raider.description
 		IconPalette: player
 	Valued:
 		Cost: 1300
@@ -8706,7 +8717,7 @@ combat_tank_ixian:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 40
-		Description: Ixian Main Battle Tank\nCombines the best of the base variants with Ixian quick fire cannon\n  Strong vs Tanks\n  Weak vs Infantry
+		Description: template-mbt.description
 		IconPalette: d2kunit
 		Prerequisites: ~heavy_factory.ixian, ~!d2k_duelist_tank_upgrade
 	Valued:
@@ -8948,7 +8959,7 @@ combat_siege_tank:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 40
 		IconPalette: d2kunit
-		Description: Siege tank with autoloader system.\nCan carry up to 2 passengers\n  Strong vs Tanks\n  Weak vs Infantry
+		Description: actor-siege_tank.description
 		Prerequisites: ~d2k_combat_siege_upgrade, research_centre.ixian
 	Valued:
 		Cost: 800
@@ -9007,7 +9018,7 @@ quake_tank:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 90
 		Prerequisites: ~d2k_combat_siege_upgrade, research_centre.ixian
-		Description: Suicidal Unit\nOnce deployed, Deals seismic damage to nearby vehicles\nand structures\nDeals massive damage after exploding\nSummons all worms on map once detonated - keeps luring Worms even after its death\nOnly one can be built at a time\n  Strong vs Ground targets
+		Description: actor-quake_tank.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 3000
@@ -9077,7 +9088,7 @@ duelist_tank:
 		BuildPaletteOrder: 40
 		IconPalette: d2kunit
 		Prerequisites: ~d2k_duelist_tank_upgrade
-		Description: Durable and with long range higher calibre gun, this tank is very dangerous opponent to face\n  Strong vs Tanks\n  Weak vs Infantry
+		Description: actor-duelist_tank.description
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -9171,7 +9182,7 @@ carryall.reinforce:
 	Buildable:
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Description: Large winged, planet-bound ship\n  Automatically lifts harvesters from and to Spice.\n  Lifts vehicles to Repair Pads when ordered.\nLimit: 10
+		Description: actor-carryall.description
 		IconPalette: d2kunit
 		BuildLimit: 10
 	HitShape:
@@ -9780,7 +9791,7 @@ d2k_personal_shield:
 	Buildable:
 		BuildPaletteOrder: 250
 		Queue: Upgrades
-		Description: Shield protects infantry from small caliber weapons\nExhausts under heavy fire and leaves unit vulnerable\nPersonal Shields attracts sandworms
+		Description: upgrade-personal_shield.description
 		Prerequisites: ~research_centre, ~!d2k_personal_shield
 		IconPalette: ra2
 		BuildDuration: 1500
@@ -9849,7 +9860,7 @@ d2k_spice_sifter_upgrade:
 		Queue: Upgrades
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Description: Decreases amount of Spice filtered out incorrectly from the Spice Sifters
+		Description: upgrade-spice_sifter.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2500
@@ -9866,7 +9877,7 @@ d2k_siege_range_upgrade:
 		Queue: Upgrades
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Description: Siege Tanks gains higher range
+		Description: Siege Tanks gain higher range
 	Valued:
 		Cost: 2000
 	RenderSprites:

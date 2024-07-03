@@ -522,7 +522,7 @@ aa_cgmiac:
 	ParatroopersPower@ra2paratroopers:
 		PauseOnCondition: disabled
 		Prerequisites:
-			1: upaa_asdf
+			1:
 		OrderName: ASDFParatroopers
 		Icons:
 			1: paratroopers
@@ -1885,16 +1885,15 @@ aa_asdf:
 			primary: shoot
 	AirstrikeMasterCA@1:
 		ArmamentNames: secondary
-		Actors: aa_kami.asdf, aa_kami.asdf, aa_kami.asdf, aa_kami.asdf
-		SquadSize: 4
+		Actors: aa_kami.asdf
+		SquadSize: 1
 		InitialActorCount: -1
 		RespawnTicks: 10
 		RearmTicks: 10
-		SpawnDistance: 60c0
+		SpawnDistance: 30c0
 		SlaveAvailableCondition: canflare
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
-		MarkSound: Action
 	KeepsDistance:
 	Voiced:
 		VoiceSet: AsianShinobiVoice
@@ -2182,7 +2181,7 @@ aa_pulv:
 	Inherits@Template: ^ScoutVehicleTemplate
 	Inherits@UpGat: ^YuriGatlingUpgrade
 	Valued:
-		Cost: 1200
+		Cost: 1000
 	Tooltip:
 		Name: Pulverizer
 	Buildable:
@@ -2442,9 +2441,11 @@ aa_mecha:
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericGroundDetector
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Inherits@MC: ^MCImmune
+	Inherits@UpGat: ^YuriGatlingUpgrade
 	Selectable:
 		Bounds: 1250, 1750, 0, -250
 	Valued:
@@ -2459,23 +2460,33 @@ aa_mecha:
 	Mobile:
 		Locomotor: heavytracked
 		Speed: 66
-		TurnSpeed: 11
+		TurnSpeed: 25
 	Health:
-		HP: 80000
+		HP: 90000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
 		Range: 7c0
 	Armament@1:
 		Weapon: AsianPulvMG3
+		RequiresCondition: gatling
 	Armament@2:
-		Weapon: AsianPulvMG1
+		Weapon: AsianPulvMG2
+		RequiresCondition: !gatling
 	Armament@1AA:
 		Weapon: AsianPulvMG3AA
+		RequiresCondition: gatling
 	Armament@2AA:
-		Weapon: AsianPulvMG1AA
+		Weapon: AsianPulvMG2AA
+		RequiresCondition: !gatling
+	GrantConditionOnAttack@gatling:
+		RequiredShotsPerInstance: 8
+		MaximumInstances: 1
+	GrantConditionOnAttack@elitegatling:
+		RequiredShotsPerInstance: 4
+		MaximumInstances: 1
 	AttackFrontal:
-		FacingTolerance: 10
+		FacingTolerance: 20
 	WithInfantryBody:
 		IdleSequences: idle
 		MinIdleDelay: 1
@@ -3513,30 +3524,30 @@ upaa_mecha:
 		Image: aa_mecha
 	ProvidesPrerequisite:
 
-upaa_asdf:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock ASDF
-	Buildable:
-		BuildPaletteOrder: 105
-		Queue: Promotions
-		Description: Enables training ASDF.
-		Prerequisites: ~aa_cgcnst, upaa_mecha, !upaa_asdf, rank1
-	RenderSprites:
-		Image: aa_asdf
-	ProvidesPrerequisite:
-
 upaa_railt2:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
 		Name: Unlock Heavy Railgun Tank
 	Buildable:
-		BuildPaletteOrder: 108
+		BuildPaletteOrder: 105
 		Queue: Promotions
 		Description: Enables construction of the Heavy Railgun Tank.
-		Prerequisites: ~aa_cgcnst, upaa_asdf, !upaa_railt2, rank1
+		Prerequisites: ~aa_cgcnst, upaa_mecha, !upaa_railt2, rank1
 	RenderSprites:
 		Image: aa_railt2
+	ProvidesPrerequisite:
+
+upaa_asdf:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock ASDF
+	Buildable:
+		BuildPaletteOrder: 108
+		Queue: Promotions
+		Description: Enables training ASDF.
+		Prerequisites: ~aa_cgcnst, upaa_railt2, !upaa_asdf, rank1
+	RenderSprites:
+		Image: aa_asdf
 	ProvidesPrerequisite:
 
 ### Researches
