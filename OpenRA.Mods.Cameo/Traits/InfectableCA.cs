@@ -153,7 +153,8 @@ namespace OpenRA.Mods.CA.Traits
 			Infector.actor.TraitOrDefault<IPositionable>().SetPosition(Infector.actor, self.CenterPosition);
 			self.World.AddFrameEndTask(w =>
 			{
-				w.Add(Infector.actor);
+				if (!Infector.actor.IsInWorld)
+					w.Add(Infector.actor);
 
 				if (kill)
 				{

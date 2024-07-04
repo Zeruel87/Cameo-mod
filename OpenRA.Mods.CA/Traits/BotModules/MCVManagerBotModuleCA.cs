@@ -90,6 +90,8 @@ namespace OpenRA.Mods.CA.Traits
 		int scanInterval;
 		bool firstTick = true;
 
+		BotLimits botLimits;
+
 		public McvManagerBotModuleCA(Actor self, McvManagerBotModuleCAInfo info)
 			: base(info)
 		{
@@ -113,6 +115,8 @@ namespace OpenRA.Mods.CA.Traits
 
 		protected override void TraitEnabled(Actor self)
 		{
+			botLimits = self.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
+
 			// Avoid all AIs reevaluating assignments on the same tick, randomize their initial evaluation delay.
 			scanInterval = world.LocalRandom.Next(Info.ScanForNewMcvInterval, Info.ScanForNewMcvInterval * 2);
 		}
@@ -156,7 +160,7 @@ namespace OpenRA.Mods.CA.Traits
 				return false;
 
 			// Build MCV if we don't have the desired number of construction yards, unless we have no factory (can't build it).
-			return AIUtils.CountActorByCommonName(constructionYards) < Info.MinimumConstructionYardCount &&
+			return (botLimits == null || AIUtils.CountActorByCommonName(constructionYards) < botLimits.Info.ConstructionYardLimit) && AIUtils.CountActorByCommonName(constructionYards) < Info.MinimumConstructionYardCount &&
 				AIUtils.CountActorByCommonName(mcvFactories) > 0;
 		}
 

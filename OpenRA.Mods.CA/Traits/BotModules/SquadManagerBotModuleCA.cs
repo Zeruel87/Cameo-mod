@@ -184,6 +184,9 @@ namespace OpenRA.Mods.CA.Traits
 		int desiredAttackForceValue;
 		int desiredAttackForceSize;
 
+		BotLimits botLimits;
+		int initialAttackDelay;
+
 		public SquadManagerBotModuleCA(Actor self, SquadManagerBotModuleCAInfo info)
 			: base(info)
 		{
@@ -255,11 +258,16 @@ namespace OpenRA.Mods.CA.Traits
 
 		protected override void TraitEnabled(Actor self)
 		{
+			botLimits = self.Owner.PlayerActor.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
+
+			if (botLimits != null)
+				initialAttackDelay = botLimits.Info.InitialAttackDelay;
+
 			// Avoid all AIs reevaluating assignments on the same tick, randomize their initial evaluation delay.
 			assignRolesTicks = World.LocalRandom.Next(0, Info.AssignRolesInterval);
 			attackForceTicks = World.LocalRandom.Next(0, Info.AttackForceInterval);
 			protectionForceTicks = World.LocalRandom.Next(0, Info.ProtectInterval);
-			minAttackForceDelayTicks = World.LocalRandom.Next(0, Info.MinimumAttackForceDelay);
+			minAttackForceDelayTicks = World.LocalRandom.Next(0, Info.MinimumAttackForceDelay) + initialAttackDelay;
 		}
 
 		void IBotEnabled.BotEnabled(IBot bot)

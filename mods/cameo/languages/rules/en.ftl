@@ -840,6 +840,13 @@ actor-jpspeedboat =
         Weak vs Ships
    .name = Japanese Speedboat
 
+actor-japancarrier =
+   .description = Very slow long-range ship.
+      Can attack air.
+        Strong vs Buildings, Ground units
+        Weak vs Naval units, Aircraft
+   .name = Japanese Aircraft Carrier
+
 actor-yamatobattleship =
    .description = Very slow long-range ship.
       Can attack air.
@@ -1377,6 +1384,77 @@ power-chaos =
    .name = Chaos Storm
    .description = Releases chaos gas on a target area.
 
+actor-shock_infantry =
+   .description = Armed with a shock gun.
+       Damages enemies in a line.
+       Strong vs Infantry, Vehicles
+
+actor-rocket_raider =
+   .description = Fast raider armed with rockets.
+      Can carry 4 passengers.
+       Strong vs Infantry, Light Vehicles, Air
+
+actor-shock_raider =
+   .description = Fast raider armed with a shock gun.
+      Strong vs Tanks
+
+actor-missile_tank =
+   .description = Long-range rocket artillery.
+       Strong vs Vehicles, Buildings
+
+actor-siege_tank =
+   .description = Long-range artillery gun.
+       Strong vs Infantry, Buildings
+
+actor-duelist_tank =
+   .description = Heavy tank.
+      Strong vs Vehicles
+
+actor-quake_tank =
+   .description = Deals seismic damage to vehicles and structures.
+
+actor-carryall =
+   .description = Automatically transports harvesters.
+
+actor-air_drone =
+   .description = Multirole light fighter armed with napalm rockets.
+       Strong vs Infantry, Aircraft
+
+upgrade-personal_shield =
+   .description = Shields increase resilience against small caliber weapons.
+      Exhausts under heavy fire and leaves unit vulnerable.
+      Attracts sandworms.
+
+upgrade-spice_sifter =
+   .description = Decreases amount of Spice filtered
+      out incorrectly from Spice Sifters.
+      Increases Spice Sifter income.
+
+actor-farasha =
+   .description = Carrier spaceship.
+      Armed with a laser.
+      Carries 5 Alfayrus drones.
+       Strong vs Everything
+
+actor-d2k_munitions =
+   .description = Increases firing speed of nearby units.
+      Effect can stack.
+      Explodes when destroyed
+
+actor-storm_lasher =
+   .description = Long-range defensive structure.
+      Deals massive splash damage.
+       Strong vs Ground
+
+actor-large_gun_turret =
+   .description = Requires power to operate.
+       Strong vs Infantry, Air
+       Weak vs Tanks
+
+actor-high_tech_factory =
+   .description = Unlocks advanced technologies.
+      Produces aircraft.
+
 actor-oilb =
    .name = Oil Derrick
    .description = Provides passive income.
@@ -1462,6 +1540,7 @@ template-shipyard =
    .td-nod = Nod Sub Pen
    .ra-soviet = Soviet Sub Pen
    .ra-allies = Allied Naval Yard
+   .ra-japan = Japanese Naval Yard
    .ra2-allies = Allied Naval Yard
    .ra2-soviet = Soviet Shipyard
    .ra2-yuri = Yuri Sub Pen

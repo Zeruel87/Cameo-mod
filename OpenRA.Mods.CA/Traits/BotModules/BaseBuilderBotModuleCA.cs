@@ -15,6 +15,7 @@ using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.AS.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
+using System;
 
 namespace OpenRA.Mods.CA.Traits
 {
@@ -117,11 +118,23 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Chance that the AI will place the defenses in the direction of the closest enemy building.")]
 		public readonly int PlaceDefenseTowardsEnemyChance = 100;
 
+		[Desc("Chance that the AI will place buildings to crawl toward resource patches.")]
+		public readonly int BaseCrawlChance = 50;
+
+		[Desc("Maximum range at which to basecrawl.")]
+		public readonly int BaseCrawlRadius = 50;
+
+		[Desc("Structures cheaper than this will be used to basecrawl.")]
+		public readonly int BaseCrawlCostThreshold = 1000;
+
 		[Desc("Minimum range at which to build defensive structures near a combat hotspot.")]
 		public readonly int MinimumDefenseRadius = 5;
 
 		[Desc("Maximum range at which to build defensive structures near a combat hotspot.")]
 		public readonly int MaximumDefenseRadius = 20;
+
+		[Desc("Maximum range at which to build refineries from a resource patch.")]
+		public readonly int MaximumRefineryRadius = 12;
 
 		[Desc("Try to build another production building if there is too much cash.")]
 		public readonly int NewProductionCashThreshold = 10000;
@@ -201,6 +214,9 @@ namespace OpenRA.Mods.CA.Traits
 		readonly ActorIndex.OwnerAndNamesAndTrait<Building> barracksBuildings;
 		readonly ActorIndex.OwnerAndNamesAndTrait<Building> factoryBuildings;
 
+		BotLimits botLimits;
+		int refineryLimit;
+
 		public BaseBuilderBotModuleCA(Actor self, BaseBuilderBotModuleCAInfo info)
 			: base(info)
 		{
@@ -244,6 +260,12 @@ namespace OpenRA.Mods.CA.Traits
 		protected override void TraitEnabled(Actor self)
 		{
 			var i = 0;
+
+			botLimits = self.Owner.PlayerActor.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
+			if (botLimits != null)
+			{
+				refineryLimit = botLimits.Info.RefineryLimit;
+			}
 
 			foreach (var building in Info.BuildingQueues)
 			{
@@ -422,6 +444,9 @@ namespace OpenRA.Mods.CA.Traits
 			{
 				var currentRefineryCount = AIUtils.CountActorByCommonName(refineryBuildings);
 
+				if (refineryLimit != 0 && currentRefineryCount >= refineryLimit)
+					return true;
+
 				foreach (var r in Info.RefineryTypes)
 				{
 					if (BuildingsBeingProduced != null && BuildingsBeingProduced.ContainsKey(r))
@@ -429,6 +454,7 @@ namespace OpenRA.Mods.CA.Traits
 				}
 
 				var currentConstructionYardCount = AIUtils.CountActorByCommonName(constructionYardBuildings);
+
 				return currentRefineryCount >= currentConstructionYardCount * Info.RefineriesPerBase + Info.MaxExtraRefineries;
 			}
 		}
@@ -438,6 +464,9 @@ namespace OpenRA.Mods.CA.Traits
 			get
 			{
 				var desiredAmount = HasAdequateBarracksCount && HasAdequateFactoryCount ? Info.NormalMinimumRefineryCount : Info.InitialMinimumRefineryCount;
+
+				if (refineryLimit != 0 && refineryLimit < desiredAmount)
+					desiredAmount = refineryLimit;
 
 				// Require at least one refinery, unless we can't build it.
 				return AIUtils.CountActorByCommonName(refineryBuildings) >= desiredAmount ||

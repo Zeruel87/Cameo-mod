@@ -1175,7 +1175,7 @@ heavyaatank:
 	Armament@AA:
 		Weapon: RAGatlingTankCannonAA
 		Recoil: 85
-		LocalOffset: 1000,100,450, 1000,-100,450
+		LocalOffset: 800,80,360, 800,-80,360
 		MuzzleSequence: muzzle
 	AttackTurreted:
 	WithMuzzleOverlay:
@@ -1290,7 +1290,6 @@ RAHARV:
 		DecorationBounds: 1536, 1536
 	SelectionDecorations:
 	Harvester:
-		PipCount: 10
 		BaleLoadDelay: 4
 		BaleUnloadDelay: 1
 		SearchFromProcRadius: 25
@@ -1335,60 +1334,6 @@ RAHARV:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 10
-	RenderSprites:
-		PlayerPalette: raplayer
-
-RAMCV:
-	Inherits: ^Vehicle
-	Inherits@Template: ^SupportVehicleTemplate
-	Inherits@selection: ^SelectableSupportUnit
-	Inherits@mcv: ^MCV
-	Buildable:
-		#Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 90
-		Prerequisites: ~rafix
-		BuildDuration: 1500
-		BuildDurationModifier: 100
-		Description: template-mcv.description
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Mobile Construction Vehicle
-	Selectable:
-		Priority: 4
-		DecorationBounds: 1536, 1536
-	SelectionDecorations:
-	Health:
-		HP: 300000
-	Repairable:
-		HpPerStep: 15000
-	ChangesHealth@SelfHealing:
-		Step: 120
-	Armor:
-		Type: Medium
-	Mobile:
-		Speed: 75
-		Locomotor: heavywheeled
-	Transforms:
-		IntoActor: rafact
-		Offset: -1,-1
-		Facing: 384
-		TransformSounds: placbldg.aud, build5.aud
-		NoTransformNotification: BuildingCannotPlaceAudio
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
-	Explodes:
-		Weapon: UnitExplodeBig
-	#SpawnActorOnDeath:
-	#	Actor: RAMCV.Husk
-	Voiced:
-		VoiceSet: RAVehicleVoice
-	WithTextDecoration:
-		Text: MCV
-		Position: BottomLeft
-		UsePlayerColor: True
-		ValidRelationships: Ally, Enemy, Neutral
 	RenderSprites:
 		PlayerPalette: raplayer
 
@@ -2430,19 +2375,10 @@ RATRAN:
 		TurnSpeed: 25
 		Speed: 125
 		AltitudeVelocity: 0c100
-	#AttackAircraft:
-	#	FacingTolerance: 512
 	Health:
 		HP: 125000
 	Armor:
 		Type: Medium
-	#Armament:
-	#	Weapon: deploytargeting.5c0
-	#	RequiresCondition: botmicro && loaded
-	#AutoTarget:
-	#	InitialStance: Defend
-	#	InitialStanceAI: AttackAnything
-	#	ScanRadius: 20
 	RevealsShroud:
 		Range: 7c0
 		Type: GroundPosition
@@ -3216,9 +3152,9 @@ CA:
 		Speed: 40
 		TurnSpeed: 8
 	Health:
-		HP: 220000
+		HP: 225000
 	ChangesHealth@SelfHealing:
-		Step: 88
+		Step: 90
 	Armor:
 		Type: Superheavy
 	Turreted@PRIMARY:
@@ -3342,13 +3278,142 @@ japanspeedboat:
 		RequiresCondition: gatling
 		Modifier: 125
 
+japancarrier:
+	Inherits: ^BoatUnit
+	Inherits@Template: ^ArtilleryShipTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: actor-japancarrier.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~dome.japan
+		Queue: Naval, RANaval
+		Description: actor-japancarrier.description
+	Selectable:
+		DecorationBounds: 2048, 2048
+	Mobile:
+		Speed: 45
+		TurnSpeed: 9
+	Health:
+		HP: 225000
+	ChangesHealth@SelfHealing:
+		Step: 90
+	Armor:
+		Type: Superheavy
+	AttackFollowFrontal:
+		Voice: Attack
+		PauseOnCondition: disabled
+	DeliversCash:
+		Payload: 450
+	CarrierMaster:
+		Actors: zerofighter, zerofighter, zerofighter, zerofighter
+		RearmTicks: 125
+		RespawnTicks: 250
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Armament@PRIMARY:
+		Weapon: JapanCarrierTarget
+		Damage: 1500
+		ReloadDelay: 125
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
+	RenderSprites:
+		PlayerPalette: player
+
+zerofighter:
+	Inherits: ^RANeutralPlane
+	Inherits@exp: ^GainsExperienceRA
+	-Selectable:
+	Interactable:
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Zero Fighter
+	Aircraft:
+		AltitudeVelocity: 250
+		InitialFacing: 768
+		TurnSpeed: 25
+		Speed: 225
+		Repulsable: false
+		TakeoffSounds: vhortaka.wav, vhortakb.wav
+		LandingSounds: vhorlana.wav, vhorlanb.wav
+		TakeUpCellWhenLand: false
+	Health:
+		HP: 20000
+	Armor:
+		Type: Fighter
+	RevealsShroud:
+		Range: 10000
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: ChainGun.Kamikaze
+		LocalOffset: 128,128,0, 128,-128,0
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: ChainGun.Kamikaze
+		LocalOffset: 128,128,0, 128,-128,0
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	Armament:
+		Weapon: JapanCarrierFighterBomb
+	AmmoPool:
+		Ammo: 16
+		AmmoCondition: ammo
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 6
+	SpawnActorOnDeath:
+		Actor: modkamimini.Husk
+	Voiced:
+		VoiceSet: JapaneseVehicleVoice
+	AttackAircraft:
+		FacingTolerance: 80
+		PersistentTargeting: false
+		RequiresCondition: ammo
+	CarrierSlave:
+		LandingDistance: 8000
+	AutoTarget:
+		InitialStanceAI: AttackAnything
+		InitialStance: AttackAnything
+	HasParent:
+	-UpdatesPlayerStatistics:
+	-ActorLostNotification:
+	-WithShadow:
+	-MapEditorData:
+	RejectsOrders:
+	WithMuzzleOverlay:
+	Contrail:
+		Offset: -500,0,125
+	LeavesTrails:
+		Offsets: -500,0,125
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+		RequiresCondition: enable-smoke
+	GrantConditionOnDamageState@SmokeTrail:
+		Condition: enable-smoke
+	RenderSprites:
+		PlayerPalette: player
+		Image: modkamimini
+
 yamatobattleship:
 	Inherits: ^BoatUnit
 	Inherits@Template: ^BattleShipTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
-	Inherits@jammable: ^ArtilleryJammable
 	Valued:
 		Cost: 2200
 	Tooltip:
@@ -3460,7 +3525,7 @@ SS:
 		LocalOffset: 256,0,0
 	RenderRangeCircle:
 	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
+		TargetTypes: Ground, Water, Ship, Submarine
 	AttackFrontal:
 		FacingTolerance: 0
 	Selectable:
@@ -3514,7 +3579,7 @@ MSUB:
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
 	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine, Repair
+		TargetTypes: Ground, Water, Ship, Submarine
 	AttackFrontal:
 		FacingTolerance: 0
 	Selectable:
@@ -3575,114 +3640,6 @@ RALST:
 #		BUILDINGS
 ####################################################################################################
 
-RAFACT:
-	Inherits: ^BaseBuilding
-	Inherits@CPQ: ^CPQCondition
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -1536, -1536
-			BottomRight: 1536, 1536
-	Selectable:
-		Bounds: 3072, 3072, 0, -128
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Construction Yard
-	Building:
-		Footprint: xxx xxx xxx
-		Dimensions: 3,3
-	Health:
-		HP: 300000 #150000
-	Armor:
-		Type: Wood
-	RevealsShroud:
-		Range: 10c0
-	WithBuildingBib:
-	Production@NORMAL:
-		Produces: Building, Defence, Building, Defence
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence, RABuilding, RADefence
-		RequiresCondition: classicproductionqueues
-	Transforms:
-		IntoActor: ramcv
-		Offset: 1,1
-		Facing: 432
-		RequiresCondition: factundeploy
-	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
-		Condition: factundeploy
-		Prerequisites: global-factundeploy
-	ProductionQueue@AlliesBuilding:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		LowPowerModifier: 200
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@SovietBuilding:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		LowPowerModifier: 200
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@AlliesDefense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Defence
-		LowPowerModifier: 300
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@SovietDefense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Defence
-		LowPowerModifier: 300
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	BaseBuilding:
-	ProductionBar@BuildingAllies:
-		ProductionType: Building
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@DefenceSoviet:
-		ProductionType: Defence
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@BuildingSoviet:
-		ProductionType: Building
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@DefenceSoviet:
-		ProductionType: Defence
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RABuildingAllies:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RADefenceSoviet:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RABuildingSoviet:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RADefenceSoviet:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
-	BaseProvider:
-		Range: 14c0
-	WithBuildingPlacedAnimation:
-	Power:
-		Amount: 0
-	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite@factionallies:
-		Prerequisite: mmallies
-		Factions: allies
-	ProvidesPrerequisite@factionsoviet:
-		Prerequisite: mmsoviet
-		Factions: soviet
-	RenderSprites:
-		PlayerPalette: raplayer
-	WithDeathAnimation:
-		DeathSequencePalette: raplayer
-
 RAFACT.ALLIES:
 	Inherits: ^BaseBuilding
 	Inherits@CPQ: ^CPQCondition
@@ -3704,6 +3661,8 @@ RAFACT.ALLIES:
 		HP: 1000000
 	Armor:
 		Type: Concrete
+	Power:
+		Amount: 100
 	RevealsShroud:
 		Range: 10c0
 	WithBuildingBib:
@@ -3765,8 +3724,6 @@ RAFACT.ALLIES:
 	BaseProvider:
 		Range: 15c0
 	WithBuildingPlacedAnimation:
-	Power:
-		Amount: 0
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 1000
@@ -3820,7 +3777,7 @@ POWR:
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 120000 #40000
+		HP: 125000 #40000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -3862,11 +3819,11 @@ APWR:
 		Bounds: 3072, 3072, 0, -512
 	SelectionDecorations:
 	Health:
-		HP: 240000
+		HP: 250000
 	Armor:
 		Type: Wood
 	RevealsShroud:
-		Range: 4c0
+		Range: 5c0
 	WithBuildingBib:
 	Power:
 		Amount: 300
@@ -4106,7 +4063,7 @@ RAPROC:
 	Armor:
 		Type: Concrete
 	RevealsShroud:
-		Range: 5c0
+		Range: 6c0
 	Refinery:
 	DockHost:
 		DockAngle: 256
@@ -4181,8 +4138,6 @@ RASILO:
 		Range: 4c0
 	WithBuildingBib:
 		HasMinibib: true
-	StoresPlayerResources:
-		Capacity: 4000
 	Power:
 		Amount: -10
 	Explodes:
@@ -4702,13 +4657,13 @@ ATEK:
 	Armor:
 		Type: Concrete
 	RevealsShroud:
-		Range: 10c0
+		Range: 10000
 		RequiresCondition: !disabled
 	RevealsShroud@Offline:
-		Range: 5c0
+		Range: 5000
 		RequiresCondition: disabled
 	DetectCloaked:
-		Range: 10c0
+		Range: 10000
 		RequiresCondition: !disabled
 	RenderDetectionCircle:
 	WithBuildingBib:
@@ -4768,7 +4723,7 @@ STEK:
 	Armor:
 		Type: Concrete
 	RevealsShroud:
-		Range: 10c0
+		Range: 10000
 	WithBuildingBib:
 	Power:
 		Amount: -100
@@ -4809,7 +4764,7 @@ MODJTEK:
 	Armor:
 		Type: Concrete
 	RevealsShroud:
-		Range: 10c0
+		Range: 10000
 	WithBuildingBib:
 	Power:
 		Amount: -100
@@ -4932,6 +4887,8 @@ RA1SYRD:
 
 RA1JSYRD:
 	Inherits: RA1SYRD
+	Tooltip:
+		Name: template-shipyard.ra-japan
 	Buildable:
 		Prerequisites: ~rafact.japan, jproc
 	ProvidesPrerequisite@buildingname:
@@ -6082,7 +6039,7 @@ MODSPACEPORT:
 		BuildPaletteOrder: 120
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Prerequisites: atek, ~upmodspaceport
+		Prerequisites: atek, ~upmodspaceport, derricklimit
 		Description: Produces vehicles.
 	Valued:
 		Cost: 5000
@@ -6142,7 +6099,7 @@ MODSPACEPORT:
 		SpawnType: ClosestEdgeToDestination
 		ProportionalSpeed: true
 		RequiresCondition: classicproductionqueues
-	ProductionQueue:
+	ParallelProductionQueue:
 		Type: Vehicle
 		DisplayOrder: 3
 		Group: Vehicle
@@ -6166,11 +6123,11 @@ MODSPACEPORT:
 	ProvidesPrerequisite:
 		Prerequisite: vehicleproduction
 	ParatroopersPower@paratroopers:
+		OrderName: rapidreinforcements
 		Icons:
 			1: paratroopers
 		Names:
 			1: power-reinforcements.name
-		OrderName: rapidreinforcements
 		Prerequisites:
 			1:
 		ChargeInterval: 7500
@@ -6230,11 +6187,11 @@ reconranger:
 		TurnSpeed: 35
 	Turreted:
 		TurnSpeed: 35
-		Offset: 0,0,128
+		Offset: -366,0,166
 	Armament:
 		Weapon: ReconRangerRecoillessGun
 		MuzzleSequence: muzzle
-		LocalOffset: 128,0,128
+		LocalOffset: 730,0,166
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -6709,6 +6666,8 @@ modartyturret:
 	#WithRangeCircle:
 	#	Color: FFFF0088
 	#	Range: 13333
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
 	Power:
 		Amount: -50
 	RevealsShroud:
@@ -8203,7 +8162,7 @@ ROCKETANGEL:
 		Image: rocketangel
 		PlayerPalette: playerra2
 	ProducibleWithLevel@spyinfantry:
-		Prerequisites: barracks.upgraded
+		Prerequisites: infantry.upgraded
 
 ROCKETANGEL.husk:
 	Inherits: ^SmallHelicopterHusk

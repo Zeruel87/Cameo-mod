@@ -354,6 +354,15 @@ AsianPulvMG1:
 	Range: 5c0
 	ReloadDelay: 6
 	ValidTargets: Ground
+	Projectile: Bullet
+		Image: 50CAL
+		ContrailStartColor: FFAA44
+		ContrailStartWidth: 15
+		ContrailEndColor: FFFFFF
+		ContrailEndColorUsePlayerColor: true
+		ContrailLength: 8
+		Speed: 10000
+		Width: 100
 	Warhead@Chaingun: SpreadDamage
 		Spread: 150
 		Damage: 3000
@@ -474,7 +483,9 @@ AsianTurretPlasma:
 	Range: 15000
 	MinRange: 3000
 	Warhead@HeavyCannon: SpreadDamage
-		Damage: 22000
+		Damage: 64000
+	Warhead@HeavyCannonPercentage: HealthPercentageDamage
+		Damage: 16
 
 AsianRailgun:
 	Inherits: ^RailgunWeapon
@@ -566,17 +577,23 @@ AsianFlamerTroop:
 
 AsianCrocBite:
 	Inherits: ^SwordWeapon
-	ReloadDelay: 40
-	Report: aa_chomp.wav
-	Range: 1500
+	ReloadDelay: 37
+	Report: galiatta.wav, galiattb.wav
+	Range: 2000
 	Projectile: InstantHit
 	Warhead@SwordWeapon: SpreadDamage
 		Falloff: 100, 100
-		Damage: 50000
+		Damage: 20000
+	Warhead@SwordWeaponFriendlyFire: SpreadDamage
+		Falloff: 100, 100
+		Damage: 10000
+	Warhead@SwordWeaponPercentage: HealthPercentageDamage
+		Falloff: 100, 100
+		Damage: 10
 	-Warhead@Effect:
 
 AsianChaosTurret:
-	Range: 4800
+	Range: 7000
 	ReloadDelay: 120
 	Report: vchaatta.wav
 	ValidTargets: MindControl
@@ -587,22 +604,43 @@ AsianChaosTurret:
 		ExplosionPalette: ra2effect
 		ImpactActors: false
 		AffectsParent: true
-	Warhead@2: SpreadDamage
-		Range: 4800
-		Falloff: 100, 100
-	Warhead@3: GrantExternalCondition
-		Range: 4800
+	Warhead@Condition: GrantExternalCondition
+		Range: 7000
 		Condition: chaosgas
-		Duration: 100
+		Duration: 40
 		ValidTargets: MindControl
 		InvalidTargets: Hero, MCImmune
 		ValidRelationships: Enemy
 
-AAHymperionMagnet:
+AAHyperionMagnet:
 	Inherits: ^RA2LaserWeapon
 	Range: 8c0
 	ValidTargets: Air
-	ReloadDelay: 60
+	InvalidTargets: Paratrooper
+	ReloadDelay: 5
+	-Report:
+	TargetActorCenter: true
+	-Projectile:
+	Projectile: InstantHit
+	Warhead@LaserWeapon: SpreadDamage
+		Range: 0, 32
+		Falloff: 100, 100
+		Damage: 5000
+		ValidTargets: Air
+	-Warhead@Smudge:
+
+AAHyperionMagnet_elite:
+	Inherits: AAHyperionMagnet
+	Range: 8c512
+	Warhead@LaserWeapon: SpreadDamage
+		Falloff: 120, 100
+		Damage: 10000
+
+AAHyperionBeam:
+	Range: 8c0
+	ValidTargets: Air
+	InvalidTargets: Paratrooper
+	ReloadDelay: 75
 	Report: vmagatta.wav
 	TargetActorCenter: true
 	Projectile: LaserZap
@@ -610,34 +648,21 @@ AAHymperionMagnet:
 		Width: 350
 		Duration: 120
 		Color: FF50F545
-		-HitAnim:
-	Warhead@LaserWeapon: SpreadDamage
-		Range: 0, 32
-		Falloff: 100, 100
-		Damage: 50000
-		Versus:
-			Light: 75
-			Heavy: 100
-			Wood: 75
-		ValidTargets: Air
-	-Warhead@Smudge:
 	Warhead@Flash: GrantExternalCondition
 		Condition: Magnet
 		Duration: 40
 		Range: 0c512
 		ValidTargets: Air
+		InvalidTargets: Paratrooper
 
-AAHymperionMagnet_elite:
-	Inherits: AAHymperionMagnet
+AAHyperionBeam_elite:
+	Inherits: AAHyperionBeam
+	Range: 8c512
 	Projectile: LaserZap
 		Color: e60000
-	Range: 8c256
-	Warhead@LaserWeapon: SpreadDamage
-		Falloff: 120, 100
-		Damage: 13000
 	Warhead@Flash: GrantExternalCondition
 		Condition: Magnet
-		Duration: 50
+		Duration: 55
 
 AsianChaosSuperweapon:
 	ValidTargets: Ground, Air, Trees
@@ -656,15 +681,15 @@ AsianChaosSuperweapon:
 AsianTSIonCannon:
 	ValidTargets: Ground, Water, Air
 	Warhead@1Dam_impact: SpreadDamage
-		Spread: 1c0
-		Damage: 15000
-		Falloff: 1000, 500, 250, 100
+		Range: 0, 1000, 2000, 3000, 5000
+		Damage: 25000
+		Falloff: 1000, 750, 500, 250, 100
 		ValidTargets: Ground, Water, Air
 		DamageTypes: Prone100Percent, TriggerProne, FireDeath
 	Warhead@2Dam_area: SpreadDamage
-		Spread: 2c0
+		Range: 0, 1000, 2000, 3000, 5000
 		Damage: 25000
-		Falloff: 100, 75, 50, 25
+		Falloff: 1000, 750, 500, 250, 100
 		Delay: 3
 		ValidTargets: Ground, Water, Air
 		DamageTypes: Prone50Percent, TriggerProne, FireDeath
@@ -758,8 +783,10 @@ AsianTankMine:
 	Projectile: InstantExplode
 	Warhead@TankDestroyerCannon: SpreadDamage
 		Damage: 100000
+		InvalidTargets: Mine
 	Warhead@TankDestroyerCannonPercentage: HealthPercentageDamage
 		Damage: 15
+		InvalidTargets: Mine
 	Warhead@Effect: CreateEffect
 		Explosions: ra2_elite_explosion
 		ImpactSounds: gexpapoa.wav
@@ -769,8 +796,14 @@ AsianTankMine:
 
 AsianChaosMine:
 	Inherits: AsianChaosTurret
+	Inherits@2: ^MediumChemicalWeapon
 	Warhead@MediumChemicalWeapon: SpreadDamage
-		Damage: 15000
+		Damage: 50000
+	Warhead@MediumChemicalWeaponFriendlyFire: SpreadDamage
+		Damage: 25000
+		InvalidTargets: Mine
+	Warhead@MediumChemicalWeaponPercentage: HealthPercentageDamage
+		InvalidTargets: Mine
 
 AsianPelicanMissile:
 	Inherits: ^RA2MediumMissile
@@ -900,7 +933,7 @@ AsianSubmarineBomb:
 AsianGrenade:
 	Inherits: RA2LashmmG
 	Range: 4500
-	ReloadDelay: 150
+	ReloadDelay: 75
 
 AsianLynxMG:
 	Inherits: RA2CRM60
@@ -970,6 +1003,48 @@ AsianPhoenixRocketAA:
 	Warhead@HeavyMissilePercentage: HealthPercentageDamage
 		Damage: 10
 		ValidTargets: Air
+
+ASDFGun:
+	Inherits: ^RA2SmallArms
+	Inherits: ^RA2Chaingun
+	Report: varmatta.wav, varmattb.wav
+	ValidTargets: Ground, Water
+	InvalidTargets: Structure, Bridge, Wall
+	Range: 8000
+	ReloadDelay: 25
+	Warhead@SmallArms: SpreadDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 5000
+	Warhead@Chaingun: SpreadDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 5000
+	Warhead@ChaingunPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 4
+
+ASDFKamikazeTargeting:
+	Range: 5c0
+	ReloadDelay: 100
+	ValidTargets: Structure
+	Projectile: InstantHit
+
+ASDFKamikazeExplosion:
+	Inherits: ^HeavyBomb
+	Inherits: ^RA2Grenade
+	Warhead@Grenade: SpreadDamage
+		Damage: 50000
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		Damage: 50000
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		Damage: 10
+	Warhead@HeavyBomb: SpreadDamage
+		Damage: 50000
+	Warhead@HeavyBombPercentage: HealthPercentageDamage
+		Damage: 10
+	Warhead@Effect: CreateEffect
+		Explosions: ivan_explosion
+		ExplosionPalette: ra2effect
+		ImpactSounds: gexpcraa.wav
 ####################################################################################################
 #		Red Alert 2 Steel Consortium Templates
 ####################################################################################################
