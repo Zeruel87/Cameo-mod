@@ -22,6 +22,49 @@ World:
 		Factions: asianalliance
 		BaseActor: aa_acv
 		SupportActors: aa_gren,aa_gren,aa_gren,aa_tkiller,aa_tkiller,aa_quas,aa_lynx,aa_lynx,aa_lynx,aa_ptnk,aa_quas
+	FactionCA@consortium:
+		Name: Consortium #faction-ra2-yuri.name
+		InternalName: consortium
+		Game: Red Alert 2
+		Side: Mod
+		Description: Asian Alliance from Eagle Red Mod #faction-ra2-yuri.description
+	StartingUnits@mcvconsortium:
+		Class: none
+		ClassName: MCV Only
+		Factions: consortium
+		BaseActor: steel_qmcv
+	StartingUnits@defaultconsortium:
+		Class: light
+		ClassName: Light Support
+		Factions: consortium
+		BaseActor: steel_qmcv
+		SupportActors: steel_fedinf,steel_fedinf,steel_fedinf,steel_qinf,steel_qinf,steel_manta,steel_qtank
+	StartingUnits@heavyconsortium:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: consortium
+		BaseActor: steel_qmcv
+		SupportActors: steel_fedinf,steel_fedinf,steel_fedinf,steel_qinf,steel_qinf,steel_manta,steel_qtank,steel_qtank,steel_qtank,aa_ptnk,steel_manta
+
+^Palettes:
+	PaletteFromFile@ra2rotunits:
+		Name: ra2rotunit
+		Filename: steelunittem.pal
+		ShadowIndex: 1, 4
+	PlayerColorPalette@ra2rotunits:
+		BasePalette: ra2rotunit
+		BaseName: playerra2rot
+		RemapIndex: 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+	PaletteFromFile@ra2consunits:
+		Name: ra2consunit
+		Filename: steelfedutem.pal
+		ShadowIndex: 1, 4
+	PlayerColorPalette@ra2consunits:
+		BasePalette: ra2consunit
+		BaseName: playerra2cons
+		RemapIndex: 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+
+
 ##############################################
 #   Red Alert 2 Asian Structures
 ##############################################
@@ -30,12 +73,7 @@ World:
 		ActorTypes: ra2engineer.asian, aa_gren, aa_gren, aa_tkiller
 
 aa_cgcnst:
-	Inherits: ^RA2Building
-	Inherits@CPQ: ^CPQCondition
-	Inherits@aicash: ^AIConyardCash
-	Inherits@conyard: ^Conyard
-	Inherits@shape: ^4x3Shape
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits: ra2gacnst
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -3016,10 +3054,10 @@ aa_kami:
 	Tooltip:
 		Name: Kamikaze
 	Aircraft:
-		CruiseAltitude: 2560
+		AltitudeVelocity: 240
 		InitialFacing: 768
 		TurnSpeed: 32
-		Speed: 223
+		Speed: 210
 		Repulsable: false
 		MaximumPitch: 56
 		TakeUpCellWhenLand: false
@@ -3043,7 +3081,7 @@ aa_kami:
 		FacingTolerance: 80
 		PersistentTargeting: false
 	CarrierSlave:
-		LandingDistance: 2c0
+		LandingDistance: 8c0
 	AutoTarget:
 		InitialStanceAI: AttackAnything
 		InitialStance: AttackAnything
@@ -3616,3 +3654,1454 @@ upaa_banzai:
 	RenderSprites:
 		Image: aa_japrif
 	ProvidesPrerequisite:
+
+##############################################
+#   Red Alert 2 Syndicate Tanks
+##############################################
+
+latin_grentank:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@updrone: ^TerrorDroneSurprise
+	Inherits@rad: ^RA2RadShells
+	Inherits@armor: ^RA2SovietArmor
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: S Tank
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~ra2naweap
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Speed: 120
+		TurnSpeed: 16
+	Health:
+		HP: 70000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 16 #3
+		Offset: -100,0,5
+	Armament:
+		Name: primary
+		Weapon: RA2120mm
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite && !upradshells
+	Armament@elite:
+		Name: primary
+		Weapon: RA2120mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite && !upradshells
+	Armament@rad:
+		Name: primary
+		Weapon: RA2120mm_rad
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite && upradshells
+	Armament@radelite:
+		Name: primary
+		Weapon: RA2120mm_elite_rad
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite && upradshells
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: RA2MammothTusk
+		LocalOffset: -85,90,340, -85,-90,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		RequiresCondition: !rank-elite
+	Armament@SECONDARYELITE:
+		Name: secondary
+		Weapon: RA2MammothTusk_elite
+		LocalOffset: -85,90,340, -85,-90,340
+		LocalYaw: -100, 100
+		Recoil: 10
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: RA2SovietVehicleVoice
+	DeliversCash:
+		Payload: 450
+	RenderSprites:
+		PlayerPalette: playerra2
+	ActorStatValues:
+		Upgrades: updronesurprise, upradshells, upsovietarmor
+
+##############################################
+#   Red Alert 2 Consortium Structure
+##############################################
+steel_qacst:
+	Inherits: ra2gacnst
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Consortium Construction Yard
+	Transforms:
+		IntoActor: steel_qmcv
+	RenderSprites:
+		PlayerPalette: playerra2cons
+steel_qapowr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@power: ^PowerPlant
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Consortium Power Plant
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Building, RABuilding
+		Description: template-power.description
+		Prerequisites: ~steel_qacst
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 200000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 250
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience:
+		ValidTypes: building
+	WithIdleOverlay@glow:
+		Sequence: idle-glow
+	ProvidesPrerequisite@buildingname:
+	RenderSprites:
+		PlayerPalette: playerra2cons
+
+steel_qref:
+	Inherits: ^RA2Building
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@ref: ^Refinery
+	Inherits@shape: ^4x3Shape
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Consortium Refinery
+	Buildable:
+		Prerequisites: ~steel_qacst, steel_qapowr
+		Queue: Building, RABuilding
+		Description: template-refinery.description
+	Building:
+		Footprint: xxx= xxx= xxx=
+		Dimensions: 4,3
+	Health:
+		HP: 300000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 6c0
+	Refinery:
+	DockHost:
+		Type: Unload
+		DockAngle: 640
+		DockOffset: 1086,1086,0
+	StoresResources:
+		Capacity: 4000 #2000
+	DrawLineToTarget:
+	CustomSellValue:
+		Value: 500 #600
+	FreeActor:
+		Actor: steel_qmin
+		SpawnOffset: 2,2
+		Facing: 256
+	Power:
+		Amount: -40
+	ProvidesPrerequisite@buildingname:
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 20
+		FullSequence: pip-yellow
+	RenderSprites:
+		PlayerPalette: playerra2rot
+	WithIdleOverlay@lights:
+		Sequence: idle-top
+	WithIdleOverlay@bib:
+		Sequence: idle-bib
+
+steel_qabarr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RA2YSpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@prod: ^ProducesUnits
+	Inherits@barr: ^IsBarrack
+	SelectionDecorations:
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Steel Barracks
+	Buildable:
+		Prerequisites: ~steel_qacst, steel_qapowr
+		Queue: Building, RABuilding
+		Description: template-barracks.description
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 150000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 5c0
+	RallyPoint:
+		Path: 1,2
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+	ParallelProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@Infantry:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAInfantry:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	Power:
+		Amount: -20
+	ProvidesPrerequisite@buildingname:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	RenderSprites:
+		PlayerPalette: playerra2cons
+
+steel_qtradr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x3Shape
+	Inherits@radar: ^RadarBuilding
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Selectable:
+		Bounds: 2048, 2560, 0, -256
+	SelectionDecorations:
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Consortium Radar
+	Buildable:
+		BuildPaletteOrder: 70
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Prerequisites: ~steel_qacst, steel_qref
+		Queue: Building, RABuilding
+		Description: template-radar.description
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	ProvidesPrerequisite@buildingname:
+	WithSpriteBody:
+		PauseOnCondition: lowpower
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	WithIdleOverlay@dish:
+		Sequence: idle-dish
+		PauseOnCondition: disabled
+		RequiresCondition: !build-incomplete
+	SupportPowerChargeBar:
+	Power:
+		Amount: -50
+	RenderSprites:
+		PlayerPalette: playerra2cons
+
+steel_qaclone:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x3Shape
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Cloning Vats
+	Buildable:
+		BuildPaletteOrder: 90
+		Prerequisites: ~steel_qacst, steel_qatech
+		Queue: Building, RABuilding
+		Description: Clones produced infantry.
+		BuildLimit: 1
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	Health:
+		HP: 110000
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: -200
+	ProvidesPrerequisite@buildingname:
+	Production:
+		Produces: Clone.Soviets
+	ClonesProducedUnits:
+		CloneableTypes: NormalInfantry
+		ProductionType: Clone.Soviets
+	Exit:
+		ExitCell: -1, 0
+	Exit@2:
+		ExitCell: 1, 0
+	RallyPoint:
+		Path: 3,3
+	RenderSprites:
+		PlayerPalette: playerra2cons
+	WithIdleOverlay@top:
+		Sequence: idle-top
+
+steel_qaweap:
+	Inherits: ^RA2DefaultWeap
+	Inherits@sell: ^AASpawnActorsOnSell
+	Tooltip:
+		Name: Consortium War Factory
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 40
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: template-factory.description
+		Prerequisites: ~steel_qacst, steel_qref
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@bib:
+		Sequence: bib
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@ramp:
+		Sequence: build-ramp
+		RequiresCondition: !build-incomplete
+	Voiced:
+		VoiceSet: PRCWarFactoryVoice
+	RenderSprites:
+		PlayerPalette: playerra2cons
+steel_qatech:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@tech: ^IsTechnoBuilding
+	Selectable:
+		Bounds: 3072, 2048, 0, 0
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 140
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~steel_qacst, steel_qtradr
+		Description: template-tech-center.description
+	Valued:
+		Cost: 4000
+	Tooltip:
+		Name: Consortium Battle Lab
+	Building:
+		Footprint: xx xx xx
+		Dimensions: 3,2
+	Health:
+		HP: 300000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10c0
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: ra2tek
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+
+steel_qaorbit:
+	Inherits: ^RA2Building
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@shape: ^3x3Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 120
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~steel_qacst, steel_qatech, !steel_qaorbit
+		Description: actor-cgionc.description
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Orbital Cannon Activator
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	Health:
+		HP: 600000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 10c0
+	DetonateWeaponPower@Ion:
+		AllowMultiple: true
+		OrderName: IonCannonPowerInfoOrder
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
+		IconImage: aa_cgionc
+		Icons:
+			1: icon2
+		Cursor: ioncannon
+		ChargeInterval: 9000
+		ActivationDelay: 50
+		ActivationSequence:
+		Names:
+			1: power-ioncannon.name
+		Weapons:
+			1: AsianTSIonCannon
+		Descriptions:
+			1: power-ioncannon.description
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		EndChargeSound:
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		CameraActor: camera.small
+		CameraRemoveDelay: 300
+		TargetCircleRanges:
+			1: 6c0
+		TargetCircleColor: ff000080
+		LaunchSound:
+		IncomingSound:
+	SupportPowerChargeBar:
+	Power:
+		Amount: -200
+	MustBeDestroyed:
+		RequiredForShortGame: false
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: steel_qaorbit
+
+steel_fedturret:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 20
+		Prerequisites: ~steel_qacst, steel_qabarr
+		Description: template-anti-infantry-defense.description
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Sentry Turret
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 60000
+	Selectable:
+		Bounds: 1024, 1024
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: SteelVulcan
+		LocalOffset: 350,128,400, 350,-128,400
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -25
+	RevealsShroud:
+		Range: 6666
+	DetectCloaked:
+		Range: 3333
+	ProvidesPrerequisite@buildingname:
+
+steel_fedaa:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 20
+		Prerequisites: ~steel_qacst, steel_qaweap
+		Description: template-anti-infantry-defense.description
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Anti Air Turret
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 90000
+	Selectable:
+		Bounds: 1024, 1024
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: RA2Patriot
+		LocalOffset: 450,150,450, 450,-150,450
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -40
+	RevealsShroud:
+		Range: 6666
+	DetectCloaked:
+		Range: 3333
+	ProvidesPrerequisite@buildingname:
+
+steel_qcannon:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 50
+		Prerequisites: ~steel_qacst, steel_qatech
+		Description: actor-cgplas.description
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Quantum Cannon
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 250000
+	Selectable:
+		Bounds: 2048, 2048
+	Turreted:
+		TurnSpeed: 12
+		InitialFacing: 896
+		Offset: -1,1,1
+		RealignDelay: -1
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: SteelQuatumTurretRail
+		LocalOffset: 1200,333,500, 1200,-333,500
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	WithRangeCircle:
+	AutoTarget:
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
+	Power:
+		Amount: -100
+	RevealsShroud:
+		Range: 15000
+	DetectCloaked:
+		Range: 7500
+
+##############################################
+#   Red Alert 2 Consortium Infantry
+##############################################
+steel_qmcv:
+	Inherits: ^Vehicle
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@mcv: ^MCV
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Consortium Mobile Construction Vehicle
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: steel_qtradr, ~steel_qaweap
+		Queue: Vehicle, RAVehicle
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: template-mcv.description
+	Selectable:
+		Priority: 4
+		DecorationBounds: 1536, 1536
+	Mobile:
+		Speed: 75
+		Locomotor: heavywheeled
+	Health:
+		HP: 150000
+	Repairable:
+		HpPerStep: 7500
+	ChangesHealth@SelfHealing:
+		Step: 60
+	Armor:
+		Type: Light
+	Transforms:
+		IntoActor: steel_qacst
+		Offset: -1,-1
+		Facing: 384
+		TransformSounds: uplace.wav
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Voiced:
+		VoiceSet: PRCMCCVoice
+	DeliversCash:
+		Payload: 1750
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmconsortium
+	RenderSprites:
+		PlayerPalette: playerra2cons
+	WithMoveAnimation:
+
+steel_qmin:
+	Inherits: HARV
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Consortium Miner
+	Harvester:
+		Voice: Move
+		PipCount: 10
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 25
+		SearchFromHarvesterRadius: 10
+		EmptyCondition: no-tiberium
+	StoresResources:
+		Capacity: 10
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 100
+		Locomotor: hover
+	Buildable:
+		Prerequisites: ~steel_qref
+		Queue: Vehicle, RAVehicle
+		Description: actor-cmin.description
+	WithDockingAnimation:
+	DockClientManager:
+		Voice: Deliver
+	Voiced:
+		VoiceSet: ChronoMinerVoice
+	DeliversCash:
+		Payload: 1000
+	RenderSprites:
+		Image: steel_qmin
+		PlayerPalette: playerra2cons
+	Hovers:
+		Ticks: 10
+		BobDistance: -64
+		InitialHeight: 384
+	WithMoveAnimation:
+
+steel_fedinf:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Clone Trooper
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~steel_qabarr
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 12500
+	Armament@PRIMARY:
+		Weapon: SteelCloneGun
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: SteelCloneGunE
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: SteelGarrison
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 0
+	-TakeCover:
+	Voiced:
+		VoiceSet: SteelCloneVoice
+	DeliversCash:
+		Payload: 60
+	RenderSprites:
+		PlayerPalette: playerra2cons
+
+steel_qinf:
+	Inherits: ^Soldier
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@editorhack: ^DeployableInfantryEditor
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@bot: ^BotAutoDeploySwitchMode
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Quantum Trooper
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~steel_qabarr
+		Queue: Infantry, RAInfantry
+		Description: actor-ggi.description
+	Mobile:
+		Speed: 50
+		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
+	Health:
+		HP: 30000
+	RangeMultiplier@deployed:
+		Modifier: 111
+		RequiresCondition: deployed
+	RenderRangeCircle:
+	RevealOnFire:
+		ArmamentNames: primary, deployed
+	Armament@PRIMARY:
+		Weapon: SteelCloneGun
+		RequiresCondition: !deployed && !rank-elite && !upra2gi
+	Armament@PRIMARY2:
+		Weapon: SteelCloneGun
+		RequiresCondition: !deployed && !rank-elite && upra2gi
+	Armament@ELITE:
+		Weapon: SteelCloneGunE
+		RequiresCondition: !deployed && rank-elite && !upra2gi
+	Armament@ELITE2:
+		Weapon: SteelCloneGunE
+		RequiresCondition: !deployed && rank-elite && upra2gi
+	Armament@BOTAA:
+		Weapon: aadeploytargeting.8c0
+		Name: targeting
+		RequiresCondition: botmicro
+	Armament@DEPLOYED:
+		Name: deployed
+		Weapon: SteelInfRailgun
+		Turret: deploy
+		LocalOffset: 384,64,384
+		RequiresCondition: !rank-elite && deployed
+	Armament@DEPLOYEDAA:
+		Name: deployed
+		Weapon: SteelInfRailgunAA
+		Turret: deploy
+		LocalOffset: 384,64,384
+		RequiresCondition: !rank-elite && deployed
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: SteelInfRailgun
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDAA:
+		Name: garrisoned
+		Weapon: SteelInfRailgunAA
+		RequiresCondition: !rank-elite
+	Armament@DEPLOYEDELITE:
+		Name: deployed
+		Weapon: SteelInfRailgunE
+		Turret: deploy
+		LocalOffset: 384,64,384
+		RequiresCondition: rank-elite && deployed
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: SteelInfRailgunE
+		RequiresCondition: rank-elite
+	Armament@DEPLOYEDELITEAA:
+		Name: deployed
+		Weapon: SteelInfRailgunAAE
+		Turret: deploy
+		LocalOffset: 384,64,384
+		RequiresCondition: rank-elite && deployed
+	Armament@GARRISONEDELITEAA:
+		Name: garrisoned
+		Weapon: SteelInfRailgunAAE
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		Armaments: primary, targeting
+		RequiresCondition: undeployed
+		FacingTolerance: 2
+	AttackTurreted@deployed:
+		Armaments: deployed
+		Turrets: deploy
+		PauseOnCondition: disabled
+		RequiresCondition: deployed
+		Voice: Attack
+	Turreted:
+		Turret: deploy
+		RealignDelay: -1
+		TurnSpeed: 1023
+		InitialFacing: 368
+	WithSpriteTurret@idle:
+		Turret: deploy
+		Sequence: deployed
+		RequiresCondition: deployed && !animate-turret
+	WithSpriteTurret@animated:
+		Turret: deploy
+		Sequence: shoot-deployed
+		RequiresCondition: deployed && animate-turret
+	WithSpriteBody:
+		Sequence: dot
+		Name: dot
+		RequiresCondition: !undeployed
+	GrantConditionOnAttack:
+		Condition: animate-turret
+		RevokeDelay: 5
+		ArmamentNames: deployed
+	WithInfantryBody:
+		-DefaultAttackSequence:
+		AttackSequences:
+			primary: shoot
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		Sequence: deploy
+		BodyNames: dot
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		Facing: 384
+		DeploySounds: iggidepa.wav
+		UndeploySounds: iggidepa.wav
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+		Voice: Deploy
+	-TakeCover:
+	Crushable:
+		RequiresCondition: undeployed
+	Crushable@deployed:
+		CrushClasses: vehicle
+		RequiresCondition: !undeployed
+	DamageMultiplier@deployed:
+		Modifier: 75
+		RequiresCondition: deployed && upra2gi
+	Voiced:
+		VoiceSet: SteelCloneVoice
+	DeliversCash:
+		Payload: 150
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	RenderSprites:
+		PlayerPalette: playerra2cons
+
+steel_fedeng:
+	Inherits: RA2ENGINEER
+	Buildable:
+		Prerequisites: ~steel_qabarr
+		Queue: Infantry, RAInfantry
+	RenderSprites:
+		Image: steel_fedeng
+	-TakeCover:
+
+steel_mako:
+	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Mako
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~steel_qaweap
+		Queue: Vehicle, RAVehicle
+		Description: actor-ftnk.description
+	Mobile:
+		Locomotor: hover
+		Speed: 130
+		TurnSpeed: 26
+	Health:
+		HP: 45000
+	Armor:
+		Type: Medium
+	Repairable:
+		HpPerStep: 2000
+	Armament@AG:
+		Weapon: SteelMakoGun
+		LocalOffset: 300,200,200
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: playerra2cons
+	Voiced:
+		VoiceSet: SteelMakoVoice
+	Hovers:
+		Ticks: 10
+		BobDistance: -64
+		InitialHeight: 384
+	WithMoveAnimation:
+
+steel_manta:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Manta
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~steel_qaweap
+		Queue: Vehicle, RAVehicle
+		Description: actor-ftnk.description
+	Mobile:
+		Locomotor: hover
+		Speed: 120
+		TurnSpeed: 26
+	Health:
+		HP: 47500
+	Armor:
+		Type: Medium
+	Repairable:
+		HpPerStep: 2000
+	Armament@AA:
+		Weapon: SteelMantaAA
+		LocalOffset: 140,-100,250, 140,100,250
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AG:
+		Weapon: SteelCloneGun
+		LocalOffset: 300,-250,100, 300,250,100
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: playerra2cons
+	Voiced:
+		VoiceSet: SteelConsortiumTankVoice
+	Hovers:
+		Ticks: 10
+		BobDistance: -64
+		InitialHeight: 384
+	WithMoveAnimation:
+steel_mega:
+	Inherits: ^Tank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Selectable:
+		Bounds: 1250, 1750, 0, -250
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Mega
+	Buildable:
+		BuildPaletteOrder: 75
+		Prerequisites: ~steel_qaweap, steel_qatech
+		Queue: Vehicle, RAVehicle
+		Description: actor-aamecha.description
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 66
+		TurnSpeed: 11
+	Health:
+		HP: 160000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Armament@1:
+		Weapon: SteelMegaSword
+	AttackFrontal:
+		FacingTolerance: 10
+	WithInfantryBody:
+		IdleSequences: idle
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
+		DefaultAttackSequence: shoot
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 4
+	Voiced:
+		VoiceSet: SteelInspectorVoice
+	RenderSprites:
+		PlayerPalette: playerra2cons
+steel_qtank:
+	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Artillery Tank
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~steel_qaweap, steel_qtradr
+		Queue: Vehicle, RAVehicle
+		Description: actor-ftnk.description
+	Mobile:
+		Locomotor: hover
+		Speed: 100
+		TurnSpeed: 26
+	Health:
+		HP: 45000
+	Armor:
+		Type: Medium
+	Repairable:
+		HpPerStep: 2000
+	Armament@Undeployed:
+		Weapon: RA2105mm
+		LocalOffset: 200,0,100
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: undeployed
+	Armament@Deployed:
+		Weapon: RA160mm
+		LocalOffset: -200,0,400
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: deployed
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: playerra2cons
+	Voiced:
+		VoiceSet: SteelConsortiumTankVoice
+	Hovers:
+		Ticks: 10
+		BobDistance: -64
+		InitialHeight: 384
+	WithMakeAnimation:
+		Sequence: deploy
+		BodyNames: dot
+	RangeMultiplier@deployed:
+		Modifier: 130
+		RequiresCondition: deployed
+	SpeedMultiplier@deployed:
+		Modifier: 60
+		RequiresCondition: deployed
+	WithInfantryBody:
+		IdleSequences: idle
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
+		DefaultAttackSequence: attack
+		RequiresCondition: undeployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		DeploySounds: uplace.wav
+		UndeploySounds: uplace.wav
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		Facing: 384
+		UndeployOnMove: false
+		RequiresCondition: !parachute
+		PauseOnCondition: disabled
+		Voice: Move
+		SkipMakeAnimation: True
+	WithInfantryBody@arty:
+		IdleSequences: idle
+		MoveSequence: run-arty
+		StandSequences: stand-arty
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
+		DefaultAttackSequence: attack-arty
+		RequiresCondition: deployed
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+
+steel_qutnk:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@SHADOWS: ^Shadows
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Quantum Tank
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~steel_qaweap, steel_qatech
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Locomotor: tracked
+		Speed: 90
+		TurnSpeed: 20
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 20 #3
+	Armament:
+		Name: primary
+		Weapon: SteelQuatumRail
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1280,0,111
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: SteelQuatumRailE
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1280,0,111
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: SteelQuantumTankVoice
+	DeliversCash:
+		Payload: 350
+	RenderSprites:
+		PlayerPalette: playerra2cons
+	WithMoveAnimation:
+
+steel_potnk:
+	Inherits: ^Tank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@crush: ^VehicleCrusher
+	Inherits@cargo: ^CargoVehicle
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
+	Selectable:
+		Bounds: 1250, 1750, 0, -250
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Power Tank
+	Buildable:
+		BuildPaletteOrder: 75
+		Prerequisites: ~steel_qaweap, steel_qatech
+		Queue: Vehicle, RAVehicle
+		Description: actor-aamecha.description
+	Mobile:
+		Locomotor: heavytracked
+		Speed: 66
+		TurnSpeed: 12
+	Health:
+		HP: 125000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Armament@1:
+		Weapon: SteelFortressWeapons
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PauseOnCondition: chronobeamed
+	AttackFrontal:
+		FacingTolerance: 5
+	WithInfantryBody:
+		IdleSequences: idle
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
+		DefaultAttackSequence: shoot
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 4
+	Voiced:
+		VoiceSet: SteelConsortiumTankVoice
+	Cargo:
+		UnloadVoice: Move
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 6
+		InitialUnits: steel_fedinf,steel_fedinf,steel_fedinf,steel_qinf,steel_qinf,steel_qinf
+	RenderSprites:
+		PlayerPalette: playerra2cons
+
+steel_inspect:
+	Inherits: ^Helicopter
+	Inherits@Template: ^LineBreakerTemplate
+	Inherits@Template: ^BomberTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@priority: ^PrioritizeBuilding
+	Inherits@rad: ^RA2RadShells
+	Inherits@armor: ^RA2SovietArmor
+	Valued:
+		Cost: 4000
+	Tooltip:
+		Name: Inspector
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 99
+		Prerequisites: ~steel_qatech
+		Queue: Vehicle, Aircraft, RAAircraft
+		Description: Attack ground with Ion Cannon
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 20
+		Speed: 30
+		RepulsionSpeed: 15
+		CanSlide: False
+		IdealSeparation: 3000
+	Health:
+		HP: 1000000
+	ChangesHealth@SelfHealing:
+		Step: 400
+	Armament@PRIMARY:
+		Weapon: SteelInspectorIonCannon
+		LocalOffset: 256,0,-512
+	AttackAircraft:
+		Voice: Attack
+		AttackType: Strafe #Hover
+		#StrafeRunLength: 3333
+		#FacingTolerance: 20
+	WithShadow:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 2560, 2560
+	SpawnActorOnDeath:
+		Actor: steel_inspect.Husk
+	Voiced:
+		VoiceSet: SteelInspectorVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+
+steel_inspect.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Inspector
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 40
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: steel_inspect
+	ShakeOnDeath:
+	FallsToEarth:
+		Moves: false
+		Velocity: 43
+		Explosion: KirovExplode
+	WithShadow:
+	RenderSprites:
+		PlayerPalette: playerra2
+steel_hummer:
+	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Federation Hummer
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~steel_qaweap
+		Queue: Vehicle, RAVehicle
+		Description: actor-aaquas.description
+	Mobile:
+		Locomotor: lighttracked
+		Speed: 110
+		TurnSpeed: 24
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2000
+	Armament@AG:
+		Weapon: SteelHoverMissile
+		LocalOffset: -400,100,300, -400,-100,300, -400,200,300, -400,-200,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: SteelCloneVoice
+	DeliversCash:
+		Payload: 250
+steel_cougar:
+	Inherits: ^Vehicle
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Federation Cougar
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~steel_qaweap
+		Queue: Vehicle, RAVehicle
+		Description: actor-jeep.description
+	Mobile:
+		Speed: 150
+		TurnSpeed: 30
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 1250
+	Turreted:
+		TurnSpeed: 30
+		Offset: -1,0,4
+	Armament:
+		Weapon: SteelVulcan
+		LocalOffset: 171,100,85, 171,-100,85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	RenderSprites:
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: SteelCloneVoice
