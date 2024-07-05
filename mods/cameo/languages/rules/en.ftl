@@ -1430,6 +1430,9 @@ upgrade-spice_sifter =
       out incorrectly from Spice Sifters.
       Increases Spice Sifter income.
 
+upgrade-wind_trap =
+   .description = Doubles Power Output of Wind Traps
+
 actor-farasha =
    .description = Carrier spaceship.
       Armed with a laser.

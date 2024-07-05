@@ -820,12 +820,12 @@ wind_trap.atreides:
 		LocalCenterOffset: 0,-512,0
 	Health:
 		HP: 200000
-	# GrantConditionOnPrerequisite@Remote:
-	# 	Prerequisites: faction.mercenary
-	# 	Condition: wt_upg
-	# PowerMultiplier@wt_upg:
-	# 	Modifier: 200
-	# 	RequiresCondition: wt_upg
+	GrantConditionOnPrerequisite@d2k_wind_trap_upgrade:
+		Condition: d2k_wind_trap_upgrade
+		Prerequisites: d2k_wind_trap_upgrade
+	PowerMultiplier@d2k_wind_trap_upgrade:
+		Modifier: 200
+		RequiresCondition: d2k_wind_trap_upgrade
 	Armor:
 		Type: Concrete
 	RevealsShroud:
@@ -2488,7 +2488,7 @@ storm_lasher:
 		Description: actor-storm_lasher.description
 		IconPalette: player
 	Valued:
-		Cost: 2500
+		Cost: 5000
 	Tooltip:
 		Name: Storm Lasher
 	Building:
@@ -2551,7 +2551,7 @@ storm_lasher:
 	DamageMultiplier@2x2Shape:
 		Modifier: 50
 	Power:
-		Amount: -125
+		Amount: -250
 	RevealsShroud:
 		Range: 12500
 	DetectCloaked:
@@ -5727,6 +5727,7 @@ d2k_mcv.ixian:
 	Selectable:
 		Class: mcv
 		DecorationBounds: 2048, 1280
+	Health:
 		HP: 300000
 	Repairable:
 		HpPerStep: 15000
@@ -5749,10 +5750,6 @@ d2k_mcv.ixian:
 		TransformSounds: BUILD1.WAV
 		Facing: 256
 		NoTransformNotification: BuildingCannotPlaceAudio
-	SpawnActorOnDeath:
-		Actor: d2k_mcv.husk
-		OwnerType: InternalName
-		EffectiveOwnerFromOwner: true
 	AttractsWorms:
 		Intensity: 700
 	-RevealOnFire:
@@ -6241,8 +6238,10 @@ d2k_air_drone:
 		Pieces: 1, 2
 		Range: 1c0, 3c0
 	Cloak:
-		InitialDelay: 75
-		CloakDelay: 50
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakSound: trans1.aud
+		UncloakSound: appear1.aud
 		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
 
 d2k_air_drone.husk:
@@ -6529,24 +6528,30 @@ d2k_farasha:
 		LocalOffset: 750,0,0
 		PauseOnCondition: !charged
 		ReloadingCondition: discharged
+	Armament@AA:
+		Name: secondary
+		Weapon: d2k_farasha_aa
+		LocalOffset: 750,0,0
+		PauseOnCondition: !charged
+		ReloadingCondition: discharged
 	AmmoPool:
 		Armaments: secondary
-		Ammo: 10
+		Ammo: 50
 		InitialAmmo: 0
 		AmmoCondition: charged
 	ReloadAmmoPoolCA@charged:
-		Count: 10
-		Delay: 60
+		Count: 50
+		Delay: 75
 		RequiresCondition: charging
 	ReloadAmmoPoolCA@discharge:
-		Count: -10
-		Delay: 15
+		Count: -50
+		Delay: 75
 		RequiresCondition: charged && !charging
 	GrantConditionOnAttack@charged:
 		Condition: charging
 		RequiredShotsPerInstance: 1
 		ArmamentNames: charge
-		RevokeDelay: 60
+		RevokeDelay: 75
 		RevokeOnNewTarget: true
 	WithAmmoPipsDecoration:
 		PipCount: 1
@@ -7478,8 +7483,10 @@ siege_tank_ixian:
 	Voiced:
 		VoiceSet: D2KSiegeTank
 	Cloak:
-		InitialDelay: 75
-		CloakDelay: 50
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakSound: trans1.aud
+		UncloakSound: appear1.aud
 		UncloakOn: Attack, Damage
 	RenderSprites:
 		Image: ix_siege_tank
@@ -7692,8 +7699,10 @@ missile_tank_ixian:
 		RequiresSelection: true
 		PipCount: 10
 	Cloak:
-		InitialDelay: 75
-		CloakDelay: 50
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakSound: trans1.aud
+		UncloakSound: appear1.aud
 		UncloakOn: Attack, infiltrate, damage
 		IsPlayerPalette: true
 		CloakedCondition: cloaked
@@ -8399,8 +8408,10 @@ rocket_raider_ixian:
 	Voiced:
 		VoiceSet: D2KRaider
 	Cloak:
-		InitialDelay: 75
-		CloakDelay: 50
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakSound: trans1.aud
+		UncloakSound: appear1.aud
 		UncloakOn: Attack, Unload
 	Armament@damage:
 		Weapon: D2K_Bazooka2
@@ -8468,8 +8479,10 @@ shock_raider:
 	AttractsWorms:
 		Intensity: 420
 	Cloak:
-		InitialDelay: 75
-		CloakDelay: 50
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakSound: trans1.aud
+		UncloakSound: appear1.aud
 		UncloakOn: Attack, Unload
 	Voiced:
 		VoiceSet: D2KShockRaider
@@ -9914,6 +9927,23 @@ d2k_spice_sifter_upgrade:
 		Cost: 2500
 	RenderSprites:
 		Image: d2k_spice_sifter
+
+d2k_wind_trap_upgrade:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Advanced Wind Traps
+	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: ~research_centre, ~!d2k_wind_trap_upgrade
+		Queue: Upgrades
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: upgrade-wind_trap.description
+		IconPalette: d2kunit
+	Valued:
+		Cost: 2500
+	RenderSprites:
+		Image: power.atreides
 
 d2k_siege_range_upgrade:
 	Inherits: ^researched_upgrade.template
