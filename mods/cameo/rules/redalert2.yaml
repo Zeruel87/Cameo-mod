@@ -509,6 +509,26 @@ RA2Flameguy:
 		Position: BottomLeft
 		RequiresSelection: true
 
+^RA2PlanewithTurnAnimation:
+	GrantConditionOnMovement@Turn:
+		Condition: Aircraft-Turning
+		ValidMovementTypes: Turn
+	GrantConditionOnMovement@H:
+		ValidMovementTypes: Horizontal #we need a turn condition with left and right
+		Condition: Aircraft-Horizontal
+	GrantConditionOnMovement@V:
+		ValidMovementTypes: Vertical #we need a turn condition with left and right
+		Condition: Aircraft-Vertical
+	WithMoveAnimation@Turn-L:
+		MoveSequence: move-l
+		RequiresCondition: Aircraft-Turning && Aircraft-Horizontal
+	WithMoveAnimation@Turn-R:
+		MoveSequence: move-r
+		RequiresCondition: Aircraft-Turning && Aircraft-Vertical
+	WithMoveAnimation:
+		MoveSequence: move
+		Condition: !Aircraft-Turning
+
 #
 # Sell Actors
 #
@@ -2140,7 +2160,7 @@ ra2natech:
 		ClockSequence: clocklarge
 		CircleSequence: circles
 		UnitTypes:
-			1: ra2cplane
+			1: ra2cplanesov
 		#UseDirectionalTarget: True
 		SquadSizes:
 			1: 3
@@ -8967,9 +8987,7 @@ ra2asw:
 		Actor: ra2asw.Husk
 
 yrspyp:
-	Inherits: ^RANeutralPlane
-	Inherits@Voxel: ^RenderVoxel
-	-UpdatesPlayerStatistics:
+	Inherits: ^AirstrikePlane
 	Health:
 		HP: 200000
 	Armor:
@@ -8987,7 +9005,6 @@ yrspyp:
 	Armament:
 		Weapon: RA2SpyCamera
 	SelectionDecorations:
-	-Voiced:
 	Contrail@1:
 		Offset: -725,683,0
 	Contrail@2:
@@ -9002,20 +9019,16 @@ yrspyp:
 		Type: CenterPosition
 		RequiresCondition: enable-smoke
 	RejectsOrders:
-	WithVoxelBody:
+	RenderSprites:
+		Image: yrspyp
+		PlayerPalette: playerra2
 	SpawnActorOnDeath:
 		Actor: yrspyp.husk
-	-WithShadow:
-	-ExternalCondition@STASIS:
-	-DelayedWeaponAttachable@lockdown:
-	-ExternalCondition@EMP:
 	GrantConditionOnDamageState@SmokeTrail:
 		Condition: enable-smoke
 
 ra2cplane:
-	Inherits: ^RANeutralPlane
-	Inherits@Voxel: ^RenderVoxel
-	-UpdatesPlayerStatistics:
+	Inherits: ^AirstrikePlane
 	ParaDrop:
 		DropRange: 4c0
 		ChuteSound: sparadra.wav
@@ -9036,7 +9049,6 @@ ra2cplane:
 	Cargo:
 		MaxWeight: 10
 	SelectionDecorations:
-	-Voiced:
 	Tooltip:
 		Name: Cargo Plane
 	Contrail@1:
@@ -9064,24 +9076,26 @@ ra2cplane:
 		Type: CenterPosition
 		RequiresCondition: enable-smoke
 	RejectsOrders:
-	#Interactable:
-	WithVoxelBody:
-	-WithShadow:
-	RenderVoxels:
-		NormalsPalette: ts-normals
-	-ExternalCondition@STASIS:
-	-DelayedWeaponAttachable@lockdown:
-	-ExternalCondition@EMP:
 	GrantConditionOnDamageState@SmokeTrail:
 		Condition: enable-smoke
+	RenderSprites:
+		Image: ra2cplane
+		PlayerPalette: playerra2
+
+ra2cplanesov:
+	Inherits: ra2cplane
+	RenderSprites:
+		Image: ra2cplanesov
+		PlayerPalette: playerra2
+	SpawnActorOnDeath:
+		Actor: ra2cplanesov.Husk
 
 yrbpln:
 	Inherits: ^AirstrikePlane
 	Inherits@Template: ^BomberTemplate
-	-BodyOrientation:
-	Inherits@Voxel: ^RenderVoxel
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@rad: ^RA2RadShells
+	Inherits@turnanimation: ^RA2PlanewithTurnAnimation
 	Selectable:
 	Tooltip:
 		Name: actor-bpln.name
@@ -9147,21 +9161,17 @@ yrbpln:
 		Actor: yrbpln.husk
 	RejectsOrders:
 	GivesExperienceToMaster:
-	WithVoxelBody:
-	-WithShadow:
 	RenderSprites:
 		Image: yrbpln
-	RenderVoxels:
-		Image: yrbpln
+		PlayerPalette: playerra2
 
 yrbpln1:
 	Inherits: ^RANeutralPlane
 	Inherits@Template: ^BomberTemplate
-	-BodyOrientation:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Voxel: ^RenderVoxel
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@rad: ^RA2RadShells
+	Inherits@turnanimation: ^RA2PlanewithTurnAnimation
 	Selectable:
 	Tooltip:
 		Name: actor-bpln.name
@@ -9226,12 +9236,9 @@ yrbpln1:
 		TrailLength: 15
 	SpawnActorOnDeath:
 		Actor: yrbpln.husk
-	WithVoxelBody:
-	-WithShadow:
 	RenderSprites:
 		Image: yrbpln
-	RenderVoxels:
-		Image: yrbpln
+		PlayerPalette: playerra2
 
 ####################################################################################################
 #		Red Alert 2 TechBuilding
@@ -10055,7 +10062,6 @@ ra2shad.Husk:
 
 yrbpln.husk:
 	Inherits: ^PlaneHusk
-	Inherits@Voxel: ^RenderVoxel
 	Tooltip:
 		Name: MiG Bomber
 	Aircraft:
@@ -10071,17 +10077,10 @@ yrbpln.husk:
 		Type: CenterPosition
 	RenderSprites:
 		Image: yrbpln
-	RenderVoxels:
-		Image: yrbpln
-	-WithShadow:
-	-Cloak@TDcloak:
-	-Cloak@TScloak:
-	RenderSprites:
 		PlayerPalette: playerra2
 
 ra2cplane.Husk:
 	Inherits: ^PlaneHusk
-	Inherits@Voxel: ^RenderVoxel
 	Tooltip:
 		Name: Cargo Plane
 	Aircraft:
@@ -10105,17 +10104,37 @@ ra2cplane.Husk:
 		Type: CenterPosition
 	RenderSprites:
 		Image: ra2cplane
-	RenderVoxels:
-		Image: ra2cplane
-	-WithShadow:
-	-Cloak@TDcloak:
-	-Cloak@TScloak:
+		PlayerPalette: playerra2
+
+ra2cplanesov.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Cargo Plane
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 149
+	LeavesTrails@0:
+		Offsets: -432,560,0
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	LeavesTrails@1:
+		Offsets: -432,-560,0
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
 	RenderSprites:
+		Image: ra2cplanesov
 		PlayerPalette: playerra2
 
 yrspyp.husk:
 	Inherits: ^PlaneHusk
-	Inherits@Voxel: ^RenderVoxel
 	Tooltip:
 		Name: Spy Plane
 	Aircraft:
@@ -10131,12 +10150,6 @@ yrspyp.husk:
 		Type: CenterPosition
 	RenderSprites:
 		Image: yrspyp
-	RenderVoxels:
-		Image: yrspyp
-	-WithShadow:
-	-Cloak@TDcloak:
-	-Cloak@TScloak:
-	RenderSprites:
 		PlayerPalette: playerra2
 
 RA2TXGASG:

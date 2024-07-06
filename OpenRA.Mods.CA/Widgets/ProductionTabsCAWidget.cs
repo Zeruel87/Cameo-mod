@@ -100,6 +100,7 @@ namespace OpenRA.Mods.CA.Widgets
 		SpriteFont font;
 		Rectangle leftButtonRect;
 		Rectangle rightButtonRect;
+
 		readonly Lazy<ProductionPaletteWidget> paletteWidget;
 		string queueGroup;
 
