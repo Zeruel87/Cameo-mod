@@ -100,7 +100,8 @@ namespace OpenRA.Mods.CA.Widgets
 		SpriteFont font;
 		Rectangle leftButtonRect;
 		Rectangle rightButtonRect;
-		readonly Lazy<ProductionPaletteCAWidget> paletteWidget;
+
+		readonly Lazy<ProductionPaletteWidget> paletteWidget;
 		string queueGroup;
 
 		int startTabIndex;
@@ -117,7 +118,7 @@ namespace OpenRA.Mods.CA.Widgets
 			// Only visible if the production palette has icons to display
 			IsVisible = () => queueGroup != null && Groups[queueGroup].Tabs.Count > 0;
 
-			paletteWidget = Exts.Lazy(() => Ui.Root.Get<ProductionPaletteCAWidget>(PaletteWidget));
+			paletteWidget = Exts.Lazy(() => Ui.Root.Get<ProductionPaletteWidget>(PaletteWidget));
 		}
 
 		public override void Initialize(WidgetArgs args)
