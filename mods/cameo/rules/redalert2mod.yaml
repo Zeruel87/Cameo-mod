@@ -2409,6 +2409,68 @@ aa_hotwi:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+aa_mlrs:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@vo: ^AttackTurretedVoice
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: actor-mlrs.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: ~aa_cgradr
+		Queue: Vehicle, RAVehicle
+		Description: actor-mlrs.description
+	Mobile:
+		Speed: 80
+		TurnSpeed: 16
+	Health:
+		HP: 24000
+	Repairable:
+		HpPerStep: 1200
+	Armor:
+		Type: Light
+	Turreted:
+		TurnSpeed: 16
+		Offset: -256,0,128
+	Armament@PRIMARY:
+		Weapon: 227mm
+		LocalOffset: 213,128,0, 213,-128,0
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Weapon: 227mmAA
+		LocalOffset: 213,-128,0, 213,128,0
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithSpriteTurret:
+	WithMuzzleOverlay:
+	RenderSprites:
+		Image: aa_mlrs
+		PlayerPalette: playerra2
+	WithTurretAimAnimation:
+		Sequence: aim
+	GrantConditionOnAttack:
+		Condition: firing
+		RevokeDelay: 5
+	SpeedMultiplier@firing:
+		RequiresCondition: firing
+		Modifier: 50
+	Voiced:
+		VoiceSet: AsianAllianceVehicleVoice
+
 aa_viper:
 	Inherits: ^Tank
 	Inherits@Template: ^ArtilleryTemplate
@@ -4448,7 +4510,7 @@ steel_qmcv:
 		NoTransformNotification: BuildingCannotPlaceAudio
 	SelectionDecorations:
 	Voiced:
-		VoiceSet: PRCMCCVoice
+		VoiceSet: SteelConsortiumMCVVoice
 	DeliversCash:
 		Payload: 1750
 	ProvidesPrerequisite@faction:
@@ -4543,6 +4605,49 @@ steel_fedinf:
 	-TakeCover:
 	Voiced:
 		VoiceSet: SteelCloneVoice
+	DeliversCash:
+		Payload: 60
+	RenderSprites:
+		PlayerPalette: playerra2cons
+steel_board_inf:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Hover Board Grenadier
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~steel_qabarr
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Locomotor: hover
+		Speed: 126
+	Hovers:
+	Health:
+		HP: 15000
+	Armament@PRIMARY:
+		Weapon: SteelMakoGun
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: SteelMakoGun
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: SteelGarrison
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 0
+	-TakeCover:
+	Voiced:
+		VoiceSet: SteelSkaterVoice
 	DeliversCash:
 		Payload: 60
 	RenderSprites:
@@ -4704,7 +4809,7 @@ steel_qinf:
 		Modifier: 75
 		RequiresCondition: deployed && upra2gi
 	Voiced:
-		VoiceSet: SteelCloneVoice
+		VoiceSet: SteelSentinelVoice
 	DeliversCash:
 		Payload: 150
 	QuantizeFacingsFromSequence:
@@ -4720,7 +4825,8 @@ steel_fedeng:
 	RenderSprites:
 		Image: steel_fedeng
 	-TakeCover:
-
+	Voiced:
+		VoiceSet: SteelEngVoice
 steel_mako:
 	Inherits: ^Tank
 	Inherits@Template: ^ScoutVehicleTemplate
@@ -5070,7 +5176,7 @@ steel_potnk:
 	Passenger:
 		Weight: 4
 	Voiced:
-		VoiceSet: SteelConsortiumTankVoice
+		VoiceSet: SteelPowerTankVoice
 	Cargo:
 		UnloadVoice: Move
 		Types: Infantry, Hacker, Fremen
@@ -5189,8 +5295,8 @@ steel_twister:
 		Speed: 175
 		IdleTurnSpeed: 10
 		IdleSpeed: 100
-		TakeoffSounds: vintupa.wav
-		LandingSounds: vintdna.wav
+		TakeoffSounds: twisSounda.wav, twisSoundb.wav
+		LandingSounds: twisSounda.wav, twisSoundb.wav
 		CanHover: false
 		CanSlide: false
 		VTOL: true
@@ -5231,7 +5337,7 @@ steel_twister:
 		Offset: -100,-256,0
 		TrailLength: 15
 	Voiced:
-		VoiceSet: HarrierVoice
+		VoiceSet: SteelAircraftVoice
 	DeathSounds:
 	AttackAircraft:
 		Voice: Attack
@@ -5263,6 +5369,87 @@ steel_twister.Husk:
 	RenderSprites:
 		PlayerPalette: playerra2cons
 
+
+steel_grun:
+	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiAir: ^PrioritizeAir
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 20
+		Prerequisites: ~steel_qtradr
+		Description: actor-aapelican.description
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Flying Turret
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 240000
+	ChangesHealth@SelfHealing:
+		Step: 32
+	Armament@PRIMARY:
+		Weapon: SteelAirTurretAA
+		LocalOffset: 85,213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 180
+		PersistentTargeting: false
+		AttackType: Hover
+	Aircraft:
+		Speed: 120
+		TurnSpeed: 24
+	SelectionDecorations:
+	WithMuzzleOverlay:
+	SpawnActorOnDeath:
+		Actor: steel_grun.Husk
+	LeavesTrails:
+		Offsets: -427,0,0
+		Image: smokey
+		MovingInterval: 3
+		StationaryInterval: 3
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+		RequiresCondition: enable-smoke
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: SteelInspectorVoice
+	GrantConditionOnDamageState@SmokeTrail:
+		Condition: enable-smoke
+	AmmoPool:
+		Ammo: 6
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 100
+		Count: 2
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 6
+	Explodes:
+		Weapon: LargeHeliExplode
+	RenderSprites:
+		PlayerPalette: playerra2rot
+	Turreted:
+		TurnSpeed: 20 #3
+	WithSpriteTurret:
+steel_grun.Husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Flying Turret
+	Aircraft:
+		TurnSpeed: 24
+		Speed: 120
+	RenderSprites:
+		Image: steel_grun
+		PlayerPalette: playerra2rot
+	Turreted:
 
 steel_dagger:
 	Inherits: ^Tank
