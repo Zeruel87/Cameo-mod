@@ -3845,8 +3845,37 @@ latin_grentank:
 ##############################################
 #   Red Alert 2 Consortium Structure
 ##############################################
+^ConsortiumSpawnActorsOnSell:
+	SpawnActorsOnSell:
+		ActorTypes: steel_fedeng, steel_fedinf, steel_fedinf, steel_qinf
+		RequiresCondition: !in_water
+
+^SteelUnderwaterStructure:
+	Inherits@sell: ^ConsortiumSpawnActorsOnSell
+	Cloak@underwater:
+		DetectionTypes: Underwater, GroundCloak, Cloak
+		InitialDelay: 0
+		CloakDelay: 15
+		CloakedCondition: underwater
+		PauseOnCondition: disabled
+		IsPlayerPalette: true
+		CloakSound: vnavupa.wav
+		UncloakSound: vnavupa.wav
+		RequiresCondition: in_water
+	Targetable@water:
+		TargetTypes: Water, Ship, Submarine
+		RequiresCondition: in_water
+	Building:
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,Water ##########
+	SpawnActorsOnSell@in_water:
+		ActorTypes: steel_board_inf, steel_board_inf, steel_manta
+		RequiresCondition: in_water
+	GrantConditionOnTerrain@Water:
+		TerrainTypes: Water
+		Condition: in_water
 steel_qacst:
 	Inherits: ra2gacnst
+	Inherits@water: ^SteelUnderwaterStructure
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -3858,7 +3887,7 @@ steel_qacst:
 steel_qapowr:
 	Inherits: ^RA2Building
 	Inherits@shape: ^2x2Shape
-	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@power: ^PowerPlant
 	Valued:
 		Cost: 800
@@ -3889,11 +3918,10 @@ steel_qapowr:
 	ProvidesPrerequisite@buildingname:
 	RenderSprites:
 		PlayerPalette: playerra2cons
-
 steel_qref:
 	Inherits: ^RA2Building
-	Inherits@sell: ^RA2SSpawnActorsOnSell
 	Inherits@ref: ^Refinery
+	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@shape: ^4x3Shape
 	Valued:
 		Cost: 2000
@@ -3943,11 +3971,10 @@ steel_qref:
 		Sequence: idle-top
 	WithIdleOverlay@bib:
 		Sequence: idle-bib
-
 steel_qabarr:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
-	Inherits@sell: ^RA2YSpawnActorsOnSell
+	Inherits@sell: ^ConsortiumSpawnActorsOnSell
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
 	Inherits@barr: ^IsBarrack
@@ -4011,7 +4038,7 @@ steel_qtradr:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x3Shape
 	Inherits@radar: ^RadarBuilding
-	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Selectable:
 		Bounds: 2048, 2560, 0, -256
 	SelectionDecorations:
@@ -4149,11 +4176,10 @@ steel_qtradr:
 		DisplayRadarPing: True
 		LaunchSound: schrmov.wav
 		IncomingSound: schrmov.wav
-
 steel_qaclone:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x3Shape
-	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@sell: ^ConsortiumSpawnActorsOnSell
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Valued:
 		Cost: 2000
@@ -4193,7 +4219,7 @@ steel_qaclone:
 
 steel_qaweap:
 	Inherits: ^RA2DefaultWeap
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Tooltip:
 		Name: Consortium War Factory
 	Buildable:
@@ -4219,8 +4245,8 @@ steel_qaweap:
 steel_qatech:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
-	Inherits@sell: ^AASpawnActorsOnSell
 	Inherits@tech: ^IsTechnoBuilding
+	Inherits@water: ^SteelUnderwaterStructure
 	Selectable:
 		Bounds: 3072, 2048, 0, 0
 	Buildable:
@@ -4258,7 +4284,7 @@ steel_qaorbit:
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@SW: ^PrimarySuperweapon
 	Inherits@shape: ^3x3Shape
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 120
@@ -4329,7 +4355,7 @@ steel_fedturret:
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGround
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
@@ -4371,13 +4397,22 @@ steel_fedturret:
 	DetectCloaked:
 		Range: 3333
 	ProvidesPrerequisite@buildingname:
-
+	MobSpawnerMaster@drone1:
+		Actors: steel_scapel
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		PauseOnCondition: disabled
+   		RequiresCondition: upsteel_scapel    
+	GrantConditionOnPrerequisite@upsteel_scapel:
+		Condition: upsteel_scapel
+		Prerequisites: upsteel_scapel
 steel_fedaa:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAir
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
@@ -4419,14 +4454,23 @@ steel_fedaa:
 	DetectCloaked:
 		Range: 3333
 	ProvidesPrerequisite@buildingname:
-
+	MobSpawnerMaster@drone1:
+		Actors: steel_scapelaa
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		PauseOnCondition: disabled
+   		RequiresCondition: upsteel_scapel    
+	GrantConditionOnPrerequisite@upsteel_scapel:
+		Condition: upsteel_scapel
+		Prerequisites: upsteel_scapel
 steel_qcannon:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^AdvancedDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetGround
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
@@ -4468,15 +4512,34 @@ steel_qcannon:
 		Range: 15000
 	DetectCloaked:
 		Range: 7500
-
+	MobSpawnerMaster@drone1:
+		Actors: steel_scapel
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		PauseOnCondition: disabled
+   		RequiresCondition: upsteel_scapel
+	MobSpawnerMaster@drone2:
+		Actors: steel_scapel
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		PauseOnCondition: disabled
+   		RequiresCondition: upsteel_scapel    
+	GrantConditionOnPrerequisite@upsteel_scapel:
+		Condition: upsteel_scapel
+		Prerequisites: upsteel_scapel
+##############################################
+#   Red Alert 2 Underwater Structure
+##############################################
 ##############################################
 #   Red Alert 2 Consortium Infantry
 ##############################################
 ^SteelUnderwaterTransit:
 	Cloak@underwater:
-		DetectionTypes: Underwater
+		DetectionTypes: Underwater, GroundCloak, Cloak
 		InitialDelay: 0
-		CloakDelay: 5
+		CloakDelay: 15
 		CloakedCondition: underwater
 		PauseOnCondition: disabled
 		RequiresCondition: !cloak-force-disabled && !underbridge && inwater
@@ -4490,6 +4553,76 @@ steel_qcannon:
 		TargetTypes: Water, Ship, Submarine
 		RequiresCondition: inwater
 
+^SteelDefensiveDrones:
+	Inherits: ^RANeutralPlane
+	-Selectable:
+	Interactable:
+	RevealsShroud:
+		Range: 3c0
+		Type: CenterPosition
+	Health:
+		HP: 9000
+	Aircraft:
+		CruiseAltitude: 1c256
+		InitialFacing: 192
+		TurnSpeed: 8
+		Speed: 75
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+		CanForceLand: false
+		VTOL: true
+	AttackAircraft:
+		AttackType: Hover
+		PersistentTargeting: false
+		FacingTolerance: 20
+	-SpawnActorOnDeath:
+	-ActorLostNotification:
+	-UpdatesPlayerStatistics:
+	GrantConditionOnPrerequisite@usaupdronearmor:
+		Condition: usaupdronearmor
+		Prerequisites: usaupdronearmor
+	DamageMultiplier@usaupdronearmor:
+		RequiresCondition: usaupdronearmor
+		Modifier: 75
+	MobSpawnerSlave:
+		GrantConditionWhenMasterIsDisabled: notenabled
+		GrantConditionWhenMasterIsPaused: paused
+	KillsSelf@masterdisabled:
+		RequiresCondition: paused
+	RejectsOrders:
+	-MapEditorData:
+
+steel_scapel:
+	Inherits: ^SteelDefensiveDrones
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Scapel
+	Armament@PRIMARY:
+		Weapon: SteelCloneGun
+		LocalOffset: 200,0,0
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	AttackAircraft:
+		Armaments: primary, pointdefense
+	RenderSprites:
+		PlayerPalette: playerra2rot
+steel_scapelaa:
+	Inherits: ^SteelDefensiveDrones
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: AA Scapel
+	Armament@PRIMARY:
+		Weapon: SteelInfRailgunAA
+		LocalOffset: 200,0,0
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	AttackAircraft:
+		Armaments: primary, pointdefense
+	RenderSprites:
+		PlayerPalette: playerra2rot
+		Image: steel_scapel
 steel_qmcv:
 	Inherits: ^Vehicle
 	Inherits@Template: ^SupportVehicleTemplate
@@ -4549,13 +4682,13 @@ steel_qmin:
 	Harvester:
 		Voice: Move
 		PipCount: 10
-		BaleLoadDelay: 4
+		BaleLoadDelay: 8
 		BaleUnloadDelay: 1
 		SearchFromProcRadius: 25
 		SearchFromHarvesterRadius: 10
 		EmptyCondition: no-tiberium
 	StoresResources:
-		Capacity: 10
+		Capacity: 20
 	Health:
 		HP: 100000
 	Repairable:
@@ -5144,6 +5277,68 @@ steel_qutnk:
 	RenderSprites:
 		PlayerPalette: playerra2cons
 	WithMoveAnimation:
+steel_katy:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@SHADOWS: ^Shadows
+	Inherits@underwater: ^SteelUnderwaterTransit
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Katy Tank
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~steel_qaweap, steel_qatech, ~upsteel_katy
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Locomotor: amphibius
+		Speed: 45
+		TurnSpeed: 15
+	Health:
+		HP: 250000
+	Repairable:
+		HpPerStep: 7500
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 15 #3
+	Armament:
+		Name: primary
+		Weapon: SteelKatyCannons
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1280,-250,111, 1280,250,111
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: SteelKatyCannons
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1280,-250,111, 1280,250,111
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: SteelQuantumTankVoice
+	DeliversCash:
+		Payload: 350
+	RenderSprites:
+		PlayerPalette: playerra2
 
 steel_potnk:
 	Inherits: ^Tank
@@ -5162,7 +5357,7 @@ steel_potnk:
 	Valued:
 		Cost: 3000
 	Tooltip:
-		Name: Power Tank
+		Name: Poseidon Tank
 	Buildable:
 		BuildPaletteOrder: 75
 		Prerequisites: ~steel_qaweap, steel_qatech
@@ -5399,7 +5594,7 @@ steel_grun:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AntiAir: ^PrioritizeAir
 	Buildable:
-		Queue: Aircraft, RAAircraft
+		Queue: Vehicle, Aircraft, RAAircraft
 		BuildPaletteOrder: 20
 		Prerequisites: ~steel_qtradr
 		Description: actor-aapelican.description
@@ -5487,7 +5682,7 @@ steel_dagger:
 		Name: Dagger
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~steel_qaweap, steel_qatech
+		Prerequisites: ~steel_qaweap, steel_qatech, ~upsteel_dagger
 		Queue: Vehicle, RAVehicle
 		Description: actor-aaquas.description
 	Mobile:
@@ -5745,3 +5940,45 @@ upsteel_conssupp4:
 	ProvidesPrerequisite:
 
 
+
+### Military tree
+upsteel_scapel:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Scapel Defenders
+	Buildable:
+		BuildPaletteOrder: 98
+		Queue: Promotions
+		Description: Spawns Scapels in your defensive structures.
+		Prerequisites: ~steel_qacst, !upsteel_scapel, rank1
+	RenderSprites:
+		Image: steel_scapel
+	ProvidesPrerequisite:
+
+upsteel_dagger:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Dagger Artillery
+	Buildable:
+		BuildPaletteOrder: 101
+		Queue: Promotions
+		Description: Enables construction of Daggers.
+		Prerequisites: ~steel_qacst, upsteel_scapel, rank1
+	RenderSprites:
+		Image: steel_dagger
+	ProvidesPrerequisite:
+
+upsteel_katy:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Katy Tank
+	Buildable:
+		BuildPaletteOrder: 104
+		Queue: Promotions
+		Description: Unlocks Chaos Mines support power.
+		Prerequisites: ~steel_qacst, upsteel_dagger, rank1
+	RenderSprites:
+		Image: steel_katy
+	ProvidesPrerequisite:
+
+### Tech tree
