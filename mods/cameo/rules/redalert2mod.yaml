@@ -2413,6 +2413,68 @@ aa_hotwi:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+aa_mlrs:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@vo: ^AttackTurretedVoice
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: actor-mlrs.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: ~aa_cgradr
+		Queue: Vehicle, RAVehicle
+		Description: actor-mlrs.description
+	Mobile:
+		Speed: 80
+		TurnSpeed: 16
+	Health:
+		HP: 24000
+	Repairable:
+		HpPerStep: 1200
+	Armor:
+		Type: Light
+	Turreted:
+		TurnSpeed: 16
+		Offset: -256,0,128
+	Armament@PRIMARY:
+		Weapon: 227mm
+		LocalOffset: 213,128,0, 213,-128,0
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Weapon: 227mmAA
+		LocalOffset: 213,-128,0, 213,128,0
+		MuzzleSequence: muzzle
+	AttackTurreted:
+	WithSpriteTurret:
+	WithMuzzleOverlay:
+	RenderSprites:
+		Image: aa_mlrs
+		PlayerPalette: playerra2
+	WithTurretAimAnimation:
+		Sequence: aim
+	GrantConditionOnAttack:
+		Condition: firing
+		RevokeDelay: 5
+	SpeedMultiplier@firing:
+		RequiresCondition: firing
+		Modifier: 50
+	Voiced:
+		VoiceSet: AsianAllianceVehicleVoice
+
 aa_viper:
 	Inherits: ^Tank
 	Inherits@Template: ^ArtilleryTemplate
@@ -3787,8 +3849,37 @@ latin_grentank:
 ##############################################
 #   Red Alert 2 Consortium Structure
 ##############################################
+^ConsortiumSpawnActorsOnSell:
+	SpawnActorsOnSell:
+		ActorTypes: steel_fedeng, steel_fedinf, steel_fedinf, steel_qinf
+		RequiresCondition: !in_water
+
+^SteelUnderwaterStructure:
+	Inherits@sell: ^ConsortiumSpawnActorsOnSell
+	Cloak@underwater:
+		DetectionTypes: Underwater, GroundCloak, Cloak
+		InitialDelay: 0
+		CloakDelay: 15
+		CloakedCondition: underwater
+		PauseOnCondition: disabled
+		IsPlayerPalette: true
+		CloakSound: vnavupa.wav
+		UncloakSound: vnavupa.wav
+		RequiresCondition: in_water
+	Targetable@water:
+		TargetTypes: Water, Ship, Submarine
+		RequiresCondition: in_water
+	Building:
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,Water ##########
+	SpawnActorsOnSell@in_water:
+		ActorTypes: steel_board_inf, steel_board_inf, steel_manta
+		RequiresCondition: in_water
+	GrantConditionOnTerrain@Water:
+		TerrainTypes: Water
+		Condition: in_water
 steel_qacst:
 	Inherits: ra2gacnst
+	Inherits@water: ^SteelUnderwaterStructure
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -3800,7 +3891,7 @@ steel_qacst:
 steel_qapowr:
 	Inherits: ^RA2Building
 	Inherits@shape: ^2x2Shape
-	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@power: ^PowerPlant
 	Valued:
 		Cost: 800
@@ -3831,11 +3922,10 @@ steel_qapowr:
 	ProvidesPrerequisite@buildingname:
 	RenderSprites:
 		PlayerPalette: playerra2cons
-
 steel_qref:
 	Inherits: ^RA2Building
-	Inherits@sell: ^RA2SSpawnActorsOnSell
 	Inherits@ref: ^Refinery
+	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@shape: ^4x3Shape
 	Valued:
 		Cost: 2000
@@ -3885,11 +3975,10 @@ steel_qref:
 		Sequence: idle-top
 	WithIdleOverlay@bib:
 		Sequence: idle-bib
-
 steel_qabarr:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
-	Inherits@sell: ^RA2YSpawnActorsOnSell
+	Inherits@sell: ^ConsortiumSpawnActorsOnSell
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
 	Inherits@barr: ^IsBarrack
@@ -3953,7 +4042,7 @@ steel_qtradr:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x3Shape
 	Inherits@radar: ^RadarBuilding
-	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Selectable:
 		Bounds: 2048, 2560, 0, -256
 	SelectionDecorations:
@@ -4091,11 +4180,10 @@ steel_qtradr:
 		DisplayRadarPing: True
 		LaunchSound: schrmov.wav
 		IncomingSound: schrmov.wav
-
 steel_qaclone:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x3Shape
-	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@sell: ^ConsortiumSpawnActorsOnSell
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Valued:
 		Cost: 2000
@@ -4135,7 +4223,7 @@ steel_qaclone:
 
 steel_qaweap:
 	Inherits: ^RA2DefaultWeap
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Tooltip:
 		Name: Consortium War Factory
 	Buildable:
@@ -4161,8 +4249,8 @@ steel_qaweap:
 steel_qatech:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
-	Inherits@sell: ^AASpawnActorsOnSell
 	Inherits@tech: ^IsTechnoBuilding
+	Inherits@water: ^SteelUnderwaterStructure
 	Selectable:
 		Bounds: 3072, 2048, 0, 0
 	Buildable:
@@ -4195,12 +4283,46 @@ steel_qatech:
 		RequiresCondition: !build-incomplete
 	RenderSprites:
 		PlayerPalette: playerra2cons
+	DetonateWeaponPower@Emp:
+		AllowMultiple: false
+		OrderName: SteelEmpCannon
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: upsteel_emp
+		IconImage: steel_qatech
+		Icons:
+			1: icon2
+		Cursor: ioncannon
+		ChargeInterval: 5000
+		ActivationDelay: 50
+		ActivationSequence:
+		Names:
+			1: Emp Disable
+		Weapons:
+			1: SteelEmpBomb
+		Descriptions:
+			1: power-ioncannon.description
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		EndChargeSound:
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		CameraActor: camera.small
+		CameraRemoveDelay: 300
+		TargetCircleRanges:
+			1: 6c0
+		TargetCircleColor: ff000080
+		LaunchSound:
+		IncomingSound:
+	SupportPowerChargeBar:
 steel_qaorbit:
 	Inherits: ^RA2Building
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@SW: ^PrimarySuperweapon
 	Inherits@shape: ^3x3Shape
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 120
@@ -4271,7 +4393,7 @@ steel_fedturret:
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGround
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
@@ -4313,13 +4435,22 @@ steel_fedturret:
 	DetectCloaked:
 		Range: 3333
 	ProvidesPrerequisite@buildingname:
-
+	MobSpawnerMaster@drone1:
+		Actors: steel_scapel
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		PauseOnCondition: disabled
+   		RequiresCondition: upsteel_scapel    
+	GrantConditionOnPrerequisite@upsteel_scapel:
+		Condition: upsteel_scapel
+		Prerequisites: upsteel_scapel
 steel_fedaa:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAir
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
@@ -4361,14 +4492,23 @@ steel_fedaa:
 	DetectCloaked:
 		Range: 3333
 	ProvidesPrerequisite@buildingname:
-
+	MobSpawnerMaster@drone1:
+		Actors: steel_scapelaa
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		PauseOnCondition: disabled
+   		RequiresCondition: upsteel_scapel    
+	GrantConditionOnPrerequisite@upsteel_scapel:
+		Condition: upsteel_scapel
+		Prerequisites: upsteel_scapel
 steel_qcannon:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^AdvancedDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetGround
-	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@EMP: ^TurretEMP
 	Buildable:
 		Queue: Defence, RADefence
@@ -4410,15 +4550,122 @@ steel_qcannon:
 		Range: 15000
 	DetectCloaked:
 		Range: 7500
-
+	MobSpawnerMaster@drone1:
+		Actors: steel_scapel
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		PauseOnCondition: disabled
+   		RequiresCondition: upsteel_scapel
+	MobSpawnerMaster@drone2:
+		Actors: steel_scapel
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		PauseOnCondition: disabled
+   		RequiresCondition: upsteel_scapel    
+	GrantConditionOnPrerequisite@upsteel_scapel:
+		Condition: upsteel_scapel
+		Prerequisites: upsteel_scapel
+##############################################
+#   Red Alert 2 Underwater Structure
+##############################################
 ##############################################
 #   Red Alert 2 Consortium Infantry
 ##############################################
+^SteelUnderwaterTransit:
+	Cloak@underwater:
+		DetectionTypes: Underwater, GroundCloak, Cloak
+		InitialDelay: 0
+		CloakDelay: 15
+		CloakedCondition: underwater
+		PauseOnCondition: disabled
+		RequiresCondition: !cloak-force-disabled && !underbridge && inwater
+		IsPlayerPalette: true
+		CloakSound: vnavupa.wav
+		UncloakSound: vnavupa.wav
+	GrantConditionOnTerrain:
+		Condition: inwater
+		TerrainTypes: Water
+	Targetable@water:
+		TargetTypes: Water, Ship, Submarine
+		RequiresCondition: inwater
+
+^SteelDefensiveDrones:
+	Inherits: ^RANeutralPlane
+	-Selectable:
+	Interactable:
+	RevealsShroud:
+		Range: 3c0
+		Type: CenterPosition
+	Health:
+		HP: 9000
+	Aircraft:
+		CruiseAltitude: 1c256
+		InitialFacing: 192
+		TurnSpeed: 8
+		Speed: 75
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+		CanForceLand: false
+		VTOL: true
+	AttackAircraft:
+		AttackType: Hover
+		PersistentTargeting: false
+		FacingTolerance: 20
+	-SpawnActorOnDeath:
+	-ActorLostNotification:
+	-UpdatesPlayerStatistics:
+	GrantConditionOnPrerequisite@usaupdronearmor:
+		Condition: usaupdronearmor
+		Prerequisites: usaupdronearmor
+	DamageMultiplier@usaupdronearmor:
+		RequiresCondition: usaupdronearmor
+		Modifier: 75
+	MobSpawnerSlave:
+		GrantConditionWhenMasterIsDisabled: notenabled
+		GrantConditionWhenMasterIsPaused: paused
+	KillsSelf@masterdisabled:
+		RequiresCondition: paused
+	RejectsOrders:
+	-MapEditorData:
+steel_scapel:
+	Inherits: ^SteelDefensiveDrones
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Scapel
+	Armament@PRIMARY:
+		Weapon: SteelCloneGun
+		LocalOffset: 200,0,0
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	AttackAircraft:
+		Armaments: primary, pointdefense
+	RenderSprites:
+		PlayerPalette: playerra2rot
+steel_scapelaa:
+	Inherits: ^SteelDefensiveDrones
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: AA Scapel
+	Armament@PRIMARY:
+		Weapon: SteelInfRailgunAA
+		LocalOffset: 200,0,0
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	AttackAircraft:
+		Armaments: primary, pointdefense
+	RenderSprites:
+		PlayerPalette: playerra2rot
+		Image: steel_scapel
 steel_qmcv:
 	Inherits: ^Vehicle
 	Inherits@Template: ^SupportVehicleTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@mcv: ^MCV
+	Inherits@underwater: ^SteelUnderwaterTransit
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -4435,7 +4682,7 @@ steel_qmcv:
 		DecorationBounds: 1536, 1536
 	Mobile:
 		Speed: 75
-		Locomotor: heavywheeled
+		Locomotor: amphibius
 	Health:
 		HP: 150000
 	Repairable:
@@ -4452,7 +4699,7 @@ steel_qmcv:
 		NoTransformNotification: BuildingCannotPlaceAudio
 	SelectionDecorations:
 	Voiced:
-		VoiceSet: PRCMCCVoice
+		VoiceSet: SteelConsortiumMCVVoice
 	DeliversCash:
 		Payload: 1750
 	ProvidesPrerequisite@faction:
@@ -4472,13 +4719,13 @@ steel_qmin:
 	Harvester:
 		Voice: Move
 		PipCount: 10
-		BaleLoadDelay: 4
+		BaleLoadDelay: 8
 		BaleUnloadDelay: 1
 		SearchFromProcRadius: 25
 		SearchFromHarvesterRadius: 10
 		EmptyCondition: no-tiberium
 	StoresResources:
-		Capacity: 10
+		Capacity: 20
 	Health:
 		HP: 100000
 	Repairable:
@@ -4547,6 +4794,49 @@ steel_fedinf:
 	-TakeCover:
 	Voiced:
 		VoiceSet: SteelCloneVoice
+	DeliversCash:
+		Payload: 60
+	RenderSprites:
+		PlayerPalette: playerra2cons
+steel_board_inf:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Hover Board Grenadier
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~steel_qabarr
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Locomotor: hover
+		Speed: 126
+	Hovers:
+	Health:
+		HP: 15000
+	Armament@PRIMARY:
+		Weapon: SteelMakoGun
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: SteelMakoGun
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: SteelGarrison
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 0
+	-TakeCover:
+	Voiced:
+		VoiceSet: SteelSkaterVoice
 	DeliversCash:
 		Payload: 60
 	RenderSprites:
@@ -4708,7 +4998,7 @@ steel_qinf:
 		Modifier: 75
 		RequiresCondition: deployed && upra2gi
 	Voiced:
-		VoiceSet: SteelCloneVoice
+		VoiceSet: SteelSentinelVoice
 	DeliversCash:
 		Payload: 150
 	QuantizeFacingsFromSequence:
@@ -4724,7 +5014,8 @@ steel_fedeng:
 	RenderSprites:
 		Image: steel_fedeng
 	-TakeCover:
-
+	Voiced:
+		VoiceSet: SteelEngVoice
 steel_mako:
 	Inherits: ^Tank
 	Inherits@Template: ^ScoutVehicleTemplate
@@ -4829,6 +5120,7 @@ steel_mega:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Inherits@MC: ^MCImmune
+	Inherits@underwater: ^SteelUnderwaterTransit
 	Selectable:
 		Bounds: 1250, 1750, 0, -250
 	Valued:
@@ -4841,8 +5133,8 @@ steel_mega:
 		Queue: Vehicle, RAVehicle
 		Description: actor-aamecha.description
 	Mobile:
-		Locomotor: heavytracked
-		Speed: 66
+		Locomotor: amphibius
+		Speed: 67
 		TurnSpeed: 11
 	Health:
 		HP: 160000
@@ -4868,6 +5160,65 @@ steel_mega:
 		VoiceSet: SteelInspectorVoice
 	RenderSprites:
 		PlayerPalette: playerra2cons
+steel_beholder:
+	Inherits: ^Tank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Selectable:
+		Bounds: 1250, 1750, 0, -250
+	Valued:
+		Cost: 2400
+	Tooltip:
+		Name: Beholder
+	Buildable:
+		BuildPaletteOrder: 75
+		Prerequisites: ~steel_qaweap, steel_qatech
+		Queue: Vehicle, RAVehicle
+		Description: actor-aamecha.description
+	Mobile:
+		Locomotor: hover
+		Speed: 150
+		TurnSpeed: 11
+	Hovers:
+		Ticks: 10
+		BobDistance: -64
+		InitialHeight: 384
+	Health:
+		HP: 160000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Armament@1:
+		Weapon: SteelBeholderLaser
+		LocalOffset: 11,-444,111, 11,444,111
+	AttackFrontal:
+		FacingTolerance: 10
+	WithInfantryBody:
+		IdleSequences: idle
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
+		DefaultAttackSequence: shoot
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 4
+	Voiced:
+		VoiceSet: SteelTCUVoice
+	RenderSprites:
+		PlayerPalette: playerra2rot
+	DeathSounds:
+	WithIdleOverlay@shield1:
+		Sequence: shield-complete-big
+		StartSequence: shield-starts-big
+	WithIdleOverlay@shield_damage:
+		Sequence: shield-complete-big
 steel_qtank:
 	Inherits: ^Tank
 	Inherits@Template: ^ScoutVehicleTemplate
@@ -4967,7 +5318,7 @@ steel_qutnk:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
-	Inherits@SHADOWS: ^Shadows
+	Inherits@underwater: ^SteelUnderwaterTransit
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -4978,7 +5329,7 @@ steel_qutnk:
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
-		Locomotor: tracked
+		Locomotor: amphibius
 		Speed: 90
 		TurnSpeed: 20
 	Health:
@@ -5021,7 +5372,72 @@ steel_qutnk:
 	RenderSprites:
 		PlayerPalette: playerra2cons
 	WithMoveAnimation:
-
+steel_katy:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@underwater: ^SteelUnderwaterTransit
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Katy Tank
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~steel_qaweap, steel_qatech, ~upsteel_katy
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Locomotor: amphibius
+		Speed: 45
+		TurnSpeed: 15
+	Health:
+		HP: 250000
+	Repairable:
+		HpPerStep: 7500
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 15 #3
+	Armament:
+		Name: primary
+		Weapon: SteelKatyCannons
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1280,-250,111, 1280,250,111
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: SteelKatyCannons
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1280,-250,111, 1280,250,111
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: SteelQuantumTankVoice
+	DeliversCash:
+		Payload: 350
+	RenderSprites:
+		PlayerPalette: playerra2
+	WithIdleOverlay@shield1:
+		Sequence: shield-complete-big
+		StartSequence: shield-starts-big
+	WithIdleOverlay@shield_damage:
+		Sequence: shield-complete-big
 steel_potnk:
 	Inherits: ^Tank
 	Inherits@Template: ^HighTechTankTemplate
@@ -5033,19 +5449,20 @@ steel_potnk:
 	Inherits@crush: ^VehicleCrusher
 	Inherits@cargo: ^OpenToppedVehicle
 	Inherits@bot: ^BotAutoDeployEvacuateCargo
+	Inherits@underwater: ^SteelUnderwaterTransit
 	Selectable:
 		Bounds: 1250, 1750, 0, -250
 	Valued:
 		Cost: 3000
 	Tooltip:
-		Name: Power Tank
+		Name: Poseidon Tank
 	Buildable:
 		BuildPaletteOrder: 75
 		Prerequisites: ~steel_qaweap, steel_qatech
 		Queue: Vehicle, RAVehicle
 		Description: actor-aamecha.description
 	Mobile:
-		Locomotor: heavytracked
+		Locomotor: amphibius
 		Speed: 66
 		TurnSpeed: 12
 	Health:
@@ -5074,7 +5491,7 @@ steel_potnk:
 	Passenger:
 		Weight: 4
 	Voiced:
-		VoiceSet: SteelConsortiumTankVoice
+		VoiceSet: SteelPowerTankVoice
 	Cargo:
 		UnloadVoice: Move
 		Types: Infantry, Hacker, Fremen
@@ -5082,7 +5499,11 @@ steel_potnk:
 		InitialUnits: steel_fedinf,steel_fedinf,steel_fedinf,steel_qinf,steel_qinf,steel_qinf
 	RenderSprites:
 		PlayerPalette: playerra2cons
-
+	WithIdleOverlay@shield1:
+		Sequence: shield-complete-big
+		StartSequence: shield-starts-big
+	WithIdleOverlay@shield_damage:
+		Sequence: shield-complete-big
 steel_inspect:
 	Inherits: ^Helicopter
 	Inherits@Template: ^LineBreakerTemplate
@@ -5091,12 +5512,10 @@ steel_inspect:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@priority: ^PrioritizeBuilding
-	Inherits@rad: ^RA2RadShells
-	Inherits@armor: ^RA2SovietArmor
 	Valued:
 		Cost: 5000
 	Tooltip:
-		Name: Inspector
+		Name: Empress
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -5141,10 +5560,14 @@ steel_inspect:
 	SpawnActorOnDeath:
 		Actor: steel_inspect.Husk
 	Voiced:
-		VoiceSet: SteelInspectorVoice
+		VoiceSet: SteelEmpressVoice
 	RenderSprites:
 		PlayerPalette: playerra2
-
+	WithIdleOverlay@shield1:
+		Sequence: shield-complete-big
+		StartSequence: shield-starts-big
+	WithIdleOverlay@shield_damage:
+		Sequence: shield-complete-big
 steel_inspect.Husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -5193,8 +5616,8 @@ steel_twister:
 		Speed: 175
 		IdleTurnSpeed: 10
 		IdleSpeed: 100
-		TakeoffSounds: vintupa.wav
-		LandingSounds: vintdna.wav
+		TakeoffSounds: twisSounda.wav, twisSoundb.wav
+		LandingSounds: twisSounda.wav, twisSoundb.wav
 		CanHover: false
 		CanSlide: false
 		VTOL: true
@@ -5235,7 +5658,7 @@ steel_twister:
 		Offset: -100,-256,0
 		TrailLength: 15
 	Voiced:
-		VoiceSet: HarrierVoice
+		VoiceSet: SteelAircraftVoice
 	DeathSounds:
 	AttackAircraft:
 		Voice: Attack
@@ -5268,6 +5691,87 @@ steel_twister.Husk:
 		PlayerPalette: playerra2cons
 
 
+steel_grun:
+	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiAir: ^PrioritizeAir
+	Buildable:
+		Queue: Vehicle, Aircraft, RAAircraft
+		BuildPaletteOrder: 20
+		Prerequisites: ~steel_qtradr
+		Description: actor-aapelican.description
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Flying Turret
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 240000
+	ChangesHealth@SelfHealing:
+		Step: 32
+	Armament@PRIMARY:
+		Weapon: SteelAirTurretAA
+		LocalOffset: 85,213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 180
+		PersistentTargeting: false
+		AttackType: Hover
+	Aircraft:
+		Speed: 120
+		TurnSpeed: 24
+	SelectionDecorations:
+	WithMuzzleOverlay:
+	SpawnActorOnDeath:
+		Actor: steel_grun.Husk
+	LeavesTrails:
+		Offsets: -427,0,0
+		Image: smokey
+		MovingInterval: 3
+		StationaryInterval: 3
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+		RequiresCondition: enable-smoke
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: SteelInspectorVoice
+	GrantConditionOnDamageState@SmokeTrail:
+		Condition: enable-smoke
+	AmmoPool:
+		Ammo: 6
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 100
+		Count: 2
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 6
+	Explodes:
+		Weapon: LargeHeliExplode
+	RenderSprites:
+		PlayerPalette: playerra2rot
+	Turreted:
+		TurnSpeed: 20 #3
+	WithSpriteTurret:
+steel_grun.Husk:
+	Inherits: ^HelicopterHusk
+	Tooltip:
+		Name: Flying Turret
+	Aircraft:
+		TurnSpeed: 24
+		Speed: 120
+	RenderSprites:
+		Image: steel_grun
+		PlayerPalette: playerra2rot
+	Turreted:
+
 steel_dagger:
 	Inherits: ^Tank
 	Inherits@Template: ^ScoutVehicleTemplate
@@ -5282,7 +5786,7 @@ steel_dagger:
 		Name: Dagger
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~steel_qaweap, steel_qatech
+		Prerequisites: ~steel_qaweap, steel_qatech, ~upsteel_dagger
 		Queue: Vehicle, RAVehicle
 		Description: actor-aaquas.description
 	Mobile:
@@ -5481,6 +5985,47 @@ steel_cobra:
 	DeliversCash:
 		Payload: 250
 
+steel_savi:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@underwater: ^SteelUnderwaterTransit
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Support Shield Generator
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~steel_qaweap, steel_qatech
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Locomotor: amphibius
+		Speed: 75
+		TurnSpeed: 15
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Medium
+	SelectionDecorations:
+	Selectable:
+	Voiced:
+		VoiceSet: SteelQuantumTankVoice
+	DeliversCash:
+		Payload: 350
+	RenderSprites:
+		PlayerPalette: playerra2cons
+	WithMoveAnimation:
+	ProximityExternalCondition@shieldgen:
+		Range: 12c0
+		Condition: shieldgen
+		EnableSound: shielded_on.aud
+		DisableSound: shielded_on.aud
+		RequiresCondition: !disabled && !lowpower
 #######################################
 # RA2 Asian Commander Tree
 #######################################
@@ -5540,3 +6085,58 @@ upsteel_conssupp4:
 	ProvidesPrerequisite:
 
 
+
+### Military tree
+upsteel_scapel:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Scapel Defenders
+	Buildable:
+		BuildPaletteOrder: 98
+		Queue: Promotions
+		Description: Spawns Scapels in your defensive structures.
+		Prerequisites: ~steel_qacst, !upsteel_scapel, rank1
+	RenderSprites:
+		Image: steel_scapel
+	ProvidesPrerequisite:
+
+upsteel_dagger:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Dagger Artillery
+	Buildable:
+		BuildPaletteOrder: 101
+		Queue: Promotions
+		Description: Enables construction of Daggers.
+		Prerequisites: ~steel_qacst, upsteel_scapel, rank1
+	RenderSprites:
+		Image: steel_dagger
+	ProvidesPrerequisite:
+
+upsteel_katy:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Katy Tank
+	Buildable:
+		BuildPaletteOrder: 104
+		Queue: Promotions
+		Description: Unlocks Chaos Mines support power.
+		Prerequisites: ~steel_qacst, upsteel_dagger, rank1
+	RenderSprites:
+		Image: steel_katy
+	ProvidesPrerequisite:
+upsteel_emp:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Emp Cannon
+	Buildable:
+		BuildPaletteOrder: 107
+		Queue: Promotions
+		Icon: icon2
+		Description: Allows the use of EMP cannons.
+		Prerequisites: ~steel_qacst, upsteel_katy, rank1
+	RenderSprites:
+		Image: steel_qatech
+	ProvidesPrerequisite:
+
+### Tech tree

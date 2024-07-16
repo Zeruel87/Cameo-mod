@@ -1349,6 +1349,7 @@
 	Inherits@AdvancedTargeting: ^AdvancedTargeting
 	Inherits@ivan: ^BombAttachable
 	Inherits@cloak: ^StealthGenCloakable
+	Inherits@shielded: ^ShieldedShieldable
 	Inherits@chrono: ^ChronoBeamable
 	Inherits@base-reveal: ^Base-reveal
 	Huntable:
@@ -1379,7 +1380,11 @@
 	RevealOnDeath:
 	ActorStatValues:
 		Stats: Armor, Sight, Speed
-
+	WithIdleOverlay@shield1:
+		Sequence: shield-complete
+		StartSequence: shield-starts
+	WithIdleOverlay@shield_damage:
+		Sequence: shield-complete
 ^Vehicle:
 	Inherits: ^BasicUnit
 	Inherits@2: ^IronCurtainable
@@ -2165,7 +2170,12 @@
 	TeleportNetworkTransportable:
 	ActorStatValues:
 		Stats: Armor, Sight, Speed
-
+	WithIdleOverlay@shield1:
+		Sequence: shield-complete-infantry
+		StartSequence: shield-starts-infantry
+		Palette: shield60
+	WithIdleOverlay@shield_damage:
+		Sequence: shield-complete-infantry
 ^AffectedByTiberium:
 	DamagedByTerrain:
 		Terrain: Tiberium, BlueTiberium
@@ -2747,6 +2757,7 @@
 	Inherits@bounty: ^GlobalBounty
 	Inherits@ivan: ^BombAttachable
 	Inherits@cloak: ^StealthGenCloakable
+	Inherits@shielded: ^ShieldedShieldable
 	Inherits@chrono: ^ChronoBeamable
 	Inherits@DisabledOverlay: ^DisabledOverlay
 	Building:
@@ -2866,6 +2877,11 @@
 			powerdown: -10, 0
 	ActorStatValues:
 		Stats: Armor, Sight, Power
+	WithIdleOverlay@shield1:
+		Sequence: shield-complete-big
+		StartSequence: shield-starts-big
+	WithIdleOverlay@shield_damage:
+		Sequence: shield-complete-big
 
 ^CivBuilding:
 	Inherits: ^Building
@@ -3494,6 +3510,11 @@
 	-GivesBuildableArea:
 	-CommandBarBlacklist:
 	-AcceptsDeliveredCash:
+	WithIdleOverlay@shield1:
+		Sequence: shield-complete
+		StartSequence: shield-starts
+	WithIdleOverlay@shield_damage:
+		Sequence: shield-complete
 
 ^DisabledOverlay:
 	WithColoredOverlay@IDISABLE:
@@ -5222,6 +5243,34 @@ CPQDEBUGDUMMY:
 	#ProvidesPrerequisite@FSdrain:
 	#	Prerequisite: forceshielddrain
 	#	RequiresCondition: forceshield
+
+^ShieldedShieldable:
+	Shielded:
+		MaxStrength: 150000
+		RegenDelay: 125
+		RegenAmount: 150
+		RegenInterval: 1
+		ShieldsUpCondition: shielded
+		RequiresCondition: !disabled && shieldgen
+		SelectionBarColor: 8888FFFF
+	ExternalCondition@shieldgen:
+		Condition: shieldgen
+	ExternalCondition@shieldhit:
+		Condition: shieldhit
+	WithIdleOverlay@shield1:
+		RequiresCondition: !disabled && shielded && !shieldhit
+		Image: energyshields
+		Sequence: shield-complete
+		StartSequence: shield-starts
+		Palette: shield60
+	WithIdleOverlay@shield_damage:
+		RequiresCondition: !disabled && shielded && shieldhit
+		Image: energyshields
+		Sequence: shield-complete
+		Palette: shield30
+	Targetable@Shielded:
+		TargetTypes: Shielded
+		RequiresCondition: shielded
 
 ^TDSpawnActorsOnSell:
 	SpawnActorsOnSell:
