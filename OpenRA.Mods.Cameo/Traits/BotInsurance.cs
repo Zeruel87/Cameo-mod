@@ -82,7 +82,7 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (string.IsNullOrEmpty(info.Condition))
 				return;
 
-			var enabled = (playerResources.Cash < info.Threshold && ticks < 0);
+			var enabled = (playerResources.GetCashAndResources() < info.Threshold && ticks < 0);
 			if (enabled && conditionToken == Actor.InvalidConditionToken)
 				conditionToken = self.GrantCondition(info.Condition);
 			else if (!enabled && conditionToken != Actor.InvalidConditionToken)
