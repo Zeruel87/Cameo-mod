@@ -1384,6 +1384,37 @@ power-chaos =
    .name = Chaos Storm
    .description = Releases chaos gas on a target area.
 
+actor-steel_board_inf =
+   .description = Armed with anti-vehicle grenades.
+
+actor-steel_mako =
+   .description = Fast hoverbike armed with an anti-tank cannon.
+
+actor-steel_manta =
+   .description = Anti-infantry and anti-air vehicle.
+
+actor-steel_qtank =
+   .description = Main battle tank.
+    Deploy to switch to an artillery gun.
+
+actor-steel_beholder =
+   .description = Armed with powerful anti-ground lasers.
+
+actor-steel_katy =
+   .description = Heavy anti-ground tank.
+
+actor-steel_mega =
+   .description = Melee fighting robot.
+
+actor-steel_savi =
+   .description = Protects nearby units with shields.
+
+actor-steel_grun =
+   .description = Anti-air turret.
+
+actor-steel_inspect =
+   .description = Armed with an ion cannon.
+
 actor-shock_infantry =
    .description = Armed with a shock gun.
        Damages enemies in a line.
