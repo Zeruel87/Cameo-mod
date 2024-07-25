@@ -1,0 +1,367 @@
+World:
+	FactionCA@xcom:
+		Name: XCOM #faction-xcom.name
+		InternalName: xcom
+		Game: XCOM
+		Side: XCOM
+		Description: Extraterrestial Combat Unit #faction-xcom.description
+
+	####################################################################################################
+	#		XCOM
+	####################################################################################################
+
+	StartingUnits@mcvonlyxcom:
+		Class: none
+		ClassName: MCV Only
+		Factions: xcom
+		BaseActor: XCOMHQ
+	StartingUnits@defaultxcom:
+		Class: light
+		ClassName: Light Support
+		Factions: xcom
+		BaseActor: XCOMHQ
+		SupportActors: rae1,rae1,rae1,rae3,rae3,rajeep,1tnk
+	StartingUnits@heavyxcom:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: xcom
+		BaseActor: XCOMHQ
+		SupportActors: rae1,rae1,rae1,rae3,rae3,rajeep,1tnk,2tnk,2tnk,2tnk
+
+####################################################################################################
+#		INFANTRY
+####################################################################################################
+
+^GainsExperienceXCOM:
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+		Conditions:
+			200: rank-veteran
+			400: rank-veteran
+			600: rank-veteran
+			800: rank-veteran
+
+^GainsExperienceXCOMBuilding:
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+		Conditions:
+			250: rank-veteran
+			500: rank-veteran
+			750: rank-veteran
+			1000: rank-veteran
+
+xcomassaultranger:
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@exp: ^GainsExperienceXCOM
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Assault Ranger
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~xcomhq
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Speed: 76
+	Health:
+		HP: 20000
+	ChangesHealth@SelfHealing:
+		Step: 16
+	Armament@PRIMARY: ##########
+		Weapon: TDShotgun
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: TDShotgun
+		MuzzleSequence: garrison-muzzle
+	WithInfantryBody:
+		IdleSequences: idle1,idle2,idle3,idle4
+	DamageMultiplier@xcom:
+		Modifier: 20
+	FirepowerMultiplier@xcom:
+		Modifier: 500
+	RenderSprites:
+		Image: gdishotgunner
+
+xcomheavygrenadier:
+	Inherits: ^Soldier
+	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceXCOM
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@editorhack: ^DeployableInfantryEditor
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@bot: ^BotAutoDeploySwitchMode
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Heavy Grenadier
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~xcomhq
+		Queue: Infantry, RAInfantry
+		Description: actor-ggi.description
+	Mobile:
+		Speed: 50
+	Health:
+		HP: 30000
+	ChangesHealth@SelfHealing:
+		Step: 24
+	RenderRangeCircle:
+	Armament@PRIMARY:
+		Weapon: MissileSoldierWeapon
+		LocalOffset: 256,43,341
+		FireDelay: 5
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: MissileSoldierWeapon
+	WithSpriteBody:
+		Sequence: dot
+		Name: dot
+	WithInfantryBody:
+		-DefaultAttackSequence:
+		AttackSequences:
+			primary: shoot
+	Voiced:
+		VoiceSet: GGIVoice
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	DamageMultiplier@xcom:
+		Modifier: 20
+	FirepowerMultiplier@xcom:
+		Modifier: 500
+	RenderSprites:
+		Image: yrggi
+
+xcomsharpshooter:
+	Inherits: ^Soldier
+	Inherits@Template: ^SniperInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceXCOM
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Sharpshooter
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~xcomhq
+		Queue: Infantry, RAInfantry
+		Description: actor-ra2snipe.description
+	Mobile:
+		Speed: 50
+	Health:
+		HP: 10000
+	ChangesHealth@SelfHealing:
+		Step: 8
+	Armament@PRIMARY:
+		Weapon: RA2AWP
+		LocalOffset: 0,0,427
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2AWP
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: RA2SniperVoice
+	DamageMultiplier@xcom:
+		Modifier: 33
+	FirepowerMultiplier@xcom:
+		Modifier: 333
+	ReloadDelayMultiplier@xcom:
+		Modifier: 33
+	RangeMultiplier@xcom:
+		Modifier: 100
+	RenderSprites:
+		Image: ra2snipe
+
+####################################################################################################
+#		Buildings
+####################################################################################################
+
+XCOMHQ:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Inherits@detect: ^GenericAllDetector
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: XCOM HQ
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: tscupd00.aud
+	Health:
+		HP: 1000000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 10000
+	Production@NORMAL:
+		Produces: Building, Defence, Infantry
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence, RAInfantry
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ParallelProductionQueue:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionQueue@Building:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionQueue@Defense:
+		Type: Defence
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@Infantry:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@Building:
+		ProductionType: Building
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@Defence:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAInfantry:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RABuilding:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADefence:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	BaseBuilding:
+	BaseProvider:
+		Range: 15c0
+	WithBuildingPlacedAnimation:
+	ProvidesPrerequisite@buildingname:
+	WithBuildingBib:
+	RallyPoint: ##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0 #-1323,1280,0
+		ExitCell: 0,2
+		Facing: 540
+	ProvidesRadar:
+		RequiresCondition: !jammed
+	Power:
+		Amount: 100
+	SlaveMinerSpawnerMaster:
+		Actors: xcom_drmn, xcom_drmn, xcom_drmn, xcom_drmn
+		SpawnOffset: 511,511,0, 511,511,0, 511,511,0, 511,511,0
+	Refinery:
+		TickRate: 15
+	DockHost:
+		Type: Unload
+		DockAngle: 640
+		DockOffset: 0,724,0
+		MaxQueueLength: 10
+	StoresResources:
+		Capacity: 10000
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 20
+		FullSequence: pip-yellow
+	RenderSprites:
+		Image: sccommandcenter
+
+xcom_drmn:
+	Inherits: HARV
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Selectable:
+		Bounds: 512, 512
+		DecorationBounds: 512, 512
+	Valued:
+		Cost: 250
+	Tooltip:
+		Name: Drone Miner
+	Buildable:
+		BuildDuration: 125
+		BuildDurationModifier: 100
+		Prerequisites: ~aa_cgrefn
+		Queue: Vehicle, RAVehicle
+		Description: template-harvester.description
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 1250
+	ChangesHealth@SelfHealing:
+		Step: 10
+	WithDockingAnimation:
+	Voiced:
+		VoiceSet: AsianDroneVoice
+	DeliversCash:
+		Payload: 225
+	RenderSprites:
+		PlayerPalette: playerra2
+	Mobile:
+		Speed: 80
+		TurnSpeed: 16
+	Harvester:
+		BaleLoadDelay: 8
+		BaleUnloadDelay: 8
+		SearchFromProcRadius: 25
+		SearchFromHarvesterRadius: 10
+	DockClientManager:
+		OccupancyCostModifier: 0
+	StoresResources:
+		Capacity: 4
+	WithStoresResourcesPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 1
+	Mobile:
+		Locomotor: chem
+	SlaveMinerSpawnerSlave:
+	RenderSprites:
+		Image: aa_drmn
