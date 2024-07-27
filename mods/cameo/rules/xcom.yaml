@@ -67,21 +67,54 @@ xcomassaultranger:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 10
+		BuildPaletteOrder: 1
 		Prerequisites: ~xcomhq
 		Queue: Infantry, RAInfantry
 		Description: template-scout-infantry.description
 	Mobile:
-		Speed: 76
+		Speed: 75
 	Health:
 		HP: 20000
+	GrantConditionOnPrerequisite@xcom_infirmary:
+		Condition: xcom_infirmary
+		Prerequisites: xcom_infirmary
 	ChangesHealth@SelfHealing:
 		Step: 16
+		RequiresCondition: xcom_infirmary
+	Production:
+		Produces: Addons
+		RequiresCondition: !ShotgunUpgrade
+	ProductionBar:
+		ProductionType: Addons
+	ProductionQueue:
+		Type: Addons
+		Group: Addons
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+	GrantConditionOnProduction@ShotgunUpgrade:
+		Condition: ShotgunUpgrade
+		Actors: ShotgunUpgrade
 	Armament@PRIMARY: ##########
-		Weapon: TDShotgun
+		Weapon: XCOMCarbine
+		RequiresCondition: !ShotgunUpgrade
+	Armament@Secondary: ##########
+		Weapon: XCOMShotgun
+		RequiresCondition: ShotgunUpgrade
+	Armament@AA: ##########
+		Weapon: XCOMCarbineAA
 	Armament@GARRISONED: ##########
 		Name: garrisoned
-		Weapon: TDShotgun
+		Weapon: XCOMCarbine
+		MuzzleSequence: garrison-muzzle
+	Armament@GARRISONED2: ##########
+		Name: garrisoned
+		Weapon: XCOMShotgun
+		MuzzleSequence: garrison-muzzle
+		RequiresCondition: ShotgunUpgrade
+	Armament@GARRISONEDAA: ##########
+		Name: garrisoned
+		Weapon: XCOMCarbineAA
 		MuzzleSequence: garrison-muzzle
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
@@ -93,6 +126,22 @@ xcomassaultranger:
 		Amount: -1
 	RenderSprites:
 		Image: gdishotgunner
+ShotgunUpgrade:
+	Tooltip:
+		Name: Shotgun Upgrade
+	Buildable:
+		Prerequisites: ~xcomhq
+		BuildPaletteOrder: 1
+		Queue: Addons
+		Description: Allows the Assault Ranger to use the Shotgun
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: upscrefinery1
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
 
 xcomheavygrenadier:
 	Inherits: ^Soldier
@@ -112,7 +161,7 @@ xcomheavygrenadier:
 	Tooltip:
 		Name: Heavy Grenadier
 	Buildable:
-		BuildPaletteOrder: 20
+		BuildPaletteOrder: 2
 		Prerequisites: ~xcomhq
 		Queue: Infantry, RAInfantry
 		Description: actor-ggi.description
@@ -120,8 +169,12 @@ xcomheavygrenadier:
 		Speed: 50
 	Health:
 		HP: 30000
+	GrantConditionOnPrerequisite@xcom_infirmary:
+		Condition: xcom_infirmary
+		Prerequisites: xcom_infirmary
 	ChangesHealth@SelfHealing:
 		Step: 24
+		RequiresCondition: xcom_infirmary
 	RenderRangeCircle:
 	Armament@PRIMARY:
 		Weapon: MissileSoldierWeapon
@@ -166,7 +219,7 @@ xcomsharpshooter:
 	Tooltip:
 		Name: Sharpshooter
 	Buildable:
-		BuildPaletteOrder: 40
+		BuildPaletteOrder: 3
 		Prerequisites: ~xcomhq
 		Queue: Infantry, RAInfantry
 		Description: actor-ra2snipe.description
@@ -174,8 +227,12 @@ xcomsharpshooter:
 		Speed: 50
 	Health:
 		HP: 10000
+	GrantConditionOnPrerequisite@xcom_infirmary:
+		Condition: xcom_infirmary
+		Prerequisites: xcom_infirmary
 	ChangesHealth@SelfHealing:
 		Step: 8
+		RequiresCondition: xcom_infirmary
 	Armament@PRIMARY:
 		Weapon: RA2AWP
 		LocalOffset: 0,0,427
@@ -280,6 +337,7 @@ XCOMHQ:
 		QueuedAudio: Training
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
+		BuildDurationModifier: 50
 		InfiniteBuildLimit: 10
 		AlwaysShowForFactions: xcom
 	ProductionBar@Infantry:
@@ -360,7 +418,7 @@ xcom_barracks:
 	Tooltip:
 		Name: Barracks
 	Buildable:
-		BuildPaletteOrder: 1
+		BuildPaletteOrder: 2
 		Prerequisites: xcom_power_generator
 		Queue: Building, RABuilding
 		Description: upgrade-spice_sifter.description
@@ -374,7 +432,7 @@ xcom_mining_bay:
 	Tooltip:
 		Name: Mining Bay
 	Buildable:
-		BuildPaletteOrder: 1
+		BuildPaletteOrder: 3
 		Prerequisites: xcom_power_generator
 		Queue: Building, RABuilding
 		Description: upgrade-spice_sifter.description
@@ -383,6 +441,20 @@ xcom_mining_bay:
 		Cost: 1000
 	RenderSprites:
 		Image: d2k_spice_sifter
+
+xcom_infirmary:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Infirmary
+	Buildable:
+		BuildPaletteOrder: 3
+		Prerequisites: xcom_power_generator
+		Queue: Building, RABuilding
+		Description: Automatically heals all XCOM Soldiers
+	Valued:
+		Cost: 1750
+	RenderSprites:
+		Image: medi
 
 ####################################################################################################
 #		Vehicles
