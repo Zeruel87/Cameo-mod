@@ -57,7 +57,7 @@ xcomassaultranger:
 	Inherits@Template: ^MeleeInfantryTemplate
 	Inherits@exp: ^GainsExperienceXCOM
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Valued:
@@ -92,6 +92,7 @@ xcomassaultranger:
 		QueueLimit: 1
 		ItemLimit: 1
 		DisplayOrder: 0
+		AlwaysShowForFactions: xcom
 	GrantConditionOnProduction@ShotgunUpgrade:
 		Condition: ShotgunUpgrade
 		Actors: ShotgunUpgrade
@@ -234,11 +235,11 @@ xcomsharpshooter:
 		Step: 8
 		RequiresCondition: xcom_infirmary
 	Armament@PRIMARY:
-		Weapon: RA2AWP
+		Weapon: XCOMAWP
 		LocalOffset: 0,0,427
 	Armament@GARRISONED:
 		Name: garrisoned
-		Weapon: RA2AWP
+		Weapon: XCOMAWP
 	AttackFrontal:
 		FacingTolerance: 0
 	Voiced:
@@ -262,11 +263,15 @@ xcomsharpshooter:
 
 XCOMHQ:
 	Inherits: ^BaseBuilding
+	Inherits: ^BasicDefense
+	Inherits@selection: ^AdvancedDefenseTemplate
+	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@shape: ^3x3Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
 	Inherits@conyard: ^Conyard
 	Inherits@detect: ^GenericAllDetector
+	Inherits: ^CashTricklerMultipliers
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -356,7 +361,7 @@ XCOMHQ:
 	ProvidesPrerequisite@buildingname:
 	WithBuildingBib:
 	RallyPoint: ##########
-		Path: 0,0
+		Path: 0,2
 	Exit@1:
 		SpawnOffset: 0,1280,0 #-1323,1280,0
 		ExitCell: 0,0
@@ -366,6 +371,12 @@ XCOMHQ:
 	Power:
 		Amount: 4
 		RequiresCondition: xcom_barracks
+	GrantConditionOnPrerequisite@xcom_officer_training_school:
+		Condition: xcom_officer_training_school
+		Prerequisites: xcom_officer_training_school
+	Power@xcom_officer_training_school:
+		Amount: 2
+		RequiresCondition: xcom_officer_training_school
 	GrantConditionOnPrerequisite@xcom_mining_bay:
 		Condition: xcom_mining_bay
 		Prerequisites: xcom_mining_bay
@@ -376,6 +387,84 @@ XCOMHQ:
 		IdleCheckTick: 125
 		ShouldSpawnInitialLoad: false
 		PauseOnCondition: !xcom_mining_bay
+	AttackTurreted:
+	Turreted:
+		TurnSpeed: 1023
+	Armament:
+		Weapon: GLStingerTargeting
+	BaseSpawnerMaster:
+		Actors: medium_gun_turret.xcom, medium_gun_turret.xcom
+		SpawnOffset: -4096,0,0, 4096,0,0
+		RespawnTicks: 500
+	GrantConditionOnPrerequisite@xcom_defense_matrix:
+		Condition: xcom_defense_matrix
+		Prerequisites: xcom_defense_matrix
+	MobSpawnerMaster@drone1:
+		Actors: xcom_scalpel
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		PauseOnCondition: disabled
+		RequiresCondition: xcom_defense_matrix
+	GrantConditionOnPrerequisite@xcom_quad_turrets:
+		Condition: xcom_quad_turrets
+		Prerequisites: xcom_quad_turrets
+	MobSpawnerMaster@drone2:
+		Actors: xcom_scalpel_aa
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		PauseOnCondition: disabled
+		RequiresCondition: xcom_quad_turrets
+	MustBeDestroyed:
+		RequiredForShortGame: true
+	GrantConditionOnPrerequisite@xcom_satellite_uplink:
+		Condition: xcom_satellite_uplink
+		Prerequisites: xcom_satellite_uplink
+	CashTrickler:
+		Interval: 250
+		Amount: 500
+		RequiresCondition: xcom_satellite_uplink
+	GrantConditionOnPrerequisite@xcom_satellite_nexus:
+		Condition: xcom_satellite_nexus
+		Prerequisites: xcom_satellite_nexus
+	CashTricklerMultiplier@RANK-4:
+		Modifier: 200
+		RequiresCondition: xcom_satellite_nexus
+	GpsPower:
+		Prerequisites: xcom_satellite_uplink
+			1:
+		Icons:
+			1: gps
+		OneShot: true
+		ChargeInterval: 10500
+		Names:
+			1: power-gps.name
+		Descriptions:
+			1: power.gps-description
+		RevealDelay: 375
+		#LaunchSpeechNotification: SatelliteLaunched
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		PauseOnCondition: disabled
+		SupportPowerPaletteOrder: 90
+	ProduceActorPower@spysat:
+		Prerequisites: xcom_satellite_nexus
+			1:
+		Icons:
+			1: gps
+		Names:
+			1: power-ra2spysat.name
+		Descriptions:
+			1: power-ra2spysat.description
+		Actors: camera.gpssat
+		Type: SpySatellite
+		ChargeInterval: 4500
+		OrderName: RA2SpySatellite
+		AutoFire: True
+		PauseOnCondition: disabled
+		IncomingSound: bspyon.wav
+		LaunchSound: bspyon.wav
+	SupportPowerChargeBar:
 	#FreeActor@1:
 	#	Actor: aa_drmn
 	#	SpawnOffset: 2,2
@@ -398,6 +487,146 @@ XCOMHQ:
 	RenderSprites:
 		Image: sccommandcenter
 
+medium_gun_turret.xcom:
+	Inherits: ^D2KDefense
+	Inherits@exp: ^GainsExperienceRABuilding
+	Inherits@buff: ^MBTBuff
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^TurretEMP
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@shape: ^1x1Shape
+	Buildable:
+		Queue: Defence, RADefence
+		Prerequisites: ~xcom_defense_matrix
+		BuildPaletteOrder: 550
+		BuildLimit: 2
+		Description: template-anti-vehicle-defense.description
+		IconPalette: d2kunit
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Gun Turret
+	WithMakeAnimation:
+	Health:
+		HP: 125000
+	BodyOrientation:
+		QuantizedFacings: 32
+	WithMuzzleOverlay:
+	WithSpriteBody:
+		Name: make
+		Sequence: invisible
+	WithMakeAnimation:
+		Condition: build-incomplete
+		BodyNames: make
+	Turreted:
+		TurnSpeed: 96
+		InitialFacing: 2048
+		RealignDelay: -1
+	Armament:
+		Weapon: 110mm_Gun
+		LocalOffset: 512,0,432
+		MuzzleSequence: muzzle
+		MuzzlePalette: d2keffect
+	Replacement:
+		ReplaceableTypes: Tower
+	WithWallSpriteBody:
+		RequiresCondition: !build-incomplete
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	-WithDeathAnimation:
+	ThrowsShrapnel:
+		Weapons: Debris2, Debris3
+		Pieces: 2, 4
+		Range: 1c512, 2c768
+	SpawnActorOnDeath@death1:
+		Actor: light_inf
+	RenderSprites:
+		Image: medium_gun_turret
+	DamageMultiplier@xcom:
+		Modifier: 50
+	FirepowerMultiplier@xcom:
+		Modifier: 200
+	Power:
+		Amount: 0
+	RevealsShroud:
+		Range: 7400
+	BaseSpawnerSlave:
+
+large_gun_turret.xcom:
+	Inherits: ^D2KDefense
+	Inherits@exp: ^GainsExperienceRABuilding
+	Inherits@Template: ^AntiAirDefenseTemplate
+	Inherits@detect: ^GenericAllDetector
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@shape: ^1x1Shape
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		Prerequisites: ~xcom_quad_turrets
+		BuildPaletteOrder: 610
+		BuildLimit: 2
+		Description: actor-large_gun_turret.description
+		IconPalette: d2kunit
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: Rocket Turret
+	Health:
+		HP: 150000
+	BodyOrientation:
+		QuantizedFacings: 32
+	Armament@PRIMARY:
+		Weapon: D2K_TowerMissile
+		LocalOffset: 256,384,768, 256,-384,768
+	Armament@SECONDARY:
+		Weapon: D2K_TowerMissileAA
+		LocalOffset: 256,384,768, 256,-384,768
+	Turreted:
+		TurnSpeed: 128
+		InitialFacing: 2048
+		RealignDelay: -1
+	AttackTurreted:
+	WithWallSpriteBody:
+		RequiresCondition: !build-incomplete
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	WithSpriteBody:
+		Name: make
+		Sequence: invisible
+	WithMakeAnimation:
+		Condition: build-incomplete
+		BodyNames: make
+	Replacement:
+		ReplaceableTypes: Tower
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	-WithDeathAnimation:
+	ThrowsShrapnel:
+		Weapons: Debris2, Debris3
+		Pieces: 3, 5
+		Range: 1c512, 2c768
+	SpawnActorOnDeath@death1:
+		Actor: light_inf
+	RenderSprites:
+		Image: large_gun_turret
+	DamageMultiplier@xcom:
+		Modifier: 50
+	FirepowerMultiplier@xcom:
+		Modifier: 200
+	Power:
+		Amount: 0
+	RevealsShroud:
+		Range: 10000
+	DetectCloaked:
+		Range: 5000
+
+
 xcom_power_generator:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
@@ -413,26 +642,12 @@ xcom_power_generator:
 	RenderSprites:
 		Image: power.atreides
 
-xcom_barracks:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Barracks
-	Buildable:
-		BuildPaletteOrder: 2
-		Prerequisites: xcom_power_generator
-		Queue: Building, RABuilding
-		Description: upgrade-spice_sifter.description
-	Valued:
-		Cost: 500
-	RenderSprites:
-		Image: ra2gapile
-
 xcom_mining_bay:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Mining Bay
 	Buildable:
-		BuildPaletteOrder: 3
+		BuildPaletteOrder: 2
 		Prerequisites: xcom_power_generator
 		Queue: Building, RABuilding
 		Description: upgrade-spice_sifter.description
@@ -442,19 +657,105 @@ xcom_mining_bay:
 	RenderSprites:
 		Image: d2k_spice_sifter
 
+xcom_barracks:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Barracks
+	Buildable:
+		BuildPaletteOrder: 3
+		Prerequisites: xcom_power_generator
+		Queue: Building, RABuilding
+		Description: upgrade-spice_sifter.description
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: ra2gapile
+
+xcom_officer_training_school:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Officer Training School
+	Buildable:
+		BuildPaletteOrder: 4
+		Prerequisites: xcom_barracks
+		Queue: Building, RABuilding
+		Description: Increases Squad Size to 6
+	Valued:
+		Cost: 1250
+	RenderSprites:
+		Image: aa_cgmiac
+
 xcom_infirmary:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Infirmary
 	Buildable:
-		BuildPaletteOrder: 3
-		Prerequisites: xcom_power_generator
+		BuildPaletteOrder: 5
+		Prerequisites: xcom_barracks
 		Queue: Building, RABuilding
 		Description: Automatically heals all XCOM Soldiers
 	Valued:
 		Cost: 1750
 	RenderSprites:
 		Image: medi
+
+xcom_defense_matrix:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Defense Matrix
+	Buildable:
+		BuildPaletteOrder: 6
+		Prerequisites: xcom_power_generator, ~!xcom_defense_matrix
+		Queue: Building, RABuilding
+		Description: 2 Turrets to defend against ground assaults
+		IconPalette: d2kunit
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: medium_gun_turret
+
+xcom_quad_turrets:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Quad Turrets
+	Buildable:
+		BuildPaletteOrder: 6
+		Prerequisites: ~xcom_defense_matrix,
+		Queue: Building, RABuilding
+		Description: Provides 2 extra Turrets that can defend against Air
+		IconPalette: d2kunit
+	Valued:
+		Cost: 1500
+	RenderSprites:
+		Image: medium_gun_turret
+
+xcom_satellite_uplink:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Satellite Uplink
+	Buildable:
+		BuildPaletteOrder: 7
+		Prerequisites: xcom_power_generator, ~!xcom_satellite_uplink
+		Queue: Building, RABuilding
+		Description: Provides passive income and GPS locations of enemies
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: atek
+
+xcom_satellite_nexus:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Satellite Nexus
+	Buildable:
+		BuildPaletteOrder: 7
+		Prerequisites: ~xcom_satellite_uplink
+		Queue: Building, RABuilding
+		Description: Increases passive income and periodically reveals the map
+	Valued:
+		Cost: 2800
+	RenderSprites:
+		Image: ra2gaspysat
 
 ####################################################################################################
 #		Vehicles
@@ -512,3 +813,53 @@ xcom_drmn:
 		MovingCallBackCellDistance: 0
 	RenderSprites:
 		Image: aa_drmn
+
+xcom_scalpel:
+	Inherits: ^SteelDefensiveDrones
+	Valued:
+		Cost: 1000
+	Health:
+		HP: 12345
+	Tooltip:
+		Name: Scapel
+	Armament@PRIMARY:
+		Weapon: SteelCloneGun
+		LocalOffset: 200,0,0
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	AttackAircraft:
+		Armaments: primary, pointdefense
+	DamageMultiplier@xcom:
+		Modifier: 33
+	FirepowerMultiplier@xcom:
+		Modifier: 333
+	ReloadDelayMultiplier@xcom:
+		Modifier: 33
+	RenderSprites:
+		Image: steel_scapel
+		PlayerPalette: playerra2rot
+
+xcom_scalpel_aa:
+	Inherits: ^SteelDefensiveDrones
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 12345
+	Tooltip:
+		Name: AA Scapel
+	Armament@PRIMARY:
+		Weapon: SteelInfRailgunAA
+		LocalOffset: 200,0,0
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	AttackAircraft:
+		Armaments: primary, pointdefense
+	DamageMultiplier@xcom:
+		Modifier: 33
+	FirepowerMultiplier@xcom:
+		Modifier: 333
+	ReloadDelayMultiplier@xcom:
+		Modifier: 33
+	RenderSprites:
+		PlayerPalette: playerra2rot
+		Image: steel_scapel
