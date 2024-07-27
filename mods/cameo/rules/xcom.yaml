@@ -59,6 +59,7 @@ xcomassaultranger:
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -88,6 +89,8 @@ xcomassaultranger:
 		Modifier: 20
 	FirepowerMultiplier@xcom:
 		Modifier: 500
+	Power:
+		Amount: -1
 	RenderSprites:
 		Image: gdishotgunner
 
@@ -103,6 +106,7 @@ xcomheavygrenadier:
 	Inherits@bot: ^BotAutoDeploySwitchMode
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Valued:
 		Cost: 5000
 	Tooltip:
@@ -141,6 +145,8 @@ xcomheavygrenadier:
 		Modifier: 20
 	FirepowerMultiplier@xcom:
 		Modifier: 500
+	Power:
+		Amount: -1
 	RenderSprites:
 		Image: yrggi
 
@@ -154,6 +160,7 @@ xcomsharpshooter:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -187,6 +194,8 @@ xcomsharpshooter:
 		Modifier: 33
 	RangeMultiplier@xcom:
 		Modifier: 100
+	Power:
+		Amount: -1
 	RenderSprites:
 		Image: ra2snipe
 
@@ -215,19 +224,27 @@ XCOMHQ:
 		Type: Wood
 	RevealsShroud:
 		Range: 10000
-	Production@NORMAL:
-		Produces: Building, Defence, Infantry
-		RequiresCondition: !classicproductionqueues
+	Production@Building:
+		Produces: Building
 		PauseOnCondition: disabled
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence, RAInfantry
-		RequiresCondition: classicproductionqueues
+	Production@Defence:
+		Produces: Defence
 		PauseOnCondition: disabled
+	GrantConditionOnPrerequisite@xcom_barracks:
+		Condition: xcom_barracks
+		Prerequisites: xcom_barracks
+	GrantConditionOnPowerState:
+		ValidPowerStates: Low, Critical
+		Condition: SoldierCap
+	Production@Infantry:
+		Produces: Infantry
+		PauseOnCondition: disabled
+		RequiresCondition: xcom_barracks && !SoldierCap
 	ProductionQueue@Building:
 		Type: Building
 		DisplayOrder: 0
 		Group: Building
-		LowPowerModifier: 200
+		LowPowerModifier: 100
 		ReadyAudio: ConstructionComplete
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -235,11 +252,12 @@ XCOMHQ:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 		InfiniteBuildLimit: 10
+		AlwaysShowForFactions: xcom
 	ProductionQueue@Defense:
 		Type: Defence
 		DisplayOrder: 1
 		Group: Defence
-		LowPowerModifier: 300
+		LowPowerModifier: 100
 		ReadyAudio: ConstructionComplete
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -247,11 +265,12 @@ XCOMHQ:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 		InfiniteBuildLimit: 10
+		AlwaysShowForFactions: xcom
 	ParallelProductionQueue@Infantry:
 		Type: Infantry
 		DisplayOrder: 2
 		Group: Infantry
-		LowPowerModifier: 300
+		LowPowerModifier: 100
 		ReadyAudio: UnitReady
 		BlockedAudio: NoBuild
 		LimitedAudio: BuildingInProgress
@@ -259,6 +278,7 @@ XCOMHQ:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 		InfiniteBuildLimit: 10
+		AlwaysShowForFactions: xcom
 	ProductionBar@Infantry:
 		ProductionType: Infantry
 		RequiresCondition: !classicproductionqueues
@@ -268,15 +288,6 @@ XCOMHQ:
 	ProductionBar@Defence:
 		ProductionType: Defence
 		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAInfantry:
-		ProductionType: RAInfantry
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RABuilding:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RADefence:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
 	BaseBuilding:
 	BaseProvider:
 		Range: 15c0
@@ -292,13 +303,18 @@ XCOMHQ:
 	ProvidesRadar:
 		RequiresCondition: !jammed
 	Power:
-		Amount: 100
+		Amount: 4
+		RequiresCondition: xcom_barracks
+	GrantConditionOnPrerequisite@xcom_mining_bay:
+		Condition: xcom_mining_bay
+		Prerequisites: xcom_mining_bay
 	SlaveMinerSpawnerMaster:
 		Actors: xcom_drmn, xcom_drmn, xcom_drmn, xcom_drmn
 		SpawnOffset: 0,1280,0, 0,1280,0, 0,1280,0, 0,1536,0
 		SlavesHaveFreeWill: true
 		IdleCheckTick: 125
 		ShouldSpawnInitialLoad: false
+		PauseOnCondition: !xcom_mining_bay
 	#FreeActor@1:
 	#	Actor: aa_drmn
 	#	SpawnOffset: 2,2
@@ -320,6 +336,54 @@ XCOMHQ:
 		FullSequence: pip-yellow
 	RenderSprites:
 		Image: sccommandcenter
+
+xcom_power_generator:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Power Generator
+	Buildable:
+		BuildPaletteOrder: 1
+		Prerequisites: ~xcomhq
+		Queue: Building, RABuilding
+		Description: upgrade-wind_trap.description
+		IconPalette: d2kunit
+	Valued:
+		Cost: 600
+	RenderSprites:
+		Image: power.atreides
+
+xcom_barracks:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Barracks
+	Buildable:
+		BuildPaletteOrder: 1
+		Prerequisites: xcom_power_generator
+		Queue: Building, RABuilding
+		Description: upgrade-spice_sifter.description
+	Valued:
+		Cost: 500
+	RenderSprites:
+		Image: ra2gapile
+
+xcom_mining_bay:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Mining Bay
+	Buildable:
+		BuildPaletteOrder: 1
+		Prerequisites: xcom_power_generator
+		Queue: Building, RABuilding
+		Description: upgrade-spice_sifter.description
+		IconPalette: d2kunit
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: d2k_spice_sifter
+
+####################################################################################################
+#		Vehicles
+####################################################################################################
 
 xcom_drmn:
 	Inherits: HARV
@@ -357,7 +421,7 @@ xcom_drmn:
 	Harvester:
 		BaleLoadDelay: 8
 		BaleUnloadDelay: 8
-		SearchFromProcRadius: 25
+		SearchFromProcRadius: 50
 		SearchFromHarvesterRadius: 10
 	DockClientManager:
 		OccupancyCostModifier: 0
