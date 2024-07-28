@@ -303,6 +303,12 @@ xcomheavygrenadier:
 		Weapon: XCOMChainGun
 		LocalOffset: 256,43,341
 		FireDelay: 5
+		RequiresCondition: !RocketLauncherUpgrade
+	Armament@ChainGun2:
+		Weapon: XCOMChainGun2
+		LocalOffset: 256,43,341
+		FireDelay: 5
+		RequiresCondition: RocketLauncherUpgrade
 	Armament@RocketLauncher:
 		Weapon: XCOMRocketLauncher
 		LocalOffset: 256,43,341
@@ -311,6 +317,11 @@ xcomheavygrenadier:
 	Armament@GarrisonedChainGun:
 		Name: garrisoned
 		Weapon: XCOMChainGun
+		RequiresCondition: !RocketLauncherUpgrade
+	Armament@GarrisonedChainGun2:
+		Name: garrisoned
+		Weapon: XCOMChainGun2
+		RequiresCondition: RocketLauncherUpgrade
 	Armament@GarrisonedRocketLauncher:
 		Name: garrisoned
 		Weapon: XCOMRocketLauncher
@@ -389,7 +400,7 @@ xcomsharpshooter:
 	Inherits@Template: ^SniperInfantryTemplate
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXPERIENCE: ^GainsExperienceXCOM
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
@@ -423,6 +434,24 @@ xcomsharpshooter:
 		Weapon: XCOMAWP
 	AttackFrontal:
 		FacingTolerance: 0
+	FreeActor@Addons:
+		Actor: CPQDEBUGDUMMY
+		RequiresCondition: !AutoSniperUpgrade
+	Production@Addons:
+		Produces: Addons
+		RequiresCondition: !AutoSniperUpgrade
+	ProductionBar:
+		ProductionType: Addons
+	ProductionQueue:
+		Type: Addons
+		Group: Addons
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+		AlwaysShowForFactions: xcom
+	GrantConditionOnProduction@AutoSniperUpgrade:
+		Condition: AutoSniperUpgrade
+		Actors: AutoSniperUpgrade
 	Voiced:
 		VoiceSet: RA2SniperVoice
 	DamageMultiplier@xcom:
@@ -431,12 +460,30 @@ xcomsharpshooter:
 		Modifier: 333
 	ReloadDelayMultiplier@xcom:
 		Modifier: 33
+		RequiresCondition: AutoSniperUpgrade
 	RangeMultiplier@xcom:
 		Modifier: 100
 	Power:
 		Amount: -1
 	RenderSprites:
 		Image: ra2snipe
+AutoSniperUpgrade:
+	Tooltip:
+		Name: Auto Sniper Upgrade
+	Buildable:
+		Prerequisites: ~xcomhq
+		BuildPaletteOrder: 2
+		BuildLimit: 1
+		Queue: Addons
+		Description: Gives the Sniper an automatic Sniper Rifle
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: ra2snipe
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
 
 ####################################################################################################
 #		Buildings
@@ -510,6 +557,7 @@ XCOMHQ:
 		QueuedAudio: Building
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
+		BuildDurationModifier: 25
 		InfiniteBuildLimit: 10
 		AlwaysShowForFactions: xcom
 	ParallelProductionQueue@Infantry:
@@ -573,10 +621,16 @@ XCOMHQ:
 		TurnSpeed: 1023
 	Armament:
 		Weapon: GLStingerTargeting
-	BaseSpawnerMaster:
-		Actors: medium_gun_turret.xcom, medium_gun_turret.xcom
-		SpawnOffset: -4096,0,0, 4096,0,0
-		RespawnTicks: 500
+	# DroneSpawnerMaster@xcom_defense_matrix:
+	# 	Actors: medium_gun_turret.xcom, medium_gun_turret.xcom
+	# 	SpawnOffset: -4096,0,0, 4096,0,0
+	# 	RespawnTicks: 500
+	# 	RequiresCondition: xcom_defense_matrix
+	# DroneSpawnerMaster@xcom_quad_turrets:
+	# 	Actors: medium_gun_turret.xcom, medium_gun_turret.xcom, large_gun_turret.xcom, large_gun_turret.xcom
+	# 	SpawnOffset: 0,-4096,0, 0,4096,0
+	# 	RespawnTicks: 500
+	# 	RequiresCondition: xcom_quad_turrets
 	GrantConditionOnPrerequisite@xcom_defense_matrix:
 		Condition: xcom_defense_matrix
 		Prerequisites: xcom_defense_matrix
@@ -727,14 +781,16 @@ medium_gun_turret.xcom:
 	RenderSprites:
 		Image: medium_gun_turret
 	DamageMultiplier@xcom:
-		Modifier: 50
+		Modifier: 25
 	FirepowerMultiplier@xcom:
-		Modifier: 200
+		Modifier: 250
+	RangeMultiplier@xcom:
+		Modifier: 125
 	Power:
 		Amount: 0
 	RevealsShroud:
 		Range: 7400
-	BaseSpawnerSlave:
+	#DroneSpawnerSlave:
 
 large_gun_turret.xcom:
 	Inherits: ^D2KDefense
@@ -797,15 +853,18 @@ large_gun_turret.xcom:
 	RenderSprites:
 		Image: large_gun_turret
 	DamageMultiplier@xcom:
-		Modifier: 50
+		Modifier: 25
 	FirepowerMultiplier@xcom:
-		Modifier: 200
+		Modifier: 250
+	RangeMultiplier@xcom:
+		Modifier: 125
 	Power:
 		Amount: 0
 	RevealsShroud:
 		Range: 10000
 	DetectCloaked:
 		Range: 5000
+	#DroneSpawnerSlave:
 
 
 xcom_power_generator:
