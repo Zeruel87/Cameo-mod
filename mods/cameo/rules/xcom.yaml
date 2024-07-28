@@ -55,8 +55,8 @@ xcomassaultranger:
 	Inherits@anim: ^TDRAInfantry
 	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@Template: ^MeleeInfantryTemplate
-	Inherits@exp: ^GainsExperienceXCOM
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@exp: ^GainsExperienceXCOM
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@COMMANDOSKULL: ^CommandoSkull
@@ -81,9 +81,12 @@ xcomassaultranger:
 	ChangesHealth@SelfHealing:
 		Step: 16
 		RequiresCondition: xcom_infirmary
-	Production:
+	FreeActor@Addons:
+		Actor: CPQDEBUGDUMMY
+		RequiresCondition: !(ShotgunUpgrade && ShardgunUpgrade && GrenadeUpgrade && CarapaceArmorUpgrade)
+	Production@Addons:
 		Produces: Addons
-		RequiresCondition: !ShotgunUpgrade
+		RequiresCondition: !(ShotgunUpgrade && ShardgunUpgrade && GrenadeUpgrade && CarapaceArmorUpgrade)
 	ProductionBar:
 		ProductionType: Addons
 	ProductionQueue:
@@ -96,27 +99,75 @@ xcomassaultranger:
 	GrantConditionOnProduction@ShotgunUpgrade:
 		Condition: ShotgunUpgrade
 		Actors: ShotgunUpgrade
-	Armament@PRIMARY: ##########
+	GrantConditionOnProduction@ShardgunUpgrade:
+		Condition: ShardgunUpgrade
+		Actors: ShardgunUpgrade
+	GrantConditionOnProduction@GrenadeUpgrade:
+		Condition: GrenadeUpgrade
+		Actors: GrenadeUpgrade
+	Armament@Carbine: ##########
 		Weapon: XCOMCarbine
 		RequiresCondition: !ShotgunUpgrade
-	Armament@Secondary: ##########
+	Armament@Shotgun: ##########
 		Weapon: XCOMShotgun
-		RequiresCondition: ShotgunUpgrade
+		RequiresCondition: ShotgunUpgrade && !ShardgunUpgrade
+	Armament@ShardGun: ##########
+		Weapon: XCOMShardGun
+		RequiresCondition: ShardgunUpgrade
+	Armament@Grenade: ##########
+		Weapon: XCOMGrenade
+		RequiresCondition: GrenadeUpgrade
 	Armament@AA: ##########
 		Weapon: XCOMCarbineAA
-	Armament@GARRISONED: ##########
+		RequiresCondition: !ShardgunUpgrade
+	Armament@AA2: ##########
+		Weapon: XCOMShardGunAA
+		RequiresCondition: ShardgunUpgrade
+	Armament@GarrisonedCarbine: ##########
 		Name: garrisoned
 		Weapon: XCOMCarbine
 		MuzzleSequence: garrison-muzzle
-	Armament@GARRISONED2: ##########
+		RequiresCondition: !ShotgunUpgrade
+	Armament@GarrisonedShotgun: ##########
 		Name: garrisoned
 		Weapon: XCOMShotgun
 		MuzzleSequence: garrison-muzzle
-		RequiresCondition: ShotgunUpgrade
-	Armament@GARRISONEDAA: ##########
+		RequiresCondition: ShotgunUpgrade && !ShardgunUpgrade
+	Armament@GarrisonedShardGun: ##########
+		Name: garrisoned
+		Weapon: XCOMShardGun
+		MuzzleSequence: garrison-muzzle
+		RequiresCondition: ShardgunUpgrade
+	Armament@GarrisonedGrenade: ##########
+		Name: garrisoned
+		Weapon: XCOMGrenade
+		MuzzleSequence: garrison-muzzle
+		RequiresCondition: GrenadeUpgrade
+	Armament@GarrisonedAA: ##########
 		Name: garrisoned
 		Weapon: XCOMCarbineAA
 		MuzzleSequence: garrison-muzzle
+		RequiresCondition: !ShardgunUpgrade
+	Armament@GarrisonedAA2: ##########
+		Name: garrisoned
+		Weapon: XCOMShardGunAA
+		MuzzleSequence: garrison-muzzle
+		RequiresCondition: ShardgunUpgrade
+	GrantConditionOnProduction@CarapaceArmorUpgrade:
+		Condition: CarapaceArmorUpgrade
+		Actors: CarapaceArmorUpgrade
+	Shielded:
+		InitialStrength: 40000
+		MaxStrength: 40000
+		DamageRegenDelay: 125
+		RegenAmount: 16
+		RegenInterval: 1
+		ShieldsUpCondition: armored
+		RequiresCondition: CarapaceArmorUpgrade
+		SelectionBarColor: FFFF88FF
+	Armor@shielded:
+		Type: Shield
+		RequiresCondition: armored
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
 	DamageMultiplier@xcom:
@@ -133,12 +184,64 @@ ShotgunUpgrade:
 	Buildable:
 		Prerequisites: ~xcomhq
 		BuildPaletteOrder: 1
+		BuildLimit: 1
 		Queue: Addons
 		Description: Allows the Assault Ranger to use the Shotgun
 	Valued:
 		Cost: 1000
 	RenderSprites:
+		Image: gdishotgunner
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+ShardgunUpgrade:
+	Tooltip:
+		Name: Shard Gun Upgrade
+	Buildable:
+		Prerequisites: ~xcomhq
+		BuildPaletteOrder: 1
+		BuildLimit: 1
+		Queue: Addons
+		Description: Upgrades the Shotgun to the Shard Gun
+	Valued:
+		Cost: 2000
+	RenderSprites:
 		Image: upscrefinery1
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+GrenadeUpgrade:
+	Tooltip:
+		Name: Grenade Upgrade
+	Buildable:
+		Prerequisites: ~xcomhq
+		BuildPaletteOrder: 2
+		BuildLimit: 1
+		Queue: Addons
+		Description: Allows the Assault Ranger to use the Grenade
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: e2
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+CarapaceArmorUpgrade:
+	Tooltip:
+		Name: Carapace Armor Upgrade
+	Buildable:
+		Prerequisites: ~xcomhq
+		BuildPaletteOrder: 2
+		BuildLimit: 1
+		Queue: Addons
+		Description: Gives an additional armor plating
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: tsblackhandlaser
 	Interactable:
 	AlwaysVisible:
 	KillsSelf:
@@ -147,6 +250,7 @@ ShotgunUpgrade:
 xcomheavygrenadier:
 	Inherits: ^Soldier
 	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXPERIENCE: ^GainsExperienceXCOM
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -176,14 +280,56 @@ xcomheavygrenadier:
 	ChangesHealth@SelfHealing:
 		Step: 24
 		RequiresCondition: xcom_infirmary
+	FreeActor@Addons:
+		Actor: CPQDEBUGDUMMY
+		RequiresCondition: !(RocketLauncherUpgrade && CarapaceArmorUpgrade)
+	Production@Addons:
+		Produces: Addons
+		RequiresCondition: !(RocketLauncherUpgrade && CarapaceArmorUpgrade)
+	ProductionBar:
+		ProductionType: Addons
+	ProductionQueue:
+		Type: Addons
+		Group: Addons
+		QueueLimit: 1
+		ItemLimit: 1
+		DisplayOrder: 0
+		AlwaysShowForFactions: xcom
+	GrantConditionOnProduction@RocketLauncherUpgrade:
+		Condition: RocketLauncherUpgrade
+		Actors: RocketLauncherUpgrade
 	RenderRangeCircle:
-	Armament@PRIMARY:
-		Weapon: MissileSoldierWeapon
+	Armament@ChainGun:
+		Weapon: XCOMChainGun
 		LocalOffset: 256,43,341
 		FireDelay: 5
-	Armament@GARRISONED:
+	Armament@RocketLauncher:
+		Weapon: XCOMRocketLauncher
+		LocalOffset: 256,43,341
+		FireDelay: 5
+		RequiresCondition: RocketLauncherUpgrade
+	Armament@GarrisonedChainGun:
 		Name: garrisoned
-		Weapon: MissileSoldierWeapon
+		Weapon: XCOMChainGun
+	Armament@GarrisonedRocketLauncher:
+		Name: garrisoned
+		Weapon: XCOMRocketLauncher
+		RequiresCondition: RocketLauncherUpgrade
+	GrantConditionOnProduction@CarapaceArmorUpgrade:
+		Condition: CarapaceArmorUpgrade
+		Actors: CarapaceArmorUpgrade
+	Shielded:
+		InitialStrength: 60000
+		MaxStrength: 60000
+		DamageRegenDelay: 125
+		RegenAmount: 24
+		RegenInterval: 1
+		ShieldsUpCondition: armored
+		RequiresCondition: CarapaceArmorUpgrade
+		SelectionBarColor: FFFF88FF
+	Armor@shielded:
+		Type: Shield
+		RequiresCondition: armored
 	WithSpriteBody:
 		Sequence: dot
 		Name: dot
@@ -203,10 +349,45 @@ xcomheavygrenadier:
 		Amount: -1
 	RenderSprites:
 		Image: yrggi
+RocketLauncherUpgrade:
+	Tooltip:
+		Name: Rocket Launcher Upgrade
+	Buildable:
+		Prerequisites: ~xcomhq
+		BuildPaletteOrder: 1
+		BuildLimit: 1
+		Queue: Addons
+		Description: Allows the Heavy Grenadier to use the Rocket Launcher
+	Valued:
+		Cost: 1000
+	RenderSprites:
+		Image: gdimissilesoldier
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
+CarapaceArmorUpgrade:
+	Tooltip:
+		Name: Carapace Armor Upgrade
+	Buildable:
+		Prerequisites: ~xcomhq
+		BuildPaletteOrder: 2
+		BuildLimit: 1
+		Queue: Addons
+		Description: Gives an additional armor plating
+	Valued:
+		Cost: 2000
+	RenderSprites:
+		Image: tsblackhandlaser
+	Interactable:
+	AlwaysVisible:
+	KillsSelf:
+		RemoveInstead: true
 
 xcomsharpshooter:
 	Inherits: ^Soldier
 	Inherits@Template: ^SniperInfantryTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXPERIENCE: ^GainsExperienceXCOM
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -421,19 +602,19 @@ XCOMHQ:
 	GrantConditionOnPrerequisite@xcom_satellite_uplink:
 		Condition: xcom_satellite_uplink
 		Prerequisites: xcom_satellite_uplink
-	CashTrickler:
+	CashTrickler@xcom_satellite_uplink:
 		Interval: 250
 		Amount: 500
 		RequiresCondition: xcom_satellite_uplink
 	GrantConditionOnPrerequisite@xcom_satellite_nexus:
 		Condition: xcom_satellite_nexus
 		Prerequisites: xcom_satellite_nexus
-	CashTricklerMultiplier@RANK-4:
+	CashTricklerMultiplier@xcom_satellite_nexus:
 		Modifier: 200
 		RequiresCondition: xcom_satellite_nexus
 	GpsPower:
-		Prerequisites: xcom_satellite_uplink
-			1:
+		Prerequisites:
+			1: xcom_satellite_uplink
 		Icons:
 			1: gps
 		OneShot: true
@@ -448,8 +629,8 @@ XCOMHQ:
 		PauseOnCondition: disabled
 		SupportPowerPaletteOrder: 90
 	ProduceActorPower@spysat:
-		Prerequisites: xcom_satellite_nexus
-			1:
+		Prerequisites:
+			1: xcom_satellite_nexus
 		Icons:
 			1: gps
 		Names:
@@ -648,7 +829,7 @@ xcom_mining_bay:
 		Name: Mining Bay
 	Buildable:
 		BuildPaletteOrder: 2
-		Prerequisites: xcom_power_generator
+		Prerequisites: ~xcom_power_generator
 		Queue: Building, RABuilding
 		Description: upgrade-spice_sifter.description
 		IconPalette: d2kunit
@@ -663,7 +844,7 @@ xcom_barracks:
 		Name: Barracks
 	Buildable:
 		BuildPaletteOrder: 3
-		Prerequisites: xcom_power_generator
+		Prerequisites: ~xcom_power_generator
 		Queue: Building, RABuilding
 		Description: upgrade-spice_sifter.description
 	Valued:
@@ -677,7 +858,7 @@ xcom_officer_training_school:
 		Name: Officer Training School
 	Buildable:
 		BuildPaletteOrder: 4
-		Prerequisites: xcom_barracks
+		Prerequisites: ~xcom_barracks
 		Queue: Building, RABuilding
 		Description: Increases Squad Size to 6
 	Valued:
@@ -691,7 +872,7 @@ xcom_infirmary:
 		Name: Infirmary
 	Buildable:
 		BuildPaletteOrder: 5
-		Prerequisites: xcom_barracks
+		Prerequisites: ~xcom_barracks
 		Queue: Building, RABuilding
 		Description: Automatically heals all XCOM Soldiers
 	Valued:
@@ -705,7 +886,7 @@ xcom_defense_matrix:
 		Name: Defense Matrix
 	Buildable:
 		BuildPaletteOrder: 6
-		Prerequisites: xcom_power_generator, ~!xcom_defense_matrix
+		Prerequisites: ~xcom_power_generator, ~!xcom_defense_matrix
 		Queue: Building, RABuilding
 		Description: 2 Turrets to defend against ground assaults
 		IconPalette: d2kunit
@@ -735,7 +916,7 @@ xcom_satellite_uplink:
 		Name: Satellite Uplink
 	Buildable:
 		BuildPaletteOrder: 7
-		Prerequisites: xcom_power_generator, ~!xcom_satellite_uplink
+		Prerequisites: ~xcom_power_generator, ~!xcom_satellite_uplink
 		Queue: Building, RABuilding
 		Description: Provides passive income and GPS locations of enemies
 	Valued:
@@ -772,12 +953,7 @@ xcom_drmn:
 		Cost: 250
 	Tooltip:
 		Name: XCOM Drone Miner
-	Buildable:
-		BuildDuration: 125
-		BuildDurationModifier: 100
-		Prerequisites: ~aa_cgrefn
-		Queue: Vehicle, RAVehicle
-		Description: template-harvester.description
+	-Buildable:
 	Health:
 		HP: 25000
 	Repairable:
@@ -824,6 +1000,10 @@ xcom_scalpel:
 		Name: Scapel
 	Armament@PRIMARY:
 		Weapon: SteelCloneGun
+		LocalOffset: 200,0,0
+		MuzzleSequence: muzzle
+	Armament@SECONDARY:
+		Weapon: SteelInfRailgun
 		LocalOffset: 200,0,0
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
