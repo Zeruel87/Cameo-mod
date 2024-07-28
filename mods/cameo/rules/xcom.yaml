@@ -96,9 +96,12 @@ xcomassaultranger:
 		ItemLimit: 1
 		DisplayOrder: 0
 		AlwaysShowForFactions: xcom
-	GrantConditionOnProduction@ShotgunUpgrade:
+	#GrantConditionOnProduction@ShotgunUpgrade:
+	#	Condition: ShotgunUpgrade
+	#	Actors: ShotgunUpgrade
+	ExternalCondition@ShotgunUpgrade:
 		Condition: ShotgunUpgrade
-		Actors: ShotgunUpgrade
+		TotalCap: 1
 	GrantConditionOnProduction@ShardgunUpgrade:
 		Condition: ShardgunUpgrade
 		Actors: ShardgunUpgrade
@@ -184,7 +187,7 @@ ShotgunUpgrade:
 	Buildable:
 		Prerequisites: ~xcomhq
 		BuildPaletteOrder: 1
-		BuildLimit: 1
+		#BuildLimit: 1
 		Queue: Addons
 		Description: Allows the Assault Ranger to use the Shotgun
 	Valued:
@@ -193,8 +196,32 @@ ShotgunUpgrade:
 		Image: gdishotgunner
 	Interactable:
 	AlwaysVisible:
-	KillsSelf:
-		RemoveInstead: true
+	GrantExternalConditionPowerCA@IRONCURTAIN:
+		OrderName: ShotgunUpgrade
+		OneShot: true
+		AllowMultiple: true
+		Prerequisites:
+			1:
+		Icons:
+			1: invuln
+		ChargeInterval: 0
+		StartFullyCharged: true
+		Names:
+			1: Shotgun Upgrade
+		Descriptions:
+			1: Allows the Assault Ranger to use the Shotgun
+		Condition: ShotgunUpgrade
+		Duration: 0
+		SelectTargetSpeechNotification: SelectTarget
+		DisplayRadarPing: false
+		OwnedTargetsOnly: true
+		MaxTargets: 1
+		ShowTargetCount: false
+		ShowSelectionBoxes: true
+		SupportPowerPaletteOrder: 1
+		Range: 1c0
+	#KillsSelf:
+	#	RemoveInstead: true
 ShardgunUpgrade:
 	Tooltip:
 		Name: Shard Gun Upgrade
@@ -621,11 +648,12 @@ XCOMHQ:
 		TurnSpeed: 1023
 	Armament:
 		Weapon: GLStingerTargeting
-	# DroneSpawnerMaster@xcom_defense_matrix:
-	# 	Actors: medium_gun_turret.xcom, medium_gun_turret.xcom
-	# 	SpawnOffset: -4096,0,0, 4096,0,0
-	# 	RespawnTicks: 500
-	# 	RequiresCondition: xcom_defense_matrix
+	DroneSpawnerMaster@xcom_defense_matrix:
+	 	Actors: medium_gun_turret.xcom, medium_gun_turret.xcom
+	 	SpawnOffset: -4096,0,0, 4096,0,0
+	 	RespawnTicks: 500
+		ShouldSpawnInitialLoad: false
+	 	PauseOnCondition: !xcom_defense_matrix
 	# DroneSpawnerMaster@xcom_quad_turrets:
 	# 	Actors: medium_gun_turret.xcom, medium_gun_turret.xcom, large_gun_turret.xcom, large_gun_turret.xcom
 	# 	SpawnOffset: 0,-4096,0, 0,4096,0
@@ -723,7 +751,7 @@ XCOMHQ:
 		Image: sccommandcenter
 
 medium_gun_turret.xcom:
-	Inherits: ^D2KDefense
+	Inherits: ^Tank
 	Inherits@exp: ^GainsExperienceRABuilding
 	Inherits@buff: ^MBTBuff
 	Inherits@AUTOTARGET: ^AutoTargetGround
@@ -732,7 +760,7 @@ medium_gun_turret.xcom:
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@shape: ^1x1Shape
 	Buildable:
-		Queue: Defence, RADefence
+		#Queue: Defence, RADefence
 		Prerequisites: ~xcom_defense_matrix
 		BuildPaletteOrder: 550
 		BuildLimit: 2
@@ -742,18 +770,23 @@ medium_gun_turret.xcom:
 		Cost: 2000
 	Tooltip:
 		Name: Gun Turret
-	WithMakeAnimation:
+	Mobile:
+		CanTurnWhileDisabled: true
+		ImmovableCondition: disable_movement
+		RequireForceMoveCondition: disable_movement
+		RequiresCondition: !disable_movement
+	RejectsMoveToAttack:
+	GrantConditionAfterDelay:
+		Condition: disable_movement
+		ShowSelectionBar: false
+		Delay: 10
 	Health:
 		HP: 125000
 	BodyOrientation:
 		QuantizedFacings: 32
 	WithMuzzleOverlay:
-	WithSpriteBody:
-		Name: make
-		Sequence: invisible
 	WithMakeAnimation:
 		Condition: build-incomplete
-		BodyNames: make
 	Turreted:
 		TurnSpeed: 96
 		InitialFacing: 2048
@@ -763,21 +796,17 @@ medium_gun_turret.xcom:
 		LocalOffset: 512,0,432
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
-	Replacement:
-		ReplaceableTypes: Tower
-	WithWallSpriteBody:
-		RequiresCondition: !build-incomplete
+	-WithFacingSpriteBody:
+	WithSpriteBody:
 	WithSpriteTurret:
 		RequiresCondition: !build-incomplete
+		PauseOnCondition: disable_movement
 	AttackTurreted:
 		RequiresCondition: !build-incomplete
-	-WithDeathAnimation:
 	ThrowsShrapnel:
 		Weapons: Debris2, Debris3
 		Pieces: 2, 4
 		Range: 1c512, 2c768
-	SpawnActorOnDeath@death1:
-		Actor: light_inf
 	RenderSprites:
 		Image: medium_gun_turret
 	DamageMultiplier@xcom:
@@ -790,7 +819,7 @@ medium_gun_turret.xcom:
 		Amount: 0
 	RevealsShroud:
 		Range: 7400
-	#DroneSpawnerSlave:
+	DroneSpawnerSlave:
 
 large_gun_turret.xcom:
 	Inherits: ^D2KDefense
