@@ -644,8 +644,6 @@ OILB.d2k:
 	Inherits: OILB.Building
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 200
 		Prerequisites: ~research_centre, derricklimit
 		Description: actor-oilb.description
 		IconPalette: d2kunit
@@ -685,8 +683,6 @@ construction_yard.ixian:
 	Inherits@CPQ: ^CPQCondition
 	Inherits@ai: ^AIConyardCash
 	Inherits@conyard: ^Conyard
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Ixian Construction Yard
 	Building:
@@ -694,84 +690,22 @@ construction_yard.ixian:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		IconPalette: d2kunit
-	Health:
-		HP: 1000000
-	Armor:
-		Type: Concrete
-	Power:
-		Amount: 100
-	RevealsShroud:
-		Range: 10c0
-	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 1000
-		Prerequisites: ~wip-content
-		Description: Produces structures.
-	Production@NORMAL:
-		Produces: Building, Defence
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence
-		RequiresCondition: classicproductionqueues
-	ProductionQueue@Building:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		LowPowerModifier: 200
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionQueue@Defense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Defence
-		LowPowerModifier: 300
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
 	Production@upgrade:
 		Produces: Addons
 	ProductionBar@upgrade:
 		ProductionType: Addons
-	ProductionBar@BUILDING:
-		ProductionType: Building
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RABUILDING:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@Defence:
-		ProductionType: Defence
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RADefence:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
 	Transforms:
 		IntoActor: d2k_mcv.ixian
 		Offset: 1,1
 		Facing: 432
 		RequiresCondition: factundeploy
-	TransferTimedExternalConditionOnTransform:
-		Condition: invulnerability
-	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
-		Condition: factundeploy
-		Prerequisites: global-factundeploy
 	SpawnActorsOnSell:
 		ActorTypes: light_inf, light_inf, engineer
-	BaseBuilding:
 	RenderSprites:
 		Image: conyard.atreides
 	WithBuildingPlacedOverlay:
 		RequiresCondition: !build-incomplete
 		Palette: d2kunit
-	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@construction_yard:
 		Prerequisite: construction_yard
 	ProvidesPrerequisite@d2k_construction_yard:
@@ -780,8 +714,6 @@ construction_yard.ixian:
 		Prerequisites: upgrade.conyard
 	ActorStatValues:
 		Upgrades: upgrade.conyard
-	BaseProvider:
-		Range: 15c0
 	GivesBuildableArea:
 		AreaTypes: building
 	-WithDeathAnimation:
@@ -916,28 +848,18 @@ d2k_barracks.ixian:
 	Inherits@UPGRADEABLE: ^D2kUpgradeable
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@barr: ^IsBarrack
 	Inherits@Prereqs: ^D2KPrereqs
 	Inherits@shape: ^2x2Shape
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, wind_trap.atreides
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 220
-		Description: template-barracks.description
 		IconPalette: d2kunit
-	Valued:
-		Cost: 400
 	Tooltip:
 		Name: Ixian Barracks
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 96000
-	Armor:
-		Type: Wood
-	RevealsShroud:
-		Range: 3c768
 	RallyPoint:
 	Exit@1:
 		SpawnOffset: 352,576,0
@@ -945,32 +867,6 @@ d2k_barracks.ixian:
 	Exit@2:
 		SpawnOffset: 512,480,0
 		ExitCell: 1,2
-	Production@NORMAL:
-		Produces: Infantry
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry
-		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
-		Type: Infantry
-		DisplayOrder: 2
-		Group: Infantry
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@infantry:
-		ProductionType: Infantry
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@rainfantry:
-		ProductionType: RAInfantry
-		RequiresCondition: classicproductionqueues
-	Power:
-		Amount: -20
 	RenderSprites:
 		Image: barracks.ixian
 	ProvidesPrerequisite@d2kbarracks:
@@ -1143,21 +1039,13 @@ refinery.atreides:
 	Inherits@shape: ^3x3Shape
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, wind_trap.atreides
-		Queue: Building, RABuilding
-		Description: template-refinery.description
 		IconPalette: d2kunit
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Spice Refinery
 	Building:
 		Footprint: =xx xx= ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 300000
-	Armor:
-		Type: Concrete
 	HitShape:
 		Type: Rectangle
 			TopLeft: -512, -1024
@@ -1166,8 +1054,6 @@ refinery.atreides:
 		Type: Rectangle
 			TopLeft: -1536, 0
 			BottomRight: 512, 1024
-	RevealsShroud:
-		Range: 6c0
 	Refinery:
 	DockHost:
 		DockAngle: 640
@@ -1191,9 +1077,6 @@ refinery.atreides:
 	WithDockedOverlay@SMOKE:
 		RequiresCondition: !build-incomplete
 		Sequence: smoke
-	Power:
-		Amount: -40
-	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@spice_refinery:
 		Prerequisite: spice_refinery
 	ThrowsShrapnel:
@@ -1209,11 +1092,6 @@ refinery.atreides:
 		Actor: light_inf
 	SpawnActorOnDeath@death4:
 		Actor: trooper
-	WithResourceStoragePipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 20
-		FullSequence: pip-yellow
 
 d2k_silo.atreides:
 	Inherits: ^D2KBuilding
@@ -1580,22 +1458,14 @@ heavy_factory:
 	Inherits@weap: ^IsWeaponFactory
 	Buildable:
 		Prerequisites: ~wip
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 330
 		Description: Produces heavy vehicles.
 		IconPalette: d2kunit
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Heavy Factory
 	Building:
 		Footprint: _x_ xxx =xX ===
 		Dimensions: 3,4
 		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 300000
-	Armor:
-		Type: Concrete
 	HitShape:
 		TargetableOffsets: -1155,-704,0, -1365,832,0
 		Type: Rectangle
@@ -1605,36 +1475,10 @@ heavy_factory:
 		Type: Rectangle
 			TopLeft: -512, -1536
 			BottomRight: 512, -512
-	RevealsShroud:
-		Range: 5c0
 	RallyPoint:
 	Exit@1:
 		SpawnOffset: 256,192,0
 		ExitCell: 0,2
-	Production@NORMAL:
-		Produces: Vehicle
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAVehicle
-		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
-		Type: Vehicle
-		DisplayOrder: 3
-		Group: Vehicle
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@Vehicle:
-		ProductionType: Vehicle
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAVehicle:
-		ProductionType: RAVehicle
-		RequiresCondition: classicproductionqueues
 	ProvidesPrerequisite@atreides:
 		Prerequisite: heavy.atreides
 	ProvidesPrerequisite@ordos:
@@ -1662,11 +1506,10 @@ heavy_factory:
 		RequiresCondition: !build-incomplete
 		Queues: Vehicle, RAVehicle
 		Sequence: production-welding
-	Power:
-		Amount: -30
-	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@heavy_factory:
 		Prerequisite: heavy_factory
+	ProductionBar@upgrade:
+		ProductionType: Addons
 	GrantConditionOnPrerequisite@UPGRADEABLE:
 		Prerequisites: upgrade.heavy
 	ActorStatValues:
@@ -1686,15 +1529,15 @@ heavy_factory:
 		Actor: trooper
 	Production@upgrade:
 		Produces: Addons
-	ProductionBar@upgrade:
-		ProductionType: Addons
 
 heavy_factory.ixian:
 	Inherits: heavy_factory
 	Tooltip:
 		Name: Ixian Advanced Heavy Factory
+	Valued:
+		Cost: 4000
 	Health:
-		HP: 500000
+		HP: 600000
 	Armor:
 		Type: Concrete
 	RenderSprites:
@@ -1713,25 +1556,15 @@ repair_pad.ixian:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@shape: ^3x3Shape
 	Inherits@repair: ^RepairsUnits
+	Inherits@repair: ^RepairFacility
 	Buildable:
-		Queue: Building, RABuilding
 		Prerequisites: ~construction_yard.ixian, heavy_factory.ixian
-		BuildPaletteOrder: 430
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: template-service-depot.description
 		IconPalette: d2kunit
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Ixian Repair Pad
 	Building:
 		Footprint: +++ +++ +++
 		Dimensions: 3,3
-	Health:
-		HP: 200000
-	Armor:
-		Type: Concrete
 	HitShape:
 		Type: Rectangle
 			TopLeft: -1536, -512
@@ -1740,24 +1573,13 @@ repair_pad.ixian:
 		Type: Rectangle
 			TopLeft: -512, -1536
 			BottomRight: 512, 1536
-	RevealsShroud:
-		Range: 5c0
 	Reservable:
-	RepairsUnits:
-		HpPerStep: 1000
-		Interval: 10
-		PlayerExperience: 100
-		StartRepairingNotification: Repairing
-		FinishRepairingNotification: Repaired
 	RallyPoint:
 	RenderSprites:
 		Image: repair_pad.gold
 	WithRepairOverlay:
 		RequiresCondition: !build-incomplete
 		Palette: effect75alpha
-	Power:
-		Amount: -30
-	ProvidesPrerequisite@buildingname:
 	-WithDeathAnimation:
 	ThrowsShrapnel:
 		Weapons: Debris2, Debris3
@@ -1775,24 +1597,13 @@ outpost.ixian:
 	Inherits@shape: ^3x2Shape
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, refinery.atreides
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 320
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: template-radar.description
 		IconPalette: d2kunit
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Ixian Outpost
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 250000
-	Armor:
-		Type: Wood
 	RenderSprites:
 		Image: outpost.atreides
 	WithIdleOverlay@DISH:
@@ -1802,9 +1613,6 @@ outpost.ixian:
 		Offset: -30,-60,0
 	GrantConditionOnDamageState@STOPDISH:
 		Condition: severe-damaged
-	Power:
-		Amount: -50
-	ProvidesPrerequisite@buildingname:
 	-WithDeathAnimation:
 	ThrowsShrapnel:
 		Weapons: Debris2, Debris3
@@ -1822,53 +1630,34 @@ high_tech_factory.ixian:
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	#Inherits@orni: ^DU_OrnithopterSupportPower
 	Inherits@shape: ^3x3Shape
+	Inherits@hpad: ^IsAircraftFactory
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, outpost.ixian
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 420
-		BuildDuration: 375
-		BuildDurationModifier: 100
 		Description: actor-high_tech_factory.description
 		IconPalette: d2kunit
+	Building:
+		Footprint: _X_ xxx XXX ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+	Tooltip:
+		Name: High Tech Factory
 	Valued:
 		Cost: 2000
 	Health:
-		HP: 300000
+		HP: 400000
 	Armor:
 		Type: Concrete
-	Tooltip:
-		Name: High Tech Factory
+	-Production@NORMAL:
+	-Production@CLASSICPRODUCTIONQUEUES:
 	ProductionFromMapEdge@NORMAL:
 		Produces: Aircraft
 		RequiresCondition: !classicproductionqueues
 	ProductionFromMapEdge@CLASSICPRODUCTIONQUEUES:
 		Produces: RAAircraft
 		RequiresCondition: classicproductionqueues
-	ProductionBar@NORMAL:
-		ProductionType: Aircraft
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@CLASSICPRODUCTIONQUEUES:
-		ProductionType: RAAircraft
-		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
-		Type: Aircraft
-		DisplayOrder: 4
-		Group: Aircraft
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
 	Exit:
 		SpawnOffset: 0,0,728
 		ExitCell: 0,0
-	Building:
-		Footprint: _X_ xxx XXX ===
-		Dimensions: 3,4
-		LocalCenterOffset: 0,-512,0
 	HitShape:
 		TargetableOffsets: -1312,0,0, -1312,-1024,0, -1312,1024,0
 		Type: Rectangle
@@ -1879,8 +1668,6 @@ high_tech_factory.ixian:
 		Type: Rectangle
 			TopLeft: -512, -1536
 			BottomRight: 512, -512
-	RevealsShroud:
-		Range: 5c0
 	RallyPoint:
 	RenderSprites:
 		Image: hightech.atreides
@@ -1900,8 +1687,6 @@ high_tech_factory.ixian:
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@high_tech_factory:
 		Prerequisite: high_tech_factory
-	Power:
-		Amount: -30
 	GrantConditionOnPrerequisite@UPGRADEABLE:
 		Prerequisites: upgrade.hightech
 	ActorStatValues:
@@ -1931,23 +1716,15 @@ research_centre.ixian:
 	Inherits@shape: ^3x3Shape
 	Inherits@tech: ^IsTechnoBuilding
 	Buildable:
-		Queue: Building, RABuilding
 		Prerequisites: ~construction_yard.ixian, outpost.ixian
-		BuildPaletteOrder: 520
 		Description: Ixian Research Center\nUnlocks advanced tanks.
 		IconPalette: d2kunit
-	Valued:
-		Cost: 4000
 	Tooltip:
 		Name: Ix Research Center
 	Building:
 		Footprint: _X_ xxx XXX ===
 		Dimensions: 3,4
 		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 500000
-	Armor:
-		Type: Concrete
 	HitShape:
 		TargetableOffsets: -1574,-158,0, -1050,-1024,0, -1155,960,0
 		Type: Rectangle
@@ -1958,23 +1735,11 @@ research_centre.ixian:
 		Type: Rectangle
 			TopLeft: -512, -1536
 			BottomRight: 512, -512
-	RevealsShroud:
-		Range: 10000
-		RequiresCondition: !disabled
-	RevealsShroud@Offline:
-		Range: 5000
-		RequiresCondition: disabled
-	DetectCloaked:
-		Range: 10000
-		RequiresCondition: !disabled
 	RenderSprites:
 		Image: research.gold
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-lights
-	Power:
-		Amount: -100
-	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@research_centre:
 		Prerequisite: research_centre
 	-WithDeathAnimation:
@@ -2005,26 +1770,31 @@ starport.ixian:
 	Inherits@shape: ^3x3Shape
 	Inherits@cashtrickler: ^CashTricklerWithExperience
 	Inherits@cashtricklerlimit: ^CashTricklerLimited
-	Tooltip:
-		Name: Starport
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, research_centre.ixian, derricklimit
 		Queue: Building, RABuilding
 		BuildLimit: 1
-		BuildPaletteOrder: 530
+		BuildPaletteOrder: 150
 		BuildDuration: 1500
 		BuildDurationModifier: 100
+		Prerequisites: ~construction_yard.ixian, research_centre.ixian, derricklimit
 		Description: Dropzone for quick reinforcements, and passive income.
 		IconPalette: d2kunit
-	Valued:
-		Cost: 5000
 	Building:
 		Footprint: xxx x=x =x=
 		Dimensions: 3,3
+	Tooltip:
+		Name: Starport
+	Valued:
+		Cost: 5000
 	Health:
-		HP: 300000
+		HP: 500000
 	Armor:
 		Type: Concrete
+	RevealsShroud:
+		Range: 7500
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
 	HitShape:
 		Type: Rectangle
 			TopLeft: -1536, -1536
@@ -2054,7 +1824,7 @@ starport.ixian:
 		ActorType: frigate
 		PauseOnCondition: lowpower
 		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
+	ParallelProductionQueue@VEHICLE:
 		Type: Vehicle
 		DisplayOrder: 3
 		Group: Vehicle
@@ -2066,17 +1836,17 @@ starport.ixian:
 		CancelledAudio: Cancelled
 		BuildDurationModifier: 50
 		InfiniteBuildLimit: 10
+	ProductionBar@VEHICLE:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLE:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
 	RenderSprites:
 		Image: starport.smuggler
 	WithDeliveryOverlay:
 		RequiresCondition: !build-incomplete
 		#Palette: starportlights
-	ProductionBar@NORMAL:
-		ProductionType: Vehicle
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@CLASSICPRODUCTIONQUEUES:
-		ProductionType: RAVehicle
-		RequiresCondition: classicproductionqueues
 	ProvidesPrerequisite@atreides:
 		Prerequisite: starport.atreides
 		Factions: atreides
@@ -2095,9 +1865,6 @@ starport.ixian:
 	ProvidesPrerequisite@harkonnen_combat:
 		Prerequisite: starport.harkonnen_combat
 		Factions: harkonnen, corrino
-	Power:
-		Amount: -100
-	ProvidesPrerequisite@buildingname:
 	-WithDeathAnimation:
 	ThrowsShrapnel:
 		Weapons: Debris2, Debris3
@@ -5714,36 +5481,11 @@ d2k_mcv.ixian:
 	Inherits@selection: ^SelectableSupportUnit
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@mcv: ^MCV
-	Inherits@conyard: ^Conyard
 	Buildable:
 		Prerequisites: ~repair_pad.ixian
-		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 110
-		BuildDuration: 1500
-		BuildDurationModifier: 100
-		Description: template-mcv.description
 		IconPalette: d2kunit
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Ixian Mobile Construction Vehicle
-	Selectable:
-		Class: mcv
-		DecorationBounds: 2048, 1280
-	Health:
-		HP: 300000
-	Repairable:
-		HpPerStep: 15000
-	ChangesHealth@SelfHealing:
-		Step: 120
-	Armor:
-		Type: Medium
-	Mobile:
-		Speed: 75
-		Locomotor: heavywheeled
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
 	Explodes:
 		Weapon: D2KUnitExplodeLarge
 		EmptyWeapon: D2KUnitExplodeLarge
@@ -5753,8 +5495,6 @@ d2k_mcv.ixian:
 		TransformSounds: BUILD1.WAV
 		Facing: 256
 		NoTransformNotification: BuildingCannotPlaceAudio
-	AttractsWorms:
-		Intensity: 700
 	-RevealOnFire:
 	Voiced:
 		VoiceSet: D2KMCV
