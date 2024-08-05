@@ -315,6 +315,8 @@ aa_cgtech:
 		Prerequisite: ra2tek
 	WithIdleOverlay@lights:
 		Sequence: idle-lights
+	Production@Upgrades:
+		Produces: Upgrades
 
 aa_cgmiac:
 	Inherits: ^RA2Building
@@ -356,8 +358,6 @@ aa_cgmiac:
 		ExitCell: 2,1
 	Power:
 		Amount: -100
-	Production@Upgrades:
-		Produces: Upgrades
 	WithIdleOverlay@lights:
 		Sequence: idle-lights
 	ParallelProductionQueue@INFANTRY:
@@ -368,6 +368,8 @@ aa_cgmiac:
 		Prerequisite: aircraft.upgraded
 	ProvidesPrerequisite@vehicles:
 		Prerequisite: vehicles.upgraded
+	ProvidesPrerequisite@ships:
+		Prerequisite: ships.upgraded
 	Voiced:
 		VoiceSet: CHPropagandaCenterVoice
 
@@ -584,7 +586,7 @@ aa_cgpnch:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
-		Prerequisites: ~aa_cgcnst, aa_cgbrck
+		Prerequisites: ~aa_cgyard
 		Description: actor-cgpnch.description
 	Valued:
 		Cost: 1200
@@ -636,7 +638,7 @@ aa_cgpuls:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 70
-		Prerequisites: ~aa_cgcnst, aa_cgweap
+		Prerequisites: ~aa_cgcnst, aa_cgradr
 		Description: template-anti-aircraft-power-defense.description
 	Valued:
 		Cost: 700
@@ -1758,8 +1760,9 @@ aa_quas:
 
 aa_dragonfly:
 	Inherits: ^Tank
-	Inherits@Template: ^ScoutVehicleTemplate
 	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@cargo: ^CargoVehicle
 	Inherits@bot: ^BotAutoDeployTransport
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -1799,12 +1802,6 @@ aa_dragonfly:
 		Armaments: garrisoned
 		PortOffsets: 224,-341,128, 224,341,128, -224,-341,128, -224,341,128
 		PauseOnCondition: chronobeamed
-		RequiresCondition: upaa_dragonfly
-	GrantConditionOnPrerequisite@Fireports:
-		Condition: upaa_dragonfly
-		Prerequisites: upaa_dragonfly
-	ActorStatValues:
-		Upgrades: upaa_dragonfly
 	Hovers:
 	Targetable@Hover:
 		TargetTypes: Water, Ship
@@ -2471,7 +2468,7 @@ aa_railt:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 2200
+		Cost: 2000
 	Tooltip:
 		Name: Railgun Tank
 	Buildable:
@@ -2497,6 +2494,7 @@ aa_railt:
 		MuzzleSequence: muzzle
 	AttackFrontal:
 		FacingTolerance: 0
+	RenderRangeCircle:
 	WithMuzzleOverlay:
 	Voiced:
 		VoiceSet: AsianAllianceVehicleVoice
@@ -2505,7 +2503,7 @@ aa_railt:
 
 aa_railt2:
 	Inherits: aa_railt
-	Inherits@Template: ^HighTechTankTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@buff: ^PromotionUnitBuff
 	Valued:
 		Cost: 3000
@@ -2842,17 +2840,79 @@ aa_panth:
 	RenderSprites:
 		PlayerPalette: playerra2
 
-aa_gunb:
+aa_ksub:
 	Inherits: ^BoatUnit
 	Inherits@effects: ^RA2Vehicle
 	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Kamikaze Submarine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~aa_cgyard
+		Queue: Naval, RANaval
+		Description: actor-aaksub.description
+	Mobile:
+		Speed: 125
+		TurnSpeed: 25
+	Health:
+		HP: 25000
+	Turreted:
+		TurnSpeed: 20
+		Offset: 512,0,11
+	Armament@PRIMARY:
+		Weapon: AsianDemoSubTargeting
+		LocalOffset: 208,0,80
+	AutoTarget:
+		InitialStance: Defend
+		InitialStanceAI: AttackAnything
+		ScanRadius: 10
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine
+	GrantConditionOnAttack:
+		Condition: triggered
+	GrantConditionOnDeploy:
+		DeployedCondition: triggered
+		PauseOnCondition: disabled
+		ExclusiveDeploy: true
+		DeployType: Detonate
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 512
+	RenderDetectionCircle:
+	Cloak@underwater:
+		CloakDelay: 75
+		CloakSound: vnavupa.wav
+		UncloakSound: vnavupa.wav
+	KillsSelf:
+		RequiresCondition: !disabled && triggered
+	Voiced:
+		VoiceSet: AsianAllianceRobotVoice
+	Explodes@bomb:
+		Weapon: AsianSubmarineBomb
+		DamageSource: Killer
+		RequiresCondition: !disabled
+	RenderSprites:
+		PlayerPalette: playerra2
+
+aa_gunb:
+	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
+	Inherits@Template: ^BattleShipTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 1400
+		Cost: 1000
 	Tooltip:
-		Name: Gun Boat
+		Name: Asian Gun Boat
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -2909,6 +2969,10 @@ aa_gunb:
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 20
+	DetectCloaked:
+		Range: 5000
+		DetectionTypes: Underwater
+	RenderDetectionCircle:
 	Voiced:
 		VoiceSet: AsianShipVoice
 	RenderSprites:
@@ -2917,13 +2981,13 @@ aa_gunb:
 aa_lsub:
 	Inherits: ^BoatUnit
 	Inherits@effects: ^RA2Vehicle
-	Inherits@Template: ^BattleShipTemplate
+	Inherits@Template: ^ScoutShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Inherits@sub: ^Submarine
 	Valued:
-		Cost: 2000
+		Cost: 1450
 	Tooltip:
 		Name: Leviathan
 	UpdatesPlayerStatistics:
@@ -2935,16 +2999,19 @@ aa_lsub:
 		Description: actor-ra2sub.description
 	Mobile:
 		Speed: 60
+		TurnSpeed: 12
 	Health:
-		HP: 120000
-	RevealsShroud:
-		Range: 6c0
+		HP: 240000
+	ChangesHealth@SelfHealing:
+		Step: 96
+	Armor:
+		Type: Heavy
 	Turreted:
-		TurnSpeed: 28
+		TurnSpeed: 12
 		Offset: 512,0,0
 	Armament@Torp:
 		Weapon: AsianSmallTorpedo
-		LocalOffset: 256,0,0
+		LocalOffset: 256,-128,0, 256,128,0
 	Targetable:
 		TargetTypes: Ground, Water, Ship, Submarine
 	AttackFrontal:
@@ -2953,15 +3020,10 @@ aa_lsub:
 	RenderDetectionCircle:
 	Selectable:
 		DecorationBounds: 1536, 1536
-	DeliversCash:
-		Payload: 475
 	Cloak@underwater:
 		CloakDelay: 75
 		CloakSound: vnavupa.wav
 		UncloakSound: vnavupa.wav
-	DetectCloaked:
-		DetectionTypes: Underwater
-		Range: 4c0
 	Voiced:
 		VoiceSet: AsianShipVoice
 	RenderSprites:
@@ -2970,30 +3032,33 @@ aa_lsub:
 aa_quasfrig:
 	Inherits: ^BoatUnit
 	Inherits@effects: ^RA2Vehicle
-	Inherits@Template: ^ScoutShipTemplate
+	Inherits@Template: ^BattleShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 1500
+		Cost: 2200
 	Tooltip:
 		Name: Quasar Frigate
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~aa_cgyard
+		Prerequisites: ~aa_cgradr
 		Queue: Naval, RANaval
 		Description: actor-aaquasfrig.description
 	Mobile:
-		Speed: 90
+		Speed: 75
+		TurnSpeed: 15
 	Health:
-		HP: 60000
-	RevealsShroud:
-		Range: 6c0
+		HP: 120000
+	ChangesHealth@SelfHealing:
+		Step: 48
+	Armor:
+		Type: Heavy
 	Armament:
 		Weapon: AsianQuasarBoatAG
-		LocalOffset: 75,0,0, 150,0,0, 250,0,0
+		LocalOffset: 500,0,250, 600,0,250, 700,0,250
 		Name: secondary
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
@@ -3004,15 +3069,9 @@ aa_quasfrig:
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	WithMuzzleOverlay:
-	DetectCloaked:
-		Range: 8c0
-		DetectionTypes: Underwater
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
-	RenderDetectionCircle:
-	DeliversCash:
-		Payload: 500
 	Voiced:
 		VoiceSet: AsianShipVoice
 	RenderSprites:
@@ -3023,43 +3082,93 @@ aa_karrier:
 	Inherits@effects: ^RA2VehicleBig
 	Inherits@Template: ^ArtilleryShipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 2500
+		Cost: 2300
 	Tooltip:
 		Name: Kamikaze Carrier
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~aa_cgtech
+		Prerequisites: ~aa_cgtech, ~!upaa_tsunami
 		Queue: Naval, RANaval
 		Description: actor-aacarrier.description
 	Mobile:
-		TurnSpeed: 32
-		Speed: 42
+		Speed: 55
+		TurnSpeed: 11
 	Health:
-		HP: 35000
-	RevealsShroud:
-		Range: 7c0
+		HP: 175000
+	ChangesHealth@SelfHealing:
+		Step: 70
+	Armor:
+		Type: Heavy
 	AttackFollowFrontal:
 		Voice: Attack
 		PauseOnCondition: disabled
-	DeliversCash:
-		Payload: 450
 	RenderSprites:
 		PlayerPalette: playerra2
 	CarrierMaster:
 		Actors: aa_kami, aa_kami, aa_kami, aa_kami
+		RearmTicks: 75
+		RespawnTicks: 150
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Armament@PRIMARY:
+		Weapon: KamikazeCarrierTarget
+	Voiced:
+		VoiceSet: AsianShipVoice
+
+aa_tsun:
+	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2VehicleBig
+	Inherits@Template: ^ArtilleryShipTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 3200
+	Tooltip:
+		Name: Tsunami Carrier
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~upaa_tsunami, aa_cgmiac
+		Queue: Naval, RANaval
+		Description: actor-aatsun.description
+	Mobile:
+		Speed: 65
+		TurnSpeed: 13
+	Health:
+		HP: 200000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	Armor:
+		Type: Superheavy
+	AttackFollowFrontal:
+		Voice: Attack
+		PauseOnCondition: disabled
+	RenderSprites:
+		PlayerPalette: playerra2
+	CarrierMaster:
+		Actors: aa_kami_chemical, aa_kami_chemical, aa_kami_chemical, aa_kami_chemical
 		RearmTicks: 150
 		RespawnTicks: 300
 		InstaRepair: true
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
 	Armament@PRIMARY:
-		Weapon: RA2CarrierTarget
+		Weapon: JapanCarrierTarget
 	Voiced:
-		VoiceSet: AsianShipVoice
+		VoiceSet: AsianTsunamiVoice
+	GrantConditionOnPrerequisite@Upgrade:
+		Condition: upaa_tsunami
+		Prerequisites: upaa_tsunami
+	ActorStatValues:
+		Upgrades: upaa_tsunami
 
 aa_kami:
 	Inherits: ^RANeutralPlane
@@ -3067,24 +3176,26 @@ aa_kami:
 	-Selectable:
 	Interactable:
 	Valued:
-		Cost: 350
+		Cost: 250
 	Tooltip:
 		Name: Kamikaze
 	Aircraft:
-		AltitudeVelocity: 240
+		AltitudeVelocity: 120
 		InitialFacing: 768
-		TurnSpeed: 32
-		Speed: 210
+		TurnSpeed: 24
+		Speed: 240
 		Repulsable: false
-		MaximumPitch: 56
+		MaximumPitch: 48
 		TakeUpCellWhenLand: false
 	Health:
-		HP: 8000
+		HP: 12500
+	Armor:
+		Type: Fighter
 	RevealsShroud:
-		Range: 7c0
+		Range: 7500
 		Type: GroundPosition
 	Armament@PRIMARY:
-		Weapon: RA2CRM60
+		Weapon: AsianKamikazeChaingun
 		LocalOffset: 427,-171,-213, 427,171,-213
 		PauseOnCondition: !ammo
 	AmmoPool:
@@ -3097,8 +3208,9 @@ aa_kami:
 	AttackAircraft:
 		FacingTolerance: 80
 		PersistentTargeting: false
+		RequiresCondition: ammo
 	CarrierSlave:
-		LandingDistance: 8c0
+		LandingDistance: 8000
 	AutoTarget:
 		InitialStanceAI: AttackAnything
 		InitialStance: AttackAnything
@@ -3109,7 +3221,7 @@ aa_kami:
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
-		PipCount: 2
+		PipCount: 6
 	RenderSprites:
 		PlayerPalette: playerra2
 	GrantConditionOnMovement@Turn:
@@ -3138,10 +3250,14 @@ aa_kami:
 aa_kami_chemical:
 	Inherits: aa_kami
 	Valued:
-		Cost: 350
+		Cost: 750
+	Health:
+		HP: 37500
+	Armor:
+		Type: Bomber
 	Tooltip:
 		Name: Chemical Kamikaze
-	Armament@PRIMARY:
+	Armament@Secondary:
 		Weapon: AsianChemicalBombs
 		LocalOffset: 427,-171,-213, 427,171,-213
 		PauseOnCondition: !ammo
@@ -3153,7 +3269,7 @@ aa_kami_chemical:
 aa_kami.asdf:
 	Inherits: aa_kami
 	Valued:
-		Cost: 50
+		Cost: 500
 	Tooltip:
 		Name: Airstrike Kamikaze
 	-CarrierSlave:
@@ -3177,117 +3293,6 @@ aa_kami.asdf:
 	SpawnActorOnDeath:
 		Actor: aa_kami.Husk
 		RequiresCondition: airborne && !diving
-
-aa_tsun:
-	Inherits: ^BoatUnit
-	Inherits@effects: ^RA2VehicleBig
-	Inherits@Template: ^ArtilleryShipTemplate
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Tsunami Carrier
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 30
-		Prerequisites: ~aa_cgtech
-		Queue: Naval, RANaval
-		Description: actor-aatsun.description
-	Mobile:
-		TurnSpeed: 32
-		Speed: 42
-	Health:
-		HP: 35000
-	RevealsShroud:
-		Range: 7c0
-	AttackFollowFrontal:
-		Voice: Attack
-		PauseOnCondition: disabled
-	DeliversCash:
-		Payload: 450
-	RenderSprites:
-		PlayerPalette: playerra2
-	CarrierMaster:
-		Actors: aa_kami_chemical, aa_kami_chemical
-		RearmTicks: 150
-		RespawnTicks: 300
-		InstaRepair: true
-		SlaveDisposalOnKill: KillSlaves
-		SpawnAllAtOnce: false
-	Armament@PRIMARY:
-		Weapon: RA2CarrierTarget
-	Voiced:
-		VoiceSet: AsianTsunamiVoice
-
-aa_ksub:
-	Inherits: ^BoatUnit
-	Inherits@effects: ^RA2Vehicle
-	Inherits@Template: ^ScoutShipTemplate
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@EMP: ^FrontalEMP
-	Inherits@sub: ^Submarine
-	Valued:
-		Cost: 500
-	Tooltip:
-		Name: Kamikaze Submarine
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~aa_cgyard
-		Queue: Naval, RANaval
-		Description: actor-aaksub.description
-	Mobile:
-		Speed: 100
-	Health:
-		HP: 30000
-	RevealsShroud:
-		Range: 6c0
-	Turreted:
-		TurnSpeed: 28
-		Offset: 512,0,11
-	Armament@PRIMARY:
-		Weapon: AsianDemoSubTargeting
-		LocalOffset: 208,0,80
-	AutoTarget:
-		InitialStance: Defend
-		InitialStanceAI: AttackAnything
-		ScanRadius: 10
-	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine
-	GrantConditionOnAttack:
-		Condition: triggered
-	GrantConditionOnDeploy:
-		DeployedCondition: triggered
-		PauseOnCondition: disabled
-		ExclusiveDeploy: true
-		DeployType: Detonate
-	AttackFrontal:
-		Voice: Attack
-		FacingTolerance: 512
-	RenderDetectionCircle:
-	DeliversCash:
-		Payload: 475
-	Cloak@underwater:
-		CloakDelay: 75
-		CloakSound: vnavupa.wav
-		UncloakSound: vnavupa.wav
-	KillsSelf:
-		RequiresCondition: !disabled && triggered
-	DetectCloaked:
-		DetectionTypes: Underwater
-		Range: 4c0
-	Voiced:
-		VoiceSet: AsianAllianceRobotVoice
-	Explodes@bomb:
-		Weapon: AsianSubmarineBomb
-		DamageSource: Killer
-		RequiresCondition: !disabled
-	RenderSprites:
-		PlayerPalette: playerra2
 
 #######################################
 # RA2 Asian Husks
@@ -3541,7 +3546,9 @@ upaa_railt2:
 		Image: aa_railt2
 	ProvidesPrerequisite:
 
-### Researches
+####################################################################################################
+#		Red Alert 2 Upgrades
+####################################################################################################
 
 upaa_gren:
 	Inherits: ^researched_upgrade.template
@@ -3563,7 +3570,7 @@ upaa_lynx:
 	Tooltip:
 		Name: Lynx Machinegun
 	Valued:
-		Cost: 1500
+		Cost: 2000
 	Buildable:
 		BuildPaletteOrder: 60
 		Queue: Upgrades
@@ -3573,27 +3580,12 @@ upaa_lynx:
 		Image: aa_lynx
 	ProvidesPrerequisite:
 
-upaa_dragonfly:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Dragonfly Fireports
-	Valued:
-		Cost: 1500
-	Buildable:
-		BuildPaletteOrder: 70
-		Queue: Upgrades
-		Description: Passengers can shoot out from Dragonflies.
-		Prerequisites: ~aa_cgmiac, !upaa_dragonfly
-	RenderSprites:
-		Image: aa_dragonfly
-	ProvidesPrerequisite:
-
 upaa_banzai:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Banzai Mode
 	Valued:
-		Cost: 2000
+		Cost: 3000
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Upgrades
@@ -3601,6 +3593,21 @@ upaa_banzai:
 		Prerequisites: ~aa_cgmiac, !upaa_banzai
 	RenderSprites:
 		Image: aa_japrif
+	ProvidesPrerequisite:
+
+upaa_tsunami:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Tsunami Carrier Upgrade
+	Valued:
+		Cost: 4000
+	Buildable:
+		BuildPaletteOrder: 70
+		Queue: Upgrades
+		Description: Upgrades Kamikaze Carrier to Tsunami Carrier.
+		Prerequisites: ~aa_cgmiac, aa_cgyard, !upaa_tsunami
+	RenderSprites:
+		Image: aa_tsun
 	ProvidesPrerequisite:
 
 ##############################################
@@ -4140,7 +4147,7 @@ steel_fedaa:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
-		Prerequisites: ~steel_qacst, steel_qaweap
+		Prerequisites: ~steel_qacst, steel_qtradr
 		Description: template-anti-infantry-defense.description
 	Valued:
 		Cost: 800
