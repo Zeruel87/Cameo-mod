@@ -880,19 +880,19 @@ AsianTSIonCannon:
 		ImpactActors: false
 
 AsianMineBomb:
-	ReloadDelay: 100
-	Range: 1c0
+	ReloadDelay: 125
+	Range: 1250
 	Report: chute1.aud
 	Projectile: InstantExplode
 	Warhead@1: FireCluster
 		Weapon: AsianMineSpawner
-		Dimensions: 5,5
-		Footprint: __X__ _XXX_ XXXXX _XXX_ __X__
+		Dimensions: 7,7
+		Footprint: __xxx__ _xxxxx_ xxxxxxx xxxxxxx xxxxxxx _xxxxx_ __xxx__
 		ValidTargets: Ground, Air, Water
 
 AsianMineSpawner:
-	Range: 4c0
-	ReloadDelay: 30
+	Range: 7000
+	ReloadDelay: 35
 	Projectile: Bullet
 		Image: aa_tankmine
 		Sequences: idle
@@ -903,7 +903,7 @@ AsianMineSpawner:
 	Warhead@1: SpawnActorOrWeapon
 		Actors: aa_tankmine
 		Weapon: AsianTankMine
-		Range: 0
+		Range: 3
 		ValidTargets: Ground, Water, Air
 
 AsianMineBomb2:
@@ -913,13 +913,13 @@ AsianMineBomb2:
 	Projectile: InstantExplode
 	Warhead@1: FireCluster
 		Weapon: AsianMineSpawner2
-		Dimensions: 5,5
-		Footprint: __X__ _XXX_ XXXXX _XXX_ __X__
+		Dimensions: 7,7
+		Footprint: __xxx__ _xxxxx_ xxxxxxx xxxxxxx xxxxxxx _xxxxx_ __xxx__
 		ValidTargets: Ground, Air, Water
 
 AsianMineSpawner2:
-	Range: 4c0
-	ReloadDelay: 30
+	Range: 7000
+	ReloadDelay: 35
 	Projectile: Bullet
 		Image: aa_chaomine
 		Sequences: idle
@@ -930,17 +930,21 @@ AsianMineSpawner2:
 	Warhead@1: SpawnActorOrWeapon
 		Actors: aa_chaomine
 		Weapon: AsianChaosMine
-		Range: 2
+		Range: 3
 		ValidTargets: Ground, Water, Air
 
 AsianTankMine:
 	Inherits: ^RA2TankDestroyerCannon
 	Projectile: InstantExplode
 	Warhead@TankDestroyerCannon: SpreadDamage
-		Damage: 100000
+		Spread: 1250
+		Falloff: 125, 100, 75, 50, 25
+		Damage: 125000
 		InvalidTargets: Mine
 	Warhead@TankDestroyerCannonPercentage: HealthPercentageDamage
-		Damage: 15
+		Spread: 2500
+		Falloff: 125, 100, 75, 50, 25
+		Damage: 25
 		InvalidTargets: Mine
 	Warhead@Effect: CreateEffect
 		Explosions: ra2_elite_explosion
@@ -951,14 +955,33 @@ AsianTankMine:
 
 AsianChaosMine:
 	Inherits: AsianChaosTurret
-	Inherits@2: ^MediumChemicalWeapon
-	Warhead@MediumChemicalWeapon: SpreadDamage
-		Damage: 50000
-	Warhead@MediumChemicalWeaponFriendlyFire: SpreadDamage
+	Inherits: AsianTankMine
+	Inherits@2: ^HeavyChemicalWeapon
+	Warhead@HeavyChemicalWeapon: SpreadDamage
+		Spread: 1250
+		Falloff: 125, 100, 75, 50, 25
+		Damage: 125000
+		InvalidTargets: Mine
+	Warhead@HeavyChemicalWeaponFriendlyFire: SpreadDamage
+		Spread: 1250
+		Falloff: 125, 100, 75, 50, 25
 		Damage: 25000
 		InvalidTargets: Mine
-	Warhead@MediumChemicalWeaponPercentage: HealthPercentageDamage
+	Warhead@HeavyChemicalWeaponPercentage: HealthPercentageDamage
+		Spread: 2500
+		Falloff: 125, 100, 75, 50, 25
 		InvalidTargets: Mine
+		Damage: 25
+	Warhead@Cloud: SpawnSmokeParticle
+		Count: 1, 4
+		Duration: 125
+		Speed: 4, 16
+		TurnRate: 10
+		Image: ra2txgasg
+		Sequences: idle
+		Palette: ra2effect
+		Weapon: RA2Cloud
+		InvalidTargets: Water
 
 AsianPelicanMissile:
 	Inherits: ^Grenade
@@ -1495,15 +1518,17 @@ AsianMLRSAA:
 ####################################################################################################
 SteelCloneGun:
 	Inherits: ^SteelSmallArms
-	ReloadDelay: 26
-	Range: 4500
+	ReloadDelay: 25
+	Range: 4700
 	Warhead@SmallArms: SpreadDamage
-		Damage: 3200
+		Damage: 4000
+
 SteelCloneGunE:
 	Inherits: SteelCloneGun
 	Range: 5500
 	Burst: 2
 	BurstDelays: 3
+
 SteelGarrison:
 	Inherits: RA2vulcan2
 	Report: steel_chaingunfire.wav
@@ -1522,7 +1547,9 @@ SteelMakoGun:
 	ReloadDelay: 30
 	Report: steel_quantumfire.wav
 	Warhead@MediumCannon: SpreadDamage
-		Damage: 6000
+		Damage: 8000
+	Warhead@MediumCannonPercentage: HealthPercentageDamage
+		Damage: 4
 	Warhead@Effect: CreateEffect
 		ExplosionPalette: ra2effect
 		ImpactSounds: gexp14a.wav
@@ -1679,17 +1706,19 @@ SteelQuatumTurretRail:
 SteelInspectorIonCannon:
 	Range: 2500
 	MinRange: 500
-	ReloadDelay: 75
+	ReloadDelay: 125
 	ValidTargets: Ground, Water, Trees, Air
 	Projectile: InstantHit
 	TargetActorCenter: true
 	Warhead@1Dam_impact: SpreadDamage
+		AffectsParent: false
 		Spread: 1250
 		Damage: 2500
 		Falloff: 1000, 500, 250, 100
 		ValidTargets: Ground, Water, Trees, Air
 		DamageTypes: Prone100Percent, TriggerProne, FireDeath
 	Warhead@2Dam_area: SpreadDamage
+		AffectsParent: false
 		Spread: 1000
 		Damage: 10000
 		Falloff: 100, 75, 50, 25
@@ -1697,11 +1726,11 @@ SteelInspectorIonCannon:
 		ValidTargets: Ground, Water, Air
 		DamageTypes: Prone50Percent, TriggerProne, FireDeath
 	Warhead@IonCannonPercentage: HealthPercentageDamage
+		AffectsParent: false
 		ValidTargets: Ground, Water, Trees, Air
 		Spread: 1500
 		Damage: 10
 		Delay: 5
-		AffectsParent: True
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@3Smu_area: LeaveSmudge
 		SmudgeType: Scorch
