@@ -117,14 +117,19 @@ Player:
 		RequiresCondition: d2k_rearm >= 5
 
 ^D2KPersonalShield:
-	Shielded:
-		MaxStrength: 10000
-		RegenDelay: 125
-		RegenAmount: 40
+	ShieldedCA:
+		#MaxStrength: 10000
+		DamageRegenDelay: 125
+		#RegenAmount: 40
 		RegenInterval: 1
 		ShieldsUpCondition: d2k_shielded
-		RequiresCondition: d2k_personal_shield && !disabled
+		RequiresCondition: !disabled
 		SelectionBarColor: 8888FFFF
+	ChangesShieldCA@personal_shield:
+		Step: 40
+		Delay: 1
+		StartIfBelow: 100
+		RequiresCondition: d2k_personal_shield
 	Armor:
 		RequiresCondition: !d2k_shielded
 	Armor@shielded:
@@ -597,6 +602,7 @@ Player:
 		AreaTypes: building
 		Adjacent: 4
 	RenderSprites:
+		Palette: cnc
 	Tooltip:
 		Name: Concrete
 		GenericName: Structure
@@ -643,8 +649,6 @@ OILB.d2k:
 	Inherits: OILB.Building
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 200
 		Prerequisites: ~research_centre, derricklimit
 		Description: actor-oilb.description
 		IconPalette: d2kunit
@@ -684,8 +688,6 @@ construction_yard.ixian:
 	Inherits@CPQ: ^CPQCondition
 	Inherits@ai: ^AIConyardCash
 	Inherits@conyard: ^Conyard
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Ixian Construction Yard
 	Building:
@@ -693,92 +695,30 @@ construction_yard.ixian:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		IconPalette: d2kunit
-	Health:
-		HP: 1000000
-	Armor:
-		Type: Concrete
-	Power:
-		Amount: 100
-	RevealsShroud:
-		Range: 10c0
-	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 1000
-		Prerequisites: ~wip-content
-		Description: Produces structures.
-	Production@NORMAL:
-		Produces: Building, Defence
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence
-		RequiresCondition: classicproductionqueues
-	ProductionQueue@Building:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		LowPowerModifier: 200
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionQueue@Defense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Defence
-		LowPowerModifier: 300
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
 	Production@upgrade:
 		Produces: Addons
 	ProductionBar@upgrade:
 		ProductionType: Addons
-	ProductionBar@BUILDING:
-		ProductionType: Building
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RABUILDING:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@Defence:
-		ProductionType: Defence
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RADefence:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
 	Transforms:
 		IntoActor: d2k_mcv.ixian
 		Offset: 1,1
 		Facing: 432
 		RequiresCondition: factundeploy
-	TransferTimedExternalConditionOnTransform:
-		Condition: invulnerability
-	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
-		Condition: factundeploy
-		Prerequisites: global-factundeploy
 	SpawnActorsOnSell:
 		ActorTypes: light_inf, light_inf, engineer
-	BaseBuilding:
 	RenderSprites:
 		Image: conyard.atreides
 	WithBuildingPlacedOverlay:
 		RequiresCondition: !build-incomplete
 		Palette: d2kunit
-	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@construction_yard:
 		Prerequisite: construction_yard
+	ProvidesPrerequisite@d2k_construction_yard:
+		Prerequisite: d2k_construction_yard
 	GrantConditionOnPrerequisite@UPGRADEABLE:
 		Prerequisites: upgrade.conyard
 	ActorStatValues:
 		Upgrades: upgrade.conyard
-	BaseProvider:
-		Range: 15c0
 	GivesBuildableArea:
 		AreaTypes: building
 	-WithDeathAnimation:
@@ -913,28 +853,18 @@ d2k_barracks.ixian:
 	Inherits@UPGRADEABLE: ^D2kUpgradeable
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@barr: ^IsBarrack
 	Inherits@Prereqs: ^D2KPrereqs
 	Inherits@shape: ^2x2Shape
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, wind_trap.atreides
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 220
-		Description: template-barracks.description
 		IconPalette: d2kunit
-	Valued:
-		Cost: 400
 	Tooltip:
 		Name: Ixian Barracks
 	Building:
 		Footprint: xx xx ==
 		Dimensions: 2,3
 		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 96000
-	Armor:
-		Type: Wood
-	RevealsShroud:
-		Range: 3c768
 	RallyPoint:
 	Exit@1:
 		SpawnOffset: 352,576,0
@@ -942,32 +872,6 @@ d2k_barracks.ixian:
 	Exit@2:
 		SpawnOffset: 512,480,0
 		ExitCell: 1,2
-	Production@NORMAL:
-		Produces: Infantry
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry
-		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
-		Type: Infantry
-		DisplayOrder: 2
-		Group: Infantry
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@infantry:
-		ProductionType: Infantry
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@rainfantry:
-		ProductionType: RAInfantry
-		RequiresCondition: classicproductionqueues
-	Power:
-		Amount: -20
 	RenderSprites:
 		Image: barracks.ixian
 	ProvidesPrerequisite@d2kbarracks:
@@ -1140,21 +1044,13 @@ refinery.atreides:
 	Inherits@shape: ^3x3Shape
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, wind_trap.atreides
-		Queue: Building, RABuilding
-		Description: template-refinery.description
 		IconPalette: d2kunit
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Spice Refinery
 	Building:
 		Footprint: =xx xx= ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 300000
-	Armor:
-		Type: Concrete
 	HitShape:
 		Type: Rectangle
 			TopLeft: -512, -1024
@@ -1163,8 +1059,6 @@ refinery.atreides:
 		Type: Rectangle
 			TopLeft: -1536, 0
 			BottomRight: 512, 1024
-	RevealsShroud:
-		Range: 6c0
 	Refinery:
 	DockHost:
 		DockAngle: 640
@@ -1188,9 +1082,6 @@ refinery.atreides:
 	WithDockedOverlay@SMOKE:
 		RequiresCondition: !build-incomplete
 		Sequence: smoke
-	Power:
-		Amount: -40
-	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@spice_refinery:
 		Prerequisite: spice_refinery
 	ThrowsShrapnel:
@@ -1206,11 +1097,6 @@ refinery.atreides:
 		Actor: light_inf
 	SpawnActorOnDeath@death4:
 		Actor: trooper
-	WithResourceStoragePipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 20
-		FullSequence: pip-yellow
 
 d2k_silo.atreides:
 	Inherits: ^D2KBuilding
@@ -1577,22 +1463,14 @@ heavy_factory:
 	Inherits@weap: ^IsWeaponFactory
 	Buildable:
 		Prerequisites: ~wip
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 330
 		Description: Produces heavy vehicles.
 		IconPalette: d2kunit
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Heavy Factory
 	Building:
 		Footprint: _x_ xxx =xX ===
 		Dimensions: 3,4
 		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 300000
-	Armor:
-		Type: Concrete
 	HitShape:
 		TargetableOffsets: -1155,-704,0, -1365,832,0
 		Type: Rectangle
@@ -1602,36 +1480,10 @@ heavy_factory:
 		Type: Rectangle
 			TopLeft: -512, -1536
 			BottomRight: 512, -512
-	RevealsShroud:
-		Range: 5c0
 	RallyPoint:
 	Exit@1:
 		SpawnOffset: 256,192,0
 		ExitCell: 0,2
-	Production@NORMAL:
-		Produces: Vehicle
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAVehicle
-		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
-		Type: Vehicle
-		DisplayOrder: 3
-		Group: Vehicle
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
-	ProductionBar@Vehicle:
-		ProductionType: Vehicle
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAVehicle:
-		ProductionType: RAVehicle
-		RequiresCondition: classicproductionqueues
 	ProvidesPrerequisite@atreides:
 		Prerequisite: heavy.atreides
 	ProvidesPrerequisite@ordos:
@@ -1659,11 +1511,10 @@ heavy_factory:
 		RequiresCondition: !build-incomplete
 		Queues: Vehicle, RAVehicle
 		Sequence: production-welding
-	Power:
-		Amount: -30
-	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@heavy_factory:
 		Prerequisite: heavy_factory
+	ProductionBar@upgrade:
+		ProductionType: Addons
 	GrantConditionOnPrerequisite@UPGRADEABLE:
 		Prerequisites: upgrade.heavy
 	ActorStatValues:
@@ -1683,15 +1534,15 @@ heavy_factory:
 		Actor: trooper
 	Production@upgrade:
 		Produces: Addons
-	ProductionBar@upgrade:
-		ProductionType: Addons
 
 heavy_factory.ixian:
 	Inherits: heavy_factory
 	Tooltip:
 		Name: Ixian Advanced Heavy Factory
+	Valued:
+		Cost: 4000
 	Health:
-		HP: 500000
+		HP: 600000
 	Armor:
 		Type: Concrete
 	RenderSprites:
@@ -1710,25 +1561,15 @@ repair_pad.ixian:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@shape: ^3x3Shape
 	Inherits@repair: ^RepairsUnits
+	Inherits@repair: ^RepairFacility
 	Buildable:
-		Queue: Building, RABuilding
 		Prerequisites: ~construction_yard.ixian, heavy_factory.ixian
-		BuildPaletteOrder: 430
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: template-service-depot.description
 		IconPalette: d2kunit
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Ixian Repair Pad
 	Building:
 		Footprint: +++ +++ +++
 		Dimensions: 3,3
-	Health:
-		HP: 200000
-	Armor:
-		Type: Concrete
 	HitShape:
 		Type: Rectangle
 			TopLeft: -1536, -512
@@ -1737,24 +1578,13 @@ repair_pad.ixian:
 		Type: Rectangle
 			TopLeft: -512, -1536
 			BottomRight: 512, 1536
-	RevealsShroud:
-		Range: 5c0
 	Reservable:
-	RepairsUnits:
-		HpPerStep: 1000
-		Interval: 10
-		PlayerExperience: 100
-		StartRepairingNotification: Repairing
-		FinishRepairingNotification: Repaired
 	RallyPoint:
 	RenderSprites:
 		Image: repair_pad.gold
 	WithRepairOverlay:
 		RequiresCondition: !build-incomplete
 		Palette: effect75alpha
-	Power:
-		Amount: -30
-	ProvidesPrerequisite@buildingname:
 	-WithDeathAnimation:
 	ThrowsShrapnel:
 		Weapons: Debris2, Debris3
@@ -1772,24 +1602,13 @@ outpost.ixian:
 	Inherits@shape: ^3x2Shape
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, refinery.atreides
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 320
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: template-radar.description
 		IconPalette: d2kunit
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Ixian Outpost
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 250000
-	Armor:
-		Type: Wood
 	RenderSprites:
 		Image: outpost.atreides
 	WithIdleOverlay@DISH:
@@ -1799,9 +1618,6 @@ outpost.ixian:
 		Offset: -30,-60,0
 	GrantConditionOnDamageState@STOPDISH:
 		Condition: severe-damaged
-	Power:
-		Amount: -50
-	ProvidesPrerequisite@buildingname:
 	-WithDeathAnimation:
 	ThrowsShrapnel:
 		Weapons: Debris2, Debris3
@@ -1819,53 +1635,34 @@ high_tech_factory.ixian:
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	#Inherits@orni: ^DU_OrnithopterSupportPower
 	Inherits@shape: ^3x3Shape
+	Inherits@hpad: ^IsAircraftFactory
 	Buildable:
 		Prerequisites: ~construction_yard.ixian, outpost.ixian
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 420
-		BuildDuration: 375
-		BuildDurationModifier: 100
 		Description: actor-high_tech_factory.description
 		IconPalette: d2kunit
+	Building:
+		Footprint: _X_ xxx XXX ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+	Tooltip:
+		Name: High Tech Factory
 	Valued:
 		Cost: 2000
 	Health:
-		HP: 300000
+		HP: 400000
 	Armor:
 		Type: Concrete
-	Tooltip:
-		Name: High Tech Factory
+	-Production@NORMAL:
+	-Production@CLASSICPRODUCTIONQUEUES:
 	ProductionFromMapEdge@NORMAL:
 		Produces: Aircraft
 		RequiresCondition: !classicproductionqueues
 	ProductionFromMapEdge@CLASSICPRODUCTIONQUEUES:
 		Produces: RAAircraft
 		RequiresCondition: classicproductionqueues
-	ProductionBar@NORMAL:
-		ProductionType: Aircraft
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@CLASSICPRODUCTIONQUEUES:
-		ProductionType: RAAircraft
-		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
-		Type: Aircraft
-		DisplayOrder: 4
-		Group: Aircraft
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-		InfiniteBuildLimit: 10
 	Exit:
 		SpawnOffset: 0,0,728
 		ExitCell: 0,0
-	Building:
-		Footprint: _X_ xxx XXX ===
-		Dimensions: 3,4
-		LocalCenterOffset: 0,-512,0
 	HitShape:
 		TargetableOffsets: -1312,0,0, -1312,-1024,0, -1312,1024,0
 		Type: Rectangle
@@ -1876,8 +1673,6 @@ high_tech_factory.ixian:
 		Type: Rectangle
 			TopLeft: -512, -1536
 			BottomRight: 512, -512
-	RevealsShroud:
-		Range: 5c0
 	RallyPoint:
 	RenderSprites:
 		Image: hightech.atreides
@@ -1897,8 +1692,6 @@ high_tech_factory.ixian:
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@high_tech_factory:
 		Prerequisite: high_tech_factory
-	Power:
-		Amount: -30
 	GrantConditionOnPrerequisite@UPGRADEABLE:
 		Prerequisites: upgrade.hightech
 	ActorStatValues:
@@ -1928,23 +1721,15 @@ research_centre.ixian:
 	Inherits@shape: ^3x3Shape
 	Inherits@tech: ^IsTechnoBuilding
 	Buildable:
-		Queue: Building, RABuilding
 		Prerequisites: ~construction_yard.ixian, outpost.ixian
-		BuildPaletteOrder: 520
 		Description: Ixian Research Center\nUnlocks advanced tanks.
 		IconPalette: d2kunit
-	Valued:
-		Cost: 4000
 	Tooltip:
 		Name: Ix Research Center
 	Building:
 		Footprint: _X_ xxx XXX ===
 		Dimensions: 3,4
 		LocalCenterOffset: 0,-512,0
-	Health:
-		HP: 500000
-	Armor:
-		Type: Concrete
 	HitShape:
 		TargetableOffsets: -1574,-158,0, -1050,-1024,0, -1155,960,0
 		Type: Rectangle
@@ -1955,23 +1740,11 @@ research_centre.ixian:
 		Type: Rectangle
 			TopLeft: -512, -1536
 			BottomRight: 512, -512
-	RevealsShroud:
-		Range: 10000
-		RequiresCondition: !disabled
-	RevealsShroud@Offline:
-		Range: 5000
-		RequiresCondition: disabled
-	DetectCloaked:
-		Range: 10000
-		RequiresCondition: !disabled
 	RenderSprites:
 		Image: research.gold
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-lights
-	Power:
-		Amount: -100
-	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@research_centre:
 		Prerequisite: research_centre
 	-WithDeathAnimation:
@@ -1987,12 +1760,6 @@ research_centre.ixian:
 		Actor: light_inf
 	SpawnActorOnDeath@death4:
 		Actor: trooper
-	Production:
-		Produces: Upgrades
-	ProductionBar:
-		ProductionType: Upgrades
-	FreeActor@CPQDEBUGDUMMY:
-		-RequiresCondition:
 
 starport.ixian:
 	Inherits: ^D2KBuilding
@@ -2002,26 +1769,31 @@ starport.ixian:
 	Inherits@shape: ^3x3Shape
 	Inherits@cashtrickler: ^CashTricklerWithExperience
 	Inherits@cashtricklerlimit: ^CashTricklerLimited
-	Tooltip:
-		Name: Starport
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, research_centre.ixian, derricklimit
 		Queue: Building, RABuilding
 		BuildLimit: 1
-		BuildPaletteOrder: 530
+		BuildPaletteOrder: 150
 		BuildDuration: 1500
 		BuildDurationModifier: 100
+		Prerequisites: ~construction_yard.ixian, research_centre.ixian, derricklimit
 		Description: Dropzone for quick reinforcements, and passive income.
 		IconPalette: d2kunit
-	Valued:
-		Cost: 5000
 	Building:
 		Footprint: xxx x=x =x=
 		Dimensions: 3,3
+	Tooltip:
+		Name: Starport
+	Valued:
+		Cost: 5000
 	Health:
-		HP: 300000
+		HP: 500000
 	Armor:
 		Type: Concrete
+	RevealsShroud:
+		Range: 7500
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
 	HitShape:
 		Type: Rectangle
 			TopLeft: -1536, -1536
@@ -2051,7 +1823,7 @@ starport.ixian:
 		ActorType: frigate
 		PauseOnCondition: lowpower
 		RequiresCondition: classicproductionqueues
-	ParallelProductionQueue:
+	ParallelProductionQueue@VEHICLE:
 		Type: Vehicle
 		DisplayOrder: 3
 		Group: Vehicle
@@ -2063,17 +1835,17 @@ starport.ixian:
 		CancelledAudio: Cancelled
 		BuildDurationModifier: 50
 		InfiniteBuildLimit: 10
+	ProductionBar@VEHICLE:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLE:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
 	RenderSprites:
 		Image: starport.smuggler
 	WithDeliveryOverlay:
 		RequiresCondition: !build-incomplete
 		#Palette: starportlights
-	ProductionBar@NORMAL:
-		ProductionType: Vehicle
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@CLASSICPRODUCTIONQUEUES:
-		ProductionType: RAVehicle
-		RequiresCondition: classicproductionqueues
 	ProvidesPrerequisite@atreides:
 		Prerequisite: starport.atreides
 		Factions: atreides
@@ -2092,9 +1864,6 @@ starport.ixian:
 	ProvidesPrerequisite@harkonnen_combat:
 		Prerequisite: starport.harkonnen_combat
 		Factions: harkonnen, corrino
-	Power:
-		Amount: -100
-	ProvidesPrerequisite@buildingname:
 	-WithDeathAnimation:
 	ThrowsShrapnel:
 		Weapons: Debris2, Debris3
@@ -2497,9 +2266,9 @@ storm_lasher:
 	WithMakeAnimation:
 	Health:
 		HP: 100000
-	Shielded:
-		MaxStrength: 100000
-		RegenDelay: 125
+	ShieldedCA:
+		#MaxStrength: 100000
+		DamageRegenDelay: 125
 		RegenAmount: 80
 		RegenInterval: 1
 		ShieldsUpCondition: d2k_shielded
@@ -3473,6 +3242,8 @@ shock_infantry:
 		Speed: 45
 	Health:
 		HP: 27500
+	ChangesHealth@SelfHealing:
+		Step: 11
 	Armament@PRIMARY: ##########
 		Weapon: D2K_ShockGunInf
 		LocalOffset: 135,0,200
@@ -5711,36 +5482,11 @@ d2k_mcv.ixian:
 	Inherits@selection: ^SelectableSupportUnit
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@mcv: ^MCV
-	Inherits@conyard: ^Conyard
 	Buildable:
 		Prerequisites: ~repair_pad.ixian
-		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 110
-		BuildDuration: 1500
-		BuildDurationModifier: 100
-		Description: template-mcv.description
 		IconPalette: d2kunit
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Ixian Mobile Construction Vehicle
-	Selectable:
-		Class: mcv
-		DecorationBounds: 2048, 1280
-	Health:
-		HP: 300000
-	Repairable:
-		HpPerStep: 15000
-	ChangesHealth@SelfHealing:
-		Step: 120
-	Armor:
-		Type: Medium
-	Mobile:
-		Speed: 75
-		Locomotor: heavywheeled
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	BaseBuilding:
 	Explodes:
 		Weapon: D2KUnitExplodeLarge
 		EmptyWeapon: D2KUnitExplodeLarge
@@ -5750,8 +5496,6 @@ d2k_mcv.ixian:
 		TransformSounds: BUILD1.WAV
 		Facing: 256
 		NoTransformNotification: BuildingCannotPlaceAudio
-	AttractsWorms:
-		Intensity: 700
 	-RevealOnFire:
 	Voiced:
 		VoiceSet: D2KMCV
@@ -6481,6 +6225,7 @@ d2k_farasha:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@MC: ^MCImmune
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@COMMANDOSKULL: ^CommandoSkull
 	#Inherits@guildtele: ^Guild_teleport
 	Valued:
@@ -6500,7 +6245,7 @@ d2k_farasha:
 		InitialFacing: 896
 		TurnSpeed: 15
 		Speed: 45
-		IdealSeparation: 1500
+		IdealSeparation: 2500
 		RepulsionSpeed: 15
 	CarrierMaster:
 		ArmamentNames: primary
@@ -6520,18 +6265,18 @@ d2k_farasha:
 	Armament@charge:
 		Name: charge
 		Weapon: d2k_farasha_charge
-		LocalOffset: 750,0,0
+		LocalOffset: 1500,0,-250
 		PauseOnCondition: discharged
 	Armament:
 		Name: secondary
 		Weapon: d2k_farasha
-		LocalOffset: 750,0,0
+		LocalOffset: 1500,0,-250
 		PauseOnCondition: !charged
 		ReloadingCondition: discharged
 	Armament@AA:
 		Name: secondary
 		Weapon: d2k_farasha_aa
-		LocalOffset: 750,0,0
+		LocalOffset: 1500,0,-250
 		PauseOnCondition: !charged
 		ReloadingCondition: discharged
 	AmmoPool:
@@ -6554,7 +6299,7 @@ d2k_farasha:
 		RevokeDelay: 75
 		RevokeOnNewTarget: true
 	WithAmmoPipsDecoration:
-		PipCount: 1
+		PipCount: 10
 		FullSequence: pip-red
 		Position: BottomLeft
 		RequiresSelection: true
@@ -6563,9 +6308,9 @@ d2k_farasha:
 		Armaments: primary, secondary, charge
 		FacingTolerance: 40
 	RenderRangeCircle:
-	Shielded:
-		MaxStrength: 250000
-		RegenDelay: 125
+	ShieldedCA:
+		MaxPercentageStrength: 100
+		DamageRegenDelay: 125
 		RegenAmount: 200
 		RegenInterval: 1
 		ShieldsUpCondition: d2k_shielded
@@ -6576,6 +6321,7 @@ d2k_farasha:
 		RequiresCondition: d2k_shielded
 	SelectionDecorations:
 	Selectable:
+		Bounds: 2048, 2048
 		DecorationBounds: 2048, 2048
 	Voiced:
 		VoiceSet: D2KVehicleVoice
@@ -6588,6 +6334,7 @@ d2k_farasha:
 		Pieces: 6, 10
 		Range: 3c0, 6c0
 	RenderSprites:
+		PlayerPalette: player_rgba
 
 d2k_farasha.husk:
 	Inherits: ^PlaneHusk
@@ -6598,6 +6345,7 @@ d2k_farasha.husk:
 		Speed: 45
 	RenderSprites:
 		Image: d2k_farasha
+		PlayerPalette: player_rgba
 	FallsToEarth:
 		Explosion: D2KUnitExplodeLarge
 
@@ -8437,6 +8185,7 @@ rocket_raider_ixian:
 shock_raider:
 	Inherits@D2KV: ^D2KVehicle
 	Inherits@Template: ^FireSupportTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
@@ -8459,6 +8208,10 @@ shock_raider:
 		AddToArmyValue: true
 	Health:
 		HP: 40000
+	Repairable:
+		HpPerStep: 2000
+	ChangesHealth@SelfHealing:
+		Step: 16
 	Armor:
 		Type: Medium
 	Mobile:
@@ -8488,6 +8241,71 @@ shock_raider:
 		VoiceSet: D2KShockRaider
 	RenderSprites:
 		Image: stealth_raider
+
+storm_raider:
+	Inherits@D2KV: ^D2KVehicle
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@CARGO: ^CargoVehicle
+	Inherits@CLOAK: ^CloakedVehicle
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 10
+		Prerequisites: ~upgrade.heavy, research_centre.ixian
+		Description: actor-shock_raider.description
+		IconPalette: player
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Storm Raider
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 50000
+	Repairable:
+		HpPerStep: 2500
+	ChangesHealth@SelfHealing:
+		Step: 20
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 105
+		TurnSpeed: 21
+	WithMuzzleOverlay:
+	Turreted:
+		TurnSpeed: 21
+	Armament@damage:
+		Weapon: D2K_ShockGun
+		LocalOffset: -300,0,300
+	Armament@StormEffect:
+		Weapon: D2K_StormGun
+		LocalOffset: -300,0,300
+	AttackFrontal:
+		FacingTolerance: 0
+	Explodes:
+		Weapon: D2KUnitExplodeSmall
+		EmptyWeapon: D2KUnitExplodeSmall
+	AttractsWorms:
+		Intensity: 420
+	Cloak:
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakSound: trans1.aud
+		UncloakSound: appear1.aud
+		UncloakOn: Attack, Unload
+	Voiced:
+		VoiceSet: D2KShockRaider
+	FirepowerMultiplier@StormEffect:
+		Modifier: 50
+	RenderSprites:
+		Image: storm_raider
+		PlayerPalette: player_rgba
 
 # rocket_raider_ixian.bot1:
 # 	Inherits: rocket_raider_ixian
@@ -9579,7 +9397,7 @@ upgrade.conyard:
 		Name: Construction Yard Upgrade
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: construction_yard
+		Prerequisites: ~d2k_construction_yard
 		Queue: Addons
 		BuildLimit: 1
 		BuildDuration: 500
@@ -11368,272 +11186,290 @@ d2k_striketeam3:
 ##############################################
 #                CREEPS
 ##############################################
-# sandworm:
-# 	Inherits@1: ^SpriteActor
-# 	Inherits: ^D2KPaletteRender
-# 	Interactable:
-# 	Tooltip:
-# 		Name: Sandworm
-# 	Health:
-# 		HP: 150000
-# 	HitShape:
-# 		Type: Circle
-# 			Radius: 256
-# 	Armor:
-# 		Type: Heavy
-# 	Mobile:
-# 		Speed: 42
-# 		Locomotor: sandwormsub
-# 	Targetable:
-# 		TargetTypes: Ground, Creep
-# 	WithSpriteBody:
-# 	WithIdleAnimation:
-# 		Interval: 160
-# 		Sequences: lightninga, lightningb, lightningc, lightningd, lightninge, lightningf
-# 		RequiresCondition: !attacking
-# 	AmbientSound:
-# 		SoundFiles: WRMSIGN1.WAV
-# 		Interval: 160
-# 		RequiresCondition: !attacking
-# 	WithAttackOverlay@mouth:
-# 		Sequence: mouth
-# 	WithAttackOverlay@sand:
-# 		Sequence: sand
-# 	HiddenUnderFog:
-# 	AppearsOnRadar:
-# 		UseLocation: true
-# 	AttackSwallow:
-# 		AttackRequiresEnteringCell: true
-# 		AttackingCondition: attacking
-# 		WormAttackNotification: WormAttack
-# 	Armament:
-# 		Weapon: WormJaw
-# 	Sandworm:
-# 		WanderMoveRadius: 5
-# 		ChanceToDisappear: 30
-# 	IgnoresCloak:
-# 	AnnounceOnSeen:
-# 		Notification: WormSign
-# 		PingRadar: True
-# 		AnnounceNeutrals: True
-# 	RevealsShroud:
-# 		Range: 5c0
-# 	LeavesTrails:
-# 		Image: sandtrail
-# 		Sequences: traila, trailb, trailc
-# 		Palette: d2keffect
-# 		Type: CenterPosition
-# 		TerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Sand, SpiceSand, Spice
-# 		MovingInterval: 3
-# 		RequiresCondition: !attacking
-# 	RevealOnFire:
-# 		Duration: 50
-# 		Radius: 2c512
-# 	RequiresSpecificOwners:
-# 		ValidOwnerNames: Creeps
+sandworm:
+	Inherits@1: ^SpriteActor
+	Inherits: ^D2KPaletteRender
+	Interactable:
+	Tooltip:
+		Name: Sandworm
+	Health:
+		HP: 150000
+	HitShape:
+		Type: Circle
+			Radius: 256
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 42
+		Locomotor: sandwormsub
+	Targetable:
+		TargetTypes: Ground, Creep
+	WithSpriteBody:
+	WithIdleAnimation:
+		Interval: 160
+		Sequences: lightninga, lightningb, lightningc, lightningd, lightninge, lightningf
+		RequiresCondition: !attacking
+	AmbientSound:
+		SoundFiles: WRMSIGN1.WAV
+		Interval: 160
+		RequiresCondition: !attacking
+	WithAttackOverlay@mouth:
+		Sequence: mouth
+	WithAttackOverlay@sand:
+		Sequence: sand
+	HiddenUnderFog:
+	AppearsOnRadar:
+		UseLocation: true
+	AttackSwallow:
+		AttackRequiresEnteringCell: true
+		AttackingCondition: attacking
+		WormAttackNotification: WormAttack
+	Armament:
+		Weapon: WormJaw
+	Sandworm:
+		WanderMoveRadius: 5
+		ChanceToDisappear: 30
+	IgnoresCloak:
+	AnnounceOnSeen:
+		Notification: WormSign
+		PingRadar: True
+		AnnounceNeutrals: True
+	RevealsShroud:
+		Range: 5c0
+	LeavesTrails:
+		Image: sandtrail
+		Sequences: traila, trailb, trailc
+		Palette: d2keffect
+		Type: CenterPosition
+		TerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Sand, SpiceSand, Spice
+		MovingInterval: 3
+		RequiresCondition: !attacking
+	RevealOnFire:
+		Duration: 50
+		Radius: 2c512
+	RequiresSpecificOwners:
+		ValidOwnerNames: Creeps
 
-# fremen_creep:
-# 	Inherits: nsfremen
-# 	-Buildable:
-# 	Health:
-# 		HP: 6000
-# 	MobSpawnerSlave:
-# 	-DamagedByTerrain:
-# 	ReloadDelayMultiplier@creep:
-# 		Modifier: 125
-# 	FirepowerMultiplier@creep:
-# 		Modifier: 60
-# 	Armament@PRIMARY:
-# 		Weapon: HMG_fremen
-# 	-Armament@SECONDARY:
-# 	AutoTarget:
-# 		ScanRadius: 7
-# 	RevealOnFire:
-# 		Duration: 50
-# 		Radius: 2c512
-# 	RequiresSpecificOwners:
-# 		ValidOwnerNames: Creeps
-# 	-RevealsShroud@base-reveal:
-# 	-GrantConditionOnPrerequisite@base-reveal:
+fremen_creep:
+	Inherits: ^D2KInfantry
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@anim: ^D2KPaletteRenderInfantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXT: ^ExternalConditions
+	Inherits@bot: ^BotMicromanageable
+	Tooltip:
+		Name: Fremen Warrior
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Mobile:
+		Speed: 50
+	Valued:
+		Cost: 500
+	Health:
+		HP: 25000
+	RevealsShroud:
+		Range: 10000
+	AutoTarget:
+		ScanRadius: 10
+	Armament@PRIMARY:
+		Weapon: HMG_fremen
+	Armament@SECONDARY:
+		Weapon: Fremen_RPG
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+	-MustBeDestroyed:
+	Voiced:
+		VoiceSet: D2KFremenVoice
+	DetectCloaked:
+		Range: 5000
+	Passenger:
+		CargoType: Fremen
+	RenderSprites:
+		Image: fremen
+	RequiresSpecificOwners:
+		ValidOwnerNames: Creeps
+	MobSpawnerSlave:
+	-RevealsShroud@base-reveal:
+	-GrantConditionOnPrerequisite@base-reveal:
 
-# fremen_creep_s:
-# 	Inherits: nsfremen
-# 	-Buildable:
-# 	Health:
-# 		HP: 6000
-# 	MobSpawnerSlave:
-# 	Tooltip:
-# 		Name: Fremen Milishia
-# 	-DamagedByTerrain:
-# 	ReloadDelayMultiplier@creep:
-# 		Modifier: 125
-# 	FirepowerMultiplier@creep:
-# 		Modifier: 60
-# 	Armament@PRIMARY:
-# 		Weapon: D2K_Rocket_Fremen
-# 	-Armament@SECONDARY:
-# 	AutoTarget:
-# 		ScanRadius: 7
-# 	RevealOnFire:
-# 		Duration: 50
-# 		Radius: 2c512
-# 	RequiresSpecificOwners:
-# 		ValidOwnerNames: Creeps
-# 	-RevealsShroud@base-reveal:
-# 	-GrantConditionOnPrerequisite@base-reveal:
+sietch_creep:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Tooltip:
+		Name: Sietch
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		TerrainTypes: Cliff
+	Health:
+		HP: 250000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 10000
+	Capturable:
+		RequiresCondition: no-capture
+	RequiresSpecificOwners:
+		ValidOwnerNames: Creeps
+	ChangesHealth:
+		Step: 100
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	MobSpawnerMaster@1:
+		Actors: fremen_creep
+		Offset: 0,2000,0
+		RespawnTicks: 125
+		ExitByBudding: false
+		AggregateHealth: false
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		SpawnAllAtOnce: false
+	MobSpawnerMaster@2:
+		Actors: fremen_creep
+		Offset: 0,2000,0
+		RespawnTicks: 250
+		ExitByBudding: false
+		AggregateHealth: false
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		SpawnAllAtOnce: false
+	MobSpawnerMaster@3:
+		Actors: fremen_creep
+		Offset: 0,2000,0
+		RespawnTicks: 375
+		ExitByBudding: false
+		AggregateHealth: false
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		SpawnAllAtOnce: false
+	MobSpawnerMaster@4:
+		Actors: fremen_creep
+		Offset: 0,2000,0
+		RespawnTicks: 500
+		ExitByBudding: false
+		AggregateHealth: false
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		SpawnAllAtOnce: false
+	MobSpawnerMaster@5:
+		Actors: fremen_creep
+		Offset: 0,2000,0
+		RespawnTicks: 625
+		ExitByBudding: false
+		AggregateHealth: false
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		SpawnAllAtOnce: false
+	MobSpawnerMaster@6:
+		Actors: fremen_creep
+		Offset: 0,2000,0
+		RespawnTicks: 750
+		ExitByBudding: false
+		AggregateHealth: false
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		SpawnAllAtOnce: false
+	MobSpawnerMaster@7:
+		Actors: fremen_creep
+		Offset: 0,2000,0
+		RespawnTicks: 875
+		ExitByBudding: false
+		AggregateHealth: false
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		SpawnAllAtOnce: false
+	MobSpawnerMaster@8:
+		Actors: fremen_creep
+		Offset: 0,2000,0
+		RespawnTicks: 1000
+		ExitByBudding: false
+		AggregateHealth: false
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		SpawnAllAtOnce: false
+	MobSpawnerMaster@9:
+		Actors: fremen_creep
+		Offset: 0,2000,0
+		RespawnTicks: 1125
+		ExitByBudding: false
+		AggregateHealth: false
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		SpawnAllAtOnce: false
+	MobSpawnerMaster@10:
+		Actors: fremen_creep
+		Offset: 0,2000,0
+		RespawnTicks: 1250
+		ExitByBudding: false
+		AggregateHealth: false
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: DoNothing
+		SlaveDisposalOnOwnerChange: DoNothing
+		SpawnAllAtOnce: false
+	SpawnActorOnDeath:
+		Actor: sietch_creep_disabled
+	-RevealsShroud@base-reveal:
+	-GrantConditionOnPrerequisite@base-reveal:
+	-DamagedByTerrain:
+	-GivesBuildableArea:
+	-Sellable:
+	-RepairableBuilding:
+	Demolishable:
+		-Condition:
+	ProvidesPrerequisite@buildingname:
+	-WithMakeAnimation:
+	-WithBuildingRepairDecoration:
+	-WithDeathAnimation:
+	ThrowsShrapnel:
+		Weapons: Debris, Debris2, Debris3, Debris4
+		Pieces: 4, 6
+		Range: 1c512, 3c0
+	RenderSprites:
+		Image: sietch
 
-# sietch_creep:
-# 	Inherits: sietch
-# 	Health:
-# 		HP: 150000
-# 	Capturable:
-# 		RequiresCondition: no-capture
-# 	RequiresSpecificOwners:
-# 		ValidOwnerNames: Creeps
-# 	ChangesHealth:
-# 		PercentageStep: 3
-# 		Delay: 80
-# 		StartIfBelow: 30
-# 	MobSpawnerMaster:
-# 		Actors: fremen_creep
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 300
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	MobSpawnerMaster@1:
-# 		Actors: fremen_creep
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 500
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	MobSpawnerMaster@2:
-# 		Actors: fremen_creep
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 1000
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	MobSpawnerMaster@3:
-# 		Actors: fremen_creep
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 1200
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	MobSpawnerMaster@4:
-# 		Actors: fremen_creep
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 1600
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	MobSpawnerMaster@5:
-# 		Actors: fremen_creep
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 2000
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	MobSpawnerMaster@6:
-# 		Actors: fremen_creep
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 2500
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	MobSpawnerMaster@7:
-# 		Actors: fremen_creep_s
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 1000
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	MobSpawnerMaster@8:
-# 		Actors: fremen_creep_s
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 3000
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	MobSpawnerMaster@9:
-# 		Actors: fremen_creep_s
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 4000
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	MobSpawnerMaster@10:
-# 		Actors: fremen_creep_s
-# 		Offset: 0,2000,0
-# 		RespawnTicks: 5000
-# 		ExitByBudding: false
-# 		AggregateHealth: false
-# 		SlavesHaveFreeWill: true
-# 		SlaveDisposalOnKill: DoNothing
-# 		SlaveDisposalOnOwnerChange: DoNothing
-# 		SpawnAllAtOnce: false
-# 	SpawnActorOnDeath:
-# 		Actor: sietch_creep_disabled
-# 	-RevealsShroud@base-reveal:
-# 	-GrantConditionOnPrerequisite@base-reveal:
-
-# sietch_creep_disabled:
-# 	Inherits@0: sietch
-# 	Capturable:
-# 		RequiresCondition: no-capture
-# 	-Targetable:
-# 	-ThrowsShrapnel:
-# 	-Selectable:
-# 	Interactable:
-# 		Bounds: 81920, 81920
-# 		DecorationBounds: 81920, 81920
-# 	Tooltip:
-# 		Name: Sietch Ruins
-# 	RenderSprites:
-# 		Palette: staticterrain
-# 	WithSpriteBody:
-# 		Sequence: destroyed
-# 	KillsSelf:
-# 		Delay: 7500
-# 	SpawnActorOnDeath:
-# 		Actor: sietch_creep
-# 	-Targetable@ivan:
-# 	-Targetable@trappable:
-# 	-Targetable@chrono:
-# 	-RevealsShroud@base-reveal:
-# 	-GrantConditionOnPrerequisite@base-reveal:
+sietch_creep_disabled:
+	Inherits@0: sietch_creep
+	Capturable:
+		RequiresCondition: no-capture
+	-Targetable:
+	-ThrowsShrapnel:
+	-Selectable:
+	Interactable:
+		Bounds: 2048, 2048
+		DecorationBounds: 2048, 2048
+	Tooltip:
+		Name: Sietch Ruins
+	RenderSprites:
+		Palette: staticterrain
+	WithSpriteBody:
+		Sequence: destroyed
+	KillsSelf:
+		Delay: 7500
+	SpawnActorOnDeath:
+		Actor: sietch_creep
+	-Targetable@ivan:
+	-Targetable@trappable:
+	-Targetable@chrono:
+	-MobSpawnerMaster@1:
+	-MobSpawnerMaster@2:
+	-MobSpawnerMaster@3:
+	-MobSpawnerMaster@4:
+	-MobSpawnerMaster@5:
+	-MobSpawnerMaster@6:
+	-MobSpawnerMaster@7:
+	-MobSpawnerMaster@8:
+	-MobSpawnerMaster@9:
+	-MobSpawnerMaster@10:
 
 ###################################################
 #       OG DUNE 2000

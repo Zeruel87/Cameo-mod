@@ -22,7 +22,7 @@ namespace OpenRA.Mods.Cameo.Traits
 	public class SlaveMinerSpawnerMasterInfo : BaseSpawnerMasterInfo
 	{
 		[Desc("Can the slaves be controlled independently?")]
-		public readonly bool SlavesHaveFreeWill = false;
+		public readonly bool SlavesHaveFreeWill = true;
 
 		[Desc("Place slave will gather to. Only recommended to used on building master")] // TODO: Test it on ground unit on map edges
 		public readonly CVec[] GatherCell = Array.Empty<CVec>();
@@ -120,8 +120,8 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		public void ResolveOrder(Actor self, Order order)
 		{
-			if (Info.SlavesHaveFreeWill)
-				return;
+			// if (Info.SlavesHaveFreeWill)
+			//	return;
 
 			switch (order.OrderString)
 			{

@@ -193,16 +193,6 @@
 		RequiresCondition: xmas-setting
 		Offset: -150,0,0
 
-^Conyard:
-	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 1000
-		Prerequisites: ~wip-content
-	#CashTransferToAllies:
-	Inherits@susaintelligence: ^susaintelligence
-	ProvidesPrerequisite@conyard:
-		Prerequisite: conyard
-
 ^Base-reveal:
 	RevealsShroud@base-reveal:
 		Range: 2c0
@@ -815,12 +805,14 @@
 	Inherits@EXT: ^ExternalConditions
 	Armor:
 		Type: None
+	DamageMultiplier@ScoutInfantryBuff:
+		Modifier: 75
 	RevealsShroud:
 		Range: 8000
 	DetectCloaked:
 		Range: 4000
 	Buildable:
-		BuildDurationModifier: 60
+		BuildDurationModifier: 75 #60
 
 ^LightInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
@@ -840,7 +832,7 @@
 	RevealsShroud:
 		Range: 6000
 	Buildable:
-		BuildDurationModifier: 60
+		BuildDurationModifier: 75 #60
 
 ^HeavyInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
@@ -903,7 +895,7 @@
 		Range: 5000
 	RenderDetectionCircle:
 	Buildable:
-		BuildDurationModifier: 70
+		BuildDurationModifier: 75
 
 ^HeroInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
@@ -1404,6 +1396,7 @@
 	Inherits@chrono: ^Chronoshiftable
 	Inherits@unstableeffect: ^UnstableEffect
 	Inherits@LeechEggLayable: ^LeechEggLayable
+	Inherits@squid: ^SquidGrabbable
 	Inherits@GDIOfficerLeadershipBuff: ^GDIOfficerLeadershipBuff
 	TemporaryOwnerManager:
 	Mobile:
@@ -1570,7 +1563,6 @@
 
 ^BoatUnit:
 	Inherits: ^Vehicle
-	Inherits@squid: ^SquidGrabbable
 	Inherits@snipe: ^DriverKillImmune
 	Mobile:
 		Locomotor: naval
@@ -3136,7 +3128,7 @@
 	AttackOpenTopped:
 		Armaments: garrisoned
 		PortOffsets: 768,0,256, 448,-682,256, -448,-682,256, -768,0,256, -448,682,256, 448,682,256
-		RequiresCondition: !chronobeamed
+		RequiresCondition: !chronobeamed && !damaged
 	Targetable@garrisoned:
 		TargetTypes: Garrisoned, Defense
 		RequiresCondition: loaded && !untargetable
@@ -3485,18 +3477,6 @@
 		DamageCooldown: 375
 		StartIfBelow: 101
 		RequiresCondition: regen-turrets
-	ProductionCostMultiplier@AIDefense:
-		Multiplier: 50
-		Prerequisites: defensebot
-	DamageMultiplier@AIDefense:
-		Modifier: 75
-		Prerequisites: defensebot
-	GrantConditionOnBotOwner@defensebot:
-		Condition: defensebot
-		Bots: defenseai
-	ProductionTimeMultiplier@defensebot:
-		Multiplier: 80
-		Condition: defensebot
 	AutoTarget:
 		InitialStance: AttackAnything
 		InitialStanceAI: AttackAnything
@@ -4607,17 +4587,26 @@ CPQDEBUGDUMMY:
 ^AIConyardCash:
 	Inherits@AIDifficulties: ^AIDifficulties
 	Inherits@FS: ^AIForceShield
+	BotInsurance@secondaryinsurance:
+		Condition: secondaryinsurance
+		Threshold: 10000
+		ThresholdDuration: 1500
+	CashTrickler@secondaryinsurance:
+		Interval: 1
+		Amount: 1
+		ShowTicks: False
+		RequiresCondition: secondaryinsurance
 	BotInsurance@cameogod:
 		Condition: cameogodbotinsurance
 		Threshold: 10000
 		ThresholdDuration: 250
 	CashTrickler@cameogod:
 		Interval: 1
-		Amount: 10
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: cameogodbot && cameogodbotinsurance
 	ResourcePurifier@cameogod:
-		Modifier: 50
+		Modifier: 5
 		ShowTicks: False
 		RequiresCondition: cameogodbot && cameogodbotinsurance
 	BotInsurance@unbeatable:
@@ -4626,11 +4615,11 @@ CPQDEBUGDUMMY:
 		ThresholdDuration: 250
 	CashTrickler@unbeatable:
 		Interval: 1
-		Amount: 9
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: (unbeatablebot || cameogodbot) && unbeatablebotinsurance
 	ResourcePurifier@unbeatable:
-		Modifier: 45
+		Modifier: 5
 		ShowTicks: False
 		RequiresCondition: (unbeatablebot || cameogodbot) && unbeatablebotinsurance
 	BotInsurance@challenger:
@@ -4639,11 +4628,11 @@ CPQDEBUGDUMMY:
 		ThresholdDuration: 250
 	CashTrickler@challenger:
 		Interval: 1
-		Amount: 8
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: (challengerbot || unbeatablebot || cameogodbot) && challengerbotinsurance
 	ResourcePurifier@challenger:
-		Modifier: 40
+		Modifier: 5
 		ShowTicks: False
 		RequiresCondition: (challengerbot || unbeatablebot || cameogodbot) && challengerbotinsurance
 	BotInsurance@brutal:
@@ -4652,11 +4641,11 @@ CPQDEBUGDUMMY:
 		ThresholdDuration: 250
 	CashTrickler@brutal:
 		Interval: 1
-		Amount: 7
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: (brutalbot || challengerbot || unbeatablebot || cameogodbot) && brutalbotinsurance
 	ResourcePurifier@brutal:
-		Modifier: 35
+		Modifier: 5
 		ShowTicks: False
 		RequiresCondition: (brutalbot || challengerbot || unbeatablebot || cameogodbot) && brutalbotinsurance
 	BotInsurance@veryhard:
@@ -4665,11 +4654,11 @@ CPQDEBUGDUMMY:
 		ThresholdDuration: 250
 	CashTrickler@veryhard:
 		Interval: 1
-		Amount: 6
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: (veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && veryhardbotinsurance
 	ResourcePurifier@veryhard:
-		Modifier: 30
+		Modifier: 5
 		ShowTicks: False
 		RequiresCondition: (veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && veryhardbotinsurance
 	BotInsurance@hard:
@@ -4678,11 +4667,11 @@ CPQDEBUGDUMMY:
 		ThresholdDuration: 250
 	CashTrickler@hard:
 		Interval: 1
-		Amount: 5
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: (hardbot || veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && hardbotinsurance
 	ResourcePurifier@hard:
-		Modifier: 25
+		Modifier: 5
 		ShowTicks: False
 		RequiresCondition: (hardbot || veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && hardbotinsurance
 	BotInsurance@medium:
@@ -4691,11 +4680,11 @@ CPQDEBUGDUMMY:
 		ThresholdDuration: 250
 	CashTrickler@medium:
 		Interval: 1
-		Amount: 4
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: (normalbot || hardbot || veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && mediumbotinsurance
 	ResourcePurifier@medium:
-		Modifier: 20
+		Modifier: 5
 		ShowTicks: False
 		RequiresCondition: (normalbot || hardbot || veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && mediumbotinsurance
 	BotInsurance@easy:
@@ -4704,11 +4693,11 @@ CPQDEBUGDUMMY:
 		ThresholdDuration: 250
 	CashTrickler@easy:
 		Interval: 1
-		Amount: 3
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: (easybot || normalbot || hardbot || veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && easybotinsurance
 	ResourcePurifier@easy:
-		Modifier: 15
+		Modifier: 5
 		ShowTicks: False
 		RequiresCondition: (easybot || normalbot || hardbot || veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && easybotinsurance
 	BotInsurance@veryeasy:
@@ -4717,11 +4706,11 @@ CPQDEBUGDUMMY:
 		ThresholdDuration: 250
 	CashTrickler@veryeasy:
 		Interval: 1
-		Amount: 2
+		Amount: 1
 		ShowTicks: False
 		RequiresCondition: (veryeasybot || easybot || normalbot || hardbot || veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && veryeasybotinsurance
 	ResourcePurifier@veryeasy:
-		Modifier: 10
+		Modifier: 5
 		ShowTicks: False
 		RequiresCondition: (veryeasybot || easybot || normalbot || hardbot || veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && veryeasybotinsurance
 	BotInsurance@easiest:
@@ -5026,39 +5015,6 @@ CPQDEBUGDUMMY:
 	VoiceAnnouncement:
 		ValidRelationships: Enemy, Neutral, Ally
 
-^MCV:
-	Inherits@MC: ^MCImmune
-	Inherits@snipe: ^DriverKillImmune
-	MustBeDestroyed:
-		RequiredForShortGame: true
-	ProvidesPrerequisite@conyard:
-		Prerequisite: conyard
-	BaseBuilding:
-	WithTextDecoration:
-		Position: Top
-		Text: MCV
-		UsePlayerColor: True
-		ValidRelationships: Ally, Enemy, Neutral
-	Transforms:
-		PauseOnCondition: disabled || terrordroned
-	TransferTimedExternalConditionOnTransform:
-		Condition: invulnerability
-	Passenger:
-		Weight: 6
-		CustomPipType: engineer
-	Crushable:
-		CrushClasses: hugevehicle
-	Buildable:
-		BuildPaletteOrder: 100
-		BuildDuration: 1500
-		BuildDurationModifier: 100
-		Description: Deploys into another Construction Yard.\n  Unarmed
-	Selectable:
-		Priority: 4
-		DecorationBounds: 1536, 1536
-	ActorStatValues:
-		Stats: Armor, Sight, Speed
-
 ^AttackVoice:
 	Mobile:
 		Voice: Move
@@ -5143,23 +5099,6 @@ CPQDEBUGDUMMY:
 	GrantCondition@disable:
 		Condition: disabled
 		RequiresCondition: ReaperTrap || chronodisabled || leaflet || SquidTrap
-
-^Superweapon:
-	Inherits@FS: ^AIForceShield
-	Inherits@spy: ^InfiltrateForSupportPowerReset
-	GrantConditionOnPrerequisite@SWReveal:
-		Condition: swreveal
-		Prerequisites: global-swreveal
-	RevealsShroud@SWReveal:
-		Range: 2c0
-		#MoveRecalculationThreshold: 0
-		ValidRelationships: Neutral, Enemy
-		RequiresCondition: swreveal
-
-^PrimarySuperweapon:
-	Inherits: ^Superweapon
-	ProvidesPrerequisite@swlimit:
-		RequiresPrerequisites: global-swlimit
 
 ^VehicleCrusher:
 	Mobile:
@@ -5271,16 +5210,54 @@ CPQDEBUGDUMMY:
 	#	RequiresCondition: forceshield
 
 ^ShieldedShieldable:
-	Shielded:
-		MaxStrength: 150000
-		RegenDelay: 125
-		RegenAmount: 150
-		RegenInterval: 1
+	ShieldedCA:
+		MaxStrength: 0
+		MaxPercentageStrength: 150
+		InitialStrength: 0
+		DamageRegenDelay: 125
+		#RegenAmount: 100
+		#RegenInterval: 1
 		ShieldsUpCondition: shielded
-		RequiresCondition: !disabled && shieldgen
+		#RequiresCondition: !disabled && shieldgen
 		SelectionBarColor: 8888FFFF
+	ChangesShieldCA@shieldgen:
+		Step: 100
+		Delay: 1
+		StartIfBelow: 100
+		RequiresCondition: shieldgen == 1
+	ChangesShieldCA@shieldgen2:
+		Step: 100
+		Delay: 1
+		StartIfBelow: 100
+		RequiresCondition: shieldgen == 2
+	ChangesShieldCA@shieldgen3:
+		Step: 100
+		Delay: 1
+		StartIfBelow: 100
+		RequiresCondition: shieldgen == 3
+	ChangesShieldCA@shieldgen4:
+		Step: 100
+		Delay: 1
+		StartIfBelow: 100
+		RequiresCondition: shieldgen == 4
+	ChangesShieldCA@shieldgen5:
+		Step: 100
+		Delay: 1
+		StartIfBelow: 100
+		RequiresCondition: shieldgen >= 5
+	ChangesShieldCA@shielddischarge:
+		PercentageStep: -1
+		Delay: 25
+		StartIfBelow: 101
+		RequiresCondition: shielded && !shieldgen && !shieldpermanent
+	ExternalCondition@shielddischarge:
+		Condition: shieldpermanent
+	Armor@shielded:
+		Type: Shield
+		RequiresCondition: shielded
 	ExternalCondition@shieldgen:
 		Condition: shieldgen
+		TotalCap: 5
 	ExternalCondition@shieldhit:
 		Condition: shieldhit
 	WithIdleOverlay@shield1:
@@ -5297,6 +5274,10 @@ CPQDEBUGDUMMY:
 	Targetable@Shielded:
 		TargetTypes: Shielded
 		RequiresCondition: shielded
+
+^HasShieldGenerator:
+	GrantCondition:
+		Condition: shieldpermanent
 
 ^TDSpawnActorsOnSell:
 	SpawnActorsOnSell:
@@ -5370,28 +5351,6 @@ CPQDEBUGDUMMY:
 	ActorStatValues:
 		Stats: Armor, Sight, Power
 
-^Refinery:
-	CashHackable:
-	Refinery:
-		TickRate: 15
-		PlayerExperienceModifier: 10
-	StoresPlayerResources:
-		Capacity: 4000
-	DockHost:
-		Type: Unload
-	Buildable:
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		BuildPaletteOrder: 20
-	Targetable@infiltrate:
-		TargetTypes: SpyInfiltrate, ThiefInfiltrate
-		RequiresCondition: !untargetable
-	Targetable@DiskDrain:
-		TargetTypes: DiskSteal
-	InfiltrateForCash:
-		Percentage: 50
-		Types: SpyInfiltrate, ThiefInfiltrate
-
 ^StoresResources:
 	StoresPlayerResources:
 		Capacity: 2000
@@ -5455,22 +5414,335 @@ CPQDEBUGDUMMY:
 		Proxy: aircraft.upgraded
 		Types: SpyInfiltrate
 
-^IsBarrack:
+^MCV:
+	Inherits@MC: ^MCImmune
+	Inherits@snipe: ^DriverKillImmune
 	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 100
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: template-mcv.description
+	Valued:
+		Cost: 5000
+	Armor:
+		Type: Medium
+	Health:
+		HP: 300000
+	Repairable:
+		HpPerStep: 15000
+	ChangesHealth@SelfHealing:
+		Step: 120
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+		Locomotor: heavywheeled
+	Passenger:
+		Weight: 6
+		CustomPipType: engineer
+	ProvidesPrerequisite@conyard:
+		Prerequisite: conyard
+	BaseBuilding:
+	WithTextDecoration:
+		Position: Top
+		Text: MCV
+		UsePlayerColor: True
+		ValidRelationships: Ally, Enemy, Neutral
+	Transforms:
+		PauseOnCondition: disabled || terrordroned
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	Tooltip:
+		Name: template-mcv.name
+	Selectable:
+		Priority: 4
+		DecorationBounds: 1536, 1536
+	SelectionDecorations:
+	Crushable:
+		CrushClasses: hugevehicle
+	MustBeDestroyed:
+		RequiredForShortGame: true
+	ActorStatValues:
+		Stats: Armor, Sight, Speed
+	AttractsWorms:
+		Intensity: 700
+
+^Conyard:
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 1000
+		Prerequisites: ~wip-content
+		Description: Builds structures
+	#CashTransferToAllies:
+	Valued:
+		Cost: 5000
+	Health:
+		HP: 1000000
+	Armor:
+		Type: Concrete
+	Power:
+		Amount: 100
+	RevealsShroud:
+		Range: 10000
+	BaseBuilding:
+	BaseProvider:
+		Range: 15000
+	Transforms:
+		RequiresCondition: factundeploy
+		PauseOnCondition: being-demolished || build-incomplete
+		IntoActor: mcv
+		Offset: 1,1
+		Facing: 432
+	TransformsIntoMobile:
+		RequiresCondition: factundeploy
+		Locomotor: heavywheeled
+		RequiresForceMove: true
+	TransformsIntoPassenger:
+		RequiresCondition: factundeploy
+		CargoType: Vehicle
+		RequiresForceMove: true
+	TransformsIntoRepairable:
+		RequiresCondition: factundeploy
+		RepairActors: fix
+		RequiresForceMove: true
+	TransferTimedExternalConditionOnTransform:
+		Condition: invulnerability
+	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+		Condition: factundeploy
+		Prerequisites: global-factundeploy
+	Production@NORMAL:
+		Produces: Building, Defence
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ProductionQueue@Building:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionQueue@Defense:
+		Type: Defence
+		DisplayOrder: 1
+		Group: Defence
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@BUILDING:
+		ProductionType: Building
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@DEFENCE:
+		ProductionType: Defence
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RABUILDING:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues
+	ProductionBar@RADEFENCE:
+		ProductionType: RADefence
+		RequiresCondition: classicproductionqueues
+	Inherits@susaintelligence: ^susaintelligence
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@conyard:
+		Prerequisite: conyard
+
+^Refinery:
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 20
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: template-refinery.description
+	Valued:
+		Cost: 2000
+	Health:
+		HP: 300000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 6000
+	Power:
+		Amount: -40
+	CashHackable:
+	Refinery:
+		TickRate: 15
+		PlayerExperienceModifier: 10
+	StoresPlayerResources:
+		Capacity: 4000
+	DockHost:
+		Type: Unload
+	Targetable@infiltrate:
+		TargetTypes: SpyInfiltrate, ThiefInfiltrate
+		RequiresCondition: !untargetable
+	Targetable@DiskDrain:
+		TargetTypes: DiskSteal
+	InfiltrateForCash:
+		Percentage: 50
+		Types: SpyInfiltrate, ThiefInfiltrate
+	ProvidesPrerequisite@buildingname:
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 20
+		FullSequence: pip-yellow
+
+^ScaledProducer:
+	GrantConditionOnPrerequisite@Scaled:
+		Condition: scaled
+		Prerequisites: scaledproductionqueues
+	GrantExternalConditionToOwner@Scaled:
+		RequiresCondition: scaled
+	ProductionCostMultiplier@Scaled0:
+		Multiplier: 50
+	ProductionTimeMultiplier@Scaled0:
+		Multiplier: 50
+	ProductionCostMultiplier@Scaled1:
+		Multiplier: 100
+	ProductionTimeMultiplier@Scaled1:
+		Multiplier: 100
+	ProductionCostMultiplier@Scaled2:
+		Multiplier: 150
+	ProductionTimeMultiplier@Scaled2:
+		Multiplier: 150
+	ProductionCostMultiplier@Scaled3:
+		Multiplier: 200
+	ProductionTimeMultiplier@Scaled3:
+		Multiplier: 200
+	ProductionCostMultiplier@Scaled4:
+		Multiplier: 250
+	ProductionTimeMultiplier@Scaled4:
+		Multiplier: 250
+
+^IsBarrack:
+	Inherits: ^ScaledProducer
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 30
 		BuildDuration: 250
 		BuildDurationModifier: 100
-		BuildPaletteOrder: 30
+		Description: template-barracks.description
+	Valued:
+		Cost: 750
+	Health:
+		HP: 200000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: -20
+	RevealsShroud:
+		Range: 5000
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ParallelProductionQueue@INFANTRY:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@INFANTRY:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRY:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
 	InfiltrateForSupportPower:
 		Proxy: infantry.upgraded
 		Types: SpyInfiltrate
 	Targetable@SpyInfiltrate:
 		TargetTypes: SpyInfiltrate
+	ProvidesPrerequisite@buildingname:
+	GrantExternalConditionToOwner@Scaled:
+		Condition: ownsbarr
+	ProductionCostMultiplier@Scaled0:
+		Prerequisites: 0barr, scaledproductionqueues
+	ProductionTimeMultiplier@Scaled0:
+		Prerequisites: 0barr, scaledproductionqueues
+	ProductionCostMultiplier@Scaled1:
+		Prerequisites: 1barr
+	ProductionTimeMultiplier@Scaled1:
+		Prerequisites: 1barr
+	ProductionCostMultiplier@Scaled2:
+		Prerequisites: 2barr
+	ProductionTimeMultiplier@Scaled2:
+		Prerequisites: 2barr
+	ProductionCostMultiplier@Scaled3:
+		Prerequisites: 3barr
+	ProductionTimeMultiplier@Scaled3:
+		Prerequisites: 3barr
+	ProductionCostMultiplier@Scaled4:
+		Prerequisites: 4barr
+	ProductionTimeMultiplier@Scaled4:
+		Prerequisites: 4barr
 
 ^IsWeaponFactory:
+	Inherits: ^ScaledProducer
 	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 40
 		BuildDuration: 500
 		BuildDurationModifier: 100
-		BuildPaletteOrder: 40
+		Description: template-factory.description
+	Valued:
+		Cost: 3000
+	Health:
+		HP: 400000
+	Armor:
+		Type: Concrete
+	Power:
+		Amount: -40
+	RevealsShroud:
+		Range: 7000
+	Production@NORMAL:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAVehicle
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
+	ParallelProductionQueue@VEHICLE:
+		Type: Vehicle
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@VEHICLE:
+		ProductionType: Vehicle
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAVEHICLE:
+		ProductionType: RAVehicle
+		RequiresCondition: classicproductionqueues
 	InfiltrateForSupportPower:
 		Proxy: vehicles.upgraded
 		Types: SpyInfiltrate
@@ -5480,12 +5752,49 @@ CPQDEBUGDUMMY:
 		Probability: 99
 		Actor: 2100artifact
 		DeathType: 2100ResearchSteal
+	ProvidesPrerequisite@buildingname:
+	GrantExternalConditionToOwner@Scaled:
+		Condition: ownsweap
+	ProductionCostMultiplier@Scaled0:
+		Prerequisites: 0weap, scaledproductionqueues
+	ProductionTimeMultiplier@Scaled0:
+		Prerequisites: 0weap, scaledproductionqueues
+	ProductionCostMultiplier@Scaled1:
+		Prerequisites: 1weap
+	ProductionTimeMultiplier@Scaled1:
+		Prerequisites: 1weap
+	ProductionCostMultiplier@Scaled2:
+		Prerequisites: 2weap
+	ProductionTimeMultiplier@Scaled2:
+		Prerequisites: 2weap
+	ProductionCostMultiplier@Scaled3:
+		Prerequisites: 3weap
+	ProductionTimeMultiplier@Scaled3:
+		Prerequisites: 3weap
+	ProductionCostMultiplier@Scaled4:
+		Prerequisites: 4weap
+	ProductionTimeMultiplier@Scaled4:
+		Prerequisites: 4weap
 
 ^IsAircraftFactory:
+	Inherits: ^ScaledProducer
+	Inherits@repair: ^RepairsUnits
 	Buildable:
+		Queue: Building, RABuilding
 		BuildPaletteOrder: 50
 		BuildDuration: 375
 		BuildDurationModifier: 100
+		Description: template-airfield.description
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 300000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: -30
+	RevealsShroud:
+		Range: 8000
 	InfiltrateForSupportPower@SpyInfiltrate:
 		Proxy: aircraft.upgraded
 		Types: SpyInfiltrate
@@ -5503,7 +5812,7 @@ CPQDEBUGDUMMY:
 		Produces: RAAircraft
 		RequiresCondition: classicproductionqueues
 		PauseOnCondition: disabled
-	ParallelProductionQueue:
+	ParallelProductionQueue@AIRCRAFT:
 		Type: Aircraft
 		DisplayOrder: 4
 		Group: Aircraft
@@ -5515,34 +5824,78 @@ CPQDEBUGDUMMY:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 		InfiniteBuildLimit: 10
-	ProductionBar@Aircraft:
+	ProductionBar@AIRCRAFT:
 		ProductionType: Aircraft
 		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAAircraft:
+	ProductionBar@RAAIRCRAFT:
 		ProductionType: RAAircraft
 		RequiresCondition: classicproductionqueues
+	RepairsUnits:
+		HpPerStep: 1000
+		Interval: 10
+		PlayerExperience: 25
+		StartRepairingNotification: Repairing
 	RallyPoint:
+	ProvidesPrerequisite@buildingname:
+	GrantExternalConditionToOwner@Scaled:
+		Condition: ownsair
+	ProductionCostMultiplier@Scaled0:
+		Prerequisites: 0air, scaledproductionqueues
+	ProductionTimeMultiplier@Scaled0:
+		Prerequisites: 0air, scaledproductionqueues
+	ProductionCostMultiplier@Scaled1:
+		Prerequisites: 1air
+	ProductionTimeMultiplier@Scaled1:
+		Prerequisites: 1air
+	ProductionCostMultiplier@Scaled2:
+		Prerequisites: 2air
+	ProductionTimeMultiplier@Scaled2:
+		Prerequisites: 2air
+	ProductionCostMultiplier@Scaled3:
+		Prerequisites: 3air
+	ProductionTimeMultiplier@Scaled3:
+		Prerequisites: 3air
+	ProductionCostMultiplier@Scaled4:
+		Prerequisites: 4air
+	ProductionTimeMultiplier@Scaled4:
+		Prerequisites: 4air
 
 ^IsShipyard:
+	Inherits: ^ScaledProducer
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@prod: ^ProducesUnits
 	Inherits@repair: ^RepairsUnits
 	Buildable:
+		Queue: Building, RABuilding
 		BuildPaletteOrder: 50
+		BuildDuration: 250
+		BuildDurationModifier: 100
 		Description: template-shipyard.description
-	Production@NORMAL:
-		Produces: Naval
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RANaval
-		RequiresCondition: classicproductionqueues
+	Valued:
+		Cost: 1000
+	Health:
+		HP: 600000
+	Armor:
+		Type: Concrete
+	Power:
+		Amount: -30
+	RevealsShroud:
+		Range: 10000
+	RequiresBuildableArea:
+		Adjacent: 10
 	Reservable:
 	RepairsUnits:
 		HpPerStep: 1000
 		PlayerExperience: 25
 		StartRepairingNotification: Repairing
 	RallyPoint:
-	ParallelProductionQueue:
+	Production@NORMAL:
+		Produces: Naval
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RANaval
+		RequiresCondition: classicproductionqueues
+	ParallelProductionQueue@NORMAL:
 		Type: Naval
 		DisplayOrder: 5
 		Group: Ship
@@ -5576,23 +5929,71 @@ CPQDEBUGDUMMY:
 		SpawnOffset: 1024,-1024,0
 		Facing: 128
 		ExitCell: 2,0
-
-^IsTechnoBuilding:
-	Inherits@IDISABLE: ^DisableOnPowerDown
-	Inherits@SPY: ^InfiltrateForDisable
-	Buildable:
-		BuildDuration: 1500
-		BuildDurationModifier: 100
 	ProvidesPrerequisite@buildingname:
-		RequiresCondition: !(powerdown || infiltrated)
-	SpawnActorOnDeath@2100ResearchSteal:
-		Probability: 50
-		Actor: 2100artifact
-		DeathType: 2100ResearchSteal
+	GrantExternalConditionToOwner@Scaled:
+		Condition: ownsship
+	ProductionCostMultiplier@Scaled0:
+		Prerequisites: 0ship, scaledproductionqueues
+	ProductionTimeMultiplier@Scaled0:
+		Prerequisites: 0ship, scaledproductionqueues
+	ProductionCostMultiplier@Scaled1:
+		Prerequisites: 1ship
+	ProductionTimeMultiplier@Scaled1:
+		Prerequisites: 1ship
+	ProductionCostMultiplier@Scaled2:
+		Prerequisites: 2ship
+	ProductionTimeMultiplier@Scaled2:
+		Prerequisites: 2ship
+	ProductionCostMultiplier@Scaled3:
+		Prerequisites: 3ship
+	ProductionTimeMultiplier@Scaled3:
+		Prerequisites: 3ship
+	ProductionCostMultiplier@Scaled4:
+		Prerequisites: 4ship
+	ProductionTimeMultiplier@Scaled4:
+		Prerequisites: 4ship
+
+^RepairFacility:
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 60
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: template-service-depot.description
+	Valued:
+		Cost: 1000
+	Health:
+		HP: 250000
+	Armor:
+		Type: Concrete
+	Power:
+		Amount: -20
+	RevealsShroud:
+		Range: 5000
+	RepairsUnits:
+		HpPerStep: 10000
+		Interval: 10
+		PlayerExperience: 100
+		StartRepairingNotification: Repairing
+	ProvidesPrerequisite@buildingname:
 
 ^RadarBuilding:
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@SPY: ^InfiltrateForDisable
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 70
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Description: template-radar.description
+	Valued:
+		Cost: 2000
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: -50
 	RevealsShroud:
 		Range: 10000
 		RequiresCondition: !disabled
@@ -5609,6 +6010,87 @@ CPQDEBUGDUMMY:
 		Condition: jammed
 	ProvidesPrerequisite@buildingname:
 		RequiresCondition: !(powerdown || infiltrated)
+
+^IsTechnoBuilding:
+	Inherits@IDISABLE: ^DisableOnPowerDown
+	Inherits@SPY: ^InfiltrateForDisable
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 100
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Description: template-tech-center.description
+	Valued:
+		Cost: 4000
+	Health:
+		HP: 500000
+	Armor:
+		Type: Concrete
+	Power:
+		Amount: -100
+	RevealsShroud:
+		Range: 10000
+		RequiresCondition: !disabled
+	RevealsShroud@Offline:
+		Range: 5000
+		RequiresCondition: disabled
+	DetectCloaked:
+		Range: 10000
+		RequiresCondition: !disabled
+	Production@Upgrades:
+		Produces: Upgrades
+	ProductionBar@Upgrades:
+		ProductionType: Upgrades
+	FreeActor@CPQDEBUGDUMMY:
+		Actor: CPQDEBUGDUMMY
+	ProvidesPrerequisite@buildingname:
+		RequiresCondition: !(powerdown || infiltrated)
+	SpawnActorOnDeath@2100ResearchSteal:
+		Probability: 50
+		Actor: 2100artifact
+		DeathType: 2100ResearchSteal
+
+^Superweapon:
+	Inherits@FS: ^AIForceShield
+	Inherits@spy: ^InfiltrateForSupportPowerReset
+	SupportPowerChargeBar:
+	GrantConditionOnPrerequisite@SWReveal:
+		Condition: swreveal
+		Prerequisites: global-swreveal
+	RevealsShroud@SWReveal:
+		Range: 2c0
+		#MoveRecalculationThreshold: 0
+		ValidRelationships: Neutral, Enemy
+		RequiresCondition: swreveal
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 200
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		BuildLimit: 1
+	Valued:
+		Cost: 5000
+	Health:
+		HP: 1000000
+	Armor:
+		Type: Concrete
+	Power:
+		Amount: -200
+	RevealsShroud:
+		Range: 10000
+		RequiresCondition: !disabled
+	RevealsShroud@Offline:
+		Range: 5000
+		RequiresCondition: disabled
+	DetectCloaked:
+		Range: 10000
+		RequiresCondition: !disabled
+	ProvidesPrerequisite@buildingname:
+
+^PrimarySuperweapon:
+	Inherits: ^Superweapon
+	ProvidesPrerequisite@swlimit:
+		RequiresPrerequisites: global-swlimit
 
 ####################################################################################################
 #		Generals
@@ -5897,6 +6379,22 @@ CPQDEBUGDUMMY:
 ^CashTricklerWithExperience:
 	Inherits: ^CashTricklerMultipliers
 	Inherits@2: ^GainsExperienceCity
+	Buildable:
+		BuildLimit: 5
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 200
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~techcenter, ~techlevel.medium, derricklimit
+		Description: actor-oilb.description
+	Valued:
+		Cost: 5000
+	Health:
+		HP: 200000
+	Power:
+		Amount: -100
+	RevealsShroud:
+		Range: 7500
 	GrantConditionOnPowerState@LOWPOWER:
 		Condition: lowpower
 		ValidPowerStates: Low, Critical
@@ -5943,7 +6441,7 @@ CPQDEBUGDUMMY:
 ^BotMicromanageable:
 	GrantConditionOnBotOwner@aimicro:
 		Condition: botmicro
-		Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce
+		Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod
 
 ^BotAutoDeployTransport:
 	Inherits: ^BotMicromanageable
