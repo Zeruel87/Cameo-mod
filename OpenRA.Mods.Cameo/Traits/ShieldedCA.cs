@@ -66,7 +66,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		public override object Create(ActorInitializer init) { return new ShieldedCA(init, this); }
 	}
 
-	public class ShieldedCA : PausableConditionalTrait<ShieldedCAInfo>, ITick, ISync, ISelectionBar, IDamageModifier, INotifyDamage, IRenderAnnotationsWhenSelected
+	public class ShieldedCA : PausableConditionalTrait<ShieldedCAInfo>, ITick, ISync, ISelectionBar, IDamageModifier, INotifyDamage
 	{
 		int conditionToken = Actor.InvalidConditionToken;
 		readonly Actor self;
@@ -197,17 +197,6 @@ namespace OpenRA.Mods.Cameo.Traits
 		bool ISelectionBar.DisplayWhenEmpty { get { return false; } }
 
 		Color ISelectionBar.GetColor() { return Info.SelectionBarColor; }
-
-		IEnumerable<IRenderable> IRenderAnnotationsWhenSelected.RenderAnnotations(Actor self, WorldRenderer wr)
-		{
-			if (IsTraitDisabled || !Info.ShowSelectionBar || Strength == 0)
-				yield break;
-			var offset = new WVec(0, 512, 0);
-			var color = self.OwnerColor();
-			yield return new TextAnnotationRenderable(font, self.CenterPosition - offset, 0, color, Strength + "/" + maxStrength);
-		}
-
-		bool IRenderAnnotationsWhenSelected.SpatiallyPartitionable => true;
 
 		int IDamageModifier.GetDamageModifier(Actor attacker, Damage damage)
 		{
