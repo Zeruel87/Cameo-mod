@@ -3945,6 +3945,7 @@ steel_qaweap:
 		VoiceSet: PRCWarFactoryVoice
 	RenderSprites:
 		PlayerPalette: playerra2cons
+
 steel_qatech:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
@@ -4484,7 +4485,7 @@ steel_qmin:
 
 steel_fedinf:
 	Inherits: ^Soldier
-	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@Template: ^LightInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -4543,7 +4544,7 @@ steel_board_inf:
 		Name: Hover Board Grenadier
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~steel_qabarr
+		Prerequisites: ~steel_qtradr
 		Queue: Infantry, RAInfantry
 		Description: actor-steel_board_inf.description
 	Mobile:
@@ -4574,7 +4575,7 @@ steel_board_inf:
 
 steel_qinf:
 	Inherits: ^Soldier
-	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
+	Inherits@Template: ^HeavyInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -4589,17 +4590,19 @@ steel_qinf:
 		Name: Quantum Trooper
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~steel_qabarr
+		Prerequisites: ~steel_qatech
 		Queue: Infantry, RAInfantry
 		Description: actor-ggi.description
 	Mobile:
-		Speed: 50
+		Speed: 51
 		RequireForceMoveCondition: !undeployed
 		ImmovableCondition: !undeployed
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
-		HP: 35000
+		HP: 27500
+	ChangesHealth@SelfHealing:
+		Step: 11
 	RangeMultiplier@deployed:
 		Modifier: 111
 		RequiresCondition: deployed
@@ -4607,19 +4610,19 @@ steel_qinf:
 	RevealOnFire:
 		ArmamentNames: primary, deployed
 	Armament@PRIMARY:
-		Weapon: RA2Robotmm
+		Weapon: SteelQuantumCannon
 		LocalOffset: 384,64,384
 		RequiresCondition: !deployed && !rank-elite && !upra2gi
 	Armament@PRIMARY2:
-		Weapon: RA2Robotmm
+		Weapon: SteelQuantumCannon
 		LocalOffset: 384,64,384
 		RequiresCondition: !deployed && !rank-elite && upra2gi
 	Armament@ELITE:
-		Weapon: RA2Robotmm_elite
+		Weapon: SteelQuantumCannon_elite
 		LocalOffset: 384,64,384
 		RequiresCondition: !deployed && rank-elite && !upra2gi
 	Armament@ELITE2:
-		Weapon: RA2Robotmm_elite
+		Weapon: SteelQuantumCannon_elite
 		LocalOffset: 384,64,384
 		RequiresCondition: !deployed && rank-elite && upra2gi
 	Armament@BOTAA:
@@ -4753,14 +4756,14 @@ steel_fedeng:
 
 steel_mako:
 	Inherits: ^Tank
-	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 400
+		Cost: 500
 	Tooltip:
 		Name: Mako
 	Buildable:
@@ -4770,10 +4773,14 @@ steel_mako:
 		Description: actor-steel_mako.description
 	Mobile:
 		Locomotor: hover
-		Speed: 130
-		TurnSpeed: 26
+		Speed: 85
+		TurnSpeed: 17
 	Health:
-		HP: 45000
+		HP: 50000
+	Repairable:
+		HpPerStep: 2500
+	ChangesHealth@SelfHealing:
+		Step: 20
 	Armor:
 		Type: Medium
 	Repairable:
@@ -4801,32 +4808,33 @@ steel_mako:
 
 steel_manta:
 	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 500
+		Cost: 700
 	Tooltip:
 		Name: Manta
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~steel_qaweap
+		Prerequisites: ~steel_qaweap, ~!upsteel_manta_hunt
 		Queue: Vehicle, RAVehicle
 		Description: actor-steel_manta.description
 	Mobile:
 		Locomotor: hover
-		Speed: 120
-		TurnSpeed: 26
+		Speed: 115
+		TurnSpeed: 23
 	Health:
-		HP: 47500
-	Armor:
-		Type: Medium
+		HP: 32500
 	Repairable:
-		HpPerStep: 2000
+		HpPerStep: 1625
+	Armor:
+		Type: Light
 	Armament@AA:
-		Weapon: SteelMantaAA
+		Weapon: SteelMantaAG
 		LocalOffset: 140,-100,250, 140,100,250
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
@@ -4850,15 +4858,18 @@ steel_manta:
 	Targetable@Hover:
 		TargetTypes: Water, Ship
 	WithMoveAnimation:
+
 steel_manta_hunt:
 	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 650
+		Cost: 1200
 	Tooltip:
 		Name: Manta Hunter
 	Buildable:
@@ -4868,18 +4879,18 @@ steel_manta_hunt:
 		Description: Kills Infantry better
 	Mobile:
 		Locomotor: hover
-		Speed: 120
-		TurnSpeed: 26
+		Speed: 90
+		TurnSpeed: 18
 	Health:
-		HP: 25000
+		HP: 45000
 	Repairable:
-		HpPerStep: 5000
+		HpPerStep: 2250
 	ChangesHealth@SelfHealing:
-		Step: 40
+		Step: 18
 	Armor:
 		Type: Light
 	Turreted:
-		TurnSpeed: 20 #3
+		TurnSpeed: 18
 	Armament:
 		Name: primary
 		Weapon: SteelMantaHunterCannons
@@ -4903,6 +4914,7 @@ steel_manta_hunt:
 		Ticks: 10
 		BobDistance: -64
 		InitialHeight: 384
+
 steel_mega:
 	Inherits: ^Tank
 	Inherits@Template: ^HighTechTankTemplate
@@ -4952,6 +4964,7 @@ steel_mega:
 		VoiceSet: SteelInspectorVoice
 	RenderSprites:
 		PlayerPalette: playerra2cons
+
 steel_beholder:
 	Inherits: ^Tank
 	Inherits@Template: ^HighTechTankTemplate
@@ -5013,6 +5026,7 @@ steel_beholder:
 		StartSequence: shield-starts-big
 	WithIdleOverlay@shield_damage:
 		Sequence: shield-complete-big
+
 steel_qtank:
 	Inherits: ^Tank
 	Inherits@Template: ^ScoutVehicleTemplate
@@ -5111,14 +5125,14 @@ steel_qtank:
 steel_qutnk:
 	Inherits: ^Tank
 	Inherits@anim: ^RA2Vehicle
-	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@Template: ^HighTechTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@underwater: ^SteelUnderwaterTransit
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	Tooltip:
 		Name: Quantum Tank
 	Buildable:
@@ -5128,7 +5142,7 @@ steel_qutnk:
 		Description: template-mbt.description
 	Mobile:
 		Locomotor: amphibius
-		Speed: 90
+		Speed: 100
 		TurnSpeed: 20
 	Health:
 		HP: 100000
@@ -5139,10 +5153,10 @@ steel_qutnk:
 	Armor:
 		Type: Medium
 	Turreted:
-		TurnSpeed: 20 #3
+		TurnSpeed: 20
 	Armament:
 		Name: primary
-		Weapon: SteelQuatumRail
+		Weapon: SteelQuantumCannon
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 1280,0,111
@@ -5151,7 +5165,7 @@ steel_qutnk:
 		RequiresCondition: !rank-elite
 	Armament@elite:
 		Name: primary
-		Weapon: SteelQuatumRailE
+		Weapon: SteelQuantumCannon_elite
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 1280,0,111
@@ -5165,11 +5179,10 @@ steel_qutnk:
 	WithSpriteTurret:
 	Voiced:
 		VoiceSet: SteelQuantumTankVoice
-	DeliversCash:
-		Payload: 350
 	RenderSprites:
 		PlayerPalette: playerra2cons
 	WithMoveAnimation:
+
 steel_katy:
 	Inherits: ^Tank
 	Inherits@anim: ^RA2Vehicle
@@ -5644,6 +5657,7 @@ steel_hummer:
 		VoiceSet: SteelCloneVoice
 	DeliversCash:
 		Payload: 250
+
 steel_cougar:
 	Inherits: ^Vehicle
 	Inherits@Template: ^ScoutVehicleTemplate
@@ -5719,7 +5733,7 @@ steel_oldqtnk:
 		Offset: 0,0,5
 	Armament:
 		Name: primary
-		Weapon: SteelQuatumRail
+		Weapon: SteelQuantumCannon_elite
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 512,200,300
@@ -5737,6 +5751,7 @@ steel_oldqtnk:
 		Payload: 450
 	RenderSprites:
 		PlayerPalette: playerra2
+
 steel_cobra:
 	Inherits: ^Tank
 	Inherits@anim: ^RA2Vehicle
