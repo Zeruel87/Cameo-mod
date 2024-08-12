@@ -46,7 +46,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 
 				a.TraitsImplementing<Integrity>()
 					.FirstOrDefault(t => !t.IsTraitPaused && !t.IsTraitDisabled)
-					?.Regenerate(a, Damage);
+					?.Regenerate(a, -Damage);
 			}
 		}
 	}
