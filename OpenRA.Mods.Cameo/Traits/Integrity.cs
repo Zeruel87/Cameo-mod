@@ -113,6 +113,9 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (Strength > MaxStrength)
 				Strength = MaxStrength;
 
+			if (Strength < 0)
+				Strength = 0;
+
 			if (Strength > 0 && conditionToken == Actor.InvalidConditionToken)
 				conditionToken = self.GrantCondition(Info.ActiveCondition);
 
