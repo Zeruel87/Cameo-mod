@@ -38,13 +38,13 @@ World:
 		ClassName: Light Support
 		Factions: consortium
 		BaseActor: steel_qmcv
-		SupportActors: steel_fedinf,steel_fedinf,steel_fedinf,steel_qinf,steel_qinf,steel_manta,steel_qtank
+		SupportActors: steel_fedinf,steel_fedinf,steel_fedinf,steel_qinf,steel_qinf,steel_manta,steel_arty
 	StartingUnits@heavyconsortium:
 		Class: heavy
 		ClassName: Heavy Support
 		Factions: consortium
 		BaseActor: steel_qmcv
-		SupportActors: steel_fedinf,steel_fedinf,steel_fedinf,steel_qinf,steel_qinf,steel_manta,steel_qtank,steel_qtank,steel_qtank,steel_qutnk,steel_manta
+		SupportActors: steel_fedinf,steel_fedinf,steel_fedinf,steel_qinf,steel_qinf,steel_manta,steel_arty,steel_arty,steel_arty,steel_quantumtank,steel_manta
 	FactionCA@Randomra2mod:
 		Name: Random #faction-ra2-random.name
 		InternalName: Randomra2mod
@@ -1178,7 +1178,19 @@ aa_cgyard:
 		Modifier: 150
 	SpeedMultiplier@KamikazeAngry:
 		RequiresCondition: KamikazeAngry && MilitaryAcedemy
-		Modifier: 150
+		Modifier: 125
+	ChangesHealth@KamikazeAngry:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	WithDecoration@KamikazeAngry:
+		Image: aa_banzai
+		Sequence: idle
+		Position: TopRight
+		BlinkInterval: 32
+		BlinkPattern: On, On, On, On
+		RequiresCondition: KamikazeAngry && MilitaryAcedemy
 	GrantConditionOnDamageState@kamikaze:
 		ValidDamageStates: Critical
 		Condition: KamikazeCritical
@@ -1193,14 +1205,12 @@ aa_cgyard:
 		Modifier: 200
 	SpeedMultiplier@KamikazeCritical:
 		RequiresCondition: KamikazeCritical && MilitaryAcedemy
-		Modifier: 200
-	WithDecoration@KamikazeAngry:
-		Image: aa_banzai
-		Sequence: idle
-		Position: TopRight
-		BlinkInterval: 32
-		BlinkPattern: On, On, On, On
-		RequiresCondition: KamikazeAngry && MilitaryAcedemy
+		Modifier: 150
+	ChangesHealth@KamikazeCritical:
+		Step: 20
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
 	WithDecoration@KamikazeCritical:
 		Image: aa_banzai
 		Sequence: idle2
@@ -3524,7 +3534,7 @@ upaa_railt2:
 	ProvidesPrerequisite:
 
 ####################################################################################################
-#		Red Alert 2 Upgrades
+#		Asian Alliance Upgrades
 ####################################################################################################
 
 upaa_gren:
@@ -4150,7 +4160,7 @@ steel_fedaa:
 		Voice: Attack
 	Armament:
 		Weapon: ConsortiumEMPMissileSystem
-		LocalOffset: 300,150,450, 300,-150,450
+		LocalOffset: 125,225,250, 125,-225,250
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	WithMuzzleOverlay:
@@ -4210,9 +4220,14 @@ steel_qcannon:
 	Armament@1:
 		Weapon: SteelQuantumTurretRail
 		LocalOffset: 600,300,100
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	Armament@2:
 		Weapon: SteelQuantumTurretRail
 		LocalOffset: 600,-300,100
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
 	WithSpriteTurret:
@@ -4224,9 +4239,9 @@ steel_qcannon:
 	Power:
 		Amount: -100
 	RevealsShroud:
-		Range: 8000
+		Range: 8888
 	DetectCloaked:
-		Range: 4000
+		Range: 4444
 	MobSpawnerMaster@drone1:
 		Actors: steel_scalpel
 		RespawnTicks: 500
@@ -4384,7 +4399,7 @@ steel_scalpel:
 	Tooltip:
 		Name: Scapel
 	Armament@PRIMARY:
-		Weapon: SteelFighterRailgun
+		Weapon: SteelInfRailgun
 		LocalOffset: 200,0,0
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
@@ -4400,7 +4415,7 @@ steel_scalpelaa:
 	Tooltip:
 		Name: AA Scapel
 	Armament@PRIMARY:
-		Weapon: SteelFighterRailgun
+		Weapon: SteelInfRailgunAA
 		LocalOffset: 200,0,0
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
@@ -4501,10 +4516,11 @@ steel_fedinf:
 	Inherits: ^Soldier
 	Inherits@Template: ^LightInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@AntiInf: ^PrioritizeInfantry
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -4609,11 +4625,13 @@ steel_qinf:
 	Inherits@editorhack: ^DeployableInfantryEditor
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@bot: ^BotAutoDeploySwitchMode
-	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
 		Cost: 500
 	Tooltip:
-		Name: Quantum Trooper
+		Name: Quantum Missile Trooper
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~steel_qatech
@@ -4626,34 +4644,37 @@ steel_qinf:
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
-		HP: 27500
+		HP: 35000
 	ChangesHealth@SelfHealing:
-		Step: 11
+		Step: 14
 	RangeMultiplier@deployed:
-		Modifier: 111
+		Modifier: 125
+		RequiresCondition: deployed
+	RevealsShroudMultiplier@shrouded:
+		Modifier: 150
 		RequiresCondition: deployed
 	DamageMultiplier@deployed:
-		Modifier: 75
+		Modifier: 50
 		RequiresCondition: deployed
 	RenderRangeCircle:
 	RevealOnFire:
 		ArmamentNames: primary, deployed
 	Armament@PRIMARY:
-		Weapon: SteelQuantumCannon
+		Weapon: SteelInfRailgun
 		LocalOffset: 384,64,384
-		RequiresCondition: !deployed && !rank-elite && !upra2gi
+		RequiresCondition: !deployed && !rank-elite
 	Armament@PRIMARY2:
-		Weapon: SteelQuantumCannon
+		Weapon: SteelInfRailgunAA
 		LocalOffset: 384,64,384
-		RequiresCondition: !deployed && !rank-elite && upra2gi
+		RequiresCondition: !deployed && !rank-elite
 	Armament@ELITE:
-		Weapon: SteelQuantumCannon_elite
+		Weapon: SteelInfRailgunE
 		LocalOffset: 384,64,384
-		RequiresCondition: !deployed && rank-elite && !upra2gi
+		RequiresCondition: !deployed && rank-elite
 	Armament@ELITE2:
-		Weapon: SteelQuantumCannon_elite
+		Weapon: SteelInfRailgunAAE
 		LocalOffset: 384,64,384
-		RequiresCondition: !deployed && rank-elite && upra2gi
+		RequiresCondition: !deployed && rank-elite
 	Armament@BOTAA:
 		Weapon: aadeploytargeting.8c0
 		Name: targeting
@@ -4792,7 +4813,7 @@ steel_mako:
 		Name: Mako
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~steel_qaweap
+		Prerequisites: ~steel_qaweap, ~!upsteel_quantumtank
 		Queue: Vehicle, RAVehicle
 		Description: actor-steel_mako.description
 	Mobile:
@@ -4835,6 +4856,75 @@ steel_mako:
 		TargetTypes: Water, Ship
 	WithMoveAnimation:
 
+steel_quantumtank:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@underwater: ^SteelUnderwaterTransit
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiDef: ^PrioritizeDefence
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Quantum Tank
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~upsteel_quantumtank
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Locomotor: amphibius
+		Speed: 100
+		TurnSpeed: 20
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 20
+	Armament:
+		Name: primary
+		Weapon: SteelQuantumCannon
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1000,0,100
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: SteelQuantumCannon_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1000,0,100
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+	WithSpriteTurret:
+	Selectable:
+		Bounds: 1440, 1440
+		DecorationBounds: 1440, 1440
+	Voiced:
+		VoiceSet: SteelQuantumTankVoice
+	RenderSprites:
+		PlayerPalette: playerra2cons
+	WithMoveAnimation:
+
 steel_manta:
 	Inherits: ^Tank
 	Inherits@Template: ^ScoutVehicleTemplate
@@ -4843,6 +4933,8 @@ steel_manta:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -4862,16 +4954,6 @@ steel_manta:
 		HpPerStep: 1625
 	Armor:
 		Type: Light
-	Armament@AA1:
-		Weapon: SteelMantaAA
-		LocalOffset: 300,100,0
-		MuzzleSequence: muzzle
-		MuzzlePalette: ra2effect
-	Armament@AA2:
-		Weapon: SteelMantaAA
-		LocalOffset: 300,-100,0
-		MuzzleSequence: muzzle
-		MuzzlePalette: ra2effect
 	Armament@AG1:
 		Weapon: SteelMantaAG
 		LocalOffset: 300,100,0
@@ -4879,6 +4961,16 @@ steel_manta:
 		MuzzlePalette: ra2effect
 	Armament@AG2:
 		Weapon: SteelMantaAG
+		LocalOffset: 300,-100,0
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AA1:
+		Weapon: SteelMantaAA
+		LocalOffset: 300,100,0
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AA2:
+		Weapon: SteelMantaAA
 		LocalOffset: 300,-100,0
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
@@ -4912,8 +5004,10 @@ steel_manta_hunt:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
-		Cost: 1700
+		Cost: 1000
 	Tooltip:
 		Name: Manta Hunter
 	Buildable:
@@ -4935,7 +5029,7 @@ steel_manta_hunt:
 		Type: Heavy
 	Turreted:
 		TurnSpeed: 12
-	Armament@1:
+	Armament@AG1:
 		Name: primary
 		Weapon: SteelMantaHunterCannons
 		Recoil: 125
@@ -4943,7 +5037,7 @@ steel_manta_hunt:
 		LocalOffset: 500,200,-150
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-	Armament@2:
+	Armament@AG2:
 		Name: primary
 		Weapon: SteelMantaHunterCannons
 		Recoil: 125
@@ -4951,12 +5045,30 @@ steel_manta_hunt:
 		LocalOffset: 500,-200,-150
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+	Armament@AA1:
+		Name: primary
+		Weapon: SteelMantaHunterCannonsAA
+		Recoil: 125
+		RecoilRecovery: 25
+		LocalOffset: 500,200,-150
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AA2:
+		Name: primary
+		Weapon: SteelMantaHunterCannonsAA
+		Recoil: 125
+		RecoilRecovery: 25
+		LocalOffset: 500,-200,-150
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
 	FirepowerMultiplier@Hunter:
-		Modifier: 22
+		Modifier: 12
 	ReloadDelayMultiplier@ELITE:
 		Modifier: 50
 		RequiresCondition: rank-elite
 	RenderRangeCircle:
+	WithRangeCircle:
+		Range: 8000
 	AttackTurreted:
 	WithMuzzleOverlay:
 	SelectionDecorations:
@@ -4985,11 +5097,11 @@ steel_mega:
 	Selectable:
 		Bounds: 1250, 1750, 0, -250
 	Valued:
-		Cost: 3000
+		Cost: 2400
 	Tooltip:
 		Name: Mega
 	Buildable:
-		BuildPaletteOrder: 75
+		BuildPaletteOrder: 50
 		Prerequisites: ~steel_qtradr
 		Queue: Vehicle, RAVehicle
 		Description: actor-steel_mega.description
@@ -5024,72 +5136,7 @@ steel_mega:
 	RenderSprites:
 		PlayerPalette: playerra2cons
 
-steel_beholder:
-	Inherits: ^Tank
-	Inherits@Template: ^LineBreakerTemplate
-	Inherits@Template: ^HighTechTankTemplate
-	Inherits@anim: ^RA2Vehicle
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
-	Inherits@vo: ^AttackFrontalVoice
-	Inherits@EMP: ^FrontalEMP
-	Inherits@MC: ^MCImmune
-	Valued:
-		Cost: 3500
-	Tooltip:
-		Name: Beholder
-	Buildable:
-		BuildPaletteOrder: 75
-		Prerequisites: ~steel_qatech
-		Queue: Vehicle, RAVehicle
-		Description: actor-steel_beholder.description
-	Mobile:
-		Locomotor: hover
-		Speed: 125
-		TurnSpeed: 25
-	Hovers:
-		Ticks: 10
-		BobDistance: -64
-		InitialHeight: 384
-	Targetable@Hover:
-		TargetTypes: Water, Ship
-	Health:
-		HP: 80000
-	Repairable:
-		HpPerStep: 4000
-	ChangesHealth@SelfHealing:
-		Step: 32
-	Armor:
-		Type: Medium
-	Armament@1:
-		Weapon: SteelBeholderLaser
-		LocalOffset: 777,-222,-333, 777,222,-333
-	AttackFrontal:
-		FacingTolerance: 10
-	WithInfantryBody:
-		IdleSequences: idle
-		MinIdleDelay: 1
-		MaxIdleDelay: 2
-		DefaultAttackSequence: shoot
-	BodyOrientation:
-		QuantizedFacings: 32
-	-QuantizeFacingsFromSequence:
-	Passenger:
-		Weight: 4
-	Selectable:
-		Bounds: 1536, 1536
-	Voiced:
-		VoiceSet: SteelTCUVoice
-	RenderSprites:
-		PlayerPalette: playerra2rot
-	DeathSounds:
-	WithIdleOverlay@shield1:
-		Sequence: shield-complete-big
-		StartSequence: shield-starts-big
-	WithIdleOverlay@shield_damage:
-		Sequence: shield-complete-big
-
-steel_qtank:
+steel_arty:
 	Inherits: ^Tank
 	Inherits@Template: ^ArtilleryTemplate
 	Inherits@anim: ^RA2Vehicle
@@ -5098,6 +5145,7 @@ steel_qtank:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@bot: ^BotAutoDeploySwitchMode
 	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiBuil: ^PrioritizeBuilding
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -5106,7 +5154,7 @@ steel_qtank:
 		BuildPaletteOrder: 50
 		Prerequisites: ~steel_qtradr
 		Queue: Vehicle, RAVehicle
-		Description: actor-steel_qtank.description
+		Description: actor-steel_arty.description
 	Mobile:
 		Locomotor: hover
 		Speed: 100
@@ -5183,70 +5231,6 @@ steel_qtank:
 		QuantizedFacings: 32
 	-QuantizeFacingsFromSequence:
 
-steel_qutnk:
-	Inherits: ^Tank
-	Inherits@anim: ^RA2Vehicle
-	Inherits@Template: ^HighTechTankTemplate
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@vo: ^AttackTurretedVoice
-	Inherits@EMP: ^TurretEMP
-	Inherits@underwater: ^SteelUnderwaterTransit
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Quantum Tank
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: ~steel_qatech
-		Queue: Vehicle, RAVehicle
-		Description: template-mbt.description
-	Mobile:
-		Locomotor: amphibius
-		Speed: 100
-		TurnSpeed: 20
-	Health:
-		HP: 100000
-	Repairable:
-		HpPerStep: 5000
-	ChangesHealth@SelfHealing:
-		Step: 40
-	Armor:
-		Type: Medium
-	Turreted:
-		TurnSpeed: 20
-	Armament:
-		Name: primary
-		Weapon: SteelQuantumCannon
-		Recoil: 128
-		RecoilRecovery: 38
-		LocalOffset: 1000,0,100
-		MuzzleSequence: muzzle
-		MuzzlePalette: ra2effect
-		RequiresCondition: !rank-elite
-	Armament@elite:
-		Name: primary
-		Weapon: SteelQuantumCannon_elite
-		Recoil: 128
-		RecoilRecovery: 38
-		LocalOffset: 1000,0,100
-		MuzzleSequence: muzzle
-		MuzzlePalette: ra2effect
-		RequiresCondition: rank-elite
-	AttackTurreted:
-	WithMuzzleOverlay:
-	SelectionDecorations:
-	Selectable:
-	WithSpriteTurret:
-	Selectable:
-		Bounds: 1440, 1440
-		DecorationBounds: 1440, 1440
-	Voiced:
-		VoiceSet: SteelQuantumTankVoice
-	RenderSprites:
-		PlayerPalette: playerra2cons
-	WithMoveAnimation:
-
 steel_katy:
 	Inherits: ^Tank
 	Inherits@anim: ^RA2Vehicle
@@ -5257,12 +5241,15 @@ steel_katy:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@underwater: ^SteelUnderwaterTransit
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiDef: ^PrioritizeDefence
 	Valued:
 		Cost: 3000
 	Tooltip:
 		Name: Katy Tank
 	Buildable:
-		BuildPaletteOrder: 60
+		BuildPaletteOrder: 75
 		Prerequisites: ~upsteel_katy, steel_qatech
 		Queue: Vehicle, RAVehicle
 		Description: actor-steel_katy.description
@@ -5332,7 +5319,7 @@ steel_potnk:
 		Bounds: 1250, 1250
 		DecorationBounds: 1250, 1250
 	Valued:
-		Cost: 3000
+		Cost: 2500
 	Tooltip:
 		Name: Poseidon Tank
 	Buildable:
@@ -5386,14 +5373,210 @@ steel_potnk:
 	WithIdleOverlay@shield_damage:
 		Sequence: shield-complete-big
 
+steel_dagger:
+	Inherits: ^Tank
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 1300
+	Tooltip:
+		Name: Dagger
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~steel_qaweap, steel_qatech, ~upsteel_dagger
+		Queue: Vehicle, RAVehicle
+		Description: actor-aahowi.description
+	Mobile:
+		Locomotor: hover
+		Speed: 100
+		TurnSpeed: 20
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 1250
+	ChangesHealth@SelfHealing:
+		Step: 10
+	Armament@PRIMARY:
+		Weapon: SteelDaggerCannon
+		LocalOffset: 450,0,150
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: SteelDaggerCannonE
+		LocalOffset: 450,0,150
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: SteelConsortiumTankVoice
+
+steel_defender:
+	Inherits: ^Tank
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Inherits@underwater: ^SteelUnderwaterTransit
+	Inherits@shield: ^HasShieldGenerator
+	Selectable:
+		Bounds: 1250, 2000, 0, -500
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Defender Bot
+	Buildable:
+		BuildPaletteOrder: 75
+		Prerequisites: ~upsteel_defender, steel_qtradr
+		Queue: Vehicle, RAVehicle
+		Description: Shielded Battle Robot
+	Mobile:
+		Locomotor: amphibius
+		Speed: 65
+		TurnSpeed: 13
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Medium
+	Armament@PRIMARY:
+		Weapon: SteelInfRailgun
+		LocalOffset: 300,200,1000, 300,-200,1000
+	AttackFrontal:
+		FacingTolerance: 10
+	RenderRangeCircle:
+	WithInfantryBody:
+		IdleSequences: idle
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
+		DefaultAttackSequence: shoot
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 4
+	Voiced:
+		VoiceSet: SteelInspectorVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+	Shielded:
+		#MaxStrength: 250000
+		MaxPercentageStrength: 250
+		DamageRegenDelay: 125
+		RegenAmount: 80
+		RegenInterval: 1
+		ShieldsUpCondition: shielded
+		RequiresCondition: !disabled
+		SelectionBarColor: 8888FFFF
+	Armor@shielded:
+		Type: Shield
+		RequiresCondition: shielded
+	ProximityExternalCondition@shieldgen:
+		Range: 6300
+		Condition: shieldgen
+		EnableSound: shielded_on.aud
+		DisableSound: shielded_on.aud
+		RequiresCondition: !disabled
+	WithRangeCircle@shieldgen:
+		Range: 6300
+		Type: shield
+		Color: 8888FF88
+		RequiresCondition: !disabled
+	# DetectCloaked:
+	# 	Range: 5000
+
+steel_beholder:
+	Inherits: ^Tank
+	Inherits@Template: ^LineBreakerTemplate
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 3500
+	Tooltip:
+		Name: Beholder
+	Buildable:
+		BuildPaletteOrder: 75
+		Prerequisites: ~upsteel_beholder, steel_qatech
+		Queue: Vehicle, RAVehicle
+		Description: actor-steel_beholder.description
+	Mobile:
+		Locomotor: hover
+		Speed: 125
+		TurnSpeed: 25
+	Hovers:
+		Ticks: 10
+		BobDistance: -64
+		InitialHeight: 384
+	Targetable@Hover:
+		TargetTypes: Water, Ship
+	Health:
+		HP: 80000
+	Repairable:
+		HpPerStep: 4000
+	ChangesHealth@SelfHealing:
+		Step: 32
+	Armor:
+		Type: Medium
+	Armament@1:
+		Weapon: SteelBeholderLaser
+		LocalOffset: 777,-222,-333, 777,222,-333
+	AttackFrontal:
+		FacingTolerance: 10
+	WithInfantryBody:
+		IdleSequences: idle
+		MinIdleDelay: 1
+		MaxIdleDelay: 2
+		DefaultAttackSequence: shoot
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 4
+	Selectable:
+		Bounds: 1536, 1536
+	Voiced:
+		VoiceSet: SteelTCUVoice
+	RenderSprites:
+		PlayerPalette: playerra2rot
+	DeathSounds:
+	WithIdleOverlay@shield1:
+		Sequence: shield-complete-big
+		StartSequence: shield-starts-big
+	WithIdleOverlay@shield_damage:
+		Sequence: shield-complete-big
+
 steel_inspect:
 	Inherits: ^Helicopter
 	Inherits@Template: ^LineBreakerTemplate
 	Inherits@Template: ^BomberTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceGlobal
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Inherits@shield: ^HasShieldGenerator
 	Valued:
@@ -5485,7 +5668,6 @@ steel_inspect.Husk:
 steel_twister:
 	Inherits: ^RANeutralPlane
 	Inherits@Template: ^FighterTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@upgrade: ^RA2AdvancedAeronautics
@@ -5559,7 +5741,6 @@ steel_twister:
 		PipCount: 8
 	RenderSprites:
 		PlayerPalette: playerra2cons
-
 steel_twister.Husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -5670,55 +5851,6 @@ steel_grun.Husk:
 		Image: steel_grun
 		PlayerPalette: playerra2rot
 	Turreted:
-
-steel_dagger:
-	Inherits: ^Tank
-	Inherits@Template: ^ArtilleryTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@anim: ^RA2Vehicle
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@vo: ^AttackFrontalVoice
-	Inherits@EMP: ^FrontalEMP
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Dagger
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: ~steel_qaweap, steel_qatech, ~upsteel_dagger
-		Queue: Vehicle, RAVehicle
-		Description: actor-aahowi.description
-	Mobile:
-		Locomotor: hover
-		Speed: 100
-		TurnSpeed: 20
-	Health:
-		HP: 25000
-	Repairable:
-		HpPerStep: 1250
-	ChangesHealth@SelfHealing:
-		Step: 10
-	Armament@PRIMARY:
-		Weapon: SteelDaggerCannon
-		LocalOffset: 400,0,100
-		MuzzleSequence: muzzle
-		MuzzlePalette: ra2effect
-		RequiresCondition: !rank-elite
-	Armament@ELITE:
-		Weapon: SteelDaggerCannonE
-		LocalOffset: 400,0,100
-		MuzzleSequence: muzzle
-		MuzzlePalette: ra2effect
-		RequiresCondition: rank-elite
-	AttackFrontal:
-	WithMuzzleOverlay:
-	Selectable:
-		DecorationBounds: 1280, 1280
-	RenderSprites:
-		PlayerPalette: playerra2
-	Voiced:
-		VoiceSet: SteelConsortiumTankVoice
 
 steel_hummer:
 	Inherits: ^Tank
@@ -6192,7 +6324,6 @@ steel_cruiser_f:
 		PipCount: 6
 	RenderSprites:
 		PlayerPalette: playerra2
-
 steel_cruiser_f.Husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -6212,84 +6343,6 @@ steel_cruiser_f.Husk:
 		Image: steel_cruiser_f
 	RenderSprites:
 		PlayerPalette: playerra2
-
-steel_defender:
-	Inherits: ^Tank
-	Inherits@Template: ^SupportVehicleTemplate
-	Inherits@anim: ^RA2Vehicle
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
-	Inherits@vo: ^AttackFrontalVoice
-	Inherits@EMP: ^FrontalEMP
-	Inherits@MC: ^MCImmune
-	Inherits@underwater: ^SteelUnderwaterTransit
-	Inherits@shield: ^HasShieldGenerator
-	Selectable:
-		Bounds: 1250, 2000, 0, -500
-	Valued:
-		Cost: 1600
-	Tooltip:
-		Name: Defender Bot
-	Buildable:
-		BuildPaletteOrder: 75
-		Prerequisites: ~upsteel_defender, steel_qtradr
-		Queue: Vehicle, RAVehicle
-		Description: Shielded Battle Robot
-	Mobile:
-		Locomotor: amphibius
-		Speed: 65
-		TurnSpeed: 13
-	Health:
-		HP: 100000
-	Repairable:
-		HpPerStep: 5000
-	ChangesHealth@SelfHealing:
-		Step: 40
-	Armor:
-		Type: Medium
-	Armament@PRIMARY:
-		Weapon: SteelInfRailgun
-		LocalOffset: 300,200,1000, 300,-200,1000
-	AttackFrontal:
-		FacingTolerance: 10
-	RenderRangeCircle:
-	WithInfantryBody:
-		IdleSequences: idle
-		MinIdleDelay: 1
-		MaxIdleDelay: 2
-		DefaultAttackSequence: shoot
-	BodyOrientation:
-		QuantizedFacings: 32
-	-QuantizeFacingsFromSequence:
-	Passenger:
-		Weight: 4
-	Voiced:
-		VoiceSet: SteelInspectorVoice
-	RenderSprites:
-		PlayerPalette: playerra2
-	Shielded:
-		#MaxStrength: 250000
-		MaxPercentageStrength: 250
-		DamageRegenDelay: 125
-		RegenAmount: 80
-		RegenInterval: 1
-		ShieldsUpCondition: shielded
-		RequiresCondition: !disabled
-		SelectionBarColor: 8888FFFF
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: shielded
-	ProximityExternalCondition@shieldgen:
-		Range: 6250
-		Condition: shieldgen
-		EnableSound: shielded_on.aud
-		DisableSound: shielded_on.aud
-		RequiresCondition: !disabled
-	WithRangeCircle@shieldgen:
-		Range: 6250
-		Type: shield
-		Color: 8888FF88
-		RequiresCondition: !disabled
 
 #######################################
 # Steel Consortium Promotion Tree
@@ -6350,17 +6403,17 @@ upsteel_conssupp4:
 	ProvidesPrerequisite:
 
 ### Military tree
-upsteel_scalpel:
+upsteel_quantumtank:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Scapel Defenders
+		Name: Quantum Tank
 	Buildable:
 		BuildPaletteOrder: 110
 		Queue: Promotions
-		Description: Spawns Scalpel defense drones for your defensive structures.
-		Prerequisites: ~steel_qacst, !upsteel_scalpel, rank1
+		Description: Enables construction of Quantum Tanks.
+		Prerequisites: ~steel_qacst, !upsteel_quantumtank, rank1
 	RenderSprites:
-		Image: steel_scalpel
+		Image: steel_quantumtank
 	ProvidesPrerequisite:
 
 upsteel_dagger:
@@ -6371,7 +6424,7 @@ upsteel_dagger:
 		BuildPaletteOrder: 113
 		Queue: Promotions
 		Description: Enables construction of Daggers.
-		Prerequisites: ~steel_qacst, !upsteel_dagger, upsteel_scalpel, rank1
+		Prerequisites: ~steel_qacst, !upsteel_dagger, upsteel_quantumtank, rank1
 	RenderSprites:
 		Image: steel_dagger
 	ProvidesPrerequisite:
@@ -6389,16 +6442,16 @@ upsteel_katy:
 		Image: steel_katy
 	ProvidesPrerequisite:
 
-upsteel_emp:
+upsteel_bfg10k:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Emp Cannon
+		Name: Unlock BFG 10000
 	Buildable:
 		BuildPaletteOrder: 119
 		Queue: Promotions
 		Icon: icon2
-		Description: Allows the use of EMP cannons.
-		Prerequisites: ~steel_qacst, !upsteel_emp, upsteel_katy, rank1
+		Description: Enables construction of the BFG 10000.
+		Prerequisites: ~steel_qacst, !upsteel_bfg10k, upsteel_katy, rank1
 	RenderSprites:
 		Image: steel_qatech
 	ProvidesPrerequisite:
@@ -6413,7 +6466,7 @@ upsteel_manta_hunt:
 		BuildPaletteOrder: 111
 		Queue: Promotions
 		Description: Enables construction of Mantas Hunters.
-		Prerequisites: ~steel_qacst, !steel_manta_hunt, rank1
+		Prerequisites: ~steel_qacst, !upsteel_manta_hunt, rank1
 	RenderSprites:
 		Image: steel_manta_hunt
 	ProvidesPrerequisite:
@@ -6425,10 +6478,23 @@ upsteel_defender:
 	Buildable:
 		BuildPaletteOrder: 114
 		Queue: Promotions
-		Description: Enables the Creation of Defenders.
+		Description: Enables construction of Defender Bots.
 		Prerequisites: ~steel_qacst, upsteel_manta_hunt, !upsteel_defender, rank1
 	RenderSprites:
 		Image: steel_defender
+	ProvidesPrerequisite:
+
+upsteel_beholder:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Beholder
+	Buildable:
+		BuildPaletteOrder: 117
+		Queue: Promotions
+		Description: Enables construction of Beholders.
+		Prerequisites: ~steel_qacst, upsteel_defender, !upsteel_beholder, rank1
+	RenderSprites:
+		Image: steel_beholder
 	ProvidesPrerequisite:
 
 upsteel_cruiser:
@@ -6436,23 +6502,61 @@ upsteel_cruiser:
 	Tooltip:
 		Name: Unlock Cruiser
 	Buildable:
-		BuildPaletteOrder: 117
+		BuildPaletteOrder: 120
 		Queue: Promotions
 		Description: Enables construction of Cruisers.
-		Prerequisites: ~steel_qacst, upsteel_defender, !upsteel_cruiser, rank1
+		Prerequisites: ~steel_qacst, upsteel_beholder, !upsteel_cruiser, rank1
 	RenderSprites:
 		Image: steel_cruiser
 	ProvidesPrerequisite:
 
+
+####################################################################################################
+#		Steel Consortium Upgrades
+####################################################################################################
+
+upsteel_scalpel:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Scalpel Defenders
+	Valued:
+		Cost: 5000
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Upgrades
+		Description: Spawns Scalpel defense drones for your defensive structures.
+		Prerequisites: ~steel_qatech, !upsteel_scalpel
+	RenderSprites:
+		Image: steel_scalpel
+	ProvidesPrerequisite:
+
 upsteel_cruiser_f:
-	Inherits: ^promotion_upgrade.template
+	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Unlock Cruiser Fighters
+	Valued:
+		Cost: 5000
 	Buildable:
-		BuildPaletteOrder: 120
-		Queue: Promotions
+		BuildPaletteOrder: 50
+		Queue: Upgrades
 		Description: Cruisers now uses Fighters.
-		Prerequisites: ~steel_qacst, upsteel_cruiser, !steel_cruiser_f, rank1
+		Prerequisites: ~steel_qatech, !upsteel_cruiser_f
 	RenderSprites:
 		Image: steel_cruiser_f
+	ProvidesPrerequisite:
+
+upsteel_emp:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Unlock Emp Cannon
+	Valued:
+		Cost: 5000
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Upgrades
+		Icon: icon2
+		Description: Allows the use of the EMP cannon support power.
+		Prerequisites: ~steel_qatech, !upsteel_emp
+	RenderSprites:
+		Image: steel_qatech
 	ProvidesPrerequisite:
