@@ -9,45 +9,72 @@
  */
 #endregion
 
-using System.Linq;
 using OpenRA.GameRules;
-using OpenRA.Mods.Cameo.Traits;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Warheads;
+using OpenRA.Mods.Cameo.Traits;
 using OpenRA.Traits;
+using OpenRA.Mods.Common;
+using System.Linq;
 
 namespace OpenRA.Mods.Cameo.Warheads
 {
-	[Desc("Grant an external condition to hit actors.")]
-	public class AffectsIntegrityWarhead : Warhead
+	[Desc("Apply damage to the targeted actor.")]
+	public class AffectsIntegrityWarhead : DamageWarhead
 	{
-		[Desc("How much (raw) damage to deal.")]
-		public readonly int Damage = 0;
+		[Desc("Damage will be applied to actors in this area. A value of zero means only targeted actor will be damaged.")]
+		public readonly WDist Spread = WDist.Zero;
 
-		public readonly WDist Range = WDist.FromCells(1);
-
-		public override void DoImpact(in Target target, WarheadArgs args)
+		protected override void DoImpact(WPos pos, Actor firedBy, WarheadArgs args)
 		{
-			if (target.Type == TargetType.Invalid)
+			if (Spread == WDist.Zero)
 				return;
 
-			var firedBy = args.SourceActor;
+			var debugVis = firedBy.World.WorldActor.TraitOrDefault<DebugVisualizations>();
+			if (debugVis != null && debugVis.CombatGeometry)
+				firedBy.World.WorldActor.Trait<WarheadDebugOverlay>().AddImpact(pos, new[] { WDist.Zero, Spread }, DebugOverlayColor);
 
-			if (target.Type == TargetType.Invalid)
-				return;
-
-			var actors = target.Type == TargetType.Actor ? new[] { target.Actor } :
-				firedBy.World.FindActorsInCircle(target.CenterPosition, Range);
-
-			foreach (var a in actors)
+			foreach (var victim in firedBy.World.FindActorsOnCircle(pos, Spread))
 			{
-				if (!IsValidAgainst(a, firedBy))
+				if (!IsValidAgainst(victim, firedBy))
 					continue;
 
-				a.TraitsImplementing<Integrity>()
-					.FirstOrDefault(t => !t.IsTraitPaused && !t.IsTraitDisabled)
-					?.Regenerate(a, -Damage);
+				HitShape closestActiveShape = null;
+				var closestDistance = int.MaxValue;
+
+				// PERF: Avoid using TraitsImplementing<HitShape> that needs to find the actor in the trait dictionary.
+				foreach (var targetPos in victim.EnabledTargetablePositions)
+				{
+					if (targetPos is HitShape hitshape)
+					{
+						var distance = hitshape.DistanceFromEdge(victim, pos).Length;
+						if (distance < closestDistance)
+						{
+							closestDistance = distance;
+							closestActiveShape = hitshape;
+						}
+					}
+				}
+
+				// Cannot be damaged without an active HitShape.
+				if (closestActiveShape == null)
+					continue;
+
+				// Cannot be damaged if HitShape is outside Spread.
+				if (closestDistance > Spread.Length)
+					continue;
+
+				InflictDamage(victim, firedBy, closestActiveShape, args);
 			}
+		}
+
+		protected override void InflictDamage(Actor victim, Actor firedBy, HitShape shape, WarheadArgs args)
+		{
+			var damage = Util.ApplyPercentageModifiers(Damage, args.DamageModifiers.Append(DamageVersus(victim, shape, args)));
+
+			victim.TraitsImplementing<Integrity>()
+				.FirstOrDefault(t => !t.IsTraitPaused && !t.IsTraitDisabled)
+                   ?.Regenerate(victim, -Damage);
 		}
 	}
 }

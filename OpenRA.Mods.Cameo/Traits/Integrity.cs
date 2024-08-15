@@ -55,10 +55,11 @@ namespace OpenRA.Mods.Cameo.Traits
 		public readonly string ActiveCondition = null;
 
 		[Desc("Hides selection bar when shield is at max strength.")]
-		public readonly bool HideBarWhenFull = false;
+		public readonly bool HideBarWhenFull = true;
 
 		public readonly bool ShowSelectionBar = true;
 		public readonly Color SelectionBarColor = Color.FromArgb(0, 148, 128);
+		public readonly Color DisabledSelectionBarColor = Color.FromArgb(173, 216, 230);
 
 		public override object Create(ActorInitializer init) { return new Integrity(init, this); }
 	}
@@ -113,8 +114,8 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (Strength > MaxStrength)
 				Strength = MaxStrength;
 
-			if (Strength < 0)
-				Strength = 0;
+			if (Strength <= -MaxStrength)
+				Strength = -MaxStrength;
 
 			if (Strength > 0 && conditionToken == Actor.InvalidConditionToken)
 				conditionToken = self.GrantCondition(Info.ActiveCondition);
@@ -136,10 +137,10 @@ namespace OpenRA.Mods.Cameo.Traits
 				conditionToken = self.GrantCondition(Info.ActiveCondition);
 
 			if (Strength <= 0 && conditionToken != Actor.InvalidConditionToken)
-			{
-				Strength = 0;
 				conditionToken = self.RevokeCondition(conditionToken);
-			}
+
+			if (Strength <= -MaxStrength)
+				Strength = -MaxStrength;
 		}
 
 		void INotifyDamage.Damaged(Actor self, AttackInfo e)
@@ -159,8 +160,11 @@ namespace OpenRA.Mods.Cameo.Traits
 			var damageAmt = Convert.ToInt32(e.Damage.Value);
 			Strength = Math.Max(Strength - damageAmt, 0);
 
-			if (Strength == 0 && conditionToken != Actor.InvalidConditionToken)
+			if (Strength <= 0 && conditionToken != Actor.InvalidConditionToken)
 				conditionToken = self.RevokeCondition(conditionToken);
+
+			if (Strength <= -MaxStrength)
+				Strength = -MaxStrength;
 		}
 
 		float ISelectionBar.GetValue()
@@ -179,12 +183,12 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (!displayHealth)
 				return 0;
 
-			return (float)Strength / MaxStrength;
+			return Math.Abs((float)Strength / MaxStrength);
 		}
 
 		bool ISelectionBar.DisplayWhenEmpty { get { return false; } }
 
-		Color ISelectionBar.GetColor() { return Info.SelectionBarColor; }
+		Color ISelectionBar.GetColor() { return Strength > 0 ? Info.SelectionBarColor : Info.DisabledSelectionBarColor; }
 
 		protected override void TraitEnabled(Actor self)
 		{
