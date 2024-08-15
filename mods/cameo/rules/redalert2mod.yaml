@@ -4015,10 +4015,10 @@ steel_qatech:
 		DisplayRadarPing: True
 		DisplayTimerRelationships: Ally, Neutral, Enemy
 		CameraActor: camera.small
-		CameraRange: 6c0
+		CameraRange: 10000
 		CameraRemoveDelay: 300
 		TargetCircleRanges:
-			1: 6c0
+			1: 10000
 		TargetCircleColor: ff000080
 		LaunchSound:
 		IncomingSound:
@@ -4085,11 +4085,13 @@ steel_qaorbit:
 
 ^ScalpelDrones:
 	DroneSpawnerMaster@steel_scalpel:
-		Actors: steel_scalpel
+		Actors: steel_scalpelMG
 		RespawnTicks: 500
 		PauseOnCondition: disabled || !upsteel_scalpel
 		RequiresCondition: upsteel_scalpel
-		FollowAfterAttackDelay: 21
+		ExitByBudding: false
+		AggregateHealth: false
+		FollowAfterAttackDelay: 25
 		ShouldSpawnInitialLoad: false
 	GrantConditionOnPrerequisite@upsteel_scalpel:
 		Condition: upsteel_scalpel
@@ -4126,10 +4128,22 @@ steel_fedturret:
 	AttackTurreted:
 		Voice: Attack
 	Armament:
+		Name: primary
 		Weapon: SteelVulcan
 		LocalOffset: 400,125,100, 400,-125,100
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+	Armament@DroneTargeting:
+		Name: targeting
+		Weapon: GLStingerTargeting
+		RequiresCondition: upsteel_scalpel
+	-RenderRangeCircle:
+	RenderRangeCircleCA:
+		Armaments: primary
+	RenderRangeCircleCA@targeting:
+		Armaments: targeting
+		Color: FF0000
+		RequiresCondition: upsteel_scalpel
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
@@ -4173,10 +4187,22 @@ steel_fedaa:
 	AttackTurreted:
 		Voice: Attack
 	Armament:
+		Name: primary
 		Weapon: ConsortiumEMPMissileSystem
 		LocalOffset: 125,225,250, 125,-225,250
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+	Armament@DroneTargeting:
+		Name: targeting
+		Weapon: GLStingerTargeting
+		RequiresCondition: upsteel_scalpel
+	-RenderRangeCircle:
+	RenderRangeCircleCA:
+		Armaments: primary
+	RenderRangeCircleCA@targeting:
+		Armaments: targeting
+		Color: FF0000
+		RequiresCondition: upsteel_scalpel
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
@@ -4191,7 +4217,7 @@ steel_fedaa:
 		Range: 6000
 	ProvidesPrerequisite@buildingname:
 	DroneSpawnerMaster@steel_scalpel:
-		Actors: steel_scalpelaa
+		Actors: steel_scalpelAA
 
 steel_qcannon:
 	Inherits: ^RA2Defense
@@ -4225,15 +4251,28 @@ steel_qcannon:
 	AttackTurreted:
 		Voice: Attack
 	Armament@1:
+		Name: primary
 		Weapon: SteelQuantumTurretRail
 		LocalOffset: 600,300,100
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	Armament@2:
+		Name: primary
 		Weapon: SteelQuantumTurretRail
 		LocalOffset: 600,-300,100
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+	Armament@DroneTargeting:
+		Name: targeting
+		Weapon: GLStingerTargeting
+		RequiresCondition: upsteel_scalpel
+	-RenderRangeCircle:
+	RenderRangeCircleCA:
+		Armaments: primary
+	RenderRangeCircleCA@targeting:
+		Armaments: targeting
+		Color: FF0000
+		RequiresCondition: upsteel_scalpel
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
@@ -4250,7 +4289,7 @@ steel_qcannon:
 	DetectCloaked:
 		Range: 4444
 	DroneSpawnerMaster@steel_scalpel:
-		Actors: steel_scalpel, steel_scalpel
+		Actors: steel_scalpelQuantumCannon
 
 steel_conpad:
 	Inherits: ^RA2Building
@@ -4386,39 +4425,51 @@ steel_qoil:
 		RequiresCondition: paused
 	RejectsOrders:
 	-MapEditorData:
-
-steel_scalpel:
-	Inherits: ^SteelDefensiveDrones
-	Valued:
-		Cost: 500
-	Tooltip:
-		Name: Scapel
-	Armament@PRIMARY:
-		Weapon: SteelInfRailgun
-		LocalOffset: 200,0,0
-		MuzzleSequence: muzzle
-	WithMuzzleOverlay:
-	AttackAircraft:
-		Armaments: primary, pointdefense
-	RenderSprites:
-		PlayerPalette: playerra2rot
-
-steel_scalpelaa:
-	Inherits: ^SteelDefensiveDrones
-	Valued:
-		Cost: 500
-	Tooltip:
-		Name: AA Scapel
-	Armament@PRIMARY:
-		Weapon: SteelInfRailgunAA
-		LocalOffset: 200,0,0
-		MuzzleSequence: muzzle
-	WithMuzzleOverlay:
-	AttackAircraft:
-		Armaments: primary, pointdefense
 	RenderSprites:
 		PlayerPalette: playerra2rot
 		Image: steel_scalpel
+
+steel_scalpelMG:
+	Inherits: ^SteelDefensiveDrones
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Scalpel
+	Armament@PRIMARY:
+		Weapon: SteelMantaAG
+		LocalOffset: 200,0,0
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	AttackAircraft:
+		Armaments: primary, pointdefense
+
+steel_scalpelQuantumCannon:
+	Inherits: ^SteelDefensiveDrones
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Quantum Scalpel
+	Armament@PRIMARY:
+		Weapon: SteelQuantumTurretRail
+		LocalOffset: 200,0,0
+		MuzzleSequence: muzzle2
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
+	AttackAircraft:
+		Armaments: primary, pointdefense
+
+steel_scalpelAA:
+	Inherits: ^SteelDefensiveDrones
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Anti Air Scalpel
+	Armament@PRIMARY:
+		Weapon: SteelInfRailgunAA
+		LocalOffset: 200,0,0
+		MuzzleSequence: muzzle2
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
 
 steel_qmcv:
 	Inherits: ^Vehicle
@@ -4857,11 +4908,10 @@ steel_quantumtank:
 	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Inherits@underwater: ^SteelUnderwaterTransit
-	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
 	Inherits@AntiDef: ^PrioritizeDefence
@@ -5938,6 +5988,9 @@ steel_oldqtnk:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiDef: ^PrioritizeDefence
 	Valued:
 		Cost: 1200
 	Tooltip:
