@@ -148,7 +148,7 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (IsTraitDisabled)
 				return;
 
-			if (Strength == 0 || e.Damage.Value == 0 || e.Attacker == self)
+			if (e.Damage.Value == 0 || e.Attacker == self)
 				return;
 
 			if (e.Damage.Value < 0 || (!Info.AffectedByDamageTypes.IsEmpty && !e.Damage.DamageTypes.Overlaps(Info.AffectedByDamageTypes)))
@@ -158,7 +158,7 @@ namespace OpenRA.Mods.Cameo.Traits
 				ticks = Info.DamageRegenDelay;
 
 			var damageAmt = Convert.ToInt32(e.Damage.Value);
-			Strength = Math.Max(Strength - damageAmt, 0);
+			Strength -= damageAmt;
 
 			if (Strength <= 0 && conditionToken != Actor.InvalidConditionToken)
 				conditionToken = self.RevokeCondition(conditionToken);
