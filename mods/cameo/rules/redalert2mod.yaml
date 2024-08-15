@@ -1656,6 +1656,7 @@ aa_asdf:
 		Prerequisites: ~upaa_asdf, aa_cgmiac
 		Queue: Infantry, RAInfantry
 		Description: actor-boris.description
+		IconPalette: ra2cameo
 	Health:
 		HP: 40000
 	ChangesHealth@SelfHealing:
@@ -3263,6 +3264,8 @@ aa_kami.asdf:
 	-AutoTarget:
 	-AmmoPool:
 	-WithAmmoPipsDecoration:
+	AttackAircraft:
+		-RequiresCondition:
 	Armament@PRIMARY:
 		Weapon: ASDFKamikazeTargeting
 		-PauseOnCondition:
@@ -3419,7 +3422,8 @@ upaa_asdf:
 	Buildable:
 		BuildPaletteOrder: 106
 		Queue: Promotions
-		Description: Enables training ASDF construction of War Turtles and upgrades paratroopers to use ASDFs.
+		Description: Enables training ASDF, construction of War Turtles, and upgrades paratroopers to use ASDFs.
+		IconPalette: ra2cameo
 		Prerequisites: ~aa_cgcnst, upaa_archer, !upaa_asdf, rank1
 	RenderSprites:
 		Image: aa_asdf
@@ -4073,6 +4077,18 @@ steel_qaorbit:
 	RenderSprites:
 		PlayerPalette: playerra2cons
 
+^ScalpelDrones:
+	DroneSpawnerMaster@steel_scalpel:
+		Actors: steel_scalpel
+		RespawnTicks: 500
+		PauseOnCondition: disabled || !upsteel_scalpel
+		RequiresCondition: upsteel_scalpel
+		FollowAfterAttackDelay: 21
+		ShouldSpawnInitialLoad: false
+	GrantConditionOnPrerequisite@upsteel_scalpel:
+		Condition: upsteel_scalpel
+		Prerequisites: upsteel_scalpel
+
 steel_fedturret:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^BasicDefenseTemplate
@@ -4080,6 +4096,7 @@ steel_fedturret:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@EMP: ^TurretEMP
+	Inherits@drones: ^ScalpelDrones
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
@@ -4118,16 +4135,6 @@ steel_fedturret:
 	RevealsShroud:
 		Range: 6666
 	ProvidesPrerequisite@buildingname:
-	MobSpawnerMaster@drone1:
-		Actors: steel_scalpel
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
-		PauseOnCondition: disabled
-		RequiresCondition: upsteel_scalpel
-	GrantConditionOnPrerequisite@upsteel_scalpel:
-		Condition: upsteel_scalpel
-		Prerequisites: upsteel_scalpel
 
 steel_fedaa:
 	Inherits: ^RA2Defense
@@ -4136,6 +4143,7 @@ steel_fedaa:
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@EMP: ^TurretEMP
+	Inherits@drones: ^ScalpelDrones
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
@@ -4176,16 +4184,8 @@ steel_fedaa:
 	DetectCloaked:
 		Range: 6000
 	ProvidesPrerequisite@buildingname:
-	MobSpawnerMaster@drone1:
+	DroneSpawnerMaster@steel_scalpel:
 		Actors: steel_scalpelaa
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
-		PauseOnCondition: disabled
-		RequiresCondition: upsteel_scalpel
-	GrantConditionOnPrerequisite@upsteel_scalpel:
-		Condition: upsteel_scalpel
-		Prerequisites: upsteel_scalpel
 
 steel_qcannon:
 	Inherits: ^RA2Defense
@@ -4195,6 +4195,7 @@ steel_qcannon:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@water: ^SteelUnderwaterStructure
 	Inherits@EMP: ^TurretEMP
+	Inherits@drones: ^ScalpelDrones
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 50
@@ -4242,23 +4243,8 @@ steel_qcannon:
 		Range: 8888
 	DetectCloaked:
 		Range: 4444
-	MobSpawnerMaster@drone1:
-		Actors: steel_scalpel
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
-		PauseOnCondition: disabled
-		RequiresCondition: upsteel_scalpel
-	MobSpawnerMaster@drone2:
-		Actors: steel_scalpel
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
-		PauseOnCondition: disabled
-		RequiresCondition: upsteel_scalpel
-	GrantConditionOnPrerequisite@upsteel_scalpel:
-		Condition: upsteel_scalpel
-		Prerequisites: upsteel_scalpel
+	DroneSpawnerMaster@steel_scalpel:
+		Actors: steel_scalpel, steel_scalpel
 
 steel_conpad:
 	Inherits: ^RA2Building
@@ -4371,7 +4357,8 @@ steel_qoil:
 	Aircraft:
 		CruiseAltitude: 1200
 		InitialFacing: 192
-		TurnSpeed: 8
+		IdleTurnSpeed: 8
+		TurnSpeed: 32
 		Speed: 80
 		RepulsionSpeed: 40
 		MaximumPitch: 40
@@ -4384,7 +4371,9 @@ steel_qoil:
 	-SpawnActorOnDeath:
 	-ActorLostNotification:
 	-UpdatesPlayerStatistics:
-	MobSpawnerSlave:
+	DroneSpawnerSlave:
+		AttackCallBackDistance: 8c0
+		MovingCallBackCellDistance: 1
 		GrantConditionWhenMasterIsDisabled: notenabled
 		GrantConditionWhenMasterIsPaused: paused
 	KillsSelf@masterdisabled:
