@@ -28,7 +28,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		public override object Create(ActorInitializer init) { return new ProvidesTeamProxyActor(init, this); }
 	}
 
-	public class ProvidesTeamProxyActor : ConditionalTrait<ProvidesTeamProxyActorInfo>, INotifyOwnerChanged, INotifyCreated, INotifyActorDisposing
+	public class ProvidesTeamProxyActor : ConditionalTrait<ProvidesTeamProxyActorInfo>, INotifyOwnerChanged, INotifyCreated, INotifyAddedToWorld, INotifyActorDisposing
 	{
 		IEnumerable<OpenRA.Player> team;
 
@@ -40,14 +40,17 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		protected override void Created(Actor self)
 		{
-			team = self.World.Players.Where(p => !p.NonCombatant && p.InternalName != "Everyone" && p.IsAlliedWith(self.Owner));
-
 			team = new List<OpenRA.Player>();
 			proxies = new List<Actor>();
 
-			Update(self);
-
 			base.Created(self);
+		}
+
+		public void AddedToWorld(Actor self)
+		{
+			team = self.World.Players.Where(p => !p.NonCombatant && p.InternalName != "Everyone" && p.IsAlliedWith(self.Owner));
+
+			Update(self);
 		}
 
 		public void OnOwnerChanged(Actor self, OpenRA.Player oldOwner, OpenRA.Player newOwner)
@@ -84,6 +87,7 @@ namespace OpenRA.Mods.Cameo.Traits
 			foreach (var proxy in proxies)
 				proxy.Dispose();
 		}
+
 		public void Disposing(Actor self)
 		{
 			ClearActors();
