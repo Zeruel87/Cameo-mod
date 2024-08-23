@@ -69,11 +69,11 @@ namespace OpenRA.Mods.Cameo.Graphics
 			var offset = LoadField(Offset, data, defaults);
 			var blendMode = LoadField(BlendMode, data, defaults);
 
-			Func<ISpriteFrame, ISpriteFrame> adjustFrame = null;
+			AdjustFrame adjustFrame = null;
 			if (remapColor != default || convertShroudToFog)
 				adjustFrame = RemapFrame;
 
-			ISpriteFrame RemapFrame(ISpriteFrame f) =>
+			ISpriteFrame RemapFrame (ISpriteFrame f, int index, int total) =>
 				(f is R8Loader.RemappableFrame rf) ? rf.WithSequenceFlags(useShadow, convertShroudToFog, remapColor) : f;
 
 			var combineNode = data.NodeWithKeyOrDefault(Combine.Key);
