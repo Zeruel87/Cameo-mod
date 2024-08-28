@@ -345,13 +345,13 @@ D2K_155mm3:
 #############################
 ^D2KRocket:
 	Inherits: ^HeavyMissile
-	ReloadDelay: 40
-	Range: 3c0
+	ReloadDelay: 50
+	Range: 5000
 	Report: ROCKET1.WAV
 	Projectile: Bullet
 		Blockable: false
-		Speed: 300
-		Inaccuracy: 128
+		Speed: 500
+		Inaccuracy: 125
 		InaccuracyType: PerCellIncrement
 		Image: d2k_RPG
 		Palette: d2keffect
@@ -377,13 +377,14 @@ D2K_155mm3:
 	Projectile: Missile
 		Shadow: true
 		HorizontalRateOfTurn: 80
-		CruiseAltitude: 1c0
+		CruiseAltitude: 1000
 		MinimumLaunchAngle: 64
 		Image: d2k_missile2
 		Palette: d2keffect
 		TrailImage: large_trail
-		Speed: 333
+		Speed: 666
 		Acceleration: 3
+		RangeLimit: 33333
 	Warhead@Concrete: DamagesConcrete
 		Damage: 750
 	Warhead@Effect: CreateEffect
@@ -406,10 +407,7 @@ D2K_Bazooka2:
 	ValidTargets: Ground, Air
 	Projectile: Missile
 		Blockable: false
-		RangeLimit: 33333
-		Speed: 333
 		Inaccuracy: 33
-		Acceleration: 3
 		InaccuracyType: PerCellIncrement
 		Image: d2k_RPG
 		Palette: d2keffect
@@ -493,28 +491,55 @@ D2K_Rocket_Fremen:
 	InvalidTargets: Infantry
 
 D2K_TowerMissile:
+	Inherits: ^Grenade
+	Inherits: ^FlakWeapon
 	Inherits: ^D2KMissile
-	ReloadDelay: 35
+	ReloadDelay: 33
 	Burst: 2
-	Range: 10000
+	Range: 15000
 	BurstDelays: 5
 	ValidTargets: Ground, Water, Trees
 	Projectile: Missile
 		Blockable: false
 		RangeLimit: 33333
-		Speed: 333
+		Speed: 3333
 		Inaccuracy: 33
 		Acceleration: 3
+	Warhead@Grenade: SpreadDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 4000
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 2000
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 2
+	Warhead@FlakWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 4000
+	Warhead@FlakWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 2
 	Warhead@HeavyMissile: SpreadDamage
 		ValidTargets: Ground, Water, Trees
-		Damage: 12000
+		Damage: 4000
 	Warhead@HeavyMissilePercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Trees
-		Damage: 6
+		Damage: 2
 
 D2K_TowerMissileAA:
 	Inherits: D2K_TowerMissile
 	ValidTargets: Air
+	Warhead@Grenade: SpreadDamage
+		ValidTargets: Air
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		ValidTargets: Air
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		ValidTargets: Air
+	Warhead@FlakWeapon: SpreadDamage
+		ValidTargets: Air
+	Warhead@FlakWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Air
 	Warhead@HeavyMissile: SpreadDamage
 		ValidTargets: Air
 	Warhead@HeavyMissilePercentage: HealthPercentageDamage
@@ -1343,6 +1368,7 @@ CrateExplosion:
 		Damage: 4500
 
 D2KUnitExplodeSmall:
+	Inherits: ^Explosion
 	Warhead@1Eff: CreateEffect
 		Explosions: d2k_self_destruct
 		ImpactSounds: EXPLSML1.WAV
@@ -1350,6 +1376,7 @@ D2KUnitExplodeSmall:
 		ExplosionPalette: effect75alpha
 
 D2KUnitExplodeMed:
+	Inherits: ^DamagingExplosion
 	Warhead@1Eff: CreateEffect
 		Explosions: d2k_building
 		ImpactSounds: EXPLSML2.WAV
@@ -1357,30 +1384,28 @@ D2KUnitExplodeMed:
 		ExplosionPalette: effect75alpha
 
 D2KUnitExplodeLarge:
+	Inherits: ^DamagingExplosionHE
 	Warhead@1Eff: CreateEffect
 		Explosions: d2k_large_explosion
 		ImpactSounds: EXPLLG2.WAV, fey_expllg1.wav, fey_expllg3.wav, fey_expllg4.wav, fey_expllg5.wav
 		ImpactActors: false
 		ExplosionPalette: effect75alpha
+
 D2kBuildingExplode:
+	Inherits: ^DamagingExplosionHE
 	Warhead@1Eff: CreateEffect
 		Explosions: d2k_building, d2k_self_destruct, d2k_large_explosion
 		ImpactActors: false
 		ExplosionPalette: effect75alpha
+
 D2kBuildingExplodeH:
 	Inherits: D2kBuildingExplode
 	Warhead@1Dam: SpreadDamage
-		Spread: 0c768
-		Damage: 12000
+		Spread: 1000
+		Damage: 10000
 		ValidTargets: Infantry, Vehicle, Air
 		ValidRelationships: Enemy, Neutral
-		Versus:
-			None: 60
-			Light: 100
-			Medium: 100
-			Heavy: 100
-			Concrete: 100
-			Wood: 100
+
 WallExplode:
 	Warhead@1Eff: CreateEffect
 		Explosions: d2k_wall_explosion
@@ -2496,7 +2521,7 @@ d2k_laser_qafza_aa:
 		ValidTargets: Air
 
 d2k_farasha_charge:
-	ReloadDelay: 75
+	ReloadDelay: 125
 	Range: 7500
 	ValidTargets: Ground, Water, Air
 	Report: d2k_lasercharging.wav
@@ -2510,7 +2535,7 @@ d2k_farasha_charge:
 d2k_farasha:
 	Inherits: ^HeavyFlameWeapon
 	Inherits: ^RailgunWeapon
-	ReloadDelay: 75
+	ReloadDelay: 125
 	Range: 7500
 	-MinRange:
 	Burst: 50

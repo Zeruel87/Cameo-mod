@@ -117,7 +117,7 @@ Player:
 		RequiresCondition: d2k_rearm >= 5
 
 ^D2KPersonalShield:
-	ShieldedCA:
+	Shielded:
 		#MaxStrength: 10000
 		DamageRegenDelay: 125
 		#RegenAmount: 40
@@ -125,7 +125,7 @@ Player:
 		ShieldsUpCondition: d2k_shielded
 		RequiresCondition: !disabled
 		SelectionBarColor: 8888FFFF
-	ChangesShieldCA@personal_shield:
+	ChangesShield@personal_shield:
 		Step: 40
 		Delay: 1
 		StartIfBelow: 100
@@ -287,10 +287,6 @@ Player:
 		IsPlayerPalette: True
 	-ActorPreviewPlaceBuildingPreview:
 	D2kActorPreviewPlaceBuildingPreview:
-	DamagedByTerrain:
-		Damage: -100
-		DamageInterval: 1
-		Terrain: Concrete
 	Cloak@TScloak:
 		Palette: d2kcloak
 
@@ -389,8 +385,8 @@ Player:
 		RequiresCondition: carryall-reserved
 	RevealOnFire:
 	RevealOnDeath:
-		Duration: 100
-		Radius: 2c512
+		Duration: 125
+		Radius: 2500
 	HitShape:
 	MapEditorData:
 		Categories: Vehicle
@@ -521,12 +517,6 @@ Player:
 		PlayerPalette: raplayer
 
 ^D2K_Ix_technology:
-	Mobile:
-		PauseOnCondition: disabled || ixdisable
-	WithColoredOverlay@IDISABLE:
-		RequiresCondition: disabled || ixdisable
-	ExternalCondition@ixdisable:
-		Condition: ixdisable
 
 ^D2K_Ix_Turret_EMP:
 	Inherits: ^D2K_Ix_technology
@@ -602,7 +592,7 @@ Player:
 		AreaTypes: building
 		Adjacent: 4
 	RenderSprites:
-		Palette: cnc
+		Palette: td_desert
 	Tooltip:
 		Name: Concrete
 		GenericName: Structure
@@ -695,9 +685,9 @@ construction_yard.ixian:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		IconPalette: d2kunit
-	Production@upgrade:
+	Production@Addons:
 		Produces: Addons
-	ProductionBar@upgrade:
+	ProductionBar@Addons:
 		ProductionType: Addons
 	Transforms:
 		IntoActor: d2k_mcv.ixian
@@ -891,9 +881,9 @@ d2k_barracks.ixian:
 		Weapons: Debris2, Debris3
 		Pieces: 1, 2
 		Range: 1c512, 2c768
-	Production@upgrade:
+	Production@Addons:
 		Produces: Addons
-	ProductionBar@upgrade:
+	ProductionBar@Addons:
 		ProductionType: Addons
 
 # d2k_flesh_vat:
@@ -1709,9 +1699,9 @@ high_tech_factory.ixian:
 		Actor: light_inf
 	SpawnActorOnDeath@death4:
 		Actor: trooper
-	Production@upgrade:
+	Production@Addons:
 		Produces: Addons
-	ProductionBar@upgrade:
+	ProductionBar@Addons:
 		ProductionType: Addons
 
 research_centre.ixian:
@@ -2194,7 +2184,7 @@ large_gun_turret:
 		Description: actor-large_gun_turret.description
 		IconPalette: d2kunit
 	Valued:
-		Cost: 1500
+		Cost: 2000
 	Tooltip:
 		Name: Rocket Turret
 	Health:
@@ -2236,9 +2226,9 @@ large_gun_turret:
 	Power:
 		Amount: -50
 	RevealsShroud:
-		Range: 10000
+		Range: 15000
 	DetectCloaked:
-		Range: 5000
+		Range: 7500
 
 storm_lasher:
 	Inherits: ^D2KDefense
@@ -2266,7 +2256,7 @@ storm_lasher:
 	WithMakeAnimation:
 	Health:
 		HP: 100000
-	ShieldedCA:
+	Shielded:
 		#MaxStrength: 100000
 		DamageRegenDelay: 125
 		RegenAmount: 80
@@ -6286,17 +6276,17 @@ d2k_farasha:
 		AmmoCondition: charged
 	ReloadAmmoPoolCA@charged:
 		Count: 50
-		Delay: 75
+		Delay: 50
 		RequiresCondition: charging
 	ReloadAmmoPoolCA@discharge:
 		Count: -50
-		Delay: 75
+		Delay: 50
 		RequiresCondition: charged && !charging
 	GrantConditionOnAttack@charged:
 		Condition: charging
 		RequiredShotsPerInstance: 1
 		ArmamentNames: charge
-		RevokeDelay: 75
+		RevokeDelay: 50
 		RevokeOnNewTarget: true
 	WithAmmoPipsDecoration:
 		PipCount: 10
@@ -6308,7 +6298,7 @@ d2k_farasha:
 		Armaments: primary, secondary, charge
 		FacingTolerance: 40
 	RenderRangeCircle:
-	ShieldedCA:
+	Shielded:
 		MaxPercentageStrength: 100
 		DamageRegenDelay: 125
 		RegenAmount: 200
@@ -8251,7 +8241,7 @@ storm_raider:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@CARGO: ^CargoVehicle
 	Inherits@CLOAK: ^CloakedVehicle
-	Inherits@EMP: ^FrontalEMP
+	Inherits@EMP: ^TurretEMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Buildable:
@@ -8275,6 +8265,7 @@ storm_raider:
 	Armor:
 		Type: Medium
 	Mobile:
+		Locomotor: hover
 		Speed: 105
 		TurnSpeed: 21
 	WithMuzzleOverlay:
@@ -8286,8 +8277,9 @@ storm_raider:
 	Armament@StormEffect:
 		Weapon: D2K_StormGun
 		LocalOffset: -300,0,300
-	AttackFrontal:
-		FacingTolerance: 0
+	AttackTurreted:
+	Turreted:
+		TurnSpeed: 21
 	Explodes:
 		Weapon: D2KUnitExplodeSmall
 		EmptyWeapon: D2KUnitExplodeSmall
@@ -8929,10 +8921,10 @@ quake_tank:
 		DetonationWeapon: d2k_quake_boom
 		ThumpDamageWeapon: d2k_quake_thump
 	AttractsWorms@thumping:
-		Intensity: 2000
-		Falloff: 1000, 1000, 250, 111, 60, 40, 30, 20, 10, 0
-		Spread: 9999c0
-		Range: 9999c0
+		Intensity: 10000
+		Falloff: 1000, 500, 250, 125, 75, 50, 25, 10, 5, 0
+		Spread: 10000
+		Range: 100000
 		RequiresCondition: deployed
 	Explodes:
 		Weapon: D2KUnitExplodeLarge
@@ -9912,37 +9904,37 @@ combat_tank_o.husk:
 #       PROMOTIONS
 ##################################
 
-d2k_striketeam2:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Strike Team Paradrop II
-	Buildable:
-		BuildPaletteOrder: 220
-		Queue: Promotions
-		Description: Unlocks Strike Team Paradrop II
-		Prerequisites: ~!d2k_striketeam2, rank3, rank1, ~faction.mercenary, ~techlevel.superweapons
-		Icon: icon_merc
-		IconPalette: d2kunit
-	RenderSprites:
-		Image: light_inf
-	ProvidesPrerequisite:
-		Prerequisite: d2k_striketeam2
+# d2k_striketeam2:
+# 	Inherits: ^upgrade.template
+# 	Tooltip:
+# 		Name: Strike Team Paradrop II
+# 	Buildable:
+# 		BuildPaletteOrder: 220
+# 		Queue: Promotions
+# 		Description: Unlocks Strike Team Paradrop II
+# 		Prerequisites: ~!d2k_striketeam2, rank3, rank1, ~faction.mercenary, ~techlevel.superweapons
+# 		Icon: icon_merc
+# 		IconPalette: d2kunit
+# 	RenderSprites:
+# 		Image: light_inf
+# 	ProvidesPrerequisite:
+# 		Prerequisite: d2k_striketeam2
 
-d2k_striketeam3:
-	Inherits: ^upgrade.template
-	Tooltip:
-		Name: Strike Team Paradrop III
-	Buildable:
-		BuildPaletteOrder: 220
-		Queue: Promotions
-		Description: Unlocks Strike Team Paradrop III
-		Prerequisites: ~!d2k_striketeam3, rank5, rank1, ~d2k_striketeam2, ~faction.mercenary, ~techlevel.superweapons
-		Icon: icon_merc
-		IconPalette: d2kunit
-	RenderSprites:
-		Image: light_inf
-	ProvidesPrerequisite:
-		Prerequisite: d2k_striketeam3
+# d2k_striketeam3:
+# 	Inherits: ^upgrade.template
+# 	Tooltip:
+# 		Name: Strike Team Paradrop III
+# 	Buildable:
+# 		BuildPaletteOrder: 220
+# 		Queue: Promotions
+# 		Description: Unlocks Strike Team Paradrop III
+# 		Prerequisites: ~!d2k_striketeam3, rank5, rank1, ~d2k_striketeam2, ~faction.mercenary, ~techlevel.superweapons
+# 		Icon: icon_merc
+# 		IconPalette: d2kunit
+# 	RenderSprites:
+# 		Image: light_inf
+# 	ProvidesPrerequisite:
+# 		Prerequisite: d2k_striketeam3
 
 ##################################
 #       MISC

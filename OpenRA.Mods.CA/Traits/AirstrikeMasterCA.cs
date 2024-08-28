@@ -384,7 +384,8 @@ namespace OpenRA.Mods.CA.Traits
 
 		public void MarkSlaveUnavailable(Actor self)
 		{
-			self.RevokeCondition(busyTokens.Pop());
+			if (busyTokens.Count() != 0)
+				self.RevokeCondition(busyTokens.Pop());
 		}
 	}
 }
