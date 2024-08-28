@@ -198,7 +198,7 @@ Player:
 ^ElementalWarfare:
 	FirepowerMultiplier@up_elementalwarfare:
 		RequiresCondition: up_elementalwarfare
-		Modifier: 125
+		Modifier: 120
 	GrantConditionOnPrerequisite@up_elementalwarfare:
 		Condition: up_elementalwarfare
 		Prerequisites: up_elementalwarfare
@@ -295,7 +295,7 @@ Player:
 		Prerequisites: up_tiberiuminfusion
 	ChangesHealth@up_tiberiuminfusion:
 		PercentageStep: 1
-		Delay: 5
+		Delay: 10
 		StartIfBelow: 100
 		DamageCooldown: 1
 		RequiresCondition: up_tiberiuminfusion
@@ -307,7 +307,7 @@ Player:
 		RequiresCondition: up_tiberiuminfusion
 	SpeedMultiplier@up_tiberiuminfusion:
 		RequiresCondition: up_tiberiuminfusion
-		Modifier: 125
+		Modifier: 110
 	ActorStatValues:
 		Upgrades: up_tiberiuminfusion
 
@@ -330,7 +330,7 @@ Player:
 		RequiresCondition: armored
 	DamageMultiplier@up_cyberneticmodifications:
 		RequiresCondition: up_cyberneticmodifications
-		Modifier: 150
+		Modifier: 200
 	ActorStatValues:
 		Upgrades: up_cyberneticmodifications
 
@@ -1024,9 +1024,9 @@ ARTY:
 	#	OwnerType: InternalName
 	#	EffectiveOwnerFromOwner: true
 	RangeMultiplier@up_improvedartilleries:
-		Modifier: 115
+		Modifier: 110
 	RevealsShroudMultiplier@up_improvedartilleries:
-		Modifier: 130
+		Modifier: 120
 	Explodes:
 		Weapon: ArtilleryShell
 	ActorStatValues:
@@ -1123,7 +1123,7 @@ BGGY:
 	Explodes:
 		Weapon: UnitExplodeSmall
 	ActorStatValues:
-		Upgrades: up_guerillatactics, up_blackmarketupgrades
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_blackmarketupgrades
 
 JEEP:
 	Inherits: ^Vehicle
@@ -1219,10 +1219,8 @@ BIKE:
 	WithMuzzleOverlay:
 	Explodes:
 		Weapon: UnitExplodeSmall
-	#SpawnActorOnDeath:
-	#	Actor: BIKE.Husk
-	#	OwnerType: InternalName
-	#	EffectiveOwnerFromOwner: true
+	ActorStatValues:
+		Upgrades: up_guerillatactics, up_advancedguerillatactics
 
 LTNK:
 	Inherits: ^Tank
@@ -1284,7 +1282,7 @@ LTNK:
 	Selectable:
 		DecorationBounds: 786, 786, 0, 0
 	ActorStatValues:
-		Upgrades: up_guerillatactics, up_blackmarketupgrades
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_blackmarketupgrades
 
 MTNK:
 	Inherits: ^Tank
@@ -1457,7 +1455,7 @@ HTNK:
 		Name: secondary
 		Weapon: MammothMissilesAMT
 		LocalOffset: -85,384,340, -85,-384,340
-		LocalYaw: -75, 75
+		LocalYaw: -50, 50
 		Recoil: 40
 		RecoilRecovery: 20
 		MuzzleSequence: muzzle
@@ -1466,7 +1464,7 @@ HTNK:
 		Name: secondary
 		Weapon: MammothMissilesAMTAA
 		LocalOffset: -85,384,340, -85,-384,340
-		LocalYaw: -75, 75
+		LocalYaw: -50, 50
 		Recoil: 40
 		RecoilRecovery: 20
 		MuzzleSequence: muzzle
@@ -1700,6 +1698,8 @@ STNK:
 	Explodes:
 		Weapon: UnitExplode
 	-MustBeDestroyed:
+	ActorStatValues:
+		Upgrades: up_guerillatactics, up_advancedguerillatactics
 
 TRAN:
 	Inherits: ^Helicopter
@@ -1907,7 +1907,7 @@ HELI:
 		RequiresSelection: True
 		PipCount: 4
 	ActorStatValues:
-		Upgrades: up_guerillatactics, up_blackmarketupgrades
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_blackmarketupgrades
 
 ORCA:
 	Inherits: ^Helicopter
@@ -2554,10 +2554,9 @@ HQ.GDI:
 	Buildable:
 		Prerequisites: ~fact.gdi, proc
 		Description: actor-hq-gdi.description
-	ProvidesPrerequisite@hq.gdi:
-		Prerequisite: hq.gdi
 	ProvidesPrerequisite@anytdhq:
 		Prerequisite: anytdhq
+		RequiresCondition: !(powerdown || infiltrated)
 	AirstrikePower:
 		PauseOnCondition: disabled
 		Prerequisites:
@@ -2599,10 +2598,9 @@ HQ.Nod:
 	Inherits@sell: ^TDSpawnActorsOnSell
 	Inherits@spy: ^InfiltrateForSupportPowerReset
 	Inherits@shape: ^2x2Shape
-	ProvidesPrerequisite@hq.nod:
-		Prerequisite: hq.nod
 	ProvidesPrerequisite@anytdhq:
 		Prerequisite: anytdhq
+		RequiresCondition: !(powerdown || infiltrated)
 	Building:
 		Footprint: X_ xx ==
 		Dimensions: 2,3
@@ -2687,8 +2685,6 @@ EYE:
 	Inherits@sell: ^TDSpawnActorsOnSell
 	Inherits@radar: ^RadarBuilding
 	Inherits@tech: ^IsTechnoBuilding
-	Valued:
-		Cost: 3000
 	Tooltip:
 		Name: actor-eye.name
 	ProvidesPrerequisite:
@@ -2734,17 +2730,20 @@ EYE:
 		CameraRemoveDelay: 125
 		CameraActor: CAMERA.small
 		SupportPowerPaletteOrder: 20
+	RevealsShroud@SWReveal:
+		RequiresCondition: swreveal && ionc
 	SupportPowerChargeBar:
-	ProvidesPrerequisite@buildingname:
+	-Production@Addons:
+	-ProductionBar@Addons:
 	ProvidesPrerequisite@swlimit:
 		Prerequisite: ionc
 		RequiresCondition: ionc
-	RevealsShroud@SWReveal:
-		RequiresCondition: swreveal && ionc
 	ProvidesPrerequisite@techcenter:
 		Prerequisite: techcenter
+		RequiresCondition: !(powerdown || infiltrated)
 	ProvidesPrerequisite@tdtechcenter:
 		Prerequisite: tdtechcenter
+		RequiresCondition: !(powerdown || infiltrated)
 	DamageMultiplier@ionc:
 		Modifier: 50
 		RequiresCondition: ionc
@@ -2761,7 +2760,7 @@ EYE:
 eye.ionc:
 	Inherits: ^BuildingPlug
 	Valued:
-		Cost: 3000
+		Cost: 5000
 	Tooltip:
 		Name: actor-eye.ionc-name
 	Buildable:
@@ -2785,8 +2784,6 @@ TMPL:
 	Inherits@sell: ^TDSpawnActorsOnSell
 	Inherits@radar: ^RadarBuilding
 	Inherits@tech: ^IsTechnoBuilding
-	Valued:
-		Cost: 3000
 	Tooltip:
 		Name: actor-tmpl.name
 	ProvidesPrerequisite:
@@ -2853,17 +2850,20 @@ TMPL:
 	WithSupportPowerActivationOverlay:
 		RequiresCondition: !build-incomplete && nuke
 		Sequence: smoke
+	RevealsShroud@SWReveal:
+		RequiresCondition: swreveal && nuke
 	SupportPowerChargeBar:
-	ProvidesPrerequisite@buildingname:
+	-Production@Addons:
+	-ProductionBar@Addons:
 	ProvidesPrerequisite@swlimit:
 		Prerequisite: nodnuke
 		RequiresCondition: nuke
-	RevealsShroud@SWReveal:
-		RequiresCondition: swreveal && nuke
 	ProvidesPrerequisite@techcenter:
 		Prerequisite: techcenter
+		RequiresCondition: !(powerdown || infiltrated)
 	ProvidesPrerequisite@tdtechcenter:
 		Prerequisite: tdtechcenter
+		RequiresCondition: !(powerdown || infiltrated)
 	DamageMultiplier@nuke:
 		Modifier: 50
 		RequiresCondition: nuke
@@ -2880,7 +2880,7 @@ TMPL:
 tmpl.nuke:
 	Inherits: ^BuildingPlug
 	Valued:
-		Cost: 3000
+		Cost: 5000
 	Tooltip:
 		Name: actor-tmpl.nuke-name
 	Buildable:
@@ -3671,7 +3671,7 @@ CNCSS:
 		Image: cncss
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: up_guerillatactics, up_blackmarketupgrades
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_blackmarketupgrades
 
 ssmsub:
 	Inherits: ^BoatUnit
@@ -4515,7 +4515,7 @@ nodbuggy2:
 	Explodes:
 		Weapon: UnitExplodeSmall
 	ActorStatValues:
-		Upgrades: up_guerillatactics, up_blackmarketupgrades
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_blackmarketupgrades
 
 nodltnk2:
 	Inherits: ^Tank
@@ -4802,11 +4802,13 @@ tsstealthsoldier:
 		UncloakSound: trans1.aud
 		IsPlayerPalette: true
 	ActorStatValues:
-		Upgrades: up_guerillatactics, up_tiberiuminfusion, up_cyberneticmodifications
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_tiberiuminfusion, up_cyberneticmodifications
 
 tanodharv:
 	Inherits: HARV
 	Inherits@cloak: ^CloakedVehicle
+	Inherits@sensors: ^GuerillaTactics
+	Inherits@sensors: ^AdvancedGuerillaTactics
 	Tooltip:
 		Name: Stealth Harvester
 	Mobile:
@@ -4829,6 +4831,8 @@ tanodharv:
 		Queue: Vehicle, RAVehicle
 	RenderSprites:
 		Image: tanodharv
+	ActorStatValues:
+		Upgrades: up_guerillatactics, up_advancedguerillatactics
 
 nodspecter:
 	Inherits: ^Tank
@@ -4883,9 +4887,9 @@ nodspecter:
 	AutoTarget:
 		InitialStanceAI: Defend
 	RangeMultiplier@up_improvedartilleries:
-		Modifier: 120
+		Modifier: 115
 	RevealsShroudMultiplier@up_improvedartilleries:
-		Modifier: 140
+		Modifier: 130
 	Explodes:
 		Weapon: SpecterArtilleryShell
 	RenderSprites:
@@ -5117,7 +5121,7 @@ up_longrangesensors:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases vision range of all units and defenses.
+		Description: Increases vision and stealth detection range of all units and defenses by 25%.
 		Prerequisites: ~hq.gdi, !up_longrangesensors
 	RenderSprites:
 		Image: eye
@@ -5211,7 +5215,21 @@ up_lightweightarmorplating:
 		Prerequisites: ~eye, !up_lightweightarmorplating
 	RenderSprites:
 		Image: htnk
+	ProvidesTeamProxyActor:
+		Actor: team_upgrade.up_lightweightarmorplating
+	#ProvidesPrerequisite:
+
+team_upgrade.up_lightweightarmorplating:
+	Inherits: ^researched_upgrade.template
 	ProvidesPrerequisite:
+		Prerequisite: up_lightweightarmorplating
+	RenderSprites:
+		Image: htnk
+	Tooltip:
+		Name: Lightweight Armor Plating
+	Buildable:
+		Description: Sligthly increases armor of tanks while also making them faster.
+	PlayerDisplayUpgrade:
 
 	####################################################################################################
 	#		Promotions GDI
@@ -5490,6 +5508,9 @@ gdiempgrenadier:
 		FireDelay: 5
 	FirepowerMultiplier@up_cuttingedgeweaponry:
 		Modifier: 200
+	DamageMultiplier@up_cuttingedgeweaponry:
+		RequiresCondition: up_cuttingedgeweaponry
+		Modifier: 50
 	TakeCover:
 		ProneOffset: 300,0,-227
 	WithInfantryBody:
@@ -5859,7 +5880,7 @@ gdimammoth3:
 		Name: secondary
 		Weapon: MammothTank3MissilesAMT
 		LocalOffset: -90,400,350, -90,-400,350
-		LocalYaw: -100, 100
+		LocalYaw: -50, 50
 		Recoil: 10
 		MuzzleSequence: muzzle
 		RequiresCondition: up_advancedmissiletargeting
@@ -5867,7 +5888,7 @@ gdimammoth3:
 		Name: secondary
 		Weapon: MammothTank3MissilesAMTAA
 		LocalOffset: -90,400,350, -90,-400,350
-		LocalYaw: -100, 100
+		LocalYaw: -50, 50
 		Recoil: 10
 		MuzzleSequence: muzzle
 		RequiresCondition: up_advancedmissiletargeting
