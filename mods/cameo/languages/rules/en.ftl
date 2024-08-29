@@ -1493,7 +1493,90 @@ actor-oilb =
    .name = Oil Derrick
    .description = Provides passive income.
       Levels up over time.
-      Build limit: 10
+      Build limit: 3
+
+upgrade-a10airstrike =
+   .description = Enables the A10 Airstrike Support Power.
+
+upgrade-longrangesensors =
+   .description = Increases vision and stealth detection range
+    of all units and defenses by 25% and doubles accuracy.
+
+upgrade-armorpiercingbullets =
+   .description = Increases damage of all bullet based weapons by 33%
+    while also making them more effective against tank armor.
+    Increase Minigunner and Shotgunner damage by 100%.
+    Also adds a machine gun to the GDI Battle Tank.
+
+upgrade-heavyaircraftarmorplating =
+   .description = Increases armor of Orcas by 30% and
+    Firehawks and A10 Bombers by 50%.
+
+upgrade-advancedmissiletargeting =
+   .description = Increases range of all missile weapons by 25%.
+   Rocket Launchers increase range by 33%
+   Tanks increase range by 10%
+   Firehawks shoot twice the amount of missiles.
+
+upgrade-cuttingedgeweaponry =
+   .description = Increases damage and fire rate of all experimental and prototype units by 15%.
+   Increases damage and armor of the EMP Grenadier by 100%.
+   Increases damage of Havoc, Experimental Exosuits and Firehawks by 50%.
+
+upgrade-highvelocitycannons =
+   .description = Increases damage and range of cannons and railguns by 15%.
+   Replaces tank cannons with high velocity cannons that deal 100% more damage
+   and travel 100% faster.
+
+upgrade-lightweightarmorplating =
+   .description = TEAM UPGRADE
+   Increases armor and speed of all tanks in your team by 15%.
+
+upgrade-guerillatactics =
+   .description = Increases speed, range and damage of all hit and run units by 5%
+   and gives the units higher vision.
+   The following units count as hit and run:
+   Flamethrower Infantry, Chemical Warrior, Commando, Buggie, Recon Bike, Light Tank,
+   SSM Launcher, Stealth Tank, Apache, Attack Submarine, Ballistic Missile Submarine,
+   Chemical Attack Bike, Chemical Stealth Tank, Nod Buggy Mk2, Black Hand Flamer,
+   Stealth Soldier, Stealth Harvester, Specter Artillery, Venom, Laser Commando.
+
+upgrade-tiberiuminfusion =
+   .description = Gives infantry rapid regeneration and 10% more speed.
+
+upgrade-improvedartilleries =
+   .description = Increases range of all artillery weapons and gives the units higher vision.
+   Artillery: 10%
+   Specter: 15%
+   Chemical SSM Launcher: 20%
+   Ballistic Missile Submarine: 25%
+
+upgrade-elementalwarfare =
+   .description = Increases damage of all flame and chemical weapons by 20%.
+
+upgrade-elitecapacitors =
+   .description = Slightly increases range, damage and fire rate of all laser weapons by 10%
+   and gives the unit higher vision.
+   Obelisks of Light increase range, damage, fire rate and vision by 15%.
+
+upgrade-cyberneticmodifications =
+   .description = Gives all infantry heavy armor platings that reduce incoming damage.
+   While the armor is active, the infantry armor type is heavy which makes them take less damage from
+   most anti infantry weapons but increased damage from anti tank weapons instead.
+
+upgrade-blackmarketupgrades =
+   .description = Gives certain units new or additional weapons:
+   Minigunner: Gets a Laser Rifle.
+   Buggy Mk1 and Mk2: Adds a Flamethrower.
+   Light Tank Mk1: Adds a Missile Launcher.
+   Apache: Adds addtional missiles.
+   Artillery and Specter: Increases spread of the warhead and damage to vehicles.
+   Gun Turret and Attack Submarine: Increases damage and spread of the warhead.
+
+upgrade-advancedguerillatactics =
+   .description = TEAM UPGRADE
+   Increases speed, range and damage of all scouts, support vehicles and fire supports in your team
+   by 10% and gives the units higher vision.
 
 template-mcv =
    .description = Deploys into another Construction Yard.

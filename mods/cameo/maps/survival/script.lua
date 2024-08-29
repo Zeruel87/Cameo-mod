@@ -42,16 +42,16 @@ end
 
 Announce = function()
 		if Spielerzahl == 1 then
-			Difficulty = 1
+			Difficulty = 0
 			DisplayDifficulty = "Easy"
 		elseif Spielerzahl == 2 then
-			Difficulty = 2
+			Difficulty = 0
 			DisplayDifficulty = "Medium"
 		elseif Spielerzahl == 3 then
-			Difficulty = 3
+			Difficulty = 0
 			DisplayDifficulty = "Hard"
 		elseif Spielerzahl == 4 then
-			Difficulty = 4
+			Difficulty = 0
 			DisplayDifficulty = "Very Hard"
 		end
 		Media.DisplayMessage("Difficulty set to .... " .. DisplayDifficulty,"")
