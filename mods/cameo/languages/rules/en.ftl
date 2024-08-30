@@ -1533,8 +1533,7 @@ upgrade-lightweightarmorplating =
    Increases armor and speed of all tanks in your team by 15%.
 
 upgrade-guerillatactics =
-   .description = Increases speed, range and damage of all hit and run units by 5%
-   and gives the units higher vision.
+   .description = Increases speed, range, damage and vision of all hit and run units by 5%.
    The following units count as hit and run:
    Flamethrower Infantry, Chemical Warrior, Commando, Buggie, Recon Bike, Light Tank,
    SSM Launcher, Stealth Tank, Apache, Attack Submarine, Ballistic Missile Submarine,
@@ -1545,7 +1544,7 @@ upgrade-tiberiuminfusion =
    .description = Gives infantry rapid regeneration and 10% more speed.
 
 upgrade-improvedartilleries =
-   .description = Increases range of all artillery weapons and gives the units higher vision.
+   .description = Increases weapon and vision range of all artillery weapons.
    Artillery: 10%
    Specter: 15%
    Chemical SSM Launcher: 20%
@@ -1555,9 +1554,8 @@ upgrade-elementalwarfare =
    .description = Increases damage of all flame and chemical weapons by 20%.
 
 upgrade-elitecapacitors =
-   .description = Slightly increases range, damage and fire rate of all laser weapons by 10%
-   and gives the unit higher vision.
-   Obelisks of Light increase range, damage, fire rate and vision by 15%.
+   .description = Slightly increases range, damage, fire and vision rate of all laser weapons by 10%
+   Obelisks of Light increase range, damage, fire and vision rate by 15%.
 
 upgrade-cyberneticmodifications =
    .description = Gives all infantry heavy armor platings that reduce incoming damage.
@@ -1577,6 +1575,37 @@ upgrade-advancedguerillatactics =
    .description = TEAM UPGRADE
    Increases speed, range and damage of all scouts, support vehicles and fire supports in your team
    by 10% and gives the units higher vision.
+
+upgrade-conscription =
+   .description = Decreases cost and training time for all infantry by 25%.
+
+upgrade-advancedthermobarics =
+   .description = Increases damage of all fire and nuclear weapons by 25%.
+   Adds a Napalm Warhead to the V1 Truck and Mig.
+
+upgrade-rocketenhancements =
+   .description = Increases weapon and vision range of all ballistic rockets:
+   V1 Truck: 25%
+   V2 Launcher: 20%
+   Nuclear V2 Launcher: 15%
+   Missile Submarine: 10%
+
+upgrade-experimentalteslaweaponry =
+   .description = Increases damage of tesla weapons by 25%
+   and adds an EMP effect that will stun vehicles and buildings after several hits.
+
+upgrade-nuclearengines =
+   .description = Increases speed of tanks by 25%.
+
+upgrade-afterburners =
+   .description = Increases speed of Migs and Su-57s by 25%.
+
+upgrade-depleteduraniumshells =
+   .description = Increases cannon damage of tanks by 50% and adds a Radiation effect.
+
+upgrade-sovietsteel =
+   .description = TEAM UPGRADE
+   Increases armor of all tanks in your team by 40% but makes them 10% slower.
 
 template-mcv =
    .description = Deploys into another Construction Yard.
