@@ -87,7 +87,7 @@ World:
 		SupportActors: rae1,rae1,rae1,rae3,rae3,rabggy,modtypej,modbggy,modbggy,modtypej,modhover
 
 ####################################################################################################
-#		INFANTRY
+#		Experience
 ####################################################################################################
 
 ^GainsExperienceRA:
@@ -107,6 +107,100 @@ World:
 			500: rank-veteran
 			750: rank-veteran
 			1000: rank-veteran
+
+####################################################################################################
+#		Red Alert
+####################################################################################################
+
+^Conscription:
+	ProductionCostMultiplier@up_conscription:
+		Prerequisites: up_conscription
+		Multiplier: 75
+	ProductionTimeMultiplier@up_conscription:
+		Prerequisites: up_conscription
+		Multiplier: 75
+	GrantConditionOnPrerequisite@up_conscription:
+		Condition: up_conscription
+		Prerequisites: up_conscription
+	ActorStatValues:
+		Upgrades: up_conscription
+
+^AdvancedThermobarics:
+	FirepowerMultiplier@up_advancedthermobarics:
+		RequiresCondition: up_advancedthermobarics
+		Modifier: 125
+	GrantConditionOnPrerequisite@up_advancedthermobarics:
+		Condition: up_advancedthermobarics
+		Prerequisites: up_advancedthermobarics
+	ActorStatValues:
+		Upgrades: up_advancedthermobarics
+
+^RocketEnhancements:
+	RangeMultiplier@up_rocketenhancements:
+		RequiresCondition: up_rocketenhancements
+		Modifier: 125
+	GrantConditionOnPrerequisite@up_rocketenhancements:
+		Condition: up_rocketenhancements
+		Prerequisites: up_rocketenhancements
+	ActorStatValues:
+		Upgrades: up_rocketenhancements
+
+^ExperimentalTeslaWeaponry:
+	FirepowerMultiplier@up_experimentalteslaweaponry:
+		RequiresCondition: up_experimentalteslaweaponry
+		Modifier: 125
+	GrantConditionOnPrerequisite@up_experimentalteslaweaponry:
+		Condition: up_experimentalteslaweaponry
+		Prerequisites: up_experimentalteslaweaponry
+	ActorStatValues:
+		Upgrades: up_experimentalteslaweaponry
+
+^NuclearEngines:
+	SpeedMultiplier@up_nuclearengines:
+		RequiresCondition: up_nuclearengines
+		Modifier: 125
+	GrantConditionOnPrerequisite@up_nuclearengines:
+		Condition: up_nuclearengines
+		Prerequisites: up_nuclearengines
+	ActorStatValues:
+		Upgrades: up_nuclearengines
+
+^Afterburners:
+	SpeedMultiplier@up_afterburners:
+		RequiresCondition: up_afterburners
+		Modifier: 125
+	GrantConditionOnPrerequisite@up_afterburners:
+		Condition: up_afterburners
+		Prerequisites: up_afterburners
+	ActorStatValues:
+		Upgrades: up_afterburners
+
+^DepletedUraniumShells:
+	FirepowerMultiplier@up_depleteduraniumshells:
+		RequiresCondition: up_depleteduraniumshells
+		Modifier: 150
+	GrantConditionOnPrerequisite@up_depleteduraniumshells:
+		Condition: up_depleteduraniumshells
+		Prerequisites: up_depleteduraniumshells
+	ActorStatValues:
+		Upgrades: up_depleteduraniumshells
+
+^SovietSteel:
+	DamageMultiplier@up_sovietsteel:
+		RequiresCondition: up_sovietsteel
+		Modifier: 60
+	SpeedMultiplier@up_sovietsteel:
+		RequiresCondition: up_sovietsteel
+		Modifier: 90
+	GrantConditionOnPrerequisite@up_sovietsteel:
+		Condition: up_sovietsteel
+		Prerequisites: up_sovietsteel
+	ActorStatValues:
+		Upgrades: up_sovietsteel
+
+####################################################################################################
+#		INFANTRY
+####################################################################################################
 
 DOG:
 	Inherits: ^DefaultInfantry
@@ -177,6 +271,9 @@ DOG:
 	SpeedMultiplier:
 		Modifier: 150
 		RequiresCondition: run
+	DamageMultiplier:
+		Modifier: 50
+		RequiresCondition: run
 	IgnoresDisguise:
 	Voiced:
 		VoiceSet: DogVoice
@@ -245,6 +342,7 @@ RAE1:
 
 RARE1:
 	Inherits: RAE1
+	Inherits@sensors: ^Conscription
 	Buildable:
 		Queue: Infantry, RAInfantry
 		Prerequisites: ~barr
@@ -280,6 +378,7 @@ RAJE1:
 RAE2:
 	Inherits: E2
 	Inherits@exp: ^GainsExperienceRA
+	Inherits@sensors: ^Conscription
 	Buildable:
 		BuildPaletteOrder: 25
 		Prerequisites: ~barr
@@ -340,6 +439,7 @@ RAE3:
 
 RARE3:
 	Inherits: RAE3
+	Inherits@sensors: ^Conscription
 	Buildable:
 		Prerequisites: ~barr, ~!upfirerocketsoldier
 		Queue: Infantry, RAInfantry
@@ -363,12 +463,19 @@ RAJE3:
 		VoiceSet: JapaneseVoice
 
 RAE4:
-	Inherits: E4
+	Inherits: ^Soldier
 	Inherits@anim: ^TDRAInfantry
 	Inherits@Template: ^HeavyInfantryTemplate
-	Inherits@exp: ^GainsExperienceRA
+	Inherits@EXP: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@sensors: ^Conscription
+	Inherits@sensors: ^AdvancedThermobarics
 	Tooltip:
 		Name: actor-e4.raname
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Valued:
 		Cost: 200
 	Buildable:
@@ -389,20 +496,36 @@ RAE4:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: FireballGun
-	-WithMuzzleOverlay:
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
 	TakeCover:
 		ProneOffset: 160,0,-200
 	Explodes:
 		Weapon: FireballGun
 	RenderSprites:
 		Image: rae4
+		PlayerPalette: raplayer
 	Voiced:
 		VoiceSet: RussianVoice
 
 RAJE4:
-	Inherits: RAE4
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@EXP: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiBuil: ^PrioritizeBuilding
 	Tooltip:
 		Name: actor-e4.jpname
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Valued:
 		Cost: 300
 	Health:
@@ -418,18 +541,29 @@ RAJE4:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: Flamer
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
 	TakeCover:
 		ProneOffset: 160,0,-300
 	Explodes:
 		Weapon: Flamethrower
 	Buildable:
+		BuildPaletteOrder: 45
 		Prerequisites: ~dome.japan
 		Queue: Infantry, RAInfantry
+		Description: actor-e4.description
 	UpdatesPlayerStatistics:
 	Selectable:
 		Class: rae4
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
 	RenderSprites:
 		Image: je4
+		PlayerPalette: raplayer
 	Voiced:
 		VoiceSet: JapaneseVoice
 
@@ -778,6 +912,8 @@ v1truck:
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeBuilding
+	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^RocketEnhancements
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -847,6 +983,8 @@ V2RL:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^RocketEnhancements
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 80
@@ -1018,6 +1156,9 @@ V2RL:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@sensors: ^NuclearEngines
+	Inherits@sensors: ^DepletedUraniumShells
+	Inherits@sensors: ^SovietSteel
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		Prerequisites: ~raweap, ~!upkotin
@@ -1077,6 +1218,9 @@ V2RL:
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@sensors: ^NuclearEngines
+	Inherits@sensors: ^DepletedUraniumShells
+	Inherits@sensors: ^SovietSteel
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 180
@@ -1913,6 +2057,8 @@ MIG:
 	Inherits@AntiTank: ^PrioritizeTank
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^Afterburners
 	Buildable:
 		Queue: Aircraft, RAAircraft
 		BuildPaletteOrder: 50
@@ -1934,6 +2080,14 @@ MIG:
 		LocalYaw: 64, -64
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
+		RequiresCondition: !up_advancedthermobarics
+	Armament@Upgrade:
+		Weapon: ThermobaricMaverick
+		LocalOffset: 0,-512,0, 0,512,0
+		LocalYaw: 64, -64
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: up_advancedthermobarics
 	AttackAircraft:
 		FacingTolerance: 80
 		StrafeRunLength: 2500
@@ -1963,12 +2117,6 @@ MIG:
 		RequiresCondition: enable-smoke
 	Voiced:
 		VoiceSet: RussianVehicleVoice
-	GrantConditionOnPrerequisite@upmigarmor:
-		Condition: upmigarmor
-		Prerequisites: upmigarmor
-	DamageMultiplier@upmigarmor:
-		RequiresCondition: upmigarmor
-		Modifier: 75
 	AmmoPool:
 		Ammo: 4
 		AmmoCondition: ammo
@@ -3526,6 +3674,7 @@ MSUB:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@sub: ^Submarine
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@sensors: ^RocketEnhancements
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -4596,8 +4745,6 @@ IRON:
 		Queue: Defence, RADefence
 		Prerequisites: ~stek, ~techlevel.superweapons
 		Description: actor-iron.description
-	Valued:
-		Cost: 2500
 	Tooltip:
 		Name: actor-iron.name
 	Building:
@@ -4651,8 +4798,6 @@ PDOX:
 		Queue: Defence, RADefence
 		Prerequisites: ~atek, ~techlevel.superweapons
 		Description: actor-pdox.description
-	Valued:
-		Cost: 2500
 	Tooltip:
 		Name: actor-pdox.name
 	Building:
@@ -4929,6 +5074,7 @@ FTUR:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@sensors: ^AdvancedThermobarics
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 60
@@ -4976,6 +5122,7 @@ TSLA:
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiTank: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@sensors: ^ExperimentalTeslaWeaponry
 	Building:
 		BuildSounds: placbldg.aud, build5.aud
 	Buildable:
@@ -6315,6 +6462,145 @@ MRJ:
 		Sequence: pickup-indicator
 		ValidRelationships: Ally, Enemy, Neutral
 		Position: BottomLeft
+
+	####################################################################################################
+	#		Upgrades Soviets
+	####################################################################################################
+
+up_conscription:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Conscription
+	Valued:
+		Cost: 5000
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: upgrade-conscription.description
+		Prerequisites: ~dome.soviet, !up_conscription
+	RenderSprites:
+		Image: rae1
+	ProvidesPrerequisite:
+
+up_advancedthermobarics:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Advanced Thermobarics
+	Valued:
+		Cost: 5000
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: upgrade-advancedthermobarics.description
+		Prerequisites: ~dome.soviet, !up_advancedthermobarics
+	RenderSprites:
+		Image: ftur
+	ProvidesPrerequisite:
+
+up_rocketenhancements:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Rocket Enhancements
+	Valued:
+		Cost: 5000
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: upgrade-rocketenhancements.description
+		Prerequisites: ~dome.soviet, !up_rocketenhancements
+	RenderSprites:
+		Image: v1truck
+	ProvidesPrerequisite:
+
+up_experimentalteslaweaponry:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Experimental Tesla Weaponry
+	Valued:
+		Cost: 7500
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Upgrades
+		Description: upgrade-experimentalteslaweaponry.description
+		Prerequisites: ~stek, !up_experimentalteslaweaponry
+	RenderSprites:
+		Image: tsla
+	ProvidesPrerequisite:
+
+up_nuclearengines:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Nuclear Engines
+	Valued:
+		Cost: 7500
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Upgrades
+		Description: upgrade-nuclearengines.description
+		Prerequisites: ~stek, !up_nuclearengines
+	RenderSprites:
+		Image: kotin
+	ProvidesPrerequisite:
+
+up_afterburners:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Afterburners
+	Valued:
+		Cost: 7500
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Upgrades
+		Description: upgrade-afterburners.description
+		Prerequisites: ~stek, !up_afterburners
+	RenderSprites:
+		Image: mig
+	ProvidesPrerequisite:
+
+up_depleteduraniumshells:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Depleted Uranium Shells
+	Valued:
+		Cost: 10000
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Upgrades
+		Description: upgrade-depleteduraniumshells.description
+		Prerequisites: ~stek, !up_depleteduraniumshells
+	RenderSprites:
+		Image: 3tnk
+	ProvidesPrerequisite:
+
+up_sovietsteel:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Soviet Steel
+	Valued:
+		Cost: 12500
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Upgrades
+		Description: upgrade-sovietsteel.description
+		Prerequisites: ~stek, !up_sovietsteel
+	RenderSprites:
+		Image: 4tnk
+	#ProvidesPrerequisite:
+	ProvidesTeamProxyActor:
+		Actor: team_upgrade.up_sovietsteel
+
+team_upgrade.up_sovietsteel:
+	Inherits: ^researched_upgrade.template
+	ProvidesPrerequisite:
+		Prerequisite: up_sovietsteel
+	RenderSprites:
+		Image: 4tnk
+	Tooltip:
+		Name: Advanced Guerrilla Tactics
+	Buildable:
+		Description: upgrade-up_sovietsteel.description
+	PlayerDisplayUpgrade:
+
 	####################################################################################################
 	#		Promotions Soviets
 	####################################################################################################
@@ -6497,6 +6783,8 @@ e3flamer:
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@sensors: ^Conscription
+	Inherits@sensors: ^AdvancedThermobarics
 	Tooltip:
 		Name: Fire Rocket Soldier
 	Buildable:
@@ -6533,6 +6821,8 @@ mortarsoldier:
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@AntiDef: ^PrioritizeDefence
 	Inherits@anim: ^TDRAInfantry
+	Inherits@sensors: ^Conscription
+	Inherits@sensors: ^AdvancedThermobarics
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 130
@@ -6584,6 +6874,8 @@ SHOK:
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@sensors: ^Conscription
+	Inherits@sensors: ^ExperimentalTeslaWeaponry
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 130
@@ -6632,6 +6924,7 @@ VOLKOV:
 	Inherits@EMP: ^UnitDisable
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@sensors: ^AdvancedThermobarics
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildLimit: 1
@@ -6765,6 +7058,7 @@ TTNK2:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@PD: ^PointLaserDefenseSystem
+	Inherits@sensors: ^ExperimentalTeslaWeaponry
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 170
@@ -6854,6 +7148,9 @@ TTNK2:
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@sensors: ^NuclearEngines
+	Inherits@sensors: ^DepletedUraniumShells
+	Inherits@sensors: ^SovietSteel
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 180
@@ -6949,6 +7246,10 @@ MonsterTank:
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
 	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^NuclearEngines
+	Inherits@sensors: ^DepletedUraniumShells
+	Inherits@sensors: ^SovietSteel
 	Buildable:
 		BuildLimit: 1
 		Queue: Vehicle, RAVehicle
@@ -7109,6 +7410,9 @@ Kotin:
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@sensors: ^NuclearEngines
+	Inherits@sensors: ^DepletedUraniumShells
+	Inherits@sensors: ^SovietSteel
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		Prerequisites: ~raweap, ~upkotin
@@ -7172,6 +7476,8 @@ V2RLNUKE:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^RocketEnhancements
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 80
@@ -7232,6 +7538,7 @@ MIGNUKE:
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@AntiDef: ^PrioritizeDefence
 	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@sensors: ^AdvancedThermobarics
 	Buildable:
 		Queue: Aircraft, RAAircraft
 		BuildLimit: 1
@@ -7312,6 +7619,8 @@ su57:
 	Inherits@AntiTank: ^PrioritizeTank
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^Afterburners
 	Buildable:
 		Queue: Aircraft, RAAircraft
 		BuildPaletteOrder: 50
