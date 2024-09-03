@@ -65,6 +65,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		readonly int[] modifierAboveThreshold;
 		readonly int[] modifierBelowThreshold;
 		readonly CashTransferToAlliesInfo info;
+		int ticktime = 7500;
+		int addedticks;
 		public bool Enabled { get; private set; }
 
 		[Sync]
@@ -137,11 +139,25 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		void ITick.Tick(Actor self)
 		{
-			if (!Enabled) return;
+			if (!Enabled)
+			{
+				return;
+			}
+
+			--ticktime;
+
+			if (ticktime > 0)
+			{
+				addedticks = ticktime / 75;
+			}
+			else
+			{
+				addedticks = 0;
+			}
 
 			if (--ticks < 0)
 			{
-				ticks = info.ChargeDuration;
+				ticks = info.ChargeDuration + addedticks;
 
 				foreach (var team in teams.Values)
 				{
