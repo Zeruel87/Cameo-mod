@@ -1579,9 +1579,8 @@ upgrade-advancedguerillatactics =
 upgrade-conscription =
    .description = Decreases cost and training time for all infantry by 25%.
 
-upgrade-advancedthermobarics =
-   .description = Increases damage of all fire and nuclear weapons by 25%.
-   Adds a Napalm Warhead to the V1 Truck and Mig.
+upgrade-nuclearengines =
+   .description = Increases speed of tanks by 25%.
 
 upgrade-rocketenhancements =
    .description = Increases weapon and vision range of all ballistic rockets:
@@ -1590,22 +1589,25 @@ upgrade-rocketenhancements =
    Nuclear V2 Launcher: 15%
    Missile Submarine: 10%
 
+upgrade-advancedthermobarics =
+   .description = Increases damage of all fire and nuclear weapons by 25%.
+   Adds Napalm Warheads to the V1 Truck, Mig, Su-57 and all tanks.
+   V2 Launcher and Nuclear V2 Launcher increase damage by 100% instead.
+
 upgrade-experimentalteslaweaponry =
-   .description = Increases damage of tesla weapons by 25%
+   .description = Increases damage of tesla weapons by 50%
    and adds an EMP effect that will stun vehicles and buildings after several hits.
 
-upgrade-nuclearengines =
-   .description = Increases speed of tanks by 25%.
-
 upgrade-afterburners =
-   .description = Increases speed of Migs and Su-57s by 25%.
+   .description = Increases speed of Migs, Su-57s and Nuclear Bombers by 25%.
 
-upgrade-depleteduraniumshells =
-   .description = Increases cannon damage of tanks by 50% and adds a Radiation effect.
+upgrade-sovietautoloaders =
+   .description = Increases the fire rate of all tank cannons by 100%.
 
 upgrade-sovietsteel =
    .description = TEAM UPGRADE
    Increases armor of all tanks in your team by 40% but makes them 10% slower.
+   For Soviets it will also increase the armor of most other vehicles, submarines, helicopters and defenses.
 
 template-mcv =
    .description = Deploys into another Construction Yard.
