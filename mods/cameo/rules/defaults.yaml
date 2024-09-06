@@ -1611,7 +1611,6 @@
 		DeathType: QueenChilds
 	ActorStatValues:
 		Stats: Armor, Sight, Speed
-
 ^Tank:
 	Inherits: ^Vehicle
 	Targetable:
@@ -7276,3 +7275,162 @@ CPQDEBUGDUMMY:
 	Inherits: ^CloakedVehicle
 	Cloak:
 		DetectionTypes: AirCloak
+####################################################################################################
+#		Civilian Cars
+####################################################################################################
+
+^CivilianVehicle:
+	Inherits: ^Vehicle
+	Inherits@ra2: ^RA2Vehicle
+	Targetable:
+		RequiresCondition: !parachute && !untargetable
+		TargetTypes: Ground, Vehicle, CivilianVehicle
+	Passenger:
+		Weight: 2
+	Mobile:
+		Locomotor: wheeled
+		Speed: 100
+	Health:
+		HP: 20000
+	Armor:
+		Type: Light
+	Tooltip:
+		Name: Civilian Vehicle
+		GenericName: Civilian Vehicle
+	DeliversCash:
+		Payload: 10
+		Type: GrinderCash
+		Sounds: bgrinda.wav
+	-ChangesHealth@DRIVER_DEAD:
+	-Capturable@DRIVER_DEAD:
+	Crushable:
+		CrushClasses: wall
+	Voiced:
+		VoiceSet: RA2CarVoice
+	MapEditorData:
+		Categories: Civilian Vehicle
+
+^CivilianSuicideVehicle:
+	Inherits: ^Vehicle
+	Inherits@ra2: ^RA2Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@EMP: ^FrontalEMP
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		BuildPaletteOrder: 160
+		Prerequisites: ~disabled
+		Description: Suicide Car, adquired by terrorists
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Bomb Car
+		GenericName: Civilian Vehicle
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 20000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 100
+	RevealsShroud:
+		Range: 5c0
+	Explodes@bomb:
+		Weapon: RA2Terrorist
+		DamageSource: Killer
+		RequiresCondition: !disabled
+	AttackFrontal:
+		FacingTolerance: 512
+	Armament@PRIMARY:
+		Weapon: DemoTruckTargeting
+	AutoTarget:
+		InitialStance: Defend
+		InitialStanceAI: AttackAnything
+		ScanRadius: 10
+	GrantConditionOnAttack:
+		Condition: triggered
+	GrantConditionOnDeploy:
+		DeployedCondition: triggered
+		PauseOnCondition: disabled
+		ExclusiveDeploy: true
+		DeployType: Detonate
+	Voiced:
+		VoiceSet: GLCarVoice
+	KillsSelf:
+		RequiresCondition: !disabled && triggered
+	Crushable:
+		CrushClasses: wall
+	MapEditorData:
+		Categories: Civilian Vehicle
+	WithColoredSelectionBox:
+		ColorSource: Player
+		ValidRelationships: Enemy, Neutral, Ally
+^CivilianDriveByVehicle:
+	Inherits: ^Tank
+	Inherits@ra2: ^RA2Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@cargo: ^OpenToppedVehicle
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Drive By Car
+		GenericName: Civilian Vehicle
+	UpdatesPlayerStatistics:
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~disabled
+		Queue: Vehicle, RAVehicle
+		Description: template-opentopped.description
+	Mobile:
+		Speed: 100
+	Passenger:
+		Weight: 2
+	Health:
+		HP: 20000
+	Armor:
+		Type: Light
+	ChangesHealth@SelfHealing:
+		Step: 50
+	#Turreted:
+	#	TurnSpeed: 1023
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 32
+	Armament:
+		Weapon: Pistol
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	AttackFrontal:
+		FacingTolerance: 0
+	Cargo:
+		UnloadVoice: Move
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 2
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, -224,-341,128, -384,0,128, -224,341,128, 224,341,128
+		PauseOnCondition: chronobeamed
+	RevealOnFire:
+		ArmamentNames: primary, garrisoned
+	AutoTarget:
+		AllowMovement: true
+	Selectable:
+		DecorationBounds: 1440, 1440, 0, -128
+		Class: ra2_car_driveby
+	Voiced:
+		VoiceSet: RA2CarVoice
+	DeliversCash:
+		Payload: 10
+	Crushable:
+		CrushClasses: wall
+	MapEditorData:
+		Categories: Civilian Vehicle
+	WithColoredSelectionBox:
+		ColorSource: Player
+		ValidRelationships: Enemy, Neutral, Ally

@@ -44,11 +44,57 @@ World:
 		ClassName: Heavy Support
 		Factions: consortium
 		BaseActor: steel_qmcv
-		SupportActors: steel_fedinf,steel_fedinf,steel_fedinf,steel_qinf,steel_qinf,steel_manta,steel_arty,steel_arty,steel_arty,steel_quantumtank,steel_manta
+		SupportActors: steel_fedinf,steel_fedinf,steel_fedinf,steel_qinf,steel_qinf,steel_manta,steel_qtank,steel_qtank,steel_qtank,steel_qutnk,steel_manta
+	FactionCA@naxis:
+		Name: Naxis #faction-ra2-yuri.name
+		InternalName: naxis
+		Game: Red Alert 2
+		Side: RA2 Mod
+		Description: Custom faction, Naxis #faction-ra2-yuri.description
+	StartingUnits@mcvnaxis:
+		Class: none
+		ClassName: MCV Only
+		Factions: naxis
+		BaseActor: nax_mcv
+	StartingUnits@defaultnaxis:
+		Class: light
+		ClassName: Light Support
+		Factions: naxis
+		BaseActor: nax_mcv
+		SupportActors: nax_rifle,nax_rifle,nax_rifle,nax_mp40,nax_mp40,nax_wirbelwind,nax_tiger
+	StartingUnits@heavynaxis:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: naxis
+		BaseActor: nax_mcv
+		SupportActors: nax_rifle,nax_rifle,aa_gren,nax_mp40,nax_mp40,nax_wirbelwind,nax_tiger,nax_tiger,nax_tiger,aa_ptnk,nax_wirbelwind
+	FactionCA@syndicate:
+		Name: Syndicate
+		InternalName: syndicate
+		Game: Red Alert 2
+		Side: RA2 Mod
+		Description: Custom faction, Based on RA2 Cuba #faction-ra2-yuri.description
+	StartingUnits@mcvsyndicate:
+		Class: none
+		ClassName: MCV Only
+		Factions: syndicate
+		BaseActor: latin_mcv
+	StartingUnits@defaultsyndicate:
+		Class: light
+		ClassName: Light Support
+		Factions: syndicate
+		BaseActor: latin_mcv
+		SupportActors: latin_mili,latin_mili,latin_mili,latin_fftr,latin_fftr,nax_wirbelwind,nax_tiger
+	StartingUnits@heavysyndicate:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: syndicate
+		BaseActor: latin_mcv
+		SupportActors: latin_mili,latin_mili,latin_mili,latin_fftr,latin_fftr,nax_wirbelwind,nax_tiger,nax_tiger,nax_tiger,aa_ptnk,nax_wirbelwind
 	FactionCA@Randomra2mod:
 		Name: Random #faction-ra2-random.name
 		InternalName: Randomra2mod
-		RandomFactionMembers: asianalliance, consortium
+		RandomFactionMembers: asianalliance, consortium, naxis, syndicate
 		Game: Red Alert 2
 		Side: Random
 		Description: Random Red Alert 2 mod faction #faction-ra2-random.description
@@ -3628,10 +3674,780 @@ upaa_tsunami:
 	ProvidesPrerequisite:
 
 ##############################################
-#   Red Alert 2 Syndicate Tanks
+#   Red Alert 2 Syndicate Buildings
 ##############################################
+latin_cgcnst:
+	Inherits: ra2gacnst
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Tooltip:
+		Name: Syndicate Construction Yard
+	Transforms:
+		IntoActor: latin_mcv
+	WithIdleOverlay@fans:
+	WithIdleOverlay@top:
+		Sequence: idle-top
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@normal:
+		Sequence: idle-normal
+		RequiresCondition: !build-incomplete
+	WithBuildingPlacedOverlay:
+		Sequence: build
 
-latin_grentank:
+latin_cgpow:
+	Inherits: ^RA2Building
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@power: ^PowerPlant
+	Inherits@FS: ^AIForceShield
+	Inherits@shape: ^3x2Shape
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Power Station
+	Buildable:
+		Prerequisites: ~latin_cgcnst
+		BuildPaletteOrder: 200
+		Queue: Building, RABuilding
+		Description: actor-nanrct.description
+	Building:
+		Footprint: xxx xxx ___
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 150000
+	Armor:
+		Type: Concrete
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 1000
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience:
+		ValidTypes: building
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+	SoundOnDamageTransition:
+		DestroyedSounds: bpowdiea.wav, bpowdieb.wav
+	Explodes@1:
+		Weapon: ReactorNukeWeak
+		RequiresCondition: !chronobeamed
+	ProvidesPrerequisite@buildingname:
+
+latin_cgpile:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@barr: ^IsBarrack
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@gar: ^ClearableGarrisonNeutronOnly
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
+	Tooltip:
+		Name: Combat Barracks
+	ProvidesPrerequisite:
+		Prerequisite: RA2Barracks
+	Buildable:
+		Prerequisites: ~latin_cgcnst, latin_cgpow
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	RallyPoint:
+		Path: 0,2
+	Exit@1:
+		ExitCell: 0,1
+	Exit@2:
+		ExitCell: 1,1
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithIdleOverlay@flag:
+		Sequence: idle-flag
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@antenna:
+		Sequence: idle-antenna
+		RequiresCondition: !build-incomplete
+	Turreted:
+		TurnSpeed: 1023
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 6
+		#InitialUnits: ra2e2
+	WithSpriteBody:
+	WithIdleOverlay@Bunkered:
+		Sequence: idle-bunkered
+		RequiresCondition: loaded && !build-incomplete
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
+		PauseOnCondition: chronobeamed
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
+	RevealsShroud:
+		Range: 6666
+	ActorStatValues:
+		Stats: Armor, Sight, Cargo, Kills, Experience
+	GivesBuildableArea:
+	RangeMultiplier@BigGarrison:
+		Modifier: 130
+		RequiresCondition: uplatin_ngbunk2
+	GrantConditionOnPrerequisite@ngbunk2:
+		Condition: uplatin_ngbunk2
+		Prerequisites: uplatin_ngbunk2
+	ActorStatValues:
+		Upgrades: uplatin_ngbunk2
+latin_cgweap:
+	Inherits: ^RA2DefaultWeap
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Tooltip:
+		Name: Syndicate Factory
+	Buildable:
+		Prerequisites: ~latin_cgcnst, latin_cgauto
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@lights2:
+		Sequence: idle-lights2
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@bib:
+		Sequence: bib
+latin_cgauto:
+	Inherits: ^RA2Building
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@ref: ^Refinery
+	Inherits@shape: ^4x3Shape
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Recycling Refinery
+	Buildable:
+		Prerequisites: ~latin_cgcnst, latin_cgpow
+	Building:
+		Footprint: xxx= xxx= xxx=
+		Dimensions: 4,3
+	Refinery:
+	DockHost:
+		Type: Unload
+		DockAngle: 640
+		DockOffset: 1086,1086,0
+	DrawLineToTarget:
+	FreeActor:
+		Actor: latin_harv
+		SpawnOffset: 2,2
+		Facing: 256
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	RenderSprites:
+		PlayerPalette: playerra2
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@bib:
+		Sequence: idle-bib
+
+latin_cgspy:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@tech: ^IsTechnoBuilding
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Selectable:
+		Bounds: 3072, 2048, 0, -256
+	Buildable:
+		Prerequisites: ~latin_cgcnst, latin_cgair
+	Tooltip:
+		Name: Spy Center
+	Building:
+		Footprint: xx xx xx
+		Dimensions: 3,2
+	SupportPowerChargeBar:
+	ProvidesPrerequisite:
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@lights:
+		Sequence: idle-lights2
+		RequiresCondition: !build-incomplete
+	AirstrikePower@spyplane:
+		PauseOnCondition: disabled
+		OrderName: SovietRA2SpyPlane
+		Prerequisites:
+			1: !RA2Psicorps, ~!RA2DOOM
+		Icons:
+			1: spyplane
+		ChargeInterval: 4500
+		Names:
+			1: power-ra2spyplane.name
+		Descriptions:
+			1: power-ra2spyplane.description
+		SelectTargetSpeechNotification: SelectTarget
+		EndChargeSpeechNotification: SpyPlaneReady
+		InsufficientPowerSpeechNotification: InsufficientPower
+		UnitTypes:
+			1: yrspyp
+		SquadSizes:
+			1: 1
+		QuantizedFacings: 8
+		DisplayBeacon: true
+		BeaconPosters:
+			1: racamicon
+		ArrowSequence: arrow
+		ClockSequence: clock
+		CircleSequence: circles
+		#UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		SupportPowerPaletteOrder: 10
+	SupportPowerChargeBar:
+latin_cgte:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@tech: ^IsTechnoBuilding
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Selectable:
+		Bounds: 3072, 2048, 0, -256
+	Buildable:
+		Prerequisites: ~latin_cgspy
+	Tooltip:
+		Name: Recycle Center
+	Building:
+		Footprint: xx xx xx
+		Dimensions: 3,2
+	SupportPowerChargeBar:
+	ProvidesPrerequisite:
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@lights:
+		Sequence: idle-lights2
+		RequiresCondition: !build-incomplete
+	SupportPowerChargeBar:
+	ProduceActorPower@car:
+ 		Name: Give Scrap cars
+ 		Description: Fast Elite infantry units armed with assault rifles and machine guns. When grouped, they can take down buildings extremely quickly\n  Strong vs Buildings\n  Weak vs Infantry, Vehicles\n  Special Ability: Invisibility
+ 		Icon: icon
+ 		IconImage: latin_buggy
+		AllowMultiple: True
+		PauseOnCondition: disabled
+		Prerequisites: latin_cgte
+		Actors: latinscrapcar, latinscrapcar2, latinscrapcar
+		Type: Car
+		ChargeInterval: 1500
+		AutoFire: true
+		OrderName: callcars
+		SupportPowerPaletteOrder: 20
+		LaunchSound: gcraspee.wav
+ 	Production@Car:
+ 		Produces: Car
+ 	Exit@1:
+		SpawnOffset: -704,768,0
+		ExitCell: -1,2
+ 	Exit@2:
+		SpawnOffset: -704,768,0
+		ExitCell: -1,3
+ 	Exit@3:
+		SpawnOffset: -704,768,0
+		ExitCell: 0,3
+
+latin_cgup:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@cashtrickler: ^CashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
+	Inherits@shape: ^3x3Shape
+	Inherits@lowpower: ^DisabledOverlay
+	Inherits@Bot: ^BotMicromanageable
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@gar: ^ClearableGarrisonNeutronOnly
+	Inherits@bot2: ^BotAutoDeployEvacuateCargo
+	Tooltip:
+		Name: Bunkered Oil Derrick
+	Buildable:
+		Prerequisites: ~latin_cgcnst, ~latin_cgspy, ~techlevel.medium, derricklimit
+		Description: actor-oilb.description
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	WithIdleOverlay@idle-pump:
+		Sequence: idle-pump
+		PauseOnCondition: lowpower
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@idle-pump2:
+		Sequence: idle-pump2
+		PauseOnCondition: lowpower
+		RequiresCondition: !build-incomplete
+	RenderSprites:
+		Image: latin_cgup
+		PlayerPalette: playerra2
+	-WithDeathAnimation:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	Turreted:
+		TurnSpeed: 1023
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 6
+		#InitialUnits: ra2e2
+	WithSpriteBody:
+	WithIdleOverlay@Bunkered:
+		Sequence: idle-bunkered
+		RequiresCondition: loaded && !build-incomplete
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
+		PauseOnCondition: chronobeamed
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
+	RevealsShroud:
+		Range: 6666
+	ActorStatValues:
+		Stats: Armor, Sight, Cargo, Kills, Experience
+	GivesBuildableArea:
+	RangeMultiplier@BigGarrison:
+		Modifier: 150
+		RequiresCondition: uplatin_ngbunk2
+	GrantConditionOnPrerequisite@ngbunk2:
+		Condition: uplatin_ngbunk2
+		Prerequisites: uplatin_ngbunk2
+	ActorStatValues:
+		Upgrades: uplatin_ngbunk2
+latin_cgair:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@radar: ^RadarBuilding
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@hpad: ^IsAircraftFactory
+	Buildable:
+		Queue: Building, RABuilding
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Prerequisites: ~latin_cgcnst, latin_cgauto
+		Description: actor-gaairc.description
+	Valued:
+		Cost: 2000
+	Power:
+		Amount: -50
+	Tooltip:
+		Name: Air Station
+	Building:
+		Footprint: x== ===
+		Dimensions: 3,2
+	Exit@1:
+		ExitCell: 1,1
+		Facing: 768
+	Reservable:
+	LaysMinefield:
+		Mines: ra2gaairc.dock
+		Locations: 0,1, 2,1, 1,0
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithIdleOverlay@top:
+		Sequence: idle-top
+		PauseOnCondition: disabled
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@bottom:
+		Sequence: idle-bottom
+		PauseOnCondition: disabled
+	WithIdleOverlay@mid:
+		Sequence: idle-mid
+		PauseOnCondition: disabled
+	WithIdleOverlay@dish:
+		Sequence: idle-dish
+		PauseOnCondition: disabled
+latin_ca12hit:
+	Inherits: ^RA2Building
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@shape: ^3x3Shape
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Tooltip:
+		Name: 12 Missile Silos
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~latin_cgcnst, latin_cgspy, !ra2nuke
+		Queue: Defence, RADefence
+		Description: actor-namisl.description
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	SelectionDecorations:
+	DetonateWeaponPowerCA:
+		AllowMultiple: true
+		OrderName: 12Rocket
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
+		Icons:
+			1: abomb
+		Cursor: ability
+		AirburstAltitude: 4c512
+		ChargeInterval: 7500
+		ActivationDelay: 100
+		ActivationSequence:
+		Names:
+			1: 12 Rocket
+		Descriptions:
+			1: power-lightningstorm.description
+		Weapons:
+			1: 12MissilesActivate
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		EndChargeTextNotification: Lightning Storm ready.
+		EndChargeSound: swearead.wav
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		LaunchTextNotification: Warning: Lightning Storm created.
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		IncomingTextNotification: Warning: Lightning Storm created.
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		CameraRemoveDelay: 512
+		Duration: 512
+		ActiveCondition: active
+		TargetCircleRanges:
+			1: 10000
+		TargetCircleColors: ff000080
+		PostProcessEffectType: LightningStorm
+		LaunchSound: snuksire.wav
+		IncomingSound: snuksire.wav
+		BeaconActor: BLASTRADIUS.atomic
+		CameraRange: 10000
+	SupportPowerChargeBar:
+	WithSupportPowerActivationAnimation:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: ra2nuke
+	WithIdleOverlay@bib:
+		Sequence: bib
+latin_cgdept:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x3Shape
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@repair: ^RepairsUnits
+	Inherits@repair: ^RepairFacility
+	HitShape:
+		TargetableOffsets: 840,0,0, 598,-640,0, 598,640,0, -1060,0,0, -768,-640,0, -768,640,0
+		Type: Polygon
+			Points: -1536,-256, -341,-940, 341,-940, 1536,-256, 1536,341, 341,1110, -341,1110, -1536,341
+	Tooltip:
+		Name: template-service-depot.ra2-soviet
+	Buildable:
+		Prerequisites: ~latin_cgcnst, latin_cgweap
+	Building:
+		Footprint: Xx_ === _=_
+		Dimensions: 3,3
+	SelectionDecorations:
+	Reservable:
+	RallyPoint:
+	WithIdleOverlay@normal:
+		Sequence: idle-normal
+	WithIdleOverlay@bib:
+		Sequence: bib
+	WithResupplyAnimation:
+		Sequence: repair
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+
+latin_ngbunk2:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@shape: ^1x1Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@gar: ^ClearableGarrisonNeutronOnly
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
+	Tooltip:
+		Name: Bunker Tower
+	Building:
+		Footprint: x
+		Dimensions: 1, 1
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 40
+		Prerequisites: ~latin_cgcnst, latin_cgpile
+		Description: actor-nabnkr.description
+	Valued:
+		Cost: 800
+	Health:
+		HP: 80000
+	Turreted:
+		TurnSpeed: 1023
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	Selectable:
+		Bounds: 1792, 1792, 0, 0
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 6
+		#InitialUnits: ra2e2
+	WithSpriteBody:
+	WithIdleOverlay@Bunkered:
+		Sequence: idle-bunkered
+		RequiresCondition: loaded && !build-incomplete
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
+		PauseOnCondition: chronobeamed
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
+	RevealsShroud:
+		Range: 6666
+	Selectable:
+		Class: yrngbnkr
+	ActorStatValues:
+		Stats: Armor, Sight, Cargo, Kills, Experience
+	WithIdleOverlay@top:
+		Sequence: idle-top
+		PauseOnCondition: disabled
+		RequiresCondition: !build-incomplete && uplatin_ngbunk2
+	RangeMultiplier@Lightpost:
+		Modifier: 125
+		RequiresCondition: uplatin_ngbunk2
+	GrantConditionOnPrerequisite@ngbunk2:
+		Condition: uplatin_ngbunk2
+		Prerequisites: uplatin_ngbunk2
+	ActorStatValues:
+		Upgrades: uplatin_ngbunk2
+
+latin_sml:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 50
+		Prerequisites: ~latin_cgcnst, latin_cgspy
+		Description: actor-cgplas.description
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: SML
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 300000
+	Selectable:
+		Bounds: 2048, 2048
+	Turreted:
+		TurnSpeed: 12
+		InitialFacing: 896
+		Offset: -1,1,1
+		RealignDelay: -1
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: SMLLauncher
+		LocalOffset: 1566,333,777, 1566,-333,777, 1566,333,666, 1566,-333,666
+		MuzzleSequence: muzzle
+	MissileSpawnerMasterCA:
+		#ArmamentNames: primary
+		Actors: yrbsubmisl, yrbsubmisl, yrbsubmisl, yrbsubmisl
+		RespawnTicks: 125
+		SpawnAllAtOnce: true
+		SpawnOffset: 1566,333,777, 1566,-333,777, 1566,333,666, 1566,-333,666
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	WithRangeCircle:
+	AutoTarget:
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
+	Power:
+		Amount: -200
+	RevealsShroud:
+		Range: 14000
+	DetectCloaked:
+		Range: 7000
+
+latin_ngdshktur:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 20
+		Prerequisites: ~latin_cgcnst, latin_cgpile
+		Description: template-anti-infantry-defense.description
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Sentry Gun
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 75000
+	Selectable:
+		Bounds: 1024, 1024
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
+		RealignDelay: -1
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: RA2vulcan
+		LocalOffset: 500,128,100, 500,-128,100
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -25
+	RevealsShroud:
+		Range: 6666
+	ProvidesPrerequisite@buildingname:
+
+#   Scrapcar
+latinscrapcar:
+	Inherits: ^CivilianVehicle
+	RenderSprites:
+		Image: ra2car
+		PlayerPalette: playerra2
+	TransformOnCapture:
+		IntoActor: latinscrapcar_demo
+		CaptureTypes: bombcar
+	TransformOnCapture@driveby:
+		IntoActor: latinscrapcar_driveby
+		CaptureTypes: driveby
+	Capturable:
+		Types: bombcar, driveby
+		ValidRelationships: Enemy, Neutral, Ally
+
+latinscrapcar_demo:
+	Inherits: ^CivilianSuicideVehicle
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	RenderSprites:
+		Image: ra2car
+		PlayerPalette: playerra2
+
+latinscrapcar_driveby:
+	Inherits: ^CivilianDriveByVehicle
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	RenderSprites:
+		Image: ra2car
+		PlayerPalette: playerra2
+latinscrapcar2:
+	Inherits: ^CivilianVehicle
+	RenderSprites:
+		Image: ra2car
+		PlayerPalette: playerra2
+	TransformOnCapture:
+		IntoActor: latinscrapcar2_demo
+		CaptureTypes: bombcar
+	TransformOnCapture@driveby:
+		IntoActor: latinscrapcar2_driveby
+		CaptureTypes: driveby
+	Capturable:
+		Types: bombcar, driveby
+		ValidRelationships: Enemy, Neutral, Ally
+
+latinscrapcar2_demo:
+	Inherits: ^CivilianSuicideVehicle
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	RenderSprites:
+		Image: ra2car
+		PlayerPalette: playerra2
+
+latinscrapcar2_driveby:
+	Inherits: ^CivilianDriveByVehicle
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	RenderSprites:
+		Image: ra2car
+		PlayerPalette: playerra2
+
+##############################################
+#   Red Alert 2 Syndicate Units
+##############################################
+^LatinCashrecover:
+	SpawnActorOnDeath@Recover:
+		Actor: latin.deathcash
+		RequiresCondition: uplatin_apc
+	GrantConditionOnPrerequisite@CashRecover:
+		Condition: cashrecover
+		Prerequisites: latin_cgte
+	ActorStatValues:
+		Upgrades: latin_cgte
+
+latin.deathcash:
+	Inherits: RACAMERA
+	EditorOnlyTooltip:
+		Name: (Deathcash)
+	RevealsShroud:
+		Range: 2c0
+	CashTrickler:
+		Interval: 30
+		Amount: 50
+latin.deathcash.small:
+	Inherits: RACAMERA
+	EditorOnlyTooltip:
+		Name: (Deathcash)
+	RevealsShroud:
+		Range: 2c0
+	CashTrickler:
+		Interval: 30
+		Amount: 25
+
+latin_mcv:
+	Inherits: ^Vehicle
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@mcv: ^MCV
+	Inherits@SHADOWS: ^Shadows
+	Inherits@uprecover: ^LatinCashrecover
+	Tooltip:
+		Name: Syndicate Mobile Construction Vehicle
+	Buildable:
+		Prerequisites: ~latin_cgdept
+	Transforms:
+		IntoActor: latin_cgcnst
+		Offset: -1,-1
+		Facing: 384
+		TransformSounds: uplace.wav
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Voiced:
+		VoiceSet: LatinMCVVoice
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmsyndicate
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: ra2smcv  #placeholder
+latin_ltnk:
 	Inherits: ^Tank
 	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@anim: ^RA2Vehicle
@@ -3639,81 +4455,47 @@ latin_grentank:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
-	Inherits@updrone: ^TerrorDroneSurprise
-	Inherits@rad: ^RA2RadShells
-	Inherits@armor: ^RA2SovietArmor
+	Inherits@uprecover: ^LatinCashrecover
 	Valued:
-		Cost: 800
+		Cost: 600
 	Tooltip:
-		Name: S Tank
+		Name: Rusher Tank
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~ra2naweap, ~disabled
+		Prerequisites: ~latin_cgweap
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
-		Speed: 120
-		TurnSpeed: 16
+		Speed: 125
+		TurnSpeed: 24
 	Health:
-		HP: 70000
+		HP: 65000
 	Repairable:
 		HpPerStep: 6500
 	ChangesHealth@SelfHealing:
 		Step: 52
 	Armor:
-		Type: Heavy
+		Type: Medium
 	Turreted:
 		TurnSpeed: 16 #3
 		Offset: -100,0,5
 	Armament:
 		Name: primary
-		Weapon: RA2120mm
+		Weapon: RA2Gren60mm
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 1024,0,80
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: !rank-elite && !upradshells
+		RequiresCondition: !rank-elite
 	Armament@elite:
 		Name: primary
-		Weapon: RA2120mm_elite
+		Weapon: RA2Gren60mm
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 1024,0,80
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
-		RequiresCondition: rank-elite && !upradshells
-	Armament@rad:
-		Name: primary
-		Weapon: RA2120mm_rad
-		Recoil: 128
-		RecoilRecovery: 38
-		LocalOffset: 1024,0,80
-		MuzzleSequence: muzzle
-		MuzzlePalette: ra2effect
-		RequiresCondition: !rank-elite && upradshells
-	Armament@radelite:
-		Name: primary
-		Weapon: RA2120mm_elite_rad
-		Recoil: 128
-		RecoilRecovery: 38
-		LocalOffset: 1024,0,80
-		MuzzleSequence: muzzle-2
-		MuzzlePalette: ra2effect
-		RequiresCondition: rank-elite && upradshells
-	Armament@SECONDARY:
-		Name: secondary
-		Weapon: RA2MammothTusk
-		LocalOffset: -85,90,340, -85,-90,340
-		LocalYaw: -100, 100
-		Recoil: 10
-		RequiresCondition: !rank-elite
-	Armament@SECONDARYELITE:
-		Name: secondary
-		Weapon: RA2MammothTusk_elite
-		LocalOffset: -85,90,340, -85,-90,340
-		LocalYaw: -100, 100
-		Recoil: 10
 		RequiresCondition: rank-elite
 	AttackTurreted:
 	WithMuzzleOverlay:
@@ -3722,13 +4504,1211 @@ latin_grentank:
 		DecorationBounds: 1280, 1280
 	WithSpriteTurret:
 	Voiced:
-		VoiceSet: RA2SovietVehicleVoice
+		VoiceSet: LatinTankVoice
 	DeliversCash:
 		Payload: 450
 	RenderSprites:
 		PlayerPalette: playerra2
+latin_mtnk:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Smoker Tank
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~latin_cgweap
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Speed: 110
+		TurnSpeed: 24
+	Health:
+		HP: 130000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 16 #3
+		Offset: -100,0,5
+	Armament:
+		Name: primary
+		Weapon: RA2105mm
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: RA2105mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	Armament@AA:
+		Weapon: RA2GrenadePack
+		LocalOffset: 600,100,300, 600,200,300, 600,-100,300, 600,-200,300
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: uplatin_apc
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: LatinHeavyTankVoice
+	DeliversCash:
+		Payload: 450
+	RenderSprites:
+		PlayerPalette: playerra2
+
+latin_diablo:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Diablo
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~latin_cgweap
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Speed: 125
+		TurnSpeed: 24
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Light
+	Turreted:
+		TurnSpeed: 16 #3
+		Offset: -100,0,5
+	Armament:
+		Name: primary
+		Weapon: NaxQuadCannon
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AA:
+		Weapon: NaxQuadCannonAA
+		LocalOffset: 600,0,300
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@AAE:
+		Weapon: NaxQuadCannonAAE
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: LatinTankVoice
+	DeliversCash:
+		Payload: 450
+	RenderSprites:
+		PlayerPalette: playerra2
+
+
+latin_buggy:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Buggy
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~latin_cgweap
+		Queue: Vehicle, RAVehicle
+		Description: actor-aapulv.description
+	Mobile:
+		Speed: 110
+		TurnSpeed: 30
+	Health:
+		HP: 30000
+	Armor:
+		Type: Light
+	Repairable:
+		HpPerStep: 3000
+	Turreted:
+		TurnSpeed: 60
+	Armament@1:
+		Weapon: RA220mmrapid
+		LocalOffset: 500,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+	Voiced:
+		VoiceSet: LatinSoldierVoice
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2GattlingMG2
+	DeliversCash:
+		Payload: 150
+	RenderSprites:
+		PlayerPalette: playerra2
+	SpawnActorOnDeath@Recover:
+		Actor: latin.deathcash.small
+latin_mortarbike:
+	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Buildable:
+		Queue: Vehicle, RAVehicle, Infantry, RAInfantry
+		BuildPaletteOrder: 30
+		Prerequisites: ~latin_cgweap, latin_cgair
+		Description: actor-v3.description
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Mortar Bike
+	Health:
+		HP: 28000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 89
+		TurnSpeed: 15
+	Armament:
+		Weapon: RA2MortarBike
+		LocalOffset: 222,0,400
+	AttackFrontal:
+		FacingTolerance: 0
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: LatinSoldierVoice
+	GrantConditionOnAttack:
+		Condition: firing
+		RevokeDelay: 5
+	DeliversCash:
+		Payload: 200
+	RenderSprites:
+		PlayerPalette: playerra2
+
+latin_apc:
+	Inherits: ^Tank
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@cargo: ^CargoVehicle
+	Inherits@bot: ^BotAutoDeployTransport
+	Inherits@uprecover: ^LatinCashrecover
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Amphibian APC
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~latin_cgweap, latin_cgair
+		Queue: Vehicle, RAVehicle
+		Description: actor-htk.description
+	Mobile:
+		Locomotor: amphibius
+		Speed: 120
+		TurnSpeed: 24
+	Health:
+		HP: 52500
+	Repairable:
+		HpPerStep: 2000
+	ChangesHealth@SelfHealing:
+		Step: 17
+	Turreted:
+		TurnSpeed: 24
+		Offset: -1,0,4
+	Armament@AA:
+		Weapon: RA2APCRocket
+		LocalOffset: 600,0,300
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: uplatin_apc
+	Armament@AG:
+		Weapon: RA220mmrapid
+		LocalOffset: 600,0,300
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@AAE:
+		Weapon: RA2APCRocket
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: uplatin_apc && rank-elite
+	Armament@AGE:
+		Weapon: RA220mmrapid
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	WithMuzzleOverlay:
+	AttackTurreted:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		Image: latin_apc
+		PlayerPalette: playerra2
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: FlakTrackVoice
+	DeliversCash:
+		Payload: 250
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 4
+		InitialUnits: latin_mili, latin_mili, latin_mili, latin_fftr
+	GrantConditionOnPrerequisite@Missile:
+		Condition: uplatin_apc
+		Prerequisites: uplatin_apc
 	ActorStatValues:
-		Upgrades: updronesurprise, upradshells, upsovietarmor
+		Upgrades: uplatin_apc
+	WithSpriteTurret:
+		Sequence: turret
+		RequiresCondition: !uplatin_apc
+	WithSpriteTurret@up:
+		Sequence: turret-up
+		RequiresCondition: uplatin_apc
+
+latin_humvee:
+	Inherits: ^Tank
+	Inherits@GAINSEXPERIENCE: ^EpicVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@cargo: ^CargoVehicle
+	Inherits@bot: ^BotAutoDeployTransport
+	Inherits@uprecover: ^LatinCashrecover
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Narco Hummer
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~latin_cgweap, latin_cgspy
+		Queue: Vehicle, RAVehicle
+		Description: actor-htk.description
+	Mobile:
+		Locomotor: wheeled
+		Speed: 120
+		TurnSpeed: 36
+	Health:
+		HP: 82500
+	Repairable:
+		HpPerStep: 2000
+	ChangesHealth@SelfHealing:
+		Step: 17
+	Turreted:
+		TurnSpeed: 24
+		Offset: -1,0,4
+	Armament@AA:
+		Weapon: RA2FreedomRocket
+		LocalOffset: 600,0,300
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: uplatin_apc
+	Armament@AG:
+		Weapon: RA2NarcoAKM
+		LocalOffset: 600,0,300
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@AAE:
+		Weapon: RA2FreedomRocketG
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: uplatin_apc && rank-elite
+	Armament@AGE:
+		Weapon: RA2NarcoAKME
+		Recoil: 85
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	WithMuzzleOverlay:
+	AttackTurreted:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		Image: latin_humvee
+		PlayerPalette: playerra2
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: LatinNarcoVVoice
+	DeliversCash:
+		Payload: 250
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 4
+		InitialUnits: latin_narco, latin_narco, latin_narco, latin_narco
+	GrantConditionOnPrerequisite@Missile:
+		Condition: uplatin_apc
+		Prerequisites: uplatin_apc
+	ActorStatValues:
+		Upgrades: uplatin_apc
+	WithSpriteTurret:
+		Sequence: turret
+
+latin_rtruck:
+	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 80
+		Prerequisites: ~latin_cgweap, latin_cgair
+		Description: actor-v3.description
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Missile Truck
+	Health:
+		HP: 28000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+	Armament:
+		Weapon: RA2RTruckRocket
+		LocalOffset: -1024,250,512, -1024,0,512, -1024,-250,512, -1024,250,800, -1024,0,800, -1024,-250,800
+	Armament@PRIMARYELITE:
+		Weapon: RA2RTruckRocket
+		LocalOffset: -1024,250,512, -1024,0,512, -1024,-250,512, -1024,250,800, -1024,0,800, -1024,-250,800
+		RequiresCondition: rank-elite
+	FirepowerMultiplier@RANK-1:
+		Modifier: 125
+	FirepowerMultiplier@RANK-2:
+		Modifier: 150
+	FirepowerMultiplier@RANK-3:
+		Modifier: 175
+	FirepowerMultiplier@RANK-ELITE:
+		Modifier: 200
+	AttackFrontal:
+		FacingTolerance: 0
+	SelectionDecorations:
+	Explodes:
+		Weapon: V3Explode
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: LatinArtyVoice
+	GrantConditionOnAttack:
+		Condition: firing
+		RevokeDelay: 5
+	WithFacingSpriteBody:
+		RequiresCondition: !firing
+		Sequence: idle
+		Name: loaded
+	WithFacingSpriteBody@EMPTY:
+		RequiresCondition: firing
+		Sequence: empty-idle
+		Name: reloading
+	DeliversCash:
+		Payload: 500
+	RenderSprites:
+		PlayerPalette: playerra2
+latin_burrito:
+	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 80
+		Prerequisites: ~latin_cgweap, latin_cgair
+		Description: actor-v3.description
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Burrito
+	Health:
+		HP: 38000
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 82
+		TurnSpeed: 15
+	Armament:
+		Weapon: RA2RBurritoRocket
+		LocalOffset: -1024,250,512, -1024,0,512, -1024,-250,512, -1024,250,800, -1024,0,800, -1024,-250,800
+	Armament@PRIMARYELITE:
+		Weapon: RA2RBurritoRocket
+		LocalOffset: -1024,250,512, -1024,0,512, -1024,-250,512, -1024,250,800, -1024,0,800, -1024,-250,800
+		RequiresCondition: rank-elite
+	FirepowerMultiplier@RANK-1:
+		Modifier: 125
+	FirepowerMultiplier@RANK-2:
+		Modifier: 150
+	FirepowerMultiplier@RANK-3:
+		Modifier: 175
+	FirepowerMultiplier@RANK-ELITE:
+		Modifier: 200
+	AttackFrontal:
+		FacingTolerance: 0
+	SelectionDecorations:
+	Explodes:
+		Weapon: V3Explode
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: LatinArtyVoice
+	GrantConditionOnAttack:
+		Condition: firing
+		RevokeDelay: 5
+	WithFacingSpriteBody:
+		RequiresCondition: !firing
+		Sequence: idle
+		Name: loaded
+	WithFacingSpriteBody@EMPTY:
+		RequiresCondition: firing
+		Sequence: empty-idle
+		Name: reloading
+	DeliversCash:
+		Payload: 500
+	RenderSprites:
+		PlayerPalette: playerra2
+
+latin_lars:
+	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 80
+		Prerequisites: ~latin_cgweap, latin_cgspy
+		Description: actor-v3.description
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: LARS
+	Health:
+		HP: 28000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+	Armament:
+		Weapon: RA2LarsRocket
+		LocalOffset: -1024,250,512, -1024,0,512, -1024,-250,512, -1024,250,800, -1024,0,800, -1024,-250,800
+	Armament@PRIMARYELITE:
+		Weapon: RA2LarsRocket
+		LocalOffset: -1024,250,512, -1024,0,512, -1024,-250,512, -1024,250,800, -1024,0,800, -1024,-250,800
+		RequiresCondition: rank-elite
+	FirepowerMultiplier@RANK-1:
+		Modifier: 125
+	FirepowerMultiplier@RANK-2:
+		Modifier: 150
+	FirepowerMultiplier@RANK-3:
+		Modifier: 175
+	FirepowerMultiplier@RANK-ELITE:
+		Modifier: 200
+	AttackFrontal:
+		FacingTolerance: 0
+	SelectionDecorations:
+	Explodes:
+		Weapon: V3Explode
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: LatinArtyVoice
+	GrantConditionOnAttack:
+		Condition: firing
+		RevokeDelay: 5
+	WithFacingSpriteBody:
+		RequiresCondition: !firing
+		Sequence: idle
+		Name: loaded
+	WithFacingSpriteBody@EMPTY:
+		RequiresCondition: firing
+		Sequence: empty-idle
+		Name: reloading
+	DeliversCash:
+		Payload: 500
+	RenderSprites:
+		PlayerPalette: playerra2
+
+latin_topol:
+	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 80
+		Prerequisites: ~latin_cgweap, latin_cgspy
+		Description: actor-v3.description
+	Valued:
+		Cost: 3500
+	Tooltip:
+		Name: TOPOL
+	Health:
+		HP: 58000
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+	Armament:
+		Weapon: RA2TOPOLCubaTarget
+		LocalOffset: -1024,250,1000
+	Armament@PRIMARYELITE:
+		Weapon: RA2TOPOLCuba
+		LocalOffset: -1024,250,5000
+		RequiresCondition: scudup == 5
+	FirepowerMultiplier@RANK-1:
+		Modifier: 125
+	FirepowerMultiplier@RANK-2:
+		Modifier: 150
+	FirepowerMultiplier@RANK-3:
+		Modifier: 175
+	FirepowerMultiplier@RANK-ELITE:
+		Modifier: 200
+	AttackFrontal:
+		FacingTolerance: 0
+	SelectionDecorations:
+	Explodes:
+		Weapon: V3Explode
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: LatinSCUDVoice
+	GrantConditionOnAttack:
+		Condition: scudup
+		RevokeDelay: 5
+		MaximumInstances: 5
+	WithFacingSpriteBody:
+		RequiresCondition: !scudup
+		Sequence: idle
+		Name: loaded
+	WithFacingSpriteBody@Scud1:
+		RequiresCondition: scudup == 1
+		Sequence: idle-up1
+		Name: reloading
+	WithFacingSpriteBody@Scud2:
+		RequiresCondition: scudup == 2
+		Sequence: idle-up2
+		Name: reloading
+	WithFacingSpriteBody@Scud3:
+		RequiresCondition: scudup == 3
+		Sequence: idle-up3
+		Name: reloading
+	WithFacingSpriteBody@Scud4:
+		RequiresCondition: scudup == 4
+		Sequence: idle-up4
+		Name: reloading
+	WithFacingSpriteBody@Scud5:
+		RequiresCondition: scudup == 5
+		Sequence: idle-up5
+		Name: reloading
+	DeliversCash:
+		Payload: 500
+	RenderSprites:
+		PlayerPalette: playerra2
+
+latin_harv:
+	Inherits: HARV
+	Inherits@anim: ^RA2Vehicle
+	Inherits@uprecover: ^LatinCashrecover
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Collect Truck
+	Buildable:
+		Prerequisites: ~latin_cgauto
+		Queue: Vehicle, RAVehicle
+		Description: actor-ra2harv.description
+	Mobile:
+		Speed: 100
+		TurnSpeed: 20
+	Health:
+		HP: 85000
+	Repairable:
+		HpPerStep: 6250
+	ChangesHealth@SelfHealing:
+		Step: 50
+	Harvester:
+		Voice: Harvest
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 1
+		SearchFromProcRadius: 25
+		SearchFromHarvesterRadius: 10
+		EmptyCondition: no-tiberium
+	StoresResources:
+		Capacity: 25
+	DeliversCash:
+		Payload: 400
+	Voiced:
+		VoiceSet: LatinHarvVoice
+	WithStoresResourcesPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+	RenderSprites:
+		PlayerPalette: playerra2
+
+latin_fftr:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Freedom Fighter
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~latin_cgpile, latin_cgauto
+		Queue: Infantry, RAInfantry
+		Description: Anti Tank and Infantry Troop, Target Tanks with Explosive Arrows
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 12500
+	Armament@PRIMARY:
+		Weapon: RA2FreedomAK47
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2FreedomAK47E
+		RequiresCondition: rank-elite
+	Armament@ROCKET:
+		Weapon: RA2FreedomRocket
+		Name: secondary
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2vulcan3
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@GARRISONED2:
+		Name: garrisoned
+		Weapon: RA2FreedomRocketG
+	AttackFrontal:
+		FacingTolerance: 0
+	WithInfantryBody:
+		DefaultAttackSequence: shoot
+		AttackSequences:
+			secondary: arrow
+	Voiced:
+		VoiceSet: LatinRamboVoice
+	DeliversCash:
+		Payload: 60
+
+latin_mili:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 125
+	Tooltip:
+		Name: Militia
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~latin_cgpile
+		Queue: Infantry, RAInfantry
+		Description: Machinegunner, Upgradable with molotovs
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 12500
+	Armament@PRIMARY:
+		Weapon: RA2MiliAK47
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2MiliAK47E
+		RequiresCondition: rank-elite
+	Armament@Molot:
+		Weapon: RA2Molotov
+		RequiresCondition: uplatin_mili
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2vulcan3
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: LatinSoldierVoice
+	DeliversCash:
+		Payload: 60
+	GrantConditionOnPrerequisite@Grenadier:
+		Condition: uplatin_mili
+		Prerequisites: uplatin_mili
+	ActorStatValues:
+		Upgrades: uplatin_mili
+
+latin_fthrow:
+	Inherits: ^Soldier
+	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Flame Trooper
+	Buildable:
+		BuildPaletteOrder: 30
+		Prerequisites: ~latin_cgpile, latin_cgweap
+		Queue: Infantry, RAInfantry
+		Description: Machinegunner, Upgradable with molotovs
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 32500
+	Armament@PRIMARY:
+		Weapon: TSFireballLauncher
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: TSFireballLauncher
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: TSFireballLauncher
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: ConscriptVoice
+	DeliversCash:
+		Payload: 60
+
+latin_narco:
+	Inherits: ^Soldier
+	Inherits@Template: ^HeroInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Narco
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: ~latin_cgspy
+		Queue: Infantry, RAInfantry
+		Description: Machinegunner, Upgradable with molotovs
+	Mobile:
+		Speed: 80
+	Health:
+		HP: 12500
+	Armament@PRIMARY:
+		Weapon: RA2NarcoPistol
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2NarcoPistolsE
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2NarcoPistolsE
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: LatinNarcoVoice
+	DeliversCash:
+		Payload: 60
+latin_mig:
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^BomberTemplate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@rad: ^RA2RadShells
+	Inherits@turnanimation: ^RA2PlanewithTurnAnimation
+	Inherits@uprecover: ^LatinCashrecover
+	Selectable:
+	Tooltip:
+		Name: Mig 21
+	Valued:
+		Cost: 1250
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites:  ~latin_cgair, ~latin_cgspy
+		Queue: Aircraft, RAAircraft
+		Description: actor-bpln.description
+	Health:
+		HP: 50000
+	ChangesHealth@SelfHealing:
+		Step: 70
+	HitShape:
+	Voiced:
+		VoiceSet: LatinMigVoice
+	Aircraft:
+		TurnSpeed: 17
+		Speed: 250
+		IdleTurnSpeed: 17
+		IdleSpeed: 180
+		RepulsionSpeed: 3
+	AttackAircraft:
+		Voice: Attack
+		FacingTolerance: 100
+	Armament:
+		Name: primary
+		Weapon: MigMissiles_AG
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 50, -50, 25, -25
+	Armament@aa:
+		Name: secondary
+		Weapon: MigMissiles_AA
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 50, -50, 25, -25
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 2
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 130
+		Count: 2
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 4
+	WithMuzzleOverlay:
+	Contrail@1:
+		Offset: -640,171,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -640,-171,0
+		TrailLength: 15
+	SpawnActorOnDeath:
+		Actor: latin_mig.husk
+	RenderSprites:
+		Image: latin_mig
+		PlayerPalette: playerra2
+latin_mig.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: MiG 21
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 176
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: latin_mig
+		PlayerPalette: playerra2
+latin_yakolev:
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^BomberTemplate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@rad: ^RA2RadShells
+	Inherits@turnanimation: ^RA2PlanewithTurnAnimation
+	Inherits@uprecover: ^LatinCashrecover
+	Selectable:
+	Tooltip:
+		Name: Yakolev
+	Valued:
+		Cost: 900
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites:  ~latin_cgair
+		Queue: Aircraft, RAAircraft
+		Description: actor-bpln.description
+	Health:
+		HP: 50000
+	ChangesHealth@SelfHealing:
+		Step: 70
+	HitShape:
+	Voiced:
+		VoiceSet: LatinMigVoice
+	Aircraft:
+		TurnSpeed: 17
+		Speed: 250
+		IdleTurnSpeed: 17
+		IdleSpeed: 180
+		RepulsionSpeed: 3
+	AttackAircraft:
+		Voice: Attack
+		FacingTolerance: 100
+	Armament:
+		Name: primary
+		Weapon: RA220mmrapid
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 50, -50, 25, -25
+	Armament@aa:
+		Name: secondary
+		Weapon: RA220mmrapid
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 50, -50, 25, -25
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 4
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 120
+		Count: 4
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 4
+	WithMuzzleOverlay:
+	Contrail@1:
+		Offset: -640,171,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -640,-171,0
+		TrailLength: 15
+	SpawnActorOnDeath:
+		Actor: latin_yakolev.husk
+	RenderSprites:
+		Image: latin_yakolev
+		PlayerPalette: playerra2
+latin_yakolev.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Yakolev
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 176
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: latin_yakolev
+		PlayerPalette: playerra2
+
+ra2engineer.syndicate:
+	Inherits: RA2ENGINEER
+	Buildable:
+		Prerequisites: ~latin_cgpile
+		Queue: Infantry, RAInfantry
+	Voiced:
+		VoiceSet: LatinEngVoice
+	RenderSprites:
+		Image: ra2engineer
+	Captures:
+		Voice: Attack
+	Captures@REUSABLE:
+		Voice: Attack
+
+#   Pass those units to Syndicate
+latin_ra2terror:
+	Inherits: ^Soldier
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: actor-terror.name
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~latin_cgpile
+		Queue: Infantry, RAInfantry
+		Description: actor-terror.description
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 15000
+	Explodes:
+		Weapon: RA2Terrorist
+		EmptyWeapon: RA2Terrorist
+		RequiresCondition: !disabled
+	AttackFrontal:
+		FacingTolerance: 512
+	Armament@PRIMARY:
+		Weapon: SuicideBomberTargeting
+	GrantConditionOnAttack:
+		Condition: triggered
+		RequiresCondition: !disabled
+	KillsSelf:
+		RequiresCondition: triggered && !disabled
+	WithInfantryBody:
+	Voiced:
+		VoiceSet: RA2TerroristVoice
+	DeliversCash:
+		Payload: 60
+	-TakeCover:
+	Captures:
+		CaptureTypes: bombcar
+		PlayerExperience: 50
+		ConsumedByCapture: True
+		EnterCursor: c4
+	RenderSprites:
+		Image: ra2terror  #placeholder
+latin_ra2dtruck:
+	Inherits: DTRK
+	Inherits@anim: ^RA2Vehicle
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@EMP: ^FrontalEMP
+	Inherits@SHADOWS: ^Shadows
+	Health:
+		HP: 20000
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 180
+		Prerequisites: ~latin_cgspy
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Demolition Truck
+	Voiced:
+		VoiceSet: RA2DemolitionTruckVoice
+	GrantConditionOnDeploy:
+		Voice: Attack
+	Explodes@bomb:
+		Weapon: RA2DemoBomb
+		EmptyWeapon: RA2DemoBomb
+	-DamagedByTintedCells@rad:
+	-DamagedByTintedCells@genrad:
+	DeathSounds:
+		RequiresCondition: !chronobeamed
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: ra2dtruck  #placeholder
+##############################################
+#   Red Alert 2 Syndicate Upgrade
+##############################################
+uplatin_mili:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Molotov Use
+	Valued:
+		Cost: 1250
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Upgrades
+		Description: Equips Militias with Molotovs.
+		Prerequisites: ~latin_cgspy, !uplatin_mili
+	RenderSprites:
+		Image: latin_mili
+	ProvidesPrerequisite:
+
+uplatin_apc:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: APC Missile addon
+	Valued:
+		Cost: 1500
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Upgrades
+		Description: Equips APCs with Rocket Launchers.
+		Prerequisites: ~latin_cgspy, !uplatin_apc
+	RenderSprites:
+		Image: latin_apc
+	ProvidesPrerequisite:
+
+uplatin_ngbunk2:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Lightposts
+	Valued:
+		Cost: 1500
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Upgrades
+		Description: Upgrade Garrisonables with extra range.
+		Prerequisites: ~latin_cgspy, !uplatin_ngbunk2
+	RenderSprites:
+		Image: latin_ngbunk2
+	ProvidesPrerequisite:
 
 ##############################################
 #   Red Alert 2 Consortium Structure
@@ -5430,9 +7410,9 @@ steel_arty:
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
-	Inherits@bot: ^BotAutoDeploySwitchMode
 	Inherits@EMP: ^FrontalEMP
 	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@bot: ^BotAutoDeploySwitchMode
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -7022,3 +9002,1068 @@ upsteel_shielresistance:
 	RenderSprites:
 		Image: steel_savi
 	ProvidesPrerequisite:
+####################################################################################################
+#		Red Alert 2 Naxis
+####################################################################################################
+nax_hole:
+	Inherits@1: ^Viceroid
+	AttackMove:
+	Armament:
+		Weapon: NaxiBlackholeShoot
+		LocalOffset: 0,0,5
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	AutoTarget:
+		ScanRadius: 12
+	Mobile:
+		Locomotor: hover
+		Speed: 50
+		TurnSpeed: 255
+	HiddenUnderFog:
+	RenderSprites:
+		Palette: ra2infantry
+	Health:
+		HP: 2400
+	ChangesHealth:
+		Step: -10
+		StartIfBelow: 101
+	WithDeathAnimation:
+		FallbackSequence: die
+		UseDeathTypeSuffix: false
+		DeathSequencePalette: ra2infantry
+		DeathPaletteIsPlayerPalette: false
+	HitShape:
+	MapEditorData:
+		Categories: Critter
+	Tooltip:
+		Name: Black Hole
+	Targetable:
+		TargetTypes: BlackHole
+	AttackMove:
+		Voice: Attack
+	-WithMuzzleOverlay:
+	-Crushable:
+nax_hole_small:
+	Inherits@1: nax_hole
+	Health:
+		HP: 1600
+	ChangesHealth:
+		Step: -15
+		StartIfBelow: 101
+
+nax_conyard:
+	Inherits: ^RA2Building
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Inherits@shape: ^4x3Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Tooltip:
+		Name: Naxis Construction Yard
+	Building:
+		Footprint: xxxx xxxx xxxx
+		Dimensions: 4,3
+	Transforms:
+		IntoActor: nax_mcv
+		Offset: 1,1
+		Facing: 432
+		RequiresCondition: factundeploy
+	WithBuildingPlacedOverlay:
+	Exit@1:
+		SpawnOffset: 213,-128,0
+		ExitCell: 1,2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2buildinghack
+nax_powr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@power: ^PowerPlant
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Nax Petrol Plant
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Building, RABuilding
+		Description: template-power.description
+		Prerequisites: ~nax_conyard
+	Building:
+		Footprint: xxx xxx
+		Dimensions: 3,2
+	Health:
+		HP: 175000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 300
+	ScalePowerWithHealth:
+	ProvidesPrerequisite@buildingname:
+
+nax_barr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RA2YSpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@barr: ^IsBarrack
+	SelectionDecorations:
+	Tooltip:
+		Name: Naxis Barracks
+	Buildable:
+		Prerequisites: ~nax_conyard, nax_powr
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	RallyPoint:
+		Path: 1,2
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+
+nax_refin:
+	Inherits: ^RA2Building
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@ref: ^Refinery
+	Inherits@shape: ^4x3Shape
+	Tooltip:
+		Name: Naxis Ore Refinery
+	Buildable:
+		Prerequisites: ~nax_conyard, nax_powr
+	Building:
+		Footprint: xxx= xxx= xxx=
+		Dimensions: 4,3
+	Refinery:
+		DockAngle: 768
+		DockOffset: 3,2
+	DockHost:
+		Type: Unload
+		DockAngle: 640
+		DockOffset: 1086,1086,0
+		MaxQueueLength: 10
+	DrawLineToTarget:
+	FreeActor@1:
+		Actor: nax_slavemaster
+		SpawnOffset: 2,2
+		Facing: 256
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithIdleOverlay@bib:
+		Sequence: idle-bib
+
+nax_mcv:
+	Inherits: ^Vehicle
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@mcv: ^MCV
+	Tooltip:
+		Name: Naxis Mobile Construction Vehicle
+	Buildable:
+		Prerequisites: ~nax_powr
+	Transforms:
+		IntoActor: nax_conyard
+		Offset: -1,-1
+		Facing: 384
+		TransformSounds: uplace.wav
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmnaxis
+	RenderSprites:
+		PlayerPalette: playerra2
+
+nax_weap:
+	Inherits: ^RA2DefaultWeap
+	Inherits@sell: ^AASpawnActorsOnSell
+	Tooltip:
+		Name: Naxis War Factory
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 40
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: template-factory.description
+		Prerequisites: ~nax_conyard, nax_refin
+	WithIdleOverlay@flag:
+		Sequence: idle-flag
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@bib:
+		Sequence: bib
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@ramp:
+		Sequence: build-ramp
+		RequiresCondition: !build-incomplete
+	Voiced:
+		VoiceSet: PRCWarFactoryVoice
+
+nax_rifle:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 100
+	Tooltip:
+		Name: Rifle Soldier
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~nax_barr
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 12500
+	Armament@PRIMARY:
+		Weapon: NaxiRifle
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: NaxiRifleE
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: NaxiRifleG
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: NaxiSoldatVoice
+	DeliversCash:
+		Payload: 60
+nax_mp40:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: SS Soldier
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~nax_barr
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 17500
+	Armament@PRIMARY:
+		Weapon: NaxiMP40
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: NaxiMP40G
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: NaxiMP40G
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: NaxiSSVoice
+	DeliversCash:
+		Payload: 60
+nax_shrek:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: PanzerSchreck
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~nax_barr
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Speed: 41
+	Health:
+		HP: 32500
+	Armament@PRIMARY:
+		Weapon: NaxiShrek
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: NaxiShrek_elite
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: NaxiShrek
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@GARRISONED_E:
+		Name: garrisoned
+		Weapon: NaxiShrek_elite
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: NaxiTroopVoice
+	DeliversCash:
+		Payload: 60
+nax_tiger:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Tiger Heavy Tank
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Speed: 80
+		TurnSpeed: 16
+	Health:
+		HP: 130000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 16 #3
+		Offset: -4,0,5
+	Armament:
+		Name: primary
+		Weapon: RA2120mm
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: RA2120mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 450
+	RenderSprites:
+		PlayerPalette: playerra2
+nax_kingtiger:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: King Tiger Heavy Tank
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+	Health:
+		HP: 200000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 16 #3
+		Offset: -4,0,5
+	Armament:
+		Name: primary
+		Weapon: RA2120mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: RA2120mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 450
+	RenderSprites:
+		PlayerPalette: playerra2
+nax_maus:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 2200
+	Tooltip:
+		Name: Maus
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Speed: 60
+		TurnSpeed: 15
+	Health:
+		HP: 450000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 16 #3
+		Offset: -160,0,5
+	Armament:
+		Name: primary
+		Weapon: NaxMausCannon
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: NaxMausCannon
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,0,80
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 450
+	RenderSprites:
+		PlayerPalette: playerra2
+nax_ratte:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Ratte
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Speed: 45
+		TurnSpeed: 5
+	Health:
+		HP: 1650000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 7 #3
+		Offset: 100,0,5
+	Armament:
+		Name: primary
+		Weapon: NaxRatteCannon
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,250,80, 1024,-250,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: NaxRatteCannon
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,250,80, 1024,-250,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@guns:
+		Name: secondary
+		Weapon: RA2MirageGun_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1024,400,80, 1024,-400,80
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 450
+	RenderSprites:
+		PlayerPalette: playerra2
+
+nax_grille:
+	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Grille
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap
+		Queue: Vehicle, RAVehicle
+		Description: actor-aaquas.description
+	Mobile:
+		Locomotor: lighttracked
+		Speed: 75
+		TurnSpeed: 24
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2000
+	Armament@AG:
+		Weapon: NaxGrilleArty
+		LocalOffset: -400,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		Image: nax_grille
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 250
+nax_brummbar:
+	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Brummbar
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap
+		Queue: Vehicle, RAVehicle
+		Description: actor-aaquas.description
+	Mobile:
+		Locomotor: lighttracked
+		Speed: 75
+		TurnSpeed: 24
+	Health:
+		HP: 75000
+	Repairable:
+		HpPerStep: 2000
+	Armament@AG:
+		Weapon: NaxBrummbarArty
+		LocalOffset: -400,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 250
+nax_hetzer:
+	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Hetzer
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap
+		Queue: Vehicle, RAVehicle
+		Description: actor-aaquas.description
+	Mobile:
+		Locomotor: tracked
+		Speed: 75
+		TurnSpeed: 24
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2000
+	Armament@AG:
+		Weapon: NaxiHetzerDestroyer
+		LocalOffset: 300,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 250
+nax_jagdpanzer:
+	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Hetzer
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap
+		Queue: Vehicle, RAVehicle
+		Description: actor-aaquas.description
+	Mobile:
+		Locomotor: tracked
+		Speed: 75
+		TurnSpeed: 24
+	Health:
+		HP: 130000
+	Repairable:
+		HpPerStep: 2000
+	Armament@AG:
+		Weapon: NaxiJadgDestroyer
+		LocalOffset: 400,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 250
+nax_halftrack:
+	Inherits: ^Tank
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@cargo: ^CargoVehicle
+	Inherits@bot: ^BotAutoDeployTransport
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Halftrack
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap
+		Queue: Vehicle, RAVehicle
+		Description: actor-aaquas.description
+	Mobile:
+		Locomotor: lighttracked
+		Speed: 110
+		TurnSpeed: 24
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2000
+	Armament@AG:
+		Weapon: NaxiWW2Machinegun
+		LocalOffset: 300,10,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 250
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 4
+		InitialUnits: nax_rifle, nax_rifle, nax_rifle, nax_mp40
+
+nax_litt:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Kleines Ungeziefer
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~nax_barr
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 12500
+	Armament@PRIMARY:
+		Weapon: BlackHoleMaker
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: BlackHoleMaker
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: BlackHoleMaker
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: NaxiSoldatVoice
+	DeliversCash:
+		Payload: 60
+nax_wirbelwind:
+	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Wirbelwind
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Speed: 85
+		TurnSpeed: 16
+	Health:
+		HP: 70000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 16 #3
+		Offset: -4,0,5
+	Armament:
+		Name: primary
+		Weapon: NaxQuadCannon
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 512,200,80, 512,-200,80, 512,200,280, 512,-200,280
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: NaxQuadCannonE
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 512,200,80, 512,-200,80, 512,200,280, 512,-200,280
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	Armament@AA:
+		Name: primary
+		Weapon: NaxQuadCannonAA
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 512,200,80, 512,-200,80, 512,200,280, 512,-200,280
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@eliteAA:
+		Name: primary
+		Weapon: NaxQuadCannonAAE
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 512,200,80, 512,-200,80, 512,200,280, 512,-200,280
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 450
+	RenderSprites:
+		PlayerPalette: playerra2
+
+nax_slavemaster:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Valued:
+		Cost: 400
+	Tooltip:
+		Name: Slave Master
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~nax_barr, nax_refin
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 12500
+	Armament@PRIMARY:
+		Weapon: NaxiRifle
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: NaxiRifleE
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: NaxiRifleG
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: NaxiSoldatVoice
+	DeliversCash:
+		Payload: 60
+	SlaveMinerSpawnerMaster:
+		Actors: nax_slav, nax_slav, nax_slav, nax_slav
+		SlavesHaveFreeWill: false
+		SlaveDisposalOnKill: GiveSlavesToAttacker
+		SlaveDisposalOnOwnerChange: GiveSlavesToAttacker
+		SpawnOffset: 511,511,0, 511,511,0, 511,511,0, 511,511,0
+	-CaptureManager:
+	-Captures@CAPTURES:
+	-Captures@DRIVER_KILL:
+	Harvester:
+		Voice: Harvest
+		BaleLoadDelay: 12
+		BaleUnloadDelay: 12
+		BaleUnloadAmount: 1
+		FullyLoadedSpeed: 80
+		SearchFromProcRadius: 25
+		SearchFromHarvesterRadius: 10
+		EmptyCondition: no-tiberium
+	StoresResources:
+		Capacity: 4
+
+nax_slav:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: Slave
+		RequiresCondition: !freed
+	Tooltip@Freed:
+		Name: Freed Slave
+		RequiresCondition: freed
+	Buildable:
+		BuildPaletteOrder: 25
+		Prerequisites: ~yryabrck
+		#Queue: Infantry, RAInfantry
+		Description: Yuri resource collector.
+	Mobile:
+		Speed: 60
+		Locomotor: chem
+	Health:
+		HP: 10000
+	ChangesHealth@SelfHealing:
+		Step: 4
+	Armament@PRIMARY:
+		Weapon: RA2Shovel
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: RA2Shovel
+	AttackFrontal:
+		FacingTolerance: 2
+	AutoTarget:
+		ScanRadius: 10
+		RequiresCondition: freed
+	Voiced:
+		VoiceSet: SlaveWorkerVoice
+		RequiresCondition: !freed
+	Voiced@2:
+		VoiceSet: FreedSlaveVoice
+		RequiresCondition: freed
+	SlaveMinerSpawnerSlave:
+		FreedCondition: freed
+		FreeingRelationships: Neutral, Enemy
+		FreedSound: isl1lia.wav
+		AllowOwnerChange: true
+	DamageMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 25
+	FirepowerMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 1000
+	ReloadDelayMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 20
+	SpeedMultiplier@Freed:
+		RequiresCondition: freed
+		Modifier: 200
+	Harvester:
+		Voice: Harvest
+		BaleLoadDelay: 12
+		BaleUnloadDelay: 12
+		BaleUnloadAmount: 1
+		FullyLoadedSpeed: 80
+		SearchFromProcRadius: 25
+		SearchFromHarvesterRadius: 10
+		EmptyCondition: no-tiberium
+	StoresResources:
+		Capacity: 4
+	DockClientManager:
+		OccupancyCostModifier: 0
+	GrantConditionOnHarvest:
+		Condition: harvesting
+	WithFacingSpriteBody:
+		Sequence: harvest
+		RequiresCondition: harvesting
+	WithInfantryBody:
+		IdleSequences: idle
+		DefaultAttackSequence: shoot
+		RequiresCondition: no-tiberium && !harvesting
+	WithInfantryBody@full:
+		IdleSequences: idle1,idle2
+		StandSequences: stand
+		MoveSequence: full-run
+		DefaultAttackSequence: shoot
+		RequiresCondition: !no-tiberium && !harvesting
+	WithEnabledAnimation:
+		Sequence: cheer
+		RequiresCondition: freed
+	WithDockingAnimation:
+		DockSequence: idle
+		DockLoopSequence: idle
+	-DamagedByTerrain:
+	-TakeCover:
+	WithStoresResourcesPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 1
+	ActorStatValues:
+		Upgrades: upyurigenemod
