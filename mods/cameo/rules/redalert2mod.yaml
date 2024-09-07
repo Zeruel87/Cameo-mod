@@ -5150,6 +5150,8 @@ latin_topol:
 		Weapon: RA2TOPOLCuba
 		LocalOffset: -1024,250,5000
 		RequiresCondition: scudup == 5
+	FirepowerMultiplier@MissileBuff:
+		Modifier: 200
 	FirepowerMultiplier@RANK-1:
 		Modifier: 125
 	FirepowerMultiplier@RANK-2:
@@ -9203,6 +9205,61 @@ nax_weap:
 	Voiced:
 		VoiceSet: PRCWarFactoryVoice
 
+nax_radar:
+	Inherits: ^BaseBuilding
+	Inherits@radar: ^RadarBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^RASpawnActorsOnSell
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 630,-384,0, 630,384,0, -700,-512,0, -700,512,0
+	Buildable:
+		Queue: Building, RABuilding
+		Prerequisites: ~nax_conyard, nax_refin
+		Description: template-radar.description
+	Tooltip:
+		Name: template-radar.ra-allies
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	WithBuildingBib:
+	ProvidesPrerequisite:
+		Prerequisite: anyrahq
+	RenderSprites:
+		Image: dome
+		PlayerPalette: raplayer
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+
+nax_tek:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RASovietSpawnActorsOnSell
+	Inherits@tech: ^IsTechnoBuilding
+	HitShape:
+		TargetableOffsets: 420,-768,0, 420,768,0, -770,-768,0, -770,768,0
+	Buildable:
+		Prerequisites: ~nax_conyard, nax_radar
+	Tooltip:
+		Name: template-tech-center.ra-soviet
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	WithBuildingBib:
+	ProvidesPrerequisite:
+		Prerequisite: tek
+	ProvidesPrerequisite@techcenter:
+		Prerequisite: techcenter
+	Production@Upgrades:
+		Produces: Upgrades
+	RenderSprites:
+		Image: stek
+		PlayerPalette: raplayer
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+
 nax_mcv:
 	Inherits: ^Vehicle
 	Inherits@Template: ^SupportVehicleTemplate
@@ -9230,7 +9287,7 @@ nax_rifle:
 	Inherits: ^Soldier
 	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
@@ -9279,7 +9336,7 @@ nax_litt:
 		Name: Kleines Ungeziefer
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~nax_barr
+		Prerequisites: ~nax_barr, nax_tek
 		Queue: Infantry, RAInfantry
 		Description: template-scout-infantry.description
 	Mobile:
@@ -9318,7 +9375,7 @@ nax_mp40:
 		Name: SS Soldier
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~nax_barr
+		Prerequisites: ~nax_barr, nax_radar
 		Queue: Infantry, RAInfantry
 		Description: template-scout-infantry.description
 	Mobile:
@@ -9357,7 +9414,7 @@ nax_shrek:
 		Name: Panzerschreck
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~nax_barr
+		Prerequisites: ~nax_barr, nax_tek
 		Queue: Infantry, RAInfantry
 		Description: template-scout-infantry.description
 	Mobile:
@@ -9465,7 +9522,7 @@ nax_kingtiger:
 		Name: King Tiger Heavy Tank
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap
+		Prerequisites: ~nax_weap, nax_radar
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -9515,7 +9572,7 @@ nax_kingtiger:
 
 nax_maus:
 	Inherits: ^Tank
-	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@Template: ^HighTechTankTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -9527,12 +9584,12 @@ nax_maus:
 		Name: Maus
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap
+		Prerequisites: ~nax_weap, nax_tek
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
 		Speed: 60
-		TurnSpeed: 15
+		TurnSpeed: 12
 	Health:
 		HP: 450000
 	Repairable:
@@ -9540,25 +9597,25 @@ nax_maus:
 	ChangesHealth@SelfHealing:
 		Step: 52
 	Armor:
-		Type: Heavy
+		Type: Superheavy
 	Turreted:
-		TurnSpeed: 16 #3
+		TurnSpeed: 12 #3
 		Offset: -160,0,5
 	Armament:
 		Name: primary
 		Weapon: NaxMausCannon
-		Recoil: 128
-		RecoilRecovery: 38
-		LocalOffset: 1024,0,80
+		Recoil: 256
+		RecoilRecovery: 32
+		LocalOffset: 1500,0,300
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@elite:
 		Name: primary
 		Weapon: NaxMausCannon
-		Recoil: 128
-		RecoilRecovery: 38
-		LocalOffset: 1024,0,80
+		Recoil: 256
+		RecoilRecovery: 32
+		LocalOffset: 1500,0,300
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
 		RequiresCondition: rank-elite
@@ -9577,7 +9634,7 @@ nax_maus:
 
 nax_ratte:
 	Inherits: ^Tank
-	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@GAINSEXPERIENCE: ^EpicVehicleTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -9589,38 +9646,39 @@ nax_ratte:
 		Name: Ratte
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap
+		BuildLimit: 1
+		Prerequisites: ~nax_weap, nax_tek
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
-		Speed: 45
-		TurnSpeed: 5
+		Speed: 35
+		TurnSpeed: 7
 	Health:
-		HP: 1650000
+		HP: 2000000
 	Repairable:
-		HpPerStep: 6500
+		HpPerStep: 100000
 	ChangesHealth@SelfHealing:
-		Step: 52
+		Step: 800
 	Armor:
-		Type: Heavy
+		Type: Superheavy
 	Turreted:
-		TurnSpeed: 7 #3
+		TurnSpeed: 7
 		Offset: 100,0,5
 	Armament:
 		Name: primary
 		Weapon: NaxRatteCannon
-		Recoil: 128
-		RecoilRecovery: 38
-		LocalOffset: 1024,250,80, 1024,-250,80
+		Recoil: 500
+		RecoilRecovery: 50
+		LocalOffset: 2000,250,500, 2000,-250,500
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@elite:
 		Name: primary
 		Weapon: NaxRatteCannon
-		Recoil: 128
-		RecoilRecovery: 38
-		LocalOffset: 1024,250,80, 1024,-250,80
+		Recoil: 500
+		RecoilRecovery: 50
+		LocalOffset: 2000,250,500, 2000,-250,500
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
@@ -9634,7 +9692,8 @@ nax_ratte:
 	WithMuzzleOverlay:
 	SelectionDecorations:
 	Selectable:
-		DecorationBounds: 1280, 1280
+		Bounds: 2048, 2048, 0, -256
+		DecorationBounds: 2048, 2048, 0, -256
 	WithSpriteTurret:
 	Voiced:
 		VoiceSet: NaxiTankVoice
@@ -9645,7 +9704,7 @@ nax_ratte:
 
 nax_grille:
 	Inherits: ^Tank
-	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@Template: ^ArtilleryTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -9657,7 +9716,7 @@ nax_grille:
 		Name: Grille
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap
+		Prerequisites: ~nax_weap, nax_radar
 		Queue: Vehicle, RAVehicle
 		Description: actor-aaquas.description
 	Mobile:
@@ -9687,7 +9746,7 @@ nax_grille:
 
 nax_brummbar:
 	Inherits: ^Tank
-	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@Template: ^ArtilleryTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -9699,7 +9758,7 @@ nax_brummbar:
 		Name: Brummbar
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap
+		Prerequisites: ~nax_weap, nax_tek
 		Queue: Vehicle, RAVehicle
 		Description: actor-aaquas.description
 	Mobile:
@@ -9740,7 +9799,7 @@ nax_hetzer:
 		Name: Hetzer
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap
+		Prerequisites: ~nax_weap, nax_radar
 		Queue: Vehicle, RAVehicle
 		Description: actor-aaquas.description
 	Mobile:
@@ -9781,7 +9840,7 @@ nax_jagdpanzer:
 		Name: Hetzer
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap
+		Prerequisites: ~nax_weap, nax_tek
 		Queue: Vehicle, RAVehicle
 		Description: actor-aaquas.description
 	Mobile:
@@ -9870,7 +9929,7 @@ nax_wirbelwind:
 		Name: Wirbelwind
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap
+		Prerequisites: ~nax_weap, nax_radar
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -9956,7 +10015,7 @@ nax_slavemaster:
 		Queue: Infantry, RAInfantry
 		Description: template-scout-infantry.description
 	Mobile:
-		Speed: 55
+		Speed: 60
 	Health:
 		HP: 12500
 	Armament@PRIMARY:
@@ -9987,15 +10046,15 @@ nax_slavemaster:
 	-Captures@DRIVER_KILL:
 	Harvester:
 		Voice: Harvest
-		BaleLoadDelay: 12
-		BaleUnloadDelay: 12
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 4
 		BaleUnloadAmount: 1
 		FullyLoadedSpeed: 80
 		SearchFromProcRadius: 25
 		SearchFromHarvesterRadius: 10
 		EmptyCondition: no-tiberium
 	StoresResources:
-		Capacity: 4
+		Capacity: 12
 
 nax_slav:
 	Inherits: ^Soldier
@@ -10062,15 +10121,15 @@ nax_slav:
 		Modifier: 200
 	Harvester:
 		Voice: Harvest
-		BaleLoadDelay: 12
-		BaleUnloadDelay: 12
+		BaleLoadDelay: 4
+		BaleUnloadDelay: 4
 		BaleUnloadAmount: 1
 		FullyLoadedSpeed: 80
 		SearchFromProcRadius: 25
 		SearchFromHarvesterRadius: 10
 		EmptyCondition: no-tiberium
 	StoresResources:
-		Capacity: 4
+		Capacity: 12
 	DockClientManager:
 		OccupancyCostModifier: 0
 	GrantConditionOnHarvest:
