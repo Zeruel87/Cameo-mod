@@ -405,7 +405,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 				owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsRunState(), true);
 
 			owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, leader.Location), false, groupedActors: followingUnits.ToArray()));
-			owner.Bot.QueueOrder(new Order("Attack", null, Target.FromActor(owner.TargetActor), false, groupedActors: attackingUnits.ToArray()));
+			owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromActor(owner.TargetActor), false, groupedActors: attackingUnits.ToArray()));
 
 			isFirstTick = false;
 		}
