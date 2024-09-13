@@ -1505,7 +1505,8 @@ upgrade-longrangesensors =
 upgrade-armorpiercingbullets =
    .description = Increases damage of all bullet based weapons by 33%
     while also making them more effective against tank armor.
-    Increase Minigunner and Shotgunner damage by 100%.
+    Increases Minigunner and Shotgunner damage by 100%.
+    Increases GDI Sniper and A10 Carrier Bomber damage by 10%.
     Also adds a machine gun to the GDI Battle Tank.
 
 upgrade-heavyaircraftarmorplating =
@@ -1520,7 +1521,7 @@ upgrade-advancedmissiletargeting =
 
 upgrade-cuttingedgeweaponry =
    .description = Increases damage and fire rate of all experimental and prototype units by 15%.
-   Increases damage and armor of the EMP Grenadier by 100%.
+   Increases damage of the EMP Grenadier by 100% and armor by 50%.
    Increases damage of Havoc, Experimental Exosuits and Firehawks by 50%.
 
 upgrade-highvelocitycannons =
