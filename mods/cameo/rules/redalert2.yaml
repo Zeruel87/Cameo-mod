@@ -18,7 +18,7 @@ World:
 		Side: Red Alert 2
 		Description: faction-ra2-yuri.description
 	FactionCA@Randomra2:
-		Name: Random #faction-ra2-random.name
+		Name: Random RA2 #faction-ra2-random.name
 		InternalName: Randomra2
 		RandomFactionMembers: ra2america, ra2russia, yuri
 		Game: Red Alert 2
@@ -2924,7 +2924,7 @@ yrygggun:
 		Footprint: x
 		Dimensions: 1,1
 	Health:
-		HP: 160000
+		HP: 140000
 	Selectable:
 		Bounds: 1024, 1024
 	Turreted:
@@ -2935,41 +2935,52 @@ yrygggun:
 	AttackTurreted:
 		PauseOnCondition: lowpower || disabled
 	Armament@1:
+		Name: primary
 		Weapon: RA2GattlingMG1
 		PauseOnCondition: gatling
 		LocalOffset: 500,140,400, 500,-150,400
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	Armament@2:
+		Name: primary
 		Weapon: RA2GattlingMG2
 		PauseOnCondition: gatling != 1
 		LocalOffset: 500,140,400, 500,-150,400
 		MuzzleSequence: muzzle-1
 		MuzzlePalette: ra2effect
 	Armament@3:
+		Name: primary
 		Weapon: RA2GattlingMG3
 		PauseOnCondition: gatling < 2
 		LocalOffset: 500,140,400, 500,-150,400
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
 	Armament@1AA:
+		Name: secondary
 		Weapon: RA2GattlingMG1AA
 		PauseOnCondition: gatling
 		LocalOffset: 500,140,400, 500,-150,400
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	Armament@2AA:
+		Name: secondary
 		Weapon: RA2GattlingMG2AA
 		PauseOnCondition: gatling != 1
 		LocalOffset: 500,140,400, 500,-150,400
 		MuzzleSequence: muzzle-1
 		MuzzlePalette: ra2effect
 	Armament@3AA:
+		Name: secondary
 		Weapon: RA2GattlingMG3AA
 		PauseOnCondition: gatling < 2
 		LocalOffset: 500,140,400, 500,-150,400
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
+	-RenderRangeCircle:
+	RenderRangeCircleCA:
+		Armaments: primary
+	RenderRangeCircleCA@SECONDARY:
+		Armaments: secondary
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
@@ -7883,28 +7894,40 @@ RA2FALC:
 		Upgrades: upra2aeronautics
 
 RA2BEAG:
-	Inherits: RA2FALC
-	Inherits@Template: ^BomberTemplate
+	Inherits: ^RANeutralPlane
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@upgrade: ^RA2AdvancedAeronautics
+	Inherits@reload: ^RearmableAircraft
+	Inherits@Template: ^BomberTemplate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Valued:
-		Cost: 3200
 	Tooltip:
 		Name: actor-beag.name
 	Buildable:
+		BuildPaletteOrder: 20
 		Prerequisites: ~ra2gatech, ~upra2beag
+		Queue: Aircraft, RAAircraft
 		Description: actor-beag.description
+	Valued:
+		Cost: 3200
+	Health:
+		HP: 90000
+	ChangesHealth@SelfHealing:
+		Step: 40
 	Aircraft:
 		CruiseAltitude: 2560
 		TurnSpeed: 10
 		Speed: 150
 		IdleTurnSpeed: 8
 		IdleSpeed: 100
+		TakeoffSounds: vintupa.wav
+		LandingSounds: vintdna.wav
+		CanHover: false
+		CanSlide: false
+		VTOL: true
 		Voice: Move
-	Health:
-		HP: 90000
-	ChangesHealth@SelfHealing:
-		Step: 40
+	AttackAircraft:
+		Voice: Attack
+		FacingTolerance: 80
 	Armament@PRIMARY:
 		Name: primary
 		Weapon: BlackEagleMissiles
@@ -7923,18 +7946,32 @@ RA2BEAG:
 		DecorationBounds: 1536, 1280
 	AmmoPool:
 		Ammo: 4
+		ReloadDelay: 25
 		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 100
-		Count: 1
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 4
 	SpawnActorOnDeath:
 		Actor: ra2beag.Husk
+	WithMoveAnimation:
+		MoveSequence: move
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1024
+	Contrail@1:
+		Offset: -100,256,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -100,-256,0
+		TrailLength: 15
 	Voiced:
 		VoiceSet: BlackEagleVoice
+	DeathSounds:
+	RenderSprites:
+		PlayerPalette: playerra2
+	ActorStatValues:
+		Upgrades: upra2aeronautics
 
 ra2shad:
 	Inherits: ^Helicopter

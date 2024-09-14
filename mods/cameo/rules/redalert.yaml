@@ -1,24 +1,24 @@
 World:
 	FactionCA@allies:
-		Name: Allies RA #faction-ra-allies.name
+		Name: Allies RA1 #faction-ra-allies.name
 		InternalName: allies
 		Game: Red Alert
 		Side: Red Alert
 		Description: faction-ra-allies.description
 	FactionCA@soviet:
-		Name: Soviets #faction-ra-soviets.name
+		Name: Soviets RA1 #faction-ra-soviets.name
 		InternalName: soviet
 		Game: Red Alert
 		Side: Red Alert
 		Description: faction-ra-soviets.description
 	FactionCA@modjapan:
-		Name: Japan #faction-ra-japan.name
+		Name: Japan RA1 #faction-ra-japan.name
 		InternalName: modjapan
 		Side: Red Alert
 		Game: Red Alert
 		Description: faction-ra-japan.description
 	FactionCA@Randomra:
-		Name: Random #faction-ra-random.name
+		Name: Random RA1 #faction-ra-random.name
 		InternalName: Randomra
 		RandomFactionMembers: allies, soviet, modjapan
 		Game: Red Alert
@@ -520,6 +520,9 @@ RAE4:
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: FireballGun
+	DamageMultiplier@up_advancedthermobarics:
+		RequiresCondition: up_advancedthermobarics
+		Modifier: 50
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 		RequiresCondition: !parachute
@@ -3701,7 +3704,6 @@ SS:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@sub: ^Submarine
 	Inherits@sensors: ^NuclearEngines
-	Inherits@sensors: ^SovietAutoLoaders
 	Inherits@sensors: ^AdvancedThermobarics
 	Inherits@sensors: ^SovietSteel
 	Valued:
@@ -3730,6 +3732,11 @@ SS:
 	Armament@PRIMARY:
 		Weapon: TorpTube
 		LocalOffset: 256,0,0
+		RequiresCondition: !up_advancedthermobarics
+	Armament@Upgrade:
+		Weapon: TorpTubeThermobaric
+		LocalOffset: 256,0,0
+		RequiresCondition: up_advancedthermobarics
 	RenderRangeCircle:
 	Targetable:
 		TargetTypes: Ground, Water, Ship, Submarine
@@ -3747,7 +3754,7 @@ SS:
 		Image: rass
 		PlayerPalette: raplayer
 	ActorStatValues:
-		Upgrades: up_nuclearengines, up_sovietautoloaders, up_advancedthermobarics, up_sovietsteel
+		Upgrades: up_nuclearengines, up_advancedthermobarics, up_sovietsteel
 
 MSUB:
 	Inherits: ^BoatUnit
@@ -5350,13 +5357,20 @@ jmgnest:
 	WithBuildingBib:
 		HasMinibib: true
 	Armament:
+		Name: primary
 		Weapon: JHighV
 		LocalOffset: 768,0,512
 		MuzzleSequence: muzzle
 	Armament@SECONDARY:
+		Name: secondary
 		Weapon: JHighVAA
 		LocalOffset: 768,0,512
 		MuzzleSequence: muzzle
+	-RenderRangeCircle:
+	RenderRangeCircleCA:
+		Armaments: primary
+	RenderRangeCircleCA@SECONDARY:
+		Armaments: secondary
 	AttackTurreted:
 		RequiresCondition: !build-incomplete
 	WithMuzzleOverlay:
@@ -7708,6 +7722,7 @@ V2RLNUKE:
 
 MIGNUKE:
 	Inherits: ^RAPlane
+	Inherits@reload: ^RearmableAircraft
 	Inherits@Template: ^BomberTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
@@ -7767,24 +7782,18 @@ MIGNUKE:
 		RequiresCondition: enable-smoke
 	Voiced:
 		VoiceSet: RussianVehicleVoice
-	GrantConditionOnActivity@supersonic:
-		Condition: supersonic
 	SpeedMultiplier@supersonic:
 		Modifier: 150
-		RequiresCondition: supersonic && ammo
 	DamageMultiplier@supersonic:
-		RequiresCondition: supersonic && ammo
 		Modifier: 50
 	AmmoPool:
-		Ammo: 3
+		Ammo: 1
+		ReloadDelay: 25
 		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 250
-		Count: 1
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
-		PipCount: 3
+		PipCount: 1
 	GrantConditionOnDamageState@SmokeTrail:
 		Condition: enable-smoke
 	RenderSprites:
@@ -7812,7 +7821,7 @@ su57:
 		Prerequisites: ~stek, ~upmignukebomber
 		Description: actor-su57.description
 	Valued:
-		Cost: 2500
+		Cost: 3300
 	Tooltip:
 		Name: actor-su57.name
 	UpdatesPlayerStatistics:
@@ -7837,15 +7846,16 @@ su57:
 		RequiresCondition: up_advancedthermobarics
 	Armament@PRIMARY:
 		Weapon: ChainGun.Yak
-		LocalOffset: 250,-250,0
+		LocalOffset: 250,-250,0, 250,250,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
 	Armament@SECONDARY:
-		Name: secondary
 		Weapon: ChainGun.Yak
-		LocalOffset: 250,250,0
+		LocalOffset: 250,250,0, 250,-250,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
+	FirepowerMultiplier@su57:
+		Modifier: 50
 	AttackAircraft:
 		FacingTolerance: 80
 		StrafeRunLength: 2500
