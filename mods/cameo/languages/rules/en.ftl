@@ -1536,7 +1536,7 @@ upgrade-lightweightarmorplating =
 upgrade-guerillatactics =
    .description = Increases speed, range, damage and vision of all hit and run units by 5%.
    The following units count as hit and run:
-   Flamethrower Infantry, Chemical Warrior, Commando, Buggie, Recon Bike, Light Tank,
+   Minigunner, Flamer, Chemical Warrior, Commando, Buggy, Recon Bike, Light Tank,
    SSM Launcher, Stealth Tank, Apache, Attack Submarine, Ballistic Missile Submarine,
    Chemical Attack Bike, Chemical Stealth Tank, Nod Buggy Mk2, Black Hand Flamer,
    Stealth Soldier, Stealth Harvester, Specter Artillery, Venom, Laser Commando.
@@ -1593,7 +1593,8 @@ upgrade-rocketenhancements =
 upgrade-advancedthermobarics =
    .description = Increases damage of all fire and nuclear weapons by 25%.
    Adds Napalm Warheads to the V1 Truck, Mig, Su-57 and all tanks.
-   V2 Launcher and Nuclear V2 Launcher increase damage by 100% instead.
+   V2 Launcher and Nuclear V2 Launcher increase damage by 100%.
+   Increases Armor of the Flamethrower Infantry by 50%
 
 upgrade-experimentalteslaweaponry =
    .description = Increases damage of tesla weapons by 50%
@@ -1830,3 +1831,8 @@ faction-ra2-yuri =
    .name = Yuri
    .description = Yuri from Yuri's Revenge
       Support powers: Genetic Mutator, Psychic Dominator
+
+faction-ra2-modded-random =
+   .name = Any
+   .description = Random faction
+      A random faction from Red Alert 2 Mods will be chosen when the game starts.
