@@ -1503,15 +1503,14 @@ upgrade-longrangesensors =
     of all units and defenses by 25% and doubles accuracy.
 
 upgrade-armorpiercingbullets =
-   .description = Increases damage of all bullet based weapons by 33%
+   .description = Increases damage of all bullet based weapons by 33%.
     while also making them more effective against tank armor.
     Increases Minigunner and Shotgunner damage by 100%.
     Increases GDI Sniper and A10 Carrier Bomber damage by 10%.
     Also adds a machine gun to the GDI Battle Tank.
 
 upgrade-heavyaircraftarmorplating =
-   .description = Increases armor of Orcas by 30% and
-    Firehawks and A10 Bombers by 50%.
+   .description = Increases armor of Orcas, Firehawks and A10s by 30%.
 
 upgrade-advancedmissiletargeting =
    .description = Increases range of all missile weapons by 25%.
