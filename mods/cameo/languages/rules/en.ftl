@@ -67,6 +67,8 @@ actor-bggy =
 actor-jeep =
    .description = Scout vehicle armed with a machine gun.
         Strong vs Infantry
+   .description2 = Scout vehicle armed with a recoilless gun.
+        Strong vs Infantry, Light Vehicles, Aircraft
    .name = Humvee
    .raname = Ranger
    .recon = Recon Ranger
@@ -1593,7 +1595,7 @@ upgrade-advancedthermobarics =
    .description = Increases damage of all fire and nuclear weapons by 25%.
    Adds Napalm Warheads to the V1 Truck, Mig, Su-57 and all tanks.
    V2 Launcher and Nuclear V2 Launcher increase damage by 100%.
-   Increases Armor of the Flamethrower Infantry by 50%
+   Increases Armor of the Flamethrower Infantry and Fire Rocket Soldier by 50%
 
 upgrade-experimentalteslaweaponry =
    .description = Increases damage of tesla weapons by 50%
@@ -1746,6 +1748,7 @@ template-commando =
 
 template-opentopped =
    .description = Transport with fireports for passengers.
+      Comes already loaded with infantry inside.
 
 template-unarmed-transport =
    .description = Unarmed troop transport.

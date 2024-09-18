@@ -7112,32 +7112,41 @@ ra2dest:
 	Armor:
 		Type: Heavy
 	Armament@PRIMARY:
+		Name: secondary
 		Weapon: RA2155mm
 		LocalOffset: 1100,0,100
-		Name: secondary
 		MuzzleSequence: muzzle
 		RequiresCondition: !rank-elite
 	Armament@ELITE:
+		Name: secondary
 		Weapon: RA2155mm_elite
 		LocalOffset: 1100,0,100
-		Name: secondary
 		MuzzleSequence: muzzle
 		RequiresCondition: rank-elite
 	Armament@GenerateOsprey:
+		Name: primary
 		Weapon: RA2OspreyTarget
+	-RenderRangeCircle:
+	RenderRangeCircleCA:
+		Armaments: primary
+		Color: FF0000
+	RenderRangeCircleCA@SECONDARY:
+		Armaments: secondary
+	DetectCloaked:
+		Range: 10000
+		DetectionTypes: Underwater
 	WithMuzzleOverlay:
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
 	RenderDetectionCircle:
 	Selectable:
-	DeliversCash:
-		Payload: 500
 	Voiced:
 		VoiceSet: AlliesNavalVoice
 	CarrierMaster:
 		Actors: ra2asw
-		RespawnTicks: 300
+		RearmTicks: 125
+		RespawnTicks: 250
 		InstaRepair: true
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: true
@@ -7148,6 +7157,67 @@ ra2dest:
 	WithFacingSpriteBody@empty:
 		Sequence: idle-empty
 		RequiresCondition: !osprey-loaded
+	RenderSprites:
+		PlayerPalette: playerra2
+
+ra2asw:
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^BomberTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@upgrade: ^RA2AdvancedAeronautics
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Osprey
+	Aircraft:
+		AltitudeVelocity: 240
+		InitialFacing: 768
+		TurnSpeed: 21
+		Speed: 210
+		MaximumPitch: 42
+		TakeoffSounds: vospstaa.wav
+		LandingSounds: vosplana.wav
+		TakeUpCellWhenLand: false
+	Health:
+		HP: 50000
+	ChangesHealth@SelfHealing:
+		Step: 20
+	Armament@PRIMARY:
+		Weapon: RA2DepthCharge
+		LocalOffset: 427,-171,-213, 427,171,-213
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 40
+		PersistentTargeting: false
+		RequiresCondition: ammo
+	DetectCloaked:
+		Range: 10000
+		DetectionTypes: Underwater
+	RenderDetectionCircle:
+	FirepowerMultiplier@ScoutShip:
+		Modifier: 50
+	SpawnActorOnDeath:
+		Actor: ra2asw.Husk
+	AmmoPool:
+		Ammo: 12
+		AmmoCondition: ammo
+	Voiced:
+		VoiceSet: NighthawkVoice
+	CarrierSlave:
+		LandingDistance: 8000
+	AutoTarget:
+		InitialStanceAI: AttackAnything
+		InitialStance: AttackAnything
+	HasParent:
+	-UpdatesPlayerStatistics:
+	-ActorLostNotification:
+	-WithShadow:
+	-MapEditorData:
+	RejectsOrders:
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 6
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -7199,8 +7269,6 @@ ra2aegis:
 		Voice: Attack
 		FacingTolerance: 0
 	WithMuzzleOverlay:
-	DeliversCash:
-		Payload: 500
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: AegisVoice
@@ -7255,7 +7323,7 @@ ra2carrier:
 
 ra2hornet:
 	Inherits: ^RANeutralPlane
-	Inherits@Template: ^FighterTemplate
+	Inherits@Template: ^BomberTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@upgrade: ^RA2AdvancedAeronautics
 	Valued:
@@ -7273,6 +7341,8 @@ ra2hornet:
 		TakeUpCellWhenLand: false
 	Health:
 		HP: 5000
+	ChangesHealth@SelfHealing:
+		Step: 2
 	Armament@PRIMARY:
 		Weapon: RA2HornetMissile
 		LocalOffset: 427,-171,-213, 427,171,-213
@@ -7934,6 +8004,7 @@ RA2BEAG:
 		Weapon: BlackEagleMissiles
 		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
 		LocalYaw: 50, -50, 25, -25
+		AmmoUsage: 2
 		PauseOnCondition: !ammo
 		RequiresCondition: !rank-elite
 	Armament@PRIMARYELITE:
@@ -7941,12 +8012,13 @@ RA2BEAG:
 		Weapon: BlackEagleMissiles_elite
 		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
 		LocalYaw: 50, -50, 25, -25
+		AmmoUsage: 1
 		PauseOnCondition: !ammo
 		RequiresCondition: rank-elite
 	Selectable:
 		DecorationBounds: 1536, 1280
 	AmmoPool:
-		Ammo: 4
+		Ammo: 8
 		ReloadDelay: 25
 		AmmoCondition: ammo
 	WithAmmoPipsDecoration:
@@ -8357,40 +8429,6 @@ yrlunr.husk:
 	Tooltip:
 		Name: Cosmonaut
 
-ra2asw:
-	Inherits: ra2hornet
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Osprey
-	Aircraft:
-		AltitudeVelocity: 240
-		InitialFacing: 768
-		TurnSpeed: 21
-		Speed: 210
-		MaximumPitch: 42
-		TakeoffSounds: vospstaa.wav
-		LandingSounds: vosplana.wav
-	Health:
-		HP: 50000
-	Armor:
-		Type: Fighter
-	Armament@PRIMARY:
-		Weapon: RA2DepthCharge
-		LocalOffset: 427,-171,-213, 427,171,-213
-		PauseOnCondition: !ammo
-	AttackAircraft:
-		FacingTolerance: 40
-		PersistentTargeting: false
-	DetectCloaked:
-		Range: 5000
-		DetectionTypes: Underwater
-	RenderDetectionCircle:
-	FirepowerMultiplier@ScoutShip:
-		Modifier: 33
-	SpawnActorOnDeath:
-		Actor: ra2asw.Husk
-
 yrspyp:
 	Inherits: ^AirstrikePlane
 	Health:
@@ -8574,6 +8612,7 @@ yrbpln:
 
 yrbpln1:
 	Inherits: ^RANeutralPlane
+	Inherits@reload: ^RearmableAircraft
 	Inherits@Template: ^BomberTemplate
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -8584,7 +8623,7 @@ yrbpln1:
 	Tooltip:
 		Name: actor-bpln.name
 	Valued:
-		Cost: 2800
+		Cost: 2000
 	Buildable:
 		BuildPaletteOrder: 100
 		Prerequisites:  ~ra2naairf, ~upra2mig
@@ -8609,16 +8648,18 @@ yrbpln1:
 		FacingTolerance: 100
 	Armament:
 		Name: primary
-		Weapon: MigMissiles_AG
+		Weapon: MigMissiles
 		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
 		LocalYaw: 50, -50, 25, -25
 		RequiresCondition: !upradshells
+		PauseOnCondition: !ammo
 	Armament@rad:
 		Name: primary
-		Weapon: MigMissiles_AG_rad
+		Weapon: MigMissiles_rad
 		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
 		LocalYaw: 50, -50, 25, -25
 		RequiresCondition: upradshells
+		PauseOnCondition: !ammo
 	Armament@aa:
 		Name: secondary
 		Weapon: MigMissiles_AA
@@ -8628,9 +8669,6 @@ yrbpln1:
 	AmmoPool:
 		Ammo: 4
 		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 65
-		Count: 1
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
