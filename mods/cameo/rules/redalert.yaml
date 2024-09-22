@@ -2235,6 +2235,7 @@ YAK:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@sensors: ^AdvancedThermobarics
 	Inherits@sensors: ^SovietSteel
 	Buildable:
 		Queue: Aircraft, RAAircraft
@@ -2252,16 +2253,31 @@ YAK:
 	ChangesHealth@SelfHealing:
 		Step: 7
 	Armament@PRIMARY:
-		Weapon: ChainGun.Yak
+		Weapon: YakChainGun
 		LocalOffset: 256,-213,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
+		RequiresCondition: !up_advancedthermobarics
 	Armament@SECONDARY:
 		Name: secondary
-		Weapon: ChainGun.Yak
+		Weapon: YakChainGun
 		LocalOffset: 256,213,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
+		RequiresCondition: !up_advancedthermobarics
+	Armament@Upgrade1:
+		Weapon: IncendiaryYakChainGun
+		LocalOffset: 256,-213,0
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: up_advancedthermobarics
+	Armament@Upgrade2:
+		Name: secondary
+		Weapon: IncendiaryYakChainGun
+		LocalOffset: 256,213,0
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: up_advancedthermobarics
 	FirepowerMultiplier@doublecannons:
 		Modifier: 50
 	AttackAircraft:
@@ -2302,6 +2318,110 @@ YAK:
 		Condition: enable-smoke
 	RenderSprites:
 		PlayerPalette: raplayer
+	ActorStatValues:
+		Upgrades: up_advancedthermobarics, up_sovietsteel
+
+HIND:
+	Inherits: ^RAHelicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^SovietSteel
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 20
+		Prerequisites: ~raafld
+		Description: actor-hind.description
+	Valued:
+		Cost: 1800
+	Tooltip:
+		Name: actor-hind.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 100000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armament@PRIMARY:
+		Weapon: ChainGun
+		LocalOffset: 85,-213,-85, 85,213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: !up_advancedthermobarics
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: ChainGun
+		LocalOffset: 85,213,-85, 85,-213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: !up_advancedthermobarics
+	Armament@Upgrade1:
+		Weapon: IncendiaryChainGun
+		LocalOffset: 85,-213,-85, 85,213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: up_advancedthermobarics
+	Armament@Upgrade2:
+		Name: secondary
+		Weapon: IncendiaryChainGun
+		LocalOffset: 85,213,-85, 85,-213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: up_advancedthermobarics
+	AttackAircraft:
+		FacingTolerance: 80
+		AttackType: Hover
+	Aircraft:
+		TurnSpeed: 24
+		Speed: 120
+	WithIdleOverlay@ROTORAIR:
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTORGROUND:
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	SelectionDecorations:
+	WithMuzzleOverlay:
+	SpawnActorOnDeath:
+		Actor: HIND.Husk
+	EjectOnDeath:
+		PilotActor: RARE1
+	LeavesTrails:
+		Offsets: -427,0,0
+		Image: smokey
+		MovingInterval: 3
+		StationaryInterval: 3
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+		RequiresCondition: enable-smoke
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	GrantConditionOnDamageState@SmokeTrail:
+		Condition: enable-smoke
+	AmmoPool:
+		Ammo: 12
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 16
+		Count: 2
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 6
+	Explodes:
+		Weapon: LargeHeliExplode
+	RenderSprites:
+		PlayerPalette: raplayer
+	ActorStatValues:
+		Upgrades: up_advancedthermobarics, up_sovietsteel
 
 RAHELI:
 	Inherits: ^RAHelicopter
@@ -2497,90 +2617,6 @@ MH60:
 		Position: BottomLeft
 		RequiresSelection: True
 		PipCount: 6
-
-HIND:
-	Inherits: ^RAHelicopter
-	Inherits@Template: ^HelicopterTemplate
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@AntiInf: ^PrioritizeInfantry
-	Inherits@AntiAir: ^PrioritizeAir
-	Inherits@sensors: ^SovietSteel
-	Buildable:
-		Queue: Aircraft, RAAircraft
-		BuildPaletteOrder: 20
-		Prerequisites: ~raafld
-		Description: actor-hind.description
-	Valued:
-		Cost: 1800
-	Tooltip:
-		Name: actor-hind.name
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 100000
-	ChangesHealth@SelfHealing:
-		Step: 40
-	Armament@PRIMARY:
-		Weapon: ChainGun
-		LocalOffset: 85,-213,-85, 85,213,-85
-		MuzzleSequence: muzzle
-		PauseOnCondition: !ammo
-	Armament@SECONDARY:
-		Name: secondary
-		Weapon: ChainGun
-		LocalOffset: 85,213,-85, 85,-213,-85
-		MuzzleSequence: muzzle
-		PauseOnCondition: !ammo
-	AttackAircraft:
-		FacingTolerance: 80
-		AttackType: Hover
-	Aircraft:
-		TurnSpeed: 24
-		Speed: 120
-	WithIdleOverlay@ROTORAIR:
-		Sequence: rotor
-		RequiresCondition: airborne
-		PauseOnCondition: disabled
-	WithIdleOverlay@ROTORGROUND:
-		Sequence: slow-rotor
-		RequiresCondition: !airborne
-		PauseOnCondition: disabled
-	SelectionDecorations:
-	WithMuzzleOverlay:
-	SpawnActorOnDeath:
-		Actor: HIND.Husk
-	EjectOnDeath:
-		PilotActor: RARE1
-	LeavesTrails:
-		Offsets: -427,0,0
-		Image: smokey
-		MovingInterval: 3
-		StationaryInterval: 3
-		SpawnAtLastPosition: False
-		TrailWhileStationary: True
-		Type: CenterPosition
-		RequiresCondition: enable-smoke
-	Selectable:
-		DecorationBounds: 1280, 1280
-	Voiced:
-		VoiceSet: RussianVehicleVoice
-	GrantConditionOnDamageState@SmokeTrail:
-		Condition: enable-smoke
-	AmmoPool:
-		Ammo: 12
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 16
-		Count: 2
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: True
-		PipCount: 6
-	Explodes:
-		Weapon: LargeHeliExplode
-	RenderSprites:
-		PlayerPalette: raplayer
 
 RATRAN:
 	Inherits: ^RAHelicopter
@@ -2884,13 +2920,13 @@ MODKAMI:
 	ChangesHealth@SelfHealing:
 		Step: 9
 	Armament@PRIMARY:
-		Weapon: ChainGun.Kamikaze
+		Weapon: ZeroFighterChainGun
 		LocalOffset: 256,213,0, 256,-213,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
 	Armament@SECONDARY:
 		Name: secondary
-		Weapon: ChainGun.Kamikaze
+		Weapon: ZeroFighterChainGun
 		LocalOffset: 256,213,0, 256,-213,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
@@ -3656,13 +3692,13 @@ zerofighter:
 	Health:
 		HP: 7500
 	Armament@PRIMARY:
-		Weapon: ChainGun.Kamikaze
+		Weapon: ZeroFighterChainGun
 		LocalOffset: 128,128,0, 128,-128,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
 	Armament@SECONDARY:
 		Name: secondary
-		Weapon: ChainGun.Kamikaze
+		Weapon: ZeroFighterChainGun
 		LocalOffset: 128,128,0, 128,-128,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
@@ -4841,6 +4877,7 @@ MSLO:
 		BeaconPosters:
 			1: raatomicon
 		CameraRange: 10000
+		CameraRemoveDelay: 125
 		CircleRanges:
 			1: 10000
 		ArrowSequence: arrow
@@ -5980,21 +6017,22 @@ reconranger:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 27500
+		HP: 25000
 	Repairable:
-		HpPerStep: 1375
+		HpPerStep: 1250
 	ChangesHealth@SelfHealing:
-		Step: 11
+		Step: 10
 	Mobile:
-		Speed: 155
-		TurnSpeed: 31
+		Speed: 160
+		TurnSpeed: 32
 	Turreted:
-		TurnSpeed: 31
+		TurnSpeed: 32
 		Offset: -366,0,166
 	Armament:
 		Weapon: ReconRangerRecoillessGun
 		MuzzleSequence: muzzle
 		LocalOffset: 730,0,166
+		FireDelay: 4
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -6007,7 +6045,7 @@ reconranger:
 		PlayerPalette: player_rgba
 	GrantConditionOnAttack:
 		Condition: firing
-		RevokeDelay: 16
+		RevokeDelay: 64
 	SpeedMultiplier@firing:
 		RequiresCondition: firing
 		Modifier: 50
@@ -7856,12 +7894,12 @@ su57:
 		PauseOnCondition: !ammo
 		RequiresCondition: up_advancedthermobarics
 	Armament@PRIMARY:
-		Weapon: ChainGun.Yak
+		Weapon: YakChainGun
 		LocalOffset: 250,-250,0, 250,250,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
 	Armament@SECONDARY:
-		Weapon: ChainGun.Yak
+		Weapon: YakChainGun
 		LocalOffset: 250,250,0, 250,-250,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
@@ -8735,7 +8773,7 @@ MODBOMBER:
 		FacingTolerance: 50
 	Armament@guns:
 		Name: secondary
-		Weapon: ChainGun.Kamikaze
+		Weapon: ZeroFighterChainGun
 		LocalOffset: 0,128,0, 0,-128,0
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo

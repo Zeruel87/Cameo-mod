@@ -1501,8 +1501,8 @@ upgrade-a10airstrike =
    .description = Enables the A10 Airstrike Support Power.
 
 upgrade-longrangesensors =
-   .description = Increases vision and stealth detection range
-    of all units and defenses by 25% and doubles accuracy.
+   .description = Increases vision, stealth detection range
+    and accuracy of all units and defenses by 25%.
 
 upgrade-armorpiercingbullets =
    .description = Increases damage of all bullet based weapons by 33%.
@@ -1595,6 +1595,7 @@ upgrade-advancedthermobarics =
    .description = Increases damage of all fire and nuclear weapons by 25%.
    Adds Napalm Warheads to the V1 Truck, Mig, Su-57 and all tanks.
    V2 Launcher and Nuclear V2 Launcher increase damage by 100%.
+   Adds Incendiary Bullets to the Yak and Hind.
    Increases Armor of the Flamethrower Infantry and Fire Rocket Soldier by 50%
 
 upgrade-experimentalteslaweaponry =
