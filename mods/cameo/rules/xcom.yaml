@@ -658,6 +658,10 @@ XCOMHQ:
 	GrantConditionOnPower:
 		Power: 1
 		Condition: SoldierCap
+	Production@Vehicle:
+		Produces: Vehicle
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
 	Production@Infantry:
 		Produces: Infantry
 		PauseOnCondition: disabled
@@ -703,8 +707,23 @@ XCOMHQ:
 		BuildDurationModifier: 50
 		InfiniteBuildLimit: 10
 		AlwaysShowForFactions: xcom
+	ParallelProductionQueue@VEHICLE:
+		Type: Vehicle
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
 	ProductionBar@Infantry:
 		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@VEHICLE:
+		ProductionType: Vehicle
 		RequiresCondition: !classicproductionqueues
 	ProductionBar@Building:
 		ProductionType: Building
@@ -1272,7 +1291,7 @@ xcom_builder:
 	Inherits@Template: ^SupportVehicleTemplate
 	Inherits@selection: ^SelectableEconomicUnit
 	Buildable:
-		Queue: Vehicle, RAVehicle
+		Queue: Vehicle
 		BuildPaletteOrder: 100
 		Prerequisites: ~xcomhq
 		Description: template-mcv.description
@@ -1326,9 +1345,13 @@ xcom_buildable_turret:
 	Inherits: RAGUN
 	Buildable:
 		Queue: Builder
-		-Prerequisites:
+		Prerequisites: ~xcomhq
 	Building:
-		BuilderRange: 2c0
+		BuilderRange: 2500
+		RequiresBaseProvider: false
+	-RequiresBuildableArea:
+	Power:
+		Amount: 0
 	InstantlyPlaced:
 	RenderSprites:
 		Image: ragun

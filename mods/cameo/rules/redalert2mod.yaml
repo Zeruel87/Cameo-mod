@@ -378,7 +378,6 @@ aa_cgmiac:
 	Inherits@shape: ^3x3Shape
 	Inherits@sell: ^AASpawnActorsOnSell
 	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@barr: ^IsBarrack
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 140
@@ -400,8 +399,33 @@ aa_cgmiac:
 		ExitCell: 2,1
 	WithIdleOverlay@lights:
 		Sequence: idle-lights
+	Production@NORMAL:
+		Produces: Infantry
+		RequiresCondition: !classicproductionqueues
+		PauseOnCondition: disabled
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+		RequiresCondition: classicproductionqueues
+		PauseOnCondition: disabled
 	ParallelProductionQueue@INFANTRY:
+		Type: Infantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
 		BuildDurationModifier: 25
+	ProductionBar@INFANTRY:
+		ProductionType: Infantry
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRY:
+		ProductionType: RAInfantry
+		RequiresCondition: classicproductionqueues
 	ProvidesPrerequisite@infantry:
 		Prerequisite: infantry.upgraded
 	ProvidesPrerequisite@aircraft:
@@ -818,6 +842,7 @@ aa_cgplas:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^AASpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
+	Inherits@detect: ^GenericGroundDetector
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 50
@@ -2206,7 +2231,7 @@ aa_viper:
 aa_mlrs:
 	Inherits: ^Tank
 	Inherits@anim: ^RA2Vehicle
-	Inherits@Template: ^ArtilleryTemplate
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@EXP: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
@@ -2245,6 +2270,7 @@ aa_mlrs:
 	AttackTurreted:
 	WithSpriteTurret:
 	WithMuzzleOverlay:
+	RenderRangeCircle:
 	RenderSprites:
 		Image: aa_mlrs
 		PlayerPalette: playerra2
@@ -2253,7 +2279,7 @@ aa_mlrs:
 	GrantConditionOnAttack:
 		Condition: gatling
 		ArmamentNames: primary, secondary
-		RequiredShotsPerInstance: 12, 24
+		RequiredShotsPerInstance: 8, 12
 		MaximumInstances: 2
 		RevokeDelay: 25
 		RevokeAll: true
@@ -2327,6 +2353,7 @@ aa_hotwi:
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	AttackTurreted:
+		TargetFrozenActors: True
 	WithMuzzleOverlay:
 	WithSpriteTurret:
 	Voiced:
@@ -3734,13 +3761,14 @@ latin_cgpile:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@shape: ^3x2Shape
+	Inherits@shape: ^3x3Shape
 	Inherits@sell: ^RA2ASpawnActorsOnSell
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@barr: ^IsBarrack
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@gar: ^ClearableGarrisonNeutronOnly
 	Inherits@bot: ^BotAutoDeployEvacuateCargo
+	Inherits@lightposts: ^LightPosts
 	Tooltip:
 		Name: Combat Barracks
 	ProvidesPrerequisite:
@@ -3750,7 +3778,7 @@ latin_cgpile:
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
-		LocalCenterOffset: 0,-512,0
+		LocalCenterOffset: 0,0,0
 	RallyPoint:
 		Path: 0,2
 	Exit@1:
@@ -3773,8 +3801,7 @@ latin_cgpile:
 		QuantizedFacings: 8
 	Cargo:
 		Types: Infantry, Hacker, Fremen
-		MaxWeight: 6
-		#InitialUnits: ra2e2
+		MaxWeight: 5
 	WithSpriteBody:
 	WithIdleOverlay@Bunkered:
 		Sequence: idle-bunkered
@@ -3783,21 +3810,11 @@ latin_cgpile:
 		Armaments: garrisoned
 		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
 		PauseOnCondition: chronobeamed
-	DamageMultiplier@2x2Shape:
-		Modifier: 50
 	RevealsShroud:
 		Range: 6666
 	ActorStatValues:
 		Stats: Armor, Sight, Cargo, Kills, Experience
 	GivesBuildableArea:
-	DamageMultiplier@uplatin_ngbunk2:
-		Modifier: 50
-		RequiresCondition: uplatin_ngbunk2
-	GrantConditionOnPrerequisite@uplatin_ngbunk2:
-		Condition: uplatin_ngbunk2
-		Prerequisites: uplatin_ngbunk2
-	ActorStatValues:
-		Upgrades: uplatin_ngbunk2
 
 latin_cgweap:
 	Inherits: ^RA2DefaultWeap
@@ -3859,16 +3876,15 @@ latin_cgte:
 	Buildable:
 		Prerequisites: ~latin_cgauto
 	Tooltip:
-		Name: Recycle Center
+		Name: Recycling Center
 	Building:
 		Footprint: xx xx xx
 		Dimensions: 3,2
-	SupportPowerChargeBar:
 	ProvidesPrerequisite:
 	WithIdleOverlay@lights:
 		Sequence: idle-lights
 		RequiresCondition: !build-incomplete
-	WithIdleOverlay@lights:
+	WithIdleOverlay@lights2:
 		Sequence: idle-lights2
 		RequiresCondition: !build-incomplete
 	SupportPowerChargeBar:
@@ -3882,17 +3898,22 @@ latin_cgte:
 		IconImage: latin_buggy
 		AllowMultiple: True
 		PauseOnCondition: disabled
-		Prerequisites:
-			1: latin_cgte
-		Actors: latinscrapcar2_driveby
+		Prerequisites: uplatin_up_tech1
+			1: uplatin_up_tech1
+		Actors: latinscrapcar_driveby, latinscrapcar2_driveby
 		Type: Car
-		ChargeInterval: 750
+		ChargeInterval: 1500
 		AutoFire: true
 		OrderName: callcars
 		SupportPowerPaletteOrder: 20
 		LaunchSound: gcraspee.wav
+		RequiresCondition: uplatin_up_tech1
+	GrantConditionOnPrerequisite@uplatin_up_tech1:
+		Condition: uplatin_up_tech1
+		Prerequisites: uplatin_up_tech1
 	Production@Car:
 		Produces: Car
+	RallyPoint:
 	Exit@1:
 		SpawnOffset: -704,768,0
 		ExitCell: -1,2
@@ -3940,35 +3961,11 @@ latin_cgair:
 	WithIdleOverlay@dish:
 		Sequence: idle-dish
 		PauseOnCondition: disabled
-
-latin_cgspy:
-	Inherits: ^RA2Building
-	Inherits@shape: ^3x2Shape
-	Inherits@sell: ^RA2ASpawnActorsOnSell
-	Inherits@tech: ^IsTechnoBuilding
-	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
-	Selectable:
-		Bounds: 3072, 2048, 0, -256
-	Buildable:
-		Prerequisites: ~latin_cgcnst, latin_cgte
-	Tooltip:
-		Name: Spy Center
-	Building:
-		Footprint: xx xx xx
-		Dimensions: 3,2
-	SupportPowerChargeBar:
-	ProvidesPrerequisite:
-	WithIdleOverlay@lights:
-		Sequence: idle-lights
-		RequiresCondition: !build-incomplete
-	WithIdleOverlay@lights:
-		Sequence: idle-lights2
-		RequiresCondition: !build-incomplete
 	AirstrikePower@spyplane:
 		PauseOnCondition: disabled
 		OrderName: SovietRA2SpyPlane
 		Prerequisites:
-			1: !RA2Psicorps, ~!RA2DOOM
+			1: latin_cgair
 		IconImage: yrspyp
 		Icons:
 			1: icon
@@ -3994,6 +3991,30 @@ latin_cgspy:
 		#UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		SupportPowerPaletteOrder: 10
+
+latin_cgspy:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@tech: ^IsTechnoBuilding
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Selectable:
+		Bounds: 3072, 2048, 0, -256
+	Buildable:
+		Prerequisites: ~latin_cgcnst, latin_cgte
+	Tooltip:
+		Name: Spy Center
+	Building:
+		Footprint: xx xx xx
+		Dimensions: 3,2
+	SupportPowerChargeBar:
+	ProvidesPrerequisite:
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@lights:
+		Sequence: idle-lights2
+		RequiresCondition: !build-incomplete
 	SupportPowerChargeBar:
 	DetonateWeaponPowerCA:
 		AllowMultiple: false
@@ -4005,14 +4026,14 @@ latin_cgspy:
 		Icons:
 			1: icon2
 		Cursor: ability
-		AirburstAltitude: 3000
-		ChargeInterval: 4500
+		AirburstAltitude: 2500
+		ChargeInterval: 7500
 		ActivationDelay: 0
 		ActivationSequence:
 		Names:
 			1: Traitors
 		Descriptions:
-			1: Change a group of enemies to your own
+			1: Convert a group of enemies to your own army.
 		Weapons:
 			1: RA2TraitorPower
 		EndChargeSound: beepy3.aud
@@ -4022,10 +4043,10 @@ latin_cgspy:
 		SelectTargetTextNotification: Select target.
 		InsufficientPowerSpeechNotification: InsufficientPower
 		LaunchSpeechNotification: UnitReady
-		LaunchTextNotification: Warning: Topol Strike launched.
+		LaunchTextNotification: Warning: Traitors activated
 		IncomingSpeechNotification: ReinforcementsArrived
-		IncomingTextNotification: Warning: A group of traitors detected.
-		LaunchSound: snuksire.wav
+		IncomingTextNotification: Warning: A group of traitors was detected.
+		LaunchSound: spysreve.wav
 		IncomingSound: beepy2.aud
 		DisplayRadarPing: True
 		DisplayTimerRelationships: Ally, Neutral, Enemy
@@ -4039,7 +4060,8 @@ latin_cgspy:
 		CameraRange: 6000
 
 latin_cgup:
-	Inherits: ^RA2Defense
+	Inherits: ^RA2Building
+	Inherits: ^BasicDefense
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@cashtrickler: ^CashTricklerWithExperience
 	Inherits@cashtricklerlimit: ^CashTricklerLimited
@@ -4049,6 +4071,7 @@ latin_cgup:
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@gar: ^ClearableGarrisonNeutronOnly
 	Inherits@bot2: ^BotAutoDeployEvacuateCargo
+	Inherits@lightposts: ^LightPosts
 	Tooltip:
 		Name: Bunkered Oil Derrick
 	Buildable:
@@ -4057,7 +4080,7 @@ latin_cgup:
 	Building:
 		Footprint: xxx xxx xxx
 		Dimensions: 3,3
-		LocalCenterOffset: 0,-512,0
+		LocalCenterOffset: 0,0,0
 	WithIdleOverlay@idle-pump:
 		Sequence: idle-pump
 		PauseOnCondition: lowpower
@@ -4079,8 +4102,7 @@ latin_cgup:
 		QuantizedFacings: 8
 	Cargo:
 		Types: Infantry, Hacker, Fremen
-		MaxWeight: 6
-		#InitialUnits: ra2e2
+		MaxWeight: 10
 	WithSpriteBody:
 	WithIdleOverlay@Bunkered:
 		Sequence: idle-bunkered
@@ -4096,14 +4118,6 @@ latin_cgup:
 	ActorStatValues:
 		Stats: Armor, Sight, Cargo, Kills, Experience
 	GivesBuildableArea:
-	DamageMultiplier@uplatin_ngbunk2:
-		Modifier: 50
-		RequiresCondition: uplatin_ngbunk2
-	GrantConditionOnPrerequisite@uplatin_ngbunk2:
-		Condition: uplatin_ngbunk2
-		Prerequisites: uplatin_ngbunk2
-	ActorStatValues:
-		Upgrades: uplatin_ngbunk2
 
 latin_ca12hit:
 	Inherits: ^RA2Building
@@ -4135,7 +4149,7 @@ latin_ca12hit:
 			1: icon2
 		Cursor: ability
 		AirburstAltitude: 4c512
-		ChargeInterval: 7500
+		ChargeInterval: 10500
 		ActivationDelay: 100
 		ActivationSequence:
 		Names:
@@ -4211,6 +4225,7 @@ latin_ngdshktur:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@sell: ^AASpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
+	Inherits@gat: ^YuriGatlingUpgrade
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
@@ -4245,6 +4260,31 @@ latin_ngdshktur:
 	WithSpriteTurret:
 		RequiresCondition: !build-incomplete
 	AutoTarget:
+	GrantConditionOnPrerequisite@latin_up_chaingun:
+		Condition: latin_up_chaingun
+		Prerequisites: latin_up_chaingun
+	ActorStatValues:
+		Upgrades: latin_up_chaingun
+	ReloadDelayMultiplier@gat1:
+		Modifier: 66
+		RequiresCondition: gatling == 1 && latin_up_chaingun
+	ReloadDelayMultiplier@gat2:
+		Modifier: 33
+		RequiresCondition: gatling > 1 && latin_up_chaingun
+	RangeMultiplier@gat1:
+		Modifier: 111
+		RequiresCondition: gatling == 1 && latin_up_chaingun
+	RangeMultiplier@gat2:
+		Modifier: 123
+		RequiresCondition: gatling > 1 && latin_up_chaingun
+	GrantConditionOnAttack@gatling:
+		Condition: gatling
+		RequiredShotsPerInstance: 4, 8
+		RequiresCondition: !rank-elite && latin_up_chaingun
+	GrantConditionOnAttack@elitegatling:
+		Condition: gatling
+		RequiredShotsPerInstance: 2, 4
+		RequiresCondition: rank-elite && latin_up_chaingun
 	Power:
 		Amount: -25
 	RevealsShroud:
@@ -4259,6 +4299,8 @@ latin_ngbunk2:
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@gar: ^ClearableGarrisonNeutronOnly
 	Inherits@bot: ^BotAutoDeployEvacuateCargo
+	Inherits@detect: ^GenericAllDetector
+	Inherits@lightposts: ^LightPosts
 	Tooltip:
 		Name: Bunker Tower
 	Building:
@@ -4279,7 +4321,7 @@ latin_ngbunk2:
 	BodyOrientation:
 		QuantizedFacings: 8
 	Selectable:
-		Bounds: 1792, 1792, 0, 0
+		Bounds: 1600, 2200, 0, 0
 	Cargo:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 3
@@ -4295,7 +4337,10 @@ latin_ngbunk2:
 	DamageMultiplier@2x2Shape:
 		Modifier: 50
 	RevealsShroud:
-		Range: 6666
+		Range: 10000
+	DetectCloaked:
+		Range: 5000
+		RequiresCondition: uplatin_ngbunk2
 	Selectable:
 		Class: yrngbnkr
 	ActorStatValues:
@@ -4304,14 +4349,6 @@ latin_ngbunk2:
 		Sequence: idle-top
 		PauseOnCondition: disabled
 		RequiresCondition: !build-incomplete && uplatin_ngbunk2
-	DamageMultiplier@uplatin_ngbunk2:
-		Modifier: 50
-		RequiresCondition: uplatin_ngbunk2
-	GrantConditionOnPrerequisite@uplatin_ngbunk2:
-		Condition: uplatin_ngbunk2
-		Prerequisites: uplatin_ngbunk2
-	ActorStatValues:
-		Upgrades: uplatin_ngbunk2
 
 latin_sml:
 	Inherits: ^RA2Defense
@@ -4324,12 +4361,12 @@ latin_sml:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 50
-		Prerequisites: ~latin_cgcnst, latin_cgte
+		Prerequisites: ~uplatin_up_sml, latin_cgspy
 		Description: actor-cgplas.description
 	Valued:
-		Cost: 3000
+		Cost: 5000
 	Tooltip:
-		Name: SML
+		Name: SML Turret
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -4340,20 +4377,20 @@ latin_sml:
 	Turreted:
 		TurnSpeed: 12
 		InitialFacing: 896
-		Offset: -1,1,1
+		Offset: 0,0,333
 		RealignDelay: -1
 	AttackTurreted:
 		Voice: Attack
 	Armament:
 		Weapon: SMLLauncher
-		LocalOffset: 1566,333,777, 1566,-333,777, 1566,333,666, 1566,-333,666
+		LocalOffset: 1000,333,1000, 1000,-333,1000, 1000,333,1000, 1000,-333,1000
 		MuzzleSequence: muzzle
 	MissileSpawnerMasterCA:
 		#ArmamentNames: primary
 		Actors: yrbsubmisl, yrbsubmisl, yrbsubmisl, yrbsubmisl
 		RespawnTicks: 125
 		SpawnAllAtOnce: true
-		SpawnOffset: 1566,333,777, 1566,-333,777, 1566,333,666, 1566,-333,666
+		SpawnOffset: 333,333,777, 333,-333,777, -333,333,777, -333,-333,777
 	BodyOrientation:
 		QuantizedFacings: 16
 	WithMuzzleOverlay:
@@ -4364,11 +4401,11 @@ latin_sml:
 	DamageMultiplier@2x2Shape:
 		Modifier: 50
 	Power:
-		Amount: -200
+		Amount: -250
 	RevealsShroud:
-		Range: 14000
+		Range: 15000
 	DetectCloaked:
-		Range: 7000
+		Range: 7500
 
 #   Scrapcar
 latinscrapcar:
@@ -4398,6 +4435,8 @@ latinscrapcar_driveby:
 	Inherits: ^CivilianDriveByVehicle
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
+	Cargo:
+		InitialUnits: latin_narco, latin_fthrow, latin_fthrow
 	RenderSprites:
 		Image: latinscrapcar
 		PlayerPalette: playerra2
@@ -4429,6 +4468,8 @@ latinscrapcar2_driveby:
 	Inherits: ^CivilianDriveByVehicle
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
+	Cargo:
+		InitialUnits: latin_mili, latin_fftr, latin_fftr
 	RenderSprites:
 		Image: latinscrapcar2
 		PlayerPalette: playerra2
@@ -4437,30 +4478,52 @@ latinscrapcar2_driveby:
 #   Red Alert 2 Syndicate Units
 ##############################################
 ^LatinCashrecover:
-	CashBack:
-		Percentage: 10
-		RequiresCondition: cashrecover
-	GrantConditionOnPrerequisite@CashRecover:
-		Condition: cashrecover
-		Prerequisites: latin_cgte
 	ActorStatValues:
 		Upgrades: latin_cgte, latin_up_industrial
-	ProductionCostMultiplier@latin_up_industrial:
-		Multiplier: 90
-		Prerequisites: latin_up_industrial
 
 ^LatinFlameUpgrades:
-	ProductionCostMultiplier@latin_up_hotfire:
-		Multiplier: 80
-		Prerequisites: latin_up_hotfire
+	FirepowerMultiplier@latin_up_hotfire:
+		Modifier: 125
+		RequiresCondition: latin_up_hotfire
+	RangeMultiplier@latin_up_hotfire:
+		Modifier: 125
+		RequiresCondition: latin_up_hotfire
+	ReloadDelayMultiplier@latin_up_hotfire:
+		Modifier: 75
+		RequiresCondition: latin_up_hotfire
 	GrantConditionOnPrerequisite@latin_up_hotfire:
 		Condition: latin_up_hotfire
 		Prerequisites: latin_up_hotfire
-	ReloadDelayMultiplier@latin_up_hotfire:
-		Modifier: 80
-		RequiresCondition: latin_up_hotfire
+	ActorStatValues:
+		Upgrades: latin_up_hotfire
+
+^LightPosts:
+	DamageMultiplier@uplatin_ngbunk2:
+		Modifier: 70
+		RequiresCondition: uplatin_ngbunk2
+	RevealsShroudMultiplier@uplatin_ngbunk2:
+		Modifier: 130
+		RequiresCondition: uplatin_ngbunk2
+	GrantConditionOnPrerequisite@uplatin_ngbunk2:
+		Condition: uplatin_ngbunk2
+		Prerequisites: uplatin_ngbunk2
+	ActorStatValues:
+		Upgrades: uplatin_ngbunk2
 
 latin.deathcash:
+	Inherits: RACAMERA
+	EditorOnlyTooltip:
+		Name: (Deathcash)
+	RevealsShroud:
+		Range: 2500
+	CashTrickler:
+		Interval: 25
+		Amount: 50
+	KillsSelf:
+		RemoveInstead: true
+		Delay: 125
+
+latin.deathcash.small:
 	Inherits: RACAMERA
 	EditorOnlyTooltip:
 		Name: (Deathcash)
@@ -4471,20 +4534,7 @@ latin.deathcash:
 		Amount: 25
 	KillsSelf:
 		RemoveInstead: true
-		Delay: 250
-
-latin.deathcash.small:
-	Inherits: RACAMERA
-	EditorOnlyTooltip:
-		Name: (Deathcash)
-	RevealsShroud:
-		Range: 2500
-	CashTrickler:
-		Interval: 25
-		Amount: 10
-	KillsSelf:
-		RemoveInstead: true
-		Delay: 250
+		Delay: 125
 
 latin_mcv:
 	Inherits: ^Vehicle
@@ -4512,6 +4562,137 @@ latin_mcv:
 		PlayerPalette: playerra2
 		Image: ra2smcv  #placeholder
 
+latin_buggy:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Inherits@gat: ^YuriGatlingUpgrade
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Syndicate Buggy
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~latin_cgweap
+		Queue: Vehicle, RAVehicle
+		Description: actor-aapulv.description
+	Mobile:
+		Speed: 110
+		TurnSpeed: 22
+	Health:
+		HP: 30000
+	Repairable:
+		HpPerStep: 3000
+	Armor:
+		Type: Light
+	Turreted:
+		TurnSpeed: 22
+	Armament:
+		Weapon: LatinBuggyMG
+		LocalOffset: 500,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@Elite:
+		Weapon: LatinBuggyMGE
+		LocalOffset: 500,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	Armament@Rocket:
+		Weapon: LatinBuggyRocket
+		LocalOffset: 500,-100,300, 500,100,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@RocketElite:
+		Weapon: LatinBuggyRocketE
+		LocalOffset: 500,100,300, 500,-100,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+	Voiced:
+		VoiceSet: LatinSoldierVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+	GrantConditionOnPrerequisite@latin_up_chaingun:
+		Condition: latin_up_chaingun
+		Prerequisites: latin_up_chaingun
+	ActorStatValues:
+		Upgrades: latin_up_chaingun
+	ReloadDelayMultiplier@gat1:
+		Modifier: 66
+		RequiresCondition: gatling == 1 && latin_up_chaingun
+	ReloadDelayMultiplier@gat2:
+		Modifier: 33
+		RequiresCondition: gatling > 1 && latin_up_chaingun
+	RangeMultiplier@gat1:
+		Modifier: 111
+		RequiresCondition: gatling == 1 && latin_up_chaingun
+	RangeMultiplier@gat2:
+		Modifier: 123
+		RequiresCondition: gatling > 1 && latin_up_chaingun
+	GrantConditionOnAttack@gatling:
+		Condition: gatling
+		RequiredShotsPerInstance: 4, 8
+		RequiresCondition: !rank-elite && latin_up_chaingun
+	GrantConditionOnAttack@elitegatling:
+		Condition: gatling
+		RequiredShotsPerInstance: 2, 4
+		RequiresCondition: rank-elite && latin_up_chaingun
+
+latin_mortarbike:
+	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Buildable:
+		Queue: Vehicle, RAVehicle, Infantry, RAInfantry
+		BuildPaletteOrder: 30
+		Prerequisites: ~latin_cgweap
+		Description: actor-v3.description
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Mortar Bike
+	Health:
+		HP: 25000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 140
+		TurnSpeed: 28
+	Armament:
+		Weapon: RA2MortarBike
+		LocalOffset: 222,0,400
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: RA2MortarBikeE
+		LocalOffset: 222,0,400
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		FacingTolerance: 0
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: LatinSoldierVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+
 latin_ltnk:
 	Inherits: ^Tank
 	Inherits@anim: ^RA2Vehicle
@@ -4527,7 +4708,7 @@ latin_ltnk:
 		Name: Rusher Tank
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~latin_cgweap
+		Prerequisites: ~latin_cgweap, ~!uplatin_mtnk
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -4589,7 +4770,7 @@ latin_mtnk:
 		Name: Smoker Tank
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~latin_cgweap, ~uplatin_mtnk
+		Prerequisites: ~uplatin_mtnk
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -4654,7 +4835,6 @@ latin_mtnk:
 latin_diablo:
 	Inherits: ^Tank
 	Inherits@Template: ^SupportVehicleTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -4667,7 +4847,7 @@ latin_diablo:
 		Name: Diablo
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~latin_cgweap
+		Prerequisites: ~latin_cgte
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -4686,7 +4866,7 @@ latin_diablo:
 		Offset: -100,0,5
 	Armament:
 		Name: primary
-		Weapon: NaxQuadCannon
+		Weapon: DiabloCannon
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 1024,0,80
@@ -4695,20 +4875,20 @@ latin_diablo:
 		RequiresCondition: !rank-elite
 	Armament@Elite:
 		Name: primary
-		Weapon: NaxQuadCannonE
+		Weapon: DiabloCannonE
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 		RequiresCondition: rank-elite
 	Armament@AA:
-		Weapon: NaxQuadCannonAA
+		Weapon: DiabloCannonAA
 		LocalOffset: 600,0,300
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 		RequiresCondition: !rank-elite
 	Armament@AAE:
-		Weapon: NaxQuadCannonAAE
+		Weapon: DiabloCannonAAE
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
@@ -4723,13 +4903,13 @@ latin_diablo:
 		VoiceSet: LatinTankVoice
 	RenderSprites:
 		PlayerPalette: playerra2
-	GrantConditionOnPrerequisite@latin_up_miraging:
-		Condition: latin_up_miraging
-		Prerequisites: latin_up_miraging
+	GrantConditionOnPrerequisite@uplatin_alliedstolentech:
+		Condition: uplatin_alliedstolentech
+		Prerequisites: uplatin_alliedstolentech
 	ActorStatValues:
-		Upgrades: latin_up_miraging
+		Upgrades: uplatin_alliedstolentech
 	Mirage:
-		RequiresCondition: !disabled && latin_up_miraging
+		RequiresCondition: !disabled && uplatin_alliedstolentech
 		InitialDelay: 25
 		RevealDelay: 25
 		RevealOn: Attack, Move
@@ -4737,127 +4917,13 @@ latin_diablo:
 		DefaultTargetTypes: t08, t10, t03, t02
 	WithMirageSpriteBody:
 		Name: tree
-		RequiresCondition: tree && latin_up_miraging
+		RequiresCondition: tree && uplatin_alliedstolentech
 		IsPlayerPalette: false
 		Palette: ra_temperat
 	WithSpriteTurret:
 		RequiresCondition: !tree
 	WithFacingSpriteBody:
 		RequiresCondition: !tree
-
-latin_buggy:
-	Inherits: ^Tank
-	Inherits@anim: ^RA2Vehicle
-	Inherits@Template: ^ScoutVehicleTemplate
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@vo: ^AttackTurretedVoice
-	Inherits@EMP: ^TurretEMP
-	Inherits@uprecover: ^LatinCashrecover
-	Inherits@gat: ^YuriGatlingUpgrade
-	Valued:
-		Cost: 300
-	Tooltip:
-		Name: Buggy
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~latin_cgweap
-		Queue: Vehicle, RAVehicle
-		Description: actor-aapulv.description
-	Mobile:
-		Speed: 110
-		TurnSpeed: 22
-	Health:
-		HP: 30000
-	Repairable:
-		HpPerStep: 3000
-	Armor:
-		Type: Light
-	Turreted:
-		TurnSpeed: 22
-	Armament:
-		Weapon: LatinBuggyMG
-		LocalOffset: 500,0,300
-		MuzzleSequence: muzzle
-		MuzzlePalette: ra2effect
-		RequiresCondition: !rank-elite
-	Armament@Elite:
-		Weapon: LatinBuggyMGE
-		LocalOffset: 500,0,300
-		MuzzleSequence: muzzle
-		MuzzlePalette: ra2effect
-		RequiresCondition: rank-elite
-	AttackTurreted:
-	WithMuzzleOverlay:
-	SelectionDecorations:
-	Selectable:
-	Voiced:
-		VoiceSet: LatinSoldierVoice
-	RenderSprites:
-		PlayerPalette: playerra2
-	GrantConditionOnPrerequisite@latin_up_chaingun:
-		Condition: latin_up_chaingun
-		Prerequisites: latin_up_chaingun
-	ActorStatValues:
-		Upgrades: latin_up_chaingun
-	ReloadDelayMultiplier@gat1:
-		Modifier: 66
-		RequiresCondition: gatling == 1 && latin_up_chaingun
-	ReloadDelayMultiplier@gat2:
-		Modifier: 33
-		RequiresCondition: gatling > 1 && latin_up_chaingun
-	RangeMultiplier@gat1:
-		Modifier: 111
-		RequiresCondition: gatling == 1 && latin_up_chaingun
-	RangeMultiplier@gat2:
-		Modifier: 123
-		RequiresCondition: gatling > 1 && latin_up_chaingun
-	GrantConditionOnAttack@gatling:
-		Condition: gatling
-		RequiredShotsPerInstance: 6, 12
-		RequiresCondition: !rank-elite && latin_up_chaingun
-	GrantConditionOnAttack@elitegatling:
-		Condition: gatling
-		RequiredShotsPerInstance: 3, 6
-		RequiresCondition: rank-elite && latin_up_chaingun
-
-latin_mortarbike:
-	Inherits: ^Vehicle
-	Inherits@anim: ^RA2Vehicle
-	Inherits@Template: ^ArtilleryTemplate
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@vo: ^AttackFrontalVoice
-	Inherits@EMP: ^FrontalEMP
-	Inherits@uprecover: ^LatinCashrecover
-	Buildable:
-		Queue: Vehicle, RAVehicle, Infantry, RAInfantry
-		BuildPaletteOrder: 30
-		Prerequisites: ~latin_cgweap, latin_cgte
-		Description: actor-v3.description
-	Valued:
-		Cost: 400
-	Tooltip:
-		Name: Mortar Bike
-	Health:
-		HP: 15000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 140
-		TurnSpeed: 28
-	Armament:
-		Weapon: RA2MortarBike
-		LocalOffset: 222,0,400
-	AttackFrontal:
-		FacingTolerance: 0
-	SelectionDecorations:
-	Selectable:
-		DecorationBounds: 1280, 1280
-	Voiced:
-		VoiceSet: LatinSoldierVoice
-	RenderSprites:
-		PlayerPalette: playerra2
 
 latin_apc:
 	Inherits: ^Tank
@@ -4876,7 +4942,7 @@ latin_apc:
 		Name: Amphibian APC
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~latin_cgweap, latin_cgte
+		Prerequisites: ~latin_cgte
 		Queue: Vehicle, RAVehicle
 		Description: actor-htk.description
 	Mobile:
@@ -4895,13 +4961,13 @@ latin_apc:
 		TurnSpeed: 42
 		Offset: -1,0,4
 	Armament@AG:
-		Weapon: RA220mmrapid
+		Weapon: RA2APCMachineGun
 		LocalOffset: 600,0,300
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 	Armament@AGE:
-		Weapon: RA220mmrapid
+		Weapon: RA2APCMachineGun
 		LocalOffset: 600,0,300
 		Recoil: 85
 		MuzzleSequence: muzzle
@@ -4913,18 +4979,18 @@ latin_apc:
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: uplatin_apc
+		RequiresCondition: uplatin_alliedstolentech
 	Armament@AAE:
 		Weapon: RA2APCRocket
 		LocalOffset: 600,-150,300, 600,150,300
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: uplatin_apc && rank-elite
+		RequiresCondition: uplatin_alliedstolentech && rank-elite
 	WithMuzzleOverlay:
 	AttackTurreted:
 	Selectable:
-		DecorationBounds: 1280, 1280
+		DecorationBounds: 1024, 1024
 	RenderSprites:
 		Image: latin_apc
 		PlayerPalette: playerra2
@@ -4936,20 +5002,20 @@ latin_apc:
 		MaxWeight: 5
 		InitialUnits: latin_mili, latin_mili, latin_fthrow, latin_fthrow, latin_fftr
 	GrantConditionOnPrerequisite@Missile:
-		Condition: uplatin_apc
-		Prerequisites: uplatin_apc
+		Condition: uplatin_alliedstolentech
+		Prerequisites: uplatin_alliedstolentech
 	ActorStatValues:
-		Upgrades: uplatin_apc
+		Upgrades: uplatin_alliedstolentech
 	WithSpriteTurret:
 		Sequence: turret
-		RequiresCondition: !uplatin_apc
+		RequiresCondition: !uplatin_alliedstolentech
 	WithSpriteTurret@up:
 		Sequence: turret-up
-		RequiresCondition: uplatin_apc
+		RequiresCondition: uplatin_alliedstolentech
 
 latin_humvee:
 	Inherits: ^Tank
-	Inherits@GAINSEXPERIENCE: ^EpicVehicleTemplate
+	Inherits@GAINSEXPERIENCE: ^SupportVehicleTemplate
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
@@ -4960,15 +5026,14 @@ latin_humvee:
 	Inherits@cargo: ^OpenToppedVehicle
 	Inherits@uprecover: ^LatinCashrecover
 	Valued:
-		Cost: 2500
+		Cost: 2400
 	Tooltip:
 		Name: Narco Hummer
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~latin_cgweap, latin_cgspy, ~uplatin_humvee
+		Prerequisites: ~uplatin_humvee, latin_cgte
 		Queue: Vehicle, RAVehicle
 		Description: actor-htk.description
-		BuildLimit: 1
 	Mobile:
 		Locomotor: wheeled
 		Speed: 120
@@ -5004,13 +5069,13 @@ latin_humvee:
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: uplatin_apc && !rank-elite
+		RequiresCondition: uplatin_alliedstolentech && !rank-elite
 	Armament@AAE:
 		Weapon: RA2FreedomRocketE
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: uplatin_apc && rank-elite
+		RequiresCondition: uplatin_alliedstolentech && rank-elite
 	RenderRangeCircle:
 	WithMuzzleOverlay:
 	AttackFrontal:
@@ -5033,10 +5098,10 @@ latin_humvee:
 		PortOffsets: 224,-341,128, -224,-341,128, -224,341,128, 224,341,128
 		PauseOnCondition: chronobeamed
 	GrantConditionOnPrerequisite@Missile:
-		Condition: uplatin_apc
-		Prerequisites: uplatin_apc
+		Condition: uplatin_alliedstolentech
+		Prerequisites: uplatin_alliedstolentech
 	ActorStatValues:
-		Upgrades: uplatin_apc
+		Upgrades: uplatin_alliedstolentech
 	WithSpriteTurret:
 		Sequence: turret
 
@@ -5058,7 +5123,7 @@ latin_cartel:
 		Name: Cartel Truck
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~latin_cgweap, latin_cgspy, ~uplatin_cartel
+		Prerequisites: ~latin_cgspy, ~uplatin_cartel
 		Queue: Vehicle, RAVehicle
 		Description: actor-htk.description
 		BuildLimit: 1
@@ -5096,20 +5161,20 @@ latin_cartel:
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: uplatin_apc
+		RequiresCondition: uplatin_alliedstolentech
 	Armament@AA:
 		Weapon: RA2FreedomRocket
 		LocalOffset: 600,0,300
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: uplatin_apc && !rank-elite
+		RequiresCondition: uplatin_alliedstolentech && !rank-elite
 	Armament@AAE:
 		Weapon: RA2FreedomRocketE
 		Recoil: 85
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: uplatin_apc && rank-elite
+		RequiresCondition: uplatin_alliedstolentech && rank-elite
 	RenderRangeCircle:
 	WithMuzzleOverlay:
 	AttackFrontal:
@@ -5131,10 +5196,10 @@ latin_cartel:
 		PortOffsets: 384,0,128, 224,-341,128, 224,341,128, 0,-341,128, 0,341,128, -224,-341,128, -224,341,128, -384,0,128
 		PauseOnCondition: chronobeamed
 	GrantConditionOnPrerequisite@Missile:
-		Condition: uplatin_apc
-		Prerequisites: uplatin_apc
+		Condition: uplatin_alliedstolentech
+		Prerequisites: uplatin_alliedstolentech
 	ActorStatValues:
-		Upgrades: uplatin_apc
+		Upgrades: uplatin_alliedstolentech
 	WithSpriteTurret:
 		Sequence: turret
 
@@ -5143,14 +5208,14 @@ latin_rtruck:
 	Inherits@anim: ^RA2Vehicle
 	Inherits@Template: ^FireSupportTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Inherits@uprecover: ^LatinCashrecover
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 80
-		Prerequisites: ~latin_cgweap, latin_cgte, ~!uplatin_burrito
+		Prerequisites: ~latin_cgte, ~!uplatin_burrito
 		Description: actor-v3.description
 	Valued:
 		Cost: 1000
@@ -5211,7 +5276,7 @@ latin_burrito:
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@Template: ^ArtilleryTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Inherits@uprecover: ^LatinCashrecover
@@ -5347,106 +5412,14 @@ latin_lars:
 	RenderSprites:
 		PlayerPalette: playerra2
 
-latin_topol:
-	Inherits: ^Vehicle
-	Inherits@anim: ^RA2Vehicle
-	Inherits@GAINSEXPERIENCE: ^EpicVehicleTemplate
-	Inherits@Template: ^ArtilleryTemplate
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@vo: ^AttackFrontalVoice
-	Inherits@EMP: ^FrontalEMP
-	Inherits@uprecover: ^LatinCashrecover
-	Buildable:
-		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 80
-		BuildLimit: 1
-		Prerequisites: ~uplatin_topol, latin_cgspy
-		Description: actor-v3.description
-	Valued:
-		Cost: 5000
-	Tooltip:
-		Name: Topol-M
-	Health:
-		HP: 100000
-	Repairable:
-		HpPerStep: 5000
-	ChangesHealth@SelfHealing:
-		Step: 40
-	Armor:
-		Type: Medium
-	Mobile:
-		Speed: 75
-		TurnSpeed: 15
-	Armament:
-		Weapon: RA2TOPOLCubaTarget
-		LocalOffset: -1024,250,1000
-	Armament@PRIMARYELITE:
-		Name: secondary
-		Weapon: RA2TOPOLCuba
-		LocalOffset: -1024,250,5000
-		PauseOnCondition: scudup != 5
-		#RequiresCondition: scudup == 5
-	ActorStatValues:
-		ReloadDelay: 500
-	ReloadArmamentsBar:
-		Armaments: secondary
-	FirepowerMultiplier@RANK-1:
-		Modifier: 125
-	FirepowerMultiplier@RANK-2:
-		Modifier: 150
-	FirepowerMultiplier@RANK-3:
-		Modifier: 175
-	FirepowerMultiplier@RANK-ELITE:
-		Modifier: 200
-	AttackFrontal:
-		FacingTolerance: 0
-	SelectionDecorations:
-	Explodes:
-		Weapon: V3Explode
-	Selectable:
-		DecorationBounds: 1280, 1280
-	Voiced:
-		VoiceSet: LatinSCUDVoice
-	GrantConditionOnAttack:
-		Condition: scudup
-		RevokeDelay: 5
-		MaximumInstances: 5
-	WithFacingSpriteBody:
-		RequiresCondition: !scudup
-		Sequence: idle
-		Name: loaded
-	WithFacingSpriteBody@Scud1:
-		RequiresCondition: scudup == 1
-		Sequence: idle-up1
-		Name: reloading
-	WithFacingSpriteBody@Scud2:
-		RequiresCondition: scudup == 2
-		Sequence: idle-up2
-		Name: reloading
-	WithFacingSpriteBody@Scud3:
-		RequiresCondition: scudup == 3
-		Sequence: idle-up3
-		Name: reloading
-	WithFacingSpriteBody@Scud4:
-		RequiresCondition: scudup == 4
-		Sequence: idle-up4
-		Name: reloading
-	WithFacingSpriteBody@Scud5:
-		RequiresCondition: scudup == 5
-		Sequence: idle-up5
-		Name: reloading
-	RenderSprites:
-		PlayerPalette: playerra2
-
 latin_harv:
 	Inherits: HARV
 	Inherits@anim: ^RA2Vehicle
 	Inherits@uprecover: ^LatinCashrecover
 	Valued:
-		Cost: 800
+		Cost: 1000
 	Tooltip:
-		Name: Collect Truck
+		Name: Collection Truck
 	Buildable:
 		Prerequisites: ~latin_cgauto
 		Queue: Vehicle, RAVehicle
@@ -5490,7 +5463,7 @@ latin_mili:
 	Valued:
 		Cost: 125
 	Tooltip:
-		Name: Militia
+		Name: Latin Militia
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: ~latin_cgpile
@@ -5528,6 +5501,15 @@ latin_mili:
 	GrantConditionOnPrerequisite@Grenadier:
 		Condition: uplatin_mili
 		Prerequisites: uplatin_mili
+	DamageMultiplier@uplatin_mili:
+		Modifier: 50
+		RequiresCondition: uplatin_mili
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+		RequiresCondition: uplatin_mili
 	GrantConditionOnPrerequisite@latin_up_chaingun:
 		Condition: latin_up_chaingun
 		Prerequisites: latin_up_chaingun
@@ -5547,11 +5529,11 @@ latin_mili:
 		RequiresCondition: gatling > 1 && latin_up_chaingun
 	GrantConditionOnAttack@gatling:
 		Condition: gatling
-		RequiredShotsPerInstance: 4, 8
+		RequiredShotsPerInstance: 2, 4
 		RequiresCondition: !rank-elite && latin_up_chaingun
 	GrantConditionOnAttack@elitegatling:
 		Condition: gatling
-		RequiredShotsPerInstance: 2, 4
+		RequiredShotsPerInstance: 4, 8
 		RequiresCondition: rank-elite && latin_up_chaingun
 
 latin_fftr:
@@ -5564,7 +5546,7 @@ latin_fftr:
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 350
+		Cost: 700
 	Tooltip:
 		Name: Freedom Fighter
 	Buildable:
@@ -5621,21 +5603,21 @@ latin_fftr:
 		RequiresCondition: !tree
 	Voiced:
 		VoiceSet: LatinRamboVoice
-	GrantConditionOnPrerequisite@latin_up_miraging:
-		Condition: latin_up_miraging
-		Prerequisites: latin_up_miraging
+	GrantConditionOnPrerequisite@uplatin_alliedstolentech:
+		Condition: uplatin_alliedstolentech
+		Prerequisites: uplatin_alliedstolentech
 	ActorStatValues:
-		Upgrades: latin_up_miraging
+		Upgrades: uplatin_alliedstolentech
 	Mirage:
-		RequiresCondition: !disabled && latin_up_miraging
+		RequiresCondition: !disabled && uplatin_alliedstolentech
 		InitialDelay: 25
 		RevealDelay: 25
-		RevealOn: Attack, Move
+		RevealOn: Attack, Move, Damage, SelfHeal
 		MirageCondition: tree
 		DefaultTargetTypes: t08, t10, t03, t02
 	WithMirageSpriteBody:
 		Name: tree
-		RequiresCondition: tree && latin_up_miraging
+		RequiresCondition: tree && uplatin_alliedstolentech
 		IsPlayerPalette: false
 		Palette: ra_temperat
 
@@ -5655,7 +5637,7 @@ latin_fthrow:
 		Name: Flame Trooper
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~latin_cgpile, latin_cgte
+		Prerequisites: ~latin_cgspy
 		Queue: Infantry, RAInfantry
 		Description: Machinegunner, Upgradable with molotovs
 	Mobile:
@@ -5682,6 +5664,10 @@ latin_fthrow:
 		RequiresCondition: rank-elite
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+	FirepowerMultiplier@latin_up_hotfire:
+		Modifier: 200
+	RangeMultiplier@latin_up_hotfire:
+		Modifier: 110
 	AttackFrontal:
 		FacingTolerance: 0
 	Voiced:
@@ -5692,7 +5678,8 @@ latin_fthrow:
 
 latin_narco:
 	Inherits: ^Soldier
-	Inherits@Template: ^HeroInfantryTemplate
+	Inherits@Template: ^SniperInfantryTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -5704,7 +5691,7 @@ latin_narco:
 		Name: Narco
 	Buildable:
 		BuildPaletteOrder: 80
-		Prerequisites: ~latin_cgspy, ~uplatin_narco
+		Prerequisites: ~uplatin_narco, latin_cgte
 		Queue: Infantry, RAInfantry
 		Description: Machinegunner, Upgradable with molotovs
 	Mobile:
@@ -5938,46 +5925,15 @@ ra2engineer.syndicate:
 	Captures@REUSABLE:
 		Voice: Attack
 
-latin_ra2dtruck:
-	Inherits: DTRK
-	Inherits@anim: ^RA2Vehicle
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@vo: ^AttackFrontalVoice
-	Inherits@announce: ^AnnounceGlobal
-	Inherits@EMP: ^FrontalEMP
-	Inherits@SHADOWS: ^Shadows
-	Health:
-		HP: 30000
-	Buildable:
-		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 180
-		Prerequisites: ~uplatin_ra2dtruck, latin_cgte
-	Valued:
-		Cost: 1500
-	Tooltip:
-		Name: Demolition Truck
-	Voiced:
-		VoiceSet: RA2DemolitionTruckVoice
-	GrantConditionOnDeploy:
-		Voice: Attack
-	Explodes@bomb:
-		Weapon: RA2DemoBomb
-		EmptyWeapon: RA2DemoBomb
-	-DamagedByTintedCells@rad:
-	-DamagedByTintedCells@genrad:
-	DeathSounds:
-		RequiresCondition: !chronobeamed
-	RenderSprites:
-		PlayerPalette: playerra2
-		Image: ra2dtruck  #placeholder
-#   Pass those units to Syndicate
 latin_ra2terror:
 	Inherits: ^Soldier
 	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@VOICES: ^WithFeedbackVoiceLines
+	Inherits@flamerup: ^LatinFlameUpgrades
 	Valued:
 		Cost: 200
 	Tooltip:
@@ -5991,10 +5947,12 @@ latin_ra2terror:
 		Speed: 75
 	Health:
 		HP: 15000
-	Explodes:
+	ExplodesCA@bomb:
 		Weapon: RA2Terrorist
 		EmptyWeapon: RA2Terrorist
 		RequiresCondition: !disabled
+	FirepowerMultiplier@latin_up_hotfire:
+		Modifier: 200
 	AttackFrontal:
 		FacingTolerance: 512
 	Armament@PRIMARY:
@@ -6017,6 +5975,44 @@ latin_ra2terror:
 		EnterCursor: c4
 	RenderSprites:
 		Image: ra2terror  #placeholder
+
+latin_ra2dtruck:
+	Inherits: DTRK
+	Inherits@anim: ^RA2Vehicle
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@EMP: ^FrontalEMP
+	Inherits@SHADOWS: ^Shadows
+	Inherits@flamerup: ^LatinFlameUpgrades
+	Health:
+		HP: 30000
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 180
+		Prerequisites: ~uplatin_ra2dtruck, latin_cgte
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Demolition Truck
+	Voiced:
+		VoiceSet: RA2DemolitionTruckVoice
+	GrantConditionOnDeploy:
+		Voice: Attack
+	ExplodesCA@bomb:
+		Weapon: RA2DemoBomb
+		EmptyWeapon: RA2DemoBomb
+	FirepowerMultiplier@latin_up_hotfire:
+		Modifier: 200
+	-DamagedByTintedCells@rad:
+	-DamagedByTintedCells@genrad:
+	DeathSounds:
+		RequiresCondition: !chronobeamed
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: ra2dtruck  #placeholder
+#   Pass those units to Syndicate
+
 latin_nuketruk:
 	Inherits: DTRK
 	Inherits@anim: ^RA2Vehicle
@@ -6026,6 +6022,7 @@ latin_nuketruk:
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@EMP: ^FrontalEMP
 	Inherits@SHADOWS: ^Shadows
+	Inherits@flamerup: ^LatinFlameUpgrades
 	Health:
 		HP: 60000
 	Buildable:
@@ -6041,9 +6038,11 @@ latin_nuketruk:
 		VoiceSet: RA2DemolitionTruckVoice
 	GrantConditionOnDeploy:
 		Voice: Attack
-	Explodes@bomb:
+	ExplodesCA@bomb:
 		Weapon: RA2Atomic
 		EmptyWeapon: RA2Atomic
+	FirepowerMultiplier@latin_up_hotfire:
+		Modifier: 200
 	-DamagedByTintedCells@rad:
 	-DamagedByTintedCells@genrad:
 	DeathSounds:
@@ -6054,35 +6053,106 @@ latin_nuketruk:
 	RenderSprites:
 		PlayerPalette: playerra2
 		Image: latin_nuketruk
+
+latin_topol:
+	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
+	Inherits@GAINSEXPERIENCE: ^EpicVehicleTemplate
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@uprecover: ^LatinCashrecover
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 80
+		BuildLimit: 1
+		Prerequisites: ~uplatin_topol, latin_cgspy
+		Description: actor-v3.description
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Topol-M
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+	Armament:
+		Weapon: RA2TOPOLCubaTarget
+		LocalOffset: -1024,250,1000
+	Armament@Launch:
+		Name: secondary
+		Weapon: RA2TOPOLCuba
+		LocalOffset: -1024,250,5000
+		PauseOnCondition: scudup != 5
+	ExplodesCA@bomb:
+		Weapon: RA2TOPOLCuba
+		EmptyWeapon: RA2TOPOLCuba
+	ActorStatValues:
+		ReloadDelay: 500
+	ReloadArmamentsBar:
+		Armaments: secondary
+	SelectionDecorations:
+	Explodes:
+		Weapon: V3Explode
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: LatinSCUDVoice
+	GrantConditionOnAttack:
+		Condition: scudup
+		RevokeDelay: 5
+		MaximumInstances: 5
+	WithFacingSpriteBody:
+		RequiresCondition: !scudup
+		Sequence: idle
+		Name: loaded
+	WithFacingSpriteBody@Scud1:
+		RequiresCondition: scudup == 1
+		Sequence: idle-up1
+		Name: reloading
+	WithFacingSpriteBody@Scud2:
+		RequiresCondition: scudup == 2
+		Sequence: idle-up2
+		Name: reloading
+	WithFacingSpriteBody@Scud3:
+		RequiresCondition: scudup == 3
+		Sequence: idle-up3
+		Name: reloading
+	WithFacingSpriteBody@Scud4:
+		RequiresCondition: scudup == 4
+		Sequence: idle-up4
+		Name: reloading
+	WithFacingSpriteBody@Scud5:
+		RequiresCondition: scudup == 5
+		Sequence: idle-up5
+		Name: reloading
+	RenderSprites:
+		PlayerPalette: playerra2
+
 #######################################
 # Red Alert 2 Syndicate Promotion Tree
 #######################################
 
 ### Narco tree
 
-uplatin_traitor:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock Traitors
-	Buildable:
-		BuildPaletteOrder: 109
-		Queue: Promotions
-		Icon: icon2
-		Description: Unlocks Traitor Superpower.
-		Prerequisites: ~latin_cgcnst, !uplatin_traitor, rank1
-	RenderSprites:
-		Image: latin_cgspy
-	ProvidesPrerequisite:
-
 uplatin_narco:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
 		Name: Unlock Narcos
 	Buildable:
-		BuildPaletteOrder: 112
+		BuildPaletteOrder: 121
 		Queue: Promotions
 		Description: Unlock Narco Forces.
-		Prerequisites: ~latin_cgcnst, !uplatin_narco, uplatin_traitor, rank1
+		Prerequisites: ~latin_cgcnst, !uplatin_narco, rank1
 	RenderSprites:
 		Image: latin_narco
 	ProvidesPrerequisite:
@@ -6090,9 +6160,9 @@ uplatin_narco:
 uplatin_humvee:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Narco Hummer
+		Name: Enables construction of Narco Hummers.
 	Buildable:
-		BuildPaletteOrder: 115
+		BuildPaletteOrder: 124
 		Queue: Promotions
 		Description: Unlock the Narco Hummer.
 		Prerequisites: ~latin_cgcnst, !uplatin_humvee, uplatin_narco, rank1
@@ -6105,12 +6175,26 @@ uplatin_cartel:
 	Tooltip:
 		Name: Unlock Cartel Truck
 	Buildable:
-		BuildPaletteOrder: 118
+		BuildPaletteOrder: 127
 		Queue: Promotions
 		Description: Unlock the Cartel Truck.
 		Prerequisites: ~latin_cgcnst, !uplatin_cartel, uplatin_humvee, rank1
 	RenderSprites:
 		Image: latin_cartel
+	ProvidesPrerequisite:
+
+uplatin_traitor:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Traitors
+	Buildable:
+		BuildPaletteOrder: 130
+		Queue: Promotions
+		Icon: icon2
+		Description: Unlock the Traitor Support Power.
+		Prerequisites: ~latin_cgcnst, !uplatin_traitor, uplatin_cartel, rank1
+	RenderSprites:
+		Image: latin_cgspy
 	ProvidesPrerequisite:
 
 ### War tree
@@ -6119,9 +6203,9 @@ uplatin_fftr:
 	Tooltip:
 		Name: Unlock Freedom Fighters
 	Buildable:
-		BuildPaletteOrder: 110
+		BuildPaletteOrder: 122
 		Queue: Promotions
-		Description: Enables training of Freedom Fighters
+		Description: Enables training of Freedom Fighters.
 		Prerequisites: ~latin_cgcnst, !uplatin_fftr, rank1
 	RenderSprites:
 		Image: latin_fftr
@@ -6132,9 +6216,9 @@ uplatin_mtnk:
 	Tooltip:
 		Name: Unlock Smoker Tanks
 	Buildable:
-		BuildPaletteOrder: 113
+		BuildPaletteOrder: 125
 		Queue: Promotions
-		Description: Enables construction of Smoker Tank
+		Description: Enables construction of Smoker Tanks.
 		Prerequisites: ~latin_cgcnst, !uplatin_mtnk, uplatin_fftr, rank1
 	RenderSprites:
 		Image: latin_mtnk
@@ -6143,9 +6227,9 @@ uplatin_mtnk:
 uplatin_burrito:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Burritos and LARS Anti Air Missiles
+		Name: Unlock Burritos and LARS Anti Air Missiles.
 	Buildable:
-		BuildPaletteOrder: 116
+		BuildPaletteOrder: 128
 		Queue: Promotions
 		Description: Enables construction of Burritos and LARS Anti Air Missiles.
 		Prerequisites: ~latin_cgcnst, !uplatin_burrito, uplatin_mtnk, rank1
@@ -6153,17 +6237,17 @@ uplatin_burrito:
 		Image: latin_burrito
 	ProvidesPrerequisite:
 
-uplatin_up_tech1:
+uplatin_up_sml:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Stolen Tech Tier 1
+		Name: Unlock SML Turrets
 	Buildable:
-		BuildPaletteOrder: 119
+		BuildPaletteOrder: 131
 		Queue: Promotions
-		Description: Unlocks a bunch of Tech packs.
-		Prerequisites: ~latin_cgcnst, !uplatin_up_tech1, uplatin_burrito, rank1
+		Description: Enables construction of SML Turrets.
+		Prerequisites: ~latin_cgcnst, !uplatin_up_sml, uplatin_burrito, rank1
 	RenderSprites:
-		Image: latin_up_tech1
+		Image: latin_sml
 	ProvidesPrerequisite:
 
 ### Artillery Weapons tree
@@ -6173,7 +6257,7 @@ uplatin_ra2terror:
 	Tooltip:
 		Name: Unlock Terrorists
 	Buildable:
-		BuildPaletteOrder: 111
+		BuildPaletteOrder: 123
 		Queue: Promotions
 		Description: Enables training of terrorists.
 		Prerequisites: ~latin_cgcnst, !uplatin_ra2terror, rank1
@@ -6186,7 +6270,7 @@ uplatin_ra2dtruck:
 	Tooltip:
 		Name: Unlock Demolition Trucks
 	Buildable:
-		BuildPaletteOrder: 114
+		BuildPaletteOrder: 126
 		Queue: Promotions
 		Description: Enables construction of Demo Trucks.
 		Prerequisites: ~latin_cgcnst, uplatin_ra2terror, !uplatin_ra2dtruck, rank1
@@ -6199,7 +6283,7 @@ uplatin_nuketruk:
 	Tooltip:
 		Name: Unlock Nuke Trucks
 	Buildable:
-		BuildPaletteOrder: 117
+		BuildPaletteOrder: 129
 		Queue: Promotions
 		Description: Enables construction of Nuke Trucks.
 		Prerequisites: ~latin_cgcnst, uplatin_ra2dtruck, !uplatin_nuketruk, rank1
@@ -6212,7 +6296,7 @@ uplatin_topol:
 	Tooltip:
 		Name: Unlock TOPOL M
 	Buildable:
-		BuildPaletteOrder: 120
+		BuildPaletteOrder: 132
 		Queue: Promotions
 		Description: Enables construction of TOPOLs.
 		Prerequisites: ~latin_cgcnst, uplatin_nuketruk, !uplatin_topol, rank1
@@ -6226,31 +6310,16 @@ uplatin_topol:
 uplatin_mili:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
-		Name: Molotov Use
+		Name: Elite Guerillas
 	Valued:
-		Cost: 1250
+		Cost: 5000
 	Buildable:
 		BuildPaletteOrder: 50
-		Queue: Upgrades
-		Description: Equips Militias with Molotovs.
-		Prerequisites: ~latin_cgspy, !uplatin_mili
+		Queue: Addons
+		Description: Equips Militias with Molotovs, icreases armor by 50% and gives self healing.
+		Prerequisites: ~latin_cgte, !uplatin_mili
 	RenderSprites:
 		Image: latin_mili
-	ProvidesPrerequisite:
-
-uplatin_apc:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: APC Missile addon
-	Valued:
-		Cost: 1500
-	Buildable:
-		BuildPaletteOrder: 50
-		Queue: Upgrades
-		Description: Equips APCs with Rocket Launchers.
-		Prerequisites: ~latin_cgspy, !uplatin_apc
-	RenderSprites:
-		Image: latin_apc
 	ProvidesPrerequisite:
 
 uplatin_ngbunk2:
@@ -6258,42 +6327,42 @@ uplatin_ngbunk2:
 	Tooltip:
 		Name: Lightposts
 	Valued:
-		Cost: 1500
+		Cost: 5000
 	Buildable:
 		BuildPaletteOrder: 50
-		Queue: Upgrades
-		Description: Upgrade garrisoned buildings armor by 50%.
-		Prerequisites: ~latin_cgspy, !uplatin_ngbunk2
+		Queue: Addons
+		Description: Increases garrisoned buildings range, vision and armor by 30%.
+		Prerequisites: ~latin_cgte, !uplatin_ngbunk2
 	RenderSprites:
 		Image: latin_ngbunk2
 	ProvidesPrerequisite:
 
-uplatin_up_tech2:
+uplatin_up_tech1:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
-		Name: Stolen Tech Tier 2
+		Name: Stolen Tech Recycling
 	Valued:
-		Cost: 2000
+		Cost: 5000
 	Buildable:
 		BuildPaletteOrder: 50
-		Queue: Upgrades
-		Description: Unlocks a bunch of Tech packs.
-		Prerequisites: ~uplatin_up_tech1, !uplatin_up_tech2
+		Queue: Addons
+		Description: Enables the production of drive by cars from the Recycle Center and unlocks stolen tech upgrades in the Spy Center.
+		Prerequisites: ~latin_cgte, !uplatin_up_tech1
 	RenderSprites:
-		Image: latin_up_tech2
+		Image: latin_up_tech1
 	ProvidesPrerequisite:
 
 latin_up_chaingun:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
-		Name: Chaiguns
+		Name: Yuri Stolen Tech: Chaiguns
 	Valued:
-		Cost: 2000
+		Cost: 7500
 	Buildable:
 		BuildPaletteOrder: 50
 		Queue: Upgrades
-		Description: Stolen Tech from Yuri Army, Equips Militia, and Buggies with Chainguns.
-		Prerequisites: ~uplatin_up_tech1, !latin_up_chaingun
+		Description: Stolen Tech from Yuri: Equips Militia, Buggies and Sentries with Chainguns.
+		Prerequisites: ~latin_cgspy, uplatin_up_tech1, !latin_up_chaingun
 	RenderSprites:
 		Image: latin_up_chaingun
 	ProvidesPrerequisite:
@@ -6301,29 +6370,29 @@ latin_up_chaingun:
 latin_up_industrial:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
-		Name: Industrial Methods
+		Name: Soviet Stolen Tech: Industrial Methods
 	Valued:
-		Cost: 3000
+		Cost: 7500
 	Buildable:
 		BuildPaletteOrder: 50
 		Queue: Upgrades
-		Description: Stolen Tech from Soviet Army, Cheaps Tanks in 10%.
-		Prerequisites: ~uplatin_up_tech2, !latin_up_industrial
+		Description: Stolen Tech from Soviet Army: Reduces Cost of Vehicles by 10%.
+		Prerequisites: ~latin_cgspy, uplatin_up_tech1, !latin_up_industrial
 	RenderSprites:
 		Image: latin_up_industrial
 	ProvidesPrerequisite:
 
-latin_up_miraging:
+uplatin_alliedstolentech:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
-		Name: Miraging
+		Name: Allied Stolen Tech: APC Missiles and Miraging
 	Valued:
-		Cost: 2500
+		Cost: 7500
 	Buildable:
 		BuildPaletteOrder: 50
 		Queue: Upgrades
-		Description: Stolen Tech from Allies, Freedom Fighters and Diablos turns in trees.
-		Prerequisites: ~uplatin_up_tech1, !latin_up_miraging
+		Description: Stolen Tech from Allies: Equips APCs and Narco vehicles with Rocket Launchers. Freedom Fighters and Diablos disguise as trees.
+		Prerequisites: ~latin_cgspy, uplatin_up_tech1, !uplatin_alliedstolentech
 	RenderSprites:
 		Image: latin_up_miraging
 	ProvidesPrerequisite:
@@ -6331,17 +6400,46 @@ latin_up_miraging:
 latin_up_hotfire:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
-		Name: Hot Fire
+		Name: Asian Alliance Stolen Tech: Hot Fire
 	Valued:
-		Cost: 2000
+		Cost: 10000
 	Buildable:
 		BuildPaletteOrder: 50
 		Queue: Upgrades
-		Description: Stolen Tech from Asian Alliance, Upgrades Flame Troopers and Burritos.
-		Prerequisites: ~uplatin_up_tech2, !latin_up_hotfire
+		Description: Stolen Tech from Asian Alliance: Increases damage, range and fire rate of Burritos by 25%. Suicide Units and Flame Troopers have their damage increased by 100%
+		Prerequisites: ~latin_cgspy, uplatin_up_tech1, !latin_up_hotfire
 	RenderSprites:
 		Image: latin_up_hotfire
 	ProvidesPrerequisite:
+
+uplatin_cashrecover:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Cash Recovery
+	Valued:
+		Cost: 12500
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Upgrades
+		Description: Recycles lost vehicles for a cashback of 10%
+		Prerequisites: ~latin_cgspy, !uplatin_cashrecover
+	RenderSprites:
+		Image: latin_up_tech2
+	#ProvidesPrerequisite:
+	ProvidesTeamProxyActor:
+		Actor: team_upgrade.uplatin_cashrecover
+
+team_upgrade.uplatin_cashrecover:
+	Inherits: ^researched_upgrade.template
+	ProvidesPrerequisite:
+		Prerequisite: uplatin_cashrecover
+	RenderSprites:
+		Image: latin_up_tech2
+	Tooltip:
+		Name: Cash Recovery
+	Buildable:
+		Description: Recycles lost vehicles for a cashback of 10%
+	PlayerDisplayUpgrade:
 
 ##############################################
 #   Red Alert 2 Consortium Structure
@@ -6828,9 +6926,9 @@ steel_fedaa:
 		Prerequisites: ~steel_qacst, steel_qtradr
 		Description: template-anti-infantry-defense.description
 	Valued:
-		Cost: 900
+		Cost: 1000
 	Tooltip:
-		Name: Anti Air Quantum Turret
+		Name: Anti Air Quantum Missile Turret
 	Building:
 		Footprint: x
 		Dimensions: 1,1
@@ -7390,7 +7488,7 @@ steel_board_inf:
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 300
+		Cost: 500
 	Tooltip:
 		Name: Hover Board Grenadier
 	Buildable:
@@ -7475,10 +7573,10 @@ steel_qinf:
 		Modifier: 125
 		RequiresCondition: deployed
 	RevealsShroudMultiplier@shrouded:
-		Modifier: 150
+		Modifier: 125
 		RequiresCondition: deployed
 	DamageMultiplier@deployed:
-		Modifier: 50
+		Modifier: 75
 		RequiresCondition: deployed
 	RenderRangeCircle:
 	RevealOnFire:
@@ -7692,7 +7790,7 @@ steel_mako:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
 	Valued:
-		Cost: 400
+		Cost: 500
 	Tooltip:
 		Name: Mako
 	Buildable:
@@ -9852,6 +9950,7 @@ nax_radar:
 		Dimensions: 4,3
 	ProvidesPrerequisite:
 		Prerequisite: anyrahq
+
 nax_airfield:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^BasicDefenseTemplate
@@ -9995,6 +10094,7 @@ nax_me262.Husk:
 		Image: nax_me262
 	RenderSprites:
 		PlayerPalette: playerra2
+
 nax_tek:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
@@ -10016,6 +10116,7 @@ nax_tek:
 		Prerequisite: techcenter
 	Production@Upgrades:
 		Produces: Upgrades
+
 nax_twr:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^BasicDefenseTemplate
@@ -10341,7 +10442,7 @@ nax_kingtiger:
 	Armor:
 		Type: Heavy
 	Turreted:
-		TurnSpeed: 16 #3
+		TurnSpeed: 15 #3
 		Offset: -4,0,5
 	Armament:
 		Name: primary
@@ -10603,7 +10704,7 @@ nax_brummbar:
 
 nax_hetzer:
 	Inherits: ^Tank
-	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -10621,11 +10722,13 @@ nax_hetzer:
 	Mobile:
 		Locomotor: tracked
 		Speed: 75
-		TurnSpeed: 24
+		TurnSpeed: 15
 	Health:
 		HP: 45000
 	Repairable:
-		HpPerStep: 2000
+		HpPerStep: 2250
+	Armor:
+		Type: Light
 	Armament@AG:
 		Weapon: NaxiHetzerDestroyer
 		LocalOffset: 300,0,300
@@ -10639,12 +10742,10 @@ nax_hetzer:
 		PlayerPalette: playerra2
 	Voiced:
 		VoiceSet: NaxiTankVoice
-	DeliversCash:
-		Payload: 250
 
 nax_jagdpanzer:
 	Inherits: ^Tank
-	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -10661,12 +10762,14 @@ nax_jagdpanzer:
 		Description: actor-aaquas.description
 	Mobile:
 		Locomotor: tracked
-		Speed: 75
-		TurnSpeed: 24
+		Speed: 60
+		TurnSpeed: 12
 	Health:
-		HP: 130000
+		HP: 62500
 	Repairable:
-		HpPerStep: 2000
+		HpPerStep: 3125
+	Armor:
+		Type: Medium
 	Armament@AG:
 		Weapon: NaxiJadgDestroyer
 		LocalOffset: 400,0,300
@@ -10705,7 +10808,7 @@ nax_halftrack:
 	Mobile:
 		Locomotor: lighttracked
 		Speed: 110
-		TurnSpeed: 24
+		TurnSpeed: 22
 	Health:
 		HP: 45000
 	Repairable:
@@ -10728,7 +10831,7 @@ nax_halftrack:
 	Cargo:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 4
-		InitialUnits: nax_rifle, nax_rifle, nax_rifle, nax_mp40
+		InitialUnits: nax_rifle, nax_rifle, nax_mp40, nax_mp40
 
 nax_wirbelwind:
 	Inherits: ^Tank
@@ -10740,7 +10843,7 @@ nax_wirbelwind:
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
 	Valued:
-		Cost: 1400
+		Cost: 1200
 	Tooltip:
 		Name: Wirbelwind
 	Buildable:

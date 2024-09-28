@@ -1579,7 +1579,7 @@ upgrade-advancedguerillatactics =
    by 10% and gives the units higher vision.
 
 upgrade-conscription =
-   .description = Decreases cost and training time for all infantry by 25%.
+   .description = Decreases cost and training time for all infantry by 50%.
 
 upgrade-nuclearengines =
    .description = Increases speed of tanks by 25%.
