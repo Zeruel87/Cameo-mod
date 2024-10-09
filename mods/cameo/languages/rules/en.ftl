@@ -1523,7 +1523,8 @@ upgrade-advancedmissiletargeting =
 upgrade-cuttingedgeweaponry =
    .description = Increases damage and fire rate of all experimental and prototype units by 15%.
    Increases damage of the EMP Grenadier by 100% and armor by 50%.
-   Increases damage of Havoc, Experimental Exosuits and Firehawks by 50%.
+   Increases damage of Experimental Exosuits and Firehawks by 50%.
+   Increases damage and fire rate of Havoc by 25%.
 
 upgrade-highvelocitycannons =
    .description = Increases damage and range of cannons and railguns by 15%.
