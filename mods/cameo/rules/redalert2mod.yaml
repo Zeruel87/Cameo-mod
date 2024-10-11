@@ -10341,18 +10341,31 @@ nax_tek:
 	Buildable:
 		Prerequisites: ~nax_conyard, nax_radar
 	Tooltip:
-		Name: template-tech-center.ra-soviet
+		Name: Naxis Academy
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
-	ProvidesPrerequisite:
-		Prerequisite: tek
-	ProvidesPrerequisite@techcenter:
-		Prerequisite: techcenter
 	Production@Upgrades:
 		Produces: Upgrades
-
+nax_tech:
+	Inherits: ^RA2Building
+	Inherits@radar: ^IsTechnoBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@sell: ^RASpawnActorsOnSell
+	Buildable:
+		Queue: Building, RABuilding
+		Prerequisites: ~nax_conyard, nax_refin
+		Description: template-radar.description
+	Tooltip:
+		Name: Naxis Tech Center
+	Building:
+		Footprint: =xxx xxxx xxx=
+		Dimensions: 4,3
+	ProvidesPrerequisite:
+		Prerequisite: anyrahq
+	Production@Upgrades:
+		Produces: Upgrades
 nax_twr:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^BasicDefenseTemplate
@@ -10452,6 +10465,62 @@ nax_flak88:
 	RevealsShroud:
 		Range: 6666
 	ProvidesPrerequisite@buildingname:
+
+nax_bunk:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@gar: ^ClearableGarrisonNeutronOnly
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
+	Tooltip:
+		Name: Naxi Bunker
+	Building:
+		Footprint: xx xx
+		Dimensions: 2, 2
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 40
+		Prerequisites: ~nax_conyard, nax_radar
+		Description: actor-nabnkr.description
+	Valued:
+		Cost: 1000
+	Health:
+		HP: 90000
+	Turreted:
+		TurnSpeed: 1023
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	Selectable:
+		Bounds: 1792, 1792, 0, 0
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 6
+		#InitialUnits: ra2e2
+	WithSpriteBody:
+	WithIdleOverlay@Bunkered:
+		Sequence: idle-bunkered
+		RequiresCondition: loaded && !build-incomplete
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
+		PauseOnCondition: chronobeamed
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
+	RevealsShroud:
+		Range: 6666
+	Selectable:
+		Class: nax_bunk
+	ActorStatValues:
+		Stats: Armor, Sight, Cargo, Kills, Experience
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: NaxiRifleT
+		LocalOffset: 300,1,700, 300,-1,700
+		MuzzleSequence: muzzle
 
 nax_mcv:
 	Inherits: ^Vehicle
@@ -10801,7 +10870,7 @@ nax_maus:
 		Name: Maus
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap, nax_tek
+		Prerequisites: ~nax_weap, nax_tech
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -10864,7 +10933,7 @@ nax_ratte:
 	Buildable:
 		BuildPaletteOrder: 60
 		BuildLimit: 1
-		Prerequisites: ~nax_weap, nax_tek
+		Prerequisites: ~nax_weap, nax_tech
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -11412,7 +11481,6 @@ nax_haenebu:
 	Inherits@Template: ^SpaceshipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@announce: ^AnnounceGlobal
 	Inherits@detect: ^GenericAirDetector
 	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
@@ -11423,7 +11491,7 @@ nax_haenebu:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~nax_tek
+		Prerequisites: ~nax_tech
 		Queue: Aircraft, RAAircraft
 		Description: actor-disk.description
 	Aircraft:
@@ -11483,10 +11551,9 @@ nax_haenebu:
 		Actor: nax_haenebu.Husk
 	Turreted:
 	Voiced:
-		VoiceSet: DiskVoice
+		VoiceSet: NaxiUFOVoice
 	RenderRangeCircle:
 		RangeCircleType: aircraft
-	DeathSounds:
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -11569,7 +11636,7 @@ nax_eng:
 		DecorationBounds: 1280, 1280
 	WithSpriteTurret:
 	Voiced:
-		VoiceSet: RA2SovietVehicleVoice
+		VoiceSet: NaxiEngVoice
 	RenderSprites:
 		PlayerPalette: playerra2
 	Captures:
