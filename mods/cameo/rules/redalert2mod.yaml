@@ -3769,8 +3769,6 @@ latin_cgpile:
 	Inherits@lightposts: ^LightPosts
 	Tooltip:
 		Name: Combat Barracks
-	ProvidesPrerequisite:
-		Prerequisite: RA2Barracks
 	Buildable:
 		Prerequisites: ~latin_cgcnst, latin_cgpow
 	Building:
@@ -6004,6 +6002,70 @@ latin_fthrow:
 		FacingTolerance: 0
 	Voiced:
 		VoiceSet: ConscriptVoice
+
+latin_monkey:
+	Inherits: ^DefaultInfantry
+	Inherits@2: ^AffectedByTiberium
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@MC: ^MCImmune
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Monkey
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~latin_cgpile
+		Queue: Infantry, RAInfantry
+		Description: actor-alligator.description
+	Mobile:
+		Speed: 90
+	Health:
+		HP: 27500
+		InitialStance: AttackAnything
+	ChangesHealth@SelfHealing:
+		Step: 11
+	Armament@PRIMARY:
+		Weapon: d2k_grenade
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: d2k_grenade
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: LatinMonkeyDie
+	DeliversCash:
+		Payload: 250
+	Passenger:
+		Weight: 2
+	Targetable@dog:
+		TargetTypes: DogImmune
+	RenderSprites:
+		PlayerPalette: playerra2
+	Crushable:
+		CrushSound: igensqua.wav
+	WithDeathAnimation:
+		DeathSequencePalette: ra2infantry
+		DeathTypes:
+			DefaultDeath: 1
+			BruteMutate: 1
+			BulletDeath: 1
+			RippedApartDeath: 2
+			SmallExplosionDeath: 2
+			ExplosionDeath: 2
+			FireDeath: 2
+			PsychicDeath: 1
+			TiberiumDeath: 1
+			RadiationDeath: 1
+			RA2VirusDeath: 1
+			ElectricityDeath: 2
+			ContaminatorMutate: 1
+			QuestionMutate: 1
+	IgnoresDisguise:
+	-Targetable@disguise:
 
 latin_narco:
 	Inherits: ^Soldier
@@ -10625,23 +10687,36 @@ nax_tek:
 	Buildable:
 		Prerequisites: ~nax_conyard, nax_radar
 	Tooltip:
-		Name: template-tech-center.ra-soviet
+		Name: Naxis Academy
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
-	ProvidesPrerequisite:
-		Prerequisite: tek
-	ProvidesPrerequisite@techcenter:
-		Prerequisite: techcenter
 	Production@Upgrades:
 		Produces: Upgrades
-
+nax_tech:
+	Inherits: ^RA2Building
+	Inherits@radar: ^IsTechnoBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@sell: ^RASpawnActorsOnSell
+	Buildable:
+		Queue: Building, RABuilding
+		Prerequisites: ~nax_conyard, nax_refin
+		Description: template-radar.description
+	Tooltip:
+		Name: Naxis Tech Center
+	Building:
+		Footprint: =xxx xxxx xxx=
+		Dimensions: 4,3
+	ProvidesPrerequisite:
+		Prerequisite: anyrahq
+	Production@Upgrades:
+		Produces: Upgrades
 nax_twr:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@detect: ^GenericAllDetector
 	Inherits@sell: ^AASpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
@@ -10651,7 +10726,7 @@ nax_twr:
 		Prerequisites: ~nax_conyard, nax_barr
 		Description: template-anti-infantry-defense.description
 	Valued:
-		Cost: 1200
+		Cost: 650
 	Tooltip:
 		Name: Rifle Tower
 	Building:
@@ -10684,6 +10759,114 @@ nax_twr:
 	RevealsShroud:
 		Range: 6666
 	ProvidesPrerequisite@buildingname:
+
+nax_flak88:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 20
+		Prerequisites: ~nax_conyard, nax_weap
+		Description: template-anti-infantry-defense.description
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Flak 88
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 80000
+	Selectable:
+		Bounds: 1024, 1024
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
+		RealignDelay: -1
+	AttackTurreted:
+		Voice: Attack
+	Armament@PRIMARY:
+		Weapon: NaxFlakAA
+		LocalOffset: 888,44,700
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AA:
+		Weapon: NaxFlakAG
+		LocalOffset: 888,44,700
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -40
+	RevealsShroud:
+		Range: 6666
+	ProvidesPrerequisite@buildingname:
+
+nax_bunk:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@gar: ^ClearableGarrisonNeutronOnly
+	Inherits@bot: ^BotAutoDeployEvacuateCargo
+	Tooltip:
+		Name: Naxi Bunker
+	Building:
+		Footprint: xx xx
+		Dimensions: 2, 2
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 40
+		Prerequisites: ~nax_conyard, nax_radar
+		Description: actor-nabnkr.description
+	Valued:
+		Cost: 1000
+	Health:
+		HP: 90000
+	Turreted:
+		TurnSpeed: 1023
+	-QuantizeFacingsFromSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	Selectable:
+		Bounds: 1792, 1792, 0, 0
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 6
+		#InitialUnits: ra2e2
+	WithSpriteBody:
+	WithIdleOverlay@Bunkered:
+		Sequence: idle-bunkered
+		RequiresCondition: loaded && !build-incomplete
+	AttackOpenTopped:
+		Armaments: garrisoned
+		PortOffsets: 768,0,128, 448,-682,128, -448,-682,128, -768,0,128, -448,682,128, 448,682,128
+		PauseOnCondition: chronobeamed
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
+	RevealsShroud:
+		Range: 6666
+	Selectable:
+		Class: nax_bunk
+	ActorStatValues:
+		Stats: Armor, Sight, Cargo, Kills, Experience
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: NaxiRifleT
+		LocalOffset: 300,1,700, 300,-1,700
+		MuzzleSequence: muzzle
 
 nax_mcv:
 	Inherits: ^Vehicle
@@ -11033,7 +11216,7 @@ nax_maus:
 		Name: Maus
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap, nax_tek
+		Prerequisites: ~nax_weap, nax_tech
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -11096,7 +11279,7 @@ nax_ratte:
 	Buildable:
 		BuildPaletteOrder: 60
 		BuildLimit: 1
-		Prerequisites: ~nax_weap, nax_tek
+		Prerequisites: ~nax_weap, nax_tech
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -11644,7 +11827,6 @@ nax_haenebu:
 	Inherits@Template: ^SpaceshipTemplate
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@announce: ^AnnounceGlobal
 	Inherits@detect: ^GenericAirDetector
 	Inherits@AntiAir: ^PrioritizeAir
 	Valued:
@@ -11655,7 +11837,7 @@ nax_haenebu:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~nax_tek
+		Prerequisites: ~nax_tech
 		Queue: Aircraft, RAAircraft
 		Description: actor-disk.description
 	Aircraft:
@@ -11715,10 +11897,9 @@ nax_haenebu:
 		Actor: nax_haenebu.Husk
 	Turreted:
 	Voiced:
-		VoiceSet: DiskVoice
+		VoiceSet: NaxiUFOVoice
 	RenderRangeCircle:
 		RangeCircleType: aircraft
-	DeathSounds:
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -11801,7 +11982,7 @@ nax_eng:
 		DecorationBounds: 1280, 1280
 	WithSpriteTurret:
 	Voiced:
-		VoiceSet: RA2SovietVehicleVoice
+		VoiceSet: NaxiEngVoice
 	RenderSprites:
 		PlayerPalette: playerra2
 	Captures:
@@ -11812,3 +11993,138 @@ nax_eng:
 		EnterCursor: ability
 		EnterBlockedCursor: move-blocked
 		Voice: Move
+nax_brad:
+	Inherits: ^Vehicle
+	Inherits@anim: ^RA2Vehicle
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 80
+		Prerequisites: ~nax_weap, nax_radar
+		Description: actor-v3.description
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: M-15A Bradley
+	Health:
+		HP: 35000
+	Repairable:
+		HpPerStep: 1750
+	ChangesHealth@SelfHealing:
+		Step: 14
+	Armor:
+		Type: Medium
+	Mobile:
+		Speed: 70
+		TurnSpeed: 16
+	Armament:
+		Weapon: NaxisBradleyTarget
+		LocalOffset: 1000,333,1000, 1000,-333,1000, 1000,333,1000, 1000,-333,1000
+		MuzzleSequence: muzzle
+	MissileSpawnerMasterCA:
+		#ArmamentNames: primary
+		Actors: yrbsubmisl, yrbsubmisl, yrbsubmisl, yrbsubmisl
+		RespawnTicks: 135
+		SpawnAllAtOnce: true
+		SpawnOffset: 333,333,777, 333,-333,777, -333,333,777, -333,-333,777
+	FirepowerMultiplier@RANK-1:
+		Modifier: 125
+	FirepowerMultiplier@RANK-2:
+		Modifier: 150
+	FirepowerMultiplier@RANK-3:
+		Modifier: 175
+	FirepowerMultiplier@RANK-ELITE:
+		Modifier: 200
+	AttackFrontal:
+		FacingTolerance: 0
+	SelectionDecorations:
+	Explodes:
+		Weapon: V3Explode
+	Selectable:
+		DecorationBounds: 1280, 1280
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	GrantConditionOnAttack:
+		Condition: firing
+		RevokeDelay: 12
+	WithFacingSpriteBody:
+		RequiresCondition: !firing
+		Sequence: idle
+		Name: loaded
+	WithFacingSpriteBody@EMPTY:
+		RequiresCondition: firing
+		Sequence: empty-idle
+		Name: reloading
+	DeliversCash:
+		Payload: 500
+	RenderSprites:
+		PlayerPalette: playerra2
+nax_sarubia:
+	Inherits: ^Tank
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Nop-03 Sarubia
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax_weap, nax_tek
+		Queue: Vehicle, RAVehicle
+		Description: actor-aaquas.description
+	Mobile:
+		Locomotor: tracked
+		Speed: 60
+		TurnSpeed: 12
+	Health:
+		HP: 62500
+	Repairable:
+		HpPerStep: 3125
+	Armor:
+		Type: Medium
+	Armament@AG:
+		Weapon: NaxisSarubianTarget
+		LocalOffset: 400,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	MissileSpawnerMasterCA:
+		#ArmamentNames: primary
+		Actors: nax_sarubia_bomb, nax_sarubia_bomb, nax_sarubia_bomb, nax_sarubia_bomb
+		RespawnTicks: 80
+		SpawnAllAtOnce: true
+		SpawnOffset: 1,1,777
+	AttackFrontal:
+	WithMuzzleOverlay:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 250
+nax_sarubia_bomb:
+	Inherits: ^ShootableMissile
+	Health:
+		HP: 9000
+	BallisticMissileCA:
+		LaunchAngle: 5
+		Speed: 80
+		LaunchSounds: vdesatta.wav, vdesattb.wav
+	MissileSpawnerSlave:
+	SpawnedExplodes:
+		Weapon: NaxiJadgDestroyer
+		EmptyWeapon: NaxiJadgDestroyer
+	RenderSprites:
+		Image: nax_sarubia_bomb
+		PlayerPalette: playerra2
+	WithFacingSpriteBody:
