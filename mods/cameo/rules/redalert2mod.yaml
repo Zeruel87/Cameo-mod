@@ -10839,7 +10839,7 @@ nax_bunk:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 40
-		Prerequisites: ~nax_conyard, nax_radar
+		Prerequisites: ~nax_conyard, nax_barr
 		Description: actor-nabnkr.description
 	Valued:
 		Cost: 1000
@@ -10847,6 +10847,7 @@ nax_bunk:
 		HP: 90000
 	Turreted:
 		TurnSpeed: 1023
+		Offset: 0,0,1024
 	-QuantizeFacingsFromSequence:
 	BodyOrientation:
 		QuantizedFacings: 8
@@ -10874,10 +10875,95 @@ nax_bunk:
 		Stats: Armor, Sight, Cargo, Kills, Experience
 	AttackTurreted:
 		Voice: Attack
-	Armament:
-		Weapon: NaxiRifleT
+	Armament@mortar:
+		Weapon: NaxGrilleArty
 		LocalOffset: 300,1,700, 300,-1,700
 		MuzzleSequence: muzzle
+		RequiresCondition: mortar
+	Armament@mg:
+		Weapon: NaxiWW2MachinegunTop
+		LocalOffset: 300,1,700, 300,-1,700
+		MuzzleSequence: muzzle
+		RequiresCondition: mg
+	Armament@aa:
+		Weapon: NaxQuadCannonAAE
+		LocalOffset: 300,1,700, 300,-1,700
+		MuzzleSequence: muzzle
+		RequiresCondition: aa
+	WithSpriteTurret@mortar:
+		RequiresCondition: !build-incomplete && mortar
+		Sequence: turret-mort
+	WithSpriteTurret@mg:
+		RequiresCondition: !build-incomplete && mg
+		Sequence: turret-mg
+	WithSpriteTurret@aa:
+		RequiresCondition: !build-incomplete && aa
+		Sequence: turret-aa
+	ProvidesPrerequisite@buildingname:
+	Pluggable:
+		Conditions:
+			nax_bunk.mg: mg
+			nax_bunk.aa: aa
+			nax_bunk.mortar: mortar
+		Requirements:
+			nax_bunk.mg: !build-incomplete && !mortar && !aa && !mg
+			nax_bunk.aa: !build-incomplete && !mortar && !aa && !mg
+			nax_bunk.mortar: !build-incomplete && !mortar && !aa && !mg
+		EditorOptions:
+			nax_bunk.mg: Machinegun Turret
+			nax_bunk.aa: Mini Flak Turret
+			nax_bunk.mortar: Mortar Turret
+
+nax_bunk.mg:
+	Inherits: ^BuildingPlug
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Machinegun Bunker Addon
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 100
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Prerequisites: ~nax_bunk, nax_barr
+	Plug:
+		Type: nax_bunk.mg
+	RenderSprites:
+		Image: nax_bunk
+
+nax_bunk.mortar:
+	Inherits: ^BuildingPlug
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Mortar Bunker Addon
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 100
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Prerequisites: ~nax_bunk, nax_radar
+	Plug:
+		Type: nax_bunk.mortar
+	RenderSprites:
+		Image: nax_bunk
+
+nax_bunk.aa:
+	Inherits: ^BuildingPlug
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Mini Flak Bunker Addon
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 100
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Prerequisites: ~nax_bunk, nax_radar
+	Plug:
+		Type: nax_bunk.aa
+	RenderSprites:
+		Image: nax_bunk
 
 nax_mcv:
 	Inherits: ^Vehicle
