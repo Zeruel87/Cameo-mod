@@ -39,6 +39,14 @@ namespace OpenRA.Mods.Cameo.Traits
 			health = self.Trait<Health>();
 		}
 
+		protected override void Created(Actor self)
+		{
+			buildingInfo = self.Info.TraitInfoOrDefault<BuildingInfo>();
+			armaments = self.TraitsImplementing<Armament>().ToArray();
+
+			base.Created(self);
+		}
+
 		void INotifyKilled.Killed(Actor self, AttackInfo e)
 		{
 			if (IsTraitDisabled || !self.IsInWorld)
