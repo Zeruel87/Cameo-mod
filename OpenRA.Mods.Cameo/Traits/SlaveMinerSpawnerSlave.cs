@@ -111,7 +111,7 @@ namespace OpenRA.Mods.Cameo.Traits
 				masterDock = null;
 				return;
 			}
-			var dock = dockClient.AvailableDockHosts(masterActor, true, true).ClosestDock(self, dockClient);
+			var dock = dockClient.AvailableDockHosts(masterActor, default, true).ClosestDock(self, dockClient);
 			if (dock.HasValue)
 			{
 				masterDock = dock.Value.Trait;

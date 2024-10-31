@@ -14,94 +14,29 @@ using OpenRA.GameRules;
 using OpenRA.Primitives;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
+using OpenRA.Mods.CA.Traits;
 
 namespace OpenRA.Mods.Cameo.Traits
 {
-	public enum ExplosionType { Footprint, CenterPosition }
-
-	public enum DamageSource { Self, Killer }
-
 	[Desc("This actor explodes when killed with firepower multipliers applied to the weapon.")]
-	public class ExplodesCAInfo : ConditionalTraitInfo, Requires<IHealthInfo>
+	public class FireWarheadsOnDeathCAInfo : FireWarheadsOnDeathInfo
 	{
-		[WeaponReference]
-		[FieldLoader.Require]
-		[Desc("Default weapon to use for explosion if ammo/payload is loaded.")]
-		public readonly string Weapon = null;
+		[Desc("Name of armament")]
+		public readonly string WeaponName = null;
 
-		public readonly string WeaponName = "primary";
-
-		[WeaponReference]
-		[Desc("Fallback weapon to use for explosion if empty (no ammo/payload).")]
-		public readonly string EmptyWeapon = "UnitExplode";
-
-		[Desc("Chance that the explosion will use Weapon instead of EmptyWeapon when exploding, provided the actor has ammo/payload.")]
-		public readonly int LoadedChance = 100;
-
-		[Desc("Chance that this actor will explode at all.")]
-		public readonly int Chance = 100;
-
-		[Desc("Health level at which actor will explode.")]
-		public readonly int DamageThreshold = 0;
-
-		[Desc("DeathType(s) that trigger the explosion. Leave empty to always trigger an explosion.")]
-		public readonly BitSet<DamageType> DeathTypes = default;
-
-		[Desc("Who is counted as source of damage for explosion.",
-			"Possible values are Self and Killer.")]
-		public readonly DamageSource DamageSource = DamageSource.Self;
-
-		[Desc("Possible values are CenterPosition (explosion at the actors' center) and ",
-			"Footprint (explosion on each occupied cell).")]
-		public readonly ExplosionType Type = ExplosionType.CenterPosition;
-
-		[Desc("Offset of the explosion from the center of the exploding actor (or cell).")]
-		public readonly WVec Offset = WVec.Zero;
-
-		public WeaponInfo WeaponInfo { get; private set; }
-		public WeaponInfo EmptyWeaponInfo { get; private set; }
-
-		public override object Create(ActorInitializer init) { return new ExplodesCA(this, init.Self); }
-		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
-		{
-			if (!string.IsNullOrEmpty(Weapon))
-			{
-				var weaponToLower = Weapon.ToLowerInvariant();
-				if (!rules.Weapons.TryGetValue(weaponToLower, out var weapon))
-					throw new YamlException($"Weapons Ruleset does not contain an entry '{weaponToLower}'");
-				WeaponInfo = weapon;
-			}
-
-			if (!string.IsNullOrEmpty(EmptyWeapon))
-			{
-				var emptyWeaponToLower = EmptyWeapon.ToLowerInvariant();
-				if (!rules.Weapons.TryGetValue(emptyWeaponToLower, out var emptyWeapon))
-					throw new YamlException($"Weapons Ruleset does not contain an entry '{emptyWeaponToLower}'");
-				EmptyWeaponInfo = emptyWeapon;
-			}
-
-			base.RulesetLoaded(rules, ai);
-		}
+		public override object Create(ActorInitializer init) { return new FireWarheadsOnDeathCA(this, init.Self); }
 	}
 
-	public class ExplodesCA : ConditionalTrait<ExplodesCAInfo>, INotifyKilled, INotifyDamage
+	public class FireWarheadsOnDeathCA : ConditionalTrait<FireWarheadsOnDeathCAInfo>, INotifyKilled, INotifyDamage
 	{
 		readonly IHealth health;
 		BuildingInfo buildingInfo;
 		Armament[] armaments;
 
-		public ExplodesCA(ExplodesCAInfo info, Actor self)
+		public FireWarheadsOnDeathCA(FireWarheadsOnDeathCAInfo info, Actor self)
 			: base(info)
 		{
-			health = self.Trait<IHealth>();
-		}
-
-		protected override void Created(Actor self)
-		{
-			buildingInfo = self.Info.TraitInfoOrDefault<BuildingInfo>();
-			armaments = self.TraitsImplementing<Armament>().ToArray();
-
-			base.Created(self);
+			health = self.Trait<Health>();
 		}
 
 		void INotifyKilled.Killed(Actor self, AttackInfo e)

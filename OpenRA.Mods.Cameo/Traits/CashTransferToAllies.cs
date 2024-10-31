@@ -32,11 +32,11 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Money Threshold for sending cash.")]
 		public readonly int Threshold = 1000;
 
-		[TranslationReference]
+		[FluentReference]
 		[Desc("Descriptive label for the creeps checkbox in the lobby.")]
 		public readonly string CheckboxLabel = "Team Cash Sharing";
 
-		[TranslationReference]
+		[FluentReference]
 		[Desc("Tooltip description for the creeps checkbox in the lobby.")]
 		public readonly string CheckboxDescription = "Automatically share cash among teammates";
 

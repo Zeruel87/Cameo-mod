@@ -21,7 +21,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Traits
 {
-	class MadTankCAInfo : PausableConditionalTraitInfo, IRulesetLoaded, Requires<ExplodesInfo>, Requires<WithFacingSpriteBodyInfo>
+	class MadTankCAInfo : PausableConditionalTraitInfo, IRulesetLoaded, Requires<FireWarheadsOnDeathInfo>, Requires<WithFacingSpriteBodyInfo>
 	{
 		[SequenceReference]
 		public readonly string ThumpSequence = null;
