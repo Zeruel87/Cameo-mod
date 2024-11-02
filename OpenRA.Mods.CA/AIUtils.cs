@@ -51,7 +51,7 @@ namespace OpenRA.Mods.CA
 			return owner.World.ActorsHavingTrait<T>().Count(a => a.Owner == owner && a.Info.Name == actorName);
 		}
 
-		public static int CountActorByCommonName<T>(ActorIndex.OwnerAndNamesAndTrait<T> actorIndex)
+		public static int CountActorByCommonName<TTraitInfo>(ActorIndex.OwnerAndNamesAndTrait<TTraitInfo> actorIndex) where TTraitInfo : ITraitInfoInterface
 		{
 			return actorIndex.Actors.Count(a => !a.IsDead);
 		}

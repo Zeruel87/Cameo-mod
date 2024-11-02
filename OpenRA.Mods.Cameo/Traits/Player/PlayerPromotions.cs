@@ -43,7 +43,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		[NotificationReference("Sounds")]
 		public readonly string LevelUpNotification = null;
 
-		[TranslationReference(optional: true)]
+		[FluentReference(optional: true)]
 		public readonly string LevelUpTextNotification = null;
 
 		[Desc("A dictionary of ranks for each faction.")]
@@ -62,11 +62,11 @@ namespace OpenRA.Mods.Cameo.Traits
 		public readonly string ID = "promotions";
 
 		[FieldLoader.Require]
-		[TranslationReference]
+		[FluentReference]
 		[Desc("Descriptive label for this option.")]
 		public readonly string Label = null;
 
-		[TranslationReference]
+		[FluentReference]
 		[Desc("Tooltip description for this option.")]
 		public readonly string Description = null;
 
@@ -74,10 +74,10 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Default option key in the `Values` list.")]
 		public readonly string PointsPerRankDefault = null;
 
-		[TranslationReference]
+		[FluentReference]
 		public readonly string[] FlavorTextNotifications = null;
 
-		[TranslationReference]
+		[FluentReference]
 		public readonly string FlavorTextPrefix = null;
 
 		[Desc("Prevent the option from being changed from its default value.")]
@@ -147,7 +147,7 @@ namespace OpenRA.Mods.Cameo.Traits
 				Ranks = Info.Ranks[Info.RanksDefault];
 
 			for (int i = 0; i < Ranks.Count; ++i)
-				Ranks[i] = TranslationProvider.GetString(Ranks[i]);
+				Ranks[i] = FluentProvider.GetString(Ranks[i]);
 
 			LevelUp();
 		}
@@ -206,8 +206,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			if (self.Owner != self.Owner.World.LocalPlayer) return;
 
-			var notification = TranslationProvider.GetString(Info.FlavorTextNotifications.Random(self.World.LocalRandom));
-			TextNotificationsManager.AddMissionLine(TranslationProvider.GetString(Info.FlavorTextPrefix), notification, self.Owner.Color);
+			var notification = FluentProvider.GetString(Info.FlavorTextNotifications.Random(self.World.LocalRandom));
+			TextNotificationsManager.AddMissionLine(FluentProvider.GetString(Info.FlavorTextPrefix), notification, self.Owner.Color);
 		}
 	}
 }

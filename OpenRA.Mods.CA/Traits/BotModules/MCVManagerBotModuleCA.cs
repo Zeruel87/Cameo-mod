@@ -77,9 +77,9 @@ namespace OpenRA.Mods.CA.Traits
 
 		readonly World world;
 		readonly Player player;
-		readonly ActorIndex.OwnerAndNamesAndTrait<Transforms> mcvs;
-		readonly ActorIndex.OwnerAndNamesAndTrait<Building> constructionYards;
-		readonly ActorIndex.OwnerAndNamesAndTrait<Building> mcvFactories;
+		readonly ActorIndex.OwnerAndNamesAndTrait<TransformsInfo> mcvs;
+		readonly ActorIndex.OwnerAndNamesAndTrait<BuildingInfo> constructionYards;
+		readonly ActorIndex.OwnerAndNamesAndTrait<BuildingInfo> mcvFactories;
 
 		readonly Predicate<Actor> unitCannotBeOrdered;
 
@@ -98,9 +98,9 @@ namespace OpenRA.Mods.CA.Traits
 			world = self.World;
 			player = self.Owner;
 			unitCannotBeOrdered = a => a.Owner != player || a.IsDead || !a.IsInWorld;
-			mcvs = new ActorIndex.OwnerAndNamesAndTrait<Transforms>(world, info.McvTypes, player);
-			constructionYards = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.ConstructionYardTypes, player);
-			mcvFactories = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.McvFactoryTypes, player);
+			mcvs = new ActorIndex.OwnerAndNamesAndTrait<TransformsInfo>(world, info.McvTypes, player);
+			constructionYards = new ActorIndex.OwnerAndNamesAndTrait<BuildingInfo>(world, info.ConstructionYardTypes, player);
+			mcvFactories = new ActorIndex.OwnerAndNamesAndTrait<BuildingInfo>(world, info.McvFactoryTypes, player);
 		}
 
 		protected override void Created(Actor self)

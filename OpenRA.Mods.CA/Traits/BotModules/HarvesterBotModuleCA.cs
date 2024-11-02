@@ -73,8 +73,8 @@ namespace OpenRA.Mods.CA.Traits
 		readonly Func<Actor, bool> unitCannotBeOrdered;
 		readonly Dictionary<Actor, HarvesterTraitWrapper> harvesters = new();
 
-		readonly ActorIndex.OwnerAndNamesAndTrait<Building> refineries;
-		readonly ActorIndex.OwnerAndNamesAndTrait<Harvester> harvestersIndex;
+		readonly ActorIndex.OwnerAndNamesAndTrait<BuildingInfo> refineries;
+		readonly ActorIndex.OwnerAndNamesAndTrait<HarvesterInfo> harvestersIndex;
 
 		IResourceLayer resourceLayer;
 		ResourceClaimLayer claimLayer;
@@ -91,8 +91,8 @@ namespace OpenRA.Mods.CA.Traits
 			world = self.World;
 			player = self.Owner;
 			unitCannotBeOrdered = a => a.Owner != self.Owner || a.IsDead || !a.IsInWorld || a.Info.HasTraitInfo<BaseSpawnerSlaveInfo>();
-			refineries = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.RefineryTypes, player);
-			harvestersIndex = new ActorIndex.OwnerAndNamesAndTrait<Harvester>(world, info.HarvesterTypes, player);
+			refineries = new ActorIndex.OwnerAndNamesAndTrait<BuildingInfo>(world, info.RefineryTypes, player);
+			harvestersIndex = new ActorIndex.OwnerAndNamesAndTrait<HarvesterInfo>(world, info.HarvesterTypes, player);
 		}
 
 		protected override void Created(Actor self)

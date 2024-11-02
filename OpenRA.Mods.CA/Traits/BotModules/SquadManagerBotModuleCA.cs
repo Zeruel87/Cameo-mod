@@ -162,7 +162,7 @@ namespace OpenRA.Mods.CA.Traits
 		readonly List<Actor> activeUnits = new();
 
 		public List<SquadCA> Squads = new();
-		readonly ActorIndex.OwnerAndNamesAndTrait<Building> constructionYardBuildings;
+		readonly ActorIndex.OwnerAndNamesAndTrait<BuildingInfo> constructionYardBuildings;
 
 		IBot bot;
 		IBotPositionsUpdated[] notifyPositionsUpdated;
@@ -194,7 +194,7 @@ namespace OpenRA.Mods.CA.Traits
 			Player = self.Owner;
 			
 			unitCannotBeOrdered = a => a == null || a.Owner != Player || a.IsDead || !a.IsInWorld || a.CurrentActivity is Enter;
-			constructionYardBuildings = new ActorIndex.OwnerAndNamesAndTrait<Building>(World, info.ConstructionYardTypes, Player);
+			constructionYardBuildings = new ActorIndex.OwnerAndNamesAndTrait<BuildingInfo>(World, info.ConstructionYardTypes, Player);
 		}
 
 		bool IsValidEnemyUnit(Actor a)

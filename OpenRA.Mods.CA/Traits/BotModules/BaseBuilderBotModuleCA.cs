@@ -208,11 +208,11 @@ namespace OpenRA.Mods.CA.Traits
 		readonly BaseBuilderQueueManagerCA[] builders;
 		int currentBuilderIndex = 0;
 
-		readonly ActorIndex.OwnerAndNamesAndTrait<Refinery> refineryBuildings;
-		readonly ActorIndex.OwnerAndNamesAndTrait<Building> powerBuildings;
-		readonly ActorIndex.OwnerAndNamesAndTrait<Building> constructionYardBuildings;
-		readonly ActorIndex.OwnerAndNamesAndTrait<Building> barracksBuildings;
-		readonly ActorIndex.OwnerAndNamesAndTrait<Building> factoryBuildings;
+		readonly ActorIndex.OwnerAndNamesAndTrait<RefineryInfo> refineryBuildings;
+		readonly ActorIndex.OwnerAndNamesAndTrait<BuildingInfo> powerBuildings;
+		readonly ActorIndex.OwnerAndNamesAndTrait<BuildingInfo> constructionYardBuildings;
+		readonly ActorIndex.OwnerAndNamesAndTrait<BuildingInfo> barracksBuildings;
+		readonly ActorIndex.OwnerAndNamesAndTrait<BuildingInfo> factoryBuildings;
 
 		BotLimits botLimits;
 		int refineryLimit;
@@ -223,11 +223,11 @@ namespace OpenRA.Mods.CA.Traits
 			world = self.World;
 			player = self.Owner;
 			builders = new BaseBuilderQueueManagerCA[info.BuildingQueues.Count + info.DefenseQueues.Count];
-			refineryBuildings = new ActorIndex.OwnerAndNamesAndTrait<Refinery>(world, info.RefineryTypes, player);
-			powerBuildings = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.PowerTypes, player);
-			constructionYardBuildings = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.ConstructionYardTypes, player);
-			barracksBuildings = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.BarracksTypes, player);
-			factoryBuildings = new ActorIndex.OwnerAndNamesAndTrait<Building>(world, info.VehiclesFactoryTypes, player);
+			refineryBuildings = new ActorIndex.OwnerAndNamesAndTrait<RefineryInfo>(world, info.RefineryTypes, player);
+			powerBuildings = new ActorIndex.OwnerAndNamesAndTrait<BuildingInfo>(world, info.PowerTypes, player);
+			constructionYardBuildings = new ActorIndex.OwnerAndNamesAndTrait<BuildingInfo>(world, info.ConstructionYardTypes, player);
+			barracksBuildings = new ActorIndex.OwnerAndNamesAndTrait<BuildingInfo>(world, info.BarracksTypes, player);
+			factoryBuildings = new ActorIndex.OwnerAndNamesAndTrait<BuildingInfo>(world, info.VehiclesFactoryTypes, player);
 		}
 
 		// Use for proactive targeting.

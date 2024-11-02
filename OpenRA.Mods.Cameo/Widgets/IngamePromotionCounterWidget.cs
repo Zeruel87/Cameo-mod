@@ -19,13 +19,13 @@ namespace OpenRA.Mods.Cameo.Widgets
 {
 	public class IngamePromotionCounterWidget : Widget
 	{
-		[TranslationReference]
+		[FluentReference]
 		const string RankText = "promotion-counter.rank";
 
-		[TranslationReference]
+		[FluentReference]
 		const string PointsText = "promotion-counter.points";
 
-		[TranslationReference]
+		[FluentReference]
 		const string ProgressText = "promotion-counter.progress";
 
 		public readonly string Font = "Bold";
@@ -53,9 +53,9 @@ namespace OpenRA.Mods.Cameo.Widgets
 
 		public override void Tick()
 		{
-			var rankText = TranslationProvider.GetString(RankText) + " " + playerPromotions.currentRank;
-			var pointsText = TranslationProvider.GetString(PointsText) + " " + playerPromotions.Points;
-			var progressText = playerPromotions.IsMaxLevel ? "" : TranslationProvider.GetString(ProgressText) + " " + playerPromotions.Experience + (playerPromotions.IsMaxLevel ? null : "/" + playerPromotions.nextLevelXpRequired);
+			var rankText = FluentProvider.GetString(RankText) + " " + playerPromotions.currentRank;
+			var pointsText = FluentProvider.GetString(PointsText) + " " + playerPromotions.Points;
+			var progressText = playerPromotions.IsMaxLevel ? "" : FluentProvider.GetString(ProgressText) + " " + playerPromotions.Experience + (playerPromotions.IsMaxLevel ? null : "/" + playerPromotions.nextLevelXpRequired);
 
 			Texts = new string[] { rankText, pointsText, progressText };
 
