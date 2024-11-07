@@ -10593,25 +10593,20 @@ nax_airfield:
 		OrderName: NaxisParatroopers
 		Prerequisites:
 			1: nax_airfield
-			2: upnax_kingtiger
-			3: upnax_sturmtiger
+			2: upnax_paratanks
 		Icons:
 			1: paratroopers
 			2: paratroopers
-			3: paratroopers
 		Names:
 			1: power-paratroopers.name
 			2: power-paratroopers.name
-			3: power-paratroopers.name
 		ChargeInterval: 6000
 		Descriptions:
 			1: power-paratroopers.description
 			2: power-paratroopers.description
-			3: power-paratroopers.description
 		DropItems:
 			1: nax_panzer, nax_panzer, nax_panzer, nax_car, nax_car, nax_atankcann, nax_atankcann
-			2: nax_tiger, nax_panzer, nax_panzer, nax_panzer, nax_car, nax_car, nax_car, nax_atankcann, nax_atankcann
-			3: nax_tiger, nax_tiger, nax_panzer, nax_panzer, nax_panzer, nax_car, nax_car, nax_car, nax_car, nax_atankcann, nax_atankcann
+			2: nax_tiger, nax_tiger, nax_panzer, nax_panzer, nax_panzer, nax_wirbelwind, nax_wirbelwind, nax_car, nax_car, nax_car, nax_atankcann, nax_atankcann
 		SelectTargetSpeechNotification: SelectTarget
 		AllowImpassableCells: false
 		QuantizedFacings: 16
@@ -10620,7 +10615,6 @@ nax_airfield:
 		BeaconPosters:
 			1: pinficon
 			2: pinficon
-			3: pinficon
 		ArrowSequence: arrow
 		ClockSequence: clocklarge
 		CircleSequence: circles
@@ -10629,11 +10623,9 @@ nax_airfield:
 		UnitTypes:
 			1: ra2cplane
 			2: ra2cplane
-			3: ra2cplane
 		SquadSizes:
 			1: 3
 			2: 3
-			3: 3
 		SquadOffset: 1792,1792,0
 nax_drone:
 	Inherits: ^RANeutralPlane
@@ -11007,6 +10999,74 @@ nax_bunk.aa:
 		Type: nax_bunk.aa
 	RenderSprites:
 		Image: nax_bunk
+
+nax_rocket:
+	Inherits: ^RA2Building
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@shape: ^3x3Shape
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Tooltip:
+		Name: Naxi Rocket Silo
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~nax_conyard, nax_tech, !nax_rocket
+		Queue: Defence, RADefence
+		Description: actor-namisl.description
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	SelectionDecorations:
+	DetonateWeaponPowerCA:
+		AllowMultiple: true
+		OrderName: NaxiV1Rocket
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
+		IconImage: ra2namisl
+		Icons:
+			1: icon2
+		Cursor: ability
+		AirburstAltitude: 4c512
+		ChargeInterval: 5000
+		ActivationDelay: 50
+		ActivationSequence:
+		Names:
+			1: V1 Missile Launch
+		Descriptions:
+			1: power-lightningstorm.description
+		Weapons:
+			1: NaxiV1RocketSpreaderScud
+		EndChargeSound: snukread.wav
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		EndChargeTextNotification: Topol Strike ready.
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		LaunchTextNotification: Warning: Topol Strike launched.
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		IncomingTextNotification: Warning: Topol Strike launched.
+		LaunchSound: snuksire.wav
+		IncomingSound: snuksire.wav
+		DisplayRadarPing: True
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		CameraRemoveDelay: 500
+		Duration: 250
+		ActiveCondition: active
+		BeaconPosters:
+			1: raatomicon
+		TargetCircleRanges:
+			1: 4000
+		TargetCircleColors: ff000080
+		BeaconActor: BLASTRADIUS.atomic
+		CameraRange: 5000
+	SupportPowerChargeBar:
+	WithSupportPowerActivationAnimation:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: nax_rocket
 
 ####################################################################################################
 #		Red Alert 2 Naxis Infantry
@@ -11405,7 +11465,7 @@ nax_slavemaster:
 	AttackFrontal:
 		FacingTolerance: 0
 	Voiced:
-		VoiceSet: NaxiSoldatVoice
+		VoiceSet: NaxiFemVoice
 	#SlaveMinerSpawnerMaster:
 	#	Actors: nax_slav, nax_slav, nax_slav, nax_slav
 	#	SlavesHaveFreeWill: false
@@ -11620,6 +11680,52 @@ nax_frank:
 	Targetable@dog:
 		TargetTypes: DogImmune
 
+nax_alien:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Naxi Alien
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~nax_barr, ~disabled
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Speed: 40
+	Health:
+		HP: 15000
+	Armament@PRIMARY:
+		Weapon: NaxiAlienPistol
+		LocalOffset: 500,0,400
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: NaxiAlienPistolE
+		LocalOffset: 500,0,400
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: NaxiAlienPistol
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: NaxiAlienPistolE
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: NaxiUFOVoice
+	-TakeCover:
 ####################################################################################################
 #		Red Alert 2 Naxis Vehicles
 ####################################################################################################
@@ -12060,7 +12166,7 @@ nax_maus:
 		DecorationBounds: 1280, 1280
 	WithSpriteTurret:
 	Voiced:
-		VoiceSet: NaxiTankVoice
+		VoiceSet: NaxiBigTankVoice
 	DeliversCash:
 		Payload: 450
 	RenderSprites:
@@ -12142,7 +12248,7 @@ nax_ratte:
 		DecorationBounds: 2048, 2048, 0, -256
 	WithSpriteTurret:
 	Voiced:
-		VoiceSet: NaxiTankVoice
+		VoiceSet: NaxiBigTankVoice
 	DeliversCash:
 		Payload: 450
 	RenderSprites:
@@ -12634,7 +12740,7 @@ nax_shoe:
 		DecorationBounds: 1280, 1280
 	WithSpriteTurret:
 	Voiced:
-		VoiceSet: NaxiTankVoice
+		VoiceSet: NaxiBigTankVoice
 	DeliversCash:
 		Payload: 450
 	RenderSprites:
@@ -12704,7 +12810,7 @@ nax_nokana:
 	RenderSprites:
 		PlayerPalette: playerra2
 	Voiced:
-		VoiceSet: NaxiTankVoice
+		VoiceSet: NaxiBigTankVoice
 	DeliversCash:
 		Payload: 1500
 	Passenger:
@@ -12800,7 +12906,7 @@ nax_imperial:
 		Speed: 110
 		TurnSpeed: 12
 	Health:
-		HP: 62500
+		HP: 82500
 	Repairable:
 		HpPerStep: 3125
 	Armor:
@@ -12838,7 +12944,7 @@ nax_imperial:
 		VoiceSet: NaxiTankVoice
 	DeliversCash:
 		Payload: 250
-#		Real WW2
+#		Support Tanks
 nax_panzer:
 	Inherits: ^Tank
 	Inherits@anim: ^RA2Vehicle
@@ -12854,7 +12960,7 @@ nax_panzer:
 		Name: Panzer III
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~nax_weap, !disabled
+		Prerequisites: ~nax_weap, ~disabled
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -12916,7 +13022,7 @@ nax_car:
 		Name: Combat Car
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~nax_weap, nax_radar, !disabled
+		Prerequisites: ~nax_weap, nax_radar, ~disabled
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
@@ -13046,30 +13152,30 @@ upnax_sturmtiger:
 		Image: nax_sturmtiger
 	ProvidesPrerequisite:
 
+upnax_paratanks:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Better Paratanks
+	Buildable:
+		BuildPaletteOrder: 117
+		Queue: Promotions
+		Description: Upgrades Paratanks Support with more units.
+		Prerequisites: ~nax_conyard, upnax_sturmtiger, !upnax_paratanks, rank1
+	RenderSprites:
+		Image: nax_tiger
+	ProvidesPrerequisite:
+
 upnax_ratte:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
 		Name: The Ratte
 	Buildable:
-		BuildPaletteOrder: 117
-		Queue: Promotions
-		Description: Enables construction of the Ratte.
-		Prerequisites: ~nax_conyard, upsteel_defender, !upsteel_beholder, rank1
-	RenderSprites:
-		Image: nax_ratte
-	ProvidesPrerequisite:
-
-upnax_idk:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock Cruiser
-	Buildable:
 		BuildPaletteOrder: 120
 		Queue: Promotions
-		Description: Enables construction of Cruisers.
-		Prerequisites: ~nax_conyard, upsteel_beholder, !upsteel_cruiser, rank1
+		Description: Enables construction of the Ratte.
+		Prerequisites: ~nax_conyard, upnax_paratanks, !upnax_ratte, rank1
 	RenderSprites:
-		Image: steel_cruiser
+		Image: nax_ratte
 	ProvidesPrerequisite:
 
 ####################################################################################################
@@ -13162,8 +13268,14 @@ nax_haenebu:
 		RequiresCondition: stealing
 	RenderSprites:
 		PlayerPalette: playerra2
-	ActorStatValues:
-		Upgrades: upyrdisk
+	EjectOnDeath:
+		PilotActor: nax_alien
+		SuccessRate: 100
+		EjectOnGround: false
+		EjectInAir: true
+		AllowUnsuitableCell: true
+		ChuteSound: chute1.aud
+
 nax_haenebu.Husk:
 	Inherits: ^LargeHelicopterHusk
 	Tooltip:
@@ -13173,6 +13285,114 @@ nax_haenebu.Husk:
 		Speed: 100
 	RenderSprites:
 		Image: nax_haenebu
+		PlayerPalette: playerra2
+nax_haenebu2:
+	Inherits: ^Helicopter
+	Inherits@Template: ^SpaceshipTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
+	Inherits@AntiAir: ^PrioritizeAir
+	Valued:
+		Cost: 2300
+	Tooltip:
+		Name: Haenebu II
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 120
+		Prerequisites: ~nax_tech
+		Queue: Aircraft, RAAircraft
+		Description: actor-disk.description
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 2000
+		Speed: 85
+		RepulsionSpeed: 40
+		IdealSeparation: 2000
+	Health:
+		HP: 150000
+	ChangesHealth@SelfHealing:
+		Step: 50
+	Armament@PRIMARY:
+		Name: primary
+		Weapon: NaxHaenebuQuadCannon
+		LocalOffset: 800,0,0
+		PauseOnCondition: !ammo
+	Armament@SECOND:
+		Name: secondary
+		Weapon: NaxiCowDrop
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		PauseOnCondition: ammo
+	AttackAircraft:
+		Voice: Attack
+		AttackType: Hover
+		FacingTolerance: 512
+	AmmoPool:
+		Armaments: primary
+		Ammo: 8
+		AmmoCondition: ammo
+	WithShadow:
+	WithMoveAnimation:
+		MoveSequence: move
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	ReloadAmmoPool:
+		Delay: 52
+		Count: 4
+	Selectable:
+		DecorationBounds: 1280, 1024
+	SpawnActorOnDeath:
+		Actor: nax_haenebu2.Husk
+	Turreted:
+	Voiced:
+		VoiceSet: NaxiUFOVoice
+	RenderRangeCircle:
+		RangeCircleType: aircraft
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+	AmbientSound@Steal:
+		SoundFiles: vflolo5a.wav, vflolo5b.wav
+		Volume: 1.5
+		RequiresCondition: stealing
+	SoundAnnouncement@StealEnd:
+		SoundFiles: vflolo6a.wav
+		Volume: 1.5
+		RequiresCondition: !stealing
+	GrantConditionOnAttack:
+		Condition: stealing
+		RevokeDelay: 5
+		ArmamentNames: secondary
+	DamageMultiplier@stealing:
+		Modifier: 50
+		RequiresCondition: stealing
+	ChangesHealth@stealing:
+		Step: 100
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+		RequiresCondition: stealing
+	RenderSprites:
+		PlayerPalette: playerra2
+	EjectOnDeath:
+		PilotActor: nax_alien
+		SuccessRate: 100
+		EjectOnGround: false
+		EjectInAir: true
+		AllowUnsuitableCell: true
+		ChuteSound: chute1.aud
+
+nax_haenebu2.Husk:
+	Inherits: ^LargeHelicopterHusk
+	Tooltip:
+		Name: Floating Disc
+	Aircraft:
+		TurnSpeed: 16
+		Speed: 100
+	RenderSprites:
+		Image: nax_haenebu2
 		PlayerPalette: playerra2
 nax_me262:
 	Inherits: ^RANeutralPlane
@@ -13275,7 +13495,7 @@ nax_piercer:
 		Step: 7
 	HitShape:
 	Voiced:
-		VoiceSet: NaxiTankVoice
+		VoiceSet: NaxiPiercerUFOVoice
 	Aircraft:
 		TurnSpeed: 10
 		Speed: 150
@@ -13313,6 +13533,13 @@ nax_piercer:
 	RenderSprites:
 		Image: nax_piercer
 		PlayerPalette: playerra2
+	EjectOnDeath:
+		PilotActor: nax_alien
+		SuccessRate: 100
+		EjectOnGround: false
+		EjectInAir: true
+		AllowUnsuitableCell: true
+		ChuteSound: chute1.aud
 nax_piercer.Husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -13329,7 +13556,7 @@ nax_piercer.Husk:
 		TrailWhileStationary: True
 		Type: CenterPosition
 	RenderSprites:
-		Image: nax_me262
+		Image: nax_piercer
 	RenderSprites:
 		PlayerPalette: playerra2
 nax_dieglocke:
@@ -13358,7 +13585,7 @@ nax_dieglocke:
 		RepulsionSpeed: 40
 		IdealSeparation: 2000
 	Health:
-		HP: 2750000
+		HP: 3750000
 	ChangesHealth@SelfHealing:
 		Step: 50
 	GrantConditionOnPrerequisite@Upgrade:
@@ -13388,10 +13615,10 @@ nax_dieglocke:
 	Selectable:
 		DecorationBounds: 1280, 1024
 	SpawnActorOnDeath:
-		Actor: nax_haenebu.Husk
+		Actor: nax_dieglocke.Husk
 	Turreted:
 	Voiced:
-		VoiceSet: NaxiUFOVoice
+		VoiceSet: NaxiUFOBigVoice
 	RenderRangeCircle:
 		RangeCircleType: aircraft
 	WithAmmoPipsDecoration:
