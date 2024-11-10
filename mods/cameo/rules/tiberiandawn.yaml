@@ -152,6 +152,10 @@ Player:
 #		Tiberian Dawn
 ####################################################################################################
 
+####################################################################################################
+#		GDI Upgrade Inherits
+####################################################################################################
+
 ^LongRangeSensors:
 	RevealsShroudMultiplier@up_longrangesensors:
 		RequiresCondition: up_longrangesensors
@@ -231,11 +235,18 @@ Player:
 	ReloadDelayMultiplier@up_cuttingedgeweaponry:
 		RequiresCondition: up_cuttingedgeweaponry
 		Modifier: 85
+	ReloadAmmoDelayMultiplier@up_cuttingedgeweaponry:
+		RequiresCondition: up_cuttingedgeweaponry
+		Modifier: 85
 	GrantConditionOnPrerequisite@up_cuttingedgeweaponry:
 		Condition: up_cuttingedgeweaponry
 		Prerequisites: up_cuttingedgeweaponry
 	ActorStatValues:
 		Upgrades: up_cuttingedgeweaponry
+
+####################################################################################################
+#		Nod Upgrade Inherits
+####################################################################################################
 
 ^ElementalWarfare:
 	FirepowerMultiplier@up_elementalwarfare:
@@ -1726,25 +1737,17 @@ STNK:
 
 TRAN:
 	Inherits: ^Helicopter
+	Inherits@Template: ^UnarmedTransportHelicopterTemplate
 	Inherits@cargo: ^CargoAircraft
-	Inherits@sensors: ^LongRangeSensors
 	Inherits@bot: ^BotAutoDeployUnarmedAirTransport
 	Valued:
-		Cost: 1000
-	ProductionCostMultiplier:
-		Multiplier: 150
+		Cost: 1500
 	Tooltip:
 		Name: actor-tran.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 		OverrideActor: tran
-	Buildable:
-		BuildPaletteOrder: 10
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Prerequisites: ~hpad, ~botplayer
-		Queue: Aircraft, RAAircraft
-		Description: actor-tran.description
+	-Buildable:
 	Aircraft:
 		TurnSpeed: 20
 		Speed: 150
@@ -1753,11 +1756,8 @@ TRAN:
 		HP: 100000
 	Repairable:
 		HpPerStep: 5000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+	ChangesHealth@SelfHealing:
+		Step: 40
 	WithIdleOverlay@ROTOR1AIR:
 		Offset: 597,0,85
 		Sequence: rotor
@@ -1798,53 +1798,44 @@ TRAN:
 
 tran.gdi:
 	Inherits: TRAN
-	ProductionCostMultiplier:
-		Multiplier: 160
+	Inherits@sensors: ^LongRangeSensors
+	Inherits@sensors: ^HeavyAircraftArmorPlating
+	Valued:
+		Cost: 3000
+	Tooltip:
+		Name: GDI Chinook
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~hpad.gdi
+		Queue: Aircraft, RAAircraft
+		Description: actor-tran.description
 	Buildable:
 		Prerequisites: ~hpad.gdi
 		Queue: Aircraft, RAAircraft
 	Cargo:
-		InitialUnits: e1gdi, e1gdi, e1gdi, e1gdi, e2, e2, e2, e3, e3, e3
-	EditorOnlyTooltip:
-		Name: Loaded Chinook (GDI)
-
-tran.gdi.rmbo:
-	Inherits: TRAN
-	Buildable:
-		BuildDuration: 1500
-		BuildDurationModifier: 100
-		BuildLimit: 1
-		Prerequisites: hpad.gdi, eye, !rmbo, !upgdihavoc, ~botplayer
-	Cargo:
-		InitialUnits: rmbo,e1gdi,e2,e3,e6,gdimissilesoldier,gdiempgrenadier,gdisniper,gdishotgunner,gdiofficer
-	ProductionCostMultiplier:
-		Multiplier: 300
+		UnloadVoice: Move
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 8
+		InitialUnits: e1gdi, e2, e3, gdimissilesoldier, gdiempgrenadier, gdishotgunner, gdiofficer, gdisniper
+	ActorStatValues:
+		Upgrades: up_longrangesensors, up_heavyaircraftarmorplating
 
 tran.nod:
 	Inherits: TRAN
-	ProductionCostMultiplier:
-		Multiplier: 230
+	Valued:
+		Cost: 3200
+	Tooltip:
+		Name: Nod Chinook
 	Buildable:
+		BuildPaletteOrder: 10
 		Prerequisites: ~hpad.nod
 		Queue: Aircraft, RAAircraft
+		Description: actor-tran.description
 	Cargo:
-		InitialUnits: e1nod, e1nod, e1nod, e3, e3, e3, e4, e4, e5, e5
-	EditorOnlyTooltip:
-		Name: Loaded Chinook (Nod)
-	ProductionCostMultiplier:
-		Multiplier: 250
-
-tran.nod.rmbo:
-	Inherits: TRAN
-	Buildable:
-		BuildDuration: 1500
-		BuildDurationModifier: 100
-		BuildLimit: 1
-		Prerequisites: hpad.nod, tmpl, !rmbo, !upnodvenom, ~botplayer
-	Cargo:
-		InitialUnits: rmbo, e1nod, e3, e4, e5, e6, cheme3, tsblackhandlaser, tsstealthsoldier, tsblackhandflamer
-	ProductionCostMultiplier:
-		Multiplier: 300
+		UnloadVoice: Move
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 8
+		InitialUnits: e1nod, e3, e4, e5, cheme3, tsblackhandlaser, tsstealthsoldier, tsblackhandflamer
 
 HELI:
 	Inherits: ^Helicopter
@@ -4027,7 +4018,7 @@ up_advancedguerillatactics:
 		BuildPaletteOrder: 80
 		Queue: Upgrades
 		Description: upgrade-advancedguerillatactics.description
-		Prerequisites: ~tmpl, ~up_guerillatactics, !up_cyberneticmodifications
+		Prerequisites: ~tmpl, up_guerillatactics, !up_cyberneticmodifications
 	RenderSprites:
 		Image: chemstnk
 	#ProvidesPrerequisite:
@@ -6339,7 +6330,6 @@ gdifirehawk:
 	GrantConditionOnDamageState@SmokeTrail:
 		Condition: enable-smoke
 	ReloadAmmoDelayMultiplier@up_cuttingedgeweaponry:
-		RequiresCondition: up_cuttingedgeweaponry
 		Modifier: 75
 	FirepowerMultiplier@up_cuttingedgeweaponry:
 		Modifier: 150

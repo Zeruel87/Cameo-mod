@@ -139,10 +139,10 @@ Player:
 		TargetTypes: PersonalShielded
 		RequiresCondition: d2k_shielded
 	DamageMultiplier@d2k_personal_shield:
-		Modifier: 125
+		Modifier: 80
 		RequiresCondition: d2k_personal_shield && !d2k_shielded
 	SpeedMultiplier@d2k_personal_shield:
-		Modifier: 80
+		Modifier: 125
 		RequiresCondition: d2k_personal_shield && d2k_shielded
 	GrantConditionOnPrerequisite@d2k_personal_shield:
 		Condition: d2k_personal_shield
@@ -188,6 +188,16 @@ Player:
 		Prerequisites: d2k_heavy_machine_guns
 	ActorStatValues:
 		Upgrades: d2k_heavy_machine_guns
+
+^D2K_HeavyInfantryTankArmor:
+	DamageMultiplier@d2k_heavy_infantry_tank_armor:
+		Modifier: 80
+		RequiresCondition: d2k_heavy_infantry_tank_armor
+	GrantConditionOnPrerequisite@d2k_heavy_infantry_tank_armor:
+		Condition: d2k_heavy_infantry_tank_armor
+		Prerequisites: d2k_heavy_infantry_tank_armor
+	ActorStatValues:
+		Upgrades: d2k_heavy_infantry_tank_armor
 
 ^D2K_AdvancedIxianTechnology:
 	GrantConditionOnPrerequisite@d2k_advanced_ixian_technology:
@@ -2096,7 +2106,7 @@ medium_gun_turret.ixian:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@shape: ^1x1Shape
-	Inherits@AntiVeh: ^D2K_ReinforcedBarrel
+	Inherits@Barrel: ^D2K_ReinforcedBarrel
 	Buildable:
 		Queue: Defence, RADefence
 		Prerequisites: ~upgrade.conyard, d2k_barracks.ixian
@@ -3038,6 +3048,7 @@ light_inf:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^D2KPaletteRenderInfantry
 	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
 	Inherits@AntiInf: ^D2K_HeavyMachineGuns
 	Valued:
 		Cost: 150
@@ -3078,7 +3089,7 @@ light_inf:
 		DefaultAttackSequence: shoot
 	Parachutable:
 	ActorStatValues:
-		Upgrades: d2k_personal_shield, d2k_heavy_machine_guns
+		Upgrades: d2k_personal_shield, d2k_heavy_infantry_tank_armor, d2k_heavy_machine_guns
 
 engineer:
 	Inherits: E6
@@ -3155,6 +3166,7 @@ trooper:
 	Inherits@anim: ^D2KPaletteRenderInfantry
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
 	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
 	Buildable:
 		Queue: Infantry, RAInfantry
@@ -3173,19 +3185,25 @@ trooper:
 	Health:
 		HP: 20000
 	Mobile:
-		Speed: 52
+		Speed: 50
 	Armament:
 		Weapon: D2K_Rocket_Trooper
+		LocalOffset: 128,0,256
+	Armament@SECONDARY:
+		Weapon: D2K_Rocket_Trooper2
 		LocalOffset: 128,0,256
 	Armament@garrisoned:
 		Name: garrisoned
 		Weapon: D2K_Rocket_Trooper
+	Armament@SECONDARYgarrisoned:
+		Name: garrisoned
+		Weapon: D2K_Rocket_Trooper2
 	TakeCover:
 		ProneOffset: 324,0,-204
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	ActorStatValues:
-		Upgrades: d2k_personal_shield, d2k_heavy_missile_upgrade
+		Upgrades: d2k_personal_shield, d2k_heavy_infantry_tank_armor, d2k_heavy_missile_upgrade
 
 shock_infantry:
 	Inherits: ^D2KInfantry
@@ -3195,6 +3213,7 @@ shock_infantry:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^D2KPaletteRenderInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -3230,6 +3249,8 @@ shock_infantry:
 	RenderSprites:
 		Image: shockgunner
 		PlayerPalette: player
+	ActorStatValues:
+		Upgrades: d2k_personal_shield, d2k_heavy_infantry_tank_armor
 
 # chem_troop:
 # 	Inherits: light_inf
@@ -5789,12 +5810,13 @@ d2k_air_drone:
 	Inherits@detect: ^GenericAllDetector
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@CLOAK: ^CloakedAircraft
 	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Valued:
-		Cost: 1700
+		Cost: 2400
 	Tooltip:
 		Name: Ix Air Drone
 	Buildable:
@@ -5806,12 +5828,12 @@ d2k_air_drone:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 67500
+		HP: 62500
 	ChangesHealth@SelfHealing:
-		Step: 27
+		Step: 25
 	Shielded:
 		DamageRegenDelay: 125
-		RegenAmount: 54
+		RegenAmount: 50
 		RegenInterval: 1
 		ShieldsUpCondition: d2k_shielded
 		SelectionBarColor: 8888FFFF
@@ -5824,7 +5846,7 @@ d2k_air_drone:
 		Ammo: 4
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 150
+		Delay: 66
 		Count: 1
 		ResetOnFire: false
 	WithAmmoPipsDecoration:
@@ -5870,7 +5892,7 @@ d2k_air_drone:
 		UncloakSound: appear1.aud
 		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
 	ActorStatValues:
-		Upgrades: d2k_heavy_missile_upgrade, d2k_advanced_ixian_technology
+		Upgrades: d2k_heavy_missile_upgrade, d2k_heavy_infantry_tank_armor, d2k_advanced_ixian_technology
 
 d2k_air_drone.husk:
 	Inherits: ^PlaneHusk
@@ -5878,9 +5900,9 @@ d2k_air_drone.husk:
 		Name: Air Drone
 	Aircraft:
 		TurnSpeed: 8
-		Speed: 196
+		Speed: 165
 	RenderSprites:
-		Image: d2k_air_drone.husk
+		Image: d2k_air_drone
 	FallsToEarth:
 		Explosion: D2KUnitExplodeSmall
 
@@ -6252,11 +6274,11 @@ harvester:
 		Intensity: 750
 	-RevealOnFire:
 	Cloak:
-		InitialDelay: 80
-		CloakDelay: 80
+		InitialDelay: 125
+		CloakDelay: 75
 		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
 		CloakedCondition: cloaked
-		RequiresCondition: d2k_heavy_missile_upgrade
+		RequiresCondition: d2k_advanced_ixian_technology
 	Voiced:
 		VoiceSet: D2KHarvester
 
@@ -6874,11 +6896,10 @@ siege_tank_ixian:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
-	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@SHADOWS: ^Shadows
 	Inherits@CLOAK: ^CloakedVehicle
-	Inherits@AntiVeh: ^D2K_ReinforcedBarrel
+	Inherits@Barrel: ^D2K_ReinforcedBarrel
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Buildable:
 		Queue: Vehicle, RAVehicle
@@ -6926,6 +6947,9 @@ siege_tank_ixian:
 		ResetOnFire: true
 	AttractsWorms:
 		Intensity: 600
+	FirepowerMultiplier@d2k_siege_range_upgrade:
+		Modifier: 200
+		RequiresCondition: d2k_siege_range_upgrade
 	RangeMultiplier@d2k_siege_range_upgrade:
 		Modifier: 150
 		RequiresCondition: d2k_siege_range_upgrade
@@ -8158,7 +8182,8 @@ combat_tank_ixian:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiVeh: ^D2K_ReinforcedBarrel
+	Inherits@Barrel: ^D2K_ReinforcedBarrel
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Buildable:
 		Queue: Vehicle, RAVehicle
@@ -8202,8 +8227,6 @@ combat_tank_ixian:
 		LocalOffset: 256,0,0
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
-	ActorStatValues:
-		Upgrades: d2k_siege_range_upgrade
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -8217,7 +8240,7 @@ combat_tank_ixian:
 	Voiced:
 		VoiceSet: D2KCombatTank
 	ActorStatValues:
-		Upgrades: d2k_siege_range_upgrade, d2k_advanced_ixian_technology
+		Upgrades: d2k_siege_range_upgrade, d2k_heavy_infantry_tank_armor, d2k_advanced_ixian_technology
 
 # combat_tank_corrino:
 # 	Inherits: combat_tank_h
@@ -9079,6 +9102,21 @@ d2k_heavy_machine_guns:
 	RenderSprites:
 		Image: light_inf
 
+d2k_heavy_infantry_tank_armor:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Heavy Infantry and Tank Armor
+	Valued:
+		Cost: 5000
+	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: ~outpost.ixian, ~!d2k_heavy_infantry_tank_armor
+		Queue: Addons
+		Description: Increases Armor of all Infantry and Tanks by 20% (also counts for Air Drones and the Farasha)
+		IconPalette: d2kunit
+	RenderSprites:
+		Image: combat_tank_ixian
+
 d2k_personal_shield:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
@@ -9122,20 +9160,6 @@ d2k_heavy_missile_upgrade:
 	RenderSprites:
 		Image: ix_missile_tank
 
-d2k_advanced_ixian_technology:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Advanced Ixian Technology
-	Valued:
-		Cost: 7500
-	Buildable:
-		BuildPaletteOrder: 200
-		Queue: Upgrades
-		Description: Gives Stealth Generators to Harvesters, Ix Missile Tanks and Ix Siege Tanks and Shield Generators to Harvesters, Combat Sieges, Combat Tanks, Duelist Tanks, Storm Raiders, Storm Lashers, Air Drones and the Farasha.
-		Prerequisites: ~research_centre, ~!d2k_advanced_ixian_technology
-	RenderSprites:
-		Image: storm_raider
-
 d2k_spice_sifter_upgrade:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
@@ -9150,6 +9174,20 @@ d2k_spice_sifter_upgrade:
 		IconPalette: d2kunit
 	RenderSprites:
 		Image: d2k_spice_sifter
+
+d2k_advanced_ixian_technology:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Advanced Ixian Technology
+	Valued:
+		Cost: 12500
+	Buildable:
+		BuildPaletteOrder: 200
+		Queue: Upgrades
+		Description: Gives Stealth Generators to Harvesters, Ix Missile Tanks and Ix Siege Tanks and Shield Generators to Harvesters, Combat Sieges, Combat Tanks, Duelist Tanks, Storm Raiders, Storm Lashers, Air Drones and the Farasha. Doubles Damage of Storm Weapons.
+		Prerequisites: ~research_centre, ~!d2k_advanced_ixian_technology
+	RenderSprites:
+		Image: storm_raider
 
 # d2k_ornithopter_upgrade:
 # 	Inherits: ^researched_upgrade.template
@@ -10950,6 +10988,7 @@ heavy_inf:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^D2KPaletteRenderInfantry
 	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
 	Inherits@AntiInf: ^D2K_HeavyMachineGuns
 	Valued:
 		Cost: 300
@@ -10994,7 +11033,7 @@ heavy_inf:
 	RenderSprites:
 		Image: light_inf
 	ActorStatValues:
-		Upgrades: d2k_personal_shield, d2k_heavy_machine_guns
+		Upgrades: d2k_personal_shield, d2k_heavy_infantry_tank_armor, d2k_heavy_machine_guns
 
 storm_infantry:
 	Inherits: ^D2KInfantry
@@ -11005,8 +11044,10 @@ storm_infantry:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^D2KPaletteRenderInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Valued:
-		Cost: 1200
+		Cost: 800
 	Tooltip:
 		Name: Storm Infantry
 	UpdatesPlayerStatistics:
@@ -11020,9 +11061,9 @@ storm_infantry:
 	Mobile:
 		Speed: 44
 	Health:
-		HP: 30000
+		HP: 40000
 	ChangesHealth@SelfHealing:
-		Step: 12
+		Step: 16
 	Armament@PRIMARY: ##########
 		Weapon: D2K_StormGunInf
 		LocalOffset: 135,0,200
@@ -11031,6 +11072,9 @@ storm_infantry:
 		Weapon: D2K_StormGunInf
 		MuzzleSequence: garrison-muzzle
 		MuzzlePalette: d2keffect
+	FirepowerMultiplier@d2k_advanced_ixian_technology:
+		Modifier: 200
+		RequiresCondition: d2k_advanced_ixian_technology
 	WithInfantryBody:
 		-IdleSequences: idle1,idle2
 		DefaultAttackSequence: shoot
@@ -11040,6 +11084,8 @@ storm_infantry:
 	RenderSprites:
 		Image: shockgunner
 		PlayerPalette: player
+	ActorStatValues:
+		Upgrades: d2k_personal_shield, d2k_heavy_infantry_tank_armor, d2k_advanced_ixian_technology
 
 storm_raider:
 	Inherits@D2KV: ^D2KVehicle
@@ -11084,6 +11130,9 @@ storm_raider:
 	Armor@shielded:
 		Type: Shield
 		RequiresCondition: d2k_shielded
+	FirepowerMultiplier@d2k_advanced_ixian_technology:
+		Modifier: 200
+		RequiresCondition: d2k_advanced_ixian_technology
 	Mobile:
 		Locomotor: hover
 		Speed: 105
@@ -11156,6 +11205,9 @@ storm_lasher:
 	Armor@shielded:
 		Type: Shield
 		RequiresCondition: d2k_shielded
+	FirepowerMultiplier@d2k_advanced_ixian_technology:
+		Modifier: 200
+		RequiresCondition: d2k_advanced_ixian_technology
 	BodyOrientation:
 		QuantizedFacings: 32
 	WithMuzzleOverlay:
@@ -11307,7 +11359,8 @@ duelist_tank:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiVeh: ^D2K_ReinforcedBarrel
+	Inherits@Barrel: ^D2K_ReinforcedBarrel
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Buildable:
 		Queue: Vehicle, RAVehicle
@@ -11368,7 +11421,7 @@ duelist_tank:
 	Voiced:
 		VoiceSet: D2KDuelistTank
 	ActorStatValues:
-		Upgrades: d2k_siege_range_upgrade, d2k_advanced_ixian_technology
+		Upgrades: d2k_siege_range_upgrade, d2k_heavy_infantry_tank_armor, d2k_advanced_ixian_technology
 
 quake_tank:
 	Inherits: ^D2KTank
@@ -11453,6 +11506,8 @@ d2k_jammer:
 	Inherits@AntiEpic: ^PrioritizeEpic
 	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Inherits@bot: ^BotMicromanageable
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Valued:
 		Cost: 5000
 	Tooltip:
@@ -11472,6 +11527,17 @@ d2k_jammer:
 		Step: 80
 	Armor:
 		Type: Medium
+	Shielded:
+		MaxPercentageStrength: 100
+		DamageRegenDelay: 125
+		RegenAmount: 160
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		RequiresCondition: d2k_advanced_ixian_technology
+		SelectionBarColor: 8888FFFF
+	Armor@shielded:
+		Type: Shield
+		RequiresCondition: d2k_shielded
 	Mobile:
 		TurnSpeed: 20
 		Speed: 100
@@ -11560,6 +11626,8 @@ d2k_jammer:
 		RequiresCondition: projection
 		FollowAfterAttackDelay: 25
 		ShouldSpawnInitialLoad: false
+	ActorStatValues:
+		Upgrades: d2k_heavy_infantry_tank_armor, d2k_advanced_ixian_technology
 
 ^D2KVordelProxyUnit:
 	GrantConditionOnPowerState@LOWPOWER:
@@ -11681,8 +11749,9 @@ combat_siege_tank:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiVeh: ^D2K_ReinforcedBarrel
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@Barrel: ^D2K_ReinforcedBarrel
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Buildable:
 		Queue: Vehicle, RAVehicle
@@ -11727,6 +11796,9 @@ combat_siege_tank:
 		LocalOffset: 256,0,320
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
+	FirepowerMultiplier@d2k_siege_range_upgrade:
+		Modifier: 150
+		RequiresCondition: d2k_siege_range_upgrade
 	RangeMultiplier@d2k_siege_range_upgrade:
 		Modifier: 125
 		RequiresCondition: d2k_siege_range_upgrade
@@ -11746,7 +11818,7 @@ combat_siege_tank:
 	Voiced:
 		VoiceSet: D2KCombatTank
 	ActorStatValues:
-		Upgrades: d2k_siege_range_upgrade, d2k_advanced_ixian_technology
+		Upgrades: d2k_siege_range_upgrade, d2k_heavy_infantry_tank_armor, d2k_advanced_ixian_technology
 
 d2k_heavy_air_drone:
 	Inherits: ^RANeutralPlane
@@ -11755,12 +11827,13 @@ d2k_heavy_air_drone:
 	Inherits@detect: ^GenericAllDetector
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@CLOAK: ^CloakedAircraft
 	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Valued:
-		Cost: 2000
+		Cost: 3500
 	Tooltip:
 		Name: Heavy Ix Air Drone
 	Buildable:
@@ -11772,12 +11845,12 @@ d2k_heavy_air_drone:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 92500
+		HP: 97500
 	ChangesHealth@SelfHealing:
-		Step: 74
+		Step: 78
 	Shielded:
 		DamageRegenDelay: 125
-		RegenAmount: 148
+		RegenAmount: 156
 		RegenInterval: 1
 		ShieldsUpCondition: d2k_shielded
 		SelectionBarColor: 8888FFFF
@@ -11787,10 +11860,10 @@ d2k_heavy_air_drone:
 		RequiresCondition: d2k_shielded
 	AmmoPool:
 		Name: primary
-		Ammo: 4
+		Ammo: 8
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 170
+		Delay: 35
 		Count: 1
 		ResetOnFire: false
 	WithAmmoPipsDecoration:
@@ -11805,6 +11878,8 @@ d2k_heavy_air_drone:
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
 		PauseOnCondition: !ammo
+	FirepowerMultiplier@ShrapnelCompensation:
+		Modifier: 75
 	Aircraft:
 		CruiseAltitude: 1800
 		Speed: 165
@@ -11818,11 +11893,11 @@ d2k_heavy_air_drone:
 		Class: d2k_air_drone
 		Bounds: 1536, 1280, 0, 0
 	SpawnActorOnDeath:
-		Actor: d2k_air_drone.husk
+		Actor: d2k_heavy_air_drone.husk
 	Voiced:
 		VoiceSet: D2KVehicleVoice
 	RenderSprites:
-		Image: d2k_air_drone
+		Image: d2k_heavy_air_drone
 	MapEditorData:
 		Categories: Aircraft
 	FireProjectilesOnDeath:
@@ -11836,7 +11911,20 @@ d2k_heavy_air_drone:
 		UncloakSound: appear1.aud
 		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
 	ActorStatValues:
-		Upgrades: d2k_heavy_missile_upgrade, d2k_advanced_ixian_technology
+		Upgrades: d2k_heavy_missile_upgrade, d2k_heavy_infantry_tank_armor, d2k_advanced_ixian_technology
+
+d2k_heavy_air_drone.husk:
+	Inherits: d2k_air_drone.husk
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Heavy Air Drone
+	Aircraft:
+		TurnSpeed: 8
+		Speed: 165
+	RenderSprites:
+		Image: d2k_heavy_air_drone
+	FallsToEarth:
+		Explosion: D2KUnitExplodeMed
 
 missile_tank_ixian:
 	Inherits@D2KT: ^D2KTank
@@ -11934,6 +12022,7 @@ d2k_farasha:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@MC: ^MCImmune
 	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@Barrel: ^D2K_HeavyInfantryTankArmor
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	#Inherits@guildtele: ^Guild_teleport
 	Valued:
@@ -11958,8 +12047,8 @@ d2k_farasha:
 	CarrierMaster:
 		ArmamentNames: primary
 		Actors: d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone
-		RearmTicks: 10
-		RespawnTicks: 100
+		RearmTicks: 25
+		RespawnTicks: 75
 		InstaRepair: true
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
@@ -11967,6 +12056,17 @@ d2k_farasha:
 		HP: 250000
 	ChangesHealth@SelfHealing:
 		Step: 100
+	Shielded:
+		MaxPercentageStrength: 100
+		DamageRegenDelay: 125
+		RegenAmount: 200
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		RequiresCondition: d2k_advanced_ixian_technology
+		SelectionBarColor: 8888FFFF
+	Armor@shielded:
+		Type: Shield
+		RequiresCondition: d2k_shielded
 	Armament@drones:
 		Name: primary
 		Weapon: d2k_dronelauncher
@@ -11989,22 +12089,23 @@ d2k_farasha:
 		ReloadingCondition: discharged
 	AmmoPool:
 		Armaments: secondary
-		Ammo: 50
+		Ammo: 100
 		InitialAmmo: 0
 		AmmoCondition: charged
 	ReloadAmmoPoolCA@charged:
-		Count: 50
+		Count: 100
 		Delay: 50
 		RequiresCondition: charging
 	ReloadAmmoPoolCA@discharge:
-		Count: -50
-		Delay: 50
+		Count: -1
+		Delay: 1
 		RequiresCondition: charged && !charging
 	GrantConditionOnAttack@charged:
 		Condition: charging
 		RequiredShotsPerInstance: 1
 		ArmamentNames: charge
 		RevokeDelay: 50
+		#MaximumInstances: 50
 		RevokeOnNewTarget: true
 	WithAmmoPipsDecoration:
 		PipCount: 10
@@ -12016,17 +12117,6 @@ d2k_farasha:
 		Armaments: primary, secondary, charge
 		FacingTolerance: 40
 	RenderRangeCircle:
-	Shielded:
-		MaxPercentageStrength: 100
-		DamageRegenDelay: 125
-		RegenAmount: 200
-		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
-		RequiresCondition: d2k_advanced_ixian_technology
-		SelectionBarColor: 8888FFFF
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
 	SelectionDecorations:
 	Selectable:
 		Bounds: 2048, 2048
@@ -12043,6 +12133,8 @@ d2k_farasha:
 		Range: 3c0, 6c0
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: d2k_heavy_infantry_tank_armor, d2k_advanced_ixian_technology
 
 d2k_farasha.husk:
 	Inherits: ^PlaneHusk
@@ -12059,7 +12151,7 @@ d2k_farasha.husk:
 
 d2k_farasha_drone:
 	Inherits: ^RANeutralPlane
-	Inherits@Template: ^FighterTemplate
+	Inherits@Template: ^BomberTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
@@ -12082,9 +12174,6 @@ d2k_farasha_drone:
 	HasParent:
 	Health:
 		HP: 12500
-	RevealsShroud:
-		Range: 6c0
-		Type: GroundPosition
 	Armament@PRIMARY:
 		Weapon: d2k_farasha_drone
 		LocalOffset: 150,0,0
