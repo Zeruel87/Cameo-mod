@@ -1580,7 +1580,8 @@ upgrade-advancedguerillatactics =
    by 10% and gives the units higher vision.
 
 upgrade-conscription =
-   .description = Decreases cost and training time for all infantry by 50%.
+   .description = Decreases cost and training time for all infantry and Hip Transports by 50%.
+   Unlocks the "Paratroopers" Support power from the Soviet Airfield.
 
 upgrade-nuclearengines =
    .description = Increases speed of tanks by 25%.
@@ -1602,9 +1603,11 @@ upgrade-advancedthermobarics =
 upgrade-experimentalteslaweaponry =
    .description = Increases damage of tesla weapons by 50%
    and adds an EMP effect that will stun vehicles and buildings after several hits.
+   Unlocks the "Parabombs" Support power from the Soviet Airfield.
 
 upgrade-afterburners =
-   .description = Increases speed of Migs, Su-57s and Nuclear Bombers by 25%.
+   .description = Increases range and speed of Migs, Su-57s and Nuclear Bombers by 15%.
+   Unlocks the "Spyplane" Support power from the Soviet Airfield.
 
 upgrade-sovietautoloaders =
    .description = Increases the fire rate of all tank cannons by 100%.
@@ -1613,6 +1616,36 @@ upgrade-sovietsteel =
    .description = TEAM UPGRADE
    Increases armor of all tanks in your team by 40% but makes them 10% slower.
    For Soviets it will also increase the armor of most other vehicles, submarines, helicopters and defenses.
+   Dogs are turned into cybernetic monstrosities that are much more durable.
+
+upgrade-advancedradarsystems =
+   .description = Increases Radar Dome detection and vision range by 50%.
+   Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
+
+upgrade-infantryarmorplating =
+   .description = Increases armor of all infantry units by 50%.
+
+upgrade-reinforcedstructures =
+   .description = Increases armor of all buildings and defenses by 25%.
+
+upgrade-cryomissiles =
+   .description = Adds a cryo warhead to all missiles that freezes enemy units and buildings.
+   Cryo missiles lowers firepower by 50%.
+   Each hit slows down the enemy target by 10%, increases damage by 10% and stacks 10 times.
+
+upgrade-lasertargetingsystems =
+   .description = Increases damage of all tanks and aircraft by 25%
+
+upgrade-airsuperioritydoctrine =
+   .description = Increases damage, firerate, armor, speed, range and accuracy by 5%.
+
+upgrade-chronoarmor =
+   .description = After taking damage, tanks will activate a chrono field which increases armor by 50% and speed by 100%
+
+upgrade-gpssatellitesupport =
+   .description = TEAM UPGRADE
+   Launches a GPS Satellite that instantly reveals all enemy units and buildings on the map.
+   Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
 
 template-mcv =
    .description = Deploys into another Construction Yard.
