@@ -10528,6 +10528,32 @@ nax_weap:
 	Voiced:
 		VoiceSet: PRCWarFactoryVoice
 
+nax_naval:
+	Inherits: ^RA2Building
+	Inherits@shipyard: ^IsShipyard
+	Inherits@shape: ^3x3Shape
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 768,-512,0, 768,512,0, -281,-512,0, -630,512,0
+	Tooltip:
+		Name: Naxis Naval Yard
+	Buildable:
+		Prerequisites: ~nax_conyard, nax_barr
+	Building:
+		Footprint: =+= +++ =+=
+		Dimensions: 3,3
+		TerrainTypes: Water
+	-GivesBuildableArea:
+	#WithResupplyAnimation:
+	#	Sequence: repair
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithIdleOverlay@waves:
+		Sequence: idle-waves
+		RequiresCondition: !build-incomplete
+	Targetable:
+		TargetTypes: Ground, Water, C4, Structure
+
 nax_radar:
 	Inherits: ^RA2Building
 	Inherits@radar: ^RadarBuilding
@@ -10760,8 +10786,41 @@ nax_tech:
 		Dimensions: 4,3
 	Production@Upgrades:
 		Produces: Upgrades
-	ProvidesPrerequisite:
-		Prerequisite: ra2tek
+nax_beer:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@cashtrickler: ^CashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
+	Inherits@lowpower: ^DisabledOverlay
+	Inherits@Bot: ^BotMicromanageable
+	Tooltip:
+		Name: Beer Factory
+	Buildable:
+		Queue: Building, RABuilding
+		Description: Produces Passive income and adds damage bonus with Infantry
+		Prerequisites: ~nax_tek, ~techlevel.medium, derricklimit
+	Building:
+		Footprint: xxx xxx
+		Dimensions: 3,2
+	ProvidesPrerequisite@buildingname:
+nax_sausage:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@cashtrickler: ^CashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
+	Inherits@lowpower: ^DisabledOverlay
+	Inherits@Bot: ^BotMicromanageable
+	Tooltip:
+		Name: Sausage Factory
+	Buildable:
+		Queue: Building, RABuilding
+		Description: Produces Passive income and adds hp bonus with Infantry
+		Prerequisites: ~nax_tek, ~techlevel.medium, derricklimit
+	Building:
+		Footprint: xxx xxx
+		Dimensions: 3,2
+	ProvidesPrerequisite@buildingname:
+
 nax_twr:
 	Inherits: ^RA2Defense
 	Inherits@Template: ^BasicDefenseTemplate
@@ -13156,10 +13215,6 @@ nax_nokana:
 		Payload: 1500
 	Passenger:
 		Weight: 5
-
-####################################################################################################
-#		Red Alert 2 Naxis Unused
-####################################################################################################
 #		Valkirie Chronicles Imperial
 nax_assault:
 	Inherits: ^Tank
@@ -13408,6 +13463,129 @@ nax_car:
 		VoiceSet: NaxiFlakVoice
 	RenderSprites:
 		PlayerPalette: playerra2
+
+####################################################################################################
+#		Naxis Ships
+####################################################################################################
+nax_tuboat:
+	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
+	Inherits@Template: ^ScoutShipTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Torpedo U boat
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~nax_naval
+		Queue: Naval, RANaval
+		Description: actor-ra2sub.description
+	Mobile:
+		Speed: 78
+		TurnSpeed: 16
+	Health:
+		HP: 120000
+	ChangesHealth@SelfHealing:
+		Step: 96
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 12
+		Offset: 512,0,0
+	Armament@Torp:
+		Weapon: AsianSmallTorpedo
+		LocalOffset: 256,-128,0, 256,128,0
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	RenderDetectionCircle:
+	Selectable:
+		DecorationBounds: 1536, 1536
+	Cloak@underwater:
+		CloakDelay: 75
+		CloakSound: vnavupa.wav
+		UncloakSound: vnavupa.wav
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+nax_muboat:
+	Inherits: ^BoatUnit
+	Inherits@effects: ^RA2Vehicle
+	Inherits@Template: ^ArtilleryShipTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@sub: ^Submarine
+	Valued:
+		Cost: 2400
+	Tooltip:
+		Name: Heavy Missile U boat
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~nax_tech
+		Queue: Naval, RANaval
+		Description: actor-msub.description
+	Mobile:
+		Speed: 60
+		TurnSpeed: 12
+	Health:
+		HP: 200000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	Armor:
+		Type: Medium
+	Armament:
+		Weapon: NaxiMissileUboat
+		LocalOffset: 800,200,0, 800,-200,0
+	WithMuzzleOverlay:
+	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine
+	AttackFrontal:
+		FacingTolerance: 0
+	Selectable:
+		DecorationBounds: 1536, 1536
+	DeliversCash:
+		Payload: 1000
+	Cloak@underwater:
+		CloakDelay: 100
+	Voiced:
+		VoiceSet: VehicleVoice
+	FirepowerMultiplier@BallisticMissileSubBuff:
+		Modifier: 200
+	FireWarheadsOnDeath:
+		Weapon: ArtilleryShell
+	AmmoPool:
+		Ammo: 2
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 65
+		Count: 1
+	WithFacingSpriteBody:
+		Sequence: idle
+		RequiresCondition: ammo == 2
+	WithFacingSpriteBody@OneMissile:
+		Sequence: idle-one
+		RequiresCondition: ammo == 1
+	WithFacingSpriteBody@NoMissiles:
+		Sequence: idle-empty
+		RequiresCondition: !ammo
+	RenderSprites:
+		Image: nax_muboat
+		PlayerPalette: playerra2
+	ActorStatValues:
+		Upgrades: up_elementalwarfare, up_improvedartilleries, up_guerillatactics, up_advancedguerillatactics
 
 ####################################################################################################
 #		Red Alert 2 Naxis Tree
