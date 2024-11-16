@@ -138,6 +138,18 @@ Player:
 #######################################
 # RA2 Defaults
 #######################################
+^RA2Parachutes:
+	WithParachute: ##########
+		ShadowImage: parach-shadow
+		ShadowSequence: idle
+		Image: ra2parach
+		Sequence: idle
+		OpeningSequence: open
+		ClosingSequence: disolve
+		Offset: 0,0,427
+		RequiresCondition: parachute
+		Palette: ra2infantry
+		IsPlayerPalette: true
 
 ^GainsExperienceRA2:
 	GainsExperience:
@@ -321,6 +333,7 @@ Player:
 
 ^RA2Infantry:
 	Inherits@shadow: ^RA2InfantryDeathAnimations
+	Inherits@para: ^RA2Parachutes
 	RenderSprites:
 		PlayerPalette: ra2infantry
 	Crushable:
@@ -403,6 +416,7 @@ RA2Flameguy:
 	-AcceptsDeliveredCash:
 
 ^RA2Vehicle:
+	Inherits@para: ^RA2Parachutes
 	FireWarheadsOnDeath:
 		Weapon: RA2UnitExplode
 		EmptyWeapon: RA2UnitExplode
@@ -489,7 +503,6 @@ RA2Flameguy:
 	WithMoveAnimation:
 		MoveSequence: move
 		Condition: !Aircraft-Turning
-
 #
 # Sell Actors
 #
@@ -5038,7 +5051,9 @@ RA2CMIN:
 	RenderSprites:
 		Image: RA2CMIN
 		PlayerPalette: playerra2
-
+	WithHarvestOverlay@harvesting:
+		Sequence: harvesting
+		Palette: ra2effect
 RA2MTNK:
 	Inherits: ^Tank
 	Inherits@anim: ^RA2Vehicle
@@ -6270,7 +6285,9 @@ RA2HARV:
 		PipCount: 10
 	RenderSprites:
 		PlayerPalette: playerra2
-
+	WithHarvestOverlay@harvesting:
+		Sequence: harvesting
+		Palette: ra2effect
 ra2dtruck:
 	Inherits: DTRK
 	Inherits@anim: ^RA2Vehicle
@@ -6374,7 +6391,6 @@ ra2dron:
 	Targetable@dog:
 		TargetTypes: DogImmune
 	-TemporaryOwnerManager:
-
 ##############################################
 #   Red Alert 2 Yuri Vehicles
 ##############################################
@@ -8150,8 +8166,8 @@ ra2hind:
 		Name: actor-ra2hind.name
 	Buildable:
 		BuildPaletteOrder: 97
-		Prerequisites: ~ra2naradr
-		Queue: Vehicle, Aircraft, RAAircraft
+		Prerequisites:  ~latin_cgair
+		Queue: Aircraft, RAAircraft
 		IconPalette: ra2cameo
 		Description: actor-ra2hind.description
 	UpdatesPlayerStatistics:
@@ -8688,6 +8704,92 @@ yrbpln1:
 		Actor: yrbpln.husk
 	RenderSprites:
 		Image: yrbpln
+		PlayerPalette: playerra2
+
+ra2_tzep:
+	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@cargo: ^CargoAircraft
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bot: ^BotAutoDeployTransport
+	Valued:
+		Cost: 3600
+	Tooltip:
+		Name: Transport Kirov
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: ra2_tzep
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~ra2naradr
+		Queue: Aircraft, RAAircraft, Vehicle
+		Description: actor-shad.description
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 35
+		AltitudeVelocity: 0c50
+		RepulsionSpeed: 15
+	Health:
+		HP: 750000
+	Repairable:
+		HpPerStep: 2625
+	ChangesHealth@SelfHealing:
+		Step: 21
+	Armament@PRIMARY:
+		Weapon: BlackHawkCannon
+		LocalOffset: 150,-200,-25, 150,200,-25
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
+	Cargo:
+		InitialUnits: ra2e2, ra2e2, ra2e2, ra2e2, RA2flakt, RA2flakt, ra2shk, ra2shk
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 8
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	SpawnActorOnDeath:
+		Actor: ra2_tzep.Husk
+	SelectionDecorations:
+	Selectable:
+		Class: ra2shad
+		DecorationBounds: 1280, 1024
+	RenderSprites:
+		Image: ra2_tzep
+		PlayerPalette: playerra2
+	Voiced:
+		VoiceSet: KirovVoice
+	DeathSounds:
+	FirepowerMultiplier@FirerateCompensation:
+		Modifier: 50
+ra2_tzep.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Transport Kirov
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 40
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: ra2_tzep
+	ShakeOnDeath:
+	FallsToEarth:
+		Moves: false
+		Velocity: 43
+		Explosion: KirovExplode
+	WithShadow:
+	RenderSprites:
 		PlayerPalette: playerra2
 
 ####################################################################################################
