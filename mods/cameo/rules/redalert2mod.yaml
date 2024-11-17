@@ -1222,59 +1222,61 @@ aa_cgyard:
 #   Red Alert 2 Asian Infantry
 ##############################################
 ^KamikazeMode:
-	GrantConditionOnPrerequisite@MilitaryAcedemy:
-		Condition: MilitaryAcedemy
+	GrantConditionOnPrerequisite@upaa_banzai:
+		Condition: upaa_banzai
 		Prerequisites: upaa_banzai
-	GrantConditionOnDamageState@angry:
+	GrantConditionOnDamageState@KamikazeHeavy:
 		ValidDamageStates: Heavy
-		Condition: KamikazeAngry
+		Condition: KamikazeHeavy
 	DamageMultiplier@KamikazeAngry:
-		RequiresCondition: KamikazeAngry && MilitaryAcedemy
 		Modifier: 66
+		RequiresCondition: KamikazeHeavy && upaa_banzai
 	RangeMultiplier@KamikazeAngry:
-		RequiresCondition: KamikazeAngry && MilitaryAcedemy
 		Modifier: 75
+		RequiresCondition: KamikazeHeavy && upaa_banzai
 	FirepowerMultiplier@KamikazeAngry:
-		RequiresCondition: KamikazeAngry && MilitaryAcedemy
 		Modifier: 150
+		RequiresCondition: KamikazeHeavy && upaa_banzai
 	SpeedMultiplier@KamikazeAngry:
-		RequiresCondition: KamikazeAngry && MilitaryAcedemy
 		Modifier: 125
+		RequiresCondition: KamikazeHeavy && upaa_banzai
 	ChangesHealth@KamikazeAngry:
 		Step: 10
 		Delay: 1
 		StartIfBelow: 100
 		DamageCooldown: 1
+		RequiresCondition: KamikazeAngry && upaa_banzai
 	WithDecoration@KamikazeAngry:
 		Image: aa_banzai
 		Sequence: idle
 		Position: TopRight
 		BlinkInterval: 32
 		BlinkPattern: On, On, On, On
-		RequiresCondition: KamikazeAngry && MilitaryAcedemy
-	GrantConditionOnDamageState@kamikaze:
+		RequiresCondition: KamikazeAngry && upaa_banzai
+	GrantConditionOnDamageState@KamikazeCritical:
 		ValidDamageStates: Critical
 		Condition: KamikazeCritical
 	DamageMultiplier@KamikazeCritical:
-		RequiresCondition: KamikazeCritical && MilitaryAcedemy
 		Modifier: 33
+		RequiresCondition: KamikazeCritical && upaa_banzai
 	RangeMultiplier@KamikazeCritical:
-		RequiresCondition: KamikazeCritical && MilitaryAcedemy
 		Modifier: 50
+		RequiresCondition: KamikazeCritical && upaa_banzai
 	FirepowerMultiplier@KamikazeCritical:
-		RequiresCondition: KamikazeCritical && MilitaryAcedemy
 		Modifier: 200
+		RequiresCondition: KamikazeCritical && upaa_banzai
 	SpeedMultiplier@KamikazeCritical:
-		RequiresCondition: KamikazeCritical && MilitaryAcedemy
 		Modifier: 150
+		RequiresCondition: KamikazeCritical && upaa_banzai
 	ChangesHealth@KamikazeCritical:
 		Step: 20
 		Delay: 1
 		StartIfBelow: 100
 		DamageCooldown: 1
+		RequiresCondition: KamikazeCritical && upaa_banzai
 	WithDecoration@KamikazeCritical:
-		Image: aa_banzai
-		Sequence: idle2
+		Image: aa_banzai2
+		Sequence: idle
 		Position: TopRight
 		BlinkInterval: 32
 		BlinkPattern: On, On, On, On
@@ -1998,7 +2000,10 @@ aa_acv:
 		PlayerPalette: playerra2
 
 aa_drmn:
-	Inherits: HARV
+	Inherits: ^Tank
+	Inherits@Template: ^HarvesterTemplate
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Selectable:
@@ -2020,6 +2025,7 @@ aa_drmn:
 		HpPerStep: 1250
 	ChangesHealth@SelfHealing:
 		Step: 10
+	WithHarvestAnimation:
 	WithDockingAnimation:
 	Voiced:
 		VoiceSet: AsianDroneVoice
@@ -2033,8 +2039,6 @@ aa_drmn:
 	Harvester:
 		BaleLoadDelay: 6
 		BaleUnloadDelay: 6
-		SearchFromProcRadius: 25
-		SearchFromHarvesterRadius: 10
 	DockClientManager:
 		OccupancyCostModifier: 0
 	StoresResources:
@@ -2429,9 +2433,9 @@ aa_mecha:
 		Queue: Vehicle, RAVehicle
 		Description: actor-aamecha.description
 	Mobile:
-		Locomotor: heavytracked
 		Speed: 65
 		TurnSpeed: 13
+		Locomotor: heavytracked
 	Health:
 		HP: 130000
 	Repairable:
@@ -2597,6 +2601,7 @@ aa_wtrt:
 	Inherits: ^Tank
 	Inherits@Template: ^LineBreakerTemplate
 	Inherits@Template: ^HighTechTankTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -2605,7 +2610,7 @@ aa_wtrt:
 	Inherits@cargo: ^OpenToppedVehicle
 	Inherits@bot: ^BotAutoDeployEvacuateCargo
 	Valued:
-		Cost: 2500
+		Cost: 3500
 	Tooltip:
 		Name: War Turtle
 	Buildable:
@@ -2623,13 +2628,13 @@ aa_wtrt:
 	Passenger:
 		Weight: 4
 	Health:
-		HP: 125000
+		HP: 100000
 	Repairable:
-		HpPerStep: 2500
+		HpPerStep: 5000
 	ChangesHealth@SelfHealing:
-		Step: 50
+		Step: 80
 	Armor:
-		Type: Heavy
+		Type: Medium
 	#Turreted:
 	#	TurnSpeed: 1023
 	-QuantizeFacingsFromSequence:
@@ -2643,7 +2648,7 @@ aa_wtrt:
 	Cargo:
 		UnloadVoice: Move
 		Types: Infantry, Hacker, Fremen
-		MaxWeight: 6
+		MaxWeight: 7
 		InitialUnits: aa_gren,aa_tkiller,aa_plast,aa_flam,aa_japrif,aa_archer,aa_asdf
 	AttackOpenTopped:
 		Voice: Attack
@@ -4812,7 +4817,7 @@ latin_mortarbike:
 		Prerequisites: ~latin_cgweap
 		Description: actor-v3.description
 	Valued:
-		Cost: 900
+		Cost: 500
 	Tooltip:
 		Name: Mortar Bike
 	Health:
@@ -5732,7 +5737,10 @@ latin_lars:
 		PlayerPalette: playerra2
 
 latin_harv:
-	Inherits: HARV
+	Inherits: ^Tank
+	Inherits@Template: ^HarvesterTemplate
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
 	Inherits@anim: ^RA2Vehicle
 	Inherits@uprecover: ^LatinCashrecover
 	Valued:
@@ -5756,17 +5764,12 @@ latin_harv:
 		Voice: Harvest
 		BaleLoadDelay: 4
 		BaleUnloadDelay: 3
-		SearchFromProcRadius: 25
-		SearchFromHarvesterRadius: 10
 		EmptyCondition: no-tiberium
 	StoresResources:
 		Capacity: 25
 	Voiced:
 		VoiceSet: LatinHarvVoice
-	WithStoresResourcesPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 10
+	WithHarvestAnimation:
 	RenderSprites:
 		PlayerPalette: playerra2
 	StoresResources:
@@ -7976,7 +7979,10 @@ steel_qmcv:
 		Upgrades: upsteel_shielresistance
 
 steel_qmin:
-	Inherits: HARV
+	Inherits: ^Tank
+	Inherits@Template: ^HarvesterTemplate
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
 	Inherits@anim: ^RA2Vehicle
 	Inherits@EXPERIENCE: ^GainsExperienceRA2
 	Valued:
@@ -7988,8 +7994,6 @@ steel_qmin:
 		PipCount: 10
 		BaleLoadDelay: 4
 		BaleUnloadDelay: 1
-		SearchFromProcRadius: 25
-		SearchFromHarvesterRadius: 10
 		EmptyCondition: no-tiberium
 	StoresResources:
 		Capacity: 20
@@ -8009,13 +8013,12 @@ steel_qmin:
 		Prerequisites: ~steel_qref
 		Queue: Vehicle, RAVehicle
 		Description: actor-cmin.description
+	WithHarvestAnimation:
 	WithDockingAnimation:
 	DockClientManager:
 		Voice: Deliver
 	Voiced:
 		VoiceSet: ChronoMinerVoice
-	DeliversCash:
-		Payload: 1000
 	RenderSprites:
 		Image: steel_qmin
 		PlayerPalette: playerra2cons
@@ -9724,9 +9727,9 @@ steel_cobra:
 		Queue: Vehicle, RAVehicle
 		Description: template-mbt.description
 	Mobile:
-		Locomotor: heavytracked
 		Speed: 70
 		TurnSpeed: 14
+		Locomotor: heavytracked
 	Health:
 		HP: 325000
 	Repairable:
@@ -12530,6 +12533,7 @@ nax_maus:
 	Mobile:
 		Speed: 60
 		TurnSpeed: 12
+		Locomotor: heavytracked
 	Health:
 		HP: 450000
 	Repairable:
@@ -12593,6 +12597,7 @@ nax_ratte:
 	Mobile:
 		Speed: 35
 		TurnSpeed: 7
+		Locomotor: heavytracked
 	Health:
 		HP: 2000000
 	Repairable:
