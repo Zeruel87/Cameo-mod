@@ -1660,14 +1660,14 @@ upgrade-energizedarrows =
    Arrows are upgraded with an electric charge that deals bonus damamge to infantry and disables vehicles and structures.
 
 upgrade-waveforcebullets =
-   .description = Increases range and damage of all bullets by 10% and makes them more effective against armor.
+   .description = Increases range and damage of all bullets by 15% and makes them more effective against armor.
 
 upgrade-stealthsuitintegration =
    .description = All Infantry come equipped with a stealth suit, that makes them invisible when not attacking or moving.
    Increases speed and armor by 10% and gives a shield generator.
 
 upgrade-superiorwarengines =
-   .description = Increases speed, fire rate and armor of all vehicles by 33%
+   .description = Increases speed, fire rate and armor of all vehicles by 20%
 
 upgrade-divinewindprotocol =
    .description = Increases damage, fire rate, speed and vision of all air units by 25%
@@ -1677,7 +1677,7 @@ upgrade-advancedplasmaweapons =
 
 upgrade-nanotechrepairs =
    .description = TEAM UPGRADE
-   Increases armor of all tanks in your team by 25% and makes them regnerate faster.
+   Increases armor of all tanks in your team by 10% and makes them regnerate faster.
    For Japan the effect is also applied to all other vehicles, aircraft and even buildings.
 
 template-mcv =
