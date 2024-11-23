@@ -22,7 +22,6 @@
 		Explosions: cryo_blast
 
 ^WaveforceBulletProjectile:
-	Inherits: ^RailgunWeapon
 	TargetActorCenter: true
 	Projectile: Bullet
 		Image: 50CAL
@@ -32,17 +31,27 @@
 		ContrailLength: 15
 		Speed: 4000
 		Width: 40
+	Warhead@Effect: CreateEffect
+		Explosions: blue_small_fire
+		ImpactSounds: kaboom12.aud
+		ValidTargets: Ground, Ship, Trees
+	Warhead@EffectWater: CreateEffect
+		Explosions: water_piffs
+		ValidTargets: Water, Underwater
+		InvalidTargets: Ship, Structure, Bridge
+	Warhead@EffectAir: CreateEffect
+		Explosions: blue_small_fire
+		ImpactSounds: kaboom12.aud
+		ValidTargets: Air
+
+^WaveforceBulletWarhead:
+	Inherits: ^RailgunWeapon
 	Warhead@RailgunWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 2000
 	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 1
-	Warhead@Effect: CreateEffect
-		ValidRelationships: Neutral, Enemy
-		Explosions: blue_small_fire
-		ImpactSounds: kaboom12.aud
-		ValidTargets: Ground, Trees
 
 OreExplosion:
 	Inherits: ^MediumFlameWeapon
@@ -74,8 +83,9 @@ CHGuardRifle:
 		Damage: 5500
 
 CHGuardRifleWaveforce:
-	Inherits: ^WaveforceBulletProjectile
+	Inherits: ^WaveforceBulletWarhead
 	Inherits: CHGuardRifle
+	Inherits: ^WaveforceBulletProjectile
 	Warhead@SmallArms: SpreadDamage
 		Damage: 6000
 	Warhead@RailgunWeapon: SpreadDamage
@@ -143,37 +153,34 @@ TankBusterBeamCannon:
 TankBusterBeamCannonCharged:
 	Inherits: ^TeslaWeapon
 	Inherits: ^HeavyCannon
-	Inherits: ^RailgunWeapon
 	ReloadDelay: 75
 	Range: 6900
 	Report: obelray1.aud
 	Projectile: KKNDLaser
-		Duration: 10
-		Color: FF4488AA
+		Duration: 25
+		Color: FF8844AA
 		InnerLightness: 100
 		OuterLightness: 50
 		Radius: 2
 		Distortion: 100
-		DistortionAnimation: 100
+		DistortionAnimation: 50
 		SegmentLength: 500
+		Inaccuracy: 100
 	Warhead@TeslaWeapon: SpreadDamage
-		Damage: 8000
+		Damage: 12000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
-		Damage: 4
+		Damage: 6
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@HeavyCannon: SpreadDamage
-		Damage: 8000
+		Damage: 12000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@HeavyCannonPercentage: HealthPercentageDamage
-		Damage: 4
+		Damage: 6
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@RailgunWeapon: SpreadDamage
-		Damage: 8000
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
-		Damage: 4
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@EMPUnit: AffectsIntegrity
+		Damage: 12000
+		Spread: 600
 
 FireRockets:
 	Inherits: ^FlakWeapon
@@ -616,7 +623,7 @@ JapanMaidenBowEnergized:
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@EMPUnit: AffectsIntegrity
 		Damage: 30000
-		Spread: 3000
+		Spread: 1500
 	Warhead@Effect: CreateEffect
 		Explosions: drneutronexp
 		ImpactSounds: kaboom12.aud
@@ -629,15 +636,58 @@ JapanMaidenBowEnergized:
 BallistaSingleShotAir:
 	Inherits: JapanMaidenBow
 	ValidTargets: Air
-	ReloadDelay: 75
+	ReloadDelay: 100
+	Warhead@ArrowWeapon: SpreadDamage
+		Damage: 80000
+	Warhead@ArrowWeaponPercentage: HealthPercentageDamage
+		Damage: 40
 
 BallistaSingleShotAirEnergized:
+	Inherits: ^MediumChemicalWeapon
 	Inherits: JapanMaidenBowEnergized
 	ValidTargets: Air
-	ReloadDelay: 75
+	ReloadDelay: 200
+	Warhead@ArrowWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 40000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@ArrowWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 20
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@MediumMissile: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 40000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@MediumMissilePercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 20
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@MediumChemicalWeapon: SpreadDamage
+		Damage: 40000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@MediumChemicalWeaponFriendlyFire: SpreadDamage
+		Damage: 20000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@MediumChemicalWeaponPercentage: HealthPercentageDamage
+		Damage: 20
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@TeslaWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 40000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 20
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@EMPUnit: AffectsIntegrity
+		Damage: 40000
+		Spread: 500
 
 BallistaMultiShot:
+	Inherits: ^Grenade
 	Inherits: ^LightFlameWeapon
+	Inherits: ^LightChemicalWeapon
 	Inherits: ^ArrowWeapon
 	ReloadDelay: 95
 	Range: 12500
@@ -663,20 +713,38 @@ BallistaMultiShot:
 		ContrailStartColor: 77CCFF
 		ContrailEndColorUsePlayerColor: true
 		ContrailEndColor: FFFFFF
+	Warhead@Grenade: SpreadDamage
+		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		Damage: 2
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@LightFlameWeapon: SpreadDamage
-		Damage: 6000
+		Damage: 4000
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@LightFlameWeaponFriendlyFire: SpreadDamage
-		Damage: 3000
+		Damage: 2000
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@LightFlameWeaponPercentage: HealthPercentageDamage
-		Damage: 3
+		Damage: 2
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@LightChemicalWeapon: SpreadDamage
+		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@LightChemicalWeaponFriendlyFire: SpreadDamage
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@LightChemicalWeaponPercentage: HealthPercentageDamage
+		Damage: 2
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@ArrowWeapon: SpreadDamage
-		Damage: 6000
+		Damage: 4000
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@ArrowWeaponPercentage: HealthPercentageDamage
-		Damage: 3
+		Damage: 2
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@Effect: CreateEffect
 		Explosions: blue_small_fire
@@ -684,10 +752,11 @@ BallistaMultiShot:
 		ValidTargets: Ground, Water, Trees
 
 BallistaMultiShotEnergized:
-	Inherits: ^MediumFlameWeapon
 	Inherits: ^TeslaWeapon
+	Inherits: ^MediumFlameWeapon
+	Inherits: ^MediumChemicalWeapon
 	Inherits: ^ArrowWeapon
-	ReloadDelay: 95
+	ReloadDelay: 195
 	Range: 12500
 	MinRange: 2500
 	Burst: 5
@@ -710,26 +779,35 @@ BallistaMultiShotEnergized:
 		ContrailLength: 30
 		ContrailStartColor: FF77CC
 		ContrailEndColor: 88664422
-	Warhead@MediumFlameWeapon: SpreadDamage
-		Damage: 4000
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@MediumFlameWeaponFriendlyFire: SpreadDamage
-		Damage: 2000
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@MediumFlameWeaponPercentage: HealthPercentageDamage
-		Damage: 2
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@TeslaWeapon: SpreadDamage
-		Damage: 4000
+		Damage: 8000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
-		Damage: 2
+		Damage: 4
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@ArrowWeapon: SpreadDamage
+	Warhead@MediumChemicalWeapon: SpreadDamage
+		Damage: 8000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@MediumChemicalWeaponFriendlyFire: SpreadDamage
 		Damage: 4000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@MediumChemicalWeaponPercentage: HealthPercentageDamage
+		Damage: 4
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@MediumFlameWeapon: SpreadDamage
+		Damage: 8000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@MediumFlameWeaponFriendlyFire: SpreadDamage
+		Damage: 4000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@MediumFlameWeaponPercentage: HealthPercentageDamage
+		Damage: 4
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@ArrowWeapon: SpreadDamage
+		Damage: 8000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@ArrowWeaponPercentage: HealthPercentageDamage
-		Damage: 2
+		Damage: 4
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@Effect: CreateEffect
 		Explosions: purplesplash
@@ -739,12 +817,10 @@ BallistaMultiShotEnergized:
 BallistaTowerMultiShot:
 	Inherits: BallistaMultiShot
 	Range: 10000
-	ReloadDelay: 70
 
 BallistaTowerMultiShotEnergized:
 	Inherits: BallistaMultiShotEnergized
 	Range: 10000
-	ReloadDelay: 70
 
 RocketAngelRockets:
 	Inherits: ^TeslaWeapon
@@ -764,7 +840,7 @@ RocketAngelRockets:
 		VerticalRateOfTurn: 20
 		Speed: 512
 		Arm: 2
-		Inaccuracy: 1250
+		Inaccuracy: 500
 		RangeLimit: 25000
 		Image: DRAGON
 		TrailImage: blue_smokey
@@ -832,16 +908,14 @@ RocketAngelRockets:
 	Warhead@ArrowWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 2000
-		Spread: 2000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@ArrowWeaponPercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 1
-		Spread: 1000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@EMPUnit: AffectsIntegrity
-		Damage: 2000
-		Spread: 2000
+		Damage: 6000
+		Spread: 1000
 	Warhead@Effect: CreateEffect
 		Explosions: drplasmaex2
 		ImpactSounds: kaboom12.aud
@@ -1453,8 +1527,9 @@ M60mg:
 		Damage: 3400
 
 M60mgWaveforce:
-	Inherits: ^WaveforceBulletProjectile
+	Inherits: ^WaveforceBulletWarhead
 	Inherits: M60mg
+	Inherits: ^WaveforceBulletProjectile
 	Warhead@SmallArms: SpreadDamage
 		Damage: 4000
 	Warhead@RailgunWeapon: SpreadDamage
@@ -1660,8 +1735,9 @@ ZeroFighterChainGun:
 		Damage: 1
 
 ZeroFighterChainGunWaveforce:
-	Inherits: ^WaveforceBulletProjectile
+	Inherits: ^WaveforceBulletWarhead
 	Inherits: ZeroFighterChainGun
+	Inherits: ^WaveforceBulletProjectile
 
 Maverick:
 	Inherits: ^MediumMissile
@@ -2165,8 +2241,9 @@ TigerCannon:
 		ImpactSounds: xplos.aud
 
 25mmWaveforce:
-	Inherits: ^WaveforceBulletProjectile
+	Inherits: ^WaveforceBulletWarhead
 	Inherits: 25mm
+	Inherits: ^WaveforceBulletProjectile
 
 90mm:
 	Inherits: ^MediumCannon
@@ -2302,6 +2379,7 @@ WaveforceCannon:
 		HelixRadiusDeltaPerTick: 16
 		HelixAngleDeltaPerTick: 32
 		QuantizationCount: 64
+		Duration: 16
 	Warhead@RailgunWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 10000
@@ -2314,24 +2392,82 @@ WaveforceCannon:
 	Warhead@HeavyMissilePercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 5
+	Warhead@Effect: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: blueartexp
+		ValidTargets: Ship, Structure, Bridge, Ground
+	Warhead@EffectWater: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: blueartexp
+		ValidTargets: Water, Underwater
+		InvalidTargets: Ship, Structure, Bridge
+	Warhead@EffectAir: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: blueartexp
+		ValidTargets: Air
 
-WaveforceCannonCharged:
-	Inherits: ^TeslaWeapon
+WaveforceCannonChargedLaser:
 	Inherits: ^HeavyMissile
-	Inherits: ^HeavyCannon
 	Inherits: ^RailgunWeapon
 	ReloadDelay: 120
 	Range: 12000
 	ValidTargets: Ground, Water, Trees, Air
+	Projectile: LaserZap
+		Width: 256
+		Duration: 16
+		ZOffset: 2047
+		Color: 4488FF44
+		SecondaryBeam: true
+		SecondaryBeamWidth: 128
+		SecondaryBeamZOffset: 2047
+		SecondaryBeamColor: FFFFFF
+		Inaccuracy: 100
+	Warhead@RailgunWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 10000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 5
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@HeavyMissile: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 10000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@HeavyMissilePercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 5
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@Effect: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: purple_plasma
+		ValidTargets: Ship, Structure, Bridge, Ground
+	Warhead@EffectWater: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: purple_plasma
+		ValidTargets: Water, Underwater
+		InvalidTargets: Ship, Structure, Bridge
+	Warhead@EffectAir: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: purple_plasma
+		ValidTargets: Air
+
+WaveforceCannonDistortedBeam1:
+	Inherits: ^TeslaWeapon
+	Inherits: ^HeavyCannon
+	ReloadDelay: 120
+	Range: 12000
+	ValidTargets: Ground, Water, Trees, Air
 	Projectile: KKNDLaser
-		Duration: 20
+		Duration: 16
 		Color: 8844FFAA
 		InnerLightness: 160
 		OuterLightness: 80
 		Radius: 2
 		Distortion: 160
-		DistortionAnimation: 160
+		DistortionAnimation: 80
 		SegmentLength: 400
+		Inaccuracy: 100
 	Warhead@TeslaWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 10000
@@ -2348,22 +2484,73 @@ WaveforceCannonCharged:
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 5
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@RailgunWeapon: SpreadDamage
+	Warhead@Effect: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: purple_plasma
+		ValidTargets: Ship, Structure, Bridge, Ground
+	Warhead@EffectWater: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: purple_plasma
+		ValidTargets: Water, Underwater
+		InvalidTargets: Ship, Structure, Bridge
+	Warhead@EffectAir: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: purple_plasma
+		ValidTargets: Air
+
+WaveforceCannonDistortedBeam2:
+	Inherits: ^HeavyChemicalWeapon
+	Inherits: ^HeavyFlameWeapon
+	ReloadDelay: 120
+	Range: 12000
+	ValidTargets: Ground, Water, Trees, Air
+	Projectile: KKNDLaser
+		Duration: 16
+		Color: FF448888
+		InnerLightness: 80
+		OuterLightness: 40
+		Radius: 2
+		Distortion: 80
+		DistortionAnimation: 40
+		SegmentLength: 200
+		Inaccuracy: 100
+	Warhead@HeavyChemicalWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 10000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
+	Warhead@HeavyChemicalWeaponFriendlyFire: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 5000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@HeavyChemicalWeaponPercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 5
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@HeavyMissile: SpreadDamage
+	Warhead@HeavyFlameWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 10000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@HeavyMissilePercentage: HealthPercentageDamage
+	Warhead@HeavyFlameWeaponFriendlyFire: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 5000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@HeavyFlameWeaponPercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Trees, Air
 		Damage: 5
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@Effect: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: purple_plasma
+		ValidTargets: Ship, Structure, Bridge, Ground
+	Warhead@EffectWater: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: purple_plasma
+		ValidTargets: Water, Underwater
+		InvalidTargets: Ship, Structure, Bridge
+	Warhead@EffectAir: CreateEffect
+		ImpactSounds: psahit00.aud
+		Explosions: purple_plasma
+		ValidTargets: Air
 
 OISmallCannon:
 	Inherits: ^MediumCannon
@@ -3311,7 +3498,7 @@ BuggyPlasmaGrenade:
 	Inherits: ^MediumChemicalWeapon
 	Inherits: ^MediumFlameWeapon
 	Inherits: ^Grenade
-	ReloadDelay: 35
+	ReloadDelay: 70
 	Range: 4555
 	Report: M203.aud
 	Projectile: Bullet
@@ -3322,37 +3509,37 @@ BuggyPlasmaGrenade:
 		ContrailLength: 11
 		Width: 33
 	Warhead@HeavyBomb: SpreadDamage
-		Damage: 4000
+		Damage: 16000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@HeavyBombPercentage: HealthPercentageDamage
-		Damage: 2
+		Damage: 8
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@MediumChemicalWeapon: SpreadDamage
-		Damage: 4000
+		Damage: 16000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@MediumChemicalWeaponFriendlyFire: SpreadDamage
-		Damage: 2000
+		Damage: 8000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@MediumChemicalWeaponPercentage: HealthPercentageDamage
-		Damage: 2
+		Damage: 8
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@MediumFlameWeapon: SpreadDamage
-		Damage: 4000
+		Damage: 16000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@MediumFlameWeaponFriendlyFire: SpreadDamage
-		Damage: 2000
+		Damage: 8000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@MediumFlameWeaponPercentage: HealthPercentageDamage
-		Damage: 2
+		Damage: 8
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@Grenade: SpreadDamage
-		Damage: 4000
+		Damage: 16000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@GrenadeFriendlyFire: SpreadDamage
-		Damage: 2000
+		Damage: 8000
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@GrenadePercentage: HealthPercentageDamage
-		Damage: 2
+		Damage: 8
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@Effect: CreateEffect
 		ImpactSounds: psahit00.aud
@@ -3491,42 +3678,32 @@ Nike:
 JHighV:
 	Inherits: ^SmallArms
 	Inherits: ^Chaingun
-	ValidTargets: Ground, Water, Trees
-	ReloadDelay: 15
+	ValidTargets: Ground, Water, Trees, Air
+	ReloadDelay: 25
 	Burst: 5
-	BurstDelays: 2
+	BurstDelays: 5
 	Range: 6666
 	MinRange: 666
 	-Report:
 	StartBurstReport: gun8.aud
 	Warhead@SmallArms: SpreadDamage
-		ValidTargets: Ground, Water, Trees
-		Damage: 2000
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 4000
 	Warhead@Chaingun: SpreadDamage
-		ValidTargets: Ground, Water, Trees
-		Damage: 2000
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 4000
 	Warhead@ChaingunPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Trees
-		Damage: 1
-
-JHighVAA:
-	Inherits: JHighV
-	Range: 9999
-	ValidTargets: Air
-	Warhead@SmallArms: SpreadDamage
-		ValidTargets: Air
-	Warhead@Chaingun: SpreadDamage
-		ValidTargets: Air
-	Warhead@ChaingunPercentage: HealthPercentageDamage
-		ValidTargets: Air
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 2
 
 JHighVWaveforce:
-	Inherits: ^WaveforceBulletProjectile
+	Inherits: ^WaveforceBulletWarhead
 	Inherits: JHighV
-
-JHighVAAWaveforce:
 	Inherits: ^WaveforceBulletProjectile
-	Inherits: JHighVAA
+	Warhead@RailgunWeapon: SpreadDamage
+		Damage: 4000
+	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
+		Damage: 2
 
 RocketsG:
 	Inherits: ^MissileWeapon
@@ -4120,10 +4297,8 @@ NanoSmokeAG:
 		ValidTargets: Air, Ground, Water
 
 WaveArtilleryShell:
-	Inherits: ^TeslaWeapon
-	Inherits: ^Grenade
-	ReloadDelay: 150
-	Range: 12500
+	ReloadDelay: 111
+	Range: 11111
 	Report: WaveforceCannon.wav
 	Projectile: WarheadTrailProjectileCA
 		Weapon: WaveArtilleryImpact
@@ -4142,47 +4317,45 @@ WaveArtilleryShell:
 		ContrailEndColorUsePlayerColor: true
 		ContrailEndColor: FFFFFF
 		Speed: 333
-		Inaccuracy: 256
-	Warhead@TeslaWeapon: SpreadDamage
-		Damage: 16000
-		Spread: 333
-	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
-		Damage: 8
-		Spread: 333
-	Warhead@Grenade: SpreadDamage
-		Damage: 16000
-		Spread: 333
-	Warhead@GrenadeFriendlyFire: SpreadDamage
-		Damage: 8000
-		Spread: 333
-	Warhead@GrenadePercentage: HealthPercentageDamage
-		Damage: 8
-		Spread: 333
+		Inaccuracy: 666
 	Warhead@Effect: CreateEffect
 		ImpactSounds: psahit00.aud
 		Explosions: blueartexp
 		ValidTargets: Ground, Air
 
 WaveArtilleryImpact:
+	Inherits: ^TeslaWeapon
 	Inherits: ^RailgunWeapon
-	ReloadDelay: 150
-	Range: 12500
 	MinRange: 1
 	Projectile: InstantHit
+	Warhead@TeslaWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 10000
+		Spread: 333
+		ValidRelationships: Enemy, Neutral
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 5
+		Spread: 333
+		ValidRelationships: Enemy, Neutral
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@RailgunWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Trees
-		Damage: 8000
-		Spread: 500
+		Damage: 10000
+		Spread: 333
 		ValidRelationships: Enemy, Neutral
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Trees
-		Damage: 4
-		Spread: 500
+		Damage: 5
+		Spread: 333
 		ValidRelationships: Enemy, Neutral
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@CommandoDebuff: GrantExternalCondition
 		Condition: CommandoDebuff
-		Duration: 250
-		Range: 1250
+		Duration: 222
+		Range: 666
 		ValidRelationships: Enemy, Neutral
 		ValidTargets: Ground, Water, Structure, Wall
 	Warhead@Effect: CreateEffect
@@ -4207,38 +4380,37 @@ WaveTurretShell:
 		ContrailStartWidth: 250
 		Speed: 500
 		Inaccuracy: 0
-	Warhead@TeslaWeapon: SpreadDamage
-		Damage: 20000
-		Spread: 500
-	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
-		Damage: 10
-		Spread: 500
-	Warhead@Grenade: SpreadDamage
-		Damage: 20000
-		Spread: 500
-	Warhead@GrenadeFriendlyFire:
-		Damage: 10000
-		Spread: 500
-	Warhead@GrenadePercentage: HealthPercentageDamage
-		Damage: 10
-		Spread: 500
 	Warhead@Effect: CreateEffect
 		Explosions: blue_building
 
 WaveTurretImpact:
 	Inherits: WaveArtilleryImpact
-	ReloadDelay: 100
-	Range: 10000
 	MinRange: 1
 	Projectile: InstantHit
-	Warhead@RailgunWeapon: SpreadDamage
+	Warhead@TeslaWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Trees
 		Damage: 10000
 		Spread: 500
 		ValidRelationships: Enemy, Neutral
-	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees
 		Damage: 5
 		Spread: 500
 		ValidRelationships: Enemy, Neutral
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@RailgunWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 10000
+		Spread: 500
+		ValidRelationships: Enemy, Neutral
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees
+		Damage: 5
+		Spread: 500
+		ValidRelationships: Enemy, Neutral
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
 	Warhead@CommandoDebuff: GrantExternalCondition
 		Duration: 150
 		Range: 1500
@@ -4350,12 +4522,14 @@ ArmoredCarMGAA:
 		ValidTargets: Air
 
 ArmoredCarMGWaveforce:
-	Inherits: ^WaveforceBulletProjectile
+	Inherits: ^WaveforceBulletWarhead
 	Inherits: ArmoredCarMG
+	Inherits: ^WaveforceBulletProjectile
 
 ArmoredCarMGAAWaveforce:
-	Inherits: ^WaveforceBulletProjectile
+	Inherits: ^WaveforceBulletWarhead
 	Inherits: ArmoredCarMGAA
+	Inherits: ^WaveforceBulletProjectile
 
 JapaneseHovercraftFlak:
 	Inherits: ^FlakWeapon
@@ -4380,12 +4554,14 @@ JapaneseHovercraftFlakAA:
 		ValidTargets: Air
 
 JapaneseHovercraftFlakWaveforce:
-	Inherits: ^WaveforceBulletProjectile
+	Inherits: ^WaveforceBulletWarhead
 	Inherits: JapaneseHovercraftFlak
+	Inherits: ^WaveforceBulletProjectile
 
 JapaneseHovercraftFlakAAkWaveforce:
-	Inherits: ^WaveforceBulletProjectile
+	Inherits: ^WaveforceBulletWarhead
 	Inherits: JapaneseHovercraftFlakAA
+	Inherits: ^WaveforceBulletProjectile
 
 MADTankDetonate:
 	Inherits: ^NuclearWarhead
@@ -4644,8 +4820,9 @@ JapanSpeedBoatGun:
 		Damage: 1
 
 JapanSpeedBoatGunWaveforce:
-	Inherits: ^WaveforceBulletProjectile
+	Inherits: ^WaveforceBulletWarhead
 	Inherits: JapanSpeedBoatGun
+	Inherits: ^WaveforceBulletProjectile
 
 YamatoCannon:
 	Inherits: ^HeavyBomb
