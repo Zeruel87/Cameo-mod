@@ -1498,33 +1498,34 @@ actor-oilb =
       Build limit: 3
 
 upgrade-a10airstrike =
-   .description = Enables the A10 Airstrike Support Power.
+   .description = Enables the A10 Airstrike Support Power
+    Increases damage of all GDI Aircraft by 15%.
 
 upgrade-longrangesensors =
    .description = Increases vision, stealth detection range
     and accuracy of all units and defenses by 25%.
+    Increases range and damage by 5%.
 
 upgrade-armorpiercingbullets =
    .description = Increases damage of all bullet based weapons by 33%.
     while also making them more effective against tank armor.
     Increases Minigunner and Shotgunner damage by 100%.
-    Increases GDI Sniper and A10 Carrier Bomber damage by 10%.
-    Also adds a machine gun to the GDI Battle Tank.
+    Increases GDI Sniper and A10 damage by 10%.
+    Also adds a machine gun to the Battle and Predator Tank and increases damage by 5%.
 
 upgrade-heavyaircraftarmorplating =
-   .description = Increases armor of Orcas, Firehawks and A10s by 30%.
+   .description = Increases armor of Orcas, Firehawks, Chinooks and A10s by 30%.
 
 upgrade-advancedmissiletargeting =
-   .description = Increases range of all missile weapons by 25%.
+   .description = Increases missile speed and Acceleration.
+   Increases range of all missile weapons by 15%.
    Rocket Launchers increase range by 33%
-   Tanks increase range by 10%
+   Tanks increase range by 5%
    Firehawks shoot twice the amount of missiles.
 
-upgrade-cuttingedgeweaponry =
-   .description = Increases damage and fire rate of all experimental and prototype units by 15%.
-   Increases damage of the EMP Grenadier by 100% and armor by 50%.
-   Increases damage of Experimental Exosuits and Firehawks by 50%.
-   Increases damage and fire rate of Havoc by 25%.
+upgrade-cuttingedgeequipment =
+   .description = Increases armor, damage and fire rate of all experimental and prototype units by 10%.
+   Doubles the effect for EMP Grenadiers, Experimental Exosuits and Firehawks and Havoc.
 
 upgrade-highvelocitycannons =
    .description = Increases damage and range of cannons and railguns by 15%.
@@ -1533,7 +1534,7 @@ upgrade-highvelocitycannons =
 
 upgrade-lightweightarmorplating =
    .description = TEAM UPGRADE
-   Increases armor and speed of all tanks in your team by 15%.
+   Increases armor by 20% and speed by 10% of all tanks in your team.
 
 upgrade-guerillatactics =
    .description = Increases speed, range, damage and vision of all hit and run units by 5%.
@@ -1592,6 +1593,7 @@ upgrade-rocketenhancements =
    V2 Launcher: 20%
    Nuclear V2 Launcher: 15%
    Missile Submarine: 10%
+   Volkov and Monstertank: 5%
 
 upgrade-advancedthermobarics =
    .description = Increases damage of all fire and nuclear weapons by 25%.
@@ -1629,9 +1631,11 @@ upgrade-reinforcedstructures =
    .description = Increases armor of all buildings and defenses by 25%.
 
 upgrade-cryomissiles =
-   .description = Adds a cryo warhead to all missiles that freezes enemy units and buildings.
-   Cryo missiles lowers firepower by 50%.
-   Each hit slows down the enemy target by 10%, increases damage by 10% and stacks 10 times.
+   .description = Adds cryo warheads to all missiles and bombs that freezes enemy units and buildings.
+   Each hit slows down the enemy target by 10%, increases damage taken by 10% and stacks 10 times.
+   Each stack lasts 5 seconds and on 10 stacks the unit is completely disabled.
+   Artillery, Bastion and Rapier Jumpjet get cryo bombs with double the cryo effect radius.
+   With no stacks applied to the target, cryo missiles deal 50% and cryo bombs 25% less damage than before.
 
 upgrade-lasertargetingsystems =
    .description = Increases damage of all tanks and aircraft by 25%
@@ -1646,6 +1650,35 @@ upgrade-gpssatellitesupport =
    .description = TEAM UPGRADE
    Launches a GPS Satellite that instantly reveals all enemy units and buildings on the map.
    Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
+
+upgrade-bushidodiscipline =
+   .description = Increases damage, firerate, armor, speed, range and accuracy by 5% and gives self healing.
+   When wounded the effect is tripled.
+
+upgrade-energizedarrows =
+   .description = Increases damage of arrows by 25%.
+   Arrows are upgraded with an electric charge that deals bonus damamge to infantry and disables vehicles and structures.
+
+upgrade-waveforcebullets =
+   .description = Increases range and damage of all bullets by 15% and makes them more effective against armor.
+
+upgrade-stealthsuitintegration =
+   .description = All Infantry come equipped with a stealth suit, that makes them invisible when not attacking or moving.
+   Increases speed and armor by 10% and gives a shield generator.
+
+upgrade-superiorwarengines =
+   .description = Increases speed, fire rate and armor of all vehicles by 20%
+
+upgrade-divinewindprotocol =
+   .description = Increases damage, fire rate, speed and vision of all air units by 25%
+
+upgrade-advancedplasmaweapons =
+   .description = Increases the damage, fire rate and range of all plasma weapons by 10%.
+
+upgrade-nanotechrepairs =
+   .description = TEAM UPGRADE
+   Increases armor of all tanks in your team by 10% and makes them regnerate faster.
+   For Japan the effect is also applied to all other vehicles, aircraft and even buildings.
 
 template-mcv =
    .description = Deploys into another Construction Yard.
