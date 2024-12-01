@@ -467,8 +467,8 @@ World:
 
 ^StealthSuitIntegration:
 	Cloak@up_stealthsuitintegration:
-		InitialDelay: 50
-		CloakDelay: 25
+		InitialDelay: 125
+		CloakDelay: 75
 		CloakSound: appear1.aud
 		UncloakSound: trans1.aud
 		UncloakOn: Attack, Move, Damage, Heal, SelfHeal
@@ -957,11 +957,9 @@ RAJE3:
 		Weapon: TankBusterBeamCannon
 		LocalOffset: 256,43,341
 		FireDelay: 5
-		RequiresCondition: !up_advancedplasmaweapons
 	Armament@GARRISONED: ##########
 		Name: garrisoned
 		Weapon: TankBusterBeamCannon
-		RequiresCondition: !up_advancedplasmaweapons
 	Armament@Upgrade: ##########
 		Weapon: TankBusterBeamCannonCharged
 		LocalOffset: 256,43,341
@@ -970,6 +968,9 @@ RAJE3:
 	Armament@UpgradeGARRISONED: ##########
 		Name: garrisoned
 		Weapon: TankBusterBeamCannonCharged
+		RequiresCondition: up_advancedplasmaweapons
+	FirepowerMultiplier@DualBeam:
+		Modifier: 50
 		RequiresCondition: up_advancedplasmaweapons
 	TakeCover:
 		ProneOffset: 180,0,-200
@@ -3451,6 +3452,7 @@ MODKUBEL:
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@upgrade: ^WaveforceBullets
+	Inherits@upgrade: ^SuperiorWarEngines
 	Inherits@upgrade: ^NanoTechRepairs
 	Buildable:
 		Queue: Vehicle, RAVehicle
@@ -3493,7 +3495,7 @@ MODKUBEL:
 	RenderSprites:
 		PlayerPalette: raplayer
 	ActorStatValues:
-		Upgrades: up_waveforcebullets, up_nanotechrepairs
+		Upgrades: up_waveforcebullets, up_superiorwarengines, up_nanotechrepairs
 
 MODTYPEJ:
 	Inherits: ^Tank
@@ -3811,7 +3813,7 @@ jballista:
 		BuildPaletteOrder: 70
 		Description: actor-arty.description
 	Valued:
-		Cost: 1150
+		Cost: 1400
 	Tooltip:
 		Name: Ballista
 	UpdatesPlayerStatistics:
@@ -5658,6 +5660,7 @@ JSHRINE:
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@shape: ^3x2Shape
 	Inherits@SW: ^PrimarySuperweapon
+	Inherits@upgrade: ^NanoTechRepairs
 	Tooltip:
 		Name: Japanese Shrine
 	Buildable:
@@ -6459,18 +6462,12 @@ jmgnest:
 		Description: actor-mgnest.description
 	Building:
 	Health:
-		HP: 92500
+		HP: 90000
 	WithBuildingBib:
 		HasMinibib: true
 	Armament:
 		Name: primary
 		Weapon: JHighV
-		LocalOffset: 768,0,512
-		MuzzleSequence: muzzle
-		RequiresCondition: !up_waveforcebullets
-	Armament@SECONDARY:
-		Name: secondary
-		Weapon: JHighVAA
 		LocalOffset: 768,0,512
 		MuzzleSequence: muzzle
 		RequiresCondition: !up_waveforcebullets
@@ -6480,17 +6477,9 @@ jmgnest:
 		LocalOffset: 768,0,512
 		MuzzleSequence: muzzle
 		RequiresCondition: up_waveforcebullets
-	Armament@UpgradeSECONDARY:
-		Name: secondary
-		Weapon: JHighVAAWaveforce
-		LocalOffset: 768,0,512
-		MuzzleSequence: muzzle
-		RequiresCondition: up_waveforcebullets
 	-RenderRangeCircle:
 	RenderRangeCircleCA:
 		Armaments: primary
-	RenderRangeCircleCA@SECONDARY:
-		Armaments: secondary
 	AttackTurreted:
 		RequiresCondition: !build-incomplete
 	WithMuzzleOverlay:
@@ -6538,19 +6527,35 @@ jballistat:
 	Armament@PRIMARY: ##########
 		Weapon: BallistaTowerMultiShot
 		LocalOffset: 624,0,208
+		PauseOnCondition: ammo < 5
 		RequiresCondition: !up_energizedarrows
 	Armament@AIR: ##########
 		Weapon: BallistaSingleShotAir
 		LocalOffset: 624,0,208
+		AmmoUsage: 5
+		PauseOnCondition: ammo < 5
 		RequiresCondition: !up_energizedarrows
 	Armament@Upgrade: ##########
 		Weapon: BallistaTowerMultiShotEnergized
 		LocalOffset: 624,0,208
+		PauseOnCondition: ammo < 5
 		RequiresCondition: up_energizedarrows
 	Armament@UpgradeAIR: ##########
 		Weapon: BallistaSingleShotAirEnergized
 		LocalOffset: 624,0,208
+		AmmoUsage: 5
+		PauseOnCondition: ammo < 5
 		RequiresCondition: up_energizedarrows
+	AmmoPool:
+		Ammo: 5
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 5
+		Count: 1
+		ResetOnFire: true
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
 	-RenderRangeCircle:
 	RenderRangeCircleCA:
 		Armaments: primary
@@ -6592,7 +6597,7 @@ modpillboxfort:
 		Prerequisites: ~rafact.japan, modjtek
 		Description: actor-waveforceturret.description
 	Valued:
-		Cost: 2100
+		Cost: 3400
 	Tooltip:
 		Name: actor-waveforceturret.name
 	Building:
@@ -6609,6 +6614,8 @@ modpillboxfort:
 		Weapon: WaveTurretShell
 		LocalOffset: 1000,0,500
 		MuzzleSequence: muzzle
+	FirepowerMultiplier@SplashCompensation:
+		Modifier: 50
 	AttackTurreted:
 	WithMuzzleOverlay:
 	-WithSpriteBody:
@@ -6616,11 +6623,11 @@ modpillboxfort:
 	RenderSprites:
 		Image: modpillboxfort
 	FireWarheadsOnDeath:
-		Weapon: WaveArtilleryShell
+		Weapon: WaveTurretImpact
 	DamageMultiplier@2x2Shape:
 		Modifier: 50
 	Power:
-		Amount: -100
+		Amount: -170
 	RevealsShroud:
 		Range: 10000
 	DetectCloaked:
@@ -10546,6 +10553,7 @@ waveforcetank:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@upgrade: ^SuperiorWarEngines
 	Inherits@upgrade: ^AdvancedPlasmaWeapons
 	Inherits@upgrade: ^NanoTechRepairs
 	Buildable:
@@ -10575,17 +10583,36 @@ waveforcetank:
 		TurnSpeed: 12
 	Armament:
 		Weapon: WaveforceCannon
-		Recoil: 128
-		RecoilRecovery: 38
+		Recoil: 256
+		RecoilRecovery: 32
 		LocalOffset: 1024,0,512
 		MuzzleSequence: muzzle
 		RequiresCondition: !up_advancedplasmaweapons
-	Armament@Upgrade: ##########
-		Weapon: WaveforceCannonCharged
-		Recoil: 128
-		RecoilRecovery: 38
+	Armament@Upgrade1: ##########
+		Weapon: WaveforceCannonChargedLaser
+		Recoil: 256
+		RecoilRecovery: 32
 		LocalOffset: 1024,0,512
 		MuzzleSequence: muzzle
+		RequiresCondition: up_advancedplasmaweapons
+	Armament@Upgrade2: ##########
+		Weapon: WaveforceCannonDistortedBeam1
+		Recoil: 256
+		RecoilRecovery: 32
+		LocalOffset: 1024,0,512
+		FireDelay: 1
+		MuzzleSequence: muzzle
+		RequiresCondition: up_advancedplasmaweapons
+	Armament@Upgrade3: ##########
+		Weapon: WaveforceCannonDistortedBeam2
+		Recoil: 256
+		RecoilRecovery: 32
+		LocalOffset: 1024,0,512
+		FireDelay: 2
+		MuzzleSequence: muzzle
+		RequiresCondition: up_advancedplasmaweapons
+	FirepowerMultiplier@TripleBeam:
+		Modifier: 66
 		RequiresCondition: up_advancedplasmaweapons
 	AttackTurreted:
 	WithMuzzleOverlay:
@@ -10598,9 +10625,15 @@ waveforcetank:
 	Voiced:
 		VoiceSet: JapaneseVehicleVoice
 	FireWarheadsOnDeath:
-		Weapon: WaveArtilleryShell
+		Weapon: WaveTurretImpact
+	SpeedMultiplier@up_superiorwarengines:
+		Modifier: 110
+	ReloadDelayMultiplier@up_superiorwarengines:
+		Modifier: 90
+	DamageMultiplier@up_superiorwarengines:
+		Modifier: 90
 	ActorStatValues:
-		Upgrades: up_advancedplasmaweapons, up_nanotechrepairs
+		Upgrades: up_superiorwarengines, up_advancedplasmaweapons, up_nanotechrepairs
 
 MODWAVE:
 	Inherits: ^Vehicle
@@ -10615,6 +10648,7 @@ MODWAVE:
 	Inherits@AntiTank: ^PrioritizeTank
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@upgrade: ^SuperiorWarEngines
 	Inherits@upgrade: ^AdvancedPlasmaWeapons
 	Inherits@upgrade: ^NanoTechRepairs
 	Buildable:
@@ -10623,7 +10657,7 @@ MODWAVE:
 		Prerequisites: ~modjtek, ~upwaveforceartillery
 		Description: actor-waveforcearty.description
 	Valued:
-		Cost: 1500
+		Cost: 2500
 	Tooltip:
 		Name: actor-waveforcearty.name
 	UpdatesPlayerStatistics:
@@ -10645,6 +10679,8 @@ MODWAVE:
 		Recoil: 85
 		LocalOffset: 512,0,192
 		MuzzleSequence: muzzle
+	FirepowerMultiplier@SplashCompensation:
+		Modifier: 50
 	AttackTurreted:
 	WithMuzzleOverlay:
 	WithSpriteTurret:
@@ -10654,11 +10690,17 @@ MODWAVE:
 	Voiced:
 		VoiceSet: JapaneseVehicleVoice
 	FireWarheadsOnDeath:
-		Weapon: WaveArtilleryShell
+		Weapon: WaveTurretImpact
 	RenderSprites:
 		Image: modwave
+	SpeedMultiplier@up_superiorwarengines:
+		Modifier: 110
+	ReloadDelayMultiplier@up_superiorwarengines:
+		Modifier: 90
+	DamageMultiplier@up_superiorwarengines:
+		Modifier: 90
 	ActorStatValues:
-		Upgrades: up_advancedplasmaweapons, up_nanotechrepairs
+		Upgrades: up_superiorwarengines, up_advancedplasmaweapons, up_nanotechrepairs
 
 exorcistoitank:
 	Inherits: ^Tank
