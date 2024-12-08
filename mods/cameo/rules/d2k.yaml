@@ -136,6 +136,12 @@ Player:
 	Targetable@PersonalShielded:
 		TargetTypes: PersonalShielded
 		RequiresCondition: d2k_shielded
+	DamageMultiplier@d2k_advanced_ixian_technology:
+		Modifier: 50
+		RequiresCondition: d2k_personal_shield && d2k_advanced_ixian_technology && d2k_shielded
+	GrantConditionOnPrerequisite@d2k_advanced_ixian_technology:
+		Condition: d2k_advanced_ixian_technology
+		Prerequisites: d2k_advanced_ixian_technology
 	DamageMultiplier@d2k_personal_shield:
 		Modifier: 80
 		RequiresCondition: d2k_personal_shield && !d2k_shielded
@@ -203,6 +209,9 @@ Player:
 		Prerequisites: d2k_advanced_ixian_technology
 	ActorStatValues:
 		Upgrades: d2k_advanced_ixian_technology
+	Armor@shielded:
+		Type: Shield
+		RequiresCondition: d2k_shielded
 
 ^D2K_AdvancedIxianTechnologyTeamUpgrade:
 	GrantConditionOnPrerequisite@d2k_advanced_ixian_technology:
@@ -826,12 +835,12 @@ wind_trap.atreides:
 	PowerMultiplier@d2k_wind_trap_upgrade:
 		Modifier: 200
 		RequiresCondition: d2k_wind_trap_upgrade
-	ProductionCostMultiplier@Scaled0:
+	ProductionCostMultiplier@d2k_wind_trap_upgrade:
 		Multiplier: 50
-		RequiresCondition: d2k_wind_trap_upgrade
-	ProductionTimeMultiplier@Scaled0:
+		Prerequisites: d2k_wind_trap_upgrade
+	ProductionTimeMultiplier@d2k_wind_trap_upgrade:
 		Multiplier: 50
-		RequiresCondition: d2k_wind_trap_upgrade
+		Prerequisites: d2k_wind_trap_upgrade
 	ActorStatValues:
 		Upgrades: d2k_wind_trap_upgrade
 	Armor:
@@ -1377,7 +1386,7 @@ d2k_munitions.ixian:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@shape: ^1x1Shape
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, d2k_barracks.ixian
+		Prerequisites: ~upgrade.conyard, d2k_barracks.ixian
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 310
 		Description: actor-d2k_munitions.description
@@ -1639,7 +1648,7 @@ repair_pad.ixian:
 	Inherits@repair: ^RepairsUnits
 	Inherits@repair: ^RepairFacility
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, heavy_factory.ixian
+		Prerequisites: ~construction_yard.ixian, heavy_factory.ixian, upgrade.conyard
 		IconPalette: d2kunit
 	Tooltip:
 		Name: Ixian Repair Pad
@@ -1677,7 +1686,7 @@ outpost.ixian:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@shape: ^3x3Shape
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, refinery.atreides
+		Prerequisites: ~construction_yard.ixian, refinery.atreides, upgrade.conyard
 		IconPalette: d2kunit
 	Tooltip:
 		Name: Ixian Outpost
@@ -1713,7 +1722,7 @@ high_tech_factory.ixian:
 	Inherits@shape: ^3x3Shape
 	Inherits@hpad: ^IsAircraftFactory
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, outpost.ixian
+		Prerequisites: ~construction_yard.ixian, outpost.ixian, upgrade.conyard
 		Description: actor-high_tech_factory.description
 		IconPalette: d2kunit
 	Building:
@@ -1797,7 +1806,7 @@ research_centre.ixian:
 	Inherits@shape: ^3x3Shape
 	Inherits@tech: ^IsTechnoBuilding
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, outpost.ixian
+		Prerequisites: ~construction_yard.ixian, outpost.ixian, upgrade.conyard
 		Description: Ixian Research Center\nUnlocks advanced tanks.
 		IconPalette: d2kunit
 	Tooltip:
@@ -1851,7 +1860,7 @@ starport.ixian:
 		BuildPaletteOrder: 150
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Prerequisites: ~construction_yard.ixian, research_centre.ixian, derricklimit
+		Prerequisites: ~construction_yard.ixian, research_centre.ixian, upgrade.conyard, derricklimit
 		Description: Dropzone for quick reinforcements, and passive income.
 		IconPalette: d2kunit
 	Building:
@@ -1947,7 +1956,7 @@ storm_lasher_big:
 	Inherits@shape: ^4x4Shape
 	Inherits@SW: ^PrimarySuperweapon
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, research_centre.ixian
+		Prerequisites: ~construction_yard.ixian, research_centre.ixian, upgrade.conyard
 		Description: actor-storm_lasher.description
 		IconPalette: player
 	Tooltip:
@@ -2114,12 +2123,14 @@ wall:
 machine_gun_turret:
 	Inherits: ^D2KDefense
 	Inherits@exp: ^GainsExperienceRABuilding
+	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@EMP: ^TurretEMP
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@shape: ^1x1Shape
 	Inherits@AntiInf: ^D2K_NeedleGuns
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Buildable:
 		Queue: Defence, RADefence
 		Prerequisites: ~construction_yard.ixian, d2k_barracks.ixian
@@ -2179,16 +2190,20 @@ machine_gun_turret:
 		Amount: -30
 	RevealsShroud:
 		Range: 6666
+	ActorStatValues:
+		Upgrades: d2k_needle_guns, d2k_general_purpose_armor
 
 medium_gun_turret.ixian:
 	Inherits: ^D2KDefense
 	Inherits@exp: ^GainsExperienceRABuilding
+	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@buff: ^MBTBuff
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@EMP: ^TurretEMP
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@shape: ^1x1Shape
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Inherits@Barrel: ^D2K_ReinforcedBarrel
 	Buildable:
 		Queue: Defence, RADefence
@@ -2221,8 +2236,6 @@ medium_gun_turret.ixian:
 		LocalOffset: 512,0,432
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
-	ActorStatValues:
-		Upgrades: d2k_siege_range_upgrade
 	Replacement:
 		ReplaceableTypes: Tower
 	WithWallSpriteBody:
@@ -2244,6 +2257,8 @@ medium_gun_turret.ixian:
 		Amount: -50
 	RevealsShroud:
 		Range: 8800
+	ActorStatValues:
+		Upgrades: d2k_siege_range_upgrade, d2k_general_purpose_armor
 
 # artillery_platform:
 # 	Inherits: medium_gun_turret
@@ -2327,6 +2342,7 @@ large_gun_turret:
 	Inherits@shape: ^1x1Shape
 	Inherits@EMP: ^TurretEMP
 	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Buildable:
 		Queue: Defence, RADefence
 		Prerequisites: ~upgrade.conyard, outpost.ixian
@@ -2371,11 +2387,13 @@ large_gun_turret:
 	SpawnActorOnDeath@death1:
 		Actor: light_inf
 	Power:
-		Amount: -70
+		Amount: -75
 	RevealsShroud:
-		Range: 10800
+		Range: 8000
 	DetectCloaked:
-		Range: 5400
+		Range: 4000
+	ActorStatValues:
+		Upgrades: d2k_heavy_missile_upgrade, d2k_general_purpose_armor
 
 # d2k_mine_ap:
 # 	Inherits: ^D2KMine
@@ -3133,6 +3151,7 @@ light_inf:
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Inherits@AntiInf: ^D2K_NeedleGuns
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Valued:
 		Cost: 150
 	Tooltip:
@@ -3154,6 +3173,7 @@ light_inf:
 		RequiresCondition: !d2k_needle_guns
 	Armament@Upgrade: ##########
 		Weapon: LMG_upgrade
+		LocalOffset: 256,0,256
 		RequiresCondition: d2k_needle_guns
 	Armament@GARRISONED: ##########
 		Name: garrisoned
@@ -3172,7 +3192,7 @@ light_inf:
 		DefaultAttackSequence: shoot
 	Parachutable:
 	ActorStatValues:
-		Upgrades: d2k_personal_shield, d2k_general_purpose_armor, d2k_needle_guns
+		Upgrades: d2k_personal_shield, d2k_needle_guns, d2k_general_purpose_armor, d2k_advanced_ixian_technology
 
 engineer:
 	Inherits: E6
@@ -3251,6 +3271,7 @@ trooper:
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 20
@@ -3286,7 +3307,7 @@ trooper:
 	WithInfantryBody:
 		DefaultAttackSequence: shoot
 	ActorStatValues:
-		Upgrades: d2k_personal_shield, d2k_general_purpose_armor, d2k_heavy_missile_upgrade
+		Upgrades: d2k_personal_shield, d2k_general_purpose_armor, d2k_heavy_missile_upgrade, d2k_advanced_ixian_technology
 
 shock_infantry:
 	Inherits: ^D2KInfantry
@@ -5926,9 +5947,6 @@ d2k_air_drone:
 		ShieldsUpCondition: d2k_shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
 	AmmoPool:
 		Name: primary
 		Ammo: 4
@@ -5957,7 +5975,7 @@ d2k_air_drone:
 		AmmoUsage: 0
 		RequiresCondition: !d2k_needle_guns
 	Armament@Upgrade: ##########
-		Weapon: HMG_turret_upgrade
+		Weapon: HMG_Duelist_upgrade
 		LocalOffset: 0,-256,0, 0,256,0
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
@@ -6338,9 +6356,8 @@ harvester:
 		ShieldsUpCondition: d2k_shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
+	Cloak:
+		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	Mobile:
 		Speed: 45
 		TurnSpeed: 9
@@ -8340,9 +8357,6 @@ combat_tank_ixian:
 		ShieldsUpCondition: d2k_shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
 	Mobile:
 		Speed: 65
 		TurnSpeed: 13
@@ -9230,35 +9244,35 @@ d2k_needle_guns:
 	RenderSprites:
 		Image: light_inf
 
-d2k_general_purpose_armor:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: General Purpose Armor
-	Valued:
-		Cost: 5000
-	Buildable:
-		BuildPaletteOrder: 200
-		Prerequisites: ~outpost.ixian, ~!d2k_general_purpose_armor
-		Queue: Addons
-		Description: upgrade-d2k_general_purpose_armor.description
-		IconPalette: d2kunit
-	RenderSprites:
-		Image: combat_tank_ixian
-
 d2k_personal_shield:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Personal Shield
 	Valued:
-		Cost: 7500
+		Cost: 5000
 	Buildable:
 		BuildPaletteOrder: 200
-		Queue: Upgrades
+		Queue: Addons
 		Description: upgrade-personal_shield.description
-		Prerequisites: ~research_centre, ~!d2k_personal_shield
+		Prerequisites: ~outpost.ixian, ~!d2k_personal_shield
 		IconPalette: ra2
 	RenderSprites:
 		Image: d2k_personal_shield_icon
+
+d2k_general_purpose_armor:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: General Purpose Armor
+	Valued:
+		Cost: 7500
+	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: ~research_centre, ~!d2k_general_purpose_armor
+		Queue: Upgrades
+		Description: upgrade-d2k_general_purpose_armor.description
+		IconPalette: d2kunit
+	RenderSprites:
+		Image: combat_tank_ixian
 
 d2k_siege_range_upgrade:
 	Inherits: ^researched_upgrade.template
@@ -9313,7 +9327,7 @@ d2k_advanced_ixian_technology:
 		BuildPaletteOrder: 200
 		Queue: Upgrades
 		Description: upgrade-d2k_advanced_ixian_technology.description
-		Prerequisites: ~research_centre, ~!d2k_advanced_ixian_technology
+		Prerequisites: ~research_centre, d2k_personal_shield, ~!d2k_advanced_ixian_technology
 	RenderSprites:
 		Image: storm_raider
 	#ProvidesPrerequisite:
@@ -11001,7 +11015,8 @@ upixians_stormlasher:
 		Image: storm_lasher
 	ProvidesPrerequisite:
 
-### Military tree
+	### Military tree
+
 upixians_ixraider:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
@@ -11016,16 +11031,30 @@ upixians_ixraider:
 		Image: shock_raider
 	ProvidesPrerequisite:
 
+upixians_combatsiege:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Ix Combat Siege
+	Buildable:
+		BuildPaletteOrder: 113
+		Queue: Promotions
+		IconPalette: d2kunit
+		Description: Enables construction of Ix Combat Siege Tanks.
+		Prerequisites: ~construction_yard.ixian, upixians_ixraider, !upixians_combatsiege, rank1
+	RenderSprites:
+		Image: combat_siege_tank
+	ProvidesPrerequisite:
+
 upixians_duelisttank:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
 		Name: Unlock Ix Duelist Tank
 	Buildable:
-		BuildPaletteOrder: 113
+		BuildPaletteOrder: 116
 		Queue: Promotions
 		IconPalette: d2kunit
 		Description: Enables construction of Ix Duelist Tanks.
-		Prerequisites: ~construction_yard.ixian, upixians_ixraider, !upixians_duelisttank, rank1
+		Prerequisites: ~construction_yard.ixian, upixians_combatsiege, !upixians_duelisttank, rank1
 	RenderSprites:
 		Image: duelist_tank
 	ProvidesPrerequisite:
@@ -11035,7 +11064,7 @@ upixians_quaketank:
 	Tooltip:
 		Name: Unlock Ix Quake Tank
 	Buildable:
-		BuildPaletteOrder: 116
+		BuildPaletteOrder: 119
 		Queue: Promotions
 		IconPalette: d2kunit
 		Description: Enables construction of Ix Quake Tanks.
@@ -11044,46 +11073,18 @@ upixians_quaketank:
 		Image: quake_tank
 	ProvidesPrerequisite:
 
-upixians_projector:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock Ix Projector
-	Buildable:
-		BuildPaletteOrder: 119
-		Queue: Promotions
-		IconPalette: windows256
-		Description: Enables construction of the Ix Projector.
-		Prerequisites: ~construction_yard.ixian, upixians_quaketank, !upixians_projector, rank1
-	RenderSprites:
-		Image: d2k_projector
-	ProvidesPrerequisite:
-
-### Unisoft tree
-
-upixians_combatsiege:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock Ix Combat Siege
-	Buildable:
-		BuildPaletteOrder: 111
-		Queue: Promotions
-		IconPalette: d2kunit
-		Description: Enables construction of Ix Combat Siege Tanks.
-		Prerequisites: ~construction_yard.ixian, !upixians_combatsiege, rank1
-	RenderSprites:
-		Image: combat_siege_tank
-	ProvidesPrerequisite:
+	### Support tree
 
 upixians_airdrone:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
 		Name: Unlock Heavy Ix Air Drone
 	Buildable:
-		BuildPaletteOrder: 114
+		BuildPaletteOrder: 111
 		Queue: Promotions
 		IconPalette: windows256
 		Description: Enables construction of Heavy Ix Air Drones.
-		Prerequisites: ~construction_yard.ixian, upixians_combatsiege, !upixians_airdrone, rank1
+		Prerequisites: ~construction_yard.ixian, !upixians_airdrone, rank1
 	RenderSprites:
 		Image: d2k_air_drone
 	ProvidesPrerequisite:
@@ -11093,7 +11094,7 @@ upixians_missiletank:
 	Tooltip:
 		Name: Unlock Ix Missile Tank
 	Buildable:
-		BuildPaletteOrder: 117
+		BuildPaletteOrder: 114
 		Queue: Promotions
 		IconPalette: d2kunit
 		Description: Enables construction of  Ix Missile Tanks.
@@ -11107,13 +11108,27 @@ upixians_farasha:
 	Tooltip:
 		Name: Unlock Farasha
 	Buildable:
-		BuildPaletteOrder: 120
+		BuildPaletteOrder: 117
 		Queue: Promotions
 		IconPalette: ra2
 		Description: Enables construction of the Farasha.
 		Prerequisites: ~construction_yard.ixian, upixians_missiletank, !upixians_farasha, rank1
 	RenderSprites:
 		Image: d2k_farasha
+	ProvidesPrerequisite:
+
+upixians_projector:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Ix Projector
+	Buildable:
+		BuildPaletteOrder: 120
+		Queue: Promotions
+		IconPalette: windows256
+		Description: Enables construction of the Ix Projector.
+		Prerequisites: ~construction_yard.ixian, upixians_farasha, !upixians_projector, rank1
+	RenderSprites:
+		Image: d2k_projector
 	ProvidesPrerequisite:
 
 	####################################################################################################
@@ -11133,6 +11148,7 @@ heavy_inf:
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Inherits@AntiInf: ^D2K_NeedleGuns
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -11156,6 +11172,7 @@ heavy_inf:
 		RequiresCondition: !d2k_needle_guns
 	Armament@Upgrade: ##########
 		Weapon: HeavyMachineGun_upgrade
+		LocalOffset: 256,0,256
 		RequiresCondition: d2k_needle_guns
 	Armament@GARRISONED: ##########
 		Name: garrisoned
@@ -11176,7 +11193,7 @@ heavy_inf:
 	RenderSprites:
 		Image: light_inf
 	ActorStatValues:
-		Upgrades: d2k_personal_shield, d2k_general_purpose_armor, d2k_needle_guns
+		Upgrades: d2k_personal_shield, d2k_needle_guns, d2k_general_purpose_armor, d2k_advanced_ixian_technology
 
 storm_infantry:
 	Inherits: ^D2KInfantry
@@ -11251,48 +11268,45 @@ storm_raider:
 		Description: actor-shock_raider.description
 		IconPalette: player
 	Valued:
-		Cost: 2000
+		Cost: 2200
 	Tooltip:
 		Name: Storm Raider
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 50000
+		HP: 60000
 	Repairable:
-		HpPerStep: 2500
+		HpPerStep: 3000
 	ChangesHealth@SelfHealing:
-		Step: 20
+		Step: 24
 	Armor:
 		Type: Medium
 	Shielded:
 		DamageRegenDelay: 125
-		RegenAmount: 40
+		RegenAmount: 48
 		RegenInterval: 1
 		ShieldsUpCondition: d2k_shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
-	FirepowerMultiplier@d2k_advanced_ixian_technology:
-		Modifier: 200
-		RequiresCondition: d2k_advanced_ixian_technology
 	Mobile:
 		Locomotor: hover
-		Speed: 105
-		TurnSpeed: 21
+		Speed: 95
+		TurnSpeed: 19
 	WithMuzzleOverlay:
+	AttackTurreted:
 	Turreted:
-		TurnSpeed: 21
+		TurnSpeed: 19
 	Armament@damage:
 		Weapon: D2K_ShockGun
 		LocalOffset: -300,0,300
 	Armament@StormEffect:
 		Weapon: D2K_StormGun
 		LocalOffset: -300,0,300
-	AttackTurreted:
-	Turreted:
-		TurnSpeed: 21
+	FirepowerMultiplier@StormEffect:
+		Modifier: 50
+	FirepowerMultiplier@d2k_advanced_ixian_technology:
+		Modifier: 200
+		RequiresCondition: d2k_advanced_ixian_technology
 	FireWarheadsOnDeath:
 		Weapon: D2KUnitExplodeSmall
 		EmptyWeapon: D2KUnitExplodeSmall
@@ -11306,8 +11320,6 @@ storm_raider:
 		UncloakOn: Attack, Unload
 	Voiced:
 		VoiceSet: D2KShockRaider
-	FirepowerMultiplier@StormEffect:
-		Modifier: 50
 	RenderSprites:
 		Image: storm_raider
 		PlayerPalette: player_rgba
@@ -11349,9 +11361,6 @@ storm_lasher:
 		ShieldsUpCondition: d2k_shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
 	FirepowerMultiplier@d2k_advanced_ixian_technology:
 		Modifier: 200
 		RequiresCondition: d2k_advanced_ixian_technology
@@ -11422,6 +11431,7 @@ heavy_rocket_raider_ixian:
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
+	Inherits@AntiInf: ^D2K_NeedleGuns
 	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Buildable:
@@ -11485,6 +11495,12 @@ heavy_rocket_raider_ixian:
 		LocalYaw: 64, -64
 		PauseOnCondition: !ammo
 		MuzzleSequence: muzzle
+	Armament@Upgrade: ##########
+		Weapon: HMG_turret_upgrade
+		LocalOffset: 64,-64,0, 64,64,0
+		MuzzleSequence: muzzle
+		MuzzlePalette: d2keffect
+		RequiresCondition: d2k_needle_guns
 	ReloadAmmoDelayMultiplier@RANK-1:
 		RequiresCondition: rank-veteran == 1
 		Modifier: 95
@@ -11497,6 +11513,13 @@ heavy_rocket_raider_ixian:
 	ReloadAmmoDelayMultiplier@RANK-ELITE:
 		RequiresCondition: rank-elite
 		Modifier: 75
+	ReloadAmmoDelayMultiplier@d2k_needle_guns:
+		RequiresCondition: d2k_needle_guns
+		Modifier: 50
+	RangeMultiplier@d2k_heavy_missile_upgrade:
+		Modifier: 110
+	RangeMultiplier@d2k_needle_guns:
+		Modifier: 105
 	RenderSprites:
 		Image: shock_raider
 	Cargo:
@@ -11508,18 +11531,95 @@ heavy_rocket_raider_ixian:
 		Position: BottomLeft
 		RequiresSelection: true
 	ActorStatValues:
-		Upgrades: d2k_heavy_missile_upgrade, d2k_general_purpose_armor, d2k_advanced_ixian_technology
+		Upgrades: d2k_heavy_missile_upgrade, d2k_needle_guns, d2k_general_purpose_armor, d2k_advanced_ixian_technology
+
+combat_siege_tank:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@Barrel: ^D2K_ReinforcedBarrel
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 40
+		IconPalette: d2kunit
+		Description: actor-siege_tank.description
+		Prerequisites: ~upixians_combatsiege, upgrade_heavy, outpost.ixian
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Ix Combat Siege
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 80000
+	Repairable:
+		HpPerStep: 4000
+	ChangesHealth@SelfHealing:
+		Step: 64
+	Armor:
+		Type: Medium
+	Shielded:
+		DamageRegenDelay: 125
+		RegenAmount: 128
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		SelectionBarColor: 8888FFFF
+		RequiresCondition: !disabled && d2k_advanced_ixian_technology
+	Mobile:
+		Speed: 80
+		TurnSpeed: 16
+	Turreted:
+		TurnSpeed: 16
+		Offset: 0,0,0
+	Armament:
+		Weapon: D2K_155mm3
+		Recoil: 150
+		RecoilRecovery: 19
+		LocalOffset: 256,0,320
+		MuzzleSequence: muzzle
+		MuzzlePalette: d2keffect
+	FirepowerMultiplier@d2k_siege_range_upgrade:
+		Modifier: 150
+		RequiresCondition: d2k_siege_range_upgrade
+	RangeMultiplier@d2k_siege_range_upgrade:
+		Modifier: 125
+		RequiresCondition: d2k_siege_range_upgrade
+	ActorStatValues:
+		Upgrades: d2k_siege_range_upgrade
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	RenderRangeCircle:
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	Selectable:
+		Class: combat
+	AttractsWorms:
+		Intensity: 520
+	Voiced:
+		VoiceSet: D2KCombatTank
+	ActorStatValues:
+		Upgrades: d2k_siege_range_upgrade, d2k_general_purpose_armor, d2k_advanced_ixian_technology
 
 duelist_tank:
 	Inherits@D2KT: ^D2KTank
 	Inherits@Template: ^HighTechTankTemplate
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@Barrel: ^D2K_ReinforcedBarrel
+	Inherits@AntiInf: ^D2K_NeedleGuns
 	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Buildable:
@@ -11529,29 +11629,26 @@ duelist_tank:
 		Prerequisites: ~upixians_duelisttank, upgrade_heavy, research_centre.ixian
 		Description: actor-duelist_tank.description
 	Valued:
-		Cost: 2000
+		Cost: 2300
 	Tooltip:
 		Name: Ix Duelist Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 142500
+		HP: 165000
 	Repairable:
-		HpPerStep: 7125
+		HpPerStep: 8250
 	ChangesHealth@SelfHealing:
-		Step: 114
+		Step: 132
 	Armor:
 		Type: Heavy
 	Shielded:
 		DamageRegenDelay: 125
-		RegenAmount: 228
+		RegenAmount: 264
 		RegenInterval: 1
 		ShieldsUpCondition: d2k_shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
 	Mobile:
 		Speed: 45
 		TurnSpeed: 9
@@ -11565,6 +11662,12 @@ duelist_tank:
 		LocalOffset: 256,0,320
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
+	Armament@Upgrade: ##########
+		Weapon: HMG_Duelist_upgrade
+		LocalOffset: 128,-128,128, 128,128,128
+		MuzzleSequence: muzzle2
+		MuzzlePalette: d2keffect
+		RequiresCondition: d2k_needle_guns
 	ActorStatValues:
 		Upgrades: d2k_siege_range_upgrade
 	AttackTurreted:
@@ -11581,7 +11684,7 @@ duelist_tank:
 	Voiced:
 		VoiceSet: D2KDuelistTank
 	ActorStatValues:
-		Upgrades: d2k_siege_range_upgrade, d2k_general_purpose_armor, d2k_advanced_ixian_technology
+		Upgrades: d2k_siege_range_upgrade, d2k_needle_guns, d2k_general_purpose_armor, d2k_advanced_ixian_technology
 
 quake_tank:
 	Inherits: ^D2KTank
@@ -11643,6 +11746,8 @@ quake_tank:
 		DetonationWeapon: d2k_quake_boom
 		ThumpDamageWeapon: d2k_quake_thump
 		RequiresCondition: !disabled
+		ExclusiveDeploy: true
+		DeployType: Detonate
 	AttractsWorms@thumping:
 		Intensity: 10000
 		Falloff: 1000, 500, 250, 125, 75, 50, 25, 10, 5, 0
@@ -11669,328 +11774,7 @@ quake_tank:
 	ActorStatValues:
 		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
 
-d2k_jammer:
-	Inherits@D2KT: ^D2KTank
-	Inherits@Template: ^EpicVehicleTemplate
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@EXT: ^ExternalConditions
-	Inherits@AntiEpic: ^PrioritizeEpic
-	Inherits@COMMANDOSKULL: ^CommandoSkull
-	Inherits@bot: ^BotMicromanageable
-	Inherits@Armor: ^D2K_GeneralPurposeArmor
-	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
-	Valued:
-		Cost: 5000
-	Tooltip:
-		Name: Ix Projector
-	Buildable:
-		Queue: Vehicle, RAVehicle
-		BuildLimit: 1
-		BuildPaletteOrder: 60
-		Prerequisites: ~upixians_projector, upgrade_heavy, research_centre.ixian
-		Description: Ultimate Ixian unit for causing chaos and distraction among enemy forces\nJams nearby enemy outposts and Ixian technologies within enemy hands\nCan detect cloaked units.\nCan disable enemy vehicles with EMP.\nCan make fake projections giving impression there is a larger army present.\nProjections disappears when too far away from Projector\n  Special Abilities: Invisibility, Safety Measure, Projections, Detector
-		IconPalette: windows256
-	Health:
-		HP: 100000
-	Repairable:
-		HpPerStep: 5000
-	ChangesHealth@SelfHealing:
-		Step: 80
-	Armor:
-		Type: Medium
-	Shielded:
-		MaxPercentageStrength: 100
-		DamageRegenDelay: 125
-		RegenAmount: 160
-		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
-		RequiresCondition: d2k_advanced_ixian_technology
-		SelectionBarColor: 8888FFFF
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
-	Mobile:
-		TurnSpeed: 20
-		Speed: 100
-		Locomotor: hover
-	Hovers:
-	RevealsShroud:
-		Range: 18000
-	ProximityExternalCondition@JAMMER:
-		Range: 18000
-		ValidRelationships: Enemy, Neutral
-		Condition: jammed
-	WithIdleOverlay@SPINNER:
-		Sequence: spinner
-		Offset: -64,0,0
-	WithRangeCircle@JAMMER:
-		Type: jammer
-		Range: 18000
-		Color: 0000FF80
-	ProximityExternalCondition@projection:
-		Range: 18000
-		ValidRelationships: Ally
-		Condition: d2kvordelproxy
-	Armament@Anim:
-		Weapon: empdisable.anim
-		RequiresCondition: end_disable == 0
-	Armament@End:
-		Weapon: empdisable.end
-		RequiresCondition: end_disable >= 1
-	GrantConditionOnAttack@End:
-		Condition: end_disable
-		RequiredShotsPerInstance: 25
-		MaximumInstances: 1
-		RevokeDelay: 5
-		RevokeAll: false
-		IsCyclic: false
-	AttackFrontal:
-		FacingTolerance: 0
-	Targetable:
-		TargetTypes: Ground, Jammer, Vehicle
-	RenderJammerCircle:
-	DetectCloaked:
-		Range: 9000
-	Selectable:
-		Bounds: 1536, 1536
-		DecorationBounds: 1536, 1536
-	Cloak@STEALTH:
-		InitialDelay: 125
-		CloakDelay: 75
-		UncloakOn: Attack, Unload, Infiltrate, Demolish, Dock, Damage, Heal
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
-	RenderSprites:
-		Image: d2k_projector
-	GrantConditionOnDeploy:
-		DeployedCondition: projection
-		SkipMakeAnimation: true
-		UndeployOnMove: true
-		UndeployOnPickup: true
-		PauseOnCondition: disabled
-	AmmoPool:
-		Name: projection
-		Ammo: 5
-		Armaments:
-	ReloadAmmoPool:
-		AmmoPool: projection
-		Delay: 250
-		Count: 1
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: True
-		PipCount: 5
-	PeriodicExplosion@projections:
-		Weapon: d2k_projections
-		RequiresCondition: projection
-		AmmoPoolName: projection
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 750
-		DeployTrigger: Attack, Damage
-	DroneSpawnerMaster@steel_scalpel:
-		Actors: d2k_apparition, d2k_apparition, d2k_apparition, d2k_apparition, d2k_apparition
-		ArmamentNames: secondary
-		RespawnTicks: 250
-		IdleCheckTick: 75
-		PauseOnCondition: disabled
-		RequiresCondition: projection
-		FollowAfterAttackDelay: 25
-		ShouldSpawnInitialLoad: false
-	ActorStatValues:
-		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
-
-^D2KVordelProxyUnit:
-	GrantConditionOnPowerState@LOWPOWER:
-		Condition: lowpower
-		ValidPowerStates: Low, Critical
-	ExternalCondition@d2kvordelproxy:
-		Condition: d2kvordelproxy
-	KillsSelf@vordel:
-		RequiresCondition: !d2kvordelproxy || criticalpower
-		Delay: 250
-	ProximityExternalCondition@JAMMER:
-		Range: 9000
-		ValidRelationships: Enemy, Neutral
-		Condition: jammed
-		RequiresCondition: !disabled
-	DamageMultiplier@vordellowpower:
-		Modifier: 200
-		RequiresCondition: !d2kvordelproxy || lowpower
-	SpeedMultiplier@vordellowpower:
-		Modifier: 50
-		RequiresCondition: !d2kvordelproxy || lowpower
-	ReloadDelayMultiplier@vordellowpower:
-		Modifier: 200
-		RequiresCondition: !d2kvordelproxy || lowpower
-	WithIdleOverlay@absorbedeffect:
-		Image: vordel_effect_2
-		Sequence: vordel_effect_2
-	WithDecoration@dissapear:
-		Image: poweroff
-		Sequence: offline
-		Position: TopRight
-		RequiresCondition: !d2kvordelproxy || lowpower
-		BlinkInterval: 25
-		BlinkPattern: On, Off, On, Off
-	DroneSpawnerSlave:
-		AttackCallBackDistance: 18000
-		MovingCallBackCellDistance: 9000
-		GrantConditionWhenMasterIsDisabled: notenabled
-		GrantConditionWhenMasterIsPaused: paused
-	AutoTarget:
-		ScanRadius: 18
-	RejectsOrders:
-
-d2k_apparition:
-	Inherits@D2KT: ^D2KTank
-	Inherits@Template: ^SupportVehicleTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EXT: ^ExternalConditions
-	Inherits@EMP: ^FrontalEMP
-	Inherits@bot: ^BotMicromanageable
-	Inherits@vordelproxy: ^D2KVordelProxyUnit
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiAir: ^PrioritizeAir
-	Inherits@MC: ^MCImmune
-	Inherits@snipe: ^DriverKillImmune
-	Inherits@ND: ^NotDevourable
-	-Buildable:
-	Valued:
-		Cost: 2000
-	WithAttackAnimation:
-		Armament: primary
-		Sequence: shoot
-	WithAttackAnimation@1:
-		Armament: secondary
-		Sequence: shoot
-	Power:
-		Amount: -100
-	Tooltip:
-		Name: Apparition
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 37500
-	ChangesHealth@SelfHealing:
-		Step: 30
-	Armor:
-		Type: Plate
-	Mobile:
-		TurnSpeed: 32
-		Speed: 160
-		Locomotor: hover
-	Armament:
-		Name: primary
-		Weapon: d2k_basq
-		Recoil: 65
-		RecoilRecovery: 25
-		MuzzleSequence: muzzle
-		LocalOffset: 600, 0, 175
-	Armament@aa:
-		Name: secondary
-		Weapon: d2k_basq_AA
-		Recoil: 65
-		RecoilRecovery: 25
-		MuzzleSequence: muzzle
-		LocalOffset: 600, 0, 175
-	AttackFrontal:
-		FacingTolerance: 0
-	FireWarheadsOnDeath:
-		Weapon: D2KUnitExplodeMed
-		EmptyWeapon: D2KUnitExplodeMed
-	Selectable:
-		Class: d2k_apparition
-	AttractsWorms:
-		Intensity: 500
-	RenderSprites:
-		Image: d2k_apparition
-		Palette: cloak
-	Cloak@TDcloak:
-
 	### Artillery and Air Tree
-
-combat_siege_tank:
-	Inherits@D2KT: ^D2KTank
-	Inherits@Template: ^FireSupportTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
-	Inherits@AntiBuil: ^PrioritizeBuilding
-	Inherits@Barrel: ^D2K_ReinforcedBarrel
-	Inherits@Armor: ^D2K_GeneralPurposeArmor
-	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
-	Buildable:
-		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 40
-		IconPalette: d2kunit
-		Description: actor-siege_tank.description
-		Prerequisites: ~upixians_combatsiege, upgrade_heavy, outpost.ixian
-	Valued:
-		Cost: 1200
-	Tooltip:
-		Name: Ix Combat Siege
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 80000
-	Repairable:
-		HpPerStep: 4000
-	ChangesHealth@SelfHealing:
-		Step: 64
-	Armor:
-		Type: Medium
-	Shielded:
-		DamageRegenDelay: 125
-		RegenAmount: 128
-		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
-		SelectionBarColor: 8888FFFF
-		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
-	Mobile:
-		Speed: 80
-		TurnSpeed: 16
-	Turreted:
-		TurnSpeed: 16
-		Offset: 0,0,0
-	Armament:
-		Weapon: D2K_155mm3
-		Recoil: 150
-		RecoilRecovery: 19
-		LocalOffset: 256,0,320
-		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
-	FirepowerMultiplier@d2k_siege_range_upgrade:
-		Modifier: 150
-		RequiresCondition: d2k_siege_range_upgrade
-	RangeMultiplier@d2k_siege_range_upgrade:
-		Modifier: 125
-		RequiresCondition: d2k_siege_range_upgrade
-	ActorStatValues:
-		Upgrades: d2k_siege_range_upgrade
-	AttackTurreted:
-	WithMuzzleOverlay:
-	WithSpriteTurret:
-	RenderRangeCircle:
-	FireWarheadsOnDeath:
-		Weapon: D2KUnitExplodeMed
-		EmptyWeapon: D2KUnitExplodeMed
-	Selectable:
-		Class: combat
-	AttractsWorms:
-		Intensity: 520
-	Voiced:
-		VoiceSet: D2KCombatTank
-	ActorStatValues:
-		Upgrades: d2k_siege_range_upgrade, d2k_general_purpose_armor, d2k_advanced_ixian_technology
 
 d2k_heavy_air_drone:
 	Inherits: ^RANeutralPlane
@@ -12028,9 +11812,6 @@ d2k_heavy_air_drone:
 		ShieldsUpCondition: d2k_shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
 	AmmoPool:
 		Name: primary
 		Ammo: 8
@@ -12068,14 +11849,14 @@ d2k_heavy_air_drone:
 		AmmoUsage: 0
 		RequiresCondition: !d2k_needle_guns
 	Armament@Upgrade: ##########
-		Weapon: HMG_turret_upgrade
+		Weapon: HMG_Duelist_upgrade
 		LocalOffset: 0,-256,0, 0,256,0
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
 		AmmoUsage: 0
 		RequiresCondition: d2k_needle_guns
 	Armament@SECONDARYUpgrade: ##########
-		Weapon: HMG_turret_upgrade
+		Weapon: HMG_Duelist_upgrade
 		LocalOffset: 0,256,0, 0,-256,0
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
@@ -12277,9 +12058,6 @@ d2k_farasha:
 		ShieldsUpCondition: d2k_shielded
 		RequiresCondition: d2k_advanced_ixian_technology
 		SelectionBarColor: 8888FFFF
-	Armor@shielded:
-		Type: Shield
-		RequiresCondition: d2k_shielded
 	Armament@drones:
 		Name: primary
 		Weapon: d2k_dronelauncher
@@ -12367,6 +12145,8 @@ d2k_farasha_drone:
 	Inherits@Template: ^BomberTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -12387,6 +12167,17 @@ d2k_farasha_drone:
 	HasParent:
 	Health:
 		HP: 12500
+	ChangesHealth@SelfHealing:
+		Step: 5
+	Shielded:
+		InitialPercentageStrength: 100
+		MaxPercentageStrength: 100
+		DamageRegenDelay: 125
+		RegenAmount: 10
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		RequiresCondition: d2k_advanced_ixian_technology
+		SelectionBarColor: 8888FFFF
 	Armament@PRIMARY:
 		Weapon: d2k_farasha_drone
 		LocalOffset: 150,0,0
@@ -12406,6 +12197,8 @@ d2k_farasha_drone:
 		Weapons: Debris, Debris2
 		Pieces: 1, 2
 		Range: 1c0, 3c0
+	ActorStatValues:
+		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
 
 d2k_farasha_drone.husk:
 	Inherits: ^PlaneHusk
@@ -12418,3 +12211,242 @@ d2k_farasha_drone.husk:
 		Image: d2k_farasha_drone
 	FallsToEarth:
 		Explosion: D2KUnitExplodeSmall
+
+d2k_jammer:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^EpicVehicleTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EXT: ^ExternalConditions
+	Inherits@AntiEpic: ^PrioritizeEpic
+	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@bot: ^BotMicromanageable
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: Ix Projector
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildLimit: 1
+		BuildPaletteOrder: 60
+		Prerequisites: ~upixians_projector, upgrade_heavy, research_centre.ixian
+		Description: Ultimate Ixian unit for causing chaos and distraction among enemy forces\nJams nearby enemy outposts and Ixian technologies within enemy hands\nCan detect cloaked units.\nCan disable enemy vehicles with EMP.\nCan make fake projections giving impression there is a larger army present.\nProjections disappears when too far away from Projector\n  Special Abilities: Invisibility, Safety Measure, Projections, Detector
+		IconPalette: windows256
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	Armor:
+		Type: Medium
+	Shielded:
+		MaxPercentageStrength: 100
+		DamageRegenDelay: 125
+		RegenAmount: 160
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		RequiresCondition: d2k_advanced_ixian_technology
+		SelectionBarColor: 8888FFFF
+	Mobile:
+		TurnSpeed: 20
+		Speed: 100
+		Locomotor: hover
+	Hovers:
+	RevealsShroud:
+		Range: 18000
+	ProximityExternalCondition@JAMMER:
+		Range: 18000
+		ValidRelationships: Enemy, Neutral
+		Condition: jammed
+	WithIdleOverlay@SPINNER:
+		Sequence: spinner
+		Offset: -64,0,0
+	WithRangeCircle@JAMMER:
+		Type: jammer
+		Range: 18000
+		Color: 0000FF80
+	ProximityExternalCondition@projection:
+		Range: 18000
+		ValidRelationships: Ally
+		Condition: d2kvordelproxy
+	Armament@Anim:
+		Weapon: empdisable.anim
+		RequiresCondition: end_disable == 0
+	Armament@End:
+		Weapon: empdisable.end
+		RequiresCondition: end_disable >= 1
+	GrantConditionOnAttack@End:
+		Condition: end_disable
+		RequiredShotsPerInstance: 25
+		MaximumInstances: 1
+		RevokeDelay: 5
+		RevokeAll: false
+		IsCyclic: false
+	AttackFrontal:
+		FacingTolerance: 0
+	Targetable:
+		TargetTypes: Ground, Jammer, Vehicle
+	RenderJammerCircle:
+	DetectCloaked:
+		Range: 9000
+	Selectable:
+		Bounds: 1536, 1536
+		DecorationBounds: 1536, 1536
+	Cloak@STEALTH:
+		InitialDelay: 125
+		CloakDelay: 75
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Dock, Damage, Heal
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+	RenderSprites:
+		Image: d2k_projector
+	GrantConditionOnDeploy:
+		DeployedCondition: projection
+		SkipMakeAnimation: true
+		UndeployOnMove: true
+		UndeployOnPickup: true
+		PauseOnCondition: disabled
+	AmmoPool:
+		Name: projection
+		Ammo: 5
+		Armaments:
+	ReloadAmmoPool:
+		AmmoPool: projection
+		Delay: 250
+		Count: 1
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 5
+	PeriodicExplosion@projections:
+		Weapon: d2k_projections
+		RequiresCondition: projection
+		AmmoPoolName: projection
+	AutoDeployer:
+		DeployChance: 100
+		DeployTicks: 750
+		DeployTrigger: Attack, Damage
+	DroneSpawnerMaster@steel_scalpel:
+		Actors: d2k_apparition, d2k_apparition, d2k_apparition, d2k_apparition, d2k_apparition
+		ArmamentNames: secondary
+		RespawnTicks: 250
+		IdleCheckTick: 75
+		PauseOnCondition: disabled
+		RequiresCondition: projection
+		FollowAfterAttackDelay: 25
+		ShouldSpawnInitialLoad: false
+	ActorStatValues:
+		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
+
+^D2KVordelProxyUnit:
+	GrantConditionOnPowerState@LOWPOWER:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	ExternalCondition@d2kvordelproxy:
+		Condition: d2kvordelproxy
+	KillsSelf@vordel:
+		RequiresCondition: !d2kvordelproxy || criticalpower
+		Delay: 250
+	ProximityExternalCondition@JAMMER:
+		Range: 9000
+		ValidRelationships: Enemy, Neutral
+		Condition: jammed
+		RequiresCondition: !disabled
+	DamageMultiplier@vordellowpower:
+		Modifier: 200
+		RequiresCondition: !d2kvordelproxy || lowpower
+	SpeedMultiplier@vordellowpower:
+		Modifier: 50
+		RequiresCondition: !d2kvordelproxy || lowpower
+	ReloadDelayMultiplier@vordellowpower:
+		Modifier: 200
+		RequiresCondition: !d2kvordelproxy || lowpower
+	WithIdleOverlay@absorbedeffect:
+		Image: vordel_effect_2
+		Sequence: vordel_effect_2
+	WithDecoration@dissapear:
+		Image: poweroff
+		Sequence: offline
+		Position: TopRight
+		RequiresCondition: !d2kvordelproxy || lowpower
+		BlinkInterval: 25
+		BlinkPattern: On, Off, On, Off
+	DroneSpawnerSlave:
+		AttackCallBackDistance: 18000
+		MovingCallBackCellDistance: 9000
+		GrantConditionWhenMasterIsDisabled: notenabled
+		GrantConditionWhenMasterIsPaused: paused
+	AutoTarget:
+		ScanRadius: 18
+	RejectsOrders:
+
+d2k_apparition:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EXT: ^ExternalConditions
+	Inherits@EMP: ^FrontalEMP
+	Inherits@bot: ^BotMicromanageable
+	Inherits@vordelproxy: ^D2KVordelProxyUnit
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@MC: ^MCImmune
+	Inherits@snipe: ^DriverKillImmune
+	Inherits@ND: ^NotDevourable
+	-Buildable:
+	Valued:
+		Cost: 2000
+	WithAttackAnimation:
+		Armament: primary
+		Sequence: shoot
+	WithAttackAnimation@1:
+		Armament: secondary
+		Sequence: shoot
+	Power:
+		Amount: -100
+	Tooltip:
+		Name: Apparition
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 37500
+	ChangesHealth@SelfHealing:
+		Step: 30
+	Armor:
+		Type: Plate
+	Mobile:
+		TurnSpeed: 32
+		Speed: 160
+		Locomotor: hover
+	Armament:
+		Name: primary
+		Weapon: d2k_basq
+		Recoil: 65
+		RecoilRecovery: 25
+		MuzzleSequence: muzzle
+		LocalOffset: 600, 0, 175
+	Armament@aa:
+		Name: secondary
+		Weapon: d2k_basq_AA
+		Recoil: 65
+		RecoilRecovery: 25
+		MuzzleSequence: muzzle
+		LocalOffset: 600, 0, 175
+	AttackFrontal:
+		FacingTolerance: 0
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	Selectable:
+		Class: d2k_apparition
+	AttractsWorms:
+		Intensity: 500
+	RenderSprites:
+		Image: d2k_apparition
+		Palette: cloak
+	Cloak@TDcloak:

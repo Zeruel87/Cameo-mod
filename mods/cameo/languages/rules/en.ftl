@@ -1612,7 +1612,7 @@ upgrade-advancedradarsystems =
    Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
 
 upgrade-infantryarmorplating =
-   .description = Increases armor of all infantry units by 50%.
+   .description = Increases armor of all infantry units by 30%.
 
 upgrade-reinforcedstructures =
    .description = Increases armor of all buildings and defenses by 25%.
@@ -1703,6 +1703,7 @@ upgrade-d2k_advanced_ixian_technology =
    For Ixians:
    Gives shields to all vehicles and aircraft and doubles shock and storm weapon damage.
    Stealth Generators are also given to Ix Missile Tanks and Ix Siege Tanks.
+   Infantry with Personal Shield Generators also have 50% more shield armor.
 
 template-mcv =
    .description = Deploys into another Construction Yard.
