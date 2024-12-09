@@ -1612,7 +1612,7 @@ upgrade-advancedradarsystems =
    Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
 
 upgrade-infantryarmorplating =
-   .description = Increases armor of all infantry units by 30%.
+   .description = Increases armor of all infantry units by 20%.
 
 upgrade-reinforcedstructures =
    .description = Increases armor of all buildings and defenses by 25%.
