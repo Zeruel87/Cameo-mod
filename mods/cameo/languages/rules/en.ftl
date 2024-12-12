@@ -1453,19 +1453,6 @@ actor-air_drone =
    .description = Multirole light fighter armed with napalm rockets.
        Strong vs Infantry, Aircraft
 
-upgrade-personal_shield =
-   .description = Shields increase resilience against small caliber weapons.
-      Exhausts under heavy fire and leaves unit vulnerable.
-      Attracts sandworms.
-
-upgrade-spice_sifter =
-   .description = Decreases amount of Spice filtered
-      out incorrectly from Spice Sifters.
-      Increases Spice Sifter income.
-
-upgrade-wind_trap =
-   .description = Doubles Power Output of Wind Traps
-
 actor-farasha =
    .description = Carrier spaceship.
       Armed with a laser.
@@ -1558,8 +1545,8 @@ upgrade-elementalwarfare =
    .description = Increases damage of all flame and chemical weapons by 20%.
 
 upgrade-elitecapacitors =
-   .description = Slightly increases range, damage, fire and vision rate of all laser weapons by 10%
-   Obelisks of Light increase range, damage, fire and vision rate by 15%.
+   .description = Slightly increases range, damage, fire rate and vision of all laser weapons by 10%
+   Obelisks of Light increase range, damage, fire rate and vision by 15%.
 
 upgrade-cyberneticmodifications =
    .description = Gives all infantry heavy armor platings that reduce incoming damage.
@@ -1625,7 +1612,7 @@ upgrade-advancedradarsystems =
    Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
 
 upgrade-infantryarmorplating =
-   .description = Increases armor of all infantry units by 50%.
+   .description = Increases armor of all infantry units by 20%.
 
 upgrade-reinforcedstructures =
    .description = Increases armor of all buildings and defenses by 25%.
@@ -1664,21 +1651,59 @@ upgrade-waveforcebullets =
 
 upgrade-stealthsuitintegration =
    .description = All Infantry come equipped with a stealth suit, that makes them invisible when not attacking or moving.
-   Increases speed and armor by 10% and gives a shield generator.
+   Increases speed and armor by 10% and gives a personal shield generator.
 
 upgrade-superiorwarengines =
    .description = Increases speed, fire rate and armor of all vehicles by 20%
+   The effect is halfed for Ballistas, Waveforce Tanks and Waveforce artilleries.
 
 upgrade-divinewindprotocol =
-   .description = Increases damage, fire rate, speed and vision of all air units by 25%
+   .description = Increases damage, fire rate, speed and vision of all air units by 10%
 
 upgrade-advancedplasmaweapons =
    .description = Increases the damage, fire rate and range of all plasma weapons by 10%.
 
 upgrade-nanotechrepairs =
    .description = TEAM UPGRADE
-   Increases armor of all tanks in your team by 10% and makes them regnerate faster.
-   For Japan the effect is also applied to all other vehicles, aircraft and even buildings.
+   Increases armor of all vehicles in your team by 10% and makes them regnerate faster.
+   For Japan the effect is also applied to all aircraft and buildings.
+
+upgrade-wind_trap =
+   .description = Increases power output of Wind Traps by 100%.
+   Additionally, Wind Traps have their cost and build time reduced by 50%.
+
+upgrade-d2k_needle_guns =
+   .description = Increases damage of machine guns by 25% and range by 10%.
+   Tungsten Needles are more effective against vehicles and buildings and can hit air units.
+
+upgrade-d2k_general_purpose_armor =
+   .description = General Purpose Armor.
+   Increases armor of all infantry, vehicles and aircraft by 20%.
+
+upgrade-personal_shield =
+   .description = Gives personal shield generators to all infantry units.
+
+upgrade-d2k_siege_range_upgrade =
+   .description = All Tanks, Gun Turrets and Artillery gain increased range and damage.
+   Gun Turret, Ix Combat Tanks and Duelist Tanks: 10% higher range and 25% more damage.
+   Ix Combat Siege: 25% higher range and 50% more damage.
+   Ix Siege Tank: 50% higher range and 100% more damage.
+
+upgrade-d2k_heavy_missile_upgrade =
+   .description = All missile based weapons deal 20% more damage and have 20% more range.
+
+upgrade-spice_sifter =
+   .description = Decreases amount of Spice filtered
+      out incorrectly from Spice Sifters and Refineries.
+      Increases Spice Sifter and Spice Refinery income by 25%.
+
+upgrade-d2k_advanced_ixian_technology =
+   .description = TEAM UPGRADE
+   Gives Stealth Generators to all Harvesters in your team and increases artillery damage by 25% and range by 10%.
+   For Ixians:
+   Gives shields to all vehicles and aircraft and doubles shock and storm weapon damage.
+   Stealth Generators are also given to Ix Missile Tanks and Ix Siege Tanks.
+   Infantry with Personal Shield Generators also have 50% more shield armor.
 
 template-mcv =
    .description = Deploys into another Construction Yard.

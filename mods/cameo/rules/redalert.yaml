@@ -234,7 +234,7 @@ World:
 ^InfantryArmorPlating:
 	DamageMultiplier@up_infantryarmorplating:
 		RequiresCondition: up_infantryarmorplating
-		Modifier: 50
+		Modifier: 80
 	GrantConditionOnPrerequisite@up_infantryarmorplating:
 		Condition: up_infantryarmorplating
 		Prerequisites: up_infantryarmorplating
@@ -743,7 +743,7 @@ RAE1:
 	Inherits@upgrade: ^AdvancedRadarSystems
 	Inherits@upgrade: ^InfantryArmorPlating
 	Buildable:
-		Prerequisites: ~tent, ~!upalliedmachinegunner
+		Prerequisites: ~tent
 	ActorStatValues:
 		Upgrades: up_advancedradarsystems, up_infantryarmorplating, up_gpssatellitesupport
 
@@ -799,14 +799,31 @@ RAJE1:
 		Upgrades: up_bushidodiscipline, up_stealthsuitintegration, up_waveforcebullets
 
 RAE2:
-	Inherits: E2
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
+	Inherits@Template: ^LightInfantryTemplate
 	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@upgrade: ^Conscription
 	Inherits@sensors: ^AdvancedThermobarics
+	Valued:
+		Cost: 200
+	Tooltip:
+		Name: actor-e2.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 25
 		Prerequisites: ~barr
 		Queue: Infantry, RAInfantry
+		Description: actor-e2.description
+	Mobile:
+		Speed: 75
+	Health:
+		HP: 8000
 	Armament:
 		Weapon: Grenade
 		LocalOffset: 0,0,427
@@ -825,13 +842,23 @@ RAE2:
 		Name: garrisoned
 		Weapon: GrenadeThermobaric
 		RequiresCondition: up_advancedthermobarics
-	RenderSprites:
-		Image: rae2
-		PlayerPalette: raplayer
+	TakeCover:
+		ProneOffset: 180,0,-200
+	WithInfantryBody:
+		DefaultAttackSequence: throw
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
+	FireWarheadsOnDeath:
+		Weapon: Grenade
 	WithDeathAnimation:
 		DeathSequencePalette: raplayer
 	Voiced:
 		VoiceSet: RussianVoice
+	RenderSprites:
+		Image: rae3
+		PlayerPalette: raplayer
 	ActorStatValues:
 		Upgrades: up_conscription, up_advancedthermobarics
 
@@ -1865,7 +1892,7 @@ V2RL:
 		RecoilRecovery: 25
 		MuzzleSequence: muzzle
 		RequiresCondition: !up_advancedthermobarics
-	Armament@SECONDARY:
+	Armament@UpgradeSECONDARY:
 		Name: secondary
 		Weapon: MammothTuskThermobaric
 		LocalOffset: -85,384,340, -85,-384,340
@@ -2057,11 +2084,11 @@ RAARTY:
 		Name: template-harvester.raname
 	SelectionDecorations:
 	Harvester:
-		BaleLoadDelay: 4
+		BaleLoadDelay: 3
 		BaleUnloadDelay: 1
 		EmptyCondition: no-tiberium
 	StoresResources:
-		Capacity: 20
+		Capacity: 30
 	Health:
 		HP: 100000
 	Repairable:
@@ -2124,6 +2151,23 @@ RAHARV.JAPAN:
 		Prerequisites: ~jproc
 	Voiced:
 		VoiceSet: JapaneseVehicleVoice
+	Harvester:
+		BaleLoadDelay: 2
+		BaleUnloadDelay: 1
+		EmptyCondition: no-tiberium
+	StoresResources:
+		Capacity: 20
+	Health:
+		HP: 75000
+	Repairable:
+		HpPerStep: 3750
+	ChangesHealth@SelfHealing:
+		Step: 30
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 120
+		TurnSpeed: 24
 	WithHarvesterSpriteBody:
 		ImageByFullness: jharv, jharv, jharv
 	RenderSprites:
@@ -2251,7 +2295,7 @@ RAAPC:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 120
-		Prerequisites: ~tent, ~!upgapgenerator
+		Prerequisites: ~tent, ~!upphasetransport
 		Description: actor-apc.description
 	Mobile:
 		Speed: 105
@@ -2529,6 +2573,7 @@ QTNK:
 	Inherits: ^Tank
 	Inherits@Template: ^LineBreakerTemplate
 	Inherits@Template: ^HighTechTankTemplate
+	Inherits@Template: ^EpicVehicleTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
@@ -2536,12 +2581,13 @@ QTNK:
 	Inherits@sensors: ^AdvancedThermobarics
 	Inherits@sensors: ^SovietSteel
 	Buildable:
+		BuildLimit: 1
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 190
 		Prerequisites: ~stek
 		Description: actor-qtnk.description
 	Valued:
-		Cost: 2000
+		Cost: 3000
 	Tooltip:
 		Name: actor-qtnk.name
 	UpdatesPlayerStatistics:
@@ -2565,6 +2611,7 @@ QTNK:
 		FacingTolerance: 512
 	Armament@PRIMARY:
 		Weapon: MADTankTargeting
+	-RenderRangeCircle:
 	AutoTarget:
 		InitialStance: HoldFire
 		InitialStanceAI: AttackAnything
@@ -2582,7 +2629,8 @@ QTNK:
 		DetonationSequence: piston
 		DetonationWeapon: MADTankDetonate
 		FirstDetonationImmediate: true
-		#ExclusiveDeploy: true
+		ExclusiveDeploy: true
+		DeployType: Detonate
 	FireWarheadsOnDeath:
 		Weapon: UnitExplodeMech
 	WithRangeCircle:
@@ -3657,7 +3705,6 @@ MODNANO:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
-	Inherits@jammable: ^ArtilleryJammable
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@upgrade: ^SuperiorWarEngines
@@ -3841,6 +3888,12 @@ jballista:
 		Weapon: ArtilleryExplode
 	Voiced:
 		VoiceSet: JapaneseVehicleVoice
+	SpeedMultiplier@up_superiorwarengines:
+		Modifier: 110
+	ReloadDelayMultiplier@up_superiorwarengines:
+		Modifier: 90
+	DamageMultiplier@up_superiorwarengines:
+		Modifier: 90
 	ActorStatValues:
 		Upgrades: up_energizedarrows, up_superiorwarengines, up_nanotechrepairs
 
@@ -4171,7 +4224,6 @@ CA:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
-	Inherits@jammable: ^ArtilleryJammable
 	Inherits@upgrade: ^AdvancedRadarSystems
 	Inherits@upgrade: ^ChronoArmor
 	Valued:
@@ -5657,7 +5709,6 @@ MODJTEK:
 
 JSHRINE:
 	Inherits: ^BaseBuilding
-	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@shape: ^3x2Shape
 	Inherits@SW: ^PrimarySuperweapon
 	Inherits@upgrade: ^NanoTechRepairs
@@ -5867,7 +5918,6 @@ RASPEN:
 
 MSLO:
 	Inherits: ^BaseBuilding
-	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@shape: ^2x1Shape
 	Inherits@SW: ^PrimarySuperweapon
 	Inherits@upgrade: ^ReinforcedStructures
@@ -5931,7 +5981,6 @@ MSLO:
 
 IRON:
 	Inherits: ^BaseBuilding
-	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@shape: ^2x2Shape
 	Inherits@SW: ^Superweapon
 	Buildable:
@@ -5985,7 +6034,6 @@ IRON:
 
 PDOX:
 	Inherits: ^BaseBuilding
-	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@shape: ^2x2Shape
 	Inherits@SW: ^Superweapon
 	Inherits@upgrade: ^ReinforcedStructures
@@ -6903,19 +6951,19 @@ uphbox:
 	ProvidesPrerequisite:
 		Prerequisite: uphbox
 
-upgapgenerator:
+upphasetransport:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: upgrade-gapgen.name
+		Name: Unlock Phase Transport
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Promotions
-		Description: upgrade-gapgen.description
-		Prerequisites: ~rafact.allies, !upgapgenerator, uphbox, rank1
+		Description: Allows construction of Phase Transports.
+		Prerequisites: ~rafact.allies, !upphasetransport, uphbox, rank1
 	RenderSprites:
-		Image: phasegapgen
+		Image: sapc
 	ProvidesPrerequisite:
-		Prerequisite: upgapgenerator
+		Prerequisite: upphasetransport
 
 upbastion:
 	Inherits: ^promotion_upgrade.template
@@ -6924,44 +6972,51 @@ upbastion:
 	Buildable:
 		BuildPaletteOrder: 33
 		Queue: Promotions
-		Description: Allows construction of the Bastion.
-		Prerequisites: ~rafact.allies, !upbastion, upgapgenerator, rank1
+		Description: Allows construction of Bastion Artillery Bunkers.
+		Prerequisites: ~rafact.allies, !upbastion, upphasetransport, rank1
 	RenderSprites:
 		Image: modartyturret
 	ProvidesPrerequisite:
 		Prerequisite: upbastion
 
-upmobileradarjammer:
+upgapgeneratorradarjammer:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Mobile Radar Jammer
+		Name: Unlock Gap Generator and Radar Jammer
 	Buildable:
 		BuildPaletteOrder: 36
 		Queue: Promotions
-		Description: Allows construction of the Mobile Radar Jammer.
-		Prerequisites: ~rafact.allies, !upmobileradarjammer, upbastion, rank1
+		Description: Allows construction of the Gap Generator and Mobile Radar Jammer.
+		Prerequisites: ~rafact.allies, !upgapgeneratorradarjammer, upbastion, rank1
 	RenderSprites:
-		Image: mrj
+		Image: gapgeneratorradarjammer
 	ProvidesPrerequisite:
-		Prerequisite: upmobileradarjammer
+		Prerequisite: upgapgeneratorradarjammer
 
 	####################################################################################################
 	#		Promotion Units Allies
 	####################################################################################################
 
-
 alliedmachinegunner:
-	Inherits: RAE1
+	Inherits: ^Soldier
+	Inherits@anim: ^TDRAInfantry
 	Inherits@Template: ^HeavyInfantryTemplate
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@upgrade: ^AdvancedRadarSystems
 	Inherits@upgrade: ^InfantryArmorPlating
-	Buildable:
-		Prerequisites: ~upalliedmachinegunner
-	Tooltip:
-		Name: Machine Gunner
 	Valued:
 		Cost: 500
+	Tooltip:
+		Name: Machine Gunner
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Infantry, RAInfantry
+		Description: actor-e1.description
+		Prerequisites: ~upalliedmachinegunner
 	Mobile:
 		Speed: 50
 	Health:
@@ -6974,11 +7029,23 @@ alliedmachinegunner:
 		Name: garrisoned
 		Weapon: RAVulcan
 		MuzzleSequence: garrison-muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	WithInfantryBody:
+		IdleSequences: idle1,idle2
+		RequiresCondition: !parachute
+	WithInfantryBody@PARACHUTE:
+		StandSequences: parachute
+		RequiresCondition: parachute
 	RenderSprites:
 		Image: alliedmachinegunner
 		PlayerPalette: raplayer
 	WithDeathAnimation:
 		DeathSequencePalette: raplayer
+	Voiced:
+		VoiceSet: RAGenericVoice
+	Selectable:
+		Class: rae1
 	ActorStatValues:
 		Upgrades: up_advancedradarsystems, up_infantryarmorplating, up_gpssatellitesupport
 
@@ -7382,83 +7449,6 @@ reconranger:
 	ActorStatValues:
 		Upgrades: up_advancedradarsystems, up_lasertargetingsystems, up_gpssatellitesupport
 
-SAPC:
-	Inherits: ^Vehicle
-	Inherits@Template: ^SupportVehicleTemplate
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EMP: ^TurretEMP
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiAir: ^PrioritizeAir
-	Inherits@cargo: ^CargoVehicle
-	Inherits@botmicro: ^BotAutoDeployTransport
-	Inherits@cloak: ^CloakedVehicle
-	Inherits@upgrade: ^AdvancedRadarSystems
-	Inherits@upgrade: ^LaserTargetingSystems
-	Inherits@upgrade: ^CryoMissiles
-	Inherits@upgrade: ^ChronoArmor
-	Buildable:
-		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 130
-		Prerequisites: atek, ~upgapgenerator
-		Description: actor-sapc.description
-	Valued:
-		Cost: 1800
-	Tooltip:
-		Name: actor-sapc.name
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 27500
-	Repairable:
-		HpPerStep: 1375
-	ChangesHealth@SelfHealing:
-		Step: 22
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 125
-		TurnSpeed: 25
-	AutoTarget:
-		InitialStance: HoldFire
-		InitialStanceAI: AttackAnything
-	Armament:
-		Weapon: APTusk
-		LocalOffset: 192,0,176
-		MuzzleSequence: muzzle
-		RequiresCondition: !up_cryomissiles
-	Armament@Upgrade: ##########
-		Weapon: APTuskCryo
-		LocalOffset: 192,0,176
-		MuzzleSequence: muzzle
-		RequiresCondition: up_cryomissiles
-	Turreted:
-		TurnSpeed: 25
-	AttackTurreted:
-	WithSpriteTurret:
-	Cargo:
-		Types: Infantry, Hacker, Fremen
-		MaxWeight: 4
-		InitialUnits: alliedmachinegunner, alliedmachinegunner, medi, rae3
-	Cloak:
-		InitialDelay: 125
-		CloakDelay: 75
-		CloakSound: appear1.aud
-		UncloakSound: appear1.aud
-	Voiced:
-		VoiceSet: RAVehicleVoice
-	WithMuzzleOverlay:
-	Selectable:
-		Class: sapc
-	RenderSprites:
-		Image: sapc
-		PlayerPalette: raplayer
-	FireWarheadsOnDeath:
-		Weapon: UnitExplode
-	ActorStatValues:
-		Upgrades: up_advancedradarsystems, up_lasertargetingsystems, up_cryomissiles, up_chronoarmor, up_gpssatellitesupport
-
 MODTIGER:
 	Inherits: 2TNK
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
@@ -7706,144 +7696,82 @@ HBOX:
 	ActorStatValues:
 		Upgrades: up_advancedradarsystems, up_reinforcedstructures, up_gpssatellitesupport
 
-RAMGG:
-	Inherits: ^Tank
+SAPC:
+	Inherits: ^Vehicle
 	Inherits@Template: ^SupportVehicleTemplate
-	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EMP: ^FrontalEMP
+	Inherits@EMP: ^TurretEMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@cargo: ^CargoVehicle
+	Inherits@botmicro: ^BotAutoDeployTransport
+	Inherits@cloak: ^CloakedVehicle
 	Inherits@upgrade: ^AdvancedRadarSystems
+	Inherits@upgrade: ^LaserTargetingSystems
+	Inherits@upgrade: ^CryoMissiles
 	Inherits@upgrade: ^ChronoArmor
 	Buildable:
-		BuildLimit: 1
-		BuildDuration: 1500
-		BuildDurationModifier: 100
 		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 150
-		Prerequisites: atek, ~upgapgenerator
-		Description: actor-mgg.description
+		BuildPaletteOrder: 130
+		Prerequisites: atek, ~upphasetransport
+		Description: actor-sapc.description
 	Valued:
-		Cost: 2000
+		Cost: 1800
 	Tooltip:
-		Name: actor-mgg.name
+		Name: actor-sapc.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 25000
+		HP: 27500
 	Repairable:
-		HpPerStep: 1250
+		HpPerStep: 1375
 	ChangesHealth@SelfHealing:
-		Step: 10
+		Step: 22
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 75
-	WithIdleOverlay@SPINNER:
-		Offset: -299,0,171
-		Sequence: spinner
+		Speed: 125
+		TurnSpeed: 25
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: AttackAnything
 	Armament:
-		Weapon: GLStingerTargeting
-	RevealsShroud:
-		Range: 8000
-	DetectCloaked:
-		Range: 4000
-	CreatesShroud:
-		Range: 8000
-		RequiresCondition: !disabled
-	ProximityExternalCondition@shrouded:
-		Range: 8000
-		ValidRelationships: Enemy
-		Condition: shrouded
-		RequiresCondition: !AdvancedTargeting
-	ProximityExternalCondition@AdvancedTargeting:
-		Range: 10000
-		ValidRelationships: Enemy
-		Condition: shrouded
-		RequiresCondition: AdvancedTargeting
-	RevealsShroudMultiplier@AdvancedTargeting:
-		Modifier: 125
-		RequiresCondition: AdvancedTargeting
-	DetectCloakedMultiplier@AdvancedTargeting:
-		Modifier: 125
-		RequiresCondition: AdvancedTargeting
-	CreatesShroudMultiplier@AdvancedTargeting:
-		Modifier: 125
-		RequiresCondition: AdvancedTargeting
-	RenderShroudCircle:
-	FireWarheadsOnDeath:
-		Weapon: UnitExplode
-	#SpawnActorOnDeath:
-	#	Actor: RAMGG.Husk
-	#	OwnerType: InternalName
-	#	EffectiveOwnerFromOwner: true
+		Weapon: APTusk
+		LocalOffset: 192,0,176
+		MuzzleSequence: muzzle
+		RequiresCondition: !up_cryomissiles
+	Armament@Upgrade: ##########
+		Weapon: APTuskCryo
+		LocalOffset: 192,0,176
+		MuzzleSequence: muzzle
+		RequiresCondition: up_cryomissiles
+	Turreted:
+		TurnSpeed: 25
+	AttackTurreted:
+	WithSpriteTurret:
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 4
+		InitialUnits: alliedmachinegunner, alliedmachinegunner, medi, rae3
+	Cloak:
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakSound: appear1.aud
+		UncloakSound: appear1.aud
 	Voiced:
 		VoiceSet: RAVehicleVoice
+	WithMuzzleOverlay:
+	Selectable:
+		Class: sapc
 	RenderSprites:
+		Image: sapc
 		PlayerPalette: raplayer
-	Selectable:
-		DecorationBounds: 1280, 1280, 0, 0
-	GuardsSelection:
-	KeepsDistance:
-		Distance: 10000
-	ActorStatValues:
-		Upgrades: up_advancedradarsystems, up_chronoarmor, up_gpssatellitesupport
-
-GAP:
-	Inherits: ^Defense
-	Inherits@Template: ^AdvancedDefenseTemplate
-	Inherits@shape: ^1x1Shape
-	Inherits@detect: ^GenericAllDetector
-	Inherits@upgrade: ^AdvancedRadarSystems
-	Inherits@upgrade: ^ReinforcedStructures
-	-AutoTarget:
-	-RenderRangeCircle:
-	Valued:
-		Cost: 3000
-	Tooltip:
-		Name: actor-gap.name
-	Building:
-		BuildSounds: placbldg.aud, build5.aud
-	Buildable:
-		BuildLimit: 1
-		BuildDuration: 1500
-		BuildDurationModifier: 100
-		Queue: Defence, RADefence
-		BuildPaletteOrder: 110
-		Prerequisites: atek, ~upgapgenerator
-		Description: actor-gap.description
-	Selectable:
-		Bounds: 1024, 2048, 0, -512
-	SelectionDecorations:
-	WithSpriteBody:
-		PauseOnCondition: lowpower || disabled
-	Health:
-		HP: 50000
-	RevealsShroud:
-		Range: 10000
-	DetectCloaked:
-		Range: 10000
-	WithBuildingBib:
-		HasMinibib: true
-	CreatesShroud:
-		Range: 10000
-		RequiresCondition: !lowpower && !disabled
-	RenderShroudCircle:
-	ProximityExternalCondition@shrouded:
-		Range: 10000
-		ValidRelationships: Enemy
-		Condition: shrouded
-	Power:
-		Amount: -250
-	MustBeDestroyed:
-		RequiredForShortGame: false
 	FireWarheadsOnDeath:
-		Weapon: BuildingExplode
-	RenderSprites:
-		PlayerPalette: raplayer
-	WithDeathAnimation:
-		DeathSequencePalette: raplayer
+		Weapon: UnitExplode
 	ActorStatValues:
-		Upgrades: up_advancedradarsystems, up_reinforcedstructures, up_gpssatellitesupport
+		Upgrades: up_advancedradarsystems, up_lasertargetingsystems, up_cryomissiles, up_chronoarmor, up_gpssatellitesupport
 
 modartyturret:
 	Inherits: ^Defense
@@ -7853,7 +7781,6 @@ modartyturret:
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@shape: ^2x2Shape
 	Inherits@gar: ^ClearableGarrisonNeutronOnly
-	Inherits@jammable: ^ArtilleryJammable
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@upgrade: ^AdvancedRadarSystems
@@ -7937,13 +7864,177 @@ modartyturret:
 	ActorStatValues:
 		Upgrades: up_advancedradarsystems, up_reinforcedstructures, up_cryomissiles, up_gpssatellitesupport
 
-MRJ:
+GAP:
+	Inherits: ^Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@shape: ^1x1Shape
+	Inherits@detect: ^GenericAllDetector
+	Inherits@upgrade: ^ReinforcedStructures
+	-AutoTarget:
+	-RenderRangeCircle:
+	-ExternalCondition@shrouded:
+	-ExternalCondition@AdvancedTargeting:
+	-RangeMultiplier@up_gpssatellitesupport:
+	-RevealsShroudMultiplier@up_gpssatellitesupport:
+	-DetectCloakedMultiplier@up_gpssatellitesupport:
+	-InaccuracyMultiplier@up_gpssatellitesupport:
+	-GrantConditionOnPrerequisite@up_gpssatellitesupport:
+	Valued:
+		Cost: 5000
+	Tooltip:
+		Name: actor-gap.name
+	Building:
+		BuildSounds: placbldg.aud, build5.aud
+	Buildable:
+		BuildLimit: 1
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 110
+		Prerequisites: atek, ~upgapgeneratorradarjammer
+		Description: actor-gap.description
+	Selectable:
+		Bounds: 1024, 2048, 0, -512
+		DecorationBounds: 1024, 2048, 0, -512
+	SelectionDecorations:
+	WithSpriteBody:
+		PauseOnCondition: lowpower || disabled
+	Health:
+		HP: 50000
+	RevealsShroud:
+		Range: 10000
+	DetectCloaked:
+		Range: 10000
+		RequiresCondition: !lowpower && !disabled
+	CreatesShroud:
+		Range: 10000
+		RequiresCondition: !lowpower && !disabled
+	ProximityExternalCondition@shrouded:
+		Range: 10000
+		ValidRelationships: Ally
+		Condition: shrouded
+		RequiresCondition: !lowpower && !disabled
+	-RenderDetectionCircle:
+	RenderShroudCircle:
+		RequiresCondition: !lowpower && !disabled
+	RevealsShroud@SWReveal:
+		Range: 2000
+		ValidRelationships: Neutral, Enemy
+	WithBuildingBib:
+		HasMinibib: true
+	WithIdleOverlay@gapfield:
+		Sequence: gapfield
+		RequiresCondition: !lowpower && !disabled
+	Targetable@Epic:
+		TargetTypes: Epic
+	TooltipExtras@Epic:
+		Description: Epic
+	Power:
+		Amount: -250
+	MustBeDestroyed:
+		RequiredForShortGame: false
+	FireWarheadsOnDeath:
+		Weapon: BuildingExplode
+	RenderSprites:
+		PlayerPalette: raplayer
+	WithDeathAnimation:
+		DeathSequencePalette: raplayer
+	ActorStatValues:
+		Upgrades: up_reinforcedstructures
+
+RAMGG:
 	Inherits: ^Tank
-	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@EXT: ^ExternalConditions
 	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
-	Inherits@upgrade: ^AdvancedRadarSystems
+	Inherits@upgrade: ^ChronoArmor
+	-ExternalCondition@shrouded:
+	-ExternalCondition@AdvancedTargeting:
+	Buildable:
+		BuildLimit: 1
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 150
+		Prerequisites: atek, ~upgapgeneratorradarjammer
+		Description: actor-mgg.description
+	Tooltip:
+		Name: Mobile Gap Generator
+	Valued:
+		Cost: 5000
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 25000
+	Repairable:
+		HpPerStep: 1250
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 75
+		TurnSpeed: 15
+	Targetable@Epic:
+		TargetTypes: Epic
+	TooltipExtras@Epic:
+		Description: Epic
+	WithIdleOverlay@SPINNER:
+		Offset: -299,0,171
+		Sequence: spinner
+	WithIdleOverlay@gapfield:
+		Sequence: gapfield
+		RequiresCondition: !disabled
+	Armament:
+		Weapon: dummytargeting
+	RevealsShroud:
+		Range: 8000
+	DetectCloaked:
+		Range: 8000
+		RequiresCondition: !disabled
+	CreatesShroud:
+		Range: 8000
+		RequiresCondition: !disabled
+	ProximityExternalCondition@shrouded:
+		Range: 8000
+		ValidRelationships: Ally
+		Condition: shrouded
+		RequiresCondition: !disabled
+	RenderShroudCircle:
+	RevealsShroud@SWReveal:
+		Range: 2000
+		ValidRelationships: Neutral, Enemy
+	FireWarheadsOnDeath:
+		Weapon: UnitExplode
+	#SpawnActorOnDeath:
+	#	Actor: RAMGG.Husk
+	#	OwnerType: InternalName
+	#	EffectiveOwnerFromOwner: true
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	RenderSprites:
+		PlayerPalette: raplayer
+	Selectable:
+		DecorationBounds: 1280, 1280, 0, 0
+	GuardsSelection:
+	KeepsDistance:
+		Distance: 10000
+	TooltipExtras@Support:
+		Description: Support Vehicle
+	ActorStatValues:
+		Upgrades: up_chronoarmor
+
+MRJ:
+	Inherits: ^Tank
+	Inherits@EXT: ^ExternalConditions
+	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
 	Inherits@upgrade: ^ChronoArmor
 	-ExternalCondition@AdvancedTargeting:
 	Valued:
@@ -7958,7 +8049,7 @@ MRJ:
 		BuildDurationModifier: 100
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 140
-		Prerequisites: atek, ~upmobileradarjammer
+		Prerequisites: atek, ~upgapgeneratorradarjammer
 		Description: actor-mrj.description
 	Health:
 		HP: 25000
@@ -7966,46 +8057,66 @@ MRJ:
 		HpPerStep: 1250
 	ChangesHealth@SelfHealing:
 		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
 	Armor:
 		Type: Light
 	Mobile:
 		Speed: 100
+		TurnSpeed: 20
+	Targetable@Epic:
+		TargetTypes: Epic
+	TooltipExtras@Epic:
+		Description: Epic
 	WithIdleOverlay@SPINNER:
 		Sequence: spinner
 		Offset: -256,0,256
 	Armament:
-		Weapon: GLStingerTargeting
-	ProximityExternalCondition@JAMMER:
-		Range: 24000
-		ValidRelationships: Enemy, Neutral
-		Condition: jammed
-		RequiresCondition: !disabled
+		Weapon: RadarJammer
+		LocalOffset: 0,0,0
+	AttackFrontalCharged:
+		ForceFireIgnoresActors: True
+		PauseOnCondition: disabled
+		FacingTolerance: 32
+		ChargeLevel: 75
+		DischargeRate: 5
+		ShotsPerCharge: 1
+		ShowSelectionBar: true
+		SelectionBarColor: ffffff
+		ChargingCondition: charging
+	AmbientSoundCA:
+		RequiresCondition: charging
+		SoundFiles: jammer.aud
+		VolumeMultiplier: 10
+	WithIdleOverlay@JAMSIGNAL:
+		Sequence: jamsignal
+		Palette: ra_temperat
+		RequiresCondition: charging
+		Offset: -256,0,256
+		IsDecoration: True
 	JamsMissiles:
-		Range: 8000
+		Range: 5000
 		DeflectionRelationships: Neutral, Enemy
 		RequiresCondition: !disabled
 	DetectCloaked:
-		Range: 16000
+		Range: 15000
 		RequiresCondition: !disabled
 	WithRangeCircle@JAMMER:
 		Type: jammer
-		Range: 24000
+		Range: 10000
 		Color: 0000FF80
 	RenderJammerCircle:
+	RenderDetectionCircle:
 	FireWarheadsOnDeath:
 		Weapon: UnitExplode
-	ProximityExternalCondition@AntiArty:
-		Range: 24000
-		ValidRelationships: Neutral, Enemy
-		Condition: artilleryjammer
-		RequiresCondition: !disabled
 	ProximityExternalCondition@AdvancedTargeting:
-		Range: 8000
+		Range: 10000
 		ValidRelationships: Ally
 		Condition: AdvancedTargeting
 		RequiresCondition: !disabled
 	RevealsShroud:
-		Range: 16000
+		Range: 15000
 	Voiced:
 		VoiceSet: RAVehicleVoice
 	RenderSprites:
@@ -8018,8 +8129,10 @@ MRJ:
 		Sequence: pickup-indicator
 		ValidRelationships: Ally, Enemy, Neutral
 		Position: BottomLeft
+	TooltipExtras@Support:
+		Description: Support Vehicle
 	ActorStatValues:
-		Upgrades: up_advancedradarsystems, up_chronoarmor, up_gpssatellitesupport
+		Upgrades: up_chronoarmor
 
 	####################################################################################################
 	#		Upgrades Soviets
