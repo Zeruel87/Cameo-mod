@@ -649,7 +649,7 @@ ra2gapile:
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@barr: ^IsBarrack
 	Tooltip:
-		Name: template-barracks.ra2-allies
+		Name: Allied Barracks
 	ProvidesPrerequisite:
 		Prerequisite: RA2Barracks
 	Buildable:
@@ -661,11 +661,11 @@ ra2gapile:
 	RallyPoint:
 		Path: 0,2
 	Exit@1:
-		SpawnOffset: -250,300,0
-		ExitCell: 0,1
+		SpawnOffset: -700,800,0
+		ExitCell: 0,2
 	Exit@2:
-		SpawnOffset: 400,500,0
-		ExitCell: 1,1
+		SpawnOffset: 100,1200,0
+		ExitCell: 1,3
 	SelectionDecorations:
 	GivesBuildableArea:
 		AreaTypes: building, cityi
@@ -984,11 +984,17 @@ ra2gagap:
 	Inherits@shape: ^1x1Shape
 	Inherits@sell: ^RA2ASpawnActorsOnSell
 	Inherits@detect: ^GenericAllDetector
-	-RenderRangeCircle:
-	-RenderDetectionCircle:
 	-AutoTarget:
+	-RenderRangeCircle:
+	-ExternalCondition@shrouded:
+	-ExternalCondition@AdvancedTargeting:
+	-RangeMultiplier@up_gpssatellitesupport:
+	-RevealsShroudMultiplier@up_gpssatellitesupport:
+	-DetectCloakedMultiplier@up_gpssatellitesupport:
+	-InaccuracyMultiplier@up_gpssatellitesupport:
+	-GrantConditionOnPrerequisite@up_gpssatellitesupport:
 	Valued:
-		Cost: 3000
+		Cost: 5000
 	Tooltip:
 		Name: actor-gap.name
 	Buildable:
@@ -996,7 +1002,6 @@ ra2gagap:
 		BuildDuration: 1500
 		BuildDurationModifier: 100
 		Queue: Defence, RADefence
-		BuildPaletteOrder: 110
 		Prerequisites: ~ra2gacnst, ra2gatech
 		Description: actor-gap.description
 	Selectable:
@@ -1010,14 +1015,30 @@ ra2gagap:
 		Range: 10000
 	DetectCloaked:
 		Range: 10000
+		RequiresCondition: !lowpower && !disabled
 	CreatesShroud:
 		Range: 10000
 		RequiresCondition: !lowpower && !disabled
-	RenderShroudCircle:
 	ProximityExternalCondition@shrouded:
 		Range: 10000
-		ValidRelationships: Enemy
+		ValidRelationships: Ally
 		Condition: shrouded
+		RequiresCondition: !lowpower && !disabled
+	-RenderDetectionCircle:
+	RenderShroudCircle:
+		RequiresCondition: !lowpower && !disabled
+	RevealsShroud@SWReveal:
+		Range: 2000
+		ValidRelationships: Neutral, Enemy
+	WithBuildingBib:
+		HasMinibib: true
+	WithIdleOverlay@gapfield:
+		Sequence: gapfield
+		RequiresCondition: !lowpower && !disabled
+	Targetable@Epic:
+		TargetTypes: Epic
+	TooltipExtras@Epic:
+		Description: Epic
 	Power:
 		Amount: -250
 	MustBeDestroyed:
@@ -1770,7 +1791,6 @@ ra2naairf:
 	Tooltip:
 		Name: Soviet Airfield
 	Buildable:
-		BuildPaletteOrder: 130
 		Prerequisites: ~ra2nacnst, ra2naradr
 		Queue: Building, RABuilding
 		Description: Produces aircraft.
