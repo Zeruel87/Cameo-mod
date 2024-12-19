@@ -1586,7 +1586,7 @@ upgrade-advancedthermobarics =
    .description = Increases damage of all fire and nuclear weapons by 25%.
    Adds Napalm Warheads to the V1 Truck, Mig, Su-57 and all tanks.
    V2 Launcher and Nuclear V2 Launcher increase damage by 100%.
-   Adds Incendiary Bullets to the Yak and Hind.
+   Adds Incendiary Bullets to the Rifle Infantry, Yak, Hind and Gatling Tank.
    Increases Armor of the Flamethrower Infantry and Fire Rocket Soldier by 50%
 
 upgrade-experimentalteslaweaponry =
