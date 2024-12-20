@@ -1501,7 +1501,7 @@ upgrade-armorpiercingbullets =
     Also adds a machine gun to the Battle and Predator Tank and increases damage by 5%.
 
 upgrade-heavyaircraftarmorplating =
-   .description = Increases armor of Orcas, Firehawks, Chinooks and A10s by 30%.
+   .description = Increases armor of Orcas, Firehawks, Chinooks and A10s by 50%.
 
 upgrade-advancedmissiletargeting =
    .description = Increases missile speed and Acceleration.
