@@ -147,7 +147,7 @@ namespace OpenRA.Mods.Cameo.Traits
 				Ranks = Info.Ranks[Info.RanksDefault];
 
 			for (int i = 0; i < Ranks.Count; ++i)
-				Ranks[i] = FluentProvider.GetString(Ranks[i]);
+				Ranks[i] = FluentProvider.GetMessage(Ranks[i]);
 
 			LevelUp();
 		}
@@ -206,8 +206,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			if (self.Owner != self.Owner.World.LocalPlayer) return;
 
-			var notification = FluentProvider.GetString(Info.FlavorTextNotifications.Random(self.World.LocalRandom));
-			TextNotificationsManager.AddMissionLine(FluentProvider.GetString(Info.FlavorTextPrefix), notification, self.Owner.Color);
+			var notification = FluentProvider.GetMessage(Info.FlavorTextNotifications.Random(self.World.LocalRandom));
+			TextNotificationsManager.AddMissionLine(FluentProvider.GetMessage(Info.FlavorTextPrefix), notification, self.Owner.Color);
 		}
 	}
 }

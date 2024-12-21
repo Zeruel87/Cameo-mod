@@ -76,7 +76,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 					return;
 
 				var tooltip = actor.TraitInfos<TooltipInfo>().FirstOrDefault(info => info.EnabledByDefault);
-				var name = tooltip != null ? FluentProvider.GetString(tooltip.Name) : actor.Name;
+				var name = tooltip != null ? FluentProvider.GetMessage(tooltip.Name) : actor.Name;
 				var buildable = BuildableInfo.GetTraitForQueue(actor, tooltipIcon.ProductionQueue?.Info.Type);
 
 				var cost = 0;
@@ -112,7 +112,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 				var requiresSize = int2.Zero;
 				if (prereqs.Count > 0)
 				{
-					var requiresText = FluentProvider.GetString(Requires, "prequisites", prereqs.JoinWith(", "));
+					var requiresText = FluentProvider.GetMessage(Requires, "prequisites", prereqs.JoinWith(", "));
 					requiresLabel.GetText = () => requiresText;
 					requiresSize = requiresFont.Measure(requiresText);
 					requiresLabel.Visible = true;
@@ -157,7 +157,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 				var costSize = font.Measure(costText);
 
 				var tooltipExtras = actor.TraitInfos<TooltipExtrasInfo>();
-				extrasLabel.Text = String.Join("\n", tooltipExtras.Select(extra => FluentProvider.GetString(extra.Description)));
+				extrasLabel.Text = String.Join("\n", tooltipExtras.Select(extra => FluentProvider.GetMessage(extra.Description)));
 				var extraSize = new int2(0, 0);
 
 				if (extrasLabel.Text != "") {
@@ -167,7 +167,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 					requiresLabel.Bounds.Y += extraSize.Y;
 				}
 
-				var desc = string.IsNullOrEmpty(buildable.Description) ? "" : FluentProvider.GetString(buildable.Description);
+				var desc = string.IsNullOrEmpty(buildable.Description) ? "" : FluentProvider.GetMessage(buildable.Description);
 				descLabel.GetText = () => desc;
 				var descSize = descFont.Measure(desc);
 				descLabel.Bounds.Width = descSize.X;
@@ -201,7 +201,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 			{
 				var actorTooltip = ai.TraitInfos<TooltipInfo>().FirstOrDefault(info => info.EnabledByDefault);
 				if (actorTooltip != null)
-					return FluentProvider.GetString(actorTooltip.Name);
+					return FluentProvider.GetMessage(actorTooltip.Name);
 			}
 
 			return a;

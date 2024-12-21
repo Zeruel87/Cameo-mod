@@ -13,6 +13,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.LoadScreens;
 using OpenRA.Primitives;
@@ -30,15 +31,16 @@ namespace OpenRA.Mods.Cameo.LoadScreens
 		int lastDensity;
 		Size lastResolution;
 
-		string[] messages = { "Loading..." };
+		[FluentReference]
+		const string Loading = "loadscreen-loading";
+		string[] messages = Array.Empty<string>();
 		string text;
 
 		public override void Init(ModData modData, Dictionary<string, string> info)
 		{
 			base.Init(modData, info);
 
-			if (info.ContainsKey("Text"))
-				messages = info["Text"].Split(',');
+			messages = FluentProvider.GetMessage(Loading).Split(',').Select(x => x.Trim()).ToArray();
 
 			text = messages.Random(Game.CosmeticRandom);
 		}
@@ -93,7 +95,7 @@ namespace OpenRA.Mods.Cameo.LoadScreens
 			if (logo != null)
 				r.RgbaSpriteRenderer.DrawSprite(logo, logoPos);
 
-			if (r.Fonts != null)
+			if (r.Fonts != null && messages.Length > 0)
 			{
 				var textSize = r.Fonts["Bold"].Measure(text);
 				r.Fonts["Bold"].DrawTextWithContrast(text,
