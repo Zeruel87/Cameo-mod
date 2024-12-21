@@ -112,7 +112,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 				var requiresSize = int2.Zero;
 				if (prereqs.Count > 0)
 				{
-					var requiresText = FluentProvider.GetMessage(Requires, "prequisites", prereqs.JoinWith(", "));
+					var requiresText = FluentProvider.GetMessage(Requires, "prerequisites", prereqs.JoinWith(", "));
 					requiresLabel.GetText = () => requiresText;
 					requiresSize = requiresFont.Measure(requiresText);
 					requiresLabel.Visible = true;
