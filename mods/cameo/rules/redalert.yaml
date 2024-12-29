@@ -123,6 +123,9 @@ World:
 	ProductionTimeMultiplier@up_conscription:
 		Prerequisites: up_conscription
 		Multiplier: 50
+	FirepowerMultiplier@up_conscription:
+		RequiresCondition: up_conscription
+		Modifier: 125
 	GrantConditionOnPrerequisite@up_conscription:
 		Condition: up_conscription
 		Prerequisites: up_conscription
@@ -133,6 +136,9 @@ World:
 	SpeedMultiplier@up_nuclearengines:
 		RequiresCondition: up_nuclearengines
 		Modifier: 125
+	FirepowerMultiplier@up_nuclearengines:
+		RequiresCondition: up_nuclearengines
+		Modifier: 110
 	GrantConditionOnPrerequisite@up_nuclearengines:
 		Condition: up_nuclearengines
 		Prerequisites: up_nuclearengines
@@ -140,6 +146,9 @@ World:
 		Upgrades: up_nuclearengines
 
 ^RocketEnhancements:
+	FirepowerMultiplier@up_rocketenhancements:
+		RequiresCondition: up_rocketenhancements
+		Modifier: 125
 	RangeMultiplier@up_rocketenhancements:
 		RequiresCondition: up_rocketenhancements
 		Modifier: 125
@@ -179,6 +188,12 @@ World:
 	RangeMultiplier@up_afterburners:
 		RequiresCondition: up_afterburners
 		Modifier: 115
+	FirepowerMultiplier@up_afterburners:
+		RequiresCondition: up_afterburners
+		Modifier: 115
+	DamageMultiplier@up_afterburners:
+		RequiresCondition: up_afterburners
+		Modifier: 85
 	GrantConditionOnPrerequisite@up_afterburners:
 		Condition: up_afterburners
 		Prerequisites: up_afterburners
@@ -311,10 +326,10 @@ World:
 		Color: 0000FF44
 	DamageMultiplier@up_chronoarmor:
 		RequiresCondition: chronoarmordamage && !chronoarmordamagecooldown
-		Modifier: 50
+		Modifier: 65
 	SpeedMultiplier@up_chronoarmor:
 		RequiresCondition: chronoarmordamage && !chronoarmordamagecooldown
-		Modifier: 200
+		Modifier: 150
 	GrantTimedCondition@up_chronoarmor:
 		RequiresCondition: chronoarmordamage
 		PauseOnCondition: !chronoarmordamage
@@ -459,6 +474,15 @@ World:
 	RangeMultiplier@up_waveforcebullets:
 		RequiresCondition: up_waveforcebullets
 		Modifier: 110
+	RevealsShroudMultiplier@up_waveforcebullets:
+		RequiresCondition: up_waveforcebullets
+		Modifier: 110
+	DetectCloakedMultiplier@up_waveforcebullets:
+		RequiresCondition: up_waveforcebullets
+		Modifier: 110
+	InaccuracyMultiplier@up_waveforcebullets:
+		RequiresCondition: up_waveforcebullets
+		Modifier: 90
 	GrantConditionOnPrerequisite@up_waveforcebullets:
 		Condition: up_waveforcebullets
 		Prerequisites: up_waveforcebullets
@@ -543,6 +567,15 @@ World:
 	RangeMultiplier@up_advancedplasmaweapons:
 		RequiresCondition: up_advancedplasmaweapons
 		Modifier: 110
+	RevealsShroudMultiplier@up_advancedplasmaweapons:
+		RequiresCondition: up_advancedplasmaweapons
+		Modifier: 110
+	DetectCloakedMultiplier@up_advancedplasmaweapons:
+		RequiresCondition: up_advancedplasmaweapons
+		Modifier: 110
+	InaccuracyMultiplier@up_advancedplasmaweapons:
+		RequiresCondition: up_advancedplasmaweapons
+		Modifier: 90
 	GrantConditionOnPrerequisite@up_advancedplasmaweapons:
 		Condition: up_advancedplasmaweapons
 		Prerequisites: up_advancedplasmaweapons
@@ -586,6 +619,42 @@ World:
 		Prerequisites: up_nanotechrepairs
 	ActorStatValues:
 		Upgrades: up_nanotechrepairs
+
+^NanoTechExtraRepairs:
+	WithColoredOverlay@up_chronoarmor:
+		RequiresCondition: nanotechrepairsdamage && !nanotechrepairsdamagecooldown
+		Color: 11223344
+	WithIdleOverlay@shrouded:
+		Image: nanodrone_overlay
+		Sequence: idle
+		Palette: shield30
+		RequiresCondition: nanotechrepairsdamage && !nanotechrepairsdamagecooldown
+		IsDecoration: True
+	ChangesHealth@nanotechrepairsdamage1:
+		PercentageStep: 1
+		Delay: 5
+		StartIfBelow: 100
+		DamageCooldown: 5
+		RequiresCondition: nanotechrepairsdamage && !nanotechrepairsdamagecooldown
+	ChangesHealth@nanotechrepairsdamage2:
+		Step: 25
+		Delay: 5
+		StartIfBelow: 100
+		DamageCooldown: 5
+		RequiresCondition: nanotechrepairsdamage && !nanotechrepairsdamagecooldown
+	DamageMultiplier@nanotechrepairsdamage:
+		RequiresCondition: nanotechrepairsdamage && !nanotechrepairsdamagecooldown
+		Modifier: 50
+	GrantTimedCondition@nanotechrepairsdamage:
+		RequiresCondition: nanotechrepairsdamage
+		PauseOnCondition: !nanotechrepairsdamage
+		Condition: nanotechrepairsdamagecooldown
+		Duration: 5
+	GrantConditionOnDamage@nanotechrepairsdamage:
+		RequiresCondition: up_nanotechrepairs
+		Condition: nanotechrepairsdamage
+		Duration: 10
+		PlayerRelationship: Ally, Neutral, Enemy
 
 ####################################################################################################
 #		INFANTRY
@@ -1535,8 +1604,6 @@ v1truck:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^TurretEMP
-	Inherits@AntiInf: ^PrioritizeInfantry
-	Inherits@AntiAir: ^PrioritizeBuilding
 	Inherits@sensors: ^RocketEnhancements
 	Inherits@sensors: ^AdvancedThermobarics
 	Valued:
@@ -1611,8 +1678,6 @@ V2RL:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
-	Inherits@AntiBuil: ^PrioritizeBuilding
-	Inherits@AntiDef: ^PrioritizeDefence
 	Inherits@sensors: ^RocketEnhancements
 	Inherits@sensors: ^AdvancedThermobarics
 	Buildable:
@@ -1621,7 +1686,7 @@ V2RL:
 		Prerequisites: ~stek, ~!upv2rlnuke
 		Description: actor-v2rl.description
 	Valued:
-		Cost: 1500
+		Cost: 1400
 	Tooltip:
 		Name: actor-v2rl.name
 	UpdatesPlayerStatistics:
@@ -1635,11 +1700,18 @@ V2RL:
 	Mobile:
 		Speed: 85
 		TurnSpeed: 17
-	Armament:
+	Armament@PRIMARY:
 		Weapon: SCUD
 		ReloadingCondition: reloading
 		LocalOffset: -256,0,128
 		MuzzleSequence: muzzle
+		RequiresCondition: !up_advancedthermobarics
+	Armament@Upgrade:
+		Weapon: SCUDThermobaric
+		ReloadingCondition: reloading
+		LocalOffset: -256,0,128
+		MuzzleSequence: muzzle
+		RequiresCondition: up_advancedthermobarics
 	WithFacingSpriteBody:
 		RequiresCondition: !reloading
 		Name: loaded
@@ -1658,6 +1730,8 @@ V2RL:
 		VoiceSet: RussianVehicleVoice
 	RenderSprites:
 		PlayerPalette: raplayer
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 120
 	RangeMultiplier@up_rocketenhancements:
 		Modifier: 120
 	RevealsShroudMultiplier@up_rocketenhancements:
@@ -1871,6 +1945,7 @@ V2RL:
 	Inherits@sensors: ^NuclearEngines
 	Inherits@sensors: ^SovietAutoLoaders
 	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^RocketEnhancements
 	Inherits@sensors: ^SovietSteel
 	Buildable:
 		Queue: Vehicle, RAVehicle
@@ -1945,8 +2020,14 @@ V2RL:
 		VoiceSet: RussianVehicleVoice
 	RenderSprites:
 		PlayerPalette: raplayer
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 105
+	RangeMultiplier@up_rocketenhancements:
+		Modifier: 105
+	RevealsShroudMultiplier@up_rocketenhancements:
+		Modifier: 110
 	ActorStatValues:
-		Upgrades: up_nuclearengines, up_sovietautoloaders, up_advancedthermobarics, up_sovietsteel
+		Upgrades: up_nuclearengines, up_sovietautoloaders, up_advancedthermobarics, up_rocketenhancements, up_sovietsteel
 
 heavyaatank:
 	Inherits: ^Vehicle
@@ -2052,8 +2133,6 @@ RAARTY:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
-	Inherits@AntiBuil: ^PrioritizeBuilding
-	Inherits@AntiDef: ^PrioritizeDefence
 	Inherits@upgrade: ^AdvancedRadarSystems
 	Inherits@upgrade: ^CryoMissiles
 	Buildable:
@@ -2429,9 +2508,7 @@ TTNK:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
-	Inherits@AntiInf: ^PrioritizeInfantry
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@TeslaTargeting: ^PrioritizeTesla
 	Inherits@sensors: ^NuclearEngines
 	Inherits@sensors: ^ExperimentalTeslaWeaponry
 	Inherits@sensors: ^SovietSteel
@@ -2489,6 +2566,7 @@ FTRK:
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@botmicro: ^BotAutoDeployTransport
 	Inherits@sensors: ^SovietSteel
+	Inherits@upgrade: ^Conscription
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 60
@@ -2545,6 +2623,8 @@ FTRK:
 		Image: ftrk
 	RenderSprites:
 		PlayerPalette: raplayer
+	ActorStatValues:
+		Upgrades: up_conscription, up_sovietsteel
 
 DTRK:
 	Inherits: ^Vehicle
@@ -2602,7 +2682,6 @@ DTRK:
 QTNK:
 	Inherits: ^Tank
 	Inherits@Template: ^LineBreakerTemplate
-	Inherits@Template: ^HighTechTankTemplate
 	Inherits@Template: ^EpicVehicleTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -2760,6 +2839,8 @@ BADR.Soviet:
 	Inherits@sensors: ^SovietSteel
 	RenderSprites:
 		Image: badr
+	ActorStatValues:
+		Upgrades: up_afterburners, up_sovietsteel
 
 BADR.Bomber:
 	Inherits: BADR.Soviet
@@ -2769,8 +2850,6 @@ BADR.Bomber:
 		Weapon: ParaBomb
 	RenderSprites:
 		Image: badr
-	ActorStatValues:
-		Upgrades: up_afterburners, up_sovietsteel
 
 BADR.Allies:
 	Inherits: BADR
@@ -2814,108 +2893,8 @@ jsuperbomber:
 	SpawnActorOnDeath:
 		Actor: jsuperbomber.Husk
 
-MIG:
-	Inherits: ^RAPlane
-	Inherits@reload: ^RearmableAircraft
-	Inherits@Template: ^BomberTemplate
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiTank: ^PrioritizeTank
-	Inherits@AntiAir: ^PrioritizeAir
-	Inherits@AntiDef: ^PrioritizeDefence
-	Inherits@sensors: ^AdvancedThermobarics
-	Inherits@sensors: ^Afterburners
-	Inherits@sensors: ^SovietSteel
-	Buildable:
-		Queue: Aircraft, RAAircraft
-		BuildPaletteOrder: 50
-		Prerequisites: ~stek, ~!upmignukebomber
-		Description: actor-mig.description
-	Valued:
-		Cost: 1400
-	Tooltip:
-		Name: actor-mig.name
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 40000
-	ChangesHealth@SelfHealing:
-		Step: 16
-	Armament@Rockets1:
-		Weapon: Maverick
-		LocalOffset: 0,-480,0, 0,640,0
-		LocalYaw: 48, -64
-		MuzzleSequence: muzzle
-		PauseOnCondition: !ammo
-		RequiresCondition: !up_advancedthermobarics
-	Armament@Rockets2:
-		Weapon: Maverick
-		LocalOffset: 0,480,0, 0,-640,0
-		LocalYaw: -48, 64
-		MuzzleSequence: muzzle
-		PauseOnCondition: !ammo
-		RequiresCondition: !up_advancedthermobarics
-	Armament@Upgrade1:
-		Weapon: ThermobaricMaverick
-		LocalOffset: 0,-480,0, 0,640,0
-		LocalYaw: 48, -64
-		MuzzleSequence: muzzle
-		PauseOnCondition: !ammo
-		RequiresCondition: up_advancedthermobarics
-	Armament@Upgrade2:
-		Weapon: ThermobaricMaverick
-		LocalOffset: 0,480,0, 0,-640,0
-		LocalYaw: -48, 64
-		MuzzleSequence: muzzle
-		PauseOnCondition: !ammo
-		RequiresCondition: up_advancedthermobarics
-	AttackAircraft:
-		FacingTolerance: 80
-		StrafeRunLength: 2500
-	Aircraft:
-		TurnSpeed: 12
-		Speed: 200
-		IdleTurnSpeed: 8
-		IdleSpeed: 150
-	Selectable:
-		Bounds: 1280, 1280, 0, 64
-	SelectionDecorations:
-	WithMuzzleOverlay:
-	Contrail@1:
-		Offset: -598,-683,0
-	Contrail@2:
-		Offset: -598,683,0
-	SpawnActorOnDeath:
-		Actor: MIG.Husk
-	LeavesTrails:
-		Offsets: -853,0,171
-		MovingInterval: 2
-		Image: smokey
-		StationaryInterval: 2
-		SpawnAtLastPosition: False
-		TrailWhileStationary: True
-		Type: CenterPosition
-		RequiresCondition: enable-smoke
-	Voiced:
-		VoiceSet: RussianVehicleVoice
-	AmmoPool:
-		Ammo: 8
-		ReloadDelay: 25
-		AmmoCondition: ammo
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: True
-		PipCount: 8
-	GrantConditionOnDamageState@SmokeTrail:
-		Condition: enable-smoke
-	RenderSprites:
-		PlayerPalette: raplayer
-	ActorStatValues:
-		Upgrades: up_advancedthermobarics, up_afterburners, up_sovietsteel
-
 YAK:
-	Inherits: ^RAPlane
+	Inherits: ^RANeutralPlane
 	Inherits@Template: ^FighterTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -2977,6 +2956,8 @@ YAK:
 		Offset: -853,0,0
 	SpawnActorOnDeath:
 		Actor: YAK.Husk
+	EjectOnDeath:
+		PilotActor: RAE2
 	LeavesTrails:
 		Offsets: -853,0,0
 		MovingInterval: 2
@@ -3007,14 +2988,125 @@ YAK:
 	ActorStatValues:
 		Upgrades: up_advancedthermobarics, up_sovietsteel
 
+MIG:
+	Inherits: ^RANeutralPlane
+	Inherits@reload: ^RearmableAircraft
+	Inherits@Template: ^BomberTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@sensors: ^RocketEnhancements
+	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^Afterburners
+	Inherits@sensors: ^SovietSteel
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 50
+		Prerequisites: ~stek, ~!upmignukebomber
+		Description: actor-mig.description
+	Valued:
+		Cost: 1400
+	Tooltip:
+		Name: actor-mig.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 40000
+	ChangesHealth@SelfHealing:
+		Step: 16
+	Armament@Rockets1:
+		Weapon: Maverick
+		LocalOffset: 0,-480,0, 0,640,0
+		LocalYaw: 48, -64
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: !up_advancedthermobarics
+	Armament@Rockets2:
+		Weapon: Maverick
+		LocalOffset: 0,480,0, 0,-640,0
+		LocalYaw: -48, 64
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: !up_advancedthermobarics
+	Armament@Upgrade1:
+		Weapon: ThermobaricMaverick
+		LocalOffset: 0,-480,0, 0,640,0
+		LocalYaw: 48, -64
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: up_advancedthermobarics
+	Armament@Upgrade2:
+		Weapon: ThermobaricMaverick
+		LocalOffset: 0,480,0, 0,-640,0
+		LocalYaw: -48, 64
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: up_advancedthermobarics
+	AttackAircraft:
+		FacingTolerance: 40
+		StrafeRunLength: 2500
+	Aircraft:
+		TurnSpeed: 12
+		Speed: 200
+		IdleTurnSpeed: 8
+		IdleSpeed: 150
+	Selectable:
+		Bounds: 1280, 1280, 0, 64
+	SelectionDecorations:
+	WithMuzzleOverlay:
+	Contrail@1:
+		Offset: -598,-683,0
+	Contrail@2:
+		Offset: -598,683,0
+	SpawnActorOnDeath:
+		Actor: MIG.Husk
+	EjectOnDeath:
+		PilotActor: RAE4
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+		RequiresCondition: enable-smoke
+	Voiced:
+		VoiceSet: RussianVehicleVoice
+	AmmoPool:
+		Ammo: 8
+		ReloadDelay: 25
+		AmmoCondition: ammo
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 8
+	GrantConditionOnDamageState@SmokeTrail:
+		Condition: enable-smoke
+	RenderSprites:
+		PlayerPalette: raplayer
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 115
+	RangeMultiplier@up_rocketenhancements:
+		Modifier: 115
+	RevealsShroudMultiplier@up_rocketenhancements:
+		Modifier: 130
+	ActorStatValues:
+		Upgrades: up_rocketenhancements, up_advancedthermobarics, up_afterburners, up_sovietsteel
+
 HIND:
-	Inherits: ^RAHelicopter
+	Inherits: ^Helicopter
 	Inherits@Template: ^HelicopterTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@sensors: ^SovietAutoLoaders
 	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^RocketEnhancements
 	Inherits@sensors: ^SovietSteel
 	Buildable:
 		Queue: Aircraft, RAAircraft
@@ -3072,7 +3164,7 @@ HIND:
 	FirepowerMultiplier@DualWeapon:
 		Modifier: 50
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 40
 		AttackType: Hover
 	Aircraft:
 		TurnSpeed: 24
@@ -3090,7 +3182,7 @@ HIND:
 	SpawnActorOnDeath:
 		Actor: HIND.Husk
 	EjectOnDeath:
-		PilotActor: RARE1
+		PilotActor: e3flamer
 	LeavesTrails:
 		Offsets: -427,0,0
 		Image: smokey
@@ -3120,11 +3212,117 @@ HIND:
 		Weapon: LargeHeliExplode
 	RenderSprites:
 		PlayerPalette: raplayer
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 110
+	RangeMultiplier@up_rocketenhancements:
+		Modifier: 110
+	RevealsShroudMultiplier@up_rocketenhancements:
+		Modifier: 120
 	ActorStatValues:
-		Upgrades: up_advancedthermobarics, up_sovietsteel
+		Upgrades: up_sovietautoloaders, up_rocketenhancements, up_advancedthermobarics, up_sovietsteel
+
+MH60:
+	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@upgrade: ^AdvancedRadarSystems
+	Inherits@upgrade: ^LaserTargetingSystems
+	Inherits@upgrade: ^AirSuperiorityDoctrine
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~rahpad
+		Queue: Aircraft, RAAircraft
+		Description: actor-mh60.description
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: actor-mh60.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 50000
+	ChangesHealth@SelfHealing:
+		Step: 20
+	Armament@PRIMARY:
+		Weapon: ChainGunMH60
+		LocalOffset: 85,-213,-85, 85,213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	Armament@SECONDARY:
+		Name: secondary
+		Weapon: ChainGunMH60
+		LocalOffset: 85,213,-85, 85,-213,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	Aircraft:
+		TurnSpeed: 26
+		Speed: 130
+	WithIdleOverlay@ROTORAIR:
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTORGROUND:
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	SelectionDecorations:
+	WithMuzzleOverlay:
+	SpawnActorOnDeath:
+		Actor: MH60.Husk
+	EjectOnDeath:
+		PilotActor: alliedmachinegunner
+	LeavesTrails:
+		Offsets: -427,0,0
+		Image: smokey
+		MovingInterval: 3
+		StationaryInterval: 3
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+		RequiresCondition: enable-smoke
+	Selectable:
+		DecorationBounds: 1440, 1440
+	Voiced:
+		VoiceSet: RAVehicleVoice
+	Parachutable: ##########
+		FallRate: 20
+		KilledOnImpassableTerrain: true
+		GroundCorpseSequence:
+		GroundCorpsePalette:
+		WaterImpactSound: splash9.aud
+		WaterCorpseSequence: small_splash
+		ParachutingCondition: parachute
+	WithParachute: ##########
+		ShadowImage: parach-shadow
+		ShadowSequence: idle
+		Image: parach
+		Sequence: idle
+		OpeningSequence: open
+		Offset: 0,0,427
+		RequiresCondition: parachute
+	GrantConditionOnDamageState@SmokeTrail:
+		Condition: enable-smoke
+	AmmoPool:
+		Ammo: 6
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 16
+		Count: 2
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 6
+	ActorStatValues:
+		Upgrades: up_advancedradarsystems, up_lasertargetingsystems, up_airsuperioritydoctrine, up_gpssatellitesupport
 
 RAHELI:
-	Inherits: ^RAHelicopter
+	Inherits: ^Helicopter
 	Inherits@Template: ^HelicopterTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -3185,6 +3383,8 @@ RAHELI:
 	WithMuzzleOverlay:
 	SpawnActorOnDeath:
 		Actor: HELI.Husk
+	EjectOnDeath:
+		PilotActor: RAE3
 	LeavesTrails:
 		Offsets: -427,0,0
 		Image: smokey
@@ -3233,62 +3433,86 @@ RAHELI:
 	ActorStatValues:
 		Upgrades: up_advancedradarsystems, up_lasertargetingsystems, up_cryomissiles, up_airsuperioritydoctrine, up_gpssatellitesupport
 
-MH60:
-	Inherits: ^RAHelicopter
+JHIND:
+	Inherits: ^Helicopter
 	Inherits@Template: ^HelicopterTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@CLOAK: ^CloakedAircraft
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
-	Inherits@upgrade: ^AdvancedRadarSystems
-	Inherits@upgrade: ^LaserTargetingSystems
-	Inherits@upgrade: ^AirSuperiorityDoctrine
+	Inherits@upgrade: ^EnergizedArrows
+	Inherits@upgrade: ^WaveforceBullets
+	Inherits@upgrade: ^DivineWindProtocol
+	Inherits@upgrade: ^AdvancedPlasmaWeapons
+	Inherits@upgrade: ^NanoTechRepairs
 	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~rahpad
 		Queue: Aircraft, RAAircraft
-		Description: actor-mh60.description
+		BuildPaletteOrder: 20
+		Prerequisites: ~modjtek
+		Description: actor-hind.description
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	Tooltip:
-		Name: actor-mh60.name
+		Name: Sky Hawk
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 50000
+		HP: 75000
 	ChangesHealth@SelfHealing:
-		Step: 20
-	Armament@PRIMARY:
-		Weapon: ChainGun
-		LocalOffset: 85,-213,-85, 85,213,-85
+		Step: 30
+	Armament@Missiles:
+		Weapon: JHindArrows
+		LocalOffset: 85,-300,-85, 85,300,-85
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
-	Armament@SECONDARY:
-		Name: secondary
-		Weapon: ChainGun
-		LocalOffset: 85,213,-85, 85,-213,-85
+		RequiresCondition: !up_energizedarrows
+	Armament@MissilesUpgrade:
+		Weapon: JHindArrowsEnergized
+		LocalOffset: 85,-300,-85, 85,300,-85
 		MuzzleSequence: muzzle
 		PauseOnCondition: !ammo
+		RequiresCondition: up_energizedarrows
+	Armament@Cannon:
+		Weapon: JHindCannon
+		LocalOffset: 85,250,-85, 85,-250,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: !up_advancedplasmaweapons
+	Armament@CannonUpgrade:
+		Weapon: JHindPlasmaCannon
+		LocalOffset: 85,250,-85, 85,-250,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: up_advancedplasmaweapons
+	Armament@ChainGun:
+		Weapon: JHindChainGun
+		LocalOffset: 85,-200,-85, 85,200,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: !up_waveforcebullets
+	Armament@ChainGunUpgrade:
+		Weapon: JHindChainGunWaveforce
+		LocalOffset: 85,-200,-85, 85,200,-85
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+		RequiresCondition: up_waveforcebullets
+	FirepowerMultiplier@TripleWeapon:
+		Modifier: 33
 	AttackAircraft:
-		FacingTolerance: 20
+		FacingTolerance: 40
 		AttackType: Hover
 	Aircraft:
-		TurnSpeed: 26
-		Speed: 130
-	WithIdleOverlay@ROTORAIR:
-		Sequence: rotor
-		RequiresCondition: airborne
-		PauseOnCondition: disabled
-	WithIdleOverlay@ROTORGROUND:
-		Sequence: slow-rotor
-		RequiresCondition: !airborne
-		PauseOnCondition: disabled
+		TurnSpeed: 25
+		Speed: 125
 	SelectionDecorations:
 	WithMuzzleOverlay:
 	SpawnActorOnDeath:
-		Actor: MH60.Husk
+		Actor: JHIND.Husk
+	EjectOnDeath:
+		PilotActor: RAJE3
 	LeavesTrails:
-		Offsets: -427,0,0
+		Offsets: -250,0,0
 		Image: smokey
 		MovingInterval: 3
 		StationaryInterval: 3
@@ -3297,42 +3521,36 @@ MH60:
 		Type: CenterPosition
 		RequiresCondition: enable-smoke
 	Selectable:
-		DecorationBounds: 1440, 1440
+		DecorationBounds: 1280, 1280
 	Voiced:
-		VoiceSet: RAVehicleVoice
-	Parachutable: ##########
-		FallRate: 20
-		KilledOnImpassableTerrain: true
-		GroundCorpseSequence:
-		GroundCorpsePalette:
-		WaterImpactSound: splash9.aud
-		WaterCorpseSequence: small_splash
-		ParachutingCondition: parachute
-	WithParachute: ##########
-		ShadowImage: parach-shadow
-		ShadowSequence: idle
-		Image: parach
-		Sequence: idle
-		OpeningSequence: open
-		Offset: 0,0,427
-		RequiresCondition: parachute
+		VoiceSet: JapaneseVoice
 	GrantConditionOnDamageState@SmokeTrail:
 		Condition: enable-smoke
 	AmmoPool:
-		Ammo: 6
+		Ammo: 16
 		AmmoCondition: ammo
 	ReloadAmmoPool:
 		Delay: 16
-		Count: 2
+		Count: 1
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
-		PipCount: 6
+		PipCount: 8
+	FireWarheadsOnDeath:
+		Weapon: LargeHeliExplode
+	RenderSprites:
+		PlayerPalette: skyhawkplayer
+	Cloak:
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakSound: trans1.aud
+		UncloakSound: appear1.aud
+		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
 	ActorStatValues:
-		Upgrades: up_advancedradarsystems, up_lasertargetingsystems, up_airsuperioritydoctrine, up_gpssatellitesupport
+		Upgrades: up_energizedarrows, up_waveforcebullets, up_divinewindprotocol, up_advancedplasmaweapons, up_nanotechrepairs
 
 RATRAN:
-	Inherits: ^RAHelicopter
+	Inherits: ^Helicopter
 	Inherits@Template: ^UnarmedTransportHelicopterTemplate
 	Inherits@cargo: ^CargoAircraft
 	Inherits@bot: ^BotAutoDeployUnarmedAirTransport
@@ -3390,6 +3608,8 @@ RATRAN:
 		AfterUnloadDelay: 10
 	SpawnActorOnDeath:
 		Actor: RATRAN.Husk
+	EjectOnDeath:
+		PilotActor: RAE1
 	SelectionDecorations:
 	Selectable:
 		Class: ratran
@@ -3459,6 +3679,8 @@ modhip:
 	SelectionDecorations:
 	SpawnActorOnDeath:
 		Actor: modhip.husk
+	EjectOnDeath:
+		PilotActor: RARE1
 	LeavesTrails:
 		Offsets: -427,0,0
 		Image: smokey
@@ -3599,6 +3821,7 @@ MODTYPEJ:
 	Inherits@upgrade: ^SuperiorWarEngines
 	Inherits@upgrade: ^AdvancedPlasmaWeapons
 	Inherits@upgrade: ^NanoTechRepairs
+	Inherits@upgrade: ^NanoTechExtraRepairs
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 50
@@ -3652,7 +3875,7 @@ MODTYPEJ:
 		Upgrades: up_superiorwarengines, up_advancedplasmaweapons, up_nanotechrepairs
 
 MODKAMI:
-	Inherits: ^RAPlane
+	Inherits: ^RANeutralPlane
 	Inherits@Template: ^FighterTemplate
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -3705,7 +3928,7 @@ MODKAMI:
 	FirepowerMultiplier@up_waveforcebullets:
 		Modifier: 50
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 40
 	Aircraft:
 		TurnSpeed: 12
 		Speed: 180
@@ -3715,6 +3938,8 @@ MODKAMI:
 		Offset: -1000,0,250
 	SpawnActorOnDeath:
 		Actor: modkami.Husk
+	EjectOnDeath:
+		PilotActor: RAJE1
 	LeavesTrails:
 		Offsets: -1000,0,250
 		MovingInterval: 2
@@ -3895,8 +4120,6 @@ jballista:
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
-	Inherits@AntiBuil: ^PrioritizeBuilding
-	Inherits@AntiDef: ^PrioritizeDefence
 	Inherits@upgrade: ^EnergizedArrows
 	Inherits@upgrade: ^SuperiorWarEngines
 	Inherits@upgrade: ^NanoTechRepairs
@@ -4774,6 +4997,8 @@ MSUB:
 	RenderSprites:
 		Image: ramsub
 		#PlayerPalette: raplayer
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 110
 	RangeMultiplier@up_rocketenhancements:
 		Modifier: 110
 	RevealsShroudMultiplier@up_rocketenhancements:
@@ -6275,7 +6500,6 @@ RAGUN:
 	Inherits: ^Defense
 	Inherits@exp: ^GainsExperienceRABuilding
 	Inherits@Template: ^BasicDefenseTemplate
-	Inherits@buff: ^MBTBuff
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiTank: ^PrioritizeVehicle
@@ -6428,9 +6652,7 @@ TSLA:
 	Inherits@selection: ^AdvancedDefenseTemplate
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@detect: ^GenericGroundDetector
-	Inherits@AntiInf: ^PrioritizeInfantry
-	Inherits@AntiTank: ^PrioritizeVehicle
-	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@TeslaTargeting: ^PrioritizeTesla
 	Inherits@sensors: ^ExperimentalTeslaWeaponry
 	Inherits@sensors: ^SovietSteel
 	Building:
@@ -6487,6 +6709,7 @@ RASAM:
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@shape: ^2x1Shape
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@sensors: ^RocketEnhancements
 	Inherits@sensors: ^SovietSteel
 	HitShape:
 		Type: Rectangle
@@ -6535,6 +6758,14 @@ RASAM:
 		Range: 13000
 	DetectCloaked:
 		Range: 6500
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 110
+	RangeMultiplier@up_rocketenhancements:
+		Modifier: 110
+	RevealsShroudMultiplier@up_rocketenhancements:
+		Modifier: 120
+	ActorStatValues:
+		Upgrades: up_rocketenhancements, up_sovietsteel
 
 jmgnest:
 	Inherits: ^Defense
@@ -7200,7 +7431,7 @@ sheridan:
 		Upgrades: up_advancedradarsystems, up_lasertargetingsystems, up_cryomissiles, up_chronoarmor, up_gpssatellitesupport
 
 rapierjumpjet:
-	Inherits: ^RAPlane
+	Inherits: ^RANeutralPlane
 	Inherits@reload: ^RearmableAircraft
 	Inherits@Template: ^BomberTemplate
 	Inherits@exp: ^GainsExperienceRA
@@ -7254,7 +7485,7 @@ rapierjumpjet:
 		PauseOnCondition: !ammo
 		RequiresCondition: up_cryomissiles
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 40
 		StrafeRunLength: 2500
 	Aircraft:
 		CruiseAltitude: 2560
@@ -7270,6 +7501,8 @@ rapierjumpjet:
 		Offset: -1000,0,200
 	SpawnActorOnDeath:
 		Actor: rapierjumpjet.Husk
+	EjectOnDeath:
+		PilotActor: sniper
 	LeavesTrails:
 		Offsets: -1000,0,200
 		MovingInterval: 2
@@ -7982,6 +8215,7 @@ GAP:
 	WithIdleOverlay@gapfield:
 		Sequence: gapfield
 		RequiresCondition: !lowpower && !disabled
+		IsDecoration: True
 	Targetable@Epic:
 		TargetTypes: Epic
 	TooltipExtras@Epic:
@@ -8046,6 +8280,7 @@ RAMGG:
 	WithIdleOverlay@gapfield:
 		Sequence: gapfield
 		RequiresCondition: !disabled
+		IsDecoration: True
 	Armament:
 		Weapon: dummytargeting
 	RevealsShroud:
@@ -8613,9 +8848,7 @@ SHOK:
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
-	Inherits@AntiInf: ^PrioritizeInfantry
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiTank: ^PrioritizeTank
+	Inherits@TeslaTargeting: ^PrioritizeTesla
 	Inherits@upgrade: ^Conscription
 	Inherits@sensors: ^ExperimentalTeslaWeaponry
 	Buildable:
@@ -8715,8 +8948,12 @@ VOLKOV:
 		VoiceSet: StavrosVoice
 	AnnounceOnKill:
 	-Crushable:
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 105
 	RangeMultiplier@up_rocketenhancements:
 		Modifier: 105
+	RevealsShroudMultiplier@up_rocketenhancements:
+		Modifier: 110
 	ActorStatValues:
 		Upgrades: up_nuclearengines, up_sovietautoloaders, up_advancedthermobarics, up_rocketenhancements, up_sovietsteel
 
@@ -8942,6 +9179,7 @@ TTNK2:
 	Inherits@sensors: ^NuclearEngines
 	Inherits@sensors: ^SovietAutoLoaders
 	Inherits@sensors: ^AdvancedThermobarics
+	Inherits@sensors: ^RocketEnhancements
 	Inherits@sensors: ^SovietSteel
 	Buildable:
 		Queue: Vehicle, RAVehicle
@@ -9021,8 +9259,14 @@ TTNK2:
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 105
+	RangeMultiplier@up_rocketenhancements:
+		Modifier: 105
+	RevealsShroudMultiplier@up_rocketenhancements:
+		Modifier: 110
 	ActorStatValues:
-		Upgrades: up_nuclearengines, up_sovietautoloaders, up_advancedthermobarics, up_sovietsteel
+		Upgrades: up_nuclearengines, up_sovietautoloaders, up_advancedthermobarics, up_rocketenhancements, up_sovietsteel
 
 MonsterTank:
 	Inherits: ^Tank
@@ -9140,8 +9384,12 @@ MonsterTank:
 		Modifier: 75
 	RenderSprites:
 		PlayerPalette: player_rgba
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 105
 	RangeMultiplier@up_rocketenhancements:
 		Modifier: 105
+	RevealsShroudMultiplier@up_rocketenhancements:
+		Modifier: 110
 	ActorStatValues:
 		Upgrades: up_nuclearengines, up_sovietautoloaders, up_advancedthermobarics, up_rocketenhancements, up_sovietsteel
 
@@ -9158,6 +9406,7 @@ MODBTR:
 	Inherits@botmicro: ^BotAutoDeployTransport
 	Inherits@sensors: ^NuclearEngines
 	Inherits@sensors: ^SovietSteel
+	Inherits@upgrade: ^Conscription
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 120
@@ -9203,7 +9452,7 @@ MODBTR:
 	-DamagedByTintedCells@rad:
 	-DamagedByTintedCells@genrad:
 	ActorStatValues:
-		Upgrades: up_nuclearengines, up_sovietsteel
+		Upgrades: up_conscription, up_nuclearengines, up_sovietsteel
 
 Kotin:
 	Inherits: ^Tank
@@ -9290,8 +9539,6 @@ V2RLNUKE:
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@EMP: ^FrontalEMP
-	Inherits@AntiBuil: ^PrioritizeBuilding
-	Inherits@AntiDef: ^PrioritizeDefence
 	Inherits@sensors: ^RocketEnhancements
 	Inherits@sensors: ^AdvancedThermobarics
 	Buildable:
@@ -9316,11 +9563,18 @@ V2RLNUKE:
 	Mobile:
 		Speed: 80
 		TurnSpeed: 16
-	Armament:
+	Armament@PRIMARY:
 		Weapon: SCUDNUKE
 		ReloadingCondition: reloading
 		LocalOffset: -512,0,128
 		MuzzleSequence: muzzle
+		RequiresCondition: !up_advancedthermobarics
+	Armament@Upgrade:
+		Weapon: SCUDNUKEThermobaric
+		ReloadingCondition: reloading
+		LocalOffset: -512,0,128
+		MuzzleSequence: muzzle
+		RequiresCondition: up_advancedthermobarics
 	WithFacingSpriteBody:
 		RequiresCondition: !reloading
 		Name: loaded
@@ -9341,6 +9595,8 @@ V2RLNUKE:
 		VoiceSet: RussianVehicleVoice
 	-DamagedByTintedCells@rad:
 	-DamagedByTintedCells@genrad:
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 115
 	RangeMultiplier@up_rocketenhancements:
 		Modifier: 115
 	RevealsShroudMultiplier@up_rocketenhancements:
@@ -9351,7 +9607,7 @@ V2RLNUKE:
 		Upgrades: up_rocketenhancements, up_advancedthermobarics
 
 MIGNUKE:
-	Inherits: ^RAPlane
+	Inherits: ^RANeutralPlane
 	Inherits@reload: ^RearmableAircraft
 	Inherits@Template: ^BomberTemplate
 	Inherits@GAINSEXPERIENCE: ^EpicVehicleTemplate
@@ -9386,7 +9642,7 @@ MIGNUKE:
 		LocalOffset: 0,-0,-64
 		PauseOnCondition: !ammo
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 40
 		StrafeRunLength: 5000
 	Aircraft:
 		TurnSpeed: 15
@@ -9404,6 +9660,8 @@ MIGNUKE:
 		Offset: -725,-683,0
 	SpawnActorOnDeath:
 		Actor: U2.Husk
+	EjectOnDeath:
+		PilotActor: shok
 	LeavesTrails:
 		Offsets: -1c43,0,0
 		MovingInterval: 2
@@ -9436,7 +9694,7 @@ MIGNUKE:
 		Upgrades: up_advancedthermobarics, up_afterburners, up_sovietsteel
 
 su57:
-	Inherits: ^RAPlane
+	Inherits: ^RANeutralPlane
 	Inherits@reload: ^RearmableAircraft
 	Inherits@Template: ^BomberTemplate
 	Inherits@exp: ^GainsExperienceRA
@@ -9446,6 +9704,7 @@ su57:
 	Inherits@AntiTank: ^PrioritizeTank
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@sensors: ^RocketEnhancements
 	Inherits@sensors: ^AdvancedThermobarics
 	Inherits@sensors: ^Afterburners
 	Inherits@sensors: ^SovietSteel
@@ -9503,7 +9762,7 @@ su57:
 		PauseOnCondition: !ammo
 		RequiresCondition: up_advancedthermobarics
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 40
 		StrafeRunLength: 2500
 	Aircraft:
 		TurnSpeed: 15
@@ -9520,6 +9779,8 @@ su57:
 		Offset: -500,625,0
 	SpawnActorOnDeath:
 		Actor: su57.Husk
+	EjectOnDeath:
+		PilotActor: mortarsoldier
 	LeavesTrails:
 		Offsets: -853,0,171
 		MovingInterval: 2
@@ -9543,8 +9804,14 @@ su57:
 		Condition: enable-smoke
 	RenderSprites:
 		PlayerPalette: raplayer
+	FirepowerMultiplier@up_rocketenhancements:
+		Modifier: 115
+	RangeMultiplier@up_rocketenhancements:
+		Modifier: 115
+	RevealsShroudMultiplier@up_rocketenhancements:
+		Modifier: 130
 	ActorStatValues:
-		Upgrades: up_advancedthermobarics, up_afterburners, up_sovietsteel
+		Upgrades: up_rocketenhancements, up_advancedthermobarics, up_afterburners, up_sovietsteel
 
 	####################################################################################################
 	#		Upgrades Japan
@@ -9938,11 +10205,9 @@ RAMAID:
 	Mobile:
 		Speed: 72
 	Health:
-		HP: 10000
+		HP: 22500
 	ChangesHealth@SelfHealing:
-		Step: 4
-	AutoTarget:
-		ScanRadius: 12
+		Step: 18
 	Armament@PRIMARY: ##########
 		Weapon: JapanMaidenBow
 		RequiresCondition: !up_energizedarrows
@@ -9993,7 +10258,7 @@ ROCKETANGEL:
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: ~modjtek, ~uprocketangel
-		Queue: Infantry, RAInfantry
+		Queue: Infantry, RAInfantry, Aircraft, RAAircraft
 		Description: actor-rocketangel.description
 	Aircraft:
 		TurnSpeed: 32
@@ -10292,6 +10557,7 @@ typechiha:
 	Inherits@upgrade: ^SuperiorWarEngines
 	Inherits@upgrade: ^AdvancedPlasmaWeapons
 	Inherits@upgrade: ^NanoTechRepairs
+	Inherits@upgrade: ^NanoTechExtraRepairs
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 50
@@ -10354,6 +10620,7 @@ modhovert:
 	Inherits@upgrade: ^SuperiorWarEngines
 	Inherits@upgrade: ^AdvancedPlasmaWeapons
 	Inherits@upgrade: ^NanoTechRepairs
+	Inherits@upgrade: ^NanoTechExtraRepairs
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		Prerequisites: ~dome.japan, ~upflamehovertank
@@ -10427,6 +10694,7 @@ modoitank:
 	Inherits@upgrade: ^SuperiorWarEngines
 	Inherits@upgrade: ^AdvancedPlasmaWeapons
 	Inherits@upgrade: ^NanoTechRepairs
+	Inherits@upgrade: ^NanoTechExtraRepairs
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 180
@@ -10631,7 +10899,7 @@ MODBGGY:
 		Upgrades: up_superiorwarengines, up_advancedplasmaweapons, up_nanotechrepairs
 
 MODBOMBER:
-	Inherits: ^RAPlane
+	Inherits: ^RANeutralPlane
 	Inherits@reload: ^RearmableAircraft
 	Inherits@Template: ^BomberTemplate
 	Inherits@exp: ^GainsExperienceRA
@@ -10707,6 +10975,8 @@ MODBOMBER:
 		Offset: -500,250,200
 	SpawnActorOnDeath:
 		Actor: modbomber.Husk
+	EjectOnDeath:
+		PilotActor: RASAMURAI
 	LeavesTrails:
 		Offsets: -500,0,200
 		MovingInterval: 2
@@ -10748,7 +11018,7 @@ waveforcetank:
 		Prerequisites: ~modjtek, ~upwaveforcetank
 		Description: actor-waveforcetank.description
 	Valued:
-		Cost: 2000
+		Cost: 1600
 	Tooltip:
 		Name: actor-waveforcetank.name
 	UpdatesPlayerStatistics:
@@ -10812,6 +11082,15 @@ waveforcetank:
 		VoiceSet: JapaneseVehicleVoice
 	FireWarheadsOnDeath:
 		Weapon: WaveTurretImpact
+	GrantConditionOnAttack:
+		Condition: firing
+		RevokeDelay: 30
+	SpeedMultiplier@firing:
+		RequiresCondition: firing
+		Modifier: 50
+	TurnSpeedMultiplier@firing:
+		RequiresCondition: firing
+		Modifier: 50
 	SpeedMultiplier@up_superiorwarengines:
 		Modifier: 110
 	ReloadDelayMultiplier@up_superiorwarengines:

@@ -556,6 +556,26 @@
 
 #Target types for Smart Auto-Targetting
 
+^PrioritizeTesla:
+	AutoTargetPriority@EPIC:
+		ValidTargets: Epic
+		Priority: 120
+	AutoTargetPriority@ENGINEER:
+		ValidTargets: Engineer
+		Priority: 110
+	AutoTargetPriority@INFANTRY:
+		ValidTargets: Infantry
+		Priority: 100
+	AutoTargetPriority@DEFENCE:
+		ValidTargets: Defense
+		Priority: 90
+	AutoTargetPriority@VEHICLE:
+		ValidTargets: Vehicle
+		Priority: 80
+	AutoTargetPriority@TANK:
+		ValidTargets: Tank
+		Priority: 70
+
 ^PrioritizeInfantry:
 	AutoTargetPriority@ENGINEER:
 		ValidTargets: Engineer
@@ -565,11 +585,17 @@
 		Priority: 30
 
 ^PrioritizeVehicle:
+	AutoTargetPriority@EPIC:
+		ValidTargets: Epic
+		Priority: 100
 	AutoTargetPriority@VEHICLE:
 		ValidTargets: Vehicle
 		Priority: 50
 
 ^PrioritizeTank:
+	AutoTargetPriority@EPIC:
+		ValidTargets: Epic
+		Priority: 100
 	AutoTargetPriority@TANK:
 		ValidTargets: Tank
 		Priority: 70
@@ -851,14 +877,63 @@
 ^GlobalBuffs:
 	Inherits: ^GPSSatelliteSupport
 
+^InfantryBuffs:
+	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@upgrade: ^AdvancedGuerillaTactics
+
 ^VehicleBuffs:
+	Inherits@GlobalBuffs: ^GlobalBuffs
 	Inherits: ^NanoTechRepairs
+
+^TankBuffs:
+	Inherits@VehicleBuffs: ^VehicleBuffs
+	Inherits@upgrade: ^LightWeightArmorPlating
+	Inherits@upgrade: ^SovietSteel
+	DamageMultiplier@TankBuffs:
+		Modifier: 80
+	FirepowerMultiplier@TankBuffs:
+		Modifier: 125
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+
+^AircraftBuffs:
+	Inherits@GlobalBuffs: ^GlobalBuffs
+	DamageMultiplier@AircraftBuffs:
+		Modifier: 90
+	FirepowerMultiplier@AircraftBuffs:
+		Modifier: 125
+	RangeMultiplier@AircraftBuffs:
+		Modifier: 110
+	ReloadAmmoDelayMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 85
+	ReloadAmmoDelayMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 70
+	ReloadAmmoDelayMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 55
+	ReloadAmmoDelayMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 40
+	AttackAircraft:
+		OpportunityFire: true
+		PersistentTargeting: true
+
+^ShipBuffs:
+	Inherits@GlobalBuffs: ^GlobalBuffs
+
+^DefenseBuffs:
+	Inherits@GlobalBuffs: ^GlobalBuffs
 
 ^ScoutInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericGroundDetector
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@InfantryBuffs: ^InfantryBuffs
 	Armor:
 		Type: None
 	DamageMultiplier@ScoutInfantryBuff:
@@ -876,7 +951,7 @@
 ^LightInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@InfantryBuffs: ^InfantryBuffs
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -889,7 +964,7 @@
 ^AntiTankAntiAirInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@InfantryBuffs: ^InfantryBuffs
 	Armor:
 		Type: Flak
 	RevealsShroud:
@@ -902,7 +977,7 @@
 ^HeavyInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@InfantryBuffs: ^InfantryBuffs
 	Armor:
 		Type: Plate
 	ChangesHealth@SelfHealing:
@@ -922,9 +997,10 @@
 ^MeleeInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@InfantryBuffs: ^InfantryBuffs
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiDef: ^PrioritizeDefence
 	AutoTargetPriority@INFANTRY:
 		ValidTargets: Infantry
 		Priority: 50
@@ -957,7 +1033,7 @@
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericGroundDetector
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@InfantryBuffs: ^InfantryBuffs
 	RenderRangeCircle:
 		RangeCircleType: infantry
 	Armor:
@@ -976,7 +1052,7 @@
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericAllDetector
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@InfantryBuffs: ^InfantryBuffs
 	Inherits@MC: ^MCImmune
 	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Targetable@Epic:
@@ -1016,9 +1092,9 @@
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericGroundDetector
-	Inherits@GlobalBuffs: ^GlobalBuffs
 	Inherits@VehicleBuffs: ^VehicleBuffs
-	Inherits@sensors: ^AdvancedGuerillaTactics
+	Inherits@upgrade: ^LightWeightArmorPlating
+	Inherits@upgrade: ^AdvancedGuerillaTactics
 	Armor:
 		Type: Scout
 	RevealsShroud:
@@ -1035,9 +1111,9 @@
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericAllDetector
-	Inherits@GlobalBuffs: ^GlobalBuffs
 	Inherits@VehicleBuffs: ^VehicleBuffs
-	Inherits@sensors: ^AdvancedGuerillaTactics
+	Inherits@upgrade: ^LightWeightArmorPlating
+	Inherits@upgrade: ^AdvancedGuerillaTactics
 	Armor:
 		Type: Light
 	ChangesHealth@SelfHealing:
@@ -1058,7 +1134,6 @@
 ^HarvesterTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
 	Inherits@VehicleBuffs: ^VehicleBuffs
 	ChangesHealth@SelfHealing:
 		Step: 10
@@ -1076,25 +1151,10 @@
 	TooltipExtras@Harvester:
 		Description: Harvester
 
-^MBTBuff:
-	DamageMultiplier@MBTBuff:
-		Modifier: 80
-	FirepowerMultiplier@MBTBuff:
-		Modifier: 125
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
-
 ^MainBattleTankTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
-	Inherits@sensors: ^LightWeightArmorPlating
-	Inherits@sensors: ^SovietSteel
-	Inherits@VehicleBuffs: ^VehicleBuffs
-	Inherits@buff: ^MBTBuff
+	Inherits@TankBuffs: ^TankBuffs
 	RevealsShroud:
 		Range: 6000
 	Buildable:
@@ -1107,11 +1167,7 @@
 ^HighTechTankTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
-	Inherits@sensors: ^LightWeightArmorPlating
-	Inherits@sensors: ^SovietSteel
-	Inherits@VehicleBuffs: ^VehicleBuffs
-	Inherits@buff: ^MBTBuff
+	Inherits@TankBuffs: ^TankBuffs
 	RevealsShroud:
 		Range: 7000
 	Buildable:
@@ -1124,8 +1180,7 @@
 ^LineBreakerTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
-	Inherits@VehicleBuffs: ^VehicleBuffs
+	Inherits@TankBuffs: ^TankBuffs
 	ProducibleWithLevel@spyvehicles:
 		Prerequisites: vehicles.upgraded
 	DamageMultiplier@LineBreakerBuff:
@@ -1140,7 +1195,7 @@
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 5000
+		Range: 8000
 	AutoTarget:
 		ScanRadius: 10
 	Buildable:
@@ -1151,9 +1206,8 @@
 ^FireSupportTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
 	Inherits@VehicleBuffs: ^VehicleBuffs
-	Inherits@sensors: ^AdvancedGuerillaTactics
+	Inherits@upgrade: ^AdvancedGuerillaTactics
 	FirepowerMultiplier@FireSupportBuff:
 		Modifier: 150
 	RevealsShroud:
@@ -1162,6 +1216,8 @@
 		Type: Light
 	Buildable:
 		BuildDurationModifier: 75
+	KeepsDistance:
+		Distance: 8
 	TooltipExtras@FireSupport:
 		Description: Fire Support
 
@@ -1169,8 +1225,13 @@
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnologyTeamUpgrade
-	Inherits@GlobalBuffs: ^GlobalBuffs
 	Inherits@VehicleBuffs: ^VehicleBuffs
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@AntiInf: ^PrioritizeInfantry
+	AutoTargetPriority@INFANTRY:
+		ValidTargets: Infantry
+		Priority: 10
 	RenderRangeCircle:
 		RangeCircleType: vehicle
 	RevealsShroud:
@@ -1182,6 +1243,8 @@
 	AttackFrontal:
 		TargetFrozenActors: True
 		FacingTolerance: 10
+	KeepsDistance:
+		Distance: 12
 	TooltipExtras@Artillery:
 		Description: Artillery
 
@@ -1189,7 +1252,6 @@
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericAllDetector
-	Inherits@GlobalBuffs: ^GlobalBuffs
 	Inherits@VehicleBuffs: ^VehicleBuffs
 	Inherits@MC: ^MCImmune
 	Inherits@COMMANDOSKULL: ^CommandoSkull
@@ -1216,35 +1278,11 @@
 	TooltipExtras@Epic:
 		Description: Epic
 
-^AircraftBuff:
-	DamageMultiplier@AircraftBuff:
-		Modifier: 90
-	FirepowerMultiplier@AircraftBuff:
-		Modifier: 125
-	RangeMultiplier@AircraftBuff:
-		Modifier: 110
-	ReloadAmmoDelayMultiplier@RANK-1:
-		RequiresCondition: rank-veteran == 1
-		Modifier: 85
-	ReloadAmmoDelayMultiplier@RANK-2:
-		RequiresCondition: rank-veteran == 2
-		Modifier: 70
-	ReloadAmmoDelayMultiplier@RANK-3:
-		RequiresCondition: rank-veteran == 3
-		Modifier: 55
-	ReloadAmmoDelayMultiplier@RANK-ELITE:
-		RequiresCondition: rank-elite
-		Modifier: 40
-	AttackAircraft:
-		OpportunityFire: true
-		PersistentTargeting: true
-
 ^FighterTemplate:
-	Inherits@AircraftBuff: ^AircraftBuff
 	Inherits@EXPERIENCE: ^GainsExperienceAircraft
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericAllDetector
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@AircraftBuffs: ^AircraftBuffs
 	DamageMultiplier@FighterBuff:
 		Modifier: 80
 	FirepowerMultiplier@FighterBuff:
@@ -1255,9 +1293,9 @@
 		StartIfBelow: 100
 		DamageCooldown: 1
 	Aircraft:
-		CruiseAltitude: 2500
+		CruiseAltitude: 4000
 		RepulsionSpeed: 40
-		MaximumPitch: 50
+		MaximumPitch: 40
 		IdealSeparation: 2000
 	Armor:
 		Type: Fighter
@@ -1276,10 +1314,9 @@
 		Description: Fighter
 
 ^BomberTemplate:
-	Inherits@AircraftBuff: ^AircraftBuff
 	Inherits@EXPERIENCE: ^GainsExperienceAircraft
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@AircraftBuffs: ^AircraftBuffs
 	DamageMultiplier@BomberBuff:
 		Modifier: 90
 	FirepowerMultiplier@BomberBuff:
@@ -1290,9 +1327,9 @@
 		StartIfBelow: 100
 		DamageCooldown: 1
 	Aircraft:
-		CruiseAltitude: 2500
+		CruiseAltitude: 4000
 		RepulsionSpeed: 40
-		MaximumPitch: 50
+		MaximumPitch: 40
 		IdealSeparation: 2000
 	Armor:
 		Type: Bomber
@@ -1309,20 +1346,19 @@
 		Description: Bomber
 
 ^HelicopterTemplate:
-	Inherits@AircraftBuff: ^AircraftBuff
 	Inherits@EXPERIENCE: ^GainsExperienceAircraft
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericAllDetector
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@AircraftBuffs: ^AircraftBuffs
 	ChangesHealth@SelfHealing:
 		Step: 10
 		Delay: 1
 		StartIfBelow: 100
 		DamageCooldown: 1
 	Aircraft:
-		CruiseAltitude: 1250
+		CruiseAltitude: 2000
 		RepulsionSpeed: 40
-		MaximumPitch: 50
+		MaximumPitch: 40
 		IdealSeparation: 2000
 	Armor:
 		Type: Helicopter
@@ -1341,11 +1377,10 @@
 		Description: Helicopter
 
 ^SpaceshipTemplate:
-	Inherits@AircraftBuff: ^AircraftBuff
 	Inherits@EXPERIENCE: ^GainsExperienceAircraft
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericAllDetector
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@AircraftBuffs: ^AircraftBuffs
 	ChangesHealth@SelfHealing:
 		Step: 10
 		Delay: 1
@@ -1382,7 +1417,7 @@
 ^ScoutShipTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceShips
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@ShipBuffs: ^ShipBuffs
 	RenderRangeCircle:
 		RangeCircleType: naval
 	FirepowerMultiplier@ScoutShip:
@@ -1408,7 +1443,7 @@
 ^BattleShipTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceShips
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@ShipBuffs: ^ShipBuffs
 	RenderRangeCircle:
 		RangeCircleType: naval
 	DamageMultiplier@BattleShip:
@@ -1430,7 +1465,7 @@
 ^ArtilleryShipTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceShips
 	Inherits@EXT: ^ExternalConditions
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@ShipBuffs: ^ShipBuffs
 	RenderRangeCircle:
 		RangeCircleType: naval
 	ChangesHealth@SelfHealing:
@@ -1451,7 +1486,7 @@
 
 ^BasicDefenseTemplate:
 	Inherits@DisabledOverlay: ^DisableOnPowerDown
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@DefenseBuffs: ^DefenseBuffs
 	Armor:
 		Type: Concrete
 	Buildable:
@@ -1460,7 +1495,7 @@
 ^AntiAirDefenseTemplate:
 	Inherits@DisabledOverlay: ^DisableOnLowPowerOrPowerDown
 	Inherits@Detect: ^GenericAirDetector
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@DefenseBuffs: ^DefenseBuffs
 	Armor:
 		Type: Concrete
 	Buildable:
@@ -1468,7 +1503,7 @@
 
 ^AdvancedDefenseTemplate:
 	Inherits@DisabledOverlay: ^DisableOnLowPowerOrPowerDown
-	Inherits@GlobalBuffs: ^GlobalBuffs
+	Inherits@DefenseBuffs: ^DefenseBuffs
 	Armor:
 		Type: Steel
 	Buildable:
@@ -1906,6 +1941,10 @@
 	SelectionDecorations:
 		MinimumZoom: 0.5
 	Aircraft:
+		CruiseAltitude: 3000
+		RepulsionSpeed: 30
+		MaximumPitch: 30
+		IdealSeparation: 3000
 		IdleTurnSpeed: 8
 		AirborneCondition: airborne
 		TakeOffOnResupply: true
@@ -1988,6 +2027,13 @@
 		KilledOnImpassableTerrain: false
 	KillsSelf@EMP:
 		RequiresCondition: (empdisable || superfreeze) && airborne
+	EjectOnDeath:
+		PilotActor: RARE1
+		SuccessRate: 100
+		EjectOnGround: false
+		EjectInAir: true
+		AllowUnsuitableCell: true
+		ChuteSound: chute1.aud
 
 ^AirstrikePlane:
 	Inherits@1: ^BasicUnit
@@ -2001,6 +2047,10 @@
 	SelectionDecorations:
 		MinimumZoom: 0.5
 	Aircraft:
+		CruiseAltitude: 3000
+		RepulsionSpeed: 30
+		MaximumPitch: 30
+		IdealSeparation: 3000
 		IdleTurnSpeed: 8
 		AirborneCondition: airborne
 	GrantCondition@untargetable:
@@ -2143,26 +2193,6 @@
 		String: Infantry
 	RangedGpsDot:
 		Sequence: Infantry
-
-^RAPlane:
-	Inherits: ^RANeutralPlane
-	EjectOnDeath:
-		PilotActor: RARE1
-		SuccessRate: 50
-		EjectOnGround: false
-		EjectInAir: true
-		AllowUnsuitableCell: true
-		ChuteSound: chute1.aud
-
-^RAHelicopter:
-	Inherits: ^Helicopter
-	EjectOnDeath:
-		PilotActor: RAE1
-		SuccessRate: 50
-		EjectOnGround: false
-		EjectInAir: true
-		AllowUnsuitableCell: true
-		ChuteSound: chute1.aud
 
 ^HeliExplodeLarge:
 	FireWarheadsOnDeath:
@@ -3980,6 +4010,7 @@
 		Sequence: idle
 		Palette: shield30
 		RequiresCondition: shrouded
+		IsDecoration: True
 
 ^CryoFreezable:
 	ExternalCondition@CryoFreeze:
@@ -4116,6 +4147,7 @@
 		Sequence: idle
 		StartSequence: idle
 		Palette: ra2effect
+		IsDecoration: True
 
 ^IronCurtainable:
 	WithColoredOverlay@IRONCURTAIN:
