@@ -1510,8 +1510,8 @@ upgrade-advancedmissiletargeting =
    Firehawks shoot twice the amount of missiles.
 
 upgrade-cuttingedgeequipment =
-   .description = Increases armor, damage and fire rate of all experimental and prototype units by 10%.
-   Doubles the effect for EMP Grenadiers, Experimental Exosuits and Firehawks and Havoc.
+   .description = Increases armor, damage and fire rate of all units and defenses by 10%.
+   Doubles the effect for EMP Grenadiers, Experimental Exosuits, Firehawks and Havoc.
 
 upgrade-highvelocitycannons =
    .description = Increases damage and range of cannons and railguns by 15%.
@@ -1611,7 +1611,7 @@ upgrade-advancedradarsystems =
    Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
 
 upgrade-infantryarmorplating =
-   .description = Increases armor of all infantry units by 20%.
+   .description = Increases armor of all infantry units by 25%.
 
 upgrade-reinforcedstructures =
    .description = Increases armor of all buildings and defenses by 25%.
@@ -1621,16 +1621,17 @@ upgrade-cryomissiles =
    Each hit slows down the enemy target by 10%, increases damage taken by 10% and stacks 10 times.
    Each stack lasts 5 seconds and on 10 stacks the unit is completely disabled.
    Artillery, Bastion and Rapier Jumpjet get cryo bombs with double the cryo effect radius.
-   With no stacks applied to the target, cryo missiles deal 50% and cryo bombs 25% less damage than before.
+   With no stacks applied to the target, cryo missiles and bombs deal 25% less damage than before.
 
 upgrade-lasertargetingsystems =
    .description = Increases damage of all tanks and aircraft by 25%
 
 upgrade-airsuperioritydoctrine =
-   .description = Increases damage, firerate, armor, speed, range and accuracy by 5%.
+   .description = Increases damage, firerate, armor, speed, range and accuracy by 10%.
 
 upgrade-chronoarmor =
    .description = After taking damage, tanks will activate a chrono field which increases armor by 35% and speed by 50%
+   Unlocks Chrono Reinforcements from the Chronosphere.
 
 upgrade-gpssatellitesupport =
    .description = TEAM UPGRADE
@@ -1666,7 +1667,7 @@ upgrade-nanotechrepairs =
    .description = TEAM UPGRADE
    Increases armor of all vehicles in your team by 10% and makes them regnerate faster.
    For Japan the effect is also applied to all aircrafts and buildings.
-   I-Go Tank, Chi-Ha Tank, Hovercraft Flame Tank and OI Tank also get a nanodrone shield
+   Japanese Fire Support Vehicles and Tanks also get a nanodrone shield
    for 0.2 seconds after taking damage that increases armor by 50%.
 
 upgrade-wind_trap =
