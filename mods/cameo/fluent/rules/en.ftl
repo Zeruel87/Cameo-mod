@@ -1531,16 +1531,16 @@ upgrade-tiberiuminfusion =
 
 upgrade-improvedartilleries =
    .description = Increases weapon and vision range of all artillery weapons.
-   Artillery: 10%
+   Artillery and Gun Turret: 10%
    Specter: 15%
    Chemical SSM Launcher: 20%
    Ballistic Missile Submarine: 25%
 
 upgrade-elementalwarfare =
-   .description = Increases damage of all flame and chemical weapons by 20%.
+   .description = Increases damage of all flame and chemical weapons by 25%.
 
 upgrade-elitecapacitors =
-   .description = Slightly increases range, damage, fire rate and vision of all laser weapons by 10%
+   .description = Increases range, damage, fire rate and vision of all laser weapons by 10%
    Obelisks of Light increase range, damage, fire rate and vision by 15%.
 
 upgrade-cyberneticmodifications =
@@ -1554,7 +1554,7 @@ upgrade-blackmarketupgrades =
    Buggy Mk1 and Mk2: Adds a Flamethrower.
    Light Tank Mk1 and Mk2: Adds a Missile Launcher.
    Apache: Adds addtional Missile Launchers.
-   Artillery and Specter: Increases spread of the warhead and damage to vehicles.
+   Artillery and Specter: Increases damage and spread of the warhead makes it more effective against vehicles.
    Gun Turret and Attack Submarine: Increases damage and spread of the warhead.
 
 upgrade-advancedguerillatactics =
@@ -1611,7 +1611,7 @@ upgrade-advancedradarsystems =
    Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
 
 upgrade-infantryarmorplating =
-   .description = Increases armor of all infantry units by 25%.
+   .description = Increases armor of all infantry units by 30%.
 
 upgrade-reinforcedstructures =
    .description = Increases armor of all buildings and defenses by 25%.
@@ -1621,7 +1621,7 @@ upgrade-cryomissiles =
    Each hit slows down the enemy target by 10%, increases damage taken by 10% and stacks 10 times.
    Each stack lasts 5 seconds and on 10 stacks the unit is completely disabled.
    Artillery, Bastion and Rapier Jumpjet get cryo bombs with double the cryo effect radius.
-   With no stacks applied to the target, cryo missiles and bombs deal 25% less damage than before.
+   With no stacks applied to the target, cryo missiles and bombs deal 20% less damage than before.
 
 upgrade-lasertargetingsystems =
    .description = Increases damage of all tanks and aircraft by 25%
