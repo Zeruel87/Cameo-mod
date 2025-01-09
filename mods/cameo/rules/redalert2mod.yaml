@@ -11135,6 +11135,267 @@ nax_rocket:
 		Prerequisite: nax_rocket
 
 ####################################################################################################
+#		Red Alert 2 Moon Naxis Structures
+####################################################################################################
+nax2_conyard:
+	Inherits: ^RA2Building
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Inherits@shape: ^4x3Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Tooltip:
+		Name: Schwarzer Mond Construction Yard
+	Building:
+		Footprint: xxxx xxxx xxxx
+		Dimensions: 4,3
+	Transforms:
+		IntoActor: nax_mcv
+		Offset: 1,1
+		Facing: 432
+		RequiresCondition: factundeploy
+	WithBuildingPlacedOverlay:
+	Exit@1:
+		SpawnOffset: 213,-128,0
+		ExitCell: 1,2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2buildinghack
+nax2_powr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@power: ^PowerPlant
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Schwarzer Mond Hydrogen Plant
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Building, RABuilding
+		Description: template-power.description
+		Prerequisites: ~nax_conyard
+	Building:
+		Footprint: xxx xxx
+		Dimensions: 3,2
+	Health:
+		HP: 175000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 300
+	ScalePowerWithHealth:
+	ProvidesPrerequisite@buildingname:
+
+nax2_barr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RA2YSpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@barr: ^IsBarrack
+	SelectionDecorations:
+	Tooltip:
+		Name: Schwarzer Mond Barracks
+	Buildable:
+		Prerequisites: ~nax_conyard, nax2_powr
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	RallyPoint:
+		Path: 1,2
+	Exit@1:
+		SpawnOffset: 512,1024,0
+		ExitCell: 1,2
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+
+nax2_refin:
+	Inherits: ^RA2Building
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@ref: ^Refinery
+	Inherits@shape: ^4x3Shape
+	Tooltip:
+		Name: Schwarzer Mond Ore Refinery
+	Buildable:
+		Prerequisites: ~nax_conyard, nax2_powr
+	Building:
+		Footprint: xxx= xxx= xxx=
+		Dimensions: 4,3
+	Refinery:
+	DockHost:
+		Type: Unload
+		DockAngle: 640
+		DockOffset: 1086,1086,0
+		MaxQueueLength: 10
+	DrawLineToTarget:
+	FreeActor@1:
+		Actor: nax2_armor_harv
+		SpawnOffset: 2,2
+		Facing: 256
+	FreeActor@2:
+		Actor: nax2_armor_harv
+		SpawnOffset: 2,1
+		Facing: 256
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithIdleOverlay@bib:
+		Sequence: idle-bib
+
+nax2_radar:
+	Inherits: ^RA2Building
+	Inherits@radar: ^RadarBuilding
+	Inherits@shape: ^4x3Shape
+	Inherits@sell: ^RASpawnActorsOnSell
+	Buildable:
+		Queue: Building, RABuilding
+		Prerequisites: ~nax_conyard, nax2_refin
+		Description: template-radar.description
+	Tooltip:
+		Name: Schwarzer Mond Radar
+	Building:
+		Footprint: =xxx xxxx xxx=
+		Dimensions: 4,3
+	ProvidesPrerequisite:
+		Prerequisite: anyrahq
+nax2_airfield:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@shape: ^4x3Shape
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@hpad: ^IsAircraftFactory
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Schwarzer Mond Airfield
+	Buildable:
+		BuildPaletteOrder: 130
+		Prerequisites: ~nax_conyard, nax2_radar
+		Queue: Building, RABuilding
+		Description: Produces aircraft.
+	Building:
+		Footprint: =xxx xxxx xxx=
+		Dimensions: 4,3
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Exit@1:
+		ExitCell: 1,1
+		Facing: 384
+	RevealsShroud:
+		Range: 7c0
+	Power:
+		Amount: -50
+	Turreted:
+		TurnSpeed: 1023
+	ProvidesPrerequisite@buildingname:
+	AttackTurreted:
+	CarrierMaster:
+		Actors: nax_drone, nax_drone, nax_drone
+		RearmTicks: 120
+		RespawnTicks: 150
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Armament@PRIMARY:
+		Weapon: NaxDefensivePlaneTarget
+	AutoTarget:
+nax2_twr:
+	Inherits: ^RA2Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@detect: ^GenericAllDetector
+	Inherits@sell: ^AASpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 20
+		Prerequisites: ~nax_conyard, nax2_barr
+		Description: template-anti-infantry-defense.description
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Laser Tower
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+	Health:
+		HP: 78000
+	Selectable:
+		Bounds: 1024, 1024
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
+		RealignDelay: -1
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: NaxLaserT
+		LocalOffset: 300,1,700, 300,-1,700
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithMuzzleOverlay:
+	BodyOrientation:
+		QuantizedFacings: 16
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -25
+	RevealsShroud:
+		Range: 6666
+	ProvidesPrerequisite@buildingname:
+
+nax2_tech:
+	Inherits: ^RA2Building
+	Inherits@radar: ^IsTechnoBuilding
+	Inherits@shape: ^4x3Shape
+	Buildable:
+		Queue: Building, RABuilding
+		Prerequisites: ~nax_conyard, nax_radar
+		Description: template-radar.description
+	Tooltip:
+		Name: Schwarzer Mond Tech Center
+	Building:
+		Footprint: =xxx xxxx xxx=
+		Dimensions: 4,3
+	Production@Upgrades:
+		Produces: Upgrades
+nax2_weap:
+	Inherits: ^RA2DefaultWeap
+	Inherits@sell: ^AASpawnActorsOnSell
+	Tooltip:
+		Name: Schwarzer Mond War Factory
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 40
+		BuildDuration: 500
+		BuildDurationModifier: 100
+		Description: template-factory.description
+		Prerequisites: ~nax_conyard, nax2_refin
+	WithIdleOverlay@flag:
+		Sequence: idle-flag
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@bib:
+		Sequence: bib
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@ramp:
+		Sequence: build-ramp
+		RequiresCondition: !build-incomplete
+	Voiced:
+		VoiceSet: PRCWarFactoryVoice
+
+####################################################################################################
 #		Red Alert 2 Naxis Infantry
 ####################################################################################################
 nax_rifle:
@@ -12125,6 +12386,342 @@ nax_quadflak:
 		VoiceSet: NaxiSSVoice
 	QuantizeFacingsFromSequence:
 		Sequence: stand
+	RenderSprites:
+		PlayerPalette: playerra2
+
+####################################################################################################
+#		Red Alert 2 Moon Naxis Infantry
+####################################################################################################
+nax_lunar:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 120
+	Tooltip:
+		Name: Lunar Soldier
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~nax2_barr
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 12500
+	Armament@PRIMARY:
+		Weapon: NaxiRifleLaser
+		LocalOffset: 500,0,400
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: NaxiRifleLaserE
+		LocalOffset: 500,0,400
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: NaxiRifleLaser
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: NaxiRifleLaserE
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: NaxiSoldatVoice
+nax_lunar2:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^RA2Infantry
+	Inherits@vo: ^AttackFrontalVoice
+	Valued:
+		Cost: 350
+	Tooltip:
+		Name: Lunar Rocket
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~nax2_barr
+		Queue: Infantry, RAInfantry
+		Description: template-scout-infantry.description
+	Mobile:
+		Speed: 55
+	Health:
+		HP: 12500
+	Armament@PRIMARY:
+		Weapon: NaxCorrosionRocketTrooper
+		LocalOffset: 500,0,400
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: NaxCorrosionRocketTrooper
+		LocalOffset: 500,0,400
+		RequiresCondition: rank-elite
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: NaxCorrosionRocketTrooper
+		RequiresCondition: !rank-elite
+	Armament@GARRISONEDELITE:
+		Name: garrisoned
+		Weapon: NaxCorrosionRocketTrooper
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		FacingTolerance: 0
+	Voiced:
+		VoiceSet: NaxiSoldatVoice
+nax2_armor_mg:
+	Inherits: ^Walker
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Selectable:
+		Bounds: 600, 600, 0, -125
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Noid MG Armor
+	Buildable:
+		BuildPaletteOrder: 75
+		Prerequisites: ~nax2_barr
+		Queue: Infantry, RAInfantry
+		Description: actor-aamecha.description
+	Mobile:
+		Speed: 40
+		TurnSpeed: 15
+		Locomotor: tracked
+	Health:
+		HP: 50000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Plate
+	Armament@PRIMARY:
+		Weapon: NaxiMP40Laser
+		LocalOffset: 500,0,400
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: NaxiMP40LaserE
+		LocalOffset: 500,0,400
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		FacingTolerance: 20
+	WithInfantryBody:
+		IdleSequences: idle1, idle2
+		MinIdleDelay: 90
+		MaxIdleDelay: 270
+		DefaultAttackSequence: shoot
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 1
+	Voiced:
+		VoiceSet: NaxiUFOVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+nax2_armor_harv:
+	Inherits: ^Walker
+	Inherits@Template: ^HarvesterTemplate
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@harv: ^Harvester
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Selectable:
+		Bounds: 600, 600, 0, -125
+	Valued:
+		Cost: 550
+	Tooltip:
+		Name: Noid Harvester
+	Buildable:
+		BuildPaletteOrder: 75
+		Prerequisites: ~nax2_refin
+		Queue: Infantry, RAInfantry
+		Description: actor-aamecha.description
+	Mobile:
+		Speed: 40
+		TurnSpeed: 15
+		Locomotor: tracked
+	Health:
+		HP: 50000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Plate
+	Armament@PRIMARY:
+		Weapon: NaxiMP40
+		LocalOffset: 500,0,400
+		RequiresCondition: !rank-elite
+	Armament@ELITE:
+		Weapon: NaxiMP40E
+		LocalOffset: 500,0,400
+		RequiresCondition: rank-elite
+	AttackFrontal:
+		FacingTolerance: 20
+	WithInfantryBody:
+		IdleSequences: idle1, idle2
+		MinIdleDelay: 90
+		MaxIdleDelay: 270
+		DefaultAttackSequence: shoot
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 1
+	Voiced:
+		VoiceSet: NaxiUFOVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+	WithHarvestOverlay@harvesting:
+		Sequence: harvesting
+		Palette: ra2effect
+	Harvester:
+		BaleLoadDelay: 6
+		BaleUnloadDelay: 6
+	DockClientManager:
+		OccupancyCostModifier: 0
+	StoresResources:
+		Capacity: 4
+	WithStoresResourcesPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 4
+	Mobile:
+		Locomotor: chem
+nax2_beetle:
+	Inherits: ^Tank
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Laser Beetle
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~nax2_weap
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Speed: 85
+		TurnSpeed: 17
+	Health:
+		HP: 47500
+	Repairable:
+		HpPerStep: 4375
+	ChangesHealth@SelfHealing:
+		Step: 35
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 34 #3
+		Offset: -4,0,5
+	Armament:
+		Name: primary
+		Weapon: NaxiBeetleLaser
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 512,1,80, 512,-1,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@AA:
+		Name: primary
+		Weapon: NaxiBeetleLaserAA
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 512,1,80, 512,-1,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1280
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: NaxiFlakVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+
+nax2_panzer:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@SHADOWS: ^Shadows
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Lunar Panzer
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~nax2_weap
+		Queue: Vehicle, RAVehicle
+		Description: template-mbt.description
+	Mobile:
+		Locomotor: hover
+		Speed: 100
+		TurnSpeed: 20
+	Health:
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armor:
+		Type: Medium
+	Turreted:
+		TurnSpeed: 20 #3
+	Armament:
+		Name: primary
+		Weapon: RA2105mm
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1280,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite
+	Armament@elite:
+		Name: primary
+		Weapon: RA2105mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1280,0,80
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite
+	AttackTurreted:
+	WithMuzzleOverlay:
+	SelectionDecorations:
+	Selectable:
+	WithSpriteTurret:
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	DeliversCash:
+		Payload: 350
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -13707,6 +14304,89 @@ upnax_ratte:
 ####################################################################################################
 #		Red Alert 2 Naxis Planes
 ####################################################################################################
+nax_me262:
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^FighterTemplate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@turnanimation: ^RA2PlanewithTurnAnimation
+	Selectable:
+	Tooltip:
+		Name: Me 262
+	Valued:
+		Cost: 1500
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites:  ~nax_radar
+		Queue: Aircraft, RAAircraft
+		Description: actor-bpln.description
+	Health:
+		HP: 12500
+	ChangesHealth@SelfHealing:
+		Step: 5
+	HitShape:
+	Voiced:
+		VoiceSet: NaxiTankVoice
+	Aircraft:
+		TurnSpeed: 10
+		Speed: 155
+		IdleTurnSpeed: 8
+		IdleSpeed: 120
+		RepulsionSpeed: 30
+	AttackAircraft:
+		Voice: Attack
+		FacingTolerance: 100
+	Armament:
+		Name: primary
+		Weapon: NaxPlanegun
+		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
+		LocalYaw: 50, -50, 25, -25
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 16
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 8
+		Count: 1
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 8
+	WithMuzzleOverlay:
+	Contrail@1:
+		Offset: -640,171,0
+		TrailLength: 15
+	Contrail@2:
+		Offset: -640,-171,0
+		TrailLength: 15
+	SpawnActorOnDeath:
+		Actor: nax_me262.husk
+	RenderSprites:
+		Image: nax_me262
+		PlayerPalette: playerra2
+
+nax_me262.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Me 262
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 55
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 1
+		Image: smokey
+		StationaryInterval: 1
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
+	RenderSprites:
+		Image: nax_me262
+	RenderSprites:
+		PlayerPalette: playerra2
+####################################################################################################
+#		Red Alert 2 Moon Naxis Planes
+####################################################################################################
 nax_haunebu:
 	Inherits: ^Helicopter
 	Inherits@Template: ^SpaceshipTemplate
@@ -13722,7 +14402,7 @@ nax_haunebu:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~nax_tech
+		Prerequisites: ~nax2_airfield
 		Queue: Aircraft, RAAircraft
 		Description: actor-disk.description
 	Aircraft:
@@ -13835,7 +14515,7 @@ nax_haunebu2:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~nax_tech
+		Prerequisites: ~nax2_airfield, ~nax2_tech
 		Queue: Aircraft, RAAircraft
 		Description: actor-disk.description
 	Aircraft:
@@ -13936,87 +14616,6 @@ nax_haunebu2.Husk:
 		Image: nax_haunebu2
 		PlayerPalette: playerra2
 
-nax_me262:
-	Inherits: ^RANeutralPlane
-	Inherits@Template: ^FighterTemplate
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@turnanimation: ^RA2PlanewithTurnAnimation
-	Selectable:
-	Tooltip:
-		Name: Me 262
-	Valued:
-		Cost: 1500
-	Buildable:
-		BuildPaletteOrder: 100
-		Prerequisites:  ~nax_radar
-		Queue: Aircraft, RAAircraft
-		Description: actor-bpln.description
-	Health:
-		HP: 12500
-	ChangesHealth@SelfHealing:
-		Step: 5
-	HitShape:
-	Voiced:
-		VoiceSet: NaxiTankVoice
-	Aircraft:
-		TurnSpeed: 10
-		Speed: 155
-		IdleTurnSpeed: 8
-		IdleSpeed: 120
-		RepulsionSpeed: 30
-	AttackAircraft:
-		Voice: Attack
-		FacingTolerance: 100
-	Armament:
-		Name: primary
-		Weapon: NaxPlanegun
-		LocalOffset: 425,-250,-225, 425,250,-225, 425,-150,-225, 425,150,-225
-		LocalYaw: 50, -50, 25, -25
-		PauseOnCondition: !ammo
-	AmmoPool:
-		Ammo: 16
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 8
-		Count: 1
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: True
-		PipCount: 8
-	WithMuzzleOverlay:
-	Contrail@1:
-		Offset: -640,171,0
-		TrailLength: 15
-	Contrail@2:
-		Offset: -640,-171,0
-		TrailLength: 15
-	SpawnActorOnDeath:
-		Actor: nax_me262.husk
-	RenderSprites:
-		Image: nax_me262
-		PlayerPalette: playerra2
-
-nax_me262.Husk:
-	Inherits: ^PlaneHusk
-	Tooltip:
-		Name: Me 262
-	Aircraft:
-		TurnSpeed: 20
-		Speed: 55
-	LeavesTrails:
-		Offsets: -853,0,171
-		MovingInterval: 1
-		Image: smokey
-		StationaryInterval: 1
-		SpawnAtLastPosition: False
-		TrailWhileStationary: True
-		Type: CenterPosition
-	RenderSprites:
-		Image: nax_me262
-	RenderSprites:
-		PlayerPalette: playerra2
-
 nax_piercer:
 	Inherits: ^RANeutralPlane
 	Inherits@Template: ^FighterTemplate
@@ -14030,7 +14629,7 @@ nax_piercer:
 		Cost: 2500
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites:  ~nax_tech
+		Prerequisites: ~nax2_airfield, ~nax2_tech
 		Queue: Aircraft, RAAircraft
 		Description: actor-bpln.description
 	Health:
@@ -14120,7 +14719,7 @@ nax_dieglocke:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~nax_tech
+		Prerequisites: ~nax2_airfield, ~nax2_tech
 		BuildLimit: 1
 		Queue: Aircraft, RAAircraft
 		Description: actor-disk.description
