@@ -53,9 +53,9 @@ namespace OpenRA.Mods.Cameo.Widgets
 
 		public override void Tick()
 		{
-			var rankText = FluentProvider.GetString(RankText) + " " + playerPromotions.currentRank;
-			var pointsText = FluentProvider.GetString(PointsText) + " " + playerPromotions.Points;
-			var progressText = playerPromotions.IsMaxLevel ? "" : FluentProvider.GetString(ProgressText) + " " + playerPromotions.Experience + (playerPromotions.IsMaxLevel ? null : "/" + playerPromotions.nextLevelXpRequired);
+			var rankText = FluentProvider.GetMessage(RankText) + " " + playerPromotions.currentRank;
+			var pointsText = FluentProvider.GetMessage(PointsText) + " " + playerPromotions.Points;
+			var progressText = playerPromotions.IsMaxLevel ? "" : FluentProvider.GetMessage(ProgressText) + " " + playerPromotions.Experience + (playerPromotions.IsMaxLevel ? null : "/" + playerPromotions.nextLevelXpRequired);
 
 			Texts = new string[] { rankText, pointsText, progressText };
 

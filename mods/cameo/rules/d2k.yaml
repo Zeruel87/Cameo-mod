@@ -51,7 +51,7 @@ World:
 		ClassName: Light Support
 		Factions: atreides, ordos, harkonnen, corrino, ixian
 		BaseActor: d2k_mcv.ixian
-		SupportActors: light_inf, light_inf, light_inf, trooper, engineer, raider, quad
+		SupportActors: light_inf, light_inf, heavy_inf, trooper, trooper, rocket_raider_ixian, combat_tank_ixian
 		InnerSupportRadius: 3
 		OuterSupportRadius: 5
 	StartingUnits@duneuniverseheavy:
@@ -59,7 +59,7 @@ World:
 		ClassName: Heavy Support
 		Factions: atreides, ordos, harkonnen, corrino, ixian
 		BaseActor: d2k_mcv.ixian
-		SupportActors: light_inf, light_inf, light_inf, trooper, grenadier, trike, combat_tank_a, missile_tank
+		SupportActors: light_inf, light_inf, heavy_inf, trooper, trooper, rocket_raider_ixian, heavy_rocket_raider_ixian, combat_tank_ixian, duelist_tank
 		InnerSupportRadius: 3
 		OuterSupportRadius: 5
 
@@ -245,6 +245,16 @@ Player:
 		DeathSequencePalette: playerd2k
 		CrushedSequencePalette: playerd2k
 		CrushedPaletteIsPlayerPalette: True
+	WithDeathAnimation@effect:
+		DeathSequencePalette: player
+		DeathPaletteIsPlayerPalette: False
+		DeathTypes:
+			FireDeath: 5
+			PsychicDeath: 5
+			TiberiumDeath: 6
+			RadiationDeath: 6
+			RA2VirusDeath: 6
+			ElectricityDeath: 7
 	Huntable:
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
@@ -541,6 +551,8 @@ Player:
 		TargetTypes: Ground, C4, Structure, Defense
 	MapEditorData:
 		Categories: Defense
+	WithIdleOverlay@shrouded:
+		Image: shrouded_overlay
 	-CommandBarBlacklist:
 	-ActorPreviewPlaceBuildingPreview:
 	ActorStatValues:
@@ -678,12 +690,11 @@ Player:
 	KillsSelf:
 		RemoveInstead: true
 	Buildable:
-		Queue: Defence, RADefence
 		BuildPaletteOrder: 10
 		Description: Provides a strong foundation that reduces damage by 33% and automatically repairs buildings on top of it.
 		IconPalette: d2kunit
 
-concretea:
+concreteabuilding:
 	Inherits: ^concrete
 	D2kBuilding:
 		Footprint: xxx xxx xxx
@@ -693,12 +704,20 @@ concretea:
 	Valued:
 		Cost: 500
 	Buildable:
+		Queue: Building, RABuilding
 		BuildPaletteOrder: 110
 		BuildDuration: 125
 		BuildDurationModifier: 100
 		Prerequisites: ~construction_yard
+	RenderSprites:
+		Image: concretea
 
-concreteb:
+concreteadefense:
+	Inherits: concreteabuilding
+	Buildable:
+		Queue: Defence, RADefence
+
+concretebbuilding:
 	Inherits: ^concrete
 	D2kBuilding:
 		Footprint: xxxxx xxxxx xxxxx xxxxx xxxxx
@@ -708,10 +727,18 @@ concreteb:
 	Valued:
 		Cost: 1000
 	Buildable:
+		Queue: Building, RABuilding
 		BuildPaletteOrder: 110
 		Prerequisites: ~upgrade.conyard
 		BuildDuration: 250
 		BuildDurationModifier: 100
+	RenderSprites:
+		Image: concreteb
+
+concretebdefense:
+	Inherits: concretebbuilding
+	Buildable:
+		Queue: Defence, RADefence
 
 OILB.d2k:
 	Inherits@D2kBLD: ^D2KBuilding
@@ -1993,17 +2020,17 @@ storm_lasher_big:
 		MissileDelay: 5
 		SpawnOffset: 1c0,427,0
 		DisplayTimerRelationships: Ally, Neutral, Enemy
-		DisplayBeacon: True
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		CircleSequence: circles
+		DisplayBeacon: true
 		DisplayRadarPing: True
 		BeaconPosters:
-			1: raatomicon
+			1: atomic
 		CameraRange: 10000
 		CameraRemoveDelay: 125
 		CircleRanges:
 			1: 10000
-		ArrowSequence: arrow
-		ClockSequence: clock
-		CircleSequence: circles
 		SupportPowerPaletteOrder: 70
 		MissileImage: raatomic
 		BeaconActor: BLASTRADIUS.atomic
@@ -2197,7 +2224,6 @@ medium_gun_turret.ixian:
 	Inherits: ^D2KDefense
 	Inherits@exp: ^GainsExperienceRABuilding
 	Inherits@Template: ^BasicDefenseTemplate
-	Inherits@buff: ^MBTBuff
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@EMP: ^TurretEMP
 	Inherits@D2KSprite: ^D2KPaletteRender
@@ -2389,9 +2415,9 @@ large_gun_turret:
 	Power:
 		Amount: -75
 	RevealsShroud:
-		Range: 8000
+		Range: 10000
 	DetectCloaked:
-		Range: 4000
+		Range: 5000
 	ActorStatValues:
 		Upgrades: d2k_heavy_missile_upgrade, d2k_general_purpose_armor
 
@@ -3170,10 +3196,11 @@ light_inf:
 		HP: 22500
 	Armament@PRIMARY: ##########
 		Weapon: LMG
+		LocalOffset: 128,0,256
 		RequiresCondition: !d2k_needle_guns
 	Armament@Upgrade: ##########
 		Weapon: LMG_upgrade
-		LocalOffset: 256,0,256
+		LocalOffset: 128,0,256
 		RequiresCondition: d2k_needle_guns
 	Armament@GARRISONED: ##########
 		Name: garrisoned
@@ -5995,6 +6022,8 @@ d2k_air_drone:
 		Bounds: 1536, 1280, 0, 0
 	SpawnActorOnDeath:
 		Actor: d2k_air_drone.husk
+	EjectOnDeath:
+		PilotActor: shock_infantry
 	Voiced:
 		VoiceSet: D2KVehicleVoice
 	RenderSprites:
@@ -7010,7 +7039,6 @@ siege_tank_ixian:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
-	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@SHADOWS: ^Shadows
 	Inherits@CLOAK: ^CloakedVehicle
 	Inherits@Barrel: ^D2K_ReinforcedBarrel
@@ -9239,7 +9267,7 @@ d2k_needle_guns:
 		BuildPaletteOrder: 200
 		Prerequisites: ~outpost.ixian, ~!d2k_needle_guns
 		Queue: Addons
-		Description: upgrade-needle_guns.description
+		Description: upgrade-d2k_needle_guns.description
 		IconPalette: d2kunit
 	RenderSprites:
 		Image: light_inf
@@ -11169,10 +11197,11 @@ heavy_inf:
 		Step: 15
 	Armament@PRIMARY: ##########
 		Weapon: HeavyMachineGun
+		LocalOffset: 128,0,256
 		RequiresCondition: !d2k_needle_guns
 	Armament@Upgrade: ##########
 		Weapon: HeavyMachineGun_upgrade
-		LocalOffset: 256,0,256
+		LocalOffset: 128,0,256
 		RequiresCondition: d2k_needle_guns
 	Armament@GARRISONED: ##########
 		Name: garrisoned
@@ -11518,8 +11547,12 @@ heavy_rocket_raider_ixian:
 		Modifier: 50
 	RangeMultiplier@d2k_heavy_missile_upgrade:
 		Modifier: 110
+	FirepowerMultiplier@d2k_heavy_missile_upgrade:
+		Modifier: 125
 	RangeMultiplier@d2k_needle_guns:
 		Modifier: 105
+	FirepowerMultiplier@d2k_needle_guns:
+		Modifier: 75
 	RenderSprites:
 		Image: shock_raider
 	Cargo:
@@ -11683,13 +11716,16 @@ duelist_tank:
 	Cloak@TDcloak:
 	Voiced:
 		VoiceSet: D2KDuelistTank
+	RangeMultiplier@d2k_needle_guns:
+		Modifier: 105
+	FirepowerMultiplier@d2k_needle_guns:
+		Modifier: 110
 	ActorStatValues:
 		Upgrades: d2k_siege_range_upgrade, d2k_needle_guns, d2k_general_purpose_armor, d2k_advanced_ixian_technology
 
 quake_tank:
 	Inherits: ^D2KTank
 	Inherits@Template: ^LineBreakerTemplate
-	Inherits@Template: ^HighTechTankTemplate
 	Inherits@GAINSEXPERIENCE: ^EpicVehicleTemplate
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@exp: ^GainsExperienceRA
@@ -11876,6 +11912,8 @@ d2k_heavy_air_drone:
 		Bounds: 1536, 1280, 0, 0
 	SpawnActorOnDeath:
 		Actor: d2k_heavy_air_drone.husk
+	EjectOnDeath:
+		PilotActor: storm_infantry
 	Voiced:
 		VoiceSet: D2KVehicleVoice
 	RenderSprites:
@@ -12020,7 +12058,7 @@ d2k_farasha:
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	#Inherits@guildtele: ^Guild_teleport
 	Valued:
-		Cost: 5000
+		Cost: 10000
 	Tooltip:
 		Name: Farasha
 	UpdatesPlayerStatistics:
@@ -12118,6 +12156,8 @@ d2k_farasha:
 		Actor: d2k_farasha.husk
 		OwnerType: InternalName
 		EffectiveOwnerFromOwner: true
+	EjectOnDeath:
+		PilotActor: heavy_inf
 	FireProjectilesOnDeath:
 		Weapons: Debris, Debris2, Debris3, Debris4
 		Pieces: 6, 10
@@ -12148,7 +12188,7 @@ d2k_farasha_drone:
 	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Valued:
-		Cost: 100
+		Cost: 1000
 	Tooltip:
 		Name: Alfayrus
 	Hovers:
@@ -12163,7 +12203,7 @@ d2k_farasha_drone:
 	Targetable:
 		TargetTypes: Air
 	CarrierSlave:
-		LandingDistance: 8000
+		LandingDistance: 6400
 	HasParent:
 	Health:
 		HP: 12500
@@ -12185,6 +12225,7 @@ d2k_farasha_drone:
 		FacingTolerance: 80
 	Voiced:
 		VoiceSet: D2KVehicleVoice
+	RejectsOrders:
 	-ActorLostNotification:
 	-UpdatesPlayerStatistics:
 	HitShape:
@@ -12193,6 +12234,7 @@ d2k_farasha_drone:
 		Actor: d2k_farasha_drone.husk
 		OwnerType: InternalName
 		EffectiveOwnerFromOwner: true
+	-EjectOnDeath:
 	FireProjectilesOnDeath:
 		Weapons: Debris, Debris2
 		Pieces: 1, 2
@@ -12263,7 +12305,7 @@ d2k_jammer:
 		Condition: jammed
 	WithIdleOverlay@SPINNER:
 		Sequence: spinner
-		Offset: -64,0,0
+		Offset: -256,0,128
 	WithRangeCircle@JAMMER:
 		Type: jammer
 		Range: 18000
@@ -12275,9 +12317,11 @@ d2k_jammer:
 	Armament@Anim:
 		Weapon: empdisable.anim
 		RequiresCondition: end_disable == 0
+		LocalOffset: -128,0,256
 	Armament@End:
 		Weapon: empdisable.end
 		RequiresCondition: end_disable >= 1
+		LocalOffset: -128,0,256
 	GrantConditionOnAttack@End:
 		Condition: end_disable
 		RequiredShotsPerInstance: 25
@@ -12302,7 +12346,8 @@ d2k_jammer:
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled || base-reveal
 	RenderSprites:
-		Image: d2k_projector
+		Image: d2k_projector2
+		PlayerPalette: player_rgba
 	GrantConditionOnDeploy:
 		DeployedCondition: projection
 		SkipMakeAnimation: true
@@ -12381,7 +12426,7 @@ d2k_jammer:
 		GrantConditionWhenMasterIsPaused: paused
 	AutoTarget:
 		ScanRadius: 18
-	RejectsOrders:
+	# RejectsOrders:
 
 d2k_apparition:
 	Inherits@D2KT: ^D2KTank

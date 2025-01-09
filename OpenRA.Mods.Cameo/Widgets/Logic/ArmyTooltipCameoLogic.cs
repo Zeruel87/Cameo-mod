@@ -43,7 +43,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 					return;
 
 				var tooltip = armyUnit.TooltipInfo;
-				var name = tooltip != null ? FluentProvider.GetString(tooltip.Name) : armyUnit.ActorInfo.Name;
+				var name = tooltip != null ? FluentProvider.GetMessage(tooltip.Name) : armyUnit.ActorInfo.Name;
 				var buildable = armyUnit.BuildableInfo;
 
 				nameLabel.GetText = () => name;
@@ -51,7 +51,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 
 				var extras = armyUnit.ActorInfo.TraitInfos<TooltipExtrasInfo>();
 
-				extrasLabel.Text = String.Join("\n", extras.Select(extra => FluentProvider.GetString(extra.Description)));
+				extrasLabel.Text = String.Join("\n", extras.Select(extra => FluentProvider.GetMessage(extra.Description)));
 				var extraSize = new int2(0, 0);
 
 				if (extrasLabel.Text != "")
@@ -61,7 +61,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 					descLabel.Bounds.Y += extraSize.Y;
 				}
 
-				var desc = string.IsNullOrEmpty(buildable.Description) ? "" : FluentProvider.GetString(buildable.Description);
+				var desc = string.IsNullOrEmpty(buildable.Description) ? "" : FluentProvider.GetMessage(buildable.Description);
 				descLabel.GetText = () => desc;
 				var descSize = descFont.Measure(desc);
 				descLabel.Bounds.Width = descSize.X;

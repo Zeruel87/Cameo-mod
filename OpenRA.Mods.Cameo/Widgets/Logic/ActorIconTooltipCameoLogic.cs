@@ -59,7 +59,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 
 				var extras = unit.ActorInfo.TraitInfos<TooltipExtrasInfo>();
 
-				extrasLabel.Text = String.Join("\n", extras.Select(extra => FluentProvider.GetString(extra.Description)));
+				extrasLabel.Text = String.Join("\n", extras.Select(extra => FluentProvider.GetMessage(extra.Description)));
 				var extraSize = new int2(0, 0);
 
 				if (extrasLabel.Text != "")
@@ -78,7 +78,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 						if (!string.IsNullOrEmpty(descText))
 							descText += "\n";
 
-						descText += FluentProvider.GetString(tooltipDesc.TooltipText);
+						descText += FluentProvider.GetMessage(tooltipDesc.TooltipText);
 					}
 
 					descLabel.Text = descText;
@@ -88,7 +88,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 				}
 				else if (buildable != null && !string.IsNullOrEmpty(buildable.Description))
 				{
-					descLabel.Text = FluentProvider.GetString(buildable.Description);
+					descLabel.Text = FluentProvider.GetMessage(buildable.Description);
 					descSize = descFont.Measure(descLabel.Text);
 					descLabel.Bounds.Width = descSize.X;
 					descLabel.Bounds.Height = descSize.Y + descLabelPadding;

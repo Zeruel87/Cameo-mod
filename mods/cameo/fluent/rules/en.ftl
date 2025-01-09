@@ -1501,18 +1501,17 @@ upgrade-armorpiercingbullets =
     Also adds a machine gun to the Battle and Predator Tank and increases damage by 5%.
 
 upgrade-heavyaircraftarmorplating =
-   .description = Increases armor of Orcas, Firehawks, Chinooks and A10s by 30%.
+   .description = Increases armor of Orcas, Firehawks, Chinooks and A10s by 50%.
 
 upgrade-advancedmissiletargeting =
-   .description = Increases missile speed and Acceleration.
-   Increases range of all missile weapons by 15%.
-   Rocket Launchers increase range by 33%
+   .description = Increases missile damage, speed and Acceleration.
+   Increases damange and range of all missile weapons by 15%.
    Tanks increase range by 5%
    Firehawks shoot twice the amount of missiles.
 
 upgrade-cuttingedgeequipment =
-   .description = Increases armor, damage and fire rate of all experimental and prototype units by 10%.
-   Doubles the effect for EMP Grenadiers, Experimental Exosuits and Firehawks and Havoc.
+   .description = Increases armor, damage and fire rate of all units and defenses by 10%.
+   Doubles the effect for EMP Grenadiers, Experimental Exosuits, Firehawks and Havoc.
 
 upgrade-highvelocitycannons =
    .description = Increases damage and range of cannons and railguns by 15%.
@@ -1521,31 +1520,27 @@ upgrade-highvelocitycannons =
 
 upgrade-lightweightarmorplating =
    .description = TEAM UPGRADE
-   Increases armor by 20% and speed by 10% of all tanks in your team.
+   Increases armor by 20% and speed by 10% of all tanks, scout and support vehicles in your team.
 
 upgrade-guerillatactics =
-   .description = Increases speed, range, damage and vision of all hit and run units by 5%.
-   The following units count as hit and run:
-   Minigunner, Flamer, Chemical Warrior, Commando, Buggy, Recon Bike, Light Tank,
-   SSM Launcher, Stealth Tank, Apache, Attack Submarine, Ballistic Missile Submarine,
-   Chemical Attack Bike, Chemical Stealth Tank, Nod Buggy Mk2, Black Hand Flamer,
-   Stealth Soldier, Stealth Harvester, Specter Artillery, Venom, Laser Commando.
+   .description = Increases speed, range, damage and vision of all infantry,
+   scout vehicles, support vehicles, tanks, helicopters, fire support and stealth units by 5%.
 
 upgrade-tiberiuminfusion =
    .description = Gives infantry rapid regeneration and 10% more speed.
 
 upgrade-improvedartilleries =
    .description = Increases weapon and vision range of all artillery weapons.
-   Artillery: 10%
+   Artillery and Gun Turret: 10%
    Specter: 15%
    Chemical SSM Launcher: 20%
    Ballistic Missile Submarine: 25%
 
 upgrade-elementalwarfare =
-   .description = Increases damage of all flame and chemical weapons by 20%.
+   .description = Increases damage of all flame and chemical weapons by 25%.
 
 upgrade-elitecapacitors =
-   .description = Slightly increases range, damage, fire rate and vision of all laser weapons by 10%
+   .description = Increases range, damage, fire rate and vision of all laser weapons by 10%
    Obelisks of Light increase range, damage, fire rate and vision by 15%.
 
 upgrade-cyberneticmodifications =
@@ -1557,36 +1552,39 @@ upgrade-blackmarketupgrades =
    .description = Gives certain units new or additional weapons:
    Minigunner: Gets a Laser Rifle.
    Buggy Mk1 and Mk2: Adds a Flamethrower.
-   Light Tank Mk1: Adds a Missile Launcher.
-   Apache: Adds addtional missiles.
-   Artillery and Specter: Increases spread of the warhead and damage to vehicles.
+   Light Tank Mk1 and Mk2: Adds a Missile Launcher.
+   Apache: Adds addtional Missile Launchers.
+   Artillery and Specter: Increases damage and spread of the warhead makes it more effective against vehicles.
    Gun Turret and Attack Submarine: Increases damage and spread of the warhead.
 
 upgrade-advancedguerillatactics =
    .description = TEAM UPGRADE
-   Increases speed, range and damage of all scouts, support vehicles and fire supports in your team
-   by 10% and gives the units higher vision.
+   Increases speed, range and damage of all infantry, scouts, support vehicles and fire supports in your team
+   by 5% and gives the units higher vision.
+   For Nod it also doubles the effect for all units affected by the guerilla tactics upgrade.
 
 upgrade-conscription =
-   .description = Decreases cost and training time for all infantry and Hip Transports by 50%.
+   .description = Decreases cost and training time for all infantry Flak Tracks, BTRs and Hip Transports by 50%.
    Unlocks the "Paratroopers" Support power from the Soviet Airfield.
+   Infantry deal 25% more damage.
 
 upgrade-nuclearengines =
    .description = Increases speed of tanks by 25%.
+   Tank damage is also increased by 10%
 
 upgrade-rocketenhancements =
-   .description = Increases weapon and vision range of all ballistic rockets:
+   .description = Increases weapon and vision range and damage of all ballistic rockets:
    V1 Truck: 25%
    V2 Launcher: 20%
-   Nuclear V2 Launcher: 15%
-   Missile Submarine: 10%
-   Volkov and Monstertank: 5%
+   Nuclear V2 Launcher, Mig and Su-57: 15%
+   Missile Submarine, SAM Site and Hind: 10%
+   Mammoth Tank, Monster Tank and Volkov: 5%
 
 upgrade-advancedthermobarics =
    .description = Increases damage of all fire and nuclear weapons by 25%.
    Adds Napalm Warheads to the V1 Truck, Mig, Su-57 and all tanks.
    V2 Launcher and Nuclear V2 Launcher increase damage by 100%.
-   Adds Incendiary Bullets to the Yak and Hind.
+   Adds Incendiary Bullets to the Rifle Infantry, Yak, Hind and Gatling Tank.
    Increases Armor of the Flamethrower Infantry and Fire Rocket Soldier by 50%
 
 upgrade-experimentalteslaweaponry =
@@ -1595,8 +1593,9 @@ upgrade-experimentalteslaweaponry =
    Unlocks the "Parabombs" Support power from the Soviet Airfield.
 
 upgrade-afterburners =
-   .description = Increases range and speed of Migs, Su-57s and Nuclear Bombers by 15%.
+   .description = Increases damage, range and speed of Migs, Su-57s and Nuclear Bombers by 15%.
    Unlocks the "Spyplane" Support power from the Soviet Airfield.
+   Jets also take 15% less damage.
 
 upgrade-sovietautoloaders =
    .description = Increases the fire rate of all tank cannons by 100%.
@@ -1612,7 +1611,7 @@ upgrade-advancedradarsystems =
    Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
 
 upgrade-infantryarmorplating =
-   .description = Increases armor of all infantry units by 20%.
+   .description = Increases armor of all infantry units by 30%.
 
 upgrade-reinforcedstructures =
    .description = Increases armor of all buildings and defenses by 25%.
@@ -1622,16 +1621,17 @@ upgrade-cryomissiles =
    Each hit slows down the enemy target by 10%, increases damage taken by 10% and stacks 10 times.
    Each stack lasts 5 seconds and on 10 stacks the unit is completely disabled.
    Artillery, Bastion and Rapier Jumpjet get cryo bombs with double the cryo effect radius.
-   With no stacks applied to the target, cryo missiles deal 50% and cryo bombs 25% less damage than before.
+   With no stacks applied to the target, cryo missiles and bombs deal 20% less damage than before.
 
 upgrade-lasertargetingsystems =
    .description = Increases damage of all tanks and aircraft by 25%
 
 upgrade-airsuperioritydoctrine =
-   .description = Increases damage, firerate, armor, speed, range and accuracy by 5%.
+   .description = Increases damage, firerate, armor, speed, range and accuracy by 10%.
 
 upgrade-chronoarmor =
-   .description = After taking damage, tanks will activate a chrono field which increases armor by 50% and speed by 100%
+   .description = After taking damage, tanks will activate a chrono field which increases armor by 35% and speed by 50%
+   Unlocks Chrono Reinforcements from the Chronosphere.
 
 upgrade-gpssatellitesupport =
    .description = TEAM UPGRADE
@@ -1647,7 +1647,7 @@ upgrade-energizedarrows =
    Arrows are upgraded with an electric charge that deals bonus damamge to infantry and disables vehicles and structures.
 
 upgrade-waveforcebullets =
-   .description = Increases range and damage of all bullets by 15% and makes them more effective against armor.
+   .description = Increases range and damage of all bullets by 10% and makes them more effective against armor.
 
 upgrade-stealthsuitintegration =
    .description = All Infantry come equipped with a stealth suit, that makes them invisible when not attacking or moving.
@@ -1666,7 +1666,9 @@ upgrade-advancedplasmaweapons =
 upgrade-nanotechrepairs =
    .description = TEAM UPGRADE
    Increases armor of all vehicles in your team by 10% and makes them regnerate faster.
-   For Japan the effect is also applied to all aircraft and buildings.
+   For Japan the effect is also applied to all aircrafts and buildings.
+   Japanese Fire Support Vehicles and Tanks also get a nanodrone shield
+   for 0.2 seconds after taking damage that increases armor by 50%.
 
 upgrade-wind_trap =
    .description = Increases power output of Wind Traps by 100%.
