@@ -268,6 +268,9 @@ Player:
 	FirepowerMultiplier@up_elementalwarfare:
 		RequiresCondition: up_elementalwarfare
 		Modifier: 125
+	DamageMultiplier@up_elementalwarfare:
+		RequiresCondition: up_elementalwarfare
+		Modifier: 80
 	GrantConditionOnPrerequisite@up_elementalwarfare:
 		Condition: up_elementalwarfare
 		Prerequisites: up_elementalwarfare
@@ -377,6 +380,9 @@ Player:
 	SpeedMultiplier@up_tiberiuminfusion:
 		RequiresCondition: up_tiberiuminfusion
 		Modifier: 110
+	DamageMultiplier@up_tiberiuminfusion:
+		RequiresCondition: up_tiberiuminfusion
+		Modifier: 90
 	ActorStatValues:
 		Upgrades: up_tiberiuminfusion
 
@@ -512,6 +518,7 @@ E2:
 	Inherits: ^Soldier
 	Inherits@anim: ^TDRAInfantry
 	Inherits@Template: ^LightInfantryTemplate
+	Inherits@explode: ^ExplodingInfantry
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -652,6 +659,7 @@ E4:
 	Inherits: ^Soldier
 	Inherits@anim: ^TDRAInfantry
 	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@explode: ^ExplodingInfantry
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -748,8 +756,6 @@ E5:
 		MuzzleSequence: muzzle
 	FireWarheadsOnDeath:
 		Weapon: SmallTiberiumExplosion
-		EmptyWeapon: SmallTiberiumExplosion
-		Chance: 100
 	TakeCover:
 		ProneOffset: 190,0,-190
 	WithMuzzleOverlay:
@@ -931,6 +937,7 @@ RMBO.GDI:
 		Prerequisites: ~eye, ~!upgdihavoc
 	Armament:
 		Weapon: Sniper
+		LocalOffset: 128,0,256
 		RequiresCondition: !up_armorpiercingbullets
 	Armament@GARRISONED:
 		Name: garrisoned
@@ -938,6 +945,7 @@ RMBO.GDI:
 		RequiresCondition: !up_armorpiercingbullets
 	Armament@Upgrade: ##########
 		Weapon: SniperAP
+		LocalOffset: 128,0,256
 		RequiresCondition: up_armorpiercingbullets
 	Armament@UpgradeGARRISONED: ##########
 		Name: garrisoned
@@ -1194,6 +1202,10 @@ ARTY:
 		Modifier: 120
 	FireWarheadsOnDeath:
 		Weapon: ArtilleryShell
+		RequiresCondition: !up_blackmarketupgrades
+	FireWarheadsOnDeath@Upgrade:
+		Weapon: ArtilleryShellUpgrade
+		RequiresCondition: up_blackmarketupgrades
 	ActorStatValues:
 		Upgrades: up_improvedartilleries, up_blackmarketupgrades
 
@@ -1205,6 +1217,8 @@ FTNK:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@upgrade: ^GuerillaTactics
+	Inherits@upgrade: ^AdvancedGuerillaTactics
 	Inherits@upgrade: ^ElementalWarfare
 	Inherits@decoration: ^NodRankDecoration
 	Valued:
@@ -1238,10 +1252,9 @@ FTNK:
 	WithMuzzleOverlay:
 	FireWarheadsOnDeath:
 		Weapon: FlametankExplode
-	#SpawnActorOnDeath:
-	#	Actor: FTNK.Husk
-	#	OwnerType: InternalName
-	#	EffectiveOwnerFromOwner: true
+	ActorStatValues:
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_elementalwarfare
+
 
 BGGY:
 	Inherits: ^Vehicle
@@ -1830,7 +1843,7 @@ MSSM:
 	KeepsDistance:
 		Distance: 8
 	ActorStatValues:
-		Upgrades: up_elementalwarfare, up_guerillatactics, up_advancedguerillatactics
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_elementalwarfare
 
 STNK:
 	Inherits: ^Vehicle
@@ -1888,6 +1901,26 @@ STNK:
 	FireWarheadsOnDeath:
 		Weapon: UnitExplode
 	-MustBeDestroyed:
+	SpeedMultiplier@up_guerillatactics:
+		Modifier: 110
+	RangeMultiplier@up_guerillatactics:
+		Modifier: 110
+	FirepowerMultiplier@up_guerillatactics:
+		Modifier: 110
+	RevealsShroudMultiplier@up_guerillatactics:
+		Modifier: 110
+	DetectCloakedMultiplier@up_guerillatactics:
+		Modifier: 110
+	SpeedMultiplier@up_advancedguerillatactics:
+		Modifier: 110
+	RangeMultiplier@up_advancedguerillatactics:
+		Modifier: 110
+	FirepowerMultiplier@up_advancedguerillatactics:
+		Modifier: 110
+	RevealsShroudMultiplier@up_advancedguerillatactics:
+		Modifier: 110
+	DetectCloakedMultiplier@up_advancedguerillatactics:
+		Modifier: 110
 	ActorStatValues:
 		Upgrades: up_guerillatactics, up_advancedguerillatactics
 
@@ -2388,8 +2421,8 @@ NUK2:
 	ScalePowerWithHealth:
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: building ##########
-	ProvidesPrerequisite@buildingname:
-		Prerequisite: nuk
+	ProvidesPrerequisite@powerplant:
+		Prerequisite: nuke
 
 ^TDPROC:
 	Inherits: ^BaseBuilding
@@ -4106,7 +4139,7 @@ up_guerillatactics:
 		Description: upgrade-guerillatactics.description
 		Prerequisites: ~hq.nod, !up_guerillatactics
 	RenderSprites:
-		Image: stnk
+		Image: guerillatacticsicon
 	ProvidesPrerequisite:
 
 up_tiberiuminfusion:
@@ -4121,7 +4154,7 @@ up_tiberiuminfusion:
 		Description: upgrade-tiberiuminfusion.description
 		Prerequisites: ~hq.nod, !up_tiberiuminfusion
 	RenderSprites:
-		Image: e5
+		Image: tiberiuminfusionicon
 	ProvidesPrerequisite:
 
 up_improvedartilleries:
@@ -4136,7 +4169,7 @@ up_improvedartilleries:
 		Description: upgrade-improvedartilleries.description
 		Prerequisites: ~hq.nod, !up_improvedartilleries
 	RenderSprites:
-		Image: arty
+		Image: improvedartilleriesicon
 	ProvidesPrerequisite:
 
 up_elementalwarfare:
@@ -4151,7 +4184,7 @@ up_elementalwarfare:
 		Description: upgrade-elementalwarfare.description
 		Prerequisites: ~tmpl, !up_elementalwarfare
 	RenderSprites:
-		Image: ftnk
+		Image: elementalwarfareicon
 	ProvidesPrerequisite:
 
 up_elitecapacitors:
@@ -4166,7 +4199,7 @@ up_elitecapacitors:
 		Description: upgrade-elitecapacitors.description
 		Prerequisites: ~tmpl, !up_elitecapacitors
 	RenderSprites:
-		Image: obli
+		Image: elitecapacitorsicon
 	ProvidesPrerequisite:
 
 up_cyberneticmodifications:
@@ -4181,7 +4214,7 @@ up_cyberneticmodifications:
 		Description: upgrade-cyberneticmodifications.description
 		Prerequisites: ~tmpl, !up_cyberneticmodifications
 	RenderSprites:
-		Image: tscyborg
+		Image: cyberneticmodificationsicon
 	ProvidesPrerequisite:
 
 up_blackmarketupgrades:
@@ -4196,7 +4229,7 @@ up_blackmarketupgrades:
 		Description: upgrade-blackmarketupgrades.description
 		Prerequisites: ~tmpl, !up_blackmarketupgrades
 	RenderSprites:
-		Image: tmpl
+		Image: blackmarketupgradesicon
 	ProvidesPrerequisite:
 
 up_advancedguerillatactics:
@@ -4211,7 +4244,7 @@ up_advancedguerillatactics:
 		Description: upgrade-advancedguerillatactics.description
 		Prerequisites: ~tmpl, up_guerillatactics, !up_advancedguerillatactics
 	RenderSprites:
-		Image: chemstnk
+		Image: advancedguerillatacticsicon
 	#ProvidesPrerequisite:
 	ProvidesTeamProxyActor:
 		Actor: team_upgrade.up_advancedguerillatactics
@@ -4221,7 +4254,7 @@ team_upgrade.up_advancedguerillatactics:
 	ProvidesPrerequisite:
 		Prerequisite: up_advancedguerillatactics
 	RenderSprites:
-		Image: chemstnk
+		Image: advancedguerillatacticsicon
 	Tooltip:
 		Name: Advanced Guerrilla Tactics
 	Buildable:
@@ -4518,7 +4551,7 @@ chembike:
 	FireWarheadsOnDeath:
 		Weapon: SmallTiberiumExplosion
 	ActorStatValues:
-		Upgrades: up_elementalwarfare, up_guerillatactics, up_advancedguerillatactics
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_elementalwarfare
 
 chemstnk:
 	Inherits: ^Vehicle
@@ -4579,7 +4612,7 @@ chemstnk:
 		CloakDelay: 75
 	-MustBeDestroyed:
 	ActorStatValues:
-		Upgrades: up_elementalwarfare, up_guerillatactics, up_advancedguerillatactics
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_elementalwarfare
 
 chemssm:
 	Inherits: ^Vehicle
@@ -4742,6 +4775,8 @@ nodltnk2:
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@AntiTank: ^PrioritizeTank
 	Inherits@PLD: ^PointLaserDefenseSystem
+	Inherits@upgrade: ^GuerillaTactics
+	Inherits@upgrade: ^AdvancedGuerillaTactics
 	Inherits@upgrade: ^ElementalWarfare
 	Inherits@upgrade: ^EliteCapacitors
 	Inherits@upgrade: ^BlackMarketUpgrades
@@ -4812,7 +4847,7 @@ nodltnk2:
 	FireWarheadsOnDeath:
 		Weapon: UnitExplode
 	ActorStatValues:
-		Upgrades: up_elementalwarfare, up_elitecapacitors, up_blackmarketupgrades
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_elementalwarfare, up_elitecapacitors, up_blackmarketupgrades
 
 nodftnk2:
 	Inherits: ^Tank
@@ -4823,6 +4858,8 @@ nodftnk2:
 	Inherits@EMP: ^TurretEMP
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@upgrade: ^GuerillaTactics
+	Inherits@upgrade: ^AdvancedGuerillaTactics
 	Inherits@upgrade: ^ElementalWarfare
 	Inherits@decoration: ^NodRankDecoration
 	Valued:
@@ -4862,6 +4899,8 @@ nodftnk2:
 	WithSpriteTurret:
 	FireWarheadsOnDeath:
 		Weapon: FlametankExplode2
+	ActorStatValues:
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_elementalwarfare
 
 tsblackhandlaser:
 	Inherits: ^Soldier
@@ -5114,6 +5153,10 @@ nodspecter:
 		Modifier: 130
 	FireWarheadsOnDeath:
 		Weapon: SpecterArtilleryShell
+		RequiresCondition: !up_blackmarketupgrades
+	FireWarheadsOnDeath@Upgrade:
+		Weapon: SpecterArtilleryShellUpgrade
+		RequiresCondition: up_blackmarketupgrades
 	RenderSprites:
 		Image: nodspecter
 	Voiced:
@@ -5121,7 +5164,7 @@ nodspecter:
 	Cloak:
 		UncloakOn: Attack, Damage
 	ActorStatValues:
-		Upgrades: up_improvedartilleries, up_guerillatactics, up_advancedguerillatactics, up_blackmarketupgrades
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_improvedartilleries, up_blackmarketupgrades
 
 nodvenom:
 	Inherits: ^Helicopter
@@ -5190,7 +5233,7 @@ nodvenom:
 	Cloak:
 		UncloakOn: Attack, Damage
 	ActorStatValues:
-		Upgrades: up_elitecapacitors, up_guerillatactics, up_advancedguerillatactics
+		Upgrades: up_guerillatactics, up_advancedguerillatactics, up_elitecapacitors
 
 nodvenom.husk:
 	Inherits: ^SmallHelicopterHusk
@@ -5345,7 +5388,7 @@ up_longrangesensors:
 		Description: upgrade-longrangesensors.description
 		Prerequisites: ~hq.gdi, !up_longrangesensors
 	RenderSprites:
-		Image: eye
+		Image: longrangesensorsicon
 	ProvidesPrerequisite:
 
 up_armorpiercingbullets:
@@ -5360,7 +5403,7 @@ up_armorpiercingbullets:
 		Description: upgrade-armorpiercingbullets.description
 		Prerequisites: ~hq.gdi, !up_armorpiercingbullets
 	RenderSprites:
-		Image: newhumvee
+		Image: armorpiercingbulletsicon
 	ProvidesPrerequisite:
 
 up_heavyaircraftarmorplating:
@@ -5375,7 +5418,7 @@ up_heavyaircraftarmorplating:
 		Description: upgrade-heavyaircraftarmorplating.description
 		Prerequisites: ~eye, !up_heavyaircraftarmorplating
 	RenderSprites:
-		Image: gdifirehawk
+		Image: aircraftarmorplatingicon
 	ProvidesPrerequisite:
 
 up_advancedmissiletargeting:
@@ -5390,7 +5433,7 @@ up_advancedmissiletargeting:
 		Description: upgrade-advancedmissiletargeting.description
 		Prerequisites: ~eye, !up_advancedmissiletargeting
 	RenderSprites:
-		Image: msam
+		Image: advancedmissiletargetingicon
 	ProvidesPrerequisite:
 
 up_cuttingedgeequipment:
@@ -5405,7 +5448,7 @@ up_cuttingedgeequipment:
 		Description: upgrade-cuttingedgeequipment.description
 		Prerequisites: ~eye, !up_cuttingedgeequipment
 	RenderSprites:
-		Image: gdiexosuit
+		Image: cuttingedgeequipmenticon
 	ProvidesPrerequisite:
 
 up_highvelocitycannons:
@@ -5420,7 +5463,7 @@ up_highvelocitycannons:
 		Description: upgrade-highvelocitycannons.description
 		Prerequisites: ~eye, !up_highvelocitycannons
 	RenderSprites:
-		Image: mtnk
+		Image: highvelocitycannonsicon
 	ProvidesPrerequisite:
 
 up_lightweightarmorplating:
@@ -5435,7 +5478,7 @@ up_lightweightarmorplating:
 		Description: upgrade-lightweightarmorplating.description
 		Prerequisites: ~eye, !up_lightweightarmorplating
 	RenderSprites:
-		Image: htnk
+		Image: lightweightarmorplatingicon
 	ProvidesTeamProxyActor:
 		Actor: team_upgrade.up_lightweightarmorplating
 	#ProvidesPrerequisite:
@@ -5445,7 +5488,7 @@ team_upgrade.up_lightweightarmorplating:
 	ProvidesPrerequisite:
 		Prerequisite: up_lightweightarmorplating
 	RenderSprites:
-		Image: htnk
+		Image: lightweightarmorplatingicon
 	Tooltip:
 		Name: Lightweight Armor Plating
 	Buildable:
@@ -5693,6 +5736,7 @@ gdiempgrenadier:
 	Inherits: ^Soldier
 	Inherits@anim: ^TDRAInfantry
 	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@explode: ^ExplodingInfantry
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -5741,8 +5785,6 @@ gdiempgrenadier:
 		DefaultAttackSequence: throw
 	FireWarheadsOnDeath:
 		Weapon: EMPGrenade
-		EmptyWeapon: EMPGrenade
-		Chance: 100
 	Voiced:
 		VoiceSet: TSInfantry
 	ActorStatValues:
@@ -5781,7 +5823,6 @@ gdisniper:
 	Armament:
 		Weapon: GDISniperRifle
 		LocalOffset: 0,0,427
-		FireDelay: 2
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: GDISniperRifle

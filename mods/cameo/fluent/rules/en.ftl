@@ -1459,6 +1459,13 @@ actor-farasha =
       Carries 5 Alfayrus drones.
        Strong vs Everything
 
+actor-ixprojector =
+   .description =  Ultimate Ixian unit for causing chaos and distraction among enemy forces
+   Jams enemy radars and disables enemy units and buildings with an EMP beam.
+   Can make fake projections giving impression there is a larger army present.
+   Projections disappears when too far away from Projector
+   Special Abilities: Invisibility, Projections, Detector
+
 actor-d2k_munitions =
    .description = Increases firing speed of nearby units.
       Effect can stack.
@@ -1525,9 +1532,10 @@ upgrade-lightweightarmorplating =
 upgrade-guerillatactics =
    .description = Increases speed, range, damage and vision of all infantry,
    scout vehicles, support vehicles, tanks, helicopters, fire support and stealth units by 5%.
+   The effect is doubled for the Stealth Tank.
 
 upgrade-tiberiuminfusion =
-   .description = Gives infantry rapid regeneration and 10% more speed.
+   .description = Gives infantry rapid regeneration and 10% more speed and armor.
 
 upgrade-improvedartilleries =
    .description = Increases weapon and vision range of all artillery weapons.
@@ -1538,6 +1546,7 @@ upgrade-improvedartilleries =
 
 upgrade-elementalwarfare =
    .description = Increases damage of all flame and chemical weapons by 25%.
+   Increases armor of elemental warfare units by 20%
 
 upgrade-elitecapacitors =
    .description = Increases range, damage, fire rate and vision of all laser weapons by 10%
@@ -1562,11 +1571,12 @@ upgrade-advancedguerillatactics =
    Increases speed, range and damage of all infantry, scouts, support vehicles and fire supports in your team
    by 5% and gives the units higher vision.
    For Nod it also doubles the effect for all units affected by the guerilla tactics upgrade.
+   The effect is doubled once more for the Stealth Tank.
 
 upgrade-conscription =
    .description = Decreases cost and training time for all infantry Flak Tracks, BTRs and Hip Transports by 50%.
    Unlocks the "Paratroopers" Support power from the Soviet Airfield.
-   Infantry deal 25% more damage.
+   All Infantry and Troop Transports deal 10% more damage and have 10% more armor.
 
 upgrade-nuclearengines =
    .description = Increases speed of tanks by 25%.
@@ -1585,7 +1595,7 @@ upgrade-advancedthermobarics =
    Adds Napalm Warheads to the V1 Truck, Mig, Su-57 and all tanks.
    V2 Launcher and Nuclear V2 Launcher increase damage by 100%.
    Adds Incendiary Bullets to the Rifle Infantry, Yak, Hind and Gatling Tank.
-   Increases Armor of the Flamethrower Infantry and Fire Rocket Soldier by 50%
+   Increases Armor of Grenadiers, Flamethrowers, Fire Rocket Soldiers and Mortar Soldiers by 50%
 
 upgrade-experimentalteslaweaponry =
    .description = Increases damage of tesla weapons by 50%
