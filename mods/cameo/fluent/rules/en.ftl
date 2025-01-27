@@ -51,7 +51,7 @@ actor-arty =
    .description = Long-range artillery.
         Strong vs Buildings
         Weak vs Air
-   .tdname = Nod artillery
+   .tdname = Nod Artillery
    .raname = Allied Artillery
 
 actor-ftnk =
@@ -1390,7 +1390,7 @@ actor-steel_board_inf =
    .description = Armed with anti-vehicle grenades.
 
 actor-steel_mako =
-   .description = Fast hoverbike armed with an anti-tank cannon.
+   .description = Main battle hoverbike.
 
 actor-steel_manta =
    .description = Anti-infantry and anti-air vehicle.
@@ -1416,6 +1416,167 @@ actor-steel_grun =
 
 actor-steel_inspect =
    .description = Armed with an ion cannon.
+
+actor-latin_mili =
+   .description = Basic rifle infantry.
+       Can be upgraded with Molotovs.
+
+actor-latin_fftr =
+   .description = Attacks vehicles and aircraft with explosive arrows.
+
+actor-latin_fthrow =
+   .description = Flamethrower infantry.
+
+actor-latin_monkey =
+   .description = Primate armed with grenades.
+
+actor-latin_narco =
+   .description = Elite infantry armed with pistols and grenades.
+
+actor-latin_yakovlev =
+   .description = Attack aircraft armed with machine guns.
+
+actor-latin_buggy =
+   .description = Fast attack vehicle armed with machine guns.
+       Can be upgraded with gatling guns
+
+actor-latin_mortarbike =
+   .description = Fast light artillery vehicle.
+
+actor-latin_humvee =
+   .description = Drive-by vehicle loaded with Narcos.
+
+actor-latin_apc =
+   .description = Amphibious infantry transport.
+      Can attack air.
+
+actor-latin_diablo =
+   .description = Anti-aircraft tank.
+
+actor-latin_burrito =
+   .description = Incendiary heavy rocket artillery.
+
+actor-latin_lars =
+   .description = Long range anti air support.
+
+actor-latin_topol =
+   .description = ICBM launcher.
+
+actor-latin_sml =
+   .description = Long-range missile launcher.
+      Rockets can be shot down
+
+actor-latin_ca12hit =
+   .description = Provides Topol Storm support power.
+      Requires power to operate.
+
+actor-nax_merc =
+   .description = Rifle infantry that gains greater bonuses from veterancy.
+
+actor-nax_mp40 =
+   .description = Elite assault infantry.
+
+actor-nax_litt =
+   .description = Commando armed with a gun that creates black holes.
+      Black holes damage nearby enemies and can be targeted
+
+actor-nax_slavemaster =
+   .description = Collects resources for processing.
+      Armed with a rifle.
+
+actor-nax_atankcann = 
+   .description = Anti-tank artillery piece.
+      Very slow to move and turn
+
+actor-nax_alien =
+   .description = Alien armed with an energy cannon.
+
+actor-nax_hmg =
+   .description = Machine gun crew.
+      Needs to deploy to attack.
+
+actor-nax_quadflak =
+   .description = Flak cannon crew.
+      Needs to deploy to attack.
+      Can only attack air.
+
+actor-nax_kubel =
+   .description = Fast scout vehicle with 2 passengers.
+      Can attack air.
+
+actor-nax_bmwbike =
+   .description = Very fast scout vehicle.
+      Can attack air.
+
+actor-nax_wirbelwind =
+   .description = Anti-aircraft and anti-infantry tank.
+
+actor-nax_grille =
+   .description = Self-propelled medium-range howitzer.
+
+actor-nax_brummbar =
+   .description = Self-propelled long-range howitzer.
+
+actor-nax_sturmtiger =
+   .description = Heavily armored assault artillery.
+
+actor-nax_hetzer =
+   .description = Light tank destroyer.
+
+actor-nax_jagdpanzer =
+   .description = Heavy tank destroyer.
+
+actor-nax_eng =
+   .description = Captures buildings and repairs vehicles.
+      Unarmed
+
+actor-nax_brad =
+   .description = Multiple rocket launcher.
+      Rockets can be shot down
+
+actor-nax_sarubia =
+   .description = Main battle tank.
+      Projectiles can be shot down
+   
+actor-nax_shoe =
+   .description = Superheavy tank armed with cannons, mortars, and rockets.
+      Has fireports for 2 passengers.
+
+actor-nax_nokana =
+   .description = Superheavy tank with a fireport for a vehicle.
+      Armed with cannons and rockets
+
+actor-nax_haunebu =
+   .description = Multirole floating disc.
+
+actor-nax_haunebu2 =
+   .description = Heavy multirole floating disc.
+      Drops a cow on targets.
+
+actor-nax_me262 =
+   .description = Multirole fighter armed with machineguns.
+
+actor-nax_piercer =
+   .description = Advanced multirole fighter.
+      Projectiles splash and corrode targets,
+      inflicting debuffs and damage over time.
+
+actor-nax_dieglocke =
+   .description = Superheavy spaceship.
+      Creates massive toxin clouds.
+      Only attacks targets below.
+
+actor-nax_flak88 =
+   .description = All-purpose defense.
+      Can attack air.
+
+actor-nax_airfield =
+   .description = Produces aircraft.
+      Automatically deploys fighters to attack enemies.
+
+actor-nax_rocket =
+   .description = Provides a V1 missile.
+      Requires power to operate
 
 actor-shock_infantry =
    .description = Armed with a shock gun.
@@ -1716,6 +1877,41 @@ upgrade-d2k_advanced_ixian_technology =
    Gives shields to all vehicles and aircraft and doubles shock and storm weapon damage.
    Stealth Generators are also given to Ix Missile Tanks and Ix Siege Tanks.
    Infantry with Personal Shield Generators also have 50% more shield armor.
+
+upgrade-uplatin_mili =
+   .description =  Equips Militias with Molotovs. 
+   Increases Militia armor by 50% and gives self healing.
+   Increases firepower and armor of all other Infantry by 25%.
+
+upgrade-uplatin_ngbunk2 =
+   .description = Increases garrisoned buildings range, vision and armor by 30%.
+
+upgrade-uplatin_up_tech1 =
+   .description = Enables the production of drive by cars from the Recycle Center.
+   Unlocks stolen tech upgrades in the Spy Center.
+
+upgrade-latin_up_chaingun =
+   .description = Stolen Tech from Yuri:
+       Equips Militia, Buggies and Sentries with Chainguns.
+       Increases fire rate of Diablos, APCs and AA Defenders.
+
+upgrade-latin_up_industrial = 
+   .description = Stolen Tech from Soviets:
+       Reduces cost of vehicles by 10%.
+       Increases armor and speed of all vehicles by 10%
+
+upgrade-uplatin_alliedstolentech =
+   .description = Stolen Tech from Allies:
+       Equips tanks, APCs and Narco vehicles with additional rocket launchers.
+       Freedom Fighters and Diablos disguise as trees and gain 25% higher range.
+
+upgrade-latin_up_hotfire =
+   .description =  Stolen Tech from Asian Alliance:
+       Increases damage, range and fire rate of Missile Trucks and Burritos by 25%.
+       Suicide Units and Flame Troopers have their damage increased by 100%.
+
+upgrade-uplatin_cashrecover =
+   .description = Recycles lost vehicles for a cashback of 10%.
 
 template-mcv =
    .description = Deploys into another Construction Yard.

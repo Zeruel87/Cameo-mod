@@ -569,6 +569,7 @@
 	AutoTargetPriority@DEFENCE:
 		ValidTargets: Defense
 		Priority: 90
+		InvalidTargets: TeslaCoil
 	AutoTargetPriority@VEHICLE:
 		ValidTargets: Vehicle
 		Priority: 80
@@ -2075,12 +2076,14 @@
 		KilledOnImpassableTerrain: false
 	KillsSelf@EMP:
 		RequiresCondition: (empdisable || superfreeze) && airborne
+
+^AircraftEjectOnDeath:
 	EjectOnDeath:
 		PilotActor: RARE1
 		SuccessRate: 100
 		EjectOnGround: false
 		EjectInAir: true
-		AllowUnsuitableCell: true
+		AllowUnsuitableCell: false
 		ChuteSound: chute1.aud
 
 ^AirstrikePlane:
@@ -2227,6 +2230,7 @@
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
 		Range: 4c0
+		Type: GroundPosition
 	Targetable@chrono:
 		TargetTypes: Chronobeamable
 		RequiresCondition: !airborne
@@ -4040,7 +4044,15 @@
 
 ^Shroudable:
 	ExternalCondition@shrouded:
+		Condition: gap-shroud
+	GrantConditionOnAttack@unshroud:
+		Condition: firing
+		RevokeDelay: 50
+		ArmamentNames: primary, secondary, deployed, garrisoned
+		RequiresCondition: gap-shroud
+	GrantCondition@shrouded:
 		Condition: shrouded
+		RequiresCondition: gap-shroud && !firing
 	WithColoredOverlay@shrouded:
 		RequiresCondition: shrouded
 		Color: 11223344
@@ -5886,8 +5898,7 @@ CPQDEBUGDUMMY:
 		ActorTypes: rae6,rae1,rae1,rae1
 
 ^RASovietSpawnActorsOnSell:
-	Building:
-		BuildSounds: placbldg.aud, build5.aud
+	Inherits: ^RASpawnActorsOnSell
 	SpawnActorsOnSell:
 		ActorTypes: rae6,rare1,rare1,rare1
 
