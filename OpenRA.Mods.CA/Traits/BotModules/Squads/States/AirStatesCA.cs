@@ -22,14 +22,71 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 	{
 		static readonly BitSet<TargetableType> AirTargetTypes = new BitSet<TargetableType>("Air");
 
-		protected const int StaticAntiAirMultiplier = 4;
+		protected const int StaticAntiAirMultiplier = 3;
 
-		protected static int CountStaticAntiAir(IEnumerable<Actor> units, SquadCA owner)
+		protected static int CountAntiAirUnits(IEnumerable<Actor> units, SquadCA owner)
 		{
 			if (!units.Any())
 				return 0;
 
-			return units.Count(a => owner.SquadManager.Info.StaticAntiAirTypes.Contains(a.Info.Name)) * StaticAntiAirMultiplier;
+			var missileUnitsCount = 0;
+			foreach (var unit in units)
+			{
+				if (unit == null || unit.IsDead)
+					continue;
+
+				if (owner.SquadManager.Info.StaticAntiAirTypes.Contains(unit.Info.Name))
+				{
+					missileUnitsCount += StaticAntiAirMultiplier;
+					continue;
+				}
+
+				foreach (var ab in unit.TraitsImplementing<AttackBase>())
+				{
+					if (ab.IsTraitDisabled || ab.IsTraitPaused)
+						continue;
+
+					foreach (var a in ab.Armaments)
+					{
+						if (a.Weapon.IsValidTarget(AirTargetTypes))
+						{
+							missileUnitsCount++;
+							break;
+						}
+					}
+				}
+			}
+
+			return missileUnitsCount / StaticAntiAirMultiplier;
+		}
+
+		protected static bool IsPathSafe(SquadCA owner, WPos start, WPos end)
+		{
+			var map = owner.World.Map;
+			var stepSize = owner.SquadManager.Info.DangerScanRadius;
+			var direction = new WVec((end - start).X, (end - start).Y, 0);
+			var distance = direction.Length;
+
+			if (distance == 0)
+				return NearToPosSafely(owner, start);
+
+			var normalizedDirection = new WVec(
+				direction.X * 1024 / distance,
+				direction.Y * 1024 / distance,
+				direction.Z * 1024 / distance
+			);
+			// Evaluate each grid cell along the path
+			for (var d = 0; d <= distance; d += stepSize * 2048) // cpos to wpos
+			{
+				var currentPos = start + normalizedDirection * d / 1024;
+				var cell = map.CellContaining(currentPos);
+
+				// Check if the current grid cell is safe
+				if (!NearToPosSafely(owner, map.CenterOfCell(cell)))
+					return false;
+			}
+
+			return true;
 		}
 
 		protected static Actor FindAirTarget(SquadCA owner)
@@ -99,21 +156,18 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 
 		protected static CPos? FindSafePlace(SquadCA owner, out Actor detectedEnemyTarget, bool needTarget)
 		{
+			var leader = owner.Units.FirstOrDefault().Actor;
 			var map = owner.World.Map;
-			var dangerRadius = owner.SquadManager.Info.DangerScanRadius;
 			detectedEnemyTarget = null;
 
-			var columnCount = (map.MapSize.X + dangerRadius - 1) / dangerRadius;
-			var rowCount = (map.MapSize.Y + dangerRadius - 1) / dangerRadius;
-
-			var checkIndices = Exts.MakeArray(columnCount * rowCount, i => i).Shuffle(owner.World.LocalRandom);
-			foreach (var i in checkIndices)
+			foreach (var pos in owner.SquadManager.airStrikeGrid.Shuffle(owner.World.LocalRandom).ToArray()) //.OrderBy(a => (a - leader.Location).LengthSquared))
 			{
-				var pos = new MPos((i % columnCount) * dangerRadius + dangerRadius / 2, (i / columnCount) * dangerRadius + dangerRadius / 2).ToCPos(map);
-
 				if (NearToPosSafely(owner, map.CenterOfCell(pos), out detectedEnemyTarget))
 				{
 					if (needTarget && detectedEnemyTarget == null)
+						continue;
+
+					if (!IsPathSafe(owner, leader.CenterPosition, map.CenterOfCell(pos)))
 						continue;
 
 					return pos;
@@ -141,7 +195,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			var possibleTargets = unitsAroundPos.Where(a => owner.SquadManager.IsAirSquadTargetType(a, owner)).ToList();
 			var possibleAntiAir = unitsAroundPos.ToList();
 
-			if (CountStaticAntiAir(possibleAntiAir, owner) < owner.Units.Count)
+			if (CountAntiAirUnits(possibleAntiAir, owner) < owner.Units.Count)
 			{
 				if (possibleTargets.Count > 0)
 					detectedEnemyTarget = possibleTargets.Random(owner.Random);
@@ -155,7 +209,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 		// Checks the number of anti air enemies around units
 		protected virtual bool ShouldFlee(SquadCA owner)
 		{
-			return ShouldFlee(owner, enemies => CountStaticAntiAir(enemies, owner) > owner.Units.Count);
+			return ShouldFlee(owner, enemies => CountAntiAirUnits(enemies, owner) > owner.Units.Count);
 		}
 	}
 

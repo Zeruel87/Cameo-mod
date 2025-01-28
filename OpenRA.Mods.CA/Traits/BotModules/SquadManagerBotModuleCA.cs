@@ -171,6 +171,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		CPos initialBaseCenter;
 		Actor airStrikeTarget;
+		public CPos[] airStrikeGrid;
 
 		int rushTicks;
 		int assignRolesTicks;
@@ -249,11 +250,33 @@ namespace OpenRA.Mods.CA.Traits
 			return a.CanBeViewedByPlayer(Player);
 		}
 
+		public bool IsValidAllyUnit(Actor a)
+		{
+			if (a == null || a.IsDead || Player.RelationshipWith(a.Owner) != PlayerRelationship.Ally || a.Info.HasTraitInfo<HuskInfo>() || a.Info.HasTraitInfo<CarrierSlaveInfo>())
+				return false;
+
+			return true;
+		}
+
+		public CPos[] AirstrikeGrid(Actor self)
+		{
+			var map = self.World.Map;
+			var dangerRadius = Info.DangerScanRadius;
+
+			var columnCount = (map.MapSize.X + dangerRadius - 1) / dangerRadius;
+			var rowCount = (map.MapSize.Y + dangerRadius - 1) / dangerRadius;
+
+			var checkIndices = Exts.MakeArray(columnCount * rowCount, i => new MPos((i % columnCount) * dangerRadius + dangerRadius / 2, (i / columnCount) * dangerRadius + dangerRadius / 2).ToCPos(map));
+
+			return checkIndices;
+		}
+
 		protected override void Created(Actor self)
 		{
 			notifyPositionsUpdated = self.Owner.PlayerActor.TraitsImplementing<IBotPositionsUpdated>().ToArray();
 			notifyIdleBaseUnits = self.Owner.PlayerActor.TraitsImplementing<IBotNotifyIdleBaseUnits>().ToArray();
 			aircraftBuilders = self.Owner.PlayerActor.TraitsImplementing<IBotAircraftBuilder>().ToArray();
+			airStrikeGrid = AirstrikeGrid(self);
 		}
 
 		protected override void TraitEnabled(Actor self)
