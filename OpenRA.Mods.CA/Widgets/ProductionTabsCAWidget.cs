@@ -15,6 +15,7 @@ using OpenRA.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Widgets;
 using OpenRA.Primitives;
+using OpenRA.Traits;
 using OpenRA.Widgets;
 
 namespace OpenRA.Mods.CA.Widgets
@@ -58,7 +59,7 @@ namespace OpenRA.Mods.CA.Widgets
 				{
 					Name = (NextQueueName++).ToString(),
 					Queue = queue,
-					Actor = queue.GetType() == typeof(ProductionQueue) ? queue.Actor : null
+					Actor = queue.Actor.Info.HasTraitInfo<IOccupySpaceInfo>() ? queue.Actor : null
 				});
 			Tabs = tabs;
 		}
@@ -138,13 +139,13 @@ namespace OpenRA.Mods.CA.Widgets
 
 			// Prioritize alerted queues
 			var queues = Groups[queueGroup].Tabs.Select(t => t.Queue)
-					.OrderByDescending(q => q.AllQueued().Any(i => i.Done) ? 1 : 0)
+					.OrderByDescending(q => q.AllQueued().Any(i => i.Done) ? 2 : !q.AllQueued().Any() ? 1 : 0)
 					.ToList();
 
 			if (reverse) queues.Reverse();
 
-			CurrentQueue = queues.SkipWhile(q => q != CurrentQueue)
-				.Skip(1).FirstOrDefault() ?? queues.FirstOrDefault();
+			UpdateTab(queues.SkipWhile(q => q != CurrentQueue)
+				.Skip(1).FirstOrDefault() ?? queues.FirstOrDefault());
 
 			return true;
 		}
@@ -310,7 +311,18 @@ namespace OpenRA.Mods.CA.Widgets
 				g.Update(allQueues);
 
 			if (allQueues.Count > 0 && CurrentQueue == null)
-				CurrentQueue = allQueues.First();
+				UpdateTab(allQueues.First());
+		}
+
+		void UpdateTab(ProductionQueue queue)
+		{
+			CurrentQueue = queue;
+
+			if (queue.Actor != null && queue.Actor.IsInWorld && queue.Actor.Info.HasTraitInfo<IOccupySpaceInfo>())
+			{
+				var viewport = worldRenderer.Viewport;
+				viewport.Center(queue.Actor.CenterPosition);
+			}
 		}
 
 		public override bool YieldMouseFocus(MouseInput mi)
@@ -375,14 +387,8 @@ namespace OpenRA.Mods.CA.Widgets
 				{
 					pressedTabIndex = tabIndex;
 					var tab = Groups[queueGroup].Tabs[tabIndex];
-					CurrentQueue = tab.Queue;
+					UpdateTab(tab.Queue);
 					Game.Sound.PlayNotification(world.Map.Rules, null, "Sounds", ClickSound, null);
-
-					if (mi.MultiTapCount > 1 && tab.Actor != null && tab.Actor.IsInWorld)
-					{
-						var viewport = worldRenderer.Viewport;
-						viewport.Center(tab.Actor.CenterPosition);
-					}
 				}
 			}
 
