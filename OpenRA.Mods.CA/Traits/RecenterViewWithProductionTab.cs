@@ -15,6 +15,13 @@ using OpenRA.Mods.Common.Traits;
 namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("Tag trait for instantly placed buildings.")]
-	public class RecenterViewWithProductionTabInfo : TraitInfo<RecenterViewWithProductionTab>, Requires<IOccupySpaceInfo> { }
-	public class RecenterViewWithProductionTab { }
+	public class RecenterViewWithProductionTabInfo : ConditionalTraitInfo, Requires<IOccupySpaceInfo>
+	{
+		public override object Create(ActorInitializer init) { return new RecenterViewWithProductionTab(this); }
+	}
+	public class RecenterViewWithProductionTab : ConditionalTrait<RecenterViewWithProductionTabInfo>
+	{
+		public RecenterViewWithProductionTab(RecenterViewWithProductionTabInfo info)
+			: base(info) { }
+	}
 }

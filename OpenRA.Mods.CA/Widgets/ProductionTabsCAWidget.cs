@@ -70,6 +70,7 @@ namespace OpenRA.Mods.CA.Widgets
 	{
 		readonly World world;
 		readonly WorldRenderer worldRenderer;
+		readonly ISelection selection;
 
 		public readonly string PaletteWidget = null;
 		public readonly string TypesContainer = null;
@@ -113,6 +114,7 @@ namespace OpenRA.Mods.CA.Widgets
 		{
 			this.world = world;
 			this.worldRenderer = worldRenderer;
+			selection = world.Selection;
 
 			Groups = world.Map.Rules.Actors.Values.SelectMany(a => a.TraitInfos<ProductionQueueInfo>())
 				.Select(q => q.Group).Distinct().ToDictionary(g => g, g => new ProductionTabGroupCA() { Group = g });
@@ -319,10 +321,13 @@ namespace OpenRA.Mods.CA.Widgets
 		{
 			CurrentQueue = queue;
 
-			if (recenter && queue.Actor != null && queue.Actor.IsInWorld && queue.Actor.Info.HasTraitInfo<RecenterViewWithProductionTabInfo>())
+			var recenterView = queue.Actor.TraitOrDefault<RecenterViewWithProductionTab>();
+
+			if (recenter && queue.Actor != null && queue.Actor.IsInWorld && recenterView != null && !recenterView.IsTraitDisabled)
 			{
 				var viewport = worldRenderer.Viewport;
 				viewport.Center(queue.Actor.CenterPosition);
+				selection.Combine(world, new Actor[] { queue.Actor }, false, false);
 			}
 		}
 
