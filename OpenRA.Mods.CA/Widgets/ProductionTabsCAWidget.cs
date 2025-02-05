@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Mods.CA.Traits;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Widgets;
 using OpenRA.Primitives;
@@ -145,7 +146,7 @@ namespace OpenRA.Mods.CA.Widgets
 			if (reverse) queues.Reverse();
 
 			UpdateTab(queues.SkipWhile(q => q != CurrentQueue)
-				.Skip(1).FirstOrDefault() ?? queues.FirstOrDefault());
+				.Skip(1).FirstOrDefault() ?? queues.FirstOrDefault(), true);
 
 			return true;
 		}
@@ -314,11 +315,11 @@ namespace OpenRA.Mods.CA.Widgets
 				UpdateTab(allQueues.First());
 		}
 
-		void UpdateTab(ProductionQueue queue)
+		void UpdateTab(ProductionQueue queue, bool recenter = false)
 		{
 			CurrentQueue = queue;
 
-			if (queue.Actor != null && queue.Actor.IsInWorld && queue.Actor.Info.HasTraitInfo<IOccupySpaceInfo>())
+			if (recenter && queue.Actor != null && queue.Actor.IsInWorld && queue.Actor.Info.HasTraitInfo<RecenterViewWithProductionTabInfo>())
 			{
 				var viewport = worldRenderer.Viewport;
 				viewport.Center(queue.Actor.CenterPosition);
@@ -389,6 +390,12 @@ namespace OpenRA.Mods.CA.Widgets
 					var tab = Groups[queueGroup].Tabs[tabIndex];
 					UpdateTab(tab.Queue);
 					Game.Sound.PlayNotification(world.Map.Rules, null, "Sounds", ClickSound, null);
+
+					if (mi.MultiTapCount > 1 && tab.Actor != null && tab.Actor.IsInWorld)
+					{
+						var viewport = worldRenderer.Viewport;
+						viewport.Center(tab.Actor.CenterPosition);
+					}
 				}
 			}
 
