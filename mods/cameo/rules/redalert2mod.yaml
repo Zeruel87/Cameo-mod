@@ -11509,13 +11509,14 @@ nax2_twr:
 	Inherits@detect: ^GenericAllDetector
 	Inherits@sell: ^SpaceNaxisSpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
+	Inherits@LUpgrade: ^NaxiYellowLaserUpgrade
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
 		Prerequisites: ~nax2_conyard, nax2_barr
 		Description: template-anti-infantry-defense.description
 	Valued:
-		Cost: 650
+		Cost: 600
 	Tooltip:
 		Name: Laser Tower
 	Building:
@@ -11537,6 +11538,13 @@ nax2_twr:
 		LocalOffset: 300,1,700, 300,-1,700
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		RequiresCondition: !upnax2_ylaser
+	Armament@UP:
+		Weapon: Lunar_YellowLaserT
+		LocalOffset: 300,1,700, 300,-1,700
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: upnax2_ylaser
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
@@ -11556,6 +11564,7 @@ nax2_sturmcann:
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@sell: ^NaxisSpawnActorsOnSell
 	Inherits@EMP: ^TurretEMP
+	Inherits@PUpgrade: ^NaxiGreenPlasmaUpgrade
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
@@ -11584,6 +11593,13 @@ nax2_sturmcann:
 		LocalOffset: 888,44,700
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		RequiresCondition: !upnax2_gplasma
+	Armament@PRIMARY_UP:
+		Weapon: Lunar_GreenSturmArty
+		LocalOffset: 888,44,700
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: upnax2_gplasma
 	WithMuzzleOverlay:
 	BodyOrientation:
 		QuantizedFacings: 16
@@ -11635,6 +11651,208 @@ nax2_weap:
 	Voiced:
 		VoiceSet: PRCWarFactoryVoice
 
+nax2_meteorray:
+	Inherits: ^RA2Building
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@shape: ^3x3Shape
+	Inherits@sell: ^SpaceNaxisSpawnActorsOnSell
+	Tooltip:
+		Name: Meteor Traction Ray
+	Buildable:
+		BuildPaletteOrder: 100
+		BuildDuration: 1500
+		BuildDurationModifier: 100
+		Prerequisites: ~nax2_conyard, nax2_tech, !nax2_meteorray
+		Queue: Defence, RADefence
+		Description: actor-namisl.description
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	SelectionDecorations:
+	DetonateWeaponPowerCA:
+		AllowMultiple: true
+		OrderName: NaxiMeteor
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
+		IconImage: ra2namisl
+		Icons:
+			1: icon2
+		Cursor: ability
+		AirburstAltitude: 4c512
+		ChargeInterval: 5000
+		ActivationDelay: 50
+		ActivationSequence:
+		Names:
+			1: Meteor Strike
+		Descriptions:
+			1: Throw some meteors to ground.
+		Weapons:
+			1: NaxiMeteorSpreaderScud
+		EndChargeSound: snukread.wav
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		EndChargeTextNotification: Topol Strike ready.
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: NuclearWeaponLaunched
+		LaunchTextNotification: Warning: V1 Strike launched.
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		IncomingTextNotification: Warning: V1 Strike launched.
+		LaunchSound: snuksire.wav
+		IncomingSound: snuksire.wav
+		DisplayRadarPing: True
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		CameraRemoveDelay: 500
+		Duration: 250
+		ActiveCondition: active
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		CircleSequence: circles
+		DisplayBeacon: true
+		BeaconPosters:
+			1: atomic
+		TargetCircleRanges:
+			1: 10000
+		TargetCircleColors: ff000080
+		BeaconActor: BLASTRADIUS.atomic
+		CameraRange: 10000
+	SupportPowerChargeBar:
+	WithSupportPowerActivationAnimation:
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: nax2_meteorray
+
+nax2_chrono:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^SpaceNaxisSpawnActorsOnSell
+	Inherits@SW: ^PrimarySuperweapon
+	HitShape:
+		TargetableOffsets: 420,-768,0, 420,768,0, -770,-768,0, -770,768,0
+	Buildable:
+		Prerequisites: ~nax2_tech
+	Tooltip:
+		Name: Dark Chronosphere
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	Valued:
+		Cost: 2000
+	DetonateWeaponPowerCA@ChronoVortex:
+		AllowMultiple: true
+		OrderName: ChronoVortex
+		Prerequisites:
+			1:
+		IconImage: pdox
+		Icons:
+			1: icon2
+		Cursor: ability
+		ChargeInterval: 10500
+		Names:
+			1: Chrono Vortex
+		ActivationDelay: 50
+		Descriptions:
+			1: Initiate a Chrono Vortex which deals heavy damage over time to a large area.
+		Weapons:
+			1: ChronoVortexInit
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		EndChargeSpeechNotification: NuclearWeaponAvailable
+		EndChargeTextNotification: Chrono Vortex ready.
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: NuclearWarheadApproaching
+		IncomingTextNotification: Chrono Vortex activated.
+		IncomingSound: nukelaunch.aud
+		LaunchSound: nukelaunch.aud
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		PauseOnCondition: disabled
+		DisplayBeacon: True
+		DisplayRadarPing: True
+		ArrowSequence: arrow
+		ClockSequence: clocklarge
+		CircleSequence: circles
+		CameraRemoveDelay: 500
+		Duration: 500
+		ActiveCondition: active
+		BeaconPosters:
+			1: chronovortexicon
+		TargetCircleRanges:
+			1: 10000
+		TargetCircleColors: ff000080
+		BeaconActor: BLASTRADIUS.atomic
+		CameraRange: 10000
+	Power:
+		Amount: -200
+
+nax2_gcore:
+	Inherits: ^RA2Building
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^SpaceNaxisSpawnActorsOnSell
+	Inherits@SW: ^PrimarySuperweapon
+	Buildable:
+		Prerequisites: ~nax2_tech
+		Queue: Defence, RADefence
+	Tooltip:
+		Name: Gravity Core
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
+	Valued:
+		Cost: 1250
+	Power:
+		Amount: -75
+	ProximityExternalCondition@gravity_1:
+		Range: 15000
+		Condition: GravityGenerator
+		RequiresCondition: !disabled
+		ValidRelationships: Enemy
+	WithRangeCircle@gravity_1:
+		Range: 15000
+		Type: gravity
+		Color: 20027788
+		RequiresCondition: !disabled
+	ProximityExternalCondition@gravity_2:
+		Range: 12500
+		Condition: GravityGenerator
+		RequiresCondition: !disabled
+		ValidRelationships: Enemy
+	WithRangeCircle@gravity_2:
+		Range: 12500
+		Type: gravity
+		Color: 20027788
+		RequiresCondition: !disabled
+	ProximityExternalCondition@gravity_3:
+		Range: 10000
+		Condition: GravityGenerator
+		RequiresCondition: !disabled
+		ValidRelationships: Enemy
+	WithRangeCircle@gravity_3:
+		Range: 10000
+		Type: gravity
+		Color: 20027788
+		RequiresCondition: !disabled
+	ProximityExternalCondition@gravity_4:
+		Range: 7500
+		Condition: GravityGenerator
+		RequiresCondition: !disabled
+		ValidRelationships: Enemy
+	WithRangeCircle@gravity_4:
+		Range: 7500
+		Type: gravity
+		Color: 20027788
+		RequiresCondition: !disabled
+	ProximityExternalCondition@gravity_5:
+		Range: 5000
+		Condition: GravityGenerator
+		RequiresCondition: !disabled
+		ValidRelationships: Enemy
+	WithRangeCircle@gravity_5:
+		Range: 5000
+		Type: gravity
+		Color: 20027788
+		RequiresCondition: !disabled
 ####################################################################################################
 #		Red Alert 2 Naxis Infantry
 ####################################################################################################
@@ -12738,6 +12956,18 @@ nax_undead:
 ####################################################################################################
 #		Red Alert 2 Moon Naxis Infantry
 ####################################################################################################
+^NaxiGreenPlasmaUpgrade:
+	GrantConditionOnPrerequisite@upnax2_gplasma:
+		Condition: upnax2_gplasma
+		Prerequisites: upnax2_gplasma
+	FirepowerMultiplier@upnax2_gplasma:
+		RequiresCondition: upnax2_gplasma
+		Modifier: 125
+
+^NaxiYellowLaserUpgrade:
+	GrantConditionOnPrerequisite@upnax2_ylaser:
+		Condition: upnax2_ylaser
+		Prerequisites: upnax2_ylaser
 nax2_mcv:
 	Inherits: ^Vehicle
 	Inherits@Template: ^SupportVehicleTemplate
@@ -12769,6 +12999,7 @@ nax_lunar:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@LUpgrade: ^NaxiYellowLaserUpgrade
 	Valued:
 		Cost: 120
 	Tooltip:
@@ -12785,19 +13016,35 @@ nax_lunar:
 	Armament@PRIMARY:
 		Weapon: NaxiRifleLaser
 		LocalOffset: 500,0,400
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upnax2_ylaser
 	Armament@ELITE:
 		Weapon: NaxiRifleLaserE
 		LocalOffset: 500,0,400
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && !upnax2_ylaser
+	Armament@PRIMARY_UP:
+		Weapon: Lunar_YellowRifleLaser
+		LocalOffset: 500,0,400
+		RequiresCondition: !rank-elite && upnax2_ylaser
+	Armament@ELITE_UP:
+		Weapon: Lunar_YellowRifleLaserE
+		LocalOffset: 500,0,400
+		RequiresCondition: rank-elite && upnax2_ylaser
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: NaxiRifleLaser
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upnax2_ylaser
 	Armament@GARRISONEDELITE:
 		Name: garrisoned
 		Weapon: NaxiRifleLaserE
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && !upnax2_ylaser
+	Armament@GARRISONED_UP:
+		Name: garrisoned
+		Weapon: Lunar_YellowRifleLaser
+		RequiresCondition: !rank-elite && upnax2_ylaser
+	Armament@GARRISONEDELITE_UP:
+		Name: garrisoned
+		Weapon: Lunar_YellowRifleLaserE
+		RequiresCondition: rank-elite && upnax2_ylaser
 	AttackFrontal:
 		FacingTolerance: 0
 	Voiced:
@@ -12851,6 +13098,7 @@ nax2_uber:
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@PUpgrade: ^NaxiGreenPlasmaUpgrade
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -12869,7 +13117,7 @@ nax2_uber:
 		LocalOffset: 500,0,400
 		RequiresCondition: !rank-elite
 	Armament@ELITE:
-		Weapon: NaxiAlienPistol
+		Weapon: NaxiAlienPistolE
 		LocalOffset: 500,0,400
 		RequiresCondition: rank-elite
 	Armament@GARRISONED:
@@ -12878,7 +13126,7 @@ nax2_uber:
 		RequiresCondition: !rank-elite
 	Armament@GARRISONEDELITE:
 		Name: garrisoned
-		Weapon: NaxiAlienPistol
+		Weapon: NaxiAlienPistolE
 		RequiresCondition: rank-elite
 	AttackFrontal:
 		FacingTolerance: 0
@@ -12944,6 +13192,8 @@ nax2_armor_mg:
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Inherits@LUpgrade: ^NaxiYellowLaserUpgrade
 	Selectable:
 		Bounds: 600, 600, 0, -125
 	Valued:
@@ -12970,11 +13220,19 @@ nax2_armor_mg:
 	Armament@PRIMARY:
 		Weapon: NaxiMP40Laser
 		LocalOffset: 500,0,400
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upnax2_ylaser
 	Armament@ELITE:
 		Weapon: NaxiMP40LaserE
 		LocalOffset: 500,0,400
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && !upnax2_ylaser
+	Armament@PRIMARY_UP:
+		Weapon: Lunar_YellowMP40Laser
+		LocalOffset: 500,0,400
+		RequiresCondition: !rank-elite && upnax2_ylaser
+	Armament@ELITE_UP:
+		Weapon: Lunar_YellowMP40LaserE
+		LocalOffset: 500,0,400
+		RequiresCondition: rank-elite && upnax2_ylaser
 	AttackFrontal:
 		FacingTolerance: 20
 	WithInfantryBody:
@@ -13005,7 +13263,7 @@ nax2_armor_harv:
 	Selectable:
 		Bounds: 600, 600, 0, -125
 	Valued:
-		Cost: 550
+		Cost: 500
 	Tooltip:
 		Name: Noid Harvester
 	Buildable:
@@ -13065,6 +13323,69 @@ nax2_armor_harv:
 		PipCount: 4
 	Mobile:
 		Locomotor: chem
+nax2_engi:
+	Inherits: ^Walker
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Selectable:
+		Bounds: 600, 600, 0, -125
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Engineering Armor
+	Buildable:
+		BuildPaletteOrder: 75
+		Prerequisites: ~nax2_barr
+		Queue: Infantry, RAInfantry
+		Description: actor-aamecha.description
+	Mobile:
+		Speed: 40
+		TurnSpeed: 15
+		Locomotor: tracked
+	Health:
+		HP: 50000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Plate
+	Armament:
+		Name: primary
+		Weapon: NaxEngiVehicleRepair
+		TargetRelationships: Ally
+		ForceTargetRelationships: None
+	AttackFrontal:
+		FacingTolerance: 20
+	WithInfantryBody:
+		IdleSequences: idle1, idle2
+		MinIdleDelay: 90
+		MaxIdleDelay: 270
+		DefaultAttackSequence: shoot
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 1
+	Voiced:
+		VoiceSet: NaxiRobotVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+	Captures:
+		CaptureTypes: building, tech
+		PlayerExperience: 500
+		CaptureDelay: 375
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+		Voice: Move
+
+        
 nax2_beetle:
 	Inherits: ^Tank
 	Inherits@Template: ^SupportVehicleTemplate
@@ -13074,8 +13395,9 @@ nax2_beetle:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@LUpgrade: ^NaxiYellowLaserUpgrade
 	Valued:
-		Cost: 800
+		Cost: 750
 	Tooltip:
 		Name: Laser Beetle
 	Buildable:
@@ -13105,6 +13427,7 @@ nax2_beetle:
 		LocalOffset: 512,1,80, 512,-1,80
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		RequiresCondition: !upnax2_ylaser
 	Armament@AA:
 		Name: primary
 		Weapon: NaxiBeetleLaserAA
@@ -13113,6 +13436,25 @@ nax2_beetle:
 		LocalOffset: 512,1,80, 512,-1,80
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		RequiresCondition: !upnax2_ylaser
+	Armament@UP:
+		Name: primary
+		Weapon: Lunar_YellowBeetleLaser
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 512,1,80, 512,-1,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: upnax2_ylaser
+	Armament@AA_UP:
+		Name: primary
+		Weapon: Lunar_YellowBeetleLaserAA
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 512,1,80, 512,-1,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: upnax2_ylaser
 	AttackTurreted:
 	WithMuzzleOverlay:
 	SelectionDecorations:
@@ -13132,8 +13474,9 @@ nax2_panzer:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@PUpgrade: ^NaxiGreenPlasmaUpgrade
 	Valued:
-		Cost: 700
+		Cost: 650
 	Tooltip:
 		Name: Lunar Panzer
 	Buildable:
@@ -13167,7 +13510,7 @@ nax2_panzer:
 		LocalOffset: 1280,0,80
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upnax2_gplasma
 	Armament@elite:
 		Name: primary
 		Weapon: RA2105mm_elite
@@ -13176,7 +13519,25 @@ nax2_panzer:
 		LocalOffset: 1280,0,80
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && !upnax2_gplasma
+	Armament@upgraded:
+		Name: primary
+		Weapon: Lunar_Green105mm
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1280,0,80
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite && upnax2_gplasma
+	Armament@upgraded-elite:
+		Name: primary
+		Weapon: Lunar_Green105mm_elite
+		Recoil: 128
+		RecoilRecovery: 38
+		LocalOffset: 1280,0,80
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite && upnax2_gplasma
 	AttackTurreted:
 	WithMuzzleOverlay:
 	SelectionDecorations:
@@ -13196,6 +13557,7 @@ nax2_tiger:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackTurretedVoice
 	Inherits@EMP: ^TurretEMP
+	Inherits@PUpgrade: ^NaxiGreenPlasmaUpgrade
 	Valued:
 		Cost: 950
 	Tooltip:
@@ -13231,7 +13593,7 @@ nax2_tiger:
 		LocalOffset: 1500,0,300
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !upnax2_gplasma
 	Armament@elite:
 		Name: primary
 		Weapon: LunarTigerCannon
@@ -13240,7 +13602,25 @@ nax2_tiger:
 		LocalOffset: 1500,0,300
 		MuzzleSequence: muzzle-2
 		MuzzlePalette: ra2effect
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && !upnax2_gplasma
+	Armament@-upgrade:
+		Name: primary
+		Weapon: Lunar_GreenTigerCannon
+		Recoil: 256
+		RecoilRecovery: 32
+		LocalOffset: 1500,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !rank-elite && upnax2_gplasma
+	Armament@elite-upgrade:
+		Name: primary
+		Weapon: Lunar_GreenTigerCannon
+		Recoil: 256
+		RecoilRecovery: 32
+		LocalOffset: 1500,0,300
+		MuzzleSequence: muzzle-2
+		MuzzlePalette: ra2effect
+		RequiresCondition: rank-elite && upnax2_gplasma
 	AttackTurreted:
 	WithMuzzleOverlay:
 	SelectionDecorations:
@@ -13261,6 +13641,7 @@ nax2_jager:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
+	Inherits@PUpgrade: ^NaxiGreenPlasmaUpgrade
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -13289,6 +13670,13 @@ nax2_jager:
 		LocalOffset: 400,0,300
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		RequiresCondition: !upnax2_gplasma
+	Armament@AG-upgraded:
+		Weapon: Lunar_GreenJadgDestroyer
+		LocalOffset: 400,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: upnax2_gplasma
 	AttackFrontal:
 	WithMuzzleOverlay:
 	Selectable:
@@ -13307,6 +13695,7 @@ nax2_grille:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
+	Inherits@PUpgrade: ^NaxiGreenPlasmaUpgrade
 	Valued:
 		Cost: 760
 	Tooltip:
@@ -13333,6 +13722,13 @@ nax2_grille:
 		LocalOffset: -400,0,300
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
+		RequiresCondition: upnax2_gplasma
+	Armament@upgraded:
+		Weapon: Lunar_GreenGrilleArty
+		LocalOffset: -400,0,300
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !upnax2_gplasma
 	AttackFrontal:
 	WithMuzzleOverlay:
 	Selectable:
@@ -13353,6 +13749,7 @@ nax2_giant_rk:
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
 	Selectable:
 		Bounds: 600, 600, 0, -125
 	Valued:
@@ -13542,6 +13939,38 @@ nax_gravity:
 		Type: gravity
 		Color: 20027788
 		RequiresCondition: !disabled
+##############################################
+#   Red Alert 2 Naxis Upgrades
+##############################################
+upnax2_ylaser:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Crystal Lens
+	Valued:
+		Cost: 5000
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Addons
+		Description: Yellow lasers upgrades shooting range and burst
+		Prerequisites: ~nax2_radar, !upnax2_ylaser
+	RenderSprites:
+		Image: upnax2_ylaser
+	ProvidesPrerequisite:
+upnax2_gplasma:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Green Plasma Shells
+	Valued:
+		Cost: 5000
+	Buildable:
+		BuildPaletteOrder: 50
+		Queue: Addons
+		Description: Tanks deals more damage and Tesla type damage
+		Prerequisites: ~nax2_radar, !upnax2_gplasma
+	RenderSprites:
+		Image: upnax2_gplasma
+	ProvidesPrerequisite:
+
 ####################################################################################################
 #		Red Alert 2 Naxis Vehicles
 ####################################################################################################
