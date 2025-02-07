@@ -10529,14 +10529,12 @@ nax_refin:
 		DockOffset: 1086,1086,0
 		MaxQueueLength: 10
 	DrawLineToTarget:
-	FreeActor@1:
-		Actor: nax_slavemaster
-		SpawnOffset: 2,2
-		Facing: 256
-	FreeActor@2:
-		Actor: nax_slavemaster
-		SpawnOffset: 2,1
-		Facing: 256
+	SlaveMinerSpawnerMaster:
+		Actors: nax_slav, nax_slav, nax_slav, nax_slav, nax_slav
+		SlavesHaveFreeWill: true
+		SlaveDisposalOnKill: GiveSlavesToAttacker
+		SlaveDisposalOnOwnerChange: GiveSlavesToAttacker
+		SpawnOffset: 511,511,0, 511,511,0, 511,511,0, 511,511,0
 	SelectionDecorations:
 	GivesBuildableArea:
 		AreaTypes: building, cityi
@@ -11853,6 +11851,24 @@ nax2_gcore:
 		Type: gravity
 		Color: 20027788
 		RequiresCondition: !disabled
+nax2_dairy:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@cashtrickler: ^CashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
+	Inherits@Bot: ^BotMicromanageable
+	Inherits@sell: ^NaxisSpawnActorsOnSell
+	Tooltip:
+		Name: Moon Dairy Farm
+	Buildable:
+		Queue: Building, RABuilding
+		Description: Produces Passive income and adds hp bonus with Infantry
+		Prerequisites: ~nax2_tech, ~techlevel.medium, derricklimit
+	Building:
+		Footprint: xxx xxx
+		Dimensions: 3,2
+	ProvidesPrerequisite@buildingname:
+
 ####################################################################################################
 #		Red Alert 2 Naxis Infantry
 ####################################################################################################
@@ -12344,7 +12360,6 @@ nax_slavemaster:
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@selection: ^SelectableEconomicUnit
-	Inherits@harv: ^Harvester
 	Inherits@undead: ^NaxiUndeadRevive
 	Valued:
 		Cost: 500
@@ -12360,14 +12375,23 @@ nax_slavemaster:
 		Locomotor: chem
 	Health:
 		HP: 12500
+	Armament@SlaveWhip:
+		Weapon: NaxiSlaveWhip
+		LocalOffset: 500,0,400
+		TargetRelationships: Ally
+		ForceTargetRelationships: None
 	Armament@PRIMARY:
 		Weapon: NaxiRifle
 		LocalOffset: 500,0,400
 		RequiresCondition: !rank-elite
+		TargetRelationships: Enemy
+		ForceTargetRelationships: None
 	Armament@ELITE:
 		Weapon: NaxiRifleE
 		LocalOffset: 500,0,400
 		RequiresCondition: rank-elite
+		TargetRelationships: Enemy
+		ForceTargetRelationships: None
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: NaxiRifle
@@ -12382,134 +12406,26 @@ nax_slavemaster:
 		RequiresCondition: rank-elite
 	AttackFrontal:
 		FacingTolerance: 0
+	AutoTarget:
+		InitialStance: AttackAnything
 	Voiced:
 		VoiceSet: NaxiFemVoice
-	#SlaveMinerSpawnerMaster:
-	#	Actors: nax_slav, nax_slav, nax_slav, nax_slav
-	#	SlavesHaveFreeWill: false
-	#	SlaveDisposalOnKill: GiveSlavesToAttacker
-	#	SlaveDisposalOnOwnerChange: GiveSlavesToAttacker
-	#	SpawnOffset: 511,511,0, 511,511,0, 511,511,0, 511,511,0
-	-CaptureManager:
-	-Captures@CAPTURES:
-	-Captures@DRIVER_KILL:
-	-DamagedByTerrain:
-	Harvester:
-		Voice: Harvest
-		BaleLoadDelay: 3
-		BaleUnloadDelay: 2
-		BaleUnloadAmount: 1
-		FullyLoadedSpeed: 80
-	StoresResources:
-		Capacity: 12
-	WithStoresResourcesPipsDecoration:
-		PipCount: 6
-
 nax_slav:
-	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperienceRA2
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
-	Inherits@selection: ^SelectableEconomicUnit
-	Inherits@harv: ^Harvester
-	Inherits@anim: ^RA2Infantry
-	Inherits@vo: ^AttackFrontalVoice
-	Inherits@VOICES: ^WithFeedbackVoiceLines
-	Valued:
-		Cost: 200
-	Tooltip:
-		Name: Slave
-		RequiresCondition: !freed
-	Tooltip@Freed:
-		Name: Freed Slave
-		RequiresCondition: freed
-	Buildable:
-		BuildPaletteOrder: 25
-		Prerequisites: ~yryabrck
-		#Queue: Infantry, RAInfantry
-		Description: Yuri resource collector.
-	Mobile:
-		Speed: 60
-		Locomotor: chem
-	Health:
-		HP: 10000
-	ChangesHealth@SelfHealing:
-		Step: 4
-	Armament@PRIMARY:
-		Weapon: RA2Shovel
-	Armament@GARRISONED:
-		Name: garrisoned
-		Weapon: RA2Shovel
-	AttackFrontal:
-		FacingTolerance: 2
-	AutoTarget:
-		ScanRadius: 10
-		RequiresCondition: freed
-	Voiced:
-		VoiceSet: SlaveWorkerVoice
-		RequiresCondition: !freed
-	Voiced@2:
-		VoiceSet: FreedSlaveVoice
-		RequiresCondition: freed
-	SlaveMinerSpawnerSlave:
-		FreedCondition: freed
-		FreeingRelationships: Neutral, Enemy
-		FreedSound: isl1lia.wav
-		AllowOwnerChange: true
-	DamageMultiplier@Freed:
-		RequiresCondition: freed
-		Modifier: 50
-	FirepowerMultiplier@Freed:
-		RequiresCondition: freed
+	Inherits: YRSLAV
+	Targetable@garrisoned:
+		TargetTypes: SlaveFaster
+		RequiresCondition: GravityGenerator <= 3
+	ExternalCondition@SlaveFaster:
+		Condition: SlaveFaster
+	SpeedMultiplier@SlaveFaster1:
+		Modifier: 150
+		RequiresCondition: GravityGenerator == 1
+	SpeedMultiplier@SlaveFaster2:
 		Modifier: 200
-	ReloadDelayMultiplier@Freed:
-		RequiresCondition: freed
-		Modifier: 50
-	SpeedMultiplier@Freed:
-		RequiresCondition: freed
-		Modifier: 200
-	Harvester:
-		Voice: Harvest
-		BaleLoadDelay: 4
-		BaleUnloadDelay: 4
-		BaleUnloadAmount: 1
-		FullyLoadedSpeed: 75
-		SearchFromProcRadius: 25
-		SearchFromHarvesterRadius: 10
-		EmptyCondition: no-tiberium
-	StoresResources:
-		Capacity: 4
-	DockClientManager:
-		OccupancyCostModifier: 0
-	GrantConditionOnHarvest:
-		Condition: harvesting
-	WithFacingSpriteBody:
-		Sequence: harvest
-		RequiresCondition: harvesting
-	WithInfantryBody:
-		IdleSequences: idle
-		DefaultAttackSequence: shoot
-		RequiresCondition: no-tiberium && !harvesting
-	WithInfantryBody@full:
-		IdleSequences: idle1,idle2
-		StandSequences: stand
-		MoveSequence: full-run
-		DefaultAttackSequence: shoot
-		RequiresCondition: !no-tiberium && !harvesting
-	WithEnabledAnimation:
-		Sequence: cheer
-		RequiresCondition: freed
-	WithDockingAnimation:
-		DockSequence: idle
-		DockLoopSequence: idle
-	-DamagedByTerrain:
-	-TakeCover:
-	WithStoresResourcesPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 4
-	ActorStatValues:
-		Upgrades: upyurigenemod
+		RequiresCondition: GravityGenerator == 2
+	SpeedMultiplier@SlaveFaster3:
+		Modifier: 250
+		RequiresCondition: GravityGenerator >= 3
 
 nax_atankcann:
 	Inherits: ^Tank
