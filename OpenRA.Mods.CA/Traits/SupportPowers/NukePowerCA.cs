@@ -18,6 +18,7 @@ using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Effects;
 using OpenRA.Mods.Common.Graphics;
+using OpenRA.Mods.CA.Projectiles;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
@@ -184,11 +185,11 @@ namespace OpenRA.Mods.CA.Traits
 			var launchPos = skipAscent ? WPos.Zero : self.CenterPosition + body.LocalToWorld(Info.SpawnOffset);
 
 			var weaponInfo = Info.WeaponInfos.First(wi => wi.Key == GetLevel()).Value;
-			var missile = new NukeLaunch(self.Owner, Info.MissileImage, weaponInfo, palette, Info.MissileUp, Info.MissileDown,
+			var missile = new NukeLaunchCA(self.Owner, Info.MissileImage, weaponInfo, palette, Info.MissileUp, Info.MissileDown,
 				launchPos,
 				targetPosition, Info.DetonationAltitude, Info.RemoveMissileOnDetonation,
 				Info.FlightVelocity, Info.MissileDelay, Info.FlightDelay, skipAscent,
-				Info.TrailImage, Info.TrailSequences, Info.TrailPalette, Info.TrailUsePlayerPalette, Info.TrailDelay, Info.TrailInterval);
+				Info.TrailImage, Info.TrailSequences, Info.TrailPalette, Info.TrailUsePlayerPalette, Info.TrailDelay, Info.TrailInterval, self);
 
 			self.World.AddFrameEndTask(w => w.Add(missile));
 
