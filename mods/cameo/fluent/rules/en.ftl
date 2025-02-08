@@ -1484,7 +1484,7 @@ actor-nax_slavemaster =
    .description = Collects resources for processing.
       Armed with a rifle.
 
-actor-nax_atankcann = 
+actor-nax_atankcann =
    .description = Anti-tank artillery piece.
       Very slow to move and turn
 
@@ -1537,7 +1537,7 @@ actor-nax_brad =
 actor-nax_sarubia =
    .description = Main battle tank.
       Projectiles can be shot down
-   
+
 actor-nax_shoe =
    .description = Superheavy tank armed with cannons, mortars, and rockets.
       Has fireports for 2 passengers.
@@ -1735,7 +1735,7 @@ upgrade-advancedguerillatactics =
    The effect is doubled once more for the Stealth Tank.
 
 upgrade-conscription =
-   .description = Decreases cost and training time for all infantry Flak Tracks, BTRs and Hip Transports by 50%.
+   .description = Decreases cost and training time for all infantry Flak Tracks, BTRs and Hip Transports by 25%.
    Unlocks the "Paratroopers" Support power from the Soviet Airfield.
    All Infantry and Troop Transports deal 10% more damage and have 10% more armor.
 
@@ -1879,7 +1879,7 @@ upgrade-d2k_advanced_ixian_technology =
    Infantry with Personal Shield Generators also have 50% more shield armor.
 
 upgrade-uplatin_mili =
-   .description =  Equips Militias with Molotovs. 
+   .description =  Equips Militias with Molotovs.
    Increases Militia armor by 50% and gives self healing.
    Increases firepower and armor of all other Infantry by 25%.
 
@@ -1895,7 +1895,7 @@ upgrade-latin_up_chaingun =
        Equips Militia, Buggies and Sentries with Chainguns.
        Increases fire rate of Diablos, APCs and AA Defenders.
 
-upgrade-latin_up_industrial = 
+upgrade-latin_up_industrial =
    .description = Stolen Tech from Soviets:
        Reduces cost of vehicles by 10%.
        Increases armor and speed of all vehicles by 10%
