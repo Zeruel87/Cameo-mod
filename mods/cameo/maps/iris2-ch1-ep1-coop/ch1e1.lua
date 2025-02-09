@@ -1,3 +1,11 @@
+ObjectiveTimer = {
+	Easy = DateTime.Minutes(3) + DateTime.Seconds(20),
+	Normal = DateTime.Minutes(2) + DateTime.Seconds(30),
+	Hard = DateTime.Minutes(1) + DateTime.Seconds(40)
+}
+
+Diff = Map.LobbyOptionOrDefault("difficulty", "normal")
+
 Notification = function (text)
 	Media.DisplayMessage(text, "Notification", HSLColor.SkyBlue)
 end
@@ -80,7 +88,13 @@ WorldLoaded = function ()
 	Trigger.AfterDelay(DateTime.Seconds(1), function ()
 		Notification("We'll need to get set up quickly before the Nitro's communications network comes back online.")
 		Media.PlaySpeechNotification(Penta, "MissionTimerInitialised")
-		DateTime.TimeLimit = DateTime.Minutes(3)
+		if Diff == "easy" then
+			DateTime.TimeLimit = ObjectiveTimer.Easy
+		elseif Diff == "normal" then
+			DateTime.TimeLimit = ObjectiveTimer.Normal
+		else
+			DateTime.TimeLimit = ObjectiveTimer.Hard
+		end
 
 		Trigger.OnTimerExpired(function ()
 			Notification("The Nitro communications grid is back online. They're going to attack soon!")
