@@ -604,6 +604,7 @@
 	AutoTargetPriority@DEFENCE:
 		ValidTargets: Defense
 		Priority: 90
+		InvalidTargets: TeslaCoil
 	AutoTargetPriority@VEHICLE:
 		ValidTargets: Vehicle
 		Priority: 80
@@ -915,10 +916,20 @@
 ^InfantryBuffs:
 	Inherits@GlobalBuffs: ^GlobalBuffs
 	Inherits@upgrade: ^AdvancedGuerillaTactics
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 2
+		StartIfBelow: 100
+		DamageCooldown: 2
 
 ^VehicleBuffs:
 	Inherits@GlobalBuffs: ^GlobalBuffs
 	Inherits: ^NanoTechRepairs
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
 
 ^TankBuffs:
 	Inherits@VehicleBuffs: ^VehicleBuffs
@@ -928,11 +939,8 @@
 		Modifier: 80
 	FirepowerMultiplier@TankBuffs:
 		Modifier: 125
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
+	RangeMultiplier@tankbunker:
+		Modifier: 150
 
 ^AircraftBuffs:
 	Inherits@GlobalBuffs: ^GlobalBuffs
@@ -957,9 +965,19 @@
 	AttackAircraft:
 		OpportunityFire: true
 		PersistentTargeting: true
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
 
 ^ShipBuffs:
 	Inherits@GlobalBuffs: ^GlobalBuffs
+	ChangesHealth@SelfHealing:
+		Step: 10
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
 
 ^DefenseBuffs:
 	Inherits@GlobalBuffs: ^GlobalBuffs
@@ -992,9 +1010,11 @@
 	RevealsShroud:
 		Range: 5500
 	Buildable:
-		BuildDurationModifier: 50
+		BuildDurationModifier: 75
 	TooltipExtras@LightInf:
 		Description: Light Infantry
+	Selectable:
+		Class: Grenadiers
 
 ^AntiTankAntiAirInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
@@ -1005,9 +1025,11 @@
 	RevealsShroud:
 		Range: 6000
 	Buildable:
-		BuildDurationModifier: 75 #60
+		BuildDurationModifier: 100
 	TooltipExtras@AntiTank:
 		Description: Anti-Tank and Anti-Air
+	Selectable:
+		Class: AntiTankAntiAirInfantry
 
 ^HeavyInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
@@ -1015,11 +1037,6 @@
 	Inherits@InfantryBuffs: ^InfantryBuffs
 	Armor:
 		Type: Plate
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	RevealsShroud:
 		Range: 6500
 	Crushable:
@@ -1045,11 +1062,6 @@
 		Type: Plate
 	DamageMultiplier@MeleeBuff:
 		Modifier: 80
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	RevealsShroud:
 		Range: 5000
 	AutoTarget:
@@ -1063,6 +1075,8 @@
 		Stats: Armor, Sight, Speed, Damage, ReloadDelay, Kills, Experience
 	TooltipExtras@Melee:
 		Description: Melee
+	Selectable:
+		Class: MeleeInfantry
 
 ^SniperInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
@@ -1080,8 +1094,12 @@
 	RenderDetectionCircle:
 	Buildable:
 		BuildDurationModifier: 75
+	KeepsDistance:
+		Distance: 10
 	TooltipExtras@Sniper:
 		Description: Sniper
+	Selectable:
+		Class: SniperInfantry
 
 ^HeroInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
@@ -1090,19 +1108,15 @@
 	Inherits@InfantryBuffs: ^InfantryBuffs
 	Inherits@MC: ^MCImmune
 	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@AntiEpic: ^PrioritizeEpic
 	Targetable@Epic:
 		TargetTypes: Epic
 	Armor:
 		Type: Heroic
 	DamageMultiplier@HeroBuff:
-		Modifier: 50
+		Modifier: 40
 	FirepowerMultiplier@HeroBuff:
-		Modifier: 200
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
+		Modifier: 125
 	RevealsShroud:
 		Range: 8000
 	DetectCloaked:
@@ -1138,9 +1152,11 @@
 		Range: 5000
 	RenderDetectionCircle:
 	Buildable:
-		BuildDurationModifier: 25
+		BuildDurationModifier: 50
 	TooltipExtras@Scout:
 		Description: Scout Vehicle
+	Selectable:
+		Class: ScoutVehicle
 
 ^SupportVehicleTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
@@ -1151,11 +1167,6 @@
 	Inherits@upgrade: ^AdvancedGuerillaTactics
 	Armor:
 		Type: Light
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	RevealsShroud:
 		Range: 8000
 	DetectCloaked:
@@ -1165,16 +1176,13 @@
 		BuildDurationModifier: 50
 	TooltipExtras@Support:
 		Description: Support Vehicle
+	Selectable:
+		Class: SupportVehicle
 
 ^HarvesterTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
 	Inherits@VehicleBuffs: ^VehicleBuffs
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	RevealsShroud:
 		Range: 5000
 	Buildable:
@@ -1185,11 +1193,15 @@
 		Stats: Armor, Sight, Speed, None, Harvester
 	TooltipExtras@Harvester:
 		Description: Harvester
+	Selectable:
+		Class: Harvester
 
 ^MainBattleTankTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
 	Inherits@TankBuffs: ^TankBuffs
+	DamageMultiplier@MMainBattleTankBuff:
+		Modifier: 80
 	RevealsShroud:
 		Range: 6000
 	Buildable:
@@ -1198,11 +1210,15 @@
 		Type: Medium
 	TooltipExtras@MainBattleTank:
 		Description: Main Battle Tank
+	Selectable:
+		Class: MainBattleTank
 
 ^HighTechTankTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
 	Inherits@TankBuffs: ^TankBuffs
+	DamageMultiplier@HighTechTankBuff:
+		Modifier: 90
 	RevealsShroud:
 		Range: 7000
 	Buildable:
@@ -1211,6 +1227,8 @@
 		Type: Medium
 	TooltipExtras@HighTechTank:
 		Description: High-Tech Tank
+	Selectable:
+		Class: HighTechTank
 
 ^LineBreakerTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceMelee
@@ -1222,11 +1240,6 @@
 		Modifier: 75
 	FirepowerMultiplier@LineBreakerBuff:
 		Modifier: 150
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -1237,6 +1250,8 @@
 		BuildDurationModifier: 50
 	TooltipExtras@Linebreaker:
 		Description: Linebreaker
+	Selectable:
+		Class: LineBreaker
 
 ^FireSupportTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
@@ -1255,6 +1270,8 @@
 		Distance: 8
 	TooltipExtras@FireSupport:
 		Description: Fire Support
+	Selectable:
+		Class: FireSupport
 
 ^ArtilleryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
@@ -1282,6 +1299,8 @@
 		Distance: 12
 	TooltipExtras@Artillery:
 		Description: Artillery
+	Selectable:
+		Class: Artillery
 
 ^EpicVehicleTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
@@ -1290,15 +1309,11 @@
 	Inherits@VehicleBuffs: ^VehicleBuffs
 	Inherits@MC: ^MCImmune
 	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@AntiEpic: ^PrioritizeEpic
 	Targetable@Epic:
 		TargetTypes: Epic
 	DamageMultiplier@EpicBuff:
 		Modifier: 50
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	Armor:
 		Type: Superheavy
 	RevealsShroud:
@@ -1322,11 +1337,6 @@
 		Modifier: 80
 	FirepowerMultiplier@FighterBuff:
 		Modifier: 120
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	Aircraft:
 		CruiseAltitude: 4000
 		RepulsionSpeed: 40
@@ -1347,6 +1357,8 @@
 		BuildDurationModifier: 50
 	TooltipExtras@Fighter:
 		Description: Fighter
+	Selectable:
+		Class: Fighter
 
 ^BomberTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceAircraft
@@ -1356,11 +1368,6 @@
 		Modifier: 90
 	FirepowerMultiplier@BomberBuff:
 		Modifier: 110
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	Aircraft:
 		CruiseAltitude: 4000
 		RepulsionSpeed: 40
@@ -1379,17 +1386,14 @@
 		BuildDurationModifier: 75
 	TooltipExtras@Bomber:
 		Description: Bomber
+	Selectable:
+		Class: Bomber
 
 ^HelicopterTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceAircraft
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericAllDetector
 	Inherits@AircraftBuffs: ^AircraftBuffs
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	Aircraft:
 		CruiseAltitude: 2000
 		RepulsionSpeed: 40
@@ -1410,17 +1414,14 @@
 		BuildDurationModifier: 50
 	TooltipExtras@Helicopter:
 		Description: Helicopter
+	Selectable:
+		Class: Helicopter
 
 ^SpaceshipTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceAircraft
 	Inherits@EXT: ^ExternalConditions
 	Inherits@detect: ^GenericAllDetector
 	Inherits@AircraftBuffs: ^AircraftBuffs
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	Aircraft:
 		CruiseAltitude: 3000
 		RepulsionSpeed: 30
@@ -1441,6 +1442,8 @@
 		BuildDurationModifier: 75
 	TooltipExtras@Spaceship:
 		Description: Spaceship
+	Selectable:
+		Class: Spaceship
 
 ^UnarmedTransportHelicopterTemplate:
 	Inherits@Template: ^HelicopterTemplate
@@ -1448,6 +1451,8 @@
 		Modifier: 75
 	Buildable:
 		BuildDurationModifier: 25
+	Selectable:
+		Class: UnarmedTransportHelicopter
 
 ^ScoutShipTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceShips
@@ -1457,11 +1462,6 @@
 		RangeCircleType: naval
 	FirepowerMultiplier@ScoutShip:
 		Modifier: 125
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	Armor:
 		Type: Medium
 	RevealsShroud:
@@ -1474,6 +1474,8 @@
 		BuildDurationModifier: 25
 	TooltipExtras@ScoutShip:
 		Description: Scout Ship
+	Selectable:
+		Class: ScoutShip
 
 ^BattleShipTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceShips
@@ -1483,11 +1485,6 @@
 		RangeCircleType: naval
 	DamageMultiplier@BattleShip:
 		Modifier: 75
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -1496,6 +1493,8 @@
 		BuildDurationModifier: 50
 	TooltipExtras@BattleShip:
 		Description: Battleship
+	Selectable:
+		Class: BattleShip
 
 ^ArtilleryShipTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceShips
@@ -1503,11 +1502,6 @@
 	Inherits@ShipBuffs: ^ShipBuffs
 	RenderRangeCircle:
 		RangeCircleType: naval
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
 	Armor:
 		Type: Medium
 	RevealsShroud:
@@ -1518,6 +1512,8 @@
 		BuildDurationModifier: 75
 	TooltipExtras@ArtilleryShip:
 		Description: Artillery Ship
+	Selectable:
+		Class: ArtilleryShip
 
 ^BasicDefenseTemplate:
 	Inherits@DisabledOverlay: ^DisableOnPowerDown
@@ -1546,21 +1542,22 @@
 	IgnoresDisguise:
 
 ^PromotionUnitBuff:
-	ChangesHealth@SelfHealing:
-		Step: 10
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
+	FirepowerMultiplier@PromotionUnit:
+		Modifier: 110
 	DamageMultiplier@PromotionUnit:
 		Modifier: 90
+	ReloadDelayMultiplier@PromotionUnit:
+		Modifier: 90
 	SpeedMultiplier@PromotionUnit:
-		Modifier: 108
+		Modifier: 105
 	RangeMultiplier@PromotionUnit:
 		Modifier: 105
-	FirepowerMultiplier@PromotionUnit:
-		Modifier: 112
-	ReloadDelayMultiplier@PromotionUnit:
-		Modifier: 94
+	RevealsShroudMultiplier@PromotionUnit:
+		Modifier: 105
+	DetectCloakedMultiplier@PromotionUnit:
+		Modifier: 105
+	InaccuracyMultiplier@PromotionUnit:
+		Modifier: 90
 
 ^BasicUnit:
 	Inherits@1: ^ExistsInWorld
@@ -1669,7 +1666,7 @@
 		CargoConditions:
 			yrngtbnk: tankbunkered
 	RangeMultiplier@tankbunker:
-		Modifier: 150
+		Modifier: 125
 		RequiresCondition: tankbunkered
 	WithDamageOverlay:
 		Palette: player
@@ -2064,12 +2061,14 @@
 		KilledOnImpassableTerrain: false
 	KillsSelf@EMP:
 		RequiresCondition: (empdisable || superfreeze) && airborne
+
+^AircraftEjectOnDeath:
 	EjectOnDeath:
 		PilotActor: RARE1
 		SuccessRate: 100
 		EjectOnGround: false
 		EjectInAir: true
-		AllowUnsuitableCell: true
+		AllowUnsuitableCell: false
 		ChuteSound: chute1.aud
 
 ^AirstrikePlane:
@@ -2216,6 +2215,7 @@
 		RevealGeneratedShroud: False
 	RevealsShroud@GAPGEN:
 		Range: 4c0
+		Type: GroundPosition
 	Targetable@chrono:
 		TargetTypes: Chronobeamable
 		RequiresCondition: !airborne
@@ -2591,6 +2591,12 @@
 		Probability: 99
 		OwnerType: Killer
 		DeathType: ZombieInfection
+
+^ExplodingInfantry:
+	FirepowerMultiplier@ExplodingInfantry:
+		Modifier: 200
+	FireWarheadsOnDeath:
+		Weapon: Grenade
 
 ^TDRAInfantry:
 	WithDeathAnimation:
@@ -3503,14 +3509,14 @@
 	FootprintPlaceBuildingPreview:
 	RequiresBuildableArea:
 		AreaTypes: building
-		Adjacent: 4
+		Adjacent: 5
 	Targetable:
 		TargetTypes: Ground, Wall
 	Crushable:
 		CrushClasses: wall
 		CrushSound: sandbag2.aud
 	LineBuild:
-		Range: 8
+		Range: 10
 		NodeTypes: wall
 	LineBuildNode:
 		Types: wall
@@ -3534,7 +3540,6 @@
 		PauseOnCondition: cloak-force-disabled || base-reveal
 	RenderSprites:
 		Palette: ra_temperat
-
 
 ^Tree:
 	Inherits@1: ^SpriteActor
@@ -4024,7 +4029,15 @@
 
 ^Shroudable:
 	ExternalCondition@shrouded:
+		Condition: gap-shroud
+	GrantConditionOnAttack@unshroud:
+		Condition: firing
+		RevokeDelay: 50
+		ArmamentNames: primary, secondary, deployed, garrisoned
+		RequiresCondition: gap-shroud
+	GrantCondition@shrouded:
 		Condition: shrouded
+		RequiresCondition: gap-shroud && !firing
 	WithColoredOverlay@shrouded:
 		RequiresCondition: shrouded
 		Color: 11223344
@@ -5962,8 +5975,7 @@ CPQDEBUGDUMMY:
 		ActorTypes: rae6,rae1,rae1,rae1
 
 ^RASovietSpawnActorsOnSell:
-	Building:
-		BuildSounds: placbldg.aud, build5.aud
+	Inherits: ^RASpawnActorsOnSell
 	SpawnActorsOnSell:
 		ActorTypes: rae6,rare1,rare1,rare1
 
@@ -7007,6 +7019,7 @@ CPQDEBUGDUMMY:
 	Cargo:
 		LoadedCondition: loaded
 		EjectOnDeathDamage: 0
+		OwnerChangedAffectsPassengers: false
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -7050,12 +7063,12 @@ CPQDEBUGDUMMY:
 		RequiresCondition: !disabled
 	AmmoPool@pld:
 		Name: pointdefense
-		Ammo: 10
+		Ammo: 5
 		Armaments: pointdefense
 		AmmoCondition: pdammo
 	ReloadAmmoPool@pld:
 		AmmoPool: pointdefense
-		Delay: 20
+		Delay: 50
 		Count: 1
 		ResetOnFire: True
 		PauseOnCondition: disabled
@@ -7261,6 +7274,7 @@ CPQDEBUGDUMMY:
 		LoadedCondition: loaded
 		LoadingCondition: notmobile
 		EjectOnDeathDamage: 0
+		OwnerChangedAffectsPassengers: false
 	WithCargoSounds:
 		EnterSounds: genter1a.wav
 		ExitSounds: gexit1a.wav

@@ -402,7 +402,11 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			squadsize = owner.Units.Count;
 
 			if ((healthChange || unitlost) && !isFirstTick)
-				owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsRunState(), true);
+			{
+				var friendlyUnits = owner.World.FindActorsInCircle(owner.TargetActor.CenterPosition, WDist.FromCells(owner.SquadManager.Info.AttackScanRadius)).Where(owner.SquadManager.IsValidAllyUnit);
+				if (friendlyUnits.Count() < squadsize + owner.SquadManager.Info.SquadSize)
+					owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsRunState(), true);
+			}
 
 			owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, leader.Location), false, groupedActors: followingUnits.ToArray()));
 			owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromActor(owner.TargetActor), false, groupedActors: attackingUnits.ToArray()));

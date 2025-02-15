@@ -12,9 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Mods.CA.Traits;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Widgets;
 using OpenRA.Primitives;
+using OpenRA.Traits;
 using OpenRA.Widgets;
 
 namespace OpenRA.Mods.CA.Widgets
@@ -58,7 +60,7 @@ namespace OpenRA.Mods.CA.Widgets
 				{
 					Name = (NextQueueName++).ToString(),
 					Queue = queue,
-					Actor = queue.GetType() == typeof(ProductionQueue) ? queue.Actor : null
+					Actor = queue.Actor.Info.HasTraitInfo<IOccupySpaceInfo>() ? queue.Actor : null
 				});
 			Tabs = tabs;
 		}
@@ -68,6 +70,7 @@ namespace OpenRA.Mods.CA.Widgets
 	{
 		readonly World world;
 		readonly WorldRenderer worldRenderer;
+		readonly ISelection selection;
 
 		public readonly string PaletteWidget = null;
 		public readonly string TypesContainer = null;
@@ -111,6 +114,7 @@ namespace OpenRA.Mods.CA.Widgets
 		{
 			this.world = world;
 			this.worldRenderer = worldRenderer;
+			selection = world.Selection;
 
 			Groups = world.Map.Rules.Actors.Values.SelectMany(a => a.TraitInfos<ProductionQueueInfo>())
 				.Select(q => q.Group).Distinct().ToDictionary(g => g, g => new ProductionTabGroupCA() { Group = g });
@@ -138,13 +142,13 @@ namespace OpenRA.Mods.CA.Widgets
 
 			// Prioritize alerted queues
 			var queues = Groups[queueGroup].Tabs.Select(t => t.Queue)
-					.OrderByDescending(q => q.AllQueued().Any(i => i.Done) ? 1 : 0)
+					.OrderByDescending(q => q.AllQueued().Any(i => i.Done) ? 2 : !q.AllQueued().Any() ? 1 : 0)
 					.ToList();
 
 			if (reverse) queues.Reverse();
 
-			CurrentQueue = queues.SkipWhile(q => q != CurrentQueue)
-				.Skip(1).FirstOrDefault() ?? queues.FirstOrDefault();
+			UpdateTab(queues.SkipWhile(q => q != CurrentQueue)
+				.Skip(1).FirstOrDefault() ?? queues.FirstOrDefault(), true);
 
 			return true;
 		}
@@ -310,7 +314,21 @@ namespace OpenRA.Mods.CA.Widgets
 				g.Update(allQueues);
 
 			if (allQueues.Count > 0 && CurrentQueue == null)
-				CurrentQueue = allQueues.First();
+				UpdateTab(allQueues.First());
+		}
+
+		void UpdateTab(ProductionQueue queue, bool recenter = false)
+		{
+			CurrentQueue = queue;
+
+			var recenterView = queue.Actor.TraitOrDefault<RecenterViewWithProductionTab>();
+
+			if (recenter && queue.Actor != null && queue.Actor.IsInWorld && recenterView != null && !recenterView.IsTraitDisabled)
+			{
+				var viewport = worldRenderer.Viewport;
+				viewport.Center(queue.Actor.CenterPosition);
+				selection.Combine(world, new Actor[] { queue.Actor }, false, false);
+			}
 		}
 
 		public override bool YieldMouseFocus(MouseInput mi)
@@ -375,7 +393,7 @@ namespace OpenRA.Mods.CA.Widgets
 				{
 					pressedTabIndex = tabIndex;
 					var tab = Groups[queueGroup].Tabs[tabIndex];
-					CurrentQueue = tab.Queue;
+					UpdateTab(tab.Queue);
 					Game.Sound.PlayNotification(world.Map.Rules, null, "Sounds", ClickSound, null);
 
 					if (mi.MultiTapCount > 1 && tab.Actor != null && tab.Actor.IsInWorld)

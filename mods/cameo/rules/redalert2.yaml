@@ -502,9 +502,9 @@ RA2Flameguy:
 	WithMoveAnimation@Turn-R:
 		MoveSequence: move-r
 		RequiresCondition: Aircraft-Turning && Aircraft-Vertical
-	WithMoveAnimation:
-		MoveSequence: move
-		Condition: !Aircraft-Turning
+	#WithMoveAnimation:
+	#	MoveSequence: move
+	#	Condition: !Aircraft-Turning
 #
 # Sell Actors
 #
@@ -1024,7 +1024,7 @@ ra2gagap:
 	ProximityExternalCondition@shrouded:
 		Range: 10000
 		ValidRelationships: Ally
-		Condition: shrouded
+		Condition: gap-shroud
 		RequiresCondition: !lowpower && !disabled
 	-RenderDetectionCircle:
 	RenderShroudCircle:
@@ -4257,10 +4257,12 @@ ra2shk:
 	AutoTargetPriority@TESLANORMAL:
 		RequiresCondition: !assault-move && !attack-move
 		ValidTargets: TeslaCoil
+		Priority: 90
 	AutoTargetPriority@TESLAAMOVE:
 		RequiresCondition: assault-move || attack-move
 		ValidTargets: TeslaCoil
 		ValidRelationships: Enemy
+		Priority: 90
 	Buildable:
 		Prerequisites: ~ra2naradr
 		Queue: Infantry, RAInfantry
@@ -5177,7 +5179,7 @@ YRROBO:
 	Inherits@EMP: ^TurretEMP
 	Inherits@MC: ^MCImmune
 	Valued:
-		Cost: 1200
+		Cost: 1100
 	Tooltip:
 		Name: actor-robo.name
 	Buildable:
@@ -5652,11 +5654,11 @@ RA2MGTK:
 		Speed: 85
 		TurnSpeed: 17
 	Health:
-		HP: 80000
+		HP: 100000
 	Repairable:
-		HpPerStep: 4000
+		HpPerStep: 5000
 	ChangesHealth@SelfHealing:
-		Step: 32
+		Step: 40
 	Armor:
 		Type: Medium
 	Turreted:
@@ -5704,8 +5706,88 @@ RA2MGTK:
 		Palette: ra_temperat
 	Voiced:
 		VoiceSet: MirageTankVoice
-	DeliversCash:
-		Payload: 650
+
+RA2HMGTK:
+	Inherits: ^Tank
+	Inherits@anim: ^RA2Vehicle
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@vo: ^AttackTurretedVoice
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: Heavy Mirage Tank
+		RequiresCondition: !tree
+	MirageTooltip@Tree:
+		Name: Heavy Mirage Tank
+		GenericName: Tree
+		GenericVisibility: Enemy, Neutral
+		RequiresCondition: tree
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~ra2gatech
+		Queue: Vehicle, RAVehicle
+		Description: actor-mgtk.description
+	Mobile:
+		Locomotor: tracked
+		Speed: 60
+		TurnSpeed: 12
+	Health:
+		HP: 240000
+	Repairable:
+		HpPerStep: 12000
+	ChangesHealth@SelfHealing:
+		Step: 96
+	Armor:
+		Type: Heavy
+	Turreted:
+		TurnSpeed: 12
+	Armament:
+		Name: primary
+		Weapon: RA2HeavyMirageGun
+		LocalOffset: 1024,0,128
+		Recoil: 128
+		RecoilRecovery: 16
+		RequiresCondition: !rank-elite
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Armament@elite:
+		Name: primary
+		Weapon: RA2HeavyMirageGun_elite
+		LocalOffset: 1024,0,128
+		Recoil: 128
+		RecoilRecovery: 16
+		RequiresCondition: rank-elite
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Mirage:
+		RequiresCondition: !disabled
+		InitialDelay: 25
+		RevealDelay: 25
+		RevealOn: Attack, Move
+		MirageCondition: tree
+		DefaultTargetTypes: t08, t10, t03, t02
+	WithMuzzleOverlay:
+	AttackTurreted:
+	SelectionDecorations:
+	AutoTarget:
+	Selectable:
+	WithSpriteTurret:
+		RequiresCondition: !tree
+	WithFacingSpriteBody:
+		RequiresCondition: !tree
+	WithMirageSpriteBody:
+		Name: tree
+		RequiresCondition: tree
+		IsPlayerPalette: false
+		Palette: ra_temperat
+	RenderSprites:
+		PlayerPalette: player_rgba
+	Voiced:
+		VoiceSet: MirageTankVoice
 
 yrbfrt:
 	Inherits: ^Tank
@@ -6020,11 +6102,11 @@ RA2APOC:
 	Passenger:
 		Weight: 4
 	Health:
-		HP: 175000
+		HP: 350000
 	Repairable:
-		HpPerStep: 8750
+		HpPerStep: 17500
 	ChangesHealth@SelfHealing:
-		Step: 70
+		Step: 140
 	Armor:
 		Type: Superheavy
 	Turreted:
@@ -6643,7 +6725,7 @@ YRLTNK:
 	Tooltip:
 		Name: Lasher Tank
 	Valued:
-		Cost: 500
+		Cost: 600
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: ~yrygweap
@@ -8802,7 +8884,6 @@ ra2_tzep:
 		Actor: ra2_tzep.Husk
 	SelectionDecorations:
 	Selectable:
-		Class: ra2shad
 		DecorationBounds: 1280, 1024
 	RenderSprites:
 		Image: ra2_tzep
@@ -11381,12 +11462,20 @@ YRDISK.Husk:
 		PlayerPalette: playerra2
 
 ra2asw.Husk:
-	Inherits: ^HelicopterHusk
+	Inherits: ^PlaneHusk
 	Tooltip:
 		Name: Osprey
 	Aircraft:
 		TurnSpeed: 16
-		Speed: 223
+		Speed: 200
+	LeavesTrails:
+		Offsets: -853,0,171
+		MovingInterval: 2
+		Image: smokey
+		StationaryInterval: 2
+		SpawnAtLastPosition: False
+		TrailWhileStationary: True
+		Type: CenterPosition
 	RenderSprites:
 		Image: ra2asw
 	RenderSprites:
