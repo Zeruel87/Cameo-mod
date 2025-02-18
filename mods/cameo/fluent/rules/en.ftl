@@ -1471,7 +1471,7 @@ actor-latin_ca12hit =
       Requires power to operate.
 
 actor-nax_merc =
-   .description = Rifle infantry that gains greater bonuses from veterancy.
+   .description = Sniper Infantry with long range.
 
 actor-nax_mp40 =
    .description = Elite assault infantry.
@@ -1740,7 +1740,7 @@ upgrade-conscription =
    All Infantry and Troop Transports deal 10% more damage and have 10% more armor.
 
 upgrade-nuclearengines =
-   .description = Increases speed of tanks by 25%.
+   .description = Increases speed of tanks by 20%.
    Tank damage is also increased by 10%
 
 upgrade-rocketenhancements =
@@ -1769,7 +1769,7 @@ upgrade-afterburners =
    Jets also take 15% less damage.
 
 upgrade-sovietautoloaders =
-   .description = Increases the fire rate of all tank cannons by 100%.
+   .description = Reduces the Reload Delay of Tanks, Hinds and Volkov by 40%.
 
 upgrade-sovietsteel =
    .description = TEAM UPGRADE
@@ -1791,11 +1791,10 @@ upgrade-cryomissiles =
    .description = Adds cryo warheads to all missiles and bombs that freezes enemy units and buildings.
    Each hit slows down the enemy target by 10%, increases damage taken by 10% and stacks 10 times.
    Each stack lasts 5 seconds and on 10 stacks the unit is completely disabled.
-   Artillery, Bastion and Rapier Jumpjet get cryo bombs with double the cryo effect radius.
-   With no stacks applied to the target, cryo missiles and bombs deal 20% less damage than before.
+   Artillery, Bastion and Rapier Jumpjet get cryo bombs with double the cryo effect radius of effect.
 
 upgrade-lasertargetingsystems =
-   .description = Increases damage of all tanks and aircraft by 25%
+   .description = Increases damage of all units and defenses by 30%
 
 upgrade-airsuperioritydoctrine =
    .description = Increases damage, firerate, armor, speed, range and accuracy by 10%.
