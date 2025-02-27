@@ -116,6 +116,29 @@ World:
 		Factions: syndicate
 		BaseActor: latin_mcv
 		SupportActors: latin_mili,latin_mili,latin_mili,latin_fftr,latin_fftr,nax_wirbelwind,nax_tiger,nax_tiger,nax_tiger,aa_ptnk,nax_wirbelwind
+	FactionCA@futuretech:
+		Name: Future Tech
+		InternalName: futuretech
+		Game: Red Alert 2
+		Side: RA2 Mod
+		Description: Private corporation of Allies specialized in robotics
+	StartingUnits@mcvfuturetech:
+		Class: none
+		ClassName: MCV Only
+		Factions: futuretech
+		BaseActor: futu_mcv
+	StartingUnits@defaultfuturetech:
+		Class: light
+		ClassName: Light Support
+		Factions: futuretech
+		BaseActor: futu_mcv
+		SupportActors: futu_wheel,futu_wheel,futu_wheel,future_robot_missiles,future_robot_missiles,future_robot_cannon,future_robot_cannon
+	StartingUnits@heavyfuturetech:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: futuretech
+		BaseActor: latin_mcv
+		SupportActors: futu_wheel,futu_wheel,futu_wheel,future_robot_missiles,future_robot_missiles,future_robot_cannon,future_robot_cannon,future_robot_cannon,future_robot_cannon,future_robot_cannon,future_robot_missiles
 	FactionCA@Randomra2mod:
 		Name: Random RA2 Mods #faction-ra2-random.name
 		InternalName: Randomra2mod
@@ -123,6 +146,8 @@ World:
 		Game: Red Alert 2
 		Side: Random
 		Description: faction-ra2-modded-random.description
+
+
 
 ^Palettes:
 	PaletteFromFile@ra2rotunits:
@@ -140,6 +165,22 @@ World:
 	PlayerColorPalette@ra2consunits:
 		BasePalette: ra2consunit
 		BaseName: playerra2cons
+		RemapIndex: 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+	PaletteFromFile@ra2future1:
+		Name: ra2future1
+		Filename: eapal1tem.pal
+		ShadowIndex: 1, 4
+	PlayerColorPalette@ra2future1:
+		BasePalette: ra2future1
+		BaseName: playerra2future1
+		RemapIndex: 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+	PaletteFromFile@ra2future2:
+		Name: ra2future2
+		Filename: eapal2tem.pal
+		ShadowIndex: 1, 4
+	PlayerColorPalette@ra2future2:
+		BasePalette: ra2future2
+		BaseName: playerra2future2
 		RemapIndex: 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
 
 ^QuantumWeaponsEMP:
@@ -16774,6 +16815,285 @@ nax2_zep.Husk:
 		PlayerPalette: playerra2
 
 ####################################################################################################
+#		Red Alert 2 Future Structures
+####################################################################################################
+futu_mcv:
+	Inherits: ^Vehicle
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@mcv: ^MCV
+	Inherits@SHADOWS: ^Shadows
+	Tooltip:
+		Name: Future Tech Mobile Construction Vehicle
+	Buildable:
+		Prerequisites: ~ra2gadept
+	Transforms:
+		IntoActor: futu_egcnst
+		Offset: -1,-1
+		Facing: 384
+		TransformSounds: uplace.wav
+		NoTransformNotification: BuildingCannotPlaceAudio
+	SelectionDecorations:
+	Voiced:
+		VoiceSet: AlliedMCV
+	ProvidesPrerequisite@faction:
+		Prerequisite: mmfuture
+	RenderSprites:
+		PlayerPalette: playerra2
+
+futu_egcnst:
+	Inherits: ^RA2Building
+	Inherits@CPQ: ^CPQCondition
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Inherits@shape: ^4x3Shape
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Tooltip:
+		Name: Future Tech Construction Yard
+	Building:
+		Footprint: xxxx xxxx xxxx
+		Dimensions: 4,3
+	Transforms:
+		IntoActor: futu_mcv
+		Offset: 1,1
+		Facing: 432
+		RequiresCondition: factundeploy
+	WithBuildingPlacedOverlay:
+	ProvidesPrerequisite@walls:
+		Prerequisite: ra2fact
+	WithIdleOverlay@fans:
+		Sequence: idle-fans
+		RequiresCondition: !build-incomplete
+	Exit@1:
+		SpawnOffset: 213,-128,0
+		ExitCell: 1,2
+	WithDeathAnimation:
+		DeathSequencePalette: playerra2
+	RenderSprites:
+		PlayerPalette: playerra2future2
+
+futu_ggpowr:
+	Inherits: ^RA2Building
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@power: ^PowerPlant
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Thermal Power Plant
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Building, RABuilding
+		Description: template-power.description
+		Prerequisites: ~futu_egcnst
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Health:
+		HP: 200000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	Power:
+		Amount: 250
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience:
+		ValidTypes: building
+	WithIdleOverlay@glow:
+		Sequence: idle-glow
+	ProvidesPrerequisite@buildingname:
+
+futu_egtf:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@radar: ^RadarBuilding
+	Tooltip:
+		Name: Trasmission Center
+	Buildable:
+		Prerequisites: ~futu_egcnst, futu_egrefn
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	SelectionDecorations:
+	WithIdleOverlay@light:
+		Sequence: idle-light
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@light2:
+		Sequence: idle-light2
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@lighta:
+		Sequence: idle-lighta
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@lightb:
+		Sequence: idle-lightb
+		RequiresCondition: !build-incomplete
+	RenderSprites:
+		PlayerPalette: playerra2future2
+futu_egpile:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@barr: ^IsBarrack
+	Tooltip:
+		Name: Troop Gate
+	Buildable:
+		Prerequisites: ~futu_egcnst, futu_ggpowr
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	RallyPoint:
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -700,800,0
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 100,1200,0
+		ExitCell: 1,3
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithIdleOverlay@light:
+		Sequence: idle-light
+		RequiresCondition: !build-incomplete
+	WithDeathAnimation:
+		DeathSequencePalette: playerra2
+		DeathPaletteIsPlayerPalette: true
+	WithProductionDoorOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-tele
+	RenderSprites:
+		PlayerPalette: playerra2future1
+futu_egweap2:
+	Inherits: ^RA2DefaultWeap
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Tooltip:
+		Name: template-factory.ra2-allies
+	Buildable:
+		Prerequisites: ~futu_egcnst, futu_egrefn
+	WithIdleOverlay@flag:
+		Sequence: idle-flag
+	WithIdleOverlay@flag2:
+		Sequence: idle-flag2
+	WithIdleOverlay@bib:
+		Sequence: bib
+	WithProductionDoorOverlay:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-tele
+	RenderSprites:
+		PlayerPalette: playerra2future1
+futu_egrefn:
+	Inherits: ^RA2Building
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@ref: ^Refinery
+	Inherits@shape: ^4x3Shape
+	Tooltip:
+		Name: Future Tech Refinery
+	Buildable:
+		Prerequisites: ~futu_egcnst, futu_ggpowr
+	Building:
+		Footprint: xxx= xxx= x+==
+		Dimensions: 4,3
+	DockHost:
+		Type: Unload
+		DockAngle: 640
+		DockOffset: 1086,1086,0
+	DrawLineToTarget:
+	FreeActor:
+		Actor: ra2cmin
+		SpawnOffset: 3,2
+		Facing: 128
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithIdleOverlay@bib:
+		Sequence: idle-bib
+	WithIdleOverlay@drill:
+		Sequence: idle-drill
+	WithIdleOverlay@chim:
+		Sequence: idle-chim
+	RenderSprites:
+		PlayerPalette: playerra2future1
+futu_ifv:
+	Inherits: RA2FV
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Future IFV
+		RequiresCondition: !ifv-mg && !ifv-repair && !ifv-sniper && !ifv-flak && !ifv-tesla && !ifv-hero && !ifv-chem && !ifv-fire && !ifv-cannon && !ifv-miss && !ifv-deso && !ifv-demo && !ifv-chrono
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~futu_egweap2
+		Queue: Vehicle, RAVehicle
+		Description: actor-fv.description
+	Mobile:
+		Locomotor: wheeled
+		Speed: 150
+		TurnSpeed: 30
+		PauseOnCondition: notmobile || disabled
+	Health:
+		HP: 25000
+	Tooltip@MG:
+		Name: Machine Gun IFV
+		RequiresCondition: ifv-mg || ifv-thief
+	Tooltip@MISS:
+		Name: Missile IFV
+		RequiresCondition: ifv-miss
+	Tooltip@REP:
+		Name: Repair IFV
+		RequiresCondition: ifv-repair
+	Tooltip@SNIPE:
+		Name: Sniper IFV
+		RequiresCondition: ifv-sniper
+	Tooltip@HERO:
+		Name: Hero IFV
+		RequiresCondition: ifv-hero
+	Tooltip@FLAK:
+		Name: Flak IFV
+		RequiresCondition: ifv-flak
+	Tooltip@TESLA:
+		Name: Tesla IFV
+		RequiresCondition: ifv-tesla
+	Tooltip@CHEM:
+		Name: Chemical IFV
+		RequiresCondition: ifv-chem
+	Tooltip@CANNON:
+		Name: Cannon IFV
+		RequiresCondition: ifv-cannon
+	Tooltip@FIRE:
+		Name: Flamethrower IFV
+		RequiresCondition: ifv-fire
+	Tooltip@DEMO:
+		Name: Bomb IFV
+		RequiresCondition: ifv-demo
+	Tooltip@CHRONO:
+		Name: Chrono IFV
+		RequiresCondition: ifv-chrono
+	GuardsSelection@HEAL:
+		ValidTargets: Infantry
+		RequiresCondition: ifv-healer && !stance-attackanything
+	GuardsSelection@REPAIR:
+		ValidTargets: Vehicle
+		RequiresCondition: ifv-repair && !stance-attackanything
+	GuardsSelection@SPY:
+		RequiresCondition: ifv-spy
+	KeepsDistance:
+		RequiresCondition: ifv-repair || ifv-healer || ifv-spy
+	AttackTurreted:
+	SelectionDecorations:
+	Selectable:
+		Class: futu_ifv
+	Voiced:
+		VoiceSet: IFVVoice
+	Turreted:
+		TurnSpeed: 30
+		Offset: -270,0,1
+
+####################################################################################################
 #		Red Alert 2 Future Infantry
 ####################################################################################################
 future_robot_cannon:
@@ -16789,18 +17109,18 @@ future_robot_cannon:
 	Selectable:
 		Bounds: 600, 600, 0, -125
 	Valued:
-		Cost: 650
+		Cost: 500
 	Tooltip:
 		Name: Cannon Attack Robot
 	Buildable:
 		BuildPaletteOrder: 75
-		Prerequisites: ~ra2gapile
+		Prerequisites: ~futu_egpile
 		Queue: Infantry, RAInfantry
 		Description: actor-aamecha.description
 	Mobile:
 		Speed: 34
 		TurnSpeed: 13
-		Locomotor: tracked
+		Locomotor: chem
 	Health:
 		HP: 60000
 	Repairable:
@@ -16826,6 +17146,7 @@ future_robot_cannon:
 	-QuantizeFacingsFromSequence:
 	Passenger:
 		Weight: 1
+		CargoType: Infantry
 	Voiced:
 		VoiceSet: AsianAllianceRobotVoice
 	RenderSprites:
@@ -16843,18 +17164,18 @@ future_robot_missiles:
 	Selectable:
 		Bounds: 600, 600, 0, -125
 	Valued:
-		Cost: 650
+		Cost: 575
 	Tooltip:
 		Name: Missile Attack Robot
 	Buildable:
 		BuildPaletteOrder: 75
-		Prerequisites: ~ra2gapile
+		Prerequisites: ~futu_egpile
 		Queue: Infantry, RAInfantry
 		Description: actor-aamecha.description
 	Mobile:
 		Speed: 34
 		TurnSpeed: 13
-		Locomotor: tracked
+		Locomotor: chem
 	Health:
 		HP: 60000
 	Repairable:
@@ -16880,6 +17201,7 @@ future_robot_missiles:
 	-QuantizeFacingsFromSequence:
 	Passenger:
 		Weight: 1
+		CargoType: Infantry
 	Voiced:
 		VoiceSet: AsianAllianceRobotVoice
 	RenderSprites:
@@ -16897,18 +17219,18 @@ future_robot_shotgun:
 	Selectable:
 		Bounds: 600, 600, 0, -125
 	Valued:
-		Cost: 400
+		Cost: 300
 	Tooltip:
 		Name: Shotgunner Attack Robot
 	Buildable:
 		BuildPaletteOrder: 75
-		Prerequisites: ~ra2gapile
+		Prerequisites: ~futu_egpile
 		Queue: Infantry, RAInfantry
 		Description: actor-aamecha.description
 	Mobile:
 		Speed: 34
 		TurnSpeed: 13
-		Locomotor: tracked
+		Locomotor: chem
 	Health:
 		HP: 50000
 	Repairable:
@@ -16918,7 +17240,7 @@ future_robot_shotgun:
 	Armor:
 		Type: Plate
 	Armament@1:
-		Weapon: RA2AsianShotgun
+		Weapon: Future_Robot_Shotgun
 		LocalOffset: 200,300,500, 200,-300,500
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
@@ -16934,6 +17256,61 @@ future_robot_shotgun:
 	-QuantizeFacingsFromSequence:
 	Passenger:
 		Weight: 1
+		CargoType: Infantry
+	Voiced:
+		VoiceSet: AsianAllianceRobotVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+futu_wheel:
+	Inherits: ^Walker
+	Inherits@Template: ^ScoutVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^FrontalEMP
+	Inherits@MC: ^MCImmune
+	Selectable:
+		Bounds: 600, 600, 0, -125
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Scout Robot
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~futu_egpile
+		Queue: Infantry, RAInfantry
+		Description: actor-aamecha.description
+	Mobile:
+		Speed: 70
+		TurnSpeed: 26
+		Locomotor: chem
+	Health:
+		HP: 10000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Plate
+	Armament@1:
+		Weapon: Future_Wheel_MG
+		LocalOffset: 200,300,500, 200,-300,500
+		MuzzlePalette: ra2effect
+	AttackFrontal:
+		FacingTolerance: 20
+	WithInfantryBody:
+		IdleSequences: idle1, idle2
+		MinIdleDelay: 90
+		MaxIdleDelay: 270
+		DefaultAttackSequence: shoot
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 1
+		CargoType: Infantry
 	Voiced:
 		VoiceSet: AsianAllianceRobotVoice
 	RenderSprites:
@@ -16960,7 +17337,7 @@ future_mech_machinegun:
 		Name: Machinegun Super Mech
 	Buildable:
 		BuildPaletteOrder: 75
-		Prerequisites: ~ra2gapile
+		Prerequisites: ~futu_egweap2
 		Queue: Vehicle, RAVehicle
 		Description: actor-aamecha.description
 	Mobile:
@@ -17014,7 +17391,7 @@ future_mech_plasma:
 		Name: Plasma Super Mech
 	Buildable:
 		BuildPaletteOrder: 75
-		Prerequisites: ~ra2gapile
+		Prerequisites: ~futu_egweap2
 		Queue: Vehicle, RAVehicle
 		Description: actor-aamecha.description
 	Mobile:
@@ -17050,7 +17427,128 @@ future_mech_plasma:
 		VoiceSet: AsianAllianceRobotVoice
 	RenderSprites:
 		PlayerPalette: playerra2
+futu_landcarr:
+	Inherits: ^Walker
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@MC: ^MCImmune
+	Selectable:
+		Bounds: 600, 600, 0, -125
+	Valued:
+		Cost: 2100
+	Tooltip:
+		Name: Land Carrier
+	Buildable:
+		BuildPaletteOrder: 75
+		Prerequisites: ~futu_egweap2
+		Queue: Vehicle, RAVehicle
+		Description: actor-aamecha.description
+	Mobile:
+		Speed: 30
+		TurnSpeed: 13
+		Locomotor: tracked
+	Health:
+		HP: 125000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Heavy
+	Armament@1:
+		Weapon: RA2HoverMissile
+		LocalOffset: 200,300,500, 200,-300,500
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithInfantryBody:
+		IdleSequences: idle1, idle2
+		MinIdleDelay: 90
+		MaxIdleDelay: 270
+		DefaultAttackSequence: idle
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 4
+	Voiced:
+		VoiceSet: AsianAllianceRobotVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 20 #3
+	CarrierMaster:
+		Actors: ra2hornet, ra2hornet, ra2hornet
+		RearmTicks: 150
+		RespawnTicks: 300
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Armament@PRIMARY:
+		Weapon: RA2CarrierTarget
+		Damage: 3000
+		ReloadDelay: 150
 
+futu_orion:
+	Inherits: ^Walker
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@anim: ^RA2Vehicle
+	Inherits@EXPERIENCE: ^GainsExperienceRA2
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@EMP: ^TurretEMP
+	Inherits@MC: ^MCImmune
+	Selectable:
+		Bounds: 600, 600, 0, -125
+	Valued:
+		Cost: 2100
+	Tooltip:
+		Name: Orion
+	Buildable:
+		BuildPaletteOrder: 75
+		Prerequisites: ~futu_egweap2
+		Queue: Vehicle, RAVehicle
+		Description: actor-aamecha.description
+	Mobile:
+		Speed: 30
+		TurnSpeed: 13
+		Locomotor: tracked
+	Health:
+		HP: 125000
+	Repairable:
+		HpPerStep: 6500
+	ChangesHealth@SelfHealing:
+		Step: 52
+	Armor:
+		Type: Heavy
+	Armament@1:
+		Weapon: RA2155mm
+		LocalOffset: 1100,0,500
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	WithInfantryBody:
+		IdleSequences: idle1, idle2
+		MinIdleDelay: 90
+		MaxIdleDelay: 270
+		DefaultAttackSequence: idle
+	BodyOrientation:
+		QuantizedFacings: 32
+	-QuantizeFacingsFromSequence:
+	Passenger:
+		Weight: 4
+	Voiced:
+		VoiceSet: AsianAllianceRobotVoice
+	RenderSprites:
+		PlayerPalette: playerra2
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 20 #3
 ####################################################################################################
 #		Red Alert 2 Future Aircraft
 ####################################################################################################
