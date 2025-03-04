@@ -1779,13 +1779,15 @@ upgrade-sovietsteel =
 
 upgrade-advancedradarsystems =
    .description = Increases Radar Dome detection and vision range by 50%.
-   Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
+   Increases damage, fire rate, accuracy, vision, detection and weapon range of all units and defenses by 10%.
 
 upgrade-infantryarmorplating =
    .description = Increases armor of all infantry units by 30%.
+   Also reduces Reload Delay by 30%.
 
 upgrade-reinforcedstructures =
    .description = Increases armor of all buildings and defenses by 25%.
+   Also reduces Cost and Build Time by 25%.
 
 upgrade-cryomissiles =
    .description = Adds cryo warheads to all missiles and bombs that freezes enemy units and buildings.
@@ -1794,13 +1796,14 @@ upgrade-cryomissiles =
    Artillery, Bastion and Rapier Jumpjet get cryo bombs with double the cryo effect radius of effect.
 
 upgrade-lasertargetingsystems =
-   .description = Increases damage of all units and defenses by 30%
+   .description = Increases damage of all units and defenses by 35%
 
 upgrade-airsuperioritydoctrine =
-   .description = Increases damage, firerate, armor, speed, range and accuracy by 10%.
+   .description = Increases damage, firerate, armor, speed, range and accuracy of aircraft and the Heavy AA Tank by 15%.
 
 upgrade-chronoarmor =
-   .description = After taking damage, tanks will activate a chrono field which increases armor by 35% and speed by 50%
+   .description = After taking damage, tanks will activate a chrono field
+   which increases armor and fire rate by 35% and speed by 50%
    Unlocks Chrono Reinforcements from the Chronosphere.
 
 upgrade-gpssatellitesupport =
