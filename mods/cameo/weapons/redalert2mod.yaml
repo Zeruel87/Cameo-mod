@@ -4232,6 +4232,7 @@ NaxCorrosionRocket:
 	BurstDelays: 2
 	Range: 8000
 	Report: nax_corrokit.wav
+	SoundVolume: 2.0
 	MinRange: 1000
 	ValidTargets: Ground, Water, Air, Trees
 	Projectile: Missile
@@ -4380,7 +4381,6 @@ NaxCorrosionBeast:
 	ReloadDelay: 34
 	Burst: 8
 	BurstDelays: 2
-	Report: nax_corrokit.wav
 	Projectile: Missile
 		Inaccuracy: 400
 
@@ -4728,8 +4728,7 @@ NaxiV1RocketSpreaderScud:
 		Delay: 23
 
 NaxiV1Rocket:
-	Inherits@2: ^HeavyBomb
-	Inherits: RA2SCUD
+	Inherits: Atomic
 	Report: vaegatta.wav, vaegattb.wav
 	ReloadDelay: 500
 	Range: 32000
@@ -4747,51 +4746,59 @@ NaxiV1Rocket:
 		TrailDelay: 0
 		TrailInterval: 1
 		SkipAscent: true
-	Warhead@HeavyBomb: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 4000
-	Warhead@HeavyBombPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 128
-		Spread: 4000
-	Warhead@Grenade: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 8000
-	Warhead@GrenadeFriendlyFire: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 8000
-	Warhead@GrenadePercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 128
-		Spread: 8000
-	Warhead@MediumFlameWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 2000
-	Warhead@MediumFlameWeaponFriendlyFire: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 2000
-	Warhead@MediumFlameWeaponPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 128
-		Spread: 2000
-	Warhead@HeavyMissile: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 1000
-	Warhead@HeavyMissilePercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 128
-		Spread: 1000
 	Warhead@3Eff_impact: CreateEffect
 		Explosions: ra2nuke
 		ExplosionPalette: ra2effect
 		ImpactSounds: snukexpl.wav
-NaxiMeteorSpreaderScud:
+
+NaxiMeteorBlitzkriegActivate:
+	Projectile: InstantExplode
+	ReloadDelay: 1
+	ValidTargets: Ground, Water, Air
+	Range: 10000
+	Warhead@1: SpawnSmokeParticle
+		ValidTargets: Ground, Water, Air
+		Weapon: NaxiMeteorSpawner
+		Image: invisibleitem
+		Sequences: idle
+		Duration: 75
+		Delay: 50
+		ImpactActors: false
+	Warhead@2: SpawnSmokeParticle
+		ValidTargets: Ground, Water, Air
+		Weapon: NaxiMeteorSpawner2
+		Image: invisibleitem
+		Sequences: idle
+		Duration: 100
+		Delay: 25
+		ImpactActors: false
+
+NaxiMeteorSpawner:
+	Projectile: InstantHit
+	ReloadDelay: 23
+	Range: 10000
+	MinRange: 5000
+	ValidTargets: Air
+	Warhead@1: FireFragment
+		ValidTargets: Ground, Water, Air
+		Weapon: NaxiMeteorSpreader
+		AimChance: 23
+		ImpactActors: false
+		TargetActorCenter: true
+
+NaxiMeteorSpawner2:
+	Projectile: InstantHit
+	ReloadDelay: 13
+	Range: 10000
+	MinRange: 5000
+	ValidTargets: Ground, Water, Air
+	Warhead@1: FireShrapnel
+		ValidTargets: Ground, Water, Air
+		Weapon: NaxiMeteorSpreader
+		AimChance: 13
+		TargetActorCenter: false
+
+NaxiMeteorSpreader:
 	Range: 10000
 	ReloadDelay: 13
 	ValidTargets: Ground, Water, Air
@@ -4800,16 +4807,17 @@ NaxiMeteorSpreaderScud:
 	Warhead@1: FireFragment
 		UseZOffsetAsAbsoluteHeight: true
 		ValidTargets: Ground, Water, Air
-		Weapon: NaxiV1Rocket
+		Weapon: NaxiMeteor
 		Delay: 23
+
 NaxiMeteor:
-	Inherits@2: ^HeavyBomb
-	Inherits: RA2SCUD
+	Inherits: ^Grenade
+	Inherits: ^MediumFlameWeapon
+	Inherits: ^ShrapnelWeapon
+	Inherits: ^HeavyBomb
+	Inherits: ^NuclearWarhead
 	Report: vaegatta.wav, vaegattb.wav
-	ReloadDelay: 500
-	Range: 32000
-	MinRange: 3200
-	TargetActorCenter: true
+	Range: 10000
 	Projectile: NukeLaunch
 		MissileWeapon: NaxiMeteor
 		MissileImage: nax2_meteor
@@ -4822,50 +4830,94 @@ NaxiMeteor:
 		TrailDelay: 0
 		TrailInterval: 1
 		SkipAscent: true
-	Warhead@HeavyBomb: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 4000
-	Warhead@HeavyBombPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 128
-		Spread: 4000
 	Warhead@Grenade: SpreadDamage
 		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 8000
+		Falloff: 100, 50
+		Damage: 10000
+		Spread: 5000
 	Warhead@GrenadeFriendlyFire: SpreadDamage
 		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 8000
+		Falloff: 100, 50
+		Damage: 10000
+		Spread: 5000
 	Warhead@GrenadePercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Air
-		Damage: 128
-		Spread: 8000
+		Falloff: 100, 50
+		Damage: 5
+		Spread: 5000
 	Warhead@MediumFlameWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 2000
+		Damage: 10000
+		Spread: 4000
 	Warhead@MediumFlameWeaponFriendlyFire: SpreadDamage
 		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 2000
+		Damage: 10000
+		Spread: 4000
 	Warhead@MediumFlameWeaponPercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Air
-		Damage: 128
+		Damage: 5
+		Spread: 4000
+	Warhead@ShrapnelWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 10000
+		Spread: 3000
+	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 10000
+		Spread: 3000
+	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 5
+		Spread: 3000
+	Warhead@HeavyBomb: SpreadDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 10000
 		Spread: 2000
-	Warhead@HeavyMissile: SpreadDamage
+	Warhead@HeavyBombPercentage: HealthPercentageDamage
 		ValidTargets: Ground, Water, Air
-		Damage: 300000
-		Spread: 1000
-	Warhead@HeavyMissilePercentage: HealthPercentageDamage
+		Damage: 5
+		Spread: 2000
+	Warhead@NuclearWarhead: SpreadDamage
 		ValidTargets: Ground, Water, Air
-		Damage: 128
+		Damage: 10000
 		Spread: 1000
-	Warhead@3Eff_impact: CreateEffect
-		Explosions: ra2nuke
+	Warhead@NuclearWarheadPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 5
+		Spread: 1000
+	Warhead@Effect: CreateEffect
+		Explosions: ra2_large_explosion
 		ExplosionPalette: ra2effect
-		ImpactSounds: snukexpl.wav
+		ImpactSounds: gexpbara.wav, gexpbarb.wav, gexpbarc.wav
+	Warhead@MeteorFlameFragment: FireShrapnel
+		Weapon: MeteorFlameFragment
+		Range: 4
+		Amount: 4
+		AimChance: 50
+		AimTargetStances: Enemy, Neutral
+
+MeteorFlameFragment:
+	Inherits: ^LightFlameWeapon
+	ReloadDelay: 20
+	Range: 2000
+	Warhead@LightFlameWeapon: SpreadDamage
+		Damage: 2000
+	Warhead@LightFlameWeaponFriendlyFire: SpreadDamage
+		Damage: 1000
+	Warhead@LightFlameWeaponPercentage: HealthPercentageDamage
+		Damage: 1
+	Warhead@Aliens: SpawnActorOrWeapon
+		Actors: nax_alien
+		Weapon: AsianTankMine
+		Range: 12
+		FallRate: 100
+		ValidTargets: Ground, Water, Air
+	Warhead@Effect: CreateEffect
+		Explosions: ra2_initfire
+		ExplosionPalette: ra2effect
+		-ImpactSounds:
+		ImpactActors: false
+		ValidTargets: Ground, Water
 
 NaxiMissileUboat:
 	Inherits: ^Grenade
