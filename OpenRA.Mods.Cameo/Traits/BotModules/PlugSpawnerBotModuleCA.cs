@@ -32,6 +32,9 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Plug spawning interval.")]
 		public readonly int Interval = 50;
 
+		[Desc("Should costs of the plug be ignored?")]
+		public readonly bool IgnoreCost = false;
+
 		public override object Create(ActorInitializer init) { return new PlugSpawnerBotModuleCA(init.Self, this); }
 	}
 
@@ -133,7 +136,7 @@ namespace OpenRA.Mods.Cameo.Traits
 					return;
 
 				var valued = actorInfo.TraitInfoOrDefault<ValuedInfo>();
-				if (valued != null)
+				if (!Info.IgnoreCost && valued != null)
 				{
 					if (valued.Cost > playerResources.GetCashAndResources())
 						return;
