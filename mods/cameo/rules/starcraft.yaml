@@ -698,6 +698,81 @@ SCMISSILETURRET:
 	Voiced:
 		VoiceSet: SCAATowerVoice
 
+SCSENTINEL:
+	Inherits: ^Defense
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@EXPERIENCE: ^GainsExperienceTDBuilding
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@detect: ^GenericAllDetector
+	Inherits@EMP: ^TurretEMP
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 20
+		Prerequisites: ~scengineeringbay
+		Description: template-anti-infantry-defense.description
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Sentinel
+	Building:
+		Footprint: x
+		Dimensions: 1,1
+		BuildSounds: tscupd00.aud
+	Health:
+		HP: 160000
+	Selectable:
+		Bounds: 1024, 1024
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 896
+		Offset: -1,1,1
+		RealignDelay: -1
+	AttackTurreted:
+		Voice: Attack
+	Armament:
+		Weapon: NaxLaserT
+		LocalOffset: 300,1,700, 300,-1,700
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+		RequiresCondition: !upnax2_ylaser
+	ProvidesPrerequisite@buildingname:
+	Transforms:
+		IntoActor: scsentinelm
+		Offset: 0,0
+		NoTransformNotification: BuildingCannotPlaceAudio
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	AutoTarget:
+	Power:
+		Amount: -40
+	RevealsShroud:
+		Range: 8181
+	DetectCloaked:
+		Range: 4090
+	ProvidesPrerequisite@buildingname:
+
+SCSENTINELM:
+	Inherits: SCCOMMANDCENTERM
+	Tooltip:
+		Name: Sentinel
+	Selectable:
+		Bounds: 1024, 1024
+		DecorationBounds: 1024, 1024, 0, 0
+	Valued:
+		Cost: 800
+	Health:
+		HP: 160000
+	Armor:
+		Type: Wood
+	Transforms:
+		IntoActor: scsentinel
+		Offset: 0,0
+	RenderSprites:
+		Image: scsentinelm
+	RenderSprites:
+		PlayerPalette: player_rgba
+
 SCFACTORY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -3473,14 +3548,29 @@ SCMADCAP:
 	ChangesHealth@SelfHealing:
 		Step: 40
 	Armament@PRIMARY:
-		Weapon: MarineMG
+		Weapon: MadcapGun
 		LocalOffset: 128,0,256
 	Armament@GARRISONED:
 		Name: garrisoned
-		Weapon: MarineMG
+		Weapon: MadcapGun
 		MuzzleSequence: muzzle
 	FirepowerMultiplier@TripleShot:
 		Modifier: 33
+	GrantConditionOnAttack@gatling:
+		Condition: gatling
+		ArmamentNames: primary, garrisoned
+		RequiredShotsPerInstance: 5, 10
+		MaximumInstances: 2
+		RevokeDelay: 50
+		RevokeAll: false
+		IsCyclic: false
+		RevokeOnNewTarget: false
+	ReloadDelayMultiplier@GattlingSpeed1:
+		RequiresCondition: gatling >= 1
+		Modifier: 50
+	ReloadDelayMultiplier@GattlingSpeed2:
+		RequiresCondition: gatling >= 2
+		Modifier: 50
 	WithMuzzleOverlay:
 	# ProductionTimeMultiplier@speedup:
 	# 	Multiplier: 50
@@ -3726,7 +3816,7 @@ SCSILVERTONGUE:
 	Inherits@armor: ^TerranInfantryWeaponUpgrades
 	Inherits@weapon: ^TerranInfantryArmorUpgrades
 	Tooltip:
-		Name: Silvertongue
+		Name: Spectre
 	Valued:
 		Cost: 700
 	Power:
@@ -4563,6 +4653,91 @@ SCDROPSHIP:
 	WithCargoSounds:
 		EnterSounds: tdrtra00.wav
 		ExitSounds: tdrtra00.wav
+
+SCMEDIVAC:
+	Inherits: ^Helicopter
+	Inherits@Template: ^UnarmedTransportHelicopterTemplate
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@cargo: ^CargoAircraft
+	Inherits@bot: ^BotAutoDeployUnarmedAirTransport
+	Inherits@eject: ^AircraftEjectOnDeath
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@weapon: ^TerranShipArmorUpgrades
+	Inherits@weapon: ^TerranInfantryArmorUpgrades
+	Tooltip:
+		Name: Medivac
+	Valued:
+		Cost: 3600
+	Power:
+		Amount: -180
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: scdropship
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~scstarport
+		Queue: Aircraft, RAAircraft
+		Description: Fast transport for all ground units.\n Unarmed
+	Aircraft:
+		TurnSpeed: 25
+		Speed: 125
+		InitialFacing: 896
+		AltitudeVelocity: 0c100
+	Health:
+		HP: 125000
+	Repairable:
+		HpPerStep: 6250
+	ChangesHealth@SelfHealing:
+		Step: 50
+	Armament:
+		Weapon: MedicHeal
+		TargetRelationships: Ally
+		ForceTargetRelationships: None
+		LocalOffset: 128,0,256
+	Armament@MedicRestore:
+		Weapon: MedicRestore
+		TargetRelationships: Ally
+		ForceTargetRelationships: None
+		LocalOffset: 0,0,0
+	AutoTarget:
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry, plagued, ivanattached, lockdowned
+	Armor:
+		Type: Light
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 8
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+		LoadedCondition: loaded
+		InitialUnits: scmadcap, scmadcap, scmadcap, scmadcap, scharakan, scmarauder, scsilvertongue, scmedic
+	-SpawnActorOnDeath:
+	FireWarheadsOnDeath:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	EjectOnDeath:
+		PilotActor: scmarine
+	Selectable:
+		Class: scdropship
+		DecorationBounds: 1280, 1280, 0, 0
+	Voiced:
+		VoiceSet: SCDropshipVoice
+	DeathSounds:
+	RenderSprites:
+		Image: scmedivac
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upshiparmor
+	WithCargoSounds:
+		EnterSounds: tdrtra00.wav
+		ExitSounds: tdrtra00.wav
+
 SCBATTLECRUISER:
 	Inherits: ^Helicopter
 	Inherits@Template: ^SpaceshipTemplate
