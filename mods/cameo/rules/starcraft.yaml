@@ -754,6 +754,7 @@ SCSENTINEL:
 
 SCSENTINELM:
 	Inherits: SCCOMMANDCENTERM
+	Inherits@EXPERIENCE: ^GainsExperienceTDBuilding
 	Tooltip:
 		Name: Sentinel
 	Selectable:
@@ -3523,6 +3524,7 @@ SCMADCAP:
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
 	Inherits@EXP: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@announce: ^AnnounceOnBuild
@@ -4166,7 +4168,7 @@ SCMATADOR:
 	Tooltip:
 		Name: Matador
 	Valued:
-		Cost: 2800
+		Cost: 1200
 	Power:
 		Amount: -140
 	Buildable:
@@ -4192,18 +4194,19 @@ SCMATADOR:
 		Offset: 0,0,0
 		RequiresCondition: undeployed
 	Turreted@deployed:
-		Turret: turret
+		Turret: deployed
+		RealignDelay: -1
 		TurnSpeed: 30
 		RequiresCondition: deployed
 	Armament:
-		Weapon: FirebatF
+		Weapon: MatadorF
 		LocalOffset: 341,-120,128
 		FireDelay: 3
 		MuzzleSequence: muzzle
 	Armament@DEPLOYED:
-		Name: turret
-		Turret: turret
-		Weapon: FirebatF
+		Name: deployed
+		Turret: deployed
+		Weapon: MatadorFDeployed
 		LocalOffset: 341,-120,128
 		RequiresCondition: deployed
 	FirepowerMultiplier@deployed:
@@ -4216,6 +4219,17 @@ SCMATADOR:
 		Turrets: primary,deployed
 		Armaments: primary,deployed
 	WithSpriteTurret:
+		RequiresCondition: undeployed
+	WithSpriteTurret@deployed:
+		Sequence: deployed
+		Turret: deployed
+		RequiresCondition: deployed
+	WithFacingSpriteBody:
+		RequiresCondition: !deployed
+	WithRangeCircle:
+		Range: 3000
+		Type: pillbox
+		RequiresCondition: deployed
 	Selectable:
 		Bounds: 1280, 1280
 		DecorationBounds: 1536, 1536
@@ -4693,7 +4707,7 @@ SCMEDIVAC:
 		Weapon: MedicHeal
 		TargetRelationships: Ally
 		ForceTargetRelationships: None
-		LocalOffset: 128,0,256
+		LocalOffset: 600,-100,256
 	Armament@MedicRestore:
 		Weapon: MedicRestore
 		TargetRelationships: Ally
@@ -4799,6 +4813,67 @@ SCBATTLECRUISER:
 	ActorStatValues:
 		Upgrades: upshipweapon, upshiparmor
 
+SCPHOBOS:
+	Inherits: ^Helicopter
+	Inherits@Template: ^SpaceshipTemplate
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceGlobal
+	Inherits@armor: ^TerranShipWeaponUpgrades
+	Inherits@weapon: ^TerranShipArmorUpgrades
+	Tooltip:
+		Name: Phobos
+	Valued:
+		Cost: 4000
+	Power:
+		Amount: -200
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~scstarport, ~scsciencefacility
+		Queue: Aircraft, RAAircraft
+		Description: Terran capital ship.\n Strong vs Everything
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 15
+		Speed: 30
+		IdealSeparation: 2500
+		RepulsionSpeed: 15
+	Health:
+		HP: 500000
+	Repairable:
+		HpPerStep: 25000
+	ChangesHealth@SelfHealing:
+		Step: 200
+	Armament:
+		Weapon: BCLaser
+		LocalOffset: 800,0,200
+	Turreted:
+	AttackTurreted:
+		PauseOnCondition: disabled
+	-AttackAircraft:
+	FireWarheadsOnDeath:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	EjectOnDeath:
+		PilotActor: scfirebat
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 2048, 2048
+	Voiced:
+		VoiceSet: SCBattleCruiserVoice
+	SpawnActorOnDeath:
+		Actor: scphobos.Husk
+	WithMoveAnimation:
+		MoveSequence: move
+	DeathSounds:
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upshipweapon, upshiparmor
+
 SCBATTLECRUISER.Husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -4808,6 +4883,19 @@ SCBATTLECRUISER.Husk:
 		Speed: 30
 	RenderSprites:
 		Image: SCBATTLECRUISER
+		PlayerPalette: player_rgba
+	FallsToEarth:
+		Explosion: KirovExplode
+
+scphobos.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Phobos
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 30
+	RenderSprites:
+		Image: scphobos
 		PlayerPalette: player_rgba
 	FallsToEarth:
 		Explosion: KirovExplode
@@ -5060,6 +5148,130 @@ SCTMCV:
 		ZOffset: -512
 	RenderSprites:
 		PlayerPalette: player_rgba
+
+## Terran Promotions
+### Infantry Tree
+
+upmadcap:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Infantry Warfare
+	Buildable:
+		BuildPaletteOrder: 61
+		Queue: Promotions
+		Description: An upgrade to the marine.
+		Prerequisites: ~sccommandcenter, !upmadcap, rank1
+	RenderSprites:
+		Image: scmadcap
+	ProvidesPrerequisite:
+
+upharakan:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Harakan
+	Buildable:
+		BuildPaletteOrder: 64
+		Queue: Promotions
+		Description: Allows construction of the Harakan and the Matador.
+		Prerequisites: ~sccommandcenter, upmadcap, !upharakan, rank1
+	RenderSprites:
+		Image: scharakan
+	ProvidesPrerequisite:
+
+upspectre:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Ghost Ops
+	Buildable:
+		BuildPaletteOrder: 67
+		Queue: Promotions
+		Description: Unlocks the Spectre.
+		Prerequisites: ~sccommandcenter, upharakan, !upspectre, rank1
+	RenderSprites:
+		Image: scsilvertongue
+	ProvidesPrerequisite:
+
+### Ship Tree
+
+upscsundog:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Sundog
+	Buildable:
+		BuildPaletteOrder: 62
+		Queue: Promotions
+		Description: Allows training of the Sundog.
+		Prerequisites: ~sccommandcenter, !upsundog, rank1
+	RenderSprites:
+		Image: scsundog
+	ProvidesPrerequisite:
+
+upwyvern:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Wyvern
+	Buildable:
+		BuildPaletteOrder: 65
+		Queue: Promotions
+		Description: Allows training of the Desolator. Infantry becomes immune to radiation.
+		Prerequisites: ~sccommandcenter, upscsundog, !upwyvern, rank1
+	RenderSprites:
+		Image: scwyvern
+	ProvidesPrerequisite:
+
+upmedivac:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Medivac
+	Buildable:
+		BuildPaletteOrder: 68
+		Queue: Promotions
+		Description: Allows construction of the Demo Truck.
+		Prerequisites: ~sccommandcenter, upwyvern, !upmedivac, rank1
+	RenderSprites:
+		Image: scmedivac
+	ProvidesPrerequisite:
+
+### Siege Tree
+
+upsentinel:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Sentinel
+	Buildable:
+		BuildPaletteOrder: 63
+		Queue: Promotions
+		Description: Allows construction of the Sentinel.
+		Prerequisites: ~sccommandcenter, !upsentinel, rank1
+	RenderSprites:
+		Image: scsentinel
+	ProvidesPrerequisite:
+
+upmatador:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Matador
+	Buildable:
+		BuildPaletteOrder: 66
+		Queue: Promotions
+		Description: Unlocks a Flamethrower Siege Tank.
+		Prerequisites: ~sccommandcenter, upsentinel, !upmatador, rank1
+	RenderSprites:
+		Image: scmatador
+	ProvidesPrerequisite:
+
+upyrngindp:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Phobos
+	Buildable:
+		BuildPaletteOrder: 69
+		Queue: Promotions
+		Description: Enables construction of the Phobos.
+		Prerequisites: ~sccommandcenter, upmatador, rank1
+	RenderSprites:
+		Image: scphobos
+	ProvidesPrerequisite:
 
 ####################################################################################################
 #		UNIT PROTOSS
