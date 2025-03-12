@@ -87,7 +87,7 @@ World:
 		SupportActors: scoverlord, sczergling, sczergling, sczergling, sczergling, sczergling, sczergling, sczergling, sczergling, schydralisk, schydralisk, schydralisk, schydralisk
 
 Player:
-	PlugSpawnerBotModule@supplydepotexpand:
+	PlugSpawnerBotModuleCA@supplydepotexpand:
 		Plug: supplydepotexpand
 		Pluggables: scsupplydepot
 		Interval: 1000
@@ -95,10 +95,11 @@ Player:
 	GrantConditionOnPrerequisite@supplydepotexpand:
 		Condition: botscsupplydepot
 		Prerequisites: scsupplydepot, botplayer
-	PlugSpawnerBotModule@sctvespinegascollector:
+	PlugSpawnerBotModuleCA@sctvespinegascollector:
 		Plug: sctvespinegascollector
 		Pluggables: screfinery
-		Interval: 1000
+		Interval: 6000
+		IgnoreCost: true
 		RequiresCondition: botscrefinery
 	GrantConditionOnPrerequisite@sctvespinegascollector:
 		Condition: botscrefinery
@@ -171,8 +172,8 @@ Player:
 	AutoDeployer:
 		DeployTrigger: Attack
 		DeployChance: 50
-		DeployTicks: 1000
-		UndeployTicks: 1000
+		DeployTicks: 550
+		UndeployTicks: 550
 		RequiresCondition: upstimpack && !nostim
 	GrantConditionOnPrerequisite@stim:
 		Condition: upstimpack
@@ -192,7 +193,7 @@ Player:
 
 ^TerranInfantryWeaponUpgrades:
 	FirepowerMultiplier@infweap:
-		Modifier: 150
+		Modifier: 125
 		RequiresCondition: upinfweapon
 	GrantConditionOnPrerequisite@infweap:
 		Condition: upinfweapon
@@ -202,7 +203,7 @@ Player:
 
 ^TerranInfantryArmorUpgrades:
 	DamageMultiplier@infarmor:
-		Modifier: 66
+		Modifier: 80
 		RequiresCondition: upinfarmor
 	GrantConditionOnPrerequisite@infarmor:
 		Condition: upinfarmor
@@ -212,7 +213,7 @@ Player:
 
 ^TerranVehiclesWeaponUpgrades:
 	FirepowerMultiplier@upmechweapon:
-		Modifier: 150
+		Modifier: 125
 		RequiresCondition: upmechweapon
 	GrantConditionOnPrerequisite@upmechweapon:
 		Condition: upmechweapon
@@ -222,7 +223,7 @@ Player:
 
 ^TerranVehicleArmorUpgrades:
 	DamageMultiplier@upmecharmor:
-		Modifier: 66
+		Modifier: 80
 		RequiresCondition: upmecharmor
 	GrantConditionOnPrerequisite@upmecharmor:
 		Condition: upmecharmor
@@ -232,7 +233,7 @@ Player:
 
 ^TerranShipWeaponUpgrades:
 	FirepowerMultiplier@upshipweapon:
-		Modifier: 150
+		Modifier: 125
 		RequiresCondition: upshipweapon
 	GrantConditionOnPrerequisite@upshipweapon:
 		Condition: upshipweapon
@@ -242,7 +243,7 @@ Player:
 
 ^TerranShipArmorUpgrades:
 	DamageMultiplier@upshiparmor:
-		Modifier: 66
+		Modifier: 80
 		RequiresCondition: upshiparmor
 	GrantConditionOnPrerequisite@upshiparmor:
 		Condition: upshiparmor
@@ -307,11 +308,11 @@ SCCOMMANDCENTER:
 		RequiresCondition: !build-incomplete
 		Queues: Building, Defence, RABuilding, RADefence
 		Sequence: build
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCCommandCenterVoice
-		
+	RenderSprites:
+		PlayerPalette: player_rgba
+
 SCSUPPLYDEPOT:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -365,10 +366,10 @@ SCSUPPLYDEPOT:
 		Requirements:
 			scsupplydepot: !build-incomplete && !supplydepotupg
 	WithBuildingBib:
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCSupplyCenterVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 supplydepotexpand:
 	Inherits: ^BuildingPlug
@@ -444,10 +445,14 @@ SCREFINERY:
 			screfinery: refineryupg
 		Requirements:
 			screfinery: !build-incomplete && !refineryupg
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCRefineryVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ProductionCostMultiplier@botplayer:
+		Multiplier: 200
+		Prerequisites: botplayer
+
 sctvespinegascollector:
 	Inherits: ^BuildingPlug
 	Tooltip:
@@ -486,6 +491,12 @@ SCBARRACKS:
 		BuildSounds: tscupd00.aud
 	ParallelProductionQueue@INFANTRY:
 		LowPowerModifier: 10000
+	ProductionCostMultiplier@terran:
+		Multiplier: 125
+	ProductionTimeMultiplier@terran:
+		Multiplier: 125
+	DamageMultiplier@terran:
+		Modifier: 75
 	Selectable:
 		Bounds: 3072, 2048
 		DecorationBounds: 3300, 2448, 0, 0
@@ -501,10 +512,10 @@ SCBARRACKS:
 		IntoActor: scbarracksm
 		Offset: 1,1
 		NoTransformNotification: BuildingCannotPlaceAudio
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCGenericBuildingVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCACADEMY:
 	Inherits: ^BaseBuilding
@@ -541,10 +552,10 @@ SCACADEMY:
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
 	WithBuildingBib:
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCAcademyVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCENGINEERINGBAY:
 	Inherits: ^BaseBuilding
@@ -583,10 +594,10 @@ SCENGINEERINGBAY:
 		IntoActor: scengineeringbaym
 		Offset: 1,1
 		NoTransformNotification: BuildingCannotPlaceAudio
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCEngineeringBayVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCBUNKER:
 	Inherits: ^Defense
@@ -640,10 +651,10 @@ SCBUNKER:
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCGenericBuildingVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCMISSILETURRET:
 	Inherits: ^Defense
@@ -693,10 +704,10 @@ SCMISSILETURRET:
 		Range: 5813
 	Power:
 		Amount: -60
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCAATowerVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCSENTINEL:
 	Inherits: ^Defense
@@ -796,6 +807,12 @@ SCFACTORY:
 		BuildSounds: tscupd00.aud
 	ParallelProductionQueue@VEHICLE:
 		LowPowerModifier: 10000
+	ProductionCostMultiplier@terran:
+		Multiplier: 125
+	ProductionTimeMultiplier@terran:
+		Multiplier: 125
+	DamageMultiplier@terran:
+		Modifier: 75
 	Selectable:
 		Bounds: 3072, 2048
 		DecorationBounds: 3472, 2448, 0, 0
@@ -812,10 +829,10 @@ SCFACTORY:
 		IntoActor: scfactorym
 		Offset: 1,1
 		NoTransformNotification: BuildingCannotPlaceAudio
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCGenericBuildingVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCARMORY:
 	Inherits: ^BaseBuilding
@@ -850,10 +867,10 @@ SCARMORY:
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
 	WithBuildingBib:
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCArmoryVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCSTARPORT:
 	Inherits: ^BaseBuilding
@@ -892,10 +909,10 @@ SCSTARPORT:
 		IntoActor: scstarportm
 		Offset: 1,1
 		NoTransformNotification: BuildingCannotPlaceAudio
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCArmoryVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCSCIENCEFACILITY:
 	Inherits: ^BaseBuilding
@@ -929,10 +946,10 @@ SCSCIENCEFACILITY:
 		IntoActor: scsciencefacilitym
 		Offset: 1,1
 		NoTransformNotification: BuildingCannotPlaceAudio
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCScienceFacilityVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCTerranMSLO:
 	Inherits: ^BaseBuilding
@@ -998,10 +1015,10 @@ SCTerranMSLO:
 	# 	RequiresCondition: !build-incomplete
 	ProvidesPrerequisite@swlimit:
 		Prerequisite: abomb
-	RenderSprites:
-		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: SCNuclearSiloVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 ####################################################################################################
 #		BUILDING PROTOSS
@@ -1093,6 +1110,7 @@ SCNEXUS:
 		FullSequence: pip-yellow
 	Transforms:
 		IntoActor: scpmcv
+
 SCPYLON:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
@@ -5230,7 +5248,7 @@ SCTMCV:
 	Inherits@SHADOWS: ^Shadows
 	Buildable:
 		Queue: Defence, RADefence
-		Prerequisites: ~scfactory
+		Prerequisites: ~scengineeringbay
 		BuildPaletteOrder: 100
 		Description: Builds structures and provides radar.
 	Tooltip:
