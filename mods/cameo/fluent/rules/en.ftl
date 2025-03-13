@@ -1783,7 +1783,7 @@ upgrade-advancedradarsystems =
 
 upgrade-infantryarmorplating =
    .description = Increases armor of all infantry units by 30%.
-   Also reduces Reload Delay by 30%.
+   Also reduces Reload Delay by 10%.
 
 upgrade-reinforcedstructures =
    .description = Increases armor of all buildings and defenses by 25%.
@@ -1812,26 +1812,26 @@ upgrade-gpssatellitesupport =
    Increases accuracy, vision, detection and weapon range of all units and defenses by 10%.
 
 upgrade-bushidodiscipline =
-   .description = Increases damage, firerate, armor, speed, range and accuracy by 5% and gives self healing.
+   .description = Increases damage, firerate, armor, speed, range and accuracy by 10% and gives self healing.
    When wounded the effect is tripled.
-
-upgrade-energizedarrows =
-   .description = Increases damage of arrows by 25%.
-   Arrows are upgraded with an electric charge that deals bonus damamge to infantry and disables vehicles and structures.
 
 upgrade-waveforcebullets =
    .description = Increases range and damage of all bullets by 10% and makes them more effective against armor.
+
+upgrade-divinewindprotocol =
+   .description = Increases damage, firerate, armor, speed, range and vision of all air units by 10%
 
 upgrade-stealthsuitintegration =
    .description = All Infantry come equipped with a stealth suit, that makes them invisible when not attacking or moving.
    Increases speed and armor by 10% and gives a personal shield generator.
 
+upgrade-energizedarrows =
+   .description = Increases damage of arrows by 25%.
+   Arrows are upgraded with an electric charge that deals bonus damamge to infantry and disables vehicles and structures.
+
 upgrade-superiorwarengines =
    .description = Increases speed, fire rate and armor of all vehicles by 20%
    The effect is halfed for Ballistas, Waveforce Tanks and Waveforce artilleries.
-
-upgrade-divinewindprotocol =
-   .description = Increases damage, fire rate, speed and vision of all air units by 10%
 
 upgrade-advancedplasmaweapons =
    .description = Increases the damage, fire rate and range of all plasma weapons by 10%.
