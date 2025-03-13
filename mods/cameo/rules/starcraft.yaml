@@ -2161,6 +2161,8 @@ SCHATCHERY:
 		FullSequence: pip-yellow
 	Transforms:
 		IntoActor: sczmcv
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 sc_zerg_larva:
 	Inherits: ^Soldier
@@ -4219,14 +4221,15 @@ SCMATADOR:
 		TurnSpeed: 30
 		RequiresCondition: deployed
 	Armament:
-		Weapon: MatadorF
-		LocalOffset: 341,-120,128
-		FireDelay: 3
+		Weapon: 120mm
 		MuzzleSequence: muzzle
+		LocalOffset: 512,256,0
+		RequiresCondition: undeployed
 	Armament@DEPLOYED:
 		Name: deployed
 		Turret: deployed
 		Weapon: MatadorFDeployed
+		MuzzleSequence: muzzleflame
 		LocalOffset: 341,-120,128
 		RequiresCondition: deployed
 	FirepowerMultiplier@deployed:
@@ -4454,7 +4457,7 @@ SCSUNDOG:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scstarport, ~!upsundog
+		Prerequisites: ~scstarport, ~upsundog
 		Queue: Aircraft, RAAircraft
 		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Buildings, Vehicles
 	Aircraft:
@@ -6593,12 +6596,13 @@ SCDRONE:
 	StoresResources:
 		Capacity: 45
 
-
 SCZERGLING:
 	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@zerg: ^BasicZerg
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@bot: ^BotAutoDeploySwitchMode
 	Valued:
 		Cost: 125
 	Tooltip:
@@ -6610,8 +6614,21 @@ SCZERGLING:
 		Description: Fast Zerg basic assault strain.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
 		Speed: 108
+		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 6500
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -6624,7 +6641,30 @@ SCZERGLING:
 		FireDelay: 3
 	AttackFrontal:
 		FacingTolerance: 0
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
 	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zluburrw.aud
+		UndeploySounds: zluburrw.aud
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
 	Power:
 		Amount: -6
 	# WithIdleOverlay@Shadow:
@@ -6654,6 +6694,8 @@ SCZERGLING:
 	SpeedMultiplier@metab:
 		Modifier: 133
 		RequiresCondition: upspeed
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCOVERLORD:
 	Inherits: ^AirZerg
@@ -6728,6 +6770,9 @@ SCOVERLORD:
 		RequiresSelection: true
 		PipCount: 10
 		FullSequence: pip-yellow
+	RenderSprites:
+		PlayerPalette: player_rgba
+		
 SCHYDRALISK:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@shadow: ^SCSmallShadow
@@ -6788,6 +6833,8 @@ SCHYDRALISK:
 	FirepowerMultiplier@upmissile:
 		Modifier: 133
 		RequiresCondition: upmissile
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCMUTALISK:
 	Inherits: ^AirZerg
