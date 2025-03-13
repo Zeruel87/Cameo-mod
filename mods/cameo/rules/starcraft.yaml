@@ -181,6 +181,16 @@ Player:
 	ActorStatValues:
 		Upgrades: upstimpack
 
+^SupplyDepotUpgrade1:
+	RangeMultiplier@supplydepotupg:
+		RequiresCondition: upsupplydepot1
+		Modifier: 125
+	GrantConditionOnPrerequisite@supplydepotupg:
+		Condition: upsupplydepot1
+		Prerequisites: upsupplydepot1
+	ActorStatValues:
+		Upgrades: upsupplydepot1
+
 ^UraniumShellsUpgrade:
 	RangeMultiplier@upmarinerange:
 		RequiresCondition: upmarinerange
@@ -353,12 +363,27 @@ SCSUPPLYDEPOT:
 	StoresPlayerResources@supplydepotupg:
 		Capacity: 2000
 		RequiresCondition: supplydepotupg
-	PowerMultiplier@supplydepotupg:
-		Modifier: 200
-		RequiresCondition: supplydepotupg
+	GrantConditionOnPrerequisite@supplydepot1:
+		Condition: upsupplydepot1
+		Prerequisites: upsupplydepot1
+	Power@supplydepot1:
+		Amount: 100
+		RequiresCondition: upsupplydepot1
+	GrantConditionOnPrerequisite@supplydepot2:
+		Condition: upsupplydepot2
+		Prerequisites: upsupplydepot2
+	Power@supplydepot2:
+		Amount: 200
+		Condition: upsupplydepot2
+		RequiresCondition: upsupplydepot2
 	ProvidesPrerequisite:
 		Prerequisite: supplydepotupgradeavailable
 		RequiresCondition: !supplydepotupg
+	PowerMultiplier@supplydepotupg:
+		Condition: supplydepotupg
+		Prerequisites: supplydepotupg
+		Modifier: 200
+		RequiresCondition: supplydepotupg
 	Pluggable:
 		Offset: 1,0
 		Conditions:
@@ -3813,6 +3838,8 @@ SCGHOST:
 		Name: garrisoned
 		Weapon: GhostSniper
 		MuzzleSequence: muzzle
+	Cloak:
+		RequiresCondition: cloakupgrade
 	WithMuzzleOverlay:
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
@@ -3862,6 +3889,8 @@ SCSILVERTONGUE:
 		Name: garrisoned
 		Weapon: GhostSniper
 		MuzzleSequence: muzzle
+	Cloak:
+		RequiresCondition: cloakupgrade
 	WithMuzzleOverlay:
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
@@ -4389,7 +4418,7 @@ SCWRAITH:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scstarport, !upsundog
+		Prerequisites: ~scstarport, ~!upsundog
 		Queue: Aircraft, RAAircraft
 		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Buildings, Vehicles
 	Aircraft:
@@ -4416,6 +4445,8 @@ SCWRAITH:
 	AttackAircraft:
 		FacingTolerance: 40
 		AttackType: Hover
+	Cloak:
+		RequiresCondition: cloakupgrade
 	-SpawnActorOnDeath:
 	FireWarheadsOnDeath:
 		Weapon: HeliExplode
@@ -4484,6 +4515,8 @@ SCSUNDOG:
 	AttackAircraft:
 		FacingTolerance: 40
 		AttackType: Hover
+	Cloak:
+		RequiresCondition: cloakupgrade
 	-SpawnActorOnDeath:
 	FireWarheadsOnDeath:
 		Weapon: HeliExplode
@@ -7998,6 +8031,51 @@ upmechweapon:
 		Prerequisites: ~scarmory
 	RenderSprites:
 		Image: upmechweapon
+	ProvidesPrerequisite:
+
+upsupplydepot1:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Upgrade Supply Depot Level 1
+	Valued:
+		Cost: 2400
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases energy of supply depots.
+		Prerequisites: ~scengineeringbay
+	RenderSprites:
+		Image: scsupplydepot
+	ProvidesPrerequisite:
+
+upsupplydepot2:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Upgrade Supply Depot Level 2
+	Valued:
+		Cost: 2400
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases energy of supply depots.
+		Prerequisites: ~scsciencefacility, ~upsupplydepot1
+	RenderSprites:
+		Image: scsupplydepot
+	ProvidesPrerequisite:
+
+cloakupgrade:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Cloak Upgrade
+	Valued:
+		Cost: 2400
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Enables cloak for Ghosts, Spectres, Wraiths, Sundogs.
+		Prerequisites: ~scsciencefacility
+	RenderSprites:
+		Image: sccloak
 	ProvidesPrerequisite:
 
 upmecharmor:
