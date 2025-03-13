@@ -181,6 +181,16 @@ Player:
 	ActorStatValues:
 		Upgrades: upstimpack
 
+^SupplyDepotUpgrade1:
+	RangeMultiplier@supplydepotupg:
+		RequiresCondition: upsupplydepot1
+		Modifier: 125
+	GrantConditionOnPrerequisite@supplydepotupg:
+		Condition: upsupplydepot1
+		Prerequisites: upsupplydepot1
+	ActorStatValues:
+		Upgrades: upsupplydepot1
+
 ^UraniumShellsUpgrade:
 	RangeMultiplier@upmarinerange:
 		RequiresCondition: upmarinerange
@@ -353,12 +363,27 @@ SCSUPPLYDEPOT:
 	StoresPlayerResources@supplydepotupg:
 		Capacity: 2000
 		RequiresCondition: supplydepotupg
-	PowerMultiplier@supplydepotupg:
-		Modifier: 200
-		RequiresCondition: supplydepotupg
+	GrantConditionOnPrerequisite@supplydepot1:
+		Condition: upsupplydepot1
+		Prerequisites: upsupplydepot1
+	Power@supplydepot1:
+		Amount: 100
+		RequiresCondition: upsupplydepot1
+	GrantConditionOnPrerequisite@supplydepot2:
+		Condition: upsupplydepot2
+		Prerequisites: upsupplydepot2
+	Power@supplydepot2:
+		Amount: 200
+		Condition: upsupplydepot2
+		RequiresCondition: upsupplydepot2
 	ProvidesPrerequisite:
 		Prerequisite: supplydepotupgradeavailable
 		RequiresCondition: !supplydepotupg
+	PowerMultiplier@supplydepotupg:
+		Condition: supplydepotupg
+		Prerequisites: supplydepotupg
+		Modifier: 200
+		RequiresCondition: supplydepotupg
 	Pluggable:
 		Offset: 1,0
 		Conditions:
@@ -719,7 +744,7 @@ SCSENTINEL:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
-		Prerequisites: ~scengineeringbay
+		Prerequisites: ~scengineeringbay, ~upsentinel
 		Description: template-anti-infantry-defense.description
 	Valued:
 		Cost: 800
@@ -2161,6 +2186,8 @@ SCHATCHERY:
 		FullSequence: pip-yellow
 	Transforms:
 		IntoActor: sczmcv
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 sc_zerg_larva:
 	Inherits: ^Soldier
@@ -3507,7 +3534,7 @@ SCMARINE:
 	Tooltip:
 		Name: Marine
 	Buildable:
-		Prerequisites: ~scbarracks
+		Prerequisites: ~scbarracks, ~!upmadcap
 		BuildPaletteOrder: 10
 		Queue: Infantry, RAInfantry
 		Description: Basic Terran infantry.\n Strong vs Infantry\n Weak vs Vehicles\n Can attack aircraft\n Uncrushable
@@ -3542,10 +3569,10 @@ SCMADCAP:
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
 	Inherits@EXP: ^GainsExperienceTD
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@stim: ^Stimpackable
 	Inherits@range: ^UraniumShellsUpgrade
 	Inherits@armor: ^TerranInfantryWeaponUpgrades
@@ -3557,7 +3584,7 @@ SCMADCAP:
 	Tooltip:
 		Name: Madcap
 	Buildable:
-		Prerequisites: ~scbarracks
+		Prerequisites: ~scbarracks, ~upmadcap
 		BuildPaletteOrder: 10
 		Queue: Infantry, RAInfantry
 		Description: Basic Terran infantry.\n Strong vs Infantry\n Weak vs Vehicles\n Can attack aircraft\n Uncrushable
@@ -3620,7 +3647,7 @@ SCFIREBAT:
 		Name: Firebat
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scacademy
+		Prerequisites: ~scacademy, ~!upharakan
 		Queue: Infantry, RAInfantry
 		Description: Terran flamethrower infantry.\n Strong vs Infantry, Buildings\n Weak vs Vehicles\n Uncrushable
 	Mobile:
@@ -3670,6 +3697,7 @@ SCHARAKAN:
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@stim: ^Stimpackable
 	Inherits@armor: ^TerranInfantryWeaponUpgrades
 	Inherits@weapon: ^TerranInfantryArmorUpgrades
@@ -3681,7 +3709,7 @@ SCHARAKAN:
 		Name: Harakan
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scacademy
+		Prerequisites: ~scacademy, ~upharakan
 		Queue: Infantry, RAInfantry
 		Description: Terran flamethrower infantry.\n Strong vs Infantry, Buildings\n Weak vs Vehicles\n Uncrushable
 	Mobile:
@@ -3728,7 +3756,6 @@ scmarauder:
 	Inherits: ^SCTINFANTRY
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@Template: ^HeavyInfantryTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
@@ -3796,7 +3823,7 @@ SCGHOST:
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Infantry, RAInfantry
-		Prerequisites: ~scsciencefacility
+		Prerequisites: ~scsciencefacility, ~!upmedivac
 		Description: Terran stealth assassin.\n Strong vs Infantry, Vehicles\n Can attack aircraft\n Can temporarily disable vehicles\n Uncrushable
 	Mobile:
 		Speed: 75
@@ -3811,6 +3838,11 @@ SCGHOST:
 		Name: garrisoned
 		Weapon: GhostSniper
 		MuzzleSequence: muzzle
+	GrantConditionOnPrerequisite@cloakon:
+		Condition: cloakupgrade
+		Prerequisites: cloakupgrade
+	Cloak:
+		RequiresCondition: cloakupgrade
 	WithMuzzleOverlay:
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
@@ -3830,6 +3862,7 @@ SCSILVERTONGUE:
 	Inherits@Template: ^SniperInfantryTemplate
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@cloak: ^CloakedVehicle
 	Inherits@AntiInf: ^PrioritizeInfantry
@@ -3844,7 +3877,7 @@ SCSILVERTONGUE:
 	Buildable:
 		BuildPaletteOrder: 30
 		Queue: Infantry, RAInfantry
-		Prerequisites: ~scsciencefacility
+		Prerequisites: ~scsciencefacility, ~upmedivac
 		Description: Terran stealth assassin.\n Strong vs Infantry, Vehicles\n Can attack aircraft\n Can temporarily disable vehicles\n Uncrushable
 	Mobile:
 		Speed: 75
@@ -3859,6 +3892,11 @@ SCSILVERTONGUE:
 		Name: garrisoned
 		Weapon: GhostSniper
 		MuzzleSequence: muzzle
+	GrantConditionOnPrerequisite@cloakon:
+		Condition: cloakupgrade
+		Prerequisites: cloakupgrade
+	Cloak:
+		RequiresCondition: cloakupgrade
 	WithMuzzleOverlay:
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
@@ -4177,6 +4215,7 @@ SCMATADOR:
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@Crushes: ^VehicleCrusher
 	Inherits@EMP: ^TurretEMP
@@ -4191,7 +4230,7 @@ SCMATADOR:
 		Amount: -140
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~scengineeringbay
+		Prerequisites: ~scengineeringbay, ~upmatador
 		Description: Terran mobile artillery.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\nCan deploy for increased range and splash damage
 	Mobile:
 		Speed: 75
@@ -4217,14 +4256,15 @@ SCMATADOR:
 		TurnSpeed: 30
 		RequiresCondition: deployed
 	Armament:
-		Weapon: MatadorF
-		LocalOffset: 341,-120,128
-		FireDelay: 3
+		Weapon: 120mm
 		MuzzleSequence: muzzle
+		LocalOffset: 512,256,0
+		RequiresCondition: undeployed
 	Armament@DEPLOYED:
 		Name: deployed
 		Turret: deployed
 		Weapon: MatadorFDeployed
+		MuzzleSequence: muzzleflame
 		LocalOffset: 341,-120,128
 		RequiresCondition: deployed
 	FirepowerMultiplier@deployed:
@@ -4384,7 +4424,7 @@ SCWRAITH:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scstarport
+		Prerequisites: ~scstarport, ~!upsundog
 		Queue: Aircraft, RAAircraft
 		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Buildings, Vehicles
 	Aircraft:
@@ -4411,12 +4451,97 @@ SCWRAITH:
 	AttackAircraft:
 		FacingTolerance: 40
 		AttackType: Hover
+	GrantConditionOnPrerequisite@cloakon:
+		Condition: cloakupgrade
+		Prerequisites: cloakupgrade
+	Cloak:
+		RequiresCondition: cloakupgrade
 	-SpawnActorOnDeath:
 	FireWarheadsOnDeath:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
 	EjectOnDeath:
 		PilotActor: scghost
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 786, 786, 0, 0
+	Voiced:
+		VoiceSet: SCWraithVoice
+	DeathSounds:
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upshipweapon, upshiparmor
+
+SCWRAITHDRONE:
+	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@CLOAK: ^CloakedAircraft
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@armor: ^TerranShipWeaponUpgrades
+	Inherits@weapon: ^TerranShipArmorUpgrades
+	Tooltip:
+		Name: Wraith Drone
+	Valued:
+		Cost: 1400
+	Power:
+		Amount: -70
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~scstarport, ~!upsundog
+		Queue: Aircraft, RAAircraft
+		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Buildings, Vehicles
+	Aircraft:
+		AltitudeVelocity: 120
+		InitialFacing: 768
+		TurnSpeed: 12
+		Speed: 200
+		Repulsable: false
+		TakeUpCellWhenLand: false
+	Health:
+		HP: 120000
+	Repairable:
+		HpPerStep: 6000
+	ChangesHealth@SelfHealing:
+		Step: 48
+	Armament@PRIMARY:
+		Weapon: WraithLaser
+		LocalOffset: 400,0,0
+	Armament@SECONDARY1:
+		Weapon: WraithRockets
+		LocalOffset: 400,400,0
+	Armament@SECONDARY2:
+		Weapon: WraithRockets
+		LocalOffset: 400,-400,0
+	CarrierSlave:
+		LandingDistance: 8000
+	AutoTarget:
+		InitialStanceAI: AttackAnything
+		InitialStance: AttackAnything
+	HasParent:
+	RejectsOrders:
+	FirepowerMultiplier@DualWeapon:
+		Modifier: 50
+	AttackAircraft:
+		FacingTolerance: 40
+		AttackType: Hover
+	GrantConditionOnPrerequisite@cloakon:
+		Condition: cloakupgrade
+		Prerequisites: cloakupgrade
+	Cloak:
+		RequiresCondition: cloakupgrade
+	-SpawnActorOnDeath:
+	FireWarheadsOnDeath:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 786, 786, 0, 0
@@ -4435,6 +4560,7 @@ SCSUNDOG:
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@AntiDef: ^PrioritizeDefence
 	Inherits@CLOAK: ^CloakedAircraft
@@ -4451,7 +4577,7 @@ SCSUNDOG:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scstarport
+		Prerequisites: ~scstarport, ~upsundog
 		Queue: Aircraft, RAAircraft
 		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Buildings, Vehicles
 	Aircraft:
@@ -4478,6 +4604,11 @@ SCSUNDOG:
 	AttackAircraft:
 		FacingTolerance: 40
 		AttackType: Hover
+	GrantConditionOnPrerequisite@cloakon:
+		Condition: cloakupgrade
+		Prerequisites: cloakupgrade
+	Cloak:
+		RequiresCondition: cloakupgrade
 	-SpawnActorOnDeath:
 	FireWarheadsOnDeath:
 		Weapon: HeliExplode
@@ -4514,7 +4645,7 @@ SCVALKYRIE:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scstarport, scarmory
+		Prerequisites: ~scstarport, scarmory, ~!upwyvern
 		Queue: Aircraft, RAAircraft
 		Description: Air Superiority Fighter that fires a burst of 8 missiles. Can only attack air.
 	Aircraft:
@@ -4560,6 +4691,7 @@ SCWYVERN:
 	Inherits: ^Helicopter
 	Inherits@Template: ^HelicopterTemplate
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
@@ -4575,7 +4707,7 @@ SCWYVERN:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scstarport, scarmory
+		Prerequisites: ~scstarport, scarmory, ~upwyvern
 		Queue: Aircraft, RAAircraft
 		Description: Air Superiority Fighter that fires a burst of 8 missiles. Can only attack air.
 	Aircraft:
@@ -4637,7 +4769,7 @@ SCDROPSHIP:
 		OverrideActor: scdropship
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scstarport
+		Prerequisites: ~scstarport, ~!upmedivac
 		Queue: Aircraft, RAAircraft
 		Description: Fast transport for all ground units.\n Unarmed
 	Aircraft:
@@ -4686,6 +4818,103 @@ SCDROPSHIP:
 		EnterSounds: tdrtra00.wav
 		ExitSounds: tdrtra00.wav
 
+SCPYTHEAN:
+	Inherits: ^Helicopter
+	Inherits@Template: ^SpaceshipTemplate
+	Inherits@Template: ^EpicAirUnitTemplate
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@cargo: ^CargoAircraft
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@eject: ^AircraftEjectOnDeath
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@weapon: ^TerranShipArmorUpgrades
+	Inherits@bot: ^BotAutoDeployUnarmedAirTransport
+	Tooltip:
+		Name: Pythean
+	Valued:
+		Cost: 3600
+	Power:
+		Amount: -180
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+		OverrideActor: scdropship
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~scstarport, ~uppythean
+		Queue: Aircraft, RAAircraft
+		BuildLimit: 1
+		Description: A slow moving garrison transport for all ground units.\nExtremely Durable\n Strong vs Everything
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 30
+		InitialFacing: 896
+		AltitudeVelocity: 0c100
+	Health:
+		HP: 1000000
+	Repairable:
+		HpPerStep: 50000
+	ChangesHealth@SelfHealing:
+		Step: 50
+	Armor:
+		Type: Light
+	Cargo:
+		ExclusiveDeploy: true
+		DeployType: opentopped
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 15
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+		LoadedCondition: loaded
+		InitialUnits: scmarine, scmarine, scmarine, scmarine, scfirebat, scmarauder, scghost, scmedic
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, -384,0,128, 224,-341,128, -224,-341,128, 224,341,128, -224,341,128
+		PauseOnCondition: chronobeamed
+	Armament:
+		Weapon: RA220mmrapid
+		MuzzleSequence: muzzle
+	FireWarheadsOnDeath:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	EjectOnDeath:
+		PilotActor: scghost
+	-SpawnActorOnDeath:
+		Actor: SCPYTHEAN.Husk
+	Selectable:
+		Class: scdropship
+		DecorationBounds: 1280, 1280, 0, 0
+	Voiced:
+		VoiceSet: SCDropshipVoice
+	DeathSounds:
+	RenderSprites:
+		Image: scpythean
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upshiparmor
+	WithCargoSounds:
+		EnterSounds: tdrtra00.wav
+		ExitSounds: tdrtra00.wav
+
+SCPYTHEAN.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Pythean
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 30
+	RenderSprites:
+		Image: SCPYTHEAN
+		PlayerPalette: player_rgba
+	FallsToEarth:
+		Explosion: KirovExplode
+		
 SCMEDIVAC:
 	Inherits: ^Helicopter
 	Inherits@Template: ^UnarmedTransportHelicopterTemplate
@@ -4707,7 +4936,7 @@ SCMEDIVAC:
 		OverrideActor: scdropship
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scstarport
+		Prerequisites: ~scstarport, ~upmedivac
 		Queue: Aircraft, RAAircraft
 		Description: Fast transport for all ground units.\n Unarmed
 	Aircraft:
@@ -4789,7 +5018,7 @@ SCBATTLECRUISER:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~scstarport, ~scsciencefacility
+		Prerequisites: ~scstarport, ~scsciencefacility, ~!upphobos
 		Queue: Aircraft, RAAircraft
 		Description: Terran capital ship.\n Strong vs Everything
 	Aircraft:
@@ -4815,7 +5044,7 @@ SCBATTLECRUISER:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
 	EjectOnDeath:
-		PilotActor: scfirebat
+		PilotActor: scghost
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 2048, 2048
@@ -4835,6 +5064,7 @@ SCPHOBOS:
 	Inherits: ^Helicopter
 	Inherits@Template: ^SpaceshipTemplate
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceGlobal
@@ -4850,7 +5080,7 @@ SCPHOBOS:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~scstarport, ~scsciencefacility
+		Prerequisites: ~scstarport, ~scsciencefacility, ~upphobos
 		Queue: Aircraft, RAAircraft
 		Description: Terran capital ship.\n Strong vs Everything
 	Aircraft:
@@ -4868,6 +5098,13 @@ SCPHOBOS:
 	Armament:
 		Weapon: BCLaser
 		LocalOffset: 800,0,200
+	CarrierMaster:
+		Actors: scwraithdrone, scwraithdrone, scwraithdrone
+		RearmTicks: 125
+		RespawnTicks: 250
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
 	Turreted:
 	AttackTurreted:
 		PauseOnCondition: disabled
@@ -4876,7 +5113,7 @@ SCPHOBOS:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
 	EjectOnDeath:
-		PilotActor: scfirebat
+		PilotActor: scspectre
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 2048, 2048
@@ -5173,7 +5410,7 @@ SCTMCV:
 upmadcap:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Infantry Warfare
+		Name: Unlock Madcap
 	Buildable:
 		BuildPaletteOrder: 61
 		Queue: Promotions
@@ -5196,22 +5433,22 @@ upharakan:
 		Image: scharakan
 	ProvidesPrerequisite:
 
-upspectre:
+upmedivac:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Ghost Ops
+		Name: Medivac and Spectre
 	Buildable:
 		BuildPaletteOrder: 67
 		Queue: Promotions
-		Description: Unlocks the Spectre.
-		Prerequisites: ~sccommandcenter, upharakan, !upspectre, rank1
+		Description: Unlocks the Medivac and Spectre.
+		Prerequisites: ~sccommandcenter, upharakan, !upmedivac, rank1
 	RenderSprites:
-		Image: scsilvertongue
+		Image: scmedivac
 	ProvidesPrerequisite:
 
 ### Ship Tree
 
-upscsundog:
+upsundog:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
 		Name: Unlock Sundog
@@ -5232,22 +5469,22 @@ upwyvern:
 		BuildPaletteOrder: 65
 		Queue: Promotions
 		Description: Allows training of the Desolator. Infantry becomes immune to radiation.
-		Prerequisites: ~sccommandcenter, upscsundog, !upwyvern, rank1
+		Prerequisites: ~sccommandcenter, upsundog, !upwyvern, rank1
 	RenderSprites:
 		Image: scwyvern
 	ProvidesPrerequisite:
 
-upmedivac:
+uppythean:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Medivac
+		Name: Unlock Pythean
 	Buildable:
 		BuildPaletteOrder: 68
 		Queue: Promotions
-		Description: Allows construction of the Demo Truck.
-		Prerequisites: ~sccommandcenter, upwyvern, !upmedivac, rank1
+		Description: Allows construction of the Pythean, a colossal transport.
+		Prerequisites: ~sccommandcenter, upwyvern, !uppythean, rank1
 	RenderSprites:
-		Image: scmedivac
+		Image: scpythean
 	ProvidesPrerequisite:
 
 ### Siege Tree
@@ -5278,7 +5515,7 @@ upmatador:
 		Image: scmatador
 	ProvidesPrerequisite:
 
-upyrngindp:
+upphobos:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
 		Name: Unlock Phobos
@@ -5286,7 +5523,7 @@ upyrngindp:
 		BuildPaletteOrder: 69
 		Queue: Promotions
 		Description: Enables construction of the Phobos.
-		Prerequisites: ~sccommandcenter, upmatador, rank1
+		Prerequisites: ~sccommandcenter, !upphobos, upmatador, rank1
 	RenderSprites:
 		Image: scphobos
 	ProvidesPrerequisite:
@@ -6491,12 +6728,13 @@ SCDRONE:
 	StoresResources:
 		Capacity: 45
 
-
 SCZERGLING:
 	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@zerg: ^BasicZerg
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@bot: ^BotAutoDeploySwitchMode
 	Valued:
 		Cost: 125
 	Tooltip:
@@ -6508,8 +6746,21 @@ SCZERGLING:
 		Description: Fast Zerg basic assault strain.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
 		Speed: 108
+		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 6500
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -6522,7 +6773,30 @@ SCZERGLING:
 		FireDelay: 3
 	AttackFrontal:
 		FacingTolerance: 0
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
 	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zluburrw.aud
+		UndeploySounds: zluburrw.aud
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
 	Power:
 		Amount: -6
 	# WithIdleOverlay@Shadow:
@@ -6552,6 +6826,8 @@ SCZERGLING:
 	SpeedMultiplier@metab:
 		Modifier: 133
 		RequiresCondition: upspeed
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCOVERLORD:
 	Inherits: ^AirZerg
@@ -6626,6 +6902,9 @@ SCOVERLORD:
 		RequiresSelection: true
 		PipCount: 10
 		FullSequence: pip-yellow
+	RenderSprites:
+		PlayerPalette: player_rgba
+		
 SCHYDRALISK:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@shadow: ^SCSmallShadow
@@ -6686,6 +6965,8 @@ SCHYDRALISK:
 	FirepowerMultiplier@upmissile:
 		Modifier: 133
 		RequiresCondition: upmissile
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCMUTALISK:
 	Inherits: ^AirZerg
@@ -7849,6 +8130,51 @@ upmechweapon:
 		Prerequisites: ~scarmory
 	RenderSprites:
 		Image: upmechweapon
+	ProvidesPrerequisite:
+
+upsupplydepot1:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Upgrade Supply Depot Level 1
+	Valued:
+		Cost: 2400
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases energy of supply depots.
+		Prerequisites: ~scengineeringbay
+	RenderSprites:
+		Image: scsupplydepot
+	ProvidesPrerequisite:
+
+upsupplydepot2:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Upgrade Supply Depot Level 2
+	Valued:
+		Cost: 2400
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases energy of supply depots.
+		Prerequisites: ~scsciencefacility, ~upsupplydepot1
+	RenderSprites:
+		Image: scsupplydepot
+	ProvidesPrerequisite:
+
+cloakupgrade:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Cloak Upgrade
+	Valued:
+		Cost: 2400
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Enables cloak for Ghosts, Spectres, Wraiths, Sundogs.
+		Prerequisites: ~scsciencefacility
+	RenderSprites:
+		Image: sccloak
 	ProvidesPrerequisite:
 
 upmecharmor:
