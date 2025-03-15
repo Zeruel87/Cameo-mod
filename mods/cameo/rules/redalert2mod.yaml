@@ -10576,6 +10576,20 @@ nax_conyard.infiltrated:
 	RenderSprites:
 		Image: nax_conyard
 
+upnax_resurrection:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Resurrection
+	Valued:
+		Cost: 7500
+	Buildable:
+		BuildPaletteOrder: 100
+		Queue: Upgrades
+		Description: Infantry killed by small arms leave corpses that can resurrect as zombies.
+		Prerequisites: ~nax_tech
+	RenderSprites:
+		Image: nax_undead
+
 nax_powr:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
@@ -12008,12 +12022,86 @@ nax2_dairy:
 #		Red Alert 2 Naxis Infantry
 ####################################################################################################
 ^NaxiUndeadRevive:
-	FireWarheadsOnDeath:
-		Weapon: NaxZombieSpawner
+	GrantConditionOnPrerequisite@NaxiRevive:
+		Condition: nax_revive
+		Prerequisites: upnax_resurrection
+	SpawnActorOnDeath@NaxiRevive1: #TODO: Multiple death types support for SpawnActorOnDeath
+		Actor: nax_corpse
+		Probability: 100
+		DeathType: BulletDeath
+		SpawnAfterDefeat: false
+		RequiresCondition: nax_revive && !chronobeamed
+	FireWarheadsOnDeath@Corpse:
+		DeathTypes: BulletDeath
+		Weapon: RA2CorpseSpawner
+		EmptyWeapon: RA2CorpseSpawner
+		RequiresCondition: !chronobeamed && !nax_revive
 
 ^NaxiUndeadReviveBig:
-	FireWarheadsOnDeath:
-		Weapon: NaxZombieSpawnerFrank
+	Inherits: ^NaxiUndeadRevive
+	SpawnActorOnDeath@NaxiRevive1:
+		Actor: nax_corpse_big
+
+nax_corpse:
+	Inherits: ^SpriteActor
+	RenderSprites:
+		Palette: ra2effect
+	Interactable:
+		Bounds: 768, 768, 0, -256
+	WithSpriteBody:
+	WithMakeAnimation:
+	WithDeathAnimation:
+		DeathSequencePalette: ra2effect
+		DeathPaletteIsPlayerPalette: false
+		UseDeathTypeSuffix: false
+		RequiresCondition: !revive
+	HiddenUnderFog:
+	OwnerLostAction:
+		Action: Kill
+	Mine:
+		CrushClasses: mine
+		DetonateClasses: mine
+		BlockFriendly: false
+	Health:
+		HP: 75000
+		NotifyAppliedDamage: false
+	Armor:
+		Type: Light
+	Tooltip:
+		Name: Corpse
+	Targetable:
+		TargetTypes: Ground, Mine
+	Mobile:
+		Speed: 1
+		Locomotor: foot
+		PauseOnCondition: dontmove
+	GrantCondition:
+		Condition: dontmove
+	KillsSelf:
+		Delay: 500
+		DamageTypes: ZombieRevive
+		GrantsCondition: revive
+	SpawnActorOnDeath@NaxiRevive:
+		Actor: nax_undead
+		Probability: 100
+		DeathType: ZombieRevive
+		SpawnAfterDefeat: false
+	Voiced:
+		VoiceSet: NaxiZombie
+	DeathSounds:
+		Voice: Move
+		DeathTypes: ZombieRevive
+	RejectsOrders:
+	HitShape:
+	MapEditorData:
+		Categories: System
+
+nax_corpse_big:
+	Inherits: nax_corpse
+	Health:
+		HP: 150000
+	SpawnActorOnDeath@NaxiRevive:
+		Actor: nax_frank
 
 nax_rifle:
 	Inherits: ^Soldier
@@ -12477,7 +12565,7 @@ nax_slavemaster:
 	Valued:
 		Cost: 500
 	Tooltip:
-		Name: Miner #Slave Master
+		Name: Slave Overseer
 	Buildable:
 		BuildPaletteOrder: 10
 		Prerequisites: ~nax_barr, nax_refin
@@ -12530,9 +12618,10 @@ nax_slav:
 	Inherits: YRSLAV
 	Targetable@garrisoned:
 		TargetTypes: SlaveFaster
-		RequiresCondition: GravityGenerator <= 3
+		RequiresCondition: SlaveFaster <= 3 && !untargetable
 	ExternalCondition@SlaveFaster:
 		Condition: SlaveFaster
+		TotalCap: 3
 	SpeedMultiplier@SlaveFaster1:
 		Modifier: 150
 		RequiresCondition: SlaveFaster == 1
@@ -13002,6 +13091,7 @@ nax_undead:
 		FacingTolerance: 0
 	Voiced:
 		VoiceSet: NaxiZombie
+
 ####################################################################################################
 #		Red Alert 2 Moon Naxis Infantry
 ####################################################################################################
