@@ -92,12 +92,12 @@ MatadorF:
 	Warhead@MediumFlameWeaponPercentage: HealthPercentageDamage
 		Damage: 1
 
-MatadorFDeployed:
+MatadorFlamer:
 	Inherits: ^MediumFlameWeapon
 	ReloadDelay: 18
 	Burst: 13
 	BurstDelays: 2
-	Range: 6000
+	Range: 5938
 	StartBurstReport: TFBFir00.aud,TFBFir01.aud
 	Projectile: Bullet
 		Speed: 150
@@ -110,6 +110,23 @@ MatadorFDeployed:
 		Damage: 1000
 	Warhead@MediumFlameWeaponPercentage: HealthPercentageDamage
 		Damage: 1
+
+MatadorLaser:
+	Inherits: ^LaserWeapon
+	ValidTargets: Ground, Water, Trees, Air
+	Report: TPhFi100.aud
+	ReloadDelay: 39
+	Range: 6590
+	Projectile: Bullet
+		Speed: 1000
+		ContrailLength: 5
+		ContrailStartColorUsePlayerColor: true
+	Warhead@LaserWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 32000
+	Warhead@LaserWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 16
 
 MarauderMissiles:
 	Inherits: ^TankDestroyerCannon
@@ -167,6 +184,7 @@ GhostSniper:
 		ContrailLength: 25
 		Speed: 2500
 		Width: 100
+		Inaccuracy: 0
 	Warhead@MediumMissile: SpreadDamage
 		ValidTargets: Ground, Water, Air, Trees
 		Damage: 2000
@@ -200,6 +218,149 @@ GhostSniper:
 	Warhead@Effect: CreateEffect
 		Explosions: small_poof
 		ImpactSounds: xplos.aud
+
+GhostSniperLockdown:
+	Inherits: ^TeslaChargedWeapon
+	Inherits: GhostSniper
+	ValidTargets: Vehicle, Air
+	InvalidTargets: lockdowned
+	ReloadDelay: 44
+	Projectile: Bullet
+		ContrailStartWidth: 300
+		ContrailEndWidth: 150
+		ContrailStartColor: 4488FF
+		ContrailEndColor: 22446688
+	Warhead@TeslaChargedWeapon: SpreadDamage
+		ValidTargets: Shielded
+		Damage: 20000
+		ValidRelationships: Enemy, Neutral
+	Warhead@TeslaChargedExtraDamage: SpreadDamage
+		ValidTargets: Shielded
+		Damage: 10000
+		ValidRelationships: Enemy, Neutral
+	Warhead@TeslaChargedWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Shielded
+		Damage: 10
+		ValidRelationships: Enemy, Neutral
+	Warhead@EMPUnit: AffectsIntegrity
+		Damage: 200000
+		ValidRelationships: Enemy, Neutral
+		ValidTargets: Vehicle, Air, Shielded
+
+GhostLockdown:
+	Projectile: Missile
+		Blockable: false
+		Image: DRAGON
+		Shadow: true
+		TrailImage: smokey
+		Speed: 426
+		RangeLimit: 12c0
+		PointDefenseType: Missile
+	ValidTargets: Vehicle
+	InvalidTargets: OrganicAircraft, lockdowned
+	Range: 5c0
+	ReloadDelay: 90
+	TargetActorCenter: true
+	Warhead@1: TargetDamage
+	#Warhead@2: GrantExternalCondition
+	#	Range: 0c768
+	#	Duration: 90
+	#	Condition: GhostLockdown
+	#	ValidTargets: Vehicle
+	Warhead@2: AttachDelayedWeapon
+		Weapon: RemovableDebuffDummy
+		Type: lockdown
+		TriggerTime: 90
+		Range: 0c768
+		ValidTargets: Vehicle
+
+GhostLockdownAA:
+	Inherits: GhostLockdown
+	ValidTargets: Air
+	Warhead@2: AttachDelayedWeapon
+		ValidTargets: Air
+
+SpecterSniper:
+	Inherits: ^MediumMissile
+	Inherits: ^HeavyCannon
+	Inherits: ^SmallArms
+	Inherits: ^FlakWeapon
+	Inherits: ^Chaingun
+	ReloadDelay: 33
+	Range: 7922
+	Report: TGhFir00.aud
+	ValidTargets: Ground, Water, Air, Trees
+	Projectile: Bullet
+		Image: 50CAL
+		ContrailStartColor: FF9933
+		ContrailEndColor: FFFFFF
+		ContrailEndColorUsePlayerColor: true
+		ContrailWidth: 250
+		ContrailLength: 25
+		Speed: 2500
+		Width: 100
+		Inaccuracy: 0
+	Warhead@MediumMissile: SpreadDamage
+		ValidTargets: Ground, Water, Air, Trees
+		Damage: 4000
+	Warhead@MediumMissilePercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Air, Trees
+		Damage: 2
+	Warhead@HeavyCannon: SpreadDamage
+		ValidTargets: Ground, Water, Air, Trees
+		Damage: 4000
+	Warhead@HeavyCannonPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Air, Trees
+		Damage: 2
+	Warhead@SmallArms: SpreadDamage
+		ValidTargets: Ground, Water, Air, Trees
+		Damage: 4000
+	Warhead@SmallArmsPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Air, Trees
+		Damage: 2
+	Warhead@FlakWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Air, Trees
+		Damage: 4000
+	Warhead@FlakWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Air, Trees
+		Damage: 2
+	Warhead@Chaingun: SpreadDamage
+		ValidTargets: Ground, Water, Air, Trees
+		Damage: 4000
+	Warhead@ChaingunPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Air, Trees
+		Damage: 2
+	Warhead@Effect: CreateEffect
+		Explosions: small_poof
+		ImpactSounds: xplos.aud
+
+SpecterSniperLockdown:
+	Inherits: ^TeslaChargedWeapon
+	Inherits: SpecterSniper
+	ValidTargets: Vehicle, Air, Shielded
+	InvalidTargets: lockdowned
+	ReloadDelay: 66
+	Projectile: Bullet
+		ContrailStartWidth: 300
+		ContrailEndWidth: 150
+		ContrailStartColor: 4488FF
+		ContrailEndColor: 22446688
+	Warhead@TeslaChargedWeapon: SpreadDamage
+		ValidTargets: Shielded
+		Damage: 40000
+		ValidRelationships: Enemy, Neutral
+	Warhead@TeslaChargedExtraDamage: SpreadDamage
+		ValidTargets: Shielded
+		Damage: 20000
+		ValidRelationships: Enemy, Neutral
+	Warhead@TeslaChargedWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Shielded
+		Damage: 20
+		ValidRelationships: Enemy, Neutral
+	Warhead@EMPUnit: AffectsIntegrity
+		Damage: 400000
+		ValidRelationships: Enemy, Neutral
+		ValidTargets: Vehicle, Air, Shielded
 
 JimRaynorMachineGun:
 	Inherits: ^HeavyCannon
@@ -377,38 +538,6 @@ GoliathMG:
 		ValidTargets: Ground, Water, Trees
 		Damage: 1
 
-GoliathMk2MG:
-	Inherits: ^Grenade
-	Inherits: ^HeavyCannon
-	Inherits: ^RA2Chaingun
-	ValidTargets: Ground, Water, Trees
-	ReloadDelay: 18
-	Range: 7834
-	Burst: 3
-	BurstDelays: 2
-	Report: TGoFir00.aud
-	Warhead@Grenade: SpreadDamage
-		ValidTargets: Ground, Water, Trees, Air
-		Damage: 2000
-	Warhead@GrenadeFriendlyFire: SpreadDamage
-		ValidTargets: Ground, Water, Trees, Air
-		Damage: 1000
-	Warhead@GrenadePercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Trees, Air
-		Damage: 1
-	Warhead@HeavyCannon: SpreadDamage
-		ValidTargets: Ground, Water, Trees, Air
-		Damage: 2000
-	Warhead@HeavyCannonPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Trees, Air
-		Damage: 1
-	Warhead@Chaingun: SpreadDamage
-		ValidTargets: Ground, Water, Trees, Air
-		Damage: 2000
-	Warhead@ChaingunPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Trees, Air
-		Damage: 1
-
 GoliathRockets:
 	Inherits: ^Chaingun
 	Inherits: ^FlakWeapon
@@ -450,14 +579,53 @@ GoliathRockets:
 	Warhead@HeavyMissilePercentage: HealthPercentageDamage
 		Damage: 3
 
+GoliathMk2MG:
+	Inherits: ^Grenade
+	Inherits: ^HeavyCannon
+	Inherits: ^FlakWeapon
+	Inherits: ^RA2Chaingun
+	ValidTargets: Ground, Water, Trees, Air
+	ReloadDelay: 32
+	Range: 8000
+	Burst: 4
+	BurstDelays: 2
+	Report: TGoFir00.aud
+	Warhead@Grenade: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 2000
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 1000
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 1
+	Warhead@HeavyCannon: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 2000
+	Warhead@HeavyCannonPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 1
+	Warhead@FlakWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 2000
+	Warhead@FlakWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 1
+	Warhead@Chaingun: SpreadDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 2000
+	Warhead@ChaingunPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Water, Trees, Air
+		Damage: 1
+
 GoliathMk2Rockets:
 	Inherits: ^Chaingun
 	Inherits: ^FlakWeapon
 	Inherits: ^LightMissile
 	Inherits: ^MediumMissile
 	Inherits: ^D2KRocket
-	ReloadDelay: 22
-	Range: 7834
+	ReloadDelay: 44
+	Range: 8000
 	Report: HKMISSLE.aud
 	ValidTargets: Ground, Water, Trees, Air
 	Projectile: Missile
@@ -471,25 +639,25 @@ GoliathMk2Rockets:
 		CloseEnough: 500
 		AllowSnapping: true
 	Warhead@Chaingun: SpreadDamage
-		Damage: 6000
+		Damage: 8000
 	Warhead@ChaingunPercentage: HealthPercentageDamage
-		Damage: 3
+		Damage: 4
 	Warhead@FlakWeapon: SpreadDamage
-		Damage: 6000
+		Damage: 8000
 	Warhead@FlakWeaponPercentage: HealthPercentageDamage
-		Damage: 3
+		Damage: 4
 	Warhead@LightMissile: SpreadDamage
-		Damage: 6000
+		Damage: 8000
 	Warhead@LightMissilePercentage: HealthPercentageDamage
-		Damage: 3
+		Damage: 4
 	Warhead@MediumMissile: SpreadDamage
-		Damage: 6000
+		Damage: 8000
 	Warhead@MediumMissilePercentage: HealthPercentageDamage
-		Damage: 3
+		Damage: 4
 	Warhead@HeavyMissile: SpreadDamage
-		Damage: 6000
+		Damage: 8000
 	Warhead@HeavyMissilePercentage: HealthPercentageDamage
-		Damage: 3
+		Damage: 4
 
 WraithRockets:
 	Inherits: ^Chaingun
@@ -904,39 +1072,6 @@ DragoonCannon:
 GhostSniperBunker:
 	Inherits: GhostSniper
 		Range: 10c0 #8c0
-
-GhostLockdown:
-	Projectile: Missile
-		Blockable: false
-		Image: DRAGON
-		Shadow: true
-		TrailImage: smokey
-		Speed: 426
-		RangeLimit: 12c0
-		PointDefenseType: Missile
-	ValidTargets: Vehicle
-	InvalidTargets: OrganicAircraft, lockdowned
-	Range: 5c0
-	ReloadDelay: 90
-	TargetActorCenter: true
-	Warhead@1: TargetDamage
-	#Warhead@2: GrantExternalCondition
-	#	Range: 0c768
-	#	Duration: 90
-	#	Condition: GhostLockdown
-	#	ValidTargets: Vehicle
-	Warhead@2: AttachDelayedWeapon
-		Weapon: RemovableDebuffDummy
-		Type: lockdown
-		TriggerTime: 90
-		Range: 0c768
-		ValidTargets: Vehicle
-
-GhostLockdownAA:
-	Inherits: GhostLockdown
-	ValidTargets: Air
-	Warhead@2: AttachDelayedWeapon
-		ValidTargets: Air
 
 GuardianShoot:
 	ReloadDelay: 55
