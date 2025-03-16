@@ -11,12 +11,12 @@ World:
 	# 	Game: StarCraft
 	# 	Side: StarCraft
 	# 	Description: Protoss\nFeatures:\n- Units consume power (supply)\n- Unit production pauses on low power\n- Buildings and defenses do not require power to operate\n- Relatively resilient and powerful units\nSupport powers: Purifier Beam
-	# FactionCA@zerg:
-	# 	Name: Zerg SC
-	# 	InternalName: zerg
-	# 	Game: StarCraft
-	# 	Side: StarCraft
-	# 	Description: Zerg\nFeatures:\n- Units consume power (supply)\n- Unit production pauses on low power\n- Buildings and defenses do not require power to operate\n- Relatively powerful units\nSupport powers: Nuclear Strike
+	FactionCA@zerg:
+		Name: Zerg SC
+		InternalName: zerg
+		Game: StarCraft
+		Side: StarCraft
+		Description: Zerg\nFeatures:\n- Units consume power (supply)\n- Unit production pauses on low power\n- Buildings and defenses do not require power to operate\n- Relatively powerful units\nSupport powers: Nuclear Strike
 	# FactionCA@RandomSC:
 	# 	Name: Any
 	# 	InternalName: RandomSC
@@ -1948,6 +1948,9 @@ zergsoilmaker:
 	RequiresBuildableArea:
 		AreaTypes: building
 		Adjacent: 4
+		LaysTerrain:
+		Template: 858
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,ClearDune
 	RenderSprites:
 	KillsSelf:
 		RemoveInstead: true
@@ -2008,10 +2011,10 @@ zergsoilkiller4:
 	Inherits: ^BaseBuilding
 	Inherits@zergai: ^ZergAIProductionBoost
 	Building:
-		TerrainTypes: ZergSoil ##########
-	FireWarheadsOnDeath@remover:
-		Weapon: CreepRemover
-		EmptyWeapon: CreepRemover
+		# TerrainTypes: ZergSoil ##########
+	# FireWarheadsOnDeath@remover:
+		# Weapon: CreepRemover
+		# EmptyWeapon: CreepRemover
 ^SCBREEDFASTER:
 	ExternalCondition@Fasterbreed:
 		Condition: SCFASTERBREED
@@ -2032,6 +2035,7 @@ SCHATCHERY:
 	Inherits@conyard: ^Conyard
 	Inherits@bot: ^BotMicromanageable
 	Inherits@breedfaster: ^SCBREEDFASTER
+	Inherits@barr: ^IsBarrack
 	Selectable:
 		Bounds: 3072, 2048
 		DecorationBounds: 3300, 2448, 0, 0
@@ -2259,6 +2263,12 @@ SCHATCHERY:
 		FullSequence: pip-yellow
 	Transforms:
 		IntoActor: sczmcv
+	ProductionBar@RAInfantryZerg:
+		ProductionType: RAInfantry
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
+	FreeActor@CPQDEBUGDUMMY:
+		Actor: CPQDEBUGDUMMY
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -2292,31 +2302,17 @@ sc_zerg_larva:
 	-ActorLostNotification:
 	MobSpawnerSlave:
 	-MapEditorData:
-	ProductionBar@InfantryZerg:
-		ProductionType: Infantry
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAInfantryZerg:
-		ProductionType: RAInfantry
-		RequiresCondition: classicproductionqueues
 	WithProductionOverlay@egg:
-		Queues: Infantry, RAInfantry
+		Queues: RAInfantry
 		Sequence: makeunit
 		IsPlayerPalette: True
 		Offset: 0,0,0
-	Production@NORMAL:
-		Produces: Infantry
-		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAInfantryZerg:
+		ProductionType: RAInfantry
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RAInfantry
-		RequiresCondition: classicproductionqueues
-	ProductionQueue@ZergInfantry:
-		Type: Infantry
-		DisplayOrder: 2
-		Group: Infantry
-		QueuedAudio: Building
-		ReadyAudio: UnitReady
-		BuildDurationModifier: 55
-		LowPowerModifier: 555
+	FreeActor@CPQDEBUGDUMMY:
+		Actor: CPQDEBUGDUMMY
 	Exit@1:
 		SpawnOffset: -1,1,0 #-1323,1280,0
 		ExitCell: 0,0
@@ -2562,6 +2558,7 @@ pscupscrefinery3:
 SCSPAWNINGPOOL:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
+	Inherits@barr: ^IsBarrack
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -7043,15 +7040,6 @@ SCZERGLING:
 		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 6500
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -7088,6 +7076,15 @@ SCZERGLING:
 		UndeployOnMove: true
 		PauseOnCondition: disabled
 		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
 	Power:
 		Amount: -6
 	# WithIdleOverlay@Shadow:
@@ -7201,6 +7198,7 @@ SCHYDRALISK:
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@zerg: ^LargeZerg
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@bot: ^BotAutoDeploySwitchMode
 	Valued:
 		Cost: 250
 	Tooltip:
@@ -7212,6 +7210,10 @@ SCHYDRALISK:
 		Description: Zerg armored assault strain.\n Strong vs Infantry, Vehicles, Aircraft\n Weak vs Siege
 	Mobile:
 		Speed: 75
+		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 16000
 	HitShape:
@@ -7233,7 +7235,39 @@ SCHYDRALISK:
 	AttackFrontal:
 		FacingTolerance: 0
 	WithMuzzleOverlay:
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
 	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zluburrw.aud
+		UndeploySounds: zluburrw.aud
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
 	-Crushable:
 	Selectable:
 		Bounds: 2048, 2048
@@ -7553,6 +7587,8 @@ SCULTRALISK:
 	FirepowerMultiplier@upmelee:
 		Modifier: 150
 		RequiresCondition: upmelee
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 # SCLURKER:
 # 	Inherits@AUTOTARGET: ^AutoTargetGround
