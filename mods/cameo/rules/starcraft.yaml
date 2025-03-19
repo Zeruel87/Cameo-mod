@@ -813,7 +813,7 @@ SCSENTINEL:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
-		Prerequisites: ~scengineeringbay, ~upsentinel
+		Prerequisites: ~scarmory
 		Description: template-anti-infantry-defense.description
 	Valued:
 		Cost: 800
@@ -3604,7 +3604,7 @@ SCMARINE:
 	Tooltip:
 		Name: Marine
 	Buildable:
-		Prerequisites: ~scbarracks, ~!upmadcap
+		Prerequisites: ~scbarracks
 		BuildPaletteOrder: 10
 		Queue: Infantry, RAInfantry
 		Description: Basic Terran infantry.\n Strong vs Infantry\n Weak vs Vehicles\n Can attack aircraft\n Uncrushable
@@ -3863,7 +3863,7 @@ scmarauder:
 		Amount: -50
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scacademy, ~upscmarauder
+		Prerequisites: ~scengineeringbay, ~upscmarauder
 		Queue: Infantry, RAInfantry
 		Description: Terran tankbuster infantry.\n Strong vs Vehicles, Buildings\n Weak vs Infantry\n Uncrushable
 	Mobile:
@@ -5140,7 +5140,7 @@ SCPYTHEAN.Husk:
 		PlayerPalette: player_rgba
 	FallsToEarth:
 		Explosion: KirovExplode
-		
+
 SCMEDIVAC:
 	Inherits: ^Helicopter
 	Inherits@Template: ^UnarmedTransportHelicopterTemplate
@@ -5260,17 +5260,19 @@ SCBATTLECRUISER:
 	ChangesHealth@SelfHealing:
 		Step: 200
 	Armament:
+		Name: primary
 		Weapon: BCLaser
 		LocalOffset: 800,0,200
 		PauseOnCondition: tacticaljump
 		AmmoUsage: 0
 		MuzzleSequence: muzzle
 	Armament@Yamato:
+		Name: secondary
 		Weapon: BCYamatoCannon
 		LocalOffset: 800,0,200
 		RequiresCondition: upyamatocannon
-		PauseOnCondition: ammo < 50 || tacticaljump
-		AmmoUsage: 50
+		PauseOnCondition: ammo < 100 || tacticaljump
+		AmmoUsage: 100
 	GrantConditionOnPrerequisite@upyamatocannon:
 		Condition: upyamatocannon
 		Prerequisites: upyamatocannon
@@ -5284,7 +5286,7 @@ SCBATTLECRUISER:
 	GrantTimedConditionOnTeleport@Portable:
 		TeleportTypes: PortableChrono
 		Condition: tacticaljump
-		Duration: 50
+		Duration: 100
 	AttackAircraft:
 		FacingTolerance: 20
 		AttackType: Hover
@@ -5300,10 +5302,25 @@ SCBATTLECRUISER:
 		VoiceSet: SCBattleCruiserVoice
 	SpawnActorOnDeath:
 		Actor: SCBATTLECRUISER.Husk
-	WithAttackAnimation:
+	WithAttackAnimation@1:
+		Armament: primary
+		Sequence: shoot
+	WithAttackAnimation@2:
+		Armament: secondary
 		Sequence: shoot
 	WithMoveAnimation:
 		MoveSequence: move
+	WithIdleOverlay@shield_damage:
+		Image: scbattlecruiserteleport
+		Sequence: idle
+		Palette: greyscale
+		RequiresCondition: tacticaljump
+	SpeedMultiplier@tacticaljump:
+		RequiresCondition: tacticaljump
+		Modifier: 0
+	DamageMultiplier@tacticaljump:
+		RequiresCondition: tacticaljump
+		Modifier: 200
 	DeathSounds:
 	AmbientSound:
 		RequiresCondition: tacticaljump
@@ -5311,7 +5328,7 @@ SCBATTLECRUISER:
 		Volume: 5
 	AmmoPool:
 		InitialAmmo: 0
-		Ammo: 50
+		Ammo: 100
 		AmmoCondition: ammo
 	ReloadAmmoPool:
 		Delay: 1
@@ -7307,7 +7324,7 @@ SCOVERLORD:
 		FullSequence: pip-yellow
 	RenderSprites:
 		PlayerPalette: player_rgba
-		
+
 SCHYDRALISK:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@shadow: ^SCSmallShadow
@@ -8667,7 +8684,7 @@ upinfarmor2:
 		Image: upinfarmor
 	ProvidesPrerequisite:
 		Prerequisite: upinfarmor
-	
+
 upinfarmor3:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
