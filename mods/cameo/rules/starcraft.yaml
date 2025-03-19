@@ -813,7 +813,7 @@ SCSENTINEL:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
-		Prerequisites: ~scengineeringbay, ~upsentinel
+		Prerequisites: ~scarmory
 		Description: template-anti-infantry-defense.description
 	Valued:
 		Cost: 800
@@ -2050,8 +2050,7 @@ SCHATCHERY:
 	Tooltip@3:
 		Name: Hive
 		RequiresCondition: hive
-	ProvidesPrerequisite:
-		Prerequisite: Hatchery
+	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@2:
 		Prerequisite: Lair
 		RequiresCondition: lair
@@ -2597,6 +2596,7 @@ SCSPAWNINGPOOL:
 		Actor: SCBROODLING
 	SpawnActorOnDeath@zergsoilkilled:
 		Actor: zergsoilkiller4
+
 SCEVOLUTIONCHAMBER:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
@@ -3604,7 +3604,7 @@ SCMARINE:
 	Tooltip:
 		Name: Marine
 	Buildable:
-		Prerequisites: ~scbarracks, ~!upmadcap
+		Prerequisites: ~scbarracks
 		BuildPaletteOrder: 10
 		Queue: Infantry, RAInfantry
 		Description: Basic Terran infantry.\n Strong vs Infantry\n Weak vs Vehicles\n Can attack aircraft\n Uncrushable
@@ -3863,9 +3863,9 @@ scmarauder:
 		Amount: -50
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scacademy, ~upscmarauder
+		Prerequisites: ~scengineeringbay, ~upscmarauder
 		Queue: Infantry, RAInfantry
-		Description: Terran flamethrower infantry.\n Strong vs Infantry, Buildings\n Weak vs Vehicles\n Uncrushable
+		Description: Terran tankbuster infantry.\n Strong vs Vehicles, Buildings\n Weak vs Infantry\n Uncrushable
 	Mobile:
 		Speed: 45
 	Health:
@@ -3895,6 +3895,83 @@ scmarauder:
 		PlayerPalette: player_rgba
 	ActorStatValues:
 		Upgrades: upinfweapon, upinfarmor
+
+sctyr:
+	Inherits: ^SCTINFANTRY
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@armor: ^TerranVehiclesWeaponUpgrades
+	Inherits@weapon: ^TerranVehicleArmorUpgrades
+	Tooltip:
+		Name: Warhound
+	Valued:
+		Cost: 2500
+	Power:
+		Amount: -150
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~scacademy
+		Queue: Infantry, RAInfantry
+		Description: Colossal Terran Mech.\n Strong vs Everything, Buildings\n Weak vs Air\n Uncrushable
+	Mobile:
+		Speed: 45
+		TurnSpeed: 18
+		Locomotor: tracked
+	Health:
+		HP: 90000
+	Armor:
+		Type: Heavy
+	ChangesHealth@SelfHealing:
+		Step: 90
+	Armament@T1:
+		Weapon: SCTyr
+		LocalOffset: 800,600,300
+		FireDelay: 3
+	Armament@T2:
+		Weapon: SCTyr
+		LocalOffset: 800,-600,300
+		FireDelay: 3
+	Armament@TA1:
+		Sequence: altshoot
+		Weapon: SCTyrA
+		LocalOffset: 0,300,800
+		FireDelay: 3
+	Armament@TA2:
+		Sequence: altshoot
+		Weapon: SCTyrA
+		LocalOffset: 0,-300,800
+		FireDelay: 3
+	Armament@TA3:
+		Sequence: altshoot
+		Weapon: SCTyrA
+		LocalOffset: 0,150,800
+		FireDelay: 3
+	Armament@TA4:
+		Sequence: altshoot
+		Weapon: SCTyrA
+		LocalOffset: 0,-150,800
+		FireDelay: 3
+	WithInfantryBody:
+	WithMuzzleOverlay:
+	Passenger:
+		Weight: 4
+		CustomPipType: blue
+	Voiced:
+		VoiceSet: SCTyrVoice
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: infantry ##########
+	RenderSprites:
+		Image: sctyr
+	Selectable:
+		DecorationBounds: 1280, 1280
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upmechweapon, upmecharmor
 
 SCGHOST:
 	Inherits: ^SCTINFANTRY
@@ -5063,7 +5140,7 @@ SCPYTHEAN.Husk:
 		PlayerPalette: player_rgba
 	FallsToEarth:
 		Explosion: KirovExplode
-		
+
 SCMEDIVAC:
 	Inherits: ^Helicopter
 	Inherits@Template: ^UnarmedTransportHelicopterTemplate
@@ -5183,16 +5260,19 @@ SCBATTLECRUISER:
 	ChangesHealth@SelfHealing:
 		Step: 200
 	Armament:
+		Name: primary
 		Weapon: BCLaser
 		LocalOffset: 800,0,200
 		PauseOnCondition: tacticaljump
 		AmmoUsage: 0
+		MuzzleSequence: muzzle
 	Armament@Yamato:
+		Name: secondary
 		Weapon: BCYamatoCannon
 		LocalOffset: 800,0,200
 		RequiresCondition: upyamatocannon
-		PauseOnCondition: ammo < 50 || tacticaljump
-		AmmoUsage: 50
+		PauseOnCondition: ammo < 100 || tacticaljump
+		AmmoUsage: 100
 	GrantConditionOnPrerequisite@upyamatocannon:
 		Condition: upyamatocannon
 		Prerequisites: upyamatocannon
@@ -5206,7 +5286,7 @@ SCBATTLECRUISER:
 	GrantTimedConditionOnTeleport@Portable:
 		TeleportTypes: PortableChrono
 		Condition: tacticaljump
-		Duration: 50
+		Duration: 100
 	AttackAircraft:
 		FacingTolerance: 20
 		AttackType: Hover
@@ -5222,8 +5302,25 @@ SCBATTLECRUISER:
 		VoiceSet: SCBattleCruiserVoice
 	SpawnActorOnDeath:
 		Actor: SCBATTLECRUISER.Husk
+	WithAttackAnimation@1:
+		Armament: primary
+		Sequence: shoot
+	WithAttackAnimation@2:
+		Armament: secondary
+		Sequence: shoot
 	WithMoveAnimation:
 		MoveSequence: move
+	WithIdleOverlay@shield_damage:
+		Image: scbattlecruiserteleport
+		Sequence: idle
+		Palette: greyscale
+		RequiresCondition: tacticaljump
+	SpeedMultiplier@tacticaljump:
+		RequiresCondition: tacticaljump
+		Modifier: 0
+	DamageMultiplier@tacticaljump:
+		RequiresCondition: tacticaljump
+		Modifier: 200
 	DeathSounds:
 	AmbientSound:
 		RequiresCondition: tacticaljump
@@ -5231,7 +5328,7 @@ SCBATTLECRUISER:
 		Volume: 5
 	AmmoPool:
 		InitialAmmo: 0
-		Ammo: 50
+		Ammo: 100
 		AmmoCondition: ammo
 	ReloadAmmoPool:
 		Delay: 1
@@ -6963,6 +7060,7 @@ SCZERATUL:
 
 SCDRONE:
 	Inherits: ^Vehicle
+	Inherits@Template: ^HarvesterTemplate
 	Inherits@selection: ^SelectableEconomicUnit
 	Inherits@harv: ^Harvester
 	Inherits@worker: ^SCWorker
@@ -6981,20 +7079,57 @@ SCDRONE:
 		Queue: Infantry, RAInfantry
 		Description: Collects resources.
 	Mobile:
-		Locomotor: foot
-		TurnSpeed: 1023
+		Locomotor: swimsuit
+		TurnSpeed: 100
 		Speed: 100
+	Hovers:
 	Health:
-		HP: 8000
+		HP: 45000
+	Repairable:
+		HpPerStep: 2250
 	Armor:
-		Type: None
+		Type: Light
 	RevealsShroud:
 		Range: 6c0
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
-	#WithMoveAnimation:
+	WithMoveAnimation:
+		MoveSequence: move
 	AttackFrontal:
 		FacingTolerance: 0
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zluburrw.aud
+		UndeploySounds: zluburrw.aud
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
 	Armament:
 		Weapon: DroneAttack
 	Power:
@@ -7002,10 +7137,6 @@ SCDRONE:
 	Voiced:
 		VoiceSet: SCDroneVoice
 	Inherits@EXT: ^ExternalConditions ##########
-	WithHarvesterSpriteBody:
-		ImageByFullness: scdrone, scdronefull
-	-WithFacingSpriteBody:
-	-FireWarheadsOnDeath:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
@@ -7014,7 +7145,9 @@ SCDRONE:
 	Selectable:
 		Class: scdrone
 	StoresResources:
-		Capacity: 45
+		Capacity: 5
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCZERGLING:
 	Inherits@EXPERIENCE: ^GainsExperienceMelee
@@ -7126,8 +7259,7 @@ SCOVERLORD:
 		Cost: 500
 	Tooltip:
 		Name: Overlord
-	ProvidesPrerequisite@overlord:
-		Prerequisite: Overlord
+	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@anypower:
 		Prerequisite: anypower
 	Buildable:
@@ -7192,7 +7324,7 @@ SCOVERLORD:
 		FullSequence: pip-yellow
 	RenderSprites:
 		PlayerPalette: player_rgba
-		
+
 SCHYDRALISK:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@shadow: ^SCSmallShadow
@@ -8552,7 +8684,7 @@ upinfarmor2:
 		Image: upinfarmor
 	ProvidesPrerequisite:
 		Prerequisite: upinfarmor
-	
+
 upinfarmor3:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
