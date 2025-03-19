@@ -1419,6 +1419,7 @@
 		InitialStance: Defend
 		InitialStanceAI: AttackAnything
 		ScanRadius: 10
+	RenderRangeCircle:
 	Buildable:
 		BuildDurationModifier: 50
 	TooltipExtras@Helicopter:
@@ -1447,6 +1448,7 @@
 		InitialStance: Defend
 		InitialStanceAI: AttackAnything
 		ScanRadius: 12
+	RenderRangeCircle:
 	Buildable:
 		BuildDurationModifier: 75
 	TooltipExtras@Spaceship:
@@ -2588,6 +2590,9 @@
 
 ^DefaultSoldier:
 	Inherits: ^DefaultInfantry
+	Buildable:
+		Queue: Infantry, RAInfantry
+		BuildAtProductionType: Soldier
 	MustBeDestroyed:
 	Tooltip:
 		Name: Soldier
@@ -6436,11 +6441,11 @@ CPQDEBUGDUMMY:
 	RevealsShroud:
 		Range: 5000
 	Production@NORMAL:
-		Produces: Infantry
+		Produces: Infantry, Soldier
 		RequiresCondition: !classicproductionqueues
 		PauseOnCondition: disabled
 	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry
+		Produces: RAInfantry, Soldier
 		RequiresCondition: classicproductionqueues
 		PauseOnCondition: disabled
 	ParallelProductionQueue@INFANTRY:
@@ -6489,6 +6494,69 @@ CPQDEBUGDUMMY:
 		Prerequisites: 4barr
 	ProductionTimeMultiplier@Scaled4:
 		Prerequisites: 4barr
+	Exit@1:
+		SpawnOffset: -170,810,0
+		ExitCell: 1,2
+		ProductionTypes: Soldier, Infantry, RAInfantry
+	Exit@2:
+		SpawnOffset: -725,640,0
+		ExitCell: 0,2
+		ProductionTypes: Soldier, Infantry, RAInfantry
+
+^IsDogKennel:
+	Inherits@DisabledOverlay: ^IsBarrack
+	Valued:
+		Cost: 200
+	Power:
+		Amount: -10
+	RallyPoint:
+		ForceSetType: Dog
+	Production@NORMAL:
+		Produces: Infantry, Dog
+		RequiresCondition: !classicproductionqueues
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry, Dog
+		RequiresCondition: classicproductionqueues
+	Production:
+		Produces: Dog
+	ParallelProductionQueue@INFANTRY:
+		Type: Dog
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	Exit@0:
+		RequiresCondition: !being-captured
+		SpawnOffset: -280,400,0
+		ExitCell: -1,1
+		ProductionTypes: Dog, Infantry, RAInfantry
+		Priority: 3
+	Exit@1:
+		RequiresCondition: !being-captured
+		SpawnOffset: -280,400,0
+		ExitCell: 0,1
+		ProductionTypes: Dog, Infantry, RAInfantry
+		Priority: 2
+	Exit@2:
+		RequiresCondition: !being-captured
+		SpawnOffset: -280,400,0
+		ExitCell: -1,0
+		ProductionTypes: Dog, Infantry, RAInfantry
+		Priority: 2
+	CommandBarBlacklist:
+		DisableStop: false
+	ProductionBar@INFANTRY:
+		ProductionType: Dog
+		RequiresCondition: !classicproductionqueues
+	ProductionBar@RAINFANTRY:
+		ProductionType: Dog
+		RequiresCondition: classicproductionqueues
 
 ^IsWeaponFactory:
 	Inherits@DisabledOverlay: ^DisableOnPowerDown

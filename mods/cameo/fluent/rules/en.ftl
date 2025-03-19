@@ -1481,8 +1481,7 @@ actor-nax_litt =
       Black holes damage nearby enemies and can be targeted
 
 actor-nax_slavemaster =
-   .description = Collects resources for processing.
-      Armed with a rifle.
+   .description = Whips slaves to make them work faster.
 
 actor-nax_atankcann =
    .description = Anti-tank artillery piece.
