@@ -2057,6 +2057,18 @@ SCHATCHERY:
 	ProvidesPrerequisite@3:
 		Prerequisite: schive
 		RequiresCondition: schive
+	Pluggable:
+		Offset: 0,0
+		Conditions:
+			schatchery: sclair
+		Requirements:
+			schatchery: !sclair
+	Pluggable@2:
+		Offset: 0,0
+		Conditions:
+			sclair: schive
+		Requirements:
+			sclair: !schive
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -2275,6 +2287,38 @@ SCHATCHERY:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
+sclair:
+	Inherits: ^BuildingPlug
+	Tooltip:
+		Name: Lair
+	Valued:
+		Cost: 400
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Defence, RADefence
+		Prerequisites: ~scspawningpool
+		Description: Increase the size of the supply depot by 100%
+	Plug:
+		Type: schatchery
+	RenderSprites:
+		Image: sclair
+
+schive:
+	Inherits: ^BuildingPlug
+	Tooltip:
+		Name: Hive
+	Valued:
+		Cost: 400
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Defence, RADefence
+		Prerequisites: ~sclair
+		Description: Increase the size of the supply depot by 100%
+	Plug:
+		Type: sclair
+	RenderSprites:
+		Image: schive
+		
 sc_zerg_larva:
 	Inherits: ^Soldier
 	Inherits@supply: ^ProducesUnits
@@ -3040,262 +3084,6 @@ SCSPORECOLONY:
 		Weapon: Spore
 	-WithDeathAnimation:
 	SpawnActorOnDeath@death1:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@zergsoilkilled:
-		Actor: zergsoilkiller
-	FireWarheadsOnDeath@remover:
-		Weapon: CreepRemover
-		EmptyWeapon: CreepRemover
-
-SCLAIR:
-	Inherits: ^BaseBuildingZerg
-	Inherits@shape: ^3x2Shape
-	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@aicash: ^AIConyardCash
-	Inherits@conyard: ^Conyard
-	Inherits@breedfaster: ^SCBREEDFASTER
-	Selectable:
-		Bounds: 3072, 2048
-		DecorationBounds: 3300, 2448, 0, 0
-	Valued:
-		Cost: 3000
-	Tooltip:
-		Name: Lair
-	ProvidesPrerequisite@buildingname:
-		Prerequisite: schatchery
-	ProvidesPrerequisite@buildingname2:
-		Prerequisite: sclair
-	#Buildable:
-	#	Queue: Building, RABuilding
-	#	Prerequisites: ~schatchery
-	#	BuildPaletteOrder: 120
-	#	Description: Builds structures and provides radar.
-	Building:
-		Footprint: xxx xxx ===
-		Dimensions: 3,3
-		LocalCenterOffset: 0,-512,0
-		BuildSounds: zchrdy00.aud
-	Health:
-		HP: 300000
-	Armor:
-		Type: Wood
-	RevealsShroud:
-		Range: 9c0
-	Production@NORMAL:
-		Produces: Building, Defence, Infantry, Lair.Zerg
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence, RAInfantry, Lair.Zerg
-		RequiresCondition: classicproductionqueues
-	ProductionQueue@ZergBuilding:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@ZergDefense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Vehicle
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@ZergInfantry:
-		Type: Infantry
-		DisplayOrder: 2
-		Group: Infantry
-		LowPowerModifier: 9999
-		QueuedAudio: Building
-		ReadyAudio: UnitReady
-	BaseBuilding:
-	ProductionBar@BuildingZerg:
-		ProductionType: Building
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@DefenceZerg:
-		ProductionType: Defence
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@InfantryZerg:
-		ProductionType: Infantry
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RABuildingZerg:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RADefenceZerg:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RAInfantryZerg:
-		ProductionType: RAInfantry
-		RequiresCondition: classicproductionqueues
-	BaseProvider:
-		Range: 14c0
-	WithBuildingPlacedAnimation:
-	WithBuildingBib:
-	RallyPoint: ##########
-		Path: 0,2
-	Exit@1:
-		SpawnOffset: -1024,1024,0 #-1323,1280,0
-		ExitCell: 0,2
-		Facing: 540
-	ProvidesRadar:
-		RequiresCondition: !jammed
-	Power:
-		Amount: 100
-	ExternalCondition@JAMMED:
-		Condition: jammed
-	GivesBuildableArea: ##########
-		AreaTypes: building, cityi, lair
-	-WithDeathAnimation:
-	ProvidesPrerequisite@faction:
-		Prerequisite: mmzerg
-	##########
-	ProductionQueue@lair:
-		Type: Lair.Zerg
-		Group: Defence
-	GrantConditionOnProduction@hive:
-		Condition: hivecondition
-		Actors: pschive
-	KillsSelf@hive:
-		RequiresCondition: hivecondition
-		GrantsCondition: hiverebirth
-	SpawnActorOnDeath@hive:
-		RequiresCondition: hiverebirth
-		Actor: schive
-	SoundOnDamageTransition:
-		-DamagedSounds: xplos.aud
-		-DestroyedSounds: crumble.aud
-	FireWarheadsOnDeath:
-		Weapon: Creeptransition
-		Type: CenterPosition
-	-ShakeOnDeath:
-	-ActorLostNotification:
-	SpawnActorOnDeath@death1:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death2:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death3:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death4:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death5:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death6:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@zergsoilkilled:
-		Actor: zergsoilkiller
-	FireWarheadsOnDeath@remover:
-		Weapon: CreepRemover
-		EmptyWeapon: CreepRemover
-
-SCHIVE:
-	Inherits: ^BaseBuildingZerg
-	Inherits@shape: ^3x2Shape
-	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@aicash: ^AIConyardCash
-	Inherits@conyard: ^Conyard
-	Inherits@breedfaster: ^SCBREEDFASTER
-	Selectable:
-		Bounds: 3072, 2048
-		DecorationBounds: 3300, 2448, 0, 0
-	Valued:
-		Cost: 4500
-	Tooltip:
-		Name: Hive
-	ProvidesPrerequisite@1:
-		Prerequisite: Hatchery
-	ProvidesPrerequisite@2:
-		Prerequisite: Lair
-	ProvidesPrerequisite@buildingname:
-	#Buildable:
-	#	Queue: Building, RABuilding
-	#	Prerequisites: ~sclair
-	#	BuildPaletteOrder: 130
-	#	Description: Builds structures and provides radar.
-	Building:
-		Footprint: xxx xxx ===
-		Dimensions: 3,3
-		LocalCenterOffset: 0,-512,0
-		BuildSounds: zchrdy00.aud
-	Health:
-		HP: 450000
-	Armor:
-		Type: Wood
-	RevealsShroud:
-		Range: 10c0
-	Production@NORMAL:
-		Produces: Building, Defence, Infantry
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence, RAInfantry
-		RequiresCondition: classicproductionqueues
-	ProductionQueue@ZergBuilding:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@ZergDefense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Vehicle
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@ZergInfantry:
-		Type: Infantry
-		DisplayOrder: 2
-		Group: Infantry
-		LowPowerModifier: 9999
-		QueuedAudio: Building
-		ReadyAudio: UnitReady
-	BaseBuilding:
-	ProductionBar@BuildingZerg:
-		ProductionType: Building
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@DefenceZerg:
-		ProductionType: Defence
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@InfantryZerg:
-		ProductionType: Infantry
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RABuildingZerg:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RADefenceZerg:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RAInfantryZerg:
-		ProductionType: RAInfantry
-		RequiresCondition: classicproductionqueues
-	BaseProvider:
-		Range: 14c0
-	WithBuildingPlacedAnimation:
-	WithBuildingBib:
-	RallyPoint: ##########
-		Path: 0,2
-	Exit@1:
-		SpawnOffset: -1024,1024,0 #-1323,1280,0
-		ExitCell: 0,2
-		Facing: 540
-	ProvidesRadar:
-		RequiresCondition: !jammed
-	Power:
-		Amount: 100
-	ExternalCondition@JAMMED:
-		Condition: jammed
-	-WithDeathAnimation:
-	ProvidesPrerequisite@faction:
-		Prerequisite: mmzerg
-	SpawnActorOnDeath@death1:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death2:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death3:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death4:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death5:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death6:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death7:
 		Actor: SCBROODLING
 	SpawnActorOnDeath@zergsoilkilled:
 		Actor: zergsoilkiller
