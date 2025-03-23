@@ -2163,63 +2163,6 @@ SCHATCHERY:
 	ProvidesPrerequisite@faction:
 		Prerequisite: mmzerg
 	##########
-	ProductionQueue@hatchery:
-		Type: Hatchery.Zerg
-		Group: Addon
-	ProductionQueue@lair:
-		Type: Lair.Zerg
-		Group: Addon
-	GrantConditionOnProduction@lair:
-		Condition: lair
-		Actors: psclair
-	GrantConditionOnProduction@hive:
-		Condition: hive
-		Actors: pschive
-	GrantConditionOnProduction@animationhack:
-		Condition: transition
-		Duration: 1
-		Actors: psclair
-	GrantConditionOnProduction@animationhack2:
-		Condition: transition2
-		Duration: 1
-		Actors: pschive
-	PeriodicExplosion@1:
-		Weapon: Lairtransition
-		RequiresCondition: transition
-	PeriodicExplosion@2:
-		Weapon: Hivetransition
-		RequiresCondition: transition2
-	WithProductionOverlay@lair:
-		Queues: Hatchery.Zerg
-		Sequence: lairhatch
-	WithProductionOverlay@hive:
-		Queues: Lair.Zerg
-		Sequence: hivehatch
-	Production@lvl1:
-		Produces: Hatchery.Zerg
-		RequiresCondition: !lair
-	Production@lvl2:
-		Produces: Lair.Zerg
-		RequiresCondition: lair && !hive
-	FreeActor@hack:
-		Actor: CPQDEBUGDUMMY
-		RequiresCondition: lair
-	WithMakeAnimation:
-		BodyNames: hatch, lair, hive
-	WithSpriteBody:
-		RequiresCondition: !lair && !hive
-		Name: hatch
-	WithSpriteBody@lair:
-		Sequence: lair
-		Name: lair
-		RequiresCondition: lair && !hive
-	WithSpriteBody@hive:
-		Sequence: hive
-		Name: hive
-		RequiresCondition: hive
-	FireWarheadsOnDeath:
-		Weapon: Creeptransition
-		Type: CenterPosition
 	Sellable:
 	##########
 	GrantConditionOnProduction@botpowerrestriction:
@@ -2250,19 +2193,19 @@ SCHATCHERY:
 		SpawnOffset: -3,-3
 	MobSpawnerMaster@1:
 		Actors: sc_zerg_larva
-		Offset: 1000,255,0
+		Offset: 1000,500,0
 		RespawnTicks: 500
 		ExitByBudding: false
 		AggregateHealth: false
 	MobSpawnerMaster@2:
 		Actors: sc_zerg_larva
-		Offset: 0,255,0
+		Offset: 0,500,0
 		RespawnTicks: 500
 		ExitByBudding: false
 		AggregateHealth: false
 	MobSpawnerMaster@3:
 		Actors: sc_zerg_larva
-		Offset: 2000,255,0
+		Offset: 2000,500,0
 		RespawnTicks: 500
 		ExitByBudding: false
 		AggregateHealth: false
@@ -2394,6 +2337,8 @@ sc_zerg_larva:
 		Facing: 256
 		AllowRespawn: True
 		RequiresCondition: producescourge
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCCREEPCOLONY:
 	Inherits: ^Defense
@@ -2585,6 +2530,8 @@ SCEXTRACTOR:
 		RequiresSelection: true
 		PipCount: 10
 		FullSequence: pip-yellow
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 pscupscrefinery3:
 	Tooltip:
@@ -2644,6 +2591,8 @@ SCSPAWNINGPOOL:
 		Actor: SCBROODLING
 	SpawnActorOnDeath@zergsoilkilled:
 		Actor: zergsoilkiller4
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCEVOLUTIONCHAMBER:
 	Inherits: ^BaseBuildingZerg
@@ -2686,6 +2635,8 @@ SCEVOLUTIONCHAMBER:
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCHYDRALISKDEN:
 	Inherits: ^BaseBuildingZerg
@@ -2736,6 +2687,8 @@ SCHYDRALISKDEN:
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCQUEENSNEST:
 	Inherits: ^BaseBuildingZerg
@@ -2776,6 +2729,8 @@ SCQUEENSNEST:
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCSPIRE:
 	Inherits: ^BaseBuildingZerg
@@ -2816,31 +2771,14 @@ SCSPIRE:
 	GivesBuildableArea:
 		AreaTypes: building, spire
 	-WithDeathAnimation:
-	Production:
-		Produces: Spire.Zerg
-		RequiresCondition: !spirecondition
-	ProductionQueue@ZergSpire:
-		Type: Spire.Zerg
-		Group: Addon
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionBar@ZergSpire:
-		ProductionType: Spire.Zerg
-	GrantConditionOnProduction@spire:
-		Condition: spirecondition
-		Actors: pscgreaterspire
-	GrantConditionOnProduction@animationhack:
-		Condition: transition
-		Actors: pscgreaterspire
-		Duration: 1
-	WithSpriteBody:
-		RequiresCondition: !spirecondition
-	WithSpriteBody@greater:
-		Sequence: greaterspire
-		Name: greaterspire
-		RequiresCondition: spirecondition
 	WithMakeAnimation:
 		BodyNames: body, greaterspire
+	Pluggable:
+		Offset: 0,0
+		Conditions:
+			schatchery: scgreaterspire
+		Requirements:
+			schatchery: !scgreaterspire
 	PeriodicExplosion:
 		Weapon: Lairtransition
 		RequiresCondition: transition
@@ -2864,6 +2802,8 @@ SCSPIRE:
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCULTRALISKCAVERN:
 	Inherits: ^BaseBuildingZerg
@@ -2914,6 +2854,8 @@ SCULTRALISKCAVERN:
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCDEFILERMOUND:
 	Inherits: ^BaseBuildingZerg
@@ -2946,6 +2888,8 @@ SCDEFILERMOUND:
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCNYDUSCANAL:
 	Inherits: ^BaseBuildingZerg
@@ -2988,6 +2932,8 @@ SCNYDUSCANAL:
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCSUNKENCOLONY:
 	Inherits: ^Defense
@@ -3092,47 +3038,20 @@ SCSPORECOLONY:
 		EmptyWeapon: CreepRemover
 
 SCGREATERSPIRE:
-	Inherits: ^BaseBuildingZerg
-	Inherits@shape: ^2x2Shape
-	Valued:
-		Cost: 1600
+	Inherits: ^BuildingPlug
 	Tooltip:
 		Name: Greater Spire
-	ProvidesPrerequisite@1:
-		Prerequisite: Spire
-	ProvidesPrerequisite@2:
-		Prerequisite: Greater Spire
-	#Buildable:
-	#	BuildPaletteOrder: 140
-	#	Prerequisites: ~schive, ~scspire
-	#	Queue: Building, RABuilding
-	#	Description: Unlocks Guardian.
-	Building:
-		Footprint: xx xx
-		Dimensions: 2,2
-		BuildSounds: zchrdy00.aud
-	Selectable:
-		Bounds: 2048, 2048
-		DecorationBounds: 2448, 2448, 0, 0
-	SelectionDecorations:
-	Health:
-		HP: 100000
-	RevealsShroud:
-		Range: 7c0
-	-WithDeathAnimation:
-	SpawnActorOnDeath@death1:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death2:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death3:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death4:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@zergsoilkilled:
-		Actor: zergsoilkiller
-	FireWarheadsOnDeath@remover:
-		Weapon: CreepRemover
-		EmptyWeapon: CreepRemover
+	Valued:
+		Cost: 400
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Defence, RADefence
+		Prerequisites: ~scspire
+		Description: Increase the size of the supply depot by 100%
+	Plug:
+		Type: schatchery
+	RenderSprites:
+		Image: scspire
 
 SCOVERMIND:
 	Inherits: ^BaseBuildingZerg
@@ -7313,6 +7232,8 @@ SCDEVOURER:
 	FirepowerMultiplier@upattack:
 		Modifier: 133
 		RequiresCondition: upattack
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCSCOURGE:
 	Inherits: ^AirZerg
@@ -7367,6 +7288,8 @@ SCSCOURGE:
 	FireWarheadsOnDeath:
 		Weapon: RA2Terrorist3
 		EmptyWeapon: RA2Terrorist3
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCQUEEN:
 	Inherits: ^AirZerg
@@ -7434,6 +7357,9 @@ SCQUEEN:
 			WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
+	RenderSprites:
+		PlayerPalette: player_rgba
+
 SCULTRALISK:
 	Inherits@EXPERIENCE: ^GainsExperienceMelee
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
@@ -7496,107 +7422,105 @@ SCULTRALISK:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
-# SCLURKER:
-# 	Inherits@AUTOTARGET: ^AutoTargetGround
-# 	Inherits@zerg: ^LargeZerg
-# 	Inherits@editorhack: ^DeployableInfantryEditor
-# 	Inherits@announce: ^AnnounceOnBuild
-# 	Inherits@bot: ^BotMicromanageable
-# 	Inherits@SHADOWS: ^Shadows
-# 	Selectable:
-# 		Bounds: 1024, 1024
-# 	Valued:
-# 		Cost: 1000
-# 	Tooltip:
-# 		Name: Lurker
-# 	Buildable:
-# 		BuildPaletteOrder: 90
-# 		Prerequisites: ~schydraliskden, ~scevolutionchamber, ~sclair
-# 		Queue: Infantry, RAInfantry
-# 		Description: Zerg ambush strain.\nNeeds to deploy to attack\n Strong vs Infantry
-# 	Mobile:
-# 		Speed: 90
-# 		Locomotor: wheeled
-# 		RequireForceMoveCondition: !undeployed
-# 	Health:
-# 		HP: 30000
-# 	Armor:
-# 		Type: Heavy
-# 	RevealsShroud:
-# 		Range: 7c0
-# 		Type: GroundPosition
-# 	-HitShape:
-# 	HitShape:
-# 	Power:
-# 		Amount: -25
-# 	DamageMultiplier:
-# 		Modifier: 50
-# 		RequiresCondition: deployed
-# 	GrantConditionOnDeploy:
-# 		PauseOnCondition: disabled
-# 		DeployedCondition: deployed
-# 		UndeployedCondition: undeployed
-# 		UndeployOnMove: true
-# 		UndeployOnPickup: true
-# 		DeploySounds: zluburrw.aud
-# 		UndeploySounds: zluburrw.aud
-# 	WithSpriteBody@deployed:
-# 		Sequence: deploy-idle
-# 		Name: deployed
-# 		RequiresCondition: !undeployed
-# 	WithInfantryBody:
-# 		RequiresCondition: undeployed
-# 	WithMakeAnimation:
-# 		BodyNames: deployed
-# 		Sequence: burrow
-# 	WithInfantryBody@Editor:
-# 		DefaultAttackSequence: stand
-# 	AutoTarget:
-# 		AllowMovement: false
-# 	Armament:
-# 		Weapon: LurkerSpines
-# 		RequiresCondition: deployed
-# 	Armament@AI:
-# 		Name: target
-# 		Weapon: LurkerAITarget
-# 		RequiresCondition: undeployed && botmicro
-# 	-AttackFrontal:
-# 	Turreted:
-# 	AttackTurreted:
-# 		RequiresCondition: deployed || botmicro
-# 		Armaments: primary, target
-# 	RenderRangeCircle:
-# 	Cloak:
-# 		InitialDelay: 60
-# 		CloakDelay: 60
-# 		RequiresCondition: deployed
-# 		IsPlayerPalette: true
-# 		PauseOnCondition: cloak-force-disabled || base-reveal
-# 	DetectCloaked:
-# 		Range: 0c0
-# 	Crushable:
-# 		RequiresCondition: undeployed
-# 	Passenger:
-# 		Weight: 4
-# 		CustomPipType: blue
-# 		RequireForceMoveCondition: !undeployed
-# 	AutoDeployer:
-# 		DeployChance: 100
-# 		DeployTicks: 250
-# 		UndeployTicks: 1000
-# 	Voiced:
-# 		VoiceSet: SCLurkerVoice
-# 	Inherits@EXT: ^ExternalConditions ##########
-# 	WithShadow:
-# 		Offset: 128, 12, 0
-# 		ZOffset: -512
-# 		RequiresCondition: undeployed
-# 	GrantConditionOnPrerequisite@upmissile:
-# 		Condition: upmissile
-# 		Prerequisites: upzergmissile
-# 	FirepowerMultiplier@upmissile:
-# 		Modifier: 150
-# 		RequiresCondition: upmissile
+SCLURKER:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@zerg: ^LargeZerg
+	Inherits@editorhack: ^DeployableInfantryEditor
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@bot: ^BotMicromanageable
+	Inherits@SHADOWS: ^Shadows
+	Selectable:
+		Bounds: 1024, 1024
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Lurker
+	Buildable:
+		BuildPaletteOrder: 90
+		Prerequisites: ~schydraliskden, ~scevolutionchamber, ~sclair
+		Queue: Infantry, RAInfantry
+		Description: Zerg ambush strain.\nNeeds to deploy to attack\n Strong vs Infantry
+	Mobile:
+		Speed: 90
+		Locomotor: wheeled
+		RequireForceMoveCondition: !undeployed
+	Health:
+		HP: 30000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	-HitShape:
+	HitShape:
+	Power:
+		Amount: -25
+	DamageMultiplier:
+		Modifier: 50
+		RequiresCondition: deployed
+	GrantConditionOnDeploy:
+		PauseOnCondition: disabled
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: true
+		UndeployOnPickup: true
+		DeploySounds: zluburrw.aud
+		UndeploySounds: zluburrw.aud
+	WithSpriteBody@deployed:
+		Sequence: deploy-idle
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	WithInfantryBody@Editor:
+		DefaultAttackSequence: stand
+	AutoTarget:
+		AllowMovement: false
+	Armament:
+		Weapon: LurkerSpines
+		RequiresCondition: deployed
+	-AttackFrontal:
+	Turreted:
+	AttackTurreted:
+		RequiresCondition: deployed || botmicro
+		Armaments: primary, target
+	RenderRangeCircle:
+	Cloak:
+		InitialDelay: 60
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+	DetectCloaked:
+		Range: 0c0
+	Crushable:
+		RequiresCondition: undeployed
+	Passenger:
+		Weight: 4
+		CustomPipType: blue
+		RequireForceMoveCondition: !undeployed
+	AutoDeployer:
+		DeployChance: 100
+		DeployTicks: 250
+		UndeployTicks: 1000
+	Voiced:
+		VoiceSet: SCLurkerVoice
+	Inherits@EXT: ^ExternalConditions ##########
+	WithShadow:
+		Offset: 128, 12, 0
+		ZOffset: -512
+		RequiresCondition: undeployed
+	GrantConditionOnPrerequisite@upmissile:
+		Condition: upmissile
+		Prerequisites: upzergmissile
+	FirepowerMultiplier@upmissile:
+		Modifier: 150
+		RequiresCondition: upmissile
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCGUARDIAN:
 	Inherits: ^AirZerg
@@ -7646,6 +7570,8 @@ SCGUARDIAN:
 	FirepowerMultiplier@upattack:
 		Modifier: 133
 		RequiresCondition: upattack
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCINFESTEDTERRAN:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -7684,6 +7610,39 @@ SCINFESTEDTERRAN:
 		Weapon: InfestedExplosion
 		EmptyWeapon: InfestedExplosion
 		RequiresCondition: triggered && !disabled && !chronobeamed
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zluburrw.aud
+		UndeploySounds: zluburrw.aud
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
 	Selectable:
 		Bounds: 1024, 1024
 		DecorationBounds: 1448, 1448, 0, 0
@@ -7694,6 +7653,8 @@ SCINFESTEDTERRAN:
 	WithInfantryBody:
 		IdleSequences: idle
 	Inherits@EXT: ^ExternalConditions
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCDEFILER:
 	Inherits: ^LargeZerg
@@ -7750,6 +7711,8 @@ SCDEFILER:
 	WithShadow:
 		Offset: 108, 24, 0
 		ZOffset: -512
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 DARKSWARM:
 	Inherits@1: ^ExistsInWorld
@@ -7826,6 +7789,8 @@ SCBROODLING:
 		Delay: 10
 		StartIfBelow: 150
 	-ActorLostNotification:
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCKERRIGANZERG:
 	Inherits@: ^LargeZerg
@@ -7896,6 +7861,8 @@ SCKERRIGANZERG:
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCZMCV:
 	Inherits: ^Vehicle
@@ -7936,6 +7903,8 @@ SCZMCV:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 ####################################################################################################
 #		UPGRADES ZERG
@@ -7978,6 +7947,7 @@ PSCHIVE:
 PSCGREATERSPIRE:
 	Tooltip:
 		Name: Greater Spire
+	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 10
 		Queue: Spire.Zerg
