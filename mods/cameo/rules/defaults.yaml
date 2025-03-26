@@ -683,6 +683,16 @@
 		ValidTargets: Monster
 		Priority: 100
 
+^PrioritizeHeal:
+	AutoTargetPriority@Heal:
+		ValidTargets: Heal
+		Priority: 100
+
+^PrioritizeRepair:
+	AutoTargetPriority@Heal:
+		ValidTargets: Repairing, Repair
+		Priority: 100
+
 ^AcceptsCloakCrate:
 	Cloak@TDcloak:
 		DetectionTypes: GroundCloak
@@ -971,6 +981,60 @@
 ^DefenseBuffs:
 	Inherits@GlobalBuffs: ^GlobalBuffs
 
+^MedicTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceInfantry
+	Inherits@EXT: ^ExternalConditions
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@InfantryBuffs: ^InfantryBuffs
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 8000
+	DetectCloaked:
+		Range: 4000
+	Buildable:
+		BuildDurationModifier: 100
+	-RenderDetectionCircle:
+	Armament@Dummy:
+		Weapon: dummytargeting
+	AutoTarget:
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry, plagued, ivanattached, lockdowned
+	KeepsDistance:
+		Distance: 10
+	TooltipExtras@Medic:
+		Description: Medic
+	GrantExternalConditionToTransport:
+		Condition: ifv-healer
+
+^MechanicTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceInfantry
+	Inherits@EXT: ^ExternalConditions
+	Inherits@detect: ^GenericGroundDetector
+	Inherits@InfantryBuffs: ^InfantryBuffs
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 8000
+	DetectCloaked:
+		Range: 4000
+	Buildable:
+		BuildDurationModifier: 100
+	-RenderDetectionCircle:
+	Armament@Dummy:
+		Weapon: dummytargeting
+	AutoTarget:
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Infantry, plagued, ivanattached, lockdowned
+	KeepsDistance:
+		Distance: 10
+	TooltipExtras@Mechanic:
+		Description: Mechanic
+	GrantExternalConditionToTransport:
+		Condition: ifv-repair
+
 ^ScoutInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
 	Inherits@EXT: ^ExternalConditions
@@ -992,7 +1056,7 @@
 	GrantExternalConditionToTransport:
 		Condition: ifv-mg
 
-^LightInfantryTemplate:
+^GrenadierInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
 	Inherits@EXT: ^ExternalConditions
 	Inherits@InfantryBuffs: ^InfantryBuffs
@@ -1003,11 +1067,28 @@
 	Buildable:
 		BuildDurationModifier: 75
 	TooltipExtras@LightInf:
+		Description: Grenadier
+	Selectable:
+		Class: GrenadierInfantry
+	GrantExternalConditionToTransport:
+		Condition: ifv-grenade
+
+^MortarInfantryTemplate:
+	Inherits@EXPERIENCE: ^GainsExperienceInfantry
+	Inherits@EXT: ^ExternalConditions
+	Inherits@InfantryBuffs: ^InfantryBuffs
+	Armor:
+		Type: None
+	RevealsShroud:
+		Range: 8000
+	Buildable:
+		BuildDurationModifier: 100
+	TooltipExtras@LightInf:
 		Description: Light Infantry
 	Selectable:
-		Class: Grenadiers
+		Class: MortarInfantry
 	GrantExternalConditionToTransport:
-		Condition: ifv-cannon
+		Condition: ifv-grenade
 
 ^AntiTankAntiAirInfantryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceInfantry
@@ -1087,7 +1168,7 @@
 	RenderRangeCircle:
 		RangeCircleType: infantry
 	Armor:
-		Type: None
+		Type: Flak
 	RevealsShroud:
 		Range: 7500
 	DetectCloaked:
@@ -1186,6 +1267,8 @@
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
 	Inherits@VehicleBuffs: ^VehicleBuffs
+	Armor:
+		Type: Medium
 	RevealsShroud:
 		Range: 5000
 	Buildable:
@@ -1205,12 +1288,12 @@
 	Inherits@TankBuffs: ^TankBuffs
 	DamageMultiplier@MMainBattleTankBuff:
 		Modifier: 80
+	Armor:
+		Type: Medium
 	RevealsShroud:
 		Range: 6000
 	Buildable:
 		BuildDurationModifier: 50
-	Armor:
-		Type: Medium
 	TooltipExtras@MainBattleTank:
 		Description: Main Battle Tank
 	Selectable:
@@ -1223,12 +1306,12 @@
 	Inherits@Crushes: ^VehicleCrusher
 	DamageMultiplier@HighTechTankBuff:
 		Modifier: 90
+	Armor:
+		Type: Medium
 	RevealsShroud:
 		Range: 7000
 	Buildable:
 		BuildDurationModifier: 50
-	Armor:
-		Type: Medium
 	TooltipExtras@HighTechTank:
 		Description: High-Tech Tank
 	Selectable:
@@ -1263,10 +1346,10 @@
 	Inherits@upgrade: ^AdvancedGuerillaTactics
 	FirepowerMultiplier@FireSupportBuff:
 		Modifier: 150
-	RevealsShroud:
-		Range: 8000
 	Armor:
 		Type: Light
+	RevealsShroud:
+		Range: 8000
 	Buildable:
 		BuildDurationModifier: 75
 	KeepsDistance:
@@ -1287,12 +1370,12 @@
 	AutoTargetPriority@INFANTRY:
 		ValidTargets: Infantry
 		Priority: 10
+	Armor:
+		Type: Light
 	RenderRangeCircle:
 		RangeCircleType: vehicle
 	RevealsShroud:
 		Range: 9000
-	Armor:
-		Type: Light
 	Buildable:
 		BuildDurationModifier: 75
 	AttackFrontal:
@@ -1598,6 +1681,7 @@
 	Inherits@chrono: ^ChronoBeamable
 	Inherits@base-reveal: ^Base-reveal
 	Inherits@Shroudable: ^Shroudable
+	Inherits@Blindable: ^Blindable
 	Inherits@jammable: ^ArtilleryJammable
 	Huntable:
 	OwnerLostAction:
@@ -1948,7 +2032,7 @@
 	MapEditorData:
 		Categories: Infantry
 	Targetable@HEAL:
-		RequiresCondition: !untargetable && damaged
+		RequiresCondition: !untargetable && damaged && !Healed
 		TargetTypes: Heal, Healing
 	GrantConditionOnDamageState@DAMAGED:
 		Condition: damaged
@@ -2217,7 +2301,7 @@
 		RequiresCondition: !chronobeamed
 		TargetTypes: Aircraft
 	Targetable@Heal:
-		RequiresCondition: !airborne && !untargetable && damaged
+		RequiresCondition: !airborne && !untargetable && damaged && !Healed
 		TargetTypes: Heal, Healing
 	AttackAircraft:
 		PauseOnCondition: disabled
@@ -2370,7 +2454,7 @@
 		RequiresCondition: !parachute && !untargetable
 		TargetTypes: Ground, Infantry
 	Targetable@HEAL:
-		RequiresCondition: !parachute && !untargetable && damaged
+		RequiresCondition: !parachute && !untargetable && damaged && !Healed
 		TargetTypes: Heal, Healing
 	Targetable@ParachuteAir:
 		RequiresCondition: parachute
@@ -2819,16 +2903,6 @@
 	GrantExternalConditionToTransport:
 		Condition: ifv-repair
 
-^MechanicDefaultWeapons:
-	Armament@repair:
-		Weapon: Repair
-		#Cursor: repair
-		#OutsideRangeCursor: repair
-		TargetRelationships: Ally
-		ForceTargetRelationships: None
-	GrantExternalConditionToTransport:
-		Condition: ifv-repair
-
 ^DINO:
 	Inherits: ^DefaultInfantry
 	Health:
@@ -2950,6 +3024,7 @@
 	Inherits@selection: ^SelectableBuilding
 	Inherits@unstableeffect: ^UnstableEffect
 	Inherits@Shroudable: ^Shroudable
+	Inherits@Blindable: ^Blindable
 	Inherits@jammable: ^ArtilleryJammable
 	Huntable:
 	OwnerLostAction:
@@ -3446,6 +3521,7 @@
 ^GarrisonableBuilding:
 	Inherits@selection: ^SelectableCombatBuilding
 	Inherits@Shroudable: ^Shroudable
+	Inherits@Blindable: ^Blindable
 	Inherits@jammable: ^ArtilleryJammable
 	Inherits@AdvancedTargeting: ^AdvancedTargeting
 	Inherits@AUTOTARGET: ^AutoTargetAll
@@ -3502,7 +3578,7 @@
 		PortOffsets: 768,0,256, 448,-682,256, -448,-682,256, -768,0,256, -448,682,256, 448,682,256
 		RequiresCondition: !chronobeamed && !damaged
 	Targetable@garrisoned:
-		TargetTypes: Garrisoned, Defense
+		TargetTypes: Garrisoned, Defense, C4
 		RequiresCondition: loaded && !untargetable
 	InstantlyRepairable:
 		Types: civ
@@ -4098,6 +4174,31 @@
 		RequiresCondition: shrouded
 		IsDecoration: True
 
+^Blindable:
+	ExternalCondition@blinded:
+		Condition: blinded
+	TimedConditionBar@blinded:
+		Condition: blinded
+		Color: 888888
+	Targetable@blinded:
+		TargetTypes: blinded
+		RequiresCondition: blinded
+	RevealsShroudMultiplier@blinded:
+		RequiresCondition: blinded
+		Modifier: 20
+	DetectCloakedMultiplier@blinded:
+		RequiresCondition: blinded
+		Modifier: 20
+	RangeMultiplier@blinded:
+		RequiresCondition: blinded
+		Modifier: 20
+	WithDecoration@blinded:
+		Image: blinded_icon
+		Sequence: idle
+		Position: Center
+		RequiresCondition: blinded
+		ValidRelationships: Ally, Neutral, Enemy
+
 ^CryoFreezable:
 	ExternalCondition@CryoFreeze:
 		Condition: CryoFreeze
@@ -4338,8 +4439,11 @@
 		StartIfBelow: 101
 		DamageCooldown: 0
 		RequiresCondition: corroded
+	Targetable@corrodible:
+		TargetTypes: corrodible
 	Targetable@corroded:
 		TargetTypes: corroded
+		RequiresCondition: corroded
 	DamageMultiplier@corroded:
 		Modifier: 125
 		RequiresCondition: corroded
@@ -4359,6 +4463,8 @@
 ^AffectedByHealingField:
 	ExternalCondition@HealingField:
 		Condition: HealingField
+	ExternalCondition@Healed:
+		Condition: Healed
 	ChangesHealth@HealingField:
 		Delay: 1
 		PercentageStep: 1
@@ -5020,161 +5126,6 @@
 		Modifier: 125
 		RequiresCondition: MayorCall
 
-####################################################################################################
-#		X
-####################################################################################################
-
-^Xprerequisite:
-	ProvidesPrerequisite@1:
-		Prerequisite: anyhq
-	ProvidesPrerequisite@2:
-		Prerequisite: Academy
-	ProvidesPrerequisite@3:
-		Prerequisite: kenn
-	ProvidesPrerequisite@4:
-		Prerequisite: ftur
-	ProvidesPrerequisite@5:
-		Prerequisite: tsla
-	ProvidesPrerequisite@6:
-		Prerequisite: fix
-	ProvidesPrerequisite@7:
-		Prerequisite: anyhq
-	ProvidesPrerequisite@8:
-		Prerequisite: eye
-	ProvidesPrerequisite@9:
-		Prerequisite: tmpl
-	ProvidesPrerequisite@10:
-		Prerequisite: atek
-	ProvidesPrerequisite@11:
-		Prerequisite: stek
-	ProvidesPrerequisite@12:
-		Prerequisite: Science Facility
-	ProvidesPrerequisite@13:
-		Prerequisite: weap
-	ProvidesPrerequisite@14:
-		Prerequisite: afld
-	ProvidesPrerequisite@15:
-		Prerequisite: barr
-	ProvidesPrerequisite@16:
-		Prerequisite: Engineering Bay
-	ProvidesPrerequisite@17:
-		Prerequisite: Armory
-	ProvidesPrerequisite@18:
-		Prerequisite: 2100RF
-	ProvidesPrerequisite@19:
-		Prerequisite: 2100FY1
-	ProvidesPrerequisite@20:
-		Prerequisite: 2100FY2
-	ProvidesPrerequisite@21:
-		Prerequisite: 2100CRC
-	ProvidesPrerequisite@22:
-		Prerequisite: pyle
-	ProvidesPrerequisite@23:
-		Prerequisite: rafix
-	ProvidesPrerequisite@24:
-		Prerequisite: hpad
-	ProvidesPrerequisite@25:
-		Prerequisite: anyhq
-	ProvidesPrerequisite@26:
-		Prerequisite: raafld
-	ProvidesPrerequisite@27:
-		Prerequisite: vehicleproduction
-	ProvidesPrerequisite@28:
-		Prerequisite: anypower
-	ProvidesPrerequisite@29:
-		Prerequisite: Library
-	ProvidesPrerequisite@30:
-		Prerequisite: Bank
-	ProvidesPrerequisite@31:
-		Prerequisite: citylibrary
-	ProvidesPrerequisite@32:
-		Prerequisite: citybank
-	ProvidesPrerequisite@33:
-		Prerequisite: cityairport
-	ProvidesPrerequisite@34:
-		Prerequisite: proc
-	ProvidesPrerequisite@35:
-		Prerequisite: Pylon
-	ProvidesPrerequisite@36:
-		Prerequisite: Assimilator
-	ProvidesPrerequisite@37:
-		Prerequisite: Gateway
-	ProvidesPrerequisite@38:
-		Prerequisite: Forge
-	ProvidesPrerequisite@39:
-		Prerequisite: Cybernetics Core
-	ProvidesPrerequisite@40:
-		Prerequisite: Robotics Facility
-	ProvidesPrerequisite@41:
-		Prerequisite: Stargate
-	ProvidesPrerequisite@42:
-		Prerequisite: Citadel of Adun
-	ProvidesPrerequisite@43:
-		Prerequisite: Robotics Support Bay
-	ProvidesPrerequisite@44:
-		Prerequisite: Fleet Beacon
-	ProvidesPrerequisite@45:
-		Prerequisite: Templar Archives
-	ProvidesPrerequisite@46:
-		Prerequisite: Observatory
-	ProvidesPrerequisite@47:
-		Prerequisite: Arbiter Tribunal
-	ProvidesPrerequisite@48:
-		Prerequisite: Hatchery
-	ProvidesPrerequisite@49:
-		Prerequisite: Creep Colony
-	ProvidesPrerequisite@50:
-		Prerequisite: Extractor
-	ProvidesPrerequisite@51:
-		Prerequisite: Spawning Pool
-	ProvidesPrerequisite@52:
-		Prerequisite: Evolution Chamber
-	ProvidesPrerequisite@53:
-		Prerequisite: Hydralisk Den
-	ProvidesPrerequisite@54:
-		Prerequisite: Queen's Nest
-	ProvidesPrerequisite@55:
-		Prerequisite: Spire
-	ProvidesPrerequisite@56:
-		Prerequisite: Ultralisk Cavern
-	ProvidesPrerequisite@57:
-		Prerequisite: Defiler Mound
-	ProvidesPrerequisite@58:
-		Prerequisite: Nydus Canal
-	ProvidesPrerequisite@59:
-		Prerequisite: Lair
-	ProvidesPrerequisite@60:
-		Prerequisite: Hive
-	ProvidesPrerequisite@61:
-		Prerequisite: Greater Spire
-	ProvidesPrerequisite@62:
-		Prerequisite: Overmind
-	ProvidesPrerequisite@63:
-		Prerequisite: ra2naweap
-	ProvidesPrerequisite@64:
-		Prerequisite: ra2gaweap
-	ProvidesPrerequisite@65:
-		Prerequisite: ra2natech
-	ProvidesPrerequisite@66:
-		Prerequisite: ra2gatech
-	ProvidesPrerequisite@67:
-		Prerequisite: yrygtech
-	ProvidesPrerequisite@68:
-		Prerequisite: yrygweap
-	ProvidesPrerequisite@69:
-		Prerequisite: tek
-	ProvidesPrerequisite@70:
-		Prerequisite: supertek
-	ProvidesPrerequisite@71:
-		Prerequisite: barracks
-	ProvidesPrerequisite@72:
-		Prerequisite: anypower
-	ProvidesPrerequisite@73:
-		Prerequisite: tsntstlh
-	ProvidesPrerequisite@74:
-		Prerequisite: tsntpuls
-	ProvidesPrerequisite@X:
-		Prerequisite: xfortress
 
 ####################################################################################################
 #		MISC
@@ -7826,6 +7777,9 @@ CPQDEBUGDUMMY:
 	Armament@cannon:
 		Weapon: RA2MirageGun
 		RequiresCondition: ifv-cannon
+	Armament@grenade:
+		Weapon: Grenade
+		RequiresCondition: ifv-grenade
 	Armament@plasma:
 		Weapon: DRPlasmaTankWeapon
 		RequiresCondition: ifv-plasma
@@ -7886,7 +7840,7 @@ CPQDEBUGDUMMY:
 		Weapon: TSSonicZap
 		RequiresCondition: ifv-sonic
 	Armament@heal:
-		Weapon: Heal2
+		Weapon: MedicHeal
 		RequiresCondition: ifv-healer
 		TargetRelationships: Ally
 		ForceTargetRelationships: None
