@@ -7043,9 +7043,13 @@ SCHYDRALISK:
 		Step: 80
 	HitShape:
 		-Type:
-	Armament:
+	Armament@PRIMARY:
 		Weapon: HydraSpit
 		LocalOffset: 0,0,200
+		MuzzleSequence: muzzle
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: HydraSpit
 		MuzzleSequence: muzzle
 	AttackFrontal:
 		FacingTolerance: 0
@@ -7280,6 +7284,73 @@ SCSCOURGE:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
+SCSCOURGEDRONE:
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^BomberTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	SelectionDecorations:
+	Selectable:
+		Bounds: 1024, 1024
+		DecorationBounds: 1448, 1448, 0, 0
+	Valued:
+		Cost: 350
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Tooltip:
+		Name: Scourge Drone
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~scspire
+		Queue: Infantry, RAInfantry
+		Description: Aerial suicide bomber.\n Strong vs Aircraft
+	Aircraft:
+		AltitudeVelocity: 120
+		InitialFacing: 768
+		TurnSpeed: 12
+		Speed: 200
+		VTOL: false
+		Repulsable: false
+		CruiseAltitude: 1c256
+		TakeUpCellWhenLand: false
+	Health:
+		HP: 3000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 4c0
+		Type: GroundPosition
+	AttackAircraft:
+		FacingTolerance: 512
+	Armament@PRIMARY:
+		Weapon: ScourgeExplosion
+	CarrierSlave:
+		LandingDistance: 8000
+	GrantConditionOnAttack:
+		Condition: triggered
+	HasParent:
+	RejectsOrders:
+	AttackAircraft:
+	-SpawnActorOnDeath:
+	FireWarheadsOnDeath:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	WithDeathAnimation:
+		UseDeathTypeSuffix: False
+	KillsSelf:
+		RequiresCondition: triggered
+	AttackAircraft:
+		FacingTolerance: 80
+	Power:
+		Amount: -5
+	Voiced:
+		VoiceSet: SCScourgeVoice
+	FireWarheadsOnDeath:
+		Weapon: RA2Terrorist3
+		EmptyWeapon: RA2Terrorist3
+	RenderSprites:
+		PlayerPalette: player_rgba
+
 SCQUEEN:
 	Inherits: ^AirZerg
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -7394,6 +7465,39 @@ SCULTRALISK:
 	Passenger:
 		Weight: 4
 		CustomPipType: blue
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zluburrw.aud
+		UndeploySounds: zluburrw.aud
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
 	Voiced:
 		VoiceSet: SCUltraliskVoice
 	Inherits@EXT: ^ExternalConditions ##########
@@ -7895,6 +7999,106 @@ SCZMCV:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
+SCBEHEMOTH:
+	Inherits: ^AirZerg
+	Inherits: ^Helicopter
+	Inherits@Template: ^SpaceshipTemplate
+	Inherits@Template: ^EpicAirUnitTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@cargo: ^CargoAircraft
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@eject: ^AircraftEjectOnDeath
+	Inherits@announce: ^AnnounceOnBuild
+	Tooltip:
+		Name: Behemoth
+	Valued:
+		Cost: 5000
+	Power:
+		Amount: -250
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~sclair
+		Queue: Infantry, RAInfantry
+		BuildLimit: 1
+		Description: A slow moving garrison transport for all ground units.\nExtremely Durable\n Strong vs Everything
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 30
+		InitialFacing: 896
+		AltitudeVelocity: 0c100
+	Health:
+		HP: 1000000
+	Repairable:
+		HpPerStep: 50000
+	ChangesHealth@SelfHealing:
+		Step: 400
+	Cargo:
+		ExclusiveDeploy: true
+		DeployType: opentopped
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 8
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+		LoadedCondition: loaded
+		InitialUnits: schydralisk, schydralisk, schydralisk, schydralisk
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, 224,341,128, 0,-341,128, 0,341,128, -224,-341,128, -224,341,128, -384,0,128
+		PauseOnCondition: chronobeamed
+	Armament:
+		Weapon: GuardianShoot
+		LocalOffset: 400,0,0
+	CarrierMaster:
+		Actors: scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone
+		RearmTicks: 125
+		RespawnTicks: 250
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	FireWarheadsOnDeath:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	EjectOnDeath:
+		PilotActor: schydralisk
+	-SpawnActorOnDeath:
+		Actor: SCBEHEMOTH.Husk
+	Selectable:
+		Class: scdropship
+		DecorationBounds: 1280, 1280, 0, 0
+	Voiced:
+		VoiceSet: SCOverlordVoice
+	DeathSounds:
+	RenderSprites:
+		Image: scbehemoth
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upshiparmor
+	WithCargoSounds:
+		EnterSounds: tdrtra00.wav
+		ExitSounds: tdrtra00.wav
+
+SCBEHEMOTH.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Behemoth
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 30
+	RenderSprites:
+		Image: scbehemoth
+		PlayerPalette: player_rgba
+	FallsToEarth:
+		Explosion: KirovExplode
 ####################################################################################################
 #		UPGRADES ZERG
 ####################################################################################################
