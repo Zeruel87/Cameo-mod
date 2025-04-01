@@ -2361,6 +2361,10 @@ sc_zerg_larva:
 		Actors: scscourge
 		Condition: producescourge
 		Duration: 1
+	GrantConditionOnProduction@producetalon:
+		Actors: sctalon
+		Condition: sctalon
+		Duration: 1
 	FreeActor@sczergling:
 		Actor: sczergling
 		SpawnOffset: 0,0
@@ -2373,6 +2377,12 @@ sc_zerg_larva:
 		Facing: 256
 		AllowRespawn: True
 		RequiresCondition: producescourge
+	FreeActor@scscourge:
+		Actor: sctalon
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producetalon
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -6931,6 +6941,98 @@ SCZERGLING:
 	Inherits@bot: ^BotAutoDeploySwitchMode
 	Tooltip:
 		Name: Zergling
+	Valued:
+		Cost: 150
+	Power:
+		Amount: -5
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~scspawningpool
+		Queue: Infantry, RAInfantry
+		Description: Fast Zerg basic assault strain.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
+	Mobile:
+		Speed: 110
+		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
+	Health:
+		HP: 11000
+	ChangesHealth@SelfHealing:
+		Step: 11
+	Armament:
+		Weapon: ZerglingClaw
+		FireDelay: 3
+	AttackFrontal:
+		FacingTolerance: 0
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zburrowup.wav
+		UndeploySounds: zburrowdown.wav
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+	# WithIdleOverlay@Shadow:
+	# 	Offset: 0,0,-250
+	Voiced:
+		VoiceSet: SCZerglingVoice
+	GrantConditionOnPrerequisite@upmelee:
+		Condition: upmelee
+		Prerequisites: upzergmelee
+	FirepowerMultiplier@upmelee:
+		Modifier: 133
+		RequiresCondition: upmelee
+	GrantConditionOnPrerequisite@adrenal:
+		Condition: upattack
+		Prerequisites: uplingattack
+	ReloadDelayMultiplier@adrenal:
+		Modifier: 50
+		RequiresCondition: upattack
+	GrantConditionOnPrerequisite@metab:
+		Condition: upspeed
+		Prerequisites: uplingspeed
+	SpeedMultiplier@metab:
+		Modifier: 133
+		RequiresCondition: upspeed
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+SCTALON:
+	Inherits@zerg: ^BasicZerg
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@bot: ^BotAutoDeploySwitchMode
+	Tooltip:
+		Name: Talon
 	Valued:
 		Cost: 150
 	Power:
