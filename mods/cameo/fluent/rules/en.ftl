@@ -1914,6 +1914,24 @@ upgrade-latin_up_hotfire =
 upgrade-uplatin_cashrecover =
    .description = Recycles lost vehicles for a cashback of 10%.
 
+upgrade-infweapon =
+   .description = Increases firepower of all Terran infantry by 25%
+
+upgrade-infarmor =
+   .description = Increases armor of all Terran infantry by 20%
+
+upgrade-mechweapon =
+   .description = Increases firepower of all Terran vehicles by 25%
+
+upgrade-mecharmor =
+   .description = Increases armor of all Terran vehicles by 20%
+
+upgrade-shipweapon =
+   .description = Increases firepower of all Terran aircraft by 25%
+
+upgrade-shiparmor =
+   .description = Increases armor of all Terran aircraft by 20%
+
 template-mcv =
    .description = Deploys into another Construction Yard.
       Unarmed

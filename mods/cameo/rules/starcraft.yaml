@@ -111,6 +111,30 @@ Player:
 	# 	Offset: 0,0,-280
 
 ^SCWorker:
+	Valued:
+		Cost: 500
+	Power:
+		Amount: -25
+	Mobile:
+		Locomotor: swimsuit
+		TurnSpeed: 100
+		Speed: 100
+	Hovers:
+	Health:
+		HP: 45000
+	Repairable:
+		HpPerStep: 2250
+	ChangesHealth@SelfHealing:
+		Step: 18
+	Armor:
+		Type: Light
+	StoresResources:
+		Capacity: 5
+	Buildable:
+		BuildPaletteOrder: 10
+		BuildDuration: 250
+		BuildDurationModifier: 100
+		Queue: Defence, RADefence
 	Harvester:
 		BaleLoadDelay: 5
 		BaleUnloadDelay: 1
@@ -118,6 +142,16 @@ Player:
 		FullyLoadedSpeed: 100
 	StoresResources:
 		Capacity: 5
+	Captures:
+		CaptureTypes: building, tech
+		PlayerExperience: 500
+		CaptureDelay: 375
+		ConsumedByCapture: False
+		EnterCursor: ability
+		EnterBlockedCursor: move-blocked
+		Voice: Move
+	Capturable:
+		Types: thiefproof
 	WithHarvestAnimation:
 	WithDockingAnimation:
 
@@ -400,10 +434,10 @@ SCSUPPLYDEPOT:
 	Inherits@shape: ^2x2Shape
 	Inherits@power: ^PowerPlant
 	Inherits@storage: ^StoresResources
-	Valued:
-		Cost: 400
 	Tooltip:
 		Name: Supply Depot
+	Valued:
+		Cost: 400
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		Prerequisites: ~sccommandcenter
@@ -813,7 +847,7 @@ SCSENTINEL:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
-		Prerequisites: ~scarmory
+		Prerequisites: ~upsentinel
 		Description: template-anti-infantry-defense.description
 	Valued:
 		Cost: 800
@@ -855,6 +889,8 @@ SCSENTINEL:
 		Range: 8181
 	DetectCloaked:
 		Range: 4090
+	RenderSprites:
+		PlayerPalette: player_rgba
 	ProvidesPrerequisite@buildingname:
 
 SCSENTINELM:
@@ -2261,7 +2297,7 @@ schive:
 		Type: sclair
 	RenderSprites:
 		Image: schive
-		
+
 sc_zerg_larva:
 	Inherits: ^Soldier
 	Inherits@supply: ^ProducesUnits
@@ -3215,32 +3251,9 @@ SCSCV:
 	#	ValidStances: Enemy, Neutral
 	Tooltip:
 		Name: SCV
-	Valued:
-		Cost: 500
-	Power:
-		Amount: -25
 	Buildable:
-		BuildPaletteOrder: 10
 		Prerequisites: ~screfinery
-		BuildDuration: 250
-		BuildDurationModifier: 100
-		Queue: Defence, RADefence
 		Description: Collects resources.\nCan repair mechanical units and buildings.
-	Mobile:
-		Locomotor: swimsuit
-		TurnSpeed: 100
-		Speed: 100
-	Hovers:
-	Health:
-		HP: 45000
-	Repairable:
-		HpPerStep: 2250
-	ChangesHealth@SelfHealing:
-		Step: 18
-	Armor:
-		Type: Light
-	StoresResources:
-		Capacity: 5
 	Armament@repair:
 		Name: repair
 		Weapon: SCVRepair
@@ -3250,14 +3263,6 @@ SCSCV:
 	Armament:
 		Weapon: SCVAttack
 		ForceTargetRelationships: Enemy, Neutral
-	Captures:
-		CaptureTypes: building, tech
-		PlayerExperience: 500
-		CaptureDelay: 375
-		ConsumedByCapture: False
-		EnterCursor: ability
-		EnterBlockedCursor: move-blocked
-		Voice: Move
 	AttackFrontal:
 		FacingTolerance: 64
 		Armaments: primary,repair
@@ -3273,15 +3278,12 @@ SCSCV:
 	DeathSounds:
 	Targetable@aihack:
 		TargetTypes: SCV
-	Inherits@EXT: ^ExternalConditions
 	WithHarvesterSpriteBody:
 		ImageByFullness: scscv, scscvfull
 	-WithFacingSpriteBody:
 	WithShadow:
 		Offset: 64, 128, 0
 		ZOffset: -512
-	Capturable:
-		Types: thiefproof
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -3297,12 +3299,12 @@ SCMARINE:
 	Inherits@range: ^UraniumShellsUpgrade
 	Inherits@armor: ^TerranInfantryWeaponUpgrades
 	Inherits@weapon: ^TerranInfantryArmorUpgrades
+	Tooltip:
+		Name: Marine
 	Valued:
 		Cost: 200
 	Power:
 		Amount: -10
-	Tooltip:
-		Name: Marine
 	Buildable:
 		Prerequisites: ~scbarracks
 		BuildPaletteOrder: 10
@@ -3347,12 +3349,12 @@ SCMADCAP:
 	Inherits@range: ^UraniumShellsUpgrade
 	Inherits@armor: ^TerranInfantryWeaponUpgrades
 	Inherits@weapon: ^TerranInfantryArmorUpgrades
+	Tooltip:
+		Name: Madcap
 	Valued:
 		Cost: 300
 	Power:
 		Amount: -15
-	Tooltip:
-		Name: Madcap
 	Buildable:
 		Prerequisites: ~scbarracks, ~upmadcap
 		BuildPaletteOrder: 10
@@ -3431,12 +3433,12 @@ SCFIREBAT:
 	Inherits@stim: ^Stimpackable
 	Inherits@armor: ^TerranInfantryWeaponUpgrades
 	Inherits@weapon: ^TerranInfantryArmorUpgrades
+	Tooltip:
+		Name: Firebat
 	Valued:
 		Cost: 500
 	Power:
 		Amount: -25
-	Tooltip:
-		Name: Firebat
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~scacademy, ~!upharakan
@@ -3595,83 +3597,6 @@ scmarauder:
 		PlayerPalette: player_rgba
 	ActorStatValues:
 		Upgrades: upinfweapon, upinfarmor
-
-sctyr:
-	Inherits: ^SCTINFANTRY
-	Inherits@speedup: ^SCUnitProductionSpeedBoost
-	Inherits@Template: ^FireSupportTemplate
-	Inherits@exp: ^GainsExperienceTD
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@announce: ^AnnounceOnBuild
-	Inherits@armor: ^TerranVehiclesWeaponUpgrades
-	Inherits@weapon: ^TerranVehicleArmorUpgrades
-	Tooltip:
-		Name: Warhound
-	Valued:
-		Cost: 2500
-	Power:
-		Amount: -150
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~scacademy
-		Queue: Infantry, RAInfantry
-		Description: Colossal Terran Mech.\n Strong vs Everything, Buildings\n Weak vs Air\n Uncrushable
-	Mobile:
-		Speed: 45
-		TurnSpeed: 18
-		Locomotor: tracked
-	Health:
-		HP: 90000
-	Armor:
-		Type: Heavy
-	ChangesHealth@SelfHealing:
-		Step: 90
-	Armament@T1:
-		Weapon: SCTyr
-		LocalOffset: 800,600,300
-		FireDelay: 3
-	Armament@T2:
-		Weapon: SCTyr
-		LocalOffset: 800,-600,300
-		FireDelay: 3
-	Armament@TA1:
-		Sequence: altshoot
-		Weapon: SCTyrA
-		LocalOffset: 0,300,800
-		FireDelay: 3
-	Armament@TA2:
-		Sequence: altshoot
-		Weapon: SCTyrA
-		LocalOffset: 0,-300,800
-		FireDelay: 3
-	Armament@TA3:
-		Sequence: altshoot
-		Weapon: SCTyrA
-		LocalOffset: 0,150,800
-		FireDelay: 3
-	Armament@TA4:
-		Sequence: altshoot
-		Weapon: SCTyrA
-		LocalOffset: 0,-150,800
-		FireDelay: 3
-	WithInfantryBody:
-	WithMuzzleOverlay:
-	Passenger:
-		Weight: 4
-		CustomPipType: blue
-	Voiced:
-		VoiceSet: SCTyrVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
-	RenderSprites:
-		Image: sctyr
-	Selectable:
-		DecorationBounds: 1280, 1280
-	RenderSprites:
-		PlayerPalette: player_rgba
-	ActorStatValues:
-		Upgrades: upmechweapon, upmecharmor
 
 SCGHOST:
 	Inherits: ^SCTINFANTRY
@@ -3852,12 +3777,14 @@ SCSILVERTONGUE:
 
 SCMEDIC:
 	Inherits: ^SCTINFANTRY
-	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@Template: ^MedicTemplate
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@pip: ^WithSpecialCargoPip
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@armor: ^TerranInfantryWeaponUpgrades
 	Inherits@weapon: ^TerranInfantryArmorUpgrades
+	Inherits@Heal: ^PrioritizeHeal
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 40
@@ -3877,33 +3804,41 @@ SCMEDIC:
 		Step: 60
 	Passenger:
 		CustomPipType: yellow
-	Armament:
+	-Armament@Dummy:
+	Armament@Flare:
+		Weapon: MedicFlare
+		LocalOffset: 128,0,256
+		AmmoUsage: 6
+		PauseOnCondition: ammo < 6
+	Armament@Heal:
 		Weapon: MedicHeal
 		TargetRelationships: Ally
 		ForceTargetRelationships: None
 		LocalOffset: 128,0,256
-	Armament@GARRISONED:
+		PauseOnCondition: !ammo
+	Armament@FlareGARRISONED:
+		Name: garrisoned
+		Weapon: MedicFlare
+		AmmoUsage: 6
+		PauseOnCondition: ammo < 6
+	Armament@HealGARRISONED:
 		Name: garrisoned
 		Weapon: MedicHeal
 		TargetRelationships: Ally
 		ForceTargetRelationships: None
-	Armament@MedicRestore:
-		Weapon: MedicRestore
-		TargetRelationships: Ally
-		ForceTargetRelationships: None
-		LocalOffset: 128,0,256
-	Armament@MedicRestoreGARRISONED:
-		Name: garrisoned
-		Weapon: MedicRestore
-		TargetRelationships: Ally
-		ForceTargetRelationships: None
-	AutoTarget:
-		InitialStance: AttackAnything
-	AutoTargetPriority@DEFAULT:
-		ValidTargets: Infantry, plagued, ivanattached, lockdowned
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 12
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 30
+		Count: 1
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 6
 	Voiced:
 		VoiceSet: SCMedicVoice
-	KeepsDistance:
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
@@ -4030,7 +3965,6 @@ SCSIEGETANK:
 	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@AntiVeh: ^PrioritizeVehicle
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@Crushes: ^VehicleCrusher
 	Inherits@EMP: ^TurretEMP
@@ -4088,6 +4022,15 @@ SCSIEGETANK:
 	RevealsShroudMultiplier@deployed:
 		Modifier: 125
 		RequiresCondition: deployed
+	RevealsShroudMultiplier@upsiegemode:
+		Modifier: 125
+		RequiresCondition: deployed && upsiegemode
+	RangeMultiplier@upsiegemode:
+		Modifier: 120
+		RequiresCondition: deployed && upsiegemode
+	GrantConditionOnPrerequisite@upsiegemode:
+		Condition: upsiegemode
+		Prerequisites: upsiegemode
 	AttackTurreted:
 		Turrets: primary,deployed
 		Armaments: primary,deployed
@@ -4145,7 +4088,7 @@ SCSIEGETANK:
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upmechweapon, upmecharmor
+		Upgrades: upmechweapon, upmecharmor, upsiegemode
 
 SCMATADOR:
 	Inherits: ^Tank
@@ -4409,6 +4352,97 @@ SCGOLIATH2:
 	ActorStatValues:
 		Upgrades: upmechweapon, upmecharmor
 
+scwarhound:
+	Inherits: ^Vehicle
+	Inherits@SC: ^SCTVEHICLE
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@Template: ^LineBreakerTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EMP: ^FrontalEMP
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@armor: ^TerranVehiclesWeaponUpgrades
+	Inherits@weapon: ^TerranVehicleArmorUpgrades
+	Tooltip:
+		Name: Warhound
+	Valued:
+		Cost: 4500
+	Power:
+		Amount: -225
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~upwarhound, ~scarmory
+		Description: Colossal Terran Mech.\n Strong vs Everything, Buildings\n Weak vs Air\n Uncrushable
+	Mobile:
+		Speed: 45
+		TurnSpeed: 18
+		Locomotor: tracked
+	Health:
+		HP: 300000
+	Repairable:
+		HpPerStep: 15000
+	ChangesHealth@SelfHealing:
+		Step: 120
+	Armor:
+		Type: Heavy
+	Armament@Cannon:
+		Name: primary
+		Weapon: SCTyr
+		LocalOffset: 800,650,350, 800,-650,350
+		MuzzleSequence: muzzle
+		AmmoUsage: 2
+		PauseOnCondition: ammo < 2
+	Armament@Rockets:
+		Name: secondary
+		Weapon: SCTyrAA
+		LocalOffset: 200,300,900, 250,150,950, 250,-150,950, 200,-300,900
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
+	AmmoPool:
+		Ammo: 4
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 2
+		Count: 1
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 4
+	WithMuzzleOverlay:
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	WithFacingSpriteBody:
+		Sequence: stand
+	WithMoveAnimation:
+		MoveSequence: run
+		ValidMovementTypes: Horizontal, Turn
+	WithAttackAnimation@Cannon:
+		Sequence: shoot
+		Armament: primary
+		Delay: 3
+	WithAttackAnimation@Rockets:
+		Sequence: altshoot
+		Armament: secondary
+		Delay: 3
+	AttackFrontal:
+		FacingTolerance: 20
+	# AutoTarget:
+	# 	InitialStanceAI: Defend
+	Passenger:
+		Weight: 4
+		CustomPipType: blue
+	Voiced:
+		VoiceSet: SCTyrVoice
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: infantry ##########
+	Selectable:
+		DecorationBounds: 1600, 1600
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upmechweapon, upmecharmor
+
 SCWRAITH:
 	Inherits: ^Helicopter
 	Inherits@Template: ^HelicopterTemplate
@@ -4542,7 +4576,7 @@ SCSUNDOG:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
 	EjectOnDeath:
-		PilotActor: scghost
+		PilotActor: scsilvertongue
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 786, 786, 0, 0
@@ -4664,7 +4698,7 @@ SCWYVERN:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
 	EjectOnDeath:
-		PilotActor: scmarauder
+		PilotActor: scmadcap
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
@@ -4697,7 +4731,7 @@ SCDROPSHIP:
 		OverrideActor: scdropship
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scstarport, ~!upmedivac
+		Prerequisites: ~scstarport, ~!upsilvertongue
 		Queue: Aircraft, RAAircraft
 		Description: Fast transport for all ground units.\n Unarmed
 	Aircraft:
@@ -4750,6 +4784,7 @@ SCPYTHEAN:
 	Inherits: ^Helicopter
 	Inherits@Template: ^SpaceshipTemplate
 	Inherits@Template: ^EpicAirUnitTemplate
+	Inherits@exp: ^GainsExperienceTD
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@cargo: ^CargoAircraft
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
@@ -4757,13 +4792,12 @@ SCPYTHEAN:
 	Inherits@eject: ^AircraftEjectOnDeath
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@weapon: ^TerranShipArmorUpgrades
-	Inherits@bot: ^BotAutoDeployUnarmedAirTransport
 	Tooltip:
 		Name: Pythean
 	Valued:
-		Cost: 3600
+		Cost: 5000
 	Power:
-		Amount: -180
+		Amount: -250
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 		OverrideActor: scdropship
@@ -4783,7 +4817,7 @@ SCPYTHEAN:
 	Repairable:
 		HpPerStep: 50000
 	ChangesHealth@SelfHealing:
-		Step: 50
+		Step: 400
 	Cargo:
 		ExclusiveDeploy: true
 		DeployType: opentopped
@@ -4797,7 +4831,7 @@ SCPYTHEAN:
 	AttackOpenTopped:
 		Voice: Attack
 		Armaments: garrisoned
-		PortOffsets: 384,0,128, -384,0,128, 224,-341,128, -224,-341,128, 224,341,128, -224,341,128
+		PortOffsets: 384,0,128, 224,-341,128, 224,341,128, 0,-341,128, 0,341,128, -224,-341,128, -224,341,128, -384,0,128
 		PauseOnCondition: chronobeamed
 	Armament:
 		Weapon: RA220mmrapid
@@ -4806,7 +4840,7 @@ SCPYTHEAN:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
 	EjectOnDeath:
-		PilotActor: scghost
+		PilotActor: scharakan
 	-SpawnActorOnDeath:
 		Actor: SCPYTHEAN.Husk
 	Selectable:
@@ -4854,15 +4888,15 @@ SCMEDIVAC:
 	Tooltip:
 		Name: Medivac
 	Valued:
-		Cost: 3600
+		Cost: 5000
 	Power:
-		Amount: -180
+		Amount: -250
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 		OverrideActor: scdropship
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scstarport, ~upmedivac
+		Prerequisites: ~scstarport, ~upsilvertongue
 		Queue: Aircraft, RAAircraft
 		Description: Fast transport for all ground units.\n Unarmed
 	Aircraft:
@@ -4881,11 +4915,6 @@ SCMEDIVAC:
 		TargetRelationships: Ally
 		ForceTargetRelationships: None
 		LocalOffset: 600,-100,256
-	Armament@MedicRestore:
-		Weapon: MedicRestore
-		TargetRelationships: Ally
-		ForceTargetRelationships: None
-		LocalOffset: 0,0,0
 	AutoTarget:
 		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
@@ -4899,13 +4928,13 @@ SCMEDIVAC:
 		BeforeUnloadDelay: 0
 		AfterUnloadDelay: 0
 		LoadedCondition: loaded
-		InitialUnits: scmadcap, scmadcap, scmadcap, scmadcap, scharakan, scmarauder, scsilvertongue, scmedic
+		InitialUnits: scmarine, scmadcap, scfirebat, scharakan, scmarauder, scghost, scsilvertongue, scmedic
 	-SpawnActorOnDeath:
 	FireWarheadsOnDeath:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
 	EjectOnDeath:
-		PilotActor: scmarine
+		PilotActor: scmedic
 	Selectable:
 		Class: scdropship
 		DecorationBounds: 1280, 1280, 0, 0
@@ -4978,7 +5007,7 @@ SCBATTLECRUISER:
 		Prerequisites: upyamatocannon
 	RA2PortableChrono:
 		TeleportType: PortableChrono
-		ChargeDelay: 250
+		ChargeDelay: 1500
 		MaxTeleportDistance: -1
 		ChronoshiftSound: chrono2.aud
 		PauseOnCondition: disabled
@@ -5100,7 +5129,7 @@ SCPHOBOS:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
 	EjectOnDeath:
-		PilotActor: scspectre
+		PilotActor: scsilvertongue
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 2048, 2048
@@ -5268,11 +5297,11 @@ SCSCIENCEVESSEL:
 	WithDecoration@deployed:
 		Image: crate-effects
 		Sequence: armor
-		RequiresCondition: deployed
+		RequiresCondition: !deployed
 	WithDecoration@ndeployed:
 		Image: crate-effects
 		Sequence: nuke
-		RequiresCondition: !deployed
+		RequiresCondition: deployed
 	Turreted:
 	AttackTurreted:
 		PauseOnCondition: disabled
@@ -5483,27 +5512,27 @@ upharakan:
 upsilvertongue:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Spectre
+		Name: Unlock Spectre and Medivac
 	Buildable:
 		BuildPaletteOrder: 139
 		Queue: Promotions
-		Description: Unlocks the Spectre.
-		Prerequisites: ~sccommandcenter, upharakan, !silvertongue, rank1
+		Description: Unlocks the Spectre and Medivac.
+		Prerequisites: ~sccommandcenter, upharakan, !upsilvertongue, rank1
 	RenderSprites:
 		Image: scsilvertongue
 	ProvidesPrerequisite:
 
-upmedivac:
+uppythean:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Medivac
+		Name: Unlock Pythean
 	Buildable:
 		BuildPaletteOrder: 142
 		Queue: Promotions
-		Description: Unlocks the Medivac.
-		Prerequisites: ~sccommandcenter, silvertongue, !upmedivac, rank1
+		Description: Allows construction of the Pythean, a colossal transport.
+		Prerequisites: ~sccommandcenter, upsilvertongue, !uppythean, rank1
 	RenderSprites:
-		Image: scmedivac
+		Image: scpythean
 	ProvidesPrerequisite:
 
 ### Siege Tree
@@ -5521,28 +5550,15 @@ upscmarauder:
 		Image: scmarauder
 	ProvidesPrerequisite:
 
-upsentinel:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock Sentinel
-	Buildable:
-		BuildPaletteOrder: 137
-		Queue: Promotions
-		Description: Allows construction of the Sentinel.
-		Prerequisites: ~sccommandcenter, upscmarauder, !upsentinel, rank1
-	RenderSprites:
-		Image: scsentinel
-	ProvidesPrerequisite:
-
 upmatador:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
 		Name: Unlock Matador
 	Buildable:
-		BuildPaletteOrder: 140
+		BuildPaletteOrder: 137
 		Queue: Promotions
 		Description: Unlocks a Flamethrower Siege Tank.
-		Prerequisites: ~sccommandcenter, upsentinel, !upmatador, rank1
+		Prerequisites: ~sccommandcenter, upscmarauder, !upmatador, rank1
 	RenderSprites:
 		Image: scmatador
 	ProvidesPrerequisite:
@@ -5552,24 +5568,51 @@ upgoliathmk2:
 	Tooltip:
 		Name: Unlock Goliath Mk2
 	Buildable:
-		BuildPaletteOrder: 143
+		BuildPaletteOrder: 140
 		Queue: Promotions
 		Description: Unlocks the Goliath Mk2.
 		Prerequisites: ~sccommandcenter, upmatador, !upgoliathmk2, rank1
 	RenderSprites:
 		Image: scgoliath2
 	ProvidesPrerequisite:
+
+upwarhound:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Warhound
+	Buildable:
+		BuildPaletteOrder: 143
+		Queue: Promotions
+		Description: Unlocks the Warhound.
+		Prerequisites: ~sccommandcenter, upgoliathmk2, !upwarhound, rank1
+	RenderSprites:
+		Image: scwarhound
+	ProvidesPrerequisite:
+
 ### Ship Tree
+
+upsentinel:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Sentinel
+	Buildable:
+		BuildPaletteOrder: 135
+		Queue: Promotions
+		Description: Allows construction of the Sentinel.
+		Prerequisites: ~sccommandcenter, !upsentinel, rank1
+	RenderSprites:
+		Image: scsentinel
+	ProvidesPrerequisite:
 
 upsundog:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
 		Name: Unlock Sundog
 	Buildable:
-		BuildPaletteOrder: 135
+		BuildPaletteOrder: 138
 		Queue: Promotions
 		Description: Allows training of the Sundog.
-		Prerequisites: ~sccommandcenter, !upsundog, rank1
+		Prerequisites: ~sccommandcenter, upsentinel, !upsundog, rank1
 	RenderSprites:
 		Image: scsundog
 	ProvidesPrerequisite:
@@ -5579,7 +5622,7 @@ upwyvern:
 	Tooltip:
 		Name: Unlock Wyvern
 	Buildable:
-		BuildPaletteOrder: 138
+		BuildPaletteOrder: 141
 		Queue: Promotions
 		Description: Allows training of the Desolator. Infantry becomes immune to radiation.
 		Prerequisites: ~sccommandcenter, upsundog, !upwyvern, rank1
@@ -5592,25 +5635,12 @@ upphobos:
 	Tooltip:
 		Name: Unlock Phobos
 	Buildable:
-		BuildPaletteOrder: 141
+		BuildPaletteOrder: 144
 		Queue: Promotions
 		Description: Allows construction of the Phobos.
 		Prerequisites: ~sccommandcenter, upwyvern, !upphobos, rank1
 	RenderSprites:
 		Image: scphobos
-	ProvidesPrerequisite:
-
-uppythean:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock Pythean
-	Buildable:
-		BuildPaletteOrder: 144
-		Queue: Promotions
-		Description: Allows construction of the Pythean, a colossal transport.
-		Prerequisites: ~sccommandcenter, upphobos, !uppythean, rank1
-	RenderSprites:
-		Image: scpythean
 	ProvidesPrerequisite:
 
 ####################################################################################################
@@ -6698,9 +6728,7 @@ SCZERATUL:
 
 ^BasicZerg:
 	Inherits: ^DefaultSoldier
-	Inherits@zergai: ^ZergAIProductionBoost
-	Inherits@botmicro: ^AIDifficulties
-	Inherits@Infect: ^InfectionGamemode
+	Inherits@botmicro: ^BotMicromanageable
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 		CrushedSequence: die
@@ -6722,12 +6750,15 @@ SCZERATUL:
 	Inherits: ^BasicZerg
 	Targetable@dog:
 		TargetTypes: DogImmune
+	Mobile:
+		Locomotor: wheeled
 
 ^VeryLargeZerg:
 	Inherits: ^LargeZerg
 	Inherits@2: ^IronCurtainable
 	Inherits@cloak: ^AcceptsCloakCrate
 	Inherits@chrono: ^Chronoshiftable
+	Inherits@Crushes: ^VehicleCrusher
 	-ExternalCondition@REAPERTRAP:
 	-Cloneable:
 	-Captures@DRIVER_KILL:
@@ -6767,30 +6798,11 @@ SCDRONE:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@SHADOWS: ^Shadows
-	Valued:
-		Cost: 150
 	Tooltip:
 		Name: Drone
-		GenericName: Harvester
 	Buildable:
-		BuildPaletteOrder: 10
 		Prerequisites: ~scextractor
-		BuildDuration: 240
-		Queue: Infantry, RAInfantry
 		Description: Collects resources.
-	Mobile:
-		Locomotor: swimsuit
-		TurnSpeed: 100
-		Speed: 100
-	Hovers:
-	Health:
-		HP: 45000
-	Repairable:
-		HpPerStep: 2250
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 6c0
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 	AttackFrontal:
@@ -6825,54 +6837,116 @@ SCDRONE:
 		PauseOnCondition: cloak-force-disabled || base-reveal
 	Armament:
 		Weapon: DroneAttack
-	Power:
-		Amount: -10
 	Voiced:
 		VoiceSet: SCDroneVoice
-	Inherits@EXT: ^ExternalConditions ##########
+	WithHarvesterSpriteBody:
+		ImageByFullness: scdrone, scdronefull
+	-WithFacingSpriteBody:
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
-	Capturable:
-		Types: thiefproof
-	Selectable:
-		Class: scdrone
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+SCOVERLORD:
+	Inherits: ^AirZerg
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@cargo: ^CargoAircraft
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@storage: ^StoresResources
+	Inherits@bot: ^BotAutoDeployUnarmedAirTransport
+	Inherits@eject: ^AircraftEjectOnDeath
+	Tooltip:
+		Name: Overlord
+	Valued:
+		Cost: 500
+	ProvidesPrerequisite@buildingname:
+	Buildable:
+		BuildPaletteOrder: 0
+		Prerequisites: ~schatchery
+		Queue: Infantry, RAInfantry
+		Description: Provides supply and stores resources\nCan transport 8 units
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 28
+		Speed: 30
+		AltitudeVelocity: 1c512
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Cargo:
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 8
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+	Health:
+		HP: 25000
+	ChangesHealth@SelfHealing:
+		Step: 10
+	Power:
+		Amount: 200
 	StoresResources:
-		Capacity: 5
+		Capacity: 1000
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1024
+		Priority: 5
+		PriorityModifiers: Ctrl, Alt
+		Class: scoverlord
+	Voiced:
+		VoiceSet: SCOverlordVoice
+	Wanders:
+		WanderMoveRadius: 2
+		MinMoveDelay: 10
+		MaxMoveDelay: 40
+		RequiresCondition: botmicro
+	WithMoveAnimation:
+	-AttackAircraft:
+	-AutoTarget:
+	-RenderRangeCircle:
+	ProductionTimeMultiplier@lowpower:
+		Multiplier: 5
+		Prerequisites: lowpower
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+		FullSequence: pip-yellow
 	RenderSprites:
 		PlayerPalette: player_rgba
 
 SCZERGLING:
-	Inherits@EXPERIENCE: ^GainsExperienceMelee
+	Inherits@zerg: ^BasicZerg
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
-	Inherits@zerg: ^BasicZerg
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@bot: ^BotAutoDeploySwitchMode
-	Valued:
-		Cost: 125
 	Tooltip:
 		Name: Zergling
+	Valued:
+		Cost: 150
+	Power:
+		Amount: -5
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~scspawningpool
 		Queue: Infantry, RAInfantry
 		Description: Fast Zerg basic assault strain.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
-		Speed: 108
+		Speed: 110
 		RequireForceMoveCondition: !undeployed
 		ImmovableCondition: !undeployed
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
-		HP: 6500
-	Armor:
-		Type: None
-	RevealsShroud:
-		Range: 4c0
-	AutoTarget:
-		ScanRadius: 6
-		InitialStance: AttackAnything
+		HP: 11000
+	ChangesHealth@SelfHealing:
+		Step: 11
 	Armament:
 		Weapon: ZerglingClaw
 		FireDelay: 3
@@ -6911,17 +6985,10 @@ SCZERGLING:
 		RequiresCondition: deployed
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled || base-reveal
-	Power:
-		Amount: -6
 	# WithIdleOverlay@Shadow:
 	# 	Offset: 0,0,-250
-	ProvidesPrerequisite@barracks:
-		Prerequisite: barracks
 	Voiced:
 		VoiceSet: SCZerglingVoice
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	GrantConditionOnPrerequisite@upmelee:
 		Condition: upmelee
 		Prerequisites: upzergmelee
@@ -6943,91 +7010,22 @@ SCZERGLING:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
-SCOVERLORD:
-	Inherits: ^AirZerg
-	Inherits@announce: ^AnnounceOnBuild
-	Inherits@detect: ^GenericAirDetector
-	Inherits@bot: ^BotMicromanageable
-	Valued:
-		Cost: 500
-	Tooltip:
-		Name: Overlord
-	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite@anypower:
-		Prerequisite: anypower
-	Buildable:
-		BuildPaletteOrder: 0
-		BuildDurationModifier: 100
-		BuildDuration: 300
-		Prerequisites: ~hatchery
-		Queue: Infantry, RAInfantry
-		Description: Provides supply and stores resources\nCan transport 8 units
-	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 28
-		Speed: 30
-		AltitudeVelocity: 1c512
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
-	Cargo:
-		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 8
-		AfterLoadDelay: 0
-		BeforeUnloadDelay: 0
-		AfterUnloadDelay: 0
-	Health:
-		HP: 24000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
-	DetectCloaked:
-		Range: 6c0
-	RenderDetectionCircle:
-	SelectionDecorations:
-	Selectable:
-		DecorationBounds: 1280, 1024
-		Priority: 5
-		PriorityModifiers: Ctrl, Alt
-		Class: scoverlord
-	Power:
-		Amount: 200
-	StoresResources:
-		Capacity: 1000
-	Voiced:
-		VoiceSet: SCOverlordVoice
-	Wanders:
-		WanderMoveRadius: 2
-		MinMoveDelay: 10
-		MaxMoveDelay: 40
-		RequiresCondition: botmicro
-	WithMoveAnimation:
-	-AttackAircraft:
-	ProductionTimeMultiplier@lowpower:
-		Multiplier: 5
-		Prerequisites: lowpower
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-	WithResourceStoragePipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 10
-		FullSequence: pip-yellow
-	RenderSprites:
-		PlayerPalette: player_rgba
-
 SCHYDRALISK:
+	Inherits@zerg: ^LargeZerg
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
+	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@shadow: ^SCSmallShadow
-	Inherits@zerg: ^LargeZerg
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@bot: ^BotAutoDeploySwitchMode
-	Valued:
-		Cost: 250
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
 	Tooltip:
 		Name: Hydralisk
+	Valued:
+		Cost: 600
+	Power:
+		Amount: -30
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: ~schydraliskden
@@ -7040,22 +7038,18 @@ SCHYDRALISK:
 	Passenger:
 		RequireForceMoveCondition: !undeployed
 	Health:
-		HP: 16000
+		HP: 80000
+	ChangesHealth@SelfHealing:
+		Step: 80
 	HitShape:
 		-Type:
-	RevealsShroud:
-		Range: 5c0
-	AutoTarget:
-		ScanRadius: 4
-	Armament:
+	Armament@PRIMARY:
 		Weapon: HydraSpit
 		LocalOffset: 0,0,200
-		FireDelay: 3
 		MuzzleSequence: muzzle
-	Armament@2:
-		Weapon: HydraSpitAA
-		LocalOffset: 0,0,200
-		FireDelay: 3
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: HydraSpit
 		MuzzleSequence: muzzle
 	AttackFrontal:
 		FacingTolerance: 0
@@ -7094,11 +7088,9 @@ SCHYDRALISK:
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled || base-reveal
 	-Crushable:
-	Selectable:
-		Bounds: 2048, 2048
-		DecorationBounds: 2448, 2448, 0, 0
-	Power:
-		Amount: -12
+	# Selectable:
+	# 	Bounds: 2048, 2048
+	# 	DecorationBounds: 2448, 2448, 0, 0
 	# WithIdleOverlay@Shadow:
 	# 	Offset: 0,0,-320
 	Passenger:
@@ -7173,6 +7165,7 @@ SCMUTALISK:
 	FirepowerMultiplier@upattack:
 		Modifier: 133
 		RequiresCondition: upattack
+
 SCDEVOURER:
 	Inherits: ^AirZerg
 	Inherits@Infect: ^InfectionGamemode
@@ -7275,6 +7268,73 @@ SCSCOURGE:
 		Weapon: ScourgeExplosion
 	GrantConditionOnAttack:
 		Condition: triggered
+	WithDeathAnimation:
+		UseDeathTypeSuffix: False
+	KillsSelf:
+		RequiresCondition: triggered
+	AttackAircraft:
+		FacingTolerance: 80
+	Power:
+		Amount: -5
+	Voiced:
+		VoiceSet: SCScourgeVoice
+	FireWarheadsOnDeath:
+		Weapon: RA2Terrorist3
+		EmptyWeapon: RA2Terrorist3
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+SCSCOURGEDRONE:
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^BomberTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	SelectionDecorations:
+	Selectable:
+		Bounds: 1024, 1024
+		DecorationBounds: 1448, 1448, 0, 0
+	Valued:
+		Cost: 350
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Tooltip:
+		Name: Scourge Drone
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~scspire
+		Queue: Infantry, RAInfantry
+		Description: Aerial suicide bomber.\n Strong vs Aircraft
+	Aircraft:
+		AltitudeVelocity: 120
+		InitialFacing: 768
+		TurnSpeed: 12
+		Speed: 200
+		VTOL: false
+		Repulsable: false
+		CruiseAltitude: 1c256
+		TakeUpCellWhenLand: false
+	Health:
+		HP: 3000
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 4c0
+		Type: GroundPosition
+	AttackAircraft:
+		FacingTolerance: 512
+	Armament@PRIMARY:
+		Weapon: ScourgeExplosion
+	CarrierSlave:
+		LandingDistance: 8000
+	GrantConditionOnAttack:
+		Condition: triggered
+	HasParent:
+	RejectsOrders:
+	AttackAircraft:
+	-SpawnActorOnDeath:
+	FireWarheadsOnDeath:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
 	KillsSelf:
@@ -7405,6 +7465,39 @@ SCULTRALISK:
 	Passenger:
 		Weight: 4
 		CustomPipType: blue
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zluburrw.aud
+		UndeploySounds: zluburrw.aud
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
 	Voiced:
 		VoiceSet: SCUltraliskVoice
 	Inherits@EXT: ^ExternalConditions ##########
@@ -7906,6 +7999,106 @@ SCZMCV:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
+SCBEHEMOTH:
+	Inherits: ^AirZerg
+	Inherits: ^Helicopter
+	Inherits@Template: ^SpaceshipTemplate
+	Inherits@Template: ^EpicAirUnitTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@cargo: ^CargoAircraft
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@eject: ^AircraftEjectOnDeath
+	Inherits@announce: ^AnnounceOnBuild
+	Tooltip:
+		Name: Behemoth
+	Valued:
+		Cost: 5000
+	Power:
+		Amount: -250
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~sclair
+		Queue: Infantry, RAInfantry
+		BuildLimit: 1
+		Description: A slow moving garrison transport for all ground units.\nExtremely Durable\n Strong vs Everything
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 30
+		InitialFacing: 896
+		AltitudeVelocity: 0c100
+	Health:
+		HP: 1000000
+	Repairable:
+		HpPerStep: 50000
+	ChangesHealth@SelfHealing:
+		Step: 400
+	Cargo:
+		ExclusiveDeploy: true
+		DeployType: opentopped
+		Types: Infantry, Hacker, Fremen, Vehicle
+		MaxWeight: 8
+		AfterLoadDelay: 0
+		BeforeUnloadDelay: 0
+		AfterUnloadDelay: 0
+		LoadedCondition: loaded
+		InitialUnits: schydralisk, schydralisk, schydralisk, schydralisk
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, 224,341,128, 0,-341,128, 0,341,128, -224,-341,128, -224,341,128, -384,0,128
+		PauseOnCondition: chronobeamed
+	Armament:
+		Weapon: GuardianShoot
+		LocalOffset: 400,0,0
+	CarrierMaster:
+		Actors: scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone
+		RearmTicks: 125
+		RespawnTicks: 250
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	FireWarheadsOnDeath:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	EjectOnDeath:
+		PilotActor: schydralisk
+	-SpawnActorOnDeath:
+		Actor: SCBEHEMOTH.Husk
+	Selectable:
+		Class: scdropship
+		DecorationBounds: 1280, 1280, 0, 0
+	Voiced:
+		VoiceSet: SCOverlordVoice
+	DeathSounds:
+	RenderSprites:
+		Image: scbehemoth
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upshiparmor
+	WithCargoSounds:
+		EnterSounds: tdrtra00.wav
+		ExitSounds: tdrtra00.wav
+
+SCBEHEMOTH.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Behemoth
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 30
+	RenderSprites:
+		Image: scbehemoth
+		PlayerPalette: player_rgba
+	FallsToEarth:
+		Explosion: KirovExplode
 ####################################################################################################
 #		UPGRADES ZERG
 ####################################################################################################
@@ -8283,7 +8476,7 @@ upmarinerange:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases range of Marines.
+		Description: Increases range of Marines by 25%.
 		Prerequisites: ~scacademy, ~!upmarinerange
 	RenderSprites:
 		Image: upmarinerange
@@ -8298,7 +8491,7 @@ upsupplydepot1:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases energy of supply depots.
+		Description: Increases energy of supply depots by 100%.
 		Prerequisites: ~scengineeringbay, ~!upsupplydepot1
 	RenderSprites:
 		Image: scsupplydepot
@@ -8313,7 +8506,7 @@ upsupplydepot2:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases energy of supply depots.
+		Description: Increases energy of supply depots by 100%.
 		Prerequisites: ~scsciencefacility, ~upsupplydepot1, ~!upsupplydepot2
 	RenderSprites:
 		Image: scsupplydepot
@@ -8332,6 +8525,21 @@ upghostcloak:
 		Prerequisites: ~scsciencefacility, ~!upghostcloak
 	RenderSprites:
 		Image: sccloak
+	ProvidesPrerequisite:
+
+upsiegemode:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Advanced Siege Mode
+	Valued:
+		Cost: 3600
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases Siege Mode Range by 20%
+		Prerequisites: ~scsciencefacility, ~!upsiegemode
+	RenderSprites:
+		Image: scsiegemode
 	ProvidesPrerequisite:
 
 upyamatocannon:
@@ -8358,7 +8566,7 @@ upinfweapon:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases firepower of all Terran infantry.
+		Description: upgrade-infweapon.description
 		Prerequisites: ~scengineeringbay, ~!upinfweapon
 	RenderSprites:
 		Image: upinfweapon
@@ -8374,7 +8582,7 @@ upinfweapon2:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases firepower of all Terran infantry.
+		Description: upgrade-infweapon.description
 		Prerequisites: ~scengineeringbay, ~upinfweapon, ~!upinfweapon2
 	RenderSprites:
 		Image: upinfweapon
@@ -8390,7 +8598,7 @@ upinfweapon3:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases firepower of all Terran infantry.
+		Description: upgrade-infweapon.description
 		Prerequisites: ~scengineeringbay, ~scsciencefacility, ~upinfweapon2, ~!upinfweapon3
 	RenderSprites:
 		Image: upinfweapon
@@ -8406,7 +8614,7 @@ upinfarmor:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases durability of all Terran infantry.
+		Description: upgrade-infarmor.description
 		Prerequisites: ~scengineeringbay, ~!upinfarmor
 	RenderSprites:
 		Image: upinfarmor
@@ -8422,7 +8630,7 @@ upinfarmor2:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases durability of all Terran infantry.
+		Description: upgrade-infarmor.description
 		Prerequisites: ~scengineeringbay, ~upinfarmor, ~!upinfarmor2
 	RenderSprites:
 		Image: upinfarmor
@@ -8438,7 +8646,7 @@ upinfarmor3:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases durability of all Terran infantry.
+		Description: upgrade-infarmor.description
 		Prerequisites: ~scengineeringbay, ~scsciencefacility, ~upinfarmor2, ~!upinfarmor3
 	RenderSprites:
 		Image: upinfarmor
@@ -8454,7 +8662,7 @@ upmechweapon:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases firepower of all Terran vehicles.
+		Description: upgrade-mechweapon.description
 		Prerequisites: ~scarmory, ~!upmechweapon
 	RenderSprites:
 		Image: upmechweapon
@@ -8469,7 +8677,7 @@ upmechweapon2:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases firepower of all Terran vehicles.
+		Description: upgrade-mechweapon.description
 		Prerequisites: ~scarmory, ~upmechweapon, ~!upmechweapon2
 	RenderSprites:
 		Image: upmechweapon
@@ -8484,7 +8692,7 @@ upmechweapon3:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases firepower of all Terran vehicles.
+		Description: upgrade-mechweapon.description
 		Prerequisites: ~scarmory, ~scsciencefacility, ~upmechweapon2, ~!upmechweapon3
 	RenderSprites:
 		Image: upmechweapon
@@ -8499,7 +8707,7 @@ upmecharmor:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases durability of all Terran vehicles.
+		Description: upgrade-mecharmor.description
 		Prerequisites: ~scarmory, ~!upmecharmor
 	RenderSprites:
 		Image: upmecharmor
@@ -8514,7 +8722,7 @@ upmecharmor2:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases durability of all Terran vehicles.
+		Description: upgrade-mecharmor.description
 		Prerequisites: ~scarmory, ~upmecharmor, ~!upmecharmor2
 	RenderSprites:
 		Image: upmecharmor
@@ -8529,7 +8737,7 @@ upmecharmor3:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases durability of all Terran vehicles.
+		Description: upgrade-mecharmor.description
 		Prerequisites: ~scarmory, ~scsciencefacility, ~upmecharmor2, ~!upmecharmor3
 	RenderSprites:
 		Image: upmecharmor
@@ -8544,7 +8752,7 @@ upshipweapon:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases firepower of all Terran aircraft.
+		Description: upgrade-shipweapon.description
 		Prerequisites: ~scarmory, ~!upshipweapon
 	RenderSprites:
 		Image: upshipweapon
@@ -8559,7 +8767,7 @@ upshipweapon2:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases firepower of all Terran aircraft.
+		Description: upgrade-shipweapon.description
 		Prerequisites: ~scarmory, ~upshipweapon, ~!upshipweapon2
 	RenderSprites:
 		Image: upshipweapon
@@ -8574,7 +8782,7 @@ upshipweapon3:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases firepower of all Terran aircraft.
+		Description: upgrade-shipweapon.description
 		Prerequisites: ~scarmory, ~scsciencefacility, ~upshipweapon2, ~!upshipweapon3
 	RenderSprites:
 		Image: upshipweapon
@@ -8589,7 +8797,7 @@ upshiparmor:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases durability of all Terran aircraft.
+		Description: upgrade-shiparmor.description
 		Prerequisites: ~scarmory, ~!upshiparmor
 	RenderSprites:
 		Image: upshiparmor
@@ -8604,7 +8812,7 @@ upshiparmor2:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases durability of all Terran aircraft.
+		Description: upgrade-shiparmor.description
 		Prerequisites: ~scarmory, ~upshiparmor, ~!upshiparmor2
 	RenderSprites:
 		Image: upshiparmor
@@ -8619,7 +8827,7 @@ upshiparmor3:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Addons
-		Description: Increases durability of all Terran aircraft.
+		Description: upgrade-shiparmor.description
 		Prerequisites: ~scarmory, ~scsciencefacility, ~upshiparmor2, ~!upshiparmor3
 	RenderSprites:
 		Image: upshiparmor
