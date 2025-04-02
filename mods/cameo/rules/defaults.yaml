@@ -941,6 +941,9 @@
 	RangeMultiplier@tankbunker:
 		Modifier: 150
 
+^ArtilleryBuffs:
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnologyTeamUpgrade
+
 ^AircraftBuffs:
 	Inherits@GlobalBuffs: ^GlobalBuffs
 	DamageMultiplier@AircraftBuffs:
@@ -1297,7 +1300,7 @@
 	TooltipExtras@MainBattleTank:
 		Description: Main Battle Tank
 	Selectable:
-		Class: MainBattleTank
+		Class: Tank
 
 ^HighTechTankTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
@@ -1315,7 +1318,7 @@
 	TooltipExtras@HighTechTank:
 		Description: High-Tech Tank
 	Selectable:
-		Class: HighTechTank
+		Class: Tank
 
 ^LineBreakerTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceMelee
@@ -1362,7 +1365,7 @@
 ^ArtilleryTemplate:
 	Inherits@EXPERIENCE: ^GainsExperienceVehicle
 	Inherits@EXT: ^ExternalConditions
-	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnologyTeamUpgrade
+	Inherits@ArtilleryBuffs: ^ArtilleryBuffs
 	Inherits@VehicleBuffs: ^VehicleBuffs
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@AntiDef: ^PrioritizeDefence
@@ -1879,14 +1882,14 @@
 		TargetTypes: VehicleDisguise
 	SpawnActorOnDeath@QueenBroodling1:
 		Actor: SCBROODLING
-		Probability: 99
+		Probability: 100
 		OwnerType: Killer
-		DeathType: QueenChilds
+		DeathType: QueenBroodlingSpawn
 	SpawnActorOnDeath@QueenBroodling2:
 		Actor: SCBROODLING
-		Probability: 99
+		Probability: 100
 		OwnerType: Killer
-		DeathType: QueenChilds
+		DeathType: QueenBroodlingSpawn
 	ActorStatValues:
 		Stats: Armor, Sight, Speed
 
@@ -2170,6 +2173,16 @@
 		DetectionTypes: AirCloak
 	Cloak@TScloak:
 		DetectionTypes: AirCloak
+	SpawnActorOnDeath@QueenBroodling1:
+		Actor: SCBROODLING
+		Probability: 100
+		OwnerType: Killer
+		DeathType: QueenBroodlingSpawn
+	SpawnActorOnDeath@QueenBroodling2:
+		Actor: SCBROODLING
+		Probability: 100
+		OwnerType: Killer
+		DeathType: QueenBroodlingSpawn
 	Parachutable:
 		FallRate: 20
 		KilledOnImpassableTerrain: false
@@ -2590,8 +2603,8 @@
 ^AffectedByTiberium:
 	DamagedByTerrain:
 		Terrain: Tiberium, BlueTiberium
-		Damage: 200
-		DamageInterval: 16
+		Damage: 20
+		DamageInterval: 1
 		DamageTypes: TiberiumDeath
 		RequiresCondition: !hazmatsuits
 	GrantConditionOnTerrain@HAZMAT:
@@ -2655,14 +2668,14 @@
 		DeathType: QuestionMutate
 	SpawnActorOnDeath@QueenBroodling1:
 		Actor: SCBROODLING
-		Probability: 99
+		Probability: 100
 		OwnerType: Killer
-		DeathType: QueenChilds
+		DeathType: QueenBroodlingSpawn
 	SpawnActorOnDeath@QueenBroodling2:
 		Actor: SCBROODLING
-		Probability: 99
+		Probability: 100
 		OwnerType: Killer
-		DeathType: QueenChilds
+		DeathType: QueenBroodlingSpawn
 	SpawnActorOnDeath@Wolfestein:
 		Actor: wolfe3
 		Probability: 50
@@ -3578,7 +3591,7 @@
 		PortOffsets: 768,0,256, 448,-682,256, -448,-682,256, -768,0,256, -448,682,256, 448,682,256
 		RequiresCondition: !chronobeamed && !damaged
 	Targetable@garrisoned:
-		TargetTypes: Garrisoned, Defense, C4
+		TargetTypes: Garrisoned, Defense
 		RequiresCondition: loaded && !untargetable
 	InstantlyRepairable:
 		Types: civ
@@ -4433,9 +4446,15 @@
 ^Corrodible:
 	ExternalCondition@corroded:
 		Condition: corroded
-	ChangesHealth@corroded:
+	ChangesHealth@corroded1:
 		Delay: 10
 		PercentageStep: -1
+		StartIfBelow: 101
+		DamageCooldown: 0
+		RequiresCondition: corroded
+	ChangesHealth@corroded2:
+		Delay: 1
+		Step: -200
 		StartIfBelow: 101
 		DamageCooldown: 0
 		RequiresCondition: corroded
@@ -4465,13 +4484,13 @@
 		Condition: HealingField
 	ExternalCondition@Healed:
 		Condition: Healed
-	ChangesHealth@HealingField:
+	ChangesHealth@HealingField1:
 		Delay: 1
 		PercentageStep: 1
 		StartIfBelow: 100
 		DamageCooldown: 0
 		RequiresCondition: HealingField
-	ChangesHealth@HealingField:
+	ChangesHealth@HealingField2:
 		Delay: 1
 		Step: 2000
 		StartIfBelow: 100
