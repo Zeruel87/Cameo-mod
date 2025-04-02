@@ -4438,10 +4438,6 @@ scwarhound:
 	RejectsOrders@deployment:
 		Reject: AttackMove, AssaultMove, Attack, Move
 		RequiresCondition: hunker
-	# WithMakeAnimation:
-	# 	BodyNames: hunker
-	# 	Sequence: hunker
-	# 	Condition: hunker
 	WithIdleOverlay@warhoundsparks:
 		Image: warhoundsparks
 		Sequence: idle
@@ -7390,11 +7386,13 @@ SCSCOURGE:
 		Description: Aerial suicide bomber.\n Strong vs Aircraft
 	Aircraft:
 		InitialFacing: 896
-		TurnSpeed: 28
-		Speed: 170
+		AltitudeVelocity: 120
+		TurnSpeed: 40
+		Speed: 200
 		Repulsable: false
 		IdealSeparation: 128
 		RepulsionSpeed: 10
+		CruiseAltitude: 1250
 	Health:
 		HP: 25000
 	ChangesHealth@SelfHealing:
@@ -7417,71 +7415,21 @@ SCSCOURGE:
 		PlayerPalette: player_rgba
 
 SCSCOURGEDRONE:
-	Inherits: ^RANeutralPlane
-	Inherits@Template: ^BomberTemplate
-	Inherits@EXP: ^GainsExperienceTD
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: SCSCOURGE
 	SelectionDecorations:
-	Selectable:
-		Bounds: 1024, 1024
-		DecorationBounds: 1448, 1448, 0, 0
-	Valued:
-		Cost: 350
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
 	Tooltip:
 		Name: Scourge Drone
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: ~scspire
-		Queue: Infantry, RAInfantry
-		Description: Aerial suicide bomber.\n Strong vs Aircraft
+	Power:
+		Amount: 0
+	-Buildable:
 	Aircraft:
-		AltitudeVelocity: 120
-		InitialFacing: 768
-		TurnSpeed: 12
-		Speed: 200
 		VTOL: false
 		Repulsable: false
-		CruiseAltitude: 1c256
 		TakeUpCellWhenLand: false
-	Health:
-		HP: 3000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 4c0
-		Type: GroundPosition
-	AttackAircraft:
-		FacingTolerance: 512
-	Armament@PRIMARY:
-		Weapon: ScourgeExplosion
 	CarrierSlave:
 		LandingDistance: 8000
-	GrantConditionOnAttack:
-		Condition: triggered
 	HasParent:
 	RejectsOrders:
-	AttackAircraft:
-	-SpawnActorOnDeath:
-	FireWarheadsOnDeath:
-		Weapon: HeliExplode
-		EmptyWeapon: HeliExplode
-	WithDeathAnimation:
-		UseDeathTypeSuffix: False
-	KillsSelf:
-		RequiresCondition: triggered
-	AttackAircraft:
-		FacingTolerance: 80
-	Power:
-		Amount: -5
-	Voiced:
-		VoiceSet: SCScourgeVoice
-	FireWarheadsOnDeath:
-		Weapon: RA2Terrorist3
-		EmptyWeapon: RA2Terrorist3
-	RenderSprites:
-		PlayerPalette: player_rgba
 
 SCQUEEN:
 	Inherits: ^AirZerg
@@ -7502,7 +7450,7 @@ SCQUEEN:
 		Description: Defensive Air Unit\nCan breed Broodlings\nCan attack air and ground\nDetector
 	Aircraft:
 		InitialFacing: 896
-		TurnSpeed: 28
+		TurnSpeed: 20
 		Speed: 100
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
@@ -7550,6 +7498,55 @@ SCQUEEN:
 		DeployChance: 100
 		Position: BottomLeft
 		RequiresSelection: True
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+SCGUARDIAN:
+	Inherits: ^AirZerg
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Tooltip:
+		Name: Guardian
+	Valued:
+		Cost: 2200
+	Power:
+		Amount: -110
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~scgreaterspire
+		Queue: Infantry, RAInfantry
+		Description: Heavy Zerg bomber.\n Strong vs Vehicles, Buildings\n Weak vs Aircraft
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 10
+		Speed: 50
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 150000
+	ChangesHealth@SelfHealing:
+		Step: 60
+	Armament:
+		Weapon: GuardianShoot
+		LocalOffset: 400,0,0
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1024
+	Voiced:
+		VoiceSet: SCGuardianVoice
+	GrantConditionOnPrerequisite@upattack:
+		Condition: upattack
+		Prerequisites: upflyerattack
+	FirepowerMultiplier@upattack:
+		Modifier: 133
+		RequiresCondition: upattack
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -7745,64 +7742,13 @@ SCLURKER:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
-SCGUARDIAN:
-	Inherits: ^AirZerg
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@announce: ^AnnounceOnBuild
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Guardian
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 100
-		Prerequisites: ~scgreaterspire
-		Queue: Infantry, RAInfantry
-		Description: Heavy Zerg bomber.\n Strong vs Vehicles, Buildings\n Weak vs Aircraft
-	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 28
-		Speed: 40
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
-	Health:
-		HP: 36000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
-	Armament:
-		Weapon: GuardianShoot
-		LocalOffset: 400,0,0
-	AttackAircraft:
-		FacingTolerance: 80
-		AttackType: Hover
-	SelectionDecorations:
-	Selectable:
-		DecorationBounds: 1280, 1024
-	Power:
-		Amount: -60
-	Voiced:
-		VoiceSet: SCGuardianVoice
-	GrantConditionOnPrerequisite@upattack:
-		Condition: upattack
-		Prerequisites: upflyerattack
-	FirepowerMultiplier@upattack:
-		Modifier: 133
-		RequiresCondition: upattack
-	RenderSprites:
-		PlayerPalette: player_rgba
-
 SCINFESTEDTERRAN:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@zerg: ^LargeZerg
 	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 500
+		Cost: 400
 	Tooltip:
 		Name: Infested Terran
 	Buildable:
@@ -7813,7 +7759,9 @@ SCINFESTEDTERRAN:
 	Mobile:
 		Speed: 95
 	Health:
-		HP: 9000
+		HP: 60000
+	ChangesHealth@SelfHealing:
+		Step: 60
 	Armor:
 		Type: None
 	RevealsShroud:
