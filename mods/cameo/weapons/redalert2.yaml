@@ -1675,27 +1675,9 @@ SonicZapFriendly:
 		ValidTargets: SquidGrabbed
 
 RA2IFVRepair:
-	Inherits@1: ^RemovesIvanBombs
-	ReloadDelay: 30
-	Burst: 10
-	BurstDelays: 1
-	StartBurstReport: vifvrepa.wav
+	Inherits: ^RepairWeapon
 	Range: 5000
-	ValidTargets: Repair
-	TargetActorCenter: true
-	Projectile: LaserZap
-		Color: 8888FF
-	Warhead@1Dam: SpreadDamage
-		Spread: 250
-		Damage: -2000
-		DamageTypes: KillsDrone
-		ValidRelationships: Ally
-		ValidTargets: Repair
-		DebugOverlayColor: 00FF00
-	Warhead@Effect: FlashTargetsInRadius
-		Radius: 213
-		ValidRelationships: Ally
-		ValidTargets: Repair
+	ReloadDelay: 30
 
 RA2CoilBolt:
 	Inherits: ^TeslaWeapon
@@ -2995,8 +2977,6 @@ RA2FlakTrackAAGunE:
 RA2DoublePistols:
 	Inherits: ^SniperWeapon
 	Report: itanatta.wav, itanattb.wav
-	ValidTargets: Infantry
-	InvalidTargets: Structure, Wall, Husk
 	ReloadDelay: 12
 	Burst: 2
 	BurstDelays: 3
@@ -3010,6 +2990,8 @@ RA2DoublePistols:
 		ContrailEndColorUsePlayerColor: false
 	Warhead@SniperWeapon: SpreadDamage
 		Damage: 14000
+	Warhead@SniperWeaponExtraDamage: OpenToppedDamage
+		Damage: 14000
 	Warhead@SniperWeaponPercentage: HealthPercentageDamage
 		Damage: 7
 
@@ -3021,9 +3003,11 @@ RA2DoublePistolsE:
 RA2AWP:
 	Inherits: ^SniperWeapon
 	ReloadDelay: 55
-	Range: 10000
+	Range: 10038
 	Report: isniatta.wav
 	Warhead@SniperWeapon: SpreadDamage
+		Damage: 22000
+	Warhead@SniperWeaponExtraDamage: OpenToppedDamage
 		Damage: 22000
 	Warhead@SniperWeaponPercentage: HealthPercentageDamage
 		Damage: 11
@@ -3034,6 +3018,8 @@ RA2AWPE:
 	Projectile: Bullet
 		ContrailStartColor: FF0000FF
 	Warhead@SniperWeapon: SpreadDamage
+		Damage: 44000
+	Warhead@SniperWeaponExtraDamage: OpenToppedDamage
 		Damage: 44000
 	Warhead@SniperWeaponPercentage: HealthPercentageDamage
 		Damage: 22
@@ -3053,6 +3039,8 @@ RA2MP5:
 		ContrailLength: 7
 		ContrailEndColorUsePlayerColor: false
 	Warhead@SniperWeapon: SpreadDamage
+		Damage: 2000
+	Warhead@SniperWeaponExtraDamage: OpenToppedDamage
 		Damage: 2000
 	Warhead@SniperWeaponPercentage: HealthPercentageDamage
 		Damage: 1
@@ -3435,42 +3423,31 @@ RA2DemoBomb:
 
 RA2Terrorist:
 	Inherits: ^HeavyBomb
+	Inherits: ^ShrapnelWeapon
 	Inherits: ^RA2Grenade
 	-Report:
 	Warhead@HeavyBomb: SpreadDamage
 		Damage: 50000
 	Warhead@HeavyBombPercentage: HealthPercentageDamage
 		Damage: 25
-	Warhead@Grenade: SpreadDamage
-		Falloff: 100, 75, 50, 25, 0
+	Warhead@ShrapnelWeapon: SpreadDamage
 		Damage: 50000
-		Spread: 1000
-	Warhead@GrenadeFriendlyFire: SpreadDamage
-		Falloff: 100, 75, 50, 25, 0
-		Damage: 50000
-		Spread: 1000
-	Warhead@GrenadePercentage: HealthPercentageDamage
-		Falloff: 100, 75, 50, 25, 0
+	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
+		Damage: 25000
+	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
 		Damage: 25
-		Spread: 2500
+	Warhead@Grenade: SpreadDamage
+		Damage: 50000
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		Damage: 25000
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		Damage: 25
 	-Warhead@Effect1:
 	-Warhead@Effect2:
 	Warhead@Effect: CreateEffect
 		Explosions: ra2_terrorist_explosion
 		ExplosionPalette: ra2effect
 		ImpactSounds: gexpapoa.wav
-
-RA2Terrorist2:
-	Inherits: RA2Terrorist
-	Warhead@Grenade: SpreadDamage
-		ValidTargets: Ground
-		Falloff: 256, 128, 64, 32, 16, 8, 4, 2, 1, 0
-
-RA2Terrorist3:
-	Inherits: RA2Terrorist
-	Warhead@Grenade: SpreadDamage
-		ValidTargets: Air
-		Falloff: 256, 128, 64, 32, 16, 8, 4, 2, 1, 0
 
 2100Tanktrap:
 	Warhead@1Dam: SpreadDamage
@@ -3695,7 +3672,7 @@ IvanAttach:
 	TargetActorCenter: true
 	Report: icraatta.wav
 	ReloadDelay: 20
-	Range: 2500
+	Range: 2000
 	ValidTargets: ivanattachable
 	InvalidTargets: ivanattached, Aircraft
 	Warhead@1: AttachDelayedWeapon
@@ -3712,44 +3689,34 @@ IvanAttachAir:
 	Warhead@1: AttachDelayedWeapon
 		Weapon: IvanBombAir
 
-IFVAttach:
-	Inherits: IvanAttach
-	Range: 4c512
-
-SEALAttach:
-	Inherits: IvanAttach
-	ValidTargets: Ship, Submarine, Structure
-	Range: 1500
-	Warhead@1: AttachDelayedWeapon
-		Weapon: SealBomb
-		TriggerTime: 75
-
-TanyaAttach:
-	Inherits: SEALAttach
-	ValidTargets: Vehicle, Ship, Submarine
-	InvalidTargets: ivanattached
-	Range: 1500
-	Warhead@1: AttachDelayedWeapon
-		Weapon: TanyaBomb
-		TriggerTime: 50
-
 IvanBomb:
-	Warhead@1Dam: SpreadDamage
-		ValidTargets: Ground, Water
-		Spread: 64
-		Damage: 80000
-		DamageTypes: Prone80Percent, ExplosionDeath
-	Warhead@2Splash: SpreadDamage
-		ValidTargets: Ground, Water
-		Spread: 1c512
-		Damage: 10000
-		DamageTypes: Prone80Percent, ExplosionDeath
-	Warhead@3Eff: CreateEffect
+	Inherits: ^Grenade
+	Inherits: ^ShrapnelWeapon
+	Inherits: ^HeavyBomb
+	Warhead@Grenade: SpreadDamage
+		Damage: 30000
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		Damage: 15000
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		Damage: 15
+	Warhead@ShrapnelWeapon: SpreadDamage
+		Damage: 30000
+	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
+		Damage: 15000
+	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+		Damage: 15
+	Warhead@HeavyBomb: SpreadDamage
+		Damage: 30000
+	Warhead@HeavyBombPercentage: HealthPercentageDamage
+		Damage: 15
+	-Warhead@Effect1:
+	-Warhead@Effect2:
+	Warhead@Effect: CreateEffect
 		Explosions: ivan_explosion
 		ExplosionPalette: ra2effect
 		ImpactSounds: gexpcraa.wav
 		ValidTargets: Ground, Air, Ship, Trees
-	Warhead@4EffWater: CreateEffect
+	Warhead@EffectWater: CreateEffect
 		Explosions: large_splash
 		ImpactSounds: gexpcraa.wav
 		ValidTargets: Water, Underwater
@@ -3757,28 +3724,79 @@ IvanBomb:
 
 IvanBombAir:
 	Inherits: IvanBomb
-	-Warhead@2Splash:
-	Warhead@1Dam: SpreadDamage
+	Warhead@HeavyBomb: SpreadDamage
 		ValidTargets: Aircraft
+	Warhead@HeavyBombPercentage: HealthPercentageDamage
+		ValidTargets: Aircraft
+
+IFVAttach:
+	Inherits: IvanAttach
+	Range: 4c512
+
+TanyaAttach:
+	Inherits: IvanAttach
+	ValidTargets: Vehicle, Ship, Submarine
+	InvalidTargets: ivanattached
+	Warhead@1: AttachDelayedWeapon
+		Weapon: TanyaBomb
+		TriggerTime: 50
 
 TanyaBomb:
 	Inherits: IvanBomb
-	-Warhead@2Splash:
-	Warhead@1Dam: SpreadDamage
+	Warhead@Grenade: SpreadDamage
 		ValidTargets: Ground, Air, Water, Underwater
-		Falloff: 100, 100
-		Damage: 500000
-		Spread: 500
-	Warhead@3Eff: CreateEffect
+		Damage: 200000
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		ValidTargets: Ground, Air, Water, Underwater
+		Damage: 100000
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		ValidTargets: Ground, Air, Water, Underwater
+		Damage: 100
+	Warhead@ShrapnelWeapon: SpreadDamage
+		ValidTargets: Ground, Air, Water, Underwater
+		Damage: 200000
+	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
+		ValidTargets: Ground, Air, Water, Underwater
+		Damage: 100000
+	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Air, Water, Underwater
+		Damage: 100
+	Warhead@HeavyBomb: SpreadDamage
+		ValidTargets: Ground, Air, Water, Underwater
+		Damage: 200000
+	Warhead@HeavyBombPercentage: HealthPercentageDamage
+		ValidTargets: Ground, Air, Water, Underwater
+		Damage: 100
+	Warhead@Effect: CreateEffect
 		Explosions: self_destruct
 		ExplosionPalette: effect
+		ImpactSounds: gexpcraa.wav
+
+SEALAttach:
+	Inherits: TanyaAttach
+	ValidTargets: Vehicle, Ship, Submarine, demolishable
+	Warhead@1: AttachDelayedWeapon
+		Weapon: SealBomb
+		TriggerTime: 100
 
 SealBomb:
 	Inherits: TanyaBomb
-	Warhead@1Dam: SpreadDamage
-		Damage: 250000
-		Spread: 250
-
+	Warhead@Grenade: SpreadDamage
+		Damage: 40000
+	Warhead@GrenadeFriendlyFire: SpreadDamage
+		Damage: 20000
+	Warhead@GrenadePercentage: HealthPercentageDamage
+		Damage: 20
+	Warhead@ShrapnelWeapon: SpreadDamage
+		Damage: 40000
+	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
+		Damage: 20000
+	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+		Damage: 20
+	Warhead@HeavyBomb: SpreadDamage
+		Damage: 40000
+	Warhead@HeavyBombPercentage: HealthPercentageDamage
+		Damage: 20
 BorisAKM:
 	Inherits: ^RA2SmallArms
 	Inherits: ^RA2Chaingun
