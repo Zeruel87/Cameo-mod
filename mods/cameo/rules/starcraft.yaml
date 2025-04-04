@@ -2086,6 +2086,12 @@ SCHATCHERY:
 	Tooltip@3:
 		Name: Hive
 		RequiresCondition: hive
+	Production@RAInfantryZerg:
+		Produces: RAInfantry
+	ProductionBar@RAInfantryZerg:
+		ProductionType: RAInfantry
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RAInfantry
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@2:
 		Prerequisite: sclair
@@ -2227,24 +2233,30 @@ SCHATCHERY:
 	FreeActor@soil:
 		Actor: zergsoilmaker
 		SpawnOffset: -3,-3
-	MobSpawnerMaster@1:
-		Actors: sc_zerg_larva
-		Offset: 1000,500,0
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
-	MobSpawnerMaster@2:
-		Actors: sc_zerg_larva
-		Offset: 0,500,0
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
-	MobSpawnerMaster@3:
-		Actors: sc_zerg_larva
-		Offset: 2000,500,0
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
+	# MobSpawnerMaster@1:
+	# 	Actors: sc_zerg_larva
+	# 	Offset: 1000,5000
+	# 	RespawnTicks: 500
+	# 	ExitByBudding: false
+	# 	AggregateHealth: false
+	# MobSpawnerMaster@2:
+	# 	Actors: sc_zerg_larva
+	# 	Offset: 0,5000
+	# 	RespawnTicks: 500
+	# 	ExitByBudding: false
+	# 	AggregateHealth: false
+	# MobSpawnerMaster@3:
+	# 	Actors: sc_zerg_larva
+	# 	Offset: 2000,5000
+	# 	RespawnTicks: 500
+	# 	ExitByBudding: false
+	# 	AggregateHealth: false
+	RallyPoint:
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0
+		ExitCell: 0,2
+		Facing: 540
 	SpawnActorOnDeath@zergsoilkilled:
 		Actor: zergsoilkiller
 	FireWarheadsOnDeath@remover:
@@ -2263,6 +2275,38 @@ SCHATCHERY:
 		Produces: RAInfantry
 	FreeActor@CPQDEBUGDUMMY:
 		Actor: CPQDEBUGDUMMY
+	FreeActor@sczergling:
+		Actor: sczergling
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producezergling
+	FreeActor@scscourge:
+		Actor: scscourge
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producescourge
+	FreeActor@sctalon:
+		Actor: sctalon
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producetalon
+	FreeActor@scspithid:
+		Actor: scspithid
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producespithid
+	FreeActor@scshriek:
+		Actor: scshriek
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: produceshriek
+	RenderSprites:
+		PlayerPalette: player_rgba
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -2365,6 +2409,14 @@ sc_zerg_larva:
 		Actors: sctalon
 		Condition: sctalon
 		Duration: 1
+	GrantConditionOnProduction@producespithid:
+		Actors: scspithid
+		Condition: scspithid
+		Duration: 1
+	GrantConditionOnProduction@produceshriek:
+		Actors: scshriek
+		Condition: scshriek
+		Duration: 1
 	FreeActor@sczergling:
 		Actor: sczergling
 		SpawnOffset: 0,0
@@ -2377,12 +2429,24 @@ sc_zerg_larva:
 		Facing: 256
 		AllowRespawn: True
 		RequiresCondition: producescourge
-	FreeActor@scscourge:
+	FreeActor@sctalon:
 		Actor: sctalon
 		SpawnOffset: 0,0
 		Facing: 256
 		AllowRespawn: True
 		RequiresCondition: producetalon
+	FreeActor@scspithid:
+		Actor: scspithid
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producespithid
+	FreeActor@scshriek:
+		Actor: scshriek
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: produceshriek
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -7074,7 +7138,7 @@ SCTALON:
 	Tooltip:
 		Name: Talon
 	Valued:
-		Cost: 150
+		Cost: 200
 	Power:
 		Amount: -5
 	Buildable:
@@ -7083,7 +7147,7 @@ SCTALON:
 		Queue: Infantry, RAInfantry
 		Description: Fast Zerg basic assault strain.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
-		Speed: 110
+		Speed: 150
 		RequireForceMoveCondition: !undeployed
 		ImmovableCondition: !undeployed
 	Passenger:
@@ -7254,6 +7318,106 @@ SCHYDRALISK:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
+
+SCSPITHID:
+	Inherits@zerg: ^LargeZerg
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@bot: ^BotAutoDeploySwitchMode
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Tooltip:
+		Name: Spithid
+	Valued:
+		Cost: 600
+	Power:
+		Amount: -30
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~schydraliskden
+		Queue: Infantry, RAInfantry
+		Description: Zerg armored assault strain.\n Strong vs Infantry, Vehicles, Aircraft\n Weak vs Siege
+	Mobile:
+		Speed: 110
+		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
+	Health:
+		HP: 80000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	HitShape:
+		-Type:
+	Armament@PRIMARY:
+		Weapon: HydraSpit
+		LocalOffset: 0,0,200
+		MuzzleSequence: muzzle
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: HydraSpit
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	WithMuzzleOverlay:
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zburrowup.wav
+		UndeploySounds: zburrowdown.wav
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+	# Selectable:
+	# 	Bounds: 2048, 2048
+	# 	DecorationBounds: 2448, 2448, 0, 0
+	# WithIdleOverlay@Shadow:
+	# 	Offset: 0,0,-320
+	Passenger:
+		Weight: 2
+		CustomPipType: blue
+	Voiced:
+		VoiceSet: SCHydraliskVoice
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: infantry ##########
+	GrantConditionOnPrerequisite@upmissile:
+		Condition: upmissile
+		Prerequisites: upzergmissile
+	FirepowerMultiplier@upmissile:
+		Modifier: 133
+		RequiresCondition: upmissile
+	RenderSprites:
+		PlayerPalette: player_rgba
+
 SCMUTALISK:
 	Inherits: ^AirZerg
 	Inherits@Template: ^HelicopterTemplate
@@ -7300,6 +7464,61 @@ SCMUTALISK:
 		DecorationBounds: 1024, 1024
 	Voiced:
 		VoiceSet: SCMutaliskVoice
+	GrantConditionOnPrerequisite@upattack:
+		Condition: upattack
+		Prerequisites: upflyerattack
+	FirepowerMultiplier@upattack:
+		Modifier: 133
+		RequiresCondition: upattack
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+SCSHRIEK:
+	Inherits: ^AirZerg
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Tooltip:
+		Name: Shriek
+	Valued:
+		Cost: 300
+	Power:
+		Amount: -60
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~scspire
+		Queue: Infantry, RAInfantry
+		Description: Airborne Zerg creature.\n Strong vs Infantry, Aircraft
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 32
+		Speed: 160
+		IdealSeparation: 640
+		RepulsionSpeed: 32
+	Health:
+		HP: 20000
+	ChangesHealth@SelfHealing:
+		Step: 20
+	Armament:
+		Weapon: ShriekStinger
+		LocalOffset: 0,0,0
+	# Armament@2:
+	# 	Weapon: MutaliskAA
+	# 	LocalOffset: 0,0,0
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	WithAttackAnimation:
+		Sequence: shoot
+	SelectionDecorations:
+	Selectable:
+		Bounds: 1024, 1024
+		DecorationBounds: 1024, 1024
+	Voiced:
+		VoiceSet: SCZerglingVoice
 	GrantConditionOnPrerequisite@upattack:
 		Condition: upattack
 		Prerequisites: upflyerattack
