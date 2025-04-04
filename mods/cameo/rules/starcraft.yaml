@@ -7319,8 +7319,107 @@ SCHYDRALISK:
 		PlayerPalette: player_rgba
 
 
-SCSPITHID:
+SCSPOREMAW:
 	Inherits@zerg: ^LargeZerg
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@bot: ^BotAutoDeploySwitchMode
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Tooltip:
+		Name: Sporemaw
+	Valued:
+		Cost: 600
+	Power:
+		Amount: -30
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~schydraliskden
+		Queue: Infantry, RAInfantry
+		Description: Zerg armored assault strain.\n Strong vs Infantry, Vehicles, Aircraft\n Weak vs Siege
+	Mobile:
+		Speed: 75
+		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
+	Health:
+		HP: 80000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	HitShape:
+		-Type:
+	Armament@PRIMARY:
+		Weapon: GuardianShoot
+		LocalOffset: 0,0,200
+		MuzzleSequence: muzzle
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: GuardianShoot
+		MuzzleSequence: muzzle
+	AttackFrontal:
+		FacingTolerance: 0
+	WithMuzzleOverlay:
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zburrowup.wav
+		UndeploySounds: zburrowdown.wav
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+	# Selectable:
+	# 	Bounds: 2048, 2048
+	# 	DecorationBounds: 2448, 2448, 0, 0
+	# WithIdleOverlay@Shadow:
+	# 	Offset: 0,0,-320
+	Passenger:
+		Weight: 2
+		CustomPipType: blue
+	Voiced:
+		VoiceSet: SCHydraliskVoice
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: infantry ##########
+	GrantConditionOnPrerequisite@upmissile:
+		Condition: upmissile
+		Prerequisites: upzergmissile
+	FirepowerMultiplier@upmissile:
+		Modifier: 133
+		RequiresCondition: upmissile
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+SCSPITHID:
+	Inherits@zerg: ^BasicZerg
 	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -7449,6 +7548,61 @@ SCMUTALISK:
 		Step: 32
 	Armament:
 		Weapon: MutaliskSpore
+		LocalOffset: 0,0,0
+	# Armament@2:
+	# 	Weapon: MutaliskAA
+	# 	LocalOffset: 0,0,0
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	-RenderRangeCircle:
+	-RenderDetectionCircle:
+	SelectionDecorations:
+	Selectable:
+		Bounds: 1024, 1024
+		DecorationBounds: 1024, 1024
+	Voiced:
+		VoiceSet: SCMutaliskVoice
+	GrantConditionOnPrerequisite@upattack:
+		Condition: upattack
+		Prerequisites: upflyerattack
+	FirepowerMultiplier@upattack:
+		Modifier: 133
+		RequiresCondition: upattack
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+SCSovreleth:
+	Inherits: ^AirZerg
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Tooltip:
+		Name: Swarmling
+	Valued:
+		Cost: 800
+	Power:
+		Amount: -60
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 50
+		Prerequisites: ~scspire, ~schive
+		Queue: Infantry, RAInfantry
+		Description: Airborne Zerg creature.\n Strong vs Everything in group
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 32
+		Speed: 60
+		IdealSeparation: 640
+		RepulsionSpeed: 32
+	Health:
+		HP: 80000
+	ChangesHealth@SelfHealing:
+		Step: 32
+	Armament:
+		Weapon: SwarmlingShoot
 		LocalOffset: 0,0,0
 	# Armament@2:
 	# 	Weapon: MutaliskAA
@@ -7792,6 +7946,101 @@ SCULTRALISK:
 		Speed: 100
 	Health:
 		HP: 400000
+	ChangesHealth@SelfHealing:
+		Step: 160
+	Armor:
+		Type: Superheavy
+	Armament:
+		Weapon: UltraliskHusk
+		FireDelay: 3
+	AttackFrontal:
+		FacingTolerance: 0
+	AutoTarget:
+		ScanRadius: 10
+		InitialStance: AttackAnything
+	WithInfantryBody:
+	-HitShape:
+	HitShape:
+	-Crushable:
+	Passenger:
+		Weight: 4
+		CustomPipType: blue
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zluburrw.aud
+		UndeploySounds: zluburrw.aud
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+	Voiced:
+		VoiceSet: SCUltraliskVoice
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	WithShadow:
+		Offset: 108, 24, 0
+		ZOffset: -512
+	GrantConditionOnPrerequisite@upmelee:
+		Condition: upmelee
+		Prerequisites: upzergmelee
+	FirepowerMultiplier@upmelee:
+		Modifier: 150
+		RequiresCondition: upmelee
+	Selectable:
+		Bounds: 1024, 1024
+		DecorationBounds: 1536, 1536
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+SCGOREMAW:
+	Inherits@zerg: ^LargeZerg
+	Inherits@Template: ^LineBreakerTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@SHADOWS: ^Shadows
+	Inherits@ND: ^NotDevourable
+	Tooltip:
+		Name: Goremaw
+	Valued:
+		Cost: 1800
+	Power:
+		Amount: -120
+	Buildable:
+		BuildPaletteOrder: 80
+		Prerequisites: ~scultraliskcavern
+		Queue: Infantry, RAInfantry
+		Description: Heavy Zerg assault strain.\n Strong vs Vehicles\n Weak vs Aircraft
+	Mobile:
+		Speed: 150
+	Health:
+		HP: 200000
 	ChangesHealth@SelfHealing:
 		Step: 160
 	Armor:
