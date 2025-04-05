@@ -382,6 +382,8 @@ SCCOMMANDCENTER:
 	Inherits@POWERDOWN: ^DisableOnPowerDown
 	Tooltip:
 		Name: Command Center
+	Power:
+		Amount: 100
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -406,8 +408,6 @@ SCCOMMANDCENTER:
 		Facing: 540
 	ProvidesRadar:
 		RequiresCondition: !jammed
-	Power:
-		Amount: 100
 	Refinery:
 	DockHost:
 		DockAngle: 256
@@ -544,7 +544,6 @@ SCREFINERY:
 		Actor: scscv
 		SpawnOffset: 0,2
 		Facing: 540
-	ProvidesPrerequisite@buildingname:
 	SelectionDecorations:
 	Refinery:
 	DockHost:
@@ -555,7 +554,6 @@ SCREFINERY:
 		Modifier: 50
 	WithIdleOverlay@smoke:
 		RequiresCondition: refineryupg
-		#Image: explosion
 		Sequence: smoke
 		Palette: greyscale
 	SeedsResource:
@@ -2068,15 +2066,10 @@ SCHATCHERY:
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
 	Inherits@aicash: ^AIConyardCash
-	Inherits@conyard: ^Conyard
 	Inherits@bot: ^BotMicromanageable
 	Inherits@breedfaster: ^SCBREEDFASTER
-	Inherits@barr: ^IsBarrack
-	Selectable:
-		Bounds: 3072, 2048
-		DecorationBounds: 3300, 2448, 0, 0
-	Valued:
-		Cost: 1500
+	#Inherits@barr: ^IsBarrack
+	Inherits@conyard: ^Conyard
 	Tooltip:
 		Name: Hatchery
 		RequiresCondition: !lair && !hive
@@ -2086,13 +2079,22 @@ SCHATCHERY:
 	Tooltip@3:
 		Name: Hive
 		RequiresCondition: hive
+	Selectable:
+		Bounds: 3072, 2048
+		DecorationBounds: 3300, 2448, 0, 0
 	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite@2:
+	ProvidesPrerequisite@sclair:
 		Prerequisite: sclair
 		RequiresCondition: sclair
-	ProvidesPrerequisite@3:
+	ProvidesPrerequisite@schive:
 		Prerequisite: schive
 		RequiresCondition: schive
+	ProvidesPrerequisite@lairupgradeavailable:
+		Prerequisite: lairupgradeavailable
+		RequiresCondition: !sclair
+	ProvidesPrerequisite@hiveupgradeavailable:
+		Prerequisite: hiveupgradeavailable
+		RequiresCondition: !schive
 	Pluggable:
 		Offset: 0,0
 		Conditions:
@@ -2111,71 +2113,12 @@ SCHATCHERY:
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: zchrdy00.aud
 		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil ##########
-	Health:
-		HP: 150000
 	DamageMultiplier@lair:
 		Modifier: 75
 		RequiresCondition: lair && !hive
 	DamageMultiplier@hive:
 		Modifier: 50
 		RequiresCondition: hive
-	Armor:
-		Type: Wood
-	RevealsShroud:
-		Range: 7c0
-	Production@NORMALBUILDING:
-		Produces: Building, Defence
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICBUILDING:
-		Produces: RABuilding, RADefence
-		RequiresCondition: classicproductionqueues
-	ProductionQueue@ZergBuilding:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@ZergDefense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Vehicle
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	BaseBuilding:
-	ProductionBar@BuildingZerg:
-		ProductionType: Building
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@DefenceZerg:
-		ProductionType: Defence
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RABuildingZerg:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RADefenceZerg:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
-	ProductionBar@InfantryZerg:
-		ProductionType: Infantry
-		RequiresCondition: !classicproductionqueues && botplayer
-	ProductionBar@RAInfantryZerg:
-		ProductionType: RAInfantry
-		RequiresCondition: classicproductionqueues && botplayer
-	Production@NORMAL:
-		Produces: Infantry
-		RequiresCondition: !classicproductionqueues && botplayer
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry
-		RequiresCondition: classicproductionqueues && botplayer
-	ProductionQueue@ZergInfantry:
-		Type: Infantry
-		DisplayOrder: 2
-		Group: Infantry
-		QueuedAudio: Building
-		ReadyAudio: UnitReady
-		BuildDurationModifier: 25
-		LowPowerModifier: 250
-	BaseProvider:
-		Range: 14c0
 	RallyPoint: ##########
 		Path: 0,2
 	Exit@1:
@@ -2184,8 +2127,6 @@ SCHATCHERY:
 		Facing: 540
 	ProvidesRadar:
 		RequiresCondition: !jammed
-	Power:
-		Amount: 100
 	ExternalCondition@JAMMED:
 		Condition: jammed
 	GivesBuildableArea: ##########
@@ -2196,8 +2137,6 @@ SCHATCHERY:
 	DockHost:
 		DockAngle: 256
 		DockOffset: 0, 1c512, 0
-	ProvidesPrerequisite@faction:
-		Prerequisite: mmzerg
 	##########
 	Sellable:
 	##########
@@ -2229,8 +2168,8 @@ SCHATCHERY:
 		SpawnOffset: -3,-3
 	DroneSpawnerMaster:
 		Actors: sc_zerg_larva, sc_zerg_larva, sc_zerg_larva
-		SpawnOffset: 511,1c0,0, -511,-1c0,0, -1c0,1c0,0
-		RespawnTicks: 500
+		SpawnOffset: -1000,1000,0, 0,1000,0, 1000,1000,0
+		RespawnTicks: 125
 		InitialActorCount: 0
 	SpawnActorOnDeath@zergsoilkilled:
 		Actor: zergsoilkiller
@@ -2244,12 +2183,6 @@ SCHATCHERY:
 		FullSequence: pip-yellow
 	Transforms:
 		IntoActor: sczmcv
-	ProductionBar@RAInfantryZerg:
-		ProductionType: RAInfantry
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry
-	FreeActor@CPQDEBUGDUMMY:
-		Actor: CPQDEBUGDUMMY
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -2258,12 +2191,12 @@ sclair:
 	Tooltip:
 		Name: Lair
 	Valued:
-		Cost: 400
+		Cost: 1400
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: Defence, RADefence
-		Prerequisites: ~scspawningpool
-		Description: Increase the size of the supply depot by 100%
+		Prerequisites: ~scspawningpool, lairupgradeavailable
+		Description: Unlocks Spire and Queen's Nest
 	Plug:
 		Type: schatchery
 	RenderSprites:
@@ -2274,12 +2207,12 @@ schive:
 	Tooltip:
 		Name: Hive
 	Valued:
-		Cost: 400
+		Cost: 2000
 	Buildable:
 		BuildPaletteOrder: 1
 		Queue: Defence, RADefence
-		Prerequisites: ~sclair
-		Description: Increase the size of the supply depot by 100%
+		Prerequisites: ~sclair, hiveupgradeavailable
+		Description: Unlocks Ultralisk Cavern and Defiler Mound
 	Plug:
 		Type: sclair
 	RenderSprites:
@@ -2329,7 +2262,7 @@ sc_zerg_larva:
 		Sequence: makeunit
 		IsPlayerPalette: True
 		Offset: 0,0,0
-	ProductionBar@RAInfantryZerg:
+	ProductionBar@INFANTRY:
 		ProductionType: RAInfantry
 	Production@CLASSICPRODUCTIONQUEUES:
 		Produces: RAInfantry
@@ -2501,10 +2434,10 @@ SCEXTRACTOR:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^3x2Shape
 	Inherits@ref: ^Refinery
-	Valued:
-		Cost: 550
 	Tooltip:
 		Name: Extractor
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 30
@@ -2517,11 +2450,11 @@ SCEXTRACTOR:
 		Footprint: _x_ xxx ===
 		Dimensions: 3,3
 		BuildSounds: zchrdy00.aud
-	Health:
-		HP: 75000
-	RevealsShroud:
-		Range: 6c0
-	FreeActor:
+	FreeActor@1:
+		Actor: scdrone
+		SpawnOffset: 0,2
+		Facing: 540
+	FreeActor@2:
 		Actor: scdrone
 		SpawnOffset: 0,2
 		Facing: 540
@@ -2530,84 +2463,76 @@ SCEXTRACTOR:
 	DockHost:
 		DockAngle: 448
 		DockOffset: -1c0, 1c0, 0
-	StoresResources:
-		Capacity: 1500
-	GivesBuildableArea: ##########
-		AreaTypes: building, cityi
 	-WithDeathAnimation:
 	SpawnActorOnDeath@death1:
 		Actor: SCBROODLING
 	SpawnActorOnDeath@death2:
 		Actor: SCBROODLING
+	DamageMultiplier@refineryupg:
+		RequiresCondition: refineryupg
+		Modifier: 50
+	WithIdleOverlay@smoke:
+		RequiresCondition: refineryupg
+		Sequence: smoke
+		Palette: greyscale
 	SeedsResource:
 		ResourceType: SCGas3
-		Interval: 100
+		Interval: 125
 		RequiresCondition: refineryup
-	Production:
-		Produces: Addon.upscrefinery3
-		RequiresCondition: !refineryup
-	ProductionBar:
-		ProductionType: Addon.upscrefinery3
-	ProductionQueue:
-		Type: Addon.upscrefinery3
-		Group: Unit
-		QueueLimit: 1
-		ItemLimit: 1
-		DisplayOrder: 0
-	GrantConditionOnProduction@refineryup:
-		Condition: refineryup
-		Actors: pscupscrefinery3
-	SpawnActorOnDeath@zergsoilkilled:
-		Actor: zergsoilkiller
-	FireWarheadsOnDeath@remover:
-		Weapon: CreepRemover
-		EmptyWeapon: CreepRemover
-	CashTrickler@player:
-		RequiresCondition: refineryup
+	CashTrickler@refineryupg:
+		RequiresCondition: refineryupg
 		Interval: 50
-		Amount: 50
+		Amount: 25
 		ShowTicks: True
-	WithResourceStoragePipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 10
-		FullSequence: pip-yellow
+	ProvidesPrerequisite:
+		Prerequisite: sczrefineryupgradeavailable
+		RequiresCondition: !refineryupg
+	Pluggable:
+		Offset: 1,0
+		Conditions:
+			screfinery: refineryupg
+		Requirements:
+			screfinery: !build-incomplete && !refineryupg
 	RenderSprites:
 		PlayerPalette: player_rgba
 
-pscupscrefinery3:
+sczvespinegascollector:
+	Inherits: ^BuildingPlug
 	Tooltip:
 		Name: Vespene Gas Collector
-	Buildable:
-		Prerequisites: anypower
-		BuildPaletteOrder: 10
-		Queue: Addon.upscrefinery3
-		Description: The Refinery generates Vespene gas Capsules
 	Valued:
-		Cost: 2000
+		Cost: 2500
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Defence, RADefence
+		Prerequisites: ~schatchery, sczrefineryupgradeavailable
+		Description: The Refinery generates Vespene gas Capsules and passive income.
+	Plug:
+		Type: screfinery
 	RenderSprites:
 		Image: upscrefinery3
-	Interactable:
-	AlwaysVisible:
-	KillsSelf:
-		RemoveInstead: true
 
 SCSPAWNINGPOOL:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
-	Inherits@barr: ^IsBarrack
-	Valued:
-		Cost: 800
 	Tooltip:
 		Name: Spawning Pool
+	Valued:
+		Cost: 1250
+	Health:
+		HP: 125000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 40
+		BuildDuration: 375
+		BuildDurationModifier: 100
 		Prerequisites: ~schatchery
 		Queue: Building, RABuilding
 		Description: Unlocks Zergling.
-		BuildDuration: 375
-		BuildDurationModifier: 100
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -2616,14 +2541,10 @@ SCSPAWNINGPOOL:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 75000
-	RevealsShroud:
-		Range: 7c0
-	Production:
-		Produces: Upgrades
-	ProductionBar:
-		ProductionType: Upgrades
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	-WithDeathAnimation:
 	SpawnActorOnDeath@death1:
 		Actor: SCBROODLING
@@ -2639,13 +2560,21 @@ SCSPAWNINGPOOL:
 SCEVOLUTIONCHAMBER:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Evolution Chamber
+	Valued:
+		Cost: 2500
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 50
+		BuildDuration: 750
+		BuildDurationModifier: 100
 		Prerequisites: ~schatchery
 		Queue: Building, RABuilding
 		Description: Unlocks Spore Colony and Lurker.
@@ -2657,14 +2586,10 @@ SCEVOLUTIONCHAMBER:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 75000
-	RevealsShroud:
-		Range: 7c0
-	Production@Upgrades:
-		Produces: Upgrades
-	ProductionBar@Upgrades:
-		ProductionType: Upgrades
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	-WithDeathAnimation:
 	SpawnActorOnDeath@death1:
 		Actor: SCBROODLING
@@ -2683,13 +2608,21 @@ SCEVOLUTIONCHAMBER:
 SCHYDRALISKDEN:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
-	Valued:
-		Cost: 800
 	Tooltip:
 		Name: Hydralisk Den
+	Valued:
+		Cost: 1250
+	Health:
+		HP: 125000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 60
+		BuildDuration: 375
+		BuildDurationModifier: 100
 		Prerequisites: ~scspawningpool
 		Queue: Building, RABuilding
 		Description: Unlocks Hydralisk.
@@ -2701,23 +2634,7 @@ SCHYDRALISKDEN:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 85000
-	RevealsShroud:
-		Range: 7c0
 	-WithDeathAnimation:
-	#Production@Upgrades:
-	#	Produces: HydraDen
-	#ProductionQueue@Upgrades:
-	#	Type: HydraDen
-	#	DisplayOrder: 10
-	#	Group: Upgrade
-	#	ItemLimit: 1
-	#	DisallowPaused: true
-	#ProductionBar@Upgrades:
-	#	ProductionType: HydraDen
-	ProvidesPrerequisite@vehicleproduction:
-		Prerequisite: vehicleproduction
 	SpawnActorOnDeath@death1:
 		Actor: SCBROODLING
 	SpawnActorOnDeath@death2:
@@ -2735,13 +2652,21 @@ SCHYDRALISKDEN:
 SCQUEENSNEST:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Queen's Nest
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 150000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 100
+		BuildDuration: 666
+		BuildDurationModifier: 100
 		Prerequisites: ~sclair
 		Queue: Building, RABuilding
 		Description: Unlocks Queen and Kerrigan.
@@ -2753,10 +2678,6 @@ SCQUEENSNEST:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 85000
-	RevealsShroud:
-		Range: 7c0
 	-WithDeathAnimation:
 	SpawnActorOnDeath@death1:
 		Actor: SCBROODLING
@@ -2778,20 +2699,28 @@ SCSPIRE:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
 	Inherits@bot: ^BotMicromanageable
-	Valued:
-		Cost: 1500
 	Tooltip:
 		Name: Spire
 		RequiresCondition: !spirecondition
 	Tooltip@2:
 		Name: Greater Spire
 		RequiresCondition: spirecondition
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 150000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@scgreaterspire:
 		Prerequisite: scgreaterspire
 		RequiresCondition: scgreaterspire
 	Buildable:
 		BuildPaletteOrder: 80
+		BuildDuration: 666
+		BuildDurationModifier: 100
 		Prerequisites: ~sclair
 		Queue: Building, RABuilding
 		Description: Unlocks Mutalisk.
@@ -2803,10 +2732,6 @@ SCSPIRE:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 60000
-	RevealsShroud:
-		Range: 7c0
 	GivesBuildableArea:
 		AreaTypes: building, spire
 	-WithDeathAnimation:
@@ -2815,16 +2740,22 @@ SCSPIRE:
 	Pluggable:
 		Offset: 0,0
 		Conditions:
-			schatchery: scgreaterspire
+			scspire: scgreaterspire
 		Requirements:
-			schatchery: !scgreaterspire
+			scspire: !scgreaterspire
+	DamageMultiplier@scgreaterspire:
+		RequiresCondition: scgreaterspire
+		Modifier: 50
+	ProvidesPrerequisite:
+		Prerequisite: greaterspireupgradeavailable
+		RequiresCondition: !scgreaterspire
 	PeriodicExplosion:
 		Weapon: Lairtransition
 		RequiresCondition: transition
-	Production@Upgrades:
-		Produces: Upgrades
-	ProductionBar@Upgrades:
-		ProductionType: Upgrades
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	FireWarheadsOnDeath:
 		Weapon: Creeptransition
 		Type: CenterPosition
@@ -2844,16 +2775,40 @@ SCSPIRE:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
+SCGREATERSPIRE:
+	Inherits: ^BuildingPlug
+	Tooltip:
+		Name: Greater Spire
+	Valued:
+		Cost: 1600
+	Buildable:
+		BuildPaletteOrder: 1
+		Queue: Defence, RADefence
+		Prerequisites: greaterspireupgradeavailable
+		Description: Increase the size of the supply depot by 100%
+	Plug:
+		Type: scspire
+	RenderSprites:
+		Image: scspire
+
 SCULTRALISKCAVERN:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
-	Valued:
-		Cost: 1400
 	Tooltip:
 		Name: Ultralisk Cavern
+	Valued:
+		Cost: 2000
+	Health:
+		HP: 200000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 90
+		BuildDuration: 500
+		BuildDurationModifier: 100
 		Prerequisites: ~schive
 		Queue: Building, RABuilding
 		Description: Unlocks Ultralisk.
@@ -2865,10 +2820,6 @@ SCULTRALISKCAVERN:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 60000
-	RevealsShroud:
-		Range: 7c0
 	#Production@Upgrades:
 	#	Produces: UltraCave
 	#ProductionQueue@Upgrades:
@@ -2899,13 +2850,21 @@ SCULTRALISKCAVERN:
 SCDEFILERMOUND:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
-	Valued:
-		Cost: 1600
 	Tooltip:
 		Name: Defiler Mound
+	Valued:
+		Cost: 2000
+	Health:
+		HP: 200000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 100
+		BuildDuration: 500
+		BuildDurationModifier: 100
 		Prerequisites: ~schive
 		Queue: Building, RABuilding
 		Description: Unlocks Defiler.
@@ -2917,10 +2876,6 @@ SCDEFILERMOUND:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 85000
-	RevealsShroud:
-		Range: 7c0
 	-WithDeathAnimation:
 	SpawnActorOnDeath@zergsoilkilled:
 		Actor: zergsoilkiller
@@ -3075,22 +3030,6 @@ SCSPORECOLONY:
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
-
-SCGREATERSPIRE:
-	Inherits: ^BuildingPlug
-	Tooltip:
-		Name: Greater Spire
-	Valued:
-		Cost: 400
-	Buildable:
-		BuildPaletteOrder: 1
-		Queue: Defence, RADefence
-		Prerequisites: ~scspire
-		Description: Increase the size of the supply depot by 100%
-	Plug:
-		Type: schatchery
-	RenderSprites:
-		Image: scspire
 
 SCOVERMIND:
 	Inherits: ^BaseBuildingZerg
@@ -3919,10 +3858,12 @@ SCVULTURE:
 	Inherits@SHADOWS: ^Shadows
 	Inherits@armor: ^TerranVehiclesWeaponUpgrades
 	Inherits@weapon: ^TerranVehicleArmorUpgrades
-	Valued:
-		Cost: 600
 	Tooltip:
 		Name: Vulture
+	Valued:
+		Cost: 900
+	Power:
+		Amount: -45
 	Buildable:
 		Prerequisites: ~scfactory
 		BuildPaletteOrder: 10
@@ -3937,8 +3878,6 @@ SCVULTURE:
 		HpPerStep: 4000
 	ChangesHealth@SelfHealing:
 		Step: 32
-	Power:
-		Amount: -25
 	Armor:
 		Type: Light
 	Armament:
@@ -4849,16 +4788,16 @@ SCPYTHEAN:
 		BuildLimit: 1
 		Description: A slow moving garrison transport for all ground units.\nExtremely Durable\n Strong vs Everything
 	Aircraft:
-		TurnSpeed: 15
-		Speed: 30
 		InitialFacing: 896
-		AltitudeVelocity: 0c100
+		TurnSpeed: 18
+		Speed: 45
+		RepulsionSpeed: 36
 	Health:
-		HP: 1000000
+		HP: 750000
 	Repairable:
-		HpPerStep: 50000
+		HpPerStep: 37500
 	ChangesHealth@SelfHealing:
-		Step: 400
+		Step: 300
 	Cargo:
 		ExclusiveDeploy: true
 		DeployType: opentopped
@@ -5019,10 +4958,9 @@ SCBATTLECRUISER:
 		Description: Terran capital ship.\n Strong vs Everything
 	Aircraft:
 		InitialFacing: 896
-		TurnSpeed: 15
+		TurnSpeed: 12
 		Speed: 30
-		IdealSeparation: 2500
-		RepulsionSpeed: 15
+		RepulsionSpeed: 24
 	Health:
 		HP: 500000
 	Repairable:
@@ -5125,6 +5063,7 @@ SCBATTLECRUISER:
 SCPHOBOS:
 	Inherits: ^Helicopter
 	Inherits@Template: ^SpaceshipTemplate
+	Inherits@Template: ^EpicAirUnitTemplate
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXP: ^GainsExperienceTD
@@ -5141,16 +5080,16 @@ SCPHOBOS:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
+		BuildLimit: 1
 		BuildPaletteOrder: 40
 		Prerequisites: ~scstarport, ~scsciencefacility, ~upphobos
 		Queue: Aircraft, RAAircraft
 		Description: Terran capital ship.\n Strong vs Everything
 	Aircraft:
 		InitialFacing: 896
-		TurnSpeed: 15
+		TurnSpeed: 10
 		Speed: 25
-		IdealSeparation: 2500
-		RepulsionSpeed: 15
+		RepulsionSpeed: 20
 	Health:
 		HP: 1000000
 	Repairable:
@@ -7410,23 +7349,6 @@ SCSCOURGE:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
-SCSCOURGEDRONE:
-	Inherits: SCSCOURGE
-	SelectionDecorations:
-	Tooltip:
-		Name: Scourge Drone
-	Power:
-		Amount: 0
-	-Buildable:
-	Aircraft:
-		VTOL: false
-		Repulsable: false
-		TakeUpCellWhenLand: false
-	CarrierSlave:
-		LandingDistance: 8000
-	HasParent:
-	RejectsOrders:
-
 SCQUEEN:
 	Inherits: ^AirZerg
 	Inherits@Template: ^HelicopterTemplate
@@ -7739,31 +7661,29 @@ SCLURKER:
 		PlayerPalette: player_rgba
 
 SCINFESTEDTERRAN:
+	Inherits@zerg: ^BasicZerg
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
-	Inherits@zerg: ^LargeZerg
 	Inherits@announce: ^AnnounceOnBuild
-	Valued:
-		Cost: 400
 	Tooltip:
 		Name: Infested Terran
+	Valued:
+		Cost: 400
+	Power:
+		Amount: -20
 	Buildable:
 		BuildPaletteOrder: 110
 		Prerequisites: ~scinfestedcommandcenter
 		Queue: Infantry, RAInfantry
 		Description: Suicide bomber infantry.\n Strong vs clustered units\n Does no damage if killed
 	Mobile:
-		Speed: 95
+		Speed: 90
 	Health:
 		HP: 60000
 	ChangesHealth@SelfHealing:
 		Step: 60
-	Armor:
-		Type: None
-	RevealsShroud:
-		Range: 4c0
-	AutoTarget:
-		ScanRadius: 4
 	AttackFrontal:
 		FacingTolerance: 512
 	Armament@PRIMARY:
@@ -7813,8 +7733,6 @@ SCINFESTEDTERRAN:
 	Selectable:
 		Bounds: 1024, 1024
 		DecorationBounds: 1448, 1448, 0, 0
-	Power:
-		Amount: -10
 	Voiced:
 		VoiceSet: SCInfestedTerranVoice
 	WithInfantryBody:
@@ -7825,15 +7743,18 @@ SCINFESTEDTERRAN:
 
 SCDEFILER:
 	Inherits: ^LargeZerg
+	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EXT: ^ExternalConditions
 	Inherits@SHADOWS: ^Shadows
-	Valued:
-		Cost: 1500
 	Tooltip:
 		Name: Defiler
+	Valued:
+		Cost: 1400
+	Power:
+		Amount: -70
 	Buildable:
 		BuildPaletteOrder: 120
 		Prerequisites: ~scdefilermound
@@ -7842,11 +7763,9 @@ SCDEFILER:
 	Mobile:
 		Speed: 50
 	Health:
-		HP: 10000
-	Armor:
-		Type: none
-	RevealsShroud:
-		Range: 7c0
+		HP: 80000
+	ChangesHealth@SelfHealing:
+		Step: 80
 	Armament:
 		Weapon: DefilerPlague
 		LocalOffset: 341,-120,128
@@ -7855,8 +7774,6 @@ SCDEFILER:
 	AttackFrontal:
 		FacingTolerance: 0
 	WithInfantryBody:
-	Power:
-		Amount: -25
 	GrantTimedConditionOnDeploy:
 		DeployedCondition: darkswarm
 		CooldownTicks: 1000
@@ -7897,7 +7814,7 @@ DARKSWARM:
 	Aircraft:
 		Repulsable: false
 		CruiseAltitude: 1
-		Speed: 18
+		Speed: 25
 	WithSpriteBody:
 	WithMakeAnimation:
 	BodyOrientation:
@@ -7908,7 +7825,7 @@ DARKSWARM:
 		StartIfBelow: 200
 		DamageTypes: DefaultDeath
 	ProximityExternalCondition@ds:
-		Range: 5c0
+		Range: 5000
 		Condition: DarkSwarm
 
 SCBROODLING:
@@ -7948,7 +7865,6 @@ SCBROODLING:
 	Inherits@EXT: ^ExternalConditions ##########
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: infantry ##########
-	-WithDeathAnimation:
 	ChangesHealth@timedlife:
 		Step: -30
 		Delay: 1
@@ -8086,28 +8002,28 @@ SCBEHEMOTH:
 	Tooltip:
 		Name: Behemoth
 	Valued:
-		Cost: 5000
+		Cost: 7200
 	Power:
-		Amount: -250
+		Amount: -360
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
+		BuildLimit: 1
 		BuildPaletteOrder: 20
 		Prerequisites: ~sclair
 		Queue: Infantry, RAInfantry
-		BuildLimit: 1
 		Description: A slow moving garrison transport for all ground units.\nExtremely Durable\n Strong vs Everything
 	Aircraft:
-		TurnSpeed: 15
-		Speed: 30
 		InitialFacing: 896
-		AltitudeVelocity: 0c100
+		TurnSpeed: 12
+		Speed: 30
+		RepulsionSpeed: 24
 	Health:
-		HP: 1000000
+		HP: 600000
 	Repairable:
-		HpPerStep: 50000
+		HpPerStep: 30000
 	ChangesHealth@SelfHealing:
-		Step: 400
+		Step: 240
 	Cargo:
 		ExclusiveDeploy: true
 		DeployType: opentopped
@@ -8124,10 +8040,10 @@ SCBEHEMOTH:
 		PortOffsets: 384,0,128, 224,-341,128, 224,341,128, 0,-341,128, 0,341,128, -224,-341,128, -224,341,128, -384,0,128
 		PauseOnCondition: chronobeamed
 	Armament:
-		Weapon: GuardianShoot
+		Weapon: BehemothShoot
 		LocalOffset: 400,0,0
 	CarrierMaster:
-		Actors: scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone
+		Actors: scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone, scscourgedrone
 		RearmTicks: 125
 		RespawnTicks: 250
 		InstaRepair: true
@@ -8138,11 +8054,11 @@ SCBEHEMOTH:
 		EmptyWeapon: HeliExplode
 	EjectOnDeath:
 		PilotActor: schydralisk
-	-SpawnActorOnDeath:
+	SpawnActorOnDeath:
 		Actor: SCBEHEMOTH.Husk
 	Selectable:
 		Class: scdropship
-		DecorationBounds: 1280, 1280, 0, 0
+		DecorationBounds: 2048, 2048, 0, 0
 	Voiced:
 		VoiceSet: SCOverlordVoice
 	DeathSounds:
@@ -8158,6 +8074,30 @@ SCBEHEMOTH:
 	WithCargoSounds:
 		EnterSounds: scoverlordgetin.wav
 		ExitSounds: scoverlordgetout.wav
+
+SCSCOURGEDRONE:
+	Inherits: SCSCOURGE
+	SelectionDecorations:
+	Tooltip:
+		Name: Scourge Drone
+	Power:
+		Amount: 0
+	-Buildable:
+	Aircraft:
+		VTOL: false
+		Repulsable: false
+		TakeUpCellWhenLand: false
+	CarrierSlave:
+		LandingDistance: 8000
+	HasParent:
+	RejectsOrders:
+	AutoTarget:
+		InitialStanceAI: AttackAnything
+		InitialStance: AttackAnything
+	Armament@PRIMARY:
+		Weapon: ScourgeDroneExplosion
+	FireWarheadsOnDeath:
+		Weapon: SCScourgeDroneExplosion
 
 SCBEHEMOTH.Husk:
 	Inherits: ^PlaneHusk
