@@ -2168,7 +2168,7 @@ SCHATCHERY:
 		SpawnOffset: -3,-3
 	DroneSpawnerMaster:
 		Actors: sc_zerg_larva, sc_zerg_larva, sc_zerg_larva
-		SpawnOffset: -1000,1000,0, 0,1000,0, 1000,1000,0
+		SpawnOffset: 0,1000,0, 1000,1000,0, 2000,1000,0
 		RespawnTicks: 125
 		InitialActorCount: 0
 	SpawnActorOnDeath@zergsoilkilled:
@@ -2183,6 +2183,38 @@ SCHATCHERY:
 		FullSequence: pip-yellow
 	Transforms:
 		IntoActor: sczmcv
+	FreeActor@sczergling:
+		Actor: sczergling
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producezergling
+	FreeActor@scscourge:
+		Actor: scscourge
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producescourge
+	FreeActor@sctalon:
+		Actor: sctalon
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producetalon
+	FreeActor@scspithid:
+		Actor: scspithid
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producespithid
+	FreeActor@scshriek:
+		Actor: scshriek
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: produceshriek
+	RenderSprites:
+		PlayerPalette: player_rgba
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -2222,10 +2254,10 @@ sc_zerg_larva:
 	Inherits: ^Soldier
 	Inherits@supply: ^ProducesUnits
 	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Valued:
-		Cost: 50
 	Tooltip:
 		Name: Larvae
+	Valued:
+		Cost: 50
 	Mobile:
 		Speed: 30
 		CanTurnWhileDisabled: true
@@ -2317,15 +2349,11 @@ sc_zerg_larva:
 
 SCCREEPCOLONY:
 	Inherits: ^Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@exp: ^GainsExperienceTDBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@EXPERIENCE: ^GainsExperienceBuildings
-	Selectable:
-		Bounds: 2048, 2048
-		DecorationBounds: 2448, 2448, 0, 0
-		Class: sccreepcolony
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Creep Colony
 		RequiresCondition: !sunken && !spore
@@ -2335,11 +2363,11 @@ SCCREEPCOLONY:
 	Tooltip@3:
 		Name: Spore Colony
 		RequiresCondition: spore
+	Valued:
+		Cost: 300
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 20
-		BuildDuration: 500
-		BuildDurationModifier: 100
 		Prerequisites: ~schatchery
 		Queue: Building, RABuilding
 		Description: Can be upgraded to Sunken or Spore Colonies.
@@ -2350,30 +2378,40 @@ SCCREEPCOLONY:
 		BuildSounds: zchrdy00.aud
 		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil ##########
 	Health:
-		HP: 25000
+		HP: 40000
 	Armor:
 		Type: Wood
+		RequiresCondition: !(sunken || spore)
+	Armor@Upgrade:
+		Type: Concrete
 		RequiresCondition: sunken || spore
 	DamageMultiplier@evo:
 		Modifier: 50
 		RequiresCondition: sunken || spore
-	RevealsShroud:
-		Range: 9c0
+	ProvidesPrerequisite@sunken:
+		Prerequisite: sunken
+		RequiresCondition: sunken
+	ProvidesPrerequisite@spore:
+		Prerequisite: spore
+		RequiresCondition: spore
+	ProvidesPrerequisite@creepcolonyupgradeavailable:
+		Prerequisite: creepcolonyupgradeavailable
+		RequiresCondition: !sunken && !spore
+	Pluggable:
+		Offset: 0,0
+		Conditions:
+			sccreepcolony: sunken
+		Requirements:
+			sccreepcolony: !sunken && !spore
+	Pluggable@2:
+		Offset: 0,0
+		Conditions:
+			sccreepcolony: spore
+		Requirements:
+			sccreepcolony: !sunken && !spore
 	Sellable:
 	-WithDeathAnimation:
 	##########
-	Production:
-		Produces: Colony.Zerg
-		RequiresCondition: !sunken && !spore
-	ProductionQueue:
-		Type: Colony.Zerg
-		Group: Addon
-	GrantConditionOnProduction@sunken:
-		Condition: sunken
-		Actors: pscsunkencolony
-	GrantConditionOnProduction@spore:
-		Condition: spore
-		Actors: pscsporecolony
 	WithSpriteBody:
 		RequiresCondition: !sunken && !spore
 	WithSpriteBody@sunken:
@@ -2401,16 +2439,15 @@ SCCREEPCOLONY:
 		RequiresCondition: spore
 	RevealOnFire:
 		ArmamentNames: primary, spore
+	RevealsShroud:
+		Range: 5000
+		RequiresCondition: !(sunken || spore)
 	RevealsShroud@upgraded:
-		Range: 9c0
+		Range: 10000
 		RequiresCondition: sunken || spore
 	DetectCloaked@spore:
-		Range: 6c0
-		RequiresCondition: spore && !disabled
-	GrantConditionOnProduction@animationhack:
-		Condition: transition
-		Duration: 1
-		Actors: pscsporecolony, pscsunkencolony
+		Range: 5000
+		RequiresCondition: (sunken || spore) && !disabled
 	PeriodicExplosion:
 		Weapon: Creeptransition
 		RequiresCondition: transition
@@ -2427,8 +2464,43 @@ SCCREEPCOLONY:
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
+	Selectable:
+		Bounds: 2048, 2048
+		DecorationBounds: 2448, 2448, 0, 0
 	RenderSprites:
 		PlayerPalette: player_rgba
+
+scsporecolonyupgrade:
+	Inherits: ^BuildingPlug
+	Tooltip:
+		Name: Sunken Colony
+	Valued:
+		Cost: 200
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Defence, RADefence
+		Prerequisites: ~schatchery, creepcolonyupgradeavailable
+		Description: Ground base defense.
+	Plug:
+		Type: sccreepcolony
+	RenderSprites:
+		Image: scsunkencolony
+
+scsunkencolonyupgrade:
+	Inherits: ^BuildingPlug
+	Tooltip:
+		Name: Spore Colony
+	Valued:
+		Cost: 200
+	Buildable:
+		BuildPaletteOrder: 10
+		Queue: Defence, RADefence
+		Prerequisites: ~schatchery, creepcolonyupgradeavailable
+		Description: Anti-aircraft base defense.
+	Plug:
+		Type: sccreepcolony
+	RenderSprites:
+		Image: scsporecolony
 
 SCEXTRACTOR:
 	Inherits: ^BaseBuildingZerg
@@ -2478,7 +2550,7 @@ SCEXTRACTOR:
 	SeedsResource:
 		ResourceType: SCGas3
 		Interval: 125
-		RequiresCondition: refineryup
+		RequiresCondition: refineryupg
 	CashTrickler@refineryupg:
 		RequiresCondition: refineryupg
 		Interval: 50
@@ -7667,6 +7739,8 @@ SCINFESTEDTERRAN:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@weapon: ^ZergMeleeWeaponUpgrades
+	Inherits@armor: ^ZergGroundArmorUpgrades
 	Tooltip:
 		Name: Infested Terran
 	Valued:
@@ -7749,6 +7823,8 @@ SCDEFILER:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EXT: ^ExternalConditions
 	Inherits@SHADOWS: ^Shadows
+	Inherits@armor: ^ZergGroundArmorUpgrades
+	Inherits@weapon: ^ZergMissileWeaponUpgrades
 	Tooltip:
 		Name: Defiler
 	Valued:
@@ -7878,10 +7954,14 @@ SCKERRIGANZERG:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AIDifficulties: ^AIDifficulties
-	Valued:
-		Cost: 3000
+	Inherits@weapon: ^ZergMeleeWeaponUpgrades
+	Inherits@armor: ^ZergGroundArmorUpgrades
 	Tooltip:
 		Name: Kerrigan
+	Valued:
+		Cost: 4000
+	Power:
+		Amount: -200
 	Buildable:
 		BuildPaletteOrder: 140
 		Prerequisites: ~scqueensnest
@@ -7895,8 +7975,6 @@ SCKERRIGANZERG:
 		Speed: 75
 	Health:
 		HP: 100000
-	Power:
-		Amount: -200
 	Armor:
 		Type: None
 	AutoTarget:
