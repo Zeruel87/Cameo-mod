@@ -2227,24 +2227,11 @@ SCHATCHERY:
 	FreeActor@soil:
 		Actor: zergsoilmaker
 		SpawnOffset: -3,-3
-	MobSpawnerMaster@1:
-		Actors: sc_zerg_larva
-		Offset: 1000,500,0
+	DroneSpawnerMaster:
+		Actors: sc_zerg_larva, sc_zerg_larva, sc_zerg_larva
+		SpawnOffset: 511,1c0,0, -511,-1c0,0, -1c0,1c0,0
 		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
-	MobSpawnerMaster@2:
-		Actors: sc_zerg_larva
-		Offset: 0,500,0
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
-	MobSpawnerMaster@3:
-		Actors: sc_zerg_larva
-		Offset: 2000,500,0
-		RespawnTicks: 500
-		ExitByBudding: false
-		AggregateHealth: false
+		InitialActorCount: 0
 	SpawnActorOnDeath@zergsoilkilled:
 		Actor: zergsoilkiller
 	FireWarheadsOnDeath@remover:
@@ -2307,13 +2294,20 @@ sc_zerg_larva:
 	Tooltip:
 		Name: Larvae
 	Mobile:
-		Speed: 0
+		Speed: 30
+		CanTurnWhileDisabled: true
+		ImmovableCondition: disable_movement
+		RequireForceMoveCondition: disable_movement
 	Health:
 		HP: 10000
 	Armor:
 		Type: Light
 	RevealsShroud:
 		Range: 4c0
+	GrantConditionAfterDelay:
+		Condition: disable_movement
+		ShowSelectionBar: false
+		Delay: 10
 	WithInfantryBody:
 		IdleSequences: idle
 		DefaultAttackSequence: idle
@@ -2326,8 +2320,10 @@ sc_zerg_larva:
 	-Crushable:
 	-TakeCover:
 	-ActorLostNotification:
-	MobSpawnerSlave:
+	DroneSpawnerSlave:
 	-MapEditorData:
+	RejectsOrders:
+	RejectsMoveToAttack:
 	WithProductionOverlay@egg:
 		Queues: RAInfantry
 		Sequence: makeunit
@@ -2361,6 +2357,10 @@ sc_zerg_larva:
 		Actors: scscourge
 		Condition: producescourge
 		Duration: 1
+	GrantConditionOnProduction@producetalon:
+		Actors: sctalon
+		Condition: sctalon
+		Duration: 1
 	FreeActor@sczergling:
 		Actor: sczergling
 		SpawnOffset: 0,0
@@ -2373,6 +2373,12 @@ sc_zerg_larva:
 		Facing: 256
 		AllowRespawn: True
 		RequiresCondition: producescourge
+	FreeActor@scscourge:
+		Actor: sctalon
+		SpawnOffset: 0,0
+		Facing: 256
+		AllowRespawn: True
+		RequiresCondition: producetalon
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -2781,12 +2787,9 @@ SCSPIRE:
 		Name: Greater Spire
 		RequiresCondition: spirecondition
 	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite@buildingname2:
-		Prerequisite: Greater Spire
-		RequiresCondition: spirecondition
-	ProvidesPrerequisite@botlimit:
-		Prerequisite: botspirelimit
-		RequiresCondition: botmicro && spirecondition
+	ProvidesPrerequisite@scgreaterspire:
+		Prerequisite: scgreaterspire
+		RequiresCondition: scgreaterspire
 	Buildable:
 		BuildPaletteOrder: 80
 		Prerequisites: ~sclair
@@ -3962,6 +3965,7 @@ SCSIEGETANK:
 	Inherits: ^Tank
 	Inherits@SC: ^SCTVEHICLE
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@ArtilleryBuffs: ^ArtilleryBuffs
 	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -4020,10 +4024,10 @@ SCSIEGETANK:
 		Modifier: 50
 		RequiresCondition: deployed
 	RevealsShroudMultiplier@deployed:
-		Modifier: 125
+		Modifier: 150
 		RequiresCondition: deployed
 	RevealsShroudMultiplier@upsiegemode:
-		Modifier: 125
+		Modifier: 150
 		RequiresCondition: deployed && upsiegemode
 	RangeMultiplier@upsiegemode:
 		Modifier: 120
@@ -4372,12 +4376,13 @@ scwarhound:
 		Amount: -225
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~upwarhound, ~scarmory
+		Prerequisites: ~scsciencefacility, ~upwarhound
 		Description: Colossal Terran Mech.\n Strong vs Everything, Buildings\n Weak vs Air\n Uncrushable
 	Mobile:
 		Speed: 45
 		TurnSpeed: 18
 		Locomotor: tracked
+		RequiresCondition: !hunker
 	Health:
 		HP: 300000
 	Repairable:
@@ -4410,10 +4415,45 @@ scwarhound:
 		RequiresSelection: True
 		PipCount: 4
 	WithMuzzleOverlay:
+	DamageMultiplier@hunker:
+		Modifier: 50
+		RequiresCondition: hunker
+	ChangesHealth@hunker:
+		Step: 120
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+		RequiresCondition: hunker
+	GrantConditionOnDamageState@hunker:
+		Condition: hunker
+		ValidDamageStates: Critical
+	WithFacingSpriteBody@hunker:
+		Sequence: hunker
+		Name: hunker
+		RequiresCondition: hunker
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove, Attack, Move
+		RequiresCondition: hunker
+	WithIdleOverlay@warhoundsparks:
+		Image: warhoundsparks
+		Sequence: idle
+		Palette: greyscale
+		RequiresCondition: hunker
+	WithIdleOverlay@warhoundsparks2:
+		ImpactSounds: vifvrepa.wav
+		Image: explosion
+		Sequence: repair_weld
+		Palette: ra2effect
+		RequiresCondition: hunker
+	AmbientSound:
+		SoundFiles: vifvrepa.wav
+		Volume: 3
+		RequiresCondition: hunker
 	QuantizeFacingsFromSequence:
 		Sequence: stand
 	WithFacingSpriteBody:
 		Sequence: stand
+		RequiresCondition: !hunker
 	WithMoveAnimation:
 		MoveSequence: run
 		ValidMovementTypes: Horizontal, Turn
@@ -4427,6 +4467,7 @@ scwarhound:
 		Delay: 3
 	AttackFrontal:
 		FacingTolerance: 20
+		RequiresCondition: !hunker
 	# AutoTarget:
 	# 	InitialStanceAI: Defend
 	Passenger:
@@ -4785,9 +4826,9 @@ SCPYTHEAN:
 	Inherits@Template: ^SpaceshipTemplate
 	Inherits@Template: ^EpicAirUnitTemplate
 	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@cargo: ^CargoAircraft
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@eject: ^AircraftEjectOnDeath
 	Inherits@announce: ^AnnounceOnBuild
@@ -5039,8 +5080,13 @@ SCBATTLECRUISER:
 		Sequence: shoot
 	WithMoveAnimation:
 		MoveSequence: move
-	WithIdleOverlay@shield_damage:
+	WithIdleOverlay@tacticaljump:
 		Image: scbattlecruiserteleport
+		Sequence: idle
+		Palette: greyscale
+		RequiresCondition: tacticaljump
+	WithIdleOverlay@tacticaljump2:
+		Image: scbattlecruiserteleport2
 		Sequence: idle
 		Palette: greyscale
 		RequiresCondition: tacticaljump
@@ -6821,8 +6867,8 @@ SCDRONE:
 		UndeployedCondition: undeployed
 		CanDeployOnRamps: True
 		SmartDeploy: True
-		DeploySounds: zluburrw.aud
-		UndeploySounds: zluburrw.aud
+		DeploySounds: zburrowup.wav
+		UndeploySounds: zburrowdown.wav
 		UndeployOnMove: true
 		PauseOnCondition: disabled
 		RequiresCondition: !parachute
@@ -6915,6 +6961,9 @@ SCOVERLORD:
 		RequiresSelection: true
 		PipCount: 10
 		FullSequence: pip-yellow
+	WithCargoSounds:
+		EnterSounds: scoverlordgetin.wav
+		ExitSounds: scoverlordgetout.wav
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -6971,8 +7020,100 @@ SCZERGLING:
 		UndeployedCondition: undeployed
 		CanDeployOnRamps: True
 		SmartDeploy: True
-		DeploySounds: zluburrw.aud
-		UndeploySounds: zluburrw.aud
+		DeploySounds: zburrowup.wav
+		UndeploySounds: zburrowdown.wav
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	RangeMultiplier@deployed:
+		Modifier: 0
+		RequiresCondition: deployed
+	Cloak:
+		InitialDelay: 15
+		CloakDelay: 60
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+	# WithIdleOverlay@Shadow:
+	# 	Offset: 0,0,-250
+	Voiced:
+		VoiceSet: SCZerglingVoice
+	GrantConditionOnPrerequisite@upmelee:
+		Condition: upmelee
+		Prerequisites: upzergmelee
+	FirepowerMultiplier@upmelee:
+		Modifier: 133
+		RequiresCondition: upmelee
+	GrantConditionOnPrerequisite@adrenal:
+		Condition: upattack
+		Prerequisites: uplingattack
+	ReloadDelayMultiplier@adrenal:
+		Modifier: 50
+		RequiresCondition: upattack
+	GrantConditionOnPrerequisite@metab:
+		Condition: upspeed
+		Prerequisites: uplingspeed
+	SpeedMultiplier@metab:
+		Modifier: 133
+		RequiresCondition: upspeed
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+SCTALON:
+	Inherits@zerg: ^BasicZerg
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
+	Inherits@shadow: ^SCSmallShadow
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@bot: ^BotAutoDeploySwitchMode
+	Tooltip:
+		Name: Talon
+	Valued:
+		Cost: 150
+	Power:
+		Amount: -5
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~scspawningpool
+		Queue: Infantry, RAInfantry
+		Description: Fast Zerg basic assault strain.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
+	Mobile:
+		Speed: 110
+		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
+	Health:
+		HP: 11000
+	ChangesHealth@SelfHealing:
+		Step: 11
+	Armament:
+		Weapon: ZerglingClaw
+		FireDelay: 3
+	AttackFrontal:
+		FacingTolerance: 0
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: True
+		SmartDeploy: True
+		DeploySounds: zburrowup.wav
+		UndeploySounds: zburrowdown.wav
 		UndeployOnMove: true
 		PauseOnCondition: disabled
 		RequiresCondition: !parachute
@@ -7073,8 +7214,8 @@ SCHYDRALISK:
 		UndeployedCondition: undeployed
 		CanDeployOnRamps: True
 		SmartDeploy: True
-		DeploySounds: zluburrw.aud
-		UndeploySounds: zluburrw.aud
+		DeploySounds: zburrowup.wav
+		UndeploySounds: zburrowdown.wav
 		UndeployOnMove: true
 		PauseOnCondition: disabled
 		RequiresCondition: !parachute
@@ -7087,7 +7228,6 @@ SCHYDRALISK:
 		RequiresCondition: deployed
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled || base-reveal
-	-Crushable:
 	# Selectable:
 	# 	Bounds: 2048, 2048
 	# 	DecorationBounds: 2448, 2448, 0, 0
@@ -7112,14 +7252,16 @@ SCHYDRALISK:
 
 SCMUTALISK:
 	Inherits: ^AirZerg
-	Inherits@Infect: ^InfectionGamemode
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Mutalisk
+	Valued:
+		Cost: 1200
+	Power:
+		Amount: -60
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -7127,36 +7269,31 @@ SCMUTALISK:
 		Prerequisites: ~scspire
 		Queue: Infantry, RAInfantry
 		Description: Airborne Zerg creature.\n Strong vs Infantry, Aircraft
-		BuildDuration: 375
-		BuildDurationModifier: 100
 	Aircraft:
 		InitialFacing: 896
-		TurnSpeed: 28
-		Speed: 120
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		TurnSpeed: 32
+		Speed: 160
+		IdealSeparation: 640
+		RepulsionSpeed: 32
 	Health:
-		HP: 17500
-	Armor:
-		Type: Medium
-	RevealsShroud:
-		Range: 6c0
-		Type: GroundPosition
+		HP: 80000
+	ChangesHealth@SelfHealing:
+		Step: 32
 	Armament:
 		Weapon: MutaliskSpore
 		LocalOffset: 0,0,0
-	Armament@2:
-		Weapon: MutaliskAA
-		LocalOffset: 0,0,0
+	# Armament@2:
+	# 	Weapon: MutaliskAA
+	# 	LocalOffset: 0,0,0
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 		AttackType: Hover
+	-RenderRangeCircle:
+	-RenderDetectionCircle:
 	SelectionDecorations:
 	Selectable:
-		Bounds: 2048, 2048
-		DecorationBounds: 2448, 2448, 0, 0
-	Power:
-		Amount: -25
+		Bounds: 1024, 1024
+		DecorationBounds: 1024, 1024
 	Voiced:
 		VoiceSet: SCMutaliskVoice
 	GrantConditionOnPrerequisite@upattack:
@@ -7165,17 +7302,22 @@ SCMUTALISK:
 	FirepowerMultiplier@upattack:
 		Modifier: 133
 		RequiresCondition: upattack
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCDEVOURER:
 	Inherits: ^AirZerg
-	Inherits@Infect: ^InfectionGamemode
-	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
-	Valued:
-		Cost: 2000
+	Inherits@AntiAir: ^PrioritizeAir
 	Tooltip:
 		Name: Devourer
+	Valued:
+		Cost: 2000
+	Power:
+		Amount: -100
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -7183,21 +7325,14 @@ SCDEVOURER:
 		Prerequisites: ~scgreaterspire
 		Queue: Infantry, RAInfantry
 		Description: Airborne Zerg creature.\n Strong vs Aircraft
-		BuildDuration: 375
-		BuildDurationModifier: 100
 	Aircraft:
 		InitialFacing: 896
-		TurnSpeed: 32
-		Speed: 40
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		TurnSpeed: 18
+		Speed: 90
 	Health:
-		HP: 40000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-		Type: GroundPosition
+		HP: 250000
+	ChangesHealth@SelfHealing:
+		Step: 100
 	Armament:
 		Weapon: MutaliskSpore
 		LocalOffset: 0,0,0
@@ -7205,23 +7340,17 @@ SCDEVOURER:
 		Weapon: SCDevourerAA
 		LocalOffset: 0,0,0
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 		AttackType: Hover
 	SelectionDecorations:
 	Selectable:
-		Bounds: 2048, 2048
-		DecorationBounds: 2448, 2448, 0, 0
-	Power:
-		Amount: -25
+		Bounds: 1280, 1280
+		DecorationBounds: 1280, 1280, 0, 0
 	Voiced:
 		VoiceSet: SCDevourerVoice
 	GrantConditionOnPrerequisite@upattack:
 		Condition: upattack
 		Prerequisites: upflyerattack
-	RangeMultiplier:
-		Modifier: 125
-	FirepowerMultiplier:
-		Modifier: 200
 	FirepowerMultiplier@upattack:
 		Modifier: 133
 		RequiresCondition: upattack
@@ -7230,19 +7359,22 @@ SCDEVOURER:
 
 SCSCOURGE:
 	Inherits: ^AirZerg
-	Inherits@Infect: ^InfectionGamemode
+	Inherits@Template: ^FighterTemplate
+	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@announce: ^AnnounceOnBuild
 	SelectionDecorations:
-	Selectable:
-		Bounds: 1024, 1024
-		DecorationBounds: 1448, 1448, 0, 0
-	Valued:
-		Cost: 350
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
 	Tooltip:
 		Name: Scourge
+	Valued:
+		Cost: 700
+	Power:
+		Amount: -35
+	Selectable:
+		Bounds: 640, 640
+		DecorationBounds: 640, 640, 0, 0
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 60
 		Prerequisites: ~scspire
@@ -7250,18 +7382,17 @@ SCSCOURGE:
 		Description: Aerial suicide bomber.\n Strong vs Aircraft
 	Aircraft:
 		InitialFacing: 896
-		TurnSpeed: 28
-		Speed: 170
+		AltitudeVelocity: 120
+		TurnSpeed: 40
+		Speed: 200
 		Repulsable: false
 		IdealSeparation: 128
 		RepulsionSpeed: 10
+		CruiseAltitude: 1250
 	Health:
-		HP: 3000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 4c0
-		Type: GroundPosition
+		HP: 25000
+	ChangesHealth@SelfHealing:
+		Step: 10
 	AttackAircraft:
 		FacingTolerance: 512
 	Armament@PRIMARY:
@@ -7272,93 +7403,42 @@ SCSCOURGE:
 		UseDeathTypeSuffix: False
 	KillsSelf:
 		RequiresCondition: triggered
-	AttackAircraft:
-		FacingTolerance: 80
-	Power:
-		Amount: -5
 	Voiced:
 		VoiceSet: SCScourgeVoice
 	FireWarheadsOnDeath:
-		Weapon: RA2Terrorist3
-		EmptyWeapon: RA2Terrorist3
+		Weapon: SCScourgeExplosion
 	RenderSprites:
 		PlayerPalette: player_rgba
 
 SCSCOURGEDRONE:
-	Inherits: ^RANeutralPlane
-	Inherits@Template: ^BomberTemplate
-	Inherits@EXP: ^GainsExperienceTD
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: SCSCOURGE
 	SelectionDecorations:
-	Selectable:
-		Bounds: 1024, 1024
-		DecorationBounds: 1448, 1448, 0, 0
-	Valued:
-		Cost: 350
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
 	Tooltip:
 		Name: Scourge Drone
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: ~scspire
-		Queue: Infantry, RAInfantry
-		Description: Aerial suicide bomber.\n Strong vs Aircraft
+	Power:
+		Amount: 0
+	-Buildable:
 	Aircraft:
-		AltitudeVelocity: 120
-		InitialFacing: 768
-		TurnSpeed: 12
-		Speed: 200
 		VTOL: false
 		Repulsable: false
-		CruiseAltitude: 1c256
 		TakeUpCellWhenLand: false
-	Health:
-		HP: 3000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 4c0
-		Type: GroundPosition
-	AttackAircraft:
-		FacingTolerance: 512
-	Armament@PRIMARY:
-		Weapon: ScourgeExplosion
 	CarrierSlave:
 		LandingDistance: 8000
-	GrantConditionOnAttack:
-		Condition: triggered
 	HasParent:
 	RejectsOrders:
-	AttackAircraft:
-	-SpawnActorOnDeath:
-	FireWarheadsOnDeath:
-		Weapon: HeliExplode
-		EmptyWeapon: HeliExplode
-	WithDeathAnimation:
-		UseDeathTypeSuffix: False
-	KillsSelf:
-		RequiresCondition: triggered
-	AttackAircraft:
-		FacingTolerance: 80
-	Power:
-		Amount: -5
-	Voiced:
-		VoiceSet: SCScourgeVoice
-	FireWarheadsOnDeath:
-		Weapon: RA2Terrorist3
-		EmptyWeapon: RA2Terrorist3
-	RenderSprites:
-		PlayerPalette: player_rgba
 
 SCQUEEN:
 	Inherits: ^AirZerg
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Queen
+	Valued:
+		Cost: 1200
+	Power:
+		Amount: -60
 	Buildable:
 		BuildPaletteOrder: 70
 		Prerequisites: ~scqueensnest
@@ -7366,34 +7446,27 @@ SCQUEEN:
 		Description: Defensive Air Unit\nCan breed Broodlings\nCan attack air and ground\nDetector
 	Aircraft:
 		InitialFacing: 896
-		TurnSpeed: 28
-		Speed: 102
+		TurnSpeed: 20
+		Speed: 100
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
-		HP: 12000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+		HP: 125000
+	ChangesHealth@SelfHealing:
+		Step: 50
 	AttackAircraft:
 		FacingTolerance: 80
 		AttackType: Hover
 	SelectionDecorations:
-	Armament:
-		Weapon: QueenBroodling
+	Armament@Spines:
+		Weapon: QueenSpine
 		LocalOffset: 0,0,200
 		FireDelay: 2
 		MuzzleSequence: muzzle
 	Selectable:
 		DecorationBounds: 1280, 1024
-	Power:
-		Amount: -50
 	Voiced:
 		VoiceSet: SCQueenVoice
-	DetectCloaked:
-		Range: 6c0
 	GrantConditionOnDeploy:
 		DeployedCondition: summon
 		SkipMakeAnimation: true
@@ -7402,38 +7475,91 @@ SCQUEEN:
 		PauseOnCondition: disabled
 	AmmoPool:
 		Name: summon
-		Ammo: 3
-		Armaments:
+		Ammo: 5
+		Armaments: SCQUEENSUMMON
 	ReloadAmmoPool:
 		AmmoPool: summon
-		Delay: 600
-		Count: 3
+		Delay: 125
+		Count: 1
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 5
+		AmmoPool: summon
 	PeriodicExplosion@projections:
 		Weapon: SCQUEENSUMMON
 		RequiresCondition: summon
 		AmmoPoolName: summon
 	AutoDeployer:
 		DeployChance: 100
-			WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
 	RenderSprites:
 		PlayerPalette: player_rgba
 
+SCGUARDIAN:
+	Inherits: ^AirZerg
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@announce: ^AnnounceOnBuild
+	Tooltip:
+		Name: Guardian
+	Valued:
+		Cost: 2200
+	Power:
+		Amount: -110
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~scgreaterspire
+		Queue: Infantry, RAInfantry
+		Description: Heavy Zerg bomber.\n Strong vs Vehicles, Buildings\n Weak vs Aircraft
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 10
+		Speed: 50
+		IdealSeparation: 1c0
+		RepulsionSpeed: 10
+	Health:
+		HP: 150000
+	ChangesHealth@SelfHealing:
+		Step: 60
+	Armament:
+		Weapon: GuardianShoot
+		LocalOffset: 400,0,0
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1024
+	Voiced:
+		VoiceSet: SCGuardianVoice
+	GrantConditionOnPrerequisite@upattack:
+		Condition: upattack
+		Prerequisites: upflyerattack
+	FirepowerMultiplier@upattack:
+		Modifier: 133
+		RequiresCondition: upattack
+	RenderSprites:
+		PlayerPalette: player_rgba
+
 SCULTRALISK:
-	Inherits@EXPERIENCE: ^GainsExperienceMelee
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@zerg: ^VeryLargeZerg
-	Inherits@MC: ^MCImmune
+	Inherits@Template: ^LineBreakerTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@SHADOWS: ^Shadows
 	Inherits@ND: ^NotDevourable
-	Selectable:
-		Bounds: 1024, 1024
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Ultralisk
+	Valued:
+		Cost: 2400
+	Power:
+		Amount: -120
 	Buildable:
 		BuildPaletteOrder: 80
 		Prerequisites: ~scultraliskcavern
@@ -7441,26 +7567,23 @@ SCULTRALISK:
 		Description: Heavy Zerg assault strain.\n Strong vs Vehicles\n Weak vs Aircraft
 	Mobile:
 		Speed: 100
-		Locomotor: heavytracked
 	Health:
-		HP: 100000
+		HP: 400000
+	ChangesHealth@SelfHealing:
+		Step: 160
 	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 6c0
-	AutoTarget:
-		ScanRadius: 6
-		InitialStance: AttackAnything
+		Type: Superheavy
 	Armament:
 		Weapon: UltraliskHusk
 		FireDelay: 3
 	AttackFrontal:
 		FacingTolerance: 0
+	AutoTarget:
+		ScanRadius: 10
+		InitialStance: AttackAnything
 	WithInfantryBody:
 	-HitShape:
 	HitShape:
-	Power:
-		Amount: -50
 	-Crushable:
 	Passenger:
 		Weight: 4
@@ -7512,22 +7635,27 @@ SCULTRALISK:
 	FirepowerMultiplier@upmelee:
 		Modifier: 150
 		RequiresCondition: upmelee
+	Selectable:
+		Bounds: 1024, 1024
+		DecorationBounds: 1536, 1536
 	RenderSprites:
 		PlayerPalette: player_rgba
 
 SCLURKER:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@zerg: ^LargeZerg
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@exp: ^GainsExperienceTD
 	Inherits@editorhack: ^DeployableInfantryEditor
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@bot: ^BotMicromanageable
 	Inherits@SHADOWS: ^Shadows
-	Selectable:
-		Bounds: 1024, 1024
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Lurker
+	Valued:
+		Cost: 1300
+	Power:
+		Amount: -65
 	Buildable:
 		BuildPaletteOrder: 90
 		Prerequisites: ~schydraliskden, ~scevolutionchamber, ~sclair
@@ -7538,19 +7666,13 @@ SCLURKER:
 		Locomotor: wheeled
 		RequireForceMoveCondition: !undeployed
 	Health:
-		HP: 30000
+		HP: 125000
+	ChangesHealth@SelfHealing:
+		Step: 50
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
 	-HitShape:
 	HitShape:
-	Power:
-		Amount: -25
-	DamageMultiplier:
-		Modifier: 50
-		RequiresCondition: deployed
 	GrantConditionOnDeploy:
 		PauseOnCondition: disabled
 		DeployedCondition: deployed
@@ -7587,8 +7709,6 @@ SCLURKER:
 		RequiresCondition: deployed
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled || base-reveal
-	DetectCloaked:
-		Range: 0c0
 	Crushable:
 		RequiresCondition: undeployed
 	Passenger:
@@ -7598,10 +7718,13 @@ SCLURKER:
 	AutoDeployer:
 		DeployChance: 100
 		DeployTicks: 250
-		UndeployTicks: 1000
+		UndeployTicks: 500
 	Voiced:
 		VoiceSet: SCLurkerVoice
 	Inherits@EXT: ^ExternalConditions ##########
+	Selectable:
+		Bounds: 1024, 1024
+		DecorationBounds: 1280, 1280
 	WithShadow:
 		Offset: 128, 12, 0
 		ZOffset: -512
@@ -7615,64 +7738,13 @@ SCLURKER:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
-SCGUARDIAN:
-	Inherits: ^AirZerg
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@announce: ^AnnounceOnBuild
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Guardian
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 100
-		Prerequisites: ~scgreaterspire
-		Queue: Infantry, RAInfantry
-		Description: Heavy Zerg bomber.\n Strong vs Vehicles, Buildings\n Weak vs Aircraft
-	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 28
-		Speed: 40
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
-	Health:
-		HP: 36000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
-	Armament:
-		Weapon: GuardianShoot
-		LocalOffset: 400,0,0
-	AttackAircraft:
-		FacingTolerance: 80
-		AttackType: Hover
-	SelectionDecorations:
-	Selectable:
-		DecorationBounds: 1280, 1024
-	Power:
-		Amount: -60
-	Voiced:
-		VoiceSet: SCGuardianVoice
-	GrantConditionOnPrerequisite@upattack:
-		Condition: upattack
-		Prerequisites: upflyerattack
-	FirepowerMultiplier@upattack:
-		Modifier: 133
-		RequiresCondition: upattack
-	RenderSprites:
-		PlayerPalette: player_rgba
-
 SCINFESTEDTERRAN:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@zerg: ^LargeZerg
 	Inherits@announce: ^AnnounceOnBuild
 	Valued:
-		Cost: 500
+		Cost: 400
 	Tooltip:
 		Name: Infested Terran
 	Buildable:
@@ -7683,7 +7755,9 @@ SCINFESTEDTERRAN:
 	Mobile:
 		Speed: 95
 	Health:
-		HP: 9000
+		HP: 60000
+	ChangesHealth@SelfHealing:
+		Step: 60
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -7722,8 +7796,8 @@ SCINFESTEDTERRAN:
 		UndeployedCondition: undeployed
 		CanDeployOnRamps: True
 		SmartDeploy: True
-		DeploySounds: zluburrw.aud
-		UndeploySounds: zluburrw.aud
+		DeploySounds: zburrowup.wav
+		UndeploySounds: zburrowdown.wav
 		UndeployOnMove: true
 		PauseOnCondition: disabled
 		RequiresCondition: !parachute
@@ -7838,21 +7912,22 @@ DARKSWARM:
 		Condition: DarkSwarm
 
 SCBROODLING:
-	Inherits: ^Soldier
-	Inherits@EXPERIENCE: ^GainsExperienceMelee
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Valued:
-		Cost: 50
+	Inherits@zerg: ^BasicZerg
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Tooltip:
 		Name: Broodling
+	Valued:
+		Cost: 60
 	Mobile:
 		Speed: 120
 	Health:
-		HP: 4500
+		HP: 6000
+	ChangesHealth@SelfHealing:
+		Step: 6
 	Armor:
 		Type: None
-	RevealsShroud:
-		Range: 4c0
 	AutoTarget:
 		ScanRadius: 10
 		InitialStance: AttackAnything
@@ -7874,12 +7949,9 @@ SCBROODLING:
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: infantry ##########
 	-WithDeathAnimation:
-	-DamagedByTerrain:
-	-Crushable:
-	-TakeCover:
 	ChangesHealth@timedlife:
-		PercentageStep: -5
-		Delay: 10
+		Step: -30
+		Delay: 1
 		StartIfBelow: 150
 	-ActorLostNotification:
 	RenderSprites:
@@ -8084,8 +8156,8 @@ SCBEHEMOTH:
 	ActorStatValues:
 		Upgrades: upshiparmor
 	WithCargoSounds:
-		EnterSounds: tdrtra00.wav
-		ExitSounds: tdrtra00.wav
+		EnterSounds: scoverlordgetin.wav
+		ExitSounds: scoverlordgetout.wav
 
 SCBEHEMOTH.Husk:
 	Inherits: ^PlaneHusk
