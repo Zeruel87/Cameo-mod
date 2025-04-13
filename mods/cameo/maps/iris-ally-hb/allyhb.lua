@@ -1,6 +1,27 @@
 
 SankalpaArrival = false
 
+Difficulty = Map.LobbyOptionOrDefault("difficulty", "normal")
+if Difficulty == "easy" then
+	DateTime.TimeLimit = DateTime.Minutes(5) + DateTime.Seconds(10)
+	NitroTaskForceSmall = { "ftrk", "3tnk" }
+	NitroTaskForceMedium = { "ftrk", "ftrk", "3tnk" }
+	NitroTaskForceLarge = { "3tnk", "3tnk", "3tnk" }
+	HailMaryWave = { "modoitank" }
+elseif Difficulty == "normal" then
+	DateTime.TimeLimit = DateTime.Minutes(10) + DateTime.Seconds(20)
+	NitroTaskForceSmall = { "ftrk", "ftrk", "3tnk" }
+	NitroTaskForceMedium = { "ftrk", "ftrk", "ftrk", "3tnk", "v2rl" }
+	NitroTaskForceLarge = { "3tnk", "3tnk", "3tnk", "v2rl", "v2rl", "4tnk" }
+	HailMaryWave = { "modoitank", "modoitank", "exorcistoitank" }
+elseif Difficulty == "hard" then
+	DateTime.TimeLimit = DateTime.Minutes(15) + DateTime.Seconds(40)
+	NitroTaskForceSmall = { "ftrk", "ftrk", "ftrk", "3tnk", "v2rl" }
+	NitroTaskForceMedium = { "ftrk", "ftrk", "ftrk", "ftrk", "ftrk", "3tnk", "3tnk", "3tnk", "v2rl", "v2rl" }
+	NitroTaskForceLarge = { "3tnk", "3tnk", "3tnk", "3tnk", "3tnk", "3tnk", "v2rl", "v2rl", "4tnk", "4tnk" }
+	HailMaryWave = { "modoitank", "modoitank", "modoitank", "modoitank", "exorcistoitank", "exorcistoitank" }
+end
+
 Notification = function (text)
 	Media.DisplayMessage(text, "Notification", HSLColor.SkyBlue)
 end
@@ -65,11 +86,6 @@ end
 JPPoints = {JPSpawn.Location, JPDeploy.Location}
 SecondMCVSpawn = {EnemySpawnThree.Location, SecondBaseDeploy.Location}
 
-NitroTaskForceSmall = { "ftrk", "ftrk", "3tnk" }
-NitroTaskForceMedium = { "ftrk", "ftrk", "ftrk", "3tnk", "3tnk", "v2rl" }
-NitroTaskForceLarge = { "3tnk", "3tnk", "3tnk", "3tnk", "3tnk", "v2rl", "v2rl", "4tnk" }
-HailMaryWave = { "modoitank", "modoitank", "modoitank", "exorcistoitank" }
-
 SankalpaHeli = { "modhip" }
 SankalpaAirForce = { "heli", "heli", "heli" }
 SankalpaDefenseForce = { "nodftnk2", "nodftnk2", "chemssm", "chemssm" }
@@ -94,7 +110,6 @@ WorldLoaded = function ()
 		NewHopeTwo.AddPrimaryObjective("Defend the harbour until support arrives.")
 	}
 
-	DateTime.TimeLimit = DateTime.Minutes(20) + DateTime.Seconds(10)
 	Trigger.AfterDelay(DateTime.Seconds(3), function ()
 		Tip("BOTH Construction Yards must survive. They cannot be rebuilt.")
 	end)
@@ -140,7 +155,7 @@ WorldLoaded = function ()
 			end)
 		end)
 		Reinforcements.Reinforce(Sankalpa, SankalpaAirForce, {SpawnTwo.Location}, 0, UnitHunt)
-		Reinforcements.ReinforceWithTransport(Sankalpa, "cncrss", SankalpaDefenseForce, {SpawnThree.Location}, 0, function (transport)
+		Reinforcements.ReinforceWithTransport(Sankalpa, "cncrss", SankalpaDefenseForce, {SpawnThree.Location}, nil, function (transport)
 			Trigger.OnIdle(transport, function (transport)
 				transport.Move(TransportTwo.Location)
 				transport.Wait(DateTime.Seconds(3))
@@ -151,6 +166,7 @@ WorldLoaded = function ()
 			la.Move(SpawnThree.Location)
 			la.Destroy()
 		end)
+		Reinforcements.Reinforce(Sankalpa, SankalpaAirForce, {SpawnFive.Location}, 0, UnitHunt)
 
 		Trigger.AfterDelay(DateTime.Seconds(12), function ()
 			NewHopeOne.MarkCompletedObjective(NewHopeObjectives[1])
@@ -162,17 +178,17 @@ WorldLoaded = function ()
 end
 
 RegularAttackWaves = function ()
-	if DateTime.GameTime < DateTime.Minutes(6) then
+	if DateTime.GameTime < DateTime.Minutes(3) then
 		SendSmallWaves()
-	elseif DateTime.GameTime < DateTime.Minutes(12) then
+	elseif DateTime.GameTime < DateTime.Minutes(6) then
 		SendMediumWaves()
 	else
 		SendLargeWaves()
 	end
-	if DateTime.GameTime > DateTime.Minutes(19) + DateTime.Seconds(50) then
+	if DateTime.TimeLimit < DateTime.Minutes(1) then
 		Reinforcements.Reinforce(Nitro, HailMaryWave, {EnemySpawnOne.Location}, 0, UnitHunt)
 	end
-	Trigger.AfterDelay(DateTime.Seconds(60), RegularAttackWaves)
+	Trigger.AfterDelay(DateTime.Seconds(120), RegularAttackWaves)
 end
 
 SeaAttackWaves = function ()
