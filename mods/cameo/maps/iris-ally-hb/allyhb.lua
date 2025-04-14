@@ -1,3 +1,6 @@
+
+SankalpaArrival = false
+
 Notification = function (text)
 	Media.DisplayMessage(text, "Notification", HSLColor.SkyBlue)
 end
@@ -68,6 +71,7 @@ NitroTaskForceLarge = { "3tnk", "3tnk", "3tnk", "3tnk", "3tnk", "v2rl", "v2rl", 
 HailMaryWave = { "modoitank", "modoitank", "modoitank", "exorcistoitank" }
 
 SankalpaHeli = { "modhip" }
+SankalpaAirForce = { "heli", "heli", "heli" }
 SankalpaDefenseForce = { "nodftnk2", "nodftnk2", "chemssm", "chemssm" }
 
 NavySmall = { "ss" }
@@ -79,6 +83,7 @@ WorldLoaded = function ()
 	Sankalpa = Player.GetPlayer("Sankalpa")
 	Nitro = Player.GetPlayer("Nitro")
 	NitroJP = Player.GetPlayer("NitroJP")
+	NitroRed = Player.GetPlayer("NitroRed")
 	Neutral = Player.GetPlayer("Neutral")
 	-- WorldLoadedGeneralsPromotions()
 
@@ -88,12 +93,12 @@ WorldLoaded = function ()
 		NewHopeOne.AddPrimaryObjective("Defend the harbour until support arrives."),
 		NewHopeTwo.AddPrimaryObjective("Defend the harbour until support arrives.")
 	}
-	
+
 	DateTime.TimeLimit = DateTime.Minutes(20) + DateTime.Seconds(10)
 	Trigger.AfterDelay(DateTime.Seconds(3), function ()
 		Tip("BOTH Construction Yards must survive. They cannot be rebuilt.")
 	end)
-	
+
 	Trigger.AfterDelay(DateTime.Seconds(10), RegularAttackWaves)
 	Trigger.AfterDelay(DateTime.Seconds(60), SeaAttackWaves)
 
@@ -106,7 +111,7 @@ WorldLoaded = function ()
 	end)
 
 	Trigger.AfterDelay(DateTime.Minutes(10), function()
-		Reinforcements.Reinforce(Nitro, {"ramcv.soviet"}, SecondMCVSpawn, 0, function (mcv)
+		Reinforcements.Reinforce(NitroRed, {"ramcv.soviet"}, SecondMCVSpawn, 0, function (mcv)
 			Trigger.OnIdle(mcv, function (mcv)
 				mcv.Deploy()
 			end)
@@ -124,10 +129,34 @@ WorldLoaded = function ()
 	end)
 
 	Trigger.OnTimerExpired(function ()
-		-- More to be added later --
-		
-		NewHopeOne.MarkCompletedObjective(NewHopeObjectives[1])
-		NewHopeTwo.MarkCompletedObjective(NewHopeObjectives[2])
+		Notification("The Sankalpa have arrived!")
+		SankalpaArrival = true
+		Reinforcements.Reinforce(Sankalpa, SankalpaHeli, {SpawnOne.Location}, 0, function(heli)
+			Trigger.OnIdle(heli, function (heli)
+				heli.Move(TransportOne.Location)
+				heli.Wait(DateTime.Seconds(3))
+				heli.UnloadPassengers()
+				heli.Destroy()
+			end)
+		end)
+		Reinforcements.Reinforce(Sankalpa, SankalpaAirForce, {SpawnTwo.Location}, 0, UnitHunt)
+		Reinforcements.ReinforceWithTransport(Sankalpa, "cncrss", SankalpaDefenseForce, {SpawnThree.Location}, 0, function (transport)
+			Trigger.OnIdle(transport, function (transport)
+				transport.Move(TransportTwo.Location)
+				transport.Wait(DateTime.Seconds(3))
+				transport.UnloadPassengers()
+			end)
+		end, function (la)
+			la.Wait(DateTime.Seconds(3))
+			la.Move(SpawnThree.Location)
+			la.Destroy()
+		end)
+
+		Trigger.AfterDelay(DateTime.Seconds(12), function ()
+			NewHopeOne.MarkCompletedObjective(NewHopeObjectives[1])
+			NewHopeTwo.MarkCompletedObjective(NewHopeObjectives[2])
+		end)
+
 	end)
 
 end
@@ -162,19 +191,19 @@ end
 SendSmallWaves = function ()
 	Reinforcements.Reinforce(Nitro, NitroTaskForceSmall, {EnemySpawnOne.Location}, 0, UnitHunt)
 	Reinforcements.Reinforce(Nitro, NitroTaskForceSmall, {EnemySpawnTwo.Location}, 0, UnitHunt)
-	Reinforcements.Reinforce(Nitro, NitroTaskForceSmall, {EnemySpawnThree.Location}, 0, UnitHunt)
+	Reinforcements.Reinforce(NitroRed, NitroTaskForceSmall, {EnemySpawnThree.Location}, 0, UnitHunt)
 end
 
 SendMediumWaves = function ()
 	Reinforcements.Reinforce(Nitro, NitroTaskForceMedium, {EnemySpawnOne.Location}, 0, UnitHunt)
 	Reinforcements.Reinforce(Nitro, NitroTaskForceMedium, {EnemySpawnTwo.Location}, 0, UnitHunt)
-	Reinforcements.Reinforce(Nitro, NitroTaskForceMedium, {EnemySpawnThree.Location}, 0, UnitHunt)
+	Reinforcements.Reinforce(NitroRed, NitroTaskForceMedium, {EnemySpawnThree.Location}, 0, UnitHunt)
 end
 
 SendLargeWaves = function ()
 	Reinforcements.Reinforce(Nitro, NitroTaskForceLarge, {EnemySpawnOne.Location}, 0, UnitHunt)
 	Reinforcements.Reinforce(Nitro, NitroTaskForceLarge, {EnemySpawnTwo.Location}, 0, UnitHunt)
-	Reinforcements.Reinforce(Nitro, NitroTaskForceLarge, {EnemySpawnThree.Location}, 0, UnitHunt)
+	Reinforcements.Reinforce(NitroRed, NitroTaskForceLarge, {EnemySpawnThree.Location}, 0, UnitHunt)
 end
 
 Tick = function ()
