@@ -3,7 +3,7 @@ SankalpaArrival = false
 
 Difficulty = Map.LobbyOptionOrDefault("difficulty", "normal")
 if Difficulty == "easy" then
-	DateTime.TimeLimit = DateTime.Minutes(5) + DateTime.Seconds(10)
+	DateTime.TimeLimit = DateTime.Minutes(7) + DateTime.Seconds(10)
 	NitroTaskForceSmall = { "ftrk", "3tnk" }
 	NitroTaskForceMedium = { "ftrk", "ftrk", "3tnk" }
 	NitroTaskForceLarge = { "3tnk", "3tnk", "3tnk" }
@@ -83,7 +83,6 @@ UnitHunt = function (a)
 	end)
 end
 
-JPPoints = {JPSpawn.Location, JPDeploy.Location}
 SecondMCVSpawn = {EnemySpawnThree.Location, SecondBaseDeploy.Location}
 
 SankalpaHeli = { "modhip" }
@@ -118,14 +117,6 @@ WorldLoaded = function ()
 	Trigger.AfterDelay(DateTime.Seconds(60), SeaAttackWaves)
 
 	Trigger.AfterDelay(DateTime.Minutes(3), function()
-		Reinforcements.Reinforce(NitroJP, {"ramcv.japan"}, JPPoints, 0, function (mcv)
-			Trigger.OnIdle(mcv, function (mcv)
-				mcv.Deploy()
-			end)
-		end)
-	end)
-
-	Trigger.AfterDelay(DateTime.Minutes(10), function()
 		Reinforcements.Reinforce(NitroRed, {"ramcv.soviet"}, SecondMCVSpawn, 0, function (mcv)
 			Trigger.OnIdle(mcv, function (mcv)
 				mcv.Deploy()
