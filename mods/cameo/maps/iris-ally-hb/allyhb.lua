@@ -2,24 +2,15 @@
 SankalpaArrival = false
 
 Difficulty = Map.LobbyOptionOrDefault("difficulty", "normal")
-if Difficulty == "easy" then
-	DateTime.TimeLimit = DateTime.Minutes(7) + DateTime.Seconds(10)
-	NitroTaskForceSmall = { "ftrk", "3tnk" }
-	NitroTaskForceMedium = { "ftrk", "ftrk", "3tnk" }
-	NitroTaskForceLarge = { "3tnk", "3tnk", "3tnk" }
-	HailMaryWave = { "modoitank" }
-elseif Difficulty == "normal" then
-	DateTime.TimeLimit = DateTime.Minutes(10) + DateTime.Seconds(20)
-	NitroTaskForceSmall = { "ftrk", "ftrk", "3tnk" }
-	NitroTaskForceMedium = { "ftrk", "ftrk", "ftrk", "3tnk", "v2rl" }
-	NitroTaskForceLarge = { "3tnk", "3tnk", "3tnk", "v2rl", "v2rl", "4tnk" }
-	HailMaryWave = { "modoitank", "modoitank", "exorcistoitank" }
-elseif Difficulty == "hard" then
-	DateTime.TimeLimit = DateTime.Minutes(15) + DateTime.Seconds(40)
-	NitroTaskForceSmall = { "ftrk", "ftrk", "ftrk", "3tnk", "v2rl" }
-	NitroTaskForceMedium = { "ftrk", "ftrk", "ftrk", "ftrk", "ftrk", "3tnk", "3tnk", "3tnk", "v2rl", "v2rl" }
-	NitroTaskForceLarge = { "3tnk", "3tnk", "3tnk", "3tnk", "3tnk", "3tnk", "v2rl", "v2rl", "4tnk", "4tnk" }
-	HailMaryWave = { "modoitank", "modoitank", "modoitank", "modoitank", "exorcistoitank", "exorcistoitank" }
+
+SetTimer = function()
+	if Difficulty == "easy" then
+		DateTime.TimeLimit = DateTime.Minutes(7) + DateTime.Seconds(10)
+	elseif Difficulty == "normal" then
+		DateTime.TimeLimit = DateTime.Minutes(10) + DateTime.Seconds(20)
+	elseif Difficulty == "hard" then
+		DateTime.TimeLimit = DateTime.Minutes(15) + DateTime.Seconds(40)
+	end
 end
 
 Notification = function (text)
@@ -89,9 +80,6 @@ SankalpaHeli = { "modhip" }
 SankalpaAirForce = { "heli", "heli", "heli" }
 SankalpaDefenseForce = { "nodftnk2", "nodftnk2", "chemssm", "chemssm" }
 
-NavySmall = { "ss" }
-NavyLarge = { "ss", "msub" }
-
 WorldLoaded = function ()
 	NewHopeOne = Player.GetPlayer("NewHopeOne")
 	NewHopeTwo = Player.GetPlayer("NewHopeTwo")
@@ -108,13 +96,11 @@ WorldLoaded = function ()
 		NewHopeOne.AddPrimaryObjective("Defend the harbour until support arrives."),
 		NewHopeTwo.AddPrimaryObjective("Defend the harbour until support arrives.")
 	}
+	SetTimer()
 
 	Trigger.AfterDelay(DateTime.Seconds(3), function ()
 		Tip("BOTH Construction Yards must survive. They cannot be rebuilt.")
 	end)
-
-	Trigger.AfterDelay(DateTime.Seconds(10), RegularAttackWaves)
-	Trigger.AfterDelay(DateTime.Seconds(60), SeaAttackWaves)
 
 	Trigger.AfterDelay(DateTime.Minutes(3), function()
 		Reinforcements.Reinforce(NitroRed, {"ramcv.soviet"}, SecondMCVSpawn, 0, function (mcv)
@@ -157,7 +143,7 @@ WorldLoaded = function ()
 			la.Move(SpawnThree.Location)
 			la.Destroy()
 		end)
-		Reinforcements.Reinforce(Sankalpa, SankalpaAirForce, {SpawnFive.Location}, 0, UnitHunt)
+		Reinforcements.Reinforce(Sankalpa, SankalpaAirForce, {SpawnFour.Location}, 0, UnitHunt)
 
 		Trigger.AfterDelay(DateTime.Seconds(12), function ()
 			NewHopeOne.MarkCompletedObjective(NewHopeObjectives[1])
@@ -166,51 +152,6 @@ WorldLoaded = function ()
 
 	end)
 
-end
-
-RegularAttackWaves = function ()
-	if DateTime.GameTime < DateTime.Minutes(3) then
-		SendSmallWaves()
-	elseif DateTime.GameTime < DateTime.Minutes(6) then
-		SendMediumWaves()
-	else
-		SendLargeWaves()
-	end
-	if DateTime.TimeLimit < DateTime.Minutes(1) then
-		Reinforcements.Reinforce(Nitro, HailMaryWave, {EnemySpawnOne.Location}, 0, UnitHunt)
-	end
-	Trigger.AfterDelay(DateTime.Seconds(120), RegularAttackWaves)
-end
-
-SeaAttackWaves = function ()
-	if DateTime.GameTime < DateTime.Minutes(12) then
-		Reinforcements.Reinforce(Nitro, NavySmall, {EnemyNavySpawnOne.Location}, 0, UnitHunt)
-		Reinforcements.Reinforce(Nitro, NavySmall, {EnemyNavySpawnThree.Location}, 0, UnitHunt)
-	else
-		Reinforcements.Reinforce(Nitro, NavyLarge, {EnemyNavySpawnOne.Location}, 0, UnitHunt)
-		Reinforcements.Reinforce(Nitro, NavyLarge, {EnemyNavySpawnTwo.Location}, 0, UnitHunt)
-		Reinforcements.Reinforce(Nitro, NavyLarge, {EnemyNavySpawnThree.Location}, 0, UnitHunt)
-	end
-
-	Trigger.AfterDelay(DateTime.Seconds(90), SeaAttackWaves)
-end
-
-SendSmallWaves = function ()
-	Reinforcements.Reinforce(Nitro, NitroTaskForceSmall, {EnemySpawnOne.Location}, 0, UnitHunt)
-	Reinforcements.Reinforce(Nitro, NitroTaskForceSmall, {EnemySpawnTwo.Location}, 0, UnitHunt)
-	Reinforcements.Reinforce(NitroRed, NitroTaskForceSmall, {EnemySpawnThree.Location}, 0, UnitHunt)
-end
-
-SendMediumWaves = function ()
-	Reinforcements.Reinforce(Nitro, NitroTaskForceMedium, {EnemySpawnOne.Location}, 0, UnitHunt)
-	Reinforcements.Reinforce(Nitro, NitroTaskForceMedium, {EnemySpawnTwo.Location}, 0, UnitHunt)
-	Reinforcements.Reinforce(NitroRed, NitroTaskForceMedium, {EnemySpawnThree.Location}, 0, UnitHunt)
-end
-
-SendLargeWaves = function ()
-	Reinforcements.Reinforce(Nitro, NitroTaskForceLarge, {EnemySpawnOne.Location}, 0, UnitHunt)
-	Reinforcements.Reinforce(Nitro, NitroTaskForceLarge, {EnemySpawnTwo.Location}, 0, UnitHunt)
-	Reinforcements.Reinforce(NitroRed, NitroTaskForceLarge, {EnemySpawnThree.Location}, 0, UnitHunt)
 end
 
 Tick = function ()
