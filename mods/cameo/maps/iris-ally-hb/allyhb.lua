@@ -74,8 +74,6 @@ UnitHunt = function (a)
 	end)
 end
 
-SecondMCVSpawn = {EnemySpawnThree.Location, SecondBaseDeploy.Location}
-
 SankalpaHeli = { "modhip" }
 SankalpaAirForce = { "heli", "heli", "heli" }
 SankalpaDefenseForce = { "nodftnk2", "nodftnk2", "chemssm", "chemssm" }
@@ -85,8 +83,11 @@ WorldLoaded = function ()
 	NewHopeTwo = Player.GetPlayer("NewHopeTwo")
 	Sankalpa = Player.GetPlayer("Sankalpa")
 	Nitro = Player.GetPlayer("Nitro")
+	Nitro.Cash = 100000
 	NitroJP = Player.GetPlayer("NitroJP")
+	NitroJP.Cash = 100000
 	NitroRed = Player.GetPlayer("NitroRed")
+	NitroRed.Cash = 100000
 	Neutral = Player.GetPlayer("Neutral")
 	-- WorldLoadedGeneralsPromotions()
 
@@ -100,14 +101,6 @@ WorldLoaded = function ()
 
 	Trigger.AfterDelay(DateTime.Seconds(3), function ()
 		Tip("BOTH Construction Yards must survive. They cannot be rebuilt.")
-	end)
-
-	Trigger.AfterDelay(DateTime.Minutes(3), function()
-		Reinforcements.Reinforce(NitroRed, {"ramcv.soviet"}, SecondMCVSpawn, 0, function (mcv)
-			Trigger.OnIdle(mcv, function (mcv)
-				mcv.Deploy()
-			end)
-		end)
 	end)
 
 	Trigger.OnRemovedFromWorld(PlayerOneMCV, function ()
