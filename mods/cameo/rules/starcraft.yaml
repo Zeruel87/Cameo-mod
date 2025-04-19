@@ -3848,12 +3848,6 @@ SCMEDIC:
 		Weapon: MedicFlare
 		AmmoUsage: 6
 		PauseOnCondition: ammo < 6
-	Armament@HealGARRISONED:
-		Name: garrisoned
-		Weapon: MedicHeal
-		TargetRelationships: Ally
-		ForceTargetRelationships: None
-		PauseOnCondition: !ammo
 	AmmoPool:
 		Ammo: 12
 		AmmoCondition: ammo
@@ -7046,7 +7040,7 @@ SCZERATUL:
 		CrushClasses: vehicle
 		-CrushSound:
 	Targetable:
-		TargetTypes: Ground, Infantry
+		TargetTypes: Ground, Infantry, Monster
 
 ^LargeZerg:
 	Inherits: ^BasicZerg
@@ -7068,7 +7062,7 @@ SCZERATUL:
 		Condition: hospital
 		Prerequisites: machshop
 	Targetable:
-		TargetTypes: Ground, Vehicle
+		TargetTypes: Ground, Monster
 	Targetable@ivan:
 	Passenger:
 		CargoType: Vehicle
@@ -7165,12 +7159,10 @@ SCOVERLORD:
 		Queue: Infantry, RAInfantry
 		Description: Provides supply and stores resources\nCan transport 8 units
 	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 28
+		TurnSpeed: 6
 		Speed: 30
-		AltitudeVelocity: 1c512
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		RepulsionSpeed: 6
+		AltitudeVelocity: 1500
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
 		MaxWeight: 8
@@ -7231,6 +7223,7 @@ SCBROODWEAVER:
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@cargo: ^CargoAircraft
 	Inherits@bot: ^BotAutoDeployUnarmedAirTransport
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@eject: ^AircraftEjectOnDeath
 	Inherits@storage: ^StoresResources
 	Inherits@announce: ^AnnounceOnBuild
@@ -7252,29 +7245,22 @@ SCBROODWEAVER:
 		Queue: Infantry, RAInfantry
 		Description: Provides supply and stores resources\nCan transport 8 units
 	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 28
-		Speed: 70
-		AltitudeVelocity: 1c512
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		TurnSpeed: 9
+		Speed: 45
+		RepulsionSpeed: 9
+		AltitudeVelocity: 1500
 	Health:
-		HP: 25000
-	Repairable:
-		HpPerStep: 6250
+		HP: 50000
 	ChangesHealth@SelfHealing:
-		Step: 50
-	Armament:
-		Weapon: MedicHeal
-		TargetRelationships: Ally
-		ForceTargetRelationships: None
-		LocalOffset: 600,-100,256
-	AutoTarget:
-		InitialStance: AttackAnything
-	AutoTargetPriority@DEFAULT:
-		ValidTargets: Infantry, plagued, ivanattached, lockdowned
-	Armor:
-		Type: Light
+		Step: 20
+	Armament@Dummy:
+		Weapon: dummytargeting
+	ProximityExternalCondition@HealingField:
+		Range: 10000
+		ValidRelationships: Ally
+		Condition: HealingField
+	WithRangeCircle:
+		Range: 10000
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
 		MaxWeight: 8
@@ -7296,11 +7282,17 @@ SCBROODWEAVER:
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
-	RenderSprites:
-		PlayerPalette: player_rgba
 	WithCargoSounds:
 		EnterSounds: scoverlordgetin.wav
 		ExitSounds: scoverlordgetout.wav
+	GrantConditionOnPrerequisite@upoverlordspeed:
+		Condition: upoverlordspeed
+		Prerequisites: upoverlordspeed
+	SpeedMultiplier@upoverlordspeed:
+		Modifier: 150
+		RequiresCondition: upoverlordspeed
+	RenderSprites:
+		PlayerPalette: player_rgba
 
 SCZERGLING:
 	Inherits@zerg: ^BasicZerg
@@ -8728,7 +8720,7 @@ SCGOREMAW:
 
 SCLURKER:
 	Inherits@AUTOTARGET: ^AutoTargetGround
-	Inherits@zerg: ^LargeZerg
+	Inherits@zerg: ^VeryLargeZerg
 	Inherits@Template: ^FireSupportTemplate
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@editorhack: ^DeployableInfantryEditor
@@ -9070,10 +9062,9 @@ SCKERRIGANZERG:
 		HP: 300000
 	ChangesHealth@SelfHealing:
 		Step: 300
-	Armor:
-		Type: None
 	AutoTarget:
-		ScanRadius: 4
+		ScanRadius: 10
+		InitialStance: AttackAnything
 	Armament:
 		Weapon: SCKERRIGANZERG
 		LocalOffset: 341,-120,128
