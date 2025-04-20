@@ -137,6 +137,8 @@ namespace OpenRA.Mods.CA.Traits
 
 			if (creatorOwner.WinState != WinState.Lost && creatorOwner.PlayerActor.IsInWorld)
 				self.ChangeOwner(creatorOwner);
+			else
+				self.ChangeOwner(self.World.Players.First(p => p.InternalName == info.FallbackOwner));
 
 			if (controlledToken != Actor.InvalidConditionToken)
 				controlledToken = self.RevokeCondition(controlledToken);

@@ -730,7 +730,7 @@ DOG:
 	Inherits: ^DefaultInfantry
 	Inherits@2: ^AffectedByTiberium
 	Inherits@detect: ^GenericGroundDetector
-	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@Template: ^DogTemplate
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@MC: ^MCImmune
@@ -738,6 +738,7 @@ DOG:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 29
 		Prerequisites: ~barr, ~!upcyberdog
+		BuildAtProductionType: Dog
 		Description: actor-dog.description
 	Valued:
 		Cost: 200
@@ -806,6 +807,7 @@ DOG:
 	Voiced:
 		VoiceSet: DogVoice
 	-Targetable@disguise:
+	-InaccuracyMultiplier@artilleryjammer:
 	WithDeathAnimation:
 		DeathTypes:
 			DefaultDeath: 1
@@ -3922,7 +3924,6 @@ RATRAN:
 	Aircraft:
 		TurnSpeed: 25
 		Speed: 125
-		AltitudeVelocity: 0c100
 	Health:
 		HP: 125000
 	Repairable:
@@ -5592,10 +5593,12 @@ KENN:
 	Inherits: ^BaseBuilding
 	Inherits@sell: ^RASovietSpawnActorsOnSell
 	Inherits@shape: ^1x1Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@barr: ^IsDogKennel
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 175
-		Prerequisites: ~rafact.soviets, barr, ~wip
+		Prerequisites: ~rafact.soviet, rabarracks, ~disabled
 		Description: Trains Attack Dogs.
 	Valued:
 		Cost: 200
@@ -6483,7 +6486,7 @@ RA1SYRD:
 	Tooltip:
 		Name: Allied Naval Yard
 	Buildable:
-		Prerequisites: ~rafact.allies, raproc.allies
+		Prerequisites: ~rafact.allies, raproc.allies, ~globalnaval
 	Building:
 		Footprint: =+= +++ =+=
 		Dimensions: 3,3
@@ -6509,7 +6512,7 @@ RA1JSYRD:
 	Tooltip:
 		Name: Japanese Naval Yard
 	Buildable:
-		Prerequisites: ~rafact.japan, jproc
+		Prerequisites: ~rafact.japan, jproc, ~globalnaval
 	Building:
 		Footprint: =+= +++ =+=
 		Dimensions: 3,3
@@ -6537,7 +6540,7 @@ RASPEN:
 	Tooltip:
 		Name: Soviet Sub Pen
 	Buildable:
-		Prerequisites: ~rafact.soviet, raproc.soviet
+		Prerequisites: ~rafact.soviet, raproc.soviet, ~globalnaval
 		Queue: Building, RABuilding
 		Description: template-shipyard.description
 	Building:
@@ -8618,7 +8621,7 @@ GAP:
 	-AutoTarget:
 	-RenderRangeCircle:
 	-ExternalCondition@shrouded:
-	-ExternalCondition@AdvancedTargeting:
+	-ExternalCondition@lockon:
 	-RangeMultiplier@up_gpssatellitesupport:
 	-RevealsShroudMultiplier@up_gpssatellitesupport:
 	-DetectCloakedMultiplier@up_gpssatellitesupport:
@@ -8695,7 +8698,7 @@ RAMGG:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@upgrade: ^ChronoArmor
 	-ExternalCondition@shrouded:
-	-ExternalCondition@AdvancedTargeting:
+	-ExternalCondition@lockon:
 	Buildable:
 		BuildLimit: 1
 		BuildDuration: 1500
@@ -8781,7 +8784,7 @@ MRJ:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
 	Inherits@upgrade: ^ChronoArmor
-	-ExternalCondition@AdvancedTargeting:
+	-ExternalCondition@lockon:
 	Valued:
 		Cost: 5000
 	Tooltip:
@@ -8857,8 +8860,8 @@ MRJ:
 		Weapon: UnitExplode
 	ProximityExternalCondition@AdvancedTargeting:
 		Range: 10000
-		ValidRelationships: Ally
-		Condition: AdvancedTargeting
+		ValidRelationships: Enemy
+		Condition: lockon
 		RequiresCondition: !disabled
 	RevealsShroud:
 		Range: 15000
@@ -9325,7 +9328,7 @@ mortarsoldier:
 cyberdog:
 	Inherits: ^DefaultInfantry
 	Inherits@detect: ^GenericGroundDetector
-	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@Template: ^DogTemplate
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@exp: ^GainsExperienceRA
@@ -9335,7 +9338,8 @@ cyberdog:
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 29
-		Prerequisites: ~upcyberdog
+		Prerequisites: ~upcyberdog, ~barr
+		BuildAtProductionType: Dog
 		Description: Cybernetically modified dog that is far more durable and can attack vehicles.
 	Valued:
 		Cost: 1000
@@ -9404,6 +9408,10 @@ cyberdog:
 	Voiced:
 		VoiceSet: DogVoice
 	-Targetable@disguise:
+	-InaccuracyMultiplier@artilleryjammer:
+	-InaccuracyMultiplier@PromotionUnit:
+	Targetable@dog:
+		TargetTypes: DogImmune
 	WithDeathAnimation:
 		DeathTypes:
 			DefaultDeath: 1
@@ -10197,7 +10205,6 @@ MIGNUKE:
 	Selectable:
 		Bounds: 1536, 1536, 0, 0
 		DecorationBounds: 1536, 1536, 0, 0
-		-Class:
 	SelectionDecorations:
 	Contrail@1:
 		Offset: -725,683,0
@@ -11355,6 +11362,7 @@ shogunexecutioner:
 	Inherits@upgrade: ^NanoTechExtraRepairs
 	Selectable:
 		Bounds: 3000, 4000, 0, 0
+		DecorationBounds: 3000, 4000
 	Valued:
 		Cost: 10000
 	Tooltip:
@@ -11374,6 +11382,9 @@ shogunexecutioner:
 		HpPerStep: 150000
 	ChangesHealth@SelfHealing:
 		Step: 1200
+	AutoTarget:
+		ScanRadius: 10
+		InitialStance: AttackAnything
 	Armament:
 		Weapon: ExecutionerSword
 	AttackFrontal:
@@ -11429,7 +11440,7 @@ MODBGGY:
 	Inherits@upgrade: ^AdvancedPlasmaWeapons
 	Inherits@upgrade: ^NanoTechRepairs
 	Valued:
-		Cost: 600
+		Cost: 900
 	Tooltip:
 		Name: Grenade Buggy
 	UpdatesPlayerStatistics:
