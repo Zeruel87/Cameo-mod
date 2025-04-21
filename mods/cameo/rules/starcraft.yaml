@@ -2234,6 +2234,12 @@ SCHATCHERY:
 	DamageMultiplier@hive:
 		Modifier: 50
 		RequiresCondition: schive
+	GrantConditionOnPowerState@supply:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	ProvidesPrerequisite@supplylimit:
+		Prerequisite: supplylimit
+		RequiresCondition: lowpower
 	RallyPoint: ##########
 		Path: 0,2
 	Exit@1:
@@ -2465,7 +2471,6 @@ SCCREEPCOLONY:
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@EXPERIENCE: ^GainsExperienceBuildings
 	Inherits@armor: ^ZergGroundArmorUpgrades
-	Inherits@weapon: ^ZergMissileWeaponUpgrades
 	Tooltip:
 		Name: Creep Colony
 		RequiresCondition: !sunken && !spore
@@ -4915,7 +4920,7 @@ SCDROPSHIP:
 SCPYTHEAN:
 	Inherits: ^Helicopter
 	Inherits@Template: ^SpaceshipTemplate
-	Inherits@Template: ^EpicAirUnitTemplate
+	Inherits@Epic: ^EpicAirUnitTemplate
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
@@ -5215,7 +5220,7 @@ SCBATTLECRUISER:
 SCPHOBOS:
 	Inherits: ^Helicopter
 	Inherits@Template: ^SpaceshipTemplate
-	Inherits@Template: ^EpicAirUnitTemplate
+	Inherits@Epic: ^EpicAirUnitTemplate
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@EXP: ^GainsExperienceTD
@@ -7039,6 +7044,10 @@ SCZERATUL:
 	Crushable:
 		CrushClasses: vehicle
 		-CrushSound:
+	ProductionTimeMultiplier@supplylimit:
+		Multiplier: 1000
+		Prerequisites: supplylimit
+		Queue: RAInfantry
 	Targetable:
 		TargetTypes: Ground, Infantry, Monster
 
@@ -7073,6 +7082,10 @@ SCZERATUL:
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
 	DeathSounds:
+	ProductionTimeMultiplier@supplylimit:
+		Multiplier: 1000
+		Prerequisites: supplylimit
+		Queue: RAInfantry
 
 ^ZergDoubleSpawner:
 	ProductionCostMultiplier@ZergDoubleSpawner:
@@ -7194,9 +7207,8 @@ SCOVERLORD:
 	-AttackAircraft:
 	-AutoTarget:
 	-RenderRangeCircle:
-	ProductionTimeMultiplier@lowpower:
-		Multiplier: 5
-		Prerequisites: lowpower
+	ProductionTimeMultiplier@supplylimit:
+		Multiplier: 33
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -7204,7 +7216,7 @@ SCOVERLORD:
 		Condition: upoverlordspeed
 		Prerequisites: upoverlordspeed
 	SpeedMultiplier@upoverlordspeed:
-		Modifier: 200
+		Modifier: 150
 		RequiresCondition: upoverlordspeed
 	WithResourceStoragePipsDecoration:
 		Position: BottomLeft
@@ -7233,7 +7245,7 @@ SCBROODWEAVER:
 	Tooltip:
 		Name: Broodweaver
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	Power:
 		Amount: 200
 	UpdatesPlayerStatistics:
@@ -7243,7 +7255,7 @@ SCBROODWEAVER:
 		BuildPaletteOrder: 0
 		Prerequisites: ~schatchery, ~upbroodweaver
 		Queue: Infantry, RAInfantry
-		Description: Provides supply and stores resources\nCan transport 8 units
+		Description: Heals nearby units.
 	Aircraft:
 		TurnSpeed: 9
 		Speed: 45
@@ -7255,12 +7267,15 @@ SCBROODWEAVER:
 		Step: 20
 	Armament@Dummy:
 		Weapon: dummytargeting
+	-RenderRangeCircle:
 	ProximityExternalCondition@HealingField:
-		Range: 10000
+		Range: 9000
 		ValidRelationships: Ally
 		Condition: HealingField
 	WithRangeCircle:
-		Range: 10000
+		Range: 9000
+		Type: heal
+		Color: 55BBFF
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
 		MaxWeight: 8
@@ -7756,8 +7771,7 @@ SCSPITHID:
 	# WithIdleOverlay@Shadow:
 	# 	Offset: 0,0,-320
 	Passenger:
-		Weight: 2
-		CustomPipType: blue
+		Weight: 1
 	Voiced:
 		VoiceSet: SCHydraliskVoice
 	Inherits@EXT: ^ExternalConditions ##########
@@ -7778,7 +7792,7 @@ SCDREADSHROUD:
 	Tooltip:
 		Name: Dreadshroud
 	Valued:
-		Cost: 1800
+		Cost: 1200
 	Power:
 		Amount: -60
 	UpdatesPlayerStatistics:
@@ -7789,14 +7803,14 @@ SCDREADSHROUD:
 		Queue: Infantry, RAInfantry
 		Description: Airborne Zerg creature.\n Strong vs Infantry, Aircraft
 	Aircraft:
-		Speed: 160
-		TurnSpeed: 32
-		RepulsionSpeed: 32
-		IdealSeparation: 640
+		Speed: 120
+		TurnSpeed: 24
+		RepulsionSpeed: 24
+		IdealSeparation: 1000
 	Health:
-		HP: 80000
+		HP: 60000
 	ChangesHealth@SelfHealing:
-		Step: 32
+		Step: 24
 	Armament:
 		Weapon: DreadshroudSpore
 	AttackAircraft:
@@ -7825,25 +7839,25 @@ SCCORRUPTOR:
 	Tooltip:
 		Name: Corruptor
 	Valued:
-		Cost: 1800
+		Cost: 1500
 	Power:
-		Amount: -60
+		Amount: -75
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: ~scgreaterspire, ~upcorruptor
 		Queue: Infantry, RAInfantry
-		Description: Airborne Zerg creature can slow down units.\n Strong vs Infantry, Aircraft
+		Description: Airborne Zerg creature can snare enemy units.
 	Aircraft:
-		Speed: 160
-		TurnSpeed: 32
-		RepulsionSpeed: 32
-		IdealSeparation: 640
+		Speed: 100
+		TurnSpeed: 20
+		RepulsionSpeed: 20
+		IdealSeparation: 1000
 	Health:
-		HP: 80000
+		HP: 100000
 	ChangesHealth@SelfHealing:
-		Step: 32
+		Step: 40
 	Armament:
 		Weapon: CorruptorSpore
 		LocalOffset: 0,0,0
@@ -8099,9 +8113,9 @@ SCMUTALISK:
 	Tooltip:
 		Name: Mutalisk
 	Valued:
-		Cost: 1200
+		Cost: 1000
 	Power:
-		Amount: -60
+		Amount: -50
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -8376,8 +8390,8 @@ SCULTRALISK:
 		Queue: Infantry, RAInfantry
 		Description: Heavy Zerg assault strain.\n Strong vs Vehicles\n Weak vs Aircraft
 	Mobile:
-		Speed: 100
-		TurnSpeed: 20
+		Speed: 80
+		TurnSpeed: 16
 		Locomotor: tracked
 	Health:
 		HP: 400000
@@ -9145,7 +9159,7 @@ SCBEHEMOTH:
 	Inherits: ^AirZerg
 	Inherits: ^Helicopter
 	Inherits@Template: ^SpaceshipTemplate
-	Inherits@Template: ^EpicAirUnitTemplate
+	Inherits@Epic: ^EpicAirUnitTemplate
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@cargo: ^CargoAircraft
@@ -9183,7 +9197,7 @@ SCBEHEMOTH:
 		ExclusiveDeploy: true
 		DeployType: opentopped
 		Types: Infantry, Hacker, Fremen, Vehicle
-		MaxWeight: 8
+		MaxWeight: 12
 		AfterLoadDelay: 0
 		BeforeUnloadDelay: 0
 		AfterUnloadDelay: 0
