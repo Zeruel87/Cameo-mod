@@ -1266,14 +1266,18 @@ SCNEXUS:
 	Inherits@ref: ^Refinery
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@explode: ^BuildingExplodeProtoss
 	Inherits@aicash: ^AIConyardCash
+	Inherits@radar: ^RadarBuilding
 	Inherits@conyard: ^Conyard
+	Inherits@POWERDOWN: ^DisableOnPowerDown
+	Inherits@explode: ^BuildingExplodeProtoss
 	Selectable:
-		Bounds: 3072, 2048
-		DecorationBounds: 3300, 2448, 0, 0
+		Bounds: 3072, 2560, 0, 0
+		DecorationBounds: 3072, 2560, 0, 0
 	Valued:
 		Cost: 2000
+	Power:
+		Amount: 100
 	Tooltip:
 		Name: Nexus
 	Building:
@@ -1281,46 +1285,12 @@ SCNEXUS:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
-	Health:
-		HP: 200000
-	Armor:
-		Type: Wood
-	RevealsShroud:
-		Range: 10c0
-	Production@NORMAL:
-		Produces: Building, Defence
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence
-		RequiresCondition: classicproductionqueues
-	ProductionQueue@ProtossBuilding:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	ProductionQueue@ProtossDefense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Defence
-		QueuedAudio: Building
-		ReadyAudio: ConstructionComplete
-	BaseBuilding:
-	ProductionBar@BuildingProtoss:
-		ProductionType: Building
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@DefenceProtoss:
-		ProductionType: Defence
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RABuildingProtoss:
-		ProductionType: RABuilding
-		RequiresCondition: classicproductionqueues
-	ProductionBar@RADefenceProtoss:
-		ProductionType: RADefence
-		RequiresCondition: classicproductionqueues
-	BaseProvider:
-		Range: 14c0
+	ProductionQueue@Building:
+		LowPowerModifier: 100
+	ProductionQueue@Defense:
+		LowPowerModifier: 100
 	WithBuildingPlacedAnimation:
+	ProvidesPrerequisite@buildingname:
 	RallyPoint: ##########
 		Path: 0,2
 	Exit@1:
@@ -1329,21 +1299,22 @@ SCNEXUS:
 		Facing: 540
 	ProvidesRadar:
 		RequiresCondition: !jammed
-	Power:
-		Amount: 100
-	ExternalCondition@JAMMED:
-		Condition: jammed
-	-WithDeathAnimation:
-	ProvidesPrerequisite@buildingname:
 	Refinery:
-		DockOffset: 0,2
-	StoresResources:
-		Capacity: 1000
+	DockHost:
+		DockAngle: 256
+		DockOffset: 0, 1c512, 0
+	Selectable:
+		Bounds: 3072, 2560, 0, 0
+		DecorationBounds: 3072, 2560, 0, 0
 	WithResourceStoragePipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 10
 		FullSequence: pip-yellow
+	WithProductionOverlay@WELDING:
+		RequiresCondition: !build-incomplete
+		Queues: Building, Defence, RABuilding, RADefence
+		Sequence: build
 	Transforms:
 		IntoActor: scpmcv
 	RenderSprites:
@@ -1352,10 +1323,10 @@ SCNEXUS:
 SCPYLON:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
-	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@power: ^Power
+	Inherits@power: ^PowerPlant
+	Inherits@storage: ^StoresResources
 	Valued:
-		Cost: 500
+		Cost: 400
 	Tooltip:
 		Name: Pylon
 	ProvidesPrerequisite@buildingname:
@@ -1370,119 +1341,11 @@ SCPYLON:
 		Dimensions: 2,2
 		BuildSounds: pshbld03.aud
 	Health:
-		HP: 60000
+		HP: 100000
 	RevealsShroud:
-		Range: 7c0
+		Range: 4c0
 	Power:
-		Amount: 100
-	StoresResources:
-		Capacity: 1200
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: building ##########
-	-WithDeathAnimation:
-	PowerMultiplier@pylonupg:
-		Modifier: 200
-		RequiresCondition: pylonupg
-	Production:
-		Produces: pylonupg.Protoss
-		RequiresCondition: !pylonupg
-	ProductionBar:
-		ProductionType: pylonupg.Protoss
-	ProductionQueue:
-		Type: pylonupg.Protoss
-		DisplayOrder: 0
-		Group: Unit #Addon
-		LowPowerModifier: 200
-		QueueLimit: 1
-		ItemLimit: 1
-	GrantConditionOnProduction@pylonupg:
-		Condition: pylonupg
-		Actors: scpylonexpand
-	RenderSprites:
-		PlayerPalette: player_rgba
-
-	WithResourceStoragePipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 6
-		FullSequence: pip-yellow
-SCPYLONEXPAND:
-	Tooltip:
-		Name: Growing Psionic Force
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: pylonupg.Protoss
-		BuildDuration: 1500
-		BuildDurationModifier: 100
-		Description: Psionic enhancement of this pylon will provide more supply
-	Valued:
-		Cost: 500
-	RenderSprites:
-		Image: scpylon
-	Interactable:
-	AlwaysVisible:
-	KillsSelf:
-		RemoveInstead: true
-
-SCASSIMILATOR:
-	Inherits: ^BaseBuilding
-	Inherits@shape: ^3x2Shape
-	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@ref: ^Refinery
-	Valued:
-		Cost: 550
-	Tooltip:
-		Name: Assimilator
-	ProvidesPrerequisite@buildingname:
-	Buildable:
-		BuildPaletteOrder: 30
-		BuildDuration: 1440
-		Prerequisites: ~scpylon
-		Queue: Building, RABuilding
-		Description: Processes raw Tiberium\ninto useable resources
-	Building:
-		Footprint: _x_ xxx ===
-		Dimensions: 3,3
-		BuildSounds: pshbld03.aud
-	Health:
-		HP: 90000
-	RevealsShroud:
-		Range: 7c0
-	FreeActor:
-		Actor: scprobe
-		SpawnOffset: 0,2
-		Facing: 540
-	SelectionDecorations:
-	Refinery:
-		DockOffset: 0,2
-	StoresResources:
-		Capacity: 1000
-	GivesBuildableArea: ##########
-		AreaTypes: building, cityi
-	-WithDeathAnimation:
-	SeedsResource:
-		ResourceType: SCGas2
-		Interval: 100
-		RequiresCondition: refineryup
-	Production:
-		Produces: Addon.upscrefinery2
-		RequiresCondition: !refineryup
-	ProductionBar:
-		ProductionType: Addon.upscrefinery2
-	ProductionQueue:
-		Type: Addon.upscrefinery2
-		Group: Unit
-		QueueLimit: 1
-		ItemLimit: 1
-		DisplayOrder: 0
-	GrantConditionOnProduction@refineryup:
-		Condition: refineryup
-		Actors: pscupscrefinery2
-	CashTrickler@player:
-		RequiresCondition: refineryup
-		Interval: 50
-		Amount: 50
-		ShowTicks: True
+		Amount: 200
 	WithResourceStoragePipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -1491,37 +1354,80 @@ SCASSIMILATOR:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
-pscupscrefinery2:
+SCASSIMILATOR:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@ref: ^Refinery
+	Inherits@explode: ^BuildingExplodeProtoss
 	Tooltip:
-		Name: Vespene Gas Collector
+		Name: Assimilator
+	Power:
+		Amount: 0
 	Buildable:
-		Prerequisites: anypower
-		BuildPaletteOrder: 800
-		Queue: Addon.upscrefinery2
-		Description: The Refinery generates Vespene gas Capsules
-	Valued:
-		Cost: 2000
+		Prerequisites: ~scnexus
+		BuildPaletteOrder: 20
+		Queue: Building, RABuilding
+		Description: Processes raw Tiberium\ninto useable resources
+	Building:
+		Footprint: _x_ xxx ===
+		BuildSounds: pshbld03.aud
+		Dimensions: 3,3
+	FreeActor@1:
+		Actor: scprobe
+		SpawnOffset: 0,2
+		Facing: 540
+	FreeActor@2:
+		Actor: scprobe
+		SpawnOffset: 0,2
+		Facing: 540
+	SelectionDecorations:
+	Refinery:
+	DockHost:
+		DockAngle: 448
+		DockOffset: -1c0, 1c0, 0
+	DamageMultiplier@assimilatorupg:
+		RequiresCondition: assimilatorupg
+		Modifier: 50
+	WithIdleOverlay@smoke:
+		RequiresCondition: assimilatorupg
+		Sequence: smoke
+		Palette: greyscale
+	SeedsResource:
+		ResourceType: SCGas
+		Interval: 125
+		RequiresCondition: assimilatorupg
+	CashTrickler@assimilatorupg:
+		RequiresCondition: assimilatorupg
+		Interval: 50
+		Amount: 25
+		ShowTicks: True
+	ProvidesPrerequisite:
+		Prerequisite: sctrefineryupgradeavailable
+		RequiresCondition: !assimilatorupg
+	Pluggable:
+		Offset: 1,0
+		Conditions:
+			screfinery: assimilatorupg
+		Requirements:
+			screfinery: !build-incomplete && !assimilatorupg
+	Voiced:
+		VoiceSet: SCRefineryVoice
 	RenderSprites:
-		Image: upscrefinery2
-	Interactable:
-	AlwaysVisible:
-	KillsSelf:
-		RemoveInstead: true
+		PlayerPalette: player_rgba
 
 SCGATEWAY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@explode: ^BuildingExplodeProtoss
 	Inherits@supply: ^SCUnitProduction
 	Inherits@barr: ^IsBarrack
-	Valued:
-		Cost: 600
+	Inherits@explode: ^BuildingExplodeProtoss
 	Tooltip:
 		Name: Gateway
-	ProvidesPrerequisite@buildingname:
+	Power:
+		Amount: 0
 	Buildable:
-		BuildPaletteOrder: 40
+		BuildPaletteOrder: 30
 		Prerequisites: ~scnexus
 		Queue: Building, RABuilding
 		Description: Produces infantry
@@ -1530,43 +1436,25 @@ SCGATEWAY:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	ParallelProductionQueue@INFANTRY:
+		LowPowerModifier: 10000
+	ProductionCostMultiplier@protoss:
+		Multiplier: 125
+	ProductionTimeMultiplier@protoss:
+		Multiplier: 125
+	DamageMultiplier@protoss:
+		Modifier: 75
+	ProvidesPrerequisite@buildingname:
 	Selectable:
 		Bounds: 3072, 2048
 		DecorationBounds: 3300, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 100000
-	RevealsShroud:
-		Range: 9c0
 	RallyPoint:
 		Path: 0,2
 	Exit@1:
 		SpawnOffset: -1024,1024,0
 		ExitCell: 0,2
 		Facing: 540
-	Production@NORMAL:
-		Produces: Infantry
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry
-		RequiresCondition: classicproductionqueues
-	ProductionQueue:
-		Type: Infantry
-		DisplayOrder: 2
-		Group: Infantry
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-	ProductionBar@INFANTRYPROTOSS:
-		ProductionType: Infantry
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAINFANTRYPROTOSS:
-		ProductionType: RAInfantry
-		RequiresCondition: classicproductionqueues
-	-WithDeathAnimation:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -1574,61 +1462,62 @@ SCFORGE:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Valued:
-		Cost: 1500
 	Tooltip:
 		Name: Forge
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 50
+		BuildPaletteOrder: 40
+		BuildDuration: 750
+		BuildDurationModifier: 100
 		Prerequisites: ~scnexus
 		Queue: Building, RABuilding
-		Description: Unlocks Photon Cannon.
+		Description: Unlocks Photon Cannon. Researches infantry upgrades.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	Selectable:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 110000
-	RevealsShroud:
-		Range: 9c0
-	-WithDeathAnimation:
-	Production:
-		Produces: Upgrades
-	ProductionBar:
-		ProductionType: Upgrades
 	RenderSprites:
 		PlayerPalette: player_rgba
 
 SCPHOTONCANNON:
 	Inherits: ^Defense
+	Inherits@Template: ^AntiAirDefenseTemplate
+	Inherits@exp: ^GainsExperienceTDBuilding
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@shape: ^2x2Shape
-	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@EXPERIENCE: ^GainsExperienceBuildings
+	Inherits@POWERDOWN: ^DisableOnPowerDown
 	Valued:
 		Cost: 2000
 	Tooltip:
 		Name: Photon Cannon
 	Buildable:
-		BuildPaletteOrder: 20
+		BuildPaletteOrder: 30
 		Prerequisites: ~scforge
 		Queue: Defence, RADefence
-		BuildDuration: 750
-		BuildDurationModifier: 100
-		Description: Protoss base defense, can attack ground\nand air.
+		Description: Basic Base defense. Can detect cloaked units.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
 		BuildSounds: pshbld03.aud
 	Health:
-		HP: 100000
-	Armor:
-		Type: Medium
+		HP: 200000
 	RevealsShroud:
 		Range: 10c0
 	DetectCloaked:
@@ -1656,33 +1545,37 @@ SCCYBERNETICSCORE:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Valued:
-		Cost: 1500
 	Tooltip:
 		Name: Cybernetics Core
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 60
+		BuildPaletteOrder: 40
+		BuildDuration: 750
+		BuildDurationModifier: 100
 		Prerequisites: ~scgateway
 		Queue: Building, RABuilding
 		Description: Unlocks Dragoon.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	Selectable:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 100000
-	RevealsShroud:
-		Range: 9c0
-	Production:
-		Produces: Upgrades
-	ProductionBar:
-		ProductionType: Upgrades
-	-WithDeathAnimation:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -1690,6 +1583,7 @@ SCSHIELDBATTERY:
 	Inherits: ^BaseBuilding
 	Inherits@explode: ^BuildingExplodeProtoss
 	Inherits@EMP: ^TurretEMP
+	Inherits@shape: ^3x2Shape
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -1707,14 +1601,15 @@ SCSHIELDBATTERY:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	Health:
-		HP: 40000
+		HP: 80000
 	RevealsShroud:
 		Range: 9c0
-	# Armament:
-	# 	Weapon: HealUnitFix
-	# 	LocalOffset: 1100,0,500
-	# 	TargetRelationships: Ally
-	# 	ForceTargetRelationships: None
+	Armament:
+		Weapon: Heal
+		#Cursor: heal
+		#OutsideRangeCursor: heal
+		TargetRelationships: Ally
+		ForceTargetRelationships: None
 	AttackTurreted:
 	Turreted:
 		TurnSpeed: 40
@@ -1740,66 +1635,44 @@ SCSHIELDBATTERY:
 
 SCROBOTICSFACILITY:
 	Inherits: ^BaseBuilding
-	Inherits@shape: ^2x2Shape
+	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@explode: ^BuildingExplodeProtoss
 	Inherits@supply: ^SCUnitProduction
 	Inherits@weap: ^IsWeaponFactory
-	HitShape:
-		UseTargetableCellsOffsets: false
-		TargetableOffsets: 0,0,0, 490,-470,0, 355,512,0, -355,-512,0, -630,512,0
-	Valued:
-		Cost: 1500
+	Inherits@explode: ^BuildingExplodeProtoss
 	Tooltip:
 		Name: Robotics Facility
-	ProvidesPrerequisite@buildingname:
+	Power:
+		Amount: 0
 	Buildable:
-		BuildPaletteOrder: 80
+		BuildPaletteOrder: 30
 		Prerequisites: ~sccyberneticscore
 		Queue: Building, RABuilding
 		Description: Produces vehicles
 	Building:
-		Footprint: xx xx ==
-		Dimensions: 2,3
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	ParallelProductionQueue@VEHICLE:
+		LowPowerModifier: 10000
+	ProductionCostMultiplier@protoss:
+		Multiplier: 125
+	ProductionTimeMultiplier@protoss:
+		Multiplier: 125
+	DamageMultiplier@protoss:
+		Modifier: 75
 	Selectable:
-		Bounds: 2048, 2048
-		DecorationBounds: 2448, 2448, 0, 0
+		Bounds: 3072, 2048
+		DecorationBounds: 3300, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 100000
-	RevealsShroud:
-		Range: 9c0
 	RallyPoint:
 		Path: 0,2
 	Exit@1:
-		SpawnOffset: -512,1536,0
+		SpawnOffset: -1024,1024,0
 		ExitCell: 0,2
 		Facing: 540
-	Production@NORMAL:
-		Produces: Vehicle
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAVehicle
-		RequiresCondition: classicproductionqueues
-	ProductionQueue:
-		Type: Vehicle
-		DisplayOrder: 3
-		Group: Vehicle
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-	ProductionBar@VEHICLEPROTOSS:
-		ProductionType: Vehicle
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAVEHICLEPROTOSS:
-		ProductionType: RAVehicle
-		RequiresCondition: classicproductionqueues
-	-WithDeathAnimation:
+	ProvidesPrerequisite@buildingname:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -1807,15 +1680,15 @@ SCSTARGATE:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
-	Inherits@explode: ^BuildingExplodeProtoss
 	Inherits@supply: ^SCUnitProduction
-	Valued:
-		Cost: 1400
+	Inherits@hpad: ^IsAircraftFactory
+	Inherits@explode: ^BuildingExplodeProtoss
 	Tooltip:
 		Name: Stargate
-	ProvidesPrerequisite@buildingname:
+	Power:
+		Amount: 0
 	Buildable:
-		BuildPaletteOrder: 90
+		BuildPaletteOrder: 80
 		Prerequisites: ~sccyberneticscore
 		Queue: Building, RABuilding
 		Description: Produces aircraft
@@ -1824,73 +1697,56 @@ SCSTARGATE:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	ParallelProductionQueue@AIRCRAFT:
+		LowPowerModifier: 10000
 	Selectable:
 		Bounds: 3072, 2048
 		DecorationBounds: 3300, 2448, 0, 0
-	Health:
-		HP: 120000
-	RevealsShroud:
-		Range: 9c0
 	RallyPoint:
 		Path: 0,2
 	Exit@1:
 		SpawnOffset: -1024,1024,0
 		ExitCell: 0,2
 		Facing: 540
-	Production@NORMAL:
-		Produces: Aircraft
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAAircraft
-		RequiresCondition: classicproductionqueues
-	ProductionQueue:
-		Type: Aircraft
-		DisplayOrder: 4
-		Group: Aircraft
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-	ProductionBar@AIRCRAFTPROTOSS:
-		ProductionType: Aircraft
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAAIRCRAFTPROTOSS:
-		ProductionType: RAAircraft
-		RequiresCondition: classicproductionqueues
-	-WithDeathAnimation:
+	ProvidesPrerequisite@buildingname:
 	RenderSprites:
 		PlayerPalette: player_rgba
-
 
 SCCITADELOFADUN:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Citadel of Adun
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 8000
+		BuildPaletteOrder: 40
+		BuildDuration: 750
+		BuildDurationModifier: 100
 		Prerequisites: ~sccyberneticscore
 		Queue: Building, RABuilding
 		Description: Unlocks Zeratul and Dark Templar.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	Selectable:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 90000
-	RevealsShroud:
-		Range: 9c0
-	-WithDeathAnimation:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -1898,33 +1754,37 @@ SCROBOTICSSUPPORTBAY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Valued:
-		Cost: 1500
 	Tooltip:
 		Name: Robotics Support Bay
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 8010
-		Prerequisites: ~scroboticsfacility, ~techlevel.medium
+		BuildPaletteOrder: 40
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Prerequisites: ~scroboticsfacility
 		Queue: Building, RABuilding
 		Description: Unlocks Reaver.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	Selectable:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 90000
-	RevealsShroud:
-		Range: 9c0
-	Production:
-		Produces: Upgrades
-	ProductionBar:
-		ProductionType: Upgrades
-	-WithDeathAnimation:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -1933,64 +1793,64 @@ SCFLEETBEACON:
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
 	Inherits@SW: ^PrimarySuperweapon
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Fleet Beacon
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite@swlimit:
-		Prerequisite: purebeam
 	Buildable:
-		BuildPaletteOrder: 8020
-		Prerequisites: ~scstargate, ~techlevel.high, !purebeam
+		BuildPaletteOrder: 40
+		BuildDuration: 750
+		BuildDurationModifier: 100
+		Prerequisites: ~scstargate
 		Queue: Building, RABuilding
 		Description: Unlocks Carrier and Purifier Beam support power.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	IonCannonPower:
+		AllowMultiple: True
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
+		Icons:
+			1: ioncannon
+		Cursor: ioncannon
+		ChargeInterval: 7500
+		WeaponDelay: 0
+		Weapon: IonCannon
+		Names:
+			1: power-ioncannon.name
+		Descriptions:
+			1: power-ioncannon.description
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		EndChargeTextNotification: Ion Cannon ready.
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		InsufficientPowerSpeechNotification: InsufficientPower
+		OnFireSound: ion1.aud
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		CameraRange: 6000
+		CameraRemoveDelay: 125
+		CameraActor: CAMERA.small
+		SupportPowerPaletteOrder: 20
+	SupportPowerChargeBar:
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	Selectable:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 180000
-	RevealsShroud:
-		Range: 9c0
-	-WithDeathAnimation:
-	# IonCannonPower:
-	# 	AllowMultiple: true
-	# 	PauseOnCondition: lowpower
-	# 	Prerequisites: ~techlevel.superweapons
-	# 	Icon: ioncannon
-	# 	Cursor: ioncannon
-	# 	ChargeInterval: 6750
-	# 	Effect: explosion
-	# 	EffectSequence: ionring
-	# 	EffectPalette: ra2unit
-	# 	Weapon: TSIonCannon
-	# 	Name: Purifier Beam
-	# 	Description: An orbiting Protoss warship glasses the target.\nApplies instant damage to a small area.
-	# 	BeginChargeSpeechNotification: IonCannonCharging
-	# 	EndChargeSpeechNotification: IonCannonReady
-	# 	SelectTargetSpeechNotification: SelectTarget
-	# 	InsufficientPowerSpeechNotification: InsufficientPower
-	# 	OnFireSound: ion1.aud
-	# 	DisplayRadarPing: True
-	# 	DisplayTimerRelationships: Ally, Neutral, Enemy
-	# 	CameraActor: camera.small
-	# 	SupportPowerPaletteOrder: 20
-	#Production:
-	#	Produces: FleetBeacon
-	#ProductionQueue:
-	#	Type: FleetBeacon
-	#	DisplayOrder: 10
-	#	Group: Aircraft
-	#	ItemLimit: 1
-	#	DisallowPaused: true
-	#ProductionBar:
-	#	ProductionType: FleetBeacon
-	SupportPowerChargeBar:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -1998,39 +1858,37 @@ SCTEMPLARARCHIVES:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Valued:
-		Cost: 1600
 	Tooltip:
 		Name: Templar Archives
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 8030
+		BuildPaletteOrder: 40
+		BuildDuration: 750
+		BuildDurationModifier: 100
 		Prerequisites: ~sccitadelofadun, ~scgateway
 		Queue: Building, RABuilding
 		Description: Unlocks High Templar & Archon.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	Selectable:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 100000
-	RevealsShroud:
-		Range: 9c0
-	#Production:
-	#	Produces: TemplarArchives
-	#ProductionQueue:
-	#	Type: TemplarArchives
-	#	DisplayOrder: 10
-	#	Group: Upgrade
-	#	ItemLimit: 1
-	#	DisallowPaused: true
-	#ProductionBar:
-	#	ProductionType: TemplarArchives
-	-WithDeathAnimation:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -2038,29 +1896,37 @@ SCOBSERVATORY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Observatory
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 8040
+		BuildPaletteOrder: 40
+		BuildDuration: 750
+		BuildDurationModifier: 100
 		Prerequisites: ~scroboticsfacility
 		Queue: Building, RABuilding
 		Description: Unlocks Observer.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	Selectable:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 50000
-	RevealsShroud:
-		Range: 9c0
-	-WithDeathAnimation:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -2068,29 +1934,37 @@ SCARBITERTRIBUNAL:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Valued:
-		Cost: 1500
 	Tooltip:
 		Name: Arbiter Tribunal
+	Valued:
+		Cost: 1500
+	Health:
+		HP: 250000
+	Armor:
+		Type: Wood
+	Power:
+		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 8050
+		BuildPaletteOrder: 40
+		BuildDuration: 750
+		BuildDurationModifier: 100
 		Prerequisites: ~scstargate, ~sctemplararchives
 		Queue: Building, RABuilding
 		Description: Unlocks Arbiter.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
 		BuildSounds: pshbld03.aud
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
 	Selectable:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 100000
-	RevealsShroud:
-		Range: 9c0
-	-WithDeathAnimation:
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -3180,84 +3054,7 @@ SCOVERMIND:
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
-
-SCINFESTEDCOMMANDCENTER:
-	Inherits: ^BaseBuildingZerg
-	Inherits@shape: ^3x2Shape
-	Inherits@SW: ^PrimarySuperweapon
-	Valued:
-		Cost: 2000
-	Tooltip:
-		Name: Infested Command Center
-	ProvidesPrerequisite:
-		Prerequisite: Infested Command Center
-	ProvidesPrerequisite@swlimit:
-		Prerequisite: zergnuke
-	Buildable:
-		BuildPaletteOrder: 8020
-		Prerequisites: ~schive, !zergnuke
-		Queue: Building, RABuilding
-		Description: Unlocks Infested Terran and Nuclear Strike support power.
-	Building:
-		Footprint: xxx xxx
-		Dimensions: 3,2
-		BuildSounds: zchrdy00.aud
-		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil ##########
-	Selectable:
-		Bounds: 3072, 2048
-		DecorationBounds: 3300, 2448, 0, 0
-	SelectionDecorations:
-	Health:
-		HP: 180000
-	RevealsShroud:
-		Range: 7c0
-	-WithDeathAnimation:
-	# NukePower:
-	# 	AllowMultiple: true
-	# 	PauseOnCondition: lowpower
-	# 	Prerequisites: ~techlevel.superweapons
-	# 	Icon: abomb
-	# 	Cursor: nuke
-	# 	ChargeInterval: 9000
-	# 	Name: Nuclear Strike
-	# 	Description: Launch a tactical nuclear warhead.\nApplies heavy damage over a large area.
-	# 	EndChargeSpeechNotification: NuclearWeaponAvailable
-	# 	SelectTargetSpeechNotification: SelectTarget
-	# 	InsufficientPowerSpeechNotification: InsufficientPower
-	# 	LaunchSpeechNotification: NuclearWeaponLaunched
-	# 	IncomingSpeechNotification: NuclearWarheadApproaching
-	# 	MissileWeapon: atomic
-	# 	MissileDelay: 11
-	# 	SpawnOffset: 3c0,0,-1c512
-	# 	DisplayBeacon: True
-	# 	BeaconPoster: atomic
-	# 	BeaconPosterPalette: beaconposter
-	# 	DisplayRadarPing: True
-	# 	DisplayTimerRelationships: Ally, Neutral, Enemy
-	# 	CameraRange: 10c0
-	# 	ArrowSequence: arrow
-	# 	ClockSequence: clock
-	# 	CircleSequence: circles
-	# 	SupportPowerPaletteOrder: 30
-	# 	MissileImage: atomic
-	SupportPowerChargeBar:
-	SpawnActorOnDeath@death1:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death2:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death3:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death4:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death5:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@death6:
-		Actor: SCBROODLING
-	SpawnActorOnDeath@zergsoilkilled:
-		Actor: zergsoilkiller
-	FireWarheadsOnDeath@remover:
-		Weapon: CreepRemover
-		EmptyWeapon: CreepRemover
+		
 ####################################################################################################
 #		UNIT TERRAN
 ####################################################################################################
@@ -6110,11 +5907,14 @@ SCPROBE:
 		PlayerPalette: player_rgba
 
 SCZEALOT:
-	Inherits@EXPERIENCE: ^GainsExperienceMelee
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@bot: ^BotAutoDeploySwitchMode
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -6155,10 +5955,10 @@ SCZEALOT:
 		PlayerPalette: player_rgba
 
 SCDRAGOON:
-	Inherits: ^Walker
+	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@EMP: ^TurretEMP
+	Inherits@EMP: ^FrontalEMP
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@SHADOWS: ^Shadows
 	Selectable:
@@ -6180,11 +5980,12 @@ SCDRAGOON:
 		HP: 65000
 	Armor:
 		Type: Heavy
+	AttackFrontal:
+		FacingTolerance: 0
 	Armament:
 		Weapon: DragoonCannon
 		FireDelay: 10
-	Turreted:
-	AttackTurreted:
+	-WithFacingSpriteBody:
 	WithInfantryBody:
 		IdleSequences: idle
 		MinIdleDelay: 1
@@ -6233,10 +6034,10 @@ SCHIGHTEMPLAR:
 		Queue: Infantry, RAInfantry
 		Description: Protoss psionic warrior.\nCasts psionic storm for massive splash damage\n Strong vs clustered units\n Uncrushable
 	Mobile:
-		Speed: 75
+		Speed: 70
 		Locomotor: hover
 	Health:
-		HP: 12500
+		HP: 35000
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -6977,30 +6778,17 @@ SCARBITER:
 
 SCPMCV:
 	Inherits: ^Vehicle
-	Inherits@EXT: ^ExternalConditions
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@selection: ^SelectableSupportUnit
 	Inherits@mcv: ^MCV
-	Inherits@conyard: ^Conyard
 	Inherits@SHADOWS: ^Shadows
-	Valued:
-		Cost: 2000
 	Buildable:
-		Queue: Building, RABuilding
+		Queue: Defence, RADefence
 		Prerequisites: ~scroboticsfacility
-		BuildPaletteOrder: 800
+		BuildPaletteOrder: 8000
 		Description: Builds structures and provides radar.
 	Tooltip:
 		Name: Mobile Construction Vehicle (Protoss)
-	Selectable:
-		Priority: 4
-		DecorationBounds: 1536, 1536
-	Mobile:
-		Speed: 110
-	Health:
-		HP: 12000
-	Armor:
-		Type: None
-	RevealsShroud:
-		Range: 7c0
 	Transforms:
 		IntoActor: scnexus
 		Offset: -1,-1
@@ -7008,8 +6796,6 @@ SCPMCV:
 		TransformSounds: pshbld03.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
 	SelectionDecorations:
-	ProvidesPrerequisite@faction:
-		Prerequisite: mmprotoss
 	Voiced:
 		VoiceSet: SCProbeVoice
 	WithShadow:
@@ -7071,6 +6857,7 @@ SCAMARANTH:
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -7126,6 +6913,7 @@ SCATREUS:
 	Inherits@EMP: ^FrontalEMP
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@SHADOWS: ^Shadows
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Selectable:
 		Bounds: 1024, 1024
 	Valued:
@@ -7149,7 +6937,7 @@ SCATREUS:
 		FacingTolerance: 0
 	Armament:
 		Weapon: AtreusMG
-		FireDelay: 10
+		LocalOffset: 512,0,256
 	-WithFacingSpriteBody:
 	WithInfantryBody:
 		IdleSequences: idle
@@ -7192,6 +6980,7 @@ SCPOSITRON:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EMP: ^FrontalEMP
 	Inherits@SHADOWS: ^Shadows
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Tooltip:
 		Name: Positron
 	Valued:
@@ -7245,6 +7034,7 @@ SCLEGIONNAIRE:
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Valued:
 		Cost: 250
 	Tooltip:
@@ -7257,7 +7047,7 @@ SCLEGIONNAIRE:
 	Mobile:
 		Speed: 100
 	Health:
-		HP: 22500
+		HP: 60000
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -7290,6 +7080,7 @@ SCPATRIARCH:
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@protoss: ^BasicProtoss
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -7298,18 +7089,17 @@ SCPATRIARCH:
 		BuildPaletteOrder: 30
 		Prerequisites: ~sctemplararchives
 		Queue: Infantry, RAInfantry
-		Description: Protoss psionic warrior.\nCasts psionic storm for massive splash damage\n Strong vs clustered units\n Uncrushable
+		Description: Protoss psionic warrior.\nShoots psionic storm for massive splash damage\n Strong vs clustered units\n Uncrushable
 	Mobile:
 		Speed: 75
 	Health:
 		HP: 12500
 	Armor:
-		Type: None
+		Type: Flak
 	RevealsShroud:
 		Range: 6c0
 	Armament:
-		Weapon: PsiStorm
-		FireDelay: 10
+		Weapon: PatriarchShoot
 	ReloadArmamentsBar:
 		Color: 0000FF
 	AttackFrontal:
