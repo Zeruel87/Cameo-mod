@@ -3023,8 +3023,7 @@ SCOVERMIND:
 		Cost: 1000
 	Tooltip:
 		Name: Overmind
-	ProvidesPrerequisite:
-		Prerequisite: Overmind
+	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 8020
 		Prerequisites: ~schive
@@ -3056,6 +3055,44 @@ SCOVERMIND:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
 		
+SCINFESTEDCOMMANDCENTER:
+	Inherits: ^BaseBuildingZerg
+	Inherits@shape: ^2x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@supply: ^SCUnitProduction
+	Inherits@weap: ^IsWeaponFactory
+	Tooltip:
+		Name: Infested Command Center
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: zchrdy00.aud
+	WithBuildingPlacedAnimation:
+	ProvidesPrerequisite@buildingname:
+	Buildable:
+		BuildPaletteOrder: 8020
+		Prerequisites: ~scovermind
+		Queue: Building, RABuilding
+		Description: Unlocks Siege Tanks.
+		IconPalette: windows256
+	WithBuildingBib:
+	ParallelProductionQueue@VEHICLE:
+		LowPowerModifier: 10000
+	RallyPoint: ##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0 #-1323,1280,0
+		ExitCell: 0,2
+		Facing: 540
+	ProvidesRadar:
+		RequiresCondition: !jammed
+	Selectable:
+		Bounds: 3072, 2560, 0, 0
+		DecorationBounds: 3072, 2560, 0, 0
+	RenderSprites:
+		PlayerPalette: player_rgba
+
 ####################################################################################################
 #		UNIT TERRAN
 ####################################################################################################
@@ -3168,6 +3205,56 @@ SCMARINE:
 		Step: 40
 	Armament@PRIMARY:
 		Weapon: MarineMG
+		LocalOffset: 128,0,256
+	Armament@GARRISONED:
+		Name: garrisoned
+		Weapon: MarineMG
+		MuzzleSequence: muzzle
+	FirepowerMultiplier@TripleShot:
+		Modifier: 33
+	WithMuzzleOverlay:
+	# ProductionTimeMultiplier@speedup:
+	# 	Multiplier: 50
+	# 	Prerequisites: scacademy
+	Voiced:
+		VoiceSet: SCMarineVoice
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upstimpack, upmarinerange, upinfweapon, upinfarmor
+
+SCREAPER:
+	Inherits: ^SCTINFANTRY
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@stim: ^Stimpackable
+	Inherits@range: ^UraniumShellsUpgrade
+	Inherits@armor: ^TerranInfantryWeaponUpgrades
+	Inherits@weapon: ^TerranInfantryArmorUpgrades
+	Tooltip:
+		Name: Reaper
+	Valued:
+		Cost: 200
+	Power:
+		Amount: -10
+	Buildable:
+		Prerequisites: ~scbarracks
+		BuildPaletteOrder: 800
+		Queue: Infantry, RAInfantry
+		Description: Basic Terran infantry.\n Strong vs Infantry\n Weak vs Vehicles\n Can attack aircraft\n Uncrushable
+	Mobile:
+		Speed: 100
+		Locomotor: hover
+	Health:
+		HP: 40000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Armament@PRIMARY:
+		Weapon: GhostSniper
 		LocalOffset: 128,0,256
 	Armament@GARRISONED:
 		Name: garrisoned
@@ -4413,6 +4500,78 @@ SCWRAITH:
 	Inherits@weapon: ^TerranShipArmorUpgrades
 	Tooltip:
 		Name: Wraith
+	Valued:
+		Cost: 1400
+	Power:
+		Amount: -70
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 800
+		Prerequisites: ~scstarport, ~!upsundog
+		Queue: Aircraft, RAAircraft
+		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Buildings, Vehicles
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 24
+		Speed: 120
+	Health:
+		HP: 120000
+	Repairable:
+		HpPerStep: 6000
+	ChangesHealth@SelfHealing:
+		Step: 48
+	Armament@PRIMARY:
+		Weapon: WraithLaser
+		LocalOffset: 400,0,0
+	Armament@SECONDARY1:
+		Weapon: WraithRockets
+		LocalOffset: 400,400,0
+	Armament@SECONDARY2:
+		Weapon: WraithRockets
+		LocalOffset: 400,-400,0
+	FirepowerMultiplier@DualWeapon:
+		Modifier: 50
+	AttackAircraft:
+		FacingTolerance: 40
+		AttackType: Hover
+	GrantConditionOnPrerequisite@cloakon:
+		Condition: upghostcloak
+		Prerequisites: upghostcloak
+	Cloak:
+		RequiresCondition: upghostcloak
+	-SpawnActorOnDeath:
+	FireWarheadsOnDeath:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	EjectOnDeath:
+		PilotActor: scghost
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 786, 786, 0, 0
+	Voiced:
+		VoiceSet: SCWraithVoice
+	DeathSounds:
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upshipweapon, upshiparmor
+
+SCRAVEN:
+	Inherits: ^Helicopter
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@CLOAK: ^CloakedAircraft
+	Inherits@announce: ^AnnounceOnBuild
+	Inherits@armor: ^TerranShipWeaponUpgrades
+	Inherits@weapon: ^TerranShipArmorUpgrades
+	Tooltip:
+		Name: Raven
 	Valued:
 		Cost: 1400
 	Power:
@@ -5901,7 +6060,7 @@ SCZEALOT:
 	Health:
 		HP: 100000
 	ChangesHealth@SelfHealing:
-		Step: 48
+		Step: 100
 	Armament:
 		Weapon: Psi-blades
 		FireDelay: 3
@@ -5942,7 +6101,7 @@ SCDRAGOON:
 	Health:
 		HP: 100000
 	Repairable:
-		HpPerStep: 4000
+		HpPerStep: 100
 	ChangesHealth@SelfHealing:
 		Step: 80
 	Armor:
@@ -5996,7 +6155,7 @@ SCHIGHTEMPLAR:
 	Health:
 		HP: 40000
 	ChangesHealth@SelfHealing:
-		Step: 35
+		Step: 40
 	Armament:
 		Weapon: PsiStorm
 		FireDelay: 10
@@ -6034,7 +6193,7 @@ SCDARKTEMPLAR:
 	Health:
 		HP: 80000
 	ChangesHealth@SelfHealing:
-		Step: 48
+		Step: 80
 	Armament:
 		Weapon: WarpBlade
 		FireDelay: 3
@@ -6061,7 +6220,7 @@ SCSHUTTLE:
 	Tooltip:
 		Name: Shuttle
 	Valued:
-		Cost: 3600
+		Cost: 1000
 	Power:
 		Amount: -180
 	UpdatesPlayerStatistics:
@@ -6091,7 +6250,7 @@ SCSHUTTLE:
 		BeforeUnloadDelay: 0
 		AfterUnloadDelay: 0
 		LoadedCondition: loaded
-		InitialUnits: scmarine, scmarine, scmarine, scmarine, scfirebat, scmarauder, scghost, scmedic
+		InitialUnits: sczealot, sczealot, sczealot, sczealot, scdragoon, scdragoon
 	-SpawnActorOnDeath:
 	FireWarheadsOnDeath:
 		Weapon: HeliExplode
@@ -6105,7 +6264,7 @@ SCSHUTTLE:
 		VoiceSet: SCShuttleVoice
 	DeathSounds:
 	RenderSprites:
-		Image: scdropship
+		Image: scshuttle
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -6119,18 +6278,16 @@ SCSHUTTLE:
 
 SCREAVER:
 	Inherits: ^Vehicle
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@explode: ^UnitExplodeSmallProtoss
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EMP: ^FrontalEMP
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Inherits@Upgrades: ^UpgradesUpgrades
 	Inherits@SHADOWS: ^Shadows
 	Selectable:
 		DecorationBounds: 1280, 1280
 	Valued:
-		Cost: 4000
+		Cost: 1500
 	Tooltip:
 		Name: Reaver
 	Buildable:
@@ -6141,7 +6298,7 @@ SCREAVER:
 	Mobile:
 		Speed: 40
 	Health:
-		HP: 40000
+		HP: 100000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -6426,7 +6583,7 @@ SCSCOUT:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@speed: ^GraviticUpgrade
 	Valued:
-		Cost: 1250
+		Cost: 750
 	Tooltip:
 		Name: Scout
 	UpdatesPlayerStatistics:
@@ -6443,7 +6600,7 @@ SCSCOUT:
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
-		HP: 25000
+		HP: 15000
 	Armor:
 		Type: Medium
 	RevealsShroud:
@@ -6485,7 +6642,7 @@ SCCORSAIR:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@speed: ^GraviticUpgrade
 	Valued:
-		Cost: 1500
+		Cost: 550
 	Tooltip:
 		Name: Corsair
 	UpdatesPlayerStatistics:
@@ -6544,7 +6701,7 @@ SCCARRIER:
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@announce: ^AnnounceGlobal
 	Valued:
-		Cost: 6000
+		Cost: 2000
 	Tooltip:
 		Name: Carrier
 	UpdatesPlayerStatistics:
@@ -6562,7 +6719,7 @@ SCCARRIER:
 		Speed: 45
 		RepulsionSpeed: 36
 	Health:
-		HP: 80000
+		HP: 300000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -6678,7 +6835,7 @@ SCARBITER:
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
-		HP: 42000
+		HP: 200000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -6765,7 +6922,9 @@ SCZERATUL:
 	Mobile:
 		Speed: 106
 	Health:
-		HP: 135000
+		HP: 300000
+	ChangesHealth@SelfHealing:
+		Step: 300
 	Armor:
 		Type: None
 	RevealsShroud:
@@ -6969,48 +7128,41 @@ SCPOSITRON:
 		RequiresCondition: updragoonrange
 
 SCLEGIONNAIRE:
-	Inherits@EXPERIENCE: ^GainsExperienceMelee
+	Inherits@protoss: ^BasicProtoss
+	Inherits@Template: ^MeleeInfantryTemplate
+	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
-	Inherits@protoss: ^BasicProtoss
-	Inherits@announce: ^AnnounceOnBuild
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@bot: ^BotAutoDeploySwitchMode
+	Inherits@weapon: ^ZergMeleeWeaponUpgrades
+	Inherits@armor: ^ZergGroundArmorUpgrades
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Valued:
-		Cost: 250
 	Tooltip:
 		Name: Legionnaire
+	Valued:
+		Cost: 300
+	Power:
+		Amount: -20
 	Buildable:
-		BuildPaletteOrder: 800
+		BuildPaletteOrder: 20
 		Prerequisites: ~scgateway
 		Queue: Infantry, RAInfantry
 		Description: Protoss infantry, attacks in close combat.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft\n Uncrushable
 	Mobile:
-		Speed: 100
+		Speed: 80
 	Health:
-		HP: 60000
-	Armor:
-		Type: None
-	RevealsShroud:
-		Range: 6c0
-	AutoTarget:
-		ScanRadius: 6
-		InitialStance: AttackAnything
+		HP: 150000
+	ChangesHealth@SelfHealing:
+		Step: 150
 	Armament:
 		Weapon: Psi-blades
 		FireDelay: 3
 	AttackFrontal:
 		FacingTolerance: 0
 	WithInfantryBody:
-	Power:
-		Amount: -20
-	Passenger:
-		Weight: 2
-		CustomPipType: blue
 	Voiced:
 		VoiceSet: SCZealotVoice
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -8732,7 +8884,7 @@ SCINFESTEDTERRAN:
 	Inherits@weapon: ^ZergMeleeWeaponUpgrades
 	Inherits@armor: ^ZergGroundArmorUpgrades
 	Tooltip:
-		Name: Infested Terran
+		Name: Infested Terran Bomber
 	Valued:
 		Cost: 400
 	Power:
@@ -8740,7 +8892,7 @@ SCINFESTEDTERRAN:
 	Buildable:
 		BuildPaletteOrder: 8010
 		Prerequisites: ~scinfestedcommandcenter
-		Queue: Infantry, RAInfantry
+		Queue: Vehicle, RAVehicle
 		Description: Suicide bomber infantry.\n Strong vs clustered units\n Does no damage if killed
 	Mobile:
 		Speed: 90
