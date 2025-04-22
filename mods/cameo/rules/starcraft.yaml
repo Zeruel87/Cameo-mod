@@ -173,10 +173,10 @@ World:
 		RequiresCondition: stimmed
 	GrantTimedCondition@stimdamage:
 		Condition: stimdamage
-		Duration: 2
+		Duration: 4
 		RequiresCondition: stimmed
 	ChangesHealth@stimdamage:
-		Step: -10000
+		Step: -2000
 		Delay: 1
 		StartIfBelow: 150
 		DamageTypes: DefaultDeath
@@ -865,6 +865,7 @@ SCBUNKER:
 		Types: Infantry, Hacker, Fremen
 		MaxWeight: 4
 		EjectOnDeath: false
+		InitialUnits: scmarine, scfirebat, scmarauder, scmarine
 	WithCargoSounds:
 		EnterSounds: tdrtra00.wav
 		ExitSounds: tdrtra00.wav
@@ -2148,7 +2149,7 @@ zergsoilkiller4:
 
 ^BaseBuildingZerg:
 	Inherits: ^BaseBuilding
-	Inherits@zergai: ^ZergAIProductionBoost
+	#Inherits@zergai: ^ZergAIProductionBoost
 	Building:
 		# TerrainTypes: ZergSoil ##########
 	# FireWarheadsOnDeath@remover:
@@ -2977,7 +2978,7 @@ SCGREATERSPIRE:
 	Buildable:
 		BuildPaletteOrder: 80
 		Queue: Defence, RADefence
-		Prerequisites: ~greaterspireupgradeavailable
+		Prerequisites: ~sclair, greaterspireupgradeavailable
 		Description: Unlocks multiple zerg air units.
 	Plug:
 		Type: scspire
@@ -7033,6 +7034,53 @@ SCZERATUL:
 #		UNIT ZERG
 ####################################################################################################
 
+^ZergBurrow:
+	Inherits@cloak: ^CloakedVehicle
+	Mobile:
+		RequireForceMoveCondition: !undeployed
+		ImmovableCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
+	AttackFrontal:
+		FacingTolerance: 0
+		RequiresCondition: undeployed
+	WithSpriteBody@deployed:
+		Sequence: deployed
+		Name: deployed
+		RequiresCondition: !undeployed
+	WithInfantryBody:
+		RequiresCondition: undeployed
+	WithMakeAnimation:
+		BodyNames: deployed
+		Sequence: deploy
+		Name: deployed
+		RequiresCondition: undeployed
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !botmicro && deployed
+	RejectsMoveToAttack:
+		RequiresCondition: !botmicro && deployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		CanDeployOnRamps: true
+		SmartDeploy: true
+		DeploySounds: zburrowup.wav
+		UndeploySounds: zburrowdown.wav
+		UndeployOnMove: true
+		PauseOnCondition: disabled
+		RequiresCondition: !parachute
+	Cloak:
+		InitialDelay: 50
+		CloakDelay: 50
+		RequiresCondition: deployed
+		IsPlayerPalette: true
+		PauseOnCondition: cloak-force-disabled || base-reveal
+
+^ZergDoubleSpawner:
+	ProductionCostMultiplier@ZergDoubleSpawner:
+		Multiplier: 200
+
 ^BasicZerg:
 	Inherits: ^DefaultSoldier
 	Inherits@botmicro: ^BotMicromanageable
@@ -7087,10 +7135,6 @@ SCZERATUL:
 		Prerequisites: supplylimit
 		Queue: RAInfantry
 
-^ZergDoubleSpawner:
-	ProductionCostMultiplier@ZergDoubleSpawner:
-		Multiplier: 200
-
 SCDRONE:
 	Inherits: ^Vehicle
 	Inherits@Template: ^HarvesterTemplate
@@ -7099,9 +7143,10 @@ SCDRONE:
 	Inherits@worker: ^SCWorker
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@SHADOWS: ^Shadows
+	Inherits@ZergBurrow: ^ZergBurrow
 	Inherits@weapon: ^ZergMeleeWeaponUpgrades
 	Inherits@armor: ^ZergGroundArmorUpgrades
-	Inherits@SHADOWS: ^Shadows
 	Tooltip:
 		Name: Drone
 	Buildable:
@@ -7109,48 +7154,37 @@ SCDRONE:
 		Description: Collects resources.
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
-	AttackFrontal:
-		FacingTolerance: 0
-	WithMakeAnimation@deployed:
-		Sequence: deployed
-		Name: deployed
-		RequiresCondition: !undeployed
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
-	RejectsMoveToAttack:
-		RequiresCondition: !botmicro && deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
-		DeploySounds: zburrowup.wav
-		UndeploySounds: zburrowdown.wav
-		UndeployOnMove: true
-		PauseOnCondition: disabled
-		RequiresCondition: !parachute
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	Armament:
 		Weapon: DroneAttack
 	Voiced:
 		VoiceSet: SCDroneVoice
+	-WithMakeAnimation:
+	WithMakeAnimation:
+		Sequence: deploy
+		Name: deployed
+		RequiresCondition: undeployed
+	WithIdleOverlay@deployed:
+		RequiresCondition: deployed
+		Image: scdrone
+		Sequence: deployed
+		Palette: greyscale
 	WithHarvesterSpriteBody:
 		ImageByFullness: scdrone, scdronefull
 	-WithFacingSpriteBody:
+	-WithInfantryBody:
+	-WithSpriteBody@deployed:
+	Cloak:
+		InitialDelay: 25
+		CloakDelay: 25
+		MinCloakedAlpha: 0.25
+		MaxCloakedAlpha: 0.25
 	WithShadow:
 		Offset: 128, 128, 0
 		ZOffset: -512
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace
 
 SCOVERLORD:
 	Inherits: ^AirZerg
@@ -7176,6 +7210,8 @@ SCOVERLORD:
 		Speed: 30
 		RepulsionSpeed: 6
 		AltitudeVelocity: 1500
+	EjectOnDeath:
+		PilotActor: SCBROODLING
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
 		MaxWeight: 8
@@ -7228,6 +7264,8 @@ SCOVERLORD:
 		ExitSounds: scoverlordgetout.wav
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upoverlordspeed, upflyerarmor
 
 SCBROODWEAVER:
 	Inherits: ^AirZerg
@@ -7265,17 +7303,28 @@ SCBROODWEAVER:
 		HP: 50000
 	ChangesHealth@SelfHealing:
 		Step: 20
-	Armament@Dummy:
-		Weapon: dummytargeting
 	-RenderRangeCircle:
+	Armament:
+		Weapon: BroodweaverLeech
+		TargetRelationships: Ally
+		ForceTargetRelationships: None
+		LocalOffset: 512,0,256
+		FireDelay: 10
 	ProximityExternalCondition@HealingField:
 		Range: 9000
 		ValidRelationships: Ally
 		Condition: HealingField
+		RequiresCondition: attacking
+	GrantConditionOnAttack:
+		Condition: attacking
+		RevokeDelay: 10
 	WithRangeCircle:
 		Range: 9000
 		Type: heal
 		Color: 55BBFF
+		RequiresCondition: attacking
+	EjectOnDeath:
+		PilotActor: SCBROODLING
 	Cargo:
 		Types: Infantry, Hacker, Fremen, Vehicle
 		MaxWeight: 8
@@ -7308,6 +7357,8 @@ SCBROODWEAVER:
 		RequiresCondition: upoverlordspeed
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upoverlordspeed, upflyerarmor
 
 SCZERGLING:
 	Inherits@zerg: ^BasicZerg
@@ -7318,6 +7369,7 @@ SCZERGLING:
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@bot: ^BotAutoDeploySwitchMode
+	Inherits@ZergBurrow: ^ZergBurrow
 	Inherits@weapon: ^ZergMeleeWeaponUpgrades
 	Inherits@armor: ^ZergGroundArmorUpgrades
 	Tooltip:
@@ -7333,10 +7385,6 @@ SCZERGLING:
 		Description: Fast Zerg basic assault strain.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
 		Speed: 110
-		RequireForceMoveCondition: !undeployed
-		ImmovableCondition: !undeployed
-	Passenger:
-		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 11000
 	ChangesHealth@SelfHealing:
@@ -7346,39 +7394,6 @@ SCZERGLING:
 		FireDelay: 3
 	AttackFrontal:
 		FacingTolerance: 0
-	WithSpriteBody@deployed:
-		Sequence: deployed
-		Name: deployed
-		RequiresCondition: !undeployed
-	WithInfantryBody:
-		RequiresCondition: undeployed
-	WithMakeAnimation:
-		BodyNames: deployed
-		Sequence: deploy
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
-	RejectsMoveToAttack:
-		RequiresCondition: !botmicro && deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
-		DeploySounds: zburrowup.wav
-		UndeploySounds: zburrowdown.wav
-		UndeployOnMove: true
-		PauseOnCondition: disabled
-		RequiresCondition: !parachute
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	# WithIdleOverlay@Shadow:
 	# 	Offset: 0,0,-250
 	Voiced:
@@ -7398,6 +7413,8 @@ SCZERGLING:
 		RequiresCondition: upspeed
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace, uplingattack, uplingspeed
 
 SCTALON:
 	Inherits@zerg: ^BasicZerg
@@ -7408,6 +7425,7 @@ SCTALON:
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@bot: ^BotAutoDeploySwitchMode
+	Inherits@ZergBurrow: ^ZergBurrow
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@weapon: ^ZergMeleeWeaponUpgrades
 	Inherits@armor: ^ZergGroundArmorUpgrades
@@ -7424,11 +7442,7 @@ SCTALON:
 		Description: Fast Zerg basic assault strain.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
 		Speed: 150
-		RequireForceMoveCondition: !undeployed
-		ImmovableCondition: !undeployed
 		Locomotor: fakeaircraft
-	Passenger:
-		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 15000
 	ChangesHealth@SelfHealing:
@@ -7438,39 +7452,6 @@ SCTALON:
 		FireDelay: 3
 	AttackFrontal:
 		FacingTolerance: 0
-	WithSpriteBody@deployed:
-		Sequence: deployed
-		Name: deployed
-		RequiresCondition: !undeployed
-	WithInfantryBody:
-		RequiresCondition: undeployed
-	WithMakeAnimation:
-		BodyNames: deployed
-		Sequence: deploy
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
-	RejectsMoveToAttack:
-		RequiresCondition: !botmicro && deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
-		DeploySounds: zburrowup.wav
-		UndeploySounds: zburrowdown.wav
-		UndeployOnMove: true
-		PauseOnCondition: disabled
-		RequiresCondition: !parachute
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	# WithIdleOverlay@Shadow:
 	# 	Offset: 0,0,-250
 	Voiced:
@@ -7490,6 +7471,8 @@ SCTALON:
 		RequiresCondition: upspeed
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace, uplingattack, uplingspeed
 
 SCSPOREMAW:
 	Inherits@zerg: ^LargeZerg
@@ -7501,6 +7484,7 @@ SCSPOREMAW:
 	Inherits@bot: ^BotAutoDeploySwitchMode
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@ZergBurrow: ^ZergBurrow
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@armor: ^ZergGroundArmorUpgrades
 	Inherits@weapon: ^ZergMissileWeaponUpgrades
@@ -7517,11 +7501,7 @@ SCSPOREMAW:
 		Description: Zerg artillery strain.\n Strong vs Infantry, Vehicles\n Weak vs Aircraft
 	Mobile:
 		Speed: 80
-		RequireForceMoveCondition: !undeployed
-		ImmovableCondition: !undeployed
 		TurnSpeed: 16
-	Passenger:
-		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 25000
 	ChangesHealth@SelfHealing:
@@ -7537,39 +7517,6 @@ SCSPOREMAW:
 	AttackFrontal:
 		FacingTolerance: 0
 	WithMuzzleOverlay:
-	WithSpriteBody@deployed:
-		Sequence: deployed
-		Name: deployed
-		RequiresCondition: !undeployed
-	WithInfantryBody:
-		RequiresCondition: undeployed
-	WithMakeAnimation:
-		BodyNames: deployed
-		Sequence: deploy
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
-	RejectsMoveToAttack:
-		RequiresCondition: !botmicro && deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
-		DeploySounds: zburrowup.wav
-		UndeploySounds: zburrowdown.wav
-		UndeployOnMove: true
-		PauseOnCondition: disabled
-		RequiresCondition: !parachute
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	# Selectable:
 	# 	Bounds: 2048, 2048
 	# 	DecorationBounds: 2448, 2448, 0, 0
@@ -7580,11 +7527,12 @@ SCSPOREMAW:
 		CustomPipType: blue
 	Voiced:
 		VoiceSet: SCHydraliskVoice
-	Inherits@EXT: ^ExternalConditions ##########
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmissile, upcarapace
 
 SCHYDRALISK:
 	Inherits@zerg: ^LargeZerg
@@ -7596,6 +7544,7 @@ SCHYDRALISK:
 	Inherits@bot: ^BotAutoDeploySwitchMode
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@ZergBurrow: ^ZergBurrow
 	Inherits@armor: ^ZergGroundArmorUpgrades
 	Inherits@weapon: ^ZergMissileWeaponUpgrades
 	Inherits@range: ^GroovedSpinesUpgrade
@@ -7612,11 +7561,7 @@ SCHYDRALISK:
 		Description: Zerg armored assault strain.\n Strong vs Infantry, Vehicles, Aircraft\n Weak vs Siege
 	Mobile:
 		Speed: 75
-		RequireForceMoveCondition: !undeployed
-		ImmovableCondition: !undeployed
 		TurnSpeed: 15
-	Passenger:
-		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 80000
 	ChangesHealth@SelfHealing:
@@ -7634,54 +7579,17 @@ SCHYDRALISK:
 	AttackFrontal:
 		FacingTolerance: 0
 	WithMuzzleOverlay:
-	WithSpriteBody@deployed:
-		Sequence: deployed
-		Name: deployed
-		RequiresCondition: !undeployed
-	WithInfantryBody:
-		RequiresCondition: undeployed
-	WithMakeAnimation:
-		BodyNames: deployed
-		Sequence: deploy
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
-	RejectsMoveToAttack:
-		RequiresCondition: !botmicro && deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
-		DeploySounds: zburrowup.wav
-		UndeploySounds: zburrowdown.wav
-		UndeployOnMove: true
-		PauseOnCondition: disabled
-		RequiresCondition: !parachute
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
-	# Selectable:
-	# 	Bounds: 2048, 2048
-	# 	DecorationBounds: 2448, 2448, 0, 0
-	# WithIdleOverlay@Shadow:
-	# 	Offset: 0,0,-320
 	Passenger:
 		Weight: 2
 		CustomPipType: blue
 	Voiced:
 		VoiceSet: SCHydraliskVoice
-	Inherits@EXT: ^ExternalConditions ##########
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmissile, upcarapace
 
 SCSPITHID:
 	Inherits@zerg: ^BasicZerg
@@ -7694,6 +7602,7 @@ SCSPITHID:
 	Inherits@bot: ^BotAutoDeploySwitchMode
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@ZergBurrow: ^ZergBurrow
 	Inherits@armor: ^ZergGroundArmorUpgrades
 	Inherits@weapon: ^ZergMissileWeaponUpgrades
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
@@ -7711,10 +7620,6 @@ SCSPITHID:
 		Description: Zerg armored assault strain.\n Strong vs Infantry, Vehicles, Aircraft\n Weak vs Siege
 	Mobile:
 		Speed: 110
-		RequireForceMoveCondition: !undeployed
-		ImmovableCondition: !undeployed
-	Passenger:
-		RequireForceMoveCondition: !undeployed
 	Health:
 		HP: 40000
 	ChangesHealth@SelfHealing:
@@ -7732,39 +7637,6 @@ SCSPITHID:
 	AttackFrontal:
 		FacingTolerance: 0
 	WithMuzzleOverlay:
-	WithSpriteBody@deployed:
-		Sequence: deployed
-		Name: deployed
-		RequiresCondition: !undeployed
-	WithInfantryBody:
-		RequiresCondition: undeployed
-	WithMakeAnimation:
-		BodyNames: deployed
-		Sequence: deploy
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
-	RejectsMoveToAttack:
-		RequiresCondition: !botmicro && deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
-		DeploySounds: zburrowup.wav
-		UndeploySounds: zburrowdown.wav
-		UndeployOnMove: true
-		PauseOnCondition: disabled
-		RequiresCondition: !parachute
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	# Selectable:
 	# 	Bounds: 2048, 2048
 	# 	DecorationBounds: 2448, 2448, 0, 0
@@ -7774,11 +7646,12 @@ SCSPITHID:
 		Weight: 1
 	Voiced:
 		VoiceSet: SCHydraliskVoice
-	Inherits@EXT: ^ExternalConditions ##########
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmissile, upcarapace
 
 SCDREADSHROUD:
 	Inherits: ^AirZerg
@@ -7826,6 +7699,8 @@ SCDREADSHROUD:
 		VoiceSet: SCMutaliskVoice
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upflyerattack, upflyerarmor
 
 SCCORRUPTOR:
 	Inherits: ^AirZerg
@@ -7879,6 +7754,8 @@ SCCORRUPTOR:
 		MoveSequence: move
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upflyerattack, upflyerarmor
 
 SCSWARMLING:
 	Inherits: ^AirZerg
@@ -7970,6 +7847,36 @@ SCSWARMLING:
 	SpeedMultiplier@Swarmling10:
 		Modifier: 90
 		RequiresCondition: Swarmling >= 33
+	ReloadDelayMultiplier@Swarmling1:
+		Modifier: 90
+		RequiresCondition: Swarmling >= 6
+	ReloadDelayMultiplier@Swarmling2:
+		Modifier: 90
+		RequiresCondition: Swarmling >= 9
+	ReloadDelayMultiplier@Swarmling3:
+		Modifier: 90
+		RequiresCondition: Swarmling >= 12
+	ReloadDelayMultiplier@Swarmling4:
+		Modifier: 90
+		RequiresCondition: Swarmling >= 15
+	ReloadDelayMultiplier@Swarmling5:
+		Modifier: 90
+		RequiresCondition: Swarmling >= 18
+	ReloadDelayMultiplier@Swarmling6:
+		Modifier: 90
+		RequiresCondition: Swarmling >= 21
+	ReloadDelayMultiplier@Swarmling7:
+		Modifier: 90
+		RequiresCondition: Swarmling >= 24
+	ReloadDelayMultiplier@Swarmling8:
+		Modifier: 90
+		RequiresCondition: Swarmling >= 27
+	ReloadDelayMultiplier@Swarmling9:
+		Modifier: 90
+		RequiresCondition: Swarmling >= 30
+	ReloadDelayMultiplier@Swarmling10:
+		Modifier: 90
+		RequiresCondition: Swarmling >= 33
 	RangeMultiplier@Swarmling1:
 		Modifier: 110
 		RequiresCondition: Swarmling >= 6
@@ -8034,6 +7941,8 @@ SCSWARMLING:
 		VoiceSet: SCMutaliskVoice
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upflyerattack, upflyerarmor
 
 SCSHRIEK:
 	Inherits: ^AirZerg
@@ -8101,6 +8010,8 @@ SCSHRIEK:
 		RequiresCondition: upspeed
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace, uplingattack, uplingspeed
 
 SCMUTALISK:
 	Inherits: ^AirZerg
@@ -8150,6 +8061,8 @@ SCMUTALISK:
 		VoiceSet: SCMutaliskVoice
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upflyerattack, upflyerarmor
 
 SCDEVOURER:
 	Inherits: ^AirZerg
@@ -8198,6 +8111,8 @@ SCDEVOURER:
 		VoiceSet: SCDevourerVoice
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upflyerattack, upflyerarmor
 
 SCSCOURGE:
 	Inherits: ^AirZerg
@@ -8254,6 +8169,8 @@ SCSCOURGE:
 		Weapon: SCScourgeExplosion
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upflyerattack, upflyerarmor
 
 SCQUEEN:
 	Inherits: ^AirZerg
@@ -8324,6 +8241,8 @@ SCQUEEN:
 		RequiresSelection: True
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upflyerattack, upflyerarmor
 
 SCGUARDIAN:
 	Inherits: ^AirZerg
@@ -8367,6 +8286,8 @@ SCGUARDIAN:
 		VoiceSet: SCGuardianVoice
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upflyerattack, upflyerarmor
 
 SCULTRALISK:
 	Inherits@zerg: ^VeryLargeZerg
@@ -8376,14 +8297,15 @@ SCULTRALISK:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@SHADOWS: ^Shadows
 	Inherits@ND: ^NotDevourable
+	Inherits@ZergBurrow: ^ZergBurrow
 	Inherits@weapon: ^ZergMeleeWeaponUpgrades
 	Inherits@armor: ^ZergGroundArmorUpgrades
 	Tooltip:
 		Name: Ultralisk
 	Valued:
-		Cost: 2400
+		Cost: 1800
 	Power:
-		Amount: -120
+		Amount: -90
 	Buildable:
 		BuildPaletteOrder: 80
 		Prerequisites: ~scultraliskcavern
@@ -8411,42 +8333,8 @@ SCULTRALISK:
 	Passenger:
 		Weight: 4
 		CustomPipType: blue
-	WithSpriteBody@deployed:
-		Sequence: deployed
-		Name: deployed
-		RequiresCondition: !undeployed
-	WithInfantryBody:
-		RequiresCondition: undeployed
-	WithMakeAnimation:
-		BodyNames: deployed
-		Sequence: deploy
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
-	RejectsMoveToAttack:
-		RequiresCondition: !botmicro && deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
-		DeploySounds: zluburrw.aud
-		UndeploySounds: zluburrw.aud
-		UndeployOnMove: true
-		PauseOnCondition: disabled
-		RequiresCondition: !parachute
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	Voiced:
 		VoiceSet: SCUltraliskVoice
-	Inherits@EXT: ^ExternalConditions ##########
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: vehicle ##########
 	WithShadow:
@@ -8457,6 +8345,8 @@ SCULTRALISK:
 		DecorationBounds: 1536, 1536
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace
 
 SCGOREKRAKEN:
 	Inherits: ^AirZerg
@@ -8508,6 +8398,8 @@ SCGOREKRAKEN:
 		Sequence: shoot
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upflyerattack, upflyerarmor
 
 SCHERMIT:
 	Inherits@zerg: ^VeryLargeZerg
@@ -8517,6 +8409,7 @@ SCHERMIT:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@SHADOWS: ^Shadows
 	Inherits@ND: ^NotDevourable
+	Inherits@ZergBurrow: ^ZergBurrow
 	Inherits@armor: ^ZergGroundArmorUpgrades
 	Inherits@weapon: ^ZergMissileWeaponUpgrades
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
@@ -8556,42 +8449,8 @@ SCHERMIT:
 	Passenger:
 		Weight: 4
 		CustomPipType: blue
-	WithSpriteBody@deployed:
-		Sequence: deployed
-		Name: deployed
-		RequiresCondition: !undeployed
-	WithInfantryBody:
-		RequiresCondition: undeployed
-	WithMakeAnimation:
-		BodyNames: deployed
-		Sequence: deploy
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
-	RejectsMoveToAttack:
-		RequiresCondition: !botmicro && deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
-		DeploySounds: zluburrw.aud
-		UndeploySounds: zluburrw.aud
-		UndeployOnMove: true
-		PauseOnCondition: disabled
-		RequiresCondition: !parachute
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	Voiced:
 		VoiceSet: SCUltraliskVoice
-	Inherits@EXT: ^ExternalConditions ##########
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: vehicle ##########
 	WithShadow:
@@ -8602,6 +8461,8 @@ SCHERMIT:
 		DecorationBounds: 1536, 1536
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace
 
 SCGOREMAW:
 	Inherits@zerg: ^VeryLargeZerg
@@ -8611,6 +8472,7 @@ SCGOREMAW:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@SHADOWS: ^Shadows
 	Inherits@ND: ^NotDevourable
+	Inherits@ZergBurrow: ^ZergBurrow
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@weapon: ^ZergMeleeWeaponUpgrades
 	Inherits@armor: ^ZergGroundArmorUpgrades
@@ -8646,30 +8508,6 @@ SCGOREMAW:
 	Passenger:
 		Weight: 4
 		CustomPipType: blue
-	WithSpriteBody@deployed:
-		Sequence: deployed
-		Name: deployed
-		RequiresCondition: !undeployed
-	WithInfantryBody:
-		RequiresCondition: undeployed
-	WithMakeAnimation:
-		BodyNames: deployed
-		Sequence: deploy
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
-	RejectsMoveToAttack:
-		RequiresCondition: !botmicro && deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
-		DeploySounds: zluburrw.aud
-		UndeploySounds: zluburrw.aud
-		UndeployOnMove: true
-		PauseOnCondition: disabled
-		RequiresCondition: !parachute
 	GrantConditionOnAttack@gatling:
 		Condition: gatling
 		ArmamentNames: primary, garrisoned
@@ -8709,18 +8547,8 @@ SCGOREMAW:
 	ReloadDelayMultiplier@GattlingSpeed10:
 		RequiresCondition: gatling >= 10
 		Modifier: 90
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	Voiced:
 		VoiceSet: SCUltraliskVoice
-	Inherits@EXT: ^ExternalConditions ##########
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: vehicle ##########
 	WithShadow:
@@ -8731,6 +8559,8 @@ SCGOREMAW:
 		DecorationBounds: 1536, 1536
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace
 
 SCLURKER:
 	Inherits@AUTOTARGET: ^AutoTargetGround
@@ -8741,6 +8571,7 @@ SCLURKER:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@bot: ^BotMicromanageable
 	Inherits@SHADOWS: ^Shadows
+	Inherits@ZergBurrow: ^ZergBurrow
 	Inherits@armor: ^ZergGroundArmorUpgrades
 	Inherits@weapon: ^ZergMissileWeaponUpgrades
 	Inherits@range: ^GroovedSpinesUpgrade
@@ -8768,6 +8599,7 @@ SCLURKER:
 		Type: Heavy
 	-HitShape:
 	HitShape:
+	-GrantConditionOnDeploy:
 	GrantConditionOnDeploy:
 		PauseOnCondition: disabled
 		DeployedCondition: deployed
@@ -8782,11 +8614,13 @@ SCLURKER:
 		RequiresCondition: !undeployed
 	WithInfantryBody:
 		RequiresCondition: undeployed
+	-WithMakeAnimation:
 	WithMakeAnimation:
 		BodyNames: deployed
 		Sequence: deploy
 	WithInfantryBody@Editor:
 		DefaultAttackSequence: stand
+		RequiresCondition: undeployed
 	AutoTarget:
 		AllowMovement: false
 	Armament:
@@ -8798,25 +8632,17 @@ SCLURKER:
 		RequiresCondition: deployed || botmicro
 		Armaments: primary, target
 	RenderRangeCircle:
-	Cloak:
-		InitialDelay: 60
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	Crushable:
 		RequiresCondition: undeployed
 	Passenger:
 		Weight: 4
 		CustomPipType: blue
-		RequireForceMoveCondition: !undeployed
 	AutoDeployer:
 		DeployChance: 100
 		DeployTicks: 250
 		UndeployTicks: 500
 	Voiced:
 		VoiceSet: SCLurkerVoice
-	Inherits@EXT: ^ExternalConditions ##########
 	Selectable:
 		Bounds: 1024, 1024
 		DecorationBounds: 1280, 1280
@@ -8826,6 +8652,8 @@ SCLURKER:
 		RequiresCondition: undeployed
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace
 
 SCINFESTEDTERRAN:
 	Inherits@zerg: ^BasicZerg
@@ -8866,39 +8694,6 @@ SCINFESTEDTERRAN:
 		Weapon: InfestedExplosion
 		EmptyWeapon: InfestedExplosion
 		RequiresCondition: triggered && !disabled && !chronobeamed
-	WithSpriteBody@deployed:
-		Sequence: deployed
-		Name: deployed
-		RequiresCondition: !undeployed
-	WithInfantryBody:
-		RequiresCondition: undeployed
-	WithMakeAnimation:
-		BodyNames: deployed
-		Sequence: deploy
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
-	RejectsMoveToAttack:
-		RequiresCondition: !botmicro && deployed
-	GrantConditionOnDeploy:
-		DeployedCondition: deployed
-		UndeployedCondition: undeployed
-		CanDeployOnRamps: True
-		SmartDeploy: True
-		DeploySounds: zburrowup.wav
-		UndeploySounds: zburrowdown.wav
-		UndeployOnMove: true
-		PauseOnCondition: disabled
-		RequiresCondition: !parachute
-	RangeMultiplier@deployed:
-		Modifier: 0
-		RequiresCondition: deployed
-	Cloak:
-		InitialDelay: 15
-		CloakDelay: 60
-		RequiresCondition: deployed
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
 	Selectable:
 		Bounds: 1024, 1024
 		DecorationBounds: 1448, 1448, 0, 0
@@ -8909,6 +8704,8 @@ SCINFESTEDTERRAN:
 	Inherits@EXT: ^ExternalConditions
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace
 
 SCDEFILER:
 	Inherits: ^LargeZerg
@@ -8969,6 +8766,8 @@ SCDEFILER:
 		ZOffset: -512
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmissile, upcarapace
 
 DARKSWARM:
 	Inherits@1: ^ExistsInWorld
@@ -9049,6 +8848,8 @@ SCBROODLING:
 	-SpawnActorOnDeath@SCSWARMLING:
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace
 
 SCKERRIGANZERG:
 	Inherits: ^LargeZerg
@@ -9124,6 +8925,8 @@ SCKERRIGANZERG:
 		DeployChance: 100
 	RenderSprites:
 		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: upzergmelee, upcarapace
 
 SCZMCV:
 	Inherits: ^Vehicle
@@ -9243,6 +9046,8 @@ SCBEHEMOTH:
 	WithCargoSounds:
 		EnterSounds: scoverlordgetin.wav
 		ExitSounds: scoverlordgetout.wav
+	ActorStatValues:
+		Upgrades: upflyerattack, upflyerarmor
 
 SCSCOURGEDRONE:
 	Inherits: SCSCOURGE
