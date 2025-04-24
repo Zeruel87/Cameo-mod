@@ -112,7 +112,6 @@ World:
 	StoresResources:
 		Capacity: 5
 	Buildable:
-		BuildPaletteOrder: 800
 		BuildDuration: 250
 		BuildDurationModifier: 100
 		Queue: Defence, RADefence
@@ -664,7 +663,6 @@ SCSUPPLYDEPOT:
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		Prerequisites: ~sccommandcenter
-		BuildPaletteOrder: 800
 		Queue: Building, RABuilding
 		Description: Provides supply and stores resources
 	Building:
@@ -809,7 +807,6 @@ sctvespenegascollector:
 	Valued:
 		Cost: 2500
 	Buildable:
-		BuildPaletteOrder: 800
 		Queue: Defence, RADefence
 		Prerequisites: ~sccommandcenter, sctrefineryupgradeavailable
 		Description: The Refinery generates Vespene gas Capsules and passive income.
@@ -1069,7 +1066,7 @@ SCSENTINEL:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
-		Prerequisites: ~upsentinel
+		Prerequisites: ~scengineeringbay
 		Description: template-anti-infantry-defense.description
 	Valued:
 		Cost: 800
@@ -1092,7 +1089,7 @@ SCSENTINEL:
 		Voice: Attack
 	Armament:
 		Weapon: NaxLaserT
-		LocalOffset: 300,1,700, 300,-1,700
+		LocalOffset: 600,0,600
 		MuzzleSequence: muzzle
 		MuzzlePalette: ra2effect
 		RequiresCondition: !upnax2_ylaser
@@ -2619,7 +2616,6 @@ scsporecolonyupgrade:
 	Valued:
 		Cost: 400
 	Buildable:
-		BuildPaletteOrder: 800
 		Queue: Defence, RADefence
 		Prerequisites: ~schatchery, creepcolonyupgradeavailable
 		Description: Ground base defense.
@@ -2635,7 +2631,6 @@ scsunkencolonyupgrade:
 	Valued:
 		Cost: 400
 	Buildable:
-		BuildPaletteOrder: 800
 		Queue: Defence, RADefence
 		Prerequisites: ~schatchery, creepcolonyupgradeavailable
 		Description: Anti-aircraft base defense.
@@ -2715,7 +2710,6 @@ sczvespenegascollector:
 	Valued:
 		Cost: 2500
 	Buildable:
-		BuildPaletteOrder: 800
 		Queue: Defence, RADefence
 		Prerequisites: ~schatchery, sczrefineryupgradeavailable
 		Description: The Refinery generates Vespene gas Capsules and passive income.
@@ -2876,7 +2870,6 @@ SCQUEENSNEST:
 		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 8000
 		BuildDuration: 666
 		BuildDurationModifier: 100
 		Prerequisites: ~sclair
@@ -3080,7 +3073,6 @@ SCDEFILERMOUND:
 		Amount: 0
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 8000
 		BuildDuration: 500
 		BuildDurationModifier: 100
 		Prerequisites: ~schive
@@ -3149,14 +3141,18 @@ SCNYDUSCANAL:
 
 SCOVERMIND:
 	Inherits: ^BaseBuildingZerg
+	Inherits@radar: ^RadarBuilding
+	Inherits@cashtrickler: ^LargeCashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
 	Inherits@shape: ^2x2Shape
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Overmind
+	Power:
+		Amount: 2000
+	StoresResources:
+		Capacity: 10000
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 8020
 		Prerequisites: ~schive
 		Queue: Building, RABuilding
 		Description: Unlocks Siege Tanks.
@@ -3169,23 +3165,19 @@ SCOVERMIND:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	SelectionDecorations:
-	Health:
-		HP: 200000
-	RevealsShroud:
-		Range: 10c0
 	-WithDeathAnimation:
 	SpawnActorOnDeath@death1:
-		Actor: SCBROODLING
+		Actor: SCOVERLORD
 	SpawnActorOnDeath@death2:
-		Actor: SCBROODLING
+		Actor: SCOVERLORD
 	SpawnActorOnDeath@death3:
-		Actor: SCBROODLING
+		Actor: SCOVERLORD
 	SpawnActorOnDeath@zergsoilkilled:
 		Actor: zergsoilkiller
 	FireWarheadsOnDeath@remover:
 		Weapon: CreepRemover
 		EmptyWeapon: CreepRemover
-		
+
 SCINFESTEDCOMMANDCENTER:
 	Inherits: ^BaseBuildingZerg
 	Inherits@shape: ^2x2Shape
@@ -3257,6 +3249,7 @@ SCSCV:
 	Inherits@harv: ^Harvester
 	Inherits@worker: ^SCWorker
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AutoRepair: ^PrioritizeRepair
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@SHADOWS: ^Shadows
 	#AutoTargetPriority@Repair:
@@ -3281,6 +3274,9 @@ SCSCV:
 	Armament:
 		Weapon: SCVAttack
 		ForceTargetRelationships: Enemy, Neutral
+	AutoTarget:
+		ScanRadius: 10
+		InitialStance: AttackAnything
 	AttackFrontal:
 		FacingTolerance: 64
 		Armaments: primary,repair
@@ -3325,7 +3321,6 @@ SCMARINE:
 		Amount: -10
 	Buildable:
 		Prerequisites: ~scbarracks
-		BuildPaletteOrder: 800
 		Queue: Infantry, RAInfantry
 		Description: Basic Terran infantry.\n Strong vs Infantry\n Weak vs Vehicles\n Can attack aircraft\n Uncrushable
 	Mobile:
@@ -3357,42 +3352,44 @@ SCMARINE:
 SCREAPER:
 	Inherits: ^SCTINFANTRY
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
-	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
+	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiBuil: ^PrioritizeBuilding
 	Inherits@announce: ^AnnounceOnBuild
-	Inherits@stim: ^Stimpackable
-	Inherits@range: ^UraniumShellsUpgrade
 	Inherits@armor: ^TerranInfantryWeaponUpgrades
 	Inherits@weapon: ^TerranInfantryArmorUpgrades
 	Tooltip:
 		Name: Reaper
 	Valued:
-		Cost: 200
+		Cost: 600
 	Power:
-		Amount: -10
+		Amount: -30
 	Buildable:
 		Prerequisites: ~scbarracks
-		BuildPaletteOrder: 800
 		Queue: Infantry, RAInfantry
 		Description: Basic Terran infantry.\n Strong vs Infantry\n Weak vs Vehicles\n Can attack aircraft\n Uncrushable
 	Mobile:
-		Speed: 100
-		Locomotor: hover
+		Speed: 120
+		Locomotor: fakeaircraft
 	Health:
-		HP: 40000
+		HP: 60000
 	ChangesHealth@SelfHealing:
-		Step: 40
+		Step: 60
 	Armament@PRIMARY:
-		Weapon: GhostSniper
+		Weapon: ReaperPistols
+		LocalOffset: 128,-128,256
+	Armament@SECONDARY:
+		Weapon: ReaperPistols
+		LocalOffset: 128,128,256
+	Armament@Grenade:
+		Weapon: ReaperGrenade
 		LocalOffset: 128,0,256
 	Armament@GARRISONED:
 		Name: garrisoned
 		Weapon: MarineMG
 		MuzzleSequence: muzzle
-	FirepowerMultiplier@TripleShot:
-		Modifier: 33
 	WithMuzzleOverlay:
 	# ProductionTimeMultiplier@speedup:
 	# 	Multiplier: 50
@@ -3402,7 +3399,7 @@ SCREAPER:
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upstimpack, upmarinerange, upinfweapon, upinfarmor
+		Upgrades: upinfweapon, upinfarmor
 
 SCMADCAP:
 	Inherits: ^SCTINFANTRY
@@ -3425,7 +3422,6 @@ SCMADCAP:
 		Amount: -15
 	Buildable:
 		Prerequisites: ~scbarracks, ~upmadcap
-		BuildPaletteOrder: 800
 		Queue: Infantry, RAInfantry
 		Description: Basic Terran infantry.\n Strong vs Infantry\n Weak vs Vehicles\n Can attack aircraft\n Uncrushable
 	Mobile:
@@ -3508,7 +3504,6 @@ SCFIREBAT:
 	Power:
 		Amount: -25
 	Buildable:
-		BuildPaletteOrder: 20
 		Prerequisites: ~scacademy, ~!upharakan
 		Queue: Infantry, RAInfantry
 		Description: Terran flamethrower infantry.\n Strong vs Infantry, Buildings\n Weak vs Vehicles\n Uncrushable
@@ -3570,7 +3565,6 @@ SCHARAKAN:
 	Tooltip:
 		Name: Harakan
 	Buildable:
-		BuildPaletteOrder: 20
 		Prerequisites: ~scacademy, ~upharakan
 		Queue: Infantry, RAInfantry
 		Description: Terran flamethrower infantry.\n Strong vs Infantry, Buildings\n Weak vs Vehicles\n Uncrushable
@@ -3631,7 +3625,6 @@ scmarauder:
 	Power:
 		Amount: -50
 	Buildable:
-		BuildPaletteOrder: 20
 		Prerequisites: ~scacademy
 		Queue: Infantry, RAInfantry
 		Description: Terran tankbuster infantry.\n Strong vs Vehicles, Buildings\n Weak vs Infantry\n Uncrushable
@@ -3683,7 +3676,6 @@ SCGHOST:
 	Power:
 		Amount: -35
 	Buildable:
-		BuildPaletteOrder: 30
 		Queue: Infantry, RAInfantry
 		Prerequisites: ~scsciencefacility, ~!upsilvertongue
 		Description: Terran stealth assassin.\n Strong vs Infantry, Vehicles\n Can attack aircraft\n Can temporarily disable vehicles\n Uncrushable
@@ -3772,7 +3764,6 @@ SCSILVERTONGUE:
 	Power:
 		Amount: -45
 	Buildable:
-		BuildPaletteOrder: 30
 		Queue: Infantry, RAInfantry
 		Prerequisites: ~scsciencefacility, ~upsilvertongue
 		Description: Terran stealth assassin.\n Strong vs Infantry, Vehicles\n Can attack aircraft\n Can temporarily disable vehicles\n Uncrushable
@@ -3854,7 +3845,6 @@ SCMEDIC:
 	Inherits@Heal: ^PrioritizeHeal
 	Buildable:
 		Queue: Infantry, RAInfantry
-		BuildPaletteOrder: 40
 		Prerequisites: ~scacademy
 		Description: Heals nearby infantry.\n Unarmed\n Uncrushable
 	Tooltip:
@@ -3985,7 +3975,6 @@ SCVULTURE:
 		Amount: -45
 	Buildable:
 		Prerequisites: ~scfactory
-		BuildPaletteOrder: 800
 		Description: Fast scout vehicle, armed with\ngrenades.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft\n Can cross water
 	Mobile:
 		Speed: 125
@@ -4638,7 +4627,6 @@ SCWRAITH:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 800
 		Prerequisites: ~scstarport, ~!upsundog
 		Queue: Aircraft, RAAircraft
 		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Buildings, Vehicles
@@ -4694,9 +4682,7 @@ SCRAVEN:
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@AntiInf: ^PrioritizeInfantry
-	Inherits@AntiAir: ^PrioritizeAir
-	Inherits@AntiDef: ^PrioritizeDefence
+	Inherits@AutoRepair: ^PrioritizeRepair
 	Inherits@CLOAK: ^CloakedAircraft
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@armor: ^TerranShipWeaponUpgrades
@@ -4704,37 +4690,35 @@ SCRAVEN:
 	Tooltip:
 		Name: Raven
 	Valued:
-		Cost: 1400
+		Cost: 2000
 	Power:
-		Amount: -70
+		Amount: -100
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 800
-		Prerequisites: ~scstarport, ~!upsundog
+		Prerequisites: ~scstarport, ~upraven
 		Queue: Aircraft, RAAircraft
 		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Buildings, Vehicles
 	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 24
-		Speed: 120
+		TurnSpeed: 20
+		Speed: 100
 	Health:
-		HP: 120000
+		HP: 100000
 	Repairable:
-		HpPerStep: 6000
+		HpPerStep: 5000
 	ChangesHealth@SelfHealing:
-		Step: 48
-	Armament@PRIMARY:
-		Weapon: WraithLaser
-		LocalOffset: 400,0,0
-	Armament@SECONDARY1:
-		Weapon: WraithRockets
-		LocalOffset: 400,400,0
-	Armament@SECONDARY2:
-		Weapon: WraithRockets
-		LocalOffset: 400,-400,0
-	FirepowerMultiplier@DualWeapon:
-		Modifier: 50
+		Step: 40
+	Armament@repair:
+		Weapon: RavenRepair
+		TargetRelationships: Ally
+		ForceTargetRelationships: Ally
+		LocalOffset: 640,0,-160
+	# Armament@TurretSpawner:
+	# 	Weapon: RavenTurretSpawner
+	# 	ForceTargetRelationships: Enemy, Neutral
+	AutoTarget:
+		ScanRadius: 10
+		InitialStance: AttackAnything
 	AttackAircraft:
 		FacingTolerance: 40
 		AttackType: Hover
@@ -4783,7 +4767,6 @@ SCSUNDOG:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 800
 		Prerequisites: ~scstarport, ~upsundog
 		Queue: Aircraft, RAAircraft
 		Description: Light Terran attack aircraft, armed\nwith lasers and AA missiles.\n Strong vs Infantry, Aircraft\n Weak vs Buildings, Vehicles
@@ -4851,7 +4834,6 @@ SCVALKYRIE:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 800
 		Prerequisites: ~scstarport, scarmory, ~!upwyvern
 		Queue: Aircraft, RAAircraft
 		Description: Air Superiority Fighter that fires a burst of 8 missiles. Can only attack air.
@@ -4913,7 +4895,6 @@ SCWYVERN:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 800
 		Prerequisites: ~scstarport, scarmory, ~upwyvern
 		Queue: Aircraft, RAAircraft
 		Description: Air Superiority Fighter that fires a burst of 8 missiles. Can only attack air.
@@ -5709,8 +5690,7 @@ SCTMCV:
 	Inherits@SHADOWS: ^Shadows
 	Buildable:
 		Queue: Defence, RADefence
-		Prerequisites: ~scengineeringbay
-		BuildPaletteOrder: 8000
+		Prerequisites: ~scengineeringbay0
 		Description: Builds structures and provides radar.
 	Tooltip:
 		Name: Mobile Construction Vehicle (Terran)
@@ -5840,17 +5820,17 @@ upwarhound:
 
 ### Ship Tree
 
-upsentinel:
+upraven:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Sentinel
+		Name: Unlock Raven
 	Buildable:
 		BuildPaletteOrder: 8035
 		Queue: Promotions
-		Description: Allows construction of the Sentinel.
-		Prerequisites: ~sccommandcenter, !upsentinel, rank1
+		Description: Allows construction of the Raven.
+		Prerequisites: ~sccommandcenter, !upraven, rank1
 	RenderSprites:
-		Image: scsentinel
+		Image: scraven
 	ProvidesPrerequisite:
 
 upsundog:
@@ -5861,7 +5841,7 @@ upsundog:
 		BuildPaletteOrder: 8038
 		Queue: Promotions
 		Description: Allows training of the Sundog.
-		Prerequisites: ~sccommandcenter, upsentinel, !upsundog, rank1
+		Prerequisites: ~sccommandcenter, upraven, !upsundog, rank1
 	RenderSprites:
 		Image: scsundog
 	ProvidesPrerequisite:
@@ -6105,18 +6085,6 @@ upbehemoth:
 	FireWarheadsOnDeath:
 		Weapon: HeliExplodeProtoss
 		EmptyWeapon: HeliExplodeProtoss
-	GrantConditionOnPrerequisite@weap:
-		Condition: upweapon
-		Prerequisites: upairweapons
-	FirepowerMultiplier@weap:
-		Modifier: 120
-		RequiresCondition: upweapon
-	GrantConditionOnPrerequisite@armor:
-		Condition: uparmor
-		Prerequisites: upairarmor
-	DamageMultiplier@armor:
-		Modifier: 80
-		RequiresCondition: uparmor
 
 ^UnitExplodeSmallProtoss:
 	FireWarheadsOnDeath:
@@ -6132,6 +6100,7 @@ SCPROBE:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@worker: ^SCWorker
 	Inherits@announce: ^AnnounceOnBuild
+	Inherits@shieldgenerator: ^HasShieldGenerator
 	Inherits@shield: ^PlasmaShieldUpgrade
 	Inherits@SHADOWS: ^Shadows
 	Tooltip:
@@ -6225,7 +6194,6 @@ SCDRAGOON:
 	Buildable:
 		Prerequisites: ~sccyberneticscore
 		Queue: Infantry, RAInfantry
-		BuildPaletteOrder: 800
 		Description: Protoss assault walker.\n Strong vs Vehicles\n Weak vs Infantry
 	Mobile:
 		Speed: 80
@@ -7050,8 +7018,7 @@ SCPMCV:
 	Inherits@SHADOWS: ^Shadows
 	Buildable:
 		Queue: Defence, RADefence
-		Prerequisites: ~scroboticsfacility
-		BuildPaletteOrder: 8000
+		Prerequisites: ~scroboticsfacility0
 		Description: Builds structures and provides radar.
 	Tooltip:
 		Name: Mobile Construction Vehicle (Protoss)
@@ -7262,7 +7229,6 @@ SCPOSITRON:
 	Buildable:
 		Prerequisites: ~sccyberneticscore
 		Queue: Infantry, RAInfantry
-		BuildPaletteOrder: 800
 		Description: Fast scout vehicle, armed with\ngrenades.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft\n Can cross water
 	Mobile:
 		Speed: 125
@@ -7452,8 +7418,17 @@ SCPATRIARCH:
 		Multiplier: 1000
 		Prerequisites: supplylimit
 		Queue: RAInfantry
+	ProductionTimeMultiplier@scovermind:
+		Multiplier: 50
+		Prerequisites: scovermind
+		Queue: RAInfantry
+	Mobile:
+		Locomotor: chem
 	Targetable:
 		TargetTypes: Ground, Infantry, Monster
+	Targetable@HEAL:
+		RequiresCondition: !untargetable && damaged && !Healed
+		TargetTypes: Heal, Healing
 
 ^LargeZerg:
 	Inherits: ^BasicZerg
@@ -7461,6 +7436,8 @@ SCPATRIARCH:
 		TargetTypes: DogImmune
 	Mobile:
 		Locomotor: wheeled
+	Targetable:
+		TargetTypes: Ground, Monster
 
 ^VeryLargeZerg:
 	Inherits: ^LargeZerg
@@ -7474,8 +7451,6 @@ SCPATRIARCH:
 	GrantConditionOnPrerequisite@MACHINESHOP:
 		Condition: hospital
 		Prerequisites: machshop
-	Targetable:
-		TargetTypes: Ground, Monster
 	Targetable@ivan:
 	Passenger:
 		CargoType: Vehicle
@@ -7486,9 +7461,16 @@ SCPATRIARCH:
 	WithDeathAnimation:
 		UseDeathTypeSuffix: False
 	DeathSounds:
+	Targetable@HEAL:
+		RequiresCondition: !untargetable && damaged && !Healed
+		TargetTypes: Heal, Healing
 	ProductionTimeMultiplier@supplylimit:
 		Multiplier: 1000
 		Prerequisites: supplylimit
+		Queue: RAInfantry
+	ProductionTimeMultiplier@scovermind:
+		Multiplier: 50
+		Prerequisites: scovermind
 		Queue: RAInfantry
 
 SCDRONE:
@@ -7582,6 +7564,12 @@ SCOVERLORD:
 		Amount: 200
 	StoresResources:
 		Capacity: 1000
+	PowerMultiplier@scovermind:
+		Modifier: 200
+		RequiresCondition: scovermind
+	GrantConditionOnPrerequisite@scovermind:
+		Condition: scovermind
+		Prerequisites: scovermind
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
@@ -7667,18 +7655,28 @@ SCBROODWEAVER:
 		LocalOffset: 512,0,256
 		FireDelay: 10
 	ProximityExternalCondition@HealingField:
-		Range: 9000
+		Range: 6000
 		ValidRelationships: Ally
 		Condition: HealingField
 		RequiresCondition: attacking
+	ProximityExternalCondition@propaganda:
+		Range: 6000
+		ValidRelationships: Ally
+		Condition: propaganda
+		RequiresCondition: !attacking
 	GrantConditionOnAttack:
 		Condition: attacking
 		RevokeDelay: 10
-	WithRangeCircle:
-		Range: 9000
+	WithRangeCircle@heal:
+		Range: 6000
 		Type: heal
 		Color: 55BBFF
 		RequiresCondition: attacking
+	WithRangeCircle@idle:
+		Range: 6000
+		Type: heal
+		Color: FFBB55
+		RequiresCondition: !attacking
 	EjectOnDeath:
 		PilotActor: SCBROODLING
 	Cargo:
@@ -8204,34 +8202,34 @@ SCSWARMLING:
 		Modifier: 90
 		RequiresCondition: Swarmling >= 33
 	ReloadDelayMultiplier@Swarmling1:
-		Modifier: 90
+		Modifier: 110
 		RequiresCondition: Swarmling >= 6
 	ReloadDelayMultiplier@Swarmling2:
-		Modifier: 90
+		Modifier: 110
 		RequiresCondition: Swarmling >= 9
 	ReloadDelayMultiplier@Swarmling3:
-		Modifier: 90
+		Modifier: 110
 		RequiresCondition: Swarmling >= 12
 	ReloadDelayMultiplier@Swarmling4:
-		Modifier: 90
+		Modifier: 110
 		RequiresCondition: Swarmling >= 15
 	ReloadDelayMultiplier@Swarmling5:
-		Modifier: 90
+		Modifier: 110
 		RequiresCondition: Swarmling >= 18
 	ReloadDelayMultiplier@Swarmling6:
-		Modifier: 90
+		Modifier: 110
 		RequiresCondition: Swarmling >= 21
 	ReloadDelayMultiplier@Swarmling7:
-		Modifier: 90
+		Modifier: 110
 		RequiresCondition: Swarmling >= 24
 	ReloadDelayMultiplier@Swarmling8:
-		Modifier: 90
+		Modifier: 110
 		RequiresCondition: Swarmling >= 27
 	ReloadDelayMultiplier@Swarmling9:
-		Modifier: 90
+		Modifier: 110
 		RequiresCondition: Swarmling >= 30
 	ReloadDelayMultiplier@Swarmling10:
-		Modifier: 90
+		Modifier: 110
 		RequiresCondition: Swarmling >= 33
 	RangeMultiplier@Swarmling1:
 		Modifier: 110
@@ -8617,7 +8615,6 @@ SCGUARDIAN:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 8000
 		Prerequisites: ~scgreaterspire
 		Queue: Infantry, RAInfantry
 		Description: Heavy Zerg bomber.\n Strong vs Vehicles, Buildings\n Weak vs Aircraft
@@ -8722,7 +8719,6 @@ SCGOREKRAKEN:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
-		BuildPaletteOrder: 8000
 		Prerequisites: ~scgreaterspire, ~upgorekraken
 		Queue: Infantry, RAInfantry
 		Description: Heavy Zerg bomber.\n Strong vs Vehicles, Buildings\n Weak vs Aircraft
@@ -9484,7 +9480,6 @@ PSCGREATERSPIRE:
 		Name: Greater Spire
 	ProvidesPrerequisite@buildingname:
 	Buildable:
-		BuildPaletteOrder: 800
 		Queue: Spire.Zerg
 		Description: Unlocks Guardian.
 		Prerequisites: ~schive
@@ -9501,7 +9496,6 @@ PSCSPORECOLONY:
 	Tooltip:
 		Name: Spore Colony
 	Buildable:
-		BuildPaletteOrder: 800
 		Queue: Colony.Zerg
 		Description: Anti-air base defense.
 		Prerequisites: Evolution Chamber
