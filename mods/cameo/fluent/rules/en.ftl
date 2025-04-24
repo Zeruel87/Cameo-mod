@@ -1899,8 +1899,8 @@ upgrade-latin_up_chaingun =
 
 upgrade-latin_up_industrial =
    .description = Stolen Tech from Soviets:
-       Reduces cost of vehicles by 10%.
-       Increases armor and speed of all vehicles by 10%
+       Reduces cost of vehicles by 20%.
+       Increases armor and speed of all vehicles by 20%
 
 upgrade-uplatin_alliedstolentech =
    .description = Stolen Tech from Allies:
