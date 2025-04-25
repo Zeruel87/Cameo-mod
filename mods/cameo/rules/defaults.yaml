@@ -691,7 +691,7 @@
 
 ^PrioritizeRepair:
 	AutoTargetPriority@Heal:
-		ValidTargets: Repairing, Repair
+		ValidTargets: Repairing, Repair, SpecialRepair
 		Priority: 100
 
 ^AcceptsCloakCrate:
@@ -942,6 +942,7 @@
 		Modifier: 125
 	RangeMultiplier@tankbunker:
 		Modifier: 150
+		RequiresCondition: tankbunkered
 
 ^ArtilleryBuffs:
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnologyTeamUpgrade
@@ -1675,6 +1676,7 @@
 	Inherits@Blindable: ^Blindable
 	Inherits@Snareable: ^Snareable
 	Inherits@jammable: ^ArtilleryJammable
+	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	Inherits@HealingField: ^AffectedByHealingField
 	Huntable:
 	OwnerLostAction:
@@ -1742,7 +1744,6 @@
 	Inherits@corr: ^Corrodible
 	Inherits@cloak: ^AcceptsCloakCrate
 	Inherits@heal: ^MachineShopRepairable
-	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	Inherits@FrenzyPower: ^FrenzyPower
 	Inherits@driver-dead: ^AffectedByDriverKill
 	Inherits@salvage: ^GenericSalvageBonus
@@ -1847,15 +1848,24 @@
 	DamageMultiplier@METALFACTORY:
 		RequiresCondition: techmetalffact
 		Modifier: 85
-	ProductionCostMultiplier@Industrial:
+	ProductionCostMultiplier@IndustrialPlant:
 		Multiplier: 75
 		Prerequisites: yrngindp
+	ProductionCostMultiplier@LatinIndustrialMethods:
+		Multiplier: 80
+		Prerequisites: latin_up_industrial
 	ProductionCostMultiplier@ShockwaveIndustrial:
 		Multiplier: 90
 		Prerequisites: schindustrialplant
-	ProductionCostMultiplier@latin_up_industrial:
+	ProductionTimeMultiplier@ShockwaveIndustrial:
 		Multiplier: 90
-		Prerequisites: latin_up_industrial
+		Prerequisites: schindustrialplant
+	ProductionCostMultiplier@DuneFactoryUpgrade:
+		Multiplier: 90
+		Prerequisites: upgrade_heavy
+	ProductionTimeMultiplier@DuneFactoryUpgrade:
+		Multiplier: 90
+		Prerequisites: upgrade_heavy
 	CashBack:
 		Percentage: 10
 		RequiresCondition: cashrecover
@@ -1999,7 +2009,6 @@
 	Inherits: ^BasicUnit
 	Inherits@mindcontrol: ^MindControllable
 	Inherits@heal: ^TechStructureHealable
-	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	Inherits@FrenzyPower: ^FrenzyPower
 	Inherits@chrono: ^Chronoshiftable
 	Inherits@unstableeffect: ^UnstableEffect
@@ -2103,6 +2112,9 @@
 	Targetable@REPAIR:
 		RequiresCondition: !airborne && !untargetable && damaged
 		TargetTypes: Repair, Healing
+	Targetable@SpecialRepair:
+		RequiresCondition: !untargetable && damaged
+		TargetTypes: SpecialRepair
 	AttackAircraft:
 		PauseOnCondition: disabled
 	GrantConditionOnDamageState@DAMAGED:
@@ -2111,6 +2123,12 @@
 	SpeedMultiplier@disable:
 		Modifier: 0
 		RequiresCondition: disabled
+	ProductionCostMultiplier@DuneFactoryUpgrade:
+		Multiplier: 90
+		Prerequisites: upgrade_hightech
+	ProductionTimeMultiplier@DuneFactoryUpgrade:
+		Multiplier: 90
+		Prerequisites: upgrade_hightech
 	HiddenUnderFog:
 		Type: GroundPosition
 	AttackMove:
@@ -2418,7 +2436,6 @@
 	Inherits@disable: ^InfantryDisable
 	Inherits@heal: ^HospitalHealable
 	Inherits@terrordrone: ^TerrorDronableInfantry
-	Inherits@PROPAGANDA: ^PropagandaSelfHeal
 	Inherits@driver-dead: ^CanCaptureDriverlessVehicles
 	Inherits@poisonable: ^Poisonable
 	Inherits@unstableeffect: ^UnstableEffect
@@ -2499,6 +2516,12 @@
 	GrantConditionOnPrerequisite@ngbunk2:
 		Condition: uplatin_ngbunk2
 		Prerequisites: uplatin_ngbunk2
+	ProductionCostMultiplier@DuneBarracksUpgrade:
+		Multiplier: 90
+		Prerequisites: upgrade_barracks
+	ProductionTimeMultiplier@DuneBarracksUpgrade:
+		Multiplier: 90
+		Prerequisites: upgrade_barracks
 	Crushable:
 		WarnProbability: 75
 		CrushSound: squish2.aud
@@ -3907,6 +3930,12 @@
 	AutoTarget:
 		InitialStance: AttackAnything
 		InitialStanceAI: AttackAnything
+	ProductionCostMultiplier@DuneDefenseUpgrade:
+		Multiplier: 90
+		Prerequisites: upgrade_conyard
+	ProductionTimeMultiplier@DuneDefenseUpgrade:
+		Multiplier: 90
+		Prerequisites: upgrade_conyard
 	ActorStatValues:
 		Stats: Armor, Sight, Power, Damage, ReloadDelay, MaxRange, Kills, Experience
 
@@ -4590,7 +4619,7 @@
 	WithColoredOverlay@HealingField:
 		RequiresCondition: HealingField
 		Color: 98765432
-	WithDecoration@PROPAGANDAHEAL:
+	WithDecoration@HealingField:
 		Image: pips
 		Sequence: pip-heal
 		Position: TopRight
@@ -5568,7 +5597,7 @@ CPQDEBUGDUMMY:
 
 ^RearmableAircraft:
 	Rearmable:
-		RearmActors: dummy_dock,hpad.gdi,hpad.nod,rahpad,raafld,modraafld,ra2gaairc,ra2naairf,aa_cgairf,steel_conpad,latin_cgair,nax_airfield
+		RearmActors: dummy_dock,hpad.gdi,hpad.nod,rahpad,raafld,modraafld,ixian_launchpad,ra2gaairc,ra2naairf,aa_cgairf,steel_conpad,latin_cgair,nax_airfield
 	AutoTarget:
 		InitialStance: HoldFire
 	DamageMultiplier@RearmableAircraft:
@@ -6066,7 +6095,7 @@ CPQDEBUGDUMMY:
 		Type: Shield
 		RequiresCondition: shielded
 	DamageMultiplier@shielded:
-		RequiresCondition: shielded
+		RequiresCondition: shielded && !shieldpermanent
 		Modifier: 150
 	DamageMultiplier@upsteel_shielresistance:
 		RequiresCondition: upsteel_shielresistance && shielded
@@ -6093,7 +6122,7 @@ CPQDEBUGDUMMY:
 
 ^HasShieldGenerator:
 	Shielded:
-		InitialPercentageStrength: 0
+		InitialPercentageStrength: 100
 	GrantCondition:
 		Condition: shieldpermanent
 
@@ -7172,14 +7201,26 @@ CPQDEBUGDUMMY:
 		Condition: propaganda
 		TotalCap: 1
 	ChangesHealth@PROPAGANDA1:
-		Step: 25
+		Step: 20
 		Delay: 1
 		StartIfBelow: 150
 		DamageCooldown: 0
 		RequiresCondition: propaganda && damaged
+	ChangesHealth@PROPAGANDAPercentage1:
+		Delay: 100
+		PercentageStep: 1
+		StartIfBelow: 150
+		DamageCooldown: 0
+		RequiresCondition: propaganda && damaged
 	ChangesHealth@PROPAGANDA2:
-		Step: 25
+		Step: 20
 		Delay: 1
+		StartIfBelow: 150
+		DamageCooldown: 0
+		RequiresCondition: propaganda && upsubliminal && damaged
+	ChangesHealth@PROPAGANDAPercentage2:
+		Delay: 100
+		PercentageStep: 1
 		StartIfBelow: 150
 		DamageCooldown: 0
 		RequiresCondition: propaganda && upsubliminal && damaged
@@ -7312,7 +7353,7 @@ CPQDEBUGDUMMY:
 		BuildPaletteOrder: 200
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Prerequisites: ~techcenter, ~techlevel.medium, derricklimit
+		Prerequisites: ~oilderrick, techcenter, derricklimit
 		Description: actor-oilb.description
 	Valued:
 		Cost: 2500

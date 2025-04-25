@@ -1695,14 +1695,14 @@ upgrade-guerillatactics =
    The effect is doubled for the Stealth Tank.
 
 upgrade-tiberiuminfusion =
-   .description = Gives infantry rapid regeneration and 10% more speed and armor.
+   .description = Gives infantry rapid regeneration and 10% more speed, fire rate and armor.
 
 upgrade-improvedartilleries =
    .description = Increases weapon and vision range of all artillery weapons.
-   Artillery and Gun Turret: 10%
-   Specter: 15%
-   Chemical SSM Launcher: 20%
-   Ballistic Missile Submarine: 25%
+      Artillery and Gun Turret: 10%
+      Specter: 15%
+      Chemical SSM Launcher: 20%
+      Ballistic Missile Submarine: 25%
 
 upgrade-elementalwarfare =
    .description = Increases damage of all flame and chemical weapons by 25%.
@@ -1716,6 +1716,7 @@ upgrade-cyberneticmodifications =
    .description = Gives all infantry heavy armor platings that reduce incoming damage.
    While the armor is active, the infantry armor type is heavy which makes them take less damage from
    most anti infantry weapons but increased damage from anti tank weapons instead.
+   Increases Movement Speed by 20%.
 
 upgrade-blackmarketupgrades =
    .description = Gives certain units new or additional weapons:
@@ -1898,8 +1899,8 @@ upgrade-latin_up_chaingun =
 
 upgrade-latin_up_industrial =
    .description = Stolen Tech from Soviets:
-       Reduces cost of vehicles by 10%.
-       Increases armor and speed of all vehicles by 10%
+       Reduces cost of vehicles by 20%.
+       Increases armor and speed of all vehicles by 20%
 
 upgrade-uplatin_alliedstolentech =
    .description = Stolen Tech from Allies:

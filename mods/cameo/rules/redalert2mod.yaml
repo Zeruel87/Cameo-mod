@@ -224,6 +224,8 @@ aa_cgcnst:
 		DeathSequencePalette: ra2buildinghack
 	Voiced:
 		VoiceSet: PRCCommandCenterVoice
+	ProvidesPrerequisite@ra2oilderrick:
+		Prerequisite: ra2oilderrick
 	Targetable@TechStealerInfiltrate:
 		TargetTypes: TechStealerInfiltrate
 	InfiltrateForSupportPower:
@@ -2784,6 +2786,7 @@ aa_phoenix:
 		PauseOnCondition: !ammo
 	AmmoPool:
 		Ammo: 2
+		ReloadDelay: 100
 		AmmoCondition: ammo
 	SpawnActorOnDeath:
 		Actor: aa_phoenix.Husk
@@ -3790,6 +3793,8 @@ latin_cgcnst:
 		RequiresCondition: !build-incomplete
 	WithBuildingPlacedOverlay:
 		Sequence: build
+	ProvidesPrerequisite@ra2oilderrick:
+		Prerequisite: ra2oilderrick
 	Targetable@TechStealerInfiltrate:
 		TargetTypes: TechStealerInfiltrate
 	InfiltrateForSupportPower:
@@ -3907,22 +3912,6 @@ latin_cgpile:
 		Stats: Armor, Sight, Cargo, Kills, Experience
 	GivesBuildableArea:
 
-latin_cgweap:
-	Inherits: ^RA2DefaultWeap
-	Inherits@sell: ^SyndicateSpawnActorsOnSell
-	Tooltip:
-		Name: Syndicate Factory
-	Buildable:
-		Prerequisites: ~latin_cgcnst, latin_cgauto
-	WithIdleOverlay@lights:
-		Sequence: idle-lights
-		RequiresCondition: !build-incomplete
-	WithIdleOverlay@lights2:
-		Sequence: idle-lights2
-		RequiresCondition: !build-incomplete
-	WithIdleOverlay@bib:
-		Sequence: bib
-
 latin_cgauto:
 	Inherits: ^RA2Building
 	Inherits@sell: ^SyndicateSpawnActorsOnSell
@@ -3956,63 +3945,75 @@ latin_cgauto:
 	WithIdleOverlay@bib:
 		Sequence: idle-bib
 
-latin_cgte:
-	Inherits: ^RA2Building
-	Inherits@shape: ^3x2Shape
+latin_cgweap:
+	Inherits: ^RA2DefaultWeap
 	Inherits@sell: ^SyndicateSpawnActorsOnSell
-	Inherits@radar: ^RadarBuilding
-	Selectable:
-		Bounds: 3072, 2048, 0, -256
-	Buildable:
-		Prerequisites: ~latin_cgauto
 	Tooltip:
-		Name: Recycling Center
-	Building:
-		Footprint: xx xx xx
-		Dimensions: 3,2
-	ProvidesPrerequisite:
+		Name: Syndicate Factory
+	Buildable:
+		Prerequisites: ~latin_cgcnst, latin_cgauto
 	WithIdleOverlay@lights:
 		Sequence: idle-lights
 		RequiresCondition: !build-incomplete
 	WithIdleOverlay@lights2:
 		Sequence: idle-lights2
 		RequiresCondition: !build-incomplete
-	SupportPowerChargeBar:
-	ProduceActorPower@car:
-		Names:
-			1: Give Scrap cars
-		Descriptions:
-			1: Produces scrap cars
-		Icons:
-			1: icon
-		IconImage: latin_buggy
-		AllowMultiple: True
+	WithIdleOverlay@bib:
+		Sequence: bib
+
+latin_radar:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x3Shape
+	Inherits@sell: ^SyndicateSpawnActorsOnSell
+	Inherits@radar: ^RadarBuilding
+	Selectable:
+		Bounds: 3072, 2048, 0, -256
+	Buildable:
+		BuildLimit: 1
+		Prerequisites: ~latin_cgcnst, latin_cgauto
+	Tooltip:
+		Name: Latin EMP Radar
+	Building:
+		Footprint: xx xx xx
+		Dimensions: 3,2
+	ProvidesPrerequisite:
+	WithIdleOverlay@radar:
+		Sequence: idle-radar
+		RequiresCondition: !build-incomplete
+	DetonateWeaponPower@Emp:
+		AllowMultiple: false
+		OrderName: SteelEmpCannon
 		PauseOnCondition: disabled
-		Prerequisites: uplatin_up_tech1
-			1: uplatin_up_tech1
-		Actors: latinscrapcar_driveby, latinscrapcar2_driveby
-		Type: Car
-		ChargeInterval: 1500
-		AutoFire: true
-		OrderName: callcars
-		SupportPowerPaletteOrder: 20
-		LaunchSound: gcraspee.wav
-		RequiresCondition: uplatin_up_tech1
-	GrantConditionOnPrerequisite@uplatin_up_tech1:
-		Condition: uplatin_up_tech1
-		Prerequisites: uplatin_up_tech1
-	Production@Car:
-		Produces: Car
-	RallyPoint:
-	Exit@1:
-		SpawnOffset: -704,768,0
-		ExitCell: -1,2
-	Exit@2:
-		SpawnOffset: -704,768,0
-		ExitCell: -1,3
-	Exit@3:
-		SpawnOffset: -704,768,0
-		ExitCell: 0,3
+		Prerequisites:
+			1: uplatin_emp
+		IconImage: steel_qatech
+		Icons:
+			1: icon2
+		Cursor: ioncannon
+		ChargeInterval: 6000
+		ActivationDelay: 50
+		ActivationSequence:
+		Names:
+			1: Emp Disable
+		Weapons:
+			1: SteelEmpBomb
+		Descriptions:
+			1: power-ioncannon.description
+		BeginChargeSpeechNotification: IonCannonCharging
+		EndChargeSpeechNotification: IonCannonReady
+		EndChargeSound:
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		CameraActor: camera.small
+		CameraRange: 6000
+		CameraRemoveDelay: 125
+		TargetCircleRanges:
+			1: 6000
+		TargetCircleColor: ff000080
+		LaunchSound:
+		IncomingSound:
 
 latin_cgair:
 	Inherits: ^RA2Building
@@ -4022,7 +4023,7 @@ latin_cgair:
 	Inherits@hpad: ^IsAircraftFactory
 	Buildable:
 		Queue: Building, RABuilding
-		Prerequisites: ~latin_cgcnst, latin_cgte
+		Prerequisites: ~latin_cgcnst, latin_radar
 		Description: actor-gaairc.description
 	Tooltip:
 		Name: Air Station
@@ -4090,7 +4091,7 @@ latin_cgspy:
 	Selectable:
 		Bounds: 3072, 2048, 0, -256
 	Buildable:
-		Prerequisites: ~latin_cgcnst, latin_cgte
+		Prerequisites: ~latin_cgcnst, latin_radar
 	Tooltip:
 		Name: Spy Center
 	Building:
@@ -4151,7 +4152,7 @@ latin_cgup:
 	Inherits: ^RA2Building
 	Inherits: ^BasicDefense
 	Inherits@Template: ^BasicDefenseTemplate
-	Inherits@cashtrickler: ^CashTricklerWithExperience
+	Inherits@cashtrickler: ^LargeCashTricklerWithExperience
 	Inherits@cashtricklerlimit: ^CashTricklerLimited
 	Inherits@shape: ^3x3Shape
 	Inherits@Bot: ^BotMicromanageable
@@ -4160,9 +4161,10 @@ latin_cgup:
 	Inherits@bot2: ^BotAutoDeployEvacuateCargo
 	Inherits@lightposts: ^LightPosts
 	Tooltip:
-		Name: Bunkered Oil Derrick
+		Name: Defense Bureau
 	Buildable:
-		Prerequisites: ~latin_cgcnst, ~latin_cgspy, ~techlevel.medium, derricklimit
+		BuildLimit: 1
+		Prerequisites: ~latin_cgcnst, latin_cgspy, derricklimit
 		Description: actor-oilb.description
 	Building:
 		Footprint: xxx xxx xxx
@@ -4201,10 +4203,69 @@ latin_cgup:
 	DamageMultiplier@2x2Shape:
 		Modifier: 50
 	RevealsShroud:
-		Range: 6666
+		Range: 10000
 	ActorStatValues:
 		Stats: Armor, Sight, Cargo, Kills, Experience
 	GivesBuildableArea:
+
+latin_cgte:
+	Inherits: ^RA2Building
+	Inherits@cashtrickler: ^LargeCashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^SyndicateSpawnActorsOnSell
+	Selectable:
+		Bounds: 3072, 2048, 0, -256
+	Buildable:
+		BuildLimit: 1
+		Prerequisites: ~latin_cgcnst, latin_cgup, derricklimit
+	Tooltip:
+		Name: Recycling Center
+	Building:
+		Footprint: xx xx xx
+		Dimensions: 3,2
+	ProvidesPrerequisite:
+	WithIdleOverlay@lights:
+		Sequence: idle-lights
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@lights2:
+		Sequence: idle-lights2
+		RequiresCondition: !build-incomplete
+	SupportPowerChargeBar:
+	ProduceActorPower@car:
+		Names:
+			1: Give Scrap cars
+		Descriptions:
+			1: Produces scrap cars
+		Icons:
+			1: icon
+		IconImage: latin_buggy
+		AllowMultiple: True
+		PauseOnCondition: disabled
+		Prerequisites:
+			1:
+		Actors: latinscrapcar_driveby, latinscrapcar2_driveby
+		Type: Car
+		ChargeInterval: 750
+		AutoFire: true
+		OrderName: callcars
+		SupportPowerPaletteOrder: 20
+		LaunchSound: gcraspee.wav
+		RequiresCondition: !disabled
+	Production@Car:
+		Produces: Car
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: -704,768,0
+		ExitCell: -1,2
+	Exit@2:
+		SpawnOffset: -704,768,0
+		ExitCell: -1,3
+	Exit@3:
+		SpawnOffset: -704,768,0
+		ExitCell: 0,3
+	AcceptsDeliveredCash:
+		ValidTypes: GrinderCash
 
 latin_ca12hit:
 	Inherits: ^RA2Building
@@ -4217,7 +4278,7 @@ latin_ca12hit:
 		BuildPaletteOrder: 100
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Prerequisites: ~latin_cgcnst, latin_cgspy, !ra2nuke
+		Prerequisites: ~latin_cgcnst, latin_cgspy !ra2topolstrike
 		Queue: Defence, RADefence
 		Description: actor-latin_ca12hit.description
 	Building:
@@ -4274,7 +4335,7 @@ latin_ca12hit:
 	SupportPowerChargeBar:
 	WithSupportPowerActivationAnimation:
 	ProvidesPrerequisite@swlimit:
-		Prerequisite: ra2nuke
+		Prerequisite: ra2topolstrike
 	WithIdleOverlay@bib:
 		Sequence: bib
 
@@ -4455,7 +4516,7 @@ latin_sml:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 50
-		Prerequisites: ~uplatin_up_sml, latin_cgspy
+		Prerequisites: ~latin_cgcnst, uplatin_up_sml, latin_cgspy
 		Description: actor-latin_sml.description
 	Valued:
 		Cost: 5000
@@ -4513,7 +4574,7 @@ latin_aatur:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 50
-		Prerequisites: ~latin_cgcnst, latin_cgweap
+		Prerequisites: ~latin_cgcnst, latin_radar
 		Description: template-anti-aircraft-defense.description
 	Valued:
 		Cost: 1500
@@ -4683,10 +4744,10 @@ latinscrapcar2_driveby:
 ##############################################
 ^LatinCashrecover:
 	DamageMultiplier@latin_up_industrial:
-		Modifier: 90
+		Modifier: 80
 		RequiresCondition: latin_up_industrial
 	SpeedMultiplier@latin_up_industrial:
-		Modifier: 110
+		Modifier: 120
 		RequiresCondition: latin_up_industrial
 	ActorStatValues:
 		Upgrades: uplatin_cashrecover, latin_up_industrial
@@ -4961,7 +5022,7 @@ latin_ltnk:
 	ChangesHealth@SelfHealing:
 		Step: 27
 	Armor:
-		Type: Light
+		Type: Medium
 	Turreted:
 		TurnSpeed: 23 #3
 		Offset: -100,0,5
@@ -5148,7 +5209,7 @@ latin_diablo:
 		Name: Diablo
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~latin_cgte
+		Prerequisites: ~latin_radar
 		Queue: Vehicle, RAVehicle
 		Description: actor-latin_diablo.description
 	Mobile:
@@ -5276,7 +5337,7 @@ latin_apc:
 		Name: Latin APC
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~latin_cgte
+		Prerequisites: ~latin_radar
 		Queue: Vehicle, RAVehicle
 		Description: actor-latin_apc.description
 	Mobile:
@@ -5389,7 +5450,7 @@ latin_humvee:
 		Name: Narco Hummer
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~uplatin_humvee, latin_cgte
+		Prerequisites: ~uplatin_humvee, latin_radar
 		Queue: Vehicle, RAVehicle
 		Description: actor-latin_humvee.description
 	Mobile:
@@ -5621,7 +5682,7 @@ latin_rtruck:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 80
-		Prerequisites: ~latin_cgte, ~!uplatin_burrito
+		Prerequisites: ~latin_radar, ~!uplatin_burrito
 		Description: actor-mssm.description
 	Valued:
 		Cost: 1000
@@ -5692,7 +5753,7 @@ latin_burrito:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 80
-		Prerequisites: ~uplatin_burrito, latin_cgte
+		Prerequisites: ~uplatin_burrito, latin_radar
 		Description: actor-latin_burrito.description
 	Valued:
 		Cost: 1200
@@ -5764,7 +5825,7 @@ latin_lars:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 80
-		Prerequisites: ~uplatin_burrito, latin_cgte
+		Prerequisites: ~uplatin_burrito, latin_radar
 		Description: actor-latin_lars.description
 	Valued:
 		Cost: 1700
@@ -6012,7 +6073,7 @@ latin_fftr:
 		Name: Freedom Fighter
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~uplatin_fftr, latin_cgte
+		Prerequisites: ~uplatin_fftr, latin_radar
 		Queue: Infantry, RAInfantry
 		Description: actor-latin_fftr.description
 	Mobile:
@@ -6219,7 +6280,7 @@ latin_narco:
 		Name: Narco
 	Buildable:
 		BuildPaletteOrder: 80
-		Prerequisites: ~uplatin_narco, latin_cgte
+		Prerequisites: ~uplatin_narco, latin_radar
 		Queue: Infantry, RAInfantry
 		Description: actor-latin_narco.description
 	Mobile:
@@ -6443,6 +6504,7 @@ latin_mig:
 		PauseOnCondition: !ammo
 	AmmoPool:
 		Ammo: 2
+		ReloadDelay: 100
 		AmmoCondition: ammo
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
@@ -6708,7 +6770,7 @@ latin_ra2dtruck:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 180
-		Prerequisites: ~uplatin_ra2dtruck, latin_cgte
+		Prerequisites: ~uplatin_ra2dtruck, latin_radar
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -6790,7 +6852,7 @@ latin_topol:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 80
 		BuildLimit: 1
-		Prerequisites: ~uplatin_topol, latin_cgspy
+		Prerequisites: ~uplatin_topol, latin_cgup
 		Description: actor-latin_topol.description
 	Valued:
 		Cost: 5000
@@ -7039,7 +7101,7 @@ uplatin_mili:
 		BuildPaletteOrder: 50
 		Queue: Addons
 		Description: upgrade-uplatin_mili.description
-		Prerequisites: ~latin_cgte, !uplatin_mili
+		Prerequisites: ~latin_radar, !uplatin_mili
 	RenderSprites:
 		Image: latin_mili
 	ProvidesPrerequisite:
@@ -7054,7 +7116,7 @@ uplatin_ngbunk2:
 		BuildPaletteOrder: 50
 		Queue: Addons
 		Description: upgrade-uplatin_ngbunk2.description
-		Prerequisites: ~latin_cgte, !uplatin_ngbunk2
+		Prerequisites: ~latin_radar, !uplatin_ngbunk2
 	RenderSprites:
 		Image: latin_ngbunk2
 	#ProvidesPrerequisite:
@@ -7073,19 +7135,20 @@ team_upgrade.uplatin_ngbunk2:
 		Description: upgrade-uplatin_ngbunk2.description
 	PlayerDisplayUpgrade:
 
-uplatin_up_tech1:
+uplatin_emp:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
-		Name: Stolen Tech Recycling
+		Name: Unlock Emp Cannon
 	Valued:
 		Cost: 5000
 	Buildable:
 		BuildPaletteOrder: 50
 		Queue: Addons
-		Description: upgrade-uplatin_up_tech1.description
-		Prerequisites: ~latin_cgte, !uplatin_up_tech1
+		Icon: icon2
+		Description: Allows the use of the EMP cannon support power from the Latin EMP Radar.
+		Prerequisites: ~latin_radar, !uplatin_emp
 	RenderSprites:
-		Image: latin_up_tech1
+		Image: steel_qatech
 	ProvidesPrerequisite:
 
 latin_up_chaingun:
@@ -7098,7 +7161,7 @@ latin_up_chaingun:
 		BuildPaletteOrder: 50
 		Queue: Upgrades
 		Description: upgrade-latin_up_chaingun.description
-		Prerequisites: ~latin_cgspy, uplatin_up_tech1, !latin_up_chaingun
+		Prerequisites: ~latin_cgspy, !latin_up_chaingun
 	RenderSprites:
 		Image: latin_up_chaingun
 	ProvidesPrerequisite:
@@ -7113,7 +7176,7 @@ latin_up_industrial:
 		BuildPaletteOrder: 50
 		Queue: Upgrades
 		Description: upgrade-latin_up_industrial.description
-		Prerequisites: ~latin_cgspy, uplatin_up_tech1, !latin_up_industrial
+		Prerequisites: ~latin_cgspy, !latin_up_industrial
 	RenderSprites:
 		Image: latin_up_industrial
 	ProvidesPrerequisite:
@@ -7128,7 +7191,7 @@ uplatin_alliedstolentech:
 		BuildPaletteOrder: 50
 		Queue: Upgrades
 		Description: upgrade-uplatin_alliedstolentech.description
-		Prerequisites: ~latin_cgspy, uplatin_up_tech1, !uplatin_alliedstolentech
+		Prerequisites: ~latin_cgspy, !uplatin_alliedstolentech
 	RenderSprites:
 		Image: latin_up_miraging
 	ProvidesPrerequisite:
@@ -7143,7 +7206,7 @@ latin_up_hotfire:
 		BuildPaletteOrder: 50
 		Queue: Upgrades
 		Description: upgrade-latin_up_hotfire.description
-		Prerequisites: ~latin_cgspy, uplatin_up_tech1, !latin_up_hotfire
+		Prerequisites: ~latin_cgspy, !latin_up_hotfire
 	RenderSprites:
 		Image: latin_up_hotfire
 	ProvidesPrerequisite:
@@ -11965,7 +12028,7 @@ nax2_gcore:
 		Dimensions: 2,2
 		LocalCenterOffset: 0,-512,0
 	Valued:
-		Cost: 1250
+		Cost: 1500
 	Power:
 		Amount: -75
 	ProximityExternalCondition@gravity_1:
@@ -12018,6 +12081,17 @@ nax2_gcore:
 		Type: gravity
 		Color: 20027788
 		RequiresCondition: !disabled
+	ProximityExternalCondition@gravity_6:
+		Range: 2500
+		Condition: GravityGenerator
+		RequiresCondition: !disabled
+		ValidRelationships: Enemy
+	WithRangeCircle@gravity_6:
+		Range: 2500
+		Type: gravity
+		Color: 20027788
+		RequiresCondition: !disabled
+
 nax2_dairy:
 	Inherits: ^RA2Building
 	Inherits@shape: ^3x2Shape
@@ -14060,7 +14134,7 @@ nax2_crystal:
 		RequiresCondition: attacking
 	GrantConditionOnAttack:
 		Condition: attacking
-		RevokeDelay: 1
+		RevokeDelay: 10
 	WithRangeCircle:
 		Range: 5000
 	RenderRangeCircle:
@@ -17152,7 +17226,7 @@ futu_mcv:
 	Tooltip:
 		Name: Future Tech Mobile Construction Vehicle
 	Buildable:
-		Prerequisites: ~ra2gadept
+		Prerequisites: ~futu_egtf
 	Transforms:
 		IntoActor: futu_egcnst
 		Offset: -1,-1

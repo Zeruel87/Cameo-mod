@@ -1,32 +1,32 @@
-# World:
-# 	FactionCA@xcom:
-# 		Name: XCOM #faction-xcom.name
-# 		InternalName: xcom
-# 		Game: XCOM
-# 		Side: XCOM
-# 		Description: Extraterrestial Combat Unit #faction-xcom.description
+World:
+	FactionCA@xcom:
+		Name: (WIP)XCOM #faction-xcom.name
+		InternalName: xcom
+		Game: XCOM
+		Side: XCOM
+		Description: Extraterrestial Combat Unit #faction-xcom.description
 
-# 	####################################################################################################
-# 	#		XCOM
-# 	####################################################################################################
+	####################################################################################################
+	#		XCOM
+	####################################################################################################
 
-# 	StartingUnits@mcvonlyxcom:
-# 		Class: none
-# 		ClassName: MCV Only
-# 		Factions: xcom
-# 		BaseActor: XCOMHQ
-# 	StartingUnits@defaultxcom:
-# 		Class: light
-# 		ClassName: Light Support
-# 		Factions: xcom
-# 		BaseActor: XCOMHQ
-# 		SupportActors: xcomassaultranger
-# 	StartingUnits@heavyxcom:
-# 		Class: heavy
-# 		ClassName: Heavy Support
-# 		Factions: xcom
-# 		BaseActor: XCOMHQ
-# 		SupportActors: xcomassaultranger,xcomheavygrenadier
+	StartingUnits@mcvonlyxcom:
+		Class: none
+		ClassName: MCV Only
+		Factions: xcom
+		BaseActor: XCOMHQ
+	StartingUnits@defaultxcom:
+		Class: light
+		ClassName: Light Support
+		Factions: xcom
+		BaseActor: XCOMHQ
+		SupportActors: xcomassaultranger
+	StartingUnits@heavyxcom:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: xcom
+		BaseActor: XCOMHQ
+		SupportActors: xcomassaultranger,xcomheavygrenadier
 
 ####################################################################################################
 #		INFANTRY
@@ -54,14 +54,13 @@ xcomassaultranger:
 	Inherits: ^Soldier
 	Inherits@anim: ^TDRAInfantry
 	Inherits@Template: ^ScoutInfantryTemplate
-	Inherits@Template: ^MeleeInfantryTemplate
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@exp: ^GainsExperienceXCOM
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Valued:
-		Cost: 2000
+		Cost: 1800
 	Tooltip:
 		Name: Assault Ranger
 	UpdatesPlayerStatistics:
@@ -74,7 +73,7 @@ xcomassaultranger:
 	Mobile:
 		Speed: 75
 	Health:
-		HP: 20000
+		HP: 100000
 	GrantConditionOnPrerequisite@xcom_infirmary:
 		Condition: xcom_infirmary
 		Prerequisites: xcom_infirmary
@@ -96,21 +95,27 @@ xcomassaultranger:
 	Armament@Carbine: ##########
 		Weapon: XCOMCarbine
 		RequiresCondition: !ShotgunUpgrade
+		LocalOffset: 128,0,256
 	Armament@Shotgun: ##########
 		Weapon: XCOMShotgun
 		RequiresCondition: ShotgunUpgrade && !ShardgunUpgrade
+		LocalOffset: 128,0,256
 	Armament@ShardGun: ##########
 		Weapon: XCOMShardGun
 		RequiresCondition: ShardgunUpgrade
-	Armament@Grenade: ##########
-		Weapon: XCOMGrenade
-		RequiresCondition: GrenadeUpgrade
-	Armament@AA: ##########
-		Weapon: XCOMCarbineAA
-		RequiresCondition: !ShardgunUpgrade
-	Armament@AA2: ##########
-		Weapon: XCOMShardGunAA
-		RequiresCondition: ShardgunUpgrade
+		LocalOffset: 128,0,256
+	Armament@Grenade1: ##########
+		Weapon: XCOMGrenade1
+		RequiresCondition: GrenadeUpgrade && !ShotgunUpgrade
+		LocalOffset: 0,0,480
+	Armament@Grenade2: ##########
+		Weapon: XCOMGrenade2
+		RequiresCondition: GrenadeUpgrade && ShotgunUpgrade && !ShardgunUpgrade
+		LocalOffset: 0,0,480
+	Armament@Grenade3: ##########
+		Weapon: XCOMGrenade3
+		RequiresCondition: GrenadeUpgrade && ShardgunUpgrade
+		LocalOffset: 0,0,480
 	Armament@GarrisonedCarbine: ##########
 		Name: garrisoned
 		Weapon: XCOMCarbine
@@ -128,19 +133,9 @@ xcomassaultranger:
 		RequiresCondition: ShardgunUpgrade
 	Armament@GarrisonedGrenade: ##########
 		Name: garrisoned
-		Weapon: XCOMGrenade
+		Weapon: XCOMGrenade3
 		MuzzleSequence: garrison-muzzle
 		RequiresCondition: GrenadeUpgrade
-	Armament@GarrisonedAA: ##########
-		Name: garrisoned
-		Weapon: XCOMCarbineAA
-		MuzzleSequence: garrison-muzzle
-		RequiresCondition: !ShardgunUpgrade
-	Armament@GarrisonedAA2: ##########
-		Name: garrisoned
-		Weapon: XCOMShardGunAA
-		MuzzleSequence: garrison-muzzle
-		RequiresCondition: ShardgunUpgrade
 	ExternalCondition@CarapaceArmorUpgrade:
 		Condition: CarapaceArmorUpgrade
 		TotalCap: 1
@@ -158,10 +153,6 @@ xcomassaultranger:
 		RequiresCondition: armored
 	WithInfantryBody:
 		IdleSequences: idle1,idle2,idle3,idle4
-	DamageMultiplier@xcom:
-		Modifier: 20
-	FirepowerMultiplier@xcom:
-		Modifier: 500
 	Power:
 		Amount: -1
 	RenderSprites:
@@ -175,7 +166,7 @@ ShotgunUpgrade:
 		Queue: Addons
 		Description: Allows the Assault Ranger to use the Shotgun
 	Valued:
-		Cost: 2000
+		Cost: 700
 	RenderSprites:
 		Image: gdishotgunner
 	Interactable:
@@ -213,7 +204,7 @@ ShardgunUpgrade:
 		Queue: Addons
 		Description: Upgrades the Shotgun to the Shard Gun
 	Valued:
-		Cost: 4000
+		Cost: 2500
 	RenderSprites:
 		Image: upscrefinery1
 	Interactable:
@@ -251,7 +242,7 @@ GrenadeUpgrade:
 		Queue: Addons
 		Description: Allows the Assault Ranger to use the Grenade
 	Valued:
-		Cost: 2000
+		Cost: 1800
 	RenderSprites:
 		Image: e2
 	Interactable:
@@ -289,7 +280,7 @@ CarapaceArmorUpgrade:
 		Queue: Addons
 		Description: Gives an additional armor plating
 	Valued:
-		Cost: 4000
+		Cost: 1000
 	RenderSprites:
 		Image: tsblackhandlaser
 	Interactable:
@@ -334,7 +325,7 @@ xcomheavygrenadier:
 	Inherits@VOICES: ^WithFeedbackVoiceLines
 	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Valued:
-		Cost: 5000
+		Cost: 1800
 	Tooltip:
 		Name: Heavy Grenadier
 	Buildable:
@@ -345,12 +336,12 @@ xcomheavygrenadier:
 	Mobile:
 		Speed: 50
 	Health:
-		HP: 30000
+		HP: 150000
 	GrantConditionOnPrerequisite@xcom_infirmary:
 		Condition: xcom_infirmary
 		Prerequisites: xcom_infirmary
 	ChangesHealth@SelfHealing:
-		Step: 24
+		Step: 150
 		RequiresCondition: xcom_infirmary
 	ExternalCondition@RocketLauncherUpgrade:
 		Condition: RocketLauncherUpgrade
@@ -358,17 +349,17 @@ xcomheavygrenadier:
 	RenderRangeCircle:
 	Armament@ChainGun:
 		Weapon: XCOMChainGun
-		LocalOffset: 256,43,341
+		LocalOffset: 128,0,256
 		FireDelay: 5
 		RequiresCondition: !RocketLauncherUpgrade
 	Armament@ChainGun2:
 		Weapon: XCOMChainGun2
-		LocalOffset: 256,43,341
+		LocalOffset: 128,0,256
 		FireDelay: 5
 		RequiresCondition: RocketLauncherUpgrade
 	Armament@RocketLauncher:
 		Weapon: XCOMRocketLauncher
-		LocalOffset: 256,43,341
+		LocalOffset: 128,0,256
 		FireDelay: 5
 		RequiresCondition: RocketLauncherUpgrade
 	Armament@GarrisonedChainGun:
@@ -409,10 +400,6 @@ xcomheavygrenadier:
 		VoiceSet: GGIVoice
 	QuantizeFacingsFromSequence:
 		Sequence: stand
-	DamageMultiplier@xcom:
-		Modifier: 20
-	FirepowerMultiplier@xcom:
-		Modifier: 500
 	Power:
 		Amount: -1
 	RenderSprites:
@@ -426,7 +413,7 @@ RocketLauncherUpgrade:
 		Queue: Addons
 		Description: Allows the Heavy Grenadier to use the Rocket Launcher
 	Valued:
-		Cost: 4000
+		Cost: 2600
 	RenderSprites:
 		Image: gdimissilesoldier
 	Interactable:
@@ -508,7 +495,7 @@ xcomsharpshooter:
 	Inherits@VOICES: ^WithFeedbackVoiceLines
 	Inherits@COMMANDOSKULL: ^CommandoSkull
 	Valued:
-		Cost: 3000
+		Cost: 1800
 	Tooltip:
 		Name: Sharpshooter
 	Buildable:
@@ -519,12 +506,12 @@ xcomsharpshooter:
 	Mobile:
 		Speed: 50
 	Health:
-		HP: 10000
+		HP: 50000
 	GrantConditionOnPrerequisite@xcom_infirmary:
 		Condition: xcom_infirmary
 		Prerequisites: xcom_infirmary
 	ChangesHealth@SelfHealing:
-		Step: 8
+		Step: 50
 		RequiresCondition: xcom_infirmary
 	Armament@PRIMARY:
 		Weapon: XCOMAWP
@@ -554,16 +541,12 @@ xcomsharpshooter:
 		TotalCap: 1
 	Voiced:
 		VoiceSet: RA2SniperVoice
-	DamageMultiplier@xcom:
-		Modifier: 33
-	FirepowerMultiplier@xcom:
-		Modifier: 333
-		RequiresCondition: !AutoSniperUpgrade
-	ReloadDelayMultiplier@xcom:
+	FirepowerMultiplier@AutoSniperUpgrade:
+		Modifier: 50
+		RequiresCondition: AutoSniperUpgrade
+	ReloadDelayMultiplier@AutoSniperUpgrade:
 		Modifier: 33
 		RequiresCondition: AutoSniperUpgrade
-	RangeMultiplier@xcom:
-		Modifier: 100
 	Power:
 		Amount: -1
 	RenderSprites:
@@ -577,7 +560,7 @@ AutoSniperUpgrade:
 		Queue: Addons
 		Description: Gives the Sniper an automatic Sniper Rifle
 	Valued:
-		Cost: 4000
+		Cost: 800
 	RenderSprites:
 		Image: ra2snipe
 	Interactable:
@@ -880,6 +863,7 @@ XCOMHQ:
 	ProvidesPrerequisite@conyard:
 		Prerequisite: conyard
 	RenderSprites:
+		PlayerPalette: player_rgba
 		Image: sccommandcenter
 
 medium_gun_turret.xcom:
@@ -1048,8 +1032,6 @@ large_gun_turret.xcom:
 		Range: 5000
 	RenderRangeCircle:
 	DroneSpawnerSlave:
-
-
 
 xcom_power_generator:
 	Inherits: ^researched_upgrade.template
