@@ -1678,9 +1678,11 @@ light_factory:
 		Actor: light_inf
 	SpawnActorOnDeath@death2:
 		Actor: light_inf
+	ProvidesPrerequisite@light_factory:
+		Prerequisite: light_factory
 	GrantConditionOnPrerequisite@UPGRADEABLE:
 		Condition: upgrade_light
-		Prerequisites: upgrade_light
+		Prerequisites: upgrade.light
 	-WithDeathAnimation:
 light_factory.ordos:
 	Inherits: light_factory
@@ -2475,7 +2477,7 @@ artillery_platform:
 		BuildPaletteOrder: 510
 		Description: Defensive structure.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
 	Health:
-		HP: 32500
+		HP: 125000
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -2500,7 +2502,7 @@ autogun_turret:
 		Description: Defensive structure.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
 		IconPalette: chrome
 	Health:
-		HP: 35000
+		HP: 75000
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -3626,7 +3628,7 @@ trooper:
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 20
-		Prerequisites: ~upgrade.barracks
+		Prerequisites: ~upgrade.barracks, ~!upordos_ordos_aatrooper
 		BuildDuration: 80
 		BuildDurationModifier: 100
 		Description: template-antitank-antiair-infantry.description
@@ -3766,7 +3768,7 @@ ordos_aatrooper:
 		Name: Anti Air trooper
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~upgrade.barracks, ~d2k_barracks.ordos
+		Prerequisites: ~upgrade.barracks, ~d2k_barracks.ordos, ~upordos_ordos_aatrooper
 		Queue: Infantry, RAInfantry
 		Description: template-antitank-antiair-infantry.description
 	Mobile:
@@ -3802,12 +3804,12 @@ ordos_mortar:
 	Inherits@anim: ^RA2Infantry
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 600
+		Cost: 400
 	Tooltip:
 		Name: Mortar trooper
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~upgrade.barracks, ~d2k_barracks.ordos
+		Prerequisites: ~upgrade.barracks, ~d2k_barracks.ordos, ~upordos_ordos_mortar
 		Queue: Infantry, RAInfantry
 		Description: template-antitank-antiair-infantry.description
 	Mobile:
@@ -3967,7 +3969,7 @@ facedancer:
 		BuildPaletteOrder: 20
 		BuildDuration: 175
 		BuildDurationModifier: 100
-		Prerequisites: ~d2k_barracks.ordos, ~research_centre.ordos
+		Prerequisites: ~d2k_barracks.ordos, ~d2k_barracks.ordos, ~upordos_facedancer
 		Description: Genetically modified humanoid\nCan shapeshift into various forms.\n Does not lie down when attacked\nCannot be damaged by Tiberium\nThrows grenades\nMust resupply at Resource Center\n  Strong vs Buildings, Infantry, Air, Vehicles\n  Weak vs Siege
 	Health:
 		HP: 5000
@@ -4054,7 +4056,7 @@ contaminator:
 		Prerequisites: ~d2k_barracks.ordos, ~upordos_contaminator
 		Description: The Contaminator is a genetically engineered organism\nthat infects a target organic unit to create another Contaminator\nwhen the target dies. They are quite\nresilient to gunfire.\n  Strong vs Buildings, Infantry, Air, Vehicles\n  Weak vs Siege
 	Health:
-		HP: 35000
+		HP: 37500
 	Mobile:
 		Speed: 42 #42
 	AutoTarget:
@@ -5781,13 +5783,13 @@ ordos_apc:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 100
-		Prerequisites: ~light_factory.ordos, research_centre.ordos
+		Prerequisites: ~light_factory.ordos, upgrade.light
 		BuildDuration: 400
 		BuildDurationModifier: 100
 		Description: Ordos Universal Battle Tank\nHighly Mobile Hover unit\nFires laser beams\nWeak durability\n  Strong vs Everything
 		IconPalette: windows256
 	Valued:
-		Cost: 1100
+		Cost: 1000
 	Tooltip:
 		Name: Ordos APC
 	UpdatesPlayerStatistics:
@@ -5863,6 +5865,9 @@ tleilax_labcrawl:
 		Range: 5c0
 	Armament:
 		Weapon: Laboratory_Bioball
+	Armament@aa:
+		Weapon: D2K_Rocket_AA
+		LocalOffset: 128,64,64, 128,-64,64
 	AttackFrontal:
 	FireWarheadsOnDeath:
 		Weapon: D2KUnitExplodeMed
@@ -5976,8 +5981,6 @@ swarmer:
 		AddToArmyValue: true
 	Health:
 		HP: 23000
-	Armor:
-		Type: Medium
 	RevealsShroud:
 		Range: 5c0
 		Type: GroundPosition
@@ -6096,7 +6099,7 @@ d2k_aa_mine:
 
 ordos_eye:
 	Inherits: ^RANeutralPlane
-	Inherits@Template: ^FighterTemplate
+	Inherits@Template: ^BomberTemplate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AntiAir: ^PrioritizeAir
@@ -6108,7 +6111,7 @@ ordos_eye:
 	Buildable:
 		Queue: Aircraft, RAAircraft
 		BuildPaletteOrder: 30
-		Prerequisites: ~high_tech_factory.ordos
+		Prerequisites: ~high_tech_factory.ordos, ~upgrade.hightech
 		BuildDuration: 250
 		BuildDurationModifier: 100
 		Description: Light plane armed with dual machine guns. \nCan attack air.\n Strong vs Infantry and Air
@@ -6117,9 +6120,7 @@ ordos_eye:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 40000
-	Armor:
-		Type: Medium
+		HP: 150000
 	RevealsShroud:
 		Range: 5c0
 		Type: GroundPosition
@@ -6163,6 +6164,83 @@ ordos_eye:
 		Position: BottomLeft
 		RequiresSelection: True
 		PipCount: 6
+ordos_banshee:
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^HelicopterTemplate
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@AntiInf: ^PrioritizeInfantry
+	AutoTarget:
+		InitialStance: ReturnFire
+	Valued:
+		Cost: 750
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 30
+		Prerequisites: ~high_tech_factory.ordos
+		BuildDuration: 250
+		BuildDurationModifier: 100
+		Description: Light plane armed with dual machine guns. \nCan attack air.\n Strong vs Infantry and Air
+	Tooltip:
+		Name: Banshee
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 34500
+	RevealsShroud:
+		Range: 5c0
+		Type: GroundPosition
+	AttackAircraft:
+		FacingTolerance: 320
+	Armament@PRIMARY:
+		Weapon: 80mm_O_Banshee
+		LocalOffset: 256,-213,0, 256,213,0
+		MuzzleSequence: muzzle
+		MuzzlePalette: ra2effect
+	Aircraft:
+		CruiseAltitude: 1920
+		Speed: 200
+		TurnSpeed: 48
+		RepulsionSpeed: 40
+		MaximumPitch: 56
+		CanHover: true
+	Guard:
+		Voice: Guard
+	Guardable:
+	WithMuzzleOverlay:
+	Targetable:
+		TargetTypes: Air, Plane
+	SpawnActorOnDeath:
+		Actor: ordos_banshee.husk
+	Selectable:
+		Class: banshee
+		Bounds: 1280, 1024, 0, 0
+	SelectionDecorations:
+	Voiced:
+		VoiceSet: EBFDAAMine
+	RenderSprites:
+		PlayerPalette: player_rgba
+	AmmoPool:
+		Ammo: 12
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 8
+		Count: 1
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 6
+	Cloak:
+		InitialDelay: 60
+		CloakDelay: 60
+		UncloakOn: Attack, Unload
+		IsPlayerPalette: true
+		Palette: player_rgba
+		CloakedCondition: cloaked
+		PauseOnCondition: cloak-force-disabled || base-reveal
+	WithMoveAnimation:
+		MoveSequence: move
 # ^Ornithopter_Missiles:
 # 	GrantConditionOnPrerequisite@orniupg:
 # 		Condition: d2k_ornithopter_upgrade
@@ -6517,6 +6595,19 @@ swarmer.husk:
 	RenderSprites:
 		PlayerPalette: player_rgba
 		Image: swarmer
+ordos_banshee.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Banshee
+	Aircraft:
+		TurnSpeed: 8
+		Speed: 172
+	RenderSprites:
+	FallsToEarth:
+		Explosion: D2KUnitExplodeSmall
+	RenderSprites:
+		PlayerPalette: player_rgba
+		Image: ordos_banshee
 ordos_eye.husk:
 	Inherits: ^PlaneHusk
 	Tooltip:
@@ -7727,7 +7818,7 @@ d2k_autogun_tank:
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Buildable:
 		Queue: Vehicle, RAVehicle
-		Prerequisites: ~heavy_factory.ordos
+		Prerequisites: ~heavy_factory.ordos ,upgrade_heavy
 		BuildPaletteOrder: 50
 		BuildDuration: 625
 		BuildDurationModifier: 100
@@ -8038,13 +8129,13 @@ d2k_laser_tank:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 100
-		Prerequisites: ~heavy_factory.ordos, research_centre.ordos
+		Prerequisites: ~heavy_factory.ordos, ~upixians_d2k_laser_tank
 		BuildDuration: 400
 		BuildDurationModifier: 100
 		Description: Ordos Universal Battle Tank\nHighly Mobile Hover unit\nFires laser beams\nWeak durability\n  Strong vs Everything
 		IconPalette: windows256
 	Valued:
-		Cost: 900
+		Cost: 1100
 	Tooltip:
 		Name: Laser Tank
 	UpdatesPlayerStatistics:
@@ -8096,7 +8187,7 @@ ordos_deviatormk2:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 100
-		Prerequisites: ~heavy_factory.ordos, research_centre.ordos
+		Prerequisites: ~heavy_factory.ordos, research_centre.ordos, ~upordos_deviatormk2
 		BuildDuration: 400
 		BuildDurationModifier: 100
 		Description: Ordos Universal Battle Tank\nHighly Mobile Hover unit\nFires laser beams\nWeak durability\n  Strong vs Everything
@@ -8108,7 +8199,7 @@ ordos_deviatormk2:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
-		HP: 80000
+		HP: 85000
 	Armor:
 		Type: Medium
 	Mobile:
@@ -8483,7 +8574,7 @@ ordos_scoutdrone:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 10
-		Prerequisites: ~light_factory.ordos
+		Prerequisites: ~light_factory.ordos, upgrade.light
 		Description: Improved Scout\n  Strong vs Vehicles\n  Weak vs Infantry
 		IconPalette: d2kunit
 	Valued:
@@ -8939,7 +9030,7 @@ combat_tank_o:
 combat_tank_o_stealth:
 	Inherits: ^combat_tank
 	Buildable:
-		Prerequisites: ~heavy_factory.ordos, research_centre.ordos
+		Prerequisites: ~heavy_factory.ordos, upgrade_heavy, ~upordos_ordos_stealth_tank
 		Description: Fast stealth tank with powerful long range cannon\n  Strong vs Tanks\n  Weak vs Infantry
 		IconPalette: windows256
 	Valued:
@@ -8975,6 +9066,8 @@ combat_tank_o_stealth:
 		Palette: player_rgba
 		CloakedCondition: cloaked
 		PauseOnCondition: cloak-force-disabled || base-reveal
+	Selectable:
+		Class: combat_tank_o_stealth
 combat_tank_ixian:
 	Inherits@D2KT: ^D2KTank
 	Inherits@Template: ^MainBattleTankTemplate
@@ -9323,7 +9416,7 @@ carryall:
 	Buildable:
 		Queue: Aircraft, RAAircraft
 		BuildPaletteOrder: 120
-		Prerequisites: ~upgrade.hightech
+		Prerequisites: ~high_tech_factory.ixian, ~upgrade.hightech
 
 carryall.paradrop:
 	Inherits: carryall.reinforce
@@ -9361,7 +9454,7 @@ ordos_carryall:
 	Buildable:
 		Queue: Aircraft, RAAircraft
 		BuildPaletteOrder: 120
-		Prerequisites: ~upgrade.hightech, ~light_factory.ordos
+		Prerequisites: ~high_tech_factory.ordos, ~upgrade.hightech
 	Tooltip:
 		Name: Advanced Carryall
 	SpawnActorOnDeath@CRUISING:
@@ -11935,6 +12028,90 @@ upordos_tleilax_labcrawl:
 	RenderSprites:
 		Image: tleilax_labcrawl
 	ProvidesPrerequisite:
+#
+upordos_ordos_aatrooper:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock AA Trooper
+	Buildable:
+		BuildPaletteOrder: 110
+		Queue: Promotions
+		#IconPalette: d2kunit
+		Description: Enables construction of Specialized AA Troopers.
+		Prerequisites: ~construction_yard.ordos, !upordos_ordos_aatrooper, rank1
+	RenderSprites:
+		Image: ordos_aatrooper
+	ProvidesPrerequisite:
+
+upordos_d2k_laser_tank:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Laser Tank
+	Buildable:
+		BuildPaletteOrder: 113
+		Queue: Promotions
+		IconPalette: d2kunit
+		Description: Enables construction of Laser Tanks.
+		Prerequisites: ~construction_yard.ordos, upordos_ordos_aatrooper, !upordos_d2k_laser_tank, rank1
+	RenderSprites:
+		Image: d2k_laser_tank
+	ProvidesPrerequisite:
+
+upordos_deviatormk2:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Deviator Tank
+	Buildable:
+		BuildPaletteOrder: 116
+		Queue: Promotions
+		IconPalette: d2kunit
+		Description: Enables construction of Ix Duelist Tanks.
+		Prerequisites: ~construction_yard.ordos, upordos_d2k_laser_tank, !upordos_deviatormk2, rank1
+	RenderSprites:
+		Image: duelist_tank
+	ProvidesPrerequisite:
+
+#
+upordos_ordos_mortar:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Mortar Troopers
+	Buildable:
+		BuildPaletteOrder: 111
+		Queue: Promotions
+		IconPalette: windows256
+		Description: Enables construction of Mortar Troopers.
+		Prerequisites: ~construction_yard.ordos, !upordos_ordos_mortar, rank1
+	RenderSprites:
+		Image: ordos_mortar
+	ProvidesPrerequisite:
+upordos_ordos_stealth_tank:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Tank Destroyer
+	Buildable:
+		BuildPaletteOrder: 114
+		Queue: Promotions
+		IconPalette: d2kunit
+		Description: Enables construction of Tank Destroyers.
+		Prerequisites: ~construction_yard.ordos, upordos_ordos_mortar, !upordos_ordos_stealth_tank, rank1
+	RenderSprites:
+		Image: d2k_ordos_stealth_tank
+	ProvidesPrerequisite:
+upordos_banshee:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Banshees
+	Buildable:
+		BuildPaletteOrder: 117
+		Queue: Promotions
+		IconPalette: ra2
+		Description: Enables construction of Banshees.
+		Prerequisites: ~construction_yard.ordos, upordos_ordos_stealth_tank, !upordos_banshee, rank1
+	RenderSprites:
+		Image: ordos_banshee
+	ProvidesPrerequisite:
+
 # 
 heavy_inf:
 	Inherits: ^D2KInfantry
