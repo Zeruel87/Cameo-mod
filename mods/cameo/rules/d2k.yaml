@@ -629,7 +629,7 @@ Player:
 	AirstrikePower@orni:
 		PauseOnCondition: disabled
 		Prerequisites:
-			1: ~upgrade.hightech
+			1: ~upgrade_hightech
 		Icons:
 			1: ornistrike
 		IconPalette: d2kunit
@@ -697,8 +697,8 @@ Player:
 concreteabuilding:
 	Inherits: ^concrete
 	D2kBuilding:
-		Footprint: xxx xxx xxx
-		Dimensions: 3,3
+		Footprint: xxxx xxxx xxxx xxxx
+		Dimensions: 4,4
 	Tooltip:
 		Name: Concrete Slab
 	Valued:
@@ -708,7 +708,7 @@ concreteabuilding:
 		BuildPaletteOrder: 110
 		BuildDuration: 125
 		BuildDurationModifier: 100
-		Prerequisites: ~construction_yard
+		Prerequisites: ~construction_yard, ~!upgrade_conyard
 	RenderSprites:
 		Image: concretea
 
@@ -718,20 +718,14 @@ concreteadefense:
 		Queue: Defence, RADefence
 
 concretebbuilding:
-	Inherits: ^concrete
+	Inherits: concreteabuilding
 	D2kBuilding:
 		Footprint: xxxxx xxxxx xxxxx xxxxx xxxxx
 		Dimensions: 5,5
 	Tooltip:
 		Name: Large Concrete Slab
-	Valued:
-		Cost: 1000
 	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 110
-		Prerequisites: ~upgrade.conyard
-		BuildDuration: 250
-		BuildDurationModifier: 100
+		Prerequisites: ~upgrade_conyard
 	RenderSprites:
 		Image: concreteb
 
@@ -745,7 +739,7 @@ OILB.d2k:
 	Inherits: OILB.Building
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Buildable:
-		Prerequisites: ~research_centre, derricklimit
+		Prerequisites: ~construction_yard, research_centre, derricklimit
 		Description: actor-oilb.description
 		IconPalette: d2kunit
 	Tooltip:
@@ -812,9 +806,12 @@ construction_yard.ixian:
 	ProvidesPrerequisite@d2k_construction_yard:
 		Prerequisite: d2k_construction_yard
 	GrantConditionOnPrerequisite@UPGRADEABLE:
-		Prerequisites: upgrade.conyard
+		Prerequisites: upgrade_conyard
+	DamageMultiplier@upgrade_conyard:
+		RequiresCondition: upgrade_conyard
+		Modifier: 75
 	ActorStatValues:
-		Upgrades: upgrade.conyard
+		Upgrades: upgrade_conyard
 	GivesBuildableArea:
 		AreaTypes: building
 	-WithDeathAnimation:
@@ -983,9 +980,12 @@ d2k_barracks.ixian:
 	ProvidesPrerequisite@barracks:
 		Prerequisite: barracks
 	GrantConditionOnPrerequisite@UPGRADEABLE:
-		Prerequisites: upgrade.barracks
+		Prerequisites: upgrade_barracks
+	DamageMultiplier@upgrade_barracks:
+		RequiresCondition: upgrade_barracks
+		Modifier: 75
 	ActorStatValues:
-		Upgrades: upgrade.barracks
+		Upgrades: upgrade_barracks
 	-WithDeathAnimation:
 	SpawnActorOnDeath@death1:
 		Actor: light_inf
@@ -1063,7 +1063,7 @@ d2k_barracks.ixian:
 # 		Image: d2k_flesh_vat
 # 	ProvidesPrerequisite@buildingname:
 # 	GrantConditionOnPrerequisite@UPGRADEABLE:
-# 		Prerequisites: upgrade.barracks
+# 		Prerequisites: upgrade_barracks
 # 	RevealOnDeath:
 # 		Radius: 3c768
 # 	-WithDeathAnimation:
@@ -1413,7 +1413,7 @@ d2k_munitions.ixian:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@shape: ^1x1Shape
 	Buildable:
-		Prerequisites: ~upgrade.conyard, d2k_barracks.ixian
+		Prerequisites: ~construction_yard.ixian, d2k_barracks.ixian
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 310
 		Description: actor-d2k_munitions.description
@@ -1546,7 +1546,7 @@ d2k_munitions.ixian:
 # 	Power:
 # 		Amount: -125
 # 	GrantConditionOnPrerequisite@UPGRADEABLE:
-# 		Prerequisites: upgrade.light
+# 		Prerequisites: upgrade_light
 # 	-WithDeathAnimation:
 # 	ThrowsShrapnel:
 # 		Weapons: Debris2, Debris3
@@ -1669,8 +1669,8 @@ heavy_factory.ixian:
 		BuildDurationModifier: 75
 	ProvidesPrerequisite@missiletank:
 		Prerequisite: heavy.missile_tank
-	ProvidesPrerequisite@upgrade_heavy:
-		Prerequisite: upgrade_heavy
+	# ProvidesPrerequisite@upgrade_heavy:
+	# 	Prerequisite: upgrade_heavy
 
 repair_pad.ixian:
 	Inherits: ^D2KBuilding
@@ -1679,7 +1679,7 @@ repair_pad.ixian:
 	Inherits@repair: ^RepairsUnits
 	Inherits@repair: ^RepairFacility
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, heavy_factory.ixian, upgrade.conyard
+		Prerequisites: ~construction_yard.ixian, heavy_factory.ixian
 		IconPalette: d2kunit
 	Tooltip:
 		Name: Ixian Repair Pad
@@ -1717,7 +1717,7 @@ outpost.ixian:
 	Inherits@D2KSprite: ^D2KPaletteRender
 	Inherits@shape: ^3x3Shape
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, refinery.atreides, upgrade.conyard
+		Prerequisites: ~construction_yard.ixian, refinery.atreides
 		IconPalette: d2kunit
 	Tooltip:
 		Name: Ixian Outpost
@@ -1744,91 +1744,27 @@ outpost.ixian:
 	SpawnActorOnDeath@death2:
 		Actor: light_inf
 
-high_tech_factory.ixian:
-	Inherits: ^D2KBuilding
-	Inherits@UPGRADEABLE: ^D2kUpgradeable
-	Inherits@D2KSprite: ^D2KPaletteRender
+ixian_launchpad:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
 	Inherits@CPQWP: ^CPQConditionWithPrimary
-	#Inherits@orni: ^DU_OrnithopterSupportPower
-	Inherits@shape: ^3x3Shape
+	Inherits@sell: ^TDSpawnActorsOnSell
 	Inherits@hpad: ^IsAircraftFactory
-	Buildable:
-		Prerequisites: ~construction_yard.ixian, outpost.ixian, upgrade.conyard
-		Description: actor-high_tech_factory.description
-		IconPalette: d2kunit
-	Building:
-		Footprint: _X_ xxx XXX ===
-		Dimensions: 3,4
-		LocalCenterOffset: 0,-512,0
 	Tooltip:
-		Name: High Tech Factory
-	ProductionCostMultiplier@dune:
-		Multiplier: 150
-	ProductionTimeMultiplier@dune:
-		Multiplier: 150
-	Armor:
-		Type: Concrete
-	-Production@NORMAL:
-	-Production@CLASSICPRODUCTIONQUEUES:
-	ProductionFromMapEdge@NORMAL:
-		Produces: Aircraft
-		RequiresCondition: !classicproductionqueues
-	ProductionFromMapEdge@CLASSICPRODUCTIONQUEUES:
-		Produces: RAAircraft
-		RequiresCondition: classicproductionqueues
-	Exit:
-		SpawnOffset: 0,0,728
-		ExitCell: 0,0
-	HitShape:
-		TargetableOffsets: -1312,0,0, -1312,-1024,0, -1312,1024,0
-		Type: Rectangle
-			TopLeft: -1536, -512
-			BottomRight: 1536, 1536
-	HitShape@TOP:
-		TargetableOffsets: 1280,0,0
-		Type: Rectangle
-			TopLeft: -512, -1536
-			BottomRight: 512, -512
+		Name: Ixian Launchpad
+	Buildable:
+		Prerequisites: ~construction_yard.ixian, outpost.ixian
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+	Exit@1:
+		SpawnOffset: 0,-256,0
+	Reservable:
+	WithResupplyAnimation:
+		RequiresCondition: !build-incomplete
 	RallyPoint:
 	RenderSprites:
-		Image: hightech.atreides
-	WithProductionOverlay@WELDING:
-		RequiresCondition: !build-incomplete
-		Queues: Aircraft
-		Sequence: production-welding
-	ProvidesPrerequisite@upgrade3:
-		Prerequisite: hightech.harkonnen
-		Factions: harkonnen, corrino, guild
-	ProvidesPrerequisite@upgrade:
-		Prerequisite: hightech.atreides
-		Factions: atreides, ixian, fremen
-	ProvidesPrerequisite@upgrade2:
-		Prerequisite: hightech.ordos
-		Factions: ordos, mercenary, smugglers, tleilaxu
-	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite@high_tech_factory:
-		Prerequisite: high_tech_factory
-	GrantConditionOnPrerequisite@UPGRADEABLE:
-		Prerequisites: upgrade.hightech
-	ActorStatValues:
-		Upgrades: upgrade.hightech
-	-WithDeathAnimation:
-	FireProjectilesOnDeath:
-		Weapons: Debris2, Debris3
-		Pieces: 7, 10
-		Range: 1c512, 2c768
-	SpawnActorOnDeath@death1:
-		Actor: light_inf
-	SpawnActorOnDeath@death2:
-		Actor: light_inf
-	SpawnActorOnDeath@death3:
-		Actor: light_inf
-	SpawnActorOnDeath@death4:
-		Actor: trooper
-	Production@Addons:
-		Produces: Addons
-	ProductionBar@Addons:
-		ProductionType: Addons
+		PlayerPalette: player_rgba
 
 research_centre.ixian:
 	Inherits: ^D2KBuilding
@@ -1837,7 +1773,7 @@ research_centre.ixian:
 	Inherits@shape: ^3x3Shape
 	Inherits@tech: ^IsTechnoBuilding
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, outpost.ixian, upgrade.conyard
+		Prerequisites: ~construction_yard.ixian, outpost.ixian
 		Description: Ixian Research Center\nUnlocks advanced tanks.
 		IconPalette: d2kunit
 	Tooltip:
@@ -1877,6 +1813,88 @@ research_centre.ixian:
 	SpawnActorOnDeath@death4:
 		Actor: trooper
 
+high_tech_factory.ixian:
+	Inherits: ^D2KBuilding
+	Inherits@UPGRADEABLE: ^D2kUpgradeable
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	#Inherits@orni: ^DU_OrnithopterSupportPower
+	Inherits@shape: ^3x3Shape
+	Inherits@hpad: ^IsAircraftFactory
+	Buildable:
+		Prerequisites: ~construction_yard.ixian, research_centre.ixian
+		Description: actor-high_tech_factory.description
+		IconPalette: d2kunit
+	Building:
+		BuildPaletteOrder: 160
+		Footprint: _X_ xxx XXX ===
+		Dimensions: 3,4
+		LocalCenterOffset: 0,-512,0
+	Tooltip:
+		Name: High Tech Factory
+	ProductionCostMultiplier@dune:
+		Multiplier: 150
+	ProductionTimeMultiplier@dune:
+		Multiplier: 150
+	Armor:
+		Type: Concrete
+	Exit:
+		SpawnOffset: 0,0,728
+		ExitCell: 0,0
+	HitShape:
+		TargetableOffsets: -1312,0,0, -1312,-1024,0, -1312,1024,0
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 1536
+	HitShape@TOP:
+		TargetableOffsets: 1280,0,0
+		Type: Rectangle
+			TopLeft: -512, -1536
+			BottomRight: 512, -512
+	RallyPoint:
+	RenderSprites:
+		Image: hightech.atreides
+	WithProductionOverlay@WELDING:
+		RequiresCondition: !build-incomplete
+		Queues: Aircraft
+		Sequence: production-welding
+	ProvidesPrerequisite@upgrade3:
+		Prerequisite: hightech.harkonnen
+		Factions: harkonnen, corrino, guild
+	ProvidesPrerequisite@upgrade:
+		Prerequisite: hightech.atreides
+		Factions: atreides, ixian, fremen
+	ProvidesPrerequisite@upgrade2:
+		Prerequisite: hightech.ordos
+		Factions: ordos, mercenary, smugglers, tleilaxu
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@high_tech_factory:
+		Prerequisite: high_tech_factory
+	GrantConditionOnPrerequisite@UPGRADEABLE:
+		Prerequisites: upgrade_hightech
+	DamageMultiplier@upgrade_hightech:
+		RequiresCondition: upgrade_hightech
+		Modifier: 75
+	ActorStatValues:
+		Upgrades: upgrade_hightech
+	-WithDeathAnimation:
+	FireProjectilesOnDeath:
+		Weapons: Debris2, Debris3
+		Pieces: 7, 10
+		Range: 1c512, 2c768
+	SpawnActorOnDeath@death1:
+		Actor: light_inf
+	SpawnActorOnDeath@death2:
+		Actor: light_inf
+	SpawnActorOnDeath@death3:
+		Actor: light_inf
+	SpawnActorOnDeath@death4:
+		Actor: trooper
+	Production@Addons:
+		Produces: Addons
+	ProductionBar@Addons:
+		ProductionType: Addons
+
 starport.ixian:
 	Inherits: ^D2KBuilding
 	Inherits@D2KSprite: ^D2KPaletteRender
@@ -1891,7 +1909,7 @@ starport.ixian:
 		BuildPaletteOrder: 150
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Prerequisites: ~construction_yard.ixian, research_centre.ixian, upgrade.conyard, derricklimit
+		Prerequisites: ~construction_yard.ixian, research_centre.ixian, derricklimit
 		Description: Dropzone for quick reinforcements, and passive income.
 		IconPalette: d2kunit
 	Building:
@@ -1987,7 +2005,7 @@ storm_lasher_big:
 	Inherits@shape: ^4x4Shape
 	Inherits@SW: ^PrimarySuperweapon
 	Buildable:
-		Prerequisites: ~construction_yard.ixian, research_centre.ixian, upgrade.conyard
+		Prerequisites: ~construction_yard.ixian, research_centre.ixian
 		Description: actor-storm_lasher.description
 		IconPalette: player
 	Tooltip:
@@ -2094,7 +2112,7 @@ wall:
 		Action: ChangeOwner
 	Buildable:
 		Queue: Defence, RADefence
-		Prerequisites: ~upgrade.conyard
+		Prerequisites: ~construction_yard.ixian
 		BuildPaletteOrder: 410
 		BuildDuration: 62
 		BuildDurationModifier: 100
@@ -2241,7 +2259,7 @@ medium_gun_turret:
 	Inherits@Barrel: ^D2K_ReinforcedBarrel
 	Buildable:
 		Queue: Defence, RADefence
-		Prerequisites: ~upgrade.conyard, d2k_barracks.ixian
+		Prerequisites: ~construction_yard.ixian, d2k_barracks.ixian
 		BuildPaletteOrder: 550
 		Description: template-anti-vehicle-defense.description
 		IconPalette: d2kunit
@@ -2301,7 +2319,7 @@ medium_gun_turret:
 # 		Priority: 50
 # 	Buildable:
 # 		Queue: Defence, RADefence
-# 		Prerequisites: ~anyordos, d2k_barracks, upgrade.barracks, ~!faction.smugglers, ~!faction.tleilaxu
+# 		Prerequisites: ~anyordos, d2k_barracks, upgrade_barracks, ~!faction.smugglers, ~!faction.tleilaxu
 # 		BuildPaletteOrder: 510
 # 		Description: Defensive structure.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
 # 	Health:
@@ -2323,7 +2341,7 @@ medium_gun_turret:
 # 	-AutoTargetPriority@VEHICLE:
 # 	Buildable:
 # 		Queue: Defence, RADefence
-# 		Prerequisites: ~autogun_prereq, d2k_barracks, upgrade.barracks
+# 		Prerequisites: ~autogun_prereq, d2k_barracks, upgrade_barracks
 # 		BuildPaletteOrder: 510
 # 		Description: Defensive structure.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
 # 		IconPalette: chrome
@@ -2379,7 +2397,7 @@ large_gun_turret:
 	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Buildable:
 		Queue: Defence, RADefence
-		Prerequisites: ~upgrade.conyard, outpost.ixian
+		Prerequisites: ~construction_yard.ixian, outpost.ixian
 		BuildPaletteOrder: 610
 		Description: actor-large_gun_turret.description
 		IconPalette: d2kunit
@@ -3312,7 +3330,7 @@ trooper:
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 20
-		Prerequisites: ~upgrade.barracks
+		Prerequisites: ~d2k_barracks
 		BuildDuration: 80
 		BuildDurationModifier: 100
 		Description: template-antitank-antiair-infantry.description
@@ -3369,7 +3387,7 @@ shock_infantry:
 		Queue: Infantry, RAInfantry
 		Description: actor-shock_infantry.description
 		IconPalette: d2kunit
-		Prerequisites: ~upgrade.barracks, ~!upixians_storm_infantry, research_centre.ixian
+		Prerequisites: ~d2k_barracks, ~!upixians_storm_infantry, research_centre.ixian
 	Mobile:
 		Speed: 45
 	Health:
@@ -3447,7 +3465,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 40
-# 		Prerequisites: upgrade.barracks, ~techlevel.low, ~d2k_prereq_no_tleilaxu
+# 		Prerequisites: upgrade_barracks, ~techlevel.low, ~d2k_prereq_no_tleilaxu
 # 		BuildDuration: 200
 # 		BuildDurationModifier: 100
 # 		Description: Attracts nearby worms when deployed\n  Unarmed
@@ -3507,7 +3525,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 80
-# 		Prerequisites: ~barracks.atreides, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~du_fremen
+# 		Prerequisites: ~barracks.atreides, upgrade_barracks, high_tech_factory, ~techlevel.medium, ~du_fremen
 # 		Icon: phantomicon
 # 		IconPalette: windows256
 # 		Description: Fast Elite infantry units armed with assault rifles and machine guns. When grouped, they can take down buildings extremely quickly\nDetector\n  Strong vs Buildings\n  Weak vs Infantry, Vehicles\n  Special Ability: Invisibility
@@ -3768,7 +3786,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 60
-# 		Prerequisites: upgrade.barracks, ~techlevel.medium, high_tech_factory
+# 		Prerequisites: upgrade_barracks, ~techlevel.medium, high_tech_factory
 # 		BuildDuration: 100
 # 		BuildDurationModifier: 100
 # 		Description: Infantry armed with grenades. \nVery prone to friendly fire\n  Strong vs Buildings, Infantry\n  Weak vs Vehicles
@@ -3850,7 +3868,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 70
-# 		Prerequisites: ~barracks.harkonnen, upgrade.barracks, ~techlevel.medium, ~faction.corrino, high_tech_factory
+# 		Prerequisites: ~barracks.harkonnen, upgrade_barracks, ~techlevel.medium, ~faction.corrino, high_tech_factory
 # 		BuildDuration: 200
 # 		BuildDurationModifier: 100
 # 	Valued:
@@ -3932,7 +3950,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 70
-# 		Prerequisites: ~barracks.harkonnen, upgrade.barracks, ~techlevel.medium, ~faction.corrino, high_tech_factory
+# 		Prerequisites: ~barracks.harkonnen, upgrade_barracks, ~techlevel.medium, ~faction.corrino, high_tech_factory
 # 		Description: Assassin equipped with Heat Blade and Crossbow\n  Strong vs Infantry
 # 		BuildDuration: 300
 # 		BuildDurationModifier: 100
@@ -4130,7 +4148,7 @@ shock_infantry:
 # 		InitialStance: ReturnFire
 # 		InitialStanceAI: AttackAnything
 # 	Buildable:
-# 		Prerequisites: ~faction.emperor, upgrade.barracks
+# 		Prerequisites: ~faction.emperor, upgrade_barracks
 # 		BuildDuration: 150
 # 		Description: Fremen infantry unit armed with Rocket Launcher.\nCan attack air.\n  Strong vs Tanks, Air\n  Weak vs Infantry, Artillery
 
@@ -4147,7 +4165,7 @@ shock_infantry:
 # 		BuildPaletteOrder: 100
 # 		BuildDuration: 280
 # 		BuildDurationModifier: 100
-# 		Prerequisites: ~barracks.harkonnen, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.corrino
+# 		Prerequisites: ~barracks.harkonnen, upgrade_barracks, high_tech_factory, ~techlevel.medium, ~faction.corrino
 # 		Description: Advanced infantry armed with a plasma ball launcher\n  Strong vs Tanks\n  Weak vs Artillery, Infantry
 # 		IconPalette: d2kunit
 # 	Valued:
@@ -4179,7 +4197,7 @@ shock_infantry:
 # emperor_plasmainf:
 # 	Inherits: plasma_infantry
 # 	Buildable:
-# 		Prerequisites: ~faction.emperor, upgrade.barracks, high_tech_factory, ~techlevel.medium
+# 		Prerequisites: ~faction.emperor, upgrade_barracks, high_tech_factory, ~techlevel.medium
 # 	RenderSprites:
 # 		Image: plasma_infantry
 
@@ -4197,7 +4215,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 120
-# 		Prerequisites: ~barracks.atreides, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.fremen
+# 		Prerequisites: ~barracks.atreides, upgrade_barracks, high_tech_factory, ~techlevel.medium, ~faction.fremen
 # 		Description: Stealth Elite Fremen Guerilla infantry armed with Sonic Weapon\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Artillery, Tanks
 # 		IconPalette: d2kunit
 # 		BuildDuration: 280
@@ -4234,7 +4252,7 @@ shock_infantry:
 # emperor_fedaykin:
 # 	Inherits: fedaykin
 # 	Buildable:
-# 		Prerequisites: ~faction.emperor, upgrade.barracks, high_tech_factory, ~techlevel.medium
+# 		Prerequisites: ~faction.emperor, upgrade_barracks, high_tech_factory, ~techlevel.medium
 # 	RenderSprites:
 # 		Image: fedaykin
 
@@ -4374,7 +4392,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 130
-# 		Prerequisites: ~barracks.harkonnen, upgrade.barracks, ~techlevel.medium, high_tech_factory
+# 		Prerequisites: ~barracks.harkonnen, upgrade_barracks, ~techlevel.medium, high_tech_factory
 # 		Description: Stealth Fast robotic vehicle that can instantly kill infantry.\nCan detect cloaked units.\nRegenerates health while invisible\n  Strong vs Infantry\n  Weak vs Aircraft\n  Special Abilities: Invisibility, Jump
 # 		IconPalette: d2kunit
 # 		BuildDuration: 300
@@ -4417,7 +4435,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 140
-# 		Prerequisites: ~barracks.harkonnen, upgrade.barracks, high_tech_factory, ~techlevel.medium
+# 		Prerequisites: ~barracks.harkonnen, upgrade_barracks, high_tech_factory, ~techlevel.medium
 # 		Description: Flying infantry unit armed with dual assault rifle.\n Can Attack air units.\n  Strong vs Infantry\n  Weak vs Vehicles
 # 		IconPalette: d2kunit
 # 		BuildDuration: 250
@@ -4509,7 +4527,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 140
-# 		Prerequisites: ~barracks.ordos, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~!faction.tleilaxu
+# 		Prerequisites: ~barracks.ordos, upgrade_barracks, high_tech_factory, ~techlevel.medium, ~!faction.tleilaxu
 # 		Description: Stealth Flying infantry unit armed with deadly dual machine guns\n  Strong vs Infantry, Vehicles\n  Weak vs Air
 # 		IconPalette: d2kunit
 # 		BuildDuration: 325
@@ -4588,7 +4606,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 160
-# 		Prerequisites: ~barracks.ordos, upgrade.barracks, ~!faction.ordos. ~!faction.smugglers, ~techlevel.medium, high_tech_factory
+# 		Prerequisites: ~barracks.ordos, upgrade_barracks, ~!faction.ordos. ~!faction.smugglers, ~techlevel.medium, high_tech_factory
 # 		Description: Infantry armed with a long range rifle\nCan detect cloaked units at great distances.\nCan Deplay to grant stealth and accuracy but loses movement\n  Strong vs Infantry, Air, Vehicles\n  Weak vs Tanks\n  Special Ability: Invisibility while static
 # 		IconPalette: d2kunit
 # 		BuildDuration: 600
@@ -4663,7 +4681,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 160
-# 		Prerequisites: ~barracks.atreides, upgrade.barracks, ~!faction.ixian, ~techlevel.low
+# 		Prerequisites: ~barracks.atreides, upgrade_barracks, ~!faction.ixian, ~techlevel.low
 # 		Description: Spotter Infantry armed with a long range rifle\nCan detect cloaked units.\nCan Deplay to grant more view distance and accuracy, but loses movement\n  Strong vs Infantry, Air, Vehicles\n  Weak vs Tanks\n  Special Ability: Binoculars
 # 		IconPalette: d2kunit
 # 		BuildDuration: 400
@@ -4702,7 +4720,7 @@ shock_infantry:
 # 		BuildPaletteOrder: 40
 # 		BuildDuration: 220
 # 		BuildDurationModifier: 100
-# 		Prerequisites: ~barracks.harkonnen, upgrade.barracks, high_tech_factory, ~techlevel.medium, ~faction.harkonnen
+# 		Prerequisites: ~barracks.harkonnen, upgrade_barracks, high_tech_factory, ~techlevel.medium, ~faction.harkonnen
 # 		Description: Stealth Deadly unit.\nUndetected even when exiting vehicles and infiltrating.\n  Strong vs Infantry, Vehicles, Tanks, Buildings\n  Weak vs Siege\n  Special Ability: Invisibility
 # 		IconPalette: d2kunit
 # 	Valued:
@@ -4752,7 +4770,7 @@ shock_infantry:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 170
-# 		Prerequisites: upgrade.barracks, ~barracks.ordos, ~techlevel.low
+# 		Prerequisites: upgrade_barracks, ~barracks.ordos, ~techlevel.low
 # 		Description: Stealth unit that can hijack enemy vehicles\n  Unarmed
 # 		IconPalette: d2kunit
 # 		BuildDuration: 400
@@ -4810,7 +4828,7 @@ shock_infantry:
 # 		BuildPaletteOrder: 80
 # 		BuildDuration: 375
 # 		BuildDurationModifier: 100
-# 		Prerequisites: upgrade.barracks, high_tech_factory, ~techlevel.medium, ~mechanic_prereq
+# 		Prerequisites: upgrade_barracks, high_tech_factory, ~techlevel.medium, ~mechanic_prereq
 # 		Description: Repairs nearby vehicles and buildings.\nCan enter vehicle husks to repair them.\nRemoves attached explosives from units and buildings\n  Unarmed
 # 		IconPalette: d2kunit
 # 	Valued:
@@ -4946,7 +4964,7 @@ shock_infantry:
 # 		BuildPaletteOrder: 80
 # 		BuildDuration: 325
 # 		BuildDurationModifier: 100
-# 		Prerequisites: ~d2k_ifv_prereq, upgrade.light, ~techlevel.low
+# 		Prerequisites: ~d2k_ifv_prereq, upgrade_light, ~techlevel.low
 # 		Description: Light Carrier vehicle with light cannon and missile launcher\nCan carry 3 passengers\n Strong vs Vehicles, Tanks\n Weak vs Infantry
 # 		IconPalette: d2kunit
 # 	Valued:
@@ -5030,7 +5048,7 @@ shock_infantry:
 # 		Queue: VVehicle, RAVehicle
 # 		BuildPaletteOrder: 150
 # 		BuildDurationModifier: 50
-# 		Prerequisites: ~faction.corrino, upgrade.light, ~techlevel.medium
+# 		Prerequisites: ~faction.corrino, upgrade_light, ~techlevel.medium
 # 		Description: Ultimate Transport Vehicle\nCan carry 12 passengers quickly\nLimit: 1
 # 		BuildLimit: 1
 # 	Cargo:
@@ -5060,7 +5078,7 @@ shock_infantry:
 # d2k_light_tank.bot1:
 # 	Inherits: d2k_light_tank
 # 	Buildable:
-# 		Prerequisites: ~d2k_ifv_prereq, upgrade.light, ~techlevel.low, ~botplayer
+# 		Prerequisites: ~d2k_ifv_prereq, upgrade_light, ~techlevel.low, ~botplayer
 # 	ProductionCostMultiplier:
 # 		Multiplier: 133
 # 	Cargo:
@@ -5270,7 +5288,7 @@ shock_infantry:
 # 		BuildPaletteOrder: 110
 # 		BuildDuration: 300
 # 		BuildDurationModifier: 100
-# 		Prerequisites: ~techlevel.low, ~light.harkonnen, upgrade.light, ~faction.corrino
+# 		Prerequisites: ~techlevel.low, ~light.harkonnen, upgrade_light, ~faction.corrino
 # 		Description: Suicidal remote vehicle armed with high explosives\nHas very weak armor \n\n Requires a Light Factory in order to move.
 # 		IconPalette: d2kunit
 # 	WithColoredOverlay:
@@ -5445,7 +5463,7 @@ shock_infantry:
 # 		BuildPaletteOrder: 40
 # 		BuildDuration: 325
 # 		BuildDurationModifier: 100
-# 		Prerequisites: upgrade.light, ~light.ordos, ~techlevel.low, ~!faction.tleilaxu, ~!faction.ordos
+# 		Prerequisites: upgrade_light, ~light.ordos, ~techlevel.low, ~!faction.tleilaxu, ~!faction.ordos
 # 		Description: Hit and Run Vehicle with small cannon and missile launcher\nCan carry 3 passengers
 # 		IconPalette: d2kunit
 # 	AutoDeployer:
@@ -5509,7 +5527,7 @@ shock_infantry:
 # d2k_apc.bot1:
 # 	Inherits: d2k_apc
 # 	Buildable:
-# 		Prerequisites: upgrade.light, ~light.ordos, ~techlevel.low, ~!faction.tleilaxu, ~!faction.ordos, ~botplayer
+# 		Prerequisites: upgrade_light, ~light.ordos, ~techlevel.low, ~!faction.tleilaxu, ~!faction.ordos, ~botplayer
 # 	ProductionCostMultiplier:
 # 		Multiplier: 133
 # 	Cargo:
@@ -5556,7 +5574,7 @@ shock_infantry:
 # 		BuildPaletteOrder: 40
 # 		BuildDuration: 300
 # 		BuildDurationModifier: 100
-# 		Prerequisites: upgrade.light, high_tech_factory, ~light.ordos, ~techlevel.medium, ~faction.ordos
+# 		Prerequisites: upgrade_light, high_tech_factory, ~light.ordos, ~techlevel.medium, ~faction.ordos
 # 		Description: Stealth Hit and Run Vehicle\nCan carry 6 passengers\nUnarmed.\n  Special Ability: Invisibility
 # 		IconPalette: d2kunit
 # 		Icon: icon_stealth
@@ -5595,7 +5613,7 @@ shock_infantry:
 # d2k_stealth_apc.bot1:
 # 	Inherits: d2k_stealth_apc
 # 	Buildable:
-# 		Prerequisites: upgrade.light, high_tech_factory, ~light.ordos, ~techlevel.medium, ~faction.ordos, ~botplayer
+# 		Prerequisites: upgrade_light, high_tech_factory, ~light.ordos, ~techlevel.medium, ~faction.ordos, ~botplayer
 # 	ProductionCostMultiplier:
 # 		Multiplier: 125
 # 	Cargo:
@@ -5953,7 +5971,8 @@ d2k_mcv.ixian:
 
 d2k_air_drone:
 	Inherits: ^RANeutralPlane
-	Inherits@Template: ^FighterTemplate
+	Inherits@reload: ^RearmableAircraft
+	Inherits@Template: ^BomberTemplate
 	Inherits@detect: ^GenericAllDetector
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -5971,7 +5990,7 @@ d2k_air_drone:
 	Buildable:
 		Queue: Aircraft, RAAircraft
 		BuildPaletteOrder: 10
-		Prerequisites: ~high_tech_factory.ixian
+		Prerequisites: ~ixian_launchpad
 		Description: actor-air_drone.description
 		IconPalette: windows256
 	UpdatesPlayerStatistics:
@@ -5991,12 +6010,9 @@ d2k_air_drone:
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	AmmoPool:
 		Name: primary
-		Ammo: 4
+		Ammo: 8
+		ReloadDelay: 25
 		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 66
-		Count: 1
-		ResetOnFire: false
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -6014,15 +6030,15 @@ d2k_air_drone:
 		LocalOffset: 0,-256,0, 0,256,0
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
-		AmmoUsage: 0
 		RequiresCondition: !d2k_needle_guns
+		PauseOnCondition: !ammo
 	Armament@Upgrade: ##########
 		Weapon: d2k_air_drone_guns_upgrade
 		LocalOffset: 0,-256,0, 0,256,0
 		MuzzleSequence: muzzle
 		MuzzlePalette: d2keffect
-		AmmoUsage: 0
 		RequiresCondition: d2k_needle_guns
+		PauseOnCondition: !ammo
 	FirepowerMultiplier@DualWeapon:
 		Modifier: 50
 	Aircraft:
@@ -6560,7 +6576,7 @@ harvester:
 # 	Inherits@AntiVeh: ^PrioritizeVehicle
 # 	Buildable:
 # 		Queue: Vehicle, RAVehicle
-# 		Prerequisites: upgrade.light, ~!faction.tleilaxu, ~!faction.smugglers, ~!faction.guild, ~!faction.corrino, ~!faction.emperor, ~techlevel.low
+# 		Prerequisites: upgrade_light, ~!faction.tleilaxu, ~!faction.smugglers, ~!faction.guild, ~!faction.corrino, ~!faction.emperor, ~techlevel.low
 # 		BuildPaletteOrder: 20
 # 		BuildDuration: 210
 # 		BuildDurationModifier: 100
@@ -6657,7 +6673,7 @@ harvester:
 # 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 # 	Buildable:
 # 		Queue: Vehicle, RAVehicle
-# 		Prerequisites: ~faction.corrino, upgrade.light, ~techlevel.low
+# 		Prerequisites: ~faction.corrino, upgrade_light, ~techlevel.low
 # 		BuildPaletteOrder: 20
 # 		BuildDuration: 280
 # 		BuildDurationModifier: 100
@@ -6710,7 +6726,7 @@ harvester:
 # d2k_transport_buggy.bot1:
 # 	Inherits: d2k_transport_buggy
 # 	Buildable:
-# 		Prerequisites: ~faction.corrino, upgrade.light, ~techlevel.low, ~botplayer
+# 		Prerequisites: ~faction.corrino, upgrade_light, ~techlevel.low, ~botplayer
 # 	Valued:
 # 		Cost: 2500
 # 	Cargo:
@@ -6757,7 +6773,7 @@ harvester:
 # 	Inherits@AntiVeh: ^PrioritizeVehicle
 # 	Buildable:
 # 		Queue: Vehicle, RAVehicle
-# 		Prerequisites: ~faction.smugglers, upgrade.light, ~techlevel.low
+# 		Prerequisites: ~faction.smugglers, upgrade_light, ~techlevel.low
 # 		BuildPaletteOrder: 20
 # 		BuildDuration: 225
 # 		BuildDurationModifier: 100
@@ -6811,7 +6827,7 @@ harvester:
 # 	Inherits@EMP: ^FrontalEMP
 # 	Buildable:
 # 		Queue: Vehicle, RAVehicle
-# 		Prerequisites: upgrade.light, ~autogun_prereq, research_centre, ~techlevel.low
+# 		Prerequisites: upgrade_light, ~autogun_prereq, research_centre, ~techlevel.low
 # 		BuildPaletteOrder: 50
 # 		BuildDuration: 325
 # 		BuildDurationModifier: 100
@@ -6904,7 +6920,7 @@ harvester:
 # 		Multiplier: 125
 # 		Prerequisites: faction.guild
 # 	Buildable:
-# 		Prerequisites: upgrade.light, ~faction.guild, ~techlevel.low
+# 		Prerequisites: upgrade_light, ~faction.guild, ~techlevel.low
 
 # mg_quad:
 # 	Inherits: quad
@@ -7066,7 +7082,7 @@ siege_tank_ixian:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 50
-		Prerequisites: ~upgrade_heavy, outpost.ixian
+		Prerequisites: ~outpost.ixian
 		Description: actor-siege_tank.description
 		IconPalette: ra2
 	Health:
@@ -7143,6 +7159,192 @@ siege_tank_ixian:
 		ZOffset: -512
 	ActorStatValues:
 		Upgrades: d2k_siege_range_upgrade, d2k_general_purpose_armor, d2k_advanced_ixian_technology
+
+duelist_tank:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@Barrel: ^D2K_ReinforcedBarrel
+	Inherits@NeedleGuns: ^D2K_NeedleGuns
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 40
+		IconPalette: d2kunit
+		Prerequisites: ~research_centre.ixian
+		Description: actor-duelist_tank.description
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Ix Duelist Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 197500
+	Repairable:
+		HpPerStep: 9875
+	ChangesHealth@SelfHealing:
+		Step: 79
+	Armor:
+		Type: Heavy
+	Shielded:
+		DamageRegenDelay: 125
+		RegenAmount: 158
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		SelectionBarColor: 8888FFFF
+		RequiresCondition: !disabled && d2k_advanced_ixian_technology
+	Mobile:
+		Speed: 45
+		TurnSpeed: 9
+	Turreted:
+		TurnSpeed: 9
+		Offset: 0,0,0
+	Armament:
+		Weapon: DuelistTankCannon
+		Recoil: 150
+		RecoilRecovery: 15
+		LocalOffset: 256,0,320
+		MuzzleSequence: muzzle
+		MuzzlePalette: d2keffect
+	Armament@Guns: ##########
+		Weapon: HMG_Duelist
+		LocalOffset: 128,-128,128, 128,128,128
+		MuzzleSequence: muzzle2
+		MuzzlePalette: d2keffect
+		RequiresCondition: !d2k_needle_guns
+	Armament@Upgrade: ##########
+		Weapon: HMG_Duelist_upgrade
+		LocalOffset: 128,-128,128, 128,128,128
+		MuzzleSequence: muzzle2
+		MuzzlePalette: d2keffect
+		RequiresCondition: d2k_needle_guns
+	FirepowerMultiplier@DualWeapon:
+		Modifier: 50
+	ActorStatValues:
+		Upgrades: d2k_siege_range_upgrade
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	Selectable:
+		Class: combat
+	AttractsWorms:
+		Intensity: 520
+	Cloak@TDcloak:
+	Voiced:
+		VoiceSet: D2KDuelistTank
+	RangeMultiplier@d2k_needle_guns:
+		Modifier: 105
+	FirepowerMultiplier@d2k_needle_guns:
+		Modifier: 110
+	ActorStatValues:
+		Upgrades: d2k_siege_range_upgrade, d2k_needle_guns, d2k_general_purpose_armor, d2k_advanced_ixian_technology
+
+missile_tank_ixian:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+	Tooltip:
+		Name: Ix Missile Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: ~research_centre.ixian
+		BuildPaletteOrder: 60
+		Description: actor-missile_tank.description
+		IconPalette: d2kunit
+	Valued:
+		Cost: 2250
+	Mobile:
+		Speed: 50
+		TurnSpeed: 10
+	Health:
+		HP: 50000
+	Repairable:
+		HpPerStep: 2500
+	ChangesHealth@SelfHealing:
+		Step: 20
+	Armor:
+		Type: Light
+	Shielded:
+		DamageRegenDelay: 125
+		RegenAmount: 40
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		SelectionBarColor: 8888FFFF
+		RequiresCondition: !disabled && d2k_advanced_ixian_technology
+	Armament:
+		Weapon: mtank_pri2
+		LocalOffset: -128,128,171, -128,-128,171
+		PauseOnCondition: !ammo
+	AttackFrontal:
+		FacingTolerance: 0
+	AutoTarget:
+		InitialStanceAI: Defend
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	Selectable:
+		Class: missiletank
+	AttractsWorms:
+		Intensity: 600
+	Cloak@TDcloak:
+	RenderRangeCircle:
+	Voiced:
+		VoiceSet: D2KMissileTank
+	AmmoPool:
+		Ammo: 10
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 25
+		Count: 1
+		ResetOnFire: true
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+	Cloak:
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakSound: trans1.aud
+		UncloakSound: appear1.aud
+		UncloakOn: Attack, infiltrate, damage
+		IsPlayerPalette: true
+		CloakedCondition: cloaked
+		RequiresCondition: d2k_advanced_ixian_technology
+	ReloadAmmoDelayMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 95
+	ReloadAmmoDelayMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 90
+	ReloadAmmoDelayMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 85
+	ReloadAmmoDelayMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 75
+	RenderSprites:
+		Image: ix_missile_tank
+		PlayerPalette: player
+	ActorStatValues:
+		Upgrades: d2k_heavy_missile_upgrade, d2k_advanced_ixian_technology
 
 # d2k_autogun_tank:
 # 	Inherits@D2KT: ^D2KTank
@@ -8036,7 +8238,7 @@ shock_raider:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 10
-		Prerequisites: ~upgrade_heavy, ~!upixians_stormraider, research_centre.ixian
+		Prerequisites: ~research_centre.ixian, ~!upixians_stormraider
 		Description: actor-shock_raider.description
 		IconPalette: player
 	Valued:
@@ -8118,7 +8320,7 @@ shock_raider:
 # 	Tooltip:
 # 		Name: Rocket Raider
 # 	Buildable:
-# 		Prerequisites: ~faction.smugglers, upgrade.light
+# 		Prerequisites: ~faction.smugglers, upgrade_light
 # 		Description: Raider Trike with Rockets\n  Strong vs Infantry, Light Vehicles, Air\n  Weak vs Tanks
 # 	RenderSprites:
 # 		Image: raider
@@ -8132,7 +8334,7 @@ shock_raider:
 # emperor_rocket_raider:
 # 	Inherits: rocket_raider_o
 # 	Buildable:
-# 		Prerequisites: ~faction.emperor, upgrade.light
+# 		Prerequisites: ~faction.emperor, upgrade_light
 
 # deviator:
 # 	Inherits@D2KT: ^D2KTank
@@ -8885,7 +9087,7 @@ carryall.huskVTOL:
 # 	Buildable:
 # 		Queue: Infantry, RAInfantry
 # 		BuildPaletteOrder: 130
-# 		Prerequisites: ~faction.fremen, high_tech_factory, upgrade.barracks, ~techlevel.medium
+# 		Prerequisites: ~faction.fremen, high_tech_factory, upgrade_barracks, ~techlevel.medium
 # 		Description: Giant Sandworm
 # 		BuildLimit: 5
 # 	Inherits@EXT: ^ExternalConditions ##########
@@ -8996,54 +9198,54 @@ carryall.huskVTOL:
 #   UPGRADES
 ###########################
 
-upgrade.conyard:
+upgrade_conyard:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Construction Yard Upgrade
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~d2k_construction_yard, ~!upgrade.conyard
+		Prerequisites: ~d2k_construction_yard, research_centre, ~!upgrade_conyard
 		Queue: Addons
 		BuildLimit: 1
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Description: Unlocks additional construction options \n(Large Concrete Slab, Wall)
+		Description: Construction Yard gets 25% more armor. Reduces cost and production time by 10% for all Defenses and upgrades Concrete Slabs.
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2500
 	RenderSprites:
 		Image: conyard.ordos
 
-upgrade.barracks:
+upgrade_barracks:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Barracks Upgrade
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~d2k_barracks, ~!upgrade.barracks
+		Prerequisites: ~d2k_barracks, research_centre, ~!upgrade_barracks
 		Queue: Addons
 		BuildLimit: 1
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Description: Unlocks additional infantry\n\nRequired to unlock faction specific infantry
+		Description: Barracks gets 25% more armor. Reduces cost and production time by 10% for all infantry.
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2500
 	RenderSprites:
 		Image: barracks.ordos
 
-upgrade.light:
+upgrade_light:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: Light Factory Upgrade
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~light_factory, ~!upgrade.light
+		Prerequisites: ~light_factory, research_centre, ~!upgrade_light
 		Queue: Addons
 		BuildLimit: 1
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Description: Unlocks additional light units\n\nRequired to unlock faction specific light units
+		Description: Light Factory gets 25% more armor. Reduces cost and production time by 10% for all light vehicles.
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2500
@@ -9056,30 +9258,30 @@ upgrade_heavy:
 		Name: Heavy Factory Upgrade
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~heavy_factory, ~!upgrade_heavy
+		Prerequisites: ~heavy_factory, research_centre, ~!upgrade_heavy
 		Queue: Addons
 		BuildLimit: 1
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Description: Unlocks additional heavy units and faction specific heavy units
+		Description: Heavy Factory gets 25% more armor. Reduces cost and production time by 10% for all heavy vehicles.
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2500
 	RenderSprites:
 		Image: heavy.ordos
 
-upgrade.hightech:
+upgrade_hightech:
 	Inherits: ^researched_upgrade.template
 	Tooltip:
 		Name: High Tech Factory Upgrade
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~high_tech_factory, ~!upgrade.hightech
+		Prerequisites: ~high_tech_factory, research_centre, ~!upgrade_hightech
 		Queue: Addons
 		BuildLimit: 1
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		Description: Unlocks advanced Air Units #Atreides Ornithopters
+		Description: High Tech Factory gets 25% more armor. Reduces cost and production time by 10% for all air units.
 		IconPalette: d2kunit
 	Valued:
 		Cost: 2500
@@ -11036,7 +11238,7 @@ upixians_storm_infantry:
 		Description: Allows training of Storm Infantry.
 		Prerequisites: ~construction_yard.ixian, !upixians_storm_infantry, upixians_heavy_inf, rank1
 	RenderSprites:
-		Image: shockgunner
+		Image: storm_infantry
 	ProvidesPrerequisite:
 
 upixians_stormraider:
@@ -11097,76 +11299,18 @@ upixians_combatsiege:
 		Image: combat_siege_tank
 	ProvidesPrerequisite:
 
-upixians_duelisttank:
+upixians_neocymek:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
-		Name: Unlock Ix Duelist Tank
+		Name: Unlock Neo Cymek
 	Buildable:
 		BuildPaletteOrder: 116
 		Queue: Promotions
 		IconPalette: d2kunit
-		Description: Enables construction of Ix Duelist Tanks.
-		Prerequisites: ~construction_yard.ixian, upixians_combatsiege, !upixians_duelisttank, rank1
+		Description: Enables construction of Neo Cymeks.
+		Prerequisites: ~construction_yard.ixian, upixians_combatsiege, !upixians_neocymek, rank1
 	RenderSprites:
-		Image: duelist_tank
-	ProvidesPrerequisite:
-
-upixians_quaketank:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock Ix Quake Tank
-	Buildable:
-		BuildPaletteOrder: 119
-		Queue: Promotions
-		IconPalette: d2kunit
-		Description: Enables construction of Ix Quake Tanks.
-		Prerequisites: ~construction_yard.ixian, upixians_duelisttank, !upixians_quaketank, rank1
-	RenderSprites:
-		Image: quake_tank
-	ProvidesPrerequisite:
-
-	### Support tree
-
-upixians_airdrone:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock Heavy Ix Air Drone
-	Buildable:
-		BuildPaletteOrder: 111
-		Queue: Promotions
-		IconPalette: windows256
-		Description: Enables construction of Heavy Ix Air Drones.
-		Prerequisites: ~construction_yard.ixian, !upixians_airdrone, rank1
-	RenderSprites:
-		Image: d2k_air_drone
-	ProvidesPrerequisite:
-
-upixians_missiletank:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock Ix Missile Tank
-	Buildable:
-		BuildPaletteOrder: 114
-		Queue: Promotions
-		IconPalette: d2kunit
-		Description: Enables construction of  Ix Missile Tanks.
-		Prerequisites: ~construction_yard.ixian, upixians_airdrone, !upixians_missiletank, rank1
-	RenderSprites:
-		Image: ix_missile_tank
-	ProvidesPrerequisite:
-
-upixians_farasha:
-	Inherits: ^promotion_upgrade.template
-	Tooltip:
-		Name: Unlock Farasha
-	Buildable:
-		BuildPaletteOrder: 117
-		Queue: Promotions
-		IconPalette: ra2
-		Description: Enables construction of the Farasha.
-		Prerequisites: ~construction_yard.ixian, upixians_missiletank, !upixians_farasha, rank1
-	RenderSprites:
-		Image: d2k_farasha
+		Image: d2k_neocymek
 	ProvidesPrerequisite:
 
 upixians_projector:
@@ -11174,13 +11318,70 @@ upixians_projector:
 	Tooltip:
 		Name: Unlock Ix Projector
 	Buildable:
-		BuildPaletteOrder: 120
+		BuildPaletteOrder: 119
 		Queue: Promotions
 		IconPalette: windows256
 		Description: Enables construction of the Ix Projector.
-		Prerequisites: ~construction_yard.ixian, upixians_farasha, !upixians_projector, rank1
+		Prerequisites: ~construction_yard.ixian, upixians_neocymek, !upixians_projector, rank1
 	RenderSprites:
 		Image: d2k_projector
+	ProvidesPrerequisite:
+
+	### Support tree
+
+upixians_ixdrone:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Ix Railgun Drone
+	Buildable:
+		BuildPaletteOrder: 111
+		Queue: Promotions
+		Description: Enables construction of Ix Railgun Drones.
+		Prerequisites: ~construction_yard.ixian, !upixians_ixdrone, rank1
+	RenderSprites:
+		Image: d2k_ixdrone
+	ProvidesPrerequisite:
+
+upixians_ixbomber:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Ixian EMP Bomber
+	Buildable:
+		BuildPaletteOrder: 114
+		Queue: Promotions
+		IconPalette: ra2
+		Description: Enables construction of Ixian EMP Bombers.
+		Prerequisites: ~construction_yard.ixian, upixians_ixdrone, !upixians_ixbomber, rank1
+	RenderSprites:
+		Image: d2k_ixbomber
+	ProvidesPrerequisite:
+
+upixians_resonancedrone:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Ix Resonance Drone
+	Buildable:
+		BuildPaletteOrder: 117
+		Queue: Promotions
+		IconPalette: d2kunit
+		Description: Enables construction of  Ix Resonance Drones.
+		Prerequisites: ~construction_yard.ixian, upixians_ixbomber, !upixians_resonancedrone, rank1
+	RenderSprites:
+		Image: d2k_resonancedrone
+	ProvidesPrerequisite:
+
+upixians_farasha:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Farasha
+	Buildable:
+		BuildPaletteOrder: 120
+		Queue: Promotions
+		IconPalette: ra2
+		Description: Enables construction of the Farasha.
+		Prerequisites: ~construction_yard.ixian, upixians_resonancedrone, !upixians_farasha, rank1
+	RenderSprites:
+		Image: d2k_farasha
 	ProvidesPrerequisite:
 
 	####################################################################################################
@@ -11191,7 +11392,7 @@ upixians_projector:
 
 heavy_inf:
 	Inherits: ^D2KInfantry
-	Inherits@Template: ^HeavyInfantryTemplate
+	Inherits@Template: ^MeleeInfantryTemplate
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -11212,7 +11413,7 @@ heavy_inf:
 		Queue: Infantry, RAInfantry
 		Description: template-scout-infantry.description
 		IconPalette: d2kunit
-		Prerequisites: ~upixians_heavy_inf, upgrade.barracks
+		Prerequisites: ~upixians_heavy_inf
 	Mobile:
 		Speed: 50
 	Health:
@@ -11276,7 +11477,7 @@ storm_infantry:
 		Queue: Infantry, RAInfantry
 		Description: actor-shock_infantry.description
 		IconPalette: d2kunit
-		Prerequisites: ~upixians_storm_infantry, upgrade.barracks, research_centre.ixian
+		Prerequisites: ~upixians_storm_infantry, research_centre.ixian
 	Mobile:
 		Speed: 44
 	Health:
@@ -11301,7 +11502,6 @@ storm_infantry:
 	Voiced:
 		VoiceSet: D2KGenericVoice
 	RenderSprites:
-		Image: shockgunner
 		PlayerPalette: player
 	ActorStatValues:
 		Upgrades: d2k_personal_shield, d2k_general_purpose_armor, d2k_advanced_ixian_technology
@@ -11323,7 +11523,7 @@ storm_raider:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 10
-		Prerequisites: ~upixians_stormraider, upgrade_heavy, research_centre.ixian
+		Prerequisites: ~upixians_stormraider, research_centre.ixian
 		Description: actor-shock_raider.description
 		IconPalette: player
 	Valued:
@@ -11399,7 +11599,7 @@ storm_lasher:
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Buildable:
 		Queue: Defence, RADefence
-		Prerequisites: ~upixians_stormlasher, upgrade.conyard, research_centre.ixian
+		Prerequisites: ~upixians_stormlasher, research_centre.ixian
 		BuildPaletteOrder: 750
 		Description: actor-storm_lasher.description
 		IconPalette: player
@@ -11496,7 +11696,7 @@ heavy_rocket_raider_ixian:
 	Buildable:
 		Queue: Vehicle, RAVehicle
 		BuildPaletteOrder: 10
-		Prerequisites: ~upixians_ixraider, upgrade_heavy
+		Prerequisites: ~upixians_ixraider
 		Description: actor-rocket_raider.description
 	AutoDeployer:
 		DeployChance: 100
@@ -11610,7 +11810,7 @@ combat_siege_tank:
 		BuildPaletteOrder: 40
 		IconPalette: d2kunit
 		Description: actor-siege_tank.description
-		Prerequisites: ~upixians_combatsiege, upgrade_heavy, outpost.ixian
+		Prerequisites: ~upixians_combatsiege, outpost.ixian
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -11669,723 +11869,105 @@ combat_siege_tank:
 	ActorStatValues:
 		Upgrades: d2k_siege_range_upgrade, d2k_general_purpose_armor, d2k_advanced_ixian_technology
 
-duelist_tank:
-	Inherits@D2KT: ^D2KTank
-	Inherits@Template: ^HighTechTankTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+d2k_neocymek:
+	Inherits: ^Vehicle
+	Inherits@Template: ^LineBreakerTemplate
 	Inherits@exp: ^GainsExperienceRA
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
-	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@EMP: ^FrontalEMP
+	#Inherits@announce: ^AnnounceOnBuild
 	Inherits@Barrel: ^D2K_ReinforcedBarrel
 	Inherits@NeedleGuns: ^D2K_NeedleGuns
 	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+	Tooltip:
+		Name: Neo Cymek
+	Valued:
+		Cost: 4500
 	Buildable:
 		Queue: Vehicle, RAVehicle
-		BuildPaletteOrder: 40
-		IconPalette: d2kunit
-		Prerequisites: ~upixians_duelisttank, upgrade_heavy, research_centre.ixian
-		Description: actor-duelist_tank.description
-	Valued:
-		Cost: 1600
-	Tooltip:
-		Name: Ix Duelist Tank
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
+		BuildPaletteOrder: 20
+		Prerequisites: ~upixians_neocymek, research_centre.ixian
+		Description: Colossal Ixian Mech.
+	Mobile:
+		Speed: 45
+		TurnSpeed: 18
+		Locomotor: tracked
 	Health:
-		HP: 197500
+		HP: 300000
 	Repairable:
-		HpPerStep: 9875
+		HpPerStep: 15000
 	ChangesHealth@SelfHealing:
-		Step: 79
+		Step: 120
 	Armor:
 		Type: Heavy
 	Shielded:
-		DamageRegenDelay: 125
-		RegenAmount: 158
+		MaxPercentageStrength: 100
+		DamageRegenDelay: 240
+		RegenAmount: 80
 		RegenInterval: 1
 		ShieldsUpCondition: d2k_shielded
+		RequiresCondition: d2k_advanced_ixian_technology
 		SelectionBarColor: 8888FFFF
-		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Mobile:
-		Speed: 45
-		TurnSpeed: 9
-	Turreted:
-		TurnSpeed: 9
-		Offset: 0,0,0
-	Armament:
-		Weapon: DuelistTankCannon
-		Recoil: 150
-		RecoilRecovery: 15
-		LocalOffset: 256,0,320
+	Armament@Cannon:
+		Name: primary
+		Weapon: D2K_StormGunCymek
+		LocalOffset: 1000,300,250, 1000,-300,250
 		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
-	Armament@Guns: ##########
-		Weapon: HMG_Duelist
-		LocalOffset: 128,-128,128, 128,128,128
-		MuzzleSequence: muzzle2
-		MuzzlePalette: d2keffect
-		RequiresCondition: !d2k_needle_guns
-	Armament@Upgrade: ##########
-		Weapon: HMG_Duelist_upgrade
-		LocalOffset: 128,-128,128, 128,128,128
-		MuzzleSequence: muzzle2
-		MuzzlePalette: d2keffect
-		RequiresCondition: d2k_needle_guns
+		AmmoUsage: 2
+		PauseOnCondition: ammo < 2
+		# FireDelay: 5
+	Armament@Rockets:
+		Name: secondary
+		Weapon: D2K_RocketsCymek
+		LocalOffset: 200,300,900, 250,150,950, 250,-150,950, 200,-300,900
+		MuzzleSequence: muzzle
+		PauseOnCondition: !ammo
 	FirepowerMultiplier@DualWeapon:
 		Modifier: 50
-	ActorStatValues:
-		Upgrades: d2k_siege_range_upgrade
-	AttackTurreted:
-	WithMuzzleOverlay:
-	WithSpriteTurret:
-	FireWarheadsOnDeath:
-		Weapon: D2KUnitExplodeMed
-		EmptyWeapon: D2KUnitExplodeMed
-	Selectable:
-		Class: combat
-	AttractsWorms:
-		Intensity: 520
-	Cloak@TDcloak:
-	Voiced:
-		VoiceSet: D2KDuelistTank
-	RangeMultiplier@d2k_needle_guns:
-		Modifier: 105
-	FirepowerMultiplier@d2k_needle_guns:
-		Modifier: 110
-	ActorStatValues:
-		Upgrades: d2k_siege_range_upgrade, d2k_needle_guns, d2k_general_purpose_armor, d2k_advanced_ixian_technology
-
-quake_tank:
-	Inherits: ^D2KTank
-	Inherits@Template: ^LineBreakerTemplate
-	Inherits@GAINSEXPERIENCE: ^EpicVehicleTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
-	Inherits@Armor: ^D2K_GeneralPurposeArmor
-	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
-	Buildable:
-		Queue: Vehicle, RAVehicle
-		BuildLimit: 1
-		BuildPaletteOrder: 90
-		Prerequisites: ~upixians_quaketank, upgrade_heavy, research_centre.ixian
-		Description: actor-quake_tank.description
-		IconPalette: d2kunit
-	Valued:
-		Cost: 5000
-	Tooltip:
-		Name: Ix Quake Tank
-	Health:
-		HP: 375000
-	Repairable:
-		HpPerStep: 18750
-	ChangesHealth@SelfHealing:
-		Step: 150
-	Armor:
-		Type: Medium
-	Shielded:
-		DamageRegenDelay: 125
-		RegenAmount: 300
-		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
-		SelectionBarColor: 8888FFFF
-		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Mobile:
-		Speed: 50
-		TurnSpeed: 10
-		Locomotor: heavytracked
-		RequiresCondition: !deployed
-	AttackFrontal:
-		FacingTolerance: 512
-	Armament@PRIMARY:
-		Weapon: MADTankTargeting
-	-RenderRangeCircle:
-	AutoDeployer:
-		DeployTrigger: Attack
-		DeployChance: 100
-		DeployTicks: 0
-	MadTankCA:
-		ThumpInterval: 25
-		ChargeDelay: 125
-		DetonationDelay: 25
-		DriverActor: shock_infantry
-		DeployedCondition: deployed
-		DetonationWeapon: d2k_quake_boom
-		ThumpDamageWeapon: d2k_quake_thump
-		RequiresCondition: !disabled
-		ExclusiveDeploy: true
-		DeployType: Detonate
-	AttractsWorms@thumping:
-		Intensity: 10000
-		Falloff: 1000, 500, 250, 125, 75, 50, 25, 10, 5, 0
-		Spread: 10000
-		Range: 100000
-		RequiresCondition: deployed
-	FireWarheadsOnDeath:
-		Weapon: D2KUnitExplodeLarge
-		EmptyWeapon: D2KUnitExplodeLarge
-		RequiresCondition: !botmicro
-	Selectable:
-		Class: quake_tank
-		DecorationBounds: 2048, 2048, 0, -128
-	Targetable:
-		TargetTypes: Ground, MADTank, Repair, Vehicle
-	AttractsWorms@normal:
-		Intensity: 700
-		RequiresCondition: !deployed
-	WithRangeCircle:
-		Color: FFFF0080
-		Range: 8c0
-	RenderSprites:
-		PlayerPalette: raplayer
-	ActorStatValues:
-		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
-
-	### Artillery and Air Tree
-
-d2k_ixdrone:
-	Inherits: ^Helicopter
-	Inherits@Template: ^HelicopterTemplate
-	Inherits@exp: ^GainsExperienceTD
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@AntiInf: ^PrioritizeInfantry
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiTank: ^PrioritizeTank
-	Inherits@AntiAir: ^PrioritizeAir
-	Inherits@cloak: ^CloakedAircraft
-	Inherits@eject: ^AircraftEjectOnDeath
-	Inherits@NeedleGuns: ^D2K_NeedleGuns
-	Inherits@Armor: ^D2K_GeneralPurposeArmor
-	Inherits@Barrel: ^D2K_ReinforcedBarrel
-	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Ix Railgun Drone
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~high_tech_factory.ixian
-		Queue: Aircraft, RAAircraft
-		Description: actor-venom.description
-	Aircraft:
-		TurnSpeed: 34
-		Speed: 170
-	Health:
-		HP: 30000
-	Repairable:
-		HpPerStep: 1500
-	ChangesHealth@SelfHealing:
-		Step: 12
-	Shielded:
-		DamageRegenDelay: 125
-		RegenAmount: 24
-		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
-		SelectionBarColor: 8888FFFF
-		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armament@PRIMARY:
-		Weapon: IxRailgunDroneBullet
-		LocalOffset: 750,0,-250
-		PauseOnCondition: !ammo
-	AttackAircraft:
-		FacingTolerance: 20
-		OpportunityFire: false
-		PersistentTargeting: false
-		AttackType: Hover
 	AmmoPool:
-		Ammo: 3
+		Ammo: 4
 		AmmoCondition: ammo
-	SpawnActorOnDeath:
-		Actor: d2k_ixdrone.husk
-	EjectOnDeath:
-		PilotActor: heavy_inf
-	SelectionDecorations:
 	ReloadAmmoPool:
-		Delay: 128
+		Delay: 2
 		Count: 1
-	ReloadAmmoDelayMultiplier@up_elitecapacitors:
-		Modifier: 70
-		RequiresCondition: up_elitecapacitors
-	Selectable:
-		DecorationBounds: 1280, 1024
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
-		PipCount: 3
-	Cloak:
-		UncloakOn: Attack, Damage
+		PipCount: 4
+	WithMuzzleOverlay:
+	QuantizeFacingsFromSequence:
+	WithFacingSpriteBody:
+	WithMoveAnimation:
+		ValidMovementTypes: Horizontal, Turn
+	WithAttackAnimation@Cannon:
+		Sequence: shoot
+		Armament: primary
+		Delay: 0
+	WithAttackAnimation@Rockets:
+		#Sequence: altshoot
+		Armament: secondary
+		Delay: 3
+	WithSpriteTurret:
+	Turreted:
+		TurnSpeed: 18
+	# AttackTurreted:
+	AttackFrontal:
+		FacingTolerance: 20
+	# AutoTarget:
+	# 	InitialStanceAI: Defend
+	Passenger:
+		Weight: 4
+		CustomPipType: blue
+	Voiced:
+		VoiceSet: D2KDuelistTank
+	Selectable:
+		DecorationBounds: 1600, 1600
+	RenderSprites:
+		PlayerPalette: player_rgba
 	ActorStatValues:
 		Upgrades: d2k_siege_range_upgrade, d2k_needle_guns, d2k_general_purpose_armor, d2k_advanced_ixian_technology
-	WithAttackAnimation:
-		Sequence: shoot
-	RenderSprites:
-		PlayerPalette: player_rgba
-
-d2k_ixdrone.husk:
-	Inherits: ^SmallHelicopterHusk
-	Tooltip:
-		Name: Ix Railgun Drone
-	Aircraft:
-		TurnSpeed: 16
-		Speed: 186
-	RenderSprites:
-		Image: d2k_ixdrone
-		PlayerPalette: player_rgba
-
-d2k_heavy_air_drone:
-	Inherits: ^RANeutralPlane
-	Inherits@Template: ^FighterTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@detect: ^GenericAllDetector
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@AntiBuil: ^PrioritizeBuilding
-	Inherits@CLOAK: ^CloakedAircraft
-	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
-	Inherits@Armor: ^D2K_GeneralPurposeArmor
-	Inherits@NeedleGuns: ^D2K_NeedleGuns
-	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
-	Inherits@eject: ^AircraftEjectOnDeath
-	Valued:
-		Cost: 2400
-	Tooltip:
-		Name: Heavy Ix Air Drone
-	Buildable:
-		Queue: Aircraft, RAAircraft
-		BuildPaletteOrder: 10
-		Prerequisites: ~upixians_airdrone, upgrade.hightech, outpost.ixian
-		Description: actor-air_drone.description
-		IconPalette: windows256
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Health:
-		HP: 97500
-	Repairable:
-		HpPerStep: 4875
-	ChangesHealth@SelfHealing:
-		Step: 39
-	Shielded:
-		DamageRegenDelay: 125
-		RegenAmount: 78
-		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
-		SelectionBarColor: 8888FFFF
-		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	AmmoPool:
-		Name: primary
-		Ammo: 8
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 35
-		Count: 1
-		ResetOnFire: false
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-	AttackAircraft:
-		FacingTolerance: 64
-	Armament:
-		Weapon: d2k_heavy_air_drone
-		LocalOffset: 0,-256,0, 0,256,0
-		LocalYaw: 64, -64
-		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
-		PauseOnCondition: !ammo
-	FirepowerMultiplier@ShrapnelCompensation:
-		Modifier: 50
-	Armament@PRIMARY: ##########
-		Weapon: d2k_air_drone_guns
-		LocalOffset: 0,-256,0, 0,256,0
-		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
-		AmmoUsage: 0
-		RequiresCondition: !d2k_needle_guns
-	Armament@SECONDARY: ##########
-		Weapon: d2k_air_drone_guns
-		LocalOffset: 0,256,0, 0,-256,0
-		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
-		AmmoUsage: 0
-		RequiresCondition: !d2k_needle_guns
-	Armament@Upgrade: ##########
-		Weapon: d2k_air_drone_guns_upgrade
-		LocalOffset: 0,-256,0, 0,256,0
-		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
-		AmmoUsage: 0
-		RequiresCondition: d2k_needle_guns
-	Armament@SECONDARYUpgrade: ##########
-		Weapon: d2k_air_drone_guns_upgrade
-		LocalOffset: 0,256,0, 0,-256,0
-		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
-		AmmoUsage: 0
-		RequiresCondition: d2k_needle_guns
-	Aircraft:
-		CruiseAltitude: 1800
-		Speed: 165
-		RepulsionSpeed: 50
-		MaximumPitch: 50
-		Repulsable: true
-		CanHover: false
-		TurnSpeed: 11
-	WithFacingSpriteBody:
-	Selectable:
-		Class: d2k_air_drone
-		Bounds: 1536, 1280, 0, 0
-	SpawnActorOnDeath:
-		Actor: d2k_heavy_air_drone.husk
-	EjectOnDeath:
-		PilotActor: storm_infantry
-	Voiced:
-		VoiceSet: D2KVehicleVoice
-	RenderSprites:
-		Image: d2k_heavy_air_drone
-	MapEditorData:
-		Categories: Aircraft
-	FireProjectilesOnDeath:
-		Weapons: Debris2, Debris3
-		Pieces: 1, 2
-		Range: 1c0, 3c0
-	Cloak:
-		InitialDelay: 125
-		CloakDelay: 75
-		CloakSound: trans1.aud
-		UncloakSound: appear1.aud
-		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
-	ActorStatValues:
-		Upgrades: d2k_heavy_missile_upgrade, d2k_general_purpose_armor, d2k_needle_guns, d2k_advanced_ixian_technology
-
-d2k_heavy_air_drone.husk:
-	Inherits: d2k_air_drone.husk
-	Inherits: ^PlaneHusk
-	Tooltip:
-		Name: Heavy Air Drone
-	Aircraft:
-		TurnSpeed: 8
-		Speed: 165
-	RenderSprites:
-		Image: d2k_heavy_air_drone
-	FallsToEarth:
-		Explosion: D2KUnitExplodeMed
-
-missile_tank_ixian:
-	Inherits@D2KT: ^D2KTank
-	Inherits@Template: ^FireSupportTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
-	Inherits@Armor: ^D2K_GeneralPurposeArmor
-	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
-	Tooltip:
-		Name: Ix Missile Tank
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		Queue: Vehicle, RAVehicle
-		Prerequisites: ~upixians_missiletank, upgrade_heavy, research_centre.ixian
-		BuildPaletteOrder: 60
-		Description: actor-missile_tank.description
-		IconPalette: d2kunit
-	Valued:
-		Cost: 2250
-	Mobile:
-		Speed: 50
-		TurnSpeed: 10
-	Health:
-		HP: 50000
-	Repairable:
-		HpPerStep: 2500
-	ChangesHealth@SelfHealing:
-		Step: 20
-	Armor:
-		Type: Light
-	Shielded:
-		DamageRegenDelay: 125
-		RegenAmount: 40
-		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
-		SelectionBarColor: 8888FFFF
-		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armament:
-		Weapon: mtank_pri2
-		LocalOffset: -128,128,171, -128,-128,171
-		PauseOnCondition: !ammo
-	AttackFrontal:
-		FacingTolerance: 0
-	AutoTarget:
-		InitialStanceAI: Defend
-	FireWarheadsOnDeath:
-		Weapon: D2KUnitExplodeMed
-		EmptyWeapon: D2KUnitExplodeMed
-	Selectable:
-		Class: missiletank
-	AttractsWorms:
-		Intensity: 600
-	Cloak@TDcloak:
-	RenderRangeCircle:
-	Voiced:
-		VoiceSet: D2KMissileTank
-	AmmoPool:
-		Ammo: 10
-		AmmoCondition: ammo
-	ReloadAmmoPool:
-		Delay: 25
-		Count: 1
-		ResetOnFire: true
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 10
-	Cloak:
-		InitialDelay: 125
-		CloakDelay: 75
-		CloakSound: trans1.aud
-		UncloakSound: appear1.aud
-		UncloakOn: Attack, infiltrate, damage
-		IsPlayerPalette: true
-		CloakedCondition: cloaked
-		RequiresCondition: d2k_advanced_ixian_technology
-	ReloadAmmoDelayMultiplier@RANK-1:
-		RequiresCondition: rank-veteran == 1
-		Modifier: 95
-	ReloadAmmoDelayMultiplier@RANK-2:
-		RequiresCondition: rank-veteran == 2
-		Modifier: 90
-	ReloadAmmoDelayMultiplier@RANK-3:
-		RequiresCondition: rank-veteran == 3
-		Modifier: 85
-	ReloadAmmoDelayMultiplier@RANK-ELITE:
-		RequiresCondition: rank-elite
-		Modifier: 75
-	RenderSprites:
-		Image: ix_missile_tank
-		PlayerPalette: player
-	ActorStatValues:
-		Upgrades: d2k_heavy_missile_upgrade, d2k_advanced_ixian_technology
-
-d2k_farasha:
-	Inherits: ^Helicopter
-	Inherits@Template: ^SpaceshipTemplate
-	Inherits@Epic: ^EpicAirUnitTemplate
-	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@detect: ^GenericAllDetector
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@MC: ^MCImmune
-	Inherits@COMMANDOSKULL: ^CommandoSkull
-	Inherits@Armor: ^D2K_GeneralPurposeArmor
-	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
-	#Inherits@guildtele: ^Guild_teleport
-	Inherits@eject: ^AircraftEjectOnDeath
-	Valued:
-		Cost: 6000
-	Tooltip:
-		Name: Farasha
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	Buildable:
-		BuildPaletteOrder: 180
-		Prerequisites: ~upixians_farasha, upgrade.hightech, research_centre.ixian
-		BuildLimit: 1
-		Queue: Aircraft, RAAircraft
-		Description: actor-farasha.description
-		IconPalette: ra2
-	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 16
-		Speed: 40
-		IdealSeparation: 2500
-		RepulsionSpeed: 32
-	CarrierMaster:
-		ArmamentNames: primary
-		Actors: d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone
-		RearmTicks: 25
-		RespawnTicks: 75
-		InstaRepair: true
-		SlaveDisposalOnKill: KillSlaves
-		SpawnAllAtOnce: false
-	Health:
-		HP: 250000
-	Repairable:
-		HpPerStep: 12500
-	ChangesHealth@SelfHealing:
-		Step: 100
-	Shielded:
-		MaxPercentageStrength: 100
-		DamageRegenDelay: 125
-		RegenAmount: 200
-		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
-		RequiresCondition: d2k_advanced_ixian_technology
-		SelectionBarColor: 8888FFFF
-	Armament@drones:
-		Name: primary
-		Weapon: d2k_dronelauncher
-	Armament@charge:
-		Name: charge
-		Weapon: d2k_farasha_charge
-		LocalOffset: 1500,0,-250
-		PauseOnCondition: discharged
-	Armament:
-		Name: secondary
-		Weapon: d2k_farasha
-		LocalOffset: 1500,0,-250
-		PauseOnCondition: !charged
-		ReloadingCondition: discharged
-	Armament@AA:
-		Name: secondary
-		Weapon: d2k_farasha_aa
-		LocalOffset: 1500,0,-250
-		PauseOnCondition: !charged
-		ReloadingCondition: discharged
-	AmmoPool:
-		Armaments: secondary
-		Ammo: 100
-		InitialAmmo: 0
-		AmmoCondition: charged
-	ReloadAmmoPoolCA@charged:
-		Count: 100
-		Delay: 50
-		RequiresCondition: charging
-	ReloadAmmoPoolCA@discharge:
-		Count: -1
-		Delay: 1
-		RequiresCondition: charged && !charging
-	GrantConditionOnAttack@charged:
-		Condition: charging
-		RequiredShotsPerInstance: 1
-		ArmamentNames: charge
-		RevokeDelay: 50
-		#MaximumInstances: 50
-		RevokeOnNewTarget: true
-	WithAmmoPipsDecoration:
-		PipCount: 10
-		FullSequence: pip-red
-		Position: BottomLeft
-		RequiresSelection: true
-	Turreted:
-	AttackAircraft:
-		Armaments: primary, secondary, charge
-		FacingTolerance: 40
-	RenderRangeCircle:
-	SelectionDecorations:
-	Selectable:
-		Bounds: 2048, 2048
-		DecorationBounds: 2048, 2048
-	Voiced:
-		VoiceSet: D2KVehicleVoice
-	SpawnActorOnDeath:
-		Actor: d2k_farasha.husk
-		OwnerType: InternalName
-		EffectiveOwnerFromOwner: true
-	EjectOnDeath:
-		PilotActor: heavy_inf
-	FireProjectilesOnDeath:
-		Weapons: Debris, Debris2, Debris3, Debris4
-		Pieces: 6, 10
-		Range: 3c0, 6c0
-	RenderSprites:
-		PlayerPalette: player_rgba
-	ActorStatValues:
-		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
-
-d2k_farasha.husk:
-	Inherits: ^PlaneHusk
-	Tooltip:
-		Name: Farasha
-	Aircraft:
-		TurnSpeed: 15
-		Speed: 40
-	RenderSprites:
-		Image: d2k_farasha
-		PlayerPalette: player_rgba
-	FallsToEarth:
-		Explosion: D2KUnitExplodeLarge
-
-d2k_farasha_drone:
-	Inherits: ^RANeutralPlane
-	Inherits@Template: ^BomberTemplate
-	Inherits@exp: ^GainsExperienceRA
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@Armor: ^D2K_GeneralPurposeArmor
-	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
-	Valued:
-		Cost: 1000
-	Tooltip:
-		Name: Alfayrus
-	Hovers:
-	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 32
-		Speed: 215
-		Repulsable: false
-		VTOL: false
-		CruiseAltitude: 1c256
-		TakeUpCellWhenLand: false
-	Targetable:
-		TargetTypes: Air
-	CarrierSlave:
-		LandingDistance: 6400
-	HasParent:
-	Health:
-		HP: 12500
-	ChangesHealth@SelfHealing:
-		Step: 5
-	Shielded:
-		InitialPercentageStrength: 100
-		MaxPercentageStrength: 100
-		DamageRegenDelay: 125
-		RegenAmount: 10
-		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
-		RequiresCondition: d2k_advanced_ixian_technology
-		SelectionBarColor: 8888FFFF
-	Armament@PRIMARY:
-		Weapon: d2k_farasha_drone
-		LocalOffset: 150,0,0
-	AttackAircraft:
-		FacingTolerance: 40
-	Voiced:
-		VoiceSet: D2KVehicleVoice
-	RejectsOrders:
-	-ActorLostNotification:
-	-UpdatesPlayerStatistics:
-	HitShape:
-	-MapEditorData:
-	SpawnActorOnDeath:
-		Actor: d2k_farasha_drone.husk
-		OwnerType: InternalName
-		EffectiveOwnerFromOwner: true
-	FireProjectilesOnDeath:
-		Weapons: Debris, Debris2
-		Pieces: 1, 2
-		Range: 1c0, 3c0
-	ActorStatValues:
-		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
-
-d2k_farasha_drone.husk:
-	Inherits: ^PlaneHusk
-	Tooltip:
-		Name: Alfayrus
-	Aircraft:
-		TurnSpeed: 20
-		Speed: 260
-	RenderSprites:
-		Image: d2k_farasha_drone
-	FallsToEarth:
-		Explosion: D2KUnitExplodeSmall
 
 d2k_jammer:
 	Inherits@D2KT: ^D2KTank
@@ -12406,7 +11988,7 @@ d2k_jammer:
 		Queue: Vehicle, RAVehicle
 		BuildLimit: 1
 		BuildPaletteOrder: 60
-		Prerequisites: ~upixians_projector, upgrade_heavy, research_centre.ixian
+		Prerequisites: ~upixians_projector, research_centre.ixian
 		Description: actor-ixprojector.description
 		IconPalette: windows256
 	Health:
@@ -12628,7 +12210,96 @@ d2k_apparition:
 		Palette: cloak
 	Cloak@TDcloak:
 
-d2k_Heavydrone:
+# quake_tank:
+# 	Inherits: ^D2KTank
+# 	Inherits@Template: ^LineBreakerTemplate
+# 	Inherits@GAINSEXPERIENCE: ^EpicVehicleTemplate
+# 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+# 	Inherits@exp: ^GainsExperienceRA
+# 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+# 	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
+# 	Inherits@Armor: ^D2K_GeneralPurposeArmor
+# 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+# 	Buildable:
+# 		Queue: Vehicle, RAVehicle
+# 		BuildLimit: 1
+# 		BuildPaletteOrder: 90
+# 		Prerequisites: ~upixians_quaketank, research_centre.ixian
+# 		Description: actor-quake_tank.description
+# 		IconPalette: d2kunit
+# 	Valued:
+# 		Cost: 5000
+# 	Tooltip:
+# 		Name: Ix Quake Tank
+# 	Health:
+# 		HP: 375000
+# 	Repairable:
+# 		HpPerStep: 18750
+# 	ChangesHealth@SelfHealing:
+# 		Step: 150
+# 	Armor:
+# 		Type: Medium
+# 	Shielded:
+# 		DamageRegenDelay: 125
+# 		RegenAmount: 300
+# 		RegenInterval: 1
+# 		ShieldsUpCondition: d2k_shielded
+# 		SelectionBarColor: 8888FFFF
+# 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
+# 	Mobile:
+# 		Speed: 50
+# 		TurnSpeed: 10
+# 		Locomotor: heavytracked
+# 		RequiresCondition: !deployed
+# 	AttackFrontal:
+# 		FacingTolerance: 512
+# 	Armament@PRIMARY:
+# 		Weapon: MADTankTargeting
+# 	-RenderRangeCircle:
+# 	AutoDeployer:
+# 		DeployTrigger: Attack
+# 		DeployChance: 100
+# 		DeployTicks: 0
+# 	MadTankCA:
+# 		ThumpInterval: 25
+# 		ChargeDelay: 125
+# 		DetonationDelay: 25
+# 		DriverActor: shock_infantry
+# 		DeployedCondition: deployed
+# 		DetonationWeapon: d2k_quake_boom
+# 		ThumpDamageWeapon: d2k_quake_thump
+# 		RequiresCondition: !disabled
+# 		ExclusiveDeploy: true
+# 		DeployType: Detonate
+# 	AttractsWorms@thumping:
+# 		Intensity: 10000
+# 		Falloff: 1000, 500, 250, 125, 75, 50, 25, 10, 5, 0
+# 		Spread: 10000
+# 		Range: 100000
+# 		RequiresCondition: deployed
+# 	FireWarheadsOnDeath:
+# 		Weapon: D2KUnitExplodeLarge
+# 		EmptyWeapon: D2KUnitExplodeLarge
+# 		RequiresCondition: !botmicro
+# 	Selectable:
+# 		Class: quake_tank
+# 		DecorationBounds: 2048, 2048, 0, -128
+# 	Targetable:
+# 		TargetTypes: Ground, MADTank, Repair, Vehicle
+# 	AttractsWorms@normal:
+# 		Intensity: 700
+# 		RequiresCondition: !deployed
+# 	WithRangeCircle:
+# 		Color: FFFF0080
+# 		Range: 8c0
+# 	RenderSprites:
+# 		PlayerPalette: raplayer
+# 	ActorStatValues:
+# 		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
+
+	### Artillery and Air Tree
+
+d2k_ixdrone:
 	Inherits: ^Helicopter
 	Inherits@Template: ^HelicopterTemplate
 	Inherits@exp: ^GainsExperienceTD
@@ -12640,19 +12311,19 @@ d2k_Heavydrone:
 	Inherits@AntiAir: ^PrioritizeAir
 	Inherits@cloak: ^CloakedAircraft
 	Inherits@eject: ^AircraftEjectOnDeath
-	Inherits@AntiInf: ^D2K_NeedleGuns
+	Inherits@NeedleGuns: ^D2K_NeedleGuns
 	Inherits@Armor: ^D2K_GeneralPurposeArmor
 	Inherits@Barrel: ^D2K_ReinforcedBarrel
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Ix Heavy Drone
+		Name: Ix Railgun Drone
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~high_tech_factory.ixian
+		Prerequisites: ~upixians_ixdrone, high_tech_factory.ixian
 		Queue: Aircraft, RAAircraft
 		Description: actor-venom.description
 	Aircraft:
@@ -12681,10 +12352,10 @@ d2k_Heavydrone:
 		PersistentTargeting: false
 		AttackType: Hover
 	AmmoPool:
-		Ammo: 3
+		Ammo: 1
 		AmmoCondition: ammo
 	SpawnActorOnDeath:
-		Actor: d2k_heavydrone.husk
+		Actor: d2k_ixdrone.husk
 	EjectOnDeath:
 		PilotActor: heavy_inf
 	SelectionDecorations:
@@ -12699,11 +12370,228 @@ d2k_Heavydrone:
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
-		PipCount: 3
+		PipCount: 1
 	Cloak:
 		UncloakOn: Attack, Damage
 	ActorStatValues:
 		Upgrades: d2k_siege_range_upgrade, d2k_needle_guns, d2k_general_purpose_armor, d2k_advanced_ixian_technology
+	WithAttackAnimation:
+		Sequence: shoot
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+d2k_ixdrone.husk:
+	Inherits: ^SmallHelicopterHusk
+	Tooltip:
+		Name: Ix Railgun Drone
+	Aircraft:
+		TurnSpeed: 16
+		Speed: 186
+	RenderSprites:
+		Image: d2k_ixdrone
+		PlayerPalette: player_rgba
+
+# d2k_heavy_air_drone:
+# 	Inherits: ^RANeutralPlane
+# 	Inherits@Template: ^FighterTemplate
+# 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+# 	Inherits@detect: ^GenericAllDetector
+# 	Inherits@exp: ^GainsExperienceRA
+# 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+# 	Inherits@AntiBuil: ^PrioritizeBuilding
+# 	Inherits@CLOAK: ^CloakedAircraft
+# 	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
+# 	Inherits@Armor: ^D2K_GeneralPurposeArmor
+# 	Inherits@NeedleGuns: ^D2K_NeedleGuns
+# 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+# 	Inherits@eject: ^AircraftEjectOnDeath
+# 	Valued:
+# 		Cost: 2400
+# 	Tooltip:
+# 		Name: Heavy Ix Air Drone
+# 	Buildable:
+# 		Queue: Aircraft, RAAircraft
+# 		BuildPaletteOrder: 10
+# 		Prerequisites: ~upixians_airdrone, outpost.ixian
+# 		Description: actor-air_drone.description
+# 		IconPalette: windows256
+# 	UpdatesPlayerStatistics:
+# 		AddToArmyValue: true
+# 	Health:
+# 		HP: 97500
+# 	Repairable:
+# 		HpPerStep: 4875
+# 	ChangesHealth@SelfHealing:
+# 		Step: 39
+# 	Shielded:
+# 		DamageRegenDelay: 125
+# 		RegenAmount: 78
+# 		RegenInterval: 1
+# 		ShieldsUpCondition: d2k_shielded
+# 		SelectionBarColor: 8888FFFF
+# 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
+# 	AmmoPool:
+# 		Name: primary
+# 		Ammo: 8
+# 		AmmoCondition: ammo
+# 	ReloadAmmoPool:
+# 		Delay: 35
+# 		Count: 1
+# 		ResetOnFire: false
+# 	WithAmmoPipsDecoration:
+# 		Position: BottomLeft
+# 		RequiresSelection: true
+# 	AttackAircraft:
+# 		FacingTolerance: 64
+# 	Armament:
+# 		Weapon: d2k_heavy_air_drone
+# 		LocalOffset: 0,-256,0, 0,256,0
+# 		LocalYaw: 64, -64
+# 		MuzzleSequence: muzzle
+# 		MuzzlePalette: d2keffect
+# 		PauseOnCondition: !ammo
+# 	FirepowerMultiplier@ShrapnelCompensation:
+# 		Modifier: 50
+# 	Armament@PRIMARY: ##########
+# 		Weapon: d2k_air_drone_guns
+# 		LocalOffset: 0,-256,0, 0,256,0
+# 		MuzzleSequence: muzzle
+# 		MuzzlePalette: d2keffect
+# 		AmmoUsage: 0
+# 		RequiresCondition: !d2k_needle_guns
+# 	Armament@SECONDARY: ##########
+# 		Weapon: d2k_air_drone_guns
+# 		LocalOffset: 0,256,0, 0,-256,0
+# 		MuzzleSequence: muzzle
+# 		MuzzlePalette: d2keffect
+# 		AmmoUsage: 0
+# 		RequiresCondition: !d2k_needle_guns
+# 	Armament@Upgrade: ##########
+# 		Weapon: d2k_air_drone_guns_upgrade
+# 		LocalOffset: 0,-256,0, 0,256,0
+# 		MuzzleSequence: muzzle
+# 		MuzzlePalette: d2keffect
+# 		AmmoUsage: 0
+# 		RequiresCondition: d2k_needle_guns
+# 	Armament@SECONDARYUpgrade: ##########
+# 		Weapon: d2k_air_drone_guns_upgrade
+# 		LocalOffset: 0,256,0, 0,-256,0
+# 		MuzzleSequence: muzzle
+# 		MuzzlePalette: d2keffect
+# 		AmmoUsage: 0
+# 		RequiresCondition: d2k_needle_guns
+# 	Aircraft:
+# 		CruiseAltitude: 1800
+# 		Speed: 165
+# 		RepulsionSpeed: 50
+# 		MaximumPitch: 50
+# 		Repulsable: true
+# 		CanHover: false
+# 		TurnSpeed: 11
+# 	WithFacingSpriteBody:
+# 	Selectable:
+# 		Class: d2k_air_drone
+# 		Bounds: 1536, 1280, 0, 0
+# 	SpawnActorOnDeath:
+# 		Actor: d2k_heavy_air_drone.husk
+# 	EjectOnDeath:
+# 		PilotActor: storm_infantry
+# 	Voiced:
+# 		VoiceSet: D2KVehicleVoice
+# 	RenderSprites:
+# 		Image: d2k_heavy_air_drone
+# 	MapEditorData:
+# 		Categories: Aircraft
+# 	FireProjectilesOnDeath:
+# 		Weapons: Debris2, Debris3
+# 		Pieces: 1, 2
+# 		Range: 1c0, 3c0
+# 	Cloak:
+# 		InitialDelay: 125
+# 		CloakDelay: 75
+# 		CloakSound: trans1.aud
+# 		UncloakSound: appear1.aud
+# 		UncloakOn: Unload, Infiltrate, Demolish, Dock, Damage, Heal, Attack
+# 	ActorStatValues:
+# 		Upgrades: d2k_heavy_missile_upgrade, d2k_general_purpose_armor, d2k_needle_guns, d2k_advanced_ixian_technology
+
+# d2k_heavy_air_drone.husk:
+# 	Inherits: d2k_air_drone.husk
+# 	Inherits: ^PlaneHusk
+# 	Tooltip:
+# 		Name: Heavy Air Drone
+# 	Aircraft:
+# 		TurnSpeed: 8
+# 		Speed: 165
+# 	RenderSprites:
+# 		Image: d2k_heavy_air_drone
+# 	FallsToEarth:
+# 		Explosion: D2KUnitExplodeMed
+
+d2k_ixbomber:
+	Inherits: ^RANeutralPlane
+	Inherits@reload: ^RearmableAircraft
+	Inherits@Template: ^BomberTemplate
+	Inherits@exp: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@cloak: ^CloakedAircraft
+	Inherits@eject: ^AircraftEjectOnDeath
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Ixian EMP Bomber
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~upixians_ixbomber, ixian_launchpad, research_centre.ixian
+		Queue: Aircraft, RAAircraft
+		Description: actor-venom.description
+	Aircraft:
+		TurnSpeed: 10
+		Speed: 150
+	Health:
+		HP: 95000
+	Repairable:
+		HpPerStep: 4750
+	ChangesHealth@SelfHealing:
+		Step: 38
+	Shielded:
+		DamageRegenDelay: 125
+		RegenAmount: 76
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		SelectionBarColor: 8888FFFF
+		RequiresCondition: !disabled && d2k_advanced_ixian_technology
+	Armament@PRIMARY:
+		Weapon: IxianEmpBomb
+		LocalOffset: 250,0,-250
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		FacingTolerance: 20
+		OpportunityFire: false
+		PersistentTargeting: false
+	AmmoPool:
+		Ammo: 1
+		ReloadDelay: 200
+		AmmoCondition: ammo
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+	SpawnActorOnDeath:
+		Actor: d2k_heavydrone.husk
+	EjectOnDeath:
+		PilotActor: heavy_inf
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1280, 1024
+	Cloak:
+		UncloakOn: Attack, Damage
+	ActorStatValues:
+		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -12715,7 +12603,7 @@ d2k_heavydrone.husk:
 		TurnSpeed: 16
 		Speed: 186
 	RenderSprites:
-		Image: d2k_heavydrone
+		Image: d2k_ixbomber
 		PlayerPalette: player_rgba
 
 d2k_resonancedrone:
@@ -12724,10 +12612,7 @@ d2k_resonancedrone:
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits@AntiInf: ^PrioritizeInfantry
-	Inherits@AntiVeh: ^PrioritizeVehicle
-	Inherits@AntiTank: ^PrioritizeTank
-	Inherits@AntiAir: ^PrioritizeAir
+	Inherits@AutoRepair: ^PrioritizeRepair
 	Inherits@cloak: ^CloakedAircraft
 	Inherits@eject: ^AircraftEjectOnDeath
 	Inherits@AntiInf: ^D2K_NeedleGuns
@@ -12735,61 +12620,74 @@ d2k_resonancedrone:
 	Inherits@Barrel: ^D2K_ReinforcedBarrel
 	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
 	Valued:
-		Cost: 1000
+		Cost: 2000
 	Tooltip:
 		Name: Ix Resonance Drone
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~high_tech_factory.ixian
+		Prerequisites: ~upixians_resonancedrone, high_tech_factory.ixian, research_centre.ixian
 		Queue: Aircraft, RAAircraft
 		Description: actor-venom.description
 	Aircraft:
-		TurnSpeed: 34
-		Speed: 170
+		TurnSpeed: 25
+		Speed: 125
 	Health:
-		HP: 30000
+		HP: 25000
 	Repairable:
-		HpPerStep: 1500
+		HpPerStep: 1250
 	ChangesHealth@SelfHealing:
-		Step: 12
+		Step: 10
+	ProximityExternalCondition@shieldgen:
+		Range: 6000
+		ValidRelationships: Ally
+		Condition: shieldgen
+	ProximityExternalCondition@propaganda:
+		Range: 6000
+		ValidRelationships: Ally
+		Condition: propaganda
+	WithRangeCircle@propaganda:
+		Range: 6000
+		Type: heal
+		Color: 55BBFF
 	Shielded:
 		DamageRegenDelay: 125
-		RegenAmount: 24
+		RegenAmount: 20
 		RegenInterval: 1
 		ShieldsUpCondition: d2k_shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
-	Armament@PRIMARY:
-		Weapon: IxRailgunDroneBullet
-		LocalOffset: 750,0,-250
-		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 10
+		InitialStance: AttackAnything
+	Armament@repair:
+		Weapon: ResonanceDroneRepair
+		TargetRelationships: Ally
+		ForceTargetRelationships: Ally
+		LocalOffset: 900,0,-100
 	AttackAircraft:
 		FacingTolerance: 20
 		OpportunityFire: false
 		PersistentTargeting: false
 		AttackType: Hover
 	AmmoPool:
-		Ammo: 3
+		Ammo: 10
 		AmmoCondition: ammo
 	SpawnActorOnDeath:
 		Actor: d2k_resonancedrone.husk
 	EjectOnDeath:
-		PilotActor: heavy_inf
+		PilotActor: light_inf
 	SelectionDecorations:
 	ReloadAmmoPool:
-		Delay: 128
+		Delay: 20
 		Count: 1
-	ReloadAmmoDelayMultiplier@up_elitecapacitors:
-		Modifier: 70
-		RequiresCondition: up_elitecapacitors
 	Selectable:
 		DecorationBounds: 1280, 1024
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
-		PipCount: 3
+		PipCount: 10
 	Cloak:
 		UncloakOn: Attack, Damage
 	ActorStatValues:
@@ -12807,5 +12705,217 @@ d2k_resonancedrone.husk:
 		TurnSpeed: 16
 		Speed: 186
 	RenderSprites:
-		Image: d2k_ixdrone
+		Image: d2k_resonancedrone
 		PlayerPalette: player_rgba
+
+d2k_farasha:
+	Inherits: ^Helicopter
+	Inherits@Template: ^SpaceshipTemplate
+	Inherits@Epic: ^EpicAirUnitTemplate
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@detect: ^GenericAllDetector
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@MC: ^MCImmune
+	Inherits@COMMANDOSKULL: ^CommandoSkull
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+	#Inherits@guildtele: ^Guild_teleport
+	Inherits@eject: ^AircraftEjectOnDeath
+	Valued:
+		Cost: 6000
+	Tooltip:
+		Name: Farasha
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 180
+		Prerequisites: ~upixians_farasha, high_tech_factory.ixian, research_centre.ixian
+		BuildLimit: 1
+		Queue: Aircraft, RAAircraft
+		Description: actor-farasha.description
+		IconPalette: ra2
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 16
+		Speed: 40
+		IdealSeparation: 2500
+		RepulsionSpeed: 32
+	CarrierMaster:
+		ArmamentNames: primary
+		Actors: d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone, d2k_farasha_drone
+		RearmTicks: 25
+		RespawnTicks: 75
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Health:
+		HP: 250000
+	Repairable:
+		HpPerStep: 12500
+	ChangesHealth@SelfHealing:
+		Step: 100
+	Shielded:
+		MaxPercentageStrength: 100
+		DamageRegenDelay: 125
+		RegenAmount: 200
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		RequiresCondition: d2k_advanced_ixian_technology
+		SelectionBarColor: 8888FFFF
+	Armament@drones:
+		Name: primary
+		Weapon: d2k_dronelauncher
+	Armament@charge:
+		Name: charge
+		Weapon: d2k_farasha_charge
+		LocalOffset: 1500,0,-250
+		PauseOnCondition: discharged
+	Armament:
+		Name: secondary
+		Weapon: d2k_farasha
+		LocalOffset: 1500,0,-250
+		PauseOnCondition: !charged
+		ReloadingCondition: discharged
+	Armament@AA:
+		Name: secondary
+		Weapon: d2k_farasha_aa
+		LocalOffset: 1500,0,-250
+		PauseOnCondition: !charged
+		ReloadingCondition: discharged
+	AmmoPool:
+		Armaments: secondary
+		Ammo: 100
+		InitialAmmo: 0
+		AmmoCondition: charged
+	ReloadAmmoPoolCA@charged:
+		Count: 100
+		Delay: 50
+		RequiresCondition: charging
+	ReloadAmmoPoolCA@discharge:
+		Count: -1
+		Delay: 1
+		RequiresCondition: charged && !charging
+	GrantConditionOnAttack@charged:
+		Condition: charging
+		RequiredShotsPerInstance: 1
+		ArmamentNames: charge
+		RevokeDelay: 50
+		#MaximumInstances: 50
+		RevokeOnNewTarget: true
+	WithAmmoPipsDecoration:
+		PipCount: 10
+		FullSequence: pip-red
+		Position: BottomLeft
+		RequiresSelection: true
+	Turreted:
+	AttackAircraft:
+		Armaments: primary, secondary, charge
+		FacingTolerance: 40
+	RenderRangeCircle:
+	SelectionDecorations:
+	Selectable:
+		Bounds: 2048, 2048
+		DecorationBounds: 2048, 2048
+	Voiced:
+		VoiceSet: D2KVehicleVoice
+	SpawnActorOnDeath:
+		Actor: d2k_farasha.husk
+		OwnerType: InternalName
+		EffectiveOwnerFromOwner: true
+	EjectOnDeath:
+		PilotActor: heavy_inf
+	FireProjectilesOnDeath:
+		Weapons: Debris, Debris2, Debris3, Debris4
+		Pieces: 6, 10
+		Range: 3c0, 6c0
+	RenderSprites:
+		PlayerPalette: player_rgba
+	ActorStatValues:
+		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
+
+d2k_farasha.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Farasha
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 40
+	RenderSprites:
+		Image: d2k_farasha
+		PlayerPalette: player_rgba
+	FallsToEarth:
+		Explosion: D2KUnitExplodeLarge
+
+d2k_farasha_drone:
+	Inherits: ^RANeutralPlane
+	Inherits@Template: ^BomberTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Alfayrus
+	Hovers:
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 32
+		Speed: 215
+		Repulsable: false
+		VTOL: false
+		CruiseAltitude: 1c256
+		TakeUpCellWhenLand: false
+	Targetable:
+		TargetTypes: Air
+	CarrierSlave:
+		LandingDistance: 6400
+	HasParent:
+	Health:
+		HP: 12500
+	ChangesHealth@SelfHealing:
+		Step: 5
+	Shielded:
+		InitialPercentageStrength: 100
+		MaxPercentageStrength: 100
+		DamageRegenDelay: 125
+		RegenAmount: 10
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		RequiresCondition: d2k_advanced_ixian_technology
+		SelectionBarColor: 8888FFFF
+	Armament@PRIMARY:
+		Weapon: d2k_farasha_drone
+		LocalOffset: 150,0,0
+	AttackAircraft:
+		FacingTolerance: 40
+	Voiced:
+		VoiceSet: D2KVehicleVoice
+	RejectsOrders:
+	-ActorLostNotification:
+	-UpdatesPlayerStatistics:
+	HitShape:
+	-MapEditorData:
+	SpawnActorOnDeath:
+		Actor: d2k_farasha_drone.husk
+		OwnerType: InternalName
+		EffectiveOwnerFromOwner: true
+	FireProjectilesOnDeath:
+		Weapons: Debris, Debris2
+		Pieces: 1, 2
+		Range: 1c0, 3c0
+	ActorStatValues:
+		Upgrades: d2k_general_purpose_armor, d2k_advanced_ixian_technology
+
+d2k_farasha_drone.husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Alfayrus
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 260
+	RenderSprites:
+		Image: d2k_farasha_drone
+	FallsToEarth:
+		Explosion: D2KUnitExplodeSmall
