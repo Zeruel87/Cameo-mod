@@ -268,12 +268,14 @@ tsmonstermaker1:
 # TS MCV
 #######################################
 
-OILB.TS:
+OILB.TS.GDI:
 	Inherits: OILB.Building
+	Tooltip:
+		Name: Oil Derrick
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 999
-		Prerequisites: ~tsgttech
+		Prerequisites: ~tsgtcnstgdi, tsgttech
 		Description: Provides Passive income
 		Icon: tsicon
 		IconPalette: ra2
@@ -288,6 +290,15 @@ OILB.TS:
 	-WithMakeAnimation:
 	RenderSprites:
 		PlayerPalette: playerra2
+
+OILB.TS.NOD:
+	Inherits: OILB.TS.GDI
+	Tooltip:
+		Name: Oil Derrick
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 999
+		Prerequisites: ~tsgtcnstnod, tsnttech
 
 TSGTCNST:
 	GrantExternalConditionToOwner@BuildingsOwned:
@@ -460,12 +471,6 @@ TSGTCNSTNOD:
 		Type: Wood
 	RevealsShroud:
 		Range: 10c0
-	Production@NORMAL:
-		Produces: Building, Defence
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence
-		RequiresCondition: classicproductionqueues
 	Transforms:
 		RequiresCondition: factundeploy
 		PauseOnCondition: being-demolished || build-incomplete
@@ -489,28 +494,6 @@ TSGTCNSTNOD:
 	GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
 		Condition: factundeploy
 		Prerequisites: global-factundeploy
-	ProductionQueue@NodBuilding:
-		Type: Building
-		DisplayOrder: 0
-		Group: Building
-		LowPowerModifier: 200
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-	ProductionQueue@NodDefense:
-		Type: Defence
-		DisplayOrder: 1
-		Group: Defence
-		LowPowerModifier: 300
-		ReadyAudio: ConstructionComplete
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Building
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
 	BaseProvider:
 		Range: 14c0
 	WithBuildingBib:
@@ -564,12 +547,6 @@ TSGTCNSTMUTANT:
 		Type: Wood
 	RevealsShroud:
 		Range: 10c0
-	Production@NORMAL:
-		Produces: Building, Defence
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence
-		RequiresCondition: classicproductionqueues
 	Transforms:
 		RequiresCondition: factundeploy
 		PauseOnCondition: being-demolished || build-incomplete
@@ -646,12 +623,6 @@ TSGTCNSTCABAL:
 		Type: Wood
 	RevealsShroud:
 		Range: 10c0
-	Production@NORMAL:
-		Produces: Building, Defence
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RABuilding, RADefence
-		RequiresCondition: classicproductionqueues
 	Transforms:
 		RequiresCondition: factundeploy
 		PauseOnCondition: being-demolished || build-incomplete
@@ -714,7 +685,7 @@ TSMCVGDI:
 		Name: Mobile Construction Vehicle
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ~tsgtweap, tsgtdept
+		Prerequisites: ~tsgtweap, tsgtdeptgdi
 		Queue: Vehicle, RAVehicle
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
@@ -755,7 +726,7 @@ TSMCVNOD:
 	Inherits: TSMCVGDI
 	Buildable:
 		Queue: Vehicle, RAVehicle
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweap, tsgtdeptnod
 	Transforms:
 		IntoActor: tsgtcnstnod
 
@@ -799,7 +770,7 @@ TSPROC:
 		Name: Tiberium Refinery
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~tsgtpowr
+		Prerequisites: ~tsgtcnstgdi, tsgtpowr
 		Queue: Building, RABuilding
 		Description: Processes raw Tiberium\ninto useable resources
 	Building:
@@ -843,17 +814,29 @@ TSPROC:
 	SelectionDecorations:
 	GivesBuildableArea: ##########
 		AreaTypes: building, cityi
-	RenderSprites:
-		Image: tsproc.gdi
-		FactionImages:
-			nod: tsproc.nod
-			tsnod: tsproc.nod
 	WithResourceStoragePipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
 		PipCount: 10
 	RenderSprites:
+		Image: tsproc.gdi
 		PlayerPalette: playerra2
+
+tsprocnod:
+	Inherits: TSPROC
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~tsgtcnstnod, tsntpowr
+		Queue: Building, RABuilding
+		Description: Processes raw Tiberium\ninto useable resources
+	FreeActor:
+		Actor: TSHARVNOD
+		SpawnOffset: 1,2
+		Facing: 256
+	Tooltip:
+		Name: Tiberium Refinery
+	RenderSprites:
+		Image: tsproc.nod
 
 tsntwast:
 	Inherits: ^BaseBuilding
@@ -873,7 +856,7 @@ tsntwast:
 	Buildable:
 		BuildPaletteOrder: 20
 		BuildLimit: 1
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod, tsnttech
 		Queue: Building, RABuilding
 		Description: Increases income from minerals by 25%.\nUnlocks Chemical Missile
 	Building:
@@ -979,7 +962,7 @@ TSNTPOWR:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 10
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod
 		Description: Provides power for other structures.
 	Valued:
 		Cost: 500 #300
@@ -1000,6 +983,7 @@ TSNTPOWR:
 		Amount: 120
 	ScalePowerWithHealth:
 	AcceptsDeliveredExperience: ##########
+	ProvidesPrerequisite@buildingname:
 		ValidTypes: building ##########
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !disabled
@@ -1017,7 +1001,7 @@ TSNTAPWR:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 110
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod, tsntradr
 		Description: Provides double the power of\na standard Power Plant.
 	Valued:
 		Cost: 800 #500
@@ -1073,11 +1057,6 @@ TSGTSILO:
 		Range: 4c0
 	Power:
 		Amount: -10
-	RenderSprites:
-		Image: tsgtsilo.gdi
-		FactionImages:
-			tsnod: tsgtsilo.nod
-			nod: tsgtsilo.nod
 	ProvidesPrerequisite@buildingname:
 	SelectionDecorations:
 	WithIdleOverlay@LIGHTS:
@@ -1098,6 +1077,21 @@ TSGTSILO:
 		PipCount: 5
 	RenderSprites:
 		PlayerPalette: playerra2
+	RenderSprites:
+		Image: tsgtsilo.gdi
+
+TSGTSILONOD:
+	Inherits: TSGTSILO
+	Tooltip:
+		Name: Silo
+	Buildable:
+		BuildPaletteOrder: 100
+		Queue: Defence, RADefence
+		Description: Stores excess Tiberium.
+		Prerequisites: ~tsgtcnstnod, tsprocnod
+	ProvidesPrerequisite@buildingname:
+	RenderSprites:
+		Image: tsgtsilo.nod
 
 TSGTPILE:
 	Inherits: ^BaseBuilding
@@ -1195,7 +1189,7 @@ TSNTHAND:
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod, tsntpowr
 		Queue: Building, RABuilding
 		Description: Trains infantry
 	Building:
@@ -1411,7 +1405,7 @@ TSNTWEAP:
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod, tsprocnod
 		Queue: Building, RABuilding
 		Description: Produces vehicles
 	Building:
@@ -1513,7 +1507,7 @@ TSGTWEAP2:
 	RenderSprites:
 		Image: tsntweap
 
-tsgtdept:
+tsgtdeptgdi:
 	Inherits: ^BaseBuilding
 	Inherits@sell: ^TSSpawnActorsOnSell
 	HitShape:
@@ -1574,6 +1568,17 @@ tsgtdept:
 		DeathSequence: dead-ground
 		UseDeathTypeSuffix: false
 	RenderSprites:
+		Image: tsgtdept
+		PlayerPalette: playerra2
+
+tsgtdeptnod:
+	Inherits: tsgtdeptgdi
+	Tooltip:
+		Name: Service Depot
+	Buildable:
+		Prerequisites: ~tsgtcnstnod, tsntweap
+	RenderSprites:
+		Image: tsgtdept
 		PlayerPalette: playerra2
 
 tsgthpad:
@@ -1683,7 +1688,7 @@ TSNTHPAD:
 		Name: Helipad (Nod)
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod
 		Queue: Building, RABuilding
 		Description: Produces, rearms and\nrepairs helicopters
 	Building:
@@ -1759,8 +1764,6 @@ TSNTHPAD2:
 tsntradr:
 	Inherits: ^BaseBuilding
 	Inherits@sell: ^TSSpawnActorsOnSell
-	Buildable:
-		Prerequisites: ~scmarine
 	HitShape:
 		TargetableOffsets: 0,0,0, 0,512,0, 420,-598,256
 		Type: Rectangle
@@ -1773,7 +1776,7 @@ tsntradr:
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 70
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod
 		Queue: Building, RABuilding
 		Description: Provides radar.\nUnlocks higher-tech units and buildings.\nProvides Support power\nRequires power to operate.
 	Building:
@@ -1960,7 +1963,7 @@ tsnttech:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 140
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod
 		Description: Provides Nod advanced technologies.
 	Valued:
 		Cost: 1500
@@ -2055,7 +2058,7 @@ tsnttmpl:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 150
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod, tsntradr, tsnttech
 		Description: Provides Nod advanced technologies.\nProvides Hunter-Seeker support power.
 	Valued:
 		Cost: 1500
@@ -2142,7 +2145,7 @@ tsntmisl:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 140
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod, tsnttech
 		Description: Provides Multi Missile and Chemical Missile\nsupport powers.
 	Valued:
 		Cost: 1000
@@ -2559,7 +2562,7 @@ tsntlasr:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 20
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod, tsnthand
 		Description: Basic base defense.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Valued:
 		Cost: 300
@@ -2763,7 +2766,7 @@ tsntsam:
 		Name: SAM Site
 	Buildable:
 		BuildPaletteOrder: 140
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod, tsnthand
 		Queue: Defence, RADefence
 		BuildDurationModifier: 40
 		Description: Nod anti-air base defense.\nRequires power to operate.\n  Strong vs Aircraft
@@ -2807,7 +2810,7 @@ tsntstlh:
 	Buildable:
 		Queue: Defence, RADefence
 		BuildPaletteOrder: 170
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod, tsnttech
 		Description: Generates a cloaking field\nto hide your forces from the enemy.\nCan not be cloaked.
 	Building:
 		Footprint: xxx XXX
@@ -2836,7 +2839,7 @@ tsntstlh:
 	RenderSprites:
 		PlayerPalette: playerra2
 
-tsntpuls:
+tsntpulsgdi:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@sell: ^TSSpawnActorsOnSell
@@ -2892,6 +2895,15 @@ tsntpuls:
 	SupportPowerChargeBar:
 	RenderSprites:
 		PlayerPalette: playerra2
+		Image: tsntpuls
+
+tsntpulsnod:
+	Inherits: tsntpulsgdi
+	Buildable:
+		BuildPaletteOrder: 140
+		Prerequisites: ~tsgtcnstnod, tsntradr
+	Tooltip:
+		Name: E.M. Pulse Cannon
 
 tsntobel:
 	Inherits: ^Defense
@@ -2903,7 +2915,7 @@ tsntobel:
 		Name: Obelisk of Light
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod, tsnttech
 		Queue: Defence, RADefence
 		BuildDurationModifier: 63
 		Description: Advanced base defense.\nRequires power to operate.\n  Strong vs Ground units\n  Weak vs Aircraft
@@ -2961,7 +2973,7 @@ tsobl2:
 		Name: Obelisk of Darkness
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstnod
 		Queue: Defence, RADefence
 		BuildDurationModifier: 40
 		Description: Advanced air defense.\nRequires power to operate.\n  Strong vs aircraft\n  Weak vs ground units
@@ -3062,7 +3074,7 @@ TSE1.NOD:
 	Inherits: TSE1
 	Buildable:
 		Queue: Infantry, RAInfantry
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand
 	RenderSprites:
 		Image: tse1.nod
 	RenderSprites:
@@ -3121,7 +3133,7 @@ TSENGINEER2:
 	Inherits@MC: ^MCImmune
 	Buildable:
 		Queue: Infantry, RAInfantry
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand
 	RenderSprites:
 		Image: tsengineer
 	Voiced:
@@ -3406,7 +3418,7 @@ TSE3:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand
 		Queue: Infantry, RAInfantry
 		Description: Anti-tank/anti-aircraft infantry. \n  Strong vs Tanks, Aircraft\n  Weak vs Infantry
 	Mobile:
@@ -3450,7 +3462,7 @@ elitcadre:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand, tsnttech, tsntradr
 		Queue: Infantry, RAInfantry
 		Description: Elite Infantry of NOD used to fight high technology enemies \n  Strong vs Infantry, Air, Vehicles\n  Weak vs Siege, Heavy armor
 		BuildDuration: 425
@@ -3585,7 +3597,7 @@ TSCHAMSPY:
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 90
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand, tsnttech
 		Description: Cloaked spy that can infiltrate structures.
 	Valued:
 		Cost: 500
@@ -3637,7 +3649,7 @@ TSMHIJACK:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand, tsntweap, tsntradr
 		Queue: Infantry, RAInfantry
 		BuildLimit: 1
 		Description: Hijacks vehicles.
@@ -3757,7 +3769,7 @@ TSCYC2:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 25
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand, tsnttech
 		Queue: Infantry, RAInfantry
 		BuildLimit: 1
 		BuildDuration: 625
@@ -4470,7 +4482,7 @@ TSHARV:
 		PipCount: 8
 		Capacity: 35
 	Buildable:
-		Prerequisites: ~tsgtcnstgdi, tsproc
+		Prerequisites: ~tsgtweap, tsproc
 		Queue: Vehicle, RAVehicle
 		Description: Harvests Tiberium for processing
 	WithVoxelBody:
@@ -4479,6 +4491,29 @@ TSHARV:
 		VoiceSet: TSVehicle
 	DeliversCash:
 		Payload: 500
+	RenderSprites:
+		Image: tsharv
+
+TSHARVNOD:
+	Inherits: ^TDHARV
+	Inherits@Voxel: ^TSRenderVoxel
+	Health:
+		HP: 85000
+	Harvester:
+		PipCount: 8
+		Capacity: 35
+	Buildable:
+		Prerequisites: ~tsntweap, tsprocnod
+		Queue: Vehicle, RAVehicle
+		Description: Harvests Tiberium for processing
+	WithVoxelBody:
+	WithDockingAnimation:
+	Voiced:
+		VoiceSet: TSVehicle
+	DeliversCash:
+		Payload: 500
+	RenderVoxels:
+		Image: tsharv
 	RenderSprites:
 		Image: tsharv
 
@@ -4721,7 +4756,7 @@ TSSAPC:
 		OverrideActor: tssapc
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweap
 		Queue: Vehicle, RAVehicle
 		Description: Troop transport that can move\nunderground to avoid detection.\n  Unarmed
 	Mobile:
@@ -5282,7 +5317,7 @@ TSBGGY:
 		Name: Attack Buggy
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweap
 		Queue: Vehicle, RAVehicle
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
@@ -5330,7 +5365,7 @@ TSBIKE:
 		Name: Attack Cycle
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweap
 		Queue: Vehicle, RAVehicle
 		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
@@ -5380,7 +5415,7 @@ TSSTNK:
 		Name: Stealth Tank
 	Buildable:
 		BuildPaletteOrder: 150
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweap
 		Queue: Vehicle, RAVehicle
 		Description: Lightly armoured tank equipped with a \nstealth generator. Armed with missiles.\nCan be spotted by infantry at close range.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
@@ -5437,7 +5472,7 @@ TSREPAIR:
 		Name: Mobile Repair Vehicle
 	Buildable:
 		BuildPaletteOrder: 70
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweap, tsgtdeptnod
 		Queue: Vehicle, RAVehicle
 		Description: Repairs nearby vehicles.\n  Unarmed
 	Mobile:
@@ -5489,7 +5524,7 @@ TSTTNK:
 		BuildPaletteOrder: 60
 		BuildDurationModifier: 100
 		BuildDuration: 300
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweap
 		Queue: Vehicle, RAVehicle
 		Description: Nod's main battle tank.\nCan deploy to gain extra protection.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
@@ -5605,7 +5640,7 @@ TSART2:
 		Name: Artillery
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweap
 		Queue: Vehicle, RAVehicle
 		Description: Mobile artillery.\nImmobile when firing.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Mobile:
@@ -5676,7 +5711,7 @@ TSSUBTANK:
 		Name: Devil's Tongue
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweap
 		Queue: Vehicle, RAVehicle
 		Description: Subterranean flame tank.\nIs able to move underground.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks, Aircraft
 	Mobile:
@@ -5792,7 +5827,7 @@ tssgen:
 		Name: Mobile Stealth Generator
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweap
 		Queue: Vehicle, RAVehicle
 		Description: Cloaks nearby buildings and units.\nCan not be cloaked.\n Unarmed
 	Mobile:
@@ -5866,6 +5901,20 @@ tslpst:
 	DetectCloaked:
 		Range: 12c0
 	RenderSprites:
+		Image: tslpst
+		PlayerPalette: playerra2
+
+tslpstnod:
+	Inherits: tslpst
+	Tooltip:
+		Name: Mobile Sensor Array
+	Buildable:
+		BuildPaletteOrder: 110
+		Prerequisites: ~tsntweap, tsntpulsnod, tsntradr
+		Queue: Vehicle, RAVehicle
+		Description: Shuts down vehicles with an EMP blast.\n  Strong vs Vehicles, Cyborgs
+	RenderSprites:
+		Image: tslpst
 		PlayerPalette: playerra2
 
 tsmemp:
@@ -5879,7 +5928,7 @@ tsmemp:
 		Name: Mobile EMP
 	Buildable:
 		BuildPaletteOrder: 110
-		Prerequisites: ~tsgtweap, tsntpuls, tsgtradr
+		Prerequisites: ~tsgtweap, tsntpulsgdi, tsgtradr
 		Queue: Vehicle, RAVehicle
 		Description: Shuts down vehicles with an EMP blast.\n  Strong vs Vehicles, Cyborgs
 	Mobile:
@@ -6959,7 +7008,8 @@ TSTRNSPORT:
 	Tooltip:
 		Name: Carryall
 	Selectable:
-		Bounds: 2048, 2048
+		Bounds: 1280, 1280
+		DecorationBounds: 1280, 1024
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -7031,7 +7081,7 @@ TSSCRIN:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthpad
 		Queue: Aircraft, RAAircraft
 		Description: Advanced fighter-bomber craft\nwith twin plasma cannons.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
 	Aircraft:
@@ -7117,7 +7167,7 @@ TSAPACHE:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthpad
 		Queue: Aircraft, RAAircraft
 		Description: Anti-personnel support gunship\narmed with dual chain guns.\n  Strong vs Infantry, Light armor, Aircraft\n  Weak vs Vehicles
 	Aircraft:
