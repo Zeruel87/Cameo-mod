@@ -125,7 +125,7 @@ Player:
 ^TSRenderVoxel:
 	Inherits: ^RenderVoxel
 	RenderVoxels:
-		Scale: 10
+		Scale: 15
 		NormalsPalette: ts-normals
 		PlayerPalette: playerra2
 		LightAmbientColor: 0.6, 0.6, 0.6
@@ -292,6 +292,16 @@ OILB.TS.GDI:
 		PlayerPalette: playerra2
 
 OILB.TS.NOD:
+	Inherits: OILB.TS.GDI
+	Tooltip:
+		Name: Oil Derrick
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 999
+		Prerequisites: ~tsgtcnstnod, tsnttech
+
+
+OILB.TS.MUTANT:
 	Inherits: OILB.TS.GDI
 	Tooltip:
 		Name: Oil Derrick
@@ -734,7 +744,7 @@ TSMCVMUTANT:
 	Inherits: TSMCVGDI
 	Buildable:
 		Queue: Vehicle, RAVehicle
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant, tsgtdeptmutant
 	Transforms:
 		IntoActor: tsgtcnstmutant
 
@@ -742,7 +752,7 @@ TSMCVCABAL:
 	Inherits: TSMCVGDI
 	Buildable:
 		Queue: Vehicle, RAVehicle
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweapcabal, tsgtdeptcabal
 	Transforms:
 		IntoActor: tsgtcnstcabal
 	Voiced:
@@ -835,6 +845,39 @@ tsprocnod:
 		Facing: 256
 	Tooltip:
 		Name: Tiberium Refinery
+	RenderSprites:
+		Image: tsproc.nod
+
+tsproccabal:
+	Inherits: TSPROC
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~tsgtcnstcabal, tsntpowrcabal
+		Queue: Building, RABuilding
+		Description: Processes raw Tiberium\ninto useable resources
+	FreeActor:
+		Actor: TSHARVCABAL
+		SpawnOffset: 1,2
+		Facing: 256
+	Tooltip:
+		Name: Tiberium Refinery
+	RenderSprites:
+		Image: tsproc.nod
+
+tsprocmutant:
+	Inherits: TSPROC
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~tsgtcnstmutant
+		Queue: Building, RABuilding
+		Description: Processes raw Tiberium\ninto useable resources
+	FreeActor:
+		Actor: TSHARVMUTANT
+		SpawnOffset: 1,2
+		Facing: 256
+	ProvidesPrerequisite@buildingname:
+	Tooltip:
+		Name: Tiberium Refinery (Mutant)
 	RenderSprites:
 		Image: tsproc.nod
 
@@ -991,6 +1034,92 @@ TSNTPOWR:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+TSNTPOWRMUTANT:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^TSSpawnActorsOnSell
+	Inherits@power: ^PowerPlant
+	Selectable:
+		Bounds: 2048, 2048
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 640,-384,0, 640,512,0, -710,-512,0, -710,512,0
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 10
+		Prerequisites: ~tsgtcnstmutant
+		Description: Provides power for other structures.
+	Valued:
+		Cost: 500 #300
+	Tooltip:
+		Name: Power Plant
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000 #40000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: 120
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience: ##########
+	ProvidesPrerequisite@buildingname:
+		ValidTypes: building ##########
+	WithIdleOverlay@LIGHTS:
+		RequiresCondition: !build-incomplete && !disabled
+		Sequence: idle-lights
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsntpowr
+
+TSNTPOWRCABAL:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@sell: ^TSSpawnActorsOnSell
+	Inherits@power: ^PowerPlant
+	Selectable:
+		Bounds: 2048, 2048
+	HitShape:
+		UseTargetableCellsOffsets: false
+		TargetableOffsets: 0,0,0, 640,-384,0, 640,512,0, -710,-512,0, -710,512,0
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 10
+		Prerequisites: ~tsgtcnstcabal
+		Description: Provides power for other structures.
+	Valued:
+		Cost: 500 #300
+	Tooltip:
+		Name: Power Plant
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		LocalCenterOffset: 0,-512,0
+	Health:
+		HP: 55000 #40000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 4c0
+	WithBuildingBib:
+	Power:
+		Amount: 120
+	ScalePowerWithHealth:
+	AcceptsDeliveredExperience: ##########
+	ProvidesPrerequisite@buildingname:
+		ValidTypes: building ##########
+	WithIdleOverlay@LIGHTS:
+		RequiresCondition: !build-incomplete && !disabled
+		Sequence: idle-lights
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsntpowr
+
 TSNTAPWR:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x2Shape
@@ -1089,6 +1218,32 @@ TSGTSILONOD:
 		Queue: Defence, RADefence
 		Description: Stores excess Tiberium.
 		Prerequisites: ~tsgtcnstnod, tsprocnod
+	ProvidesPrerequisite@buildingname:
+	RenderSprites:
+		Image: tsgtsilo.nod
+
+TSGTSILOMUTANT:
+	Inherits: TSGTSILO
+	Tooltip:
+		Name: Silo
+	Buildable:
+		BuildPaletteOrder: 100
+		Queue: Defence, RADefence
+		Description: Stores excess Tiberium.
+		Prerequisites: ~tsgtcnstmutant, tsprocmutant
+	ProvidesPrerequisite@buildingname:
+	RenderSprites:
+		Image: tsgtsilo.gdi
+
+TSGTSILONOD:
+	Inherits: TSGTSILO
+	Tooltip:
+		Name: Silo
+	Buildable:
+		BuildPaletteOrder: 100
+		Queue: Defence, RADefence
+		Description: Stores excess Tiberium.
+		Prerequisites: ~tsgtcnstcabal, tsproccabal
 	ProvidesPrerequisite@buildingname:
 	RenderSprites:
 		Image: tsgtsilo.nod
@@ -1254,7 +1409,7 @@ TSNTHAND2:
 		Name: Hand of CABAL
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstcabal, tsntpowrcabal
 		Queue: Building, RABuilding
 		Description: Trains infantry
 		Icon: iconcabal
@@ -1275,13 +1430,13 @@ TSNTHAND2:
 		Image: tsnthand
 		PlayerPalette: playerra2
 
-TSGTPILE2:
+tsgtpile2:
 	Inherits: TSNTHAND
 	Tooltip:
 		Name: Hand of Forgotten
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstmutant, tsntpowrmutant
 		Queue: Building, RABuilding
 		Description: Trains infantry
 	Production@NORMAL:
@@ -1467,11 +1622,11 @@ TSNTWEAP:
 	RenderSprites:
 		PlayerPalette: playerra2
 
-TSNTWEAP2:
+TSNTWEAPCABAL:
 	Inherits: TSNTWEAP
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstcabal, tsproccabal
 		Queue: Building, RABuilding
 		Description: Produces vehicles
 	Production@NORMAL:
@@ -1487,11 +1642,11 @@ TSNTWEAP2:
 	RenderSprites:
 		Image: tsntweap
 
-TSGTWEAP2:
+TSGTWEAPMUTANT:
 	Inherits: TSNTWEAP
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstmutant, tsprocmutant
 		Queue: Building, RABuilding
 		Description: Produces vehicles
 	Production@NORMAL:
@@ -1581,6 +1736,26 @@ tsgtdeptnod:
 		Image: tsgtdept
 		PlayerPalette: playerra2
 
+tsgtdeptmutant:
+	Inherits: tsgtdeptgdi
+	Tooltip:
+		Name: Service Depot
+	Buildable:
+		Prerequisites: ~tsgtcnstmutant, tsgtweapmutant
+	RenderSprites:
+		Image: tsgtdept
+		PlayerPalette: playerra2
+
+tsgtdeptcabal:
+	Inherits: tsgtdeptgdi
+	Tooltip:
+		Name: Service Depot
+	Buildable:
+		Prerequisites: ~tsgtcnstcabal, tsntweapcabal
+	RenderSprites:
+		Image: tsgtdept
+		PlayerPalette: playerra2
+
 tsgthpad:
 	Inherits: ^BaseBuilding
 	Inherits@sell: ^TSSpawnActorsOnSell
@@ -1598,7 +1773,7 @@ tsgthpad:
 		Name: Helipad (GDI)
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites:  ~tsgtcnstgdi, tsgtradr
+		Prerequisites: ~tsgtcnstgdi, tsgtradr
 		Queue: Building, RABuilding
 		Description: Produces, rearms and\nrepairs helicopters
 	Building:
@@ -1651,13 +1826,13 @@ tsgthpad:
 	RenderSprites:
 		PlayerPalette: playerra2
 
-tsgthpad2:
+tsgthpadmutant:
 	Inherits: tsgthpad
 	Tooltip:
 		Name: Helipad (Forgotten)
 	Buildable:
 		Queue: Building, RABuilding
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstmutant, tsgtradrmutant
 	Production@NORMAL:
 		Produces: Aircraft
 	Production@CLASSICPRODUCTIONQUEUES:
@@ -1688,7 +1863,7 @@ TSNTHPAD:
 		Name: Helipad (Nod)
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~tsgtcnstnod
+		Prerequisites: ~tsgtcnstnod, tsntradr
 		Queue: Building, RABuilding
 		Description: Produces, rearms and\nrepairs helicopters
 	Building:
@@ -1747,7 +1922,7 @@ TSNTHPAD2:
 		Name: Helipad (CABAL)
 	Buildable:
 		Queue: Building, RABuilding
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstcabal, tsntradrcabal
 	Production@NORMAL:
 		Produces: Aircraft
 	Production@CLASSICPRODUCTIONQUEUES:
@@ -1776,7 +1951,7 @@ tsntradr:
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 70
-		Prerequisites: ~tsgtcnstnod
+		Prerequisites: ~tsgtcnstnod, tsntweap
 		Queue: Building, RABuilding
 		Description: Provides radar.\nUnlocks higher-tech units and buildings.\nProvides Support power\nRequires power to operate.
 	Building:
@@ -1830,6 +2005,14 @@ tsntradr:
 	# 	Prerequisites: mmtsnod
 	RenderSprites:
 		PlayerPalette: playerra2
+
+tsntradrcabal:
+	Inherits: tsntradr
+	Buildable:
+		Prerequisites: ~tsgtcnstcabal, tsproccabal
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsntradr
 
 tsgtradr:
 	Inherits: ^BaseBuilding
@@ -1899,12 +2082,12 @@ tsgtradr:
 	RenderSprites:
 		PlayerPalette: playerra2
 
-tsgtradr2:
+tsgtradrmutant:
 	Inherits: tsgtradr
 	Inherits@SW: ^PrimarySuperweapon
 	Buildable:
 		BuildPaletteOrder: 70
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstmutant, tsprocmutant
 		Queue: Building, RABuilding
 		Description: Provides radar and support powers.\nUnlocks higher-tech units and buildings.\nRequires power to operate.
 	# DetonateWeaponPower:
@@ -1963,7 +2146,7 @@ tsnttech:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 140
-		Prerequisites: ~tsgtcnstnod
+		Prerequisites: ~tsgtcnstnod, tsntradr, tsntweap
 		Description: Provides Nod advanced technologies.
 	Valued:
 		Cost: 1500
@@ -2039,11 +2222,27 @@ tsfgttech:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 150
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstmutant, tsgtradrmutant, tsgtweapmutant
 		Description: Provides Forgotten advanced technologies.\nCan be only built once
 		BuildLimit: 1
 	RenderSprites:
 		Image: tsgttech
+		PlayerPalette: playerra2
+
+tscabaltech:
+	Inherits: tsgttech
+	Tooltip:
+		Name: Cabal Tech Center
+	Selectable:
+		Bounds: 2048, 2048
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 150
+		Prerequisites: ~tsgtcnstcabal, tsntradrcabal, tsntweapcabal
+		Description: Provides Cabal advanced technologies.\nCan be only built once
+		BuildLimit: 1
+	RenderSprites:
+		Image: tsnttech
 		PlayerPalette: playerra2
 
 tsnttmpl:
@@ -2099,7 +2298,7 @@ tscore:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 150
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtcnstcabal, tscabaltech
 		Description: Provides CABAL advanced technologies.\nProvides Hunter-Seeker support power.
 	Valued:
 		Cost: 1500
@@ -2239,6 +2438,14 @@ tsntmisl:
 	SupportPowerChargeBar:
 	RenderSprites:
 		PlayerPalette: playerra2
+
+tsntmislcabal:
+	Inherits: tsntmisl
+	Buildable:
+		Prerequisites: ~tsgtcnstcabal, tscore
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsntmisl
 
 tsctarmr:
 	Inherits: ^BaseBuilding
@@ -2503,11 +2710,6 @@ tsveinhole:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@shape: ^2x2Shape
-	Buildable:
-		BuildPaletteOrder: 50
-		Prerequisites: ~scmarine
-		Queue: Building, RABuilding
-		Description: Produces, and\nrepairs boats
 	Selectable:
 		Bounds: 2048, 2048
 		Priority: 0
@@ -2600,6 +2802,16 @@ tsntlasr:
 	-Cloak@TDcloak:
 	RenderSprites:
 		PlayerPalette: playerra2
+
+tsntlasrcabal:
+	Inherits: tsntlasr
+	Buildable:
+		Prerequisites: ~tsgtcnstcabal, tsnthand2
+	RenderVoxels:
+		Image: tsntlasr
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsntlasr
 
 tsgtctwrmg:
 	Inherits: ^Defense
@@ -2738,6 +2950,51 @@ tsgtctwrsam:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+tsgtctwrsammutant:
+	Inherits: ^Defense
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@sell: ^TSSpawnActorsOnSell
+	Inherits@EMP: ^TurretEMP
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: SAM Tower
+	Buildable:
+		BuildPaletteOrder: 140
+		Prerequisites: ~tsgtcnstmutant, tsgtpile2
+		Queue: Defence, RADefence
+		BuildDurationModifier: 40
+		Description: GDI anti-air base defense.\nDoes not require power to operate.\n  Strong vs Aircraft
+	RequiresBuildableArea:
+		AreaTypes: building
+	Selectable:
+		Bounds: 1024, 1024
+	SelectionDecorations:
+	Health:
+		HP: 50000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+	Turreted:
+		TurnSpeed: 48
+		Offset: 0,0,0
+	WithSpriteBody:
+	Armament:
+		Weapon: TSRedEye2
+		LocalOffset: 250,0,750
+	AttackTurreted:
+	WithSpriteTurret:
+	DetectCloaked:
+		Range: 4c0
+	-SpawnActorsOnSell:
+	-WithDeathAnimation:
+	Power:
+		Amount: -30
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsgtctwrsam
+
 tsgtwr:
 	Inherits: GTWR
 	Valued:
@@ -2754,6 +3011,26 @@ tsgtwr:
 		HP: 45000
 	RangeMultiplier:
 		Modifier: 105
+
+tsgtwrmutant:
+	Inherits: GTWR
+	Valued:
+		Cost: 650
+	Tooltip:
+		Name: Guard Tower
+	Buildable:
+		BuildPaletteOrder: 0
+		Prerequisites: ~tsgtcnstmutant
+		Queue: Defence, RADefence
+	RenderSprites:
+		Image: gtwr
+	Health:
+		HP: 45000
+	RangeMultiplier:
+		Modifier: 105
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: gtwr
 
 tsntsam:
 	Inherits: ^Defense
@@ -2799,6 +3076,14 @@ tsntsam:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+tsntsamcabal:
+	Inherits: tsntsam
+	Buildable:
+		Prerequisites: ~tsgtcnstcabal, tsnthand2
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsntsam
+
 tsntstlh:
 	Inherits: ^BaseBuilding
 	Inherits@sell: ^TSSpawnActorsOnSell
@@ -2838,6 +3123,14 @@ tsntstlh:
 	ProvidesPrerequisite@buildingname:
 	RenderSprites:
 		PlayerPalette: playerra2
+
+tsntstlhcabal:
+	Inherits: tsntstlh
+	Buildable:
+		Prerequisites: ~tsgtcnstcabal, tscabaltech
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsntstlh
 
 tsntpulsgdi:
 	Inherits: ^BaseBuilding
@@ -2905,6 +3198,14 @@ tsntpulsnod:
 	Tooltip:
 		Name: E.M. Pulse Cannon
 
+tsntpulscabal:
+	Inherits: tsntpulsgdi
+	Buildable:
+		BuildPaletteOrder: 140
+		Prerequisites: ~tsgtcnstcabal, tsntradrcabal
+	Tooltip:
+		Name: E.M. Pulse Cannon
+
 tsntobel:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetGround
@@ -2963,6 +3264,14 @@ tsntobel:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+tsntobelcabal:
+	Inherits: tsntobel
+	Buildable:
+		Prerequisites: ~tsgtcnstcabal, tscabaltech
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsntobel
+
 tsobl2:
 	Inherits: ^Defense
 	Inherits@AUTOTARGET: ^AutoTargetAir
@@ -3018,6 +3327,14 @@ tsobl2:
 		Amount: -75
 	RenderSprites:
 		PlayerPalette: playerra2
+
+tsntobel2cabal:
+	Inherits: tsobl2
+	Buildable:
+		Prerequisites: ~tsgtcnstcabal, tscabaltech
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsobl2
 
 #######################################
 # TS Infantry Reporting!
@@ -3076,9 +3393,8 @@ TSE1.NOD:
 		Queue: Infantry, RAInfantry
 		Prerequisites: ~tsnthand
 	RenderSprites:
-		Image: tse1.nod
-	RenderSprites:
 		PlayerPalette: playerra2
+		Image: tse1.nod
 
 TSE1PARA:
 	Inherits: TSE1
@@ -3137,10 +3453,36 @@ TSENGINEER2:
 	RenderSprites:
 		Image: tsengineer
 	Voiced:
+		VoiceSet: TSInfantry
+	-TemporaryOwnerManager:
+	RenderSprites:
+		PlayerPalette: playerra2
+
+TSENGINEERMUTANT:
+	Inherits: TSENGINEER
+	Inherits@MC: ^MCImmune
+	Buildable:
+		Queue: Infantry, RAInfantry
+		Prerequisites: ~tsgtpile2
+	Voiced:
+		VoiceSet: TSInfantry
+	-TemporaryOwnerManager:
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsengineer
+
+TSENGINEECABAL:
+	Inherits: TSENGINEER
+	Inherits@MC: ^MCImmune
+	Buildable:
+		Queue: Infantry, RAInfantry
+		Prerequisites: ~tsnthand2
+	Voiced:
 		VoiceSet: TSCyborg
 	-TemporaryOwnerManager:
 	RenderSprites:
 		PlayerPalette: playerra2
+		Image: tsengineer
 
 TSE2:
 	Inherits: ^Soldier
@@ -3447,6 +3789,15 @@ TSE3:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+TSE3.MUTANT:
+	Inherits: TSE3
+	Buildable:
+		Queue: Infantry, RAInfantry
+		Prerequisites: ~tsgtpile2
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tse3
+
 elitcadre:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -3522,7 +3873,7 @@ TSCYBORG:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand2
 		BuildDurationModifier: 100
 		BuildDuration: 250
 		Queue: Infantry, RAInfantry
@@ -3689,6 +4040,15 @@ TSMHIJACK:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+TSMHIJACKMUTANT:
+	Inherits: TSMHIJACK
+	Buildable:
+		Queue: Infantry, RAInfantry
+		Prerequisites: ~tsgtpile2, tsgtweapmutant, tsgtradrmutant
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsmhijack
+
 TSREAPER:
 	Inherits: ^Walker
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -3707,7 +4067,7 @@ TSREAPER:
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 140
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand2, tscabaltech
 		Description: Cyborg walker armed with missiles and nets.\n Strong vs vehicles\n Can immobilize infantry
 		BuildDuration: 500
 		BuildDurationModifier: 100
@@ -3769,7 +4129,7 @@ TSCYC2:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 25
-		Prerequisites: ~tsnthand, tsnttech
+		Prerequisites: ~tsnthand2, tscabaltech
 		Queue: Infantry, RAInfantry
 		BuildLimit: 1
 		BuildDuration: 625
@@ -3813,7 +4173,7 @@ TSDissolver:
 		BuildPaletteOrder: 20
 		Queue: Infantry, RAInfantry
 		Description: Anti-Tank Walker\nDissolves mechanical parts to regenerate itself
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand2
 		IconPalette: ra2
 	Selectable:
 		Class: TSDissolver
@@ -3863,7 +4223,7 @@ TSUMAGON:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 95
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtpile2, tsfgttech
 		Queue: Infantry, RAInfantry
 		Description: Advanced anti-infantry unit.\nMaximum 10 can be trained.\n  Strong vs Infantry\n  Weak vs Vehicles
 		BuildLimit: 10
@@ -3956,6 +4316,15 @@ TSGHOST:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+TSGHOSTMUTANT:
+	Inherits: TSGHOST
+	Buildable:
+		Queue: Infantry, RAInfantry
+		Prerequisites: ~tsgtpile2, tsfgttech
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsghost
+
 tsghost.r4:
 	Inherits: TSGHOST
 	-Buildable:
@@ -4022,7 +4391,7 @@ TSMUTANT:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtpile2
 		BuildDuration: 68
 		BuildDurationModifier: 100
 		Queue: Infantry, RAInfantry
@@ -4078,7 +4447,7 @@ TSMWMN:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtpile2
 		Queue: Infantry, RAInfantry
 		Description: Mutant armed with a carbine.\nWeapon does high, precise damage.\n  Strong vs infantry, light vehicles\n  Weak vs tanks, aircraft
 		BuildDuration: 120
@@ -4138,7 +4507,7 @@ TSMUTANT3:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtpile2, tsgtradrmutant
 		Queue: Infantry, RAInfantry
 		Description: Elite mutant infantry, can use grenades.\n  Strong vs Infantry\n  Weak vs Vehicles
 		BuildDuration: 180
@@ -4186,7 +4555,7 @@ TSWEEDGUY:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtpile2, tsgtradrmutant
 		Queue: Infantry, RAInfantry
 		Description: Mutant soldier with a Tiberium weapon.\nCan attack air\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
@@ -4246,7 +4615,7 @@ TSDOGGIE:
 		BuildPaletteOrder: 25
 		BuildDurationModifier: 100
 		BuildDuration: 500
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtpile2, tsgtradrmutant
 		Queue: Infantry, RAInfantry
 		Description: Canine mutant that hurls Tiberium shards.\nCan attack aircraft\n Strong vs Vehicles\n Weak vs Infantry
 	Mobile:
@@ -4293,6 +4662,8 @@ TSDOGGIEW:
 
 TSMUTANTW:
 	Inherits: TSMUTANT
+	Buildable:
+		Prerequisites: ~TSMUTANTW
 	RenderSprites:
 		Image: tsmutant
 	AttackWander:
@@ -4517,6 +4888,52 @@ TSHARVNOD:
 	RenderSprites:
 		Image: tsharv
 
+TSHARVNOD:
+	Inherits: ^TDHARV
+	Inherits@Voxel: ^TSRenderVoxel
+	Health:
+		HP: 85000
+	Harvester:
+		PipCount: 8
+		Capacity: 35
+	Buildable:
+		Prerequisites: ~tsntweap, tsprocnod
+		Queue: Vehicle, RAVehicle
+		Description: Harvests Tiberium for processing
+	WithVoxelBody:
+	WithDockingAnimation:
+	Voiced:
+		VoiceSet: TSVehicle
+	DeliversCash:
+		Payload: 500
+	RenderVoxels:
+		Image: tsharv
+	RenderSprites:
+		Image: tsharv
+
+TSHARVCABAL:
+	Inherits: ^TDHARV
+	Inherits@Voxel: ^TSRenderVoxel
+	Health:
+		HP: 85000
+	Harvester:
+		PipCount: 8
+		Capacity: 35
+	Buildable:
+		Prerequisites: ~tsntweapcabal, tsproccabal
+		Queue: Vehicle, RAVehicle
+		Description: Harvests Tiberium for processing
+	WithVoxelBody:
+	WithDockingAnimation:
+	Voiced:
+		VoiceSet: TSVehicle
+	DeliversCash:
+		Payload: 500
+	RenderVoxels:
+		Image: tsharv
+	RenderSprites:
+		Image: tsharv
+
 #TSWEED:
 #	Inherits: HARV
 #	Inherits@Voxel: ^TSRenderVoxel
@@ -4576,7 +4993,7 @@ tsldrone:
 	Armament:
 		Weapon: TSEMPLimpetBomb
 	RenderVoxels:
-		Scale: 7.2
+		Scale: 15
 	-TemporaryOwnerManager:
 	Capturable:
 		Types: thiefproof
@@ -4756,7 +5173,7 @@ TSSAPC:
 		OverrideActor: tssapc
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~tsntweap
+		Prerequisites: ~tsntweap, tsntradr
 		Queue: Vehicle, RAVehicle
 		Description: Troop transport that can move\nunderground to avoid detection.\n  Unarmed
 	Mobile:
@@ -4793,6 +5210,16 @@ TSSAPC:
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
+
+TSSAPCCABAL:
+	Inherits: TSSAPC
+	Buildable:
+		Prerequisites: ~tsntweapcabal, tsntradrcabal
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tssapc
+	RenderVoxels:
+		Image: tssapc
 
 tssapc.mut:
 	Inherits: TSSAPC
@@ -4875,7 +5302,7 @@ TSMMCH:
 		MoveSequence: walk
 		ValidMovementTypes: Horizontal, Turn
 	RenderVoxels:
-		Scale: 5.0
+		Scale: 10
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -5046,7 +5473,7 @@ TSHVR:
 	Hovers:
 		RequiresCondition: !disabled
 	RenderVoxels:
-		Scale: 7.2
+		Scale: 15
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -5195,7 +5622,7 @@ TSHMEC:
 	DeliversCash:
 		Payload: 1500
 	RenderVoxels:
-		Scale: 10
+		Scale: 15
 	Passenger:
 		Weight: 10
 	Capturable:
@@ -5251,7 +5678,7 @@ TSSONIC:
 	DeliversCash:
 		Payload: 650
 	RenderVoxels:
-		Scale: 7.2
+		Scale: 15
 	-RangeMultiplier@usasearchndestroy:
 	RenderSprites:
 		PlayerPalette: playerra2
@@ -5402,6 +5829,16 @@ TSBIKE:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+TSBIKECABAL:
+	Inherits: TSBIKE
+	Buildable:
+		Prerequisites: ~tsntweapcabal
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsbike
+	RenderVoxels:
+		Image: tsbike
+
 TSSTNK:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -5415,7 +5852,7 @@ TSSTNK:
 		Name: Stealth Tank
 	Buildable:
 		BuildPaletteOrder: 150
-		Prerequisites: ~tsntweap
+		Prerequisites: ~tsntweap, tsnttech
 		Queue: Vehicle, RAVehicle
 		Description: Lightly armoured tank equipped with a \nstealth generator. Armed with missiles.\nCan be spotted by infantry at close range.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
@@ -5458,6 +5895,16 @@ TSSTNK:
 		ValidDamageStates: Critical
 	RenderSprites:
 		PlayerPalette: playerra2
+
+TSSTNKCABAL:
+	Inherits: TSSTNK
+	Buildable:
+		Prerequisites: ~tsntweapcabal, tscabaltech
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsstnk
+	RenderVoxels:
+		Image: tsstnk
 
 TSREPAIR:
 	Inherits: ^Tank
@@ -5507,6 +5954,16 @@ TSREPAIR:
 		ValidTargets: Vehicles
 	RenderSprites:
 		PlayerPalette: playerra2
+
+TSREPAIRCABAL:
+	Inherits: TSREPAIR
+	Buildable:
+		Prerequisites: ~tsntweapcabal, tsgtdeptcabal
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsrepair
+	RenderVoxels:
+		Image: tsrepair
 
 TSTTNK:
 	Inherits: ^Tank
@@ -5627,6 +6084,16 @@ TSTTNK:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+TSTTNKCABAL:
+	Inherits: TSTTNK
+	Buildable:
+		Prerequisites: ~tsntweapcabal
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsttnk
+	RenderVoxels:
+		Image: tsttnk
+
 TSART2:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -5640,7 +6107,7 @@ TSART2:
 		Name: Artillery
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~tsntweap
+		Prerequisites: ~tsntweap, tsntradr
 		Queue: Vehicle, RAVehicle
 		Description: Mobile artillery.\nImmobile when firing.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Mobile:
@@ -5696,6 +6163,15 @@ TSART2:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+TSART2CABAL:
+	Inherits: TSART2
+	Buildable:
+		Prerequisites: ~tsntweapcabal, tsntradrcabal
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsart2
+	RenderVoxels:
+		Image: tsart2
 
 TSSUBTANK:
 	Inherits: ^Tank
@@ -5711,7 +6187,7 @@ TSSUBTANK:
 		Name: Devil's Tongue
 	Buildable:
 		BuildPaletteOrder: 60
-		Prerequisites: ~tsntweap
+		Prerequisites: ~tsntweap, tsnttech
 		Queue: Vehicle, RAVehicle
 		Description: Subterranean flame tank.\nIs able to move underground.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks, Aircraft
 	Mobile:
@@ -5740,9 +6216,19 @@ TSSUBTANK:
 	DeliversCash:
 		Payload: 350
 	RenderVoxels:
-		Scale: 6.3
+		Scale: 15
 	RenderSprites:
 		PlayerPalette: playerra2
+
+TSSUBTANKCABAL:
+	Inherits: TSSUBTANK
+	Buildable:
+		Prerequisites: ~tsntweapcabal, tscabaltech
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tssubtank
+	RenderVoxels:
+		Image: tssubtank
 
 TSAPC:
 	Inherits: ^Tank
@@ -5827,7 +6313,7 @@ tssgen:
 		Name: Mobile Stealth Generator
 	Buildable:
 		BuildPaletteOrder: 120
-		Prerequisites: ~tsntweap
+		Prerequisites: ~tsntweap, tsntstlh
 		Queue: Vehicle, RAVehicle
 		Description: Cloaks nearby buildings and units.\nCan not be cloaked.\n Unarmed
 	Mobile:
@@ -5849,7 +6335,7 @@ tssgen:
 	DeliversCash:
 		Payload: 650
 	RenderVoxels:
-		Scale: 7.2
+		Scale: 15
 	ProximityExternalCondition@StealGen:
 		Range: 7c0
 		Condition: tscloak
@@ -5866,6 +6352,16 @@ tssgen:
 		Range: 7c0
 	RenderSprites:
 		PlayerPalette: playerra2
+
+tssgencabal:
+	Inherits: tssgen
+	Buildable:
+		Prerequisites: ~tsntweapcabal, tsntstlhcabal
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tssgen
+	RenderVoxels:
+		Image: tssgen
 
 tslpst:
 	Inherits: ^Tank
@@ -5897,12 +6393,22 @@ tslpst:
 	DeliversCash:
 		Payload: 650
 	RenderVoxels:
-		Scale: 7.2
+		Scale: 15
 	DetectCloaked:
 		Range: 12c0
 	RenderSprites:
 		Image: tslpst
 		PlayerPalette: playerra2
+
+tslpstcabal:
+	Inherits: tslpst
+	Buildable:
+		Prerequisites: ~tsntweapcabal, tsntradrcabal
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tslpst
+	RenderVoxels:
+		Image: tslpst
 
 tslpstnod:
 	Inherits: tslpst
@@ -5956,7 +6462,7 @@ tsmemp:
 		Payload: 500
 	RenderVoxels:
 		Image: tsm_emp
-		Scale: 7.2
+		Scale: 15
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -5978,7 +6484,7 @@ TSWINI2:
 		Name: Missile Van
 	Buildable:
 		BuildPaletteOrder: 100
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant
 		Queue: Vehicle, RAVehicle
 		Description: Light motor vehicle armed with\nlong range missiles.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 		BuildDuration: 300
@@ -6014,7 +6520,7 @@ TSWINI2:
 	DeliversCash:
 		Payload: 350
 	RenderVoxels:
-		Scale: 7.5
+		Scale: 15
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -6031,7 +6537,7 @@ TSCAR2:
 		Name: Raider Car
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant
 		Queue: Vehicle, RAVehicle
 		Description: Fast raiding vehicle.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
@@ -6067,7 +6573,7 @@ TSCAR2:
 	DeliversCash:
 		Payload: 175
 	RenderVoxels:
-		Scale: 8.5
+		Scale: 15
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -6084,7 +6590,7 @@ TS1TNK:
 		Name: Light Tank
 	Buildable:
 		BuildPaletteOrder: 170
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant
 		Queue: Vehicle, RAVehicle
 		Description: Fast, lightly armored tank.\n Strong vs Light Vehicles
 		BuildDuration: 250
@@ -6122,7 +6628,7 @@ TS1TNK:
 	DeliversCash:
 		Payload: 325
 	RenderVoxels:
-		Scale: 8.0
+		Scale: 15
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -6139,7 +6645,7 @@ TS2TNK:
 		Name: Medium Tank
 	Buildable:
 		BuildPaletteOrder: 180
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant, tsgtradrmutant
 		Queue: Vehicle, RAVehicle
 		Description: General-purpose Mutant tank.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
 		BuildDuration: 375
@@ -6178,7 +6684,7 @@ TS2TNK:
 	DeliversCash:
 		Payload: 400
 	RenderVoxels:
-		Scale: 8.8
+		Scale: 15
 
 TS3TNK:
 	Inherits: ^Tank
@@ -6193,7 +6699,7 @@ TS3TNK:
 		Name: Heavy Tank
 	Buildable:
 		BuildPaletteOrder: 190
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant, tsfgttech
 		Queue: Vehicle, RAVehicle
 		Description: Mutant heavy armor.\n Strong vs Vehicles\n Weak vs Aircraft, Infantry
 		BuildDuration: 550
@@ -6232,7 +6738,7 @@ TS3TNK:
 	DeliversCash:
 		Payload: 400
 	RenderVoxels:
-		Scale: 9.0
+		Scale: 15
 
 TSFTNK:
 	Inherits: ^Tank
@@ -6247,7 +6753,7 @@ TSFTNK:
 		Name: Flame Tank
 	Buildable:
 		BuildPaletteOrder: 50
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant
 		Queue: Vehicle, RAVehicle
 		Description: Mutant incendiary tank, restored from\nFirst Tiberium War inventories.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft
 	Mobile:
@@ -6292,7 +6798,7 @@ TS4TNK:
 		Name: Mammoth Tank
 	Buildable:
 		BuildPaletteOrder: 200
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant, tsfgttech
 		Queue: Vehicle, RAVehicle
 		BuildDuration: 1250
 		BuildDurationModifier: 100
@@ -6346,7 +6852,7 @@ TS4TNK:
 		StartIfBelow: 100
 		DamageCooldown: 1
 	RenderVoxels:
-		Scale: 9.8
+		Scale: 15
 
 TSARTY:
 	Inherits: ^Tank
@@ -6361,7 +6867,7 @@ TSARTY:
 		Name: Tank Killer
 	Buildable:
 		BuildPaletteOrder: 160
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant, tsgtradrmutant
 		Queue: Vehicle, RAVehicle
 		Description: Mutant long ranged vehicle with heavy sabot shells.\n Strong vs Vehicles, Buildings\n Weak vs Infantry, Aircraft
 	Mobile:
@@ -6395,7 +6901,7 @@ TSARTY:
 	DeliversCash:
 		Payload: 350
 	RenderVoxels:
-		Scale: 7.5
+		Scale: 15
 
 tsmlrs:
 	Inherits: ^Tank
@@ -6410,7 +6916,7 @@ tsmlrs:
 		Name: MLRS
 	Buildable:
 		BuildPaletteOrder: 160
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant, tsgtradrmutant
 		Queue: Vehicle, RAVehicle
 		Description: Mutant rocket artillery.\n Strong vs Infantry, Buildings\n Weak vs Vehicles
 	Mobile:
@@ -6448,7 +6954,7 @@ tsmlrs:
 	DeliversCash:
 		Payload: 350
 	RenderVoxels:
-		Scale: 7.5
+		Scale: 15
 
 tsm113:
 	Inherits: ^Tank
@@ -6467,7 +6973,7 @@ tsm113:
 		OverrideActor: tsm113
 	Buildable:
 		BuildPaletteOrder: 160
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgtweapmutant, tsgtpile2
 		Queue: Vehicle, RAVehicle
 		Description: Armored troop transport.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft
 	Mobile:
@@ -6501,7 +7007,7 @@ tsm113:
 		Payload: 350
 	RenderVoxels:
 		Image: tsm113
-		Scale: 7.5
+		Scale: 15
 	RenderSprites:
 		Image: tsm113
 	WithCargoPipsDecoration:
@@ -6533,7 +7039,7 @@ TST1000:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 40
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand2, tscabaltech
 		BuildDurationModifier: 50
 		BuildLimit: 1
 		Queue: Infantry, RAInfantry
@@ -6623,7 +7129,7 @@ TSDEFENDER:
 		BuildPaletteOrder: 140
 		BuildLimit: 1
 		BuildDurationModifier: 25
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsntweapcabal, tscore
 		Description: Superheavy CABAL epic unit.\n Strong vs ground targets
 	Mobile:
 		Speed: 50
@@ -6676,8 +7182,6 @@ TSDEFENDER:
 		RequiresCondition: ontiberium
 		BlinkInterval: 32
 		BlinkPattern: On, Off
-	RenderSprites:
-		Palette: player
 	QuantizeFacingsFromSequence:
 		Sequence: stand
 	WithInfantryBody:
@@ -6701,6 +7205,8 @@ TSDEFENDER:
 		ScanRadius: 10
 	Capturable:
 		Types: thiefproof
+	RenderSprites:
+		PlayerPalette: playerra2
 
 TSBIKE2:
 	Inherits: TSBIKE
@@ -6973,7 +7479,7 @@ TSORCAB:
 	SpawnActorOnDeath:
 		Actor: TSORCAB.Husk
 	RenderVoxels:
-		Scale: 7.4
+		Scale: 15
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
@@ -6995,7 +7501,7 @@ TSORCAB.Husk:
 		Image: tsorcab
 	RenderVoxels:
 		Image: tsorcab
-		Scale: 7.4
+		Scale: 15
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
@@ -7037,15 +7543,13 @@ TSTRNSPORT:
 		Range: 7c0
 		Type: CenterPosition
 	RenderSprites:
-	Selectable:
-		Bounds: 80085, 58240, 0, -14549
 	SpawnActorOnDeath:
 		Actor: TSTRNSPORT.Husk
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: TSHeli
 	RenderVoxels:
-		Scale: 7.4
+		Scale: 15
 
 TSTRNSPORT.Husk:
 	Inherits: ^PlaneHusk
@@ -7067,6 +7571,54 @@ TSTRNSPORT.Husk:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
 
+TSTRNSPORTMUTANT:
+	Inherits: ^Helicopter
+	Inherits@Voxel: ^TSRenderVoxel
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Carryall
+	Selectable:
+		Bounds: 1280, 1280
+		DecorationBounds: 1280, 1024
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Aircraft, RAAircraft
+		BuildPaletteOrder: 60
+		Prerequisites: ~tsgthpadmutant, tsgtdeptmutant
+		Description: VTOL aircraft capable of lifting\nand transporting vehicles.\n  Unarmed
+	Aircraft:
+		TurnSpeed: 80
+		Speed: 149
+		InitialFacing: 0
+		TakeoffSounds: dropup1.aud
+		LandingSounds: dropdwn1.aud
+	Carryall:
+		Voice: Move
+		LocalOffset: 0,0,-317
+		BeforeLoadDelay: 10
+		BeforeUnloadDelay: 10
+	-WithShadow:
+	Health:
+		HP: 17500
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+		Type: CenterPosition
+	RenderSprites:
+	SpawnActorOnDeath:
+		Actor: TSTRNSPORT.Husk
+	WithVoxelBody:
+	Voiced:
+		VoiceSet: TSHeli
+	RenderVoxels:
+		Scale: 15
+		Image: tstrnsport
+	RenderSprites:
+		Image: tstrnsport
+
 TSSCRIN:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -7081,7 +7633,7 @@ TSSCRIN:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		Prerequisites: ~tsnthpad
+		Prerequisites: ~tsnthpad, tsnttech, tsntradr
 		Queue: Aircraft, RAAircraft
 		Description: Advanced fighter-bomber craft\nwith twin plasma cannons.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
 	Aircraft:
@@ -7134,6 +7686,16 @@ TSSCRIN:
 		RequiresSelection: True
 		PipCount: 3
 
+TSSCRINCABAL:
+	Inherits: TSSCRIN
+	Buildable:
+		Prerequisites: ~tsnthpad2, tsntradrcabal, tscabaltech
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tsscrin
+	RenderVoxels:
+		Image: tsscrin
+
 TSSCRIN.Husk:
 	Inherits: ^PlaneHusk
 	Inherits@Voxel: ^TSRenderVoxel
@@ -7153,7 +7715,7 @@ TSSCRIN.Husk:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
 
-TSAPACHE:
+TSAPACHENOD:
 	Inherits: ^Helicopter
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -7219,12 +7781,164 @@ TSAPACHE:
 		RequiresCondition: !airborne
 		PauseOnCondition: disabled
 	RenderVoxels:
-		Scale: 7.4
+		Scale: 15
+		Image: tsapache
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
 		PipCount: 4
+	RenderSprites:
+		Image: tsapache
 
+TSAPACHEMUTANT:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@reload: ^RearmableAircraft
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Harpy
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~tsgthpadmutant, tsgtradrmutant, tsfgttech
+		Queue: Aircraft, RAAircraft
+		Description: Anti-personnel support gunship\narmed with dual chain guns.\n  Strong vs Infantry, Light armor, Aircraft\n  Weak vs Vehicles
+	Aircraft:
+		TurnSpeed: 80
+		Speed: 150
+	Health:
+		HP: 22500
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: TSHarpyClaw
+		LocalOffset: 0,0,0
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 80
+		PersistentTargeting: false
+		Voice: Attack
+		PauseOnCondition: disabled
+		AttackType: Hover
+	-WithShadow:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1536, 1536
+	WithVoxelBody:
+	Voiced:
+		VoiceSet: TSScrin
+	AmmoPool:
+		Ammo: 12
+		AmmoCondition: ammo
+		ReloadCount: 3
+	ReloadAmmoPool:
+		Delay: 25
+		Count: 1
+	SpawnActorOnDeath:
+		Actor: TSAPACHE.Husk
+	WithIdleOverlay@ROTORAIR:
+		Offset: 42,0,300
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTORGROUND:
+		Offset: 42,0,300
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	RenderVoxels:
+		Scale: 15
+		Image: tsapache
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 4
+	RenderSprites:
+		Image: tsapache
+
+TSAPACHECABAL:
+	Inherits: ^Helicopter
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@reload: ^RearmableAircraft
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Harpy
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~tsnthpad2
+		Queue: Aircraft, RAAircraft
+		Description: Anti-personnel support gunship\narmed with dual chain guns.\n  Strong vs Infantry, Light armor, Aircraft\n  Weak vs Vehicles
+	Aircraft:
+		TurnSpeed: 80
+		Speed: 150
+	Health:
+		HP: 22500
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 7c0
+		Type: GroundPosition
+	Armament@PRIMARY:
+		Weapon: TSHarpyClaw
+		LocalOffset: 0,0,0
+		PauseOnCondition: !ammo
+	AutoTarget:
+		ScanRadius: 5
+	AttackAircraft:
+		FacingTolerance: 80
+		PersistentTargeting: false
+		Voice: Attack
+		PauseOnCondition: disabled
+		AttackType: Hover
+	-WithShadow:
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 1536, 1536
+	WithVoxelBody:
+	Voiced:
+		VoiceSet: TSScrin
+	AmmoPool:
+		Ammo: 12
+		AmmoCondition: ammo
+		ReloadCount: 3
+	ReloadAmmoPool:
+		Delay: 25
+		Count: 1
+	SpawnActorOnDeath:
+		Actor: TSAPACHE.Husk
+	WithIdleOverlay@ROTORAIR:
+		Offset: 42,0,300
+		Sequence: rotor
+		RequiresCondition: airborne
+		PauseOnCondition: disabled
+	WithIdleOverlay@ROTORGROUND:
+		Offset: 42,0,300
+		Sequence: slow-rotor
+		RequiresCondition: !airborne
+		PauseOnCondition: disabled
+	RenderVoxels:
+		Scale: 15
+		Image: tsapache
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: True
+		PipCount: 4
+	RenderSprites:
+		Image: tsapache
 
 TSAPACHE.Husk:
 	Inherits: ^HelicopterHusk
@@ -7241,7 +7955,7 @@ TSAPACHE.Husk:
 		Image: tsapache
 	RenderVoxels:
 		Image: tsapache
-		Scale: 7.4
+		Scale: 15
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
@@ -7316,7 +8030,7 @@ TSHELI:
 		RequiresCondition: !airborne
 		PauseOnCondition: disabled
 	RenderVoxels:
-		Scale: 8.0
+		Scale: 15
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
@@ -7338,7 +8052,7 @@ TSHELI.Husk:
 		Image: tsheli
 	RenderVoxels:
 		Image: tsheli
-		Scale: 8.0
+		Scale: 15
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
@@ -7357,7 +8071,7 @@ TSHIND:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsgthpadmutant
 		Queue: Aircraft, RAAircraft
 		Description: Anti-personnel support gunship\narmed with dual chain guns.\n  Strong vs Infantry, Light armor, Aircraft\n  Weak vs Vehicles
 	Aircraft:
@@ -7409,7 +8123,7 @@ TSHIND:
 		RequiresCondition: !airborne
 		PauseOnCondition: disabled
 	RenderVoxels:
-		Scale: 8.0
+		Scale: 15
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
@@ -7431,7 +8145,7 @@ TSHIND.Husk:
 		Image: tshind
 	RenderVoxels:
 		Image: tshind
-		Scale: 8.0
+		Scale: 15
 	-WithShadow:
 	-Cloak@TDcloak:
 	-Cloak@TScloak:
@@ -7490,7 +8204,7 @@ TSTRAN:
 	SpawnActorOnDeath:
 		Actor: TSTRAN.Husk
 	RenderVoxels:
-		Scale: 8.0
+		Scale: 15
 	WithCargoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -7510,7 +8224,7 @@ TSTRAN.Husk:
 		Image: tstran
 	RenderVoxels:
 		Image: tstran
-		Scale: 8.0
+		Scale: 15
 
 TSARND:
 	Inherits: ^Soldier
@@ -7523,7 +8237,7 @@ TSARND:
 		Name: Eliminator 800
 	Buildable:
 		BuildPaletteOrder: 10
-		Prerequisites: ~scmarine
+		Prerequisites: ~tsnthand2
 		BuildDurationModifier: 100
 		BuildDuration: 250
 		Queue: Infantry, RAInfantry
