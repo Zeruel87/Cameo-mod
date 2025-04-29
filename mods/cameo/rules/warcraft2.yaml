@@ -306,7 +306,7 @@ Player:
 	Inherits@ANNOUNCE: ^AnnounceOnBuild
 	Inherits@EXT: ^ExternalConditions
 	Mobile:
-		TurnSpeed: 2048
+		TurnSpeed: 25
 	DeathSounds:
 	-FireWarheadsOnDeath:
 	AttackFrontal:
@@ -922,6 +922,7 @@ WC2 SPELL/STATUS EFFECT INHERITABLES
 ####################################################################################################
 
 ^wc2_townhall:
+	Inherits: ^BaseBuilding
 	Inherits@shape: ^3x4Shape
 	Inherits@exits: ^WC2Exits_3x3
 	Inherits@ai: ^AIConyardCash
@@ -1931,95 +1932,324 @@ WC2 SPELL/STATUS EFFECT INHERITABLES
 # WC2 HUMAN BUILDINGS
 ####################################################################################################
 
+# wc2_human_townhall:
+# 	Inherits@WC2BUILDING: ^WC2HumanBuilding
+# 	Inherits@wc2_townhall: ^wc2_townhall
+# 	Tooltip:
+# 		Name: Town Hall
+# 	SpawnActorsOnSell:
+# 		ActorTypes: wc2_human_footman
+# 	Transforms:
+# 		IntoActor: wc2_human_mcv
+# 	Voiced:
+# 		VoiceSet: humantownhallvoice
+
+# 	# ### AI related stuff ###
+# 	# GrantConditionOnBotOwner@AIFarms:
+# 	# 	Condition: wc2_cond_bot_owner
+# 	# 	Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce, defenseai
+# 	# ProvidesPrerequisite@AIFarms:
+# 	# 	Prerequisite: wc2_human_farm_ai
+# 	# 	RequiresCondition: wc2_cond_bot_owner
+
+# 	### Upgrade stuff ###
+# 	# Un upgraded sprite
+# 	WithSpriteBody:
+# 		RequiresCondition: !wc2_human_keep && !wc2_human_castle
+
+# 	# Keep upgrade
+# 	GrantConditionOnPrerequisite@keep:
+# 		Condition: wc2_human_keep
+# 		Prerequisites: wc2_human_keep
+# 	WithSpriteBody@keep:
+# 		Sequence: wc2_human_keep
+# 		RequiresCondition: wc2_human_keep && !wc2_human_castle
+# 	DamageMultiplier@keep:
+# 		Modifier: 80
+# 		RequiresCondition: wc2_human_keep
+# 	PowerMultiplier@keep:
+# 		Modifier: 200
+# 		RequiresCondition: wc2_human_keep
+# 	# WithTextDecoration@keep:
+# 	# 	Text: humankeepupg
+# 	# 	RequiresCondition: humankeepupg
+
+# 	# Castle Upgrade
+# 	GrantConditionOnPrerequisite@castle:
+# 		Condition: wc2_human_castle
+# 		Prerequisites: wc2_human_castle
+# 	WithSpriteBody@castle:
+# 		Sequence: wc2_human_castle
+# 		RequiresCondition: wc2_human_castle
+# 	DamageMultiplier@castle:
+# 		Modifier: 80
+# 		RequiresCondition: wc2_human_castle
+# 	PowerMultiplier@castle:
+# 		Modifier: 200
+# 		RequiresCondition: wc2_human_castle
+# 	# WithTextDecoration@castle:
+# 	# 	Text: humancastleupg
+# 	# 	RequiresCondition: humancastleupg
+# 	# 	Position: BottomLeft
+
+# wc2_human_townhall:
+# 	Inherits: ^BaseBuilding
+# 	Inherits@ref: ^Refinery
+# 	Inherits@shape: ^3x2Shape
+# 	Inherits@CPQWP: ^CPQConditionWithPrimary
+# 	Inherits@aicash: ^AIConyardCash
+# 	Inherits@radar: ^RadarBuilding
+# 	Inherits@conyard: ^Conyard
+# 	Selectable:
+# 		Bounds: 3072, 2560, 0, 0
+# 		DecorationBounds: 3072, 2560, 0, 0
+# 	Valued:
+# 		Cost: 2000
+# 	Power:
+# 		Amount: 100
+# 	Tooltip:
+# 		Name: Town Hall
+# 		RequiresCondition: !wc2_human_townhall && !wc2_human_castle
+# 	Tooltip@2:
+# 		Name: Keep
+# 		RequiresCondition: wc2_human_townhall && !wc2_human_castle
+# 	Tooltip@3:
+# 		Name: Castle
+# 		RequiresCondition: wc2_human_castle
+# 	Building:
+# 		Footprint: xxx xxx ===
+# 		Dimensions: 3,3
+# 		LocalCenterOffset: 0,-512,0
+# 	ProductionQueue@Building:
+# 		LowPowerModifier: 100
+# 	ProductionQueue@Defense:
+# 		LowPowerModifier: 100
+# 	ProvidesPrerequisite@buildingname:
+# 	ProvidesPrerequisite@wc2_human_townhall:
+# 		Prerequisite: wc2_human_townhall
+# 		RequiresCondition: wc2_human_townhall
+# 	ProvidesPrerequisite@wc2_human_castle:
+# 		Prerequisite: wc2_human_castle
+# 		RequiresCondition: wc2_human_castle
+# 	ProvidesPrerequisite@keepupgradeavailable:
+# 		Prerequisite: keepupgradeavailable
+# 		RequiresCondition: !wc2_human_townhall
+# 	ProvidesPrerequisite@castleupgradeavailable:
+# 		Prerequisite: castleupgradeavailable
+# 		RequiresCondition: !wc2_human_castle
+# 	Pluggable:
+# 		Offset: 0,0
+# 		Conditions:
+# 			schatchery: wc2_human_townhall
+# 		Requirements:
+# 			schatchery: !wc2_human_townhall
+# 	Pluggable@2:
+# 		Offset: 0,0
+# 		Conditions:
+# 			sclair: wc2_human_castle
+# 		Requirements:
+# 			sclair: !wc2_human_castle
+# 	WithSpriteBody@townhall:
+# 		RequiresCondition: !wc2_human_townhall && !wc2_human_castle
+# 	WithSpriteBody@keep:
+# 		Sequence: wc2_human_keep
+# 		Name: keep
+# 		RequiresCondition: wc2_human_townhall && !wc2_human_castle
+# 	WithSpriteBody@castle:
+# 		Sequence: wc2_human_castle
+# 		Name: castle
+# 		RequiresCondition: wc2_human_castle
+# 	DamageMultiplier@keep:
+# 		Modifier: 75
+# 		RequiresCondition: wc2_human_townhall && !wc2_human_castle
+# 	DamageMultiplier@castle:
+# 		Modifier: 50
+# 		RequiresCondition: wc2_human_castle
+# 	RallyPoint: ##########
+# 		Path: 0,2
+# 	Exit@1:
+# 		SpawnOffset: -1024,1024,0 #-1323,1280,0
+# 		ExitCell: 0,2
+# 		Facing: 540
+# 	ProvidesRadar:
+# 		RequiresCondition: !jammed
+# 	Refinery:
+# 	DockHost:
+# 		DockAngle: 256
+# 		DockOffset: 0, 1c512, 0
+# 	Selectable:
+# 		Bounds: 3072, 2560, 0, 0
+# 		DecorationBounds: 3072, 2560, 0, 0
+# 	WithResourceStoragePipsDecoration:
+# 		Position: BottomLeft
+# 		RequiresSelection: true
+# 		PipCount: 10
+# 		FullSequence: pip-yellow
+# 	Transforms:
+# 		IntoActor: wc2_human_mcv
+
 wc2_human_townhall:
-	Inherits@WC2BUILDING: ^WC2HumanBuilding
-	Inherits@wc2_townhall: ^wc2_townhall
+	Inherits: ^BaseBuilding
+	Inherits@ref: ^Refinery
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@aicash: ^AIConyardCash
+	Inherits@bot: ^BotMicromanageable
+	Inherits@breedfaster: ^SCBREEDFASTER
+	Inherits@conyard: ^Conyard
 	Tooltip:
 		Name: Town Hall
-	SpawnActorsOnSell:
-		ActorTypes: wc2_human_footman
-	Transforms:
-		IntoActor: wc2_human_mcv
-	Voiced:
-		VoiceSet: humantownhallvoice
-
-	# ### AI related stuff ###
-	# GrantConditionOnBotOwner@AIFarms:
-	# 	Condition: wc2_cond_bot_owner
-	# 	Bots: easiest, easy, medium, hard, brutal, challenger, unbeatable, cameogod, airforce, defenseai
-	# ProvidesPrerequisite@AIFarms:
-	# 	Prerequisite: wc2_human_farm_ai
-	# 	RequiresCondition: wc2_cond_bot_owner
-
-	### Upgrade stuff ###
-	# Un upgraded sprite
-	WithSpriteBody:
+		RequiresCondition: !wc2_human_townhall && !wc2_human_castle
+	Tooltip@2:
+		Name: Keep
+		RequiresCondition: wc2_human_keep && !wc2_human_castle
+	Tooltip@3:
+		Name: Castle
+		RequiresCondition: wc2_human_castle
+	Selectable:
+		Bounds: 3072, 2048
+		DecorationBounds: 3300, 2448, 0, 0
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@wc2_human_keep:
+		Prerequisite: wc2_human_keep
+		RequiresCondition: wc2_human_keep
+	ProvidesPrerequisite@wc2_human_castle:
+		Prerequisite: wc2_human_castle
+		RequiresCondition: wc2_human_castle
+	ProvidesPrerequisite@keepupgradeavailable:
+		Prerequisite: keepupgradeavailable
+		RequiresCondition: !wc2_human_keep
+	ProvidesPrerequisite@castleupgradeavailable:
+		Prerequisite: castleupgradeavailable
+		RequiresCondition: !wc2_human_castle
+	Pluggable:
+		Offset: 0,0
+		Conditions:
+			wc2_human_townhall: wc2_human_keep
+		Requirements:
+			wc2_human_townhall: !wc2_human_keep
+	Pluggable@2:
+		Offset: 0,0
+		Conditions:
+			wc2_human_keep: wc2_human_castle
+		Requirements:
+			wc2_human_keep: !wc2_human_castle
+	WithSpriteBody@keep:
 		RequiresCondition: !wc2_human_keep && !wc2_human_castle
-
-	# Keep upgrade
-	GrantConditionOnPrerequisite@keep:
-		Condition: wc2_human_keep
-		Prerequisites: wc2_human_keep
 	WithSpriteBody@keep:
 		Sequence: wc2_human_keep
+		Name: keep
 		RequiresCondition: wc2_human_keep && !wc2_human_castle
-	DamageMultiplier@keep:
-		Modifier: 80
-		RequiresCondition: wc2_human_keep
-	PowerMultiplier@keep:
-		Modifier: 200
-		RequiresCondition: wc2_human_keep
-	# WithTextDecoration@keep:
-	# 	Text: humankeepupg
-	# 	RequiresCondition: humankeepupg
-
-	# Castle Upgrade
-	GrantConditionOnPrerequisite@castle:
-		Condition: wc2_human_castle
-		Prerequisites: wc2_human_castle
 	WithSpriteBody@castle:
 		Sequence: wc2_human_castle
+		Name: castle
 		RequiresCondition: wc2_human_castle
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: zchrdy00.aud
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil ##########
+	DamageMultiplier@keep:
+		Modifier: 75
+		RequiresCondition: wc2_human_townhall && !wc2_human_castle
 	DamageMultiplier@castle:
-		Modifier: 80
+		Modifier: 50
 		RequiresCondition: wc2_human_castle
-	PowerMultiplier@castle:
-		Modifier: 200
-		RequiresCondition: wc2_human_castle
-	# WithTextDecoration@castle:
-	# 	Text: humancastleupg
-	# 	RequiresCondition: humancastleupg
-	# 	Position: BottomLeft
+	GrantConditionOnPowerState@supply:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	ProvidesPrerequisite@supplylimit:
+		Prerequisite: supplylimit
+		RequiresCondition: lowpower
+	RallyPoint: ##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0 #-1323,1280,0
+		ExitCell: 0,2
+		Facing: 540
+	ProvidesRadar:
+		RequiresCondition: !jammed
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi, hatchery
+	WithMakeAnimation:
+	-WithDeathAnimation:
+	Refinery:
+	DockHost:
+		DockAngle: 256
+		DockOffset: 0, 1c512, 0
+	Sellable:
+	Refinery:
+		DockOffset: 0,2
+	StoresResources:
+		Capacity: 1000
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+		FullSequence: pip-yellow
+	Transforms:
+		IntoActor: wc2_human_mcv
 
 wc2_human_keep:
-	Inherits: ^researched_upgrade.template
+	Inherits: ^BuildingPlug
 	Tooltip:
 		Name: Keep
 	Valued:
-		Cost: 5000
+		Cost: 1400
 	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~!wc2_human_keep, ~wc2_human_barracks
-		Queue: Addons
+		BuildPaletteOrder: 80
+		Queue: Defence, RADefence
+		Prerequisites:  ~wc2_human_townhall, keepupgradeavailable
 		Description: Unlocks more advanced buildings.
-		Icon: icon
-	RenderSprites:
-	ProvidesPrerequisite:
+	Plug:
+		Type: wc2_human_townhall
 
 wc2_human_castle:
-	Inherits: ^researched_upgrade.template
+	Inherits: ^BuildingPlug
 	Tooltip:
 		Name: Castle
 	Valued:
-		Cost: 5000
+		Cost: 2000
 	Buildable:
-		BuildPaletteOrder: 21
-		Prerequisites: ~wc2_human_keep, wc2_human_elven_lumber_mill, wc2_human_blacksmith, wc2_human_stables
-		Queue: Addons
-		Description: Unlocks even more advanced buildings.
-		Icon: icon
-	RenderSprites:
-	ProvidesPrerequisite:
+		BuildPaletteOrder: 80
+		Queue: Defence, RADefence
+		Prerequisites: ~wc2_human_keep, castleupgradeavailable
+		Description: Unlocks more advanced buildings.
+	Plug:
+		Type: wc2_human_keep
+
+# wc2_human_keep:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Keep
+# 	Valued:
+# 		Cost: 5000
+# 	Buildable:
+# 		BuildPaletteOrder: 20
+# 		Prerequisites: ~!wc2_human_keep, ~wc2_human_barracks
+# 		Queue: Addons
+# 		Description: Unlocks more advanced buildings.
+# 		Icon: icon
+# 	RenderSprites:
+# 	ProvidesPrerequisite:
+
+# wc2_human_castle:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Castle
+# 	Valued:
+# 		Cost: 5000
+# 	Buildable:
+# 		BuildPaletteOrder: 21
+# 		Prerequisites: ~wc2_human_keep, wc2_human_elven_lumber_mill, wc2_human_blacksmith, wc2_human_stables
+# 		Queue: Addons
+# 		Description: Unlocks even more advanced buildings.
+# 		Icon: icon
+# 	RenderSprites:
+# 	ProvidesPrerequisite:
 
 wc2_human_farm:
 	Inherits@WC2BUILDING: ^WC2HumanBuilding
@@ -3262,87 +3492,270 @@ wc2_human_gryphon_rider:
 # WC2 ORC BUILDINGS
 ####################################################################################################
 
+# wc2_orc_greathall:
+# 	Inherits@WC2BUILDING: ^WC2OrcBuilding
+# 	Inherits@wc2_townhall: ^wc2_townhall
+# 	Tooltip:
+# 		Name: Great Hall
+# 	SpawnActorsOnSell:
+# 		ActorTypes: wc2_orc_grunt
+# 	Transforms:
+# 		IntoActor: wc2_orc_mcv
+# 	Voiced:
+# 		VoiceSet: orctownhallvoice
+
+# 	### Upgrade stuff ###
+# 	# Un upgraded sprite
+# 	WithSpriteBody:
+# 		RequiresCondition: !wc2_orc_stronghold && !wc2_orc_fortress
+
+# 	# Stronghold upgrade
+# 	GrantConditionOnPrerequisite@stronghold:
+# 		Condition: wc2_orc_stronghold
+# 		Prerequisites: wc2_orc_stronghold
+# 	WithSpriteBody@stronghold:
+# 		Sequence: wc2_orc_stronghold
+# 		RequiresCondition: wc2_orc_stronghold && !wc2_orc_fortress
+# 	DamageMultiplier@stronghold:
+# 		Modifier: 80
+# 		RequiresCondition: wc2_orc_stronghold
+# 	PowerMultiplier@stronghold:
+# 		Modifier: 200
+# 		RequiresCondition: wc2_orc_stronghold
+# 	# WithTextDecoration@stronghold:
+# 	# 	Text: orcstrongholdupg
+# 	# 	RequiresCondition: orcstrongholdupg
+
+# 	# Fortress Upgrade
+# 	GrantConditionOnPrerequisite@fortress:
+# 		Condition: wc2_orc_fortress
+# 		Prerequisites: wc2_orc_fortress
+# 	WithSpriteBody@fortress:
+# 		Sequence: wc2_orc_fortress
+# 		RequiresCondition: wc2_orc_fortress
+# 	DamageMultiplier@fortress:
+# 		Modifier: 80
+# 		RequiresCondition: wc2_orc_fortress
+# 	PowerMultiplier@fortress:
+# 		Modifier: 200
+# 		RequiresCondition: wc2_orc_fortress
+# 	# WithTextDecoration@fortress:
+# 	# 	Text: orcfortressupg
+# 	# 	RequiresCondition: orcfortressupg
+# 	# 	Position: BottomLeft
+
+# wc2_orc_greathall:
+# 	Inherits: ^BaseBuilding
+# 	Inherits@ref: ^Refinery
+# 	Inherits@shape: ^3x2Shape
+# 	Inherits@CPQWP: ^CPQConditionWithPrimary
+# 	Inherits@aicash: ^AIConyardCash
+# 	Inherits@radar: ^RadarBuilding
+# 	Inherits@conyard: ^Conyard
+# 	Inherits@POWERDOWN: ^DisableOnPowerDown
+# 	Selectable:
+# 		Bounds: 3072, 2560, 0, 0
+# 		DecorationBounds: 3072, 2560, 0, 0
+# 	Valued:
+# 		Cost: 2000
+# 	Power:
+# 		Amount: 100
+# 	Tooltip:
+# 		Name: Great Hall
+# 	Building:
+# 		Footprint: xxx xxx ===
+# 		Dimensions: 3,3
+# 		LocalCenterOffset: 0,-512,0
+# 	ProductionQueue@Building:
+# 		LowPowerModifier: 100
+# 	ProductionQueue@Defense:
+# 		LowPowerModifier: 100
+# 	ProvidesPrerequisite@buildingname:
+# 	RallyPoint: ##########
+# 		Path: 0,2
+# 	Exit@1:
+# 		SpawnOffset: -1024,1024,0 #-1323,1280,0
+# 		ExitCell: 0,2
+# 		Facing: 540
+# 	ProvidesRadar:
+# 		RequiresCondition: !jammed
+# 	Refinery:
+# 	DockHost:
+# 		DockAngle: 256
+# 		DockOffset: 0, 1c512, 0
+# 	Selectable:
+# 		Bounds: 3072, 2560, 0, 0
+# 		DecorationBounds: 3072, 2560, 0, 0
+# 	WithResourceStoragePipsDecoration:
+# 		Position: BottomLeft
+# 		RequiresSelection: true
+# 		PipCount: 10
+# 		FullSequence: pip-yellow
+# 	Transforms:
+# 		IntoActor: wc2_orc_mcv
+
+# wc2_orc_stronghold:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Stronghold
+# 	Valued:
+# 		Cost: 5000
+# 	Buildable:
+# 		BuildPaletteOrder: 20
+# 		Prerequisites: ~!wc2_orc_stronghold, ~wc2_orc_barracks
+# 		Queue: Addons
+# 		Description: Unlocks more advanced buildings.
+# 		Icon: icon
+# 	RenderSprites:
+# 	ProvidesPrerequisite:
+
+# wc2_orc_fortress:
+# 	Inherits: ^researched_upgrade.template
+# 	Tooltip:
+# 		Name: Fortress
+# 	Valued:
+# 		Cost: 5000
+# 	Buildable:
+# 		BuildPaletteOrder: 21
+# 		Prerequisites: ~wc2_orc_stronghold, wc2_orc_troll_lumber_mill, wc2_orc_blacksmith, wc2_orc_ogre_mound
+# 		Queue: Addons
+# 		Description: Unlocks even more advanced buildings.
+# 		Icon: icon
+# 	RenderSprites:
+# 	ProvidesPrerequisite:
+
 wc2_orc_greathall:
-	Inherits@WC2BUILDING: ^WC2OrcBuilding
-	Inherits@wc2_townhall: ^wc2_townhall
+	Inherits: ^BaseBuilding
+	Inherits@ref: ^Refinery
+	Inherits@shape: ^3x2Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@aicash: ^AIConyardCash
+	Inherits@bot: ^BotMicromanageable
+	Inherits@breedfaster: ^SCBREEDFASTER
+	Inherits@conyard: ^Conyard
 	Tooltip:
 		Name: Great Hall
-	SpawnActorsOnSell:
-		ActorTypes: wc2_orc_grunt
-	Transforms:
-		IntoActor: wc2_orc_mcv
-	Voiced:
-		VoiceSet: orctownhallvoice
-
-	### Upgrade stuff ###
-	# Un upgraded sprite
+		RequiresCondition: !wc2_orc_greathall && !wc2_orc_fortress
+	Tooltip@2:
+		Name: Stronghold
+		RequiresCondition: wc2_orc_stronghold && !wc2_orc_fortress
+	Tooltip@3:
+		Name: Fortress
+		RequiresCondition: wc2_orc_fortress
+	Selectable:
+		Bounds: 3072, 2048
+		DecorationBounds: 3300, 2448, 0, 0
+	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@wc2_orc_stronghold:
+		Prerequisite: wc2_orc_stronghold
+		RequiresCondition: wc2_orc_stronghold
+	ProvidesPrerequisite@wc2_orc_fortress:
+		Prerequisite: wc2_orc_fortress
+		RequiresCondition: wc2_orc_fortress
+	ProvidesPrerequisite@strongholdupgradeavailable:
+		Prerequisite: strongholdupgradeavailable
+		RequiresCondition: !wc2_orc_stronghold
+	ProvidesPrerequisite@fortressupgradeavailable:
+		Prerequisite: fortressupgradeavailable
+		RequiresCondition: !wc2_orc_fortress
+	Pluggable:
+		Offset: 0,0
+		Conditions:
+			wc2_orc_greathall: wc2_orc_stronghold
+		Requirements:
+			wc2_orc_greathall: !wc2_orc_stronghold
+	Pluggable@2:
+		Offset: 0,0
+		Conditions:
+			wc2_orc_stronghold: wc2_orc_fortress
+		Requirements:
+			wc2_orc_stronghold: !wc2_orc_fortress
 	WithSpriteBody:
 		RequiresCondition: !wc2_orc_stronghold && !wc2_orc_fortress
-
-	# Stronghold upgrade
-	GrantConditionOnPrerequisite@stronghold:
-		Condition: wc2_orc_stronghold
-		Prerequisites: wc2_orc_stronghold
-	WithSpriteBody@stronghold:
+	WithSpriteBody@keep:
 		Sequence: wc2_orc_stronghold
+		Name: stronghold
 		RequiresCondition: wc2_orc_stronghold && !wc2_orc_fortress
-	DamageMultiplier@stronghold:
-		Modifier: 80
-		RequiresCondition: wc2_orc_stronghold
-	PowerMultiplier@stronghold:
-		Modifier: 200
-		RequiresCondition: wc2_orc_stronghold
-	# WithTextDecoration@stronghold:
-	# 	Text: orcstrongholdupg
-	# 	RequiresCondition: orcstrongholdupg
-
-	# Fortress Upgrade
-	GrantConditionOnPrerequisite@fortress:
-		Condition: wc2_orc_fortress
-		Prerequisites: wc2_orc_fortress
-	WithSpriteBody@fortress:
+	WithSpriteBody@castle:
 		Sequence: wc2_orc_fortress
+		Name: fortress
 		RequiresCondition: wc2_orc_fortress
-	DamageMultiplier@fortress:
-		Modifier: 80
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+		BuildSounds: zchrdy00.aud
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil ##########
+	DamageMultiplier@keep:
+		Modifier: 75
+		RequiresCondition: wc2_orc_greathall && !wc2_orc_fortress
+	DamageMultiplier@castle:
+		Modifier: 50
 		RequiresCondition: wc2_orc_fortress
-	PowerMultiplier@fortress:
-		Modifier: 200
-		RequiresCondition: wc2_orc_fortress
-	# WithTextDecoration@fortress:
-	# 	Text: orcfortressupg
-	# 	RequiresCondition: orcfortressupg
-	# 	Position: BottomLeft
+	GrantConditionOnPowerState@supply:
+		Condition: lowpower
+		ValidPowerStates: Low, Critical
+	ProvidesPrerequisite@supplylimit:
+		Prerequisite: supplylimit
+		RequiresCondition: lowpower
+	RallyPoint: ##########
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -1024,1024,0 #-1323,1280,0
+		ExitCell: 0,2
+		Facing: 540
+	ProvidesRadar:
+		RequiresCondition: !jammed
+	ExternalCondition@JAMMED:
+		Condition: jammed
+	GivesBuildableArea: ##########
+		AreaTypes: building, cityi, hatchery
+	WithMakeAnimation:
+	-WithDeathAnimation:
+	Refinery:
+	DockHost:
+		DockAngle: 256
+		DockOffset: 0, 1c512, 0
+	Sellable:
+	Refinery:
+		DockOffset: 0,2
+	StoresResources:
+		Capacity: 1000
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+		FullSequence: pip-yellow
+	Transforms:
+		IntoActor: wc2_orc_mcv
 
 wc2_orc_stronghold:
-	Inherits: ^researched_upgrade.template
+	Inherits: ^BuildingPlug
 	Tooltip:
-		Name: Stronghold
+		Name: Keep
 	Valued:
-		Cost: 5000
+		Cost: 1400
 	Buildable:
-		BuildPaletteOrder: 20
-		Prerequisites: ~!wc2_orc_stronghold, ~wc2_orc_barracks
-		Queue: Addons
+		BuildPaletteOrder: 80
+		Queue: Defence, RADefence
+		Prerequisites:  ~wc2_orc_greathall, strongholdupgradeavailable
 		Description: Unlocks more advanced buildings.
-		Icon: icon
-	RenderSprites:
-	ProvidesPrerequisite:
+	Plug:
+		Type: wc2_orc_greathall
 
 wc2_orc_fortress:
-	Inherits: ^researched_upgrade.template
+	Inherits: ^BuildingPlug
 	Tooltip:
-		Name: Fortress
+		Name: Castle
 	Valued:
-		Cost: 5000
+		Cost: 2000
 	Buildable:
-		BuildPaletteOrder: 21
-		Prerequisites: ~wc2_orc_stronghold, wc2_orc_troll_lumber_mill, wc2_orc_blacksmith, wc2_orc_ogre_mound
-		Queue: Addons
-		Description: Unlocks even more advanced buildings.
-		Icon: icon
-	RenderSprites:
-	ProvidesPrerequisite:
+		BuildPaletteOrder: 80
+		Queue: Defence, RADefence
+		Prerequisites: ~wc2_orc_stronghold, fortressupgradeavailable
+		Description: Unlocks more advanced buildings.
+	Plug:
+		Type: wc2_orc_stronghold
 
 wc2_orc_pigfarm:
 	Inherits@WC2BUILDING: ^WC2OrcBuilding
