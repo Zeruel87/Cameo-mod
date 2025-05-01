@@ -558,20 +558,25 @@ World:
 	Shielded:
 		DamageRegenDelay: 125
 		RegenInterval: 1
-		ShieldsUpCondition: japan_shielded
-		RequiresCondition: !disabled && up_stealthsuitintegration
+		ShieldsUpCondition: shielded
+		RequiresCondition: !disabled && (up_stealthsuitintegration || shieldgen)
 		SelectionBarColor: 8888FFFF
+	GrantCondition@shieldpermanent:
+		Condition: shieldpermanent
+		RequiresCondition: up_stealthsuitintegration
 	ChangesShield@personal_shield:
 		Step: 30
 		Delay: 1
 		StartIfBelow: 100
-		DamageCooldown: 1
+		DamageCooldown: 125
 		RequiresCondition: up_stealthsuitintegration
+	Armor:
+		RequiresCondition: !shielded
 	Armor@shielded:
 		Type: Shield
-		RequiresCondition: japan_shielded
-	DamageMultiplier@japan_shielded:
-		RequiresCondition: japan_shielded
+		RequiresCondition: shielded
+	DamageMultiplier@shielded:
+		RequiresCondition: shielded
 		Modifier: 90
 	GrantConditionOnPrerequisite@up_stealthsuitintegration:
 		Condition: up_stealthsuitintegration
@@ -738,6 +743,7 @@ DOG:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 29
 		Prerequisites: ~barr, ~!upcyberdog
+		BuildAtProductionType: Dog
 		Description: actor-dog.description
 	Valued:
 		Cost: 200
@@ -5594,10 +5600,12 @@ KENN:
 	Inherits: ^BaseBuilding
 	Inherits@sell: ^RASovietSpawnActorsOnSell
 	Inherits@shape: ^1x1Shape
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@barr: ^IsDogKennel
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 175
-		Prerequisites: ~rafact.soviets, barr, ~wip
+		Prerequisites: ~rafact.soviet, rabarracks, ~disabled
 		Description: Trains Attack Dogs.
 	Valued:
 		Cost: 200
@@ -9337,7 +9345,8 @@ cyberdog:
 	Buildable:
 		Queue: Infantry, RAInfantry
 		BuildPaletteOrder: 29
-		Prerequisites: ~upcyberdog
+		Prerequisites: ~upcyberdog, ~barr
+		BuildAtProductionType: Dog
 		Description: Cybernetically modified dog that is far more durable and can attack vehicles.
 	Valued:
 		Cost: 1000
