@@ -18,7 +18,7 @@ World:
 		Side: StarCraft
 		Description: Zerg\nFeatures:\n- Units consume power (supply)\n- Unit production pauses on low power\n- Buildings and defenses do not require power to operate\n- Relatively powerful units\nSupport powers: Nuclear Strike
 	FactionCA@RandomSC:
-		Name: Any
+		Name: Any StarCraft
 		InternalName: RandomSC
 		RandomFactionMembers: terran, protoss, zerg
 		Game: StarCraft
@@ -140,6 +140,9 @@ World:
 	GrantConditionOnPowerState@supply:
 		Condition: lowpower
 		ValidPowerStates: Low, Critical
+	ProvidesPrerequisite@supplylimit:
+		Prerequisite: supplylimit
+		RequiresCondition: lowpower
 	Production@NORMAL:
 		PauseOnCondition: lowpower
 	Production@CLASSICPRODUCTIONQUEUES:
@@ -457,14 +460,6 @@ World:
 		Modifier: 150
 		RequiresCondition: upspeed
 
-^PlasmaShieldUpgrade:
-	GrantConditionOnPrerequisite@plasmashield:
-		Condition: plasmashield
-		Prerequisites: upplasmashield
-	DamageMultiplier@plasmashield:
-		Modifier: 80
-		RequiresCondition: plasmashield && shielded
-
 ####################################################################################################
 #		Zerg Upgrade Inherits
 ####################################################################################################
@@ -660,6 +655,8 @@ SCSUPPLYDEPOT:
 		Name: Supply Depot
 	Valued:
 		Cost: 400
+	Power:
+		Amount: 100
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		Prerequisites: ~sccommandcenter
@@ -673,8 +670,6 @@ SCSUPPLYDEPOT:
 		HP: 100000
 	RevealsShroud:
 		Range: 4c0
-	Power:
-		Amount: 100
 	WithResourceStoragePipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
@@ -701,7 +696,6 @@ SCSUPPLYDEPOT:
 		Prerequisites: upsupplydepot2
 	Power@supplydepot2:
 		Amount: 200
-		Condition: upsupplydepot2
 		RequiresCondition: upsupplydepot2
 	ProvidesPrerequisite:
 		Prerequisite: supplydepotupgradeavailable
@@ -969,7 +963,7 @@ SCBUNKER:
 		Prerequisites: ~scbarracks
 		Description: Static defense with fireports for up to 4 garrisoned soldiers.
 	Valued:
-		Cost: 1600
+		Cost: 2000
 	Health:
 		HP: 350000
 	Turreted:
@@ -1387,17 +1381,14 @@ SCNEXUS:
 	Inherits@conyard: ^Conyard
 	Inherits@POWERDOWN: ^DisableOnPowerDown
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
+	Tooltip:
+		Name: Nexus
+	Power:
+		Amount: 100
 	Selectable:
 		Bounds: 3072, 2560, 0, 0
 		DecorationBounds: 3072, 2560, 0, 0
-	Valued:
-		Cost: 2000
-	Power:
-		Amount: 100
-	Tooltip:
-		Name: Nexus
 	Building:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
@@ -1433,12 +1424,6 @@ SCNEXUS:
 		RequiresCondition: !build-incomplete
 		Queues: Building, Defence, RABuilding, RADefence
 		Sequence: build
-	GrantConditionOnPowerState@supply:
-		Condition: lowpower
-		ValidPowerStates: Low, Critical
-	ProvidesPrerequisite@supplylimit:
-		Prerequisite: supplylimit
-		RequiresCondition: lowpower
 	Transforms:
 		IntoActor: scpmcv
 	RenderSprites:
@@ -1449,12 +1434,13 @@ SCPYLON:
 	Inherits@shape: ^2x2Shape
 	Inherits@power: ^PowerPlant
 	Inherits@storage: ^StoresResources
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Valued:
-		Cost: 400
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Pylon
+	Valued:
+		Cost: 400
+	Power:
+		Amount: 200
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		Prerequisites: ~scnexus
@@ -1470,20 +1456,17 @@ SCPYLON:
 		HP: 100000
 	RevealsShroud:
 		Range: 4c0
-	Power:
-		Amount: 200
 	GrantConditionOnPrerequisite@uppylon1:
 		Condition: uppylon1
 		Prerequisites: uppylon1
 	Power@uppylon1:
 		Amount: 200
-		RequiresCondition: uppylon2
+		RequiresCondition: uppylon1
 	GrantConditionOnPrerequisite@uppylon2:
 		Condition: uppylon2
 		Prerequisites: uppylon2
 	Power@uppylon2:
-		Amount: 300
-		Condition: uppylon2
+		Amount: 200
 		RequiresCondition: uppylon2
 	WithResourceStoragePipsDecoration:
 		Position: BottomLeft
@@ -1498,8 +1481,7 @@ SCASSIMILATOR:
 	Inherits@shape: ^3x2Shape
 	Inherits@ref: ^Refinery
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Assimilator
 	Power:
@@ -1534,7 +1516,7 @@ SCASSIMILATOR:
 		Sequence: smoke
 		Palette: greyscale
 	SeedsResource:
-		ResourceType: SCGas
+		ResourceType: SCGas2
 		Interval: 125
 		RequiresCondition: assimilatorupg
 	CashTrickler@assimilatorupg:
@@ -1543,18 +1525,33 @@ SCASSIMILATOR:
 		Amount: 25
 		ShowTicks: True
 	ProvidesPrerequisite:
-		Prerequisite: sctrefineryupgradeavailable
+		Prerequisite: scprefineryupgradeavailable
 		RequiresCondition: !assimilatorupg
 	Pluggable:
 		Offset: 1,0
 		Conditions:
-			screfinery: assimilatorupg
+			scassimilator: assimilatorupg
 		Requirements:
-			screfinery: !build-incomplete && !assimilatorupg
+			scassimilator: !build-incomplete && !assimilatorupg
 	Voiced:
 		VoiceSet: SCRefineryVoice
 	RenderSprites:
 		PlayerPalette: player_rgba
+
+scpvespenegascollector:
+	Inherits: ^BuildingPlug
+	Tooltip:
+		Name: Vespene Gas Collector
+	Valued:
+		Cost: 2500
+	Buildable:
+		Queue: Defence, RADefence
+		Prerequisites: ~scnexus, scprefineryupgradeavailable
+		Description: The Assimilator generates Vespene gas Capsules and passive income.
+	Plug:
+		Type: scassimilator
+	RenderSprites:
+		Image: upscrefinery2
 
 SCGATEWAY:
 	Inherits: ^BaseBuilding
@@ -1563,8 +1560,7 @@ SCGATEWAY:
 	Inherits@supply: ^SCUnitProduction
 	Inherits@barr: ^IsBarrack
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Gateway
 	Power:
@@ -1605,12 +1601,11 @@ SCFORGE:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Forge
 	Valued:
-		Cost: 1500
+		Cost: 2500
 	Health:
 		HP: 250000
 	Armor:
@@ -1648,8 +1643,7 @@ SCPHOTONCANNON:
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@shape: ^2x2Shape
 	Inherits@POWERDOWN: ^DisableOnPowerDown
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -1665,10 +1659,6 @@ SCPHOTONCANNON:
 		BuildSounds: pshbld03.aud
 	Health:
 		HP: 200000
-	RevealsShroud:
-		Range: 10c0
-	DetectCloaked:
-		Range: 6c0
 	Turreted:
 		InitialFacing: 0
 		RealignDelay: -1
@@ -1685,6 +1675,14 @@ SCPHOTONCANNON:
 		QuantizedFacings: 16
 	-WithSpriteBody:
 	-WithDeathAnimation:
+	DamageMultiplier@2x2Shape:
+		Modifier: 50
+	RevealsShroud:
+		Range: 8228
+	DetectCloaked:
+		Range: 4224
+	Power:
+		Amount: -100
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -1692,12 +1690,11 @@ SCCYBERNETICSCORE:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Cybernetics Core
 	Valued:
-		Cost: 1500
+		Cost: 2500
 	Health:
 		HP: 250000
 	Armor:
@@ -1733,10 +1730,9 @@ SCSHIELDBATTERY:
 	Inherits@explode: ^BuildingExplodeProtoss
 	Inherits@EMP: ^TurretEMP
 	Inherits@shape: ^3x2Shape
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Valued:
-		Cost: 800
+		Cost: 1000
 	Tooltip:
 		Name: Shield Battery
 	Building:
@@ -1752,9 +1748,9 @@ SCSHIELDBATTERY:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
 	Health:
-		HP: 80000
+		HP: 100000
 	RevealsShroud:
-		Range: 9c0
+		Range: 10000
 	Armament:
 		Weapon: Heal
 		#Cursor: heal
@@ -1766,10 +1762,21 @@ SCSHIELDBATTERY:
 		TurnSpeed: 40
 	WithEmbeddedTurretSpriteBody:
 	AutoTarget:
-		ScanRadius: 3
+		ScanRadius: 10
 		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Infantry, Vehicle
+	ProximityExternalCondition@shieldgen:
+		Range: 10000
+		Condition: shieldgen
+		EnableSound: shielded_on.aud
+		DisableSound: shielded_on.aud
+		RequiresCondition: !disabled
+	WithRangeCircle@shieldgen:
+		Range: 10000
+		Type: shield
+		Color: 8888FF88
+		RequiresCondition: !disabled
 	RallyPoint:
 	RepairsUnits:
 		ValuePercentage: 0
@@ -1778,9 +1785,9 @@ SCSHIELDBATTERY:
 	-WithSpriteBody:
 	-GivesBuildableArea:
 	-WithDeathAnimation:
-	FirepowerMultiplier@plasmashield:
+	FirepowerMultiplier@upplasmashield:
 		Modifier: 200
-		RequiresCondition: plasmashield
+		RequiresCondition: upplasmashield
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -1791,8 +1798,7 @@ SCROBOTICSFACILITY:
 	Inherits@supply: ^SCUnitProduction
 	Inherits@weap: ^IsWeaponFactory
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Robotics Facility
 	Power:
@@ -1836,8 +1842,7 @@ SCSTARGATE:
 	Inherits@supply: ^SCUnitProduction
 	Inherits@hpad: ^IsAircraftFactory
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Stargate
 	Power:
@@ -1871,12 +1876,11 @@ SCCITADELOFADUN:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Citadel of Adun
 	Valued:
-		Cost: 1500
+		Cost: 2500
 	Health:
 		HP: 250000
 	Armor:
@@ -1911,12 +1915,11 @@ SCROBOTICSSUPPORTBAY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Robotics Support Bay
 	Valued:
-		Cost: 1500
+		Cost: 2500
 	Health:
 		HP: 250000
 	Armor:
@@ -1952,8 +1955,7 @@ SCFLEETBEACON:
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
 	Inherits@SW: ^PrimarySuperweapon
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Fleet Beacon
 	Health:
@@ -2019,12 +2021,11 @@ SCTEMPLARARCHIVES:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Templar Archives
 	Valued:
-		Cost: 1500
+		Cost: 2500
 	Health:
 		HP: 250000
 	Armor:
@@ -2058,13 +2059,13 @@ SCTEMPLARARCHIVES:
 SCOBSERVATORY:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
+	Inherits@radar: ^RadarBuilding
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Observatory
 	Valued:
-		Cost: 1500
+		Cost: 2500
 	Health:
 		HP: 250000
 	Armor:
@@ -2099,12 +2100,11 @@ SCARBITERTRIBUNAL:
 	Inherits: ^BaseBuilding
 	Inherits@shape: ^2x2Shape
 	Inherits@explode: ^BuildingExplodeProtoss
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Arbiter Tribunal
 	Valued:
-		Cost: 1500
+		Cost: 2500
 	Health:
 		HP: 250000
 	Armor:
@@ -2296,12 +2296,6 @@ SCHATCHERY:
 	DamageMultiplier@hive:
 		Modifier: 50
 		RequiresCondition: schive
-	GrantConditionOnPowerState@supply:
-		Condition: lowpower
-		ValidPowerStates: Low, Critical
-	ProvidesPrerequisite@supplylimit:
-		Prerequisite: supplylimit
-		RequiresCondition: lowpower
 	RallyPoint: ##########
 		Path: 0,2
 	Exit@1:
@@ -2687,7 +2681,7 @@ SCEXTRACTOR:
 	ProvidesPrerequisite@buildingname:
 	Buildable:
 		BuildPaletteOrder: 30
-		Prerequisites: ~scoverlord
+		Prerequisites: ~schatchery
 		Queue: Building, RABuilding
 		Description: Processes raw Tiberium\ninto useable resources
 	Building:
@@ -2712,31 +2706,31 @@ SCEXTRACTOR:
 		Actor: SCBROODLING
 	SpawnActorOnDeath@death2:
 		Actor: SCBROODLING
-	DamageMultiplier@refineryupg:
-		RequiresCondition: refineryupg
+	DamageMultiplier@extractorupg:
+		RequiresCondition: extractorupg
 		Modifier: 50
 	WithIdleOverlay@smoke:
-		RequiresCondition: refineryupg
+		RequiresCondition: extractorupg
 		Sequence: smoke
 		Palette: greyscale
 	SeedsResource:
 		ResourceType: SCGas3
 		Interval: 125
-		RequiresCondition: refineryupg
-	CashTrickler@refineryupg:
-		RequiresCondition: refineryupg
+		RequiresCondition: extractorupg
+	CashTrickler@extractorupg:
+		RequiresCondition: extractorupg
 		Interval: 50
 		Amount: 25
 		ShowTicks: True
 	ProvidesPrerequisite:
 		Prerequisite: sczrefineryupgradeavailable
-		RequiresCondition: !refineryupg
+		RequiresCondition: !extractorupg
 	Pluggable:
 		Offset: 1,0
 		Conditions:
-			screfinery: refineryupg
+			scextractor: extractorupg
 		Requirements:
-			screfinery: !build-incomplete && !refineryupg
+			scextractor: !build-incomplete && !extractorupg
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -2749,9 +2743,9 @@ sczvespenegascollector:
 	Buildable:
 		Queue: Defence, RADefence
 		Prerequisites: ~schatchery, sczrefineryupgradeavailable
-		Description: The Refinery generates Vespene gas Capsules and passive income.
+		Description: The Extractor generates Vespene gas Capsules and passive income.
 	Plug:
-		Type: screfinery
+		Type: scextractor
 	RenderSprites:
 		Image: upscrefinery3
 
@@ -3274,6 +3268,7 @@ SCINFESTEDCOMMANDCENTER:
 		CrushedSequence: die
 		CrushedSequencePalette: player
 		CrushedPaletteIsPlayerPalette: true
+		PlayerPalette: player_rgba
 	Crushable:
 		CrushClasses: vehicle
 		-CrushSound:
@@ -3390,7 +3385,7 @@ SCMARINE:
 SCREAPER:
 	Inherits: ^SCTINFANTRY
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
-	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@Template: ^SniperInfantryTemplate
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@AntiInf: ^PrioritizeInfantry
@@ -3424,9 +3419,15 @@ SCREAPER:
 	Armament@Grenade:
 		Weapon: ReaperGrenade
 		LocalOffset: 128,0,256
-	Armament@GARRISONED:
+	Armament@GARRISONED1:
 		Name: garrisoned
-		Weapon: MarineMG
+		Weapon: ReaperPistols
+		LocalOffset: 128,-128,256
+		MuzzleSequence: muzzle
+	Armament@GARRISONED2:
+		Name: garrisoned
+		Weapon: ReaperPistols
+		LocalOffset: 128,128,256
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
 	# ProductionTimeMultiplier@speedup:
@@ -3578,8 +3579,6 @@ SCFIREBAT:
 	WithMuzzleOverlay:
 	Voiced:
 		VoiceSet: SCFirebatVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
@@ -3639,8 +3638,6 @@ SCHARAKAN:
 	WithMuzzleOverlay:
 	Voiced:
 		VoiceSet: SCFirebatVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
@@ -3685,8 +3682,6 @@ scmarauder:
 	WithMuzzleOverlay:
 	Voiced:
 		VoiceSet: SCMarauderVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	RenderSprites:
 		Image: scmarauder
 	# Selectable:
@@ -3776,8 +3771,6 @@ SCGHOST:
 		ValidDamageStates: Critical
 	Voiced:
 		VoiceSet: SCGhostVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
@@ -3864,8 +3857,6 @@ SCSILVERTONGUE:
 		ValidDamageStates: Critical
 	Voiced:
 		VoiceSet: SCSilvertongueVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
@@ -3976,8 +3967,6 @@ SCJIMRAYNOR:
 		DecorationBounds: -24,0
 	Voiced:
 		VoiceSet: SCJimRaynorVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
@@ -4634,8 +4623,6 @@ scwarhound:
 		CustomPipType: blue
 	Voiced:
 		VoiceSet: SCTyrVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	Selectable:
 		DecorationBounds: 1600, 1600
 	RenderSprites:
@@ -5605,9 +5592,6 @@ SCCOMMANDCENTERM:
 		HP: 1000000
 	Armor:
 		Type: Concrete
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
 	Transforms:
 		IntoActor: sccommandcenter
 		Offset: -1,-1
@@ -6080,9 +6064,48 @@ upbehemoth:
 #		UNIT PROTOSS
 ####################################################################################################
 
+^ProtossPersonalShield:
+	Shielded:
+		InitialPercentageStrength: 100
+		DamageRegenDelay: 125
+		RegenInterval: 1
+		ShieldsUpCondition: shielded
+		RequiresCondition: !disabled
+		SelectionBarColor: 8888FFFF
+	GrantCondition@shieldpermanent:
+		Condition: shieldpermanent
+	DamageMultiplier@shieldpermanent:
+		Modifier: 100
+	FirepowerMultiplier@shieldpermanent:
+		Modifier: 100
+	ChangesShield@personal_shield:
+		Step: 40
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: upplasmashield
+	Armor:
+		RequiresCondition: !shielded
+	Armor@shielded:
+		Type: Shield
+		RequiresCondition: shielded
+	Targetable@PersonalShielded:
+		TargetTypes: PersonalShielded
+		RequiresCondition: shielded
+	DamageMultiplier@upplasmashield:
+		Modifier: 80
+		RequiresCondition: upplasmashield && shielded
+	GrantConditionOnPrerequisite@upplasmashield:
+		Condition: upplasmashield
+		Prerequisites: upplasmashield
+	ActorStatValues:
+		Upgrades: upplasmashield
+
 ^BasicProtoss: #ONLY USE FOR UNITS THAT INHERIT ^SOLDIER
 	Inherits: ^DefaultSoldier
-	Inherits@2: ^PlasmaShieldUpgrade
+	Inherits@ProtossPersonalShield: ^ProtossPersonalShield
+	Shielded:
+		RegenAmount: 40
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
 		CrushedSequence: die
@@ -6091,17 +6114,6 @@ upbehemoth:
 	Crushable:
 		CrushClasses: vehicle
 		-CrushSound:
-	ProductionTimeMultiplier@supplylimit:
-		Multiplier: 1000
-		Prerequisites: supplylimit
-		Queue: Infantry, RAInfantry, Vehicle, RAVehicle
-	ProductionCostMultiplier@LargeProtoss:
-		Multiplier: 150
-		Queue: Infantry, RAInfantry, Vehicle, RAVehicle
-	DamageMultiplier@shielded:
-		Modifier: 300
-	FirepowerMultiplier@shielded:
-		Modifier: 75
 
 ^LargeProtoss:
 	Inherits: ^BasicProtoss
@@ -6127,26 +6139,12 @@ upbehemoth:
 	HitShape:
 		Type: Circle
 			Radius: 1024
-	ProductionCostMultiplier@LargeProtoss:
-		Multiplier: 200
-	DamageMultiplier@shielded:
-		Modifier: 1000
-	FirepowerMultiplier@shielded:
-		Modifier: 50
 
 ^AirProtoss:
 	Inherits: ^Helicopter
-	ProductionTimeMultiplier@supplylimit:
-		Multiplier: 1000
-		Prerequisites: supplylimit
-		Queue: Aircraft, RAAircraft, Vehicle, RAVehicle
-	ProductionCostMultiplier@LargeProtoss:
-		Multiplier: 200
-		Queue: Aircraft, RAAircraft, Vehicle, RAVehicle
-	DamageMultiplier@shielded:
-		Modifier: 1000
-	FirepowerMultiplier@shielded:
-		Modifier: 50
+	Inherits@ProtossPersonalShield: ^ProtossPersonalShield
+	Shielded:
+		RegenAmount: 40
 
 ^BuildingExplodeProtoss:
 	FireWarheadsOnDeath:
@@ -6170,16 +6168,14 @@ SCPROBE:
 	Inherits@explode: ^UnitExplodeSmallProtoss
 	Inherits@selection: ^SelectableEconomicUnit
 	Inherits@harv: ^Harvester
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@worker: ^SCWorker
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AutoRepair: ^PrioritizeRepair
 	Inherits@announce: ^AnnounceOnBuild
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Inherits@SHADOWS: ^Shadows
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Tooltip:
 		Name: Probe
-	Valued:
-		Cost: 500
 	Buildable:
 		Prerequisites: ~scassimilator
 		Description: Collects resources.\nCan repair mechanical units and buildings.
@@ -6188,10 +6184,13 @@ SCPROBE:
 		Weapon: SCVRepair
 		TargetRelationships: Ally
 		ForceTargetRelationships: Ally
-		LocalOffset: 240,160,240
+		LocalOffset: 240,0,240
 	Armament:
 		Weapon: SCVAttack
 		ForceTargetRelationships: Enemy, Neutral
+	AutoTarget:
+		ScanRadius: 10
+		InitialStance: AttackAnything
 	AttackFrontal:
 		FacingTolerance: 0
 	Voiced:
@@ -6212,7 +6211,6 @@ SCZEALOT:
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
-	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@bot: ^BotAutoDeploySwitchMode
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
@@ -6221,18 +6219,20 @@ SCZEALOT:
 	Valued:
 		Cost: 300
 	Power:
-		Amount: -20
+		Amount: -15
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~scgateway, ~!uplegionnaire
 		Queue: Infantry, RAInfantry
 		Description: Protoss infantry, attacks in close combat.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft\n Uncrushable
 	Mobile:
-		Speed: 80
+		Speed: 70
 	Health:
-		HP: 25000
+		HP: 40000
 	ChangesHealth@SelfHealing:
-		Step: 100
+		Step: 40
+	Shielded:
+		RegenAmount: 80
 	Armament:
 		Weapon: Psi-blades
 		FireDelay: 3
@@ -6242,7 +6242,7 @@ SCZEALOT:
 	Voiced:
 		VoiceSet: SCZealotVoice
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -6251,25 +6251,23 @@ SCDRAGOON:
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXP: ^GainsExperienceTD
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EMP: ^FrontalEMP
 	Inherits@SHADOWS: ^Shadows
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@range: ^SingularityChargeUpgrade
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Tooltip:
 		Name: Dragoon
 	Valued:
 		Cost: 1000
 	Power:
-		Amount: -45
+		Amount: -50
 	Buildable:
 		Prerequisites: ~sccyberneticscore, ~!upatreus
 		Queue: Infantry, RAInfantry
-		Description: Protoss assault walker.\n Strong vs Vehicles\n Weak vs Infantry
+		Description: Protoss assault walker. Can attack air.
 	Mobile:
 		Speed: 80
 		TurnSpeed: 1023
@@ -6277,14 +6275,18 @@ SCDRAGOON:
 	Health:
 		HP: 50000
 	Repairable:
-		HpPerStep: 100
+		HpPerStep: 2500
 	ChangesHealth@SelfHealing:
-		Step: 80
+		Step: 20
+	Shielded:
+		RegenAmount: 40
 	Armor:
-		Type: Heavy
+		Type: Medium
 	Armament:
 		Weapon: DragoonCannon
-		FireDelay: 10
+		FireDelay: 3
+	FirepowerMultiplier@DualWeapon:
+		Modifier: 50
 	AttackFrontal:
 		FacingTolerance: 0
 	Passenger:
@@ -6302,57 +6304,59 @@ SCDRAGOON:
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor, updragoonrange
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield, updragoonrange
 
 SCMANIFOLD:
 	Inherits: ^LargeProtoss
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
-	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@Template: ^SupportVehicleTemplate
 	Inherits@EXP: ^GainsExperienceTD
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EMP: ^FrontalEMP
 	Inherits@SHADOWS: ^Shadows
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@range: ^SingularityChargeUpgrade
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Tooltip:
 		Name: Manifold
 	Valued:
-		Cost: 1000
+		Cost: 600
 	Power:
-		Amount: -45
+		Amount: -30
 	Buildable:
 		Prerequisites: ~sccyberneticscore, ~upmanifold
 		Queue: Vehicle, RAVehicle
-		Description: Protoss support vehicle.
+		Description: Protoss anti air support vehicle. Can lockon enemy units.
 	Mobile:
-		Speed: 80
-		TurnSpeed: 1023
+		Speed: 75
+		TurnSpeed: 15
 		Locomotor: hover
 	Health:
-		HP: 50000
+		HP: 25000
 	Repairable:
-		HpPerStep: 100
+		HpPerStep: 1250
 	ChangesHealth@SelfHealing:
-		Step: 80
+		Step: 10
+	Shielded:
+		RegenAmount: 20
 	Armor:
-		Type: Heavy
+		Type: Light
 	Armament:
-		Weapon: DragoonCannon
-		FireDelay: 10
-	ProximityExternalCondition@Leadership:
-		Range: 3333
-		ValidRelationships: Ally
-		Condition: GDIOfficerLeadership
-	ProximityExternalCondition@propaganda:
-		Range: 3333
-		ValidRelationships: Ally
-		Condition: propaganda
-	WithRangeCircle:
-		Range: 3333
+		Weapon: ManifoldMG
+	Armament@AA:
+		Weapon: ManifoldMGAA
+	ProximityExternalCondition@AdvancedTargeting:
+		Range: 7500
+		ValidRelationships: Enemy
+		Condition: lockon
+		RequiresCondition: !disabled
+	WithRangeCircle@lockon:
+		Range: 7500
+		Type: lockon
+		Color: FF888888
+		RequiresCondition: !disabled
 	-WithInfantryBody:
 	-WithDeathAnimation:
 	WithFacingSpriteBody:
@@ -6373,57 +6377,63 @@ SCMANIFOLD:
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor, updragoonrange
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield, updragoonrange
 
 SCANALOGUE:
 	Inherits: ^LargeProtoss
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
-	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@Template: ^SupportVehicleTemplate
 	Inherits@EXP: ^GainsExperienceTD
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AutoRepair: ^PrioritizeRepair
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EMP: ^FrontalEMP
 	Inherits@SHADOWS: ^Shadows
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@range: ^SingularityChargeUpgrade
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Tooltip:
 		Name: Analogue
 	Valued:
-		Cost: 1000
+		Cost: 1200
 	Power:
-		Amount: -45
+		Amount: -60
 	Buildable:
 		Prerequisites: ~sccyberneticscore, ~upanalogue
 		Queue: Vehicle, RAVehicle
-		Description: Protoss support vehicle.
+		Description: Protoss mobile shield generator. Can repair vehicles and buildings.
 	Mobile:
-		Speed: 80
-		TurnSpeed: 1023
+		Speed: 60
+		TurnSpeed: 12
 		Locomotor: hover
 	Health:
-		HP: 50000
+		HP: 60000
 	Repairable:
-		HpPerStep: 100
+		HpPerStep: 3000
 	ChangesHealth@SelfHealing:
-		Step: 80
+		Step: 24
+	Shielded:
+		RegenAmount: 48
 	Armor:
-		Type: Heavy
+		Type: Light
 	Armament:
-		Weapon: DragoonCannon
-		FireDelay: 10
-	WithRangeCircle:
-		Range: 12500
+		Weapon: SCVAttack
+		ForceTargetRelationships: Enemy, Neutral
+	Armament@repair:
+		Name: repair
+		Weapon: SCVRepair
+		TargetRelationships: Ally
+		ForceTargetRelationships: Ally
+		LocalOffset: 240,0,240
 	ProximityExternalCondition@shieldgen:
-		Range: 12500
+		Range: 10000
 		Condition: shieldgen
 		EnableSound: shielded_on.aud
 		DisableSound: shielded_on.aud
 		RequiresCondition: !disabled
 	WithRangeCircle@shieldgen:
-		Range: 12500
+		Range: 10000
 		Type: shield
 		Color: 8888FF88
 		RequiresCondition: !disabled
@@ -6447,29 +6457,28 @@ SCANALOGUE:
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor, updragoonrange
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield, updragoonrange
 
 SCIDOL:
 	Inherits: ^LargeProtoss
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
-	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@Template: ^EpicVehicleTemplate
 	Inherits@EXP: ^GainsExperienceTD
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EMP: ^FrontalEMP
 	Inherits@SHADOWS: ^Shadows
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@range: ^SingularityChargeUpgrade
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Inherits@Template: ^HeroInfantryTemplate
 	Tooltip:
 		Name: Idol
 	Valued:
-		Cost: 1000
+		Cost: 2800
 	Power:
-		Amount: -200
+		Amount: -140
 	Buildable:
 		Prerequisites: ~sccyberneticscore, ~upidol
 		Queue: Vehicle, RAVehicle
@@ -6477,29 +6486,34 @@ SCIDOL:
 		Description: Protoss support vehicle.
 	Mobile:
 		Speed: 40
-		TurnSpeed: 1023
+		TurnSpeed: 8
 		Locomotor: hover
 	Health:
-		HP: 250000
+		HP: 350000
 	Repairable:
-		HpPerStep: 100
+		HpPerStep: 17500
 	ChangesHealth@SelfHealing:
-		Step: 80
+		Step: 140
+	Shielded:
+		RegenAmount: 280
 	Armor:
 		Type: Heavy
 	Armament:
-		Weapon: DragoonCannon
-		FireDelay: 10
+		Weapon: IdolCannon
+		FireDelay: 3
 	ProximityExternalCondition@Leadership:
-		Range: 15000
+		Range: 5000
 		ValidRelationships: Ally
 		Condition: GDIOfficerLeadership
 	ProximityExternalCondition@propaganda:
-		Range: 15000
+		Range: 5000
 		ValidRelationships: Ally
 		Condition: propaganda
-	WithRangeCircle:
-		Range: 15000
+	WithRangeCircle@propaganda:
+		Range: 5000
+		Type: propaganda
+		Color: FFFF8888
+		RequiresCondition: !disabled
 	-WithInfantryBody:
 	-WithDeathAnimation:
 	WithFacingSpriteBody:
@@ -6520,24 +6534,24 @@ SCIDOL:
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor, updragoonrange
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield, updragoonrange
 
 SCHIGHTEMPLAR:
 	Inherits@protoss: ^BasicProtoss
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@Template: ^SniperInfantryTemplate
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Tooltip:
 		Name: High Templar
 	Valued:
-		Cost: 1000
+		Cost: 1400
 	Power:
-		Amount: -50
+		Amount: -70
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~sctemplararchives
@@ -6547,17 +6561,19 @@ SCHIGHTEMPLAR:
 		Speed: 70
 		Locomotor: hover
 	Health:
-		HP: 40000
+		HP: 35000
 	ChangesHealth@SelfHealing:
-		Step: 40
+		Step: 35
+	Shielded:
+		RegenAmount: 70
 	Armament:
 		Weapon: PsiStorm
-		FireDelay: 10
+		FireDelay: 8
 	AttackFrontal:
 		FacingTolerance: 0
 	WithInfantryBody:
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield
 	Voiced:
 		VoiceSet: SCHighTemplarVoice
 	RenderSprites:
@@ -6569,39 +6585,39 @@ SCDARKTEMPLAR:
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
+	Inherits@cloak: ^CloakedVehicle
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Tooltip:
 		Name: Dark Templar
 	Valued:
-		Cost: 1500
+		Cost: 600
 	Power:
-		Amount: -50
+		Amount: -30
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~sccitadelofadun, ~!upamaranth
 		Queue: Infantry, RAInfantry
 		Description: Protoss stealth warrior, attacks in close combat.\n Strong vs ground targets\n Uncrushable
 	Mobile:
-		Speed: 80
+		Speed: 75
 	Health:
-		HP: 60000
+		HP: 50000
 	ChangesHealth@SelfHealing:
-		Step: 80
+		Step: 50
+	Shielded:
+		RegenAmount: 100
 	Armament:
 		Weapon: WarpBlade
 		FireDelay: 3
-	Cloak:
 	AttackFrontal:
 		FacingTolerance: 0
 	WithInfantryBody:
 	Voiced:
 		VoiceSet: SCDarkTemplarVoice
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -6617,14 +6633,12 @@ SCSHUTTLE:
 	Inherits@speed: ^GraviticUpgrade
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Tooltip:
 		Name: Shuttle
 	Valued:
-		Cost: 1000
+		Cost: 3400
 	Power:
-		Amount: -180
+		Amount: -170
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 		OverrideActor: scshuttle
@@ -6643,6 +6657,8 @@ SCSHUTTLE:
 		HpPerStep: 6250
 	ChangesHealth@SelfHealing:
 		Step: 50
+	Shielded:
+		RegenAmount: 100
 	Armor:
 		Type: Light
 	Cargo:
@@ -6673,14 +6689,15 @@ SCSHUTTLE:
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upairarmor, upairspeed
+		Upgrades: upairarmor, upairspeed, upplasmashield
 	WithCargoSounds:
 		EnterSounds: tdrtra00.wav
 		ExitSounds: tdrtra00.wav
 
 SCREAVER:
-	Inherits: ^Vehicle
+	Inherits: ^LargeProtoss
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
@@ -6688,14 +6705,12 @@ SCREAVER:
 	Inherits@SHADOWS: ^Shadows
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Selectable:
-		DecorationBounds: 1280, 1280
-	Valued:
-		Cost: 1500
 	Tooltip:
 		Name: Reaver
+	Valued:
+		Cost: 3000
+	Power:
+		Amount: -150
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~scroboticssupportbay
@@ -6703,32 +6718,37 @@ SCREAVER:
 		Description: Long-range rocket artillery.\n Strong vs Vehicles, Buildings\n Weak vs Aircraft
 	Mobile:
 		Speed: 40
+		TurnSpeed: 8
 	Health:
 		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Shielded:
+		RegenAmount: 80
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		RevealGeneratedShroud: False
 	Armament@primary:
 		Name: primary
 		Weapon: ScarabLaunch
+		LocalOffset: 512,0,256
 		PauseOnCondition: !ammo
 	Armament@secondary:
 		Name: secondary
 		Weapon: ScarabLaunchDummy
+		LocalOffset: 512,0,256
 		RequiresCondition: !upreavercapacity
 		PauseOnCondition: !ammo
 	AutoTarget:
 		ScanRadius: 15
 	AttackFrontal:
 		FacingTolerance: 0
+	-WithInfantryBody:
 	WithFacingSpriteBody:
 	WithMoveAnimation:
 	SelectionDecorations:
 	DeathSounds:
-	Power:
-		Amount: -75
 	Passenger:
 		Weight: 4
 		CustomPipType: blue
@@ -6736,139 +6756,41 @@ SCREAVER:
 		Ammo: 10
 		AmmoCondition: ammo
 	ReloadAmmoPool:
-		Delay: 400
+		Delay: 360
 		Count: 1
 	Voiced:
 		VoiceSet: SCReaverVoice
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle
 	WithShadow:
 		Offset: 108, 64, 0
 		ZOffset: -512
-	FirepowerMultiplier@weap:
-		Modifier: 150
-		RequiresCondition: upreaverdamage
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: True
 		PipCount: 10
+	Selectable:
+		DecorationBounds: 1280, 1280
 	GrantConditionOnPrerequisite@upreavercapacity:
 		Condition: upreavercapacity
 		Prerequisites: upreavercapacity
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield
 	RenderSprites:
 		PlayerPalette: player_rgba
-
-screaver2:
-	Inherits: SCREAVER
-	Buildable:
-		Prerequisites: ~wip-content
-		Description: Test for alternative reaver implementation
-	#-CarrierMaster:
-	#-CarrierMaster@2:
-	Mobile:
-	Armament@1:
-		Weapon: ScarabLaunch
-		PauseOnCondition: !ammo || firing
-	Armament@2:
-		#Weapon: ScarabLaunch
-		#Name: secondary
-		Weapon: ScarabLaunchDummy
-		RequiresCondition: upcapacity
-		LocalOffset: 624,0,208
-		MuzzleSequence: muzzle
-	MobSpawnerMaster:
-		Actors: scscarab2
-		RespawnTicks: 80
-		AggregateHealth: false
-		RequiresCondition: firing
-		ArmamentNames: primary, secondary
-	GrantConditionOnAttack:
-		Condition: firing
-		RevokeDelay: 50
-	RenderSprites:
-		Image: screaver
-
-SCSCARAB:
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@explode: ^HeliExplodeProtoss
-	Valued:
-		Cost: 50
-	Tooltip:
-		Name: Scarab
-	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 28
-		Speed: 270
-		Repulsable: false
-		CruiseAltitude: 0c512
-	CarrierSlave:
-		LandingDistance: 2c0
-	Health:
-		HP: 50
-	Armor:
-		Type: None
-	RevealsShroud:
-		Range: 6c0
-		Type: GroundPosition
-	Armament:
-		Weapon: Scarab
-		LocalOffset: 200,0,0
-	AttackAircraft:
-		FacingTolerance: 80
-		PersistentTargeting: false
-	LeavesTrails:
-		Image: blue_smokey
-		MovingInterval: 2
-		Type: CenterPosition
-	GrantConditionOnAttack:
-		Condition: triggered
-	KillsSelf:
-		RequiresCondition: triggered
-	FirepowerMultiplier@weap:
-		Modifier: 133
-	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			TopLeft: -512, -512
-			BottomRight: 512, 512
-	RenderSprites:
-		PlayerPalette: player_rgba
-
-scscarab2:
-	Inherits: SCSCARAB
-	RenderSprites:
-		Image: scscarab
-	-AttackAircraft:
-	-Aircraft:
-	-CarrierSlave:
-	MobSpawnerSlave:
-		GrantConditionWhenMasterIsDisabled: notenabled
-		GrantConditionWhenMasterIsPaused: paused
-	Mobile:
-		Speed: 200
-		Locomotor: foot
-	AttackFrontal:
-		FacingTolerance: 0
-	KillsSelf:
-		RequiresCondition: triggered || notenabled
 
 SCOBSERVER:
 	Inherits: ^AirProtoss
+	Inherits@Template: ^HelicopterTemplate
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@announce: ^AnnounceOnBuild
-	Inherits@detect: ^GenericAirDetector
 	Inherits@bot: ^BotMicromanageable
+	Inherits@cloak: ^CloakedAircraft
 	Inherits@speed: ^GraviticUpgrade
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Valued:
-		Cost: 500
 	Tooltip:
 		Name: Observer
+	Valued:
+		Cost: 500
+	Power:
+		Amount: -25
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -6877,21 +6799,31 @@ SCOBSERVER:
 		Queue: Vehicle, RAVehicle
 		Description: Stealth scout.\n Unarmed
 	Aircraft:
-		TurnSpeed: 20
 		Speed: 60
-		InitialFacing: 896
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		TurnSpeed: 12
+		RepulsionSpeed: 12
+		IdealSeparation: 640
 	Health:
-		HP: 7200
+		HP: 12500
+	Repairable:
+		HpPerStep: 625
+	ChangesHealth@SelfHealing:
+		Step: 5
+	Shielded:
+		RegenAmount: 10
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+		Range: 10000
 	DetectCloaked:
-		Range: 8c0
+		Range: 10000
+		DetectionTypes: Cloak, AirCloak, GroundCloak, Underwater, Hijacker
+	RangedGpsProvider:
+		Range: 20000
 	RenderDetectionCircle:
+	WithRangeCircle:
+		Range: 20000
+		Color: FF000088
 	-SpawnActorOnDeath:
 	-MustBeDestroyed:
 	DeathSounds:
@@ -6899,14 +6831,6 @@ SCOBSERVER:
 	Selectable:
 		Bounds: 2048, 2048
 		DecorationBounds: 2448, 2448, 0, 0
-	Cloak:
-		InitialDelay: 10
-		CloakDelay: 10
-		RequiresCondition: !disabled
-		IsPlayerPalette: true
-		PauseOnCondition: cloak-force-disabled || base-reveal
-	Power:
-		Amount: -10
 	Voiced:
 		VoiceSet: SCObserverVoice
 	Wanders:
@@ -6915,31 +6839,27 @@ SCOBSERVER:
 		MaxMoveDelay: 80
 		RequiresCondition: botmicro
 	ActorStatValues:
-		Upgrades: upairarmor, upairspeed
+		Upgrades: upairarmor, upairspeed, upplasmashield
 	RenderSprites:
 		PlayerPalette: player_rgba
 
 SCARCHON:
-	Inherits@EXPERIENCE: ^GainsExperienceMelee
+	Inherits: ^LargeProtoss
+	Inherits@speedup: ^SCUnitProductionSpeedBoost
+	Inherits@Template: ^LineBreakerTemplate
+	Inherits@EXP: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@explode: ^UnitExplodeSmallProtoss
-	Inherits@protoss: ^LargeProtoss
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EMP: ^FrontalEMP
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Selectable:
-		Bounds: 1024, 1024
-	WithIdleOverlay:
-		Sequence: shroud
-		IsPlayerPalette: true
-		PauseOnCondition: chronobeamed
-	Valued:
-		Cost: 3000
 	Tooltip:
 		Name: Archon
+	Valued:
+		Cost: 5600
+	Power:
+		Amount: -280
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: ~sctemplararchives
@@ -6947,11 +6867,18 @@ SCARCHON:
 		Description: Powerful heavy protoss warrior.\n Strong vs Everything
 	Mobile:
 		Speed: 75
+		TurnSpeed: 15
 		Locomotor: hover
 	Health:
-		HP: 75000
+		HP: 350000
+	Repairable:
+		HpPerStep: 17500
+	ChangesHealth@SelfHealing:
+		Step: 140
+	Shielded:
+		RegenAmount: 280
 	Armor:
-		Type: Heavy
+		Type: Medium
 	Targetable:
 		TargetTypes: Ground, Vehicle, Infantry
 	RevealsShroud:
@@ -6972,20 +6899,21 @@ SCARCHON:
 		Sequence: shoot
 	-HitShape:
 	HitShape:
-	Power:
-		Amount: -100
 	Passenger:
 		Weight: 4
 		CustomPipType: blue
 	Voiced:
-		VoiceSet: SCArchonVoice
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
+		VoiceSet: SCArchonVoice ##########
 	-WithDeathAnimation:
 	-Crushable:
+	Selectable:
+		Bounds: 1024, 1024
+	WithIdleOverlay:
+		Sequence: shroud
+		IsPlayerPalette: true
+		PauseOnCondition: chronobeamed
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield
 
 SCSCOUT:
 	Inherits: ^AirProtoss
@@ -7001,12 +6929,12 @@ SCSCOUT:
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@speed: ^GraviticUpgrade
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Valued:
-		Cost: 750
 	Tooltip:
 		Name: Scout
+	Valued:
+		Cost: 2100
+	Power:
+		Amount: -105
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -7015,21 +6943,24 @@ SCSCOUT:
 		Queue: Aircraft, RAAircraft
 		Description: Protoss fighter aircraft.\n Strong vs Aircraft
 	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 28
 		Speed: 125
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		TurnSpeed: 25
+		RepulsionSpeed: 25
 	Health:
 		HP: 150000
-	Armor:
-		Type: Medium
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
-	Armament@PRIMARY:
+	Repairable:
+		HpPerStep: 7500
+	ChangesHealth@SelfHealing:
+		Step: 60
+	Shielded:
+		RegenAmount: 120
+	Armament@PRIMARY1:
 		Weapon: ScoutMG
-		LocalOffset: 400,0,0
+		LocalOffset: 400,200,0
+		Name: primary
+	Armament@PRIMARY2:
+		Weapon: ScoutMG
+		LocalOffset: 400,-200,0
 		Name: primary
 	Armament@SECONDARY1:
 		Weapon: ScoutRockets
@@ -7040,7 +6971,7 @@ SCSCOUT:
 		LocalOffset: 400,-400,0
 		Name: secondary
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 		AttackType: Hover
 		Armaments: primary, secondary
 	-SpawnActorOnDeath:
@@ -7048,10 +6979,8 @@ SCSCOUT:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
-	Power:
-		Amount: -50
 	ActorStatValues:
-		Upgrades: upairweapons, upairarmor, upairspeed
+		Upgrades: upairweapons, upairarmor, upairspeed, upplasmashield
 	Voiced:
 		VoiceSet: SCScoutVoice
 	RenderSprites:
@@ -7071,13 +7000,13 @@ SCEPIGRAPH:
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@speed: ^GraviticUpgrade
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Valued:
-		Cost: 750
 	Tooltip:
 		Name: Epigraph
+	Valued:
+		Cost: 2600
+	Power:
+		Amount: -130
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -7092,26 +7021,21 @@ SCEPIGRAPH:
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
-		HP: 150000
-	Armor:
-		Type: Medium
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+		HP: 200000
+	Repairable:
+		HpPerStep: 10000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	Shielded:
+		RegenAmount: 160
 	Armament@PRIMARY:
-		Weapon: ScoutMG
-		LocalOffset: 400,0,0
-		Name: primary
-	Armament@SECONDARY1:
-		Weapon: ScoutRockets
-		LocalOffset: 400,400,0
-		Name: secondary
-	Armament@SECONDARY2:
-		Weapon: ScoutRockets
-		LocalOffset: 400,-400,0
-		Name: secondary
+		Weapon: EpigraphMG
+		LocalOffset: 600,200,0
+	Armament@SECONDARY:
+		Weapon: EpigraphMG
+		LocalOffset: 600,-200,0
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 		AttackType: Hover
 		Armaments: primary, secondary
 	-SpawnActorOnDeath:
@@ -7119,10 +7043,8 @@ SCEPIGRAPH:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
-	Power:
-		Amount: -50
 	ActorStatValues:
-		Upgrades: upairweapons, upairarmor, upairspeed
+		Upgrades: upairweapons, upairarmor, upairspeed, upplasmashield
 	Voiced:
 		VoiceSet: SCScoutVoice
 	RenderSprites:
@@ -7142,45 +7064,45 @@ SCLANIFECT:
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@speed: ^GraviticUpgrade
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Valued:
-		Cost: 750
 	Tooltip:
 		Name: Lanifect
+	Valued:
+		Cost: 1200
+	Power:
+		Amount: -60
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~scstargate, ~uplanifect
 		Queue: Aircraft, RAAircraft
-		Description: Protoss fighter aircraft.\n Strong vs Aircraft
+		Description: Protoss fighter aircraft that can blind enemies.
 	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 28
-		Speed: 125
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		Speed: 120
+		TurnSpeed: 24
+		RepulsionSpeed: 24
+		IdealSeparation: 1000
 	Health:
-		HP: 150000
-	Armor:
-		Type: Medium
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+		HP: 60000
+	Repairable:
+		HpPerStep: 3000
+	ChangesHealth@SelfHealing:
+		Step: 24
+	Shielded:
+		RegenAmount: 48
 	Armament:
 		Weapon: LanifectBeam
 		LocalOffset: 400,0,0
+	AttackAircraft:
+		FacingTolerance: 20
 	-SpawnActorOnDeath:
 	DeathSounds:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
-	Power:
-		Amount: -50
 	ActorStatValues:
-		Upgrades: upairweapons, upairarmor, upairspeed
+		Upgrades: upairweapons, upairarmor, upairspeed, upplasmashield
 	Voiced:
 		VoiceSet: SCScoutVoice
 	RenderSprites:
@@ -7200,13 +7122,13 @@ SCGLADIUS:
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@speed: ^GraviticUpgrade
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Valued:
-		Cost: 750
 	Tooltip:
 		Name: Gladius
+	Valued:
+		Cost: 2200
+	Power:
+		Amount: -110
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -7215,30 +7137,29 @@ SCGLADIUS:
 		Queue: Aircraft, RAAircraft
 		Description: Protoss artillery aircraft.\n Strong vs everything
 	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 28
 		Speed: 125
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		TurnSpeed: 25
+		RepulsionSpeed: 25
 	Health:
-		HP: 150000
-	Armor:
-		Type: Medium
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+		HP: 100000
+	Repairable:
+		HpPerStep: 5000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Shielded:
+		RegenAmount: 80
 	Armament:
-		Weapon: gladiuscannon
+		Weapon: GladiusCannon
 		LocalOffset: 400,0,0
+	AttackAircraft:
+		FacingTolerance: 20
 	-SpawnActorOnDeath:
 	DeathSounds:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
-	Power:
-		Amount: -50
 	ActorStatValues:
-		Upgrades: upairweapons, upairarmor, upairspeed
+		Upgrades: upairweapons, upairarmor, upairspeed, upplasmashield
 	Voiced:
 		VoiceSet: SCScoutVoice
 	RenderSprites:
@@ -7258,12 +7179,12 @@ SCCORSAIR:
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@speed: ^GraviticUpgrade
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Valued:
-		Cost: 550
 	Tooltip:
 		Name: Corsair
+	Valued:
+		Cost: 1500
+	Power:
+		Amount: -75
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -7272,18 +7193,17 @@ SCCORSAIR:
 		Queue: Aircraft, RAAircraft
 		Description: Protoss fighter aircraft.\n Strong vs Aircraft
 	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 28
 		Speed: 125
-		IdealSeparation: 1c0
-		RepulsionSpeed: 10
+		TurnSpeed: 25
+		RepulsionSpeed: 25
 	Health:
-		HP: 150000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+		HP: 75000
+	Repairable:
+		HpPerStep: 3750
+	ChangesHealth@SelfHealing:
+		Step: 30
+	Shielded:
+		RegenAmount: 60
 	Armament@PRIMARY:
 		Weapon: CorsairEMP
 		LocalOffset: 400,0,0
@@ -7297,7 +7217,7 @@ SCCORSAIR:
 		LocalOffset: 400,-400,0
 		Name: secondary
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 		AttackType: Hover
 		Armaments: primary, secondary
 	-SpawnActorOnDeath:
@@ -7305,10 +7225,8 @@ SCCORSAIR:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
-	Power:
-		Amount: -30
 	ActorStatValues:
-		Upgrades: upairweapons, upairarmor, upairspeed
+		Upgrades: upairweapons, upairarmor, upairspeed, upplasmashield
 	Voiced:
 		VoiceSet: SCCorsairVoice
 	RenderSprites:
@@ -7318,22 +7236,21 @@ SCCARRIER:
 	Inherits: ^AirProtoss
 	Inherits@Template: ^SpaceshipTemplate
 	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Carrier
+	Valued:
+		Cost: 3000
+	Power:
+		Amount: -150
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		BuildDuration: 2250
-		BuildDurationModifier: 100
 		Prerequisites: ~scfleetbeacon
 		Queue: Aircraft, RAAircraft
 		Description: Heavy protoss warship, deploys\n5 interceptor craft.\n Strong vs Vehicles, Aircraft
@@ -7344,20 +7261,21 @@ SCCARRIER:
 		RepulsionSpeed: 36
 	Health:
 		HP: 300000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+	Repairable:
+		HpPerStep: 15000
+	ChangesHealth@SelfHealing:
+		Step: 120
+	Shielded:
+		RegenAmount: 240
 	Armament:
 		Weapon: InterceptorLauncher
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 		AttackType: Hover
 	CarrierMaster:
 		Actors: SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR
-		RearmTicks: 10
-		RespawnTicks: 200
+		RearmTicks: 125
+		RespawnTicks: 250
 		InstaRepair: true
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
@@ -7366,67 +7284,60 @@ SCCARRIER:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 2048, 2048
-	Power:
-		Amount: -200
 	Voiced:
 		VoiceSet: SCCarrierVoice
 	ActorStatValues:
-		Upgrades: upairweapons, upairarmor, upairspeed
-	ChangesHealth:
-		Step: 32
-		Delay: 1
-		StartIfBelow: 100
-		DamageCooldown: 1
+		Upgrades: upairweapons, upairarmor, upairspeed, upplasmashield
+
 	RenderSprites:
 		PlayerPalette: player_rgba
 
 SCSTARSHIPSOVEREIGN:
 	Inherits: ^AirProtoss
 	Inherits@Template: ^SpaceshipTemplate
+	Inherits@Epic: ^EpicAirUnitTemplate
 	Inherits@exp: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@announce: ^AnnounceGlobal
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@Template: ^HeroInfantryTemplate
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Starship Sovereign
+	Valued:
+		Cost: 7200
+	Power:
+		Amount: -360
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		BuildPaletteOrder: 20
-		BuildDuration: 2250
-		BuildDurationModifier: 100
 		BuildLimit: 1
 		Prerequisites: ~scfleetbeacon, ~upstarsovereign
 		Queue: Aircraft, RAAircraft
 		Description: Heavy protoss warship, deploys\n5 interceptor craft.\n Strong vs Vehicles, Aircraft
 	Aircraft:
-		InitialFacing: 896
-		TurnSpeed: 18
-		Speed: 45
-		RepulsionSpeed: 36
+		Speed: 40
+		TurnSpeed: 16
+		RepulsionSpeed: 16
 	Health:
-		HP: 300000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+		HP: 750000
+	Repairable:
+		HpPerStep: 37500
+	ChangesHealth@SelfHealing:
+		Step: 300
+	Shielded:
+		RegenAmount: 600
 	Armament:
 		Weapon: StarshipSovereignBeam
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 		AttackType: Hover
 	CarrierMaster:
 		Actors: SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR, SCINTERCEPTOR
 		RearmTicks: 10
-		RespawnTicks: 200
+		RespawnTicks: 125
 		InstaRepair: true
 		SlaveDisposalOnKill: KillSlaves
 		SpawnAllAtOnce: false
@@ -7435,12 +7346,10 @@ SCSTARSHIPSOVEREIGN:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 2048, 2048
-	Power:
-		Amount: -200
 	Voiced:
 		VoiceSet: SCCarrierVoice
 	ActorStatValues:
-		Upgrades: upairweapons, upairarmor, upairspeed
+		Upgrades: upairweapons, upairarmor, upairspeed, upplasmashield
 	ChangesHealth:
 		Step: 32
 		Delay: 1
@@ -7453,16 +7362,15 @@ SCINTERCEPTOR:
 	Inherits: ^RANeutralPlane
 	Inherits@Template: ^BomberTemplate
 	Inherits@EXP: ^GainsExperienceTD
+	Inherits@shieldgenerator: ^ProtossPersonalShield
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@explode: ^HeliExplodeProtoss
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Valued:
-		Cost: 50
 	Tooltip:
 		Name: Interceptor
+	Valued:
+		Cost: 500
 	Aircraft:
 		AltitudeVelocity: 120
 		InitialFacing: 768
@@ -7486,24 +7394,25 @@ SCINTERCEPTOR:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
 	Health:
-		HP: 10000
-	Armor:
-		Type: None
-	RevealsShroud:
-		Range: 6c0
-		Type: GroundPosition
+		HP: 30000
+	Repairable:
+		HpPerStep: 1500
+	ChangesHealth@SelfHealing:
+		Step: 12
+	Shielded:
+		RegenAmount: 24
 	Armament@PRIMARY:
 		Weapon: InterceptorCannon
 		LocalOffset: 200,0,0
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 	DeathSounds:
 	Power:
 		Amount: 0
 	Voiced:
 		VoiceSet: SCCarrierVoice
 	ActorStatValues:
-		Upgrades: upairweapons, upairarmor, upairspeed
+		Upgrades: upairweapons, upairarmor, upairspeed, upplasmashield
 	HitShape:
 		UseTargetableCellsOffsets: true
 		Type: Rectangle
@@ -7521,12 +7430,12 @@ SCARBITER:
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Valued:
-		Cost: 2000
 	Tooltip:
 		Name: Arbiter
+	Valued:
+		Cost: 2000
+	Power:
+		Amount: -100
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -7541,12 +7450,13 @@ SCARBITER:
 		IdealSeparation: 1c0
 		RepulsionSpeed: 10
 	Health:
-		HP: 200000
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
-		Type: GroundPosition
+		HP: 125000
+	Repairable:
+		HpPerStep: 6250
+	ChangesHealth@SelfHealing:
+		Step: 50
+	Shielded:
+		RegenAmount: 100
 	Armament:
 		Weapon: ArbiterCannon
 		LocalOffset: 400,0,0
@@ -7559,25 +7469,23 @@ SCARBITER:
 		Armaments: secondary
 		Color: 0000FF
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 		AttackType: Hover
 	-SpawnActorOnDeath:
 	DeathSounds:
 	SelectionDecorations:
 	Selectable:
 		DecorationBounds: 1280, 1024
-	Power:
-		Amount: -100
 	Voiced:
 		VoiceSet: SCArbiterVoice
-	ProximityExternalCondition@StealGen:
-		Range: 7c0
-		Condition: tscloak
 	-ExternalCondition@TSCLOAK:
-	ActorStatValues:
-		Upgrades: upairweapons, upairarmor, upairspeed
+	ProximityExternalCondition@StealGen:
+		Range: 5000
+		Condition: tscloak
 	WithRangeCircle:
-		Range: 7c0
+		Range: 5000
+	ActorStatValues:
+		Upgrades: upairweapons, upairarmor, upairspeed, upplasmashield
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -7587,8 +7495,6 @@ SCPMCV:
 	Inherits@selection: ^SelectableSupportUnit
 	Inherits@mcv: ^MCV
 	Inherits@SHADOWS: ^Shadows
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Buildable:
 		Queue: Defence, RADefence
 		Prerequisites: ~scroboticsfacility
@@ -7617,12 +7523,12 @@ SCZERATUL:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Valued:
-		Cost: 3000
 	Tooltip:
 		Name: Zeratul
+	Valued:
+		Cost: 4000
+	Power:
+		Amount: -200
 	Buildable:
 		BuildPaletteOrder: 50
 		Prerequisites: ~sccitadelofadun
@@ -7631,33 +7537,28 @@ SCZERATUL:
 		BuildLimit: 1
 		IconPalette: ra2
 	Mobile:
-		Speed: 106
+		Speed: 100
 	Health:
-		HP: 300000
+		HP: 250000
 	ChangesHealth@SelfHealing:
-		Step: 300
-	RevealsShroud:
-		Range: 6c0
+		Step: 250
+	Shielded:
+		RegenAmount: 500
 	AutoTarget:
-		ScanRadius: 6
+		ScanRadius: 10
 		InitialStance: AttackAnything
 	Armament:
 		Weapon: ZeratulSlice
 	AttackFrontal:
 		FacingTolerance: 0
 	WithInfantryBody:
-	Power:
-		Amount: -200
 	Passenger:
 		Weight: 2
 		CustomPipType: blue
 	Voiced:
 		VoiceSet: SCZealotVoice
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -7667,33 +7568,31 @@ SCAMARANTH:
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMoveMelee
 	Inherits@shadow: ^SCSmallShadow
+	Inherits@cloak: ^CloakedVehicle
 	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@bot: ^BotAutoDeploySwitchMode
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Amaranth
+	Valued:
+		Cost: 1200
+	Power:
+		Amount: -60
 	Buildable:
 		BuildPaletteOrder: 40
 		Prerequisites: ~sccitadelofadun, ~upamaranth
 		Queue: Infantry, RAInfantry
 		Description: Protoss stealth warrior, attacks in close combat.\n Strong vs ground targets\n Uncrushable
 	Mobile:
-		Speed: 80
+		Speed: 70
 	Health:
 		HP: 70000
-	Armor:
-		Type: None
-	RevealsShroud:
-		Range: 6c0
-	AutoTarget:
-		ScanRadius: 6
-		InitialStance: HoldFire
+	ChangesHealth@SelfHealing:
+		Step: 70
+	Shielded:
+		RegenAmount: 140
 	Armament:
 		Weapon: WarpBladeAmaranth
 		FireDelay: 3
@@ -7708,19 +7607,14 @@ SCAMARANTH:
 		UncloakOn: None
 		IsPlayerPalette: true
 		PauseOnCondition: cloak-force-disabled || base-reveal
-	Power:
-		Amount: -50
 	-Crushable:
 	Passenger:
 		Weight: 2
 		CustomPipType: blue
 	Voiced:
 		VoiceSet: SCDarkTemplarVoice
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -7729,21 +7623,20 @@ SCATREUS:
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXP: ^GainsExperienceTD
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@announce: ^AnnounceOnBuild
 	Inherits@EMP: ^FrontalEMP
 	Inherits@SHADOWS: ^Shadows
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
+	Inherits@range: ^SingularityChargeUpgrade
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Selectable:
-		Bounds: 1024, 1024
-	Valued:
-		Cost: 500
 	Tooltip:
 		Name: Atreus
+	Valued:
+		Cost: 2000
+	Power:
+		Amount: -100
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~sccyberneticscore, ~upatreus
@@ -7751,12 +7644,14 @@ SCATREUS:
 		Description: Protoss assault walker.\n Strong vs Vehicles\n Weak vs Infantry
 	Mobile:
 		Speed: 80
-		TurnSpeed: 1023
+		TurnSpeed: 16
 		Locomotor: wheeled
 	Health:
-		HP: 75000
-	Armor:
-		Type: Heavy
+		HP: 100000
+	ChangesHealth@SelfHealing:
+		Step: 40
+	Shielded:
+		RegenAmount: 80
 	AttackFrontal:
 		FacingTolerance: 0
 	Armament:
@@ -7772,23 +7667,23 @@ SCATREUS:
 	-QuantizeFacingsFromSequence:
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
-	Power:
-		Amount: -30
 	Passenger:
 		Weight: 2
 		CustomPipType: blue
 	Voiced:
 		VoiceSet: SCDragoonVoice
+	Selectable:
+		Bounds: 1024, 1024
 	WithShadow:
 		Offset: 64, 64, 0
 		ZOffset: -512
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor, updragoonrange
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield, updragoonrange
 	RenderSprites:
 		PlayerPalette: player_rgba
 
 SCPOSITRON:
-	Inherits: ^Vehicle
+	Inherits: ^LargeProtoss
 	Inherits@speedup: ^SCUnitProductionSpeedBoost
 	Inherits@Template: ^ScoutVehicleTemplate
 	Inherits@EXP: ^GainsExperienceTD
@@ -7799,35 +7694,39 @@ SCPOSITRON:
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Tooltip:
 		Name: Positron
 	Valued:
-		Cost: 600
+		Cost: 1200
 	Power:
-		Amount: -45
+		Amount: -60
 	Buildable:
 		Prerequisites: ~sccyberneticscore, ~uppositron
 		Queue: Vehicle, RAVehicle
 		Description: Fast scout vehicle, armed with\ngrenades.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft\n Can cross water
 	Mobile:
-		Speed: 125
-		TurnSpeed: 25
+		Speed: 120
+		TurnSpeed: 24
 		Locomotor: hover
 	Health:
-		HP: 80000
+		HP: 60000
 	Repairable:
-		HpPerStep: 4000
+		HpPerStep: 3000
 	ChangesHealth@SelfHealing:
-		Step: 32
+		Step: 24
+	Shielded:
+		RegenAmount: 48
 	Armor:
 		Type: Light
 	Armament:
 		Weapon: PositronGrenade
 		LocalOffset: 600,0,0
+	FirepowerMultiplier@DualWeapon:
+		Modifier: 50
 	AttackFrontal:
 		FacingTolerance: 0
+	-WithInfantryBody:
+	WithFacingSpriteBody:
 	Passenger:
 		Weight: 2
 		CustomPipType: blue
@@ -7841,7 +7740,7 @@ SCPOSITRON:
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor, updragoonrange
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield, updragoonrange
 
 SCLEGIONNAIRE:
 	Inherits@protoss: ^BasicProtoss
@@ -7854,25 +7753,25 @@ SCLEGIONNAIRE:
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
 	Tooltip:
 		Name: Legionnaire
 	Valued:
-		Cost: 300
+		Cost: 700
 	Power:
-		Amount: -20
+		Amount: -35
 	Buildable:
 		BuildPaletteOrder: 20
 		Prerequisites: ~scgateway, ~uplegionnaire
 		Queue: Infantry, RAInfantry
 		Description: Protoss infantry, attacks in close combat.\n Strong vs Infantry\n Weak vs Vehicles, Aircraft\n Uncrushable
 	Mobile:
-		Speed: 80
+		Speed: 60
 	Health:
-		HP: 35000
+		HP: 60000
 	ChangesHealth@SelfHealing:
-		Step: 150
+		Step: 60
+	Shielded:
+		RegenAmount: 120
 	Armament:
 		Weapon: Psi-spear
 		FireDelay: 3
@@ -7882,26 +7781,25 @@ SCLEGIONNAIRE:
 	Voiced:
 		VoiceSet: SCZealotVoice
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield
 	RenderSprites:
 		PlayerPalette: player_rgba
 
 SCPATRIARCH:
 	Inherits@protoss: ^BasicProtoss
+	Inherits@Template: ^HeroInfantryTemplate
 	Inherits@exp: ^GainsExperienceTD
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@shadow: ^SCSmallShadow
-	Inherits@AntiInf: ^PrioritizeInfantry
 	Inherits@weapon: ^ProtossGroundWeaponUpgrades
 	Inherits@armor: ^ProtossGroundArmorUpgrades
 	Inherits@PromotionUnitBuff: ^PromotionUnitBuff
-	Inherits@Template: ^HeroInfantryTemplate
-	Inherits@shieldgenerator: ^HasShieldGenerator
-	Inherits@shield: ^PlasmaShieldUpgrade
-	Valued:
-		Cost: 1000
 	Tooltip:
 		Name: Patriarch
+	Valued:
+		Cost: 4000
+	Power:
+		Amount: -200
 	Buildable:
 		BuildPaletteOrder: 30
 		Prerequisites: ~sctemplararchives, ~uppatriarch
@@ -7912,10 +7810,10 @@ SCPATRIARCH:
 		Speed: 75
 	Health:
 		HP: 125000
-	Armor:
-		Type: Flak
-	RevealsShroud:
-		Range: 6c0
+	ChangesHealth@SelfHealing:
+		Step: 125
+	Shielded:
+		RegenAmount: 250
 	Armament:
 		Weapon: PatriarchShoot
 	ReloadArmamentsBar:
@@ -7925,8 +7823,6 @@ SCPATRIARCH:
 	WithInfantryBody:
 		MinIdleDelay: 1
 		MaxIdleDelay: 2
-	Power:
-		Amount: -50
 	-Crushable:
 	Passenger:
 		Weight: 2
@@ -7934,7 +7830,7 @@ SCPATRIARCH:
 	Voiced:
 		VoiceSet: SCHighTemplarVoice
 	ActorStatValues:
-		Upgrades: upgroundweapons, upgroundarmor
+		Upgrades: upgroundweapons, upgroundarmor, upplasmashield
 	RenderSprites:
 		PlayerPalette: player_rgba
 
@@ -8241,6 +8137,7 @@ SCDRONE:
 		Name: Drone
 	Buildable:
 		Prerequisites: ~scextractor
+		Queue: Infantry, RAInfantry
 		Description: Collects resources.
 	WithDeathAnimation:
 		UseDeathTypeSuffix: false
@@ -8633,8 +8530,6 @@ SCSPOREMAW:
 		CustomPipType: blue
 	Voiced:
 		VoiceSet: SCHydraliskVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
@@ -8690,12 +8585,10 @@ SCHYDRALISK:
 		CustomPipType: blue
 	Voiced:
 		VoiceSet: SCHydraliskVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upzergmissile, upcarapace
+		Upgrades: upzergmissile, upcarapace, upzergrange
 
 SCSPITHID:
 	Inherits@zerg: ^BasicZerg
@@ -8752,12 +8645,10 @@ SCSPITHID:
 		Weight: 1
 	Voiced:
 		VoiceSet: SCHydraliskVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upzergmissile, upcarapace
+		Upgrades: upzergmissile, upcarapace, upzergrange
 
 SCDREADSHROUD:
 	Inherits: ^AirZerg
@@ -9201,9 +9092,6 @@ SCDEVOURER:
 	ChangesHealth@SelfHealing:
 		Step: 100
 	Armament:
-		Weapon: MutaliskSpore
-		LocalOffset: 0,0,0
-	Armament@2:
 		Weapon: SCDevourerAA
 		LocalOffset: 0,0,0
 	AttackAircraft:
@@ -9306,7 +9194,7 @@ SCQUEEN:
 	ChangesHealth@SelfHealing:
 		Step: 50
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 		AttackType: Hover
 	SelectionDecorations:
 	Armament@Spines:
@@ -9439,9 +9327,7 @@ SCULTRALISK:
 		Weight: 4
 		CustomPipType: blue
 	Voiced:
-		VoiceSet: SCUltraliskVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
+		VoiceSet: SCUltraliskVoice ##########
 	WithShadow:
 		Offset: 108, 24, 0
 		ZOffset: -512
@@ -9554,9 +9440,7 @@ SCHERMIT:
 		Weight: 4
 		CustomPipType: blue
 	Voiced:
-		VoiceSet: SCUltraliskVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
+		VoiceSet: SCUltraliskVoice ##########
 	WithShadow:
 		Offset: 108, 24, 0
 		ZOffset: -512
@@ -9652,9 +9536,7 @@ SCGOREMAW:
 		RequiresCondition: gatling >= 10
 		Modifier: 90
 	Voiced:
-		VoiceSet: SCUltraliskVoice
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
+		VoiceSet: SCUltraliskVoice ##########
 	WithShadow:
 		Offset: 108, 24, 0
 		ZOffset: -512
@@ -9757,7 +9639,7 @@ SCLURKER:
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
-		Upgrades: upzergmelee, upcarapace
+		Upgrades: upzergmelee, upcarapace, upzergrange
 
 SCINFESTEDTERRAN:
 	Inherits@zerg: ^BasicZerg
@@ -9863,8 +9745,6 @@ SCDEFILER:
 		UndeployTicks: 0
 	Voiced:
 		VoiceSet: SCDefilerVoice ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	WithShadow:
 		Offset: 108, 24, 0
 		ZOffset: -512
@@ -9941,9 +9821,6 @@ SCBROODLING:
 		TargetTypes: Broodling
 	Voiced:
 		VoiceSet: SCBroodlingVoice
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	ChangesHealth@timedlife:
 		Step: -30
 		Delay: 1
@@ -9999,9 +9876,6 @@ SCKERRIGANZERG:
 	RenderSprites:
 	Voiced:
 		VoiceSet: SCKerriganZergVoice
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	GrantConditionOnDeploy:
 		DeployedCondition: summon
 		SkipMakeAnimation: true
@@ -10276,207 +10150,11 @@ updragoonrange:
 		Description: Increases range of Dragoons, Atreuses, and Positrons
 		Prerequisites: ~sccyberneticscore, ~!updragoonrange
 	Valued:
-		Cost: 2000
+		Cost: 3600
 	RenderSprites:
 		Image: updragoonrange
 	ProvidesPrerequisite:
 		Prerequisite: updragoonrange
-
-upgroundweapons:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Ground Weapons Level 1
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases firepower of all Protoss ground units.
-		Prerequisites: ~sctemplararchives, ~!upgroundweapons
-	Valued:
-		Cost: 2400
-	RenderSprites:
-		Image: upgroundweapons
-	ProvidesPrerequisite:
-		Prerequisite: upgroundweapons
-
-upgroundweapons2:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Ground Weapons Level 2
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases firepower of all Protoss ground units.
-		Prerequisites: ~sctemplararchives, ~upgroundweapons, ~!upgroundweapons2
-	Valued:
-		Cost: 3600
-	RenderSprites:
-		Image: upgroundweapons
-	ProvidesPrerequisite:
-		Prerequisite: upgroundweapons
-
-upgroundweapons3:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Ground Weapons Level 3
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases firepower of all Protoss ground units.
-		Prerequisites: ~sctemplararchives, ~upgroundweapons2, ~!upgroundweapons3
-	Valued:
-		Cost: 4800
-	RenderSprites:
-		Image: upgroundweapons
-	ProvidesPrerequisite:
-		Prerequisite: upgroundweapons
-
-upgroundarmor:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Ground Armor Level 1
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases armor of all Protoss ground units.
-		Prerequisites: ~sctemplararchives, ~!upgroundarmor
-	Valued:
-		Cost: 2400
-	RenderSprites:
-		Image: upgroundarmor
-	ProvidesPrerequisite:
-		Prerequisite: upgroundarmor
-
-upgroundarmor2:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Ground Armor Level 2
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases armor of all Protoss ground units.
-		Prerequisites: ~sctemplararchives, ~upgroundarmor, ~!upgroundarmor2
-	Valued:
-		Cost: 3600
-	RenderSprites:
-		Image: upgroundarmor
-	ProvidesPrerequisite:
-		Prerequisite: upgroundarmor
-
-upgroundarmor3:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Ground Armor Level 3
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases armor of all Protoss ground units.
-		Prerequisites: ~sctemplararchives, ~upgroundarmor2, ~!upgroundarmor3
-	Valued:
-		Cost: 4800
-	RenderSprites:
-		Image: upgroundarmor
-	ProvidesPrerequisite:
-		Prerequisite: upgroundweapons
-
-upairweapons:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Air Weapons Level 1
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases firepower of all Protoss aur units.
-		Prerequisites: ~sctemplararchives, ~!upairweapons
-	Valued:
-		Cost: 2400
-	RenderSprites:
-		Image: upairweapons
-	ProvidesPrerequisite:
-		Prerequisite: upairweapons
-
-upairweapons2:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Air Weapons Level 2
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases firepower of all Protoss air units.
-		Prerequisites: ~sctemplararchives, ~upairweapons, ~!upairweapons2
-	Valued:
-		Cost: 3600
-	RenderSprites:
-		Image: upairweapons
-	ProvidesPrerequisite:
-		Prerequisite: upairweapons
-
-upairweapons3:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Air Weapons Level 3
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases firepower of all Protoss air units.
-		Prerequisites: ~sctemplararchives, ~upairweapons2, ~!upairweapons3
-	Valued:
-		Cost: 4800
-	RenderSprites:
-		Image: upairweapons
-	ProvidesPrerequisite:
-		Prerequisite: upairweapons
-
-upairarmor:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Air Armor Level 1
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases armor of all Protoss air units.
-		Prerequisites: ~sctemplararchives, ~!upairarmor
-	Valued:
-		Cost: 2400
-	RenderSprites:
-		Image: upairarmor
-	ProvidesPrerequisite:
-		Prerequisite: upairarmor
-
-upairarmor2:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Air Armor Level 2
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases armor of all Protoss air units.
-		Prerequisites: ~sctemplararchives, ~upairarmor, ~!upairarmor2
-	Valued:
-		Cost: 3600
-	RenderSprites:
-		Image: upairarmor
-	ProvidesPrerequisite:
-		Prerequisite: upairarmor
-
-upairarmor3:
-	Inherits: ^researched_upgrade.template
-	Tooltip:
-		Name: Air Armor Level 3
-	Buildable:
-		BuildPaletteOrder: 80
-		Queue: Addons
-		Description: Increases armor of all Protoss air units.
-		Prerequisites: ~sctemplararchives, ~upairarmor2, ~!upairarmor3
-	Valued:
-		Cost: 4800
-	RenderSprites:
-		Image: upairarmor
-	ProvidesPrerequisite:
-		Prerequisite: upairarmor
-
-	####################################################################################################
-	#		Upgrades Protoss WIP
-	####################################################################################################
 
 uppylon1:
 	Inherits: ^researched_upgrade.template
@@ -10518,7 +10196,7 @@ upplasmashield:
 		Description: Increases durability of all Protoss units and structures.
 		Prerequisites: ~sccyberneticscore, ~!upplasmashield
 	Valued:
-		Cost: 3000
+		Cost: 3600
 	RenderSprites:
 		Image: upplasmashield
 	ProvidesPrerequisite:
@@ -10534,7 +10212,7 @@ upreavercapacity:
 		Description: Doubles Reaver capacity.
 		Prerequisites: ~scroboticssupportbay
 	Valued:
-		Cost: 2500
+		Cost: 3600
 	RenderSprites:
 		Image: upreavercapacity
 	ProvidesPrerequisite:
@@ -10550,11 +10228,203 @@ upairspeed:
 		Description: Increases speed of flying Protoss Units.
 		Prerequisites: ~scroboticssupportbay, ~!upairspeed
 	Valued:
-		Cost: 2000
+		Cost: 3600
 	RenderSprites:
 		Image: upairspeed
 	ProvidesPrerequisite:
 		Prerequisite: upairspeed
+
+upgroundweapons:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Ground Weapons Level 1
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases firepower of all Protoss ground units.
+		Prerequisites: ~sctemplararchives, ~!upgroundweapons
+	Valued:
+		Cost: 2400
+	RenderSprites:
+		Image: upgroundweapons
+	ProvidesPrerequisite:
+		Prerequisite: upgroundweapons
+
+upgroundweapons2:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Ground Weapons Level 2
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases firepower of all Protoss ground units.
+		Prerequisites: ~sctemplararchives, ~upgroundweapons, ~!upgroundweapons2
+	Valued:
+		Cost: 4200
+	RenderSprites:
+		Image: upgroundweapons
+	ProvidesPrerequisite:
+		Prerequisite: upgroundweapons
+
+upgroundweapons3:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Ground Weapons Level 3
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases firepower of all Protoss ground units.
+		Prerequisites: ~sctemplararchives, ~upgroundweapons2, ~!upgroundweapons3
+	Valued:
+		Cost: 6000
+	RenderSprites:
+		Image: upgroundweapons
+	ProvidesPrerequisite:
+		Prerequisite: upgroundweapons
+
+upgroundarmor:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Ground Armor Level 1
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases armor of all Protoss ground units.
+		Prerequisites: ~sctemplararchives, ~!upgroundarmor
+	Valued:
+		Cost: 2400
+	RenderSprites:
+		Image: upgroundarmor
+	ProvidesPrerequisite:
+		Prerequisite: upgroundarmor
+
+upgroundarmor2:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Ground Armor Level 2
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases armor of all Protoss ground units.
+		Prerequisites: ~sctemplararchives, ~upgroundarmor, ~!upgroundarmor2
+	Valued:
+		Cost: 4200
+	RenderSprites:
+		Image: upgroundarmor
+	ProvidesPrerequisite:
+		Prerequisite: upgroundarmor
+
+upgroundarmor3:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Ground Armor Level 3
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases armor of all Protoss ground units.
+		Prerequisites: ~sctemplararchives, ~upgroundarmor2, ~!upgroundarmor3
+	Valued:
+		Cost: 6000
+	RenderSprites:
+		Image: upgroundarmor
+	ProvidesPrerequisite:
+		Prerequisite: upgroundweapons
+
+upairweapons:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Air Weapons Level 1
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases firepower of all Protoss aur units.
+		Prerequisites: ~sctemplararchives, ~!upairweapons
+	Valued:
+		Cost: 2400
+	RenderSprites:
+		Image: upairweapons
+	ProvidesPrerequisite:
+		Prerequisite: upairweapons
+
+upairweapons2:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Air Weapons Level 2
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases firepower of all Protoss air units.
+		Prerequisites: ~sctemplararchives, ~upairweapons, ~!upairweapons2
+	Valued:
+		Cost: 6000
+	RenderSprites:
+		Image: upairweapons
+	ProvidesPrerequisite:
+		Prerequisite: upairweapons
+
+upairweapons3:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Air Weapons Level 3
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases firepower of all Protoss air units.
+		Prerequisites: ~sctemplararchives, ~upairweapons2, ~!upairweapons3
+	Valued:
+		Cost: 3600
+	RenderSprites:
+		Image: upairweapons
+	ProvidesPrerequisite:
+		Prerequisite: upairweapons
+
+upairarmor:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Air Armor Level 1
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases armor of all Protoss air units.
+		Prerequisites: ~sctemplararchives, ~!upairarmor
+	Valued:
+		Cost: 5400
+	RenderSprites:
+		Image: upairarmor
+	ProvidesPrerequisite:
+		Prerequisite: upairarmor
+
+upairarmor2:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Air Armor Level 2
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases armor of all Protoss air units.
+		Prerequisites: ~sctemplararchives, ~upairarmor, ~!upairarmor2
+	Valued:
+		Cost: 7200
+	RenderSprites:
+		Image: upairarmor
+	ProvidesPrerequisite:
+		Prerequisite: upairarmor
+
+upairarmor3:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Air Armor Level 3
+	Buildable:
+		BuildPaletteOrder: 80
+		Queue: Addons
+		Description: Increases armor of all Protoss air units.
+		Prerequisites: ~sctemplararchives, ~upairarmor2, ~!upairarmor3
+	Valued:
+		Cost: 4800
+	RenderSprites:
+		Image: upairarmor
+	ProvidesPrerequisite:
+		Prerequisite: upairarmor
 
 	####################################################################################################
 	#		Upgrades Terrans

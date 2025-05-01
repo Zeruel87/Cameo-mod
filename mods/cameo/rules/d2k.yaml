@@ -3,19 +3,19 @@ World:
 	# 	Name: Atreides DU
 	# 	InternalName: atreides
 	# 	Game: Dune Universe
-	# 	Side: Houses
+	# 	Side: Dune
 	# 	Description: House Atreides\nThe noble Atreides, from the water world of Caladan,\nrely on their ornithopters to ensure air superiority.\nThey have allied themselves with the Fremen, the fearsome\nnative warriors of Dune that can move undetected in battle.\nTheir Strength lies in air superiority\nBonus: Builds structures faster\nSupport Power: Ornithopter Airstrike, Fremen Guerilla
 	# FactionCA@Harkonnen:
 	# 	Name: Harkonnen DU
 	# 	InternalName: harkonnen
 	# 	Game: Dune Universe
-	# 	Side: Houses
+	# 	Side: Dune
 	# 	Description: House Harkonnen\nThe evil Harkonnen of the planet Giedi Prime\nwill stop at nothing to gain control of the spice.\nThey rely on brute force and atomic weapons to achieve their goals:\nwealth, and the destruction of House Atreides.\nTheir Specialities are Devastators and Annihilators.\nBonus: Explosions are more powerful\nSupport Power: Death Hand Missile
 	FactionCA@Ordos:
 		Name: Ordos DU
 		InternalName: ordos
 		Game: Dune Universe
-		Side: Houses
+		Side: Dune
 		Description: House Ordos\nThe insidious Ordos of the icy planet Sigma Draconis IV\nare known for their wealth, greed and treachery.\nRelying heavily on mercenaries they often resort\nto sabotage and forbidden Ixian technologies.\nTheir Strength lies in Stealth and quick hit and run tactics\nBonus: Stealthed units moves faster\nSupport Power: Saboteur, Chaos Lightning
 	# FactionCA@Corrino:
 	# 	Name: Corrino DU
@@ -29,13 +29,13 @@ World:
 		Game: Dune Universe
 		Side: Dune
 		Description: Ixians
-	# FactionCA@RandomDU:
-	# 	Name: Any
-	# 	InternalName: RandomDU
-	# 	RandomFactionMembers: atreides, ordos, harkonnen, corrino, ixian
-	# 	Game: Dune Universe
-	# 	Side: Random
-	# 	Description: Random Faction\nA random faction from Dune Universe will be chosen when the game starts.
+	FactionCA@RandomDU:
+		Name: Any Dune
+		InternalName: RandomDU
+		RandomFactionMembers: ordos, ixian #atreides, ordos, harkonnen, corrino, ixian
+		Game: Dune Universe
+		Side: Random
+		Description: Random Faction\nA random faction from Dune Universe will be chosen when the game starts.
 
 	#########################################
 	#   DUNE UNIVERSE
@@ -140,34 +140,38 @@ Player:
 	Shielded:
 		DamageRegenDelay: 125
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
-		RequiresCondition: !disabled
+		ShieldsUpCondition: shielded
+		RequiresCondition: !disabled && (d2k_personal_shield || shieldgen)
 		SelectionBarColor: 8888FFFF
+	GrantCondition@shieldpermanent:
+		Condition: shieldpermanent
+		RequiresCondition: d2k_personal_shield
 	ChangesShield@personal_shield:
 		Step: 40
 		Delay: 1
 		StartIfBelow: 100
+		DamageCooldown: 125
 		RequiresCondition: d2k_personal_shield
 	Armor:
-		RequiresCondition: !d2k_shielded
+		RequiresCondition: !shielded
 	Armor@shielded:
 		Type: Shield
-		RequiresCondition: d2k_shielded
+		RequiresCondition: shielded
 	Targetable@PersonalShielded:
 		TargetTypes: PersonalShielded
-		RequiresCondition: d2k_shielded
+		RequiresCondition: shielded
 	DamageMultiplier@d2k_advanced_ixian_technology:
 		Modifier: 50
-		RequiresCondition: d2k_personal_shield && d2k_advanced_ixian_technology && d2k_shielded
+		RequiresCondition: d2k_personal_shield && d2k_advanced_ixian_technology && shielded
 	GrantConditionOnPrerequisite@d2k_advanced_ixian_technology:
 		Condition: d2k_advanced_ixian_technology
 		Prerequisites: d2k_advanced_ixian_technology
 	DamageMultiplier@d2k_personal_shield:
 		Modifier: 80
-		RequiresCondition: d2k_personal_shield && !d2k_shielded
+		RequiresCondition: d2k_personal_shield && !shielded
 	SpeedMultiplier@d2k_personal_shield:
 		Modifier: 125
-		RequiresCondition: d2k_personal_shield && d2k_shielded
+		RequiresCondition: d2k_personal_shield && shielded
 	GrantConditionOnPrerequisite@d2k_personal_shield:
 		Condition: d2k_personal_shield
 		Prerequisites: d2k_personal_shield
@@ -231,7 +235,7 @@ Player:
 		Upgrades: d2k_advanced_ixian_technology
 	Armor@shielded:
 		Type: Shield
-		RequiresCondition: d2k_shielded
+		RequiresCondition: shielded
 
 ^D2K_AdvancedIxianTechnologyTeamUpgrade:
 	GrantConditionOnPrerequisite@d2k_advanced_ixian_technology:
@@ -2589,6 +2593,7 @@ artillery_platform:
 	-DetectCloaked:
 	RenderSprites:
 		Image: artillery_platform
+
 autogun_turret:
 	Inherits: medium_gun_turret
 	Inherits@AUTOTARGET: ^AutoTargetAll
@@ -6621,7 +6626,7 @@ d2k_air_drone:
 		DamageRegenDelay: 125
 		RegenAmount: 50
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	AmmoPool:
@@ -7062,7 +7067,7 @@ harvester:
 		DamageRegenDelay: 125
 		RegenAmount: 160
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	Cloak:
@@ -8002,6 +8007,7 @@ ordos_python:
 		RequiresCondition: deployed
 	RenderSprites:
 		PlayerPalette: player_rgba
+
 siege_tank_ixian:
 	Inherits@D2KT: ^D2KTank
 	Inherits@Template: ^ArtilleryTemplate
@@ -8041,7 +8047,7 @@ siege_tank_ixian:
 		DamageRegenDelay: 125
 		RegenAmount: 48
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	Armament:
@@ -8094,6 +8100,192 @@ siege_tank_ixian:
 		ZOffset: -512
 	ActorStatValues:
 		Upgrades: d2k_siege_range_upgrade, d2k_general_purpose_armor, d2k_advanced_ixian_technology
+
+duelist_tank:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@IXEMP: ^D2K_Ix_Turret_EMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@Barrel: ^D2K_ReinforcedBarrel
+	Inherits@NeedleGuns: ^D2K_NeedleGuns
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 40
+		IconPalette: d2kunit
+		Prerequisites: ~research_centre.ixian
+		Description: actor-duelist_tank.description
+	Valued:
+		Cost: 1600
+	Tooltip:
+		Name: Ix Duelist Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 197500
+	Repairable:
+		HpPerStep: 9875
+	ChangesHealth@SelfHealing:
+		Step: 79
+	Armor:
+		Type: Heavy
+	Shielded:
+		DamageRegenDelay: 125
+		RegenAmount: 158
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		SelectionBarColor: 8888FFFF
+		RequiresCondition: !disabled && d2k_advanced_ixian_technology
+	Mobile:
+		Speed: 45
+		TurnSpeed: 9
+	Turreted:
+		TurnSpeed: 9
+		Offset: 0,0,0
+	Armament:
+		Weapon: DuelistTankCannon
+		Recoil: 150
+		RecoilRecovery: 15
+		LocalOffset: 256,0,320
+		MuzzleSequence: muzzle
+		MuzzlePalette: d2keffect
+	Armament@Guns: ##########
+		Weapon: HMG_Duelist
+		LocalOffset: 128,-128,128, 128,128,128
+		MuzzleSequence: muzzle2
+		MuzzlePalette: d2keffect
+		RequiresCondition: !d2k_needle_guns
+	Armament@Upgrade: ##########
+		Weapon: HMG_Duelist_upgrade
+		LocalOffset: 128,-128,128, 128,128,128
+		MuzzleSequence: muzzle2
+		MuzzlePalette: d2keffect
+		RequiresCondition: d2k_needle_guns
+	FirepowerMultiplier@DualWeapon:
+		Modifier: 50
+	ActorStatValues:
+		Upgrades: d2k_siege_range_upgrade
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	Selectable:
+		Class: combat
+	AttractsWorms:
+		Intensity: 520
+	Cloak@TDcloak:
+	Voiced:
+		VoiceSet: D2KDuelistTank
+	RangeMultiplier@d2k_needle_guns:
+		Modifier: 105
+	FirepowerMultiplier@d2k_needle_guns:
+		Modifier: 110
+	ActorStatValues:
+		Upgrades: d2k_siege_range_upgrade, d2k_needle_guns, d2k_general_purpose_armor, d2k_advanced_ixian_technology
+
+missile_tank_ixian:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^FireSupportTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
+	Inherits@AntiVeh: ^PrioritizeVehicle
+	Inherits@HeavyMissiles: ^D2K_HeavyMissilesUpgrade
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Inherits@IxianTechnology: ^D2K_AdvancedIxianTechnology
+	Tooltip:
+		Name: Ix Missile Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: ~research_centre.ixian
+		BuildPaletteOrder: 60
+		Description: actor-missile_tank.description
+		IconPalette: d2kunit
+	Valued:
+		Cost: 2250
+	Mobile:
+		Speed: 50
+		TurnSpeed: 10
+	Health:
+		HP: 50000
+	Repairable:
+		HpPerStep: 2500
+	ChangesHealth@SelfHealing:
+		Step: 20
+	Armor:
+		Type: Light
+	Shielded:
+		DamageRegenDelay: 125
+		RegenAmount: 40
+		RegenInterval: 1
+		ShieldsUpCondition: d2k_shielded
+		SelectionBarColor: 8888FFFF
+		RequiresCondition: !disabled && d2k_advanced_ixian_technology
+	Armament:
+		Weapon: mtank_pri2
+		LocalOffset: -128,128,171, -128,-128,171
+		PauseOnCondition: !ammo
+	AttackFrontal:
+		FacingTolerance: 0
+	AutoTarget:
+		InitialStanceAI: Defend
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	Selectable:
+		Class: missiletank
+	AttractsWorms:
+		Intensity: 600
+	Cloak@TDcloak:
+	RenderRangeCircle:
+	Voiced:
+		VoiceSet: D2KMissileTank
+	AmmoPool:
+		Ammo: 10
+		AmmoCondition: ammo
+	ReloadAmmoPool:
+		Delay: 25
+		Count: 1
+		ResetOnFire: true
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+	Cloak:
+		InitialDelay: 125
+		CloakDelay: 75
+		CloakSound: trans1.aud
+		UncloakSound: appear1.aud
+		UncloakOn: Attack, infiltrate, damage
+		IsPlayerPalette: true
+		CloakedCondition: cloaked
+		RequiresCondition: d2k_advanced_ixian_technology
+	ReloadAmmoDelayMultiplier@RANK-1:
+		RequiresCondition: rank-veteran == 1
+		Modifier: 95
+	ReloadAmmoDelayMultiplier@RANK-2:
+		RequiresCondition: rank-veteran == 2
+		Modifier: 90
+	ReloadAmmoDelayMultiplier@RANK-3:
+		RequiresCondition: rank-veteran == 3
+		Modifier: 85
+	ReloadAmmoDelayMultiplier@RANK-ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 75
+	RenderSprites:
+		Image: ix_missile_tank
+		PlayerPalette: player
+	ActorStatValues:
+		Upgrades: d2k_heavy_missile_upgrade, d2k_advanced_ixian_technology
 
 d2k_autogun_tank:
 	Inherits@D2KT: ^D2KTank
@@ -8170,14 +8362,6 @@ d2k_autogun_tank:
 	RangeMultiplier@gatling1:
 		Modifier: 140
 		RequiresCondition: gatling > 1
-# d2k_autogun_tank.husk:
-# 	Inherits: ^D2KVehicleHusk
-# 	Tooltip:
-# 		Name: Autogun Tank (Destroyed)
-# 	Health:
-# 		HP: 1500
-# 	TransformOnCapture:
-# 		IntoActor: d2k_autogun_tank
 
 d2k_autogun_tank_small:
 	Inherits: combat_tank_h
@@ -8992,7 +9176,7 @@ rocket_raider_ixian:
 		DamageRegenDelay: 125
 		RegenAmount: 20
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	AmmoPool:
@@ -9094,7 +9278,7 @@ shock_raider:
 		DamageRegenDelay: 125
 		RegenAmount: 32
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	Armor:
@@ -9358,6 +9542,7 @@ combat_tank_o_stealth:
 		PauseOnCondition: cloak-force-disabled || base-reveal
 	Selectable:
 		Class: combat_tank_o_stealth
+
 combat_tank_ixian:
 	Inherits@D2KT: ^D2KTank
 	Inherits@Template: ^MainBattleTankTemplate
@@ -9393,7 +9578,7 @@ combat_tank_ixian:
 		DamageRegenDelay: 125
 		RegenAmount: 52
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	Mobile:
@@ -12156,6 +12341,7 @@ upordos_chem_troop:
 	RenderSprites:
 		Image: chemtrooper
 	ProvidesPrerequisite:
+
 upordos_contaminator:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
@@ -12169,6 +12355,7 @@ upordos_contaminator:
 	RenderSprites:
 		Image: contaminator
 	ProvidesPrerequisite:
+
 upordos_d2k_leech:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
@@ -12238,6 +12425,7 @@ upordos_deviatormk2:
 	RenderSprites:
 		Image: ordos_deviatormk2
 	ProvidesPrerequisite:
+
 upordos_wraith:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
@@ -12266,6 +12454,7 @@ upordos_ordos_mortar:
 	RenderSprites:
 		Image: ordos_mortar
 	ProvidesPrerequisite:
+
 upordos_ordos_stealth_tank:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
@@ -12279,6 +12468,7 @@ upordos_ordos_stealth_tank:
 	RenderSprites:
 		Image: d2k_ordos_stealth_tank
 	ProvidesPrerequisite:
+
 upordos_banshee:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
@@ -12292,6 +12482,7 @@ upordos_banshee:
 	RenderSprites:
 		Image: ordos_banshee
 	ProvidesPrerequisite:
+
 upordos_python:
 	Inherits: ^promotion_upgrade.template
 	Tooltip:
@@ -12321,7 +12512,7 @@ heavy_inf:
 	Valued:
 		Cost: 400
 	Tooltip:
-		Name: Rashinan
+		Name: Rashidan
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -12460,7 +12651,7 @@ storm_raider:
 		DamageRegenDelay: 125
 		RegenAmount: 48
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	Mobile:
@@ -12533,7 +12724,7 @@ storm_lasher:
 		DamageRegenDelay: 125
 		RegenAmount: 160
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	FirepowerMultiplier@d2k_advanced_ixian_technology:
@@ -12634,7 +12825,7 @@ heavy_rocket_raider_ixian:
 		DamageRegenDelay: 125
 		RegenAmount: 68
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	AmmoPool:
@@ -12745,7 +12936,7 @@ combat_siege_tank:
 		DamageRegenDelay: 125
 		RegenAmount: 64
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	Mobile:
@@ -12823,7 +13014,7 @@ d2k_neocymek:
 		DamageRegenDelay: 240
 		RegenAmount: 80
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		RequiresCondition: d2k_advanced_ixian_technology
 		SelectionBarColor: 8888FFFF
 	Armament@Cannon:
@@ -12920,7 +13111,7 @@ d2k_jammer:
 		DamageRegenDelay: 125
 		RegenAmount: 80
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		RequiresCondition: d2k_advanced_ixian_technology
 		SelectionBarColor: 8888FFFF
 	Mobile:
@@ -13159,7 +13350,7 @@ d2k_apparition:
 # 		DamageRegenDelay: 125
 # 		RegenAmount: 300
 # 		RegenInterval: 1
-# 		ShieldsUpCondition: d2k_shielded
+# 		ShieldsUpCondition: shielded
 # 		SelectionBarColor: 8888FFFF
 # 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 # 	Mobile:
@@ -13255,7 +13446,7 @@ d2k_ixdrone:
 		DamageRegenDelay: 125
 		RegenAmount: 24
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	Armament@PRIMARY:
@@ -13343,7 +13534,7 @@ d2k_ixdrone.husk:
 # 		DamageRegenDelay: 125
 # 		RegenAmount: 78
 # 		RegenInterval: 1
-# 		ShieldsUpCondition: d2k_shielded
+# 		ShieldsUpCondition: shielded
 # 		SelectionBarColor: 8888FFFF
 # 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 # 	AmmoPool:
@@ -13479,7 +13670,7 @@ d2k_ixbomber:
 		DamageRegenDelay: 125
 		RegenAmount: 76
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	Armament@PRIMARY:
@@ -13571,7 +13762,7 @@ d2k_resonancedrone:
 		DamageRegenDelay: 125
 		RegenAmount: 20
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		SelectionBarColor: 8888FFFF
 		RequiresCondition: !disabled && d2k_advanced_ixian_technology
 	AutoTarget:
@@ -13676,7 +13867,7 @@ d2k_farasha:
 		DamageRegenDelay: 125
 		RegenAmount: 200
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		RequiresCondition: d2k_advanced_ixian_technology
 		SelectionBarColor: 8888FFFF
 	Armament@drones:
@@ -13789,16 +13980,16 @@ d2k_farasha_drone:
 		LandingDistance: 6400
 	HasParent:
 	Health:
-		HP: 12500
+		HP: 25000
 	ChangesHealth@SelfHealing:
-		Step: 5
+		Step: 10
 	Shielded:
 		InitialPercentageStrength: 100
 		MaxPercentageStrength: 100
 		DamageRegenDelay: 125
-		RegenAmount: 10
+		RegenAmount: 20
 		RegenInterval: 1
-		ShieldsUpCondition: d2k_shielded
+		ShieldsUpCondition: shielded
 		RequiresCondition: d2k_advanced_ixian_technology
 		SelectionBarColor: 8888FFFF
 	Armament@PRIMARY:
