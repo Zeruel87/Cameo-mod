@@ -1908,16 +1908,17 @@ outpost.ordos:
 	ParatroopersPower@paratroopers:
 		OrderName: OrdosSmugglers
 		Prerequisites:
-			1: outpost.ordos
+			1: upordos_outpost.ordos
+		IconImage: ordos_upgrade_para
 		Icons:
-			1: paratroopers
+			1: icon
 		Names:
 			1: Ordos Contraband
 		ChargeInterval: 6000
 		Descriptions:
 			1: power-paratroopers.description
 		DropItems:
-			1: d2k_autogun_tank_small, raider, combat_tank_o, deviator, deviator, ordos_apc, combat_tank_o_stealth, d2k_autogun_tank_small, raider, combat_tank_o, deviator, deviator, ordos_apc, combat_tank_o_stealth, d2k_autogun_tank_small, raider, combat_tank_o, deviator, deviator, ordos_apc, combat_tank_o_stealth
+			1: stealth_raider, stealth_raider, deviator, deviator, deviator, stealth_raider, stealth_raider, deviator, deviator, deviator, stealth_raider, stealth_raider, deviator, deviator, deviator
 		SelectTargetSpeechNotification: SelectTarget
 		AllowImpassableCells: false
 		QuantizedFacings: 16
@@ -7811,7 +7812,7 @@ ordos_cobra:
 	Inherits@AntiBuil: ^PrioritizeBuilding
 	Buildable:
 		Queue: Vehicle, RAVehicle
-		Prerequisites: ~heavy_factory.ordos, outpost.ordos
+		Prerequisites: ~heavy_factory.ordos, outpost.ordos, ~!upordos_python
 		BuildPaletteOrder: 50
 		Description: Siege Artillery\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
 		IconPalette: d2kunit
@@ -7819,12 +7820,6 @@ ordos_cobra:
 		Cost: 1000
 	Tooltip:
 		Name: Cobra Tank
-	Buildable:
-		BuildPaletteOrder: 60
-		BuildDurationModifier: 100
-		BuildDuration: 300
-		Queue: Vehicle, RAVehicle
-		Description: Nod's main battle tank.\nCan deploy to gain extra protection.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		Speed: 43
 		TurnSpeed: 48
@@ -7854,6 +7849,107 @@ ordos_cobra:
 		Name: deployed
 		Turret: deployed
 		Weapon: 120mm_cobra_deploy
+		LocalOffset: 543,0,362
+		RequiresCondition: deployed
+		MuzzleSequence: muzzle
+	WithMuzzleOverlay:
+	AttackFrontal:
+		RequiresCondition: undeployed
+		FacingTolerance: 0
+	AttackTurreted@deployed:
+		RequiresCondition: deployed
+		Armaments: deployed
+		Turrets: deployed
+		PauseOnCondition: disabled
+		Voice: Attack
+	SelectionDecorations:
+	Selectable:
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	WithSpriteBody@deployed:
+		RequiresCondition: deployed
+		Sequence: deploy-idle
+	WithSpriteTurret:
+		Turret: deployed
+		RequiresCondition: deployed
+	WithFacingSpriteBody:
+		RequiresCondition: !deployed
+	WithMakeAnimation:
+	GrantConditionOnDeploy:
+		PauseOnCondition: disabled
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: true
+		UndeployOnPickup: true
+		Facing: 640
+		DeploySounds: KobraDeploy.wav
+		UndeploySounds: KobraDeploy.wav
+		Voice: Move
+	Passenger:
+		RequireForceMoveCondition: !undeployed
+	AutoDeployer:
+		DeployChance: 75
+		DeployTicks: 300
+		UndeployTicks: 1000
+	Voiced:
+		VoiceSet: EBFDOrdosCobra
+	DeliversCash:
+		Payload: 350
+	RangeMultiplier@deployed:
+		Modifier: 160
+		RequiresCondition: deployed
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+ordos_python:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@EMP: ^FrontalEMP
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		Prerequisites: ~heavy_factory.ordos, outpost.ordos, ~upordos_python
+		BuildPaletteOrder: 50
+		Description: Siege Artillery\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
+		IconPalette: d2kunit
+	Valued:
+		Cost: 1200
+	Tooltip:
+		Name: Python Tank
+	Mobile:
+		Speed: 40
+		TurnSpeed: 48
+		RequireForceMoveCondition: deployed
+	Health:
+		HP: 80000
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 6c0
+	RevealOnFire:
+		ArmamentNames: primary, deployed
+	DamageMultiplier:
+		Modifier: 75
+		RequiresCondition: deployed
+	Turreted:
+		TurnSpeed: 160
+		Turret: deployed
+	Armament@PRIMARY:
+		Weapon: 120mm_python
+		LocalOffset: 407,0,362
+		RequiresCondition: undeployed
+		MuzzleSequence: muzzle
+	Armament@deployed:
+		Name: deployed
+		Turret: deployed
+		Weapon: 120mm_python_deploy
 		LocalOffset: 543,0,362
 		RequiresCondition: deployed
 		MuzzleSequence: muzzle
@@ -10230,7 +10326,20 @@ ordos_upgrade_toxin:
 		IconPalette: d2kunit
 	RenderSprites:
 		Image: ordos_upgrade_toxin
-
+upordos_outpost.ordos:
+	Inherits: ^researched_upgrade.template
+	Tooltip:
+		Name: Contraband
+	Valued:
+		Cost: 12500
+	Buildable:
+		BuildPaletteOrder: 200
+		Prerequisites: ~research_centre.ordos, ~!upordos_outpost.ordos
+		Queue: Upgrades
+		Description: upgrades the firepowerr and reload of current chemical and biological units.
+		IconPalette: d2kunit
+	RenderSprites:
+		Image: ordos_upgrade_para
 # d2k_ornithopter_upgrade:
 # 	Inherits: ^researched_upgrade.template
 # 	Tooltip:
@@ -12182,6 +12291,18 @@ upordos_banshee:
 		Prerequisites: ~construction_yard.ordos, upordos_ordos_stealth_tank, !upordos_banshee, rank1
 	RenderSprites:
 		Image: ordos_banshee
+	ProvidesPrerequisite:
+upordos_python:
+	Inherits: ^promotion_upgrade.template
+	Tooltip:
+		Name: Unlock Python
+	Buildable:
+		BuildPaletteOrder: 120
+		Queue: Promotions
+		Description: Enables construction of the Python.
+		Prerequisites: ~construction_yard.ordos, upordos_banshee, !upordos_python, rank1
+	RenderSprites:
+		Image: ordos_python
 	ProvidesPrerequisite:
 
 # 
