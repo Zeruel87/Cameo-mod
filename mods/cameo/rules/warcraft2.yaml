@@ -2148,7 +2148,7 @@ wc2_human_townhall:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
-		BuildSounds: zchrdy00.aud
+		BuildSounds: wc2_constrct.aud
 		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil ##########
 	DamageMultiplier@keep:
 		Modifier: 75
@@ -2625,100 +2625,233 @@ wc2_human_oil_platform:
 		VoiceSet: wc2orcoilplatformvoice
 
 wc2_human_scout_tower:
-	Inherits@WC2BUILDING: ^WC2HumanDefense
-	Inherits@wc2_watch_tower: ^wc2_watch_tower
-	# Don't declare AutoTarget stuff before AttackBase stuff or an annoying bug with WithSpriteBody will occur.
-	#Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits: ^Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@exp: ^GainsExperienceTDBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EXPERIENCE: ^GainsExperienceBuildings
 	Tooltip:
 		Name: Scout Tower
+		RequiresCondition: !guard && !cannon
+	Tooltip@2:
+		Name: Guard Tower
+		RequiresCondition: guard
+	Tooltip@3:
+		Name: Cannon Tower
+		RequiresCondition: cannon
+	Valued:
+		Cost: 600
+	ProvidesPrerequisite@buildingname:
 	Buildable:
+		BuildPaletteOrder: 20
 		Prerequisites: ~wc2_human_barracks
-		Queue: Defence, RADefence
-		Description: Upgradable defense building\nDetector
-	Voiced:
-		VoiceSet: humanguardtowervoice
-	Armament@guardtower:
+		Queue: Building, RABuilding
+		Description: Can be upgraded to Guard or Cannon Tower.
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: wc2_constrct.aud
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil ##########
+	Health:
+		HP: 80000
+	Armor:
+		Type: Wood
+		RequiresCondition: !(guard || cannon)
+	Armor@Upgrade:
+		Type: Concrete
+		RequiresCondition: guard || cannon
+	DamageMultiplier@evo:
+		Modifier: 50
+		RequiresCondition: guard || cannon
+	ProvidesPrerequisite@guard:
+		Prerequisite: guard
+		RequiresCondition: guard
+	ProvidesPrerequisite@cannon:
+		Prerequisite: cannon
+		RequiresCondition: cannon
+	ProvidesPrerequisite@scouttowerupgradeavailable:
+		Prerequisite: scouttowerupgradeavailable
+		RequiresCondition: !guard && !cannon
+	Pluggable:
+		Offset: 0,0
+		Conditions:
+			wcscouttower: guard
+		Requirements:
+			wcscouttower: !guard && !cannon
+	Pluggable@2:
+		Offset: 0,0
+		Conditions:
+			wcscouttower2: cannon
+		Requirements:
+			wcscouttower2: !guard && !cannon
+	Sellable:
+	-WithDeathAnimation:
+	##########
+	WithSpriteBody:
+		RequiresCondition: !guard && !cannon
+	WithSpriteBody@guard:
+		Sequence: guard
+		Name: guard
+		RequiresCondition: guard && !cannon
+	WithSpriteBody@cannon:
+		Sequence: cannon
+		Name: cannon
+		RequiresCondition: cannon && !guard
+	-WithMakeAnimation:
+	AttackOmni:
+		Armaments: primary, cannon, guard
+		PauseOnCondition: disabled
+	Armament@guard:
 		Weapon: wc2_tower_arrow
-		RequiresCondition: humanguardtowerupg
+		RequiresCondition: guard
 	Armament@guardtoweraa:
 		Weapon: wc2_tower_arrow_aa
-		RequiresCondition: humanguardtowerupg
-	Armament@cannontower:
+		RequiresCondition: guard
+	Armament@cannon:
+		Name: cannon
 		Weapon: wc2cannontowerFire
-		RequiresCondition: humancannontowerupg
-	WithRangeCircle:
-		Range: 3072
-		RequiresCondition: humancannontowerupg
-	Inherits@AUTOTARGET: ^AutoTargetAll
-	### Upgrade stuff ###
-	Production:
-		Produces: Towerupgrade.human2
-		RequiresCondition: !humanguardtowerupg && !humancannontowerupg
-	ProductionBar:
-		ProductionType: Towerupgrade.human2
-	ProductionQueue:
-		Type: Towerupgrade.human2
-		DisplayOrder: 0
-		Group: Addon
-		LowPowerModifier: 200
-		QueueLimit: 1
-		ItemLimit: 1
-	GrantConditionOnProduction@guardtower:
-		Condition: humanguardtowerupg
-		Actors: wc2_human_guard_tower
-	GrantConditionOnProduction@cannontower:
-		Condition: humancannontowerupg
-		Actors: wc2_human_cannon_tower
-	WithSpriteBody:
-		RequiresCondition: !humanguardtowerupg && !humancannontowerupg
-	WithSpriteBody@guardtower:
-		Sequence: wc2_human_guard_tower
-		RequiresCondition: humanguardtowerupg
-	WithSpriteBody@cannontower:
-		Sequence: wc2_human_cannon_tower
-		RequiresCondition: humancannontowerupg
-	DamageMultiplier@guardtower:
-		Modifier: 75
-		RequiresCondition: humanguardtowerupg
-	DamageMultiplier@cannontower:
-		Modifier: 67
-		RequiresCondition: humancannontowerupg
+		RequiresCondition: cannon
+	RevealOnFire:
+		ArmamentNames: primary, cannon
+	RevealsShroud:
+		Range: 5000
+		RequiresCondition: !(guard || cannon)
+	RevealsShroud@upgraded:
+		Range: 10000
+		RequiresCondition: guard || cannon
+	DetectCloaked@cannon:
+		Range: 5000
+		RequiresCondition: (guard || cannon) && !disabled
+	Selectable:
+		Bounds: 2048, 2048
+		DecorationBounds: 2448, 2448, 0, 0
 
-wc2_human_guard_tower:
+wchumancannontowerupgrade:
+	Inherits: ^BuildingPlug
 	Tooltip:
 		Name: Guard Tower
-	Buildable:
-		BuildPaletteOrder: 1
-		Prerequisites: ~wc2_human_elven_lumber_mill
-		Queue: Towerupgrade.human2
-		BuildDuration: 3500
-		BuildDurationModifier: 12
-		Description: Guard tower, attacks land, sea, and air.
 	Valued:
-		Cost: 800
-	Interactable:
-	AlwaysVisible:
-	KillsSelf:
-		RemoveInstead: true
+		Cost: 400
+	Buildable:
+		Queue: Defence, RADefence
+		Prerequisites: ~wc2_human_elven_lumber_mill, scouttowerupgradeavailable
+		Description: Ground base defense.
+	Plug:
+		Type: wcscouttower
 	RenderSprites:
+		Image: wc2_human_guard_tower
 
-wc2_human_cannon_tower:
+wchumanguardtowerupgrade:
+	Inherits: ^BuildingPlug
 	Tooltip:
 		Name: Cannon Tower
-	Buildable:
-		BuildPaletteOrder: 1
-		Prerequisites: ~wc2_human_blacksmith
-		Queue: Towerupgrade.human2
-		BuildDuration: 4750
-		BuildDurationModifier: 12
-		Description: Cannon tower, attacks land.
 	Valued:
-		Cost: 1600
-	Interactable:
-	AlwaysVisible:
-	KillsSelf:
-		RemoveInstead: true
+		Cost: 400
+	Buildable:
+		Queue: Defence, RADefence
+		Prerequisites: ~wc2_human_blacksmith, scouttowerupgradeavailable
+		Description: Anti-aircraft base defense.
+	Plug:
+		Type: wcscouttower2
 	RenderSprites:
+		Image: wc2_human_cannon_tower
+
+# wc2_human_scout_tower:
+# 	Inherits@WC2BUILDING: ^WC2HumanDefense
+# 	Inherits@wc2_watch_tower: ^wc2_watch_tower
+# 	# Don't declare AutoTarget stuff before AttackBase stuff or an annoying bug with WithSpriteBody will occur.
+# 	#Inherits@AUTOTARGET: ^AutoTargetAll
+# 	Tooltip:
+# 		Name: Scout Tower
+# 	Buildable:
+# 		Prerequisites: ~wc2_human_barracks
+# 		Queue: Defence, RADefence
+# 		Description: Upgradable defense building\nDetector
+# 	Voiced:
+# 		VoiceSet: humanguardtowervoice
+# 	Armament@guardtower:
+# 		Weapon: wc2_tower_arrow
+# 		RequiresCondition: humanguardtowerupg
+# 	Armament@guardtoweraa:
+# 		Weapon: wc2_tower_arrow_aa
+# 		RequiresCondition: humanguardtowerupg
+# 	Armament@cannontower:
+# 		Weapon: wc2cannontowerFire
+# 		RequiresCondition: humancannontowerupg
+# 	WithRangeCircle:
+# 		Range: 3072
+# 		RequiresCondition: humancannontowerupg
+# 	Inherits@AUTOTARGET: ^AutoTargetAll
+# 	### Upgrade stuff ###
+# 	Production:
+# 		Produces: Towerupgrade.human2
+# 		RequiresCondition: !humanguardtowerupg && !humancannontowerupg
+# 	ProductionBar:
+# 		ProductionType: Towerupgrade.human2
+# 	ProductionQueue:
+# 		Type: Towerupgrade.human2
+# 		DisplayOrder: 0
+# 		Group: Addon
+# 		LowPowerModifier: 200
+# 		QueueLimit: 1
+# 		ItemLimit: 1
+# 	GrantConditionOnProduction@guardtower:
+# 		Condition: humanguardtowerupg
+# 		Actors: wc2_human_guard_tower
+# 	GrantConditionOnProduction@cannontower:
+# 		Condition: humancannontowerupg
+# 		Actors: wc2_human_cannon_tower
+# 	WithSpriteBody:
+# 		RequiresCondition: !humanguardtowerupg && !humancannontowerupg
+# 	WithSpriteBody@guardtower:
+# 		Sequence: wc2_human_guard_tower
+# 		RequiresCondition: humanguardtowerupg
+# 	WithSpriteBody@cannontower:
+# 		Sequence: wc2_human_cannon_tower
+# 		RequiresCondition: humancannontowerupg
+# 	DamageMultiplier@guardtower:
+# 		Modifier: 75
+# 		RequiresCondition: humanguardtowerupg
+# 	DamageMultiplier@cannontower:
+# 		Modifier: 67
+# 		RequiresCondition: humancannontowerupg
+
+# wc2_human_guard_tower:
+# 	Tooltip:
+# 		Name: Guard Tower
+# 	Buildable:
+# 		BuildPaletteOrder: 1
+# 		Prerequisites: ~wc2_human_elven_lumber_mill
+# 		Queue: Towerupgrade.human2
+# 		BuildDuration: 3500
+# 		BuildDurationModifier: 12
+# 		Description: Guard tower, attacks land, sea, and air.
+# 	Valued:
+# 		Cost: 800
+# 	Interactable:
+# 	AlwaysVisible:
+# 	KillsSelf:
+# 		RemoveInstead: true
+# 	RenderSprites:
+
+# wc2_human_cannon_tower:
+# 	Tooltip:
+# 		Name: Cannon Tower
+# 	Buildable:
+# 		BuildPaletteOrder: 1
+# 		Prerequisites: ~wc2_human_blacksmith
+# 		Queue: Towerupgrade.human2
+# 		BuildDuration: 4750
+# 		BuildDurationModifier: 12
+# 		Description: Cannon tower, attacks land.
+# 	Valued:
+# 		Cost: 1600
+# 	Interactable:
+# 	AlwaysVisible:
+# 	KillsSelf:
+# 		RemoveInstead: true
+# 	RenderSprites:
 
 wc2_human_wall:
 	Inherits: ^Wall
@@ -3684,7 +3817,7 @@ wc2_orc_greathall:
 		Footprint: xxx xxx ===
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
-		BuildSounds: zchrdy00.aud
+		BuildSounds: wc2_constrct.aud
 		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil ##########
 	DamageMultiplier@keep:
 		Modifier: 75
@@ -4119,100 +4252,233 @@ wc2_orc_oil_platform:
 		VoiceSet: wc2orcoilplatformvoice
 
 wc2_orc_watch_tower:
-	Inherits@WC2BUILDING: ^WC2OrcDefense
-	Inherits@wc2_watch_tower: ^wc2_watch_tower
-	# Don't declare AutoTarget stuff before AttackBase stuff or an annoying bug with WithSpriteBody will occur.
-	#Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits: ^Defense
+	Inherits@Template: ^BasicDefenseTemplate
+	Inherits@exp: ^GainsExperienceTDBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EXPERIENCE: ^GainsExperienceBuildings
 	Tooltip:
 		Name: Watch Tower
+		RequiresCondition: !guard && !cannon
+	Tooltip@2:
+		Name: Guard Tower
+		RequiresCondition: guard
+	Tooltip@3:
+		Name: Cannon Tower
+		RequiresCondition: cannon
+	Valued:
+		Cost: 600
+	ProvidesPrerequisite@buildingname:
 	Buildable:
+		BuildPaletteOrder: 20
 		Prerequisites: ~wc2_orc_barracks
-		Queue: Defence, RADefence
-		Description: Upgradable defense building\nDetector
-	Voiced:
-		VoiceSet: orcguardtowervoice
-	Armament@guardtower:
-		Weapon: wc2_tower_axe
-		RequiresCondition: orcguardtowerupg
-	Armament@guardtoweraa:
-		Weapon: wc2_tower_axe_aa
-		RequiresCondition: orcguardtowerupg
-	Armament@cannontower:
-		Weapon: wc2cannontowerFire
-		RequiresCondition: orccannontowerupg
-	WithRangeCircle:
-		Range: 3072
-		RequiresCondition: orccannontowerupg
-	Inherits@AUTOTARGET: ^AutoTargetAll
-	### Upgrade stuff ###
-	Production:
-		Produces: Towerupgrade.orc2
-		RequiresCondition: !orcguardtowerupg && !orccannontowerupg
-	ProductionBar:
-		ProductionType: Towerupgrade.orc2
-	ProductionQueue:
-		Type: Towerupgrade.orc2
-		DisplayOrder: 0
-		Group: Addon
-		LowPowerModifier: 200
-		QueueLimit: 1
-		ItemLimit: 1
-	GrantConditionOnProduction@guardtower:
-		Condition: orcguardtowerupg
-		Actors: wc2_orc_guard_tower
-	GrantConditionOnProduction@cannontower:
-		Condition: orccannontowerupg
-		Actors: wc2_orc_cannon_tower
+		Queue: Building, RABuilding
+		Description: Can be upgraded to Guard or Cannon Tower.
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: wc2_constrct.aud
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil ##########
+	Health:
+		HP: 80000
+	Armor:
+		Type: Wood
+		RequiresCondition: !(guard || cannon)
+	Armor@Upgrade:
+		Type: Concrete
+		RequiresCondition: guard || cannon
+	DamageMultiplier@evo:
+		Modifier: 50
+		RequiresCondition: guard || cannon
+	ProvidesPrerequisite@guard:
+		Prerequisite: guard
+		RequiresCondition: guard
+	ProvidesPrerequisite@cannon:
+		Prerequisite: cannon
+		RequiresCondition: cannon
+	ProvidesPrerequisite@scouttowerupgradeavailable:
+		Prerequisite: scouttowerupgradeavailable
+		RequiresCondition: !guard && !cannon
+	Pluggable:
+		Offset: 0,0
+		Conditions:
+			wcscouttower: guard
+		Requirements:
+			wcscouttower: !guard && !cannon
+	Pluggable@2:
+		Offset: 0,0
+		Conditions:
+			wcscouttower2: cannon
+		Requirements:
+			wcscouttower2: !guard && !cannon
+	Sellable:
+	-WithDeathAnimation:
+	##########
 	WithSpriteBody:
-		RequiresCondition: !orcguardtowerupg && !orccannontowerupg
-	WithSpriteBody@guardtower:
-		Sequence: wc2_orc_guard_tower
-		RequiresCondition: orcguardtowerupg
-	WithSpriteBody@cannontower:
-		Sequence: wc2_orc_cannon_tower
-		RequiresCondition: orccannontowerupg
-	DamageMultiplier@guardtower:
-		Modifier: 75
-		RequiresCondition: orcguardtowerupg
-	DamageMultiplier@cannontower:
-		Modifier: 67
-		RequiresCondition: orccannontowerupg
+		RequiresCondition: !guard && !cannon
+	WithSpriteBody@guard:
+		Sequence: guard
+		Name: guard
+		RequiresCondition: guard && !cannon
+	WithSpriteBody@cannon:
+		Sequence: cannon
+		Name: cannon
+		RequiresCondition: cannon && !guard
+	-WithMakeAnimation:
+	AttackOmni:
+		Armaments: primary, cannon, guard
+		PauseOnCondition: disabled
+	Armament@guard:
+		Weapon: wc2_tower_arrow
+		RequiresCondition: guard
+	Armament@guardtoweraa:
+		Weapon: wc2_tower_arrow_aa
+		RequiresCondition: guard
+	Armament@cannon:
+		Name: cannon
+		Weapon: wc2cannontowerFire
+		RequiresCondition: cannon
+	RevealOnFire:
+		ArmamentNames: primary, cannon
+	RevealsShroud:
+		Range: 5000
+		RequiresCondition: !(guard || cannon)
+	RevealsShroud@upgraded:
+		Range: 10000
+		RequiresCondition: guard || cannon
+	DetectCloaked@cannon:
+		Range: 5000
+		RequiresCondition: (guard || cannon) && !disabled
+	Selectable:
+		Bounds: 2048, 2048
+		DecorationBounds: 2448, 2448, 0, 0
 
-wc2_orc_guard_tower:
+wcorcguardtowerupgrade:
+	Inherits: ^BuildingPlug
 	Tooltip:
 		Name: Guard Tower
-	Buildable:
-		BuildPaletteOrder: 1
-		Prerequisites: ~wc2_orc_troll_lumber_mill
-		Queue: Towerupgrade.orc2
-		BuildDuration: 3500
-		BuildDurationModifier: 15
-		Description: Guard tower, attacks land, sea, and air.
 	Valued:
-		Cost: 800
-	Interactable:
-	AlwaysVisible:
-	KillsSelf:
-		RemoveInstead: true
+		Cost: 400
+	Buildable:
+		Queue: Defence, RADefence
+		Prerequisites: ~wc2_orc_troll_lumber_mill, scouttowerupgradeavailable
+		Description: Ground base defense.
+	Plug:
+		Type: wcscouttower
 	RenderSprites:
+		Image: wc2_orc_guard_tower
 
-wc2_orc_cannon_tower:
+wcorccannontowerupgrade:
+	Inherits: ^BuildingPlug
 	Tooltip:
 		Name: Cannon Tower
-	Buildable:
-		BuildPaletteOrder: 1
-		Prerequisites: ~wc2_orc_blacksmith
-		Queue: Towerupgrade.orc2
-		BuildDuration: 4750
-		BuildDurationModifier: 15
-		Description: Cannon tower, attacks land.
 	Valued:
-		Cost: 1600
-	Interactable:
-	AlwaysVisible:
-	KillsSelf:
-		RemoveInstead: true
+		Cost: 400
+	Buildable:
+		Queue: Defence, RADefence
+		Prerequisites: ~wc2_orc_blacksmith, scouttowerupgradeavailable
+		Description: Anti-aircraft base defense.
+	Plug:
+		Type: wcscouttower2
 	RenderSprites:
+		Image: wc2_orc_cannon_tower
+
+# wc2_orc_watch_tower:
+# 	Inherits@WC2BUILDING: ^WC2OrcDefense
+# 	Inherits@wc2_watch_tower: ^wc2_watch_tower
+# 	# Don't declare AutoTarget stuff before AttackBase stuff or an annoying bug with WithSpriteBody will occur.
+# 	#Inherits@AUTOTARGET: ^AutoTargetAll
+# 	Tooltip:
+# 		Name: Watch Tower
+# 	Buildable:
+# 		Prerequisites: ~wc2_orc_barracks
+# 		Queue: Defence, RADefence
+# 		Description: Upgradable defense building\nDetector
+# 	Voiced:
+# 		VoiceSet: orcguardtowervoice
+# 	Armament@guardtower:
+# 		Weapon: wc2_tower_axe
+# 		RequiresCondition: orcguardtowerupg
+# 	Armament@guardtoweraa:
+# 		Weapon: wc2_tower_axe_aa
+# 		RequiresCondition: orcguardtowerupg
+# 	Armament@cannontower:
+# 		Weapon: wc2cannontowerFire
+# 		RequiresCondition: orccannontowerupg
+# 	WithRangeCircle:
+# 		Range: 3072
+# 		RequiresCondition: orccannontowerupg
+# 	Inherits@AUTOTARGET: ^AutoTargetAll
+# 	### Upgrade stuff ###
+# 	Production:
+# 		Produces: Towerupgrade.orc2
+# 		RequiresCondition: !orcguardtowerupg && !orccannontowerupg
+# 	ProductionBar:
+# 		ProductionType: Towerupgrade.orc2
+# 	ProductionQueue:
+# 		Type: Towerupgrade.orc2
+# 		DisplayOrder: 0
+# 		Group: Addon
+# 		LowPowerModifier: 200
+# 		QueueLimit: 1
+# 		ItemLimit: 1
+# 	GrantConditionOnProduction@guardtower:
+# 		Condition: orcguardtowerupg
+# 		Actors: wc2_orc_guard_tower
+# 	GrantConditionOnProduction@cannontower:
+# 		Condition: orccannontowerupg
+# 		Actors: wc2_orc_cannon_tower
+# 	WithSpriteBody:
+# 		RequiresCondition: !orcguardtowerupg && !orccannontowerupg
+# 	WithSpriteBody@guardtower:
+# 		Sequence: wc2_orc_guard_tower
+# 		RequiresCondition: orcguardtowerupg
+# 	WithSpriteBody@cannontower:
+# 		Sequence: wc2_orc_cannon_tower
+# 		RequiresCondition: orccannontowerupg
+# 	DamageMultiplier@guardtower:
+# 		Modifier: 75
+# 		RequiresCondition: orcguardtowerupg
+# 	DamageMultiplier@cannontower:
+# 		Modifier: 67
+# 		RequiresCondition: orccannontowerupg
+
+# wc2_orc_guard_tower:
+# 	Tooltip:
+# 		Name: Guard Tower
+# 	Buildable:
+# 		BuildPaletteOrder: 1
+# 		Prerequisites: ~wc2_orc_troll_lumber_mill
+# 		Queue: Towerupgrade.orc2
+# 		BuildDuration: 3500
+# 		BuildDurationModifier: 15
+# 		Description: Guard tower, attacks land, sea, and air.
+# 	Valued:
+# 		Cost: 800
+# 	Interactable:
+# 	AlwaysVisible:
+# 	KillsSelf:
+# 		RemoveInstead: true
+# 	RenderSprites:
+
+# wc2_orc_cannon_tower:
+# 	Tooltip:
+# 		Name: Cannon Tower
+# 	Buildable:
+# 		BuildPaletteOrder: 1
+# 		Prerequisites: ~wc2_orc_blacksmith
+# 		Queue: Towerupgrade.orc2
+# 		BuildDuration: 4750
+# 		BuildDurationModifier: 15
+# 		Description: Cannon tower, attacks land.
+# 	Valued:
+# 		Cost: 1600
+# 	Interactable:
+# 	AlwaysVisible:
+# 	KillsSelf:
+# 		RemoveInstead: true
+# 	RenderSprites:
 
 wc2_orc_wall:
 	Inherits: wc2_human_wall
