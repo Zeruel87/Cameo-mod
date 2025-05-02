@@ -300,7 +300,6 @@ OILB.TS.NOD:
 		BuildPaletteOrder: 999
 		Prerequisites: ~tsgtcnstnod, tsnttech
 
-
 OILB.TS.MUTANT:
 	Inherits: OILB.TS.GDI
 	Tooltip:
@@ -308,7 +307,16 @@ OILB.TS.MUTANT:
 	Buildable:
 		Queue: Building, RABuilding
 		BuildPaletteOrder: 999
-		Prerequisites: ~tsgtcnstnod, tsnttech
+		Prerequisites: ~tsgtcnstmutant, tsfgttech
+
+OILB.TS.CABAL:
+	Inherits: OILB.TS.GDI
+	Tooltip:
+		Name: Oil Derrick
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 999
+		Prerequisites: ~tsgtcnstcabal, tscabaltech
 
 TSGTCNST:
 	GrantExternalConditionToOwner@BuildingsOwned:
@@ -401,7 +409,7 @@ TSGTCNSTGDI:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	Health:
-		HP: 350000
+		HP: 1000000
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -707,7 +715,7 @@ TSMCVGDI:
 		Speed: 80
 		Locomotor: heavywheeled
 	Health:
-		HP: 175000
+		HP: 300000
 	Repairable:
 		HpPerStep: 2182
 	Armor:
@@ -792,12 +800,9 @@ TSPROC:
 	RevealsShroud:
 		Range: 6c0
 	Refinery:
+	DockHost:
 		DockAngle: 680
-		DockOffset: 2,2
-		IsDragRequired: True
-		DragOffset: -554,512,0
-		DragLength: 12
-		TickRate: 15
+		DockOffset: 1c0, 1c0, 0
 	StoresResources:
 		Capacity: 1000
 	Selectable:
@@ -3344,11 +3349,13 @@ tsntobel2cabal:
 
 TSE1:
 	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
+	Inherits@AntiInf: ^PrioritizeInfantry
 	Valued:
 		Cost: 120
 	Tooltip:
@@ -3362,32 +3369,37 @@ TSE1:
 		IconPalette: ra2
 		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
 	Mobile:
-		Speed: 71
+		Speed: 60
 	Health:
-		HP: 6250
+		HP: 16000
+	ChangesHealth@SelfHealing:
+		Step: 16
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
 		Weapon: TSMinigun
 		RequiresCondition: !rank-elite
 	Armament@ELITE:
-		Weapon: TSM1Carbine
+		Weapon: TSMinigun
 		RequiresCondition: rank-elite
 	Armament@GARRISONED: ##########
 		Name: garrisoned
-		Weapon: TSVulcanTower
-	Selectable:
-		Bounds: 1280, 1280
-		DecorationBounds: 1280, 1024
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
+		Weapon: TSMinigun
+	# Selectable:
+	# 	Bounds: 256, 512
+	# 	DecorationBounds: 256, 512
+	# Inherits@EXT: ^ExternalConditions ##########
+	# AcceptsDeliveredExperience: ##########
+	# 	ValidTypes: infantry ##########
 	RenderSprites:
 		Image: tse1.gdi
 	Voiced:
 		VoiceSet: TSInfantry
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSE1.NOD:
 	Inherits: TSE1
@@ -3421,7 +3433,7 @@ TSMEDIC:
 		Queue: Infantry, RAInfantry
 		Description: Heals nearby infantry.\n  Unarmed
 	Valued:
-		Cost: 200
+		Cost: 500
 	Tooltip:
 		Name: Medic
 	WithInfantryBody:
@@ -3432,6 +3444,9 @@ TSMEDIC:
 		VoiceSet: TSMedic
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSENGINEER:
 	Inherits: E6
@@ -3445,6 +3460,9 @@ TSENGINEER:
 		Payload: 250
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSENGINEER2:
 	Inherits: TSENGINEER
@@ -3488,6 +3506,7 @@ TSENGINEECABAL:
 
 TSE2:
 	Inherits: ^Soldier
+	Inherits@Template: ^GrenadierInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -3508,6 +3527,8 @@ TSE2:
 		Speed: 56
 	Health:
 		HP: 8000
+	ChangesHealth@SelfHealing:
+		Step: 8
 	AutoTarget:
 		ScanRadius: 4
 	Armament:
@@ -3525,13 +3546,13 @@ TSE2:
 		ProneOffset: 300,0,-227
 	WithInfantryBody:
 		DefaultAttackSequence: throw
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 	# Explodes:
 	# 	Weapon: GrenadierExplode
 	# 	EmptyWeapon: GrenadierExplode
 	# 	Chance: 50
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
 	Voiced:
 		VoiceSet: TSInfantry
 	RenderSprites:
@@ -3551,8 +3572,8 @@ TSE2PARA:
 
 TSJUMPJET:
 	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
@@ -3573,43 +3594,29 @@ TSJUMPJET:
 		VoiceSet: TSJumpJet
 	Mobile:
 		Speed: 71
-		Locomotor: jumpjet
+		Locomotor: swimsuit
 	Health:
-		HP: 10000
+		HP: 17500
+	ChangesHealth@SelfHealing:
+		Step: 7
 	Armor:
 		Type: Light
 	Passenger:
 		CustomPipType: green
 	RevealsShroud:
 		Range: 6c0
-	Armament:
+	Armament@PRIMARY:
 		Weapon: TSJumpCannon
-	Armament@2:
-		Weapon: TSJumpCannonAA
-		RequiresCondition: airborne
-	AttackFrontal:
-		Voice: Attack
-		FacingTolerance: 0
+	# AttackFrontal:
+	# 	FacingTolerance: 0
+	# 	Voice: Attack
 	WithInfantryBody:
 		RequiresCondition: !airborne && !swimming
 		DefaultAttackSequence: attack
-	WithInfantryBody@flying:
-		RequiresCondition: airborne || swimming
-		DefaultAttackSequence: flying-attack
-		StandSequences: flying
-		MoveSequence: flying
-	-TakeCover:
-	Hovers:
-		RequiresCondition: (airborne || swimming) && !disabled
-	DamagedByTerrain:
-		RequiresCondition: !airborne
+	# Hovers:
+	# 	RequiresCondition: (airborne || swimming) && !disabled
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
-	Targetable:
-		RequiresCondition: !airborne && !chronobeamed
-	Targetable@AIRBORNE:
-		TargetTypes: Air, Aircraft
-		RequiresCondition: airborne && !chronobeamed
 	#SpawnActorOnDeath@airborne:
 	#	Actor: TSJUMPJET.Husk
 	#	RequiresCondition: airborne
@@ -3633,99 +3640,94 @@ TSJUMPJET:
 		Offset: 0, 128, 0
 		ZOffset: -128
 		RequiresCondition: airborne || swimming
-	GrantConditionOnJumpjetLayer:
-		Condition: airborne
-	GrantConditionOnTerrain@Water:
-		TerrainTypes: Water, River
-		Condition: swimming
-	#Transforms:
-	#	IntoActor: tsjumpjet2
-	#	Offset: 0,0
-	#	Facing: 2
-	#	TransformSounds:
-	#	NoTransformNotification: BuildingCannotPlaceAudio
+	# GrantConditionOnTerrain@Water:
+	# 	TerrainTypes: Water, River
+	# 	Condition: swimming
+	Transforms:
+		IntoActor: tsjumpjet2
+		Offset: 0,0
+		Facing: 2
+		TransformSounds:
+		NoTransformNotification: BuildingCannotPlaceAudio
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 	Armament@GARRISONED: ##########
 		Name: garrisoned
-		Weapon: TSVulcanTower
+		Weapon: TSJumpCannon
 	RenderSprites:
 		PlayerPalette: playerra2
 
-TSJUMPJET2:
-	Inherits: ^Helicopter
+tsjumpjet2:
+	Inherits: ^JumpjetInfantry
+	Inherits@Template: ^HelicopterTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@detect: ^GenericAirDetector
 	Valued:
 		Cost: 600
 	Tooltip:
-		Name: Jumpjet Infantry
+		Name: actor-ra2rock.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
-	#Buildable:
-	#	BuildPaletteOrder: 40
-	#	Prerequisites: anyhq, ~techlevel.medium
-	#	Queue: Infantry, RAInfantry
-	#	Description: Airborne soldier.\n  Strong vs Infantry\n  Weak vs Aircraft
+	Buildable:
+		BuildPaletteOrder: 20
+		Prerequisites: ~ra2gaairc
+		Queue: Infantry, RAInfantry
+		Description: actor-ra2rock.description
 	Aircraft:
-		TurnSpeed: 28
-		Speed: 146
-		RepulsionSpeed: 10
-		IdealSeparation: 512
-		LandableTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, SCMinerals, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice, RoughDune
-		VTOL: true
+		TurnSpeed: 36
+		Speed: 180
+		IdealSeparation: 900
+		Voice: Move
 	Health:
-		HP: 6000
-	Armor:
-		Type: None
-	RevealsShroud:
-		Range: 6c0
-		Type: GroundPosition
+		HP: 17500
+	ChangesHealth@SelfHealing:
+		Step: 7
 	Armament@PRIMARY:
 		Weapon: TSJumpCannon
-	AutoTarget:
-		ScanRadius: 5
 	AttackAircraft:
-		FacingTolerance: 80
+		FacingTolerance: 20
 		AttackType: Hover
-	-SpawnActorOnDeath:
-	SelectionDecorations:
+	SpawnActorOnDeath:
+		Actor: TSJUMPJET.Husk
 	Voiced:
 		VoiceSet: TSJumpJet
-	-WithFacingSpriteBody:
+	DeathSounds:
+	-WithShadow:
+	WithInfantryBody@Air:
+		StandSequences: flying
+		MoveSequence: flying
+		DefaultAttackSequence: flying-attack
+		IdleSequences: flying
+		RequiresCondition: airborne
 	WithInfantryBody:
-		AttackSequences: shoot
-		IdleSequences: idle
-		StandSequences: idle
-		MoveSequence: idle
-	ChangesHealth@HOSPITAL:
-		Step: 500
-		Delay: 100
-		StartIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: hospitalheal
-	GrantConditionOnPrerequisite@HOSPITAL:
-		Condition: hospital
-		Prerequisites: hosp
-	GrantConditionOnDamageState@HOSPITAL:
-		Condition: damaged
-		ValidDamageStates: Light, Medium, Heavy, Critical
-	GrantCondition@HOSPITAL:
-		RequiresCondition: hospital && damaged
-		Condition: hospitalheal
-	WithDecoration@REDCROSS:
-		Image: pips
-		Sequence: pip-heal
-		Position: BottomRight
-		RequiresCondition: hospitalheal
-		BlinkInterval: 32
-		BlinkPattern: On, Off
+		IdleSequences: idle1, idle2
+		DefaultAttackSequence: attack
+		RequiresCondition: !airborne
+	WithShadow@airborne:
+		Offset: 0, 128, 0
+		ZOffset: -128
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	Selectable:
+		Bounds: 512, 768
+	FirepowerMultiplier@FirerateCompensation:
+		Modifier: 40
+	RenderSprites:
+		PlayerPalette: playerra2
 	Transforms:
 		IntoActor: tsjumpjet
 		Offset: 0,0
-		Facing: 8
+		Facing: 2
 		TransformSounds:
 		NoTransformNotification: BuildingCannotPlaceAudio
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 	RenderSprites:
 		PlayerPalette: playerra2
+		Image: tsjumpjet
 
 TSJUMPJET.Husk:
 	Inherits: ^HelicopterHusk
@@ -3749,6 +3751,7 @@ TSJUMPJET.Husk:
 
 TSE3:
 	Inherits: ^Soldier
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -3768,7 +3771,9 @@ TSE3:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 5000
+		HP: 10000
+	ChangesHealth@SelfHealing:
+		Step: 10
 	AutoTarget:
 		ScanRadius: 6
 	Armament@PRIMARY: ##########
@@ -3777,12 +3782,15 @@ TSE3:
 		FireDelay: 5
 	Armament@GARRISONED: ##########
 		Name: garrisoned
-		Weapon: RocketsG
+		Weapon: TSBazooka
 	TakeCover:
 		ProneOffset: 180,0,-200
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: infantry ##########
+	# Inherits@EXT: ^ExternalConditions ##########
+	# AcceptsDeliveredExperience: ##########
+	# 	ValidTypes: infantry ##########
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 	Voiced:
 		VoiceSet: TSRocket
 	Armament@GARRISONED: ##########
@@ -3802,13 +3810,14 @@ TSE3.MUTANT:
 
 elitcadre:
 	Inherits: ^Soldier
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
 	Inherits@anim: ^TSInfantry
 	Inherits@vo: ^AttackFrontalVoice
 	Valued:
-		Cost: 650
+		Cost: 150
 	Tooltip:
 		Name: Elite Cadre
 	UpdatesPlayerStatistics:
@@ -3824,6 +3833,8 @@ elitcadre:
 		Speed: 70
 	Health:
 		HP: 20000
+	ChangesHealth@SelfHealing:
+		Step: 20
 	AutoTarget:
 		ScanRadius: 6
 	Armament@PRIMARY:
@@ -3859,6 +3870,7 @@ elitcadre:
 
 TSCYBORG:
 	Inherits: ^Soldier
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@MC: ^MCImmune
@@ -3887,6 +3899,8 @@ TSCYBORG:
 		Type: Light
 	Health:
 		HP: 25000
+	ChangesHealth@SelfHealing:
+		Step: 25
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -3939,6 +3953,9 @@ TSCYBORG:
 		Class: tscyborg
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSCHAMSPY:
 	Inherits: ^Soldier
@@ -3986,6 +4003,9 @@ TSCHAMSPY:
 		VoiceSet: TSSpy	
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSMHIJACK:
 	Inherits: ^Soldier
@@ -4041,6 +4061,9 @@ TSMHIJACK:
 	-DamagedByTerrain:
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSMHIJACKMUTANT:
 	Inherits: TSMHIJACK
@@ -4052,6 +4075,7 @@ TSMHIJACKMUTANT:
 		Image: tsmhijack
 
 TSREAPER:
+	Inherits@Template: ^AntiTankAntiAirInfantryTemplate
 	Inherits: ^Walker
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -4109,6 +4133,9 @@ TSREAPER:
 		DamageCooldown: 1
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSREAPER2:
 	Inherits: TSREAPER
@@ -4121,10 +4148,11 @@ TSREAPER2:
 		Image: tsreaper
 
 TSCYC2:
+	Inherits@Template: ^HeroInfantryTemplate
 	Inherits: TSCYBORG
 	Inherits@tibheal: ^TibHealable
 	Valued:
-		Cost: 1800
+		Cost: 4000
 	Tooltip:
 		Name: Cyborg Commando
 	UpdatesPlayerStatistics:
@@ -4140,7 +4168,7 @@ TSCYC2:
 	Mobile:
 		Speed: 52
 	Health:
-		HP: 40000
+		HP: 200000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -4149,18 +4177,9 @@ TSCYC2:
 		VoiceSet: TSCyborgCommando
 	Selectable:
 		Class: tscyc2
-
-TSCYC2.CABAL:
-	Inherits: TSCYC2
-	Buildable:
-		Queue: Infantry, RAInfantry
-		Prerequisites: ~scmarine
-	DamageMultiplier:
-		Modifier: 80
-	FirepowerMultiplier:
-		Modifier: 120
-	RenderSprites:
-		Image: tscyc2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSDissolver:
 	Inherits: ^Vehicle
@@ -4217,6 +4236,7 @@ TSDissolver:
 
 TSUMAGON:
 	Inherits: TSMUTANT
+	Inherits@Template: ^SniperInfantryTemplate
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -4253,6 +4273,9 @@ TSUMAGON:
 		Class: tsumagon
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSUMAGONSP:
 	Inherits: TSUMAGON
@@ -4272,6 +4295,7 @@ TSUMAGONSP:
 
 TSGHOST:
 	Inherits: ^Soldier
+	Inherits@Template: ^HeroInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -4279,7 +4303,7 @@ TSGHOST:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@tibheal: ^TibHealable
 	Valued:
-		Cost: 2000
+		Cost: 4000
 	Tooltip:
 		Name: Ghost Stalker
 	UpdatesPlayerStatistics:
@@ -4295,7 +4319,7 @@ TSGHOST:
 	Armor:
 		Type: Light
 	Health:
-		HP: 20000
+		HP: 200000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -4317,6 +4341,9 @@ TSGHOST:
 		Class: tsghost
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSGHOSTMUTANT:
 	Inherits: TSGHOST
@@ -4379,6 +4406,7 @@ tsghost.mutant:
 
 TSMUTANT:
 	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -4386,7 +4414,7 @@ TSMUTANT:
 	Inherits@vo: ^AttackFrontalVoice
 	Inherits@tibheal: ^TibHealable
 	Valued:
-		Cost: 50
+		Cost: 150
 	Tooltip:
 		Name: Mutant
 	UpdatesPlayerStatistics:
@@ -4401,7 +4429,7 @@ TSMUTANT:
 	Mobile:
 		Speed: 71
 	Health:
-		HP: 7000
+		HP: 20000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -4421,6 +4449,9 @@ TSMUTANT:
 		Weapon: TSVulcanTower
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSMUTANTSP:
 	Inherits: TSMUTANT
@@ -4440,9 +4471,10 @@ TSMUTANTSP:
 
 TSMWMN:
 	Inherits: TSMUTANT
+	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
-		Cost: 150
+		Cost: 250
 	Tooltip:
 		Name: Mutant Soldier
 	UpdatesPlayerStatistics:
@@ -4457,7 +4489,7 @@ TSMWMN:
 	Mobile:
 		Speed: 68
 	Health:
-		HP: 8000
+		HP: 30000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -4479,6 +4511,9 @@ TSMWMN:
 		Weapon: TSRPGTower
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 TSMWMNSP:
 	Inherits: TSMWMN
@@ -4498,6 +4533,7 @@ TSMWMNSP:
 
 TSMUTANT3:
 	Inherits: TSMUTANT
+	Inherits@Template: ^ScoutInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -4517,7 +4553,7 @@ TSMUTANT3:
 	Mobile:
 		Speed: 56
 	Health:
-		HP: 12000
+		HP: 50000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@GRENADE:
@@ -4539,10 +4575,14 @@ TSMUTANT3:
 		Weapon: TSGrenadeG
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 
 TSWEEDGUY:
 	Inherits: ^Soldier
+	Inherits@Template: ^MeleeInfantryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
@@ -4564,7 +4604,7 @@ TSWEEDGUY:
 		Speed: 64
 		Locomotor: chem
 	Health:
-		HP: 10000
+		HP: 52000
 	AutoTarget:
 		ScanRadius: 4
 	Armament@PRIMARY:
@@ -4588,6 +4628,9 @@ TSWEEDGUY:
 		TargetTypes: ToxinImmune
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 RAPT:
 	Inherits: ^DINO
@@ -4601,12 +4644,13 @@ RAPT:
 
 TSDOGGIE:
 	Inherits: RAPT
+	Inherits@Template: ^MeleeInfantryTemplate
 	Inherits@bounty: ^GlobalBounty ##########
 	Inherits@anim: ^TSInfantry
 	Inherits@autotarget: ^AutoTargetAllAssaultMove
 	Inherits@tibheal: ^TibHealable
 	Health:
-		HP: 10000
+		HP: 52000
 	Valued:
 		Cost: 1000
 	Armor:
@@ -4639,6 +4683,9 @@ TSDOGGIE:
 		CrushClasses: vehicle
 	RenderSprites:
 		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
 
 #The following are used for the mutant wildlife spawner superweapon
 
@@ -4850,7 +4897,7 @@ TSHARV:
 	Inherits: ^TDHARV
 	Inherits@Voxel: ^TSRenderVoxel
 	Health:
-		HP: 85000
+		HP: 150000
 	Harvester:
 		PipCount: 8
 		Capacity: 35
@@ -4871,7 +4918,7 @@ TSHARVNOD:
 	Inherits: ^TDHARV
 	Inherits@Voxel: ^TSRenderVoxel
 	Health:
-		HP: 85000
+		HP: 150000
 	Harvester:
 		PipCount: 8
 		Capacity: 35
@@ -4894,7 +4941,7 @@ TSHARVMUTANT:
 	Inherits: ^TDHARV
 	Inherits@Voxel: ^TSRenderVoxel
 	Health:
-		HP: 85000
+		HP: 150000
 	Harvester:
 		PipCount: 8
 		Capacity: 35
@@ -4917,7 +4964,7 @@ TSHARVCABAL:
 	Inherits: ^TDHARV
 	Inherits@Voxel: ^TSRenderVoxel
 	Health:
-		HP: 85000
+		HP: 150000
 	Harvester:
 		PipCount: 8
 		Capacity: 35
@@ -5161,87 +5208,9 @@ TSCLOUD1:
 # TS GDI Vehicles
 #######################################
 
-TSSAPC:
-	Inherits: ^Tank
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@Voxel: ^TSRenderVoxel
-	Inherits@sub: ^SubterraneanVoxelVehicle
-	Inherits@cargo: ^CargoVehicle
-	Valued:
-		Cost: 700
-	Tooltip:
-		Name: Subterranean APC
-	UpdatesPlayerStatistics:
-		OverrideActor: tssapc
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: ~tsntweap, tsntradr
-		Queue: Vehicle, RAVehicle
-		Description: Troop transport that can move\nunderground to avoid detection.\n  Unarmed
-	Mobile:
-		Locomotor: subterranean
-		PauseOnCondition: loading || being-captured || disabled
-		Speed: 71
-	Health:
-		HP: 17500
-	Repairable:
-		HpPerStep: 2637
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 5c0
-		RequiresCondition: !submerged
-	Turreted:
-		TurnSpeed: 20 #3
-	SelectionDecorations:
-	Selectable:
-		Class: tssapc
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
-	Voiced:
-		VoiceSet: TSVehicle
-	DeliversCash:
-		Payload: 400
-	Cargo:
-		Types: Infantry, Hacker, Fremen
-		MaxWeight: 5
-		UnloadTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice
-	Targetable@garrisoned:
-		RequiresCondition: loaded && !submerged
-	WithCargoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-
-TSSAPCCABAL:
-	Inherits: TSSAPC
-	Buildable:
-		Prerequisites: ~tsntweapcabal, tsntradrcabal
-	RenderSprites:
-		PlayerPalette: playerra2
-		Image: tssapc
-	RenderVoxels:
-		Image: tssapc
-
-tssapc.mut:
-	Inherits: TSSAPC
-	RenderVoxels:
-		Image: tssapc
-	RenderSprites:
-		Image: tssapc
-	Buildable:
-		BuildPaletteOrder: 60
-		Prerequisites: ~scmarine
-	Cargo:
-		InitialUnits: tsghost.r4,tsghost.r4,tsumagon.r4,tsumagon.r4,tsumagon.r4
-	AutoDeployer:
-		DeployChance: 100
-		DeployTicks: 0
-	UpdatesPlayerStatistics:
-		OverrideActor: tssapc
-
 TSMMCH:
 	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -5249,7 +5218,7 @@ TSMMCH:
 	Inherits@detect: ^EliteDetector
 	Inherits@vo: ^AttackTurretedVoice
 	Valued:
-		Cost: 750
+		Cost: 600
 	Tooltip:
 		Name: Titan
 	Buildable:
@@ -5263,7 +5232,7 @@ TSMMCH:
 		Locomotor: tracked
 		Speed: 75
 	Health:
-		HP: 50000
+		HP: 120000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -5273,7 +5242,7 @@ TSMMCH:
 	Turreted:
 		TurnSpeed: 20 #3
 	Armament:
-		Weapon: TS120mm
+		Weapon: 120mm
 		Recoil: 128
 		RecoilRecovery: 32
 		LocalOffset: 800, 300, 700
@@ -5310,6 +5279,7 @@ TSMMCH:
 
 TSJUGG:
 	Inherits: ^Tank
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	# Inherits@Voxel: ^TSRenderVoxel
@@ -5332,7 +5302,7 @@ TSJUGG:
 		Queue: Vehicle, RAVehicle
 		Description: Mobile artillery mech.\nImmobile when firing.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Health:
-		HP: 35000
+		HP: 120000
 	Mobile:
 		Locomotor: tracked
 		Speed: 71
@@ -5425,6 +5395,7 @@ TSJUGG:
 
 TSHVR:
 	Inherits: ^Tank
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -5445,7 +5416,7 @@ TSHVR:
 		Locomotor: hover
 		Speed: 99
 	Health:
-		HP: 23000
+		HP: 60000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -5481,6 +5452,7 @@ TSHVR:
 
 TSSMECH:
 	Inherits: ^Vehicle
+	Inherits@Template: ^ScoutVehicleTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
@@ -5504,7 +5476,7 @@ TSSMECH:
 		Speed: 99
 		Locomotor: wheeled
 	Health:
-		HP: 20000
+		HP: 60000
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -5529,6 +5501,7 @@ TSSMECH:
 
 TSHMEC:
 	Inherits: ^Tank
+	Inherits@Template: ^LineBreakerTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -5634,6 +5607,7 @@ TSHMEC:
 
 TSSONIC:
 	Inherits: ^Tank
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -5734,8 +5708,61 @@ tsaegis:
 # TS Nod Vehicles
 #######################################
 
+TSSAPC:
+	Inherits: ^Tank
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@Voxel: ^TSRenderVoxel
+	Inherits@sub: ^SubterraneanVoxelVehicle
+	Inherits@cargo: ^CargoVehicle
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Subterranean APC
+	UpdatesPlayerStatistics:
+		OverrideActor: tssapc
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~tsntweap, tsntradr
+		Queue: Vehicle, RAVehicle
+		Description: Troop transport that can move\nunderground to avoid detection.\n  Unarmed
+	Mobile:
+		Locomotor: subterranean
+		PauseOnCondition: loading || being-captured || disabled
+		Speed: 71
+	Health:
+		HP: 17500
+	Repairable:
+		HpPerStep: 2637
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 5c0
+		RequiresCondition: !submerged
+	Turreted:
+		TurnSpeed: 20 #3
+	SelectionDecorations:
+	Selectable:
+		Class: tssapc
+	Inherits@EXT: ^ExternalConditions ##########
+	AcceptsDeliveredExperience: ##########
+		ValidTypes: vehicle ##########
+	Voiced:
+		VoiceSet: TSVehicle
+	DeliversCash:
+		Payload: 400
+	Cargo:
+		Types: Infantry, Hacker, Fremen
+		MaxWeight: 5
+		UnloadTerrainTypes: Clear, ClearTemperat, ClearWinter, ClearJungle, ClearSnow, ClearDesert, ClearInterior, Rough, Road, Beach, ClearDune, Dune, Concrete, Sand, SpiceSand, Spice
+	Targetable@garrisoned:
+		RequiresCondition: loaded && !submerged
+	WithCargoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+
 TSBGGY:
 	Inherits: ^Vehicle
+	Inherits@Template: ^ScoutVehicleTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
@@ -5784,6 +5811,7 @@ TSBGGY:
 
 TSBIKE:
 	Inherits: ^Vehicle
+	Inherits@Template: ^ScoutVehicleTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EMP: ^FrontalEMP
@@ -5860,7 +5888,7 @@ TSSTNK:
 	Mobile:
 		Speed: 108
 	Health:
-		HP: 24000
+		HP: 25000
 	Repairable:
 		HpPerStep: 2000
 	Armor:
@@ -5969,6 +5997,7 @@ TSREPAIRCABAL:
 
 TSTTNK:
 	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -6098,6 +6127,7 @@ TSTTNKCABAL:
 
 TSART2:
 	Inherits: ^Tank
+	Inherits@Template: ^ArtilleryTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -6177,6 +6207,7 @@ TSART2CABAL:
 
 TSSUBTANK:
 	Inherits: ^Tank
+	Inherits@Template: ^LineBreakerTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -6255,7 +6286,7 @@ TSAPC:
 		Locomotor: amphibius
 		Speed: 113
 	Health:
-		HP: 25000
+		HP: 30000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -6472,8 +6503,26 @@ tsmemp:
 # TS Forgotten Vehicles
 #######################################
 
+tssapc.mut:
+	Inherits: TSSAPC
+	RenderVoxels:
+		Image: tssapc
+	RenderSprites:
+		Image: tssapc
+	Buildable:
+		BuildPaletteOrder: 60
+		Prerequisites: ~tsgtweapmutant
+	Cargo:
+		InitialUnits: tsghost.r4,tsghost.r4,tsumagon.r4,tsumagon.r4,tsumagon.r4
+	AutoDeployer:
+		DeployChance: 100
+		DeployTicks: 0
+	UpdatesPlayerStatistics:
+		OverrideActor: tssapc
+
 TSWINI2:
 	Inherits: ^Tank
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -6527,6 +6576,7 @@ TSWINI2:
 		PlayerPalette: playerra2
 
 TSCAR2:
+	Inherits: ^CivilianDriveByVehicle
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
@@ -6563,6 +6613,8 @@ TSCAR2:
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
 	AttackTurreted:
+	Cargo:
+		InitialUnits: tsmutant, tsmutant
 	SelectionDecorations:
 	Selectable:
 	Inherits@EXT: ^ExternalConditions ##########
@@ -6581,13 +6633,14 @@ TSCAR2:
 
 TS1TNK:
 	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
 	Inherits@EMP: ^TurretEMP
 	Inherits@vo: ^AttackTurretedVoice
 	Valued:
-		Cost: 500
+		Cost: 600
 	Tooltip:
 		Name: Light Tank
 	Buildable:
@@ -6601,17 +6654,17 @@ TS1TNK:
 		Locomotor: tracked
 		Speed: 126
 	Health:
-		HP: 34000
+		HP: 80000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
-		Type: Heavy
+		Type: Medium
 	RevealsShroud:
 		Range: 6c0
 	Turreted:
 		TurnSpeed: 20 #3
 	Armament:
-		Weapon: TS90mm
+		Weapon: 70mm
 		Recoil: 128
 		RecoilRecovery: 26
 		MuzzleSequence: muzzle
@@ -6636,6 +6689,7 @@ TS1TNK:
 
 TS2TNK:
 	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -6656,17 +6710,17 @@ TS2TNK:
 		Locomotor: tracked
 		Speed: 90
 	Health:
-		HP: 45000
+		HP: 125000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
-		Type: Heavy
+		Type: Medium
 	RevealsShroud:
 		Range: 6c0
 	Turreted:
 		TurnSpeed: 20 #3
 	Armament:
-		Weapon: TS120mm
+		Weapon: 120mm
 		Recoil: 128
 		RecoilRecovery: 26
 		LocalOffset: 768,0,90
@@ -6690,6 +6744,7 @@ TS2TNK:
 
 TS3TNK:
 	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -6710,7 +6765,7 @@ TS3TNK:
 		Locomotor: tracked
 		Speed: 71
 	Health:
-		HP: 60000
+		HP: 150000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -6720,7 +6775,7 @@ TS3TNK:
 	Turreted:
 		TurnSpeed: 20 #3
 	Armament:
-		Weapon: TS105mm
+		Weapon: 120mmDual
 		Recoil: 128
 		RecoilRecovery: 38
 		LocalOffset: 768,85,90, 768,-85,90
@@ -6744,6 +6799,7 @@ TS3TNK:
 
 TSFTNK:
 	Inherits: ^Tank
+	Inherits@Template: ^LineBreakerTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -6761,15 +6817,17 @@ TSFTNK:
 	Mobile:
 		Speed: 99
 	Health:
-		HP: 27000
+		HP: 200000
 	Repairable:
-		HpPerStep: 2000
+		HpPerStep: 10000
+	ChangesHealth@SelfHealing:
+		Step: 80
 	Armor:
-		Type: Heavy
+		Type: Superheavy
 	RevealsShroud:
 		Range: 6c0
 	Armament@PRIMARY:
-		Weapon: TSFireballLauncher
+		Weapon: BigFlamer2
 		LocalOffset: 0,-50,509, 0,50,0
 	# Explodes:
 	# 	Weapon: FlametankExplode
@@ -6789,6 +6847,8 @@ TSFTNK:
 
 TS4TNK:
 	Inherits: ^Tank
+	Inherits@Template: ^HighTechTankTemplate
+	Inherits@Template: ^EpicVehicleTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -6812,7 +6872,7 @@ TS4TNK:
 	Passenger:
 		Weight: 4
 	Health:
-		HP: 150000
+		HP: 225000
 	Repairable:
 		HpPerStep: 2637
 	Armor:
@@ -6858,6 +6918,7 @@ TS4TNK:
 
 TSARTY:
 	Inherits: ^Tank
+	Inherits@Template: ^MainBattleTankTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -6877,14 +6938,14 @@ TSARTY:
 		TurnSpeed: 8
 		Locomotor: lighttracked
 	Health:
-		HP: 20000
+		HP: 125000
 	Repairable:
 	Armor:
 		Type: Heavy
 	RevealsShroud:
 		Range: 7c0
 	Armament:
-		Weapon: TS152mm
+		Weapon: MammothTankCannon
 		Recoil: 128
 		RecoilRecovery: 26
 		LocalOffset: 624,0,208
@@ -6907,6 +6968,7 @@ TSARTY:
 
 tsmlrs:
 	Inherits: ^Tank
+	Inherits@Template: ^FireSupportTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -6932,13 +6994,13 @@ tsmlrs:
 	RevealsShroud:
 		Range: 7c0
 	Armament:
-		Weapon: TS227mm
+		Weapon: 227mm
 		Recoil: 64
 		RecoilRecovery: 32
 		LocalOffset: 0,121,271, 0,-121,271
 		MuzzleSequence: muzzle
 	Armament@2:
-		Weapon: TS227mm
+		Weapon: 227mm
 		Recoil: 64
 		RecoilRecovery: 32
 		LocalOffset: 0,-121,271, 0,121,271
@@ -6982,14 +7044,14 @@ tsm113:
 		Speed: 132
 		PauseOnCondition: notmobile || disabled
 	Health:
-		HP: 20000
+		HP: 100000
 	Repairable:
 	Armor:
 		Type: Heavy
 	RevealsShroud:
 		Range: 7c0
 	Armament:
-		Weapon: TSRaiderCannon
+		Weapon: MachineGunHumvee2
 		LocalOffset: 85,0,171
 		MuzzleSequence: muzzle
 	Turreted:
@@ -7000,9 +7062,17 @@ tsm113:
 	WithVoxelBody:
 	WithVoxelTurret:
 	Cargo:
+		UnloadVoice: Move
 		Types: Infantry, Hacker, Fremen
-		MaxWeight: 5
-		LoadingCondition: notmobile
+		MaxWeight: 8
+		InitialUnits: TSMUTANT,TSMUTANT,TSMWMN,TSMUTANT3,TSE3.MUTANT,TSE3.MUTANT,TSMUTANT,TSMUTANT
+		ExclusiveDeploy: true
+		DeployType: Battlefortress
+	AttackOpenTopped:
+		Voice: Attack
+		Armaments: garrisoned
+		PortOffsets: 384,0,128, 224,-341,128, 224,341,128, 0,-341,128, 0,341,128, -224,-341,128, -224,341,128, -384,0,128
+		PauseOnCondition: chronobeamed
 	Voiced:
 		VoiceSet: TSVehicle
 	DeliversCash:
@@ -7019,6 +7089,16 @@ tsm113:
 #######################################
 # TS CABAL Vehicles
 #######################################
+
+TSSAPCCABAL:
+	Inherits: TSSAPC
+	Buildable:
+		Prerequisites: ~tsntweapcabal, tsntradrcabal
+	RenderSprites:
+		PlayerPalette: playerra2
+		Image: tssapc
+	RenderVoxels:
+		Image: tssapc
 
 TST1000:
 	Inherits: ^Soldier
@@ -7338,6 +7418,7 @@ TSSAPC2:
 
 TSORCA:
 	Inherits: ^Helicopter
+	Inherits@Template: ^BomberTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -7362,7 +7443,7 @@ TSORCA:
 		CanSlide: false
 		TakeOffOnResupply: true
 	Health:
-		HP: 20000
+		HP: 60000
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -7421,6 +7502,7 @@ TSORCA.Husk:
 
 TSORCAB:
 	Inherits: ^Helicopter
+	Inherits@Template: ^BomberTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -7446,7 +7528,7 @@ TSORCAB:
 		CanHover: false
 		CanSlide: false
 	Health:
-		HP: 26000
+		HP: 75000
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -7538,7 +7620,7 @@ TSTRNSPORT:
 		BeforeUnloadDelay: 10
 	-WithShadow:
 	Health:
-		HP: 17500
+		HP: 47500
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -7623,6 +7705,7 @@ TSTRNSPORTMUTANT:
 
 TSSCRIN:
 	Inherits: ^Helicopter
+	Inherits@Template: ^BomberTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -7648,7 +7731,7 @@ TSSCRIN:
 		CanHover: false
 		CanSlide: false
 	Health:
-		HP: 33333
+		HP: 280000
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -7719,6 +7802,7 @@ TSSCRIN.Husk:
 
 TSAPACHENOD:
 	Inherits: ^Helicopter
+	Inherits@Template: ^BomberTemplate
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@Voxel: ^TSRenderVoxel
@@ -7738,7 +7822,7 @@ TSAPACHENOD:
 		TurnSpeed: 80
 		Speed: 150
 	Health:
-		HP: 22500
+		HP: 60000
 	Armor:
 		Type: Light
 	RevealsShroud:
