@@ -385,9 +385,7 @@ AsianQuasarBoatAA:
 		MinimumLaunchSpeed: 256
 
 AsianHowitzerCannon:
-	Inherits: ^RA2Grenade
-	Inherits: ^HeavyBomb
-	Inherits: ^RA2MediumCannon
+	Inherits: ^Artillery
 	ReloadDelay: 200
 	Report: aa_bgart.wav
 	Range: 20000
@@ -406,6 +404,43 @@ AsianHowitzerCannon:
 		ContrailStartWidth: 100
 		ContrailEndWidth: 20
 		TrailInterval: 1
+		Inaccuracy: 0c256
+	Warhead@1Dam: SpreadDamage
+		Falloff: 100, 55, 20, 5
+		Versus:
+			None: 60
+	Warhead@Cloud: SpawnSmokeParticle
+		Count: 1
+		Duration: 70
+		Speed: 0
+		TurnRate: 10
+		Image: tscloud1
+		Sequences: idle
+		EndSequences: die
+		Palette: shield60
+	Warhead@1Fire: TriggerLayerWeapon
+		LayerName: InfernoLayer
+		TriggerWeapon: AsianSmallOilBomb
+		TriggerSetLevel: 0
+		Level: 0
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air, GroundActor, WaterActor, AirborneActor
+		AirThreshold: 8c0
+		TriggerAtLevelMin: 320
+	Warhead@2Fire: TriggerLayerWeapon
+		LayerName: InfernoLayer
+		AllowSetLevelWhenTrigger: false
+		TriggerAtLevelMin: 50
+		TriggerWeapon: AsianHowitzerSplash
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air, GroundActor, WaterActor, AirborneActor
+		AirThreshold: 8c0
+
+AsianHowitzerSplash:
+	Inherits: ^RA2Grenade
+	Inherits: ^HeavyBomb
+	Inherits: ^RA2MediumCannon
+	Projectile: InstantExplode
 	Warhead@Grenade: SpreadDamage
 		Damage: 20000
 	Warhead@GrenadeFriendlyFire: SpreadDamage
@@ -2385,16 +2420,23 @@ SteelInspectorIonCannon:
 		Delay: 6
 		Offsets: 0, 0, 25460
 		ImpactActors: false
-		Weapon: SteelIonCannonBeam
+		Weapon: SteelIonCannonBeam2
 		ValidTargets: Ground, Water, Air
 		AirThreshold: 8c0
 	Warhead@Beam2: FireFragment
 		Delay: 6
 		Offsets: 0, 0, 25460
 		ImpactActors: false
-		Weapon: SteelIonCannonBeam2
+		Weapon: SteelIonCannonBeam
 		ValidTargets: Ground, Water, Air
 		AirThreshold: 8c0
+	Warhead@10Effect: CreateEffect
+		Explosions: steel_ionexplosionsmall
+		ExplosionPalette: ra2effect
+		ImpactSounds: ion1.aud
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
+		Delay: 5
 	Warhead@5BeamDam: FireFragment
 		Delay: 5
 		ImpactActors: false
@@ -2404,12 +2446,6 @@ SteelInspectorIonCannon:
 
 SteelInspectorIonCannonDamage:
 	Inherits: IonCannon
-	Warhead@10Effect: CreateEffect
-		Explosions: steel_ionexplosionsmall
-		ExplosionPalette: ra2effect
-		ImpactSounds: ion1.aud
-		ImpactActors: false
-		ValidTargets: Ground, Water, Air
 
 SteelIonCannon:
 	ValidTargets: Ground, Water, Trees, Air
@@ -2417,16 +2453,23 @@ SteelIonCannon:
 		Delay: 6
 		Offsets: 0, 0, 25460
 		ImpactActors: false
-		Weapon: SteelIonCannonBeam
+		Weapon: SteelIonCannonBeam2
 		ValidTargets: Ground, Water, Air
 		AirThreshold: 8c0
 	Warhead@Beam2: FireFragment
 		Delay: 6
 		Offsets: 0, 0, 25460
 		ImpactActors: false
-		Weapon: SteelIonCannonBeam2
+		Weapon: SteelIonCannonBeam
 		ValidTargets: Ground, Water, Air
 		AirThreshold: 8c0
+	Warhead@Effect: CreateEffect
+		Explosions: steel_ionexplosion
+		ExplosionPalette: ra2effect
+		ImpactSounds: ion1.aud
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
+		Delay: 5
 	Warhead@5BeamDam: FireFragment
 		Delay: 5
 		ImpactActors: false
@@ -2437,28 +2480,26 @@ SteelIonCannon:
 SteelIonCannonBeam:
 	ValidTargets: Ground, Water, Trees, Air
 	Projectile: SpriteRailgun
-		BeamColor: 00DDEE
-		Duration: 15
-		BeamWidth: 750
+		BeamColor: FFFFEE
+		Duration: 10
+		BeamWidth: 200
 		QuantizationCount: 1
 		HelixRadius: 0
-		HelixPitch: 1250
+		HelixPitch: 1725
 		HelixAnim: explosion
 		HelixAnimSequence: tspodring
 		HelixAnimPalette: tseffect
 
 SteelIonCannonBeam2:
 	ValidTargets: Ground, Water, Trees, Air
-	Projectile: SpriteRailgun
-		BeamColor: FFFFFF
-		Duration: 15
-		BeamWidth: 250
-		QuantizationCount: 1
-		HelixRadius: 0
-		HelixPitch: 2500
-		HelixAnim: explosion
-		HelixAnimSequence: tspodring
-		HelixAnimPalette: tseffect
+	Projectile: LaserZap
+		TrackTarget: false
+		Duration: 12
+		Color: 00DDEE
+		Width: 800
+		SecondaryBeamColor: DDFFFF66
+		SecondaryBeamWidth: 450
+		SecondaryBeam: true
 
 SteelIonCannonDamage:
 	Inherits: IonCannon
@@ -2467,12 +2508,6 @@ SteelIonCannonDamage:
 		InvalidTargets: Vehicle, Building, Wall
 		Size: 3
 		Delay: 3
-	Warhead@Effect: CreateEffect
-		Explosions: steel_ionexplosion
-		ExplosionPalette: ra2effect
-		ImpactSounds: ion1.aud
-		ImpactActors: false
-		ValidTargets: Ground, Water, Air
 
 SteelHoverMissile:
 	Inherits: ^ArrowWeapon
