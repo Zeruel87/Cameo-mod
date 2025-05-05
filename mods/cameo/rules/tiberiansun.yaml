@@ -103,12 +103,6 @@ World:
 		BaseActor: tsmcvcabal
 		SupportActors: tscyborg,tscyborg,tscyborg,tsbike2,tsbike2,tsttnk2,tsttnk2,tsttnk2
 
-Player:
-	ExternalCondition@PassiveIncomeBuildingsOwned:
-		Condition: PassiveIncomeBuildingsOwned
-	ProvidesPrerequisite@PassiveIncomeBuildingsOwned:
-		Prerequisite: allowsPassiveIncomeBuilding
-		RequiresCondition: PassiveIncomeBuildingsOwned < 5
 #######################################
 # TS Defaults
 #######################################
@@ -264,59 +258,48 @@ tsmonstermaker1:
 		InternalOwner: Creeps
 		RequiresLobbyCreeps: true
 
-#######################################
-# TS MCV
-#######################################
-
-OILB.TS.GDI:
+OILB.TS:
 	Inherits: OILB.Building
+	Inherits@cashtrickler: ^CashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
 	Tooltip:
-		Name: Oil Derrick
+		Name: Tiberium Pump
 	Buildable:
 		Queue: Building, RABuilding
-		BuildPaletteOrder: 999
-		Prerequisites: ~tsgtcnstgdi, tsgttech
+		Prerequisites: ~tsoilderrick, tstek, derricklimit
 		Description: Provides Passive income
-		Icon: tsicon
 		IconPalette: ra2
-	Valued:
-		Cost: 2500
 	RenderSprites:
-		Image: ra2cpower
-	Power:
-		Amount: -50
-	Health:
-		HP: 125000
+		Image: tibpump
 	-WithMakeAnimation:
+	WithIdleOverlay@PLATFORM:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-platform
+	WithIdleOverlay@LIGHTS:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-lights
 	RenderSprites:
 		PlayerPalette: playerra2
 
-OILB.TS.NOD:
-	Inherits: OILB.TS.GDI
-	Tooltip:
-		Name: Oil Derrick
-	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 999
-		Prerequisites: ~tsgtcnstnod, tsnttech
-
 OILB.TS.MUTANT:
-	Inherits: OILB.TS.GDI
+	Inherits: OILB.TS
+	Inherits@shape: ^3x4Shape
 	Tooltip:
-		Name: Oil Derrick
+		Name: Tiberium Extractor
 	Buildable:
 		Queue: Building, RABuilding
-		BuildPaletteOrder: 999
-		Prerequisites: ~tsgtcnstmutant, tsfgttech
+		Prerequisites: ~tsoilderricksuper, tstek, derricklimit
+	SeedsResource:
+		ResourceType: Tiberium
+		Interval: 50
+		MaxRange: 250
+	RenderSprites:
+		Image: tibdrill
+		PlayerPalette: playerra2
 
-OILB.TS.CABAL:
-	Inherits: OILB.TS.GDI
-	Tooltip:
-		Name: Oil Derrick
-	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 999
-		Prerequisites: ~tsgtcnstcabal, tscabaltech
+#######################################
+# TS MCV
+#######################################
 
 TSGTCNST:
 	GrantExternalConditionToOwner@BuildingsOwned:
@@ -441,6 +424,8 @@ TSGTCNSTGDI:
 		Sequence: build
 	BaseProvider:
 		Range: 14c0
+	ProvidesPrerequisite@tsoilderrick:
+		Prerequisite: tsoilderrick
 	WithIdleOverlay@TOP:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-top
@@ -512,6 +497,8 @@ TSGTCNSTNOD:
 		Prerequisites: global-factundeploy
 	BaseProvider:
 		Range: 14c0
+	ProvidesPrerequisite@tsoilderrick:
+		Prerequisite: tsoilderrick
 	WithBuildingBib:
 	WithProductionOverlay@WELDING:
 		RequiresCondition: !build-incomplete
@@ -592,6 +579,8 @@ TSGTCNSTMUTANT:
 		Sequence: build
 	BaseProvider:
 		Range: 14c0
+	ProvidesPrerequisite@tsoilderricksuper:
+		Prerequisite: tsoilderricksuper
 	WithBuildingBib:
 	WithIdleOverlay@TOP:
 		RequiresCondition: !build-incomplete
@@ -668,6 +657,8 @@ TSGTCNSTCABAL:
 		Sequence: build
 	BaseProvider:
 		Range: 14c0
+	ProvidesPrerequisite@tsoilderrick:
+		Prerequisite: tsoilderrick
 	WithBuildingBib:
 	WithIdleOverlay@TOP:
 		RequiresCondition: !build-incomplete
@@ -694,9 +685,6 @@ TSMCVGDI:
 	Inherits: ^Vehicle
 	Inherits@Voxel: ^TSRenderVoxel
 	Inherits@mcv: ^MCV
-	Inherits@conyard: ^Conyard
-	Valued:
-		Cost: 2500
 	Tooltip:
 		Name: Mobile Construction Vehicle
 	Buildable:
@@ -705,21 +693,6 @@ TSMCVGDI:
 		Queue: Vehicle, RAVehicle
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
-	Selectable:
-		Priority: 4
-		Bounds: 1536, 1536
-		DecorationBounds: 1536, 1536
-	Mobile:
-		Speed: 80
-		Locomotor: heavywheeled
-	Health:
-		HP: 300000
-	Repairable:
-		HpPerStep: 2182
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
 	Transforms:
 		IntoActor: tsgtcnstgdi
 		Offset: -1,-1
@@ -727,12 +700,8 @@ TSMCVGDI:
 		TransformSounds: tsplace2.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
 	WithVoxelBody:
-	SelectionDecorations:
-	Inherits@EXT: ^ExternalConditions ##########
 	Voiced:
 		VoiceSet: TSVehicle
-	DeliversCash:
-		Payload: 1750
 	RenderSprites:
 		Image: tsmcv
 	RenderVoxels:
@@ -2025,6 +1994,8 @@ tsnttech:
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@factionnod:
 		Prerequisite: mmtsnod
+	ProvidesPrerequisite:
+		Prerequisite: tstek
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
@@ -2064,6 +2035,8 @@ tsgttech:
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
+	ProvidesPrerequisite:
+		Prerequisite: tstek
 	RenderSprites:
 		PlayerPalette: playerra2
 
