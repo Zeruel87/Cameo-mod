@@ -2742,139 +2742,87 @@ CorvetteDragon:
 	Warhead@EffectAir: CreateEffect
 		Explosions: small_building
 
-
-TSIonCannonSpawner: ### THIS ONE GENERATES THE MAIN ION BEAM DUMMY
-	Inherits: IonCannon
+TDIonCannon:
 	Range: 12c0
-	AirThreshold: 8c0
+	AirThreshold: 99c0
 	ValidTargets: Ground, Water, Air
-	Warhead@4BeamEff: FireReverseRadius
-		ValidTargets: Ground, Water, Air
-		Weapon: TSIonBeamMini
-		ImpactActors: false
-		Amount: 10
-		AirThreshold: 8c0
+ 	## Hack: using Bullet, Beam image will disappear at 11 tick and its warheads play at 12 tick, which has 1 tick blank
+ 	## So split warheads and projectile for the best visual effect
 	Warhead@5BeamEff: FireFragment
-		Delay: 100
 		ImpactActors: false
-		Weapon: TSIonBeam
+		Weapon: TDIonCannonLaunch
 		ValidTargets: Ground, Water, Air
-		AirThreshold: 8c0
-	Warhead@6BeamEff: FireFragment
-		Delay: 108
+		AirThreshold: 99c0
+	Warhead@6Damage: FireFragment
 		ImpactActors: false
-		Weapon: TSIonBeamMiniEnd
+		Weapon: TDIonCannonDamage
 		ValidTargets: Ground, Water, Air
-		AirThreshold: 8c0
-	Warhead@3Smu_area: LeaveSmudge
-		Delay: 110
-		SmudgeType: Scorch
-		Size: 3,2
-		AirThreshold: 8c0
-	Warhead@3Effect: CreateEffect
-		Delay: 110
+		AirThreshold: 99c0
+		Delay: 9
+	Warhead@2Effect: CreateEffect
 		Image: tsioncannon
 		Explosions: ionring
 		ExplosionPalette: tseffect
-		ImpactSounds: ion1.aud
-		AffectsParent: true
 		ImpactActors: false
 		ValidTargets: Ground, Water, Air
 		AirThreshold: 8c0
-	Warhead@Shake: ShakeScreen
-		Duration: 15
-		Intensity: 8
-		Multiplier: 1,1
+		Delay: 11
+	Warhead@3Effect: CreateEffect
+		Image: ionsfx
+		Explosions: explode
+		ExplosionPalette: tseffect
+		ImpactSounds: ion1.aud
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
 		AirThreshold: 8c0
-		Delay: 114
-	#Damage
+		Delay: 10
+
+TDIonCannonLaunch:
+	AirThreshold: 99c0
+	Range: 99c0
+	ValidTargets: Ground, Water, Air
+	Projectile: AthenaProjectile
+		Altitude: 22856
+	Warhead@later: FireFragment
+		Weapon: TDIonBeam
+		ImpactActors: false
+		UseZOffsetAsAbsoluteHeight: true
+		ValidTargets: Ground, Water, Air
+		AirThreshold: 8c0
+
+TDIonBeam:
+	AirThreshold: 99c0
+	Range: 99c0
+	ValidTargets: Ground, Water, Air
+	Projectile: Bullet
+		Speed: 2159
+		Image: ionsfx
+		Sequences: proj
+		Palette: tseffect
+		Blockable: false
+		TrailImage: ionsfx
+		TrailSequences: trail
+		TrailInterval: 0
+		TrailDelay: 2
+		TrailPalette: tseffect
+
+TDIonCannonDamage:
+	Inherits: IonCannon
 	Warhead@TeslaChargedWeapon: SpreadDamage
-		Spread: 1600
-		Damage: 16000
-		Delay: 107
+		Spread: 600
 	Warhead@TeslaChargedWeaponPercentage: HealthPercentageDamage
-		Spread: 16000
-		Damage: 8
-		Delay: 108
+		Spread: 6000
 	Warhead@TeslaChargedExtraDamage: SpreadDamage
-		Spread: 1600
-		Damage: 8000
-		Delay: 109
+		Spread: 600
 	Warhead@TeslaWeapon: SpreadDamage
-		Spread: 16000
-		Damage: 16000
-		Delay: 110
+		Spread: 1100
 	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
-		Spread: 1600
-		Damage: 8
-		Delay: 111
+		Spread: 6000
 	Warhead@TeslaExtraDamage: SpreadDamage
-		Spread: 16000
-		Damage: 8000
-		Delay: 112
+		Spread: 600
 	Warhead@IonCannon: SpreadDamage
-		Spread: 16000
-		Damage: 16000
-		Delay: 113
+		Range: 0, 600, 1400, 2000, 2820
 	Warhead@IonCannonPercentage: HealthPercentageDamage
-		Spread: 16000
-		Damage: 8
-		Delay: 114
-	Warhead@IonCannonAirPercentage: HealthPercentageDamage
-		Spread: 16000
-		Damage: 8
-		Delay: 115
+		Spread: 4000
 	-Warhead@2Smu_impact:
 	-Warhead@5Smu_area2:
-
-^TSIonBeam:
-	Inherits: ^TeslaChargedWeapon
-	ReloadDelay: 9999
-	AirThreshold: 8c0
-	ValidTargets: Ground, Water, Air
-	Projectile: SpriteAthenaLaser
-		Image: tsioncannon
-		Sequence: ionbeam
-		Palette: tseffect
-		RingImage: tsioncannon
-		RingSequence: ringmini2
-		SpriteNumber: 10
-		HeightOffset: 2546
-		StayTicks: 39
-		Speed: 0
-		ExplosionInterval: 9999
-
-TSIonBeamMini:
-	Inherits: ^TSIonBeam
-	Range: 5c256
-	AirThreshold: 8c0
-	Projectile: SpriteAthenaLaser
-		Sequence: ionbeamstart
-		RingSequence: ringmini2
-		Palette: tseffect
-		StayTicks: 5
-		ExplosionInterval: 3
-		Speed: 52
-		RotSpeed: 12
-	Warhead@Effect: CreateEffect
-		Explosions: blue_med_frag
-
-TSIonBeamMiniEnd:
-	Inherits: ^TSIonBeam
-	Projectile: SpriteAthenaLaser
-		StayTicks: 45
-		Sequence: ionbeamstart
-		RingSequence: ringmini2
-		Palette: tseffect
-
-TSIonbeam:
-	Inherits: ^TSIonBeam
-	Projectile: SpriteAthenaLaser
-		Image: explosion
-		Sequence: ionbeam
-		Palette: ra2unit
-		RingImage: tsioncannon
-		RingSequence: ringmini2
-		SpriteNumber: 5
-		HeightOffset: 5046
-		StayTicks: 39
