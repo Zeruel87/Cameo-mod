@@ -103,12 +103,6 @@ World:
 		BaseActor: tsmcvcabal
 		SupportActors: tscyborg,tscyborg,tscyborg,tsbike2,tsbike2,tsttnk2,tsttnk2,tsttnk2
 
-Player:
-	ExternalCondition@PassiveIncomeBuildingsOwned:
-		Condition: PassiveIncomeBuildingsOwned
-	ProvidesPrerequisite@PassiveIncomeBuildingsOwned:
-		Prerequisite: allowsPassiveIncomeBuilding
-		RequiresCondition: PassiveIncomeBuildingsOwned < 5
 #######################################
 # TS Defaults
 #######################################
@@ -264,59 +258,48 @@ tsmonstermaker1:
 		InternalOwner: Creeps
 		RequiresLobbyCreeps: true
 
-#######################################
-# TS MCV
-#######################################
-
-OILB.TS.GDI:
+OILB.TS:
 	Inherits: OILB.Building
+	Inherits@cashtrickler: ^CashTricklerWithExperience
+	Inherits@cashtricklerlimit: ^CashTricklerLimited
 	Tooltip:
-		Name: Oil Derrick
+		Name: Tiberium Pump
 	Buildable:
 		Queue: Building, RABuilding
-		BuildPaletteOrder: 999
-		Prerequisites: ~tsgtcnstgdi, tsgttech
+		Prerequisites: ~tsoilderrick, tstek, derricklimit
 		Description: Provides Passive income
-		Icon: tsicon
 		IconPalette: ra2
-	Valued:
-		Cost: 2500
 	RenderSprites:
-		Image: ra2cpower
-	Power:
-		Amount: -50
-	Health:
-		HP: 125000
+		Image: tibpump
 	-WithMakeAnimation:
+	WithIdleOverlay@PLATFORM:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-platform
+	WithIdleOverlay@LIGHTS:
+		RequiresCondition: !build-incomplete
+		Sequence: idle-lights
 	RenderSprites:
 		PlayerPalette: playerra2
 
-OILB.TS.NOD:
-	Inherits: OILB.TS.GDI
-	Tooltip:
-		Name: Oil Derrick
-	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 999
-		Prerequisites: ~tsgtcnstnod, tsnttech
-
 OILB.TS.MUTANT:
-	Inherits: OILB.TS.GDI
+	Inherits: OILB.TS
+	Inherits@shape: ^3x4Shape
 	Tooltip:
-		Name: Oil Derrick
+		Name: Tiberium Extractor
 	Buildable:
 		Queue: Building, RABuilding
-		BuildPaletteOrder: 999
-		Prerequisites: ~tsgtcnstmutant, tsfgttech
+		Prerequisites: ~tsoilderricksuper, tstek, derricklimit
+	SeedsResource:
+		ResourceType: Tiberium
+		Interval: 50
+		MaxRange: 250
+	RenderSprites:
+		Image: tibdrill
+		PlayerPalette: playerra2
 
-OILB.TS.CABAL:
-	Inherits: OILB.TS.GDI
-	Tooltip:
-		Name: Oil Derrick
-	Buildable:
-		Queue: Building, RABuilding
-		BuildPaletteOrder: 999
-		Prerequisites: ~tsgtcnstcabal, tscabaltech
+#######################################
+# TS MCV
+#######################################
 
 TSGTCNST:
 	GrantExternalConditionToOwner@BuildingsOwned:
@@ -341,8 +324,6 @@ TSGTCNST:
 		Type: Wood
 	RevealsShroud:
 		Range: 10c0
-	Production:
-		Produces: Building, RABuilding, Defence, RADefence
 	Transforms:
 		RequiresCondition: factundeploy
 		PauseOnCondition: being-demolished || build-incomplete
@@ -443,6 +424,8 @@ TSGTCNSTGDI:
 		Sequence: build
 	BaseProvider:
 		Range: 14c0
+	ProvidesPrerequisite@tsoilderrick:
+		Prerequisite: tsoilderrick
 	WithIdleOverlay@TOP:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-top
@@ -514,6 +497,8 @@ TSGTCNSTNOD:
 		Prerequisites: global-factundeploy
 	BaseProvider:
 		Range: 14c0
+	ProvidesPrerequisite@tsoilderrick:
+		Prerequisite: tsoilderrick
 	WithBuildingBib:
 	WithProductionOverlay@WELDING:
 		RequiresCondition: !build-incomplete
@@ -594,6 +579,8 @@ TSGTCNSTMUTANT:
 		Sequence: build
 	BaseProvider:
 		Range: 14c0
+	ProvidesPrerequisite@tsoilderricksuper:
+		Prerequisite: tsoilderricksuper
 	WithBuildingBib:
 	WithIdleOverlay@TOP:
 		RequiresCondition: !build-incomplete
@@ -670,6 +657,8 @@ TSGTCNSTCABAL:
 		Sequence: build
 	BaseProvider:
 		Range: 14c0
+	ProvidesPrerequisite@tsoilderrick:
+		Prerequisite: tsoilderrick
 	WithBuildingBib:
 	WithIdleOverlay@TOP:
 		RequiresCondition: !build-incomplete
@@ -696,9 +685,6 @@ TSMCVGDI:
 	Inherits: ^Vehicle
 	Inherits@Voxel: ^TSRenderVoxel
 	Inherits@mcv: ^MCV
-	Inherits@conyard: ^Conyard
-	Valued:
-		Cost: 2500
 	Tooltip:
 		Name: Mobile Construction Vehicle
 	Buildable:
@@ -707,21 +693,6 @@ TSMCVGDI:
 		Queue: Vehicle, RAVehicle
 		BuildDurationModifier: 40
 		Description: Deploys into another Construction Yard.\n  Unarmed
-	Selectable:
-		Priority: 4
-		Bounds: 1536, 1536
-		DecorationBounds: 1536, 1536
-	Mobile:
-		Speed: 80
-		Locomotor: heavywheeled
-	Health:
-		HP: 300000
-	Repairable:
-		HpPerStep: 2182
-	Armor:
-		Type: Heavy
-	RevealsShroud:
-		Range: 7c0
 	Transforms:
 		IntoActor: tsgtcnstgdi
 		Offset: -1,-1
@@ -729,12 +700,8 @@ TSMCVGDI:
 		TransformSounds: tsplace2.aud
 		NoTransformNotification: BuildingCannotPlaceAudio
 	WithVoxelBody:
-	SelectionDecorations:
-	Inherits@EXT: ^ExternalConditions ##########
 	Voiced:
 		VoiceSet: TSVehicle
-	DeliversCash:
-		Payload: 1750
 	RenderSprites:
 		Image: tsmcv
 	RenderVoxels:
@@ -1295,31 +1262,9 @@ TSGTPILE:
 	Exit@2:
 		SpawnOffset: 298,298,0
 		ExitCell: 1,1
-	Production@NORMAL:
-		Produces: Infantry
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry
-		RequiresCondition: classicproductionqueues
 	GrantExternalConditionToProduced:
 		Condition: produced
-	ProductionQueue:
-		Type: Infantry
-		DisplayOrder: 2
-		Group: Infantry
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-	ProductionBar@INFANTRYGDI:
-		ProductionType: Infantry
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAINFANTRYGDI:
-		ProductionType: RAInfantry
-		RequiresCondition: classicproductionqueues
+	ParallelProductionQueue@INFANTRY:
 	Power:
 		Amount: -20
 	ProvidesPrerequisite@buildingname:
@@ -1373,29 +1318,7 @@ TSNTHAND:
 	Exit@2:
 		SpawnOffset: 298,298,0
 		ExitCell: 1,1
-	Production@NORMAL:
-		Produces: Infantry
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry
-		RequiresCondition: classicproductionqueues
-	ProductionQueue:
-		Type: Infantry
-		DisplayOrder: 2
-		Group: Infantry
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
-	ProductionBar@INFANTRYNOD:
-		ProductionType: Infantry
-		RequiresCondition: !classicproductionqueues
-	ProductionBar@RAINFANTRYNOD:
-		ProductionType: RAInfantry
-		RequiresCondition: classicproductionqueues
+	ParallelProductionQueue@INFANTRY:
 	Power:
 		Amount: -20
 	ProvidesPrerequisite@buildingname:
@@ -1423,18 +1346,7 @@ TSNTHAND2:
 		Description: Trains infantry
 		Icon: iconcabal
 		IconPalette: windows256
-	Production@NORMAL:
-		Produces: Infantry
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry
-		RequiresCondition: classicproductionqueues
-	ProductionQueue:
-		Type: Infantry
-	ProductionBar@INFANTRYNOD:
-		ProductionType: Infantry
-	ProductionBar@RAINFANTRYNOD:
-		ProductionType: RAInfantry
+	ParallelProductionQueue@INFANTRY:
 	RenderSprites:
 		Image: tsnthand
 		PlayerPalette: playerra2
@@ -1448,18 +1360,9 @@ tsgtpile2:
 		Prerequisites: ~tsgtcnstmutant, tsntpowrmutant
 		Queue: Building, RABuilding
 		Description: Trains infantry
-	Production@NORMAL:
-		Produces: Infantry
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAInfantry
 	GrantExternalConditionToProduced:
 		Condition: produced
-	ProductionQueue:
-		Type: Infantry
-	ProductionBar@INFANTRYNOD:
-		ProductionType: Infantry
-	ProductionBar@RAINFANTRYNOD:
-		ProductionType: RAInfantry
+	ParallelProductionQueue@INFANTRY:
 	RenderSprites:
 		Image: tsgtpile2
 		PlayerPalette: playerra2
@@ -1503,23 +1406,7 @@ tsgtweap:
 		SpawnOffset: -512,-512,0
 		ExitCell: 2,1
 		ExitDelay: 3
-	Production@NORMAL:
-		Produces: Vehicle
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAVehicle
-		RequiresCondition: classicproductionqueues
-	ProductionQueue:
-		Type: Vehicle
-		DisplayOrder: 3
-		Group: Vehicle
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
+	ParallelProductionQueue@VEHICLE:
 	ProductionBar@VEHICLEGDI:
 		ProductionType: Vehicle
 		RequiresCondition: !classicproductionqueues
@@ -1589,23 +1476,7 @@ TSNTWEAP:
 		SpawnOffset: -512,-512,0
 		ExitCell: 2,1
 		ExitDelay: 3
-	Production@NORMAL:
-		Produces: Vehicle
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAVehicle
-		RequiresCondition: classicproductionqueues
-	ProductionQueue:
-		Type: Vehicle
-		DisplayOrder: 3
-		Group: Vehicle
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
+	ParallelProductionQueue@VEHICLE:
 	ProductionBar@VEHICLEGDI:
 		ProductionType: Vehicle
 		RequiresCondition: !classicproductionqueues
@@ -1636,12 +1507,7 @@ TSNTWEAPCABAL:
 		Prerequisites: ~tsgtcnstcabal, tsproccabal
 		Queue: Building, RABuilding
 		Description: Produces vehicles
-	Production@NORMAL:
-		Produces: Vehicle
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAVehicle
-	ProductionQueue:
-		Type: Vehicle
+	ParallelProductionQueue@VEHICLE:
 	ProductionBar@VEHICLEGDI:
 		ProductionType: Vehicle
 	ProductionBar@RAVEHICLEGDI:
@@ -1656,12 +1522,7 @@ TSGTWEAPMUTANT:
 		Prerequisites: ~tsgtcnstmutant, tsprocmutant
 		Queue: Building, RABuilding
 		Description: Produces vehicles
-	Production@NORMAL:
-		Produces: Vehicle
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAVehicle
-	ProductionQueue:
-		Type: Vehicle
+	ParallelProductionQueue@VEHICLE:
 	ProductionBar@VEHICLEGDI:
 		ProductionType: Vehicle
 	ProductionBar@RAVEHICLEGDI:
@@ -1790,29 +1651,13 @@ tsgthpad:
 		Range: 5c0
 	Exit@1:
 		SpawnOffset: 0,-256,0
-	Production@NORMAL:
-		Produces: Aircraft
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAAircraft
-		RequiresCondition: classicproductionqueues
 	Reservable:
 	RepairsUnits:
 		HpPerStep: 1000
 		PlayerExperience: 25
 		StartRepairingNotification: Repairing
 	RallyPoint:
-	ProductionQueue:
-		Type: Aircraft
-		DisplayOrder: 4
-		Group: Aircraft
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
+	ParallelProductionQueue@AIRCRAFT:
 	ProductionBar@AIRCRAFTGDI:
 		ProductionType: Aircraft
 		RequiresCondition: !classicproductionqueues
@@ -1838,12 +1683,7 @@ tsgthpadmutant:
 	Buildable:
 		Queue: Building, RABuilding
 		Prerequisites: ~tsgtcnstmutant, tsgtradrmutant
-	Production@NORMAL:
-		Produces: Aircraft
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAAircraft
-	ProductionQueue:
-		Type: Aircraft
+	ParallelProductionQueue@AIRCRAFT:
 	ProductionBar@AIRCRAFTGDI:
 		ProductionType: Aircraft
 	ProductionBar@RAAIRCRAFTGDI:
@@ -1879,29 +1719,13 @@ TSNTHPAD:
 		Range: 5c0
 	Exit@1:
 		SpawnOffset: 0,-256,0
-	Production@NORMAL:
-		Produces: Aircraft
-		RequiresCondition: !classicproductionqueues
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAAircraft
-		RequiresCondition: classicproductionqueues
 	Reservable:
 	RepairsUnits:
 		HpPerStep: 1000
 		PlayerExperience: 25
 		StartRepairingNotification: Repairing
 	RallyPoint:
-	ProductionQueue:
-		Type: Aircraft
-		DisplayOrder: 4
-		Group: Aircraft
-		LowPowerModifier: 300
-		ReadyAudio: UnitReady
-		BlockedAudio: NoBuild
-		LimitedAudio: BuildingInProgress
-		QueuedAudio: Training
-		OnHoldAudio: OnHold
-		CancelledAudio: Cancelled
+	ParallelProductionQueue@AIRCRAFT:
 	ProductionBar@AIRCRAFTNOD:
 		ProductionType: Aircraft
 		RequiresCondition: !classicproductionqueues
@@ -1927,12 +1751,7 @@ TSNTHPAD2:
 	Buildable:
 		Queue: Building, RABuilding
 		Prerequisites: ~tsgtcnstcabal, tsntradrcabal
-	Production@NORMAL:
-		Produces: Aircraft
-	Production@CLASSICPRODUCTIONQUEUES:
-		Produces: RAAircraft
-	ProductionQueue:
-		Type: Aircraft
+	ParallelProductionQueue@AIRCRAFT:
 	ProductionBar@AIRCRAFTNOD:
 		ProductionType: Aircraft
 	ProductionBar@RAAIRCRAFTNOD:
@@ -2175,6 +1994,8 @@ tsnttech:
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@factionnod:
 		Prerequisite: mmtsnod
+	ProvidesPrerequisite:
+		Prerequisite: tstek
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
@@ -2214,6 +2035,8 @@ tsgttech:
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
+	ProvidesPrerequisite:
+		Prerequisite: tstek
 	RenderSprites:
 		PlayerPalette: playerra2
 
@@ -4975,7 +4798,7 @@ TSHARVMUTANT:
 		PipCount: 8
 		Capacity: 35
 	Buildable:
-		Prerequisites: ~tsntweapmutant, tsprocmutant
+		Prerequisites: ~tsgtweapmutant, tsprocmutant
 		Queue: Vehicle, RAVehicle
 		Description: Harvests Tiberium for processing
 	WithVoxelBody:
@@ -6588,14 +6411,12 @@ TSWINI2:
 		Recoil: 128
 		RecoilRecovery: 26
 		LocalOffset: 0,121,271, 0,-121,271
-	AttackTurreted:
 	SelectionDecorations:
 	Selectable:
 	Inherits@EXT: ^ExternalConditions ##########
 	AcceptsDeliveredExperience: ##########
 		ValidTypes: vehicle ##########
 	WithVoxelBody:
-	WithVoxelTurret:
 	Voiced:
 		VoiceSet: TSVehicle
 	DeliversCash:
