@@ -1283,37 +1283,80 @@ MutAPRifleE:
 ####################################################################################################
 
 TSTacticalMissile:
+	Inherits: ^TSDefaultMissile
+	Report: samshot1.aud
 	ValidTargets: Ground, Water, Air
-	Warhead@1Dam: SpreadDamage
-		Spread: 512
-		Falloff: 100, 100, 0
-		Damage: 13000
+	Range: 9999c0
+	AirThreshold: 11c0
+	Projectile: Missile
+		RangeLimit: -1
+		MinimumLaunchAngle: 250
+		MaximumLaunchAngle: 250
+		MinimumLaunchSpeed: 400
+		MaximumLaunchSpeed: 400
+		Jammable: false
+		-PointDefenseTypes:
+		HomingActivationDelay: 8
+		CruiseAltitude: 4000
+		AirburstAltitude: 3096
+		Image: tsnodmmsil
+		Sequences: idle
+		Palette: ra2unit
+		Speed: 1024
+		TrailWhenDeactivated: true
+		TrailInterval: 0
+		Gravity: 0
+	-Warhead@MediumMissile:
+	-Warhead@MediumMissilePercentage:
+	-Warhead@LightMissile:
+	-Warhead@LightMissilePercentage:
+	Warhead@1Dam: FireFragment
+		Weapon: TSTacticalMissileDamage
 		ValidTargets: Ground, Water, Air
-		Versus:
-			None: 100
-			Wood: 85
-			Light: 70
-			Medium: 50
-			Heavy: 35
-			Concrete: 28
-		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		AirThreshold: 11c0
+		ImpactActors: false
 	Warhead@2Eff: CreateEffect
 		Explosions: large_twlt
 		ExplosionPalette: tseffect
 		ImpactSounds: expnew19.aud
 		ImpactActors: false
+		AirThreshold: 11c0
 		ValidTargets: Ground, Water, Air
+
+TSTacticalMissileDamage:
+	Inherits: ^TSDefaultMissile
+	AirThreshold: 11c0
+	Projectile: SupportPowerInstantExplode
+	Warhead@AirPercentage: HealthPercentageDamage
+		AirThreshold: 11c0
+		Spread: 512
+		Falloff: 100, 100, 100
+		Damage: 70
+		ValidTargets: Air
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@Reveal: RevealShroud
+		Duration: 150
+		Radius: 7c0
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
+		AirThreshold: 11c0
+		RevealGeneratedShroud: true
 	Warhead@Cluster: FireCluster
 		Weapon: TSMissileBomblet
+		AirThreshold: 11c0
 		Dimensions: 7,7
-		Footprint: __XXX__ _X___X_ X_____X X_____X X_____X _X___X_ __XXX__
+		Footprint: __xxx__ _xxxxx_ xxxxxxx xxxxxxx xxxxxxx _xxxxx_ __xxx__
 
 TSMissileBomblet:
+	AirThreshold: 11c0
+	ValidTargets: Ground, Water, Air
+	Range: 7c0
 	Projectile: Bullet
 		Image: 120mm
 		TrailImage: smokey
 		Shadow: true
 		Speed: 128
+		Blockable: false
 	Warhead@1Dam: SpreadDamage
 		Spread: 1c0
 		Damage: 26000
@@ -1409,51 +1452,138 @@ TSHSeekerTargeting:
 	Projectile: InstantHit
 	Warhead@1Dam: TargetDamage
 
-TSIonCannon:
+TSIonCannon: ### THIS ONE GENERATES THE MAIN ION BEAM DUMMY
+	Inherits: IonCannon
+	Range: 12c0
+	AirThreshold: 8c0
 	ValidTargets: Ground, Water, Air
-	Warhead@1Dam_impact: SpreadDamage
-		Spread: 1c0
-		Damage: 15000
-		Falloff: 1000, 500, 250, 100
+	Warhead@4BeamEff: FireReverseRadius
 		ValidTargets: Ground, Water, Air
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath
-	Warhead@2Dam_area: SpreadDamage
-		Spread: 2c0
-		Damage: 25000
-		Falloff: 100, 75, 50, 25
-		Delay: 3
+		Weapon: TSIonBeamMini
+		ImpactActors: false
+		Amount: 10
+		AirThreshold: 8c0
+	Warhead@5BeamEff: FireFragment
+		Delay: 100
+		ImpactActors: false
+		Weapon: TSIonBeam
 		ValidTargets: Ground, Water, Air
-		DamageTypes: Prone50Percent, TriggerProne, FireDeath
+		AirThreshold: 8c0
+	Warhead@6BeamEff: FireFragment
+		Delay: 108
+		ImpactActors: false
+		Weapon: TSIonBeamMiniEnd
+		ValidTargets: Ground, Water, Air
+		AirThreshold: 8c0
 	Warhead@3Smu_area: LeaveSmudge
+		Delay: 110
 		SmudgeType: Scorch
-		InvalidTargets: Vehicle, Building, Wall
-		Size: 3
-		Delay: 3
-	Warhead@4Effect: CreateEffect
-		Explosions: ionbeam
-		ExplosionPalette: ra2unit
+		Size: 3,2
+		AirThreshold: 8c0
+	Warhead@3Effect: CreateEffect
+		Delay: 110
+		Image: tsioncannon
+		Explosions: ionring
+		ExplosionPalette: tseffect
 		ImpactSounds: ion1.aud
+		AffectsParent: true
 		ImpactActors: false
-	Warhead@5Effect: CreateEffect
-		Explosions: ionbeam2
-		ExplosionPalette: ra2unit
-		ImpactActors: false
-	Warhead@6Effect: CreateEffect
-		Explosions: ionbeam3
-		ExplosionPalette: ra2unit
-		ImpactActors: false
-	Warhead@7Effect: CreateEffect
-		Explosions: ionbeam4
-		ExplosionPalette: ra2unit
-		ImpactActors: false
-	Warhead@8Effect: CreateEffect
-		Explosions: ionbeam5
-		ExplosionPalette: ra2unit
-		ImpactActors: false
-	Warhead@9Effect: CreateEffect
-		Explosions: ionbeam6
-		ExplosionPalette: ra2unit
-		ImpactActors: false
+		ValidTargets: Ground, Water, Air
+		AirThreshold: 8c0
+	Warhead@Shake: ShakeScreen
+		Duration: 15
+		Intensity: 8
+		Multiplier: 1,1
+		AirThreshold: 8c0
+		Delay: 114
+	Warhead@TeslaChargedWeapon: SpreadDamage
+		Spread: 600
+		Damage: 16000
+		Delay: 107
+	Warhead@TeslaChargedWeaponPercentage: HealthPercentageDamage
+		Spread: 6000
+		Damage: 8
+		Delay: 108
+	Warhead@TeslaChargedExtraDamage: SpreadDamage
+		Spread: 600
+		Damage: 8000
+		Delay: 109
+	Warhead@TeslaWeapon: SpreadDamage
+		Spread: 1600
+		Damage: 6000
+		Delay: 110
+	Warhead@TeslaWeaponPercentage: HealthPercentageDamage
+		Spread: 6000
+		Damage: 6
+		Delay: 111
+	Warhead@TeslaExtraDamage: SpreadDamage
+		Spread: 600
+		Damage: 8000
+		Delay: 112
+	Warhead@IonCannon: SpreadDamage
+		Range: 0, 600, 1400, 2000, 2820
+		Damage: 16000
+		Delay: 113
+	Warhead@IonCannonPercentage: HealthPercentageDamage
+		Spread: 4000
+		Damage: 8
+		Delay: 114
+	Warhead@IonCannonAirPercentage: HealthPercentageDamage
+		Delay: 115
+	-Warhead@2Smu_impact:
+	-Warhead@5Smu_area2:
+
+^TSIonBeam:
+	Inherits: ^TeslaChargedWeapon
+	ReloadDelay: 9999
+	AirThreshold: 8c0
+	ValidTargets: Ground, Water, Air
+	Projectile: SpriteAthenaLaser
+		Image: tsioncannon
+		Sequence: ionbeam
+		Palette: tseffect
+		RingImage: tsioncannon
+		RingSequence: ringmini2
+		SpriteNumber: 10
+		HeightOffset: 2546
+		StayTicks: 39
+		Speed: 0
+		ExplosionInterval: 9999
+
+TSIonBeamMini:
+	Inherits: ^TSIonBeam
+	Range: 5c256
+	AirThreshold: 8c0
+	Projectile: SpriteAthenaLaser
+		Sequence: ionbeamstart
+		RingSequence: ringmini2
+		Palette: tseffect
+		StayTicks: 5
+		ExplosionInterval: 3
+		Speed: 52
+		RotSpeed: 12
+	Warhead@Effect: CreateEffect
+		Explosions: blue_poof
+
+TSIonBeamMiniEnd:
+	Inherits: ^TSIonBeam
+	Projectile: SpriteAthenaLaser
+		StayTicks: 45
+		Sequence: ionbeamstart
+		RingSequence: ringmini2
+		Palette: tseffect
+
+TSIonbeam:
+	Inherits: ^TSIonBeam
+	Projectile: SpriteAthenaLaser
+		Image: explosion
+		Sequence: ionbeam
+		Palette: ra2unit
+		RingImage: tsioncannon
+		RingSequence: ringmini2
+		SpriteNumber: 5
+		HeightOffset: 5046
+		StayTicks: 39
 
 TSCloud:
 	ReloadDelay: 20
