@@ -13,7 +13,7 @@ using OpenRA.GameRules;
 using OpenRA.Graphics;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.SP.Projectiles
+namespace OpenRA.Mods.Cameo.Projectiles
 {
 	[Desc("Hack: Used for SupportPower actor which use Armament as support power." +
 		"Bind damage warhead to it to prevent unit and AI player return fire at this actor.")]
