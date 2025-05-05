@@ -1,0 +1,355 @@
+
+####################################################################################################
+#		MCV
+####################################################################################################
+
+World:
+	FactionCA@tkm:
+		Name: TKM
+		InternalName: tkm
+		Game: Red Alert 2
+		Side: RA2 Mod
+		Description: Highly customizable force.
+		
+####################################################################################################
+#		MPSTARTUNITS
+####################################################################################################
+
+	StartingUnits@mcvonlyratsgdi:
+		Class: none
+		ClassName: MCV Only
+		Factions: tkm
+		BaseActor: tkmmcv
+	StartingUnits@defaulttsgdi:
+		Class: light
+		ClassName: Light Support
+		Factions: tkm
+		BaseActor: tkmmcv
+		SupportActors: tse1,tse1,tse1,tse2,tse2,tssmech,tsmmch
+	StartingUnits@heavytsgdi:
+		Class: heavy
+		ClassName: Heavy Support
+		Factions: tkm
+		BaseActor: tkmmcv
+		SupportActors: tse1,tse1,tse1,tse2,tse2,tssmech,tsmmch,tsmmch,tsmmch,tsmmch
+		
+#######################################
+# TKM Defaults
+#######################################
+
+^TKMRenderVoxel:
+	Inherits: ^RenderVoxel
+	RenderVoxels:
+		Scale: 10
+		NormalsPalette: ts-normals
+		PlayerPalette: playerra2
+		LightAmbientColor: 0.6, 0.6, 0.6
+		LightDiffuseColor: 0.4, 0.4, 0.4
+		LightPitch: 142
+		LightYaw: 682
+
+#######################################
+# TKM MCV and Construction Yard
+#######################################
+
+tkmmcv:
+	Inherits: ^Vehicle
+	Inherits@Template: ^SupportVehicleTemplate
+	Inherits@selection: ^SelectableSupportUnit
+	Inherits@Voxel: ^TKMRenderVoxel
+	Inherits@mcv: ^MCV
+	Inherits@conyard: ^Conyard
+	Valued:
+		Cost: 2500
+	Tooltip:
+		Name: Mobile Construction Vehicle
+	Buildable:
+		BuildPaletteOrder: 100
+		Prerequisites: ~tsgtweap, tsgtdeptgdi
+		Queue: Vehicle, RAVehicle
+		BuildDurationModifier: 40
+		Description: Deploys into another Construction Yard.\n  Unarmed
+	Selectable:
+		Priority: 4
+		Bounds: 1536, 1536
+		DecorationBounds: 1536, 1536
+	Mobile:
+		Speed: 80
+		Locomotor: heavywheeled
+	Health:
+		HP: 300000
+	Repairable:
+		HpPerStep: 2182
+	Armor:
+		Type: Heavy
+	RevealsShroud:
+		Range: 7c0
+	Transforms:
+		IntoActor: tkmcommandcenter
+		Offset: -1,-1
+		Facing: 384
+		TransformSounds: tsplace2.aud
+		NoTransformNotification: BuildingCannotPlaceAudio
+	WithVoxelBody:
+	SelectionDecorations:
+	Voiced:
+		VoiceSet: TSVehicle
+	DeliversCash:
+		Payload: 1750
+	RenderSprites:
+		Image: tkmmcv
+	RenderVoxels:
+		Image: tkmmcv
+
+tkmcommandcenter:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^3x2Shape
+	Inherits@aicash: ^AIConyardCash
+	Inherits@conyard: ^Conyard
+	Inherits@sell: ^TDSpawnActorsOnSell
+	Tooltip:
+		Name: TKM Construction Yard
+	Transforms:
+		IntoActor: tkmmcv
+	WithIdleOverlay@top:
+		Sequence: idle-top
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@normal:
+		Sequence: idle-normal
+		RequiresCondition: !build-incomplete
+	WithBuildingPlacedOverlay:
+		Sequence: build
+	ProvidesPrerequisite@buildingname:
+	Targetable@TechStealerInfiltrate:
+		TargetTypes: TechStealerInfiltrate
+	RenderSprites:
+		PlayerPalette: playerra2
+
+tkmbarracks:
+	Inherits: ^RA2Building
+	Inherits@shape: ^3x2Shape
+	Inherits@sell: ^RA2ASpawnActorsOnSell
+	Inherits@CPQWP: ^CPQConditionWithPrimary
+	Inherits@barr: ^IsBarrack
+	Tooltip:
+		Name: TKM Barracks
+	ProvidesPrerequisite:
+		Prerequisite: RA2Barracks
+	Buildable:
+		Prerequisites: ~tkmcommandcenter, tkmpowerplant
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	RallyPoint:
+		Path: 0,2
+	Exit@1:
+		SpawnOffset: -700,800,0
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 100,1200,0
+		ExitCell: 1,3
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	WithDeathAnimation:
+		DeathSequencePalette: playerra2
+		DeathPaletteIsPlayerPalette: true
+
+tkmpowerplant:
+	Inherits: ^BaseBuilding
+	Inherits@shape: ^2x2Shape
+	Inherits@power: ^PowerPlant
+	Inherits@storage: ^StoresResources
+	Tooltip:
+		Name: Power Plant
+	Valued:
+		Cost: 400
+	Power:
+		Amount: 100
+	ProvidesPrerequisite@buildingname:
+	Buildable:
+		Prerequisites: ~tkmcommandcenter
+		Queue: Building, RABuilding
+		Description: Provides supply and stores resources
+	Building:
+		Footprint: xx xx
+		Dimensions: 2,2
+		BuildSounds: tscupd00.aud
+	Health:
+		HP: 100000
+	RevealsShroud:
+		Range: 4c0
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 10
+		FullSequence: pip-yellow
+	-WithMakeAnimation:
+	RenderSprites:
+		PlayerPalette: playerra2
+
+tkmrefinery:
+	Inherits: ^RA2Building
+	Inherits@sell: ^RA2SSpawnActorsOnSell
+	Inherits@ref: ^Refinery
+	Inherits@shape: ^4x3Shape
+	Valued:
+		Cost: 2000
+	Tooltip:
+		Name: TKM Ore Refinery
+	Buildable:
+		Prerequisites: ~tkmcommandcenter, tkmpowerplant
+	Building:
+		Footprint: xxx= xxx= xxx=
+		Dimensions: 4,3
+	Refinery:
+	DockHost:
+		Type: Unload
+		DockAngle: 640
+		DockOffset: 1086,1086,0
+	DrawLineToTarget:
+	FreeActor:
+		Actor: tkmharv
+		SpawnOffset: 2,2
+		Facing: 256
+	SelectionDecorations:
+	GivesBuildableArea:
+		AreaTypes: building, cityi
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+tkmharv:
+	Inherits: ^TDHARV
+	Inherits@Voxel: ^TKMRenderVoxel
+	Health:
+		HP: 150000
+	Harvester:
+		PipCount: 8
+		Capacity: 35
+	Buildable:
+		Prerequisites: ~tsgtweap, tsproc
+		Queue: Vehicle, RAVehicle
+		Description: Harvests Tiberium for processing
+	WithVoxelBody:
+	WithDockingAnimation:
+	Voiced:
+		VoiceSet: TSVehicle
+	DeliversCash:
+		Payload: 500
+	RenderSprites:
+		Image: tsharv
+	RenderVoxels:
+		Image: stk
+
+#######################################
+# TKM Infantry Reporting!
+#######################################
+
+tkmrifleman:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^TSInfantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 120
+	Tooltip:
+		Name: Rifleman
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~tkmbarracks
+		Queue: Infantry, RAInfantry
+		IconPalette: ra2
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 60
+	Health:
+		HP: 16000
+	ChangesHealth@SelfHealing:
+		Step: 16
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:
+		Weapon: NaxiRifle
+		RequiresCondition: !rank-elite
+		LocalOffset: 500,0,400
+	Armament@ELITE:
+		Weapon: NaxiRifle
+		RequiresCondition: rank-elite
+		LocalOffset: 500,0,400
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: NaxiRifle
+	# Selectable:
+	# 	Bounds: 256, 512
+	# 	DecorationBounds: 256, 512
+	# Inherits@EXT: ^ExternalConditions ##########
+	# AcceptsDeliveredExperience: ##########
+	# 	ValidTypes: infantry ##########
+	Voiced:
+		VoiceSet: TSInfantry
+	RenderSprites:
+		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
+
+tkmrocketeer:
+	Inherits: ^Soldier
+	Inherits@Template: ^ScoutInfantryTemplate
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@DECORATIONS: ^InfantryExperienceHospitalHazmatOverrides
+	Inherits@anim: ^TSInfantry
+	Inherits@vo: ^AttackFrontalVoice
+	Inherits@AntiInf: ^PrioritizeInfantry
+	Valued:
+		Cost: 120
+	Tooltip:
+		Name: Rocketeer
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 10
+		Prerequisites: ~tkmbarracks
+		Queue: Infantry, RAInfantry
+		IconPalette: ra2
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles
+	Mobile:
+		Speed: 60
+	Health:
+		HP: 16000
+	ChangesHealth@SelfHealing:
+		Step: 16
+	AutoTarget:
+		ScanRadius: 4
+	Armament@PRIMARY:
+		Weapon: Rockets
+		RequiresCondition: !rank-elite
+		LocalOffset: 500,0,400
+	Armament@ELITE:
+		Weapon: Rockets
+		RequiresCondition: rank-elite
+		LocalOffset: 500,0,400
+	Armament@GARRISONED: ##########
+		Name: garrisoned
+		Weapon: Rockets
+	# Selectable:
+	# 	Bounds: 256, 512
+	# 	DecorationBounds: 256, 512
+	# Inherits@EXT: ^ExternalConditions ##########
+	# AcceptsDeliveredExperience: ##########
+	# 	ValidTypes: infantry ##########
+	Voiced:
+		VoiceSet: TSInfantry
+	RenderSprites:
+		PlayerPalette: playerra2
+	WithDeathAnimation:
+		DeathSequencePalette: ra2player
+		CrushedSequencePalette: ra2effect
