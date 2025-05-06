@@ -37,8 +37,8 @@ namespace OpenRA.Mods.Cameo.Warheads
 			if (!target.IsValidFor(firedBy) || firedBy.IsDead || !firedBy.IsInWorld)
 				return;
 
-			var mc = firedBy.Trait<MindControllerCA>();
-			if (mc.IsTraitDisabled || mc.IsTraitPaused) return;
+			var mc = firedBy.TraitOrDefault<MindControllerCA>();
+			if (mc == null || mc.IsTraitDisabled || mc.IsTraitPaused) return;
 
 			var actors = firedBy.World.FindActorsInCircle(target.CenterPosition, Range);
 
