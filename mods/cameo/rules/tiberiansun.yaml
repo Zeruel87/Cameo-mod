@@ -1897,21 +1897,6 @@ tsgtradr:
 		RequiresCondition: !build-incomplete
 		PauseOnCondition: lowpower || disabled
 		Sequence: idle-dish
-	# DetonateWeaponPower:
-	# 	OrderName: GDI Drop
-	# 	Cursor: ability
-	# 	PauseOnCondition: lowpower
-	# 	Icon: droppod
-	# 	Name: Drop Pods
-	# 	Description: Deploys elite infantry from orbit.
-	# 	InsufficientPowerSpeechNotification: InsufficientPower
-	# 	LaunchSpeechNotification: ReinforcementsArrived
-	# 	SelectTargetSpeechNotification: SelectTarget
-	# 	DisplayRadarPing: True
-	# 	ChargeInterval: 4500
-	# 	Weapon: TSDroppodSpawner
-	# 	CameraActor: camera.small
-	# 	CameraRemoveDelay: 60
 	# SupportPowerChargeBar:
 	RenderSprites:
 		PlayerPalette: playerra2
@@ -2191,9 +2176,9 @@ tsntmisl:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
 	AttackFollow:
-	# Armament@superweapon1:
-	# 	Name: superweapon1
-	# 	Weapon: TSTacticalMissile
+	Armament@superweapon1:
+	 	Name: superweapon1
+	 	Weapon: TSTacticalMissile
 	FireArmamentPower:
 		AllowMultiple: true
 		ArmamentName: superweapon1
@@ -8160,3 +8145,106 @@ TSARND:
 	RenderSprites:
 		PlayerPalette: playerra2
 
+TSKODK:
+	Inherits: ^Helicopter
+	Inherits@Template: ^SpaceshipTemplate
+	Inherits@EXP: ^GainsExperienceTD
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@announce: ^AnnounceGlobal
+	Tooltip:
+		Name: Kodiak Command Ship
+	Valued:
+		Cost: 4000
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		BuildPaletteOrder: 40
+		Prerequisites: ~tsgthpad, tsgtplug
+		Queue: Aircraft, RAAircraft
+		Description: GDI command ship.\n Strong vs Everything and a support power
+		BuildLimit: 1
+	Aircraft:
+		InitialFacing: 896
+		TurnSpeed: 12
+		Speed: 30
+		RepulsionSpeed: 24
+		IdealSeparation: 2500
+	Health:
+		HP: 500000
+	Repairable:
+		HpPerStep: 25000
+	ChangesHealth@SelfHealing:
+		Step: 200
+	Armament:
+		Name: primary
+		Weapon: BCLaser
+		LocalOffset: 800,0,200
+		PauseOnCondition: tacticaljump
+		AmmoUsage: 0
+		MuzzleSequence: muzzle
+	AttackAircraft:
+		FacingTolerance: 20
+		AttackType: Hover
+	FireWarheadsOnDeath:
+		Weapon: HeliExplode
+		EmptyWeapon: HeliExplode
+	#EjectOnDeath:
+	#	PilotActor: scghost
+	SelectionDecorations:
+	Selectable:
+		DecorationBounds: 2048, 2048
+	Voiced:
+		VoiceSet: SCBattleCruiserVoice
+	SpawnActorOnDeath:
+		Actor: TSKODK.Husk
+	DeathSounds:
+	-ReloadAmmoDelayMultiplier@RANK-1:
+	-ReloadAmmoDelayMultiplier@RANK-2:
+	-ReloadAmmoDelayMultiplier@RANK-3:
+	-ReloadAmmoDelayMultiplier@RANK-ELITE:
+	RenderSprites:
+		PlayerPalette: playerra2
+	IonCannonPower:
+		AllowMultiple: True
+		OrderName: GDIDropDod
+		Prerequisites:
+			1: ~techlevel.superweapons
+		Icons:
+			1:droppod
+		Cursor: ioncannon
+		ChargeInterval: 7500
+		WeaponDelay: 0
+		Weapon: TSDroppodSpawner
+		Effect: tsioncannon
+		EffectSequence: targeting
+		EffectPalette: ra2effect
+		Names: 
+			1: Drop Pods
+		Descriptions:
+			1: Deploys elite infantry from orbit.
+		InsufficientPowerSpeechNotification: InsufficientPower
+		SelectTargetSpeechNotification: SelectTarget
+		LaunchSpeechNotification: ReinforcementsArrived
+		SelectTargetTextNotification: Select target.
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		DisplayRadarPing: True
+		CameraRange: 5000
+		CameraRemoveDelay: 125
+		CameraActor: CAMERA.small
+		SupportPowerPaletteOrder: 20
+		TargetCircleRanges:
+			1: 5000
+		TargetCircleColor: ff000080
+
+TSKODK.Husk:
+	Inherits: ^PlaneHusk
+	Tooltip:
+		Name: Kodiak Command Ship
+	Aircraft:
+		TurnSpeed: 15
+		Speed: 30
+	RenderSprites:
+		Image: tskodk
+		PlayerPalette: playerra2
+	FallsToEarth:
+		Explosion: KirovExplode
