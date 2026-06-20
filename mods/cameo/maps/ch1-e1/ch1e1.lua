@@ -61,7 +61,8 @@ InitObjectives = function(player)
 	end)
 end
 
-ConstructionVehicle = {"ramcv.allies"}
+ConstructionVehicleOne = {"ramcv.allies"}
+ConstructionVehicleTwo = {"ra2amcv"}
 TaskForceOne = {"ra2fv", "ra2fv", "ra2mtnk", "ra2mtnk"}
 TaskForceTwo = {"rae1", "rae1", "rae1", "rae3", "rae3", "rae3", "raarty", "raarty"}
 Boats = {"dd", "dd"}
@@ -81,7 +82,7 @@ WorldLoaded = function ()
 
 	InitObjectives(Penta)
 	Notification("We've started our assault on the beachhead in North Carolina. More naval and land forces are coming.")
-	
+
 	PlayerOneObjective = Penta.AddPrimaryObjective("Clear the enemy forces at the beachhead and prepare for a landing.")
 	Trigger.AfterDelay(DateTime.Seconds(1), function ()
 		Notification("We'll need to get set up quickly before the Nitro's communications network comes back online.")
@@ -116,7 +117,7 @@ WorldLoaded = function ()
 		Notification("Reinforcements have arrived.")
 		Reinforcements.ReinforceWithTransport(Penta, "ra2lcrf", TaskForceOne, {PentaSpawnOne.Location, PentaDestOne.Location}, {PentaSpawnOne.Location})
 		Reinforcements.ReinforceWithTransport(Penta, "ra2lcrf", TaskForceOne, {PentaSpawnThree.Location, PentaDestThree.Location}, {PentaSpawnThree.Location})
-		Reinforcements.ReinforceWithTransport(Penta, "ra2lcrf", ConstructionVehicle, {PentaSpawnTwo.Location, PentaDestTwo.Location}, {PentaSpawnTwo.Location})
+		Reinforcements.ReinforceWithTransport(Penta, "ra2lcrf", ConstructionVehicleOne, {PentaSpawnTwo.Location, PentaDestTwo.Location}, {PentaSpawnTwo.Location})
 		Trigger.AfterDelay(DateTime.Seconds(5), function ()
 			PlayerOneClear = Penta.AddPrimaryObjective("Eliminate all Nitro forces.")
 			Penta.MarkCompletedObjective(PlayerOneObjective)
@@ -144,7 +145,7 @@ WorldLoaded = function ()
 			la.Move(ShadeSpawnThree.Location)
 			la.Destroy()
 		end)
-		Reinforcements.ReinforceWithTransport(ShadeIdle, "ra2lcrf", ConstructionVehicle, {ShadeSpawnTwo.Location, ShadeDestTwo.Location}, nil, function (la, cv)
+		Reinforcements.ReinforceWithTransport(ShadeIdle, "ra2lcrf", ConstructionVehicleTwo, {ShadeSpawnTwo.Location, ShadeDestTwo.Location}, nil, function (la, cv)
 			la.UnloadPassengers()
 			Utils.Do(cv, function (mcv)
 				Trigger.OnAddedToWorld(mcv, function ()
