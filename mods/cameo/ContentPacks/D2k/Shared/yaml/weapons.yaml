@@ -52,6 +52,7 @@
 	-Warhead@DuneRock:
 	-Warhead@DuneSand:
 	-Warhead@RA2Crater:
+	-Warhead@Concrete
 	Warhead@Smudge: LeaveSmudge
 		SmudgeType: SandCrater, RockCrater
 		InvalidTargets: Vehicle, Structure, wall, Husk, Creep
@@ -61,15 +62,36 @@
 		ExplosionPalette: effect75alpha
 		ImpactActors: false
 		ValidTargets: Ground, Air
-	-Warhead@EffectAir:
 	Warhead@Concrete: DamagesConcrete
 		Damage: 750
 
-^Effect_MissileHE_Heavy_D2K_Rocket:
-	Inherits: ^Effect_MissileHE_Heavy
+
+## D2K per-game EFFECT templates for the AP missile/rocket family (legacy ^D2KRocket/^D2KMissile remain AP).
+
+^Effect_MissileAP_Heavy_D2K:
+	Inherits: ^Effect_MissileAP_Heavy
 	-Warhead@DuneRock:
 	-Warhead@DuneSand:
 	-Warhead@RA2Crater:
+	-Warhead@Concrete
+	Warhead@Smudge: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure, wall, Husk, Creep
+	Warhead@Effect: CreateEffect
+		Explosions: d2k_small_explosion
+		ImpactSounds: EXPLSML1.WAV
+		ExplosionPalette: effect75alpha
+		ImpactActors: false
+		ValidTargets: Ground, Air
+	Warhead@Concrete: DamagesConcrete
+		Damage: 750
+
+^Effect_MissileAP_Heavy_D2K_Rocket:
+	Inherits: ^Effect_MissileAP_Heavy
+	-Warhead@DuneRock:
+	-Warhead@DuneSand:
+	-Warhead@RA2Crater:
+	-Warhead@Concrete
 	Warhead@Smudge: LeaveSmudge
 		SmudgeType: SandCrater, RockCrater
 		InvalidTargets: Vehicle, Structure, wall, Husk, Creep
@@ -78,6 +100,321 @@
 		ExplosionPalette: effect75alpha
 		ImpactActors: false
 		ValidTargets: Ground, Air
-	-Warhead@EffectAir:
+	Warhead@Concrete: DamagesConcrete
+		Damage: 240
+
+## D2K per-game EFFECT templates for weapons that use the larger d2k_rocket_explosion
+## while keeping the D2K AP rocket/missile smudge and concrete.
+
+^Effect_MissileAP_Heavy_D2K_Rocket_Blast:
+	Inherits: ^Effect_MissileAP_Heavy
+	-Warhead@DuneRock:
+	-Warhead@DuneSand:
+	-Warhead@RA2Crater:
+	-Warhead@Concrete
+	Warhead@Smudge: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure, wall, Husk, Creep
+	Warhead@Effect: CreateEffect
+		Explosions: d2k_rocket_explosion
+		ExplosionPalette: effect75alpha
+		ImpactActors: false
+		ValidTargets: Ground, Air
+
+## D2K per-game PROJECTILE templates for the cannon/shell family.
+
+^Projectile_Shell_Medium_D2K:
+	Inherits: ^Projectile_Shell
+	Projectile: Bullet
+		Speed: 640
+		Inaccuracy: 16
+		InaccuracyType: PerCellIncrement
+		Image: d2k_120mm
+		Palette: d2keffect
+
+^Projectile_Shell_Heavy_D2K_DevBullet:
+	Inherits: ^Projectile_Shell
+	Projectile: Bullet
+		Speed: 333
+		Inaccuracy: 16
+		InaccuracyType: PerCellIncrement
+		Image: doubleblastbullet
+		Palette: d2keffect
+
+## D2K per-game EFFECT templates for the cannon/shell family.
+
+^Effect_CannonHE_Medium_D2K:
+	Inherits: ^Effect_CannonHE_Medium
+	-Warhead@Concrete
+	Warhead@Smudge: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@Effect: CreateEffect
+		Explosions: d2k_small_napalm
+		ExplosionPalette: effect75alpha
+		ImpactActors: false
+		ValidTargets: Ground, Ship
+	Warhead@Concrete: DamagesConcrete
+		Damage: 1000
+
+## D2K heavy Devastator/Plasma cannon family.
+
+^Warhead_CannonHE_Heavy_D2K_DevBullet:
+	Inherits: ^Warhead_CannonHE_Heavy
+	Range: 6666
+	ReloadDelay: 100
+	-Warhead@CannonHE_Heavy
+	Warhead@CannonHE_Heavy_D2K_DevBullet: SpreadDamage
+		Spread: 666
+		Damage: 80000
+		Versus:
+			None: 70
+			Wood: 60
+			Light: 100
+			Medium: 90
+			Heavy: 90
+			Superheavy: 80
+			Concrete: 50
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@CannonHE_Heavy_D2K_DevBullet_Percentage: AreaDamagePercentage
+		ValidTargets: Ground, Water
+		Spread: 666
+		Damage: 5
+
+^Effect_CannonHE_Heavy_D2K_DevBullet:
+	Inherits: ^Effect_CannonHE_Medium_D2K
+	Warhead@Concrete: DamagesConcrete
+		Damage: 3333
+	Warhead@Glow: GlowImpact
+		Color: A060E8
+		Scale: 1.4
+		FadeFrames: 60
+	Warhead@Effect: CreateEffect
+		Explosions: d2k_shockwave
+		ImpactSounds: EXPLMD4.WAV
+		ExplosionPalette: effect75alpha
+
+## D2K heavy missile/rocket intermediates.
+## These keep the per-weapon defaults (ReloadDelay, Range, Report) while pulling
+## the projectile and effect layers from the D2K Shared templates above.
+
+^D2KRocket:
+	Inherits@wh: ^Warhead_MissileAP_Heavy
+	Inherits@proj: ^Projectile_Missile_Heavy_D2K_Rocket
+	Inherits@fx: ^Effect_MissileAP_Heavy_D2K_Rocket
+	ReloadDelay: 50
+	Range: 5000
+	Report: ROCKET1.WAV
+
+^D2KMissile:
+	Inherits@wh: ^Warhead_MissileAP_Heavy
+	Inherits@proj: ^Projectile_Missile_Heavy_D2K
+	Inherits@fx: ^Effect_MissileAP_Heavy_D2K
+	ReloadDelay: 60
+	Range: 5500
+	MinRange: 1100
+	Report: ROCKET1.WAV
+
+## D2K old full-stack ^ORocket and ^OMissile 3-way split templates.
+## These preserve the old SpreadDamage warheads, projectiles, and effect stacks
+## (including the legacy 2Smu/3Eff/3Concrete key names) so the converted
+## children resolve with identical behaviour.
+
+^Warhead_MissileAP_Heavy_D2K_ORocket:
+	Inherits: ^Warhead_MissileAP_Heavy
+	-ValidTargets
+	-TargetActorCenter
+	-Warhead@MissileAP_Heavy
+	Warhead@MissileAP_Heavy: SpreadDamage
+		Spread: 192
+		Falloff: 100, 50, 25, 0
+		Damage: 3000
+		Versus:
+			None: 8
+			wall: 75
+			Wood: 45
+			Light: 70
+			Heavy: 100
+			invulnerable: 0
+			Concrete: 20
+			harvester: 50
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+
+^Projectile_Missile_Heavy_D2K_ORocket:
+	Projectile: Bullet
+		Blockable: false
+		Speed: 281
+		Inaccuracy: 256
+		Image: d2k_RPG
+		Palette: d2keffect
+		TrailImage: bazooka_trail2
+		TrailPalette: effect75alpha
+		TrailInterval: 1
+
+^Projectile_Missile_Heavy_D2K_OMissile:
+	Projectile: Missile
+		Blockable: false
+		Shadow: true
+		HorizontalRateOfTurn: 12
+		RangeLimit: 6c614
+		Inaccuracy: 384
+		CruiseAltitude: 1c0
+		MinimumLaunchAngle: 64
+		VerticalRateOfTurn: 40
+		Image: d2k_missile2
+		TrailImage: large_trail
+		Speed: 288
+		Palette: d2keffect
+		TrailPalette: effect75alpha
+		TrailInterval: 1
+
+^Effect_MissileAP_Heavy_D2K_ORocket:
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_tiny_explosion
+		ExplosionPalette: effect75alpha
+		ImpactActors: false
+		ValidTargets: Ground, Air
+	Warhead@Concrete: DamagesConcrete
+		Damage: 240
+
+^Effect_MissileAP_Heavy_D2K_OMissile:
+	Inherits: ^Effect_MissileAP_Heavy
+	-Warhead@DuneRock:
+	-Warhead@DuneSand:
+	-Warhead@RA2Crater:
+	-Warhead@Concrete
+	Warhead@Smudge: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure, wall, Husk, Creep
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_small_explosion
+		ImpactSounds: EXPLSML1.WAV
+		ExplosionPalette: effect75alpha
+		ImpactActors: false
+		ValidTargets: Ground, Air
+	Warhead@Concrete: DamagesConcrete
+		Damage: 720
+
+## D2K per-game PROJECTILE and EFFECT templates for the debris/grenade family.
+
+^Projectile_Grenade_Light_D2K_Debris:
+	Inherits: ^Projectile_Grenade_Light
+	Projectile: Bullet
+		Speed: 32, 64
+		LaunchAngle: 128, 192
+		Inaccuracy: 1c256
+		Image: shrapnel
+		Palette: d2keffect
+		Shadow: true
+		BounceCount: 3
+		BounceRangeModifier: 20
+
+^Effect_Demolition_Light_D2K:
+	Inherits: ^Effect_Demolition_Light
+	Warhead@Smudge: LeaveSmudge
+		SmudgeType: Scorch
+		InvalidTargets: Vehicle, Structure
+	Warhead@Effect: CreateEffect
+		Explosions: d2k_tiny_explosion
+		ExplosionPalette: effect75alpha
+		ImpactActors: false
+	Warhead@Concrete: DamagesConcrete
+		Damage: 300
+
+## D2K per-game PROJECTILE and EFFECT templates for the 155mm family.
+## These centralize the shared d2k_155mm grenade projectile and d2k_med_explosion effect.
+
+^Projectile_Grenade_Light_D2K_155mm:
+	Inherits: ^Projectile_Grenade_Light
+	Projectile: Bullet
+		Image: d2k_155mm
+		Palette: d2keffect
+		Blockable: false
+		Shadow: true
+		LaunchAngle: 62
+		ContrailLength: 20
+		Speed: 192
+
+^Effect_Demolition_Heavy_D2K_155mm:
+	Inherits: ^Effect_Demolition_Heavy
+	-Warhead@Concrete
+	Warhead@Smudge: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@Effect: CreateEffect
+		Explosions: d2k_med_explosion
+		ImpactSounds: EXPLMD2.WAV
+		ExplosionPalette: effect75alpha
+
+## D2K per-game PROJECTILE and WARHEAD/EFFECT templates for the Ornithopter bomb.
+
+^Projectile_GravityBomb_D2K:
+	Projectile: GravityBomb
+		Image: d2k_bombs
+		Palette: d2keffect
+		Velocity: 0, 0, -64
+		Acceleration: 0, 0, 0
+		Shadow: true
+
+^Warhead_Demolition_Heavy_D2K_Orni:
+	Inherits: ^Warhead_Demolition_Heavy
+	-ValidTargets
+	-TargetActorCenter
+	-Warhead@Demolition_Heavy
+	Warhead@Demolition_Heavy: SpreadDamage
+		Spread: 1250
+		Falloff: 100, 50, 25, 0
+		Damage: 7500
+		Versus:
+			None: 175
+			Wood: 75
+			Light: 150
+			Medium: 125
+			Heavy: 100
+			Concrete: 50
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+		DamageCalculationType: ClosestTargetablePosition
+
+^Effect_Demolition_Heavy_D2K_Orni:
+	Inherits: ^Effect_Demolition_Heavy
+	-Warhead@Glow
+	-Warhead@Smudge1
+	-Warhead@RA2Crater
+	-Warhead@Smudge2
+	-Warhead@Smudge2RA2
+	-Warhead@Effect1
+	-Warhead@Effect2
+	-Warhead@EffectWater
+	-Warhead@ShieldHit
+	-Warhead@ShieldHitEffect
+	-Warhead@Concrete
+	Warhead@2Smu: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure
+	Warhead@3Eff: CreateEffect
+		Explosions: d2k_large_explosion
+		ImpactSounds: EXPLSML4.WAV
+		ImpactActors: false
+		ExplosionPalette: effect75alpha
+	Warhead@Concrete: DamagesConcrete
+		Damage: 7500
+
+## D2K per-game PROJECTILE and EFFECT templates for the Rocket Trooper family.
+## These preserve the resolved d2k_RPG projectile and the tiny napalm/sand-rock smudge FX.
+
+^Effect_MissileAP_Heavy_D2K_Rocket_Trooper:
+	Inherits: ^Effect_MissileAP_Heavy
+	-Warhead@Concrete
+	Warhead@Smudge: LeaveSmudge
+		SmudgeType: SandCrater, RockCrater
+		InvalidTargets: Vehicle, Structure, wall, Husk, Creep
+	Warhead@Effect: CreateEffect
+		Explosions: d2k_tiny_explosion
+		ExplosionPalette: effect75alpha
+		ImpactActors: false
+		ValidTargets: Ground, Air
 	Warhead@Concrete: DamagesConcrete
 		Damage: 240

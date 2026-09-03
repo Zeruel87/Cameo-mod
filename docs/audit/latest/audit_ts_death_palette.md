@@ -1,3 +1,0 @@
-Checked 56 YAML files in TiberianSun ContentPacks.
-Found 0 palette issue(s).
-All TS actors have matching PlayerPalette and DeathSequencePalette.

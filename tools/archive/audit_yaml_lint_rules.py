@@ -11,7 +11,7 @@ Checks:
   5. No duplicated RepairActors lists in ContentPack actors (should inherit from template)
 
 Usage:
-  python tools/audit/audit_yaml_lint_rules.py [--root mods/cameo]
+  python tools/archive/audit_yaml_lint_rules.py [--root mods/cameo]
 """
 
 import argparse

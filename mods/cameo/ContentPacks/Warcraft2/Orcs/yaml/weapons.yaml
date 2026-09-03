@@ -1,6 +1,6 @@
 wc2gruntslice2:
 	Inherits@wh: ^Warhead_Melee_Medium
-	Inherits@proj: ^Projectile_Melee_Medium
+	Inherits@proj: ^Projectile_InstantHit
 	Inherits@fx: ^Effect_Melee_Medium
 	ReloadDelay: 18
 	Range: 1600
@@ -8,8 +8,6 @@ wc2gruntslice2:
 	Projectile: InstantHit
 	Warhead@Melee_Medium:
 		Damage: 24000
-	Warhead@Melee_Medium_Percentage: HealthPercentageDamage
-		Damage: 12
 	Warhead@Effect: CreateEffect
 		ImpactSounds: wc2_sword1.aud,wc2_sword2.aud,wc2_sword3.aud
 
@@ -35,7 +33,7 @@ wc2axeFirespear:
 
 wc2ogrepunch:
 	Inherits@wh: ^Warhead_Melee_Medium
-	Inherits@proj: ^Projectile_Melee_Medium
+	Inherits@proj: ^Projectile_InstantHit
 	Inherits@fx: ^Effect_Melee_Medium
 	ReloadDelay: 20
 	Range: 1660
@@ -43,8 +41,6 @@ wc2ogrepunch:
 	Projectile: InstantHit
 	Warhead@Melee_Medium:
 		Damage: 30000
-	Warhead@Melee_Medium_Percentage: HealthPercentageDamage
-		Damage: 15
 	Warhead@Effect: CreateEffect
 		ImpactSounds: wc2_punch.aud
 
@@ -151,6 +147,8 @@ wc2runesSuper:
 		ImpactSounds: wc2_runes.aud
 
 wc2catapultFire:
+	Inherits@collapsewh: ^Warhead_Concussion_Heavy
+	-TargetActorCenter:
 	Inherits: ^Grenade
 	Inherits@2: ^MediumFlameWeapon
 	Inherits@3: ^ShrapnelWeapon
@@ -168,7 +166,7 @@ wc2catapultFire:
 		Damage: 30000
 	Warhead@GrenadeFriendlyFire: SpreadDamage
 		Damage: 15000
-	Warhead@GrenadePercentage: HealthPercentageDamage
+	Warhead@GrenadePercentage: AreaDamagePercentage
 		Damage: 15
 	Warhead@MediumFlameWeapon: AreaDamage
 		ValidRelationships: Ally, Neutral, Enemy
@@ -185,16 +183,34 @@ wc2catapultFire:
 		Damage: 30000
 	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
 		Damage: 15000
-	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+	Warhead@ShrapnelWeaponPercentage: AreaDamagePercentage
 		Damage: 15
 	Warhead@HeavyBomb: SpreadDamage
 		Damage: 30000
-	Warhead@HeavyBombPercentage: HealthPercentageDamage
+	Warhead@HeavyBombPercentage: AreaDamagePercentage
 		Damage: 15
 	Warhead@Effect: CreateEffect
 		Image: wc2_catapult_stone_projectile_medium
 		Explosions: idle
 		ImpactSounds: explode.aud
+
+	-Warhead@Grenade:
+	-Warhead@GrenadeFriendlyFire:
+	-Warhead@MediumFlameWeapon:
+	-Warhead@ShrapnelWeapon:
+	-Warhead@ShrapnelWeaponFriendlyFire:
+	-Warhead@HeavyBomb:
+	Warhead@Concussion_Heavy:
+		ValidTargets: Ground, Water
+		Damage: 90000
+		PercentageScale: 0
+	Warhead@CollapseTargetCompatibility1: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Ship
+		Damage: 30000
+		PercentageScale: 0
 
 # Death Knight basic attack
 
@@ -209,10 +225,6 @@ wc2deathknightFire:
 	Warhead@Flame_Heavy:
 		ValidTargets: Ground, Water, Air
 		Damage: 8000
-		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
-	Warhead@Flame_Heavy_Percentage: AreaDamagePercentage
-		ValidTargets: Ground, Water, Air
-		Damage: 4
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
 	Warhead@Effect: CreateEffect
 		Image: wc2_effect_death_knight_attack
@@ -352,9 +364,6 @@ wc2deathknightDeathAndDecay_Hit:
 	Warhead@Inferno_Heavy:
 		ValidTargets: Ground, Water, Air
 		Damage: 24000
-	Warhead@Inferno_Heavy_Percentage:
-		ValidTargets: Ground, Water, Air
-		Damage: 12
 	Warhead@Effect: CreateEffect
 		Image: wc2_effect_death_and_decay
 		Explosions: idle
@@ -516,23 +525,17 @@ wc2dragonFireVisible:
 		Damage: 30000
 		PhysicalStateName: Temperature
 		PhysicalStateScale: 100
-	Warhead@Flame_Heavy_Percentage:
-		ValidTargets: Ground, Water, Air
-		Damage: 15
-		PhysicalStateName: Temperature
-		PhysicalStateScale: 100
 	Warhead@Effect: CreateEffect
 		Explosions: wc2_building_collapse
 		ImpactSounds: explode.aud
 		ValidTargets: Ground, Water, Air
 wc2dragonFireExplosion:
 	Inherits: wc2dragonFireVisible
-	Projectile: Bullet
 	Burst: 3
 	BurstDelays: 0
 	FirstBurstTargetOffset: 0,0,0
 	FollowingBurstTargetOffset: 1024,0,0
-	Projectile:
+	Projectile: Bullet
 		Image: wc2_fireball
 		Inaccuracy: 250
 		TrailImage: smokey

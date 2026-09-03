@@ -7,7 +7,7 @@ by display name and compare:
   HP      vs Health.HP
   Speed   vs Mobile.Speed / Aircraft.Speed
   Damage  vs main weapon warhead damage x Burst        (burst rule)
-  Reload  vs ReloadDelay + (Burst-1) x BurstDelay      (burst rule)
+  Reload  vs ReloadDelay + every inter-shot BurstDelay (burst rule)
   Range   vs weapon range in sheet units (wdist/1000, NOT cells)
 
 Mismatches are reported for design review — the sheet is the intended
@@ -27,8 +27,11 @@ import sys
 from cameo_model import Model
 from report import h1, h2, table
 
-DEFAULT_XLSX = str(pathlib.Path(__file__).resolve().parents[2]
-                   / "docs/design/cameo_armor_system.xlsx")
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools/balance"))
+import formula  # noqa: E402
+
+DEFAULT_XLSX = str(ROOT / "docs/design/cameo_armor_system.xlsx")
 UNIT_SHEETS = ("Infantry", "Tanks", "Vehicles", "Aircraft", "Defenses")
 MEME_EXEMPT = {"nanoartilleryag", "nanosmokeag", "hammerheadartillery"}
 UTILITY = {"genericc4", "defusekit", "leechdisinfect", "repair", "heal",
@@ -38,13 +41,8 @@ UTILITY = {"genericc4", "defusekit", "leechdisinfect", "repair", "heal",
 def sheet_range(v: str | None) -> float | None:
     """Game range -> sheet units. The sheet stores wdist/1000 (NOT cells:
     a cell is 1024 wdist, so in-game 5c0 = 5120 wdist = sheet 5.12)."""
-    if not v:
-        return None
-    v = str(v)
-    if "c" in v:
-        c, _, sub = v.partition("c")
-        return (int(c) * 1024 + int(sub or 0)) / 1000
-    return int(v) / 1000
+    value = formula.wdist_value(v)
+    return None if value is None else value / 1000
 
 
 def norm(name: str) -> str:
@@ -140,13 +138,9 @@ def main() -> int:
             if dmg <= 0:
                 continue
             burst = int(ww.get("Burst") or 1)
-            bdel = ww.get("BurstDelays") or ww.get("BurstDelay") or "5"
-            try:
-                bdel = int(str(bdel).split(",")[0])
-            except ValueError:
-                bdel = 5
+            bdel = ww.get("BurstDelays") or ww.get("BurstDelay")
             reload_ = int(ww.get("ReloadDelay") or 40)
-            eff_reload = reload_ + (burst - 1) * bdel
+            eff_reload = formula.eff_reload(reload_, burst, bdel)
             reloads.add(eff_reload)
             total_dmg += dmg * burst
             if main is None:
@@ -195,7 +189,7 @@ def main() -> int:
                 if isinstance(dmg, (int, float)) and dmg and                         abs(gdmg - dmg) / max(dmg, 1) > 0.02:
                     diffs.append(f"Damage {dmg} vs game {gdmg}")
                 if isinstance(rel, (int, float)) and abs(grel - rel) > 1:
-                    diffs.append(f"Reload {rel} vs game {grel}"
+                    diffs.append(f"Reload {rel} vs game {grel:g}"
                                  + (" [multi-reload]" if mixed_reload else ""))
                 if isinstance(rng, (int, float)) and grng is not None \
                         and abs(grng - rng) > 0.15:

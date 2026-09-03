@@ -195,7 +195,7 @@ ts_gdi_mobileemp:
 	Mobile:
 		Locomotor: tracked
 		Speed: 100
-		TurnSpeed: 40
+		TurnSpeed: 20
 	Health:
 		HP: 150000
 	Repairable:
@@ -269,7 +269,6 @@ ts_gdi_titan:
 		RequiresCondition: ts_gdi_upgrade_railgunweaponry
 	AttackTurreted:
 	WithMuzzleOverlay:
-	RenderVoxels:
 	-WithVoxelBody:
 	WithVoxelBarrel:
 		LocalOffset: 0,51,256
@@ -379,7 +378,7 @@ ts_gdi_juggernautmkii:
 	Mobile:
 		Locomotor: heavytracked
 		Speed: 70
-		TurnSpeed: 14
+		TurnSpeed: 28
 	Health:
 		HP: 50000
 	Repairable:
@@ -402,8 +401,8 @@ ts_gdi_juggernautmkii:
 	WithMuzzleOverlay:
 	SelectionDecorations:
 	Selectable:
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
 	Voiced:
 		VoiceSet: TSVehicle
 	# WithSpriteTurret:
@@ -459,7 +458,7 @@ ts_gdi_juggernaut:
 	Mobile:
 		Locomotor: tracked
 		Speed: 71
-		TurnSpeed: 20
+		TurnSpeed: 14
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 9c0
@@ -485,7 +484,7 @@ ts_gdi_juggernaut:
 		Name: deployedbody
 	Turreted:
 		Turret: deploy
-		TurnSpeed: 20
+		TurnSpeed: 14
 		InitialFacing: 384
 		Offset: 0,0,256
 		RealignDelay: -1
@@ -524,6 +523,24 @@ ts_gdi_juggernaut:
 		VoiceSet: TSVehicle
 	ActorStatValues:
 		Upgrades: ts_gdi_upgrade_fieldmaintenance, ts_gdi_upgrade_mechengineering
+	# DEPLOYING ADDS THE STEEL DEFENCE ARMOUR ON TOP OF THE UNIT'S OWN CLASS ARMOUR.
+	# Maintainer 2026-08-22: *"activate the steel armor type on deploy but keep the underlying
+	# regular armor intact and then create the average between them"* — a deployed unit is a
+	# static defence, and Steel is what defences wear.
+	#
+	# Both traits stay ENABLED together, which is the whole point:
+	# `AreaDamageWarhead.MultiArmorCombination` defaults to `Average`, so the class row and the
+	# Steel row meet in the middle instead of one replacing the other. Gating the class armour
+	# on `undeployed` — what the defence rig, siege tank and matador used to do — makes Steel a
+	# REPLACEMENT and throws the unit's own class away.
+	#
+	# ⚠ Averaging only happens for warheads routing through AreaDamage (62.9% of the tree).
+	# The legacy inline-Versus SpreadDamage nodes still MULTIPLY, and under multiplication the
+	# class row cancels out entirely (the ratio becomes just Steel/100) — so those weapons see a
+	# flatter effect than designed until item A5 retires them onto ^Warhead_* templates.
+	Armor@deployed:
+		Type: Steel
+		RequiresCondition: !shielded && deployed
 
 ts_gdi_hovermlrs:
 	Inherits: ^Tank
@@ -546,6 +563,7 @@ ts_gdi_hovermlrs:
 		Queue: Vehicle, RAVehicle
 		Description: Hovering vehicle armed with\nlong range missiles.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
+		TurnSpeed: 16
 		Locomotor: hover
 		Speed: 80
 	Health:
@@ -562,9 +580,9 @@ ts_gdi_hovermlrs:
 	AttackTurreted:
 	SelectionDecorations:
 		Bounds: 2248, 2248
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
 	WithVoxelBody:
 	WithVoxelTurret:
 	Voiced:
@@ -801,9 +819,9 @@ ts_gdi_mammothprototype:
 	SelectionDecorations:
 	Selectable:
 		Bounds: 1280, 1024
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
 	-WithVoxelBody:
 	WithVoxelWalkerBody:
 		TickRate: 1
@@ -894,9 +912,9 @@ ts_gdi_mammothmkii:
 	SelectionDecorations:
 	Selectable:
 		Bounds: 1280, 1024
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
 	Voiced:
 		VoiceSet: TSVehicle
 	Passenger:
@@ -971,9 +989,9 @@ ts_gdi_disruptor:
 	WithVoxelTurret:
 	SelectionDecorations:
 	Selectable:
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: TSVehicle
@@ -1000,6 +1018,7 @@ ts_gdi_mobilesensorarray:
 		Queue: Vehicle, RAVehicle
 		Description: Detects cloaked units and buildings.\n Unarmed
 	Mobile:
+		TurnSpeed: 17
 		Speed: 85
 	Health:
 		HP: 60000
@@ -1007,7 +1026,7 @@ ts_gdi_mobilesensorarray:
 		HpPerStep: 2637
 	Armor:
 		Type: Wood
-	Inherits@EXT: ^ExternalConditions ##########
+	Inherits@EXT: ^ExternalConditions
 	WithVoxelBody:
 	Voiced:
 		VoiceSet: TSVehicle

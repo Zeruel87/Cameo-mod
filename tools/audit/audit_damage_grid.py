@@ -1,6 +1,18 @@
 #!/usr/bin/env python3
 """audit_damage_grid.py — enforce the universal 2000/1% damage rule.
 
+⛔ **STALE — QUARANTINED, deliberately NOT in run_all.sh.**
+This script still encodes the RETIRED 2000-step damage grid and the retired
+`main // 2000` percentage twin. Both were replaced by W15/W17:
+
+    live grid : tools/balance/formula.py -> DAMAGE_STEP = 100
+    live twin : tools/balance/formula.py -> percentage_twin()
+
+Run as-is it reports ~300 "off-grid" weapons that are perfectly legal under the
+current law. Re-derive it from `formula` (import DAMAGE_STEP and
+percentage_twin instead of the literals below), then wire it into run_all.sh.
+Until then treat its output as historical. See docs/HANDOFF.md.
+
 Rule (DESIGN.md §12):
 - Main SpreadDamage/AreaDamage warheads must all carry the SAME value.
 - That value must sit on the 2000-step grid (Damage % 2000 == 0).

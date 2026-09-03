@@ -1,11 +1,13 @@
 # FORMULA V2 — the complete law book (as learned through 2026-07-19)
 
-_Master index: **MEGAPLAN.md** ties this + BALANCE_PIPELINE + the class
-logs + the weapon-template program together._
+_Where this fits: [`BALANCE_PROGRAM_PLAN.md`](BALANCE_PROGRAM_PLAN.md) is the phase sequence,
+[`BALANCE_PROGRAM_PLAN.md`](BALANCE_PROGRAM_PLAN.md) is the board and ownership, and
+[`BALANCE_PIPELINE.md`](BALANCE_PIPELINE.md) is the machinery. (The old `MEGAPLAN.md`
+index is archived at [`../history/MEGAPLAN_2026-08-08.md`](../history/MEGAPLAN_2026-08-08.md).)_
 
 _The consolidated, binding reference for the per-class balance system.
 Grew out of DESIGN §12 + the balance pipeline (BALANCE_PIPELINE.md) +
-the scout-class conversions (docs/balance/formula_v2_scout.md holds the
+the scout-class conversions (docs/balance/formula_v2_classes.md holds the
 class log). Update THIS file whenever a law is added or tuned._
 
 ## 1. The construction (why O = P = Q = cost always holds)
@@ -75,13 +77,15 @@ C₀ = cost). With ratios h,s,r,d (and r carrying the Special factor K):
   50; the migrated actors CANCEL it with a local `Modifier: 100`, which
   is why those overrides look like deletable no-ops and are not — see
   BALANCE_PROGRAM_PLAN §W26. Claim: `unmigrated_scout_damage_multiplier`.)
-- **Damage**: steps of 2000; every weapon carries a
-  HealthPercentageDamage warhead at 1% per 2000 damage.
+- **Damage**: steps of 100. Percentage companions use basis-point units so
+  every 100 flat Damage tracks 0.01% max HP (1% per 10000); folded
+  `PercentageScale` hits derive their amount from the same main Damage.
 - **Burst is flavor, not power** (i.e. burst count is a presentation/
-  weapon-feel constraint, not a balance input — increasing burst raises
-  raw output, so the FirepowerMultiplier compensates): keep burst feel,
-  trim effective DPS to the formula target with a **unit-named
-  FirepowerMultiplier** (e.g. burst 3 → ~33%). Gatling/spinup units
+  weapon-feel constraint, not an independently priced bonus — the full burst
+  and every inter-shot gap are already included in effective DPS): keep burst
+  feel, then trim the main Damage on the 100 grid or adjust reload timing.
+  Unconditional actor `FirepowerMultiplier` is retired as a tuning knob.
+  Gatling/spinup units
   (soviet gatling tank, RA1 allied heavy AA tank) are special cases —
   handle individually.
 - **Weapon-class bands by cost** (scout values; per-class analogues):
@@ -154,7 +158,7 @@ the current DPS math misprices; hand-price + flag, and FIX the math
 
 | gap | detect by | example |
 |---|---|---|
-| Multi-warhead stacking (DPS undercounted) | one weapon inherits several damage templates (`^Grenade+^Shrapnel+^HeavyBomb+^MediumMissile+^Chaingun+^FlakWeapon…`) so a shot applies many warheads; max-warhead DPS misses the SUM | **Patriarch** (K 2.0 was a kludge; real fix = sum the damage warheads in DPS, then K→1.0) — **DONE**: DPS/pricing use `formula.spread_damage_sum`; the workbook Damage cell is the per-shot TOTAL and `formula.distribute_damage` gives every main warhead the identical `total ÷ N` on the 2000 grid (FF + ExtraDamage 50%, Percentage 1/2000, ExtraDamage excluded from the total; fine-tune with FirepowerMultiplier), so the design number can't be broadcast onto every warhead. Guard: `audit_warhead_split`. See BALANCE_PIPELINE §3. |
+| Multi-warhead stacking (DPS undercounted) | one weapon inherits several damage templates (`^Grenade+^Shrapnel+^HeavyBomb+^MediumMissile+^Chaingun+^FlakWeapon…`) so a shot applies many warheads; max-warhead DPS misses the SUM | **Patriarch** (K 2.0 was a kludge; real fix = sum the damage warheads in DPS, then K→1.0) — **DONE**: DPS/pricing use `formula.spread_damage_sum`; the workbook Damage cell is the per-shot TOTAL and `formula.distribute_damage` gives every main warhead the identical `total ÷ N` on the 100 grid (FF + ExtraDamage 50%; standalone Percentage companions track 0.01% per 100 flat Damage in their own denominator; folded percentage derives from the main; ExtraDamage excluded from the total), so the design number can't be broadcast onto every warhead. Guard: `audit_warhead_split`. See BALANCE_PIPELINE §3. |
 | Probabilistic / bounce / AoE-DoT | <100%-hit split warheads, or damage-over-area-over-time from a caster/spawned actor | high templar psi-storm, spawned black-hole DoT |
 
 **Validation (reproduces legacy K exactly):**
@@ -217,11 +221,11 @@ class-specific log, because they apply to all classes.
 
 - **Uniqueness within a class** (EXACTLY these 5, checked against each other):
   no two units may share the same **HP**, **Speed**, **effective damage per
-  shot** (= Σ of all offensive warhead `Damage` × `FirepowerMultiplier`),
+  shot** (= Σ of all offensive warhead `Damage` at the baseline actor state),
   **raw `ReloadDelay`** (NOT the burst-adjusted/effective reload), or **Range**.
-  `FirepowerMultiplier` on its own — like any single value — is meaningless and
-  is NEVER a uniqueness key; use it to fine-tune the effective damage-per-shot
-  without breaking the 2000-step rule. #3 (damage×FP) and #4 (raw ReloadDelay)
+  An inherited or conditional `FirepowerMultiplier` is gameplay state, not a
+  uniqueness key or a fine-tuning knob; tune base output on the 100-Damage grid.
+  #3 (effective damage per shot) and #4 (raw ReloadDelay)
   are checked SEPARATELY, so two units may share one if they differ on the other.
 - **Baseline/verifier exception only**: the verification unit is exactly
   2× HP, 2× DPS, 2.5× cost, same Range and Speed as the baseline (§2). No other
@@ -237,8 +241,8 @@ class-specific log, because they apply to all classes.
 - **Original C&C prices are pinned**: TD, TS, RA1, and RA2 factions keep their
   original costs for memorability; only stats move. Custom/RA2-mod factions may
   adjust cost in 10-credit steps inside the class envelope.
-- **Damage stays in 2000 steps**: never nudge warhead `Damage` by small amounts;
-  adjust effective DPS with `FirepowerMultiplier` or `ReloadDelay`.
+- **Damage stays in 100 steps**: never write free-valued or unequal main
+  warhead Damage; adjust effective DPS on that grid or with `ReloadDelay`.
 - **Outlier flag rule**: if a unit's current stats place it so far outside the
   allowed band that fixing it would completely change its character, stop and
   ask the maintainer before editing.

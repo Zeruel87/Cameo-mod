@@ -19,6 +19,12 @@ using System;
 
 namespace OpenRA.Mods.Cameo.Traits
 {
+	public enum PhysicalStateOverlayBlendMode
+	{
+		Additive,
+		Multiply
+	}
+
 	[Desc("Display a colored overlay based on PhysicalState, changing along a gradient between two values for upper and lower bounds.")]
 	public class WithPhysicalStateColoredOverlayInfo : ConditionalTraitInfo, Requires<PhysicalStateInfo>
 	{
@@ -37,6 +43,9 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		[Desc("Upper bound for MaxColor.")]
 		public readonly int UpperValue = 100;
+
+		[Desc("How the physical-state tint blends with the renderable. Additive can brighten; Multiply only darkens or preserves channels.")]
+		public readonly PhysicalStateOverlayBlendMode BlendMode = PhysicalStateOverlayBlendMode.Additive;
 
 		public override object Create(ActorInitializer init) { return new WithPhysicalStateColoredOverlay(init.Self, this); }
 	}
@@ -109,13 +118,22 @@ namespace OpenRA.Mods.Cameo.Traits
 			{
 				if (!a.IsDecoration && a is IModifyableRenderable ma)
 				{
-					// Additive "glow": add the tint colour on top of the sprite/model, scaled by the
-					// current alpha (i.e. temperature intensity). This preserves the underlying detail and
-					// can brighten — giving a fiery glow when hot and an icy sheen when cold — instead of
-					// pasting an opaque flat colour over the unit. The shader treats alpha=2 as the
-					// additive-overlay sentinel (vTint.a > 1.0), adding vTint.rgb * (alpha - 1).
-					var scaledTint = currentAlpha * currentTint;
-					yield return ma.WithTint(scaledTint, TintModifiers.OverlayTint).WithAlpha(2f);
+					if (Info.BlendMode == PhysicalStateOverlayBlendMode.Multiply)
+					{
+						// Interpolate from neutral white toward the state colour, then multiply the
+						// renderable's existing tint. Every channel remains <= its original value, so
+						// sprite/model detail is preserved and the effect can never brighten pixels.
+						var multiply = float3.Ones + currentAlpha * (currentTint - float3.Ones);
+						yield return ma.WithTint(ma.Tint * multiply, ma.TintModifiers);
+					}
+					else
+					{
+						// Additive "glow": add the tint colour on top of the sprite/model, scaled by the
+						// current alpha. The shader treats alpha=2 as the additive-overlay sentinel
+						// (vTint.a > 1.0), adding vTint.rgb * (alpha - 1).
+						var scaledTint = currentAlpha * currentTint;
+						yield return ma.WithTint(scaledTint, TintModifiers.OverlayTint).WithAlpha(2f);
+					}
 				}
 				else
 				{

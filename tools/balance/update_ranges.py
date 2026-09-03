@@ -68,7 +68,7 @@ def unit_dps(u, fp_factor: float):
             continue
         rd = fnum(arm.get("reloaddelay")) or 1
         burst = int(fnum(arm.get("burst")) or 1)
-        bd = fnum(arm.get("burstdelays"))
+        bd = arm.get("burstdelays")
         total += formula.dps(dmg, rd, burst, bd, fp_factor)
     return total
 
@@ -109,7 +109,7 @@ def process_ledger(path: pathlib.Path, anchors, faction_filter, confirm: bool):
             for arm in u.get("armaments", []):
                 if not arm.get("pricing", True):
                     continue
-                old = fnum(arm.get("range"))
+                old = formula.wdist_value(arm.get("range"))
                 if old is not None and int(old) == rng:
                     continue
                 if confirm:

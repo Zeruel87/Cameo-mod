@@ -1,29 +1,30 @@
 #!/usr/bin/env python3
-"""audit_duplicate_keys.py — duplicate keys inside one node (silent overrides).
+"""audit_duplicate_keys.py — duplicate keys inside one node (ambiguous merges).
 
-MiniYaml does NOT reject a key that appears twice in the same node: it merges
-the second node over the first (engine MiniYaml.cs MergeSelfPartial ->
-MergePartial), and the merged value is ``overrideNodes.Value ?? existingNodes.Value``.
-So the LAST occurrence wins silently and neither ``--check-yaml`` nor the boot
-gate complains.
+MiniYaml does NOT generally reject a key that appears twice in the same node.
+Ordinary duplicates merge the second node over the first, and the merged value is
+``overrideNodes.Value ?? existingNodes.Value``. The LAST scalar value wins silently
+and neither static loading nor the boot gate complains. Inheritance directives are
+handled specially as described below.
 
 Two severities:
 
-D1 (BLOCKING) — duplicate ``Inherits``/``Inherits@X`` keys with DIFFERENT values.
-    One whole template is silently dropped: the actor/weapon never inherits it,
-    so traits, armaments and effects the author expected simply do not exist.
-    Fix by giving each inherit a unique ``@suffix``.
+D1 — duplicate ``Inherits``/``Inherits@X`` labels with DIFFERENT values.
+    OpenRA resolves every inheritance directive that survives source merging, so
+    repeated labels inside one definition do not by themselves drop a parent.
+    They are still ambiguous for source overlays and audit tooling: merging another
+    definition through the same label can replace one parent.  Fix by giving each
+    inheritance directive a unique ``@suffix``.
 
 D2 — every other duplicate key (same trait or field declared twice, or a
     duplicated ``Inherits`` with an identical value). The nodes merge, so the
     result is usually what the author wanted, but any field set by both copies
     resolves to the last one. Hygiene: collapse them into one node.
 
-Exit code 1 when the D1 count RISES ABOVE ``D1_BASELINE``. The pre-existing
-findings are a ratchet, not a green light: resolving one changes resolved
-behaviour (the dropped template starts applying again), which needs a
-maintainer decision per case (CLAUDE.md rules 3-4). Lower the baseline as
-they are fixed; never raise it.
+Exit code 1 when the D1 or D2 count rises above its baseline. The pre-existing
+findings are ratchets, not a green light. Renaming a label is behavior-preserving
+only when a resolved before/after comparison confirms it; otherwise the case needs
+individual review. Lower each baseline as findings are fixed; never raise them.
 
 Usage: python tools/audit/audit_duplicate_keys.py
 """
@@ -44,9 +45,9 @@ if hasattr(sys.stdout, "reconfigure"):
 SCAN_DIRS = ("mods/cameo",)
 SKIP_PARTS = ("maps", "bits")
 
-# Ratchet: D1 findings measured on 2026-08-11 against the unmodified tree.
-# Lower it as duplicates are resolved; never raise it without a note.
-D1_BASELINE = 89
+# Ratchets: lower them as duplicates are resolved; never raise without a note.
+D1_BASELINE = 35
+D2_BASELINE = 260
 
 
 def duplicate_children(node: Node) -> dict[str, list[Node]]:
@@ -98,11 +99,11 @@ def main() -> int:
                     d2_counts[key] += 1
                     d2_rows.append([rel, lines, owner, key])
 
-    print(h1("audit_duplicate_keys — duplicate keys in one node (silent override)"))
-    print(f"Files scanned: **{len(files)}** — D1 dropped inherits: "
+    print(h1("audit_duplicate_keys — duplicate keys in one node (ambiguous merges)"))
+    print(f"Files scanned: **{len(files)}** — D1 ambiguous inheritance labels: "
           f"**{len(d1_rows)}**, D2 merged duplicates: **{len(d2_rows)}**\n")
 
-    print(h2("D1 — duplicate Inherits key with different values (one template is dropped)"))
+    print(h2("D1 — duplicate inheritance labels with different parent values"))
     print(table(["file", "lines", "node", "key", "values"], d1_rows))
 
     print(h2("D2 — duplicate keys by key name (top 40)"))
@@ -114,12 +115,21 @@ def main() -> int:
 
     if len(d1_rows) > D1_BASELINE:
         print(f"\n**FAIL** — D1 count {len(d1_rows)} exceeds the baseline "
-              f"{D1_BASELINE}: a new duplicate Inherits key was introduced.\n")
+              f"{D1_BASELINE}: a new ambiguous inheritance label was introduced.\n")
         return 1
 
     if len(d1_rows) < D1_BASELINE:
         print(f"\nD1 count {len(d1_rows)} is below the baseline {D1_BASELINE} — "
               f"lower D1_BASELINE in this script to lock the fix in.\n")
+
+    if len(d2_rows) > D2_BASELINE:
+        print(f"\n**FAIL** — D2 count {len(d2_rows)} exceeds the baseline "
+              f"{D2_BASELINE}: a new duplicate key was introduced.\n")
+        return 1
+
+    if len(d2_rows) < D2_BASELINE:
+        print(f"\nD2 count {len(d2_rows)} is below the baseline {D2_BASELINE} — "
+              f"lower D2_BASELINE in this script to lock the fix in.\n")
 
     return 0
 

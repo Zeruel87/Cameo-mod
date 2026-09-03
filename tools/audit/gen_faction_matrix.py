@@ -94,7 +94,12 @@ def main() -> int:
                 fluent_total += 1
                 if looks_like_fluent(tt):
                     fluent_ok += 1
-        main_file = files.most_common(1)[0][0] if files else "—"
+        # ⚠ Break the tie by NAME. `Counter.most_common` falls back to insertion order, which
+        # comes from an unordered walk, so a faction whose files tie on count (ts_nod: vehicles
+        # and buildings, 23 each) named a different file on every run — churn in TRACKED evidence
+        # (CLAUDE.md rule 8). Third instance of this class in one regeneration; see also
+        # audit_buildable_order and audit_packs.
+        main_file = min(files.items(), key=lambda kv: (-kv[1], kv[0]))[0] if files else "—"
         ai_status = ("yes" if combat and wired == len(combat)
                      else f"partial {wired}/{len(combat)}" if wired else "NO")
         rows.append([

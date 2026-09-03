@@ -107,7 +107,7 @@ def unit_inputs(u, du=None, use_k=False):
         else:
             raw = formula.dps(dmg, reload_,
                               int(fnum(arm.get("burst")) or 1),
-                              fnum(arm.get("burstdelays")))
+                              arm.get("burstdelays"))
         if use_k:
             keyed = kidx.get((arm.get("slot"), arm.get("weapon")))
             if keyed is None:
@@ -115,7 +115,7 @@ def unit_inputs(u, du=None, use_k=False):
             total_dps += raw if keyed is None else keyed
         else:
             total_dps += raw
-        best_range = max(best_range, fnum(arm.get("range")) or 0.0)
+        best_range = max(best_range, formula.wdist_value(arm.get("range"), 0.0))
     total_dps *= fp   # apply the actor-level FirepowerMultiplier to effective DPS
     if hp is None or speed is None or total_dps == 0:
         return None, 0

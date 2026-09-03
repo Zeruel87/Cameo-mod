@@ -1,4 +1,4 @@
-﻿# audit_plating_exclusivity — one plating per actor, and a plating is a TYPE
+# audit_plating_exclusivity — one plating per actor, and a plating is a TYPE
 
 Found **7** plating grant(s) across **7** definition(s), over the 5 platings (ARMOR, BLAST, COMPOSITE, HAZMAT, REFLECTOR).
 

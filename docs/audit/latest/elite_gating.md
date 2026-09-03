@@ -4,7 +4,7 @@ Armament@*ELITE* blocks without RequiresCondition: rank-elite: **21**
 
 | File | Line | Actor | Trait | Issue |
 |---|---|---|---|---|
-| ContentPacks/RedAlert2/Allies/yaml/defenses.yaml | 308 | ra2_allies_patriotmissilesystem | Armament@missileeliteThunderbolt | RequiresCondition but NOT rank-elite |
+| ContentPacks/RedAlert2/Allies/yaml/defenses.yaml | 310 | ra2_allies_patriotmissilesystem | Armament@missileeliteThunderbolt | RequiresCondition but NOT rank-elite |
 | ContentPacks/TiberianDawn/Nod/yaml/aircraft.yaml | 202 | td_nod_venom | Armament@Elite | RequiresCondition but NOT rank-elite |
 | ContentPacks/TiberianDawn/Nod/yaml/buildings.yaml | 487 | td_nod_laserturret | Armament@Elite | RequiresCondition but NOT rank-elite |
 | ContentPacks/TiberianDawn/Nod/yaml/buildings.yaml | 593 | td_nod_obeliskoflight | Armament@Elite | RequiresCondition but NOT rank-elite |

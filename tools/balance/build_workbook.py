@@ -3,8 +3,8 @@
 
 Ledger (docs/balance/*.json) -> docs/design/cameo_balance_by_faction.xlsx and docs/design/cameo_balance_by_type.xlsx.
 
-The workbook is a WORKBENCH, never a committed source (gitignored):
-regenerate at will. Raw stats appear as editable cells; every derived
+The tracked files are generated WORKBENCHES, never authoritative sources:
+regenerate them from the ledger whenever the model changes. Raw stats appear as editable cells; every derived
 quantity is a live Excel formula (identical math to formula.py — proven
 by test_formula.py's Tiger identity + symbolic equivalence). Layout:
 
@@ -19,10 +19,10 @@ Editable (unlocked) cells: unit HP/Speed/TechTier/UnitClass/Special,
 weapon Damage/Reload/Burst/BurstDelays/Range/WeaponClass, and Cost.
 Everything else is locked (sheet protection, no password).
 
-Damage convention: the weapon row's Damage cell is the MAX of the
-weapon's raw warhead damages (all of them are listed in a cell
-comment); importing a changed Damage scales every warhead
-proportionally (Phase 4).
+Damage convention: the weapon row's Damage cell is the SUM of the main
+offensive warheads. Importing a changed total redistributes it as equal
+100-grid shares across those main warheads (Phase 4); percentage and
+extra-damage applications keep their dedicated rules.
 
 Defense rows with no Speed get the legacy speed=100 convention as an
 explicit input value (until the Formula-v2 defense class replaces it).
@@ -30,6 +30,7 @@ explicit input value (until the Formula-v2 defense class replaces it).
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import pathlib
 import re
@@ -65,7 +66,7 @@ HDR = ["Mod", "Actor", "Name", "Class", "HP", "Speed", "Armor",
        "WeaponTypes"]
 COL = {name: i + 1 for i, name in enumerate(HDR)}
 UNLOCKED_UNIT = ("Class", "HP", "Speed", "TechTier", "UnitClass", "Special",
-                 "FirepowerMultiplier", "Cost")
+                 "Cost")
 UNLOCKED_WEAPON = ("Damage", "Reload", "Burst", "BurstDel", "Range(wd)", "WeapClass")
 
 DEFAULT_FONT = Font(size=10)
@@ -114,6 +115,34 @@ def fnum(v):
         return float(v)
     except (TypeError, ValueError):
         return None
+
+
+def range_num(v):
+    """Workbook-ready WDist, including OpenRA cell notation such as 40c0."""
+    return formula.wdist_value(v)
+
+
+def burst_delays_value(v):
+    """Workbook input value without discarding a comma-separated delay list."""
+    values = formula.burst_delay_values(v)
+    if values is None:
+        return None
+    return values[0] if len(values) == 1 else formula.burst_delays_text(values)
+
+
+def eff_reload_formula(row: int) -> str:
+    """Excel form of formula.eff_reload, including lists and engine defaults."""
+    reload_cell = f"{L('Reload')}{row}"
+    burst_cell = f"{L('Burst')}{row}"
+    delay_cell = f"{L('BurstDel')}{row}"
+    gaps = f"MAX({burst_cell}-1,0)"
+    # A scalar delay repeats for every gap. A text list contains one delay per
+    # gap and is summed. Blank means WeaponInfo's default delay of five ticks.
+    delay_total = (
+        f"IF(ISBLANK({delay_cell}),{formula.ENGINE_DEFAULT_BURST_DELAY:g}*{gaps},"
+        f"IF(ISNUMBER({delay_cell}),{delay_cell}*{gaps},"
+        f"SUM(IFERROR(VALUE(TEXTSPLIT({delay_cell},\",\")),0))))")
+    return f"={reload_cell}+IF({gaps}>0,{delay_total},0)"
 
 
 def unit_rows(ws, theme, aid, u, section, row):
@@ -180,22 +209,32 @@ def unit_rows(ws, theme, aid, u, section, row):
                 f"per-shot TOTAL across {n_main} main warhead(s).\n"
                 "raw warhead damages: " + ", ".join(str(int(x)) for x in damages)
                 + "\nediting this gives every main warhead the IDENTICAL value "
-                "total/N snapped to the 2000 grid (FriendlyFire + ExtraDamage "
-                "twins 50%, Percentage twins 1 per 2000; ExtraDamage excluded "
-                "from the total). Fine-tune the effective damage with the actor "
-                "FirepowerMultiplier.",
+                "total/N snapped to the 100 grid (FriendlyFire + ExtraDamage "
+                "twins 50%; percentage twins follow their node denominator; "
+                "ExtraDamage excluded from the total). Actor FirepowerMultiplier "
+                "is read for legacy compatibility, not used as a tuning knob.",
                 "balance-pipeline")
-        ws.cell(row=row, column=COL["Reload"], value=fnum(arm.get("reloaddelay")))
-        ws.cell(row=row, column=COL["Burst"], value=fnum(arm.get("burst")) or 1)
-        ws.cell(row=row, column=COL["BurstDel"], value=fnum(arm.get("burstdelays")))
-        ws.cell(row=row, column=COL["Range(wd)"], value=fnum(arm.get("range")))
+        reload_delay = fnum(arm.get("reloaddelay"))
+        burst = fnum(arm.get("burst"))
+        weapon_range = range_num(arm.get("range"))
+        ws.cell(
+            row=row, column=COL["Reload"],
+            value=(formula.ENGINE_DEFAULT_RELOAD_DELAY
+                   if reload_delay is None else reload_delay))
+        ws.cell(
+            row=row, column=COL["Burst"],
+            value=formula.ENGINE_DEFAULT_BURST if burst is None else burst)
+        ws.cell(row=row, column=COL["BurstDel"],
+                value=burst_delays_value(arm.get("burstdelays")))
+        ws.cell(
+            row=row, column=COL["Range(wd)"],
+            value=formula.ENGINE_DEFAULT_RANGE if weapon_range is None else weapon_range)
         ws.cell(row=row, column=COL["WeapClass"],
                 value=fnum(arm.get("design_weapon_class")) or 1)
         r = row
         fp_factor = f"IF(ISBLANK({L('FirepowerMultiplier')}{first}),1,{L('FirepowerMultiplier')}{first})"
         ws.cell(row=r, column=COL["EffReload"],
-                value=f"={L('Reload')}{r}+IF({L('Burst')}{r}>1,"
-                      f"N({L('BurstDel')}{r})*({L('Burst')}{r}-1),0)")
+                value=eff_reload_formula(r))
         # No *WeapClass (W4): formula.dps() dropped it, and this sheet must emit
         # the SAME math as the module or the two silently disagree. The WeapClass
         # column stays as design data — it just no longer prices.
@@ -239,9 +278,12 @@ def unit_rows(ws, theme, aid, u, section, row):
             # TechTier column is absolute f(C); class-baseline needs relative
             # f(C)/f(C_anchor), so divide by the anchor's absolute tier here.
             T_REL = f"({T_}/{anchor_tier})"
-            price = (f"=(({h}+{sd}+{d}+{rn})*{c0}/4"
+            # Some intentionally unarmed class anchors have zero DPS/range
+            # baselines. Keep their price blank instead of emitting a visible
+            # #DIV/0! until that class receives a combat-capable anchor.
+            price = (f"=IFERROR((({h}+{sd}+{d}+{rn})*{c0}/4"
                      f"+(({h}*{sd})+({rn}*{d}))*{c0}/2"
-                     f"+({h}*{sd}*{rn}*{d})*{c0})*{T_REL}/3")
+                     f"+({h}*{sd}*{rn}*{d})*{c0})*{T_REL}/3,\"\")")
             A = f"(({h}+{sd}+{d})*{c0}/4+({h}*{sd})*{c0}/2)*{T_REL}"
             B = f"({c0}/4+({d})*{c0}/2+({h}*{sd}*{d})*{c0})*{T_REL}"
             rs = (f"=IFERROR(ROUND(((3*{L('Cost')}{r}-{A})/{B}*{rng0})"
@@ -281,19 +323,37 @@ def protect(ws, unit_cells, weapon_cells):
     ws.protection.enable()
 
 
+def workbook_fingerprint() -> str:
+    """Hash every source/input that can change generated workbook semantics."""
+    paths = [pathlib.Path(__file__), pathlib.Path(formula.__file__),
+             pathlib.Path(tier_chain.__file__), MOD_CONFIG, DEFAULTS]
+    paths.extend(sorted(LEDGER.rglob("*.json")))
+    digest = hashlib.sha256()
+    for path in paths:
+        digest.update(path.relative_to(ROOT).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        # Git may materialize these text files with LF or CRLF. Hash normalized
+        # content so an unchanged tree produces the same workbook on every OS.
+        normalized = path.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
+        digest.update(normalized.encode("utf-8"))
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
 def add_constants_sheet(wb, title):
     const = wb.active
     const.title = "Constants"
     notes = [
         (f"{title} — generated workbench (build_workbook.py).", None),
-        ("NEVER commit this file; regenerate from the ledger.", None),
+        ("TRACKED generated workbench; regenerate from the ledger, never treat as source.", None),
         ("Formula law (formula.py, Tiger anchor O=P=Q=Cost=800):", None),
-        ("DPS", "Damage*Burst/(Reload+BurstDel*(Burst-1))*FirepowerMultiplier/100"),
+        ("DPS", "Damage*Burst/(Reload+sum of every burst gap; blank delay = 5 each)*FirepowerMultiplier"),
         ("WeapClass", "design data only — retired from pricing 2026-08-11 (W4)"),
         ("O", "(HP/1e5+Speed/100+Rng*Spec/5+DPS/200)*200*UC*Tier"),
         ("P", "((HP*Speed/25000)+(Rng*Spec*DPS/2.5))*UC*Tier"),
         ("Q", "(HP*Speed*Rng*Spec*DPS*UC*Tier)/12.5e6"),
         ("Price", "(O+P+Q)/3   |   RangeSolve: price(range)=Cost, exact"),
+        ("Generator fingerprint", workbook_fingerprint()),
     ]
     for i, (a, b) in enumerate(notes, start=1):
         const.cell(row=i, column=1, value=a).font = HEAD_FONT if i <= 3 else Font()
@@ -334,11 +394,31 @@ def write_unit(ws, theme, aid, u, section, row, unit_unlock, weap_unlock):
     first = row
     row = unit_rows(ws, theme, aid, u, section, row)
     for col in UNLOCKED_UNIT:
+        # HP/Speed/Cost need an existing provenance slot for apply_balance.py
+        # to write safely. In particular, the displayed Speed 100 for a defense
+        # without a movement trait is only a pricing convention, not an engine
+        # field. Keep unsupported cells locked instead of accepting an edit the
+        # importer would have to ignore.
+        if col == "HP" and not isinstance(u.get("hp"), dict):
+            continue
+        if col == "Speed" and not (
+                isinstance(u.get("speed"), dict) or
+                isinstance(u.get("speed_air"), dict)):
+            continue
+        if col == "Cost" and not isinstance(u.get("cost"), dict):
+            continue
         unit_unlock.append(ws.cell(row=first, column=COL[col]))
-    for wr in range(first + 1, row):
-        if str(ws.cell(row=wr, column=COL["Name"]).value or "").startswith("Armament"):
-            for col in UNLOCKED_WEAPON:
-                weap_unlock.append(ws.cell(row=wr, column=COL[col]))
+    resolved_arms = [arm for arm in u.get("armaments", []) if not arm.get("unresolved")]
+    for offset, arm in enumerate(resolved_arms, 1):
+        wr = first + offset
+        for col in UNLOCKED_WEAPON:
+            # There is no scalar Damage field to create when a weapon has no
+            # existing main damage warhead. Other top-level weapon fields can be
+            # inserted safely by apply_balance.py.
+            if col == "Damage" and not formula.spread_damage_sum(
+                    arm.get("damage_warheads", [])):
+                continue
+            weap_unlock.append(ws.cell(row=wr, column=COL[col]))
     return row
 
 
@@ -547,12 +627,15 @@ def expected_type_layout(docs):
 
 
 def actual_type_layout(ws):
+    # Some standards-compliant XLSX writers omit the optional worksheet
+    # ``dimension`` hint. Stream the read-only rows once instead of relying on
+    # max_row (or repeatedly reparsing the XML through ws.cell()).
     layout = []
     subtype = None
     actors = []
-    for row in range(2, ws.max_row + 1):
-        left = ws.cell(row=row, column=COL["Mod"]).value
-        actor = ws.cell(row=row, column=COL["Actor"]).value
+    for values in ws.iter_rows(min_row=2, values_only=True):
+        left = values[COL["Mod"] - 1] if len(values) >= COL["Mod"] else None
+        actor = values[COL["Actor"] - 1] if len(values) >= COL["Actor"] else None
         if left and not actor:
             if subtype is not None:
                 layout.append((subtype, actors))
@@ -566,6 +649,7 @@ def actual_type_layout(ws):
 
 def check_order(docs):
     errors = []
+    expected_fingerprint = workbook_fingerprint()
     if not OUTFILE.exists():
         errors.append(f"missing {OUTFILE.relative_to(ROOT)}")
     else:
@@ -573,6 +657,8 @@ def check_order(docs):
         expected_tabs = ["Constants", *[doc["ledger"][:31] for doc in docs]]
         if wb.sheetnames != expected_tabs:
             errors.append("faction workbook tab order differs from mod.yaml load order")
+        if wb["Constants"]["B10"].value != expected_fingerprint:
+            errors.append("faction workbook was not regenerated from current code/ledger")
     if not TYPE_OUTFILE.exists():
         errors.append(f"missing {TYPE_OUTFILE.relative_to(ROOT)}")
     else:
@@ -581,6 +667,8 @@ def check_order(docs):
         expected_tabs = ["Constants", *TYPE_ORDER]
         if wb.sheetnames != expected_tabs:
             errors.append("type workbook tab order differs from the declared major type order")
+        if wb["Constants"]["B10"].value != expected_fingerprint:
+            errors.append("type workbook was not regenerated from current code/ledger")
         for category, expected in expected_layout.items():
             if category not in wb.sheetnames:
                 continue
@@ -591,7 +679,7 @@ def check_order(docs):
     if errors:
         print("workbook order check: stale — run build_workbook.py")
         return 1
-    print("workbook order check: current")
+    print("workbook order/fingerprint check: current")
     return 0
 
 

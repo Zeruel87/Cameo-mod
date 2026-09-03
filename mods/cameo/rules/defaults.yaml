@@ -1576,7 +1576,7 @@
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@VehicleBuffs: ^VehicleBuffs
 	Inherits@upgrade: ^LightWeightArmorPlating
-	Inherits@upgrade: ^AdvancedGuerillaTactics
+	Inherits@guerillaupgrade: ^AdvancedGuerillaTactics
 	Armor:
 		Type: Scout
 	RevealsShroud:
@@ -1598,7 +1598,7 @@
 	Inherits@detect: ^GenericAllDetector
 	Inherits@VehicleBuffs: ^VehicleBuffs
 	Inherits@upgrade: ^LightWeightArmorPlating
-	Inherits@upgrade: ^AdvancedGuerillaTactics
+	Inherits@guerillaupgrade: ^AdvancedGuerillaTactics
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -2407,7 +2407,7 @@
 	Inherits@cloak: ^AcceptsCloakCrate
 	Inherits@LockOn: ^LockOn
 	Inherits@ivan: ^BombAttachable
-	Inherits@cloak: ^StealthGenCloakable
+	Inherits@stealthgencloak: ^StealthGenCloakable
 	Inherits@shielded: ^ShieldedShieldable
 	Inherits@chrono: ^ChronoBeamable
 	Inherits@base-reveal: ^Base-reveal
@@ -2570,7 +2570,7 @@
 	GrantConditionOnDamageState@DAMAGED:
 		Condition: damaged
 		ValidDamageStates: Light, Medium, Heavy, Critical
-	Parachutable: ##########
+	Parachutable:
 		FallRate: 20
 		KilledOnImpassableTerrain: true
 		GroundCorpseSequence:
@@ -2578,7 +2578,7 @@
 		WaterImpactSound: splash9.aud
 		WaterCorpseSequence: small_splash
 		ParachutingCondition: parachute
-	WithParachute: ##########
+	WithParachute:
 		ShadowImage: parach_shadow
 		ShadowSequence: idle
 		Image: parach
@@ -2736,6 +2736,7 @@
 
 ^Submarine:
 	Targetable:
+		TargetTypes: Ground, Water, Ship, Submarine
 	Cloak@underwater:
 		DetectionTypes: Underwater
 		InitialDelay: 0
@@ -2763,8 +2764,6 @@
 		RequiresCondition: underwater
 	WithColoredSelectionBox@UnderBridge:
 		RequiresCondition: underbridge && !underwater
-	Targetable:
-		TargetTypes: Ground, Water, Ship, Submarine
 	Targetable@Underwater:
 		TargetTypes: Submarine, Underwater
 		RequiresCondition: underwater
@@ -3361,7 +3360,7 @@
 			Radius: 128
 	MapEditorData:
 		Categories: Infantry
-	Parachutable: ##########
+	Parachutable:
 		FallRate: 25
 		KilledOnImpassableTerrain: true
 		GroundCorpseSequence: corpse
@@ -3369,7 +3368,7 @@
 		WaterImpactSound: splash9.aud
 		WaterCorpseSequence: small_splash
 		ParachutingCondition: parachute
-	WithParachute: ##########
+	WithParachute:
 		ShadowImage: parach_shadow
 		ShadowSequence: idle
 		Image: parach
@@ -3592,7 +3591,7 @@
 		Voice: Poisoned
 		DeathTypes: TiberiumDeath, RA2VirusDeath, RadiationDeath
 		RequiresCondition: !chronobeamed
-	DeathSounds@ZAPPED: ##########
+	DeathSounds@ZAPPED:
 		Voice: Zapped
 		DeathTypes: ElectricityDeath
 		RequiresCondition: !chronobeamed
@@ -3627,8 +3626,6 @@
 		MaxMoveDelay: 750
 	MapEditorData:
 		Categories: Civilian infantry
-	Passenger:
-		CustomPipType: civilian
 
 ^Monster:
 	Inherits@1: ^ExistsInWorld
@@ -3719,7 +3716,6 @@
 	Voiced:
 		VoiceSet: AntVoice
 	WithDamageOverlay:
-	CombatDebugOverlay:
 	KillsSelf:
 		RequiresCondition: invulnerability
 	Chronoshiftable:
@@ -3863,6 +3859,12 @@
 		String: Infantry
 
 ^Building:
+	# Observer spectator tabs (ported from Combined Arms). `UpdatesBuildOrder` records this
+	# structure in the player's initial build order with a timestamp; `UpdatesUnitsProduced`
+	# records every unit produced here by name, count and value. Both report into the
+	# `ProductionTracker` on the player actor, and both are inert for anyone not spectating.
+	UpdatesBuildOrder:
+	UpdatesUnitsProduced:
 	Inherits@1: ^ExistsInWorld
 	Inherits@2: ^SpriteActor
 	Inherits@bounty: ^GlobalBounty
@@ -4053,7 +4055,7 @@
 		RequiresBaseProvider: true
 		BuildSounds: constru2.aud, hvydoor1.aud, placbldg.aud, build5.aud
 		UndeploySounds: cashturn.aud
-		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune ##########
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune
 	RequiresBuildableArea:
 		AreaTypes: building
 		Adjacent: 3
@@ -4076,6 +4078,7 @@
 		RepairStep: 200
 		PlayerExperience: 10
 		RepairingNotification: Repairing
+		RepairCondition: repairing
 	WithDeathAnimation:
 		DeathSequence: dead
 		DeathSequencePalette: ra2player
@@ -4128,6 +4131,8 @@
 		IsPlayerPalette: True
 		Scale: 0.40
 		ScaleWithZoom: True
+		Offsets:
+			powerdown: -10, 0
 	GrantCondition@disable:
 		Condition: disabled
 		RequiresCondition: (empdisable || superfreeze || chronobeamed || diskdrain || being-captured) && !invulnerability
@@ -4169,11 +4174,6 @@
 	GrantConditionOnBotOwner@defensebot:
 		Condition: defensebot
 		Bots: defenseai
-	RepairableBuilding:
-		RepairCondition: repairing
-	WithBuildingRepairDecoration:
-		Offsets:
-			powerdown: -10, 0
 	ActorStatValues:
 		Stats: Armor, Sight, Power
 	WithIdleOverlay@shrouded:
@@ -4505,7 +4505,7 @@
 		Dimensions: 1,1
 		Footprint: x
 		BuildSounds: hvydoor1.aud
-		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune ##########
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune
 	FootprintPlaceBuildingPreview:
 		TilesetPalettes:
 			VOLCANIC: ra_temperat
@@ -5269,76 +5269,90 @@
 		ValidRelationships: Ally, Neutral, Enemy
 
 ^Magnefreezable:
-	ExternalCondition@Magnetron:
-		Condition: Magnet
 	Targetable@Magnet:
 		TargetTypes: Magnefreezable
-	TimedConditionBar@Magnet:
-		Condition: Magnet
-		Color: FF55FF
-	GrantCondition@magnetfreeze:
+	# THE MAGNETIC GRIP IS A METER, NOT TEN STACKED CONDITION BANDS.
+	#
+	# It used to be an `ExternalCondition` counted in stacks (`RA2Magnet` is `Burst 100 /
+	# BurstDelays 1`, so one volley grants 100 tokens over 99 ticks) read by ten
+	# `SpeedMultiplier` traits on 10-point windows -- and every one of the nine interior
+	# boundaries OVERLAPPED, because `Magnet <= 20` and `Magnet >= 20` both hold at exactly 20.
+	# Two multipliers therefore MULTIPLIED at each step the burst swept through:
+	# 90% x 80% = 72% at 20, 60% x 50% = 30% at 50. The ramp was non-monotonic at every
+	# boundary, and the burst hit all nine of them on every single volley.
+	#
+	# `SlowsProportionalToPhysicalState` interpolates continuously between two endpoints, so
+	# the overlap cannot exist. 20 traits collapse to 5, and the effect becomes visible to
+	# `tools/balance/physical_state_price.py`, which prices a meter by how fast it fills.
+	#
+	# Scale: 20000 over `Burst: 100` shots = `Amount: 200` per shot, so a full volley still
+	# means a full lock, exactly as the 100-token stack did.
+	PhysicalState@Magnetism:
+		Name: Magnetism
+		MaxValue: 20000
+		MinValue: 0
+		RelaxedValue: 0
+		# The old stack counted SHOTS, not damage -- a scout and a superheavy were pinned by
+		# the same 100 hits. `false` keeps that; `true` would silently make the magnetron
+		# far better against light targets than it has ever been.
+		RelativeToHealth: false
+		ApplyDamageModifiers: false
+		# A token lasted 100 ticks, so the grip unwound over ~100 ticks after the last shot.
+		# 200/tick over a 20000 bar reproduces that; `ReloadDelay: 200` still leaves the
+		# target fully free between volleys.
+		RelaxationLinear: 200
+		RelaxationInterval: 1
+		RelaxationDelay: 25
+		InitialValue: 0
+	# Pink, matching `WithPhysicalStateColoredOverlay`'s MaxColor (FF88FF) rather than the old
+	# `TimedConditionBar` magenta, so the bar and the tint read as one effect. Same shape as the
+	# Temperature and Corrosion bars; no deadzone condition is needed because Magnetism is
+	# UNSIGNED and relaxes to 0, so `DisplayWhenRelaxed: false` already hides it at rest.
+	PhysicalStateBar@MagnetismBar:
+		PhysicalStateName: Magnetism
+		PositiveColor: FF88FF
+		NeutralColor: 808080
+		DisplayWhenRelaxed: false
+		ShowAbsoluteValues: false
+	# `magnetfreeze` is CONSUMED -- it is one of the disable conditions on ^Vehicle and
+	# ^Aircraft (`empdisable || superfreeze || ... || magnetfreeze`). Deleting it without
+	# a replacement would leave those `RequiresCondition` expressions referencing a
+	# condition nothing grants. Granted only at a completely full bar, as `Magnet >= 100` was.
+	GrantConditionOnPhysicalState@magnetfreeze:
+		PhysicalStateName: Magnetism
 		Condition: magnetfreeze
-		RequiresCondition: Magnet >= 100
-	SpeedMultiplier@MagnetFreeze1:
-		Modifier: 90
-		RequiresCondition: Magnet >= 10 && Magnet <= 20
-	SpeedMultiplier@MagnetFreeze2:
-		Modifier: 80
-		RequiresCondition: Magnet >= 20 && Magnet <= 30
-	SpeedMultiplier@MagnetFreeze3:
-		Modifier: 70
-		RequiresCondition: Magnet >= 30 && Magnet <= 40
-	SpeedMultiplier@MagnetFreeze4:
-		Modifier: 60
-		RequiresCondition: Magnet >= 40 && Magnet <= 50
-	SpeedMultiplier@MagnetFreeze5:
-		Modifier: 50
-		RequiresCondition: Magnet >= 50 && Magnet <= 60
-	SpeedMultiplier@MagnetFreeze6:
-		Modifier: 40
-		RequiresCondition: Magnet >= 60 && Magnet <= 70
-	SpeedMultiplier@MagnetFreeze7:
-		Modifier: 30
-		RequiresCondition: Magnet >= 70 && Magnet <= 80
-	SpeedMultiplier@MagnetFreeze8:
-		Modifier: 20
-		RequiresCondition: Magnet >= 80 && Magnet <= 90
-	SpeedMultiplier@MagnetFreeze9:
-		Modifier: 10
-		RequiresCondition: Magnet >= 90 && Magnet <= 100
-	SpeedMultiplier@MagnetFreeze10:
-		Modifier: 0
-		RequiresCondition: Magnet >= 100
-	WithColoredOverlay@Magnet1:
-		Color: 66886611
-		RequiresCondition: Magnet >= 10 && Magnet <= 20
-	WithColoredOverlay@Magnet2:
-		Color: 77887722
-		RequiresCondition: Magnet >= 20 && Magnet <= 30
-	WithColoredOverlay@Magnet3:
-		Color: 88888833
-		RequiresCondition: Magnet >= 30 && Magnet <= 40
-	WithColoredOverlay@Magnet4:
-		Color: 99889944
-		RequiresCondition: Magnet >= 40 && Magnet <= 50
-	WithColoredOverlay@Magnet5:
-		Color: AA88AA55
-		RequiresCondition: Magnet >= 50 && Magnet <= 60
-	WithColoredOverlay@Magnet6:
-		Color: BB88BB66
-		RequiresCondition: Magnet >= 60 && Magnet <= 70
-	WithColoredOverlay@Magnet7:
-		Color: CC88CC77
-		RequiresCondition: Magnet >= 70 && Magnet <= 80
-	WithColoredOverlay@Magnet8:
-		Color: DD88DD88
-		RequiresCondition: Magnet >= 80 && Magnet <= 90
-	WithColoredOverlay@Magnet9:
-		Color: EE88EE99
-		RequiresCondition: Magnet >= 90 && Magnet <= 100
-	WithColoredOverlay@Magnet10:
-		Color: FF88FFAA
-		RequiresCondition: Magnet >= 100
+		LowerValue: 20000
+		UpperValue: 20000
+	# A FULL BAR IS A DISABLE, so every axis ramps -- maintainer ruling 2026-08-22: *"turn speed
+	# should be scaled, reload delay too because it's an actual disable! even if it didn't have
+	# it before it should have it now"*. The old ten `SpeedMultiplier` bands moved movement only;
+	# this deliberately does MORE than they did, and the ramp now agrees with `magnetfreeze`
+	# instead of contradicting it -- a unit pinned at 100% used to keep firing and traversing at
+	# full rate right up to the instant the disable condition landed.
+	#
+	# Identical in shape to `@FrostSlowdown` on the Temperature meter. Reload bottoms out at 1,
+	# not 0: `ConvertReloadSpeedToDelayPercent` maps 0 to `int.MaxValue`, and 1 already means a
+	# 100x reload delay.
+	SlowsProportionalToPhysicalState@Magnetism:
+		PhysicalStateName: Magnetism
+		UseDeviationFromRelaxed: true
+		OnlyPositiveValues: true
+		SpeedModifierAtMinimum: 100
+		SpeedModifierAtMaximum: 0
+		TurnSpeedModifierAtMinimum: 100
+		TurnSpeedModifierAtMaximum: 0
+		TurretTurnSpeedModifierAtMinimum: 100
+		TurretTurnSpeedModifierAtMaximum: 0
+		ReloadDelayModifierAtMinimum: 100
+		ReloadDelayModifierAtMaximum: 1
+	# Same magenta ramp the ten `WithColoredOverlay` traits drew, now interpolated. It opens
+	# at 2000 (the old `Magnet >= 10`) so a single stray shot still does not tint the actor.
+	WithPhysicalStateColoredOverlay@Magnetism:
+		PhysicalStateName: Magnetism
+		MinColor: 66886611
+		MaxColor: FF88FFAA
+		LowerValue: 2000
+		UpperValue: 20000
 
 ^EnemyInProximity:
 	PhysicalState@EnemyProximity:
@@ -5428,7 +5442,7 @@
 		RelaxationDelay: 25
 		InitialValue: 0
 		ApplyDamageModifiers: true
-	PhysicalStateBar@TemperatureBar:
+	SelectedPhysicalStateBar@TemperatureBar:
 		PhysicalStateName: Temperature
 		PositiveColor: FF0000
 		NegativeColor: 0080FF
@@ -5501,7 +5515,7 @@
 		LowerValue: -20000
 	WithPhysicalStateColoredOverlay@CryoFreeze:
 		PhysicalStateName: Temperature
-		MinColor: 88BBFF64
+		MinColor: 88BBFF33
 		MaxColor: 4488FF08
 		UpperValue: -200
 		LowerValue: -20000
@@ -5515,7 +5529,7 @@
 	WithPhysicalStateColoredOverlay@Overheating:
 		PhysicalStateName: Temperature
 		MinColor: FF884408
-		MaxColor: FF40207B
+		MaxColor: FF402033
 		UpperValue: 20000
 		LowerValue: 200
 	WithIdleOverlay@overheat:
@@ -5675,15 +5689,9 @@
 	WithColoredOverlay@corroded:
 		RequiresCondition: corroded
 		Color: 44FF4444
-	WithIdleOverlay@corroded:
-		RequiresCondition: corroded
-		Image: explosion
-		Sequence: nax_corr_frag
-		StartSequence: nax_corr_frag
-		Palette: ra2effect
 	# --- Corrosion METER (physical-state axis). ADDITIVE + inert until a weapon feeds it via
 	# AreaDamage PhysicalStateName: Corrosion / PhysicalStateScale. Green tint 200->20000; effects
-	# open at 1% (Corroding); nax_corr_frag pulse at max. Binary `corroded` above kept until the
+	# open at 1% (Corroding). Binary `corroded` above is kept until the
 	# Schwarzer Mond weapons are migrated onto the meter. See docs/design/PHYSICAL_STATE_SYSTEM.md.
 	PhysicalState@Corrosion:
 		Name: Corrosion
@@ -5721,8 +5729,8 @@
 		LowerValue: 20000
 	WithPhysicalStateColoredOverlay@Corrosion:
 		PhysicalStateName: Corrosion
-		MinColor: 44FF4422
-		MaxColor: 00FF0088
+		MinColor: 44FF4404
+		MaxColor: 00FF001A
 		UpperValue: 20000
 		LowerValue: 200
 	ChangesHealthProportionalToPhysicalState@Corrosion:
@@ -5756,14 +5764,6 @@
 		DamageMultiplierAtMaximum: 150
 		UseDeviationFromRelaxed: true
 		RequiresCondition: Corroding
-	WithIdleOverlay@CorrosionPulse:
-		RequiresCondition: CorrosionMax
-		Image: explosion
-		Sequence: nax_corr_frag
-		StartSequence: nax_corr_frag
-		Palette: ra2effect
-		IsDecoration: True
-
 ^AffectedByHealingField:
 	ExternalCondition@HealingField:
 		Condition: HealingField
@@ -5803,21 +5803,23 @@
 	ExternalCondition@INVULNERABILITY:
 		Condition: invulnerability
 
-# W8 (2026-08-15) — the gatling spin-up, as a METER instead of a condition ladder.
+# W8 (2026-08-15) — the gatling spin-up, as a compact meter backed by the
+# existing condition ladder.
 # Replaces the three ^GatlingSpeedUp* templates, now deleted: 20 conditional
 # multipliers on the turret variant, 30 on the unit, 40 on the special unit, across
 # 43 actors — roughly 1300 trait objects — collapse into three traits per template
-# that move CONTINUOUSLY rather than in ten visible 5% steps.
+# whose value follows the ten condition stages.
 #
-# End-points reproduce the ladder EXACTLY, measured not assumed:
+# Rounded end-points preserve the previous ladder targets:
 #   reload  0.95^10 = 0.599 -> ReloadDelayTo 60   (lower = faster)
 #   range   1.02^10 = 1.219 -> RangeTo       122
 # The turret template has no speed term, so neither does this.
+# Intermediate stages retain the compact meter's linear interpolation; they are not
+# numerically identical to the old stack of compounded 95% / 102% modifier traits.
 #
-# The `gatling` condition is kept as the FILL TRIGGER rather than as ten thresholds:
-# GrantConditionOnAttack still counts shots, but only `>= 1` is read, so the elite
-# variant's faster stacking no longer needs a parallel ladder — it simply reaches the
-# trigger sooner and the meter does the rest.
+# The `gatling` condition count is the single source of truth for the meter. This keeps
+# normal/elite shot thresholds and staged decay while avoiding independent fill and
+# relaxation timers that can fight each other and make the range circle oscillate.
 ^GatlingSpinUpTurretBehavior:
 	PhysicalState@SpinUp:
 		Name: SpinUp
@@ -5825,15 +5827,15 @@
 		MaxValue: 100
 		RelaxedValue: 0
 		InitialValue: 0
-		RelaxationLinear: 10
-		RelaxationDelay: 30
-		RelaxationInterval: 1
-	ChangesPhysicalState@SpinUp:
+	SynchronizesPhysicalStateWithCondition@SpinUp:
+		Condition: gatling
 		PhysicalStateName: SpinUp
-		Amount: 10
-		Delay: 5
-		AffectedByModifiers: false
-		RequiresCondition: gatling >= 1
+		ValuePerInstance: 10
+	SelectedPhysicalStateBar@SpinUp:
+		PhysicalStateName: SpinUp
+		PositiveColor: FF8000
+		DisplayWhenRelaxed: false
+		ShowAbsoluteValues: true
 	ModifiesCombatProportionalToPhysicalState@SpinUp:
 		PhysicalStateName: SpinUp
 		ReloadDelayFrom: 100
@@ -5872,6 +5874,10 @@
 	ModifiesCombatProportionalToPhysicalState@SpinUp:
 		SpeedFrom: 100
 		SpeedTo: 60
+		TurnSpeedFrom: 100
+		TurnSpeedTo: 60
+		TurretTurnSpeedFrom: 100
+		TurretTurnSpeedTo: 60
 
 # Special-unit variant: adds the DEFENSIVE term. DamageMultiplier < 100 means less
 # damage TAKEN, so a spun-up gatling is also harder to kill (0.95^10 = 0.599).
@@ -6824,6 +6830,11 @@ CPQDEBUGDUMMY:
 		RequiresCondition: (easiestbot || veryeasybot || easybot || normalbot || hardbot || veryhardbot || brutalbot || challengerbot || unbeatablebot || cameogodbot) && easiestbotinsurance
 
 ^Harvester:
+	# Observer Economy Damage tab — see ^Refinery above.
+	UpdatesCount@EconomyDamage:
+		Type: HarvesterKilled
+		LossType: HarvesterLost
+		UpdateOn: Killed
 	Inherits@MC: ^MCImmune
 	Inherits@snipe: ^DriverKillImmune
 	Inherits@D2K_AdvancedIxianTechnology: ^D2K_AdvancedIxianTechnology
@@ -6873,7 +6884,7 @@ CPQDEBUGDUMMY:
 	WithStoresResourcesPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true
-		PipCount: 7
+		PipCount: 10
 	SpeedMultiplier@HARVBALANCE:
 		RequiresCondition: harv-balance
 		Modifier: 138
@@ -6883,14 +6894,9 @@ CPQDEBUGDUMMY:
 		Stats: Armor, Sight, Speed, None, None, None, Harvester
 	StoresResources:
 		Resources: Tiberium, BlueTiberium, RedTiberium, GoldTiberium, Ore, Gems, RA2Copper, RA2Silver, RA2Ore, RA2Gems, SCMinerals, GESupplies, SWPCarbon, SWRCarbon, SWDCarbon, SWPNova, SWCNova, SWPMin, SWCMin, Spice, SCGas, SCGas2, SCGas3, SCMineralsChunk, SCRMinerals, DRWater, DRTaelon, D2Spice, D2SpiceDense, SWFarms, OP2Ore2, OP2Ore
-	DockClientManager:
 	Selectable:
 		Priority: 7
 		DecorationBounds: 1536, 1536
-	WithStoresResourcesPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		PipCount: 10
 
 ^RearmableAircraft:
 	Rearmable:
@@ -7860,6 +7866,12 @@ CPQDEBUGDUMMY:
 		Prerequisite: conyard
 
 ^Refinery:
+	# Observer Economy Damage tab (ported from Combined Arms). Feeds the named counters on the
+	# player's CountManager: the KILLER's RefineryKilled and the victim's RefineryLost.
+	UpdatesCount@EconomyDamage:
+		Type: RefineryKilled
+		LossType: RefineryLost
+		UpdateOn: Killed
 	Inherits@WarEconomyTeamUpgradeRA1: ^WarEconomyTeamUpgradeRA1
 	Buildable:
 		Queue: Building, RABuilding
@@ -8502,7 +8514,6 @@ CPQDEBUGDUMMY:
 		BuildPaletteOrder: 200
 		BuildDuration: 1500
 		BuildDurationModifier: 100
-		BuildLimit: 1
 		IconPalette: cameo
 	Valued:
 		Cost: 5000
@@ -8524,13 +8535,13 @@ CPQDEBUGDUMMY:
 		Range: 10000
 		RequiresCondition: !disabled
 	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite@swlimit:
+		RequiresPrerequisites: global-swlimit
 
 ^PrimarySuperweapon:
 	Inherits: ^Superweapon
 	Valued:
 		Cost: 10000
-	ProvidesPrerequisite@swlimit:
-		RequiresPrerequisites: global-swlimit
 
 ####################################################################################################
 #		Generals

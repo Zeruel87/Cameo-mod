@@ -1,36 +1,448 @@
-# Cameo Roadmap — detailed work queue (rebuilt 2026-07-13)
+# Cameo Roadmap — the live work queue
 
-_The living work queue, resumable by any agent. Rule zero: crashes and
-bugs ALWAYS jump the queue. Ordering within a section: **quickest wins
-first, then by severity**. Effort: S < 1h, M = one session, L = multi-
-session. Every completed item gets its commit hash; every new order
-lands here first. Goal: **mod-synthesis balance overhaul** (see ★ MAJOR
-PROGRAM below) — finish infantry classes, then vehicles/aircraft/defenses/
-naval. CABAL faction work is largely complete; remaining CABAL items are
-flagged inline. Faction reference: [FACTIONS.md](../FACTIONS.md)._
+_Entry point for a new session: **[`docs/HANDOFF.md`](../HANDOFF.md)**. This file is the
+granular, resumable task queue that the handoff points into._
 
-> **Multi-agent repo.** Three contributors touch this tree: the
-> maintainer (AedisToru), **333ggg** (i333ggg@yandex.ru — works Starcraft
-> vultures, TS GDI riot troopers, `cabal.xlsx` rows), and **Devin AI**
-> (leaves a log at `DevinCameoProject/DEVELOPMENT_LOG.md` in the external scratch folder). ALWAYS `git add <files>` scoped, never `-A`.
-> Verify others' commits before building on them. Devin's 2026-07-12
-> sound pass (obelcor3/samshot1 fixes) was reviewed and TRUSTED
-> 2026-07-13; keep it. 333ggg's mine commits are self-contained (SC +
-> GDI), unrelated to CABAL.
+## AI PERSONALITY SELECTOR (2026-08-21)
+
+- [x] Add synchronized random Rush/Turtle/Tech/Expansion/Steamroller selection
+  (`cdd04e5a1`).
+- [x] Gate independent squad-manager instances on the selected condition
+  (`cdd04e5a1`).
+- [x] Add audit coverage for shared-field duplication and condition parity
+  (`cdd04e5a1`).
+- [ ] Observe long-match squad-value ramp behavior in-game; this branch makes no
+  long-match gameplay claim.
+- [x] Add an observer/replay-only chat notification so spectators can see the
+  selected personality; live players intentionally receive no UI decoration
+  because the indicator would leak opponent strategy.
+- [ ] Consider personality-specific base-builder behavior without duplicating
+  the full base-builder configuration.
+
+## AI UNIT COMPOSITIONS (2026-08-24)
+
+- [~] Port the opt-in unit-composition mechanism and two TD pilot compositions;
+  extend the pilot to other universes and factions as a follow-up.
+
+## AI ARCHITECTURE (2026-08-31)
+
+Design: [`AI_ARCHITECTURE.md`](AI_ARCHITECTURE.md). Nothing here is implemented; the
+design document is the deliverable so far. Ordered so each item is independently
+verifiable.
+
+- [x] Measure how ContentPack `ai.yaml` merges with the global AI file
+  (add-only, packs load first, removal is a load-time crash).
+- [ ] **S** Migrate one pack's `UnitsToBuild` rows out of `ai/ai.yaml` into
+  `ContentPacks/TiberianDawn/GDI/yaml/ai.yaml`, gated on a byte-identical
+  `--resolved-rules Player` dump. Mechanical once the first one works.
+- [ ] **M** Repeat per pack, then per dictionary (`UnitLimits`,
+  `BuildingFractions`).
+- [ ] **S** Personality-specific compositions via condition-gated
+  `ProvidesPrerequisite` tokens plus group tokens for OR - zero C#.
+- [ ] **M** Guerrilla as the sixth personality (many small simultaneous raids).
+- [ ] **M** `MasterAiBotModule`: fogged per-enemy signals, main-target scoring,
+  personality choice. Switches travel as a `SetBotPersonality` order resolved by
+  a synced controller trait, because bot logic may not touch synced state.
+- [ ] **M** Per-enemy pairwise damage ledger (`PlayerStatistics` is aggregate and
+  cannot attribute losses to a specific opponent).
+- [ ] **M** JSONL match logging: match / decision / outcome records, the episode
+  as the unit of learning. Record-only, no behaviour change - this is the
+  proof-of-concept deliverable.
+- [ ] **M** Offline aggregation tool: personality and composition performance per
+  faction matchup, with a minimum sample threshold.
+- [ ] **L** Bandit-style (UCB1/Thompson) personality priors per matchup, fitted
+  offline and committed as reviewed data.
+- [ ] **L** Headless AI-vs-AI batch harness to produce the data volume.
+- [ ] **DEFERRED** Anything neural - blocked on factions and balance being
+  finished, per the maintainer's own sequencing.
+- [ ] **OPEN DESIGN** Fogged bot observation. Bots currently scan `World.Actors`
+  and filter only cloak, never shroud, so they know the whole map from tick zero.
+  This is the only real cheat left (difficulty is `BotLimits` throttling, not
+  resources), and fixing it will make bots temporarily weaker and requires a
+  scouting module. Maintainer's call - see AI_ARCHITECTURE.md section 9,
+  decision 1.
+
+**Rule zero: crashes and player-visible regressions ALWAYS jump the queue.** Ordering inside a
+section: quickest wins first, then by severity. Effort: **S** < 1 h · **M** = one session ·
+**L** = multi-session. Every completed item carries its commit hash; every new order lands here
+first. Faction reference: [`FACTIONS.md`](../FACTIONS.md).
+
+> ⚠ **Commit hashes are not resolvable in a shallow clone.** Cloud/CI checkouts of this repo are
+> shallow (`git log` starts 2026-08-10), so `git show <older-hash>` fails there. Run
+> `git fetch --unshallow` first, or verify the claim against the artifact instead — which is the
+> better habit anyway.
+
+> **Multi-agent repo — one owner per file-set.** Committing into this tree, by git author:
+> **AedisToru** (maintainer; also lands most agent work under the shared repo identity),
+> **Blackrobe** (co-maintainer), **Elpollo315**, **Zan Yewang**, and **Devin AI**. The commit
+> TRAILER, not the author line, records which agent wrote a change (CLAUDE.md rule 10).
+> Always `git add <files>` scoped, never `-A`. Check a file's mtime and `git log -3 <file>`
+> for a live agent before editing, and re-verify others' commits before building on them.
+
+**Closed July → early-August items** were lifted out of this file on 2026-08-23 and live in
+[`docs/history/ROADMAP_ARCHIVE_2026-07.md`](../history/ROADMAP_ARCHIVE_2026-07.md). Nothing with
+an open checkbox was moved.
 
 ---
 
-## ⭐ START HERE — [`BALANCE_PROGRAM_PLAN.md`](BALANCE_PROGRAM_PLAN.md) (2026-08-11)
+## ⭐ START HERE — [`BALANCE_PROGRAM_PLAN.md`](BALANCE_PROGRAM_PLAN.md)
 
 **The balance program's board, ownership and acceptance criteria live in ONE file:
-[`docs/design/BALANCE_PROGRAM_PLAN.md`](BALANCE_PROGRAM_PLAN.md).** Work items W1–W12,
-one `VERIFY` command each, file-set ownership so two agents can run in parallel, and the
-universal commit gate. Any agent resuming after a compaction reads §0 of that file first.
-Do not duplicate its status here — this ROADMAP links to it on purpose.
+[`docs/design/BALANCE_PROGRAM_PLAN.md`](BALANCE_PROGRAM_PLAN.md).** Work items W1–W26, one
+`VERIFY` command each, file-set ownership so two agents can run in parallel, and the universal
+commit gate. Any agent resuming after a compaction reads §0 and §0a of that file first.
+**Do not duplicate its status here** — this ROADMAP links to it on purpose, and a status
+copied into two files is how they start disagreeing.
 
-Current: **W1 ✅ done** (K coefficient + target model, `f8421d345`) · **W2 ⬜ ready, owner
-Devin** (`^LightFlameWeapon` → 3-way split + `^Warhead_Inferno_*`) · **W3–W5 ⬜ ready,
-owner Claude** (ledger split, retire weapon-class K, the five missing metrics).
+The current front is **W24** (one damage warhead per weapon) → **W23** (retrofit the 47 legacy
+templates) → **A5** → class anchors. §0a of that file is the binding order; it is why pricing
+is deliberately NOT running yet.
+
+## ⭐ PHYSICAL STATES — dilution, Magnetism, and the IFV problem (2026-08-22)
+
+Maintainer: *"we need to rework all units that can only apply physical states from one weapon"*
+and *"the IFV kind of things need their own logic so you should skip them"*.
+
+### 1. METER DILUTION — 34 actors — **now guarded: `audit_meter_dilution.py` (ratchet 34)**
+
+The meter fills from ONE weapon's damage but the target dies to the actor's WHOLE output, so the
+effect lands far later than the per-weapon `fill_ratio` says. `physical_state_price.fill_ratio` has
+a `fed_share` term for exactly this, but it works WITHIN a weapon and stops at the weapon boundary;
+the actor level is not modelled at all.
+
+⛔ **The number was 58 here and it was wrong — twice over, in opposite directions.** The measure
+now lives in a committed audit instead of a scratchpad script, because both errors were invisible
+in the output:
+
+  1. counting EVERY `Armament` gave 170 and put every RA2 IFV at 10.92x — an IFV's 42 armaments
+     are each gated on a distinct `ifv-<passenger>` condition, so exactly ONE ever fires.
+  2. dividing meter-feeding damage by the actor's total gave 81 and scored `cobra.steel` at 5.20x
+     on a ONE-gun loadout. That formula DOUBLE-COUNTS: `fed_share` already prices the dilution
+     inside the state weapon. The factor the pricing cannot see is only the OTHER guns' damage,
+     `actor_total / carrier_total`.
+
+**34 actors** fire a state weapon alongside unconditional non-state weapons:
+
+| actor | guns | with state | state guns' share | dilution |
+|---|--:|--:|--:|--:|
+| `japan_exorcistoitank` | 5 | 3 | 6.2% | **16.12x** |
+| `cabal_hunterdronecarrier` | 3 | 1 | 10.4% | **9.60x** |
+| `ra1_allies_destroyer` | 2 | 1 | 14.5% | **6.89x** |
+| `cabal_manticore` / `_backup` | 2 | 1 | 18.7% | **5.35x** |
+| `ra1_allies_sheridanassaulttank` | 3 | 1 | 44.4% | **2.25x** |
+
+Distribution: 10 above 3x, 3 at 2-3x, 11 at 1.5-2x, 10 below 1.5x. `EDEN_LYNX_EMP`/`EDEN_TIGER_EMP`
+are NOT on the list — both their guns carry the state, so there is nothing to dilute.
+
+⚠ **`SheridanMissilesCryo`'s extreme Scale is a COMPENSATION for this, not an outlier.** The
+Sheridan fires Cannon + Vulcan + (Missiles XOR MissilesCryo); the cryo half is 44.4% of output, so
+the true ratio is 0.378, not the 0.168 the pricing sees — it is **OVER-charged 1.41x**.
+
+**MAINTAINER'S FIX (preferred): make every weapon on a state unit apply the state** — cryo cannon,
+cryo bullet, cryo rocket. Dilution becomes 1.0 by construction, no per-weapon compensation is
+needed, and `Scale 100` means the same thing everywhere. Strictly better than teaching the pricing
+to model actor-level dilution, because it removes the problem instead of measuring it.
+
+### 2. ⛔ DEFERRED — the IFV class needs its own logic
+
+`ra2_allies_ifv` and friends carry **42 armaments**, each gated on a distinct `ifv-<passenger>`
+condition, so exactly ONE fires at a time. They are NOT diluted and must never be counted as such
+— a first measurement did exactly that and reported 10.92x for every IFV variant. Any
+per-armament analysis has to collapse condition-gated variants first. Deferred by maintainer
+ruling; needs a variant-aware model.
+
+### 3. ✅ DONE — `^Magnefreezable` → a `Magnetism` meter
+
+The 10 `SpeedMultiplier` + 10 `WithColoredOverlay` bands became 5 meter traits, on all **739**
+actors that inherit the template (`^Vehicle`, `^RANeutralPlane`, `^ShootableMissile`). The nine
+overlapping band boundaries (`<= 20` and `>= 20` both hold at 20 → 90%×80% = **72%**, 60%×50% =
+**30%**) are now structurally impossible: `SlowsProportionalToPhysicalState` interpolates between
+two endpoints. `Burst 100 / BurstDelays 1` swept every one of those boundaries on every volley.
+
+⚠ **NOT the sole carrier** — a first pass said `yuri_magnetron` only. `AAHyperionMagnet`
+(`asianalliance_hyperionprojector`, anti-air) grants the same condition and was converted too;
+so did `RA2MagnetAA` / `RA2MagnetAA_elite`, which RE-DECLARE the warhead type and would have
+silently kept `GrantExternalCondition` if only the base had been edited.
+
+Behaviour preserved deliberately: `RelativeToHealth: false` (the old stack counted SHOTS, so a
+scout and a superheavy were pinned by the same 100 hits), firepower and damage modifiers OFF (the
+magnetron carries `FirepowerMultiplier@MultiWeapon: 50` while not elite), and turn/turret/reload
+pinned at 100 at BOTH ends — the trait defaults them to 50, and omitting them would have quietly
+added three effects the magnetron never had.
+
+⚠ **The full lock is still nearly unreachable, and that is unchanged, not introduced.** 100 shots
+fill the bar; `physical_state_price` puts the fill/kill ratio at **15.1**, so the magnetron's own
+laser kills long before `magnetfreeze` is granted. That was equally true of the 100-token stack.
+Whether the grip should complete faster is a BALANCE question for the ledger, not a conversion bug.
+
+### 4. More axes to convert
+
+Documented in `PHYSICAL_STATE_SYSTEM.md` §5 but not built: **Sonic → `Resonance`** (W7, needs no
+new C#), **Hex** (Magic: −firepower/−accuracy/disable specials), **ArmorBreach**, **Knockback**
+(needs new C#). Only **Temperature** (98.6% exposure) and **Corrosion** (45.0%) exist today.
+
+## ✅ RULED — the "broken ladders" were never broken (2026-08-23)
+
+Superseded the `⛔ BROKEN LADDERS` section that stood here and had been re-reported as an open
+maintainer question for days. **`audit_level_ladder` is retired.** It required a family's
+EFFECTIVE damage to rise Light -> Medium -> Heavy -> Super, and no law ever said so:
+
+* **DESIGN §12.0d** makes the LEVEL a TILT — which armor the weapon is good against — not a
+  magnitude.
+* **DESIGN §12.0h** makes `Damage` a separate, free knob, and normalises every profile to MEAN 100
+  precisely so the tilt costs nothing.
+* Structurally decisive: **145 of the `^Warhead_*` templates carry only a placeholder
+  `Damage: 2000`.** The template holds the SHAPE, the weapon holds the MAGNITUDE. A family's damage
+  ladder is emergent from per-weapon values, and collapsing the levels into a continuous `h` never
+  touches a damage number.
+
+So nine families sat in a standing WARN against a rule that did not exist, and it was listed as
+blocker #1 of `WEAPON_HEAVINESS.md` §9.6 — blocking the bell for no reason.
+
+> **Maintainer, 2026-08-23**, restating the model in their own words: *"the weapon family should be
+> the most important and the heaviness level should only nudge it a little … a low level CannonAP
+> will lean stronger towards lighter armor types but still deal more damage to heavy armor … Flame
+> weapons will be the opposite … but still more damage to light, because that's their identity."*
+
+That is §12.0d's sharpen-or-flatten sentence, and it is now **DESIGN §12.0i**, COMPLETE as of
+2026-08-24: one global 13-slot armor axis 0..2 (every ladder centred on 1.000, one deliberate
+three-way tie at 1.0), `mu = (h + centre_of_mass) / 2`, `LO` 0.667 (swing 1.50x = 1/`TILT_RATIO`),
+`sigma` 0.75, and **heaviness has no price effect** (`Versus` = WHAT, `Damage` = HOW). The
+2026-08-23 constants (`SHIFT` 0.25, `LO` 0.80, three buckets) are all retired — the axis twice, and
+`SHIFT` entirely.
+
+**Replaced by `tools/audit/audit_heaviness_bell.py`**, which simulates the bell before it exists so
+§9.6 step 6 has its test waiting. Measured across 48 families, checking each ladder's FULL rank
+order: **0 orderings changed, 0 mean drift**, and 2 families with no gradient (`Sonic`, `Magic` —
+down from the 6 §9.2 predicted, since `fit_band_floor` gave `Cryo`/`Railgun`/`Waveforce`/`Storm`
+real gradients).
+
+⛔ **An earlier version of this section recorded two permanent "known inversions" and a gap in
+§9.4 that called for authoring new gradients. Both are RETRACTED.** They were artifacts of the
+audit skipping §12.0d's rank restore — the tilt is applied to the VALUES and each armor is then
+given back the RANK it held. Without that step the bell reorders ladders in **127** cases across 60
+family/ladder pairs; with it, **zero**. Nothing needs authoring.
+
+⛔ **The x-axis is NOT settled.** The maintainer wants every armor to carry its OWN unique
+continuous value; the interim per-ladder form is unique within a ladder but collides across them.
+Recorded as an explicit OPEN block in DESIGN §12.0i — think it through before changing anything.
+
+⭐ **The bell is unblocked.** §9.6's blockers 1 and 2 are both gone — blocker 2 (every family in the
+spread band) was already finished on 2026-08-22 and the document had not noticed
+(`audit_versus_profile`: 46 in band, `SPREAD_OFFENDERS_BASELINE = 0`). Next action is §9.6 step 5:
+implement the family-anchored bell in `AreaDamageWarhead`, **inert at h=1**, and prove the resolved
+profiles are byte-identical before any weapon sets a different `h`.
+
+## ✅ RULED AND SHIPPED — the Cryo families are adopted (2026-08-23, `a9f31258a`)
+
+Superseded the "OPEN DECISION" that stood here. The maintainer ruled a **fourth** shape, better
+than the three that had been costed:
+
+> *"their regular weapons are upgraded into cryo versions: MissileAP and MissileHE become
+> MissileCryo warheads and the Missile Projectile changes into the Missile Cryo projectile with
+> the cryo trails and the Missile effect changes into the cryo explosion effect. The apply
+> physical state is removed and the cryo physical state is applied directly from the warhead …
+> This is the same for bullets, cannons, missiles, bombs, etc. — a GLOBAL change for all the RA1
+> Allies weapons, not only those that already have it … even the snipers have cryo, everything
+> else should too (except those that don't deal any damage, or heal, or repair)."*
+> — and: *"both Demolition and Concussion become CryoBlast, because CryoBlast is
+> Demolition × Concussion × Cryo."*
+
+That is neither ADD nor FOLD: the cryo weapon is a SEPARATE weapon on a **condition-gated
+armament slot**, so the upgrade SWAPS the armament instead of layering a warhead. No main warhead
+is added to any weapon, so the `three_way_split` ratchet does not move — the objection that
+disqualified the ADD shape never applies.
+
+**Shipped by `a9f31258a`:** **14** new `*Cryo` weapon definitions and **21** new armament slots,
+a delivery-agnostic `^Effect_Cryo` template (cryo impact with no `Projectile` and no
+`ApplyPhysicalState`), and a `FlakCryo` family in `gen_weapon_template.py`. Tree-wide totals are
+now 27 cryo weapons on 39 slots across 12 files — **37 of the 39 are condition-gated**; the two
+that are not are FutureTech's Cryocopter and cryo turret, which are cryo by identity rather than
+by upgrade and were never in this ruling's scope. The conversion map:
+
+| non-cryo | becomes |
+|---|---|
+| `Bullet`, `Sniper` | `BulletCryo` |
+| `CannonAP`, `CannonHE` | `CannonCryo` |
+| `MissileAP`, `MissileHE` | `MissileCryo` |
+| `Demolition`, `Concussion` | `CryoBlast` |
+| `Flak` | `FlakCryo` |
+| `Flame` | *dropped* — fire and cryo cancel; `ParaBombCryo` is `CryoBlast_Heavy` alone |
+
+Adoption today: `BulletCryo` 8 weapons, `CryoBlast` 6, `CannonCryo` 5, `MissileCryo` 3,
+`FlakCryo` 1. (Was 0 for every family when this section said "OPEN".)
+
+### The remainder — 4 weapons, blocked on their PARENTS, not on cryo
+
+`CryoReconRangerRecoillessGun`, `APTuskCryo`, `ChronoTuskCryo` and `155mmCryo`
+(`ContentPacks/RedAlert/Allies/yaml/weapons.yaml`) still run the legacy
+`^CryoMissileProjectile` + `Warhead@PhysicalStateCryo: ApplyPhysicalState` path. Each is a thin
+child whose parent is a legacy MULTI-MAIN weapon — `APTusk` resolves **4** mains
+(`^TankDestroyerCannon` + `^Grenade` + `^FlakWeapon` + `^MediumMissile`), `ChronoTusk` **5**. A
+cryo child cannot be pointed at one `^Warhead_*Cryo` template until its parent has been reduced
+to one main warhead, so these are **W24 work on the parents**, not cryo work. Converting them
+also needs warhead permission (hard rule 4).
+
+⚠ The other `PhysicalStateCryo` sites are NOT this backlog and must not be swept in:
+`RedAlert/Shared` (13) is the `^CryoMissileProjectile` template itself plus a deliberate
+hand-built 12-ring cryo falloff on a bomb; `RedAlert2Mod/FutureTech` (11) and `StarCraft/Protoss`
+(6) belong to other factions and were never in the ruling's scope, which was RA1 Allies.
+
+## ⭐ FROM THE DISCORD PLAYTEST THREAD (2026-08-22)
+
+### 1. TS Nod tick tank — the complaint is real, the diagnosis pointed at the wrong upgrade
+
+Destined: *"They are supposed to be aggravatingly tanky once deployed … They shouldn't be good
+against infantry, at least not until t3 upgrade."* Plus: *"it's crazy that in this mod they
+become hard to counter at radar upgrade instead of tech center upgrade."*
+
+⛔ **Tiberium Lenses is ALREADY at T3.** Measured: `~ts_nod_techcenter`, cost 10,000 — exactly
+where Shattered Paradise has it. The T2 upgrade doing the damage is a different one:
+
+| upgrade | tier | cost | what it adds |
+|---|---|--:|---|
+| **Auxiliary Weapon** | **T2 `~ts_nod_radar`** | 4,000 | `TS25mmDep` — `Ground, Water, Air`, **None 200** / Flak 149 / Plate 117 |
+| Tiberium Lenses | T3 `~ts_nod_techcenter` | 10,000 | swaps to lasers |
+
+So the **Auxiliary Weapon** is both the anti-infantry AND the anti-air spike, at T2. Without it
+the tick tank has **no anti-air at all** and its cannon is `Ground, Water` only. And the T3 laser
+is a NERF, not a spike: `TSLaser25mmDep` drops None 200 → 80 and Heavy 49 → 45.
+
+**Levers, with collateral measured:**
+
+| lever | collateral |
+|---|---|
+| drop `Air` from `TS25mmDep` `ValidTargets` | none — per weapon |
+| move Auxiliary Weapon T2 → T3 | none — per upgrade |
+| cannon `^Warhead_CannonHE_Medium` → `^Warhead_CannonAP_Medium` | **1** other inherit site |
+| lower the anti-infantry Versus directly | ⛔ not viable — Flak_Medium is 32 weapons, CannonHE_Medium is 73, and Versus lives only in templates |
+
+⭐ The cannon swap is the precise answer to *"only good against tanks/buildings"*:
+None **0.51x**, Wood 0.69x, Scout 0.78x — but Heavy **1.27x**, Concrete **1.72x**,
+Superheavy **1.91x**. `CannonAP_Medium` has only ONE inherit site today, so adoption is cheap.
+
+⚠ 333ggg wants a dedicated TS Nod anti-air unit; removing the tick tank's AA is gated on that.
+
+### 2. "Very tanky" via an armour BAR — supported, and it is the R1 law
+
+Maintainer: *"give them an additional armor plating when deployed (armor bar shows up so they
+need to destroy the armor bar first) … will that cause any problems?"*
+
+`OpenRA.Mods.Cameo/Traits/ArmorPlating.cs` is exactly this and its own [Desc] states the rule:
+*"Every 'this unit is tougher now' effect in Cameo is meant to be one of these … toughness is a
+visible bar rather than an invisible DamageMultiplier."* It is a `PausableConditionalTrait`, so
+`RequiresCondition: deployed` is all it takes. Two properties fit the tick fantasy exactly:
+
+- **`RampTicks: 125`** — the pool repairs NOTHING while under fire and winds up to full rate once
+  left alone. It heals back between engagements, not during them.
+- **`BypassDamageTypes`** — damage types that pass straight THROUGH the plating to health. Point
+  it at artillery/siege types and the unit is countered by exactly what Destined says should
+  counter it, by construction rather than by tuning.
+
+⚠ Two things to get right:
+1. `MaxPercentageStrength: 50` (the default) is a pool worth 50% of max HP = **1.5x** effective
+   HP — LESS than the ×0.5 multiplier it replaces (2x). If "very tanky" is the target the pool
+   has to be bigger; the difference is that a bar is visible and priced, a multiplier was neither.
+2. Grant the plating **without** a `FullCondition` armour type. The trait's docs tell you to gate
+   the body `Armor` on `EmptyCondition` when the plating carries its own type — that is for the
+   armor-swap pattern and would fight §12.0g's deploy averaging. A pure pool has no Versus
+   interaction and composes cleanly.
+
+### 3. Spectator tabs ported from Combined Arms (request: Demeow Cat Hans) — ✅ SHIPPED AND VERIFIED
+
+Shipped: **Economy Damage** (harvesters/refineries killed and lost), **Units Produced** (count +
+value per unit type), **Build Order** (initial order with timestamps), **Team Army** and **Team
+Earnings** graphs, per-player **selected-unit value**, and CA's five-speed replay bar with MAX
+capped at the Insane timestep rather than the uncapped one. Upgrades and Promotions already
+existed. An in-game encyclopedia was raised and deferred as too large.
+
+⭐ **VERIFIED IN A LIVE REPLAY 2026-08-23** — previously this whole surface rested on boot-gating
+alone, which never draws observer chrome. It has now been exercised for real:
+
+| what | result |
+|---|---|
+| all 17 stats dropdown options constructed + `DisplayStats` run, with real players | no exception |
+| `Earnings` / `Army` / `Team Army` / `Team Earnings` graphs left **visible and drawing** 45 s each | no exception |
+| selected-unit value forced to a **2-owner** selection so the per-player grouping path runs | no exception |
+
+⭐ **HOW TO TEST OBSERVER UI WITHOUT PLAYING A GAME** — this is the reusable part. The main menu
+never loads observer chrome, but the engine will drive straight into a replay:
+
+    engine\bin\OpenRA.exe Game.Mod=cameo Engine.EngineDir=".." ^
+        Engine.ModSearchPaths="<repo>\mods,./mods" ^
+        Launch.Replay="%APPDATA%\OpenRA\Replays\cameo\{DEV_VERSION}\<file>.orarep" ^
+        Launch.AllowIncompatibleReplay=true
+
+(`LaunchArguments.cs` → `BlankLoadScreen.cs`; `AllowIncompatibleReplay` skips the version prompt,
+which matters because the replays predate the current rules.) **147 cameo replays already exist**
+in that folder, newest 2026-08-19. ⚠ Do NOT invoke `launch-game.cmd` for this — it wraps `"%*"`
+in one pair of quotes and collapses the arguments into a single token.
+
+`CameoObserverStatsLogic` selects `statsDropDownOptions[1]` (Minimal) at load, so a plain replay
+run draws exactly one panel. To exercise the rest, temporarily loop `OnClick()` over every option
+in the constructor and rest on the index you want drawn — the sweep proves construction and
+`DisplayStats`, resting on an index proves `Draw`. Revert the harness before committing.
+
+⭐ **`ScrollableLineGraphWidget` ported 2026-08-23** — all four graphs now use it. Stock
+`LineGraphWidget` divides the panel width by the sample count, so a long game squeezes every sample
+into a couple of pixels and the graph stops being readable exactly when it gets interesting. The
+scrollable one keeps the x step FIXED (`XAxisSize` samples visible) and scrolls instead,
+auto-following the right edge until the viewer scrolls away from it. All four verified drawing in
+the same replay. That closes the CA observer widget set — Cameo now has every one of them.
+
+**Still unexercised:** the replay-speed buttons, the stats hotkeys and the new graph scrollbar are
+only reachable by a real click or keypress, which the replay harness cannot synthesise.
+
+### 4. Deploy-abuse bugs (reporter: ws) — UNVERIFIED, needs reproduction
+
+- redeploying a **nexus** appears to refill its shield — a free full shield on demand.
+- **hatcheries** appear to lose their upgrades when redeployed.
+
+Both are `GrantConditionOnDeploy` state-reset bugs; neither has been reproduced against the tree
+yet, so they are reports, not findings.
+
+## ⭐ NEXT MAJOR — continuous weapon heaviness — see [`WEAPON_HEAVINESS.md`](WEAPON_HEAVINESS.md) (2026-08-22)
+
+Resolves the 3-way-split vs between-tier-mix collision: ONE warhead template per family plus a
+continuous `Heaviness` scalar, instead of a discrete level ladder. Measured: a level is already a
+pure transform (`Versus = base + offset(h)`, offset 0/+4/+9, plating 0, Shield 2x; `Spread` ramps
+1 : 1.5 : 2) on 39 of 40 families. Collapses ~600 future templates to ~100 and fixes the 33
+between-tier weapons that currently out-damage the tier ABOVE them.
+
+⛔ **CORRECTED 2026-08-22 — MOST OF THIS WAS ALREADY LAW AND ALREADY SHIPPED.**
+
+`DESIGN.md` §12.0h (THE MEAN-100 LAW), §12.0c (THE SHIELD LADDER) and §12.0d (THE CLASS TILT)
+already rule this design, and all three are live in `gen_weapon_template.py` (`mean_normalise`,
+`class_tilt`, `TILT_RATIO 1.5`, `MEAN_TARGET 100`). §12.0d IS the bell curve, and it already
+solves inversion: the tilt is applied to the VALUES and each armor is then given back the RANK it
+held, so it *"can never invert"*.
+
+The blockers previously listed here were measured with a broken hand parser that read
+`PercentageVersus` instead of `Versus` — see the correction banner in
+`WEAPON_HEAVINESS.md`. Re-measured through the resolver:
+
+| previously claimed | truth |
+|---|---|
+| 0 of 125 obey MEAN-100 | **123 of 125** (the 2 are HAND_TUNED) |
+| every family breaks the 2x-8x band | **39 of 42 in band**, median 4.17x vs a 4x target |
+| a Heavy weapon self-prices at ~2x a Light one | Heavy/Light weighted-mean Versus is **1.00x** — tier does NOT price through Versus, exactly as §12.0h intends |
+
+**What is genuinely still open:**
+
+1. Make the class tilt **CONTINUOUS** — driven by `h` from `tier_chain` (already computed and
+   stored per actor) instead of four discrete levels. This is the whole remaining idea.
+2. Collapse the level templates to **one per family + a per-weapon `h`**.
+3. ✅ CLEARED — the 4 orientation flips were **one real flip** (`Cryo`) plus 3 false positives from
+   comparing `None` (INF ladder) against `Superheavy` (VEH); §12.0d only orders WITHIN a ladder.
+   `Cryo` flipped because its blend tiebreak was decided per LEVEL on a one-point margin — the
+   tiebreak is now family-wide (`1af72a3c1`). `audit_versus_profile.py` ratchet **0**.
+4. ✅ CLEARED — `CannonAP` 1.81x and `Cryo` 1.97x were too flat because the 2x band floor lived
+   inside `finish_blend()` (blend families only) and ran BEFORE `class_tilt` reshaped the profile.
+   It is now applied to every family, after the tilt (`edd1c4597`). Ratchet **0**.
+5. ✅ CLEARED — the "broken DAMAGE ladders" were never a defect. `audit_level_ladder.py` is
+   retired: it enforced a damage-monotonic rule no law states, while §12.0d makes the level a
+   TILT and the templates carry only a placeholder `Damage: 2000`. Replaced by
+   `audit_heaviness_bell.py`; see the RULED section above.
 
 ## ▶ ACTIVE — CAMEO CONTENT INSTALLER
 
@@ -80,7 +492,7 @@ removal (`43df39235`); 5 earlier templates + buff-strip (`090d3d997`).
   `^CommandoCall`/`^CommandoCallable` untouched) and the mark baked into all three
   `^Warhead_Sonic_*` levels by `gen_weapon_template.py` (`FAMILY_CONDITION` → a zero-damage
   `Warhead@<tag>_Debuff: GrantExternalCondition`; `Duration = 2 × ReloadDelay` = 50 ticks,
-  `Range = 2 × Spread` = 800/1200/1600, Enemy/Neutral only). Generator drift stays 1, empty-warhead 0,
+  `Range = 2 × Spread` = 800/1200/1600, Enemy/Neutral only). `verify_generator_sync.py` reports drift = 0, empty-warhead 0,
   `audit_physical_state_warheads` PASS. Boot-gated, `5a14355e6`. Spec: `PHYSICAL_STATE_SYSTEM.md` §5.
 - **[RESOLVED 2026-08-10, Devin] Upgraded Tesla weapons drained integrity at the same ratio as their
   un-upgraded base** — RA1 Tesla Doctrine (`PortaTesla_EMP`/`TTankZap_EMP`/`TTankZap2_EMP`/
@@ -133,7 +545,7 @@ removal (`43df39235`); 5 earlier templates + buff-strip (`090d3d997`).
    and docs; propose merge/generalize/delete plan. NO deletes without maintainer sign-off.
 4. **[M] New weapon templates** (AFTER vehicles) — kill warhead-mixing, **HARD LIMIT 2 inherits/weapon**
    (special >2 only if justified, bar TBD); then weapon-class pipeline + unit↔weapon binding. Maintainer
-   names them + I propose. See [[cameo-weapon-structure-rules]] + [[cameo-weapon-ordering-law]].
+   names them + I propose. See +.
    DESIGNED + SIGNED OFF 2026-08-01/02 (survives /compact via docs+memory): two-level ordering law
    (ARMOR_SYSTEM "PROFILE construction" + `cameo-weapon-ordering-law`); 4-dimensional differentiation
    model + flat/% orthogonal axis + Super tier + AoE-FF rule + CORRECTED %-warhead
@@ -165,7 +577,8 @@ removal (`43df39235`); 5 earlier templates + buff-strip (`090d3d997`).
    - ✅ **Warhead FF twins BUILT + BOOT-GATED 2026-08-02** (`956cf1ecb`) — 19 FriendlyFire twins for the
      7 AoE families (Demolition/Concussion/Flame/Chemical/Nuclear/Sonic/Melee). ExtraDamage twin (energy)
      stays per-weapon (bespoke +vs-shield). All 3 layers now exist (55 wh + 24 proj + 27 fx).
-   - **RETROFIT Phase A (SmallArms/Chaingun pilot) — IN PROGRESS 2026-08-02.** Repoint weapons to
+   - **RETROFIT Phase A (SmallArms/Chaingun pilot) — historical 2026-08-02 record; its
+     2000-grid/FirepowerMultiplier tuning rule is superseded by the current 100-grid/no-FP law.** Repoint weapons to
      `Inherits@wh + @proj + @fx`, renaming `Warhead@<Old>` keys → new key while **PRESERVING each
      weapon's existing on-grid `Damage` verbatim** (damage law = 2000-grid, all mains identical, fine-tune
      ONLY via one unconditional actor `FirepowerMultiplier` — DESIGN.md §nice-number). Handle INTERMEDIATE
@@ -235,7 +648,7 @@ removal (`43df39235`); 5 earlier templates + buff-strip (`090d3d997`).
    deemed fine/grandfathered** (116 = RA2 civ-terrain `ra2ct*`; ~83 variant/husk: `*mkii`←base,
    `ifv_*`←ifv, `E1`←minigunner, badger family, WC2 towers). NOT a must-fix — do it as its own pass
    later; resolution = inline (cross-pack/one-off) or hoist to `^Template` (same-pack). Memory:
-   [[cameo-no-actor-inheritance]]. Audit cmd in the memory. Don't stop pipeline work for it.
+. Audit cmd in the memory. Don't stop pipeline work for it.
 
 **ENGINE workflow.** ⚠ **CORRECTED 2026-08-15 — `engine/` is NOT a submodule of this repo.**
 Verified: no `.gitmodules`, no `engine/.git`, `.gitignore` lists `engine`/`engine*`, and
@@ -261,15 +674,6 @@ Precedent: `ColorPickerColorShift`, `PlayerColorShift`, and `SelectionDecoration
 Memory: `cameo-engine-submodule`.
 
 ---
-
-## 🔴 BUG — campaign maps vanish from editor + mission selector
-
-- [x] **FIXED** (`42ba6f34c`, 2026-07-27): Root cause was `LockFaction: Random`
-  (string) instead of `LockFaction: True` (boolean) in 6 map.yaml files — a
-  regression from commit `6ccb9a749`. OpenRA silently dropped maps with invalid
-  `LockFaction` values. Also fixed invalid fluent key `bot-campaign-ai.name` →
-  `CampaignAI` in delivery/deliverycoop rules.yaml and added missing
-  `bot_ai.campaign` fluent key to en.ftl.
 
 ## ❓ OPEN DESIGN — Schwarzer Mond team upgrade + faction lore pass (2026-08-15)
 
@@ -380,7 +784,7 @@ AA-gating, rock-paper-scissors) are captured in `BALANCE_SYNTHESIS.md` + `ORIGIN
 
 ## Active documentation maintenance
 
-- [x] **Documentation architecture quick wins** — owner: Cascade. Added `docs/README.md`; reduced `PROJECT_CONTEXT.md` to orientation and canonical links; kept the complete startup, evidence, incident, and commit-gate protocol in `AGENT_WORKSPACE.md`. Validation: checked links in the entry documents and ran `git diff --check`.
+- [x] **Documentation architecture quick wins** — owner: Cascade. Added `docs/README.md`; reduced `README.md` to orientation and canonical links; kept the complete startup, evidence, incident, and commit-gate protocol in `AGENT_WORKSPACE.md`. Validation: checked links in the entry documents and ran `git diff --check`.
 - [x] **Documentation architecture continuation** — owner: Cascade. De-mixed `MEGAPLAN.md` into a short rebalance index and moved the Dynamic Campaign vision into non-binding `VISION.md`; Formula V2, balance-pipeline, and ARMOR_SYSTEM remain canonical linked sources. Excludes the ROADMAP history split and Formula V2 roster-log migration. Validation: internal-link check and `git diff --check`.
 
 ## Code health program
@@ -418,8 +822,9 @@ in-game); actors + stats + structure are LOCKED. Full anchor store:
 - **SUM law** — effective damage = Σ offensive SpreadDamage warheads (excl.
   `*ExtraDamage`/`*Percentage`/`*FriendlyFire`), never MAX. Canonical reducer
   `formula.spread_damage_sum` (done: propose_class_rebalance/fit_class/update_ranges route through it).
-- **Two-stage DPS tuning** — coarse: warhead `Damage` on the 2000 grid;
-  fine: `FirepowerMultiplier@<unit>` in 1% steps (1 = ×0.01). Dispatcher must emit both.
+- **DPS tuning** — identical main-warhead `Damage` on the 100 grid, with
+  reload/range used for the remaining fit. Unconditional actor
+  `FirepowerMultiplier` is retired as a fine-tuning knob.
 - **Baseline @ band middle**; **verifier ≡ baseline on range+speed, exactly
   2×HP / 2×DPS / 2.5×cost**; same tech tier as baseline so it cancels.
 - **WC/StarCraft unit costs = multiples of 20** (power = Cost/20).
@@ -448,7 +853,7 @@ in-game); actors + stats + structure are LOCKED. Full anchor store:
   `design.class_anchor` overrides for pollutants. 257 buildable infantry classed:
   melee 41, heavy 39, rocket 35, support 34, scout 24, commando 24, SF 16,
   pure_sniper 16, grenadier 10, flying 7, closecombat 4, heavy_sniper 2. See
-  `docs/balance/membership_review.md`. Reclassified: engineers/medics/spies/
+  `docs/history/balance/membership_review.md`. Reclassified: engineers/medics/spies/
   casters→support; dogs→melee; dragunov+virus→heavy_sniper; futuretech droids
   (shotgun→closecombat, cannon→heavy, missile→rocket, scout→scout, repair→support);
   zerg_ultralisk/wc2 knight+ogre→melee (were on the tank template); marauder→heavy.
@@ -466,12 +871,12 @@ in-game); actors + stats + structure are LOCKED. Full anchor store:
   `tier_multiplier` to the derived sidecar. Manual `design.tech_tier` values are
   preserved as overrides.
 - [ ] Build `tools/balance/rebalance_classes.py` dispatcher: SUM price →
-  2000-grid warheads → 1%-step FP-mult → range-solve to band (mult-of-10) →
+  100-grid warheads → range-solve to band (mult-of-10) →
   uniqueness within broad TYPE → Δ (goal ≤1). Consolidates the scout/
   closecombat/SF one-offs (LESSONS §172-176).
 - [x] **Fix uniqueness in code** (done 2026-07-22, commit pending):
   `propose_class_rebalance.resolve_dps_uniqueness` now keys on effective
-  damage-per-shot (Σwarheads×FP); the report checks the 5 raw stats — HP, Speed,
+  damage-per-shot at the baseline actor state; the report checks the 5 raw stats — HP, Speed,
   Range, RAW ReloadDelay, effective-damage-per-shot — with damage-per-shot and
   reload as SEPARATE dimensions (reload dupes flagged, never auto-nudged). STILL
   TODO: apply the same 5-stat metric to the standalone uniqueness AUDIT.
@@ -633,48 +1038,6 @@ in-game); actors + stats + structure are LOCKED. Full anchor store:
   default `explosion` image where they don't exist. Restored `Image: ra2corpse`
   per corpse-spawner exception in DESIGN.md §8.
 
-### P0 — Completed (2026-07-26 session)
-
-- [x] **RA1 Soviet atomic bomb lost its directional flash**: bulk YAML lint
-  commit `d42ad53a1` deleted the `Warhead@NuclearFlash` header from active
-  `RAAtomic`, leaving its tuning fields under a removal node. Split the shared
-  weapon into `^AtomicCore` and an `Atomic` wrapper so `RAAtomic` can define the
-  approved 40-tick effect without a regex-fragile negative removal. Added an
-  active-ruleset contract audit covering RA1 `RAAtomic`, Ixian `PulseMissile`,
-  and CABAL `CabalMagicNuke`.
-
-### P0 — Completed (2026-07-24 session)
-
-- [x] **RA2 weapons migration to ContentPack** (`fix/ra2-weapons-migration`):
-  The ContentPack `RedAlert2/Shared/yaml/weapons.yaml` only had templates
-  (`^RA2*` prefixed), missing 134 weapon definitions (RA2CarrierTarget,
-  RA2BrutePunch, MigMissiles, V3Launch, etc.) that were only in
-  `mods/cameo/weapons/redalert2.yaml` (commented out in mod.yaml). Replaced
-  ContentPack weapons.yaml with full copy of redalert2.yaml and applied all
-  lint fixes from commit d42ad53a1 (NegativeRemovals, invalid fields, etc.).
-  This resolves the `RA2CarrierTarget not found` error.
-- [x] **Yuri weapons missing headers** (`fix/ra2-weapons-migration`): The lint
-  commit d42ad53a1 accidentally removed 6 weapon/warhead headers in
-  `RedAlert2/Yuri/yaml/weapons.yaml` while doing NegativeRemoval cleanup.
-  Restored: `RA2DiskSteal:`, `Warhead@Cloud: SpawnSmokeParticle` (RA2Chemspray),
-  `Warhead@MediumChemicalWeaponPercentage: HealthPercentageDamage` (RA2Chemspray),
-  `Warhead@LaserWeapon: SpreadDamage` (RA2Magnet),
-  `Warhead@FlakWeapon: SpreadDamage` (RA2Virusgun2),
-  `Warhead@Smudge: LeaveSmudge` (RA2CosmonautLaser).
-  The missing `Warhead@Cloud: SpawnSmokeParticle` header caused the
-  `Sequences` field error (orphaned SpawnSmokeParticle child nodes under a
-  removal line).
-- [x] **Naxis Kübelwagen weapon encoding fix** (`fix/ra2-weapons-migration`):
-  Weapon name `NaxiWW2KÃ¼belwagenMachinegun` in Naxis weapons.yaml had
-  double-encoded UTF-8 (mojibake), causing weapon-not-found crash for
-  `naxis_kbelwagen` actor. Fixed to `NaxiWW2KübelwagenMachinegun`.
-- [x] **Missing postprocess_nuclearflash.frag shader** (prior session):
-  `NuclearFlashRenderer.cs` expects `postprocess_nuclearflash.frag` in
-  `engine/glsl/` but the file was never created. Created shader with proper
-  uniforms (LightPosition, LightRadius, LightColor, Brightness, Darkness,
-  SourceTexture). NOTE: file lives in engine/ which is .gitignored; must be
-  recreated after `make all` fetches engine. See history/AI_AGENT_HANDOFF.md.
-
 ### P0 — Completed (2026-07-14 session)
 
 - [x] **CABAL Backup Systems upgrade coverage (avatar, widow)**
@@ -779,53 +1142,6 @@ in-game); actors + stats + structure are LOCKED. Full anchor store:
   `aa_lynx→asianalliance_lynxtank`, `aa_mecha→asianalliance_pulverizermecha`,
   `aa_flam→asianalliance_asiansentryflamer`; unresolved: `aa_archer`,
   `aa_ftnk`, `steel_fedinf`, `steel_qinf`. Effort: S–M once decided.
-
-### New orders 2026-07-17 (second batch)
-
-- [x] **Umlaut transliteration** (2026-07-17): `schwarzermond_bermensch`
-  → `schwarzermond_ubermensch` (Ü was dropped instead of transliterated),
-  `ÜbermenschLaser(E)` → `UbermenschLaser(E)`, assets git-mv'd. RULE in
-  DESIGN §1: Ü→u, Ö→o, Ä→a, ß→ss in ids; display names keep umlauts.
-
-- [x] **BUG: cameo tileset palettes** — FIXED 2026-07-30: root cause was
-  that CAMEO's `terrain` and `staticterrain` palettes used `temperat.pal`
-  while all CAMEO tile templates use `Palette: ra_temperat` and all
-  bib/smudge sprites (`.tem` files) were designed for `ra_temperat.pal`.
-  The `temperat.pal` and `ra_temperat.pal` are different palette files,
-  causing color mismatches on smudges, craters, and building bibs.
-  Fix: changed both `PaletteFromFile@terrain-cameo` and
-  `PaletteFromFile@staticterrain-cameo` in `rules/palettes.yaml` from
-  `temperat.pal` to `ra_temperat.pal`. Reported by maintainer; was lost
-  from an earlier queue.
-- [x] **SM promotion grid (maintainer's design, image 2026-07-17)** —
-  3 columns x 4 ranks implemented in `SchwarzerMond/yaml/promotions.yaml`.
-  [Übermensch/Laser Tank(rpl Beetle)/Crystal Tank/Parzival] |
-  [Noid MG/Lunar Tiger(rpl Panzer)/Korruptes Biest/Dalek] |
-  [Piercer/Haunebu 3(rpl H2)/MARS(rpl Jagerline)/Die Glocke]. Unit
-  prerequisites wired to require the matching promotion; replaced units
-  disabled when the replacement promotion is bought. Promotion-unit
-  `^PromotionUnitBuff` inheritance verified on all grid units. Boot
-  test passed (2026-07-17). FINAL layout re-chained 2026-07-17 after
-  the maintainer's decision — see P2 (RESOLVED) for the binding grid;
-  do not rearrange promotions.yaml except through a new design order.
-- [x] **cabal_plasmaturret not buildable** — root cause: no sequence/
-  icon defined for `cabal_plasmaturret`. Added sequence in `ContentPacks/
-  TiberianSun/CABAL/yaml/sequences.yaml` and voxel turret mapping in
-  `sequences/voxels.yaml`, using TS Nod laser turret assets as placeholder
-  (2026-07-17). Boot test passed.
-- [x] **cabal_mobilestealthgenerator removed** — CABAL should not have
-  it (design 2026-07-17); actor + AI references deleted.
-- [x] **RA1 LEGACY-ID RENAME** — DONE 2026-07-17 (`fdd466494`): all 52
-  legacy ids renamed via tools/rename/apply_ra1_legacy.py +
-  rename_map_ra1_legacy.yaml; zerofighter collision resolved as
-  japan_zerofighter_slave; registry 3910/2365, zero old ids, boot green.
-  Follow-up fix same day: explicit `actor_<oldid>.description/.name`
-  refs in yaml (13) broke when ftl keys renamed — applicator now has a
-  fluent-stem pass; warcraft2_en.ftl + tkm_en.ftl were never registered
-  in mod.yaml FluentMessages (added). audit_fluent: 0 unresolved.
-- [x] **Stale copy cleanup** — DONE 2026-07-17 (`fdd466494`):
-  rules/weapons/sequences redalert.yaml + dead RedAlert wrapper
-  content.yaml/ai.yaml deleted.
 
 ### P0/P1 — User-reported issues (2026-07-15/17)
 
@@ -977,97 +1293,6 @@ in-game); actors + stats + structure are LOCKED. Full anchor store:
   (warhead values, weapon targeting, or unit stats). Effort: M. **Do NOT
   auto-apply — requires user approval per balance policy.**
 
-### P2 — SM promotion grid tier ladder (RESOLVED 2026-07-17 — maintainer picked the reshuffle)
-
-**FINAL LAYOUT (implemented; column convention: left = infantry, middle =
-vehicles/tanks, right = aircraft/artillery/support):**
-
-| Rank | Infantry | Vehicles | Air/Artillery/Support |
-|---|---|---|---|
-| 1 | Noid MG (T2) | Lunar Tiger (rpl Panzer, T2) | Laser Tank (rpl Beetle, T1) |
-| 2 | Übermensch (T3) | MARS (rpl Jagerline, T2) | Haunebu III (rpl H2, T3) |
-| 3 | Korruptes Biest (T3) | Crystal Tank (T3) | Piercer (T3) |
-| 4 | Parzival | Dalek | Die Glocke |
-
-Implemented 2026-07-17: promotions.yaml re-chained + BuildPaletteOrder
-row-major; promotion actor `..._bermensch` renamed `..._ubermensch`
-(umlaut law); `^PromotionUnitBuff` corrected to the FutureTech
-convention — EXACTLY the 12 grid units inherit it (was also on 10 base
-units incl. all 4 replaced ones: Lunar Soldier/Rocket, Laser Beetle,
-Lunar Panzer, Jagerline, Haunebu II, Neo Jagdpanzer, Lunar Grille,
-Gravity Core Tank, Black Bomb — an unintended faction-wide buff).
-Follow-up: fluent-ify the 12 promotion tooltips (raw strings), part of
-the SM rebalance pass below.
-
-<details><summary>Decision record (superseded analysis)</summary>
-
-#### Original analysis — kept for the record
-
-**Maintainer input (2026-07-17):** MARS is an AA artillery unit (ground +
-air, long range); Laser Beetle and Laser Tank are AA too, so MARS replacing
-Jagerline is fine — the earlier "loses mobile AA" concern is WITHDRAWN.
-Binding principle: promotion rank should ladder with tech tier. Open
-dilemma: Übermensch is T3 yet sits at rank 1; making it a base unit leaves
-an empty cell; SM also feels thin on early-game units.
-
-**Implemented state:** the grid exists in `SchwarzerMond/yaml/promotions.yaml`
-with CABAL-pattern gating already in place (the promotion gates the option;
-units keep their tech prereqs — e.g. Dalek needs warfactory + techcenter +
-promotion; replaced units carry `!promotion_x`). NOTE: the implemented
-chains DEVIATE from the maintainer's image: col1 Übermensch→Crystal
-Tank→Korruptes Biest→Parzival, col2 Laser Tank→Lunar Tiger→Noid MG→Dalek,
-col3 MARS→Haunebu III→Piercer→Die Glocke (the image had Noid MG + Piercer
-at rank 1 and MARS at rank 3). Needs maintainer sign-off either way.
-
-**The structural fact:** 8 of the 12 grid units are T3 payoffs. Only Laser
-Tank (T1 replace), Noid MG, Lunar Tiger and MARS (T2) are early/mid-game.
-A strict tier-per-rank ladder is impossible with these 12 units — but a
-clean monotone ladder IS possible, because rank 2+ arrives around the T3
-tech era anyway. Only rank 1 must be early-tier.
-
-**Base roster reference (after promotion extraction):**
-T1 base: Lunar Soldier, Lunar Rocket, Engineering Armor, Laser Beetle,
-Lunar Panzer, Sturm Cannon, Laser Tower. T2 base: Jagerline, Lunar
-Grille, Space Zeppelin, Noid Harvester. T3 base: Neo Jagdpanzer,
-Gravity Core Tank, Black Bomb. (Everything else is promotion-gated.)
-
-**Option 1 — RESHUFFLE (recommended; zero balance impact — only
-promotions.yaml chains + BuildPaletteOrder change, unit files untouched):**
-
-| Rank | Vehicles | Infantry & walkers | Armor & air |
-|---|---|---|---|
-| 1 | Laser Tank (rpl Beetle, T1) | Noid MG (T2) | Lunar Tiger (rpl Panzer, T2) |
-| 2 | MARS (rpl Jagerline, T2) | Übermensch (T3) | Haunebu III (rpl H2, T3) |
-| 3 | Crystal Tank (T3) | Korruptes Biest (T3) | Piercer (T3) |
-| 4 | Dalek (capstone) | Parzival (capstone) | Die Glocke (capstone) |
-
-Ladder: rank 1 = T1/T2, rank 2 = T2/T3, rank 3 = T3, rank 4 = buildlimit-1
-capstones. Replacements (straight upgrades) all land in ranks 1–2, pure
-unlocks in ranks 2–4. Übermensch keeps its promotion prestige at rank 2,
-matching its techcenter timing.
-
-**Option 2 — Übermensch to base roster, swap in an existing T3 base unit**
-(if the flagship must always be visible): Übermensch becomes a regular T3
-buildable; its cell is filled by promoting an existing base T3 unit into
-the grid instead (candidates: Gravity Core Tank, Neo Jagdpanzer, Black
-Bomb) — no new art needed, roster depth unchanged. Then apply Option 1's
-ladder to the resulting 12.
-
-**Option 3 — early-game retier pass** (independent lever for "not enough
-early units"; sheet-first + maintainer approval since stats/prices move):
-candidates Noid MG T2→T1 (classic MG-infantry tier) and/or Lunar Grille
-earlier. Combines freely with Option 1; does NOT block it.
-
-**Rejected:** keeping the image order with pure visibility-gating (rank 1
-unlocking T3 options) — contradicts the maintainer's tier principle. New
-early-game units (old Option E) stays a separate long-term roster item.
-
-(Maintainer picked Option 1 with two switches: infantry column left,
-vehicles middle; Laser Tank ↔ Lunar Tiger swapped — Lunar Tiger is a
-line tank, Laser Tank plays as support. See the FINAL LAYOUT above.)
-
-</details>
-
 ### P0 — TKM CONTRIBUTOR PORT (ordered 2026-07-18, jumps the queue)
 
 A community contributor updated TKM (new upgrades and/or rebalance) but
@@ -1099,17 +1324,6 @@ DESIGN formulas instead of silently "fixing".
   GDI (31k HP, 63 spd, 5499 rng, BD 3, FP 24), Nod (30k HP, 66 spd,
   4609 rng, BD 2, FP 29), Allies (27k HP, 55 spd, 5500 rng, BD 4, FP 47),
   Soviets (34k HP, 54 spd, 4668 rng, BD 5, FP 42). Verified 2026-07-30.
-
-### ~~P0 — ENGINE PIN vs LOCAL ENGINE MISMATCH~~ RESOLVED 2026-07-19
-
-Commit a4b2eb8a7 (#210) bumped mod.config ENGINE_VERSION to `b89ae60`
-but the local engine/ is still `7ba39d9` and NO engine fetch/build ran
-— `launch-game.cmd` refuses to start ("Required engine files not
-found") for EVERYONE on a fresh pull until the engine is updated
-(make all / fetch b89ae60 + dotnet rebuild) or the pin is reverted.
-Owner: whoever landed #210 (their session likely has the context).
-My boot gates ran against the proven 7ba39d9 via a temporary LOCAL
-pin revert (never committed). **RESOLVED: `make.cmd all` fetched b89ae60 and rebuilt engine + all mod assemblies (0 errors); boot to menu verified on the new engine. TEAMMATES: run `make.cmd all` once after pulling if your local engine is still 7ba39d9.**
 
 ### New orders 2026-07-18 (third batch — crash + SM polish)
 
@@ -1186,7 +1400,7 @@ pin revert (never committed). **RESOLVED: `make.cmd all` fetched b89ae60 and reb
   guards on ALL perpetual systems (verified zero unguarded), `PendingSpawns`
   counter to prevent premature victory from async reinforcements, and coop
   player elimination handling. Research documented in
-  `docs/design/mission_win_lose_research.md`.
+  `docs/design/RESEARCH_NOTES.md`.
   (b) difficulty dip waves 12–15 — ADDRESSED 2026-07-27: randomized
   wave system now pads waves with cheapest unit to meet minUnits floor.
   (c) maintainer idea: waves spawn with all upgrades ("elite force") —
@@ -1244,7 +1458,7 @@ cancel the template's `DamageMultiplier@ScoutInfantryBuff: 50` with a
 local `Modifier: 100`; 16 still resolve to 50 and are therefore twice
 as durable as their price. Finishing this class means finishing that
 migration, not just setting the anchor** — W26 / FORMULA_V2.md.
-Assessment + simulation: docs/balance/formula_v2_scout.md — anchor
+Assessment + simulation: docs/balance/formula_v2_classes.md — anchor
 structure confirmed, speed 60 recommended over 50, bake endorsed;
 BLOCKED ON: (1) garrisoned/pricing armament flag in the extractor,
 (2) WeaponClass seeding for the class weapons, then bake -> anchor ->
@@ -1258,8 +1472,9 @@ ledger (32 faction files, 2025 actors, raw stats + provenance,
 deterministic, `--check` drift mode). PHASE 2 DONE 2026-07-18:
 `formula.py` (Tiger identity exact, symbolic equivalence vs the
 legacy cell formulas exact, closed-form Range solver) +
-`build_workbook.py` -> cameo_balance_v2.xlsx workbench (gitignored;
-32 faction tabs, weapon sub-rows, live formulas, locked non-input
+`build_workbook.py` -> the tracked `cameo_balance_by_faction.xlsx` and
+`cameo_balance_by_type.xlsx` workbenches (`cameo_balance_v2.xlsx` is the frozen
+pre-split prototype; 32 faction tabs, weapon sub-rows, live formulas, locked non-input
 cells, delta traffic lights). PHASES 3+4 DONE 2026-07-18 — WORKING
 PROTOTYPE: seed_design.py (437 units seeded from the legacy sheet,
 discrepancies.md: 22 cost mismatches, 581 never-priced combat units,
@@ -1272,8 +1487,8 @@ fixed point exact (0 changes on untouched ledger), live demo
 Bonus: the fixed-point test exposed and fixed a resolver cache
 poisoning bug affecting ALL audits. Next: Phase 5 Formula v2 +
 Phase 6 enforcement (balance check into run_all). yaml → per-faction JSON
-ledger (committed) → generated cameo_balance_v2.xlsx (CABAL-tab format,
-formulas live in the sheet, locked cells) → legacy-sheet comparator +
+ledger (committed) → generated faction/type workbooks (formulas live in the
+sheet, locked cells) → legacy-sheet comparator +
 discrepancy triage → gated write-back (apply_balance.py, maintainer
 order only) → drift audit in run_all so hand-edited balance numbers
 become red findings mechanically. Phases 1-3 first (extractor,
@@ -1303,121 +1518,6 @@ faction." Rules of engagement:
   Tiger, Jagerline→MARS, H2→H3), boot + audits.
 - Include: fluent-ification of the 12 promotion tooltips/descriptions
   (raw strings today) and the SM upgrades/defenses columns.
-
-### P2b — CABAL promotion grid tier-mismatch (DESIGN DECISION NEEDED)
-
-**Same problem as SM.** CABAL's 3×4 grid also has tier mismatches:
-
-| Row | Col 1 (Infantry) | Col 2 (Vehicles) | Col 3 (Aircraft) |
-|---|---|---|---|
-| 1 | Devout **T2** | Spider CNC4 **T1** | Cyborg Assassin **T2** |
-| 2 | Ascended **T2** | Heavy Reaper **T2** | Super Hunter Killer **T1** |
-| 3 | Beholder **T3** | Widow **T2** | Overkill Gunship **T1** |
-| 4 | Cyborg Commando V2 **T3** | Core Defender **T2** | Mothership **T1** |
-
-Col 3 (Aircraft) is inverted: Row 1 is T2, but Rows 2-4 are all T1 (helipad
-only). Capstones (Row 4) include T1 and T2 units alongside T3.
-
-**How FutureTech solved it:** All 12 FutureTech promotion-units are T3.
-Every unit requires high-tier buildings (`battlelab`, `hypercore`,
-`robotcontrolcenter`, `transmissioncenter`). The promotion grid only
-determines *which* T3 units you can see — the tech buildings gate the
-actual power. No tier mismatch because all units are the same tier.
-
-This works for FutureTech because it's a high-tech faction where everything
-is advanced. CABAL is more diverse — it has T1 helipad units, T2 cyborg
-factory units, and T3 techcenter units.
-
-**Solution options for CABAL:**
-
-**Option FT — Make all promotion-units T3 (FutureTech pattern)**
-- Add `cabal_techcenter` (or `cabal_core`) as a prerequisite to every
-  promotion-unit that doesn't already have it.
-- The promotion grid then just gates visibility — all units are T3 power.
-- **Pro:** Cleanest, proven pattern (FutureTech works). Zero grid
-  restructuring. Matches the CABAL pattern already in use.
-- **Con:** T1/T2 units (Overkill Gunship, Hunter Killer, Devout, etc.)
-  become T3 — delayed availability, possible balance shift. Mothership
-  and Overkill Gunship are currently early-game options; making them T3
-  changes CABAL's early game feel.
-- **Effort:** S (add prereq to ~6 units, boot test).
-
-**Option SR — Sort grid rows by tier (restructure)**
-- Row 1 → T1 units: Spider CNC4, (new T1 vehicle), Hunter Killer
-- Row 2 → T2 units: Devout, Heavy Reaper, Cyborg Assassin
-- Row 3 → T3 units: Beholder, Widow, Overkill Gunship (rebalance to T3)
-- Row 4 → Capstones: Cyborg Commando V2, Core Defender, Mothership
-- **Pro:** Clean tier ladder.
-- **Con:** Requires rebalancing several units (Overkill Gunship T1→T3,
-  Mothership T1→T3). Need a T1 vehicle for Col 2 Row 1 (or move an
-  existing unit down). Significant balance pass.
-- **Effort:** L (rebalance + grid restructure + test).
-
-**Option HY — Hybrid: tier-sort columns + CABAL gating**
-- Sort each column so tiers go T1→T2→T3→capstone within the column.
-- Keep the CABAL pattern: promotion gates visibility, tech gates power.
-- Col 1: Devout (T2) → Ascended (T2) → Beholder (T3) → Cyborg Commando V2 (T3)
-- Col 2: Spider CNC4 (T1) → Heavy Reaper (T2) → Widow (T2) → Core Defender (T2)
-- Col 3: Hunter Killer (T1) → Overkill Gunship (T1) → Cyborg Assassin (T2) → Mothership (T1)
-- **Pro:** Best tier progression within columns. Minimal unit changes.
-- **Con:** Col 3 is still mostly T1 — aircraft are inherently low-tier
-  for CABAL. Would need to rebalance aircraft to higher tiers for a
-  clean ladder, or accept that CABAL aircraft are early-game.
-- **Effort:** M (rearrange grid + minor rebalance + test).
-
-**Option KP — Keep as-is, promotion gates option (accept the mismatch)**
-- CABAL already uses the "promotion gates visibility, tech gates power"
-  pattern. The tier mismatch is acceptable because:
-  - Row 1 unlocks options you can build once you have the right building.
-  - Row 4 capstones are powerful regardless of tier (Mothership is T1
-    but requires `cabal_core` which is a late-game building).
-- **Pro:** Zero changes needed. Already works.
-- **Con:** Tier progression doesn't feel intuitive. A new player might
-  expect Row 4 to be "bigger" than Row 1 but it's not always.
-- **Effort:** S (zero).
-
-**Recommendation:** Option FT (FutureTech pattern) is the cleanest if
-we're willing to make all CABAL promotion-units require `cabal_techcenter`
-or `cabal_core`. This is the proven solution. However, it changes CABAL's
-early game by delaying T1/T2 promotion-units to T3. Option KP (keep
-as-is) is the lowest-risk if the maintainer is comfortable with the
-existing CABAL pattern where `cabal_core` already gates the capstones.
-
-**Note:** `cabal_core` (CABAL Core building) is already a high-tier
-prerequisite for Core Defender, Widow, and Mothership. It's effectively
-CABAL's T3.5 gate. If we standardize all promotion-units to require
-either `cabal_techcenter` or `cabal_core`, we get the FutureTech pattern
-without changing the feel of individual units — just their availability
-window.
-
-**Awaiting maintainer decision before implementation.**
-
----
-
-## CABAL — recently completed (this push)
-
-- [x] Confident quick fixes: missile arc, HK mk1 blue laser, Core
-  Defender offset, Mantis sound (`87a716b41`).
-- [x] Crab → **Ravager** infantry plasma line-breaker + plasma bullet
-  effect (`e4ac0ce40`, `b31113a6d`). Crab id retired.
-- [x] CABAL weapons get their own firing sounds (`1281a71f5`).
-- [x] Rocket-launcher offsets/counts + Manticore dual laser (`c4691e758`).
-- [x] Mantis + Laser Spider → AttackFrontal fire support (`cc6a290db`).
-- [x] Dissolver: cloak → corrosion (`corroded` cond) + TankDestroyer +
-  LightChemical combo + new `cabal_dissolveimpact` effect (`de25b469d`);
-  effect re-rendered to fit its frame (`45b8f0caa`).
-- [x] Eliminator 800: real `^GatlingSpeedUpUnitBehavior` spin-up (drop
-  the AmmoPool hack), single ground + Air-only twin, dune autogun muzzle
-  @3671 (`33c13a553`).
-- [x] All CABAL infantry: vehicle-style turn rate 2×Speed/5 (`f98bf8155`).
-- [x] Devin sound pass (uncommitted, verified, keep): DarkObeliskLaser /
-  CabalCommandoPlasma / Mk2 → obelcor3.aud; Reaper/TwinBazooka/rocket
-  weapons → samshot1.aud; Core Defender offset raise; magicnuke Tick tune.
-- [x] Effect-naming: CABAL authored weapons already clean. `TS90mm_bluenuke`
-  `@3Eff` is NOT a violation — it overrides `^TSCannonEffect`'s own
-  `@3Eff`. Mod-wide sweep still pending (CE).
-
----
 
 ## CABAL — new orders 2026-07-13 (the big batch)
 
@@ -1617,25 +1717,6 @@ window.
 
 ---
 
-## Dune factions (D2K) — split + naming + upgrades (P2)
-
-- [x] **Split dune Light Infantry + Rocket Trooper per faction** (neutral
-  base template → per-faction Ixian/Ordos actors) so upgrades apply
-  separately (`b180aef36`).
-- [x] **Ordos Light Infantry gets Laser Cartridges** once it's its own actor
-  (`b180aef36`).
-- [x] **Rename Ordos "Armor-Piercing Rounds" → "Rapid Fire Armor-Piercing
-  Belts"** (actor id, template, condition, sequence, icon — full rename)
-  (`b180aef36`).
-- [x] No-hyphen naming scheme across all dune factions.
-  Verified 2026-07-14: no hyphenated actor IDs, weapon IDs, or asset
-  references in any D2k ContentPack yaml. All hyphens found are
-  engine-defined conditions/sequence names (build-incomplete, damaged-idle,
-  etc.) which are engine-owned and stay as-is per DESIGN.md §1.
-- Note: 7 Ordos armor-rework files are the maintainer's live WIP — leave.
-
----
-
 ## Content-pack completion — TOP PRIORITY (ordered 2026-07-16)
 
 _User order (verbatim intent): "Move everything to the new content packs
@@ -1783,55 +1864,6 @@ types, creating a unified wall+turret defense system across the mod.
 - May need new C# traits if the existing `Replaceable`/`Replacement`
   system doesn't support all desired behaviors (e.g. conditional
   replacement based on tech level).
-
----
-
-## Barrier & Wall Assignment Refactor (2026-07-17, COMPLETED)
-
-**Goal:** Thematic and balanced barrier assignment across all factions.
-Only classic TD and RA1 factions have dual wall types (light + heavy).
-All other factions have a single, thematically appropriate wall type.
-
-### Final Barrier Assignment Map
-
-| Faction | Wall Type | Prerequisite Token |
-|---------|-----------|-------------------|
-| TD GDI | SBAG (sandbag) + BRIK (concrete) | `sandbagbarrier` + `concretebarrier` (^FACT) |
-| TD Nod | CYCL (chainlink) + BRIK (concrete) | `chainlinkfence` + `concretebarrier` (^FACT) |
-| RA1 Allies | SBAG (sandbag) + BRIK (concrete) | `sandbagbarrier` + `concretebarrier` (^RAFACT) |
-| RA1 Soviets | FENC (wire) + BRIK (concrete) | `wirefence` + `concretebarrier` (^RAFACT) |
-| RA1 Japan | CYCL (chainlink) + BRIK (concrete) | `chainlinkfence` + `concretebarrier` (^RAFACT) |
-| RA2 Allies | ra2_awall | `ra2awall` |
-| RA2 Soviets | ra2_swall | `ra2swall` |
-| RA2 Yuri | ra2_ywall | `ra2ywall` |
-| FutureTech | ra2_awall | `ra2awall` |
-| Consortium | ra2_awall | `ra2awall` |
-| Syndicate | ra2_swall | `ra2swall` |
-| Naxis | ra2_swall | `ra2swall` |
-| Schwarzer Mond | ra2_ywall | `ra2ywall` |
-| Asian Alliance | asianalliance_concretebarrier | `asianalliancebarrier` |
-| TS GDI | asianalliance_concretebarrier | `asianalliancebarrier` |
-| TS Nod | ts_nod_laserfence | `tslaserfence` |
-| CABAL | ts_nod_laserfence | `tslaserfence` |
-| Forgotten | FENC (wire) | `wirefence` |
-| TKM | FENC (wire) | `wirefence` |
-| D2k Ordos | D2k wall | `d2k_construction_yard` |
-| D2k Ixian | D2k wall | `d2k_construction_yard` |
-
-### Changes Made
-- Restored missing RA2 faction wall actors (`ra2_awall`, `ra2_swall`, `ra2_ywall`)
-  with sprites and sequences from golden reference.
-- Changed TD Nod from `wirefence` to `chainlinkfence` per maintainer request.
-- Added shared `tslaserfence` prerequisite token so both TS Nod and CABAL
-  can build the laser fence.
-- Added shared `asianalliancebarrier` prerequisite token so both Asian
-  Alliance and TS GDI can build the Asian Alliance concrete barrier.
-- Removed `ra2fact` prerequisite from FutureTech (was enabling secondary
-  `ra2brik` wall).
-- Negated inherited `ra2awall` on RA2 Soviets and Yuri so they only get
-  their own faction-specific wall.
-- Removed `concretebarrier` and `sandbagbarrier` from all non-classic
-  faction construction yards.
 
 ---
 
@@ -2046,7 +2078,7 @@ All other factions have a single, thematically appropriate wall type.
 - [x] **SM-ARTWORK: Replace copy-pasted icons** — create unique placeholder
   icons for `schwarzer_mond_mars`, `schwarzer_mond_m200bjagerline`,
   `schwarzer_mond_gravitycoretank`, and `schwarzer_mond_blackbomb`. See
-  `docs/design/schwarzer_mond_artwork_status.md` for the full status. Final
+  `docs/design/RESEARCH_NOTES.md` for the full status. Final
   production-quality cameo art can replace the placeholders later.
 
 ## Sequence Filename Standardization
@@ -2095,110 +2127,12 @@ All other factions have a single, thematically appropriate wall type.
   Effort: L (multi-session). See DESIGN.md §1 "Weapon names must include
   the full actor id as a prefix".
 
-## Faction Internal Name & Inherits Consistency
-
-- [x] **FACTION-RENAME: Rename faction internal names for consistency**
-  — DONE 2026-07-16. Renamed 11 faction InternalNames to match actor
-  prefixes, plus WC2 actor prefix rename. All YAML, Python, MD, AI files
-  and asset files updated:
-  - `gdi` → `td_gdi`, `nod` → `td_nod` (TD factions)
-  - `allies` → `ra1_allies`, `soviets` → `ra1_soviets` (RA1 factions)
-  - `ra2allies` → `ra2_allies`, `ra2soviets` → `ra2_soviets` (RA2 factions)
-  - `tsgdi` → `ts_gdi`, `tsnod` → `ts_nod` (TS factions)
-  - `consortium` → `steelconsortium`, `syndicate` → `latinsyndicate` (RA2 mod)
-  - `warcraft_humans` → `wc2_humans`, `warcraft_orcs` → `wc2_orcs` (WC2 factions + actors)
-  - `asian_alliance` → `asianalliance` (fixed underscore-in-faction-name violation)
-  - Already consistent: `schwarzermond`, `naxis`, `futuretech`, `japan`, `yuri`,
-    `forgotten`, `cabal`, `terran`, `zerg`, `protoss`, `tkm`, etc.
-  - Verified by `audit_consistency_report.py` checks C6-C11 (73 checks, 0 failures).
-  - Remaining: `.oramap` map files may need `tools/fix-oramap.ps1` update.
-  - Remaining: WC1 factions (`human` → `wc1human`, `orc` → `wc1orc`) not yet done.
-
-- [x] **INHERITS-PASCAL: Convert camelCase/snake_case inherits to PascalCase**
-  — all inherits templates converted to PascalCase per DESIGN.md §1.
-  Commit `3f5c53915` (WC2/WC1, 301 replacements/20 files): WC2 Humans
-  (`^wc2_h_*`/`^wc2_humans_*` → `^WC2Humans*`), WC2 Orcs
-  (`^wc2_o_*`/`^wc2_orcs_*` → `^WC2Orcs*`), WC2 shared (`^wc2_*` → `^WC2*`),
-  WC1 Humans (`^wc_h_*` → `^WCHumans*`). Full faction names used (no
-  single-letter abbreviations).
-  Commit `cf0e4485d` (all remaining, ~2158 replacements/126 files): RA2
-  Soviets camelCase, CABAL snake_case, Outpost 2/SOW, TKM, USA, RA1 Allies,
-  D2K, generic templates (`^wall`→`^Wall`, `^refinery`→`^Refinery`, etc.),
-  and Sidebar faction name capitalization. D2K-specific `^Refinery` renamed
-  to `^D2KRefinery` to avoid collision with base `^Refinery`. Boot-gate
-  clean (zero "Parent type not found" errors).
-
-## Starcraft Rank Decoration Fix
-
-- [x] **SC-RANKS: Split alien rank decoration per Starcraft faction**
-  — FIXED: commit `c3e3490f7` reverted the blanket `^AlienRankDecoration`,
-  commit `031c54d6b` created 3 separate decorations (`^ZergRankDecoration`
-  with `alienrank`, `^TerranRankDecoration` with `terranrank`,
-  `^ProtossRankDecoration` with `protossrank`). All use `alienranks.png`
-  as placeholder. 7 actors missing faction decorations fixed and
-  `audit_rank_decoration.py` reports 0 StarCraft issues.
-
-## Weapon Suffix Standardization
-
-- [x] **WEAPON-SUFFIX-ELITE: Migrate legacy E suffix to _elite**
-  — DONE 2026-07-30: Renamed 117 elite-gated weapons from `<base>E` to
-  `<base>_elite` across 44 files (339 lines changed) via
-  `tools/rename_elite_weapons.py`. Handles compound suffixes: `AAE`→`AA_elite`,
-  `EMPE`→`EMP_elite`, `EResonance`→`_eliteResonance` + bounce variants.
-  Skipped `MigMissiles_AA_ELITE` (already contains ELITE) and 45 doctrine
-  variants (`_rad`/`_fire`/`_tesla`), upgrade combos, and gatling spin-ups
-  that are intentionally non-standard. Boot-gated: menu reached, 0 new
-  exception logs. Audit: X1 count dropped from 112+ to 45 (intentional
-  non-standard remnants).
-  **Follow-up** (2026-07-31): Renamed 17 remaining deprecated `E`-suffix
-  weapons missed by the first pass (33 replacements across 15 files) via
-  `tools/archive/rename_elite_E_suffix.py` (one-time, archived). X4 dropped 19→2 (only `HE` =
-  High Explosive false positives remain). Boot-gated, O2=0, V3=0.
-
-- [x] **WEAPON-SUFFIX-EMP: Standardize EMP weapon names to _EMP suffix**
-  — DONE 2026-07-31: Renamed 62 EMP weapons across 44 files (179 lines
-  changed) via `tools/rename_emp_weapons.py`. Handles: EMP suffix ->
-  _EMP, mid-name EMP -> _EMP_, compound EMPAA -> _EMP_AA, EMPulse ->
-  _EMP_Pulse, ArcTeslaFragment sub-variants. Case-insensitive global
-  replacement catches Weapon:, Weapons: list entries, and Inherits:
-  references. Skipped DREMPDeviceSound (audio VoiceSet) and EMPGrenade
-  (EMP is prefix). Boot-gated: menu reached, 0 new exception logs.
-
-- [x] **WEAPON-SUFFIX-AA: Standardize anti-air weapon names to _AA suffix**
-  (2026-07-31) — per corrected DESIGN.md §1 rule: `_AA` marks the
-  air-only sibling of a **dual-weapon actor** (an actor/template that
-  equips two separate weapons via different `Armament` traits — one
-  ground-capable, one air-only — e.g. an Anti-Air Tank). Standalone
-  AA-only weapons with no ground-capable sibling on the same actor (SAM
-  Sites, etc.) are intentionally excluded, as are single weapons whose
-  own `ValidTargets` already covers both Ground and Air.
-  **Renamed 111 weapons** via `tools/rename_aa_weapons.py`
-  (structurally-scoped exact-token replacement — top-level def key,
-  `*Weapon:`/`*Weapons:` fields, indexed superweapon lists,
-  block-context-gated `Inherits:` — never a blind substring match).
-  Verified: `audit_weapon_suffixes.py` X3 = 0, `audit_orphans.py`
-  dangling weapon refs = 0, `audit_inherits.py` V3 dangling = 0, rename
-  script is idempotent (second run finds nothing to do).
-  **Bugs found/fixed during this task** (see `docs/LESSONS_LEARNED.md`):
-  an earlier draft of the rename script did a blind file-wide
-  word-boundary substitution of bare weapon names, corrupting unrelated
-  Tooltip/Name/RequiresCondition/Prerequisite text and comments across
-  ~30 files (reverted via `git reset --hard` before merge, never
-  pushed); `AA_LEGACY_KEYWORDS` including bare `"aa"` silently excluded
-  every weapon that already contained "AA" without an underscore;
-  identical names reused across actor/weapon/sequence namespaces (e.g.
-  `sow_mech_avenger`, `d2k_aircraft_eater`) required block-type gating
-  before renaming `Inherits:` or top-level definition keys; many
-  weapons declare `ValidTargets` only on a `^Template` ancestor,
-  requiring Inherits-chain resolution.
-  Effort: M. See DESIGN.md §1.
-
 ## Long-term goals
 
 - [ ] **ZERO YAML ERRORS & WARNINGS** — achieve zero errors and zero warnings
   from `utility.cmd cameo --check-yaml`. Latest report: 2026-07-24
   (check_yaml_v8.txt, ~89,392 errors, ~69,325 warnings).
-  Full phased plan in `docs/design/MEGAPLAN_YAML_CLEANUP.md`.
+  Full phased plan in `docs/history/MEGAPLAN_YAML_CLEANUP.md`.
   Analysis tool: `tools/audit/analyze_check_yaml.py`. Effort: L (multi-session).
 
   **Fixes applied this session (2026-07-24):**
@@ -2258,18 +2192,3 @@ All other factions have a single, thematically appropriate wall type.
   run it repeatedly. Keep findings above updated in this section.
 
 ---
-
-## Superweapon Documentation Audit (2026-07-25, COMPLETED)
-
-Full cross-reference of all superweapon and support power YAML traits vs
-`FACTIONS.md`. Raw data: `docs/audit/latest/superweapon_audit.yaml`.
-Summary: `docs/audit/SUMMARY.md` § "Superweapon documentation audit".
-
-**14 findings** — all FACTIONS.md discrepancies FIXED:
-- SW-001 (HIGH): Harkonnen Palace has `^PrimarySuperweapon` but no power trait (parked faction, not a regression)
-- SW-002 (MED): Forgotten superweapon corrected from "Tiberian Wildlife Rampage" to "Nuclear Missile"
-- SW-003 (MED): CABAL corrected — added Nuclear Missile, removed unimplemented "Satellite Hack"
-- SW-004–011 (LOW): Added missing support powers (Cluster Missile, Chrono Reinforcements, Force Shield, EMP Disable, Traitors, Slow, Invisibility, Bloodlust, Haste) + fixed name mismatches (Meteor Blitzkrieg, Chaos Storm)
-- SW-012–014 (INFO): Added Drop Pods, Federation Support Teleport to reference table; noted Protoss reuses SteelIonCannon
-
-**WIP factions discovered** (not in FACTIONS.md): Warzone 2100, Worms, Win98, Warcraft 1, WH40K all have superweapon traits in rules/ YAML. Document when factions become active.

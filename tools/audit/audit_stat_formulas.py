@@ -53,9 +53,10 @@ Ordos Raider (raider.ordos).
       unlock (tier counted from tech buildings only, transitively;
       production buildings and refineries never count) — the FutureTech
       Prospector Mk2 lockout class
-  F18 anti-air weapons: a weapon whose ValidTargets include Air must have at
-      least one damage warhead whose ValidTargets include Air (inherited
-      warheads resolved) — otherwise it fires at aircraft but deals nothing
+  F18 anti-air weapons: a weapon whose ValidTargets include Air must deliver
+      a positive-damage warhead, delayed payload, or cluster chain that can
+      affect Air (inherited warheads resolved) — otherwise it fires at
+      aircraft but has no gameplay payload
 
 Scope: buildable rosters of real factions. Tolerance ±1 on divisions.
 """
@@ -466,8 +467,61 @@ def promotion_tier_check(m, rows):
                              f"promotion {pname} tier {ptier} — must match"])
 
 
+def targets_air(node, *, default_all: bool = False) -> bool:
+    raw = node.get("ValidTargets")
+    if raw is None:
+        return default_all
+    return "air" in {v.strip().lower() for v in raw.split(",")}
+
+
+def positive_damage(node) -> bool:
+    if node.value == "DamagesConcrete":
+        return False
+    damage = ivalue(node, "Damage")
+    return damage is not None and damage > 0
+
+
+def is_point_defense(weapon) -> bool:
+    targets = {v.strip().lower()
+               for v in (weapon.get("ValidTargets") or "").split(",")}
+    invalid = {v.strip().lower()
+               for v in (weapon.get("InvalidTargets") or "").split(",")}
+    projectile_targets = {"missile", "ballisticmissile", "bulletas", "bulletca"}
+    excluded_units = {"infantry", "vehicle", "structure"}
+    return bool(targets & projectile_targets) and excluded_units <= invalid
+
+
+def has_air_payload(rs, weapon, seen: set[str] | None = None) -> bool:
+    """Return whether a resolved weapon delivers a gameplay payload to Air.
+
+    Delivery chains are followed because the carrier weapon can intentionally
+    use a token impact while a spawned or delayed weapon owns the real damage.
+    AttachDelayedWeapon must itself accept Air before its nested chain counts.
+    """
+    seen = set() if seen is None else seen
+    key = weapon.key.lower()
+    if key in seen:
+        return False
+    seen.add(key)
+    for child in weapon.children:
+        if not child.key.startswith("Warhead"):
+            continue
+        if positive_damage(child) and targets_air(child, default_all=True):
+            return True
+        if child.value in ("AttachDelayedWeapon", "FireCluster",
+                           "SpawnSmokeParticle"):
+            if child.value == "AttachDelayedWeapon" and not targets_air(
+                    child, default_all=True):
+                continue
+            nested_name = child.get("Weapon")
+            nested = rs.resolve_weapon(nested_name) if nested_name else None
+            if nested is not None and has_air_payload(rs, nested, set(seen)):
+                return True
+    return False
+
+
 def aa_warhead_check(m: Model, rows: dict) -> None:
-    """F18 — weapons that target Air but whose damage warheads can't hit Air."""
+    """F18 — weapons that target Air but deliver no gameplay payload to it."""
     rs = m.rs
     used_by: dict[str, set[str]] = {}
     roster_all: set[str] = set()
@@ -486,18 +540,23 @@ def aa_warhead_check(m: Model, rows: dict) -> None:
         w = rs.resolve_weapon(wname)
         if w is None:
             continue
-        if "air" not in (w.get("ValidTargets") or "").lower():
+        if not targets_air(w):
+            continue
+        # Point-defense beams carry Air alongside projectile target types, but
+        # explicitly exclude normal unit classes. Their token damage destroys
+        # intercepted projectile actors and is not an anti-air unit contract.
+        if is_point_defense(w):
             continue
         dmg_warheads = [c for c in w.children
-                        if c.key.startswith("Warhead") and "Damage" in (c.value or "")]
+                        if c.key.startswith("Warhead") and positive_damage(c)]
         if not dmg_warheads:
             continue
-        airless = [c.key for c in dmg_warheads
-                   if "air" not in (c.get("ValidTargets") or "").lower()]
-        if len(airless) == len(dmg_warheads):
+        if not has_air_payload(rs, w):
+            airless = [c.key for c in dmg_warheads
+                       if not targets_air(c, default_all=True)]
             users = ", ".join(sorted(used_by[wname])[:5])
             rows["F18"].append([wname, ", ".join(airless[:4]),
-                                f"targets Air but no damage warhead hits Air (used by {users})"])
+                                f"targets Air but no gameplay payload hits Air (used by {users})"])
 
 
 def main() -> int:
@@ -703,7 +762,7 @@ def main() -> int:
         "F15": "F15 — Light Support composition (Tier-1 only, ~2000, 5:1 inf:veh)",
         "F16": "F16 — Heavy Support composition (all tiers, ~10000, 5:1 inf:veh)",
         "F17": "F17 — fighter/bomber TurnSpeed ≠ Speed/15 (frontal: 2×)",
-        "F18": "F18 — weapons targeting Air whose damage warheads can't hit Air",
+        "F18": "F18 — weapons targeting Air whose gameplay payload can't hit Air",
         "F19": "F19 — helicopter/spaceship TurnSpeed ≠ Speed/5",
         "F20": "F20 — AA support vehicle: air range ≠ 1.5 × ground range",
         "F22": "F22 — promotion tech gate ≠ unlocked unit's tech gate",

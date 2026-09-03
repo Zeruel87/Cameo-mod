@@ -240,7 +240,7 @@ class FedDamageShare(unittest.TestCase):
         # Friendly-fire twins and Percentage warheads must be excluded on BOTH sides or the
         # share is computed against a denominator the binding census never saw.
         rs = model().rs
-        total, fed = psp.damage_split(rs, "ChemicalStealthTankMissiles")
+        total, fed = psp.damage_split(rs, "ChemRockets")
         self.assertGreater(total, 0)
         self.assertGreater(total, fed, "this weapon is the reported multi-main case")
         self.assertLess(fed / total, 0.75)

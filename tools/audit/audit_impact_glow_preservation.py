@@ -78,6 +78,11 @@ NON_EMISSIVE_EFFECT_ROOTS = {
 	"^Effect_Bullet_Light",
 	"^Effect_Bullet_Medium",
 	"^Effect_Bullet_Heavy",
+	# These templates historically had no impact glow.  The cryo effect also
+	# needs a dedicated cold-colour tier before it can glow without turning orange.
+	"^Effect_Cryo",
+	"^Effect_Demolition_Heavy_D2K_Orni",
+	"^Effect_MissileAP_Heavy_D2K_ORocket",
 	"^Effect_Sniper_Light",
 }
 
@@ -109,6 +114,10 @@ def sprite_root(
 		ruleset: Ruleset, name: str, sprite_effects: set[str], stack: tuple[str, ...] = ()) -> str:
 	if name.lower() in {item.lower() for item in stack}:
 		return name
+	# An explicitly classified descendant is a semantic effect boundary even if
+	# it inherits a broader sprite-bearing effect and removes/replaces that art.
+	if name in EMISSIVE_EFFECT_ROOTS or name in NON_EMISSIVE_EFFECT_ROOTS:
+		return name
 	parents = [parent for parent in direct_parents(ruleset, name) if parent in sprite_effects]
 	if not parents:
 		return name
@@ -122,6 +131,9 @@ def tier_path_count(
 	if key in memo:
 		return memo[key]
 	if key in {item.lower() for item in stack}:
+		return 0
+	if name in NON_EMISSIVE_EFFECT_ROOTS:
+		memo[key] = 0
 		return 0
 	total = 0
 	for parent in direct_parents(ruleset, name):

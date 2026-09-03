@@ -1,32 +1,35 @@
 M16Laser:
+	Inherits@wh: ^Warhead_Laser_Heavy
 	Inherits: ^SmallArms
 	Inherits@2: ^Chaingun
 	Inherits@3: ^LaserWeapon
+	Inherits@legacychip: ^LegacyLaserChipCompatibility
 	ValidTargets: Ground, Water, Air
 	ReloadDelay: 25
 	Range: 4983
 	Report: vpalwe2d.aud
 	Projectile: LaserZap
 		Width: 25
-	Warhead@SmallArms: SpreadDamage
-		Damage: 2000
-	Warhead@SmallArmsPercentage: HealthPercentageDamage
+	TargetActorCenter: false
+	-Warhead@SmallArms:
+	Warhead@SmallArmsPercentage: AreaDamagePercentage
 		Damage: 1
-	Warhead@Chaingun: SpreadDamage
-		Damage: 2000
-	Warhead@ChaingunPercentage: HealthPercentageDamage
+	-Warhead@Chaingun:
+	Warhead@ChaingunPercentage: AreaDamagePercentage
 		Damage: 1
-	Warhead@LaserWeapon: SpreadDamage
-		Damage: 2000
-	Warhead@LaserWeaponPercentage: HealthPercentageDamage
+	-Warhead@LaserWeapon:
+	-Warhead@LaserExtraDamage:
+	Warhead@LaserWeaponPercentage: AreaDamagePercentage
 		Damage: 1
+	Warhead@Laser_Heavy:
+		Damage: 6000
+		PercentageScale: 0
+	-Warhead@Laser_Heavy_ExtraDamage:
 
 FlamethrowerExplode:
 	Inherits: Flamethrower
 	Warhead@Flame_Light:
 		Damage: 10000
-	Warhead@Flame_Light_Percentage: AreaDamagePercentage
-		Damage: 5
 NodTurretLaser:
 	Inherits@wh: ^Warhead_Laser_Medium
 	Inherits@proj: ^Projectile_Laser_Heavy
@@ -49,8 +52,6 @@ NodTurretLaser:
 		SecondaryBeamColor: FFFFFF
 	Warhead@Laser_Medium:
 		Damage: 12000
-	Warhead@Laser_Medium_Percentage:
-		Damage: 6
 	Warhead@Laser_Medium_ExtraDamage:
 		Spread: 300
 		Damage: 600
@@ -100,9 +101,6 @@ NodTurretLaserInferno:
 		SecondaryBeamColor: FFFFFF
 	Warhead@Inferno_Medium:
 		Damage: 12000
-	Warhead@Inferno_Medium_Percentage:
-		Damage: 6
-
 NodTurretLaserBurning:
 	Inherits: NodTurretLaserInferno
 	Burst: 10
@@ -117,8 +115,6 @@ SmallTiberiumExplosion:
 	Inherits: Chemspray
 	Warhead@Chemical_Light:
 		Damage: 24000
-	Warhead@Chemical_Light_Percentage: AreaDamagePercentage
-		Damage: 12
 	Warhead@Resource: CreateResource
 		AddsResourceType: Tiberium
 		Size: 0,0
@@ -130,13 +126,12 @@ BigTiberiumExplosion:
 	Report: flamer2.aud
 	Warhead@Chemical_Heavy:
 		Damage: 50000
-	Warhead@Chemical_Heavy_Percentage: AreaDamagePercentage
-		Damage: 25
 	Warhead@Resource: CreateResource
 		AddsResourceType: Tiberium
 		Size: 1,0
 
 ArtilleryShellUpgrade:
+	Inherits@collapsewh: ^Warhead_Concussion_Heavy
 	Inherits: ^Grenade
 	Inherits@2: ^ShrapnelWeapon
 	Inherits@3: ^MediumChemicalWeapon
@@ -163,13 +158,13 @@ ArtilleryShellUpgrade:
 		Damage: 6000
 	Warhead@GrenadeFriendlyFire: SpreadDamage
 		Damage: 3000
-	Warhead@GrenadePercentage: HealthPercentageDamage
+	Warhead@GrenadePercentage: AreaDamagePercentage
 		Damage: 3
 	Warhead@ShrapnelWeapon: SpreadDamage
 		Damage: 6000
 	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
 		Damage: 3000
-	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+	Warhead@ShrapnelWeaponPercentage: AreaDamagePercentage
 		Damage: 3
 	Warhead@MediumChemicalWeapon: AreaDamage
 		ValidRelationships: Ally, Neutral, Enemy
@@ -195,13 +190,33 @@ ArtilleryShellUpgrade:
 		PhysicalStateScale: 100
 	Warhead@MediumCannon: SpreadDamage
 		Damage: 6000
-	Warhead@MediumCannonPercentage: HealthPercentageDamage
+	Warhead@MediumCannonPercentage: AreaDamagePercentage
 		Damage: 3
 	Warhead@HeavyBomb: SpreadDamage
 		Damage: 6000
-	Warhead@HeavyBombPercentage: HealthPercentageDamage
+	Warhead@HeavyBombPercentage: AreaDamagePercentage
 		Damage: 3
 	-Warhead@Effect:
+
+	-Warhead@Grenade:
+	-Warhead@GrenadeFriendlyFire:
+	-Warhead@ShrapnelWeapon:
+	-Warhead@ShrapnelWeaponFriendlyFire:
+	-Warhead@MediumChemicalWeapon:
+	-Warhead@MediumFlameWeapon:
+	-Warhead@MediumCannon:
+	-Warhead@HeavyBomb:
+	Warhead@Concussion_Heavy:
+		ValidTargets: Ground, Water
+		Damage: 30000
+		PercentageScale: 0
+	Warhead@CollapseTargetCompatibility1: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Ship
+		Damage: 6000
+		PercentageScale: 0
 
 MachineGun:
 	Inherits@wh: ^Warhead_Bullet_Light
@@ -215,9 +230,6 @@ MachineGun:
 	Report: mgun11.aud
 	Warhead@Bullet_Light:
 		Damage: 4000
-	Warhead@Bullet_Light_Percentage: HealthPercentageDamage
-		Damage: 2
-
 FireballLauncherBuggy:
 	Inherits@wh: ^Warhead_Flame_Light
 	Inherits@proj: ^Projectile_Flame_Light
@@ -234,10 +246,9 @@ FireballLauncherBuggy:
 		Palette: tseffect
 	Warhead@Flame_Light:
 		Damage: 2000
-	Warhead@Flame_Light_Percentage: AreaDamagePercentage
-		Damage: 1
-
 BikeRockets:
+	Inherits@collapsewh: ^Warhead_MissileAP_Medium
+	-TargetActorCenter:
 	Inherits: ^TankDestroyerCannon
 	Inherits@2: ^ShrapnelWeapon
 	Inherits@3: ^FlakWeapon
@@ -252,22 +263,39 @@ BikeRockets:
 		MaximumLaunchAngle: 75
 	Warhead@TankDestroyerCannon: SpreadDamage
 		Damage: 4000
-	Warhead@TankDestroyerCannonPercentage: HealthPercentageDamage
+	Warhead@TankDestroyerCannonPercentage: AreaDamagePercentage
 		Damage: 2
 	Warhead@ShrapnelWeapon: SpreadDamage
 		Damage: 4000
 	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
 		Damage: 2000
-	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+	Warhead@ShrapnelWeaponPercentage: AreaDamagePercentage
 		Damage: 2
 	Warhead@FlakWeapon: SpreadDamage
 		Damage: 4000
-	Warhead@FlakWeaponPercentage: HealthPercentageDamage
+	Warhead@FlakWeaponPercentage: AreaDamagePercentage
 		Damage: 2
 	Warhead@LightMissile: SpreadDamage
 		Damage: 4000
-	Warhead@LightMissilePercentage: HealthPercentageDamage
+	Warhead@LightMissilePercentage: AreaDamagePercentage
 		Damage: 2
+
+	-Warhead@TankDestroyerCannon:
+	-Warhead@ShrapnelWeapon:
+	-Warhead@ShrapnelWeaponFriendlyFire:
+	-Warhead@FlakWeapon:
+	-Warhead@LightMissile:
+	Warhead@MissileAP_Medium:
+		ValidTargets: Ground, Water
+		Damage: 8000
+		PercentageScale: 0
+	Warhead@CollapseTargetCompatibility1: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water, Air
+		Damage: 8000
+		PercentageScale: 0
 
 PDLaserBike:
 	Inherits: PDLaser
@@ -284,8 +312,6 @@ PDLaserBike:
 		Speed: 499
 	Warhead@CannonHE_Medium:
 		Damage: 6000
-	Warhead@CannonHE_Medium_Percentage: HealthPercentageDamage
-		Damage: 3
 	Warhead@Effect: CreateEffect
 		ImpactSounds: xplos.aud
 
@@ -298,13 +324,11 @@ LTNKMissiles:
 	Report: bazook1.aud
 	Warhead@MissileAP_Medium:
 		Damage: 6000
-	Warhead@MissileAP_Medium_Percentage: HealthPercentageDamage
-		Damage: 3
 	Warhead@Effect: CreateEffect
 		Explosions: small_frag
 
 HonestJohn:
-	Inherits@wh: ^Warhead_FireMissile_Heavy
+	Inherits@wh: ^Warhead_MissileFire_Heavy
 	Inherits@fx: ^Effect_Flame_Heavy
 	ReloadDelay: 225
 	Burst: 2
@@ -324,14 +348,10 @@ HonestJohn:
 		Shadow: true
 		TrailDelay: 1
 		TrailInterval: 1
-	Warhead@FireMissile_Heavy: AreaDamage
+	Warhead@MissileFire_Heavy: AreaDamage
 		ValidTargets: Ground, Water
 		Damage: 50000
 		FriendlyFireDamage: 30
-		DamageTypes: Prone75Percent, TriggerProne, SmallExplosionDeath, Incendiary
-	Warhead@FireMissile_Heavy_Percentage: AreaDamagePercentage
-		ValidTargets: Ground, Water
-		Damage: 25
 		DamageTypes: Prone75Percent, TriggerProne, SmallExplosionDeath, Incendiary
 	Warhead@Effect: CreateEffect
 		Explosions: med_napalm
@@ -352,8 +372,6 @@ StealthTankMissiles:
 	Report: rocket1.aud
 	Warhead@MissileAP_Medium:
 		Damage: 12000
-	Warhead@MissileAP_Medium_Percentage: HealthPercentageDamage
-		Damage: 6
 	Warhead@Effect: CreateEffect
 		Explosions: small_poof
 		ImpactSounds: xplobig4.aud
@@ -393,9 +411,6 @@ StealthTankMissilesShrapnel:
 	Warhead@Flame_Light:
 		ValidTargets: Ground, Water, Air
 		Damage: 2000
-	Warhead@Flame_Light_Percentage: AreaDamagePercentage
-		ValidTargets: Ground, Water, Air
-		Damage: 1
 	Warhead@Cloud: SpawnSmokeParticle
 		Count: 1, 2
 		Duration: 12
@@ -420,10 +435,6 @@ HeliGun:
 	Warhead@Bullet_Medium:
 		ValidTargets: Ground, Water, Air
 		Damage: 4000
-	Warhead@Bullet_Medium_Percentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 2
-
 HeliMissiles:
 	Inherits@wh: ^Warhead_MissileAP_Medium
 	Inherits@proj: ^Projectile_Missile_Medium
@@ -437,11 +448,8 @@ HeliMissiles:
 	Warhead@MissileAP_Medium:
 		ValidTargets: Ground, Water, Air
 		Damage: 2000
-	Warhead@MissileAP_Medium_Percentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 1
-
 TurretGun:
+	Inherits@collapsewh: ^Warhead_Concussion_Medium
 	Inherits: ^ShrapnelWeapon
 	Inherits@2: ^Grenade
 	Inherits@3: ^MediumCannon
@@ -453,39 +461,44 @@ TurretGun:
 		Speed: 771
 		-LaunchAngle:
 		Damage: 6000
-	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
-		Damage: 3000
-	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+	Warhead@ShrapnelWeaponPercentage: AreaDamagePercentage
 		Damage: 3
-	Warhead@Grenade: SpreadDamage
-		Damage: 6000
-	Warhead@GrenadeFriendlyFire: SpreadDamage
-		Damage: 3000
-	Warhead@GrenadePercentage: HealthPercentageDamage
+	Warhead@GrenadePercentage: AreaDamagePercentage
 		Damage: 3
-	Warhead@MediumCannon: SpreadDamage
-		Damage: 6000
-	Warhead@MediumCannonPercentage: HealthPercentageDamage
+	Warhead@MediumCannonPercentage: AreaDamagePercentage
 		Damage: 3
-	Warhead@TankDestroyerCannon: SpreadDamage
-		Damage: 6000
-	Warhead@TankDestroyerCannonPercentage: HealthPercentageDamage
+	Warhead@TankDestroyerCannonPercentage: AreaDamagePercentage
 		Damage: 3
+	-Warhead@ShrapnelWeapon:
+	-Warhead@ShrapnelWeaponFriendlyFire:
+	-Warhead@Grenade:
+	-Warhead@GrenadeFriendlyFire:
+	-Warhead@MediumCannon:
+	-Warhead@TankDestroyerCannon:
+	Warhead@Concussion_Medium:
+		Damage: 19000
+		PercentageScale: 0
 
 TurretGunBlackMarket:
+	Inherits@roleflat: ^Compatibility_Concussion_MediumFlat
 	Inherits: ^HeavyBomb
 	Inherits@2: ^HeavyCannon
 	Inherits@3: TurretGun
 	Warhead@HeavyBomb: SpreadDamage
 		Damage: 6000
-	Warhead@HeavyBombPercentage: HealthPercentageDamage
+	Warhead@HeavyBombPercentage: AreaDamagePercentage
 		Damage: 3
 	Warhead@HeavyCannon: SpreadDamage
 		Damage: 6000
-	Warhead@HeavyCannonPercentage: HealthPercentageDamage
+	Warhead@HeavyCannonPercentage: AreaDamagePercentage
 		Damage: 3
 	-Warhead@Effect:
-
+	-Warhead@HeavyBomb:
+	-Warhead@HeavyCannon:
+	Warhead@Concussion_Medium:
+		Damage: 31000
+		PercentageScale: 0
+	-Warhead@Concussion_MediumFlatCompatibility:
 Dragon:
 	Inherits@wh: ^Warhead_MissileAA_Heavy
 	Inherits@proj: ^Projectile_Missile_Heavy
@@ -525,9 +538,6 @@ Dragon:
 	Warhead@MissileAA_Heavy:
 		ValidRelationships: Neutral, Enemy
 		Damage: 12000
-	Warhead@MissileAA_Heavy_Percentage:
-		ValidRelationships: Neutral, Enemy
-		Damage: 6
 	Warhead@Effect: CreateEffect
 		Explosions: big_frag
 		ImpactSounds: xplobig4.aud
@@ -591,8 +601,6 @@ LaserObelisk:
 		SourceFlareCoreSize: 5
 	Warhead@Laser_Heavy:
 		Damage: 96000
-	Warhead@Laser_Heavy_Percentage: HealthPercentageDamage
-		Damage: 48
 	# Warhead@Effect: CreateEffect
 	# 	-ImpactSounds:
 	# Warhead@EffectAir: CreateEffect
@@ -614,10 +622,8 @@ LaserObeliskBurning:
 		Inaccuracy: 0
 	Warhead@Inferno_Heavy:
 		Damage: 24000
-	Warhead@Inferno_Heavy_Percentage:
-		Damage: 12
-
 ChemRockets:
+	Inherits@collapsewh: ^Warhead_Chemical_Light
 	Inherits: ^Grenade
 	Inherits@2: ^LightChemicalWeapon
 	Inherits@3: ^LightMissile
@@ -626,38 +632,17 @@ ChemRockets:
 	Report: bazook1.aud
 	Projectile: Missile
 		TrailImage: spittrail
-	Warhead@Grenade: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 12000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@GrenadeFriendlyFire: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 6000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@GrenadePercentage: HealthPercentageDamage
+	Warhead@GrenadePercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 6
 		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@LightChemicalWeapon: AreaDamage
-		ValidRelationships: Ally, Neutral, Enemy
-		FriendlyFireDamage: 50
-		FriendlyFireSpread: 50
-		ValidTargets: Ground, Water, Air
-		Damage: 12000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@LightChemicalWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 6
 		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
 		PhysicalStateName: Corrosion
 		PhysicalStateScale: 100
-	Warhead@LightMissile: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 12000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@LightMissilePercentage: HealthPercentageDamage
+	Warhead@LightMissilePercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 6
 		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
@@ -667,35 +652,41 @@ ChemRockets:
 	Warhead@EffectAir: CreateEffect
 		Explosions: chemball
 		ImpactSounds: xplos.aud
+	-Warhead@Grenade:
+	-Warhead@GrenadeFriendlyFire:
+	-Warhead@LightChemicalWeapon:
+	-Warhead@LightMissile:
+	Warhead@Chemical_Light:
+		ValidTargets: Ground, Water, Air
+		Damage: 24000
+		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
+		PercentageScale: 0
+	Warhead@ChemRocketCompatibility: AreaDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 12000
+		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
 
 ChemRocketsExplosion:
 	Inherits: ChemRockets
-	Warhead@Grenade: SpreadDamage
-		Damage: 6000
-	Warhead@GrenadeFriendlyFire: SpreadDamage
-		Damage: 3000
-	Warhead@GrenadePercentage: HealthPercentageDamage
+	Warhead@GrenadePercentage: AreaDamagePercentage
 		Damage: 3
-	Warhead@LightChemicalWeapon: AreaDamage
-		ValidRelationships: Ally, Neutral, Enemy
-		FriendlyFireDamage: 50
-		FriendlyFireSpread: 50
-		Damage: 6000
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@LightChemicalWeaponPercentage: AreaDamagePercentage
 		Damage: 3
 		PhysicalStateName: Corrosion
 		PhysicalStateScale: 100
-	Warhead@LightMissile: SpreadDamage
-		Damage: 6000
-	Warhead@LightMissilePercentage: HealthPercentageDamage
+	Warhead@LightMissilePercentage: AreaDamagePercentage
 		Damage: 3
+	Warhead@Chemical_Light:
+		Damage: 12000
+		PercentageScale: 0
+	Warhead@ChemRocketCompatibility:
+		Damage: 6000
 	Warhead@Resource: CreateResource
 		AddsResourceType: Tiberium
 		Size: 0,0
 
 ChemicalBikeRockets:
+	Inherits@collapsewh: ^Warhead_MissileChem_Medium
 	Inherits: ^TankDestroyerCannon
 	Inherits@2: ^LightChemicalWeapon
 	Inherits@3: ^FlakWeapon
@@ -710,42 +701,21 @@ ChemicalBikeRockets:
 		TrailImage: spittrail
 		MinimumLaunchAngle: 75
 		MaximumLaunchAngle: 75
-	Warhead@TankDestroyerCannon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 8000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@TankDestroyerCannonPercentage: HealthPercentageDamage
+	Warhead@TankDestroyerCannonPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 4
 		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@LightChemicalWeapon: AreaDamage
-		ValidRelationships: Ally, Neutral, Enemy
-		FriendlyFireDamage: 50
-		FriendlyFireSpread: 50
-		ValidTargets: Ground, Water, Air
-		Damage: 8000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@LightChemicalWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 4
 		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
 		PhysicalStateName: Corrosion
 		PhysicalStateScale: 100
-	Warhead@FlakWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 8000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@FlakWeaponPercentage: HealthPercentageDamage
+	Warhead@FlakWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 4
 		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@MediumMissile: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 8000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@MediumMissilePercentage: HealthPercentageDamage
+	Warhead@MediumMissilePercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 4
 		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
@@ -758,6 +728,14 @@ ChemicalBikeRockets:
 		ImpactActors: false
 		ValidTargets: Air
 
+	TargetActorCenter: false
+	-Warhead@TankDestroyerCannon:
+	-Warhead@LightChemicalWeapon:
+	-Warhead@FlakWeapon:
+	-Warhead@MediumMissile:
+	Warhead@MissileChem_Medium:
+		Damage: 32000
+		PercentageScale: 0
 ChemicalBikeRocketsExplosion:
 	Inherits: ChemicalBikeRockets
 	Warhead@Resource: CreateResource
@@ -765,6 +743,7 @@ ChemicalBikeRocketsExplosion:
 		Size: 0,0
 
 ChemicalStealthTankMissiles:
+	Inherits@collapsewh: ^Warhead_MissileChem_Medium
 	Inherits: ^ShrapnelWeapon
 	Inherits@2: ^MediumChemicalWeapon
 	Inherits@3: ^MediumMissile
@@ -775,38 +754,17 @@ ChemicalStealthTankMissiles:
 	Projectile: Missile
 		Image: MISSILE
 		TrailImage: spittrail
-	Warhead@ShrapnelWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 10000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 5000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+	Warhead@ShrapnelWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 5
 		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@MediumChemicalWeapon: AreaDamage
-		ValidRelationships: Ally, Neutral, Enemy
-		FriendlyFireDamage: 50
-		FriendlyFireSpread: 50
-		ValidTargets: Ground, Water, Air
-		Damage: 10000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@MediumChemicalWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 5
 		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
 		PhysicalStateName: Corrosion
 		PhysicalStateScale: 100
-	Warhead@MediumMissile: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 10000
-		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
-	Warhead@MediumMissilePercentage: HealthPercentageDamage
+	Warhead@MediumMissilePercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 5
 		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
@@ -822,6 +780,14 @@ ChemicalStealthTankMissiles:
 		ImpactActors: false
 		ValidTargets: Air
 
+	TargetActorCenter: false
+	-Warhead@ShrapnelWeapon:
+	-Warhead@ShrapnelWeaponFriendlyFire:
+	-Warhead@MediumChemicalWeapon:
+	-Warhead@MediumMissile:
+	Warhead@MissileChem_Medium:
+		Damage: 30000
+		PercentageScale: 0
 ChemicalStealthTankExplosion:
 	Inherits: ChemicalStealthTankMissiles
 	Warhead@Resource: CreateResource
@@ -829,6 +795,7 @@ ChemicalStealthTankExplosion:
 		Size: 1,1
 
 ChemicalHonestJohn:
+	Inherits@collapsewh: ^Warhead_MissileChem_Heavy
 	Inherits: ^HeavyMissile
 	Inherits@2: ^HeavyBomb
 	Inherits@3: ^HeavyFlameWeapon
@@ -851,13 +818,13 @@ ChemicalHonestJohn:
 	Warhead@HeavyMissile: SpreadDamage
 		ValidTargets: Ground, Water
 		Damage: 30000
-	Warhead@HeavyMissilePercentage: HealthPercentageDamage
+	Warhead@HeavyMissilePercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water
 		Damage: 15
 	Warhead@HeavyBomb: SpreadDamage
 		ValidTargets: Ground, Water
 		Damage: 30000
-	Warhead@HeavyBombPercentage: HealthPercentageDamage
+	Warhead@HeavyBombPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water
 		Damage: 15
 	Warhead@HeavyFlameWeapon: AreaDamage
@@ -893,8 +860,17 @@ ChemicalHonestJohn:
 		GlowFadeFrames: 60
 		GlowFadeInFrames: 12
 		ImpactSounds: xplobig6.aud
+	-Warhead@HeavyMissile:
+	-Warhead@HeavyBomb:
+	-Warhead@HeavyFlameWeapon:
+	-Warhead@HeavyChemicalWeapon:
+	Warhead@MissileChem_Heavy:
+		ValidTargets: Ground, Water
+		Damage: 120000
+		PercentageScale: 0
 
 MachineGunBuggy2:
+	Inherits@collapsewh: ^Warhead_Bullet_Medium
 	Inherits: ^HeavyCannon
 	Inherits@2: ^SmallArms
 	Inherits@3: ^Chaingun
@@ -904,24 +880,25 @@ MachineGunBuggy2:
 	Range: 5274
 	Report: mgun11.aud
 	ValidTargets: Ground, Water
-	Warhead@HeavyCannon: SpreadDamage
-		ValidTargets: Ground, Water
-		Damage: 2000
-	Warhead@HeavyCannonPercentage: HealthPercentageDamage
+	Warhead@HeavyCannonPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water
 		Damage: 1
-	Warhead@SmallArms: SpreadDamage
-		ValidTargets: Ground, Water
-		Damage: 2000
-	Warhead@SmallArmsPercentage: HealthPercentageDamage
+	Warhead@SmallArmsPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water
 		Damage: 1
-	Warhead@Chaingun: SpreadDamage
-		ValidTargets: Ground, Water
-		Damage: 2000
-	Warhead@ChaingunPercentage: HealthPercentageDamage
+	Warhead@ChaingunPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water
 		Damage: 1
+	-TargetActorCenter:
+	-Warhead@HeavyCannon:
+	-Warhead@SmallArms:
+	-Warhead@Chaingun:
+	Warhead@Bullet_Medium:
+		ValidTargets: Ground, Water
+		Damage: 6000
+		FriendlyFireDamage: 100
+		FriendlyFireSpread: 100
+		PercentageScale: 0
 
 MachineGunBuggy2_AA:
 	Inherits: MachineGunBuggy2
@@ -929,15 +906,15 @@ MachineGunBuggy2_AA:
 	ValidTargets: Air
 	Warhead@CannonHE_Heavy: AreaDamage
 		ValidTargets: Air
-	Warhead@CannonHE_Heavy_Percentage: HealthPercentageDamage
+	Warhead@CannonHE_Heavy_Percentage: AreaDamagePercentage
 		ValidTargets: Air
 	Warhead@Bullet_Light: AreaDamage
 		ValidTargets: Air
-	Warhead@Bullet_Light_Percentage: HealthPercentageDamage
+	Warhead@Bullet_Light_Percentage: AreaDamagePercentage
 		ValidTargets: Air
 	Warhead@Bullet_Medium: AreaDamage
 		ValidTargets: Air
-	Warhead@Bullet_Medium_Percentage: HealthPercentageDamage
+	Warhead@Bullet_Medium_Percentage: AreaDamagePercentage
 		ValidTargets: Air
 
 LaserBuggy2:
@@ -961,8 +938,6 @@ LaserBuggy2:
 		SecondaryBeamColor: FFFFFF
 	Warhead@Laser_Light:
 		Damage: 6000
-	Warhead@Laser_Light_Percentage:
-		Damage: 3
 	Warhead@Laser_Light_ExtraDamage:
 		Spread: 300
 		Damage: 600
@@ -1007,9 +982,6 @@ LaserBuggy2Inferno:
 		SecondaryBeamColor: FFFFFF
 	Warhead@Inferno_Light:
 		Damage: 6000
-	Warhead@Inferno_Light_Percentage:
-		Damage: 3
-
 LaserBuggy2Burning:
 	Inherits: LaserBuggy2Inferno
 	Burst: 10
@@ -1031,19 +1003,14 @@ LaserBuggy2_AAInferno:
 	ValidTargets: Air
 	Warhead@Inferno_Light:
 		ValidTargets: Air
-	Warhead@Inferno_Light_Percentage:
-		ValidTargets: Air
-
 LaserBuggy2_AABurning:
 	Inherits: LaserBuggy2Burning
 	Range: 7911
 	ValidTargets: Air
 	Warhead@Inferno_Light:
 		ValidTargets: Air
-	Warhead@Inferno_Light_Percentage:
-		ValidTargets: Air
-
 FireballLauncherBuggy2:
+	Inherits@roleflat: ^Compatibility_Flame_MediumFlat
 	Inherits: ^Warhead_Flame_Light
 	Inherits@2: ^Warhead_Flame_Heavy
 	Inherits@3: ^Warhead_Flame_Medium
@@ -1060,18 +1027,19 @@ FireballLauncherBuggy2:
 		Palette: tseffect
 	Warhead@Flame_Light:
 		Damage: 2000
-	Warhead@Flame_Light_Percentage:
-		Damage: 1
 	Warhead@Flame_Heavy:
 		Damage: 2000
-	Warhead@Flame_Heavy_Percentage:
-		Damage: 1
 	Warhead@Flame_Medium:
 		Damage: 2000
-	Warhead@Flame_Medium_Percentage:
-		Damage: 1
-
+	-Warhead@Flame_Heavy:
+	-Warhead@Flame_Light:
+	-Warhead@Flame_Medium:
+	Warhead@Flame_MediumFlatCompatibility:
+		ValidTargets: Ground, Water
+		Damage: 6000
+		PercentageScale: 9984
 LightTank2Cannon:
+	Inherits@collapsewh: ^Warhead_CannonHE_Medium
 	Inherits: ^LightChemicalWeapon
 	Inherits@2: ^MediumCannon
 	ReloadDelay: 35
@@ -1092,32 +1060,27 @@ LightTank2Cannon:
 		PhysicalStateScale: 100
 	Warhead@MediumCannon: SpreadDamage
 		Damage: 4000
-	Warhead@MediumCannonPercentage: HealthPercentageDamage
+	Warhead@MediumCannonPercentage: AreaDamagePercentage
 		Damage: 2
 	Warhead@Effect: CreateEffect
 		Explosions: chemball
 		ImpactSounds: xplos.aud
 
+	-Warhead@LightChemicalWeapon:
+	-Warhead@MediumCannon:
+	Warhead@CannonHE_Medium:
+		Damage: 8000
+		PercentageScale: 0
 LightTank2Missiles:
-	Inherits: ^Warhead_Flame_Light
 	Inherits@2: ^Warhead_MissileAP_Medium
 	Inherits@3: ^Projectile_Missile_Medium
 	Inherits@4: ^Effect_MissileAP_Medium
 	ReloadDelay: 35
 	Range: 4903
 	Report: bazook1.aud
-	Warhead@Flame_Light:
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-	Warhead@Flame_Light_Percentage:
-		ValidTargets: Ground, Water, Air
-		Damage: 2
 	Warhead@MissileAP_Medium:
 		ValidTargets: Ground, Water, Air
-		Damage: 4000
-	Warhead@MissileAP_Medium_Percentage:
-		ValidTargets: Ground, Water, Air
-		Damage: 2
+		Damage: 8000
 	Warhead@Effect: CreateEffect
 		Explosions: small_frag
 
@@ -1136,8 +1099,6 @@ BigFlamer2:
 	Report: flamer2.aud
 	Warhead@Flame_Heavy:
 		Damage: 20000
-	Warhead@Flame_Heavy_Percentage: AreaDamagePercentage
-		Damage: 10
 	Warhead@Glow: GlowImpact
 		Color: FF6600
 		Scale: 2.0
@@ -1150,8 +1111,6 @@ FlametankExplode2:
 	Inherits@fx: ^Effect_Flame_Heavy
 	Warhead@Flame_Heavy:
 		Damage: 40000
-	Warhead@Flame_Heavy_Percentage: AreaDamagePercentage
-		Damage: 20
 	Warhead@Effect: CreateEffect
 		Explosions: big_napalm
 		GlowScale: 2.0
@@ -1167,6 +1126,7 @@ BlackHandLaser:
 	# baseline (6000@50, 120). Laser inherited LAST so LaserZap defines the
 	# beam. ExtraDamage warheads inherit untouched (shield-only chip; ignored
 	# for pricing). (^TankDestroyerCannon = interim Light CannonAP.)
+	Inherits@wh: ^Warhead_Laser_Heavy
 	Inherits@light: ^TankDestroyerCannon
 	Inherits@medium: ^FlakWeapon
 	Inherits@heavy: ^LaserWeapon
@@ -1183,20 +1143,81 @@ BlackHandLaser:
 		SecondaryBeamWidth: 64
 		SecondaryBeamZOffset: 2047
 		SecondaryBeamColor: FFFFFF
-	Warhead@TankDestroyerCannon: SpreadDamage
-		Damage: 48000
-	Warhead@TankDestroyerCannonPercentage: HealthPercentageDamage
+	TargetActorCenter: false
+	-Warhead@TankDestroyerCannon:
+	Warhead@TankDestroyerCannonPercentage: AreaDamagePercentage
 		Damage: 4
-	Warhead@FlakWeapon: SpreadDamage
-		Damage: 48000
-	Warhead@FlakWeaponPercentage: HealthPercentageDamage
+	-Warhead@FlakWeapon:
+	Warhead@FlakWeaponPercentage: AreaDamagePercentage
 		Damage: 4
-	Warhead@LaserWeapon: SpreadDamage
+	-Warhead@LaserWeapon:
+	-Warhead@LaserExtraDamage:
+	Warhead@LegacyLaserExtraDamage: SpreadDamage
 		ValidTargets: Ground, Water, Air
-		Damage: 48000
-	Warhead@LaserWeaponPercentage: HealthPercentageDamage
+		Spread: 300
+		Damage: 600
+		Versus:
+			REFLECTOR: 50
+			Shield: 100
+			None: 1
+			Flak: 1
+			Plate: 1
+			Heroic: 1
+			Superheavy: 1
+			Heavy: 1
+			Medium: 1
+			Light: 1
+			Scout: 1
+			Steel: 1
+			Concrete: 1
+			Wood: 1
+			Fighter: 1
+			Bomber: 1
+			Helicopter: 1
+			Spaceship: 1
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		UpdatesUnitStatistics: false
+	Warhead@LaserWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 4
+	Warhead@Laser_Heavy:
+		Damage: 96000
+		PercentageScale: 0
+	-Warhead@Laser_Heavy_ExtraDamage:
+	Warhead@LaserHeavyGroundRemainder: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water
+		Spread: 64
+		Damage: 48000
+		Falloff: 100, 0
+		Versus:
+			HAZMAT: 56
+			COMPOSITE: 71
+			BLAST: 95
+			REFLECTOR: 59
+			ARMOR: 70
+			Shield: 294
+			Superheavy: 162
+			Spaceship: 144
+			Concrete: 141
+			Plate: 134
+			Heavy: 124
+			Helicopter: 114
+			Steel: 103
+			Medium: 100
+			Flak: 97
+			Bomber: 88
+			Light: 80
+			Wood: 75
+			None: 70
+			Fighter: 68
+			Scout: 55
+			Heroic: 45
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PhysicalStateName: Temperature
+		PhysicalStateScale: 75
 
 BlackHandFlamer:
 	Inherits@wh: ^Warhead_Flame_Medium
@@ -1214,17 +1235,14 @@ BlackHandFlamer:
 		Palette: tseffect
 	Warhead@Flame_Medium:
 		Damage: 4000
-	Warhead@Flame_Medium_Percentage: AreaDamagePercentage
-		Damage: 2
 BlackHandFlamerExplode:
 	Inherits@wh: ^Warhead_Flame_Medium
 	Inherits@proj: ^Projectile_Flame_Medium
 	Inherits@fx: ^Effect_Flame_Medium
 	Warhead@Flame_Medium:
 		Damage: 12000
-	Warhead@Flame_Medium_Percentage: AreaDamagePercentage
-		Damage: 6
 BHRedDarts:
+	Inherits@collapsewh: ^Warhead_Tesla_Super
 	Inherits: ^TeslaChargedWeapon
 	Inherits@2: ^TankDestroyerCannon
 	Inherits@3: ^Chaingun
@@ -1244,56 +1262,46 @@ BHRedDarts:
 		ContrailEndColorUsePlayerColor: true
 		ContrailEndColor: FFFFFF
 		ContrailStartColor: ff0000
-	Warhead@TeslaChargedWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@TeslaChargedExtraDamage: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 2000
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@TeslaChargedWeaponPercentage: HealthPercentageDamage
+	Warhead@TeslaChargedWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 2
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@TankDestroyerCannon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@TankDestroyerCannonPercentage: HealthPercentageDamage
+	Warhead@TankDestroyerCannonPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 2
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@Chaingun: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@ChaingunPercentage: HealthPercentageDamage
+	Warhead@ChaingunPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 2
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@ShrapnelWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 2000
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+	Warhead@ShrapnelWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 2
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@MediumMissile: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@MediumMissilePercentage: HealthPercentageDamage
+	Warhead@MediumMissilePercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 2
 		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
-	Warhead@EMPUnit: AffectsIntegrity
+	Warhead@EMPCompatibility: AffectsIntegrity
 		Damage: 5000
+		Spread: 1
+		InvalidTargets: Shielded
+		ValidTargets: Vehicle, Ship, Air, Cyborg, Defense, Building, Epic
+	-Warhead@TeslaChargedWeapon:
+	-Warhead@TeslaChargedExtraDamage:
+	-Warhead@TankDestroyerCannon:
+	-Warhead@Chaingun:
+	-Warhead@ShrapnelWeapon:
+	-Warhead@ShrapnelWeaponFriendlyFire:
+	-Warhead@MediumMissile:
+	-Warhead@Tesla_Super_ExtraDamage:
+	-Warhead@EMPUnit:
+	Warhead@Tesla_Super:
+		ValidTargets: Ground, Water, Air
+		Damage: 22000
+		DamageTypes: Prone100Percent, TriggerProne, ElectricityDeath, Tesla
+		IntegrityScale: 0
+		PercentageScale: 0
 	Warhead@Effect: CreateEffect
 		Explosions: steel_blueexp
 		ExplosionPalette: ra2effect
@@ -1303,7 +1311,7 @@ BHRedDarts:
 		ExplosionPalette: ra2effect
 		ImpactSounds: makoexplose.wav
 
-SpecterArtilleryShell:
+^SpecterArtilleryShellLegacy:
 	Inherits@wh: ^Warhead_Demolition_Light
 	Inherits@wh2: ^Warhead_Concussion_Medium
 	Inherits@proj: ^Projectile_Grenade_Light
@@ -1327,24 +1335,30 @@ SpecterArtilleryShell:
 		Image: bhreddragon
 	Warhead@Demolition_Light:
 		Damage: 16000
-	Warhead@Demolition_Light_Percentage:
-		Damage: 8
 	Warhead@Concussion_Medium:
 		Damage: 16000
-	Warhead@Concussion_Medium_Percentage:
-		Damage: 8
 	Warhead@Effect: CreateEffect
 		Explosions: artillery_explosion
 		ImpactSounds: kaboom15.aud
 
+SpecterArtilleryShell:
+	Inherits@finalmain: ^Compatibility_Concussion_MediumFlat
+	Inherits: ^SpecterArtilleryShellLegacy
+	-Warhead@Concussion_Medium:
+	-Warhead@Demolition_Light:
+	Warhead@Concussion_MediumFlatCompatibility:
+		ValidTargets: Ground, Water
+		Damage: 32000
+		PercentageScale: 9997
 SpecterArtilleryShellUpgrade:
+	Inherits@roleflat: ^Compatibility_CannonHE_HeavyFlat
 	Inherits: ^MediumChemicalWeapon
 	Inherits@2: ^MediumFlameWeapon
 	Inherits@3: ^HeavyBomb
 	Inherits@4: ^TankDestroyerCannon
 	Inherits@5: ^MediumCannon
 	Inherits@6: ^HeavyCannon
-	Inherits@7: SpecterArtilleryShell
+	Inherits@7: ^SpecterArtilleryShellLegacy
 	Projectile: Bullet
 		ContrailStartWidth: 111
 		ContrailEndWidth: 11
@@ -1353,12 +1367,8 @@ SpecterArtilleryShellUpgrade:
 		TrailInterval: 1
 	Warhead@Demolition_Light:
 		Damage: 4000
-	Warhead@Demolition_Light_Percentage: HealthPercentageDamage
-		Damage: 2
 	Warhead@Concussion_Medium:
 		Damage: 4000
-	Warhead@Concussion_Medium_Percentage: HealthPercentageDamage
-		Damage: 2
 	Warhead@MediumChemicalWeapon: AreaDamage
 		ValidRelationships: Ally, Neutral, Enemy
 		FriendlyFireDamage: 50
@@ -1383,21 +1393,33 @@ SpecterArtilleryShellUpgrade:
 		PhysicalStateScale: 100
 	Warhead@HeavyBomb: SpreadDamage
 		Damage: 4000
-	Warhead@HeavyBombPercentage: HealthPercentageDamage
+	Warhead@HeavyBombPercentage: AreaDamagePercentage
 		Damage: 2
 	Warhead@TankDestroyerCannon: SpreadDamage
 		Damage: 4000
-	Warhead@TankDestroyerCannonPercentage: HealthPercentageDamage
+	Warhead@TankDestroyerCannonPercentage: AreaDamagePercentage
 		Damage: 2
 	Warhead@MediumCannon: SpreadDamage
 		Damage: 4000
-	Warhead@MediumCannonPercentage: HealthPercentageDamage
+	Warhead@MediumCannonPercentage: AreaDamagePercentage
 		Damage: 2
 	Warhead@HeavyCannon: SpreadDamage
 		Damage: 4000
-	Warhead@HeavyCannonPercentage: HealthPercentageDamage
+	Warhead@HeavyCannonPercentage: AreaDamagePercentage
 		Damage: 2
 	-Warhead@Effect:
+	-Warhead@HeavyBomb:
+	-Warhead@HeavyCannon:
+	-Warhead@MediumCannon:
+	-Warhead@MediumChemicalWeapon:
+	-Warhead@MediumFlameWeapon:
+	-Warhead@TankDestroyerCannon:
+	Warhead@CannonHE_HeavyFlatCompatibility:
+		ValidTargets: Ground, Water
+		Damage: 32000
+		PercentageScale: 2497
+	-Warhead@Concussion_Medium:
+	-Warhead@Demolition_Light:
 
 VenomLaser:
 	Inherits@wh: ^Warhead_Laser_Medium
@@ -1418,8 +1440,6 @@ VenomLaser:
 		SecondaryBeamColor: FFFFFF
 	Warhead@Laser_Medium:
 		Damage: 8000
-	Warhead@Laser_Medium_Percentage:
-		Damage: 4
 	Warhead@Laser_Medium_ExtraDamage:
 		Spread: 300
 		Damage: 600
@@ -1461,10 +1481,8 @@ VenomLaserInferno:
 		SecondaryBeamZOffset: 2047
 		SecondaryBeamColor: FFFFFF
 	Warhead@Inferno_Medium:
+		ValidTargets: Ground, Water, Air
 		Damage: 8000
-	Warhead@Inferno_Medium_Percentage:
-		Damage: 4
-
 VenomLaserBurning:
 	Inherits: VenomLaserInferno
 	Burst: 10
@@ -1479,6 +1497,8 @@ NodCommandoLaser:
 	Inherits@wh: ^Warhead_Laser_Heavy
 	Inherits@proj: ^Projectile_Laser_Heavy
 	Inherits@fx: ^Effect_Laser_Heavy
+	Warhead@Laser_Heavy:
+		PercentageScale: 60000
 	ReloadDelay: 8
 	Report: vpalwe2d.aud
 	ValidTargets: Ground, Air, Missile, BulletAS, BallisticMissile
@@ -1497,9 +1517,6 @@ NodCommandoLaser:
 		-HitAnim:
 		ValidTargets: Ground, Air, Missile, BulletAS, BallisticMissile
 		Damage: 12000
-	Warhead@Laser_Heavy_Percentage: HealthPercentageDamage
-		ValidTargets: Ground, Air, Missile, BulletAS, BallisticMissile
-		Damage: 6
 	Warhead@Effect: CreateEffect
 		ValidTargets: Ground, Air, Ship
 		Explosions: small_napalm
@@ -1536,13 +1553,8 @@ NodTorpTube:
 		CruiseAltitude: 0
 	Warhead@Concussion_Light:
 		Damage: 8000
-	Warhead@Concussion_Light_Percentage:
-		Damage: 4
 	Warhead@MissileHE_Heavy:
 		Damage: 8000
-		ValidTargets: Water, Underwater, Bridge, Structure
-	Warhead@MissileHE_Heavy_Percentage:
-		Damage: 4
 		ValidTargets: Water, Underwater, Bridge, Structure
 	-Warhead@Smudge:
 	Warhead@Effect: CreateEffect
@@ -1585,13 +1597,8 @@ NodTorpTubeBlackMarket:
 		CruiseAltitude: 0
 	Warhead@Demolition_Heavy:
 		Damage: 8000
-	Warhead@Demolition_Heavy_Percentage:
-		Damage: 4
 	Warhead@MissileHE_Heavy:
 		Damage: 8000
-		ValidTargets: Water, Underwater, Bridge, Structure
-	Warhead@MissileHE_Heavy_Percentage:
-		Damage: 4
 		ValidTargets: Water, Underwater, Bridge, Structure
 	Warhead@Effect: CreateEffect
 		ValidTargets: Ship, Structure, Bridge, Ground
@@ -1611,9 +1618,6 @@ CorvetteLaserObelisk:
 	Range: 9550
 	Warhead@Laser_Heavy:
 		Damage: 120000
-	Warhead@Laser_Heavy_Percentage: HealthPercentageDamage
-		Damage: 60
-
 CorvetteDragon:
 	Inherits@wh: ^Warhead_MissileAP_Heavy
 	Inherits@proj: ^Projectile_Missile_Heavy
@@ -1634,9 +1638,6 @@ CorvetteDragon:
 	Warhead@MissileAP_Heavy:
 		Damage: 10000
 		Spread: 500
-	Warhead@MissileAP_Heavy_Percentage: HealthPercentageDamage
-		Damage: 5
-		Spread: 500
 	Warhead@EffectAir: CreateEffect
 		Explosions: small_building
 
@@ -1654,13 +1655,12 @@ td_nod_minigunner_minigun:
 	Report: mgun2.aud
 	Warhead@Bullet_Light:
 		Damage: 2000
-	Warhead@Bullet_Light_Percentage: HealthPercentageDamage
-		Damage: 1
-
 td_nod_minigunner_minigun_laser:
+	Inherits@wh: ^Warhead_Laser_Heavy
 	Inherits: ^SmallArms
 	Inherits@2: ^Chaingun
 	Inherits@3: ^LaserWeapon
+	Inherits@legacychip: ^LegacyLaserChipCompatibility
 	ValidTargets: Ground, Water
 	ReloadDelay: 40
 	Range: 4500
@@ -1669,15 +1669,18 @@ td_nod_minigunner_minigun_laser:
 	Report: vpalwe2d.aud
 	Projectile: LaserZap
 		Width: 25
-	Warhead@SmallArms: SpreadDamage
-		Damage: 2000
-	Warhead@SmallArmsPercentage: HealthPercentageDamage
+	TargetActorCenter: false
+	-Warhead@SmallArms:
+	Warhead@SmallArmsPercentage: AreaDamagePercentage
 		Damage: 1
-	Warhead@Chaingun: SpreadDamage
-		Damage: 2000
-	Warhead@ChaingunPercentage: HealthPercentageDamage
+	-Warhead@Chaingun:
+	Warhead@ChaingunPercentage: AreaDamagePercentage
 		Damage: 1
-	Warhead@LaserWeapon: SpreadDamage
-		Damage: 2000
-	Warhead@LaserWeaponPercentage: HealthPercentageDamage
+	-Warhead@LaserWeapon:
+	-Warhead@LaserExtraDamage:
+	Warhead@LaserWeaponPercentage: AreaDamagePercentage
 		Damage: 1
+	Warhead@Laser_Heavy:
+		Damage: 6000
+		PercentageScale: 0
+	-Warhead@Laser_Heavy_ExtraDamage:

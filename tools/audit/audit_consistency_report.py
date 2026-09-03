@@ -84,9 +84,9 @@ check_file_not_contains("docs/design/garrison_exceptions.yaml",
     "ra1_soviet_cyberdog", "2: garrison_exceptions no singular soviet")
 
 # 3. MASTER_REPORT uses ra1_soviets (plural)
-check_file_contains("docs/MASTER_REPORT.md", "ra1_soviets_*",
+check_file_contains("docs/history/MASTER_REPORT_2026-07-08.md", "ra1_soviets_*",
     "3: MASTER_REPORT plural soviets")
-check_file_not_contains("docs/MASTER_REPORT.md", "ra1_soviet_*",
+check_file_not_contains("docs/history/MASTER_REPORT_2026-07-08.md", "ra1_soviet_*",
     "3: MASTER_REPORT no singular soviet")
 
 # 4. ROADMAP E3 has deprecation note about E suffix
@@ -175,11 +175,11 @@ check_file_contains("docs/DESIGN.md", "_EMP _AA _upgraded",
     "13: DESIGN.md variant list complete")
 
 # 14. MASTER_REPORT variant list includes new suffixes
-check_file_contains("docs/MASTER_REPORT.md", "_EMP",
+check_file_contains("docs/history/MASTER_REPORT_2026-07-08.md", "_EMP",
     "14a: MASTER_REPORT variant _EMP")
-check_file_contains("docs/MASTER_REPORT.md", "_AA",
+check_file_contains("docs/history/MASTER_REPORT_2026-07-08.md", "_AA",
     "14b: MASTER_REPORT variant _AA")
-check_file_contains("docs/MASTER_REPORT.md", "_upgraded",
+check_file_contains("docs/history/MASTER_REPORT_2026-07-08.md", "_upgraded",
     "14c: MASTER_REPORT variant _upgraded")
 
 # 15. backlog_weapon_rename.md has new variant markers

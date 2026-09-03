@@ -1,6 +1,6 @@
 # Mandatory recurring audits
 
-Five code-health checks are mandatory on a cadence. The registry is
+Six code-health checks are mandatory on a cadence. The registry is
 `docs/audit/periodic.json`; `tools/audit/audit_periodic_freshness.py` (last
 step of `tools/audit/run_all.sh`) turns "we should re-run that sometime" into a
 gate:
@@ -25,17 +25,39 @@ Enforce the calendar in a scheduled run (not the commit gate):
 python tools/audit/audit_periodic_freshness.py     # no flag -> exit 1 when overdue
 ```
 
-The *scripted* part of each track still runs on every `run_all.sh` and blocks
-immediately on a regression (each script is a ratchet: counts may fall, never
-rise). The *periodic* run below is the wider pass that a script cannot do —
-network queries, the real test suites, and human review of the report — and it
-is what `last_run` tracks.
+The *scripted* part of each track still runs on every `run_all.sh` — but as of the
+**2026-08-24 maintainer ruling it is ADVISORY there and does not set the suite's exit code.**
+Each script writes its full report and still exits 1 on its own findings, so a scheduled or CI
+run may gate on one deliberately; the per-commit suite does not.
+
+⛔ **Why the change.** These five were being run as per-commit gates. `test_coverage` alone drifted **223 -> 235 -> 249 ->
+257 -> 270** untested modules against a baseline of 224 between 2026-08-16 and 2026-08-24, so
+— and a scheduled scan's findings must not mix into the same signal as a defect in the commit being
+made. That is the argument this file already made for `--warn-only`, applied one level down. The
+cadence is still enforced, by the strict form above.
+
+⚠ **This does NOT make the suite exit 0, and it was never meant to.** Eight further audits gate on
+real content defects (`inherits`, `upgrades`, `sequences`, `fluent`, `basebuilder_crates`,
+`buildable_order`, `weapon_suffixes`, `impact_glow_preservation`) — the bounded-bug backlog in
+`HANDOFF.md` §3.3. The suite still exits 1, correctly. Nor is a green suite the commit gate:
+CLAUDE.md's gate is booting to the main menu with no new `exception-*.log`.
+
+⚠ Advisory is not permission to let them rot. The ratchets still only go down, and the calendar
+still bites in the scheduled run.
+
+The *periodic* run below is the wider pass that a script cannot do — network queries, the real
+test suites, and human review of the report — and it is what `last_run` tracks.
 
 Stamp a completed periodic run (never stamp without doing the steps):
 
 ```sh
 python tools/audit/audit_periodic_freshness.py --record <id> --evidence <path-or-url>
 ```
+
+⚠ **Not everything that guards the docs is on a cadence.** `audit_doc_claims.py` (numeric
+claims) and `audit_doc_health.py` (structural defects: control characters, mojibake, broken
+links and anchors, references to moved documents, duplicate DESIGN section ids) both run on
+**every** `run_all.sh`, because both are cheap and both catch corruption rather than staleness.
 
 Baselines live at the top of each script. Lowering a baseline after fixing
 findings is the point; raising one needs a note in the commit message saying

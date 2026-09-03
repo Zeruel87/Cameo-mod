@@ -1,6 +1,6 @@
 # Rank decoration audit
 
-## Actor decoration issues: **51**
+## Actor decoration issues: **52**
 
 | File | Line | Actor | Issue | Found |
 |---|---|---|---|---|
@@ -9,7 +9,8 @@
 | ContentPacks/TiberianDawn/Shared/yaml/templates.yaml | 30 | ^E1 | TD actor missing RankDecoration | ? |
 | ContentPacks/TiberianDawn/Shared/yaml/templates.yaml | 67 | ^E3 | TD actor missing RankDecoration | ? |
 | ContentPacks/TiberianSun/CABAL/yaml/infantry.yaml | 940 | cabal_eliminator800 | RA2 actor has RankDecoration (should not) | CABALRankDecoration |
-| ContentPacks/Warcraft2/Humans/yaml/aircraft.yaml | 28 | wc2_humans_gryphonrider | TD actor missing RankDecoration | ? |
+| ContentPacks/TiberianSun/GDI/yaml/naval.yaml | 1 | ts_gdi_hover | Wrong decoration (expected GDIRankDecoration) | NodRankDecoration |
+| ContentPacks/Warcraft2/Humans/yaml/aircraft.yaml | 32 | wc2_humans_gryphonrider | TD actor missing RankDecoration | ? |
 | ContentPacks/Warcraft2/Humans/yaml/defenses.yaml | 1 | wc2_humans_humanscouttower | TD actor missing RankDecoration | ? |
 | ContentPacks/Warcraft2/Humans/yaml/infantry.yaml | 55 | wc2_humans_footman | TD actor missing RankDecoration | ? |
 | ContentPacks/Warcraft2/Humans/yaml/infantry.yaml | 97 | wc2_humans_warcraft3footman | TD actor missing RankDecoration | ? |
@@ -20,10 +21,10 @@
 | ContentPacks/Warcraft2/Humans/yaml/infantry.yaml | 404 | wc2_humans_mortarteam | TD actor missing RankDecoration | ? |
 | ContentPacks/Warcraft2/Humans/yaml/infantry.yaml | 728 | wc2_humans_highelfpriest | TD actor missing RankDecoration | ? |
 | ContentPacks/Warcraft2/Humans/yaml/infantry.yaml | 842 | wc2_humans_highelfsorceress | TD actor missing RankDecoration | ? |
-| ContentPacks/Warcraft2/Humans/yaml/vehicles.yaml | 69 | wc2_humans_warcraft3knight | TD actor missing RankDecoration | ? |
-| ContentPacks/Warcraft2/Humans/yaml/vehicles.yaml | 113 | wc2_humans_ballista | TD actor missing RankDecoration | ? |
-| ContentPacks/Warcraft2/Humans/yaml/vehicles.yaml | 160 | wc2_humans_siegeengine | TD actor missing RankDecoration | ? |
-| ContentPacks/Warcraft2/Orcs/yaml/aircraft.yaml | 16 | wc2_orcs_dragon | TD actor missing RankDecoration | ? |
+| ContentPacks/Warcraft2/Humans/yaml/vehicles.yaml | 73 | wc2_humans_warcraft3knight | TD actor missing RankDecoration | ? |
+| ContentPacks/Warcraft2/Humans/yaml/vehicles.yaml | 117 | wc2_humans_ballista | TD actor missing RankDecoration | ? |
+| ContentPacks/Warcraft2/Humans/yaml/vehicles.yaml | 164 | wc2_humans_siegeengine | TD actor missing RankDecoration | ? |
+| ContentPacks/Warcraft2/Orcs/yaml/aircraft.yaml | 18 | wc2_orcs_dragon | TD actor missing RankDecoration | ? |
 | ContentPacks/Warcraft2/Orcs/yaml/defenses.yaml | 1 | wc2_orcs_orcwatchtower | TD actor missing RankDecoration | ? |
 | ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml | 1 | wc2_orcs_grunt | TD actor missing RankDecoration | ? |
 | ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml | 43 | wc2_orcs_warcraft3grunt | TD actor missing RankDecoration | ? |
@@ -35,8 +36,8 @@
 | ContentPacks/Warcraft2/Orcs/yaml/templates.yaml | 641 | ^WC2Demolitioner | TD actor missing RankDecoration | ? |
 | ContentPacks/Warcraft2/Orcs/yaml/templates.yaml | 660 | ^WC2Mage | TD actor missing RankDecoration | ? |
 | ContentPacks/Warcraft2/Orcs/yaml/templates.yaml | 681 | ^WC2AirScout | TD actor missing RankDecoration | ? |
-| ContentPacks/Warcraft2/Orcs/yaml/vehicles.yaml | 72 | wc2_orcs_catapult | TD actor missing RankDecoration | ? |
-| ContentPacks/Warcraft2/Orcs/yaml/vehicles.yaml | 123 | wc2_orcs_siegeengine | TD actor missing RankDecoration | ? |
+| ContentPacks/Warcraft2/Orcs/yaml/vehicles.yaml | 76 | wc2_orcs_catapult | TD actor missing RankDecoration | ? |
+| ContentPacks/Warcraft2/Orcs/yaml/vehicles.yaml | 127 | wc2_orcs_siegeengine | TD actor missing RankDecoration | ? |
 | rules/outpost2.yaml | 1484 | EDEN_SCOUT | TD actor missing RankDecoration | ? |
 | rules/outpost2.yaml | 1524 | EDEN_LYNX_LASER | TD actor missing RankDecoration | ? |
 | rules/outpost2.yaml | 1564 | EDEN_TIGER_LASER | TD actor missing RankDecoration | ? |
@@ -44,7 +45,7 @@
 | rules/outpost2.yaml | 1643 | EDEN_TIGER_RAILGUN | TD actor missing RankDecoration | ? |
 | rules/outpost2.yaml | 1682 | EDEN_LYNX_EMP | TD actor missing RankDecoration | ? |
 | rules/outpost2.yaml | 1725 | EDEN_TIGER_EMP | TD actor missing RankDecoration | ? |
-| rules/outpost2.yaml | 2584 | PLYMOUTH_SCOUT | TD actor missing RankDecoration | ? |
+| rules/outpost2.yaml | 2586 | PLYMOUTH_SCOUT | TD actor missing RankDecoration | ? |
 | rules/warcraft2.yaml | 380 | ^WC2Critter | TD actor missing RankDecoration | ? |
 | rules/warcraft2.yaml | 803 | ^WC2Supplier | TD actor missing RankDecoration | ? |
 | rules/warcraft2.yaml | 823 | ^WC2Engineer | TD actor missing RankDecoration | ? |

@@ -1,6 +1,6 @@
-﻿# audit_multiplier_modifiers — *Multiplier Modifier integer percent check
+# audit_multiplier_modifiers — *Multiplier Modifier integer percent check
 
-*Multiplier trait families seen: 1823
+*Multiplier trait families seen: 1812
 
 | trait family |
 |---|
@@ -330,7 +330,6 @@
 | `DamageMultiplier@ra2_allies_upgrade_advancedaeronautics` |
 | `DamageMultiplier@ra2_allies_upgrade_assaultsquadtraining` |
 | `DamageMultiplier@ra2_allies_upgrade_compositearmorplating` |
-| `DamageMultiplier@ra2_allies_upgrade_elitegi` |
 | `DamageMultiplier@ra2_allies_upgrade_infiltratorstraining` |
 | `DamageMultiplier@ra2_allies_upgrade_ionpulseplating` |
 | `DamageMultiplier@ra2_allies_upgrade_reflectivearmorplating` |
@@ -1610,16 +1609,6 @@
 | `SpeedMultiplier@MC7` |
 | `SpeedMultiplier@MC8` |
 | `SpeedMultiplier@MC9` |
-| `SpeedMultiplier@MagnetFreeze1` |
-| `SpeedMultiplier@MagnetFreeze10` |
-| `SpeedMultiplier@MagnetFreeze2` |
-| `SpeedMultiplier@MagnetFreeze3` |
-| `SpeedMultiplier@MagnetFreeze4` |
-| `SpeedMultiplier@MagnetFreeze5` |
-| `SpeedMultiplier@MagnetFreeze6` |
-| `SpeedMultiplier@MagnetFreeze7` |
-| `SpeedMultiplier@MagnetFreeze8` |
-| `SpeedMultiplier@MagnetFreeze9` |
 | `SpeedMultiplier@PalUpg` |
 | `SpeedMultiplier@Phase` |
 | `SpeedMultiplier@PromotionUnit` |

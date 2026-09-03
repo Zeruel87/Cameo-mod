@@ -38,7 +38,7 @@ ordos_apc:
 		Locomotor: hover
 		Voice: Move
 	Turreted:
-		TurnSpeed: 42
+		TurnSpeed: 21
 		Offset: -100,20,10
 	Armament:
 		Weapon: D2K_APC_Rocket
@@ -804,10 +804,10 @@ ordos_cobratank:
 		RegenAmount: 36
 	Mobile:
 		Speed: 45
-		TurnSpeed: 18
+		TurnSpeed: 9
 		RequireForceMoveCondition: deployed
 	Turreted:
-		TurnSpeed: 18
+		TurnSpeed: 9
 		Turret: deployed
 	RevealOnFire:
 		ArmamentNames: primary, deployed
@@ -816,10 +816,7 @@ ordos_cobratank:
 		Modifier: 50
 	RangeMultiplier@deployed:
 		RequiresCondition: deployed
-		Modifier: 125
-	DamageMultiplier@deployed:
-		RequiresCondition: deployed
-		Modifier: 75
+		Modifier: 160
 	Armament@PRIMARY:
 		Weapon: 120mm_cobra
 		LocalOffset: 600,0,300
@@ -866,13 +863,28 @@ ordos_cobratank:
 		RequireForceMoveCondition: !undeployed
 	Voiced:
 		VoiceSet: EBFDOrdosCobra
-	RangeMultiplier@deployed:
-		Modifier: 160
-		RequiresCondition: deployed
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
 		Upgrades: ordos_upgrade_shields, ordos_upgrade_contraband
+	# DEPLOYING ADDS THE STEEL DEFENCE ARMOUR ON TOP OF THE UNIT'S OWN CLASS ARMOUR.
+	# Maintainer 2026-08-22: *"activate the steel armor type on deploy but keep the underlying
+	# regular armor intact and then create the average between them"* — a deployed unit is a
+	# static defence, and Steel is what defences wear.
+	#
+	# Both traits stay ENABLED together, which is the whole point:
+	# `AreaDamageWarhead.MultiArmorCombination` defaults to `Average`, so the class row and the
+	# Steel row meet in the middle instead of one replacing the other. Gating the class armour
+	# on `undeployed` — what the defence rig, siege tank and matador used to do — makes Steel a
+	# REPLACEMENT and throws the unit's own class away.
+	#
+	# ⚠ Averaging only happens for warheads routing through AreaDamage (62.9% of the tree).
+	# The legacy inline-Versus SpreadDamage nodes still MULTIPLY, and under multiplication the
+	# class row cancels out entirely (the ratio becomes just Steel/100) — so those weapons see a
+	# flatter effect than designed until item A5 retires them onto ^Warhead_* templates.
+	Armor@deployed:
+		Type: Steel
+		RequiresCondition: !shielded && deployed
 
 ordos_pythontank:
 	Inherits@D2KT: ^D2KTank
@@ -906,9 +918,9 @@ ordos_pythontank:
 		RegenAmount: 56
 	Mobile:
 		Speed: 40
-		TurnSpeed: 16
+		TurnSpeed: 8
 	Turreted:
-		TurnSpeed: 16
+		TurnSpeed: 8
 		Turret: deployed
 	RevealOnFire:
 		ArmamentNames: primary, deployed
@@ -917,10 +929,7 @@ ordos_pythontank:
 		Modifier: 50
 	RangeMultiplier@deployed:
 		RequiresCondition: deployed
-		Modifier: 125
-	DamageMultiplier@deployed:
-		RequiresCondition: deployed
-		Modifier: 75
+		Modifier: 160
 	Armament@PRIMARY:
 		Weapon: 120mm_python
 		LocalOffset: 750,0,350
@@ -960,13 +969,28 @@ ordos_pythontank:
 		Voice: Move
 	Voiced:
 		VoiceSet: EBFDOrdosCobra
-	RangeMultiplier@deployed:
-		Modifier: 160
-		RequiresCondition: deployed
 	RenderSprites:
 		PlayerPalette: player_rgba
 	ActorStatValues:
 		Upgrades: ordos_upgrade_shields, ordos_upgrade_contraband
+	# DEPLOYING ADDS THE STEEL DEFENCE ARMOUR ON TOP OF THE UNIT'S OWN CLASS ARMOUR.
+	# Maintainer 2026-08-22: *"activate the steel armor type on deploy but keep the underlying
+	# regular armor intact and then create the average between them"* — a deployed unit is a
+	# static defence, and Steel is what defences wear.
+	#
+	# Both traits stay ENABLED together, which is the whole point:
+	# `AreaDamageWarhead.MultiArmorCombination` defaults to `Average`, so the class row and the
+	# Steel row meet in the middle instead of one replacing the other. Gating the class armour
+	# on `undeployed` — what the defence rig, siege tank and matador used to do — makes Steel a
+	# REPLACEMENT and throws the unit's own class away.
+	#
+	# ⚠ Averaging only happens for warheads routing through AreaDamage (62.9% of the tree).
+	# The legacy inline-Versus SpreadDamage nodes still MULTIPLY, and under multiplication the
+	# class row cancels out entirely (the ratio becomes just Steel/100) — so those weapons see a
+	# flatter effect than designed until item A5 retires them onto ^Warhead_* templates.
+	Armor@deployed:
+		Type: Steel
+		RequiresCondition: !shielded && deployed
 
 ordos_lasertank:
 	Inherits: ^D2KTank
@@ -1394,7 +1418,7 @@ ordos_raider:
 		TurnSpeed: 72
 	WithMuzzleOverlay:
 	Armament@damage:
-		Weapon: HMGo
+		Weapon: ordos_raider_hmg
 		LocalOffset: 210,135,75, 210,-135,75
 		MuzzlePalette: d2keffect
 		MuzzleSequence: muzzle
@@ -1786,10 +1810,10 @@ ordos_heavyautoguntank:
 		RegenAmount: 96
 	Mobile:
 		Speed: 75
-		TurnSpeed: 30
+		TurnSpeed: 15
 	Turreted:
 		Offset: 32,16,0
-		TurnSpeed: 12
+		TurnSpeed: 15
 	AttackFrontal:
 		FacingTolerance: 0
 	Armament:

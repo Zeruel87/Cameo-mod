@@ -4,7 +4,7 @@ Status: **The framework + the entire Temperature axis ALREADY EXIST and are wire
 corrects the first draft, which wrongly implied a from-scratch C# build. The real remaining work is
 small (one C# field + yaml config). Verify against the code before building — "don't trust, verify".
 
-Companion: `AREADAMAGE_WARHEAD_REBALANCE.md`, `SPREAD_FALLOFF_PLAN.md`; memory `cameo-weapon-differentiation`.
+Companion: `AREADAMAGE_WARHEAD.md`, `SPREAD_FALLOFF_PLAN.md`;.
 
 ---
 
@@ -96,7 +96,7 @@ parts relate*.
 ⛔ **This is why `BALANCE_PROGRAM_PLAN` §0a puts weapon STRUCTURE before pricing** — restated by
 the maintainer 2026-08-19: *"that's exactly why I said you should finish the 3 way weapon split
 first!"* Pricing a weapon whose structure is wrong measures the wrong object. The burn-down is
-pinned as `w24_multi_main_fed` (386, ratchet-down-only).
+pinned as `w24_multi_main_fed` (380, ratchet-down-only).
 
 ⚠ **RELAXATION is still excluded** and moves this number down further: `RelaxationDelay 25` +
 `RelaxationLinear 5` + `RelaxationScaled 50` bleeds ~642 meter/shot at `ReloadDelay 60` (23% of
@@ -234,16 +234,15 @@ cold/corrosion auto-scale with damage. **Everything else below is YAML config of
 
 ⚠ Corrosion is NOT greenfield: it already exists as a **binary `corroded` condition** (`defaults.yaml`
 ~5495–5516) applied on/off by the Schwarzer Mond rockets — `DamageMultiplier@corroded 125`,
-`SpeedMultiplier@corroded 75`, `WithColoredOverlay@corroded 44FF4444` (green), `WithIdleOverlay@corroded`
-(`Image: explosion, Sequence: nax_corr_frag` = the pulse), `Targetable@corroded`. So BUILD 1 is a
-CONVERSION, reusing the existing art:
+`SpeedMultiplier@corroded 75`, `WithColoredOverlay@corroded 44FF4444` (green), `Targetable@corroded`.
+So BUILD 1 is a CONVERSION, reusing the existing gameplay mechanics:
 1. Add `PhysicalState@Corrosion` meter (0–20000, `RelativeToHealth`, decay) on `^CryoFreezable` (the
    shared Temperature home) + wherever else Temperature lives.
 2. Replace the fixed `@corroded` traits with **scaled** ones from 50%→100% (`ChangesHealthProportionalToPhysicalState`
    DoT ~180 + a `@…Hazmat` half via `hazmatsuits`; `SlowsProportionalToPhysicalState` `OnlyPositiveValues`
    to ~60%; `DamageMultiplierProportionalToPhysicalState` to +150%).
-3. Keep the art: `WithPhysicalStateColoredOverlay@Corrosion` green tint 200→20000; `WithIdleOverlay`
-   `nax_corr_frag` pulse gated on a `CorrosionMax` condition (meter == 20000).
+3. Keep the meter art: `WithPhysicalStateColoredOverlay@Corrosion` green tint 200→20000; leave the
+   `CorrosionMax` condition visual-empty.
 4. Migrate the Schwarzer Mond weapons from granting the binary `corroded` to feeding the Corrosion meter
    (via the new `PhysicalStateScale`, or an `ApplyPhysicalState` warhead). Keep the old binary path until
    migrated so nothing breaks mid-way.
@@ -300,7 +299,7 @@ Cryo warhead's Versus is the real value (temperature alone would be redundant). 
 ⚠ **Combined weapons stack it further (maintainer 2026-08-09):** artillery is being reworked to
 **CannonHE + Demolition** (the slow big-blast combo), so a cryo upgrade makes Cryo the **THIRD** warhead
 (CannonHE + Demolition + Cryo). This exceeds the usual 2-warhead cap but is a justified exception (a
-combined artillery weapon + an upgrade) — the allow-list case in [[cameo-weapon-structure-rules]].
+combined artillery weapon + an upgrade) — the allow-list case in.
 
 **Damage model (maintainer 2026-08-09) — symmetric warheads + a FirepowerMultiplier penalty:**
 keep all members at the SAME damage (e.g. each 2000) and pay for the freeze by REDUCING net output.
@@ -347,7 +346,7 @@ used for Temperature's blue cold side) AND (b) **threshold artwork** at the extr
 | **Sonic** | 🔵 **looped, transparently-shifting blue** overlay (the sonic-mark visual) | — (on-hit, short duration) | **NEW art needed** — a looped shifting-blue overlay. PLACEHOLDER live now: `^SonicDebuff` uses a flat `WithColoredOverlay@SONICDEBUFF` (`0088FF40`, Multiply) — swap it for the looped overlay when the art lands. The commented-out `WithDecoration@SONICDEBUFF` in `^SonicDebuff` still points at the existing `2100commandodebuff` icon. |
 | **Armor Breach** | very light **grey** scaling overlay | **breach icon** at 100% — a bullet punching through armor plating (when they take 200%) | **NEW art needed** — the breach icon; overlay is just grey colour |
 
-**New sprite art to create** (RGBA PngSheet per memory `cameo-custom-effects-pngsheet`; pair every new
+**New sprite art to create** (RGBA PngSheet per pair every new
 effect with a sound): the **looped shifting-blue Sonic** overlay, and the **armor-breach breach-icon**
 (bullet-through-plating) for the 100% state. Corrosion's pulse already exists (play it at max) and its
 green tint is just a colour trait. The traits (`WithPhysicalStateColoredOverlay` / `WithIdleOverlay`)
@@ -385,7 +384,7 @@ reference an image+sequence, so the yaml wires with placeholders and the art dro
 - ✅ C# damage-scaled `PhysicalStateName`/`PhysicalStateScale` on `AreaDamage` + `_Percentage` — `406261128`
 - ✅ C# MULTI-state `PhysicalStates` dict (one warhead → many meters) — `2e6d6968a`
 - ✅ Corrosion meter axis on `^Corrodible` (green tint 200→20000, DoT+slow+vuln 50→100%, hazmat-half,
-  `nax_corr_frag` pulse at max) — additive, INERT until fed — `ecf616978`
+  no cap visual) — additive, INERT until fed — `ecf616978`
 - ✅ Family wiring LIVE: Flame +100 / Laser +75 / Chemical +100 (generator `FAMILY_PHYSICAL_STATE`) — `51148be5b`
 - ✅ Cryo family = `^Warhead_Cryo_*` inherits `^Warhead_Prism_*` + Temperature −100 (generator
   `INHERIT_FAMILIES`) — `f97a3b77c`
@@ -402,9 +401,28 @@ reference an image+sequence, so the yaml wires with placeholders and the art dro
   into all three `^Warhead_Sonic_*` levels by the generator (`FAMILY_CONDITION` → a
   `Warhead@<tag>_Debuff: GrantExternalCondition`, both numbers DERIVED: `Duration = 2 × ReloadDelay` = 50
   ticks, `Range = 2 × Spread` = 800/1200/1600 = the half-damage radius). Zero damage → price-neutral,
-  drift stays 1. The predator laser / waveforce / IonPulse keep their own hand-tuned grants, now of the
+  drift stays 0. The predator laser / waveforce / IonPulse keep their own hand-tuned grants, now of the
   renamed condition. `5a14355e6`
+- ✅ **Magnetism meter on `^Magnefreezable`** (2026-08-22) — the third live axis. The magnetic grip
+  used to be an `ExternalCondition` counted in STACKS (`RA2Magnet` is `Burst 100 / BurstDelays 1`, so
+  one volley grants 100 tokens over 99 ticks) read by ten `SpeedMultiplier` + ten `WithColoredOverlay`
+  traits on 10-point windows. ⛔ **All nine interior boundaries overlapped** — `Magnet <= 20` and
+  `Magnet >= 20` both hold at exactly 20 — so two multipliers MULTIPLIED at every step the burst swept
+  through: 90%×80% = **72%** at 20, 60%×50% = **30%** at 50. The ramp was non-monotonic at every
+  boundary, on all **739** actors that inherit the template (via `^Vehicle`, `^RANeutralPlane`,
+  `^ShootableMissile`), on every volley. 20 traits → 5; the overlap is structurally impossible now
+  because `SlowsProportionalToPhysicalState` interpolates. Meter `0..20000`, `RelativeToHealth: false`
+  (the old stack counted SHOTS, not damage), `Amount: 200` × `Burst: 100` = a full lock per volley,
+  and the CONSUMED `magnetfreeze` condition is re-granted by `GrantConditionOnPhysicalState` at a full
+  bar. Price-neutral: both carriers (`yuri_magnetron`, `asianalliance_hyperionprojector`) already pay
+  1.183× for the heat binding on `^RA2LaserWeapon`, and `actor_multipliers` takes the max, not the sum.
 - (Temperature axis + framework were ALREADY built — see §0.)
+- ✅ **Upgraded-weapon IntegrityScale bump + missing chip `DamageTypes: Tesla`** (Devin, 2026-08-10,
+  `145c6861c`, PR `fix/tesla-integrity-upgrade-drain`) — fixed two bugs that kept RA1 Tesla Doctrine /
+  RA2 Tesla Overload upgrades draining integrity at the same ratio as their un-upgraded base weapon.
+  Full root-cause + fix write-up, plus a reply-letter with suggestions for the still-queued flat-EMP
+  cleanup, lives in `docs/design/EMP_INTEGRITY_SYSTEM.md` §3c and §6 — read those before touching the
+  flat-EMP sweep (§4 there) or the Quantum Tesla-typing decision (§2 there).
 
 **TODO — resume queue (in order):**
 1. **ADOPT the Sonic family** (needs a maintainer warhead order — rule 4): nothing inherits
@@ -429,8 +447,8 @@ reference an image+sequence, so the yaml wires with placeholders and the art dro
    curves, Railgun charge-delay, resume Phase B mixed-weapon collapse (~350, behavior-preserving).
 
 **Guardrails to keep:** boot-gate every commit (kill lingering OpenRA before a C# rebuild — it locks
-`engine/bin`); `verify_generator_sync` drift stays **1** (pre-existing `^Warhead_Sniper_Light`, not the
-generator's); scoped `git add`; family PhysicalState goes on the main and percentage warheads (chip excluded).
+`engine/bin`); `verify_generator_sync` drift stays **0** (regenerated `^Warhead_Sniper_Light` now matches the
+generator); scoped `git add`; family PhysicalState goes on the main and percentage warheads (chip excluded).
 
 ## 6. Decisions (maintainer 2026-08-09) + what's still open
 DECIDED:

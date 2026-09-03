@@ -390,6 +390,11 @@ def pseudo_armor_mean(row: str = "Shield") -> float:
     """
     values: list[float] = []
     for name, node in _ruleset().weapons.items():
+        # Percentage-inert compatibility slices are structural migration helpers,
+        # not standalone damage profiles. Counting their template rows would move
+        # the global shield model even though no weapon behavior changed.
+        if name.startswith("^Compatibility_"):
+            continue
         for child in node.children:
             if not child.key.startswith("Warhead@"):
                 continue

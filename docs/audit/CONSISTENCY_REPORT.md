@@ -50,7 +50,7 @@ changes are naming consistency, documentation, audit scripts, and exception conf
 - **Fix**: Changed to `ra1_soviets_cyberdog`.
 
 #### 3. MASTER_REPORT §9.1: `ra1_soviet` → `ra1_soviets` (FIXED)
-- **File**: `docs/MASTER_REPORT.md` line 392
+- **File**: `docs/history/MASTER_REPORT_2026-07-08.md` line 392
 - **Issue**: Used `ra1_soviet_*` (singular), but actual InternalName is
   `ra1_soviets` (plural) and all actor IDs use `ra1_soviets_*`.
 - **Fix**: Changed to `ra1_soviets_*` / `ra2_soviets_*`.
@@ -140,7 +140,7 @@ changes are naming consistency, documentation, audit scripts, and exception conf
 - **Fix**: Added them to the list.
 
 #### 14. MASTER_REPORT §9.1: Missing variant suffixes (FIXED)
-- **File**: `docs/MASTER_REPORT.md` line 396
+- **File**: `docs/history/MASTER_REPORT_2026-07-08.md` line 396
 - **Issue**: Listed only `_mk2, _elite, _husk, _water, _ai`. Missing:
   `_sp, _r4, _wild, _EMP, _AA, _upgraded`, `.husk`, `para`.
 - **Fix**: Expanded to match DESIGN.md §1, with cross-reference.
@@ -231,12 +231,12 @@ The following files/areas were checked and found clean:
 - `CLAUDE.md` — no stale references
 - `docs/MIGRATION.md` — no stale references
 - `docs/audit/SUMMARY.md` — no stale references
-- `docs/audit/FINDINGS.md` — no stale references
+- `docs/history/audits/BASELINE_FINDINGS.md` — no stale references
 - `docs/factions/MATRIX.md` — no stale references
 - `docs/design/upgrades_intent.yaml` — no stale references
-- `docs/design/cabal_rebuild_plan.md` — consistent working doc
-- `docs/design/schwarzer_mond_artwork_status.md` — no stale references
-- `docs/design/shattered_paradise_research.md` — no stale references
+- `docs/design/RESEARCH_NOTES.md` — consistent working doc
+- `docs/design/RESEARCH_NOTES.md` — no stale references
+- `docs/design/RESEARCH_NOTES.md` — no stale references
 - `docs/Cameo_Knowledge_Base_Manual.md` — actor IDs with `_aa` (e.g.
   `d2k_aa_mine`) are actor names, not weapon suffixes; not a violation
 - `docs/session_progress_2026_07_14.md` — historical session log; no

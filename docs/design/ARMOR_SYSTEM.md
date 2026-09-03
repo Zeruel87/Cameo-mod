@@ -15,14 +15,14 @@ Every damage weapon's Versus table is fully determined by two choices:
    sits at 100 (the best target) and the descending sequence after it.
    The step is constant; the ORDER is the weapon's identity.
 
-## LEVEL — the step law (main SpreadDamage warhead)
+## LEVEL — the step law (main AreaDamage warhead)
 
-| level | step | runs 100 → | Shield (special) | WC (K) |
+| level | step | runs 100 → | Shield | WC (K) |
 |---|---|---|---|---|
-| **Light** | **6** | **10** | **110** | 0.75 |
-| **Medium** | **5** | **25** | **125** | 1.00 |
-| **Heavy** | **4** | **40** | **140** | 1.25 |
-| **Super** | **3** | **55** | **155** | **1.50** |
+| **Light** | **6** | **10** | generated separately | 0.75 |
+| **Medium** | **5** | **25** | generated separately | 1.00 |
+| **Heavy** | **4** | **40** | generated separately | 1.25 |
+| **Super** | **3** | **55** | generated separately | **1.50** |
 
 `Super` (step 3) is the CONFIRMED superweapon band (maintainer 2026-08-02) for **Nuclear** and
 **charged Tesla** — one notch above Heavy in both flatness and WeaponClass.
@@ -58,10 +58,12 @@ Every damage weapon's Versus table is fully determined by two choices:
   standard set. **Step 3 = `Super` (floor 55, WC 1.5) is CONFIRMED** (Nuclear +
   charged Tesla, 2026-08-02); steps 2/1 remain unused — confirm before using.
 
-## The PERCENTAGE warhead (HealthPercentageDamage) — its own scale
+## The folded percentage half — its own armor profile
 
-Each weapon pairs its main warhead with a HealthPercentageDamage
-warhead that ALSO ladders down by step 1, in a level-dependent window:
+Each generated family carries one `AreaDamage` warhead. Its flat hit uses
+`Damage` and `Versus`; its folded max-health hit is enabled by
+`PercentageScale` and uses `PercentageVersus`. The percentage armor profile
+still ladders down by step 1 in a level-dependent window:
 
 | level | % top → floor | Shield % (= top + floor) |
 |---|---|---|
@@ -70,21 +72,21 @@ warhead that ALSO ladders down by step 1, in a level-dependent window:
 | Heavy | 25 → 10 | **35** |
 | Super | 30 → 15 | **45** |
 
-Same armor ORDER as the main warhead; step always 1. Shield obeys the
-SAME `top + floor` law.
+Same armor ORDER as the main hit; step always 1. Shield obeys the same percentage-profile
+law. This table is a SHAPE, not the final percent of max health.
 
-**IMPORTANT — the % table is a SHAPE, not the actual damage (corrected 2026-08-02).**
-The HealthPercentageDamage twin's real magnitude is set by its **`Damage` field =
-mainFlatDamage / 2000** (the "1 per 2000" law, `formula.py`; memory
-`cameo-weapon-structure-rules`), and the table above only *shapes* that base across
-armors. So the % is a **modest chip PROPORTIONAL to the flat damage** — NOT a flat
-16–30% of max HP. And because values are **integers rounded down**, a small base ×
-a low Versus **rounds to 0** → **natural hard immunity** for a weapon against the
-targets it is bad against (this is what makes RPS counters real, no floor-zeroing
-needed). The % naturally peaks on the weapon's best target, so anti-tank profiles
-auto-earn a tank-sized HP chip while anti-infantry profiles get ~0 % (flat dominates).
-The flat-vs-% RATIO is a whole ORTHOGONAL design axis (anti-small ↔ anti-big) — see
-`WEAPON_TYPE_SYSTEM.md` §13 (Sonic = flat-equalizer, Magic = %-equalizer).
+At the standard `PercentageScale: 10000`, every 2000 flat `Damage` produces 100 basis
+points (1.00% of max health) before `PercentageVersus`. The engine rounds that derived
+basis-point amount once, then applies the armor row and the victim's maximum HP. This is
+therefore a **modest contribution proportional to the same `Damage`**, not an independent
+16–30% hit and not a fixed damage floor. Low final values can still truncate to zero, but
+hard immunity is not a design guarantee and must not be inferred from the retired
+whole-percent twin. A nonstandard `PercentageScale` is the explicit flat-vs-percentage
+ratio dial.
+
+Standalone `AreaDamagePercentage` or `HealthPercentageDamage` warheads still exist on
+bespoke weapons. Those are independent max-health hits and create a real output floor;
+the balance model prices them separately from folded damage. See `EFFECTIVE_DAMAGE.md`.
 
 ## PROFILE — the standard armor orderings (which type is at 100)
 

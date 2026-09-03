@@ -1,6 +1,6 @@
 # audit_orphans — dead content (B10)
 
-Live weapons: **2621** — orphans: **374**, dangling weapon refs (BLOCKING): **0**, conditions granted-never-consumed: **15**
+Live weapons: **2784** — orphans: **377**, dangling weapon refs (BLOCKING): **0**, conditions granted-never-consumed: **15**
 
 
 ## O2 — dangling weapon references (crash-on-use class)
@@ -34,6 +34,7 @@ _none found_
 | ChronoAI | mods/cameo/ContentPacks/RedAlert/Shared/yaml/weapons.yaml |
 | ChronoMinerTeleport | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
 | ChronoMinerTeleportImpact | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
+| ChronoReinforcementsSpawner | mods/cameo/ContentPacks/RedAlert/Shared/yaml/weapons.yaml |
 | ChronoVortexInit | mods/cameo/ContentPacks/RedAlert/Shared/yaml/weapons.yaml |
 | ChronoshiftImpact | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
 | Combat_Tank_F_Sound | mods/cameo/weapons/d2k.yaml |
@@ -247,6 +248,7 @@ _none found_
 | SWrBigRedLaser | mods/cameo/weapons/weapons.yaml |
 | SardDeath | mods/cameo/weapons/d2k.yaml |
 | Scarab | mods/cameo/weapons/starcraft.yaml |
+| ScrapCarSpawner | mods/cameo/ContentPacks/RedAlert2Mod/Syndicate/yaml/weapons.yaml |
 | Short8Inch | mods/cameo/weapons/weapons.yaml |
 | SmallHeliCrash | mods/cameo/weapons/weapons.yaml |
 | Sound2 | mods/cameo/weapons/d2k.yaml |
@@ -266,6 +268,7 @@ _none found_
 | TSChemAdatsMissile | mods/cameo/weapons/tiberiansun.yaml |
 | TSChemAdatsMissileAA | mods/cameo/weapons/tiberiansun.yaml |
 | TSDragon | mods/cameo/weapons/tiberiansun.yaml |
+| TSDroppodSpawner | mods/cameo/ContentPacks/TiberianSun/GDI/yaml/weapons.yaml |
 | TSGrenadeAA | mods/cameo/weapons/tiberiansun.yaml |
 | TSHeal | mods/cameo/weapons/tiberiansun.yaml |
 | TSHighVelocityTurChem | mods/cameo/weapons/tiberiansun.yaml |

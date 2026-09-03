@@ -10,13 +10,20 @@ Before starting ANY task, load these documents into context IN THIS ORDER. Never
 1. `CLAUDE.md` (repo root) — project instructions, loaded every session.
 2. `docs/LESSONS_LEARNED.md` — safe defaults, pitfalls, latest incident findings.
 3. `docs/AGENT_WORKSPACE.md` — source-of-truth map, operating sequence, git/commit rules.
-4. `docs/PROJECT_CONTEXT.md` — project orientation.
+4. `docs/HANDOFF.md` — **the entry point**: verified current state and the priority-ordered
+   queue. It supersedes every dated handoff; those live in `docs/history/handoffs/` and must
+   NOT be resumed from.
 5. `docs/DESIGN.md` — binding rules (relevant sections) before touching YAML/assets/naming/balance.
-6. `docs/design/ROADMAP.md` — current work queue; P0 crashes jump the queue.
-7. `docs/audit/SUMMARY.md` — known issue classes.
+6. `docs/design/ROADMAP.md` — the granular work queue; P0 crashes jump it.
+7. `docs/audit/SUMMARY.md` — known issue classes and current counts.
 8. `docs/Cameo_Knowledge_Base_Manual.md` — engine/trait reference as needed.
 
-If any document conflicts with chat memory or old notes, the repository documents win.
+`docs/README.md` is the CANONICAL definition of this order; if this copy disagrees with it,
+README wins and this copy gets fixed.
+
+If any document conflicts with chat memory or old notes, the repository documents win — and if
+the ARTIFACT (the tree, an audit, the boot) disagrees with a document, the artifact wins and the
+document gets fixed in the same commit.
 
 # Boot-gate rule (never forget)
 

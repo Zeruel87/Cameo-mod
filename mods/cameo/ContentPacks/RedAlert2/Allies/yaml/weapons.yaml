@@ -11,9 +11,6 @@ RA2Patriot:
 		MinimumLaunchAngle: 60
 	Warhead@MissileAP_Medium:
 		Damage: 10000
-	Warhead@MissileAP_Medium_Percentage: HealthPercentageDamage
-		Damage: 5
-
 RA2PatriotThunderboltMissile:
 	Inherits@wh: ^Warhead_MissileAA_Heavy
 	Inherits@proj: ^Projectile_Missile_AA
@@ -43,6 +40,9 @@ RA2PatriotThunderboltMissile:
 		Acceleration: 10
 		ContrailStartColor: EEEE00
 		ContrailEndColor: FFFFFF
+	Warhead@MissileAA_Heavy:
+		ValidTargets: Air
+		Damage: 10000
 
 HarrierMissiles:
 	Inherits: ^LightFlameWeapon
@@ -51,6 +51,7 @@ HarrierMissiles:
 	Inherits@4: ^HeavyAAWeapon
 	Inherits@5: ^FlakWeapon
 	Inherits@6: ^RA2MediumMissile
+	Inherits@WallExcluded: ^Compatibility_MissileAP_Medium_WallExcluded
 	ReloadDelay: 104
 	Burst: 4
 	BurstDelays: 2
@@ -61,15 +62,22 @@ HarrierMissiles:
 	Projectile: Missile
 		Inaccuracy: 333
 		Speed: 555
-	Warhead@LightFlameWeapon: AreaDamage
-		ValidRelationships: Ally, Neutral, Enemy
-		FriendlyFireDamage: 50
-		FriendlyFireSpread: 50
+		ContrailStartColor: FF884400
+		ContrailEndColor: 000000FF
+	Warhead@MissileAP_Medium:
 		ValidTargets: Ground, Water, Air
-		Damage: 4000
+		Damage: 18000
+		PercentageScale: 2222
+		PercentageDenominator: 10000
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-		PhysicalStateName: Temperature
-		PhysicalStateScale: 100
+	Warhead@MissileAP_Medium_WallExcludedExtraDamage:
+		Damage: 8000
+	-Warhead@LightFlameWeapon:
+	-Warhead@Grenade:
+	-Warhead@GrenadeFriendlyFire:
+	-Warhead@HeavyChemicalWeapon:
+	-Warhead@HeavyAAWeapon:
+	-Warhead@FlakWeapon:
 	Warhead@LightFlameWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 2
@@ -77,30 +85,11 @@ HarrierMissiles:
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PhysicalStateName: Temperature
 		PhysicalStateScale: 100
-	Warhead@Grenade: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-		ValidRelationships: Neutral, Enemy
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@GrenadeFriendlyFire: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 2000
-		ValidRelationships: Neutral, Enemy
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@GrenadePercentage: HealthPercentageDamage
+	Warhead@GrenadePercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 2
 		ValidRelationships: Neutral, Enemy
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@HeavyChemicalWeapon: AreaDamage
-		ValidRelationships: Ally, Neutral, Enemy
-		FriendlyFireDamage: 50
-		FriendlyFireSpread: 50
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@HeavyChemicalWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 2
@@ -108,36 +97,27 @@ HarrierMissiles:
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PhysicalStateName: Corrosion
 		PhysicalStateScale: 100
-	Warhead@HeavyAAWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-		ValidRelationships: Neutral, Enemy
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@HeavyAAWeaponPercentage: HealthPercentageDamage
+	Warhead@HeavyAAWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 2
 		ValidRelationships: Neutral, Enemy
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@FlakWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-		ValidRelationships: Neutral, Enemy
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@FlakWeaponPercentage: HealthPercentageDamage
+	Warhead@FlakWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 2
 		ValidRelationships: Neutral, Enemy
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@MissileAP_Medium:
-		ValidTargets: Ground, Water, Air
-		Damage: 4000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@MissileAP_Medium_Percentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 2
-		ValidRelationships: Neutral, Enemy
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-
+	Warhead@Effect: CreateEffect
+		ImpactActors: false
+		GlowScale: 2.0
+		GlowFadeFrames: 60
+		GlowFadeInFrames: 12
+	Warhead@GroundFire: SpawnActor
+		Actors: groundfire
+		Range: 1
+		ForceGround: true
+		OwnerType: InternalName
+		InternalOwner: Neutral
 HarrierMissiles_elite:
 	Inherits: HarrierMissiles
 	Burst: 8
@@ -153,6 +133,7 @@ HarrierMissiles_elite:
 		ContrailEndColor: FFFFFF
 
 BlackEagleMissiles:
+	Inherits@finalmain: ^Compatibility_MissileAP_MediumFlat
 	Inherits@wh: ^Warhead_Demolition_Light
 	Inherits@wh2: ^Warhead_Demolition_Heavy
 	Inherits@proj: ^Projectile_Grenade_Light
@@ -181,22 +162,103 @@ BlackEagleMissiles:
 	Warhead@Demolition_Light:
 		Damage: 16000
 		ValidTargets: Ground, Water, Air
-	Warhead@Demolition_Light_Percentage:
-		Damage: 8
-		ValidTargets: Ground, Water, Air
 	Warhead@Demolition_Heavy:
 		Damage: 16000
-		ValidTargets: Ground, Water, Air
-	Warhead@Demolition_Heavy_Percentage:
-		Damage: 8
 		ValidTargets: Ground, Water, Air
 	Warhead@MissileAP_Medium:
 		Damage: 16000
 		ValidTargets: Ground, Water, Air
-	Warhead@MissileAP_Medium_Percentage: HealthPercentageDamage
-		Damage: 8
+	Warhead@CollapsedBlackEagleMissilesDemolition_HeavyPercentage: AreaDamagePercentage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
 		ValidTargets: Ground, Water, Air
-
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		Damage: 800
+		PercentageDenominator: 10000
+		Versus:
+			Shield: 35
+			Wood: 25
+			Steel: 24
+			Concrete: 23
+			None: 22
+			Flak: 21
+			Plate: 20
+			Heroic: 19
+			Scout: 18
+			Light: 17
+			Medium: 16
+			Heavy: 15
+			Superheavy: 14
+			Fighter: 13
+			Bomber: 12
+			Helicopter: 11
+			Spaceship: 10
+		Falloff: 100, 45, 18
+		Range: 0, 466, 932
+	Warhead@CollapsedBlackEagleMissilesDemolition_LightPercentage: AreaDamagePercentage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water, Air
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		Damage: 800
+		PercentageDenominator: 10000
+		Versus:
+			Shield: 17
+			Wood: 16
+			Steel: 15
+			Concrete: 14
+			None: 13
+			Flak: 12
+			Plate: 11
+			Heroic: 10
+			Scout: 9
+			Light: 8
+			Medium: 7
+			Heavy: 6
+			Superheavy: 5
+			Fighter: 4
+			Bomber: 3
+			Helicopter: 2
+			Spaceship: 1
+		Falloff: 100, 45, 18
+		Range: 0, 233, 466
+	Warhead@CollapsedBlackEagleMissilesMissileAP_MediumPercentage: AreaDamagePercentage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water, Air
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		Damage: 800
+		PercentageDenominator: 10000
+		Versus:
+			Shield: 25
+			Superheavy: 20
+			Heavy: 19
+			Medium: 18
+			Light: 17
+			Scout: 16
+			Spaceship: 15
+			Helicopter: 14
+			Bomber: 13
+			Fighter: 12
+			Concrete: 11
+			Steel: 10
+			Wood: 9
+			Heroic: 8
+			Plate: 7
+			Flak: 6
+			None: 5
+		Falloff: 100, 50
+		Range: 0, 32
+	-Warhead@Demolition_Heavy:
+	-Warhead@Demolition_Light:
+	-Warhead@MissileAP_Medium:
+	Warhead@MissileAP_MediumFlatCompatibility:
+		ValidTargets: Ground, Water, Air
+		Damage: 48000
+		PercentageScale: 0
 BlackEagleMissiles_elite:
 	Inherits: BlackEagleMissiles
 	Range: 10000
@@ -208,6 +270,97 @@ BlackEagleMissiles_elite:
 		ContrailStartColor: E60000
 		ContrailEndColorUsePlayerColor: true
 		ContrailEndColor: FFFFFF
+	-Warhead@CollapsedBlackEagleMissilesDemolition_HeavyPercentage:
+	-Warhead@CollapsedBlackEagleMissilesDemolition_LightPercentage:
+	-Warhead@CollapsedBlackEagleMissilesMissileAP_MediumPercentage:
+	Warhead@CollapsedBlackEagleMissiles_eliteDemolition_HeavyPercentage: AreaDamagePercentage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water, Air
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		Damage: 800
+		PercentageDenominator: 10000
+		Versus:
+			Shield: 35
+			Wood: 25
+			Steel: 24
+			Concrete: 23
+			None: 22
+			Flak: 21
+			Plate: 20
+			Heroic: 19
+			Scout: 18
+			Light: 17
+			Medium: 16
+			Heavy: 15
+			Superheavy: 14
+			Fighter: 13
+			Bomber: 12
+			Helicopter: 11
+			Spaceship: 10
+		Falloff: 100, 45, 18
+		Range: 0, 466, 932
+	Warhead@CollapsedBlackEagleMissiles_eliteDemolition_LightPercentage: AreaDamagePercentage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water, Air
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		Damage: 800
+		PercentageDenominator: 10000
+		Versus:
+			Shield: 17
+			Wood: 16
+			Steel: 15
+			Concrete: 14
+			None: 13
+			Flak: 12
+			Plate: 11
+			Heroic: 10
+			Scout: 9
+			Light: 8
+			Medium: 7
+			Heavy: 6
+			Superheavy: 5
+			Fighter: 4
+			Bomber: 3
+			Helicopter: 2
+			Spaceship: 1
+		Falloff: 100, 45, 18
+		Range: 0, 233, 466
+	Warhead@CollapsedBlackEagleMissiles_eliteMissileAP_MediumPercentage: AreaDamagePercentage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water, Air
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		Damage: 800
+		PercentageDenominator: 10000
+		Versus:
+			Shield: 25
+			Superheavy: 20
+			Heavy: 19
+			Medium: 18
+			Light: 17
+			Scout: 16
+			Spaceship: 15
+			Helicopter: 14
+			Bomber: 13
+			Fighter: 12
+			Concrete: 11
+			Steel: 10
+			Wood: 9
+			Heroic: 8
+			Plate: 7
+			Flak: 6
+			None: 5
+		Falloff: 100, 50
+		Range: 0, 32
+	Warhead@MissileAP_MediumFlatCompatibility:
+		ValidTargets: Ground, Water, Air
+		Damage: 48000
+		PercentageScale: 0
 
 BlackEagleThunderboltMissiles:
 	Inherits: ^Grenade
@@ -219,6 +372,7 @@ BlackEagleThunderboltMissiles:
 	Inherits@7: ^FlakWeapon
 	Inherits@8: ^ArrowWeapon
 	Inherits@9: ^RA2LightMissile
+	Inherits@WallExcluded: ^Compatibility_MissileAP_Light_WallExcluded
 	ReloadDelay: 50
 	Burst: 4
 	BurstDelays: 2
@@ -241,87 +395,84 @@ BlackEagleThunderboltMissiles:
 		Acceleration: 10
 		ContrailStartColor: EEEE00
 		ContrailEndColor: FFFFFF
-	Warhead@Grenade: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 6000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@GrenadeFriendlyFire: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 3000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@GrenadePercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 3
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@ShrapnelWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 6000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 3000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 3
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@HeavyBomb: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 6000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@HeavyBombPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 3
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@HeavyMissile: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 6000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@HeavyMissilePercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 3
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@HeavyAAWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 6000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@HeavyAAWeaponPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 3
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@MediumMissile: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 6000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@MediumMissilePercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 3
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@FlakWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 6000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@FlakWeaponPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 3
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@ArrowWeapon: SpreadDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 6000
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@ArrowWeaponPercentage: HealthPercentageDamage
-		ValidTargets: Ground, Water, Air
-		Damage: 3
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 	Warhead@MissileAP_Light:
 		ValidTargets: Ground, Water, Air
-		Damage: 6000
+		Damage: 48000
+		PercentageScale: 1250
+		PercentageDenominator: 10000
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-	Warhead@MissileAP_Light_Percentage: HealthPercentageDamage
+	Warhead@MissileAP_Light_WallExcludedExtraDamage:
+		Damage: 6000
+	-Warhead@Grenade:
+	-Warhead@GrenadeFriendlyFire:
+	-Warhead@ShrapnelWeapon:
+	-Warhead@ShrapnelWeaponFriendlyFire:
+	-Warhead@HeavyBomb:
+	-Warhead@HeavyMissile:
+	-Warhead@HeavyAAWeapon:
+	-Warhead@MediumMissile:
+	-Warhead@FlakWeapon:
+	-Warhead@ArrowWeapon:
+	Warhead@GrenadePercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 3
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-
+	Warhead@ShrapnelWeaponPercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 3
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+	Warhead@HeavyBombPercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 3
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+	Warhead@HeavyMissilePercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 3
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+	Warhead@HeavyAAWeaponPercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 3
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+	Warhead@MediumMissilePercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 3
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+	Warhead@FlakWeaponPercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 3
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+	Warhead@ArrowWeaponPercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 3
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+	Warhead@Effect: CreateEffect
+		ImpactActors: false
+	Warhead@Smudge1: LeaveSmudge
+		SmudgeType: Crater
+		InvalidTargets: Vehicle, Structure, wall, Husk, Creep
+	Warhead@Smudge2: LeaveSmudge
+		SmudgeType: Scorch
+		InvalidTargets: Vehicle, Structure, wall
+		Size: 2
+		Delay: 6
+	Warhead@Smudge2RA2: LeaveSmudge
+		SmudgeType: RA2Scorch
+		InvalidTargets: Vehicle, Structure, wall
+		Size: 2
+		Delay: 6
+	Warhead@Effect1: CreateEffect
+		Explosions: poof
+		ImpactSounds: siege_impact.aud
+		ImpactActors: false
+		ValidTargets: Ground, Ship
+	Warhead@Effect2: CreateEffect
+		Delay: 6
+		Explosions: napalm
+		ImpactSounds: gexp14a.wav
+		ValidTargets: Ground, Ship
+		GlowScale: 1.5
+		GlowFadeFrames: 30
+		GlowFadeInFrames: 12
 BlackEagleThunderboltMissiles_elite:
 	Inherits: BlackEagleThunderboltMissiles
 	Range: 10000
@@ -400,9 +551,6 @@ RA2Prism:
 	Warhead@Laser_Heavy:
 		Damage: 32000
 		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
-	Warhead@Laser_Heavy_Percentage: HealthPercentageDamage
-		Damage: 16
-		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
 	Warhead@3: FireShrapnel
 		Weapon: PrismScatter
 		Amount: 4
@@ -420,8 +568,6 @@ PrismScatter:
 		-HitAnim:
 	Warhead@Laser_Heavy:
 		Damage: 4000
-	Warhead@Laser_Heavy_Percentage: HealthPercentageDamage
-		Damage: 2
 	Warhead@3: FireShrapnel
 		Weapon: PrismScatter2
 		Amount: 3
@@ -437,8 +583,6 @@ PrismScatter2:
 		Duration: 12
 	Warhead@Laser_Heavy:
 		Damage: 2000
-	Warhead@Laser_Heavy_Percentage: HealthPercentageDamage
-		Damage: 1
 	-Warhead@3:
 
 PrismScatterE:
@@ -446,8 +590,6 @@ PrismScatterE:
 	Range: 5000
 	Warhead@Laser_Heavy:
 		Damage: 6000
-	Warhead@Laser_Heavy_Percentage: HealthPercentageDamage
-		Damage: 3
 	Warhead@3: FireShrapnel
 		Weapon: PrismScatter2
 		Amount: 4
@@ -478,18 +620,10 @@ RA2Comet:
 	Warhead@Demolition_Light:
 		Damage: 20000
 		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
-	Warhead@Demolition_Light_Percentage: HealthPercentageDamage
-		Damage: 10
-		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
 	Warhead@Flame_Medium:
 		Damage: 20000
-	Warhead@Flame_Medium_Percentage: AreaDamagePercentage
-		Damage: 10
 	Warhead@Laser_Heavy:
 		Damage: 20000
-		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
-	Warhead@Laser_Heavy_Percentage: HealthPercentageDamage
-		Damage: 10
 		DamageTypes: Prone75Percent, TriggerProne, ElectricityDeath
 	Warhead@3: FireShrapnel
 		InvalidTargets: FireImmune
@@ -511,6 +645,7 @@ RA2Comet_elite:
 		AimTargetStances: Enemy, Neutral
 
 RA2GrandCannonWeapon:
+	Inherits@roleflat: ^Compatibility_CannonHE_HeavyFlat
 	Inherits: ^Warhead_CannonHE_Heavy
 	Inherits@2: ^Projectile_Shell_Heavy
 	Inherits@3: ^Effect_CannonHE_Heavy
@@ -539,12 +674,11 @@ RA2GrandCannonWeapon:
 		ContrailEndWidth: 25
 		TrailInterval: 1
 	Warhead@CannonHE_Heavy:
-		Damage: 50000
-	Warhead@CannonHE_Heavy_Percentage:
-		Damage: 25
+		PercentageScale: 2000
+		Damage: 250000
 	Warhead@HeavyBomb: SpreadDamage
 		Damage: 50000
-	Warhead@HeavyBombPercentage: HealthPercentageDamage
+	Warhead@HeavyBombPercentage: AreaDamagePercentage
 		Damage: 25
 	Warhead@MediumFlameWeapon: AreaDamage
 		ValidRelationships: Ally, Neutral, Enemy
@@ -561,7 +695,7 @@ RA2GrandCannonWeapon:
 		Damage: 50000
 	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
 		Damage: 25000
-	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+	Warhead@ShrapnelWeaponPercentage: AreaDamagePercentage
 		Damage: 25
 	Warhead@LightChemicalWeapon: AreaDamage
 		ValidRelationships: Ally, Neutral, Enemy
@@ -576,13 +710,21 @@ RA2GrandCannonWeapon:
 		PhysicalStateScale: 100
 	Warhead@Demolition_Light:
 		Damage: 50000
-	Warhead@Demolition_Light_Percentage: HealthPercentageDamage
-		Damage: 25
 	Warhead@EffectWater: CreateEffect
 		Explosions: large_splash
 		ImpactSounds: gexpwasa.wav
 		ValidTargets: Water, Underwater
-
+	-Warhead@HeavyBomb:
+	-Warhead@LightChemicalWeapon:
+	-Warhead@MediumFlameWeapon:
+	-Warhead@ShrapnelWeapon:
+	-Warhead@ShrapnelWeaponFriendlyFire:
+	-Warhead@CannonHE_Heavy:
+	-Warhead@Demolition_Light:
+	Warhead@CannonHE_HeavyFlatCompatibility:
+		ValidTargets: Ground, Water
+		Damage: 300000
+		PercentageScale: 3333
 RA2MirageGun_elite:
 	Inherits: RA2MirageGun
 	Inherits@Elite: ^RA2EliteEffects
@@ -591,6 +733,7 @@ RA2MirageGun_elite:
 	BurstDelays: 3
 
 RA2HeavyMirageGun:
+	Inherits@roleflat: ^Compatibility_CannonAP_LightFlat
 	Inherits: ^RailgunWeapon
 	Inherits@2: ^ShrapnelWeapon
 	Inherits@3: ^MediumChemicalWeapon
@@ -604,7 +747,7 @@ RA2HeavyMirageGun:
 	Warhead@RailgunWeapon: SpreadDamage
 		Damage: 8000
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath
-	Warhead@RailgunWeaponPercentage: HealthPercentageDamage
+	Warhead@RailgunWeaponPercentage: AreaDamagePercentage
 		Damage: 4
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath
 	Warhead@ShrapnelWeapon: SpreadDamage
@@ -613,7 +756,7 @@ RA2HeavyMirageGun:
 	Warhead@ShrapnelWeaponFriendlyFire: SpreadDamage
 		Damage: 4000
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath
-	Warhead@ShrapnelWeaponPercentage: HealthPercentageDamage
+	Warhead@ShrapnelWeaponPercentage: AreaDamagePercentage
 		Damage: 4
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath
 	Warhead@MediumChemicalWeapon: AreaDamage
@@ -632,10 +775,17 @@ RA2HeavyMirageGun:
 	Warhead@CannonAP_Light:
 		Damage: 8000
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath
-	Warhead@CannonAP_Light_Percentage: HealthPercentageDamage
-		Damage: 4
+	-Warhead@MediumChemicalWeapon:
+	-Warhead@RailgunExtraDamage:
+	-Warhead@RailgunWeapon:
+	-Warhead@ShrapnelWeapon:
+	-Warhead@ShrapnelWeaponFriendlyFire:
+	Warhead@CannonAP_LightFlatCompatibility:
+		ValidTargets: Ground, Water
+		Damage: 33000
+		PercentageScale: 2422
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath
-
+	-Warhead@CannonAP_Light:
 RA2HeavyMirageGun_elite:
 	Inherits: RA2HeavyMirageGun
 	Inherits@Elite: ^RA2EliteEffects
@@ -674,10 +824,6 @@ RA2Medusa_AA:
 	Warhead@MissileAP_Medium:
 		ValidTargets: Air
 		Damage: 30000
-	Warhead@MissileAP_Medium_Percentage: HealthPercentageDamage
-		ValidTargets: Air
-		Damage: 15
-
 RA2MedusaAG:
 	Inherits: RA2Medusa_AA
 	Range: 9000
@@ -685,9 +831,6 @@ RA2MedusaAG:
 	ValidTargets: Ground, Water
 	Warhead@MissileAP_Medium:
 		ValidTargets: Ground, Water
-	Warhead@MissileAP_Medium_Percentage: HealthPercentageDamage
-		ValidTargets: Ground, Water
-
 RA2M60:
 	Inherits: ^RA2SmallArms
 	ReloadDelay: 15
@@ -697,9 +840,6 @@ RA2M60:
 	Report: igiat1a.wav, igiat1b.wav, igiat1c.wav
 	Warhead@Bullet_Light:
 		Damage: 2000
-	Warhead@Bullet_Light_Percentage: HealthPercentageDamage
-		Damage: 1
-
 ra2_allies_gi_mg:
 	Inherits: ^RA2SmallArms
 	ReloadDelay: 15
@@ -709,9 +849,6 @@ ra2_allies_gi_mg:
 	Report: igiat1a.wav, igiat1b.wav, igiat1c.wav
 	Warhead@Bullet_Light:
 		Damage: 2000
-	Warhead@Bullet_Light_Percentage: HealthPercentageDamage
-		Damage: 1
-
 ra2_allies_gi_para:
 	Inherits: ^RA2Chaingun
 	ValidTargets: Ground, Water
@@ -722,9 +859,6 @@ ra2_allies_gi_para:
 	Report: igiat2a.wav, igiat2b.wav, igiat2c.wav, igiat2d.wav
 	Warhead@Bullet_Medium:
 		Damage: 2000
-	Warhead@Bullet_Medium_Percentage: HealthPercentageDamage
-		Damage: 1
-
 RA2vulcan2:
 	Inherits: GuardianGIMG
 	ReloadDelay: 25
@@ -732,6 +866,7 @@ RA2vulcan2:
 	Report: bpilatta.wav, bpilattb.wav, bpilattc.wav, bpilattd.wav, bpilattc.wav
 
 GuardianGIMG:
+	Inherits@roleflat: ^Compatibility_Bullet_MediumFlat
 	Inherits: ^RA2SmallArms
 	Inherits@2: ^RA2Chaingun
 	ValidTargets: Ground, Water
@@ -742,13 +877,14 @@ GuardianGIMG:
 	Report: vblhatta.wav, vblhattb.wav
 	Warhead@Bullet_Light:
 		Damage: 2000
-	Warhead@Bullet_Light_Percentage: HealthPercentageDamage
-		Damage: 1
 	Warhead@Bullet_Medium:
 		Damage: 2000
-	Warhead@Bullet_Medium_Percentage: HealthPercentageDamage
-		Damage: 1
-
+	-Warhead@Bullet_Light:
+	-Warhead@Bullet_Medium:
+	Warhead@Bullet_MediumFlatCompatibility:
+		ValidTargets: Ground, Water, Air
+		Damage: 4000
+		PercentageScale: 9975
 RA2para:
 	Inherits: ^RA2Chaingun
 	ValidTargets: Ground, Water
@@ -759,16 +895,10 @@ RA2para:
 	Report: igiat2a.wav, igiat2b.wav, igiat2c.wav, igiat2d.wav
 	Warhead@Bullet_Medium:
 		Damage: 2000
-	Warhead@Bullet_Medium_Percentage: HealthPercentageDamage
-		Damage: 1
-
 GuardianGIMG2:
 	Inherits: RA2para
 	Warhead@Bullet_Medium:
 		Damage: 4000
-	Warhead@Bullet_Medium_Percentage: HealthPercentageDamage
-		Damage: 2
-
 GuardianGIMG_elite:
 	Inherits: GuardianGIMG
 	Range: 5762
@@ -788,12 +918,13 @@ RA2AWP_elite:
 	Inherits: RA2AWP
 	Range: 12345
 	Projectile: Bullet
+		Speed: 10000
 		ContrailStartColor: FF0000FF
 	Warhead@Sniper_Light:
 		Damage: 88000
 	Warhead@Sniper_Light_ExtraDamage: OpenToppedDamage
 		Damage: 88000
-	Warhead@Sniper_Light_Percentage: HealthPercentageDamage
+	Warhead@Sniper_Light_Percentage: AreaDamagePercentage
 		Damage: 44
 
 RA2MP5:
@@ -806,6 +937,7 @@ RA2MP5:
 	Burst: 4
 	BurstDelays: 3
 	Projectile: Bullet
+		Speed: 10000
 		ContrailStartColor: 77777777
 		ContrailEndColor: 33333333
 		ContrailStartWidth: 33
@@ -816,7 +948,7 @@ RA2MP5:
 		Damage: 4000
 	Warhead@Sniper_Light_ExtraDamage: OpenToppedDamage
 		Damage: 2000
-	Warhead@Sniper_Light_Percentage: HealthPercentageDamage
+	Warhead@Sniper_Light_Percentage: AreaDamagePercentage
 		Damage: 1
 
 RA2MP5_elite:
@@ -825,6 +957,7 @@ RA2MP5_elite:
 	Burst: 8
 
 ra2roktgun:
+	Inherits@roleflat: ^Compatibility_Bullet_MediumFlat
 	Inherits: ^LightMissile
 	Inherits@2: ^SmallArms
 	Inherits@3: ^FlakWeapon
@@ -836,25 +969,34 @@ ra2roktgun:
 	Warhead@LightMissile: SpreadDamage
 		ValidTargets: Ground, Air, Water
 		Damage: 2000
-	Warhead@LightMissilePercentage: HealthPercentageDamage
+	Warhead@LightMissilePercentage: AreaDamagePercentage
 		ValidTargets: Ground, Air, Water
 		Damage: 1
 	Warhead@SmallArms: SpreadDamage
 		ValidTargets: Ground, Air, Water
 		Damage: 2000
-	Warhead@SmallArmsPercentage: HealthPercentageDamage
+	Warhead@SmallArmsPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Air, Water
 		Damage: 1
 	Warhead@FlakWeapon: SpreadDamage
 		ValidTargets: Ground, Air, Water
 		Damage: 2000
-	Warhead@FlakWeaponPercentage: HealthPercentageDamage
+	Warhead@FlakWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Air, Water
 		Damage: 1
 	Warhead@Bullet_Medium:
 		ValidTargets: Ground, Air, Water
 		Damage: 2000
-	Warhead@Bullet_Medium_Percentage: HealthPercentageDamage
-		ValidTargets: Ground, Air, Water
-		Damage: 1
 	-Warhead@EffectAir:
+	# Pinned: this weapon stacks TWO projectile templates, so the hitscan
+	# ^Projectile_Bullet_* would take the type and orphan the other one's
+	# guidance fields. Keeps today's resolved type verbatim.
+	Projectile: Bullet
+	-Warhead@FlakWeapon:
+	-Warhead@LightMissile:
+	-Warhead@SmallArms:
+	Warhead@Bullet_MediumFlatCompatibility:
+		ValidTargets: Ground, Air, Water
+		Damage: 8000
+		PercentageScale: 2488
+	-Warhead@Bullet_Medium:

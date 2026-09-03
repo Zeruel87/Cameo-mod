@@ -3,7 +3,7 @@
 
 Reads the ledger JSONs, selects all units belonging to a given class
 (subtype or explicit class_anchor), keeps their current HP/Speed/Cost,
-resolves effective-DPS uniqueness by fine-tuning FirepowerMultiplier,
+resolves effective-DPS uniqueness on the Damage grid,
 solves the class-baseline range that makes price == cost, rounds to the
 nearest 10, clamps to the class band, and writes a markdown report.
 """
@@ -112,7 +112,7 @@ def spread_damages(arm: dict, smallarms_only: bool = False):
 def armament_dps(arm: dict, fp: float, base_only: bool = False, smallarms_only: bool = False):
     rl = fnum(arm.get("reloaddelay"))
     burst = fnum(arm.get("burst")) or 1
-    burst_delays = fnum(arm.get("burstdelays")) or 0
+    burst_delays = arm.get("burstdelays")
     if rl is None or rl <= 0:
         return 0.0
     dmg = spread_damages(arm, smallarms_only=smallarms_only)
@@ -132,11 +132,14 @@ def resolve_dps_uniqueness(rows, step: float = 0.01) -> None:
     """⚠ DEAD + SUPERSEDED — tunes a knob that W17 retired. Kept, not deleted,
     only because it is referenced by name in ROADMAP.md and LESSONS_LEARNED.md.
 
-    Nothing in this module calls it, and its one apparent caller
-    (`_balance_audit_report.py`) reaches for `resolve_dps_uniqueness` on the
-    `*_rebalance_proposal_final` modules, which no longer exist — that script
-    cannot import. The live uniqueness pass is `unique_dmg_per_shot`, which
-    nudges Damage on the grid. Do not revive this one without W17 in hand.
+    Nothing in this module calls it. Its one apparent caller,
+    `_balance_audit_report.py`, reached for `resolve_dps_uniqueness` on the
+    `*_rebalance_proposal_final` modules, which no longer exist — so that script
+    could not import, and it was deleted on 2026-08-28 (recover with
+    `git show 6e0a273b:tools/balance/_balance_audit_report.py`; its last output is
+    archived at `docs/history/balance/BALANCE_AUDIT.md`). The live uniqueness pass
+    is `unique_dmg_per_shot`, which nudges Damage on the grid. Do not revive this
+    one without W17 in hand.
 
     Tune FirepowerMultiplier so effective DAMAGE-PER-SHOT (Σwarheads × FP)
     is unique across the class — the maintainer 5-stat uniqueness law
@@ -310,7 +313,7 @@ def load_class_rows(cls: str):
                 hp = fnum((u.get("hp") or {}).get("v")) or 0
                 spd = fnum((u.get("speed") or {}).get("v")) or 0
                 cost = fnum((u.get("cost") or {}).get("v")) or 0
-                rng = fnum((u.get("range") or {}).get("v")) or 0
+                rng = formula.wdist_value((u.get("range") or {}).get("v"), 0)
                 fp_raw = fnum((u.get("firepower_multiplier") or {}).get("v"))
                 is_protected = actor in protected
                 fp0 = 1.0 if is_protected else (fp_raw if fp_raw is not None else 1.0)
@@ -359,8 +362,8 @@ def load_class_rows(cls: str):
                 # etc. (chem locomotor but no TurnSpeed) stay foot-stepped.
                 row["vehicle_turnrate"] = bool(u.get("turn_speed"))
                 row["spd_step"] = 5 if row["vehicle_turnrate"] else 1
-                row["arm_rng"] = fnum(arm.get("range")) or 0
-                # offensive warheads on the primary weapon (2000-grid split target)
+                row["arm_rng"] = formula.wdist_value(arm.get("range"), 0)
+                # offensive warheads on the primary weapon (100-grid split target)
                 offensive = [w for w in arm.get("damage_warheads", [])
                              if not str(w.get("tag", "")).lower().endswith(
                                  ("percentage", "extradamage", "friendlyfire"))]
@@ -520,7 +523,7 @@ def rebalance_class(cls: str):
         r["rng"] = max(band_lo, min(band_hi, int(round(cur / 10)) * 10))
     nudge_ranges(rows, band_lo, band_hi)     # range uniqueness (skips protected)
     # 2. Per member: solve target eff-DPS for Δ0 at final (hp,spd,rng); decompose
-    #    to 2000-grid warhead Damage + 1% FP (cost pinned, stats trimmed law).
+    #    to 100-grid warhead Damage at FP=1 (cost pinned, stats trimmed law).
     for r in rows:
         r["per_unit"] = (r["base_dps"] / r["dmg_shot0"]) if r["dmg_shot0"] else 0.0
         if r["protected"]:
@@ -551,7 +554,7 @@ def rebalance_class(cls: str):
         r["dmg_eff"] = r["dmg_shot"] * fp
         r["dps_eff"] = r["per_unit"] * r["dmg_shot"] * fp
         r["trimmed"] = (r["dmg_shot"] != (r["dmg_shot0"] or r["dmg_shot"]))
-    # 2b. Range fine-tune: range is a finer (10-step) Δ lever than the 1% FP.
+    # 2b. Range fine-tune: range is a finer (10-step) Δ lever than one Damage step.
     #     Snap each member to the range that zeroes Δ at its trimmed DPS when
     #     that lands in band; the DPS-trim already handled out-of-band cases.
     for r in rows:
@@ -605,7 +608,7 @@ def render_report(rows, cls):
         f"Anchor spec: HP={s['hp0']}, Speed={s['speed0']}, Range={s['range0_wdist']}, eff-DPS={s['dps0']}, Cost={s['cost0']}",
         "",
         "Converter law: cost pinned, range clamped to band + made unique, "
-        "eff-DPS trimmed to Δ≤1 via 2000-grid warhead Damage × 1% FirepowerMultiplier.",
+        "eff-DPS trimmed to Δ≤1 via 100-grid warhead Damage; unconditional FirepowerMultiplier is retired.",
         "",
         "| actor | faction | HP | spd | rng | cost | dmg/wh×n | rl | burst | legacy FP% | eff DPS | price | Δ | flags |",
         "|---|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|---|",

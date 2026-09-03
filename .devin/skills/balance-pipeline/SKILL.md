@@ -74,12 +74,19 @@ git add <changed_yaml_files> docs/balance/<faction>.json
 - **SUM LAW:** effective per-shot damage = SUM of all offensive warheads
   (never max). `spread_damage_sum()` skips `*ExtraDamage`, `*Percentage`,
   and `*FriendlyFire`.
-- **Damage grid:** main `Damage` is always a multiple of 2000. Fine-tune
-  via `FirepowerMultiplier` on the unit (integer %, e.g. 89 = 89%).
+- **Damage grid:** main `Damage` sits on `formula.DAMAGE_STEP` = **100**
+  (W15, 2026-08-15 — it was 2000 before that). The `%`-twin comes from
+  `formula.percentage_twin()`, never from `damage // 2000`.
+- **`FirepowerMultiplier` is RETIRED** (W17): `apply_balance` cannot write it,
+  and the proposer always solves at `fp = 1.0`. Do not add new ones; when you
+  restat an actor that has one, DELETE it — the prescribed `Damage` is already
+  solved at `fp = 1`, so a surviving trait scales it a second time.
 - **Range:** always a multiple of 10.
 - **Speed:** infantry use steps of 1; vehicles/aircraft/ships use steps of 5.
 - **Uniqueness:** 5 stats must be unique within a class: HP, Speed,
-  effective damage per shot, ReloadDelay (raw), Range.
+  Σ(offensive warhead `Damage`) × FirepowerMultiplier, ReloadDelay (RAW, not
+  burst-adjusted), Range. ⚠ That third one is NOT the ledger's
+  `effective_damage` column — see `docs/design/EFFECTIVE_DAMAGE.md` §1.
 - **Dual-weapon units:** balance each weapon independently, sharing HP/Speed
   but with independent Range/Damage/ReloadDelay. FirepowerMultiplier is
   shared (affects both weapons).

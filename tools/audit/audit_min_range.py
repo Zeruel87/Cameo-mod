@@ -10,24 +10,19 @@ Equivalent calculation: expected = round(Range / 25.0) * 5.
 
 from __future__ import annotations
 
-import re
+import pathlib
 import sys
 
 from cameo_model import Model
 from report import h1, h2, table
 
-
-_NUM_RE = re.compile(r"^-?\d+")
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools" / "balance"))
+import formula  # noqa: E402
 
 
 def parse_number(value: str | None) -> int | None:
-    if not value:
-        return None
-    # Cameo uses plain wdist integers; ignore c-notation suffixes.
-    m = _NUM_RE.match(value.strip())
-    if not m:
-        return None
-    return int(m.group())
+    return formula.wdist_value(value)
 
 
 def expected_min_range(range_val: int) -> int:

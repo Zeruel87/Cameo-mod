@@ -12,8 +12,8 @@ This script:
 4. Handles compound suffixes like AAE -> AA_elite, EResonance -> _eliteResonance, etc.
 
 Usage:
-  python tools/rename_elite_weapons.py mods/cameo          # preview
-  python tools/rename_elite_weapons.py mods/cameo --apply   # apply changes
+  python tools/archive/rename_elite_weapons.py mods/cameo          # preview
+  python tools/archive/rename_elite_weapons.py mods/cameo --apply   # apply changes
 """
 
 import os

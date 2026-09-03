@@ -36,7 +36,7 @@ scout, anti_air, artillery_tank, artillery, fire_support, missile_veh). Written 
 | 12 | fire_support | 1400 | 120,000 | 90 | 2,100 | 10,000 | 86 | 1.50 | 7,714 | 15,000 | 22,714 |
 | 13 | missile_vehicle | 1200 | 160,000 | 100 | 1,200 | 8,000 | 133 | 1.00 | 13,333 | 8,000 | 21,333 |
 
-**⚠ DPS restat DEFERRED** to the cannon/weapon rebuild ([[cameo-cannon-weapon-templates]]): current in-game
+**⚠ DPS restat DEFERRED** to the cannon/weapon rebuild: current in-game
 DPS is confounded by warhead-mixing + two calc bugs (fit_class skips FirepowerMultiplier; versus_shield
 stale-preserved WC). HP/Speed/Cost/armor restat can proceed now. Armor targets (in class_anchors + templates):
 missile Light, anti_air Medium, tank_destroyer Heavy, high_tech + dreadnought Superheavy (fix
@@ -78,7 +78,7 @@ All 5 base stats (HP/Spd/DPS/Range/Cost) remain UNIQUE per column ✓ (MBT HP 22
 **Baseline actor change (HighTechTank):** baseline RA1 Soviet Mammoth → **TD GDI Mammoth Tank**
 (`td_gdi_mammothtank`); RA1 Soviet Mammoth (`ra1_soviets_mammothtank`) demoted to a **mid variant at
 Spd 60 / Cost 2500** (more HP/Range/FP); **Siege Mammoth stays verifier**. ⚠ CONFIRM TD Mammoth (baseline)
-and Siege Mammoth (RA1, verifier) share the same M-bucket + K or the 2.5× breaks — [[cameo-verifier-tier-k-match]].
+and Siege Mammoth (RA1, verifier) share the same M-bucket + K or the 2.5× breaks —.
 
 **Did it fix the earlier problems? — verdict:**
 - ✅ FireSupport no longer efficiency-dominated by MissileVehicle (FS 21,750 > MV 18,000).
@@ -100,7 +100,7 @@ the GOAL is **MORE uniqueness between units of a class**. Application model:
    values, **(b)** every relative stat from the cross-game/mod data-mining, and **(c)** deep reasoning on
    where each unit sits relative to its class baseline. **RE-READ** the research before this pass:
    `docs/design/ORIGINAL_UNIT_STATS.md`, `docs/design/BALANCE_SYNTHESIS.md`, the extracted-mod ledgers,
-   and memories [[cameo-balance-synthesis]] + [[cameo-source-library-scope]].
+   and memories +.
 This is a **massive, compute-intensive pass** and is the real "apply the class" work — the per-member
 spread, NOT a copy of the baseline ratios. `fit_class` then prices each synthesized member.
 
@@ -176,7 +176,7 @@ Baseline+verifier must share the same **TechTier M-bucket AND K** or the 2.5× c
   verifier is WRONG** (Hover MLRS T2 / Ixian Missile Tank T3 ✗; V2 rocket T3 ✗).
 - **K** (special modifier): **gatling → K 1.25** (Asian MLRS, Latin LARS = gatling → invalid MV verifiers);
   flame/charge/cloak likewise must match. Tier detection = read Buildable Prerequisites for a tech building.
-Also saved as memory [[cameo-verifier-tier-k-match]].
+Also saved as memory.
 
 ## ★ NEXT MAJOR TASK (after compaction): NEW WEAPON CLASSES / TYPES
 The rule **unit-class ↔ weapon-class are directly bound** (each unit class carries a specific weapon type)
@@ -196,7 +196,7 @@ binding audit. **THEN** each vehicle class gets its bound weapon type(s).
   per weapon**, achieved by having a proper template per role so a weapon inherits ONE role instead of
   stitching several.
 - **HARD LIMIT = 2 weapon-template inherits per weapon** (this is the *upgraded* variant's ceiling; a basic
-  weapon = 1). See [[cameo-weapon-structure-rules]].
+  weapon = 1). See.
 - **Special-unit exemption is NOT a blank cheque — it is TBD.** A special unit may exceed 2 **only when the
   extra mixing is genuinely justified** (a deliberate multi-role "for-fun" siege unit); an unjustified >2 is
   a cleanup target, NOT an exemption. The exact justification bar is **still to be determined** with the
@@ -1164,7 +1164,7 @@ OWN class → need a different 10000 unit), but 2500 **overlaps** the Advanced b
 
 **★ Tesla Coil EXEMPT from charge-up rule** (maintainer 2026-07-26): both RA1+RA2 tesla coils have a
 QUICK charge (25) and are already strong → NO 0.75 discount, NO reload=2×charge; **K = 1.25 (EMP)**;
-effective reload still 125 (RA1: ReloadDelay 100 + InitialChargeDelay 25). See [[cameo-charge-up-rule]].
+effective reload still 125 (RA1: ReloadDelay 100 + InitialChargeDelay 25). See.
 
 ---
 

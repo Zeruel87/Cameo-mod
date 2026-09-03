@@ -36,6 +36,12 @@ def parse_blocks(text):
     return blocks
 
 
+def family_from(name: str) -> str:
+    """'^Warhead_Family_Level:' -> 'Family'."""
+    parts = name.split("_")
+    return "_".join(parts[1:-1]) if len(parts) >= 3 else name
+
+
 def main():
     fams = sys.argv[1:]
     if not fams:
@@ -46,12 +52,22 @@ def main():
     # anyone should be able to make by hitting return.
     if fams == ["--all"]:
         fams = []
-    out = subprocess.run([sys.executable, str(GEN), *fams], capture_output=True, text=True)
+    wanted = {f.lower() for f in fams}
+    # Always run the full generator so shield_uniqueness sees the whole set and
+    # produces correct final Shield values; then keep only the requested blocks.
+    out = subprocess.run([sys.executable, str(GEN)], capture_output=True, text=True)
     if out.returncode:
         sys.exit("generator failed:\n" + out.stderr)
-    gen = parse_blocks(out.stdout)
+    all_gen = parse_blocks(out.stdout)
+    if wanted:
+        gen = {n: b for n, b in all_gen.items()
+               if family_from(n).lower() in wanted}
+    else:
+        gen = all_gen
 
-    flines = F.read_text(encoding="utf-8").split("\n")
+    text = F.read_text(encoding="utf-8")
+    newline = "\r\n" if "\r\n" in text else "\n"
+    flines = text.split(newline)
     result, replaced, i = [], [], 0
     while i < len(flines):
         ln = flines[i]
@@ -65,11 +81,14 @@ def main():
         else:
             result.append(ln)
             i += 1
-    F.write_text("\n".join(result), encoding="utf-8")
-    print(f"spliced {len(replaced)} blocks: {', '.join(replaced)}")
     missing = sorted(set(gen) - set(replaced))
     if missing:
-        print("WARNING: generated block not present in file (NOT spliced):", missing)
+        for m in missing:
+            result.append("")
+            result.extend(gen[m])
+        replaced += missing
+    F.write_text(newline.join(result), encoding="utf-8")
+    print(f"spliced {len(replaced)} blocks: {', '.join(replaced)}")
 
 
 if __name__ == "__main__":

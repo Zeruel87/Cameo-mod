@@ -42,7 +42,28 @@ def main():
              "have live uncommitted WIP that a wide add would capture or clobber). "
              "Stage explicit paths instead: `git add <file> [<file> ...]`.")
 
-    # (2) boot-gate before committing engine-loaded content
+    # (2) NEVER HAND-PARSE VERSUS. A bespoke line-scanner that opens a dict on `Versus:` and
+    # scans following `Key: <int>` lines cannot see where the block ENDS, so the
+    # `PercentageVersus:` rows that live in the SAME warhead node silently overwrite the real
+    # profile. That produced a full session of internally-consistent, wrong numbers on
+    # 2026-08-22 ("0 of 125 obey the MEAN-100 law"; the truth was 123 of 125). The project has
+    # correct readers; use them.
+    if re.search(r"""["']Versus:["']""", cmd) and re.search(r"startswith|split\(|re\.match", cmd):
+        if "versus_of" not in cmd and "resolve_weapon" not in cmd:
+            deny("Never hand-parse a `Versus:` block. A line-scanner cannot tell where the block "
+                 "ENDS, so `PercentageVersus:` in the same warhead node silently overwrites the "
+                 "profile — that is exactly how a whole session of weapon-profile numbers came "
+                 "out wrong. Use the project's readers: "
+                 "`miniyaml.Ruleset.resolve_weapon(name)` for the node, then "
+                 "`weapon_efficiency.versus_of(warhead_node)` for the {armor: percent} dict. "
+                 "See CLAUDE.md rule 8e and tools/audit/audit_versus_profile.py.")
+
+    # (3) boot-gate before committing engine-loaded content.
+    #     Exempt: a MERGE that only carries engine files through unchanged from one
+    #     of its parents. That content was gated on the branch it came from, and
+    #     demanding a boot for it makes `git merge origin/master` impossible for
+    #     anyone whose branch is docs-only. A merge that RESOLVES an engine file
+    #     (content differing from both parents) is still gated.
     if re.search(r"\bgit\s+commit\b", cmd):
         root = pathlib.Path(__file__).resolve().parents[2]
         try:
@@ -53,8 +74,37 @@ def main():
             return  # git unavailable -> don't block
         engine_prefixes = ("mods/", "OpenRA.Mods.Cameo/", "engine/")
         eng = [f for f in staged if f.startswith(engine_prefixes)]
+
+        # A MERGE stages every file the other side brought in, so merging an
+        # already-gated upstream branch would demand a boot for content this
+        # commit did not author. Keep only the engine files whose merged content
+        # differs from BOTH parents — those are the ones this commit resolved,
+        # and they are the only ones a boot could say anything about.
+        if eng and (root / ".git" / "MERGE_HEAD").exists():
+            def blob(rev, path):
+                r = subprocess.run(["git", "-C", str(root), "show", f"{rev}:{path}"],
+                                   capture_output=True, timeout=15)
+                return r.stdout if r.returncode == 0 else None
+
+            def staged_blob(path):
+                r = subprocess.run(["git", "-C", str(root), "show", f":0:{path}"],
+                                   capture_output=True, timeout=15)
+                return r.stdout if r.returncode == 0 else None
+
+            try:
+                parents = ["HEAD", (root / ".git" / "MERGE_HEAD").read_text().split()[0]]
+                authored = []
+                for f in eng:
+                    mine = staged_blob(f)
+                    if mine is not None and any(blob(par, f) == mine for par in parents):
+                        continue  # identical to a parent -> inherited, not authored here
+                    authored.append(f)
+                eng = authored
+            except Exception:
+                pass  # can't tell -> fall through and demand the gate
+
         if not eng:
-            return  # docs/tools-only commit — boot not required
+            return  # docs/tools-only commit (or a pure merge) — boot not required
         newest = 0.0
         for f in eng:
             p = root / f

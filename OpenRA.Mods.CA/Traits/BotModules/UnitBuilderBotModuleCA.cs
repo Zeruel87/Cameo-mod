@@ -70,6 +70,31 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("List of actor types to measure against for air superiority.")]
 		public readonly HashSet<string> AirThreatUnits = new HashSet<string>();
 
+		[Desc("If true, the bot will use compositions defined in the UnitCompositionsBotModule to determine what units to build.",
+			"If false, the bot will ignore compositions and just use UnitsToBuild.")]
+		public readonly bool UseCompositions = false;
+
+		[Desc("Minimum ticks before selecting a new composition.")]
+		public readonly int MinCompositionSelectInterval = 750;
+
+		[Desc("Maximum ticks before selecting a new composition.")]
+		public readonly int MaxCompositionSelectInterval = 7500;
+
+		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
+		{
+			base.RulesetLoaded(rules, ai);
+
+			if (MinCompositionSelectInterval < 0)
+				throw new YamlException("MinCompositionSelectInterval must not be negative.");
+
+			if (MaxCompositionSelectInterval < 0)
+				throw new YamlException("MaxCompositionSelectInterval must not be negative.");
+
+			if (MinCompositionSelectInterval != 0 && MaxCompositionSelectInterval != 0 &&
+				MaxCompositionSelectInterval < MinCompositionSelectInterval)
+				throw new YamlException("MaxCompositionSelectInterval cannot be less than MinCompositionSelectInterval.");
+		}
+
 		public override object Create(ActorInitializer init) { return new UnitBuilderBotModuleCA(init.Self, this); }
 	}
 
@@ -80,9 +105,19 @@ namespace OpenRA.Mods.CA.Traits
 		readonly World world;
 		readonly Player player;
 
+		UnitComposition activeComposition;
+		int activeCompositionProducedValue;
+		int activeCompositionSelectedTick;
+		int nextCompositionSelectTick;
+		readonly Dictionary<string, int> compositionLastUsedTickById = new Dictionary<string, int>();
+
 		readonly List<string> queuedBuildRequests = new List<string>();
-		readonly ActorIndex.OwnerAndNames unitsToBuild;
+		ActorIndex.OwnerAndNames unitsToBuild;
 		readonly Dictionary<string, int> activeUnitIntervals = new Dictionary<string, int>();
+
+		UnitCompositionsBotModule compositionsModule;
+		List<UnitComposition> possibleActiveCompositions;
+		TechTree techTree;
 
 		IBotRequestPauseUnitProduction[] requestPause;
 		int idleUnitCount;
@@ -102,7 +137,6 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			world = self.World;
 			player = self.Owner;
-			unitsToBuild = new ActorIndex.OwnerAndNames(world, info.UnitsToBuild.Keys, player);
 		}
 
 		protected override void Created(Actor self)
@@ -113,6 +147,28 @@ namespace OpenRA.Mods.CA.Traits
 			// for bot modules always to the Player actor.
 			requestPause = self.TraitsImplementing<IBotRequestPauseUnitProduction>().ToArray();
 			playerResources = self.Owner.PlayerActor.Trait<PlayerResources>();
+			techTree = self.Owner.PlayerActor.TraitOrDefault<TechTree>();
+			compositionsModule = Info.UseCompositions ? self.World.WorldActor.TraitOrDefault<UnitCompositionsBotModule>() : null;
+
+			var referencedUnitTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			if (Info.UnitsToBuild != null)
+				referencedUnitTypes.UnionWith(Info.UnitsToBuild.Keys);
+
+			if (compositionsModule != null && compositionsModule.UnitCompositions.Count != 0)
+			{
+				foreach (var composition in compositionsModule.UnitCompositions)
+					if (composition?.UnitsToBuild != null)
+						referencedUnitTypes.UnionWith(composition.UnitsToBuild.Keys);
+
+				possibleActiveCompositions = compositionsModule.UnitCompositions
+					.Where(c => c != null && !c.IsBaseline &&
+						(c.EnabledChance == 100 || self.World.LocalRandom.Next(100) < c.EnabledChance))
+					.ToList();
+
+				nextCompositionSelectTick = GetNextCompositionSelectTick();
+			}
+
+			unitsToBuild = new ActorIndex.OwnerAndNames(world, referencedUnitTypes, player);
 		}
 
 		protected override void TraitEnabled(Actor self)
@@ -167,6 +223,8 @@ namespace OpenRA.Mods.CA.Traits
 
 			if (ticks % (FeedbackTime + Info.UnitBuilderInterval) == 0)
 			{
+				UpdateComposition();
+
 				var buildRequest = queuedBuildRequests.FirstOrDefault();
 				if (buildRequest != null)
 				{
@@ -207,7 +265,7 @@ namespace OpenRA.Mods.CA.Traits
 					continue;
 
 				var unit = queue.BuildableItems()
-					.FirstOrDefault(a => Info.OpeningDefenseUnitTypes.Contains(a.Name) && ShouldBuild(a.Name, false));
+					.FirstOrDefault(a => Info.OpeningDefenseUnitTypes.Contains(a.Name) && ShouldBuild(a.Name, false, queue.Info.Type));
 				if (unit == null)
 					continue;
 
@@ -258,11 +316,16 @@ namespace OpenRA.Mods.CA.Traits
 					ChooseUnitToBuild(queue, excludeLimited);
 
 				if (unit == null)
+				{
+					if (activeComposition != null && CompositionAppliesToCategory(activeComposition, queue.Info.Type))
+						RevertToBaselineComposition();
+
 					return;
+				}
 
 				var name = unit.Name;
 
-				if (!ShouldBuild(name, false))
+				if (!ShouldBuild(name, false, queue.Info.Type))
 				{
 					if (!excludeLimited)
 						BuildUnit(bot, category, buildRandom, true);
@@ -272,6 +335,8 @@ namespace OpenRA.Mods.CA.Traits
 
 				SetUnitInterval(name);
 				bot.QueueOrder(Order.StartProduction(queue.Actor, name, 1));
+				if (activeComposition != null && CompositionAppliesToCategory(activeComposition, queue.Info.Type))
+					AddToActiveCompositionProducedValue(unit);
 			}
 		}
 
@@ -313,9 +378,10 @@ namespace OpenRA.Mods.CA.Traits
 			activeUnitIntervals[name] = Info.UnitIntervals[name] * unitIntervalModifier / 100;
 		}
 
-		bool ShouldBuild(string name, bool ignoreUnitsToBuild)
+		bool ShouldBuild(string name, bool ignoreUnitsToBuild, string queueCategory = null)
 		{
-			if (!ignoreUnitsToBuild && Info.UnitsToBuild != null && !Info.UnitsToBuild.ContainsKey(name))
+			var unitsToBuildShares = GetUnitsToBuildForCategory(queueCategory);
+			if (!ignoreUnitsToBuild && unitsToBuildShares != null && !unitsToBuildShares.ContainsKey(name))
 				return false;
 
 			if (Info.UnitDelays != null &&
@@ -338,7 +404,12 @@ namespace OpenRA.Mods.CA.Traits
 
 		ActorInfo ChooseRandomUnitToBuild(ProductionQueue queue, bool excludeLimited)
 		{
-			var buildableThings = queue.BuildableItems().Where(a => Info.UnitsToBuild.ContainsKey(a.Name) && (!excludeLimited || !Info.UnitLimits.ContainsKey(a.Name)));
+			var unitsToBuildShares = GetUnitsToBuildForCategory(queue.Info.Type);
+			if (unitsToBuildShares == null || unitsToBuildShares.Count == 0)
+				return null;
+
+			var buildableThings = queue.BuildableItems().Where(a => unitsToBuildShares.ContainsKey(a.Name) &&
+				(!excludeLimited || Info.UnitLimits == null || !Info.UnitLimits.ContainsKey(a.Name)));
 			if (!buildableThings.Any())
 				return null;
 
@@ -352,19 +423,189 @@ namespace OpenRA.Mods.CA.Traits
 			if (!buildableThings.Any())
 				return null;
 
+			var unitsToBuildShares = GetUnitsToBuildForCategory(queue.Info.Type);
+			if (unitsToBuildShares == null || unitsToBuildShares.Count == 0)
+				return null;
+
 			var myUnits = player.World
 				.ActorsHavingTrait<IPositionable>()
 				.Where(a => a.Owner == player)
 				.Select(a => a.Info.Name).ToList();
 
-			foreach (var unit in Info.UnitsToBuild.Shuffle(world.LocalRandom))
+			foreach (var unit in unitsToBuildShares.Shuffle(world.LocalRandom))
 				if (buildableThings.Any(b => b.Name == unit.Key))
-					if (!excludeLimited || !Info.UnitLimits.ContainsKey(unit.Key))
+					if (!excludeLimited || Info.UnitLimits == null || !Info.UnitLimits.ContainsKey(unit.Key))
 						if (myUnits.Count(a => a == unit.Key) * 100 < unit.Value * myUnits.Count)
 							if (CanBuildMoreOfAircraft(world.Map.Rules.Actors[unit.Key]))
 								return world.Map.Rules.Actors[unit.Key];
 
 			return null;
+		}
+
+		Dictionary<string, int> GetUnitsToBuildForCategory(string queueCategory)
+		{
+			if (compositionsModule == null || compositionsModule.UnitCompositions.Count == 0 ||
+				activeComposition == null || !CompositionAppliesToCategory(activeComposition, queueCategory))
+				return Info.UnitsToBuild;
+
+			return activeComposition.UnitsToBuild;
+		}
+
+		void UpdateComposition()
+		{
+			if (compositionsModule == null || compositionsModule.UnitCompositions.Count == 0)
+				return;
+
+			if (activeComposition != null)
+			{
+				var exceededDuration = activeComposition.MaxDuration > 0 &&
+					world.WorldTick - activeCompositionSelectedTick >= activeComposition.MaxDuration;
+				var exceededValue = activeComposition.MaxProducedValue > 0 &&
+					activeCompositionProducedValue >= activeComposition.MaxProducedValue;
+
+				if (exceededDuration || exceededValue)
+					RevertToBaselineComposition();
+			}
+			else if (world.WorldTick >= nextCompositionSelectTick)
+			{
+				var newActiveComposition = ChooseActiveComposition();
+				if (newActiveComposition != null)
+				{
+					activeComposition = newActiveComposition;
+					activeCompositionProducedValue = 0;
+					activeCompositionSelectedTick = world.WorldTick;
+					if (!string.IsNullOrEmpty(activeComposition.Id))
+						compositionLastUsedTickById[activeComposition.Id] = world.WorldTick;
+				}
+			}
+		}
+
+		void RevertToBaselineComposition()
+		{
+			activeComposition = null;
+			activeCompositionProducedValue = 0;
+			nextCompositionSelectTick = GetNextCompositionSelectTick();
+		}
+
+		UnitComposition ChooseActiveComposition()
+		{
+			if (possibleActiveCompositions == null || possibleActiveCompositions.Count == 0)
+				return null;
+
+			nextCompositionSelectTick = GetNextCompositionSelectTick();
+
+			var playerQueues = OpenRA.Mods.Common.AIUtils.FindQueuesByCategory(player);
+			var candidates = possibleActiveCompositions
+				.Where(c => IsCompositionTimeValid(c)
+					&& IsCompositionIntervalValid(c)
+					&& AreCompositionPrerequisitesMet(c)
+					&& CanProduceAnyUnitInCompositionForEachQueueCategory(c, playerQueues))
+				.ToArray();
+
+			return candidates.Length != 0 ? candidates.Random(world.LocalRandom) : null;
+		}
+
+		bool IsCompositionIntervalValid(UnitComposition composition)
+		{
+			if (composition.MinInterval <= 0 || string.IsNullOrEmpty(composition.Id))
+				return true;
+
+			if (!compositionLastUsedTickById.TryGetValue(composition.Id, out var lastTick))
+				return true;
+
+			return world.WorldTick - lastTick >= composition.MinInterval;
+		}
+
+		bool IsCompositionTimeValid(UnitComposition composition)
+		{
+			var tick = world.WorldTick;
+			if (composition.MinTime > 0 && tick < composition.MinTime)
+				return false;
+			if (composition.MaxTime > 0 && tick > composition.MaxTime)
+				return false;
+
+			return true;
+		}
+
+		bool CanProduceAnyUnitInCompositionForQueueCategory(UnitComposition composition, string queueCategory)
+		{
+			if (string.IsNullOrEmpty(queueCategory))
+				return false;
+
+			if (techTree == null)
+				return true;
+
+			var byQueue = composition.UnitPrerequisitesByQueue;
+			if (byQueue == null || !byQueue.TryGetValue(queueCategory, out var unitPrereqs) ||
+				unitPrereqs == null || unitPrereqs.Count == 0)
+				return false;
+
+			foreach (var prereqs in unitPrereqs.Values)
+				if (prereqs == null || prereqs.Length == 0 || techTree.HasPrerequisites(prereqs))
+					return true;
+
+			return false;
+		}
+
+		bool CanProduceAnyUnitInCompositionForEachQueueCategory(UnitComposition composition, ILookup<string, ProductionQueue> playerQueues)
+		{
+			var byQueue = composition.UnitPrerequisitesByQueue;
+			if (byQueue == null || byQueue.Count == 0)
+				return false;
+
+			foreach (var queueCategory in byQueue.Keys)
+			{
+				if (!playerQueues.Contains(queueCategory))
+					continue;
+
+				if (!CanProduceAnyUnitInCompositionForQueueCategory(composition, queueCategory))
+					return false;
+			}
+
+			return true;
+		}
+
+		bool CompositionAppliesToCategory(UnitComposition composition, string queueCategory)
+		{
+			if (composition.UnitQueues == null || composition.UnitQueues.Length == 0)
+				return true;
+
+			return composition.UnitQueues.Any(q => q != null && q.Equals(queueCategory, StringComparison.OrdinalIgnoreCase));
+		}
+
+		bool AreCompositionPrerequisitesMet(UnitComposition composition)
+		{
+			if (composition.Prerequisites == null || composition.Prerequisites.Length == 0)
+				return true;
+
+			return techTree == null || techTree.HasPrerequisites(composition.Prerequisites);
+		}
+
+		int GetNextCompositionSelectTick()
+		{
+			var min = Math.Max(0, Info.MinCompositionSelectInterval);
+			var max = Math.Max(0, Info.MaxCompositionSelectInterval);
+
+			if (min == 0 && max == 0)
+				return int.MaxValue / 4;
+
+			if (max < min)
+				max = min;
+
+			var interval = min == max ? min : world.LocalRandom.Next(min, max + 1);
+			return world.WorldTick + interval;
+		}
+
+		void AddToActiveCompositionProducedValue(ActorInfo builtUnit)
+		{
+			if (activeComposition == null || compositionsModule == null || builtUnit == null)
+				return;
+
+			compositionsModule.UnitCosts.TryGetValue(builtUnit.Name, out var unitCost);
+			if (unitCost <= 0)
+				return;
+
+			activeCompositionProducedValue += unitCost;
 		}
 
 		bool IBotAircraftBuilder.CanBuildMoreOfAircraft(ActorInfo actorInfo)
@@ -412,7 +653,10 @@ namespace OpenRA.Mods.CA.Traits
 			return new List<MiniYamlNode>()
 			{
 				new("QueuedBuildRequests", FieldSaver.FormatValue(queuedBuildRequests.ToArray())),
-				new("IdleUnitCount", FieldSaver.FormatValue(idleUnitCount))
+				new("IdleUnitCount", FieldSaver.FormatValue(idleUnitCount)),
+				new("CompositionLastUsed", "", compositionLastUsedTickById
+					.Select(kvp => new MiniYamlNode(kvp.Key, FieldSaver.FormatValue(kvp.Value)))
+					.ToList())
 			};
 		}
 
@@ -431,11 +675,19 @@ namespace OpenRA.Mods.CA.Traits
 			var idleUnitCountNode = data.NodeWithKeyOrDefault("IdleUnitCount");
 			if (idleUnitCountNode != null)
 				idleUnitCount = FieldLoader.GetValue<int>("IdleUnitCount", idleUnitCountNode.Value.Value);
+
+			var compositionLastUsedNode = data.NodeWithKeyOrDefault("CompositionLastUsed");
+			if (compositionLastUsedNode != null)
+			{
+				compositionLastUsedTickById.Clear();
+				foreach (var n in compositionLastUsedNode.Value.Nodes)
+					compositionLastUsedTickById[n.Key] = FieldLoader.GetValue<int>("CompositionLastUsed", n.Value.Value);
+			}
 		}
 
 		void INotifyActorDisposing.Disposing(Actor self)
 		{
-			unitsToBuild.Dispose();
+			unitsToBuild?.Dispose();
 		}
 	}
 }

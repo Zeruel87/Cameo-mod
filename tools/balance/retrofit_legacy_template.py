@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
-"""Move ONE legacy weapon template into the `^Warhead_*` family system, descendants and all.
+"""QUARANTINED legacy-template migration tool.
+
+Do not use this writer in the folded-percentage family system. Its conversion body still
+expects a separate `HealthPercentageDamage` / `*_Percentage` twin and would create or rename
+warheads that current generated families no longer provide. It now refuses every run before
+loading or editing rules. Keep the implementation only as migration-history reference until it
+is redesigned around `PercentageScale` / `PercentageVersus` and independently reviewed.
+
+Historical contract follows:
+
+Move ONE legacy weapon template into the `^Warhead_*` family system, descendants and all.
 
 DESIGN.md is explicit that **`Versus` lives ONLY in `^Warhead_*` templates**. 47 legacy
 templates still declare their own, and 1343 weapons inherit them. This converts one
@@ -426,6 +436,12 @@ def main() -> int:
     ap.add_argument("template", help="legacy template, e.g. ^SwordWeapon")
     ap.add_argument("--apply", action="store_true", help="write the files")
     args = ap.parse_args()
+
+    print("REFUSED: retrofit_legacy_template.py is quarantined.")
+    print("It still assumes a separate percentage twin; current families fold percentage "
+          "damage into AreaDamage with PercentageScale/PercentageVersus.")
+    print("Redesign and independently review the migration before enabling dry-run or --apply.")
+    return 2
 
     legacy = args.template
     if legacy in EXCEPTIONS:

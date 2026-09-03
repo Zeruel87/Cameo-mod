@@ -54,7 +54,23 @@ REVIEW_DMG = 8000
 # FIRED by a concrete actor, while this audit scans EVERY concrete weapon
 # (`rs.weapons`), fired or not. Two populations, both correct for their own
 # question — don't reconcile them by changing one.
-BROADCAST_BASELINE = 952
+BROADCAST_BASELINE = 90
+
+# The two former routing-revealed exceptions were consolidated into their
+# selected Flak and Bullet profiles. Keep the registry empty so a future
+# exception must be an explicit reviewed decision rather than inherited debt.
+ROUTING_REVEALED_BROADCASTS = {}
+
+# Exact behavior restoration, not a newly authored broadcast.  PR 287 folded
+# these four profiles and accidentally multiplied Hydralisk's ground damage.
+RESTORED_GAMEPLAY_BROADCASTS = {
+    "HydraSpit": (
+        ("ArrowWeapon", 18000),
+        ("LightChemicalWeapon", 18000),
+        ("LightMissile", 18000),
+        ("SmallArms", 18000),
+    ),
+}
 
 
 def _int(v) -> int:
@@ -92,6 +108,8 @@ def main() -> int:
     rs = m.rs
 
     broadcast_rows = []   # FAIL 1 (uniform main warheads)
+    routing_revealed_rows = []  # known composites unmasked by target-route repair
+    restored_gameplay_rows = []  # exact profiles restored to repair regressions
     ff_rows = []          # FAIL 2
     review_rows = []      # informational
 
@@ -109,9 +127,16 @@ def main() -> int:
 
         # FAIL 1 — every MAIN broadcast to one identical, non-zero value
         if len(set(main_dmgs)) == 1 and main_dmgs[0] > 0:
-            broadcast_rows.append([
+            row = [
                 wname, str(len(mains)), str(main_dmgs[0]),
-                str(main_dmgs[0] * len(mains))])
+                str(main_dmgs[0] * len(mains))]
+            fingerprint = tuple(sorted(mains))
+            if ROUTING_REVEALED_BROADCASTS.get(wname) == fingerprint:
+                routing_revealed_rows.append(row)
+            elif RESTORED_GAMEPLAY_BROADCASTS.get(wname) == fingerprint:
+                restored_gameplay_rows.append(row)
+            else:
+                broadcast_rows.append(row)
 
         # FAIL 2 — friendly fire louder than the offensive shot
         for tag, d in ff:
@@ -144,6 +169,18 @@ def main() -> int:
     out.append(table(["weapon", "mains", "per_warhead", "total"], broadcast_rows[:40]))
     if len(broadcast_rows) > 40:
         out.append(f"\n_... and {len(broadcast_rows) - 40} more._\n")
+
+    out.append(h2(f"Review — exact gameplay restorations ({len(restored_gameplay_rows)})"))
+    out.append(table(
+        ["weapon", "mains", "per_warhead", "total"], restored_gameplay_rows))
+
+    out.append(h2(f"Review — routing-revealed composites ({len(routing_revealed_rows)})"))
+    out.append(
+        "Exact-fingerprint exceptions for pre-existing composites whose dead legacy slots "
+        "previously masked them from the ratchet. Any main-key or damage change removes the "
+        "exception and is checked normally.\n")
+    out.append(table(["weapon", "mains", "per_warhead", "total"],
+                     routing_revealed_rows))
 
     out.append(h2(f"FAIL 2 — FriendlyFire louder than the shot ({len(ff_rows)})"))
     if ff_rows:

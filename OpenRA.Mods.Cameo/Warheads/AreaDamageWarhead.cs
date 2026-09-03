@@ -17,6 +17,7 @@ using OpenRA.Mods.Cameo.Traits;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Warheads;
+using OpenRA.Mods.D2k.Traits;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Cameo.Warheads
@@ -95,6 +96,40 @@ namespace OpenRA.Mods.Cameo.Warheads
 		[Desc("Percentage of the tick radius within which allied actors can be hit (Cameo law: 50).")]
 		public readonly int FriendlyFireSpread = 50;
 
+		[Desc("FOLDED-IN PERCENTAGE HALF, in HUNDREDTHS of a 0.01%-unit of the victim's MAX",
+			"HEALTH per 2000 flat Damage. 10000 reproduces the old convention of 1% per 2000 and",
+			"is the per-family dial: a chemical family scales harder, a kinetic one softer,",
+			"without touching a single weapon. 0 disables the percentage half entirely.",
+			"This replaces the separate AreaDamagePercentage twin — one warhead, one Damage",
+			"number inline, and the percentage follows from it instead of being hand-typed",
+			"alongside and drifting.",
+			"⚠ WHY HUNDREDTHS AND NOT WHOLE UNITS. A whole-unit dial cannot express the ratio",
+			"some weapons already have: TSMechRailgunII needs exactly 2.5 and would round to 2,",
+			"a 20% error on its percentage half. 47 weapons were rounding-limited that way. In",
+			"hundredths every ratio in the tree lands exactly.")]
+		public readonly int PercentageScale = 0;
+
+		[Desc("The percentage half's radius as a PERCENTAGE of the main one (Cameo law: 50 —",
+			"the same halving FriendlyFireSpread uses, and what 2381 of 2487 hand-typed twins",
+			"already did).")]
+		public readonly int PercentageSpread = 50;
+
+		[Desc("Denominator the derived percentage is read against. 10000 = basis points (0.01%",
+			"steps), which is what PercentageScale is expressed in.")]
+		public readonly int PercentageDenominator = 10000;
+
+		[Desc("The percentage half's own armor table. EMPTY falls back to Versus, which is the",
+			"common case; a family whose percentage half should favour different armor states",
+			"its own here.")]
+		public readonly Dictionary<string, int> PercentageVersus = new();
+
+		[Desc("Also damage D2k concrete slabs, 1:1 with everything else the weapon does to",
+			"concrete: slab damage = Damage x Versus[Concrete] / 100. There is deliberately NO",
+			"scale knob (maintainer 2026-08-19: a wall, a building and a slab all take the same",
+			"Concrete damage). Replaces the separate DamagesConcrete warhead — leaving one of",
+			"those alongside this would hit the slab TWICE.")]
+		public readonly bool DamagesConcrete = false;
+
 		[Desc("Optional PhysicalState (e.g. Temperature, Corrosion) to change on hit, SCALED BY the damage",
 			"this warhead deals (unlike ApplyPhysicalStateWarhead's fixed Amount). Empty = off.")]
 		public readonly string PhysicalStateName = null;
@@ -128,6 +163,9 @@ namespace OpenRA.Mods.Cameo.Warheads
 
 		void IRulesetLoaded<WeaponInfo>.RulesetLoaded(Ruleset rules, WeaponInfo info)
 		{
+			if (PercentageDenominator <= 0)
+				throw new YamlException("PercentageDenominator must be positive.");
+
 			if (Range != null)
 			{
 				if (Range.Length != 1 && Range.Length != Falloff.Length)
@@ -197,13 +235,24 @@ namespace OpenRA.Mods.Cameo.Warheads
 
 		protected override int DamageVersus(Actor victim, HitShape shape, WarheadArgs args)
 		{
-			if (Versus.Count == 0)
+			return VersusFrom(Versus, victim, shape);
+		}
+
+		/// <summary>
+		/// The armor lookup, parameterised by TABLE. The flat half passes `Versus` and the
+		/// folded-in percentage half passes `PercentageVersus`; sharing one body is deliberate,
+		/// because the plating layer rule and the multi-armor combination must never differ
+		/// between a weapon's two halves.
+		/// </summary>
+		int VersusFrom(IReadOnlyDictionary<string, int> table, Actor victim, HitShape shape)
+		{
+			if (table.Count == 0)
 				return 100;
 
 			// Same selection as the base: enabled armors this warhead has a Versus row for,
 			// filtered by the hit shape's own armor restriction. Only the COMBINATION differs.
 			var matched = victim.TraitsImplementing<Armor>()
-				.Where(a => !a.IsTraitDisabled && a.Info.Type != null && Versus.ContainsKey(a.Info.Type) &&
+				.Where(a => !a.IsTraitDisabled && a.Info.Type != null && table.ContainsKey(a.Info.Type) &&
 					(shape.Info.ArmorTypes.IsEmpty || shape.Info.ArmorTypes.Contains(a.Info.Type)))
 				.ToList();
 
@@ -213,12 +262,12 @@ namespace OpenRA.Mods.Cameo.Warheads
 			// audit_plating_exclusivity keeps it to one in practice.)
 			var plating = matched
 				.Where(a => PlatingArmors.Contains(a.Info.Type))
-				.Select(a => Versus[a.Info.Type])
+				.Select(a => table[a.Info.Type])
 				.ToList();
 
 			var armor = matched
 				.Where(a => !PlatingArmors.Contains(a.Info.Type))
-				.Select(a => Versus[a.Info.Type])
+				.Select(a => table[a.Info.Type])
 				.ToList();
 
 			// No matching class armor means no class modifier, exactly as the base's empty product
@@ -258,6 +307,14 @@ namespace OpenRA.Mods.Cameo.Warheads
 		{
 			var world = firedBy.World;
 
+			// The folded-in concrete half. ONCE per impact, not once per victim — a slab is
+			// terrain, not an actor, so it is not in the victim loop at all. Damage is 1:1 with
+			// what the weapon does to any other concrete (maintainer 2026-08-19: a wall, a
+			// building and a slab all take the same Concrete damage), so it reads the same
+			// Versus[Concrete] row and has no scale knob of its own.
+			if (DamagesConcrete)
+				HitConcrete(world, pos);
+
 			for (var tick = 0; tick < Ticks; tick++)
 			{
 				// Copy the loop variable so each scheduled lambda captures its own tick index.
@@ -267,6 +324,19 @@ namespace OpenRA.Mods.Cameo.Warheads
 				else
 					world.AddFrameEndTask(w => w.Add(new DelayedAction(t * TickDelay, () => ApplyRing(world, pos, firedBy, args, t))));
 			}
+		}
+
+		void HitConcrete(World world, WPos pos)
+		{
+			var layer = world.WorldActor.TraitOrDefault<BuildableTerrainLayer>();
+			if (layer == null)
+				return;                                  // no concrete on this map — nothing to hit
+
+			// Versus has no Concrete row on most families; 100 then means "full damage", the same
+			// default every other armor lookup uses.
+			var slab = Versus.TryGetValue("Concrete", out var v) ? Damage * v / 100 : Damage;
+			if (slab > 0)
+				layer.HitTile(world.Map.CellContaining(pos), slab);
 		}
 
 		void ApplyRing(World world, WPos pos, Actor firedBy, WarheadArgs args, int tick)
@@ -355,11 +425,70 @@ namespace OpenRA.Mods.Cameo.Warheads
 					ImpactOrientation = impactOrientation,
 				};
 
-				InflictDamage(victim, firedBy, closestActiveShape, updatedWarheadArgs);
+				InflictPrimaryDamage(victim, firedBy, closestActiveShape, updatedWarheadArgs);
+
+				// The folded-in percentage half: a SECOND application on the same victim, with
+				// its own (smaller) radius and its own armor table. Applied here rather than as a
+				// separate warhead so an inline weapon carries one Damage number and nothing else.
+				if (PercentageScale > 0 && falloffDistance <= victimOuter.Length * PercentageSpread / 100)
+					InflictPercentage(victim, firedBy, closestActiveShape, updatedWarheadArgs);
 			}
 		}
 
+		void InflictPercentage(Actor victim, Actor firedBy, HitShape shape, WarheadArgs args)
+		{
+			var healthInfo = victim.Info.TraitInfoOrDefault<HealthInfo>();
+			if (healthInfo == null)
+				return;
+
+			// Basis points of max health = Damage/2000 x PercentageScale/100, i.e. Scale 10000 on
+			// a 2000-damage weapon is 100bp = 1.00%, exactly what the old twin dealt. The extra
+			// factor of 100 is the hundredths granularity — see PercentageScale's [Desc].
+			// ROUND, do not truncate: integer division biases every weapon DOWNWARD by up to
+			// one basis point, which showed up as a systematic 0.99% where 1.00% was meant.
+			var basisPoints = FoldedPercentageUnits(Damage, PercentageScale);
+			if (basisPoints <= 0)
+				return;
+
+			var versus = PercentageVersus.Count > 0
+				? PercentageDamageVersus(victim, shape, args)
+				: DamageVersus(victim, shape, args);
+
+			var damage = Util.ApplyPercentageModifiers(healthInfo.HP,
+				args.DamageModifiers.Append(basisPoints, versus));
+
+			// ApplyPercentageModifiers already divided by 100 for the basisPoints modifier, so
+			// only the remaining factor is left. Applied LAST, on the largest intermediate, so the
+			// extra division costs the least precision.
+			damage = ApplyPercentageDenominator(damage, PercentageDenominator);
+
+			if (damage <= 0)
+				return;
+
+			victim.InflictDamage(firedBy, new Damage(damage, DamageTypes, GetProjectileType(args)));
+			ApplyPhysicalState(victim, firedBy, damage);
+			ApplyIntegrityScale(victim, firedBy, damage);
+		}
+
+		/// <summary>The percentage half's armor lookup: its own table, or Versus when it has none.</summary>
+		int PercentageDamageVersus(Actor victim, HitShape shape, WarheadArgs args)
+		{
+			return VersusFrom(PercentageVersus, victim, shape);
+		}
+
+
 		protected override void InflictDamage(Actor victim, Actor firedBy, HitShape shape, WarheadArgs args)
+		{
+			// DamageWarhead routes direct Actor impacts here instead of through DoImpact.
+			// Keep the folded hit in this wrapper so direct weapons receive it exactly once;
+			// positional impacts call InflictPrimaryDamage from ApplyRing and add their own
+			// radius-gated folded hit there.
+			InflictPrimaryDamage(victim, firedBy, shape, args);
+			if (PercentageScale > 0)
+				InflictPercentage(victim, firedBy, shape, args);
+		}
+
+		protected virtual void InflictPrimaryDamage(Actor victim, Actor firedBy, HitShape shape, WarheadArgs args)
 		{
 			var damage = Util.ApplyPercentageModifiers(Damage, args.DamageModifiers.Append(DamageVersus(victim, shape, args)));
 			victim.InflictDamage(firedBy, new Damage(damage, DamageTypes, GetProjectileType(args)));
@@ -378,11 +507,11 @@ namespace OpenRA.Mods.Cameo.Warheads
 				return;
 
 			if (!string.IsNullOrEmpty(PhysicalStateName) && PhysicalStateScale != 0)
-				ApplyOneState(victim, firedBy, PhysicalStateName, damage * PhysicalStateScale / 100);
+				ApplyOneState(victim, firedBy, PhysicalStateName, ScaleDamage(damage, PhysicalStateScale));
 
 			foreach (var kv in PhysicalStates)
 				if (kv.Value != 0)
-					ApplyOneState(victim, firedBy, kv.Key, damage * kv.Value / 100);
+					ApplyOneState(victim, firedBy, kv.Key, ScaleDamage(damage, kv.Value));
 		}
 
 		static void ApplyOneState(Actor victim, Actor firedBy, string name, int change)
@@ -412,13 +541,32 @@ namespace OpenRA.Mods.Cameo.Warheads
 			if (damage == 0 || IntegrityScale == 0)
 				return;
 
-			var change = damage * IntegrityScale / 100;
+			var change = ScaleDamage(damage, IntegrityScale);
 			if (change == 0)
 				return;
 
 			victim.TraitsImplementing<Integrity>()
 				.FirstOrDefault(t => !t.IsTraitPaused && !t.IsTraitDisabled)
 				?.Regenerate(victim, -change);
+		}
+
+		// Keep authored fields and final engine damage as Int32, but use Int64 for
+		// intermediate products so valid large weapons cannot wrap before division.
+		internal static int FoldedPercentageUnits(int damage, int percentageScale)
+		{
+			return checked((int)(((long)damage * percentageScale + 100000L) / 200000L));
+		}
+
+		internal static int ApplyPercentageDenominator(int damage, int denominator)
+		{
+			return denominator == 100
+				? damage
+				: checked((int)((long)damage * 100 / denominator));
+		}
+
+		internal static int ScaleDamage(int damage, int percentage)
+		{
+			return checked((int)((long)damage * percentage / 100));
 		}
 
 		int GetDamageFalloff(int distance)

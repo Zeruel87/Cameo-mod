@@ -1,26 +1,133 @@
-# Lessons Learned — Start Here Before Every Task
+# Lessons Learned — read before every task
 
-**Read this document, `AGENT_WORKSPACE.md`, `PROJECT_CONTEXT.md`, and especially `DESIGN.md` before touching any code, YAML, asset, or balance value.** All canonical documents must be loaded into context at the start of every session.
+**Read this file, `AGENT_WORKSPACE.md`, `HANDOFF.md` and the relevant sections of `DESIGN.md`
+before touching any code, YAML, asset or balance value.**
 
-This is the central, repository-owned record of hard-won lessons, safe defaults, and recurring pitfalls discovered while working on Cameo. `docs/balance/LESSONS_LEARNED.md` is now a redirect to this file; keep all new lessons here.
+This is the repository-owned record of hard-won lessons, safe defaults and recurring pitfalls.
+Every entry was paid for once — the point of the file is that it is not paid for twice.
+**Add new lessons here**, not in a session log and not in a memory. When you add a `##` section,
+add it to the Contents below: `audit_doc_health` D7 fails if the index misses one.
 
 ---
 
 ## Required reading order for every new task
 
-**The canonical reading order is defined in `docs/README.md`.** The list below
-is provided for convenience; if it disagrees with README.md, README.md wins.
+**`docs/README.md` is the canonical definition of the reading order.** The list below is a
+convenience copy; if they disagree, README wins and this copy gets fixed.
 
-1. `CLAUDE.md` (repo root) — project instructions, loaded every session.
+1. `CLAUDE.md` (repo root) — the hard rules, loaded every session.
 2. `docs/LESSONS_LEARNED.md` (this file) — safe defaults and pitfalls.
 3. `docs/AGENT_WORKSPACE.md` — source-of-truth map, operating sequence, incident protocol, commit gate.
-4. `docs/PROJECT_CONTEXT.md` — short project orientation and current safety focus.
-5. `docs/DESIGN.md` — binding rules and conventions (read the relevant sections, especially before modifying YAML, assets, naming, weapons, balance, or descriptions).
-6. `docs/design/ROADMAP.md` — current work queue and P0 items.
-7. `docs/audit/SUMMARY.md` — known issue classes and current audit status.
+4. `docs/HANDOFF.md` — verified current state and the priority-ordered queue.
+5. `docs/DESIGN.md` — binding rules; read the sections your change touches.
+6. `docs/design/ROADMAP.md` — the granular work queue.
+7. `docs/audit/SUMMARY.md` — known issue classes and current audit counts.
 8. `docs/Cameo_Knowledge_Base_Manual.md` — engine and custom-trait reference, as needed.
 
-Do not modify rules, assets, or balance numbers until these documents are in context. When this document and `DESIGN.md` conflict with code or old notes, the repository documents win unless an audit baseline explicitly defers the fix.
+When this document and `DESIGN.md` conflict with code or old notes, the repository documents
+win — **unless the artifact says otherwise, and then the artifact wins and you fix the document.**
+
+---
+
+## Contents
+
+**Crash classes — these end a boot, and most gates cannot see them**
+
+- [`Parent type X was already inherited` — the crash class nothing but the boot could see (2026-08-17)](#parent-type-x-was-already-inherited--the-crash-class-nothing-but-the-boot-could-see-2026-08-17)
+- [Interactable trait and upgrade actors (2026-07-24)](#interactable-trait-and-upgrade-actors-2026-07-24)
+- [ClassicProductionQueueProperties crash on actors with no queue (2026-07-31)](#classicproductionqueueproperties-crash-on-actors-with-no-queue-2026-07-31)
+- [Empty warhead type = boot NRE; check-yaml does not catch it (2026-08-04)](#empty-warhead-type--boot-nre-check-yaml-does-not-catch-it-2026-08-04)
+
+**Silent-corruption classes — valid yaml, clean boot, wrong game**
+
+- [⛔ NEVER HAND-PARSE YAML — a sibling node silently overwrote every Versus number (2026-08-22)](#-never-hand-parse-yaml--a-sibling-node-silently-overwrote-every-versus-number-2026-08-22)
+- [Five bug classes from the W25 armor/Versus rebuild (2026-08-16/17)](#five-bug-classes-from-the-w25-armorversus-rebuild-2026-08-1617)
+- [3-way split retrofits: two recurring child-weapon bugs (2026-08-08)](#3-way-split-retrofits-two-recurring-child-weapon-bugs-2026-08-08)
+- [Bulk YAML rename scripts: safety lessons (2026-07-31)](#bulk-yaml-rename-scripts-safety-lessons-2026-07-31)
+- [Loose-extracted .oramap maps must always be repacked before finishing a task (2026-07-31)](#loose-extracted-oramap-maps-must-always-be-repacked-before-finishing-a-task-2026-07-31)
+- [Effect-warhead merge safety during 3-way split (2026-08-07)](#effect-warhead-merge-safety-during-3-way-split-2026-08-07)
+- [Measure the law's OWN pipeline, and never validate a rule against the corpus it generated (2026-08-24)](#measure-the-laws-own-pipeline-and-never-validate-a-rule-against-the-corpus-it-generated-2026-08-24)
+- [An audit is not evidence of a law — two guards enforced retired designs (2026-08-24)](#an-audit-is-not-evidence-of-a-law--two-guards-enforced-retired-designs-2026-08-24)
+- [Porting from an upstream mod: a NEW NAME is not a NEW MECHANIC (2026-08-23)](#porting-from-an-upstream-mod-a-new-name-is-not-a-new-mechanic-2026-08-23)
+- [`Inherits` POSITION is semantic, not cosmetic (2026-08-16)](#inherits-position-is-semantic-not-cosmetic-2026-08-16)
+- [Upgrade regressions feel like downgrades (2026-08-19)](#upgrade-regressions-feel-like-downgrades-2026-08-19)
+
+**Weapon templates, the 3-way split and the effect layer**
+
+- [Weapon effect-layer `DamagesConcrete` handling (2026-08-20)](#weapon-effect-layer-damagesconcrete-handling-2026-08-20)
+- [Weapon template retrofit — Phase A lessons (2026-08-02)](#weapon-template-retrofit--phase-a-lessons-2026-08-02)
+- [Weapon 3-way split — effect/projectile pitfalls found during the effects-table pass (2026-08-05)](#weapon-3-way-split--effectprojectile-pitfalls-found-during-the-effects-table-pass-2026-08-05)
+- [Weapon 3-way split: projectile family naming (2026-08-07)](#weapon-3-way-split-projectile-family-naming-2026-08-07)
+- [Template location and PhysicalStates forms (2026-08-20)](#template-location-and-physicalstates-forms-2026-08-20)
+- [Contrail fields are projectile, not warhead, and can survive a projectile type swap (2026-08-20)](#contrail-fields-are-projectile-not-warhead-and-can-survive-a-projectile-type-swap-2026-08-20)
+- [Inline effect warheads should be inherited, not inline (2026-08-19)](#inline-effect-warheads-should-be-inherited-not-inline-2026-08-19)
+
+**Balance pipeline and formula**
+
+- [Latest lessons from the July 2026 infantry rebalance pass](#latest-lessons-from-the-july-2026-infantry-rebalance-pass)
+- [Class-specific notes](#class-specific-notes)
+- [Uniqueness enforcement](#uniqueness-enforcement)
+- [Dual-weapon units](#dual-weapon-units)
+- [Audit and pipeline findings from 2026-07-22](#audit-and-pipeline-findings-from-2026-07-22)
+- [Tooling fixes discovered during W24 A1a (2026-08-22)](#tooling-fixes-discovered-during-w24-a1a-2026-08-22)
+
+**Process, tooling and platform**
+
+- [YAML-only AI personalities and dead squad-manager keys (2026-08-21)](#yaml-only-ai-personalities-and-dead-squad-manager-keys-2026-08-21)
+- [Opt-in AI unit compositions (2026-08-24)](#opt-in-ai-unit-compositions-2026-08-24)
+- [A ContentPack can only ADD to a bot module - and a partial migration fails silently (2026-08-31)](#a-contentpack-can-only-add-to-a-bot-module---and-a-partial-migration-fails-silently-2026-08-31)
+- [Content installer and music filesystem plumbing (2026-08-11)](#content-installer-and-music-filesystem-plumbing-2026-08-11)
+- [Git workflow and commit rules (2026-07-24)](#git-workflow-and-commit-rules-2026-07-24)
+- [YAML lint rules learned (2026-07-24)](#yaml-lint-rules-learned-2026-07-24)
+- [OpenRA Lua `Map` API: there is no `Map.Contains` (2026-07-31)](#openra-lua-map-api-there-is-no-mapcontains-2026-07-31)
+- [Between-cell movement responsiveness (2026-08-11)](#between-cell-movement-responsiveness-2026-08-11)
+- [`docs/audit/latest/` is environment-bound — an incomplete tree reports LESS and still says PASS (2026-08-23)](#docsauditlatest-is-environment-bound--an-incomplete-tree-reports-less-and-still-says-pass-2026-08-23)
+- [Two ways a gate passes its own verification and is still broken (2026-08-23)](#two-ways-a-gate-passes-its-own-verification-and-is-still-broken-2026-08-23)
+- ["Regenerable" is a claim about a tool, and it needs running (2026-08-28)](#regenerable-is-a-claim-about-a-tool-and-it-needs-running-2026-08-28)
+- ["Not found" is not "not there" — three ways a grep lies (2026-08-28)](#not-found-is-not-not-there--three-ways-a-grep-lies-2026-08-28)
+
+---
+
+## YAML-only AI personalities and dead squad-manager keys (2026-08-21)
+
+The Cameo AI personality selector uses `GrantRandomCondition` on the inherited
+`Player` actor and gates five independent `SquadManagerBotModuleCA` instances
+with mutually exclusive personality conditions. The instances must duplicate
+their shared fields: YAML trait inheritance is keyed by the trait suffix, so a
+shared fallback can leave live managers with different or incomplete values.
+`tools/audit/audit_ai_personalities.py` compares every non-tuning field
+byte-for-byte and checks selector/consumer condition parity.
+
+`RushInterval` and `RushAttackScanRadius` are stale squad-manager keys. They
+are absent from both the vendored CA trait and the pinned engine, and must not
+be copied into new instances. Steamroller cannot express zero guerrilla units
+in YAML: the engine's `guerrillaForce == null` short-circuit creates the first
+guerrilla squad regardless of `JoinGuerrilla`, so its documented behavior is
+at most one harasser.
+
+The personality indicator uses a reusable `ObserverConditionNotification`
+trait rather than a personality-specific UI path. It announces once after a
+short delay to spectators and replay viewers through the local chat feed, while
+live players are excluded so opponent strategy is not revealed. Keep this
+observer-only behavior display-local and out of synchronized game state.
+
+## Opt-in AI unit compositions (2026-08-24)
+
+When porting a composition selector into a divergent unit builder, keep the
+consumer opt-in and preserve the existing `UnitsToBuild` table as the fallback
+rather than introducing a second baseline configuration. Resolve shares by
+production queue category, and keep explicit unit requests on their existing
+bypass path so harvesters and MCVs are not blocked by composition filtering.
+Composition candidates must be gated by time, per-composition interval,
+technology prerequisites, and whether their units are producible in the
+player's queues. Parallel production queues must count every queued unit
+toward produced-value expiry.
+
+When a squad manager gains optional time-scaled value thresholds, retain the
+flat `SquadValueRandomBonus` path for existing consumers and reject configuring
+both modes on one instance. Cache `ValuedInfo.Cost` by actor type when summing
+idle units; missing `ValuedInfo` must remain a cached zero rather than changing
+the threshold behavior.
 
 ## Content installer and music filesystem plumbing (2026-08-11)
 
@@ -39,23 +146,64 @@ Do not modify rules, assets, or balance numbers until these documents are in con
   `*-content` mod convention; it is an explicit exception to Cameo's
   underscore-only in-mod naming rule.
 
-## Contents
+## Weapon effect-layer `DamagesConcrete` handling (2026-08-20)
 
-- [Latest lessons from the July 2026 infantry rebalance pass](#latest-lessons-from-the-july-2026-infantry-rebalance-pass)
-- [Class-specific notes](#class-specific-notes)
-- [Uniqueness enforcement](#uniqueness-enforcement)
-- [Dual-weapon units](#dual-weapon-units)
-- [Audit and pipeline findings from 2026-07-22](#audit-and-pipeline-findings-from-2026-07-22)
-- [Interactable trait and upgrade actors (2026-07-24)](#interactable-trait-and-upgrade-actors-2026-07-24)
-- [Git workflow and commit rules (2026-07-24)](#git-workflow-and-commit-rules-2026-07-24)
-- [YAML lint cleanup header-removal bug (2026-07-24)](#yaml-lint-cleanup-header-removal-bug-2026-07-24)
-- [Superweapon documentation audit (2026-07-25)](#superweapon-documentation-audit-2026-07-25)
-- [Engine update pipeline and Smart App Control findings (2026-07-30, updated with deep research)](#engine-update-pipeline-and-smart-app-control-findings-2026-07-30-updated-with-deep-research)
-- [Loose-extracted .oramap maps must always be repacked before finishing a task (2026-07-31)](#loose-extracted-oramap-maps-must-always-be-repacked-before-finishing-a-task-2026-07-31)
-- [Empty warhead type = boot NRE; check-yaml does not catch it (2026-08-04)](#empty-warhead-type--boot-nre-check-yaml-does-not-catch-it-2026-08-04)
-- [3-way split retrofits: two recurring child-weapon bugs (2026-08-08)](#3-way-split-retrofits-two-recurring-child-weapon-bugs-2026-08-08)
+- `DamagesConcrete` is a separate warhead trait. It is NOT automatically
+  redundant with `SpreadDamage` or `AreaDamage`; it must be preserved unless the
+  source behavior proves it is accidental or duplicate.
+- When a weapon inherits multiple effect templates (e.g. old full-stack or
+  3-way-split intermediates), the same `DamagesConcrete` node can be inherited
+  more than once. Use `tools/audit/effect_audit.py` (or `scratchpad/`) to scan
+  all resolved weapons; the target is **0 weapons with >1 `DamagesConcrete`**.
+- Effect templates should remove inherited generic concrete with
+  `-Warhead@Concrete` and re-add a single `Warhead@Concrete: DamagesConcrete`
+  with the intended local value when the effect is meant to be standalone.
+- Weapon children that need a different concrete value should override with a
+  single `Warhead@Concrete:` key; matching keys merge, so only the last value
+  survives.
 
----
+## ⛔ NEVER HAND-PARSE YAML — a sibling node silently overwrote every Versus number (2026-08-22)
+
+A whole day of weapon-profile analysis produced confident, internally consistent, WRONG numbers,
+because the reader was a bespoke line-scanner instead of the project's resolver.
+
+The scanner opened a dict on `Versus:` and then kept absorbing any `Key: <int>` line. It never
+CLOSED the block. The AreaDamage fold had since added `PercentageVersus:` INSIDE the same warhead
+node, so the twin's rank ladder overwrote the real profile row by row:
+
+```
+Warhead@Bullet_Light: AreaDamage
+    Versus:            None: 200 ... Superheavy 48   <- the real profile, mean 100
+    PercentageVersus:  None: 16  ... Superheavy  1   <- what got read, mean 8.5
+```
+
+**What it cost.** Reported "0 of 125 profiles obey the MEAN-100 law" (truth: **123 of 125**),
+"every family violates the 2x-8x spread band" (truth: **39 of 42 in band, median 4.17x**),
+an additive `+4/+5` level offset that was really the rank ladder stepping 1/5/10, "26 of 42
+families invert", and "a Heavy weapon self-prices at ~2x a Light one" (truth: the Heavy/Light
+weighted-mean Versus ratio is **1.00x** — the level does not price through Versus at all, exactly
+as §12.0h intends). Two design documents were written and committed on those numbers.
+
+**The rules:**
+
+1. **Read through `miniyaml.Ruleset.resolve_weapon` / `.resolve`**, and pull Versus with
+   `weapon_efficiency.versus_of(node)`. They return structured nodes and cannot confuse siblings.
+2. If a hand parser is genuinely unavoidable, **CLOSE every block on indentation** — the moment
+   indentation returns to the opening key's level or shallower, the block is over.
+3. **A near-miss name is the danger**: `PercentageVersus` does not `startswith("Versus:")`, so the
+   opening guard looked correct. The bug was the missing CLOSE, not the missing open.
+4. **Sanity-check against a stated law before believing a result.** "0 of 125 conform to a binding
+   law that the generator implements and `verify_generator_sync` reports 0 drift on" is not a
+   finding, it is a contradiction — and the contradiction was visible immediately.
+
+Guarded by `tools/audit/audit_versus_profile.py`, which reads through the resolver on purpose.
+
+**And the deeper miss:** `docs/DESIGN.md` is required reading #4 in CLAUDE.md ("the binding design
+contract ... Read it before touching any yaml"), and it already contained §12.0h (MEAN-100),
+§12.0c (the Shield ladder) and §12.0d (the class tilt). Days of design work re-derived rulings
+that were already made and already shipped. **Before designing anything, grep DESIGN.md for the
+concept.** A design question that feels novel usually is not.
+
 
 ## Five bug classes from the W25 armor/Versus rebuild (2026-08-16/17)
 
@@ -514,7 +662,13 @@ The engine lives in TWO places that must stay in sync. Follow these steps IN ORD
 4. **Update `mod.config`** in the mod repository: set `ENGINE_VERSION="<full-40-char-hash>"`. The engine pin lives in `mod.config`, NOT `mod.yaml`.
 5. **Run `make all`** (Windows: `make.cmd all`). Because `engine/VERSION` no longer matches, the SDK deletes `engine/`, downloads the source zip for the pinned commit from GitHub, and rebuilds everything.
 6. **Verify**: `engine/VERSION` must contain the new hash; the build must have 0 errors.
-7. **Boot-gate with `launch-game.cmd`** before committing the `mod.config` change (see AGENT_WORKSPACE.md git rules). Recreate any custom `engine/glsl/` shaders after the fetch (they are wiped).
+7. **Boot-gate with `launch-game.cmd`** before committing the `mod.config` change (see AGENT_WORKSPACE.md git rules).
+   ⚠ **The old "recreate any custom `engine/glsl/` shaders, they are wiped" step is STALE — verified 2026-08-22.**
+   All 16 shaders (including `postprocess_nuclearflash.frag`) are now TRACKED in the engine repo, so the source
+   zipball carries them and the fetch restores them untouched. Measured by md5-summing `engine/glsl/*` before and
+   after a full `make.cmd all` on pin `462fc1fc4b`: identical, all 16. Still worth a `md5sum` before/after rather
+   than trusting either version of this line — if a shader is ever added WITHOUT committing it to the engine repo,
+   the wipe becomes real again.
 8. **Commit `mod.config`** together with the change's docs updates.
 
 Key facts verified 2026-07-30:
@@ -644,6 +798,340 @@ A `Warhead@X:` line with **no value** is a boot crash, not a lint warning. `Weap
 - `^DefaultInfantry` enables `ResponsiveBetweenCells` for responsive foot infantry.
 - A defined `Mobile.TurnSpeed` remains the documented marker for infantry that deliberately turn like vehicles; those actors inherit `^VehicleTurnRateInfantry`, which only sets `Mobile.ResponsiveBetweenCells: false` so their balance values and movement tuning remain unchanged.
 
+
+## `docs/audit/latest/` is environment-bound — an incomplete tree reports LESS and still says PASS (2026-08-23)
+
+**The failure is not that the audit breaks. It is that the audit succeeds.**
+
+`docs/audit/latest/` is TRACKED evidence, and a dozen audits read things that are not in this
+repository — `engine/` C# sources (a build output, `.gitignore`d, CLAUDE.md rule 7) and full git
+history. Run the suite where those are missing and nothing errors: the scripts scan a smaller
+corpus, find fewer problems, print a smaller number and say **PASS**. Commit that and real
+findings are deleted from the tracked evidence with a clean diff and a green run.
+
+Measured in a cloud container on 2026-08-23, one `git add` away from being committed:
+
+| report | complete tree | incomplete tree | why |
+|---|--:|--:|---|
+| `unique_traits.md` | 125 trait types † | **11** | no `engine/**/*.cs` to resolve `.Trait<T>()` |
+| `dead_warhead_fields.md` | 27071 warhead nodes | **7014** | no C# field sets, so most types are "not checked" |
+| `fluent.md` | 5235 messages | **3640** | the engine ships fluent files too |
+| `assets.md` | 8780 WAVs | **4390** | the engine's own mods are not there |
+| `recent_changes.md` | 663 files touched | **31523** | shallow clone: the grafted boundary commit looks like it touched the world |
+
+† 125 was itself an under-report. `audit_unique_traits.py` looked for CA under `engine/OpenRA.Mods.CA`, but `OpenRA.Mods.CA` is **vendored at the repo root** — so 14 CA trait types had never been scanned on ANY machine. The complete-tree figure is **139**. A denominator can be wrong on the good tree too.
+
+`git log` showed `latest/` had been ping-ponging between a Windows checkout and a container for
+several commits — each run overwriting the other's numbers, `unique_traits.md` flipping 125 ↔ 11
+in commit after commit — so the committed set was a MIXTURE, some rows true and some degraded,
+with nothing on the page saying which.
+
+**The guard.** `tools/audit/environment.py` names the defects and the audits each one degrades.
+Both runners call it first: an incomplete tree still runs the whole suite (the answers are
+useful) but writes to the untracked `docs/audit/degraded/` and prints why. `--force-latest`
+overrides for a deliberate partial refresh. `docs/factions/MATRIX.md` is diverted the same way.
+
+⭐ **The general shape, worth more than this instance:** a tool that measures a corpus will report
+the corpus it can see, and "fewer findings" and "fixed" produce the identical green. Before
+believing a count fell, check that the DENOMINATOR did not. Every row above is a denominator
+that moved.
+
+⚠ Even on two complete trees the reports are not byte-identical: Windows writes `mods\cameo\…`
+and Linux writes `mods/cameo/…`, and a few audits emit unordered rows. So a cross-platform
+regenerate is never a clean diff, and `latest/` should be refreshed **whole, from one machine**,
+not file by file.
+
+⚠ And the suite writes TRACKED files outside `latest/`: `docs/factions/MATRIX.md`, plus
+`tools/rename/rename_map_*.yaml`, which `gen_rename_maps.py` emits as a side effect of the
+naming report. `git status` after a suite run is therefore *expected* to be dirty in places the
+run never mentions — check what moved before assuming a stray edit.
+
+
+## Measure the law's OWN pipeline, and never validate a rule against the corpus it generated (2026-08-24)
+
+Two failure modes from one session designing DESIGN §12.0i's armor axis. Both produced results that
+were internally consistent, plausible, and wrong — the hardest kind to catch.
+
+**1. A measurement of an INCOMPLETE pipeline is not evidence about the design.**
+
+§12.0d says the class tilt "is applied to the VALUES and each armor is then given back the RANK it
+held". `audit_heaviness_bell.py` skipped that restore and compared only each ladder's first-vs-last
+rung. Everything measured against it was wrong:
+
+| conclusion drawn | reality with the restore in place |
+|---|---|
+| 2 permanent `KNOWN_INVERSIONS`, "a gap in §9.4, author new gradients under rule 4" | 0 inversions; nothing needs authoring |
+| a tier-anchored peak "inverts 26 of 42 families", so §12.0i law 1 must anchor to the family | `mu = h` inverts **nothing**, at any sigma, across 44 families × 5 heaviness values |
+| ladder orderings changed by the bell: 0 (endpoints only) | **127**, across 60 family/ladder pairs |
+
+The endpoint check was ALSO blind to 125 reorderings it should have caught, so the same omission
+produced both a false positive and a false negative. **When a binding law names a pipeline STEP,
+implement the step before measuring against the law.**
+
+**2. A GENERATED corpus cannot confirm the rule that generated it.**
+
+The maintainer asked for a continuous heaviness value per armor, and the tempting move was to
+derive it from the 45 authored `^Warhead_*_Medium` profiles rather than hand-type 15 numbers. PC1
+of those profiles looked like a triumph: every ladder monotone lightest→heaviest, and it reproduced
+the maintainer's own independent statement (*"bomber is between light and medium, helicopter
+between medium and heavy"*) to two decimals. It was not a measurement of heaviness:
+
+* **56% of PC1 was ladder MEMBERSHIP, not heaviness** — macro-type priority in disguise (`Bullet`
+  favours infantry whatever its heaviness). PC2 was 93% ladder membership.
+* Remove the macro-type term and the cross-ladder OFFSETS vanish with it: each ladder's residual
+  mean is exactly zero **by construction**. They are not identifiable, at all, from any corpus.
+* The within-ladder SPACING that survives correlates **0.979** with mean `build_order` rank — it
+  re-reads `gen_weapon_template`'s interleave rule rather than confirming it.
+
+What the corpus legitimately confirms is the rung ORDER (with macro-type removed, one axis explains
+92.3% of the residual and all four ladders come out monotone independently) — which was never in
+doubt. **Reporting "this is a ruling, not a measurement, and here is why it cannot be one" is what
+got the numbers ruled.** Dressing a design decision as a fit would have shipped 15 numbers nobody
+had actually chosen.
+
+**3. The corollary for acceptance tests: compare like with like.** "Can the bell reproduce the
+shipped Light/Heavy templates from one base?" scored the bell at 2% better than doing nothing, and
+that nearly went in the notes as evidence against the model. The control killed it: the **shipped**
+`class_tilt` scores **+18.7% WORSE than doing nothing** on the same comparison, because the level
+also changes the body's `step` and `floor` (`LEVELS` in `gen_weapon_template.py`), not just the
+tilt. Compared tilt-to-tilt on the same base, the bell recovers ~60% of the shipped tilt. Always run
+the shipped implementation through your own acceptance test first — if it fails, the test is wrong.
+
+## An audit is not evidence of a law — two guards enforced retired designs (2026-08-24)
+
+A failing audit feels like a finding about the tree. Twice in one session it was a finding about
+the AUDIT, and in one of those cases believing it would have meant **changing shipped content to
+satisfy a rule that no longer existed.**
+
+**1. `audit_physical_state_warheads` demanded warheads the AreaDamage fold had folded away.**
+
+It looked for a separate `Warhead@{Flame,Chemical}_{Light,Medium,Heavy}_Percentage` twin of type
+`AreaDamagePercentage`. All six reported "missing percentage warhead", it had been red for days,
+and the drafted fix was *"make `gen_weapon_template.py` emit the six twins its own comment already
+promises."* That would have added six warheads to satisfy a retired structure.
+
+The fold put all of it in ONE node — `AreaDamageWarhead` carries `PercentageScale`,
+`PercentageSpread`, `PercentageVersus`, `FriendlyFireDamage` and `FriendlyFireSpread` as fields:
+
+```
+Warhead@Flame_Light: AreaDamage
+    Damage: 2000  Spread: 200  Falloff: 100, 90, 78, 60, 0   <- flat
+    PercentageScale: 10000   PercentageSpread: 50            <- percentage, folded in
+    FriendlyFireDamage: 50   FriendlyFireSpread: 50          <- friendly fire, folded in
+    PhysicalStateName: Temperature   PhysicalStateScale: 100 <- the meter
+```
+
+⛔ **The tell that was walked straight past: `verify_generator_sync` reported 0 drift.** The
+generator and the yaml agreed. When two independent artifacts agree and a THIRD checker disagrees,
+**the checker is the suspect** — the same rule already written down as *"a result that contradicts
+a binding law is a contradiction, not a finding"*, and it still lost to the instinct to fix the
+data.
+
+⚠ Second trap inside the first: the meter has **two legal forms**. Flame uses singular
+`PhysicalStateName` + `PhysicalStateScale`; **Chemical uses the `PhysicalStates:` MAP**
+(`Corrosion: 100`), which is what blend families emit. Reading only the singular form makes
+Chemical look like it has no meter at all.
+
+**2. `audit_level_ladder` enforced a damage ladder no law states.** It required a family's
+effective damage to rise Light -> Medium -> Heavy -> Super. DESIGN §12.0d makes the level a TILT,
+§12.0h makes `Damage` a free knob, and 145 `^Warhead_*` templates carry only a placeholder
+`Damage: 2000` — the template holds the SHAPE, the weapon holds the MAGNITUDE. Nine families sat
+in a standing WARN for weeks, and it was `WEAPON_HEAVINESS.md` §9.6's "blocker #1", holding up the
+continuous-heaviness bell for nothing. Retired by maintainer ruling.
+
+**The habit both cases needed:** before acting on an audit's findings, ask **what design era it was
+written for**, and grep `docs/DESIGN.md` for the structure it demands to confirm that structure is
+still current. An audit encodes a law as of the day it was written; DESIGN.md is the law now.
+
+⚠ And the corollary for authors: when a design supersedes a structure, **the guards that enforced
+the old one are part of the change**. Both of these outlived their designs because the yaml moved
+and nobody swept the audits.
+
+
+## Porting from an upstream mod: a NEW NAME is not a NEW MECHANIC (2026-08-23)
+
+Cameo is absorbing four upstream mods (`docs/design/UPSTREAM_MODS.md`). The obvious way to decide
+what to take is "which of their types do we not have" — and it is wrong, because **the same
+mechanic arrives under different names in different mods**, and a name comparison cannot see that.
+
+The case that proved it. `audit_upstream_adoption.py` listed Romanov's Vengeance's `Temporal`
+warhead and `AffectedByTemporal` trait as NEW, and a grep for `Temporal` across every assembly
+Cameo loads returned nothing — so they were ported into `OpenRA.Mods.Cameo`, adapted for the
+one engine API difference, built clean, and confirmed registered in `--docs`. Every step passed.
+
+They were duplicates. Combined Arms' `WarpDamage` + `Warpable`, vendored here for months, are the
+same design — a `TargetDamageWarhead` subclass routing damage into a meter on a companion trait —
+and are **already wired to `ChronoBeam` and `IFVChronoBeam`**, exactly the weapons RV points
+`Temporal` at. CA's is the richer version (`RevokeRate`, `ScaleWithCurrentHealthPercentage`).
+The two traits even carry a word-for-word identical `[Desc]`. The port was reverted before
+anything was built on it.
+
+**Nothing on the C# side could have caught this.** The grep was correct, the build was correct,
+the registration was correct. What caught it was opening the DESTINATION — the actor that would
+use the new trait — and seeing a working implementation already there.
+
+So, before porting any upstream type:
+
+1. **Find the actor or weapon it would serve, and read it.** `ra2_allies_chronolegionnaire` fires
+   `ChronoBeam`; one look at that weapon ends the question. This is the only reliable step.
+2. **Search by MECHANIC, not by name** — the damage-routing base class, the companion trait, the
+   yaml field names — and search `OpenRA.Mods.CA` explicitly, since it is vendored at the repo
+   ROOT and a search rooted at `engine/` will miss all 181 files of it.
+3. **Let the audit pair the descriptions.** `audit_upstream_adoption.py` now compares `[Desc(...)]`
+   text and reports matches as a stop sign instead of a candidate. It found **52** such pairs
+   across the four upstreams — RV alone drops from 15 "new" types to 7. But the match is evidence,
+   not proof, and it misleads **both** ways: it missed `MissileSpawnerOldSlave`, a real duplicate
+   whose wording differs by one word, and it flags `LeaveSmudgeSP`, which repeats Common
+   `LeaveSmudge`'s description verbatim while being a genuine superset of it. The pairing narrows
+   the reading list; it does not replace it.
+
+⚠ The cost of getting this wrong is not a broken build — it is a second implementation of a live
+mechanic sitting unused in the assembly, which is exactly the bloat `UPSTREAM_MODS.md` §5 warns
+about (86 of the 142 CA trait types already vendored here are unused).
+
+
+## Two ways a gate passes its own verification and is still broken (2026-08-23)
+
+The commit that added `tools/audit/environment.py` and the D8 citation check shipped with two
+defects, both in the new code, both "verified" before landing. The verifications were real —
+they were just aimed slightly off the thing that mattered.
+
+**1. A grep whose filter excluded exactly the counter-evidence.**
+
+`environment.py` needed the list of assemblies whose C# the audits read. The list was copied in
+spirit from `audit_unique_traits.py`, then sanity-checked with:
+
+    grep -n "engine" tools/audit/audit_dead_warhead_fields.py
+
+which printed the `AS`, `Cnc`, `D2k` and `Common` rows and looked like confirmation. It was not.
+`audit_dead_warhead_fields.py`'s table is:
+
+    ("AS",     "engine/OpenRA.Mods.AS"),
+    ("CA",     "OpenRA.Mods.CA"),        <- no "engine", so the grep hid it
+    ("Cameo",  "OpenRA.Mods.Cameo"),     <- likewise
+    ("Cnc",    "engine/OpenRA.Mods.Cnc"),
+
+**`OpenRA.Mods.CA` and `OpenRA.Mods.Cameo` are VENDORED AT THE REPO ROOT**, not under `engine/`.
+The two rows that disproved the assumption were precisely the two the filter removed, and the
+filter was the word the assumption was built on. So the new gate listed `engine/OpenRA.Mods.CA`,
+a path that cannot exist on any machine, and `incomplete()` returned a reason even on a fully
+built Windows tree — the gate could never say "complete", and diverted a legitimate run's 65
+reports to `degraded/`. The same wrong path had been sitting in `audit_unique_traits.py` for
+much longer, silently: 125 trait types scanned instead of 139.
+
+⭐ **When you grep for the word your belief is made of, matches confirm nothing** — the
+counter-examples are the lines that lack the word. Either read the whole structure, or grep for
+the FIELD (`OpenRA.Mods`) rather than the value you expect (`engine`). `ls` would also have
+settled it in one call.
+
+**2. A tracked-file scan run while the new file was still untracked.**
+
+`audit_doc_health` enumerates files with `git ls-files`. The D8 check was added along with
+`tools/tests/test_audit_doc_health.py`, whose fixtures deliberately contain a wrong citation
+label so the detector can be tested against the real bug. Running the audit at that moment
+reported **0 findings** and exit 0 — correctly, because the test file was still UNTRACKED and
+therefore invisible to `git ls-files`. `git add` made it visible; the very next run of the suite
+reported 3 findings and exited 1 on a clean tree.
+
+⭐ **Any check that enumerates via `git ls-files` must be re-run AFTER staging**, never before.
+Otherwise the last thing you verify is a tree that does not contain your change. This is the
+third instance of the self-reference class in this one audit — D5 needed the same exclusion for
+its own `GONE` table, and D4 for its own example anchor. A detector that scans the repository
+will eventually scan itself and its tests; write the exclusion when you add the check, not after
+it fires.
+
+
+## "Regenerable" is a claim about a tool, and it needs running (2026-08-28)
+
+The 83→43 documentation compaction deleted 40 files. Its commit message said **nothing was
+summarised away** and that every merged file's content lines had been checked for presence
+in the target — verified mechanically, 0 lines lost.
+
+That claim was true, and it covered the wrong set.
+
+It described the files that were **merged**. Alongside them, fifteen files were **deleted
+outright** on the grounds that they were generated and could be rebuilt on demand. That
+second claim was asserted, not tested.
+
+Re-checking it later, by diffing every deleted file's content lines against the whole live
+corpus:
+
+| outcome | count |
+|---|--:|
+| carried across into a merge target | 24 |
+| deleted, regeneration **verified by running the generator** | 13 |
+| deleted, **not regenerable** | 2 |
+
+The two that were not:
+
+* `docs/balance/BALANCE_AUDIT.md` — a per-unit formula-price-vs-cost delta report. Its
+  generator, `tools/balance/_balance_audit_report.py`, raises `ModuleNotFoundError: No
+  module named 'scout_rebalance_proposal_final'`. The module was removed long ago;
+  `propose_class_rebalance.py` even carries a comment saying those modules no longer
+  exist. The script is dead, nothing runs it, and nobody noticed because nobody ran it.
+* `docs/balance/proposal_vehicle_defense_anchors.md` — deleted with thirteen
+  `proposal_*.md` siblings, but it is not one of them. The proposer writes
+  `proposal_<class>_infantry.md`; this name matches no pattern and a repo-wide search
+  finds no generator at all. It was deleted by resemblance.
+
+Both are restored under `docs/history/balance/` with banners, because their numbers
+predate W24 and are provenance rather than current truth.
+
+⭐ **Deleting a generated artifact is safe exactly when the generator runs.** That is one
+command, and skipping it converts a reversible cleanup into permanent loss that a green
+verification report actively conceals — the check that ran measured merges, and the files
+at risk were the ones it did not cover. Run the generator, or keep the file.
+
+⭐ **Group deletions inherit the safety of the group's weakest member.** Fourteen files
+were removed under one justification; thirteen deserved it. A filename that merely looks
+like the others is the one to check individually, because resemblance is not provenance.
+
+## "Not found" is not "not there" — three ways a grep lies (2026-08-28)
+
+Three separate disagreements in one week, between careful people looking at the same
+project, all with the same shape: someone searched, found nothing, and concluded the thing
+did not exist. Every time, it did.
+
+**1. Wrong commit.** Five outside reviews declared seven documents missing —
+`MASTER_REPORT`, `audit/FINDINGS`, `BALANCE_MEGAPLAN`, `PROJECT_CONTEXT` and others. All
+seven had been merged away by the 83→43 compaction. The reviewers were not describing this
+repository; they were describing it on an earlier date, and disagreeing with each other
+about *when* rather than about *what*.
+
+> `git log --all -- <path>` separates **moved** from **never existed**. A path with commits
+> behind it and none at HEAD was relocated, and the report's substance may still be sound.
+
+**2. Wrong load state.** Four USA doctrine conditions in `defaults.yaml` looked like dead
+wiring: nothing on master grants them, so five multipliers hang off conditions that can
+never fire. The provider exists and works — `usacommand` in `rules/generals.yaml`, which
+`mod.yaml` has commented out. Dormant content can be the sole provider for live wiring, so
+the defect is real on master and invisible to anyone working with that pack enabled.
+
+> Check `mod.yaml` before calling wiring dead. State which files were loaded when reporting
+> it.
+
+**3. Wrong namespace.** The same four tokens then vanished from a contributor's tree
+entirely. That tree had renamed 874 actors plus every id that doubles as a string match, so
+`usabombardament` had become `usa_doctrine_bombardmentbattleplan` — locally, and nowhere
+else. Searching master's names against a renamed tree returns nothing, and nothing looks
+identical to deleted.
+
+> Before concluding a rename removed something, search for what it was renamed *to*. A
+> rename map is the fastest way to translate between naming generations.
+
+⭐ **A finding is scoped to a commit, a load state, and a namespace.** All three must be
+established before "I could not find it" becomes "it is not there" — and each failure is
+invisible from inside, because a search that returns nothing looks the same in every case.
+
+⭐ **Trace a mechanism end to end rather than inferring its absence from an empty grep.**
+The load-state case took four links to settle — production grant, prerequisite, condition,
+multiplier — and stopping at any one of them produced a confident wrong answer. Two of the
+three disagreements above were resolved only by walking the whole chain; none was resolved
+by a better search term.
+
+The worked instances, with line numbers, are in
+[`design/BALANCE_PIPELINE_GAPS.md`](design/BALANCE_PIPELINE_GAPS.md) §0–§0b.
+
 ## `Inherits` POSITION is semantic, not cosmetic (2026-08-16)
 
 **The last node wins, and `Inherits` is a node.** `MiniYaml` walks a definition's children
@@ -689,3 +1177,71 @@ Two resolver/tooling gotchas from the chemical-weapon and artillery-projectile p
 The legacy mixed-stack missile weapons (`227mm`, `GDIRigMissilePod`, `MammothTusk`) inherited `^FlakWeapon` — a `Bullet` projectile with `ContrailStartColor: FF884400` and `ContrailEndColor: 000000FF` — and then a `^*Missile` template that switched the projectile to `Missile`. Because `ContrailStartColor`/`ContrailEndColor` were not re-declared in the missile template, the resolved `Projectile: Missile` still carried the flak bullet colors.
 
 A naive 3-way split onto `^Projectile_Missile_*` drops those colors and `review_resolve_diff.py` flags `Proj.CStart`/`Proj.CEnd`. Preserve them as local `Projectile:` overrides on the concrete weapon whenever the resolved baseline had them and the new family does not.
+
+---
+
+## Tooling fixes discovered during W24 A1a (2026-08-22)
+
+- tools/rename/safe_rename.py lower-cased every replacement. It now preserves the exact case written in the rename map, so mixed-case OpenRA ids stay canonical.
+- tools/balance/splice_templates.py ran gen_weapon_template.py with a family filter, which caused shield_uniqueness to see only a subset and emit wrong compressed Shield values. It now always runs the full generator and splices only the requested blocks, preserving the original newline style (CRLF/LF).
+- The A1a delivery-first rename proved that verify_generator_sync.py is the real source of truth for ^Warhead_* blocks: the Flame and MissileChem blocks had drifted by one Shield point and were re-synced by splicing.
+
+## Upgrade regressions feel like downgrades (2026-08-19)
+
+A W24 collapse can move an upgrade pair onto families with **opposite Versus profiles** and still pass every damage check, because the on-grid `Damage` total is preserved on both sides. `audit_upgrade_regression.py` was added to catch this:
+
+- **314 gated armament pairs** scanned (`Armament` with `RequiresCondition`, one half `!cond` and the other `cond`).
+- **59 findings** in the first pass:
+  - **12 STRICTLY WEAKER** — the upgrade loses on every core armor (e.g. `RA2PatriotThunderboltMissile` vs `RA2Patriot` is 0.13× on vehicles, `TSHellfireSonic` vs `TSHellfire` is 0.11× vs Superheavy).
+  - **42 ROLE-SHIFTED** — wins on some armor, loses on others (legitimate for a specialist, a regression when the loss is on the armor the unit exists to fight).
+  - **5 THIN MARGIN** — the upgrade never loses, but is worth only ~1.03–1.10× where it matters while multiplying on another class. `MonsterTank120mm -> MonsterTank120mmThermobaric` is the poster case: same geometry, 1.5× damage, but the Versus shift means it is **+4% vs Scout / +7% vs Light / +16% vs Medium** and **+126% vs infantry**.
+
+⚠ **A2 was NOT the root cause.** Measured before vs after A2: **54 findings before, 54 after.** A2 deepened the pre-existing `Su57` case from 0.92× to 0.87×. This is pre-existing debt the W24 collapse made visible.
+
+**Rule:** every upgrade must be verified with `python tools/audit/audit_upgrade_regression.py` after any family repoint that touches an armament pair. Do not rely on a damage-preservation check alone.
+
+## Inline effect warheads should be inherited, not inline (2026-08-19)
+
+Maintainer ruling: **Effect warheads (`Warhead@Effect*`) should live in `^Effect_*` templates and be inherited, not declared inline on a concrete weapon.** The only legitimate exception is superweapons, which may need multiple bespoke animations.
+
+First scan: **665 concrete weapons carry 815 inline effect warhead nodes** (`Warhead@Effect`, `Warhead@EffectAir`, `Warhead@EffectWater`, etc.) instead of using `Inherits@fx:`. This is a structural-debt class: it duplicates FX definitions across the tree and makes the 3-way split harder to reason about.
+
+**Rule:**
+- A concrete weapon should use `Inherits@fx: ^Effect_<Family>` for its visuals.
+- Local `Warhead@Effect*` entries should be reserved for **exceptional overrides** (e.g. a custom sound, a one-off `Explosions` list) and should be rare.
+- Superweapons are exempt from the inherit rule because their effects are often unique and multi-animated.
+- Add new effect families to `gen_weapon_template.py` / `weapons.yaml` instead of copy-pasting `CreateEffect` nodes.
+
+**Guard:** `tools/audit/audit_inline_effects.py` is now implemented. Current baseline: **665 concrete weapons carry 815 inline effect nodes**; after auto-detecting superweapons, **628 weapons with 771 nodes** remain as non-exempt debt. Run it after any conversion batch to watch the count fall.
+
+## A ContentPack can only ADD to a bot module - and a partial migration fails silently (2026-08-31)
+
+`ContentPacks/**/yaml/ai.yaml` resolves BEFORE the global `Rules:` block, so
+`cameo|ai/ai.yaml` is the LATER file and wins every leaf collision. Measured with
+`--resolved-rules Player`, one case at a time, against a 1375-row baseline:
+
+| what a pack does | what happens |
+|---|---|
+| adds a NEW dictionary row | unions - 1375 to 1376 rows |
+| sets a scalar the global file also sets | global wins; the pack's value leaves no trace |
+| declares a NEW trait instance (`@suffix`) | works, no warning |
+| removes a trait the global file declares | `YamlException: There are no elements with key ... to remove` |
+
+Three traps follow. First, "split the AI per ContentPack" is a SUBTRACTIVE job on
+`ai/ai.yaml`: whatever the global file still declares is permanently unownable by
+any pack. Second, a half-finished migration is SILENT - the global value simply
+keeps winning, so the yaml looks split and behaves as if it never was. Gate every
+step on a byte-identical resolved-rules dump, not on reading the file. Third,
+"add, never remove": a pack cannot opt out of a global default, and reaching for
+`-TraitName` to do it is a load-time crash. Express opt-out as a value the pack
+ADDS - a condition, a prerequisite token, or a zero-weight row the consumer
+treats as "never".
+
+The corollary for multi-instance modules: `@suffix` instances load fine, so the
+resolver will not stop you creating a second decision authority. Whether that is
+safe is a property of the CONSUMER, not of the yaml -
+`UnitBuilderBotModuleCA` resolves `UnitCompositionsBotModule` with
+`TraitOrDefault`, which throws on the second instance, and a disabled
+`ConditionalTrait` still occupies the trait dictionary - so gating five
+composition modules by condition crashes on the first bot tick instead of
+degrading.

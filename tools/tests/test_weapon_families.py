@@ -36,6 +36,13 @@ class OldFamiliesTest(unittest.TestCase):
 
 
 class WeaponFilesTest(unittest.TestCase):
+    def test_central_list_matches_current_active_monoliths(self):
+        self.assertIn("weapons/d2k.yaml", wf.CENTRAL)
+        self.assertIn("weapons/starcraft.yaml", wf.CENTRAL)
+        self.assertIn("weapons/outpost2.yaml", wf.CENTRAL)
+        self.assertNotIn("weapons/redalert2.yaml", wf.CENTRAL)
+        self.assertNotIn("weapons/missiles.yaml", wf.CENTRAL)
+
     def test_central_files_come_first_and_in_listed_order(self):
         with tempfile.TemporaryDirectory() as tmp:
             mod = pathlib.Path(tmp)

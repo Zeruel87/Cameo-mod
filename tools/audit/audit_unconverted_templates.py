@@ -27,10 +27,19 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools" / "audit"))
 sys.path.insert(0, str(ROOT / "tools" / "balance"))
+import environment  # noqa: E402
 import miniyaml  # noqa: E402
 import gen_weapon_template as gwt  # noqa: E402
 
-OUT = ROOT / "docs" / "audit" / "latest" / "unconverted_templates.md"
+# This audit writes its OWN report rather than being redirected by run_all, so it has
+# to honour the same guard the runners do: docs/audit/latest/ is tracked evidence and
+# must not be written from a tree that cannot produce it. See tools/audit/environment.py.
+REPORT = "unconverted_templates.md"
+
+
+def out_path(force_latest: bool = False) -> pathlib.Path:
+    dest, _ = environment.out_dir(force_latest)
+    return ROOT / dest / REPORT
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -148,8 +157,12 @@ def render(rows: list[dict]) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--write", action="store_true", help=f"write {OUT.relative_to(ROOT)}")
+    ap.add_argument("--write", action="store_true",
+                    help=f"write docs/audit/<latest|degraded>/{REPORT}")
+    ap.add_argument("--force-latest", action="store_true",
+                    help="write docs/audit/latest/ even from an incomplete tree")
     args = ap.parse_args()
+    out = out_path(args.force_latest)
     rows = survey()
     live = [r for r in rows if not r["keep"]]
     print(f"{len(live)} unconverted templates, "
@@ -157,8 +170,9 @@ def main() -> int:
     for r in live[:15]:
         print(f"  {r['inheritors']:4d}  {r['template']:24s} -> {r['target'] or 'UNDECIDED'}")
     if args.write:
-        OUT.write_text(render(rows) + "\n", encoding="utf-8")
-        print(f"\nwrote {OUT.relative_to(ROOT)}")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(render(rows) + "\n", encoding="utf-8")
+        print(f"\nwrote {out.relative_to(ROOT)}")
     return 0
 
 

@@ -61,7 +61,7 @@ class WalkTest(unittest.TestCase):
 
 
 class SeverityTest(unittest.TestCase):
-    """D1 = duplicate Inherits with DIFFERENT values (a template is dropped)."""
+    """D1 marks ambiguous inheritance labels with different parent values."""
 
     @staticmethod
     def classify(key: str, values: list[str]) -> str:
@@ -81,6 +81,8 @@ class SeverityTest(unittest.TestCase):
     def test_baseline_is_a_ratchet_not_a_target(self):
         self.assertGreaterEqual(dup.D1_BASELINE, 0)
         self.assertIsInstance(dup.D1_BASELINE, int)
+        self.assertGreaterEqual(dup.D2_BASELINE, 0)
+        self.assertIsInstance(dup.D2_BASELINE, int)
 
 
 if __name__ == "__main__":

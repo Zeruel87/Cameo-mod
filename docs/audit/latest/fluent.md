@@ -1,6 +1,6 @@
 # audit_fluent — localization drift (B12)
 
-Fluent messages loaded: **5230** — unresolved fluent refs in rules: **1**, orphaned actor-* messages: **526**
+Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orphaned actor-* messages: **526**
 
 
 ## F1 — rules reference fluent keys that don't exist (shows raw key in-game)
@@ -569,7 +569,7 @@ Fluent messages loaded: **5230** — unresolved fluent refs in rules: **1**, orp
 | td_nod | 3/74 | 4% |
 | terran | 0/79 | 0% |
 | tkm | 1/75 | 1% |
-| ts_gdi | 0/69 | 0% |
+| ts_gdi | 0/70 | 0% |
 | ts_nod | 1/50 | 2% |
 | wc2_humans | 0/71 | 0% |
 | wc2_orcs | 0/62 | 0% |

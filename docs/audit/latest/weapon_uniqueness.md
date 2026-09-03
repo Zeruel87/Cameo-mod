@@ -1,6 +1,6 @@
 # Weapon uniqueness (DESIGN.md §10 — faction identity)
 
-damaging armament weapons checked: 1415; W1 same-faction 34, W2 cross-faction 34, W3 carrier-only 95
+damaging armament weapons checked: 1425; W1 same-faction 34, W2 cross-faction 34, W3 carrier-only 95
 
 
 ## W1 — same faction, distinct actors, identical weapon (34)

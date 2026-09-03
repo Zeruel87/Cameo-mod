@@ -63,8 +63,12 @@ def build_replacer(actors: dict[str, str]):
             or `.name`. The key part is replaced, the attribute suffix is
             preserved. This fixes YAML Buildable.Description fields that
             reference FTL keys.
+
+    Matching is case-insensitive, but the replacement keeps the exact case
+    written in the rename map so mixed-case OpenRA ids stay canonical.
     """
     lower = {k.lower(): v.lower() for k, v in actors.items()}
+    exact = {k.lower(): v for k, v in actors.items()}
     if not lower:
         def sub(text: str) -> tuple[str, int]:
             return text, 0
@@ -90,12 +94,12 @@ def build_replacer(actors: dict[str, str]):
         def repl1(mo: re.Match) -> str:
             nonlocal n
             n += 1
-            return lower[mo.group(1).lower()]
+            return exact[mo.group(1).lower()]
 
         def repl2(mo: re.Match) -> str:
             nonlocal n
             n += 1
-            return lower[mo.group(1).lower()] + mo.group(2)
+            return exact[mo.group(1).lower()] + mo.group(2)
 
         # Pass 2 first (more specific), then Pass 1
         text, n2 = rx2.subn(repl2, text)

@@ -1,6 +1,6 @@
 # audit_assets — asset format norms (B11, RAMpage)
 
-PNGs scanned: **1979** (over budget: **143**), WAVs scanned: **8780** (non-conforming: **3634**)
+PNGs scanned: **2006** (over budget: **148**), WAVs scanned: **8780** (non-conforming: **3634**)
 
 
 ## P1 — PNGs over budget (> 8 MiB or > 8192px)
@@ -114,6 +114,11 @@ PNGs scanned: **1979** (over budget: **143**), WAVs scanned: **8780** (non-confo
 | mods/cameo/bits/ts/forgotten_wasp.png | 225 KiB | 12480x203 |
 | mods/cameo/bits/ts/forgot_navyyard.png | 889 KiB | 16384x256 |
 | mods/cameo/bits/ts/forgot_smoker.png | 359 KiB | 13888x226 |
+| mods/cameo/bits/ts/tsgdi_carrier.png | 3809 KiB | 26880x420 |
+| mods/cameo/bits/ts/tsgdi_cruiser.png | 4141 KiB | 26880x420 |
+| mods/cameo/bits/ts/tsgdi_navalyard.png | 423 KiB | 16384x256 |
+| mods/cameo/bits/ts/tsnod_cruiser.png | 3249 KiB | 26880x420 |
+| mods/cameo/bits/ts/tsnod_navalyard.png | 625 KiB | 16384x256 |
 | mods/cameo/bits/ts/ts_bus.png | 598 KiB | 8768x118 |
 | mods/cameo/bits/ts/ts_gdi_promotion_mammothmkii_atk.png | 447 KiB | 12864x150 |
 | mods/cameo/bits/ts/ts_gdi_promotion_mammothmkii_walk.png | 1103 KiB | 21440x150 |

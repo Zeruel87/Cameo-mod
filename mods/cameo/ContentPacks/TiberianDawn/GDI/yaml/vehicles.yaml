@@ -63,7 +63,7 @@ td_gdi_apc:
 	Armor:
 		Type: Medium
 	Turreted:
-		TurnSpeed: 40
+		TurnSpeed: 20
 	Armament@PRIMARY:
 		Weapon: APCGun
 		Recoil: 48
@@ -361,7 +361,7 @@ td_gdi_boxer:
 		Speed: 80
 		TurnSpeed: 16
 	Turreted:
-		TurnSpeed: 32
+		TurnSpeed: 16
 		Offset: -128,0,0
 	Armament@AG:
 		Weapon: BoxerCannonAG
@@ -560,7 +560,7 @@ td_gdi_assaultapc:
 	AttackFrontal:
 		FacingTolerance: 0
 	Turreted:
-		TurnSpeed: 25
+		TurnSpeed: 20
 		Offset: 100,0,250
 	Cargo:
 		UnloadVoice: Move
@@ -639,7 +639,7 @@ td_gdi_humveemkii:
 	ChangesHealth@SelfHealing:
 		Step: 15
 	Turreted:
-		TurnSpeed: 46
+		TurnSpeed: 23
 		Offset: 0,0,300
 	Armament:
 		Weapon: MachineGunHumvee2
@@ -995,10 +995,25 @@ td_gdi_defenserig:
 		ArmamentNames: primary, deployed
 	Armor:
 		Type: Superheavy
-		RequiresCondition: !shielded && undeployed
+		RequiresCondition: !shielded
+	# DEPLOYING ADDS THE STEEL DEFENCE ARMOUR ON TOP OF THE UNIT'S OWN CLASS ARMOUR.
+	# Maintainer 2026-08-22: *"activate the steel armor type on deploy but keep the underlying
+	# regular armor intact and then create the average between them"* — a deployed unit is a
+	# static defence, and Steel is what defences wear.
+	#
+	# Both traits stay ENABLED together, which is the whole point:
+	# `AreaDamageWarhead.MultiArmorCombination` defaults to `Average`, so the class row and the
+	# Steel row meet in the middle instead of one replacing the other. Gating the class armour
+	# on `undeployed` — what the defence rig, siege tank and matador used to do — makes Steel a
+	# REPLACEMENT and throws the unit's own class away.
+	#
+	# ⚠ Averaging only happens for warheads routing through AreaDamage (62.9% of the tree).
+	# The legacy inline-Versus SpreadDamage nodes still MULTIPLY, and under multiplication the
+	# class row cancels out entirely (the ratio becomes just Steel/100) — so those weapons see a
+	# flatter effect than designed until item A5 retires them onto ^Warhead_* templates.
 	Armor@deployed:
 		Type: Steel
-		RequiresCondition: !shielded && !undeployed
+		RequiresCondition: !shielded && deployed
 	AutoTargetPriority@Repair:
 		Priority: 0
 	Turreted@pointdefense:
@@ -1173,7 +1188,7 @@ td_gdi_defenserig:
 		RequiresCondition: deployed
 	RejectsOrders@deployment:
 		Reject: AttackMove, AssaultMove
-		RequiresCondition: !botmicro && deployed
+		RequiresCondition: !(botmicro && !attacking) && deployed
 	GrantConditionOnDeploy:
 		PauseOnCondition: disabled
 		DeployedCondition: deployed
@@ -1183,12 +1198,6 @@ td_gdi_defenserig:
 		UndeployOnMove: true
 		SmartDeploy: True
 		Facing: 0
-	DamageMultiplier@deployed:
-		Modifier: 70
-		RequiresCondition: deployed
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !(botmicro && !attacking) && deployed
 	RejectsMoveToAttack:
 		RequiresCondition: !(botmicro && !attacking) && deployed
 	Passenger:
@@ -1209,7 +1218,6 @@ td_gdi_defenserig:
 	Voiced:
 		VoiceSet: SCSiegeTankVoice
 	DeathSounds:
-	WithMuzzleOverlay:
 	SelectionDecorations:
 	Selectable:
 		Bounds: 1536, 1536

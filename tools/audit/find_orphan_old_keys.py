@@ -69,6 +69,7 @@ def parse_file(path):
         has_new_wh = False
         old_keys_found = []  # (oldkey, suffix, line_no, text)
         new_keys_present = set()  # base new keys present in this node
+        warhead_slots = set()  # exact (base key, suffix) slots authored here
         for j, ln in enumerate(block):
             raw = ln.rstrip("\r\n")
             mi = RE_INHERITS_PLAIN.match(raw)
@@ -82,12 +83,14 @@ def parse_file(path):
             m = RE_OLD_WH.match(stripped)
             if m:
                 key, suffix = m.group(1), m.group(2)
+                warhead_slots.add((key, suffix))
                 if key in OLD_KEYS:
                     old_keys_found.append((key, suffix, start + j + 1, raw.strip()))
                 # record all warhead base keys present (new or old)
                 new_keys_present.add(key)
         nodes.append({"name": name, "parents": parents, "has_new_wh": has_new_wh,
                       "old_keys": old_keys_found, "new_keys_present": new_keys_present,
+                      "warhead_slots": warhead_slots,
                       "file": str(path.relative_to(MOD))})
     return nodes
 
@@ -147,6 +150,15 @@ for cv, kids in children_of.items():
                 # is the new key present in the converted ancestor (cv)?
                 # check cv and all converted ancestors in the chain
                 chain = {cv} | {a for a in ancestors_of(kid) if a in converted}
+                # A retained percentage/friendly-fire slot is still a live inherited
+                # warhead. A child using that exact slot overrides it; it does not add an
+                # orphan beside the new main warhead.
+                retains_old_slot = any(
+                    (oldkey, suffix) in all_nodes[a][0]["warhead_slots"]
+                    for a in chain if all_nodes.get(a)
+                )
+                if retains_old_slot:
+                    continue
                 has_new = any(newkey in all_nodes[a][0]["new_keys_present"] for a in chain if all_nodes.get(a))
                 if has_new:
                     bugs.append((nd["file"], ln, kid, cv, oldkey, newkey, txt))

@@ -8,6 +8,7 @@ Output: a markdown report at docs/audit/latest/phase_b_survey.md with:
 """
 import re
 import sys
+from datetime import date
 from pathlib import Path
 from collections import defaultdict
 
@@ -15,10 +16,43 @@ from collections import defaultdict
 # the weapon-split tools (audit_code_duplication C3), so a family added to one copy
 # went missing from the others.
 from weapon_families import MOD, OLD_FAMILIES, weapon_files  # noqa: E402,F401
+from cameo_model import Model  # noqa: E402
 
 FILES = weapon_files()
+RULESET = Model(MOD.parents[1]).rs
+
+
+def inherited_flat_warhead_keys(family):
+    """Positive flat hits supplied by one resolved legacy family."""
+    node = RULESET.resolve_weapon(family)
+    if node is None:
+        return {family.lstrip("^")}
+    keys = set()
+    for warhead in node.children:
+        if not warhead.key.startswith("Warhead"):
+            continue
+        if "Percentage" in warhead.key or "Concrete" in warhead.key:
+            continue
+        if warhead.value not in {"AreaDamage", "SpreadDamage"}:
+            continue
+        try:
+            damage = int(str(warhead.get("Damage") or "0").strip())
+        except ValueError:
+            continue
+        if damage > 0:
+            keys.add(warhead.key.split("@", 1)[1])
+    return keys or {family.lstrip("^")}
+
+
+FAMILY_FLAT_WARHEADS = {
+    family: inherited_flat_warhead_keys(family) for family in OLD_FAMILIES
+}
 RE_INHERITS_OLD = re.compile(r"^\s*Inherits(?:@\w+)?\s*:\s*\^\w+")
-RE_TOPNAME = re.compile(r"^(\w+):\s*$")
+# MiniYAML template names begin with ``^`` and concrete weapon names may contain
+# punctuation.  ``\w+`` silently merged a concrete block with the following
+# template block, attributing that template's retired inherits to the concrete
+# weapon above it.
+RE_TOPNAME = re.compile(r"^([^\s:#][^:]*):\s*$")
 RE_WARHEAD = re.compile(r"^\s*Warhead@(\w+)\s*:\s*(\S*)")
 RE_DAMAGE = re.compile(r"^\s*Damage\s*:\s*(\d+)")
 
@@ -39,8 +73,18 @@ def parse_file(path):
     for h_i, start in enumerate(headers):
         end = headers[h_i + 1] if h_i + 1 < len(headers) else len(lines)
         name = RE_TOPNAME.match(lines[start].rstrip("\r\n")).group(1).strip()
+        # Several active files repeat the same weapon name. MiniYAML keeps only
+        # the winning definition, so counting every source block inflates the
+        # remaining debt and can recommend editing a shadowed definition.
+        winner = RULESET.weapons.get(name)
+        if winner is None:
+            continue
+        winner_path = (MOD.parents[1] / winner.file).resolve()
+        if winner_path != path.resolve() or winner.line != start + 1:
+            continue
         block = lines[start:end]
         old_inherits = set()
+        deleted_warheads = set()
         has_new_wh = False
         warheads = []  # (key, type, damage, has_children)
         cur_wh = None
@@ -52,10 +96,14 @@ def parse_file(path):
             m_inh = re.match(r"^\s*Inherits(?:@\w+)?\s*:\s*(\^\w+)", raw)
             if m_inh and m_inh.group(1) in OLD_FAMILIES:
                 old_inherits.add(m_inh.group(1))
+            m_delete = re.match(r"^\s*-Warhead@(\w+)\s*:", raw)
+            if m_delete:
+                deleted_warheads.add(m_delete.group(1))
             if re.match(r"^\s*Inherits@wh\d?\s*:\s*\^Warhead_", raw):
                 has_new_wh = True
             m_w = RE_WARHEAD.match(raw)
             if m_w:
+                deleted_warheads.discard(m_w.group(1))
                 if cur_wh is not None:
                     warheads.append((cur_wh, cur_type, cur_dmg, cur_has_children))
                 cur_wh = m_w.group(1)
@@ -70,6 +118,14 @@ def parse_file(path):
                     cur_has_children = True
         if cur_wh is not None:
             warheads.append((cur_wh, cur_type, cur_dmg, cur_has_children))
+        # An old wrapper is no longer a full-stack legacy family only when every
+        # positive flat hit supplied by that resolved family is explicitly deleted.
+        # It may remain temporarily to carry independently rounded percentage or
+        # presentation compatibility fields.
+        old_inherits = {
+            family for family in old_inherits
+            if not FAMILY_FLAT_WARHEADS[family].issubset(deleted_warheads)
+        }
         nodes.append({"name": name, "old_inherits": old_inherits, "has_new_wh": has_new_wh,
                       "warheads": warheads, "file": str(path.relative_to(MOD))})
     return nodes
@@ -87,7 +143,7 @@ for w in weapons:
         key = tuple(sorted(w["old_inherits"]))
         groups[key].append(w)
 
-out = ["# Phase B Mixed-Weapon Survey", "", f"Generated: 2026-08-08"]
+out = ["# Phase B Mixed-Weapon Survey", "", f"Generated: {date.today().isoformat()}"]
 
 # split templates (^) vs concrete
 concrete_groups = {k: [w for w in v if not w["name"].startswith("^")] for k, v in groups.items()}

@@ -6,7 +6,7 @@ ra1_allies_chronosphere:
 	Inherits@sell: ^RASpawnActorsOnSell
 	Buildable:
 		Queue: Defence, RADefence
-		Prerequisites: ~ra1_allies_alliedtechcenter, ~techlevel.superweapons, !ra1_allies_chronosphere
+		Prerequisites: ~ra1_allies_alliedtechcenter, ~techlevel.superweapons, !ra1_allies_chronosphere_swlimit
 		Description: actor_pdox.description
 	Tooltip:
 		Name: Chronosphere
@@ -18,6 +18,7 @@ ra1_allies_chronosphere:
 		HasMinibib: true
 	RA2ChronoshiftPower@chronoshift:
 		OrderName: Chronoshift
+		AllowMultiple: true
 		Prerequisites:
 			1: !botplayer, ~techlevel.superweapons
 		PauseOnCondition: disabled
@@ -54,7 +55,9 @@ ra1_allies_chronosphere:
 		DisplayTimerRelationships: Ally, Neutral, Enemy
 	DetonateWeaponPower@ChronoReinforcements:
 		OrderName: ChronoReinforcements
+		AllowMultiple: true
 		Cost: 1000
+		Prerequisites:
 			1: ra1_allies_upgrade_chronoarmor, ~techlevel.superweapons
 		PauseOnCondition: disabled
 		Icons:
@@ -68,7 +71,7 @@ ra1_allies_chronosphere:
 		Descriptions:
 			1: Teleports a small taskforce to a specified location.
 		Weapons:
-			1: ChronoAI
+			1: ChronoReinforcementsSpawner
 		CameraActor: camera.placeholderhack
 		CameraRemoveDelay: 0
 		SelectTargetSpeechNotification: SelectTarget
@@ -76,10 +79,37 @@ ra1_allies_chronosphere:
 		DisplayRadarPing: True
 		LaunchSound: chrono2.aud
 		IncomingSound: chrono2.aud
+	# AI always has its own fake chronoshift power separate from upgrades purchased.
+	DetonateWeaponPower@ChronoAI:
+		OrderName: ChronoshiftAI
+		AllowMultiple: true
+		Prerequisites:
+			1: botplayer, ~techlevel.superweapons
+		PauseOnCondition: disabled
+		Icons:
+			1: chrono
+		Cursor: ability
+		ChargeInterval: 4500
+		Names:
+			1: power_chronoshift.name
+		ActivationDelay: 25
+		ActivationSequence:
+		Descriptions:
+			1: power_chronoshift.description
+		Weapons:
+			1: ChronoAI
+		CameraActor: camera.placeholderhack
+		CameraRemoveDelay: 0
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		DisplayRadarPing: True
+		LaunchSound: schrmov.wav
+		IncomingSound: schrmov.wav
 		DisplayTimerRelationships: Ally, Neutral, Enemy
 	DetonateWeaponPowerCA@ra1_allies_chronovortex:
 		AllowMultiple: true
 		OrderName: ra1_allies_chronovortex
+		Prerequisites:
 			1: ~techlevel.superweapons
 		IconImage: ra1_allies_chronosphere
 		Icons:
@@ -120,7 +150,7 @@ ra1_allies_chronosphere:
 		BeaconActor: BLASTRADIUS.super
 		CameraRange: 12345
 	ProvidesPrerequisite@swlimit:
-		Prerequisite: ra1_allies_chronosphere
+		Prerequisite: ra1_allies_chronosphere_swlimit
 	RenderSprites:
 		PlayerPalette: raplayer
 	WithDeathAnimation:
@@ -183,7 +213,6 @@ ra1_allies_pillbox:
 		Damage: 200
 		ReloadDelay: 48
 		Range: 6570
-	ActorStatValues:
 		Upgrades: ra1_allies_upgrade_advancedradarsystems, ra1_allies_upgrade_reinforcedstructures, ra1_allies_upgrade_lasertargetingsystems, ra1_allies_upgrade_gpssatellitesupport
 
 ra1_allies_alliedgunturret:
@@ -276,6 +305,7 @@ ra1_allies_alliedaagun:
 		CasingWeapon: generic_bullet_casing
 		CasingSpawnLocalOffset: 260,150,450, 260,-150,450
 		CasingTargetOffset: 0,750,0, 0,-750,0
+		RequiresCondition: !ra1_allies_upgrade_cryomissiles
 	AttackTurreted:
 		RequiresCondition: !build-incomplete
 		PauseOnCondition: lowpower || disabled
@@ -293,6 +323,14 @@ ra1_allies_alliedaagun:
 	ActorStatValues:
 		Upgrades: ra1_allies_upgrade_advancedradarsystems, ra1_allies_upgrade_reinforcedstructures, ra1_allies_upgrade_lasertargetingsystems, ra1_allies_upgrade_gpssatellitesupport
 
+	Armament@Cryo:
+		LocalOffset: 520,150,450, 520,-150,450
+		MuzzleSequence: muzzle
+		CasingWeapon: generic_bullet_casing
+		CasingSpawnLocalOffset: 260,150,450, 260,-150,450
+		CasingTargetOffset: 0,750,0, 0,-750,0
+		Weapon: zsu_23Cryo
+		RequiresCondition: ra1_allies_upgrade_cryomissiles
 ra1_allies_camopillbox:
 	Inherits: ^Defense
 	Inherits@exp: ^GainsExperienceRABuilding
@@ -357,7 +395,6 @@ ra1_allies_camopillbox:
 		Damage: 200
 		ReloadDelay: 50
 		Range: 7640
-	ActorStatValues:
 		Upgrades: ra1_allies_upgrade_advancedradarsystems, ra1_allies_upgrade_reinforcedstructures, ra1_allies_upgrade_lasertargetingsystems, ra1_allies_upgrade_gpssatellitesupport
 
 ra1_allies_bastionartillerybunker:
@@ -408,7 +445,7 @@ ra1_allies_bastionartillerybunker:
 		Turret: cannon
 		Name: cannon
 		RequiresCondition: !disabled && !lowpower && !ra1_allies_upgrade_cryomissiles
-	Armament@Upgrade: ##########
+	Armament@Upgrade:
 		Weapon: 155mmBastionCryo
 		LocalOffset: 1000,0,900
 		MuzzleSequence: muzzle

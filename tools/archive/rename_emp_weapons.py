@@ -15,8 +15,8 @@ Skips:
   - Sub-variants (ArcTeslaFragment, Bounce, etc.)
 
 Usage:
-  python tools/rename_emp_weapons.py mods/cameo          # preview
-  python tools/rename_emp_weapons.py mods/cameo --apply   # apply changes
+  python tools/archive/rename_emp_weapons.py mods/cameo          # preview
+  python tools/archive/rename_emp_weapons.py mods/cameo --apply   # apply changes
 """
 
 import os

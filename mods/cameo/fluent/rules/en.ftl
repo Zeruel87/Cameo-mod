@@ -1870,7 +1870,7 @@ ra1_soviets_doctrine_heavyarmor =
       Replaces V1 Rocket Trucks with Grads
       Replaces Replaces Migs with Su-57s
       Unlocks Shtora Defense System Upgrade
-      Unlocks Auto Loaders, High Explosive Rockets and Stalinium Upgrades
+      Unlocks Auto Loaders, Thermobaric Rockets and Stalinium Upgrades
 
 ra1_soviets_doctrine_nuclearwar =
    .description = DOCTRINE (Only One Doctrine For Each Tier Can Be Researched)
@@ -1947,10 +1947,10 @@ ra1_soviets_upgrade_autoloaders =
    .description = Tech Upgrade (Only affects units of own faction)
       Reduces Reload Delay of all Tanks by 40%.
 
-ra1_soviets_upgrade_highexplosiverockets =
+ra1_soviets_upgrade_thermobaricrockets =
    .description = Tech Upgrade (Only affects units of own faction)
       Heavy Rockets such as of the Siege Mammoth Tank, Hind, Su-57, Grad and V2 Launcher
-      are replaced with High Explosive Rockets that deal 20% more damage and have higher area of effect.
+      are replaced with Thermobaric Rockets that deal 20% more damage and have higher area of effect.
 
 ra1_soviets_upgrade_stalinium =
    .description = Team Upgrade (Also affects units of your teammates)

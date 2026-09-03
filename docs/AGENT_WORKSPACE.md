@@ -6,34 +6,41 @@ This repository is the shared source of truth for maintainers and every AI agent
 
 | Need | Canonical location | Rule |
 |---|---|---|
-| Lessons learned / start protocol | `docs/LESSONS_LEARNED.md` | Read first before every new task; contains required reading order and accumulated pitfalls. |
-| Short project orientation | `docs/PROJECT_CONTEXT.md` | Read after LESSONS_LEARNED; referenced primary documents remain authoritative. |
-| Current work queue | `docs/design/ROADMAP.md` | Crashes and player-visible bugs are P0 and always jump the queue. Add new issues here before implementation. |
+| Lessons learned / start protocol | `docs/LESSONS_LEARNED.md` | Read before every new task: accumulated pitfalls and safe defaults. (It carries a convenience copy of the reading order; `docs/README.md` is the canonical one.) |
+| **Entry point: current state + priority queue** | `docs/HANDOFF.md` | The single handoff. Supersedes every dated one in `docs/history/handoffs/`; never resume from those. |
+| Short project orientation | `docs/README.md` | One page for a first-time reader; every document above is authoritative over it. |
+| Current work queue | `docs/design/ROADMAP.md` | Crashes and player-visible bugs are P0 and always jump the queue. Add new issues here before implementation. Closed July items live in `docs/history/ROADMAP_ARCHIVE_2026-07.md`. |
+| Balance board, ownership, acceptance criteria | `docs/design/BALANCE_PROGRAM_PLAN.md` | W1–W26, file-set ownership (§2), and the binding order of operations (§0a). |
+| Numeric claims that must not rot | `docs/audit/doc_claims.yaml` | Every number a DECISION rests on, with its re-measure command. Update `value` AND every doc under `docs:` in the same commit. |
 | Binding rules and conventions | `docs/DESIGN.md` | Read before modifying YAML, assets, naming, weapons, balance, or descriptions. |
 | Engine and custom-trait reference | `docs/Cameo_Knowledge_Base_Manual.md` | Consult before changing unfamiliar traits or C#-backed behavior. |
 | Audit overview | `docs/audit/SUMMARY.md` | Read first for known issue classes and current audit status. |
-| Detailed audit findings | `docs/audit/FINDINGS.md`, `docs/audit/CONSISTENCY_REPORT.md` | Update only from evidence produced by a current audit or engine boot. |
+| Detailed audit findings | `docs/history/audits/BASELINE_FINDINGS.md`, `docs/audit/CONSISTENCY_REPORT.md` | Update only from evidence produced by a current audit or engine boot. |
 | Audit scripts | `tools/audit/` | Scripts are reusable tooling; do not duplicate them into personal-agent folders. |
 | Generated audit output | `docs/audit/latest/` | Regenerate via `tools/audit/run_all.sh`; it is the current evidence set. |
 | Baseline audit evidence | `docs/audit/baseline/` | Historical comparison only. |
 | Faction reference | `docs/FACTIONS.md`, `docs/factions/MATRIX.md` | Use for display-name, faction-role, roster, and documentation checks. |
 | Migration process | `docs/MIGRATION.md` | Use for naming, actor splits, asset movement, and Fluent migrations. |
 | External-agent historical evidence | `docs/history/LEGACY_DEVIN_CABAL.md` | Historical register only. No external output is current until rerun in this repository. |
-| Current multi-agent handoff | `docs/AI_HANDOFF_2026-08-05.md` | State, estimates, and next-step plan for the next agent; updated at session handoff. |
+| Archived handoffs | `docs/history/handoffs/` | Dated session records. Provenance only — **never** resume work from one. |
 
 ## Required operating sequence
 
-1. Read `docs/LESSONS_LEARNED.md` first, then `docs/DESIGN.md`, `docs/audit/SUMMARY.md`, and the relevant section of `docs/Cameo_Knowledge_Base_Manual.md` before touching rules or assets. **The canonical reading order is defined in `docs/README.md` — refer there if any conflict arises.**
+1. Read in this order before touching rules or assets: `docs/LESSONS_LEARNED.md` → this file → `docs/HANDOFF.md` → `docs/DESIGN.md` (the sections your change touches) → `docs/design/ROADMAP.md` → `docs/audit/SUMMARY.md`, then the relevant section of `docs/Cameo_Knowledge_Base_Manual.md`. **`docs/README.md` defines that order and wins over any copy of it, including this one.**
 2. Record a newly discovered crash, regression, or suspected discrepancy in `docs/design/ROADMAP.md` before proposing a fix.
 3. Treat release builds, engine logs, resolved-ruleset diffs, and current audit output as evidence. Do not promote an old raw `.txt` result to a live finding without rerunning its audit.
-4. For refactors, compare `tools/audit/dump_resolved.py` output before and after. For content changes, run the targeted audit first and the full suite when practical.
+4. For refactors, compare `tools/audit/dump_resolved.py` output before and after (for a single weapon conversion, `tools/audit/review_resolve_diff.py`). For content changes, run the targeted audit first and the full suite when practical.
 5. Before every commit, boot-gate with `launch-game.cmd` — launch the game, wait for the main menu (perf.log ends with `MenuPostProcessEffect.PostWorldLoaded`), kill the process, then check for NEW `exception-*.log` files in `%APPDATA%/OpenRA/Logs`. Fix any crashes before committing. Stage only the files belonging to the change. **SAC note**: If Windows Smart App Control (Enforcement mode) blocks the boot-gate, see `docs/LESSONS_LEARNED.md` § Smart App Control for four options to enable testing (EA cache workaround, Evaluation mode via WinRE, VM, or code signing). Never silently skip the boot-gate — record the SAC state in the commit/PR description.
 6. `utility.cmd cameo --check-yaml` is a **linting/YAML validation tool**, NOT a boot-gate substitute. Use it for: verifying cosmetic refactors (actor/template renames), checking broken prerequisites, and detecting gameplay-relevant YAML issues. **Goal: 0 errors AND 0 warnings.** The utility takes a VERY LONG TIME (10+ minutes) — only run it when you have completed ALL connected tasks from the last report and expect 0 errors/warnings to confirm. Do NOT run it repeatedly. Keep findings from the last report in ROADMAP and docs so they can be fixed without re-running. It is ABSOLUTELY NECESSARY — just choose wisely WHEN to run it.
 7. After any bulk YAML lint cleanup, run `python tools/audit/audit_nuclear_flash_bindings.py`. It resolves the active `mod.yaml` graph and blocks removal of the RA1, Ixian, or CABAL directional flash warhead. The full audit suite includes the same check.
 
 ## Git workflow and commit rules (binding, 2026-07-24)
 
-**Co-maintainer: Blackrobe. Multiple developers work on this repository.**
+**Multiple developers and agents work on this repository.** Committing identities seen in the
+log: **AedisToru** (maintainer — also lands most agent work under the shared repo identity),
+**Blackrobe** (co-maintainer), **Elpollo315**, **Zan Yewang**, **Devin AI**. Because the git
+author is often the shared identity, the `Co-Authored-By:` **trailer** is the only reliable
+record of which agent wrote a change — see CLAUDE.md rule 10.
 
 1. **Always fetch, pull, and merge before any commit.** The remote may have changes from other developers. If the engine pin (`mod.config` `ENGINE_VERSION`) changed, always run `make all` to fetch and build the new engine before boot-gating. Never skip the boot-gate.
 2. **Always boot-gate before committing.** Launch the game with `launch-game.cmd`, wait for the main menu (perf.log ends with `MenuPostProcessEffect.PostWorldLoaded`), kill the process, then check for NEW `exception-*.log` files in `%APPDATA%/OpenRA/Logs`. A commit that breaks the boot is not acceptable. (`utility.cmd cameo --check-yaml` is a separate linting tool — see step 6 above.) **If SAC blocks the boot-gate**, see `docs/LESSONS_LEARNED.md` § Smart App Control for options; record the SAC state in the commit/PR description.

@@ -16,6 +16,7 @@ range 5000, reload 50, all modifiers 1 -> O = P = Q = price = 800.
 from __future__ import annotations
 
 import re
+import math
 
 _COND_TOKEN = re.compile(r"[A-Za-z_][A-Za-z0-9_.\-]*")
 
@@ -63,21 +64,172 @@ def condition_holds_by_default(expr: str | None) -> bool:
         return False
 
 
-def eff_reload(reload_delay: float, burst: int = 1, burst_delays: float | None = None) -> float:
-    """Effective ticks per full burst cycle."""
-    if burst and burst > 1:
-        return reload_delay + (burst_delays or 0) * (burst - 1)
-    return reload_delay
+ENGINE_DEFAULT_RELOAD_DELAY = 1.0
+ENGINE_DEFAULT_BURST = 1
+ENGINE_DEFAULT_BURST_DELAY = 5.0
+ENGINE_DEFAULT_RANGE = 0.0
+INT32_MIN = -(2 ** 31)
+INT32_MAX = 2 ** 31 - 1
+_INT32_TEXT = re.compile(r"^[+-]?[0-9]+$")
+_WDIST_TEXT = re.compile(
+    r"^([+-]?[0-9]+)\s*(?:c\s*([+-]?[0-9]+))?$", re.IGNORECASE)
+
+
+def parse_int32(raw, field: str = "value", default=None) -> int | None:
+    """Parse one C# ``Int32`` field without accepting fractional coercion."""
+    if raw is None:
+        return default
+    if isinstance(raw, bool):
+        raise ValueError(f"{field} must be an Int32")
+    if isinstance(raw, int):
+        value = raw
+    elif isinstance(raw, float):
+        if not math.isfinite(raw) or not raw.is_integer():
+            raise ValueError(f"{field} must be an Int32")
+        value = int(raw)
+    else:
+        text = str(raw).strip()
+        if not _INT32_TEXT.fullmatch(text):
+            raise ValueError(f"{field} must be an Int32")
+        value = int(text)
+    if value < INT32_MIN or value > INT32_MAX:
+        raise ValueError(f"{field} is outside the Int32 range")
+    return value
+
+
+def parse_bool(raw, field: str = "value", default=None) -> bool | None:
+    """Parse one C# ``bool`` field (only true/false, case-insensitive)."""
+    if raw is None:
+        return default
+    if isinstance(raw, bool):
+        return raw
+    text = str(raw).strip().lower()
+    if text == "true":
+        return True
+    if text == "false":
+        return False
+    raise ValueError(f"{field} must be true or false")
+
+
+def _unchecked_int32(value: int) -> int:
+    """Wrap an integer like C# arithmetic outside a checked context."""
+    return (value - INT32_MIN) % (2 ** 32) + INT32_MIN
+
+
+def parse_wdist(raw, *, allow_distribution: bool = False) -> int:
+    """Parse OpenRA's integer or cell-relative WDist notation.
+
+    Ledger values normally contain raw WDist integers, but OpenRA also accepts
+    values such as ``40c0`` (40 cells = 40960 WDist).  Callers modeling a
+    projectile's random speed array may opt into reducing a comma list to its
+    integer mean; scalar engine fields reject that syntax.
+    """
+    if isinstance(raw, dict):
+        raw = raw.get("v")
+    if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+        return parse_int32(raw, "WDist")
+    text = str(raw).strip()
+    if "," in text:
+        if not allow_distribution:
+            raise ValueError("scalar WDist cannot contain a distribution")
+        parts = text.split(",")
+        if any(not part.strip() for part in parts):
+            raise ValueError("WDist distribution contains an empty value")
+        values = [parse_wdist(part) for part in parts]
+        return sum(values) // len(values)
+    match = _WDIST_TEXT.fullmatch(text)
+    if match is None:
+        raise ValueError(f"invalid WDist: {raw!r}")
+    first = parse_int32(match.group(1), "WDist component")
+    remainder = match.group(2)
+    if remainder is None:
+        return first
+    subcell = parse_int32(remainder, "WDist subcell component")
+    if first < 0:
+        subcell = -subcell
+    return _unchecked_int32(1024 * first + subcell)
+
+
+def wdist_value(raw, default=None):
+    """Safe scalar WDist for ledger/report consumers.
+
+    Keep generic numeric parsers for HP, cost, and cadence; ranges need this
+    OpenRA-aware path so ``40c0`` cannot silently become zero in one consumer
+    while the engine and the rest of the pipeline read 40960.
+    """
+    if raw is None or (not isinstance(raw, dict) and str(raw).strip() == ""):
+        return default
+    try:
+        return parse_wdist(raw)
+    except (TypeError, ValueError, OverflowError):
+        return default
+
+
+def burst_delay_values(raw) -> list[int] | None:
+    """Parse the engine's integer BurstDelays field without truncation."""
+    if isinstance(raw, dict):
+        raw = raw.get("v")
+    if raw is None or str(raw).strip() == "":
+        return None
+    parts = raw if isinstance(raw, (list, tuple)) else str(raw).split(",")
+    values = []
+    try:
+        for part in parts:
+            number = float(str(part).strip())
+            if not math.isfinite(number) or not number.is_integer():
+                return None
+            value = int(number)
+            if value < -(2 ** 31) or value > 2 ** 31 - 1:
+                return None
+            values.append(value)
+    except (TypeError, ValueError):
+        return None
+    return values or None
+
+
+def burst_delays_text(raw) -> str | None:
+    """Canonical workbook/YAML text for a valid BurstDelays value."""
+    values = burst_delay_values(raw)
+    return None if values is None else ", ".join(str(value) for value in values)
+
+
+def burst_delay_sum(burst: int = 1, burst_delays=None) -> float:
+    """Total inter-shot delay in one engine burst.
+
+    ``WeaponInfo.BurstDelays`` defaults to ``[5]``. One configured value is reused
+    for every gap; a comma-separated list supplies exactly ``Burst - 1`` gaps.
+    Keeping this parser here prevents callers from silently taking only the first
+    value or treating a missing field as zero.
+    """
+    gaps = max(int(burst or 1) - 1, 0)
+    if gaps == 0:
+        return 0.0
+    if burst_delays is None or str(burst_delays).strip() == "":
+        values = [ENGINE_DEFAULT_BURST_DELAY]
+    else:
+        values = burst_delay_values(burst_delays) or [ENGINE_DEFAULT_BURST_DELAY]
+    if not values:
+        values = [ENGINE_DEFAULT_BURST_DELAY]
+    if len(values) == 1:
+        return values[0] * gaps
+    # The engine rejects any list length other than Burst - 1. Returning the values
+    # it would consume keeps diagnostics deterministic on a malformed fixture.
+    return sum(values[:gaps])
+
+
+def eff_reload(reload_delay: float, burst: int = 1, burst_delays=None) -> float:
+    """Effective ticks per full burst cycle, including every inter-shot delay."""
+    return reload_delay + burst_delay_sum(burst, burst_delays)
 
 
 def dps(damage: float, reload_delay: float, burst: int = 1,
-        burst_delays: float | None = None,
+        burst_delays=None,
         firepower_multiplier: float = 1.0) -> float:
     """Burst-aware DPS. With burst=1 this is the legacy G/I*H exactly.
 
-    firepower_multiplier is the per-actor FirepowerMultiplier value
-    expressed as a factor (1.0 = 100%), used to fine-tune effective
-    damage output without leaving the 2000-step Damage grid.
+    firepower_multiplier is a legacy per-actor FirepowerMultiplier expressed as
+    a factor (1.0 = 100%). It still affects actors that carry one, but the balance
+    writer no longer creates or fine-tunes this retired knob.
 
     **`weapon_class` was REMOVED here on 2026-08-11 (W4).** It was a tier weight
     standing in for "how good is this weapon type", back when nothing measured
@@ -325,10 +477,11 @@ def physical_state_price_multiplier(weight: float) -> float:
     return 1.0 + (PHYSICAL_STATE_PRICE_MULTIPLIER - 1.0) * w
 
 
-# Twin warheads — NEVER main / NEVER in the damage total (DESIGN.md):
+# Tagged twins used by the rebalance writer — NEVER main / NEVER in its flat
+# damage total (the runtime percentage model discovers nodes by TYPE, not suffix):
 #   *ExtraDamage   Tesla/Nuclear shield chip — ALWAYS excluded from damage
 #   *FriendlyFire  own-side splash (50% twin)
-#   *Percentage    HealthPercentageDamage (1-per-2000 twin)
+#   *Percentage    standalone percentage twin, written in its node's own unit
 _TWIN_SUFFIXES = ("extradamage", "percentage", "friendlyfire")
 
 
@@ -482,21 +635,21 @@ def twin_denominator(warhead: dict) -> int:
 
 def distribute_damage(new_total, warheads, template_names=None) -> dict[str, int]:
     """Turn a design per-shot TOTAL (a spread_damage_sum) into per-warhead
-    Damage values by the FIXED law in DESIGN.md ("Damage: 2000-steps"):
+    Damage values by the fixed law in DESIGN.md (``DAMAGE_STEP``):
 
       * EVERY main damage warhead (template-named SpreadDamage, see
         ``main_spread_warheads``) carries the IDENTICAL value
-        D = new_total / N snapped to the 2000-damage grid — they never
-        differ ("all class warheads carry the identical value"). Coarse
-        control only; fine-tune the effective damage with the actor's
-        FirepowerMultiplier, NEVER by making warheads unequal or off-grid.
+        D = new_total / N snapped to the 100-damage grid — they never
+        differ ("all class warheads carry the identical value"). Tune on that
+        grid, never by making warheads unequal or reintroducing actor FP.
       * each ``*FriendlyFire`` SpreadDamage twin = 50% of D (D // 2).
       * each ``*ExtraDamage`` SpreadDamage twin = 50% of D (D // 2): energy
         weapons trade area-of-effect for a shield/bonus chip, so it is
         ALWAYS half the main — yet still EXCLUDED from the damage total.
-      * each ``*Percentage`` HealthPercentageDamage twin = 1 per 2000 of D
-        (16000 -> 8), via ``percentage_twin`` — rounded, never floored to
-        zero, so an off-grid D does not silently disable it.
+      * each ``*Percentage`` twin tracks 1 whole percent per 10000 flat Damage,
+        written in the node's own denominator (16000 -> 2 whole-percent units,
+        or 160 basis points), via ``percentage_twin`` — rounded, never floored
+        to zero, so an off-grid D does not silently disable it.
 
     This is the ONE canonical way to write per-warhead Damage, so a single
     design number can NEVER again be broadcast identically onto every
@@ -521,8 +674,8 @@ def distribute_damage(new_total, warheads, template_names=None) -> dict[str, int
             # (e.g. SniperWeaponExtraDamage); the rule is type-agnostic.
             result[tag] = per // 2
         elif low.endswith("percentage"):           # %-of-max-health twin
-            # The node's own unit, never assumed: a stock HealthPercentageDamage writes
-            # whole percent, an AreaDamagePercentage may write per-mille.
+            # The node's own unit, never assumed: HealthPercentageDamage writes
+            # whole percent, while AreaDamagePercentage may use basis points.
             result[tag] = percentage_twin(per, twin_denominator(w))
     return result
 
@@ -764,11 +917,11 @@ def _selftest() -> None:
     assert percentage_twin(16000) == 2
     assert percentage_twin(1) == 1                      # but still never a silent zero
 
-    # off-grid total snaps to the step; mains stay identical (fine-tune=FP)
+    # Off-grid total snaps to the step; mains stay identical.
     r = distribute_damage(9000, [wh("a", 2000), wh("b", 2000), wh("c", 2000)])
     assert len(set(r.values())) == 1, r                 # identical
     assert all(v % DAMAGE_STEP == 0 for v in r.values()), r
-    # 9000/3 = 3000 lands EXACTLY on the 200 grid. The old 2000 grid had to snap it to
+    # 9000/3 = 3000 lands EXACTLY on the 100 grid. The old 2000 grid had to snap it to
     # 4000 and hand a 33% remainder to FirepowerMultiplier — that is what finer buys.
     assert set(r.values()) == {3000}, r
 

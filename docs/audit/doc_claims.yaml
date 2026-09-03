@@ -1,4 +1,4 @@
-﻿# doc_claims.yaml â€” every NUMERIC claim the design docs make, and how to re-measure it.
+# doc_claims.yaml — every NUMERIC claim the design docs make, and how to re-measure it.
 #
 # Maintainer 2026-08-17: *"the documentations are starting to explode in size ... regularly
 # review everything for discrepancies and contradictions and then make design decisions
@@ -29,10 +29,10 @@
 
 claims:
   - id: shield_versus_mean
-    value: 185.25
+    value: 189.088
     tolerance: 0.01
     what: Mean Versus-vs-Shield across all main flat warheads. Drives shield_hp_factor.
-    docs: [docs/DESIGN.md, docs/design/PSEUDO_ARMOR_AND_INTEGRITY.md, docs/design/SUPERWEAPON_LAYER_DAMAGE.md]
+    docs: [docs/DESIGN.md, docs/design/ARMOR_LAYERS.md, docs/design/ARMOR_LAYERS.md]
     measure: |
       import sys, pathlib
       sys.path[:0] = ['tools/audit', 'tools/balance']
@@ -40,10 +40,10 @@ claims:
       print(tm.pseudo_armor_mean('Shield'))
 
   - id: shield_hp_factor
-    value: 0.5398
+    value: 0.528855
     tolerance: 0.01
     what: What one shield point is worth as HP (100 / mean Versus vs Shield).
-    docs: [docs/DESIGN.md, docs/design/PSEUDO_ARMOR_AND_INTEGRITY.md]
+    docs: [docs/DESIGN.md, docs/design/ARMOR_LAYERS.md]
     measure: |
       import sys
       sys.path[:0] = ['tools/audit', 'tools/balance']
@@ -56,7 +56,7 @@ claims:
     what: >
       Fraction of roster raw damage landing on the Shield row at BASELINE. The claim that
       replaced "51% of the roster", which counted empty shield CAPACITY as a shield.
-    docs: [docs/DESIGN.md, docs/design/PSEUDO_ARMOR_AND_INTEGRITY.md]
+    docs: [docs/DESIGN.md, docs/design/ARMOR_LAYERS.md]
     measure: |
       import sys
       sys.path[:0] = ['tools/audit', 'tools/balance']
@@ -69,7 +69,7 @@ claims:
     what: >
       Actors that SPAWN with a shield pool and no positive gate — the only ones E1 prices.
       1318 more carry an empty capacity behind `shieldgen`; ~216 are upgrade-gated.
-    docs: [docs/DESIGN.md, docs/design/PSEUDO_ARMOR_AND_INTEGRITY.md]
+    docs: [docs/DESIGN.md, docs/design/ARMOR_LAYERS.md]
     measure: |
       import re, sys, pathlib
       sys.path[:0] = ['tools/audit', 'tools/balance']
@@ -135,7 +135,7 @@ claims:
       print(n)
 
   - id: live_damage_multipliers
-    value: 366
+    value: 354
     tolerance: 0
     what: >
       DamageMultiplier declarations in LIVE files (mod.yaml's Rules list). The tree holds 683;
@@ -158,35 +158,19 @@ claims:
       print(n)
 
   - id: multi_main_fired_weapons
-    value: 975
+    value: 243
     tolerance: 0
     what: >
-      Fired weapons carrying MORE THAN ONE damage main — W24's scope, and the reason pricing
-      must wait for the weapon rebuild (their K is still going to move).
-    docs: [docs/design/BALANCE_PROGRAM_PLAN.md]
+      Direct actor-armament weapons carrying MORE THAN ONE damage main under the unified W24
+      predicate — W24's scope, and the reason pricing must wait for the weapon rebuild.
+    docs: [docs/design/BALANCE_PROGRAM_PLAN.md, docs/HANDOFF.md]
     measure: |
-      import collections, sys, pathlib
-      sys.path[:0] = ['tools/audit', 'tools/balance']
-      import effective_damage as ed
+      import sys, pathlib
+      sys.path[:0] = ['tools/audit']
       from miniyaml import Ruleset
+      from survey_weapon_structure import inventory
       rs = Ruleset(pathlib.Path('.').resolve())
-      fired = collections.Counter()
-      for name in rs.actors:
-          if name.startswith('^'): continue
-          node = rs.resolve(name)
-          if node is None: continue
-          for c in node.children:
-              if c.key == 'Armament' or c.key.startswith('Armament@'):
-                  w = c.get('Weapon')
-                  if w: fired[str(w).strip()] += 1
-      n = 0
-      for w in fired:
-          node = rs.resolve_weapon(w)
-          if node is None: continue
-          mains = [t for t, _wt, _b, _nd in ed.flat_damage_warheads(node)
-                   if 'ExtraDamage' not in t]
-          if len(mains) > 1: n += 1
-      print(n)
+      print(inventory(rs)['counts']['stacked_main_direct_actor_armament'])
 
   - id: percentage_denominator_unset
     value: 0
@@ -194,7 +178,7 @@ claims:
     what: >
       W18 has NOT landed. Any nonzero here means the basis-point rebase shipped and every
       pct_absolute / dps_floor figure in the docs is stale.
-    docs: [docs/design/PSEUDO_ARMOR_AND_INTEGRITY.md, docs/design/BALANCE_PROGRAM_PLAN.md]
+    docs: [docs/design/ARMOR_LAYERS.md, docs/design/BALANCE_PROGRAM_PLAN.md]
     measure: |
       import pathlib, sys
       sys.path[:0] = ['tools/audit', 'tools/balance']
@@ -207,7 +191,7 @@ claims:
       print(n)
 
   - id: unmigrated_scout_damage_multiplier
-    value: 16
+    value: 15
     tolerance: 0
     what: >
       Scouts still resolving `DamageMultiplier@ScoutInfantryBuff: 50` — i.e. taking HALF damage,
@@ -232,7 +216,7 @@ claims:
       print(n)
 
   - id: meters_filling_before_death
-    value: 118
+    value: 137
     tolerance: 0
     what: >
       Weapon/meter bindings on FIRED weapons whose meter reaches FULL effect while the target
@@ -262,7 +246,7 @@ claims:
       Add it after W24, not before — it is a second term on the same corrected base.
       The formula lives ONLY in `tools/balance/physical_state_price.py`, which this measure
       imports, so the two can no longer disagree.
-    docs: [docs/design/PHYSICAL_STATE_SYSTEM.md, docs/design/PSEUDO_ARMOR_AND_INTEGRITY.md]
+    docs: [docs/design/PHYSICAL_STATE_SYSTEM.md, docs/design/ARMOR_LAYERS.md]
     measure: |
       import sys, pathlib
       sys.path[:0] = ['tools/audit', 'tools/balance']
@@ -273,7 +257,7 @@ claims:
                 if r['ratio'] is not None and r['ratio'] <= psp.FULL_EFFECT_BAR))
 
   - id: corrosion_meter_actors
-    value: 783
+    value: 785
     tolerance: 0
     what: >
       Actors carrying the `Corrosion` meter — 48.7% of the 1609 priced (Health + Valued)
@@ -299,7 +283,7 @@ claims:
                   break
       print(n)
   - id: w24_multi_main_fed
-    value: 386
+    value: 380
     tolerance: 0
     what: >
       RATCHET — damage-scaled metered weapons whose meter is fed by LESS than 100% of their
@@ -330,7 +314,7 @@ claims:
               n += 1
       print(n)
   - id: physical_state_fired_weapons
-    value: 449
+    value: 460
     tolerance: 0
     what: >
       FIRED weapons that deliver a PhysicalState meter (Temperature or Corrosion) and are priced
@@ -338,7 +322,7 @@ claims:
       damage-scaled `PhysicalStateScale`, and a BLEND's `PhysicalStates:` dict — which carries no
       `PhysicalStateName` at all, so keying on that name misses every blend family. Counting one
       shape is how the docs carried "~89 bindings"; counting two gave 367.
-    docs: [docs/design/PSEUDO_ARMOR_AND_INTEGRITY.md, docs/design/BALANCE_PROGRAM_PLAN.md]
+    docs: [docs/design/ARMOR_LAYERS.md, docs/design/BALANCE_PROGRAM_PLAN.md]
     measure: |
       import sys, pathlib
       sys.path[:0] = ['tools/audit', 'tools/balance']
@@ -380,7 +364,7 @@ claims:
       design). The maintainer's uniqueness law: *"don't put 3 energy weapons exactly on the same
       versus value"*. Four groups tied before e7fa2d57b. A tie may ONLY be fixed by moving mass
       across a group boundary onto a second real defeat mechanism — never by fabricated noise.
-    docs: [docs/design/PLATING_COMPOSITION_REFINEMENT.md, docs/design/PLATING_COMBINATION.md]
+    docs: [docs/design/ARMOR_LAYERS.md, docs/design/ARMOR_LAYERS.md]
     measure: |
       import sys
       sys.path[:0] = ['tools/audit', 'tools/balance']
@@ -400,13 +384,13 @@ claims:
       print(len(names) - len(set(rows)))
 
   - id: plating_families
-    value: 32
+    value: 46
     tolerance: 0
     what: >
       Families the generator emits a plating row for. The row count of the matrix in
       PLATING_COMPOSITION_REFINEMENT.md — so adding a family without updating that table, or
       dropping one, goes red instead of silently making the document wrong.
-    docs: [docs/design/PLATING_COMPOSITION_REFINEMENT.md]
+    docs: [docs/design/ARMOR_LAYERS.md]
     measure: |
       import sys
       sys.path[:0] = ['tools/audit', 'tools/balance']
@@ -427,3 +411,69 @@ claims:
       d = json.loads(pathlib.Path('docs/balance/class_anchors.json').read_text(encoding='utf-8'))
       print(sum(1 for v in d.values()
                 if isinstance(v, dict) and 'spec' in v and v.get('signed_off')))
+
+  - id: warhead_family_reach
+    value: 1245
+    tolerance: 0
+    what: >
+      Fired weapons whose inherit chain reaches a `^Warhead_*` family — the W23/W24 burn-up.
+      The rest still route through the legacy templates that `audit_unconverted_templates`
+      lists. BALANCE_PROGRAM_PLAN §0a carried "639 of 1620 = 39%" with no recorded method;
+      this entry pins BOTH the number and how it is counted (transitive inherit chain over the
+      fired-weapon set), so the next reader does not have to guess which was measured.
+      ⛔ RATCHET — this may only go UP.
+    docs: [docs/design/BALANCE_PROGRAM_PLAN.md, docs/HANDOFF.md]
+    measure: |
+      import pathlib, sys
+      sys.path[:0] = ['tools/audit', 'tools/balance']
+      from miniyaml import Ruleset
+      rs = Ruleset(pathlib.Path('.').resolve())
+      fired = set()
+      for name in rs.actors:
+          if name.startswith('^'): continue
+          node = rs.resolve(name)
+          if node is None: continue
+          for c in node.children:
+              if c.key == 'Armament' or c.key.startswith('Armament@'):
+                  w = c.get('Weapon')
+                  if w: fired.add(str(w).strip())
+      def ancestors(nm, seen=None):
+          seen = seen if seen is not None else set()
+          n = rs.weapon(nm)
+          if n is None: return seen
+          for _k, v in rs.inherits_of(n):
+              v = str(v).strip()
+              if v and v not in seen:
+                  seen.add(v); ancestors(v, seen)
+          return seen
+      print(sum(1 for w in fired
+                if rs.weapon(w) is not None
+                and any(a.startswith('^Warhead_') for a in ancestors(w))))
+
+  - id: unconverted_template_inheritors
+    value: 1162
+    tolerance: 0
+    what: >
+      Direct inheritors of the 47 remaining legacy weapon templates (W23's scope).
+      ⛔ RATCHET — this may only go DOWN. Was 1343 when BALANCE_PROGRAM_PLAN §0a was written.
+    docs: [docs/design/BALANCE_PROGRAM_PLAN.md, docs/HANDOFF.md]
+    measure: |
+      import re, subprocess, sys
+      out = subprocess.run([sys.executable, 'tools/audit/audit_unconverted_templates.py'],
+                           capture_output=True, text=True).stdout
+      print(re.search(r'(\d+) direct inheritors', out).group(1))
+
+  - id: ledgers_drifted
+    value: 0
+    tolerance: 0
+    what: >
+      Balance ledgers (docs/balance/*.json) that disagree with the live yaml. CLAUDE.md requires
+      committing yaml and ledger TOGETHER, so the only correct value is 0. Any other number means
+      a commit moved balance data without re-running `extract_stats.py`.
+    docs: [docs/HANDOFF.md, docs/design/BALANCE_PIPELINE.md]
+    measure: |
+      import re, subprocess, sys
+      out = subprocess.run([sys.executable, 'tools/audit/audit_balance_drift.py'],
+                           capture_output=True, text=True).stdout
+      m = re.search(r'\*\*(\d+) ledger\(s\) drifted\*\*', out)
+      print(m.group(1) if m else 0)

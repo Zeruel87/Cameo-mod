@@ -12,6 +12,57 @@ the method; the METHOD is the point.
 > everywhere (§1a) and the 3-shape menu {Linear/Punchy/Flat} (§1a table). Implementation: per-family
 > `spreads`/`falloffs` overrides in `gen_weapon_template.py` → `splice_templates.py` → boot-gate.
 
+> **✅ BUILT 2026-08-22.** §8 is live: `PHYSICS_SHAPES` in `gen_weapon_template.py` holds the
+> per-type radius + curve, `LEVEL_RADIUS_SCALE` scales the radius by level without touching the
+> shape, and `blend_shape()` crosses a blend family's shape from its parents' (geometric mean of
+> the radii, arithmetic mean of the curves) exactly as `blend_versus` already crossed their armor
+> profiles. Measured effect: **10 distinct falloff curves → 24**, and the flat tier where 23
+> different Heavy families all sat at Spread 800 / radius 4000 / `100,50,25,10,5,0` — Melee,
+> Arrow, PhotonCannon, Sonic, Flame, CannonNuke alike — is gone. `review_batch_diff`: main damage
+> preserved on all 2325 weapons, blast shape changed on 1467.
+>
+> **UNIQUENESS PASS 2026-08-22** (maintainer: *"every family needs to be unique as fuck"*). The
+> first pass was not enough: **13 families were still pairwise IDENTICAL** in radius and curve,
+> because every pinpoint weapon had collapsed onto `100, 0` at one of a handful of radii. The
+> kinetic/beam tier is now a ladder of real lateral energy spread — Sniper 40, Laser 48,
+> MissileAP 64 (a shaped-charge jet is narrow and deep), Railgun 72, Arrow 88, Magic 96,
+> Bullet 100, CannonAP 120, Melee 0 — and three families earn their own curve because they have a
+> genuine secondary spread: Tesla `100, 55, 0` (the arc jumps to nearby conductors), Prism
+> `100, 40, 0` (refraction halo), MissileAA `100, 70, 30, 0` (a proximity fuze never touches the
+> target). **Flak** becomes airburst shrapnel, `100, 58, 32, 16, 6, 0` at radius 550 — a sharp
+> drop off the detonation point and a long fragment tail, distinct from Concussion, which is the
+> same physics at ground level and twice the size.
+>
+> ⚠ **`ENERGY_THIN_SPREAD` was silently overriding the physics table** for Tesla, Laser, Railgun,
+> Prism, Inferno and Cryo, pinning all six to a flat `Spread 100` at every level — which is
+> exactly what made Laser collide with Railgun and with Bullet. It is now only a fallback for a
+> family with no physics shape.
+>
+> Guarded by **`tools/audit/audit_family_uniqueness.py`** (in `run_all.sh`), which reads the
+> RESOLVED templates so hand edits are caught too: 126 family/level templates, no two sharing
+> both a radius and a curve.
+>
+> ### Hitscan for the fast bullets, travel time for the shells
+>
+> Maintainer 2026-08-22: *"bullets should have that instant hit with tracer thingy from Shattered
+> Paradise ... but only for the fastest bullets like the machine guns, gatlings, flak, sniper etc
+> and not tank shells or artillery shells because those should have a travel time and inaccuracy
+> while those fast bullets should only have a minimum inaccuracy that is equal to their spread."*
+>
+> | template | projectile | inaccuracy |
+> |---|---|---|
+> | `^Projectile_Bullet_{Light,Medium,Heavy}` | `InstantHitWithFakeBullets` | = Spread (67/100/133) |
+> | `^Projectile_Sniper_Light` | `InstantHitWithFakeBullets` | = Spread (40) |
+> | `^Projectile_Flak_{Light,Medium,Heavy}` | `InstantHitWithFakeBullets` | = Spread (73/110/146) |
+> | `^Projectile_Melee_{Light,Medium,Heavy}` | `InstantHit` (nothing drawn) | n/a |
+> | `^Projectile_Shell*`, `^Projectile_Artillery*`, missiles, grenades | unchanged, they fly | 1% of Range |
+>
+> `InstantHitWithFakeBullets` is ported from Shattered Paradise: the warhead lands on the firing
+> tick and N **fake** bullets fly out afterwards carrying the sprite, trail and full contrail, so
+> the existing visuals are kept. ⚠ `FakeBulletNumber` defaults to **0**, which draws nothing.
+> Sniper and Flak were already at `Speed: 10000` — the `SPEED_CAP` the pricing model calls
+> "basically instant" — so hitscan makes honest what those numbers already pretended.
+
 ## 1. The engine mechanic (verified in `OpenRA.Mods.Cameo/Warheads/AreaDamageWarhead.cs`)
 
 - `Spread` (WDist) = the distance **between** falloff steps.

@@ -1,6 +1,6 @@
 # audit_stat_formulas — house stat formulas
 
-Violations: **785** across 1910 roster actors (reference-clean units: gdiarcher, raider.ordos)
+Violations: **615** across 1911 roster actors (reference-clean units: gdiarcher, raider.ordos)
 
 
 ## F1 — Repairable.HpPerStep ≠ HP/20  (41)
@@ -411,151 +411,19 @@ _243 further infantry inherit Repairable from the infantry base template (^Defau
 | zerg_sunkencolony_defense | Power missing | expected -62 |
 
 
-## F8 — vehicle TurnSpeed ≠ Speed/5  (33)
+## F8 — vehicle TurnSpeed ≠ Speed/5  (0)
 
-| actor | actual | expected |
-|---|---|---|
-| eden_lynx_acidcloud | TurnSpeed 10 (Speed 90) | expected 18 = Speed/5 |
-| futuretech_beehivedronecarrier | TurnSpeed 12 (Speed 45) | expected 9 = Speed/5 |
-| futuretech_energizer | TurnSpeed 20 (Speed 50) | expected 10 = Speed/5 |
-| ixian_neocymek | TurnSpeed 18 (Speed 45) | expected 9 = Speed/5 |
-| ixian_shockraider | TurnSpeed 48 (Speed 120) | expected 24 = Speed/5 |
-| japan_nanodronebuggy | TurnSpeed 17 (Speed 77) | expected 15 = Speed/5 |
-| naxis_bmwbike | TurnSpeed 16 (Speed 125) | expected 25 = Speed/5 |
-| naxis_shoekarn | TurnSpeed 30 (Speed 75) | expected 15 = Speed/5 |
-| ordos_cobratank | TurnSpeed 18 (Speed 45) | expected 9 = Speed/5 |
-| ordos_heavyautoguntank | TurnSpeed 30 (Speed 75) | expected 15 = Speed/5 |
-| ordos_pythontank | TurnSpeed 16 (Speed 40) | expected 8 = Speed/5 |
-| plymouth_lynx_emp | TurnSpeed 10 (Speed 90) | expected 18 = Speed/5 |
-| plymouth_lynx_esg | TurnSpeed 10 (Speed 90) | expected 18 = Speed/5 |
-| plymouth_lynx_microwave | TurnSpeed 10 (Speed 90) | expected 18 = Speed/5 |
-| plymouth_lynx_rpg | TurnSpeed 10 (Speed 90) | expected 18 = Speed/5 |
-| plymouth_lynx_starflare | TurnSpeed 10 (Speed 90) | expected 18 = Speed/5 |
-| plymouth_lynx_stickyfoam | TurnSpeed 10 (Speed 90) | expected 18 = Speed/5 |
-| plymouth_lynx_supernova | TurnSpeed 10 (Speed 90) | expected 18 = Speed/5 |
-| ra1_allies_minelayer | TurnSpeed 40 (Speed 128) | expected 26 = Speed/5 |
-| ra1_soviets_gorynychtank | TurnSpeed 12 (Speed 70) | expected 14 = Speed/5 |
-| ra1_soviets_heatraytank | TurnSpeed 24 (Speed 60) | expected 12 = Speed/5 |
-| ra1_soviets_teslatank | TurnSpeed 32 (Speed 80) | expected 16 = Speed/5 |
-| ra2_soviets_terrordrone | TurnSpeed 200 (Speed 200) | expected 40 = Speed/5 |
-| steelconsortium_consortiummobileconstructionvehicle | TurnSpeed 15 (Speed 60) | expected 12 = Speed/5 |
-| td_nod_chemicalattackbike | TurnSpeed 70 (Speed 175) | expected 35 = Speed/5 |
-| td_nod_reconbike | TurnSpeed 80 (Speed 200) | expected 40 = Speed/5 |
-| ts_gdi_hovermlrs | TurnSpeed 40 (Speed 80) | expected 16 = Speed/5 |
-| ts_gdi_juggernaut | TurnSpeed 20 (Speed 71) | expected 14 = Speed/5 |
-| ts_gdi_mobileemp | TurnSpeed 40 (Speed 100) | expected 20 = Speed/5 |
-| ts_gdi_mobilesensorarray | TurnSpeed 40 (Speed 85) | expected 17 = Speed/5 |
-| ts_nod_artillery | TurnSpeed 24 (Speed 60) | expected 12 = Speed/5 |
-| ts_nod_mobilestealthgenerator | TurnSpeed 40 (Speed 56) | expected 11 = Speed/5 |
-| ts_nod_ticktank | TurnSpeed 32 (Speed 90) | expected 18 = Speed/5 |
+_none found_
 
 
-## F9 — Turreted.TurnSpeed ≠ Mobile.TurnSpeed  (50)
+## F9 — Turreted.TurnSpeed ≠ Mobile.TurnSpeed  (0)
 
-| actor | actual | expected |
-|---|---|---|
-| asianalliance_pulverizer | Turreted 26 vs Mobile 13 | must match |
-| eden_tiger_thorshammer | Turreted 18 vs Mobile 16 | must match |
-| futuretech_phalanxwip | Turreted 12 vs Mobile 19 | must match |
-| japan_armoredcar | Turreted 52 vs Mobile 26 | must match |
-| latinsyndicate_diablo | Turreted 36 vs Mobile 25 | must match |
-| latinsyndicate_latinapc | Turreted 36 vs Mobile 18 | must match |
-| latinsyndicate_smokertank | Turreted 21 vs Mobile 19 | must match |
-| naxis_shoekarn | Turreted 15 vs Mobile 30 | must match |
-| ordos_apc | Turreted 42 vs Mobile 21 | must match |
-| ordos_heavyautoguntank | Turreted 12 vs Mobile 30 | must match |
-| ra1_allies_alliedapc | Turreted 42 vs Mobile 21 | must match |
-| ra1_allies_alliedheavyaatank | Turreted 30 vs Mobile 15 | must match |
-| ra1_soviets_btr80 | Turreted 36 vs Mobile 18 | must match |
-| ra1_soviets_flaktruck | Turreted 48 vs Mobile 24 | must match |
-| ra1_soviets_gatlingtank | Turreted 30 vs Mobile 15 | must match |
-| ra1_soviets_gorynychtank | Turreted 20 vs Mobile 12 | must match |
-| ra1_soviets_v1rockettruck | Turreted 32 vs Mobile 20 | must match |
-| ra2_allies_ifv | Turreted 60 vs Mobile 30 | must match |
-| ra2_allies_ifv_chrono | Turreted 60 vs Mobile 30 | must match |
-| ra2_allies_ifv_hmg | Turreted 60 vs Mobile 30 | must match |
-| ra2_allies_ifv_mg | Turreted 60 vs Mobile 30 | must match |
-| ra2_allies_ifv_missile | Turreted 60 vs Mobile 30 | must match |
-| ra2_allies_ifv_repair | Turreted 60 vs Mobile 30 | must match |
-| ra2_soviets_flaktrack | Turreted 38 vs Mobile 19 | must match |
-| schwarzermond_komet | Turreted 24 vs Mobile 12 | must match |
-| schwarzermond_laserbeetle | Turreted 34 vs Mobile 17 | must match |
-| schwarzermond_lasertank | Turreted 28 vs Mobile 14 | must match |
-| schwarzermond_lunarpanzer | Turreted 20 vs Mobile 18 | must match |
-| schwarzermond_lunartiger | Turreted 20 vs Mobile 16 | must match |
-| steelconsortium_barracuda | Turreted 12 vs Mobile 16 | must match |
-| td_gdi_apc | Turreted 40 vs Mobile 20 | must match |
-| td_gdi_assaultapc | Turreted 25 vs Mobile 20 | must match |
-| td_gdi_boxer | Turreted 32 vs Mobile 16 | must match |
-| td_gdi_humveemkii | Turreted 46 vs Mobile 23 | must match |
-| td_nod_buggymkii | Turreted 48 vs Mobile 24 | must match |
-| td_nod_chemicalstealthtank | Turreted 25 vs Mobile 24 | must match |
-| terran_cyclone | Turreted 46 vs Mobile 23 | must match |
-| terran_goliath | Turreted 36 vs Mobile 18 | must match |
-| terran_goliathmk2 | Turreted 30 vs Mobile 15 | must match |
-| terran_matador | Turreted 15 vs Mobile 20 | must match |
-| tkm_medictruck | Turreted 20 vs Mobile 15 | must match |
-| tkm_t72m | Turreted 20 vs Mobile 16 | must match |
-| tkm_trenchtruck | Turreted 15 vs Mobile 12 | must match |
-| tkm_zaza | Turreted 30 vs Mobile 15 | must match |
-| ts_gdi_hovermlrs | Turreted 16 vs Mobile 40 | must match |
-| wirbelwind.nax | Turreted 34 vs Mobile 17 | must match |
-| yuri_chaosdrone | Turreted 2000 vs Mobile 28 | must match |
-| yuri_gatlingtank | Turreted 36 vs Mobile 18 | must match |
-| yuri_lashertank | Turreted 23 vs Mobile 21 | must match |
-| yuri_mastermind | Turreted 2000 vs Mobile 24 | must match |
+_none found_
 
 
-## F10 — turretless TurnSpeed ≠ 2×Speed/5 (artillery: Speed/5)  (46)
+## F10 — turretless TurnSpeed ≠ 2×Speed/5 (artillery: Speed/5)  (0)
 
-| actor | actual | expected |
-|---|---|---|
-| asianalliance_heavyrailguntank | TurnSpeed 10 (Speed 50) | expected 20 = 2 x Speed/5 (turretless) |
-| asianalliance_viper | TurnSpeed 25 (Speed 125) | expected 50 = 2 x Speed/5 (turretless) |
-| asianalliance_warturtle | TurnSpeed 15 (Speed 75) | expected 30 = 2 x Speed/5 (turretless) |
-| forgotten_thumperbus | TurnSpeed 18 (Speed 90) | expected 36 = 2 x Speed/5 (turretless) |
-| futuretech_athenacannon | TurnSpeed 12 (Speed 60) | expected 24 = 2 x Speed/5 (turretless) |
-| ixian_ixsiegetank | TurnSpeed 12 (Speed 60) | expected 24 = 2 x Speed/5 (turretless) |
-| japan_ballista | TurnSpeed 13 (Speed 65) | expected 26 = 2 x Speed/5 (turretless) |
-| latinsyndicate_burrito | TurnSpeed 16 (Speed 80) | expected 32 = 2 x Speed/5 (turretless) |
-| latinsyndicate_topolm | TurnSpeed 15 (Speed 75) | expected 30 = 2 x Speed/5 (turretless) |
-| missile_tank | TurnSpeed 80 (Speed 64) | expected 26 = 2 x Speed/5 (turretless) |
-| naxis_brummbar | TurnSpeed 12 (Speed 60) | expected 24 = 2 x Speed/5 (turretless) |
-| naxis_grille | TurnSpeed 16 (Speed 80) | expected 32 = 2 x Speed/5 (turretless) |
-| naxis_nokana | TurnSpeed 12 (Speed 60) | expected 24 = 2 x Speed/5 (turretless) |
-| naxis_oldtank | TurnSpeed 12 (Speed 50) | expected 20 = 2 x Speed/5 (turretless) |
-| naxis_sturmtiger | TurnSpeed 6 (Speed 30) | expected 12 = 2 x Speed/5 (turretless) |
-| protoss_dragoon | TurnSpeed 1023 (Speed 80) | expected 32 = 2 x Speed/5 (turretless) |
-| protoss_probe | TurnSpeed 100 (Speed 100) | expected 40 = 2 x Speed/5 (turretless) |
-| ra1_allies_alliedartillery | TurnSpeed 12 (Speed 60) | expected 24 = 2 x Speed/5 (turretless) |
-| ra1_allies_mobilegapgenerator | TurnSpeed 15 (Speed 75) | expected 30 = 2 x Speed/5 (turretless) |
-| ra1_allies_mobileradarjammer | TurnSpeed 20 (Speed 100) | expected 40 = 2 x Speed/5 (turretless) |
-| ra1_soviets_madtank | TurnSpeed 12 (Speed 60) | expected 24 = 2 x Speed/5 (turretless) |
-| ra1_soviets_nuclearv2launcher | TurnSpeed 16 (Speed 80) | expected 32 = 2 x Speed/5 (turretless) |
-| ra1_soviets_v2rocketlauncher | TurnSpeed 17 (Speed 85) | expected 34 = 2 x Speed/5 (turretless) |
-| ra2_allies_battlefortress | TurnSpeed 12 (Speed 60) | expected 24 = 2 x Speed/5 (turretless) |
-| ra2_allies_battlefortress_chrono | TurnSpeed 12 (Speed 60) | expected 24 = 2 x Speed/5 (turretless) |
-| ra2_allies_battlefortress_empty | TurnSpeed 12 (Speed 60) | expected 24 = 2 x Speed/5 (turretless) |
-| ra2_soviets_v3rocketlauncher | TurnSpeed 15 (Speed 75) | expected 30 = 2 x Speed/5 (turretless) |
-| steelconsortium_dagger | TurnSpeed 20 (Speed 100) | expected 40 = 2 x Speed/5 (turretless) |
-| steelconsortium_hammerheadartillerytank | TurnSpeed 20 (Speed 100) | expected 40 = 2 x Speed/5 (turretless) |
-| steelconsortium_supportshieldgenerator | TurnSpeed 15 (Speed 75) | expected 30 = 2 x Speed/5 (turretless) |
-| td_nod_artillery | TurnSpeed 11 (Speed 55) | expected 22 = 2 x Speed/5 (turretless) |
-| td_nod_chemicalssmlauncher | TurnSpeed 15 (Speed 75) | expected 30 = 2 x Speed/5 (turretless) |
-| td_nod_specterartillery | TurnSpeed 20 (Speed 100) | expected 40 = 2 x Speed/5 (turretless) |
-| terran_scv | TurnSpeed 100 (Speed 100) | expected 40 = 2 x Speed/5 (turretless) |
-| tkm_battlebus | TurnSpeed 20 (Speed 100) | expected 40 = 2 x Speed/5 (turretless) |
-| tkm_radartruck | TurnSpeed 15 (Speed 75) | expected 30 = 2 x Speed/5 (turretless) |
-| tkm_repairtruck | TurnSpeed 15 (Speed 75) | expected 30 = 2 x Speed/5 (turretless) |
-| tkm_tornadoglauncher | TurnSpeed 16 (Speed 80) | expected 32 = 2 x Speed/5 (turretless) |
-| ts_gdi_juggernautmkii | TurnSpeed 14 (Speed 70) | expected 28 = 2 x Speed/5 (turretless) |
-| ts_nod_subterraneanapc | TurnSpeed 40 (Speed 60) | expected 24 = 2 x Speed/5 (turretless) |
-| wc2_humans_mobileconstructionvehiclehuman | TurnSpeed 15 (Speed 75) | expected 30 = 2 x Speed/5 (turretless) |
-| wc2_humans_paladin | TurnSpeed 92 (Speed 115) | expected 46 = 2 x Speed/5 (turretless) |
-| wc2_humans_warcraft3knight | TurnSpeed 96 (Speed 120) | expected 48 = 2 x Speed/5 (turretless) |
-| wc2_orcs_mobileconstructionvehicleorc | TurnSpeed 15 (Speed 75) | expected 30 = 2 x Speed/5 (turretless) |
-| wc2_orcs_ogremage | TurnSpeed 68 (Speed 85) | expected 34 = 2 x Speed/5 (turretless) |
-| zerg_drone | TurnSpeed 100 (Speed 100) | expected 40 = 2 x Speed/5 (turretless) |
+_none found_
 
 
 ## F11 — turreted artillery missing/incorrect firing-slow (Archer pattern)  (18)
@@ -591,8 +459,8 @@ _none found_
 
 | actor | actual | expected |
 |---|---|---|
-| ordos: ordos_autogunturret | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 | ordos: ordos_artilleryplatform | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
+| ordos: ordos_autogunturret | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 | schwarzermond: schwarzermond_lasertower | prereqs: schwarzermond_barracks, schwarzermond_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 
 
@@ -801,85 +669,42 @@ _none found_
 | eden: heavyeden | eden_lynx_railgun (cost 900) x3 vs eden_scout (cost 300) x1 | pricier units must not outnumber cheaper ones |
 
 
-## F17 — fighter/bomber TurnSpeed ≠ Speed/15 (frontal: 2×)  (7)
+## F17 — fighter/bomber TurnSpeed ≠ Speed/15 (frontal: 2×)  (0)
 
-| actor | actual | expected |
-|---|---|---|
-| asianalliance_harbinger | TurnSpeed 16 (Speed 210) | expected 14 = Speed/15 |
-| forgotten_cropplane | TurnSpeed 64 (Speed 160) | expected 11 = Speed/15 |
-| ordos_airmine | TurnSpeed 8 (Speed 35) | expected 2 = Speed/15 |
-| ra1_soviets_supersonicnuclearbomber | TurnSpeed 15 (Speed 200) | expected 13 = Speed/15 |
-| schwarzermond_blackbomb | TurnSpeed 10 (Speed 75) | expected 5 = Speed/15 |
-| tkm_viper | TurnSpeed 25 (Speed 150) | expected 10 = Speed/15 |
-| zerg_scourge | TurnSpeed 40 (Speed 200) | expected 13 = Speed/15 |
+_none found_
 
 
-## F18 — weapons targeting Air whose damage warheads can't hit Air  (24)
+## F18 — weapons targeting Air whose damage warheads can't hit Air  (22)
 
 | actor | actual | expected |
 |---|---|---|
 | beehivecarriertarget | Warhead@1Dam | targets Air but no damage warhead hits Air (used by futuretech_beehivedronecarrier) |
 | boomerlaunch | Warhead@1Dam | targets Air but no damage warhead hits Air (used by yuri_boomersubmarine) |
-| cabaloverkillcharge | Warhead@Tesla_Heavy, Warhead@Tesla_Heavy_Percentage, Warhead@Tesla_Heavy_ExtraDamage | targets Air but no damage warhead hits Air (used by cabal_hunterdronecarrier) |
-| defilerplague | Warhead@Chemical_Heavy, Warhead@Chemical_Heavy_Percentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by zerg_defiler) |
+| cabaloverkillcharge | Warhead@Tesla_Heavy, Warhead@Tesla_Heavy_ExtraDamage | targets Air but no damage warhead hits Air (used by cabal_hunterdronecarrier) |
+| defilerplague | Warhead@Chemical_Heavy, Warhead@Concrete | targets Air but no damage warhead hits Air (used by zerg_defiler) |
 | ivanattachair | Warhead@2 | targets Air but no damage warhead hits Air (used by ra2_soviets_crazyivan) |
 | naxdefensiveplanetarget | Warhead@1Dam | targets Air but no damage warhead hits Air (used by naxis_airfield, schwarzermond_airfield) |
-| naxdieglocke | Warhead@Chemical_Heavy, Warhead@Chemical_Heavy_Percentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by schwarzermond_dieglocke) |
+| naxdieglocke | Warhead@Chemical_Heavy, Warhead@Concrete | targets Air but no damage warhead hits Air (used by schwarzermond_dieglocke) |
 | pdlaserbike | Warhead@1Dam | targets Air but no damage warhead hits Air (used by td_nod_chemicalattackbike, td_nod_reconbike) |
 | pdlaserltnk2 | Warhead@1Dam | targets Air but no damage warhead hits Air (used by td_nod_lighttankmkii) |
-| psionicshockwave | Warhead@Tesla_Super, Warhead@Tesla_Super_Percentage, Warhead@Tesla_Super_ExtraDamage | targets Air but no damage warhead hits Air (used by protoss_archon) |
+| psionicshockwave | Warhead@Tesla_Super, Warhead@Tesla_Super_ExtraDamage | targets Air but no damage warhead hits Air (used by protoss_archon) |
 | sciencevesseldefensematrix | Warhead@1 | targets Air but no damage warhead hits Air (used by terran_sciencevessel) |
 | tkmpdlaser | Warhead@1Dam | targets Air but no damage warhead hits Air (used by tkm_t72m) |
-| tsassaultcannon | Warhead@Flak_Medium, Warhead@Flak_Medium_Percentage, Warhead@Bullet_Medium, Warhead@Bullet_Medium_Percentage | targets Air but no damage warhead hits Air (used by ts_gdi_wolverine) |
-| tsassaultcannontal | Warhead@Bullet_Medium, Warhead@Bullet_Medium_Percentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by ts_gdi_wolverinemkii) |
-| tsfiendshard | Warhead@Chemical_Light, Warhead@Chemical_Light_Percentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by forgotten_tiberianfiend) |
+| tsassaultcannon | Warhead@Flak_Medium, Warhead@Bullet_Medium, Warhead@Concrete | targets Air but no damage warhead hits Air (used by ts_gdi_wolverine) |
+| tsassaultcannontal | Warhead@Bullet_Medium, Warhead@Concrete | targets Air but no damage warhead hits Air (used by ts_gdi_wolverinemkii) |
+| tsfiendshard | Warhead@Chemical_Light, Warhead@Concrete | targets Air but no damage warhead hits Air (used by forgotten_tiberianfiend) |
 | tsfiendshardblue | Warhead@Grenade, Warhead@GrenadeFriendlyFire, Warhead@GrenadePercentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by forgotten_viniferafiend) |
 | tsfiendshardblueup | Warhead@Grenade, Warhead@GrenadeFriendlyFire, Warhead@GrenadePercentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by forgotten_viniferafiend) |
-| tsfiendshardup | Warhead@LightChemicalWeapon, Warhead@LightChemicalWeaponFriendlyFire, Warhead@LightChemicalWeaponPercentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by forgotten_tiberianfiend) |
-| tstacticalchemmissile | Warhead@Concrete | targets Air but no damage warhead hits Air (used by ts_nod_missilesilo) |
-| tstacticalmissile | Warhead@Concrete | targets Air but no damage warhead hits Air (used by ts_nod_missilesilo) |
-| venomlaserburning | Warhead@Inferno_Medium, Warhead@Inferno_Medium_Percentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by td_nod_venom) |
-| venomlaserinferno | Warhead@Inferno_Medium, Warhead@Inferno_Medium_Percentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by td_nod_venom) |
+| tsfiendshardup | Warhead@LightChemicalWeapon, Warhead@LightChemicalWeaponPercentage, Warhead@Concrete, Warhead@MediumChemicalWeapon | targets Air but no damage warhead hits Air (used by forgotten_tiberianfiend) |
+| venomlaserburning | Warhead@Inferno_Medium, Warhead@Concrete | targets Air but no damage warhead hits Air (used by td_nod_venom) |
+| venomlaserinferno | Warhead@Inferno_Medium, Warhead@Concrete | targets Air but no damage warhead hits Air (used by td_nod_venom) |
 | wc2deathknightdeathanddecay | Warhead@1Dam_impact | targets Air but no damage warhead hits Air (used by wc2_orcs_deathknight) |
 | wc2mageblizzard | Warhead@1Dam_impact | targets Air but no damage warhead hits Air (used by wc2_humans_archmage, wc2_humans_mage) |
 
 
-## F19 — helicopter/spaceship TurnSpeed ≠ Speed/5  (32)
+## F19 — helicopter/spaceship TurnSpeed ≠ Speed/5  (0)
 
-| actor | actual | expected |
-|---|---|---|
-| forgotten_apache | TurnSpeed 64 (Speed 160) | expected 32 = Speed/5 |
-| forgotten_cobracopter | TurnSpeed 66 (Speed 165) | expected 33 = Speed/5 |
-| forgotten_wasp | TurnSpeed 80 (Speed 200) | expected 40 = Speed/5 |
-| futuretech_harbingergunship | TurnSpeed 8 (Speed 125) | expected 25 = Speed/5 |
-| ixian_farasha | TurnSpeed 16 (Speed 40) | expected 8 = Speed/5 |
-| naxis_transportzeppelin | TurnSpeed 20 (Speed 35) | expected 7 = Speed/5 |
-| ordos_wraith | TurnSpeed 45 (Speed 45) | expected 9 = Speed/5 |
-| protoss_arbiter | TurnSpeed 28 (Speed 75) | expected 15 = Speed/5 |
-| protoss_carrier | TurnSpeed 18 (Speed 45) | expected 9 = Speed/5 |
-| protoss_shuttle | TurnSpeed 20 (Speed 150) | expected 30 = Speed/5 |
-| protoss_starshipsovereign | TurnSpeed 16 (Speed 40) | expected 8 = Speed/5 |
-| ra1_soviets_hiptransport | TurnSpeed 10 (Speed 100) | expected 20 = Speed/5 |
-| ra2_soviets_kirovairship | TurnSpeed 12 (Speed 30) | expected 6 = Speed/5 |
-| ra2_soviets_transportkirov | TurnSpeed 14 (Speed 35) | expected 7 = Speed/5 |
-| schwarzermond_dieglocke | TurnSpeed 40 (Speed 40) | expected 8 = Speed/5 |
-| schwarzermond_haunebuii | TurnSpeed 66 (Speed 66) | expected 13 = Speed/5 |
-| schwarzermond_haunebuiii | TurnSpeed 55 (Speed 55) | expected 11 = Speed/5 |
-| schwarzermond_spacezeppelin | TurnSpeed 35 (Speed 35) | expected 7 = Speed/5 |
-| steelconsortium_cloudbreaker | TurnSpeed 20 (Speed 50) | expected 10 = Speed/5 |
-| steelconsortium_empressstation | TurnSpeed 25 (Speed 25) | expected 5 = Speed/5 |
-| td_gdi_chinooktransport | TurnSpeed 20 (Speed 150) | expected 30 = Speed/5 |
-| td_nod_chinooktransport | TurnSpeed 20 (Speed 150) | expected 30 = Speed/5 |
-| terran_battlecruiser | TurnSpeed 12 (Speed 30) | expected 6 = Speed/5 |
-| terran_phobos | TurnSpeed 10 (Speed 25) | expected 5 = Speed/5 |
-| terran_pythean | TurnSpeed 16 (Speed 40) | expected 8 = Speed/5 |
-| terran_sciencevessel | TurnSpeed 28 (Speed 66) | expected 13 = Speed/5 |
-| ts_nod_harpy | TurnSpeed 56 (Speed 140) | expected 28 = Speed/5 |
-| wc2_humans_flyingmachine | TurnSpeed 28 (Speed 165) | expected 33 = Speed/5 |
-| wc2_humans_gyrocoptermachine | TurnSpeed 28 (Speed 165) | expected 33 = Speed/5 |
-| wc2_orcs_goblinzeppelin | TurnSpeed 28 (Speed 165) | expected 33 = Speed/5 |
-| yuri_floatingdisk | TurnSpeed 80 (Speed 80) | expected 16 = Speed/5 |
-| zerg_behemoth | TurnSpeed 12 (Speed 30) | expected 6 = Speed/5 |
+_none found_
 
 
 ## F20 — AA support vehicle: air range ≠ 1.5 × ground range  (3)

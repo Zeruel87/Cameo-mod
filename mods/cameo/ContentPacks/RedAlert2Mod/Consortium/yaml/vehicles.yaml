@@ -640,7 +640,7 @@ steelconsortium_supportshieldgenerator:
 	Mobile:
 		Locomotor: amphibius
 		Speed: 75
-		TurnSpeed: 15
+		TurnSpeed: 30
 	Health:
 		HP: 100000
 	Repairable:
@@ -694,6 +694,7 @@ steelconsortium_consortiummobileconstructionvehicle:
 		Prerequisites: steelconsortium_consortiumradar, ~steelconsortium_consortiumwarfactory
 		Description: Deploys into a Construction Yard.\n  Unarmed
 	Mobile:
+		TurnSpeed: 12
 		Speed: 60
 		Locomotor: amphibius
 	Health:
@@ -774,8 +775,6 @@ steelconsortium_consortiumminer:
 	Targetable@Hover:
 		TargetTypes: Water, Ship
 	WithMoveAnimation:
-	StoresResources:
-	DockClientManager:
 	WithHarvestOverlay@harvesting:
 		Sequence: harvesting
 		Palette: ra2effect
@@ -925,10 +924,9 @@ steelconsortium_quantumtank:
 	WithMuzzleOverlay:
 	SelectionDecorations:
 	Selectable:
-	WithSpriteTurret:
-	Selectable:
 		Bounds: 1440, 1440
 		DecorationBounds: 1440, 1440
+	WithSpriteTurret:
 	Voiced:
 		VoiceSet: SteelQuantumTankVoice
 	RenderSprites:
@@ -1072,7 +1070,7 @@ steelconsortium_barracuda:
 	ChangesHealth@SelfHealing:
 		Step: 16
 	Turreted:
-		TurnSpeed: 12
+		TurnSpeed: 16
 	Armament@AG1:
 		Name: primary
 		Weapon: SteelMantaHunterCannons
@@ -1254,7 +1252,7 @@ steelconsortium_hammerheadartillerytank:
 	Mobile:
 		Locomotor: hover
 		Speed: 100
-		TurnSpeed: 20
+		TurnSpeed: 40
 	Health:
 		HP: 52500
 	Repairable:
@@ -1331,6 +1329,24 @@ steelconsortium_hammerheadartillerytank:
 	-QuantizeFacingsFromSequence:
 	ActorStatValues:
 		Upgrades: steelconsortium_upgrade_naniteinfusion, steelconsortium_upgrade_ferrocretecurtain, steelconsortium_upgrade_shieldresistance
+	# DEPLOYING ADDS THE STEEL DEFENCE ARMOUR ON TOP OF THE UNIT'S OWN CLASS ARMOUR.
+	# Maintainer 2026-08-22: *"activate the steel armor type on deploy but keep the underlying
+	# regular armor intact and then create the average between them"* — a deployed unit is a
+	# static defence, and Steel is what defences wear.
+	#
+	# Both traits stay ENABLED together, which is the whole point:
+	# `AreaDamageWarhead.MultiArmorCombination` defaults to `Average`, so the class row and the
+	# Steel row meet in the middle instead of one replacing the other. Gating the class armour
+	# on `undeployed` — what the defence rig, siege tank and matador used to do — makes Steel a
+	# REPLACEMENT and throws the unit's own class away.
+	#
+	# ⚠ Averaging only happens for warheads routing through AreaDamage (62.9% of the tree).
+	# The legacy inline-Versus SpreadDamage nodes still MULTIPLY, and under multiplication the
+	# class row cancels out entirely (the ratio becomes just Steel/100) — so those weapons see a
+	# flatter effect than designed until item A5 retires them onto ^Warhead_* templates.
+	Armor@deployed:
+		Type: Steel
+		RequiresCondition: !shielded && deployed
 
 steelconsortium_poseidontank:
 	Inherits: ^Tank
@@ -1425,7 +1441,7 @@ steelconsortium_dagger:
 	Mobile:
 		Locomotor: hover
 		Speed: 100
-		TurnSpeed: 20
+		TurnSpeed: 40
 	Health:
 		HP: 25000
 	Repairable:

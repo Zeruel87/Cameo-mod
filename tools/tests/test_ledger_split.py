@@ -30,6 +30,9 @@ DERIVED = LEDGERS / "derived"
 # branch cannot quietly reintroduce them.
 MODEL_KEYS = {
     "k", "avg_versus", "effective_per_shot", "eff_reload", "effective_dps",
+    "k_context", "k_flat", "k_flat_context", "pct_absolute",
+    "pct_absolute_context", "folded_rounding", "folded_rounding_context",
+    "dps_floor", "factor_targets", "factor_range", "factor_deadzone", "overkill",
     "effective_damage", "damage_total", "footprint", "reliability", "sigma",
     "effective_base_total", "effective_footprint_cells2",
     "effective_avg_reliability", "effective_sigma",
@@ -82,7 +85,9 @@ class SplitDerivedTest(unittest.TestCase):
 
 class FnumTest(unittest.TestCase):
     def test_takes_the_first_of_a_list(self):
-        self.assertEqual(es.fnum("15, 15, 15"), 15.0)   # BurstDelays
+        # fnum is for scalar fields; burst cadence passes the raw list to
+        # formula.eff_reload instead of using this convenience parser.
+        self.assertEqual(es.fnum("15, 15, 15"), 15.0)
 
     def test_bad_input_is_none_not_a_crash(self):
         for bad in (None, "", "abc", "-"):
@@ -118,6 +123,8 @@ class CommittedLedgerTest(unittest.TestCase):
         self.assertIn("BLOB_UPTIME", doc["target_model"])
         self.assertGreater(doc["target_model"]["reference_hp"], 0)
         self.assertGreater(sum(doc["target_model"]["armor_census"].values()), 0)
+        self.assertEqual(doc["weapon_timing"]["ENGINE_DEFAULT_BURST_DELAY"], 5.0)
+        self.assertGreater(doc["percentage_damage"]["FOLDED_SCALE_DENOMINATOR"], 0)
 
 
 if __name__ == "__main__":

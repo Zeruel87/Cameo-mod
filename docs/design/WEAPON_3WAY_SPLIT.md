@@ -1,5 +1,8 @@
 # WEAPON 3-WAY SPLIT — warhead / projectile / effect layers (2026-08-02)
 
+> ⚠ **SUPERSEDED (W15/W17, 2026-08-15).** The grid is now `formula.DAMAGE_STEP` = **100**, the `%`-twin comes from `formula.percentage_twin()` (not `damage // 2000`), and `FirepowerMultiplier` is retired as a fine-tuning knob — `apply_balance` cannot write it and `decompose_dps` always solves at `fp = 1.0`. Read every "multiple of 2000" mention below as history.
+> The split itself is unaffected — it preserves `Damage` verbatim either way.
+
 _The repoint architecture. Maintainer decision 2026-08-02: "do the full split
 now." Supersedes the naive "reparent onto warhead-only templates" plan (which
 would orphan 392/437 override keys + strip FX). Companion to
@@ -31,7 +34,7 @@ and PRESERVES the weapon's existing on-grid value verbatim; it invents NO number
 2000-grid re-quantise + per-actor FirepowerMultiplier are the **restat's** job (the
 balance pipeline: `extract_stats` → workbook → `apply_balance --confirm`).
 
-- **Layer 1 WARHEAD** = the 55-template library (`gen_weapon_template.py`, committed
+- **Layer 1 WARHEAD** = the 99-template library (`gen_weapon_template.py`, committed
   `fa0947ae5`/`956cf1ecb`) — pure Versus/damage/%/FF, FX/projectile-agnostic by design.
   FF twin (AoE) done; ExtraDamage twin (energy) handled per-weapon in the energy retrofit.
 - **Layer 2 PROJECTILE** = the `Projectile:` block only.
@@ -43,9 +46,11 @@ Why: the OLD central templates (^SmallArms/^Grenade/…) are FULL-STACK and weap
 their warheads BY THE OLD KEY NAME + rely on their bundled FX, so a bare reparent breaks
 them. The split lets a weapon pick its damage identity independently of look/delivery.
 
-## Layer 2 — PROJECTILE templates (proposed `^Proj*`)
+## Layer 2 — PROJECTILE templates
 
-Derived from the 30 old templates' `Projectile:` blocks (catalog 2026-08-02).
+> **Naming resolved 2026-08-02:** the shipped prefix is `^Projectile_*` (not the early `^Proj*`
+> proposal below). Derived from the 30 old templates' `Projectile:` blocks
+> (catalog 2026-08-02; current `weapons.yaml` has 30 `^Projectile_*` + 48 `^Effect_*` + 99 `^Warhead_*`).
 
 | Proposed | Projectile | Signature | From (old templates) |
 |---|---|---|---|
@@ -95,15 +100,17 @@ The **ExtraDamage** twin (Laser/Railgun/Tesla/Magic/Sniper — an OpenToppedDama
 
 ## Build plan (incremental, each boot-gated)
 
-1. **[additive, 0-usage]** Generate the `^Proj*` + `^Fx*` libraries into weapons.yaml above the
+1. **[additive, 0-usage]** Generate the `^Projectile_*` + `^Effect_*` libraries into weapons.yaml above the
    divider (same low-risk pattern as the warhead splice). Boot-gate + commit. Nothing inherits
    them yet → no behavior change.
 2. **[warhead layer]** Extend `gen_weapon_template.py`: FF twin for AoE families, ExtraDamage
    twin for energy families. Re-splice the warhead library. Boot-gate.
 3. **[retrofit — the big batch]** Family-by-family, convert weapons from the old full-stack
-   inherit to the 4-inherit model (warhead+proj+fx), rewriting `Warhead@<Old>` override keys to
-   the new warhead key. Start with the 437 single-inherit; then the 609 mixed (each collapsed to
-   ≤2 warheads — the "kill warhead-mixing" pass). Resolver-diff + boot-gate per family.
+   inherit to the 3-inherit model (`Inherits@wh`/`Inherits@proj`/`Inherits@fx`), rewriting
+   `Warhead@<Old>` override keys to the new warhead key. Single-inherit mechanical families are
+   done (`retrofit_weapon_family.py` reports 0 remaining); the rest is **285 mixed weapons in
+   212 groups** (see `phase_b_survey.py`) collapsed to ≤2 warheads by dominant-damage choice.
+   Resolver-diff + boot-gate per group.
 4. **[cleanup]** Delete the 30 orphaned old templates; drop their `weapon_classes.yaml` rows.
 
 ## The 2-warhead cap + its EXCEPTION allow-list (maintainer 2026-08-02)
@@ -114,11 +121,25 @@ must NOT strip these. Known so far (more to be defined; confirm each before keep
 - **Dune combat tanks** — Ixian combat tank / Koda tank / Ordos combat tank / **any D2k
   combat tank** = **3 cannon warheads** (Cannon Light + Medium + Heavy), their signature
   (vs the single Medium cannon of other medium tanks).
+- **D2K Rocket Trooper family** (`D2K_Rocket_Trooper`, `D2K_Rocket_Trooper1`,
+  `D2K_Rocket_Trooper2`, `D2K_Rocket_Trooper_AA`, `D2K_Rocket_Trooper_AGOnly`) —
+  the resolved damage identity requires **three warhead layers** (Light/Medium/Heavy
+  missile AP for the base and AA variants; Demolition + Railgun + Cannon for the
+  Ixian/Ordos demolition variants). The 3-way split keeps these separate `Inherits@wh`
+  entries; new per-weapon `^Projectile_*_D2K_Rocket_Trooper*` and
+  `^Effect_MissileAP_Heavy_D2K_Rocket_Trooper` templates preserve the d2k_RPG
+  projectile and Dune smudge/effect behaviour.
+- **Ixian D2K missile weapons** (`D2K_TowerMissile`, `mtank_pri2`) — collapsed to a
+  single `^D2KMissile` warhead identity with `Damage` overrides for the missile main
+  and percentage twin; only the D2K-specific `^Projectile_Missile_Heavy_D2K_TowerMissile`,
+  `^Projectile_Missile_Heavy_D2K_mtank_pri2`, `^Effect_MissileAP_Heavy_D2K_TowerMissile`,
+  and `^Effect_MissileAP_Heavy_D2K_mtank_pri2` templates remain as custom projectile/
+  effect layers.
 - **Terran Siege Tank** (`SiegeTankSiegeCannon`) + **Warcraft Siege Engine**
   (`SiegeEngineCannon`) = keep ALL AoE warheads + others combined = a unique shared explosion.
 
 Everything else: the 2-cap is strict. Build a concrete allow-list (unit/weapon ids) before
-the kill-mixing pass. See memory `cameo-weapon-structure-rules`.
+the kill-mixing pass. See.
 
 ## Retrofit specifics + weapon assignments (maintainer 2026-08-02)
 
@@ -159,8 +180,8 @@ authoritative path. One canonical retrofit tool; one family per commit; every st
 1. **Structural only.** A retrofit renames inherits + warhead keys; it PRESERVES every existing
    on-grid `Damage` verbatim and invents no numbers. (2000-grid + FirepowerMultiplier = the restat.)
 2. **≤2 warhead inherits** per weapon (the cap is on warheads). Direct-fire = 1; energy/upgrade = 2;
-   the **exception allow-list** (Dune 3-cannon combat tanks; Terran Siege Tank + WC Siege Engine) is
-   the ONLY place >2 is allowed.
+   the **exception allow-list** (Dune 3-cannon combat tanks; Terran Siege Tank + WC Siege Engine)
+   is the ONLY place >2 is allowed.
 3. **Exactly one** `@proj` and one `@fx` per weapon (except bombs = no `@proj`). >1 = the v1 bug.
 4. **Single-inherit first; mixed weapons are Phase B** (per-weapon collapse, maintainer-directed).
 5. Resolver-diff (structural) + audits + **boot-gate** + scoped commit **per family**.
@@ -211,7 +232,7 @@ pair. Every concrete weapon under the intermediate then inherits it unchanged �
   run audits (warhead_split, template_conformance, yaml_lint, weapon_uniqueness); **boot-gate**;
   spot-check every category (single SA, single CG, RA2 intermediate, a skipped dual/mixed weapon).
 - If clean → **commit it** as "retrofit: Bullet family (SmallArms/Chaingun)". If any defect → fix or
-  discard (my `stash@{0}` holds the v1; the v3 tooling is `tools/archive/retrofit_v3.py`).
+  discard (my `stash@{0}` holds the v1; the v3 tooling is `tools/archive/retrofit_v3.py` — ⚠ **not in the tree**; the surviving canonical tool is `tools/balance/retrofit_weapon_family.py`).
 - **Adopt ONE canonical retrofit tool** (`tools/balance/retrofit_weapon_family.py`, authored/owned by
   me) driven by the triple-map above + the categorizer, so every remaining family is done identically.
 
@@ -274,12 +295,44 @@ BOM-safe, Report in the PROJECTILE layer, damage always preserved.
 
 D2K heavy missile/rocket HE 3-way split: created `ContentPacks/D2k/Shared/yaml/weapons.yaml`
 with the per-game `^Projectile_Missile_Heavy_D2K` and `^Effect_MissileHE_Heavy_D2K` layers,
-reparented the six D2K rocket cluster weapons to `^Warhead_MissileHE_Heavy`, and boot-gated.
+reparented the six D2K rocket cluster weapons to `^Warhead_MissileHE_Heavy`, and boot-gated;
+followed by `^D2K_Cannon` repointed to the per-game `^Projectile_Shell_Medium_D2K` and
+`^Effect_CannonHE_Medium_D2K` layers (preserving the d2k_120mm and d2k_small_napalm visuals);
+then `^D2KRocket` and `^D2KMissile` migrated into the same D2K Shared pack as AP 3-way
+split intermediates using `^Effect_MissileAP_Heavy_D2K` / `^Effect_MissileAP_Heavy_D2K_Rocket`;
+finally the D2K `Debris` family moved its shrapnel bounce and demolition-effect overrides
+into `^Projectile_Grenade_Light_D2K_Debris` and `^Effect_Demolition_Light_D2K`;
+then the D2K 155mm family (D2K_155mm, D2K_155mm_turret, D2K_155mm3) moved its shared
+`d2k_155mm` projectile and `d2k_med_explosion` effect into
+`^Projectile_Grenade_Light_D2K_155mm` and `^Effect_Demolition_Heavy_D2K_155mm`;
+then Dune_SiegeMortar moved its `d2k_155mm` Bullet and `d2k_large_explosion`
+into `^Projectile_Shell_Light_D2K_Mortar` and `^Effect_CannonAP_Light_D2K_Mortar`;
+then `D2K_Rocket` and `Fremen_RPG` moved their `d2k_rocket_explosion` effect
+into `^Effect_MissileAP_Heavy_D2K_Rocket_Blast` and
+`^Effect_MissileAP_Heavy_D2K_Missile_Blast` while keeping their custom
+concrete and warhead stacks; then `oRocket` moved its `d2k_rocket_explosion`
+effect into `^Effect_MissileAP_Heavy_D2K_Rocket_Blast`;
+then `D2K_155mm2` moved its `d2k_155mm` grenade projectile and
+`d2k_large_explosion` effect into `^Projectile_Grenade_Light_D2K_155mm`
+and `^Effect_Demolition_Heavy_D2K_155mm2`;
+then the legacy `^ORocket`/`^OMissile` intermediates and their children
+(`oBazooka`, `oRocket`, `oTowerMissile`, `omtank_pri`, `oDeviatorMissile`)
+were converted to 3-way split using new D2K Shared
+`^Warhead_MissileAP_Heavy_D2K_ORocket`, `^Projectile_Missile_Heavy_D2K_ORocket`,
+`^Projectile_Missile_Heavy_D2K_OMissile`, `^Effect_MissileAP_Heavy_D2K_ORocket`,
+and `^Effect_MissileAP_Heavy_D2K_OMissile`, preserving the old `SpreadDamage`
+warhead, projectile fields, effect stacks, concrete values, and smudge behaviour.
 
-**RESUME — Phase 2 remaining families** (one commit each: `--old <names>` → self-check → boot → commit):
-`LightMissile,MediumMissile,HeavyMissile` + `FlakWeapon,HeavyAAWeapon` → then
-`LightFlameWeapon,MediumFlameWeapon,HeavyFlameWeapon` + `LightChemicalWeapon,MediumChemicalWeapon,HeavyChemicalWeapon`
-→ `Grenade,ShrapnelWeapon,HeavyBomb` → `SwordWeapon,ArrowWeapon,MagicWeapon` → `NuclearWarhead` →
+then `OrniBomb` and `OrniBombC` converted to 3-way split using D2K Shared `^Projectile_GravityBomb_D2K`, `^Warhead_Demolition_Heavy_D2K_Orni`, and `^Effect_Demolition_Heavy_D2K_Orni` (preserving the 7500 SpreadDamage warhead, d2k_bombs GravityBomb, Sand/Rock smudge, d2k_large_explosion, and 7500 concrete);
+then `HeatRayBeam1/2/3/4` were fully 3-way split with `^Warhead_Inferno_Heavy` + `^Projectile_Inferno_Heavy_HeatRayBeam` + `^Effect_Inferno_Heavy` (per-weapon RadBeam projectile, small_napalm effect override preserved); resolver diff identical; boot-gated;
+**RESUME — Phase 2 complete; Phase B mixed-weapon collapse remaining** (one commit each, maintainer-directed dominant-family choice):
+`LightMissile,MediumMissile,HeavyMissile` + `FlakWeapon,HeavyAAWeapon` + `LightFlameWeapon,MediumFlameWeapon,HeavyFlameWeapon`
++ `LightChemicalWeapon,MediumChemicalWeapon,HeavyChemicalWeapon` + `Grenade,ShrapnelWeapon,HeavyBomb` +
+`SwordWeapon,ArrowWeapon,MagicWeapon` + `NuclearWarhead` are now down to **zero single-inherit candidates**;
+`retrofit_weapon_family.py` reports 285 mixed (Phase B) weapons in 212 groups. Use
+`tools/audit/phase_b_survey.py` for the live work-list; the next group is at the top of
+`docs/audit/latest/phase_b_survey.md`.
+
 **ENERGY LAST** (Laser/Railgun/Tesla/TeslaCharged — BLOCKED on the ExtraDamage decision below).
 Standard self-check after each: 0 orphaned old keys, 0 layer conflicts, 0 Damage changes, boots.
 

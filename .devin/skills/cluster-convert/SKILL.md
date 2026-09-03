@@ -16,16 +16,24 @@ This skill converts a group of weapons from old full-stack templates (`^SmallArm
 ## Pre-requisites (read before starting)
 
 Load these docs into context first:
-1. `docs/design/WEAPON_3WAY_SPLIT.md` -- the architecture
-2. `docs/design/AREADAMAGE_HANDOFF.md` -- universal AreaDamage state
-3. `docs/AI_HANDOFF_2026-08-05.md` -- current state + mistakes to avoid
+1. `docs/HANDOFF.md` -- current state, the priority queue, and the W24 cluster procedure
+2. `docs/design/WEAPON_3WAY_SPLIT.md` -- the architecture
+3. `docs/design/BALANCE_PROGRAM_PLAN.md` §1b -- the resolve-and-inline-FIRST procedure
+4. `docs/LESSONS_LEARNED.md` -- the conversion traps (inherit position, removal markers,
+   orphaned old keys, effect-warhead merges)
+
+⚠ The two ARCHIVED handoffs this skill used to name
+(`docs/history/handoffs/AREADAMAGE_HANDOFF_2026-08-04.md`,
+`docs/history/handoffs/AI_HANDOFF_2026-08-05.md`) are provenance only. Their AreaDamage
+conversion is COMPLETE and their "current state" is months stale -- read them for technique,
+never for status.
 
 Key rules:
 - **Damage values are PRESERVED VERBATIM** -- never change a number
 - **Main warhead type is `AreaDamage`** (or bare if inheriting `^Warhead_*`)
 - **Never `SpreadDamage`** on new-family warheads (that's the old type)
 - **2-warhead cap** on warheads (exceptions need maintainer sign-off)
-- **Do NOT touch files the maintainer is editing** (check `docs/AI_HANDOFF_2026-08-05.md` section 8)
+- **Do NOT touch files the maintainer is editing** (check `docs/history/handoffs/AI_HANDOFF_2026-08-05.md` section 8)
 
 ## Conversion procedure
 

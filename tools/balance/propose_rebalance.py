@@ -46,7 +46,7 @@ def unit_row(u):
     if primary is not None:
         reload_ = fnum(primary.get("reloaddelay"))
         burst = int(fnum(primary.get("burst")) or 1)
-        best_range = fnum(primary.get("range")) or 0.0
+        best_range = formula.wdist_value(primary.get("range"), 0.0)
         if reload_:
             # Sum the main damage warheads; ignore chip ExtraDamage and Percentage warheads.
             damage = 0.0
@@ -61,7 +61,7 @@ def unit_row(u):
                     damage += dmg
             if damage:
                 total_dps = formula.dps(damage, reload_, burst,
-                                        fnum(primary.get("burstdelays")),
+                                        primary.get("burstdelays"),
                                         firepower_multiplier=fp)
     return hp, speed, best_range, total_dps, cost, d
 

@@ -24,21 +24,34 @@ from report import h1, h2, relpath, table
 
 # trait base name -> (field, beneficial_predicate, meaning)
 DIRECTION = {
-    "FirepowerMultiplier":     ("Modifier", lambda v: v > 100, ">100 = stronger"),
-    "ReloadDelayMultiplier":   ("Modifier", lambda v: v < 100, "<100 = faster"),
-    "DamageMultiplier":        ("Modifier", lambda v: v < 100, "<100 = takes less damage"),
-    "SpeedMultiplier":         ("Modifier", lambda v: v > 100, ">100 = faster"),
-    "RangeMultiplier":         ("Modifier", lambda v: v > 100, ">100 = longer range"),
-    "RevealsShroudMultiplier": ("Modifier", lambda v: v > 100, ">100 = more vision"),
-    "DetectCloakedMultiplier": ("Modifier", lambda v: v > 100, ">100 = better detection"),
-    "InaccuracyMultiplier":    ("Modifier", lambda v: v < 100, "<100 = more accurate"),
-    "PowerMultiplier":         ("Modifier", lambda v: v > 100, ">100 = more power"),
-    "ProductionCostMultiplier":("Multiplier", lambda v: v < 100, "<100 = cheaper"),
-    "ProductionTimeMultiplier":("Multiplier", lambda v: v < 100, "<100 = faster build"),
+    "FirepowerMultiplier":     ("Modifier", lambda v: v >= 100, ">=100 = not weaker"),
+    "ReloadDelayMultiplier":   ("Modifier", lambda v: v <= 100, "<=100 = not slower"),
+    "DamageMultiplier":        ("Modifier", lambda v: v <= 100, "<=100 = no more damage"),
+    "SpeedMultiplier":         ("Modifier", lambda v: v >= 100, ">=100 = not slower"),
+    "RangeMultiplier":         ("Modifier", lambda v: v >= 100, ">=100 = not shorter"),
+    "RevealsShroudMultiplier": ("Modifier", lambda v: v >= 100, ">=100 = no less vision"),
+    "DetectCloakedMultiplier": ("Modifier", lambda v: v >= 100, ">=100 = no worse detection"),
+    "InaccuracyMultiplier":    ("Modifier", lambda v: v <= 100, "<=100 = no less accurate"),
+    "PowerMultiplier":         ("Modifier", lambda v: v >= 100, ">=100 = no less power"),
+    "ProductionCostMultiplier":("Multiplier", lambda v: v <= 100, "<=100 = no dearer"),
+    "ProductionTimeMultiplier":("Multiplier", lambda v: v <= 100, "<=100 = no slower build"),
 }
 
 UPGRADE_QUEUES = ("upgrade", "research", "promotion")
 _ident = re.compile(r"[A-Za-z0-9_.\-]+")
+
+# Aedis deliberately changed this from 160 to 91 together with a production-cost
+# rebalance.  Its intended formula cannot be resolved without reopening pricing,
+# which is outside this pipeline.  Pin the exact unresolved fingerprint so any
+# actor, trait, or value drift becomes a new blocking finding.
+DEFERRED_INVERTED = {
+    ("steelconsortium_upgrade_pulseweapons", "steelconsortium_clonetrooper",
+     "FirepowerMultiplier@steelconsortium_upgrade_pulseweapons", "91"),
+}
+
+
+def is_deferred_inverted(upgrade: str, actor: str, trait: str, value: str) -> bool:
+    return (upgrade, actor, trait, value) in DEFERRED_INVERTED
 
 
 def load_intent(root: pathlib.Path) -> dict[str, dict]:
@@ -122,7 +135,7 @@ def main() -> int:
             unlock_consumers.setdefault(tok, []).append(name.lower())
 
     # ---- checks ------------------------------------------------------------ #
-    inverted, dead_upgrades, no_intent = [], [], []
+    inverted, deferred_inverted, dead_upgrades, no_intent = [], [], [], []
     for uname, toks in sorted(upgrades.items()):
         entry = intent.get(uname, None)
         drawbacks = set((entry or {}).get("drawbacks", "").replace(",", " ").split())
@@ -145,8 +158,12 @@ def main() -> int:
                 except ValueError:
                     continue
                 if not spec[1](v) and base.lower() not in drawbacks:
-                    inverted.append([uname, actor, trait_key, str(v), spec[2],
-                                     "declared drawback?" if entry else "no intent entry"])
+                    row = [uname, actor, trait_key, str(v), spec[2],
+                           "declared drawback?" if entry else "no intent entry"]
+                    if is_deferred_inverted(uname, actor, trait_key, str(v)):
+                        deferred_inverted.append(row)
+                    else:
+                        inverted.append(row)
         if not consumed:
             node = rs.actor(uname)
             dead_upgrades.append([uname, ", ".join(sorted(toks - {uname})) or "(own name only)",
@@ -176,12 +193,16 @@ def main() -> int:
 
     print(h1("audit_upgrades — inverted / dead upgrade effects (B3)"))
     print(f"Upgrade items found: **{len(upgrades)}** — inverted-direction traits: "
-          f"**{len(inverted)}**, dead upgrades: **{len(dead_upgrades)}**, "
+          f"**{len(inverted)}**, exact deferred traits: **{len(deferred_inverted)}**, "
+          f"dead upgrades: **{len(dead_upgrades)}**, "
           f"dead wiring tokens: **{len(dead_wiring)}**, "
           f"without intent entries: **{len(no_intent)}**\n")
     print(h2("Inverted-direction stat traits gated on upgrade conditions"))
     print(table(["upgrade", "affected actor", "trait", "value", "beneficial means", "note"],
                 inverted))
+    print(h2("Exact deferred inverted traits (pricing-linked review boundary)"))
+    print(table(["upgrade", "affected actor", "trait", "value", "beneficial means", "note"],
+                deferred_inverted))
     print(h2("Dead upgrades (granted tokens nobody consumes)"))
     print(table(["upgrade", "extra tokens", "file"], dead_upgrades))
     print(h2("Dead wiring (GrantConditionOnPrerequisite tokens granted by nothing)"))

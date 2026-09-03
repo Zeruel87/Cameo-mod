@@ -108,7 +108,7 @@ def main() -> int:
                     dps += fnum(arm.get("effective_dps")) or 0.0
                 rng = 0.0
                 for arm in unit.get("armaments", []) or []:
-                    r = fnum(arm.get("range"))
+                    r = formula.wdist_value(arm.get("range"))
                     if r:
                         rng = max(rng, r)
                 ratio = price_ratio(hp, eff, speed, rng, dps)

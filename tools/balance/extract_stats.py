@@ -34,6 +34,7 @@ sys.path.insert(0, str(ROOT / "tools/balance"))
 from cameo_model import Model  # noqa: E402
 import effective_damage as effmod  # noqa: E402
 import formula  # noqa: E402
+import percentage_damage as pd  # noqa: E402
 import physical_state_price as psp  # noqa: E402
 import target_model as tm  # noqa: E402
 import tier_chain  # noqa: E402
@@ -418,7 +419,61 @@ def model_constants() -> dict:
     return {
         "effective_damage": {"SWARM_W": effmod.SWARM_W, "LEAD": effmod.LEAD,
                              "TARGET_SPEED": effmod.TARGET_SPEED,
-                             "MIN_SPREAD": effmod.MIN_SPREAD},
+                             "SPEED_CAP": effmod.SPEED_CAP,
+                             "DEFAULT_AREA_SPREAD": effmod.DEFAULT_AREA_SPREAD,
+                             "DEFAULT_AREA_FALLOFF": effmod.DEFAULT_AREA_FALLOFF,
+                             "POINT_TARGET_RADIUS": effmod.POINT_TARGET_RADIUS,
+                             "BULLET_DEFAULT_SPEED": effmod.BULLET_DEFAULT_SPEED,
+                             "MOVING_PROJECTILE_DEFAULT_SPEEDS":
+                                 effmod.MOVING_PROJECTILE_DEFAULT_SPEEDS,
+                             "INSTANT_PROJECTILES": sorted(effmod.INSTANT_PROJECTILES),
+                             "INSTANT_SCATTER_PROJECTILES":
+                                 sorted(effmod.INSTANT_SCATTER_PROJECTILES),
+                             "TRACKED_ZAP_PROJECTILES":
+                                 sorted(effmod.TRACKED_ZAP_PROJECTILES),
+                             "UNMODELED_TRAJECTORY_PROJECTILES":
+                                 sorted(effmod.UNMODELED_TRAJECTORY_PROJECTILES),
+                             "INACCURACY_PROJECTILES":
+                                 sorted(effmod.INACCURACY_PROJECTILES),
+                             "CENTER_TARGET_ACTOR_PROJECTILES":
+                                 sorted(effmod.CENTER_TARGET_ACTOR_PROJECTILES),
+                             "LINE_WIDTH_ACTOR_PROJECTILES":
+                                 sorted(effmod.LINE_WIDTH_ACTOR_PROJECTILES),
+                             "LINEAR_PULSE_ACTOR_IMPACTS":
+                                 sorted(effmod.LINEAR_PULSE_ACTOR_IMPACTS),
+                             "AREA_BEAM_DEFAULT_DURATION":
+                                 effmod.AREA_BEAM_DEFAULT_DURATION,
+                             "AREA_BEAM_DEFAULT_DAMAGE_INTERVAL":
+                                 effmod.AREA_BEAM_DEFAULT_DAMAGE_INTERVAL,
+                             "LASER_ZAP_DEFAULT_DURATION":
+                                 effmod.LASER_ZAP_DEFAULT_DURATION,
+                             "LASER_ZAP_DEFAULT_DAMAGE_DURATION":
+                                 effmod.LASER_ZAP_DEFAULT_DAMAGE_DURATION,
+                             "LASER_ZAP_DEFAULT_DAMAGE_INTERVAL":
+                                 effmod.LASER_ZAP_DEFAULT_DAMAGE_INTERVAL,
+                             "SPRITE_ATHENA_DEFAULT_EXPLOSION_INTERVAL":
+                                 effmod.SPRITE_ATHENA_DEFAULT_EXPLOSION_INTERVAL,
+                             "SPRITE_ATHENA_DEFAULT_PIERCE_TICKS":
+                                 effmod.SPRITE_ATHENA_DEFAULT_PIERCE_TICKS,
+                             "SPRITE_ATHENA_DEFAULT_STAY_TICKS":
+                                 effmod.SPRITE_ATHENA_DEFAULT_STAY_TICKS,
+                             "LIGHTNING_ZAP_DEFAULT_DURATION":
+                                 effmod.LIGHTNING_ZAP_DEFAULT_DURATION,
+                             "LIGHTNING_ZAP_DEFAULT_DAMAGE_DURATION":
+                                 effmod.LIGHTNING_ZAP_DEFAULT_DAMAGE_DURATION},
+        "weapon_timing": {
+            "ENGINE_DEFAULT_RELOAD_DELAY": formula.ENGINE_DEFAULT_RELOAD_DELAY,
+            "ENGINE_DEFAULT_BURST": formula.ENGINE_DEFAULT_BURST,
+            "ENGINE_DEFAULT_BURST_DELAY": formula.ENGINE_DEFAULT_BURST_DELAY,
+            "ENGINE_DEFAULT_RANGE": formula.ENGINE_DEFAULT_RANGE,
+        },
+        "percentage_damage": {
+            "FOLDED_SCALE_DENOMINATOR": pd.FOLDED_SCALE_DENOMINATOR,
+            "FOLDED_ROUNDING_BIAS": pd.FOLDED_ROUNDING_BIAS,
+            "FOLDED_DEFAULT_DENOMINATOR": pd.FOLDED_DEFAULT_DENOMINATOR,
+            "STANDALONE_DEFAULT_DENOMINATOR": pd.STANDALONE_DEFAULT_DENOMINATOR,
+            "DEFAULT_PERCENTAGE_SPREAD": pd.DEFAULT_PERCENTAGE_SPREAD,
+        },
         "target_model": {"A_BLOB": tm.A_BLOB, "A_SELF": tm.A_SELF,
                          "BLOB_UPTIME": tm.BLOB_UPTIME,
                          "DENSITY": dict(tm.DENSITY),
@@ -442,11 +497,12 @@ def derived_metrics(resolved, raw: dict) -> dict | None:
     * `effective_damage` / `footprint` / `reliability` / `sigma` — the area-integrated
       per-shot metric.
     * `k` / `effective_per_shot` / `effective_dps` — the W1 pricing coefficient.
-      ⚠ **`k` and `k_context` measure correctly but MUST NOT BE INVERTED** (E4): a
-      %-of-max-HP twin's damage does not scale with the flat Damage, so `k` carries
-      `flat_total` in a denominator and moves when Damage moves. Invert the AFFINE pair:
+      ⚠ **`k` and `k_context` measure correctly but MUST NOT BE INVERTED** (E4):
+      standalone percentage damage is additive, while folded percentage damage is
+      scalable but basis-point rounded. Invert the affine pair:
       `Damage_required = (target_per_shot - pct_absolute_context) / k_flat_context`,
-      and treat a target below `dps_floor` as unreachable rather than rounding it.
+      snap to the Damage grid, recompute folded rounding, and treat a target below
+      the standalone `dps_floor` as unreachable rather than rounding it.
 
     `effective_dps` is the WEAPON's number. `FirepowerMultiplier` is an actor
     property, so it is deliberately NOT baked in here — the caller applies it.
@@ -461,15 +517,16 @@ def derived_metrics(resolved, raw: dict) -> dict | None:
         out["sigma"] = round(ed[4], 2)
 
     damage_total = ed[1] if ed is not None else 0.0
-    res = we.analyse(resolved, damage_total or 1.0)
+    res = we.analyse(resolved, damage_total)
     if res is not None:
-        # Weighted over the FLAT warheads only, whose shares sum to 1.0 — the same
-        # quantity the family table's avgVersus column reports. Including the %-twins
-        # would drag it toward their armor profile and make the two disagree.
-        flat = [p for p in res["parts"] if p["kind"] != "pct"]
-        shares = sum(p["share"] for p in flat) or 1.0
-        out["k"] = round(res["k"], 4)
-        out["k_context"] = round(res["k_context"], 4)
+        # Weighted over flat mains and chips only. Folded percentage damage belongs
+        # in k_flat for scaling, but its separate armor profile must not leak into the
+        # family table's flat avgVersus column.
+        flat = [p for p in res["parts"] if p["kind"] in {"flat", "chip"}]
+        shares = sum(p["share"] for p in flat)
+        if res["k"] is not None:
+            out["k"] = round(res["k"], 4)
+            out["k_context"] = round(res["k_context"], 4)
         # E4 — the AFFINE pair. `k`/`k_context` measure correctly but must NEVER be
         # inverted (they carry the %-twin's absolute damage divided by the current flat
         # Damage, so they move when Damage moves). These two are the invertible form:
@@ -478,25 +535,38 @@ def derived_metrics(resolved, raw: dict) -> dict | None:
         out["k_flat_context"] = round(res["k_flat_context"], 4)
         out["pct_absolute"] = round(res["pct_absolute"], 2)
         out["pct_absolute_context"] = round(res["pct_absolute_context"], 2)
-        out["avg_versus"] = round(
-            sum(p["share"] * p["versus"] for p in flat) / shares, 4)
+        if abs(res["folded_rounding_context"]) >= 0.005:
+            out["folded_rounding"] = round(res["folded_rounding"], 2)
+            out["folded_rounding_context"] = round(res["folded_rounding_context"], 2)
+        if shares > 0:
+            out["avg_versus"] = round(
+                sum(p["share"] * p["versus"] for p in flat) / shares, 4)
         # W5 factors, each its own column so a price move can be traced to ONE of
         # them rather than to an opaque blend.
         for name, value in res["factors"].items():
             out[f"factor_{name}"] = round(value, 4)
         out["overkill"] = round(res["overkill"], 4)
-        out["effective_per_shot"] = round(res["k_context"] * damage_total, 2)
+        if abs(res["projectile_impact_multiplier"] - 1.0) > 1e-9:
+            out["projectile_impact_multiplier"] = round(
+                res["projectile_impact_multiplier"], 4)
+        if res["nominal_projectile_impacts"] is not None:
+            out["nominal_projectile_impacts"] = res["nominal_projectile_impacts"]
+        if res["model_limitations"]:
+            out["model_limitations"] = res["model_limitations"]
+            out["model_status"] = "provisional"
+        out["effective_per_shot"] = round(res["effective"], 2)
 
         burst = int(fnum(raw.get("burst")) or 1)
         reload_delay = fnum(raw.get("reloaddelay"))
         if reload_delay:
-            eff = formula.eff_reload(reload_delay, burst, fnum(raw.get("burstdelays")))
+            burst_delays = raw.get("burstdelays")
+            if isinstance(burst_delays, dict):
+                burst_delays = burst_delays.get("v")
+            eff = formula.eff_reload(reload_delay, burst, burst_delays)
             out["eff_reload"] = round(eff, 2)
-            out["effective_dps"] = round(
-                res["k_context"] * damage_total * burst / eff, 2)
-            # The DPS this weapon still delivers at `Damage: 0` — its %-twin floor. A
-            # pricing target below it is unreachable by lowering flat Damage, so it has to
-            # be visible in the ledger rather than discovered as a wrong prescription.
+            out["effective_dps"] = round(res["effective"] * burst / eff, 2)
+            # Only standalone percentage warheads survive at Damage: 0. Folded
+            # PercentageScale damage and its rounding residual explicitly do not.
             if res["pct_absolute_context"] > 0:
                 out["dps_floor"] = round(
                     res["pct_absolute_context"] * burst / eff, 2)
@@ -705,11 +775,11 @@ def weapon_entry(rs, wname: str) -> dict | None:
                     "spread": c.get("Spread"),
                     "falloff": c.get("Falloff"),
                 }
-                # The UNIT of a percentage twin's Damage (100 = whole percent,
-                # 1000 = per-mille). Recorded only when the node states it, so the
+                # The UNIT of a percentage twin's Damage (denominator 100 = whole
+                # percent, 10000 = basis points). Recorded only when the node states it, so the
                 # ledger diff stays empty for every weapon still on the default —
                 # without it `distribute_damage` would write whole percent into a
-                # per-mille node and silently deal a tenth of the damage.
+                # basis-point node and silently deal the wrong fraction of max health.
                 denominator = c.get("PercentageDenominator")
                 if denominator is not None:
                     record["percentage_denominator"] = denominator

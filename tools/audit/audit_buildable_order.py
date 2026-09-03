@@ -164,8 +164,13 @@ def main() -> int:
         for queue, actors in sorted(by_queue.items()):
             expected = sorted(actors, key=lambda x: (x[1], x[2], x[0]))
             expected_order = {a[0]: i for i, a in enumerate(expected)}
-            for name, tier, cost, bpo in actors:
-                for other_name, _, _, other_bpo in actors:
+            # ⚠ Iterate in a DETERMINISTIC order, not `actors`' own. `queues` is a set, so the
+            # build order of `actors` varies between runs — and because the inner loop `break`s on
+            # the first offender it finds, both the row order AND the "should be before X" text
+            # changed run to run. docs/audit/latest/ is TRACKED evidence (CLAUDE.md rule 8), so
+            # that churn made ~1400 lines diff on every regeneration and hid real changes.
+            for name, tier, cost, bpo in expected:
+                for other_name, _, _, other_bpo in expected:
                     if other_name == name:
                         continue
                     if expected_order[other_name] < expected_order[name] and other_bpo > bpo:

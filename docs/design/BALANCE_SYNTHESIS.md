@@ -162,10 +162,11 @@ balance. Where's the middle ground?
   into the baseline actor stats** so the baseline is WYSIWYG. Changing a baseline stat then reruns
   the whole class rebalance and updates every member.
 - **KEEP (the only allowed global multipliers):** the global **50% firepower reduction** (ironically
-  named *"global buff"*) **+ 150% damage multiplier**. Reason: our fixed **2000-damage-step + 1%
-  percentage** rule made total damage too high, so we cut 50% then added 150% back — but the 150%
-  applies **only to units + defenses**, so **regular buildings are exempt and stay much more
-  durable** than anything else. This asymmetry is intentional and stays.
+  named *"global buff"*) **+ 150% damage multiplier**. Their unit/defense-versus-building
+  asymmetry is now an explicit durability rule: the 150% applies **only to units + defenses**, so
+  **regular buildings are exempt and stay much more durable**. The historical 2000-damage-step +
+  1% actor-firepower tuning mechanism that originally motivated these values is retired; current
+  weapon tuning uses a 100-damage grid and no per-actor FP residual knob.
 - Everything else = resolved into baseline actors.
 
 ---
@@ -470,12 +471,12 @@ everywhere / air is useless" imbalance. **BUT the per-actor list needs a refined
 tool** (the keyword filter has false positives — legit snipers like `asianalliance_asiancommando`
 got flagged; and some `…AA`/`…SmallAA` weapons are the *intended* AA variant). 
 
-**Next step (scripted, not manual):** add `tools/audit/audit_aa_gating.py` to the suite that (a)
+**Next step (scripted, not manual):** add `tools/audit/audit_aa_gating.py` ⚠ (**proposed, never built** — no such script) to the suite that (a)
 resolves each armed actor's Cameo **class** (via the `class_anchor`/`balance_include` tags or
 template inheritance, not a name heuristic), (b) lists actors whose class is NOT in the §9
 air-allowed set yet carry an unconditional (non-upgrade) AA armament, and (c) emits to
 `docs/audit/latest/aa_gating.md` **via `run_all.sh`** (bash only — PowerShell `>` writes UTF-16,
-[[cameo-powershell-utf16-hazard]]). The vehicle/aircraft gate (support/scout/hi-tank; no
+). The vehicle/aircraft gate (support/scout/hi-tank; no
 flying-artillery AA) is the same check over `vehicles.yaml`/`aircraft.yaml`. This tool is the
 clean way to enforce §9 mod-wide; the scan above is only the scoping evidence that it's needed.
 

@@ -8,8 +8,9 @@ the generator output and weapons.yaml, and diffs them line-by-line. Any drift
 
 This is the acceptance test for the "regenerate is a no-op" invariant: once the
 generator matches the file, a regenerate+splice cannot silently revert the
-AreaDamage/universal-FF conversion. ^Warhead_Nuclear_Super is hand-tuned and is
-NOT emitted by the generator (HAND_TUNED), so it is skipped here too.
+AreaDamage/universal-FF conversion. ^Warhead_Nuclear_Super and ^Warhead_Sniper_Light
+are hand-tuned and are NOT emitted by the generator (HAND_TUNED), so they are
+skipped here too.
 
 Usage: python tools/balance/verify_generator_sync.py   (from the repo root)
 """
@@ -61,7 +62,8 @@ def main():
 
     drift = 0
     missing = sorted(set(gen) - set(fil))
-    extra = sorted(n for n in set(fil) - set(gen) if n != "^Warhead_Nuclear_Super")
+    HAND_TUNED = {"^Warhead_Nuclear_Super", "^Warhead_Sniper_Light"}
+    extra = sorted(n for n in set(fil) - set(gen) if n not in HAND_TUNED)
     if missing:
         drift += len(missing)
         print(f"[X] generator emits {len(missing)} template(s) ABSENT from weapons.yaml:")

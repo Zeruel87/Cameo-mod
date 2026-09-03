@@ -43,12 +43,13 @@ code. When in doubt, say "uniqueness damage" for A and "area-integrated damage" 
 ## 2. The formula
 
 ```
-effective = Σ over (main + every *_ExtraDamage)   base × ( reliability + SWARM_W × footprint )
+effective = projectile_impacts × Σ over (main + every *_ExtraDamage)
+            base × ( reliability + SWARM_W × footprint )
 
   footprint   = 2π ∫ (F(r)/100) · r dr / 1024²                     [cell²]
   reliability = E[ F(miss distance) ] over the engine's scatter     [0 … 1]
   σ           = Inaccuracy + LEAD × TARGET_SPEED × Range / min(Speed, SPEED_CAP)
-  clamps      : Spread ≥ 100 ; Falloff at least "100, 0"
+  area defaults: Spread 43 ; Falloff "100, 37, 14, 5, 0"
 ```
 
 Constants (all at the top of the tool, all tunable):
@@ -59,7 +60,9 @@ Constants (all at the top of the tool, all tunable):
 | `LEAD` | 0.20 | the engine leads/tracks, so real miss ≈ 20 % of raw displacement |
 | `TARGET_SPEED` | 100 | a typical dodging vehicle, WDist/tick |
 | `SPEED_CAP` | 10000 | ≥ this a projectile is "basically instant" (~10 cells/tick) |
-| `MIN_SPREAD` | 100 | nothing integrates below Spread 100 |
+| `DEFAULT_AREA_SPREAD` | 43 | runtime default when an area warhead omits Spread |
+| `DEFAULT_AREA_FALLOFF` | 100, 37, 14, 5, 0 | runtime default when an area warhead omits Falloff |
+| `POINT_TARGET_RADIUS` | 100 | synthetic radius used only for point-target reliability |
 
 ### 2.1 footprint — "how much ground does this cover"
 
@@ -82,9 +85,25 @@ target**. `σ` has two terms:
   range gives the target time to walk out of the blast. Dimensionally: (WDist/tick) ×
   WDist / (WDist/tick) = WDist. ✔
 
-**Instant hits** (`InstantHit`, `LaserZap`, `Railgun`, …, or any projectile with no
-`Speed`) always strike the aim point → `reliability = 1.0` at every range. This was a
-maintainer decision (2026-08-11) after global-range superweapons drifted absurdly.
+MiniYAML does not materialize C# defaults. An ordinary `Bullet` with no authored
+`Speed` therefore uses the runtime default 17 rather than becoming an instant hit.
+`ScaledBullet` likewise starts from 17/0 and applies its range-percentage speed and
+inaccuracy derivation before this calculation.
+
+Missiles use the runtime default speed of 384. An always-locking missile uses
+`LockOnInaccuracy` when it is non-negative, matching the value selected by the engine
+before the offset is calculated. A lock probability from 0 through 98 mixes tracked and
+untracked trajectories, so that row is explicitly provisional rather than assigned a
+guessed average.
+
+**Instant does not mean perfectly accurate.** `InstantHit`, the fake-bullet hitscan,
+and `Railgun` have no travel drift but retain authored `Inaccuracy`; their positional
+impacts still sample the warhead falloff. `TargetActorCenter` hitscans bypass scatter on
+an ordinary valid actor target, while a tracking `LaserZap` replaces its initially
+scattered point with the live target position. Support-power instant explosions use the
+authored center falloff rather than an automatic 1.0. Projectiles with no known scalar
+speed keep authored scatter, add no guessed travel drift, and are marked provisional
+when their trajectory is known to need a richer model.
 
 **The scatter distribution matches the engine, not a convenient approximation.**
 `Bullet.cs` does `target += WVec.FromPDF(rng, 2) * maxInaccuracy / 1024`, and
@@ -118,15 +137,16 @@ AoE feels over- or under-valued, and it has a physical meaning you can argue abo
 - raise it toward `0.5` if you want blob-clearing weapons to price higher;
 - lower it toward `0.1` to model spread-out armies where splash rarely multi-hits.
 
-## 3. What it deliberately does NOT include
+## 3. What the per-shot metric keeps separate
 
-| not included | why | consequence |
+| input | treatment | consequence |
 |---|---|---|
-| `ReloadDelay`, `Burst`, `BurstDelays` | the metric is **per shot**, not per second | **it is not DPS.** `DPS = effective × burst / eff_reload`. `fit_class.py` still builds DPS the old way |
+| `ReloadDelay`, `Burst`, `BurstDelays` | cadence is separate from the per-shot result | `effective_dps = effective_per_shot × burst / eff_reload`; every burst gap is counted and a missing delay uses the engine default of 5 |
 | `FirepowerMultiplier` | actor-level, and one weapon serves many actors | multiply at the actor, as `fit_class.py` already does |
 | `WeaponClass` (0.75/1.0/1.25/1.5) | **RETIRED from pricing entirely (W4)** | `formula.dps()` no longer takes it; K measures weapon quality directly |
-| `Versus` / armor profile | lives in the `^Warhead_*` template layer | folded into K as `avg_versus` (W1), weighted by the measured armor census |
-| `*_Percentage` twins | a different currency (% of max HP) | converted through `reference_hp` and folded into K |
+| `Versus` / armor profile | resolved from each live warhead | folded into K as `avg_versus`, weighted by the measured armor census |
+| percentage damage | discovered by runtime warhead type, not tag suffix | folded damage joins the scalable coefficient; standalone damage becomes an additive reference-HP floor |
+| projectile-internal impacts | `AreaBeam` and `LaserZap` apply every warhead at their damage intervals; `LightningZap` applies them during its damage-active ticks | count those applications before ordinary Burst/reload cadence |
 | `*FriendlyFire` twins | baked own-side splash, never a benefit | correctly ignored |
 
 ### 3.0 The context factors (W5, 2026-08-11) — no longer excluded
@@ -154,16 +174,75 @@ Folding it into K would turn that exact inversion into a fixed-point iteration, 
 reported **beside** K and never inside it. `tools/tests/test_weapon_context.py` pins
 this distinction; if you ever fold `overkill` in, the inversion must become iterative.
 
-⚠ **The `%`-of-max-HP twin was the same defect, and it WAS folded in** (E4, measured
-2026-08-17). Its damage is a share of the TARGET's max HP, so it does not scale with the
-weapon's flat `Damage` — yet `k` carried it as `share = ref_hp × pct_damage / 100 /
-flat_total`, putting `flat_total` in a denominator. **`k` and `k_context` therefore move
-when `Damage` moves and must never be inverted**: doubling `AnthraxCloudLarge`'s flat
-Damage drops its `k` by 37%, and inverting through it to reach 2× the DPS prescribes 40%
-of the Damage actually needed. `k` is still a correct MEASUREMENT — `effective_per_shot =
-Damage_total × k_context` is exact at the weapon's current Damage — it is not a shape
-coefficient. Invert `k_flat_context` (scale-invariant) against `pct_absolute_context`
-(additive). Guard: `tools/audit/audit_k_linearity.py`.
+⚠ **Percentage damage has two runtime shapes, and only one is additive** (E4, corrected
+2026-08-25). A standalone `AreaDamagePercentage` / `HealthPercentageDamage` warhead is a
+share of the TARGET's max HP independent of the weapon's flat `Damage`; it belongs in
+`pct_absolute_context` and creates a real floor. The `PercentageScale` fields folded into
+an `AreaDamage` warhead derive a second hit from that SAME warhead's `Damage`; they reach
+zero with it and therefore belong in `k_flat_context` when the current runtime invokes
+them. The engine rounds the folded hit to basis-point units using unchecked Int32
+arithmetic. The difference between the continuous coefficient and current runtime output
+is published separately as `folded_rounding_context` and recomputed after snapping a
+proposed Damage value. Overflow can make this residual large and non-linear; those rows
+are marked provisional. `k` and `k_context` remain measurement forms and must not be
+inverted. Guard: `tools/audit/audit_k_linearity.py`.
+
+The current direct-Actor `AreaDamageWarhead` path invokes its flat `InflictDamage` method
+but skips the folded `PercentageScale` second hit. The model mirrors that shipped behavior:
+direct hits keep flat and standalone percentage applications, but do not price a folded
+application that the game never executes. This is recorded as a separate runtime repair
+candidate, not silently assumed by the balance pipeline.
+
+`Ticks` and expanding `MinRadius`/`MaxRadius` are also evaluated one application at a
+time. Each tick gets its own integer damage share and current ring radius; applying the
+final falloff curve once to the whole attack overprices expanding shockwaves.
+
+Direct-Actor geometry means the warhead's `Spread`, `Falloff`, and `Ticks` are bypassed;
+for the current folded-percentage omission see above. It does not mean that a projectile
+only invokes the warhead once. `AreaBeam` calls the active warhead path repeatedly while
+the target remains on the beam. A stationary target exposed
+for the whole uninterrupted beam receives `Duration / DamageInterval` impacts on
+average. The exact count is the adjacent floor or ceiling when those fields do not
+divide evenly, because it depends on travel-tick phase; moving, blocking, stopping, and
+hit-shape width can shorten or extend the live exposure. A tracking beam refreshes its
+line from the selected actor before searching the line, so initial scatter and travel
+drift do not reduce that actor's ordinary direct hit. An untracked beam keeps the moving
+projectile reliability approximation. The active percentage-bearing beams divide their
+cadence evenly, making the published per-target full-exposure factors exact; their extra
+line catches remain provisional.
+
+`LightningZap` has a different repeated-hit rule. It invokes the warheads once per
+damage-active tick, exactly `max(min(DamageDuration, Duration), 0)` times. This multiplier
+is modeled directly, including zero-duration and clipped-duration cases.
+
+`LaserZap` and `LaserZapCA` impact at tick zero and then every `DamageInterval` while
+`ticks < DamageDuration` and the projectile remains alive. Their exact ordinary count is
+modeled, including non-positive intervals (which impact every eligible tick). A `HitAnim`
+can keep the projectile alive beyond `Duration`; if its authored damage window extends
+into that unknown animation lifetime, the row is marked provisional rather than guessing
+the sequence length.
+
+Likewise, `TargetActorCenter` hitscans use the direct path only for an ordinary valid,
+unblocked actor target. If the target becomes invalid, or a blockable shot meets a
+blocker, the engine converts the impact to a position and warhead area geometry applies.
+The pricing model describes the ordinary successful target hit.
+
+Multi-actor line projectiles are only partly modeled today. `AreaBeam`, line-damaging
+railguns, and shaped `LinearPulse` projectiles use the correct direct warhead invocation,
+and AreaBeam's per-target cadence is counted, but their beam/line/cone secondary catches
+and projectile-level falloff are not yet priced. Such derived rows carry a
+machine-readable `model_limitations` entry and `model_status: provisional` so consumers
+cannot mistake the number for complete projectile output.
+
+`SpriteAthenaLaser` is also explicit rather than silently wrong. It invokes its
+warheads repeatedly while moving, so derived rows report a max-range
+`nominal_projectile_impacts` count and carry cadence/geometry limitations. The total
+corridor count is not multiplied into one target's K; when the authored interval makes
+the count exactly zero, the damage multiplier is zero because no warhead is invoked.
+Ballistic `GravityBomb` and `NukeLaunch` rows likewise carry a motion limitation instead
+of pretending that an omitted scalar Speed makes them instant. Their projectile classes
+do not own scalar `Speed` or `Inaccuracy` fields, so foreign keys left by inheritance are
+ignored just as the runtime ignores them.
 
 `TARGETS_FLOOR` exists because AA units are separately class-anchored: a raw
 engagement share would price an AA-only weapon at 0.10 and penalise those units twice.
@@ -224,13 +303,20 @@ the raw ledger (W3, 2026-08-11). One row per armament, joined back to the raw le
 | `reliability` | area-integrated | P-weighted falloff at the impact point |
 | `sigma` | area-integrated | scatter σ in WDist |
 | `k` | **pricing (W1)** | the dimensionless coefficient — see below |
-| `k_context` | **pricing (W5)** | `k × targets × range × deadzone` — still Damage-independent |
+| `k_context` | **pricing (W5)** | measured `k × targets × range × deadzone`; not the invertible shape coefficient |
+| `k_flat` / `k_flat_context` | **pricing (E4)** | scalable flat + chip + folded-percentage coefficient, before/after context factors |
+| `pct_absolute` / `pct_absolute_context` | **pricing (E4)** | standalone percentage damage at the reference HP; the true additive floor |
+| `folded_rounding` / `folded_rounding_context` | diagnostic (E4) | current runtime residual from basis-point rounding or Int32 wrap; absent when exact |
 | `avg_versus` | pricing | prevalence-weighted mean Versus over the FLAT warheads |
 | `factor_targets` / `factor_range` / `factor_deadzone` | pricing (W5) | the three context factors, individually inspectable (§3.0) |
 | `overkill` | diagnostic (W5) | Damage-DEPENDENT, so reported beside K, never inside it |
-| `effective_per_shot` | pricing | `k_context × damage_total` |
-| `eff_reload` | pricing | `formula.eff_reload(reload, burst, burst_delays)` |
-| `effective_dps` | pricing | `k_context × damage_total × burst / eff_reload` |
+| `projectile_impact_multiplier` | cadence | internal warhead applications per weapon fire; present when not 1 (for example an `AreaBeam` or `LightningZap`) |
+| `nominal_projectile_impacts` | cadence diagnostic | max-range total corridor impacts for `SpriteAthenaLaser`; not folded into one-target K |
+| `model_limitations` / `model_status` | diagnostic | explicit unsupported projectile contributions, such as line geometry, ballistic trajectories, or probabilistic missile lock-on; affected rows are provisional |
+| `effective_per_shot` | pricing | `damage_total × k_flat_context + pct_absolute_context + folded_rounding_context` |
+| `eff_reload` | pricing | reload plus every burst gap; missing `BurstDelays` uses the engine default 5 |
+| `effective_dps` | pricing | `effective_per_shot × burst / eff_reload` |
+| `dps_floor` | pricing (E4) | standalone `pct_absolute_context × burst / eff_reload`; folded damage is excluded |
 
 Two metrics sit side by side on purpose — §1 warns they are not interchangeable, so
 they keep distinct names instead of being blended into one number.
@@ -238,17 +324,23 @@ they keep distinct names instead of being blended into one number.
 `effective_dps` is the **weapon's** number. `FirepowerMultiplier` is an actor property
 and is deliberately not baked in; the caller applies it.
 
+When `damage_total` is zero, a measured ratio such as `k` has no denominator and is
+therefore undefined. The derived row keeps the standalone percentage floor, but leaves
+the contaminated ratio fields empty instead of inventing a coefficient from division by
+one.
+
 `docs/balance/derived/_model.json` records the constants every one of these depends on
-(`SWARM_W`, `LEAD`, `TARGET_SPEED`, `MIN_SPREAD`, `A_BLOB`, `A_SELF`, `BLOB_UPTIME`,
-`DENSITY`, `ENGAGEMENT`, `reference_hp`, the armor census). A retune therefore shows up
+(`SWARM_W`, `LEAD`, `TARGET_SPEED`, the runtime area defaults,
+`POINT_TARGET_RADIUS`, `A_BLOB`, `A_SELF`, `BLOB_UPTIME`, `DENSITY`, `ENGAGEMENT`,
+`reference_hp`, the armor census). A retune therefore shows up
 as a short readable diff at the top of the tree, not only as thousands of shifted
 decimals underneath it.
 
-**Nothing reads any of it yet.** `fit_class.py`, `formula.py`, `apply_balance.py` and
-`propose_class_rebalance.py` all still price on `Σ main Damage × WeaponClass × burst /
-eff_reload × FirepowerMultiplier`; `build_workbook.py` never read the fields even when
-they sat in the ledger. This is a *diagnostic* tree, not an input — wiring K into
-pricing is **W11**, behind a flag and with a maintainer sign-off.
+`fit_class.py --use-k` reads `effective_dps`, and `--compare-k` produces a side-by-side
+raw-versus-effective report without writing an anchor candidate. The default fit,
+`apply_balance.py`, the proposal tools, and the workbook remain on the raw-stat path.
+K-adjusted pricing is therefore available for review, but is not the default pipeline
+until the maintainer signs off on the comparison.
 
 ### 5.1 The "RAW STATS ONLY" ledger law — restored
 
@@ -287,23 +379,23 @@ removed line one of the five field names.
 whole geometry collapses into one dimensionless number:
 
 ```
-effective_dps = Damage_total × (burst / eff_reload) × FirepowerMultiplier × K
-K = Σ_warheads  share_w × versus_w × ( reliability_w + secondary_w )
+effective_per_shot = Damage_total × k_flat_context
+                     + pct_absolute_context + folded_rounding_context
+effective_dps = effective_per_shot × burst / eff_reload × FirepowerMultiplier
 ```
 
-The FLAT part of K never depends on the Damage magnitude, so pricing inverts exactly and
+The scalable part of K never depends on the Damage magnitude, so pricing inverts exactly and
 the grid is never violated — `Damage_required = (target_per_shot − pct_absolute_context) /
 k_flat_context`, snapped to the grid. A workbook value of 2351.85 therefore never goes into
-yaml: the designer sets geometry for feel, K measures it, the pipeline solves for Damage.
+yaml: the designer sets geometry for feel, K measures it, the pipeline solves for Damage,
+then recomputes the folded basis-point rounding at the snapped value.
 
-⚠ The `%`-twin is **additive**, not multiplicative (see the E4 note above), so the model is
-affine: `effective_per_shot = Damage_total × k_flat_context + pct_absolute_context`. That
-also means **the twin is a DPS FLOOR** — a weapon still delivers `pct_absolute_context` at
-`Damage: 0`, so no reduction of flat Damage can price it lower. 1537 concrete weapons carry
-a twin and 52 have a floor at ≥25% of output (worst: `AnthraxCloudLarge`, 75%). A target
-below the floor is UNREACHABLE; `weapon_efficiency.required_damage()` returns `None` rather
-than a confidently wrong positive number, and `dps_floor` is published per weapon in the
-derived ledger. To price such a weapon lower, the TWIN has to shrink.
+⚠ A **standalone** percentage warhead is additive, so the model is affine and that term is
+a true DPS floor: a weapon still delivers `pct_absolute_context` at `Damage: 0`. A target
+below it is unreachable; `weapon_efficiency.required_damage()` returns `None` rather than a
+wrong positive number, and `dps_floor` is published per weapon in the derived ledger. Folded
+`PercentageScale` damage is different: it scales with the main Damage, lives in `k_flat`,
+and contributes no floor. `audit_k_linearity.py` publishes the live counts for both shapes.
 
 **Secondary targets (W1, done).** `secondary = ρ_class × BLOB_UPTIME × (min(footprint,
 A_BLOB) − A_SELF)`. `ρ` is per macro class (INF 2.0 / VEH 0.33 / BLD 0.25 / AIR 0.20 units
@@ -311,22 +403,17 @@ per cell²) so anti-infantry splash legitimately catches more bodies; `A_BLOB = 
 caps a superweapon-sized blast from claiming 50 kills; `A_SELF = 1 cell²` stops the aimed
 target being counted twice. `BLOB_UPTIME = 0.30` is the fraction of shots that actually
 land in a crowd — without it every splash family scored ~5× every single-target family.
+Completed foundations: the ledger publishes a full-cycle rate, armor prevalence weights
+the Versus profile, and `fit_class.py` can compare the raw and K-adjusted paths without
+changing the default.
 
-
-
-1. **Decide §3.1** (chips in or out). Blocking for any pricing use.
-2. **Make it a rate.** Add `effective_dps = effective × burst / eff_reload(...)` to the
-   ledger so it is comparable with the DPS the formula already uses. Per-shot and
-   per-second answer different questions and both are wanted.
-3. **Armor-weight it.** `effective_vs = Σ_armor w(armor) × Versus(armor) × effective`
-   with `w` a target-mix weight per class. This is the single biggest missing axis: it
-   would let the anchors compare an anti-infantry and an anti-tank weapon honestly.
-4. **Calibrate `SWARM_W` from the game**, not from taste: measure the mean number of
+1. **Decide §3.1** (chips in or out) before making K-adjusted pricing the default.
+2. **Calibrate `SWARM_W` from the game**, not from taste: measure the mean number of
    actors inside a 1-cell² disc in real engagements and set the density from that.
-5. **Model `TARGET_SPEED` per victim class** rather than one global 100 — a Harvester and
+3. **Model `TARGET_SPEED` per victim class** rather than one global 100 — a Harvester and
    a scout bike do not dodge alike; the drift term is linear in it.
-6. **Then** wire it into `fit_class.py` behind a flag, fit one class both ways, and
-   compare the resulting prices before switching the pipeline over.
+4. **Review the existing `--compare-k` reports class by class**, then switch the default
+   only after the resulting prices receive maintainer and multiplayer sign-off.
 
 ## 7. Reading the numbers
 

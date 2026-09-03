@@ -20,10 +20,10 @@ import pathlib
 MOD = pathlib.Path(__file__).resolve().parents[2] / "mods" / "cameo"
 
 # Central weapon files (the per-theme monoliths that survive migration).
-CENTRAL = ["weapons/weapons.yaml", "weapons/redalert2.yaml",
-           "weapons/redalert2mod.yaml", "weapons/tiberiansun.yaml",
-           "weapons/tiberiandawn.yaml", "weapons/warcraft2.yaml",
-           "weapons/missiles.yaml"]
+CENTRAL = ["weapons/weapons.yaml", "weapons/tiberiandawn.yaml",
+           "weapons/redalert2mod.yaml", "weapons/d2k.yaml",
+           "weapons/starcraft.yaml", "weapons/warcraft2.yaml",
+           "weapons/tiberiansun.yaml", "weapons/outpost2.yaml"]
 
 # Legacy full-stack templates retired by the 3-way split.
 OLD_FAMILIES = {

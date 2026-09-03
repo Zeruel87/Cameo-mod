@@ -1,3 +1,8 @@
 # Minimum range audit
 
-All weapon minimum ranges are consistent with Range/5.
+
+## Weapons with MinRange != round(Range/5) to nearest step of 5
+
+| Weapon | Range | MinRange | Expected MinRange |
+|---|---|---|---|
+| DebrisMissile | 7168 | 512 | 1435 |

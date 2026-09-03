@@ -35,7 +35,9 @@ SOURCE_ROOTS = [
     ROOT / "engine" / "OpenRA.Game",
     ROOT / "engine" / "OpenRA.Mods.Common",
     ROOT / "engine" / "OpenRA.Mods.AS",
-    ROOT / "engine" / "OpenRA.Mods.CA",
+    # CA is vendored at the repo root, not in engine/ — this read engine/OpenRA.Mods.CA,
+    # which does not exist, so 185 CA source files were silently missing from the scan.
+    ROOT / "OpenRA.Mods.CA",
     ROOT / "engine" / "OpenRA.Mods.Cnc",
     ROOT / "engine" / "OpenRA.Mods.D2k",
     ROOT / "OpenRA.Mods.Cameo",

@@ -354,6 +354,24 @@ futuretech_guardiantank:
 	SpeedMultiplier@Laser:
 		RequiresCondition: deployed
 		Modifier: 75
+	# DEPLOYING ADDS THE STEEL DEFENCE ARMOUR ON TOP OF THE UNIT'S OWN CLASS ARMOUR.
+	# Maintainer 2026-08-22: *"activate the steel armor type on deploy but keep the underlying
+	# regular armor intact and then create the average between them"* — a deployed unit is a
+	# static defence, and Steel is what defences wear.
+	#
+	# Both traits stay ENABLED together, which is the whole point:
+	# `AreaDamageWarhead.MultiArmorCombination` defaults to `Average`, so the class row and the
+	# Steel row meet in the middle instead of one replacing the other. Gating the class armour
+	# on `undeployed` — what the defence rig, siege tank and matador used to do — makes Steel a
+	# REPLACEMENT and throws the unit's own class away.
+	#
+	# ⚠ Averaging only happens for warheads routing through AreaDamage (62.9% of the tree).
+	# The legacy inline-Versus SpreadDamage nodes still MULTIPLY, and under multiplication the
+	# class row cancels out entirely (the ratio becomes just Steel/100) — so those weapons see a
+	# flatter effect than designed until item A5 retires them onto ^Warhead_* templates.
+	Armor@deployed:
+		Type: Steel
+		RequiresCondition: !shielded && deployed
 
 futuretech_riptideacv:
 	Inherits: ^Tank
@@ -458,7 +476,7 @@ futuretech_phalanxwip:
 	ChangesHealth@SelfHealing:
 		Step: 18
 	Turreted:
-		TurnSpeed: 12
+		TurnSpeed: 19
 		Offset: -150,0,5
 	Armament:
 		Weapon: RA2RTruckRocket
@@ -513,7 +531,7 @@ futuretech_beehivedronecarrier:
 	Mobile:
 		Locomotor: tracked
 		Speed: 45
-		TurnSpeed: 12
+		TurnSpeed: 9
 	Health:
 		HP: 125000
 	Repairable:
@@ -521,7 +539,7 @@ futuretech_beehivedronecarrier:
 	ChangesHealth@SelfHealing:
 		Step: 52
 	Turreted:
-		TurnSpeed: 12
+		TurnSpeed: 9
 		Offset: 0,0,0
 	BodyOrientation:
 		QuantizedFacings: 32
@@ -781,7 +799,7 @@ futuretech_athenacannon:
 	Mobile:
 		Locomotor: tracked
 		Speed: 60
-		TurnSpeed: 12
+		TurnSpeed: 24
 	Health:
 		HP: 62500
 	Repairable:
@@ -849,7 +867,7 @@ futuretech_energizer:
 		Step: 20
 	Mobile:
 		Speed: 50
-		TurnSpeed: 20
+		TurnSpeed: 10
 	Armament@Agressive:
 		Name: primary
 		Weapon: Future_CoilerAgressive

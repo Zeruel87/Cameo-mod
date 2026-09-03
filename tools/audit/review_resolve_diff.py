@@ -53,8 +53,10 @@ def summarize(node):
             dmg = cval(c, "Damage")
             d["warheads"].append((c.key, c.value, dmg))
             low = c.key.lower()
+            relationships = (cval(c, "ValidRelationships") or "").strip()
+            ally_only = "Ally" in relationships and "Enemy" not in relationships
             if (c.value in ("SpreadDamage", "AreaDamage")
-                    and "friendlyfire" not in low and "percentage" not in low and dmg):
+                    and not ally_only and "percentage" not in low and dmg):
                 try:
                     d["dmgs"].append(int(dmg))
                 except ValueError:

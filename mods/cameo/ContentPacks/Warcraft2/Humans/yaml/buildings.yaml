@@ -71,11 +71,9 @@ wc2_humans_townhall:
 		Requirements:
 			wc2_humans_keep: wc2_humans_keep && !wc2_humans_castle
 	WithSpriteBody@keep:
-		RequiresCondition: !wc2_humans_keep && !wc2_humans_castle
-	WithSpriteBody@keep:
+		RequiresCondition: wc2_humans_keep && !wc2_humans_castle
 		Sequence: wc2_humans_keep
 		Name: keep
-		RequiresCondition: wc2_humans_keep && !wc2_humans_castle
 	WithSpriteBody@castle:
 		Sequence: wc2_humans_castle
 		Name: castle
@@ -85,7 +83,7 @@ wc2_humans_townhall:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 		BuildSounds: wc2_constrct.aud
-		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil ##########
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune,ZergSoil
 	DamageMultiplier@keep:
 		Modifier: 75
 		RequiresCondition: wc2_humans_townhall && !wc2_humans_castle
@@ -98,7 +96,7 @@ wc2_humans_townhall:
 	ProvidesPrerequisite@supplylimit:
 		Prerequisite: supplylimit
 		RequiresCondition: lowpower
-	RallyPoint: ##########
+	RallyPoint:
 		Path: 0,2
 	Exit@1:
 		SpawnOffset: -1024,1024,0 #-1323,1280,0
@@ -108,11 +106,10 @@ wc2_humans_townhall:
 		RequiresCondition: !jammed
 	ExternalCondition@JAMMED:
 		Condition: jammed
-	GivesBuildableArea: ##########
+	GivesBuildableArea:
 		AreaTypes: building, cityi, hatchery
 	WithMakeAnimation:
 	-WithDeathAnimation:
-	Refinery:
 	DockHost:
 		Type: Unload
 		DockAngle: 0
@@ -450,6 +447,7 @@ wc2_humans_sunwell:
 	Building:
 		Footprint: XX XX
 		Dimensions: 2,2
+		BuildSounds: wc2_constrct.aud
 	Selectable:
 		Bounds: 2048, 2048, 0, -512
 	SpawnActorsOnSell:
@@ -462,8 +460,6 @@ wc2_humans_sunwell:
 		Type: CenterPosition
 		Weapon: wc2buildingexplode
 		EmptyWeapon: wc2buildingexplode
-	Building:
-		BuildSounds: wc2_constrct.aud
 	GrantTimedCondition:
 		Condition: wc2cond_playsound
 		Duration: 50
@@ -488,9 +484,11 @@ wc2_humans_magetower:
 	Tooltip:
 		Name: Mage Tower
 	Buildable:
-		Prerequisites: ~wc2_humans_townhall, wc2_humans_castle
+		Prerequisites: ~wc2_humans_townhall, wc2_humans_castle, !wc2_humans_magetower_swlimit
 		Queue: Building, RABuilding
 		Description: Teaches men in arcane magicks.\nTrains Mages.\nUnlocks Blizzard superweapon.
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: wc2_humans_magetower_swlimit
 	SpawnActorsOnSell:
 		ActorTypes: wc2_humans_footman
 	Voiced:
@@ -498,6 +496,7 @@ wc2_humans_magetower:
 	# Support powers
 	# Slow
 	GrantExternalConditionPower@SLOW:
+		AllowMultiple: true
 		OrderName: wc2_slow
 		#PauseOnCondition: lowpower
 		Icon: slow
@@ -522,6 +521,7 @@ wc2_humans_magetower:
 			1: __x__ _xxx_ xxxxx _xxx_ __x__
 	# Invisibility
 	GrantExternalConditionPower@INVISIBILITY:
+		AllowMultiple: true
 		OrderName: wc2_invisibility
 		#PauseOnCondition: lowpower
 		Icon: invisibility
@@ -546,6 +546,7 @@ wc2_humans_magetower:
 			1: __x__ _xxx_ xxxxx _xxx_ __x__
 	# Blizzard super weapon
 	IonCannonPower@BLIZZARD:
+		AllowMultiple: true
 		OrderName: wc2_blizzard
 		PauseOnCondition: lowpower
 		Prerequisites:

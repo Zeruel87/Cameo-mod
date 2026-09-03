@@ -108,6 +108,15 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Random number of up to this value units is added to squad valuee when creating an attack squad.")]
 		public readonly int SquadValueRandomBonus = 0;
 
+		[Desc("Maximum random bonus added to squad value at the start of the match.")]
+		public readonly int SquadValueMaxEarlyBonus = 0;
+
+		[Desc("Minimum random bonus added to squad value at the end of the ramp.")]
+		public readonly int SquadValueMinLateBonus = 0;
+
+		[Desc("Maximum random bonus added to squad value at the end of the ramp.")]
+		public readonly int SquadValueMaxLateBonus = 0;
+
 		[Desc("Percent change for ground squads to attack a random priority target rather than the closest enemy.")]
 		public readonly int HighValueTargetPriority = 0;
 
@@ -141,6 +150,16 @@ namespace OpenRA.Mods.CA.Traits
 
 			if (DangerScanRadius <= 0)
 				throw new YamlException("DangerScanRadius must be greater than zero.");
+
+			if (SquadValueMaxEarlyBonus > SquadValueMaxLateBonus)
+				throw new YamlException("SquadValueMaxEarlyBonus cannot be greater than SquadValueMaxLateBonus.");
+
+			if (SquadValueMinLateBonus > SquadValueMaxLateBonus)
+				throw new YamlException("SquadValueMinLateBonus cannot be greater than SquadValueMaxLateBonus.");
+
+			if (SquadValueRandomBonus != 0 &&
+				(SquadValueMaxEarlyBonus != 0 || SquadValueMinLateBonus != 0 || SquadValueMaxLateBonus != 0))
+				throw new YamlException("SquadValueRandomBonus cannot be combined with squad value ramp bonuses.");
 		}
 
 		public override object Create(ActorInitializer init) { return new SquadManagerBotModuleCA(init.Self, this); }
@@ -148,6 +167,8 @@ namespace OpenRA.Mods.CA.Traits
 
 	public class SquadManagerBotModuleCA : ConditionalTrait<SquadManagerBotModuleCAInfo>, IBotEnabled, IBotTick, IBotRespondToAttack, IBotPositionsUpdated, IGameSaveTraitData, INotifyActorDisposing
 	{
+		const float SquadValueRampDurationTicks = 20f * 60f * 25f; // Assumes the default 25 ticks per second.
+
 		public CPos GetRandomBaseCenter()
 		{
 			var randomConstructionYard = constructionYardBuildings.Actors.RandomOrDefault(World.LocalRandom);
@@ -187,6 +208,7 @@ namespace OpenRA.Mods.CA.Traits
 
 		int desiredAttackForceValue;
 		int desiredAttackForceSize;
+		readonly Dictionary<string, int> cachedUnitValues = new();
 
 		BotLimits botLimits;
 		int initialAttackDelay;
@@ -498,9 +520,13 @@ namespace OpenRA.Mods.CA.Traits
 			{
 				foreach (var a in unitsHangingAroundTheBase)
 				{
-					var valued = a.Actor.Info.TraitInfoOrDefault<ValuedInfo>();
-					if (valued != null)
-						idleUnitsValue += valued.Cost;
+					if (!cachedUnitValues.TryGetValue(a.Actor.Info.Name, out var unitCost))
+					{
+						unitCost = a.Actor.Info.TraitInfoOrDefault<ValuedInfo>()?.Cost ?? 0;
+						cachedUnitValues[a.Actor.Info.Name] = unitCost;
+					}
+
+					idleUnitsValue += unitCost;
 				}
 			}
 
@@ -524,7 +550,26 @@ namespace OpenRA.Mods.CA.Traits
 			desiredAttackForceValue = 0;
 
 			if (Info.SquadValue > 0)
-				desiredAttackForceValue = Info.SquadValue + World.LocalRandom.Next(Info.SquadValueRandomBonus);
+			{
+				if (Info.SquadValueMaxEarlyBonus == 0 &&
+					Info.SquadValueMinLateBonus == 0 &&
+					Info.SquadValueMaxLateBonus == 0)
+					desiredAttackForceValue = Info.SquadValue + World.LocalRandom.Next(Info.SquadValueRandomBonus);
+				else
+				{
+					desiredAttackForceValue = Info.SquadValue;
+					// Add a random bonus between a min and max that scale over the first 20 minutes.
+					// Min scales from 0 to SquadValueMinLateBonus; max scales from SquadValueMaxEarlyBonus to SquadValueMaxLateBonus.
+					var t = Math.Min(1f, World.WorldTick / SquadValueRampDurationTicks);
+					var minBonus = (int)(Info.SquadValueMinLateBonus * t);
+					var maxBonus = (int)(Info.SquadValueMaxEarlyBonus + (Info.SquadValueMaxLateBonus - Info.SquadValueMaxEarlyBonus) * t);
+
+					if (maxBonus <= minBonus)
+						desiredAttackForceValue += minBonus;
+					else
+						desiredAttackForceValue += World.LocalRandom.Next(minBonus, maxBonus);
+				}
+			}
 		}
 
 		void ProtectOwn(Actor attacker)

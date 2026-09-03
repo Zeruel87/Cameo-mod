@@ -56,7 +56,7 @@ FLAT_VALUES = {"Light": 45, "Medium": 55, "Heavy": 65}   # main SpreadDamage vs 
 FLAT_PCT = {"Light": 5, "Medium": 8, "Heavy": 10}        # its modest % chip
 # PCT / "%-equalizer" (Magic): tiny flat + a LARGE uniform % of max HP (ignores armor) = giant-killer.
 MAGIC_MAIN = {"Light": 22, "Medium": 27, "Heavy": 32, "Super": 38}   # Magic flat = 1/2 Sonic flat (uniform)
-MAGIC_PCT  = {"Light": 25, "Medium": 40, "Heavy": 50, "Super": 65}   # Magic %-of-maxHP Versus = 5x Sonic %-chip (Damage stays 1-per-2000 grid)
+MAGIC_PCT  = {"Light": 25, "Medium": 40, "Heavy": 50, "Super": 65}   # Magic percentage profile; magnitude follows main Damage through PercentageScale
 
 
 def block_seq(group, direction):
@@ -139,7 +139,7 @@ WEAPONS = {
     "Tesla":       ([("INF", "VEH"), "BLD", "AIR"],     "heavy", False, L3 + ["Super"]),  # 4-tier (L/M/H/Super); was TeslaCharged at Super
     # Nuclear = BUILDING-first heavy (levels structures+heavy units+air, weak vs inf) — distinct
     # from Chemical/Tesla (inf+veh). Super tier (step 3, WC 1.5). Maintainer 2026-08-02.
-    "Nuclear":     (["BLD", "VEH", "AIR", "INF"],       "heavy", True,  ["Super"]),
+    "Nuclear":     (["BLD", "VEH", "AIR", "INF"],       "heavy", True,  L3 + ["Super"]),
 }
 
 
@@ -265,15 +265,19 @@ PHYSICS_RANK = {
     # blended energy — part field-coupling, part thermal
     "Waveforce": 0.70, "Plasma": 0.68,
     # exotic / field-adjacent
-    "Sonic": 0.60, "Magic": 0.58, "Inferno": 0.57, "Nuclear": 0.56,
+    "Sonic": 0.60, "Magic": 0.58, "Inferno": 0.57, "Nuclear": 0.56, "MissileQuantum": 0.57, "MissileTesla": 0.66,
     # Inferno = Flame×Prism heatray: thermo-led but still some field-coupling.
     # thermal / chemical — a shield stops heat and reagents well; little field coupling
-    "FireCannon": 0.52, "FireMissile": 0.52, "Flame": 0.50, "ChemCannon": 0.50,
-    "ChemMissile": 0.50, "Chemical": 0.48, "Toxic": 0.46, "Thermobaric": 0.44,
+    "CannonFire": 0.52, "MissileFire": 0.52, "Flame": 0.50, "CannonChem": 0.50, "CannonNuke": 0.45, "MissileNuke": 0.44,
+    "MissileChem": 0.50, "Chemical": 0.48, "Toxic": 0.46, "Thermobaric": 0.44, "MissileThermobaric": 0.39,
     # kinetic / explosive — momentum is exactly what a shield is designed for
     "Flak": 0.38, "Concussion": 0.36, "Demolition": 0.35, "Bullet": 0.34,
     "MissileAA": 0.34, "CannonHE": 0.33, "MissileHE": 0.33, "CannonAP": 0.32,
     "MissileAP": 0.32, "Sniper": 0.30,
+    # Bullet blends (maintainer 2026-08-22): the mean of their parents, same as every other
+    # blend in this table. A bullet couples to a shield poorly (0.34), so each blend lands just
+    # above Bullet by however much its payload couples.
+    "BulletFire": 0.42, "BulletThermobaric": 0.39, "BulletHE": 0.35, "BulletTesla": 0.67,
     # physical contact — the canonical thing a shield stops
     "Arrow": 0.24, "Melee": 0.22,
 }
@@ -295,7 +299,7 @@ SHIELD_CEIL_TARGET = 400
 # to set the band.
 #
 # So the term is DAMPED to the one job §5b actually left it: separating families whose
-# physics rank is EQUAL (`ChemCannon`/`ChemMissile` both 0.50, `CannonHE`/`MissileHE` both
+# physics rank is EQUAL (`CannonChem`/`MissileChem` both 0.50, `CannonHE`/`MissileHE` both
 # 0.33). The exponent is derived, not chosen — it is exactly the largest damping under which
 # the SMALLEST genuine rank gap still wins:
 #
@@ -503,7 +507,7 @@ PLATING_DEPTH = 0.50
 # measured as BYTE-IDENTICAL. So every secondary share below names a SECOND real defeat
 # mechanism; none is a fudge to break a tie, because a fabricated difference is a lie about the
 # model (`b182fd228`). `tools/tests/test_plating_composition.py` pins the uniqueness, and
-# `docs/design/PLATING_COMPOSITION_REFINEMENT.md` argues every line one at a time.
+# `docs/design/ARMOR_LAYERS.md` argues every line one at a time.
 COMPOSITION = {
     # --- KINETIC: a solid mass arrives at speed. Defeated by hard, brittle ceramic that
     # shatters or erodes the penetrator before it reaches the backing plate — which is what
@@ -794,6 +798,7 @@ def distinct_ints(rows):
 
 
 BAND_LOW = 2.0                      # DESIGN.md §12.0 rule 5 — the target band's flat end
+BAND_MARGIN = 1.03                  # headroom so integer rounding cannot fall back out of band
 DERIVED_ARMORS = ("Heroic", "Airborne")
 # Rows that live on a Versus node but are not armor classes, so they never enter a
 # profile statistic: the shield LAYER, the HAZMAT gate, Tesla's REFLECTOR.
@@ -847,9 +852,9 @@ NON_ARMOR_ROWS = ("Shield",) + tuple(PLATING_CYCLE)
 # lever is the CEILING, not this function — under mean-100 a peak of 2x the average is
 # arithmetic, not policy.
 #
-# ⚠ **Scope: the MAIN warhead only.** The `_Percentage` twin encodes its magnitude IN
-# its Versus rows (`Damage` is a fixed 1-per-2000 grid), so normalising it would multiply
-# every %-effect by ~5x. Rebasing the twins is W18's atomic job.
+# ⚠ **Scope: the MAIN warhead only.** `PercentageVersus` encodes the percentage half's
+# armor profile while `PercentageScale` derives its magnitude from main Damage, so
+# normalising those rows would multiply every percentage effect by ~5x.
 MEAN_TARGET = 100.0
 
 
@@ -973,6 +978,35 @@ def _to_mean(vals, target):
     return [v * target / m for v in vals] if m > 0 else list(vals)
 
 
+def fit_band_floor(rows):
+    """Expand a too-FLAT profile up to `BAND_LOW` about its geometric mean (DESIGN 12.0 rule 5).
+
+    The same floor already existed inside `finish_blend`, but that is the BLEND-only path and it
+    runs BEFORE `class_tilt` — the last thing that reshapes a profile. Two families slipped
+    through: `CannonAP` (a standard WEAPONS family, so `finish_blend` never ran on it) sat at
+    1.81x, and `Cryo` (a blend) was floored to exactly 2.00 and then nudged back to 1.97x by the
+    tilt. Applying it to EVERY family AFTER the tilt closes both holes.
+
+    Order-preserving (a power law about the geometric mean is monotonic), and safe to run before
+    `mean_normalise` because that rescale is multiplicative, so the ratio set here survives.
+    A profile that is flat BY DESIGN (`Sonic`, `Magic`) has hi/lo == 1.0 and is left alone.
+    """
+    live = [v for a, v in rows
+            if a not in NON_ARMOR_ROWS and a not in DERIVED_ARMORS and v > 0]
+    if len(live) < 2:
+        return rows
+    hi, lo = max(live), min(live)
+    if not (1.0 < hi / lo < BAND_LOW):
+        return rows
+    centre = statistics.geometric_mean(live)
+    # ⚠ Aim slightly ABOVE the floor. `mean_normalise` rounds to ints afterwards, and landing
+    # exactly on 2.00 let rounding drop Prism_Heavy to 1.98x and Laser_Light to 1.99x — still
+    # out of band, from a fix that had just put them in it.
+    alpha = math.log(BAND_LOW * BAND_MARGIN) / math.log(hi / lo)
+    return [(a, v if a in NON_ARMOR_ROWS else centre * (max(v, 1.0) / centre) ** alpha)
+            for a, v in rows]
+
+
 def mean_normalise(rows, target=MEAN_TARGET):
     """Rescale a MAIN profile so the MEAN of its armor rows is `target` (see above).
 
@@ -1029,12 +1063,52 @@ def blend_direction(name, values):
     heavy, light = votes.count("heavy"), votes.count("light")
     if heavy != light:
         return "heavy" if heavy > light else "light"
-    lean = 0.0                       # sum of (heaviest rung - lightest rung) per ladder
+    # A TIE is settled by the measured lean -- but ACROSS THE WHOLE FAMILY, not per level.
+    #
+    # ⚠ Deciding it per level made `Cryo` (= Laser heavy + Prism light) lay itself out BOTH
+    # ways: its averaged profile leaned heavy at Light (None 68 / Superheavy 83) and Medium
+    # (68 / 88), then light at Heavy by a ONE-POINT margin (83 / 82). A single point flipped
+    # the entire level's ladder, so one family read anti-heavy at two levels and anti-light at
+    # the third -- the only family in the tree to do so. A family has ONE identity; the level
+    # decides how big it is, never which way it points.
+    cached = _BLEND_DIRECTION.get(name)
+    if cached is not None:
+        return cached
+    levels = BLEND_FAMILIES.get(name, ([], None, []))[2] or []
+    leans = []
+    for lvl in levels or [None]:
+        rows = values if lvl is None else _blend_rows_for(name, parents, lvl)
+        if not rows:
+            continue
+        leans.append(_lean_of(rows))
+    if not leans:
+        leans = [_lean_of(values)]
+    direction = "heavy" if sum(leans) > 0 else "light"
+    if levels:
+        _BLEND_DIRECTION[name] = direction        # one identity per family, computed once
+    return direction
+
+
+_BLEND_DIRECTION: dict[str, str] = {}
+
+
+def _lean_of(values):
+    """Sum of (heaviest rung - lightest rung) over every ladder. >0 means anti-heavy."""
+    lean = 0.0
     for ladder in LADDERS.values():
         rungs = [a for a in ladder if a in values and a not in DERIVED_ARMORS]
         if len(rungs) >= 2:
             lean += values[rungs[-1]] - values[rungs[0]]
-    return "heavy" if lean > 0 else "light"
+    return lean
+
+
+def _blend_rows_for(name, parents, level):
+    """The averaged parent profile at one level, for the family-wide lean vote."""
+    try:
+        main, _pct = blend_versus(parents)(level)
+    except Exception:
+        return None
+    return dict(main)
 
 
 def relay_ladders(values, direction):
@@ -1075,12 +1149,12 @@ def finish_blend(rows, name=None):
        `Heroic = Plate x Scout / peak` **of the profile it belongs to** — and the
        average of the parents' Heroic is not the product of the blend's own Plate
        and Scout (`avg(ab/p) != avg(a)avg(b)/avg(p)`). Measured: 5 of 21 blend
-       levels were off, `FireCannon_Light` by 12 points. Same failure as the
+       levels were off, `CannonFire_Light` by 12 points. Same failure as the
        `/100` divisor bug — a derived value has to be derived LAST, from the
        finished profile.
     2. **It flattens.** Averaging profiles that disagree cancels the
        disagreement — the identical effect that makes a per-family aggregate mush
-       (DESIGN §12.0 rule 5). `ChemMissile_Heavy` came out at 1.8x, under the
+       (DESIGN §12.0 rule 5). `MissileChem_Heavy` came out at 1.8x, under the
        band. It is re-sharpened back to the band floor with the same POWER LAW the
        reference side uses (`v' = G * (v/G) ** alpha` about the geometric mean),
        never by clamping: clamping would move two cells and change the shape,
@@ -1241,12 +1315,11 @@ def family(name, order16, vt, levels, *, mode=None, damage=2000,
     Every main warhead is AreaDamage with baked UNIVERSAL friendly fire
     (ValidRelationships: Ally, Neutral, Enemy + FriendlyFireDamage/Spread 50) —
     the old separate _FriendlyFire twin is retired. See cameo-expanding-damage-trait
-    and docs/design/AREADAMAGE_WARHEAD_REBALANCE.md."""
+    and docs/design/AREADAMAGE_WARHEAD.md."""
     blocks = []
     allr = sorted(CANON16)
     for level in levels:
         li = list(LEVELS).index(level)
-        pct_damage = damage // 2000              # 1% chip per 2000 main flat damage
         if versus_override is not None:          # blend family (e.g. Plasma = avg of Flame + Chemical)
             main, pct = versus_override(level)
             main = finish_blend(main, name)      # ordering law, re-derive Heroic/Airborne, un-flatten
@@ -1259,7 +1332,7 @@ def family(name, order16, vt, levels, *, mode=None, damage=2000,
         elif mode == "pct":                      # Magic: 1/2 Sonic flat + 5x Sonic %-of-maxHP (giant-killer)
             mv = MAGIC_MAIN[level]
             main = [("Shield", mv)] + [(a, mv) for a in allr]
-            pv = MAGIC_PCT[level]                 # %-magnitude in VERSUS (scales with main); Damage stays 1
+            pv = MAGIC_PCT[level]                 # percentage profile; magnitude follows main Damage
             pct = [("Shield", pv)] + [(a, pv) for a in allr]
             hz = None
         else:                                    # standard sloped profile
@@ -1273,18 +1346,20 @@ def family(name, order16, vt, levels, *, mode=None, damage=2000,
             # the even ramp and split them off from the parent they inherit.
             main = (reference_main(profile_family or name, order16, level)
                     or table(order16, step, 100, mfloor, 100 + mfloor))
-            # ⚠ The %-twin stays the 1-step ladder, deliberately. Its window is only
+            # PercentageVersus stays the 1-step ladder, deliberately. Its window is only
             # 16 wide (`ptop` down to `ptop-15`), so 16 armors that must all differ
-            # can ONLY be the even ramp — there is no room left for a shape. Giving
-            # it one needs W18's x5 rebase to open the window, and W18 must land as
-            # one change (denominator + values) or every %-twin deals a fifth or
-            # five times. Until then the twin carries the ORDER, not the shape.
+            # can only be the even ramp — there is no room left for a second shape.
+            # PercentageScale supplies the magnitude; this table carries the armor order.
             pct = table(order16, 1, ptop, pfloor, ptop + pfloor)
             hz = overlays
         # W25 S2 — the class tilt, BEFORE the mean is pinned: the tilt moves output between
         # armors and would otherwise leave the mean off 100. Order-preserving by
         # construction (see class_tilt), so the two-level ordering law is untouched.
         main = class_tilt(main, level)
+        # DESIGN 12.0 rule 5 — the 2x band floor, applied to EVERY family and AFTER the tilt.
+        # See fit_band_floor: the blend-only copy inside finish_blend missed CannonAP entirely
+        # and let the tilt undo it for Cryo.
+        main = fit_band_floor(main)
         # W25 S1 — pin the profile's MEAN to 100 before anything reads it. Must run on
         # EVERY branch and BEFORE `shield_for`: Shield's structural term is
         # `sqrt((200+floor)(100+top))`, so it has to see the final ladder, not the
@@ -1314,8 +1389,14 @@ def family(name, order16, vt, levels, *, mode=None, damage=2000,
         main = [r for r in main if r[0] not in PLATING_CYCLE]
         main = plating_rows(name) + main
         tag = f"{name}_{level}"
-        # Energy families are thinned to near single-target; the chip/utility pays for the low spread.
-        main_spread = ENERGY_THIN_SPREAD_LEVEL.get((name, level), ENERGY_THIN_SPREAD.get(name, at(spreads, li)))
+        # ⚠ `spreads` (the PHYSICS_SHAPES value) WINS. ENERGY_THIN_SPREAD is the older
+        # "thin the energy mains to near single-target" rule and it is now only a FALLBACK for a
+        # family with no physics shape. It used to win outright, which pinned Tesla, Laser,
+        # Railgun, Prism, Inferno and Cryo to a flat Spread 100 at every level and made Laser
+        # collide with Railgun and with Bullet — the physics table was computed and then thrown
+        # away for exactly the six families whose identity is "a thin beam".
+        main_spread = at(spreads, li) if spreads else ENERGY_THIN_SPREAD_LEVEL.get(
+            (name, level), ENERGY_THIN_SPREAD.get(name, 400))
         invalid = FAMILY_INVALID_TARGETS.get(name)
         inv_weapon = [f"\tInvalidTargets: {invalid}"] if invalid else []
         inv_warhead = [f"\t\tInvalidTargets: {invalid}"] if invalid else []
@@ -1338,38 +1419,40 @@ def family(name, order16, vt, levels, *, mode=None, damage=2000,
              emit_versus(main),
              f"\t\tDamageTypes: {damage_types}"]
         if name in FAMILY_PHYSICAL_STATE:  # heat/cold/corrosion meter, scaled by main damage
-            psn, pss = FAMILY_PHYSICAL_STATE[name]
-            main_wh += [f"\t\tPhysicalStateName: {psn}", f"\t\tPhysicalStateScale: {pss}"]
+            ps = FAMILY_PHYSICAL_STATE[name]
+            if isinstance(ps, dict):
+                main_wh.append("\t\tPhysicalStates:")
+                main_wh += [f"\t\t\t{k}: {v}" for k, v in _physical_states_for_level(ps, level).items()]
+            else:
+                psn, pss = ps
+                main_wh += [f"\t\tPhysicalStateName: {psn}", f"\t\tPhysicalStateScale: {pss}"]
         if physical_states:  # multi-state blend (e.g. Plasma: Temperature 50 + Corrosion 50)
+            resolved = _physical_states_for_level(physical_states, level)
             main_wh.append("\t\tPhysicalStates:")
-            main_wh += [f"\t\t\t{k}: {v}" for k, v in physical_states.items()]
+            main_wh += [f"\t\t\t{k}: {v}" for k, v in resolved.items()]
         integ = FAMILY_INTEGRITY_SCALE.get(name)  # ELECTRONICS (EMP) auto-drain — NOT a shield
         if integ:
             main_wh.append(f"\t\tIntegrityScale: {integ}")
-        percentage_state = FAMILY_PHYSICAL_STATE.get(name) if name in {"Flame", "Chemical", "Inferno", "Cryo"} else None
-        # All %-twins use the Cameo AreaDamagePercentage warhead (unified 2026-08-10): same expanding-ring
-        # spatial pass + baked-FF plumbing as the AreaDamage main, and it can carry PhysicalStateScale.
-        # Behaviour-preserving drop-in for HealthPercentageDamage (no ValidRelationships: Ally => no FF).
-        # AreaDamagePercentage extends AreaDamageWarhead, so it inherits IntegrityScale. For integrity-
-        # affecting families, the %-twin MUST also drain integrity (otherwise HP dies before integrity
-        # depletes). The %-twin also carries DamageTypes: Tesla for the passive INotifyDamage drain.
-        percentage_type = "AreaDamagePercentage"
-        pct_wh = [f"\tWarhead@{tag}_Percentage: {percentage_type}",
-             f"\t\tValidTargets: {vt}",
-             *inv_warhead,
-             f"\t\tSpread: {main_spread // 2}",
-             f"\t\tDamage: {pct_damage}",
-             f"\t\tFalloff: {at(falloffs, li)}",
-             f"\t\tVersus:",
-             emit_versus(pct)]
-        if integ:
-            pct_wh.append(f"\t\tDamageTypes: Tesla")
-            pct_wh.append(f"\t\tIntegrityScale: {integ}")
-        pct_wh.append(f"\t\tUpdatesUnitStatistics: false")
-        if percentage_state:
-            psn, pss = percentage_state
-            pct_wh += [f"\t\tPhysicalStateName: {psn}", f"\t\tPhysicalStateScale: {pss}"]
-        parts = main_wh + pct_wh
+        # ⭐ THE FOLD (UNIFIED_AREADAMAGE_WARHEAD.md). The percentage half is no longer a second
+        # warhead — it is four fields on the main one, so an inline weapon carries ONE Damage
+        # number and the percentage follows from it instead of being hand-typed alongside and
+        # drifting. Measured before the change: 2287 of 2469 twins were already exactly
+        # `main // 100`, and the 182 that were not drifted by clean fractions (x0.5, x0.25,
+        # x0.2, x2) — i.e. deliberate per-weapon dials, which is what PercentageScale is.
+        #
+        # ⚠ NO x5 on these Versus values. W18 multiplied the standalone twin's band by 5 to pair
+        # with `Damage = flat // 100`; the fold derives its own basis points as
+        # `Damage x PercentageScale / 200000`, which already carries that factor. (D/100)x5V is
+        # (D/20)xV, so PercentageVersus stays in the natural band.
+        #
+        # IntegrityScale, PhysicalStateName/Scale and PhysicalStates already sit on the main
+        # warhead and AreaDamageWarhead.InflictPercentage applies them to the percentage hit
+        # too, so the twin's copies of all three are simply no longer needed.
+        main_wh += [f"		PercentageScale: 10000",
+                    f"		PercentageSpread: 50",
+                    f"		PercentageVersus:",
+                    emit_versus(pct)]
+        parts = main_wh
         if name in CHIPS:  # paid-for ExtraDamage chip (energy families only)
             parts.append(emit_chip(tag, name, damage, vt, level=level))
         if name in FAMILY_CONDITION:  # on-hit status mark (Sonic -> SonicDebuff)
@@ -1424,6 +1507,141 @@ FAMILY_FALLOFFS = {
 }
 
 
+# ---------------------------------------------------------------------------------------------
+# SPREAD_FALLOFF_PLAN.md §8 — the per-type PHYSICS shape (maintainer ruling 2026-08-08, built
+# 2026-08-22). Every damage TYPE gets its own curve derived from how that weapon really spreads
+# energy; the LEVEL scales the radius but never the shape.
+#
+# ⛔ WHY THIS EXISTS. Before this table 103 of 117 families shared just THREE curves, one per
+# level, so the shape encoded the weapon's LEVEL and not its TYPE: 23 different Heavy families —
+# Melee, Arrow, PhotonCannon, Sonic, Flame, CannonNuke — all sat at Spread 800 / radius 4000 /
+# `100,50,25,10,5,0`. A melee strike had the same four-cell blast as a nuclear tank shell.
+#
+# radius = the MEDIUM radius in WDist (1024 = one cell); Spread = radius / (len(Falloff) - 1),
+# because AreaDamageWarhead.cs:143 lays the falloff points at 0, S, 2S ... (N-1)S.
+PHYSICS_SHAPES = {
+    # -- kinetic point impact ---------------------------------------------------------------
+    # ⚠ These are NOT all "100, 0 at whatever radius". Maintainer 2026-08-22: *"every family
+    # needs to be unique as fuck"*. A pinpoint weapon still has a real lateral energy spread and
+    # the ladder below is that spread, smallest first — a coherent beam deposits on a spot, a
+    # shaped-charge jet is a narrow cone, a broadhead is physically wide, a proximity fuze never
+    # touches the target at all. No two families share BOTH a radius and a curve.
+    "Sniper":     (40,   "100, 0"),          # one aimed round, tighter than a burst
+    "Laser":      (48,   "100, 0"),          # coherent light: no lateral spread whatsoever
+    "MissileAP":  (64,   "100, 0"),          # shaped-charge jet — narrow, deep, all energy forward
+    "Railgun":    (72,   "100, 0"),          # hypervelocity slug + plasma sheath on impact
+    "Arrow":      (88,   "100, 0"),          # a broadhead is physically wide but slow
+    "Magic":      (96,   "100, 0"),          # non-physical %HP, no blast at all
+    "Bullet":     (100,  "100, 0"),          # the reference point impact
+    "CannonAP":   (120,  "100, 0"),          # big penetrator: spall sprays behind the plate
+    "Melee":      (0,    "100, 0"),          # adjacent contact only
+    # -- pinpoint WITH a real secondary spread: these earn their own curve -------------------
+    "Prism":      (150,  "100, 40, 0"),      # beam plus a refraction scatter halo
+    "Tesla":      (140,  "100, 55, 0"),      # the arc jumps to nearby conductors
+    "MissileAA":  (180,  "100, 70, 30, 0"),  # proximity fuze: never hits, detonates NEAR
+    # -- overpressure: convex, ~1/r near-field ----------------------------------------------
+    "CannonHE":   (900,  "100, 50, 20, 0"),
+    "MissileHE":  (450,  "100, 45, 15, 0"),
+    # Airburst fragmentation (maintainer: *"flak could get a slightly different shape that makes
+    # it more like explosion or shrapnel"*). A shell bursting in the air throws fragments outward,
+    # so it is NOT the plain convex blast of an HE shell: a sharp drop off the detonation point
+    # and then a long thin fragment tail. Smaller and sharper-cored than Concussion, which is the
+    # same physics at ground level and twice the size.
+    "Flak":       (550,  "100, 58, 32, 16, 6, 0"),
+    "Demolition": (1400, "100, 45, 18, 6, 0"),        # concentrated charge, ~1/r^3, punchy centre
+    # -- fragmentation: frags fly OUTWARD, so the field is broad with a long thin tail -------
+    "Concussion": (2100, "100, 72, 50, 32, 18, 8, 0"),
+    # -- sustained zone: fire covers an area evenly and stops at a hard edge -----------------
+    "Flame":      (1200, "100, 90, 78, 60, 0"),
+    "Chemical":   (1100, "100, 88, 72, 50, 0"),
+    # -- wave: sound pressure falls ~1/r, near-linear ----------------------------------------
+    "Sonic":      (1600, "100, 75, 50, 25, 0"),
+    # An electrical STORM is many discrete arcs over an area: broad reach, but each arc is a
+    # point, so the field thins quickly rather than holding a plateau like fire.
+    "Storm":      (1600, "100, 70, 45, 25, 10, 0"),
+    # Nuclear's own template is HAND_TUNED (11 expanding rings) and the generator skips it, but
+    # it must appear here or the blends that cross it — CannonNuke, MissileNuke — silently drop
+    # their nuclear half and come out the size of a plain HE shell.
+    "Nuclear":    (10000, "100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0"),
+}
+
+
+# Radius by level, relative to the family's MEDIUM radius. Preserves the ratios of the old
+# global (400, 600, 800, 1000) tuple — 0.67 / 1 / 1.33 / 1.67 — so the level ladder is unchanged
+# and only the per-family SHAPE and SCALE move. Trace is the sub-light lingering tier.
+LEVEL_RADIUS_SCALE = {"Light": 2 / 3, "Medium": 1.0, "Heavy": 4 / 3, "Super": 5 / 3, "Trace": 0.5}
+
+
+def _curve(text):
+    return [int(x) for x in text.split(",")]
+
+
+def _resample(curve, n):
+    """`curve` re-expressed on `n` evenly spaced points over the SAME normalised radius.
+
+    Blending a 2-point `100, 0` with a 5-point fire curve needs both on one grid; resampling
+    the pinpoint curve to 5 points yields `100, 75, 50, 25, 0`, i.e. the same straight line
+    it always described. Linear interpolation, matching GetDamageFalloff's own int2.Lerp.
+    """
+    if n == len(curve):
+        return list(curve)
+    out = []
+    for i in range(n):
+        pos = i * (len(curve) - 1) / (n - 1)
+        lo = int(pos)
+        hi = min(lo + 1, len(curve) - 1)
+        out.append(round(curve[lo] + (curve[hi] - curve[lo]) * (pos - lo)))
+    return out
+
+
+def blend_shape(parents):
+    """A crossover family's shape, built from the shapes of the families it crosses.
+
+    Maintainer 2026-08-22: *"if one warhead is like a crossover of different other warheads they
+    should take the original shapes into account and then create a crossover shape as well"*.
+
+    - RADIUS is the GEOMETRIC mean, because the notation is `Bullet x Flame` and scales
+      multiply: an incendiary bullet leaves a small fire (sqrt(100 x 1200) = 346), not half a
+      flamethrower (arithmetic would say 650). Over parents of similar size the two agree.
+    - The CURVE is the arithmetic mean per point, on the finest parent's grid — percentages
+      average, and keeping the most detailed grid means no parent's shape detail is lost.
+    """
+    shapes = [PHYSICS_SHAPES[p] for p in parents if p in PHYSICS_SHAPES]
+    if not shapes:
+        return None
+    radius = 1.0
+    for r, _ in shapes:
+        radius *= max(r, 1)
+    radius = round(radius ** (1 / len(shapes)))
+    n = max(len(_curve(c)) for _, c in shapes)
+    grids = [_resample(_curve(c), n) for _, c in shapes]
+    avg = [round(sum(g[i] for g in grids) / len(grids)) for i in range(n)]
+    avg[0], avg[-1] = 100, 0                     # every curve starts full and reaches zero
+    return radius, ", ".join(str(v) for v in avg)
+
+
+def shape_for(name):
+    """(spreads, falloffs) tuples for one family, indexed by level position in LEVELS.
+
+    Returns None when the family is governed by an explicit FAMILY_SPREADS/FAMILY_FALLOFFS
+    override (Toxic's spawned gas field) or is HAND_TUNED (Nuclear's 11 expanding rings).
+    """
+    shape = PHYSICS_SHAPES.get(name)
+    if shape is None:
+        parents = BLEND_FAMILIES.get(name, ([],))[0]
+        shape = blend_shape(parents) if parents else None
+    if shape is None:
+        return None
+    radius, falloff = shape
+    steps = len(_curve(falloff)) - 1
+    spreads, falloffs = [], []
+    for level in LEVELS:
+        r = round(radius * LEVEL_RADIUS_SCALE[level])
+        spreads.append(max(r // steps, 1) if steps else 1)
+        falloffs.append(falloff)
+    return tuple(spreads), tuple(falloffs)
+
+
 def at(seq, index):
     """`seq[index]`, tolerating a tuple shorter than the level count.
 
@@ -1464,12 +1682,35 @@ def _m(fraction: float) -> int:
     return int(round(METER_FULL * fraction))
 
 
+def _physical_states_for_level(states, level):
+    """Resolve a physical-states spec to the current level.
+
+    Supports level-scaled dicts like {"Corrosion": {"Light": 20, "Medium": 33, "Heavy": 50}}
+    alongside plain constants like {"Corrosion": 50}.  Missing levels fall back to Heavy.
+    """
+    if not states:
+        return {}
+    resolved = {}
+    for k, v in states.items():
+        if isinstance(v, dict):
+            resolved[k] = v.get(level, v.get("Heavy", v.get("Light", 0)))
+        else:
+            resolved[k] = v
+    return resolved
+
+
 FAMILY_PHYSICAL_STATE = {
     "Flame":    ("Temperature", _m(1.00)),   # heat -> overheat/pop
     "Laser":    ("Temperature", _m(0.75)),   # laser overheats (main only, chip excluded)
-    "Chemical": ("Corrosion", _m(1.00)),     # acid -> corrosion meter
-    "Cryo":     ("Temperature", _m(-1.00)),  # prism beam that freezes
-    "Inferno":  ("Temperature", _m(1.00)),   # prism beam that burns
+    "Chemical": {"Corrosion": _m(1.00)},     # acid -> corrosion meter (mapping form)
+    # ⭐ SUPPORT WEAPONS, maintainer 2026-08-22: Cryo and Inferno fill the meter TWICE as fast as
+    # Flame (Scale 200 vs 100), so they freeze/ignite after 25% of lethal damage instead of 50%.
+    # The intent is "mostly apply the physical effect without dealing too much direct damage" —
+    # most of their output is INDIRECT. That is only expressible now that `speed_weight` prices
+    # fill RATE (the old delivery-average metric charged Scale 400 the same as Scale 67), so the
+    # doubled rate is paid for and the pipeline can take the direct damage back out.
+    "Cryo":     ("Temperature", _m(-2.00)),  # prism beam that freezes — 2x Flame
+    "Inferno":  ("Temperature", _m(2.00)),   # prism beam that burns — 2x Flame
     # Plasma (Temperature + Corrosion) needs two states on one warhead -> handled at family build.
 }
 
@@ -1486,6 +1727,9 @@ FAMILY_INTEGRITY_SCALE = {
     "Tesla": 100,                          # pure Tesla = full drain (the EMP-disable specialist)
     "Storm": 50,                          # Tesla+Magic -> 1/2
     "Quantum": 33,                        # Railgun+Laser+Tesla -> 1/3
+    "MissileTesla": 50,                   # Tesla + MissileAP -> 1/2
+    "BulletTesla": 50,                    # Tesla + Bullet -> 1/2
+    "MissileQuantum": 17,                 # (Railgun+Laser+Tesla) + 3xMissileAP -> 1/6 Tesla
     # ⚠ `Waveforce: 20` DELETED 2026-08-16 (maintainer order) — it could never fire.
     #
     # The drain rate is `(1 if the damage carries the `Tesla` type else 0) + IntegrityScale/100`
@@ -1510,9 +1754,21 @@ FAMILY_INTEGRITY_SCALE = {
 # values already account for the passive drain stacking. `ElectricityDeath` = tesla death animation.
 # Families NOT listed use the default (Prone75Percent, TriggerProne, ExplosionDeath).
 FAMILY_DAMAGE_TYPES = {
-    "Tesla":   "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
-    "Quantum": "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
-    "Inferno": "Prone75Percent, TriggerProne, FireDeath, Incendiary",
+    "Tesla":      "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
+    "Quantum":    "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
+    "Inferno":    "Prone75Percent, TriggerProne, FireDeath, Incendiary",
+    "CannonNuke":    "Prone75Percent, TriggerProne, FireDeath, Incendiary",
+    "MissileNuke":    "Prone75Percent, TriggerProne, FireDeath, Incendiary",
+    "CannonFire":    "Prone75Percent, TriggerProne, FireDeath, Incendiary",
+    "MissileFire":    "Prone75Percent, TriggerProne, FireDeath, Incendiary",
+    "MissileTesla":   "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
+    "BulletFire":     "Prone75Percent, TriggerProne, FireDeath, Incendiary",
+    "BulletThermobaric": "Prone75Percent, TriggerProne, FireDeath, Incendiary",
+    "BulletTesla":    "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
+    "MissileQuantum": "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
+    "MissileThermobaric": "Prone75Percent, TriggerProne, FireDeath, Incendiary",
+    "CannonChem": "Prone75Percent, TriggerProne, TiberiumDeath",
+    "MissileChem":"Prone75Percent, TriggerProne, TiberiumDeath",
     # Storm is handled at its own call site (Prone100Percent + Tesla).
 }
 
@@ -1584,10 +1840,10 @@ BLEND_FAMILIES = {
     # Element + delivery blends (maintainer 2026-08-10): per-armor AVERAGE of the element family and the
     # delivery family + the element's meter / 2 parents (150). FIRE = anti-light -> pairs with HE delivery
     # (better vs infantry/buildings); CHEMICAL = anti-armor -> pairs with AP delivery (better vs armor).
-    "FireCannon":  (["Flame", "CannonHE"],    {"Temperature": _m(0.50)}, L3),
-    "FireMissile": (["Flame", "MissileHE"],   {"Temperature": _m(0.50)}, L3),
-    "ChemCannon":  (["Chemical", "CannonAP"], {"Corrosion": _m(0.50)}, L3),
-    "ChemMissile": (["Chemical", "MissileAP"],{"Corrosion": _m(0.50)}, L3),
+    "CannonFire":  (["Flame", "CannonHE"],    {"Temperature": _m(0.50)}, L3),
+    "MissileFire": (["Flame", "MissileHE"],   {"Temperature": _m(0.50)}, L3),
+    "CannonChem":  (["Chemical", "CannonAP"], {"Corrosion": {"Light": 20, "Medium": 33, "Heavy": 50}}, L3),
+    "MissileChem": (["Chemical", "MissileAP"],{"Corrosion": {"Light": 20, "Medium": 33, "Heavy": 50}}, L3),
     # Waveforce = a resonant energy weapon: "a bit like a mix of the plasma warhead and the
     # quantum warheads" (maintainer 2026-08-16), adopted for the Japanese energy rifles —
     # which inherit `^WaveforceBulletWarhead` and were never railguns — and for the Protoss
@@ -1602,6 +1858,23 @@ BLEND_FAMILIES = {
     #
     # Meters follow the documented per-parent-average rule, same as Quantum's comment above:
     # Temperature = (Flame 300 + Laser 225) / 5 parents = 105; Corrosion = (Chemical 300) / 5 = 60.
+    # BULLET blends (maintainer 2026-08-22): *"BulletFire = Bullet x Flame, BulletHE = Bullet x
+    # Demolition, BulletThermobaric = Bullet x Thermobaric, BulletTesla = Bullet x Tesla"*. These
+    # are the small-arms payload rounds — incendiary, explosive and electrified ammunition — and
+    # they give the ~17 Incendiary* weapons and Volkov's electrified rounds a real family instead
+    # of a plain Bullet warhead. The blend machinery does the rest: the Versus profile averages the
+    # parents, and blend_shape() crosses their SHAPES, so an incendiary bullet gets a small fire
+    # (geometric mean of Bullet 100 and Flame 1200 = 346) rather than half a flamethrower.
+    #
+    # Thermobaric is itself a blend, so it is expanded to its own primitives and Bullet is repeated
+    # three times to keep the split 50/50 — the same repetition-as-weight convention PhotonCannon
+    # uses. Meters follow the per-parent-average rule: Flame's 300 over 2 parents = 150 for
+    # BulletFire, over 6 parents = 50 for BulletThermobaric.
+    "BulletFire":  (["Bullet", "Flame"],      {"Temperature": _m(0.50)}, L3),
+    "BulletHE":    (["Bullet", "Demolition"], None, L3),
+    "BulletThermobaric": (["Bullet", "Bullet", "Bullet", "Demolition", "Concussion", "Flame"],
+                          {"Temperature": _m(1 / 6)}, L3),
+    "BulletTesla": (["Bullet", "Tesla"],      None, L3),
     "Waveforce": (["Flame", "Chemical", "Railgun", "Laser", "Tesla"],
                   {"Temperature": _m(0.35), "Corrosion": _m(0.20)}, L3),
     # PhotonCannon = the maintainer's 3-way — Waveforce 25% / CannonHE 25% / MissileAA 50% — and
@@ -1636,7 +1909,83 @@ BLEND_FAMILIES = {
     # Cryo = a Laser×Prism coldray: coherent energy delivery that freezes. Mostly energy-field
     # coupling, some thermal load, and a small kinetic share from cryogenic embrittlement.
     # Air-capable (Laser parent), thin spread, negative Temperature scaling.
+    # Nuclear delivery blends (A1b): the nuclear family is Super-only, so expanding it to L/M/H
+    # in WEAPONS makes it available as a blend parent while keeping it hand-tuned (not emitted).
+    "CannonNuke":  (["Nuclear", "CannonHE"], {}, L3),
+    "MissileNuke":  (["Nuclear", "MissileAP"], {}, L3),
+    # Tesla/Quantum thermobaric missile blends (A1b). Expanded to primitives for the generator.
+    "MissileTesla":   (["Tesla", "MissileAP"], {}, L3),
+    "MissileQuantum": (["Railgun", "Laser", "Tesla"] + ["MissileAP"] * 3, {"Temperature": _m(0.125)}, L3),
+    "MissileThermobaric": (["Demolition", "Concussion", "Flame"] + ["MissileHE"] * 3, {"Temperature": _m(0.17)}, L3),
     "Cryo": (["Laser", "Prism"], {}, L3),
+    # ⭐ CRYO DELIVERY BLENDS (maintainer 2026-08-22): *"we do need to create those new like
+    # CannonCryo, BulletCryo, MissileCryo"* plus *"a cryo explosion which is demolition x cryo
+    # for the heavy bombs that carry the cryo load"*. They exist because a cryo weapon whose
+    # OTHER guns do not freeze is diluted at the ACTOR level (audit_meter_dilution) — the fix is
+    # to give every gun on a cryo unit a cryo family, not to hand-crank one weapon's Scale.
+    #
+    # ⭐ THE DELIVERY HALF IS AP AND HE TOGETHER, by ruling: *"use an in between blend of HE and
+    # AP so it fits with both versions"*. Cryo does not fit the documented FIRE→HE / CHEM→AP
+    # split — freezing both embrittles armour AND controls soft targets — and the weapons prove
+    # it: `SheridanCannon` is already `CannonAP_Light + CannonHE_Medium`, so either pure choice
+    # would have changed its role. Averaging both cannon halves keeps it.
+    #
+    # Cryo is itself a blend, so it is expanded to its primitives (Laser + Prism) and the
+    # delivery side is listed twice — the repetition-as-weight convention PhotonCannon and
+    # BulletThermobaric already use. 2 Cryo primitives : 2 delivery = exactly 50/50, with the
+    # delivery half split 25/25 between AP and HE.
+    #
+    # Meter: the per-parent-average rule over the TOP-LEVEL halves, which is how MissileQuantum
+    # (Quantum 0.25 → 0.125) and MissileThermobaric (Thermobaric 1/3 → 0.17) are derived —
+    # Cryo's -2.00 over 2 halves = -1.00. NOT over the four primitives: Laser's meter is
+    # POSITIVE (it heats), so deriving from the expanded list would flip the sign of a cryo
+    # weapon. The explicit dict is what keeps that from happening.
+    "BulletCryo":     (["Laser", "Prism", "Bullet", "Bullet"],
+                       {"Temperature": _m(-1.00)}, L3),
+    "CannonCryo":     (["Laser", "Prism", "CannonAP", "CannonHE"],
+                       {"Temperature": _m(-1.00)}, L3),
+    "MissileCryo":    (["Laser", "Prism", "MissileAP", "MissileHE"],
+                       {"Temperature": _m(-1.00)}, L3),
+    # FlakCryo — the AA cell of the cryo grid (maintainer 2026-08-23: the cryo upgrade is
+    # GLOBAL for RA1 Allies, "this is the same for bullets, cannons, missiles, bombs, etc").
+    # Three Allies weapons resolve to Flak_Medium and had no cryo cell to swap to:
+    # APCGunAllies, APCGunAllies_AA and zsu_23. Flak is doubled to hold the 50/50 against
+    # the two-primitive Cryo half, exactly as BulletCryo doubles Bullet.
+    #
+    # ⚠ Sniper deliberately gets NO cell. It is not a generator family (it is a hand-made
+    # ^Warhead_Sniper_Light, which is why verify_generator_sync accepts it as an exception),
+    # so a SniperCryo would mean promoting Sniper to a family first and re-ranking every
+    # ladder. DESIGN §11c's reuse test settles it: a cryo sniper round IS a cryo bullet, so
+    # Colt45 maps to BulletCryo. Reuse beats a new family that only exists for the label.
+    "FlakCryo":       (["Laser", "Prism", "Flak", "Flak"],
+                       {"Temperature": _m(-1.00)}, L3),
+    # ⭐ CryoBlast = THE CRYO SIBLING OF THERMOBARIC (maintainer 2026-08-22): *"change the
+    # DemolitionCryo into a new thing: CryoBlast (which is like a cryo explosion) and it
+    # combines Demolition x Concussion x Cryo … It should increase the spread a bit and also
+    # make the versus values feel more like a detonation"*. Confirmed on all three counts.
+    #
+    # Same construction as `Thermobaric` (Demolition + Concussion + Flame) with Cryo in the
+    # element slot, so the two are exact siblings: the fire blast and the cold blast. EQUAL
+    # THIRDS, and Cryo expands to two primitives, so Demolition and Concussion are each listed
+    # twice to hold the 1/3 : 1/3 : 1/3 split.
+    #
+    # ⭐ CONCUSSION IS WHAT MAKES IT AN EXPLOSION, and it is the biggest single lever in the
+    # whole shape table: radius 2100 (the widest of any family) on a SEVEN-point curve
+    # (100, 72, 50, 32, 18, 8, 0), i.e. a shockwave that still does half damage at half its
+    # radius. Measured against the DemolitionCryo it replaces:
+    #
+    #     radius   345 -> 630 (+83%)      Spread 86 -> 105
+    #     falloff  100,59,32,14,0  ->  100,72,50,32,19,9,0
+    #     Versus   spread 1.90x -> 1.84x — FLATTER, which is the detonation feel: it gives up
+    #              anti-soft-target discrimination (Wood/None/Steel -3..-8) and gains the
+    #              vehicle rows (Scout/Light/Medium/Heroic +6..+8). A shaped charge picks a
+    #              target; a blast does not.
+    #
+    # Carries the cryo weapons whose delivery IS the explosion — `RapierBombsCryo` (a pure
+    # `Demolition_Heavy` today), and the `155mmBastionCryo` / `155mmCryo` artillery shells.
+    # Meter: Cryo's -200 over 3 top-level halves = -67, the Thermobaric derivation exactly.
+    "CryoBlast": (["Laser", "Prism", "Demolition", "Demolition", "Concussion", "Concussion"],
+                  {"Temperature": _m(-2 / 3)}, L3),
 }
 # Fixed emission order for a blend (it has no single light/heavy direction).
 BLEND_ARMOR_ORDER = ["None", "Flak", "Plate", "Heroic", "Scout", "Light", "Medium", "Heavy",
@@ -1678,7 +2027,7 @@ def blend_versus(parents):
 # Storm = Ixian Tesla + Magic superweapon blend (maintainer 2026-08-10). The SUPER tier is the 3-way
 # AVERAGE of Tesla_Super main + its full ExtraDamage chip + the new Magic — for BOTH the flat main and
 # the %-twin. Every lower tier is that SUPER profile SCALED by WC[level]/WC[Super]. The %-magnitude lives
-# in Versus (Damage stays the 1-per-2000 grid, so it scales with the weapon).
+# in PercentageVersus while PercentageScale derives magnitude from the main Damage.
 STORM_LEVELS = ["Light", "Medium", "Heavy", "Super"]
 
 
@@ -1738,8 +2087,9 @@ def _generate():
         if nm in HAND_TUNED:  # hand-authored; never regenerate (would revert)
             continue
         vt = valid_targets(air, ground_only=(nm == "Melee"))
-        spreads = FAMILY_SPREADS.get(nm, (400, 600, 800, 1000))
-        falloffs = FAMILY_FALLOFFS.get(nm, DEFAULT_FALLOFFS)
+        physics = shape_for(nm)
+        spreads = FAMILY_SPREADS.get(nm) or (physics[0] if physics else (400, 600, 800, 1000))
+        falloffs = FAMILY_FALLOFFS.get(nm) or (physics[1] if physics else DEFAULT_FALLOFFS)
         if isinstance(bl, str) and bl in SPECIAL_MODE:
             print(f"###### {nm}: {macro_summary(bl)} ######")
             print(family(nm, None, vt, lv, mode=SPECIAL_MODE[bl], spreads=spreads, falloffs=falloffs))
@@ -1774,14 +2124,23 @@ def _generate():
         vt = valid_targets(air_share >= 1 / 3)
         dt = FAMILY_DAMAGE_TYPES.get(nm)
         states_note = f"+ PhysicalStates {states}" if states else "no PhysicalStates"
+        # The blend's SHAPE crosses its parents' shapes exactly as its Versus crosses their
+        # profiles — see blend_shape(). Without this the 17 blend families kept the old
+        # one-curve-per-level default while every primitive moved to its physics curve.
+        bphysics = shape_for(nm)
+        bspreads = FAMILY_SPREADS.get(nm) or (bphysics[0] if bphysics else (400, 600, 800, 1000))
+        bfalloffs = FAMILY_FALLOFFS.get(nm) or (bphysics[1] if bphysics else DEFAULT_FALLOFFS)
         print(f"###### {nm}: blend of {'+'.join(parents)} + {states_note} ######")
         print(family(nm, None, vt, lv, versus_override=blend_versus(parents), physical_states=states,
+                     spreads=bspreads, falloffs=bfalloffs,
                      **({"damage_types": dt} if dt else {})))
         print()
     if not wanted or "storm" in wanted:
         print("###### Storm: Tesla_Super + Magic + TeslaSuperExtraDamage/5 (Super-anchored, scaled down) ######")
+        sphysics = shape_for("Storm")
         print(family("Storm", None, valid_targets(False), STORM_LEVELS,
                      versus_override=storm_versus,
+                     spreads=sphysics[0], falloffs=sphysics[1],
                      damage_types="Prone100Percent, TriggerProne, ElectricityDeath, Tesla"))
         print()
 

@@ -1,11 +1,31 @@
 #!/usr/bin/env python3
-"""Reject physical-state warhead combinations that double-apply a meter.
+"""Physical-state meters: check the FOLDED warhead, and reject double-application.
 
-The Formula V2 Flame and Chemical families apply Temperature/Corrosion in
-proportion to actual damage. Their percentage-damage twins must use
-AreaDamagePercentage so that damage also reaches the meter. A resolved weapon
-must not combine either damage-scaled implementation with a legacy fixed
-ApplyPhysicalState warhead for the same meter.
+The Formula V2 Flame and Chemical families raise Temperature/Corrosion in proportion to actual
+damage. Two checks:
+
+  1. Each `^Warhead_{Flame,Chemical}_{Light,Medium,Heavy}` main warhead carries its meter AND a
+     non-zero `PercentageScale`, so the percentage component reaches the same meter.
+  2. No resolved weapon combines a damage-scaled meter with a legacy fixed `ApplyPhysicalState`
+     for that same meter — that is a double-application and it fills the bar twice as fast.
+
+⛔ CHECK (1) USED TO LOOK FOR A SEPARATE `Warhead@<tag>_Percentage` TWIN, AND THAT WAS STALE.
+The AreaDamage fold put flat damage, the percentage component and friendly fire into ONE warhead:
+`PercentageScale` / `PercentageSpread` / `PercentageVersus` and `FriendlyFireDamage` /
+`FriendlyFireSpread` are fields on `AreaDamageWarhead` itself. There are no twins any more, so the
+audit reported all six templates as "missing percentage warhead" against a structure the design had
+retired — six false failures that turned the whole suite red. Corrected 2026-08-24 after the
+maintainer caught it. Verify the shape before trusting a count:
+
+    Warhead@Flame_Light: AreaDamage
+        Damage: 2000  Spread: 200  Falloff: ...    <- flat
+        PercentageScale: 10000  PercentageSpread: 50 <- percentage, folded in
+        FriendlyFireDamage: 50  FriendlyFireSpread: 50
+        PhysicalStateName: Temperature  PhysicalStateScale: 100
+
+⚠ The meter comes in TWO forms and both are legal: Flame uses the singular
+`PhysicalStateName`/`PhysicalStateScale`, Chemical uses the `PhysicalStates:` MAP (blend families
+emit the map). `scaled_states()` and `state_scale()` read both — never grep for one.
 """
 
 from __future__ import annotations
@@ -58,21 +78,31 @@ def main() -> int:
 		for level in LEVELS:
 			tag = f"{family}_{level}"
 			template_name = f"^Warhead_{tag}"
-			template = rs.weapon(template_name)
-			percentage = template.child(f"Warhead@{tag}_Percentage") if template else None
-			if percentage is None:
-				problems.append(f"{template_name}: missing percentage warhead")
+			# RESOLVED, not source: the meter and the percentage fields can be inherited.
+			template = rs.resolve_weapon(template_name)
+			main = template.child(f"Warhead@{tag}") if template else None
+			if main is None:
+				problems.append(f"{template_name}: no Warhead@{tag} main warhead")
 				continue
 
-			if percentage.value != "AreaDamagePercentage":
+			if main.value != "AreaDamage":
 				problems.append(
-					f"{template_name}: percentage warhead is {percentage.value}, expected AreaDamagePercentage")
-			if expected_state not in scaled_states(percentage):
+					f"{template_name}: main warhead is {main.value}, expected AreaDamage")
+			if expected_state not in scaled_states(main):
 				problems.append(
-					f"{template_name}: percentage warhead does not apply {expected_state}")
-			if state_scale(percentage, expected_state) != expected_scale:
+					f"{template_name}: main warhead does not apply {expected_state}")
+			if state_scale(main, expected_state) != expected_scale:
 				problems.append(
-					f"{template_name}: percentage warhead scale is not {expected_scale}")
+					f"{template_name}: {expected_state} scale is not {expected_scale}")
+
+			# The fold's whole point: percentage damage rides the SAME warhead, so it reaches the
+			# same meter. A zero or absent scale means the percentage component silently does not
+			# exist, which is the pre-fold bug wearing the post-fold shape.
+			scale = main.get("PercentageScale")
+			if scale is None or str(scale).strip() in {"", "0"}:
+				problems.append(
+					f"{template_name}: PercentageScale is {scale!r} — percentage damage is folded "
+					f"into this warhead and must be non-zero")
 
 	for weapon_name in sorted(rs.weapons, key=str.lower):
 		if weapon_name.startswith("^"):
@@ -116,7 +146,8 @@ def main() -> int:
 		return 1
 
 	print("## PASS\n")
-	print("- Flame and Chemical percentage damage feeds the matching physical-state meter.")
+	print("- Flame and Chemical fold percentage damage into the main AreaDamage warhead, and it")
+	print("  feeds the matching physical-state meter.")
 	print("- No active weapon double-applies a meter through scaled and fixed warheads.")
 	return 0
 

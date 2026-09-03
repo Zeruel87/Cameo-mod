@@ -339,30 +339,33 @@ SHARE profiles and differentiate on the other three axes.
 4. **flat/% RATIO + special effect** — see §13.2–13.3. *Anti-small ↔ anti-big, plus EMP/DoT/etc.*
 
 ### 13.1 The Super tier (step 3)
-The L/M/H triple extends UP to **Super = step 3** (main 100→55, Shield **155**, %-window top 30,
-**WC 1.5**) for the superweapon band: **Nuclear** and **charged Tesla**. Flatter than Heavy
+The L/M/H triple extends UP to **Super = step 3** (main 100→55, %-window top 30,
+**WC 1.5**) for the superweapon band: **Nuclear** and **charged Tesla**. Shield is generated
+by the separate physics-ranked 100–400 law. Super is flatter than Heavy
 (never below 55%) and one WC notch above Heavy. (`LEVELS`/`WC` in `gen_weapon_template.py`.)
 
 ### 13.2 The percentage warhead — CORRECTED mechanic
-Every template carries BOTH a flat `SpreadDamage` and a `HealthPercentageDamage` twin, both on
-the SAME armor order. **The earlier "16–25% of max HP chip" framing (and my "20% per hit / dies
-in 5 hits" claim) was WRONG.** The real law (`formula.py` §"1 per 2000", memory
-`cameo-weapon-structure-rules`):
-- The **% twin's `Damage` = mainFlatDamage / 2000** (integer). It is a modest chip **proportional
-  to the flat damage**, then shaped by its Versus (window top 16/20/25/30, floor top−15).
-- **Integer rounding** on small values → **0** → **natural HARD IMMUNITY** for a weapon vs the
-  targets it's bad against. So RPS counters are real *without* zeroing any floor — `1% × 1%`
-  rounds to nothing.
-- Because the % follows the profile, it **peaks on the weapon's best target**: anti-tank profiles
-  auto-earn a tank-sized HP chip (a % of a huge pool); anti-infantry profiles get a near-zero %
-  (a % of a tiny pool) so flat damage dominates. **The flat/% balance self-tunes by profile.**
+Generated families now carry one `AreaDamage` warhead with two linked parts: flat `Damage` /
+`Versus`, plus a folded max-health contribution controlled by `PercentageScale` /
+`PercentageVersus`. **The earlier separate `HealthPercentageDamage` twin and its whole-percent
+rounding law are retired for these families.**
+
+- At the standard `PercentageScale: 10000`, every 2000 flat `Damage` derives 1.00% of max
+  health before `PercentageVersus`. Changing the main Damage therefore scales both parts.
+- `PercentageVersus` supplies the same armor order in the 16/20/25/30 window (floor top−15).
+  Runtime rounds the derived basis points and final HP damage; a low result may truncate to zero,
+  but this is not a designed hard-immunity rule.
+- A bespoke standalone `AreaDamagePercentage` / `HealthPercentageDamage` does not follow main
+  Damage and creates a true output floor. The affine pricing model reports that floor separately.
+- Because the folded profile peaks on the weapon's best target, anti-tank families earn a larger
+  high-HP contribution while anti-infantry families remain flat-dominant.
 
 ### 13.3 The flat/% ratio = the ORTHOGONAL axis (anti-small ↔ anti-big)
 Independent of the armor profile: **flat-dominant = anti-LOW-HP; %-dominant = anti-HIGH-HP.** This
 is a whole second design dimension the profile doesn't touch. The two pure extremes (both *ignore
 armor* — uniform vs every armor):
 - **Sonic** = FLAT uniform (45/55/65 vs all) → the anti-**low-HP** equalizer (fixed damage vs anything).
-- **Magic** = **%-EQUALIZER**: tiny flat (uniform 20) + a big uniform **% of max HP** (4/6/9%),
+- **Magic** = **%-EQUALIZER**: tiny flat plus a large uniform folded **% of max HP** contribution,
   ground-only → the anti-**high-HP** giant-killer (melts expensive/high-HP units, useless vs
   cheap swarms). *The mirror of Sonic on the HP axis.*
 - **General guidance:** tie a weapon's flat/% ratio to its target's typical HP — anti-infantry =
@@ -371,8 +374,8 @@ armor* — uniform vs every armor):
   extreme.
 
 ### 13.4 AoE FRIENDLY-FIRE rule (GENERAL — applies to every splash weapon)
-Every **AoE** weapon deals **reduced friendly fire: HALF radius + HALF damage** to friendlies
-(a `*FriendlyFire` warhead twin at 50% damage / smaller spread, per the twin law). Applies to
+Every **AoE** `AreaDamage` weapon deals **reduced friendly fire: HALF radius + HALF damage**
+to friendlies through its baked `FriendlyFireSpread` / `FriendlyFireDamage` fields. Applies to
 Chemical, Demolition, Concussion, Nuclear, artillery HE, and any splash weapon — **remember this
 when repointing.** (Single-target/hitscan weapons — bullets, cannon direct, Prism beam,
 tesla, railgun — have no friendly-fire twin.)

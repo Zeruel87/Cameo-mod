@@ -1,16 +1,25 @@
 # tools/audit — the Cameo audit suite
 
-Implements the detector specifications from `docs/MASTER_REPORT.md`
+Implements the detector specifications from `docs/history/MASTER_REPORT_2026-07-08.md`
 Appendix A. Every script reads the live ruleset (mod.yaml include graph,
 merged + inheritance-resolved) and prints a markdown report to stdout.
 
 ## Running
 
 ```sh
-tools/audit/run_all.sh              # full suite -> docs/audit/latest/
+bash tools/audit/run_all.sh         # full suite -> docs/audit/latest/   (canonical)
+python tools/audit/run_all.py       # same thing, for shells without `sh`
 python tools/audit/audit_ai.py      # any single audit
 python tools/audit/dump_resolved.py --faction cabal > before.json
 ```
+
+⚠ **Never redirect an audit through PowerShell's `>`** — it writes UTF-16 and corrupts the
+report (CLAUDE.md rule 8). Both runners force `PYTHONIOENCODING=utf-8`.
+
+`run_all.py` parses its audit list out of `run_all.sh` rather than keeping its own copy.
+That is deliberate: the two lists DID drift once, and because the Python runner also used a
+different filename convention (`audit_<name>.md` vs `<name>.md`), `docs/audit/latest/` ended
+up holding two stale copies of every report. **Add new audits to `run_all.sh`.**
 
 Blocking-severity findings (dangling references and similar crash-class
 issues) make the owning script — and run_all.sh — exit non-zero, so the
@@ -25,6 +34,7 @@ suite can gate CI.
 | `audit_upgrades.py` | B3 | inverted multiplier directions, dead upgrades, dead wiring (needs `docs/design/upgrades_intent.yaml`) |
 | `audit_upgrade_coverage.py` | B4 | roster-wide upgrade coverage gaps |
 | `audit_ai.py` | B5 | ai.yaml refs to nonexistent/unloaded actors; unwired combat units |
+| `audit_ai_personalities.py` | AI wiring | personality selector/consumer condition parity and byte-identical shared squad-manager fields |
 | `audit_sequences.py` | B6 | missing render images/sequences; orphaned sequence images |
 | `audit_metadata.py` | B7 | duplicate/missing tooltips per faction |
 | `audit_outliers.py` | B9 | robust-z numeric drift per (trait, field); bounds hard screen |
@@ -57,6 +67,31 @@ suite can gate CI.
 | `gen_faction_matrix.py` | §2 | regenerates `docs/factions/MATRIX.md` |
 | `gen_damage_matrix.py` | §8, ARMOR_SYSTEM.md | armor classes + Versus aggregates |
 | `gen_rename_maps.py` | §1 | naming compliance; writes `tools/rename/rename_map_<faction>.yaml` |
+| `audit_duplicate_inherits.py` | crash | a definition reaching the same parent twice on ONE chain — the `Parent type X was already inherited` boot crash. Grep cannot find it; the boot reports only the FIRST one |
+| `audit_duplicate_keys.py` | crash-risk | duplicate keys inside one node (silent overrides). D1 = a dropped `Inherits`, i.e. a template that is quietly not applied |
+| `audit_unique_traits.py` | crash | duplicate traits the engine resolves with `.Trait<T>()` — these crash at PRODUCTION time, not at boot |
+| `audit_physical_state_warheads.py` | correctness | physical-state warhead combinations that double-apply a meter |
+| `audit_warhead_split.py` | W24 | the multi-warhead over-damage guard. A RATCHET: the baseline may fall, never rise |
+| `audit_unconverted_templates.py` | W23 | legacy weapon templates still outside the `^Warhead_*` family system. **Writes its own report with `--write`** — its stdout is only a summary |
+| `audit_impact_glow_preservation.py` | §8 | universal glow coverage for sprite-backed weapon effects |
+| `audit_template_conformance.py` | §12 | template values are law (conyard power, etc.) |
+| `audit_multiplier_modifiers.py` | §12 | every `*Multiplier` `Modifier` is an integer percent (`89`, never `0.89`) |
+| `audit_armor_upgrade_harm.py` | §12.0e | the armor-plating invariants — above all, **an armor upgrade must never increase incoming damage** |
+| `audit_plating_exclusivity.py` | §12.0e | no actor may ever wear two armor platings at once |
+| `audit_hex_shield_routing.py` | §12.0f | actor-specific shield sizing and invalid resolved shield routes |
+| `audit_survivability_pricing.py` | E1 | what a baseline shield SHOULD cost and currently does not (informational) |
+| `audit_k_linearity.py` | pricing | scalable K must stay damage-independent; inventories folded hits, standalone floors, and rounding |
+| `audit_balance_drift.py` | pipeline | yaml vs the committed ledger. **Red means a balance commit skipped `extract_stats.py`** |
+| `audit_packs.py` | §2 | content-pack conversion and placement |
+| `audit_ts_death_palette.py` | B6 | TS actors whose `PlayerPalette` and `DeathSequencePalette` disagree |
+| `audit_doc_claims.py` | meta | re-measures every numeric claim in `docs/audit/doc_claims.yaml`. A number in prose is true only on the day it is written |
+| `audit_doc_health.py` | meta | the documentation's own gate: control characters, mojibake, broken links/anchors, references to moved documents, duplicate DESIGN section ids |
+| `audit_code_duplication.py` | periodic | copy-paste detector for the tooling and the C# mods |
+| `audit_test_coverage.py` | periodic | test-coverage floor for the C# mod code and the tooling |
+| `audit_error_handling.py` | periodic | error-handling lint for the Python tooling |
+| `audit_security.py` | periodic | repo security scan (no network required) |
+| `audit_recent_changes.py` | periodic | regression review of recent git history: balance yaml without a ledger, unregistered audits, missing provenance trailers. **Needs full history — a shallow clone limits it** |
+| `audit_periodic_freshness.py` | meta | staleness gate for `docs/audit/periodic.json`. `--warn-only` in the per-commit suite; strict in the scheduled run |
 | `dump_resolved.py` | §10 | canonical resolved-ruleset JSON (refactor safety net) |
 
 Shared infrastructure: `miniyaml.py` (parser/merger/inheritance resolver),

@@ -4,7 +4,7 @@
 > to finish the Cameo balance program — the weapon 3-way split, the weapon
 > foundation laws, the reference data-mining + synthesis, the class anchors,
 > the Formula-V2 completion, and the per-faction apply. Supersedes the PERT
-> table in `docs/AI_HANDOFF_2026-08-05.md` §8 (which predates A1 being done and
+> table in `docs/history/handoffs/AI_HANDOFF_2026-08-05.md` §8 (which predates A1 being done and
 > under-counted the reference-research and Formula-V2 categories).
 >
 > Method: **three-point PERT**. For each item, `O` = optimistic, `M` = most
@@ -48,7 +48,7 @@
   the CABAL bespoke pilot. First effect-heavy cluster (`Grenade+LightFlame`)
   proven, de-risking flame/chemical.
 - ✅ **Reference library — extraction DONE, synthesis NOT** (`ORIGINAL_UNIT_STATS.md`,
-  `ORIGINAL_UNITS_RAW.md`, `FACTION_IDENTITY.md`, `shattered_paradise_research.md`,
+  `ORIGINAL_UNITS_RAW.md`, `FACTION_IDENTITY.md`, `RESEARCH_NOTES.md`,
   `BALANCE_SYNTHESIS.md`). Every peer mod is extracted — Mental Omega, DTA, Combined Arms,
   Shattered Paradise, **CnC Reloaded (324 rows)** and **Romanov's Vengeance (207 rows)**.
   Plus `class_anchors.json` (28 classes), infantry membership auto-classification.
@@ -121,7 +121,7 @@ peer mod**: Mental Omega, DTA (Classic+Enhanced), Combined Arms, Shattered
 Paradise, **CnC Reloaded (325 units)** and **Romanov's Vengeance (208 units)** —
 all extracted with full stats (sources in `Downloads/`). Normalized ×rifle tables
 + the synthesis framework are in `BALANCE_SYNTHESIS.md`. Faction identity is
-covered in `FACTION_IDENTITY.md` + `shattered_paradise_research.md`. Only the
+covered in `FACTION_IDENTITY.md` + `RESEARCH_NOTES.md`. Only the
 items below remain.
 
 | # | Sub-task | O | M | P | **E (h)** | Sessions | Depends | Notes |

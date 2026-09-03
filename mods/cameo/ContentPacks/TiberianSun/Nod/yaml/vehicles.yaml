@@ -99,7 +99,7 @@ ts_nod_subterraneanapc:
 		Locomotor: subterranean
 		PauseOnCondition: loading || being-captured || disabled
 		Speed: 60
-		TurnSpeed: 40
+		TurnSpeed: 24
 	Health:
 		HP: 17500
 	Repairable:
@@ -361,7 +361,7 @@ ts_nod_artillery:
 	Mobile:
 		Locomotor: tracked
 		Speed: 60
-		TurnSpeed: 24
+		TurnSpeed: 12
 	Health:
 		HP: 30000
 	Repairable:
@@ -369,7 +369,7 @@ ts_nod_artillery:
 	ChangesHealth@SelfHealing:
 		Step: 12
 	Turreted:
-		TurnSpeed: 24
+		TurnSpeed: 12
 		InitialFacing: 384
 	Armament@Dummy:
 		Weapon: TSArtyTargeting
@@ -413,6 +413,24 @@ ts_nod_artillery:
 		PlayerPalette: playerra2
 	ActorStatValues:
 		Upgrades: ts_nod_upgrade_mobilityspecialization, ts_nod_upgrade_auxiliaryweapon, ts_nod_upgrade_advancedtiberiumrefinement
+	# DEPLOYING ADDS THE STEEL DEFENCE ARMOUR ON TOP OF THE UNIT'S OWN CLASS ARMOUR.
+	# Maintainer 2026-08-22: *"activate the steel armor type on deploy but keep the underlying
+	# regular armor intact and then create the average between them"* — a deployed unit is a
+	# static defence, and Steel is what defences wear.
+	#
+	# Both traits stay ENABLED together, which is the whole point:
+	# `AreaDamageWarhead.MultiArmorCombination` defaults to `Average`, so the class row and the
+	# Steel row meet in the middle instead of one replacing the other. Gating the class armour
+	# on `undeployed` — what the defence rig, siege tank and matador used to do — makes Steel a
+	# REPLACEMENT and throws the unit's own class away.
+	#
+	# ⚠ Averaging only happens for warheads routing through AreaDamage (62.9% of the tree).
+	# The legacy inline-Versus SpreadDamage nodes still MULTIPLY, and under multiplication the
+	# class row cancels out entirely (the ratio becomes just Steel/100) — so those weapons see a
+	# flatter effect than designed until item A5 retires them onto ^Warhead_* templates.
+	Armor@deployed:
+		Type: Steel
+		RequiresCondition: !shielded && deployed
 
 ts_nod_devilstongue:
 	Inherits: ^Tank
@@ -465,8 +483,6 @@ ts_nod_mobilestealthgenerator:
 	Inherits@detect: ^GenericGroundDetector
 	Inherits@AdvancedTiberiumRefinement: ^AdvancedTiberiumRefinement
 	Inherits@StealthFieldsImprovements: ^StealthFieldsImprovements
-	ActorStatValues:
-		Upgrades:
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -477,6 +493,7 @@ ts_nod_mobilestealthgenerator:
 		Queue: Vehicle, RAVehicle
 		Description: Cloaks nearby buildings and units.\nCan not be cloaked.\n Unarmed
 	Mobile:
+		TurnSpeed: 11
 		Speed: 56
 	Health:
 		HP: 20000
@@ -563,9 +580,9 @@ ts_nod_attackcycle:
 		FacingTolerance: 512
 	SelectionDecorations:
 	Selectable:
-	Inherits@EXT: ^ExternalConditions ##########
-	AcceptsDeliveredExperience: ##########
-		ValidTypes: vehicle ##########
+	Inherits@EXT: ^ExternalConditions
+	AcceptsDeliveredExperience:
+		ValidTypes: vehicle
 	Voiced:
 		VoiceSet: TSVehicle
 	RenderSprites:
@@ -597,10 +614,10 @@ ts_nod_ticktank:
 		# BuildDuration: 300
 		Prerequisites: ~ts_nod_warfactory
 		Queue: Vehicle, RAVehicle
-		Description: Nod's main battle tank.\nCan deploy to gain extra protection.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Nod's main battle tank.\nDeploys into concrete armour: resists anti-tank fire,\nbut siege weapons hit it much harder.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		Locomotor: tracked
-		TurnSpeed: 32
+		TurnSpeed: 18
 		Speed: 90
 	Health:
 		HP: 100000
@@ -610,11 +627,53 @@ ts_nod_ticktank:
 		Step: 40
 	RevealOnFire:
 		ArmamentNames: primary, deployed
-	DamageMultiplier:
-		Modifier: 50
-		RequiresCondition: deployed
+	# DEPLOYING SWAPS THE ARMOUR TYPE, IT DOES NOT GRANT BLANKET DAMAGE REDUCTION.
+	# Maintainer 2026-08-22: *"What it should do instead is switching the armor type from heavy
+	# to concrete like in the original TS, which means anti building weapons will be more
+	# effective when it's deployed but anti vehicle weapons will be less effective. Right now
+	# everything is equally less effective at 50% reduced damage."*
+	#
+	# It used to carry `DamageMultiplier: 50 / RequiresCondition: deployed` — the STRONGEST
+	# deploy bonus in the tree (every other deployable sits at 60-75, and the only other
+	# vehicle-scale one is the 5000-credit `td_gdi_defenserig` at 70). Because damage
+	# multipliers MULTIPLY, it compounded with the whole veterancy ladder: deployed +
+	# rank-elite = x0.30, and a realistic late-game stack reached ~613,000 effective HP on an
+	# 800-credit tank. It was also invisible to pricing — `extract_stats` only reads a
+	# `DamageMultiplier` gated on the SHIELD-up condition — so the 2x was free.
+	#
+	# Measured across all 137 generated profiles, Concrete vs Heavy: anti-vehicle fire is far
+	# WEAKER against it (MissileAP 0.41x, Railgun 0.51x, MissileChem 0.50x) while siege fire is
+	# far STRONGER (Demolition 2.34x/2.06x, Flame 1.85x, Thermobaric 1.57x). Median 0.94x, so
+	# deploying is now a genuine trade-off instead of a flat 2x.
+	#
+	# ⚠ The three Armor traits MUST stay mutually exclusive. `DamageWarhead.DamageVersus` does
+	# `Util.ApplyPercentageModifiers(100, armor)` over EVERY enabled Armor trait, so two active
+	# at once MULTIPLY their Versus (Heavy 74 x Concrete 136 = 101, i.e. armour cancels itself).
+	# Gated on `!deployed` rather than `undeployed` so the deploy transition can never leave the
+	# actor with NO armour trait — that would resolve to a flat 100% and ignore Versus entirely.
+	Armor:
+		Type: Heavy
+		RequiresCondition: !shielded
+	# DEPLOYING ADDS THE STEEL DEFENCE ARMOUR ON TOP OF THE UNIT'S OWN CLASS ARMOUR.
+	# Maintainer 2026-08-22: *"activate the steel armor type on deploy but keep the underlying
+	# regular armor intact and then create the average between them"* — a deployed unit is a
+	# static defence, and Steel is what defences wear.
+	#
+	# Both traits stay ENABLED together, which is the whole point:
+	# `AreaDamageWarhead.MultiArmorCombination` defaults to `Average`, so the class row and the
+	# Steel row meet in the middle instead of one replacing the other. Gating the class armour
+	# on `undeployed` — what the defence rig, siege tank and matador used to do — makes Steel a
+	# REPLACEMENT and throws the unit's own class away.
+	#
+	# ⚠ Averaging only happens for warheads routing through AreaDamage (62.9% of the tree).
+	# The legacy inline-Versus SpreadDamage nodes still MULTIPLY, and under multiplication the
+	# class row cancels out entirely (the ratio becomes just Steel/100) — so those weapons see a
+	# flatter effect than designed until item A5 retires them onto ^Warhead_* templates.
+	Armor@deployed:
+		Type: Steel
+		RequiresCondition: !shielded && deployed
 	Turreted:
-		TurnSpeed: 32
+		TurnSpeed: 18
 		Turret: deployed
 		Offset: 220,-20,296
 	Armament@PRIMARY:

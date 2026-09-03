@@ -18,13 +18,12 @@ import sys
 import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools" / "balance"))
+import formula  # noqa: E402
 
 
 def _parse_num(value: str | None) -> int | None:
-    if not value:
-        return None
-    m = re.match(r"-?\d+", value.strip())
-    return int(m.group()) if m else None
+    return formula.wdist_value(value)
 
 
 def _expected(range_val: int) -> int:

@@ -1,6 +1,6 @@
 # audit_outliers — systemic numeric drift (B9)
 
-(trait,field) distributions sampled: **18** — robust outliers (top 25 per field): **181**, selection bounds > 5120: **0**
+(trait,field) distributions sampled: **18** — robust outliers (top 25 per field): **174**, selection bounds > 5120: **0**
 
 
 ## Hard screen — Selectable bounds above the 5x5-cell maximum
@@ -13,8 +13,6 @@ _none found_
 | trait.field | actor | value | median | robust z |
 |---|---|---|---|---|
 | Aircraft.CruiseAltitude | TSDPOD | 16384 | 2500 | 18.7 |
-| Aircraft.CruiseAltitude | TSDPODE1 | 16384 | 2500 | 18.7 |
-| Aircraft.CruiseAltitude | TSDPODE2 | 16384 | 2500 | 18.7 |
 | Aircraft.CruiseAltitude | INVISIBLEPLANE | 9000 | 2500 | 8.8 |
 | Aircraft.TurnSpeed | japan_rocketangel_husk | 160 | 20 | 18.9 |
 | Aircraft.TurnSpeed | ra2rock.husk | 160 | 20 | 18.9 |
@@ -30,17 +28,17 @@ _none found_
 | Aircraft.TurnSpeed | ts_gdi_carryall | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | ts_gdi_orcafighter_husk | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | ts_gdi_carryall_husk | 80 | 20 | 8.1 |
+| Aircraft.TurnSpeed | ts_gdi_strike_orca_husk | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | forgotten_carryall | 80 | 20 | 8.1 |
-| Aircraft.TurnSpeed | forgotten_wasp | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | forgotten_cobracopter_husk | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | forgotten_apache_husk | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | forgotten_wasp_husk | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | RA2FALC.Husk | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | ra2beag.Husk | 80 | 20 | 8.1 |
-| Aircraft.TurnSpeed | yuri_floatingdisk | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | phoenix_husk.asian | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | harbinger_husk.asian | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | twister_husk.steel | 80 | 20 | 8.1 |
+| Aircraft.TurnSpeed | tkmdrone | 80 | 20 | 8.1 |
 | ChangesHealth.PercentageStep | wc2_orcs_deathknight | 83 | 1 | 55.3 |
 | ChangesHealth.Step | terran_marine | -2000 | 20 | 68.1 |
 | ChangesHealth.Step | terran_madcap | -2000 | 20 | 68.1 |
@@ -92,14 +90,9 @@ _none found_
 | Health.HP | cabal_core | 1000000 | 60000 | 15.9 |
 | Health.HP | cabal_constructionyard | 1000000 | 60000 | 15.9 |
 | Health.HP | cabal_avatar | 1000000 | 60000 | 15.9 |
-| Mobile.TurnSpeed | protoss_dragoon | 1023 | 20 | 104.1 |
 | Mobile.TurnSpeed | hole_small.nax2 | 255 | 20 | 24.4 |
 | Mobile.TurnSpeed | hole.nax2 | 255 | 20 | 24.4 |
-| Mobile.TurnSpeed | ra2_soviets_terrordrone | 200 | 20 | 18.7 |
 | Mobile.TurnSpeed | SCSPIDERMINE | 200 | 20 | 18.7 |
-| Mobile.TurnSpeed | protoss_probe | 100 | 20 | 8.3 |
-| Mobile.TurnSpeed | zerg_drone | 100 | 20 | 8.3 |
-| Mobile.TurnSpeed | terran_scv | 100 | 20 | 8.3 |
 | Power.Amount | asianalliance_tankreactor | 2700 | -35 | 73.8 |
 | Power.Amount | wc2_humans_sunwell | 2500 | -35 | 68.4 |
 | Power.Amount | ra2_soviets_nuclearreactor | 2000 | -35 | 54.9 |
@@ -189,10 +182,10 @@ _none found_
 | Selectable.Bounds | futuretech_launchpad | 5120 | 1024 | 10.8 |
 | Selectable.Bounds | C2KNUKE | 5120 | 1024 | 10.8 |
 | Selectable.Bounds | td_nod_airstrip | 4096 | 1024 | 8.1 |
-| Valued.Cost | cabal_coredefender | 15000 | 1575 | 9.3 |
-| Valued.Cost | schwarzermond_dieglocke | 15000 | 1575 | 9.3 |
-| Valued.Cost | wc2_orcs_orcgoldmine_bot | 15000 | 1575 | 9.3 |
-| Valued.Cost | wc2_humans_humangoldmine_bot | 15000 | 1575 | 9.3 |
+| Valued.Cost | cabal_coredefender | 15000 | 1600 | 9.0 |
+| Valued.Cost | schwarzermond_dieglocke | 15000 | 1600 | 9.0 |
+| Valued.Cost | wc2_orcs_orcgoldmine_bot | 15000 | 1600 | 9.0 |
+| Valued.Cost | wc2_humans_humangoldmine_bot | 15000 | 1600 | 9.0 |
 
 
 _Outliers are leads, not verdicts: epic units are legitimately extreme. Scan for CLUSTERS of similar z-scores — those are unit systems using a stale scale convention._

@@ -25,13 +25,17 @@ Delivery has THREE independent factors, all measured from the resolved tree, nev
 
 so the divisor is the meter's RANGE, not the 10000 that `PhysicalStateInfo`'s own [Desc]
 advertises ("divided by HP/10000"). That stale Desc is exactly what the old derivation
-trusted. Because `Temperature` is SIGNED (-20000..20000) its range is 40000 — DOUBLE
-`Corrosion`'s 20000 — so the two meters do not even share a formula:
+trusted. RANGE is not MaxValue: a SIGNED meter spans twice its top, so its formula halves.
 
-    ratio = MaxValue * 100 / (Scale * range)        damage-scaled  -> Temperature  50/Scale
-                                                                      Corrosion   100/Scale
-    ratio = MaxValue * damage / (Amount * range)    discrete apply -> Temperature  D/(2A)
-                                                                      Corrosion   D/A
+    ratio = MaxValue * 100 / (Scale * range)        damage-scaled
+    ratio = MaxValue * damage / (Amount * range)    discrete apply
+
+⚠ Nothing here is hard-coded per meter — `meter_geometry` MEASURES the bounds, and the
+constants that used to be written out in this docstring have already drifted once. As of
+2026-08-22 the tree carries: `Temperature` -20000..20000 (range 40000 -> 50/Scale),
+`Corrosion` -20000..20000 (range 40000 -> 50/Scale, NOT the 100/Scale an earlier version of
+this text claimed — it was signed after that was written), and `Magnetism` 0..20000, the one
+UNSIGNED meter (range 20000 -> 100/Scale). Read the `--report` table, never this paragraph.
 
 ⭐ Target MaxHP and weapon damage BOTH cancel in the damage-scaled form — the race is a
 property of the CONSTANT alone, which is why one constant moved every weapon at once.
@@ -326,13 +330,65 @@ def delivery_weight(ratio: float | None, curve, meter_exposure: float,
     return max(0.0, min(1.0, meter_exposure * delivery(ratio, curve) / reference))
 
 
+# ⛔ NO CEILING, BY RULING (maintainer 2026-08-22: *"clamps are really a horrible thing and
+# break balance so there should never be any clamps"*). A first version of this capped the
+# weight at 4.0 -- and `SheridanMissilesCryo` already sat at 4.46x, so the cap was ALREADY
+# hiding an imbalance on the day it was written. That is exactly the failure this function
+# replaced: the old `delivery_weight` clamped at 1.0 and made every binding from Scale ~67
+# upwards cost the same. A price that keeps rising is visible and can be argued with; a
+# clamped one silently stops charging and looks correct.
+
+
+def speed_weight(ratio: float | None, meter_exposure: float) -> float:
+    """The 0..1+ weight for HOW FAST the meter fills, measured against the bar.
+
+    ⛔ WHY THIS REPLACED THE DELIVERY-AVERAGE WEIGHT FOR THE SPEED AXIS.
+
+    `delivery_weight` scores a binding by `delivery` -- the MEAN effect share over the target's
+    remaining life. That number asymptotes to 1.0, so once a weapon fills the meter early,
+    filling it EARLIER STILL barely moves the average. Measured on the live curves:
+
+        Scale 100 -> ratio 0.50 -> delivery 0.7500
+        Scale 200 -> ratio 0.25 -> delivery 0.8750      twice as fast, +17% delivery
+        Scale 400 -> ratio 0.12 -> delivery 0.9375      four times as fast, +25%
+
+    and on top of that the weight was CLAMPED at 1.0, which `delivery` already exceeded at
+    Scale 100 (0.75 / 0.625 = 1.20). So every binding from Scale ~67 upwards paid the identical
+    1.25x, and doubling a weapon's freeze rate cost nothing at all. That made the maintainer's
+    design for Inferno and Cryo -- "mostly apply the physical effect, little direct damage" --
+    unpriceable: you could not trade damage away for meter speed, because meter speed had no
+    price.
+
+    Speed is what "twice as effective" MEANS, so it is now priced directly and linearly:
+
+        weight = exposure x (FULL_EFFECT_BAR / ratio)
+
+        ratio 0.75 (the bar) -> 1.00    ratio 0.50 (Scale 100) -> 1.50
+        ratio 0.25 (Scale 200) -> 3.00  ratio 0.20 (Scale 250) -> 3.75
+
+    Exposure still gates it: a meter no target carries delivers nothing and costs nothing.
+    There is NO upper clamp -- see the note above SPEED_CEILING's removal.
+    """
+    if ratio is None or ratio <= 0 or meter_exposure <= 0:
+        return 0.0
+    return max(0.0, meter_exposure * FULL_EFFECT_BAR / ratio)
+
+
 # --------------------------------------------------------------------------- #
 # 4. the weapon scan
 # --------------------------------------------------------------------------- #
 
 # Which curve a binding is read against. The SIGN of the constant picks it: a negative
 # `PhysicalStateScale` / `Amount` cools (Cryo), a positive one heats (Flame).
-AXIS_TEMPLATE = {"Temperature": "^CryoFreezable", "Corrosion": "^Corrodible"}
+AXIS_TEMPLATE = {"Temperature": "^CryoFreezable", "Corrosion": "^Corrodible",
+                 "Magnetism": "^Magnefreezable"}
+
+
+def axis_label(meter: str, positive: bool) -> str:
+    """The report's name for a (meter, sign) pair. Only Temperature is signed."""
+    if meter == "Temperature":
+        return "heat" if positive else "cryo"
+    return meter.lower()
 
 
 def fired_weapons(rs) -> set[str]:
@@ -445,14 +501,15 @@ def scan(rs) -> list[dict]:
             ratio = fill_ratio(kind, abs(mag), damage, geom[meter],
                                fed_share=share if kind == "scaled" else 1.0)
             curve = curves[(meter, positive)]
-            weight = delivery_weight(ratio, curve, exp.get(meter, 0.0), reference)
+            # Priced on SPEED, not on the delivery average — see speed_weight for why the
+            # old metric could not tell Scale 100 from Scale 400.
+            weight = speed_weight(ratio, exp.get(meter, 0.0))
             out.append({"weapon": weapon, "meter": meter, "kind": kind,
                         "magnitude": mag, "damage": damage, "ratio": ratio,
                         "fed_share": share if kind == "scaled" else 1.0,
                         "delivery": delivery(ratio, curve), "weight": weight,
                         "multiplier": 1.0 + 0.25 * weight,
-                        "axis": ("heat" if positive else "cryo") if meter == "Temperature"
-                                else "corrosion"})
+                        "axis": axis_label(meter, positive)})
     return out, reference, geom, exp, curves
 
 
@@ -557,9 +614,13 @@ def main() -> int:
     print("\n## Effect curves — share of the axis delivered at a given fill\n")
     print("| axis | 5% | 25% | 50% | 75% | 100% |")
     print("|---|--:|--:|--:|--:|--:|")
-    for label, key in (("heat", ("Temperature", True)), ("cryo", ("Temperature", False)),
-                       ("corrosion", ("Corrosion", True))):
+    # Every axis in AXIS_TEMPLATE, both signs, minus the ones whose consumers never fire for
+    # that sign (`Corrosion` and `Magnetism` only rise, so their negative curve is flat zero).
+    for key in sorted(curves):
         c = curves[key]
+        if all(c(x) == 0.0 for x in (0.05, 0.25, 0.5, 0.75, 1.0)):
+            continue
+        label = axis_label(*key)
         print(f"| {label} | " + " | ".join(f"{c(x):.2f}" for x in
                                            (0.05, 0.25, 0.5, 0.75, 1.0)) + " |")
     print(f"\nReference delivery (the maintainer's bar on the cryo curve): "

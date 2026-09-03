@@ -11,7 +11,7 @@ Read, in this exact order (see `docs/README.md` for the canonical definition):
 1. `CLAUDE.md` (repo root)
 2. `docs/LESSONS_LEARNED.md`
 3. `docs/AGENT_WORKSPACE.md`
-4. `docs/PROJECT_CONTEXT.md`
+4. `docs/HANDOFF.md`  ← the entry point: current state + priority queue
 5. `docs/DESIGN.md`
 6. `docs/design/ROADMAP.md`
 7. `docs/audit/SUMMARY.md`
@@ -36,7 +36,7 @@ If chat memory, old notes, or a prior session's assumptions conflict with these 
 ## 4. Verify before commit — the mandatory pre-commit gate
 
 1. Update ALL affected documentation FIRST: `docs/design/ROADMAP.md`, `docs/DESIGN.md`, `docs/audit/SUMMARY.md`, `docs/LESSONS_LEARNED.md`, and regenerate `docs/audit/latest/*.md` reports touched by the change. A change without updated docs is incomplete.
-2. Run the targeted audit(s) for the change, then the full suite when practical (`tools/audit/run_all.sh` / `run_all.py`).
+2. Run the targeted audit(s) for the change, then the full suite when practical: **`bash tools/audit/run_all.sh`** — the canonical runner. `tools/audit/run_all.py` is a port for shells without `sh` and reads its audit list out of the `.sh`, so the two cannot drift. **Never a PowerShell `>` redirect**: it writes UTF-16 and corrupts every report. `docs/audit/latest/` is only written from a COMPLETE tree (`engine/` built, clone not shallow); anywhere else the suite still runs but writes to the untracked `docs/audit/degraded/` and says why, because an incomplete tree reports FEWER findings and still says PASS.
 3. **Build**: run `make.cmd all` (fetches/rebuilds the engine + mod). Zero errors required. If C# sources changed, this step is mandatory — stale DLLs crash the boot with `Cannot locate type: …Info`.
 4. **Boot-gate (never skip, never fake)**: snapshot the current file list in `%APPDATA%/OpenRA/Logs` (or use `boot-test.cmd`, which launches the game for ~30s and can be inspected afterward), then launch the game (`launch-game.cmd` or `boot-test.cmd`). Confirm:
    - `perf.log` ends with `MenuPostProcessEffect.PostWorldLoaded` (reached the main menu), and

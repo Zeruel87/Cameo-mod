@@ -49,9 +49,11 @@ def unit_inputs(u, du=None):
         if not dmg or not reload_:
             continue
         rng = st.get("range")
-        rng = fnum(rng.get("v") if isinstance(rng, dict) else rng) or 0.0
+        rng = formula.wdist_value(rng, 0.0)
         burst = st.get("burst"); burst = int(fnum(burst.get("v") if isinstance(burst, dict) else burst) or 1)
-        bd = st.get("burst_delays"); bd = fnum(bd.get("v") if isinstance(bd, dict) else bd)
+        # Raw ledgers use ``burstdelays``. Keep the underscored fallback only
+        # for the older nested fixture shape this reader still accepts.
+        bd = st.get("burstdelays", st.get("burst_delays"))
         total_dps += formula.dps(dmg, reload_, burst, bd)
         best_range = max(best_range, rng)
     if hp is None or speed is None or total_dps == 0:

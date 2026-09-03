@@ -97,7 +97,6 @@ latinsyndicate_combatbarracks:
 		Range: 6666
 	ActorStatValues:
 		Stats: Armor, Sight, Cargo, Kills, Experience
-	GivesBuildableArea:
 
 latinsyndicate_recyclingrefinery:
 	Inherits: ^RA2Building
@@ -278,12 +277,8 @@ latinsyndicate_spycenter:
 	SupportPowerChargeBar:
 	ProvidesPrerequisite:
 	WithIdleOverlay@lights:
-		Sequence: idle-lights
-		RequiresCondition: !build-incomplete
-	WithIdleOverlay@lights:
 		Sequence: idle-lights2
 		RequiresCondition: !build-incomplete
-	SupportPowerChargeBar:
 	DetonateWeaponPowerCA:
 		AllowMultiple: false
 		OrderName: TraitorsPower
@@ -385,7 +380,6 @@ latinsyndicate_defensebureau:
 		Modifier: 50
 	RevealsShroud:
 		Range: 10000
-	GivesBuildableArea:
 
 latinsyndicate_recyclingcenter:
 	Inherits: ^RA2Building
@@ -412,28 +406,56 @@ latinsyndicate_recyclingcenter:
 		Sequence: idle-lights2
 		RequiresCondition: !build-incomplete
 	SupportPowerChargeBar:
-	ProduceActorPower@car:
-		Names:
-			1: Give Scrap cars
-		Descriptions:
-			1: Produces scrap cars
+	DetonateWeaponPower@car:
+		OrderName: ScrapCars
+		Prerequisites:
+			1: ~techlevel.superweapons
+		PauseOnCondition: disabled
 		Icons:
 			1: icon
 		IconImage: latinsyndicate_raiderbuggy
 		AllowMultiple: True
-		PauseOnCondition: disabled
-		Prerequisites:
-			1:
-		Actors: scrapcar_driveby.latin, scrapcar2_driveby.latin
-		Type: Car
-		ChargeInterval: 750
-		AutoFire: true
-		OrderName: callcars
-		SupportPowerPaletteOrder: 20
+		Cursor: ability
+		ChargeInterval: 1500
+		Names:
+			1: Scrap Car Ambush
+		ActivationDelay: 25
+		ActivationSequence:
+		Descriptions:
+			1: Creates scrap cars to ambush the enemy.
+		Weapons:
+			1: ScrapCarSpawner
+		CameraActor: camera.placeholderhack
+		CameraRemoveDelay: 0
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		LaunchSpeechNotification: ReinforcementsArrived
+		IncomingSpeechNotification: EnemyUnitsApproaching
+		DisplayRadarPing: True
 		LaunchSound: gcraspee.wav
-		RequiresCondition: !disabled
-	Production@Car:
-		Produces: Car
+	 	IncomingSound:
+	# ProduceActorPower@car:
+	# 	Names:
+	# 		1: Give Scrap cars
+	# 	Descriptions:
+	# 		1: Produces scrap cars
+	# 	Icons:
+	# 		1: icon
+	# 	IconImage: latinsyndicate_raiderbuggy
+	# 	AllowMultiple: True
+	# 	PauseOnCondition: disabled
+	# 	Prerequisites:
+	# 		1:
+	# 	Actors: scrapcar_driveby.latin, scrapcar2_driveby.latin
+	# 	Type: Car
+	# 	ChargeInterval: 750
+	# 	AutoFire: true
+	# 	OrderName: callcars
+	# 	SupportPowerPaletteOrder: 20
+	# 	LaunchSound: gcraspee.wav
+	# 	RequiresCondition: !disabled
+	# Production@Car:
+	# 	Produces: Car
 	RallyPoint:
 	Exit@1:
 		SpawnOffset: -704,768,0
@@ -524,7 +546,7 @@ latinsyndicate_syndicateservicedepot:
 	Inherits@shape: ^3x3Shape
 	Inherits@sell: ^SyndicateSpawnActorsOnSell
 	Inherits@repair: ^RepairsUnits
-	Inherits@repair: ^RepairFacility
+	Inherits@repairfacility: ^RepairFacility
 	HitShape:
 		TargetableOffsets: 840,0,0, 598,-640,0, 598,640,0, -1060,0,0, -768,-640,0, -768,640,0
 		Type: Polygon

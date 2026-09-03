@@ -1,150 +1,196 @@
-# Baseline Audit — Summary
+# Audit summary — current known-issue state
 
-_One page. Details: [FINDINGS.md](FINDINGS.md) · raw tables: [baseline/](baseline/) ·
-faction map: [../factions/MATRIX.md](../factions/MATRIX.md)._
+_One page. Live reports: [`latest/`](latest/) · comparison snapshots: [`baseline/`](baseline/) ·
+faction map: [`../factions/MATRIX.md`](../factions/MATRIX.md)._
 
-Recurring code-health audits and their cadence are tracked in
-[`PERIODIC.md`](PERIODIC.md) and [`periodic.json`](periodic.json).
+**Evidence date: 2026-08-23**, from `bash tools/audit/run_all.sh` at `e60aab63`, with
+`doc_claims` and `gen_sync` re-measured at `519175ae` (both read only tracked files, so they are
+trustworthy from any checkout). `level_ladder` was RETIRED on 2026-08-23 — it enforced a
+damage-monotonic rule no law states — and replaced by `heaviness_bell`.
+Recurring code-health audits and their cadence: [`PERIODIC.md`](PERIODIC.md) +
+[`periodic.json`](periodic.json).
+
+⚠ **`latest/` is currently a MIXTURE of two environments and is owed one clean regenerate.**
+A dozen audits read `engine/` C# or full git history — neither of which exists in a fresh
+clone — and they respond by reporting *less* and still saying PASS (`dead_warhead_fields` 27071
+warhead nodes → 7014, `fluent` 5235 messages → 3640). Alternating Windows and container runs
+have been overwriting each other's numbers. `run_all` now refuses to write `latest/` from an
+incomplete tree (it diverts to the untracked `docs/audit/degraded/`; `--force-latest`
+overrides), so this is a one-time cleanup: **run the suite once on a complete tree and commit
+the result whole.**
+
+> **How to use this page.** Every number is a count from a report in `latest/`, named in the
+> "report" column. If a number here disagrees with that report, **the report wins** — re-run the
+> suite and fix this page in the same commit. Never hand-edit a count in without re-running.
+
+```sh
+bash tools/audit/run_all.sh          # regenerates every report in latest/ (UTF-8 enforced)
+python tools/audit/audit_<name>.py   # one audit, straight to stdout
+```
+
+⚠ **Never regenerate reports with a PowerShell `>` redirect** — it writes UTF-16 and corrupts
+the file (CLAUDE.md rule 8).
+
+---
+
+## AI personality wiring
+
+`audit_ai_personalities.py` verifies that the five personality-gated
+`SquadManagerBotModuleCA` instances retain byte-identical shared fields and
+that their consumed conditions exactly match the `GrantRandomCondition`
+selector. Personality-specific differences are restricted to an explicit
+tuning allow-list.
+
+The implementation removes the stale `RushInterval` and
+`RushAttackScanRadius` keys; neither exists in the vendored CA or pinned engine
+SquadManager implementation. Steamroller is intentionally documented as
+having at most one harasser because the engine always creates the first
+guerrilla squad and YAML cannot express zero guerrilla units.
+
+The reusable `ObserverConditionNotification` trait announces each selected
+personality once in the chat feed for spectators and replay viewers after its
+condition activates. Live players are intentionally excluded so the indicator
+does not leak opponent strategy; no live-player UI decoration is intended.
+
+The five personality managers now use optional time-scaled squad-value
+thresholds, preserving their early-game flat-bonus values. Other squad-manager
+instances retain the flat `SquadValueRandomBonus` path. The ramp and the
+actor-value cache have not been observed in a long match; that is an in-game
+verification follow-up.
+
+The unit-builder composition consumer is opt-in through `UseCompositions`.
+Without an active composition, each personality's `UnitsToBuild` table remains
+the fallback. The pilot compositions are limited to TD vehicle queues and are
+gated by their respective tech prerequisites; broader composition coverage is
+still a follow-up. Explicit unit requests continue to bypass composition
+shares.
 
 ## Counts by bug class
 
-> **Note:** Counts below were generated from the baseline audit run. Significant work since then (weapon template splicing, renames, armor normalization, ContentPack migration) may have changed some counts. Re-run `tools/audit/run_all.sh` for current numbers.
+| class | what | count | report |
+|---|---|--:|---|
+| **B8** | crash-class content | **0** | — |
+| B1 | cross-faction leaks | 435 L1 · 20 L3 · 91 shared | `faction_leaks.md` |
+| B2 | illegal inherits | 281 V1 · **0** V2 · **0** V3 dangling · 1863 V4 depth>3 · 95 V5 | `inherits.md` |
+| B2b | duplicate inherit paths | 1770 definitions reach a parent by >1 path | `duplicate_inherits.md` |
+| B3 | upgrade direction | 594 items · 103 inverted · **0** dead · 19 dead tokens · 568 without an intent entry | `upgrades.md` |
+| B4 | upgrade coverage | 23 tagged upgrades · 21 uncovered unit slots | `upgrade_coverage.md` |
+| B5 | AI wiring | 1801 refs · **0** defined nowhere · **0** unloaded · **0** unwired pool factions | `ai.md` |
+| B6 | art/sequence refs | 2 missing images · **0** missing sequences · 595 unreferenced images | `sequences.md` |
+| B7 | metadata rot | 32 duplicate-tooltip groups · **0** missing tooltip names | `metadata.md` |
+| B9 | numeric drift | 176 robust outliers · **0** bounds over the 5×5 max | `outliers.md` |
+| B10 | dead content | 374 orphan weapons · **0** dangling refs · 15 dead conditions | `orphans.md` |
+| B11 | asset norms | 148 / 2006 PNGs over budget · 1817 / 4390 WAVs off-norm | `assets.md` |
+| B12 | localization | 1 unresolved fluent ref · 526 orphaned `actor-*` messages | `fluent.md` |
+| R2 | stacked multipliers | 790 units over the 2.0× power budget | `power_budget.md` |
+| W | weapon uniqueness (§10) | 34 same-faction · 34 cross-faction · 95 carrier-only | `weapon_uniqueness.md` |
+| G | garrison weapons (§11) | **6 G1** · 0 G2 · 0 G3 | `garrison_weapons.md` |
+| F | house stat formulas | 615 violations across 1910 roster actors | `stat_formulas.md` |
+| E | elite / rank wiring | 197 missing elite armaments · 21 ungated ELITE blocks · 52 decoration issues | `missing_elite.md`, `elite_gating.md`, `rank_decoration.md` |
+| Q | build order | prerequisite-order violations across 841 buildables | `buildable_order.md` |
+| D | duplicate keys | **88 D1 dropped inherits** · 439 D2 merged duplicates | `duplicate_keys.md` |
 
-| class | what | count (live tree) | severity profile |
-|---|---|---|---|
-| B8 | crash-class content | **0** distinct (was 3+ — fixed 2026-07-14: ts_nod_ticktank voxel, magicnuke sequence, ra2_cgtbnkbb/ctoutpbb missing assets; 2026-07-15: CABAL CreateEffect Image: fields removed, impact animations consolidated in misc.yaml, map actors renamed; 2026-07-24: RA2 weapons migrated to ContentPack, Yuri weapons headers restored, Naxis Kübelwagen encoding fixed, nuclearflash shader created) | crash |
-| B1 | cross-faction leaks | 10 L1 + 13 L3 (+1,106 shared needing owners) | balance |
-| B2 | illegal inherits | **328** concrete→concrete, 24 cross-faction, 0 dangling | balance-risk |
-| B5 | AI wiring | **200** ids defined nowhere, 620 unloaded refs, 26 factions with unwired units | balance |
-| B3 | upgrade direction | 12 anti-buff combos (2 suspicious, 1 verify, rest intended drawbacks), 4 dead upgrades, 5 dead-wiring families on 300–1,042 actors each | balance |
-| B4 | upgrade coverage | 15 tracked upgrades, ~40 real uncovered combat slots (CABAL backup systems: avatar+widow done; `cabal_legion` does not exist — was renamed/removed) | balance |
-| B6 | art/sequence refs | 11 missing images, 11 missing sequences, 542 orphan images | cosmetic→crash-risk |
-| B7 | metadata rot | 24 duplicate-tooltip groups, 0 missing tooltips | cosmetic |
-| B9 | numeric drift | bounds screen **clean** (TB23 fix held); 163 outlier leads | balance-minor |
-| B10 | dead content | 345 orphan weapons, 542 orphan images, 16 dead conditions | hygiene |
-| B11 | asset norms | 3,632 / 8,776 WAVs off-norm (mono/16-bit/22050 Hz); 131 PNGs over budget | hygiene |
-| B12 | localization | 0 unresolved Fluent refs, 233 orphaned messages, ≤10% Fluent coverage | cosmetic |
-| R2 | stacked multipliers | **757** units over the 2.0× budget; worst 36× (RA2 Allies) | balance |
-| W | weapon uniqueness (DESIGN §10) | 36 same-faction + 42 cross-faction shared weapons; 95 carrier-only (IFV borrow, informational) | design/identity |
-| G | garrison weapons (DESIGN §11) | **clean** (G1/G2/G3 = 0 after 2026-07-10 fixes; 30 design exceptions) | crash-free/balance |
+## Green — and must stay green
 
-## Top 20 findings
+`empty_warhead` **0** of 2760 weapons (the boot-NRE class) · dangling weapon refs **0** ·
+dangling inherit targets **0** · cross-faction concrete inherits **0** · rename-broken sprite
+refs **0** · missing voxels **0** · TS death-palette **0** · D2k rank decorations **0** ·
+promotion wiring clean · `MinRange` clean · duplicate uniquely-resolved traits clean ·
+armor-plating invariants clean · plating exclusivity clean · physical-state warheads PASS ·
+cross-document consistency 73/0 · display text 0 active findings ·
+**documentation structure 0** (`doc_health.md`, D1–D8) · **balance-ledger drift 0** ·
+**doc claims 19 of 19 match** · **generator sync drift 0** (136 shared templates, no-op
+regenerate).
 
-1. **`tatacitus` NukePower fires nonexistent `TSChemTacticalMissile`** — FIXED: changed to existing `TSTacticalChemMissile` with valid `tsnodmmsil` image (tiberiaalliances.yaml).
-2. **RA2 Allies hero-infantry stack measures 36×** fresh-self power (Assault Squad + Vanguard + Infiltrators + Chromium/Prismatic lines) — worst in game; Yuri 30× behind it.
-3. **ai.yaml: 200 references defined nowhere** — incl. `ra2naclon`, `nax2_chrono` (CABAL refs `tsgtcnstcabalb`/`tsntpulscabal` already removed).
-4. **Stale "BuildingFractions Dune Universe" block** uses pre-ContentPacks names — entire section steers nothing.
-5. **`raider.ordos` not in any AI build list** — FIXED: added to Dune Universe `UnitsToBuild` with weight 7 (also `runner.steel`, `orion.futu`, `yrrobo.futu`, 5 Naxis units still pending).
-6. **`ra_doctrine_teslatech` doubles reload (Modifier 200) on 2 actors** — suspected Dark-Armament-class inversion; verify.
-7. **`up_energizedarrows` has ReloadDelayMultiplier 125** on one actor — suspected inversion; verify.
-8. **328 concrete→concrete inherits** — the Slave-Miner bug factory; Phase-1 queue, full grouped list in FINDINGS.
-9. **13 L3 leaks**: CABAL/Forgotten/TS-Nod buildings inherit GDI/Nod concrete actors (tscabaltech→tsgttech etc.).
-10. **Modern Fire Control Systems covers 15/33 of TS GDI** — all aircraft + half the infantry lack the roster-wide hook.
-11. **WC2 tower upgrade names** (guard↔cannon swap) — FIXED; remaining 24 duplicate-tooltip groups still under review.
-12. **Dead-wiring families on 1,042 actors each** (`usabombardament`, `usaholdtheline`, `usasearchndestroy`, `upsubliminal(2)`) + `upra2deso` on 302 — Generals-era hooks granted by nothing.
-13. **3 player-visible raw Fluent keys** — STALE/RESOLVED: current `audit_fluent.py` F1 shows 0 unresolved refs.
-14. **`wc2_orc_eye_of_kilrogg` TurnSpeed 2048** — FIXED: reduced to 28 (bounds screen still clean; high vision range remains by design as scout).
-15. **345 orphan weapons + 542 orphan sequence images** — RAM/load-time dead weight.
-16. **CABAL absent from Random AND Tournament pools, still titled "(WIP)"** — FIXED: CABAL added to both pools, WIP label removed.
-17. **CABAL post-TB23 full stack = 3.9×** — over the 2.0 budget but sane; trim one Research multiplier or cap rank scaling.
-18. **_old.yaml deprecated files removed** — tiberiansunold + warcraft2old rules/sequences/weapons deleted (20,919 lines).
+## Red right now
 
-## Recommended fix order (per MASTER_REPORT §4)
+| check | state | what to do |
+|---|---|---|
+| **level ladder** | **WARN — 9 broken, at ratchet 9** (7 inverted, 2 flat) | no longer failing: `a9f31258` fixed `Demolition`. Still blocked on a maintainer ruling. Full measured table + the diagnosis: [`../design/ROADMAP.md`](../design/ROADMAP.md) "BROKEN LADDERS". These are balance numbers: pipeline only, and **never raise the ratchet**. |
+| duplicate keys D1 | 88 dropped inherits | each one silently drops a template — same family as the `Parent type X was already inherited` boot crash |
+| warhead-split ratchet | at baseline | pre-existing W24 debt, not a regression; lower the baseline as W24 lands |
 
-1. **B5 AI wiring** (items 3–5) — restore bot competence for pool factions; delete/fence the 620 unloaded refs.
-2. **B3/B4 verify+fix** (items 6, 7, 10) and transcribe the remaining 526 `upgrades_intent.yaml` entries.
-3. **B2+B1 structurally** via §12 Phase-1 per-faction migration (items 8–9), `dump_resolved.py`-verified; turn `audit_inherits` blocking in CI as factions land.
-4. **B7/B9/B12 quick wins** (items 11, 13, 14) — ideal AI-agent batch work.
-5. **B10/B11 hygiene** (items 15, 18) — orphan purge + per-directory WAV normalization; deprecated *_old.yaml files already removed.
-6. **R2 rebalance** (items 2, 17) with tournament telemetry before touching Consortium-family numbers.
+Cleared since the last edition of this page: **doc claims** (was 4 of 19 drifted, now 19 of 19
+matching) and **generator sync** (was non-zero, now 0).
 
-## Superweapon documentation audit (2026-07-25)
+## Programme-scale debt
 
-Full cross-reference of YAML superweapon/support power traits vs `FACTIONS.md` completed.
-Raw data: [`latest/superweapon_audit.yaml`](latest/superweapon_audit.yaml).
+Sequenced on the board, not loose bugs. Status and ownership:
+[`../design/BALANCE_PROGRAM_PLAN.md`](../design/BALANCE_PROGRAM_PLAN.md); the order is fixed by
+its §0a.
 
-**14 findings** (1 HIGH, 2 MEDIUM, 8 LOW, 3 INFO):
-- **SW-001 (HIGH)**: Harkonnen Palace has `^PrimarySuperweapon` + `SupportPowerChargeBar` but **no power trait** — Death Hand Missile unimplemented (parked faction).
-- **SW-002 (MED)**: Forgotten superweapon was "Tiberian Wildlife Rampage" in docs but YAML implements `NukePowerCA` (nuclear missile). FIXED in FACTIONS.md.
-- **SW-003 (MED)**: CABAL listed "Data Worm, Satellite Hack" but YAML has `NukePowerCA` (CabalMagicNuke) + `FireArmamentPower` (Data Worm). Satellite Hack not found. FIXED.
-- **SW-004–011 (LOW)**: Missing support powers in FACTIONS.md — Nod TS Cluster Missile, RA1 Allies Chrono Reinforcements, RA2 Allies Force Shield, Latin Syndicate EMP/Traitors, Schwarzer Mond name mismatch, Ordos name mismatch, WC2 Humans Slow/Invisibility, WC2 Orcs Bloodlust/Haste. ALL FIXED.
-- **SW-012–014 (INFO)**: Protoss reuses SteelIonCannon weapon, Consortium missing Federation Support Teleport in ref table, TS GDI missing Drop Pods in ref table. ALL FIXED.
+| id | debt | measured |
+|---|---|--:|
+| W24 | directly fired weapons carrying more than one damage main | **494** |
+| W23 | fired weapons reaching a `^Warhead_*` family | **1231** |
+| W23 | direct inheritors of the legacy weapon templates | **1162** |
+| W26 | live `DamageMultiplier` declarations | **353** |
+| W11 | class anchors the maintainer has signed off | **0** — so no price is final |
 
-**Outpost 2 verified**: Supernova Missile IS implemented in `rules/outpost2.yaml` (`NukePower`, charge 9000). FACTIONS.md was correct.
+All five are pinned in [`doc_claims.yaml`](doc_claims.yaml) and re-measured on every suite run,
+so they cannot rot in prose again.
 
-**WIP faction superweapons discovered** (not in FACTIONS.md): Warzone 2100 (IonCannonPower + AirstrikePower + NukePower), Worms (Sheep Strike + Concrete Donkey), Win98 (Demo Disk Strike + Red Ring of Death), Warcraft 1 (Rain of Fire + Poison Cloud), WH40K (8 Deep Strike variants + Marauder Bomber + Inquisition).
+## Recommended fix order
 
-## War Economy SpeedMultiplier bug (2026-08-03)
+1. **One clean suite run on a complete tree** — cheapest, and until `latest/` stops mixing two
+   environments no count on this page can be fully trusted.
+2. **The 9 broken level ladders** — a heavier level dealing less damage than a lighter one is
+   player-visible nonsense. Back at the ratchet rather than over it, so it no longer fails the
+   suite, but nothing about the nine has been ruled on.
+3. **B2b duplicate inherit paths / D1 dropped inherits** — the class that produces
+   `Parent type X was already inherited` boot crashes and silently-dropped templates. Only the
+   boot and `audit_duplicate_inherits` can see it.
+4. **G1 garrison weapons (6)** and **B6 missing images (2)** — small, bounded, player-visible.
+5. **B1 cross-faction leaks (435 L1)** — the count grew because the audit's faction coverage
+   grew, not only because the tree got worse. Triage before treating it as 435 bugs.
+6. **B3/B4 upgrade direction and coverage**, plus transcribing the remaining 568
+   `upgrades_intent.yaml` entries so the audit can tell an intended drawback from a bug.
+7. **B10/B11 hygiene** — orphan purge, per-directory WAV normalisation. Good batch work.
+8. **R2 stacked multipliers (790)** — folds into W26; do not touch it separately.
 
-**FIXED**: `SpeedMultiplier@ra1_soviets_upgrade_wareconomy` in `ContentPacks/RedAlert/Shared/yaml/upgrades.yaml:134` used `Prerequisites` instead of `RequiresCondition`. Since `SpeedMultiplierInfo` has no `Prerequisites` field, the engine ignored it, making the trait **always active** at 110% — even without the War Economy upgrade researched.
+---
 
-**Impact**: Every unit inheriting `^WarEconomyTeamUpgradeRA1` (all harvesters via `^HarvesterTemplate`, all refineries via `^Refinery`) got a permanent +10% speed boost. For the Noid Harvester (base speed 50), this produced a displayed speed of 55 instead of 50. When combined with the Gap Generator shroud effect (80%), the result was 50 × 80% × 110% = 44.
+## Standing incident notes
 
-**Fix**: Changed `Prerequisites` → `RequiresCondition` on line 135. The trait is now properly conditional on the `ra1_soviets_upgrade_wareconomy` condition granted by `GrantConditionOnPrerequisite`.
+Closed, but each is a bug class the ordinary gates cannot see.
 
-**Audit**: Swept all YAML files for the same pattern (`SpeedMultiplier` with `Prerequisites` but no `RequiresCondition`) — no other SpeedMultiplier instances found. **Superseded**: the bug class later proved to cover ALL conditional multipliers — see next section.
+### Empty warhead type = boot NRE (2026-08-04, CLOSED)
 
-## Empty warhead type NRE (2026-08-04)
+A `Warhead@X:` line with **no type value** parses to `null`; `WeaponInfo.LoadWarheads` calls
+`Game.CreateObject<IWarhead>(null + "Warhead")`, that resolves to the abstract `Warhead` base
+class, and `ObjectCreator.CreateBasic` throws before the main menu. It happens for **every**
+top-level weapon node in the resolved ruleset, including unused `^templates`.
+**`utility --check-yaml` does not catch this class.** Guard:
+`python tools/audit/find_empty_warhead.py`. Run it after any bulk warhead edit.
 
-**FIXED**: Boot crashed with `NullReferenceException` in `WeaponInfo.LoadWarheads` (`ObjectCreator.CreateBasic` on the abstract `Warhead` base class) because two weapons had `Warhead@` nodes with **no type value**:
+### Conditional multipliers ignore `Prerequisites:` (2026-08-04, CLOSED)
 
-- `RA2MirageGun` — `Warhead@Effect:` → set to `CreateEffect` (`mods/cameo/weapons/redalert2.yaml`)
-- `TSSAPCMissiles` — `Warhead@GrenadeFriendlyFire:` → set to `SpreadDamage` (`mods/cameo/weapons/tiberiansun.yaml`)
-- `HighV` — `Warhead@Bullet_Medium_Percentage:` → set to `HealthPercentageDamage` (`mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/weapons.yaml`)
+Every `ConditionalTrait`-based multiplier (`FirepowerMultiplier`, `DamageMultiplier`,
+`SpeedMultiplier`, …) has **no `Prerequisites` field**. A `Prerequisites:` line inside such a
+block is silently ignored by the loader, making the multiplier **permanently active**. Found via
+the War Economy speed bug, then swept mod-wide: 4 fixed, 0 remaining.
+`ProductionCostMultiplier` / `ProductionTimeMultiplier` legitimately support it.
 
-**Mechanism**: An empty `Key:` line parses to a null value. The merge's null-fallback (`overrideNodes.Value ?? existingNodes.Value`) only rescues the node when a same-key ancestor has a value; these two nodes had none. The engine constructs `WeaponInfo` for **every** top-level weapon node — including unused `^templates` — so a typeless warhead anywhere in the resolved ruleset is a boot crash, and `LoadWarheads` then calls `Game.CreateObject<IWarhead>(null + "Warhead")`, which resolves to the abstract `Warhead` class and NREs.
+### Superweapon documentation audit (2026-07-25, CLOSED)
 
-**Audit**: New `tools/audit/audit_empty_warheads.py` resolves the full manifest weapon set via the shared `miniyaml.Ruleset` and flags any resolved node whose key starts with `Warhead` but has no type (plus empty `Projectile:` as a suspect). 4,202 weapons checked, 0 remaining findings. **`utility --check-yaml` does NOT catch this class** — run the audit after bulk warhead/weapon edits. Boot-gate passed after the fix.
+Every superweapon/support-power trait cross-referenced against `FACTIONS.md`: 14 findings, all
+documentation discrepancies, all fixed. The one substantive finding stands: **Harkonnen Palace**
+carries `^PrimarySuperweapon` + `SupportPowerChargeBar` but **no power trait** — the Death Hand
+Missile is unimplemented (parked faction, not a regression). Superweapons also exist in the WIP
+factions (Warzone 2100, Worms, Win98, Warcraft 1, WH40K); document them in `FACTIONS.md` only
+when those factions go active.
 
-## Conditional-multiplier `Prerequisites:` sweep (2026-08-04, follow-up to War Economy bug)
+⚠ The raw cross-reference was written to `latest/superweapon_audit.yaml` and **no longer
+exists**: `run_all.sh` regenerates `latest/` wholesale. Put one-off artifacts anywhere else.
 
-**FIXED**: The War Economy bug class was wider than `SpeedMultiplier`. Every `ConditionalTrait`-based multiplier (`FirepowerMultiplier`, `DamageMultiplier`, `SpeedMultiplier`, `RangeMultiplier`, `ReloadDelayMultiplier`, `InaccuracyMultiplier`, `RevealsShroudMultiplier`, `DetectCloakedMultiplier`, ...) has **no `Prerequisites` field** — a `Prerequisites:` line inside such a block is silently ignored by the loader, making the multiplier **always active**. (`ProductionCostMultiplier` / `ProductionTimeMultiplier` legitimately support `Prerequisites` and are unaffected.)
+### TD GDI release regression (2026-07-17, CLOSED)
 
-Three more always-active `FirepowerMultiplier` instances were found and fixed (`Prerequisites:` → `RequiresCondition:`):
+See [`INCIDENT_TD_GDI_RELEASE_REGRESSION.md`](INCIDENT_TD_GDI_RELEASE_REGRESSION.md).
 
-- `FirepowerMultiplier@ra1_soviets_doctrine_conscription` (Modifier 110) — `mods/cameo/ContentPacks/RedAlert/Soviets/yaml/templates.yaml`
-- `FirepowerMultiplier@global_conscription_buff` (Modifier 110) — `mods/cameo/rules/defaults.yaml`
-- `FirepowerMultiplier@selectcolin` (Modifier 80) — `mods/cameo/rules/advancewars.yaml`
+### The 2026-07-08 baseline audit
 
-**Impact before fix**: Conscription gave +10% firepower permanently (not just while the doctrine was active); the same permanent-always-on behaviour applied to `global_conscription_buff` and Advance Wars CO Colin's firepower debuff.
-
-**Sweep method**: scanned every `*.yaml` under `mods/cameo` for a `Prerequisites:` line whose parent block is any `*Multiplier@` trait other than `Production*` — 0 remaining instances after the fixes. The UK-economy / France-siege / RA2 commando-doctrine templates from the earlier audit notes are not present on this branch; nothing else was actionable here.
-
-## W24 cluster 8 — 227mm / GDIRigMissilePod / MammothTusk (2026-08-20)
-
-**Converted** three legacy mixed-stack missile weapons to the 3-way split (one warhead, one projectile, one effect):
-
-- `227mm` (`mods/cameo/weapons/tiberiandawn.yaml`) → `^Warhead_MissileHE_Medium` + `^Projectile_Missile_Medium` + `^Effect_MissileHE_Medium`.
-- `GDIRigMissilePod` (`mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/weapons.yaml`) → `^Warhead_MissileHE_Heavy` + `^Projectile_Missile_Medium` + `^Effect_MissileHE_Medium`.
-- `MammothTusk` (`mods/cameo/ContentPacks/RedAlert/Shared/yaml/weapons.yaml`) → `^Warhead_MissileHE_Heavy` + `^Projectile_Missile_Heavy` + `^Effect_MissileHE_Heavy`.
-
-**Preserved:** resolved per-shot damage totals (8000/32000/24000), percentage twins, `Range`, `ReloadDelay`, `Burst`, `ValidTargets`, local `Projectile` overrides (`Speed`, `Inaccuracy`, launch angles), impact sounds, target filters, and `ImpactActors`. Added local `Warhead@EffectWater` because the new `^Effect_MissileHE_*` templates do not provide one.
-
-**Resolver diff:** `tools/audit/review_resolve_diff.py` clean. The flak bullet contrail colors (`ContrailStartColor: FF884400`, `ContrailEndColor: 000000FF`) were restored to the three non-AMT parent projectiles as a resolved-behaviour preserve.
-
-**Audits:** `find_empty_warhead.py` 0; `audit_warhead_split` broadcast count 958, baseline lowered 965→958; `audit_physical_state_warheads` PASS; `audit_balance_drift` clean; `audit_duplicate_inherits` no new findings for the cluster; `utility --check-yaml` pre-existing errors/warnings unchanged.
-
-**Boot-gate:** `launch-game.cmd` reached `MenuPostProcessEffect.PostWorldLoaded`; no new `exception-*.log` after the run.
-
-## W24 cluster 9 — D2K rocket family (GoliathRockets_AA, WraithRockets_AA, SunDogRockets, MissileTurret, ScoutRockets_AA, HeavyOrdosCombatTankRockets) (2026-08-22)
-
-**Converted** six mixed-stack D2K-rocket weapons to a single `^D2KRocket` archetype (one `^Warhead_MissileAP_Heavy` main + `^Warhead_MissileAP_Heavy_Percentage` twin):
-
-- `GoliathRockets_AA` (`mods/cameo/ContentPacks/StarCraft/Terran/yaml/weapons.yaml`) → 5×6000 + 5×3 = `Damage: 30000` / `Damage: 15`.
-- `WraithRockets_AA` (`mods/cameo/ContentPacks/StarCraft/Terran/yaml/weapons.yaml`) → 5×2000 + 5×1 = `Damage: 10000` / `Damage: 5`.
-- `SunDogRockets` (`mods/cameo/ContentPacks/StarCraft/Terran/yaml/weapons.yaml`) → 5×2000 + 5×1 = `Damage: 10000` / `Damage: 5`.
-- `MissileTurret` (`mods/cameo/ContentPacks/StarCraft/Terran/yaml/weapons.yaml`) → 5×4000 + 5×2 = `Damage: 20000` / `Damage: 10`.
-- `ScoutRockets_AA` (`mods/cameo/ContentPacks/StarCraft/Protoss/yaml/weapons.yaml`) → 5×2000 + 5×1 = `Damage: 10000` / `Damage: 5`.
-- `HeavyOrdosCombatTankRockets` (`mods/cameo/ContentPacks/D2k/Ordos/yaml/weapons.yaml`) → 5×2000 + 5×1 = `Damage: 10000` / `Damage: 5`.
-
-**Removed:** `^Chaingun`, `^FlakWeapon`, `^LightMissile`, `^MediumMissile` inherits and their `Warhead@Chaingun`, `Warhead@FlakWeapon`, `Warhead@LightMissile`, `Warhead@MediumMissile` main/percentage blocks.
-
-**Preserved:** `Range`, `ReloadDelay`, `Burst`, `BurstDelays`, `ValidTargets`, `Report`, local `Projectile` overrides (`Speed`, `Inaccuracy`, launch angles, Wraith/HeavyOrdos `ContrailStartColor`/`ContrailEndColor`), and resolved water-splash behaviour by adding a local `Warhead@EffectWater: CreateEffect` (`Explosions: small_splash`, `ValidTargets: Water, Underwater`, `InvalidTargets: Ship, Structure, Bridge`) because `^D2KRocket` (via `^Effect_MissileAP_Heavy`) does not define one. Also restored the flak-bullet contrail visual fields (`ContrailZOffset`, `ContrailStartColor`, `ContrailEndColor`, `ContrailStartWidth`, `ContrailEndWidth`) as local `Projectile` overrides because `^Projectile_Missile_Heavy` drops them.
-
-**Key finding:** `^D2KRocket` weapons that previously resolved through `^FlakWeapon` need explicit local `ContrailStartColor`/`ContrailEndColor`/`ContrailZOffset`/`ContrailStartWidth`/`ContrailEndWidth` overrides to preserve the resolved old projectile appearance, and a local `Warhead@EffectWater` to keep the water splash.
-
-**Resolver diff:** `tools/audit/review_resolve_diff.py` OK (behavioural invariants preserved) for all six, with no CreateEffect changes; the only resolved delta is the damage-warhead multiset collapsing to one warhead whose sum equals the old total.
-
-**Audits:** `find_empty_warhead.py` 0; `find_orphan_old_keys.py` 0 real bugs; `audit_warhead_split` broadcast count 952, baseline lowered 958→952; `audit_physical_state_warheads` PASS; `audit_balance_drift` clean; `sweep_areadamage.py` dry-run no changes in cluster; `extract_stats` regenerated ledgers; `run_all.py` has pre-existing unrelated failures (`audit_inherits`, `audit_upgrades`, `audit_sequences`, `audit_fluent`, `audit_basebuilder_crates`, `audit_buildable_order`, `audit_weapon_suffixes`) unchanged.
-
-**Boot-gate:** `launch-game.cmd` reached `MenuPostProcessEffect.PostWorldLoaded`; no new `exception-*.log`.
+The original long-form findings (the B1–B12 taxonomy, per-class tables) are archived at
+[`../history/audits/BASELINE_FINDINGS.md`](../history/audits/BASELINE_FINDINGS.md) and
+[`../history/MASTER_REPORT_2026-07-08.md`](../history/MASTER_REPORT_2026-07-08.md). Their file
+paths predate the ContentPack restructure and their counts predate everything above — read them
+for the taxonomy, never for numbers.

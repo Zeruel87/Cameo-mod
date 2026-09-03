@@ -1,12 +1,20 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "_comment": [
+    "Hook commands use $CLAUDE_PROJECT_DIR so they resolve from anywhere.",
+    "A bare relative path ('python tools/hooks/bash_guard.py') resolves against the",
+    "SHELL's current directory, so a single `cd` into a subdirectory made every",
+    "subsequent Bash call fail with 'can't open file .../tools/hooks/bash_guard.py'",
+    "- the guard blocked the tool it was protecting, and the only way out was to",
+    "create a stub at the wrong path. Keep these absolute."
+  ],
   "hooks": {
     "SessionStart": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "python tools/hooks/session_checklist.py",
+            "command": "python \"$CLAUDE_PROJECT_DIR/tools/hooks/session_checklist.py\"",
             "timeout": 10,
             "statusMessage": "Loading Cameo checklist"
           }
@@ -19,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python tools/hooks/bash_guard.py",
+            "command": "python \"$CLAUDE_PROJECT_DIR/tools/hooks/bash_guard.py\"",
             "timeout": 15
           }
         ]

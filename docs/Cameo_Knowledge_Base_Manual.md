@@ -5020,9 +5020,28 @@ The loader must be `static object MethodName(MiniYaml yaml)`. If the method sign
 
 `LoadTraitInfo` throws `YamlException` if the trait node has a non-empty `Value`. A trait is always a mapping; its data lives in child nodes.
 
-### Unknown fields throw by default
+### Unknown fields throw ONLY on the `LoadField` path — traits and warheads DROP them silently
 
-If a YAML file contains a key that does not match any serializable field on the target type, the default `UnknownFieldAction` throws a `NotImplementedException`. The linter swaps this to a logged error. The same action is also used when the `TypeDescriptor` fallback cannot find a converter for a type.
+⚠ **CORRECTED 2026-08-22 (measured).** This section used to say flatly that an unknown field
+throws. That is true of **`FieldLoader.LoadField`** (`FieldLoader.cs:758` → `UnknownFieldAction`
+→ `NotImplementedException`), which settings parsing and the `--check-yaml` linter use.
+
+It is **false** of **`FieldLoader.Load(object, MiniYaml)`** (`FieldLoader.cs:676`), which iterates
+the TYPE's own fields and **never looks at the leftover yaml keys**. Traits and warheads load
+through `Load` (`WeaponInfo.LoadWarheads`, `WeaponInfo.cs:178`), so a misspelled or misplaced
+field on a trait or a warhead is discarded in **total silence** — no error, no crash, green audits.
+
+What that cost: 2059 `Warhead@…Percentage` nodes across 1284 weapons carried a `Falloff:` line on
+`HealthPercentageDamage`, a type with 12 fields and no `Falloff`, so every nuke's percentage half
+was a flat pinpoint circle instead of half the main blast. Another 104 carried `IntegrityScale`,
+so the Tesla/EMP drain of the percentage half never fired at all.
+
+Empirical proof either way: the tree boots with those lines present. If they threw, it could not.
+
+**Guard:** `python tools/audit/audit_dead_warhead_fields.py` (in `run_all.sh`, LOWER-ONLY ratchet).
+⚠ When reading C# to build a field set, match `public`, **not** `public readonly` — FieldLoader
+loads any public instance field and some AS warheads declare mutable ones
+(`CreateTintedCellsWarhead: public int Level = 100;`).
 
 ### Type name collisions
 
@@ -6271,7 +6290,7 @@ If any of the concepts above feel unclear, review the relevant section before co
 - `docs/AGENT_WORKSPACE.md`
 - `docs/DESIGN.md`
 - `docs/MIGRATION.md` — the ongoing migration of faction content into self-contained ContentPacks, directly relevant to the `mods/cameo/ContentPacks/` layout described here.
-- `docs/history/AI_AGENT_HANDOFF.md`
+- `docs/history/handoffs/AI_AGENT_HANDOFF_2026-07-25.md`
 
 ## What to read next
 
@@ -14408,7 +14427,7 @@ If any of the concepts above feel unclear, review the relevant section before co
 - [Part 8.4 — Bot Order Flow](#file-chapters-Part_08_Chapter_04_Order_Flow) for how bot orders enter the lockstep pipeline.
 - [Part 9.1 — OrderManager and Lockstep Foundation](#file-chapters-Part_09_Chapter_01_OrderManager) for the network frame pacing that makes bot orders deterministic.
 - `docs/design/FORMULA_V2.md` and `docs/design/ARMOR_SYSTEM.md`
-- `docs/history/AI_AGENT_HANDOFF.md`
+- `docs/history/handoffs/AI_AGENT_HANDOFF_2026-07-25.md`
 
 
 ---
@@ -14845,7 +14864,7 @@ For build planning, `UnitCompositionsBotModule` provides a parsed composition st
 - [Part 8.3 — Bot Squads and Combat Heuristics](#file-chapters-Part_08_Chapter_03_Squads) for how `SquadManagerBotModuleCA` turns produced units into combat forces.
 - [Part 8.4 — Bot Order Flow](#file-chapters-Part_08_Chapter_04_Order_Flow) for how bot module orders enter the lockstep pipeline.
 - `docs/design/FORMULA_V2.md` and `docs/design/ARMOR_SYSTEM.md`
-- `docs/history/AI_AGENT_HANDOFF.md`
+- `docs/history/handoffs/AI_AGENT_HANDOFF_2026-07-25.md`
 
 
 ---
@@ -15876,7 +15895,7 @@ Set `IsImmediate = true` for orders that should not cross the lockstep pipeline 
 - [Part 8.1 — Bot Architecture and IBot](#file-chapters-Part_08_Chapter_01_IBot) for the broader `IBot` and `ModularBot` architecture.
 - [Part 8.3 — Bot Squads and Combat Heuristics](#file-chapters-Part_08_Chapter_03_Squads) for the squad state machines that issue the `AttackMove` orders described in this chapter.
 - `docs/AGENT_WORKSPACE.md`
-- `docs/history/AI_AGENT_HANDOFF.md`
+- `docs/history/handoffs/AI_AGENT_HANDOFF_2026-07-25.md`
 
 ## Summary
 

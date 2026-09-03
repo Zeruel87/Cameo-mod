@@ -37,7 +37,7 @@ sys.path.insert(0, str(ROOT / "tools" / "balance"))
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-import effective_damage as ed  # noqa: E402
+from audit_three_way_split import main_warhead_nodes  # noqa: E402
 from miniyaml import Ruleset  # noqa: E402
 
 FAMILY_TPL = re.compile(r"^\^Warhead_([A-Za-z]+)_(\w+)$")
@@ -150,8 +150,11 @@ def analyse(rs):
         local = rs.weapon(wname)
         if resolved is None or local is None:
             continue
-        mains = [(t, base) for t, _wt, base, _n in ed.flat_damage_warheads(resolved)
-                 if "ExtraDamage" not in t]
+        # Use the exact same predicate as the all-concrete split audit.  This
+        # table is the direct actor-armament subset of that survey, not a
+        # separate flat-damage approximation with accidentally similar totals.
+        mains = [(n.key.replace("Warhead@", ""), int(str(n.get("Damage")).strip()))
+                 for n in main_warhead_nodes(resolved)]
         if len(mains) < 2:
             continue
 
@@ -219,7 +222,8 @@ def main() -> int:
 
     print("# W24 collapse plan — one damage family per weapon")
     print()
-    print(f"**{len(rows)}** multi-warhead fired weapons. **No yaml is touched by this tool.**")
+    print(f"**{len(rows)}** directly actor-armed multi-main weapons. "
+          "**No yaml is touched by this tool.**")
     print()
     print("| confidence | weapons | meaning |")
     print("|---|--:|---|")
@@ -232,10 +236,10 @@ def main() -> int:
         print(f"| {conf} | {by_conf.get(conf, 0)} | {meaning} |")
     print()
     uniform = sum(1 for r in rows if r["uniform"])
-    print(f"⚠ **{uniform} of {len(rows)}** have every main at the SAME damage — the broadcast "
-          f"fingerprint. Their `sum` is an artifact of how many templates were inherited, not a "
-          f"design value. Collapse preserving the sum anyway (behaviour-neutral, verifiable) and "
-          f"let the PRICING pass move it; see BALANCE_PROGRAM_PLAN §1b.")
+    print(f"⚠ **{uniform} of {len(rows)}** have every main at the SAME damage — a useful "
+          "broadcast fingerprint, not conversion authorization. Preserving the numeric sum does "
+          "not preserve armor profile, geometry, relationships, damage types, or separately "
+          "rounded percentage damage; every selected cohort still needs those guards.")
     print()
 
     show = [r for r in rows if r["confidence"] == "NONE"] if args.unresolved else rows

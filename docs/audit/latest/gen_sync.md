@@ -1,4 +1,3 @@
-[X] weapons.yaml has 1 ^Warhead_ template(s) the generator does NOT emit:
-      ^Warhead_Sniper_Light
 
-checked 94 shared template(s); drift = 1
+checked 139 shared template(s); drift = 0
+[OK] generator reproduces every ^Warhead_ family in weapons.yaml (no-op regenerate).

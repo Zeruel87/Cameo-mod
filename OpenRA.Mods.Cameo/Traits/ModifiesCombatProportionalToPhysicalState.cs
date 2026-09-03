@@ -17,7 +17,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Cameo.Traits
 {
-	[Desc("Scales reload, range, speed and firepower with a PhysicalState meter.",
+	[Desc("Scales reload, range, movement/turn speed, firepower, and damage taken with a PhysicalState meter.",
 		"The framework's missing half: every stock proportional trait only makes things WORSE",
 		"(SlowsProportionalToPhysicalState, DamageMultiplierProportionalToPhysicalState), so a",
 		"spin-UP meter had no way to express itself. This one is signed — put the better number",
@@ -50,6 +50,18 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		[Desc("Movement-speed modifier at the meter's high end (percentage).")]
 		public readonly int SpeedTo = 100;
+
+		[Desc("Body turn-speed modifier at the meter's low end (percentage).")]
+		public readonly int TurnSpeedFrom = 100;
+
+		[Desc("Body turn-speed modifier at the meter's high end (percentage).")]
+		public readonly int TurnSpeedTo = 100;
+
+		[Desc("Turret turn-speed modifier at the meter's low end (percentage).")]
+		public readonly int TurretTurnSpeedFrom = 100;
+
+		[Desc("Turret turn-speed modifier at the meter's high end (percentage).")]
+		public readonly int TurretTurnSpeedTo = 100;
 
 		[Desc("Firepower modifier at the meter's low end (percentage).")]
 		public readonly int FirepowerFrom = 100;
@@ -89,7 +101,8 @@ namespace OpenRA.Mods.Cameo.Traits
 
 	public class ModifiesCombatProportionalToPhysicalState
 		: ConditionalTrait<ModifiesCombatProportionalToPhysicalStateInfo>,
-			IReloadModifier, IRangeModifier, ISpeedModifier, IFirepowerModifier,
+			IReloadModifier, IRangeModifier, ISpeedModifier, ITurnSpeedModifier,
+			ITurretTurnSpeedModifier, IFirepowerModifier,
 			IDamageModifier, INotifyPhysicalStateChanged
 	{
 		readonly PhysicalState physicalState;
@@ -97,6 +110,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		int reload = 100;
 		int range = 100;
 		int speed = 100;
+		int turnSpeed = 100;
+		int turretTurnSpeed = 100;
 		int firepower = 100;
 		int damageTaken = 100;
 		int pitch = 100;
@@ -129,6 +144,8 @@ namespace OpenRA.Mods.Cameo.Traits
 			reload = Interpolate(Info.ReloadDelayFrom, Info.ReloadDelayTo, Intensity);
 			range = Interpolate(Info.RangeFrom, Info.RangeTo, Intensity);
 			speed = Interpolate(Info.SpeedFrom, Info.SpeedTo, Intensity);
+			turnSpeed = Interpolate(Info.TurnSpeedFrom, Info.TurnSpeedTo, Intensity);
+			turretTurnSpeed = Interpolate(Info.TurretTurnSpeedFrom, Info.TurretTurnSpeedTo, Intensity);
 			firepower = Interpolate(Info.FirepowerFrom, Info.FirepowerTo, Intensity);
 			damageTaken = Interpolate(Info.DamageTakenFrom, Info.DamageTakenTo, Intensity);
 			pitch = Interpolate(Info.PitchFrom, Info.PitchTo, Intensity);
@@ -179,6 +196,16 @@ namespace OpenRA.Mods.Cameo.Traits
 		int ISpeedModifier.GetSpeedModifier()
 		{
 			return IsTraitDisabled ? 100 : speed;
+		}
+
+		int ITurnSpeedModifier.GetTurnSpeedModifier()
+		{
+			return IsTraitDisabled ? 100 : turnSpeed;
+		}
+
+		int ITurretTurnSpeedModifier.GetTurretTurnSpeedModifier(string turretName)
+		{
+			return IsTraitDisabled ? 100 : turretTurnSpeed;
 		}
 
 		int IFirepowerModifier.GetFirepowerModifier(string armamentName)

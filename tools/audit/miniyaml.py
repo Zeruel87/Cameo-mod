@@ -2,7 +2,7 @@
 """miniyaml.py — shared MiniYAML loader/merger/resolver for the Cameo audit suite.
 
 Implements the subset of OpenRA MiniYAML semantics the audits need
-(see docs/MASTER_REPORT.md Appendix A):
+(see docs/history/MASTER_REPORT_2026-07-08.md Appendix A):
 
 - tab/space indentation, ``#`` comments (``\\#`` escapes), ``key: value`` pairs
 - ``^Template`` definitions, ``Trait@Suffix`` instance keys, ``-Key`` removals

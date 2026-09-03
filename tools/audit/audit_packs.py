@@ -90,7 +90,11 @@ def main() -> int:
         p = prefix_of(a)
         if p:
             outside[p].append((a, f))
-    prefixes = sorted(set(in_pack) | set(outside), key=lambda p: -len(outside.get(p, [])))
+    # ⚠ The name is the TIE-BREAK, and it is not optional: the input is a SET, so its iteration
+    # order varies between runs, and a stable sort on the count alone therefore ordered equal-count
+    # rows differently every time. docs/audit/latest/ is TRACKED evidence (CLAUDE.md rule 8) and
+    # that churn diffed ~140 lines on every regeneration for no reason.
+    prefixes = sorted(set(in_pack) | set(outside), key=lambda p: (-len(outside.get(p, [])), p))
     print("## P1 — conversion coverage (faction prefixes with actors OUTSIDE packs)\n")
     print("| prefix | in packs | outside packs | sample outside file |")
     print("|---|---|---|---|")
