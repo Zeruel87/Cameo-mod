@@ -2405,9 +2405,9 @@
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@bot: ^BotProductionBehavior
 	Inherits@cloak: ^AcceptsCloakCrate
+	Inherits@StealthGenCloakable: ^StealthGenCloakable
 	Inherits@LockOn: ^LockOn
 	Inherits@ivan: ^BombAttachable
-	Inherits@stealthgencloak: ^StealthGenCloakable
 	Inherits@shielded: ^ShieldedShieldable
 	Inherits@chrono: ^ChronoBeamable
 	Inherits@base-reveal: ^Base-reveal
@@ -2934,6 +2934,7 @@
 		Categories: Aircraft
 	SpawnActorOnDeath:
 		RequiresCondition: airborne
+		Actor: aircraft_husk
 	FireWarheadsOnDeath:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
@@ -3022,6 +3023,7 @@
 	WithFacingSpriteBody:
 	SpawnActorOnDeath:
 		RequiresCondition: airborne
+		Actor: aircraft_husk
 	FireWarheadsOnDeath:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
@@ -3115,6 +3117,7 @@
 		Categories: Infantry
 	SpawnActorOnDeath:
 		RequiresCondition: airborne
+		Actor: aircraft_husk
 	FireWarheadsOnDeath:
 		Weapon: HeliExplode
 		EmptyWeapon: HeliExplode
@@ -5230,6 +5233,45 @@
 ^Blindable:
 	ExternalCondition@blinded:
 		Condition: blinded
+	# --- Blind METER (physical-state axis). ADDITIVE + inert until weapons migrate.
+	# W10 spec: range scales 100% -> 20% proportionally with the meter; at FULL blind
+	# the weapon is disabled, the icon shows, and the `blinded` condition applies so
+	# blinding units retarget. This block defines the meter and the full-blind
+	# condition grant; the proportional range scaling and weapon disable wiring stay
+	# with the Set B weapon migration (warheads switch from `GrantExternalCondition`
+	# `blinded` to `PhysicalStateName: Blind` / `PhysicalStateScale` and the old
+	# `RangeMultiplier@blinded` is retired). See PHYSICAL_STATE_SYSTEM.md §5 / W10.
+	PhysicalState@Blind:
+		Name: Blind
+		MaxValue: 20000
+		MinValue: 0
+		RelaxedValue: 0
+		RelativeToHealth: false
+		ApplyDamageModifiers: false
+		RelaxationLinear: 200
+		RelaxationInterval: 1
+		RelaxationDelay: 25
+		InitialValue: 0
+	PhysicalStateBar@Blind:
+		PhysicalStateName: Blind
+		PositiveColor: 888888
+		NeutralColor: 808080
+		DisplayWhenRelaxed: false
+		ShowAbsoluteValues: false
+	# `blinded` is still granted at a completely full meter; old-style weapons that
+	# directly `GrantExternalCondition: blinded` keep working until they migrate.
+	GrantConditionOnPhysicalState@blinded:
+		PhysicalStateName: Blind
+		Condition: blinded
+		LowerValue: 20000
+		UpperValue: 20000
+	WithPhysicalStateColoredOverlay@Blind:
+		PhysicalStateName: Blind
+		MinColor: 88888811
+		MaxColor: 888888AA
+		UpperValue: 20000
+		LowerValue: 2000
+	# --- old binary condition block (preserved until Set B weapon migration).
 	TimedConditionBar@blinded:
 		Condition: blinded
 		Color: 888888
@@ -5515,7 +5557,7 @@
 		LowerValue: -20000
 	WithPhysicalStateColoredOverlay@CryoFreeze:
 		PhysicalStateName: Temperature
-		MinColor: 88BBFF40
+		MinColor: 88BBFF33
 		MaxColor: 4488FF08
 		UpperValue: -200
 		LowerValue: -20000
@@ -5529,7 +5571,7 @@
 	WithPhysicalStateColoredOverlay@Overheating:
 		PhysicalStateName: Temperature
 		MinColor: FF884408
-		MaxColor: FF402040
+		MaxColor: FF402033
 		UpperValue: 20000
 		LowerValue: 200
 	WithIdleOverlay@overheat:
@@ -5689,15 +5731,9 @@
 	WithColoredOverlay@corroded:
 		RequiresCondition: corroded
 		Color: 44FF4444
-	WithIdleOverlay@corroded:
-		RequiresCondition: corroded
-		Image: explosion
-		Sequence: nax_corr_frag
-		StartSequence: nax_corr_frag
-		Palette: ra2effect
 	# --- Corrosion METER (physical-state axis). ADDITIVE + inert until a weapon feeds it via
 	# AreaDamage PhysicalStateName: Corrosion / PhysicalStateScale. Green tint 200->20000; effects
-	# open at 1% (Corroding); nax_corr_frag pulse at max. Binary `corroded` above kept until the
+	# open at 1% (Corroding). Binary `corroded` above is kept until the
 	# Schwarzer Mond weapons are migrated onto the meter. See docs/design/PHYSICAL_STATE_SYSTEM.md.
 	PhysicalState@Corrosion:
 		Name: Corrosion
@@ -5735,8 +5771,8 @@
 		LowerValue: 20000
 	WithPhysicalStateColoredOverlay@Corrosion:
 		PhysicalStateName: Corrosion
-		MinColor: 44FF4422
-		MaxColor: 00FF0040
+		MinColor: 44FF4404
+		MaxColor: 00FF001A
 		UpperValue: 20000
 		LowerValue: 200
 	ChangesHealthProportionalToPhysicalState@Corrosion:
@@ -5770,14 +5806,6 @@
 		DamageMultiplierAtMaximum: 150
 		UseDeviationFromRelaxed: true
 		RequiresCondition: Corroding
-	WithIdleOverlay@CorrosionPulse:
-		RequiresCondition: CorrosionMax
-		Image: explosion
-		Sequence: nax_corr_frag
-		StartSequence: nax_corr_frag
-		Palette: ra2effect
-		IsDecoration: True
-
 ^AffectedByHealingField:
 	ExternalCondition@HealingField:
 		Condition: HealingField

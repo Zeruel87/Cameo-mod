@@ -1,9 +1,9 @@
 # Weapon uniqueness (DESIGN.md §10 — faction identity)
 
-damaging armament weapons checked: 1425; W1 same-faction 34, W2 cross-faction 34, W3 carrier-only 95
+damaging armament weapons checked: 1458; W1 same-faction 39, W2 cross-faction 38, W3 carrier-only 95
 
 
-## W1 — same faction, distinct actors, identical weapon (34)
+## W1 — same faction, distinct actors, identical weapon (39)
 
 | weapon | faction(s) | actors |
 |---|---|---|
@@ -13,21 +13,26 @@ damaging armament weapons checked: 1425; W1 same-faction 34, W2 cross-faction 34
 | cabalengineerrepairbeam | cabal | cabal_engineer, cabal_repairdrone |
 | d2k_apc_rocket | ordos | ordos_apc, ordos_dustdrone |
 | d2k_apc_rocket_aa | ordos | ordos_banshee, ordos_laboratorycrawler |
-| d2k_bazooka2 | harkonnen, ixian, ordos | heavy_rocket_raider.ixian, rocket_raider.ixian |
-| d2k_rocket_trooper | ixian, ordos | ixian_rockettrooper, ordos_rockettrooper, trooper |
+| d2k_bazooka2 | ixian, ordos | heavy_rocket_raider.ixian, rocket_raider.ixian |
+| d2k_rocket_trooper | atreides, corrino, harkonnen, ixian, ordos | atreides_rockettrooper, corrino_sardaukar_bazooka, corrino_trooper, harkonnen_rockettrooper, harkonnen_sardaukar, ixian_rockettrooper, ordos_rockettrooper, trooper |
+| devbullet | harkonnen | devastator, harkonnen_devastatormech |
 | futuremicrotorpedos | futuretech | futuretech_phalanxwip, futuretech_riptideacv |
+| harkonnenflameturret | harkonnen | harkonnen_flametank, harkonnen_flameturret |
+| hmg | atreides | atreides_apc, atreides_sandbike |
 | incendiaryyakchaingun | ra1_soviets | ra1_soviets_nuclearyak, ra1_soviets_yakscoutplane |
 | jimraynormachinegun | terran | terran_jimraynor, terran_pythean |
 | laboratory_bioball | ordos | ordos_banshee, ordos_laboratorycrawler |
-| light_inf_lmg | ixian, ordos | ixian_lightinfantry, light_inf, ordos_lightinfantry |
+| light_inf_lmg | atreides, corrino, harkonnen, ixian, ordos | atreides_lightinfantry, corrino_lightinfantry, harkonnen_lightinfantry, ixian_lightinfantry, light_inf, ordos_lightinfantry |
 | light_inf_lmg_upgrade | ixian | ixian_lightinfantry, light_inf |
 | medicheal | terran | terran_medic, terran_medivac |
+| mtank_pri | harkonnen, ixian | atreides_missiletank, corrino_missiletank, missile_tank |
 | naxgrillearty | naxis | naxis_grille, naxis_naxibunker, naxis_shoekarn |
 | naxiantitankcannon | naxis | naxis_antitankcannon, naxis_oldtank |
 | naxijadgdestroyer | naxis | naxis_imperialturbotank, naxis_jagdpanzer |
 | naxmauscannon | naxis | naxis_maus, naxis_nokana |
 | naxplanegun_elite | naxis | naxis_bf109, naxis_me262 |
 | naxquadcannon_aa_elite | naxis | naxis_naxibunker, naxis_ratte |
+| ornigun | harkonnen, ixian, ordos | atreides_ornithopter, harkonnen_gunship |
 | pdlaserbike | td_nod | td_nod_chemicalattackbike, td_nod_reconbike |
 | rocketsra | ra1_soviets | ra1_allies_alliedrocketsoldier, ra1_soviets_rocketsoldier |
 | spore_aa | zerg | zerg_creepcolony, zerg_creepcolony_defense, zerg_sporecolony, zerg_sunkencolony_defense |
@@ -43,26 +48,30 @@ damaging armament weapons checked: 1425; W1 same-faction 34, W2 cross-faction 34
 | yakchaingun | ra1_soviets | ra1_soviets_nuclearyak, ra1_soviets_yakscoutplane |
 
 
-## W2 — identical weapon across factions (34)
+## W2 — identical weapon across factions (38)
 
 | weapon | families | factions | actors |
 |---|---|---|---|
+| d2k_rocket_trooper | 8 | atreides, corrino, harkonnen, ixian, ordos | atreides_rockettrooper, corrino_sardaukar_bazooka, corrino_trooper, harkonnen_rockettrooper, harkonnen_sardaukar, ixian_rockettrooper, ordos_rockettrooper, trooper |
+| light_inf_lmg | 6 | atreides, corrino, harkonnen, ixian, ordos | atreides_lightinfantry, corrino_lightinfantry, harkonnen_lightinfantry, ixian_lightinfantry, light_inf, ordos_lightinfantry |
 | wc2_tower_arrow | 6 | wc2_humans, wc2_orcs | wc2_humans_cannontower, wc2_humans_guardtower, wc2_humans_humanscouttower, wc2_orcs_cannontower, wc2_orcs_guardtower, wc2_orcs_orcwatchtower |
 | wc2cannontowerfire | 6 | wc2_humans, wc2_orcs | wc2_humans_cannontower, wc2_humans_guardtower, wc2_humans_humanscouttower, wc2_orcs_cannontower, wc2_orcs_guardtower, wc2_orcs_orcwatchtower |
 | ra2ifvrepair | 4 | futuretech, naxis, schwarzermond, tkm | futuretech_repairdroid, naxis_engineeringtruck, schwarzermond_engineeringarmor, tkm_repairtruck |
 | tanyaattach | 4 | ra1_allies, ra2_allies, td_gdi, td_nod | ra1_allies_tanya, ra2_allies_tanyaii, td_gdi_commando, td_nod_commando |
 | blackhawkcannon | 3 | latinsyndicate, ra2_allies, ra2_soviets | latinsyndicate_hindtransport, ra2_allies_nighthawk, ra2_soviets_transportkirov |
-| d2k_rocket_trooper | 3 | harkonnen, ixian, ordos | ixian_rockettrooper, ordos_rockettrooper, trooper |
-| light_inf_lmg | 3 | harkonnen, ixian, ordos | ixian_lightinfantry, light_inf, ordos_lightinfantry |
+| d2k_towermissile | 3 | corrino, harkonnen, ixian | corrino_sardaukar_bazooka, harkonnen_sardaukar, ixian_rocketturret |
+| mtank_pri | 3 | harkonnen, ixian | atreides_missiletank, corrino_missiletank, missile_tank |
 | ra220mmrapid | 3 | ra2_allies, ra2_soviets, yuri | ra2_allies_battlefortress, ra2_allies_battlefortress_chrono, ra2_allies_battlefortress_empty, ra2_soviets_warminer, yuri_slaveminer, yuri_slaveminer_deployed |
 | sealattach | 3 | futuretech, ra2_allies, tkm | futuretech_blackwidow, ra2_allies_seal, tkm_spetsnaz |
 | tsengineerpistol | 3 | forgotten, ts_gdi, ts_nod | forgotten_engineer, ts_gdi_engineer, ts_nod_engineer |
+| 80mm_a | 2 | atreides, corrino | atreides_combattank, corrino_bmp |
 | bigflamer | 2 | ra1_soviets, td_nod | ra1_soviets_gorynychtank, td_nod_flametank |
-| d2k_bazooka2 | 2 | harkonnen, ixian, ordos | heavy_rocket_raider.ixian, rocket_raider.ixian |
-| highvap | 2 | td_gdi, tkm | td_gdi_guardtower, tkm_bunker |
-| light_inf_lmg_upgrade | 2 | harkonnen, ixian, ordos | ixian_lightinfantry, light_inf |
+| d2k_155mm | 2 | atreides, corrino | atreides_siegetank, corrino_siegetank |
+| d2k_bazooka2 | 2 | ixian, ordos | heavy_rocket_raider.ixian, rocket_raider.ixian |
+| light_inf_lmg_upgrade | 2 | atreides, corrino, harkonnen, ixian, ordos | ixian_lightinfantry, light_inf |
 | naxlasert | 2 | schwarzermond, terran | schwarzermond_lasertower, terran_sentinel |
 | naxsturmarty | 2 | naxis, schwarzermond | naxis_sturmtiger, schwarzermond_sturmcannon |
+| ornigun | 2 | harkonnen, ixian, ordos | atreides_ornithopter, harkonnen_gunship |
 | plymouthrpgmines | 2 | eden, plymouth | eden_lynx_acidcloud, plymouth_lynx_esg |
 | plymouthtigerrpgmines | 2 | eden, plymouth | eden_tiger_acidcloud, plymouth_tiger_esg |
 | ra2rtruckrocket | 2 | futuretech, latinsyndicate | futuretech_phalanxwip, latinsyndicate_missiletruck |
@@ -90,7 +99,7 @@ damaging armament weapons checked: 1425; W1 same-faction 34, W2 cross-faction 34
 | chaingun | ra1_soviets_hindattackhelicopter, ra1_soviets_kamovattackhelicopter |
 | dragunovsniper | futuretech_salamanderifv, ra1_soviets_dragunovantimaterialsniper, ra2_allies_ifv, ra2_allies_ifv_chrono, ra2_allies_ifv_hmg, ra2_allies_ifv_mg, ra2_allies_ifv_missile, ra2_allies_ifv_repair |
 | drplasmatankweapon | futuretech_salamanderifv, ra2_allies_ifv, ra2_allies_ifv_chrono, ra2_allies_ifv_hmg, ra2_allies_ifv_mg, ra2_allies_ifv_missile, ra2_allies_ifv_repair |
-| fremen_l | futuretech_salamanderifv, ra2_allies_ifv, ra2_allies_ifv_chrono, ra2_allies_ifv_hmg, ra2_allies_ifv_mg, ra2_allies_ifv_missile, ra2_allies_ifv_repair |
+| fremen_l | atreides_fremen, futuretech_salamanderifv, ra2_allies_ifv, ra2_allies_ifv_chrono, ra2_allies_ifv_hmg, ra2_allies_ifv_mg, ra2_allies_ifv_missile, ra2_allies_ifv_repair |
 | grenade | futuretech_salamanderifv, ra2_allies_ifv, ra2_allies_ifv_chrono, ra2_allies_ifv_hmg, ra2_allies_ifv_mg, ra2_allies_ifv_missile, ra2_allies_ifv_repair, td_gdi_grenadier |
 | hindmissiles | ra1_soviets_hindattackhelicopter, ra1_soviets_kamovattackhelicopter |
 | ifvchronobeam | futuretech_salamanderifv, ra2_allies_ifv, ra2_allies_ifv_chrono, ra2_allies_ifv_hmg, ra2_allies_ifv_mg, ra2_allies_ifv_missile, ra2_allies_ifv_repair |

@@ -49,7 +49,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from miniyaml import Ruleset  # noqa: E402
 
 # Structural budget violations when this was written (2026-08-22). LOWER ONLY.
-TIER_BASELINE = 218
+TIER_BASELINE = 48
 
 MAIN_DAMAGE_TYPES = {"AreaDamage", "SpreadDamage", "HealthPercentageDamage", "TargetDamage"}
 COMPANION_MARKERS = ("Percentage", "ExtraDamage", "ExtraRepair", "Concrete")

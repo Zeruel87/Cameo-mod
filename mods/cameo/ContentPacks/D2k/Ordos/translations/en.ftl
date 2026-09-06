@@ -20,3 +20,7 @@ upgrade_ordos_aatrooper =
 
 upgrade_ordos_rapidfirearmorpiercingbelts =
    .description = Autoguns gain +10% firepower, +10% rate of fire, and +5% range.
+
+template_harvester =
+   .description = Collects spice for credits.
+      Unarmed

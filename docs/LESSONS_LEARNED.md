@@ -41,6 +41,8 @@ win — **unless the artifact says otherwise, and then the artifact wins and you
 **Silent-corruption classes — valid yaml, clean boot, wrong game**
 
 - [⛔ NEVER HAND-PARSE YAML — a sibling node silently overwrote every Versus number (2026-08-22)](#-never-hand-parse-yaml--a-sibling-node-silently-overwrote-every-versus-number-2026-08-22)
+- [⛔ `Node.child()` is an EXACT match — 97% of the mod's producers were invisible (2026-09-06)](#-nodechild-is-an-exact-match--97-of-the-mods-producers-were-invisible-2026-09-06)
+- [A hand-edit to generated output has a countdown on it (2026-09-05)](#a-hand-edit-to-generated-output-has-a-countdown-on-it-2026-09-05)
 - [Five bug classes from the W25 armor/Versus rebuild (2026-08-16/17)](#five-bug-classes-from-the-w25-armorversus-rebuild-2026-08-1617)
 - [3-way split retrofits: two recurring child-weapon bugs (2026-08-08)](#3-way-split-retrofits-two-recurring-child-weapon-bugs-2026-08-08)
 - [Bulk YAML rename scripts: safety lessons (2026-07-31)](#bulk-yaml-rename-scripts-safety-lessons-2026-07-31)
@@ -51,6 +53,7 @@ win — **unless the artifact says otherwise, and then the artifact wins and you
 - [Porting from an upstream mod: a NEW NAME is not a NEW MECHANIC (2026-08-23)](#porting-from-an-upstream-mod-a-new-name-is-not-a-new-mechanic-2026-08-23)
 - [`Inherits` POSITION is semantic, not cosmetic (2026-08-16)](#inherits-position-is-semantic-not-cosmetic-2026-08-16)
 - [Upgrade regressions feel like downgrades (2026-08-19)](#upgrade-regressions-feel-like-downgrades-2026-08-19)
+- [`git grep` and `miniyaml.load` BOTH silently under-read non-UTF-8 weapons yaml (2026-09-05)](#git-grep-and-miniyamlload-both-silently-under-read-non-utf-8-weapons-yaml-2026-09-05)
 
 **Weapon templates, the 3-way split and the effect layer**
 
@@ -1201,6 +1204,31 @@ A W24 collapse can move an upgrade pair onto families with **opposite Versus pro
 
 **Rule:** every upgrade must be verified with `python tools/audit/audit_upgrade_regression.py` after any family repoint that touches an armament pair. Do not rely on a damage-preservation check alone.
 
+## `git grep` and `miniyaml.load` BOTH silently under-read non-UTF-8 weapons yaml (2026-09-05)
+
+Several weapons yaml files in this repo contain non-UTF-8 bytes (legacy encoding
+artifacts from upstream mod imports). Two standard tools silently fail on them:
+
+1. **`git grep` treats them as binary and skips them entirely.** It reported
+   `ordos_chemturret` as absent from a file where `git show <rev>:<file> | grep -a`
+   finds it at line 1136. The file is invisible to `git grep`, not just the match.
+2. **`miniyaml.load` silently under-parses the same files** — it reported
+   `0 nodes added` for `D2k/Ordos/yaml/weapons.yaml` when raw byte extraction
+   found `ordos_chemturret` and `ordos_laserturret` right there.
+
+This nearly caused the deletion of 30 live weapon nodes during the master merge,
+including the whole D2k mortar family and the CannonTesla templates.
+
+**Rule:** for any presence/absence check on weapons yaml, use
+`git show <rev>:<file> | grep -a`, never `git grep` and never a bare
+`miniyaml` node count. The `-a` flag forces `grep` to treat the input as text
+regardless of binary byte detection.
+
+**Guard:** no automated guard yet. The splice regen (`b905d7679`) rewrote
+`weapons.yaml` as clean UTF-8, but per-faction ContentPack files may still
+carry legacy encodings. Always verify with `git show ... | grep -a` before
+asserting a weapon or node is absent.
+
 ## Inline effect warheads should be inherited, not inline (2026-08-19)
 
 Maintainer ruling: **Effect warheads (`Warhead@Effect*`) should live in `^Effect_*` templates and be inherited, not declared inline on a concrete weapon.** The only legitimate exception is superweapons, which may need multiple bespoke animations.
@@ -1254,3 +1282,57 @@ silently truncates the value rather than reporting an error. A truncated .NET
 format string can then throw only when the consuming widget draws. Neither
 `--check-yaml` nor the boot gate exercises that graph draw path, so any YAML
 value carrying a `#` needs a display-time check.
+## ⛔ `Node.child()` is an EXACT match — 97% of the mod's producers were invisible (2026-09-06)
+
+`miniyaml.Node.child("X")` matches the literal key `X`. Almost every trait in this tree is
+written with an `@suffix`, so the lookup returns `None` for a trait that is plainly there:
+
+    atreides_barracks actually declares
+        Production@NORMAL
+        Production@CLASSICPRODUCTIONQUEUES
+        ProductionQueue@INFANTRY
+
+    node.child("ProductionQueue")            -> None      ⛔
+    node.children_named("ProductionQueue")   -> [ProductionQueue@INFANTRY]   ✅
+
+**Use `children_named()` for any trait that can carry an `@suffix`, which is nearly all of
+them.** `child()` is only safe for a key you have just seen unsuffixed in the file.
+
+This cost two independent wrong conclusions on the same day:
+
+* an agent probing D2k buildings with `child()` reported *"no D2k building has
+  ProductionQueue or Production; D2k uses ProvidesPrerequisite + Exit instead"* and proposed
+  rewriting the audit around that architecture. Every D2k barracks has both traits.
+* `audit_buildable_order.py:31` used `child()` in `production_building_names()`. It saw **9**
+  producers where the tree has **279** — it missed 97%, mod-wide, not just in D2k
+  (`td_gdi_barracks`, `ts_gdi_barracks` and 268 more were invisible), and every tech tier it
+  computed came from that 3%.
+
+⚠ **The worst part was a green number.** With almost no producers visible,
+`is_production_token()` could essentially never return True, so the *"Prerequisite order
+violations"* check reported a perfect **0** — not because the tree was clean but because the
+check was incapable of failing. Fixing the lookup turned that 0 into 1 real violation and
+removed 11 false build-palette findings from mis-tiered actors. **A gate that cannot fail is
+worse than a red one, because it is trusted.**
+
+⭐ The general rule, and it is the same one behind the `Versus:` scanner and the `vsINF`
+lowercase bug above: **before reporting that something is absent, print what is actually
+there.** Not `child("X") is None` — `[c.key for c in node.children]`, and look.
+
+
+## A hand-edit to generated output has a countdown on it (2026-09-05)
+
+`verify_generator_sync.py` went red: `^Warhead_CannonAP_*` carried `REFLECTOR: 74`
+while `gen_weapon_template.py` emits 75. The tempting fixes were all wrong:
+a `DERIVED_OVERRIDES` post-normalization table, a composition nudge that perturbs
+the whole family, or a tolerance whitelist that would hide real drift forever.
+
+Ruling (`47ba8bc25`, promoted to `docs/DESIGN.md` splice-programme item 4):
+**the generator owns every row it emits.** A hand-edit to a generated file is not
+a fix - it is a loan the next `splice_templates.py --all` calls in. If a cell must
+differ, change the SPEC or the FORMULA in the generator, never the output.
+
+Corollary for this tree specifically: `mods/cameo/weapons/weapons.yaml` is
+generated, so direct Versus edits in it silently revert on the next splice and
+re-flag `gen_sync` in the meantime. Route every generated-row change through
+`gen_weapon_template.py` or a maintainer ruling that changes the law.

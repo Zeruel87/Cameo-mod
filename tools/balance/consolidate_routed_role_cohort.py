@@ -46,8 +46,8 @@ ROOTS = {
 }
 PINS = {
     "SyndicateFireballLauncherExplode": (18000, 3328),
-    "NaxCorrosionRocketTrooper_elite": (16000, 4994),
 }
+AUTHORIZED_SUCCESSORS = {"NaxCorrosionRocketTrooper_elite"}
 
 OLD_MAINS = {
     "RA2MultiThunderboltMissile": {"MissileHE_Heavy", "MissileHE_Light"},
@@ -57,7 +57,6 @@ OLD_MAINS = {
     "SyndicateFireballLauncher": {"Flame_Light", "Flame_Medium", "Flame_Heavy"},
     "SyndicateFireballLauncherExplode": {"Flame_Light", "Flame_Medium", "Flame_Heavy", "LightFlameWeapon", "MediumFlameWeapon", "HeavyFlameWeapon"},
     "NaxCorrosionRocket": {"Concussion_Light", "MissileAP_Heavy", "MissileAP_Medium"},
-    "NaxCorrosionRocketTrooper_elite": {"Concussion_Light", "MissileAP_Heavy", "MissileAP_Medium", "Grenade", "HeavyMissile"},
     "MarauderMissiles": {"MissileAP_MediumFlatCompatibility", "CannonHE_Heavy"},
     "TSStankTibTusk": {"MissileAP_MediumFlatCompatibility", "CannonHE_Medium"},
     "RA2RBurritoRocket": {"CannonHE_HeavyFlatCompatibility", "Demolition_Light", "MissileAP_Heavy"},
@@ -69,10 +68,6 @@ PINNED_AFTER_MAINS = {
         "PreservedFlat_Flame_Heavy", "PreservedFlat_Flame_Light",
         "PreservedFlat_Flame_Medium", "PreservedFlat_HeavyFlameWeapon",
         "PreservedFlat_LightFlameWeapon", "PreservedFlat_MediumFlameWeapon",
-    },
-    "NaxCorrosionRocketTrooper_elite": {
-        "PreservedFlat_Concussion_Light", "PreservedFlat_HeavyMissile",
-        "PreservedFlat_MissileAP_Heavy", "PreservedFlat_MissileAP_Medium",
     },
 }
 
@@ -98,13 +93,13 @@ def selections(rs):
         actual = descendants(rs, root)
         if actual != expected:
             raise RuntimeError(f"{root}: closure changed; added={sorted(actual-expected)}, missing={sorted(expected-actual)}")
-        for name in {root, *expected}:
+        for name in {root, *expected} - AUTHORIZED_SUCCESSORS:
             if name in PINS:
                 result[name] = (None, *PINS[name])
             else:
                 result[name] = (dest, total, scale)
-    if len(result) != 21:
-        raise RuntimeError(f"expected 21 closure members, found {len(result)}")
+    if len(result) != 20:
+        raise RuntimeError(f"expected 20 closure members, found {len(result)}")
     return result
 
 
@@ -214,9 +209,6 @@ def apply_changes(rs):
     for root, (dest, _children, total, scale) in ROOTS.items():
         compat = f"{dest}FlatCompatibility"
         convert(rs, changed, root, dest, total, scale, OLD_MAINS[root] - {compat})
-    preserve_member(rs, changed, "NaxCorrosionRocketTrooper_elite",
-                    {"Grenade", "HeavyMissile", "MissileAP_Medium"},
-                    "MissileAP_MediumFlatCompatibility")
     preserve_member(rs, changed, "SyndicateFireballLauncherExplode",
                     {"LightFlameWeapon", "MediumFlameWeapon", "HeavyFlameWeapon"},
                     "Flame_HeavyFlatCompatibility")

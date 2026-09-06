@@ -1,6 +1,6 @@
 # audit_outliers — systemic numeric drift (B9)
 
-(trait,field) distributions sampled: **18** — robust outliers (top 25 per field): **174**, selection bounds > 5120: **0**
+(trait,field) distributions sampled: **18** — robust outliers (top 25 per field): **165**, selection bounds > 5120: **0**
 
 
 ## Hard screen — Selectable bounds above the 5x5-cell maximum
@@ -12,8 +12,8 @@ _none found_
 
 | trait.field | actor | value | median | robust z |
 |---|---|---|---|---|
-| Aircraft.CruiseAltitude | TSDPOD | 16384 | 2500 | 18.7 |
-| Aircraft.CruiseAltitude | INVISIBLEPLANE | 9000 | 2500 | 8.8 |
+| Aircraft.CruiseAltitude | TSDPOD | 16384 | 2160 | 24.0 |
+| Aircraft.CruiseAltitude | INVISIBLEPLANE | 9000 | 2160 | 11.5 |
 | Aircraft.TurnSpeed | japan_rocketangel_husk | 160 | 20 | 18.9 |
 | Aircraft.TurnSpeed | ra2rock.husk | 160 | 20 | 18.9 |
 | Aircraft.TurnSpeed | yrlunr.husk | 160 | 20 | 18.9 |
@@ -90,32 +90,23 @@ _none found_
 | Health.HP | cabal_core | 1000000 | 60000 | 15.9 |
 | Health.HP | cabal_constructionyard | 1000000 | 60000 | 15.9 |
 | Health.HP | cabal_avatar | 1000000 | 60000 | 15.9 |
-| Mobile.TurnSpeed | hole_small.nax2 | 255 | 20 | 24.4 |
-| Mobile.TurnSpeed | hole.nax2 | 255 | 20 | 24.4 |
-| Mobile.TurnSpeed | SCSPIDERMINE | 200 | 20 | 18.7 |
-| Power.Amount | asianalliance_tankreactor | 2700 | -35 | 73.8 |
-| Power.Amount | wc2_humans_sunwell | 2500 | -35 | 68.4 |
-| Power.Amount | ra2_soviets_nuclearreactor | 2000 | -35 | 54.9 |
-| Power.Amount | zerg_overmind | 2000 | -35 | 54.9 |
-| Power.Amount | steelconsortium_bfg10000 | -1000 | -35 | 26.0 |
-| Power.Amount | TECHBCANNON2 | -1000 | -35 | 26.0 |
-| Power.Amount | steelconsortium_geothermalreactor | 750 | -35 | 21.2 |
-| Power.Amount | futuretech_hypercore | 750 | -35 | 21.2 |
-| Power.Amount | latinsyndicate_powerstation | 500 | -35 | 14.4 |
-| Power.Amount | C2KNUKE | 500 | -35 | 14.4 |
-| Power.Amount | protoss_starshipsovereign | -500 | -35 | 12.5 |
-| Power.Amount | terran_phobos | -500 | -35 | 12.5 |
-| Power.Amount | yuri_bioreactor | 400 | -35 | 11.7 |
-| Power.Amount | ts_nod_advancedpowerplant | 360 | -35 | 10.7 |
-| Power.Amount | ra1_advancedpowerplant | 300 | -35 | 9.0 |
-| Power.Amount | ra2cpower | 300 | -35 | 9.0 |
-| Power.Amount | steelconsortium_consortiumpowerplant | 300 | -35 | 9.0 |
-| Power.Amount | naxis_naxpetrolplant | 300 | -35 | 9.0 |
-| Power.Amount | schwarzermond_hydrogenplant | 300 | -35 | 9.0 |
-| Power.Amount | wc2_humans_farm | 300 | -35 | 9.0 |
-| Power.Amount | EDEN_SOLAR_ARRAY | 300 | -35 | 9.0 |
-| Power.Amount | PLYMOUTH_SOLARARRAY | 300 | -35 | 9.0 |
-| Power.Amount | zerg_behemoth | -360 | -35 | 8.8 |
+| Mobile.TurnSpeed | hole_small.nax2 | 255 | 20 | 22.6 |
+| Mobile.TurnSpeed | hole.nax2 | 255 | 20 | 22.6 |
+| Mobile.TurnSpeed | SCSPIDERMINE | 200 | 20 | 17.3 |
+| Power.Amount | asianalliance_tankreactor | 2700 | -40 | 61.6 |
+| Power.Amount | wc2_humans_sunwell | 2500 | -40 | 57.1 |
+| Power.Amount | ra2_soviets_nuclearreactor | 2000 | -40 | 45.9 |
+| Power.Amount | zerg_overmind | 2000 | -40 | 45.9 |
+| Power.Amount | steelconsortium_bfg10000 | -1000 | -40 | 21.6 |
+| Power.Amount | TECHBCANNON2 | -1000 | -40 | 21.6 |
+| Power.Amount | steelconsortium_geothermalreactor | 750 | -40 | 17.8 |
+| Power.Amount | futuretech_hypercore | 750 | -40 | 17.8 |
+| Power.Amount | latinsyndicate_powerstation | 500 | -40 | 12.1 |
+| Power.Amount | C2KNUKE | 500 | -40 | 12.1 |
+| Power.Amount | protoss_starshipsovereign | -500 | -40 | 10.3 |
+| Power.Amount | terran_phobos | -500 | -40 | 10.3 |
+| Power.Amount | yuri_bioreactor | 400 | -40 | 9.9 |
+| Power.Amount | ts_nod_advancedpowerplant | 360 | -40 | 9.0 |
 | Repairable.HpPerStep | japan_shogunexecutioner | 150000 | 4250 | 43.7 |
 | Repairable.HpPerStep | naxis_ratte | 100000 | 4250 | 28.7 |
 | Repairable.HpPerStep | ts_gdi_mammothmkii | 60000 | 4250 | 16.7 |
@@ -131,7 +122,7 @@ _none found_
 | Repairable.HpPerStep | forgotten_nomadbarracks | 32500 | 4250 | 8.5 |
 | Repairable.HpPerStep | futuretech_futuretank | 32500 | 4250 | 8.5 |
 | Repairable.HpPerStep | ra1_soviets_siegemammothtank | 31250 | 4250 | 8.1 |
-| Repairable.HpPerStep | devastator | 31250 | 4250 | 8.1 |
+| Repairable.HpPerStep | harkonnen_devastatormech | 31250 | 4250 | 8.1 |
 | RevealsShroud.Range | steelconsortium_bfg10000 | 25000 | 2048 | 20.2 |
 | RevealsShroud.Range | tkm_radartruck | 21500 | 2048 | 17.1 |
 | RevealsShroud.Range | ixian_ixprojector | 20000 | 2048 | 15.8 |
@@ -182,10 +173,10 @@ _none found_
 | Selectable.Bounds | futuretech_launchpad | 5120 | 1024 | 10.8 |
 | Selectable.Bounds | C2KNUKE | 5120 | 1024 | 10.8 |
 | Selectable.Bounds | td_nod_airstrip | 4096 | 1024 | 8.1 |
-| Valued.Cost | cabal_coredefender | 15000 | 1600 | 9.0 |
-| Valued.Cost | schwarzermond_dieglocke | 15000 | 1600 | 9.0 |
-| Valued.Cost | wc2_orcs_orcgoldmine_bot | 15000 | 1600 | 9.0 |
-| Valued.Cost | wc2_humans_humangoldmine_bot | 15000 | 1600 | 9.0 |
+| Valued.Cost | cabal_coredefender | 15000 | 1500 | 9.1 |
+| Valued.Cost | schwarzermond_dieglocke | 15000 | 1500 | 9.1 |
+| Valued.Cost | wc2_orcs_orcgoldmine_bot | 15000 | 1500 | 9.1 |
+| Valued.Cost | wc2_humans_humangoldmine_bot | 15000 | 1500 | 9.1 |
 
 
 _Outliers are leads, not verdicts: epic units are legitimately extreme. Scan for CLUSTERS of similar z-scores — those are unit systems using a stale scale convention._

@@ -1,6 +1,6 @@
 # audit_armor_upgrade_harm — the armor-plating layer's invariants
 
-Checked **139** generated `^Warhead_*` templates against **5** platings (skipping `^Warhead_Nuclear_Super`, `^Warhead_Sniper_Light`, which the generator does not emit).
+Checked **145** generated `^Warhead_*` templates against **5** platings (skipping `^Warhead_Nuclear_Super`, `^Warhead_Sniper_Light`, which the generator does not emit).
 
 ## I1 — no gaps (a missing row makes `DamageVersus` return 100)
 
@@ -10,10 +10,10 @@ _clean_ — every template carries a row for every plating.
 
 | plating | mean | min | max |
 |---|--:|--:|--:|
-| `HAZMAT` | **69.96** | 34 | 102 |
-| `COMPOSITE` | **70.01** | 35 | 106 |
-| `BLAST` | **70.01** | 36 | 104 |
-| `REFLECTOR` | **69.90** | 42 | 104 |
+| `HAZMAT` | **70.35** | 34 | 102 |
+| `COMPOSITE` | **69.15** | 36 | 107 |
+| `BLAST` | **70.43** | 36 | 104 |
+| `REFLECTOR` | **69.80** | 42 | 104 |
 | `ARMOR` | **70.00** | 70 | 70 |
 
 ## I3 — closure (every family has a counter and an exposure)

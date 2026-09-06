@@ -310,23 +310,12 @@ def analyse(resolved, damage_total: float | None = None):
     ref_hp = tm.reference_hp()
     is_instant, sigma = ed.weapon_reliability_ctx(resolved)
     is_direct_actor = direct_actor_impact(resolved)
-    authored_applications = pd.percentage_applications(resolved, ref_hp)
-    # Current AreaDamageWarhead.DoImpact delegates direct Actor targets to the
-    # base DamageWarhead path, which invokes only InflictDamage. Its folded
-    # PercentageScale second hit is therefore skipped. Standalone percentage
-    # warheads remain independent applications and are not removed here.
-    applications = [
-        app for app in authored_applications
-        if not (is_direct_actor and app["kind"] == pd.PCT_FOLDED)
-    ]
+    applications = pd.percentage_applications(resolved, ref_hp)
     if not whs and not applications:
         return None
     impact_multiplier = ed.projectile_impact_multiplier(resolved)
     nominal_impacts = ed.projectile_nominal_impact_count(resolved)
     limitations = ed.model_limitations(resolved)
-    if any(app.get("runtime_overflow") for app in applications):
-        limitations.append("nonlinear_folded_percentage_overflow")
-
     parts = []
     flat_total = sum(base for _t, _w, base, _n in whs)
     # Shares need a non-zero normalizer, but that implementation detail must not

@@ -56,6 +56,7 @@
 | wc2_h | 0 | 2 | mods\cameo\rules\warcraft2.yaml |
 | wc2_o | 0 | 2 | mods\cameo\rules\warcraft2.yaml |
 | win98 | 0 | 2 | mods\cameo\rules\win98.yaml |
+| aircraft | 0 | 1 | mods\cameo\rules\husks.yaml |
 | camea | 0 | 1 | mods\cameo\rules\camea.yaml |
 | cute | 0 | 1 | mods\cameo\rules\valentine.yaml |
 | dummy | 1 | 1 | mods\cameo\rules\redalert2.yaml |
@@ -115,16 +116,34 @@
 | worms | 0 | 1 | mods\cameo\rules\worms.yaml |
 | zmcv | 0 | 1 | mods\cameo\rules\z.yaml |
 
-Fully converted prefixes (92): air, asianalliance, atreides, banshee, bbomb, bbomb2, bbomb3, bf109, bomber, cabal, cargoship, carryall, cgcnst, combat, conyard, corpse, cplane, cruiser, cryo, d2k, deathcash, dieglocke, drone, duelist, egcnst, eye, farasha, forgotten, fremen, futuretech, grun, harbinger, harkonnen, haunebu, haunebu2, heavy, heavydrone, hole, horten, inspect, ixian, japan, kami, landcarr, latinsyndicate, light, litt, me262, mig, missile, nax, naxis, ordos, ornithopter, pelican, phoenix, piercer, protoss, qacst, ra1_allies, ra1_badger, ra2_allies, ra2_soviets, ra2_yuri, ra2hind, resonance, rocket, sarubia, schwarzermond, scrapcar, scrapcar2, siege, sietch, steelconsortium, swarmer, td_gdi, team, terran, tkm, ts_gdi, ts_nod, twister, up, upgrade, wc2_humans, wc2_orcs, wind, wraith, yakolev, yuri, zep, zerg
+Fully converted prefixes (93): air, asianalliance, atreides, banshee, bbomb, bbomb2, bbomb3, bf109, bomber, cabal, cargoship, carryall, cgcnst, combat, conyard, corpse, corrino, cplane, cruiser, cryo, d2k, deathcash, dieglocke, drone, duelist, egcnst, eye, farasha, forgotten, fremen, futuretech, grun, harbinger, harkonnen, haunebu, haunebu2, heavy, heavydrone, hole, horten, inspect, ixian, japan, kami, landcarr, latinsyndicate, light, litt, me262, mig, missile, nax, naxis, ordos, ornithopter, pelican, phoenix, piercer, protoss, qacst, ra1_allies, ra1_badger, ra2_allies, ra2_soviets, ra2_yuri, ra2hind, resonance, rocket, sarubia, schwarzermond, scrapcar, scrapcar2, siege, sietch, sonic, steelconsortium, swarmer, td_gdi, team, terran, tkm, ts_gdi, ts_nod, twister, up, upgrade, wc2_humans, wc2_orcs, wraith, yakolev, yuri, zep, zerg
 
 ## P2 — actors whose id does not match the pack's dominant prefix
 
 | pack | actor | dominant prefix |
 |---|---|---|
 | D2k/Atreides | ornithopter_husk.atreides | atreides |
-| D2k/Atreides | wind_trap.atreides | atreides |
-| D2k/Atreides | d2k_silo.atreides | atreides |
-| D2k/Atreides | combat_tank.atreides | atreides |
+| D2k/Atreides | upgrade_conyard.atreides | atreides |
+| D2k/Atreides | upgrade_barracks.atreides | atreides |
+| D2k/Atreides | upgrade_light.atreides | atreides |
+| D2k/Atreides | upgrade_heavy.atreides | atreides |
+| D2k/Atreides | upgrade_radar.atreides | atreides |
+| D2k/Atreides | combat_tank_husk.atreides | atreides |
+| D2k/Atreides | sonic_tank_husk.atreides | atreides |
+| D2k/Atreides | siege_tank_husk.atreides | atreides |
+| D2k/Corrino | carryall_husk.corrino | corrino |
+| D2k/Corrino | upgrade_conyard.corrino | corrino |
+| D2k/Corrino | upgrade_barracks.corrino | corrino |
+| D2k/Corrino | upgrade_light.corrino | corrino |
+| D2k/Corrino | upgrade_heavy.corrino | corrino |
+| D2k/Corrino | upgrade_radar.corrino | corrino |
+| D2k/Corrino | siege_tank_husk.corrino | corrino |
+| D2k/Harkonnen | carryall_husk.harkonnen | harkonnen |
+| D2k/Harkonnen | upgrade_conyard.harkonnen | harkonnen |
+| D2k/Harkonnen | upgrade_barracks.harkonnen | harkonnen |
+| D2k/Harkonnen | upgrade_light.harkonnen | harkonnen |
+| D2k/Harkonnen | upgrade_heavy.harkonnen | harkonnen |
+| D2k/Harkonnen | upgrade_radar.harkonnen | harkonnen |
 | D2k/Harkonnen | combat_tank.harkonnen | harkonnen |
 | D2k/Harkonnen | missile_tank | harkonnen |
 | D2k/Ixian | air_drone_husk.ixian | ixian |
@@ -218,4 +237,4 @@ _clean_
 
 - actor ids violating the lowercase grammar: **1510** (e.g. 1TNK.camea, 2100A2MAT, 2100A2PT, 2100A2TIT, 2100A2VET, 2100AA, 2100AACH, 2100AAMAT)
 
-Total findings: 691
+Total findings: 710

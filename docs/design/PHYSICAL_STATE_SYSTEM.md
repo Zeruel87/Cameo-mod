@@ -69,11 +69,10 @@ target's life still ahead of it, comfortably inside the 0.75 bar.
 
 | mechanism | bindings | reach full effect before 25% HP |
 |---|--:|--:|
-| damage-scaled (heat + corrosion) | 527 | **111** |
-| discrete apply (cryo) | 22 | 7 |
-| **total** | **549** | **118 (21.5%)** |
+| damage-scaled (heat + corrosion) | 562 | **146** |
+| **total** | **562** | **146 (26.0%)** |
 
-⛔ **`meters_filling_before_death` = 118 of 549 — NOT the 534 (97.3%) this section claimed until
+⛔ **`meters_filling_before_death` = 146 of 562 — NOT the 534 (97.3%) this section claimed until
 2026-08-19.** The correction is one term, and it is W24's term. Everything above assumes the
 damage that FILLS the meter is the damage that KILLS the target. It is not: a damage-scaled
 binding fills from the ONE warhead carrying `PhysicalStateName`, while the target dies to every
@@ -96,7 +95,7 @@ parts relate*.
 ⛔ **This is why `BALANCE_PROGRAM_PLAN` §0a puts weapon STRUCTURE before pricing** — restated by
 the maintainer 2026-08-19: *"that's exactly why I said you should finish the 3 way weapon split
 first!"* Pricing a weapon whose structure is wrong measures the wrong object. The burn-down is
-pinned as `w24_multi_main_fed` (380, ratchet-down-only).
+pinned as `w24_multi_main_fed` (374, ratchet-down-only).
 
 ⚠ **RELAXATION is still excluded** and moves this number down further: `RelaxationDelay 25` +
 `RelaxationLinear 5` + `RelaxationScaled 50` bleeds ~642 meter/shot at `ReloadDelay 60` (23% of
@@ -234,16 +233,15 @@ cold/corrosion auto-scale with damage. **Everything else below is YAML config of
 
 ⚠ Corrosion is NOT greenfield: it already exists as a **binary `corroded` condition** (`defaults.yaml`
 ~5495–5516) applied on/off by the Schwarzer Mond rockets — `DamageMultiplier@corroded 125`,
-`SpeedMultiplier@corroded 75`, `WithColoredOverlay@corroded 44FF4444` (green), `WithIdleOverlay@corroded`
-(`Image: explosion, Sequence: nax_corr_frag` = the pulse), `Targetable@corroded`. So BUILD 1 is a
-CONVERSION, reusing the existing art:
+`SpeedMultiplier@corroded 75`, `WithColoredOverlay@corroded 44FF4444` (green), `Targetable@corroded`.
+So BUILD 1 is a CONVERSION, reusing the existing gameplay mechanics:
 1. Add `PhysicalState@Corrosion` meter (0–20000, `RelativeToHealth`, decay) on `^CryoFreezable` (the
    shared Temperature home) + wherever else Temperature lives.
 2. Replace the fixed `@corroded` traits with **scaled** ones from 50%→100% (`ChangesHealthProportionalToPhysicalState`
    DoT ~180 + a `@…Hazmat` half via `hazmatsuits`; `SlowsProportionalToPhysicalState` `OnlyPositiveValues`
    to ~60%; `DamageMultiplierProportionalToPhysicalState` to +150%).
-3. Keep the art: `WithPhysicalStateColoredOverlay@Corrosion` green tint 200→20000; `WithIdleOverlay`
-   `nax_corr_frag` pulse gated on a `CorrosionMax` condition (meter == 20000).
+3. Keep the meter art: `WithPhysicalStateColoredOverlay@Corrosion` green tint 200→20000; leave the
+   `CorrosionMax` condition visual-empty.
 4. Migrate the Schwarzer Mond weapons from granting the binary `corroded` to feeding the Corrosion meter
    (via the new `PhysicalStateScale`, or an `ApplyPhysicalState` warhead). Keep the old binary path until
    migrated so nothing breaks mid-way.
@@ -385,7 +383,7 @@ reference an image+sequence, so the yaml wires with placeholders and the art dro
 - ✅ C# damage-scaled `PhysicalStateName`/`PhysicalStateScale` on `AreaDamage` + `_Percentage` — `406261128`
 - ✅ C# MULTI-state `PhysicalStates` dict (one warhead → many meters) — `2e6d6968a`
 - ✅ Corrosion meter axis on `^Corrodible` (green tint 200→20000, DoT+slow+vuln 50→100%, hazmat-half,
-  `nax_corr_frag` pulse at max) — additive, INERT until fed — `ecf616978`
+  no cap visual) — additive, INERT until fed — `ecf616978`
 - ✅ Family wiring LIVE: Flame +100 / Laser +75 / Chemical +100 (generator `FAMILY_PHYSICAL_STATE`) — `51148be5b`
 - ✅ Cryo family = `^Warhead_Cryo_*` inherits `^Warhead_Prism_*` + Temperature −100 (generator
   `INHERIT_FAMILIES`) — `f97a3b77c`

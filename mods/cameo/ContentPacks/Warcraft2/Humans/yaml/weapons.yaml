@@ -283,7 +283,6 @@ wc2paladinexorcism:
 # 25-80 WC2 damage. 80 Base, 0 Pierce.
 
 wc2ballistaFire:
-	Inherits@wh: ^Warhead_Demolition_Light
 	Inherits@wh2: ^Warhead_Demolition_Heavy
 	Inherits@wh3: ^Warhead_Concussion_Medium
 	Inherits@proj: ^Projectile_Grenade_Light
@@ -297,12 +296,12 @@ wc2ballistaFire:
 		Inaccuracy: 384
 		Image: wc2_human_ballistabolt
 		Blockable: false
-	Warhead@Demolition_Light:
-		Damage: 30000
 	Warhead@Concussion_Medium:
 		Damage: 30000
 	Warhead@Demolition_Heavy:
-		Damage: 30000
+		Damage: 90000
+		PercentageScale: 9999
+	-Warhead@Concussion_Medium:
 	Warhead@Effect: CreateEffect
 		Image: wc2_catapult_impact
 		Explosions: idle
@@ -343,13 +342,9 @@ MortarTeamArtilleryShell:
 		FriendlyFireSpread: 50
 		Damage: 20000
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@MediumChemicalWeaponPercentage: AreaDamagePercentage
 		Damage: 10
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@MediumFlameWeapon: AreaDamage
 		ValidRelationships: Ally, Neutral, Enemy
 		FriendlyFireDamage: 50
@@ -738,3 +733,82 @@ wc2blizzardSuper_Spread:
 		#Footprint: __x__ _xxx_ xxxxx _xxx_ __x__
 
 # 6-16 WC2 damage. 4 Base, 12 Pierce.
+
+# --- Hero weapons (ported from wcameo(1), converted to 3-way split) ---
+
+# Alleria: 6 old warheads each 6000 main + 3% percentage -> 36000 main, 18% twin.
+wc2_humans_alleria_arrow:
+	Inherits@wh: ^Warhead_Arrow_Medium
+	Inherits@proj: ^Projectile_Arrow_Light
+	Inherits@fx: ^Effect_Arrow_Medium
+	ReloadDelay: 23
+	Range: 7487
+	Report: wc2_bowfire.aud
+	ValidTargets: Ground, Water, Air
+	Projectile: Missile
+		Image: arrow
+		Speed: 750
+		HorizontalRateOfTurn: 75
+		VerticalRateOfTurn: 75
+		RangeLimit: 16000
+		AllowSnapping: True
+		CloseEnough: 600
+		ContrailLength: 0
+	Warhead@Arrow_Medium:
+		Damage: 36000
+	Warhead@Effect: CreateEffect
+		ImpactSounds: wc2_bowhit.aud
+
+# Alleria elite / general: 6 old warheads each 8000 main + 4% -> 48000 main, 24% twin.
+wc2_humans_alleria_arrow_elite:
+	Inherits@wh: ^Warhead_Arrow_Heavy
+	Inherits@proj: ^Projectile_Arrow_Light
+	Inherits@fx: ^Effect_Arrow_Heavy
+	ReloadDelay: 20
+	Range: 7487
+	Report: wc2_bowfire.aud
+	ValidTargets: Ground, Water, Air
+	Projectile: Missile
+		Image: arrow
+		Speed: 850
+		HorizontalRateOfTurn: 80
+		VerticalRateOfTurn: 80
+		RangeLimit: 16000
+		AllowSnapping: True
+		CloseEnough: 600
+		ContrailLength: 0
+	Warhead@Arrow_Heavy:
+		Damage: 48000
+	Warhead@Effect: CreateEffect
+		ImpactSounds: wc2_bowhit.aud
+
+# Danath: 12 WC2 damage (36000). Old 3-main (36000/18000/12%) -> one AreaDamage.
+# PercentageScale 6667 preserves the 12% percentage twin at 36000 main.
+wc2_humans_danath_slice:
+	Inherits@wh: ^Warhead_Melee_Medium
+	Inherits@proj: ^Projectile_InstantHit
+	Inherits@fx: ^Effect_Melee_Medium
+	ReloadDelay: 12
+	Range: 1533
+	Report: wc2_sword1.aud,wc2_sword2.aud,wc2_sword3.aud
+	Projectile: InstantHit
+	Warhead@Melee_Medium:
+		Damage: 36000
+		PercentageScale: 6667
+	Warhead@Effect: CreateEffect
+		ImpactSounds: wc2_sword1.aud,wc2_sword2.aud,wc2_sword3.aud
+
+# Danath elite / veteran: 16 WC2 damage (48000). 48000*6667/200000 ~= 16%.
+wc2_humans_danath_slice_elite:
+	Inherits@wh: ^Warhead_Melee_Medium
+	Inherits@proj: ^Projectile_InstantHit
+	Inherits@fx: ^Effect_Melee_Medium
+	ReloadDelay: 10
+	Range: 1533
+	Report: wc2_sword1.aud,wc2_sword2.aud,wc2_sword3.aud
+	Projectile: InstantHit
+	Warhead@Melee_Medium:
+		Damage: 48000
+		PercentageScale: 6667
+	Warhead@Effect: CreateEffect
+		ImpactSounds: wc2_sword1.aud,wc2_sword2.aud,wc2_sword3.aud

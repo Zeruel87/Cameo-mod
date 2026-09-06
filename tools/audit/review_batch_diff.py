@@ -28,13 +28,15 @@ instantaneous thump. A damage check alone cannot see that, so `Spread`/`Falloff`
 `MaxRadius` are diffed too — as a REPORT, because changing the shape is often the whole point
 of moving a weapon onto a family.
 
-EXIT CODE: 1 if damage, runtime percentage damage, percentage-warhead profiles, cadence,
-targeting, reports, projectiles, or non-damage warheads change. Blast shape remains report-only
-because choosing a standard family may intentionally replace the old stack's geometry.
+EXIT CODE: 1 if damage, runtime percentage damage, armor/percentage-armor profiles,
+percentage-warhead profiles, cadence, targeting, reports, projectiles, or non-damage warheads
+change. Blast shape remains report-only because choosing a standard family may intentionally
+replace the old stack's geometry.
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import pathlib
 import sys
@@ -50,7 +52,7 @@ import percentage_damage as pd  # noqa: E402
 
 # Keep the design reference in the matrix even when no active actor currently
 # authors that exact HP. Active authored HP values are added below so the audit
-# also catches the parked runtime's rounding and unchecked Int32 overflow.
+# also catches live folded-percentage quantisation and checked-result overflow.
 PERCENTAGE_REFERENCE_HP = 200_000
 
 
@@ -103,6 +105,13 @@ def _target_tokens(raw: str | None) -> tuple[str, ...]:
     return tuple(sorted(token.strip() for token in (raw or "").split(",") if token.strip()))
 
 
+def _versus_profile(node, field: str) -> tuple[tuple[str, str], ...]:
+    block = node.child(field)
+    if block is None:
+        return ()
+    return tuple(sorted((child.key, str(child.value)) for child in block.children))
+
+
 def _physical_state_entries(node) -> tuple[tuple[str, str], ...]:
     """Enabled physical-state bindings, including the singular and map forms."""
     out: list[tuple[str, str]] = []
@@ -138,7 +147,7 @@ def snapshot(root: str, with_concrete: bool, health_values: list[int]) -> dict[s
         node = rs.resolve_weapon(name)
         if node is None:
             continue
-        total, mains, shape = 0.0, [], []
+        total, mains, shape, armor_profiles = 0.0, [], [], []
         valid_target_damage: dict[str, float] = {}
         invalid_target_damage: dict[str, float] = {}
         relationship_stat_damage: dict[tuple[str, bool, str], float] = {}
@@ -177,6 +186,12 @@ def snapshot(root: str, with_concrete: bool, health_values: list[int]) -> dict[s
                     continue
                 total += d
                 mains.append(int(d))
+                armor_profiles.append((
+                    wh.key.split("@", 1)[-1],
+                    int(d),
+                    _versus_profile(wh, "Versus"),
+                    _versus_profile(wh, "PercentageVersus"),
+                ))
                 for target in _target_tokens(wh.get("ValidTargets")):
                     valid_target_damage[target] = valid_target_damage.get(target, 0) + d
                 for target in _target_tokens(wh.get("InvalidTargets")):
@@ -216,6 +231,7 @@ def snapshot(root: str, with_concrete: bool, health_values: list[int]) -> dict[s
                 for hp in health_values
             },
             "shape": sorted(shape),
+            "armor_profile": tuple(sorted(armor_profiles)),
             "valid_target_damage": tuple(sorted(valid_target_damage.items())),
             "invalid_target_damage": tuple(sorted(invalid_target_damage.items())),
             "relationship_stat_damage": tuple(sorted(relationship_stat_damage.items())),
@@ -240,6 +256,7 @@ OPERATING_BEHAVIOR = (
     "Report", "StartBurstReport", "valid_target_damage", "invalid_target_damage",
     "relationship_stat_damage",
     "physical_state_bindings",
+    "armor_profile",
     "percentage_warheads",
     "top_level", "projectile", "non_damage_warheads",
 )
@@ -269,6 +286,11 @@ def compare(base: dict, head: dict) -> tuple[dict, list, list]:
         if diffs:
             changed[w] = diffs
     return changed, gone, added
+
+
+def snapshot_digest(value: dict) -> str:
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), default=list)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
 def main() -> int:
@@ -342,7 +364,9 @@ def main() -> int:
         print(f"\n### {marker} {kind} changed on {len(ws)} weapon(s)")
         for w in ws[:10]:
             d = next(x for x in changed[w] if x[0] == kind)
-            if kind in ("top_level", "projectile", "non_damage_warheads"):
+            if kind in (
+                    "top_level", "projectile", "non_damage_warheads",
+                    "armor_profile"):
                 print(f"- `{w}`: resolved {kind.replace('_', ' ')} changed")
             else:
                 print(f"- `{w}`: {d[1]!r} → {d[2]!r}")
@@ -351,7 +375,17 @@ def main() -> int:
 
     if a.json:
         pathlib.Path(a.json).write_text(
-            json.dumps({"changed": changed, "removed": gone, "added": added}, indent=1),
+            json.dumps({
+                "meta": {
+                    "base_snapshot_sha256": snapshot_digest(base),
+                    "head_snapshot_sha256": snapshot_digest(head),
+                    "health_values": health_values,
+                    "with_concrete": a.with_concrete,
+                },
+                "changed": changed,
+                "removed": gone,
+                "added": added,
+            }, indent=1),
             encoding="utf-8")
         print(f"\n_wrote {a.json}_")
 

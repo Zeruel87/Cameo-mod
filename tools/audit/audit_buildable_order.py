@@ -28,7 +28,18 @@ def production_building_names(rs) -> set[str]:
         res = rs.resolve(name)
         if res is None:
             continue
-        if res.child("ProductionQueue") is not None or res.child("Production") is not None:
+        # ⛔ `Node.child()` IS AN EXACT KEY MATCH AND EVERY ONE OF THESE TRAITS IS @SUFFIXED.
+        # Real keys are `ProductionQueue@INFANTRY`, `Production@NORMAL`,
+        # `Production@CLASSICPRODUCTIONQUEUES` — so `child("ProductionQueue")` returned None for
+        # essentially the whole mod. Measured at the moment of the fix: this function saw **9**
+        # producers where the tree has **279**, i.e. it missed 97% of them, and every tech tier
+        # this audit computes was derived from that 3%. Not a D2k problem — `td_gdi_barracks`,
+        # `ts_gdi_barracks` and the rest were all invisible too.
+        # ⚠ THE SAME `.child()` TRAP PRODUCED THE BUG REPORT THAT FOUND THIS ONE: a probe using
+        # `res.child("ProductionQueue")` concluded "no D2k building has ProductionQueue", when
+        # every barracks has one. Use `children_named()` for any trait that can carry an @suffix,
+        # which is nearly all of them.
+        if res.children_named("ProductionQueue") or res.children_named("Production"):
             out.add(name.lower())
     return out
 

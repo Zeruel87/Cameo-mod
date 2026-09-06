@@ -23,6 +23,14 @@ class RemainingWeaponClassificationTests(unittest.TestCase):
     def test_reviewed_retired_flat_root_backlog_is_empty(self):
         self.assertEqual([], self.rows)
 
+    def test_exact_reviewed_restoration_is_not_reopened_as_backlog(self):
+        self.assertEqual({"HydraSpit"}, classifier.EXACT_REVIEWED_RESTORATIONS)
+        self.assertNotIn("HydraSpit", {row["weapon"] for row in self.rows})
+        exact = {"ArrowWeapon", "LightChemicalWeapon", "LightMissile", "SmallArms"}
+        self.assertTrue(classifier.is_exact_reviewed_restoration("HydraSpit", exact))
+        self.assertFalse(classifier.is_exact_reviewed_restoration(
+            "HydraSpit", exact - {"SmallArms"}))
+
     def test_special_positive_damage_warheads_are_not_flat_health_slices(self):
         rules = Ruleset(ROOT)
         old_keys = classifier.positive_flat_keys(rules, "^SniperWeapon")

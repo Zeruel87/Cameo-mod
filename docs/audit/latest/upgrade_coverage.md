@@ -1,6 +1,6 @@
 # audit_upgrade_coverage — roster-wide upgrade gaps (B4)
 
-Coverage-tagged upgrades checked: **23** — uncovered unit slots: **21**
+Coverage-tagged upgrades checked: **24** — uncovered unit slots: **21**
 
 
 ## Coverage by upgrade
@@ -18,6 +18,7 @@ Coverage-tagged upgrades checked: **23** — uncovered unit slots: **21**
 | schwarzer_mond_upgrade_lunaralloys | lnaxis | roster_wide | UPGRADE ACTOR MISSING |  |
 | schwarzer_mond_upgrade_moonpropaganda | lnaxis | infantry | UPGRADE ACTOR MISSING |  |
 | schwarzer_mond_upgrade_vrilinfusion | lnaxis | infantry | UPGRADE ACTOR MISSING |  |
+| td_nod_upgrade_cyberneticmodifications | td_nod | infantry | 11/11 | — |
 | up_advancedtiberiumrefinement | tsnod | vehicles | UPGRADE ACTOR MISSING |  |
 | up_chemicalfuel | forgotten | vehicles | UPGRADE ACTOR MISSING |  |
 | up_genomemapping | forgotten | infantry | UPGRADE ACTOR MISSING |  |

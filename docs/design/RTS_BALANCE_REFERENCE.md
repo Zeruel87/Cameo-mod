@@ -231,5 +231,27 @@ weapon structure first, and no price is final while zero class anchors are signe
 What this page is for is the moment *before* a metric gets built — so that when the
 strategic layer is scheduled, it is designed against the questions that matter rather
 than rediscovered one mispriced faction at a time. The evidence ladder in
-[`BALANCE_PIPELINE_GAPS.md`](BALANCE_PIPELINE_GAPS.md) §4 applies to everything above:
-none of it is measured yet, and saying so is part of using it honestly.
+[`BALANCE_PIPELINE_GAPS.md`](BALANCE_PIPELINE_GAPS.md) §4 applies to everything above.
+
+⛔ **"None of it is measured yet" was true when this page was written and is NOT true now.**
+That sentence stood here after four of these sections had partly landed, which is the exact
+failure this repository keeps paying for — a summary outliving its artifact. Re-measured against
+the tree 2026-08-30:
+
+| § | dimension | what exists in the tree today | state |
+|---|---|---|---|
+| 1 | what "balanced" is not | no win-rate tuning (no telemetry to tune to); asymmetry protected by `FACTION_IDENTITY.md` | **aligned by default** |
+| 2 | counterplay taxonomy | `docs/balance/counter_matrix.yaml` + `audit_counter_matrix.py`, which cite this page by name. But they implement RELATION TYPES (hard / soft / generalist / forbidden / neutral), a different cut from the 11 RESPONSE AXES here — only `armor` and `tech` appear in both, and `detection`, `terrain`, `timing`, `economic` appear in neither file | **partial** |
+| 3 | TTK decomposition | `effective_damage.py` (falloff, area geometry, projectile impact), `audit_burst_delays.py`, and **overkill modelled explicitly** — `weapon_efficiency` reports it ALONGSIDE K rather than inside it, precisely because it moves with `Damage`. Burst / sustained / setup / squad are not four separate metrics, and there is no first-shot or spin-up term | **partial** |
+| 3 | effective survival | `target_model.py` (armor census, armor weights, shield damage share, shield-HP factor), `audit_survivability_pricing.py`, `armor_exposure.py` — the layers are modelled as PRICING, not as survival TIME against representative threats. No healing, repair, stealth or retreat term | **partial** |
+| 4 | economy + tempo | `HARVESTER_BALANCE.md`'s six-parameter income model, `harvester_income.py`, `harvester_table.py` — ONE archetype (refinery). No `EconomyProfile`, no archetype registry, and **zero** tempo metrics: `time_to_tech`, `first_expansion`, `army_timing`, income/minute all return no hits in `tools/` | **the largest gap, as predicted** |
+| 5 | snowball / comeback / failure severity | nothing — no hits for any of it in `tools/` | **absent** |
+| 6 | coverage / reachability / role | the 28 class anchors ARE a role taxonomy; `audit_upgrade_coverage.py` finds roster-wide holes; `audit_buildable_order.py` checks prerequisite and palette order; `audit_ai.py` checks AI WIRING. Missing: a role × tech-tier matrix per faction, faction identity as a CHECKABLE claim, build-order timings, and reachability by the AI's DECISION logic (wiring is not reachability) | **partial** |
+| 7 | things needing their own model | ⭐ **the closest to done.** `docs/design/balance_exceptions.yaml` is exactly the "data with a recorded reason" this section asks for: every entry carries `in_formula`, `ruling` and `method`. Covers combat units, defenses, heroes (in formula, no separate track), superweapons (out, method TO BUILD), harvesters, weaponless support, props. Not covered: transports, builders, promotion/upgrade TREES, transforming units | **mostly landed** |
+| 8 | telemetry | none, as this page says. Confirmed: no hits for `telemetry`, `win_rate` in `tools/` | **absent, by design** |
+
+So the honest summary is **the fight is well modelled and the game is not**. Everything inside one
+engagement — damage, armor, overkill, survivability layers, counter relations — has an owner and an
+audit. Everything spanning a MATCH — economy shape, tempo, snowball, build-order timing, role
+coverage per tier — has none. That is a coherent place to be given the board's order (weapon
+structure before pricing), and it is the shape of the remaining work.

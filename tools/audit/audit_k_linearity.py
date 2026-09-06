@@ -31,7 +31,7 @@ Three checks:
   **L2 — the measurement identity holds**, including the folded runtime residual.
   **L3 — standalone percentage FLOORS are reported.** Folded ``PercentageScale`` damage is
   scalable and explicitly excluded from the floor.
-  **L4 — folded rounding/overflow is visible**, never silently promoted into a permanent floor.
+  **L4 — folded rounding is visible**, never silently promoted into a permanent floor.
 """
 from __future__ import annotations
 
@@ -105,12 +105,7 @@ def runtime_percentage_inventory(node) -> Counter:
             scale = _positive_int(child.get("PercentageScale"))
             denominator = _positive_int(
                 child.get("PercentageDenominator"), pd.FOLDED_DEFAULT_DENOMINATOR)
-            # Current AreaDamageWarhead direct-Actor impacts invoke only the
-            # flat InflictDamage path and skip the folded second hit.
-            direct_actor_skips_folded = (
-                child.value == "AreaDamage" and we.direct_actor_impact(node))
-            if (scale is not None and denominator is not None and
-                    not direct_actor_skips_folded):
+            if scale is not None and denominator is not None:
                 found[(pd.PCT_FOLDED, tag)] += 1
     return found
 
@@ -242,8 +237,8 @@ def main() -> int:
     print("## L2 — the scalable/absolute split decomposes the published `k`")
     print()
     print("`k == k_flat + (pct_absolute + folded_rounding) / damage_total`. The "
-          "standalone term is a floor; the folded term is the current runtime residual, "
-          "including Int32 wrap where present.")
+          "standalone term is a floor; the folded term is the current runtime "
+          "quantisation residual.")
     print()
     broken = []
     undefined = []
@@ -307,7 +302,7 @@ def main() -> int:
     print()
 
     # ---- L4 -----------------------------------------------------------------
-    print("## L4 — folded runtime residual (rounding or Int32 wrap)")
+    print("## L4 — folded runtime quantisation residual")
     print()
     rounded = sorted(
         ((name, res["folded_rounding_context"])

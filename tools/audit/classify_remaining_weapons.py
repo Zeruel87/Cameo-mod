@@ -28,6 +28,7 @@ from miniyaml import Ruleset  # noqa: E402
 from weapon_families import OLD_FAMILIES, weapon_files  # noqa: E402
 import plan_warhead_collapse as planner  # noqa: E402
 import percentage_damage as pd  # noqa: E402
+import intentional_composites as reviewed  # noqa: E402
 from extract_stats import warheads as inherited_warheads  # noqa: E402
 
 OUT_MD = ROOT / "docs" / "audit" / "latest" / "remaining_weapon_classification.md"
@@ -35,6 +36,9 @@ OUT_JSON = ROOT / "docs" / "audit" / "latest" / "remaining_weapon_classification
 CANONICAL = re.compile(r"^\^Warhead_([A-Za-z]+)_(Light|Medium|Heavy|Super)$")
 EXCEPTION_FAMILIES = {"^MagicWeapon", "^NuclearWarhead", "^LightFlameWeapon"}
 FLAT_DAMAGE_TYPES = {"AreaDamage", "SpreadDamage"}
+# These roots deliberately retain their historical multi-family profile after a
+# resolved-gameplay review found that collapsing it changed live balance.
+EXACT_REVIEWED_RESTORATIONS = {"HydraSpit"}
 
 
 def damage(node) -> int:
@@ -172,6 +176,18 @@ def flat_ledger(node) -> list[dict[str, object]]:
     return rows
 
 
+def is_exact_reviewed_restoration(name: str, flat_tags: set[str]) -> bool:
+    """Exclude a restoration only while its validated reviewed shape is exact."""
+    if name not in EXACT_REVIEWED_RESTORATIONS:
+        return False
+    decision = reviewed.curated_decisions().get(name)
+    return bool(
+        decision
+        and decision["category"] == "maintainer-approved role blend"
+        and set(decision["mains"]) == flat_tags
+    )
+
+
 def percentage_ledger(node) -> list[dict[str, object]]:
     rows = []
     for application in pd.percentage_applications(node, 200_000):
@@ -235,6 +251,9 @@ def classify(rs: Ruleset) -> list[dict[str, object]]:
         local = rs.weapon(name)
         resolved = rs.resolve_weapon(name)
         if local is None or resolved is None:
+            continue
+        if is_exact_reviewed_restoration(
+                name, {hit["tag"] for hit in flat_ledger(resolved)}):
             continue
         local_path = (ROOT / local.file).resolve()
         if local_path not in active_files:

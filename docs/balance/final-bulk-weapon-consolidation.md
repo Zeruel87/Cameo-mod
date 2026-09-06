@@ -44,10 +44,11 @@ The automated pass rejects rather than guesses when it finds:
 - split ground/air routing, including the FLAK-23 AA child;
 - physical-state or friendly-fire changes, including BC Yamato, the Latin
   militia Molotov, and several temperature-bearing hybrids;
-- unsafe percentage overflow or inherited percentage drift, including the elite
+- percentage quantisation or inherited percentage drift, including the elite
   Freedom Rocket and RA2 radioactive 120 mm descendants;
 - semantic conflicts such as an AA Thunderbolt resolving toward high-explosive
   missiles, a mortar resolving toward a cannon profile, and unresolved
   Quantum/railgun identities.
 
-Pricing and the parked percentage-damage runtime fix remain outside this batch.
+Pricing and the later percentage-damage runtime activation were outside this
+earlier batch.

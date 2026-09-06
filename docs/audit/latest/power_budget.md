@@ -1,6 +1,6 @@
 # audit_power_budget — worst-case stacked multipliers (R2)
 
-Units above the 2.0× effective-power budget: **790**
+Units above the 2.0× effective-power budget: **828**
 
 
 ## Breaches (damage× × surv× = power×), largest first
@@ -62,6 +62,8 @@ Units above the 2.0× effective-power budget: **790**
 | ra1_soviets | ra1_soviets_heatraytank | 3.83 | 2.48 | 9.50 | DamageMultiplier@ra1_soviets_upgrade_stalinium=80; FirepowerMultiplier@ra1_soviets_upgrade_nucleartankshells=120; FirepowerMultiplier@ra1_soviets_upgrade_scorchedearth=125; FirepowerMultiplier@ra1_soviets_doctrine_inferno=125; DamageMultiplier@ra1_soviets_doctrine_inferno=80; DamageMultiplier@ra1_soviets_doctrine_heavyarmor=90; FirepowerMultiplier@ra1_soviets_doctrine_nuclearwar=110; DamageMultiplier@RANK-3=70 |
 | ra1_soviets | ra1_soviets_btr80 | 4.16 | 2.20 | 9.17 | FirepowerMultiplier@global_conscription_buff=110; DamageMultiplier@global_conscription_buff=90; ReloadDelayMultiplier@global_conscription_buff=90; DamageMultiplier@ra1_soviets_doctrine_heavyarmor=90; FirepowerMultiplier@ra1_soviets_doctrine_nuclearwar=110; ReloadDelayMultiplier@ra1_soviets_upgrade_autoloaders=60; DamageMultiplier@ra1_soviets_upgrade_stalinium=80; DamageMultiplier@RANK-3=70 |
 | latinsyndicate | latinsyndicate_latinmilitia | 2.70 | 3.33 | 9.00 | DamageMultiplier@latinsyndicate_doctrine_eliteguerillas=50; FirepowerMultiplier@latinsyndicate_doctrine_eliteguerillas=150; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
+| wc2_humans | wc2_humans_alleria | 3.60 | 2.48 | 8.94 | DamageMultiplier@WC2HShieldUpg=90; DamageMultiplier@WC2HShieldUpg2=80; FirepowerMultiplier@WC2ArrowUpg=115; FirepowerMultiplier@WC2ArrowUpg2=135; FirepowerMultiplier@RMarksmanUpg=125; DamageMultiplier@RangerUpg=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130 |
+| wc2_humans | wc2_humans_alleria_elite | 3.60 | 2.48 | 8.94 | DamageMultiplier@WC2HShieldUpg=90; DamageMultiplier@WC2HShieldUpg2=80; FirepowerMultiplier@WC2ArrowUpg=115; FirepowerMultiplier@WC2ArrowUpg2=135; FirepowerMultiplier@RMarksmanUpg=125; DamageMultiplier@RangerUpg=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130 |
 | wc2_humans | wc2_humans_elvenarcher | 3.60 | 2.48 | 8.94 | DamageMultiplier@WC2HShieldUpg=90; DamageMultiplier@WC2HShieldUpg2=80; FirepowerMultiplier@WC2ArrowUpg=115; FirepowerMultiplier@WC2ArrowUpg2=135; FirepowerMultiplier@RMarksmanUpg=125; DamageMultiplier@RangerUpg=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130 |
 | wc2_humans | wc2_humans_elvenranger | 3.60 | 2.48 | 8.94 | DamageMultiplier@WC2HShieldUpg=90; DamageMultiplier@WC2HShieldUpg2=80; FirepowerMultiplier@WC2ArrowUpg=115; FirepowerMultiplier@WC2ArrowUpg2=135; FirepowerMultiplier@RMarksmanUpg=125; DamageMultiplier@RangerUpg=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130 |
 | wc2_humans | wc2_humans_highelvenarcher | 3.60 | 2.48 | 8.94 | DamageMultiplier@WC2HShieldUpg=90; DamageMultiplier@WC2HShieldUpg2=80; FirepowerMultiplier@WC2ArrowUpg=115; FirepowerMultiplier@WC2ArrowUpg2=135; FirepowerMultiplier@RMarksmanUpg=125; DamageMultiplier@RangerUpg=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130 |
@@ -69,6 +71,8 @@ Units above the 2.0× effective-power budget: **790**
 | wc2_orcs | wc2_orcs_trollaxethrower | 2.88 | 3.10 | 8.94 | FirepowerMultiplier@TAxeUpg=115; FirepowerMultiplier@TAxeUpg2=135; DamageMultiplier@WC2OShieldUpg=90; DamageMultiplier@WC2OShieldUpg2=80; DamageMultiplier@BRegenUpg=80; DamageMultiplier@BerserkerUpg=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130 |
 | wc2_orcs | wc2_orcs_trollberserker | 2.88 | 3.10 | 8.94 | FirepowerMultiplier@TAxeUpg=115; FirepowerMultiplier@TAxeUpg2=135; DamageMultiplier@WC2OShieldUpg=90; DamageMultiplier@WC2OShieldUpg2=80; DamageMultiplier@BRegenUpg=80; DamageMultiplier@BerserkerUpg=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130 |
 | wc2_orcs | wc2_orcs_trollheadhunter | 2.88 | 3.10 | 8.94 | FirepowerMultiplier@TAxeUpg=115; FirepowerMultiplier@TAxeUpg2=135; DamageMultiplier@WC2OShieldUpg=90; DamageMultiplier@WC2OShieldUpg2=80; DamageMultiplier@BRegenUpg=80; DamageMultiplier@BerserkerUpg=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130 |
+| wc2_orcs | wc2_orcs_zuljin | 2.88 | 3.10 | 8.94 | FirepowerMultiplier@TAxeUpg=115; FirepowerMultiplier@TAxeUpg2=135; DamageMultiplier@WC2OShieldUpg=90; DamageMultiplier@WC2OShieldUpg2=80; DamageMultiplier@BRegenUpg=80; DamageMultiplier@BerserkerUpg=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130 |
+| wc2_orcs | wc2_orcs_zuljin_elite | 2.88 | 3.10 | 8.94 | FirepowerMultiplier@TAxeUpg=115; FirepowerMultiplier@TAxeUpg2=135; DamageMultiplier@WC2OShieldUpg=90; DamageMultiplier@WC2OShieldUpg2=80; DamageMultiplier@BRegenUpg=80; DamageMultiplier@BerserkerUpg=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130 |
 | ixian | ixian_stormlasher | 5.00 | 1.79 | 8.93 | DamageMultiplier@ixian_upgrade_generalpurposearmor=80; FirepowerMultiplier@ixian_upgrade_advancedixiantechnology=200; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
 | td_gdi | td_gdi_assaultapc | 3.54 | 2.53 | 8.93 | DamageMultiplier@td_gdi_upgrade_lightweightarmorplating=80; FirepowerMultiplier@td_gdi_upgrade_longrangesensors=105; FirepowerMultiplier@td_gdi_upgrade_armorpiercingbullets=133; FirepowerMultiplier@td_gdi_upgrade_cuttingedgeequipment=110; ReloadDelayMultiplier@td_gdi_upgrade_cuttingedgeequipment=90; DamageMultiplier@td_gdi_upgrade_cuttingedgeequipment=90; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145 |
 | ra1_soviets | ra1_soviets_flametower | 3.91 | 2.23 | 8.72 | FirepowerMultiplier@ra1_soviets_upgrade_scorchedearth=125; FirepowerMultiplier@ra1_soviets_doctrine_inferno=125; DamageMultiplier@ra1_soviets_doctrine_inferno=80; DamageMultiplier@ra1_soviets_upgrade_stalinium=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
@@ -91,8 +95,12 @@ Units above the 2.0× effective-power budget: **790**
 | ra2_soviets | ra2_soviets_flaktrooper | 3.29 | 2.47 | 8.12 | FirepowerMultiplier@global_conscription_buff=110; DamageMultiplier@global_conscription_buff=90; ReloadDelayMultiplier@global_conscription_buff=90; DamageMultiplier@ra2_soviets_doctrine_harshenvironmentinfantryconditioning=75; FirepowerMultiplier@ra2_soviets_doctrine_shocktroopertraining=115; FirepowerMultiplier@ra2_soviets_upgrade_heavycannons=130; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | terran | terran_firebat | 3.22 | 2.53 | 8.12 | FirepowerMultiplier@terran_upgrade_infantryweaponslevel1=115; FirepowerMultiplier@terran_upgrade_infantryweaponslevel2=135; DamageMultiplier@terran_upgrade_infantryarmorlevel1=90; DamageMultiplier@terran_upgrade_infantryarmorlevel2=80; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | terran | terran_harakan | 3.22 | 2.53 | 8.12 | FirepowerMultiplier@terran_upgrade_infantryweaponslevel1=115; FirepowerMultiplier@terran_upgrade_infantryweaponslevel2=135; DamageMultiplier@terran_upgrade_infantryarmorlevel1=90; DamageMultiplier@terran_upgrade_infantryarmorlevel2=80; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
+| wc2_humans | wc2_humans_danath | 3.22 | 2.53 | 8.12 | FirepowerMultiplier@WC2SwordUpg=115; FirepowerMultiplier@WC2SwordUpg2=135; DamageMultiplier@WC2HShieldUpg=90; DamageMultiplier@WC2HShieldUpg2=80; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
+| wc2_humans | wc2_humans_danath_elite | 3.22 | 2.53 | 8.12 | FirepowerMultiplier@WC2SwordUpg=115; FirepowerMultiplier@WC2SwordUpg2=135; DamageMultiplier@WC2HShieldUpg=90; DamageMultiplier@WC2HShieldUpg2=80; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | wc2_humans | wc2_humans_demolitionsquad | 3.22 | 2.53 | 8.12 | FirepowerMultiplier@BallUpg=115; FirepowerMultiplier@BallUpg2=135; DamageMultiplier@WC2HShieldUpg=90; DamageMultiplier@WC2HShieldUpg2=80; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | wc2_orcs | wc2_orcs_goblinsappers | 3.22 | 2.53 | 8.12 | FirepowerMultiplier@CatUpg=115; FirepowerMultiplier@CatUpg2=135; DamageMultiplier@WC2OShieldUpg=90; DamageMultiplier@WC2OShieldUpg2=80; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
+| wc2_orcs | wc2_orcs_hellscream | 3.22 | 2.53 | 8.12 | FirepowerMultiplier@WC2AxeUpg=115; FirepowerMultiplier@WC2AxeUpg2=135; DamageMultiplier@WC2OShieldUpg=90; DamageMultiplier@WC2OShieldUpg2=80; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
+| wc2_orcs | wc2_orcs_hellscream_elite | 3.22 | 2.53 | 8.12 | FirepowerMultiplier@WC2AxeUpg=115; FirepowerMultiplier@WC2AxeUpg2=135; DamageMultiplier@WC2OShieldUpg=90; DamageMultiplier@WC2OShieldUpg2=80; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | zerg | zerg_infestedterranbomber | 3.22 | 2.53 | 8.12 | FirepowerMultiplier@zerg_upgrade_meleeattackslevel1=115; FirepowerMultiplier@zerg_upgrade_meleeattackslevel2=135; DamageMultiplier@zerg_upgrade_carapacelevel1=90; DamageMultiplier@zerg_upgrade_carapacelevel2=80; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | zerg | zerg_ultralisk | 3.22 | 2.53 | 8.12 | FirepowerMultiplier@zerg_upgrade_meleeattackslevel1=115; FirepowerMultiplier@zerg_upgrade_meleeattackslevel2=135; DamageMultiplier@zerg_upgrade_carapacelevel1=90; DamageMultiplier@zerg_upgrade_carapacelevel2=80; DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | ra1_soviets | ra1_soviets_hammertank | 4.09 | 1.98 | 8.11 | DamageMultiplier@ra1_soviets_upgrade_stalinium=80; FirepowerMultiplier@ra1_soviets_upgrade_nucleartankshells=120; DamageMultiplier@ra1_soviets_doctrine_heavyarmor=90; FirepowerMultiplier@ra1_soviets_doctrine_nuclearwar=110; ReloadDelayMultiplier@ra1_soviets_upgrade_autoloaders=60; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
@@ -448,6 +456,8 @@ Units above the 2.0× effective-power budget: **790**
 | td_nod | td_nod_venom | 3.19 | 1.43 | 4.56 | FirepowerMultiplier@td_nod_upgrade_elitecapacitors=130; FirepowerMultiplier@td_nod_upgrade_guerillatactics=115; FirepowerMultiplier@td_nod_upgrade_advancedguerillatactics=115; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | td_nod | td_nod_stealthtank | 3.14 | 1.43 | 4.48 | FirepowerMultiplier@td_nod_upgrade_advancedguerillatactics=130; FirepowerMultiplier@td_nod_upgrade_guerillatactics=130; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | ordos | ordos_artilleryplatform | 3.12 | 1.43 | 4.46 | FirepowerMultiplier@ordos_upgrade_contraband=125; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
+| ordos | ordos_chemturret | 3.12 | 1.43 | 4.46 | FirepowerMultiplier@ordos_upgrade_contraband=125; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
+| ordos | ordos_laserturret | 3.12 | 1.43 | 4.46 | FirepowerMultiplier@ordos_upgrade_contraband=125; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
 | ra1_soviets | ra1_soviets_samsite | 2.50 | 1.79 | 4.46 | DamageMultiplier@ra1_soviets_upgrade_stalinium=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
 | td_nod | td_nod_gunturret | 3.12 | 1.43 | 4.46 | FirepowerMultiplier@td_nod_upgrade_improvedartilleries=125; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
 | latinsyndicate | latinsyndicate_terrorist | 3.33 | 1.33 | 4.44 | FirepowerMultiplier@latinsyndicate_upgrade_asianalliancestolentechhotfire=200; ReloadDelayMultiplier@latinsyndicate_upgrade_asianalliancestolentechhotfire=75; DamageMultiplier@latinsyndicate_doctrine_eliteguerillas=75; FirepowerMultiplier@latinsyndicate_doctrine_eliteguerillas=125 |
@@ -574,10 +584,11 @@ Units above the 2.0× effective-power budget: **790**
 | schwarzermond | schwarzermond_noidharvester | 2.28 | 1.67 | 3.79 | FirepowerMultiplier@schwarzermond_upgrade_moonpropaganda=110; FirepowerMultiplier@schwarzermond_upgrade_helium3=115; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | td_gdi | td_gdi_grenadier | 2.38 | 1.59 | 3.78 | FirepowerMultiplier@td_gdi_upgrade_longrangesensors=105; FirepowerMultiplier@td_gdi_upgrade_cuttingedgeequipment=110; ReloadDelayMultiplier@td_gdi_upgrade_cuttingedgeequipment=90; DamageMultiplier@td_gdi_upgrade_cuttingedgeequipment=90; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | td_gdi | td_gdi_shotgunner | 2.38 | 1.59 | 3.78 | FirepowerMultiplier@td_gdi_upgrade_longrangesensors=105; FirepowerMultiplier@td_gdi_upgrade_cuttingedgeequipment=110; ReloadDelayMultiplier@td_gdi_upgrade_cuttingedgeequipment=90; DamageMultiplier@td_gdi_upgrade_cuttingedgeequipment=90; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_sardaukar_berserker | 2.07 | 1.82 | 3.77 | DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_sardaukar_sword | 2.07 | 1.82 | 3.77 | DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | forgotten | forgotten_closhtank | 2.07 | 1.82 | 3.77 | DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | forgotten | forgotten_flametank | 2.07 | 1.82 | 3.77 | DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | forgotten | forgotten_thumperbus | 2.07 | 1.82 | 3.77 | DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
-| harkonnen | heavy_inf.ixian | 2.07 | 1.82 | 3.77 | DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | ordos | heavy_inf.ixian | 2.07 | 1.82 | 3.77 | DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | ts_nod | ts_nod_chameleonspy | 2.07 | 1.82 | 3.77 | DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
 | ts_nod | ts_nod_devilstongue | 2.07 | 1.82 | 3.77 | DamageMultiplier@RANK-3=55; FirepowerMultiplier@RANK-3=145; ReloadDelayMultiplier@RANK-3=70 |
@@ -635,6 +646,7 @@ Units above the 2.0× effective-power budget: **790**
 | forgotten | forgotten_brokenscoopertankturret | 2.50 | 1.43 | 3.57 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
 | forgotten | forgotten_brokenwarriortankturret | 2.50 | 1.43 | 3.57 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
 | forgotten | forgotten_machineguntower | 2.50 | 1.43 | 3.57 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
+| harkonnen | harkonnen_devastatorturret | 2.50 | 1.43 | 3.57 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
 | harkonnen | harkonnen_flameturret | 2.50 | 1.43 | 3.57 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
 | ts_gdi | ts_gdi_rpgtower | 2.50 | 1.43 | 3.57 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
 | ts_gdi | ts_gdi_vulcantower | 2.50 | 1.43 | 3.57 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
@@ -669,6 +681,8 @@ Units above the 2.0× effective-power budget: **790**
 | steelconsortium | steelconsortium_quantummissiletrooper | 1.80 | 1.85 | 3.33 | DamageMultiplier@steelconsortium_upgrade_naniteinfusion=90; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | steelconsortium | steelconsortium_steelrunner | 1.80 | 1.85 | 3.33 | DamageMultiplier@steelconsortium_upgrade_naniteinfusion=90; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | asianalliance | asianalliance_chaostower | 1.89 | 1.75 | 3.32 | DamageMultiplier@asianalliance_upgrade_wayofthedragon=95; FirepowerMultiplier@asianalliance_upgrade_wayofthedragon=105; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
+| ixian | atreides_missiletank | 2.32 | 1.43 | 3.32 | FirepowerMultiplier@ixian_upgrade_advancedixiantechnology=125; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| ixian | corrino_missiletank | 2.32 | 1.43 | 3.32 | FirepowerMultiplier@ixian_upgrade_advancedixiantechnology=125; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | ixian | ixian_empbomber | 1.86 | 1.79 | 3.32 | DamageMultiplier@ixian_upgrade_generalpurposearmor=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | ixian | ixian_farasha | 1.86 | 1.79 | 3.32 | DamageMultiplier@ixian_upgrade_generalpurposearmor=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | ixian | ixian_ixprojector | 1.86 | 1.79 | 3.32 | DamageMultiplier@ixian_upgrade_generalpurposearmor=80; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
@@ -740,6 +754,25 @@ Units above the 2.0× effective-power budget: **790**
 | ts_nod | ts_nod_attackcycle | 1.86 | 1.59 | 2.95 | DamageMultiplier@ts_nod_upgrade_mobilityspecialization=90; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | ts_nod | ts_nod_bansheefighter | 1.86 | 1.59 | 2.95 | DamageMultiplier@ts_nod_upgrade_mobilityspecialization=90; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | ts_nod | ts_nod_subterraneanapc | 1.86 | 1.59 | 2.95 | DamageMultiplier@ts_nod_upgrade_mobilityspecialization=90; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| atreides | atreides_combattank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| atreides | atreides_lightinfantry | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| atreides | atreides_repairtank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| atreides | atreides_rockettrooper | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| atreides | atreides_sandbike | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| atreides | atreides_siegetank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| atreides | light_inf | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| atreides | trooper | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_bmp | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_buggy | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_combattank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_lightinfantry | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_sardaukar_bazooka | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_sardaukar_javelin | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_sardaukar_laser | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_siegetank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | corrino_trooper | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | light_inf | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| corrino | trooper | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | eden | eden_lynx_emp | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | eden | eden_lynx_laser | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | eden | eden_lynx_railgun | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
@@ -765,13 +798,18 @@ Units above the 2.0× effective-power budget: **790**
 | forgotten | forgotten_tankkiller | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | forgotten | forgotten_warriortank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | forgotten | forgotten_wasp | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| harkonnen | atreides_missiletank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | harkonnen | combat_tank.harkonnen | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
-| harkonnen | duelist_tank.ixian | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
-| harkonnen | heavy_rocket_raider.ixian | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
-| harkonnen | ixian_kodatank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| harkonnen | corrino_missiletank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| harkonnen | harkonnen_adp | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| harkonnen | harkonnen_buzzsaw | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| harkonnen | harkonnen_flametank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| harkonnen | harkonnen_inkvine | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| harkonnen | harkonnen_lightinfantry | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| harkonnen | harkonnen_rockettrooper | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
+| harkonnen | harkonnen_sardaukar | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | harkonnen | light_inf | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | harkonnen | missile_tank | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
-| harkonnen | rocket_raider.ixian | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | harkonnen | trooper | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | ixian | ixian_mongoose | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
 | japan | ra1_allies_alliedrocketsoldier | 1.86 | 1.43 | 2.65 | DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |

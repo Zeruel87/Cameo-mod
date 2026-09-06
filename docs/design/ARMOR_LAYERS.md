@@ -1471,7 +1471,7 @@ though they are in the same kinetic family right? But you need to use your best 
 reasoning for this to get it right!"* … *"I want all weapon families to be a bit more unique so
 don't put 3 energy weapons exactly on the same versus value but slightly different"*
 
-**STATUS: DONE** — shipped in `e7fa2d57b`. **46 emitted families** (`plating_families`, re-measured 2026-08-23). ⚠ The matrix below still lists 37 rows — the families added since (the Cryo cells among them) have no row yet; `audit_doc_claims` holds this red until the table is regenerated. Four groups
+**STATUS: DONE** — shipped in `e7fa2d57b`. **48 emitted families** (`plating_families`, re-measured 2026-09-05). ⚠ The matrix below still lists 37 rows — the families added since (the Cryo cells among them) have no row yet; `audit_doc_claims` holds this red until the table is regenerated. Four groups
 of ties are gone: `Laser/Prism/Tesla`, `Chemical/Cryo/Flame/Toxic`, `Concussion/Demolition`, and
 `Arrow/Bullet/CannonAP/Melee`. Pinned by `tools/tests/test_plating_composition.py`.
 

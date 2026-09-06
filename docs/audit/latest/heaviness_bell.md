@@ -4,7 +4,7 @@ DESIGN §12.0i: `LO` 0.667 (swing 1.50x), `sigma` 0.75, mu = (h + centre_of_mass
 
 | | |
 |---|--:|
-| families measured | 48 |
+| families measured | 50 |
 | with NO gradient the bell could preserve | 2 |
 | ladder ORDERINGS changed by the bell | 0 |
 | weighted-mean drift beyond 1e-6 | 0 |

@@ -17,13 +17,13 @@
 | EMP Grenadier | td_gdi_empgrenadier | Damage 64000 vs game 104232 |
 | Hover Board Grenadier | steelconsortium_hoverboardgrenadier | Damage 44000 vs game 29304; Reload 50 vs game 25 |
 | Mortar Bike | latinsyndicate_mortarbike | Damage 18000 vs game 36165 |
-| Ordos Mortar Trooper | ordos_mortartrooper | Damage 40000 vs game 41000 |
+| Ordos Mortar Trooper | ordos_mortartrooper | Damage 40000 vs game 43000 |
 | Mortar Team | wc2_humans_mortarteam | Reload 225 vs game 200 |
 | Sonic Missile Soldier | td_gdi_sonicmissilesoldier | Damage 50000 vs game 51225 |
-| Twin Rocket Trooper | ixian_twinrockettrooper | Damage 48000 vs game 50240 |
-| Lunar Rocket | schwarzermond_lunarrocket | Damage 12000 vs game 16154 |
+| Twin Rocket Trooper | ixian_twinrockettrooper | Damage 48000 vs game 58240 |
+| Lunar Rocket | schwarzermond_lunarrocket | Damage 12000 vs game 16554 |
 | Madcap | terran_madcap | Damage 6000 vs game 36200 |
-| Hydralisk | zerg_hydralisk | Damage 8000 vs game 72104 |
+| Hydralisk | zerg_hydralisk | Damage 8000 vs game 18000 |
 | High Templar | protoss_hightemplar | Damage 8000 vs game 104000; Reload 8 vs game 64 |
 | Elven Archer | wc2_humans_elvenarcher | Damage 18000 vs game 24110 |
 | Asian Tank Killer | asianalliance_asiantankkiller | Damage 34000 vs game 68200 |
@@ -36,12 +36,12 @@
 | Shock Trooper | ra1_soviets_shocktrooper | Damage 20000 vs game 31000 |
 | Zapper | ra1_soviets_zapper | Damage 30000 vs game 64000; Reload 30 vs game 32 |
 | Übermensch | schwarzermond_ubermensch | Damage 16000 vs game 172368 |
-| Noid MG Armor | schwarzermond_noidmgarmor | Damage 50000 vs game 234468 |
+| Noid MG Armor | schwarzermond_noidmgarmor | Damage 50000 vs game 243468 |
 | Dwarven Rifleman | wc2_humans_dwarvenrifleman | Damage 24000 vs game 25112; Reload 64 vs game 60 |
 | Gatling Trooper | yuri_gatlingtrooper | Damage 4000 vs game 16025 |
 | Bio Trooper | yuri_biotrooper | Damage 24000 vs game 73800 |
 | Fanatic | asianalliance_fanatic | HP 24000 vs game 100000; Speed 63 vs game 75; Damage 8000 vs game 40250; Reload 50 vs game 70 |
-| Quantum Missile Trooper | steelconsortium_quantummissiletrooper | Damage 32000 vs game 295236 |
+| Quantum Missile Trooper | steelconsortium_quantummissiletrooper | Damage 32000 vs game 297636 |
 | Shotgunner | td_gdi_shotgunner | HP 24000 vs game 50000; Damage 12000 vs game 20125 |
 | SS Soldier | naxis_sssoldier | HP 30000 vs game 63000; Speed 60 vs game 55; Damage 60000 vs game 40250 |
 | Firebat | terran_firebat | Damage 26000 vs game 52000 |
@@ -88,22 +88,22 @@ ambiguous: Rifle Infantry -> ra1_allies_rifleinfantry, ra1_soviets_rifleinfantry
 | Hovercraft Flametank | japan_hovercraftflametank | HP 60000 vs game 120000 |
 | Heavy Autogun Tank | ordos_heavyautoguntank | Damage 19200 vs game 48116 |
 | Deviator Tank | ordos_deviatortank | Damage 40000 vs game 41010 |
-| Neo Jagdpanzer | schwarzermond_neojagdpanzer | Damage 90000 vs game 226200 |
+| Neo Jagdpanzer | schwarzermond_neojagdpanzer | Damage 90000 vs game 232200 |
 | Warhound | terran_warhound | Damage 128000 vs game 97036; Reload 90 vs game 44 [multi-reload] |
 | Goremaw | zerg_goremaw | Damage 10000 vs game 30000; Reload 10 vs game 30 |
 | Archon | protoss_archon | Damage 30000 vs game 47000 |
 | Mirage Tank | ra2_allies_miragetank | Damage 24000 vs game 25108 |
 | Heavy Mirage Tank | ra2_allies_heavymiragetank | Damage 32000 vs game 33112 |
-| Apocalypse Tank | ra2_soviets_apocalypsetank | Damage 24000 vs game 138338 |
+| Apocalypse Tank | ra2_soviets_apocalypsetank | Damage 24000 vs game 143322 |
 | Robot Tank | futuretech_robottank | Damage 24000 vs game 31100 |
 | Megalodon | steelconsortium_megalodon | Damage 60000 vs game 316325 |
-| Defender Bot | steelconsortium_defenderbot | Damage 32000 vs game 98412 |
+| Defender Bot | steelconsortium_defenderbot | Damage 32000 vs game 99212 |
 | Beholder | cabal_beholder | Damage 80000 vs game 95290 |
-| Tortuga Tank | latinsyndicate_tortugatank | Damage 40000 vs game 48150 |
+| Tortuga Tank | latinsyndicate_tortugatank | Damage 40000 vs game 48550 |
 | Chrono Tank | ra1_allies_chronotank | Damage 80000 vs game 161280 |
 | Hermit | zerg_hermit | Damage 120000 vs game 60155 |
 | Idol | protoss_idol | Damage 134000 vs game 67310 |
-| Ratte | naxis_ratte | Damage 300000 vs game 412848 |
+| Ratte | naxis_ratte | Damage 300000 vs game 452848 |
 | Dalek | schwarzermond_dalek | Damage 300000 vs game 353100 |
 | Future Tank | futuretech_futuretank | Damage 300000 vs game 1502676 |
 
@@ -112,7 +112,7 @@ unmatched: Light Tank Mk2, Sheridan, Chi-Ha Medium Tank, Shrine Tank, Ix Combat 
 ambiguous: Lunar Tiger -> schwarzermond_lunartiger, schwarzermond_promotion_lunartiger | Quantum Tank -> steelconsortium_promotion_quantumtank, steelconsortium_quantumtank | Laser Tank -> ordos_lasertank, schwarzermond_lasertank, schwarzermond_promotion_lasertank | Katy Tank -> steelconsortium_katytank, steelconsortium_promotion_katytank
 
 
-## Vehicles: 98 matched, 44 mismatched, 50 unmatched, 9 ambiguous
+## Vehicles: 98 matched, 47 mismatched, 50 unmatched, 9 ambiguous
 
 | sheet unit | actor | mismatches |
 |---|---|---|
@@ -124,7 +124,8 @@ ambiguous: Lunar Tiger -> schwarzermond_lunartiger, schwarzermond_promotion_luna
 | Ix Raider | rocket_raider.ixian | Damage 6000 vs game 6750; Reload 25 vs game 5 |
 | Ordos Raider | ordos_raider | HP 35000 vs game 60000; Speed 135 vs game 180; Damage 16000 vs game 36000; Reload 53 vs game 24 |
 | Stealth Raider | ordos_stealthraider | HP 35000 vs game 60000; Speed 135 vs game 180 |
-| Laboratory Crawler | ordos_laboratorycrawler | Damage 50000 vs game 100366 |
+| Ordos APC | ordos_apc | Damage 24000 vs game 25440 |
+| Laboratory Crawler | ordos_laboratorycrawler | Damage 50000 vs game 102766 |
 | Flak Track | ra2_soviets_flaktrack | HP 30000 vs game 45000; Speed 120 vs game 95; Damage 4000 vs game 16056; Reload 15 vs game 25 [multi-reload] |
 | Boxer | td_gdi_boxer | Damage 6000 vs game 24062 |
 | Allied Heavy AA Tank | ra1_allies_alliedheavyaatank | Damage 4000 vs game 16058 |
@@ -132,8 +133,8 @@ ambiguous: Lunar Tiger -> schwarzermond_lunartiger, schwarzermond_promotion_luna
 | Yuri Gatling Tank | yuri_gatlingtank | Damage 3000 vs game 12050 |
 | Quasar | asianalliance_quasar | Damage 8000 vs game 39834 |
 | Diablo | latinsyndicate_diablo | Damage 8000 vs game 16056 |
-| Wirbelwind | wirbelwind.nax | Damage 48000 vs game 84336 |
-| Laser Beetle | schwarzermond_laserbeetle | Damage 16000 vs game 34516 |
+| Wirbelwind | wirbelwind.nax | Damage 48000 vs game 114336 |
+| Laser Beetle | schwarzermond_laserbeetle | Damage 16000 vs game 26516 |
 | Manta | steelconsortium_manta | HP 27500 vs game 55000; Damage 8000 vs game 32100 |
 | Barracuda | steelconsortium_barracuda | Damage 4000 vs game 20100 |
 | Eden EMP Lynx | eden_lynx_emp | Damage 16000 vs game 100416 |
@@ -144,7 +145,9 @@ ambiguous: Lunar Tiger -> schwarzermond_lunartiger, schwarzermond_promotion_luna
 | Nanodrone Buggy | japan_nanodronebuggy | Damage 31108 vs game 23452 |
 | Waveforce Tank | japan_waveforcetank | Damage 30000 vs game 21100 |
 | Storm Raider | ixian_stormraider | Damage 60000 vs game 120100 |
+| Ix Combat Siege | ixian_ixcombatsiege | Damage 24000 vs game 25450 |
 | Ix Missile Tank | ixian_ixmissiletank | Damage 24000 vs game 24750; Reload 25 vs game 5 |
+| Dust Drone | ordos_dustdrone | Damage 24000 vs game 25440 |
 | Korruptes Biest | schwarzermond_korruptesbiest | Damage 48000 vs game 49200 |
 | Crystal Tank | schwarzermond_crystaltank | Damage 20000 vs game 40000 |
 | Cyclone | terran_cyclone | Damage 24000 vs game 24600 |
@@ -175,10 +178,10 @@ ambiguous: Ranger -> ra1_allies_ranger, wc2_humans_upgrade_ranger | Battle Fortr
 | Black Hawk | ra1_allies_blackhawk | Damage 5000 vs game 16050; Reload 8 vs game 6 |
 | Sky Hawk | japan_skyhawk | Damage 12000 vs game 84125; Reload 8 vs game 128 [multi-reload] |
 | Rocket Angel | japan_rocketangel | HP 25000 vs game 24000; Speed 160 vs game 140; Damage 24000 vs game 76424; Reload 34 vs game 40 |
-| Banshee | ordos_banshee | Damage 50000 vs game 100366 |
+| Banshee | ordos_banshee | Damage 50000 vs game 102766 |
 | Night Hawk | ra2_allies_nighthawk | Damage 2000 vs game 4025 |
 | Cosmonaut | yuri_cosmonaut | Damage 6000 vs game 13630 |
-| Sky Mage | naxis_skymage | Damage 24000 vs game 84336 |
+| Sky Mage | naxis_skymage | Damage 24000 vs game 114336 |
 | Valkyrie | terran_valkyrie | Damage 64000 vs game 131888 |
 | Mutalisk | zerg_mutalisk | Damage 8000 vs game 32166 |
 | Devourer | zerg_devourer | Damage 20000 vs game 44172 |
@@ -190,11 +193,11 @@ ambiguous: Ranger -> ra1_allies_ranger, wc2_humans_upgrade_ranger | Battle Fortr
 | Sky Hammer | steelconsortium_skyhammer | Damage 48000 vs game 131440 |
 | Orca | td_gdi_orca | HP 62500 vs game 32500; Speed 145 vs game 175; Damage 24000 vs game 12156; Reload 32 vs game 16 |
 | Jumpjet Infantry | ts_gdi_jumpjetinfantry | HP 35000 vs game 34000; Damage 12000 vs game 8025 |
-| Harrier | ra2_allies_harrier | Damage 72000 vs game 96640 |
-| Yakovlev | latinsyndicate_yakovlev | Damage 40000 vs game 32100 |
+| Harrier | ra2_allies_harrier | Damage 72000 vs game 104640 |
+| Yakovlev | latinsyndicate_yakovlev | Damage 40000 vs game 33700 |
 | Japanese Bomber | japan_japanesebomber | Damage 80000 vs game 153300; Reload 250 vs game 136 [multi-reload] |
 | Ixian EMP Bomber | ixian_empbomber | Damage 90000 vs game 225295 |
-| Black Eagle | ra2_allies_blackeagle | Damage 192000 vs game 409096; Reload 250 vs game 56 |
+| Black Eagle | ra2_allies_blackeagle | Damage 192000 vs game 418696; Reload 250 vs game 56 |
 | Orca Bomber | ts_gdi_orcabomber | Reload 250 vs game 50 |
 | Farasha | ixian_farasha | Damage 300000 vs game 910300; Reload 175 vs game 99 |
 | Battlecruiser | terran_battlecruiser | Damage 32000 vs game 37641 |
@@ -202,7 +205,7 @@ ambiguous: Ranger -> ra1_allies_ranger, wc2_humans_upgrade_ranger | Battle Fortr
 | Starship Sovereign | protoss_starshipsovereign | Damage 12000 vs game 14631 |
 | Gryphon Rider | wc2_humans_gryphonrider | Damage 40000 vs game 55270 |
 | Dragon | wc2_orcs_dragon | Damage 60000 vs game 150000 |
-| Empress Station | steelconsortium_empressstation | Damage 25000 vs game 352025 |
+| Empress Station | steelconsortium_empressstation | Damage 25000 vs game 354025 |
 | Haunebu II | schwarzermond_haunebuii | HP 375000 vs game 250000; Speed 55 vs game 66 |
 
 unmatched: Hind, Kamov, Ix Drone, Wraith (Laser), Wraith (Rockets), Sun Dog (Laser), Sun Dog (Rockets), Scout (MG), Scout (Rockets), Corsair (EMP), Corsair (AA), RA2 Hind, Pelican (Rockets), Pelican (MG), Steel Cargo Ship, Cryo Copter (Cryo Beam), Cryo Copter (Rockets), Yak (Chaingun), Yak (Bombs), Tesla Yak (Chaingun), Tesla Yak (Bombs), Tesla Yak (Tesla), Nuclear Yak (Chaingun), Nuclear Yak (Bomb), Zero Fighter (Chaingun), Zero Fighter (Arrows), Me 262 (MG), Me 262 (Rockets), Firehawk (Bombs), Firehawk (Missiles) ...
@@ -210,7 +213,7 @@ unmatched: Hind, Kamov, Ix Drone, Wraith (Laser), Wraith (Rockets), Sun Dog (Las
 ambiguous: Rocketeer -> ra2_allies_rocketeer, tkm_rocketeer | Twister -> futuretech_twister, steelconsortium_twister | Wraith -> ordos_wraith, terran_wraith
 
 
-## Defenses: 25 matched, 11 mismatched, 31 unmatched, 7 ambiguous
+## Defenses: 25 matched, 12 mismatched, 31 unmatched, 7 ambiguous
 
 | sheet unit | actor | mismatches |
 |---|---|---|
@@ -219,12 +222,13 @@ ambiguous: Rocketeer -> ra2_allies_rocketeer, tkm_rocketeer | Twister -> futuret
 | Sentry Gun | ra2_soviets_sentrygun | Damage 12000 vs game 16100; Reload 20 vs game 27 |
 | Gatling Cannon | yuri_gatlingcannon | Damage 4000 vs game 36150 |
 | Missile Turret | terran_missileturret | HP 60000 vs game 200000; Damage 20000 vs game 41500; Reload 15 vs game 30 |
+| Advanced Guard Tower | td_gdi_advancedguardtower | Damage 28000 vs game 32314 |
 | Ballista Tower | japan_ballistatower | Damage 160000 vs game 360600 |
 | Autogun Turret | ordos_autogunturret | Damage 24000 vs game 24800 |
-| Artillery Platform | ordos_artilleryplatform | Damage 48000 vs game 53625 |
+| Artillery Platform | ordos_artilleryplatform | Damage 48000 vs game 56025 |
 | Prism Tower | ra2_allies_prismtower | Damage 32000 vs game 33025; Reload 40 vs game 3 |
 | BFG 10000 | steelconsortium_bfg10000 | Damage 300000 vs game 1130088 |
-| Flak 88 | naxis_flak88 | Damage 48000 vs game 112448 |
+| Flak 88 | naxis_flak88 | Damage 48000 vs game 152448 |
 
 unmatched: MG Nest, Camo Pillbox (MG), Camo Pillbox (Rockets), Dune Machine Gun Turret, Ixian Gun Turret, RA2 Pillbox, AA Sentry Flamer, Multi Rocket System (normal), Javelin Rocket System, Frag Rocket System , Sigma Rocket System, Freezer Turret, AA Gun, AA Punisher, AA Pulsar, AA Hyperion , AA Defender, Consortium Anti Air Turret, Obelisk, Bastion, Lunar Naxi Laser Tower, Dune Rocket Turret, RA2 Tesla Coil, AA Rail Tower, AA Plasma Cannon, Freezer Turret, GDI Rig (Phalanx), GDI Rig (Railgun), GDI Rig (Missiles), Consortium Quantum Cannon ...
 

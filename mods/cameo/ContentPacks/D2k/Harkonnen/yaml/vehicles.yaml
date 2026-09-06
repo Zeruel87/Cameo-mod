@@ -26,6 +26,7 @@ harkonnen_mobileconstructionvehicle:
 	RenderSprites:
 		Image: d2k_mcv
 
+
 combat_tank.harkonnen:
 	Inherits@D2KT: ^D2KTank
 	Inherits@Template: ^MainBattleTankTemplate
@@ -33,7 +34,6 @@ combat_tank.harkonnen:
 	Inherits@decoration: ^DuneRankDecoration
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
-	Inherits@EMP: ^TurretEMP
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Buildable:
 		Queue: Vehicle, RAVehicle, Starport
@@ -44,31 +44,33 @@ combat_tank.harkonnen:
 	Valued:
 		Cost: 600
 	Tooltip:
-		Name: Harkonnen Combat Tank
+		Name: Harkonnen Assault Tank
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
 		HP: 70000
+	Armor:
+		Type: Heavy
 	Mobile:
 		Speed: 65
-		TurnSpeed: 13
-	Turreted:
 		TurnSpeed: 13
 	Armament:
 		Weapon: 80mm_H
 		Recoil: 64
 		RecoilRecovery: 32
 		LocalOffset: 256,0,0
-		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
-	AttackTurreted:
-	WithMuzzleOverlay:
-	WithSpriteTurret:
+	AttackFrontal:
+		FacingTolerance: 0
 	FireWarheadsOnDeath:
 		Weapon: D2KUnitExplodeMed
 		EmptyWeapon: D2KUnitExplodeMed
 	Cloak@TDcloak:
-		Palette: d2kcloak
+		CloakStyle: Palette
+		CloakedPalette: d2kcloak
+	-WithDeathAnimation:
+	RenderSprites:
+		Image: combat_tank.harkonnen
+		PlayerPalette: player_rgba
 	Voiced:
 		VoiceSet: D2KCombatTank
 
@@ -83,7 +85,7 @@ missile_tank:
 	Inherits@AntiVeh: ^PrioritizeVehicle
 	Buildable:
 		Queue: Vehicle, RAVehicle, Starport
-		Prerequisites: ~harkonnen_vehicle_production, ~heavy.missile_tank, upgrade_heavy, research_centre
+		Prerequisites: ~harkonnen_vehicle_production, ~heavy.missile_tank, research_centre, upgrade_heavy
 		BuildPaletteOrder: 60
 		Description: Rocket Artillery\n  Strong vs Vehicles, Buildings, Aircraft\n  Weak vs Infantry\nDetector
 		IconPalette: d2kunit
@@ -98,6 +100,8 @@ missile_tank:
 		TurnSpeed: 26
 	Health:
 		HP: 50000
+	Armor:
+		Type: Medium
 	RevealsShroud:
 		Range: 6c256
 	Armament:
@@ -125,8 +129,110 @@ missile_tank:
 		Range: 4c0
 	Voiced:
 		VoiceSet: D2KMissileTank
+	-WithDeathAnimation:
+	RenderSprites:
+		Image: missile_tank
+		PlayerPalette: player_rgba
 
 devastator:
+	Inherits@D2KT: ^D2KTank
+	Inherits@GAINSEXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	-WithDeathAnimation:
+	Inherits@EXT: ^ExternalConditions
+	Inherits@IXEMP: ^D2K_Ix_Frontal_EMP
+	Inherits@AntiTank: ^PrioritizeTank
+	Buildable:
+		Queue: Vehicle, RAVehicle
+		BuildPaletteOrder: 100
+		Prerequisites: ~harkonnen_vehicle_production, ~heavy.harkonnen, research_centre
+		BuildDuration: 1000
+		BuildDurationModifier: 100
+		Description: actor_devastator.description
+		IconPalette: d2kunit
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: actor_devastator.name
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 150000
+	ChangesHealth:
+		Step: 60
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 1
+	Armor:
+		Type: Heavy
+	Voiced:
+		VoiceSet: D2KDevastator
+	Mobile:
+		TurnSpeed: 48
+		Speed: 33
+		Locomotor: heavytracked
+		RequiresCondition: !overload
+		PauseOnCondition: notmobile
+	AutoCarryable:
+		RequiresCondition: !overload
+	RevealsShroud:
+		Range: 4c768
+	Armament:
+		Weapon: DevBullet
+		LocalOffset: 640,0,32
+		MuzzleSequence: muzzle
+		MuzzlePalette: d2keffect
+	AttackFrontal:
+		FacingTolerance: 0
+	WithMuzzleOverlay:
+		IgnoreOffset: true
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeLarge
+		EmptyWeapon: D2KUnitExplodeLarge
+		RequiresCondition: !overload
+	SpawnActorOnDeath:
+		Actor: devastator.husk
+		OwnerType: InternalName
+		EffectiveOwnerFromOwner: true
+	FireWarheadsOnDeath@OVERLOAD:
+		Weapon: PlasmaExplosion
+		EmptyWeapon: PlasmaExplosion
+		RequiresCondition: meltdown
+	GrantConditionOnDeploy@REACTOR:
+		DeployedCondition: overload
+		PauseOnCondition: overload
+	WithIdleOverlay@OVERLOAD:
+		Sequence: active
+		RequiresCondition: overload
+	WithIdleOverlay@OVERLOAD2:
+		Sequence: active-2
+		RequiresCondition: overload
+	KillsSelf@MELTDOWN:
+		Delay: 180
+		RequiresCondition: overload
+		GrantsCondition: meltdown
+	Selectable:
+		DecorationBounds: 1280, 1280, 0, 0
+	RenderSprites:
+		Image: devastator
+		PlayerPalette: playerd2k
+	Cloak@TDcloak:
+		Palette: d2kcloak
+
+devastator.husk:
+	Inherits: ^D2KVehicleHusk
+	Health:
+		HP: 1250
+	Tooltip:
+		Name: actor_devastator_husk.name
+	TransformOnCapture:
+		IntoActor: devastator
+	RenderSprites:
+		Image: devastator
+		PlayerPalette: playerd2k
+
+harkonnen_devastatormech:
 	Inherits@D2KT: ^D2KTank
 	Inherits@exp: ^GainsExperienceRA
 	Inherits@decoration: ^DuneRankDecoration
@@ -138,15 +244,15 @@ devastator:
 	Buildable:
 		Queue: Vehicle, RAVehicle, Starport
 		Prerequisites: ~harkonnen_vehicle_production, ~heavy.harkonnen, research_centre
-		BuildPaletteOrder: 100
+		BuildPaletteOrder: 105
 		BuildDuration: 1000
 		BuildDurationModifier: 100
-		Description: Super Heavy Tank\n  Strong vs Tanks\n  Weak vs Artillery
+		Description: actor_harkonnen_devastatormech.description
 		IconPalette: d2kunit
 	Valued:
 		Cost: 3000
 	Tooltip:
-		Name: Harkonnen Devastator Tank
+		Name: actor_harkonnen_devastatormech.name
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Health:
@@ -170,12 +276,8 @@ devastator:
 	Armament:
 		Weapon: DevBullet
 		LocalOffset: 640,0,32
-		MuzzleSequence: muzzle
-		MuzzlePalette: d2keffect
 	AttackFrontal:
 		FacingTolerance: 0
-	WithMuzzleOverlay:
-		IgnoreOffset: true
 	WithMuzzleGlow:
 		Color: A060E8
 		CoreColor: E8D8FF
@@ -194,12 +296,6 @@ devastator:
 		DeployedCondition: overload
 		PauseOnCondition: overload
 		RequiresCondition: !unit-captured
-	WithIdleOverlay@OVERLOAD:
-		Sequence: active
-		RequiresCondition: overload
-	WithIdleOverlay@OVERLOAD2:
-		Sequence: active-2
-		RequiresCondition: overload
 	KillsSelf@MELTDOWN:
 		Delay: 150
 		RequiresCondition: overload
@@ -225,3 +321,229 @@ devastator:
 		Stats: Armor, Sight, Speed, Damage, ReloadDelay, MaxRange, Kills, Experience
 	Voiced:
 		VoiceSet: D2KVehicleVoice
+	-WithDeathAnimation:
+	RenderSprites:
+		Image: harkonnen_devastatormech
+		PlayerPalette: player_rgba
+
+harkonnen_spiceharvester:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^HarvesterTemplate
+	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@harv: ^Harvester
+	Buildable:
+		Queue: Vehicle, RAVehicle, Starport
+		Prerequisites: ~spice_refinery, ~harkonnen_vehicle_production
+		BuildPaletteOrder: 10
+		Description: Collects spice for credits.\n  Unarmed
+		IconPalette: d2kunit
+		BuildDuration: 250
+		BuildDurationModifier: 100
+	Valued:
+		Cost: 600
+	Tooltip:
+		Name: Harkonnen Spice Harvester
+	Selectable:
+		DecorationBounds: 1536, 1536
+	Harvester:
+		HarvestFacings: 8
+		BaleUnloadDelay: 1
+	StoresResources:
+		Capacity: 60
+	CarryableHarvester:
+	Health:
+		HP: 240000
+	Repairable:
+		HpPerStep: 10000
+	ChangesHealth@SelfHealing:
+		Step: 80
+	Armor:
+		Type: Heavy
+	Mobile:
+		Speed: 38
+		TurnSpeed: 9
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeLarge
+		EmptyWeapon: D2KUnitExplodeLarge
+	WithHarvestOverlay:
+		Palette: effect50alpha
+	WithDockingAnimation:
+	-RevealOnFire:
+	Voiced:
+		VoiceSet: D2KHarvester
+	WithMoveAnimation:
+		MoveSequence: move
+	RenderSprites:
+		PlayerPalette: player_rgba
+harkonnen_flametank:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^MainBattleTankTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@decoration: ^DuneRankDecoration
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Buildable:
+		Queue: Vehicle, RAVehicle, Starport
+		BuildPaletteOrder: 45
+		Prerequisites: ~harkonnen_vehicle_production, ~heavy.harkonnen_combat
+		Description: Flamethrower tank.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks
+		IconPalette: d2kunit
+	Valued:
+		Cost: 700
+	Tooltip:
+		Name: Harkonnen Flame Tank
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 70000
+	Mobile:
+		Speed: 65
+		TurnSpeed: 13
+	Armament:
+		Weapon: HarkonnenFlameTurret
+		LocalOffset: 256,0,0
+	AttackFrontal:
+		FacingTolerance: 0
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeLarge
+		EmptyWeapon: D2KUnitExplodeLarge
+	-WithDeathAnimation:
+	RenderSprites:
+		Image: harkonnen_flametank
+		PlayerPalette: player_rgba
+	Voiced:
+		VoiceSet: D2KVehicleVoice
+	MapEditorData:
+		Categories: Vehicle
+
+harkonnen_buzzsaw:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@decoration: ^DuneRankDecoration
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Buildable:
+		Queue: Vehicle, RAVehicle, Starport
+		BuildPaletteOrder: 70
+		Prerequisites: ~harkonnen_vehicle_production, ~heavy.harkonnen_combat, research_centre
+		Description: Heavy assault tank.\n  Strong vs Vehicles\n  Weak vs Infantry
+		IconPalette: d2kunit
+	Valued:
+		Cost: 800
+	Tooltip:
+		Name: Harkonnen Buzzsaw
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 70000
+	Mobile:
+		Speed: 43
+		TurnSpeed: 48
+	Armament:
+		Weapon: D2K70mmH
+		LocalOffset: 256,0,0
+	AttackFrontal:
+		FacingTolerance: 0
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeLarge
+		EmptyWeapon: D2KUnitExplodeLarge
+	-WithDeathAnimation:
+	RenderSprites:
+		Image: harkonnen_buzzsaw
+		PlayerPalette: player_rgba
+	Voiced:
+		VoiceSet: D2KVehicleVoice
+	MapEditorData:
+		Categories: Vehicle
+
+harkonnen_inkvine:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^ArtilleryTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@decoration: ^DuneRankDecoration
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Buildable:
+		Queue: Vehicle, RAVehicle, Starport
+		BuildPaletteOrder: 65
+		Prerequisites: ~harkonnen_vehicle_production, ~heavy.harkonnen_combat, research_centre
+		Description: Chemical artillery.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles
+		IconPalette: d2kunit
+	Valued:
+		Cost: 900
+	Tooltip:
+		Name: Harkonnen Inkvine
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 45000
+	Mobile:
+		Speed: 43
+		TurnSpeed: 48
+	Armament:
+		Weapon: harkonnen_inkvine_weapon
+		LocalOffset: 512,0,320
+	AttackFrontal:
+		FacingTolerance: 10
+		TargetFrozenActors: true
+	AutoTarget:
+		InitialStanceAI: Defend
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	-WithDeathAnimation:
+	RenderSprites:
+		Image: harkonnen_inkvine
+		PlayerPalette: player_rgba
+	Voiced:
+		VoiceSet: D2KVehicleVoice
+	MapEditorData:
+		Categories: Vehicle
+
+harkonnen_adp:
+	Inherits@D2KT: ^D2KTank
+	Inherits@Template: ^AntiAirVehicleTemplate
+	Inherits@exp: ^GainsExperienceRA
+	Inherits@decoration: ^DuneRankDecoration
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Buildable:
+		Queue: Vehicle, RAVehicle, Starport
+		BuildPaletteOrder: 55
+		Prerequisites: ~harkonnen_vehicle_production, ~heavy.harkonnen_combat, research_centre
+		Description: Mobile anti-aircraft platform.\n  Strong vs Aircraft\n  Weak vs Ground
+		IconPalette: d2kunit
+	Valued:
+		Cost: 750
+	Tooltip:
+		Name: Harkonnen ADP
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 50000
+	Mobile:
+		Speed: 64
+		TurnSpeed: 20
+	Turreted:
+		TurnSpeed: 48
+	Armament:
+		Weapon: D2K_Rocket_AA
+		LocalOffset: 256,0,0
+		MuzzleSequence: muzzle
+		MuzzlePalette: d2keffect
+	AttackTurreted:
+	WithMuzzleOverlay:
+	WithSpriteTurret:
+	FireWarheadsOnDeath:
+		Weapon: D2KUnitExplodeMed
+		EmptyWeapon: D2KUnitExplodeMed
+	-WithDeathAnimation:
+	RenderSprites:
+		Image: harkonnen_adp
+		PlayerPalette: player_rgba
+	Voiced:
+		VoiceSet: D2KVehicleVoice
+	MapEditorData:
+		Categories: Vehicle

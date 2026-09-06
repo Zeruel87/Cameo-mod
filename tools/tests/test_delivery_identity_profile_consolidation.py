@@ -98,8 +98,7 @@ class DeliveryIdentityProfileConsolidationTests(unittest.TestCase):
 
     def test_routing_and_overflow_hazards_remain_unconverted(self):
         deferred = {
-            "RA220mmrapid", "TSSergGun", "d2k_shotgun",
-            "AlliedTankDestroyerCannon", "RA2TorpTube", "TSInfantryMortar",
+            "d2k_shotgun", "AlliedTankDestroyerCannon",
         }
         for weapon in deferred:
             self.assertGreater(len(main_warheads(self.rules.resolve_weapon(weapon))), 1, weapon)
@@ -114,8 +113,8 @@ class DeliveryIdentityProfileConsolidationTests(unittest.TestCase):
         self.assertIn("Warhead@Bullet_Medium", keys)
 
     def test_ratchets_match_the_live_reduction(self):
-        self.assertEqual(667, SPLIT_BASELINE)
-        self.assertEqual(363, BROADCAST_BASELINE)
+        self.assertEqual(114, SPLIT_BASELINE)
+        self.assertEqual(90, BROADCAST_BASELINE)
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ Upstream: `C:\Users\AedisToru\Documents\GitHub\CAmod\OpenRA.Mods.CA`
 | ours only (not upstream) | 32 |
 | upstream only (NOT adopted) | 322 |
 
-**9781 differing lines** across 108 files — 30 of them <= 6 lines (usually a refactor to adopt), 31 over 50 (a different implementation; port by hand or not at all).
+**9678 differing lines** across 108 files — 30 of them <= 6 lines (usually a refactor to adopt), 31 over 50 (a different implementation; port by hand or not at all).
 
 ## Upstream files never adopted (322), by area
 
@@ -258,11 +258,11 @@ Upstream: `C:\Users\AedisToru\Documents\GitHub\CAmod\OpenRA.Mods.CA`
 
 -  851  `Traits/BotModules/Squads/States/GroundStatesCA.cs`
 -  807  `Traits/BotModules/BaseBuilderBotModuleCA.cs`
--  611  `Traits/BotModules/SquadManagerBotModuleCA.cs`
--  582  `Traits/BotModules/UnitBuilderBotModuleCA.cs`
+-  628  `Traits/BotModules/SquadManagerBotModuleCA.cs`
 -  574  `Traits/BotModules/BotModuleLogic/BaseBuilderQueueManagerCA.cs`
 -  516  `Projectiles/LinearPulse.cs`
 -  484  `Traits/MindController.cs`
+-  462  `Traits/BotModules/UnitBuilderBotModuleCA.cs`
 -  451  `Traits/BotModules/Squads/States/NavyStatesCA.cs`
 -  436  `Traits/Attachable.cs`
 -  340  `Traits/BotModules/HarvesterBotModuleCA.cs`

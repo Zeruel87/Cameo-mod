@@ -1,55 +1,67 @@
 # Warhead-split guard (multi-warhead over-damage)
 
 
-## FAIL 1 — broadcast fingerprint / every MAIN identical (937 vs baseline 939)
+## FAIL 1 — broadcast fingerprint / every MAIN identical (75 vs baseline 75)
 
-_at or below baseline_ — pre-existing **W24** debt (937 weapons), not a regression. The ratchet catches new broadcasts without blocking every commit on the existing pile. **Lower `BROADCAST_BASELINE` as W24 collapses weapons; never raise it.**
+_at or below baseline_ — pre-existing **W24** debt (75 weapons), not a regression. The ratchet catches new broadcasts without blocking every commit on the existing pile. **Lower `BROADCAST_BASELINE` as W24 collapses weapons; never raise it.**
 
 | weapon | mains | per_warhead | total |
 |---|---|---|---|
-| 105mmThermobaric | 2 | 6000 | 12000 |
-| 110mm_Gun | 3 | 10000 | 30000 |
-| 120mm_cobra | 4 | 30000 | 120000 |
-| 120mm_cobra_deploy | 4 | 30000 | 120000 |
-| 120mm_python | 4 | 30000 | 120000 |
-| 120mm_python_deploy | 4 | 30000 | 120000 |
-| 120mm_td | 4 | 14000 | 56000 |
 | 12MissilesSpawnerScud | 4 | 24000 | 96000 |
-| 155mm | 3 | 10000 | 30000 |
-| 155mmBastion | 3 | 10000 | 30000 |
-| 155mmBastionCryo | 3 | 10000 | 30000 |
-| 155mmCryo | 3 | 10000 | 30000 |
-| 25mm | 6 | 2000 | 12000 |
-| 25mmWaveforce | 7 | 2000 | 14000 |
-| 8Inch | 2 | 40000 | 80000 |
-| ACV_Machinegun | 2 | 2000 | 4000 |
-| APCGun | 2 | 2000 | 4000 |
-| APCGunAllies | 2 | 2000 | 4000 |
-| APCGunAllies_AA | 2 | 2000 | 4000 |
-| APCGun_AA | 2 | 2000 | 4000 |
-| APTusk | 4 | 4000 | 16000 |
-| APTuskCryo | 4 | 4000 | 16000 |
-| ASDFGun | 2 | 2000 | 4000 |
-| ASDFGun2 | 3 | 2000 | 6000 |
-| ASDFKamikazeExplosion | 2 | 10000 | 20000 |
 | AlliedTankDestroyerCannon | 2 | 12000 | 24000 |
 | AphidCryo_AA | 2 | 8000 | 16000 |
 | Aphid_AA | 2 | 8000 | 16000 |
-| ArbiterCannon | 4 | 10000 | 40000 |
-| ArcherArtilleryShell | 5 | 14000 | 70000 |
-| ArmoredCarMG | 8 | 2000 | 16000 |
-| ArtilleryExplode | 3 | 10000 | 30000 |
-| ArtilleryShell | 2 | 16000 | 32000 |
-| ArtilleryShellUpgrade | 6 | 6000 | 36000 |
 | AsianChaosMine | 2 | 125000 | 250000 |
-| AsianChemical | 6 | 4000 | 24000 |
-| AsianChemicalBombs | 2 | 2000 | 4000 |
-| AsianChemical_elite | 6 | 4000 | 24000 |
-| AsianGrenade | 2 | 4000 | 8000 |
-| AsianGrenade_elite | 2 | 4000 | 8000 |
+| AsianPhoenixRocket | 3 | 20000 | 60000 |
+| AsianPhoenixRocket_elite | 3 | 20000 | 60000 |
+| BikeRockets | 2 | 8000 | 16000 |
+| CommandoM16 | 2 | 4000 | 8000 |
+| CommandoSniper | 2 | 20000 | 40000 |
+| D2K_Rocket_Trooper2 | 3 | 8000 | 24000 |
+| D2K_Rocket_Trooper_AA | 3 | 10000 | 30000 |
+| D2K_Rocket_Trooper_AGOnly | 3 | 10000 | 30000 |
+| DredMissile | 3 | 30000 | 90000 |
+| GoliathMG | 3 | 2000 | 6000 |
+| HMG | 2 | 2000 | 4000 |
+| HMGh | 2 | 2000 | 4000 |
+| HMGo_upgrade | 3 | 2000 | 6000 |
+| HellfireCryo | 2 | 8000 | 16000 |
+| IdolCannon | 4 | 10000 | 40000 |
+| JimRaynorMachineGun | 2 | 2000 | 4000 |
+| KodiakCannonSonic | 2 | 22000 | 44000 |
+| MagicOrb | 2 | 12000 | 24000 |
+| MagicOrb2 | 2 | 4000 | 8000 |
+| NaxiMP40 | 3 | 2000 | 6000 |
+| NaxiMP40_elite | 3 | 2000 | 6000 |
+| NodTorpTube | 2 | 8000 | 16000 |
+| NodTorpTubeBlackMarket | 2 | 8000 | 16000 |
+| OIBigPlasmaCannon | 3 | 8000 | 24000 |
+| RA2Comet | 3 | 20000 | 60000 |
+| RA2Comet_elite | 3 | 20000 | 60000 |
+| RA2DiskDrain | 2 | 2000 | 4000 |
+| RA2KirovBomb_nuclear | 2 | 80000 | 160000 |
+| RA2KirovBomb_nuclear_elite | 2 | 100000 | 200000 |
+| RA2KirovBomb_rad | 2 | 48000 | 96000 |
+| RA2KirovBomb_tesla | 2 | 80000 | 160000 |
+| RA2Robotmm | 3 | 8000 | 24000 |
+| RA2Robotmm_elite | 3 | 8000 | 24000 |
+| RA2SCUD | 3 | 30000 | 90000 |
+| RA2SCUDELITE | 4 | 30000 | 120000 |
 
 
-_... and 897 more._
+_... and 35 more._
+
+
+## Review — exact gameplay restorations (0)
+
+_none found_
+
+
+## Review — routing-revealed composites (0)
+
+Exact-fingerprint exceptions for pre-existing composites whose dead legacy slots previously masked them from the ratchet. Any main-key or damage change removes the exception and is checked normally.
+
+_none found_
 
 
 ## FAIL 2 — FriendlyFire louder than the shot (0)
@@ -57,130 +69,30 @@ _... and 897 more._
 None. ✅
 
 
-## Review — high uniform stacks (informational, 237)
+## Review — high uniform stacks (informational, 20)
 
 Allowed, but 8000+ per-warhead x N is a big total — confirm it is intended (not flattening residue).
 
 | weapon | mains | per_warhead | total |
 |---|---|---|---|
-| 110mm_Gun | 3 | 10000 | 30000 |
-| 120mm_cobra | 4 | 30000 | 120000 |
-| 120mm_cobra_deploy | 4 | 30000 | 120000 |
-| 120mm_python | 4 | 30000 | 120000 |
-| 120mm_python_deploy | 4 | 30000 | 120000 |
-| 120mm_td | 4 | 14000 | 56000 |
 | 12MissilesSpawnerScud | 4 | 24000 | 96000 |
-| 155mm | 3 | 10000 | 30000 |
-| 155mmBastion | 3 | 10000 | 30000 |
-| 155mmBastionCryo | 3 | 10000 | 30000 |
-| 155mmCryo | 3 | 10000 | 30000 |
-| ArbiterCannon | 4 | 10000 | 40000 |
-| ArcherArtilleryShell | 5 | 14000 | 70000 |
-| ArtilleryExplode | 3 | 10000 | 30000 |
 | AsianPhoenixRocket | 3 | 20000 | 60000 |
 | AsianPhoenixRocket_elite | 3 | 20000 | 60000 |
-| AthenaLaser | 6 | 32000 | 192000 |
-| BCYamatoCannon | 9 | 16000 | 144000 |
-| BallistaMultiShot | 4 | 10000 | 40000 |
-| BallistaMultiShotEnergized | 4 | 10000 | 40000 |
-| BallistaSingleShotAirEnergized | 8 | 20000 | 160000 |
-| BallistaTowerMultiShot | 4 | 10000 | 40000 |
-| BallistaTowerMultiShotEnergized | 4 | 10000 | 40000 |
-| BlackEagleMissiles | 3 | 16000 | 48000 |
-| BlackEagleMissiles_elite | 3 | 16000 | 48000 |
-| BlackHandLaser | 3 | 48000 | 144000 |
-| BuggyPlasmaGrenade | 3 | 20000 | 60000 |
-| CabalArtilleryWalkerShell | 4 | 42000 | 168000 |
-| CabalArtilleryWalkerShellUpgraded | 8 | 42000 | 336000 |
-| CabalBeholderLaser | 4 | 10000 | 40000 |
-| CabalCommandoPlasma | 3 | 50000 | 150000 |
-| CabalCommandoPlasmaMk2 | 3 | 50000 | 150000 |
-| CabalCommandoPlasmaMk2Neutron | 6 | 50000 | 300000 |
-| CabalCommandoPlasmaNeutron | 6 | 50000 | 300000 |
-| CabalHeavyReaperMissiles | 4 | 12000 | 48000 |
-| CabalHeavyReaperMissiles_AA | 4 | 12000 | 48000 |
-| CabalHunterKillerLasers_elite | 3 | 10000 | 30000 |
-| CabalManticoreMissilesAA | 4 | 12000 | 48000 |
-| CabalMothershipRockets | 6 | 10000 | 60000 |
-| CabalReaperMissiles | 4 | 8000 | 32000 |
-| CabalReaperMissiles_AA | 4 | 8000 | 32000 |
-| CabalSubmarinePlasma | 3 | 25000 | 75000 |
-| ChemRockets | 3 | 12000 | 36000 |
-| ChemicalBikeRockets | 4 | 8000 | 32000 |
-| ChemicalBikeRocketsExplosion | 4 | 8000 | 32000 |
-| ChemicalHonestJohn | 4 | 30000 | 120000 |
-| ChemicalStealthTankExplosion | 3 | 10000 | 30000 |
-| ChemicalStealthTankMissiles | 3 | 10000 | 30000 |
-| D2K_155mm | 4 | 12000 | 48000 |
-| D2K_155mm2 | 4 | 12000 | 48000 |
-| D2K_155mm3 | 3 | 8000 | 24000 |
-| D2K_155mm_turret | 4 | 12000 | 48000 |
-| D2K_APC_Rocket | 3 | 8000 | 24000 |
-| D2K_APC_Rocket_AA | 3 | 8000 | 24000 |
-| D2K_Rocket_Trooper | 3 | 8000 | 24000 |
-| D2K_Rocket_Trooper1 | 3 | 8000 | 24000 |
 | D2K_Rocket_Trooper2 | 3 | 8000 | 24000 |
 | D2K_Rocket_Trooper_AA | 3 | 10000 | 30000 |
 | D2K_Rocket_Trooper_AGOnly | 3 | 10000 | 30000 |
-| D2K_SiegeQuad | 4 | 12000 | 48000 |
-| DalekCannon | 3 | 100000 | 300000 |
-| DalekCannon_elite | 3 | 200000 | 600000 |
-| DeviatorMissile | 4 | 10000 | 40000 |
-| DeviatorMissile_Artillery | 6 | 10000 | 60000 |
-| DragoonCannon | 4 | 10000 | 40000 |
-| DragunovSniper | 5 | 80000 | 400000 |
 | DredMissile | 3 | 30000 | 90000 |
-| DuelistTankCannon | 6 | 14000 | 84000 |
-| Dune_SiegeMortar | 4 | 10000 | 40000 |
-| EMPGrenade | 8 | 8000 | 64000 |
-| FirehawkBomb | 4 | 10000 | 40000 |
-| FutureMechPlasma | 3 | 10000 | 30000 |
-| FutureMechPlasma_elite | 3 | 10000 | 30000 |
-| FutureTankCannons | 6 | 100000 | 600000 |
-| FutureTankCannons_elite | 6 | 100000 | 600000 |
-| Future_Cryocopter_Rocket | 3 | 16000 | 48000 |
-| Future_MultiMissile_Sigma | 5 | 10000 | 50000 |
-| GDISniperRifle | 4 | 8000 | 32000 |
-| GladiusCannon | 11 | 10000 | 110000 |
-| GoliathMk2Rockets | 4 | 8000 | 32000 |
-| GuardianShoot | 3 | 8000 | 24000 |
-| HydraSpit | 4 | 18000 | 72000 |
 | IdolCannon | 4 | 10000 | 40000 |
-| InfestedExplosion | 3 | 50000 | 150000 |
-| IvanBomb | 3 | 30000 | 90000 |
-| IvanBombAir | 3 | 30000 | 90000 |
-| IxianBomb_EMP | 3 | 30000 | 90000 |
-| JapanSuperBomb | 5 | 10000 | 50000 |
-| JapanesePlasmaBomb | 3 | 10000 | 30000 |
-| KodiakCannon | 5 | 8000 | 40000 |
-| Laboratory_Bioball | 5 | 10000 | 50000 |
-| LatinBuggyRocket | 4 | 10000 | 40000 |
-| LatinBuggyRocket_elite | 4 | 10000 | 40000 |
-| LatinMonkeyGrenade1 | 3 | 10000 | 30000 |
-| LatinMonkeyGrenade2 | 3 | 10000 | 30000 |
-| LatinMonkeyGrenade3 | 3 | 10000 | 30000 |
-| LunarNaxiJadgDestroyer | 3 | 30000 | 90000 |
-| LunarNaxiJadgDestroyer_elite | 3 | 30000 | 90000 |
-| Lunar_GreenGrilleArty | 4 | 16000 | 64000 |
-| Lunar_GreenGrilleArty_elite | 4 | 16000 | 64000 |
-| Lunar_GreenJadgDestroyer | 4 | 30000 | 120000 |
-| Lunar_GreenJadgDestroyer_elite | 4 | 30000 | 120000 |
-| MadcapGun | 3 | 12000 | 36000 |
-| MammothTusk2 | 3 | 16000 | 48000 |
-| MammothTusk2TargetingComputer | 3 | 16000 | 48000 |
-| MammothTusk2Thermobaric | 3 | 16000 | 48000 |
-| MammothTusk2ThermobaricTargetingComputer | 3 | 16000 | 48000 |
-| MammothTuskTesla | 4 | 8000 | 32000 |
-| MammothTuskTeslaTargetingComputer | 4 | 8000 | 32000 |
-| MarauderMissiles | 3 | 10000 | 30000 |
-| MarineMG | 3 | 12000 | 36000 |
-| MigMissiles | 4 | 8000 | 32000 |
-| MigMissiles_AA | 4 | 8000 | 32000 |
-| MigMissiles_AA_elite | 4 | 8000 | 32000 |
-| MigMissiles_elite | 4 | 8000 | 32000 |
-| MigMissiles_fire | 4 | 8000 | 32000 |
-| MigMissiles_fire_elite | 4 | 8000 | 32000 |
-| MigMissiles_tesla | 4 | 8000 | 32000 |
-| MigMissiles_tesla_elite | 4 | 8000 | 32000 |
-| MissileSoldierWeapon | 5 | 10000 | 50000 |
+| OIBigPlasmaCannon | 3 | 8000 | 24000 |
+| RA2Comet | 3 | 20000 | 60000 |
+| RA2Comet_elite | 3 | 20000 | 60000 |
+| RA2Robotmm | 3 | 8000 | 24000 |
+| RA2Robotmm_elite | 3 | 8000 | 24000 |
+| RA2SCUD | 3 | 30000 | 90000 |
+| RA2SCUDELITE | 4 | 30000 | 120000 |
+| RA2SCUD_fire | 3 | 30000 | 90000 |
+| RA2SCUD_tesla | 3 | 30000 | 90000 |
+| V3Explode | 3 | 10000 | 30000 |
+| YakTeslaBomb | 4 | 40000 | 160000 |
+| d2k_grenade | 3 | 10000 | 30000 |
 

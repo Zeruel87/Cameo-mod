@@ -43,6 +43,15 @@ import re
 import subprocess
 import sys
 
+# ⛔ THIS AUDIT WAS FAILING ON ITS OWN OUTPUT. Windows gives Python a cp1252 stdout, and
+# `main()` printed a finding containing `→` — so the run died with UnicodeEncodeError at
+# the D3 section, never printed D3 or D7, and exited 1. That 1 was read as "documentation is
+# unhealthy" when it meant "the reporter crashed": the audit could not report a finding whose
+# text contained an arrow, in a repository whose docs are full of arrows. Same class as the
+# other guards that failed on the evidence they were built from.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 # Documents that legitimately contain mojibake because they document the bug class.

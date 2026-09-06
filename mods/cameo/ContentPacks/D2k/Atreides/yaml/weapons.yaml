@@ -1,0 +1,219 @@
+# Atreides faction-specific weapons.
+# Ported from legacy mods/cameo/weapons/d2k.yaml to make the Atreides ContentPack
+# self-contained. These override the legacy definitions (ContentPacks load after
+# the global weapons file). Shared D2k weapons (light_inf_lmg, D2K_Rocket_Trooper,
+# 80mm_A, mtank_pri, D2K_155mm, D2KUnitExplode*) remain in the global file until
+# Devin-Blaze moves them to ContentPacks/D2k/Shared/yaml/weapons.yaml.
+#
+# Atreides-unique weapons:
+# - Sound/Sound2: sonic tank weapon (AreaBeam, Atreides only)
+# - OrniBomb/OrniBombC: ornithopter bomb
+# - OrniMissile: ornithopter missile
+# - OrniGun/OrniGunC: ornithopter gun
+# - Fremen_S: Fremen stealth weapon
+
+Sound:
+	ReloadDelay: 77
+	Range: 7777
+	Report: SONIC1.WAV
+	Projectile: AreaBeam
+		Speed: 333
+		Inaccuracy: 333
+		InaccuracyType: PerCellIncrement
+		Duration: 4 # Has a length of 0c512
+		DamageInterval: 2 # Travels 0c384 between impacts, will hit a target roughly three times
+		Width: 0c512
+		Shape: Flat
+		Falloff: 100, 75, 50
+		Range: 0, 7500, 15000
+		BeyondTargetRange: 1c0
+		Color: C4C9C2
+	Warhead@1Dam: SpreadDamage
+		Range: 0, 32
+		Falloff: 100, 100
+		Damage: 3333
+		AffectsParent: false
+		ValidRelationships: Neutral, Enemy
+		Versus:
+			None: 333
+			Wood: 88
+			Light: 123
+			Medium: 111
+			Heavy: 99
+			Concrete: 77
+		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
+	Warhead@2Dam: SpreadDamage
+		Range: 0, 32
+		Falloff: 100, 100
+		Damage: 333 # Only does 10% damage to friendly units
+		AffectsParent: false
+		ValidRelationships: Ally
+		Versus:
+			None: 333
+			Wood: 88
+			Light: 123
+			Medium: 111
+			Heavy: 99
+			Concrete: 77
+		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
+	Warhead@Concrete: DamagesConcrete
+		Damage: 1500
+
+
+Sound2:
+	Inherits: Sound
+	Range: 5632
+	ReloadDelay: 40
+	Projectile: AreaBeam
+		Speed: 0c256
+		Duration: 2
+		Width: 0c256
+	Warhead@1Dam: SpreadDamage
+		Damage: 4000
+	Warhead@2Dam: SpreadDamage
+		Damage: 400
+	Warhead@Concrete: DamagesConcrete
+		Damage: 800
+
+
+OrniBomb:
+	Inherits@wh: ^Warhead_Demolition_Heavy_D2K_Orni
+	Inherits@proj: ^Projectile_GravityBomb_D2K
+	Inherits@fx: ^Effect_Demolition_Heavy_D2K_Orni
+	ReloadDelay: 25
+	Burst: 5
+	BurstDelays: 5
+	Range: 2500
+
+
+OrniBombC:
+	Inherits: OrniBomb
+	Range: 2500
+
+
+OrniMissile:
+	Inherits: PhoenixRocket
+	ReloadDelay: 66
+	Burst: 2
+	Range: 6666
+	ValidTargets: Ground, Air
+	BurstDelays: 6
+	Projectile: Missile
+		Inaccuracy: 666
+		Speed: 333
+		RangeLimit: 33333
+	Warhead@1Dam: SpreadDamage
+		Damage: 12345
+		Spread: 1234
+		ValidTargets: Ground, Air
+		Versus:
+			None: 25
+			Wood: 150
+			Light: 100
+			Medium: 75
+			Heavy: 50
+			Concrete: 125
+
+	MinRange: 1335
+
+OrniGun:
+	StartBurstReport: FREMODD1.WAV
+	Burst: 5
+	BurstDelays: 2
+	ReloadDelay: 25
+	Range: 6666
+	ValidTargets: Ground
+	Projectile: InstantHit
+		Inaccuracy: 1c256
+		InaccuracyType: PerCellIncrement
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Ground
+		Damage: 3333
+		Spread: 333
+		Falloff: 100, 33
+		Versus:
+			None: 333
+			Wood: 66
+			Light: 123
+			Medium: 111
+			Heavy: 99
+			Concrete: 33
+		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+		DamageCalculationType: ClosestTargetablePosition
+	Warhead@2Eff: CreateEffect
+		Explosions: d2k_piffs
+		ImpactActors: false
+		ExplosionPalette: effect75alpha
+	Warhead@Concrete: DamagesConcrete
+		Damage: 1250
+
+
+OrniGunC:
+	Inherits: OrniGun
+	Range: 6000
+	ValidTargets: Ground, Air
+	Warhead@1Dam: SpreadDamage
+		ValidTargets: Ground, Air
+		Damage: 800
+
+	MinRange: 1200
+
+Fremen_S:
+	Inherits: ^MG
+	ValidTargets: Infantry
+	InvalidTargets: Vehicle, Structure, Air
+	ReloadDelay: 20
+	Report: MGUN2.WAV
+	Warhead@1Dam: SpreadDamage
+		Damage: 1600
+	Warhead@2Eff: CreateEffect
+		Explosions: d2k_small_explosion
+
+# Migrated from legacy mods/cameo/weapons/d2k.yaml (Ruling 9)
+# These weapons are only used by Atreides actors.
+
+D2KRepair:
+	Inherits: Heal
+	ReloadDelay: 80
+	Report: fixit1.aud
+	ValidTargets: Repair, lockdowned, ivanattached, Repairing
+	Projectile: InstantHit
+	Warhead@1Dam: SpreadDamage
+		Spread: 250
+		Damage: -1500
+		ValidRelationships: Ally
+		ValidTargets: Repair, Repairing
+		Versus:
+			None: 125
+			Light: 100
+			Medium: 75
+			Heavy: 60
+			Concrete: 60
+			Wood: 100
+	Warhead@2Defuse: DetachDelayedWeapon
+		Types: ivanbomb
+		ValidTargets: ivanattached
+		ValidRelationships: Ally
+	Warhead@3Defuse: DetachDelayedWeapon
+		Types: lockdown
+		ValidTargets: lockdowned
+		ValidRelationships: Ally
+
+HMG:
+	Inherits@wh: ^Warhead_Bullet_Medium
+	Inherits@proj: ^Projectile_Bullet_Light
+	Inherits@fx: ^Effect_Bullet_Light
+	ReloadDelay: 20
+	Range: 3072
+	Report: 20MMGUN1.WAV
+	Warhead@1Dam: SpreadDamage
+		Damage: 2000
+		Versus:
+			None: 100
+			Wood: 30
+			Light: 50
+			Medium: 15
+			Heavy: 10
+			Concrete: 15
+	Warhead@Concrete: DamagesConcrete
+		Damage: 1800

@@ -93,9 +93,8 @@ class Under100PhysicalProfileTests(unittest.TestCase):
                                                       "ValidTargets").value)
         rockets = self.rules.resolve_weapon("NaxInterceptorRockets")
         self.assertEqual("Air", child(rockets, "ValidTargets").value)
-        for key in ("MissileAP_Medium", "MissileAP_Heavy"):
-            self.assertEqual("Air", child(child(rockets, f"Warhead@{key}"),
-                                          "ValidTargets").value)
+        main = child(rockets, "Warhead@MissileAA_HeavyFlatCompatibility")
+        self.assertEqual("Air", child(main, "ValidTargets").value)
 
         resolved_gun = self.rules.resolve_weapon("NaxiInterceptorGun")
         gun = child(resolved_gun,

@@ -1,6 +1,6 @@
 # audit_orphans — dead content (B10)
 
-Live weapons: **2784** — orphans: **377**, dangling weapon refs (BLOCKING): **0**, conditions granted-never-consumed: **15**
+Live weapons: **2894** — orphans: **367**, dangling weapon refs (BLOCKING): **0**, conditions granted-never-consumed: **16**
 
 
 ## O2 — dangling weapon references (crash-on-use class)
@@ -44,7 +44,6 @@ _none found_
 | Crush | mods/cameo/weapons/d2k.yaml |
 | CryoM1Carbine | mods/cameo/ContentPacks/RedAlert/Shared/yaml/weapons.yaml |
 | D2K70mm | mods/cameo/weapons/d2k.yaml |
-| D2K70mmH | mods/cameo/weapons/d2k.yaml |
 | D2K76mm | mods/cameo/weapons/d2k.yaml |
 | D2KAPMine | mods/cameo/weapons/d2k.yaml |
 | D2KATMine | mods/cameo/weapons/d2k.yaml |
@@ -52,7 +51,6 @@ _none found_
 | D2KDemolish | mods/cameo/weapons/d2k.yaml |
 | D2KGomJabbar | mods/cameo/weapons/d2k.yaml |
 | D2KMarksmanRifle | mods/cameo/weapons/d2k.yaml |
-| D2KRepair | mods/cameo/weapons/d2k.yaml |
 | D2KSniperRifle | mods/cameo/weapons/d2k.yaml |
 | D2KTheVoice | mods/cameo/weapons/d2k.yaml |
 | D2K_Annihilator | mods/cameo/weapons/d2k.yaml |
@@ -61,7 +59,6 @@ _none found_
 | D2K_Combat_Fleet | mods/cameo/weapons/d2k.yaml |
 | D2K_Personal_Shield_Impact | mods/cameo/weapons/d2k.yaml |
 | D2K_Rocket | mods/cameo/weapons/d2k.yaml |
-| D2K_Rocket_AA | mods/cameo/weapons/d2k.yaml |
 | D2K_Rocket_Buggy | mods/cameo/weapons/d2k.yaml |
 | D2K_Rocket_Fremen | mods/cameo/weapons/d2k.yaml |
 | D2K_Rocket_ultimate | mods/cameo/weapons/d2k.yaml |
@@ -86,7 +83,6 @@ _none found_
 | Emperor_Sardaukar_E | mods/cameo/weapons/d2k.yaml |
 | ExplosiveDebris | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/weapons.yaml |
 | ForceShield | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
-| Fremen_S | mods/cameo/weapons/d2k.yaml |
 | Fremen_Upg | mods/cameo/weapons/d2k.yaml |
 | GLASCUD | mods/cameo/weapons/weapons.yaml |
 | GLASCUDPOWER | mods/cameo/weapons/weapons.yaml |
@@ -122,13 +118,13 @@ _none found_
 | GLTunnelWeap | mods/cameo/weapons/weapons.yaml |
 | GhostSniperBunker | mods/cameo/weapons/starcraft.yaml |
 | GrenDeath | mods/cameo/ContentPacks/D2k/Ordos/yaml/weapons.yaml |
-| HMG | mods/cameo/weapons/d2k.yaml |
 | HMG_tleilaxu | mods/cameo/weapons/d2k.yaml |
 | HMGh | mods/cameo/weapons/d2k.yaml |
+| HMGo | mods/cameo/ContentPacks/D2k/Ordos/yaml/weapons.yaml |
 | HeavyAATankCannontkm | mods/cameo/ContentPacks/RedAlert2Mod/TKM/yaml/weapons.yaml |
 | HeliCrash | mods/cameo/weapons/weapons.yaml |
+| HighV | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/weapons.yaml |
 | Horn | mods/cameo/weapons/weapons.yaml |
-| HueyFireMissiles | mods/cameo/ContentPacks/RedAlert2Mod/TKM/yaml/weapons.yaml |
 | IFVAttach | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
 | IdolCannon | mods/cameo/weapons/starcraft.yaml |
 | IncendiaryM1Carbine | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/weapons.yaml |
@@ -155,8 +151,6 @@ _none found_
 | MagicOrbHailstormActivate | mods/cameo/ContentPacks/RedAlert/Shared/yaml/weapons.yaml |
 | MammothTankCannon | mods/cameo/weapons/tiberiansun.yaml |
 | MammothTuskGal | mods/cameo/ContentPacks/RedAlert/Shared/yaml/weapons.yaml |
-| MigMissiles_fire_elite | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
-| MigMissiles_rad_elite | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
 | MutAPRifle | mods/cameo/ContentPacks/TiberianSun/Forgotten/yaml/weapons.yaml |
 | MutAPRifle_elite | mods/cameo/weapons/tiberiansun.yaml |
 | MutSAPCSpawner | mods/cameo/weapons/tiberiansun.yaml |
@@ -178,11 +172,8 @@ _none found_
 | NaxiV1Rocket | mods/cameo/weapons/redalert2mod.yaml |
 | NaxisBlackBomb | mods/cameo/weapons/redalert2mod.yaml |
 | OP2bombchassisTargeting | mods/cameo/weapons/outpost2.yaml |
-| OrniBomb | mods/cameo/weapons/d2k.yaml |
-| OrniBombC | mods/cameo/weapons/d2k.yaml |
-| OrniGun | mods/cameo/weapons/d2k.yaml |
-| OrniGunC | mods/cameo/weapons/d2k.yaml |
-| OrniMissile | mods/cameo/weapons/d2k.yaml |
+| OrniBombC | mods/cameo/ContentPacks/D2k/Atreides/yaml/weapons.yaml |
+| OrniGunC | mods/cameo/ContentPacks/D2k/Atreides/yaml/weapons.yaml |
 | PDLaser | mods/cameo/weapons/weapons.yaml |
 | Patriot | mods/cameo/weapons/weapons.yaml |
 | PhoenixRocket | mods/cameo/weapons/d2k.yaml |
@@ -207,6 +198,7 @@ _none found_
 | RA2GIRockets | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
 | RA2IMP | mods/cameo/weapons/weapons.yaml |
 | RA2IMPAA | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
+| RA2KirovHowitzerSplash | mods/cameo/weapons/redalert2mod.yaml |
 | RA2LargeDebris | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
 | RA2M60 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/weapons.yaml |
 | RA2MODHIFVMG | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/weapons.yaml |
@@ -251,7 +243,7 @@ _none found_
 | ScrapCarSpawner | mods/cameo/ContentPacks/RedAlert2Mod/Syndicate/yaml/weapons.yaml |
 | Short8Inch | mods/cameo/weapons/weapons.yaml |
 | SmallHeliCrash | mods/cameo/weapons/weapons.yaml |
-| Sound2 | mods/cameo/weapons/d2k.yaml |
+| Sound2 | mods/cameo/ContentPacks/D2k/Atreides/yaml/weapons.yaml |
 | Spit | mods/cameo/weapons/weapons.yaml |
 | Spit_AA | mods/cameo/weapons/weapons.yaml |
 | SteelSupportSpawner1 | mods/cameo/weapons/redalert2mod.yaml |
@@ -265,8 +257,6 @@ _none found_
 | TS152mm | mods/cameo/weapons/tiberiansun.yaml |
 | TS155mm_bluenuke | mods/cameo/weapons/tiberiansun.yaml |
 | TSBazookaG | mods/cameo/weapons/tiberiansun.yaml |
-| TSChemAdatsMissile | mods/cameo/weapons/tiberiansun.yaml |
-| TSChemAdatsMissileAA | mods/cameo/weapons/tiberiansun.yaml |
 | TSDragon | mods/cameo/weapons/tiberiansun.yaml |
 | TSDroppodSpawner | mods/cameo/ContentPacks/TiberianSun/GDI/yaml/weapons.yaml |
 | TSGrenadeAA | mods/cameo/weapons/tiberiansun.yaml |
@@ -393,7 +383,7 @@ _none found_
 
 ## O3a — conditions granted but never consumed (sample)
 
-!aircraft-turning, armory-rank, chaosgas && !untargetable, defensebot, disable_movement, emptesla, hnavyshield_upg, littlebuilderenable, ordos_upgrade_lightfactory, propaganda, ra2_soviets_doctrine_conscription, scaledprices, shade-ready, up_tsunami.asian, yuri_doctrine_psioniclegion
+!aircraft-turning, armory-rank, chaosgas && !untargetable, corrosionmax, defensebot, disable_movement, emptesla, hnavyshield_upg, littlebuilderenable, ordos_upgrade_lightfactory, propaganda, ra2_soviets_doctrine_conscription, scaledprices, shade-ready, up_tsunami.asian, yuri_doctrine_psioniclegion
 
 
 _O3b (identifiers consumed but never granted) is high-noise because RequiresCondition expressions mix conditions with prerequisite tokens; see audit_upgrades dead-wiring for the curated version._

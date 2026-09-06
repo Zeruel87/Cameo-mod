@@ -176,10 +176,6 @@ def weapon_profile(rs, name: str) -> dict | None:
 
     reference_hp = tm.reference_hp()
     for app in pd.percentage_applications(node, reference_hp):
-        if direct_actor and app["kind"] == pd.PCT_FOLDED:
-            # Current AreaDamageWarhead direct-Actor impacts skip their folded
-            # PercentageScale second hit; standalone percentage warheads remain.
-            continue
         wh = app["node"]
         if "Concrete" in wh.key or not _enemy_damage(wh):
             continue

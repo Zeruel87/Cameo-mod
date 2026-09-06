@@ -37,7 +37,8 @@ selected destination armor/percentage table and blast profile.
 
 ## Deferred hazards
 
-The batch rejects candidates whose merged percentage arithmetic overflows or moves
-by more than one HP at any active health value. It also defers target-routing
+The batch rejects candidates whose merged percentage arithmetic exceeds the
+checked result range or moves by more than one HP at any active health value. It also defers target-routing
 conflicts such as `RA220mmrapid`, mixed-family descendants, rifle/shotgun role
-ambiguities, pricing, and the parked percentage-damage runtime change.
+ambiguities, and pricing. The later percentage-damage runtime activation was
+deliberately handled as a separate change.

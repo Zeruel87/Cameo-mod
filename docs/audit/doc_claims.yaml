@@ -29,7 +29,7 @@
 
 claims:
   - id: shield_versus_mean
-    value: 189.088
+    value: 175.919
     tolerance: 0.01
     what: Mean Versus-vs-Shield across all main flat warheads. Drives shield_hp_factor.
     docs: [docs/DESIGN.md, docs/design/ARMOR_LAYERS.md, docs/design/ARMOR_LAYERS.md]
@@ -40,7 +40,7 @@ claims:
       print(tm.pseudo_armor_mean('Shield'))
 
   - id: shield_hp_factor
-    value: 0.528855
+    value: 0.568442
     tolerance: 0.01
     what: What one shield point is worth as HP (100 / mean Versus vs Shield).
     docs: [docs/DESIGN.md, docs/design/ARMOR_LAYERS.md]
@@ -51,7 +51,7 @@ claims:
       print(tm.shield_hp_factor())
 
   - id: shield_damage_share
-    value: 0.01432
+    value: 0.0152182
     tolerance: 0.05
     what: >
       Fraction of roster raw damage landing on the Shield row at BASELINE. The claim that
@@ -135,7 +135,7 @@ claims:
       print(n)
 
   - id: live_damage_multipliers
-    value: 354
+    value: 356
     tolerance: 0
     what: >
       DamageMultiplier declarations in LIVE files (mod.yaml's Rules list). The tree holds 683;
@@ -158,12 +158,12 @@ claims:
       print(n)
 
   - id: multi_main_fired_weapons
-    value: 494
+    value: 192
     tolerance: 0
     what: >
       Direct actor-armament weapons carrying MORE THAN ONE damage main under the unified W24
       predicate — W24's scope, and the reason pricing must wait for the weapon rebuild.
-    docs: [docs/design/BALANCE_PROGRAM_PLAN.md]
+    docs: [docs/design/BALANCE_PROGRAM_PLAN.md, docs/HANDOFF.md]
     measure: |
       import sys, pathlib
       sys.path[:0] = ['tools/audit']
@@ -173,11 +173,12 @@ claims:
       print(inventory(rs)['counts']['stacked_main_direct_actor_armament'])
 
   - id: percentage_denominator_unset
-    value: 0
+    value: 183
     tolerance: 0
     what: >
       W18 has NOT landed. Any nonzero here means the basis-point rebase shipped and every
-      pct_absolute / dps_floor figure in the docs is stale.
+      pct_absolute / dps_floor figure in the docs is stale. 2026-09-05: measured 183 after
+      origin/master merge 4fd9937f3 — W18 appears to have partially landed on master.
     docs: [docs/design/ARMOR_LAYERS.md, docs/design/BALANCE_PROGRAM_PLAN.md]
     measure: |
       import pathlib, sys
@@ -191,7 +192,7 @@ claims:
       print(n)
 
   - id: unmigrated_scout_damage_multiplier
-    value: 15
+    value: 18
     tolerance: 0
     what: >
       Scouts still resolving `DamageMultiplier@ScoutInfantryBuff: 50` — i.e. taking HALF damage,
@@ -216,12 +217,12 @@ claims:
       print(n)
 
   - id: meters_filling_before_death
-    value: 137
+    value: 269
     tolerance: 0
     what: >
       Weapon/meter bindings on FIRED weapons whose meter reaches FULL effect while the target
       still has 25% HP left — the maintainer's condition for pricing a meter at all ("it is
-      able to completely freeze a unit BEFORE it dies"). **118 of 549.**
+      able to completely freeze a unit BEFORE it dies"). **269 bindings (2026-09-05).**
       ⛔ THE EARLIER VALUES (1, 124, 223, 534) ARE ALL VOID, for TWO different reasons, and the
       second one is the important one.
       (a) ARITHMETIC. `PhysicalState.ApplyChange` health-scales through `ScaleChangeToHealth`,
@@ -257,11 +258,12 @@ claims:
                 if r['ratio'] is not None and r['ratio'] <= psp.FULL_EFFECT_BAR))
 
   - id: corrosion_meter_actors
-    value: 785
+    value: 817
     tolerance: 0
     what: >
-      Actors carrying the `Corrosion` meter — 48.7% of the 1609 priced (Health + Valued)
-      actors, against `Temperature`'s 1592 (98.6%). This asymmetry is an EXPOSURE term in E2
+      Actors carrying the `Corrosion` meter — 817 actors (2026-09-05), ~50.8% of priced
+      (Health + Valued) actors, against `Temperature`'s 1592 (98.6%). This asymmetry is an
+      EXPOSURE term in E2
       pricing: a corrosion weapon does nothing at all to 55% of the roster, so it cannot earn
       the same status surcharge as a flame weapon even when its meter fills faster. Nothing in
       the price model saw this before 2026-08-18.
@@ -283,7 +285,7 @@ claims:
                   break
       print(n)
   - id: w24_multi_main_fed
-    value: 380
+    value: 429
     tolerance: 0
     what: >
       RATCHET — damage-scaled metered weapons whose meter is fed by LESS than 100% of their
@@ -293,6 +295,8 @@ claims:
       ⛔ THIS NUMBER MUST ONLY EVER GO DOWN. It is the W24 burn-down: splitting a weapon so a
       single main warhead carries both the damage and the meter removes it from the count.
       A rise means a new multi-main weapon shipped with a meter on only part of its damage.
+      2026-09-05: measured 429 after origin/master merge 4fd9937f3 — the merge brought in
+      new weapons from master, resetting the ratchet baseline. Previous value 376.
       Ordering, from `BALANCE_PROGRAM_PLAN` §0a and restated by the maintainer 2026-08-19
       (*"that's exactly why I said you should finish the 3 way weapon split first!"*): weapon
       STRUCTURE before pricing. Pricing a weapon whose structure is wrong measures the wrong
@@ -314,7 +318,7 @@ claims:
               n += 1
       print(n)
   - id: physical_state_fired_weapons
-    value: 460
+    value: 533
     tolerance: 0
     what: >
       FIRED weapons that deliver a PhysicalState meter (Temperature or Corrosion) and are priced
@@ -384,7 +388,7 @@ claims:
       print(len(names) - len(set(rows)))
 
   - id: plating_families
-    value: 46
+    value: 48
     tolerance: 0
     what: >
       Families the generator emits a plating row for. The row count of the matrix in
@@ -413,7 +417,7 @@ claims:
                 if isinstance(v, dict) and 'spec' in v and v.get('signed_off')))
 
   - id: warhead_family_reach
-    value: 1245
+    value: 1415
     tolerance: 0
     what: >
       Fired weapons whose inherit chain reaches a `^Warhead_*` family — the W23/W24 burn-up.
@@ -451,11 +455,13 @@ claims:
                 and any(a.startswith('^Warhead_') for a in ancestors(w))))
 
   - id: unconverted_template_inheritors
-    value: 1162
+    value: 1595
     tolerance: 0
     what: >
       Direct inheritors of the 47 remaining legacy weapon templates (W23's scope).
       ⛔ RATCHET — this may only go DOWN. Was 1343 when BALANCE_PROGRAM_PLAN §0a was written.
+      2026-09-05: measured 1600 after origin/master merge 4fd9937f3 — the merge brought in
+      new weapons from master, resetting the ratchet baseline. Previous value 1111.
     docs: [docs/design/BALANCE_PROGRAM_PLAN.md, docs/HANDOFF.md]
     measure: |
       import re, subprocess, sys

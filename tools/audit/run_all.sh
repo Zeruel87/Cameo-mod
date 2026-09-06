@@ -52,10 +52,11 @@ export PYTHONIOENCODING=utf-8
 # NOTE: "elite_naming" is intentionally excluded — audit_elite_naming.py is
 # deprecated, fully superseded by audit_weapon_suffixes.py X1 section
 # (same check: rank-elite gated armaments not ending _elite).
-# NOTE: "damage_grid" is intentionally excluded — audit_damage_grid.py still
-# encodes the RETIRED 2000-step grid and the `main // 2000` percentage twin.
-# The live law is formula.DAMAGE_STEP (= 100) + formula.percentage_twin().
-# Re-derive it from `formula` before wiring it in; see docs/HANDOFF.md.
+# NOTE: "damage_grid" is intentionally excluded — audit_damage_grid.py WAS
+# re-derived 2026-08-25 from the live law (formula.DAMAGE_STEP = 100 +
+# formula.percentage_twin); it is excluded not because it is stale but because
+# its counts are moving targets while W24 collapses and the fold are in flight.
+# Wire it in once that work settles; see docs/HANDOFF.md and the audit header.
 for a in inherits duplicate_inherits faction_leaks upgrades upgrade_coverage ai ai_personalities sequences \
          metadata outliers orphans assets fluent power_budget stat_formulas \
          weapon_uniqueness garrison_weapons asset_files promotion_gating min_range \
@@ -66,8 +67,8 @@ for a in inherits duplicate_inherits faction_leaks upgrades upgrade_coverage ai 
          duplicate_keys \
          template_conformance multiplier_modifiers nuclear_flash_bindings \
          ts_death_palette warhead_split physical_state_warheads \
-         unique_traits armor_upgrade_harm plating_exclusivity k_linearity \
-         survivability_pricing doc_claims doc_health hex_shield_routing \
+         unique_traits armor_upgrade_harm plating_exclusivity k_linearity percentage_runtime \
+         survivability_pricing doc_claims doc_health task_index hex_shield_routing \
          impact_glow_preservation dead_warhead_fields family_uniqueness \
          three_way_split tier_weapon_class heaviness_bell versus_profile \
          meter_dilution ca_drift upstream_adoption engine_freshness; do

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Collapse the last mechanically identical ordinary main-damage profiles.
 
-Only full recursive profile duplicates are selected.  Damage and the parked
-PercentageScale metadata may differ; projectile, effect, percentage, status,
+Only full recursive profile duplicates are selected.  Damage and the folded
+PercentageScale fields may differ; projectile, effect, percentage, status,
 targeting, and descendant behavior are pinned by resolved-tree hashes.
 """
 from __future__ import annotations

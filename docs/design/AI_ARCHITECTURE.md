@@ -106,6 +106,14 @@ Case 5 also kills the most obvious layering idiom: a pack cannot opt out of a gl
 Opt-out has to be expressed as a value a pack *adds* (a condition, a prerequisite token, a row
 with weight 0 where the consumer treats 0 as "never"), never as a removal.
 
+**Ordering caveat (measured 2026-09-05):** `MiniYaml.MergePartial`
+(`engine/OpenRA.Game/MiniYaml.cs:590-643`) appends new dictionary keys in merge order — pack
+rows first, then global rows. Moving an existing `UnitsToBuild` row from the global file to a
+pack therefore relocates it to the top of the resolved dictionary: the `--resolved-rules` dump
+cannot stay byte-identical, though the resolved content (keys + values, and the
+`FrozenDictionary` the bot consumes) is identical. Any migration gate must compare *content*,
+not dump bytes, or the rows must stay in the global file.
+
 ### 1.3 Multi-instance safety is per-consumer, and one consumer is a crash
 
 Multiple same-type modules are fine *iff* every consumer enumerates them. The engine's own bot

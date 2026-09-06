@@ -48,15 +48,16 @@ class PercentageArithmeticTest(unittest.TestCase):
         self.assertEqual(rounded, 101, "the engine rounds a half unit upward")
         self.assertEqual(pd.folded_units(2001, 10_000), (100.05, 100))
 
-    def test_folded_arithmetic_reproduces_current_int32_overflow(self):
-        self.assertEqual(pd.folded_units(240_000, 10_000), (12_000, -9474))
-        self.assertEqual(pd.folded_units(600_000, 10_000), (30_000, 8525))
+    def test_folded_arithmetic_uses_wide_intermediates(self):
+        self.assertEqual(pd.folded_units(240_000, 10_000), (12_000, 12_000))
+        self.assertEqual(pd.folded_units(600_000, 10_000), (30_000, 30_000))
 
-    def test_percentage_runtime_mirror_reproduces_current_overflow_behavior(self):
+    def test_percentage_runtime_mirror_uses_wide_intermediates(self):
         with self.assertRaisesRegex(OverflowError, "runtime Int32"):
             pd.runtime_percentage_hp(pd.INT32_MAX, 200, 100)
-        self.assertEqual(pd.folded_units(pd.INT32_MAX, pd.INT32_MAX)[1], 0)
-        self.assertEqual(pd.runtime_percentage_hp(3_750_000, 30_000, 200), 4_154_251)
+        with self.assertRaisesRegex(OverflowError, "runtime Int32"):
+            pd.folded_units(pd.INT32_MAX, pd.INT32_MAX)
+        self.assertEqual(pd.runtime_percentage_hp(3_750_000, 30_000, 200), 562_500_000)
 
     def test_percentage_runtime_mirror_truncates_negative_healing_toward_zero(self):
         self.assertEqual(pd.runtime_percentage_hp(101, -1, 100), -1)
@@ -226,14 +227,14 @@ class PercentageArithmeticTest(unittest.TestCase):
         self.assertTrue(any(p["kind"] == pd.PCT_FOLDED for p in result["parts"]))
         self.assertGreater(result["k_flat"], 1.0)
 
-    def test_folded_overflow_is_measured_and_marked_provisional(self):
+    def test_large_folded_damage_remains_linear(self):
         root = weapon(warhead(
             "Main", "AreaDamage", 240_000,
             field("PercentageScale", 10_000)))
         result = we.analyse(root)
         folded = next(p for p in result["parts"] if p["kind"] == pd.PCT_FOLDED)
-        self.assertLess(folded["rounding_share"], 0)
-        self.assertIn(
+        self.assertEqual(folded["rounding_share"], 0)
+        self.assertNotIn(
             "nonlinear_folded_percentage_overflow",
             result["model_limitations"])
 
@@ -309,7 +310,7 @@ class PercentageArithmeticTest(unittest.TestCase):
         self.assertTrue(result["direct_actor"])
         self.assertEqual(
             [part["kind"] for part in result["parts"]],
-            ["flat", pd.PCT_STANDALONE])
+            ["flat", pd.PCT_FOLDED, pd.PCT_STANDALONE])
         for part in result["parts"]:
             self.assertEqual(part["rel"], 1.0)
             self.assertEqual(part["secondary"], 0.0)
@@ -376,7 +377,7 @@ class PercentageArithmeticTest(unittest.TestCase):
                     field("PercentageScale", 10_000)))
         result = we.analyse(root)
         self.assertTrue(result["direct_actor"])
-        self.assertFalse(any(
+        self.assertTrue(any(
             part["kind"] == pd.PCT_FOLDED for part in result["parts"]))
         self.assertTrue(all(part["footprint"] == 0.0 for part in result["parts"]))
         self.assertEqual(result["projectile_impact_multiplier"], 15)
@@ -659,7 +660,7 @@ class PercentageArithmeticTest(unittest.TestCase):
             linearity.runtime_percentage_inventory(root),
             {(pd.PCT_STANDALONE, "Double"): 1, (pd.PCT_FOLDED, "Double"): 1})
 
-    def test_inventory_excludes_folded_hit_skipped_by_direct_actor_runtime(self):
+    def test_inventory_includes_folded_hit_for_direct_actor_runtime(self):
         root = weapon(
             field("TargetActorCenter", "true"),
             field("Projectile", "InstantHit"),
@@ -668,7 +669,8 @@ class PercentageArithmeticTest(unittest.TestCase):
             warhead("Standalone", "AreaDamagePercentage", 1))
         self.assertEqual(
             linearity.runtime_percentage_inventory(root),
-            {(pd.PCT_STANDALONE, "Standalone"): 1})
+            {(pd.PCT_FOLDED, "Main"): 1,
+             (pd.PCT_STANDALONE, "Standalone"): 1})
 
     def test_linearity_scaling_keeps_engine_int32_damage(self):
         root = weapon(warhead(
@@ -763,7 +765,7 @@ class UpgradeRegressionFixtureTest(unittest.TestCase):
                     field("Falloff", "50, 0"), field("Ticks", 3),
                     field("PercentageScale", 10_000)))
         profile = upgrade.weapon_profile(self.Rules({"direct": direct}), "direct")
-        self.assertEqual(profile["per_armor"]["None"], 100)
+        self.assertEqual(profile["per_armor"]["None"], 200)
 
     def test_area_beam_duration_downgrade_is_visible_to_upgrade_guard(self):
         def beam(duration):

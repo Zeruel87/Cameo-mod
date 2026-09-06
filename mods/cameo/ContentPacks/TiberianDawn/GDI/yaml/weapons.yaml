@@ -39,6 +39,39 @@ HighV:
 	StartBurstReport: gun8.aud
 	Warhead@Bullet_Medium:
 		Damage: 2000
+
+td_gdi_guardtower_highv:
+	Inherits: HighV
+	Projectile: Bullet
+		-Image:
+		ProjectileStreakLength: 960
+		ProjectileStreakLengthVariation: 96
+		ProjectileStreakWidth: 45
+		ProjectileStreakColor: FFF4C2
+		ProjectileStreakTailWidth: 6
+		ProjectileStreakHeadWidth: 24
+		ProjectileStreakHeadTaperLength: 192
+		ProjectileStreakTailColor: FFB060
+		ProjectileStreakTailColorAlpha: 176
+		ContrailLength: 0
+		Speed: 4000
+
+td_gdi_guardtower_highvap:
+	Inherits: HighVAP
+	Projectile: Bullet
+		-Image:
+		ProjectileStreakLength: 960
+		ProjectileStreakLengthVariation: 96
+		ProjectileStreakWidth: 45
+		ProjectileStreakColor: FFF4C2
+		ProjectileStreakTailWidth: 6
+		ProjectileStreakHeadWidth: 24
+		ProjectileStreakHeadTaperLength: 192
+		ProjectileStreakTailColor: FFB060
+		ProjectileStreakTailColorAlpha: 176
+		ContrailLength: 0
+		Speed: 4000
+
 GrenadeExplode:
 	Inherits: ^Warhead_Demolition_Light
 	Inherits@2: ^Projectile_Grenade_Light
@@ -271,9 +304,11 @@ ArcherArtilleryShell:
 	Range: 14000
 	MinRange: 2800
 	Report: tnkfire2.aud
+	-InvalidTargets:
 	TargetActorCenter: true
 	Projectile: Bullet
 		Speed: 280
+		Blockable: false
 		Inaccuracy: 700
 		LaunchAngle: 70
 		ContrailLength: 28
@@ -550,6 +585,7 @@ Vulcan:
 		Damage: 12000
 		Spread: 600
 Napalm:
+	Inherits@finalmain: ^Compatibility_Flame_HeavyFlat
 	Inherits: ^Warhead_Demolition_Heavy
 	Inherits@2: ^Warhead_Flame_Heavy
 	Inherits@3: ^Effect_Flame_Heavy
@@ -569,7 +605,15 @@ Napalm:
 		GlowScale: 1.5
 		GlowFadeFrames: 30
 		GlowFadeInFrames: 12
+	-Warhead@Demolition_Heavy:
+	-Warhead@Flame_Heavy:
+	Warhead@Flame_HeavyFlatCompatibility:
+		ValidTargets: Ground, Water
+		Damage: 12000
+		PercentageScale: 9992
 
+		PhysicalStateName: Temperature
+		PhysicalStateScale: 50
 VulcanA10Carrier:
 	Inherits@wh: ^Warhead_Bullet_Medium
 	Inherits@proj: ^Projectile_Bullet_Medium
@@ -796,13 +840,9 @@ MissileSoldierWeapon:
 		FriendlyFireSpread: 50
 		ValidTargets: Ground, Water, Air
 		Damage: 10000
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@LightChemicalWeaponPercentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 5
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@ShrapnelWeapon: SpreadDamage
 		ValidTargets: Ground, Water, Air
 		Damage: 10000
@@ -1140,6 +1180,7 @@ RocketsHumvee2_AA:
 	Warhead@MissileAP_Light:
 		ValidTargets: Air
 RocketsHumvee2AMT:
+	Inherits@finalmain: ^Compatibility_MissileAP_HeavyFlat
 	Inherits@wh: ^Warhead_MissileAP_Heavy
 	Inherits@proj: ^Projectile_Missile_Heavy
 	Inherits@fx: ^Effect_MissileAP_Heavy
@@ -1148,14 +1189,25 @@ RocketsHumvee2AMT:
 	Warhead@MissileAP_Heavy:
 		ValidTargets: Ground, Water
 		Damage: 16000
+	-Warhead@MissileAP_Heavy:
+	-Warhead@MissileAP_Light:
+	Warhead@MissileAP_HeavyFlatCompatibility:
+		ValidTargets: Ground, Water
+		Damage: 32000
+		PercentageScale: 9997
 RocketsHumvee2AMT_AA:
+	Inherits@finalmain: ^Compatibility_MissileAA_HeavyFlat
 	Inherits: RocketsHumvee2AMT
 	Range: 8397
 	ValidTargets: Air
-	Warhead@MissileAP_Light:
-		ValidTargets: Air
 	Warhead@MissileAP_Heavy:
 		ValidTargets: Air
+	-Warhead@MissileAP_Heavy:
+	-Warhead@MissileAP_HeavyFlatCompatibility:
+	Warhead@MissileAA_HeavyFlatCompatibility:
+		ValidTargets: Air
+		Damage: 32000
+		PercentageScale: 9997
 TDShotgun:
 	Inherits@collapsewh: ^Warhead_Bullet_Medium
 	Inherits@collapseexplosive: ^Warhead_Concussion_Medium
@@ -1347,9 +1399,6 @@ OfficerMachineGun:
 	BurstDelays: 4
 	Range: 5596
 	Report: mgun11.aud
-	Warhead@Bullet_Light:
-		PercentageScale: 2500
-		Damage: 8000
 	Warhead@Bullet_Medium:
 		PercentageScale: 2500
 		Damage: 8000
@@ -1607,8 +1656,8 @@ CommandoSniper:
 		ImpactSounds: xplos.aud
 
 CommandoRocketLauncher:
+	Inherits@finalmain: ^Compatibility_MissileHE_MediumFlat
 	Inherits@wh: ^Warhead_MissileHE_Medium
-	Inherits@wh2: ^Warhead_MissileHE_Light
 	Inherits@proj: ^Projectile_Missile_Light
 	Inherits@fx: ^Effect_MissileHE_Light
 	Report: bazook1.aud
@@ -1627,15 +1676,17 @@ CommandoRocketLauncher:
 		ContrailEndColorUsePlayerColor: true
 	Warhead@MissileHE_Medium:
 		ValidTargets: Ground, Air, Water
-		Damage: 20000
-	Warhead@MissileHE_Light:
-		ValidTargets: Ground, Air, Water
-		Damage: 20000
+		Damage: 40000
 	Warhead@Effect: CreateEffect
 		ValidRelationships: Neutral, Enemy
 		Explosions: blue_building_napalm
 		ImpactSounds: kaboom12.aud
 		ValidTargets: Ground
+	-Warhead@MissileHE_Medium:
+	Warhead@MissileHE_MediumFlatCompatibility:
+		ValidTargets: Ground, Air, Water
+		Damage: 40000
+		PercentageScale: 9998
 
 CommandoGrenadeLauncher:
 	Inherits@collapsewh: ^Warhead_Concussion_Medium
@@ -2028,8 +2079,6 @@ td_gdi_shotgunner_shotgun:
 	Projectile: Bullet
 		Speed: 4000
 		Inaccuracy: 800
-	Warhead@Bullet_Light:
-		Damage: 2000
 	Warhead@Bullet_Medium:
 		Damage: 2000
 	-Warhead@Bullet_Light:

@@ -7,43 +7,129 @@ atreides_constructionyard:
 	RenderSprites:
 		Image: conyard.atreides
 
-wind_trap.atreides:
+atreides_windtrap:
 	Inherits: ^WindTrap
 	Buildable:
+		Factions: atreides
 		Prerequisites: ~atreides_constructionyard
 		Description: Provides power to the base.
 	RenderSprites:
 		Image: power.atreides
 
-refinery.atreides:
+atreides_refinery:
 	Inherits: ^D2KRefinery
 	Buildable:
-		Prerequisites: ~atreides_constructionyard, wind_trap.atreides
+		Factions: atreides
+		Prerequisites: ~atreides_constructionyard, atreides_windtrap
 		Description: Processes spice into credits.
 	FreeActor:
-		Actor: ixian_spiceharvester
+		Actor: atreides_spiceharvester
 		SpawnOffset: 0,2
 		Facing: 160
 	FreeActorWithDelivery@1:
-		Actor: ixian_spiceharvester
+		Actor: atreides_spiceharvester
 		DeliveryOffset: 2,2
 		DeliveringActor: carryall.reinforce
 		Facing: 160
-	# FreeActorWithDelivery@2:
-	# 	Actor: ixian_spiceharvester
-	# 	DeliveryOffset: 0,2
-	# 	DeliveringActor: carryall.reinforce
-	# 	Facing: 160
 	RenderSprites:
 		Image: refinery.atreides
 
-d2k_silo.atreides:
+atreides_storagesilo:
 	Inherits: ^D2KSilo
 	Buildable:
-		Prerequisites: ~atreides_constructionyard, refinery.atreides
+		Factions: atreides
+		Prerequisites: ~atreides_constructionyard, atreides_refinery
 		Description: Stores excess spice.
 	RenderSprites:
 		Image: silo.atreides
+
+atreides_barracks:
+	Inherits: ^D2KBuilding
+	Inherits@UPGRADEABLE: ^D2kUpgradeable
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@ra1_soviets_barracks: ^IsBarrack
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Factions: atreides
+		Prerequisites: ~atreides_constructionyard, atreides_windtrap
+		Description: Trains infantry units.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Atreides Barracks
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 352,576,0
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 512,480,0
+		ExitCell: 1,2
+	RenderSprites:
+		Image: barracks.atreides
+	ProvidesPrerequisite@d2kbarracks:
+		Prerequisite: d2k_barracks
+	ProvidesPrerequisite@barracks:
+		Prerequisite: barracks
+	ProvidesPrerequisite@factionbarracks:
+		Prerequisite: atreides_barracks
+	GrantConditionOnPrerequisite@UPGRADEABLE:
+		Prerequisites: upgrade_barracks.atreides
+	DamageMultiplier@upgrade_barracks:
+		RequiresCondition: upgrade_barracks
+		Modifier: 75
+	ActorStatValues:
+		Upgrades: upgrade_barracks.atreides
+	-WithDeathAnimation:
+	SpawnActorOnDeath@death1:
+		Actor: light_inf
+	SpawnActorOnDeath@death2:
+		Actor: light_inf
+	FireProjectilesOnDeath:
+		Weapons: Debris2, Debris3
+		Pieces: 1, 2
+		Range: 1c512, 2c768
+
+atreides_lightfactory:
+	Inherits: ^D2KBuilding
+	Inherits@UPGRADEABLE: ^D2kUpgradeable
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Factions: atreides
+		Prerequisites: ~atreides_constructionyard, atreides_refinery
+		Description: Produces light vehicles.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Atreides Light Factory
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 352,576,0
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 512,480,0
+		ExitCell: 1,2
+	RenderSprites:
+		Image: light.atreides
+	ProvidesPrerequisite@vehicle_production:
+		Prerequisite: atreides_light_vehicle_production
+	ProvidesPrerequisite@light:
+		Prerequisite: light.atreides
+	ProvidesPrerequisite@factionlight:
+		Prerequisite: atreides_lightfactory
+	GrantConditionOnPrerequisite@UPGRADEABLE:
+		Prerequisites: upgrade_light.atreides
+	DamageMultiplier@upgrade_light:
+		RequiresCondition: upgrade_light
+		Modifier: 75
+	ActorStatValues:
+		Upgrades: upgrade_light.atreides
 
 atreides_heavyfactory:
 	Inherits: ^HeavyFactory
@@ -52,7 +138,8 @@ atreides_heavyfactory:
 	RenderSprites:
 		Image: heavy.atreides
 	Buildable:
-		Prerequisites: ~atreides_constructionyard, refinery.atreides
+		Factions: atreides
+		Prerequisites: ~atreides_constructionyard, atreides_refinery
 		Description: template_factory.description
 		IconPalette: player
 	ProvidesPrerequisite@vehicle_production:
@@ -63,3 +150,237 @@ atreides_heavyfactory:
 		Prerequisite: heavy.missile_tank
 	ProvidesPrerequisite@mcv_production:
 		Prerequisite: atreides_mcv_production
+
+atreides_repairpad:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Factions: atreides
+		Prerequisites: ~atreides_heavyfactory
+		Description: Repairs vehicles.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Atreides Repair Pad
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: repair_pad.atreides
+	RepairsUnits:
+		FinishRepairingNotification: Repaired
+		StartRepairingNotification: Repairing
+	RallyPoint:
+
+atreides_outpost:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Factions: atreides
+		Prerequisites: ~atreides_constructionyard, atreides_refinery, atreides_barracks
+		Description: Provides radar and reveals terrain.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Atreides Outpost
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: outpost.atreides
+	ProvidesPrerequisite@outpost:
+		Prerequisite: outpost
+	DetectCloaked:
+		Range: 5c0
+	RevealsShroud:
+		Range: 8c0
+
+atreides_hightechfactory:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^3x2Shape
+	Buildable:
+		Factions: atreides
+		Prerequisites: ~atreides_heavyfactory
+		Description: Produces aircraft and provides tech upgrades.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Atreides High Tech Factory
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: hightech.atreides
+	ProvidesPrerequisite@hightech:
+		Prerequisite: hightech.atreides
+
+atreides_ixresearchcenter:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Factions: atreides
+		Prerequisites: ~atreides_heavyfactory
+		Description: Unlocks advanced technology.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Atreides Research Centre
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: research.atreides
+	ProvidesPrerequisite@research:
+		Prerequisite: research_centre
+
+atreides_starport:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^3x2Shape
+	Buildable:
+		Factions: atreides
+		Prerequisites: ~hightech.atreides, ~research_centre
+		Description: Orders units from orbit.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Atreides Starport
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: starport.atreides
+	ProvidesPrerequisite@starport:
+		Prerequisite: starport.atreides
+
+atreides_palace:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@SW: ^PrimarySuperweapon
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Factions: atreides
+		Prerequisites: ~hightech.atreides, ~research_centre, !apalace, ~techlevel.superweapons
+		Description: Unlocks superweapons and elite units.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Atreides Palace
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: palace.atreides
+	ProvidesPrerequisite@palace:
+		Prerequisite: palace
+	ProvidesPrerequisite@swlimit:
+		Prerequisite: apalace
+	AirstrikePower@orni:
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
+		IconImage: atreides_ornithopter
+		IconPalette: d2kunit
+		ChargeInterval: 4500
+		UnitTypes:
+			1: atreides_ornithopter
+		SquadSizes:
+			1: 3
+		QuantizedFacings: 32
+		Names:
+			1: Ornithopter Airstrike
+		Descriptions:
+			1: Ornithopters hit the target with bombs and heavy machine guns
+		SelectTargetSpeechNotification: SelectTarget
+		InsufficientPowerSpeechNotification: InsufficientPower
+		IncomingSpeechNotification: EnemyPlanesApproaching
+		DisplayBeacon: True
+		AllowMultiple: False
+		DisplayRadarPing: True
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		DisplayTimerRelationships: Ally, Neutral, Enemy
+		OrderName: ornistrike
+		SupportPowerPaletteOrder: 10
+	ProduceActorPower@fremenguerilla:
+		Name: Fremen Guerilla
+		Description: Deploys 3 Fremen warriors anywhere on map
+		Icon: fremenicon
+		IconPalette: d2kunit
+		AllowMultiple: True
+		PauseOnCondition: disabled
+		Prerequisites:
+			1: ~techlevel.superweapons
+		Actors: atreides_fremen, atreides_fremen, atreides_fremen
+		Type: Fremen
+		ChargeInterval: 1500
+		AutoFire: true
+		OrderName: callatrfremen
+		SupportPowerPaletteOrder: 20
+		LaunchSound: A_FSEL1.AUD
+	Exit@1:
+		SpawnOffset: -704,768,0
+		ExitCell: -1,2
+	Exit@2:
+		SpawnOffset: -704,768,0
+		ExitCell: -1,3
+	Exit@3:
+		SpawnOffset: -704,768,0
+		ExitCell: 0,3
+	RallyPoint:
+	Production@Fremen:
+		Produces: Fremen
+
+atreides_gunturret:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^1x1Shape
+	Buildable:
+		Factions: atreides
+		Prerequisites: ~atreides_constructionyard, atreides_barracks
+		Description: Anti-infantry defense turret.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Atreides Gun Turret
+	Building:
+		Footprint: x =
+		Dimensions: 1,2
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: gun_turret.atreides
+	Armament:
+		Weapon: 110mm_Gun
+	AttackTurreted:
+		FacingTolerance: 0
+	Turreted:
+		TurnSpeed: 80
+	WithSpriteTurret:
+
+atreides_rocketturret:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^1x1Shape
+	Buildable:
+		Factions: atreides
+		Prerequisites: ~atreides_constructionyard, atreides_barracks
+		Description: Anti-vehicle rocket turret.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Atreides Rocket Turret
+	Building:
+		Footprint: x =
+		Dimensions: 1,2
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: rocket_turret.atreides
+	Armament:
+		Weapon: D2K_TowerMissile
+	AttackTurreted:
+		FacingTolerance: 0
+	Turreted:
+		TurnSpeed: 80
+	WithSpriteTurret:

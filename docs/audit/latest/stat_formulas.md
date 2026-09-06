@@ -1,15 +1,18 @@
 # audit_stat_formulas — house stat formulas
 
-Violations: **615** across 1911 roster actors (reference-clean units: gdiarcher, raider.ordos)
+Violations: **669** across 1993 roster actors (reference-clean units: gdiarcher, raider.ordos)
 
 
-## F1 — Repairable.HpPerStep ≠ HP/20  (41)
+## F1 — Repairable.HpPerStep ≠ HP/20  (44)
 
 | actor | actual | expected |
 |---|---|---|
-| devastator | HpPerStep 31250 | expected 27500 (HP 550000/20) |
+| atreides_spiceharvester | HpPerStep 10000 | expected 9000 (HP 180000/20) |
+| corrino_spiceharvester | HpPerStep 10000 | expected 9000 (HP 180000/20) |
 | forgotten_scoopertank | HpPerStep 10000 | expected 12500 (HP 250000/20) |
 | futuretech_beehivedronecarrier | HpPerStep 6500 | expected 6250 (HP 125000/20) |
+| harkonnen_devastatormech | HpPerStep 31250 | expected 27500 (HP 550000/20) |
+| harkonnen_spiceharvester | HpPerStep 10000 | expected 12000 (HP 240000/20) |
 | ixian_empbomber | HpPerStep 5555 | expected 5550 (HP 111000/20) |
 | japan_coreairfield | HpPerStep 15000 | expected 2500 (HP 50000/20) |
 | japan_corebarracks | HpPerStep 15000 | expected 2500 (HP 50000/20) |
@@ -50,14 +53,31 @@ Violations: **615** across 1911 roster actors (reference-clean units: gdiarcher,
 | ts_nod_subterraneanapc | HpPerStep 2637 | expected 875 (HP 17500/20) |
 
 
-## F2 — SelfHealing Step ≠ HP/2500 (inf: HP/1000)  (96)
+## F2 — SelfHealing Step ≠ HP/2500 (inf: HP/1000)  (129)
 
 | actor | actual | expected |
 |---|---|---|
 | asianalliance_pulverizermecha | Step 114 | expected 285 (HP 285000/1000) |
+| atreides_combattank | Step 10 | expected 40 (HP 100000/2500) |
+| atreides_missiletank | Step 10 | expected 20 (HP 50000/2500) |
+| atreides_repairtank | Step 10 | expected 24 (HP 60000/2500) |
+| atreides_rockettrooper | Step 10 | expected 40 (HP 40000/1000) |
+| atreides_sandbike | Step 10 | expected 12 (HP 30000/2500) |
+| atreides_siegetank | Step 10 | expected 16 (HP 40000/2500) |
+| atreides_spiceharvester | Step 80 | expected 72 (HP 180000/2500) |
 | cabal_beholder | Step 50 | expected 125 (HP 125000/1000) |
 | combat_tank.harkonnen | Step 10 | expected 28 (HP 70000/2500) |
-| devastator | Step 250 | expected 220 (HP 550000/2500) |
+| corrino_bmp | Step 10 | expected 16 (HP 40000/2500) |
+| corrino_combattank | Step 10 | expected 40 (HP 100000/2500) |
+| corrino_missiletank | Step 10 | expected 20 (HP 50000/2500) |
+| corrino_sardaukar_bazooka | Step 50 | expected 120 (HP 120000/1000) |
+| corrino_sardaukar_berserker | Step 50 | expected 120 (HP 120000/1000) |
+| corrino_sardaukar_javelin | Step 50 | expected 120 (HP 120000/1000) |
+| corrino_sardaukar_laser | Step 50 | expected 120 (HP 120000/1000) |
+| corrino_sardaukar_sword | Step 50 | expected 120 (HP 120000/1000) |
+| corrino_siegetank | Step 10 | expected 16 (HP 40000/2500) |
+| corrino_spiceharvester | Step 80 | expected 72 (HP 180000/2500) |
+| corrino_trooper | Step 10 | expected 40 (HP 40000/1000) |
 | eden_tiger_acidcloud | Step 10 | expected 24 (HP 60000/2500) |
 | forgotten_mutant | Step 36 | expected 45 (HP 45000/1000) |
 | forgotten_mutanthijacker | Step 10 | expected 25 (HP 25000/1000) |
@@ -70,6 +90,14 @@ Violations: **615** across 1911 roster actors (reference-clean units: gdiarcher,
 | futuretech_shotgundroid | Step 22 | expected 55 (HP 55000/1000) |
 | futuretech_spyfutu | Step 10 | expected 5 (HP 5000/1000) |
 | futuretech_twister | Step 50 | expected 20 (HP 50000/2500) |
+| harkonnen_adp | Step 10 | expected 20 (HP 50000/2500) |
+| harkonnen_buzzsaw | Step 10 | expected 28 (HP 70000/2500) |
+| harkonnen_devastatormech | Step 250 | expected 220 (HP 550000/2500) |
+| harkonnen_flametank | Step 10 | expected 28 (HP 70000/2500) |
+| harkonnen_inkvine | Step 10 | expected 18 (HP 45000/2500) |
+| harkonnen_rockettrooper | Step 10 | expected 40 (HP 40000/1000) |
+| harkonnen_sardaukar | Step 50 | expected 120 (HP 120000/1000) |
+| harkonnen_spiceharvester | Step 80 | expected 96 (HP 240000/2500) |
 | japan_chihaheavytank | Step 104 | expected 52 (HP 130000/2500) |
 | japan_coreairfield | Step 120 | expected 20 (HP 50000/2500) |
 | japan_corebarracks | Step 120 | expected 20 (HP 50000/2500) |
@@ -145,9 +173,17 @@ Violations: **615** across 1911 roster actors (reference-clean units: gdiarcher,
 | ts_gdi_zonetrooper | Step 10 | expected 80 (HP 80000/1000) |
 | ts_nod_chameleonspy | Step 10 | expected 30 (HP 30000/1000) |
 | ts_nod_subterraneanapc | Step 10 | expected 7 (HP 17500/2500) |
+| wc2_humans_alleria | Step 25 | expected 50 (HP 50000/1000) |
+| wc2_humans_alleria_elite | Step 35 | expected 75 (HP 75000/1000) |
+| wc2_humans_danath | Step 50 | expected 150 (HP 150000/1000) |
+| wc2_humans_danath_elite | Step 80 | expected 250 (HP 250000/1000) |
 | wc2_humans_knight | Step 67 | expected 168 (HP 167500/1000) |
 | wc2_humans_militiapeasant | Step 8 | expected 20 (HP 20000/1000) |
+| wc2_orcs_hellscream | Step 50 | expected 150 (HP 150000/1000) |
+| wc2_orcs_hellscream_elite | Step 80 | expected 250 (HP 250000/1000) |
 | wc2_orcs_ogre | Step 80 | expected 200 (HP 200000/1000) |
+| wc2_orcs_zuljin | Step 25 | expected 50 (HP 50000/1000) |
+| wc2_orcs_zuljin_elite | Step 35 | expected 75 (HP 75000/1000) |
 | zerg_gorekraken | Step 150 | expected 140 (HP 350000/2500) |
 | zerg_ultralisk | Step 160 | expected 400 (HP 400000/1000) |
 
@@ -168,20 +204,30 @@ Violations: **615** across 1911 roster actors (reference-clean units: gdiarcher,
 | wc2_humans_militiapeasant | infantry declares Repairable locally |  |
 
 
-_243 further infantry inherit Repairable from the infantry base template (^DefaultInfantry RepairActors: drfghosp… — unloaded Dark Reign hospitals). One template-line fix covers them all._
+_267 further infantry inherit Repairable from the infantry base template (^DefaultInfantry RepairActors: drfghosp… — unloaded Dark Reign hospitals). One template-line fix covers them all._
 
 
-## F4 — upgrade shield RegenAmount ≠ 2×SelfHealing Step  (59)
+## F4 — upgrade shield RegenAmount ≠ 2×SelfHealing Step  (69)
 
 | actor | actual | expected |
 |---|---|---|
 | asianalliance_droneminer | RegenAmount 10 | expected 20 (2 x SelfHealing 10) |
+| atreides_lightinfantry | RegenAmount 10 | expected 64 (2 x SelfHealing 32) |
+| atreides_rockettrooper | RegenAmount 10 | expected 20 (2 x SelfHealing 10) |
+| atreides_spiceharvester | RegenAmount 10 | expected 160 (2 x SelfHealing 80) |
+| corrino_lightinfantry | RegenAmount 10 | expected 64 (2 x SelfHealing 32) |
+| corrino_spiceharvester | RegenAmount 10 | expected 160 (2 x SelfHealing 80) |
+| corrino_trooper | RegenAmount 10 | expected 20 (2 x SelfHealing 10) |
 | duelist_tank.ixian | RegenAmount 158 | expected 192 (2 x SelfHealing 96) |
 | eden_cargotruck_empty | RegenAmount 10 | expected 88 (2 x SelfHealing 44) |
 | forgotten_engineer | RegenAmount 25 | expected 20 (2 x SelfHealing 10) |
 | forgotten_tiberiumharvester | RegenAmount 10 | expected 120 (2 x SelfHealing 60) |
 | futuretech_prospector | RegenAmount 10 | expected 80 (2 x SelfHealing 40) |
 | futuretech_prospectormk2 | RegenAmount 10 | expected 120 (2 x SelfHealing 60) |
+| harkonnen_lightinfantry | RegenAmount 10 | expected 64 (2 x SelfHealing 32) |
+| harkonnen_rockettrooper | RegenAmount 10 | expected 20 (2 x SelfHealing 10) |
+| harkonnen_sardaukar | RegenAmount 10 | expected 100 (2 x SelfHealing 50) |
+| harkonnen_spiceharvester | RegenAmount 10 | expected 160 (2 x SelfHealing 80) |
 | heavy_inf.ixian | RegenAmount 10 | expected 64 (2 x SelfHealing 32) |
 | ixian_empbomber | RegenAmount 76 | expected 88 (2 x SelfHealing 44) |
 | ixian_lightinfantry | RegenAmount 10 | expected 64 (2 x SelfHealing 32) |
@@ -236,7 +282,7 @@ _243 further infantry inherit Repairable from the infantry base template (^Defau
 | zerg_drone | RegenAmount 10 | expected 36 (2 x SelfHealing 18) |
 
 
-## F5 — defense RevealsShroud.Range ≠ weapon range  (43)
+## F5 — defense RevealsShroud.Range ≠ weapon range  (46)
 
 | actor | actual | expected |
 |---|---|---|
@@ -250,11 +296,14 @@ _243 further infantry inherit Repairable from the infantry base template (^Defau
 | forgotten_brokenscoopertankturret | RevealsShroud 7168 | weapon range 6404 |
 | forgotten_brokenwarriortankturret | RevealsShroud 7168 | weapon range 9483 |
 | forgotten_machineguntower | RevealsShroud 7168 | weapon range 6272 |
+| harkonnen_devastatorturret | RevealsShroud 10684 | weapon range 7168 |
 | harkonnen_flameturret | RevealsShroud 7979 | weapon range 6742 |
 | latinsyndicate_latinsentrygun | RevealsShroud 6666 | weapon range 7777 |
 | naxis_flak88 | RevealsShroud 6666 | weapon range 13200 |
 | naxis_naxibunker | RevealsShroud 6666 | weapon range 12345 |
 | naxis_rifletower | RevealsShroud 6666 | weapon range 8100 |
+| ordos_chemturret | RevealsShroud 7710 | weapon range 14000 |
+| ordos_laserturret | RevealsShroud 7710 | weapon range 7275 |
 | plymouth_gp_microwave | RevealsShroud 6144 | weapon range 6656 |
 | plymouth_gp_rpg | RevealsShroud 6144 | weapon range 7168 |
 | plymouth_gp_stickyfoam | RevealsShroud 6144 | weapon range 6656 |
@@ -285,7 +334,7 @@ _243 further infantry inherit Repairable from the infantry base template (^Defau
 | zerg_sunkencolony_defense | RevealsShroud 5000 | weapon range 10160 |
 
 
-## F6 — AA/advanced defense DetectCloaked.Range ≠ weapon range/2  (19)
+## F6 — AA/advanced defense DetectCloaked.Range ≠ weapon range/2  (22)
 
 | actor | actual | expected |
 |---|---|---|
@@ -294,7 +343,10 @@ _243 further infantry inherit Repairable from the infantry base template (^Defau
 | forgotten_brokenscoopertankturret | DetectCloaked 3072 | expected 3202 (range/2) |
 | forgotten_brokenwarriortankturret | DetectCloaked 3072 | expected 4741 (range/2) |
 | forgotten_juggerflakwall | DetectCloaked 4096 | expected 5617 (range/2) |
+| harkonnen_devastatorturret | DetectCloaked 5342 | expected 3584 (range/2) |
 | latinsyndicate_smlturret | DetectCloaked 7000 | expected 7500 (range/2) |
+| ordos_chemturret | DetectCloaked 3855 | expected 7000 (range/2) |
+| ordos_laserturret | DetectCloaked 3855 | expected 3637 (range/2) |
 | protoss_photoncannon | DetectCloaked 4224 | expected 4114 (range/2) |
 | ra2_soviets_teslacoil | DetectCloaked 5000 | expected 4421 (range/2) |
 | steelconsortium_antiairquantummissileturret | DetectCloaked 6000 | expected 7500 (range/2) |
@@ -310,7 +362,7 @@ _243 further infantry inherit Repairable from the infantry base template (^Defau
 | yuri_psychictower | DetectCloaked 5000 | expected 4000 (range/2) |
 
 
-## F7 — defense Power.Amount ≠ -Cost/20  (95)
+## F7 — defense Power.Amount ≠ -Cost/20  (99)
 
 | actor | actual | expected |
 |---|---|---|
@@ -318,7 +370,10 @@ _243 further infantry inherit Repairable from the infantry base template (^Defau
 | asianalliance_asiansentryflamer | Power -25 | expected -40 (-Cost/20) |
 | asianalliance_chaosstorminductor | Power -200 | expected -250 (-Cost/20) |
 | asianalliance_concretebarrier | Power missing | expected -10 |
+| atreides_palace | Power -200 | expected -500 (-Cost/20) |
+| atreides_storagesilo | Power -10 | expected -7 (-Cost/20) |
 | brik | Power missing | expected -10 |
+| corrino_storagesilo | Power -10 | expected -7 (-Cost/20) |
 | cycl | Power missing | expected -3 |
 | eden_gp_emp | Power -10 | expected -30 (-Cost/20) |
 | eden_gp_laser | Power -10 | expected -30 (-Cost/20) |
@@ -348,6 +403,7 @@ _243 further infantry inherit Repairable from the infantry base template (^Defau
 | naxis_naxibunker | Power missing | expected -50 |
 | naxis_naxirocketsilo | Power -200 | expected -500 (-Cost/20) |
 | naxis_rifletower | Power -25 | expected -32 (-Cost/20) |
+| ordos_chemturret | Power -55 | expected -60 (-Cost/20) |
 | ordos_storagesilo | Power -10 | expected -7 (-Cost/20) |
 | plymouth_gp_microwave | Power -10 | expected -30 (-Cost/20) |
 | plymouth_gp_rpg | Power -10 | expected -30 (-Cost/20) |
@@ -411,25 +467,47 @@ _243 further infantry inherit Repairable from the infantry base template (^Defau
 | zerg_sunkencolony_defense | Power missing | expected -62 |
 
 
-## F8 — vehicle TurnSpeed ≠ Speed/5  (0)
-
-_none found_
-
-
-## F9 — Turreted.TurnSpeed ≠ Mobile.TurnSpeed  (0)
-
-_none found_
-
-
-## F10 — turretless TurnSpeed ≠ 2×Speed/5 (artillery: Speed/5)  (0)
-
-_none found_
-
-
-## F11 — turreted artillery missing/incorrect firing-slow (Archer pattern)  (18)
+## F8 — vehicle TurnSpeed ≠ Speed/5  (6)
 
 | actor | actual | expected |
 |---|---|---|
+| atreides_apc | TurnSpeed 16 (Speed 65) | expected 13 = Speed/5 |
+| atreides_siegetank | TurnSpeed 48 (Speed 43) | expected 9 = Speed/5 |
+| corrino_apc | TurnSpeed 40 (Speed 100) | expected 20 = Speed/5 |
+| corrino_bmp | TurnSpeed 40 (Speed 70) | expected 14 = Speed/5 |
+| corrino_buggy | TurnSpeed 60 (Speed 85) | expected 17 = Speed/5 |
+| harkonnen_adp | TurnSpeed 20 (Speed 64) | expected 13 = Speed/5 |
+
+
+## F9 — Turreted.TurnSpeed ≠ Mobile.TurnSpeed  (2)
+
+| actor | actual | expected |
+|---|---|---|
+| atreides_apc | Turreted 48 vs Mobile 16 | must match |
+| harkonnen_adp | Turreted 48 vs Mobile 20 | must match |
+
+
+## F10 — turretless TurnSpeed ≠ 2×Speed/5 (artillery: Speed/5)  (10)
+
+| actor | actual | expected |
+|---|---|---|
+| atreides_missiletank | TurnSpeed 80 (Speed 64) | expected 26 = 2 x Speed/5 (turretless) |
+| atreides_repairtank | TurnSpeed 16 (Speed 50) | expected 20 = 2 x Speed/5 (turretless) |
+| atreides_sandbike | TurnSpeed 24 (Speed 90) | expected 36 = 2 x Speed/5 (turretless) |
+| combat_tank.harkonnen | TurnSpeed 13 (Speed 65) | expected 26 = 2 x Speed/5 (turretless) |
+| corrino_missiletank | TurnSpeed 80 (Speed 64) | expected 26 = 2 x Speed/5 (turretless) |
+| corrino_siegetank | TurnSpeed 4 (Speed 56) | expected 22 = 2 x Speed/5 (turretless) |
+| devastator | TurnSpeed 48 (Speed 33) | expected 14 = 2 x Speed/5 (turretless) |
+| harkonnen_buzzsaw | TurnSpeed 48 (Speed 43) | expected 18 = 2 x Speed/5 (turretless) |
+| harkonnen_flametank | TurnSpeed 13 (Speed 65) | expected 26 = 2 x Speed/5 (turretless) |
+| harkonnen_inkvine | TurnSpeed 48 (Speed 43) | expected 18 = 2 x Speed/5 (turretless) |
+
+
+## F11 — turreted artillery missing/incorrect firing-slow (Archer pattern)  (19)
+
+| actor | actual | expected |
+|---|---|---|
+| atreides_siegetank | firing-slow pattern missing | see gdiarcher (GrantConditionOnAttack + 50% multipliers) |
 | eden_lynx_railgun | firing-slow pattern missing | see gdiarcher (GrantConditionOnAttack + 50% multipliers) |
 | eden_lynx_thorshammer | firing-slow pattern missing | see gdiarcher (GrantConditionOnAttack + 50% multipliers) |
 | eden_tiger_railgun | firing-slow pattern missing | see gdiarcher (GrantConditionOnAttack + 50% multipliers) |
@@ -455,12 +533,13 @@ _none found_
 _none found_
 
 
-## F13 — advanced defense not gated by the faction's tech tier  (3)
+## F13 — advanced defense not gated by the faction's tech tier  (4)
 
 | actor | actual | expected |
 |---|---|---|
 | ordos: ordos_artilleryplatform | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 | ordos: ordos_autogunturret | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
+| ordos: ordos_chemturret | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 | schwarzermond: schwarzermond_lasertower | prereqs: schwarzermond_barracks, schwarzermond_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 
 
@@ -523,12 +602,12 @@ _none found_
 | ordos: ordos_L | 5 infantry : 2 vehicles | want ~5 infantry per vehicle |
 | ixian: ixian_L | total cost 3300 | target ~2000 (±15%) |
 | ixian: ixian_L | 5 infantry : 2 vehicles | want ~5 infantry per vehicle |
-| atreides: atreides_L | total cost 3300 | target ~2000 (±15%) |
-| atreides: atreides_L | 5 infantry : 2 vehicles | want ~5 infantry per vehicle |
-| harkonnen: harkonnen_L | total cost 3300 | target ~2000 (±15%) |
-| harkonnen: harkonnen_L | 5 infantry : 2 vehicles | want ~5 infantry per vehicle |
-| corrino: corrino_L | total cost 3300 | target ~2000 (±15%) |
-| corrino: corrino_L | 5 infantry : 2 vehicles | want ~5 infantry per vehicle |
+| atreides: atreides_L | trooper (cost 300) x2 vs atreides_rockettrooper (cost 200) x1 | pricier units must not outnumber cheaper ones |
+| harkonnen: harkonnen_L | total cost 1100 | target ~2000 (±15%) |
+| harkonnen: harkonnen_L | 5 infantry : 0 vehicles | light set should include a vehicle |
+| harkonnen: harkonnen_L | trooper (cost 300) x2 vs harkonnen_rockettrooper (cost 200) x1 | pricier units must not outnumber cheaper ones |
+| corrino: corrino_L | total cost 1500 | target ~2000 (±15%) |
+| corrino: corrino_L | 5 infantry : 0 vehicles | light set should include a vehicle |
 | terran: defaultterran | total cost 4067 | target ~2000 (±15%) |
 | terran: defaultterran | terran_marine (cost 689) x3 vs terran_firebat (cost 500) x1 | pricier units must not outnumber cheaper ones |
 | terran: defaultterran | terran_marine (cost 689) x3 vs terran_medic (cost 600) x1 | pricier units must not outnumber cheaper ones |
@@ -547,7 +626,7 @@ _none found_
 | eden: defaulteden | eden_lynx_railgun (cost 900) x2 vs eden_scout (cost 300) x1 | pricier units must not outnumber cheaper ones |
 
 
-## F16 — Heavy Support composition (all tiers, ~10000, 5:1 inf:veh)  (116)
+## F16 — Heavy Support composition (all tiers, ~10000, 5:1 inf:veh)  (115)
 
 | actor | actual | expected |
 |---|---|---|
@@ -642,13 +721,12 @@ _none found_
 | ordos: ordos_h | all units are Tier 1 | heavy support should mix all tiers |
 | ixian: ixian_h | total cost 7100 | target ~10000 (±15%) |
 | ixian: ixian_h | 5 infantry : 4 vehicles | want ~5 infantry per vehicle |
-| atreides: atreides_h | total cost 7100 | target ~10000 (±15%) |
-| atreides: atreides_h | 5 infantry : 4 vehicles | want ~5 infantry per vehicle |
-| harkonnen: harkonnen_h | total cost 7100 | target ~10000 (±15%) |
-| harkonnen: harkonnen_h | 5 infantry : 4 vehicles | want ~5 infantry per vehicle |
-| harkonnen: harkonnen_h | all units are Tier 1 | heavy support should mix all tiers |
-| corrino: corrino_h | total cost 7100 | target ~10000 (±15%) |
-| corrino: corrino_h | 5 infantry : 4 vehicles | want ~5 infantry per vehicle |
+| atreides: atreides_h | total cost 2600 | target ~10000 (±15%) |
+| atreides: atreides_h | 7 infantry : 2 vehicles | want ~5 infantry per vehicle |
+| harkonnen: harkonnen_h | total cost 2650 | target ~10000 (±15%) |
+| harkonnen: harkonnen_h | 6 infantry : 2 vehicles | want ~5 infantry per vehicle |
+| corrino: corrino_h | total cost 3300 | target ~10000 (±15%) |
+| corrino: corrino_h | 6 infantry : 2 vehicles | want ~5 infantry per vehicle |
 | terran: heavyterran | 4 infantry : 3 vehicles | want ~5 infantry per vehicle |
 | terran: heavyterran | terran_marine (cost 689) x2 vs terran_firebat (cost 500) x1 | pricier units must not outnumber cheaper ones |
 | terran: heavyterran | terran_marine (cost 689) x2 vs terran_medic (cost 600) x1 | pricier units must not outnumber cheaper ones |
@@ -674,32 +752,11 @@ _none found_
 _none found_
 
 
-## F18 — weapons targeting Air whose damage warheads can't hit Air  (22)
+## F18 — weapons targeting Air whose gameplay payload can't hit Air  (1)
 
 | actor | actual | expected |
 |---|---|---|
-| beehivecarriertarget | Warhead@1Dam | targets Air but no damage warhead hits Air (used by futuretech_beehivedronecarrier) |
-| boomerlaunch | Warhead@1Dam | targets Air but no damage warhead hits Air (used by yuri_boomersubmarine) |
-| cabaloverkillcharge | Warhead@Tesla_Heavy, Warhead@Tesla_Heavy_ExtraDamage | targets Air but no damage warhead hits Air (used by cabal_hunterdronecarrier) |
-| defilerplague | Warhead@Chemical_Heavy, Warhead@Concrete | targets Air but no damage warhead hits Air (used by zerg_defiler) |
-| ivanattachair | Warhead@2 | targets Air but no damage warhead hits Air (used by ra2_soviets_crazyivan) |
-| naxdefensiveplanetarget | Warhead@1Dam | targets Air but no damage warhead hits Air (used by naxis_airfield, schwarzermond_airfield) |
-| naxdieglocke | Warhead@Chemical_Heavy, Warhead@Concrete | targets Air but no damage warhead hits Air (used by schwarzermond_dieglocke) |
-| pdlaserbike | Warhead@1Dam | targets Air but no damage warhead hits Air (used by td_nod_chemicalattackbike, td_nod_reconbike) |
-| pdlaserltnk2 | Warhead@1Dam | targets Air but no damage warhead hits Air (used by td_nod_lighttankmkii) |
-| psionicshockwave | Warhead@Tesla_Super, Warhead@Tesla_Super_ExtraDamage | targets Air but no damage warhead hits Air (used by protoss_archon) |
-| sciencevesseldefensematrix | Warhead@1 | targets Air but no damage warhead hits Air (used by terran_sciencevessel) |
-| tkmpdlaser | Warhead@1Dam | targets Air but no damage warhead hits Air (used by tkm_t72m) |
-| tsassaultcannon | Warhead@Flak_Medium, Warhead@Bullet_Medium, Warhead@Concrete | targets Air but no damage warhead hits Air (used by ts_gdi_wolverine) |
-| tsassaultcannontal | Warhead@Bullet_Medium, Warhead@Concrete | targets Air but no damage warhead hits Air (used by ts_gdi_wolverinemkii) |
-| tsfiendshard | Warhead@Chemical_Light, Warhead@Concrete | targets Air but no damage warhead hits Air (used by forgotten_tiberianfiend) |
-| tsfiendshardblue | Warhead@Grenade, Warhead@GrenadeFriendlyFire, Warhead@GrenadePercentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by forgotten_viniferafiend) |
-| tsfiendshardblueup | Warhead@Grenade, Warhead@GrenadeFriendlyFire, Warhead@GrenadePercentage, Warhead@Concrete | targets Air but no damage warhead hits Air (used by forgotten_viniferafiend) |
-| tsfiendshardup | Warhead@LightChemicalWeapon, Warhead@LightChemicalWeaponPercentage, Warhead@Concrete, Warhead@MediumChemicalWeapon | targets Air but no damage warhead hits Air (used by forgotten_tiberianfiend) |
-| venomlaserburning | Warhead@Inferno_Medium, Warhead@Concrete | targets Air but no damage warhead hits Air (used by td_nod_venom) |
-| venomlaserinferno | Warhead@Inferno_Medium, Warhead@Concrete | targets Air but no damage warhead hits Air (used by td_nod_venom) |
-| wc2deathknightdeathanddecay | Warhead@1Dam_impact | targets Air but no damage warhead hits Air (used by wc2_orcs_deathknight) |
-| wc2mageblizzard | Warhead@1Dam_impact | targets Air but no damage warhead hits Air (used by wc2_humans_archmage, wc2_humans_mage) |
+| tsserggun | Warhead@Bullet_MediumFlatCompatibility | targets Air but no gameplay payload hits Air (used by forgotten_mutantsergeant) |
 
 
 ## F19 — helicopter/spaceship TurnSpeed ≠ Speed/5  (0)

@@ -1,0 +1,125 @@
+# Peer `Versus` tag -> Cameo ARMOR LADDER, per source, with confidence.
+#
+# HAND-AUTHORED. It is data, not code, because it is a series of judgements and each one has to be
+# inspectable and arguable. Measured input: docs/reference/PEER_ARMOR_VOCABULARIES.md.
+#
+# WHY LADDERS AND NOT THE 16 ROWS. DESIGN.md organises Cameo's armor into four ladders ΓÇö
+#   INF  None / Flak / Plate / Heroic
+#   VEH  Scout / Light / Medium / Heavy / Superheavy
+#   AIR  Fighter / Bomber / Helicopter / Spaceship
+#   BLD  Wood / Concrete / Steel
+# Most peers ship five or six tags total. Mapping their `Light` onto Cameo's `Light` specifically
+# would claim a precision no peer has; mapping it onto the VEH ladder is a claim the data supports.
+# The ladder is the common denominator, and it is Cameo's own structure rather than an invented one.
+#
+# CONFIDENCE, and it gates voting:
+#   high    the tag means the same thing in both systems (shared Westwood vocabulary, or the
+#           AS/RV lineage Cameo's own armor set descends from)
+#   medium  the tag maps onto a ladder unambiguously but coarsely (CA `Aircraft` -> all of AIR)
+#   low     the tag is a role or a special case rather than an armor class; recorded, not voted
+#   exclude the source cannot participate at all
+#
+# Only `high` and `medium` vote on armor-aware effective damage.
+
+ladders:
+  INF: [None, Flak, Plate, Heroic]
+  VEH: [Scout, Light, Medium, Heavy, Superheavy]
+  AIR: [Fighter, Bomber, Helicopter, Spaceship]
+  BLD: [Wood, Concrete, Steel]
+
+sources:
+
+  # ΓöÇΓöÇ The AS / Romanov's Vengeance lineage ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  # Cameo's own armor set descends from this one: None/Flak/Plate/Light/Medium/Heavy/Wood/Steel/
+  # Concrete appear verbatim in both. This is the highest-confidence mapping in the file, and it
+  # is why RV and Valiant Shades are the most useful armor-aware sources in the corpus.
+  Romanov's Vengeance: &as_lineage
+    confidence: high
+    reason: >-
+      Shares Cameo's armor vocabulary directly ΓÇö Cameo's set descends from the Attacque Superior
+      lineage that RV also uses. Nine of eleven tags are name-identical with identical meaning.
+    map:
+      None: INF
+      Flak: INF
+      Plate: INF
+      Light: VEH
+      Medium: VEH
+      Heavy: VEH
+      Drone: VEH          # a light mechanical walker; Cameo files the equivalent under Scout
+      Wood: BLD
+      Steel: BLD
+      Concrete: BLD
+      Rocket: null        # a projectile-interception class, not a unit armor ΓÇö recorded, no vote
+  Valiant Shades: *as_lineage
+
+  # ΓöÇΓöÇ The Westwood core ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  # None/Light/Heavy/Wood/Concrete carry the same meaning in every Westwood-derived ruleset, which
+  # is exactly why they are the five tags shared by six or more mods.
+  OpenRA Red Alert: &westwood
+    confidence: high
+    reason: Westwood's original five-class scheme; identical meaning across all derivatives.
+    map: {None: INF, Light: VEH, Heavy: VEH, Wood: BLD, Concrete: BLD, Tree: null}
+  OpenRA Tiberian Dawn: *westwood
+  OpenRA Tiberian Sun: *westwood
+  OpenHV:
+    confidence: high
+    reason: Original IP, but it adopts the Westwood five plus Steel, used the same way.
+    map: {None: INF, Light: VEH, Heavy: VEH, Wood: BLD, Steel: BLD, Concrete: BLD}
+
+  Combined Arms:
+    confidence: medium
+    reason: >-
+      Westwood core plus three of its own. `Brick` and `Tree` are terrain-ish building classes;
+      `Aircraft` is a single tag where Cameo splits AIR into four, so it maps to the ladder rather
+      than to any one rung.
+    map: {None: INF, Light: VEH, Heavy: VEH, Wood: BLD, Concrete: BLD, Brick: BLD, Tree: null,
+          Aircraft: AIR}
+
+  Crystallized Nexus:
+    confidence: medium
+    reason: >-
+      Mixes an armor ladder (Light/Medium/Heavy/Superheavy) with ROLE tags (Infantry, Cyborg,
+      Vehicle, Aircraft, Building). The ladder half maps cleanly; the role half maps to its
+      ladder. `Stability` and `Shield` are mechanics, not armor.
+    map: {None: INF, Infantry: INF, Cyborg: INF, Light: VEH, Medium: VEH, Heavy: VEH,
+          Superheavy: VEH, Vehicle: VEH, Aircraft: AIR, Building: BLD, Flora: null,
+          Shield: null, Stability: null}
+
+  Shattered Paradise:
+    confidence: medium
+    reason: >-
+      Two overlapping schemes in one ruleset ΓÇö bare tags and `*Armor` suffixed duplicates ΓÇö plus
+      role tags. Both spellings are mapped so neither half is silently dropped. `Boss` is a
+      campaign class and `Shield` a mechanic.
+    map: {Infantry: INF, InfantryArmor: INF, Light: VEH, Heavy: VEH, VehicleArmor: VEH,
+          Building: BLD, BuildingArmor: BLD, Concrete: BLD, ConcreteArmor: BLD,
+          Defense: BLD, DefenseArmor: BLD, Aircraft: AIR, Boss: null, Shield: null}
+
+  OpenRA Dune 2000:
+    confidence: medium
+    reason: >-
+      Westwood core, but the ruleset ships BOTH cases of several tags (`none` and `None`, `wood`
+      and `Wood`) so both are mapped. `cy`, `harvester`, `wall` and `invulnerable` are
+      unit-specific special cases, not armor classes.
+    map: {None: INF, none: INF, Light: VEH, light: VEH, Heavy: VEH, heavy: VEH,
+          Wood: BLD, wood: BLD, Concrete: BLD, concrete: BLD, building: BLD,
+          cy: null, harvester: null, wall: null, invulnerable: null}
+
+  OpenE2140:
+    confidence: low
+    reason: >-
+      Four role tags and no armor ladder at all ΓÇö `infantry`, `vehicle`, `aircraft`, `building`.
+      The mapping is exact but carries no within-ladder information, so it is recorded and does
+      not vote; letting it in would flatten every ladder it touches.
+    map: {infantry: INF, vehicle: VEH, aircraft: AIR, building: BLD}
+
+  Generals Alpha:
+    confidence: exclude
+    reason: >-
+      37 tags, many of them PER-UNIT (`vehicle.battle_bus.crate-1`,
+      `aircraft.comanche.countermeasures`). These are targeting switches, not an armor ladder,
+      and there is nothing to map them onto.
+
+  OpenRA Dune II:
+    confidence: exclude
+    reason: Declares no `Versus` on any weapon; there is nothing to map.

@@ -118,6 +118,13 @@ namespace OpenRA.Mods.Cameo.Warheads
 			"steps), which is what PercentageScale is expressed in.")]
 		public readonly int PercentageDenominator = 10000;
 
+		[Desc("Continuous heaviness scalar h, in THOUSANDTHS (0 = disabled / today's behaviour,",
+			"1000 = h = 1.0, 2000 = h = 2.0). When 0 the warhead uses its authored Versus and Spread;",
+			"when non-zero the profile is passed through the §12.0i bell at runtime. Spread scales",
+			"linearly 2/3 -> 1 -> 4/3 as h goes 0 -> 1 -> 2 (Light/Medium/Heavy); Super and Trace are",
+			"outside the currently ruled h range and are not yet reproduced.")]
+		public readonly int Heaviness = 0;
+
 		[Desc("The percentage half's own armor table. EMPTY falls back to Versus, which is the",
 			"common case; a family whose percentage half should favour different armor states",
 			"its own here.")]
@@ -158,11 +165,41 @@ namespace OpenRA.Mods.Cameo.Warheads
 			"and hits hard, later rings are larger and weaker. An INCREASING profile builds up instead.")]
 		public readonly ImmutableArray<int> TickDamage = default;
 
+		WDist effectiveSpread;
 		ImmutableArray<WDist> effectiveRange;
 		int tickDamageTotal;
 
+		IReadOnlyDictionary<string, int> effectiveVersus;
+		IReadOnlyDictionary<string, int> effectivePercentageVersus;
+
 		void IRulesetLoaded<WeaponInfo>.RulesetLoaded(Ruleset rules, WeaponInfo info)
 		{
+			if (PercentageDenominator <= 0)
+				throw new YamlException("PercentageDenominator must be positive.");
+
+			// §12.0i — continuous heaviness. Heaviness = 0 keeps authored values verbatim.
+			if (Heaviness == 0)
+			{
+				effectiveSpread = Spread;
+				effectiveVersus = Versus;
+				effectivePercentageVersus = PercentageVersus.Count > 0 ? PercentageVersus : Versus;
+			}
+			else
+			{
+				var h = Heaviness / 1000.0;
+
+				// Spread scale: linear interpolation of the existing LEVEL_RADIUS_SCALE points
+				// Light h=0 -> 2/3, Medium h=1 -> 1, Heavy h=2 -> 4/3. Super/Trace are outside the
+				// currently ruled h range and stay unhandled until the maintainer rules them.
+				var spreadScale = (h + 2.0) / 3.0;
+				effectiveSpread = new WDist((int)(Spread.Length * spreadScale));
+
+				effectiveVersus = HeavinessBell.Transform(Versus, h);
+				effectivePercentageVersus = PercentageVersus.Count > 0
+					? HeavinessBell.Transform(PercentageVersus, h)
+					: effectiveVersus;
+			}
+
 			if (Range != null)
 			{
 				if (Range.Length != 1 && Range.Length != Falloff.Length)
@@ -175,7 +212,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 				effectiveRange = Range;
 			}
 			else
-				effectiveRange = Exts.MakeArray(Falloff.Length, i => i * Spread).ToImmutableArray();
+				effectiveRange = Exts.MakeArray(Falloff.Length, i => i * effectiveSpread).ToImmutableArray();
 
 			if (TickDamage != null)
 			{
@@ -232,7 +269,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 
 		protected override int DamageVersus(Actor victim, HitShape shape, WarheadArgs args)
 		{
-			return VersusFrom(Versus, victim, shape);
+			return VersusFrom(effectiveVersus, victim, shape);
 		}
 
 		/// <summary>
@@ -331,7 +368,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 
 			// Versus has no Concrete row on most families; 100 then means "full damage", the same
 			// default every other armor lookup uses.
-			var slab = Versus.TryGetValue("Concrete", out var v) ? Damage * v / 100 : Damage;
+			var slab = effectiveVersus.TryGetValue("Concrete", out var v) ? Damage * v / 100 : Damage;
 			if (slab > 0)
 				layer.HitTile(world.Map.CellContaining(pos), slab);
 		}
@@ -422,7 +459,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 					ImpactOrientation = impactOrientation,
 				};
 
-				InflictDamage(victim, firedBy, closestActiveShape, updatedWarheadArgs);
+				InflictPrimaryDamage(victim, firedBy, closestActiveShape, updatedWarheadArgs);
 
 				// The folded-in percentage half: a SECOND application on the same victim, with
 				// its own (smaller) radius and its own armor table. Applied here rather than as a
@@ -443,7 +480,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 			// factor of 100 is the hundredths granularity — see PercentageScale's [Desc].
 			// ROUND, do not truncate: integer division biases every weapon DOWNWARD by up to
 			// one basis point, which showed up as a systematic 0.99% where 1.00% was meant.
-			var basisPoints = (Damage * PercentageScale + 100000) / 200000;
+			var basisPoints = FoldedPercentageUnits(Damage, PercentageScale);
 			if (basisPoints <= 0)
 				return;
 
@@ -457,8 +494,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 			// ApplyPercentageModifiers already divided by 100 for the basisPoints modifier, so
 			// only the remaining factor is left. Applied LAST, on the largest intermediate, so the
 			// extra division costs the least precision.
-			if (PercentageDenominator != 100)
-				damage = damage * 100 / PercentageDenominator;
+			damage = ApplyPercentageDenominator(damage, PercentageDenominator);
 
 			if (damage <= 0)
 				return;
@@ -471,11 +507,22 @@ namespace OpenRA.Mods.Cameo.Warheads
 		/// <summary>The percentage half's armor lookup: its own table, or Versus when it has none.</summary>
 		int PercentageDamageVersus(Actor victim, HitShape shape, WarheadArgs args)
 		{
-			return VersusFrom(PercentageVersus, victim, shape);
+			return VersusFrom(effectivePercentageVersus, victim, shape);
 		}
 
 
 		protected override void InflictDamage(Actor victim, Actor firedBy, HitShape shape, WarheadArgs args)
+		{
+			// DamageWarhead routes direct Actor impacts here instead of through DoImpact.
+			// Keep the folded hit in this wrapper so direct weapons receive it exactly once;
+			// positional impacts call InflictPrimaryDamage from ApplyRing and add their own
+			// radius-gated folded hit there.
+			InflictPrimaryDamage(victim, firedBy, shape, args);
+			if (PercentageScale > 0)
+				InflictPercentage(victim, firedBy, shape, args);
+		}
+
+		protected virtual void InflictPrimaryDamage(Actor victim, Actor firedBy, HitShape shape, WarheadArgs args)
 		{
 			var damage = Util.ApplyPercentageModifiers(Damage, args.DamageModifiers.Append(DamageVersus(victim, shape, args)));
 			victim.InflictDamage(firedBy, new Damage(damage, DamageTypes, GetProjectileType(args)));
@@ -494,11 +541,11 @@ namespace OpenRA.Mods.Cameo.Warheads
 				return;
 
 			if (!string.IsNullOrEmpty(PhysicalStateName) && PhysicalStateScale != 0)
-				ApplyOneState(victim, firedBy, PhysicalStateName, damage * PhysicalStateScale / 100);
+				ApplyOneState(victim, firedBy, PhysicalStateName, ScaleDamage(damage, PhysicalStateScale));
 
 			foreach (var kv in PhysicalStates)
 				if (kv.Value != 0)
-					ApplyOneState(victim, firedBy, kv.Key, damage * kv.Value / 100);
+					ApplyOneState(victim, firedBy, kv.Key, ScaleDamage(damage, kv.Value));
 		}
 
 		static void ApplyOneState(Actor victim, Actor firedBy, string name, int change)
@@ -528,13 +575,32 @@ namespace OpenRA.Mods.Cameo.Warheads
 			if (damage == 0 || IntegrityScale == 0)
 				return;
 
-			var change = damage * IntegrityScale / 100;
+			var change = ScaleDamage(damage, IntegrityScale);
 			if (change == 0)
 				return;
 
 			victim.TraitsImplementing<Integrity>()
 				.FirstOrDefault(t => !t.IsTraitPaused && !t.IsTraitDisabled)
 				?.Regenerate(victim, -change);
+		}
+
+		// Keep authored fields and final engine damage as Int32, but use Int64 for
+		// intermediate products so valid large weapons cannot wrap before division.
+		internal static int FoldedPercentageUnits(int damage, int percentageScale)
+		{
+			return checked((int)(((long)damage * percentageScale + 100000L) / 200000L));
+		}
+
+		internal static int ApplyPercentageDenominator(int damage, int denominator)
+		{
+			return denominator == 100
+				? damage
+				: checked((int)((long)damage * 100 / denominator));
+		}
+
+		internal static int ScaleDamage(int damage, int percentage)
+		{
+			return checked((int)((long)damage * percentage / 100));
 		}
 
 		int GetDamageFalloff(int distance)

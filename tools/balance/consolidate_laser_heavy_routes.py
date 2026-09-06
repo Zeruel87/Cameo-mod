@@ -114,8 +114,8 @@ def resolved_hash(rs: Ruleset, name: str) -> str:
 def profile_signature(node) -> tuple:
     """Identity excluding the three fields this route fold may author."""
     # PercentageSpread/PercentageVersus are inert here because PercentageScale
-    # is pinned to zero on both sides of the fold.  They remain on the
-    # canonical destination; the parked percentage runtime is not enabled.
+    # is pinned to zero on both sides of the fold. They remain on the canonical
+    # destination but cannot create a folded hit.
     ignored = {
         "Damage", "PercentageScale", "PercentageSpread", "PercentageVersus",
         "ValidTargets",

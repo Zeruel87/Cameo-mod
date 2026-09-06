@@ -71,8 +71,10 @@ SPECS = {
 }
 
 # Folded scales preserve the baseline runtime percentage units after the flat
-# damage is combined.  RA2FreedomRocket and its elite child are deliberately not
-# selected: the elite merge cannot be represented without unsafe Int32 behavior.
+# damage is combined. The normal RA2FreedomRocket is handled by the focused tail
+# converter; its elite child deliberately remains split because no single scale
+# preserves the now-live percentage result within one HP across all active health
+# values because of integer quantisation.
 PERCENTAGE_SCALES = {
     'TurretGunBlackMarket': 0,
     'ra120mm2': 3332,
@@ -115,6 +117,7 @@ PERCENTAGE_SCALES = {
 # the compatibility profile the sole canonical main.  Keep this older converter
 # idempotent without weakening its checks for any other entry.
 FINALIZED_BY_PINNED_ROLE = {
+    'AsianPulverizerMechaGatling': (10000, 5990),
     'CannonAttackRobotGun': (8000, 4988),
     'LatinSmokerCannon': (13000, 3070),
     'RA2LarsRocket': (10000, 3990),

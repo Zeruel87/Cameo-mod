@@ -186,8 +186,8 @@ number appears exactly as the yaml states it, with provenance:
   `*ExtraDamage` twins = **50%** of the main. Standalone `*Percentage`
   companions track **0.01% per 100 flat Damage** in their own denominator;
   folded `PercentageScale` damage derives from the main Damage. The calculator mirrors
-  the current runtime quirk that direct-Actor `AreaDamage` impacts skip that folded hit;
-  it does not assume the separate runtime repair has landed.
+  the Cameo runtime: both positional and direct-Actor `AreaDamage` impacts apply the
+  folded hit exactly once, with wide intermediate arithmetic and checked final results.
   `*ExtraDamage` (the energy-weapon shield/AoE-compensation chip) is
   always 50% of the main but is **excluded from the damage total**.
   Fine-tuning is done on the 100-Damage grid or with reload timing;

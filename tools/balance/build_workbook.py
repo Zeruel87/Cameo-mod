@@ -46,6 +46,7 @@ from openpyxl.utils import get_column_letter
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/balance"))
 import formula  # noqa: E402
+import class_membership  # noqa: E402
 
 LEDGER = ROOT / "docs/balance"
 MOD = ROOT / "mods/cameo"
@@ -468,19 +469,16 @@ def normalize_type_name(value):
     return value
 
 
-def subtype_to_anchor(st: str | None) -> str | None:
-    """Map a design subtype to the class_anchor key when it is not explicit."""
-    if not st:
-        return None
-    name = re.sub(r"[^A-Za-z0-9]", "", str(st)).casefold()
-    exact = {
-        "scoutinfantry": "scout",
-        "closecombatinfantry": "closecombat",
-        "specialforcesinfantry": "special_forces",
-        "mainbattletank": "mbt",
-        "linebreaker": "mbt",
-    }
-    return exact.get(name)
+def subtype_to_anchor(st):
+    """DELEGATES to `tools/balance/class_membership.py`, the single map.
+
+    ⛔ There were THREE copies of this function and they disagreed: this one and
+    `update_ranges.py` knew 5 subtypes, `propose_class_rebalance.py` knew 17, and all three said
+    `linebreaker -> mbt` when `line_breaker` is its own class with 30 of 31 members tagged that
+    way — so 40 line-breakers were being folded into the MBT population. Kept as a name so the
+    call sites do not all have to change at once.
+    """
+    return class_membership.subtype_to_anchor(st)
 
 
 def load_template_order():

@@ -1,12 +1,25 @@
 # audit_assets — asset format norms (B11, RAMpage)
 
-PNGs scanned: **2006** (over budget: **148**), WAVs scanned: **8780** (non-conforming: **3634**)
+PNGs scanned: **2102** (over budget: **169**), WAVs scanned: **8812** (non-conforming: **3666**)
 
 
 ## P1 — PNGs over budget (> 8 MiB or > 8192px)
 
 | file | size | dimensions |
 |---|---|---|
+| mods/cameo/bits/d2k/atreides_minotaurus.png | 1404 KiB | 46176x96 |
+| mods/cameo/bits/d2k/atreides_mongoose.png | 452 KiB | 24576x96 |
+| mods/cameo/bits/d2k/atreides_ornithopter.png | 555 KiB | 25088x98 |
+| mods/cameo/bits/d2k/atreides_repairtank.png | 561 KiB | 25088x98 |
+| mods/cameo/bits/d2k/atreides_sonictank.png | 459 KiB | 25088x98 |
+| mods/cameo/bits/d2k/corrino_bmp.png | 484 KiB | 18688x122 |
+| mods/cameo/bits/d2k/corrino_buggy.png | 868 KiB | 24960x171 |
+| mods/cameo/bits/d2k/corrino_tank.png | 535 KiB | 25088x98 |
+| mods/cameo/bits/d2k/harkonnen_buzzsaw.png | 603 KiB | 25088x98 |
+| mods/cameo/bits/d2k/harkonnen_devastatorturret.png | 917 KiB | 20480x256 |
+| mods/cameo/bits/d2k/harkonnen_devestator.png | 1592 KiB | 25088x98 |
+| mods/cameo/bits/d2k/harkonnen_harvester.png | 1350 KiB | 38400x150 |
+| mods/cameo/bits/d2k/harkonnen_inkvine.png | 587 KiB | 25088x98 |
 | mods/cameo/bits/d2k/ixian_mongoose_atrmongoosespritesheet_256.png | 401 KiB | 13824x84 |
 | mods/cameo/bits/d2k/ixian_promotion_ixrailgundrone_ixrailgun.png | 237 KiB | 9360x130 |
 | mods/cameo/bits/d2k/ixian_promotion_neocymek_ixcymekspritesheet.png | 584 KiB | 16048x126 |
@@ -14,8 +27,10 @@ PNGs scanned: **2006** (over budget: **148**), WAVs scanned: **8780** (non-confo
 | mods/cameo/bits/d2k/ix_raider.png | 355 KiB | 9856x62 |
 | mods/cameo/bits/d2k/ordos_advancedcarryall.png | 399 KiB | 12800x150 |
 | mods/cameo/bits/d2k/ordos_apc.png | 472 KiB | 9216x72 |
+| mods/cameo/bits/d2k/ordos_chemtur.png | 249 KiB | 10880x112 |
 | mods/cameo/bits/d2k/ordos_cobratank.png | 589 KiB | 18200x138 |
 | mods/cameo/bits/d2k/ordos_eyeinthesky.png | 327 KiB | 12800x150 |
+| mods/cameo/bits/d2k/ordos_lasertur.png | 389 KiB | 13056x112 |
 | mods/cameo/bits/d2k/ordos_promotion_banshees.png | 520 KiB | 18560x97 |
 | mods/cameo/bits/d2k/ordos_promotion_contaminator_tleilax_contaminator.png | 408 KiB | 35631x77 |
 | mods/cameo/bits/d2k/ordos_promotion_deviatortank_deviatormk2.png | 508 KiB | 11520x70 |
@@ -28,6 +43,12 @@ PNGs scanned: **2006** (over budget: **148**), WAVs scanned: **8780** (non-confo
 | mods/cameo/bits/d2k/ordos_spiceharvester.png | 982 KiB | 15744x80 |
 | mods/cameo/bits/d2k/ordos_swarmerdrone.png | 184 KiB | 11520x135 |
 | mods/cameo/bits/d2k/ordos_upgrade_antiairtrooper_aatrooper.png | 304 KiB | 20646x44 |
+| mods/cameo/bits/d2k/saudakar_bazooka.png | 347 KiB | 43623x86 |
+| mods/cameo/bits/d2k/saudakar_berserker.png | 357 KiB | 43623x86 |
+| mods/cameo/bits/d2k/saudakar_javelin.png | 283 KiB | 43623x86 |
+| mods/cameo/bits/d2k/saudakar_laser.png | 262 KiB | 43623x86 |
+| mods/cameo/bits/d2k/saudakar_sword.png | 286 KiB | 43623x86 |
+| mods/cameo/bits/d2k/tleilax_facedancer.png | 226 KiB | 43623x86 |
 | mods/cameo/bits/protoss/protoss_adept_adeptspritesheet.png | 466 KiB | 8880x48 |
 | mods/cameo/bits/protoss/protoss_promotion_atreus_scatreuswalk.png | 266 KiB | 9216x68 |
 | mods/cameo/bits/ra/AlliedTankDestroyerH.png | 1326 KiB | 16512x258 |
@@ -162,7 +183,7 @@ PNGs scanned: **2006** (over budget: **148**), WAVs scanned: **8780** (non-confo
 | directory | non-conforming WAVs |
 |---|---|
 | mods/cameo/bits/darkreign | 1726 |
-| mods/cameo/bits/ra2 | 774 |
+| mods/cameo/bits/ra2 | 806 |
 | mods/cameo/bits/generals | 360 |
 | mods/cameo/bits/z | 100 |
 | mods/cameo/bits/classicdoom | 88 |
@@ -216,5 +237,5 @@ PNGs scanned: **2006** (over budget: **148**), WAVs scanned: **8780** (non-confo
 | mods/cameo/bits/aw/AWBazooka3.wav | 1ch/16bit/16364Hz | ffmpeg -i "AWBazooka3.wav" -ac 1 -ar 22050 -acodec pcm_s16le "AWBazooka3.wav" |
 
 
-_Total non-conforming: 3634. A count this large means the RAMpage WAV norm has not yet been applied tree-wide; treat as one batch-conversion task per directory, not per-file bugs._
+_Total non-conforming: 3666. A count this large means the RAMpage WAV norm has not yet been applied tree-wide; treat as one batch-conversion task per directory, not per-file bugs._
 

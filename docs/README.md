@@ -1,5 +1,10 @@
 # Cameo documentation — the map
 
+> ⛔ **START AT [`TASK_INDEX.md`](TASK_INDEX.md).** It routes a task to the document and
+> SECTION it must read, and to the tools that already exist for it. Read it before the list
+> below — the list tells you what to read, the index tells you *when*, and which of it applies
+> to the thing you are about to do. Guarded by `tools/audit/audit_task_index.py`.
+
 **Picking up work? Start at [`HANDOFF.md`](HANDOFF.md).** Everything else is reference.
 
 This file is the **sole reading-order definition** and the map of which document owns which

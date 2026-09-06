@@ -54,12 +54,19 @@ REVIEW_DMG = 8000
 # FIRED by a concrete actor, while this audit scans EVERY concrete weapon
 # (`rs.weapons`), fired or not. Two populations, both correct for their own
 # question — don't reconcile them by changing one.
-BROADCAST_BASELINE = 363
+BROADCAST_BASELINE = 75
 
 # The two former routing-revealed exceptions were consolidated into their
 # selected Flak and Bullet profiles. Keep the registry empty so a future
 # exception must be an explicit reviewed decision rather than inherited debt.
 ROUTING_REVEALED_BROADCASTS = {}
+
+# Exact behavior restoration, not a newly authored broadcast.  PR 287 folded
+# these four profiles and accidentally multiplied Hydralisk's ground damage.
+# (The HydraSpit entry was retired 2026-09-06: after `8748c68e4` it resolves to a
+# single BulletChem main, so the exemption could never fire and would only have
+# masked a future re-broadcast.)
+RESTORED_GAMEPLAY_BROADCASTS = {}
 
 
 def _int(v) -> int:
@@ -98,6 +105,7 @@ def main() -> int:
 
     broadcast_rows = []   # FAIL 1 (uniform main warheads)
     routing_revealed_rows = []  # known composites unmasked by target-route repair
+    restored_gameplay_rows = []  # exact profiles restored to repair regressions
     ff_rows = []          # FAIL 2
     review_rows = []      # informational
 
@@ -121,6 +129,8 @@ def main() -> int:
             fingerprint = tuple(sorted(mains))
             if ROUTING_REVEALED_BROADCASTS.get(wname) == fingerprint:
                 routing_revealed_rows.append(row)
+            elif RESTORED_GAMEPLAY_BROADCASTS.get(wname) == fingerprint:
+                restored_gameplay_rows.append(row)
             else:
                 broadcast_rows.append(row)
 
@@ -155,6 +165,10 @@ def main() -> int:
     out.append(table(["weapon", "mains", "per_warhead", "total"], broadcast_rows[:40]))
     if len(broadcast_rows) > 40:
         out.append(f"\n_... and {len(broadcast_rows) - 40} more._\n")
+
+    out.append(h2(f"Review — exact gameplay restorations ({len(restored_gameplay_rows)})"))
+    out.append(table(
+        ["weapon", "mains", "per_warhead", "total"], restored_gameplay_rows))
 
     out.append(h2(f"Review — routing-revealed composites ({len(routing_revealed_rows)})"))
     out.append(

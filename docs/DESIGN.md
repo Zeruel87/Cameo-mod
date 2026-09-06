@@ -969,6 +969,13 @@ is exactly what it catches.
    together (§ the Cryo ruling: *"an in between blend of HE and AP so it fits with both
    versions"*), so one cell serves both an AP and an HE base weapon.
 3. Always `splice_templates.py --all` — a new cell re-ranks the shield-coupling ladder.
+4. **The generator owns every row it emits** (Claude ruling `47ba8bc25`, the CannonAP
+   REFLECTOR row): a hand-edit to generated output has a countdown on it — the next
+   `splice_templates.py --all` rewrites it. If a cell must differ, the fix belongs in the
+   GENERATOR (spec, composition, or a ruling that changes the formula), never in the file.
+   No `DERIVED_OVERRIDES` table, no composition nudge to force one cell, no ±1 tolerance
+   whitelist — each of those hides real drift. `verify_generator_sync.py` drift is therefore
+   always a generator-side bug or an un-landed splice, never a reason to "fix" the yaml.
 
 ## 12. Balance formula — the Cameo Armor System workbook
 

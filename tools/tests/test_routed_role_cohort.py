@@ -32,7 +32,7 @@ class RoutedRoleCohortTests(unittest.TestCase):
 
     def test_converter_and_closures_are_fully_pinned(self):
         cohort.validate_result()
-        self.assertEqual(21, len(cohort.selections(self.rules)))
+        self.assertEqual(20, len(cohort.selections(self.rules)))
         for root, (_dest, expected, _total, _scale) in cohort.ROOTS.items():
             self.assertEqual(expected, cohort.descendants(self.rules, root), root)
 
@@ -64,10 +64,15 @@ class RoutedRoleCohortTests(unittest.TestCase):
             mains = main_warheads(self.rules.resolve_weapon(name))
             self.assertEqual(cohort.PINNED_AFTER_MAINS[name], set(mains), name)
             self.assertTrue(all(tag.startswith("PreservedFlat_") for tag in mains), name)
+        self.assertEqual(
+            {"MissileAP_MediumFlatCompatibility"},
+            set(main_warheads(self.rules.resolve_weapon(
+                "NaxCorrosionRocketTrooper_elite"))),
+        )
 
     def test_ratchets_match_live_reduction(self):
-        self.assertEqual(667, SPLIT_BASELINE)
-        self.assertEqual(363, BROADCAST_BASELINE)
+        self.assertEqual(114, SPLIT_BASELINE)
+        self.assertEqual(90, BROADCAST_BASELINE)
 
 
 if __name__ == "__main__":

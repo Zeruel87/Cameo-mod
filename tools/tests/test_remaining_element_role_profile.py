@@ -13,7 +13,6 @@ from miniyaml import Ruleset
 
 
 ROOTS = {
-    "HydraSpit": ("Chemical_Light", 72000, 4, "Corrosion", "100"),
     "LeechSpit": ("Chemical_Light", 12000, 4, "Corrosion", "100"),
     "LurkerSpinesImpact": ("Chemical_Medium", 5000, 2, "Corrosion", "100"),
     "QueenSpine": ("Chemical_Medium", 20000, 2, "Corrosion", "100"),

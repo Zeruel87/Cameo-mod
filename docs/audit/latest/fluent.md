@@ -1,13 +1,11 @@
 # audit_fluent — localization drift (B12)
 
-Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orphaned actor-* messages: **526**
+Fluent messages loaded: **5253** — unresolved fluent refs in rules: **0**, orphaned actor-* messages: **527**
 
 
 ## F1 — rules reference fluent keys that don't exist (shows raw key in-game)
 
-| actor | field | missing key |
-|---|---|---|
-| td_nod_upgrade_burninglasers | Buildable.Description | upgrade_burninglasers.description |
+_none found_
 
 
 ## F2 — fluent actor-* messages for actors that no longer exist
@@ -70,6 +68,7 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | actor_d2k_munitions |
 | actor_deso |
 | actor_dest |
+| actor_devastator_husk |
 | actor_disk |
 | actor_dlph |
 | actor_dog |
@@ -547,16 +546,18 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | faction | fluent/total tooltips | coverage |
 |---|---|---|
 | asianalliance | 0/78 | 0% |
+| atreides | 0/32 | 0% |
 | cabal | 0/84 | 0% |
+| corrino | 0/33 | 0% |
 | eden | 0/45 | 0% |
 | forgotten | 78/81 | 96% |
 | futuretech | 0/59 | 0% |
-| harkonnen | 0/41 | 0% |
-| ixian | 0/82 | 0% |
+| harkonnen | 3/61 | 4% |
+| ixian | 0/90 | 0% |
 | japan | 1/76 | 1% |
 | latinsyndicate | 0/71 | 0% |
 | naxis | 0/78 | 0% |
-| ordos | 0/92 | 0% |
+| ordos | 0/100 | 0% |
 | plymouth | 0/46 | 0% |
 | protoss | 0/74 | 0% |
 | ra1_allies | 1/74 | 1% |
@@ -569,10 +570,10 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | td_nod | 3/74 | 4% |
 | terran | 0/79 | 0% |
 | tkm | 1/75 | 1% |
-| ts_gdi | 0/70 | 0% |
+| ts_gdi | 0/69 | 0% |
 | ts_nod | 1/50 | 2% |
-| wc2_humans | 0/71 | 0% |
-| wc2_orcs | 0/62 | 0% |
+| wc2_humans | 0/75 | 0% |
+| wc2_orcs | 0/66 | 0% |
 | yuri | 2/67 | 2% |
 | zerg | 0/77 | 0% |
 

@@ -3,12 +3,13 @@
 
 This is deliberately narrower than choosing a weapon role.  Each selected group
 has the same resolved warhead type and recursively identical fields except for
-``Damage`` and the parked ``PercentageScale`` metadata.  The flat damage is
+``Damage`` and the folded ``PercentageScale`` fields.  The flat damage is
 summed onto one existing semantic key; every other projectile, effect, target,
 relationship, status, and companion warhead remains untouched.
 
-The two Freedom Rocket definitions are excluded because the elite percentage
-arithmetic cannot be folded without unsafe Int32 behavior.  The Syndicate
+The normal Freedom Rocket is handled by a focused converter that reconstructs
+its elite child. The elite remains split because no single scale preserves its
+live percentage result within one HP at every active health value. The Syndicate
 fireball impact is excluded because its otherwise-identical mains each apply a
 physical state, so reducing the number of applications would change behavior.
 """

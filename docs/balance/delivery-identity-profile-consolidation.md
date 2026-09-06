@@ -31,6 +31,6 @@ difference occurs across the 155 active and design health values.
 ## Rejected candidates
 
 The pass leaves split air/ground machine guns, the D2K shotgun inheritance
-branch, anti-tank cannon overflow cases, torpedoes with different target masks,
-and artillery closures with chemical or nuclear descendants unchanged.  Pricing
-and the parked percentage-damage runtime fix remain outside this work.
+branch, anti-tank cannon profile conflicts, torpedoes with different target masks,
+and artillery closures with chemical or nuclear descendants unchanged. Pricing
+and the later percentage-damage runtime activation were outside this earlier batch.

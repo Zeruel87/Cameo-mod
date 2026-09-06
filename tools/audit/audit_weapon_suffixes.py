@@ -89,6 +89,44 @@ NON_WEAPON_MARKER_KEYS = (
 )
 
 
+def find_non_elite_armament_weapons(root: str) -> set:
+    """Weapons referenced by any non-elite Armament block.
+
+    Ruling 2 (Claude-Local, 2026-09-06): a numbered weapon that is a rung on a
+    ladder shared across actors (e.g. AsianRailTank2 is railguntank's ELITE
+    armament AND heavyrailguntank's PRIMARY) cannot take the `_elite` suffix
+    without lying about the actor that fires it as its primary armament. X1
+    therefore exempts an elite-gated weapon that is also referenced by a
+    non-elite armament anywhere.
+    """
+    shared = set()
+    for dirpath, _, filenames in os.walk(root):
+        for fn in filenames:
+            if not fn.endswith(".yaml"):
+                continue
+            fpath = os.path.join(dirpath, fn)
+            try:
+                lines = open(fpath, encoding="utf-8").readlines()
+            except Exception:
+                continue
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                am = re.match(r'^\tArmament(@(\w+))?\s*:', line)
+                if am and 'elite' not in (am.group(2) or '').lower():
+                    j = i + 1
+                    while j < len(lines):
+                        bl = lines[j]
+                        if re.match(r'^\t\S', bl) or re.match(r'^[^\t\s]', bl):
+                            break
+                        wref = re.match(r'^\t\tWeapon:\s*(\S+)', bl)
+                        if wref:
+                            shared.add(wref.group(1))
+                        j += 1
+                i += 1
+    return shared
+
+
 def is_weapon_definition_body(body_lines: list) -> bool:
     """Heuristic: does this top-level YAML block look like a weapon def?"""
     has_weapon_marker = False
@@ -286,6 +324,16 @@ def main() -> int:
     # standalone AA-only weapon (e.g. a SAM Site).
     weapon_targets = parse_weapon_targets(root)
     paired_air_only = find_actor_paired_air_only_weapons(root, weapon_targets)
+    shared_rung_weapons = find_non_elite_armament_weapons(root)
+    # Same ruling, one rung up: a weapon whose numbered siblings are shared
+    # rungs (e.g. LatinMonkeyGrenade3 is only an elite weapon, but Grenade1/2
+    # are the same actor's PRIMARY/SECONDARY) is still a rung of that ladder —
+    # `_elite` would mislabel it identically.
+    shared_rung_families = {
+        re.sub(r'\d+$', '', w) for w in shared_rung_weapons
+        if re.search(r'\d+$', w)
+    }
+    x1_shared_rung = 0  # elite-gated weapons exempt per Ruling 2 (shared rung)
 
     for dirpath, _, filenames in os.walk(root):
         for fn in filenames:
@@ -381,12 +429,25 @@ def main() -> int:
                         wref = re.match(r'^\t\tWeapon:\s*(\S+)', bl)
                         if wref:
                             weapon_ref = wref.group(1)
-                        if 'rank-elite' in bl.lower():
-                            has_rank_elite = True
+                        # RequiresCondition matching: `rank-elite` must appear
+                        # UNnegated — `!rank-elite && upgrade` marks a
+                        # NON-elite (upgrade) armament, not an elite one
+                        # (steelconsortium_megalodon's Armament@ELITE was a
+                        # false positive this way).
+                        for mm in re.finditer(r'rank-elite', bl.lower()):
+                            if mm.start() == 0 or bl.lower()[mm.start() - 1] != '!':
+                                has_rank_elite = True
+                                break
                         j += 1
                     if weapon_ref and has_rank_elite:
                         elite_weapons.add(weapon_ref)
-                        if not weapon_ref.endswith('_elite'):
+                        if weapon_ref.endswith('_elite'):
+                            pass
+                        elif (weapon_ref in shared_rung_weapons
+                              or re.sub(r'\d+$', '', weapon_ref) in shared_rung_families
+                              and re.search(r'\d+$', weapon_ref)):
+                            x1_shared_rung += 1
+                        else:
                             actor_name = "?"
                             for k in range(i - 1, -1, -1):
                                 actm = re.match(r'^(\S+):', lines[k])
@@ -404,7 +465,8 @@ def main() -> int:
     #  some elite weapons may be defined after their armament ref)
 
     print("# Weapon suffix audit (DESIGN.md §1)\n")
-    print(f"X1 elite weapons not ending _elite: **{len(x1_rows)}**")
+    print(f"X1 elite weapons not ending _elite: **{len(x1_rows)}**"
+          f" (+{x1_shared_rung} exempt shared-rung weapons, Ruling 2)")
     print(f"X2 EMP weapons not ending _EMP: **{len(x2_rows)}**")
     print(f"X3 AA weapons not ending _AA: **{len(x3_rows)}**")
     print(f"X4 deprecated E suffix (informational): **{len(x4_rows)}**")

@@ -108,12 +108,12 @@ class SameFamilyStackConsolidationTests(unittest.TestCase):
                 })
                 self.assertEqual(expected, profile, weapon)
 
-    def test_overflow_and_target_contract_hazards_remain_deferred(self):
+    def test_role_and_target_contract_hazards_remain_deferred(self):
         deferred = {
             "RA220mmrapid", "CabalCyborgChaingun", "TSDevoutChainguns",
             "CommandoRocketLauncher", "RocketsRA", "SheridanMissiles",
             "CabalRocketCyborgRockets", "CabalRocketCyborgRocketsUpgraded",
-            "TSBikeMissile", "AsianHowitzerCannon", "TigerCannon",
+            "TSBikeMissile", "TigerCannon",
             "Type97Cannon", "TSZoneHellfireSonic",
         }
         selected = set(bullets.ROOT_CLOSURES) | set(adjacent.SPECS)

@@ -7,7 +7,14 @@ check the artifact itself — grep the data, `ls` the file (incl. `~/Downloads`)
 boot-gate the tree. When a summary (ROADMAP line, handoff, memory, status table) disagrees with
 the artifact, **the artifact wins — then fix the stale summary.**
 
-**Must-read, in order:** this file → `docs/LESSONS_LEARNED.md` → `docs/AGENT_WORKSPACE.md` →
+**⛔ BEFORE STARTING ANY TASK: open `docs/TASK_INDEX.md` and find your task's row.** It names
+the document AND SECTION to read first, and the tools that ALREADY EXIST for that task. It is
+the standing defence against duplicate work — a spec was written for a resolver check that
+exists twice, a virtual-anchor mechanism was re-designed when `fit_class.py --spec` already
+implements it, and a whole session once re-derived a weapon-tier model DESIGN.md had shipped.
+Guarded by `tools/audit/audit_task_index.py`.
+
+**Must-read, in order:** this file → `docs/TASK_INDEX.md` → `docs/LESSONS_LEARNED.md` → `docs/AGENT_WORKSPACE.md` →
 **`docs/HANDOFF.md`** (the entry point: verified current state + the priority-ordered queue;
 it supersedes every dated handoff) → `docs/DESIGN.md` → `docs/design/ROADMAP.md` →
 `docs/audit/SUMMARY.md`. `docs/README.md` is the canonical definition of that order — if any

@@ -2820,8 +2820,8 @@ ra_upgrade_autoloaders =
 ra_upgrade_hazmatsuits =
    .description = Hazmat Suits
 
-ra_upgrade_highexplosiverockets =
-   .description = High Explosive Rockets
+ra_upgrade_thermobaricrockets =
+   .description = Thermobaric Rockets
 
 ra_upgrade_incendiarybullets =
    .description = Incendiary Bullets
@@ -2864,3 +2864,6 @@ ra_upgrade_vengeance =
 
 ra_upgrade_wareconomy =
    .description = War Economy
+
+upgrade_burninglasers =
+   .description = Replaces Nod laser weapons with burning inferno variants, increasing damage and igniting targets.

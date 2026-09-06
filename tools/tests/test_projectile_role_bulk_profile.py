@@ -53,7 +53,7 @@ class ProjectileRoleBulkProfileTests(unittest.TestCase):
     def setUpClass(cls):
         cls.rules = Ruleset(ROOT)
 
-    def test_roots_have_one_standard_flat_destination_and_parked_percentages(self):
+    def test_roots_have_one_standard_flat_destination_and_standalone_percentages(self):
         for name, (family, damage, percentage_count) in ROOTS.items():
             weapon = self.rules.resolve_weapon(name)
             main = child(weapon, f"Warhead@{family}")

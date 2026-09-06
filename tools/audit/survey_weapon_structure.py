@@ -26,9 +26,16 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / "docs" / "audit" / "latest" / "weapon_structure_inventory.json"
+# One reviewed reachable stack was restored for Hydralisk gameplay correctness.
+RAW_REACHABLE_BASELINE = 240
+RAW_REACHABLE_EXCESS_BASELINE = 452
 sys.path.insert(0, str(ROOT / "tools" / "audit"))
 
-from audit_three_way_split import main_warhead_nodes, main_warheads  # noqa: E402
+from audit_three_way_split import (  # noqa: E402
+    main_warhead_nodes,
+    main_warheads,
+    validated_reviewed_predicate,
+)
 from miniyaml import Ruleset  # noqa: E402
 
 
@@ -120,7 +127,10 @@ def weapon_reference_sets(rules: Ruleset, concrete: set[str]) -> tuple[set[str],
     return direct_refs, reachable
 
 
-def inventory(rules: Ruleset) -> dict[str, object]:
+def inventory(rules: Ruleset, reviewed_predicate=None) -> dict[str, object]:
+    if reviewed_predicate is None:
+        reviewed_predicate = validated_reviewed_predicate(
+            rules, main_warhead_nodes)
     concrete = {
         name for name in rules.weapons
         if not name.startswith("^") and rules.resolve_weapon(name) is not None
@@ -128,6 +138,10 @@ def inventory(rules: Ruleset) -> dict[str, object]:
     violations = {
         name for name in concrete
         if len(main_warheads(rules.resolve_weapon(name))) > 1
+    }
+    reviewed_violations = {
+        name for name in violations
+        if reviewed_predicate(name, main_warheads(rules.resolve_weapon(name)))
     }
     direct_refs, reachable = weapon_reference_sets(rules, concrete)
 
@@ -140,8 +154,17 @@ def inventory(rules: Ruleset) -> dict[str, object]:
     transitive = violations & reachable
     indirect = transitive - direct
     unreached = violations - transitive
+    reviewed_direct = direct & reviewed_violations
+    reviewed_indirect = indirect & reviewed_violations
+    reviewed_unreached = unreached & reviewed_violations
+    unreviewed_direct = direct - reviewed_direct
+    unreviewed_indirect = indirect - reviewed_indirect
+    unreviewed_unreached = unreached - reviewed_unreached
     assert violations == direct | indirect | unreached
     assert not (direct & indirect or direct & unreached or indirect & unreached)
+
+    def excess(names):
+        return sum(max(0, main_counts[name] - 1) for name in names)
 
     return {
         "predicate": (
@@ -157,24 +180,68 @@ def inventory(rules: Ruleset) -> dict[str, object]:
             "stacked_main_indirect_weapon_graph": len(indirect),
             "stacked_main_transitive_weapon_graph": len(transitive),
             "stacked_main_unreached": len(unreached),
+            "reviewed_stacked_main_all_concrete": len(reviewed_violations),
+            "reviewed_stacked_main_direct_actor_armament": len(reviewed_direct),
+            "reviewed_stacked_main_indirect_weapon_graph": len(reviewed_indirect),
+            "reviewed_stacked_main_transitive_weapon_graph": (
+                len(reviewed_direct | reviewed_indirect)),
+            "reviewed_stacked_main_unreached": len(reviewed_unreached),
+            "unreviewed_stacked_main_all_concrete": (
+                len(violations - reviewed_violations)),
+            "unreviewed_stacked_main_direct_actor_armament": len(unreviewed_direct),
+            "unreviewed_stacked_main_indirect_weapon_graph": len(unreviewed_indirect),
+            "unreviewed_stacked_main_transitive_weapon_graph": (
+                len(unreviewed_direct | unreviewed_indirect)),
+            "unreviewed_stacked_main_unreached": len(unreviewed_unreached),
             "main_warhead_instances_all_concrete": sum(main_counts.values()),
-            "excess_main_warhead_instances_all_concrete": sum(
-                max(0, count - 1) for count in main_counts.values()),
+            "excess_main_warhead_instances_all_concrete": excess(concrete),
             "main_warhead_instances_transitive_weapon_graph": sum(
                 main_counts[name] for name in reachable),
-            "excess_main_warhead_instances_transitive_weapon_graph": sum(
-                max(0, main_counts[name] - 1) for name in reachable),
+            "excess_main_warhead_instances_transitive_weapon_graph": excess(reachable),
+            "excess_main_warhead_instances_direct_actor_armament": excess(direct_refs),
+            "excess_main_warhead_instances_indirect_weapon_graph": excess(
+                reachable - direct_refs),
+            "excess_main_warhead_instances_unreached": excess(concrete - reachable),
+            "reviewed_excess_main_warhead_instances_all_concrete": excess(
+                reviewed_violations),
+            "reviewed_excess_main_warhead_instances_transitive_weapon_graph": excess(
+                reviewed_direct | reviewed_indirect),
+            "unreviewed_excess_main_warhead_instances_all_concrete": excess(
+                violations - reviewed_violations),
+            "unreviewed_excess_main_warhead_instances_transitive_weapon_graph": excess(
+                unreviewed_direct | unreviewed_indirect),
         },
         "sets": {
             "direct_actor_armament": sorted(direct),
             "indirect_weapon_graph": sorted(indirect),
             "unreached": sorted(unreached),
+            "reviewed_direct_actor_armament": sorted(reviewed_direct),
+            "reviewed_indirect_weapon_graph": sorted(reviewed_indirect),
+            "reviewed_unreached": sorted(reviewed_unreached),
+            "unreviewed_direct_actor_armament": sorted(unreviewed_direct),
+            "unreviewed_indirect_weapon_graph": sorted(unreviewed_indirect),
+            "unreviewed_unreached": sorted(unreviewed_unreached),
         },
     }
 
 
 def serialized(data: dict[str, object]) -> str:
     return json.dumps(data, indent=2, sort_keys=True) + "\n"
+
+
+def ratchet_errors(data: dict[str, object]) -> list[str]:
+    counts = data["counts"]
+    errors = []
+    actual = counts["stacked_main_transitive_weapon_graph"]
+    if actual > RAW_REACHABLE_BASELINE:
+        errors.append(
+            f"raw reachable stacks increased: {actual}/{RAW_REACHABLE_BASELINE}")
+    excess = counts["excess_main_warhead_instances_transitive_weapon_graph"]
+    if excess > RAW_REACHABLE_EXCESS_BASELINE:
+        errors.append(
+            "raw reachable excess mains increased: "
+            f"{excess}/{RAW_REACHABLE_EXCESS_BASELINE}")
+    return errors
 
 
 def main() -> int:
@@ -185,6 +252,12 @@ def main() -> int:
     args = parser.parse_args()
 
     data = inventory(Ruleset(ROOT))
+    errors = ratchet_errors(data)
+    if errors:
+        print("FAIL weapon structure ratchets")
+        for error in errors:
+            print(f"- {error}")
+        return 1
     text = serialized(data)
     if args.write:
         OUT.parent.mkdir(parents=True, exist_ok=True)

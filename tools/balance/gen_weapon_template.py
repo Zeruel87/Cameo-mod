@@ -26,6 +26,7 @@ Usage:  gen_weapon_template.py [family ...] | --list | --orders
 """
 from __future__ import annotations
 import json
+import os
 import math
 import pathlib
 import statistics
@@ -265,7 +266,7 @@ PHYSICS_RANK = {
     # blended energy — part field-coupling, part thermal
     "Waveforce": 0.70, "Plasma": 0.68,
     # exotic / field-adjacent
-    "Sonic": 0.60, "Magic": 0.58, "Inferno": 0.57, "Nuclear": 0.56, "MissileQuantum": 0.57, "MissileTesla": 0.66,
+    "Sonic": 0.60, "Magic": 0.58, "Inferno": 0.57, "Nuclear": 0.56, "MissileQuantum": 0.57, "MissileTesla": 0.66, "CannonTesla": 0.66,
     # Inferno = Flame×Prism heatray: thermo-led but still some field-coupling.
     # thermal / chemical — a shield stops heat and reagents well; little field coupling
     "CannonFire": 0.52, "MissileFire": 0.52, "Flame": 0.50, "CannonChem": 0.50, "CannonNuke": 0.45, "MissileNuke": 0.44,
@@ -968,6 +969,128 @@ def class_tilt(rows, level):
     return [(a, out[a]) for a, _ in rows]
 
 
+# --------------------------------------------------------------------------- #
+# §12.0i — THE CONTINUOUS-HEAVINESS BELL (maintainer 2026-08-23/24)
+# --------------------------------------------------------------------------- #
+# The continuous successor to `class_tilt` above. DESIGN §12.0i is binding and holds the
+# derivation; this is the implementation, and it is OFF until the maintainer authorises the
+# regeneration (rule 4 — a warhead's Versus may not change without explicit permission).
+#
+#     x(armor)      = ONE GLOBAL 13-slot scale, 0..2, step 1/6
+#     mu(family, h) = ( h + centre_of_mass(base_profile) ) / 2
+#     curve(x)      = BELL_LO + (1 - BELL_LO) * exp( -(x - mu)^2 / (2 * BELL_SIGMA^2) )
+#     out(a)        = base(a) * curve(x(a))   then renormalised, then RANK-RESTORED per ladder
+#
+# ⭐ EVERY LADDER IS CENTRED EXACTLY ON 1.000 — VEH width 2.000, INF 1.667, AIR 1.333,
+# BLD 0.667 — so h = 0 / 1 / 2 is the lightest / middle / heaviest rung of every ladder at
+# once, which is what makes this a drop-in successor to `tilt_exponent`'s ramp/tent.
+#
+# ⛔ THE THREE-WAY TIE AT 1.0 IS DELIBERATE AND IS THE ONLY TIE. Flak, Medium and Steel sit
+# in three DIFFERENT ladders, and the rank restore is per-ladder, so they are never in
+# competition: de-tying them moves no row by more than 0.89%. A tie WITHIN one ladder stays
+# forbidden — that was the retired bucket axis, where Bomber and Helicopter shared a
+# coordinate and heaviness could not tell them apart at all.
+BELL_AXIS_ORDER = [["Scout"], ["None"], ["Fighter"], ["Light"], ["Wood"], ["Bomber"],
+                   ["Medium", "Flak", "Steel"],
+                   ["Helicopter"], ["Concrete"], ["Heavy"], ["Spaceship"], ["Plate"],
+                   ["Superheavy"]]
+BELL_AXIS = {a: i * 2.0 / (len(BELL_AXIS_ORDER) - 1)
+             for i, slot in enumerate(BELL_AXIS_ORDER) for a in slot}
+# `LO` = 1/TILT_RATIO on purpose: the bell must span the SAME 1.5x the discrete tilt already
+# spans, or collapsing three templates into one flattens the game. 0.80 was ruled on
+# 2026-08-23 against a peak that moved only 0.25 and was re-ruled on 2026-08-24.
+BELL_LO = 1.0 / TILT_RATIO
+BELL_SIGMA = 0.75
+# Which `h` each discrete level maps to, so the bell can reproduce today's templates.
+# `Trace` tilts with Light exactly as `tilt_exponent` has it. ⚠ `Super` is NOT a point on the
+# bell: §12.0d makes it the FLAT generalist, which no value of `h` produces — it keeps
+# `class_tilt`'s SUPER_RATIO compression instead.
+BELL_H = {"Light": 0.0, "Trace": 0.0, "Medium": 1.0, "Heavy": 2.0}
+
+
+def bell_centre_of_mass(vals):
+    """Where on the 0..2 axis a profile's strength sits, weighted by its own Versus."""
+    pairs = [(BELL_AXIS[a], v) for a, v in vals.items() if a in BELL_AXIS and v > 0]
+    total = sum(v for _x, v in pairs)
+    return sum(x * v for x, v in pairs) / total if total else None
+
+
+def heaviness_bell(rows, level):
+    """`class_tilt`'s continuous successor. Same signature, same guarantees.
+
+    Identical in every structural respect: the derived armors are excluded, `Super` is
+    flattened rather than tilted, each ladder's rank is restored afterwards, and `Heroic` /
+    `Airborne` are re-derived LAST from the finished profile.
+    """
+    vals = dict(rows)
+    live = [v for a, v in rows if a not in NON_ARMOR_ROWS]
+    if not live or max(live) <= min(live):
+        return rows          # Sonic / Magic are flat BY DESIGN; a bell would destroy that
+    out = dict(vals)
+
+    h = BELL_H.get(level)
+    if h is not None:
+        tiltable = {a: v for a, v in vals.items()
+                    if a in BELL_AXIS and a not in DERIVED_ARMORS}
+        com = bell_centre_of_mass(tiltable)
+        if com is not None:
+            mu = (h + com) / 2.0
+            belled = {a: v * (BELL_LO + (1 - BELL_LO)
+                              * math.exp(-((BELL_AXIS[a] - mu) ** 2) / (2 * BELL_SIGMA ** 2)))
+                      for a, v in tiltable.items()}
+            # Renormalise so heaviness redistributes and never inflates (§12.0i law 2). The
+            # mean is re-pinned by `mean_normalise` later, but doing it here keeps the
+            # rank-restore step reading comparable magnitudes.
+            before = statistics.fmean(tiltable.values())
+            after = statistics.fmean(belled.values())
+            if after > 0:
+                belled = {a: v * before / after for a, v in belled.items()}
+            # ⛔ THE RANK RESTORE (§12.0d, §12.0i law 5) — give each armor back the rank it
+            # held. Without it the bell changes a ladder's internal order in 127 cases across
+            # 60 family/ladder pairs; with it, zero. It permutes values inside one ladder, so
+            # the multiset and therefore the mean are untouched.
+            for ladder in LADDERS.values():
+                rungs = [a for a in ladder if a in belled]
+                if len(rungs) < 2:
+                    continue
+                order = sorted(range(len(rungs)), key=lambda i: (-vals[rungs[i]], i))
+                ranked = sorted((belled[a] for a in rungs), reverse=True)
+                for slot, i in enumerate(order):
+                    out[rungs[i]] = ranked[slot]
+
+    if level == "Super":
+        # The generalist: compress toward the band's flat end about the geometric mean.
+        # Unchanged from `class_tilt` — no `h` makes a bell flat.
+        body = [v for a, v in out.items() if a not in NON_ARMOR_ROWS and v > 0]
+        lo, hi = min(body), max(body)
+        if lo > 0 and hi / lo > SUPER_RATIO:
+            g = statistics.geometric_mean(body)
+            alpha = math.log(SUPER_RATIO) / math.log(hi / lo)
+            out = {a: (v if a in NON_ARMOR_ROWS else g * (max(v, 1.0) / g) ** alpha)
+                   for a, v in out.items()}
+
+    # Re-derive the products LAST, from the finished profile (§12.0b).
+    peak = max(v for a, v in out.items()
+               if a not in NON_ARMOR_ROWS and a not in DERIVED_ARMORS)
+    for name, (first, second) in (("Heroic", ("Plate", "Scout")),
+                                  ("Airborne", ("Helicopter", "Scout"))):
+        if name in out and first in out and second in out and peak > 0:
+            out[name] = out[first] * out[second] / peak
+    return [(a, out[a]) for a, _ in rows]
+
+
+# ⚠ OFF BY DEFAULT, and it must stay off until the maintainer authorises the regeneration:
+# switching it rewrites the `Versus` of every `^Warhead_*` template, which CLAUDE.md rule 4
+# forbids without explicit permission. `tools/balance/preview_bell.py` measures exactly what
+# would change without writing a byte of yaml.
+USE_BELL = os.environ.get("CAMEO_HEAVINESS_BELL") == "1"
+
+
+def level_tilt(rows, level):
+    """The single call site's entry point: the ruled bell, or today's discrete tilt."""
+    return heaviness_bell(rows, level) if USE_BELL else class_tilt(rows, level)
+
+
 def _powerlaw(vals, alpha):
     g = statistics.geometric_mean([max(v, 1.0) for v in vals])
     return [g * (max(v, 1.0) / g) ** alpha for v in vals]
@@ -1355,7 +1478,7 @@ def family(name, order16, vt, levels, *, mode=None, damage=2000,
         # W25 S2 — the class tilt, BEFORE the mean is pinned: the tilt moves output between
         # armors and would otherwise leave the mean off 100. Order-preserving by
         # construction (see class_tilt), so the two-level ordering law is untouched.
-        main = class_tilt(main, level)
+        main = level_tilt(main, level)
         # DESIGN 12.0 rule 5 — the 2x band floor, applied to EVERY family and AFTER the tilt.
         # See fit_band_floor: the blend-only copy inside finish_blend missed CannonAP entirely
         # and let the tilt undo it for Cryo.
@@ -1728,6 +1851,7 @@ FAMILY_INTEGRITY_SCALE = {
     "Storm": 50,                          # Tesla+Magic -> 1/2
     "Quantum": 33,                        # Railgun+Laser+Tesla -> 1/3
     "MissileTesla": 50,                   # Tesla + MissileAP -> 1/2
+    "CannonTesla": 50,                    # Tesla + CannonAP -> 1/2
     "BulletTesla": 50,                    # Tesla + Bullet -> 1/2
     "MissileQuantum": 17,                 # (Railgun+Laser+Tesla) + 3xMissileAP -> 1/6 Tesla
     # ⚠ `Waveforce: 20` DELETED 2026-08-16 (maintainer order) — it could never fire.
@@ -1762,6 +1886,7 @@ FAMILY_DAMAGE_TYPES = {
     "CannonFire":    "Prone75Percent, TriggerProne, FireDeath, Incendiary",
     "MissileFire":    "Prone75Percent, TriggerProne, FireDeath, Incendiary",
     "MissileTesla":   "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
+    "CannonTesla":   "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
     "BulletFire":     "Prone75Percent, TriggerProne, FireDeath, Incendiary",
     "BulletThermobaric": "Prone75Percent, TriggerProne, FireDeath, Incendiary",
     "BulletTesla":    "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
@@ -1769,6 +1894,7 @@ FAMILY_DAMAGE_TYPES = {
     "MissileThermobaric": "Prone75Percent, TriggerProne, FireDeath, Incendiary",
     "CannonChem": "Prone75Percent, TriggerProne, TiberiumDeath",
     "MissileChem":"Prone75Percent, TriggerProne, TiberiumDeath",
+    "BulletChem": "Prone75Percent, TriggerProne, TiberiumDeath",
     # Storm is handled at its own call site (Prone100Percent + Tesla).
 }
 
@@ -1875,6 +2001,21 @@ BLEND_FAMILIES = {
     "BulletThermobaric": (["Bullet", "Bullet", "Bullet", "Demolition", "Concussion", "Flame"],
                           {"Temperature": _m(1 / 6)}, L3),
     "BulletTesla": (["Bullet", "Tesla"],      None, L3),
+    # BulletChem = Bullet x Chemical (maintainer 2026-09-02, for the Hydralisk W24 collapse):
+    # "a new BulletChem that is like Bullet x Chemical so it's more similar to what it was
+    # before but more damage against infantry and aircraft with a little bit damage against
+    # tanks from the chemical side". It is the BULLET delivery member of the element+delivery
+    # Chem set, alongside CannonChem and MissileChem, and it exists because HydraSpit stacked
+    # ^SmallArms (Bullet) + ^LightChemicalWeapon + ^LightMissile + ^ArrowWeapon: no single
+    # existing family reproduces a corrosive small-arms round, so collapsing it to plain
+    # Chemical moved every ground matchup (see docs/design/W24_COLLAPSE_REVIEW.md).
+    # Corrosion follows the CHEM convention, not the Bullet-blend one. CannonChem and
+    # MissileChem ramp {Light 20, Medium 33, Heavy 50}; the Bullet blends use the flat
+    # per-parent average _m(0.50) = 50. The two AGREE at Heavy (Chemical 100 over 2
+    # parents), so the ramp is the same rule with a level curve, and being the third member
+    # of the Chem set outranks being the fifth member of the Bullet set.
+    "BulletChem":  (["Bullet", "Chemical"],
+                    {"Corrosion": {"Light": 20, "Medium": 33, "Heavy": 50}}, L3),
     "Waveforce": (["Flame", "Chemical", "Railgun", "Laser", "Tesla"],
                   {"Temperature": _m(0.35), "Corrosion": _m(0.20)}, L3),
     # PhotonCannon = the maintainer's 3-way — Waveforce 25% / CannonHE 25% / MissileAA 50% — and
@@ -1915,6 +2056,7 @@ BLEND_FAMILIES = {
     "MissileNuke":  (["Nuclear", "MissileAP"], {}, L3),
     # Tesla/Quantum thermobaric missile blends (A1b). Expanded to primitives for the generator.
     "MissileTesla":   (["Tesla", "MissileAP"], {}, L3),
+    "CannonTesla":    (["Tesla", "CannonAP"], {}, L3),
     "MissileQuantum": (["Railgun", "Laser", "Tesla"] + ["MissileAP"] * 3, {"Temperature": _m(0.125)}, L3),
     "MissileThermobaric": (["Demolition", "Concussion", "Flame"] + ["MissileHE"] * 3, {"Temperature": _m(0.17)}, L3),
     "Cryo": (["Laser", "Prism"], {}, L3),

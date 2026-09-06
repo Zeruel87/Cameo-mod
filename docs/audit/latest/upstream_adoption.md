@@ -1,6 +1,6 @@
 # audit_upstream_adoption — upstream mod types Cameo already has, and what is new
 
-Cameo resolves **1101** yaml-visible type names across 7 assemblies.
+Cameo resolves **1103** yaml-visible type names across 7 assemblies.
 
 | mod | types | already in Cameo | same mechanic, other name | candidates | of the candidates |
 |---|--:|--:|--:|--:|---|

@@ -26,4 +26,5 @@ design health values (160 and 250 HP), this changes 4 to 6 HP and 8 to 10 HP;
 all other 153 audited health values match. This bounded difference is accepted
 for the clean ground/air role split.
 
-Pricing and the parked percentage-damage runtime fix remain outside this work.
+Pricing and the later percentage-damage runtime activation were outside this
+earlier batch.

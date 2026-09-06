@@ -6,9 +6,9 @@ Cameo currently has two independent percentage-damage shapes:
 * a standalone ``AreaDamagePercentage`` / ``HealthPercentageDamage`` warhead;
 * a folded second hit on an ``AreaDamage`` warhead with ``PercentageScale``.
 
-The folded hit is authored on many direct-Actor weapons, but the current
-``AreaDamageWarhead.DoImpact`` path skips it for those impacts. Callers classify
-the projectile and remove that non-executed application from runtime totals.
+The folded hit runs for both positional and direct-Actor impacts. Positional
+impacts apply its smaller authored radius; direct hits bypass area geometry and
+apply it once to the struck actor.
 
 The distinction is load-bearing for pricing.  A standalone warhead is an
 absolute contribution at the reference target HP and therefore creates a DPS
@@ -16,8 +16,9 @@ floor.  Folded damage is derived from that warhead's own flat ``Damage`` and
 falls to zero with it, so it belongs to the scalable coefficient instead.
 
 This module mirrors the arithmetic in the current ``AreaDamageWarhead.cs`` and
-``AreaDamagePercentageWarhead.cs``, including their legacy Int32 overflow
-behavior.  It deliberately knows nothing about target density or projectile
+``AreaDamagePercentageWarhead.cs``. Authored fields and final damage remain
+Int32, while intermediate products use Int64 to prevent wraparound. It
+deliberately knows nothing about target density or projectile
 reliability; callers layer those concerns on top of the same runtime
 applications returned here.
 """
@@ -50,9 +51,11 @@ def _truncate_div(numerator: int, denominator: int) -> int:
     return -magnitude if (numerator < 0) != (denominator < 0) else magnitude
 
 
-def _unchecked_int32(value: int) -> int:
-    """Wrap like an unchecked C# Int32 arithmetic expression."""
-    return (value - INT32_MIN) % (2 ** 32) + INT32_MIN
+def _runtime_int32(value: int) -> int:
+    """Validate an engine Int32 result after wide intermediate arithmetic."""
+    if value < INT32_MIN or value > INT32_MAX:
+        raise OverflowError("percentage damage exceeds the runtime Int32 result")
+    return value
 
 
 def versus_table(node, field: str = "Versus") -> dict[str, int]:
@@ -71,26 +74,23 @@ def folded_units(damage: int, scale: int) -> tuple[float, int]:
     """Continuous and engine-rounded percentage units for one folded hit.
 
     The engine expression is ``(Damage * PercentageScale + 100000) / 200000``
-    using unchecked Int32 multiplication/addition and integer division.  The
+    using an Int64 intermediate and integer division. The
     continuous wide value is kept separately because it is the scalable design
-    coefficient; the difference to the runtime value is a current-shot residual.
-    Normally that residual is only quantisation, but an overflowing authored
-    product can make it large and non-linear.
+    coefficient; the difference to the runtime value is a quantisation residual.
     """
     continuous = damage * scale / FOLDED_SCALE_DENOMINATOR
-    numerator = _unchecked_int32(
-        _unchecked_int32(damage * scale) + FOLDED_ROUNDING_BIAS)
-    rounded = _truncate_div(numerator, FOLDED_SCALE_DENOMINATOR)
+    numerator = damage * scale + FOLDED_ROUNDING_BIAS
+    rounded = _runtime_int32(
+        _truncate_div(numerator, FOLDED_SCALE_DENOMINATOR))
     return continuous, rounded
 
 
 def runtime_percentage_hp(reference_hp: float, units: int, denominator: int) -> int:
-    """Neutral-armor HP damage with the current C# truncation/overflow path."""
+    """Neutral-armor HP damage with the current C# wide-intermediate path."""
     hp = int(reference_hp)
     after_units = _truncate_div(hp * units, 100)
-    if after_units < INT32_MIN or after_units > INT32_MAX:
-        raise OverflowError("percentage modifiers exceed the runtime Int32 result")
-    return _truncate_div(_unchecked_int32(after_units * 100), denominator)
+    after_units = _runtime_int32(after_units)
+    return _runtime_int32(_truncate_div(after_units * 100, denominator))
 
 
 def percentage_applications(resolved, reference_hp: float) -> list[dict]:
@@ -142,7 +142,6 @@ def percentage_applications(resolved, reference_hp: float) -> list[dict]:
                 "continuous_hp": continuous_hp,
                 "runtime_hp": runtime_hp,
                 "rounding_hp": runtime_hp - continuous_hp,
-                "runtime_overflow": _unchecked_int32(damage * scale) != damage * scale,
                 "versus": pct_versus or versus_table(node),
                 "percentage_spread": percentage_spread,
             })

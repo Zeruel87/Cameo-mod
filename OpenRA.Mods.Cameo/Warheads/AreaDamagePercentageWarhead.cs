@@ -34,7 +34,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 			"exactly instead of rounding: on the 100-damage grid one flat step is worth",
 			"exactly one basis point (100 flat damage = 0.01% of max health), and the",
 			"percentage warhead's Versus values move in clean steps of 5.")]
-		public readonly int PercentageDenominator = 100;
+		public new readonly int PercentageDenominator = 100;
 
 		// Extends the BASE class's validation through its hook. Implementing
 		// IRulesetLoaded<WeaponInfo> here instead would REPLACE the base's explicit
@@ -45,9 +45,13 @@ namespace OpenRA.Mods.Cameo.Warheads
 			if (PercentageDenominator <= 0)
 				throw new YamlException("PercentageDenominator must be positive: 100 = Damage is "
 					+ "a whole percent of max health, 10000 = basis points (0.01% steps).");
+
+			if (PercentageScale > 0)
+				throw new YamlException("AreaDamagePercentage cannot also set PercentageScale: "
+					+ "this would apply two percentage hits from one warhead.");
 		}
 
-		protected override void InflictDamage(Actor victim, Actor firedBy, HitShape shape, WarheadArgs args)
+		protected override void InflictPrimaryDamage(Actor victim, Actor firedBy, HitShape shape, WarheadArgs args)
 		{
 			var healthInfo = victim.Info.TraitInfo<HealthInfo>();
 			var damage = Util.ApplyPercentageModifiers(healthInfo.HP, args.DamageModifiers.Append(Damage, DamageVersus(victim, shape, args)));
@@ -55,8 +59,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 			// ApplyPercentageModifiers already divided by 100 for the Damage modifier, so a
 			// finer unit only needs the remaining factor. Applied LAST, on the largest
 			// intermediate, so the extra division costs the least precision.
-			if (PercentageDenominator != 100)
-				damage = damage * 100 / PercentageDenominator;
+			damage = ApplyPercentageDenominator(damage, PercentageDenominator);
 			victim.InflictDamage(firedBy, new Damage(damage, DamageTypes, GetProjectileType(args)));
 			ApplyPhysicalState(victim, firedBy, damage);
 			ApplyIntegrityScale(victim, firedBy, damage);
