@@ -184,6 +184,48 @@ def shape_similarity(a, b):
     return 1.0 - sum(abs(x - y) for x, y in pairs) / len(pairs)
 
 
+# ⛔ ORIGINALS OUTRANK VARIANTS (maintainer 2026-09-07). Cameo ships more units than the source
+# games do: `ra1_soviets_sovietmammothtank` is RA1's Mammoth, and `ra1_soviets_siegemammothtank`
+# is a Cameo ADD-ON built on top of it. Both normalise to something CONTAINING "mammothtank", so
+# both land in the same name bucket and the reference went to whichever won on role/cost — which
+# was the add-on. The original is the unit the reference IS; the add-on is a unit the reference
+# is merely related to, and it must find its own counterpart (Combined Arms fields an Apocalypse
+# and an Overlord for exactly this reason) or be placed by rank.
+#
+# A FACTION word is not a variant: `soviet`/`allied`/`gdi` only say whose Mammoth it is.
+FACTION_WORDS = frozenset((
+    "soviet", "soviets", "allied", "allies", "gdi", "nod", "japanese", "japan", "german",
+    "germany", "russian", "russia", "french", "france", "american", "america", "usa", "asian",
+    "latin", "british", "england",
+))
+
+# A VARIANT word marks a unit the original game did not ship.
+VARIANT_WORDS = frozenset((
+    "mkii", "mkiii", "mk2", "mk3", "siege", "heavy", "light", "assault", "advanced", "elite",
+    "super", "nuclear", "atomic", "tesla", "laser", "chemical", "flame", "stealth", "sonic",
+    "railgun", "rail", "plasma", "cryo", "emp", "veteran", "prototype", "improved", "upgraded",
+    "armored", "twin", "multi", "quantum", "hover",
+))
+
+
+def variant_rank(cameo_id, peer_name):
+    """1 when the actor is the plain original, 0 when it carries a variant modifier.
+
+    Only consulted when the reference name is a SUBSTRING of the actor's — i.e. when two Cameo
+    actors are genuinely competing for the same counterpart. It never suppresses a variant that
+    has no competition; it only decides who wins the contest.
+    """
+    tail = syn.norm(cameo_id.split("_")[-1])
+    peer = syn.norm(peer_name)
+    if not peer or peer not in tail:
+        return 1
+    residue = tail.replace(peer, "")
+    for w in VARIANT_WORDS:
+        if w in residue and w not in FACTION_WORDS:
+            return 0
+    return 1
+
+
 def score(cam, rec, peer, cam_cost_pct, peer_cost_pct, home, cam_shape=None, peer_shape=None):
     """The LEXICOGRAPHIC cascade (maintainer: name, then tech tier, then type, then role, then cost).
 
@@ -197,8 +239,16 @@ def score(cam, rec, peer, cam_cost_pct, peer_cost_pct, home, cam_shape=None, pee
     """
     if cam["type"] != peer["type"]:
         return None                                   # cross-type is refused (§9 cross-type ruling)
-    if peer.get("w_damage") is not None and not peer["w_damage"] and is_armed(rec):
-        return None                                   # clause 5: zero damage never matches a combat unit
+    # ⛔ CLAUSE 5, AND *MISSING* DAMAGE COUNTS AS UNARMED. The old guard read
+    # `w_damage is not None and not w_damage`, which fires only on an explicit zero — so a row
+    # that carries NO damage field at all sailed past it. Every unarmed reference in the corpus is
+    # exactly that shape: OpenRA TD's Mobile Construction Vehicle and Combined Arms' Thief both
+    # have `w_damage=None`, and both were duly assigned to armed Cameo units (an MCV to
+    # `td_gdi_mammothtankmkiii`, a Thief to `ra1_soviets_sovietrocketsoldier`) on shape similarity
+    # alone. A support unit sitting in the same place in its roster as a tank does in ours is a
+    # coincidence of distribution, not a counterpart.
+    if is_armed(rec) and not peer.get("w_damage"):
+        return None
     # ⛔ THE NAME SCORE IS BUCKETED, AND THAT IS WHAT MAKES THE CASCADE A CASCADE.
     # A lexicographic tuple whose first key is a near-continuous float degenerates into "rank by
     # that key alone": exact ties never happen, so tier, type, role and cost are never consulted.
@@ -223,8 +273,10 @@ def score(cam, rec, peer, cam_cost_pct, peer_cost_pct, home, cam_shape=None, pee
         cost = 1.0 - abs(cam_cost_pct - peer_cost_pct)
     # home lineage sits directly under the name bucket: it decides CONTESTS (§9.4), which is a
     # stronger claim than shape similarity or cost proximity.
-    return (name, 1 if home else 0, TIER_UNAVAILABLE, round(role, 3), round(cost, 3),
-            round(raw_name, 3))
+    # `variant_rank` sits directly under the name bucket and above HOME: which unit the reference
+    # actually IS outranks which faction lineage it came from.
+    return (name, variant_rank(cam["id"], peer.get("name", "")), 1 if home else 0,
+            TIER_UNAVAILABLE, round(role, 3), round(cost, 3), round(raw_name, 3))
 
 
 def assign(only_class=None, routing=True):
@@ -355,7 +407,12 @@ def assign(only_class=None, routing=True):
             # "Rebel" at 0.12, "Fremen" at 0.11. Each sits in the same place in ITS roster as the
             # militia does in ours, which is real evidence for a DISTRIBUTION method and is not a
             # claim that the two are the same unit. The reviewer has to be able to tell them apart.
-            bucket, role_score = s[0], s[3]
+            # ⚠ POSITIONAL READS OF THE SCORE TUPLE. `variant_rank` was inserted at index 1,
+            # which shifted every later key; reading the old offsets turned role into the
+            # TIER constant and collapsed the SHAPE tier to nothing (610 -> 0) while WEAK
+            # tripled. Keep these in step with `score()`'s return.
+            #   0 name · 1 variant · 2 home · 3 tier · 4 role · 5 cost · 6 raw_name
+            bucket, role_score = s[0], s[4]
             if bucket >= 3 or (bucket >= 1 and role_score >= 0.75):
                 conf = "STRONG"
             elif bucket >= 1:
@@ -366,7 +423,7 @@ def assign(only_class=None, routing=True):
                 conf = "WEAK"
             result[cid][source] = {"name": p.get("name"), "score": s,
                                    "hp": p.get("hp"), "cost": p.get("cost"),
-                                   "home": bool(s[1]), "raw_name": s[5], "confidence": conf}
+                                   "home": bool(s[2]), "raw_name": s[6], "confidence": conf}
     assign.formula_only = formula_only
     return result, skipped, len(scope)
 
