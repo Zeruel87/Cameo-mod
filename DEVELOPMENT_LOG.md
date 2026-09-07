@@ -1,5 +1,31 @@
 # Development Log
 
+
+## Devin-DAWN (A4) — LANE-3 batch 1: 10 multi-main collapses (2026-09-07)
+
+**Identity:** Devin-DAWN (Devin CLI, SWE-1.7 Max). Formerly the "second Nova" —
+re-slotted per `Cameo-mod-fleet/AGENTS.md` (`.agent-id` = A4/DAWN/`devin/dawn/`).
+
+Batch 1 of LANE-3 (D2k/StarCraft/Warcraft2/TiberianDawn W24 + drift repair),
+commit `5be0ad305` on `devin/dawn/w24-lane3`:
+
+- 10 weapons collapsed to one resolved main each, survivor `Damage` set to the
+  `collapse_target.py` number: CommandoM16, CommandoSniper,
+  td_gdi_commando_sniper_elite, GDISniperRifle (TD); wc2_dwarf_Rifle,
+  wc2catapultFire, wc2deathknightFire (WC2); ArcherArtilleryShell,
+  ArtilleryShellUpgrade (TD); GoliathMk2MG (SC).
+- Mechanic: delete local `Warhead@CollapseTargetCompatibility1` / `*Compatibility`
+  placeholder blocks, or add `-Warhead@X:` markers where an ancestor still
+  provides the node (verified providers exist — no dangling removals).
+- Gates: `find_empty_warhead` 0; `audit_release_drift` all ratchets hold;
+  `audit_weapon_shape` W5 394→382, nothing rose; boot-gate PASS from the
+  worktree (engine `462fc1fc` copied in for the launch).
+- Deferred: `JimRaynorMachineGun` (planner family Bullet but resolves
+  MissileHE+CannonHE — needs a family swap, not a drop); 12 NONE-confidence
+  weapons listed in the fleet report.
+
+Co-Authored-By: Devin AI <devin@cognition.ai>
+
 ## Codex - PR 328 current-upstream integration and scoped review (2026-09-06)
 
 Integrated `56c14d9db` without changing its gameplay, engine, or class anchors.
