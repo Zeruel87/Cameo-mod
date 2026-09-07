@@ -65,7 +65,7 @@ for a in inherits duplicate_inherits faction_leaks upgrades upgrade_coverage ai 
          missing_elite elite_gating rank_decoration \
          dune_rank_decoration effect_warhead_names weapon_suffixes \
          balance_sheet consistency_report packs balance_drift \
-         duplicate_keys split_definitions weapon_shape shrapnel_chains \
+         duplicate_keys split_definitions weapon_shape shrapnel_chains missile_role_family \
          template_conformance multiplier_modifiers nuclear_flash_bindings \
          ts_death_palette warhead_split physical_state_warheads \
          unique_traits armor_upgrade_harm plating_exclusivity k_linearity percentage_runtime \

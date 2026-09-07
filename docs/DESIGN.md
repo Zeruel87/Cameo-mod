@@ -886,9 +886,48 @@ inherits (1,142 no `^Warhead_*`, 1,348 no `^Projectile_*`, 1,230 no `^Effect_*`)
 **review queue, not a defect count** — an instant or utility weapon may legitimately have no
 projectile — and it must not be bulk-converted or ratcheted without a per-weapon design pass.
 
-⚠ **The value rule when collapsing is VERBATIM, never the SUM.** Equal-damage mains are the
-fingerprint of a refactor that duplicated one warhead across families; the multiplication was
-the bug. See the HydraSpit precedent (`8748c68e4`) and the note below.
+⚠ **The value rule when collapsing is TOTAL OUTPUT PRESERVED.** Maintainer, 2026-09-07:
+*"make it so the total damage output remains the same after the collapse."* There is ONE rule, not two.
+
+The survivor's `Damage` = Σ of the weapon's **RESOLVED MAIN** warheads
+(`formula.spread_damage_sum`, each first mapped through its family ratio). **"Verbatim" is not
+a second rule** — it is what that sum degenerates to when the weapon resolves to exactly ONE
+main, no matter how many templates it inherits. That is why the earlier "VERBATIM, never the
+SUM" phrasing was wrong as a general law: it read a one-main case as if it were the rule.
+
+* **Many inherits, ONE resolved main.** `D2K_APC_Rocket` carries SIX inherits and resolves to a
+  single `MissileAP_Medium` main at 24000. Cutting it to three inherits moves no damage,
+  because Σ over one main is that one number. This is the case people call "verbatim".
+* **Several resolved MAINS.** `TSZoneHellfireSonic` resolves to `MissileAP_Heavy` 24000 **plus**
+  `Sonic_Heavy` 16000. The engine applies both warheads, so the weapon delivers 40000 and the
+  survivor must be 40000. Equal-damage mains are no exception — if it really lands twice today,
+  the survivor lands the total.
+
+⛔ **Count the RESOLVED MAINS, never the inherits.** The two cases are indistinguishable in the
+source and differ by a factor of N in what the weapon actually does.
+
+⚠ **The HydraSpit conversion (`8748c68e4`) is cited in older notes as the "verbatim" precedent.
+It is not** — and measuring it against the last SHIPPED build shows why a collapse must never be
+judged on the tree's own numbers alone. Measured 2026-09-07 against `playtest-20260709`
+(Tournament Build 24):
+
+| | flat per shot | percentage half |
+|---|--:|--:|
+| shipped release | 4 mains x 2000 = **8000** | 4 x 1% = **4%** |
+| pre-collapse (`8748c68e4^`) | 4 mains x 18000 = **72000** | — |
+| now | 1 main x 18000 = **18000** | **9%** |
+
+The collapse was NOT the origin of the defect: an earlier sweep had inflated the per-main value
+**2000 -> 18000 (9x)**, and the collapse took the weapon from 9x the shipped damage down to
+**2.25x**. It is a partial repair of an upstream inflation, not a clean conversion — and the
+weapon still deals 2.25x what shipped, on BOTH halves.
+
+⛔ **A collapse is only verifiable against a baseline outside the tree.** 1321 of 1559 weapons
+shared with `playtest-20260709` carry byte-identical total main damage, so the damage scale did
+NOT move and the comparison is valid — but **238 weapons have drifted from the shipped build**,
+in both directions (`AsianTSIonCannon` 7.67x, `MarineMG` 6.00x; `wc2ogremageRunes_Hit` 0.11x
+after 10 mains became 1). Re-check a conversion against the release tag, not against the commit
+before it.
 
 ### 11b.2 The SEVEN kinds of multi-main weapon (the codemod's taxonomy)
 
@@ -914,9 +953,10 @@ warhead system expresses in ONE warhead.
 
 ### Collapsing a multi-warhead weapon
 
-1. **Sum is preserved.** The survivor's `Damage` = Σ of the old warheads' damage, each
-   first mapped through its own family ratio (`formula.spread_damage_sum`, the SUM law).
-   Collapsing must never change what the weapon deals in total.
+1. **Total output is preserved.** The survivor's `Damage` = Σ of the old MAIN warheads'
+   damage, each first mapped through its own family ratio (`formula.spread_damage_sum`).
+   Where the weapon had only ONE main and merely inherited several templates, that sum is that
+   one number — i.e. verbatim. Collapsing must never change what the weapon deals in total.
 2. **Pick the family that matches the weapon's IDENTITY**, not the one with the largest
    damage — check what it actually is (its projectile, its lore, its role).
 3. ⚠ **If no existing family fits, CREATE A NEW ONE — do not force a bad fit.**
@@ -961,6 +1001,45 @@ is a faction upgrade that cannot be built.
 |---|---|---|
 | **un-upgraded** | the PRIMITIVE delivery family | `CannonAP`, `CannonHE`, `MissileAP`, `MissileHE`, `Bullet`, `Demolition` |
 | **upgraded** | `<Delivery><FactionTech>` | `CannonTesla`, `MissileCryo`, `BulletQuantum` |
+
+### Which missile family — the ROLE decides (maintainer 2026-09-07) — binding
+
+> *"If the unit is using the weapon against ground it will be missile he, and if the weapon is
+> anti air then missile aa, but if the same missile is used against both then only missile AP.
+> And missile he should never be used for anti air — that one is for anti ground rockets only."*
+
+The weapon's own `ValidTargets` decides its family, and there is exactly one right answer:
+
+| the weapon can hit | family | why that delivery |
+|---|---|---|
+| Ground / Water only | `^Warhead_MissileHE_*` | blast rocket, no reason to carry a fuze it never uses |
+| Air only | `^Warhead_MissileAA_*` | **proximity fuze** — `PHYSICS_SHAPES` gives it Spread 300 / `Falloff 100, 70, 30, 0`, a blast radius of 900, because an AA missile has to detonate NEAR a moving target |
+| both | `^Warhead_MissileAP_*` | shaped charge, Spread 64 / `Falloff 100, 0` — one direct-hit rocket that works either way |
+
+⛔ **`MissileHE` may never be reachable against `Air`.** That clause is absolute; the other
+three rows are the positive form of the same rule.
+
+⚠ **This is a DELIVERY difference, not a label.** Swapping an AA mount from `MissileAA` to
+`MissileAP` does not retag it — it removes the proximity blast, i.e. the mechanism that lets
+the missile connect at all. Never "simplify" an AA weapon onto AP because the ladder looks
+better; read `PHYSICS_SHAPES` first.
+
+The **payload blends** (`MissileChem`, `MissileCryo`, `MissileFire`, `MissileNuke`,
+`MissileQuantum`, `MissileTesla`, `MissileThermobaric`) are OUT of scope: a blend carries a
+payload identity that outranks the role tag, and the ruling did not cover them.
+
+**Measured 2026-09-07** by `tools/audit/audit_missile_role_family.py` (LOWER-ONLY ratchets) —
+358 concrete weapons fly a `Missile*` main, **190 already conform**:
+
+| code | violation | count |
+|---|---|--:|
+| R1 | ground-only not flying `MissileHE` | 51 |
+| R2 | air-only not flying `MissileAA` | 33 |
+| R3 | dual-role not flying `MissileAP` | 47 |
+| R4 | `MissileHE` reachable against Air — the hard clause | 50 |
+
+⚠ `df01cb590` set `D2K_Rocket_Trooper_AGOnly` to `MissileAP` the day before this ruling. Under
+the rule it is ground-only and belongs on `MissileHE`; it is one of the 51.
 
 ### The mechanism already exists — do not invent a new one
 
