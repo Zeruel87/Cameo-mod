@@ -565,15 +565,15 @@ Checkout: `/home/user/openra/openra` · rifle anchor **`E1` = 5,000 HP / 100 cre
 
 ## OpenRA Dune II  (49 buildable units)
 
-Checkout: `/home/user/openra/d2` · rifle anchor **`light_inf` = 20 HP / 60 credits = 1.00×**
+Checkout: `..\d2` · rifle anchor **`light_inf` = 20 HP / 60 credits = 1.00×**
 
 | id | unit | type | faction | HP | ×rifle | Cost | ×rifle cost | Speed | Turn | Turret | Limit | Range | Dmg | Burst | Reload | DPS | vsINF | vsVEH | vsAIR | vsBLD |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|:-:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
 | `palace` | Palace | building | — | 1,000 | 50.00 | 999 | 16.65 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `sandworm` | Sandworm | vehicle | — | 1,000 | 50.00 | — | — | 42 | — | n | — | 1,536 | 10,000 | 1 | 10 | 1,000 | — | — | — | — |
 | `sardaukar` | Sardaukar | infantry | harkonnen | 1,000 | 50.00 | 200 | 3.33 | 31 | — | n | — | 2,560 | 125 | 1 | 40 | 3 | — | — | — | — |
-| `fremen` | Fremen | infantry | — | 700 | 35.00 | 200 | 3.33 | 43 | — | n | — | 2,560 | 125 | 1 | 40 | 3 | — | — | — | — |
-| `nsfremen` | Fremen | infantry | — | 700 | 35.00 | 200 | 3.33 | 43 | — | n | — | 2,560 | 125 | 1 | 40 | 3 | — | — | — | — |
+| `fremen` | Fremen | infantry | atreides | 700 | 35.00 | 200 | 3.33 | 43 | — | n | — | 2,560 | 125 | 1 | 40 | 3 | — | — | — | — |
+| `nsfremen` | Fremen | infantry | atreides | 700 | 35.00 | 200 | 3.33 | 43 | — | n | — | 2,560 | 125 | 1 | 40 | 3 | — | — | — | — |
 | `frigate` | Frigate | aircraft | — | 500 | 25.00 | — | — | 189 | 4 | n | — | — | — | — | — | — | — | — | — | — |
 | `outpost` | Outpost | building | — | 500 | 25.00 | 400 | 6.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `starport` | Starport | building | — | 500 | 25.00 | 500 | 8.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -582,9 +582,9 @@ Checkout: `/home/user/openra/d2` · rifle anchor **`light_inf` = 20 HP / 60 cred
 | `devastator` | Devastator | vehicle | harkonnen | 400 | 20.00 | 800 | 13.33 | 31 | 20 | Y | — | 4,096 | 30 | 1 | 75 | 0 | — | — | — | — |
 | `high_tech_factory` | High Tech Factory | building | — | 400 | 20.00 | 500 | 8.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `research_centre` | Ix Lab | building | — | 400 | 20.00 | 500 | 8.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `wor` | WOR | building | ordos | 400 | 20.00 | 400 | 6.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `wor` | WOR | building | harkonnen/ordos | 400 | 20.00 | 400 | 6.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `light_factory` | Light Factory | building | — | 350 | 17.50 | 400 | 6.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `barracks` | Barracks | building | atreides | 300 | 15.00 | 300 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `barracks` | Barracks | building | atreides/ordos | 300 | 15.00 | 300 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `siege_tank` | Siege Tank | vehicle | — | 300 | 15.00 | 600 | 10.00 | 43 | 12 | Y | — | 5,632 | 40 | 1 | 80 | 0 | — | — | — | — |
 | `siege_tank.starport` | Siege Tank | vehicle | — | 300 | 15.00 | 1,000 | 16.67 | 43 | 12 | Y | — | 5,632 | 40 | 1 | 80 | 0 | — | — | — | — |
 | `combat_tank` | Combat Tank | vehicle | — | 200 | 10.00 | 300 | 5.00 | 75 | 20 | Y | — | 4,096 | 25 | 1 | 50 | 0 | — | — | — | — |
@@ -599,7 +599,7 @@ Checkout: `/home/user/openra/d2` · rifle anchor **`light_inf` = 20 HP / 60 cred
 | `mcv` | Mobile Construction Vehicle | vehicle | — | 150 | 7.50 | 900 | 15.00 | 31 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `mcv.starport` | Mobile Construction Vehicle | vehicle | — | 150 | 7.50 | 1,500 | 25.00 | 31 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `silo` | Silo | building | — | 150 | 7.50 | 150 | 2.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `quad` | Missile Quad | vehicle | — | 130 | 6.50 | 200 | 3.33 | 96 | 32 | n | — | 3,584 | 7 | 1 | 30 | 0 | — | — | — | — |
+| `quad` | Missile Quad | vehicle | harkonnen | 130 | 6.50 | 200 | 3.33 | 96 | 32 | n | — | 3,584 | 7 | 1 | 30 | 0 | — | — | — | — |
 | `quad.starport` | Missile Quad | vehicle | — | 130 | 6.50 | 600 | 10.00 | 96 | 32 | n | — | 3,584 | 7 | 1 | 30 | 0 | — | — | — | — |
 | `deviator` | Deviator | vehicle | ordos | 120 | 6.00 | 750 | 12.50 | 53 | 20 | Y | — | 5,120 | — | 1 | 160 | — | — | — | — | — |
 | `sonic_tank` | Sonic Tank | vehicle | atreides | 110 | 5.50 | 600 | 10.00 | 31 | 20 | Y | — | 5,120 | 120 | 1 | 90 | 1 | — | — | — | — |
@@ -607,7 +607,7 @@ Checkout: `/home/user/openra/d2` · rifle anchor **`light_inf` = 20 HP / 60 cred
 | `carryall` | Carryall | aircraft | — | 100 | 5.00 | 800 | 13.33 | 144 | 16 | n | — | — | — | — | — | — | — | — | — | — |
 | `carryall.reinforce` | Carryall | aircraft | — | 100 | 5.00 | 800 | 13.33 | 144 | 16 | n | — | — | — | — | — | — | — | — | — | — |
 | `carryall.starport` | Carryall | aircraft | — | 100 | 5.00 | 1,500 | 25.00 | 144 | 16 | n | — | — | — | — | — | — | — | — | — | — |
-| `missile_tank` | Missile Tank | vehicle | — | 100 | 5.00 | 450 | 7.50 | 64 | 20 | Y | — | 6,144 | 75 | 2 | 115 | 1 | — | — | — | — |
+| `missile_tank` | Missile Tank | vehicle | atreides/harkonnen | 100 | 5.00 | 450 | 7.50 | 64 | 20 | Y | — | 6,144 | 75 | 2 | 115 | 1 | — | — | — | — |
 | `missile_tank.starport` | Missile Tank | vehicle | — | 100 | 5.00 | 1,700 | 28.33 | 64 | 20 | Y | — | 6,144 | 75 | 2 | 115 | 1 | — | — | — | — |
 | `trike` | Trike | vehicle | atreides | 100 | 5.00 | 150 | 2.50 | 128 | 40 | n | — | 3,072 | 5 | 1 | 20 | 0 | — | — | — | — |
 | `trike.starport` | Trike | vehicle | — | 100 | 5.00 | 400 | 6.67 | 128 | 40 | n | — | 3,072 | 5 | 1 | 20 | 0 | — | — | — | — |
@@ -616,16 +616,16 @@ Checkout: `/home/user/openra/d2` · rifle anchor **`light_inf` = 20 HP / 60 cred
 | `wall` | Concrete Wall | building | — | 50 | 2.50 | 50 | 0.83 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `trooper` | Trooper | vehicle | — | 45 | 2.25 | 100 | 1.67 | 31 | — | n | — | 3,072 | 5 | 1 | 40 | 0 | — | — | — | — |
 | `light_inf` | Light Infantry | infantry | — | 20 | 1.00 | 60 | 1.00 | 43 | — | n | — | 2,560 | 3 | 1 | 30 | 0 | — | — | — | — |
-| `ornithopter` | Ornithopter | aircraft | atreides | 10 | 0.50 | 600 | 10.00 | 224 | 20 | n | — | 3,072 | 50 | 1 | 50 | 1 | — | — | — | — |
-| `saboteur` | Saboteur | infantry | — | 10 | 0.50 | 300 | 5.00 | 43 | — | n | — | — | — | — | — | — | — | — | — | — |
+| `ornithopter` | Ornithopter | aircraft | atreides/ordos | 10 | 0.50 | 600 | 10.00 | 224 | 20 | n | — | 3,072 | 50 | 1 | 50 | 1 | — | — | — | — |
+| `saboteur` | Saboteur | infantry | ordos | 10 | 0.50 | 300 | 5.00 | 43 | — | n | — | — | — | — | — | — | — | — | — | — |
 
 ## OpenRA Dune 2000  (56 buildable units)
 
-Checkout: `/home/user/openra/openra` · rifle anchor **`light_inf` = 6,000 HP / 50 credits = 1.00×**
+Checkout: `C:\Users\AedisToru\Documents\GitHub\cameo-engine` · rifle anchor **`light_inf` = 6,000 HP / 50 credits = 1.00×**
 
 | id | unit | type | faction | HP | ×rifle | Cost | ×rifle cost | Speed | Turn | Turret | Limit | Range | Dmg | Burst | Reload | DPS | vsINF | vsVEH | vsAIR | vsBLD |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|:-:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| `devastator` | Devastator | vehicle | harkonnen | 50,000 | 8.33 | 1,050 | 21.00 | 31 | 12 | n | — | 4,720 | 9,750 | 1 | 75 | 130 | 0.65 | 1.00 | — | 0.68 |
+| `devastator` | Devastator | vehicle | harkonnen | 50,000 | 8.33 | 1,200 | 24.00 | 31 | 12 | n | — | 4,720 | 9,750 | 1 | 75 | 130 | 0.65 | 1.00 | — | 0.68 |
 | `harvester` | Spice Harvester | vehicle | — | 45,000 | 7.50 | 1,200 | 24.00 | 43 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `harvester.starport` | Spice Harvester | vehicle | — | 45,000 | 7.50 | 1,500 | 30.00 | 43 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `mcv` | Mobile Construction Vehicle | vehicle | — | 45,000 | 7.50 | 2,000 | 40.00 | 31 | 20 | n | — | — | — | — | — | — | — | — | — | — |
@@ -635,51 +635,51 @@ Checkout: `/home/user/openra/openra` · rifle anchor **`light_inf` = 6,000 HP / 
 | `high_tech_factory` | High Tech Factory | building | — | 35,000 | 5.83 | 1,150 | 23.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `outpost` | Outpost | building | — | 35,000 | 5.83 | 750 | 15.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `starport` | Starport | building | — | 35,000 | 5.83 | 1,500 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `light_factory` | Light Factory | building | — | 33,000 | 5.50 | 500 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `light_factory` | Light Factory | building | — | 33,000 | 5.50 | 600 | 12.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `barracks` | Barracks | building | — | 32,000 | 5.33 | 300 | 6.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `construction_yard` | Construction Yard | other | — | 30,000 | 5.00 | 2,000 | 40.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `conyard.atreides` | Construction Yard | building | — | 30,000 | 5.00 | 2,000 | 40.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `conyard.harkonnen` | Construction Yard | building | — | 30,000 | 5.00 | 2,000 | 40.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `conyard.ordos` | Construction Yard | building | — | 30,000 | 5.00 | 2,000 | 40.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `conyard.atreides` | Construction Yard | building | atreides | 30,000 | 5.00 | 2,000 | 40.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `conyard.harkonnen` | Construction Yard | building | harkonnen | 30,000 | 5.00 | 2,000 | 40.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `conyard.ordos` | Construction Yard | building | ordos | 30,000 | 5.00 | 2,000 | 40.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `refinery` | Spice Refinery | building | — | 30,000 | 5.00 | 1,500 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `repair_pad` | Repair Pad | building | — | 30,000 | 5.00 | 800 | 16.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `sonic_tank` | Sonic Tank | vehicle | atreides | 30,000 | 5.00 | 1,100 | 22.00 | 31 | 12 | n | — | 6,144 | 2,520 | 1 | 90 | 28 | 1.00 | 0.80 | — | 0.80 |
-| `combat_tank_h` | Harkonnen Combat Tank | vehicle | harkonnen | 29,000 | 4.83 | 700 | 14.00 | 64 | 20 | Y | — | 4,720 | 3,240 | 1 | 55 | 59 | 0.30 | 0.75 | — | 0.55 |
-| `combat_tank_h.starport` | Harkonnen Combat Tank | vehicle | harkonnen | 29,000 | 4.83 | 875 | 17.50 | 64 | 20 | Y | — | 4,720 | 3,240 | 1 | 55 | 59 | 0.30 | 0.75 | — | 0.55 |
+| `combat_tank_h` | Harkonnen Combat Tank | vehicle | corrino/harkonnen | 28,500 | 4.75 | 700 | 14.00 | 64 | 20 | Y | — | 4,720 | 3,340 | 1 | 55 | 61 | 0.30 | 0.75 | — | 0.55 |
+| `combat_tank_h.starport` | Harkonnen Combat Tank | vehicle | corrino/harkonnen | 28,500 | 4.75 | 875 | 17.50 | 64 | 20 | Y | — | 4,720 | 3,340 | 1 | 55 | 61 | 0.30 | 0.75 | — | 0.55 |
 | `wind_trap` | Wind Trap | building | — | 28,000 | 4.67 | 225 | 4.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `large_gun_turret` | Rocket Turret | building | — | 27,000 | 4.50 | 750 | 15.00 | — | 32 | Y | — | 7,168 | 5,520 | 1 | 60 | 92 | 0.10 | 0.90 | — | 0.60 |
+| `large_gun_turret` | Rocket Turret | building | — | 27,000 | 4.50 | 750 | 15.00 | — | 32 | Y | — | 7,168 | 5,521 | 2 | 60 | 92 | 0.10 | 0.90 | — | 0.60 |
 | `research_centre` | IX Research Center | building | — | 25,000 | 4.17 | 1,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `medium_gun_turret` | Gun Turret | building | — | 24,000 | 4.00 | 550 | 11.00 | — | 24 | Y | — | 6,144 | 5,800 | 1 | 35 | 166 | 0.65 | 0.30 | — | 0.65 |
-| `combat_tank_a` | Atreides Combat Tank | vehicle | atreides | 22,000 | 3.67 | 700 | 14.00 | 75 | 20 | Y | — | 5,120 | 3,240 | 1 | 50 | 65 | 0.30 | 0.75 | — | 0.55 |
-| `combat_tank_a.starport` | Atreides Combat Tank | vehicle | atreides | 22,000 | 3.67 | 875 | 17.50 | 75 | 20 | Y | — | 5,120 | 3,240 | 1 | 50 | 65 | 0.30 | 0.75 | — | 0.55 |
+| `combat_tank_a` | Atreides Combat Tank | vehicle | atreides/fremen | 22,000 | 3.67 | 700 | 14.00 | 75 | 20 | Y | — | 5,232 | 3,340 | 1 | 50 | 67 | 0.30 | 0.75 | — | 0.55 |
+| `combat_tank_a.starport` | Atreides Combat Tank | vehicle | atreides/fremen | 22,000 | 3.67 | 875 | 17.50 | 75 | 20 | Y | — | 5,232 | 3,340 | 1 | 50 | 67 | 0.30 | 0.75 | — | 0.55 |
 | `carryall` | Carryall | aircraft | — | 20,000 | 3.33 | 1,000 | 20.00 | 170 | 16 | n | — | — | — | — | — | — | — | — | — | — |
 | `carryall.reinforce` | Carryall | aircraft | — | 20,000 | 3.33 | 1,000 | 20.00 | 170 | 16 | n | — | — | — | — | — | — | — | — | — | — |
 | `carryall.starport` | Carryall | aircraft | — | 20,000 | 3.33 | 1,500 | 30.00 | 170 | 16 | n | — | — | — | — | — | — | — | — | — | — |
 | `wall` | Concrete Wall | building | — | 20,000 | 3.33 | 100 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `combat_tank_o` | Ordos Combat Tank | vehicle | ordos | 19,000 | 3.17 | 700 | 14.00 | 85 | 20 | Y | — | 4,720 | 3,240 | 1 | 44 | 74 | 0.30 | 0.75 | — | 0.55 |
-| `combat_tank_o.starport` | Ordos Combat Tank | vehicle | ordos | 19,000 | 3.17 | 875 | 17.50 | 85 | 20 | Y | — | 4,720 | 3,240 | 1 | 44 | 74 | 0.30 | 0.75 | — | 0.55 |
+| `combat_tank_o` | Ordos Combat Tank | vehicle | mercenary/ordos/smuggler | 19,000 | 3.17 | 700 | 14.00 | 85 | 20 | Y | — | 4,720 | 3,340 | 1 | 44 | 76 | 0.30 | 0.75 | — | 0.55 |
+| `combat_tank_o.starport` | Ordos Combat Tank | vehicle | mercenary/ordos/smuggler | 19,000 | 3.17 | 875 | 17.50 | 85 | 20 | Y | — | 4,720 | 3,340 | 1 | 44 | 76 | 0.30 | 0.75 | — | 0.55 |
 | `silo` | Silo | building | — | 15,000 | 2.50 | 120 | 2.40 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `missile_tank` | Missile Tank | vehicle | — | 13,000 | 2.17 | 900 | 18.00 | 60 | 20 | n | — | 8,068 | 6,900 | 1 | 115 | 60 | 0.10 | 0.90 | — | 0.60 |
-| `missile_tank.starport` | Missile Tank | vehicle | — | 13,000 | 2.17 | 1,250 | 25.00 | 60 | 20 | n | — | 8,068 | 6,900 | 1 | 115 | 60 | 0.10 | 0.90 | — | 0.60 |
-| `deviator` | Deviator | vehicle | ordos | 12,000 | 2.00 | 1,000 | 20.00 | 53 | 12 | n | — | 6,144 | 3,000 | 1 | 160 | 19 | 1.00 | 1.00 | — | 1.00 |
-| `siege_tank` | Siege Tank | vehicle | — | 11,500 | 1.92 | 800 | 16.00 | 40 | 12 | Y | — | 7,044 | 10,125 | 1 | 90 | 112 | 1.00 | 0.25 | — | 0.85 |
-| `siege_tank.starport` | Siege Tank | vehicle | — | 11,500 | 1.92 | 1,075 | 21.50 | 40 | 12 | Y | — | 7,044 | 10,125 | 1 | 90 | 112 | 1.00 | 0.25 | — | 0.85 |
-| `quad` | Missile Quad | vehicle | — | 11,000 | 1.83 | 350 | 7.00 | 96 | 32 | n | — | 4,208 | 3,125 | 2 | 50 | 104 | 0.25 | 0.75 | — | 0.57 |
+| `missile_tank` | Missile Tank | vehicle | atreides/corrino/fremen/harkonnen | 13,000 | 2.17 | 900 | 18.00 | 60 | 20 | n | — | 8,068 | 6,901 | 2 | 115 | 60 | 0.10 | 0.90 | — | 0.60 |
+| `missile_tank.starport` | Missile Tank | vehicle | — | 13,000 | 2.17 | 1,250 | 25.00 | 60 | 20 | n | — | 8,068 | 6,901 | 2 | 115 | 60 | 0.10 | 0.90 | — | 0.60 |
+| `deviator` | Deviator | vehicle | ordos | 12,500 | 2.08 | 1,000 | 20.00 | 53 | 12 | n | — | 6,144 | 3,001 | 1 | 160 | 19 | 1.00 | 1.00 | — | 1.00 |
+| `siege_tank` | Siege Tank | vehicle | — | 11,500 | 1.92 | 800 | 16.00 | 40 | 12 | Y | — | 7,044 | 10,125 | 1 | 105 | 96 | 1.00 | 0.25 | — | 0.85 |
+| `siege_tank.starport` | Siege Tank | vehicle | — | 11,500 | 1.92 | 1,075 | 21.50 | 40 | 12 | Y | — | 7,044 | 10,125 | 1 | 105 | 96 | 1.00 | 0.25 | — | 0.85 |
+| `quad` | Missile Quad | vehicle | — | 11,000 | 1.83 | 400 | 8.00 | 96 | 32 | n | — | 4,208 | 3,125 | 2 | 50 | 104 | 0.25 | 0.75 | — | 0.57 |
 | `quad.starport` | Missile Quad | vehicle | — | 11,000 | 1.83 | 500 | 10.00 | 96 | 32 | n | — | 4,208 | 3,125 | 2 | 50 | 104 | 0.25 | 0.75 | — | 0.57 |
 | `mpsardaukar` | Sardaukar | infantry | harkonnen | 10,000 | 1.67 | 200 | 4.00 | 31 | — | n | — | 4,096 | 2,500 | 1 | 50 | 50 | 1.15 | 0.24 | — | 0.47 |
-| `sardaukar` | Sardaukar | infantry | — | 10,000 | 1.67 | 120 | 2.40 | 31 | — | n | — | 4,096 | 2,500 | 1 | 40 | 62 | 1.15 | 0.24 | — | 0.47 |
-| `stealth_raider` | Stealth Raider Trike | vehicle | ordos | 10,000 | 1.67 | 350 | 7.00 | 140 | 40 | n | — | 3,947 | 3,600 | 1 | 18 | 200 | 1.15 | 0.24 | — | 0.47 |
-| `raider` | Raider Trike | vehicle | — | 9,200 | 1.53 | 325 | 6.50 | 140 | 40 | n | — | 3,947 | 3,600 | 1 | 18 | 200 | 1.15 | 0.24 | — | 0.47 |
-| `trike` | Trike | vehicle | — | 9,000 | 1.50 | 275 | 5.50 | 128 | 40 | n | — | 3,947 | 3,600 | 1 | 20 | 180 | 1.15 | 0.24 | — | 0.47 |
+| `sardaukar` | Sardaukar | infantry | corrino | 10,000 | 1.67 | 120 | 2.40 | 31 | — | n | — | 4,096 | 2,500 | 1 | 40 | 62 | 1.15 | 0.24 | — | 0.47 |
+| `stealth_raider` | Stealth Raider Trike | vehicle | ordos | 10,000 | 1.67 | 400 | 8.00 | 140 | 40 | n | — | 3,947 | 3,600 | 1 | 18 | 200 | 1.15 | 0.24 | — | 0.47 |
+| `raider` | Raider Trike | vehicle | mercenary/ordos/smuggler | 9,200 | 1.53 | 330 | 6.60 | 140 | 40 | n | — | 3,947 | 3,600 | 1 | 18 | 200 | 1.15 | 0.24 | — | 0.47 |
+| `trike` | Trike | vehicle | atreides/corrino/fremen/harkonnen | 9,000 | 1.50 | 300 | 6.00 | 128 | 40 | n | — | 3,947 | 3,600 | 1 | 20 | 180 | 1.15 | 0.24 | — | 0.47 |
 | `trike.starport` | Trike | vehicle | — | 9,000 | 1.50 | 315 | 6.30 | 128 | 40 | n | — | 3,947 | 3,600 | 1 | 20 | 180 | 1.15 | 0.24 | — | 0.47 |
 | `ornithopter` | Ornithopter | aircraft | atreides | 8,000 | 1.33 | — | — | 224 | 8 | n | — | 3,584 | 16,750 | 7 | 25 | 3,782 | 0.90 | 0.80 | — | 0.68 |
-| `fremen` | Fremen | infantry | — | 7,000 | 1.17 | 200 | 4.00 | 43 | — | n | — | 3,184 | 2,500 | 1 | 40 | 62 | 1.15 | 0.24 | — | 0.47 |
-| `nsfremen` | Fremen | infantry | — | 7,000 | 1.17 | 200 | 4.00 | 43 | — | n | — | 3,184 | 2,500 | 1 | 40 | 62 | 1.15 | 0.24 | — | 0.47 |
-| `trooper` | Trooper | infantry | — | 7,000 | 1.17 | 100 | 2.00 | 31 | — | n | — | 3,696 | 3,240 | 1 | 40 | 81 | 0.10 | 0.85 | — | 0.47 |
+| `fremen` | Fremen | infantry | atreides | 7,000 | 1.17 | 200 | 4.00 | 43 | — | n | — | 3,184 | 2,500 | 1 | 40 | 62 | 1.15 | 0.24 | — | 0.47 |
+| `nsfremen` | Fremen | infantry | atreides | 7,000 | 1.17 | 200 | 4.00 | 43 | — | n | — | 3,184 | 2,500 | 1 | 40 | 62 | 1.15 | 0.24 | — | 0.47 |
+| `trooper` | Trooper | infantry | — | 7,000 | 1.17 | 100 | 2.00 | 31 | — | n | — | 3,942 | 3,240 | 1 | 40 | 81 | 0.10 | 0.85 | — | 0.47 |
 | `grenadier` | Grenadier | infantry | atreides | 6,000 | 1.00 | 80 | 1.60 | 43 | — | n | — | 4,321 | 3,375 | 1 | 50 | 68 | 1.35 | 0.25 | — | 0.70 |
 | `light_inf` | Light Infantry | infantry | — | 6,000 | 1.00 | 50 | 1.00 | 43 | — | n | — | 3,184 | 2,500 | 1 | 30 | 83 | 1.15 | 0.24 | — | 0.47 |
 | `engineer` | Engineer | infantry | — | 5,000 | 0.83 | 400 | 8.00 | 31 | — | n | — | — | — | — | — | — | — | — | — | — |
-| `saboteur` | Saboteur | infantry | — | 5,000 | 0.83 | 300 | 6.00 | 43 | — | n | — | — | — | — | — | — | — | — | — | — |
+| `saboteur` | Saboteur | infantry | ordos | 5,000 | 0.83 | 300 | 6.00 | 43 | — | n | — | — | — | — | — | — | — | — | — | — |
 | `thumper` | Thumper Infantry | infantry | — | 3,750 | 0.62 | 200 | 4.00 | 43 | — | n | — | — | — | — | — | — | — | — | — | — |
 
 ## OpenE2140  (84 buildable units)

@@ -1,5 +1,38 @@
 # Development Log
 
+## Devin-DAWN â€” Dune peer extractor improvements and route matrix refresh (2026-09-07)
+
+Rebased lane `devin/dawn/untagged-dune-mo` onto master `5e87c1bdd`, resolved the
+extractor merge conflicts, and continued the Dune II / Dune 2000 faction-recovery
+work Claude assigned.
+
+What changed in `tools/reference/extract_peer_units.py`:
+1. `Buildable.ForceFaction` is now read at claim level (like Queue/Prerequisites).
+   This recovers D2k's `conyard.atreides/harkonnen/ordos`.
+2. `ProduceActorPower` is now scanned. The produced actor list is mapped to the
+   power's faction scope using the existing `ProvidesPrerequisite` provider index
+   plus the power's `RequiresCondition`. This recovers D2/D2k `fremen` and
+   `saboteur`.
+3. A concrete `Inherits` fallback for disabled units lets `nsfremen` borrow the
+   faction from `fremen`.
+
+Measured improvement:
+- OpenRA Dune II: 49 total, 14 tagged, 35 untagged (was 38 untagged).
+- OpenRA Dune 2000: 56 total, 23 tagged, 33 untagged (was 39 untagged).
+
+The remaining untagged rows are the shared structures and universal units that
+R14 (universal-pool carve-out) is intended to route.
+
+Regenerated and spliced only the D2/D2k sections of
+`docs/design/ORIGINAL_UNITS_PEER_OPENRA.md`. Ran `faction_routes.py --check`:
+`âœ… every ruled route resolves against the corpus`.
+
+Gates:
+- `find_empty_warhead.py` â†’ 0
+- `audit_release_drift.py` â†’ D1-D5 all PASS at ratchet
+- `audit_weapon_shape.py` â†’ W1-W6 all PASS at ratchet
+- `launch-game.cmd` â†’ reached main menu, no new `exception-*.log`
+
 ## Codex - PR 328 current-upstream integration and scoped review (2026-09-06)
 
 Integrated `56c14d9db` without changing its gameplay, engine, or class anchors.
@@ -10625,7 +10658,7 @@ the whole `SpreadDamage.Amount` kind), at ratchet. Complements the parallel Nova
 
 Co-Authored-By: Devin AI <devin@cognition.ai>
 
-## Devin-Dawn — rebase onto 5e87c1bdd + fix vfi regression (2026-09-08)
+## Devin-Dawn ï¿½ rebase onto 5e87c1bdd + fix vfi regression (2026-09-08)
 
 Branch `devin/dawn/untagged-dune-mo` reset to master `5e87c1bdd` to pick up
 Claude/Ember's merged extractor changes. The merge kept the
@@ -10636,19 +10669,19 @@ recursive `vfi` pass-through.
 
 Co-Authored-By: Devin AI <devin@cognition.ai>
 
-## Devin-Dawn — *Compatibility warheads are one main, not two (2026-09-08)
+## Devin-Dawn ï¿½ *Compatibility warheads are one main, not two (2026-09-08)
 
 Re-applied the `audit_weapon_shape.py` fix: the W5 counter was flagging
 flat/percentage-scoped twins such as `Laser_HeavyFlatCompatibility` as a second
-main, contradicting `DESIGN.md` §12.0h. Added `"compatibility"` to `NOT_A_MAIN`.
+main, contradicting `DESIGN.md` ï¿½12.0h. Added `"compatibility"` to `NOT_A_MAIN`.
 Ratchet result on the rebased tree: W5 394?274, W1 583?577.
 
 Co-Authored-By: Devin AI <devin@cognition.ai>
 
-## Devin-Dawn — new read-only audit for duplicate weapon definitions (2026-09-08)
+## Devin-Dawn ï¿½ new read-only audit for duplicate weapon definitions (2026-09-08)
 
 Re-added `tools/audit/audit_duplicate_weapon_defs.py` on the rebased branch.
-It maps every weapon key present in more than one manifest-listed yaml file —
+It maps every weapon key present in more than one manifest-listed yaml file ï¿½
 the silent-merge hazard that produced d2k25mm/d2kFlameTurret/BikeRockets
 phantom-damage incidents and the cross-pack `OrniBombC`, `Sound`, `Sound2`
 duplicates.
