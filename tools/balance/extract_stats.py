@@ -1033,10 +1033,17 @@ def load_existing_design(name: str) -> tuple[dict[str, dict], dict[str, dict]]:
             for actor, u in sec.items():
                 d = u.get("design")
                 if d:
-                    # Subtypes are always re-derived from yaml; keep only
-                    # judgment fields that yaml can never provide.
+                    # Subtypes are re-derived from yaml when the actor
+                    # inherits a ^<Name>Template; but units that don't
+                    # inherit any role template get a generic placeholder
+                    # (Aircraft, Vehicle, Infantry, Ship, Misc).  An
+                    # authored subtype set by LANE-4 is judgment data the
+                    # yaml cannot provide, so preserve it when it is NOT
+                    # a generic placeholder.
+                    _GENERIC = set(SECTION_DEFAULT_SUBTYPE.values()) | {"Unclassified"}
                     kept = {k: v for k, v in d.items()
-                            if v is not None and k != "subtype"}
+                            if v is not None
+                            and not (k == "subtype" and v in _GENERIC)}
                     if kept:
                         out[actor] = kept
                 slots = {a["slot"]: a["design_weapon_class"]
