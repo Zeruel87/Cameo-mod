@@ -11,6 +11,15 @@
 
 ---
 
+## ⛔⛔ CURRENT ORDERS — `docs/BLACKROBE_ASTRA_ORDERS_2026-09-07.md`
+
+**Read that file FIRST; it is your live task list and it supersedes the lane assignments in this
+brief.** It carries the superweapon rule, the measured blocker chain (W24 · W23 · A5 · W11), the
+ownership map, and 26 numbered tasks C1–C26. This brief remains your standing reference for
+environment, protocol and technique.
+
+---
+
 ## ⛔ ADDENDUM 2026-09-07 — read this before Part 0; four things changed under you
 
 **1. Use a `git worktree`, not `git checkout -b`.** Part 0.1 still says
