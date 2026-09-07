@@ -162,24 +162,53 @@ def weapon_of(ini: dict, wname: str, engine: str) -> dict:
     }
 
 
-def _clean_owner_set(text: str, countries: set) -> set | None:
+def _side_map(ini: dict, countries: set) -> dict[str, set[str]]:
+    """Read `[Sides]` and map side labels to the countries that belong to them.
+
+    RA2/YR mods express ownership with both side labels (`Allies`, `Soviets`) and
+    country labels (`Americans`, `Russians`). `[Sides]` is the authoritative map.
+    Some mods only have `[Houses]`; in that case the country set itself is the
+    side map (each house is its own side)."""
+    sides = ini.get("Sides", {})
+    out = {}
+    for side, raw in sides.items():
+        side = side.strip()
+        cs = {c.strip() for c in (raw or "").split(",")
+              if c.strip() and c.strip() in countries and c.strip() not in GENERIC_FACTIONS}
+        if side and cs:
+            out[side] = cs
+    return out
+
+
+def _expand_owner_tokens(text: str, countries: set, side_map: dict | None) -> set[str]:
+    """Expand a comma-separated owner/side string into validated countries."""
+    out = set()
+    for t in (text or "").split(","):
+        t = t.strip()
+        if not t or t in GENERIC_FACTIONS:
+            continue
+        if t in countries:
+            out.add(t)
+        elif side_map and t in side_map:
+            out.update(side_map[t])
+    return out
+
+
+def _clean_owner_set(text: str, countries: set, side_map: dict | None = None) -> set | None:
     """Turn an INI `Owner=`, `FactoryOwners=` or `RequiredHouses=` string into a
     validated country set. Returns `None` when the set is empty or covers every
     playable country (no information)."""
-    out = {c.strip() for c in (text or "").split(",")
-           if c.strip() and c.strip() not in GENERIC_FACTIONS and c.strip() in countries}
+    out = _expand_owner_tokens(text, countries, side_map)
     playable = countries - GENERIC_FACTIONS
     if not out or out == playable:
         return None
     return out
 
 
-def _apply_houses_filter(owner: set, a: dict, countries: set) -> set | None:
+def _apply_houses_filter(owner: set, a: dict, countries: set, side_map: dict | None = None) -> set | None:
     """Narrow `owner` with `RequiredHouses` / `ForbiddenHouses` if the actor has them."""
-    req = {c.strip() for c in (a.get("RequiredHouses") or "").split(",")
-           if c.strip() and c.strip() in countries and c.strip() not in GENERIC_FACTIONS}
-    forb = {c.strip() for c in (a.get("ForbiddenHouses") or "").split(",")
-            if c.strip() and c.strip() in countries and c.strip() not in GENERIC_FACTIONS}
+    req = _expand_owner_tokens(a.get("RequiredHouses"), countries, side_map)
+    forb = _expand_owner_tokens(a.get("ForbiddenHouses"), countries, side_map)
     if req:
         owner &= req
     if forb:
@@ -187,7 +216,8 @@ def _apply_houses_filter(owner: set, a: dict, countries: set) -> set | None:
     return owner if owner else None
 
 
-def _actor_owner(actor: str, a: dict | None, countries: set, allow_universal: bool = False) -> set | None:
+def _actor_owner(actor: str, a: dict | None, countries: set, side_map: dict | None = None,
+                 allow_universal: bool = False) -> set | None:
     """The direct owner claim of one actor, after filtering and house rules.
 
     `FactoryOwners` is checked first because it is the producer-specific claim:
@@ -200,20 +230,19 @@ def _actor_owner(actor: str, a: dict | None, countries: set, allow_universal: bo
     "all-playable" claim and is returned."""
     if not a:
         return None
-    own = _clean_owner_set(a.get("FactoryOwners"), countries) or _clean_owner_set(a.get("Owner"), countries)
+    own = _clean_owner_set(a.get("FactoryOwners"), countries, side_map) or _clean_owner_set(a.get("Owner"), countries, side_map)
     if not own:
         if not allow_universal:
             return None
         # Owner=all or FactoryOwners=all — return the whole playable set.
-        raw = a.get("FactoryOwners") or a.get("Owner") or ""
-        own = {c.strip() for c in raw.split(",")
-               if c.strip() and c.strip() not in GENERIC_FACTIONS and c.strip() in countries}
+        own = _expand_owner_tokens(a.get("FactoryOwners") or a.get("Owner"), countries, side_map)
         if not own:
             return None
-    return _apply_houses_filter(own, a, countries)
+    return _apply_houses_filter(own, a, countries, side_map)
 
 
 def _resolve_owner(actor: str, ini: dict, countries: set, all_actors: set,
+                   side_map: dict | None = None,
                    depth: int = 0, seen: set | None = None) -> set | None:
     """Resolve an actor's faction by walking `Prerequisite` up to depth 2.
 
@@ -231,7 +260,7 @@ def _resolve_owner(actor: str, ini: dict, countries: set, all_actors: set,
     a = ini.get(actor)
     if not a:
         return None
-    own = _actor_owner(actor, a, countries)
+    own = _actor_owner(actor, a, countries, side_map)
     if own:
         return own
     prereq = a.get("Prerequisite") or ""
@@ -240,7 +269,7 @@ def _resolve_owner(actor: str, ini: dict, countries: set, all_actors: set,
         p = p.strip()
         if not p or p == actor:
             continue
-        s = _resolve_owner(p, ini, countries, all_actors, depth + 1, seen.copy())
+        s = _resolve_owner(p, ini, countries, all_actors, side_map, depth + 1, seen.copy())
         if s:
             sets.append(s)
     if not sets:
@@ -278,6 +307,7 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
     all_actors: set[str] = set()
     for list_sec in TYPE_LISTS:
         all_actors.update(listed(ini, list_sec))
+    side_map = _side_map(ini, countries)
     rows: list[dict] = []
     for list_sec, utype in TYPE_LISTS.items():
         for actor in listed(ini, list_sec):
@@ -312,12 +342,24 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
             # If `Owner` is all-playable and the walk finds a more specific claim, use that;
             # otherwise the all-playable claim is preserved as a universal reference (R14).
             raw_owner = (a.get("FactoryOwners") or a.get("Owner") or "").strip()
-            raw_list = [o for o in (o.strip() for o in raw_owner.split(","))
-                        if o and o not in GENERIC_FACTIONS and o in countries]
-            direct = _clean_owner_set(raw_owner, countries)
+            raw_list: list[str] = []
+            seen_raw: set[str] = set()
+            for o in (o.strip() for o in raw_owner.split(",")):
+                if not o or o in GENERIC_FACTIONS:
+                    continue
+                if o in countries:
+                    if o not in seen_raw:
+                        raw_list.append(o)
+                        seen_raw.add(o)
+                elif side_map and o in side_map:
+                    for c in side_map[o]:
+                        if c not in seen_raw:
+                            raw_list.append(c)
+                            seen_raw.add(c)
+            direct = _clean_owner_set(raw_owner, countries, side_map)
             if direct:
-                direct = _apply_houses_filter(direct, a, countries)
-            resolved = _resolve_owner(actor, ini, countries, all_actors)
+                direct = _apply_houses_filter(direct, a, countries, side_map)
+            resolved = _resolve_owner(actor, ini, countries, all_actors, side_map)
             playable = countries - GENERIC_FACTIONS
             if resolved and resolved != playable and resolved != countries:
                 if not direct or resolved < (direct or playable):
@@ -333,7 +375,7 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
             else:
                 # No Owner and no resolvable Prerequisite — `RequiredHouses` alone can still
                 # make a claim (e.g. country-specific hero units).
-                req = _clean_owner_set(a.get("RequiredHouses"), countries)
+                req = _clean_owner_set(a.get("RequiredHouses"), countries, side_map)
                 own_list = sorted(req) if req else []
             owners = own_list
             rows.append({
