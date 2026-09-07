@@ -18,6 +18,14 @@ self-consistent. Only an EXTERNAL baseline can see it.
   D2 WEAKENED  a weapon deals LESS than it shipped
   D3 EXTREME   |ratio| >= 3x either way - the ones a player will feel immediately
   D4 UNMATCHED a weapon in the baseline that no longer exists under that name
+  D5 ACCEPTED  a deliberate value edit, excluded from D1-D3 (informational)
+
+D5 exists because not all drift is damage. 43 weapons differ from the release with their
+MAIN COUNT UNCHANGED - nobody collapsed them, somebody edited the number. The maintainer
+ruled on 2026-09-07 that those are deliberate and are accepted. They live in
+`docs/reference/drift_accepted.json`, and the acceptance is PINNED TO THE VALUE: if such a
+weapon's damage moves again it stops matching the pin and returns to D1/D2 as new drift.
+Acceptance is per value, never a permanent pass for a weapon.
 
 ⛔ D4 is the hole that makes the other three lie. This audit can only compare weapons it
 can still FIND, so renaming a weapon silently removes it from the comparison - a naming
@@ -50,15 +58,25 @@ import miniyaml
 from gen_release_baseline import snapshot
 from report import h1, h2, table
 
-# Measured 2026-09-07 against playtest-20260709 on aec54e103. LOWER ONLY.
+# Measured 2026-09-07 against playtest-20260709, with the 43 D5-accepted value edits
+# excluded (maintainer ruling 2026-09-07). LOWER ONLY.
 # ⛔ Never raise one of these to make a batch pass: a rise means a collapse or a
 # sweep moved a weapon further from the build players actually played.
-D1_BASELINE = 164
-D2_BASELINE = 74
-D3_BASELINE = 42
+D1_BASELINE = 133
+D2_BASELINE = 62
+D3_BASELINE = 27
 D4_BASELINE = 335
+D5_BASELINE = 43
 
 BASELINE_DIR = "docs/reference"
+
+
+def load_accepted(repo: pathlib.Path) -> dict:
+    """Deliberate value edits, pinned to the value that was accepted."""
+    f = repo / BASELINE_DIR / "drift_accepted.json"
+    if not f.exists():
+        return {}
+    return json.loads(f.read_text(encoding="utf-8")).get("weapons", {})
 
 
 def load_baseline(repo: pathlib.Path) -> tuple[dict, dict]:
@@ -80,10 +98,12 @@ def main():
 
     repo = pathlib.Path(__file__).resolve().parents[2]
     meta, base = load_baseline(repo)
+    accepted = load_accepted(repo)
     now = snapshot(repo)
 
     rows = []
     unmatched = []
+    still_accepted = []
     for name, was in base.items():
         if name not in now:
             unmatched.append(name)        # renamed or deleted: INVISIBLE to D1-D3, so count it
@@ -93,6 +113,10 @@ def main():
             continue
         ratio = new / old
         if abs(ratio - 1.0) < 0.01:
+            continue
+        pin = accepted.get(name)
+        if pin is not None and pin.get("accepted") == new:
+            still_accepted.append(name)     # unchanged since the ruling - not drift
             continue
         rows.append((ratio, name, old, was["mains"], new, now[name]["mains"]))
 
@@ -112,6 +136,7 @@ def main():
         ["D2", "WEAKENED - deals less than it shipped", len(weakened), D2_BASELINE],
         ["D3", f"EXTREME - {args.min_ratio:g}x or worse, either way", len(extreme), D3_BASELINE],
         ["D4", "UNMATCHED - in the release, gone under that name", len(unmatched), D4_BASELINE],
+        ["D5", "ACCEPTED value edit (informational)", len(still_accepted), D5_BASELINE],
     ]
     print(table(["code", "check", "count", "ratchet", ""],
                 [[c, d, str(n), str(b), "PASS" if n <= b else "FAIL"] for c, d, n, b in checks]))
@@ -135,7 +160,7 @@ def main():
         print(chr(10).join("- `" + n + "`" for n in sorted(unmatched)[:400]))
         print()
 
-    over = [c for c, _d, n, b in checks if n > b]
+    over = [c for c, _d, n, b in checks if n > b and c != "D5"]
     if over:
         print(f"\n**FAIL: {', '.join(over)} above ratchet.** A rise means a weapon moved "
               "FURTHER from the shipped build, or that the gate went BLIND to more of them. "
