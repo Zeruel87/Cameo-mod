@@ -141,6 +141,44 @@ the method, the faction-specific traps, the gates, and the report format. Read
 ⚠ **Agent-to-agent chatter lives OUTSIDE the repository**, in `../Cameo-mod-fleet/`.
 `DEVELOPMENT_LOG.md` keeps one entry per COMPLETED work item plus lessons learned — nothing else.
 
+## ⭐⭐ START HERE 2026-09-07 — why the balance pipeline has not moved, and the fix
+
+```
+$ python tools/balance/apply_balance.py --faction d2k_atreides
+DRY RUN: 0 values would change
+```
+
+**The pipeline is not blocked by tooling, by W11, or by sign-off. It is idle because nobody
+has written a target number into the ledger.** `apply_balance` writes ledger → yaml; the
+ledger holds today's values; applying it is therefore a no-op *by construction*.
+
+`anchor_readiness.py` reports **0 of 27 classes signable**, 26 failing "the anchor does not
+describe its members" (median pricing error 15%–106%) — and explains itself in one line:
+*"the anchor actor is still PRE-RESTAT, so its percentile is measured on stats the design
+already intends to replace."*
+
+Meanwhile **all 27 classes already carry a complete spec** in `docs/balance/class_anchors.json`
+(`cost0`, `dps0`, `hp0`, `range0_wdist`, `speed0`) that has never been used. `mbt`'s spec is
+hp0 **240,000**; the actual unit has **100,000**. The numbers were designed and never written
+anywhere the pipeline reads.
+
+⭐ **MAINTAINER ORDER, 2026-09-07 — do this first:**
+
+1. Write the 27 anchor specs into the ledger on **`hp0` / `speed0` / `range0_wdist` / `cost0`
+   only**. ⛔ **NOT `dps0`** — it depends on weapon structure and therefore on W24, and would
+   be written twice.
+2. `python tools/balance/apply_balance.py --faction <f> --confirm`
+3. Boot-gate, re-extract, then re-read `anchor_readiness.py`.
+
+This is the first real balance change the project will have made, and it breaks the apparent
+circularity (sign-off needs a restat; the restat needs numbers in the ledger — which is a
+LEDGER edit, explicitly sanctioned by CLAUDE.md rule 3, not a hand edit of yaml).
+
+⚠ The four non-DPS axes depend on nothing but the unit, so **W24 is not a prerequisite for
+this.** The two can run in parallel: the restat writes `docs/balance/*.json` → actor yaml,
+W24 writes `**/weapons.yaml`, and `extract_stats.load_existing_design()` preserves authored
+`design.*` across re-extraction.
+
 ## ⛔⛔ TOP OF THE QUEUE 2026-09-07 — revert the ra1_soviets rename
 
 **All 32 actor renames `ad7c5e232` applied made the id LONGER and WORSE. Not one
