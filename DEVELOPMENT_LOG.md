@@ -10624,3 +10624,33 @@ the whole `SpreadDamage.Amount` kind), at ratchet. Complements the parallel Nova
 (`15321fe2b`) â€” different kind, no overlap. Boot-gate PASS.
 
 Co-Authored-By: Devin AI <devin@cognition.ai>
+
+## Devin-Dawn — rebase onto 5e87c1bdd + fix vfi regression (2026-09-08)
+
+Branch `devin/dawn/untagged-dune-mo` reset to master `5e87c1bdd` to pick up
+Claude/Ember's merged extractor changes. The merge kept the
+`prerequisite_providers` index but left `factions_of()` without a `vfi`
+parameter, so the top-level `factions_of(..., vfi=vfi)` and the recursive call
+both raised `TypeError`. Fixed by adding `vfi=None` to the signature and the
+recursive `vfi` pass-through.
+
+Co-Authored-By: Devin AI <devin@cognition.ai>
+
+## Devin-Dawn — *Compatibility warheads are one main, not two (2026-09-08)
+
+Re-applied the `audit_weapon_shape.py` fix: the W5 counter was flagging
+flat/percentage-scoped twins such as `Laser_HeavyFlatCompatibility` as a second
+main, contradicting `DESIGN.md` §12.0h. Added `"compatibility"` to `NOT_A_MAIN`.
+Ratchet result on the rebased tree: W5 394?274, W1 583?577.
+
+Co-Authored-By: Devin AI <devin@cognition.ai>
+
+## Devin-Dawn — new read-only audit for duplicate weapon definitions (2026-09-08)
+
+Re-added `tools/audit/audit_duplicate_weapon_defs.py` on the rebased branch.
+It maps every weapon key present in more than one manifest-listed yaml file —
+the silent-merge hazard that produced d2k25mm/d2kFlameTurret/BikeRockets
+phantom-damage incidents and the cross-pack `OrniBombC`, `Sound`, `Sound2`
+duplicates.
+
+Co-Authored-By: Devin AI <devin@cognition.ai>
