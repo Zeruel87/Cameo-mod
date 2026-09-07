@@ -84,6 +84,7 @@ win — **unless the artifact says otherwise, and then the artifact wins and you
 - [YAML-only AI personalities and dead squad-manager keys (2026-08-21)](#yaml-only-ai-personalities-and-dead-squad-manager-keys-2026-08-21)
 - [Opt-in AI unit compositions (2026-08-24)](#opt-in-ai-unit-compositions-2026-08-24)
 - [A ContentPack can only ADD to a bot module - and a partial migration fails silently (2026-08-31)](#a-contentpack-can-only-add-to-a-bot-module---and-a-partial-migration-fails-silently-2026-08-31)
+- [MiniYaml treats unescaped hashes in values as comments (2026-09-01)](#miniyaml-treats-unescaped-hashes-in-values-as-comments-2026-09-01)
 - [Content installer and music filesystem plumbing (2026-08-11)](#content-installer-and-music-filesystem-plumbing-2026-08-11)
 - [Git workflow and commit rules (2026-07-24)](#git-workflow-and-commit-rules-2026-07-24)
 - [YAML lint rules learned (2026-07-24)](#yaml-lint-rules-learned-2026-07-24)
@@ -1393,6 +1394,14 @@ safe is a property of the CONSUMER, not of the yaml -
 `ConditionalTrait` still occupies the trait dictionary - so gating five
 composition modules by condition crashes on the first bot tick instead of
 degrading.
+
+## MiniYaml treats unescaped hashes in values as comments (2026-09-01)
+
+MiniYaml treats an unescaped `#` in a value as the start of a comment and
+silently truncates the value rather than reporting an error. A truncated .NET
+format string can then throw only when the consuming widget draws. Neither
+`--check-yaml` nor the boot gate exercises that graph draw path, so any YAML
+value carrying a `#` needs a display-time check.
 
 ## ⛔ `Node.child()` is an EXACT match — 97% of the mod's producers were invisible (2026-09-06)
 
