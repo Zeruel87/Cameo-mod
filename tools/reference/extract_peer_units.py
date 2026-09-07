@@ -468,6 +468,7 @@ def prerequisite_providers(rules, known):
             continue
         if node is None:
             continue
+        own_factions = set(factions_of(node, known, rules))
         actor_scope = set()
         for c in node.children:
             if c.key.split("@")[0] == "ValidFactions":
@@ -481,7 +482,14 @@ def prerequisite_providers(rules, known):
             pr = d.get("prerequisite") or d.get("prerequisites") or ""
             fac = {f.strip().lower()
                    for f in (d.get("factions") or "").split(",") if f.strip()}
-            scope = (fac or actor_scope) & set(known)
+            # ⛔ A BARE `ProvidesPrerequisite` INHERITS THE PROVIDER'S OWN FACTIONS. OpenRA's
+            # Red Alert gates E1 on `~barracks`, and BOTH barracks grant it with no `Factions:`
+            # line — `TENT` is Allied and `BARR` is Soviet purely through their own buildability.
+            # Taking only the trait's declared factions left `barracks` unscoped, so E1 and E3 —
+            # the basic rifle and rocket infantry that every faction builds — came out UNTAGGED
+            # and `allows()` then refused them to everyone. The union across both providers is
+            # what makes them universal, which is exactly R14's carve-out.
+            scope = (fac or actor_scope or own_factions) & set(known)
             for t in pr.split(","):
                 t = t.strip().lower()
                 if t and scope:
@@ -489,7 +497,7 @@ def prerequisite_providers(rules, known):
     return prov
 
 
-def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None):
+def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=None):
     """The faction tokens an actor is gated on, filtered by what the mod actually declares.
 
     ⛔ THE FACTION IS OFTEN ONE HOP AWAY, IN THE PREREQUISITE BUILDING. OpenRA gates most infantry

@@ -247,7 +247,15 @@ def score(cam, rec, peer, cam_cost_pct, peer_cost_pct, home, cam_shape=None, pee
     # `td_gdi_mammothtankmkiii`, a Thief to `ra1_soviets_sovietrocketsoldier`) on shape similarity
     # alone. A support unit sitting in the same place in its roster as a tank does in ours is a
     # coincidence of distribution, not a counterpart.
-    if is_armed(rec) and not peer.get("w_damage"):
+    # ⚠ AND "UNARMED" MEANS NO WEAPON AT ALL, NOT A MISSING DAMAGE NUMBER. Refusing on
+    # `w_damage` alone threw away Combined Arms' E1 — the RIFLE INFANTRY, the single most
+    # important reference unit in the corpus — because its damage does not extract, and handed
+    # `ra1_allies_rifleinfantry` a Shock Trooper instead. The two cases are distinguishable:
+    #   CA MCV   w_range None  w_reload None  w_burst None   <- genuinely unarmed
+    #   CA E1    w_range 1024  w_reload 5     w_burst 1      <- armed, damage failed to extract
+    # A row carrying any weapon field is a combat unit whose damage is an extraction gap.
+    if is_armed(rec) and not any(peer.get(k) for k in
+                                 ("w_damage", "w_range", "w_reload", "w_burst")):
         return None
     # ⛔ THE NAME SCORE IS BUCKETED, AND THAT IS WHAT MAKES THE CASCADE A CASCADE.
     # A lexicographic tuple whose first key is a near-continuous float degenerates into "rank by
