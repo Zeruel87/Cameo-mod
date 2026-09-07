@@ -453,7 +453,14 @@ def is_ai_only(row, source_ids=None):
         return True
     rid = (row.get("id") or "").upper()
     if source_ids and rid.startswith("AI") and len(rid) > 3:
-        return rid[2:] in source_ids.get(row.get("source"), ())
+        known = source_ids.get(row.get("source"), ())
+        base = rid[2:]
+        # ⚠ AND THE SIBLING MAY CARRY A TRAILING INDEX THE REAL UNIT DOES NOT. DTA ships
+        # `AIHTNK2` beside `HTNK` — there is no `HTNK2` — so an exact sibling test let it through
+        # and `td_gdi_mammothtankmkiii` drew an AI-only Mammoth. The maintainer's objection is the
+        # substantive one: AI variants are deliberately CHEAPER, so using one as a price reference
+        # is worse than having no reference at all.
+        return base in known or base.rstrip("0123456789") in known
     return False
 
 

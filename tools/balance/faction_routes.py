@@ -532,6 +532,34 @@ def suffix_claim(row, src):
     return table[suffix]
 
 
+# ⛔ R15 IN ITS THIRD FORM: THE CLAIM IS A DOT SUFFIX ON THE ID. Combined Arms distinguishes the
+# side-specific build of a shared chassis by appending it to the id — `STNK.Nod`, `GUN.Nod`,
+# `SYRD.gdi`, `BTR.YURI` — while its `Prerequisites`/`Queue` tags stay broad (CA's median row is
+# admissible to FIVE factions, against ONE for every other source). The suffix is therefore the
+# only place CA states ownership precisely, and not reading it let Nod's Stealth Tank become the
+# reference for `td_gdi_predatortank` AND `ra1_allies_sheridanassaulttank` at once, and Nod's SAM
+# the reference for `ra1_soviets_sovietsamsite`.
+#
+# ⚠ ONLY UNAMBIGUOUS FACTION TOKENS BELONG HERE. CA's other suffixes are variants, not owners —
+# `.ATOMIC`, `.LASER`, `.RAIL`, `.UPG`, `.DRONE`, `.TOW` — and `.TD` names a THEME that both
+# Tiberian Dawn factions share, so none of them may claim.
+DOT_SUFFIX_CLAIMS = {
+    "Combined Arms": {"nod": "td_nod", "gdi": "td_gdi", "yuri": "yuri"},
+}
+
+
+def dot_claim(row, src):
+    """The Cameo faction a dotted id suffix claims the row for, or None."""
+    table = DOT_SUFFIX_CLAIMS.get(src)
+    if not table:
+        return None
+    for part in reversed((row.get("id") or "").split(".")[1:]):
+        hit = table.get(part.strip().lower())
+        if hit:
+            return hit
+    return None
+
+
 def claimed_by(row, src):
     """The Cameo faction this source's own naming claims the row for, or None."""
     name = (row.get("name") or "").strip().lower()
@@ -658,6 +686,8 @@ def allows(faction, row):
     # A NAME CLAIM SHORT-CIRCUITS BOTH WAYS: the claimant gets the row, everyone else is
     # refused it, and no exclusivity or ownership test is consulted.
     claim = claimed_by(row, row.get("source"))
+    if claim is None:
+        claim = dot_claim(row, row.get("source"))
     if claim is None:
         claim = suffix_claim(row, row.get("source"))
     if claim is not None:

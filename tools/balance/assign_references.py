@@ -147,12 +147,37 @@ def norm_words(text):
 # is the wrong faction's unit, and the right one shares no word with ours at all. Routing catches
 # it (DTA's MLRS is tagged Nod) but only the alias FINDS the correct row.
 # ⛔ Do not add `mlrs -> ssmlauncher` here. They are two different units and Cameo ships both.
+# The mods that ship an original game and add nothing — so a NAME match against one of them is
+# proof the actor is an original, and proof a counterpart exists in every other source too.
+ORIGINAL_SOURCES = ("OpenRA Red Alert", "OpenRA Tiberian Dawn",
+                    "OpenRA Tiberian Sun", "Romanov's Vengeance")
+
 NAME_ALIASES = {
     "battletank": ("mediumtank",),
     "mediumtank": ("battletank",),
     "mlrs": ("msam", "rocketlauncher"),
     "ssmlauncher": ("mlrs",),
 }
+
+
+def _substantial_containment(a, b):
+    """One string inside the other, and enough of it to mean something.
+
+    ⛔ THE OLD GUARD MEASURED THE WRONG STRING. It asked `len(cand) >= 8` — the length of the
+    CAMEO id — while the danger is a SHORT PEER matching inside a long Cameo name. OpenRA Red
+    Alert's `Ant` (Giant Ant) therefore scored 0.85 against
+    `ra1_soviets_dragunovantimaterialsniper`, because "ant" is sitting in the middle of
+    "...antimaterialsniper", and the sniper was assigned a giant ant with a straight face.
+
+    Both sides must now carry weight: the shorter string has to be at least five characters and
+    at least 40% of the longer. That keeps the matches this rule exists for — "Rocket Soldier"
+    inside `sovietrocketsoldier`, "AA Gun" inside `alliedaagun`, faction-prefixed names like
+    "GDI Medium Tank" — and refuses the accidental ones.
+    """
+    if a not in b and b not in a:
+        return False
+    lo, hi = sorted((len(a), len(b)))
+    return lo >= 5 and lo / hi >= 0.4
 
 
 def name_score(cameo_id, peer_name):
@@ -172,7 +197,7 @@ def name_score(cameo_id, peer_name):
         # alone misses the exact unit it is looking at. The same defect, in its `startswith` form,
         # is what hides 143 actors from `reference_distribution`. Guarded on length so a short
         # token cannot match half a roster.
-        elif len(cand) >= 8 and (cand in peer or peer in cand):
+        elif _substantial_containment(cand, peer):
             best = max(best, 0.85)
     ratio = difflib.SequenceMatcher(None, tail, peer).ratio()
     shared = set(norm_words(cameo_id.split("_")[-1])) & set(norm_words(peer_name))
@@ -256,11 +281,20 @@ def variant_rank(cameo_id, peer_name):
     peer = syn.norm(peer_name)
     if not peer or peer not in tail:
         return 1
+    # ⛔ THE TEST IS INVERTED FROM WHAT IT WAS, and the old form was whack-a-mole. It asked
+    # whether the leftover text appears in a hand-kept VARIANT_WORDS list — which holds "flame"
+    # but not "fire", so `ra1_soviets_firerocketsoldier` was ranked a base unit and beat the
+    # actual `ra1_soviets_sovietrocketsoldier` to Combined Arms' E3 and DTA's E3S. The real RA1
+    # rocket soldier was left holding an Impaler and a Grenadier.
+    #
+    # A closed list of variant words can never be complete; the list of FACTION words can, because
+    # the factions are ours and we know them. So: after removing the reference's own name,
+    # anything left that is not a faction prefix makes this a VARIANT. `sovietrocketsoldier`
+    # leaves "soviet" and is the base; `firerocketsoldier` leaves "fire" and is not.
     residue = tail.replace(peer, "")
-    for w in VARIANT_WORDS:
-        if w in residue and w not in FACTION_WORDS:
-            return 0
-    return 1
+    for w in FACTION_WORDS:
+        residue = residue.replace(w, "")
+    return 1 if not residue else 0
 
 
 def score(cam, rec, peer, cam_cost_pct, peer_cost_pct, home, cam_shape=None, peer_shape=None):
@@ -430,6 +464,23 @@ def assign(only_class=None, routing=True):
                 routed_pool[(fac, src)] = [p for p in by_source.get(src, ())
                                            if fr.allows(fac, p)]
 
+    # ⛔ AN ORIGINAL CLAIMS BEFORE AN EXPANSION EVER BIDS (maintainer, 2026-09-07).
+    #
+    # `ra1_soviets_firerocketsoldier` — a Cameo addition — took Combined Arms' `E3` and DTA's
+    # `E3S`, both Rocket Soldiers, while `ra1_soviets_sovietrocketsoldier`, the actual RA1 unit
+    # those rows ARE, was left with an Impaler and a Grenadier. The greedy did nothing wrong by
+    # its own lights: string similarity has no idea that "soviet" is a faction prefix and "fire"
+    # is a variant prefix, so the expansion scores 0.867 against "Rocket Soldier" and the original
+    # scores 0.850. The expansion is literally the closer string.
+    #
+    # No amount of scorer tuning fixes that, because the two names really are similar and the
+    # tie-break has to come from OUTSIDE the string. The maintainer's rule supplies it: a unit
+    # that exists in the original game has first claim on that game's row, and everything else
+    # bids for what is left. Deciding it BEFORE the greedy runs is what makes it a rule rather
+    # than another heuristic competing with the others.
+    originals = original_actors(scope, by_source, routed_pool, routing)
+    assign.originals = originals
+
     result = collections.defaultdict(dict)
     for source, plist in sorted(by_source.items()):
         cands = []
@@ -454,7 +505,8 @@ def assign(only_class=None, routing=True):
                 if s:
                     cands.append((s, c["id"], p))
         # clause 9: greedy descent — best remaining wins, both sides then spoken for
-        cands.sort(key=lambda t: (t[0], t[1]), reverse=True)
+        # Originals first, then score. `reverse=True` puts True ahead of False.
+        cands.sort(key=lambda t: (t[1] in originals, t[0], t[1]), reverse=True)
         used_cam, used_peer = set(), set()
         for s, cid, p in cands:
             # ⛔ CLAUSE 3 IS SCOPED PER CAMEO FACTION, not globally (maintainer 2026-09-07).
@@ -525,15 +577,90 @@ def assign(only_class=None, routing=True):
                                    "hp": p.get("hp"), "cost": p.get("cost"),
                                    "home": bool(s[2]), "raw_name": s[6], "confidence": conf}
     assign.formula_only = formula_only
+    result = promote_by_id_agreement(result, by_source, routed_pool, routing)
     result, shape_only = drop_unbacked_shape(result)
     assign.shape_only = shape_only
     return result, skipped, len(scope)
 
 
-# The mods that ship an original game and add nothing — so a NAME match against one of them is
-# proof the actor is an original, and proof that a counterpart exists in every other source too.
-ORIGINAL_SOURCES = ("OpenRA Red Alert", "OpenRA Tiberian Dawn",
-                    "OpenRA Tiberian Sun", "Romanov's Vengeance")
+ORIGINAL_NAME_FLOOR = 0.85
+
+
+def original_actors(scope, by_source, routed_pool, routing):
+    """Cameo actors that exist in an original game — decided BEFORE the greedy runs.
+
+    The test is deliberately narrow: some ORIGINAL-shipping source must hold a row this actor
+    matches by NAME or ID at `ORIGINAL_NAME_FLOOR`, and routing must allow it. 0.85 is the
+    containment tier — "Rocket Soldier" inside `sovietrocketsoldier`, "Light Tank" inside
+    `alliedlighttank` — which is where real originals land once the containment guard stops
+    matching three-letter fragments.
+
+    ⚠ This must NOT be derived from the finished assignment. That is circular, and it is also
+    too late: the whole point is to decide who bids first.
+    """
+    out = set()
+    for c in scope:
+        cid = c["id"]
+        fac = fr.faction_of(cid)
+        for src in ORIGINAL_SOURCES:
+            visible = (routed_pool.get((fac, src), ()) if routing else by_source.get(src, ()))
+            for p in visible:
+                if max(name_score(cid, p.get("name", "")),
+                       name_score(cid, p.get("id", ""))) >= ORIGINAL_NAME_FLOOR:
+                    out.add(cid)
+                    break
+            if cid in out:
+                break
+    return out
+
+
+def promote_by_id_agreement(result, by_source, routed_pool, routing):
+    """When the sources AGREE ON AN ID, that id is the unit — whatever a source chose to call it.
+
+    ⭐ THE SIGNAL NOBODY WAS READING. These mods descend from the same Westwood originals, so they
+    share the original's id long after they have renamed the unit for flavour:
+
+        ra1_allies_alliedlighttank    OpenRA `1TNK` "Light Tank"   DTA `1TNK` "Allied Light Tank"
+                                      Combined Arms `1TNK` "SCOUT TANK"  <- name matches nothing
+
+    Two sources had already agreed by name that this actor is `1TNK`. The third ships `1TNK` too
+    and was passed over for a Mini Drone, because "Scout Tank" resembles nothing in our id and the
+    matcher had no way to say "but it is the same unit".
+
+    So: once an actor holds a NAME-backed reference, its id becomes evidence in its own right. Any
+    source with no name-backed match, but which ships a row with that exact id, gets promoted to
+    it. This only ever fills a slot that name matching failed on, never overrides one it won, and
+    it respects the per-faction exclusivity — a row another actor already holds is not taken.
+    """
+    claimed = {(fr.faction_of(cid), src, (d.get("id") or "").upper())
+               for cid, srcs in result.items() for src, d in srcs.items()}
+    promoted = 0
+    for cid, srcs in result.items():
+        backed = {(d.get("id") or "").upper() for d in srcs.values()
+                  if d["confidence"] in ("STRONG", "FAIR") and d.get("id")}
+        if not backed:
+            continue
+        fac = fr.faction_of(cid)
+        for src in by_source:
+            cur = srcs.get(src)
+            if cur and cur["confidence"] in ("STRONG", "FAIR"):
+                continue
+            visible = (routed_pool.get((fac, src), ()) if routing else by_source.get(src, ()))
+            for p in visible:
+                pid = (p.get("id") or "").upper()
+                if pid not in backed or (fac, src, pid) in claimed:
+                    continue
+                if cur:
+                    claimed.discard((fac, src, (cur.get("id") or "").upper()))
+                srcs[src] = {"name": p.get("name"), "id": p.get("id"),
+                             "score": (cur or {}).get("score"), "hp": p.get("hp"),
+                             "cost": p.get("cost"), "home": False,
+                             "raw_name": None, "confidence": "FAIR"}
+                claimed.add((fac, src, pid))
+                promoted += 1
+                break
+    promote_by_id_agreement.count = promoted
+    return result
 
 
 def drop_unbacked_shape(result):
@@ -559,14 +686,22 @@ def drop_unbacked_shape(result):
 
     ⚠ Measured before this: of ten mappings the maintainer called junk, 8 were SHAPE and 2 WEAK,
     and ZERO were STRONG; of the ones they called correct, 20 of 21 were STRONG.
+
+    ⛔ REVISED 2026-09-07, SAME DAY: shape references are now dropped for ORIGINALS TOO. Keeping
+    them for originals was defensible in theory — a counterpart provably exists, so a shape match
+    is probably it — and indefensible in practice. It is what left `ra1_allies_gunboat` holding a
+    Mobile Repair Ship, `ra1_allies_alliedaagun` a Pill Box, `ra1_allies_pillbox` a Silo and
+    `ra1_allies_alliedheavyaatank` a Heavy Flame Tank. The maintainer's verdict was "we need to
+    increase our confidence here", and PRECISION IS THE THING BEING ASKED FOR: a source with no
+    name-backed match should record NOTHING, and the O1 audit should then show that gap as work
+    to do. An empty slot is a question. A Mobile Repair Ship is a wrong answer that will be
+    silently averaged into a price.
     """
     kept, dropped = {}, {}
     for cid, srcs in result.items():
-        backed = any(d["confidence"] in ("STRONG", "FAIR") and s in ORIGINAL_SOURCES
-                     for s, d in srcs.items())
         keep, drop = {}, {}
         for s, d in srcs.items():
-            if d["confidence"] in ("STRONG", "FAIR") or backed:
+            if d["confidence"] in ("STRONG", "FAIR"):
                 keep[s] = d
             else:
                 drop[s] = {"id": d.get("id"), "name": d.get("name"),
