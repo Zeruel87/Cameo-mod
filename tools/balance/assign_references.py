@@ -329,7 +329,15 @@ def assign(only_class=None, routing=True):
         cands.sort(key=lambda t: (t[0], t[1]), reverse=True)
         used_cam, used_peer = set(), set()
         for s, cid, p in cands:
-            key = (p["source"], syn.norm(p.get("name", "")), p.get("id", ""))
+            # ⛔ CLAUSE 3 IS SCOPED PER CAMEO FACTION, not globally (maintainer 2026-09-07).
+            # A shared original exists ONCE in a reference roster and is built by BOTH sides:
+            # Tiberian Dawn's E1/E2/E3, APC and Harvester belong to GDI *and* Nod. Spending it
+            # globally starved the second faction of a unit the source game plainly gives it —
+            # OpenRA TD's Rocket Soldier went to `td_nod_rocketsoldier`, so `td_gdi_rocketsoldier`
+            # got nothing, and the same rule left the actual RA1 `sovietmammothtank` without the
+            # Mammoth it is named after. Within ONE faction the reference is still spent once, so
+            # the anti-duplication intent (clause 4, maximise DISTINCT references) is untouched.
+            key = (fr.faction_of(cid), p["source"], syn.norm(p.get("name", "")), p.get("id", ""))
             if cid in used_cam or key in used_peer:
                 continue
             used_cam.add(cid)
