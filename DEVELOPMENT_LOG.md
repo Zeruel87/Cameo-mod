@@ -24,6 +24,14 @@ commit `5be0ad305` on `devin/dawn/w24-lane3`:
   MissileHE+CannonHE — needs a family swap, not a drop); 12 NONE-confidence
   weapons listed in the fleet report.
 
+Batch 2 (`5ab072593`): 3 shipped-damage repairs (wc2ogremageRunes_Hit,
+d2k_grenade, D2K_Rocket_Trooper_AGOnly) + 7 collapses (D2K_155mm2, AtreusMG,
+EpigraphMG, HMG_Duelist_upgrade, DuelistTankCannon, BlackHandLaser, BCLaser).
+Drift improved: D1 131(-2), D2 59(-3), D3 23(-4); W5 377(-5). Boot PASS.
+Deferred for ruling: `BikeRockets` split-definition, `AGOnly` AP-vs-HE role
+conflict with `df01cb590`, the `^D2KMissile`/`PhoenixRocket` family-swap
+cluster, and the `D2K_Rocket_Trooper1/2` three-family weapons.
+
 Co-Authored-By: Devin AI <devin@cognition.ai>
 
 ## Codex - PR 328 current-upstream integration and scoped review (2026-09-06)
