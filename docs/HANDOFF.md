@@ -62,8 +62,14 @@ walker. **EMBER owns this.** Until it is fixed, `REFERENCE_OVERRIDES` and `FAMIL
    Volkov, both TD Commandos, Havoc, Kerrigan, Zeratul, Jim Raynor, Chrono Tank, MAD Tank — never
    enter the reference map at all. OpenTD's `RMBO` sits in the peer pool and always did; there is
    simply no Cameo actor left in scope that can claim it, and the same is true of OpenRA RA's
-   `CTNK`. The rule excludes heroes because they *"will be balanced separately"* — so this needs a
-   RULING on what "separately" means, not a filter. See the open question below.
+   `CTNK`.
+   ⭐ **RULED 2026-09-07 — the HERO-ONLY REFERENCE LANE.** Heroes stay OUT of every ordinary
+   distribution (the population rule is unchanged, and the 3,000,000 HP epic never re-enters the
+   vehicle ceiling), but a Cameo hero MAY match a peer hero, so `td_gdi_commando` claims `RMBO`
+   and `ra1_allies_chronotank` claims `CTNK`. References only — **no hero is ever priced by the
+   ordinary formula.** Implementation is the fleet's: a hero flag carried on the row rather than a
+   drop, `peer_rows()` keeping its exclusion for distributions, and `assign_references` matching
+   hero-to-hero only. 83 Cameo actors and 295 peer heroes are in scope.
 3. **Aliases for the 9 short originals** (ECHO) — each is one synonym; DTA calls its rocket
    soldier "Bazooka" and its AA gun "Anti-aircraft Gun". Finite and checkable.
 4. **Sign the 27 class anchors** (CODEX) — 0 of 27 signed, and `apply_balance` therefore refuses
@@ -77,12 +83,6 @@ walker. **EMBER owns this.** Until it is fixed, `REFERENCE_OVERRIDES` and `FAMIL
 * **Is Romanov's Vengeance the RA2 authority?** It carries 729 buildable units; RA2 + YR never
   shipped that many. It is 104 of 119 unclaimed "originals", and O2 currently reports it without
   gating on it. That exemption must be DELETED when ruled, never raised.
-* **How are heroes balanced "separately"?** The population rule excludes them from every
-  distribution, correctly — one 3,000,000 HP epic once made Cameo's vehicle ceiling 35x the peers'.
-  But the same exclusion also denies them REFERENCES, and 83 Cameo combat actors sit outside the
-  map because of it. A hero-only lane (heroes stay out of the ordinary distributions, and match
-  only other heroes) would give them evidence without reopening the distortion — but it is a
-  design change to a standing ruling and is not mine to make.
 * **TD naval** — GDI and Nod ships exist in DTA and CA and Cameo has none mapped.
 * Missing actors the maintainer named: **RMBO / E7 (Tanya)**, CA's Chinook, Specter, Venom.
 
