@@ -261,8 +261,13 @@ def _main() -> int:
                 # them out of the priced population; this is the SECOND lock, on the write path,
                 # so a hand-edited ledger cannot reach yaml either. Refuse, never silently skip:
                 # an edit aimed at a superweapon is a mistake the operator needs told about.
-                if _is_superweapon(ru) and changed_paths({"sections": {section: {actor: ru}}},
-                                                           {"sections": {section: {actor: u}}}):
+                # ⚠ `any(...)` IS LOAD-BEARING. `changed_paths` is a GENERATOR function, and a
+                # generator object is truthy even when it yields nothing — so the first version of
+                # this guard fired on EVERY superweapon row whether or not the ledger had touched
+                # it, and refused `tiberiandawn_gdi` (and every other faction that ships one)
+                # permanently. A guard that cannot pass is not a guard, it is an outage.
+                if _is_superweapon(ru) and any(changed_paths({"sections": {section: {actor: ru}}},
+                                                             {"sections": {section: {actor: u}}})):
                     problems.append(f"{actor}: SUPERWEAPON — fixed HP, never repriced; "
                                     f"revert this ledger edit")
                     continue

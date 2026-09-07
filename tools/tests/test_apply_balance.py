@@ -514,5 +514,44 @@ class StagedExtractorTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), b"someone else")
 
 
+class SuperweaponLockTests(unittest.TestCase):
+    """The second superweapon lock must refuse an EDIT and pass an untouched row.
+
+    ⛔ It did neither. `changed_paths` is a generator FUNCTION, so `and changed_paths(...)` tested
+    a generator OBJECT — always truthy — and the lock fired on every superweapon row whether the
+    ledger had touched it or not. `apply_balance --faction tiberiandawn_gdi` therefore reported
+    `REFUSED: 1 problem(s)` on a tree with zero pending edits, and every faction that ships a
+    superweapon was permanently unappliable. A guard that cannot pass is an outage, not a guard.
+    """
+
+    # Borrowed rather than INHERITED: subclassing `ApplyTests` would re-run all 37 of its tests
+    # against a ledger whose only unit is a superweapon, and 20 of them would fail for a reason
+    # that has nothing to do with what is under test here.
+    write_ledgers = ApplyTests.write_ledgers
+    run_apply = ApplyTests.run_apply
+    successful_child = ApplyTests.successful_child
+    change_cost = ApplyTests.change_cost
+
+    def setUp(self):
+        ApplyTests.setUp(self)
+        unit = self.fresh["test"]["sections"]["infantry"]["unit"]
+        unit["prerequisites"] = ["~techlevel.superweapons"]
+        self.desired = copy.deepcopy(self.fresh)
+        self.write_ledgers()
+
+    def test_untouched_superweapon_does_not_refuse(self):
+        code, text, _ = self.run_apply()
+        self.assertEqual(code, 0, text)
+        self.assertNotIn("SUPERWEAPON", text)
+        self.assertIn("DRY RUN: 0", text)
+
+    def test_edited_superweapon_is_refused(self):
+        self.change_cost()
+        code, text, _ = self.run_apply()
+        self.assertNotEqual(code, 0)
+        self.assertIn("SUPERWEAPON", text)
+        self.assertEqual(self.yaml.read_bytes(), self.original)
+
+
 if __name__ == "__main__":
     unittest.main()
