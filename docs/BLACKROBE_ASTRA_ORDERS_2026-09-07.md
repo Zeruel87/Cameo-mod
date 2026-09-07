@@ -11,7 +11,10 @@ binding order of operations).
 > map — breaking it costs another agent a day. §4 is your lane and it is large on purpose: it is
 > the single thing standing between this project and its first applied balance number, and it is
 > measurement and reconciliation work, which is what you are good at. §5–§8 are real follow-on
-> work, ordered. Do not start §8 before §4 is signed.
+> work, ordered. Do not start §8 before §4 is signed. **§9 is the maintainer's two open pull
+> requests and should be done EARLY — one finding there is time-sensitive.** §10 is everything the
+> fleet has started and cannot land on its own; it is analysis and reconciliation, never conversion.
+> 42 numbered tasks, C1–C42.
 >
 > Every number below was measured on master `545ff414a` on 2026-09-07 with the command shown
 > beside it. Re-measure before you rely on any of them — that is the house rule, not a courtesy.
@@ -168,7 +171,7 @@ apply_balance.py --faction <any>                DRY RUN: 0 values would change
 holds no target numbers. Every additional guard is a stronger gate on a road with no traffic.
 
 PR #328 was **99 documentation files, +104,391 lines, zero code**, mostly regenerated audit
-reports. A diff that size cannot be reviewed, so in practice it is not reviewed. See §9.
+reports. A diff that size cannot be reviewed, so in practice it is not reviewed. See §11.
 
 One duplication, which was my failure as coordinator and not yours: you built
 `CameoMatchLog`/`CameoMatchRecorder` while the fleet built `AiMatchLogWriter`. Yours was deleted.
@@ -379,15 +382,38 @@ members · `REF` members · residual · READY / NOT READY · the one-line "what 
 
 ## 5. Membership — the 251 rows that have no class
 
+### ⛔ BEFORE C13 AND C14 — THE FLEET ALREADY DID BOTH, AND NEITHER LANDED
+
+I nearly had you redo a week of someone else's work. Read these branches FIRST:
+
+| branch | what is on it |
+|---|---|
+| `devin/aurora/lane5-proposal` | `docs(lane5): air/naval/economy class proposal for 268 unclassed units` |
+| `devin/ember/lane5-classes` | `docs(lane5): air/naval/economy class proposal + 39-tag analysis` — a SECOND proposal for the same units |
+| `devin/aurora/lane4-templates` and `-v2` | `balance(lane4): classify 97 units with no unit template` — same 29-file set on both branches |
+| `devin/aurora/fix-anchor-readiness` | `fix(tools): anchor_readiness.py crash from deleted intentional_composites` + `balance(lane4): classify 9 no-template units + fix extract_stats preservation` |
+
+⚠ **The last row is in YOUR file-set** — `anchor_readiness.py` and `extract_stats.py`. Read it
+before you touch either, or you will collide with AURORA exactly the way five agents collided in
+the reference tree this week.
+
+⚠ And the counts disagree with mine: they say **268** unclassed and **97** without a template;
+`anchor_readiness` on master today says **199** and **52**. Reconciling that difference is part of
+the task — it is either progress since those branches were cut, or a different definition, and you
+must say which before you use either number.
+
 ### C13 — The 199 buildable rows with no defined class
 
-Produce `docs/balance/anchors/unclassified.md`: every row, its faction, section, hp/speed/cost, and
+**Start from AURORA's and EMBER's two competing proposals, not from scratch.** Reconcile them: where
+they agree, that is the proposal; where they disagree, present both readings with the role reason
+for each and let the maintainer pick. Then produce `docs/balance/anchors/unclassified.md`: every row, its faction, section, hp/speed/cost, and
 a **proposed** class with a one-line role reason. Group by proposed class so the maintainer reviews
 a class at a time. Flag anything you cannot place at all as `NEEDS RULING`, with the question
 written out.
 
 ### C14 — The 52 buildable rows with no unit template
 
+**AURORA classified 97 of these on `lane4-templates`; take that branch as the starting point.**
 These are rows the extractor sees but that inherit no `^*Template`. Establish whether each is (a) a
 genuine gap, (b) an actor that should not be in a combat section, or (c) an extraction defect.
 Report counts per cause before proposing any change.
@@ -517,7 +543,239 @@ evidence from the paired units, and mark it `NEEDS RULING`. Do not pick it yours
 
 ---
 
-## 9. Working rules
+## 9. The maintainer's two open pull requests — #325 and #321
+
+Maintainer, 2026-09-07:
+
+> *"if you have time can you review my two open pull requests #325 and #321?"*
+
+Do this **early** — ahead of §5 onward — because one finding below is time-sensitive and the rest
+of your lane does not depend on it.
+
+* https://github.com/cameo-mod/Cameo-mod/pull/325 — "Bot insurance rewrite + the high-DPI flag bug"
+* https://github.com/cameo-mod/Cameo-mod/pull/321 — "balance pipeline: stat grids, converter fixes, W24 batch prep, and two guard hooks"
+
+### C27 — ⛔ Start from these three measurements, because they change what the review IS
+
+```
+git rev-parse origin/claude/bot_insurance_dynamic_trait     -> e42eb9914...
+git rev-parse origin/claude/docs-audit-reorganize-xgzwhr    -> e42eb9914...   THE SAME COMMIT
+git rev-list --left-right --count origin/master...e42eb9914 -> 405   155
+git diff --stat 4deaee086 e42eb9914                         -> 250 files, +130904, -2872
+```
+
+**1. #325 and #321 are the same branch content under two names.** Both PR heads resolve to the
+identical commit `e42eb9914`, both show 250 files / +130,904 / −2,872, and both were last updated
+in the same second. Two different titles, one diff. Whichever is reviewed, the other is a
+duplicate — say so first, before any line-level comment.
+
+**2. They are 405 commits behind master and diverged at `4deaee086` ("Add archon merging").** The
+diff is measured against that ancient merge base, which is why it looks enormous.
+
+**3. ⛔⛔ MERGING EITHER ONE AS-IS WOULD DELETE THE SUPERWEAPON LOCK.** Measured:
+
+| marker | on the PR branch | on master |
+|---|--:|--:|
+| `SUPERWEAPON_TOKENS` / `is_superweapon` (`reference_distribution.py`) | **0** | 2 |
+| `ORIGINAL_NAME_FLOOR` (originals claim first) | **0** | 3 |
+| `REFERENCE_OVERRIDES` | **0** | 2 |
+| `tools/balance/assign_references.py` | 507 lines | **948** |
+| `tools/balance/reference_distribution.py` | 751 lines | **970** |
+| `tools/reference/extract_peer_units.py` | 626 lines | **733** |
+
+The branch carries an OLDER copy of the entire reference pipeline. A merge that takes the branch
+side on any of those files silently reverts the superweapon exclusion the maintainer declared
+absolute on 2026-09-07, plus every reference fix from three review rounds. **This is the headline
+of your review.**
+
+### C28 — What the review must actually deliver
+
+Not a line-by-line pass over 130,904 lines — that is not reviewable, and pretending otherwise is
+how #328 happened. Deliver:
+
+1. **The duplicate finding and the supersession finding, up front**, with the commands above so
+   the maintainer can re-run them in ten seconds.
+2. **A salvage list.** Work on that branch that is genuinely NOT on master and is still wanted.
+   `OpenRA.Mods.Cameo/Traits/DynamicBotInsurance.cs` (631 lines) and the high-DPI flag fix are the
+   obvious candidates — check whether each already landed by another route before listing it. For
+   each: does master have it, and if not, is it still correct against today's code?
+3. **A recommendation per PR**, one sentence each, from exactly three options: *close as
+   superseded*, *close and re-open a small PR carrying only the salvage list*, or *rebase onto
+   master* — and if you say rebase, say how many conflicts you MEASURED, not how many you expect.
+4. **⛔ Do not merge, close, or force-push anything.** These are the maintainer's PRs. You write
+   the review; they decide.
+
+### C29 — The general lesson to write into the review
+
+A PR whose diff is measured against a 405-commit-old base is not a proposal, it is an
+archaeological record. **The reviewable unit is `git diff origin/master...HEAD` on a rebased
+branch, and nothing else.** Recommend a house rule: any PR more than ~50 commits behind master gets
+rebased before review, or gets closed and re-cut. Put the sentence in `docs/AGENT_WORKSPACE.md` if
+the maintainer agrees.
+
+---
+
+## 10. What the fleet has started and cannot finish alone
+
+Maintainer, 2026-09-07: *"add many more things that codex needs to do, especially everything that
+the fleet is currently working on and can't finish on its own."*
+
+Measured today: **39 unmerged agent branches.** The fleet is good at producing work and bad at
+landing it, and almost none of what follows needs another agent — it needs one careful reader with
+a whole-repo view. That is you. ⛔ Throughout this section you **analyse, reconcile and report**:
+you do not convert weapons, you do not merge to master, and you do not commit to another agent's
+file.
+
+### C30 — W24 is spread across FOUR unmerged branches with 77 commits between them
+
+```
+devin/nova/w24-lane2       57 commits   66 files
+devin/ember/w24-lane1       7 commits   17 files
+devin/dawn/w24-lane3       11 commits   11 files
+devin/nova/w24-naxi-pilot   2 commits    3 files
+                           --
+                           77 commits unmerged
+files touched by 2+ of them: 9
+```
+
+The nine shared files are the problem, and two of them are live weapon files:
+
+```
+mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/weapons.yaml   lane1 + lane2
+mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/weapons.yaml        lane2 + naxi-pilot
+docs/balance/derived/tiberiansun_{gdi,nod,cabal,forgotten}.json     lane1 + lane2
+docs/balance/{derived/,}redalert2mod_consortium.json                lane1 + lane2
+DEVELOPMENT_LOG.md                                                  lane1 + lane2 + lane3
+```
+
+**Deliverable: a merge-order dossier.** For each of the nine — do the two branches touch the same
+WEAPON, or merely the same file? Where they overlap, do they agree on the final value? What order
+must they land in, and which pair needs a human decision? A textual conflict is cheap; **two lanes
+collapsing the same weapon to different damage is not, and no tool currently looks for it.**
+
+⛔ You convert nothing and you merge nothing. You produce the order and the collision list; I land
+them.
+
+### C31 — Four confirmed duplicate branch pairs, two of them byte-identical
+
+```
+devin/regen/conversion         == devin/aurora/regen-starcraft-wc2   IDENTICAL COMMIT (122 files)
+devin/aurora/naming-ra1_allies == devin/dawn/ra1-soviets-wip         IDENTICAL COMMIT (287 files)
+devin/aurora/lane4-templates   vs devin/aurora/lane4-templates-v2    same 29-file set
+devin/dawn/untagged-dune-mo    vs devin/dawn/ini-side-aliases        same 7-file set
+devin/ember/rename-asianalliance vs devin/ember/naming-asianalliance 78 of 83/79 files shared
+devin/aurora/rv-untagged-fix / -v2 / -v3                             three versions: 6 / 47 / 1 files
+devin/aurora/pool-hygiene / pool-hygiene-clean                       14 commits vs 1
+```
+
+Two agents are pushing **byte-identical commits under different names**, which means at least one
+of them believes they did work they did not do. Build
+`tools/audit/audit_branch_duplication.py`: for every unmerged branch pair, report identical HEADs,
+identical filesets, and any overlap above 70%. Run it, report the table, and recommend which branch
+of each pair survives. ⛔ **Delete nothing** — recommend, and let me do it.
+
+Worth automating: it has happened at least seven times in one week and nobody noticed until a human
+read the branch list.
+
+### C32 — `devin/aurora/fix-anchor-readiness` is unmerged and it is IN YOUR FILE-SET
+
+`fix(tools): anchor_readiness.py crash from deleted intentional_composites`, plus
+`fix extract_stats preservation`. Both files are yours under §3. **Read and verify that branch
+before you write a line in either**, then tell me whether it should land as-is, land with changes,
+or be superseded by your own work. If you rewrite around it without reading it, AURORA's fix is
+lost silently — exactly what happened to your match logger.
+
+### C33 — `devin/regen/conversion`: 497 `ChangesHealth@SelfHealing` Step overrides removed
+
+```
+650c0c600  regen(ra/ra2/ra2mod): remove 364 ChangesHealth@SelfHealing Step overrides
+cb49bd2f9  regen(d2k/td):        remove 131 ChangesHealth@SelfHealing Step overrides
+dba79de35  regen(d2k/shared):    remove   2 ChangesHealth@SelfHealing Step overrides
+```
+
+This is the DERIVED-STATS-IN-TRAITS work: a generated value replacing hand-written per-actor
+overrides. It touches 122 files of live yaml and is **unmerged and unverified**. Verify that the
+generated value equals the removed one for every actor — not a sample — and boot-gate it.
+⚠ The failure mode is `LESSONS_LEARNED` 8c: a "derive unless overridden" default is invisible while
+something upstream always overrides, so **assert the DERIVED value on a real resolved actor**,
+never that the knob is merely present.
+
+### C34 — The regeneration hazard that has already destroyed the corpus once
+
+⛔ `tools/reference/extract_peer_units.py --mod <x>` **rewrites the whole corpus** with only that
+mod's rows. It ran `docs/design/ORIGINAL_UNITS_PEER_OPENRA.md` from 2,583 rows down to 57 on
+2026-09-07, and was recovered only because a backup had been taken first.
+`tools/reference/splice_peer_section.py` exists to make that impossible — it refuses to write when
+any other source's row count moves.
+
+**Task: find the other tools in this repo with the same shape** — a filter-style flag that silently
+narrows a whole-corpus write. Report them; propose a splice wrapper or a refusal for each. This is
+a class of bug, not an incident.
+
+### C35 — Reconcile the ratchets nobody trusts
+
+Beyond B2 (322 vs 389), sweep every ratchet in `tools/audit/*.py` and report, per ratchet: its
+current value, its committed value, when it last moved, and whether the report in
+`docs/audit/latest/` agrees with a fresh run. ⚠ I found `original_coverage` stale today — the
+committed report says O1 19 / O2 115; a fresh run says **O1 9 / O2 119**. A stale report is worse
+than no report, because it is read as evidence. Do NOT regenerate `docs/audit/latest/` as part of
+this — report the drift, and refresh in a separate commit, alone (§11).
+
+### C36 — The AI match-log aggregation has no consumer
+
+`OpenRA.Mods.Cameo/Traits/AiMatchLogWriter.cs` and `tools/ai/aggregate_ai_matches.py` have landed,
+and the JSON-validity bug in the writer is fixed and covered by a test. But nothing consumes the
+aggregate. Establish what a personality-tuning loop would actually need from it and write the
+spec — not the tuner. ⚠ Already ruled and relevant: personality-tagged AI compositions need **zero
+C#**, because a condition-gated player-level `ProvidesPrerequisite` already ships in
+`mods/cameo/ai/ai.yaml`. Do not design a C# mechanism for something yaml already does.
+
+### C37 — `release_drift` D4 belongs here too
+
+See C19. 335 weapons that existed in the build players played no longer exist under that name.
+Classify them `RENAMED -> <new>` / `MERGED INTO <weapon>` / `DELETED`. It is the only check that
+looks at what SHIPPED rather than at what the rules say, and nobody has read its largest bucket.
+
+### C38 — The naming migration is 287 files deep on two identical branches
+
+`devin/aurora/naming-ra1_allies` and `devin/dawn/ra1-soviets-wip` are the same commit, 287 files.
+⚠ The maintainer has ALREADY ruled that the `ra1_soviets` rename must be **reverted** — *"all 32
+ids got worse"*. Before anything here lands, establish which of the 287 files belong to the
+rejected rename and which do not. **Do not land a rename the maintainer has rejected.**
+Underscore-only naming remains the law: no hyphens in ids, files, or fluent keys.
+
+### C39 — Hero support in the ledger, for the lane the maintainer just ruled
+
+Heroes now get a reference lane of their own (§4 C4). The fleet implements the reference side; the
+**ledger** side is yours. `cameo_rows()` must keep dropping build-limited actors from every
+distribution while the assignment can still see them — which means a hero FLAG carried on the row
+rather than a drop. Specify the flag, where it is set, and every consumer that must learn to ignore
+it. ⛔ SPECIFY it. The fleet writes it, so that two people are not editing
+`reference_distribution.py` at once.
+
+### C40 — Write the standing anti-collision check
+
+Everything in this section is one failure repeated: **work that existed and nobody knew.** Propose a
+single lightweight check — a script, a hook, a `docs/` table, your call — that would have caught the
+byte-identical branch pairs, the duplicate match logger, and the two competing lane5 proposals
+BEFORE the second one was written. Propose it and let me rule before you build it; this document
+exists partly because I skipped that step with AURORA's filter.
+
+### C41 — Keep `docs/TASK_INDEX.md` honest
+
+It is the standing defence against exactly the duplication in C31, and it is only as good as its
+rows. Every task you complete from this document earns a row: the task, the document and SECTION to
+read first, and the tools that ALREADY EXIST for it. `tools/audit/audit_task_index.py` guards it.
+
+### C42 — When you run out of work, ask before inventing more
+
+The failure this document exists to prevent is a month of careful work on something nobody needed.
+If C1–C41 are done, **post the state and wait** rather than starting a new subsystem. The one
+exception is a crash: crashes always jump the queue.
+
+---
+
+## 11. Working rules
 
 * **Worktree, never `git checkout -b` in the shared checkout.**
   `git worktree add C:/tmp/astra-<lane> -b astra/<lane> origin/master`. A checkout in the main tree
@@ -543,7 +801,7 @@ evidence from the paired units, and mark it `NEEDS RULING`. Do not pick it yours
 
 ---
 
-## 10. Reporting format
+## 12. Reporting format
 
 Post one message per lane, and lead with the measurement, not the narrative:
 
