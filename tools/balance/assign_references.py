@@ -157,6 +157,11 @@ NAME_ALIASES = {
     "mediumtank": ("battletank",),
     "mlrs": ("msam", "rocketlauncher"),
     "ssmlauncher": ("mlrs",),
+    # DTA writes it out in full where OpenRA and Combined Arms both abbreviate: `AGUN` "AA Gun"
+    # and `CRAM` "AA Gun" against DTA's `RAAGUN` "Anti-aircraft Gun". Confirmed by the maintainer
+    # as the same unit.
+    "aagun": ("antiaircraftgun", "antiaircraft"),
+    "alliedaagun": ("antiaircraftgun",),
 }
 
 
@@ -578,6 +583,7 @@ def assign(only_class=None, routing=True):
                                    "home": bool(s[2]), "raw_name": s[6], "confidence": conf}
     assign.formula_only = formula_only
     result = promote_by_id_agreement(result, by_source, routed_pool, routing)
+    result = apply_overrides(result, by_source, routed_pool, routing)
     result, shape_only = drop_unbacked_shape(result)
     assign.shape_only = shape_only
     return result, skipped, len(scope)
@@ -612,6 +618,43 @@ def original_actors(scope, by_source, routed_pool, routing):
             if cid in out:
                 break
     return out
+
+
+# ⛔ MAINTAINER-RULED PAIRINGS, for ambiguities no rule can resolve (2026-09-07).
+#
+# DTA's Allied navy is Corvette (id `DESTROYER`, 750cr) -> Frigate (1200) -> Cruiser (2500).
+# Cameo's is Gunboat (1300) -> Destroyer (1600) -> Cruiser (3000). The IDS and the ROLES point
+# opposite ways: DTA's id `DESTROYER` belongs to a ship they renamed "Corvette", which sits where
+# RA1's Gunboat sits. Id agreement — normally strong evidence — is a FALSE FRIEND here.
+#
+# The maintainer ruled the LADDER wins: cheapest maps to cheapest, and all three Allied warships
+# are used exactly once. Recorded as data rather than folded into the scorer, because it is a
+# judgement about one mod's renaming, not a general principle — and a rule inferred from a single
+# case is how the reference map got into trouble in the first place.
+REFERENCE_OVERRIDES = {
+    ("ra1_allies_gunboat", "DTA Enhanced"): "DESTROYER",   # DTA "Corvette"
+    ("ra1_allies_destroyer", "DTA Enhanced"): "FRIGATE",
+}
+
+
+def apply_overrides(result, by_source, routed_pool, routing):
+    """Force the maintainer-ruled pairings, displacing whatever the greedy chose."""
+    index = {}
+    for src, plist in by_source.items():
+        for p in plist:
+            index[(src, (p.get("id") or "").upper())] = p
+    for (cid, src), pid in REFERENCE_OVERRIDES.items():
+        p = index.get((src, pid.upper()))
+        if p is None:
+            continue
+        for other, srcs in result.items():
+            d = srcs.get(src)
+            if other != cid and d and (d.get("id") or "").upper() == pid.upper():
+                del srcs[src]
+        result.setdefault(cid, {})[src] = {
+            "name": p.get("name"), "id": p.get("id"), "score": None, "hp": p.get("hp"),
+            "cost": p.get("cost"), "home": False, "raw_name": None, "confidence": "STRONG"}
+    return result
 
 
 def promote_by_id_agreement(result, by_source, routed_pool, routing):
