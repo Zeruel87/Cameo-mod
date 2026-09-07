@@ -36,11 +36,29 @@ import faction_routes as fr        # noqa: E402
 import reference_distribution as rd  # noqa: E402
 
 ASSIGN = ROOT / "docs/balance/derived/reference_assignment.json"
-ORIGINAL_SOURCES = ("OpenRA Red Alert", "OpenRA Tiberian Dawn")
+# ⛔ THE AUTHORITY ON ORIGINALS, PER UNIVERSE (maintainer 2026-09-07). These mods port an
+# original game and add nothing, so their roster IS the original roster. Every other source —
+# Combined Arms, DTA, Shattered Paradise, CnC Reloaded — is a superset that expands it.
+ORIGINAL_SOURCES = (
+    "OpenRA Red Alert",        # RA1
+    "OpenRA Tiberian Dawn",    # TD
+    "OpenRA Tiberian Sun",     # TS — already extracted, 74 units
+    "Romanov's Vengeance",     # RA2 + YR (maintainer's ruling; see the caveat below)
+)
+# ⚠ ROMANOV'S VENGEANCE CARRIES 729 BUILDABLE UNITS. The maintainer named it the RA2/YR
+# authority, and it is the most complete RA2 source we have — but 729 is far more than RA2 and
+# Yuri's Revenge shipped between them, so it plainly expands the roster too. The corpus also
+# holds `OpenRA RA2 official` (86) and `Yuri's Revenge on OpenRA` (124), whose sizes match the
+# real rosters much more closely. Which of the three is the ORIGINAL authority is an open
+# question, and until it is settled RV will mark add-on units as originals here.
 
 # LOWER-ONLY ratchets, set from this audit's own run.
-O1_BASELINE = 12
-O2_BASELINE = 15
+# ⚠ These were 12 and 15 when ORIGINAL_SOURCES held only RA1 and TD. Adding Tiberian Sun and
+# Romanov's Vengeance widened the CORPUS, not the defect: more rosters are now treated as
+# authoritative, so more unclaimed originals are visible. That is a re-baseline on a changed
+# measurement, not a raised ratchet on the same one — and most of the jump is RV's 729 rows.
+O1_BASELINE = 19
+O2_BASELINE = 115
 
 
 def main() -> int:
