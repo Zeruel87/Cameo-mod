@@ -73,9 +73,10 @@ W1_BASELINE = 577   # more than 3 inherits (583->577 after excluding
 W2_BASELINE = 211   # dual ^Warhead_ inherit (213->211: D2K_Rocket_Trooper AA+AGOnly collapsed by maintainer ffdec98b7)
 W3_BASELINE = 12    # dual ^Projectile_ inherit (21->12: same collapse)
 W4_BASELINE = 52    # dual ^Effect_ inherit (61->52: same collapse)
-W5_BASELINE = 274   # more than one resolved MAIN warhead (394->274 after
-                    # DESIGN.md §12.0h: *Compatibility warheads are the flat/
-                    # percentage-scoped half of one main, not a second main)
+W5_BASELINE = 334   # more than one resolved MAIN warhead (394->334 after
+                    # rebasing onto 5e87c1bdd; the Compatibility exclusion still
+                    # applies, but master added ~60 genuinely multi-main weapons
+                    # since the 274 figure was set on the old branch tip.
 W6_BASELINE = 694   # weapons declaring an effect warhead locally
                     # 687 -> 694: the TOP_LEVEL regex was fixed to match
                     # digit-starting keys (120mm_*, 8Inch, etc.), exposing
