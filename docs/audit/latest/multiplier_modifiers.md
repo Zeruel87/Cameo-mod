@@ -1,6 +1,6 @@
 # audit_multiplier_modifiers — *Multiplier Modifier integer percent check
 
-*Multiplier trait families seen: 1813
+*Multiplier trait families seen: 1814
 
 | trait family |
 |---|
@@ -724,6 +724,7 @@
 | `FirepowerMultiplier@naxis_beerfactory` |
 | `FirepowerMultiplier@naxis_naxiriflerecruit` |
 | `FirepowerMultiplier@naxis_naxiriflesoldier` |
+| `FirepowerMultiplier@naxis_tiger` |
 | `FirepowerMultiplier@naxis_upgrade_ostfrontexperience` |
 | `FirepowerMultiplier@naxis_upgrade_tankarsenalrenovation` |
 | `FirepowerMultiplier@ordos_lightinfantry` |

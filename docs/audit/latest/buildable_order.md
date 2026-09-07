@@ -2,7 +2,7 @@
 
 Buildable combat actors checked: **895**
 Prerequisite order violations: **1**
-Build palette order violations: **1043**
+Build palette order violations: **989**
 
 
 ## Prerequisite order violations
@@ -216,12 +216,12 @@ Build palette order violations: **1043**
 | futuretech | Vehicle | futuretech_prospectormk2 | 3 | 1200 | 115 | should be before futuretech_riptideacv (tier/cost order) |
 | futuretech | Vehicle | futuretech_robottank | 3 | 1600 | 225 | should be before futuretech_energizer (tier/cost order) |
 | futuretech | Vehicle | futuretech_oriontank | 3 | 2400 | 435 | should be before futuretech_energizer (tier/cost order) |
-| harkonnen | Aircraft | harkonnen_gunship | 2 | 1200 | 20 | should be before harkonnen_advancedcarryall (tier/cost order) |
-| harkonnen | Aircraft | atreides_ornithopter | 2 | 1500 | 20 | should be before harkonnen_advancedcarryall (tier/cost order) |
+| harkonnen | Aircraft | harkonnen_advancedcarryall | 2 | 800 | 30 | should be before atreides_advancedcarryall (tier/cost order) |
+| harkonnen | Aircraft | harkonnen_gunship | 2 | 1200 | 20 | should be before atreides_advancedcarryall (tier/cost order) |
 | harkonnen | Infantry | light_inf | 3 | 150 | 10 | should be before harkonnen_rockettrooper (tier/cost order) |
 | harkonnen | Infantry | trooper | 3 | 300 | 20 | should be before harkonnen_engineer (tier/cost order) |
-| harkonnen | RAAircraft | harkonnen_gunship | 2 | 1200 | 20 | should be before harkonnen_advancedcarryall (tier/cost order) |
-| harkonnen | RAAircraft | atreides_ornithopter | 2 | 1500 | 20 | should be before harkonnen_advancedcarryall (tier/cost order) |
+| harkonnen | RAAircraft | harkonnen_advancedcarryall | 2 | 800 | 30 | should be before atreides_advancedcarryall (tier/cost order) |
+| harkonnen | RAAircraft | harkonnen_gunship | 2 | 1200 | 20 | should be before atreides_advancedcarryall (tier/cost order) |
 | harkonnen | RAInfantry | light_inf | 3 | 150 | 10 | should be before harkonnen_rockettrooper (tier/cost order) |
 | harkonnen | RAInfantry | trooper | 3 | 300 | 20 | should be before harkonnen_engineer (tier/cost order) |
 | harkonnen | RAVehicle | harkonnen_spiceharvester | 2 | 600 | 10 | should be before combat_tank.harkonnen (tier/cost order) |
@@ -238,10 +238,10 @@ Build palette order violations: **1043**
 | harkonnen | Vehicle | harkonnen_inkvine | 2 | 900 | 65 | should be before harkonnen_buzzsaw (tier/cost order) |
 | harkonnen | Vehicle | harkonnen_mobileconstructionvehicle | 2 | 5000 | 100 | should be before harkonnen_devastatormech (tier/cost order) |
 | harkonnen | Vehicle | missile_tank | 3 | 750 | 60 | should be before harkonnen_buzzsaw (tier/cost order) |
-| ixian | Aircraft | atreides_advancedcarryall | 2 | 800 | 10 | should be before carryall (tier/cost order) |
+| ixian | Aircraft | atreides_advancedcarryall | 2 | 800 | 40 | should be before carryall (tier/cost order) |
 | ixian | Aircraft | harkonnen_advancedcarryall | 2 | 800 | 30 | should be before carryall (tier/cost order) |
 | ixian | Aircraft | harkonnen_gunship | 2 | 1200 | 20 | should be before carryall (tier/cost order) |
-| ixian | Aircraft | atreides_ornithopter | 2 | 1500 | 20 | should be before carryall (tier/cost order) |
+| ixian | Aircraft | atreides_ornithopter | 2 | 1500 | 60 | should be before carryall (tier/cost order) |
 | ixian | Aircraft | ixian_railgundrone | 3 | 2000 | 20 | should be before carryall (tier/cost order) |
 | ixian | Aircraft | ixian_empbomber | 3 | 2400 | 20 | should be before carryall (tier/cost order) |
 | ixian | Aircraft | ixian_resonancedrone | 3 | 2500 | 20 | should be before carryall (tier/cost order) |
@@ -252,10 +252,10 @@ Build palette order violations: **1043**
 | ixian | Infantry | ixian_shockinfantry | 3 | 500 | 10 | should be before engineer (tier/cost order) |
 | ixian | Infantry | ixian_twinrockettrooper | 3 | 600 | 20 | should be before engineer (tier/cost order) |
 | ixian | Infantry | ixian_storminfantry | 3 | 800 | 10 | should be before engineer (tier/cost order) |
-| ixian | RAAircraft | atreides_advancedcarryall | 2 | 800 | 10 | should be before carryall (tier/cost order) |
+| ixian | RAAircraft | atreides_advancedcarryall | 2 | 800 | 40 | should be before carryall (tier/cost order) |
 | ixian | RAAircraft | harkonnen_advancedcarryall | 2 | 800 | 30 | should be before carryall (tier/cost order) |
 | ixian | RAAircraft | harkonnen_gunship | 2 | 1200 | 20 | should be before carryall (tier/cost order) |
-| ixian | RAAircraft | atreides_ornithopter | 2 | 1500 | 20 | should be before carryall (tier/cost order) |
+| ixian | RAAircraft | atreides_ornithopter | 2 | 1500 | 60 | should be before carryall (tier/cost order) |
 | ixian | RAAircraft | ixian_railgundrone | 3 | 2000 | 20 | should be before carryall (tier/cost order) |
 | ixian | RAAircraft | ixian_empbomber | 3 | 2400 | 20 | should be before carryall (tier/cost order) |
 | ixian | RAAircraft | ixian_resonancedrone | 3 | 2500 | 20 | should be before carryall (tier/cost order) |
@@ -361,7 +361,7 @@ Build palette order violations: **1043**
 | latinsyndicate | RAVehicle | latinsyndicate_mortarbike | 3 | 500 | 30 | should be before latinsyndicate_diablo (tier/cost order) |
 | latinsyndicate | RAVehicle | latinsyndicate_rushertank | 3 | 650 | 60 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
 | latinsyndicate | RAVehicle | latinsyndicate_raiderbuggy | 3 | 700 | 20 | should be before latinsyndicate_diablo (tier/cost order) |
-| latinsyndicate | RAVehicle | tiger.nax | 3 | 800 | 60 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
+| latinsyndicate | RAVehicle | naxis_tiger | 3 | 800 | 60 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
 | latinsyndicate | RAVehicle | latinsyndicate_missiletruck | 3 | 1000 | 80 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
 | latinsyndicate | RAVehicle | latinsyndicate_lars | 3 | 1300 | 80 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
 | latinsyndicate | RAVehicle | latinsyndicate_burrito | 3 | 1800 | 80 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
@@ -377,7 +377,7 @@ Build palette order violations: **1043**
 | latinsyndicate | Vehicle | latinsyndicate_mortarbike | 3 | 500 | 30 | should be before latinsyndicate_diablo (tier/cost order) |
 | latinsyndicate | Vehicle | latinsyndicate_rushertank | 3 | 650 | 60 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
 | latinsyndicate | Vehicle | latinsyndicate_raiderbuggy | 3 | 700 | 20 | should be before latinsyndicate_diablo (tier/cost order) |
-| latinsyndicate | Vehicle | tiger.nax | 3 | 800 | 60 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
+| latinsyndicate | Vehicle | naxis_tiger | 3 | 800 | 60 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
 | latinsyndicate | Vehicle | latinsyndicate_missiletruck | 3 | 1000 | 80 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
 | latinsyndicate | Vehicle | latinsyndicate_lars | 3 | 1300 | 80 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
 | latinsyndicate | Vehicle | latinsyndicate_burrito | 3 | 1800 | 80 | should be before latinsyndicate_syndicatemobileconstructionvehicle (tier/cost order) |
@@ -405,7 +405,7 @@ Build palette order violations: **1043**
 | naxis | RAInfantry | naxis_panzerschreck | 2 | 600 | 10 | should be before naxis_portableflak (tier/cost order) |
 | naxis | RAInfantry | naxis_skymage | 2 | 1200 | 80 | should be before naxis_coneheadsknights (tier/cost order) |
 | naxis | RAVehicle | naxis_grille | 3 | 800 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
-| naxis | RAVehicle | tiger.nax | 3 | 800 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
+| naxis | RAVehicle | naxis_tiger | 3 | 800 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
 | naxis | RAVehicle | naxis_brummbar | 3 | 1100 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
 | naxis | RAVehicle | naxis_hetzer | 3 | 1300 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
 | naxis | RAVehicle | naxis_nop03sarubia | 3 | 1400 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
@@ -418,7 +418,7 @@ Build palette order violations: **1043**
 | naxis | RAVehicle | naxis_maus | 3 | 4200 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
 | naxis | Vehicle | naxis_transportzeppelin | 2 | 5000 | 20 | should be before naxis_kubelwagen (tier/cost order) |
 | naxis | Vehicle | naxis_grille | 3 | 800 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
-| naxis | Vehicle | tiger.nax | 3 | 800 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
+| naxis | Vehicle | naxis_tiger | 3 | 800 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
 | naxis | Vehicle | naxis_brummbar | 3 | 1100 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
 | naxis | Vehicle | naxis_hetzer | 3 | 1300 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
 | naxis | Vehicle | naxis_nop03sarubia | 3 | 1400 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
@@ -429,68 +429,14 @@ Build palette order violations: **1043**
 | naxis | Vehicle | naxis_sturmtiger | 3 | 2500 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
 | naxis | Vehicle | naxis_nokana | 3 | 3000 | 80 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
 | naxis | Vehicle | naxis_maus | 3 | 4200 | 60 | should be before naxis_naximobileconstructionvehicle (tier/cost order) |
-| ordos | Aircraft | atreides_advancedcarryall | 2 | 800 | 10 | should be before ordos_airmine (tier/cost order) |
-| ordos | Aircraft | harkonnen_advancedcarryall | 2 | 800 | 30 | should be before ordos_advancedcarryall (tier/cost order) |
-| ordos | Aircraft | harkonnen_gunship | 2 | 1200 | 20 | should be before ordos_airmine (tier/cost order) |
-| ordos | Aircraft | atreides_ornithopter | 2 | 1500 | 20 | should be before ordos_airmine (tier/cost order) |
-| ordos | Aircraft | ordos_eyeinthesky | 2 | 2500 | 30 | should be before ordos_advancedcarryall (tier/cost order) |
-| ordos | Aircraft | ordos_banshee | 3 | 2250 | 30 | should be before ordos_advancedcarryall (tier/cost order) |
-| ordos | Infantry | engineer | 2 | 500 | 30 | should be before ordos_saboteur (tier/cost order) |
-| ordos | Infantry | ordos_facedancer | 2 | 5000 | 20 | should be before ordos_saboteur (tier/cost order) |
+| ordos | Aircraft | harkonnen_advancedcarryall | 2 | 800 | 30 | should be before atreides_advancedcarryall (tier/cost order) |
+| ordos | Aircraft | harkonnen_gunship | 2 | 1200 | 20 | should be before ordos_advancedcarryall (tier/cost order) |
 | ordos | Infantry | light_inf | 3 | 150 | 10 | should be before ordos_saboteur (tier/cost order) |
-| ordos | Infantry | ordos_rockettrooper | 3 | 300 | 20 | should be before ordos_saboteur (tier/cost order) |
-| ordos | Infantry | trooper | 3 | 300 | 20 | should be before ordos_saboteur (tier/cost order) |
-| ordos | Infantry | atreides_fremen | 3 | 400 | 80 | should be before ordos_saboteur (tier/cost order) |
-| ordos | Infantry | ordos_chemicaltrooper | 3 | 400 | 10 | should be before ordos_saboteur (tier/cost order) |
-| ordos | Infantry | ordos_antiairtrooper | 3 | 450 | 20 | should be before ordos_saboteur (tier/cost order) |
-| ordos | Infantry | ordos_contaminator | 3 | 500 | 10 | should be before ordos_saboteur (tier/cost order) |
-| ordos | Infantry | ordos_mortartrooper | 3 | 600 | 20 | should be before ordos_saboteur (tier/cost order) |
-| ordos | RAAircraft | atreides_advancedcarryall | 2 | 800 | 10 | should be before ordos_airmine (tier/cost order) |
-| ordos | RAAircraft | harkonnen_advancedcarryall | 2 | 800 | 30 | should be before ordos_advancedcarryall (tier/cost order) |
-| ordos | RAAircraft | harkonnen_gunship | 2 | 1200 | 20 | should be before ordos_airmine (tier/cost order) |
-| ordos | RAAircraft | atreides_ornithopter | 2 | 1500 | 20 | should be before ordos_airmine (tier/cost order) |
-| ordos | RAAircraft | ordos_eyeinthesky | 2 | 2500 | 30 | should be before ordos_advancedcarryall (tier/cost order) |
-| ordos | RAAircraft | ordos_banshee | 3 | 2250 | 30 | should be before ordos_advancedcarryall (tier/cost order) |
-| ordos | RAInfantry | engineer | 2 | 500 | 30 | should be before ordos_saboteur (tier/cost order) |
-| ordos | RAInfantry | ordos_facedancer | 2 | 5000 | 20 | should be before ordos_saboteur (tier/cost order) |
+| ordos | Infantry | trooper | 3 | 300 | 20 | should be before engineer (tier/cost order) |
+| ordos | RAAircraft | harkonnen_advancedcarryall | 2 | 800 | 30 | should be before atreides_advancedcarryall (tier/cost order) |
+| ordos | RAAircraft | harkonnen_gunship | 2 | 1200 | 20 | should be before ordos_advancedcarryall (tier/cost order) |
 | ordos | RAInfantry | light_inf | 3 | 150 | 10 | should be before ordos_saboteur (tier/cost order) |
-| ordos | RAInfantry | ordos_rockettrooper | 3 | 300 | 20 | should be before ordos_saboteur (tier/cost order) |
-| ordos | RAInfantry | trooper | 3 | 300 | 20 | should be before ordos_saboteur (tier/cost order) |
-| ordos | RAInfantry | atreides_fremen | 3 | 400 | 80 | should be before ordos_saboteur (tier/cost order) |
-| ordos | RAInfantry | ordos_chemicaltrooper | 3 | 400 | 10 | should be before ordos_saboteur (tier/cost order) |
-| ordos | RAInfantry | ordos_antiairtrooper | 3 | 450 | 20 | should be before ordos_saboteur (tier/cost order) |
-| ordos | RAInfantry | ordos_contaminator | 3 | 500 | 10 | should be before ordos_saboteur (tier/cost order) |
-| ordos | RAInfantry | ordos_mortartrooper | 3 | 600 | 20 | should be before ordos_saboteur (tier/cost order) |
-| ordos | RAVehicle | ordos_tankdestroyer | 2 | 2200 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | RAVehicle | ordos_combattank | 3 | 650 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | RAVehicle | ordos_heavycombattank | 3 | 950 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | RAVehicle | ordos_raider | 3 | 1200 | 10 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | RAVehicle | ordos_stealthraider | 3 | 1300 | 30 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | RAVehicle | ordos_dustdrone | 3 | 1400 | 10 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | RAVehicle | ordos_cobratank | 3 | 1500 | 50 | should be before ordos_mobileconstructionvehicle (tier/cost order) |
-| ordos | RAVehicle | ordos_combatautoguntank | 3 | 1500 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | RAVehicle | ordos_pythontank | 3 | 2500 | 50 | should be before ordos_mobileconstructionvehicle (tier/cost order) |
-| ordos | RAVehicle | ordos_heavyautoguntank | 3 | 2800 | 50 | should be before ordos_mobileconstructionvehicle (tier/cost order) |
-| ordos | Starport | ordos_tankdestroyer | 2 | 2200 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Starport | ordos_combattank | 3 | 650 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Starport | ordos_heavycombattank | 3 | 950 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Starport | ordos_raider | 3 | 1200 | 10 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Starport | ordos_stealthraider | 3 | 1300 | 30 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Starport | ordos_dustdrone | 3 | 1400 | 10 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Starport | ordos_cobratank | 3 | 1500 | 50 | should be before ordos_mobileconstructionvehicle (tier/cost order) |
-| ordos | Starport | ordos_combatautoguntank | 3 | 1500 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Starport | ordos_pythontank | 3 | 2500 | 50 | should be before ordos_mobileconstructionvehicle (tier/cost order) |
-| ordos | Starport | ordos_heavyautoguntank | 3 | 2800 | 50 | should be before ordos_mobileconstructionvehicle (tier/cost order) |
-| ordos | Vehicle | ordos_tankdestroyer | 2 | 2200 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Vehicle | ordos_combattank | 3 | 650 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Vehicle | ordos_heavycombattank | 3 | 950 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Vehicle | ordos_raider | 3 | 1200 | 10 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Vehicle | ordos_stealthraider | 3 | 1300 | 30 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Vehicle | ordos_dustdrone | 3 | 1400 | 10 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Vehicle | ordos_cobratank | 3 | 1500 | 50 | should be before ordos_mobileconstructionvehicle (tier/cost order) |
-| ordos | Vehicle | ordos_combatautoguntank | 3 | 1500 | 40 | should be before ordos_deviatorartillery (tier/cost order) |
-| ordos | Vehicle | ordos_pythontank | 3 | 2500 | 50 | should be before ordos_mobileconstructionvehicle (tier/cost order) |
-| ordos | Vehicle | ordos_heavyautoguntank | 3 | 2800 | 50 | should be before ordos_mobileconstructionvehicle (tier/cost order) |
+| ordos | RAInfantry | trooper | 3 | 300 | 20 | should be before engineer (tier/cost order) |
 | plymouth | RAVehicle | plymouth_lynx_stickyfoam | 2 | 500 | 60 | should be before plymouth_lynx_starflare (tier/cost order) |
 | plymouth | RAVehicle | plymouth_lynx_emp | 2 | 700 | 60 | should be before plymouth_lynx_starflare (tier/cost order) |
 | plymouth | RAVehicle | plymouth_tiger_stickyfoam | 2 | 900 | 130 | should be before plymouth_tiger_starflare (tier/cost order) |

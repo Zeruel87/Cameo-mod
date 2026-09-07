@@ -44,6 +44,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		string filePath;
 		string mutexName;
 		bool written;
+		bool eligibleAtWorldLoad;
 		int attempts;
 		int nextAttemptTick;
 
@@ -54,6 +55,15 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		void IWorldLoaded.WorldLoaded(World world, WorldRenderer worldRenderer)
 		{
+			// Save replay-in eventually clears IsLoadingGameSave. Keep the exclusion
+			// for this world's entire lifetime, including its eventual GameOver.
+			eligibleAtWorldLoad = Eligible(world.Type, world.IsReplay, world.IsLoadingGameSave, Game.IsHost);
+			if (!eligibleAtWorldLoad)
+			{
+				written = true;
+				return;
+			}
+
 			fallbackGameUid = Guid.NewGuid().ToString("N");
 			filePath = Path.Combine(Platform.SupportDir, "Logs", info.FileName);
 			var canonicalPath = Path.GetFullPath(filePath);
@@ -92,7 +102,7 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (written)
 				return;
 
-			if (world.Type != WorldType.Regular || world.IsReplay || !Game.IsHost)
+			if (!eligibleAtWorldLoad || world.Type != WorldType.Regular || world.IsReplay || !Game.IsHost)
 			{
 				written = true;
 				return;
@@ -168,6 +178,11 @@ namespace OpenRA.Mods.Cameo.Traits
 				.Where(IsEligiblePlayer)
 				.Where(p => p.IsBot)
 				.All(p => p.WinState != WinState.Undefined);
+		}
+
+		internal static bool Eligible(WorldType type, bool replay, bool loadingSave, bool host)
+		{
+			return type == WorldType.Regular && !replay && !loadingSave && host;
 		}
 
 		string BuildLog(World world)

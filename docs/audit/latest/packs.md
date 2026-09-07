@@ -116,7 +116,7 @@
 | worms | 0 | 1 | mods\cameo\rules\worms.yaml |
 | zmcv | 0 | 1 | mods\cameo\rules\z.yaml |
 
-Fully converted prefixes (93): air, asianalliance, atreides, banshee, bbomb, bbomb2, bbomb3, bf109, bomber, cabal, cargoship, carryall, cgcnst, combat, conyard, corpse, corrino, cplane, cruiser, cryo, d2k, deathcash, dieglocke, drone, duelist, egcnst, eye, farasha, forgotten, fremen, futuretech, grun, harbinger, harkonnen, haunebu, haunebu2, heavy, heavydrone, hole, horten, inspect, ixian, japan, kami, landcarr, latinsyndicate, light, litt, me262, mig, missile, nax, naxis, ordos, ornithopter, pelican, phoenix, piercer, protoss, qacst, ra1_allies, ra1_badger, ra2_allies, ra2_soviets, ra2_yuri, ra2hind, resonance, rocket, sarubia, schwarzermond, scrapcar, scrapcar2, siege, sietch, sonic, steelconsortium, swarmer, td_gdi, team, terran, tkm, ts_gdi, ts_nod, twister, up, upgrade, wc2_humans, wc2_orcs, wraith, yakolev, yuri, zep, zerg
+Fully converted prefixes (76): air, asianalliance, atreides, banshee, bomber, cabal, cargoship, carryall, cgcnst, combat, corrino, cruiser, cryo, d2k, deathcash, drone, duelist, egcnst, eye, farasha, forgotten, fremen, futuretech, grun, harbinger, harkonnen, heavy, heavydrone, inspect, ixian, japan, kami, landcarr, latinsyndicate, light, mig, missile, nax, naxis, ordos, ornithopter, pelican, phoenix, protoss, qacst, ra1_allies, ra1_badger, ra2_allies, ra2_soviets, ra2_yuri, ra2hind, resonance, rocket, schwarzermond, scrapcar, scrapcar2, siege, sietch, sonic, steelconsortium, swarmer, td_gdi, team, terran, tkm, ts_gdi, ts_nod, twister, up, upgrade, wc2_humans, wc2_orcs, wraith, yakolev, yuri, zerg
 
 ## P2 — actors whose id does not match the pack's dominant prefix
 
@@ -193,29 +193,7 @@ Fully converted prefixes (93): air, asianalliance, atreides, banshee, bbomb, bbo
 | RedAlert2Mod/FutureTech | harbinger_husk.futu | futuretech |
 | RedAlert2Mod/FutureTech | landcarr_drone.futu | futuretech |
 | RedAlert2Mod/FutureTech | egcnst_infiltrated.futu | futuretech |
-| RedAlert2Mod/Naxis | bf109_husk.nax | naxis |
-| RedAlert2Mod/Naxis | me262_husk.nax | naxis |
-| RedAlert2Mod/Naxis | zep_husk.nax | naxis |
-| RedAlert2Mod/Naxis | horten_bomber.nax | naxis |
-| RedAlert2Mod/Naxis | horten_husk.nax | naxis |
-| RedAlert2Mod/Naxis | cplane_husk.nax | naxis |
-| RedAlert2Mod/Naxis | litt_husk.nax | naxis |
 | RedAlert2Mod/Naxis | nax_bitsmark | naxis |
-| RedAlert2Mod/Naxis | conyard_infiltrated.nax | naxis |
-| RedAlert2Mod/Naxis | up_resurrection.nax | naxis |
-| RedAlert2Mod/Naxis | sarubia_bomb.nax | naxis |
-| RedAlert2Mod/Naxis | up_team_blitzkrieg.nax | naxis |
-| RedAlert2Mod/Naxis | corpse_big.nax | naxis |
-| RedAlert2Mod/SchwarzerMond | zep_husk.nax2 | schwarzermond |
-| RedAlert2Mod/SchwarzerMond | bbomb_husk.nax2 | schwarzermond |
-| RedAlert2Mod/SchwarzerMond | bbomb2_husk.nax2 | schwarzermond |
-| RedAlert2Mod/SchwarzerMond | bbomb3_husk.nax2 | schwarzermond |
-| RedAlert2Mod/SchwarzerMond | haunebu_husk.nax2 | schwarzermond |
-| RedAlert2Mod/SchwarzerMond | haunebu2_husk.nax2 | schwarzermond |
-| RedAlert2Mod/SchwarzerMond | piercer_husk.nax2 | schwarzermond |
-| RedAlert2Mod/SchwarzerMond | dieglocke_husk.nax2 | schwarzermond |
-| RedAlert2Mod/SchwarzerMond | hole_small.nax2 | schwarzermond |
-| RedAlert2Mod/SchwarzerMond | conyard_infiltrated.nax2 | schwarzermond |
 | RedAlert2Mod/Syndicate | ra2hind_husk.latin | latinsyndicate |
 | RedAlert2Mod/Syndicate | yakolev_husk.latin | latinsyndicate |
 | RedAlert2Mod/Syndicate | mig_husk.latin | latinsyndicate |
@@ -238,4 +216,4 @@ _clean_
 
 - actor ids violating the lowercase grammar: **1510** (e.g. 1TNK.camea, 2100A2MAT, 2100A2PT, 2100A2TIT, 2100A2VET, 2100AA, 2100AACH, 2100AAMAT)
 
-Total findings: 711
+Total findings: 689

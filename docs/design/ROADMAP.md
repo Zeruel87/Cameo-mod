@@ -30,6 +30,19 @@ granular, resumable task queue that the handoff points into._
 - [ ] Generate `Mobile` / `Turreted` / `Aircraft` TurnSpeed from Speed and drive the
   T1/T2 ratchets down. 40% of vehicles currently disobey the rule.
 
+## Balance apply failure safety (2026-09-07)
+
+- [x] Repair `apply_balance.py` confirmation: reject incomplete plans, validate
+  provenance/shared consumers, stage extraction outside proposal ledgers, propagate
+  failed subprocesses, and restore transaction-owned writes on failure.
+- [x] Add failure-injection regressions and verify an unchanged live faction dry run.
+
+The former writer could save YAML despite planning errors, invoke the extractor
+with an obsolete positional argument, and report success after subprocess failure.
+The repair is independently reviewed; balance targets still require the normal
+sign-off and boot gates. Evidence and delivery status are in
+`docs/audit/ASTRA_REVIEW.md`.
+
 ## AI PERSONALITY SELECTOR (2026-08-21)
 
 - [x] Add synchronized random Rush/Turtle/Tech/Expansion/Steamroller selection
@@ -53,8 +66,9 @@ granular, resumable task queue that the handoff points into._
 
 ## AI ARCHITECTURE (2026-08-31)
 
-Design: [`AI_ARCHITECTURE.md`](AI_ARCHITECTURE.md). Nothing here is implemented; the
-design document is the deliverable so far. Ordered so each item is independently
+Design: [`AI_ARCHITECTURE.md`](AI_ARCHITECTURE.md). Record-only completed-match telemetry
+is implemented on the follow-up branch; adaptive decision behavior remains proposed.
+Ordered so each item is independently
 verifiable. §10 of the design is the module-by-module build plan: what every loaded
 bot module owns, what it reads from the master's snapshot, and the phase order
 (logging → observe-only master → switching → targeting → hints → fog → learning),

@@ -1,3 +1,4 @@
+import json
 import pathlib
 import sys
 import unittest
@@ -44,32 +45,22 @@ class WeaponStructureInventoryTests(unittest.TestCase):
             + counts["stacked_main_indirect_weapon_graph"],
         )
 
-    def test_current_corrected_baseline(self):
-        # Upstream 4deaee086 adds three single-main definitions after PR #320.
-        self.assertEqual(2349, self.data["counts"]["concrete_weapons"])
-        self.assertEqual(340, self.data["counts"]["stacked_main_all_concrete"])
-        self.assertEqual(190, self.data["counts"]["stacked_main_direct_actor_armament"])
-        self.assertEqual(50, self.data["counts"]["stacked_main_indirect_weapon_graph"])
-        self.assertEqual(240, self.data["counts"]["stacked_main_transitive_weapon_graph"])
-        self.assertEqual(100, self.data["counts"]["stacked_main_unreached"])
-        self.assertEqual(2629, self.data["counts"]["main_warhead_instances_all_concrete"])
-        self.assertEqual(597, self.data["counts"]["excess_main_warhead_instances_all_concrete"])
-        self.assertEqual(2201, self.data["counts"]["main_warhead_instances_transitive_weapon_graph"])
-        self.assertEqual(452, self.data["counts"]["excess_main_warhead_instances_transitive_weapon_graph"])
-        self.assertEqual(226, self.data["counts"]["reviewed_stacked_main_all_concrete"])
-        self.assertEqual(178, self.data["counts"]["reviewed_stacked_main_direct_actor_armament"])
-        self.assertEqual(48, self.data["counts"]["reviewed_stacked_main_indirect_weapon_graph"])
-        self.assertEqual(226, self.data["counts"]["reviewed_stacked_main_transitive_weapon_graph"])
-        self.assertEqual(114, self.data["counts"]["unreviewed_stacked_main_all_concrete"])
-        self.assertEqual(14, self.data["counts"]["unreviewed_stacked_main_transitive_weapon_graph"])
-        self.assertEqual(434, self.data["counts"]["reviewed_excess_main_warhead_instances_all_concrete"])
-        self.assertEqual(434, self.data["counts"]["reviewed_excess_main_warhead_instances_transitive_weapon_graph"])
-        self.assertEqual(163, self.data["counts"]["unreviewed_excess_main_warhead_instances_all_concrete"])
-        self.assertEqual(18, self.data["counts"]["unreviewed_excess_main_warhead_instances_transitive_weapon_graph"])
+    def test_live_inventory_matches_committed_measurement_without_exemptions(self):
+        # Do not pretend the PR320 population is current. Check the full generated
+        # artifact (including identities), while independent raw ratchets below
+        # prevent a regenerated report from legitimizing structural regressions.
+        committed = json.loads((ROOT / "docs/audit/latest/weapon_structure_inventory.json").read_text(encoding="utf-8"))
+        self.assertEqual(committed, self.data)
+        counts = self.data["counts"]
+        for key, value in counts.items():
+            if key.startswith("reviewed_"):
+                self.assertEqual(0, value, key)
+            elif key.startswith("unreviewed_"):
+                self.assertEqual(counts[key.removeprefix("unreviewed_")], value, key)
 
     def test_raw_reachable_ratchets_match_the_checkpoint(self):
-        self.assertEqual(240, RAW_REACHABLE_BASELINE)
-        self.assertEqual(452, RAW_REACHABLE_EXCESS_BASELINE)
+        self.assertLessEqual(RAW_REACHABLE_BASELINE, 234)
+        self.assertLessEqual(RAW_REACHABLE_EXCESS_BASELINE, 425)
         self.assertEqual([], ratchet_errors(self.data))
 
     def test_engine_weapon_reference_fields_are_followed(self):

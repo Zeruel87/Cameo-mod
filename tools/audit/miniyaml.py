@@ -72,17 +72,22 @@ def _strip_comment(text: str) -> str:
 
 def load(path: str | pathlib.Path) -> list[Node]:
     """Parse one MiniYAML file into a list of top-level Nodes."""
+    text = pathlib.Path(path).read_text(encoding="utf-8-sig", errors="replace")
+    return load_text(text, str(path))
+
+
+def load_text(text: str, source: str = "<memory>") -> list[Node]:
+    """Parse an archive member or supplied text using the same MiniYAML reader."""
     root: list[Node] = []
     stack: list[tuple[int, Node | None]] = [(-1, None)]
-    text = pathlib.Path(path).read_text(encoding="utf-8-sig", errors="replace")
-    for lineno, raw in enumerate(text.splitlines(), 1):
+    for lineno, raw in enumerate(text.lstrip("\ufeff").splitlines(), 1):
         stripped_full = _strip_comment(raw)
         if not stripped_full.strip():
             continue
         indent = len(stripped_full) - len(stripped_full.lstrip("\t "))
         body = stripped_full.strip()
         key, _, val = body.partition(":")
-        node = Node(key.strip(), val.strip(), [], str(path), lineno)
+        node = Node(key.strip(), val.strip(), [], source, lineno)
         while stack and stack[-1][0] >= indent:
             stack.pop()
         parent = stack[-1][1]
@@ -171,6 +176,7 @@ class Manifest:
     weapons: list[pathlib.Path] = field(default_factory=list)
     sequences: list[pathlib.Path] = field(default_factory=list)
     fluent: list[pathlib.Path] = field(default_factory=list)
+    sources: list[pathlib.Path] = field(default_factory=list)
 
 
 def load_manifest(repo_root: pathlib.Path, mod_id: str = "cameo") -> Manifest:
@@ -191,6 +197,7 @@ def load_manifest(repo_root: pathlib.Path, mod_id: str = "cameo") -> Manifest:
                     continue
                 seen_includes.add(inc)
                 if inc.exists():
+                    man.sources.append(inc)
                     absorb(load(inc), inc.parent)
                 continue
             target = section_map.get(top.key)
@@ -206,6 +213,7 @@ def load_manifest(repo_root: pathlib.Path, mod_id: str = "cameo") -> Manifest:
                     target.append(p)
 
     mod_yaml = repo_root / "mods" / mod_id / "mod.yaml"
+    man.sources.append(mod_yaml)
     absorb(load(mod_yaml), mod_yaml.parent)
     return man
 

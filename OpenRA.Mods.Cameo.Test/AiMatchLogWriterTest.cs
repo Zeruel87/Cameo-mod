@@ -20,6 +20,17 @@ namespace OpenRA.Mods.Cameo.Test
 	[TestFixture]
 	public sealed class AiMatchLogWriterTest
 	{
+		[TestCase(false, false, true, true)]
+		[TestCase(true, false, true, false)]
+		[TestCase(false, true, true, false)]
+		[TestCase(false, false, false, false)]
+		public void EligibilityExcludesReplaySaveAndNonHost(bool replay, bool save, bool host, bool expected)
+		{
+			Assert.That(AiMatchLogWriter.Eligible(WorldType.Regular, replay, save, host), Is.EqualTo(expected));
+			Assert.That(AiMatchLogWriter.Eligible(WorldType.Shellmap, replay, save, host), Is.False);
+			Assert.That(AiMatchLogWriter.Eligible(WorldType.Editor, replay, save, host), Is.False);
+		}
+
 		// The match log is JSON Lines assembled by hand with a StringBuilder, so a single missing
 		// separator makes every line unparseable — and the aggregator can only report it as a skip.
 		// The shipped emitter had exactly that: AppendTimeline wrote no leading comma, so each line

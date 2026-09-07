@@ -126,9 +126,9 @@ damaging armament weapons checked: 1458; W1 same-faction 39, W2 cross-faction 37
 | naxibeetlelaser_elite | schwarzermond_laserbeetle, schwarzermond_spacezeppelin |
 | naximp40laser | schwarzermond_noidharvester, schwarzermond_noidmgarmor |
 | naximp40laser_elite | schwarzermond_noidharvester, schwarzermond_noidmgarmor |
-| naxquadcannon | naxis_transportzeppelin, wirbelwind.nax |
-| naxquadcannon_aa | naxis_transportzeppelin, wirbelwind.nax |
-| naxquadcannon_elite | naxis_transportzeppelin, wirbelwind.nax |
+| naxquadcannon | naxis_transportzeppelin, naxis_wirbelwind |
+| naxquadcannon_aa | naxis_transportzeppelin, naxis_wirbelwind |
+| naxquadcannon_elite | naxis_transportzeppelin, naxis_wirbelwind |
 | oiflamer | japan_exorcistoitank, japan_oitank |
 | oiplasmaflamer | japan_exorcistoitank, japan_oitank |
 | oismallcannon | japan_exorcistoitank, japan_oitank |

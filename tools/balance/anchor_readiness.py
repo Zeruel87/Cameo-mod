@@ -61,6 +61,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 import class_membership  # noqa: E402
+import formula  # noqa: E402
 
 LEDGER = ROOT / "docs" / "balance"
 TICKS_PER_SECOND = 25
@@ -81,19 +82,24 @@ def fnum(v):
     if v is None:
         return None
     try:
-        return float(str(v).strip())
+        value = float(str(v).strip())
+        return value if math.isfinite(value) else None
     except (TypeError, ValueError):
         return None
 
 
 def unit_dps(unit):
-    """Peak single-armament DPS: damage / reload * ticks. None when unarmed."""
+    """Peak nominal single-armament DPS, with full burst cadence.
+
+    This diagnostic is not summed live output, a matchup model, or a sign-off:
+    activation conditions, charge traits and actor modifiers are not modeled.
+    """
     best = None
     for arm in unit.get("armaments") or []:
         if not arm.get("pricing"):
             continue
         reload_ = fnum(arm.get("reloaddelay"))
-        if not reload_:
+        if reload_ is None or reload_ <= 0:
             continue
         damage = 0.0
         for wh in arm.get("damage_warheads") or []:
@@ -104,7 +110,16 @@ def unit_dps(unit):
                 damage += d
         if damage <= 0:
             continue
-        dps = damage / reload_ * TICKS_PER_SECOND
+        burst = fnum(arm.get("burst", 1))
+        if burst is None or burst < 1 or not burst.is_integer():
+            continue
+        if "burstdelays" in arm:
+            delays = formula.burst_delay_values(arm["burstdelays"])
+            if not delays or (burst > 1 and len(delays) not in (1, int(burst) - 1)):
+                continue
+        if formula.eff_reload(reload_, int(burst), arm.get("burstdelays")) <= 0:
+            continue
+        dps = formula.dps(damage, reload_, int(burst), arm.get("burstdelays")) * TICKS_PER_SECOND
         best = dps if best is None else max(best, dps)
     return best
 
@@ -112,7 +127,7 @@ def unit_dps(unit):
 def unit_range(unit):
     best = None
     for arm in unit.get("armaments") or []:
-        r = fnum(arm.get("range"))
+        r = formula.wdist_value(arm.get("range"))
         if r:
             best = r if best is None else max(best, r)
     return best
@@ -122,7 +137,9 @@ def features(unit):
     return {"hp": fnum((unit.get("hp") or {}).get("v")),
             "dps": unit_dps(unit),
             "range": unit_range(unit),
-            "speed": fnum((unit.get("speed") or {}).get("v"))}
+            "speed": fnum((unit.get("speed") or {}).get("v")
+                          if (unit.get("speed") or {}).get("v") is not None
+                          else (unit.get("speed_air") or {}).get("v"))}
 
 
 def load_units():
@@ -133,8 +150,8 @@ def load_units():
             continue
         try:
             doc = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
-        except (ValueError, OSError):
-            continue
+        except (ValueError, OSError) as exc:
+            raise ValueError(f"readiness unavailable: cannot read {path}: {exc}") from exc
         for section, units in (doc.get("sections") or {}).items():
             if not isinstance(units, dict):
                 continue
@@ -142,6 +159,20 @@ def load_units():
                 if isinstance(rec, dict):
                     out.append((doc.get("ledger", ""), section, name, rec))
     return out
+
+
+def coverage_counts(units):
+    """Report ledger-row coverage without calling structures unclassified units."""
+    counts = collections.Counter()
+    for _f, _s, _n, rec in units:
+        if not rec.get("buildable"):
+            continue
+        cls, reason = class_membership.classify(rec.get("design") or {})
+        counts["buildable_rows"] += 1
+        counts[reason] += 1
+        counts["classified_rows"] += bool(cls)
+        counts["non_structural_rows"] += reason != "not-a-unit"
+    return counts
 
 
 def distance(feat, spec):
@@ -246,7 +277,7 @@ def anchor_actor_vs_spec(anchors, units):
     rows = []
     for cls in sorted(anchors):
         entry = anchors[cls]
-        if not isinstance(entry, dict) or "cost0" not in entry:
+        if cls.startswith("_") or not isinstance(entry, dict) or not entry.get("anchor_actor"):
             continue
         spec = entry.get("spec") or {}
         fitted, want = fnum(entry.get("cost0")), fnum(spec.get("cost0"))
@@ -258,6 +289,7 @@ def anchor_actor_vs_spec(anchors, units):
             for key in SPEC_COMPARABLE:
                 got, target = feat.get(key), fnum(spec.get(SPEC_KEY[key]))
                 if got is None or target in (None, 0):
+                    off.append(f"{key} unavailable ({'measured' if got is None else 'target'})")
                     continue
                 # range comes from armaments and carries per-weapon jitter; the ladder
                 # itself moves in steps of 500, so anything inside 250 is on target.
@@ -266,6 +298,7 @@ def anchor_actor_vs_spec(anchors, units):
                     off.append(f"{key} {got:g}!={target:g}")
         ratio = (fitted / want) if (fitted and want) else None
         rows.append((cls, actor, rec is not None, fitted, want, ratio, off,
+                     fitted is not None and
                      entry.get("o0") == entry.get("p0") == entry.get("q0") == fitted))
     return rows
 
@@ -301,7 +334,10 @@ def three_way_split_gate(units, classes):
     except ImportError as exc:                  # keep readiness usable without the audit tree
         return None, f"split gate unavailable: {exc}"
 
-    rules = miniyaml.Ruleset(ROOT)
+    try:
+        rules = miniyaml.Ruleset(ROOT)
+    except Exception as exc:
+        return None, f"split gate unavailable: cannot load active rules: {exc}"
     debt = collections.defaultdict(list)
     counted = collections.Counter()
     for actor, rec in units.items():
@@ -318,15 +354,17 @@ def three_way_split_gate(units, classes):
                 tpl = arm.get("versus_templates") or []
                 wname = tpl[-1] if tpl else None
             if not wname:
-                continue
+                return None, f"split gate unavailable: {actor} has an unidentified armament"
             try:
                 resolved = rules.resolve_weapon(wname)
-            except Exception:
-                continue
+            except Exception as exc:
+                return None, f"split gate unavailable: {actor}/{wname}: {exc}"
             if resolved is None:
-                continue
+                return None, f"split gate unavailable: unresolved weapon {actor}/{wname}"
             mains = tws.main_warheads(resolved)
-            if len(mains) > 1 and not tws.intentional_composite(wname, mains):
+            # Raw structure counts include reviewed composites; review status is
+            # a separate decision, never an exemption from measurement.
+            if len(mains) > 1:
                 if len(mains) > worst:
                     worst, worst_w = len(mains), (wname, mains)
         if worst > 1:
@@ -357,20 +395,27 @@ def main():
     tagged = [(f, s, n, r) for f, s, n, r in units
               if class_membership.classify(r.get("design") or {})[0]]
 
-    buildable = sum(1 for _f, _s, _n, r in units if r.get("buildable"))
+    coverage = coverage_counts(units)
+    buildable = coverage["buildable_rows"]
     classes = [c for c in anchors if not c.startswith("_")]
     signed = [c for c in classes if anchors[c].get("signed_off")]
 
     print("# Class anchor readiness\n")
     print(f"classes defined      : {len(classes)}")
     print(f"signed off           : **{len(signed)}**")
-    print(f"buildable units      : {buildable}")
+    print(f"buildable ledger rows: {buildable} (includes structures and upgrades)")
     tagged_buildable = sum(1 for _f, _s, _n, r in units
                            if r.get("buildable")
                            and class_membership.classify(r.get("design") or {})[0])
     print(f"tagged with a class  : {tagged_buildable} of the buildable "
-          f"({tagged_buildable / buildable * 100:.1f}%); {len(tagged)} including "
+          f"({tagged_buildable / buildable * 100 if buildable else 0:.1f}%); {len(tagged)} including "
           "non-buildable\n")
+    candidates = coverage["non_structural_rows"]
+    print(f"excluding structure/upgrade rows: {tagged_buildable} of {candidates} "
+          f"({100 * tagged_buildable / candidates if candidates else 0:.1f}%) classified")
+    print(f"remaining buildable gaps: {coverage['no-template']} without a unit template; "
+          f"{coverage['no-class-exists']} without a defined class; "
+          f"{coverage['unmapped']} unmapped templates. These are rows, not deduplicated units.\n")
 
     # --- ⛔ ANCHOR INTEGRITY — measured 2026-08-30, and it outranks the fit table ---- #
     #
@@ -542,7 +587,7 @@ def main():
             print()
         return 0
 
-    print("## ⛔ Anchor integrity — an anchor must BE a member, and near the middle\n")
+    print("## Anchor integrity — class membership and diagnostic HP percentiles\n")
     print(f"anchors tagged into the class they anchor : "
           f"**{len(classes) - len(untagged_anchor)} of {len(classes)}**\n")
     if empty:
@@ -558,17 +603,10 @@ def main():
             print(f"  - {e}")
         print()
     if off_centre:
-        print("**Anchors far from their class centre** — a pricing-error cause, fixed by moving "
-              "the ANCHOR rather than the formula.\n")
-        print("⚠ READ THIS BEFORE RE-ANCHORING ANYTHING. For the 13 classes on the 2026-08-01 "
-              "LOCKED table the anchor actor is still PRE-RESTAT, so its percentile is measured "
-              "on stats the design already intends to replace — `scout_vehicle`'s buggy reads "
-              "7th at hp 20000 against a spec of 30000, and the restat moves it. Those entries "
-              "are a SYMPTOM of the unapplied restat, not an independent defect: apply the "
-              "restat, then re-read this list.\n")
-        print("The ones that are NOT explained that way are the infantry classes, where no "
-              "restat is queued because no ladder exists — `special_forces` at the 13th "
-              "percentile of 15 members is the real thing, and it is signed.\n")
+        print("**Anchors outside the middle half of current member HP.** This is descriptive, "
+              "not a failed rule: the intended anchor is a typical entry unit, not necessarily "
+              "the median. Existing role rulings and deferred restats take precedence. "
+              "Do not move anchors from this percentile alone.\n")
         for e in sorted(off_centre):
             print(f"  - {e}")
         print()
@@ -605,7 +643,7 @@ def main():
                              r["median_error_pct"] if r["median_error_pct"] is not None else 0,
                              -(r["scored"] or 0)))
 
-    print("## Sign-off queue — ranked by PRICING error, not stat distance\n")
+    print("## Fit-review queue — ranked by pricing residual, not sign-off eligibility\n")
     print("`median |Δ|` is how far the class formula's price sits from the unit's "
           "actual cost, from `fit_class.py`'s validation table. **A class needs at "
           "least 3 scored members to mean anything** — an anchor prices itself at "
@@ -621,13 +659,13 @@ def main():
             verdict = f"⚠ only {r['scored']} scored — too few to judge"
             blocked += 1
         elif r["median_error_pct"] <= 10:
-            verdict = "✅ **SIGN THIS ONE** — the anchor prices its class"
+            verdict = "low residual — structure, spec and role review still required"
             ready += 1
         elif r["median_error_pct"] <= 25:
-            verdict = "⚠ close — review the outliers, then sign"
+            verdict = "review outliers and prerequisite gates"
             blocked += 1
         else:
-            verdict = "⛔ the anchor does not describe its members"
+            verdict = "large residual — review inputs, membership and current prices"
             blocked += 1
         cells = [f"`{r['class']}`", str(r["scored"]),
                  f"{r['median_error_pct']}%" if r["median_error_pct"] is not None else "—",
@@ -638,8 +676,8 @@ def main():
 
     alld = [d for ds in members.values() for d in ds]
     pairs = anchor_spread(anchors)
-    print(f"\n**{ready} classes are ready to SIGN today**, {blocked} need review "
-          f"first, {empty} could not be fitted.\n")
+    print(f"\n**{ready} classes have low pricing residuals**, {blocked} need fit review, "
+          f"{empty} could not be fitted. Residuals alone never authorize sign-off.\n")
     if alld and pairs:
         own = statistics.median(alld)
         between = statistics.median([d for d, _a, _b in pairs])
@@ -659,9 +697,9 @@ def main():
                                              for _f, _sec, n, r in units})
     print("\n## The 3-way split gate — what must be fixed BEFORE a class is priced\n")
     print("§0a of `BALANCE_PROGRAM_PLAN.md` is binding: weapon structure comes before pricing. "
-          "`K` is share-weighted over each warhead's armor profile, so collapsing N mains into 1 "
-          "preserves the damage SUM but MOVES `K` — pricing a member whose weapons are not split "
-          "yet prices an input that is about to be replaced.\n")
+          "Changing armor profiles can change `K` even when total damage is preserved. "
+          "These are raw resolved main-warhead counts, including reviewed composites; "
+          "a finding requires review, not an automatic collapse.\n")
     if gate_err:
         print(f"⚠ {gate_err}\n")
     else:
@@ -669,24 +707,27 @@ def main():
         tot = sum(len(v) for v in debt.values())
         print(f"* class-tagged members still firing 2+ main warheads: **{tot}**\n")
         if debt:
-            print("| class | members owing a split | of tagged | worst offender |")
+            print("| class | members with stacked mains | of tagged | largest stack |")
             print("|---|--:|--:|---|")
             for cls in sorted(debt, key=lambda c: -len(debt[c])):
-                rows = sorted(debt[cls], key=lambda r: -r[2])
-                a, w, n = rows[0]
-                print(f"| `{cls}` | {len(rows)} | {counted[cls]} | "
+                stack_rows = sorted(debt[cls], key=lambda r: -r[2])
+                a, w, n = stack_rows[0]
+                print(f"| `{cls}` | {len(stack_rows)} | {counted[cls]} | "
                       f"`{a}` via `{w}` ({n} mains) |")
         clean = sorted(c for c in counted if not debt.get(c))
-        print(f"\n**{len(clean)} class(es) owe NOTHING and are structurally ready to price"
-              + (": " + ", ".join(f"`{c}`" for c in clean) if clean else "") + ".**")
+        print(f"\n**{len(clean)} class(es) have no observed stacked-main finding"
+              + (": " + ", ".join(f"`{c}`" for c in clean) if clean else "") + ".** "
+              "This is not full weapon-structure clearance or anchor sign-off.")
 
     print("\n## Anchor actor vs its ruled spec\n")
     print("`spec.*` is the LOCKED target from `anchor_decisions_log.md`; the top-level "
           "`cost0/o0/p0/q0` are FITTED from the anchor actor as it stands in yaml today. "
           "They disagree wherever the decisions log's application-law step 2c (restat the "
-          "baseline actors to the table) has not run. Since `price = cost0 * (h+r+d)/3`, "
-          "the anchor IS the class zero point, so this gates sign-off.\n")
+          "baseline actors to the table) has not run. Formula V2 averages the normalized "
+          "O/P/Q terms; the anchor defines their baseline, so missing or mismatched "
+          "baselines require review before sign-off.\n")
     print(f"* fitted `cost0` != `spec.cost0`: **{len(drift)} of {len(spec_rows)}** classes")
+    print(f"* missing fitted or target cost baseline: **{sum(r[5] is None for r in spec_rows)}**")
     print(f"* anchor actor off its ruled stats: **{len(offspec)} of {len(spec_rows)}** "
           "(of those whose actor is in a ledger)")
     ident = [r[0] for r in spec_rows if r[7]]
@@ -701,8 +742,10 @@ def main():
                 continue
             note = ", ".join(off) if off else ("not in a ledger" if not seen else "on spec")
             rs = f"{ratio:.2f}x" if ratio is not None else "-"
-            print(f"| `{cls}` | `{actor}` | {fitted:g} | "
-                  f"{want:g} | {rs} | {note} |".replace("None", "-"))
+            fitted_text = f"{fitted:g}" if fitted is not None else "unavailable"
+            wanted_text = f"{want:g}" if want is not None else "unavailable"
+            print(f"| `{cls}` | `{actor}` | {fitted_text} | "
+                  f"{wanted_text} | {rs} | {note} |")
 
     print("\n## Anchors that are statistically indistinguishable\n")
     print("Separated by what they SHOOT AT, not by their stats. No stat-based "
@@ -736,12 +779,14 @@ def main():
     if args.json:
         pathlib.Path(args.json).write_text(
             json.dumps({"rows": rows,
+                        "coverage": dict(coverage),
+                        "split_gate_error": gate_err,
                         "closest_anchor_pairs": [
                             {"a": a, "b": b, "d": round(d, 4)}
                             for d, a, b in pairs[:12]]},
                        indent=1, sort_keys=True), encoding="utf-8")
         print(f"\nwrote {args.json}")
-    return 0
+    return 1 if gate_err else 0
 
 
 if __name__ == "__main__":

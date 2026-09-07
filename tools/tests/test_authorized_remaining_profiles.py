@@ -49,13 +49,26 @@ class AuthorizedRemainingProfileTests(unittest.TestCase):
             "8ddfb4e9bc5a5d25765ce635845b4004e3e2a485e015b712192554e333b0393f",
             snapshot_digest(self.comparison["meta"]))
 
-    def test_followup_preserves_the_refreshed_upstream_weapon_snapshot(self):
-        # Independently pin upstream 4deaee086; never relabel the historical
-        # authorized batch artifact as evidence for these later changes.
+    def test_followup_snapshot_matches_the_explicit_merge_repairs(self):
+        # Separate evidence for current upstream648f62f7c6 -> these five repairs;
+        # never relabel PR320's historical artifact as current gameplay proof.
+        repair = json.loads((ROOT / "docs/audit/latest/merge_payload_repair_comparison.json").read_text(encoding="utf-8"))
+        self.assertEqual("978d3bb50a01dcbcd53cfde4aa4142beafbfe1062c7034e11a1cb409d859a6c5",
+                         hashlib.sha256(json.dumps(repair, sort_keys=True, separators=(",", ":")).encode()).hexdigest())
+        self.assertEqual("21c440193fa1d7e7f667cab3c96b1ce236a184e7e3a6aa2ff556b0acb68a7cfc",
+                         repair["meta"]["base_snapshot_sha256"])
+        self.assertEqual({"TSScoopDualChem", "RA2120xmm", "RA2120xmm_elite",
+                          "RA2120xmm_rad", "RA2120xmm_rad_elite"}, set(repair["changed"]))
+        self.assertEqual([], repair["added"])
+        self.assertEqual([], repair["removed"])
         health_values = sorted(set(active_health_values(ROOT)))
+        self.assertEqual(health_values, repair["meta"]["health_values"])
+        self.assertFalse(repair["meta"]["with_concrete"])
         self.assertEqual(
-            "6984adb9be04b1f7c056159aa33f3c2a31b16e400e9062af13b0912a8124a737",
+            repair["meta"]["head_snapshot_sha256"],
             snapshot_digest(snapshot(ROOT, False, health_values)))
+        for name, changes in repair["changed"].items():
+            self.assertTrue({"cadence", "report"}.isdisjoint(change[0] for change in changes), name)
 
     def test_comparison_payload_is_exactly_reviewed(self):
         payload = {
@@ -89,14 +102,16 @@ class AuthorizedRemainingProfileTests(unittest.TestCase):
         }
         self.assertEqual({"GrenadeRA"}, non_damage)
 
-    def test_reachable_backlog_is_reduced_to_the_review_boundary(self):
+    def test_reachable_backlog_keeps_raw_ratchets_without_exemptions(self):
         # Do not retain a fully resolved roster throughout this test class: the
         # snapshot and converter tests otherwise hold another roster concurrently.
         counts = inventory(Ruleset(ROOT))["counts"]
-        self.assertEqual(240, counts["stacked_main_transitive_weapon_graph"])
-        self.assertEqual(226, counts["reviewed_stacked_main_transitive_weapon_graph"])
-        self.assertEqual(14, counts["unreviewed_stacked_main_transitive_weapon_graph"])
-        self.assertEqual(100, counts["unreviewed_stacked_main_unreached"])
+        self.assertLessEqual(counts["stacked_main_transitive_weapon_graph"], 240)
+        self.assertEqual(0, counts["reviewed_stacked_main_transitive_weapon_graph"])
+        self.assertEqual(counts["stacked_main_transitive_weapon_graph"],
+                         counts["unreviewed_stacked_main_transitive_weapon_graph"])
+        self.assertEqual(counts["stacked_main_unreached"], counts["unreviewed_stacked_main_unreached"])
+        self.assertLessEqual(counts["excess_main_warhead_instances_transitive_weapon_graph"], 452)
 
     def test_t30_profile_keeps_the_authorized_railgun_geometry(self):
         node = self.rules.resolve_weapon("t30shell").child(
@@ -107,11 +122,10 @@ class AuthorizedRemainingProfileTests(unittest.TestCase):
         self.assertEqual("3000", node.get("PercentageScale"))
         self.assertEqual(1200, (80000 * 3000 + 100000) // 200000)
 
-    def test_paid_thermobaric_routes_do_not_regress_core_vehicle_damage(self):
+    def test_hammer_thermobaric_route_does_not_regress_core_vehicle_damage(self):
         armors = ("Scout", "Light", "Medium", "Heavy", "Superheavy")
         for base_name, paid_name in (
-                ("HammerTankCannon", "HammerTankCannonThermobaric"),
-                ("KotinCannon", "KotinCannonThermobaric")):
+                ("HammerTankCannon", "HammerTankCannonThermobaric"),):
             base = self.rules.resolve_weapon(base_name).child("Warhead@CannonHE_Heavy")
             paid = self.rules.resolve_weapon(paid_name).child("Warhead@Thermobaric_Heavy")
             base_versus = {node.key: int(node.value) for node in base.child("Versus").children}
@@ -123,6 +137,27 @@ class AuthorizedRemainingProfileTests(unittest.TestCase):
                     paid_damage * paid_versus[armor],
                     base_damage * base_versus[armor],
                     f"{paid_name} regresses {armor}")
+
+    def test_kotin_uses_the_upstream_nuclear_upgrade_for_fire_and_death(self):
+        # 4a1479b50 changed this role deliberately; do not impose the retired
+        # thermobaric matchup guarantee on the nuclear/radiation replacement.
+        weapon = self.rules.resolve_weapon("KotinCannonNuclearShell")
+        self.assertIsNotNone(weapon)
+        self.assertEqual("16000", weapon.child("Warhead@CannonNuke_Heavy").get("Damage"))
+        self.assertEqual(("96", "6427", "2", "4"), tuple(
+            weapon.get(key) for key in ("ReloadDelay", "Range", "Burst", "BurstDelays")))
+        radiation = weapon.child("Warhead@Radiation")
+        self.assertEqual("CreateTintedCells", radiation.value)
+        self.assertEqual("ra2radiation", radiation.get("LayerName"))
+        self.assertEqual("30", radiation.get("Level"))
+        actor = self.rules.resolve("ra1_soviets_kotinnucleartank")
+        for trait in ("Armament", "FireWarheadsOnDeath"):
+            base = actor.child(trait)
+            upgraded = actor.child(trait + "@Upgrade")
+            self.assertEqual("KotinCannon", base.get("Weapon"))
+            self.assertEqual("!ra1_soviets_upgrade_nucleartankshells", base.get("RequiresCondition"))
+            self.assertEqual("KotinCannonNuclearShell", upgraded.get("Weapon"))
+            self.assertEqual("ra1_soviets_upgrade_nucleartankshells", upgraded.get("RequiresCondition"))
 
     def test_converter_default_mode_is_read_only(self):
         paths = {

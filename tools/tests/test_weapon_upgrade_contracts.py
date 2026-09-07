@@ -8,9 +8,9 @@ import _bootstrap  # noqa: F401 — sys.path side effect
 
 import audit_upgrade_regression as upgrade
 from audit_three_way_split import (
-    INTENTIONAL_COMPOSITES,
-    SPLIT_BASELINE,
-    intentional_composite,
+    RAW_SPLIT_BASELINE,
+    main_warhead_nodes,
+    validated_reviewed_predicate,
     main_warheads,
 )
 from cameo_model import Model
@@ -123,17 +123,14 @@ class WeaponUpgradeContractTest(unittest.TestCase):
         self.assertIsNone(kodiak_projectile.get("TrailImage"))
         self.assertIsNone(kodiak_projectile.get("PointDefenseTypes"))
 
-    def test_sonic_hellfire_is_one_exact_reviewed_composite(self):
-        self.assertEqual(114, SPLIT_BASELINE)
-        self.assertEqual(
-            ("MissileAP_Heavy", "Sonic_Medium"),
-            INTENTIONAL_COMPOSITES["TSHellfireSonic"],
-        )
+    def test_sonic_hellfire_remains_raw_debt_without_an_exemption(self):
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
         mains = main_warheads(self.rs.resolve_weapon("TSHellfireSonic"))
-        self.assertTrue(intentional_composite("TSHellfireSonic", mains))
-        self.assertFalse(intentional_composite("CopiedHellfireSonic", mains))
-        self.assertFalse(intentional_composite(
-            "TSHellfireSonic", mains + ["Sonic_Heavy"]))
+        self.assertEqual(["MissileAP_Heavy", "Sonic_Medium"], mains)
+        reviewed = validated_reviewed_predicate(self.rs, main_warhead_nodes)
+        self.assertFalse(reviewed("TSHellfireSonic", mains))
+        self.assertFalse(reviewed("CopiedHellfireSonic", mains))
+        self.assertFalse(reviewed("TSHellfireSonic", mains + ["Sonic_Heavy"]))
 
     def test_quantum_emp_anti_air_replacements_increase_damage(self):
         for base, upgraded in (

@@ -126,9 +126,9 @@ Buildable actors with ^GainsExperienceRA2 but NO Armament@*ELITE*: **197**
 | ContentPacks/RedAlert2Mod/FutureTech/yaml/infantry.yaml | 529 | futuretech_repairdroid | RedAlert2Mod/FutureTech |
 | ContentPacks/RedAlert2Mod/FutureTech/yaml/vehicles.yaml | 376 | futuretech_riptideacv | RedAlert2Mod/FutureTech |
 | ContentPacks/RedAlert2Mod/FutureTech/yaml/aircraft.yaml | 310 | landcarr_drone.futu | RedAlert2Mod/FutureTech |
-| ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml | 1424 | car.nax | RedAlert2Mod/Naxis |
 | ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml | 183 | naxis_airfield | RedAlert2Mod/Naxis |
 | ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml | 1168 | naxis_bmwbike | RedAlert2Mod/Naxis |
+| ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml | 1424 | naxis_car | RedAlert2Mod/Naxis |
 | ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml | 861 | naxis_donnerschlag | RedAlert2Mod/Naxis |
 | ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml | 793 | naxis_engineeringtruck | RedAlert2Mod/Naxis |
 | ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml | 481 | naxis_flak88 | RedAlert2Mod/Naxis |
@@ -142,7 +142,7 @@ Buildable actors with ^GainsExperienceRA2 but NO Armament@*ELITE*: **197**
 | ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml | 426 | naxis_rifletower | RedAlert2Mod/Naxis |
 | ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml | 524 | naxis_slave | RedAlert2Mod/Naxis |
 | ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml | 644 | naxis_sturmtiger | RedAlert2Mod/Naxis |
-| ContentPacks/RedAlert2Mod/Naxis/yaml/naval.yaml | 1 | tuboat.nax | RedAlert2Mod/Naxis |
+| ContentPacks/RedAlert2Mod/Naxis/yaml/naval.yaml | 1 | naxis_tuboat | RedAlert2Mod/Naxis |
 | ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/buildings.yaml | 146 | schwarzermond_airfield | RedAlert2Mod/SchwarzerMond |
 | ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml | 272 | schwarzermond_blackbomb | RedAlert2Mod/SchwarzerMond |
 | ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml | 556 | schwarzermond_corruptorpiercer | RedAlert2Mod/SchwarzerMond |

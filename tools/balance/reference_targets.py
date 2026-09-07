@@ -237,7 +237,7 @@ def main() -> int:
     if args.md:
         p = ROOT / args.md
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(text + "\n", encoding="utf-8")
+        p.write_text(text.rstrip() + "\n", encoding="utf-8")
         print(f"wrote {args.md}")
     else:
         print(text)

@@ -60,7 +60,7 @@ REVIEW_DMG = 8000
 # DELETED, and the honest number is 72. That is NOT a raised ratchet: 22 was an artifact
 # of hiding 51 weapons, and 72 is below the 75 this file carried before the exemption
 # existed. Never raise it from here.
-BROADCAST_BASELINE = 72
+BROADCAST_BASELINE = 69
 
 # The two former routing-revealed exceptions were consolidated into their
 # selected Flak and Bullet profiles. Keep the registry empty so a future

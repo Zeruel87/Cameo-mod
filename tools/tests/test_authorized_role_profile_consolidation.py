@@ -15,6 +15,7 @@ sys.path[:0] = [str(ROOT / "tools/audit"), str(ROOT / "tools/balance")]
 from audit_three_way_split import main_warhead_nodes, main_warheads
 import consolidate_authorized_role_profiles as cohort
 from miniyaml import Ruleset
+from reviewed_weapon_history import HistoricalView
 import percentage_damage as pd
 
 
@@ -37,13 +38,19 @@ class AuthorizedRoleProfileConsolidationTests(unittest.TestCase):
         cls.report = json.loads(REPORT.read_text(encoding="utf-8"))
 
     def test_exact_selected_family_and_totals_are_live(self):
-        self.assertTrue(cohort.inspect(self.rules))
+        # Historical converter fingerprints must reject later canonical re-ranking.
+        # Never retune the converter to replay an old transform over changed rules.
+        with self.assertRaisesRegex(RuntimeError, "selected-main fingerprint changed"):
+            cohort.inspect(self.rules)
+        self.assertTrue(cohort.inspect(HistoricalView(self, self.rules)))
         self.assertEqual(12, len(CHANGED))
         for name in sorted(CHANGED):
             destination = cohort.DESTINATIONS[name]
             nodes = main_warhead_nodes(self.rules.resolve_weapon(name))
             self.assertEqual([destination], [node.key.split("@", 1)[1] for node in nodes], name)
             self.assertEqual(cohort.TOTALS[name], int(nodes[0].get("Damage")), name)
+            self.assertEqual("AreaDamage", nodes[0].value, name)
+            self.assertEqual(cohort.EXPECTED_CONTRACT, cohort.contract(nodes[0]), name)
             self.assertEqual("10000", nodes[0].get("PercentageScale"), name)
             self.assertEqual(cohort.RUNTIME_UNITS[name], sum(
                 int(application["runtime_units"])

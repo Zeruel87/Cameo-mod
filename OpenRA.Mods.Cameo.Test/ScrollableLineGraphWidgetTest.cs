@@ -29,6 +29,20 @@ namespace OpenRA.Mods.Cameo.Test
 		}
 
 		[Test]
+		public void EmptySeriesUsesHistoricalRange()
+		{
+			Assert.That(ScaledRange(), Is.EqualTo((0f, 5000f)));
+			Assert.That(ScaledRange(System.Array.Empty<float>()), Is.EqualTo((0f, 5000f)));
+		}
+
+		[Test]
+		public void MultipleSeriesIncludeBothExtremes()
+		{
+			Assert.That(ScaledRange(new[] { -6200f, 0f }, new[] { 3500f }),
+				Is.EqualTo((-7000f, 4000f)));
+		}
+
+		[Test]
 		public void AllPositiveValuesPreserveHistoricalRange()
 		{
 			var range = ScaledRange(new[] { 6250f });
@@ -44,6 +58,8 @@ namespace OpenRA.Mods.Cameo.Test
 
 			Assert.That(range.Min, Is.LessThan(0f));
 			Assert.That(range.Max, Is.GreaterThan(0f));
+			Assert.That(range.Min, Is.LessThanOrEqualTo(-1200f));
+			Assert.That(range.Max, Is.GreaterThanOrEqualTo(2500f));
 		}
 
 		[Test]

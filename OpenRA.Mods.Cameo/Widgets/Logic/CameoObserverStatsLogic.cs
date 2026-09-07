@@ -24,7 +24,7 @@ using OpenRA.Widgets;
 
 namespace OpenRA.Mods.Cameo.Widgets.Logic
 {
-	public enum CameoObserverStatsPanel { None, Minimal, Basic, Economy, Production, SupportPowers, Combat, Army, Upgrades, Promotions, BuildOrder, UnitsProduced, EconomyDamage, Graph, ArmyGraph, TeamArmyGraph, TeamEarningsGraph, CombatEffectivenessGraph }
+	public enum CameoObserverStatsPanel { None, Minimal, Basic, Economy, Production, SupportPowers, Combat, Army, Upgrades, Promotions, BuildOrder, UnitsProduced, EconomyDamage, Graph, ArmyGraph, CombatEffectivenessGraph, TeamArmyGraph, TeamEarningsGraph }
 
 	[ChromeLogicArgsHotkeys("StatisticsMinimalKey", "StatisticsBasicKey", "StatisticsEconomyKey", "StatisticsProductionKey", "StatisticsSupportPowersKey", "StatisticsCombatKey", "StatisticsArmyKey", "StatisticsUpgradesKey", "StatisticsPromotionsKey", "StatisticsBuildOrderKey", "StatisticsUnitsProducedKey", "StatisticsEconomyDamageKey", "StatisticsGraphKey", "StatisticsTeamArmyGraphKey", "StatisticsTeamEarningsGraphKey",
 		"StatisticsArmyGraphKey")]

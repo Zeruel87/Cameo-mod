@@ -5,10 +5,12 @@ _Written 2026-08-31. Owner document for everything about how Cameo's bots decide
 systems that already ship; this file is the forward design and the research behind it.
 Task queue: [`ROADMAP.md`](ROADMAP.md) section "AI ARCHITECTURE"._
 
-**This document is a design, not a shipped system.** Section 1 is verified fact with file:line
-evidence. Sections 2–7 are proposals. Section 8 is outside research. Section 9 records what is
+**Most of this document remains a design, not a shipped adaptive system.** Section 1 is verified
+fact with source evidence. Sections 2–7 are proposals except the record-only implementation in
+§6.2a, delivered on the follow-up branch for coordinator review. Section 8 is outside research. Section 9 records what is
 still undecided. Section 10 is the module-by-module build plan and section 11 reconciles the
-five-agent research round against sections 1–10. Nothing below section 1 has been observed running.
+five-agent research round against sections 1–10. The §6.2a match logger has runtime and replay
+evidence in `docs/audit/ASTRA_REVIEW.md`; this does not validate the proposed decision system.
 
 ---
 
@@ -536,7 +538,9 @@ runtime, no network calls, no adapting mid-match from a file that another client
 
 `Log.AddChannel(name, file, isTimestamped)` writes to `Platform.SupportDir + "Logs"`
 (`engine/OpenRA.Game/Support/Log.cs:111,128`) and mods already add channels from traits
-(`ScriptContext.cs:146`, `TraitDictionary.cs:62`), so JSONL match logs need no new IO plumbing.
+(`ScriptContext.cs:146`, `TraitDictionary.cs:62`). The shipped phase-one writer uses
+an append-only file with host authority, mutex coordination and bounded retries;
+its exact contract is in `AI_MATCH_LOG.md`.
 
 ### 6.2 Shipped record-only log schema (one JSON object per line)
 
@@ -548,7 +552,7 @@ The game never reads the file back. The offline
 [`aggregate_ai_matches.py`](../../tools/ai/aggregate_ai_matches.py) tool consumes
 schema version 1 records; later decision and episode records remain proposals.
 
-Three record types, deliberately flat so aggregation is trivial:
+Three proposed learning record types, not the shipped schema above:
 
 * `match` — map, ruleset hash, player slots (faction, difficulty, bot type, human/bot), duration,
   outcome per player.
@@ -562,33 +566,48 @@ The unit of learning is the **episode** (a personality held against one target),
 Match-level win/loss alone is far too sparse to attribute — a 40-minute game with six switches
 gives one bit of signal against six decisions, which is the credit-assignment problem in §8.
 
-### 6.3 Learning, in the order it should be built
+### 6.2a Integration boundary and learning stages
+
+PR #329 adopts the merged #331 writer rather than shipping its competing
+`CameoMatchRecorder`. Older `Logs/cameo_matches/*.jsonl` experiments have a different
+schema and must not be mixed with `Logs/cameo-ai-matches.jsonl`. The retained writer
+captures bot rows when all bots resolve or GameOver occurs, not necessarily at
+completion of the whole world. Replays, loaded saves and non-host clients are excluded.
+Prior PR #329 runtime recording evidence exercised the retired writer, not this one.
+
+The shipped schema does not carry source hashes, module IDs or lobby options;
+matching mod-version strings do not prove identical balance inputs. Missing stats
+are zero, and overlapping personalities are not separately marked ambiguous.
+Timeline length and retries are bounded, but file size and record size are not.
+These are explicit limitations, not grounds for introducing a second recorder.
 
 **Phase 1 — record only (implemented).** Emit schema version 1 logs, change no behaviour, and
 leave aggregation offline. The shipped recorder, writer, schema, and aggregator are the proof of
 concept deliverable. Verify the schema survives real matches and that the numbers are attributable.
 
-**Phase 2 — offline aggregation.** A Python tool under `tools/` producing, per
+**Stage B — offline aggregation extensions.** The shipped aggregate tool handles
+schema-v1 bot rows; future episode-aware extensions would produce, per
 (faction × enemy faction × personality) and (composition × enemy faction), the episode counts,
 mean value-trade ratio and win contribution. This is where "which composition does badly" gets
-answered, with a minimum sample threshold before any number is believed.
+answered once episode attribution exists, with uncertainty and coverage reported before
+any number informs a decision. First compare fixed versus dynamic policies offline (§11.3.5).
 
-**Phase 3 — offline weight fitting, still no online learning.** Fit the §4 scores' weights, or
+**Stage C — offline weight fitting, still no online learning.** Fit the §4 scores' weights, or
 simply a prior over personality choice per matchup, and ship the result as a committed data file
 reviewed like any balance change. Bandit-style selection (UCB1/Thompson over personalities per
-matchup) is the right first algorithm — it is what the strongest scripted StarCraft bots use
-(§8.2), it needs no neural network, and it is auditable.
+matchup) is a candidate from §8.2, not a selected Cameo policy. It must first show a benefit
+over the fixed-policy comparator on compatible Cameo data (§11.3.5).
 
-**Phase 4 — AI-vs-AI batch harness.** Headless repeated matches across matchups, feeding phases
-2–3. This is what makes the data volume possible; it should be a script and a map rotation, not
+**Stage D — AI-vs-AI batch harness.** Headless repeated matches across matchups, feeding stages
+B–C. This is what makes the data volume possible; it should be a script and a map rotation, not
 engine work.
 
-**Phase 5 — anything neural.** Explicitly deferred until factions and balance are finished, per
+**Stage E — anything neural.** Explicitly deferred until factions and balance are finished, per
 the user's own sequencing. Training against a moving balance target fits noise.
 
-An honest note on ordering: phases 1–2 are worth doing now because the logs also make the *current*
-bots debuggable. Phases 3–4 only pay off once the game is balanced, for the same reason phase 5 is
-deferred.
+Recording and coverage diagnostics help debug the current bots while balance moves. Learned
+weights remain §10.6 phase 7, after the earlier delivery phases; neither this section nor the
+batch-harness proposal authorizes skipping the observe-only and behavior-review gates.
 
 ---
 
@@ -639,7 +658,7 @@ The strongest *scripted* Brood War bots learn between games rather than within t
 "uses the results from past games for an opponent to decide which strategy to try the next game
 against that opponent" ([Liquipedia](https://liquipedia.net/starcraft/ZZZKBot)). That is precisely
 the user's "learn which personality works against which faction and build order", implemented with
-a handful of counters and no neural network — which is why §6.3 phase 3 is a bandit.
+a handful of counters and no neural network — which motivates the bandit candidate in §6.3 stage C.
 
 Tavares et al. treat strategy selection itself as a game, filling a payoff matrix from recorded
 matches and showing it pays to *deviate* from Nash equilibrium to exploit a suboptimal opponent,
@@ -654,7 +673,7 @@ correct, not sloppy.
 Gehring et al. cast high-level strategy selection in Brood War as reinforcement learning where an
 action *is* a switch to a strategy, under partial observability, and report substantial win-rate
 gains over a fixed-strategy baseline ([arXiv:1811.08568](https://www.alphaxiv.org/abs/1811.08568)).
-This is close to the user's target and is the reason §6.3 phase 5 is not dismissed. But it is also
+This is close to the user's target and is the reason §6.3 stage E is not dismissed. But it is also
 the reason it is last: it needed a research team, a mature bot to sit inside, and training volume
 Cameo cannot produce until the balance stops moving. AlphaStar-class approaches are further still
 outside reach and, more importantly, outside the point — a deterministic, auditable manager is
@@ -727,37 +746,195 @@ this incrementally shippable — each phase in 10.6 is a complete, playable stat
 
 ### 10.2 What Cameo loads today
 
-Grounded in `mods/cameo/ai/ai.yaml` at the cited lines. This is the full set the plan has to
-account for — there are no other bot modules in the mod.
+Verified on 2026-09-07 from the active `mods/cameo/mod.yaml` manifest and resolved
+`Player` / `World`, against upstream base `291052380`. Scope here is the decision modules,
+their explicit coordination adapter, and the three data/limit providers named below:
+**21 distinct trait types, 36 Player instances plus one World instance**. Conditional instances
+are loaded, not necessarily enabled simultaneously. This replaces the old unqualified
+"20 loaded modules" claim. The scope does not count `ModularBot` dispatchers,
+`GrantConditionOnBotOwner`, `BotInsurance`, generic condition/prerequisite traits, or observers;
+it is not a claim that nothing else affects bots.
 
-| Module (instances) | ai.yaml | Owns today | Planned change |
+Sources: `mods/cameo/ai/ai.yaml`, active pack additions, and the `SupportPowerBotModule`
+inherited through Player rules. C# implementations are under
+`OpenRA.Mods.CA/Traits/BotModules/`, `engine/OpenRA.Mods.AS/Traits/BotModules/`,
+`engine/OpenRA.Mods.Common/Traits/BotModules/`, with Cameo's
+`Traits/BotModules/CratePickupBotModule.cs` and `Traits/BotGlobalUnitBudget.cs`.
+Names below are actual resolved types; `PowerDownBotModule` resolves to AS
+(`PowerDownBotManager.cs`), not the separately named CA implementation.
+
+**Boundary legend:** **U** = local bot reasoning / callbacks; only queued orders may change
+simulation. `ModularBot` wraps both `IBotTick` and `IBotRespondToAttack` in
+`Sync.RunUnsynced`; it does not activate bots in replays. **R** = rule/state provider read by
+local reasoning, not an autonomous order issuer. Provider trait existence on all peers does
+not make a local cache safe for synced consumers. None of these rows reads the proposed
+master snapshot today. "Hint" below is a future read-only integration, not shipped behavior.
+
+| Actual type (loaded instances) | Decision / data ownership today | Current reads; future snapshot hint | Publishes / cadence / boundary |
 |---|---|---|---|
-| `SquadManagerBotModuleCA` @rush/@turtle/@tech/@expansion/@steamroller | 3177, 3250, 3323, 3396, 3469 | squad formation, attack/defence posture, retreat | reads main target + urgency from the snapshot; gains a sixth @guerrilla instance; **fog gate on its actor scan** (§0.2) |
-| `BaseBuilderBotModuleCA@generic` | 3755 | what to build and where, defence fractions, expansion | reads defence-fraction and expansion-appetite hints |
-| `UnitBuilderBotModuleCA@generic` | 4774 | unit mix, idle-unit accounting, composition consumption | reads counter-demand hints (AA / anti-armour / anti-infantry / detector / artillery) |
-| `UnitCompositionsBotModule` (world, **singleton**) | 6414 | the composition table | unchanged C#; gains personality- and counter-tagged rows via prerequisite tokens (§1.4) |
-| `SupportPowerBotASModule` | 214 | support power usage | reads main target so powers land on the player being pressured |
-| `SendUnitToAttackBotModule` (+@chrono) | 3538, 3655 | opportunistic single-unit attacks | reads main target as a preference, not a constraint |
-| `HarvesterBotModuleCA` | 3131 | harvester assignment, threat response | unchanged in phase 1; later reads "economy under attack" |
-| `McvExpansionManagerBotModule` (the only MCV module loaded) | 3143 | MCV deployment and expansion | reads expansion appetite (Expansion/Guerrilla raise it, Turtle lowers it) |
-| `CaptureManagerBotModuleCA` | 3157 | capture targets | reads main target for capture preference |
-| `BuildingRepairBotModule(CA)` | 3139, 3141 | repair response | unchanged |
-| `PowerDownBotModule` | 212 | power management | unchanged |
-| `CratePickupBotModule` | 3167 | crate collection | unchanged |
-| `LoadGarrisonerBotModuleCA@Infantry`, `LoadCargoBotModule@*` | 3687, 3691, 3727, 3733 | garrisoning and transports | unchanged in phase 1; Turtle should prefer garrisoning |
-| `MinelayerBotModule` | 3740 | minelaying | reads posture: Turtle mines approaches, Rush does not |
-| `ResourceMapBotModule` | 3747 | resource knowledge for the builders | unchanged (already an information provider, not a decider) |
-| `ExternalBotOrdersManager` | 3172 | queues orders that **synced** traits registered via `IssueOrderToBot` | unchanged, but see 10.4 — it is the precedent for order plumbing, in the opposite direction |
-| `BotLimits` per difficulty | 37-142 | the entire difficulty axis | unchanged; the manager is difficulty-gated by condition, not by new knobs (§9.6) |
-| **new** `MasterAiBotModule` | — | — | per-player observer/decider; owns main target, personality, urgency, snapshot |
-| **new** `ScoutBotModule` | — | — | dependency of fogged observation; Cameo has no scouting behaviour at all |
-| **new** `BotPersonalityController` (synced) | — | — | the only synced piece: resolves the personality order, grants/revokes the token (10.4) |
+| `SquadManagerBotModuleCA` (5 personalities) | squad assignment, combat posture and retreat | actors, attack events, base positions, limits; main target + urgency hint | orders, idle-unit and position callbacks; roles 25 ticks, attack-force 50/100/75/75/60 by current personality; U |
+| `BaseBuilderBotModuleCA` (@generic) | structure choice, placement and construction priorities | queues, economy, terrain, limits, base/defence state; defence/expansion hints | build/placement/rally orders, production-pause query; queue-state delays and configured building intervals, not one universal period; U |
+| `UnitBuilderBotModuleCA` (@generic) | unit production and composition selection | buildability, cash, idle units, requests, pause providers, composition table; counter-demand hint | production orders, requested-production count; feedback loop plus `UnitBuilderInterval`, per-unit delays and composition-selection gates; U |
+| `UnitCompositionsBotModule` (World singleton) | composition definitions and lookup data | resolved rules and configured rows; no direct snapshot read planned | `Info.UnitCompositions`, prerequisite/queue/cost dictionaries at construction; R |
+| `SupportPowerBotModule` (1) | Common decision-table power targeting | available powers, funds, configured decisions, target actors; target preference if integrated | power orders; each bot tick with per-power retry delays; U |
+| `SupportPowerBotASModule` (1) | AS decision-table power targeting | same manager, AS decision rows and target evaluation; target preference if integrated | power orders; each bot tick with its own per-power retry delays; U |
+| `SendUnitToAttackBotModule` (default, @chrono) | configured opportunistic attackers | eligible units/targets and attack desire; target preference | attack orders; `ScanTick` default 463; U |
+| `HarvesterBotModuleCA` (1) | harvester task/threat handling | collectors, resources, threats and unit requests; economy-pressure hint later | harvesting/movement and production requests; idle scan configured 1000 ticks plus other source callbacks; U |
+| `McvExpansionManagerBotModule` (1) | MCV deployment and expansion | mobile construction actors, resource map, base positions, unit builder; expansion hint | movement/deploy orders, production requests, position callbacks; new-MCV scan default 20, build check 101; U |
+| `CaptureManagerBotModuleCA` (1) | capture assignment | eligible capturers/targets and visibility configuration; target preference | capture orders; minimum capture delay configured 125 ticks; U |
+| `BuildingRepairBotModule` (1) | Common building repair response | attacked actor, damage state, repair capability | repair orders on `IBotRespondToAttack`, including cooldown-gated all-building scan inside that callback; U |
+| `BuildingRepairBotModuleCA` (1) | CA repair response path | cached repair trait, damage event and attacker relationship | conditional repair orders on `IBotRespondToAttack`; U |
+| `PowerDownBotModule` (1) | power toggling | power totals and toggleable buildings; no new hint | PowerDown orders; interval default 150 ticks; U |
+| `CratePickupBotModule` (1) | crate collector assignment | crate candidates, collectors and visibility setting; no new hint | movement orders; scan configured 300 ticks; U |
+| `LoadGarrisonerBotModuleCA` (@Infantry) | passenger-to-garrison assignment | configured passengers, garrisons, capacity/proximity; posture hint only in a later phase | Stop/AttackMove/EnterGarrison orders; scan default 457 ticks; U |
+| `LoadCargoBotModule` (@Infantry/@TankBunker/@Battery) | configured cargo loading | passengers, transport capacity and proximity; no phase-1 hint | cargo-related orders; scan default 317, Battery configured 799 ticks; U |
+| `MinelayerBotModule` (1) | minefield assignment | minelayers, positions and attack events; posture hint later | mine-related orders; scan default 320 ticks and attack callbacks; U |
+| `ResourceMapBotModule` (1) | resource-index information | resource layer and nearby actors; no snapshot hint | index/threat query methods; `UpdateResourceMapInverval` default 67 ticks, randomized initialization; U provider |
+| `ExternalBotOrdersManager` (1) | forwarding registered external requests | direct entries / `IssueOrderToBot` registrations and current issuer validity | queued orders each bot tick; local bridge, not a new strategy owner; U |
+| `BotLimits` (10 difficulty instances) | configured cap/delay inputs | enabled difficulty condition; no master replacement | enabled `Info` queried by consumers; no independent tick; R |
+| `BotGlobalUnitBudget` (1) | global-budget production pause input | living bots, owned mobile actors, exclusions and configured clamps | `IBotRequestPauseUnitProduction.PauseUnitProduction`, lazy recalculation at default 25-tick interval; R/local cache |
 
-Two things this table makes obvious. First, **most modules change by reading, not by being
-rewritten** — the snapshot is the whole integration surface, which is why 10.3 pins it down before
-any code. Second, the squad managers are the only place where personality is expressed structurally
-(five parallel instances), and that is already the mechanism the manager needs; nothing about the
-five-instance shape has to change to make switching dynamic.
+Intervals are simulation ticks, not milliseconds, and are gates rather than promises to emit
+an order every interval. Startup randomization, disabled conditions, affordability, target
+availability and existing queue backpressure still apply. These contracts do not alter any of
+them or certify the separate economic-fairness claims elsewhere in this design.
+
+### 10.2a Interaction and failure contracts
+
+The following is the integration contract; absence of the future snapshot preserves current
+decisions. A delayed rebuild must not trigger a compensating burst of production or orders.
+Invalid/dead targets are revalidated by the decision owner; an unavailable hint is not permission
+to mutate simulation directly. Existing overlap is recorded honestly below: the target design's
+"one authority" rule is not proof that today's modules never compete.
+
+**SquadManagerBotModuleCA.** Retains tactical ownership; the master may suggest a strategic
+target but cannot commandeer squad members. Existing idle-unit notifications feed the unit
+builder, and position updates coordinate bases. On future personality changes, re-resolve
+enabled manager references rather than caching a disabled instance. No hint means current
+targeting, including its existing visibility limitations, remains in force.
+
+**BaseBuilderBotModuleCA.** Owns construction orders and placement attempts; production-pause
+responses are advisory to the unit builder, whose existing opening-defence exception remains.
+An unaffordable or unplaceable candidate stays subject to current retry/backoff limits.
+Expansion appetite must not become an independent second building queue in the master.
+
+**UnitBuilderBotModuleCA.** Owns fulfilling unit requests, not callers such as the harvester
+or MCV manager. It checks non-base pause providers before its base-builder opening-defence
+exception; a budget pause must not be bypassed by a future counter-demand hint. Missing
+composition eligibility leaves existing selection behavior intact, not an invented fallback unit.
+
+**UnitCompositionsBotModule.** Is data, not a second production agent. Consumers own selection
+and prerequisite evaluation. Preserve the singleton: adding condition-gated duplicates breaks
+single-trait lookup even when most copies are disabled (§1.3). Future personality influence
+travels through properly supplied prerequisite tokens, not mutation of shared dictionaries.
+
+**SupportPowerBotModule.** Owns its Common decision rows and queues, never directly executes,
+power orders. Missing decision entries do not fire powers; no affordable target triggers the
+existing decision-specific retry. Its co-presence with AS is real: future integration must
+compare decision `OrderName` coverage before claiming exclusive power ownership.
+
+**SupportPowerBotASModule.** Retains the AS targeting algorithm and separate retry dictionary.
+A suggested main target cannot override power readiness, cost or target-validity checks.
+There is no shared reservation protocol with Common today; any overlapping decision rows
+require an explicit later ownership decision rather than silently disabling one module here.
+
+**SendUnitToAttackBotModule.** The two instances retain their configured unit selections and
+attack-desire accumulation. Missing suitable attackers/targets leaves them waiting. The master
+does not issue substitute attack orders; avoiding overlap with squad ownership is an integration
+acceptance test, not an already implemented reservation system.
+
+**HarvesterBotModuleCA.** Keeps collector control and requests replacements through the unit
+production interface. A future danger hint is additional input, not a command to abandon the
+economy. Unavailable resources, actors or production capacity retain current retry behavior;
+the master cannot create a collector or bypass the builder.
+
+**McvExpansionManagerBotModule.** Uses ResourceMap's indices and requests production through
+the builder; it owns deployment decisions. Missing viable expansion locations must not cause
+another module to deploy the same MCV. Current `MoveConyardTick: 0` is preserved; a future
+appetite hint does not implicitly enable that separate relocation behavior.
+
+**CaptureManagerBotModuleCA.** Keeps capturer eligibility and capture-target checks. A stale
+main target is discarded as a preference, not forced through capture restrictions. Easiest-bot
+condition gating remains; waiting for the minimum delay cannot transfer ownership to the master.
+
+**BuildingRepairBotModule.** Receives attack callbacks and inspects repair-capable actors
+through the existing Common path. Its all-building scan is cooldown-gated inside the attack
+callback, not independently scheduled; without callbacks there is no scan. Unsupported actors
+produce no direct repair order; future hints must not create an unconditional expenditure loop.
+
+**BuildingRepairBotModuleCA.** Is separately loaded, not an alias of Common. Its source caches
+`RepairableBuilding` from the trait's own actor at creation, so loading it on Player does not
+prove it repairs attacked buildings: a missing cached trait makes its response inert. This is
+a diagnosis boundary, not authorization to change attachment or repair behavior in this task.
+
+**PowerDownBotModule.** Reads the power manager and eligible buildings, then queues toggles.
+It does not own construction of replacement generators. Insufficient toggleable capacity
+remains a power-management limitation; future base-builder hints cannot justify direct power
+or condition changes inside this local module.
+
+**CratePickupBotModule.** Chooses a collector under existing distance/eligibility and visibility
+settings and queues movement. No crate or collector yields no useful assignment; future squad
+coordination must explicitly resolve competing actor orders rather than inventing an actor-lock
+API absent from today's code.
+
+**LoadGarrisonerBotModuleCA.** Chooses passengers and garrisons, with the existing capacity and
+scan limits. Full/dead destinations require current eligibility checks; a future Turtle hint
+must not bypass capacity or force the same infantry simultaneously into a squad and garrison.
+Such arbitration is future work, not a shipped shared allocator.
+
+**LoadCargoBotModule.** Keeps each instance's configured passenger/transport policy. A full or
+missing transport does not authorize an unrelated module to spawn one. Preserve the three
+instances and Battery cadence; cross-instance passenger contention must be tested if their
+selection sets change.
+
+**MinelayerBotModule.** Owns mine-placement assignments, using its current periodic and attack
+inputs. No usable minelayer or site leaves no assignment. A posture hint may bias sites later,
+but cannot grant mines or issue orders independently from this owner.
+
+**ResourceMapBotModule.** Publishes local derived indices through query methods; it is not
+the planned shared strategic snapshot. Consumers must tolerate stale information and recheck
+actors/locations before orders. Its scan data must not feed a synced trait directly merely
+because the source world is synced.
+
+**ExternalBotOrdersManager.** Forwards valid registered requests rather than deciding global
+strategy. Dead, out-of-world or no-longer-owned direct issuers are skipped, and direct entries
+are cleared after processing. Preserve the source's distinction between direct entries and
+`IssueOrderToBot` registrations; it is not a durable, acknowledged inter-module message bus.
+
+**BotLimits.** Supplies enabled-instance policy to builders and squads; it neither publishes
+a snapshot nor emits orders. Consumers must handle condition selection using their existing
+refresh rules. The master must not silently replace difficulty limits while changing personality;
+these are different axes.
+
+**BotGlobalUnitBudget.** Is a query-driven pause provider, not an actor producer or remover.
+Disabled/nonpositive budget returns no pause; otherwise existing clamps and exclusions apply.
+Cached results may wait for the next configured recalculation; no other local module may
+interpret that cache as synchronized world state or bypass it through a new production path.
+
+**Proposed, not loaded:** `MasterAiBotModule` alone would publish the immutable local snapshot
+at the §10.5 proposed cadence (emergency ~25, rebuild ~150, decisions ~1500 ticks).
+Observe-only deployment has **no consumers and no behavior changes**. Later consumers pull hints,
+not orders; no snapshot means old policy. `ScoutBotModule` remains a later owner of explicitly
+allocated scouting tasks after contact memory and the visibility gate (§11.3), not a current
+capability. `BotPersonalityController` would be the synced `IResolveOrder` bridge: validate
+the token, ignore repeats, and manage its condition through replayed orders. It must solve
+initial-token ownership with `GrantRandomCondition` before switching ships; reading an unsynced
+personality field from simulation code is forbidden. No controller is implemented by this contract.
+
+```text
+Current synced world / rule data
+    -> local modules + data providers (existing callbacks and queries)
+    -> bot.QueueOrder -> synchronized order resolution -> world
+
+Planned local Master snapshot --read-only hints--> existing decision owners
+    |                                              -> same order boundary
+    +-- SetBotPersonality order --> planned synced Controller --> condition
+    +-- observation / decision records --> local diagnostics only
+```
+
+This specification changes documentation only. It adds no callbacks, shared snapshot consumers,
+personality switching, scouting, fog restriction, priority arbitration or AI orders. In particular,
+it does not re-adopt §11's rejected direct-condition mutation or multi-agent pipeline designs.
 
 ### 10.3 The snapshot: the one shared data structure
 
@@ -924,7 +1101,7 @@ Recorded because they were stated as settled fact, and two of them would have ch
 | "Misclassifying a Rush as a Turtle was proved fatal" | **Unsourced.** Plausible and probably directionally right, but no paper, no measurement. Not admitted to §1; if it holds, phase-1 logs will show it |
 | "`S_def > 0.35` classifies heavy defences; `S_eco > 1.25` classifies aggressive expansion" | **Invented constants.** No derivation, no data. Thresholds come from phase-2 logs (§10.6) or not at all |
 | "All five agents' research has been synthesised into the architecture" | **False**, per §11.1 |
-| "PR #323 merged" / "PR #324 merged" | **False** at the last authoritative check; both open |
+| "PR #323 merged" / "PR #324 merged" | **False when asserted in round one.** Current check (2026-09-07): #324 merged on September 6 as `15a08466e`; #323 remains open/conflicting and its graph is adapted on the follow-up branch. Historical rejection is not current PR status |
 | "Cameo bots are omniscient, and so is every bot in the family" | **Half true.** Correct for Cameo's squad targeting (§0.2), false for CN's strategy input (§1.6) |
 
 ### 11.3 Recommendations adopted, and what they amend

@@ -55,11 +55,10 @@ class FacedancerApFoldTests(unittest.TestCase):
             self.weapon.child("Warhead@LightFlameWeaponPercentage").get(
                 "PhysicalStateName"),
         )
-        self.assertEqual(
-            "Corrosion",
-            self.weapon.child("Warhead@MediumChemicalWeaponPercentage").get(
-                "PhysicalStateName"),
-        )
+        chemical = self.weapon.child("Warhead@MediumChemicalWeaponPercentage")
+        self.assertEqual("100", chemical.child("PhysicalStates").get("Corrosion"))
+        self.assertIsNone(chemical.get("PhysicalStateName"))
+        self.assertIsNone(chemical.get("PhysicalStateScale"))
 
     def test_authorized_reprofile_removes_the_he_splash_main(self):
         self.assertIsNone(self.weapon.child("Warhead@CannonHE_Heavy"))

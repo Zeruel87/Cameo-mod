@@ -360,7 +360,7 @@ actor_tsla =
 
 actor_bastion =
    .description = Bunker with a cannon and fireports
-      for 3 garrisoned soldiers.
+      for 5 garrisoned soldiers.
    .name = Bastion Artillery Bunker
 
 actor_mgnest =

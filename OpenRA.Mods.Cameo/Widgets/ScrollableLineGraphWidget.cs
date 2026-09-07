@@ -5,7 +5,8 @@
  *
  * Cameo changes: namespace OpenRA.Mods.Common.Widgets -> OpenRA.Mods.Cameo.Widgets,
  * which costs an explicit `using OpenRA.Mods.Common.Widgets;` for WidgetUtils and
- * ButtonWidget. The drawing and scrolling logic is verbatim.
+ * ButtonWidget. Original scrolling is retained; signed ranges, the zero line,
+ * sample cadence labels and label bounds are Cameo drawing adaptations.
  *
  * Why this exists at all: stock LineGraphWidget divides the panel width by the
  * number of samples, so a long game squeezes every sample into a couple of pixels

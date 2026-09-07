@@ -77,10 +77,12 @@ class SameFamilyStackConsolidationTests(unittest.TestCase):
                     tuple(node_fingerprint(child) for child in node.children))
 
         for root, (destination, closure) in selections.items():
-            canonical_weapon = rules.resolve_weapon(f"^Warhead_{destination}")
+            # Compatibility is frozen, not recanonicalized when generated armor
+            # coupling ranks move. Compare every field against its actual root.
+            canonical_weapon = rules.resolve_weapon(f"^Compatibility_{destination}Flat")
             canonical = next(
                 child for child in canonical_weapon.children
-                if child.key == f"Warhead@{destination}"
+                if child.key == f"Warhead@{destination}FlatCompatibility"
             )
             expected = {
                 key: node_fingerprint(canonical.child(key))

@@ -348,10 +348,10 @@ are still scheduled to change across most of the roster. Pricing now means prici
 are about to be replaced.
 
 ```
-W24  one damage warhead per weapon          192 directly fired weapons still carry 2+
- └─> W23  retrofit the legacy templates      1162 direct inheritors; 1245 fired
- │        (2026-08-23 baseline; re-measure before using as current state)
- │        (its old "33-collision" blocker    weapons already reach a ^Warhead_* family
+W24  one damage warhead per weapon          184 directly fired weapons still carry 2+
+ └─> W23  retrofit the legacy templates      1596 direct inheritors
+ │        (2026-09-07 raw counts; 234 direct + indirect reachable stacks)
+ │        (its old "33-collision" blocker
  │         is DISSOLVED — W24 removes it)
  └─> A5   retire the remaining inline-Versus weapons onto templates
       └─> class anchors → fit_class per class → W11 maintainer sign-off
