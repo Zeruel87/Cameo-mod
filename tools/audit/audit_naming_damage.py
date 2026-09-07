@@ -44,7 +44,7 @@ from report import h1, h2, table
 # --- ratchets - LOWER ONLY.  Set 2026-09-06 from this audit's own first run.
 # Never raise one.  Never set one from a scratch measurement: on 2026-09-06 a
 # throwaway scan said 602/237/30/72 where the real audit said 583/221/21/61.
-N1_BASELINE = 25
+N1_BASELINE = 21
 N2_BASELINE = 16
 N3_BASELINE = 5
 N4_BASELINE = 345
