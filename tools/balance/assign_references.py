@@ -103,19 +103,43 @@ def norm_words(text):
     return [w for w in re.split(r"[^a-z0-9]+", (text or "").lower()) if w]
 
 
+# ⛔ CAMEO RENAMED UNITS THE WHOLE CORPUS CALLS SOMETHING ELSE, and the docstring below has
+# promised "alias matches" since this function was written without any table behind it. The cost
+# is invisible and total: `td_gdi_battletank` shares NO word with "GDI Medium Tank", so its name
+# score sat at 0.30 — the same score a MOBILE SENSOR ARRAY got — and the sensor array won on
+# shape. Every reference for a mainline GDI tank was lost to a naming choice.
+#
+# Keys are the normalised LAST TOKEN of a Cameo actor id; values are normalised reference names
+# it should also be tried as. Add only where the identity is not in dispute — this bypasses the
+# name evidence, so a wrong entry is worse than a missing one.
+NAME_ALIASES = {
+    "battletank": ("mediumtank",),
+    "mediumtank": ("battletank",),
+}
+
+
 def name_score(cameo_id, peer_name):
     """0..1. Exact and alias matches sit at the top; a shared distinctive word still counts."""
     tail = syn.norm(cameo_id.split("_")[-1])
     peer = syn.norm(peer_name)
     if not tail or not peer:
         return 0.0
-    if tail == peer:
-        return 1.0
-    if tail.startswith(peer) or peer.startswith(tail):
-        return 0.9
+    best = 0.0
+    for cand in (tail,) + NAME_ALIASES.get(tail, ()):
+        if cand == peer:
+            return 1.0
+        if cand.startswith(peer) or peer.startswith(cand):
+            best = max(best, 0.9)
+        # ⚠ CONTAINMENT, NOT JUST PREFIX. A reference row is routinely written with its faction
+        # in front — "GDI Medium Tank", "Allied Medium Tank", "Nod Light Tank" — so a prefix test
+        # alone misses the exact unit it is looking at. The same defect, in its `startswith` form,
+        # is what hides 143 actors from `reference_distribution`. Guarded on length so a short
+        # token cannot match half a roster.
+        elif len(cand) >= 8 and (cand in peer or peer in cand):
+            best = max(best, 0.85)
     ratio = difflib.SequenceMatcher(None, tail, peer).ratio()
     shared = set(norm_words(cameo_id.split("_")[-1])) & set(norm_words(peer_name))
-    return max(ratio, 0.6 if shared else 0.0)
+    return max(best, ratio, 0.6 if shared else 0.0)
 
 
 def pct_rank(value, population):

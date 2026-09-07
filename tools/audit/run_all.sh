@@ -60,11 +60,12 @@ export PYTHONIOENCODING=utf-8
 for a in inherits duplicate_inherits faction_leaks upgrades upgrade_coverage ai ai_personalities sequences \
          metadata outliers orphans assets fluent power_budget stat_formulas \
          weapon_uniqueness garrison_weapons asset_files promotion_gating min_range \
-         basebuilder_crates buildable_order display_text rename_safety \
+         basebuilder_crates buildable_order display_text rename_safety naming_damage \
+         map_actors \
          missing_elite elite_gating rank_decoration \
          dune_rank_decoration effect_warhead_names weapon_suffixes \
          balance_sheet consistency_report packs balance_drift \
-         duplicate_keys \
+         duplicate_keys split_definitions weapon_shape shrapnel_chains missile_role_family release_drift \
          template_conformance multiplier_modifiers nuclear_flash_bindings \
          ts_death_palette warhead_split physical_state_warheads \
          unique_traits armor_upgrade_harm plating_exclusivity k_linearity percentage_runtime \
@@ -139,6 +140,29 @@ echo "== gen_faction_matrix"
 MATRIX="docs/factions/MATRIX.md"
 [ "$OUT" = "docs/audit/latest" ] || MATRIX="$OUT/MATRIX.md"
 "$PYTHON" tools/audit/gen_faction_matrix.py > "$MATRIX" || failed=1
+
+# ⛔ REPORT-INTEGRITY GATE (2026-09-06). An INTERRUPTED run leaves reports at ZERO BYTES,
+# and a zero-byte report reads as a perfectly clean board: on 2026-09-06 eight of them sat
+# in the working tree as an ordinary `git status` modification, `-52,063` lines, with a
+# truncated weapon_suffixes.md reporting X1-X5 all zero when the real numbers were 10 and 10.
+# `environment.py` cannot catch this — the tree was COMPLETE; the RUN died, not the corpus.
+#
+# Two different causes produce the same empty file, and the .err sidecar tells them apart:
+#   .err present -> the audit ran and REFUSED (a real finding; read it)
+#   .err absent  -> the run was interrupted (regenerate)
+empty=$(find "$OUT" -name "*.md" -size 0 | sort)
+if [ -n "$empty" ]; then
+  echo
+  echo "⛔ ZERO-BYTE REPORTS — do NOT commit $OUT/; a zero-byte report is a false green board:"
+  for f in $empty; do
+    if [ -f "${f%.md}.err" ]; then
+      echo "   $f  — HARD FAILURE, read ${f%.md}.err"
+    else
+      echo "   $f  — interrupted run, regenerate"
+    fi
+  done
+  failed=1
+fi
 
 echo "reports in $OUT/ ; matrix in $MATRIX"
 exit $failed

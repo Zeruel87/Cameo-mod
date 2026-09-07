@@ -6,6 +6,7 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools/audit'))
 from miniyaml import Node, Ruleset
+import hydra_history
 from audit_physical_state_warheads import (
     duplicate_state_problems, scaled_states, state_scale)
 
@@ -54,12 +55,19 @@ class StateBindingsTests(unittest.TestCase):
     def test_spread_damage_does_not_execute_area_state_fields(self):
         self.assertEqual([], duplicate_state_problems(warhead(kind='SpreadDamage')))
 
-    def test_resolved_hydra_exposes_existing_duplicate_on_both_hits(self):
-        weapon = Ruleset(ROOT).resolve_weapon('HydraSpit')
+    def test_historical_hydra_exposes_duplicate_on_both_hits(self):
+        weapon = hydra_history.weapon()
         for key in ('LightChemicalWeapon', 'LightChemicalWeaponPercentage'):
             node = weapon.child('Warhead@' + key)
             self.assertEqual('200', state_scale(node, 'Corrosion'))
             self.assertEqual(1, len(duplicate_state_problems(node)))
+
+    def test_current_upstream_hydra_has_one_mapped_route(self):
+        weapon = Ruleset(ROOT).resolve_weapon('HydraSpit')
+        node = weapon.child('Warhead@BulletChem_Light')
+        self.assertIsNotNone(node)
+        self.assertEqual('20', state_scale(node, 'Corrosion'))
+        self.assertEqual([], duplicate_state_problems(node))
 
 
 if __name__ == '__main__':

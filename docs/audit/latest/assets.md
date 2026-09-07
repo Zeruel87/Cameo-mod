@@ -1,6 +1,6 @@
 # audit_assets — asset format norms (B11, RAMpage)
 
-PNGs scanned: **2102** (over budget: **169**), WAVs scanned: **8812** (non-conforming: **3666**)
+PNGs scanned: **2070** (over budget: **169**), WAVs scanned: **8812** (non-conforming: **3666**)
 
 
 ## P1 — PNGs over budget (> 8 MiB or > 8192px)
@@ -55,9 +55,9 @@ PNGs scanned: **2102** (over budget: **169**), WAVs scanned: **8812** (non-confo
 | mods/cameo/bits/ra/ra1_soviets_ak47conscript.png | 251 KiB | 25641x52 |
 | mods/cameo/bits/ra/ra1_soviets_dragunovantimaterialsniper.png | 229 KiB | 22311x45 |
 | mods/cameo/bits/ra/ra1_soviets_gorynychtank.png | 1008 KiB | 32897x258 |
-| mods/cameo/bits/ra/ra1_soviets_heavyindustrialminer_sovietheavyoretruckspritesheet.png | 369 KiB | 23670x80 |
 | mods/cameo/bits/ra/ra1_soviets_hiptransport.png | 242 KiB | 13952x200 |
 | mods/cameo/bits/ra/ra1_soviets_kamovattackhelicopter.png | 290 KiB | 13952x200 |
+| mods/cameo/bits/ra/ra1_soviets_sovietheavyindustrialminer_ra1_soviets_heavyindustrialminer_sovietheavyoretruckspritesheet.png | 369 KiB | 23670x80 |
 | mods/cameo/bits/ra/ra1_soviets_stalinfist.png | 2116 KiB | 16449x258 |
 | mods/cameo/bits/ra/ra1_soviets_upgrade_commissar.png | 236 KiB | 23976x52 |
 | mods/cameo/bits/ra/ra1_soviets_zapper.png | 265 KiB | 25641x52 |

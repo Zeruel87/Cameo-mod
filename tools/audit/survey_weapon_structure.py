@@ -26,7 +26,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / "docs" / "audit" / "latest" / "weapon_structure_inventory.json"
-# One reviewed reachable stack was restored for Hydralisk gameplay correctness.
+# Historical lower-only thresholds; retirement of exemptions does not raise them.
 RAW_REACHABLE_BASELINE = 240
 RAW_REACHABLE_EXCESS_BASELINE = 452
 sys.path.insert(0, str(ROOT / "tools" / "audit"))
@@ -34,7 +34,6 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 from audit_three_way_split import (  # noqa: E402
     main_warhead_nodes,
     main_warheads,
-    validated_reviewed_predicate,
 )
 from miniyaml import Ruleset  # noqa: E402
 
@@ -127,10 +126,7 @@ def weapon_reference_sets(rules: Ruleset, concrete: set[str]) -> tuple[set[str],
     return direct_refs, reachable
 
 
-def inventory(rules: Ruleset, reviewed_predicate=None) -> dict[str, object]:
-    if reviewed_predicate is None:
-        reviewed_predicate = validated_reviewed_predicate(
-            rules, main_warhead_nodes)
+def inventory(rules: Ruleset) -> dict[str, object]:
     concrete = {
         name for name in rules.weapons
         if not name.startswith("^") and rules.resolve_weapon(name) is not None
@@ -139,10 +135,9 @@ def inventory(rules: Ruleset, reviewed_predicate=None) -> dict[str, object]:
         name for name in concrete
         if len(main_warheads(rules.resolve_weapon(name))) > 1
     }
-    reviewed_violations = {
-        name for name in violations
-        if reviewed_predicate(name, main_warheads(rules.resolve_weapon(name)))
-    }
+    # Upstream retired composite exemptions. Keep legacy partition field names
+    # for report readers, but never exempt a stack or consult the deleted registry.
+    reviewed_violations = set()
     direct_refs, reachable = weapon_reference_sets(rules, concrete)
 
     main_counts = {
@@ -167,6 +162,7 @@ def inventory(rules: Ruleset, reviewed_predicate=None) -> dict[str, object]:
         return sum(max(0, main_counts[name] - 1) for name in names)
 
     return {
+        "exemption_policy": "retired; reviewed partitions are empty and all raw stacks remain counted",
         "predicate": (
             "positive Damage on AreaDamage, SpreadDamage, HealthPercentageDamage, or "
             "TargetDamage; excludes designed companions and friendly-fire twins"

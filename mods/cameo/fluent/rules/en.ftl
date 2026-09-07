@@ -948,7 +948,7 @@ actor_ts_nod_artillery =
       Strong vs Buildings, Ground units
       Weak vs Aircraft, close-range units
 
-ra1_soviets_upgrade_shtoradefensesystem =
+ra1_soviets_upgrade_shtoradefensesystemupgrade =
    .name = Shtora Defense System
    .description = Tech Upgrade (Only affects units of own faction)
       Hammer Tanks mount the Shtora countermeasure suite: a defensive laser that periodically blinds a nearby enemy, cutting its weapon range, vision and cloak detection to 20% for a short time.
@@ -1825,7 +1825,7 @@ upgrade_shipweapon =
 upgrade_shiparmor =
    .description = Increases armor of all Terran aircraft by 20%
 
-ra1_soviets_doctrine_conscription =
+ra1_soviets_doctrine_conscriptiondoctrine =
    .description = DOCTRINE (Only One Doctrine For Each Tier Can Be Researched)
       Focuses on Mass Produced Infantry:
       All Infantry are 25% cheaper and faster to train
@@ -1836,7 +1836,7 @@ ra1_soviets_doctrine_conscription =
       Unlocks Commissar
       Unlocks Vengeance and Men of Steel Upgrades
 
-ra1_soviets_doctrine_industrialefficiency =
+ra1_soviets_doctrine_industrialefficiencydoctrine =
    .description = DOCTRINE (Only One Doctrine For Each Tier Can Be Researched)
       Focuses on strong Economy and Mass Produced Vehicles and Aircraft
       Replaces Ore Trucks with Industrial Miners
@@ -1844,7 +1844,7 @@ ra1_soviets_doctrine_industrialefficiency =
       Replaces Airfields with Large Airfields (100% faster production)
       Unlocks Mass Production and War Economy Upgrades
 
-ra1_soviets_doctrine_inferno =
+ra1_soviets_doctrine_infernodoctrine =
    .description = DOCTRINE (Only One Doctrine For Each Tier Can Be Researched)
       Focuses on Flame and Artillery Weapons
       All Grenadiers, Mortars, Flame Weapons and Artilleries have 25% more firepower
@@ -1853,7 +1853,7 @@ ra1_soviets_doctrine_inferno =
       Unlocks Heatray Tank
       Unlocks Incendiary Bullets and Scorched Earth Upgrades
 
-ra1_soviets_doctrine_teslaandexperimentaltech =
+ra1_soviets_doctrine_teslaandexperimentaltechdoctrine =
    .description = DOCTRINE (Only One Doctrine For Each Tier Can Be Researched)
       Focuses on Experimental Tesla Technology
       All Tesla Weapons deal additional EMP Damage.
@@ -1862,7 +1862,7 @@ ra1_soviets_doctrine_teslaandexperimentaltech =
       Unlocks Heavy Tesla Tank
       Unlocks Tesla Arcing, Tesla Rockets and Reactor Overload Upgrades
 
-ra1_soviets_doctrine_heavyarmor =
+ra1_soviets_doctrine_heavyarmordoctrine =
    .description = DOCTRINE (Only One Doctrine For Each Tier Can Be Researched)
       Focuses on Heavy Armor and Powerful Tanks
       All Vehicles and Aircraft have 10% additional Damage Resistance
@@ -1872,7 +1872,7 @@ ra1_soviets_doctrine_heavyarmor =
       Unlocks Shtora Defense System Upgrade
       Unlocks Auto Loaders, Thermobaric Rockets and Stalinium Upgrades
 
-ra1_soviets_doctrine_nuclearwar =
+ra1_soviets_doctrine_nuclearwardoctrine =
    .description = DOCTRINE (Only One Doctrine For Each Tier Can Be Researched)
       Focuses on High Damage and Speed.
       All Vehicles have 10% higher Firepower and Speed

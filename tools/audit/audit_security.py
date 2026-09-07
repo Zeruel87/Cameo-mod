@@ -73,6 +73,11 @@ def iter_files(root: pathlib.Path):
         rel_parts = path.relative_to(root).parts
         if any(part in SKIP_PARTS for part in rel_parts):
             continue
+        # A top-level directory containing `.git` (file or dir) is a nested
+        # checkout — a linked worktree like wt_base/ — not repo content.
+        # Scanning it double-counts every finding.
+        if len(rel_parts) > 1 and (root / rel_parts[0] / ".git").exists():
+            continue
         yield path
 
 

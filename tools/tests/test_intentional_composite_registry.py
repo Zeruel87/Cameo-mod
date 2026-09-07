@@ -1,4 +1,11 @@
-"""Transparency and drift contracts for reviewed multi-main weapons."""
+"""Transparency and drift contracts for reviewed multi-main weapons.
+
+⛔ SKIPPED: tools/audit/intentional_composites.py was DELETED 2026-09-06 by
+maintainer ruling ("no more than the 3-way split and no dual inherits per
+type"). The exemption registry no longer exists; every multi-main weapon is
+debt. These tests are preserved for provenance but cannot run until rewritten
+against the new audit_weapon_shape.py / audit_three_way_split.py framework.
+"""
 
 from __future__ import annotations
 
@@ -15,13 +22,21 @@ sys.path[:0] = [str(ROOT / "tools/audit")]
 
 import audit_three_way_split as split  # noqa: E402
 from audit_three_way_split import main_warhead_nodes, main_warheads  # noqa: E402
-import intentional_composites as reviewed  # noqa: E402
+
+try:
+    import intentional_composites as reviewed  # noqa: E402
+except ImportError:
+    reviewed = None
+
 from miniyaml import Ruleset  # noqa: E402
 import survey_weapon_structure as survey  # noqa: E402
 from survey_weapon_structure import OUT as INVENTORY_REPORT  # noqa: E402
 from survey_weapon_structure import inventory, serialized  # noqa: E402
 
 
+@unittest.skipIf(reviewed is None,
+                 "intentional_composites.py was deleted 2026-09-06; "
+                 "exemption repealed by maintainer ruling")
 class IntentionalCompositeRegistryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

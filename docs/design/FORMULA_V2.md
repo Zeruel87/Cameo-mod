@@ -58,7 +58,8 @@ C₀ = cost). With ratios h,s,r,d (and r carrying the Special factor K):
 
 ## 3. Stat laws (all classes unless stated)
 
-- **Price**: 10-credit steps; envelope **50%–250% of the class C₀**;
+- **Price**: 10-credit steps; hard band **50%–350% of the class C₀**
+  (maintainer 2026-09-08), sweet spot **100%–250%** — see `BALANCE_PIPELINE.md` §8.1;
   classic C&C factions keep their ORIGINAL prices (memorability);
   custom factions (AsianAlliance, LatinSyndicate, …) may deviate.
 - **Range**: ±10% of the class baseline (HARD band; scouts 4500–5500);

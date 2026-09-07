@@ -54,11 +54,6 @@ if hasattr(sys.stdout, "reconfigure"):          # Windows consoles default to cp
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from miniyaml import Ruleset  # noqa: E402
-from intentional_composites import (  # noqa: E402
-    intentional_composite,
-    reviewed_fingerprints,
-    validated_reviewed_predicate,
-)
 
 # Weapons resolving to >1 main damaging warhead when this was measured (2026-08-28). LOWER ONLY.
 # 1190 -> 1178 the same day: a MEASUREMENT fix, not converted weapons. See FRIENDLY_FIRE below.
@@ -67,9 +62,8 @@ from intentional_composites import (  # noqa: E402
 # 340 -> 339 on 2026-09-02: HydraSpit collapsed from four damage mains onto the new
 # ^Warhead_BulletChem_Light family (maintainer ruling; docs/design/W24_COLLAPSE_REVIEW.md
 # ┬º8). Structural consolidation, which is the only reason this number may move.
-RAW_SPLIT_BASELINE = 335
-SPLIT_BASELINE = 111
-INTENTIONAL_COMPOSITES = reviewed_fingerprints()
+RAW_SPLIT_BASELINE = 329  # 335 -> 329; the exemption was deleted 2026-09-06 so nothing is
+                          # subtracted. LOWER ONLY.
 REPORT = pathlib.Path(__file__).resolve().parents[2] / "docs/audit/latest/three_way_split.md"
 
 # Warhead types that inflict damage on a normal target. Everything else (CreateEffect,
@@ -133,12 +127,26 @@ def main_warheads(resolved) -> list[str]:
     return [wh.key.replace("Warhead@", "") for wh in main_warhead_nodes(resolved)]
 
 
+def validated_reviewed_predicate(rs, main_warhead_nodes_fn):
+    """Return a predicate (name, mains) -> bool that is True for weapons that
+    were reviewed and deliberately kept as multi-main composites.
+
+    The ``intentional_composites`` exemption was DELETED 2026-09-06 by
+    maintainer ruling ("no more than the 3-way split and no dual inherits
+    per type"). Nothing is exempt anymore — every multi-main weapon is debt.
+    This stub returns a predicate that always says "not reviewed" so that
+    ``survey_weapon_structure.inventory`` and ``audit_doc_claims`` continue
+    to work without the deleted ``intentional_composites.py`` module.
+    """
+    def _predicate(name, mains):
+        return False
+    return _predicate
+
+
 def run(rs: Ruleset) -> int:
-    reviewed_predicate = validated_reviewed_predicate(rs, main_warhead_nodes)
     hist = collections.Counter()
     combos = collections.Counter()
     rows: list[tuple[str, list[str]]] = []
-    reviewed: list[tuple[str, list[str]]] = []
 
     for name in sorted(rs.weapons):
         if name.startswith("^"):
@@ -149,21 +157,17 @@ def run(rs: Ruleset) -> int:
         mains = main_warheads(resolved)
         hist[len(mains)] += 1
         if len(mains) > 1:
-            if reviewed_predicate(name, mains):
-                reviewed.append((name, mains))
-            else:
-                rows.append((name, mains))
-                combos[tuple(sorted(mains))] += 1
+            rows.append((name, mains))
+            combos[tuple(sorted(mains))] += 1
 
     total = sum(hist.values())
-    raw_count = len(rows) + len(reviewed)
-    print(f"# audit_three_way_split — {raw_count} raw stacked weapons; "
-          f"{len(rows)} remain unreviewed\n")
+    raw_count = len(rows)
+    print(f"# audit_three_way_split — {raw_count} weapons with MORE THAN ONE main warhead\n")
+    print("_The `intentional_composites` exemption was DELETED 2026-09-06 (DESIGN §11b.1). Nothing is subtracted — every stack is debt._\n")
     print(f"  {hist[1]:5d}  correct — exactly one main warhead")
     print(f"  {hist[0]:5d}  none — utility / effect-only weapons")
     print(f"  {raw_count:5d}  RAW STACKS — structural inventory")
-    print(f"  {len(reviewed):5d}  reviewed — exact intentional composites")
-    print(f"  {len(rows):5d}  UNREVIEWED — classification backlog\n")
+    print(f"  {len(rows):5d}  STACKS — all debt under §11b.1\n")
 
     print("  mains  weapons")
     for k in sorted(hist):
@@ -175,26 +179,18 @@ def run(rs: Ruleset) -> int:
     for combo, n in combos.most_common(20):
         print(f"| {n} | {' + '.join(combo)} |")
 
-    print(f"\nReviewed exact composites ({len(reviewed)}):\n")
-    if reviewed:
-        for name, mains in reviewed:
-            print(f"- `{name}`: {' + '.join(sorted(mains))}")
-    else:
-        print("_none_")
 
     raw_over = raw_count > RAW_SPLIT_BASELINE
-    review_over = len(rows) > SPLIT_BASELINE
-    over = raw_over or review_over
+    over = raw_over
     print(f"\n{'FAIL' if over else 'WARN'} raw {raw_count}/{RAW_SPLIT_BASELINE}; "
-          f"unreviewed {len(rows)}/{SPLIT_BASELINE}")
+          f"(cross-check audit_weapon_shape W5)")
     if raw_over:
         print("**A weapon just gained a second main warhead.** Split it into the 3 layers instead "
               "of raising RAW_SPLIT_BASELINE.")
-    elif review_over:
-        print("**A reviewed fingerprint drifted or a new stack needs classification.**")
     else:
-        print("Lower raw ratchets only for structural consolidation; lower the unreviewed "
-              "ratchet only for exact reviewed decisions.")
+        print("Lower `RAW_SPLIT_BASELINE` as weapons are collapsed; never raise it. "
+              "⚠ Cross-check `audit_weapon_shape` W5, which measures the same population "
+              "from the RESOLVED node rather than the source.")
     return 1 if over else 0
 
 

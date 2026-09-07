@@ -3,8 +3,8 @@
 | metric | meaning | value | floor/baseline |
 |---|---|---|---|
 | T1 | NUnit [Test] cases in OpenRA.Mods.Cameo.Test (5 file(s)) | 48 | >= 24 |
-| T2 | `def test_*` in tools/tests (84 file(s)) | 815 | >= 177 |
-| T3 | modules with no test mentioning them | 263 | <= 224 |
+| T2 | `def test_*` in tools/tests (89 file(s)) | 887 | >= 177 |
+| T3 | modules with no test mentioning them | 267 | <= 224 |
 
 
 ## How to run the real suites (periodic run must paste output here)
@@ -15,7 +15,7 @@ python -m unittest discover -s tools/tests -t tools/tests
 ```
 
 
-## T3 — untested modules (263)
+## T3 — untested modules (267)
 
 | kind | file | type(s)/module |
 |---|---|---|
@@ -209,7 +209,9 @@ python -m unittest discover -s tools/tests -t tools/tests
 | python | tools/audit/audit_rank_decoration.py | audit_rank_decoration |
 | python | tools/audit/audit_rename_safety.py | audit_rename_safety |
 | python | tools/audit/audit_sequences.py | audit_sequences |
+| python | tools/audit/audit_split_definitions.py | audit_split_definitions |
 | python | tools/audit/audit_survivability_pricing.py | audit_survivability_pricing |
+| python | tools/audit/audit_task_index.py | audit_task_index |
 | python | tools/audit/audit_template_conformance.py | audit_template_conformance |
 | python | tools/audit/audit_test_coverage.py | audit_test_coverage |
 | python | tools/audit/audit_tier_weapon_class.py | audit_tier_weapon_class |
@@ -218,6 +220,7 @@ python -m unittest discover -s tools/tests -t tools/tests
 | python | tools/audit/audit_unique_traits.py | audit_unique_traits |
 | python | tools/audit/audit_upgrade_coverage.py | audit_upgrade_coverage |
 | python | tools/audit/audit_weapon_identity.py | audit_weapon_identity |
+| python | tools/audit/audit_weapon_shape.py | audit_weapon_shape |
 | python | tools/audit/audit_weapon_suffixes.py | audit_weapon_suffixes |
 | python | tools/audit/audit_weapon_uniqueness.py | audit_weapon_uniqueness |
 | python | tools/audit/check_effect_audio.py | check_effect_audio |
@@ -248,6 +251,7 @@ python -m unittest discover -s tools/tests -t tools/tests
 | python | tools/balance/convert_apply_to_scaled_v2.py | convert_apply_to_scaled_v2 |
 | python | tools/balance/count_mixed.py | count_mixed |
 | python | tools/balance/design_invented_profiles.py | design_invented_profiles |
+| python | tools/balance/firepower_consumer_report.py | firepower_consumer_report |
 | python | tools/balance/fix_orphan_old_keys.py | fix_orphan_old_keys |
 | python | tools/balance/fix_orphan_old_keys_multi.py | fix_orphan_old_keys_multi |
 | python | tools/balance/fix_stale_warhead_keys.py | fix_stale_warhead_keys |
@@ -259,10 +263,10 @@ python -m unittest discover -s tools/tests -t tools/tests
 | python | tools/balance/plan_firepower_retirement.py | plan_firepower_retirement |
 | python | tools/balance/plan_warhead_collapse.py | plan_warhead_collapse |
 | python | tools/balance/preview_bell.py | preview_bell |
-| python | tools/balance/propose_rebalance.py | propose_rebalance |
 | python | tools/balance/remove_dead_weapons.py | remove_dead_weapons |
 | python | tools/balance/rename_3way_underscore.py | rename_3way_underscore |
 | python | tools/balance/report_versus_change.py | report_versus_change |
+| python | tools/balance/retained_firepower_survey.py | retained_firepower_survey |
 | python | tools/balance/retrofit_legacy_template.py | retrofit_legacy_template |
 | python | tools/balance/retrofit_weapon_family.py | retrofit_weapon_family |
 | python | tools/balance/run_with_guard.py | run_with_guard |
@@ -286,5 +290,5 @@ python -m unittest discover -s tools/tests -t tools/tests
 
 ## FAIL
 
-- T3: 263 untested > baseline 224
+- T3: 267 untested > baseline 224
 

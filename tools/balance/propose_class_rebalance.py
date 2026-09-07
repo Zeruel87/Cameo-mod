@@ -293,6 +293,12 @@ def load_class_rows(cls: str):
                 if (not u.get("buildable", True) and actor not in protected
                         and not design.get("balance_include")):
                     continue
+                if "resolved_firepower_modifiers" in u:
+                    raise SystemExit(
+                        f"{actor}: replacement-damage proposals do not yet model retained "
+                        "inherited/scoped firepower. No proposal written. Use fit_class or "
+                        "propose_rebalance for current-output diagnostics; do not delete "
+                        "global/class modifiers to satisfy the legacy FP=1 solver.")
                 hp = fnum((u.get("hp") or {}).get("v")) or 0
                 spd = fnum((u.get("speed") or {}).get("v")) or 0
                 cost = fnum((u.get("cost") or {}).get("v")) or 0

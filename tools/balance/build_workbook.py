@@ -46,6 +46,8 @@ from openpyxl.utils import get_column_letter
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/balance"))
 import formula  # noqa: E402
+from firepower import armament_firepower, priced_by_default
+import firepower
 import class_membership  # noqa: E402
 
 LEDGER = ROOT / "docs/balance"
@@ -168,9 +170,9 @@ def unit_rows(ws, theme, aid, u, section, row):
     ws.cell(row=row, column=COL["TechTier"], value=tech_tier)
     ws.cell(row=row, column=COL["UnitClass"], value=d.get("unit_class") or 1)
     ws.cell(row=row, column=COL["Special"], value=d.get("special") or 1)
-    fp_raw = fnum((u.get("firepower_multiplier") or {}).get("v"))
-    fp_factor = fp_raw / 100 if fp_raw is not None else None
-    ws.cell(row=row, column=COL["FirepowerMultiplier"], value=fp_factor)
+    ws.cell(row=row, column=COL["FirepowerMultiplier"]).comment = Comment(
+        "Resolved unconditional multipliers are shown per weapon row. Read-only; "
+        "not a gameplay tuning knob. Conditional bonuses are excluded.", "balance-pipeline")
     ws.cell(row=row, column=COL["Cost"], value=cost)
 
     wrows = []
@@ -180,7 +182,7 @@ def unit_rows(ws, theme, aid, u, section, row):
             continue
         row += 1
         wrows_all.append(row)
-        if arm.get("pricing", True):
+        if priced_by_default(arm):
             wrows.append(row)
         ws.cell(row=row, column=COL["Actor"],
                 value=f"  ↳ {arm.get('weapon')}").font = WEAPON_FONT
@@ -233,7 +235,8 @@ def unit_rows(ws, theme, aid, u, section, row):
         ws.cell(row=row, column=COL["WeapClass"],
                 value=fnum(arm.get("design_weapon_class")) or 1)
         r = row
-        fp_factor = f"IF(ISBLANK({L('FirepowerMultiplier')}{first}),1,{L('FirepowerMultiplier')}{first})"
+        ws.cell(row=r, column=COL["FirepowerMultiplier"], value=armament_firepower(u, arm))
+        fp_factor = f"{L('FirepowerMultiplier')}{r}"
         ws.cell(row=r, column=COL["EffReload"],
                 value=eff_reload_formula(r))
         # No *WeapClass (W4): formula.dps() dropped it, and this sheet must emit
@@ -326,7 +329,8 @@ def protect(ws, unit_cells, weapon_cells):
 
 def workbook_fingerprint() -> str:
     """Hash every source/input that can change generated workbook semantics."""
-    paths = [pathlib.Path(__file__), pathlib.Path(formula.__file__),
+    paths = [pathlib.Path(__file__), pathlib.Path(formula.__file__), pathlib.Path(firepower.__file__),
+             pathlib.Path(class_membership.__file__),
              pathlib.Path(tier_chain.__file__), MOD_CONFIG, DEFAULTS]
     paths.extend(sorted(LEDGER.rglob("*.json")))
     digest = hashlib.sha256()
@@ -349,6 +353,8 @@ def add_constants_sheet(wb, title):
         ("TRACKED generated workbench; regenerate from the ledger, never treat as source.", None),
         ("Formula law (formula.py, Tiger anchor O=P=Q=Cost=800):", None),
         ("DPS", "Damage*Burst/(Reload+sum of every burst gap; blank delay = 5 each)*FirepowerMultiplier"),
+        ("FirepowerMultiplier", "Read-only resolved unconditional product per weapon row; not an editable actor knob."),
+        ("Conditional weapons", "Displayed individually; only default-enabled priced rows enter unit totals."),
         ("WeapClass", "design data only — retired from pricing 2026-08-11 (W4)"),
         ("O", "(HP/1e5+Speed/100+Rng*Spec/5+DPS/200)*200*UC*Tier"),
         ("P", "((HP*Speed/25000)+(Rng*Spec*DPS/2.5))*UC*Tier"),

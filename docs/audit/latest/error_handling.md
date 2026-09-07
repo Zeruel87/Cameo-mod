@@ -1,6 +1,6 @@
 # audit_error_handling — Python tooling error handling
 
-Files scanned: **389**
+Files scanned: **400**
 
 | code | meaning | count | baseline |
 |---|---|---|---|
@@ -39,16 +39,16 @@ Files scanned: **389**
 | tools/audit/audit_rank_decoration.py | 49 | handler body discards the error |
 | tools/audit/audit_rank_decoration.py | 68 | handler body discards the error |
 | tools/audit/audit_scaled_bullet_overrides.py | 41 | handler body discards the error |
-| tools/audit/audit_three_way_split.py | 125 | handler body discards the error |
+| tools/audit/audit_three_way_split.py | 119 | handler body discards the error |
 | tools/audit/audit_tier_weapon_class.py | 76 | handler body discards the error |
 | tools/audit/audit_unique_traits.py | 73 | handler body discards the error |
 | tools/audit/audit_upgrades.py | 158 | handler body discards the error |
 | tools/audit/audit_upstream_adoption.py | 97 | handler body discards the error |
 | tools/audit/audit_upstream_adoption.py | 138 | handler body discards the error |
-| tools/audit/audit_weapon_suffixes.py | 110 | handler body discards the error |
-| tools/audit/audit_weapon_suffixes.py | 157 | handler body discards the error |
-| tools/audit/audit_weapon_suffixes.py | 223 | handler body discards the error |
-| tools/audit/audit_weapon_suffixes.py | 345 | handler body discards the error |
+| tools/audit/audit_weapon_suffixes.py | 115 | handler body discards the error |
+| tools/audit/audit_weapon_suffixes.py | 162 | handler body discards the error |
+| tools/audit/audit_weapon_suffixes.py | 228 | handler body discards the error |
+| tools/audit/audit_weapon_suffixes.py | 350 | handler body discards the error |
 | tools/audit/audit_weapon_uniqueness.py | 99 | handler body discards the error |
 | tools/audit/gen_damage_matrix.py | 52 | handler body discards the error |
 | tools/audit/miniyaml.py | 203 | handler body discards the error |
@@ -75,7 +75,7 @@ Files scanned: **389**
 | tools/balance/design_invented_profiles.py | 172 | handler body discards the error |
 | tools/balance/design_invented_profiles.py | 186 | handler body discards the error |
 | tools/balance/extract_stats.py | 239 | handler body discards the error |
-| tools/balance/extract_stats.py | 1018 | handler body discards the error |
+| tools/balance/extract_stats.py | 1042 | handler body discards the error |
 | tools/balance/formula.py | 543 | handler body discards the error |
 | tools/balance/gen_derived_stats.py | 95 | handler body discards the error |
 | tools/balance/measure_retrofit_gap.py | 134 | handler body discards the error |

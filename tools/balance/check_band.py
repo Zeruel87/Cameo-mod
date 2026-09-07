@@ -4,12 +4,12 @@
 For every ledger unit tagged design.class_anchor = <class>, compute its
 class-formula price and the ratio price/cost0, then enforce the baseband law:
 
-  * hard band     50%..400%  of the class baseline cost0
+  * hard band     50%..350%  of the class baseline cost0  (maintainer 2026-09-08)
   * practical floor  ~75%   (formula breaks down below — units too weak/price)
   * sweet spot   100%..250%  (baseline..verifier) — target >=80% occupancy
 
 Read-only. Emits a report and a nonzero exit if any member is below 75% or
-above 400% (unless it is a BuildLimit:1 epic/hero, which is band-exempt).
+above 350% (unless it is a BuildLimit:1 epic/hero, which is band-exempt).
 
 Usage: python tools/balance/check_band.py [--class X] [--md docs/audit/latest/band.md]
 """
@@ -20,11 +20,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/balance"))
 import formula  # noqa: E402
 import tier_chain  # noqa: E402
+from firepower import armament_firepower, priced_by_default
 
 LEDGER = ROOT / "docs/balance"
 ANCHORS = LEDGER / "class_anchors.json"
 
-FLOOR, SOFT_FLOOR, SWEET_LO, SWEET_HI, CEIL = 0.50, 0.75, 1.00, 2.50, 4.00
+FLOOR, SOFT_FLOOR, SWEET_LO, SWEET_HI, CEIL = 0.50, 0.75, 1.00, 2.50, 3.50
 
 
 def fnum(v):
@@ -40,7 +41,7 @@ def unit_inputs(u, du=None):
     du = du or {}
     total_dps, best_range = 0.0, 0.0
     for arm in u.get("armaments", []):
-        if not arm.get("pricing", True):
+        if not priced_by_default(arm):
             continue
         st = arm.get("stats", arm)  # tolerate both nesting styles
         dmg = formula.spread_damage_sum(st.get("damage_warheads", arm.get("damage_warheads", [])))
@@ -54,7 +55,7 @@ def unit_inputs(u, du=None):
         # Raw ledgers use ``burstdelays``. Keep the underscored fallback only
         # for the older nested fixture shape this reader still accepts.
         bd = st.get("burstdelays", st.get("burst_delays"))
-        total_dps += formula.dps(dmg, reload_, burst, bd)
+        total_dps += formula.dps(dmg, reload_, burst, bd) * armament_firepower(u, arm)
         best_range = max(best_range, rng)
     if hp is None or speed is None or total_dps == 0:
         return None

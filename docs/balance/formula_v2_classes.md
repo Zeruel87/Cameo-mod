@@ -56,7 +56,7 @@ Anchor spec: HP=20000, Speed=60, Range=5000, eff-DPS=60, Cost=100
 
 - `forgotten_mutant` → reclassified to closecombat infantry (was range 3132).
 - `schwarzermond_lunarsoldier` → already moved to special forces; excluded from this scout pass.
-- `alien.nax` → civilian variant spawned from asteroids/dead aircraft; set Cost to **1000** (stats unchanged).
+- `naxis_alien` → civilian variant spawned from asteroids/dead aircraft; set Cost to **1000** (stats unchanged).
 - Spies, civilian Naxis variants, casters, and units priced outside the scout envelope remain for a future pass.
 - Raw Damage values are kept in 2000-step increments; effective-DPS uniqueness is enforced via per-actor FirepowerMultiplier.
 
@@ -184,7 +184,7 @@ the maintainer before any conversion.
 5. Melee + heavy anchors: after closecombat lands, same survey method
    (melee r₀ ~1500 band 1350–1650; heavy needs its own survey — many
    flame units already live there).
-6. Civilians (alien/undead/conehead2.nax): parked undecided per the
+6. Civilians (alien/undead/naxis_conehead2): parked undecided per the
    maintainer — they can slot into scout/closecombat/melee/heavy once
    the ladder is complete.
 
@@ -240,12 +240,12 @@ Lessons:
 
 _Merged 2026-08-23 from `docs/balance/formula_v2_mbt.md`, unedited below this line._
 
-anchor: `tiger.nax` (cost0 800, O0 946.79, P0 1093.58, Q0 1387.16)
+anchor: `naxis_tiger` (cost0 800, O0 946.79, P0 1093.58, Q0 1387.16)
 
 | unit | cost (actual) | class-formula price | delta |
 |---|---|---|---|
 | `asianalliance_lynxtank` | 850 | 761 | -11% ⚠ |
-| `assault.nax` | 900 | 4452 | +395% ❗ |
+| `naxis_assault` | 900 | 4452 | +395% ❗ |
 | `cabal_tarantula` | 1000 | 1065 | +7% |
 | `cabal_widow` | 3500 | 8264 | +136% ❗ |
 | `combat_tank.atreides` | 600 | 1018 | +70% ❗ |
@@ -278,7 +278,7 @@ anchor: `tiger.nax` (cost0 800, O0 946.79, P0 1093.58, Q0 1387.16)
 | `td_gdi_battletank` | 900 | 911 | +1% |
 | `td_gdi_predatortank` | 1250 | 1282 | +3% |
 | `terran_matador` | 1700.0 | (no combat stats) | |
-| `tiger.nax` | 800 | 800 | +0% |
+| `naxis_tiger` | 800 | 800 | +0% |
 | `tkm_abrams` | 1000 | 1046 | +5% |
 | `tkm_t72m` | 900 | 1287 | +43% ❗ |
 | `tkm_technicaltank` | 700 | 715 | +2% |

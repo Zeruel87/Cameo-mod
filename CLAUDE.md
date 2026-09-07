@@ -99,6 +99,25 @@ never for status.
    the level scales the radius only, and blends cross their parents' shapes via `blend_shape()`.
    Radius = **(N-1) x Spread**, not N x Spread. Always `splice_templates.py --all`, never a subset:
    adding a family re-ranks the shield-coupling ladder and a partial splice leaves drift.
+8g. **AN OVERRIDE IS A CANCELLATION — never judge it by the node it sits in.**
+   `-Key@X:` in a child CANCELS what an ANCESTOR defines, so it looks dead *precisely
+   because* the node it sits in does not define X. On 2026-09-06 `d818aec40` deleted
+   **2248 `-Warhead@*` nodes as "stale"** and resurrected every cancelled warhead:
+   weapons with more than one MAIN warhead went **461 → 1103**, and 14 deleted
+   `-Warhead@shrapnel:` terminators turned the mutalisk's 3-bounce spore into an
+   **infinite loop** the maintainer found in play. ⛔ **Nothing crashed** — a boot gate
+   proves the rules PARSE, never that they are RIGHT. Resolve the chain and keep the
+   node unless **no ancestor defines that key**; verify with
+   `tools/audit/review_resolve_diff.py`, and note that a bulk delete is the wrong
+   SHAPE for this cleanup — it must be per-node. Guarded by **`bash_guard.py` rule 4**
+   (a staged yaml diff deleting a `-Key@...` needs `RESOLVE-VERIFIED` in the message)
+   and by **`audit_shrapnel_chains.py`** (S1a multi-node cycles, ratchet 0). The same
+   trap wears other clothes: a child's `Modifier: 100` is usually a cancellation of an
+   inherited multiplier, not a no-op.
+8h. **A RENAME BREAKS MAPS, and the boot gate cannot see it.** A `.oramap` lists placed
+   actors; if a rename moves a type the map still asks for the old one, and the failure
+   happens when that map is STARTED, not at boot. `1e30a1cb9` repaired seven maps by
+   hand. Run **`audit_map_actors.py`** (M1 ratchet 0) after every rename batch.
 9. **Underscore-only naming** — no hyphens in ids / files / fluent keys.
 10. **Attribute the ACTUAL author in the commit trailer — never impersonate another agent.**
     Sign with **your own** identity, including your real model name:

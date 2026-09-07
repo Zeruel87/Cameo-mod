@@ -74,10 +74,6 @@ class TheExemptionsTest(unittest.TestCase):
         self.assertAlmostEqual(ar.shape_similarity([1.0, 1.0], [0.0, 0.0]), 0.0)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class TheSpawnOnlyIdiomTest(unittest.TestCase):
     """⛔ `~self` and `~!self` sit side by side in this tree and mean opposite things. Stripping
     the `!` before comparing — which the check did — collapses 562 legitimate one-offs and 3
@@ -105,3 +101,37 @@ class TheSpawnOnlyIdiomTest(unittest.TestCase):
     def test_the_check_is_skipped_when_no_actor_name_is_given(self):
         """Back-compat: the old one-argument call must keep working."""
         self.assertTrue(self.fn({"Queue": "Infantry", "Prerequisites": "~x"}))
+
+    def test_normalization_and_exact_token_matching(self):
+        for prerequisite, expected in (("  ~UNIT  ", False), ("unit", False),
+                                       ("~!unit", True), ("~unit_upgrade", True)):
+            with self.subTest(prerequisite=prerequisite):
+                self.assertEqual(self.fn({"Queue": "Infantry",
+                                          "Prerequisites": prerequisite}, "unit"), expected)
+
+    def test_existing_disabling_gates_still_apply(self):
+        for buildable in (None, {}, {"Queue": ""},
+                          {"Queue": "Infantry", "Prerequisites": "~wip, ~!unit"}):
+            with self.subTest(buildable=buildable):
+                self.assertFalse(self.fn(buildable, "unit"))
+
+
+class ResolvedBuildabilityTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import extract_stats
+        from miniyaml import Ruleset
+        cls.extract = staticmethod(extract_stats.extract_actor)
+        cls.rules = Ruleset(ROOT)
+
+    def test_inherited_spawn_only_and_one_off_reach_the_ledger(self):
+        for name, section, expected in (("forgotten_mutant_wild", "infantry", False),
+                                        ("tkm_bigshiee", "vehicles", True)):
+            with self.subTest(actor=name):
+                row = self.extract(self.rules, name, section)
+                self.assertIsNotNone(row)
+                self.assertEqual(row["buildable"], expected)
+
+
+if __name__ == "__main__":
+    unittest.main()

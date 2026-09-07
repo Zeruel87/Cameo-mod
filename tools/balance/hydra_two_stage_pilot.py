@@ -14,6 +14,7 @@ from fractions import Fraction
 from hydra_impact_lab import (
     ROOT, Ruleset, Node, TARGETS, enabled, impact, modifiers, replace,
     target_from_actor, falloff_and_radii, runtime_falloff)
+from hydra_impact_lab import require_legacy_hydra
 from miniyaml import load
 import percentage_damage as pd
 
@@ -47,6 +48,7 @@ def damage(nodes, armor, distance, flags=()):
 
 
 def fit(current):
+    require_legacy_hydra(current)
     nodes=[current.child(k) for k in NONCHEMICAL]
     armors=sorted(set().union(*(pd.versus_table(n) for n in nodes)))
     knots=sorted(set().union(*(falloff_and_radii(n)[1] for n in nodes)))
@@ -118,12 +120,17 @@ def compare(current,pilot,armors):
     return rows
 
 
-def evidence(rules,current,pilot,armors,knots,curve):
-    shooter=rules.resolve('zerg_hydralisk')
-    fp=[int(n.get('Modifier')) for n in shooter.children_named('FirepowerMultiplier') if enabled(n)]
+def evidence(rules,current,pilot,armors,knots,curve,*,targets=None,firepower=None):
+    if (targets is None) != (firepower is None):
+        raise ValueError('Explicit historical evidence requires targets and firepower together')
+    if targets is None:
+        shooter=rules.resolve('zerg_hydralisk')
+        firepower=[int(n.get('Modifier')) for n in shooter.children_named('FirepowerMultiplier') if enabled(n)]
+        targets=[target_from_actor(rules.resolve(name)) for name in TARGETS]
+    fp=firepower
     actors=[]
-    for name in TARGETS:
-        target=target_from_actor(rules.resolve(name))
+    for target in targets:
+        name=target.name
         samples=[]
         for d in (0,55,110,220,350,420,700,800):
             before=impact(current,target,fp,d)
@@ -215,7 +222,10 @@ def main():
     args=parser.parse_args()
     rules=Ruleset(ROOT)
     current=rules.resolve_weapon('HydraSpit')
-    pilot,armors,knots,curve=fit(current)
+    try:
+        pilot,armors,knots,curve=fit(current)
+    except ValueError as error:
+        raise SystemExit(str(error))
     data=evidence(rules,current,pilot,armors,knots,curve)
     outputs={PILOT:yaml_text(pilot),REPORT:report(data),DATA:json.dumps(data,indent=2)+'\n'}
     if args.write:

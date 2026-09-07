@@ -3,6 +3,17 @@
 **Written 2026-09-05 by a CLOUD session (Claude Opus 5), for the LOCAL agent with file access.**
 Verified against `ec7272b81`. Every number here has the command that produced it next to it.
 
+> ⚠ **SCOPE, so this cannot become a second source of law.** This file holds the lane's
+> PROCEDURE and its TRAPS (§8 is the valuable part — nine real bugs, each with the guard
+> and test that now catches it). It does **not** hold rulings: **R1–R15 live in**
+> [`REFERENCE_EXTRACTION_PLAN.md`](REFERENCE_EXTRACTION_PLAN.md), which is their single
+> home per `docs/TASK_INDEX.md`. Where the two touch, the plan wins.
+>
+> ⚠ **§5's measured state is as of 2026-09-05 and has MOVED** — the INI corpus was wired
+> in on 2026-09-06 (2,568 → 4,520 peer rows, 15 → 21 sources, every routed faction now
+> clears the two-source floor). Re-measure with `python tools/balance/faction_routes.py`
+> and `python tools/balance/faction_extrapolate.py --by-class` rather than quoting §5.
+
 > ⚠ **THIS IS A TOPIC HANDOFF, NOT A SECOND ENTRY POINT.**
 > [`../HANDOFF.md`](../HANDOFF.md) remains THE handoff and outranks this file everywhere they
 > touch. `AGENT_WORKSPACE.md` forbids a second roadmap or handoff, and this is not one: it is the

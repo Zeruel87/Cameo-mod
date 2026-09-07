@@ -6,15 +6,16 @@ import unittest
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'tools/balance'))
 import hydra_candidate_screen as screen
+import hydra_history
 
 
 class HydraScreenTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rules=screen.Ruleset(ROOT)
-        cls.hydra=cls.rules.resolve_weapon('HydraSpit')
+        cls.hydra=hydra_history.weapon()
 
-    def test_current_nominal_none_and_duplicate_corrosion(self):
+    def test_historical_nominal_none_and_duplicate_corrosion(self):
         self.assertEqual((51480,135,25200),screen.nominal(self.hydra,'None',30000))
 
     def test_staged_candidate_has_reported_large_increase(self):

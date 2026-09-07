@@ -369,7 +369,8 @@ foolproof, and fixes the ORDER of operations. Reference data behind the anchor t
 The class **baseline** (100% cost) and **verifier** (250% cost = 2× HP + 2× DPS) bound a *band where
 most units live*. Distribution is deliberately uneven:
 - **Sweet spot 100%–250% cost** — ~**80% of all units**, skewed toward the **baseline (100%)**.
-- **Hard caps 50%–400%** — only a few units below baseline or above the verifier.
+- **Hard caps 50%–350%** (maintainer 2026-09-08, was 400%) — only a few units below
+  baseline or above the verifier.
 - **★ The formula BREAKS DOWN below ~75% cost** — units become too weak for their price (a
   600¢ tank vs an 800¢ base; the Naxis Rifle Recruit at 75¢). **75% is the practical FLOOR**, not 50.
 - **★ Price ⇒ tech-tier GATE mapping (maintainer 2026-07-25).** Cost above the baseline must be

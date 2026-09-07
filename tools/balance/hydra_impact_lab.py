@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass, field
 import json
+import hashlib
 from math import prod
 import pathlib
 import struct
@@ -198,6 +199,7 @@ def replace(node, key, value):
 
 
 def make_variants(current):
+    require_legacy_hydra(current)
     staged = candidate(72000, 10000)
     scaled = candidate(33000, 2098)
     # Explicit role experiment, not a new generated canonical family. Retains
@@ -231,12 +233,27 @@ def make_variants(current):
             'two_stage_control':two_stage}
 
 
-def build():
-    rules = Ruleset(ROOT)
-    current = rules.resolve_weapon('HydraSpit')
-    shooter = rules.resolve('zerg_hydralisk')
-    firepower = tuple(int(n.get('Modifier')) for n in shooter.children_named('FirepowerMultiplier') if enabled(n))
-    targets = [target_from_actor(rules.resolve(name)) for name in TARGETS]
+def require_legacy_hydra(current):
+    # These experiments claim one exact historical profile, not every weapon
+    # that happens to keep four familiar names and their raw Damage values.
+    def shape(node):
+        return [node.key, node.value, [shape(c) for c in node.children]]
+    digest = hashlib.sha256(json.dumps(shape(current), separators=(',', ':')).encode()).hexdigest() if current else None
+    if digest != '50c133e219282e45ffe130f8a657d61aba40e732aecd9953a19d9098680e4122':
+        raise ValueError('Historical four-profile Hydra scenario required; current weapon is unsupported. No artifacts written.')
+
+
+def build(current=None, targets=None, firepower=None):
+    supplied = (current is not None, targets is not None, firepower is not None)
+    if any(supplied) and not all(supplied):
+        raise ValueError('Explicit historical evaluation requires weapon, targets and firepower together')
+    if not any(supplied):
+        rules = Ruleset(ROOT)
+        current = rules.resolve_weapon('HydraSpit')
+        require_legacy_hydra(current)
+        shooter = rules.resolve('zerg_hydralisk')
+        firepower = tuple(int(n.get('Modifier')) for n in shooter.children_named('FirepowerMultiplier') if enabled(n))
+        targets = [target_from_actor(rules.resolve(name)) for name in TARGETS]
     variants = make_variants(current)
     results = {target.name: {key: {str(d):impact(v,target,firepower,d) for d in (0,55,110,220,350)}
                             for key,v in variants.items()} for target in targets}
@@ -301,7 +318,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--write', action='store_true')
     args = parser.parse_args()
-    data = build()
+    try:
+        data = build()
+    except ValueError as error:
+        raise SystemExit(str(error))
     if args.write:
         (ROOT/'docs/design/HYDRALISK_IMPACT_LAB.md').write_text(render(data), encoding='utf-8')
         (ROOT/'docs/audit/latest/hydralisk_impact_lab.json').write_text(json.dumps(data, indent=2)+'\n', encoding='utf-8')

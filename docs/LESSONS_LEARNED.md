@@ -42,7 +42,12 @@ win — **unless the artifact says otherwise, and then the artifact wins and you
 
 - [⛔ NEVER HAND-PARSE YAML — a sibling node silently overwrote every Versus number (2026-08-22)](#-never-hand-parse-yaml--a-sibling-node-silently-overwrote-every-versus-number-2026-08-22)
 - [⛔ `Node.child()` is an EXACT match — 97% of the mod's producers were invisible (2026-09-06)](#-nodechild-is-an-exact-match--97-of-the-mods-producers-were-invisible-2026-09-06)
+- [⛔ A ZERO-BYTE audit report is a clean green board (2026-09-06)](#-a-zero-byte-audit-report-is-a-clean-green-board-2026-09-06)
+- [⛔ A 0% compliance row is a bug report about the CHECKER (2026-09-06)](#-a-0-compliance-row-is-a-bug-report-about-the-checker-2026-09-06)
 - [A hand-edit to generated output has a countdown on it (2026-09-05)](#a-hand-edit-to-generated-output-has-a-countdown-on-it-2026-09-05)
+- [⛔ An override is a CANCELLATION — never judge it by the node it sits in (2026-09-06)](#-an-override-is-a-cancellation--never-judge-it-by-the-node-it-sits-in-2026-09-06)
+- [Walk the bisect back until the symptom is GONE, not until it appears (2026-09-07)](#walk-the-bisect-back-until-the-symptom-is-gone-not-until-it-appears)
+- [⛔ Fix the TOOL, not its output — six defects hid behind one patched map (2026-09-06)](#-fix-the-tool-not-its-output--six-defects-hid-behind-one-patched-map-2026-09-06)
 - [Five bug classes from the W25 armor/Versus rebuild (2026-08-16/17)](#five-bug-classes-from-the-w25-armorversus-rebuild-2026-08-1617)
 - [3-way split retrofits: two recurring child-weapon bugs (2026-08-08)](#3-way-split-retrofits-two-recurring-child-weapon-bugs-2026-08-08)
 - [Bulk YAML rename scripts: safety lessons (2026-07-31)](#bulk-yaml-rename-scripts-safety-lessons-2026-07-31)
@@ -165,6 +170,92 @@ the threshold behavior.
 - Weapon children that need a different concrete value should override with a
   single `Warhead@Concrete:` key; matching keys merge, so only the last value
   survives.
+
+## ⛔ A 0% compliance row is a bug report about the CHECKER (2026-09-06)
+
+`gen_rename_maps.py` reported **eight factions at exactly 0% naming compliance** — 526 actors
+— while every other faction sat at 96–100%. That report was read as a renaming backlog and
+chased **for months**. It was a two-word data-entry bug.
+
+The expected prefix is built as `"_".join(p for p in (game, slug) if p) + "_"`, and the table
+carried the game prefix **twice** for exactly those eight factions:
+
+```python
+"ra1_soviets": ("ra1", "ra1_soviets")   # -> want_prefix "ra1_ra1_soviets_"
+```
+
+Nothing can match that, so compliance was structurally pinned at 0 and the generator proposed
+**doubling every id** and **quadrupling sub-sprites**
+(`ra1_soviets_btr80_new_btr.shp` → `ra1_ra1_soviets_btr80_ra1_soviets_btr80_new_btr.shp`).
+Emptying the `game` slot for those eight moved seven of them from **0% to 100%** in one run.
+The eighth read 0% only because its rename had already been executed against the bad map —
+181 files and several hundred yaml references, caught while still uncommitted.
+
+**The tells, in order of how cheap they are to check:**
+
+1. **Exactly 0.0%, not 3% or 11%.** Real non-compliance is ragged. A clean zero across a whole
+   population means the predicate can never be true.
+2. **The set of failures is suspiciously structural.** All eight were the factions whose slug
+   already contained their game prefix — a property of the CONFIG, not of the data.
+3. **The baseline faction failed its own baseline.** The report is headed *"RA1-Soviet
+   baseline"* and `ra1_soviets` scored 0/106. A convention's own reference case cannot fail it.
+4. **A sibling metric disagreed.** Icon compliance for the same faction read **105/105 100%**
+   while actor ids read 0/106. Two metrics over one roster disagreeing that hard is the
+   checker, not the roster.
+
+**So: read what the checker EXPECTED before reading what the data contains.** One line —
+printing `want_prefix` per faction — would have exposed this at any point in the last months.
+
+⚠ And **never act on a generated proposal without eyeballing a sample of it.** The map
+literally said `ra1_soviets_btr80: ra1_ra1_soviets_btr80`. One glance at three lines of that
+file would have stopped 181 renames.
+
+`gen_rename_maps.py` now raises `AssertionError` on its own bad configuration instead of
+emitting a proposal.
+
+## ⛔ A ZERO-BYTE audit report is a clean green board (2026-09-06)
+
+Rule 8 already warns that regenerating `docs/audit/latest/` from an INCOMPLETE tree makes a
+dozen audits scan a smaller corpus, report FEWER findings and still say PASS. This is the
+same damage from a different cause, and it slips past the defence rule 8 built.
+
+**What happened.** A `run_all.sh` run was interrupted. It left **eight reports at 0 bytes** —
+`balance_sheet`, `dead_warhead_fields`, `display_text`, `duplicate_inherits`,
+`hex_shield_routing`, `impact_glow_preservation`, `meter_dilution`, `three_way_split` — plus
+`weapon_suffixes.md` truncated to 289 bytes. `git diff --stat docs/audit/latest/` read
+**24 files, −52,063 lines**. Committing that would have deleted the evidence base with a
+board that looked perfect: the truncated `weapon_suffixes.md` reported **X1–X5 all zero**
+when the real numbers were X2 = 10 and X3 = 10.
+
+**Why the existing guard does not catch it.** `tools/audit/environment.py` printed
+`complete environment` — the tree was fine, so `run_all` correctly wrote to `latest/` rather
+than diverting to `degraded/`. The corpus never shrank; the RUN did. And an emptied file is
+an ordinary modification in `git status`, indistinguishable at a glance from a report that
+legitimately went from findings to none.
+
+**The check, before any commit that touches `docs/audit/latest/`:**
+
+```sh
+find docs/audit/latest -name "*.md" -size 0     # must print nothing
+```
+
+**⛔ READ THE `.err` SIDECAR FIRST — it is sitting right next to the empty file.**
+`run_all.sh` writes each audit's stderr to `docs/audit/latest/<name>.err` and deletes it when
+empty, so a zero-byte report with a surviving `.err` beside it has already explained itself. I
+guessed "a bug in how run_all invokes it" for `three_way_split.md` when
+`three_way_split.err` held the real answer — `ValueError: intentional composite registry is
+stale or invalid`, a HARD FAILURE ON PURPOSE because a maintainer-curated composite had been
+changed underneath it. The empty report was the guard working. Two different causes produce
+the same zero-byte file, and only the sidecar tells them apart:
+
+* **`.err` present** — the audit ran and refused. Read it; it is usually a real finding.
+* **`.err` absent** — the run was interrupted. Regenerate.
+
+**And the diagnosis rule.** A large deletion count in `docs/audit/latest/` is a red flag, not
+a success. Before believing that findings dropped, re-run one of the emptied audits by hand
+and compare its corpus line — `dead_warhead_fields` prints `scanned N resolved warhead nodes`
+and `N` must not move unless the tree really changed. All eight audits here ran clean by hand
+at exit 0, which is what proved the reports, not the audits, were the damaged thing.
 
 ## ⛔ NEVER HAND-PARSE YAML — a sibling node silently overwrote every Versus number (2026-08-22)
 
@@ -419,6 +510,35 @@ The `^D2KRocket` archetype inherits `^Projectile_Missile_Heavy`, which does **no
 - Decimal `Modifier` values such as `0.89` are wrong and must be converted to `89`.
 - `tools/balance/apply_balance.py` and `tools/balance/extract_stats.py` now convert between the ledger fraction (`0.89`) and the YAML integer (`89`) automatically.
 - `tools/audit/audit_multiplier_modifiers.py` flags any non-integer `*Multiplier Modifier` value.
+
+### A tool that sums correctly still ships the wrong number if its input is already wrong
+
+`consolidate_reviewed_weapon_roots.py` computes `total = sum(...)` across a weapon's mains
+and writes exactly that. It is correct. It still helped put **195 weapons** off the damage
+they shipped with, because the values it summed had already been multiplied by
+`04de392b3` (2026-07-22, "WIP: balance, weapon-class, and audit fixes") — 70 `Damage:` lines
+changed with the main counts left alone. `RAVulcan` went 4,000 -> 16,000 in July with two
+mains intact; September collapsed it to one main and faithfully carried the 16,000 across.
+
+Three wrong hypotheses were spent before that landed:
+
+1. *"the templates supply the damage"* — every `^Warhead_*` template carries a `Damage: 2000`
+   placeholder and the weapons override it locally. Disproved by reading the templates.
+2. *"a uniform regrid multiplied everything"* — the multipliers are 4x, 6x, 8x, 15x, 25x, and
+   **85% of shared weapons never moved at all**. Disproved by measuring the population.
+3. *"the consolidation series wrote the numbers"* — `git blame` pointed at ContentPack SPLIT
+   commits, which is a blame artifact: blame follows file creation, not the edit. Disproved by
+   walking the resolved value across history instead of trusting blame.
+
+**The lesson is the method, not the culprit.** To find when a value changed, resolve it at
+sampled commits and watch the number move. Do not blame a line in a tree that has been
+reorganised, and do not reason from what a tool's code does — a correct tool with a corrupted
+input produces a confidently wrong result that every self-referential gate will pass.
+
+⛔ **Corollary, now enforced:** a gate that compares the tree to itself cannot see this class
+of defect at all. `tools/audit/audit_release_drift.py` compares against a committed snapshot
+of a SHIPPED release (`docs/reference/release_baseline_*.json`) and is the only gate in the
+tree with an external reference. Run it after every collapse.
 
 ### Balance tooling discipline
 
@@ -1336,3 +1456,154 @@ Corollary for this tree specifically: `mods/cameo/weapons/weapons.yaml` is
 generated, so direct Versus edits in it silently revert on the next splice and
 re-flag `gen_sync` in the meantime. Route every generated-row change through
 `gen_weapon_template.py` or a maintainer ruling that changes the law.
+
+## ⛔ Fix the TOOL, not its output — six defects hid behind one patched map (2026-09-06)
+
+The doubled-game-prefix bug in `gen_rename_maps.py` (`("ra1", "ra1_soviets")` wanting
+`ra1_ra1_soviets_`, which nothing can match) was found and fixed on 2026-09-06. The
+faction that had already been renamed with the broken proposal was repaired by
+**hand-editing 59 entries in `tools/rename/rename_map_ra1_soviets.yaml`** and
+re-applying. The commit message says so plainly: *"Fixed 59 file rename entries with
+doubled compound filenames (corrected to simple prefix replacement)."*
+
+**The generator was never given that same correction.** A regenerate the same day
+proposed **842 file renames, 92 of them corrupt** — the identical shape, waiting for
+the next faction. Five further defects of the same family were sitting in the file
+half, none of them reachable by fixing a map:
+
+| defect | what it minted |
+|---|---|
+| PREPEND instead of REPLACE | `ra1_soviets_btr80_ra1_soviets_btr80_new_btr.shp` |
+| shared assets exempt only above **3** users | 16 RA1-Allies sprites wearing `ra1_soviets_*` names |
+| fluent-key guard tested `actor-` but keys also use `actor_` | actor id `ra1_soviets_actordogname` from `actor_dog.name` |
+| `owner_of()` returns a pack path, `FACTION_SLUG` is keyed by `.internal` | would rename every compliant id to `redalert_soviets_*` |
+| dedupe stripped the slug but never the English adjective | `ra1_soviets_sovietairfield`, `japan_japanesebarracks` (345 live) |
+| package-qualified refs treated as filenames | `cabal_cyborgfactory_cabal_icons\|…png`, unloadable |
+
+**The rule: when a generated artifact is wrong, the artifact is a SYMPTOM.** Patching
+it clears today's damage and guarantees tomorrow's. Fix the generator, regenerate, and
+diff the regenerated output against the hand-patched one — if they differ, the tool is
+still wrong.
+
+### Walk the bisect back until the symptom is GONE, not until it appears
+
+The removal-node damage happened TWICE and the first pass only found the second one.
+`d818aec40` (the 2248-node sweep) was found, reverted, and measured against its own
+parent `d818aec40^`. Forty-four self-cycling FireShrapnel chains were still present at
+that parent, so they were written up as pre-existing debt and left alone.
+
+They were not. One commit further back, `ad7c5e232` — whose subject line reads
+*"feat(rename): ra1_soviets faction rename"* — had stripped **236 removal nodes** out of
+one weapons file, taking multi-main weapons 396 to 461 and destroying every tesla-arc
+terminator. Restoring them took the self-cycles 44 to 0 and W5 459 to 394, below the
+figure that preceded either commit.
+
+**The rule: a measurement at the parent of the commit you already found proves nothing
+about older commits.** Walk back until the symptom disappears.
+
+⚠ **And note the disguise.** The earlier, larger damage was inside a commit that
+announced itself as a *rename*. Nobody hunting a weapons regression would have opened
+it, and its own message described only the rename. **Judge a commit by its DIFF, never
+by its subject line** — `git show <sha> --stat` costs one command.
+
+### The check that could not see the thing it was built to find
+
+A near-miss from the same day, caught only because a slow first run finished in the
+background an hour later and **disagreed with the shipped version**.
+
+The first cut of `audit_naming_damage.py` matched each actor id with a **consuming**
+separator, `(?:^|_)<id>(?:_|$)`. `re.finditer` resumes after the consumed `_`, so in
+`ra1_soviets_btr80_ra1_soviets_btr80_new_btr` the second occurrence could no longer
+match its required `(?:^|_)` prefix. **The doubled id the check exists to detect was
+structurally invisible to it.** It reported `N1 4 / N2 0` where the truth was `25 / 16`.
+
+`N2 = 0` — an exact zero, over a population whose members had been listed by eye ten
+minutes earlier. **Had that run set the baselines, N2 would have been ratcheted at 0:
+a check incapable of failing, with 16 real findings hidden behind a green PASS.** The
+correct count only existed because an unrelated performance rewrite had replaced the
+consuming separator with a lookahead `(?=_|$)`, which consumes nothing — the accuracy
+fix was accidental.
+
+Two rules fall out:
+
+* **A detector needs a positive self-test on a KNOWN-BAD input**, not just a plausible
+  count. `audit_naming_damage.self_test()` now asserts the pattern finds two
+  occurrences in a hand-written doubled stem, and fails loudly if anyone rewrites it
+  back into a consuming form.
+* **A guard must validate the thing being acted on, not the thing it lives next to.**
+  The same hour, `tools/hooks/bash_guard.py` was found resolving the repository from
+  its OWN file path, so it always inspected the MAIN checkout's index. Once the fleet
+  moved to `git worktree`s that was wrong in both directions: it refused a docs-only
+  commit in a worktree because another agent had 73 sprite files staged in the main
+  tree, and — the direction that matters — it would have waved through engine content
+  committed from a worktree whenever the main index happened to be clean. A boot gate
+  that reads the wrong index is not a weaker gate, it is **no gate**. Fixed to resolve
+  the worktree from the command's `cwd` (and from `git -C <dir>`), with
+  `tools/hooks/test_bash_guard.py` asserting the invariant across every worktree.
+* **When two runs of the same tool disagree, do not assume the newer one is right
+  because it is newer.** Diff the logic and prove which is correct. Here the older run
+  was the stale one AND the wrong one, but that had to be demonstrated in four lines of
+  `re.finditer`, not assumed.
+
+### The second half: a bad id does not stay local
+
+`ra1_soviets_actordogname` was not confined to the sprite folder. It reached
+`ai/ai.yaml` `GuerrillaTypes` (5 lines), an `InitialUnits:` list in
+`RedAlert/Soviets/yaml/aircraft.yaml`, and a `Targetable@` suffix inside
+**`ContentPacks/D2k/Ordos/yaml/infantry.yaml`** — a faction with no relationship to
+RA1. Renames propagate through text replacement into places the renamer never looked.
+
+### And a check that could not see the damage
+
+`gen_rename_maps.py` reports per-faction compliance over **faction-exclusive
+BUILDABLE actors only**. Husks, upgrade markers, proxy actors and variants are
+invisible to it, and `startswith(prefix)` is satisfied by `ra1_soviets_sovietairfield`
+just as well as by `ra1_soviets_airfield`. `asianalliance` read **73/73, 100%** while
+holding 27 dotted ids and 73 redundant-word ids. **A compliance percentage measures
+the predicate, not the goal.** `tools/audit/audit_naming_damage.py` now reads the
+RESULT instead — six pathologies, six lower-only ratchets, whoever produced them.
+
+Related: `docs/LESSONS_LEARNED.md` "A hand-edit to generated output has a countdown on
+it", and the exactly-0.0% tell in `tools/audit/gen_rename_maps.py`'s FACTION_SLUG
+comment.
+
+## ⛔ An override is a CANCELLATION — never judge it by the node it sits in (2026-09-06)
+
+`d818aec40` deleted 2248 `-Warhead@*` nodes as "stale". They were not stale. A
+`-Warhead@X` in a child **cancels a warhead an ANCESTOR defines**, and deleting it
+brings that warhead back.
+
+Measured with the audit's own resolver, at `d818aec40^` vs after:
+
+| | |
+|---|---|
+| weapons resolving to >1 MAIN warhead | **461 → 1103** |
+| newly multi-main | **644** |
+| same weapon, different main set | **161** |
+
+```
+IxianCombatTankCannon   cancelled CannonHE_Medium, then defined CannonHE_Heavy.
+                        Without the cancellation it fires BOTH on every shot.
+harkonnen_autogunturret cancelled Bullet_Light, Bullet_Medium, CannonHE_Heavy.
+25mmWaveforce           2 mains -> 8, gaining LightFlameWeapon, MediumChemical,
+                        ShrapnelWeapon, TankDestroyerCannon.
+```
+
+**Why they looked stale:** the check asked whether *the same node* also defines
+`Warhead@X`. It does not — that is the whole point of a cancellation — so every one
+of them read as dead.
+
+**The rule: resolve the node and check the ANCESTORS before deleting any override.**
+For a `-Warhead@X`, keep it unless **no ancestor defines `Warhead@X`**. The same trap
+wears other clothes: a child's `Modifier: 100` is almost always a cancellation of an
+inherited multiplier, not a no-op — W26's "20 no-ops" were 19 cancellations.
+
+**And a boot gate cannot catch this.** Nothing crashed; the game starts perfectly with
+a tank that also throws grenades. A boot gate proves the rules PARSE, never that they
+are RIGHT. For any bulk edit to resolved behaviour the gate is
+`tools/audit/review_resolve_diff.py` on a sample — five weapons would have caught this
+in minutes, and it was not run.
+
+⚠ **A bulk delete is the wrong shape for this class of cleanup entirely.** Whatever
+genuinely-dead nodes existed among those 2248 are still there after the revert; they
+have to be found per-node, by resolving each parent chain.

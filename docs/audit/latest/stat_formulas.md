@@ -1,6 +1,6 @@
 # audit_stat_formulas — house stat formulas
 
-Violations: **669** across 1993 roster actors (reference-clean units: gdiarcher, raider.ordos)
+Violations: **667** across 1994 roster actors (reference-clean units: gdiarcher, raider.ordos)
 
 
 ## F1 — Repairable.HpPerStep ≠ HP/20  (44)
@@ -250,8 +250,8 @@ _267 further infantry inherit Repairable from the infantry base template (^Defau
 | ordos_rockettrooper | RegenAmount 10 | expected 24 (2 x SelfHealing 12) |
 | plymouth_cargotruck_empty | RegenAmount 10 | expected 96 (2 x SelfHealing 48) |
 | ra1_allies_alliedoretruck | RegenAmount 10 | expected 80 (2 x SelfHealing 40) |
-| ra1_soviets_heavyindustrialminer | RegenAmount 10 | expected 108 (2 x SelfHealing 54) |
-| ra1_soviets_oretruck | RegenAmount 10 | expected 80 (2 x SelfHealing 40) |
+| ra1_soviets_sovietheavyindustrialminer | RegenAmount 10 | expected 108 (2 x SelfHealing 54) |
+| ra1_soviets_sovietoretruck | RegenAmount 10 | expected 80 (2 x SelfHealing 40) |
 | ra2_allies_chronominer | RegenAmount 10 | expected 80 (2 x SelfHealing 40) |
 | ra2_soviets_warminer | RegenAmount 10 | expected 100 (2 x SelfHealing 50) |
 | schwarzermond_noidharvester | RegenAmount 10 | expected 60 (2 x SelfHealing 30) |
@@ -414,7 +414,7 @@ _267 further infantry inherit Repairable from the infantry base template (^Defau
 | ra1_allies_chronosphere | Power -200 | expected -500 (-Cost/20) |
 | ra1_oresilo | Power -10 | expected -7 (-Cost/20) |
 | ra1_soviets_ironcurtain | Power -200 | expected -250 (-Cost/20) |
-| ra1_soviets_missilesilo | Power -200 | expected -500 (-Cost/20) |
+| ra1_soviets_sovietmissilesilo | Power -200 | expected -500 (-Cost/20) |
 | ra2_allies_chronosphere | Power -200 | expected -250 (-Cost/20) |
 | ra2_allies_concretebarrier | Power missing | expected -10 |
 | ra2_allies_grandcannon | Power -200 | expected -250 (-Cost/20) |
@@ -537,9 +537,9 @@ _none found_
 
 | actor | actual | expected |
 |---|---|---|
-| ordos: ordos_artilleryplatform | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 | ordos: ordos_autogunturret | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 | ordos: ordos_chemturret | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
+| ordos: ordos_artilleryplatform | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 | schwarzermond: schwarzermond_lasertower | prereqs: schwarzermond_barracks, schwarzermond_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 
 
@@ -548,7 +548,7 @@ _none found_
 _none found_
 
 
-## F15 — Light Support composition (Tier-1 only, ~2000, 5:1 inf:veh)  (72)
+## F15 — Light Support composition (Tier-1 only, ~2000, 5:1 inf:veh)  (71)
 
 | actor | actual | expected |
 |---|---|---|
@@ -598,8 +598,7 @@ _none found_
 | futuretech: defaultfuturetech | 0 infantry : 7 vehicles | want ~5 infantry per vehicle |
 | futuretech: defaultfuturetech | futuretech_cannondroid, futuretech_missiledroid, futuretech_scoutdroid | light support must be Tier-1 only (producer-building prereqs only) |
 | tkm: defaulttstkm | 5 infantry : 2 vehicles | want ~5 infantry per vehicle |
-| ordos: ordos_L | total cost 3240 | target ~2000 (±15%) |
-| ordos: ordos_L | 5 infantry : 2 vehicles | want ~5 infantry per vehicle |
+| ordos: ordos_L | total cost 3060 | target ~2000 (±15%) |
 | ixian: ixian_L | total cost 3300 | target ~2000 (±15%) |
 | ixian: ixian_L | 5 infantry : 2 vehicles | want ~5 infantry per vehicle |
 | atreides: atreides_L | trooper (cost 300) x2 vs atreides_rockettrooper (cost 200) x1 | pricier units must not outnumber cheaper ones |
@@ -647,7 +646,7 @@ _none found_
 | ra1_allies: heavyallies | all units are Tier 1 | heavy support should mix all tiers |
 | ra1_soviets: heavysoviet | total cost 5000 | target ~10000 (±15%) |
 | ra1_soviets: heavysoviet | 5 infantry : 4 vehicles | want ~5 infantry per vehicle |
-| ra1_soviets: heavysoviet | ra1_soviets_heavytank (cost 1000) x2 vs ra1_soviets_flaktruck (cost 800) x1 | pricier units must not outnumber cheaper ones |
+| ra1_soviets: heavysoviet | ra1_soviets_sovietheavytank (cost 1000) x2 vs ra1_soviets_flaktruck (cost 800) x1 | pricier units must not outnumber cheaper ones |
 | ra1_soviets: heavysoviet | all units are Tier 1 | heavy support should mix all tiers |
 | japan: heavyjapan | total cost 6100 | target ~10000 (±15%) |
 | japan: heavyjapan | 5 infantry : 6 vehicles | want ~5 infantry per vehicle |
@@ -716,8 +715,8 @@ _none found_
 | tkm: heavytstkm | tkm_technical (cost 400) x4 vs tkm_rifleman (cost 120) x3 | pricier units must not outnumber cheaper ones |
 | tkm: heavytstkm | tkm_technical (cost 400) x4 vs tkm_rocketeer (cost 200) x2 | pricier units must not outnumber cheaper ones |
 | tkm: heavytstkm | all units are Tier 1 | heavy support should mix all tiers |
-| ordos: ordos_h | total cost 7040 | target ~10000 (±15%) |
-| ordos: ordos_h | 5 infantry : 4 vehicles | want ~5 infantry per vehicle |
+| ordos: ordos_h | total cost 6510 | target ~10000 (±15%) |
+| ordos: ordos_h | 6 infantry : 3 vehicles | want ~5 infantry per vehicle |
 | ordos: ordos_h | all units are Tier 1 | heavy support should mix all tiers |
 | ixian: ixian_h | total cost 7100 | target ~10000 (±15%) |
 | ixian: ixian_h | 5 infantry : 4 vehicles | want ~5 infantry per vehicle |
@@ -752,11 +751,9 @@ _none found_
 _none found_
 
 
-## F18 — weapons targeting Air whose gameplay payload can't hit Air  (1)
+## F18 — weapons targeting Air whose gameplay payload can't hit Air  (0)
 
-| actor | actual | expected |
-|---|---|---|
-| tsserggun | Warhead@Bullet_MediumFlatCompatibility | targets Air but no gameplay payload hits Air (used by forgotten_mutantsergeant) |
+_none found_
 
 
 ## F19 — helicopter/spaceship TurnSpeed ≠ Speed/5  (0)

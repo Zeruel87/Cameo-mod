@@ -28,7 +28,12 @@ granular, resumable task queue that the handoff points into._
 
 Design: [`AI_ARCHITECTURE.md`](AI_ARCHITECTURE.md). Nothing here is implemented; the
 design document is the deliverable so far. Ordered so each item is independently
-verifiable.
+verifiable. §10 of the design is the module-by-module build plan: what every loaded
+bot module owns, what it reads from the master's snapshot, and the phase order
+(logging → observe-only master → switching → targeting → hints → fog → learning),
+each phase shippable on its own. §11 reconciles the five-agent research round: what was verified,
+what was rejected as unsourced, and the amendments it made to the target score, the log schema and
+the fog sequencing.
 
 - [x] Measure how ContentPack `ai.yaml` merges with the global AI file
   (add-only, packs load first, removal is a load-time crash).

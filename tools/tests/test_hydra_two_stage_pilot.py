@@ -8,13 +8,16 @@ from fractions import Fraction
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'tools/balance'))
 import hydra_two_stage_pilot as pilot
+import hydra_impact_lab as lab
+import hydra_history
 
 
 class TwoStagePilotTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rules=pilot.Ruleset(ROOT)
-        cls.current=cls.rules.resolve_weapon('HydraSpit')
+        cls.current=hydra_history.weapon()
+        cls.targets,cls.firepower=hydra_history.scenario(lab)
         cls.proposed,cls.armors,cls.knots,cls.curve=pilot.fit(cls.current)
 
     def test_pilot_is_not_in_active_includes_or_weapon_inventory(self):
@@ -70,14 +73,19 @@ class TwoStagePilotTests(unittest.TestCase):
         self.assertEqual(pilot.fingerprint(self.proposed),pilot.fingerprint(nodes[0]))
         self.assertEqual(pilot.yaml_text(self.proposed),pilot.PILOT.read_text(encoding='utf-8'))
 
-    def test_full_grid_and_artifacts_are_fresh_without_masking_failures(self):
-        data=pilot.evidence(self.rules,self.current,self.proposed,self.armors,self.knots,self.curve)
+    def test_historical_grid_and_artifacts_reproduce_from_frozen_inputs(self):
+        data=pilot.evidence(None,self.current,self.proposed,self.armors,self.knots,self.curve,
+                            targets=self.targets,firepower=self.firepower)
         self.assertEqual(json.loads(json.dumps(data)),json.loads(pilot.DATA.read_text(encoding='utf-8')))
         self.assertEqual(pilot.report(data),pilot.REPORT.read_text(encoding='utf-8'))
         self.assertEqual('blocked: preservation checks fail',data['activation'])
         self.assertTrue(data['protected_nodes_unchanged'])
         self.assertEqual(4*len(self.armors)*801,sum(r['cases'] for r in data['comparison']))
         self.assertTrue(all(r['changed_cases']>0 for r in data['comparison']))
+
+    def test_live_bulletchem_weapon_is_not_a_supported_historical_fit(self):
+        with self.assertRaisesRegex(ValueError,'Historical four-profile'):
+            pilot.fit(self.rules.resolve_weapon('HydraSpit'))
 
 
 if __name__=='__main__':

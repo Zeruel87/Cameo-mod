@@ -15,8 +15,226 @@ those are archived under [`history/handoffs/`](history/handoffs/) and must not b
 | know how the bots are meant to work, and what is only designed | [`design/AI_ARCHITECTURE.md`](design/AI_ARCHITECTURE.md) |
 | know the current bug counts | [`audit/SUMMARY.md`](audit/SUMMARY.md) |
 | find which document owns a topic | [`README.md`](README.md) |
+| **you are the Blackrobe GPT-6 Astra Agent** | ⭐ [`BLACKROBE_ASTRA_BRIEF.md`](BLACKROBE_ASTRA_BRIEF.md) — your complete single-prompt instruction set |
 
 ---
+
+## ⭐ AGENT ASSIGNMENTS — who is doing what (2026-09-06)
+
+| agent | lane |
+|---|---|
+| **Blackrobe GPT-6 Astra** | ⭐ **FINISH THE BALANCE PIPELINE** (Tasks A–G) **and inherit the AI bot modules** (Task H — Devin Cloud ran out of quota mid-merge). Full brief: [`BLACKROBE_ASTRA_BRIEF.md`](BLACKROBE_ASTRA_BRIEF.md). Branch `astra/balance-pipeline`, never master. Has **full authority including `apply_balance --confirm`**, conditional on one commit per decision and a review dossier at `audit/ASTRA_REVIEW.md`. |
+| **Aurora** | `ra1_allies` + `ra2_allies` + `ts_gdi` — **128 items**, incl. the 16 Allies sprites wearing Soviet names → `../Cameo-mod-fleet/TASK_2026-09-06_aurora.md` |
+| **Ember** | `asianalliance` — **100 items**; first action is to rebase and push the finished `.asian` branch → `TASK_2026-09-06_ember.md` |
+| **Nova** | `ra1_soviets` — **94 items**, incl. the fluent-key leak and the 19 doubled filenames → `TASK_2026-09-06_nova.md` |
+| **Dawn** | `latinsyndicate` + `steelconsortium` + `wc2_*` + `zerg` — **79 items** → `TASK_2026-09-06_dawn.md` |
+| **Echo** | `ixian` + `ordos` + `d2k` + `japan` — **68 items** + the mod's last hyphen → `TASK_2026-09-06_echo.md` |
+| **Blaze** | `atreides` + `corrino` + `harkonnen` + `futuretech` + `yuri` — **32 items**, incl. **14 of the 15 actor-id renames left in the whole mod** → `TASK_2026-09-06_blaze.md` |
+| **Claude-Local (Opus 5)** | rulings, review, squash-merges to master, and the gates |
+
+⚠ **Nobody merges to master except Claude-Local.** Agents commit freely on their own branch
+and report a completed work item; Claude reviews and squash-merges one meaningful commit. The
+maintainer must be able to read master — 107 commits in one day, 49 of them touching only
+`DEVELOPMENT_LOG.md`, is not reviewable.
+
+### ⛔ 2026-09-07 — four bugs shipped past every gate; three new audits + one hook rule
+
+**The maintainer found the worst one by playing**: the mutalisk's fire shrapnel bounced
+forever. Root cause for two of the four, and it is now `CLAUDE.md` rule 8g:
+
+> **`-Key@X:` in a child CANCELS what an ANCESTOR defines.** It looks dead precisely
+> because the node it sits in does not define X.
+
+`d818aec40` deleted 2248 of them as "stale": multi-main weapons **461 → 1103**, and 14
+deleted `-Warhead@shrapnel:` terminators made the spore loop forever. **Nothing
+crashed** — a boot gate proves the rules PARSE, never that they are RIGHT. Reverted in
+`ad6fc66b8`, ledger re-extracted in `a6525d6fb`.
+
+| new gate | catches | ratchet |
+|---|---|---|
+| `audit_shrapnel_chains.py` | a FireShrapnel chain that never ends | S1a **0**; S1b **0** — 44 self-cycles were the same damage; fixed in `7b63045fd` |
+| `audit_map_actors.py` | a map placing an actor the rules do not define (boot gate is blind: it fails when the map is STARTED) | M1 **0** |
+| `bash_guard.py` rule 4 | deleting a `-Key@...` without `RESOLVE-VERIFIED` in the message | — |
+
+Also fixed: `audit_naming_damage`'s regex could not see a doubled id (reported N1 4 /
+N2 0 against the true 25 / 16 — an exact zero is always suspect), and the boot-gate
+hook read the MAIN checkout's index from every worktree, which would have waved
+through engine content committed from a worktree. Both now have self-tests.
+
+✅ **RESOLVED 2026-09-07 — they were not old debt, and they are fixed.**
+`ad7c5e232` (labelled a *rename*) also stripped **236 removal nodes** out of
+`RedAlert/Soviets/yaml/weapons.yaml`, and the tesla fragments' `-Warhead@TeslaArc:`
+terminators were among them. Restoring all 236 (`7b63045fd`) took **S1b 44 → 0**;
+the ratchet is now 0. Every FireShrapnel chain in the mod terminates: 193 weapons,
+193 chains, zero cycles of either kind. No in-game test needed.
+
+⚠ **I was wrong about these twice, and the second time is the instructive one.** First
+I called them benign chain lightning — reasoned from field names, not the code. Then I
+called them pre-existing debt because *"all 44 predate `d818aec40`"*. That was literally
+true and still the wrong conclusion: **the bisect stopped at the first commit that showed
+the problem instead of walking back until it disappeared.** One commit further back was
+the actual cause. When bisecting, walk back until the symptom is GONE, not until it
+first appears.
+
+Full write-up for agents: `../Cameo-mod-fleet/BRIEF_2026-09-07_what_broke_and_the_new_gates.md`.
+
+### ⭐ Naming — the real state, measured 2026-09-06 (replaces every earlier count)
+
+`python tools/audit/audit_naming_damage.py` is the source of truth and is now in
+`run_all.sh`. Six pathologies, six **lower-only** ratchets, all currently PASS:
+
+| code | pathology | count | lane |
+|---|---|---|---|
+| N1 | a filename carries one actor id **twice** | 25 | Nova 19, Aurora 4, Dawn 2 |
+| N2 | a filename carries **two factions'** ids | 16 | Aurora — all 16 are RA1-Allies sprites wearing Soviet names |
+| N3 | a **fluent key** became an actor id | 5 | Nova |
+| N4 | the faction named **twice** (`ra1_allies_alliedaagun`) | 345 | split per faction |
+| N5 | dotted id that is not a sanctioned `.husk` | 161 | split per faction |
+| N6 | a hyphen (rule 9) | 1 | Echo |
+
+**Three earlier numbers were wrong and are retired:**
+
+* the **526-actor backlog** was a doubled game prefix in one config table — seven of eight
+  factions jumped **0% → 100%** when it was fixed;
+* the **144 dotted renames** undercounted; the real figure is **161**, and separately
+  **234 `.husk` ids are LEGAL** (`DESIGN.md` line 71 sanctions dotted `.husk` variants), so
+  the raw 398 must never be quoted as backlog;
+* **`.nax` / `.nax2` are DONE** — 0 remain. Nova landed them.
+
+Actor-id work left in `gen_rename_maps` is **15 actors total**: `atreides` 21/23,
+`corrino` 22/25, `harkonnen` 27/35, `ixian` 60/65. Every other faction reads 100%.
+
+⚠ **A 100% row there is not proof a faction is clean.** That report sees only
+faction-exclusive **buildable** actors, and `startswith(prefix)` is satisfied by
+`ra1_soviets_sovietairfield` too. `asianalliance` reads 73/73 while holding 27 dotted and
+73 redundant-word ids. Use `audit_naming_damage.py` for the real number.
+
+⛔ **`gen_rename_maps.py --files` is opt-in and `--out` is mandatory practice.** Six defects
+were found in its file half on 2026-09-06 (commit `c9437f4f8`); a regenerate proposed **842
+file renames, 92 corrupt**, now **44, none corrupt**. Without `--out` a run **overwrites every
+`tools/rename/rename_map_*.yaml`**, including hand-corrected ones. See `LESSONS_LEARNED.md`
+"Fix the TOOL, not its output".
+
+### AI bot modules — state as of 2026-09-06
+
+Devin Cloud designed the module architecture and stopped mid-merge when its quota ran out.
+**The design is landed, not lost:**
+
+* **PR #324 is MERGED** — [`design/AI_ARCHITECTURE.md`](design/AI_ARCHITECTURE.md) **§10** (the
+  per-module build plan, the shared snapshot, the one synced piece, and the 7-phase build
+  order) and **§11** (the reconciliation of the first five-agent research round, with rejected
+  claims and what falsifies each).
+* **PR #323 is OPEN and CONFLICTING** — Observer Combat Effectiveness graph, +233/−12, and it
+  touches C#, so it needs a `dotnet build` and a boot gate, not just a merge. **Assigned to
+  Astra, Task H.1.**
+* ⚠ `gh` defaults to the wrong remote in this checkout — always pass
+  `--repo cameo-mod/Cameo-mod`.
+* Next implementation step is **phase 1: record-only match logging.** Phases 1–2 carry no
+  gameplay effect and may run while the balance pipeline is still moving; **phase 6 (fog) is
+  deliberately last** because it weakens the bots and invalidates any tuning done before it.
+
+⚠ **If you are a Devin agent, your task file is `../Cameo-mod-fleet/TASK_2026-09-06_<you>.md`**
+and the index is `TASKS_ACTIVE.md`. Each task file is self-contained: your complete item list,
+the method, the faction-specific traps, the gates, and the report format. Read
+`BRIEF_2026-09-06_naming_damage.md` once for context before you start.
+
+⚠ **Agent-to-agent chatter lives OUTSIDE the repository**, in `../Cameo-mod-fleet/`.
+`DEVELOPMENT_LOG.md` keeps one entry per COMPLETED work item plus lessons learned — nothing else.
+
+## ⭐⭐ START HERE 2026-09-07 — why the balance pipeline has not moved, and the fix
+
+```
+$ python tools/balance/apply_balance.py --faction d2k_atreides
+DRY RUN: 0 values would change
+```
+
+**The pipeline is not blocked by tooling, by W11, or by sign-off. It is idle because nobody
+has written a target number into the ledger.** `apply_balance` writes ledger → yaml; the
+ledger holds today's values; applying it is therefore a no-op *by construction*.
+
+`anchor_readiness.py` reports **0 of 27 classes signable**, 26 failing "the anchor does not
+describe its members" (median pricing error 15%–106%) — and explains itself in one line:
+*"the anchor actor is still PRE-RESTAT, so its percentile is measured on stats the design
+already intends to replace."*
+
+Meanwhile **all 27 classes already carry a complete spec** in `docs/balance/class_anchors.json`
+(`cost0`, `dps0`, `hp0`, `range0_wdist`, `speed0`) that has never been used. `mbt`'s spec is
+hp0 **240,000**; the actual unit has **100,000**. The numbers were designed and never written
+anywhere the pipeline reads.
+
+⭐ **MAINTAINER ORDER, 2026-09-07 — do this first:**
+
+1. Write the 27 anchor specs into the ledger on **`hp0` / `speed0` / `range0_wdist` / `cost0`
+   only**. ⛔ **NOT `dps0`** — it depends on weapon structure and therefore on W24, and would
+   be written twice.
+2. `python tools/balance/apply_balance.py --faction <f> --confirm`
+3. Boot-gate, re-extract, then re-read `anchor_readiness.py`.
+
+This is the first real balance change the project will have made, and it breaks the apparent
+circularity (sign-off needs a restat; the restat needs numbers in the ledger — which is a
+LEDGER edit, explicitly sanctioned by CLAUDE.md rule 3, not a hand edit of yaml).
+
+⚠ The four non-DPS axes depend on nothing but the unit, so **W24 is not a prerequisite for
+this.** The two can run in parallel: the restat writes `docs/balance/*.json` → actor yaml,
+W24 writes `**/weapons.yaml`, and `extract_stats.load_existing_design()` preserves authored
+`design.*` across re-extraction.
+
+## ⛔⛔ TOP OF THE QUEUE 2026-09-07 — revert the ra1_soviets rename
+
+**All 32 actor renames `ad7c5e232` applied made the id LONGER and WORSE. Not one
+improvement in the set.** Full write-up and the revert procedure:
+[`design/RA1_SOVIETS_RENAME_REVERT.md`](design/RA1_SOVIETS_RENAME_REVERT.md).
+
+```
+ra1_soviets_barracks              -> ra1_soviets_sovietbarracks
+ra1_soviets_constructionyard      -> ra1_soviets_sovietconstructionyard
+ra1_soviets_attackdog             -> ra1_soviets_actordogname      (a FLUENT KEY)
+ra1_soviets_doctrine_conscription -> ..._doctrine_conscriptiondoctrine
+ra1_soviets_upgrade_hammertank    -> ..._upgrade_hammertankupgrade
+```
+
+The tech markers are **duplicated** — `doctrine_X` became `doctrine_Xdoctrine`. That is
+what a mechanical rename looks like when nobody reads three lines of the proposal.
+
+**The cause is already fixed** (`c9437f4f8` defects C and E), so the corrected generator
+now proposes the ORIGINAL ids — the revert target is what the tool produces, not a
+judgement call. It has already cost: 7 broken `.oramap` files including both shellmaps
+(two tester crashes), 236 deleted removal nodes, and 69 of the 345 N4 findings.
+
+⛔ **Do not batch this with another rename.** It touches both shellmaps; boot gate is
+mandatory.
+
+**The rule it earns: a rename that makes an id LONGER is a regression until proven
+otherwise.** A batch that raises N4 has failed, whatever its compliance percentage says.
+
+## ⭐ NEW WORK SPECIFIED 2026-09-07 — two maintainer orders, neither built
+
+Both are written up in full, with the state verified rather than assumed. Neither is a
+naming-lane task; both are self-contained and neither outranks the balance pipeline.
+
+### 1. Paired effect+sound templates — [`design/EFFECT_SOUND_TEMPLATES.md`](design/EFFECT_SOUND_TEMPLATES.md)
+
+One inherit must carry the visual **and** its sound, named after the source game and the
+effect's own file name (`^d2k_big_explosion`), so the two can never drift apart.
+
+Measured: **6987** CreateEffect warheads, only **4008** carry both halves, and **68**
+sprites are each used with more than one sound. The reported symptom is located exactly —
+`D2K_Rocket_Trooper` pairs the visual `d2k_tiny_explosion` with the sound
+`xplobig4.aud` (a BIG explosion sound on a TINY sprite), and its four variants have four
+different pairings, one of them borrowing a RA/TD sound for a D2k visual. Those five
+weapons are the acceptance test.
+
+### 2. Colour-picker preview for every faction — [`design/COLORPICKER_PREVIEW.md`](design/COLORPICKER_PREVIEW.md)
+
+⚠ **The believed state was wrong.** TD/RA/Japan were not "done": `fact.colorpicker`,
+`rafact.colorpicker` and `rafactj.colorpicker` exist but are **dead — nothing references
+them**, there is **no `FactionPreviewActors` block anywhere**, and every faction currently
+previews a Soviet mammoth tank.
+
+The engine already has `FactionPreviewActors` (zero C# needed), but using it as-is means
+~31 clone actors. The better build is a **`RenderSprites` shadow in `OpenRA.Mods.Cameo`**
+honouring `ActorPreviewType.ColorPicker`, so any actor is its own preview — **route
+confirmed open**, since neither AS nor CA defines `RenderSprites`. No engine fork.
 
 ## 0. The one rule that makes all the others work
 
@@ -218,9 +436,9 @@ Crashes and player-visible regressions jump everything below.
 |---|---|---|---|
 | **Claude** (Opus 5, local) | **Fleet coordinator** (maintainer order 2026-09-05) | ✅ Reference-pipeline tooling landed (`85bcf3f33`). ✅ 7 reference mods extracted (8183 unit rows). ✅ Master fast-forwarded 113 commits. **AWAITING: issue consolidated fleet-wide orders. Rule on 4 open items: (1) ordos_laserturret "unique and special" mechanical spec, (2) heaviness bell — refold existing level templates now or later?, (3) composite registry re-curation priority, (4) CannonTesla family under single-warhead ruling.** | `tools/reference/**`, `tools/balance/{assign_references,faction_routes,faction_extrapolate}.py`, `docs/balance/review/**` |
 | **Devin-Dawn** (was Devin-Prime) | Active (awaiting) | D2k/Corrino pack skeleton created (`f07d8d35e`); full Corrino build pending WC2 hero blocker and phases 1-2. TSLaser90mm family work on hold. **WC2 blocker is RESOLVED — proceed with Corrino Phase 3.** | `ContentPacks/D2k/Corrino/`, `mods/cameo/weapons/tiberiansun.yaml` |
-| **Devin-Aurora** (SWE-1.7 Max / GLM-5.2 High) | Active — **D2k coordinator under Claude** | D2k Phase 0/1/2/3 coordinator. ✅ Ruling 7 EXECUTED: Factions: atreides (37 blocks) + Factions: ordos (72 blocks). ✅ Ruling 3 EXECUTED: Ordos Selectable + 3 sequence migrations. ✅ Ruling 5 EXECUTED: meter_dilution fix — D2K_APC_Rocket_AA feeds Temperature meter (34→32, matches ratchet). ✅ Ruling 8 LEARNED: .child() trap (use children_named). ✅ Ruling 9 COMPLETE for my lane: 2 Atreides + 41 Ordos + 3 Shared weapons migrated; 13 Atreides + 4 Ordos sequences migrated. Only D2K_155mm + D2K_Rocket_Trooper remain (unsafe, need Blaze to remove legacy defs). ✅ Legacy d2k.yaml classified: 114 dead, 8 non-D2k, 10 effect. **NOW: lane clean. Awaiting Ruling 10 (Ixian cross-pack deps in Ordos). Latest commits: 0ebb08582 (80mm_A + D2KUnitExplodeMed), 9799b007a (handoff), 0480b7de0 (template_harvester), f38525226 (13 Atreides seqs), 6dc9ade39 (4 Ordos seqs), 115c0cdf2 (Shared explosions), 0169409d3 (41 Ordos weapons), e5b5f85f5 (mtank_pri), de619f382 (Atreides D2KRepair+HMG), 7a5b60c19 (meter_dilution fix).** | `mods/cameo/ContentPacks/D2k/Atreides/`, `mods/cameo/ContentPacks/D2k/Ordos/`, `mods/cameo/ContentPacks/D2k/Shared/yaml/weapons.yaml`, `mods/cameo/bits/d2k/` |
+| **Devin-Aurora** (SWE-1.7 Max / GLM-5.2 High) | Active — **D2k coordinator under Claude** | D2k Phase 0/1/2/3 coordinator. ✅ Ruling 7 EXECUTED: Factions: atreides (37 blocks) + Factions: ordos (72 blocks). ✅ Ruling 3 EXECUTED: Ordos Selectable + 3 sequence migrations. ✅ Ruling 5 EXECUTED: meter_dilution fix. ✅ Ruling 9 COMPLETE for my lane: 2 Atreides + 41 Ordos + 3 Shared weapons migrated; 13 Atreides + 4 Ordos sequences migrated. ✅ Ruling 10 EXECUTED: 0 Ixian cross-pack refs in Ordos. ✅ Ruling 13 W24: d2k_grenade re-collapsed correctly (`f901513a7`) — VERBATIM 10000, Concussion_Medium survivor. HMG collapse done by maintainer (`a16ee55fc`). ✅ **ra1_soviets rename** (`ad7c5e232`): 106/106 actors compliant, 105/105 icons, 181 asset git-mv, 8 .oramap repacked, boot-gate PASS. ✅ **Split-definition cleanup** (`a662a68f5`): 30 identical duplicate blocks deleted from legacy `weapons/d2k.yaml`; W2 201/213, W3 18/21, W4 58/61 (all below ratchet); boot-gate PASS. ⛔ **W24 collapse attempt on D2K_Rocket_Trooper_AA + AGOnly was WRONG — reverted.** The maintainer's `d818aec40` showed the correct approach is NOT to collapse but to remove stale `-Warhead@` markers and fix empty-type warheads. **AWAITING Claude ruling on how to handle multi-warhead weapons under the ONE-WARHEAD law. Do NOT collapse any more weapons without explicit Claude/maintainer instruction.** | `mods/cameo/ContentPacks/D2k/Atreides/`, `mods/cameo/ContentPacks/D2k/Ordos/`, `mods/cameo/ContentPacks/D2k/Shared/yaml/weapons.yaml`, `mods/cameo/bits/d2k/` |
 | **Devin-Cyrus** (was Devin-Forge) | **RESOLVED** — WC2 hero pass committed by maintainer | WC2 hero weapon rework. Maintainer committed Cyrus's unfinished work as `d11b90720` (2026-08-25): 8 hero weapons + 8 hero actors across Humans and Orcs. Hellscream + elite verified: actors, weapons, sequences, icon all present. **Cyrus: stand down, this is done.** | `mods/cameo/ContentPacks/Warcraft2/Humans/`, `Warcraft2/Orcs/` |
-| **Devin-Ember** (SWE-1.7 Max) | Active — verifier lane | Verification + coordination. Committed `c58890d52`, `fd95873c5`, `50d7a838b`, `0df97723c` (fleet hierarchy + maintainer rulings executed). **ORDER: continue verification + doc sync. Monitor for boot-blockers. Help Nova with composite registry.** | none |
+| **Devin-Ember** (SWE-1.7 Max) | Active — **W24 broadcast lane (RedAlert)** | Per Claude's night orders: ra2_allies rename was PHANTOM (FACTION_SLUG bug, fixed in-tree). Executed 6/8 assigned broadcast collapses — VERBATIM, delivery-matched survivors, resolver-diffed clean, `find_empty_warhead`=0, count 72→64 — **held UNCOMMITTED** until the maintainer's `-Warhead@` sweep + ra1_soviets revert settle (hunks interleave in the same files). Flagged: SCUDIrak/V2ExplodeIrak are dead children of the LIVE `SCUD` broadcast (cross-lane, needs Claude ruling). X3 AA rename map intact (`rename_map_x3_aa.yaml`) but its tree edits were wiped — re-apply pending. Log: `60509d3a7`. | `ContentPacks/RedAlert/{Allies,Shared,Japan}/yaml/weapons.yaml` (6 collapsed weapons only) |
 | **Devin-Echo** (SWE-1.7 Max) | Active — **review CABAL + Ixian** | Phase 2 Atreides done (`f07d8d35e`); auditing D2k weapons. **ORDER: 1. Review CABAL file after cabal_avatar patch landed (`e1552421f`). 2. Re-verify D2k/Ixian before Phase 4.** | `mods/cameo/ContentPacks/D2k/Atreides/`, `D2k/Ordos/`, `D2k/Ixian/`, `TiberianSun/CABAL/` |
 | **Devin-Blaze** | Active — **D2k Shared consolidation** (maintainer priority) | Phase 1 Harkonnen complete (`afdaae46c`); Phase 4 shared/global. **ORDER: move remaining shared D2k content into `ContentPacks/D2k/Shared/`. Clean up legacy `d2k.yaml`/`rules/d2k.yaml` dead blocks. Verify no dangling refs.** | `mods/cameo/ContentPacks/D2k/Harkonnen/`, `ContentPacks/D2k/Shared/`, legacy `mods/cameo/weapons/d2k.yaml`, `mods/cameo/rules/d2k.yaml` |
 | **Devin-Nova** (Devin CLI, SWE-1.7 Max) | Active — verifier/generator lane | Committed `7557c983d` (AreaDamageWarhead C# NRE fix), `b905d7679` (BulletChem generator spec), `85bcf3f33` (Claude's reference-pipeline tooling). **Relayed heaviness bell ruling.** ORDER: composite-registry re-curation (fixes `three_way_split` crash on `wc2deathknightFire` stale digest). `gen_weapon_template.py` REFLECTOR 75→74 sync. Help Ember. | `OpenRA.Mods.Cameo/Warheads/AreaDamageWarhead.cs`, `tools/balance/gen_weapon_template.py` |
@@ -269,7 +487,7 @@ different coordinators. Resolved against §3.A and against who has actually been
 | **Devin-Echo** | `ContentPacks/D2k/Ixian/**`, `TiberianSun/CABAL/**` | Atreides, Ordos (Aurora's) |
 | **Devin-Blaze** | `ContentPacks/D2k/Harkonnen/**`, `D2k/Shared/**` except `yaml/weapons.yaml`, legacy `weapons/d2k.yaml`, `rules/d2k.yaml` | — |
 | **Devin-Nova** | `OpenRA.Mods.Cameo/Warheads/**`, `tools/balance/gen_weapon_template.py`, `mods/cameo/weapons/weapons.yaml` | — |
-| **Devin-Ember** | verification lane — audits, no content files | any content file |
+| **Devin-Ember** | `ContentPacks/RedAlert/{Allies,Shared,Japan}/yaml/weapons.yaml` — assigned broadcast collapses only | other agents' in-flight sweeps in those files |
 | **Claude-Local** | `tools/reference/**`, `tools/balance/{assign_references,faction_routes,faction_extrapolate}.py`, `docs/balance/review/**` | all `ContentPacks/**`, all `mods/cameo/weapons/**` |
 
 ### Orders, in priority order

@@ -1,6 +1,6 @@
 # Weapon uniqueness (DESIGN.md §10 — faction identity)
 
-damaging armament weapons checked: 1458; W1 same-faction 39, W2 cross-faction 38, W3 carrier-only 95
+damaging armament weapons checked: 1458; W1 same-faction 39, W2 cross-faction 37, W3 carrier-only 95
 
 
 ## W1 — same faction, distinct actors, identical weapon (39)
@@ -13,7 +13,7 @@ damaging armament weapons checked: 1458; W1 same-faction 39, W2 cross-faction 38
 | cabalengineerrepairbeam | cabal | cabal_engineer, cabal_repairdrone |
 | d2k_apc_rocket | ordos | ordos_apc, ordos_dustdrone |
 | d2k_apc_rocket_aa | ordos | ordos_banshee, ordos_laboratorycrawler |
-| d2k_bazooka2 | ixian, ordos | heavy_rocket_raider.ixian, rocket_raider.ixian |
+| d2k_bazooka2 | ixian | heavy_rocket_raider.ixian, rocket_raider.ixian |
 | d2k_rocket_trooper | atreides, corrino, harkonnen, ixian, ordos | atreides_rockettrooper, corrino_sardaukar_bazooka, corrino_trooper, harkonnen_rockettrooper, harkonnen_sardaukar, ixian_rockettrooper, ordos_rockettrooper, trooper |
 | devbullet | harkonnen | devastator, harkonnen_devastatormech |
 | futuremicrotorpedos | futuretech | futuretech_phalanxwip, futuretech_riptideacv |
@@ -34,7 +34,7 @@ damaging armament weapons checked: 1458; W1 same-faction 39, W2 cross-faction 38
 | naxquadcannon_aa_elite | naxis | naxis_naxibunker, naxis_ratte |
 | ornigun | harkonnen, ixian, ordos | atreides_ornithopter, harkonnen_gunship |
 | pdlaserbike | td_nod | td_nod_chemicalattackbike, td_nod_reconbike |
-| rocketsra | ra1_soviets | ra1_allies_alliedrocketsoldier, ra1_soviets_rocketsoldier |
+| rocketsra | ra1_soviets | ra1_allies_alliedrocketsoldier, ra1_soviets_sovietrocketsoldier |
 | spore_aa | zerg | zerg_creepcolony, zerg_creepcolony_defense, zerg_sporecolony, zerg_sunkencolony_defense |
 | tentacle | zerg | zerg_creepcolony, zerg_creepcolony_defense, zerg_sporecolony, zerg_sunkencolony_defense |
 | tkmmedicheal | tkm | tkm_battlebus, tkm_medictruck |
@@ -48,7 +48,7 @@ damaging armament weapons checked: 1458; W1 same-faction 39, W2 cross-faction 38
 | yakchaingun | ra1_soviets | ra1_soviets_nuclearyak, ra1_soviets_yakscoutplane |
 
 
-## W2 — identical weapon across factions (38)
+## W2 — identical weapon across factions (37)
 
 | weapon | families | factions | actors |
 |---|---|---|---|
@@ -67,7 +67,6 @@ damaging armament weapons checked: 1458; W1 same-faction 39, W2 cross-faction 38
 | 80mm_a | 2 | atreides, corrino | atreides_combattank, corrino_bmp |
 | bigflamer | 2 | ra1_soviets, td_nod | ra1_soviets_gorynychtank, td_nod_flametank |
 | d2k_155mm | 2 | atreides, corrino | atreides_siegetank, corrino_siegetank |
-| d2k_bazooka2 | 2 | ixian, ordos | heavy_rocket_raider.ixian, rocket_raider.ixian |
 | light_inf_lmg_upgrade | 2 | atreides, corrino, harkonnen, ixian, ordos | ixian_lightinfantry, light_inf |
 | naxlasert | 2 | schwarzermond, terran | schwarzermond_lasertower, terran_sentinel |
 | naxsturmarty | 2 | naxis, schwarzermond | naxis_sturmtiger, schwarzermond_sturmcannon |
@@ -76,7 +75,7 @@ damaging armament weapons checked: 1458; W1 same-faction 39, W2 cross-faction 38
 | plymouthtigerrpgmines | 2 | eden, plymouth | eden_tiger_acidcloud, plymouth_tiger_esg |
 | ra2rtruckrocket | 2 | futuretech, latinsyndicate | futuretech_phalanxwip, latinsyndicate_missiletruck |
 | rockets | 2 | td_gdi, td_nod | td_gdi_rocketsoldier, td_nod_rocketsoldier |
-| rocketsra | 2 | japan, ra1_allies, ra1_soviets | ra1_allies_alliedrocketsoldier, ra1_soviets_rocketsoldier |
+| rocketsra | 2 | japan, ra1_allies, ra1_soviets | ra1_allies_alliedrocketsoldier, ra1_soviets_sovietrocketsoldier |
 | scvattack | 2 | protoss, terran | protoss_analogue, terran_scv |
 | scvrepair | 2 | protoss, terran | protoss_analogue, terran_scv |
 | siegeenginecannon | 2 | wc2_humans, wc2_orcs | wc2_humans_siegeengine, wc2_orcs_siegeengine |

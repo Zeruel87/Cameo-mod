@@ -206,8 +206,15 @@ def main() -> int:
     for f in tracked("*.md", "*.py", "*.json", "*.yaml", "*.sh"):
         rel = str(f).replace("\\", "/")
         # history keeps its own period-correct references on purpose, and this
-        # script's own GONE table names every old path by definition.
-        if rel.startswith("docs/history/") or rel == "tools/audit/audit_doc_health.py":
+        # script's own GONE table names every old path by definition. Generated
+        # audit reports are the same case: `docs/audit/latest/recent_changes.md`
+        # REPORTS on commits, so it quotes the paths those commits touched —
+        # naming a since-moved file there is a factual record, not a stale
+        # pointer. A guard must not fail on the evidence it is built from.
+        if (rel.startswith("docs/history/")
+                or rel.startswith("docs/audit/latest/")
+                or rel.startswith("docs/audit/degraded/")
+                or rel == "tools/audit/audit_doc_health.py"):
             continue
         text = read(f)
         if text is None:

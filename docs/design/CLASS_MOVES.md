@@ -4,7 +4,7 @@ _Working document. One section per class, in the order they are done. Each secti
 until the maintainer approves it; approved sections still need `apply_balance --confirm` where they
 move a number, and a **boot gate** in every case (they edit `mods/**`)._
 
-Governed by [`BASELINE_ACTOR_REVIEW.md`](BASELINE_ACTOR_REVIEW.md). Enforced by
+Governed by `BASELINE_ACTOR_REVIEW.md` (archived; content merged into this document). Enforced by
 `tools/audit/audit_class_templates.py`.
 
 ---
@@ -114,7 +114,7 @@ as this one and roughly 20 units in size, and it empties most of the grab-bag at
 ## 2. The unclassified 91 — ✅ APPROVED 2026-09-02 (A3 + A4)
 
 Every **buildable, mobile** actor carrying no full class template. 67 have nothing at all; 24 carry
-only an epic add-on. Buildings are out of scope (§4.5 of `BASELINE_ACTOR_REVIEW.md`), upgrades are
+only an epic add-on. Buildings are out of scope (§4.5 of `BASELINE_ACTOR_REVIEW.md`, archived), upgrades are
 not units.
 
 ✅ **Maintainer approved 2.1, 2.2, 2.3 and 2.6 outright**, ruled that ground/naval transports get

@@ -10,6 +10,7 @@ _clean_
 
 ### T2b — explicit non-zero icon offsets (maintainer visual pass pending; D2k legacy pattern)
 
+- mods/cameo/ContentPacks/D2k/Atreides/yaml/sequences.yaml:709: `hightech.atreides` icon has explicit Offset -30,-24
 - mods/cameo/ContentPacks/D2k/Ordos/yaml/sequences.yaml:566: `hightech.ordos` icon has explicit Offset -30,-24
 - mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/sequences.yaml:1149: `tscrys` icon has explicit Offset 0, 0, 25
 - mods/cameo/ContentPacks/TiberianSun/Forgotten/yaml/sequences.yaml:840: `forgotten_crystalpowerextractor` icon has explicit Offset 0, 0, 25
@@ -17,4 +18,4 @@ _clean_
 - mods/cameo/sequences/d2k.yaml:495: `hightech.atreides` icon has explicit Offset -30,-24
 - mods/cameo/sequences/d2k.yaml:1363: `hightech.harkonnen` icon has explicit Offset -30,-24
 
-Total blocking findings: 0 (T2b informational: 6)
+Total blocking findings: 0 (T2b informational: 7)

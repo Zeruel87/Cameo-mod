@@ -1014,11 +1014,9 @@ Dune_SiegeMortar:
 		PercentageScale: 0
 
 D2K_Rocket_Trooper_AGOnly:
-	Inherits@wh: ^Warhead_Demolition_Light
-	Inherits@wh2: ^Warhead_Railgun_Heavy
-	Inherits@wh3: ^Warhead_CannonHE_Medium
-	Inherits@proj: ^Projectile_Grenade_Light
-	Inherits@fx: ^Effect_CannonHE_Medium_D2K
+	Inherits@wh: ^Warhead_MissileAP_Heavy
+	Inherits@proj: ^Projectile_Missile_Light
+	Inherits@fx: ^Effect_MissileAP_Heavy_D2K_Rocket_Trooper
 	ReloadDelay: 50
 	Range: 6252
 	Report: ROCKET1.WAV
@@ -1036,20 +1034,13 @@ D2K_Rocket_Trooper_AGOnly:
 		ProjectileSpeedPercentage: 10
 		LaunchAngle: 66
 		Shadow: true
-	Warhead@Demolition_Light:
-		ValidTargets: Ground, Water
-		Damage: 10000
-	Warhead@Railgun_Heavy:
-		Damage: 10000
-	Warhead@CannonHE_Medium:
+	Warhead@MissileAP_Heavy:
 		ValidTargets: Ground, Water
 		Damage: 10000
 D2K_Rocket_Trooper_AA:
-	Inherits@wh: ^Warhead_Flak_Medium
-	Inherits@wh2: ^Warhead_MissileAP_Light
-	Inherits@wh3: ^Warhead_MissileAP_Heavy
+	Inherits@wh: ^Warhead_MissileAA_Heavy
 	Inherits@proj: ^Projectile_Missile_Light
-	Inherits@fx: ^Effect_MissileAP_Heavy_D2K_Rocket_Trooper
+	Inherits@fx: ^Effect_MissileHE_Heavy_D2K
 	ReloadDelay: 75
 	Range: 9716
 	Report: ROCKET1.WAV
@@ -1069,13 +1060,7 @@ D2K_Rocket_Trooper_AA:
 		HorizontalRateOfTurn: 22
 		VerticalRateOfTurn: 22
 		Acceleration: 8
-	Warhead@MissileAP_Light:
-		ValidTargets: Air
-		Damage: 10000
-	Warhead@Flak_Medium:
-		ValidTargets: Air
-		Damage: 10000
-	Warhead@MissileAP_Heavy:
+	Warhead@MissileAA_Heavy:
 		ValidTargets: Air
 		Damage: 10000
 D2K_APC_Rocket:
@@ -1450,13 +1435,9 @@ LeechJump:
 		DamageTypes: DefaultDeath, DroneInfection
 
 d2k_grenade:
-	Inherits@wh: ^Warhead_Demolition_Light
-	Inherits@wh2: ^Warhead_Concussion_Medium
+	Inherits@wh: ^Warhead_Concussion_Medium
 	Inherits@proj: ^Projectile_Grenade_Light
 	Inherits@fx: ^Effect_Concussion_Medium
-	Inherits: ^Warhead_CannonHE_Heavy
-	Inherits@2: ^Projectile_Shell_Heavy
-	Inherits@3: ^Effect_CannonHE_Heavy
 	ReloadDelay: 60
 	Range: 6000
 	MinRange: 1200
@@ -1474,16 +1455,8 @@ d2k_grenade:
 		ContrailEndColor: 33221100
 		ContrailStartWidth: 24
 		ContrailEndWidth: 12
-	Warhead@Demolition_Light:
-		ValidTargets: Ground, Water, Air
-		Damage: 10000
-		DamageCalculationType: ClosestTargetablePosition
 	Warhead@Concussion_Medium:
-		ValidTargets: Ground, Water, Air
-		Damage: 10000
-		DamageCalculationType: ClosestTargetablePosition
-	Warhead@CannonHE_Heavy:
-		ValidTargets: Ground, Water, Air
+		ValidTargets: Ground, Water
 		Damage: 10000
 		DamageCalculationType: ClosestTargetablePosition
 	Warhead@Smudge: LeaveSmudge
@@ -1519,11 +1492,11 @@ Laboratory_Bioball:
 		ContrailEndColor: 33442211
 		ContrailStartWidth: 52
 		ContrailEndWidth: 13
-	Warhead@Demolition_Light:
+	Warhead@Demolition_Light: AreaDamage
 		ValidTargets: Ground, Water, Air
 		Damage: 10000
 		DamageTypes: Prone75Percent, TriggerProne, ContaminatorMutate
-	Warhead@Concussion_Medium:
+	Warhead@Concussion_Medium: AreaDamage
 		PercentageScale: 12000
 		ValidTargets: Ground, Water, Air
 		Damage: 10000
@@ -1978,9 +1951,16 @@ d2kCarryallChainGun:
 	Warhead@Bullet_Medium:
 		Damage: 4000
 ordos_airmine:
-	Inherits: ixian_airdrone
-	Burst: 15
+	Inherits@collapseflat: ^Compatibility_MissileAP_HeavyFlat
+	Inherits: ^TankDestroyerCannon
+	Inherits@2: ^LightChemicalWeapon
+	Inherits@3: ^FlakWeapon
+	Inherits@4: ^MediumMissile
+	Inherits@5: ^HeavyBomb
+	Inherits@6: ^D2KMissile
+	ReloadDelay: 132
 	Range: 2048
+	Burst: 15
 	BurstDelays: 0
 	Projectile: Missile
 		MaximumLaunchSpeed: 96
@@ -1999,11 +1979,83 @@ ordos_airmine:
 		CruiseAltitude: 2c124
 		AllowSnapping: true
 		TerrainHeightAware: true
+	Warhead@TankDestroyerCannon: SpreadDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		ValidRelationships: Neutral, Enemy
+	Warhead@TankDestroyerCannonPercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		ValidRelationships: Neutral, Enemy
+	Warhead@LightChemicalWeapon: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water, Air
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@LightChemicalWeaponPercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		ValidRelationships: Neutral, Enemy
+	Warhead@FlakWeapon: SpreadDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		ValidRelationships: Neutral, Enemy
+	Warhead@FlakWeaponPercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		ValidRelationships: Neutral, Enemy
+	Warhead@MediumMissile: SpreadDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		ValidRelationships: Neutral, Enemy
+	Warhead@MediumMissilePercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		ValidRelationships: Neutral, Enemy
+	Warhead@HeavyBomb: SpreadDamage
+		ValidTargets: Ground, Water, Air
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		ValidRelationships: Neutral, Enemy
+	Warhead@HeavyBombPercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
+		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		ValidRelationships: Neutral, Enemy
+	Warhead@MissileAP_Heavy:
+		ValidTargets: Ground, Water, Air
+		Damage: 2000
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+	Warhead@Shrapnel: FireShrapnel
+		ValidTargets: Ground, Water, Air
+		Weapon: PhoenixRocketShrapnel
+		Amount: 2
+		AimChance: 50
+		AimTargetStances: Enemy, Neutral
 	Warhead@1Dam: SpreadDamage
 		ValidTargets: Air
 		Spread: 0c768
 		Damage: 10000
-
+	-Warhead@TankDestroyerCannon:
+	-Warhead@LightChemicalWeapon:
+	-Warhead@FlakWeapon:
+	-Warhead@MediumMissile:
+	-Warhead@HeavyBomb:
+	Warhead@MissileAP_HeavyFlatCompatibility:
+		ValidTargets: Ground, Water, Air
+		Damage: 12000
+		PercentageScale: 1659
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+	-Warhead@MissileAP_Heavy:
 	MinRange: 410
 ordos_lasertank:
 	Inherits@wh: ^Warhead_Laser_Heavy
@@ -2581,15 +2633,8 @@ HMG_tleilaxu:
 	Burst: 6
 	BurstDelays: 2
 	Range: 4096
-	Warhead@1Dam: SpreadDamage
+	Warhead@Bullet_Medium:
 		Damage: 2500
-		Versus:
-			None: 150
-			Wood: 100
-			Light: 110
-			Medium: 75
-			Heavy: 60
-			Concrete: 50
 
 d2k_sardaukar_elite:
 	Inherits: ordos_autogunturret
@@ -2641,17 +2686,9 @@ Rocketeer_o:
 	ReloadDelay: 18
 	Range: 2560
 	ValidTargets: Ground
-	Warhead@1Dam: SpreadDamage
+	Warhead@Bullet_Medium:
 		Damage: 2250
-		DamageTypes: TriggerProne, SmallExplosionDeath
 		ValidTargets: Ground
-		Versus:
-			None: 120
-			Wood: 90
-			Light: 100
-			Medium: 90
-			Heavy: 60
-			Concrete: 35
 
 Rocketeer_t:
 	Inherits: Rocketeer_o
@@ -2660,8 +2697,6 @@ Rocketeer_t:
 	BurstDelays: 4
 	ReloadDelay: 40
 	ValidTargets: Ground, Air
-	Warhead@1Dam: SpreadDamage
-		ValidTargets: Ground, Air
 
 D2KBuggyExplosion:
 	ValidTargets: Ground, Air

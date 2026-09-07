@@ -165,6 +165,7 @@ Fully converted prefixes (93): air, asianalliance, atreides, banshee, bbomb, bbo
 | D2k/Ordos | carryall_reinforce.ordos | ordos |
 | D2k/Ordos | carryall_husk.ordos | ordos |
 | D2k/Ordos | carryall_huskvtol.ordos | ordos |
+| D2k/Ordos | team_upgrade.ordos_stealthtechnology | ordos |
 | RedAlert2Mod/AsianAlliance | kami_chemical.asian | asianalliance |
 | RedAlert2Mod/AsianAlliance | kami_asdf.asian | asianalliance |
 | RedAlert2Mod/AsianAlliance | kami_husk.asian | asianalliance |
@@ -237,4 +238,4 @@ _clean_
 
 - actor ids violating the lowercase grammar: **1510** (e.g. 1TNK.camea, 2100A2MAT, 2100A2PT, 2100A2TIT, 2100A2VET, 2100AA, 2100AACH, 2100AAMAT)
 
-Total findings: 710
+Total findings: 711

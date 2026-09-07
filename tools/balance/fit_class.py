@@ -30,6 +30,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/balance"))
 import formula  # noqa: E402
 import tier_chain  # noqa: E402
+from firepower import armament_firepower  # re-export for existing callers
+import class_membership  # noqa: E402
 
 LEDGER = ROOT / "docs/balance"
 ANCHORS = LEDGER / "class_anchors.json"
@@ -74,9 +76,6 @@ def unit_inputs(u, du=None, use_k=False):
     hp = fnum((u.get("hp") or {}).get("v"))
     speed = fnum((u.get("speed") or {}).get("v") or (u.get("speed_air") or {}).get("v"))
     d = u.get("design") or {}
-    # Unconditional per-actor FirepowerMultiplier scales EFFECTIVE damage output;
-    # balance prices on effective DPS = raw x FP-mult (cameo-firepower-mult-in-dps). Default 1.0.
-    fp = fnum((u.get("firepower_multiplier") or {}).get("v")) or 1.0
     kidx = derived_dps_index(du) if use_k else {}
     total_dps, best_range = 0.0, 0.0
     fallbacks = 0
@@ -112,11 +111,10 @@ def unit_inputs(u, du=None, use_k=False):
             keyed = kidx.get((arm.get("slot"), arm.get("weapon")))
             if keyed is None:
                 fallbacks += 1
-            total_dps += raw if keyed is None else keyed
+            total_dps += (raw if keyed is None else keyed) * armament_firepower(u, arm)
         else:
-            total_dps += raw
+            total_dps += raw * armament_firepower(u, arm)
         best_range = max(best_range, formula.wdist_value(arm.get("range"), 0.0))
-    total_dps *= fp   # apply the actor-level FirepowerMultiplier to effective DPS
     if hp is None or speed is None or total_dps == 0:
         return None, 0
     # Tech tier: manual design.tech_tier is the maintainer override;
@@ -216,8 +214,12 @@ def collect_units(cls, actors_filter, always=()):
 
         for secname, sec in doc["sections"].items():
             for actor, u in sec.items():
+                # Membership via class_membership.classify, NOT the raw
+                # `class_anchor` tag — the hand tag covers ~1/3 of the roster;
+                # the subtype-template fallback re-derived per extract is how
+                # anchor_readiness counts (PRIORITY 0 item 1, 2026-09-02).
                 keep = (actor in actors_filter if actors_filter
-                        else (u.get("design") or {}).get("class_anchor") == cls)
+                        else class_membership.classify(u.get("design") or {})[0] == cls)
                 if not keep and actor not in always:
                     continue
                 out[actor] = u
@@ -331,17 +333,26 @@ def main() -> int:
         on K against an anchor fitted on raw DPS would compare two different
         scales and make every delta meaningless.
         """
+        # --spec is a virtual anchor, not a no-member probe: the class still
+        # gets priced against it. A spec anchor has no armaments, so it has no
+        # K fallbacks of its own.
         if args.spec:
-            hp, speed, rng, dmg, reload_, c0 = (float(x) for x in args.spec.split(","))
+            hp, speed, rng, dmg, reload_ , c0 = (float(x) for x in args.spec.split(","))
             d0 = formula.dps(dmg, reload_)
             e0 = formula.estimators(hp, speed, rng, d0)
-            return (f"SPEC({args.spec})", c0) + e0 + ([], 0)
-
-        ai, af = unit_inputs(units[args.anchor], derived.get(args.anchor), use_k)
-        if ai is None:
-            return None
-        c0 = fnum((units[args.anchor].get("cost") or {}).get("v"))
-        e0 = formula.estimators(*ai)
+            anchor_id, af = f"SPEC({args.spec})", 0
+        else:
+            ai, af = unit_inputs(units[args.anchor], derived.get(args.anchor), use_k)
+            if ai is None:
+                return None
+            c0 = fnum((units[args.anchor].get("cost") or {}).get("v"))
+            e0 = formula.estimators(*ai)
+            anchor_id = args.anchor
+        # A zero estimator (e.g. ability-priced `support`, dps0 = 0) cannot price
+        # members — class_anchor_price divides by it. Return empty rows; main()
+        # writes the "not combat-priced" report.
+        if not all(e0):
+            return (anchor_id, c0) + e0 + ([], 0)
         rws, fb = [], af
         for actor, u in sorted(units.items()):
             inp, f = unit_inputs(u, derived.get(actor), use_k)
@@ -352,7 +363,7 @@ def main() -> int:
                 continue
             v2 = price_unit(u, derived.get(actor), inp, *e0, c0)
             rws.append((actor, cost, v2, (v2 - cost) / cost if cost else None))
-        return (args.anchor, c0) + e0 + (rws, fb)
+        return (anchor_id, c0) + e0 + (rws, fb)
 
     if args.anchor and args.anchor not in units:
         print(f"anchor `{args.anchor}` not found in the ledger")
@@ -371,9 +382,27 @@ def main() -> int:
           + (f"  [K mode, {fallbacks} armament(s) fell back to raw DPS]"
              if args.use_k else ""))
 
+    if not all((o0, p0, q0)):
+        # A zero estimator makes class_anchor_price divide by zero. That is a
+        # DESIGN statement, not a crash: `support`'s spec is ability-priced
+        # (dps0 = 0, "no combat verifier", FORMULA_V2 3b). Write the finding so
+        # anchor_readiness has a report to read, and exit clean.
+        rep = LEDGER / f"formula_v2_{args.cls}.md"
+        rep.write_text(
+            f"# Formula v2 validation — class `{args.cls}`\n\n"
+            f"anchor: `{anchor_id}` (cost0 {cost0:.0f}, "
+            f"O0 {o0:.2f}, P0 {p0:.2f}, Q0 {q0:.2f})\n\n"
+            "**Not combat-priced:** an estimator is zero (O0/P0/Q0 must all be "
+            "non-zero for `cost0 * (O/O0+P/P0+Q/Q0)/3`). Ability-priced classes "
+            "like `support` carry dps0 = 0 by design and are validated by their "
+            "special-K ledger, not this formula.\n",
+            encoding="utf-8", newline="\n")
+        print(f"  -> {rep.relative_to(ROOT)} (not combat-priced: zero estimator)")
+        return 0
+
     rep = LEDGER / f"formula_v2_{args.cls}.md"
     lines = [f"# Formula v2 validation — class `{args.cls}`",
-             "", f"anchor: `{args.anchor}` (cost0 {cost0:.0f}, "
+             "", f"anchor: `{anchor_id}` (cost0 {cost0:.0f}, "
              f"O0 {o0:.2f}, P0 {p0:.2f}, Q0 {q0:.2f})", "",
              "| unit | cost (actual) | class-formula price | delta |",
              "|---|---|---|---|"]
@@ -384,6 +413,13 @@ def main() -> int:
             flag = "" if abs(delta) < 0.10 else (" ⚠" if abs(delta) < 0.30 else " ❗")
             lines.append(f"| `{actor}` | {cost:.0f} | {v2:.0f} | {delta:+.0%}{flag} |")
     rep.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+
+    if args.spec:
+        # The locked spec IS the input, not an output — a spec-mode run must not
+        # mutate the maintainer's anchor table (anchor_actor would degrade to a
+        # "SPEC(...)" string and signed_off would reset). Report only.
+        print("spec mode: class_anchors.json left untouched")
+        return 0
 
     anchors = json.loads(ANCHORS.read_text(encoding="utf-8"))
     # ⚠⚠ **MERGE, NEVER REPLACE.** This used to be `anchors[args.cls] = {...}`, which

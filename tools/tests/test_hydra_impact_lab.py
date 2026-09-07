@@ -7,6 +7,7 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'tools/balance'))
 import hydra_impact_lab as lab
+import hydra_history
 
 
 def hit(damage=100, state=None, kind='AreaDamage'):
@@ -70,7 +71,8 @@ class ResolvedHydraImpactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rules=lab.Ruleset(ROOT)
-        cls.hydra=cls.rules.resolve_weapon('HydraSpit')
+        cls.hydra=hydra_history.weapon()
+        cls.targets,cls.firepower=hydra_history.scenario(lab)
 
     def test_corrosion_vulnerability_activates_from_meter_condition(self):
         t=lab.target_from_actor(self.rules.resolve('zerg_hydralisk'))
@@ -82,10 +84,9 @@ class ResolvedHydraImpactTests(unittest.TestCase):
         self.assertEqual(150,lab.vulnerability_at(t,20000))
         self.assertEqual((200,20000),t.vulnerability['active_range'])
 
-    def test_real_nod_cover_and_hydra_outgoing_modifiers(self):
-        t=lab.target_from_actor(self.rules.resolve('td_nod_minigunner'))
-        shooter=self.rules.resolve('zerg_hydralisk')
-        fp=[int(n.get('Modifier')) for n in shooter.children_named('FirepowerMultiplier') if lab.enabled(n)]
+    def test_historical_nod_cover_and_hydra_outgoing_modifiers(self):
+        t=next(t for t in self.targets if t.name=='td_nod_minigunner')
+        fp=self.firepower
         self.assertEqual([50,110,110,99],fp)
         result=lab.impact(self.hydra,t,fp)
         self.assertEqual(100,result['trace'][0]['cover'])
@@ -93,7 +94,7 @@ class ResolvedHydraImpactTests(unittest.TestCase):
         self.assertGreater(result['total'],t.hp)  # intentionally potential damage, not HP removed
 
     def test_secondary_corrosion_binding_observes_first(self):
-        t=lab.target_from_actor(self.rules.resolve('zerg_hydralisk'))
+        t=next(t for t in self.targets if t.name=='zerg_hydralisk')
         result=lab.impact(self.hydra,t,[50,110,110,99])
         steps=result['trace'][0]['state_steps']
         self.assertEqual(2,len(steps))
@@ -104,10 +105,24 @@ class ResolvedHydraImpactTests(unittest.TestCase):
         lab.make_variants(self.hydra)
         self.assertEqual(before,repr(self.hydra))
 
-    def test_generated_evidence_matches_current_rules_and_evaluator(self):
-        data=lab.build()
+    def test_archived_evidence_reproduces_from_frozen_scenario(self):
+        data=lab.build(self.hydra,self.targets,self.firepower)
         self.assertEqual(json.loads(json.dumps(data)),json.loads((ROOT/'docs/audit/latest/hydralisk_impact_lab.json').read_text(encoding='utf-8')))
         self.assertEqual(lab.render(data),(ROOT/'docs/design/HYDRALISK_IMPACT_LAB.md').read_text(encoding='utf-8'))
+
+    def test_live_bulletchem_rejected_before_variant_generation(self):
+        with self.assertRaisesRegex(ValueError,'Historical four-profile'):
+            lab.make_variants(self.rules.resolve_weapon('HydraSpit'))
+
+    def test_changed_historical_shape_cannot_claim_the_pinned_scenario(self):
+        changed=hydra_history.weapon()
+        changed.child('Warhead@SmallArms').child('Damage').value='18100'
+        with self.assertRaisesRegex(ValueError,'Historical four-profile'):
+            lab.make_variants(changed)
+
+    def test_partial_historical_inputs_are_rejected(self):
+        with self.assertRaisesRegex(ValueError,'together'):
+            lab.build(self.hydra)
 
 
 if __name__=='__main__':

@@ -7,7 +7,8 @@ Task queue: [`ROADMAP.md`](ROADMAP.md) section "AI ARCHITECTURE"._
 
 **This document is a design, not a shipped system.** Section 1 is verified fact with file:line
 evidence. Sections 2–7 are proposals. Section 8 is outside research. Section 9 records what is
-still undecided. Nothing below section 1 has been observed running.
+still undecided. Section 10 is the module-by-module build plan and section 11 reconciles the
+five-agent research round against sections 1–10. Nothing below section 1 has been observed running.
 
 ---
 
@@ -183,6 +184,47 @@ Equally important is what CN does **not** have, which is precisely the user's as
 No other reference mod is closer. So dynamic switching has a reference implementation to learn
 from; **per-enemy targeting and cross-match learning have none, in any OpenRA mod** — that part is
 new work, and §8 is where the outside prior art for it comes from.
+
+"Copy the shape" above means the *numbers and the safeguards*. It does not mean the mechanism:
+§1.6 is a second read of the same file, and it shows the mechanism is one Cameo may not use.
+
+### 1.6 CN, read a second time: the numbers hold, the mechanism does not
+
+Verified against the local clone at `crystallized-nexus@30cf70a66`, file
+`.modsdk/OpenRA.Mods.CN/Traits/BotModules/CNBotProfileBotModule.cs` unless stated otherwise.
+
+* **The adaptive constants are as quoted in §1.5**: `AdaptiveStaticExposureWeight` 0.25 (`:90`),
+  `AdaptiveSwitchCooldownTicks` 1500 (`:96`), `AdaptiveEmergencyCheckInterval` 25 (`:110`),
+  `AdaptiveMinimumIntentHoldTicks` 3000 (`:113`), `AdaptiveEmergencyTurtleDangerThreshold` 600
+  (`:116`), `AdaptiveEnemyFortifiedDefenses` 6 (`:126`), `AdaptiveProfileMomentumBonus` 0.75
+  (`:190`), `TeamAdaptiveCoverageWeight` 1.5 (`:194`).
+* **CN switches profiles by granting the condition directly from the bot module.** `SwitchTo`
+  revokes the old token and grants the new one on the player actor (`:882-887`); it is reached from
+  `IBotTick.BotTick` (`:321`), i.e. from inside `Sync.RunUnsynced`. The initial profile is drawn
+  with `world.LocalRandom` in the trait constructor and granted in `Created` (`:307`, `:317-318`,
+  `:901-910`). Under §1.1 that is synced state being mutated from unsynced code, on one client, from
+  a host-local random draw. I have not tested whether CN desyncs in practice — it may be effectively
+  single-client in the modes people play — but the pattern is the one `ModularBot` explicitly
+  forbids, so **it is not available to Cameo**. The order bridge in §4.2 and §10.4 is therefore not
+  "validated by CN"; it is Cameo's own, and it exists precisely because CN's shortcut is closed to
+  us. Two of the research replies asserted the opposite; see §11.2.
+* **CN's fortification input is fog-honest contact memory, not omniscience.**
+  `UpdateKnownEnemyDefenses` (`Squads/CNSquadManagerBotModule.cs:4101-4145`) records a defence only
+  if `building.CanBeViewedByPlayer(Player)`, forgets a remembered cell only when
+  `Player.Shroud.IsVisible(cell)` proves it empty, and otherwise keeps what was last seen under fog;
+  damage taken also writes the attacker's cell into the same memory (`:975`). So the blanket claim
+  that the family's bots are omniscient except for cloak — mine for Cameo in §0.2, and Grok's for the
+  family — is true of *targeting* but false of CN's *strategy input*. This matters for sequencing:
+  contact memory is the cheapest first step towards §0.2 and it has a working in-family reference,
+  while a full shroud gate on squad targeting does not.
+* **CN documents its own worst bug in-source, and Cameo would inherit it verbatim** (`:325-332`):
+  because there is one squad manager, base builder and MCV manager *per profile*, each gated by a
+  condition, a reference cached on the first tick points at an instance the module's own next
+  decision disables — "the fortification input read zero for the rest of the match while the active
+  squad manager knew of twenty-two enemy emplacements". Cameo's personality squad managers are
+  per-personality instances too (§10.2), so any master-module reference to a personality-gated module
+  must be re-resolved whenever the cached one is not enabled (`:333-351` is the fix), never cached
+  once.
 
 ---
 
@@ -632,3 +674,300 @@ weights, hence bandits with exploration rather than fixed tables), and **distrib
 5. **Do we want a human-replay pipeline** at all, given §8.4's distribution-shift warning?
 6. **Are the ten difficulty tiers all supposed to get the manager**, or is dynamic switching itself
    a high-difficulty feature? Making it difficulty-gated is a cheap, honest difficulty axis.
+7. **How deep does the opponent model go in phase 2** — per-enemy strategy labels as §3 designs, or
+   own-state plus a fortification scalar as CN actually ships (§1.6)? Kept open on purpose: the
+   phase-2 logs are the evidence that settles it.
+8. **Who owns contact memory** — one memory built by the master, or an extension of the squad
+   manager's own scan, which is where CN keeps it? One authority per decision (§10.1) says pick one,
+   and the master needs it per enemy player while the squad manager needs it per cell.
+9. **How verbose is the decision trace** (§11.3.2) — always-on JSONL, or behind a debug flag? Eight
+   bots re-deciding every 1500 ticks with a full candidate vector is small; the same trace on the
+   emergency cadence is not.
+10. **What may an emergency override change** — target and urgency only, or the personality too? CN
+    switches the personality straight to Turtle on a danger spike (§1.6); the review reply argues an
+    emergency should never rewrite the strategic posture. Unresolved conflict, and the answer decides
+    whether §4.5's fast path needs its own hold time.
+11. **Do CN's hysteresis constants ship as Cameo's defaults**, or get re-fitted from phase-2 logs
+    before phase 3 turns switching on? Leaning: ship CN's as the starting point, since they were
+    tuned against a switching bot in this engine family, and re-fit after the first logged matches.
+
+---
+
+## 10. The module plan: every module, what changes, and how they connect
+
+§5 states the master module's role in the abstract. This section is the concrete build plan: what
+each module that Cameo actually loads does today, what changes for it, and what it is allowed to
+read. It exists so that implementation can start module by module without re-deriving the design,
+and so that a reviewer can check any single module against it in isolation.
+
+### 10.1 One authority per decision
+
+The load-bearing rule, and the one most likely to be violated by accident:
+
+> A decision has exactly one owner. The master module changes the *inputs* to a decision. It never
+> makes a decision another module already owns.
+
+Concretely: the master may raise the AA demand that `UnitBuilderBotModuleCA` reads, but it never
+queues a production order itself; it may name the main target, but `SquadManagerBotModuleCA` still
+picks which squad attacks what. Every past AI regression in this tree came from two writers of the
+same state, and §1.3 shows the engine punishes duplicate authorities with a hard crash rather than
+a subtle bug.
+
+The second rule follows from it: **absence degrades, it never breaks.** Every reader treats a
+missing master, a missing snapshot, or a stale snapshot as "carry on as today". That is what makes
+this incrementally shippable — each phase in 10.6 is a complete, playable state.
+
+### 10.2 What Cameo loads today
+
+Grounded in `mods/cameo/ai/ai.yaml` at the cited lines. This is the full set the plan has to
+account for — there are no other bot modules in the mod.
+
+| Module (instances) | ai.yaml | Owns today | Planned change |
+|---|---|---|---|
+| `SquadManagerBotModuleCA` @rush/@turtle/@tech/@expansion/@steamroller | 3177, 3250, 3323, 3396, 3469 | squad formation, attack/defence posture, retreat | reads main target + urgency from the snapshot; gains a sixth @guerrilla instance; **fog gate on its actor scan** (§0.2) |
+| `BaseBuilderBotModuleCA@generic` | 3755 | what to build and where, defence fractions, expansion | reads defence-fraction and expansion-appetite hints |
+| `UnitBuilderBotModuleCA@generic` | 4774 | unit mix, idle-unit accounting, composition consumption | reads counter-demand hints (AA / anti-armour / anti-infantry / detector / artillery) |
+| `UnitCompositionsBotModule` (world, **singleton**) | 6414 | the composition table | unchanged C#; gains personality- and counter-tagged rows via prerequisite tokens (§1.4) |
+| `SupportPowerBotASModule` | 214 | support power usage | reads main target so powers land on the player being pressured |
+| `SendUnitToAttackBotModule` (+@chrono) | 3538, 3655 | opportunistic single-unit attacks | reads main target as a preference, not a constraint |
+| `HarvesterBotModuleCA` | 3131 | harvester assignment, threat response | unchanged in phase 1; later reads "economy under attack" |
+| `McvExpansionManagerBotModule` (the only MCV module loaded) | 3143 | MCV deployment and expansion | reads expansion appetite (Expansion/Guerrilla raise it, Turtle lowers it) |
+| `CaptureManagerBotModuleCA` | 3157 | capture targets | reads main target for capture preference |
+| `BuildingRepairBotModule(CA)` | 3139, 3141 | repair response | unchanged |
+| `PowerDownBotModule` | 212 | power management | unchanged |
+| `CratePickupBotModule` | 3167 | crate collection | unchanged |
+| `LoadGarrisonerBotModuleCA@Infantry`, `LoadCargoBotModule@*` | 3687, 3691, 3727, 3733 | garrisoning and transports | unchanged in phase 1; Turtle should prefer garrisoning |
+| `MinelayerBotModule` | 3740 | minelaying | reads posture: Turtle mines approaches, Rush does not |
+| `ResourceMapBotModule` | 3747 | resource knowledge for the builders | unchanged (already an information provider, not a decider) |
+| `ExternalBotOrdersManager` | 3172 | queues orders that **synced** traits registered via `IssueOrderToBot` | unchanged, but see 10.4 — it is the precedent for order plumbing, in the opposite direction |
+| `BotLimits` per difficulty | 37-142 | the entire difficulty axis | unchanged; the manager is difficulty-gated by condition, not by new knobs (§9.6) |
+| **new** `MasterAiBotModule` | — | — | per-player observer/decider; owns main target, personality, urgency, snapshot |
+| **new** `ScoutBotModule` | — | — | dependency of fogged observation; Cameo has no scouting behaviour at all |
+| **new** `BotPersonalityController` (synced) | — | — | the only synced piece: resolves the personality order, grants/revokes the token (10.4) |
+
+Two things this table makes obvious. First, **most modules change by reading, not by being
+rewritten** — the snapshot is the whole integration surface, which is why 10.3 pins it down before
+any code. Second, the squad managers are the only place where personality is expressed structurally
+(five parallel instances), and that is already the mechanism the manager needs; nothing about the
+five-instance shape has to change to make switching dynamic.
+
+### 10.3 The snapshot: the one shared data structure
+
+The user's "input matrix". One immutable object per player, rebuilt on the slow cadence, read by
+everyone, written by nobody but the master.
+
+```csharp
+// unsynced, host-local, rebuilt on the slow cadence (10.5)
+sealed class BotSituation
+{
+    int Tick;                                 // when this was built; readers check staleness
+    Player MainTarget;                        // may be null: no contact yet
+    string Personality;                       // what the master ASKED for, not what is granted
+    Urgency Urgency;                          // Normal | Pressured | Emergency
+    IReadOnlyDictionary<Player, EnemyProfile> Enemies;   // §3.2 signals, per enemy
+    CounterDemand Demand;                     // AA, anti-armour, anti-infantry, detector, artillery: 0-100
+    int DefenceFractionHint;                  // for the base builder
+    int ExpansionAppetiteHint;                // for the MCV/expansion modules
+}
+```
+
+Three properties are deliberate:
+
+* **Pull-based.** Readers ask the master (`TraitOrDefault<MasterAiBotModule>()?.Situation`). The
+  master does not know its readers, so a reader can be added without touching it, and a missing
+  master is a `null` that every reader already has to handle.
+* **Immutable and stamped.** Readers may cache it and compare `Tick`; nobody can mutate another
+  module's view. This also makes the snapshot the natural log record (§6.2) — the thing we log is
+  exactly the thing the bot decided on, so a replay explanation is never a reconstruction.
+* **Hints, not commands.** `DefenceFractionHint` is an input the base builder may clamp or ignore
+  by its own rules. That is what keeps 10.1 true.
+
+`Personality` in the snapshot is the *request*. The authoritative state is the granted condition,
+because that is what the five squad-manager instances key off. Readers that care about posture must
+read the condition (as they do today), not this field; the field exists for logging and for the
+one-tick window before the order resolves.
+
+### 10.4 The one synced piece, and why an existing trait cannot do it
+
+The switch has to cross from unsynced reasoning into synced state, and §1.1 allows exactly one
+bridge: queue an order. `ExternalBotOrdersManager` (10.2) is the precedent for order plumbing, but
+it runs the other way — synced traits register, the module queues. What we need is the
+`PlacePlugAI` direction: module queues, synced trait resolves.
+
+`GrantConditionOnOrders` (`OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnOrders.cs`) looks like a
+zero-C# answer and is not one. Its `ResolveOrder` revokes the condition on **any** order whose name
+is not in its set (lines 44-47), and the Player actor resolves plenty of unrelated orders —
+`PlaceBuilding` is a player-level trait (`engine/OpenRA.Mods.Common/Traits/Player/PlaceBuilding.cs:22`),
+as are the production queues. The first building the bot places would clear its own personality.
+Five instances would give correct mutual exclusion and still lose the state on the next placement.
+
+So one small synced trait is unavoidable — the only new synced state in the whole design:
+
+```
+MasterAiBotModule (unsynced, IBotTick)
+    bot.QueueOrder(new Order("SetBotPersonality", player.PlayerActor, false)
+                   { TargetString = "guerrilla", SuppressVisualFeedback = true })
+        |
+BotPersonalityController (synced, on Player, IResolveOrder)   ~40 lines
+    validates TargetString against its configured token map
+    revokes the previous token, grants the new one, ignores a repeat of the current one
+        |
+existing consumers, unchanged:
+    SquadManagerBotModuleCA@<personality>       (condition-gated instance selection)
+    ProvidesPrerequisite@personality_<p>        -> personality-tagged compositions (§1.4)
+    ObserverConditionNotification@<p>           (observer-only switch announcement)
+```
+
+`GrantRandomCondition@personality` (`ai.yaml:5-6`) stays as the **initial draw**. If the manager is
+absent, disabled, or difficulty-gated off, the bot behaves exactly as it does today — a random
+fixed personality — which is the degradation rule of 10.1 applied to the riskiest change here.
+
+Two consequences to accept: every switch is a replay-visible order (good — it is auditable and it
+is how the observer indicator learns about it), and the switch costs one order per change, so the
+cadence limits in §4.5 are not just anti-thrash tuning, they are the cost control.
+
+### 10.5 Cadence, and why the master is cheap
+
+| Loop | Cadence | Work |
+|---|---|---|
+| Emergency check | ~25 ticks | danger delta only; can force Urgency=Emergency and Turtle |
+| Snapshot rebuild | ~150 ticks | per-enemy signal scan, counter demand, hints |
+| Target + personality decision | ~1500 ticks | scoring, hysteresis, the order |
+| Log flush | match end + on switch | append JSONL (§6) |
+
+The expensive part is the actor scan in the snapshot rebuild, and it is the same scan the squad
+manager already does every tick — so doing it once per 150 ticks in the master and letting readers
+share the result is a net *saving* if the squad managers are later pointed at the shared result
+instead of scanning independently. That consolidation is not phase 1, but the snapshot is shaped to
+allow it.
+
+### 10.6 Build order, each phase shippable on its own
+
+1. **Match logging, record-only.** No behaviour change. Writes the match record (§6.2) including
+   the fixed personality and the outcome. Value: the learning loop has data before any decision
+   code exists, and the log schema gets exercised while it is still cheap to change.
+2. **`MasterAiBotModule`, observe-only.** Builds and publishes the snapshot; decides nothing, and
+   no module reads it yet. Logged per rebuild. This is where the signal derivations get validated
+   against replays cheaply — a wrong detector is visible in the log without touching gameplay.
+3. **`BotPersonalityController` + dynamic switching.** The first behaviour change. Difficulty-gated
+   so the lower tiers keep today's fixed personality.
+4. **Main target selection**, consumed by the squad managers and support powers.
+5. **Counter demand and hints**, consumed by the unit builder, base builder and compositions
+   (`ProvidesPrerequisite` tokens, zero C#).
+6. **Fogged observation + `ScoutBotModule`.** Deliberately last among the behaviour changes,
+   because it makes the bots temporarily weaker and it invalidates any tuning done against
+   omniscient signals. This is the §9.1 decision; phases 1-5 are honest about being pre-fog.
+7. **Offline learning.** Aggregate logs, fit bandit priors per (faction, personality, enemy
+   strategy), commit them as reviewed data (§6.1 tier 4). Nothing neural until balance is frozen.
+
+Phases 1 and 2 are pure additions with no gameplay effect and can proceed while the balance
+pipeline is still moving. Phase 3 is the first one that needs playtesting attention, and phase 6 is
+the one that needs a tuning pass on everything before it.
+
+### 10.7 Failure modes this shape is chosen to avoid
+
+| Failure | Why it is avoided here |
+|---|---|
+| Duplicate authority (two writers of production or squads) | 10.1; enforced by the master owning no queues and no squads |
+| Second instance of a `TraitOrDefault` consumer | §1.3; the master and the compositions module are singletons by declaration |
+| Personality thrash | §4.5 hold time + momentum + slow cadence; and every switch costs an order (10.4) |
+| Desync from learning | §6.1 tiers; learned data is read at load or never touches synced state |
+| Learned weights overfitted to bot-vs-bot play | §8.4 distribution shift; priors stay small and are reviewed as balance data |
+| Losing today's behaviour on a bad phase | degradation rule in 10.1; `GrantRandomCondition` remains the fallback |
+| Tuning invalidated by the fog switch | fog is phase 6, and phases 1-5 are labelled pre-fog rather than pretending otherwise |
+| Stale reference to a personality-gated module after a switch | §1.6; CN shipped this bug and documented it — every such reference is re-resolved whenever the cached instance is not enabled |
+| A borrowed detection threshold that never fires | §11.4; detection thresholds are fitted from phase-2 logs, only the hysteresis constants are imported |
+
+---
+
+## 11. Reconciliation of the five-agent research round
+
+Five differentiated briefs went out (`AI-RESEARCH-BRIEFS.md`: literature, OpenRA archaeology,
+decision maths, engine feasibility, yaml/migration). This section records what came back, what
+survived checking, and what the answers changed in the design. The discipline is the one that made
+the balance pipeline usable: **repository artifact > measured experiment > primary external source >
+independent review > AI synthesis**. Where two replies disagree, the disagreement is kept as an open
+decision in §9 rather than averaged into a compromise nobody verified.
+
+### 11.1 What actually came back
+
+| Brief | Delivered | Usable content |
+|---|---|---|
+| OpenRA archaeology (Grok) | **Yes**, with file paths and constants | CN's adaptive constants, the per-profile stale-cache trap, the "no in-family main-target focuser" gap, an anti-pattern list. Independently re-verified in §1.6 — the constants and the trap check out; two of its architectural conclusions did not (§11.2) |
+| Decision maths | **Partly** — a design review, not the requested derivation | bounded/saturating features, personality/target decoupling, decision traces, confidence propagation (§11.3). No thresholds, no team-coverage shape |
+| Engine feasibility | **No** — a restatement of the existing spec as a "handoff document" | nothing new; it also reported #324 as merged, which it is not |
+| Literature | **No** — the reply in this round answered the observer-graph question instead | none for the AI briefs |
+| Yaml / migration | **No** — a "synthesis matrix" asserting findings the other agents never produced (§11.2) | none admissible |
+
+So one of five briefs is answered on its own terms. The literature, engine-feasibility and
+yaml-migration questions are still open, and **§3's signal thresholds, §6.3's bandit sample sizes and
+§2.7's migration steps still have no external evidence behind them**. That does not block phases 1-2
+of §10.6, which deliberately need no thresholds: they log raw signals so the thresholds can be fitted
+from Cameo's own matches instead of borrowed.
+
+### 11.2 Claims rejected, with what falsifies them
+
+Recorded because they were stated as settled fact, and two of them would have changed the design.
+
+| Claim | Status |
+|---|---|
+| "The order-based `BotPersonalityController` is validated by CN's implementation" | **False.** CN grants the condition directly from the bot module and issues no order at all (§1.6). The bridge is Cameo's own invention, forced by §1.1 |
+| "CN-style token lifecycle owned by one module is an acceptable alternative to the order bridge" | **Rejected**, same evidence. It is a §1.1 violation; that it apparently works in CN is not evidence that it is sound |
+| "Misclassifying a Rush as a Turtle was proved fatal" | **Unsourced.** Plausible and probably directionally right, but no paper, no measurement. Not admitted to §1; if it holds, phase-1 logs will show it |
+| "`S_def > 0.35` classifies heavy defences; `S_eco > 1.25` classifies aggressive expansion" | **Invented constants.** No derivation, no data. Thresholds come from phase-2 logs (§10.6) or not at all |
+| "All five agents' research has been synthesised into the architecture" | **False**, per §11.1 |
+| "PR #323 merged" / "PR #324 merged" | **False** at the last authoritative check; both open |
+| "Cameo bots are omniscient, and so is every bot in the family" | **Half true.** Correct for Cameo's squad targeting (§0.2), false for CN's strategy input (§1.6) |
+
+### 11.3 Recommendations adopted, and what they amend
+
+1. **Bounded, saturating features in the target score.** §4.3's weighted sum takes raw quantities,
+   which lets one large economy or army number dominate every other term. Amended: every feature is
+   normalised into `[0,1]` before weighting, using `x / (x + k)` for unbounded quantities (economy
+   share, army value, damage) so that twice the value is not twice the attractiveness, with `k` per
+   feature in the tuning block. Weights stay linear on top of bounded features.
+2. **A decision trace on every strategic decision.** Not just the chosen personality and target, but
+   the full candidate vector, the incumbent's momentum bonus, the winning margin and the gates that
+   fired. This is what makes phase 2 of §10.6 worth shipping on its own: an observe-only master whose
+   log says only "would pick Rush" cannot be debugged, while one that says "Rush 0.73, Tech 0.67,
+   incumbent +0.15, margin +0.06, held by minimum-hold" can. Folded into §6.2 as the
+   `decision` object; §9.9 covers how verbose it is allowed to be.
+3. **Confidence travels with every signal.** "Saw two tanks" must not enter the transition table as
+   "the enemy army is armour-heavy". Each per-enemy signal in §3.2 carries a confidence derived from
+   observation age and coverage, and a switch below a confidence floor is not taken — it is logged as
+   suppressed. This is also the mechanism that makes fog (§10.6 phase 6) a change of input rather
+   than a rewrite of the decision layer.
+4. **Contact memory is split out ahead of fog and scouting.** §10.6 phase 6 bundled the shroud gate
+   with `ScoutBotModule`. Amended to three increments in order: (a) contact memory — remember what
+   was seen and what shot us, forget it only when a visible cell disproves it, the CN shape in §1.6;
+   (b) the shroud gate on the squad managers' actor scan, which is the actual §0.2 fix; (c)
+   `ScoutBotModule`, which only has a job once (b) leaves gaps worth filling. Each is independently
+   playable and (a) costs the bots nothing.
+5. **Bandits come after an offline comparison, not as the cheap first win.** §6.3 frames bandit
+   priors as the cheap first learning step. Amended: the cheap first step is an offline comparison of
+   fixed vs dynamic personality on logged matches. A bandit that has not been shown to beat the fixed
+   policy on Cameo's own data is not cheap, it is unfalsifiable.
+6. **The master stays out of the economy.** Restating §10.1 because two replies drifted here: the
+   harvester, MCV-expansion and base-builder modules keep their decisions; the master publishes
+   economy and expansion pressure as hints and nothing else.
+7. **No caching of personality-gated module references** (§1.6, last bullet). Any master-module
+   reference to a per-personality module is re-resolved whenever the cached instance is not enabled.
+
+### 11.4 Rejected as design changes
+
+* **A five-module unsynced pipeline** (`FogPerceptionBotModule` → `OpponentModelBotModule` →
+  `EnemyTargetingBotModule` → `PersonalityEvaluator` → controller). Four extra trait lifecycles,
+  four more load-order and enable/disable interactions, for what are pure functions over one
+  snapshot. §10.1's last rule stands: the master's stages are methods, not traits. The only new
+  traits remain `MasterAiBotModule`, `BotPersonalityController` and eventually `ScoutBotModule`.
+* **A richer snapshot up front** (snapshot age, per-enemy tech/air/armour shares, aggression score,
+  economy pressure as separate fields). Every field needs a consumer in the same phase that adds it;
+  otherwise it is unverified surface that the log makes look authoritative. The fields arrive with
+  their readers.
+* **A full enemy-strategy classifier in phase 2.** Phase 2 logs raw per-enemy signals only. Strategy
+  labels are added once the logs show the signals actually separate the strategies — this is the
+  disagreement between the archaeology reply (own-state and fortification only, as CN does) and the
+  §3 design (a per-enemy classifier), and §9.7 keeps it open rather than resolving it by assertion.
+* **Any fixed numeric threshold before phase-2 logs exist**, including the CN constants as Cameo
+  defaults. CN's numbers are the starting point for *hysteresis* (they were tuned against a switching
+  bot in the same engine family), not for *detection*.

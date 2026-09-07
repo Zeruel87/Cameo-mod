@@ -56,6 +56,11 @@ EMP_SUBVARIANT_SUFFIXES = (
 # filtering out as noise.
 X4_WHOLE_WORD_EXCLUSIONS = (
     "NUKE", "ZOMBIE", "CRATE", "ELITE", "GRENADE", "SMOKE", "STRIKE",
+    # "HE" = High Explosive, an AMMUNITION type, not the deprecated elite `E`.
+    # `SUSABurtonSniperHE` inherits `SUSABurtonSniper`, and `SUSAMLRSHE` sits
+    # beside a correctly-suffixed `SUSAMLRS_EMP` — both were X4 false positives.
+    # Safe because X4 only ever sees weapons that are NOT elite-gated.
+    "HE",
 )
 
 # AA name keywords that predate the _AA convention.

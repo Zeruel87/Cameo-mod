@@ -51,6 +51,8 @@ def candidate(damage, scale):
 def report():
     rules = Ruleset(ROOT)
     hydra = rules.resolve_weapon('HydraSpit')
+    from hydra_impact_lab import require_legacy_hydra
+    require_legacy_hydra(hydra)
     lines = ['# Hydralisk candidate screening', '',
         'Source: upstream 4deaee086; candidate template from PR325 e42eb991 staged patch.',
         'No candidate is applied. Cost, HP, speed, range, reload and projectile remain unchanged.', '',
@@ -109,7 +111,10 @@ if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--write', action='store_true')
     args=parser.parse_args()
-    result=report()
+    try:
+        result=report()
+    except ValueError as error:
+        raise SystemExit(str(error))
     if args.write:
         (ROOT/'docs/design/HYDRALISK_CANDIDATE_SCREEN.md').write_text(result,encoding='utf-8')
     else:

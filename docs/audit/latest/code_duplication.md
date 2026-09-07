@@ -1,12 +1,12 @@
 # audit_code_duplication — copy-paste clone groups
 
-Python files: **389** (min 5 statements), C# files: **349** (min 8 lines)
+Python files: **400** (min 5 statements), C# files: **349** (min 8 lines)
 
 | code | meaning | clone groups | baseline |
 |---|---|---|---|
 | C1 | identical Python function bodies | 19 | 10 |
 | C2 | identical C# method bodies | 15 | 14 |
-| C3 | identical module-level literal tables | 22 | 10 |
+| C3 | identical module-level literal tables | 21 | 10 |
 
 
 ## C1 — Python function clones (19 group(s))
@@ -55,13 +55,13 @@ Python files: **389** (min 5 statements), C# files: **349** (min 8 lines)
 | 2 | fccb77d01668aded | OpenRA.Mods.CA/Traits/BotModules/BaseBuilderBotModuleCA.cs:825 CountQueuedBuildings(); OpenRA.Mods.CA/Traits/BotModules/BaseBuilderBotModuleCA.cs:833 SellUselessRefinery() |
 
 
-## C3 — Duplicated constant tables (22 group(s))
+## C3 — Duplicated constant tables (21 group(s))
 
 | copies | fingerprint | sites |
 |---|---|---|
 | 5 | e90c0e4fa9ad2195 | tools/balance/consolidate_corroborated_role_profiles.py:278 CONTRACT_FIELDS; tools/balance/consolidate_explicit_family_state_profiles.py:158 CONTRACT_FIELDS; tools/balance/consolidate_high_identity_profiles.py:60 CONTRACT_FIELDS; tools/balance/consolidate_named_state_corrections.py:61 CONTRACT_FIELDS; tools/balance/consolidate_pinned_role_profiles.py:86 CONTRACT_FIELDS |
 | 4 | 28fac3656bc8fc3b | tools/audit/find_orphan_old_keys.py:20 CENTRAL; tools/audit/find_orphan_old_keys_multi.py:18 CENTRAL; tools/balance/fix_orphan_old_keys.py:19 CENTRAL; tools/balance/fix_orphan_old_keys_multi.py:16 CENTRAL |
-| 4 | 9a62b7cb0c6b46dc | tools/audit/audit_heaviness_bell.py:95 COMPANION; tools/audit/audit_three_way_split.py:81 COMPANION_MARKERS; tools/audit/audit_tier_weapon_class.py:55 COMPANION_MARKERS; tools/balance/preview_bell.py:44 COMPANION |
+| 4 | 9a62b7cb0c6b46dc | tools/audit/audit_heaviness_bell.py:95 COMPANION; tools/audit/audit_three_way_split.py:75 COMPANION_MARKERS; tools/audit/audit_tier_weapon_class.py:55 COMPANION_MARKERS; tools/balance/preview_bell.py:44 COMPANION |
 | 3 | 985c1fe34e42db41 | tools/audit/find_empty_warhead.py:16 CENTRAL; tools/audit/weapon_families.py:23 CENTRAL; tools/balance/sweep_areadamage.py:25 CENTRAL |
 | 2 | 153d4fc74c8cdd31 | tools/tilesets/build_ra_temperate_basalt_trees.py:20 ACTORS; tools/tilesets/build_volcanic_basalt_gimp_brushes.py:20 ACTORS |
 | 2 | 245ae127cd6182e8 | tools/balance/consolidate_explicit_family_state_profiles.py:81 STATE_EXPANSION; tools/tests/test_explicit_family_state_profile_consolidation.py:30 EXPECTED_EXPANSION |
@@ -70,22 +70,21 @@ Python files: **389** (min 5 statements), C# files: **349** (min 8 lines)
 | 2 | 590fa5489ca5f751 | tools/audit/find_orphan_old_keys_multi.py:25 OLD_KEY_FAMILIES; tools/balance/fix_orphan_old_keys_multi.py:22 OLD_KEY_FAMILIES |
 | 2 | 783c5216cd3c1bf0 | tools/audit/audit_versus_profile.py:64 NON_ARMOR; tools/balance/preview_bell.py:45 OFF_AXIS |
 | 2 | 7b392ae5dfabff76 | tools/tilesets/apply_ai_edge_correction.py:16 MAGENTA; tools/tilesets/process_ai_edge_mask.py:14 MAGENTA |
-| 2 | 8ad665990352733b | tools/balance/build_workbook.py:60 TYPE_ORDER; tools/balance/import_workbook.py:37 TYPE_SHEETS |
+| 2 | 8ad665990352733b | tools/balance/build_workbook.py:62 TYPE_ORDER; tools/balance/import_workbook.py:37 TYPE_SHEETS |
 | 2 | 926a972c11b9232c | tools/audit/audit_heaviness_bell.py:142 AXIS_ORDER; tools/balance/gen_weapon_template.py:993 BELL_AXIS_ORDER |
 | 2 | b53e0f9e7578cc2a | tools/audit/audit_heaviness_bell.py:106 LADDERS; tools/reference/aggregate_archetype.py:62 CAMEO_LADDERS |
-| 2 | b67e7e846f5ed14e | tools/audit/intentional_composites.py:21 WEAPON_REF_FIELDS; tools/audit/survey_weapon_structure.py:42 WEAPON_REF_FIELDS |
 | 2 | c15459229a835d70 | tools/tilesets/build_tc_basalt_from_gimp.py:18 ACTORS; tools/tilesets/fix_tc_basalt_shadow_outlines.py:18 ACTORS |
 | 2 | de57d7955065e638 | tools/balance/gen_effects.py:38 LEVELORDER; tools/balance/gen_projectiles.py:30 LEVELORDER |
 | 2 | e82cdb37ffc15514 | tools/audit/audit_versus_profile.py:66 LADDERS; tools/balance/gen_weapon_template.py:35 LADDERS |
 | 2 | eba2f9dc1c86d3e4 | tools/audit/audit_tier_weapon_class.py:59 LADDER; tools/balance/gen_weapon_template.py:2173 STORM_LEVELS |
 | 2 | ee8795bea6c56142 | tools/audit/audit_versus_profile.py:73 LEVELS; tools/reference/propose_family_profiles.py:113 LEVEL_ORDER |
 | 2 | eed204ad8ec23410 | tools/audit/propose_sonic_mapping.py:104 OLD_FAMILIES; tools/audit/weapon_families.py:29 OLD_FAMILIES |
-| 2 | efe4c032c5c937c9 | tools/audit/audit_three_way_split.py:78 MAIN_DAMAGE_TYPES; tools/audit/audit_tier_weapon_class.py:54 MAIN_DAMAGE_TYPES |
+| 2 | efe4c032c5c937c9 | tools/audit/audit_three_way_split.py:72 MAIN_DAMAGE_TYPES; tools/audit/audit_tier_weapon_class.py:54 MAIN_DAMAGE_TYPES |
 
 
 ## FAIL
 
 - C1: 19 > baseline 10
 - C2: 15 > baseline 14
-- C3: 22 > baseline 10
+- C3: 21 > baseline 10
 

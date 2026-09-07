@@ -28,7 +28,7 @@ Confidence: FAIR 5 · SHAPE 11 · **STRONG 7** · **WEAK 5**
 ⚠ **No reference at all** — formula-only unless the review rescues them:
 
 * `E1` — cost 100.0
-* `conehead2.nax` — cost 500.0
+* `naxis_conehead2` — cost 500.0
 * `forgotten_mutant_sp` — cost 160.0
 * `forgotten_mutant_wild` — cost 160.0
 * `forgotten_mutantsoldier_sp` — cost 250.0
@@ -38,7 +38,7 @@ Confidence: FAIR 5 · SHAPE 11 · **STRONG 7** · **WEAK 5**
 * `ra2e2.black` — cost 150.0
 * `tkm_marine` — cost 300.0 — ⛔ no route for faction 'tkm'
 * `tkm_rifleman` — cost 120.0 — ⛔ no route for faction 'tkm'
-* `undead.nax` — cost 100.0
+* `naxis_undead` — cost 100.0
 * `zerg_spithid` — cost 300.0 — ⛔ no declared Cameo faction in the id
 
 ---

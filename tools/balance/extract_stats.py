@@ -313,12 +313,31 @@ def weapon_class_from_types(types: list[str]) -> float | None:
     return sum(vals) / len(vals)
 
 
+def resolved_firepower_modifiers(resolved, local):
+    """Raw unconditional traits, including inherited and armament-scoped entries.
+
+    Keep percentages separately: their product is a pricing approximation, not
+    a simulation of engine integer damage rounding. Conditional traits are excluded.
+    """
+    result = []
+    for node in resolved.children_named("FirepowerMultiplier"):
+        if node.get("RequiresCondition"):
+            continue
+        modifier = int(node.get("Modifier") or "100")
+        own = child(local, node.key) if local is not None else None
+        source = (f"{rel(own.file)}#{node.key}.Modifier"
+                  if own is not None and own.get("Modifier") is not None else "inherited")
+        result.append({"trait": node.key, "modifier": modifier, "src": source,
+                       "types": [s.strip() for s in (node.get("Types") or "").split(",") if s.strip()]})
+    return result
+
+
 def firepower_multiplier(resolved, local):
     """Extract a single unconditional, locally-defined FirepowerMultiplier.
 
     Inherited template traits like FirepowerMultiplier@GlobalBuffs are NOT
-    captured, because they are not the per-actor fine-tuning knob.  Only
-    values written directly on the actor block are balance-relevant.
+    captured here, because this legacy field is the per-actor fine-tuning knob.
+    Class-fitting damage inputs use resolved_firepower_modifiers instead.
     Conditional FirepowerMultiplier traits (RequiresCondition) are also
     ignored for pricing because they are situational buffs/debuffs.
     The actor-specific FirepowerMultiplier@<actor> or unqualified
@@ -823,18 +842,22 @@ def weapon_entry(rs, wname: str) -> dict | None:
 _DISABLING_PREREQS = {"disabled", "wip", "disable", "unavailable", "notbuildable"}
 
 
-def _is_balance_buildable(buildable) -> bool:
+def _is_balance_buildable(buildable, actor_name: str | None = None) -> bool:
     """True iff the actor can actually be built (maintainer law 2026-07-22):
     has a Buildable trait with a non-empty Queue and no disabling prerequisite
     (~disabled / ~wip / …). Legacy tokens (E1/E3 — Buildable but no Queue),
-    spawn/veterancy variants (no Buildable), and ~disabled units all fail."""
+    spawn/veterancy variants (no Buildable), and ~disabled units all fail.
+    A positive self prerequisite is Cameo's spawn-only idiom; a negated self
+    prerequisite is a build-limit gate and must remain eligible. This is a
+    roster filter, not a complete simulation of the prerequisite system."""
     if buildable is None:
         return False
     if not buildable.get("Queue"):
         return False
     prereq = buildable.get("Prerequisites") or ""
     toks = {t.strip().lstrip("~").strip().lower() for t in prereq.split(",")}
-    return not (toks & _DISABLING_PREREQS)
+    return not (toks & _DISABLING_PREREQS) and (
+        actor_name is None or actor_name.strip().lower() not in toks)
 
 
 def extract_actor(rs, key: str, section: str,
@@ -899,7 +922,7 @@ def extract_actor(rs, key: str, section: str,
     # if it can be built in some way. NON-buildable (no Buildable trait, no Queue,
     # or a disabling prereq like ~disabled/~wip) → excluded from balancing AND all
     # audits. Its cost is only an XP-on-kill value; its stats don't matter.
-    u["buildable"] = _is_balance_buildable(buildable)
+    u["buildable"] = _is_balance_buildable(buildable, key)
     arms = []
     for c in resolved.children:
         if c.key == "Armament" or c.key.startswith("Armament@"):
@@ -916,14 +939,15 @@ def extract_actor(rs, key: str, section: str,
             req = c.get("RequiresCondition")
             if req:
                 entry["requires"] = req
-            if c.get("Name"):
-                entry["armament_name"] = c.get("Name")
+            if child(c, "Name") is not None:
+                entry["armament_name"] = c.get("Name") or ""
             arm_name = c.get("Name") or ""
             entry["pricing"] = not ("garrison" in arm_name.lower()) and not (
                 entry.get("extraction_note") == "no_damage_warheads")
             arms.append(entry)
     if arms:
         u["armaments"] = arms
+        u["resolved_firepower_modifiers"] = resolved_firepower_modifiers(resolved, local)
     fp = firepower_multiplier(resolved, local)
     if fp:
         u["firepower_multiplier"] = fp
