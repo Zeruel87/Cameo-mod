@@ -310,12 +310,12 @@ Reference-clean units: **TD GDI Archer** (`gdiarcher`), **Ordos Raider**
 | rule | formula |
 |---|---|
 | Repair | `Repairable.HpPerStep = HP / 20` (non-infantry) |
-| Self-heal | `ChangesHealth@SelfHealing.Step = HP / 2500`; infantry `HP / 1000`; infantry never has Repairable |
-| Upgrade shields | `Shielded.RegenAmount = 2 × SelfHealing Step` (Ixian model) |
+| Self-heal | **TICKS TO FULL, not a per-step amount** (maintainer 2026-09-07): every unit fully self-heals in **2500 ticks (100 s)**; **infantry in 1250 ticks (50 s)** — exactly 2x. Applied EVERY tick with a fractional accumulator, so HP is no longer constrained by the divisor. Always active while damaged (`StartIfBelow: 100`). Infantry never has Repairable. See §Regeneration. |
+| Upgrade shields | **Shield regen is ALWAYS 2x the HP regen rate**, measured as %-of-max-HP per tick (`GrantsShield.PercentageRegenAmount 2` per `RegenInterval 25` = 0.08%/tick against HP's 0.04%/tick — the rule already holds in the shipped trait). Shield ramp is **2x as long** as the HP ramp. |
 | Defense vision | `RevealsShroud.Range = weapon range` |
 | AA / advanced defense detection | `DetectCloaked.Range = weapon range / 2` |
 | Defense power | `Power.Amount = -(Cost / 20)` |
-| Vehicle turning | `Mobile.TurnSpeed = Speed / 5`; `Turreted.TurnSpeed` equals it |
+| Vehicle turning | `TurnSpeed = Speed / 5`, `Turreted.TurnSpeed` equals it — but **DERIVED IN C#, not written in yaml** (maintainer 2026-09-07). Speed is now on a step of 1, so `Speed / 5` is no longer an integer; the yaml carries a MULTIPLIER and the trait computes the angle in fixed point, so the ratio stays exact instead of rounding to ~3%. |
 | Turretless (AttackFrontal) vehicles | `TurnSpeed = 2 × Speed / 5` — the former artillery exception was dropped 2026-07-10 (data check: turretless artillery split 24 at 2×, 18 at 1× — no real pattern) |
 | Turreted artillery / fire support | Archer firing-slow: `GrantConditionOnAttack(firing)`, 50% Speed/Turn/TurretTurn multipliers, `RevokeDelay = weapon ReloadDelay / 2` |
 | Fighters & bombers (by template) | `Aircraft.TurnSpeed = Speed / 15` (frontal-weapon craft 2×) |
@@ -1472,11 +1472,19 @@ steps so the house formulas stay integral:
   `Warhead@SmallArms`, `Warhead@TankDestroyerCannon`, …). The legacy
   generic `Warhead@1Dam` is RETIRED — it was renamed to the per-template
   warhead name; a bare `1Dam` (or stray non-template warhead) is a bug.
-- **HP: 2500-steps** for vehicles/aircraft/ships (self-heal HP/2500,
-  repair HP/20); **1000-steps for infantry** (self-heal HP/1000);
-  defenses may use either (their self-heal is a flat 10).
-- **Speed: steps of 5** for vehicles, aircraft, and ships; **steps of 1**
-  for infantry (per `FORMULA_V2.md` and `LESSONS_LEARNED.md`).
+- **HP: 1000-steps for EVERY type** (maintainer 2026-09-07; was 2500 for
+  vehicles/aircraft/ships and 1000 for infantry). The old 2500 existed only so
+  `Step = HP/2500` divided evenly; once regeneration is expressed as TICKS TO FULL
+  and accumulated fractionally, nothing constrains HP and the finer step is free.
+  Repair stays `HP/20` (every 1000-step is a multiple of 20).
+  ⭐ **Why it changed: the coarse steps made the uniqueness law impossible.** Measured
+  2026-09-07, the `mbt` class has **51 members but only 24 distinct HP values** — HP
+  100,000 is shared by **10 units**.
+- **Speed: steps of 1 for EVERY type** (was 5 for vehicles/aircraft/ships). Steps of 5
+  over a 60-120 range give **13 slots for 51 mbt units** — speed 75 is shared by 9 of
+  them, and no assignment of 51 units to 13 values can satisfy uniqueness. The step of 5
+  existed only to keep `TurnSpeed = Speed/5` an integer, which the derived-turn-rate
+  trait now handles.
 - **TurnSpeed (vehicles & fixed-weapon units):** units without a turret or
   with a forward-facing fixed weapon turn at **`TurnSpeed = 2 × Speed / 5`**;
   turreted units turn at **`TurnSpeed = Speed / 5`**. Infantry normally turns
@@ -1484,6 +1492,39 @@ steps so the house formulas stay integral:
   because they carry forward-facing weapons.
 - **TurnSpeed (aircraft):** helicopters and spaceships both use
   **`Speed / 5`**.
+### Regeneration — one global rule, no per-actor numbers
+
+**Maintainer ruling 2026-09-07.** Regeneration is stated as **TICKS TO FULL**, never as a
+per-step amount, and it is applied **every tick**:
+
+| | ticks to full | seconds | ramp after damage |
+|---|--:|--:|--:|
+| infantry | **1250** | 50 | 125 ticks (5 s) |
+| vehicles / aircraft / ships / defenses | **2500** | 100 | 125 ticks (5 s) |
+| **shields** | **2x the HP rate** | half the HP time | **250 ticks (10 s)** |
+
+* **Per tick, with a fractional accumulator.** At 0.04%/tick a 1,000 HP unit heals 0.4 HP per
+  tick, which truncates to zero as an `int` — the remainder is carried, so the rate is exact at
+  every HP value. This is what frees HP from any step constraint.
+* **`ChangesHealth.PercentageStep` cannot express this** (it is an `int`, minimum 1% per step),
+  so the rate lives in a Cameo trait. Only `Common` declares `ChangesHealth` — CA's is
+  `ChangesHealthVersus`, a different name — so a Cameo type shadows it with no yaml churn.
+* **The ramp replaces the hard cooldown.** Rate is `full x min(1, t / 125)` where `t` is ticks
+  since the last damage: 0 at the moment of the hit, full at 5 s, linear between. Shields use
+  250. The old `DamageCooldown` (10 vehicles / 20 infantry) is retired.
+* **Always on while damaged** — `StartIfBelow: 100`, as `defaults.yaml` already sets.
+* **ONE global inherit.** The rate belongs to `^InfantryBuffs` / `^VehicleBuffs` /
+  `^AircraftBuffs` / `^ShipBuffs` in `defaults.yaml`. **The 883 per-actor
+  `ChangesHealth@SelfHealing` overrides are deleted** — they existed only to write `HP/2500`
+  per actor, which the trait now derives.
+
+⚠ **What was already correct, and was nearly "fixed" by mistake.** `defaults.yaml` sets
+`Delay: 1` for vehicles/aircraft/ships and `Delay: 2` for infantry. Reading only the ContentPack
+templates — which set `Step` and no `Delay` — suggests the engine default of 5 and yields a
+"500 s" self-heal that does not exist. Vehicles really do heal in **100 s** and the shipped
+shield trait really is **exactly 2x** the HP rate. The one real gap was infantry, which
+`Delay: 2` put at **80 s (1.25x)** rather than the intended 2x; that is what moves to 1250 ticks.
+
 - ReloadDelay: any integer.
 - **Beautiful ranges are kept**: if Range is exactly 6.000 or 7.500,
   adjust the other stats, not the range.
