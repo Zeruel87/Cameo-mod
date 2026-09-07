@@ -1402,6 +1402,7 @@ silently truncates the value rather than reporting an error. A truncated .NET
 format string can then throw only when the consuming widget draws. Neither
 `--check-yaml` nor the boot gate exercises that graph draw path, so any YAML
 value carrying a `#` needs a display-time check.
+
 ## ⛔ `Node.child()` is an EXACT match — 97% of the mod's producers were invisible (2026-09-06)
 
 `miniyaml.Node.child("X")` matches the literal key `X`. Almost every trait in this tree is
