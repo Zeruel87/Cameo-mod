@@ -1,9 +1,9 @@
 # Explicit emissive-impact glow audit
-active ^Effect* templates: 116
-sprite-backed effect roots: 51
-emissive roots: 41
+active ^Effect* templates: 118
+sprite-backed effect roots: 53
+emissive roots: 43
 non-emissive sprite roots: 10
-resolved emissive effects: 100
+resolved emissive effects: 102
 unclassified sprite roots: 0
 stale root classifications: 0
 overlapping root classifications: 0

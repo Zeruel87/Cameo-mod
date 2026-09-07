@@ -1,13 +1,13 @@
 # audit_error_handling — Python tooling error handling
 
-Files scanned: **400**
+Files scanned: **429**
 
 | code | meaning | count | baseline |
 |---|---|---|---|
 | E1 | bare except / except BaseException | 2 | 2 |
-| E2 | handler discards the error | 88 | 30 |
-| E3 | open() without encoding= | 92 | 90 |
-| E4 | subprocess call without check= | 20 | 9 |
+| E2 | handler discards the error | 94 | 30 |
+| E3 | open() without encoding= | 95 | 90 |
+| E4 | subprocess call without check= | 27 | 9 |
 
 
 ## E1 — 2 finding(s)
@@ -18,7 +18,7 @@ Files scanned: **400**
 | tools/audit_createeffect_image.py | 19 | bare `except:` |
 
 
-## E2 — 88 finding(s)
+## E2 — 94 finding(s)
 
 | file | line | detail |
 |---|---|---|
@@ -32,6 +32,7 @@ Files scanned: **400**
 | tools/audit/audit_garrison_weapons.py | 61 | handler body discards the error |
 | tools/audit/audit_k_linearity.py | 132 | handler body discards the error |
 | tools/audit/audit_k_linearity.py | 150 | handler body discards the error |
+| tools/audit/audit_missile_role_family.py | 124 | handler body discards the error |
 | tools/audit/audit_missing_elite.py | 21 | handler body discards the error |
 | tools/audit/audit_orphans.py | 93 | handler body discards the error |
 | tools/audit/audit_plating_exclusivity.py | 94 | handler body discards the error |
@@ -41,6 +42,7 @@ Files scanned: **400**
 | tools/audit/audit_scaled_bullet_overrides.py | 41 | handler body discards the error |
 | tools/audit/audit_three_way_split.py | 119 | handler body discards the error |
 | tools/audit/audit_tier_weapon_class.py | 76 | handler body discards the error |
+| tools/audit/audit_turn_speed.py | 65 | handler body discards the error |
 | tools/audit/audit_unique_traits.py | 73 | handler body discards the error |
 | tools/audit/audit_upgrades.py | 158 | handler body discards the error |
 | tools/audit/audit_upstream_adoption.py | 97 | handler body discards the error |
@@ -51,20 +53,20 @@ Files scanned: **400**
 | tools/audit/audit_weapon_suffixes.py | 350 | handler body discards the error |
 | tools/audit/audit_weapon_uniqueness.py | 99 | handler body discards the error |
 | tools/audit/gen_damage_matrix.py | 52 | handler body discards the error |
-| tools/audit/miniyaml.py | 203 | handler body discards the error |
+| tools/audit/gen_release_baseline.py | 50 | handler body discards the error |
+| tools/audit/miniyaml.py | 210 | handler body discards the error |
 | tools/audit/phase_b_survey.py | 40 | handler body discards the error |
 | tools/audit/review_batch_diff.py | 80 | handler body discards the error |
 | tools/audit/review_resolve_diff.py | 62 | handler body discards the error |
 | tools/audit_ce_image_usage.py | 29 | handler body discards the error |
 | tools/audit_createeffect_image.py | 19 | handler body discards the error |
-| tools/balance/anchor_readiness.py | 136 | handler body discards the error |
-| tools/balance/anchor_readiness.py | 324 | handler body discards the error |
-| tools/balance/anchor_readiness.py | 396 | handler body discards the error |
+| tools/balance/anchor_readiness.py | 441 | handler body discards the error |
 | tools/balance/armor_exposure.py | 105 | handler body discards the error |
 | tools/balance/armor_exposure.py | 141 | handler body discards the error |
 | tools/balance/assign_references.py | 72 | handler body discards the error |
-| tools/balance/assign_references.py | 249 | handler body discards the error |
-| tools/balance/class_membership.py | 224 | handler body discards the error |
+| tools/balance/assign_references.py | 336 | handler body discards the error |
+| tools/balance/class_membership.py | 225 | handler body discards the error |
+| tools/balance/collapse_target.py | 137 | handler body discards the error |
 | tools/balance/compensate_retrofit.py | 113 | handler body discards the error |
 | tools/balance/compensate_retrofit.py | 121 | handler body discards the error |
 | tools/balance/consolidate_adjacent_family_stacks.py | 65 | handler body discards the error |
@@ -74,8 +76,8 @@ Files scanned: **400**
 | tools/balance/consolidate_same_family_stacks.py | 136 | handler body discards the error |
 | tools/balance/design_invented_profiles.py | 172 | handler body discards the error |
 | tools/balance/design_invented_profiles.py | 186 | handler body discards the error |
-| tools/balance/extract_stats.py | 239 | handler body discards the error |
-| tools/balance/extract_stats.py | 1042 | handler body discards the error |
+| tools/balance/extract_stats.py | 244 | handler body discards the error |
+| tools/balance/extract_stats.py | 1047 | handler body discards the error |
 | tools/balance/formula.py | 543 | handler body discards the error |
 | tools/balance/gen_derived_stats.py | 95 | handler body discards the error |
 | tools/balance/measure_retrofit_gap.py | 134 | handler body discards the error |
@@ -100,9 +102,13 @@ Files scanned: **400**
 | tools/balance/tier_chain.py | 254 | handler body discards the error |
 | tools/balance/verify_retrofit.py | 79 | handler body discards the error |
 | tools/balance/verify_retrofit.py | 87 | handler body discards the error |
-| tools/hooks/bash_guard.py | 103 | handler body discards the error |
+| tools/hooks/bash_guard.py | 117 | handler body discards the error |
+| tools/hooks/bash_guard.py | 140 | handler body discards the error |
+| tools/hooks/bash_guard.py | 154 | handler body discards the error |
+| tools/hooks/bash_guard.py | 214 | handler body discards the error |
 | tools/reference/aggregate_archetype.py | 873 | handler body discards the error |
-| tools/reference/extract_peer_units.py | 481 | handler body discards the error |
+| tools/reference/extract_peer_units.py | 467 | handler body discards the error |
+| tools/reference/extract_peer_units.py | 550 | handler body discards the error |
 | tools/reference/extract_versus.py | 175 | handler body discards the error |
 | tools/rename/apply.py | 178 | handler body discards the error |
 | tools/rename/safe_rename.py | 132 | handler body discards the error |
@@ -112,7 +118,7 @@ Files scanned: **400**
 | tools/tilesets/generate_volcanic_tileset.py | 814 | handler body discards the error |
 
 
-## E3 — 92 finding(s)
+## E3 — 95 finding(s)
 
 | file | line | detail |
 |---|---|---|
@@ -122,12 +128,15 @@ Files scanned: **400**
 | tools/d2k_to_openra.py | 153 | `Image.open()` without encoding= |
 | tools/d2k_to_openra.py | 164 | `Image.open()` without encoding= |
 | tools/extract_insignias.py | 113 | `Image.open()` without encoding= |
-| tools/hooks/bash_guard.py | 95 | `read_text()` without encoding= |
-| tools/hooks/bash_guard.py | 121 | `perf.read_text()` without encoding= |
+| tools/hooks/bash_guard.py | 206 | `read_text()` without encoding= |
+| tools/hooks/bash_guard.py | 232 | `perf.read_text()` without encoding= |
 | tools/hooks/exec_guard.py | 69 | `perf.read_text()` without encoding= |
 | tools/make_syndicate_insignia.py | 41 | `Image.open()` without encoding= |
 | tools/make_syndicate_insignia.py | 63 | `Image.open()` without encoding= |
 | tools/reference/extract_mix_ini.py | 78 | `path.open()` without encoding= |
+| tools/tests/test_ai_headquarters_refinery_cleanup.py | 39 | `read_text()` without encoding= |
+| tools/tests/test_ai_logging_integration.py | 21 | `read_text()` without encoding= |
+| tools/tests/test_defense_tooltip_accuracy.py | 30 | `read_text()` without encoding= |
 | tools/tilesets/apply_ai_edge_correction.py | 34 | `Image.open()` without encoding= |
 | tools/tilesets/apply_ai_edge_correction.py | 78 | `Image.open()` without encoding= |
 | tools/tilesets/apply_dark_noise_cleanup.py | 79 | `Image.open()` without encoding= |
@@ -210,18 +219,18 @@ Files scanned: **400**
 | tools/tilesets/transfer_ai_cliff_style.py | 101 | `Image.open()` without encoding= |
 
 
-## E4 — 20 finding(s)
+## E4 — 27 finding(s)
 
 | file | line | detail |
 |---|---|---|
 | tools/audit/audit_doc_claims.py | 104 | `subprocess.run()` without check= |
 | tools/audit/audit_doc_health.py | 139 | `subprocess.run()` without check= |
 | tools/audit/audit_engine_freshness.py | 52 | `subprocess.run()` without check= |
+| tools/audit/gen_release_baseline.py | 94 | `subprocess.run()` without check= |
+| tools/audit/gen_release_baseline.py | 112 | `subprocess.run()` without check= |
 | tools/audit/run_all.py | 114 | `subprocess.run()` without check= |
 | tools/audit/run_all.py | 138 | `subprocess.run()` without check= |
 | tools/audit/run_all.py | 164 | `subprocess.run()` without check= |
-| tools/balance/apply_balance.py | 271 | `subprocess.run()` without check= |
-| tools/balance/apply_balance.py | 273 | `subprocess.run()` without check= |
 | tools/balance/check_determinism.py | 94 | `subprocess.run()` without check= |
 | tools/balance/compensate_retrofit.py | 170 | `subprocess.run()` without check= |
 | tools/balance/gen_derived_stats.py | 60 | `subprocess.run()` without check= |
@@ -230,15 +239,22 @@ Files scanned: **400**
 | tools/balance/splice_templates.py | 58 | `subprocess.run()` without check= |
 | tools/balance/verify_generator_sync.py | 56 | `subprocess.run()` without check= |
 | tools/balance/verify_retrofit.py | 239 | `subprocess.run()` without check= |
-| tools/hooks/bash_guard.py | 70 | `subprocess.run()` without check= |
-| tools/hooks/bash_guard.py | 85 | `subprocess.run()` without check= |
-| tools/hooks/bash_guard.py | 90 | `subprocess.run()` without check= |
+| tools/hooks/bash_guard.py | 112 | `subprocess.run()` without check= |
+| tools/hooks/bash_guard.py | 120 | `subprocess.run()` without check= |
+| tools/hooks/bash_guard.py | 136 | `subprocess.run()` without check= |
+| tools/hooks/bash_guard.py | 186 | `subprocess.run()` without check= |
+| tools/hooks/bash_guard.py | 196 | `subprocess.run()` without check= |
+| tools/hooks/bash_guard.py | 201 | `subprocess.run()` without check= |
 | tools/hooks/exec_guard.py | 45 | `subprocess.run()` without check= |
+| tools/hooks/test_bash_guard.py | 43 | `subprocess.run()` without check= |
+| tools/hooks/test_bash_guard.py | 50 | `subprocess.run()` without check= |
+| tools/hooks/test_bash_guard.py | 58 | `subprocess.run()` without check= |
+| tools/hooks/test_bash_guard.py | 77 | `subprocess.run()` without check= |
 
 
 ## FAIL
 
-- E2: 88 > baseline 30
-- E3: 92 > baseline 90
-- E4: 20 > baseline 9
+- E2: 94 > baseline 30
+- E3: 95 > baseline 90
+- E4: 27 > baseline 9
 

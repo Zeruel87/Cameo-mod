@@ -1,12 +1,12 @@
 # audit_recent_changes — last 14 day(s) of history
 
-Commits reviewed: **199**, files touched: **881**
+Commits reviewed: **457**, files touched: **1056**
 
 | code | meaning | count | blocking |
 |---|---|---|---|
 | R1 | balance yaml edited without the ledger | 22 | yes |
 | R2 | audit script never run by run_all.sh | 4 | yes |
-| R3 | provenance (wrong-identity trailer blocks; missing one on the shared identity is review-only) | 19 | partly |
+| R3 | provenance (wrong-identity trailer blocks; missing one on the shared identity is review-only) | 40 | partly |
 | R4 | engine/mod.config change (needs boot gate) | 0 | no |
 
 
@@ -48,10 +48,35 @@ Commits reviewed: **199**, files touched: **881**
 | tools/audit/audit_weapon_identity.py | not invoked by run_all.sh |
 
 
-## R3 — commits without provenance (19)
+## R3 — commits without provenance (40)
 
 | commit | date | author | problem | severity |
 |---|---|---|---|---|
+| 78ba66d8 | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 6d021955 | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 6405d194 | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| b05f1847 | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| dcd26b4c | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| a5ec321a | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 19ebd5d5 | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| a6db521f | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 3cfb3b70 | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 04a1c54d | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 4e9c86c3 | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 2824459d | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| a9b620dc | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 4c707ac3 | 2026-09-07 | Blackrobe | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
+| ac53b4d2 | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 1cc57788 | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 66f1b4a8 | 2026-09-07 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 29105238 | 2026-09-06 | Blackrobe | agent trailer `Codex <noreply@openai.com>` on a non-shared identity | review |
+| 9bc45e66 | 2026-09-06 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 08a43574 | 2026-09-06 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 15a08466 | 2026-09-06 | devin-ai-integration[bot] | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
+| 979d172c | 2026-09-05 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| c6313f50 | 2026-09-05 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 82dd5f70 | 2026-09-01 | Devin AI | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
+| e70ab6cd | 2026-09-01 | Devin AI | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
 | 3256bb36 | 2026-08-31 | Devin AI | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
 | d3f188d0 | 2026-08-31 | Devin AI | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
 | c91de468 | 2026-08-31 | Devin AI | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
@@ -67,10 +92,6 @@ Commits reviewed: **199**, files touched: **881**
 | c71bde9d | 2026-08-25 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
 | ec2457c0 | 2026-08-25 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
 | ccace5a5 | 2026-08-25 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
-| 36ee102c | 2026-08-24 | Devin AI | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
-| 75238eb3 | 2026-08-24 | Devin AI | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
-| 5f0f2828 | 2026-08-24 | Devin AI | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
-| 1d18d5d4 | 2026-08-23 | Claude | agent trailer `Claude Opus 5 <noreply@anthropic.com>` on a non-shared identity | review |
 
 
 ## R4 — engine/config changes to re-verify (0)
@@ -82,21 +103,21 @@ _none found_
 
 | file | commits touching it |
 |---|---|
-| DEVELOPMENT_LOG.md | 79 |
-| docs/HANDOFF.md | 49 |
-| tools/audit/audit_warhead_split.py | 40 |
-| docs/design/BALANCE_PROGRAM_PLAN.md | 40 |
-| docs/balance/derived/redalert_soviets.json | 33 |
-| docs/balance/derived/tiberiansun_forgotten.json | 29 |
-| docs/balance/derived/d2k_ixian.json | 28 |
-| docs/audit/doc_claims.yaml | 27 |
-| docs/balance/derived/tiberiansun_nod.json | 27 |
-| docs/audit/SUMMARY.md | 27 |
-| docs/balance/derived/tiberiansun_gdi.json | 26 |
-| mods/cameo/ContentPacks/RedAlert/Soviets/yaml/weapons.yaml | 26 |
-| docs/balance/derived/redalert2_yuri.json | 25 |
-| docs/balance/derived/redalert2mod_asianalliance.json | 25 |
-| docs/balance/derived/redalert2mod_futuretech.json | 25 |
+| DEVELOPMENT_LOG.md | 200 |
+| docs/HANDOFF.md | 75 |
+| tools/audit/audit_warhead_split.py | 49 |
+| docs/design/BALANCE_PROGRAM_PLAN.md | 39 |
+| docs/balance/derived/redalert_soviets.json | 36 |
+| docs/audit/doc_claims.yaml | 33 |
+| docs/balance/derived/d2k_ordos.json | 31 |
+| docs/balance/derived/tiberiansun_forgotten.json | 30 |
+| mods/cameo/ContentPacks/RedAlert/Soviets/yaml/weapons.yaml | 30 |
+| mods/cameo/ContentPacks/D2k/Ordos/yaml/weapons.yaml | 30 |
+| docs/balance/derived/d2k_ixian.json | 29 |
+| docs/balance/derived/tiberiansun_nod.json | 28 |
+| docs/balance/redalert_soviets.json | 27 |
+| docs/balance/derived/tiberiansun_gdi.json | 27 |
+| docs/balance/derived/redalert2_yuri.json | 26 |
 
 
 ## Reviewer checklist (not machine-checkable)
@@ -110,7 +131,7 @@ _none found_
 
 ## Enforcement
 
-R1/R3 block only for commits on or after **2026-08-12**: 22 R1 and 0 R3 of 22/19 findings are in scope; the rest predate the gate.
+R1/R3 block only for commits on or after **2026-08-12**: 22 R1 and 0 R3 of 22/40 findings are in scope; the rest predate the gate.
 
 
 ## FAIL

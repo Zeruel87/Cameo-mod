@@ -425,8 +425,8 @@ Units above the 2.0× effective-power budget: **823**
 | naxis | naxis_jagdpanzer | 2.44 | 1.96 | 4.78 | DamageMultiplier@naxis_upgrade_tankarsenalrenovation=85; FirepowerMultiplier@naxis_upgrade_tankarsenalrenovation=115; ReloadDelayMultiplier@naxis_upgrade_tankarsenalrenovation=85; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | naxis | naxis_kingtigerheavytank | 2.44 | 1.96 | 4.78 | DamageMultiplier@naxis_upgrade_tankarsenalrenovation=85; FirepowerMultiplier@naxis_upgrade_tankarsenalrenovation=115; ReloadDelayMultiplier@naxis_upgrade_tankarsenalrenovation=85; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | naxis | naxis_oldtank | 2.44 | 1.96 | 4.78 | DamageMultiplier@naxis_upgrade_tankarsenalrenovation=85; FirepowerMultiplier@naxis_upgrade_tankarsenalrenovation=115; ReloadDelayMultiplier@naxis_upgrade_tankarsenalrenovation=85; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
-| naxis | tiger.nax | 2.44 | 1.96 | 4.78 | DamageMultiplier@naxis_upgrade_tankarsenalrenovation=85; FirepowerMultiplier@naxis_upgrade_tankarsenalrenovation=115; ReloadDelayMultiplier@naxis_upgrade_tankarsenalrenovation=85; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
-| naxis | wirbelwind.nax | 2.44 | 1.96 | 4.78 | DamageMultiplier@naxis_upgrade_tankarsenalrenovation=85; FirepowerMultiplier@naxis_upgrade_tankarsenalrenovation=115; ReloadDelayMultiplier@naxis_upgrade_tankarsenalrenovation=85; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
+| naxis | naxis_tiger | 2.44 | 1.96 | 4.78 | DamageMultiplier@naxis_upgrade_tankarsenalrenovation=85; FirepowerMultiplier@naxis_upgrade_tankarsenalrenovation=115; ReloadDelayMultiplier@naxis_upgrade_tankarsenalrenovation=85; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
+| naxis | naxis_wirbelwind | 2.44 | 1.96 | 4.78 | DamageMultiplier@naxis_upgrade_tankarsenalrenovation=85; FirepowerMultiplier@naxis_upgrade_tankarsenalrenovation=115; ReloadDelayMultiplier@naxis_upgrade_tankarsenalrenovation=85; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | schwarzermond | schwarzermond_engineeringarmor | 2.85 | 1.67 | 4.74 | FirepowerMultiplier@schwarzermond_upgrade_moonpropaganda=110; FirepowerMultiplier@schwarzermond_upgrade_helium3=115; FirepowerMultiplier@schwarzermond_upgrade_vrilinfusion=125; DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | td_nod | td_nod_samsite | 3.31 | 1.43 | 4.72 | FirepowerMultiplier@td_nod_upgrade_guerillatactics=115; FirepowerMultiplier@td_nod_upgrade_advancedguerillatactics=115; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=175; ReloadDelayMultiplier@RANK-3=70 |
 | ts_gdi | ts_gdi_orcafighter | 2.23 | 2.12 | 4.72 | FirepowerMultiplier@ts_gdi_upgrade_projectileimprovements=120; DamageMultiplier@ts_gdi_upgrade_ceramicarmor=75; DamageMultiplier@ts_gdi_upgrade_fieldmaintenance=90; DamageMultiplier@RANK-3=70; FirepowerMultiplier@RANK-3=130; ReloadDelayMultiplier@RANK-3=70 |
@@ -711,9 +711,9 @@ Units above the 2.0× effective-power budget: **823**
 | futuretech | futuretech_repairdroid | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | latinsyndicate | latinsyndicate_latinaadefender | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | latinsyndicate | latinsyndicate_latinsentrygun | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
+| latinsyndicate | naxis_tiger | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
+| latinsyndicate | naxis_wirbelwind | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | latinsyndicate | ptnk.asian | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
-| latinsyndicate | tiger.nax | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
-| latinsyndicate | wirbelwind.nax | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | naxis | naxis_airfield | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | naxis | naxis_bf109 | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |
 | naxis | naxis_bmwbike | 1.80 | 1.67 | 3.00 | DamageMultiplier@RANK-4=60; FirepowerMultiplier@RANK-4=180 |

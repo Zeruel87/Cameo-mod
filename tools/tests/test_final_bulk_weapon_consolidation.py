@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 import consolidate_final_safe_cohorts as final_cohorts
-from audit_three_way_split import SPLIT_BASELINE, main_warheads
+from audit_three_way_split import RAW_SPLIT_BASELINE, main_warheads
 from miniyaml import Ruleset
 
 
@@ -96,15 +96,14 @@ class FinalBulkWeaponConsolidationTests(unittest.TestCase):
             self.assertTrue(own.isdisjoint(inherited), weapon)
 
     def test_structural_backlog_ratchet_was_lowered(self):
-        self.assertEqual(114, SPLIT_BASELINE)
+        # Upstream retired exemptions: enforce the raw ceiling, never subtract reviewed stacks.
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
 
     def test_rejected_runtime_and_role_hazards_remain_unconverted(self):
         rules = Ruleset(ROOT)
         deferred = {
             # Live percentage quantisation or inherited percentage drift.
-            "RA2FreedomRocket_elite", "RA2120xmm_rad",
-            # Split ground/air routing without a reviewed single profile.
-            "d2k_shotgun",
+            "RA2FreedomRocket_elite",
             # Friendly-fire or physical-state behavior would change.
             "BCYamatoCannon", "HMGo_upgrade",
             # Semantic name/delivery traps from the independent review.
@@ -112,6 +111,17 @@ class FinalBulkWeaponConsolidationTests(unittest.TestCase):
         }
         for weapon in deferred:
             self.assertGreater(len(main_warheads(rules.resolve_weapon(weapon))), 1, weapon)
+
+    def test_shotgun_inherits_the_already_consolidated_lmg(self):
+        # 556ce135b3 consolidated LMG; the remaining local1Dam has no damage.
+        rules = Ruleset(ROOT)
+        weapon = rules.resolve_weapon("d2k_shotgun")
+        self.assertEqual(["Bullet_Medium"], main_warheads(weapon))
+        self.assertEqual("4000", weapon.child("Warhead@Bullet_Medium").get("Damage"))
+        self.assertEqual(("3", "0", "40", "3328"), tuple(
+            weapon.get(key) for key in ("Burst", "BurstDelays", "ReloadDelay", "Range")))
+        self.assertEqual("InstantHit", weapon.child("Projectile").value)
+        self.assertEqual("0c768", weapon.child("Projectile").get("Inaccuracy"))
 
 
 if __name__ == "__main__":

@@ -84,12 +84,17 @@ Strings are the internal names, never the display/translated names.
 
 ## Writer rules
 
-- Write ONLY when `world.Type == WorldType.Regular`, `!world.IsReplay`, and
+Loaded saves are excluded for the entire world lifetime, using eligibility captured
+at world load before replay-in clears the loading flag. This prevents resumed
+matches from being recorded as fresh complete observations.
+
+- Write ONLY for fresh worlds (`!IsLoadingGameSave` at world load),
+  `world.Type == WorldType.Regular`, `!world.IsReplay`, and
   `Game.IsHost` (bots only tick on the host — `Player.cs:223` — so the host is
   the only process with authority, and this prevents every client in a
   multiplayer game appending a duplicate line).
 - Write once per match, at the first of: `IGameOver.GameOver`, or all bot
-  players resolved via `INotifyWinStateChanged`. Guard with a `written` flag.
+  players resolved as polled by `ITick`. Guard with a `written` flag.
 - Append under a cross-process named mutex derived from the canonical file path,
   exactly as `CameoCareerRepository` does (`SHA256` of the upper-cased full path
   on Windows), because the future AI-vs-AI harness runs many instances at once.

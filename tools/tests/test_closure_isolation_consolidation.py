@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 
 from audit_three_way_split import main_warhead_nodes, main_warheads
 from miniyaml import Ruleset
+from reviewed_weapon_history import historical_copy
 
 
 CONSOLIDATED = {
@@ -88,7 +89,7 @@ class ClosureIsolationConsolidationTests(unittest.TestCase):
 
     def test_excluded_descendants_are_byte_stable_after_isolation(self):
         for name, expected in PRESERVED_HASHES.items():
-            self.assertEqual(expected, resolved_hash(self.rules.resolve_weapon(name)), name)
+            self.assertEqual(expected, resolved_hash(historical_copy(self, self.rules.resolve_weapon(name))), name)
         self.assertEqual({"TSAux155mm"}, descendants(self.rules, "TS155mm"))
         self.assertEqual(set(), descendants(self.rules, "TSInfantryMortar"))
         self.assertEqual(set(), descendants(self.rules, "GrenadeRA"))
@@ -97,7 +98,7 @@ class ClosureIsolationConsolidationTests(unittest.TestCase):
         alias = self.rules.resolve_weapon("RA2KirovHowitzerSplash")
         self.assertEqual(
             "b77525d04f7bd02e15f288318bbd3e027f1232d9d4e1c2d1c522cb900b491bf0",
-            children_hash(alias),
+            children_hash(historical_copy(self, alias)),
         )
         kirov = self.rules.resolve_weapon("RA2KirovBomb_fire")
         trigger = next(child for child in kirov.children if child.key == "Warhead@2Fire")

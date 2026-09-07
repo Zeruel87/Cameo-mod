@@ -17,7 +17,7 @@ _none found_
 | Aircraft.TurnSpeed | japan_rocketangel_husk | 160 | 20 | 18.9 |
 | Aircraft.TurnSpeed | ra2rock.husk | 160 | 20 | 18.9 |
 | Aircraft.TurnSpeed | yrlunr.husk | 160 | 20 | 18.9 |
-| Aircraft.TurnSpeed | litt_husk.nax | 160 | 20 | 18.9 |
+| Aircraft.TurnSpeed | naxis_litt_husk | 160 | 20 | 18.9 |
 | Aircraft.TurnSpeed | cabal_overkillgunship_husk | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | cabal_hunterdronecarrier_husk | 80 | 20 | 8.1 |
 | Aircraft.TurnSpeed | cabal_hunterdrone_husk | 80 | 20 | 8.1 |
@@ -90,8 +90,8 @@ _none found_
 | Health.HP | cabal_core | 1000000 | 60000 | 15.9 |
 | Health.HP | cabal_constructionyard | 1000000 | 60000 | 15.9 |
 | Health.HP | cabal_avatar | 1000000 | 60000 | 15.9 |
-| Mobile.TurnSpeed | hole_small.nax2 | 255 | 20 | 22.6 |
-| Mobile.TurnSpeed | hole.nax2 | 255 | 20 | 22.6 |
+| Mobile.TurnSpeed | schwarzermond_hole_small | 255 | 20 | 22.6 |
+| Mobile.TurnSpeed | schwarzermond_hole | 255 | 20 | 22.6 |
 | Mobile.TurnSpeed | SCSPIDERMINE | 200 | 20 | 17.3 |
 | Power.Amount | asianalliance_tankreactor | 2700 | -40 | 61.6 |
 | Power.Amount | wc2_humans_sunwell | 2500 | -40 | 57.1 |

@@ -1,14 +1,26 @@
 # WEAPON 3-WAY SPLIT — warhead / projectile / effect layers (2026-08-02)
 
+> **Current authority (2026-09-06):** [DESIGN §11b.1](../DESIGN.md#11b1-tightened-and-enforced-binding-maintainer-2026-09-06)
+> replaces this document's older two-warhead/four-inherit model. Use one main
+> warhead and the current three-layer policy, including its narrow mechanic/twin
+> exceptions and informational treatment of legitimately absent layers. The model,
+> migration batches and open proposals below are historical implementation context,
+> not instructions to restore two mains, the 2,000 grid or actor firepower tuning.
+> Current damage-grid and pricing authority is [FORMULA_V2.md](FORMULA_V2.md).
+> Use [TASK_INDEX.md](../TASK_INDEX.md) for current tools and gates; remeasure dated
+> counts. The historical conversion plans below do not authorize a new collapse.
+
 > ⚠ **SUPERSEDED (W15/W17, 2026-08-15).** The grid is now `formula.DAMAGE_STEP` = **100**, the `%`-twin comes from `formula.percentage_twin()` (not `damage // 2000`), and `FirepowerMultiplier` is retired as a fine-tuning knob — `apply_balance` cannot write it and `decompose_dps` always solves at `fp = 1.0`. Read every "multiple of 2000" mention below as history.
-> The split itself is unaffected — it preserves `Damage` verbatim either way.
+> Current collapse-value authority is DESIGN §11b.1: preserve total resolved main
+> output and check the shipped-release baseline. Verbatim applies when only one
+> resolved main exists; it is not a general rule for discarding stacked damage.
 
 _The repoint architecture. Maintainer decision 2026-08-02: "do the full split
 now." Supersedes the naive "reparent onto warhead-only templates" plan (which
 would orphan 392/437 override keys + strip FX). Companion to
 `WEAPON_TYPE_SYSTEM.md` (warhead layer) + `ARMOR_SYSTEM.md` (Versus law)._
 
-## The model — up to 4 inherits per weapon
+## Historical model — up to 4 inherits per weapon (superseded)
 
 The **2-inherit cap is on WARHEADS**, not total inherits. A weapon composes ONE
 of each layer (warhead may be 1–2):

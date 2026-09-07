@@ -18,7 +18,7 @@ namespace OpenRA.Mods.Cameo.Traits
 {
 	[TraitLocation(SystemActors.Player)]
 	[Desc("Attach this to the player actor to record a low-resolution history of the combat value trade:",
-		"enemy asset value destroyed minus own asset value lost.")]
+		"Recorded asset value destroyed minus recorded asset value lost (PlayerStatistics accounting).")]
 	public class CombatEffectivenessStatisticsInfo : TraitInfo
 	{
 		public override object Create(ActorInitializer init) { return new CombatEffectivenessStatistics(); }
@@ -36,23 +36,32 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		void INotifyCreated.Created(Actor self) { stats = self.TraitOrDefault<PlayerStatistics>(); }
 
-		void IWorldLoaded.WorldLoaded(World w, WorldRenderer wr) { Sample(); }
+		void IWorldLoaded.WorldLoaded(World w, WorldRenderer wr)
+		{
+			if (stats != null)
+				Sample(stats.KillsCost, stats.DeathsCost);
+		}
 
 		void ITick.Tick(Actor self)
 		{
+			if (stats != null)
+				TickSamples(self.World.Timestep, stats.KillsCost, stats.DeathsCost);
+		}
+
+		internal void TickSamples(int timestep, int killsCost, int deathsCost)
+		{
 			ticks++;
-			if (ticks * self.World.Timestep < SampleIntervalMs)
+			if (ticks * timestep < SampleIntervalMs)
 				return;
 
 			ticks = 0;
-			Sample();
+			Sample(killsCost, deathsCost);
 		}
 
-		void Sample()
+		internal void Sample(int killsCost, int deathsCost)
 		{
 			// Zero is a legitimate value here, so sampling must never disable itself.
-			if (stats != null)
-				Samples.Add(stats.KillsCost - stats.DeathsCost);
+			Samples.Add(killsCost - deathsCost);
 		}
 	}
 }

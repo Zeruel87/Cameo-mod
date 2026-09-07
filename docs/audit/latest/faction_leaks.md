@@ -299,9 +299,9 @@ Factions checked: **31** — L1 leaks: **453**, L3 concrete-inherit leaks: **20*
 | ra2_soviets | ra2_soviets_v3rocketlauncher | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/vehicles.yaml |
 | ra2_soviets | ra2_soviets_warfactory | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/buildings.yaml |
 | ra2_soviets | ra2_soviets_warminer | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/vehicles.yaml |
+| latinsyndicate | naxis_tiger | redalert2mod/naxis | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
+| latinsyndicate | naxis_wirbelwind | redalert2mod/naxis | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | latinsyndicate | ptnk.asian | redalert2mod/asianalliance | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/vehicles.yaml |
-| latinsyndicate | tiger.nax | redalert2mod/naxis | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
-| latinsyndicate | wirbelwind.nax | redalert2mod/naxis | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | ordos | atreides_advancedcarryall | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |
 | ordos | atreides_fremen | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/infantry.yaml |
 | ordos | atreides_ornithopter | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |

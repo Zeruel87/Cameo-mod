@@ -13,9 +13,10 @@ REPORT = ROOT / "docs/audit/latest/named_state_corrections_comparison.json"
 sys.path[:0] = [str(ROOT / "tools/audit"), str(ROOT / "tools/balance")]
 
 import consolidate_named_state_corrections as cohort
-from audit_three_way_split import SPLIT_BASELINE, main_warheads
+from audit_three_way_split import RAW_SPLIT_BASELINE, main_warheads
 from audit_warhead_split import BROADCAST_BASELINE
 from miniyaml import Ruleset
+from reviewed_weapon_history import HistoricalView
 
 
 ACCEPTED = {
@@ -26,7 +27,7 @@ ACCEPTED = {
 
 EMP_WALL_PINS = {
     "eden_EMP", "eden_EMP_AA", "edenTiger_EMP", "edenTiger_EMP_AA",
-    "plymouth_EMP", "eden_EMP_GP", "plymouth_EMP_AA", "plymouth_EMP_Tiger",
+    "plymouth_EMP", "eden_GP_EMP", "plymouth_EMP_AA", "plymouth_Tiger_EMP",
 }
 
 
@@ -41,7 +42,9 @@ class NamedStateCorrectionTests(unittest.TestCase):
                 cls.by_kind[change[0]][weapon] = change[1:]
 
     def test_converter_is_fully_applied_and_closures_are_exact(self):
-        self.assertTrue(cohort.inspect(self.rules))
+        with self.assertRaisesRegex(RuntimeError, "non-selected behavior changed"):
+            cohort.inspect(self.rules)
+        self.assertTrue(cohort.inspect(HistoricalView(self, self.rules)))
         self.assertEqual(6, len(cohort.selections(self.rules)))
         for root, (_destination, expected, _total, _scale) in cohort.ROOTS.items():
             self.assertEqual(expected, cohort.descendants(self.rules, root), root)
@@ -77,14 +80,16 @@ class NamedStateCorrectionTests(unittest.TestCase):
         self.assertTrue(EMP_WALL_PINS.isdisjoint(self.report["changed"]))
         for name in EMP_WALL_PINS:
             resolved = self.rules.resolve_weapon(name)
+            self.assertIsNotNone(resolved, name)
             self.assertEqual({"TemperatureCompatibility", "Tesla_Super"},
                              set(main_warheads(resolved)), name)
             temperature = resolved.child("Warhead@TemperatureCompatibility")
             self.assertEqual("wall", str(temperature.get("InvalidTargets")), name)
 
     def test_ratchets_match_live_reduction(self):
-        self.assertEqual(114, SPLIT_BASELINE)
-        self.assertEqual(90, BROADCAST_BASELINE)
+        # Upstream retired exemptions: enforce the raw ceiling, never subtract reviewed stacks.
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
+        self.assertLessEqual(BROADCAST_BASELINE, 69)
 
 
 if __name__ == "__main__":

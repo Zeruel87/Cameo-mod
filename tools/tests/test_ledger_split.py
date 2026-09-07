@@ -114,6 +114,31 @@ class CommittedLedgerTest(unittest.TestCase):
         for path in sorted(DERIVED.glob("*.json")):
             if path.name.startswith("_"):
                 continue
+            if path.name == "reference_assignment.json":
+                # Upstream reference routing cache, not a faction's extracted ledger.
+                reference = json.loads(path.read_text(encoding="utf-8"))
+                self.assertIsInstance(reference["assignment"], dict)
+                self.assertTrue(reference["assignment"])
+                self.assertNotIn("ledger", reference)
+                self.assertNotIn("sections", reference)
+                continue
+            if path.name == "reference_distributions.json":
+                # reference_distribution.py emits a cross-game distribution,
+                # not a faction ledger. Unknown orphan sidecars still fail.
+                reference = json.loads(path.read_text(encoding="utf-8"))
+                self.assertIn("cameo", reference)
+                self.assertIsInstance(reference["cameo"], dict)
+                self.assertNotIn("ledger", reference)
+                self.assertNotIn("sections", reference)
+                continue
+            if path.name == "reference_signatures.json":
+                signatures = json.loads(path.read_text(encoding="utf-8"))
+                self.assertTrue(signatures)
+                self.assertTrue(all(isinstance(row, dict) and "signature" in row
+                                    for row in signatures.values()))
+                self.assertNotIn("ledger", signatures)
+                self.assertNotIn("sections", signatures)
+                continue
             self.assertTrue((LEDGERS / path.name).exists(),
                             f"{path.name} has no raw ledger")
 

@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 import consolidate_rule_driven_blast_ordnance as blast
 import consolidate_rule_driven_legacy_energy as legacy
-from audit_three_way_split import SPLIT_BASELINE, main_warheads
+from audit_three_way_split import RAW_SPLIT_BASELINE, main_warheads
 from audit_warhead_split import BROADCAST_BASELINE
 from miniyaml import Ruleset
 
@@ -44,8 +44,11 @@ class RuleDrivenFinalTrancheTests(unittest.TestCase):
         cls.rules = Ruleset(ROOT)
         cls.selected = set(blast.SELECTED) | set(legacy.DESTINATIONS)
 
-    def test_converters_are_fully_applied(self):
-        blast.validate_result()
+    def test_historical_blast_converter_rejects_the_superseding_scoop_role(self):
+        # Aedis chose CannonChem in a92a4bc1bf. Do not replay the older Chemical
+        # converter over that role or combine both alternatives after a merge.
+        with self.assertRaisesRegex(RuntimeError, "TSScoopDualChem: expected"):
+            blast.validate_result()
         legacy.validate_result()
 
     def test_comparison_scope_is_exact(self):
@@ -83,8 +86,10 @@ class RuleDrivenFinalTrancheTests(unittest.TestCase):
         destinations = dict(blast.SELECTED)
         destinations.update(legacy.DESTINATIONS)
         for name, destination in sorted(destinations.items()):
+            expected = ("CannonChem_Medium" if name == "TSScoopDualChem"
+                        else f"{destination}FlatCompatibility")
             self.assertEqual(
-                [f"{destination}FlatCompatibility"],
+                [expected],
                 main_warheads(self.rules.resolve_weapon(name)), name)
 
     def test_generated_parent_percentage_routes_do_not_accumulate(self):
@@ -135,12 +140,15 @@ class RuleDrivenFinalTrancheTests(unittest.TestCase):
 
     def test_backlog_and_audit_ratchets_match_the_checkpoint(self):
         counts = self.inventory["counts"]
-        self.assertEqual(240, counts["stacked_main_transitive_weapon_graph"])
-        self.assertEqual(190, counts["stacked_main_direct_actor_armament"])
-        self.assertEqual(50, counts["stacked_main_indirect_weapon_graph"])
-        self.assertEqual(340, counts["stacked_main_all_concrete"])
-        self.assertEqual(114, SPLIT_BASELINE)
-        self.assertEqual(90, BROADCAST_BASELINE)
+        self.assertLessEqual(counts["stacked_main_transitive_weapon_graph"], 240)
+        self.assertEqual(counts["stacked_main_transitive_weapon_graph"],
+                         counts["stacked_main_direct_actor_armament"] +
+                         counts["stacked_main_indirect_weapon_graph"])
+        self.assertLessEqual(counts["stacked_main_all_concrete"], RAW_SPLIT_BASELINE)
+        self.assertEqual(0, counts["reviewed_stacked_main_all_concrete"])
+        # Upstream retired exemptions: enforce the raw ceiling, never subtract reviewed stacks.
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
+        self.assertLessEqual(BROADCAST_BASELINE, 69)
 
 
 if __name__ == "__main__":

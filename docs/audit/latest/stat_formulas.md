@@ -1,6 +1,6 @@
 # audit_stat_formulas — house stat formulas
 
-Violations: **667** across 1994 roster actors (reference-clean units: gdiarcher, raider.ordos)
+Violations: **668** across 1994 roster actors (reference-clean units: gdiarcher, raider.ordos)
 
 
 ## F1 — Repairable.HpPerStep ≠ HP/20  (44)
@@ -537,9 +537,9 @@ _none found_
 
 | actor | actual | expected |
 |---|---|---|
-| ordos: ordos_autogunturret | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 | ordos: ordos_chemturret | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 | ordos: ordos_artilleryplatform | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
+| ordos: ordos_autogunturret | prereqs: ordos_barracks, ordos_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 | schwarzermond: schwarzermond_lasertower | prereqs: schwarzermond_barracks, schwarzermond_constructionyard (gate 2, radar tier 3) | DEFERRED: valid, but faction's only pre-radar defense — add a Tier-1 defense before regating |
 
 
@@ -585,8 +585,8 @@ _none found_
 | steelconsortium: defaultconsortium | steelconsortium_quantummissiletrooper | light support must be Tier-1 only (producer-building prereqs only) |
 | latinsyndicate: defaultsyndicate | total cost 8990 | target ~2000 (±15%) |
 | latinsyndicate: defaultsyndicate | 5 infantry : 2 vehicles | want ~5 infantry per vehicle |
-| latinsyndicate: defaultsyndicate | latinsyndicate_freedomfighter (cost 3000) x2 vs wirbelwind.nax (cost 1800) x1 | pricier units must not outnumber cheaper ones |
-| latinsyndicate: defaultsyndicate | latinsyndicate_freedomfighter (cost 3000) x2 vs tiger.nax (cost 800) x1 | pricier units must not outnumber cheaper ones |
+| latinsyndicate: defaultsyndicate | latinsyndicate_freedomfighter (cost 3000) x2 vs naxis_wirbelwind (cost 1800) x1 | pricier units must not outnumber cheaper ones |
+| latinsyndicate: defaultsyndicate | latinsyndicate_freedomfighter (cost 3000) x2 vs naxis_tiger (cost 800) x1 | pricier units must not outnumber cheaper ones |
 | latinsyndicate: defaultsyndicate | latinsyndicate_freedomfighter | light support must be Tier-1 only (producer-building prereqs only) |
 | naxis: defaultnaxis | total cost 3380 | target ~2000 (±15%) |
 | naxis: defaultnaxis | 5 infantry : 2 vehicles | want ~5 infantry per vehicle |
@@ -700,8 +700,8 @@ _none found_
 | latinsyndicate: heavysyndicate | 5 infantry : 6 vehicles | want ~5 infantry per vehicle |
 | latinsyndicate: heavysyndicate | latinsyndicate_freedomfighter (cost 3000) x2 vs ptnk.asian (cost 2400) x1 | pricier units must not outnumber cheaper ones |
 | naxis: heavynaxis | 5 infantry : 6 vehicles | want ~5 infantry per vehicle |
-| naxis: heavynaxis | wirbelwind.nax (cost 1800) x3 vs naxis_sssoldier (cost 240) x2 | pricier units must not outnumber cheaper ones |
-| naxis: heavynaxis | tiger.nax (cost 800) x3 vs naxis_sssoldier (cost 240) x2 | pricier units must not outnumber cheaper ones |
+| naxis: heavynaxis | naxis_wirbelwind (cost 1800) x3 vs naxis_sssoldier (cost 240) x2 | pricier units must not outnumber cheaper ones |
+| naxis: heavynaxis | naxis_tiger (cost 800) x3 vs naxis_sssoldier (cost 240) x2 | pricier units must not outnumber cheaper ones |
 | schwarzermond: heavyschwarzermond | total cost 6400 | target ~10000 (±15%) |
 | schwarzermond: heavyschwarzermond | 5 infantry : 6 vehicles | want ~5 infantry per vehicle |
 | schwarzermond: heavyschwarzermond | schwarzermond_laserbeetle (cost 700) x3 vs schwarzermond_lunarsoldier (cost 500) x2 | pricier units must not outnumber cheaper ones |
@@ -751,9 +751,11 @@ _none found_
 _none found_
 
 
-## F18 — weapons targeting Air whose gameplay payload can't hit Air  (0)
+## F18 — weapons targeting Air whose gameplay payload can't hit Air  (1)
 
-_none found_
+| actor | actual | expected |
+|---|---|---|
+| tsserggun | Warhead@Bullet_MediumFlatCompatibility | targets Air but no gameplay payload hits Air (used by forgotten_mutantsergeant) |
 
 
 ## F19 — helicopter/spaceship TurnSpeed ≠ Speed/5  (0)

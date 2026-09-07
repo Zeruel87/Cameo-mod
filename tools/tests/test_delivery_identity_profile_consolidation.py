@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 import consolidate_delivery_identity_profiles as delivery
 import consolidate_machinegun_profiles as machineguns
-from audit_three_way_split import SPLIT_BASELINE, main_warheads
+from audit_three_way_split import RAW_SPLIT_BASELINE, main_warheads
 from audit_warhead_split import BROADCAST_BASELINE
 from miniyaml import Ruleset
 
@@ -98,7 +98,7 @@ class DeliveryIdentityProfileConsolidationTests(unittest.TestCase):
 
     def test_routing_and_overflow_hazards_remain_unconverted(self):
         deferred = {
-            "d2k_shotgun", "AlliedTankDestroyerCannon",
+            "AlliedTankDestroyerCannon",
         }
         for weapon in deferred:
             self.assertGreater(len(main_warheads(self.rules.resolve_weapon(weapon))), 1, weapon)
@@ -113,8 +113,9 @@ class DeliveryIdentityProfileConsolidationTests(unittest.TestCase):
         self.assertIn("Warhead@Bullet_Medium", keys)
 
     def test_ratchets_match_the_live_reduction(self):
-        self.assertEqual(114, SPLIT_BASELINE)
-        self.assertEqual(90, BROADCAST_BASELINE)
+        # Upstream retired exemptions: enforce the raw ceiling, never subtract reviewed stacks.
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
+        self.assertLessEqual(BROADCAST_BASELINE, 69)
 
 
 if __name__ == "__main__":

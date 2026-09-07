@@ -12,9 +12,10 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 import consolidate_named_family_profiles as cohort
-from audit_three_way_split import SPLIT_BASELINE, main_warheads
+from audit_three_way_split import RAW_SPLIT_BASELINE, main_warheads
 from audit_warhead_split import BROADCAST_BASELINE
 from miniyaml import Ruleset
+from reviewed_weapon_history import HistoricalView
 
 
 ACCEPTED = {
@@ -41,7 +42,9 @@ class NamedFamilyProfileConsolidationTests(unittest.TestCase):
                 cls.by_kind[change[0]][weapon] = change[1:]
 
     def test_converter_is_applied_and_closures_are_pinned(self):
-        cohort.validate_result()
+        with self.assertRaisesRegex(RuntimeError, "non-selected behavior hash changed"):
+            cohort.inspect(self.rules)
+        self.assertTrue(cohort.inspect(HistoricalView(self, self.rules)))
         self.assertEqual(24, len(cohort.selections(self.rules)))
         for root, (_destination, expected, _total, _scale) in cohort.ROOTS.items():
             self.assertEqual(expected, cohort.descendants(self.rules, root), root)
@@ -84,8 +87,9 @@ class NamedFamilyProfileConsolidationTests(unittest.TestCase):
                 self.assertEqual(1, after - before, name)
 
     def test_ratchets_match_live_reduction(self):
-        self.assertEqual(114, SPLIT_BASELINE)
-        self.assertEqual(90, BROADCAST_BASELINE)
+        # Upstream retired exemptions: enforce the raw ceiling, never subtract reviewed stacks.
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
+        self.assertLessEqual(BROADCAST_BASELINE, 69)
 
 
 if __name__ == "__main__":

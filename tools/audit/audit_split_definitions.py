@@ -130,7 +130,7 @@ def main() -> int:
             f"\n_at or below baseline_ — pre-existing migration residue. **Lower "
             "`S1_BASELINE`/`S2_BASELINE` as duplicates are deleted; never raise them.**\n")
 
-    print("\n".join(out))
+    print("\n".join(out).rstrip())
     return 1 if failed else 0
 
 

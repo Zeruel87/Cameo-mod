@@ -17,6 +17,7 @@ from consolidate_identical_main_profiles import (
 )
 import consolidate_freedom_rocket_base as freedom
 from miniyaml import Ruleset
+from reviewed_weapon_history import HistoricalView
 
 
 class IdenticalMainProfileConsolidationTests(unittest.TestCase):
@@ -52,7 +53,14 @@ class IdenticalMainProfileConsolidationTests(unittest.TestCase):
             main_warheads(self.rules.resolve_weapon("RA2FreedomRocket_elite")),
         )
 
-        self.assertTrue(freedom.inspect(self.rules))
+        # b905d7679 regenerated canonical coupling armor; frozen compatibility
+        # keeps its old table. The historical equality guard must reject replay.
+        elite = self.rules.resolve_weapon("RA2FreedomRocket_elite")
+        self.assertEqual("44", elite.child("Warhead@MissileAP_MediumFlatCompatibility").child("Versus").get("COMPOSITE"))
+        self.assertEqual("45", elite.child("Warhead@MissileAP_Medium").child("Versus").get("COMPOSITE"))
+        with self.assertRaisesRegex(RuntimeError, "selected profiles are no longer identical"):
+            freedom.inspect(self.rules)
+        self.assertTrue(freedom.inspect(HistoricalView(self, self.rules)))
 
     def test_freedom_rocket_whole_tree_comparison_is_structural_only(self):
         report = json.loads(FREEDOM_REPORT.read_text(encoding="utf-8"))

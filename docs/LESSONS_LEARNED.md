@@ -542,6 +542,15 @@ tree with an external reference. Run it after every collapse.
 
 ### Balance tooling discipline
 
+- **A child command starting is not proof that it succeeded.** The old balance
+  writer saved YAML despite planning errors, passed an obsolete positional path
+  to `extract_stats.py`, and ignored its failure. The repaired writer stages
+  extraction, checks subprocess results and verifies requested raw values before
+  publishing ledgers. Failed confirmations restore transaction-owned bytes and
+  preserve proposal ledgers. Tests in `tools/tests/test_apply_balance.py` inject
+  extraction, audit, write and interruption failures; a no-op dry run alone would
+  never have caught this defect.
+
 - **Always syntax-check a script before running it** — `python -m py_compile <script>` catches typos that would otherwise leave the pipeline half-finished.
 - Then run Python balance scripts through `tools/balance/run_with_guard.py` (syntax pre-check + 60 s timeout guard) or, when the guard is not yet available, `python -m py_compile` + the script directly.
 - `propose_class_rebalance.py` is now the generalized dispatcher for ALL 14 classes (reads `class_anchors.json`, uses the SUM engine `formula.spread_damage_sum`). It only prices units already tagged `design.class_anchor`; membership tagging is still pending, so classify a class's units before trusting its full roster output. The old per-class `*_rebalance_proposal_final.py` one-offs are superseded and slated for archival.
@@ -936,6 +945,13 @@ A `Warhead@X:` line with **no value** is a boot crash, not a lint warning. `Weap
 - **Effect-free clusters are the safest next conversion targets.** `ShrapnelWeapon + HeavyCannon` → `Concussion_Medium + CannonHE_Heavy` (3 weapons) converted cleanly because neither warhead drags in `PhysicalState`/`GroundFire`/`SpawnActor` effects. This makes the bare `Inherits@wh/@wh2/@proj/@fx` pattern safe.
 - **Removal markers (`-Key:` or `-Sub/Key:`) crash if the removed key no longer exists in the resolved chain.** `8Inch` had `-Warhead@Effect2:` inherited from the old `^Grenade`/`^HeavyBomb` stack. After repointing to `^Effect_Demolition_Light`, `Effect2` was gone and the game threw "There are no elements with key `Warhead@Effect2` to remove". `JHindChainGun` had `-		-LaunchAngle:` nested under `Projectile: Bullet` to remove `LaunchAngle` from the old `^Chaingun`/`^Grenade` `Bullet` projectile; the new `^Projectile_Bullet_Medium` does not contain `LaunchAngle`, so the same crash occurred. Any conversion must strip **all** stale removal markers — top-level and nested, not just `-Warhead@*` — before boot-gating.
 - **Single-inherit repoint is only safe when the weapon has exactly one `Inherits` tag and no other addon inherits.** A mechanical sweep that included multi-addon `Steel`/`RA2` weapons produced 46 empty-type warheads because `^SteelLightMissile`, `^RA2FlakWeapon`, and other intermediate addons still supply the non-converted warheads. Filter for blocks with exactly one `Inherits` line and no `Inherits@2`/`Inherits@3` addons; the first broad run must be reverted.
+
+**2026-09-07 follow-up: Python resolved equality is not strict-engine validity.**
+The Scooper merge repair resolved identically to its authored reference in
+`miniyaml.Ruleset`, but the engine rejected two now-absent removal targets.
+The Python subset silently ignores those missing removals. Check the complete
+ancestor chain before removing or retaining a cancellation, add a targeted
+source regression, and boot the actual engine. Do not bulk-delete cancellations.
 
 ## Weapon 3-way split: projectile family naming (2026-08-07)
 
@@ -1481,6 +1497,15 @@ Corollary for this tree specifically: `mods/cameo/weapons/weapons.yaml` is
 generated, so direct Versus edits in it silently revert on the next splice and
 re-flag `gen_sync` in the meantime. Route every generated-row change through
 `gen_weapon_template.py` or a maintainer ruling that changes the law.
+# A random menu boot does not validate every packaged shellmap
+
+A faction rename can update its source definitions while old references survive
+inside other archive members. The 2026-09-07 boot failed on a Soviet barracks;
+fixing only that placement would have left Lua reinforcements and map-local rules
+broken. Follow every member of the affected archives, compare against the exact
+rename commit, and resolve placed actors against active rules. Preserve unchanged
+member bytes and ZIP metadata. A successful random menu boot remains one runtime
+sample; `test_shellmap_actor_references.py` covers all packaged shellmap placements.
 
 ## ⛔ Fix the TOOL, not its output — six defects hid behind one patched map (2026-09-06)
 
