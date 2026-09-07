@@ -1029,7 +1029,7 @@ def load_existing_design(name: str) -> tuple[dict[str, dict], dict[str, dict]]:
     out, wc = {}, {}
     try:
         doc = json.loads(p.read_text(encoding="utf-8"))
-        for sec in doc.get("sections", {}).values():
+        for sec_name, sec in doc.get("sections", {}).items():
             for actor, u in sec.items():
                 d = u.get("design")
                 if d:
@@ -1039,11 +1039,15 @@ def load_existing_design(name: str) -> tuple[dict[str, dict], dict[str, dict]]:
                     # (Aircraft, Vehicle, Infantry, Ship, Misc).  An
                     # authored subtype set by LANE-4 is judgment data the
                     # yaml cannot provide, so preserve it when it is NOT
-                    # a generic placeholder.
-                    _GENERIC = set(SECTION_DEFAULT_SUBTYPE.values()) | {"Unclassified"}
+                    # the section's own default placeholder.  Section-aware
+                    # check: `Building` is the default for the `buildings`
+                    # section but an authored judgment for a `misc`-section
+                    # actor (walls and shipyards that landed in misc).
+                    section_default = SECTION_DEFAULT_SUBTYPE.get(sec_name, "Unclassified")
                     kept = {k: v for k, v in d.items()
                             if v is not None
-                            and not (k == "subtype" and v in _GENERIC)}
+                            and not (k == "subtype" and v == section_default)
+                            and not (k == "subtype" and v == "Unclassified")}
                     if kept:
                         out[actor] = kept
                 slots = {a["slot"]: a["design_weapon_class"]
