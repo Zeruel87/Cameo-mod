@@ -489,7 +489,7 @@ def prerequisite_providers(rules, known):
     return prov
 
 
-def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None):
+def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=None):
     """The faction tokens an actor is gated on, filtered by what the mod actually declares.
 
     ⛔ THE FACTION IS OFTEN ONE HOP AWAY, IN THE PREREQUISITE BUILDING. OpenRA gates most infantry
