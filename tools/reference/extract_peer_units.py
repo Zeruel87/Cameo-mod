@@ -410,24 +410,47 @@ PREREQ_DEPTH = 2
 
 def _faction_tokens(text, known):
     """The faction tokens inside one comma-separated Queue/Prerequisites string."""
+
+    def match(part):
+        """One token -> one declared faction, by exact name or 3+-char prefix."""
+        if not part or part.isdigit():
+            return None
+        if part in known:
+            return part
+        # ⚠ Mods abbreviate their own faction names inconsistently: Shattered Paradise
+        # DECLARES `mut`, `cab`, `scr` and then gates units on `mutant`, `cabal`, `scrin`.
+        # A prefix match in either direction reconciles them; 3 characters is the floor so
+        # short unit tokens cannot masquerade as a faction.
+        for k in known:
+            if len(part) >= 3 and len(k) >= 3 and (part.startswith(k) or k.startswith(part)):
+                return k
+        return None
+
     found = set()
     for chunk in (text or "").split(","):
         tok = chunk.strip().lstrip("~!").strip().lower()
         # `Infantry.Allies` -> allies · `~infantry.england` -> england · bare `yuri` -> yuri
         for part in (tok.split(".")[-1], tok):
-            if not part or part.isdigit():
-                continue
             if part in known:
                 found.add(part)
                 continue
-            # ⚠ Mods abbreviate their own faction names inconsistently: Shattered Paradise
-            # DECLARES `mut`, `cab`, `scr` and then gates units on `mutant`, `cabal`, `scrin`.
-            # A prefix match in either direction reconciles them; 3 characters is the floor so
-            # short unit tokens cannot masquerade as a faction.
-            for k in known:
-                if len(part) >= 3 and len(k) >= 3 and (part.startswith(k) or k.startswith(part)):
-                    found.add(k)
-                    break
+            # ⚠ A COMPOSITE TOKEN IS NOT ONE FACTION. `structure.atreides_or_ordos` names
+            # TWO, and prefix-matching it whole reports only `atreides` — an ordos source
+            # came out looking atreides-only. Split `x_or_y` / `x_and_y` expressions and
+            # match each named piece instead; a piece may itself be dotted
+            # (`light.harkonnen_or_upgrade.light` -> harkonnen via `light.harkonnen`).
+            pieces = [p for p in re.split(r"_(?:or|and)_", part) if p]
+            if len(pieces) > 1:
+                for piece in pieces:
+                    for sub in (piece.split(".")[-1], piece):
+                        hit = match(sub)
+                        if hit:
+                            found.add(hit)
+                            break
+                continue
+            hit = match(part)
+            if hit:
+                found.add(hit)
     return found
 
 
@@ -459,7 +482,27 @@ def prerequisite_providers(rules, known):
 
     A provider with neither field contributes nothing — that preserves the deliberate
     shared-infrastructure refusal (`anypower` et al. stay unscoped).
+
+    ⭐ THE INDEX FEEDS ITSELF: a provider's own factions often come from a
+    `ProvidesPrerequisite` token issued by ANOTHER actor — Dune's `barracks` is gated on
+    `~structure.atreides_or_ordos`, which only `construction_yard` provides. Scoping a
+    bare `ProvidesPrerequisite` on `barracks` therefore needs the index being built, so
+    the build is iterated until it stops growing. Scopes only ever widen, which makes the
+    iteration monotone; the pass cap is a belt against oscillation, not the mechanism.
     """
+    prov = {}
+    for _ in range(10):
+        merged = {t: set(s) for t, s in prov.items()}
+        for t, s in _prerequisite_providers_pass(rules, known, prov).items():
+            merged.setdefault(t, set()).update(s)
+        if merged == prov:
+            break
+        prov = merged
+    return prov
+
+
+def _prerequisite_providers_pass(rules, known, vfi):
+    """One pass over the provider index; `vfi` is the index built so far (or {})."""
     prov = {}
     for aid in rules.actors:
         try:
@@ -468,6 +511,7 @@ def prerequisite_providers(rules, known):
             continue
         if node is None:
             continue
+        own_factions = set(factions_of(node, known, rules, vfi=vfi))
         actor_scope = set()
         for c in node.children:
             if c.key.split("@")[0] == "ValidFactions":
@@ -628,6 +672,61 @@ def inherited_disabled_faction(actor, rules, known, vfi, pidx, _seen=None):
     return set()
 
 
+def queue_providers(rules, known, vfi):
+    """{queue name: set(declared factions)} — who can produce each build queue.
+
+    ⚠ MANY UNITS CARRY NO FACTION PREREQUISITE AT ALL. Dune's `light_inf`, `trooper`,
+    `combat_tank` and `harvester` have only `Buildable.Queue` — their faction lives on
+    whichever building runs that queue: `barracks` is atreides/ordos while `wor`, its
+    Harkonnen replacement, runs a separate `Trooper` queue. This index inverts the
+    `Production*` traits (`Production`, `ProductionQueue`, `ProductionAirdrop`,
+    `ProductionFromMapEdge`, `ClassicProductionQueue`, …): each `Produces:`/`Type:` queue
+    maps to the factions of every actor able to run it.
+
+    A producer whose own `factions_of` resolves uses that scope. A producer with a
+    `Buildable` but NO faction-restricting fields (`construction_yard`, `wind_trap`,
+    `heavy_factory`) produces for every declared faction — it is universal, and skipping
+    it would orphan every queue only it runs. A producer that resolves to nothing and
+    IS faction-gated stays out of the index rather than guessing.
+    """
+    qidx = {}
+    for aid in getattr(rules, "actors", ()):
+        if aid.startswith(("^", "-")):
+            continue
+        try:
+            node = rules.resolve(aid)
+        except Exception:
+            continue
+        if node is None:
+            continue
+        queues = set()
+        for c in node.children:
+            base = c.key.split("@")[0]
+            if not (base.startswith("Production") or base.endswith("ProductionQueue")):
+                continue
+            d = {k.key.lower(): k.value for k in c.children}
+            for f in ("produces", "type"):
+                for t in (d.get(f) or "").split(","):
+                    t = t.strip().lower()
+                    if t:
+                        queues.add(t)
+        if not queues:
+            continue
+        scope = set(factions_of(node, known, rules, vfi=vfi))
+        if not scope:
+            b = _buildable(node)
+            gated = b is None or _faction_tokens(
+                ",".join(x for x in (b.get("Prerequisites"), b.get("ForceFaction"),
+                                     b.get("Queue")) if x), known)
+            if b is not None and not gated:
+                scope = set(known)
+        if not scope:
+            continue
+        for q in queues:
+            qidx.setdefault(q, set()).update(scope & set(known))
+    return qidx
+
+
 def extract(mod_id):
     spec = PEERS[mod_id]
     label, cands, rifle_id, expect = spec["label"], spec["root"], spec["rifle"], spec["expect"]
@@ -646,6 +745,9 @@ def extract(mod_id):
     # Support-power produced actors (Dune Fremen/Saboteur) get their faction from the power that
     # creates them, not from their own disabled Buildable.
     pidx = power_produced_factions(rules, known_factions, vfi)
+    # Units with no faction prerequisite at all inherit the factions of whichever buildings
+    # run their `Buildable.Queue` (Dune's `light_inf`/`combat_tank`/`harvester`).
+    qidx = queue_providers(rules, known_factions, vfi)
 
     key = rules._actor_ci.get(rifle_id.lower())
     if not key:
@@ -691,6 +793,14 @@ def extract(mod_id):
                 fac = pidx.get(actor, set()) & set(known_factions)
                 if not fac:
                     fac = inherited_disabled_faction(actor, rules, known_factions, vfi, pidx) & set(known_factions)
+            # ⭐ THE QUEUE IS A FACTION GATE TOO: a unit that names no faction anywhere is
+            # still only reachable through the buildings that run its queue, so the queue's
+            # producer scope is the last-resort tag. Consulted after the disabled/power
+            # paths so a `~disabled` actor keeps its tighter power-derived scope.
+            if not fac and b is not None:
+                for q in (b.get("Queue") or "").lower().split(","):
+                    fac |= qidx.get(q.strip(), set())
+                fac &= set(known_factions)
         rows.append({
             "id": actor, "name": unit_name(actor, node, fluent),
             "type": unit_type(node), "turn_speed": ts, "turreted": turreted,

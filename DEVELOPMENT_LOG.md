@@ -10687,3 +10687,44 @@ phantom-damage incidents and the cross-pack `OrniBombC`, `Sound`, `Sound2`
 duplicates.
 
 Co-Authored-By: Devin AI <devin@cognition.ai>
+
+## Devin-DAWN — Dune peer extractor: composite tokens, provider fixed point, and queue fallback (2026-09-09)
+
+Continued the `devin/dawn/untagged-dune-mo` lane. Rebased the worktree back to the
+authoritative master baseline `5e87c1bdd` after a `launch-game.cmd` crash on newer
+master showed master itself is currently unbootable from the `AiMatchLogWriter`
+trait; `5e87c1bdd` boots cleanly to menu.
+
+What changed in `tools/reference/extract_peer_units.py`:
+1. `_faction_tokens()` now splits `_or_` and `_and_` composite tokens and matches each
+   piece independently. `structure.atreides_or_ordos` now yields both houses, not just
+   `atreides`.
+2. `prerequisite_providers()` is now iterated to a fixed point and passes the partial
+   provider index (`vfi`) into `factions_of()`. This lets Dune `barracks` inherit the
+   faction scope of the `construction_yard` that provides its prerequisite.
+3. New `queue_providers()` index scans `Production*` / `*ProductionQueue` traits and maps
+   each queue to the factions of the buildings that produce it. Used as a fallback in
+   `extract()` after direct prerequisite traversal fails.
+
+Measured improvement:
+- OpenRA Dune II: 49 total, 45 tagged, 4 untagged (was 14 tagged, 35 untagged).
+- OpenRA Dune 2000: 56 total, 54 tagged, 2 untagged (was 23 tagged, 33 untagged).
+
+The remaining Dune II untagged rows are `carryall.reinforce`, `construction_yard`,
+`frigate`, and `sandworm`; for Dune 2000, `carryall.reinforce` and `construction_yard`.
+These are not reachable through a production queue and need R14 or a manual routing call.
+
+Regenerated and spliced only the `## OpenRA Dune II` and `## OpenRA Dune 2000` sections
+of `docs/design/ORIGINAL_UNITS_PEER_OPENRA.md`; all other peer sections preserved.
+
+Gates (re-run on `5e87c1bdd` worktree after rebuild):
+- `find_empty_warhead.py` -> 0
+- `audit_release_drift.py` -> D1-D5 all PASS at ratchet
+- `audit_weapon_shape.py` -> W1-W6 all PASS at ratchet
+- `launch-game.cmd` -> reached main menu (`MenuPostProcessEffect.PostWorldLoaded` in
+  `%APPDATA%/OpenRA/Logs/perf.log`), no new `exception-*.log` files
+
+Outstanding: AURORA peer review requested in
+`../Cameo-mod-fleet/PEER_REVIEW_2026-09-09_dawn_dune.md`; verdict pending.
+
+Co-Authored-By: Devin AI <devin@cognition.ai>
