@@ -637,8 +637,14 @@ def cameo_rows():
                     if dps and wname:
                         for lad, frac in cameo_weapon_ladders(wname).items():
                             w[f"dps_vs_{lad}"] = dps * frac
+                # ⭐ COST. Every PEER row has carried a price since extraction; Cameo's did not,
+                # so a price target had nothing on this side to normalise onto and every cost
+                # column came out empty — reading as "no reference data" when the references had
+                # it all along. `cost` is not in ALL_STATS (this module is the chassis layer), so
+                # a consumer that wants price must build that aggregate itself; carrying the value
+                # here is what makes that possible at all.
                 out.append({"source": "Cameo", "id": name, "name": name, "type": kind,
-                            "hp": hp, "speed": spd, "turn_speed": turn,
+                            "hp": hp, "speed": spd, "turn_speed": turn, "cost": val("cost"),
                             "structure_debt": debt,
                             "turn_ratio": (spd / turn) if (spd and turn) else None, **w})
     return out
