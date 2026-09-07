@@ -515,7 +515,7 @@ def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=No
     if b is None:
         return []
     found = set()
-    for field in ("Queue", "Prerequisites"):
+    for field in ("Queue", "Prerequisites", "ForceFaction"):
         found |= _faction_tokens(b.get(field), known)
     # A VALIDATED-FACTION GRANT IS A DIRECT CLAIM, not an inherited one: the mod names the
     # factions explicitly next to the token this actor is gated on. Consulted before the
@@ -545,6 +545,89 @@ def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=No
     return sorted(found)
 
 
+def power_produced_factions(rules, known, vfi):
+    """Map actors produced by ProduceActorPower to the factions that can trigger the power.
+
+    ⛔ Some units are NOT buildable through the normal queue. Dune's `fremen` and `saboteur`
+    are produced by `ProduceActorPower` on the `palace`; their own `Buildable` is marked
+    `Prerequisites: ~disabled` so the queue never shows them. The power's prerequisites and
+    `RequiresCondition` carry the real faction gate (e.g. `~palace.fremen` -> atreides,
+    `RequiresCondition: atreides`).
+    """
+    pidx = {}
+    for aid in getattr(rules, "actors", ()):
+        if aid.startswith(("^", "-")):
+            continue
+        try:
+            node = rules.resolve(aid)
+        except Exception:
+            continue
+        if node is None:
+            continue
+        for c in node.children:
+            if not c.key.startswith("ProduceActorPower"):
+                continue
+            d = {k.key: k.value for k in c.children}
+            actors = d.get("Actors") or d.get("Actor")
+            if not actors:
+                continue
+            found = set()
+            for chunk in (d.get("Prerequisites") or "").split(","):
+                tok = chunk.strip().lstrip("~!").strip().lower()
+                if tok and tok in vfi:
+                    found |= vfi[tok]
+            for part in re.split(r"\|\||&&", d.get("RequiresCondition") or ""):
+                part = part.strip().lstrip("!").strip().lower()
+                if part and part in known:
+                    found.add(part)
+            if not found:
+                continue
+            for a in actors.split(","):
+                a = a.strip().lower()
+                if a:
+                    pidx.setdefault(a, set()).update(found & set(known))
+    return pidx
+
+
+def inherited_disabled_faction(actor, rules, known, vfi, pidx, _seen=None):
+    """For a disabled-buildable actor that inherits a concrete parent, borrow the parent's faction.
+
+    D2k's `nsfremen` is `Inherits: fremen` with its own `Buildable: Prerequisites: ~disabled`.
+    Once `fremen` is recovered from `ProduceActorPower`, `nsfremen` can follow the concrete
+    `Inherits` chain and take the same faction.
+    """
+    if _seen is None:
+        _seen = set()
+    _seen.add(actor.lower())
+    raw = rules.actor(actor)
+    if raw is None:
+        return set()
+    for c in raw.children:
+        if c.key != "Inherits" and not c.key.startswith("Inherits@"):
+            continue
+        parent = c.value
+        if not parent or parent.startswith("^") or parent.lower() in _seen:
+            continue
+        key = rules._actor_ci.get(parent.lower())
+        if not key:
+            continue
+        try:
+            pnode = rules.resolve(key)
+        except Exception:
+            continue
+        p_b = _buildable(pnode)
+        if p_b is None:
+            continue
+        pf = set(factions_of(pnode, known, rules, _depth=0, _seen=_seen, vfi=vfi))
+        if not pf:
+            pf = (pidx.get(parent, set()) & set(known))
+        if not pf and "~disabled" in (p_b.get("Prerequisites") or ""):
+            pf = inherited_disabled_faction(parent, rules, known, vfi, pidx, _seen)
+        if pf:
+            return pf
+    return set()
+
+
 def extract(mod_id):
     spec = PEERS[mod_id]
     label, cands, rifle_id, expect = spec["label"], spec["root"], spec["rifle"], spec["expect"]
@@ -560,6 +643,9 @@ def extract(mod_id):
     # `ProvidesPrerequisite*` trait and falls back to the PROVIDING actor's `ValidFactions`,
     # which a `ValidatedFaction`-only reader misses.
     vfi = prerequisite_providers(rules, known_factions)
+    # Support-power produced actors (Dune Fremen/Saboteur) get their faction from the power that
+    # creates them, not from their own disabled Buildable.
+    pidx = power_produced_factions(rules, known_factions, vfi)
 
     key = rules._actor_ci.get(rifle_id.lower())
     if not key:
@@ -595,13 +681,20 @@ def extract(mod_id):
         limit = trait(node, ("Buildable",), "BuildLimit")
         ts, turreted = turn_speed(node)
         wep = weapon_stats(rules, node, label)
+        # ⭐ THE FACTION COLUMN (maintainer 2026-09-04). Reference routing needs it: an Asian
+        # Alliance unit may only draw on Mental Omega China, which is what stops
+        # "Animal Alligator" from ever being a candidate.
+        fac = set(factions_of(node, known_factions, rules, vfi=vfi))
+        if not fac:
+            b = _buildable(node)
+            if b is not None and "~disabled" in (b.get("Prerequisites") or ""):
+                fac = pidx.get(actor, set()) & set(known_factions)
+                if not fac:
+                    fac = inherited_disabled_faction(actor, rules, known_factions, vfi, pidx) & set(known_factions)
         rows.append({
             "id": actor, "name": unit_name(actor, node, fluent),
             "type": unit_type(node), "turn_speed": ts, "turreted": turreted,
-            # ⭐ THE FACTION COLUMN (maintainer 2026-09-04). Reference routing needs it: an Asian
-            # Alliance unit may only draw on Mental Omega China, which is what stops
-            # "Animal Alligator" from ever being a candidate.
-            "faction": "/".join(factions_of(node, known_factions, rules, vfi=vfi)) or "",
+            "faction": "/".join(sorted(fac)) or "",
             "limit": int(limit) if (limit and str(limit).strip().isdigit()) else None,
             **wep,
             "hp": int(hp), "cost": int(cost) if cost else None,
