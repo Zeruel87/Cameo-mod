@@ -1,4 +1,4 @@
-﻿#region Copyright & License Information
+#region Copyright & License Information
 /*
  * Copyright (c) The OpenRA Developers and Contributors
  * This file is part of OpenRA, which is free software. It is made
@@ -60,7 +60,7 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (OperatingSystem.IsWindows())
 				canonicalPath = canonicalPath.ToUpperInvariant();
 
-			mutexName = "OpenRA-CameoCareer-" + Convert.ToHexString(
+			mutexName = "OpenRA-CameoAiMatchLog-" + Convert.ToHexString(
 				SHA256.HashData(Encoding.UTF8.GetBytes(canonicalPath)));
 		}
 
@@ -82,6 +82,8 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		void IGameOver.GameOver(World world)
 		{
+			// World.EndGame pauses before dispatching IGameOver, and paused worlds do not advance ticks.
+			// A retry scheduled here may therefore never run; retries matter for live all-bots-resolved capture.
 			CaptureAndAppend(world);
 		}
 
