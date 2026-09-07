@@ -485,6 +485,53 @@ NAME_CLAIMS = {
 }
 
 
+# ⛔ R15 IN ITS SECOND FORM: THE CLAIM IS IN THE ID SUFFIX, NOT THE NAME. DTA ships one shared
+# roster across four sides and tags EVERY variant `GDI/Nod/Allies/Soviet`, so `Owner=` cannot
+# separate them — but its ids can: bare = GDI, `N` = Nod, `A` = Allies, `S` = Soviets.
+#
+#   E1  Minigunner   E1N Minigunner   E1A Rifle Infantry   E1S Rifle Infantry
+#
+# Without this the Soviet rifle infantry drew the ALLIED variant, because both were equally
+# admissible and nothing broke the tie. (Harmless in that instance — the four are byte-identical
+# on every stat — but a crossed mapping is still wrong, and it will not stay harmless.)
+#
+# ⚠ A SINGLE-LETTER SUFFIX IS A BLUNT KEY, so the claim only fires when the UNSUFFIXED sibling
+# actually exists in the same source. `E1A` claims Allies because `E1` is there; `GUN` claims
+# nothing because `GU` is not. The index is registered by whoever loads the corpus; until then
+# the rule is INACTIVE, so a consumer that never registers behaves exactly as before.
+ID_SUFFIX_CLAIMS = {
+    "DTA Enhanced": {"A": "ra1_allies", "S": "ra1_soviets", "N": "td_nod"},
+}
+
+_SOURCE_IDS: dict[str, frozenset] = {}
+
+
+def register_source_ids(rows):
+    """Tell the suffix rule which ids each source actually ships. Idempotent."""
+    seen = {}
+    for r in rows:
+        rid = (r.get("id") or "").strip().upper()
+        if rid:
+            seen.setdefault(r.get("source"), set()).add(rid)
+    for src, ids in seen.items():
+        _SOURCE_IDS[src] = frozenset(ids)
+
+
+def suffix_claim(row, src):
+    """The Cameo faction this source's ID NAMING claims the row for, or None."""
+    table = ID_SUFFIX_CLAIMS.get(src)
+    known = _SOURCE_IDS.get(src)
+    if not table or not known:
+        return None
+    rid = (row.get("id") or "").strip().upper()
+    if len(rid) < 3:
+        return None
+    base, suffix = rid[:-1], rid[-1]
+    if suffix not in table or base not in known:
+        return None
+    return table[suffix]
+
+
 def claimed_by(row, src):
     """The Cameo faction this source's own naming claims the row for, or None."""
     name = (row.get("name") or "").strip().lower()
@@ -592,6 +639,8 @@ def allows(faction, row):
     # A NAME CLAIM SHORT-CIRCUITS BOTH WAYS: the claimant gets the row, everyone else is
     # refused it, and no exclusivity or ownership test is consulted.
     claim = claimed_by(row, row.get("source"))
+    if claim is None:
+        claim = suffix_claim(row, row.get("source"))
     if claim is not None:
         return claim == faction and row.get("source") in routed_sources(faction)
 

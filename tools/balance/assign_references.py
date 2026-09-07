@@ -295,6 +295,9 @@ def assign(only_class=None, routing=True):
     behaviour the maintainer rejected; do not generate a review sheet with it.
     """
     peers, cameo = rd.peer_rows(), rd.cameo_rows()
+    # The id-suffix claim (R15 in its second form) stays INACTIVE until the corpus is
+    # registered, so it can never fire on a source whose ids nobody has enumerated.
+    fr.register_source_ids(peers)
     led = ledger()
     cam_rows = [c for c in cameo if c["id"] in led]
 
@@ -358,9 +361,15 @@ def assign(only_class=None, routing=True):
     routed_pool = {}
     if routing:
         for fac in {fr.faction_of(c["id"]) for c in scope}:
-            for src, toks in fr.routes_for(fac):
+            for src, _toks in fr.routes_for(fac):
+                # ⛔ ASK `allows()`. This used to filter inline on `peer_factions(p) & toks`, a
+                # SECOND implementation of routing that silently skipped every ruling `allows`
+                # carries: R13 exclusivity, R14's universal carve-out, and R15's name claims —
+                # so CnC Reloaded's "CABAL's ..." claims and DTA's id-suffix claims were computed
+                # and then ignored. `ra1_soviets_rifleinfantry` drew DTA's ALLIED E1A because
+                # nothing here ever asked whether the Allies had claimed it.
                 routed_pool[(fac, src)] = [p for p in by_source.get(src, ())
-                                           if fr.peer_factions(p) & toks]
+                                           if fr.allows(fac, p)]
 
     result = collections.defaultdict(dict)
     for source, plist in sorted(by_source.items()):
