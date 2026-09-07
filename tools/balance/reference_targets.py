@@ -33,6 +33,7 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "audit"))
+import faction_routes as fr  # noqa: E402
 import reference_distribution as rd  # noqa: E402
 
 ROOT = rd.ROOT
@@ -83,20 +84,82 @@ def attach(assignment, idx):
             hits = idx.get((src, (rec.get("name") or "").strip()))
             if not hits:
                 continue
-            best = hits[0]
-            for h in hits:
-                if h.get("hp") == rec.get("hp") and h.get("cost") == rec.get("cost"):
-                    best = h
-                    break
+            # The ID is the only reliable key — see the note in assign_references. hp/cost is the
+            # fallback for assignments written before the id was recorded.
+            best = None
+            if rec.get("id"):
+                best = next((h for h in hits if h.get("id") == rec["id"]), None)
+            if best is None:
+                best = next((h for h in hits if h.get("hp") == rec.get("hp")
+                             and h.get("cost") == rec.get("cost")), hits[0])
             rows.append(best)
         if rows:
             out[actor] = rows
     return out
 
 
+def expand_families(attached, peers):
+    """Replace each assigned row with its whole variant family from that source."""
+    by_source = collections.defaultdict(list)
+    for p in peers:
+        by_source[p["source"]].append(p)
+    out = {}
+    for actor, rows in attached.items():
+        faction = fr.faction_of(actor)
+        grown, seen = [], set()
+        for r in rows:
+            for f in family_rows(r, by_source, faction):
+                key = (f["source"], f.get("id"), f.get("name"))
+                if key in seen:
+                    continue
+                seen.add(key)
+                grown.append(f)
+        out[actor] = grown
+    return out
+
+
+def family_rows(assigned, peers_by_source, faction):
+    """Every VARIANT of the assigned reference, from that same source — one voice between them.
+
+    ⛔ MAINTAINER 2026-09-07: *"if more than one variant exists just use all of them as reference
+    since they would otherwise not be mapped... but weight it still only the mean from CA as one
+    voice compared to our existing Cameo one."*
+
+    Combined Arms routes FOUR mammoths to GDI — `HTNK`, `HTNK.Hover`, `HTNK.Ion`, `HTNK.Drone` —
+    and clause 2 lets an actor take only one per source, so three of them describe nothing and a
+    Cameo add-on above the Mammoth has almost no evidence to sit on. Taking all four and averaging
+    them inside the source keeps R4 intact: Combined Arms still casts ONE vote, it is just a better
+    informed one.
+
+    The grouping signal is the mod's own naming, not a similarity guess: these mods suffix a
+    variant onto the base actor id after a dot, so `HTNK.Ion` belongs to `HTNK`. A row is admitted
+    only if routing already allows this faction to see it.
+    """
+    base = (assigned.get("id") or "").split(".")[0]
+    if not base:
+        return [assigned]
+    out = [r for r in peers_by_source.get(assigned["source"], ())
+           if (r.get("id") or "").split(".")[0] == base and fr.allows(faction, r)]
+    # ⚠ DTA ships AI duplicates of its own units (`AIHTNK`, `AIHTNK2`) with identical stats.
+    # They are not variants and must not weight the source's mean toward one design twice.
+    seen, uniq = set(), []
+    for r in out:
+        key = (r.get("name"), r.get("hp"), r.get("cost"), r.get("w_damage"))
+        if key in seen:
+            continue
+        seen.add(key)
+        uniq.append(r)
+    return uniq or [assigned]
+
+
 def target_for(rows, cameo_row, stat, dist, cdist):
-    """(peers_only, with_cameo, n_sources) on one stat, or (None, None, 0)."""
-    pooled, used = collections.defaultdict(list), set()
+    """(peers_only, with_cameo, n_sources) on one stat, or (None, None, 0).
+
+    ⭐ POOLED PER SOURCE FIRST. Every source casts exactly ONE vote however many of its rows are
+    in play, so a mod that happens to ship four variants of a unit cannot outvote one that ships
+    a single unit. Without this, expanding to variant families would quietly re-weight R4.
+    """
+    per_source = collections.defaultdict(lambda: collections.defaultdict(list))
     for r in rows:
         x = r.get(stat)
         if not x or x <= 0:
@@ -104,8 +167,13 @@ def target_for(rows, cameo_row, stat, dist, cdist):
         for pop in ("overall", r["type"]):
             agg = dist.get(r["source"], {}).get(pop, {}).get(stat)
             for k, v in rd.coordinates(float(x), agg).items():
-                pooled[(pop, k)].append(v)
-                used.add(r["source"])
+                per_source[r["source"]][(pop, k)].append(v)
+    pooled, used = collections.defaultdict(list), set()
+    for source, coords in per_source.items():
+        used.add(source)
+        for key, vals in coords.items():
+            # p_rng is a bounded position and averages arithmetically; the rest are ratios.
+            pooled[key].append(statistics.fmean(vals) if key[1] == "p_rng" else rd.gm(vals))
     if not pooled:
         return None, None, 0
     # p_rng is a bounded [0,1] position and can legitimately be 0, where a geometric mean is
@@ -138,7 +206,7 @@ def main() -> int:
     add_cost_distribution(cameo_dist_all, cameo)
     cdist = cameo_dist_all["Cameo"]
     assignment = json.loads(ASSIGN.read_text(encoding="utf-8"))["assignment"]
-    attached = attach(assignment, peer_index(peers))
+    attached = expand_families(attach(assignment, peer_index(peers)), peers)
     crows = {c["id"]: c for c in cameo}
 
     out = ["# Reference targets — R4 synthesis (references + Cameo, one vote each)", ""]

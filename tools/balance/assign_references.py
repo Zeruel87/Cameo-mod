@@ -421,7 +421,13 @@ def assign(only_class=None, routing=True):
                 conf = "SHAPE"         # same position in its own roster, name says nothing
             else:
                 conf = "WEAK"
-            result[cid][source] = {"name": p.get("name"), "score": s,
+            # ⛔ STORE THE ROW'S ID. The name alone is not a key: Combined Arms ships TWO rows
+            # called "Mammoth Tank" — `HTNK` (Tiberian Dawn's, routed to GDI) and `4TNK` (Red
+            # Alert's, routed to the Soviets) — with IDENTICAL hp and cost, so a consumer
+            # re-attaching by name and stats cannot tell them apart and silently took the first.
+            # That handed `td_gdi_mammothtank` the SOVIET mammoth and, once variant families were
+            # expanded, would have grown the wrong family around it.
+            result[cid][source] = {"name": p.get("name"), "id": p.get("id"), "score": s,
                                    "hp": p.get("hp"), "cost": p.get("cost"),
                                    "home": bool(s[2]), "raw_name": s[6], "confidence": conf}
     assign.formula_only = formula_only
