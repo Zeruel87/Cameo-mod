@@ -1,3 +1,39 @@
+﻿## Devin-Ember - LANE-1 W24 collapse batches 1-3: 19 weapons to single-main (2026-09-07, midday)
+
+**Identity:** Devin-Ember (Devin CLI, SWE-1.7 Max), LANE-1 per .agent-id / CLAIMS.
+Branch `devin/ember/w24-lane1` (commits `62fbc0339`/`10dca3861`/`6cec3798e`).
+
+Collapsed 19 TiberianSun/Consortium broadcast weapons to one main each per
+`collapse_target.py` targets + `plan_warhead_collapse.py` family picks.
+Mechanics used: same-block inherit+node drops, `-Warhead@X:` cancellations of
+parent-inherited mains (TSHellfireSonic, TSZoneHellfireSonic, SteelMegaSword_elite),
+and one forced chain collapse (SteelStalkerRailgun_EMP/_elite/EScatter share an
+untyped `Warhead@Quantum_HeavyFlatCompatibility` node - removing the parent's
+`@roleflat` orphans all descendants, so all three went to Tesla).
+
+New traps for the fleet:
+- The planner's NAME heuristic fires on name substrings even when the family is
+  absent from the resolved mains (TSBoatcannon 'cannon'->CannonHE vs Concussion+
+  Demolition; TSSonicZapWeapon 'sonic'->Sonic vs Tesla+Magic; three Consortium
+  cases). Gate NAME rows by "family must appear in resolved mains".
+- `Inherits@roleflat` overrides down a chain mean removing it reverts to the
+  grandparent's flat template - check for an existing `-Warhead@` cancel.
+- `audit_release_drift` reads raw `Damage`, not `PercentageScale`-adjusted
+  runtime: a shrapnel child at 16.67% scale looked 6.05x shipped until its flat
+  `Damage` was set to the tool's 30000 target.
+
+Skipped (ruling-blocked, detailed in fleet report
+`ember_2026-09-07_lane1_batch1.md`): shotgun trio (same-block -Warhead@
+self-cancel), SteelAirTurret chain (NONE-confidence elite), TSScoopDualChem
+(ambiguous chem-vs-chem), 5 planner NAME-misfires, TSCABALObeliskLaserFire
+(deliberate 2.68x), CabalAscendedRockets (conditional bonus main), 14
+not-planner-covered weapons.
+
+Gates on branch tip: empty-warhead 0, drift D1 128/133 D2 61/62 D3 27/27
+D4 335/335, weapon_shape W5 377/394, shrapnel 193 clean, boot-gate PASS x3.
+
+Co-Authored-By: Devin AI <devin@cognition.ai>
+
 # Development Log
 
 ## Codex - Complete runtime graph validation (2026-09-07)
