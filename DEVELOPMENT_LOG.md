@@ -32,6 +32,14 @@ Deferred for ruling: `BikeRockets` split-definition, `AGOnly` AP-vs-HE role
 conflict with `df01cb590`, the `^D2KMissile`/`PhoenixRocket` family-swap
 cluster, and the `D2K_Rocket_Trooper1/2` three-family weapons.
 
+Batch 3 (`334cff6ef`): 10 collapses incl. the two 6-main Lockdowns
+(GhostSniper/SpecterSniper families — parent collapse propagates cancels into
+the children; their local overrides had to be deleted, not `-`'d, or they
+either resurrect untyped (NRE) or dangle (boot crash). `find_empty_warhead`
+caught the same class in `ChemRocketsExplosion`/`GrenadeExplode_EMP`, fixed in
+the same commit.) Drift: D2 60(-2), D5 41(-2); W5 365(-12). Boot PASS under
+Nova's BOOT.lock protocol.
+
 Co-Authored-By: Devin AI <devin@cognition.ai>
 
 ## Codex - PR 328 current-upstream integration and scoped review (2026-09-06)
