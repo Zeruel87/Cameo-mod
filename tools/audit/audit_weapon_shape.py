@@ -68,13 +68,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 # Ratchets established 2026-09-06 by THIS script's own first run. LOWER ONLY.
 # (An earlier throwaway scan said 602/237/30/72; its regex was looser. Always set
 #  a ratchet from the audit that enforces it, never from a scratch measurement.)
-W1_BASELINE = 583   # more than 3 inherits
+W1_BASELINE = 577   # more than 3 inherits (583->577 after excluding
+                    # ^Compatibility_* flat/percentage-scoped twins)
 W2_BASELINE = 211   # dual ^Warhead_ inherit (213->211: D2K_Rocket_Trooper AA+AGOnly collapsed by maintainer ffdec98b7)
 W3_BASELINE = 12    # dual ^Projectile_ inherit (21->12: same collapse)
 W4_BASELINE = 52    # dual ^Effect_ inherit (61->52: same collapse)
-W5_BASELINE = 394   # more than one resolved MAIN warhead (was 401; 394 after the
-                    # ad7c5e232 removal-node restore, which was the last of the
-                    # resurrected-warhead damage)
+W5_BASELINE = 274   # more than one resolved MAIN warhead (394->274 after
+                    # DESIGN.md §12.0h: *Compatibility warheads are the flat/
+                    # percentage-scoped half of one main, not a second main)
 W6_BASELINE = 694   # weapons declaring an effect warhead locally
                     # 687 -> 694: the TOP_LEVEL regex was fixed to match
                     # digit-starting keys (120mm_*, 8Inch, etc.), exposing
@@ -86,7 +87,12 @@ EFFECT_TYPES = {
     "DamagesConcrete",
 }
 # Suffixes that mark a warhead as a HALF of one main, not a second main.
-NOT_A_MAIN = ("percentage", "friendlyfire", "extradamage")
+# "compatibility" captures the flat/percentage-scoped twins from
+# ^Compatibility_* templates (e.g. Laser_HeavyFlatCompatibility, EMPCompatibility)
+# which DESIGN.md §12.0h already rules as a legal second half of one main.
+# The trailing "1" on CollapseTargetCompatibility1 is intentionally NOT matched
+# ("compatibility1" != "compatibility") so that outlier stays flagged.
+NOT_A_MAIN = ("percentage", "friendlyfire", "extradamage", "compatibility")
 
 TOP_LEVEL = re.compile(r"^([A-Za-z0-9_^][A-Za-z0-9_.^]*):")
 INHERIT = re.compile(r"^\t(Inherits(?:@[A-Za-z0-9_]+)?):\s*(\S+)")
