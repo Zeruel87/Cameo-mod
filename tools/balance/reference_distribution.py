@@ -439,9 +439,22 @@ _AI_ID = re.compile(r"[._]AI\d*$", re.I)
 _AI_NAME = re.compile(r"\(\s*AI\s*\)|AI[- ]ONLY|for AI", re.I)
 
 
-def is_ai_only(row):
-    """True when a corpus row is an AI-exclusive duplicate and must never be a reference."""
-    return bool(_AI_ID.search(row.get("id") or "") or _AI_NAME.search(row.get("name") or ""))
+def is_ai_only(row, source_ids=None):
+    """True when a corpus row is an AI-exclusive duplicate and must never be a reference.
+
+    ⚠ THE MARKER IS ALSO A PREFIX, not only a suffix. DTA ships 37 of them — `AIMSAM`, `AIMLRS`,
+    `AILTNK`, `AIMTNK` — beside the real `MSAM`, `MLRS`, `LTNK`, `MTNK`, and the first pass of
+    this filter looked only for a trailing `_AI`, so every one of them stayed in the pool. Here
+    the sibling test is REQUIRED rather than advisory: `AI` at the front of an id is far too
+    common to act on alone (a bare prefix rule would strike `AIRCRAFT`), so the row is refused
+    only when stripping the prefix names a unit the same source actually ships.
+    """
+    if _AI_ID.search(row.get("id") or "") or _AI_NAME.search(row.get("name") or ""):
+        return True
+    rid = (row.get("id") or "").upper()
+    if source_ids and rid.startswith("AI") and len(rid) > 3:
+        return rid[2:] in source_ids.get(row.get("source"), ())
+    return False
 
 
 def peer_rows():
@@ -534,8 +547,13 @@ def peer_rows():
         rows.append(row)
     # Applied once, here, so EVERY consumer sees the same corpus: the assignment, the coverage
     # audit and the distributions alike. An AI-only row must not shape a distribution either.
-    peer_rows.ai_only = [r for r in rows if is_ai_only(r)]
-    return [r for r in rows if not is_ai_only(r)]
+    by_src = collections.defaultdict(set)
+    for r in rows:
+        rid = (r.get("id") or "").strip().upper()
+        if rid:
+            by_src[r["source"]].add(rid)
+    peer_rows.ai_only = [r for r in rows if is_ai_only(r, by_src)]
+    return [r for r in rows if not is_ai_only(r, by_src)]
 
 
 # Cameo's own 16 armor rows, grouped by the ladder DESIGN.md puts them in.

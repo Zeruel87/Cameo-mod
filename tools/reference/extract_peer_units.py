@@ -609,6 +609,22 @@ def extract(mod_id):
             continue
         if not any(c.key.split("@")[0] == "Buildable" for c in node.children):
             continue
+        # ⛔ `~disabled` MEANS THE MOD SHIPS IT UNBUILDABLE, and such a row is not a reference.
+        # OpenRA gates its critters on a prerequisite nothing ever grants — the dinosaurs, the
+        # Visceroid, the giant ants — while leaving the `Buildable` block in place so the map
+        # editor can still place them. They therefore arrived in the corpus as ordinary infantry
+        # tagged `gdi/nod` with 100,000 HP, and the matcher, having spent the real units on the
+        # originals, handed the leftovers to Cameo's expansion units: `td_gdi_officer` drew a
+        # Triceratops, `td_gdi_shotgunner` a Stegosaurus, `td_gdi_heavysniper` a Velociraptor.
+        #
+        # ⭐ This is the DATA'S OWN test, not a name blocklist. A blocklist of dinosaur names
+        # would rot the moment a mod adds a critter, and would never have caught OpenRA Red
+        # Alert's `HIND` — which carries `~disabled` too, and so is honestly NOT an available
+        # reference for our Hind even though the unit exists in the files.
+        b = _buildable(node)
+        prereq = (({k.key: k.value for k in b.children}).get("Prerequisites") or "") if b is not None else ""
+        if any(c.strip().lstrip("~!").lower() == "disabled" for c in prereq.split(",")):
+            continue
         hp = trait(node, T["health"], "HP")
         if not hp:
             continue

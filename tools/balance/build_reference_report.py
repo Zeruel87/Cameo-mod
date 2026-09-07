@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """build_reference_report.py — the reference map as a reviewable HTML page.
 
-The map is only as good as the maintainer's read of it, and a markdown table of 130 actors is not
-readable. This renders the same data grouped by unit type, with every reference's FULL id and name
-next to the Cameo actor's, so a wrong pairing is visible at a glance rather than inferred from a
-stat that looks off.
+⭐ ORIGINALS AND EXPANSIONS ARE TWO DIFFERENT REPORTS (maintainer, 2026-09-07). Mixing them is
+what made the first page unreadable. An ORIGINAL exists in OpenRA/OpenTD, so a counterpart
+provably exists in every source: all three references must be present and must be the same unit,
+and every row is checkable against the original game. An EXPANSION exists only in Cameo, Combined
+Arms or DTA; it cannot always have three references, and holding it to the same standard buries
+the rows that are genuinely wrong among rows that never could be right.
 
-⭐ IT SHOWS WHAT IS MISSING, not just what was chosen. The failure this effort keeps hitting is a
-correct candidate that never reached the matcher, and no listing of CHOSEN references can show
-that. Originals holding fewer than three sources are flagged, because per the maintainer's rule a
-unit that exists in OpenRA/OpenTD must have all three.
+The two bands are therefore separated, counted and captioned apart, so a review pass over the
+originals is a finite, decidable job.
 
     python tools/balance/build_reference_report.py --faction td_gdi td_nod ra1_allies ra1_soviets
 """
@@ -35,20 +35,23 @@ SECTIONS = (("infantry", "Infantry"), ("vehicle", "Vehicles"), ("aircraft", "Air
 CONF_ORDER = {"STRONG": 0, "FAIR": 1, "SHAPE": 2, "WEAK": 3}
 
 STYLE = """
-:root{--bg:#f7f6f3;--fg:#1b1a17;--mut:#6f6a60;--line:#ddd8cd;--card:#fffefb;
+:root{--bg:#f7f6f3;--fg:#1b1a17;--mut:#6f6a60;--line:#ddd8cd;--card:#fffefb;--accent:#8a5a2b;
 --strong:#1f6b4a;--fair:#7a6320;--shape:#4a5a78;--weak:#8a4a3c;--bad:#a3312a;--tgt:#2e5c8a;}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#161513;--fg:#eae6dd;
---mut:#9b948a;--line:#33302a;--card:#1e1c19;--strong:#5fbf8f;--fair:#c9a94a;--shape:#8fa8cc;
---weak:#d08a78;--bad:#e0736a;--tgt:#7fb0e0;}}
+--mut:#9b948a;--line:#33302a;--card:#1e1c19;--accent:#d8a56a;--strong:#5fbf8f;--fair:#c9a94a;
+--shape:#8fa8cc;--weak:#d08a78;--bad:#e0736a;--tgt:#7fb0e0;}}
 :root[data-theme=dark]{--bg:#161513;--fg:#eae6dd;--mut:#9b948a;--line:#33302a;--card:#1e1c19;
---strong:#5fbf8f;--fair:#c9a94a;--shape:#8fa8cc;--weak:#d08a78;--bad:#e0736a;--tgt:#7fb0e0;}
+--accent:#d8a56a;--strong:#5fbf8f;--fair:#c9a94a;--shape:#8fa8cc;--weak:#d08a78;--bad:#e0736a;
+--tgt:#7fb0e0;}
 body{background:var(--bg);color:var(--fg);font:14px/1.5 ui-sans-serif,system-ui,sans-serif;
 margin:0;padding:28px clamp(12px,4vw,56px);}
 h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
 h2{margin:34px 0 6px;font-size:1.15rem;border-bottom:2px solid var(--line);padding-bottom:5px}
-h3{margin:20px 0 6px;font-size:.82rem;text-transform:uppercase;letter-spacing:.09em;color:var(--mut)}
-.muted{color:var(--mut);font-weight:400}
-.lede{color:var(--mut);max-width:74ch;margin:0 0 10px}
+h2.band{border-bottom:none;color:var(--accent);font-size:.95rem;text-transform:uppercase;
+letter-spacing:.1em;margin:26px 0 2px}
+h3{margin:18px 0 6px;font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--mut)}
+.muted{color:var(--mut);font-weight:400;text-transform:none;letter-spacing:0}
+.lede{color:var(--mut);max-width:78ch;margin:0 0 10px}
 .wrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;background:var(--card);border:1px solid var(--line);
 border-radius:7px;overflow:hidden;margin-bottom:6px}
@@ -75,6 +78,65 @@ def num(v, dash="—"):
     return f"{v:,.0f}" if isinstance(v, (int, float)) and v else dash
 
 
+def is_original(srcs):
+    """An actor is an ORIGINAL when an original-shipping mod matched it BY NAME.
+
+    That is the maintainer's own rule made mechanical: OpenRA Red Alert and Tiberian Dawn ship
+    the original rosters and nothing else, so a name-backed match against one of them is proof
+    the unit existed in the original game — and therefore proof that DTA and Combined Arms, both
+    supersets, must have it too.
+    """
+    return any(d.get("confidence") in ("STRONG", "FAIR") and s in ORIGINAL_SOURCES
+               for s, d in (srcs or {}).items())
+
+
+def emit(body, members, crows, assignment, attached, chassis_only, dist, cdist, counts):
+    for kind, title in SECTIONS:
+        group = [a for a in members if crows[a]["type"] == kind]
+        if not group:
+            continue
+        body.append(f'<h3>{title} <span class="muted">· {len(group)}</span></h3>')
+        body.append('<table><thead><tr><th>Cameo actor</th><th class="n">refs</th>'
+                    '<th class="n">HP now</th><th class="n">HP →</th>'
+                    '<th class="n">speed now</th><th class="n">speed →</th>'
+                    '<th class="n">cost now</th><th class="n">cost →</th>'
+                    '<th>reference units chosen</th></tr></thead><tbody>')
+        for a in group:
+            c = crows[a]
+            rows = attached.get(a) or []
+            chosen = assignment.get(a) or {}
+            counts["actors"] += 1
+            counts["refs"] += len(chosen)
+            srcs = sorted(chosen.items(), key=lambda kv: (
+                CONF_ORDER.get((kv[1] or {}).get("confidence", "WEAK"), 9), kv[0]))
+            flag = ""
+            if not srcs:
+                counts["none"] += 1
+                flag = ' <b class="bad">no reference — formula</b>'
+            elif is_original(chosen) and len(srcs) < 3:
+                counts["thin"] += 1
+                flag = ' <b class="warn">original, &lt;3 sources</b>'
+            chips = "".join(
+                '<span class="chip {cls}"><i>{src}</i> <code>{rid}</code> {rname}</span>'.format(
+                    cls=(d or {}).get("confidence", "WEAK").lower(),
+                    src=html.escape(s),
+                    rid=html.escape(str((d or {}).get("id") or "?")),
+                    rname=html.escape(str((d or {}).get("name") or "")))
+                for s, d in srcs)
+            tgt = {s: (rt.target_for(rows, c, s, dist, cdist)[1] if rows else None)
+                   for s in ("hp", "speed", "cost")}
+            note = ' <span class="tag">chassis-only</span>' if a in chassis_only else ""
+            empty = '<span class="muted">—</span>'
+            body.append(
+                f'<tr><td><code>{html.escape(a)}</code>{note}{flag}</td>'
+                f'<td class="n">{len(srcs)}</td>'
+                f'<td class="n">{num(c.get("hp"))}</td><td class="n t">{num(tgt["hp"])}</td>'
+                f'<td class="n">{num(c.get("speed"))}</td><td class="n t">{num(tgt["speed"])}</td>'
+                f'<td class="n">{num(c.get("cost"))}</td><td class="n t">{num(tgt["cost"])}</td>'
+                f'<td>{chips or empty}</td></tr>')
+        body.append("</tbody></table>")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--faction", nargs="+", required=True)
@@ -93,76 +155,49 @@ def main() -> int:
     crows = {c["id"]: c for c in cameo}
 
     body = []
-    counts = {"actors": 0, "refs": 0, "thin": 0, "none": 0}
+    counts = {"actors": 0, "refs": 0, "thin": 0, "none": 0, "orig": 0, "exp": 0}
     for fac in args.faction:
         members = sorted(a for a in crows if a.startswith(fac + "_"))
-        body.append(f'<h2>{html.escape(fac)} <span class="muted">· {len(members)} actors</span></h2>')
-        for kind, title in SECTIONS:
-            group = [a for a in members if crows[a]["type"] == kind]
-            if not group:
+        originals = [a for a in members if is_original(assignment.get(a))]
+        expansions = [a for a in members if not is_original(assignment.get(a))]
+        counts["orig"] += len(originals)
+        counts["exp"] += len(expansions)
+        body.append(f'<h2>{html.escape(fac)} <span class="muted">· {len(originals)} original, '
+                    f'{len(expansions)} expanded</span></h2>')
+        for band, label, note in (
+            (originals, "Originals",
+             "These exist in OpenRA/OpenTD, so a counterpart exists in every source and all "
+             "three must be present and must be the same unit. Anything short of three, or any "
+             "reference that is not plainly the same unit, is a defect worth reporting."),
+            (expansions, "Expanded units",
+             "Cameo, Combined Arms or DTA additions. No counterpart is guaranteed, so references "
+             "here are accepted only on a name or id match — never on a similar stat shape, which "
+             "is what used to hand these actors critters and hero units. An actor with no "
+             "reference is priced by the formula from its class anchor, which is the intended "
+             "outcome, not a gap.")):
+            if not band:
                 continue
-            body.append(f'<h3>{title} <span class="muted">· {len(group)}</span></h3>')
-            body.append('<table><thead><tr><th>Cameo actor</th><th class="n">refs</th>'
-                        '<th class="n">HP now</th><th class="n">HP →</th>'
-                        '<th class="n">speed now</th><th class="n">speed →</th>'
-                        '<th class="n">cost now</th><th class="n">cost →</th>'
-                        '<th>reference units chosen</th></tr></thead><tbody>')
-            for a in group:
-                c = crows[a]
-                # ⚠ TWO DIFFERENT SHAPES, and they are easy to confuse. `attached` holds the peer
-                # ROWS (stat-bearing, family-expanded) that the target maths needs; the confidence
-                # and the chosen id/name live on the ASSIGNMENT. Reading chips out of `attached`
-                # gets a list where a dict is expected, and reading targets out of the assignment
-                # silently drops the family expansion.
-                rows = attached.get(a) or []
-                chosen = assignment.get(a) or {}
-                counts["actors"] += 1
-                counts["refs"] += len(chosen)
-                srcs = sorted(chosen.items(), key=lambda kv: (
-                    CONF_ORDER.get((kv[1] or {}).get("confidence", "WEAK"), 9), kv[0]))
-                holds_original = any(s in ORIGINAL_SOURCES for s, _ in srcs)
-                flag = ""
-                if not srcs:
-                    counts["none"] += 1
-                    flag = ' <b class="bad">no reference</b>'
-                elif holds_original and len(srcs) < 3:
-                    counts["thin"] += 1
-                    flag = ' <b class="warn">original, &lt;3 sources</b>'
-                chips = "".join(
-                    '<span class="chip {cls}"><i>{src}</i> <code>{rid}</code> {rname}</span>'.format(
-                        cls=(d or {}).get("confidence", "WEAK").lower(),
-                        src=html.escape(s),
-                        rid=html.escape(str((d or {}).get("id") or "?")),
-                        rname=html.escape(str((d or {}).get("name") or "")))
-                    for s, d in srcs)
-                tgt = {}
-                for stat in ("hp", "speed", "cost"):
-                    tgt[stat] = rt.target_for(rows, c, stat, dist, cdist)[1] if rows else None
-                note = ' <span class="tag">chassis-only</span>' if a in chassis_only else ""
-                body.append(
-                    f'<tr><td><code>{html.escape(a)}</code>{note}{flag}</td>'
-                    f'<td class="n">{len(srcs)}</td>'
-                    f'<td class="n">{num(c.get("hp"))}</td><td class="n t">{num(tgt["hp"])}</td>'
-                    f'<td class="n">{num(c.get("speed"))}</td><td class="n t">{num(tgt["speed"])}</td>'
-                    f'<td class="n">{num(c.get("cost"))}</td><td class="n t">{num(tgt["cost"])}</td>'
-                    f'<td>{chips or chr(60) + "span class=muted" + chr(62) + chr(8212) + "</span>"}</td></tr>')
-            body.append("</tbody></table>")
+            body.append(f'<h2 class="band">{label} '
+                        f'<span class="muted">· {len(band)}</span></h2>'
+                        f'<p class="lede">{note}</p>')
+            emit(body, band, crows, assignment, attached, chassis_only, dist, cdist, counts)
 
-    summary = (f'{counts["actors"]} actors · {counts["refs"]} references · '
-               f'{counts["none"]} with none · {counts["thin"]} originals under three sources')
+    summary = (f'{counts["orig"]} originals · {counts["exp"]} expanded · '
+               f'{counts["refs"]} references · {counts["none"]} priced by formula · '
+               f'{counts["thin"]} originals under three sources')
     page = (
         "<title>TD &amp; RA1 Reference Map</title>\n"
         f"<style>{STYLE}</style>\n"
         "<h1>TD &amp; RA1 Reference Map</h1>\n"
         '<p class="lede">Every Cameo actor with the reference unit chosen from each source, by '
-        'full id and name. The bar on each chip is match confidence. <b>HP →</b>, '
-        '<b>speed →</b> and <b>cost →</b> are the R4 synthesis targets — references '
-        'plus Cameo, one vote each. Nothing here has been written to yaml.</p>\n'
+        'full id and name, split into units that exist in the original games and units that do '
+        'not. The bar on each chip is match confidence. <b>HP →</b>, <b>speed →</b> and '
+        '<b>cost →</b> are the R4 synthesis targets — references plus Cameo, one vote each. '
+        'Nothing here has been written to yaml.</p>\n'
         f'<p class="lede">{summary}</p>\n'
         '<div class="wrap">\n' + "\n".join(body) + "\n</div>\n")
-    out = pathlib.Path(args.out)
-    out.write_text(page, encoding="utf-8")
-    print(f"wrote {out}  ({summary})")
+    pathlib.Path(args.out).write_text(page, encoding="utf-8")
+    print(f"wrote {args.out}  ({summary})")
     return 0
 
 

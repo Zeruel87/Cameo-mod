@@ -506,22 +506,15 @@ Checkout: `C:\Users\AedisToru\Documents\GitHub\cameo-engine` · rifle anchor **`
 | id | unit | type | faction | HP | ×rifle | Cost | ×rifle cost | Speed | Turn | Turret | Limit | Range | Dmg | Burst | Reload | DPS | vsINF | vsVEH | vsAIR | vsBLD |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|:-:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
 | `FACT` | Construction Yard | building | — | 210,000 | 42.00 | 3,000 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `FACT.GDI` | GDI Construction Yard | building | gdi/nod | 210,000 | 42.00 | 3,000 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `FACT.NOD` | Nod Construction Yard | building | gdi/nod | 210,000 | 42.00 | 3,000 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `TMPL` | Temple of Nod | building | nod | 210,000 | 42.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `EYE` | Advanced Communications Center | building | gdi | 130,000 | 26.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `MCV` | Mobile Construction Vehicle | vehicle | gdi/nod | 120,000 | 24.00 | 3,000 | 30.00 | 60 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `AFLD` | Airstrip | building | nod | 110,000 | 22.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `WEAP` | Weapons Factory | building | gdi | 110,000 | 22.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `PROC` | Tiberium Refinery | building | gdi/nod | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `RAPT` | Velociraptor | infantry | gdi/nod | 100,000 | 20.00 | 1,000 | 10.00 | 113 | — | n | — | 1,024 | 6,000 | 1 | 10 | 600 | 0.90 | 0.20 | — | 0.10 |
-| `STEG` | Stegosaurus | infantry | gdi/nod | 100,000 | 20.00 | 1,000 | 10.00 | 113 | — | n | — | 1,024 | 18,000 | 1 | 30 | 600 | 0.90 | 0.20 | — | 0.10 |
-| `TREX` | Tyrannosaurus rex | infantry | gdi/nod | 100,000 | 20.00 | 1,000 | 10.00 | 113 | — | n | — | 1,024 | 18,000 | 1 | 30 | 600 | 0.90 | 0.20 | — | 0.10 |
-| `TRIC` | Triceratops | infantry | gdi/nod | 100,000 | 20.00 | 1,000 | 10.00 | 113 | — | n | — | 1,024 | 12,000 | 1 | 20 | 600 | 0.90 | 0.20 | — | 0.10 |
 | `HTNK` | Mammoth Tank | vehicle | gdi | 87,000 | 17.40 | 1,800 | 18.00 | 46 | 14 | Y | — | 4,864 | 4,000 | 2 | 40 | 167 | 0.25 | 1.00 | — | 1.00 |
 | `FIX` | Repair Facility | building | gdi/nod | 80,000 | 16.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `HQ` | Communications Center | building | gdi/nod | 80,000 | 16.00 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `MISS` | Tech Center | building | — | 80,000 | 16.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `OBLI` | Obelisk of Light | building | nod | 75,000 | 15.00 | 1,500 | 15.00 | — | — | n | — | 7,680 | 36,000 | 1 | 40 | 900 | — | — | — | 0.50 |
 | `NUK2` | Advanced Power Plant | building | gdi/nod | 70,000 | 14.00 | 800 | 8.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `HARV` | Harvester | vehicle | gdi/nod | 62,500 | 12.50 | 1,100 | 11.00 | 72 | 20 | n | — | — | — | — | — | — | — | — | — | — |
@@ -536,7 +529,6 @@ Checkout: `C:\Users\AedisToru\Documents\GitHub\cameo-engine` · rifle anchor **`
 | `GTWR` | Guard Tower | building | gdi/nod | 40,000 | 8.00 | 600 | 6.00 | — | 512 | Y | — | 6,144 | 3,000 | 1 | 25 | 120 | 1.00 | 0.50 | — | 0.40 |
 | `SAM` | SAM Site | building | nod | 40,000 | 8.00 | 650 | 6.50 | — | 40 | Y | — | 10,240 | 2,500 | 2 | 20 | 200 | 1.40 | 1.22 | — | 1.22 |
 | `LTNK` | Light Tank | vehicle | nod | 32,000 | 6.40 | 750 | 7.50 | 102 | 28 | Y | — | 4,096 | 2,500 | 1 | 30 | 83 | 0.24 | 0.94 | — | 0.88 |
-| `PVICE` | Visceroid | infantry | gdi/nod | 30,000 | 6.00 | 700 | 7.00 | 68 | — | n | — | 3,072 | 8,000 | 1 | 65 | 123 | 0.70 | 0.75 | — | 0.55 |
 | `FTNK` | Flame Tank | vehicle | nod | 27,000 | 5.40 | 600 | 6.00 | 92 | 28 | n | — | 3,584 | 10,000 | 2 | 65 | 267 | 0.82 | 0.47 | — | 0.75 |
 | `BRIK` | Concrete Barrier | building | gdi/nod | 20,000 | 4.00 | 150 | 1.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `MHQ` | Mobile HQ | vehicle | — | 20,000 | 4.00 | 1,000 | 10.00 | 72 | 20 | n | — | — | — | — | — | — | — | — | — | — |
@@ -1065,7 +1057,6 @@ Checkout: `C:\Users\AedisToru\Documents\GitHub\cameo-engine` · rifle anchor **`
 | id | unit | type | faction | HP | ×rifle | Cost | ×rifle cost | Speed | Turn | Turret | Limit | Range | Dmg | Burst | Reload | DPS | vsINF | vsVEH | vsAIR | vsBLD |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|:-:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
 | `FACF` | Fake Construction Yard | defense | france | 150,000 | 30.00 | 200 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `FACT` | Construction Yard | building | — | 150,000 | 30.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `WEAF` | Fake War Factory | defense | france | 150,000 | 30.00 | 200 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `WEAP` | War Factory | building | — | 150,000 | 30.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `AFLD` | Airfield | building | russia/soviet/ukraine | 100,000 | 20.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -1077,7 +1068,6 @@ Checkout: `C:\Users\AedisToru\Documents\GitHub\cameo-engine` · rifle anchor **`
 | `MSLO` | Missile Silo | defense | allies/soviet | 100,000 | 20.00 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
 | `PDOF` | Fake Chronosphere | defense | france | 100,000 | 20.00 | 150 | 1.50 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
 | `PDOX` | Chronosphere | defense | allies/england/france/germany | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `SPEF` | Fake Sub Pen | defense | — | 100,000 | 20.00 | 80 | 0.80 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SPEN` | Sub Pen | building | russia/soviet/ukraine | 100,000 | 20.00 | 800 | 8.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SYRD` | Naval Yard | building | allies/england/france/germany | 100,000 | 20.00 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SYRF` | Fake Naval Yard | defense | france | 100,000 | 20.00 | 100 | 1.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -1134,18 +1124,14 @@ Checkout: `C:\Users\AedisToru\Documents\GitHub\cameo-engine` · rifle anchor **`
 | `JEEP` | Ranger | vehicle | allies/england/france/germany | 15,000 | 3.00 | 500 | 5.00 | 164 | 40 | Y | — | 4,096 | 1,000 | 5 | 30 | 100 | 1.50 | 0.20 | — | 0.10 |
 | `SBAG` | Sandbag Wall | defense | allies/england/france/germany | 15,000 | 3.00 | 30 | 0.30 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `TRAN` | Chinook | aircraft | allies/england/france/germany | 14,000 | 2.80 | 900 | 9.00 | 128 | 20 | n | — | — | — | — | — | — | — | — | — | — |
-| `WarriorAnt` | Warrior Ant | infantry | — | 12,500 | 2.50 | 300 | 3.00 | 56 | 48 | n | — | 1,536 | 10,000 | 2 | 15 | 571 | 1.00 | 0.62 | — | 0.15 |
 | `HELI` | Longbow | aircraft | allies/england/france/germany | 12,000 | 2.40 | 2,000 | 20.00 | 149 | 16 | n | — | 4,096 | 3,000 | 2 | 30 | 150 | 0.10 | 1.00 | — | 0.62 |
 | `TRUK` | Supply Truck | vehicle | — | 11,000 | 2.20 | 500 | 5.00 | 113 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `ARTY` | Artillery | vehicle | allies/england/france/germany | 10,000 | 2.00 | 850 | 8.50 | 72 | 8 | n | — | 12,288 | 23,000 | 1 | 85 | 271 | 0.60 | 0.42 | — | 0.45 |
 | `E7` | Tanya | infantry | allies/england/france/germany | 10,000 | 2.00 | 1,800 | 18.00 | 68 | — | n | 1 | 7,168 | 10,000 | 1 | 7 | 1,429 | — | — | — | — |
-| `HIND` | Hind | aircraft | allies/england/france/germany | 10,000 | 2.00 | 1,500 | 15.00 | 112 | 16 | n | — | 5,120 | 2,500 | 2 | 10 | 333 | 1.44 | 0.50 | — | 0.44 |
 | `MH60` | Black Hawk | aircraft | allies/england/france/germany | 10,000 | 2.00 | 1,500 | 15.00 | 112 | 16 | n | — | 5,120 | 2,500 | 2 | 10 | 333 | 1.44 | 0.50 | — | 0.44 |
-| `ScoutAnt` | Scout Ant | infantry | — | 8,500 | 1.70 | 300 | 3.00 | 92 | 48 | n | — | 1,536 | 6,000 | 2 | 10 | 500 | 0.90 | 0.20 | — | 0.10 |
 | `MECH` | Mechanic | infantry | allies/england/france/germany | 8,000 | 1.60 | 500 | 5.00 | 49 | — | n | — | 4,096 | — | 1 | 80 | — | — | — | — | — |
 | `MIG` | MiG Attack Plane | aircraft | soviet/ukraine | 8,000 | 1.60 | 2,000 | 20.00 | 223 | 16 | n | — | 9,216 | 7,000 | 2 | 50 | 246 | 0.30 | 1.02 | — | 0.95 |
 | `THF` | Thief | infantry | russia/soviet/ukraine | 8,000 | 1.60 | 500 | 5.00 | 72 | — | n | — | — | — | — | — | — | — | — | — | — |
-| `FireAnt` | Fire Ant | infantry | — | 7,500 | 1.50 | 300 | 3.00 | 68 | 48 | n | — | 4,096 | 4,000 | 2 | 50 | 114 | 0.80 | 0.33 | — | 0.50 |
 | `MEDI` | Medic | infantry | allies/england/france/germany | 6,000 | 1.20 | 200 | 2.00 | 49 | — | n | — | 4,096 | — | 1 | 80 | — | — | — | — | — |
 | `YAK` | Yak Attack Plane | aircraft | soviet/ukraine | 6,000 | 1.20 | 1,350 | 13.50 | 178 | 16 | n | — | 5,120 | 4,000 | 2 | 3 | 1,000 | 1.00 | 0.42 | — | 0.38 |
 | `E1` | Rifle Infantry | infantry | allies/soviet | 5,000 | 1.00 | 100 | 1.00 | 54 | — | n | — | 5,120 | 1,000 | 1 | 20 | 50 | 1.50 | 0.25 | — | 0.20 |

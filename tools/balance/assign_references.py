@@ -140,9 +140,18 @@ def norm_words(text):
 # Keys are the normalised LAST TOKEN of a Cameo actor id; values are normalised reference names
 # it should also be tried as. Add only where the identity is not in dispute — this bypasses the
 # name evidence, so a wrong entry is worse than a missing one.
+# ⚠ AN ALIAS IS FOR A UNIT THE SOURCES CALL SOMETHING ELSE, never for two DIFFERENT units.
+# The GDI rocket launcher is `MSAM` in DTA ("Rocket Launcher"), `MSAM` in OpenRA TD ("Rocket
+# Launcher") and `MSAM` in Combined Arms ("MLRS"). Cameo calls it `td_gdi_mlrs` — and `MLRS` is
+# the id all three sources use for NOD'S SSM LAUNCHER. So the id that looks like a perfect match
+# is the wrong faction's unit, and the right one shares no word with ours at all. Routing catches
+# it (DTA's MLRS is tagged Nod) but only the alias FINDS the correct row.
+# ⛔ Do not add `mlrs -> ssmlauncher` here. They are two different units and Cameo ships both.
 NAME_ALIASES = {
     "battletank": ("mediumtank",),
     "mediumtank": ("battletank",),
+    "mlrs": ("msam", "rocketlauncher"),
+    "ssmlauncher": ("mlrs",),
 }
 
 
@@ -300,7 +309,19 @@ def score(cam, rec, peer, cam_cost_pct, peer_cost_pct, home, cam_shape=None, pee
     # computed and then thrown away. Bucketing restores the maintainer's stated intent: name
     # DOMINATES, and the later keys decide among names of comparable quality.
     #   4 exact · 3 prefix/alias · 2 strong similarity · 1 shares a distinctive word · 0 neither
-    raw_name = name_score(cam["id"], peer.get("name", ""))
+    # ⛔ SCORE THE PEER'S ID AS WELL AS ITS NAME, and take the better of the two. A mod's id is
+    # frequently the only place the unit's common name survives — its display name having been
+    # localised, expanded or renamed outright:
+    #
+    #   td_gdi_apc   -> CA `APC2`  "Armored Personnel Carrier"   name 0.231   id 0.900
+    #   td_gdi_mlrs  -> DTA `MLRS` "SSM Launcher"                name 0.400   id 1.000
+    #
+    # Reading the name alone sent `td_gdi_apc` to an RA1 Allied IFV while CA's actual GDI APC sat
+    # unused, and handed `td_gdi_mlrs` a Drone Launcher while DTA's real MLRS went unclaimed. Both
+    # were then recorded as SHAPE matches — the scorer knew they were bad and the assignment kept
+    # them anyway, which is the other half of this bug.
+    raw_name = max(name_score(cam["id"], peer.get("name", "")),
+                   name_score(cam["id"], peer.get("id", "")))
     name = (4 if raw_name >= 1.0 else 3 if raw_name >= 0.9 else
             2 if raw_name >= 0.75 else 1 if raw_name >= 0.6 else 0)
     TIER_UNAVAILABLE = 0.0
@@ -482,11 +503,79 @@ def assign(only_class=None, routing=True):
             # re-attaching by name and stats cannot tell them apart and silently took the first.
             # That handed `td_gdi_mammothtank` the SOVIET mammoth and, once variant families were
             # expanded, would have grown the wrong family around it.
+            # ⛔ SHAPE AND WEAK ARE NOT EVIDENCE (maintainer ruling, 2026-09-07). A reference
+            # must be backed by a NAME, never by shape alone.
+            #
+            # Measured on the ten mappings the maintainer called junk: 8 SHAPE, 2 WEAK, ZERO
+            # STRONG. On the ones they called correct: 20 STRONG out of 21. The scorer separates
+            # good from junk almost perfectly and the assignment then RECORDED THE JUNK ANYWAY,
+            # as if a weak reference were a weak form of evidence. It is not — a Velociraptor is
+            # not a poor sniper reference, it is not a reference. `td_gdi_officer` drew a
+            # Triceratops, `td_gdi_shotgunner` a Stegosaurus, `td_gdi_sonicmissilesoldier` the
+            # Commando (a hero Cameo already fields).
+            #
+            # ⚠ WHY THE JUNK IS SPECIFICALLY WEIRD UNITS, which is the part worth remembering:
+            # the greedy matches originals first, so by the time an EXPANSION unit is reached the
+            # ordinary units are taken and what is left in the pool is critters, heroes and
+            # one-offs. An expansion did not draw a random reference — it drew one biased toward
+            # junk. Dropping shape-only matches is what stops an actor with no true counterpart
+            # from being handed the leftovers; it falls through to the formula instead, which is
+            # where a unit nobody else ships belongs.
             result[cid][source] = {"name": p.get("name"), "id": p.get("id"), "score": s,
                                    "hp": p.get("hp"), "cost": p.get("cost"),
                                    "home": bool(s[2]), "raw_name": s[6], "confidence": conf}
     assign.formula_only = formula_only
+    result, shape_only = drop_unbacked_shape(result)
+    assign.shape_only = shape_only
     return result, skipped, len(scope)
+
+
+# The mods that ship an original game and add nothing — so a NAME match against one of them is
+# proof the actor is an original, and proof that a counterpart exists in every other source too.
+ORIGINAL_SOURCES = ("OpenRA Red Alert", "OpenRA Tiberian Dawn",
+                    "OpenRA Tiberian Sun", "Romanov's Vengeance")
+
+
+def drop_unbacked_shape(result):
+    """Shape-only references are evidence for an ORIGINAL and noise for an EXPANSION.
+
+    ⛔ THE MAINTAINER'S RULE IS THE WHOLE ARGUMENT (2026-09-07):
+
+        "All the original units are in OpenRA. DTA, CA and Cameo all expand the unit roster, so
+         if it doesn't exist in OpenRA or OpenTD then it is an extra unit and those can't always
+         have 3 references."
+
+    Read it as a statement about PRIORS and the rule writes itself. For an original, the
+    probability that a counterpart exists in a given source is 1 — so when the name match fails
+    there (DTA calls its rocket soldier "Bazooka", its MLRS "SSM Launcher") a shape match is very
+    likely to be that counterpart, and dropping it costs the actor a voice it is entitled to. For
+    an expansion, no counterpart exists at all, and a shape match is only ever the best of the
+    leftovers — which, because the greedy takes the originals first, means critters, heroes and
+    one-offs. `td_gdi_officer` drew a Triceratops. `td_gdi_shotgunner` a Stegosaurus.
+
+    So: an actor may keep its shape-only references ONLY if some ORIGINAL source matched it BY
+    NAME. That one test separates the two populations exactly, and it is the maintainer's own rule
+    restated — not a threshold anyone tuned.
+
+    ⚠ Measured before this: of ten mappings the maintainer called junk, 8 were SHAPE and 2 WEAK,
+    and ZERO were STRONG; of the ones they called correct, 20 of 21 were STRONG.
+    """
+    kept, dropped = {}, {}
+    for cid, srcs in result.items():
+        backed = any(d["confidence"] in ("STRONG", "FAIR") and s in ORIGINAL_SOURCES
+                     for s, d in srcs.items())
+        keep, drop = {}, {}
+        for s, d in srcs.items():
+            if d["confidence"] in ("STRONG", "FAIR") or backed:
+                keep[s] = d
+            else:
+                drop[s] = {"id": d.get("id"), "name": d.get("name"),
+                           "confidence": d["confidence"]}
+        if keep:
+            kept[cid] = keep
+        if drop:
+            dropped[cid] = drop
+    return kept, dropped
 
 
 def write_review(klass):
