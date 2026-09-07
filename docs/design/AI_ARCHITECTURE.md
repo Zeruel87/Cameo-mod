@@ -538,7 +538,15 @@ runtime, no network calls, no adapting mid-match from a file that another client
 (`engine/OpenRA.Game/Support/Log.cs:111,128`) and mods already add channels from traits
 (`ScriptContext.cs:146`, `TraitDictionary.cs:62`), so JSONL match logs need no new IO plumbing.
 
-### 6.2 Log schema (one JSON object per line)
+### 6.2 Shipped record-only log schema (one JSON object per line)
+
+Phase 1 ships one versioned JSONL object per bot player per finished match. The
+authoritative field order and writer rules live in [`AI_MATCH_LOG.md`](AI_MATCH_LOG.md).
+`AiMatchLogRecorder` observes personality transitions without changing them, and
+`AiMatchLogWriter` appends the records only on the host in regular non-replay worlds.
+The game never reads the file back. The offline
+[`aggregate_ai_matches.py`](../../tools/ai/aggregate_ai_matches.py) tool consumes
+schema version 1 records; later decision and episode records remain proposals.
 
 Three record types, deliberately flat so aggregation is trivial:
 
@@ -556,9 +564,9 @@ gives one bit of signal against six decisions, which is the credit-assignment pr
 
 ### 6.3 Learning, in the order it should be built
 
-**Phase 1 — record only.** Emit the logs, change no behaviour. Verify the schema survives real
-matches and that the numbers are attributable. This is the proof of concept the user asked for,
-and it is the whole first deliverable.
+**Phase 1 — record only (implemented).** Emit schema version 1 logs, change no behaviour, and
+leave aggregation offline. The shipped recorder, writer, schema, and aggregator are the proof of
+concept deliverable. Verify the schema survives real matches and that the numbers are attributable.
 
 **Phase 2 — offline aggregation.** A Python tool under `tools/` producing, per
 (faction × enemy faction × personality) and (composition × enemy faction), the episode counts,

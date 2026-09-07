@@ -2822,6 +2822,12 @@ composition behavior is claimed.
 
 ## 21. AI architecture (forward design)
 
+### 21.1 Record-only AI match logging
+
+AI match logging is record-only: it never changes gameplay and the game never
+reads the log back. The writer runs on the host only and emits schema version 1
+JSONL records.
+
 The forward design for bot modules, per-ContentPack AI splitting, the dynamic
 personality manager, the master AI module, and match logging lives in
 [`design/AI_ARCHITECTURE.md`](design/AI_ARCHITECTURE.md). Sections 19 and 20
