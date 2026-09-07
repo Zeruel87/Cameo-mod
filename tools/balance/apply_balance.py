@@ -172,6 +172,13 @@ class YamlEditor:
             self.path.write_bytes(self.content())
 
 
+def _is_superweapon(rec):
+    """Superweapon test, imported lazily so this module keeps its light import graph."""
+    sys.path.insert(0, str(ROOT / "tools/balance"))
+    import reference_distribution as rd
+    return rd.is_superweapon(rec)
+
+
 def fresh_ledgers(only):
     """Fresh in-memory extraction — write-back only writes values whose
     ledger entry differs from the RESOLVED game value, so shadowed or
@@ -246,6 +253,18 @@ def _main() -> int:
                 ru = resolved_unit(doc["ledger"], section, actor)
                 if ru is None:
                     problems.append(f"{actor}: no current resolved actor in this ledger section")
+                    continue
+                # ⛔⛔ A SUPERWEAPON IS NEVER WRITTEN (maintainer, 2026-09-07): "NEVER CHANGE
+                # THEM!! SO EXCLUDE THEM BEFORE ANYTHING IS CHANGED ON ACCIDENT!!!" Their HP is a
+                # deliberate constant — all 32 of them sit at exactly 1,000,000 — not a stat the
+                # formula has any business normalising. `reference_distribution` already keeps
+                # them out of the priced population; this is the SECOND lock, on the write path,
+                # so a hand-edited ledger cannot reach yaml either. Refuse, never silently skip:
+                # an edit aimed at a superweapon is a mistake the operator needs told about.
+                if _is_superweapon(ru) and changed_paths({"sections": {section: {actor: ru}}},
+                                                           {"sections": {section: {actor: u}}}):
+                    problems.append(f"{actor}: SUPERWEAPON — fixed HP, never repriced; "
+                                    f"revert this ledger edit")
                     continue
                 for field in RETIRED_UNIT_FIELDS:
                     slot, rslot = u.get(field), (ru.get(field) or {})

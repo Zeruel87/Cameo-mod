@@ -68,6 +68,7 @@ margin:1px 3px 1px 0;font-size:12px;white-space:nowrap}
 .chip.fair{border-left:3px solid var(--fair)}
 .chip.shape{border-left:3px solid var(--shape)}
 .chip.weak{border-left:3px solid var(--weak)}
+.chip.fam{border-style:dashed;color:var(--mut)}
 .bad{color:var(--bad)}
 .warn{color:var(--fair)}
 .tag{font-size:11px;color:var(--mut);border:1px dashed var(--line);border-radius:4px;padding:0 4px}
@@ -123,6 +124,19 @@ def emit(body, members, crows, assignment, attached, chassis_only, dist, cdist, 
                     rid=html.escape(str((d or {}).get("id") or "?")),
                     rname=html.escape(str((d or {}).get("name") or "")))
                 for s, d in srcs)
+            # ⭐ SHOW THE VARIANT FAMILY, because the chip list was hiding the actual evidence.
+            # A target is computed from every variant of the assigned unit in that source — the
+            # Mammoth Mk III already averages CA's Mammoth, Hover Mammoth, Ion Mammoth and Mammoth
+            # Drone — but the report displayed only the one row the greedy picked, so it read as a
+            # single arbitrary choice. The maintainer reasonably objected to a mapping that was in
+            # fact four rows deep.
+            extra = len(rows) - len(srcs)
+            if extra > 0:
+                fam = ", ".join(dict.fromkeys(
+                    str(r.get("id")) for r in rows
+                    if str(r.get("id")) not in {str((d or {}).get("id")) for d in chosen.values()}))
+                chips += (f'<span class="chip fam">+{extra} variant'
+                          f'{"s" if extra != 1 else ""}: {html.escape(fam[:90])}</span>')
             tgt = {s: (rt.target_for(rows, c, s, dist, cdist)[1] if rows else None)
                    for s in ("hp", "speed", "cost")}
             note = ' <span class="tag">chassis-only</span>' if a in chassis_only else ""

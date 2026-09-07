@@ -98,6 +98,16 @@ def attach(assignment, idx):
     return out
 
 
+# ⭐ FAMILY MEMBERS THAT DO NOT SHARE THE ID STEM (maintainer, 2026-09-07). The family rule finds
+# `4TNK.ATOMIC` and `4TNK.ERAD` from `4TNK` because Combined Arms suffixes the variant onto the
+# base id. It cannot find the Apocalypse or the Overlord, which are the SAME tier of Soviet super-
+# heavy under their own names, and the maintainer wants them counted with the rest. Named rows
+# only — this is a list of units, not a pattern anyone can widen by accident.
+FAMILY_EXTRA = {
+    ("ra1_soviets_siegemammothtank", "Combined Arms"): ("APOC", "OVLD"),
+}
+
+
 def expand_families(attached, peers):
     """Replace each assigned row with its whole variant family from that source."""
     by_source = collections.defaultdict(list)
@@ -114,6 +124,16 @@ def expand_families(attached, peers):
                     continue
                 seen.add(key)
                 grown.append(f)
+        for (a_id, src), ids in FAMILY_EXTRA.items():
+            if a_id != actor:
+                continue
+            for extra in by_source.get(src, ()):
+                if (extra.get("id") or "").upper() not in ids:
+                    continue
+                key = (extra["source"], extra.get("id"), extra.get("name"))
+                if key not in seen:
+                    seen.add(key)
+                    grown.append(extra)
         out[actor] = grown
     return out
 

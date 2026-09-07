@@ -634,6 +634,22 @@ def original_actors(scope, by_source, routed_pool, routing):
 REFERENCE_OVERRIDES = {
     ("ra1_allies_gunboat", "DTA Enhanced"): "DESTROYER",   # DTA "Corvette"
     ("ra1_allies_destroyer", "DTA Enhanced"): "FRIGATE",
+    # ── Combined Arms, ruled by the maintainer 2026-09-07 on review of the map ──────────────
+    # Where a Cameo unit and a CA unit are the same THING under different names, and no rule can
+    # see it. Each was named explicitly; none is inferred.
+    ("ra1_soviets_flaktruck", "Combined Arms"): "BTR",     # not the Tesla Track
+    ("ra1_soviets_teslatank", "Combined Arms"): "TTRA",    # CA's "Tesla Track" IS our tesla tank
+    ("ra1_soviets_heavyteslatank", "Combined Arms"): "TTNK",   # and CA's "Tesla Tank" the heavy
+    ("td_gdi_boxer", "Combined Arms"): "VULC",             # GDI Vulcan
+    # `td_nod_lasertrooper`: Cyborg Elite over Enlightened. Both are routed to Nod and both are
+    # elite Nod infantry, but the Enlightened's DPS is 40 against the Cyborg Elite's 260 — it is a
+    # psionic support unit, and averaging its damage into a LASER trooper would import a number
+    # that describes nothing about the unit. Range and role match too (7168 vs our 5524).
+    ("td_nod_lasertrooper", "Combined Arms"): "RMBC",
+    # CA ships TWO rows named "AA Gun" with identical stats. `AGUN` is the id OpenRA Red Alert
+    # uses, so id agreement gives it to the Allied gun and frees `CRAM` for GDI's Skyshield.
+    ("td_gdi_skyshield", "Combined Arms"): "CRAM",
+    ("ra1_allies_alliedaagun", "Combined Arms"): "AGUN",
 }
 
 
@@ -691,7 +707,15 @@ def promote_by_id_agreement(result, by_source, routed_pool, routing):
             visible = (routed_pool.get((fac, src), ()) if routing else by_source.get(src, ()))
             for p in visible:
                 pid = (p.get("id") or "").upper()
-                if pid not in backed or (fac, src, pid) in claimed:
+                # ⭐ DTA PREFIXES ITS RED-ALERT-ERA ACTORS WITH `RA`, and it is a convention, not
+                # a coincidence: `RAPBOX`, `RAAGUN`, `RASAM`, `RATSLA`, `RAFTUR`, `RAGUN`,
+                # `RAARTY`, `RAPROC` — the Tiberian-era actor keeps the bare id, the Red Alert one
+                # is prefixed, because DTA carries both rosters in one mod. Combined Arms and
+                # OpenRA had already agreed `ra1_allies_pillbox` is `PBOX`; DTA ships `RAPBOX` and
+                # was passed over, so the pillbox came out with two references instead of three.
+                if pid not in backed and pid.removeprefix("RA") not in backed:
+                    continue
+                if (fac, src, pid) in claimed:
                     continue
                 if cur:
                     claimed.discard((fac, src, (cur.get("id") or "").upper()))

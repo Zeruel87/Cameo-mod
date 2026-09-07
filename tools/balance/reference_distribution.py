@@ -617,6 +617,31 @@ def cameo_weapon_ladders(weapon_name):
     return {k: sum(v) / len(v) / 100.0 for k, v in hits.items() if v}
 
 
+# ⛔⛔ SUPERWEAPONS ARE NEVER PRICED, NEVER RESTATTED, NEVER TOUCHED (maintainer, 2026-09-07):
+#
+#     "exclude super weapons from this balance formula since they are all fixed HP!
+#      NEVER CHANGE THEM!! SO EXCLUDE THEM BEFORE ANYTHING IS CHANGED ON ACCIDENT!!!"
+#
+# They are gated on `~techlevel.superweapons` (or a `_swlimit` negation), and that prerequisite is
+# the mechanical test — 32 actors carry it, and EVERY one whose HP is recorded holds exactly
+# 1,000,000. That uniform value is the point: it is a deliberate constant, not a balance figure,
+# and a pipeline that treats it as a stat to normalise would drag it toward a building average
+# and quietly destroy it.
+#
+# Excluded HERE, at the single point every consumer reads, so the reference map, the
+# distributions, the targets and the uniqueness audit all agree that these actors do not exist.
+SUPERWEAPON_TOKENS = ("techlevel.superweapon", "swlimit")
+
+
+def is_superweapon(rec):
+    """True when a ledger record is gated on a superweapon prerequisite."""
+    for pre in (rec.get("prerequisites") or []):
+        low = str(pre).lower()
+        if any(tok in low for tok in SUPERWEAPON_TOKENS):
+            return True
+    return False
+
+
 def cameo_rows():
     """Cameo's own roster in the same shape, so it has real distributions to project onto."""
     out = []
@@ -646,6 +671,8 @@ def cameo_rows():
                 if not isinstance(rec, dict):
                     continue
                 if rec.get("buildable") is not True:
+                    continue
+                if is_superweapon(rec):
                     continue
                 if rec.get("build_limit") is not None:      # check_band.py's epic/hero predicate
                     continue
