@@ -188,7 +188,27 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
             if not a:
                 continue
             prim = (a.get("Primary") or "").strip()
+            sec = (a.get("Secondary") or "").strip()
             wep = weapon_of(ini, prim, engine) if prim else {"weapon": None}
+            sw = weapon_of(ini, sec, engine) if sec else None
+            # ⛔ A DUMMY PRIMARY HIDES THE REAL GUN IN THE SECONDARY SLOT. Westwood engines pick
+            # Primary/Secondary by TARGET, so a unit whose anti-air or elite-only slot is a
+            # zero-damage placeholder carries its actual cannon as `Secondary`. Reading only
+            # `Primary` recorded those units as unarmed: DTA's GDI Medium Tank extracted as
+            # `90mmDummy`, damage 0 — and clause 5 of the matching law ("a zero-damage row never
+            # matches a combat unit") then removed the one exact-name reference for Cameo's GDI
+            # Battle Tank, which fell through to a MOBILE SENSOR ARRAY. 161 rows across 8 sources
+            # were reading damage off the wrong weapon.
+            if sw and sw.get("w_damage") and not wep.get("w_damage"):
+                wep = {**sw, "w_from_secondary": True, "w_dummy_primary": wep.get("weapon")}
+                sw = None
+            # The OTHER weapon is kept whole so an effective-damage fold (burst + simultaneous
+            # weapons) can be built later without a re-extract. It does NOT vote yet: Westwood
+            # Primary/Secondary is usually target-SELECTED, not simultaneous, so summing the two
+            # would overstate every dual-purpose unit.
+            if sw:
+                wep = {**wep, **{f"w2_{k[2:]}" if k.startswith("w_") else "w2_weapon": v
+                                 for k, v in sw.items() if v is not None}}
             owners = [o.strip() for o in (a.get("Owner") or "").split(",") if o.strip()]
             rows.append({
                 "source": label,
