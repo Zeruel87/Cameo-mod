@@ -317,6 +317,9 @@ Reference-clean units: **TD GDI Archer** (`gdiarcher`), **Ordos Raider**
 | Defense power | `Power.Amount = -(Cost / 20)` |
 | Vehicle turning | `TurnSpeed = Speed / 5`, `Turreted.TurnSpeed` equals it — but **DERIVED IN C#, not written in yaml** (maintainer 2026-09-07). Speed is now on a step of 1, so `Speed / 5` is no longer an integer; the yaml carries a MULTIPLIER and the trait computes the angle in fixed point, so the ratio stays exact instead of rounding to ~3%. |
 | Turretless (AttackFrontal) vehicles | `TurnSpeed = 2 × Speed / 5` — the former artillery exception was dropped 2026-07-10 (data check: turretless artillery split 24 at 2×, 18 at 1× — no real pattern) |
+| Stationary defenses | **`Turreted.TurnSpeed = 2 × Speed / 5` applied to the TURRET, not a chassis** (maintainer 2026-09-07). A defense has no hull to turn, so the turretless doubling lands on the turret instead — a defense therefore tracks as fast as a frontal-weapon tank, and markedly faster than a tank TURRET. `Speed` here is the speed the emplacement would have as a mobile unit of its class. |
+| Units that DEPLOY into an immobile form | **rotation DOUBLES while deployed** (maintainer 2026-09-07) — the deployed state is a stationary defense and takes the defense rule. Applies to `td_gdi_defenserig`, the Terran siege tank, the Matador and every other deploy-to-immobile unit. |
+| Husks | **the only actors with no turn rate at all.** Everything else that can face a direction has one. |
 | Turreted artillery / fire support | Archer firing-slow: `GrantConditionOnAttack(firing)`, 50% Speed/Turn/TurretTurn multipliers, `RevokeDelay = weapon ReloadDelay / 2` |
 | Fighters & bombers (by template) | `Aircraft.TurnSpeed = Speed / 15` (frontal-weapon craft 2×) |
 | Helicopters & spaceships (by template) | `Aircraft.TurnSpeed = Speed / 5`, like vehicles (design 2026-07-10; 45 of ~55 helicopters already comply) |
@@ -1492,6 +1495,18 @@ steps so the house formulas stay integral:
   because they carry forward-facing weapons.
 - **TurnSpeed (aircraft):** helicopters and spaceships both use
   **`Speed / 5`**.
+- ⛔ **A TURRET ALWAYS FOLLOWS ITS HULL** (maintainer 2026-09-07). `Turreted.TurnSpeed` equals
+  `Mobile.TurnSpeed`; **every disagreement is a bug**, with no per-class exemption. Measured
+  2026-09-07: 233 of 260 turreted vehicles already comply, and the 27 that do not are not a
+  design — they are two accidental families plus two outright errors (`nodlasercorvette` turret
+  1000 against a hull of 12; `td_gdi_defenserig` 128 against 12). The naval group sitting at
+  0.4–0.7x and the light/IFV group at 2–3x are **not** ratified; they are drift that happened to
+  be consistent. Guarded by `audit_turn_speed.py` T3.
+- **Turn rate is GENERATED into yaml, never derived at runtime** — `audit_turn_speed.py` guards
+  it. Turn speed is an integer `WAngle` at every layer and both runtime hooks
+  (`ITurnSpeedModifier`, `ITurretTurnSpeedModifier`) take an integer PERCENTAGE, so code and a
+  generator produce byte-identical values; `Aircraft` exposes no hook at all and would need the
+  whole trait shadowed for no change in the numbers.
 ### Regeneration — one global rule, no per-actor numbers
 
 **Maintainer ruling 2026-09-07.** Regeneration is stated as **TICKS TO FULL**, never as a
