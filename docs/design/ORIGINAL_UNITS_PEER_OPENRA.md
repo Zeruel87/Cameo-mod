@@ -508,8 +508,8 @@ Checkout: `C:\Users\AedisToru\Documents\GitHub\cameo-engine` · rifle anchor **`
 | `FACT` | Construction Yard | building | — | 210,000 | 42.00 | 3,000 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `FACT.GDI` | GDI Construction Yard | building | gdi/nod | 210,000 | 42.00 | 3,000 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `FACT.NOD` | Nod Construction Yard | building | gdi/nod | 210,000 | 42.00 | 3,000 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `TMPL` | Temple of Nod | building | gdi/nod | 210,000 | 42.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `EYE` | Advanced Communications Center | building | gdi/nod | 130,000 | 26.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `TMPL` | Temple of Nod | building | nod | 210,000 | 42.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `EYE` | Advanced Communications Center | building | gdi | 130,000 | 26.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `MCV` | Mobile Construction Vehicle | vehicle | gdi/nod | 120,000 | 24.00 | 3,000 | 30.00 | 60 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `AFLD` | Airstrip | building | nod | 110,000 | 22.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `WEAP` | Weapons Factory | building | gdi | 110,000 | 22.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -525,43 +525,42 @@ Checkout: `C:\Users\AedisToru\Documents\GitHub\cameo-engine` · rifle anchor **`
 | `OBLI` | Obelisk of Light | building | nod | 75,000 | 15.00 | 1,500 | 15.00 | — | — | n | — | 7,680 | 36,000 | 1 | 40 | 900 | — | — | — | 0.50 |
 | `NUK2` | Advanced Power Plant | building | gdi/nod | 70,000 | 14.00 | 800 | 8.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `HARV` | Harvester | vehicle | gdi/nod | 62,500 | 12.50 | 1,100 | 11.00 | 72 | 20 | n | — | — | — | — | — | — | — | — | — | — |
-| `HAND` | Hand of Nod | building | gdi/nod | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `HAND` | Hand of Nod | building | nod | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `HPAD` | Helipad | building | gdi/nod | 60,000 | 12.00 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `PYLE` | Barracks | building | gdi/nod | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `ATWR` | Advanced Guard Tower | building | gdi/nod | 55,000 | 11.00 | 1,000 | 10.00 | — | 512 | Y | — | 7,168 | 3,000 | 2 | 30 | 158 | 0.52 | 1.00 | — | 0.62 |
+| `PYLE` | Barracks | building | gdi | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `ATWR` | Advanced Guard Tower | building | gdi | 55,000 | 11.00 | 1,000 | 10.00 | — | 512 | Y | — | 7,168 | 3,000 | 2 | 30 | 158 | 0.52 | 1.00 | — | 0.62 |
 | `NUKE` | Power Plant | building | gdi/nod | 55,000 | 11.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SILO` | Tiberium Silo | building | gdi/nod | 50,000 | 10.00 | 100 | 1.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `MTNK` | Medium Tank | vehicle | gdi/nod | 45,000 | 9.00 | 900 | 9.00 | 72 | 20 | Y | — | 4,864 | 4,000 | 1 | 40 | 100 | 0.25 | 1.00 | — | 1.00 |
+| `MTNK` | Medium Tank | vehicle | gdi | 45,000 | 9.00 | 900 | 9.00 | 72 | 20 | Y | — | 4,864 | 4,000 | 1 | 40 | 100 | 0.25 | 1.00 | — | 1.00 |
 | `GUN` | Turret | building | gdi/nod | 41,000 | 8.20 | 600 | 6.00 | — | 48 | Y | — | 6,144 | 4,000 | 1 | 20 | 200 | 0.20 | 1.00 | — | 0.50 |
 | `GTWR` | Guard Tower | building | gdi/nod | 40,000 | 8.00 | 600 | 6.00 | — | 512 | Y | — | 6,144 | 3,000 | 1 | 25 | 120 | 1.00 | 0.50 | — | 0.40 |
 | `SAM` | SAM Site | building | nod | 40,000 | 8.00 | 650 | 6.50 | — | 40 | Y | — | 10,240 | 2,500 | 2 | 20 | 200 | 1.40 | 1.22 | — | 1.22 |
-| `LTNK` | Light Tank | vehicle | gdi/nod | 32,000 | 6.40 | 750 | 7.50 | 102 | 28 | Y | — | 4,096 | 2,500 | 1 | 30 | 83 | 0.24 | 0.94 | — | 0.88 |
+| `LTNK` | Light Tank | vehicle | nod | 32,000 | 6.40 | 750 | 7.50 | 102 | 28 | Y | — | 4,096 | 2,500 | 1 | 30 | 83 | 0.24 | 0.94 | — | 0.88 |
 | `PVICE` | Visceroid | infantry | gdi/nod | 30,000 | 6.00 | 700 | 7.00 | 68 | — | n | — | 3,072 | 8,000 | 1 | 65 | 123 | 0.70 | 0.75 | — | 0.55 |
-| `FTNK` | Flame Tank | vehicle | gdi/nod | 27,000 | 5.40 | 600 | 6.00 | 92 | 28 | n | — | 3,584 | 10,000 | 2 | 65 | 267 | 0.82 | 0.47 | — | 0.75 |
+| `FTNK` | Flame Tank | vehicle | nod | 27,000 | 5.40 | 600 | 6.00 | 92 | 28 | n | — | 3,584 | 10,000 | 2 | 65 | 267 | 0.82 | 0.47 | — | 0.75 |
 | `BRIK` | Concrete Barrier | building | gdi/nod | 20,000 | 4.00 | 150 | 1.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `MHQ` | Mobile HQ | vehicle | — | 20,000 | 4.00 | 1,000 | 10.00 | 72 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `APC` | APC | vehicle | gdi | 19,000 | 3.80 | 600 | 6.00 | 128 | 40 | Y | — | 5,120 | 1,000 | 1 | 9 | 111 | 0.30 | 0.50 | — | 0.25 |
-| `MLRS` | Mobile SAM | vehicle | gdi/nod | 18,000 | 3.60 | 600 | 6.00 | 92 | 32 | Y | — | 9,216 | 5,000 | 1 | 25 | 200 | 0.28 | 1.20 | — | 1.28 |
+| `MLRS` | Mobile SAM | vehicle | nod | 18,000 | 3.60 | 600 | 6.00 | 92 | 32 | Y | — | 9,216 | 5,000 | 1 | 25 | 200 | 0.28 | 1.20 | — | 1.28 |
 | `JEEP` | Hum-vee | vehicle | gdi | 16,000 | 3.20 | 400 | 4.00 | 145 | 40 | Y | — | 4,096 | 1,150 | 5 | 20 | 144 | 1.50 | 0.40 | — | 0.10 |
 | `RMBO` | Commando | infantry | gdi | 15,000 | 3.00 | 1,500 | 15.00 | 68 | — | n | — | 8,192 | 10,000 | 1 | 40 | 250 | — | — | — | — |
 | `STNK` | Stealth Tank | vehicle | nod | 15,000 | 3.00 | 900 | 9.00 | 127 | 40 | n | — | 7,168 | 6,000 | 2 | 70 | 150 | 0.25 | 0.95 | — | 0.82 |
-| `HELI` | Apache Longbow | aircraft | gdi/nod | 12,500 | 2.50 | 1,200 | 12.00 | 180 | 28 | n | — | 4,096 | 2,000 | 2 | 20 | 160 | 1.00 | 0.50 | — | 0.50 |
+| `HELI` | Apache Longbow | aircraft | nod | 12,500 | 2.50 | 1,200 | 12.00 | 180 | 28 | n | — | 4,096 | 2,000 | 2 | 20 | 160 | 1.00 | 0.50 | — | 0.50 |
 | `TRAN` | Chinook Transport | aircraft | gdi/nod | 12,500 | 2.50 | 750 | 7.50 | 150 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `BGGY` | Nod Buggy | vehicle | nod | 12,000 | 2.40 | 300 | 3.00 | 170 | 40 | Y | — | 4,096 | 1,000 | 5 | 20 | 125 | 1.50 | 0.40 | — | 0.10 |
-| `MSAM` | Rocket Launcher | vehicle | gdi/nod | 12,000 | 2.40 | 900 | 9.00 | 72 | 512 | Y | — | 11,264 | 2,500 | 4 | 100 | 96 | 0.24 | 0.74 | — | 0.54 |
+| `MSAM` | Rocket Launcher | vehicle | gdi | 12,000 | 2.40 | 900 | 9.00 | 72 | 512 | Y | — | 11,264 | 2,500 | 4 | 100 | 96 | 0.24 | 0.74 | — | 0.54 |
 | `BIKE` | Recon Bike | vehicle | nod | 11,000 | 2.20 | 500 | 5.00 | 192 | 40 | n | — | 6,144 | 2,500 | 2 | 60 | 71 | 0.28 | 1.24 | — | 1.08 |
 | `TRUCK` | Supply Truck | vehicle | gdi/nod | 11,000 | 2.20 | 1,000 | 10.00 | 113 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `CYCL` | Chain Link Barrier | building | nod | 10,000 | 2.00 | 25 | 0.25 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `ORCA` | Orca | aircraft | gdi/nod | 10,000 | 2.00 | 1,200 | 12.00 | 186 | 28 | n | — | 4,864 | 2,500 | 1 | 12 | 208 | 0.32 | 0.98 | — | 0.98 |
+| `ORCA` | Orca | aircraft | gdi | 10,000 | 2.00 | 1,200 | 12.00 | 186 | 28 | n | — | 4,864 | 2,500 | 1 | 12 | 208 | 0.32 | 0.98 | — | 0.98 |
 | `SBAG` | Sandbag Barrier | building | gdi | 10,000 | 2.00 | 25 | 0.25 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `E4` | Flamethrower | infantry | gdi/nod | 9,000 | 1.80 | 200 | 2.00 | 54 | — | n | — | 3,072 | 4,000 | 1 | 55 | 73 | 1.10 | 0.55 | — | 1.00 |
+| `E4` | Flamethrower | infantry | nod | 9,000 | 1.80 | 200 | 2.00 | 54 | — | n | — | 3,072 | 4,000 | 1 | 55 | 73 | 1.10 | 0.55 | — | 1.00 |
 | `E5` | Chemical Warrior | infantry | nod | 9,000 | 1.80 | 300 | 3.00 | 54 | — | n | — | 3,072 | 8,000 | 1 | 65 | 123 | 0.70 | 0.75 | — | 0.55 |
-| `ARTY` | Artillery | vehicle | gdi/nod | 7,500 | 1.50 | 600 | 6.00 | 72 | 16 | n | — | 11,264 | 10,000 | 1 | 65 | 154 | 1.40 | 0.94 | — | 0.88 |
+| `ARTY` | Artillery | vehicle | nod | 7,500 | 1.50 | 600 | 6.00 | 72 | 16 | n | — | 11,264 | 10,000 | 1 | 65 | 154 | 1.40 | 0.94 | — | 0.88 |
 | `E1` | Minigunner | infantry | gdi/nod | 5,000 | 1.00 | 100 | 1.00 | 54 | — | n | — | 4,096 | 1,000 | 1 | 20 | 50 | 1.50 | 0.25 | — | 0.20 |
-| `E2` | Grenadier | infantry | gdi/nod | 5,000 | 1.00 | 160 | 1.60 | 68 | — | n | — | 4,096 | 5,000 | 1 | 50 | 100 | 1.00 | 0.57 | — | 0.50 |
+| `E2` | Grenadier | infantry | gdi | 5,000 | 1.00 | 160 | 1.60 | 68 | — | n | — | 4,096 | 5,000 | 1 | 50 | 100 | 1.00 | 0.57 | — | 0.50 |
 | `E3` | Rocket Soldier | infantry | gdi/nod | 4,500 | 0.90 | 300 | 3.00 | 39 | — | n | — | 6,144 | 2,500 | 1 | 55 | 45 | 0.28 | 1.40 | — | 1.28 |
 | `E6` | Engineer | infantry | gdi/nod | 3,000 | 0.60 | 500 | 5.00 | 46 | — | n | — | — | — | — | — | — | — | — | — | — |
-
 
 ## OpenRA Dune II  (49 buildable units)
 
@@ -779,7 +778,7 @@ Checkout: `/home/user/opene2140/opene2140` · rifle anchor **`ed_infantry_a01` =
 
 ## Generals Alpha  (153 buildable units)
 
-Checkout: `/home/user/mustaphatr/generals-alpha` · rifle anchor **`infantry.conscript` = 12,000 HP / 100 credits = 1.00×**
+Checkout: `C:\Users\AedisToru\Documents\GitHub\Generals-Alpha` · rifle anchor **`infantry.conscript` = 12,000 HP / 100 credits = 1.00×**
 
 | id | unit | type | faction | HP | ×rifle | Cost | ×rifle cost | Speed | Turn | Turret | Limit | Range | Dmg | Burst | Reload | DPS | vsINF | vsVEH | vsAIR | vsBLD |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|:-:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
@@ -790,16 +789,16 @@ Checkout: `/home/user/mustaphatr/generals-alpha` · rifle anchor **`infantry.con
 | `building.particle_cannon` | Particle Uplink Cannon | building | air/laser/usa | 400,000 | 33.33 | 5,000 | 50.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `building.particle_cannon.super` | Particle Uplink Cannon | building | super/usa | 400,000 | 33.33 | 2,500 | 25.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `building.scud_storm` | SCUD Storm | building | demo/gla/toxin | 400,000 | 33.33 | 5,000 | 50.00 | — | 8 | Y | — | 9,216,000 | 56,250 | 2 | 90 | 1,184 | — | — | — | — |
-| `building.scud_storm.boss` | SCUD Storm | building | boss/prc | 400,000 | 33.33 | 5,000 | 50.00 | — | 8 | Y | — | 9,216,000 | 56,250 | 2 | 90 | 1,184 | — | — | — | — |
+| `building.scud_storm.boss` | SCUD Storm | building | boss | 400,000 | 33.33 | 5,000 | 50.00 | — | 8 | Y | — | 9,216,000 | 56,250 | 2 | 90 | 1,184 | — | — | — | — |
 | `building.palace` | Palace | building | demo/gla/toxin | 300,000 | 25.00 | 2,500 | 25.00 | — | 1023 | Y | — | — | — | — | — | — | — | — | — | — |
 | `building.internet_center` | Internet Center | vehicle | inf/nuke/prc/tank | 250,000 | 20.83 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `building.arms_dealer` | GLA Arms Dealer | building | demo/gla/inf/toxin | 200,000 | 16.67 | 2,500 | 25.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `building.arms_dealer` | GLA Arms Dealer | building | demo/gla/toxin | 200,000 | 16.67 | 2,500 | 25.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `building.detention_camp` | Detention Camp | building | air/laser/super/usa | 200,000 | 16.67 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `building.gla_supply_stash` | GLA Supply Stash | building | demo/gla/toxin | 200,000 | 16.67 | 1,500 | 15.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `building.prc_supply_center` | PRC Supply Center | building | boss/inf/nuke/prc | 200,000 | 16.67 | 1,500 | 15.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `building.prc_war_factory` | PRC War Factory | building | boss/inf/nuke/prc | 200,000 | 16.67 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `building.usa_supply_center` | USA Supply Center | building | air/laser/super/usa | 200,000 | 16.67 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `building.usa_war_factory` | USA War Factory | building | air/inf/laser/super/usa | 200,000 | 16.67 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `building.usa_war_factory` | USA War Factory | building | air/laser/super/usa | 200,000 | 16.67 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `tech.artillery_platform` | Artillery Platform | building | — | 200,000 | 16.67 | — | — | — | 20 | Y | — | 8,960 | 10,000 | 1 | 175 | 57 | — | — | — | — |
 | `tech.hospital` | Hospital | building | — | 200,000 | 16.67 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `tech.oil_derrick` | Oil Derrick | building | — | 200,000 | 16.67 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -809,7 +808,7 @@ Checkout: `/home/user/mustaphatr/generals-alpha` · rifle anchor **`infantry.con
 | `building.nuclear_reactor` | Nuclear Reactor | building | inf/prc | 150,000 | 12.50 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `building.prc_airfield` | PRC Airfield | building | boss/inf/nuke/prc | 150,000 | 12.50 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `building.strategy_center` | Strategy Center | building | air/laser/super/usa | 150,000 | 12.50 | 2,500 | 25.00 | — | 12 | Y | — | 10,240 | 20,000 | 1 | 175 | 114 | — | — | — | — |
-| `building.usa_airfield` | USA Airfield | building | air/inf/laser/super/usa | 150,000 | 12.50 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `building.usa_airfield` | USA Airfield | building | air/laser/super/usa | 150,000 | 12.50 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `fake.command_center` | Fake Command Center | building | demo/gla/toxin | 125,000 | 10.42 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `vehicle.emparor_overlord` | Emperor Overlord | vehicle | prc/tank | 110,000 | 9.17 | 2,000 | 20.00 | 20 | 12 | Y | — | 4,480 | 8,000 | 2 | 50 | 286 | — | — | — | — |
 | `vehicle.overlord_tank` | Overlord Tank | vehicle | nuke/prc | 110,000 | 9.17 | 2,000 | 20.00 | 20 | 12 | Y | — | 4,480 | 8,000 | 2 | 50 | 286 | — | — | — | — |
@@ -839,9 +838,9 @@ Checkout: `/home/user/mustaphatr/generals-alpha` · rifle anchor **`infantry.con
 | `building.cold_fusion_reactor` | Cold Fusion Reactor | building | air/boss/usa | 80,000 | 6.67 | 800 | 8.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `building.cold_fusion_reactor.laser` | Cold Fusion Reactor | building | boss/laser/usa | 80,000 | 6.67 | 700 | 7.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `tech.flame_tower` | Flame Tower | infantry | — | 75,000 | 6.25 | 600 | 6.00 | — | 1023 | Y | — | 3,840 | 30,000 | 2 | 65 | 706 | — | — | — | — |
-| `vessel.cruiser` | Cruiser | vehicle | inf | 60,000 | 5.00 | 2,400 | 24.00 | 20 | 12 | Y | — | 15,360 | 25,000 | 2 | 250 | 196 | — | — | — | — |
+| `vessel.cruiser` | Cruiser | vehicle | air/boss/demo/gla/inf/laser/nuke/prc/super/toxin/usa | 60,000 | 5.00 | 2,400 | 24.00 | 20 | 12 | Y | — | 15,360 | 25,000 | 2 | 250 | 196 | — | — | — | — |
 | `BRIK` | Concrete Wall | building | air/boss/demo/gla/inf/laser/nuke/prc/super/toxin/usa | 50,000 | 4.17 | 200 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `fake.arms_dealer` | Fake Arms Dealer | building | demo/gla/inf/toxin | 50,000 | 4.17 | 625 | 6.25 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `fake.arms_dealer` | Fake Arms Dealer | building | demo/gla/toxin | 50,000 | 4.17 | 625 | 6.25 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `vehicle.paladin_tank` | Paladin Tank | vehicle | boss/usa | 50,000 | 4.17 | 1,100 | 11.00 | 30 | 32 | Y | — | 3,840 | 6,000 | 1 | 50 | 120 | — | — | — | — |
 | `vehicle.marauder_tank` | Marauder Tank | vehicle | demo/gla/toxin | 49,000 | 4.08 | 800 | 8.00 | 40 | 32 | Y | — | 3,840 | 6,000 | 1 | 50 | 120 | — | — | — | — |
 | `vehicle.crusader_tank` | Crusader Tank | vehicle | usa | 48,000 | 4.00 | 900 | 9.00 | 30 | 32 | Y | — | 3,840 | 6,000 | 1 | 50 | 120 | — | — | — | — |
@@ -850,9 +849,9 @@ Checkout: `/home/user/mustaphatr/generals-alpha` · rifle anchor **`infantry.con
 | `fake.scud_storm` | Fake SCUD Storm | building | demo/gla/toxin | 40,000 | 3.33 | 1,000 | 10.00 | — | 8 | Y | — | 9,216,000 | 56,250 | 2 | 90 | 1,184 | — | — | — | — |
 | `vehicle.battlemaster_tank` | Battlemaster Tank | vehicle | prc/tank | 40,000 | 3.33 | 800 | 8.00 | 25 | 20 | Y | — | 3,840 | 6,000 | 1 | 50 | 120 | — | — | — | — |
 | `vehicle.nuclear_battlemaster_tank` | Nuclear Battlemaster Tank | vehicle | nuke/prc | 40,000 | 3.33 | 800 | 8.00 | 25 | 20 | Y | — | 3,840 | 6,000 | 1 | 50 | 120 | — | — | — | — |
-| `vessel.destroyer` | Destroyer | vehicle | inf | 40,000 | 3.33 | 1,000 | 10.00 | 40 | 28 | Y | — | 7,680 | 3,000 | 2 | 60 | 92 | — | — | — | — |
+| `vessel.destroyer` | Destroyer | vehicle | air/boss/demo/gla/inf/laser/nuke/prc/super/toxin/usa | 40,000 | 3.33 | 1,000 | 10.00 | 40 | 28 | Y | — | 7,680 | 3,000 | 2 | 60 | 92 | — | — | — | — |
 | `vehicle.scorpion_tank` | Scorpion Tank | vehicle | demo/gla/toxin | 37,000 | 3.08 | 600 | 6.00 | 40 | 16 | Y | — | 3,840 | 2,000 | 1 | 25 | 80 | — | — | — | — |
-| `aircraft.combat_chinook` | Combat Chinook | aircraft | air/usa | 35,000 | 2.92 | 1,200 | 12.00 | 150 | 24 | n | — | 3,072 | — | 1 | 25 | — | — | — | — | — |
+| `aircraft.combat_chinook` | Combat Chinook | aircraft | air | 35,000 | 2.92 | 1,200 | 12.00 | 150 | 24 | n | — | 3,072 | — | 1 | 25 | — | — | — | — | — |
 | `CYCL` | Chain-Link Barrier | building | boss/inf/nuke/prc | 30,000 | 2.50 | 50 | 0.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `FENC` | Wire Fence | building | demo/gla/toxin | 30,000 | 2.50 | 50 | 0.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SBAG` | Sandbag Wall | building | air/laser/super/usa | 30,000 | 2.50 | 50 | 0.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -880,7 +879,7 @@ Checkout: `/home/user/mustaphatr/generals-alpha` · rifle anchor **`infantry.con
 | `vehicle.assault_troop_crawler` | Assault Troop Crawler | vehicle | inf/prc | 24,000 | 2.00 | 2,400 | 24.00 | 40 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `vehicle.humvee` | Humvee | vehicle | air/laser/super/usa | 24,000 | 2.00 | 700 | 7.00 | 60 | 32 | Y | — | 3,840 | 800 | 1 | 5 | 160 | — | — | — | — |
 | `vehicle.listening_outpost` | Listening Outpost | vehicle | nuke/prc/tank | 24,000 | 2.00 | 800 | 8.00 | 40 | 16 | n | — | — | — | — | — | — | — | — | — | — |
-| `vehicle.nuke_cannon` | Nuke Cannon | vehicle | inf/nuke/prc | 24,000 | 2.00 | 1,600 | 16.00 | 20 | 12 | Y | — | 8,960 | 64,000 | 1 | 250 | 256 | — | — | — | — |
+| `vehicle.nuke_cannon` | Nuke Cannon | vehicle | inf/prc | 24,000 | 2.00 | 1,600 | 16.00 | 20 | 12 | Y | — | 8,960 | 64,000 | 1 | 250 | 256 | — | — | — | — |
 | `vehicle.toxin_tractor` | Toxin Tractor | vehicle | demo/gla/stealth/toxin | 24,000 | 2.00 | 600 | 6.00 | 30 | 32 | Y | — | 2,560 | 2,000 | 1 | 6 | 333 | — | — | — | — |
 | `vehicle.troop_crawler` | Troop Crawler | vehicle | nuke/prc/tank | 24,000 | 2.00 | 1,400 | 14.00 | 40 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `aircraft.comanche` | Comanche | aircraft | air/super/usa | 22,000 | 1.83 | 1,500 | 15.00 | 120 | 32 | n | — | 5,120 | 600 | 1 | 3 | 200 | — | — | — | — |
@@ -906,7 +905,7 @@ Checkout: `/home/user/mustaphatr/generals-alpha` · rifle anchor **`infantry.con
 | `fake.stinger_site` | Fake Stinger Site | building | demo/gla/toxin | 12,500 | 1.04 | 100 | 1.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `fake.toxin_tunnel_network` | Toxin Tunnel Network | building | gla/toxin | 12,500 | 1.04 | 100 | 1.00 | — | 48 | Y | — | 4,480 | 1,000 | 1 | 6 | 167 | — | — | — | — |
 | `fake.tunnel_network` | Fake Tunnel Network | building | demo/gla | 12,500 | 1.04 | 100 | 1.00 | — | 48 | Y | — | 4,480 | 1,000 | 1 | 6 | 167 | — | — | — | — |
-| `aircraft.stealth_fighter` | Stealth Fighter | aircraft | stealth/super/usa | 12,000 | 1.00 | 1,600 | 16.00 | 175 | 32 | n | — | 5,632 | 10,000 | 1 | 5 | 2,000 | — | — | — | — |
+| `aircraft.stealth_fighter` | Stealth Fighter | aircraft | super/usa | 12,000 | 1.00 | 1,600 | 16.00 | 175 | 32 | n | — | 5,632 | 10,000 | 1 | 5 | 2,000 | — | — | — | — |
 | `infantry.conscript` | Conscript | infantry | — | 12,000 | 1.00 | 100 | 1.00 | 25 | 64 | n | — | 2,560 | 500 | 3 | 18 | 71 | — | — | — | — |
 | `infantry.flamethrower` | Flamethrower | infantry | — | 12,000 | 1.00 | 300 | 3.00 | 20 | 64 | n | — | 3,840 | 2,000 | 15 | 50 | 588 | — | — | — | — |
 | `infantry.minigunner` | Minigunner | infantry | inf/prc | 12,000 | 1.00 | 350 | 3.50 | 25 | 64 | n | — | 3,200 | 1,000 | 1 | 12 | 83 | — | — | — | — |
@@ -1425,7 +1424,7 @@ Checkout: `/home/user/as/valiantshades` · rifle anchor **`e1` = 65,000 HP / 100
 
 ## Romanov's Vengeance  (729 buildable units)
 
-Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12,500 HP / 150 credits = 1.00×**
+Checkout: `C:\Users\AedisToru\Documents\GitHub\Romanovs-Vengeance` · rifle anchor **`e1` = 12,500 HP / 150 credits = 1.00×**
 
 | id | unit | type | faction | HP | ×rifle | Cost | ×rifle cost | Speed | Turn | Turret | Limit | Range | Dmg | Burst | Reload | DPS | vsINF | vsVEH | vsAIR | vsBLD |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|:-:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
@@ -1433,7 +1432,7 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `caeast01` | Moai | building | — | 300,000 | 24.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `caeast02` | Yuri Statue | building | — | 300,000 | 24.00 | — | — | — | 12 | Y | — | 9,216 | 30,000 | 2 | 80 | 667 | 1.00 | 1.00 | — | 1.00 |
 | `capars01` | Eiffel Tower | building | — | 300,000 | 24.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `vlad` | Vladamir's Dreadnought | ship | soviets | 250,000 | 20.00 | 2,500 | 16.67 | 135 | 12 | n | — | 25,600 | — | 2 | 150 | — | — | — | — | — |
+| `vlad` | Vladamir's Dreadnought | ship | bakupact/soviets | 250,000 | 20.00 | 2,500 | 16.67 | 135 | 12 | n | — | 25,600 | — | 2 | 150 | — | — | — | — | — |
 | `camex01` | Mayan Pyramid | building | — | 200,000 | 16.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `amcv` | Mobile Construction Vehicle | vehicle | allies/germany | 160,000 | 12.80 | 4,000 | 26.67 | 75 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `cacnst` | Debug Construction Yard | building | allies/bakupact/soviets | 160,000 | 12.80 | 4,000 | 26.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -1519,13 +1518,13 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `cawash15` | Lincoln Memorial | building | — | 150,000 | 12.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `cawash16` | Smithsonian Castle | building | — | 150,000 | 12.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `cawsh12` | Washington Monument | building | — | 150,000 | 12.00 | — | — | — | 1023 | Y | — | — | — | — | — | — | — | — | — | — |
-| `cayard` | Civilian Shipyard | building | allies | 150,000 | 12.00 | 1,000 | 6.67 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
+| `cayard` | Civilian Shipyard | building | allies/bakupact/psicorps/soviets | 150,000 | 12.00 | 1,000 | 6.67 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
 | `city05` | Battersea Power Station | building | — | 150,000 | 12.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `gayard` | Naval Yard | building | allies | 150,000 | 12.00 | 1,000 | 6.67 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
 | `nayard` | Naval Yard | building | bakupact/soviets | 150,000 | 12.00 | 1,000 | 6.67 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
 | `smin` | Slave Miner | vehicle | psicorps | 150,000 | 12.00 | 1,500 | 10.00 | 105 | 20 | Y | — | 6,144 | 3,000 | 1 | 20 | 150 | 0.90 | 0.70 | — | 0.18 |
-| `yarefn` | Slave Miner | building | — | 150,000 | 12.00 | 1,500 | 10.00 | — | 20 | Y | — | 6,144 | 3,000 | 1 | 20 | 150 | 0.90 | 0.70 | — | 0.18 |
-| `yayard` | Submarine Pen | building | — | 150,000 | 12.00 | 1,000 | 6.67 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
+| `yarefn` | Slave Miner | building | allies/bakupact/soviets | 150,000 | 12.00 | 1,500 | 10.00 | — | 20 | Y | — | 6,144 | 3,000 | 1 | 20 | 150 | 0.90 | 0.70 | — | 0.18 |
+| `yayard` | Submarine Pen | building | allies/bakupact/psicorps/soviets | 150,000 | 12.00 | 1,000 | 6.67 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
 | `cabunk01` | Concrete Bunker | building | — | 140,000 | 11.20 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `cabunk02` | Concrete Bunker | building | — | 140,000 | 11.20 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `cabunk03` | Concrete Bunker | building | — | 140,000 | 11.20 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -1649,16 +1648,16 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `cawash17` | Smithsonian Natural History Museum | building | — | 140,000 | 11.20 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `camisl` | Tech Missile Silo | building | — | 125,000 | 10.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `caslab` | Tech Secret Lab | building | — | 125,000 | 10.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `bsub` | Boomer Submarine | ship | — | 120,000 | 9.60 | 2,500 | 16.67 | 75 | 24 | n | — | 7,168 | 4,500 | 2 | 75 | 112 | 1.00 | 0.81 | — | 0.70 |
+| `bsub` | Boomer Submarine | ship | allies/bakupact/soviets | 120,000 | 9.60 | 2,500 | 16.67 | 75 | 24 | n | — | 7,168 | 4,500 | 2 | 75 | 112 | 1.00 | 0.81 | — | 0.70 |
 | `camsc07` | Hut | building | — | 120,000 | 9.60 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `caweap` | Civilian Factory | building | allies | 120,000 | 9.60 | 2,000 | 13.33 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
-| `caweap.unused` | Debug Factory | building | soviets | 120,000 | 9.60 | 2,000 | 13.33 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
+| `caweap` | Civilian Factory | building | allies/bakupact/psicorps/soviets | 120,000 | 9.60 | 2,000 | 13.33 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
+| `caweap.unused` | Debug Factory | building | allies/bakupact/psicorps/soviets | 120,000 | 9.60 | 2,000 | 13.33 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
 | `gaweap` | War Factory | building | allies | 120,000 | 9.60 | 2,000 | 13.33 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
 | `gaweat` | Weather Controller | building | allies/france | 120,000 | 9.60 | 5,000 | 33.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `namisl` | Nuclear Missile Silo | building | soviets | 120,000 | 9.60 | 5,000 | 33.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `naweap` | War Factory | building | bakupact/soviets | 120,000 | 9.60 | 2,000 | 13.33 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
-| `yappet` | Psychic Dominator | building | — | 120,000 | 9.60 | 5,000 | 33.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `yaweap` | War Factory | building | — | 120,000 | 9.60 | 2,000 | 13.33 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
+| `yappet` | Psychic Dominator | building | allies/bakupact/soviets | 120,000 | 9.60 | 5,000 | 33.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `yaweap` | War Factory | building | allies/bakupact/psicorps/soviets | 120,000 | 9.60 | 2,000 | 13.33 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
 | `yaeast02` | Yuri Statue | building | psisouth | 110,000 | 8.80 | 2,500 | 16.67 | — | 12 | Y | — | 9,216 | 30,000 | 2 | 80 | 667 | 1.00 | 1.00 | — | 1.00 |
 | `yaeast02-tr` | Yuri Statue | building | psisouth | 110,000 | 8.80 | 2,500 | 16.67 | — | 12 | Y | — | 9,216 | 30,000 | 2 | 80 | 667 | 1.00 | 1.00 | — | 1.00 |
 | `basops` | Special Operations Center | building | bakupact | 100,000 | 8.00 | 1,500 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -1689,13 +1688,13 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `nairon` | Iron Curtain Device | building | bakupact/soviets | 100,000 | 8.00 | 2,500 | 16.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `nanrct` | Nuclear Reactor | building | bakupact/soviets | 100,000 | 8.00 | 1,500 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `naradr` | Radar Tower | building | soviets | 100,000 | 8.00 | 1,500 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `natbnk` | Tank Bunker | building | — | 100,000 | 8.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `natbnk` | Tank Bunker | building | allies/bakupact/psicorps/soviets | 100,000 | 8.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `yacomd` | Yuri's Command Center | building | — | 100,000 | 8.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `yadome` | Radar Dome | building | — | 100,000 | 8.00 | 1,500 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `yagntc` | Lazarus Shield Generator | building | — | 100,000 | 8.00 | 2,500 | 16.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `yadome` | Radar Dome | building | allies/bakupact/psicorps/soviets | 100,000 | 8.00 | 1,500 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `yagntc` | Lazarus Shield Generator | building | allies/bakupact/soviets | 100,000 | 8.00 | 2,500 | 16.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `yapppt` | Psychic Dominator | building | — | 100,000 | 8.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `gtgcan` | Grand Cannon | building | france | 90,000 | 7.20 | 1,500 | 10.00 | — | 12 | Y | — | 15,360 | 15,000 | 1 | 100 | 150 | 1.00 | 1.00 | — | 0.97 |
-| `yagrnd` | Grinder | building | — | 90,000 | 7.20 | 600 | 4.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `yagrnd` | Grinder | building | allies/bakupact/psicorps/soviets | 90,000 | 7.20 | 600 | 4.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `apoc` | Apocalypse Tank | vehicle | bakupact/cuba/iraq/libya/soviets | 80,000 | 6.40 | 1,750 | 11.67 | 75 | 16 | Y | — | 6,144 | 10,000 | 1 | 65 | 154 | 0.18 | 0.84 | — | 0.57 |
 | `caeur04` | Civilian Building | building | — | 80,000 | 6.40 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `cafarm01` | Farm | building | — | 80,000 | 6.40 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -1715,9 +1714,9 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `cdest` | Coast Guard Boat | ship | allies | 80,000 | 6.40 | 1,400 | 9.33 | 105 | 32 | n | — | 6,144 | 9,000 | 1 | 70 | 129 | 0.18 | 0.84 | — | 0.57 |
 | `dest` | Destroyer | ship | allies | 80,000 | 6.40 | 1,400 | 9.33 | 105 | 32 | n | — | 6,144 | 9,000 | 1 | 70 | 129 | 0.18 | 0.84 | — | 0.57 |
 | `dred` | Dreadnought | ship | bakupact/soviets | 80,000 | 6.40 | 2,500 | 16.67 | 90 | 12 | n | — | 25,600 | — | 2 | 150 | — | — | — | — | — |
-| `expn` | Mobile Expansion Vehicle | vehicle | allies | 80,000 | 6.40 | 1,200 | 8.00 | 105 | 16 | n | — | 8,192 | — | 1 | 20 | — | — | — | — | — |
-| `exps` | Mobile Expansion Vehicle | vehicle | soviets | 80,000 | 6.40 | 1,200 | 8.00 | 105 | 16 | n | — | 8,192 | — | 1 | 20 | — | — | — | — | — |
-| `expy` | Mobile Expansion Vehicle | vehicle | — | 80,000 | 6.40 | 1,200 | 8.00 | 105 | 16 | n | — | 8,192 | — | 1 | 20 | — | — | — | — | — |
+| `expn` | Mobile Expansion Vehicle | vehicle | allies/soviets | 80,000 | 6.40 | 1,200 | 8.00 | 105 | 16 | n | — | 8,192 | — | 1 | 20 | — | — | — | — | — |
+| `exps` | Mobile Expansion Vehicle | vehicle | allies/bakupact/soviets | 80,000 | 6.40 | 1,200 | 8.00 | 105 | 16 | n | — | 8,192 | — | 1 | 20 | — | — | — | — | — |
+| `expy` | Mobile Expansion Vehicle | vehicle | allies/soviets | 80,000 | 6.40 | 1,200 | 8.00 | 105 | 16 | n | — | 8,192 | — | 1 | 20 | — | — | — | — | — |
 | `grtk` | Grinder Tank | vehicle | psicorps/transcaucus | 80,000 | 6.40 | 2,000 | 13.33 | 135 | 20 | n | — | 1,843 | 15,000 | 1 | 25 | 600 | 1.33 | 1.00 | — | 0.97 |
 | `sub` | Typhoon Attack Submarine | ship | bakupact/soviets | 80,000 | 6.40 | 1,600 | 10.67 | 90 | 24 | n | — | 7,168 | 7,500 | 1 | 75 | 100 | 1.00 | 0.81 | — | 0.70 |
 | `baacdm` | Military Academy | building | bakupact | 75,000 | 6.00 | 2,500 | 16.67 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
@@ -1731,22 +1730,22 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `capsyb` | Tech Psychic Beacon | building | — | 75,000 | 6.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `carpad` | Tech Reinforcement Pad | building | — | 75,000 | 6.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `cashosp` | Tech Hospital | building | — | 75,000 | 6.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `gadept` | Service Depot | building | allies | 75,000 | 6.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `gadept` | Service Depot | building | allies/bakupact/soviets | 75,000 | 6.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `gaorep` | Ore Purifier | building | allies | 75,000 | 6.00 | 2,500 | 16.67 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
 | `garefn` | Ore Refinery | building | allies | 75,000 | 6.00 | 2,000 | 13.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `gatech` | Battle Lab | building | allies | 75,000 | 6.00 | 3,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `naclon` | Cloning Vats | building | bakupact/soviets | 75,000 | 6.00 | 2,000 | 13.33 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `nadept` | Service Depot | building | soviets | 75,000 | 6.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `nadept` | Service Depot | building | bakupact/soviets | 75,000 | 6.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `naheli` | Helipad | building | soviets | 75,000 | 6.00 | 1,000 | 6.67 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
 | `naindp` | Industrial Plant | building | soviets | 75,000 | 6.00 | 2,500 | 16.67 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
 | `narefn` | Ore Refinery | building | bakupact/soviets | 75,000 | 6.00 | 2,000 | 13.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `natech` | Battle Lab | building | bakupact/soviets | 75,000 | 6.00 | 3,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `yaclon` | Cloning Vats | building | — | 75,000 | 6.00 | 2,500 | 16.67 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `yadept` | Service Depot | building | — | 75,000 | 6.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `yadisk` | Disc Pad | building | — | 75,000 | 6.00 | 1,000 | 6.67 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
+| `yaclon` | Cloning Vats | building | allies/bakupact/soviets | 75,000 | 6.00 | 2,500 | 16.67 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `yadept` | Service Depot | building | allies/bakupact/psicorps/soviets | 75,000 | 6.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `yadisk` | Disc Pad | building | allies/bakupact/psicorps/soviets | 75,000 | 6.00 | 1,000 | 6.67 | — | — | n | — | 6,144 | — | 1 | 25 | — | — | — | — | — |
 | `yapsyb` | Psychic Beacon | building | — | 75,000 | 6.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `yarfn2` | Ore Refinery | building | — | 75,000 | 6.00 | 2,000 | 13.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `yatech` | Battle Lab | building | — | 75,000 | 6.00 | 3,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `yarfn2` | Ore Refinery | building | allies/bakupact/soviets | 75,000 | 6.00 | 2,000 | 13.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `yatech` | Battle Lab | building | allies/bakupact/soviets | 75,000 | 6.00 | 3,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `yarock` | Rocket Launch Pad | building | — | 70,000 | 5.60 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `4tnk` | Mammoth Tank | vehicle | — | 60,000 | 4.80 | 1,700 | 11.33 | 60 | 16 | Y | — | 6,144 | 9,000 | 1 | 65 | 138 | 0.18 | 0.84 | — | 0.57 |
 | `adest` | Assault Destroyer | ship | allies | 60,000 | 4.80 | 1,400 | 9.33 | 105 | 16 | n | — | 6,144 | 9,000 | 1 | 70 | 129 | 0.18 | 0.84 | — | 0.57 |
@@ -1769,12 +1768,12 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `castl05f` | Stadium | building | — | 60,000 | 4.80 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `castl05g` | Stadium | building | — | 60,000 | 4.80 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `castl05h` | Stadium | building | — | 60,000 | 4.80 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `disk` | Leech Disc | aircraft | — | 60,000 | 4.80 | 1,750 | 11.67 | 180 | 1023 | n | — | 6,144 | 15,000 | 1 | 80 | 188 | 1.00 | 0.81 | — | 0.98 |
+| `disk` | Leech Disc | aircraft | allies/bakupact/soviets | 60,000 | 4.80 | 1,750 | 11.67 | 180 | 1023 | n | — | 6,144 | 15,000 | 1 | 80 | 188 | 1.00 | 0.81 | — | 0.98 |
 | `gagap` | Gap Generator | building | allies/france | 60,000 | 4.80 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `galite` | Light Post | building | — | 60,000 | 4.80 | 200 | 1.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `gapill-tr` | Flak Cannon | building | allies/bakupact/soviets | 60,000 | 4.80 | 700 | 4.67 | — | 40 | Y | — | 12,288 | 4,000 | 1 | 15 | 267 | 1.00 | 0.90 | — | 0.00 |
+| `gapill-tr` | Flak Cannon | building | bakupact/soviets | 60,000 | 4.80 | 700 | 4.67 | — | 40 | Y | — | 12,288 | 4,000 | 1 | 15 | 267 | 1.00 | 0.90 | — | 0.00 |
 | `garobo` | Robot Control Center | building | allies | 60,000 | 4.80 | 600 | 4.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `nabnkr` | Battle Bunker | building | soviets | 60,000 | 4.80 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `nabnkr` | Battle Bunker | building | bakupact/soviets | 60,000 | 4.80 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `naflak` | Flak Cannon | building | bakupact/soviets | 60,000 | 4.80 | 700 | 4.67 | — | 40 | Y | — | 12,288 | 4,000 | 1 | 15 | 267 | 1.00 | 0.90 | — | 0.00 |
 | `naflak-tr` | Flak Cannon | building | bakupact/soviets | 60,000 | 4.80 | 700 | 4.67 | — | 40 | Y | — | 12,288 | 4,000 | 1 | 15 | 267 | 1.00 | 0.90 | — | 0.00 |
 | `naprop` | Propaganda Tower | building | soviets | 60,000 | 4.80 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -1783,19 +1782,19 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `qyzyl` | Qızıl Ulduz Defense Platform | vehicle | bakupact | 60,000 | 4.80 | 2,200 | 14.67 | 105 | 32 | n | — | — | — | — | — | — | — | — | — | — |
 | `tesla` | Tesla Coil | building | soviets | 60,000 | 4.80 | 1,500 | 10.00 | — | — | n | — | 8,192 | 7,500 | 1 | 3 | 2,500 | 10.00 | 1.25 | — | 0.97 |
 | `tesla-tr` | Tesla Coil | building | soviets | 60,000 | 4.80 | 1,500 | 10.00 | — | — | n | — | 8,192 | 7,500 | 1 | 3 | 2,500 | 10.00 | 1.25 | — | 0.97 |
-| `yaggun` | Gatling Cannon | building | — | 60,000 | 4.80 | 800 | 5.33 | — | 40 | Y | — | 7,168 | 1,500 | 2 | 6 | 333 | 0.90 | 0.70 | — | 0.17 |
-| `yaggun-tr` | Gatling Cannon | building | — | 60,000 | 4.80 | 800 | 5.33 | — | 40 | Y | — | 7,168 | 1,500 | 2 | 6 | 333 | 0.90 | 0.70 | — | 0.17 |
-| `yapsyt` | Psychic Tower | building | — | 60,000 | 4.80 | 1,500 | 10.00 | — | 1023 | Y | — | 7,168 | — | 1 | 100 | — | — | — | — | — |
-| `yapsyt-tr` | Psychic Tower | building | — | 60,000 | 4.80 | 1,500 | 10.00 | — | 1023 | Y | — | 7,168 | — | 1 | 100 | — | — | — | — | — |
-| `yasgen` | Stealth Generator | building | — | 60,000 | 4.80 | 1,000 | 6.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `yaggun` | Gatling Cannon | building | allies/bakupact/soviets | 60,000 | 4.80 | 800 | 5.33 | — | 40 | Y | — | 7,168 | 1,500 | 2 | 6 | 333 | 0.90 | 0.70 | — | 0.17 |
+| `yaggun-tr` | Gatling Cannon | building | allies/bakupact/soviets | 60,000 | 4.80 | 800 | 5.33 | — | 40 | Y | — | 7,168 | 1,500 | 2 | 6 | 333 | 0.90 | 0.70 | — | 0.17 |
+| `yapsyt` | Psychic Tower | building | allies/bakupact/psicorps/soviets | 60,000 | 4.80 | 1,500 | 10.00 | — | 1023 | Y | — | 7,168 | — | 1 | 100 | — | — | — | — | — |
+| `yapsyt-tr` | Psychic Tower | building | allies/bakupact/psicorps/soviets | 60,000 | 4.80 | 1,500 | 10.00 | — | 1023 | Y | — | 7,168 | — | 1 | 100 | — | — | — | — | — |
+| `yasgen` | Stealth Generator | building | allies/bakupact/soviets | 60,000 | 4.80 | 1,000 | 6.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `babarr` | Barracks | building | bakupact | 50,000 | 4.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `cabarn02` | Barn | building | — | 50,000 | 4.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `cabrck` | Civilian Barracks | building | allies | 50,000 | 4.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `cabrck.unused` | Debug Barracks | building | soviets | 50,000 | 4.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `cabrck` | Civilian Barracks | building | allies/bakupact/soviets | 50,000 | 4.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `cabrck.unused` | Debug Barracks | building | allies/america/aussie/bakupact/belarus/canada/chile/china/cuba/england/france/germany/iraq/japan/korea/libya/mexico/mongolia/poland/psicorps/psimoon/psinepal/psisouth/psitrans/russia/soviets/turkey/ukraine/vietnam | 50,000 | 4.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `camov01` | Drive In Movie Screen | building | — | 50,000 | 4.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `carus02b` | Kremlin Walls | building | — | 50,000 | 4.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `cawash19` | Iwo Jima Memorial | building | — | 50,000 | 4.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `floater` | Mutant Crab | ship | — | 50,000 | 4.00 | 1,000 | 6.67 | 120 | 1023 | n | — | 2,176 | 6,000 | 1 | 40 | 150 | — | 1.00 | — | 0.97 |
+| `floater` | Mutant Crab | ship | allies/bakupact/psicorps/soviets | 50,000 | 4.00 | 1,000 | 6.67 | 120 | 1023 | n | — | 2,176 | 6,000 | 1 | 40 | 150 | — | 1.00 | — | 0.97 |
 | `gagun` | Gun Turret | building | allies/france | 50,000 | 4.00 | 650 | 4.33 | — | 40 | Y | — | 7,168 | 15,000 | 1 | 60 | 250 | 0.18 | 0.84 | — | 0.47 |
 | `gagun-tr` | Gun Turret | building | allies/france | 50,000 | 4.00 | 650 | 4.33 | — | 40 | Y | — | 7,168 | 15,000 | 1 | 60 | 250 | 0.18 | 0.84 | — | 0.47 |
 | `gamgun` | Mirage Turret | building | france | 50,000 | 4.00 | 800 | 5.33 | — | 40 | Y | — | 7,168 | 10,000 | 1 | 70 | 143 | 1.40 | 0.94 | — | 0.20 |
@@ -1810,9 +1809,9 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `napost` | Tesla Fence Post | building | bakupact/soviets | 50,000 | 4.00 | 200 | 1.33 | — | — | n | — | 3,072 | 5,000 | 1 | 3 | 1,667 | 1.00 | 1.00 | — | 0.97 |
 | `napowr` | Tesla Reactor | building | bakupact/soviets | 50,000 | 4.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `napsis` | Psychic Sensor | building | bakupact/soviets | 50,000 | 4.00 | 1,500 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `yabrck` | Barracks | building | — | 50,000 | 4.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `yabrck` | Barracks | building | allies/bakupact/soviets | 50,000 | 4.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `yapowr` | Bio Reactor | building | — | 50,000 | 4.00 | 500 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `yapsis` | Psychic Sensor | building | — | 50,000 | 4.00 | 1,500 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `yapsis` | Psychic Sensor | building | allies/bakupact/soviets | 50,000 | 4.00 | 1,500 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `3tnk` | Heavy Tank | vehicle | — | 40,000 | 3.20 | 950 | 6.33 | 90 | 28 | Y | — | 6,144 | 6,500 | 1 | 70 | 93 | 0.18 | 0.84 | — | 0.57 |
 | `aegis` | Aegis Cruiser | ship | allies | 40,000 | 3.20 | 900 | 6.00 | 105 | 1023 | Y | — | 12,288 | 10,000 | 3 | 100 | 265 | 1.00 | 1.00 | — | 0.00 |
 | `badgr` | Tu-16 Badger | aircraft | bakupact | 40,000 | 3.20 | 2,500 | 16.67 | 165 | 20 | n | — | 1,024 | 75,000 | 1 | 10 | 7,500 | 1.25 | 0.90 | — | 0.67 |
@@ -1834,7 +1833,7 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `kamaz` | Armored Truck | vehicle | psicorps/transcaucus | 40,000 | 3.20 | 800 | 5.33 | 135 | 28 | Y | — | 5,120 | 1,800 | 4 | 60 | 96 | 1.40 | 0.68 | — | 0.00 |
 | `lart` | Annihilator Artillery | vehicle | psicorps/transcaucus | 40,000 | 3.20 | 1,600 | 10.67 | 75 | 20 | n | — | 11,264 | — | 1 | 51 | — | — | — | — | — |
 | `lcrf` | Amphibious Transport | ship | allies | 40,000 | 3.20 | 500 | 3.33 | 135 | 16 | n | — | — | — | — | — | — | — | — | — | — |
-| `mlyr` | Minelayer | vehicle | — | 40,000 | 3.20 | 900 | 6.00 | 105 | 32 | n | — | — | — | — | — | — | — | — | — | — |
+| `mlyr` | Minelayer | vehicle | allies/soviets | 40,000 | 3.20 | 900 | 6.00 | 105 | 32 | n | — | — | — | — | — | — | — | — | — | — |
 | `mnly` | Minelayer | vehicle | — | 40,000 | 3.20 | 800 | 5.33 | 105 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `mrcv` | Mobile Robot Control Vehicle | vehicle | — | 40,000 | 3.20 | — | — | 105 | 30 | Y | — | — | — | — | — | — | — | — | — | — |
 | `mrj` | Mobile Radar Jammer | vehicle | — | 40,000 | 3.20 | 1,000 | 6.67 | 105 | 30 | Y | — | — | — | — | — | — | — | — | — | — |
@@ -1843,7 +1842,7 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `nalasr-tr` | Sentry Gun | building | bakupact/soviets | 40,000 | 3.20 | 500 | 3.33 | — | 40 | Y | — | 6,144 | 6,500 | 1 | 35 | 186 | 1.10 | 0.47 | — | 0.30 |
 | `sapc` | Amphibious Transport | ship | bakupact/soviets | 40,000 | 3.20 | 500 | 3.33 | 135 | 16 | n | — | — | — | — | — | — | — | — | — | — |
 | `smrj` | Mobile Radar Jammer | vehicle | bakupact | 40,000 | 3.20 | 1,000 | 6.67 | 105 | 30 | Y | — | — | — | — | — | — | — | — | — | — |
-| `spider` | Mutant Tarantula | vehicle | psitrans/transcaucus | 40,000 | 3.20 | 700 | 4.67 | 120 | 1023 | n | — | 5,120 | 4,000 | 2 | 40 | 178 | 1.00 | 0.47 | — | 0.28 |
+| `spider` | Mutant Tarantula | vehicle | transcaucus | 40,000 | 3.20 | 700 | 4.67 | 120 | 1023 | n | — | 5,120 | 4,000 | 2 | 40 | 178 | 1.00 | 0.47 | — | 0.28 |
 | `sqd` | Giant Squid | ship | bakupact/soviets | 40,000 | 3.20 | 1,000 | 6.67 | 135 | 1023 | n | — | 1,880 | 5,000 | 1 | 32 | 156 | — | — | — | — |
 | `tnkd` | Tank Destroyer | vehicle | germany | 40,000 | 3.20 | 900 | 6.00 | 90 | 20 | n | — | 6,144 | 15,000 | 1 | 70 | 214 | 0.08 | 0.84 | — | 0.57 |
 | `yhvr` | Amphibious Transport | ship | — | 40,000 | 3.20 | 500 | 3.33 | 135 | 16 | n | — | — | — | — | — | — | — | — | — | — |
@@ -1877,9 +1876,9 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `piranha` | Piranha Submarine | ship | — | 30,000 | 2.40 | 800 | 5.33 | 135 | 40 | n | — | 6,144 | 3,500 | 1 | 45 | 78 | 1.00 | 0.81 | — | 0.70 |
 | `schp` | Siege Chopper | aircraft | cuba/libya/soviets/vietnam | 30,000 | 2.40 | 1,400 | 9.33 | 180 | 80 | Y | — | 6,144 | 12,000 | 1 | 30 | 400 | 0.90 | 0.42 | — | 0.10 |
 | `sray` | Stingray | ship | bakupact/soviets | 30,000 | 2.40 | 900 | 6.00 | 105 | 20 | Y | — | 5,120 | 14,000 | 1 | 75 | 187 | 10.00 | 1.19 | — | 0.58 |
-| `strt` | Strider Tank | ship | — | 30,000 | 2.40 | 700 | 4.67 | 120 | 32 | Y | — | 6,144 | 5,000 | 1 | 45 | 111 | 0.18 | 0.84 | — | 0.57 |
-| `ttnk` | Tesla Tank | vehicle | russia | 30,000 | 2.40 | 1,200 | 8.00 | 105 | 28 | Y | — | 5,120 | 7,000 | 2 | 75 | 165 | 10.00 | 1.19 | — | 0.58 |
-| `yasilo` | Ore Silo | building | — | 30,000 | 2.40 | 300 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `strt` | Strider Tank | ship | allies/bakupact/psicorps/soviets | 30,000 | 2.40 | 700 | 4.67 | 120 | 32 | Y | — | 6,144 | 5,000 | 1 | 45 | 111 | 0.18 | 0.84 | — | 0.57 |
+| `ttnk` | Tesla Tank | vehicle | bakupact/russia | 30,000 | 2.40 | 1,200 | 8.00 | 105 | 28 | Y | — | 5,120 | 7,000 | 2 | 75 | 165 | 10.00 | 1.19 | — | 0.58 |
+| `yasilo` | Ore Silo | building | allies/bakupact/psicorps/soviets | 30,000 | 2.40 | 300 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `yawall` | Citadel Wall | building | — | 30,000 | 2.40 | 100 | 0.67 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `1tnk` | Light Tank | vehicle | — | 25,000 | 2.00 | 700 | 4.67 | 120 | 30 | Y | — | 6,144 | 6,500 | 1 | 60 | 108 | 0.18 | 0.84 | — | 0.57 |
 | `calunr01` | Lunar Lander | building | — | 25,000 | 2.00 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -1901,7 +1900,7 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `cawash18` | Fountain | building | — | 20,000 | 1.60 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `ctnk` | Chrono Dragon | vehicle | allies/germany | 20,000 | 1.60 | 2,200 | 14.67 | 105 | 32 | n | — | 8,192 | 2,500 | 8 | 90 | 213 | 0.13 | 0.74 | — | 0.70 |
 | `dlph` | Dolphin | ship | allies | 20,000 | 1.60 | 500 | 3.33 | 165 | 1023 | n | — | 5,120 | 700 | 1 | 40 | 18 | — | — | — | 0.60 |
-| `gatsub` | Gatling Submarine | ship | — | 20,000 | 1.60 | 900 | 6.00 | 90 | 40 | Y | — | 5,120 | 1,000 | 2 | 6 | 222 | 0.90 | 0.70 | — | 0.17 |
+| `gatsub` | Gatling Submarine | ship | allies/bakupact/psicorps/soviets | 20,000 | 1.60 | 900 | 6.00 | 90 | 40 | Y | — | 5,120 | 1,000 | 2 | 6 | 222 | 0.90 | 0.70 | — | 0.17 |
 | `gbear` | Grizzly Bear | infantry | — | 20,000 | 1.60 | 10 | 0.07 | 45 | — | n | — | 1,536 | 3,000 | 1 | 30 | 100 | — | — | — | — |
 | `hwtz` | Howitzer | vehicle | allies/germany | 20,000 | 1.60 | 900 | 6.00 | 105 | 20 | n | — | 10,240 | 17,500 | 1 | 110 | 159 | 1.00 | 0.76 | — | 0.57 |
 | `hyd` | Sea Scorpion | ship | soviets | 20,000 | 1.60 | 600 | 4.00 | 135 | 32 | n | — | 5,120 | 2,500 | 1 | 25 | 100 | 1.42 | 0.55 | — | 0.25 |
@@ -1913,7 +1912,7 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `tug` | Tug Boat | ship | — | 20,000 | 1.60 | 500 | 3.33 | 60 | 8 | n | — | — | — | — | — | — | — | — | — | — |
 | `yuripr` | Yuri Prime | infantry | soviets | 20,000 | 1.60 | 2,000 | 13.33 | 90 | — | n | 1 | 30,720 | — | 1 | 200 | — | — | — | — | — |
 | `magnedisk` | Mosquito Disc | aircraft | psinepal | 17,500 | 1.40 | 1,100 | 7.33 | 195 | 1023 | n | — | 5,120 | 4,500 | 1 | 120 | 38 | 10.00 | 0.47 | — | 0.30 |
-| `tric` | Mortar Tricycle | vehicle | soviets | 17,500 | 1.40 | 500 | 3.33 | 165 | 80 | n | — | 9,216 | 5,000 | 1 | 75 | 67 | 1.25 | 0.54 | — | 0.53 |
+| `tric` | Mortar Tricycle | vehicle | america/aussie/bakupact/belarus/canada/chile/china/cuba/england/france/germany/iraq/japan/korea/libya/mexico/mongolia/poland/psicorps/psimoon/psinepal/psisouth/psitrans/russia/soviets/turkey/ukraine/vietnam | 17,500 | 1.40 | 500 | 3.33 | 165 | 80 | n | — | 9,216 | 5,000 | 1 | 75 | 67 | 1.25 | 0.54 | — | 0.53 |
 | `txdx` | Lethocerus Platform | aircraft | — | 17,500 | 1.40 | 1,000 | 6.67 | 195 | 1023 | n | — | 5,120 | 8,000 | 2 | 50 | 267 | 0.13 | 0.61 | — | 0.57 |
 | `boris` | Boris Bukov | infantry | cuba/iraq/soviets | 15,000 | 1.20 | 2,000 | 13.33 | 75 | — | n | 1 | 7,168 | 6,500 | 1 | 15 | 433 | 2.00 | 0.69 | — | 0.05 |
 | `cow` | Cow | infantry | — | 15,000 | 1.20 | 10 | 0.07 | 45 | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -1922,7 +1921,7 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `grad` | Grad MLRS | vehicle | bakupact | 15,000 | 1.20 | 900 | 6.00 | 105 | 28 | Y | — | 12,288 | 2,500 | 10 | 90 | 266 | 0.77 | 0.50 | — | 0.82 |
 | `hmve` | Humvee | vehicle | — | 15,000 | 1.20 | 400 | 2.67 | 105 | 30 | Y | — | 5,120 | 2,000 | 1 | 20 | 100 | 0.90 | 0.47 | — | 0.30 |
 | `itrp` | Iron Trooper | infantry | bakupact/cuba/iraq/soviets/turkmen/tuva | 15,000 | 1.20 | 1,200 | 8.00 | 60 | — | n | — | 5,120 | — | 1 | 150 | — | — | — | — | — |
-| `m3` | Meme3 Launcher | vehicle | soviets | 15,000 | 1.20 | 900 | 6.00 | 90 | 32 | n | — | 18,432 | — | 1 | 75 | — | — | — | — | — |
+| `m3` | Meme3 Launcher | vehicle | america/aussie/belarus/canada/chile/china/cuba/england/france/germany/iraq/japan/korea/libya/mexico/mongolia/poland/psicorps/psimoon/psinepal/psisouth/psitrans/russia/soviets/turkey/ukraine/vietnam | 15,000 | 1.20 | 900 | 6.00 | 90 | 32 | n | — | 18,432 | — | 1 | 75 | — | — | — | — | — |
 | `mlrs` | Rocket Launcher | vehicle | — | 15,000 | 1.20 | 800 | 5.33 | 105 | 28 | Y | — | 8,192 | 2,500 | 8 | 90 | 213 | 0.13 | 0.74 | — | 0.70 |
 | `orca` | Harrier | aircraft | allies/korea | 15,000 | 1.20 | 1,200 | 8.00 | 225 | 20 | n | — | 6,144 | 20,000 | 1 | 3 | 6,667 | 1.33 | 0.75 | — | 0.62 |
 | `shkc` | Tesla Commando | infantry | bakupact/cuba/iraq/soviets/turkmen/tuva | 15,000 | 1.20 | 1,500 | 10.00 | 75 | — | n | — | 5,120 | 10,000 | 1 | 60 | 167 | 1.00 | 1.19 | — | 0.52 |
@@ -1930,17 +1929,17 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `tele` | Magnetron | vehicle | psicorps/transcaucus | 15,000 | 1.20 | 800 | 5.33 | 90 | 28 | Y | — | 10,240 | 8,000 | 1 | 110 | 73 | — | — | — | — |
 | `ttrp` | Intoxicator | infantry | soviets | 15,000 | 1.20 | 1,500 | 10.00 | 75 | — | n | — | 5,120 | 2,000 | 10 | 30 | 267 | 1.40 | 0.68 | — | 0.00 |
 | `v3` | V3 Launcher | vehicle | cuba/iraq/libya/soviets | 15,000 | 1.20 | 900 | 6.00 | 90 | 32 | n | — | 18,432 | — | 1 | 75 | — | — | — | — | — |
-| `yurix` | Yuri Prime | infantry | — | 15,000 | 1.20 | 2,000 | 13.33 | 90 | — | n | 1 | 7,168 | — | 1 | 200 | — | — | — | — | — |
+| `yurix` | Yuri Prime | infantry | allies/bakupact/soviets | 15,000 | 1.20 | 2,000 | 13.33 | 90 | — | n | 1 | 7,168 | — | 1 | 200 | — | — | — | — | — |
 | `shk` | Tesla Trooper | infantry | cuba/iraq/soviets | 13,000 | 1.04 | 300 | 2.00 | 60 | — | n | — | 4,096 | 5,000 | 1 | 60 | 83 | 1.00 | 1.19 | — | 0.52 |
 | `ccomand` | Chrono Commando | infantry | allies | 12,500 | 1.00 | 1,500 | 10.00 | 75 | — | n | — | 5,120 | 7,000 | 1 | 15 | 467 | 1.50 | 0.42 | — | 0.30 |
-| `civan` | Chrono Ivan | infantry | allies/bakupact/cuba/iraq/soviets/turkmen/tuva | 12,500 | 1.00 | 1,000 | 6.67 | 75 | — | n | — | 1,536 | — | 1 | 50 | — | — | — | — | — |
+| `civan` | Chrono Ivan | infantry | bakupact/cuba/iraq/soviets/turkmen/tuva | 12,500 | 1.00 | 1,000 | 6.67 | 75 | — | n | — | 1,536 | — | 1 | 50 | — | — | — | — | — |
 | `cleg` | Chrono Legionnaire | infantry | allies | 12,500 | 1.00 | 1,000 | 6.67 | 60 | — | n | — | 5,120 | 800 | 1 | 1 | 800 | — | — | — | — |
 | `crkt` | Chaos Trooper | infantry | — | 12,500 | 1.00 | 1,500 | 10.00 | 60 | — | n | — | 9,216 | 4,000 | 1 | 40 | 100 | 0.13 | 0.66 | — | 0.35 |
 | `e1` | G.I. | infantry | allies | 12,500 | 1.00 | 150 | 1.00 | 60 | 1023 | Y | — | 4,096 | 1,500 | 1 | 25 | 60 | 0.90 | 0.47 | — | 0.30 |
 | `e2` | Conscript | infantry | bakupact/cuba/iraq/soviets/turkmen/tuva | 12,500 | 1.00 | 100 | 0.67 | 60 | — | n | — | 4,096 | 1,500 | 1 | 25 | 60 | 0.90 | 0.47 | — | 0.30 |
 | `flakt` | Flak Trooper | infantry | cuba/iraq/soviets | 12,500 | 1.00 | 300 | 2.00 | 60 | — | n | — | 4,096 | 2,000 | 1 | 25 | 80 | 1.42 | 0.55 | — | 0.25 |
 | `ggi` | Guardian G.I. | infantry | allies | 12,500 | 1.00 | 300 | 2.00 | 60 | 1023 | Y | — | 4,096 | 1,500 | 1 | 25 | 60 | 0.90 | 0.47 | — | 0.30 |
-| `ghost` | Navy SEAL | infantry | america | 12,500 | 1.00 | 800 | 5.33 | 75 | — | n | — | 5,120 | 7,000 | 1 | 15 | 467 | 1.50 | 0.42 | — | 0.30 |
+| `ghost` | Navy SEAL | infantry | allies/america | 12,500 | 1.00 | 800 | 5.33 | 75 | — | n | — | 5,120 | 7,000 | 1 | 15 | 467 | 1.50 | 0.42 | — | 0.30 |
 | `gren` | Grenadier | infantry | allies | 12,500 | 1.00 | 250 | 1.67 | 75 | — | n | — | 5,120 | 16,000 | 1 | 60 | 267 | 1.00 | 0.76 | — | 0.88 |
 | `gtrp` | Gatling Trooper | infantry | — | 12,500 | 1.00 | 300 | 2.00 | 60 | — | n | — | 4,096 | 1,000 | 1 | 6 | 71 | 0.90 | 0.70 | — | 0.17 |
 | `hjck` | Hijacker | infantry | cuba/iraq/soviets | 12,500 | 1.00 | 500 | 3.33 | 90 | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -1950,10 +1949,10 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `lunr` | Cosmonaut | infantry | psimoon | 12,500 | 1.00 | 600 | 4.00 | 165 | 787 | n | — | 4,096 | 2,000 | 1 | 30 | 67 | 1.00 | 1.00 | — | 1.00 |
 | `medi` | Medic | infantry | bakupact/turkmen/tuva | 12,500 | 1.00 | 200 | 1.33 | 60 | — | n | — | 2,560 | — | 1 | 80 | — | — | — | — | — |
 | `mtrp` | Mortar Trooper | infantry | bakupact/turkmen/tuva | 12,500 | 1.00 | 550 | 3.67 | 60 | — | n | — | 9,216 | 10,000 | 1 | 75 | 133 | 1.25 | 0.72 | — | 0.53 |
-| `pyro` | Flamethrower | infantry | soviets | 12,500 | 1.00 | 300 | 2.00 | 60 | — | n | — | 5,120 | 2,000 | 5 | 50 | 143 | 1.50 | 0.57 | — | 0.82 |
-| `snipe` | Sniper | infantry | england | 12,500 | 1.00 | 600 | 4.00 | 60 | — | n | — | 12,288 | 20,000 | 1 | 120 | 167 | 0.83 | 0.25 | — | 0.01 |
+| `pyro` | Flamethrower | infantry | bakupact | 12,500 | 1.00 | 300 | 2.00 | 60 | — | n | — | 5,120 | 2,000 | 5 | 50 | 143 | 1.50 | 0.57 | — | 0.82 |
+| `snipe` | Sniper | infantry | allies/england | 12,500 | 1.00 | 600 | 4.00 | 60 | — | n | — | 12,288 | 20,000 | 1 | 120 | 167 | 0.83 | 0.25 | — | 0.01 |
 | `ssnipe` | Sniper | infantry | bakupact | 12,500 | 1.00 | 600 | 4.00 | 60 | — | n | — | 12,288 | 20,000 | 1 | 120 | 167 | 0.83 | 0.25 | — | 0.01 |
-| `virus` | Virus | infantry | — | 12,500 | 1.00 | 600 | 4.00 | 60 | — | n | — | 9,216 | 20,000 | 1 | 120 | 167 | 1.00 | 0.50 | — | 0.01 |
+| `virus` | Virus | infantry | allies/bakupact/psicorps/soviets | 12,500 | 1.00 | 600 | 4.00 | 60 | — | n | — | 9,216 | 20,000 | 1 | 120 | 167 | 1.00 | 0.50 | — | 0.01 |
 | `rctt` | Rocket Soldier | infantry | bakupact/turkmen/tuva | 12,000 | 0.96 | 350 | 2.33 | 60 | — | n | — | 6,144 | 4,000 | 1 | 40 | 100 | 0.13 | 0.74 | — | 0.57 |
 | `dog` | Attack Dog | infantry | allies/bakupact/cuba/iraq/soviets/turkmen/tuva/vietnam | 10,500 | 0.84 | 200 | 1.33 | 120 | — | n | — | 1,280 | 100,000 | 1 | 40 | 2,500 | 1.00 | 0.00 | — | 0.00 |
 | `ambu` | Ambulance | vehicle | — | 10,000 | 0.80 | 50 | 0.33 | 120 | 20 | n | — | — | — | — | — | — | — | — | — | — |
@@ -2001,8 +2000,8 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `propa` | Propaganda Truck | vehicle | — | 10,000 | 0.80 | 50 | 0.33 | 120 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `ptroop` | Psi Commando | infantry | allies | 10,000 | 0.80 | 1,500 | 10.00 | 60 | — | n | — | 7,168 | — | 1 | 200 | — | — | — | — | — |
 | `ptruck` | Pickup Truck | vehicle | — | 10,000 | 0.80 | 50 | 0.33 | 120 | 20 | n | — | — | — | — | — | — | — | — | — | — |
-| `slav` | Slave | infantry | — | 10,000 | 0.80 | 100 | 0.67 | 45 | — | n | — | 1,536 | 3,000 | 1 | 30 | 100 | 0.93 | 0.42 | — | 0.37 |
-| `spct` | Lazarus Spectre | infantry | — | 10,000 | 0.80 | 1,200 | 8.00 | 75 | — | n | — | 5,120 | 6,000 | 2 | 75 | 150 | 0.18 | 0.94 | — | 0.50 |
+| `slav` | Slave | infantry | psicorps | 10,000 | 0.80 | 100 | 0.67 | 45 | — | n | — | 1,536 | 3,000 | 1 | 30 | 100 | 0.93 | 0.42 | — | 0.37 |
+| `spct` | Lazarus Spectre | infantry | allies/bakupact/soviets | 10,000 | 0.80 | 1,200 | 8.00 | 75 | — | n | — | 5,120 | 6,000 | 2 | 75 | 150 | 0.18 | 0.94 | — | 0.50 |
 | `spy` | Spy | infantry | allies | 10,000 | 0.80 | 500 | 3.33 | 60 | — | n | — | — | — | — | — | — | — | — | — | — |
 | `sspy` | sspy | infantry | bakupact/turkmen/tuva | 10,000 | 0.80 | 500 | 3.33 | 60 | — | n | — | — | — | — | — | — | — | — | — | — |
 | `stang` | Automobile | vehicle | — | 10,000 | 0.80 | 50 | 0.33 | 120 | 20 | n | — | — | — | — | — | — | — | — | — | — |
@@ -2015,7 +2014,7 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 | `wini` | Recreational Vehicle | vehicle | — | 10,000 | 0.80 | 50 | 0.33 | 120 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `ycab` | Yellow Cab | vehicle | — | 10,000 | 0.80 | 50 | 0.33 | 120 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `yuri` | Yuri Clone | infantry | bakupact/soviets | 10,000 | 0.80 | 1,200 | 8.00 | 60 | — | n | — | 7,168 | — | 1 | 200 | — | — | — | — | — |
-| `yuripsi` | Yuri Clone | infantry | — | 10,000 | 0.80 | 1,000 | 6.67 | 60 | — | n | — | 7,168 | — | 1 | 200 | — | — | — | — | — |
+| `yuripsi` | Yuri Clone | infantry | allies/bakupact/psicorps/soviets | 10,000 | 0.80 | 1,000 | 6.67 | 60 | — | n | — | 7,168 | — | 1 | 200 | — | — | — | — | — |
 | `terror` | Terrorist | infantry | cuba | 7,500 | 0.60 | 200 | 1.33 | 90 | — | n | — | 2,048 | — | 1 | — | — | — | — | — | — |
 | `camsc02` | Beach Umbrellas | building | — | 5,000 | 0.40 | — | — | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `civ1` | Civilian | infantry | — | 5,000 | 0.40 | 10 | 0.07 | 45 | — | n | — | — | — | — | — | — | — | — | — | — |
@@ -2161,7 +2160,7 @@ Checkout: `/home/user/mustaphatr/romanovs-vengeance` · rifle anchor **`e1` = 12
 
 ## Shattered Paradise  (306 buildable units)
 
-Checkout: `/home/user/abrandau/shattered-paradise-sdk` · rifle anchor **`E1` = 12,500 HP / 120 credits = 1.00×**
+Checkout: `C:\Users\AedisToru\Documents\GitHub\Shattered-Paradise-SDK` · rifle anchor **`E1` = 12,500 HP / 120 credits = 1.00×**
 
 | id | unit | type | faction | HP | ×rifle | Cost | ×rifle cost | Speed | Turn | Turret | Limit | Range | Dmg | Burst | Reload | DPS | vsINF | vsVEH | vsAIR | vsBLD |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|:-:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
@@ -2271,7 +2270,7 @@ Checkout: `/home/user/abrandau/shattered-paradise-sdk` · rifle anchor **`E1` = 
 | `REGENTNK` | Regenisis Tank | vehicle | mut | 75,000 | 6.00 | 1,600 | 13.33 | 60 | 20 | Y | — | 8,192 | 14,000 | 1 | 90 | 156 | 1.00 | 1.00 | — | 0.78 |
 | `SCRDEPOT` | Scrin Maintenance Depot | building | scr | 75,000 | 6.00 | 500 | 4.17 | — | — | n | — | 5,120 | — | 1 | 25 | — | — | — | — | — |
 | `SCRTECH` | Scrin Laboratory | building | scr | 75,000 | 6.00 | 3,000 | 25.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `TDREPD` | Service Depot | building | — | 75,000 | 6.00 | 400 | 3.33 | — | — | n | — | 5,120 | — | 1 | 25 | — | — | — | — | — |
+| `TDREPD` | Service Depot | building | cab/gdi/mut/nod/scr | 75,000 | 6.00 | 400 | 3.33 | — | — | n | — | 5,120 | — | 1 | 25 | — | — | — | — | — |
 | `DEATHCLAW` | Ravager | vehicle | mut | 70,000 | 5.60 | 1,200 | 10.00 | 105 | — | n | — | 1,674 | 5,000 | 1 | 30 | 167 | 1.50 | 1.00 | — | 0.78 |
 | `SCRPOWR` | Ichor Generator | building | scr | 65,000 | 5.20 | 400 | 3.33 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `TRIPOD` | Annihilator Tripod | vehicle | scr | 65,000 | 5.20 | 1,600 | 13.33 | 75 | 32 | n | — | 7,168 | 1,000 | 10 | 70 | 141 | 1.00 | 1.00 | — | 0.78 |
@@ -2683,4 +2682,3 @@ Checkout: `/home/user/cookgreen/yuris-revenge` · rifle anchor **`e1` = 125 HP /
 | `terror` | Terrorist | infantry | cuba | 75 | 0.60 | 200 | 1.00 | 71 | — | n | — | — | — | — | — | — | — | — | — | — |
 | `yengineer` | Engineer | infantry | yuri | 75 | 0.60 | 500 | 2.50 | 60 | — | n | — | — | — | — | — | — | — | — | — | — |
 | `spy` | spy | infantry | allies | 25 | 0.20 | 500 | 2.50 | 56 | — | n | — | — | — | — | — | — | — | — | — | — |
-

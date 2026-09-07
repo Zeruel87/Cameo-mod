@@ -44,11 +44,17 @@ import reference_distribution as rd  # noqa: E402
 STATS = ("hp", "speed", "w_range", "w_dps", "cost")
 
 # LOWER-ONLY ratchets, set from this audit's own run.
+# ⚠ hp 750 -> 779 and cost 771 -> 809 on 2026-09-07 when `cameo_rows()` stopped dropping armed
+# structures filed in a `buildings` section (38 actors, all seven TD defences among them). That is
+# a RE-BASELINE ON A WIDENED CORPUS, not a raised ratchet on the same one, and it was verified as
+# such rather than assumed: restricted to the 869 rows the old population held, the collision
+# counts are still EXACTLY 750 / 716 / 771. Every added collision belongs to a row that was
+# previously invisible. `speed` is unmoved because structures have none.
 U1_BASELINE = 36
 U2_BASELINE = 33
-U3_HP_BASELINE = 750
+U3_HP_BASELINE = 779
 U3_SPEED_BASELINE = 716
-U3_COST_BASELINE = 771
+U3_COST_BASELINE = 809
 
 
 def main() -> int:

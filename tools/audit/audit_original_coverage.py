@@ -57,8 +57,12 @@ ORIGINAL_SOURCES = (
 # Romanov's Vengeance widened the CORPUS, not the defect: more rosters are now treated as
 # authoritative, so more unclaimed originals are visible. That is a re-baseline on a changed
 # measurement, not a raised ratchet on the same one — and most of the jump is RV's 729 rows.
-O1_BASELINE = 19
-O2_BASELINE = 115
+O1_BASELINE = 18
+# ⭐ 115 -> 110 on 2026-09-07. Tiberian Dawn went from SIX unclaimed originals to one (TREX, the
+# dinosaur) once Cameo's own TD defences became visible to the population at all — they had been
+# dropped for sitting in a `buildings` section, so nothing was ever asking to claim OBLI, GTWR,
+# ATWR, GUN or SAM. The map was not choosing badly; the claimant was missing. Again.
+O2_BASELINE = 103
 
 
 def main() -> int:

@@ -65,6 +65,7 @@ import argparse
 import collections
 import json
 import math
+import re
 import pathlib
 import statistics
 import sys
@@ -423,6 +424,26 @@ def doc1_rows():
     return out
 
 
+# ⛔ AI-ONLY VARIANTS ARE NOT REFERENCES (maintainer, 2026-09-07). Several mods ship a duplicate
+# actor that only the computer player can build — DTA's `TWR_AI`/`GUN1_AI`, CnC Reloaded's
+# `NABNKR_AI` ("Soviet Battle Bunker (for AI)"), Red Resurrection's "AI ONLY" rows. They are
+# balance crutches for the bot, not units a player ever faces on equal terms, and the real actor
+# they shadow is sitting right next to them in the same source. The assignment was handing
+# `td_gdi_guardtower` DTA's `TWR1_AI` while DTA's actual `TWR` went unused.
+#
+# ⚠ THE TEST MUST NOT BE `id.endswith("AI")`. Shattered Paradise's `ORCAI` is an Orca Interceptor
+# and Combined Arms' `ZRAI` is a Zone Raider — real units whose names simply end in those letters.
+# A separator before the suffix (`_AI`, `.AI`) is what marks the variant, and the mods that use a
+# bare suffix say so in the NAME instead ("(AI)", "AI ONLY", "for AI").
+_AI_ID = re.compile(r"[._]AI\d*$", re.I)
+_AI_NAME = re.compile(r"\(\s*AI\s*\)|AI[- ]ONLY|for AI", re.I)
+
+
+def is_ai_only(row):
+    """True when a corpus row is an AI-exclusive duplicate and must never be a reference."""
+    return bool(_AI_ID.search(row.get("id") or "") or _AI_NAME.search(row.get("name") or ""))
+
+
 def peer_rows():
     """Doc 5 rows with type, raw HP/speed/turn — the chassis corpus, after lineage de-dup."""
     rows, source, header = [], None, None
@@ -511,7 +532,10 @@ def peer_rows():
             dropped_lineage.add(row["source"])
             continue
         rows.append(row)
-    return rows
+    # Applied once, here, so EVERY consumer sees the same corpus: the assignment, the coverage
+    # audit and the distributions alike. An AI-only row must not shape a distribution either.
+    peer_rows.ai_only = [r for r in rows if is_ai_only(r)]
+    return [r for r in rows if not is_ai_only(r)]
 
 
 # Cameo's own 16 armor rows, grouped by the ladder DESIGN.md puts them in.
@@ -580,7 +604,18 @@ def cameo_rows():
             continue
         for section, units in (doc.get("sections") or {}).items():
             kind = CAMEO_SECTION_TYPE.get(section)
-            if not kind or not isinstance(units, dict):
+            # ⛔ `buildings` has NO entry in CAMEO_SECTION_TYPE, and for most of its contents that
+            # is right — a refinery is not a combat unit. But Cameo files its defences by pack
+            # CONVENTION, not by rule: the RedAlert packs have a `defenses.yaml`, the TiberianDawn
+            # ones keep theirs in `buildings.yaml`. Gating on the section name alone therefore
+            # dropped every armed structure in the second group — 38 buildable actors, INCLUDING
+            # ALL SEVEN TD DEFENCES (Obelisk, both Guard Towers, Gun Turret, SAM, Skyshield).
+            # They were not mismatched; they never entered the population, so nothing could claim
+            # OpenTD's OBLI/GTWR/ATWR/GUN/SAM and audit_original_coverage reported them unclaimed.
+            # This is the SAME rule the peer side already applies (see the `building` -> `defense`
+            # retype below): armed means defence, on BOTH sides, or Cameo's `defense` population is
+            # measured against a peer population built to a wider definition.
+            if (kind is None and section != "buildings") or not isinstance(units, dict):
                 continue
             for name, rec in units.items():
                 if not isinstance(rec, dict):
@@ -608,6 +643,14 @@ def cameo_rows():
                 # way as the peers': damage summed over POSITIVE mains, burst inside the cycle.
                 arms = [a for a in (rec.get("armaments") or [])
                         if isinstance(a, dict) and a.get("pricing")]
+                # An actor from `buildings` earns a place only by being armed; production and
+                # economy structures stay out. `row_kind` is local because `kind` is the section's
+                # and must not leak from one actor to the next.
+                row_kind = kind
+                if row_kind is None:
+                    if not arms:
+                        continue
+                    row_kind = "defense"
 
                 def anum(v):
                     try:
@@ -643,7 +686,7 @@ def cameo_rows():
                 # it all along. `cost` is not in ALL_STATS (this module is the chassis layer), so
                 # a consumer that wants price must build that aggregate itself; carrying the value
                 # here is what makes that possible at all.
-                out.append({"source": "Cameo", "id": name, "name": name, "type": kind,
+                out.append({"source": "Cameo", "id": name, "name": name, "type": row_kind,
                             "hp": hp, "speed": spd, "turn_speed": turn, "cost": val("cost"),
                             "structure_debt": debt,
                             "turn_ratio": (spd / turn) if (spd and turn) else None, **w})

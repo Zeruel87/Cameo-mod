@@ -522,6 +522,23 @@ def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=No
     b = _buildable(node)
     if b is None:
         return []
+    # ⛔ A FACTION-SUFFIXED `Queue:` IS THE OWNERSHIP STATEMENT, and nothing may dilute it.
+    # `Queue` names the production queue the actor appears in, which is exactly "who can build
+    # this". `Prerequisites` names what you must already own, which is routinely SHARED — and
+    # unioning the two destroyed the direct gate on 15 of OpenRA Tiberian Dawn's 49 faction-gated
+    # actors, the Light Tank, Medium Tank, Flame Tank, Orca and Apache among them:
+    #
+    #     LTNK:  Queue: Vehicle.Nod      Prerequisites: anyhq, ~techlevel.medium
+    #
+    # `Vehicle.Nod` resolves to {nod} correctly; then `anyhq` — a token BOTH headquarters provide —
+    # came back through the prerequisite-provider index and widened it to {gdi, nod}. Nod's Light
+    # Tank became claimable by a GDI actor. OBLI and SAM escaped only because `tmpl` and `hand`
+    # happen to be Nod-only buildings, so the dilution was invisible wherever it did no harm.
+    # The rule below the vfi block already said a direct gate must not be diluted; it simply ran
+    # too late to protect this one.
+    queue_gate = _faction_tokens(b.get("Queue"), known)
+    if queue_gate:
+        return sorted(queue_gate)
     found = set()
     for field in ("Queue", "Prerequisites"):
         found |= _faction_tokens(b.get(field), known)

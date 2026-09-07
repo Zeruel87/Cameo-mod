@@ -52,10 +52,20 @@ ROOT = rd.ROOT
 syn = rd.syn
 OUT = ROOT / "docs" / "balance" / "derived" / "reference_assignment.json"
 
-# ── Clause 10: the exempt roles ───────────────────────────────────────────────────────────────
+# ── Clause 10: the CHASSIS-ONLY roles ─────────────────────────────────────────────────────────
 # ⚠ ARMED APCs STAY IN (maintainer 2026-09-03): the test is whether the actor has a damaging
-# armament, not what it is called. An unarmed carrier is exempt; a troop carrier that shoots is a
-# combat unit with real HP, DPS and armour.
+# armament, not what it is called. An unarmed carrier is chassis-only; a troop carrier that shoots
+# is a combat unit with real HP, DPS and armour.
+#
+# ⭐ REVISED 2026-09-07 (maintainer): these roles are no longer SKIPPED, they are CHASSIS-ONLY.
+#     "For our support units and mcv or harvesters we just need to extract HP and Speed
+#      because that's all they need since they don't have a weapon"
+# Skipping them entirely left 122 unarmed actors with no reference at all, and it showed: every
+# Mobile Construction Vehicle in the game is 300,000 HP / speed 75 and every Tiberium Harvester
+# 150,000 / 60, across more than twenty factions, because nothing was ever measured against them.
+# They now match and vote like anything else — on HP and SPEED alone, since they have no weapon
+# to compare. The RA2 War Miner and its armed kin are not affected: `is_armed` already keeps a
+# support unit that shoots out of this list entirely.
 EXEMPT_WORDS = ("mobileconstructionvehicle", "mcv", "engineer", "harvester", "miner",
                 "transport", "carryall", "chinook", "dropship", "hovercraft", "spy", "detector")
 EXEMPT_CLASSES = {"support"}
@@ -84,6 +94,24 @@ def is_armed(rec):
         if isinstance(arm, dict) and arm.get("pricing"):
             return True
     return False
+
+
+def has_any_armament(rec):
+    """Does this actor carry a weapon of ANY kind — priced or not?
+
+    ⛔ NOT THE SAME QUESTION AS `is_armed`, and conflating them cost the V3 its references.
+    `is_armed` asks whether an armament is PRICED, which is what clause 5 needs. 79 actors carry
+    an armament the ledger marks `pricing: False` — engineer defuse kits and kamikaze target
+    designators, which really are not weapons, but also `japan_waveforceartillery`,
+    `asianalliance_chaostower` and `ra2_soviets_v3rocketlauncher`, which plainly are.
+
+    The unarmed guard must use THIS test. Asking `is_armed` there declared the V3 Rocket Launcher
+    unarmed and refused it every armed peer, so it lost `V3` in five separate sources at once and
+    fell back on a drone pile, a Lynx and a Hind. A guard that is wrong in the RESTRICTIVE
+    direction deletes correct candidates from the pool — the failure this whole cascade is made
+    of — so where the two tests disagree, this one lets the actor through.
+    """
+    return bool(rec.get("armaments"))
 
 
 def exempt(actor, rec):
@@ -257,6 +285,14 @@ def score(cam, rec, peer, cam_cost_pct, peer_cost_pct, home, cam_shape=None, pee
     if is_armed(rec) and not any(peer.get(k) for k in
                                  ("w_damage", "w_range", "w_reload", "w_burst")):
         return None
+    # ⛔ AND THE MIRROR OF IT, which matters the moment chassis-only actors enter scope: an
+    # UNARMED Cameo actor must not consume an ARMED peer. Without this a harvester can outbid a
+    # tank for a tank's reference on shape alone and the tank is left with the leftovers — the
+    # exact "the right candidate was deleted from the pool" failure, run in reverse. An MCV is
+    # only ever comparable to another MCV.
+    if not has_any_armament(rec) and any(peer.get(k) for k in
+                                         ("w_damage", "w_range", "w_reload", "w_burst")):
+        return None
     # ⛔ THE NAME SCORE IS BUCKETED, AND THAT IS WHAT MAKES THE CASCADE A CASCADE.
     # A lexicographic tuple whose first key is a near-continuous float degenerates into "rank by
     # that key alone": exact ties never happen, so tier, type, role and cost are never consulted.
@@ -301,14 +337,16 @@ def assign(only_class=None, routing=True):
     led = ledger()
     cam_rows = [c for c in cameo if c["id"] in led]
 
-    # exemptions first, so exempt units never consume a reference
+    # Chassis-only roles stay IN scope; the symmetric unarmed guard in the matcher is what keeps
+    # them from consuming a combat unit's reference, so they no longer have to be dropped to be
+    # safe. `skipped` keeps its name and its place in the output: it is now the record of WHICH
+    # actors carry hp/speed only, not of actors that were thrown away.
     scope, skipped = [], {}
     for c in cam_rows:
         why = exempt(c["id"], led[c["id"]])
         if why:
             skipped[c["id"]] = why
-        else:
-            scope.append(c)
+        scope.append(c)
 
     # ── clause 11: route, then match ──────────────────────────────────────────────────────────
     # ⚠ A UNIT WITH NO ROUTE LEAVES SCOPE ENTIRELY rather than falling back to open matching.
@@ -579,7 +617,7 @@ def main():
     counts = collections.Counter(len(v) for v in result.values())
     fo = getattr(assign, "formula_only", {})
     print(f"routing               : {'FACTION (clause 11)' if not args.no_routing else 'OFF ⛔ the rejected behaviour'}")
-    print(f"Cameo actors in scope : {in_scope}   exempt: {len(skipped)}   "
+    print(f"Cameo actors in scope : {in_scope}   chassis-only (hp+speed): {len(skipped)}   "
           f"formula-only (no route): {len(fo)}")
     print(f"actors assigned >=1   : {len(result)}")
     print(f"actors reaching the >=2 reference floor: "
@@ -609,7 +647,7 @@ def main():
                       f"role={m['score'][3]:.2f} cost={m['score'][4]:.2f}")
     if args.write:
         OUT.parent.mkdir(parents=True, exist_ok=True)
-        OUT.write_text(json.dumps({"assignment": result, "exempt": skipped},
+        OUT.write_text(json.dumps({"assignment": result, "chassis_only": skipped},
                                   indent=1, sort_keys=True) + "\n", encoding="utf-8")
         print(f"\nwrote {OUT.relative_to(ROOT)}")
     return 0

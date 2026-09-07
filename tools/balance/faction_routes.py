@@ -620,8 +620,27 @@ def routed_sources(faction):
     return frozenset(src for src, _ in ROUTES.get(faction, ()))
 
 
+# ⛔ WHERE A REFERENCE MOD DEPARTS FROM THE ORIGINAL GAME, THE ORIGINAL WINS (maintainer,
+# 2026-09-07). OpenRA's Tiberian Dawn lets BOTH sides build the Guard Tower and the Gun Turret
+# (`Queue: Support.GDI, Support.Nod` on each). The original game did not, and neither do DTA,
+# Combined Arms or Cameo — all three keep a GDI Guard Tower and a Nod Gun Turret. DTA even names
+# its row "Nod Gun Turret". OpenRA is the outlier of four, so it does not get to widen the pool:
+# a GDI actor must not draw the Nod turret as its reference, nor a Nod actor the GDI tower.
+#
+# ⚠ This table is for a DELIBERATE DIVERGENCE from the original roster, verified against the
+# other sources — never for a row that is merely inconvenient to route. Each entry names the
+# faction(s) the ORIGINAL game gave the unit, and it overrides whatever the mod's own data says.
+FACTION_OVERRIDES = {
+    ("OpenRA Tiberian Dawn", "GTWR"): frozenset({"gdi"}),   # Guard Tower — GDI in the original
+    ("OpenRA Tiberian Dawn", "GUN"): frozenset({"nod"}),    # Gun Turret — Nod in the original
+}
+
+
 def peer_factions(row):
     """The faction tokens on one peer row. The column is `/`-separated; `—` means untagged."""
+    override = FACTION_OVERRIDES.get((row.get("source"), (row.get("id") or "").strip().upper()))
+    if override is not None:
+        return override
     raw = (row.get("faction") or "").strip()
     if not raw or raw in {"—", "-", "?"}:
         return frozenset()
