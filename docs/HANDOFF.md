@@ -19,6 +19,40 @@ those are archived under [`history/handoffs/`](history/handoffs/) and must not b
 
 ---
 
+## ⛔ 2026-09-07 — the reference map, and what it cost to make it trustworthy
+
+**master `57d7d7858`.** The maintainer reviewed a TD/RA1 reference map and rejected it:
+`ra1_allies_rifleinfantry` was mapped to a **Cryo Trooper** when all three sources ship an E1.
+Seven silent defects, each individually sufficient — full list in
+`memory: cameo-reference-defect-cascade`, the essentials here.
+
+⭐ **THE LESSON.** The matcher was never choosing badly. **The correct candidate was deleted
+from the pool before matching**, and the greedy picked the best of what remained. Every wrong
+pairing looked like a scoring bug and was a visibility bug.
+
+⛔ **A "verification" that reads a crashed run's output verifies nothing.** `factions_of` lost
+its `vfi` parameter in a merge, so every OpenRA extraction raised TypeError and was swallowed
+per-mod; my splice then copied the unchanged file back and I reported the fix working.
+
+**THE ACCEPTANCE TEST** (maintainer, verbatim): *"All the original units are in OpenRA. DTA, CA
+and Cameo all expand the roster... those that exist in OpenRA and OpenTD MUST ALWAYS HAVE 3
+REFERENCES."* Encoded as `audit_original_coverage.py`. **O2 — an original nobody claimed — is
+the check that matters**; a voice count cannot see it.
+
+**OPEN QUESTION, unanswered:** Romanov's Vengeance carries **729 buildable units**. RA2+YR never
+shipped that many, so RV expands the roster like CA and DTA do. `OpenRA RA2 official` (86) and
+`Yuri's Revenge on OpenRA` (124) match the real rosters. Which is the RA2 authority?
+
+**NEXT, in order:**
+1. Work the O2 list — **every Tiberian Dawn defense is unclaimed** (Obelisk, Guard Tower,
+   Advanced Guard Tower, Turret, SAM), plus RA1's Tesla/Chrono tank and Demolition Truck.
+2. Settle the RA2 authority, then re-baseline O1/O2.
+3. The regen conversion (892 nodes, delegated, `devin/regen/conversion`) — **Claude-Local flips
+   `defaults.yaml` LAST and merges whole**, or master double-heals.
+4. The faction identity modifier to break byte-identical mirrors — magnitude not yet set.
+
+⚠ **No balance number has been written to yaml.** Nothing is applied until the map is right.
+
 ## ⭐ AGENT ASSIGNMENTS — who is doing what (2026-09-06)
 
 | agent | lane |
