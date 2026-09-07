@@ -436,6 +436,59 @@ def _buildable(node):
                  if c.key == "Buildable" or c.key.startswith("Buildable@")), None)
 
 
+def prerequisite_providers(rules, known):
+    """{provided token: set(declared factions)} — the INVERTED direction of faction gating.
+
+    ⚠ Some mods gate a unit's faction from the PROVIDER side, not the consumer side.
+    Combined Arms writes `Prerequisites: ~vehicles.1tnk` on the unit and then answers
+    "who may build it" on a structure:
+
+        ProvidesPrerequisiteValidatedFaction@1tnk:
+            Factions: allies, france, germany, usa
+            Prerequisite: vehicles.1tnk
+
+    `factions_of` walks the unit's prerequisites UP toward actors and finds nothing —
+    `vehicles.1tnk` is a capability token, not an actor. This index reads the other
+    direction: every `ProvidesPrerequisite*` trait's `Prerequisite:` token is mapped
+    to its scope, which is
+
+    * the trait's own `Factions:` (`ProvidesPrerequisiteValidatedFaction`), or
+    * the PROVIDING actor's `ValidFactions.Factions` — a Soviet-only barracks
+      provides `infantry.ra` unscoped, and the scope is the building's, not the
+      token's (structures.yaml: `ValidFactions: soviet, russia, ukraine, iraq, yuri`).
+
+    A provider with neither field contributes nothing — that preserves the deliberate
+    shared-infrastructure refusal (`anypower` et al. stay unscoped).
+    """
+    prov = {}
+    for aid in rules.actors:
+        try:
+            node = rules.resolve(aid)
+        except Exception:
+            continue
+        if node is None:
+            continue
+        actor_scope = set()
+        for c in node.children:
+            if c.key.split("@")[0] == "ValidFactions":
+                d = {k.key.lower(): k.value for k in c.children}
+                actor_scope |= {f.strip().lower()
+                                for f in (d.get("factions") or "").split(",") if f.strip()}
+        for c in node.children:
+            if not c.key.startswith("ProvidesPrerequisite"):
+                continue
+            d = {k.key.lower(): k.value for k in c.children}
+            pr = d.get("prerequisite") or d.get("prerequisites") or ""
+            fac = {f.strip().lower()
+                   for f in (d.get("factions") or "").split(",") if f.strip()}
+            scope = (fac or actor_scope) & set(known)
+            for t in pr.split(","):
+                t = t.strip().lower()
+                if t and scope:
+                    prov.setdefault(t, set()).update(scope)
+    return prov
+
+
 def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None):
     """The faction tokens an actor is gated on, filtered by what the mod actually declares.
 
@@ -494,6 +547,7 @@ def extract(mod_id):
     rules = miniyaml.Ruleset(root, mod_id)
     fluent = load_fluent(root, mod_id)
     known_factions = declared_factions(rules)
+    providers = prerequisite_providers(rules, known_factions)
 
     key = rules._actor_ci.get(rifle_id.lower())
     if not key:
@@ -529,13 +583,24 @@ def extract(mod_id):
         limit = trait(node, ("Buildable",), "BuildLimit")
         ts, turreted = turn_speed(node)
         wep = weapon_stats(rules, node, label)
+        fac = factions_of(node, known_factions, rules)
+        if not fac:
+            # Inverted gating (CA): the faction sits on the prerequisite's PROVIDER,
+            # not on the consumer's chain. The index is pre-filtered to declared
+            # factions; a union covering every declared faction means "universal".
+            b = _buildable(node)
+            hits = set()
+            for chunk in (b.get("Prerequisites") or "").split(","):
+                tok = chunk.strip().lstrip("~!").strip().lower()
+                hits |= providers.get(tok, set())
+            fac = sorted(hits)
         rows.append({
             "id": actor, "name": unit_name(actor, node, fluent),
             "type": unit_type(node), "turn_speed": ts, "turreted": turreted,
             # ⭐ THE FACTION COLUMN (maintainer 2026-09-04). Reference routing needs it: an Asian
             # Alliance unit may only draw on Mental Omega China, which is what stops
             # "Animal Alligator" from ever being a candidate.
-            "faction": "/".join(factions_of(node, known_factions, rules)) or "",
+            "faction": "/".join(fac) or "",
             "limit": int(limit) if (limit and str(limit).strip().isdigit()) else None,
             **wep,
             "hp": int(hp), "cost": int(cost) if cost else None,
