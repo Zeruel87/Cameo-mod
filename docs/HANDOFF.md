@@ -1,5 +1,78 @@
 # Cameo — THE HANDOFF
 
+## ⛔⛔ 2026-09-07 — READ THIS FIRST: the reference map, and one absolute rule
+
+**SUPERWEAPONS ARE NEVER PRICED, RESTATTED OR TOUCHED** (maintainer, verbatim: *"NEVER CHANGE
+THEM!! SO EXCLUDE THEM BEFORE ANYTHING IS CHANGED ON ACCIDENT!!!"*). 32 actors are gated on
+`~techlevel.superweapons`; every one whose HP is recorded holds exactly **1,000,000**, which is a
+deliberate constant, not a balance figure. Two locks, both landed in `9ad611a6d`:
+`reference_distribution.cameo_rows()` drops them from the priced population, and `apply_balance`
+**refuses** any ledger edit that touches one. Do not weaken either.
+
+### Where the reference map stands (master `8589e8eb8`)
+
+The maintainer reviewed it three times and rejected it twice. Every reference is now
+**name-backed** — shape-only matches are refused outright, after a sniper drew a Velociraptor and
+an officer a Triceratops. 63 originals · 77 expanded · 235 references · 4 originals still short.
+
+**The one lesson that generalises**, stated three ways because it recurred every single time:
+
+> The matcher was never choosing badly. **The correct candidate was invisible, or the wrong one
+> was recorded despite the scorer already knowing it was bad.** Of ten mappings the maintainer
+> called junk: 8 SHAPE, 2 WEAK, **zero STRONG**. Of the ones they called correct: 20 STRONG of 21.
+> When a mapping looks stupid, ask what was excluded — not what was chosen.
+
+Defects fixed today, each worth knowing because each was invisible:
+
+| | |
+|---|---|
+| Armed structures in a `buildings` section were not in the population at all | 38 actors, incl. every TD defence |
+| AI-only variants were eligible references (suffix **and** prefix forms) | 122 rows; they are deliberately CHEAPER |
+| `~disabled` rows were eligible | OpenRA's dinosaurs, ants, Visceroid — and its `HIND` |
+| A direct `Queue:` gate was diluted by a shared prerequisite (`anyhq`) | 15 TD rows incl. Light/Medium Tank |
+| An EXPANSION outbid an ORIGINAL for its own reference | `firerocketsoldier` scores **0.867** vs `sovietrocketsoldier`'s **0.850** — the expansion is literally the closer string, so no scorer tuning fixes it. Originals now claim first. |
+| `variant_rank` was a whack-a-mole list — held "flame", not "fire" | inverted: a closed list of FACTION words, not an open list of variant words |
+| Containment guard measured the Cameo string, not the peer's | `Ant` matched inside `dragunov**ant**imaterialsniper` |
+| Sources agree on IDS after renaming, and nothing read it | CA ships `1TNK` as "Scout Tank"; DTA prefixes RA-era actors `RA` (`RAPBOX`) |
+| CA states ownership in a DOT SUFFIX (`STNK.Nod`) | its Queue/Prereq tags are useless — see below |
+| The report hid variant FAMILIES | a 6-row mapping displayed as one arbitrary pick |
+
+### ⛔ THE BIGGEST REMAINING LEVER — Combined Arms over-tagging
+
+**CA's median row is admissible to FIVE Cameo factions. Every other source's median is ONE**, and
+154 of 346 CA rows exceed six. That single fact produced most of what was rejected in both
+reviews: a Soviet Tesla Trooper for Nod's laser trooper, Nod's SAM for the Soviet SAM site, an RA1
+Allied IFV for a GDI APC, and `allows("td_gdi", TITN)` returning **False** — CA denying GDI its own
+walker. **EMBER owns this.** Until it is fixed, `REFERENCE_OVERRIDES` and `FAMILY_EXTRA` in
+`tools/balance/` are papering over it with named rows.
+
+### Priority queue
+
+1. **CA over-tagging** (EMBER) — unblocks ~8 known-wrong mappings at once.
+2. **Wire Aurora's `filter_candidate_eligibility.py`** — it is written and correct
+   (`devin/aurora/pool-hygiene-clean`), covers the INI sources my `~disabled` fix did not, and
+   handles the HERO bucket (`build_limit=1`). But it writes a side file
+   (`ini_corpus_filtered.json`) that **nothing consumes**. Wiring it should let Cameo's commando
+   claim `RMBO`, the last unclaimed Tiberian Dawn original.
+3. **Aliases for the 9 short originals** (ECHO) — each is one synonym; DTA calls its rocket
+   soldier "Bazooka" and its AA gun "Anti-aircraft Gun". Finite and checkable.
+4. **Sign the 27 class anchors** (CODEX) — 0 of 27 signed, and `apply_balance` therefore refuses
+   every faction. This, not writer safety, is what blocks the whole pipeline.
+5. **Then: the faction-calibration method for expansions** — anchor on originals, derive the rest
+   (class anchor × tech tier × faction factor). Maintainer wants **Japan** as the first test,
+   precisely because it has no reference data.
+
+### Open questions the maintainer has not answered
+
+* **Is Romanov's Vengeance the RA2 authority?** It carries 729 buildable units; RA2 + YR never
+  shipped that many. It is 104 of 119 unclaimed "originals", and O2 currently reports it without
+  gating on it. That exemption must be DELETED when ruled, never raised.
+* **TD naval** — GDI and Nod ships exist in DTA and CA and Cameo has none mapped.
+* Missing actors the maintainer named: **RMBO / E7 (Tanya)**, CA's Chinook, Specter, Venom.
+
+---
+
+
 **2026-08-25 update (Devin AI):** The volcanic shellmap (`shellmap_v3.oramap`) camera was too tight (6-cell radius), hiding the scripted attack waves. The `attack.lua` camera radius has been widened to 45 cells. The boot-blocking stale removal `-Warhead@CannonHE_MediumPercentage` in `weapons/outpost2.yaml` is resolved in `a92ae850`, and boot-gate passes with no new exceptions. See `DEVELOPMENT_LOG.md` § "Volcanic shellmap camera radius fix" for evidence and verification.
 
 **This is the single entry point for anyone picking up work on Cameo — human or agent.**
