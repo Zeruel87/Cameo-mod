@@ -436,46 +436,60 @@ def _buildable(node):
                  if c.key == "Buildable" or c.key.startswith("Buildable@")), None)
 
 
-def validated_faction_index(rules):
-    """{prerequisite token: [factions]} from `ProvidesPrerequisiteValidatedFaction`.
+def prerequisite_providers(rules, known):
+    """{provided token: set(declared factions)} — the INVERTED direction of faction gating.
 
-    ⛔ THIS TRAIT IS WHERE SOME MODS ACTUALLY DECLARE OWNERSHIP, and reading only `Buildable`
-    misses it entirely. Combined Arms gates its units on a UNIT-scoped token and grants that
-    token from a structure, naming the factions there:
+    ⚠ Some mods gate a unit's faction from the PROVIDER side, not the consumer side.
+    Combined Arms writes `Prerequisites: ~vehicles.1tnk` on the unit and then answers
+    "who may build it" on a structure:
 
-        MTNK:   Buildable: Prerequisites: ~vehicles.mtnk, ~techlevel.medium
-        WEAP:   ProvidesPrerequisiteValidatedFaction@mtnk:
-                    Factions: gdi, talon, zocom, eagle, arc, legion
-                    Prerequisite: vehicles.mtnk
+        ProvidesPrerequisiteValidatedFaction@1tnk:
+            Factions: allies, france, germany, usa
+            Prerequisite: vehicles.1tnk
 
-    `vehicles.mtnk` is not a faction token, so `_faction_tokens` finds nothing and the prerequisite
-    hop lands on the shared WEAP factory, which is refused as shared infrastructure. The GDI Battle
-    Tank therefore came out tagged from an unrelated path (`arc/nod`) and the Allied Scout Tank
-    (`1TNK`: allies, france, germany, usa) came out with NO tag at all — invisible to every Cameo
-    faction, because `faction_routes.allows` correctly refuses an untagged row. 81 of Combined
-    Arms' 357 rows were untagged this way.
+    `factions_of` walks the unit's prerequisites UP toward actors and finds nothing —
+    `vehicles.1tnk` is a capability token, not an actor. This index reads the other
+    direction: every `ProvidesPrerequisite*` trait's `Prerequisite:` token is mapped
+    to its scope, which is
+
+    * the trait's own `Factions:` (`ProvidesPrerequisiteValidatedFaction`), or
+    * the PROVIDING actor's `ValidFactions.Factions` — a Soviet-only barracks
+      provides `infantry.ra` unscoped, and the scope is the building's, not the
+      token's (structures.yaml: `ValidFactions: soviet, russia, ukraine, iraq, yuri`).
+
+    A provider with neither field contributes nothing — that preserves the deliberate
+    shared-infrastructure refusal (`anypower` et al. stay unscoped).
     """
-    idx = {}
-    for key in getattr(rules, "_actor_ci", {}).values():
+    prov = {}
+    for aid in rules.actors:
         try:
-            node = rules.resolve(key)
+            node = rules.resolve(aid)
         except Exception:
             continue
+        if node is None:
+            continue
+        actor_scope = set()
         for c in node.children:
-            if not c.key.startswith("ProvidesPrerequisiteValidatedFaction"):
+            if c.key.split("@")[0] == "ValidFactions":
+                d = {k.key.lower(): k.value for k in c.children}
+                actor_scope |= {f.strip().lower()
+                                for f in (d.get("factions") or "").split(",") if f.strip()}
+        for c in node.children:
+            if not c.key.startswith("ProvidesPrerequisite"):
                 continue
-            facs, pre = None, None
-            for f in c.children:
-                if f.key == "Factions":
-                    facs = [t.strip().lower() for t in (f.value or "").split(",") if t.strip()]
-                elif f.key == "Prerequisite":
-                    pre = (f.value or "").strip().lower()
-            if pre and facs:
-                idx.setdefault(pre, set()).update(facs)
-    return {k: sorted(v) for k, v in idx.items()}
+            d = {k.key.lower(): k.value for k in c.children}
+            pr = d.get("prerequisite") or d.get("prerequisites") or ""
+            fac = {f.strip().lower()
+                   for f in (d.get("factions") or "").split(",") if f.strip()}
+            scope = (fac or actor_scope) & set(known)
+            for t in pr.split(","):
+                t = t.strip().lower()
+                if t and scope:
+                    prov.setdefault(t, set()).update(scope)
+    return prov
 
 
-def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=None):
+def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None):
     """The faction tokens an actor is gated on, filtered by what the mod actually declares.
 
     ⛔ THE FACTION IS OFTEN ONE HOP AWAY, IN THE PREREQUISITE BUILDING. OpenRA gates most infantry
@@ -541,7 +555,11 @@ def extract(mod_id):
     rules = miniyaml.Ruleset(root, mod_id)
     fluent = load_fluent(root, mod_id)
     known_factions = declared_factions(rules)
-    vfi = validated_faction_index(rules)
+    # EMBER's index (devin/ember/untagged-ca-sp), consulted at CLAIM level rather than as a
+    # last resort — see factions_of. Their version is the broader read: it takes every
+    # `ProvidesPrerequisite*` trait and falls back to the PROVIDING actor's `ValidFactions`,
+    # which a `ValidatedFaction`-only reader misses.
+    vfi = prerequisite_providers(rules, known_factions)
 
     key = rules._actor_ci.get(rifle_id.lower())
     if not key:
