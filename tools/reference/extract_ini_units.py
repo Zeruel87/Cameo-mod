@@ -69,6 +69,8 @@ TYPE_LISTS = {
 RA2_ARMOR = ["none", "flak", "plate", "light", "medium", "heavy",
              "wood", "steel", "concrete", "special_1", "special_2"]
 
+# Factions that are never a playable owner claim; they mean "no specific faction".
+GENERIC_FACTIONS = frozenset({"Neutral", "Special", "Civilian", "Mutant"})
 SECTION = re.compile(r"^\s*\[([^\]]+)\]")
 KV = re.compile(r"^\s*([A-Za-z0-9_.]+)\s*=\s*([^;]*)")
 
@@ -160,6 +162,98 @@ def weapon_of(ini: dict, wname: str, engine: str) -> dict:
     }
 
 
+def _clean_owner_set(text: str, countries: set) -> set | None:
+    """Turn an INI `Owner=`, `FactoryOwners=` or `RequiredHouses=` string into a
+    validated country set. Returns `None` when the set is empty or covers every
+    playable country (no information)."""
+    out = {c.strip() for c in (text or "").split(",")
+           if c.strip() and c.strip() not in GENERIC_FACTIONS and c.strip() in countries}
+    playable = countries - GENERIC_FACTIONS
+    if not out or out == playable:
+        return None
+    return out
+
+
+def _apply_houses_filter(owner: set, a: dict, countries: set) -> set | None:
+    """Narrow `owner` with `RequiredHouses` / `ForbiddenHouses` if the actor has them."""
+    req = {c.strip() for c in (a.get("RequiredHouses") or "").split(",")
+           if c.strip() and c.strip() in countries and c.strip() not in GENERIC_FACTIONS}
+    forb = {c.strip() for c in (a.get("ForbiddenHouses") or "").split(",")
+            if c.strip() and c.strip() in countries and c.strip() not in GENERIC_FACTIONS}
+    if req:
+        owner &= req
+    if forb:
+        owner -= forb
+    return owner if owner else None
+
+
+def _actor_owner(actor: str, a: dict | None, countries: set, allow_universal: bool = False) -> set | None:
+    """The direct owner claim of one actor, after filtering and house rules.
+
+    `FactoryOwners` is checked first because it is the producer-specific claim:
+    a building like `GATECH` has `Owner=all` but `FactoryOwners=Allies`.
+
+    When `allow_universal=False` (the default, used inside the prerequisite walk)
+    an `Owner=` that covers every playable country is treated as NO claim, so the
+    walker can keep going through buildings to the construction yard. When
+    `allow_universal=True` (used at the top level) the same set is a valid
+    "all-playable" claim and is returned."""
+    if not a:
+        return None
+    own = _clean_owner_set(a.get("FactoryOwners"), countries) or _clean_owner_set(a.get("Owner"), countries)
+    if not own:
+        if not allow_universal:
+            return None
+        # Owner=all or FactoryOwners=all — return the whole playable set.
+        raw = a.get("FactoryOwners") or a.get("Owner") or ""
+        own = {c.strip() for c in raw.split(",")
+               if c.strip() and c.strip() not in GENERIC_FACTIONS and c.strip() in countries}
+        if not own:
+            return None
+    return _apply_houses_filter(own, a, countries)
+
+
+def _resolve_owner(actor: str, ini: dict, countries: set, all_actors: set,
+                   depth: int = 0, seen: set | None = None) -> set | None:
+    """Resolve an actor's faction by walking `Prerequisite` up to depth 2.
+
+    Westwood INI lists `Prerequisite=BUILDING,TECH` as a conjunction. A unit with
+    `Prerequisite=GAPILE` is Allied because `GAPILE`'s own `Prerequisite=GACNST`
+    and `GACNST` is owned by the Allied countries. Ares adds `FactoryOwners` so
+    buildings like `GATECH` can be Allied even when `Owner` is set to all.
+    """
+    if actor not in all_actors or depth > 2:
+        return None
+    seen = seen or set()
+    if actor in seen:
+        return None
+    seen.add(actor)
+    a = ini.get(actor)
+    if not a:
+        return None
+    own = _actor_owner(actor, a, countries)
+    if own:
+        return own
+    prereq = a.get("Prerequisite") or ""
+    sets: list[set] = []
+    for p in prereq.split(","):
+        p = p.strip()
+        if not p or p == actor:
+            continue
+        s = _resolve_owner(p, ini, countries, all_actors, depth + 1, seen.copy())
+        if s:
+            sets.append(s)
+    if not sets:
+        return None
+    inter = set(sets[0])
+    for s in sets[1:]:
+        inter &= s
+    playable = countries - GENERIC_FACTIONS
+    if not inter or inter == playable or inter == countries:
+        return None
+    return inter
+
+
 def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
     notes: list[str] = []
     path = REF / spec["file"]
@@ -181,6 +275,9 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
     # first left `countries` empty for a TS source, which silently disabled the filter below
     # rather than failing — the owners were kept unvalidated. Read both.
     countries = set(listed(ini, "Countries")) | set(listed(ini, "Houses"))
+    all_actors: set[str] = set()
+    for list_sec in TYPE_LISTS:
+        all_actors.update(listed(ini, list_sec))
     rows: list[dict] = []
     for list_sec, utype in TYPE_LISTS.items():
         for actor in listed(ini, list_sec):
@@ -209,7 +306,36 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
             if sw:
                 wep = {**wep, **{f"w2_{k[2:]}" if k.startswith("w_") else "w2_weapon": v
                                  for k, v in sw.items() if v is not None}}
-            owners = [o.strip() for o in (a.get("Owner") or "").split(",") if o.strip()]
+
+            # ⭐ Faction resolution: direct `Owner`/`FactoryOwners`, then `RequiredHouses` /
+            # `ForbiddenHouses`, then a bounded walk through `Prerequisite` buildings.
+            # If `Owner` is all-playable and the walk finds a more specific claim, use that;
+            # otherwise the all-playable claim is preserved as a universal reference (R14).
+            raw_owner = (a.get("FactoryOwners") or a.get("Owner") or "").strip()
+            raw_list = [o for o in (o.strip() for o in raw_owner.split(","))
+                        if o and o not in GENERIC_FACTIONS and o in countries]
+            direct = _clean_owner_set(raw_owner, countries)
+            if direct:
+                direct = _apply_houses_filter(direct, a, countries)
+            resolved = _resolve_owner(actor, ini, countries, all_actors)
+            playable = countries - GENERIC_FACTIONS
+            if resolved and resolved != playable and resolved != countries:
+                if not direct or resolved < (direct or playable):
+                    own_list = sorted(resolved)
+                else:
+                    own_list = [o for o in raw_list if o in direct] if direct else sorted(resolved)
+            elif direct and direct != playable:
+                own_list = [o for o in raw_list if o in direct]
+            elif raw_list:
+                # `Owner`/`FactoryOwners` covers every playable country or is a real
+                # (universal) claim with no narrower resolution — preserve it.
+                own_list = raw_list
+            else:
+                # No Owner and no resolvable Prerequisite — `RequiredHouses` alone can still
+                # make a claim (e.g. country-specific hero units).
+                req = _clean_owner_set(a.get("RequiredHouses"), countries)
+                own_list = sorted(req) if req else []
+            owners = own_list
             rows.append({
                 "source": label,
                 "engine": engine,
