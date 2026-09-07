@@ -105,6 +105,13 @@ def attach(assignment, idx):
 # only — this is a list of units, not a pattern anyone can widen by accident.
 FAMILY_EXTRA = {
     ("ra1_soviets_siegemammothtank", "Combined Arms"): ("APOC", "OVLD"),
+    # GDI's super-heavy tier is split across two chassis names: the Mammoth line and the Titan
+    # walkers. Both are 110,000 HP / 2,000cr in Combined Arms and both belong with the Mk III.
+    # ⚠ `allows("td_gdi", TITN)` currently returns FALSE — CA's broad faction tagging denies GDI
+    # its own walker — so these rows are unreachable through routing and can only arrive here.
+    # That is a symptom, not a fix: EMBER owns the CA over-tagging, and when it is corrected these
+    # two entries should be re-checked to see whether the family rule finds them unaided.
+    ("td_gdi_mammothtankmkiii", "Combined Arms"): ("TITN", "TITN.RAIL"),
 }
 
 
