@@ -103,3 +103,26 @@ Strings are the internal names, never the display/translated names.
   control characters in every string value. Do not add a JSON dependency.
 - Never read the file, never let its contents influence the simulation, and
   never touch synced state. This is record-only.
+
+## Emitter guard — hand-serialized JSON has a separator bug class
+
+Serializing by hand means one forgotten comma makes every line unparseable, and
+the aggregator can only report that as a skip — it cannot say *why*. The first
+implementation shipped with exactly that: `AppendTimeline` wrote no leading
+comma, so every line came out as
+
+    ..."personality_switches":0"personality_timeline":[]...
+
+`tools/tests/test_aggregate_ai_matches.py` could not see it, because its
+fixtures are built with `json.dumps` — it tests the reader, never the writer.
+
+Two rules follow, and both are load-bearing:
+
+- **Every `Append*` helper writes its own leading separator**, governed by the
+  same `first` flag — `AppendString`, `AppendNumber`, `AppendBoolean`,
+  `AppendObjectPropertyStart`, `AppendTimeline` and `AppendRelationships` alike.
+  `BuildLog` therefore contains no hand-written `,` at all. A new field cannot
+  be added without its separator because there is nowhere to omit it from.
+- **`OpenRA.Mods.Cameo.Test/AiMatchLogWriterTest.cs` runs that same call
+  sequence and parses the result** with `JsonDocument`. It fails 2 of 3 against
+  the original emitter. Extend it whenever `BuildLog` grows a field.

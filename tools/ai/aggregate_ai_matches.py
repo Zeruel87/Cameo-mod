@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Aggregate the record-only AI match log into per-matchup outcome tables.
 
-Reads the JSONL written by AiMatchLogBotModule (schema 1) and reports, per
+Reads the JSONL written by AiMatchLogWriter (schema 1) and reports, per
 (bot faction x personality x enemy faction), how often that combination won.
 This is the OFFLINE half of the learning loop: the game never reads this
 output. Nothing here adjusts the bots; a human reviews the table and decides.

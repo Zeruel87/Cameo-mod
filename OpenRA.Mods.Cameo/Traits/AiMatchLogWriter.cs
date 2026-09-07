@@ -195,7 +195,6 @@ namespace OpenRA.Mods.Cameo.Traits
 				AppendNumber(lines, "duration_ticks", world.WorldTick);
 				AppendNumber(lines, "timestep", world.Timestep);
 
-				lines.Append(',');
 				AppendObjectPropertyStart(lines, "player");
 				AppendString(lines, "name", player.InternalName, true);
 				AppendString(lines, "bot_type", player.BotType);
@@ -207,7 +206,7 @@ namespace OpenRA.Mods.Cameo.Traits
 				AppendString(lines, "personality", recorder?.CurrentPersonality ?? "");
 				AppendNumber(lines, "personality_switches", recorder?.PersonalitySwitches ?? 0);
 				AppendTimeline(lines, recorder?.PersonalityTimeline);
-				lines.Append("},");
+				lines.Append('}');
 
 				AppendObjectPropertyStart(lines, "stats");
 				AppendNumber(lines, "units_killed", stats?.UnitsKilled ?? 0, true);
@@ -220,10 +219,9 @@ namespace OpenRA.Mods.Cameo.Traits
 				AppendNumber(lines, "assets_value", stats?.AssetsValue ?? 0);
 				AppendNumber(lines, "resources_earned", resources?.Earned ?? 0);
 				AppendNumber(lines, "resources_spent", resources?.Spent ?? 0);
-				lines.Append("},");
+				lines.Append('}');
 
 				AppendRelationships(lines, world, player, "opponents", false);
-				lines.Append(',');
 				AppendRelationships(lines, world, player, "allies", true);
 				lines.Append("}\n");
 			}
@@ -231,8 +229,10 @@ namespace OpenRA.Mods.Cameo.Traits
 			return lines.ToString();
 		}
 
-		static void AppendRelationships(StringBuilder builder, World world, OpenRA.Player subject, string property, bool allies)
+		static void AppendRelationships(StringBuilder builder, World world, OpenRA.Player subject, string property, bool allies, bool first = false)
 		{
+			if (!first)
+				builder.Append(',');
 			builder.Append('"').Append(property).Append("\":[");
 			var relationships = world.Players
 				.Where(IsEligiblePlayer)
@@ -261,8 +261,10 @@ namespace OpenRA.Mods.Cameo.Traits
 			builder.Append(']');
 		}
 
-		static void AppendTimeline(StringBuilder builder, IReadOnlyList<AiMatchLogPersonalityTransition> timeline)
+		internal static void AppendTimeline(StringBuilder builder, IReadOnlyList<AiMatchLogPersonalityTransition> timeline, bool first = false)
 		{
+			if (!first)
+				builder.Append(',');
 			builder.Append("\"personality_timeline\":[");
 			if (timeline != null)
 				for (var i = 0; i < timeline.Count; i++)
@@ -293,14 +295,16 @@ namespace OpenRA.Mods.Cameo.Traits
 			};
 		}
 
-		static void AppendObjectStart(StringBuilder builder) { builder.Append('{'); }
+		internal static void AppendObjectStart(StringBuilder builder) { builder.Append('{'); }
 
-		static void AppendObjectPropertyStart(StringBuilder builder, string name)
+		internal static void AppendObjectPropertyStart(StringBuilder builder, string name, bool first = false)
 		{
+			if (!first)
+				builder.Append(',');
 			builder.Append('"').Append(name).Append("\":{");
 		}
 
-		static void AppendString(StringBuilder builder, string name, string value, bool first = false)
+		internal static void AppendString(StringBuilder builder, string name, string value, bool first = false)
 		{
 			if (!first)
 				builder.Append(',');
@@ -309,7 +313,7 @@ namespace OpenRA.Mods.Cameo.Traits
 			builder.Append('"');
 		}
 
-		static void AppendNumber(StringBuilder builder, string name, int value, bool first = false)
+		internal static void AppendNumber(StringBuilder builder, string name, int value, bool first = false)
 		{
 			if (!first)
 				builder.Append(',');
@@ -317,7 +321,7 @@ namespace OpenRA.Mods.Cameo.Traits
 				.Append(value.ToString(CultureInfo.InvariantCulture));
 		}
 
-		static void AppendBoolean(StringBuilder builder, string name, bool value, bool first = false)
+		internal static void AppendBoolean(StringBuilder builder, string name, bool value, bool first = false)
 		{
 			if (!first)
 				builder.Append(',');
