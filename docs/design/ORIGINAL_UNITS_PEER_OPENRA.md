@@ -8,364 +8,364 @@ Companion to [`ORIGINAL_UNITS_RAW.md`](ORIGINAL_UNITS_RAW.md) (the RA2 family) a
 
 ## Combined Arms  (382 buildable units)
 
-Checkout: `/home/user/inq8/camod` · rifle anchor **`E1` = 5,000 HP / 100 credits = 1.00×**
+Checkout: `C:\Users\AedisToru\Documents\GitHub\CAmod` · rifle anchor **`E1` = 5,000 HP / 100 credits = 1.00×**
 
 | id | unit | type | faction | HP | ×rifle | Cost | ×rifle cost | Speed | Turn | Turret | Limit | Range | Dmg | Burst | Reload | DPS | vsINF | vsVEH | vsAIR | vsBLD |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|:-:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| `AIRS` | Airstrip | building | — | 200,000 | 40.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `AIRS` | Airstrip | building | blackh/marked/nod/shadow | 200,000 | 40.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `AFAC` | Construction Yard | building | — | 150,000 | 30.00 | 3,000 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `FACF` | Fake Construction Yard | defense | england | 150,000 | 30.00 | 250 | 2.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `FACT` | Construction Yard | building | — | 150,000 | 30.00 | 3,000 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SFAC` | Colony Platform | building | — | 150,000 | 30.00 | 3,000 | 30.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `WEAF` | Fake War Factory | defense | england | 150,000 | 30.00 | 225 | 2.25 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `WEAP` | War Factory | building | — | 150,000 | 30.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `WEAP.TD` | Weapons Factory | building | — | 150,000 | 30.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `WEAP.TD` | Weapons Factory | building | arc/eagle/gdi/legion/talon/zocom | 150,000 | 30.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `WSPH` | Warp Sphere | building | scrin | 150,000 | 30.00 | 2,000 | 20.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `BATF` | Battle Fortress | vehicle | france | 140,000 | 28.00 | 2,000 | 20.00 | 43 | 8 | n | — | 5,888 | 750 | 3 | 10 | 188 | 1.50 | 0.27 | — | 0.23 |
 | `BATF.AI` | Battle Fortress | vehicle | france | 140,000 | 28.00 | 2,000 | 20.00 | 43 | 8 | n | — | 5,888 | 750 | 3 | 10 | 188 | 1.50 | 0.27 | — | 0.23 |
-| `UPGC` | Upgrade Center | building | gdi | 140,000 | 28.00 | 1,800 | 18.00 | — | 12 | Y | 1 | 307,200 | 36,000 | 3 | 100 | 900 | 0.80 | 0.95 | — | 0.42 |
-| `APOC` | Apocalypse Tank | vehicle | soviet | 130,000 | 26.00 | 2,600 | 26.00 | 43 | 8 | Y | — | 5,888 | 4,500 | 2 | 135 | 63 | 0.40 | 1.03 | — | 0.62 |
-| `APOC.ATOMIC` | Atomic Apocalypse Tank | vehicle | soviet | 130,000 | 26.00 | 2,600 | 26.00 | 43 | 8 | Y | — | 5,888 | 4,500 | 2 | 135 | 63 | 0.40 | 1.03 | — | 0.62 |
-| `APOC.ERAD` | Apocalyptic Eradicator | vehicle | soviet | 130,000 | 26.00 | 2,600 | 26.00 | 43 | 8 | Y | — | 5,888 | 29,275 | 2 | 135 | 404 | 1.75 | 0.48 | — | 0.34 |
-| `APOC.ERAD.ATOMIC` | Atomic Apocalyptic Eradicator | vehicle | soviet | 130,000 | 26.00 | 2,600 | 26.00 | 43 | 8 | Y | — | 5,888 | 29,275 | 2 | 135 | 404 | 1.75 | 0.48 | — | 0.34 |
+| `UPGC` | Upgrade Center | building | arc/eagle/gdi/talon/zocom | 140,000 | 28.00 | 1,800 | 18.00 | — | 12 | Y | 1 | 307,200 | 36,000 | 3 | 100 | 900 | 0.80 | 0.95 | — | 0.42 |
+| `APOC` | Apocalypse Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 130,000 | 26.00 | 2,600 | 26.00 | 43 | 8 | Y | — | 5,888 | 4,500 | 2 | 135 | 63 | 0.40 | 1.03 | — | 0.62 |
+| `APOC.ATOMIC` | Atomic Apocalypse Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 130,000 | 26.00 | 2,600 | 26.00 | 43 | 8 | Y | — | 5,888 | 4,500 | 2 | 135 | 63 | 0.40 | 1.03 | — | 0.62 |
+| `APOC.ERAD` | Apocalyptic Eradicator | vehicle | iraq/russia/soviet/ukraine/yuri | 130,000 | 26.00 | 2,600 | 26.00 | 43 | 8 | Y | — | 5,888 | 29,275 | 2 | 135 | 404 | 1.75 | 0.48 | — | 0.34 |
+| `APOC.ERAD.ATOMIC` | Atomic Apocalyptic Eradicator | vehicle | iraq/russia/soviet/ukraine/yuri | 130,000 | 26.00 | 2,600 | 26.00 | 43 | 8 | Y | — | 5,888 | 29,275 | 2 | 135 | 404 | 1.75 | 0.48 | — | 0.34 |
 | `MSHP` | Mothership | aircraft | scrin | 130,000 | 26.00 | 3,000 | 30.00 | 60 | 512 | n | 1 | 512 | 9,000 | 1 | 150 | 60 | — | — | — | — |
-| `OVLD` | Overlord Tank | vehicle | soviet | 130,000 | 26.00 | 2,350 | 23.50 | 43 | 10 | Y | — | 5,888 | 8,300 | 2 | 80 | 195 | 0.60 | 1.00 | — | 0.62 |
-| `OVLD.ATOMIC` | Atomic Overlord Tank | vehicle | soviet | 130,000 | 26.00 | 2,350 | 23.50 | 43 | 10 | Y | — | 5,888 | 8,300 | 2 | 80 | 195 | 0.60 | 1.00 | — | 0.62 |
-| `OVLD.ERAD` | Overlord Eradicator | vehicle | soviet | 130,000 | 26.00 | 2,350 | 23.50 | 43 | 10 | Y | — | 5,888 | 17,550 | 2 | 80 | 351 | 1.75 | 0.48 | — | 0.34 |
-| `OVLD.ERAD.ATOMIC` | Atomic Overlord Eradicator | vehicle | soviet | 130,000 | 26.00 | 2,350 | 23.50 | 43 | 10 | Y | — | 5,888 | 17,550 | 2 | 80 | 351 | 1.75 | 0.48 | — | 0.34 |
+| `OVLD` | Overlord Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 130,000 | 26.00 | 2,350 | 23.50 | 43 | 10 | Y | — | 5,888 | 8,300 | 2 | 80 | 195 | 0.60 | 1.00 | — | 0.62 |
+| `OVLD.ATOMIC` | Atomic Overlord Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 130,000 | 26.00 | 2,350 | 23.50 | 43 | 10 | Y | — | 5,888 | 8,300 | 2 | 80 | 195 | 0.60 | 1.00 | — | 0.62 |
+| `OVLD.ERAD` | Overlord Eradicator | vehicle | iraq/russia/soviet/ukraine/yuri | 130,000 | 26.00 | 2,350 | 23.50 | 43 | 10 | Y | — | 5,888 | 17,550 | 2 | 80 | 351 | 1.75 | 0.48 | — | 0.34 |
+| `OVLD.ERAD.ATOMIC` | Atomic Overlord Eradicator | vehicle | iraq/russia/soviet/ukraine/yuri | 130,000 | 26.00 | 2,350 | 23.50 | 43 | 10 | Y | — | 5,888 | 17,550 | 2 | 80 | 351 | 1.75 | 0.48 | — | 0.34 |
 | `SIGN` | Signal Transmitter | building | scrin | 130,000 | 26.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `ALHQ` | Allied HQ | building | allies | 120,000 | 24.00 | 1,200 | 12.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `CVAT` | Cloning Vat | building | soviet | 120,000 | 24.00 | 2,000 | 20.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `INDP` | Industrial Plant | building | soviet | 120,000 | 24.00 | 2,000 | 20.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `MUNP` | Munitions Plant | building | soviet | 120,000 | 24.00 | 2,000 | 20.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `QTNK` | MAD Tank | vehicle | soviet | 120,000 | 24.00 | 1,700 | 17.00 | 46 | 20 | n | — | — | — | — | — | — | — | — | — | — |
-| `TMPP` | Temple Prime | building | nod | 120,000 | 24.00 | 2,000 | 20.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `ATEK` | Allied Tech Center | building | allies | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `ALHQ` | Allied HQ | building | allies/england/france/germany/usa | 120,000 | 24.00 | 1,200 | 12.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `CVAT` | Cloning Vat | building | iraq/russia/soviet/ukraine/yuri | 120,000 | 24.00 | 2,000 | 20.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `INDP` | Industrial Plant | building | iraq/russia/soviet/ukraine/yuri | 120,000 | 24.00 | 2,000 | 20.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `MUNP` | Munitions Plant | building | iraq/russia/soviet/ukraine/yuri | 120,000 | 24.00 | 2,000 | 20.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `QTNK` | MAD Tank | vehicle | iraq/russia/soviet/ukraine | 120,000 | 24.00 | 1,700 | 17.00 | 46 | 20 | n | — | — | — | — | — | — | — | — | — | — |
+| `TMPP` | Temple Prime | building | blackh/legion/marked/nod/shadow | 120,000 | 24.00 | 2,000 | 20.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `ATEK` | Allied Tech Center | building | allies/england/france/germany/usa | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `DOME` | Radar Dome | building | — | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `DOMF` | Fake Radar Dome | defense | england | 110,000 | 22.00 | 200 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `GTEK` | GDI Tech Center | building | gdi | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `GTEK` | GDI Tech Center | building | arc/eagle/gdi/talon/zocom | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `HQ` | Comm. Center | building | nod | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `HQ.UPG` | Internet Center | building | nod | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `KIRO` | Kirov Airship | aircraft | soviet | 110,000 | 22.00 | 2,000 | 20.00 | 49 | 12 | n | — | 480 | 13,000 | 1 | 25 | 520 | 0.40 | 0.80 | — | 0.80 |
+| `KIRO` | Kirov Airship | aircraft | iraq/russia/soviet/ukraine | 110,000 | 22.00 | 2,000 | 20.00 | 49 | 12 | n | — | 480 | 13,000 | 1 | 25 | 520 | 0.40 | 0.80 | — | 0.80 |
 | `NERV` | Nerve Center | building | scrin | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `NPWR` | Atomic Reactor | building | soviet | 110,000 | 22.00 | 1,500 | 15.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `NPWR` | Atomic Reactor | building | iraq/russia/soviet/ukraine/yuri | 110,000 | 22.00 | 1,500 | 15.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SCRT` | Scrin Tech Center | building | scrin | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `STEK` | Soviet Tech Center | building | soviet | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `STEK` | Soviet Tech Center | building | iraq/russia/soviet/ukraine/yuri | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `TITN` | Titan | vehicle | talon | 110,000 | 22.00 | 2,000 | 20.00 | 43 | 10 | Y | — | 5,120 | 14,500 | 1 | 80 | 181 | 0.30 | 0.88 | — | 0.60 |
 | `TITN.RAIL` | Railgun Titan | vehicle | talon | 110,000 | 22.00 | 2,000 | 20.00 | 43 | 10 | Y | — | 5,888 | 6,000 | 1 | 80 | 75 | 0.30 | 0.85 | — | 0.68 |
-| `TMPL` | Temple of Nod | building | nod | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `TMPL` | Temple of Nod | building | blackh/legion/marked/nod/shadow | 110,000 | 22.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `RTPD` | Reaper Tripod | vehicle | reaper | 102,000 | 20.40 | 2,200 | 22.00 | 46 | 512 | n | — | 5,376 | 925 | 1 | 55 | 17 | 0.85 | 0.88 | — | 0.58 |
-| `AFLD` | Airfield | building | soviet | 100,000 | 20.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `AFLD.GDI` | Airfield | building | gdi | 100,000 | 20.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `EYE` | Advanced Communications Center | defense | gdi | 100,000 | 20.00 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `AFLD` | Airfield | building | iraq/russia/soviet/ukraine/yuri | 100,000 | 20.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `AFLD.GDI` | Airfield | building | arc/eagle/gdi/talon/zocom | 100,000 | 20.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `EYE` | Advanced Communications Center | defense | arc/eagle/gdi/talon/zocom | 100,000 | 20.00 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
 | `GRAV` | Gravity Stabilizer | building | scrin | 100,000 | 20.00 | 500 | 5.00 | — | — | n | — | 1,536 | — | 6 | 25 | — | — | — | — | — |
-| `IRON` | Iron Curtain | defense | soviet | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `LASP` | Laser Fence | defense | nod | 100,000 | 20.00 | 200 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `IRON` | Iron Curtain | defense | iraq/russia/soviet/ukraine/yuri | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `LASP` | Laser Fence | defense | blackh/legion/marked/nod/shadow | 100,000 | 20.00 | 200 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `MANI` | Field Manipulator | defense | scrin | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `MSLO` | Missile Silo | defense | soviet | 100,000 | 20.00 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `MSLO.Nod` | Missile Silo | defense | nod | 100,000 | 20.00 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `OREP` | Ore Purifier | building | allies | 100,000 | 20.00 | 1,600 | 16.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `PATR` | EMP Missile Launcher | defense | gdi | 100,000 | 20.00 | 1,500 | 15.00 | — | 15 | Y | 1 | 307,200 | 9,000 | 1 | 120 | 75 | 0.50 | 0.35 | — | 0.28 |
-| `PDOX` | Chronosphere | defense | allies | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `MSLO` | Missile Silo | defense | iraq/russia/soviet/ukraine/yuri | 100,000 | 20.00 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `MSLO.Nod` | Missile Silo | defense | blackh/legion/marked/nod/shadow | 100,000 | 20.00 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `OREP` | Ore Purifier | building | allies/england/france/germany/usa | 100,000 | 20.00 | 1,600 | 16.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `PATR` | EMP Missile Launcher | defense | arc/eagle/gdi/talon/zocom | 100,000 | 20.00 | 1,500 | 15.00 | — | 15 | Y | 1 | 307,200 | 9,000 | 1 | 120 | 75 | 0.50 | 0.35 | — | 0.28 |
+| `PDOX` | Chronosphere | defense | allies/england/france/germany/usa | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
 | `RFGN` | Rift Generator | defense | scrin | 100,000 | 20.00 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `SGEN` | Stealth Generator | defense | nod/shadow | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `SGEN.Shadow` | Stealth Generator | defense | nod/shadow | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `SPEN` | Sub Pen | building | soviet | 100,000 | 20.00 | 800 | 8.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `SPEN.nod` | Sub Pen | building | nod | 100,000 | 20.00 | 800 | 8.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `SYRD` | Naval Yard | building | allies | 100,000 | 20.00 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `SYRD.gdi` | Naval Yard | building | gdi | 100,000 | 20.00 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `SGEN` | Stealth Generator | defense | blackh/legion/marked/nod/shadow | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `SGEN.Shadow` | Stealth Generator | defense | blackh/legion/marked/nod/shadow | 100,000 | 20.00 | 1,500 | 15.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `SPEN` | Sub Pen | building | iraq/russia/soviet/ukraine/yuri | 100,000 | 20.00 | 800 | 8.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `SPEN.nod` | Sub Pen | building | blackh/legion/marked/nod/shadow | 100,000 | 20.00 | 800 | 8.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `SYRD` | Naval Yard | building | allies/england/france/germany/usa | 100,000 | 20.00 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `SYRD.gdi` | Naval Yard | building | arc/eagle/gdi/talon/zocom | 100,000 | 20.00 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SYRF` | Fake Naval Yard | defense | england | 100,000 | 20.00 | 100 | 1.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `WEAT` | Weather Control Device | defense | allies | 100,000 | 20.00 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
-| `4TNK` | Mammoth Tank | vehicle | soviet | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 4,864 | 6,000 | 2 | 80 | 141 | 0.30 | 1.00 | — | 0.62 |
-| `4TNK.ATOMIC` | Atomic Mammoth Tank | vehicle | soviet | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 4,864 | 6,000 | 2 | 80 | 141 | 0.30 | 1.00 | — | 0.62 |
-| `4TNK.ERAD` | Eradicator | vehicle | soviet | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 5,888 | 20,050 | 1 | 80 | 251 | 1.75 | 0.48 | — | 0.34 |
-| `4TNK.ERAD.ATOMIC` | Atomic Eradicator | vehicle | soviet | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 5,888 | 20,050 | 1 | 80 | 251 | 1.75 | 0.48 | — | 0.34 |
+| `WEAT` | Weather Control Device | defense | allies/england/france/germany/usa | 100,000 | 20.00 | 2,500 | 25.00 | — | — | n | 1 | — | — | — | — | — | — | — | — | — |
+| `4TNK` | Mammoth Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 4,864 | 6,000 | 2 | 80 | 141 | 0.30 | 1.00 | — | 0.62 |
+| `4TNK.ATOMIC` | Atomic Mammoth Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 4,864 | 6,000 | 2 | 80 | 141 | 0.30 | 1.00 | — | 0.62 |
+| `4TNK.ERAD` | Eradicator | vehicle | iraq/russia/soviet/ukraine/yuri | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 5,888 | 20,050 | 1 | 80 | 251 | 1.75 | 0.48 | — | 0.34 |
+| `4TNK.ERAD.ATOMIC` | Atomic Eradicator | vehicle | iraq/russia/soviet/ukraine/yuri | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 5,888 | 20,050 | 1 | 80 | 251 | 1.75 | 0.48 | — | 0.34 |
 | `HTNK` | Mammoth Tank | vehicle | arc/eagle/gdi/zocom | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 4,864 | 6,000 | 2 | 80 | 141 | 0.30 | 1.00 | — | 0.62 |
-| `HTNK.Hover` | Hover Mammoth Tank | vehicle | eagle/gdi | 95,000 | 19.00 | 1,700 | 17.00 | 60 | 20 | Y | — | 4,864 | 6,000 | 2 | 80 | 141 | 0.30 | 1.00 | — | 0.62 |
-| `HTNK.Ion` | Ion Mammoth Tank | vehicle | gdi/zocom | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 5,376 | 12,500 | 1 | 85 | 147 | 0.30 | 1.00 | — | 0.70 |
+| `HTNK.Hover` | Hover Mammoth Tank | vehicle | arc/eagle/gdi/zocom | 95,000 | 19.00 | 1,700 | 17.00 | 60 | 20 | Y | — | 4,864 | 6,000 | 2 | 80 | 141 | 0.30 | 1.00 | — | 0.62 |
+| `HTNK.Ion` | Ion Mammoth Tank | vehicle | arc/eagle/gdi/zocom | 95,000 | 19.00 | 1,700 | 17.00 | 44 | 12 | Y | — | 5,376 | 12,500 | 1 | 85 | 147 | 0.30 | 1.00 | — | 0.70 |
 | `FREF` | Fake Refinery | defense | england | 90,000 | 18.00 | 200 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `HTUR` | Grand Cannon | defense | france | 90,000 | 18.00 | 1,750 | 17.50 | — | 8 | Y | — | 10,240 | 30,000 | 1 | 120 | 250 | 0.17 | 0.33 | — | 0.27 |
 | `PROC` | Ore Refinery | building | — | 90,000 | 18.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `PROC.SCRIN` | Refinery | building | scrin | 90,000 | 18.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `PROC.TD` | Refinery | building | — | 90,000 | 18.00 | 1,800 | 18.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `HTNK.Drone` | Mammoth Drone | vehicle | arc/gdi | 88,000 | 17.60 | 1,300 | 13.00 | 44 | 12 | Y | — | 4,864 | 2,000 | 2 | 28 | 121 | 0.30 | 1.00 | — | 0.62 |
-| `TPOD` | Annihilator Tripod | vehicle | scrin | 86,000 | 17.20 | 1,800 | 18.00 | 46 | 512 | n | — | 5,376 | 925 | 1 | 65 | 14 | 0.85 | 0.88 | — | 0.58 |
+| `HTNK.Drone` | Mammoth Drone | vehicle | arc/eagle/gdi/zocom | 88,000 | 17.60 | 1,300 | 13.00 | 44 | 12 | Y | — | 4,864 | 2,000 | 2 | 28 | 121 | 0.30 | 1.00 | — | 0.62 |
+| `TPOD` | Annihilator Tripod | vehicle | collector/harbinger/scrin/traveler | 86,000 | 17.20 | 1,800 | 18.00 | 46 | 512 | n | — | 5,376 | 925 | 1 | 65 | 14 | 0.85 | 0.88 | — | 0.58 |
 | `STCR` | Stormcrawler | vehicle | reaper | 84,000 | 16.80 | 1,350 | 13.50 | 46 | 16 | n | — | 4,608 | 2,800 | 6 | 50 | 317 | 0.15 | 0.30 | — | 0.85 |
-| `CA` | Cruiser | ship | allies | 80,000 | 16.00 | 2,000 | 20.00 | 29 | 12 | Y | — | 22,272 | 2,000 | 1 | 120 | 17 | 1.00 | 0.57 | — | 0.83 |
+| `CA` | Cruiser | ship | allies/england/france/germany/usa | 80,000 | 16.00 | 2,000 | 20.00 | 29 | 12 | Y | — | 22,272 | 2,000 | 1 | 120 | 17 | 1.00 | 0.57 | — | 0.83 |
 | `FIX` | Service Depot | building | — | 80,000 | 16.00 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `HPAD` | Helipad | building | allies | 80,000 | 16.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `HPAD.TD` | Helipad | building | nod | 80,000 | 16.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `HPAD` | Helipad | building | allies/england/france/germany/usa | 80,000 | 16.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `HPAD.TD` | Helipad | building | blackh/legion/marked/nod/shadow | 80,000 | 16.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `REP` | Repair Facility | building | — | 80,000 | 16.00 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SREP` | Regeneration Bay | building | scrin | 80,000 | 16.00 | 1,000 | 10.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `AVTR` | Avatar | vehicle | nod | 78,000 | 15.60 | 2,000 | 20.00 | 56 | 18 | n | — | 6,656 | 26,000 | 1 | 100 | 260 | 2.50 | — | — | 0.55 |
+| `AVTR` | Avatar | vehicle | legion/nod | 78,000 | 15.60 | 2,000 | 20.00 | 56 | 18 | n | — | 6,656 | 26,000 | 1 | 100 | 260 | 2.50 | — | — | 0.55 |
 | `AMCV` | Mobile Construction Vehicle | vehicle | — | 75,000 | 15.00 | 3,000 | 30.00 | 54 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `CHPR` | Chrono Prison | vehicle | germany | 75,000 | 15.00 | 1,550 | 15.50 | 44 | 16 | Y | — | 6,144 | 2 | 22 | 5 | 4 | — | 0.82 | — | 0.23 |
 | `HARV` | Ore Truck | vehicle | allies | 75,000 | 15.00 | 1,400 | 14.00 | 72 | 24 | n | — | — | — | — | — | — | — | — | — | — |
-| `HARV.Chrono` | Chrono Miner | vehicle | allies | 75,000 | 15.00 | 1,400 | 14.00 | 72 | 24 | n | — | — | — | — | — | — | — | — | — | — |
+| `HARV.Chrono` | Chrono Miner | vehicle | allies/england/france/germany/usa | 75,000 | 15.00 | 1,400 | 14.00 | 72 | 24 | n | — | — | — | — | — | — | — | — | — | — |
 | `HARV.Scrin` | Harvester | vehicle | scrin | 75,000 | 15.00 | 1,400 | 14.00 | 72 | 24 | n | — | — | — | — | — | — | — | — | — | — |
 | `HARV.TD` | Harvester | vehicle | nod | 75,000 | 15.00 | 1,400 | 14.00 | 72 | 24 | n | — | — | — | — | — | — | — | — | — | — |
 | `MCV` | Mobile Construction Vehicle | vehicle | — | 75,000 | 15.00 | 3,000 | 30.00 | 54 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `SMCV` | Colony Ship | vehicle | scrin | 75,000 | 15.00 | 3,000 | 30.00 | 54 | 512 | n | — | — | — | — | — | — | — | — | — | — |
-| `APWR` | Advanced Power Plant | building | — | 70,000 | 14.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `CUST` | Custodian | vehicle | nod | 70,000 | 14.00 | 1,500 | 15.00 | 50 | 16 | Y | — | 3,584 | — | 1 | 70 | — | — | — | — | — |
+| `APWR` | Advanced Power Plant | building | allies/england/france/germany/iraq/soviet/ukraine/usa/yuri | 70,000 | 14.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `CUST` | Custodian | vehicle | legion/nod | 70,000 | 14.00 | 1,500 | 15.00 | 50 | 16 | Y | — | 3,584 | — | 1 | 70 | — | — | — | — | — |
 | `CV` | Drone Carrier | ship | gdi | 70,000 | 14.00 | 2,000 | 20.00 | 31 | 16 | n | — | 20,480 | 50,000 | 1 | 15 | 3,333 | 0.00 | 0.00 | — | 0.00 |
 | `NUK2` | Advanced Nuclear Power Plant | building | — | 70,000 | 14.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `REA2` | Advanced Reactor | building | scrin | 70,000 | 14.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `TPWR` | Tesla Reactor | building | russia | 70,000 | 14.00 | 600 | 6.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `3TNK.RHINO` | Rhino Heavy Tank | vehicle | soviet | 68,000 | 13.60 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 8,350 | 1 | 75 | 111 | 0.30 | 1.02 | — | 0.58 |
+| `3TNK.RHINO` | Rhino Heavy Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 68,000 | 13.60 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 8,350 | 1 | 75 | 111 | 0.30 | 1.02 | — | 0.58 |
 | `3TNK.RHINO.ATOMIC` | Atomic Rhino Heavy Tank | vehicle | soviet/yuri | 68,000 | 13.60 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 8,350 | 1 | 75 | 111 | 0.30 | 1.02 | — | 0.58 |
 | `DISR` | Disruptor | vehicle | zocom | 66,000 | 13.20 | 1,600 | 16.00 | 46 | 16 | Y | — | 5,376 | 3,600 | 9 | 80 | 381 | 0.75 | 0.23 | — | 0.78 |
 | `3TNK.RHINO.ATOMICYURI` | Atomic Thrasher Tank | vehicle | soviet/yuri | 65,000 | 13.00 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 8,350 | 1 | 75 | 111 | 0.30 | 1.02 | — | 0.58 |
 | `DISC` | Floating Disc | aircraft | yuri | 65,000 | 13.00 | 2,000 | 20.00 | 60 | 512 | Y | — | 6,144 | 13,000 | 1 | 60 | 217 | 1.00 | 0.75 | 0.35 | 0.67 |
 | `HARV.TD.UPG` | Stealth Harvester | vehicle | nod | 65,000 | 13.00 | 1,400 | 14.00 | 72 | 24 | n | — | — | — | — | — | — | — | — | — | — |
-| `OBLI` | Obelisk of Light | defense | nod | 64,000 | 12.80 | 1,500 | 15.00 | — | — | n | — | 8,704 | 37,500 | 1 | 95 | 395 | 2.50 | 1.01 | — | 0.67 |
+| `OBLI` | Obelisk of Light | defense | blackh/legion/marked/nod/shadow | 64,000 | 12.80 | 1,500 | 15.00 | — | — | n | — | 8,704 | 37,500 | 1 | 95 | 395 | 2.50 | 1.01 | — | 0.67 |
 | `3TNK.RHINO.YURI` | Thrasher Tank | vehicle | soviet/yuri | 63,000 | 12.60 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 8,350 | 1 | 75 | 111 | 0.30 | 1.02 | — | 0.58 |
-| `3TNK` | Heavy Tank | vehicle | soviet | 62,000 | 12.40 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 4,000 | 2 | 70 | 107 | 0.30 | 1.02 | — | 0.58 |
-| `3TNK.ATOMIC` | Atomic Heavy Tank | vehicle | soviet | 62,000 | 12.40 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 4,000 | 2 | 70 | 107 | 0.30 | 1.02 | — | 0.58 |
+| `3TNK` | Heavy Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 62,000 | 12.40 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 4,000 | 2 | 70 | 107 | 0.30 | 1.02 | — | 0.58 |
+| `3TNK.ATOMIC` | Atomic Heavy Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 62,000 | 12.40 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 4,000 | 2 | 70 | 107 | 0.30 | 1.02 | — | 0.58 |
 | `JUGG` | Juggernaut | vehicle | talon | 62,000 | 12.40 | 2,000 | 20.00 | 43 | 12 | Y | — | 9,216 | 1,125 | 3 | 110 | 28 | 1.00 | 0.50 | — | 0.73 |
-| `BARR` | Soviet Barracks | building | soviet | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `HAND` | Hand of Nod | building | nod | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `BARR` | Soviet Barracks | building | iraq/russia/soviet/ukraine/yuri | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `HAND` | Hand of Nod | building | blackh/legion/marked/nod/shadow | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `ISU` | Siege Tank | vehicle | ukraine | 60,000 | 12.00 | 1,500 | 15.00 | 46 | 8 | n | — | 6,912 | 100,000 | 1 | 150 | 667 | 0.55 | 0.48 | — | 1.00 |
-| `NUKC` | Nuke Cannon | vehicle | soviet | 60,000 | 12.00 | 2,400 | 24.00 | 46 | 6 | Y | — | 18,432 | 142,000 | 1 | 200 | 710 | 0.35 | 0.65 | — | 1.00 |
+| `NUKC` | Nuke Cannon | vehicle | iraq/russia/soviet/ukraine/yuri | 60,000 | 12.00 | 2,400 | 24.00 | 46 | 6 | Y | — | 18,432 | 142,000 | 1 | 200 | 710 | 0.35 | 0.65 | — | 1.00 |
 | `PORT` | Portal | building | scrin | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `PYLE` | GDI Barracks | building | gdi | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `PYLE` | GDI Barracks | building | arc/eagle/gdi/talon/zocom | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SILO.TD` | Silo | defense | — | 60,000 | 12.00 | 300 | 3.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `TENT` | Allied Barracks | building | allies | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `3TNK.ATOMICYURI` | Atomic Lasher Tank | vehicle | soviet | 57,000 | 11.40 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 7,000 | 1 | 70 | 100 | 0.30 | 1.02 | — | 0.58 |
-| `3TNK.YURI` | Lasher Tank | vehicle | soviet | 57,000 | 11.40 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 7,000 | 1 | 70 | 100 | 0.30 | 1.02 | — | 0.58 |
+| `TENT` | Allied Barracks | building | allies/england/france/germany/usa | 60,000 | 12.00 | 500 | 5.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `3TNK.ATOMICYURI` | Atomic Lasher Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 57,000 | 11.40 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 7,000 | 1 | 70 | 100 | 0.30 | 1.02 | — | 0.58 |
+| `3TNK.YURI` | Lasher Tank | vehicle | iraq/russia/soviet/ukraine/yuri | 57,000 | 11.40 | 1,150 | 11.50 | 60 | 20 | Y | — | 4,864 | 7,000 | 1 | 70 | 100 | 0.30 | 1.02 | — | 0.58 |
 | `PAC` | Planetary Assault Carrier | aircraft | scrin | 56,000 | 11.20 | 2,800 | 28.00 | 60 | 512 | Y | — | 7,168 | 5,000 | 1 | 5 | 1,000 | 0.00 | 0.00 | — | 0.00 |
-| `ATWR` | Advanced Guard Tower | defense | — | 52,000 | 10.40 | 1,250 | 12.50 | — | 512 | Y | — | 7,168 | 8,900 | 2 | 60 | 254 | 0.40 | 0.72 | — | 0.62 |
-| `MEMP` | Mobile E.M.P | vehicle | gdi | 52,000 | 10.40 | 1,150 | 11.50 | 126 | 28 | n | — | 2,048 | — | 1 | — | — | — | — | — | — |
-| `MTNK` | Battle Tank | vehicle | arc/nod | 52,000 | 10.40 | 900 | 9.00 | 72 | 20 | Y | — | 4,864 | 4,600 | 1 | 55 | 84 | 0.30 | 1.05 | — | 0.58 |
-| `MTNK.Laser` | Laser Battle Tank | vehicle | nod | 52,000 | 10.40 | 900 | 9.00 | 72 | 20 | Y | — | 5,888 | 5,850 | 1 | 40 | 146 | 0.40 | 0.42 | — | 0.28 |
-| `MTNK.Nod.Preview` | Battle Tank | vehicle | arc/nod | 52,000 | 10.40 | 900 | 9.00 | 72 | 20 | Y | — | 4,864 | 4,600 | 1 | 55 | 84 | 0.30 | 1.05 | — | 0.58 |
-| `RECK` | Reckoner | vehicle | — | 52,000 | 10.40 | 1,000 | 10.00 | 60 | 40 | Y | — | 4,864 | 2,750 | 2 | 50 | 100 | 0.10 | 0.90 | — | 0.55 |
-| `AGUN` | AA Gun | defense | allies | 50,000 | 10.00 | 800 | 8.00 | — | 60 | Y | — | 8,192 | 5,000 | 1 | 8 | 625 | — | — | — | — |
-| `CRAM` | AA Gun | defense | gdi | 50,000 | 10.00 | 800 | 8.00 | — | 60 | Y | — | 8,192 | 2,600 | 1 | 5 | 520 | — | — | — | — |
-| `GAP` | Gap Generator | defense | allies | 50,000 | 10.00 | 1,000 | 10.00 | — | 512 | Y | — | 10,240 | — | 1 | 15 | — | — | — | — | — |
-| `NSAM` | SAM Site | defense | nod | 50,000 | 10.00 | 750 | 7.50 | — | 120 | Y | — | 7,680 | 13,500 | 1 | 20 | 675 | 1.00 | 1.00 | — | 1.00 |
-| `SAM` | SAM Site | defense | soviet | 50,000 | 10.00 | 750 | 7.50 | — | 120 | Y | — | 7,680 | 13,500 | 1 | 20 | 675 | 1.00 | 1.00 | — | 1.00 |
+| `ATWR` | Advanced Guard Tower | defense | arc/eagle/gdi/talon | 52,000 | 10.40 | 1,250 | 12.50 | — | 512 | Y | — | 7,168 | 8,900 | 2 | 60 | 254 | 0.40 | 0.72 | — | 0.62 |
+| `MEMP` | Mobile E.M.P | vehicle | arc/eagle/gdi/talon/zocom | 52,000 | 10.40 | 1,150 | 11.50 | 126 | 28 | n | — | 2,048 | — | 1 | — | — | — | — | — | — |
+| `MTNK` | Battle Tank | vehicle | arc/eagle/gdi/legion/talon/zocom | 52,000 | 10.40 | 900 | 9.00 | 72 | 20 | Y | — | 4,864 | 4,600 | 1 | 55 | 84 | 0.30 | 1.05 | — | 0.58 |
+| `MTNK.Laser` | Laser Battle Tank | vehicle | arc/eagle/gdi/legion/talon/zocom | 52,000 | 10.40 | 900 | 9.00 | 72 | 20 | Y | — | 5,888 | 5,850 | 1 | 40 | 146 | 0.40 | 0.42 | — | 0.28 |
+| `MTNK.Nod.Preview` | Battle Tank | vehicle | arc/eagle/gdi/legion/talon/zocom | 52,000 | 10.40 | 900 | 9.00 | 72 | 20 | Y | — | 4,864 | 4,600 | 1 | 55 | 84 | 0.30 | 1.05 | — | 0.58 |
+| `RECK` | Reckoner | vehicle | allies/england/france/germany/usa | 52,000 | 10.40 | 1,000 | 10.00 | 60 | 40 | Y | — | 4,864 | 2,750 | 2 | 50 | 100 | 0.10 | 0.90 | — | 0.55 |
+| `AGUN` | AA Gun | defense | allies/england/france/germany/usa | 50,000 | 10.00 | 800 | 8.00 | — | 60 | Y | — | 8,192 | 5,000 | 1 | 8 | 625 | — | — | — | — |
+| `CRAM` | AA Gun | defense | arc/eagle/gdi/talon/zocom | 50,000 | 10.00 | 800 | 8.00 | — | 60 | Y | — | 8,192 | 2,600 | 1 | 5 | 520 | — | — | — | — |
+| `GAP` | Gap Generator | defense | allies/england/france/germany/usa | 50,000 | 10.00 | 1,000 | 10.00 | — | 512 | Y | — | 10,240 | — | 1 | 15 | — | — | — | — | — |
+| `NSAM` | SAM Site | defense | blackh/legion/marked/nod/shadow | 50,000 | 10.00 | 750 | 7.50 | — | 120 | Y | — | 7,680 | 13,500 | 1 | 20 | 675 | 1.00 | 1.00 | — | 1.00 |
+| `SAM` | SAM Site | defense | iraq/russia/soviet/ukraine/yuri | 50,000 | 10.00 | 750 | 7.50 | — | 120 | Y | — | 7,680 | 13,500 | 1 | 20 | 675 | 1.00 | 1.00 | — | 1.00 |
 | `SHAR` | Shard Launcher | defense | scrin | 50,000 | 10.00 | 800 | 8.00 | — | 60 | Y | — | 8,192 | 5,300 | 5 | 25 | 914 | — | — | — | — |
 | `STWR` | Sonic Tower | defense | zocom | 47,500 | 9.50 | 1,450 | 14.50 | — | 20 | Y | — | 7,680 | 12,500 | 1 | 68 | 184 | 0.28 | 0.96 | — | 0.94 |
-| `2TNK` | Medium Tank | vehicle | allies | 47,000 | 9.40 | 800 | 8.00 | 72 | 20 | Y | — | 4,864 | 4,000 | 1 | 50 | 80 | 0.30 | 1.02 | — | 0.58 |
-| `GUN` | Turret | defense | allies | 46,500 | 9.30 | 800 | 8.00 | — | 48 | Y | — | 7,168 | 6,000 | 1 | 30 | 200 | 0.20 | 0.75 | — | 0.49 |
-| `GUN.Nod` | Turret | defense | nod | 46,500 | 9.30 | 800 | 8.00 | — | 48 | Y | — | 7,168 | 6,000 | 1 | 30 | 200 | 0.20 | 0.75 | — | 0.49 |
+| `2TNK` | Medium Tank | vehicle | allies/england/france/germany/usa | 47,000 | 9.40 | 800 | 8.00 | 72 | 20 | Y | — | 4,864 | 4,000 | 1 | 50 | 80 | 0.30 | 1.02 | — | 0.58 |
+| `GUN` | Turret | defense | allies/england/france/germany/usa | 46,500 | 9.30 | 800 | 8.00 | — | 48 | Y | — | 7,168 | 6,000 | 1 | 30 | 200 | 0.20 | 0.75 | — | 0.49 |
+| `GUN.Nod` | Turret | defense | blackh/legion/marked/nod/shadow | 46,500 | 9.30 | 800 | 8.00 | — | 48 | Y | — | 7,168 | 6,000 | 1 | 30 | 200 | 0.20 | 0.75 | — | 0.49 |
 | `PTUR` | Plasma Cannon | defense | scrin | 46,000 | 9.20 | 700 | 7.00 | — | 48 | Y | — | 6,144 | 2,110 | 2 | 14 | 234 | 0.85 | 0.40 | — | 0.33 |
 | `SCOL` | Storm Column | defense | scrin | 45,000 | 9.00 | 1,400 | 14.00 | — | — | n | — | 7,679 | 1,600 | 7 | 35 | 303 | 0.55 | 0.88 | — | 0.75 |
-| `HALO` | Halo | aircraft | soviet | 44,000 | 8.80 | 1,000 | 10.00 | 155 | 20 | n | — | 4,096 | — | 1 | 50 | — | — | — | — | — |
+| `HALO` | Halo | aircraft | iraq/russia/soviet/ukraine/yuri | 44,000 | 8.80 | 1,000 | 10.00 | 155 | 20 | n | — | 4,096 | — | 1 | 50 | — | — | — | — | — |
 | `HFTK` | Heavy Flame Tank | vehicle | blackh | 44,000 | 8.80 | 1,100 | 11.00 | 60 | 20 | Y | — | 2,560 | 1,140 | 25 | 80 | 348 | 1.00 | 0.55 | — | 0.52 |
 | `INTL` | Interloper | vehicle | scrin | 44,000 | 8.80 | 800 | 8.00 | 60 | 512 | n | — | 4,864 | 1,900 | 2 | 40 | 84 | 0.30 | 1.08 | — | 0.57 |
 | `INTL.AI` | Interloper | vehicle | scrin | 44,000 | 8.80 | 800 | 8.00 | 60 | 512 | n | — | 4,864 | 1,900 | 2 | 40 | 84 | 0.30 | 1.08 | — | 0.57 |
 | `INTL.AI2` | Interloper | vehicle | scrin | 44,000 | 8.80 | 800 | 8.00 | 60 | 512 | n | — | 4,864 | 1,900 | 2 | 40 | 84 | 0.30 | 1.08 | — | 0.57 |
-| `PRIS` | Prism Tower | defense | — | 44,000 | 8.80 | 1,350 | 13.50 | — | — | n | — | 7,680 | 13,000 | 1 | 3 | 4,333 | 0.40 | 0.80 | — | 0.62 |
+| `PRIS` | Prism Tower | defense | allies/england/germany/usa | 44,000 | 8.80 | 1,350 | 13.50 | — | — | n | — | 7,680 | 13,000 | 1 | 3 | 4,333 | 0.40 | 0.80 | — | 0.62 |
 | `TTUR` | Chemical Tower | defense | iraq | 44,000 | 8.80 | 650 | 6.50 | — | 512 | Y | — | 6,144 | 60,000 | 1 | 70 | 857 | 0.45 | 0.20 | — | 0.07 |
 | `WOLV` | Wolverine | vehicle | talon | 44,000 | 8.80 | 900 | 9.00 | 60 | 64 | n | — | 4,864 | 750 | 5 | 25 | 134 | 1.50 | 0.41 | — | 0.27 |
 | `GTNK` | Grizzly Tank | vehicle | — | 41,250 | 8.25 | 875 | 8.75 | 100 | 20 | Y | — | 4,864 | 4,300 | 1 | 50 | 86 | 0.30 | 1.05 | — | 0.58 |
 | `GTNKR2` | Grizzly Tank | vehicle | — | 41,250 | 8.25 | 875 | 8.75 | 100 | 20 | Y | — | 4,864 | 4,300 | 1 | 50 | 86 | 0.30 | 1.05 | — | 0.58 |
 | `BRIK` | Concrete Wall | defense | — | 40,000 | 8.00 | 200 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `DD` | Destroyer | ship | allies | 40,000 | 8.00 | 1,000 | 10.00 | 56 | 28 | Y | — | 9,216 | 7,000 | 2 | 60 | 212 | 0.36 | 0.70 | — | 0.72 |
+| `DD` | Destroyer | ship | allies/england/france/germany/usa | 40,000 | 8.00 | 1,000 | 10.00 | 56 | 28 | Y | — | 9,216 | 7,000 | 2 | 60 | 212 | 0.36 | 0.70 | — | 0.72 |
 | `FPWR` | Fake Power Plant | defense | england | 40,000 | 8.00 | 150 | 1.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `FTNK` | Flame Tank | vehicle | — | 40,000 | 8.00 | 800 | 8.00 | 76 | 20 | n | — | 2,560 | 6,000 | 2 | 65 | 171 | 1.00 | 0.55 | — | 0.52 |
-| `FTUR` | Flame Tower | defense | — | 40,000 | 8.00 | 600 | 6.00 | — | 512 | Y | — | 6,144 | 60,000 | 1 | 62 | 968 | 0.45 | 0.14 | — | 0.07 |
-| `GTWR` | Guard Tower | defense | gdi | 40,000 | 8.00 | 600 | 6.00 | — | 512 | Y | — | 6,144 | 1,000 | 1 | 30 | 33 | 2.20 | 0.36 | — | 0.37 |
+| `FTNK` | Flame Tank | vehicle | legion/marked/nod/shadow | 40,000 | 8.00 | 800 | 8.00 | 76 | 20 | n | — | 2,560 | 6,000 | 2 | 65 | 171 | 1.00 | 0.55 | — | 0.52 |
+| `FTUR` | Flame Tower | defense | russia/soviet/ukraine/yuri | 40,000 | 8.00 | 600 | 6.00 | — | 512 | Y | — | 6,144 | 60,000 | 1 | 62 | 968 | 0.45 | 0.14 | — | 0.07 |
+| `GTWR` | Guard Tower | defense | arc/eagle/gdi/talon/zocom | 40,000 | 8.00 | 600 | 6.00 | — | 512 | Y | — | 6,144 | 1,000 | 1 | 30 | 33 | 2.20 | 0.36 | — | 0.37 |
 | `HBOX` | Camo Pillbox | defense | england | 40,000 | 8.00 | 600 | 6.00 | — | 512 | Y | — | 6,144 | 1,000 | 1 | 30 | 33 | 2.20 | 0.36 | — | 0.37 |
-| `LTUR` | Laser Turret | defense | nod | 40,000 | 8.00 | 600 | 6.00 | — | 48 | Y | — | 6,144 | 5,500 | 1 | 34 | 162 | 3.20 | 0.55 | — | 0.55 |
-| `MTNK.Drone` | Battle Drone | vehicle | arc | 40,000 | 8.00 | 600 | 6.00 | 72 | 20 | Y | — | 4,864 | 1,900 | 1 | 30 | 63 | 0.30 | 1.05 | — | 0.58 |
+| `LTUR` | Laser Turret | defense | blackh/legion/marked/nod/shadow | 40,000 | 8.00 | 600 | 6.00 | — | 48 | Y | — | 6,144 | 5,500 | 1 | 34 | 162 | 3.20 | 0.55 | — | 0.55 |
+| `MTNK.Drone` | Battle Drone | vehicle | arc/eagle/gdi/legion/talon/zocom | 40,000 | 8.00 | 600 | 6.00 | 72 | 20 | Y | — | 4,864 | 1,900 | 1 | 30 | 63 | 0.30 | 1.05 | — | 0.58 |
 | `NUKE` | Nuclear Power Plant | building | — | 40,000 | 8.00 | 300 | 3.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `PBOX` | Pillbox | defense | — | 40,000 | 8.00 | 600 | 6.00 | — | 512 | Y | — | 6,144 | 1,000 | 1 | 30 | 33 | 2.20 | 0.36 | — | 0.37 |
+| `PBOX` | Pillbox | defense | allies/france/germany/usa | 40,000 | 8.00 | 600 | 6.00 | — | 512 | Y | — | 6,144 | 1,000 | 1 | 30 | 33 | 2.20 | 0.36 | — | 0.37 |
 | `POWR` | Power Plant | building | — | 40,000 | 8.00 | 300 | 3.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `REAC` | Reactor | building | scrin | 40,000 | 8.00 | 300 | 3.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `RMBC` | Cyborg Elite | infantry | nod | 40,000 | 8.00 | 1,500 | 15.00 | 54 | — | n | — | 7,168 | 13,000 | 1 | 50 | 260 | 0.75 | 0.90 | — | 0.45 |
 | `DARK` | Darkener Tank | vehicle | scrin | 38,000 | 7.60 | 1,350 | 13.50 | 60 | 16 | Y | — | 7,168 | 7,001 | 1 | 120 | 58 | 0.10 | 0.56 | — | 0.38 |
 | `DD2` | Frigate | ship | gdi | 38,000 | 7.60 | 1,000 | 10.00 | 60 | 20 | Y | — | 8,192 | 9,500 | 1 | 70 | 136 | 1.00 | 0.93 | — | 0.52 |
-| `NHAW` | Nighthawk | aircraft | — | 38,000 | 7.60 | 1,150 | 11.50 | 155 | 20 | n | — | 4,864 | 1,000 | 3 | 38 | 70 | 1.65 | 0.30 | — | 0.13 |
-| `PMAK` | Peacemaker | aircraft | allies | 38,000 | 7.60 | 2,500 | 25.00 | 157 | 14 | n | — | 1,856 | 24,000 | 5 | — | 20,000 | 0.00 | 0.00 | — | 0.15 |
+| `NHAW` | Nighthawk | aircraft | usa | 38,000 | 7.60 | 1,150 | 11.50 | 155 | 20 | n | — | 4,864 | 1,000 | 3 | 38 | 70 | 1.65 | 0.30 | — | 0.13 |
+| `PMAK` | Peacemaker | aircraft | allies/england/france/germany/usa | 38,000 | 7.60 | 2,500 | 25.00 | 157 | 14 | n | — | 1,856 | 24,000 | 5 | — | 20,000 | 0.00 | 0.00 | — | 0.15 |
 | `TNKD` | Tank Destroyer | vehicle | germany | 38,000 | 7.60 | 1,150 | 11.50 | 60 | 8 | Y | — | 7,168 | 12,000 | 1 | 100 | 120 | 0.10 | 1.10 | — | 0.38 |
 | `TTNK` | Tesla Tank | vehicle | russia | 38,000 | 7.60 | 1,200 | 12.00 | 60 | 28 | Y | — | 5,632 | 3,500 | 2 | 50 | 132 | 3.80 | 0.60 | — | 0.38 |
-| `TSLA` | Tesla Coil | defense | soviet | 37,500 | 7.50 | 1,200 | 12.00 | — | — | n | — | 7,168 | 10,000 | 1 | 3 | 3,333 | 10.00 | — | — | 0.47 |
+| `TSLA` | Tesla Coil | defense | iraq/russia/soviet/ukraine/yuri | 37,500 | 7.50 | 1,200 | 12.00 | — | — | n | — | 7,168 | 10,000 | 1 | 3 | 3,333 | 10.00 | — | — | 0.47 |
 | `LTNK` | Light Tank | vehicle | nod | 37,000 | 7.40 | 700 | 7.00 | 76 | 28 | Y | — | 4,864 | 3,500 | 1 | 36 | 97 | 0.25 | 0.93 | — | 0.46 |
 | `LTNK.Laser` | Laser Light Tank | vehicle | nod | 37,000 | 7.40 | 700 | 7.00 | 76 | 28 | Y | — | 5,888 | 5,850 | 1 | 50 | 117 | 0.40 | 0.42 | — | 0.28 |
-| `CORR` | Corrupter | vehicle | — | 36,000 | 7.20 | 1,100 | 11.00 | 72 | 16 | n | — | 7,168 | 1,000 | 30 | 100 | 291 | 3.00 | 0.60 | — | 0.53 |
+| `CORR` | Corrupter | vehicle | harbinger/reaper/scrin/traveler | 36,000 | 7.20 | 1,100 | 11.00 | 72 | 16 | n | — | 7,168 | 1,000 | 30 | 100 | 291 | 3.00 | 0.60 | — | 0.53 |
 | `SHRW` | Shard Walker | vehicle | scrin | 36,000 | 7.20 | 600 | 6.00 | 92 | 36 | n | — | 5,120 | 2,650 | 5 | 35 | 331 | 1.20 | 0.21 | — | 0.08 |
 | `SWAL` | Biometallic Wall | defense | scrin | 36,000 | 7.20 | 200 | 2.00 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `TRPC` | Troop Crawler | vehicle | soviet | 36,000 | 7.20 | 1,500 | 15.00 | 64 | 20 | n | — | — | — | — | — | — | — | — | — | — |
+| `TRPC` | Troop Crawler | vehicle | iraq/russia/soviet/ukraine/yuri | 36,000 | 7.20 | 1,500 | 15.00 | 64 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `ISUB` | ICBM Submarine | ship | nod | 35,000 | 7.00 | 2,000 | 20.00 | 31 | 16 | n | — | 25,600 | 50,000 | 1 | 275 | 182 | 0.00 | 0.00 | — | 0.00 |
 | `LST` | Transport | ship | — | 35,000 | 7.00 | 700 | 7.00 | 113 | — | n | — | — | — | — | — | — | — | — | — | — |
-| `HIND` | Hind | aircraft | soviet | 34,000 | 6.80 | 1,600 | 16.00 | 112 | 16 | n | — | 5,632 | 4,400 | 1 | 16 | 275 | 1.00 | 0.43 | — | 0.24 |
-| `KAMV` | Kamov | aircraft | — | 34,000 | 6.80 | 1,800 | 18.00 | 112 | 16 | n | — | 9,216 | 6,500 | 3 | 100 | 174 | 0.10 | 0.82 | — | 0.45 |
-| `TRAN` | Chinook | aircraft | — | 34,000 | 6.80 | 900 | 9.00 | 135 | 20 | n | — | 4,096 | — | 1 | 50 | — | — | — | — | — |
+| `HIND` | Hind | aircraft | iraq/russia/soviet/ukraine/yuri | 34,000 | 6.80 | 1,600 | 16.00 | 112 | 16 | n | — | 5,632 | 4,400 | 1 | 16 | 275 | 1.00 | 0.43 | — | 0.24 |
+| `KAMV` | Kamov | aircraft | iraq/russia/soviet/ukraine/yuri | 34,000 | 6.80 | 1,800 | 18.00 | 112 | 16 | n | — | 9,216 | 6,500 | 3 | 100 | 174 | 0.10 | 0.82 | — | 0.45 |
+| `TRAN` | Chinook | aircraft | allies/england/france/germany | 34,000 | 6.80 | 900 | 9.00 | 135 | 20 | n | — | 4,096 | — | 1 | 50 | — | — | — | — | — |
 | `BRUT` | Brute | infantry | yuri | 32,000 | 6.40 | 450 | 4.50 | 60 | — | n | — | 1,536 | 10,000 | 1 | 95 | 105 | 0.40 | 0.88 | — | 0.42 |
-| `CTNK` | Chrono Tank | vehicle | allies | 32,000 | 6.40 | 1,500 | 15.00 | 92 | 30 | n | — | 7,168 | 8,000 | 2 | 75 | 200 | 0.15 | 0.93 | 0.25 | 0.70 |
+| `CTNK` | Chrono Tank | vehicle | allies/england/france/germany/usa | 32,000 | 6.40 | 1,500 | 15.00 | 92 | 30 | n | — | 7,168 | 8,000 | 2 | 75 | 200 | 0.15 | 0.93 | 0.25 | 0.70 |
 | `DEVA` | Devastator Warship | aircraft | scrin | 32,000 | 6.40 | 2,400 | 24.00 | 60 | 16 | Y | — | 16,384 | 4,675 | 7 | 170 | 189 | 1.00 | 0.42 | — | 0.97 |
-| `IFV` | Infantry Fighting Vehicle | vehicle | allies | 32,000 | 6.40 | 750 | 7.50 | 100 | 40 | Y | — | 4,864 | 2,750 | 2 | 50 | 100 | 0.10 | 0.90 | — | 0.55 |
-| `IFV.AI` | Infantry Fighting Vehicle | vehicle | allies | 32,000 | 6.40 | 750 | 7.50 | 100 | 40 | Y | — | 4,864 | 2,750 | 2 | 50 | 100 | 0.10 | 0.90 | — | 0.55 |
-| `ORCB` | Orca Bomber | aircraft | gdi | 32,000 | 6.40 | 2,000 | 20.00 | 157 | 16 | n | — | 2,048 | 1,600 | 3 | 50 | 84 | 0.00 | 0.00 | — | 0.13 |
+| `IFV` | Infantry Fighting Vehicle | vehicle | allies/england/france/germany/usa | 32,000 | 6.40 | 750 | 7.50 | 100 | 40 | Y | — | 4,864 | 2,750 | 2 | 50 | 100 | 0.10 | 0.90 | — | 0.55 |
+| `IFV.AI` | Infantry Fighting Vehicle | vehicle | allies/england/france/germany/usa | 32,000 | 6.40 | 750 | 7.50 | 100 | 40 | Y | — | 4,864 | 2,750 | 2 | 50 | 100 | 0.10 | 0.90 | — | 0.55 |
+| `ORCB` | Orca Bomber | aircraft | arc/eagle/gdi/talon/zocom | 32,000 | 6.40 | 2,000 | 20.00 | 157 | 16 | n | — | 2,048 | 1,600 | 3 | 50 | 84 | 0.00 | 0.00 | — | 0.13 |
 | `RTNK` | Mirage Tank | vehicle | england | 32,000 | 6.40 | 750 | 7.50 | 113 | 20 | Y | — | 4,864 | 6,000 | 1 | 50 | 120 | 0.30 | 0.95 | — | 0.47 |
-| `A10` | Warthog | aircraft | gdi | 30,000 | 6.00 | 2,000 | 20.00 | 180 | 16 | n | — | 2,048 | 1,500 | 7 | 50 | 188 | 0.00 | 0.00 | — | 0.12 |
-| `A10.GAU` | Warthog | aircraft | gdi | 30,000 | 6.00 | 2,000 | 20.00 | 180 | 16 | n | — | 6,144 | 1,900 | 15 | 80 | 352 | 2.00 | 0.93 | — | 0.17 |
-| `A10.SW` | Warthog | aircraft | gdi | 30,000 | 6.00 | 2,000 | 20.00 | 180 | 16 | n | — | 2,048 | 1,500 | 7 | 50 | 188 | 0.00 | 0.00 | — | 0.12 |
-| `APC` | Armored Personnel Carrier | vehicle | allies | 30,000 | 6.00 | 600 | 6.00 | 126 | 20 | n | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
-| `APC.AI` | Armored Personnel Carrier | vehicle | allies | 30,000 | 6.00 | 600 | 6.00 | 126 | 20 | n | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
+| `A10` | Warthog | aircraft | arc/eagle/gdi/talon/zocom | 30,000 | 6.00 | 2,000 | 20.00 | 180 | 16 | n | — | 2,048 | 1,500 | 7 | 50 | 188 | 0.00 | 0.00 | — | 0.12 |
+| `A10.GAU` | Warthog | aircraft | arc/eagle/gdi/talon/zocom | 30,000 | 6.00 | 2,000 | 20.00 | 180 | 16 | n | — | 6,144 | 1,900 | 15 | 80 | 352 | 2.00 | 0.93 | — | 0.17 |
+| `A10.SW` | Warthog | aircraft | arc/eagle/gdi/talon/zocom | 30,000 | 6.00 | 2,000 | 20.00 | 180 | 16 | n | — | 2,048 | 1,500 | 7 | 50 | 188 | 0.00 | 0.00 | — | 0.12 |
+| `APC` | Armored Personnel Carrier | vehicle | allies/england/france/germany/usa | 30,000 | 6.00 | 600 | 6.00 | 126 | 20 | n | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
+| `APC.AI` | Armored Personnel Carrier | vehicle | allies/england/france/germany/usa | 30,000 | 6.00 | 600 | 6.00 | 126 | 20 | n | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
 | `APC2` | Armored Personnel Carrier | vehicle | gdi | 30,000 | 6.00 | 600 | 6.00 | 126 | 20 | n | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
-| `APC2.GDIAI` | Armored Personnel Carrier | vehicle | gdi | 30,000 | 6.00 | 600 | 6.00 | 126 | 20 | n | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
-| `APC2.NODAI` | Armored Personnel Carrier | vehicle | nod | 30,000 | 6.00 | 600 | 6.00 | 126 | 20 | n | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
+| `APC2.GDIAI` | Armored Personnel Carrier | vehicle | arc/eagle/gdi/talon/zocom | 30,000 | 6.00 | 600 | 6.00 | 126 | 20 | n | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
+| `APC2.NODAI` | Armored Personnel Carrier | vehicle | legion/nod | 30,000 | 6.00 | 600 | 6.00 | 126 | 20 | n | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
 | `APC2.Nod.Preview` | Armored Personnel Carrier | vehicle | gdi | 30,000 | 6.00 | 600 | 6.00 | 126 | 20 | n | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
-| `DELP` | Armored Personnel Carrier (Delphis) | vehicle | allies | 30,000 | 6.00 | 800 | 8.00 | 100 | 14 | Y | — | 5,376 | 2,100 | 3 | 80 | 77 | 0.70 | 0.53 | — | 0.85 |
-| `DELP.AI` | Armored Personnel Carrier (Delphis) | vehicle | allies | 30,000 | 6.00 | 800 | 8.00 | 100 | 14 | Y | — | 5,376 | 2,100 | 3 | 80 | 77 | 0.70 | 0.53 | — | 0.85 |
+| `DELP` | Armored Personnel Carrier (Delphis) | vehicle | allies/england/france/germany/usa | 30,000 | 6.00 | 800 | 8.00 | 100 | 14 | Y | — | 5,376 | 2,100 | 3 | 80 | 77 | 0.70 | 0.53 | — | 0.85 |
+| `DELP.AI` | Armored Personnel Carrier (Delphis) | vehicle | allies/england/france/germany/usa | 30,000 | 6.00 | 800 | 8.00 | 100 | 14 | Y | — | 5,376 | 2,100 | 3 | 80 | 77 | 0.70 | 0.53 | — | 0.85 |
 | `ENLI` | Enlightened | infantry | nod | 30,000 | 6.00 | 1,000 | 10.00 | 54 | — | n | — | 6,656 | 2,600 | 1 | 65 | 40 | 0.07 | 0.35 | — | 0.28 |
-| `KENN` | Kennel | building | soviet | 30,000 | 6.00 | 150 | 1.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `KENN` | Kennel | building | iraq/russia/soviet/ukraine/yuri | 30,000 | 6.00 | 150 | 1.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `MNLY` | Minelayer | vehicle | — | 30,000 | 6.00 | 800 | 8.00 | 126 | 20 | n | — | 1,536 | 12,000 | 1 | 6 | 2,000 | — | — | — | — |
-| `MSUB` | Missile Submarine | ship | soviet | 30,000 | 6.00 | 1,650 | 16.50 | 49 | 16 | n | — | 14,336 | 1,250 | 2 | 90 | 26 | 0.60 | 0.67 | — | 0.68 |
+| `MSUB` | Missile Submarine | ship | iraq/russia/soviet/ukraine/yuri | 30,000 | 6.00 | 1,650 | 16.50 | 49 | 16 | n | — | 14,336 | 1,250 | 2 | 90 | 26 | 0.60 | 0.67 | — | 0.68 |
 | `OBLT` | Obliterator | vehicle | harbinger | 30,000 | 6.00 | 2,300 | 23.00 | 48 | 512 | n | — | 15,360 | 17,000 | 1 | 75 | 227 | 0.60 | 0.95 | — | 1.07 |
-| `OCAR` | Orca Carryall | aircraft | gdi | 30,000 | 6.00 | 900 | 9.00 | 236 | 20 | n | — | — | — | — | — | — | — | — | — | — |
+| `OCAR` | Orca Carryall | aircraft | arc/eagle/gdi/talon/zocom | 30,000 | 6.00 | 900 | 9.00 | 236 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `PT2` | Patrol Boat | ship | gdi | 30,000 | 6.00 | 750 | 7.50 | 72 | 28 | Y | — | 7,168 | 7,000 | 2 | 60 | 203 | 1.00 | 0.40 | — | 0.64 |
 | `REAP` | Cyborg Reaper | infantry | nod | 30,000 | 6.00 | 1,000 | 10.00 | 60 | — | n | — | 6,144 | 5,500 | 2 | 65 | 147 | 1.00 | 0.50 | — | 0.67 |
 | `SILO` | Silo | defense | — | 30,000 | 6.00 | 150 | 1.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `SILO.SCRIN` | Silo | defense | scrin | 30,000 | 6.00 | 150 | 1.50 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `VULC` | Vulcan | vehicle | gdi | 30,000 | 6.00 | 800 | 8.00 | 100 | 28 | Y | — | 7,680 | 1,330 | 1 | 5 | 266 | — | — | — | — |
-| `VULC.AI` | Vulcan | vehicle | gdi | 30,000 | 6.00 | 800 | 8.00 | 100 | 28 | Y | — | 7,680 | 1,330 | 1 | 5 | 266 | — | — | — | — |
+| `VULC` | Vulcan | vehicle | arc/eagle/gdi/talon/zocom | 30,000 | 6.00 | 800 | 8.00 | 100 | 28 | Y | — | 7,680 | 1,330 | 1 | 5 | 266 | — | — | — | — |
+| `VULC.AI` | Vulcan | vehicle | arc/eagle/gdi/talon/zocom | 30,000 | 6.00 | 800 | 8.00 | 100 | 28 | Y | — | 7,680 | 1,330 | 1 | 5 | 266 | — | — | — | — |
 | `GUNW` | Gun Walker | vehicle | scrin | 28,000 | 5.60 | 600 | 6.00 | 100 | 38 | n | — | 5,120 | 2,450 | 5 | 30 | 322 | 1.00 | 0.23 | — | 0.13 |
 | `LCHR` | Leecher | vehicle | collector | 28,000 | 5.60 | 1,000 | 10.00 | 82 | 20 | n | — | 5,632 | 3,250 | 9 | 60 | 450 | 1.00 | 0.33 | — | 0.27 |
-| `MANT` | Mantis | vehicle | — | 28,000 | 5.60 | 1,000 | 10.00 | 126 | 30 | n | — | 7,680 | 2,500 | 2 | 10 | 385 | 2.50 | 1.01 | — | 0.67 |
-| `SEAS` | Sea Scorpion | ship | soviet | 28,000 | 5.60 | 600 | 6.00 | 92 | 36 | n | — | 5,376 | 2,200 | 1 | 10 | 220 | 1.50 | 0.35 | — | 0.33 |
+| `MANT` | Mantis | vehicle | legion | 28,000 | 5.60 | 1,000 | 10.00 | 126 | 30 | n | — | 7,680 | 2,500 | 2 | 10 | 385 | 2.50 | 1.01 | — | 0.67 |
+| `SEAS` | Sea Scorpion | ship | iraq/russia/soviet/ukraine/yuri | 28,000 | 5.60 | 600 | 6.00 | 92 | 36 | n | — | 5,376 | 2,200 | 1 | 10 | 220 | 1.50 | 0.35 | — | 0.33 |
 | `DEVO` | Devourer Tank | vehicle | scrin | 27,500 | 5.50 | 1,350 | 13.50 | 70 | 512 | n | — | 7,168 | 2,050 | 1 | 95 | 22 | 0.20 | 0.85 | — | 0.62 |
-| `1TNK` | Scout Tank | vehicle | — | 27,000 | 5.40 | 650 | 6.50 | 113 | 28 | Y | — | 4,864 | 3,100 | 1 | 31 | 100 | 0.25 | 0.95 | — | 0.47 |
-| `CRYO` | Cryo Launcher | vehicle | allies | 26,000 | 5.20 | 1,350 | 13.50 | 72 | 16 | n | — | 9,216 | 2,500 | 2 | 125 | 38 | 0.50 | 0.85 | — | 0.53 |
+| `1TNK` | Scout Tank | vehicle | allies/france/germany/usa | 27,000 | 5.40 | 650 | 6.50 | 113 | 28 | Y | — | 4,864 | 3,100 | 1 | 31 | 100 | 0.25 | 0.95 | — | 0.47 |
+| `CRYO` | Cryo Launcher | vehicle | allies/england/france/germany/usa | 26,000 | 5.20 | 1,350 | 13.50 | 72 | 16 | n | — | 9,216 | 2,500 | 2 | 125 | 38 | 0.50 | 0.85 | — | 0.53 |
 | `MCOR` | Manticore | aircraft | — | 26,000 | 5.20 | 1,800 | 18.00 | 80 | 14 | n | — | 14,336 | 8,000 | 4 | 150 | 209 | 1.00 | 1.00 | — | 1.00 |
 | `STMR` | Stormrider | aircraft | scrin | 26,000 | 5.20 | 1,650 | 16.50 | 157 | 22 | n | — | 6,144 | 4,800 | 5 | 50 | 444 | 1.05 | 0.47 | — | 0.33 |
-| `BTR` | Armored Personnel Carrier (BTR) | vehicle | soviet | 25,000 | 5.00 | 675 | 6.75 | 100 | 40 | Y | — | 4,864 | 1,750 | 1 | 10 | 175 | 1.00 | 0.42 | — | 0.13 |
-| `BTR.AI` | Armored Personnel Carrier (BTR) | vehicle | soviet | 25,000 | 5.00 | 675 | 6.75 | 100 | 40 | Y | — | 4,864 | 1,750 | 1 | 10 | 175 | 1.00 | 0.42 | — | 0.13 |
-| `BTR.YURI` | Armored Personnel Carrier (Gattling BTR) | vehicle | soviet | 25,000 | 5.00 | 750 | 7.50 | 100 | 28 | Y | — | 5,120 | 306 | 1 | 5 | 61 | 1.60 | 0.64 | — | 0.30 |
-| `BTR.YURI.AI` | Armored Personnel Carrier (Gattling BTR) | vehicle | soviet | 25,000 | 5.00 | 750 | 7.50 | 100 | 28 | Y | — | 5,120 | 306 | 1 | 5 | 61 | 1.60 | 0.64 | — | 0.30 |
-| `ENFO` | Enforcer | infantry | allies | 25,000 | 5.00 | 650 | 6.50 | 46 | — | n | — | 4,096 | 7,000 | 1 | 55 | 127 | 1.00 | 0.47 | — | 0.28 |
-| `HSTK` | Heavy Stealth Tank | vehicle | nod | 25,000 | 5.00 | 1,350 | 13.50 | 100 | 32 | Y | — | 5,120 | 7,700 | 4 | 75 | 342 | 0.12 | 0.50 | — | 0.37 |
-| `MGG` | Mobile Gap Generator | vehicle | allies | 25,000 | 5.00 | 1,000 | 10.00 | 72 | 20 | Y | — | 10,240 | — | 1 | 15 | — | — | — | — | — |
-| `MRJ` | Mobile Radar Jammer | vehicle | allies | 25,000 | 5.00 | 1,000 | 10.00 | 72 | 20 | n | — | 10,240 | — | 1 | 150 | — | — | — | — | — |
+| `BTR` | Armored Personnel Carrier (BTR) | vehicle | iraq/russia/soviet/ukraine/yuri | 25,000 | 5.00 | 675 | 6.75 | 100 | 40 | Y | — | 4,864 | 1,750 | 1 | 10 | 175 | 1.00 | 0.42 | — | 0.13 |
+| `BTR.AI` | Armored Personnel Carrier (BTR) | vehicle | iraq/russia/soviet/ukraine/yuri | 25,000 | 5.00 | 675 | 6.75 | 100 | 40 | Y | — | 4,864 | 1,750 | 1 | 10 | 175 | 1.00 | 0.42 | — | 0.13 |
+| `BTR.YURI` | Armored Personnel Carrier (Gattling BTR) | vehicle | iraq/russia/soviet/ukraine/yuri | 25,000 | 5.00 | 750 | 7.50 | 100 | 28 | Y | — | 5,120 | 306 | 1 | 5 | 61 | 1.60 | 0.64 | — | 0.30 |
+| `BTR.YURI.AI` | Armored Personnel Carrier (Gattling BTR) | vehicle | iraq/russia/soviet/ukraine/yuri | 25,000 | 5.00 | 750 | 7.50 | 100 | 28 | Y | — | 5,120 | 306 | 1 | 5 | 61 | 1.60 | 0.64 | — | 0.30 |
+| `ENFO` | Enforcer | infantry | allies/england/france/germany/usa | 25,000 | 5.00 | 650 | 6.50 | 46 | — | n | — | 4,096 | 7,000 | 1 | 55 | 127 | 1.00 | 0.47 | — | 0.28 |
+| `HSTK` | Heavy Stealth Tank | vehicle | legion/nod | 25,000 | 5.00 | 1,350 | 13.50 | 100 | 32 | Y | — | 5,120 | 7,700 | 4 | 75 | 342 | 0.12 | 0.50 | — | 0.37 |
+| `MGG` | Mobile Gap Generator | vehicle | allies/england/france/germany/usa | 25,000 | 5.00 | 1,000 | 10.00 | 72 | 20 | Y | — | 10,240 | — | 1 | 15 | — | — | — | — | — |
+| `MRJ` | Mobile Radar Jammer | vehicle | allies/england/france/germany/usa | 25,000 | 5.00 | 1,000 | 10.00 | 72 | 20 | n | — | 10,240 | — | 1 | 150 | — | — | — | — | — |
 | `NULL` | Nullifier | vehicle | scrin | 25,000 | 5.00 | 1,600 | 16.00 | 60 | 512 | n | — | 8,192 | 25,000 | 1 | 80 | 312 | 1.00 | 0.30 | — | 0.20 |
-| `SS` | Submarine | ship | soviet | 25,000 | 5.00 | 950 | 9.50 | 56 | 16 | n | — | 9,216 | 12,000 | 2 | 100 | 200 | — | 0.82 | — | 0.88 |
-| `MSAR` | Mobile Sensor Array | vehicle | gdi | 24,000 | 4.80 | 1,250 | 12.50 | 72 | 20 | n | — | — | — | — | — | — | — | — | — | — |
+| `SS` | Submarine | ship | iraq/russia/soviet/ukraine/yuri | 25,000 | 5.00 | 950 | 9.50 | 56 | 16 | n | — | 9,216 | 12,000 | 2 | 100 | 200 | — | 0.82 | — | 0.88 |
+| `MSAR` | Mobile Sensor Array | vehicle | arc/eagle/gdi/talon/zocom | 24,000 | 4.80 | 1,250 | 12.50 | 72 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `SS2` | Attack Submarine | ship | nod | 24,000 | 4.80 | 950 | 9.50 | 60 | 20 | n | — | 9,216 | 12,000 | 2 | 100 | 200 | — | 0.82 | — | 0.88 |
 | `VIPR` | Viper | vehicle | — | 24,000 | 4.80 | 1,350 | 13.50 | 82 | 512 | n | — | 7,168 | 2,300 | 1 | 95 | 24 | 0.20 | 0.85 | — | 0.62 |
-| `SEEK` | Seeker | vehicle | — | 23,000 | 4.60 | 700 | 7.00 | 126 | 40 | Y | — | 5,120 | 2,200 | 5 | 75 | 139 | 0.30 | 0.82 | — | 0.55 |
-| `HARR` | Harrier | aircraft | allies | 22,500 | 4.50 | 2,000 | 20.00 | 201 | 18 | n | — | 7,680 | 16,000 | 2 | 60 | 457 | 1.00 | 1.00 | — | 1.00 |
-| `SCRN` | Banshee | aircraft | nod | 22,500 | 4.50 | 2,000 | 20.00 | 216 | 20 | n | — | 7,168 | 800 | 3 | 50 | 44 | 0.15 | 0.80 | — | 0.73 |
+| `SEEK` | Seeker | vehicle | collector/harbinger/reaper/scrin | 23,000 | 4.60 | 700 | 7.00 | 126 | 40 | Y | — | 5,120 | 2,200 | 5 | 75 | 139 | 0.30 | 0.82 | — | 0.55 |
+| `HARR` | Harrier | aircraft | allies/england/france/germany/usa | 22,500 | 4.50 | 2,000 | 20.00 | 201 | 18 | n | — | 7,680 | 16,000 | 2 | 60 | 457 | 1.00 | 1.00 | — | 1.00 |
+| `SCRN` | Banshee | aircraft | blackh/legion/marked/nod/shadow | 22,500 | 4.50 | 2,000 | 20.00 | 216 | 20 | n | — | 7,168 | 800 | 3 | 50 | 44 | 0.15 | 0.80 | — | 0.73 |
 | `XO` | X-O Powersuit | vehicle | zocom | 22,500 | 4.50 | 1,000 | 10.00 | 60 | 64 | n | — | 7,168 | 2,500 | 2 | 70 | 66 | 1.00 | 0.53 | — | 0.10 |
-| `BASI` | Basilisk | vehicle | — | 22,000 | 4.40 | 1,350 | 13.50 | 100 | 20 | n | — | 8,192 | 500 | 3 | 60 | 23 | 0.20 | 1.00 | — | 0.40 |
-| `HELI` | Longbow | aircraft | allies | 22,000 | 4.40 | 1,500 | 15.00 | 157 | 18 | n | — | 5,120 | 6,000 | 4 | 60 | 343 | 1.00 | 1.00 | — | 1.00 |
-| `MSAM` | MLRS | vehicle | — | 22,000 | 4.40 | 1,000 | 10.00 | 72 | 16 | Y | — | 9,216 | 800 | 2 | 130 | 12 | 1.00 | 0.48 | — | 0.78 |
-| `THWK` | Tomahawk Launcher | vehicle | gdi | 22,000 | 4.40 | 1,850 | 18.50 | 44 | 4 | Y | — | 22,015 | — | 1 | 250 | — | — | — | — | — |
+| `BASI` | Basilisk | vehicle | arc/eagle/gdi/talon/zocom | 22,000 | 4.40 | 1,350 | 13.50 | 100 | 20 | n | — | 8,192 | 500 | 3 | 60 | 23 | 0.20 | 1.00 | — | 0.40 |
+| `HELI` | Longbow | aircraft | allies/england/france/germany/usa | 22,000 | 4.40 | 1,500 | 15.00 | 157 | 18 | n | — | 5,120 | 6,000 | 4 | 60 | 343 | 1.00 | 1.00 | — | 1.00 |
+| `MSAM` | MLRS | vehicle | arc/gdi/talon/zocom | 22,000 | 4.40 | 1,000 | 10.00 | 72 | 16 | Y | — | 9,216 | 800 | 2 | 130 | 12 | 1.00 | 0.48 | — | 0.78 |
+| `THWK` | Tomahawk Launcher | vehicle | arc/eagle/gdi/talon/zocom | 22,000 | 4.40 | 1,850 | 18.50 | 44 | 4 | Y | — | 22,015 | — | 1 | 250 | — | — | — | — | — |
 | `TPLR` | Templar | infantry | marked | 21,000 | 4.20 | 550 | 5.50 | 60 | — | n | — | 6,144 | 1,900 | 2 | 42 | 84 | 1.75 | 0.73 | — | 0.48 |
-| `CYCP` | Cyclops | vehicle | — | 20,000 | 4.00 | 1,250 | 12.50 | 82 | 20 | n | — | 8,192 | 18,500 | 1 | 125 | 148 | 10.00 | 0.75 | — | 0.35 |
+| `CYCP` | Cyclops | vehicle | iraq/russia/soviet/ukraine/yuri | 20,000 | 4.00 | 1,250 | 12.50 | 82 | 20 | n | — | 8,192 | 18,500 | 1 | 125 | 148 | 10.00 | 0.75 | — | 0.35 |
 | `ENRV` | Enervator | aircraft | traveler | 20,000 | 4.00 | 2,000 | 20.00 | 225 | 24 | n | — | 6,144 | 13,000 | 1 | 50 | 260 | 0.30 | 0.90 | — | 0.68 |
-| `MIG` | MiG Attack Plane | aircraft | soviet | 20,000 | 4.00 | 1,500 | 15.00 | 201 | 16 | n | — | 7,168 | 11,000 | 2 | 50 | 386 | 0.20 | 0.82 | — | 0.70 |
-| `N1C` | Cyborg | infantry | nod | 20,000 | 4.00 | 250 | 2.50 | 46 | — | n | — | 1,024 | — | 1 | 5 | — | — | — | — | — |
-| `PCAN` | Prism Cannon | vehicle | allies | 20,000 | 4.00 | 1,350 | 13.50 | 60 | 12 | Y | — | 11,264 | 18,000 | 1 | 125 | 144 | 0.60 | 0.57 | — | 0.75 |
-| `PT` | Gunboat | ship | allies | 20,000 | 4.00 | 500 | 5.00 | 92 | 28 | Y | — | 5,632 | 4,000 | 1 | 40 | 100 | 0.15 | 0.82 | — | 0.33 |
-| `PTNK` | Prism Tank | vehicle | allies | 20,000 | 4.00 | 1,350 | 13.50 | 72 | 20 | Y | — | 8,192 | 4,400 | 1 | 50 | 88 | 1.50 | 0.72 | — | 0.83 |
-| `SAPC` | Stealth APC | vehicle | nod | 20,000 | 4.00 | 1,100 | 11.00 | 82 | 20 | n | — | 6,144 | 3,400 | 1 | 30 | 113 | 1.00 | 0.33 | — | 0.30 |
-| `SAPC.AI` | Stealth APC | vehicle | nod | 20,000 | 4.00 | 1,100 | 11.00 | 82 | 20 | n | — | 6,144 | 3,400 | 1 | 30 | 113 | 1.00 | 0.33 | — | 0.30 |
-| `SAPC.AI2` | Stealth APC | vehicle | nod | 20,000 | 4.00 | 1,100 | 11.00 | 82 | 20 | n | — | 6,144 | 3,400 | 1 | 30 | 113 | 1.00 | 0.33 | — | 0.30 |
-| `STNK.Nod` | Stealth Tank | vehicle | nod | 20,000 | 4.00 | 1,100 | 11.00 | 126 | 40 | Y | — | 5,120 | 11,000 | 2 | 70 | 297 | 0.12 | 0.50 | — | 0.37 |
-| `VERT` | Vertigo | aircraft | — | 20,000 | 4.00 | 2,000 | 20.00 | 157 | 16 | n | — | 3,072 | 15,200 | 1 | 50 | 304 | 0.50 | 0.45 | — | 0.36 |
+| `MIG` | MiG Attack Plane | aircraft | iraq/russia/soviet/ukraine/yuri | 20,000 | 4.00 | 1,500 | 15.00 | 201 | 16 | n | — | 7,168 | 11,000 | 2 | 50 | 386 | 0.20 | 0.82 | — | 0.70 |
+| `N1C` | Cyborg | infantry | blackh/legion/marked/nod/shadow | 20,000 | 4.00 | 250 | 2.50 | 46 | — | n | — | 1,024 | — | 1 | 5 | — | — | — | — | — |
+| `PCAN` | Prism Cannon | vehicle | allies/england/france/germany/usa | 20,000 | 4.00 | 1,350 | 13.50 | 60 | 12 | Y | — | 11,264 | 18,000 | 1 | 125 | 144 | 0.60 | 0.57 | — | 0.75 |
+| `PT` | Gunboat | ship | allies/england/france/germany/usa | 20,000 | 4.00 | 500 | 5.00 | 92 | 28 | Y | — | 5,632 | 4,000 | 1 | 40 | 100 | 0.15 | 0.82 | — | 0.33 |
+| `PTNK` | Prism Tank | vehicle | allies/england/france/germany/usa | 20,000 | 4.00 | 1,350 | 13.50 | 72 | 20 | Y | — | 8,192 | 4,400 | 1 | 50 | 88 | 1.50 | 0.72 | — | 0.83 |
+| `SAPC` | Stealth APC | vehicle | legion/nod | 20,000 | 4.00 | 1,100 | 11.00 | 82 | 20 | n | — | 6,144 | 3,400 | 1 | 30 | 113 | 1.00 | 0.33 | — | 0.30 |
+| `SAPC.AI` | Stealth APC | vehicle | legion/nod | 20,000 | 4.00 | 1,100 | 11.00 | 82 | 20 | n | — | 6,144 | 3,400 | 1 | 30 | 113 | 1.00 | 0.33 | — | 0.30 |
+| `SAPC.AI2` | Stealth APC | vehicle | legion/nod | 20,000 | 4.00 | 1,100 | 11.00 | 82 | 20 | n | — | 6,144 | 3,400 | 1 | 30 | 113 | 1.00 | 0.33 | — | 0.30 |
+| `STNK.Nod` | Stealth Tank | vehicle | legion/nod | 20,000 | 4.00 | 1,100 | 11.00 | 126 | 40 | Y | — | 5,120 | 11,000 | 2 | 70 | 297 | 0.12 | 0.50 | — | 0.37 |
+| `VERT` | Vertigo | aircraft | blackh/legion/marked/nod/shadow | 20,000 | 4.00 | 2,000 | 20.00 | 157 | 16 | n | — | 3,072 | 15,200 | 1 | 50 | 304 | 0.50 | 0.45 | — | 0.36 |
 | `WTNK` | Microwave Tank | vehicle | legion | 20,000 | 4.00 | 1,500 | 15.00 | 68 | 16 | Y | — | 7,168 | 60,000 | 1 | 170 | 353 | 0.20 | 0.93 | — | 0.17 |
-| `ZDEF` | Zone Defender | infantry | gdi | 20,000 | 4.00 | 700 | 7.00 | 46 | — | n | — | 6,144 | 8,250 | 1 | 70 | 118 | 0.18 | 0.93 | — | 0.67 |
-| `ZEUS` | Zeus Artillery | vehicle | allies | 20,000 | 4.00 | 2,000 | 20.00 | 46 | 20 | n | — | 22,015 | — | 1 | 150 | — | — | — | — | — |
+| `ZDEF` | Zone Defender | infantry | arc/eagle/gdi/talon/zocom | 20,000 | 4.00 | 700 | 7.00 | 46 | — | n | — | 6,144 | 8,250 | 1 | 70 | 118 | 0.18 | 0.93 | — | 0.67 |
+| `ZEUS` | Zeus Artillery | vehicle | allies/england/france/germany/usa | 20,000 | 4.00 | 2,000 | 20.00 | 46 | 20 | n | — | 22,015 | — | 1 | 150 | — | — | — | — | — |
 | `HSAM` | Hover MLRS | vehicle | eagle | 19,000 | 3.80 | 1,100 | 11.00 | 86 | 16 | Y | — | 8,704 | 800 | 2 | 130 | 12 | 1.00 | 0.48 | — | 0.78 |
-| `ORCA` | Orca | aircraft | gdi | 19,000 | 3.80 | 1,500 | 15.00 | 180 | 22 | n | — | 6,144 | 5,500 | 4 | 70 | 282 | 0.20 | 0.82 | — | 0.70 |
+| `ORCA` | Orca | aircraft | arc/eagle/gdi/talon/zocom | 19,000 | 3.80 | 1,500 | 15.00 | 180 | 22 | n | — | 6,144 | 5,500 | 4 | 70 | 282 | 0.20 | 0.82 | — | 0.70 |
 | `DESO` | Desolator | infantry | iraq | 18,500 | 3.70 | 600 | 6.00 | 46 | — | n | — | 6,144 | 7,900 | 1 | 110 | 72 | 2.40 | 0.57 | — | 0.54 |
 | `ATMZ` | Atomizer | vehicle | collector | 18,000 | 3.60 | 1,350 | 13.50 | 72 | 32 | Y | — | 9,216 | 4,000 | 1 | 150 | 27 | 0.15 | 0.82 | — | 0.60 |
 | `AURO` | Aurora | aircraft | eagle/gdi | 18,000 | 3.60 | 2,300 | 23.00 | 180 | 16 | n | — | 3,072 | 15,200 | 1 | 50 | 304 | 0.50 | 0.45 | — | 0.32 |
-| `BEAG` | Black Eagle | aircraft | allies | 18,000 | 3.60 | 2,000 | 20.00 | 225 | 20 | n | — | 7,168 | 24,000 | 1 | 50 | 480 | 0.20 | 0.82 | — | 0.60 |
+| `BEAG` | Black Eagle | aircraft | allies/england/france/germany/usa | 18,000 | 3.60 | 2,000 | 20.00 | 225 | 20 | n | — | 7,168 | 24,000 | 1 | 50 | 480 | 0.20 | 0.82 | — | 0.60 |
 | `BRST` | Burster | infantry | scrin | 18,000 | 3.60 | 550 | 5.50 | 60 | — | n | — | 1,536 | — | 1 | — | — | — | — | — | — |
 | `MSG` | Mobile Stealth Generator | vehicle | shadow | 18,000 | 3.60 | 1,100 | 11.00 | 60 | 20 | n | — | — | — | — | — | — | — | — | — | — |
-| `PHAN` | Phantom | aircraft | — | 18,000 | 3.60 | 1,800 | 18.00 | 225 | 16 | n | — | 7,168 | 12,000 | 2 | 50 | 421 | 0.20 | 0.82 | — | 0.60 |
-| `SHDE` | Shade | aircraft | — | 18,000 | 3.60 | 1,800 | 18.00 | 225 | 20 | n | — | 7,168 | 17,000 | 1 | 100 | 170 | 0.75 | 0.90 | — | 0.43 |
-| `SUK` | Sukhoi Attack Plane | aircraft | soviet | 18,000 | 3.60 | 2,000 | 20.00 | 216 | 16 | n | — | 7,168 | 17,600 | 4 | 50 | 1,173 | 0.50 | 0.33 | — | 0.26 |
-| `SUK.UPG` | Sukhoi Attack Plane | aircraft | soviet | 18,000 | 3.60 | 2,000 | 20.00 | 216 | 16 | n | — | 7,168 | 1,850 | 2 | 70 | 51 | 0.10 | 0.88 | — | 0.78 |
-| `TTRA` | Tesla Track | vehicle | soviet | 18,000 | 3.60 | 1,350 | 13.50 | 60 | 16 | Y | — | 8,192 | 18,500 | 1 | 125 | 148 | 10.00 | 0.75 | — | 0.35 |
-| `TTRP` | Tesla Trooper | infantry | iraq/soviet | 18,000 | 3.60 | 600 | 6.00 | 46 | — | n | — | 6,144 | 5,300 | 1 | 70 | 76 | 2.40 | 1.00 | — | 0.45 |
+| `PHAN` | Phantom | aircraft | allies/england/france/germany/usa | 18,000 | 3.60 | 1,800 | 18.00 | 225 | 16 | n | — | 7,168 | 12,000 | 2 | 50 | 421 | 0.20 | 0.82 | — | 0.60 |
+| `SHDE` | Shade | aircraft | arc/eagle/gdi/talon/zocom | 18,000 | 3.60 | 1,800 | 18.00 | 225 | 20 | n | — | 7,168 | 17,000 | 1 | 100 | 170 | 0.75 | 0.90 | — | 0.43 |
+| `SUK` | Sukhoi Attack Plane | aircraft | iraq/russia/soviet/ukraine/yuri | 18,000 | 3.60 | 2,000 | 20.00 | 216 | 16 | n | — | 7,168 | 17,600 | 4 | 50 | 1,173 | 0.50 | 0.33 | — | 0.26 |
+| `SUK.UPG` | Sukhoi Attack Plane | aircraft | iraq/russia/soviet/ukraine/yuri | 18,000 | 3.60 | 2,000 | 20.00 | 216 | 16 | n | — | 7,168 | 1,850 | 2 | 70 | 51 | 0.10 | 0.88 | — | 0.78 |
+| `TTRA` | Tesla Track | vehicle | iraq/russia/soviet/ukraine/yuri | 18,000 | 3.60 | 1,350 | 13.50 | 60 | 16 | Y | — | 8,192 | 18,500 | 1 | 125 | 148 | 10.00 | 0.75 | — | 0.35 |
+| `TTRP` | Tesla Trooper | infantry | russia/soviet/ukraine/yuri | 18,000 | 3.60 | 600 | 6.00 | 46 | — | n | — | 6,144 | 5,300 | 1 | 70 | 76 | 2.40 | 1.00 | — | 0.45 |
 | `VENM` | Venom | aircraft | marked | 18,000 | 3.60 | 1,500 | 15.00 | 180 | 24 | n | — | 5,632 | 5,500 | 1 | 30 | 183 | 2.50 | 0.75 | — | 0.47 |
-| `CMEC` | Cyborg Mechanic | infantry | nod | 17,000 | 3.40 | 400 | 4.00 | 46 | — | n | — | 2,560 | — | 1 | 75 | — | — | — | — | — |
+| `CMEC` | Cyborg Mechanic | infantry | blackh/legion/marked/nod/shadow | 17,000 | 3.40 | 400 | 4.00 | 46 | — | n | — | 2,560 | — | 1 | 75 | — | — | — | — | — |
 | `PBUL` | Pitbull | vehicle | eagle | 17,000 | 3.40 | 850 | 8.50 | 130 | 40 | Y | — | 6,144 | 7,000 | 2 | 80 | 167 | 0.10 | 0.75 | — | 0.48 |
 | `BH` | Black Hand Trooper | infantry | blackh | 16,000 | 3.20 | 500 | 5.00 | 66 | — | n | — | 3,584 | 820 | 28 | 110 | 205 | 0.45 | 0.82 | — | 0.23 |
 | `CSCR` | Cyberscrin | infantry | — | 16,000 | 3.20 | 500 | 5.00 | 77 | — | n | — | 5,632 | 1,750 | 1 | 50 | 35 | 1.00 | 0.45 | — | 0.42 |
 | `EVIS` | Eviscerator | infantry | scrin | 16,000 | 3.20 | 600 | 6.00 | 92 | — | n | — | 4,096 | 2,200 | 5 | 30 | 324 | — | 0.38 | — | 0.12 |
-| `RAH` | Comanche | aircraft | nod | 16,000 | 3.20 | 2,000 | 20.00 | 157 | 18 | n | — | 6,144 | 800 | 4 | 35 | 82 | 0.85 | 0.42 | — | 0.30 |
+| `RAH` | Comanche | aircraft | blackh/legion/marked/nod/shadow | 16,000 | 3.20 | 2,000 | 20.00 | 157 | 18 | n | — | 6,144 | 800 | 4 | 35 | 82 | 0.85 | 0.42 | — | 0.30 |
 | `SEAL` | Navy SEAL | infantry | usa | 16,000 | 3.20 | 1,000 | 10.00 | 60 | — | n | — | 6,144 | 1,570 | 3 | 6 | 589 | 1.00 | 0.25 | — | 0.12 |
 | `V3RL` | V3 Launcher | vehicle | ukraine | 16,000 | 3.20 | 1,250 | 12.50 | 46 | 16 | n | — | 22,015 | 50,000 | 1 | 250 | 200 | 0.00 | 0.00 | — | 0.00 |
-| `ZTRP` | Zone Trooper | infantry | gdi | 16,000 | 3.20 | 700 | 7.00 | 46 | — | n | — | 6,144 | 10,000 | 1 | 65 | 154 | 0.30 | 0.93 | — | 0.67 |
-| `APCH` | Apache | aircraft | — | 15,000 | 3.00 | 1,400 | 14.00 | 168 | 22 | n | — | 5,632 | 5,000 | 1 | 14 | 357 | 1.44 | 0.40 | — | 0.28 |
-| `CHAIN` | Chain-link Fence | defense | nod | 15,000 | 3.00 | 30 | 0.30 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `CRYT` | Cryo Trooper | infantry | allies | 15,000 | 3.00 | 700 | 7.00 | 60 | — | n | — | 5,888 | 400 | 1 | 5 | 80 | 1.00 | 0.12 | — | 0.50 |
-| `FENC` | Wire Fence | defense | soviet | 15,000 | 3.00 | 30 | 0.30 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `ZTRP` | Zone Trooper | infantry | arc/eagle/gdi/talon/zocom | 16,000 | 3.20 | 700 | 7.00 | 46 | — | n | — | 6,144 | 10,000 | 1 | 65 | 154 | 0.30 | 0.93 | — | 0.67 |
+| `APCH` | Apache | aircraft | blackh/legion/nod/shadow | 15,000 | 3.00 | 1,400 | 14.00 | 168 | 22 | n | — | 5,632 | 5,000 | 1 | 14 | 357 | 1.44 | 0.40 | — | 0.28 |
+| `CHAIN` | Chain-link Fence | defense | blackh/legion/marked/nod/shadow | 15,000 | 3.00 | 30 | 0.30 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `CRYT` | Cryo Trooper | infantry | allies/england/france/germany/usa | 15,000 | 3.00 | 700 | 7.00 | 60 | — | n | — | 5,888 | 400 | 1 | 5 | 80 | 1.00 | 0.12 | — | 0.50 |
+| `FENC` | Wire Fence | defense | iraq/russia/soviet/ukraine/yuri | 15,000 | 3.00 | 30 | 0.30 | — | — | n | — | — | — | — | — | — | — | — | — | — |
 | `GDRN` | Guardian Drone | vehicle | arc | 15,000 | 3.00 | 450 | 4.50 | 126 | 40 | Y | — | 4,864 | 2,600 | 3 | 80 | 95 | 0.25 | 0.85 | — | 0.50 |
 | `GDRN.TOW` | TOW Guardian Drone | vehicle | arc | 15,000 | 3.00 | 575 | 5.75 | 118 | 40 | Y | — | 4,864 | 2,600 | 3 | 80 | 95 | 0.25 | 0.85 | — | 0.50 |
-| `HMMV` | Hum-Vee | vehicle | gdi | 15,000 | 3.00 | 400 | 4.00 | 144 | 40 | Y | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
-| `HMMV.TOW` | TOW Hum-Vee | vehicle | gdi | 15,000 | 3.00 | 575 | 5.75 | 126 | 40 | Y | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
-| `JEEP` | Ranger | vehicle | allies | 15,000 | 3.00 | 400 | 4.00 | 144 | 40 | Y | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
-| `MLRS` | SSM Launcher | vehicle | nod | 15,000 | 3.00 | 1,350 | 13.50 | 72 | 8 | Y | — | 12,288 | 2,400 | 2 | 130 | 27 | 1.00 | 0.53 | — | 0.62 |
-| `N5` | Chemical Warrior | infantry | nod | 15,000 | 3.00 | 325 | 3.25 | 60 | — | n | — | 2,560 | 11,250 | 1 | 65 | 173 | 1.00 | 0.47 | — | 0.42 |
+| `HMMV` | Hum-Vee | vehicle | eagle/gdi/talon/zocom | 15,000 | 3.00 | 400 | 4.00 | 144 | 40 | Y | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
+| `HMMV.TOW` | TOW Hum-Vee | vehicle | eagle/gdi/talon/zocom | 15,000 | 3.00 | 575 | 5.75 | 126 | 40 | Y | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
+| `JEEP` | Ranger | vehicle | allies/england/france/germany/usa | 15,000 | 3.00 | 400 | 4.00 | 144 | 40 | Y | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
+| `MLRS` | SSM Launcher | vehicle | blackh/legion/marked/nod | 15,000 | 3.00 | 1,350 | 13.50 | 72 | 8 | Y | — | 12,288 | 2,400 | 2 | 130 | 27 | 1.00 | 0.53 | — | 0.62 |
+| `N5` | Chemical Warrior | infantry | blackh/legion/marked/nod/shadow | 15,000 | 3.00 | 325 | 3.25 | 60 | — | n | — | 2,560 | 11,250 | 1 | 65 | 173 | 1.00 | 0.47 | — | 0.42 |
 | `RUIN` | Ruiner | vehicle | scrin | 15,000 | 3.00 | 1,250 | 12.50 | 72 | 512 | n | — | 10,240 | 5,000 | 5 | 175 | 132 | 1.20 | 0.68 | — | 0.67 |
-| `SBAG` | Sandbag Wall | defense | — | 15,000 | 3.00 | 30 | 0.30 | — | — | n | — | — | — | — | — | — | — | — | — | — |
-| `V2RL` | V2 Rocket Launcher | vehicle | — | 15,000 | 3.00 | 900 | 9.00 | 60 | 20 | n | — | 12,288 | 3,600 | 1 | 240 | 15 | 0.90 | 0.55 | — | 0.68 |
+| `SBAG` | Sandbag Wall | defense | allies/arc/eagle/england/france/gdi/germany/talon/usa/zocom | 15,000 | 3.00 | 30 | 0.30 | — | — | n | — | — | — | — | — | — | — | — | — | — |
+| `V2RL` | V2 Rocket Launcher | vehicle | iraq/russia/soviet/yuri | 15,000 | 3.00 | 900 | 9.00 | 60 | 20 | n | — | 12,288 | 3,600 | 1 | 240 | 15 | 0.90 | 0.55 | — | 0.68 |
 | `CDOG` | Cyberdog | infantry | — | 14,000 | 2.80 | 400 | 4.00 | 100 | — | n | — | 4,608 | 100,000 | 1 | 10 | 10,000 | — | — | — | — |
-| `GRAD` | Grad | vehicle | soviet | 14,000 | 2.80 | 750 | 7.50 | 54 | 10 | Y | — | 13,312 | 400 | 3 | 180 | 6 | 1.00 | 0.62 | — | 0.68 |
+| `GRAD` | Grad | vehicle | iraq/russia/soviet/ukraine/yuri | 14,000 | 2.80 | 750 | 7.50 | 54 | 10 | Y | — | 13,312 | 400 | 3 | 180 | 6 | 1.00 | 0.62 | — | 0.68 |
 | `MRDR` | Marauder | infantry | harbinger | 14,000 | 2.80 | 600 | 6.00 | 46 | — | n | — | 6,144 | 4,200 | 2 | 70 | 112 | 0.05 | 0.04 | — | 0.55 |
-| `ZRAI` | Zone Raider | infantry | gdi | 14,000 | 2.80 | 700 | 7.00 | 60 | — | n | — | 6,144 | 8,500 | 1 | 60 | 142 | 0.35 | 0.72 | — | 0.73 |
-| `YAK` | Yak Attack Plane | aircraft | soviet | 13,500 | 2.70 | 1,200 | 12.00 | 180 | 16 | n | — | 6,144 | 3,150 | 4 | 60 | 194 | 1.00 | 0.40 | — | 0.27 |
-| `BGGY` | Buggy | vehicle | nod | 13,250 | 2.65 | 350 | 3.50 | 144 | 40 | Y | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
-| `RBUG` | Raider Buggy | vehicle | nod | 13,250 | 2.65 | 400 | 4.00 | 126 | 36 | Y | — | 4,608 | 2,750 | 1 | 25 | 98 | 1.50 | 0.42 | — | 0.13 |
+| `ZRAI` | Zone Raider | infantry | arc/eagle/gdi/talon/zocom | 14,000 | 2.80 | 700 | 7.00 | 60 | — | n | — | 6,144 | 8,500 | 1 | 60 | 142 | 0.35 | 0.72 | — | 0.73 |
+| `YAK` | Yak Attack Plane | aircraft | iraq/russia/soviet/ukraine/yuri | 13,500 | 2.70 | 1,200 | 12.00 | 180 | 16 | n | — | 6,144 | 3,150 | 4 | 60 | 194 | 1.00 | 0.40 | — | 0.27 |
+| `BGGY` | Buggy | vehicle | legion/nod | 13,250 | 2.65 | 350 | 3.50 | 144 | 40 | Y | — | 4,096 | 1,000 | 5 | 38 | 122 | 1.50 | 0.42 | — | 0.13 |
+| `RBUG` | Raider Buggy | vehicle | legion/nod | 13,250 | 2.65 | 400 | 4.00 | 126 | 36 | Y | — | 4,608 | 2,750 | 1 | 25 | 98 | 1.50 | 0.42 | — | 0.13 |
 | `CONF` | Confessor | vehicle | — | 13,000 | 2.60 | 750 | 7.50 | 46 | — | n | — | 6,144 | 3,000 | 1 | 20 | 150 | 1.50 | 0.32 | — | 0.23 |
-| `KATY` | Katyusha | vehicle | soviet | 13,000 | 2.60 | 750 | 7.50 | 54 | 12 | n | — | 8,960 | 4,000 | 3 | 180 | 62 | 1.00 | 0.62 | — | 0.68 |
+| `KATY` | Katyusha | vehicle | iraq/russia/soviet/ukraine/yuri | 13,000 | 2.60 | 750 | 7.50 | 54 | 12 | n | — | 8,960 | 4,000 | 3 | 180 | 62 | 1.00 | 0.62 | — | 0.68 |
 | `LACE` | Lacerator | vehicle | traveler | 13,000 | 2.60 | 600 | 6.00 | 144 | 40 | Y | — | 5,120 | 2,900 | 5 | 100 | 138 | 0.15 | 0.80 | — | 0.47 |
 | `MDRN` | Mini Drone | vehicle | arc | 13,000 | 2.60 | 225 | 2.25 | 126 | 512 | n | — | 4,096 | 1,000 | 5 | 40 | 116 | 1.50 | 0.42 | — | 0.13 |
 | `CDRN` | Chaos Drone | vehicle | yuri | 12,000 | 2.40 | 850 | 8.50 | 135 | 20 | n | — | 2,048 | — | 1 | — | — | — | — | — | — |
-| `CMSR` | Commissar | infantry | soviet | 12,000 | 2.40 | 800 | 8.00 | 46 | — | n | — | 6,144 | 900 | 10 | 80 | 102 | 1.00 | 0.25 | — | 0.13 |
+| `CMSR` | Commissar | infantry | iraq/russia/soviet/ukraine/yuri | 12,000 | 2.40 | 800 | 8.00 | 46 | — | n | — | 6,144 | 900 | 10 | 80 | 102 | 1.00 | 0.25 | — | 0.13 |
 | `IVAN` | Crazy Ivan | infantry | ukraine | 12,000 | 2.40 | 600 | 6.00 | 72 | — | n | — | 3,797 | — | 1 | 75 | — | — | — | — | — |
-| `BIKE` | Recon Bike | vehicle | nod | 11,000 | 2.20 | 500 | 5.00 | 170 | 40 | n | — | 5,120 | 4,000 | 2 | 50 | 145 | 0.10 | 0.72 | — | 0.57 |
-| `BORI` | Boris | infantry | soviet | 11,000 | 2.20 | 1,500 | 15.00 | 60 | — | n | 1 | 7,168 | 4,700 | 3 | 15 | 829 | 1.00 | 0.20 | — | 0.10 |
-| `E7` | Tanya | infantry | allies | 11,000 | 2.20 | 1,500 | 15.00 | 60 | — | n | 1 | 7,168 | 4,700 | 4 | 10 | 817 | — | 0.25 | — | 0.15 |
+| `BIKE` | Recon Bike | vehicle | legion/nod | 11,000 | 2.20 | 500 | 5.00 | 170 | 40 | n | — | 5,120 | 4,000 | 2 | 50 | 145 | 0.10 | 0.72 | — | 0.57 |
+| `BORI` | Boris | infantry | iraq/russia/soviet/ukraine | 11,000 | 2.20 | 1,500 | 15.00 | 60 | — | n | 1 | 7,168 | 4,700 | 3 | 15 | 829 | 1.00 | 0.20 | — | 0.10 |
+| `E7` | Tanya | infantry | allies/england/france/germany/usa | 11,000 | 2.20 | 1,500 | 15.00 | 60 | — | n | 1 | 7,168 | 4,700 | 4 | 10 | 817 | — | 0.25 | — | 0.15 |
 | `MAST` | Mastermind | infantry | scrin | 11,000 | 2.20 | 1,500 | 15.00 | 60 | — | n | 1 | 7,168 | — | 1 | 50 | — | — | — | — | — |
-| `N3C` | Cyborg Rocket Soldier | infantry | nod | 11,000 | 2.20 | 400 | 4.00 | 46 | — | n | — | 7,168 | 11,500 | 1 | 50 | 230 | 1.00 | 1.00 | — | 1.00 |
+| `N3C` | Cyborg Rocket Soldier | infantry | blackh/legion/marked/nod/shadow | 11,000 | 2.20 | 400 | 4.00 | 46 | — | n | — | 7,168 | 11,500 | 1 | 50 | 230 | 1.00 | 1.00 | — | 1.00 |
 | `RMBO` | Commando | infantry | — | 11,000 | 2.20 | 1,500 | 15.00 | 60 | — | n | 1 | 7,168 | 25,000 | 1 | 16 | 1,562 | — | 0.15 | — | 0.15 |
-| `S4` | Intruder | infantry | — | 11,000 | 2.20 | 500 | 5.00 | 54 | — | n | — | 6,144 | 2,850 | 3 | 70 | 116 | 0.15 | 0.78 | — | 0.92 |
+| `S4` | Intruder | infantry | collector/reaper/scrin/traveler | 11,000 | 2.20 | 500 | 5.00 | 54 | — | n | — | 6,144 | 2,850 | 3 | 70 | 116 | 0.15 | 0.78 | — | 0.92 |
 | `SB` | Recon Boat | ship | nod | 11,000 | 2.20 | 500 | 5.00 | 113 | 40 | n | — | 5,120 | 4,000 | 2 | 50 | 145 | 0.10 | 0.72 | — | 0.57 |
 | `SPEC` | Spectre | vehicle | shadow | 11,000 | 2.20 | 1,350 | 13.50 | 82 | 20 | n | — | 13,312 | 9,500 | 3 | 200 | 138 | 1.00 | 0.47 | — | 0.62 |
 | `TRUK` | Supply Truck | vehicle | — | 11,000 | 2.20 | 500 | 5.00 | 126 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `TRUK.DROP` | Supply Truck | vehicle | — | 11,000 | 2.20 | 500 | 5.00 | 126 | 20 | n | — | — | — | — | — | — | — | — | — | — |
 | `YURI` | Yuri | infantry | yuri | 11,000 | 2.20 | 1,500 | 15.00 | 60 | — | n | 1 | 7,168 | — | 1 | 50 | — | — | — | — | — |
-| `ARTY` | Artillery | vehicle | allies | 10,000 | 2.00 | 650 | 6.50 | 46 | 12 | n | — | 8,960 | 9,750 | 1 | 85 | 115 | 0.70 | 0.57 | — | 0.90 |
-| `ARTY.nod` | Artillery | vehicle | nod | 10,000 | 2.00 | 650 | 6.50 | 46 | 12 | n | — | 8,960 | 9,750 | 1 | 85 | 115 | 0.70 | 0.57 | — | 0.90 |
-| `HOPL` | Hoplite | infantry | allies | 10,000 | 2.00 | 650 | 6.50 | 46 | — | n | — | 7,168 | 6,000 | 1 | 75 | 80 | 1.50 | 0.70 | — | 0.60 |
-| `HOWI` | Howitzer | vehicle | nod | 10,000 | 2.00 | 650 | 6.50 | 72 | 18 | Y | — | 7,936 | 11,500 | 1 | 100 | 115 | 0.70 | 0.57 | — | 0.78 |
+| `ARTY` | Artillery | vehicle | allies/england/france/germany/usa | 10,000 | 2.00 | 650 | 6.50 | 46 | 12 | n | — | 8,960 | 9,750 | 1 | 85 | 115 | 0.70 | 0.57 | — | 0.90 |
+| `ARTY.nod` | Artillery | vehicle | legion/nod | 10,000 | 2.00 | 650 | 6.50 | 46 | 12 | n | — | 8,960 | 9,750 | 1 | 85 | 115 | 0.70 | 0.57 | — | 0.90 |
+| `HOPL` | Hoplite | infantry | allies/england/france/germany/usa | 10,000 | 2.00 | 650 | 6.50 | 46 | — | n | — | 7,168 | 6,000 | 1 | 75 | 80 | 1.50 | 0.70 | — | 0.60 |
+| `HOWI` | Howitzer | vehicle | legion/nod | 10,000 | 2.00 | 650 | 6.50 | 72 | 18 | Y | — | 7,936 | 11,500 | 1 | 100 | 115 | 0.70 | 0.57 | — | 0.78 |
 | `STLK` | Stalker | infantry | scrin | 10,000 | 2.00 | 600 | 6.00 | 92 | — | n | — | 5,120 | 7,500 | 2 | 40 | 341 | — | 0.24 | — | 0.10 |
 | `TORM` | Tormentor | aircraft | scrin | 10,000 | 2.00 | 900 | 9.00 | 201 | 40 | n | — | 7,168 | 13,800 | 1 | 50 | 276 | 0.20 | 0.82 | — | 0.62 |
 | `ACOL` | Acolyte | infantry | marked | 9,000 | 1.80 | 475 | 4.75 | 60 | — | n | — | 6,144 | 1,900 | 2 | 42 | 84 | 1.55 | 0.70 | — | 0.48 |
-| `E4` | Soviet Flamethrower | infantry | soviet | 9,000 | 1.80 | 200 | 2.00 | 46 | — | n | — | 4,371 | 10,000 | 1 | 40 | 250 | 1.00 | 0.17 | — | 0.22 |
+| `E4` | Soviet Flamethrower | infantry | iraq/russia/soviet/ukraine/yuri | 9,000 | 1.80 | 200 | 2.00 | 46 | — | n | — | 4,371 | 10,000 | 1 | 40 | 250 | 1.00 | 0.17 | — | 0.22 |
 | `E8` | Rad Trooper | infantry | iraq | 8,000 | 1.60 | 425 | 4.25 | 46 | — | n | — | 6,144 | 7,600 | 1 | 110 | 69 | 2.40 | 0.70 | — | 0.37 |
 | `IMPL` | Impaler | infantry | scrin | 8,000 | 1.60 | 600 | 6.00 | 60 | — | n | — | 7,168 | 12,500 | 2 | 125 | 167 | — | 0.47 | — | 0.23 |
-| `TIGR` | Tiger Guard | infantry | allies | 8,000 | 1.60 | 650 | 6.50 | 46 | — | n | — | 9,216 | 20,000 | 1 | 125 | 160 | 1.00 | 1.00 | — | 1.00 |
-| `SHOK` | Shock Trooper | infantry | iraq/soviet | 7,500 | 1.50 | 425 | 4.25 | 46 | — | n | — | 6,144 | 5,300 | 1 | 100 | 53 | 2.40 | 0.93 | — | 0.45 |
-| `N4` | Nod Flamethrower | infantry | nod | 7,000 | 1.40 | 200 | 2.00 | 60 | — | n | — | 2,560 | 10,500 | 1 | 65 | 162 | 1.00 | 0.42 | — | 0.38 |
+| `TIGR` | Tiger Guard | infantry | allies/england/france/germany/usa | 8,000 | 1.60 | 650 | 6.50 | 46 | — | n | — | 9,216 | 20,000 | 1 | 125 | 160 | 1.00 | 1.00 | — | 1.00 |
+| `SHOK` | Shock Trooper | infantry | russia/soviet/ukraine/yuri | 7,500 | 1.50 | 425 | 4.25 | 46 | — | n | — | 6,144 | 5,300 | 1 | 100 | 53 | 2.40 | 0.93 | — | 0.45 |
+| `N4` | Nod Flamethrower | infantry | blackh/legion/marked/nod/shadow | 7,000 | 1.40 | 200 | 2.00 | 60 | — | n | — | 2,560 | 10,500 | 1 | 65 | 162 | 1.00 | 0.42 | — | 0.38 |
 | `U3` | Guardian G.I | vehicle | — | 6,500 | 1.30 | 350 | 3.50 | 41 | 1023 | Y | — | 1,024 | — | 1 | 5 | — | — | — | — | — |
 | `U3R2` | Guardian G.I | vehicle | — | 6,500 | 1.30 | 350 | 3.50 | 41 | 1023 | Y | — | 1,024 | — | 1 | 5 | — | — | — | — | — |
-| `BJET` | Bombardier | infantry | gdi | 6,000 | 1.20 | 550 | 5.50 | 100 | — | n | — | 7,168 | 7,000 | 1 | 60 | 117 | 1.00 | 0.53 | — | 0.65 |
-| `JJET` | Jump-Jet Trooper | infantry | gdi | 6,000 | 1.20 | 350 | 3.50 | 118 | — | n | — | 4,864 | 3,250 | 3 | 38 | 227 | 1.00 | 0.22 | — | 0.04 |
+| `BJET` | Bombardier | infantry | arc/eagle/gdi/talon/zocom | 6,000 | 1.20 | 550 | 5.50 | 100 | — | n | — | 7,168 | 7,000 | 1 | 60 | 117 | 1.00 | 0.53 | — | 0.65 |
+| `JJET` | Jump-Jet Trooper | infantry | arc/eagle/gdi/talon/zocom | 6,000 | 1.20 | 350 | 3.50 | 118 | — | n | — | 4,864 | 3,250 | 3 | 38 | 227 | 1.00 | 0.22 | — | 0.04 |
 | `S2` | Ravager | infantry | scrin | 6,000 | 1.20 | 275 | 2.75 | 92 | — | n | — | 5,120 | 2,000 | 5 | 45 | 200 | — | 0.38 | — | 0.12 |
 | `ARTI` | Artificer | vehicle | — | 5,000 | 1.00 | 400 | 4.00 | 46 | — | n | — | 2,560 | — | 1 | 80 | — | — | — | — | — |
-| `DTRK` | Demolition Truck | vehicle | soviet | 5,000 | 1.00 | 2,000 | 20.00 | 72 | 20 | n | — | 1,873 | — | 1 | — | — | — | — | — | — |
+| `DTRK` | Demolition Truck | vehicle | iraq/russia/soviet/ukraine/yuri | 5,000 | 1.00 | 2,000 | 20.00 | 72 | 20 | n | — | 1,873 | — | 1 | — | — | — | — | — | — |
 | `E1` | Rifle Infantry | infantry | — | 5,000 | 1.00 | 100 | 1.00 | 46 | — | n | — | 1,024 | — | 1 | 5 | — | — | — | — | — |
-| `E2` | Grenadier | infantry | — | 5,000 | 1.00 | 160 | 1.60 | 60 | — | n | — | 4,821 | 6,000 | 1 | 60 | 100 | 0.60 | 0.57 | — | 0.73 |
+| `E2` | Grenadier | infantry | iraq/russia/soviet/yuri | 5,000 | 1.00 | 160 | 1.60 | 60 | — | n | — | 4,821 | 6,000 | 1 | 60 | 100 | 0.60 | 0.57 | — | 0.73 |
 | `HACK` | Hacker | vehicle | — | 5,000 | 1.00 | 750 | 7.50 | 60 | — | n | — | 11,264 | — | 1 | 5 | — | — | — | — | — |
-| `MECH` | Mechanic | infantry | nod | 5,000 | 1.00 | 400 | 4.00 | 46 | — | n | — | 2,560 | — | 1 | 80 | — | — | — | — | — |
+| `MECH` | Mechanic | infantry | blackh/legion/marked/nod/shadow | 5,000 | 1.00 | 400 | 4.00 | 46 | — | n | — | 2,560 | — | 1 | 80 | — | — | — | — | — |
 | `MEDI` | Medic | infantry | — | 5,000 | 1.00 | 200 | 2.00 | 46 | — | n | — | 4,096 | — | 1 | 80 | — | — | — | — | — |
-| `N1` | Mini-Gunner | infantry | nod | 5,000 | 1.00 | 100 | 1.00 | 46 | — | n | — | 1,024 | — | 1 | 5 | — | — | — | — | — |
-| `N2` | Grenadier | infantry | gdi | 5,000 | 1.00 | 160 | 1.60 | 60 | — | n | — | 4,821 | 6,000 | 1 | 60 | 100 | 0.60 | 0.57 | — | 0.73 |
+| `N1` | Mini-Gunner | infantry | blackh/legion/marked/nod/shadow | 5,000 | 1.00 | 100 | 1.00 | 46 | — | n | — | 1,024 | — | 1 | 5 | — | — | — | — | — |
+| `N2` | Grenadier | infantry | arc/eagle/gdi/talon/zocom | 5,000 | 1.00 | 160 | 1.60 | 60 | — | n | — | 4,821 | 6,000 | 1 | 60 | 100 | 0.60 | 0.57 | — | 0.73 |
 | `S1` | Warrior | infantry | scrin | 5,000 | 1.00 | 100 | 1.00 | 46 | — | n | — | 1,024 | — | 1 | 5 | — | — | — | — | — |
-| `SAB` | Infiltrator | infantry | nod | 5,000 | 1.00 | 500 | 5.00 | 46 | — | n | — | 3,584 | 15,050 | 1 | 80 | 188 | — | 0.15 | — | 0.15 |
+| `SAB` | Infiltrator | infantry | blackh/legion/marked/nod/shadow | 5,000 | 1.00 | 500 | 5.00 | 46 | — | n | — | 3,584 | 15,050 | 1 | 80 | 188 | — | 0.15 | — | 0.15 |
 | `SHAD` | Shadow Operative | vehicle | shadow | 5,000 | 1.00 | 500 | 5.00 | 72 | — | n | — | 4,821 | 7,000 | 1 | 50 | 140 | 0.60 | 0.88 | — | 0.82 |
 | `SMEDI` | Rejuvenator | vehicle | — | 5,000 | 1.00 | 200 | 2.00 | 46 | — | n | — | 4,096 | — | 1 | 80 | — | — | — | — | — |
-| `THF` | Thief | infantry | soviet | 5,000 | 1.00 | 500 | 5.00 | 54 | — | n | — | — | — | — | — | — | — | — | — | — |
+| `THF` | Thief | infantry | iraq/russia/soviet/ukraine/yuri | 5,000 | 1.00 | 500 | 5.00 | 54 | — | n | — | — | — | — | — | — | — | — | — | — |
 | `TTRK` | Toxin Truck | vehicle | — | 5,000 | 1.00 | 2,000 | 20.00 | 72 | 20 | n | — | 1,873 | — | 1 | — | — | — | — | — | — |
 | `WCHR` | Watcher | infantry | scrin | 5,000 | 1.00 | 500 | 5.00 | 80 | — | n | — | 6,144 | — | 1 | 100 | — | — | — | — | — |
 | `ASSA` | Assassin | vehicle | — | 4,500 | 0.90 | 750 | 7.50 | 54 | — | n | — | 8,192 | 25,300 | 1 | 100 | 253 | — | 0.10 | — | 0.01 |
@@ -375,7 +375,7 @@ Checkout: `/home/user/inq8/camod` · rifle anchor **`E1` = 5,000 HP / 100 credit
 | `MORT.Chem` | Chemical Mortar | infantry | — | 3,500 | 0.70 | 350 | 3.50 | 46 | — | n | — | 7,168 | 13,250 | 1 | 90 | 147 | 1.00 | 0.45 | — | 0.65 |
 | `MORT.Cryo` | Cryo Mortar | infantry | — | 3,500 | 0.70 | 350 | 3.50 | 46 | — | n | — | 7,168 | 2,500 | 1 | 90 | 28 | 0.90 | 0.45 | — | 0.45 |
 | `MORT.Sonic` | Sonic Mortar | infantry | — | 3,500 | 0.70 | 350 | 3.50 | 46 | — | n | — | 7,168 | 5,250 | 1 | 90 | 58 | 0.75 | 0.45 | — | 1.00 |
-| `N3` | Rocket Soldier | infantry | nod | 3,500 | 0.70 | 300 | 3.00 | 41 | — | n | — | 6,656 | 11,000 | 1 | 50 | 220 | 1.00 | 1.00 | — | 1.00 |
+| `N3` | Rocket Soldier | infantry | blackh/legion/marked/nod/shadow | 3,500 | 0.70 | 300 | 3.00 | 41 | — | n | — | 6,656 | 11,000 | 1 | 50 | 220 | 1.00 | 1.00 | — | 1.00 |
 | `S3` | Disintegrator | infantry | scrin | 3,500 | 0.70 | 300 | 3.00 | 41 | — | n | — | 6,144 | 6,875 | 1 | 30 | 229 | 0.10 | 0.67 | — | 0.66 |
 | `C1` | Civilian | vehicle | — | 2,500 | 0.50 | 50 | 0.50 | 46 | — | n | — | 3,072 | 134 | 10 | 80 | 15 | 1.00 | 0.25 | — | 0.13 |
 | `C10` | Civilian | vehicle | — | 2,500 | 0.50 | 50 | 0.50 | 46 | — | n | — | 3,072 | 134 | 10 | 80 | 15 | 1.00 | 0.25 | — | 0.13 |
@@ -390,10 +390,11 @@ Checkout: `/home/user/inq8/camod` · rifle anchor **`E1` = 5,000 HP / 100 credit
 | `E6` | Engineer | infantry | — | 2,500 | 0.50 | 400 | 4.00 | 46 | — | n | — | 2,559 | — | 1 | 50 | — | — | — | — | — |
 | `N6` | Engineer | infantry | — | 2,500 | 0.50 | 400 | 4.00 | 46 | — | n | — | 2,559 | — | 1 | 50 | — | — | — | — | — |
 | `S6` | Assimilator | infantry | scrin | 2,500 | 0.50 | 400 | 4.00 | 46 | — | n | — | 2,559 | — | 1 | 50 | — | — | — | — | — |
-| `SPY` | SPY | infantry | allies | 2,500 | 0.50 | 500 | 5.00 | 54 | — | n | — | — | — | — | — | — | — | — | — | — |
+| `SPY` | SPY | infantry | allies/england/france/germany/usa | 2,500 | 0.50 | 500 | 5.00 | 54 | — | n | — | — | — | — | — | — | — | — | — | — |
 | `TECN` | Technician | vehicle | — | 2,500 | 0.50 | 50 | 0.50 | 46 | — | n | — | 3,072 | 134 | 10 | 80 | 15 | 1.00 | 0.25 | — | 0.13 |
-| `DOG` | Attack Dog | infantry | soviet | 1,800 | 0.36 | 200 | 2.00 | 94 | — | n | — | 2,048 | 100,000 | 1 | 10 | 10,000 | — | — | — | — |
-| `TDOG` | Terror Dog | infantry | soviet | 1,800 | 0.36 | 300 | 3.00 | 94 | — | n | — | 2,048 | 100,000 | 1 | 10 | 10,000 | — | — | — | — |
+| `DOG` | Attack Dog | infantry | iraq/russia/soviet/ukraine/yuri | 1,800 | 0.36 | 200 | 2.00 | 94 | — | n | — | 2,048 | 100,000 | 1 | 10 | 10,000 | — | — | — | — |
+| `TDOG` | Terror Dog | infantry | iraq/russia/soviet/ukraine/yuri | 1,800 | 0.36 | 300 | 3.00 | 94 | — | n | — | 2,048 | 100,000 | 1 | 10 | 10,000 | — | — | — | — |
+
 
 ## Crystallized Nexus  (97 buildable units)
 

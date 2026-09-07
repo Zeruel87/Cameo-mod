@@ -436,7 +436,46 @@ def _buildable(node):
                  if c.key == "Buildable" or c.key.startswith("Buildable@")), None)
 
 
-def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None):
+def validated_faction_index(rules):
+    """{prerequisite token: [factions]} from `ProvidesPrerequisiteValidatedFaction`.
+
+    ⛔ THIS TRAIT IS WHERE SOME MODS ACTUALLY DECLARE OWNERSHIP, and reading only `Buildable`
+    misses it entirely. Combined Arms gates its units on a UNIT-scoped token and grants that
+    token from a structure, naming the factions there:
+
+        MTNK:   Buildable: Prerequisites: ~vehicles.mtnk, ~techlevel.medium
+        WEAP:   ProvidesPrerequisiteValidatedFaction@mtnk:
+                    Factions: gdi, talon, zocom, eagle, arc, legion
+                    Prerequisite: vehicles.mtnk
+
+    `vehicles.mtnk` is not a faction token, so `_faction_tokens` finds nothing and the prerequisite
+    hop lands on the shared WEAP factory, which is refused as shared infrastructure. The GDI Battle
+    Tank therefore came out tagged from an unrelated path (`arc/nod`) and the Allied Scout Tank
+    (`1TNK`: allies, france, germany, usa) came out with NO tag at all — invisible to every Cameo
+    faction, because `faction_routes.allows` correctly refuses an untagged row. 81 of Combined
+    Arms' 357 rows were untagged this way.
+    """
+    idx = {}
+    for key in getattr(rules, "_actor_ci", {}).values():
+        try:
+            node = rules.resolve(key)
+        except Exception:
+            continue
+        for c in node.children:
+            if not c.key.startswith("ProvidesPrerequisiteValidatedFaction"):
+                continue
+            facs, pre = None, None
+            for f in c.children:
+                if f.key == "Factions":
+                    facs = [t.strip().lower() for t in (f.value or "").split(",") if t.strip()]
+                elif f.key == "Prerequisite":
+                    pre = (f.value or "").strip().lower()
+            if pre and facs:
+                idx.setdefault(pre, set()).update(facs)
+    return {k: sorted(v) for k, v in idx.items()}
+
+
+def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=None):
     """The faction tokens an actor is gated on, filtered by what the mod actually declares.
 
     ⛔ THE FACTION IS OFTEN ONE HOP AWAY, IN THE PREREQUISITE BUILDING. OpenRA gates most infantry
@@ -464,6 +503,14 @@ def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None):
     found = set()
     for field in ("Queue", "Prerequisites"):
         found |= _faction_tokens(b.get(field), known)
+    # A VALIDATED-FACTION GRANT IS A DIRECT CLAIM, not an inherited one: the mod names the
+    # factions explicitly next to the token this actor is gated on. Consulted before the
+    # prerequisite hop, and filtered by what the mod declares, like every other path here.
+    if vfi:
+        for chunk in ((b.get("Prerequisites") or "") + "," + (b.get("Queue") or "")).split(","):
+            tok = chunk.strip().lstrip("~!").strip().lower()
+            if tok and tok in vfi:
+                found |= {f for f in vfi[tok] if not known or f in known}
     # Already decided at this level — do not dilute a direct gate with an inherited one.
     if found or rules is None or _depth <= 0:
         return sorted(found)
@@ -480,7 +527,7 @@ def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None):
             parent = rules.resolve(key)
         except Exception:                       # a prerequisite that does not resolve is not fatal
             continue
-        found |= set(factions_of(parent, known, rules, _depth - 1, _seen))
+        found |= set(factions_of(parent, known, rules, _depth - 1, _seen, vfi))
     return sorted(found)
 
 
@@ -494,6 +541,7 @@ def extract(mod_id):
     rules = miniyaml.Ruleset(root, mod_id)
     fluent = load_fluent(root, mod_id)
     known_factions = declared_factions(rules)
+    vfi = validated_faction_index(rules)
 
     key = rules._actor_ci.get(rifle_id.lower())
     if not key:
@@ -535,7 +583,7 @@ def extract(mod_id):
             # ⭐ THE FACTION COLUMN (maintainer 2026-09-04). Reference routing needs it: an Asian
             # Alliance unit may only draw on Mental Omega China, which is what stops
             # "Animal Alligator" from ever being a candidate.
-            "faction": "/".join(factions_of(node, known_factions, rules)) or "",
+            "faction": "/".join(factions_of(node, known_factions, rules, vfi=vfi)) or "",
             "limit": int(limit) if (limit and str(limit).strip().isdigit()) else None,
             **wep,
             "hp": int(hp), "cost": int(cost) if cost else None,
