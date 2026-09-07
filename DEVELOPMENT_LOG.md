@@ -49,6 +49,17 @@ not a collapse). Gotcha logged in the fleet report: a weapon can carry TWO
 overrides of the same warhead key in its own block — later wins; dump the full
 resolved block before editing.
 
+Batches 5+6 (`b13f1e413`, `4c5410915`): 28 collapses through the legacy
+`weapons/d2k.yaml` + Ordos pack — mostly `Warhead@1Dam` bespoke-Versus legacy
+channels folded into the family survivor, plus the `^D2KMissile` `1Dam`
+cluster (kept MissileAP; the AA/AG role-law question is flagged for ruling —
+`*_AA` wants MissileAA, `*_AG` wants MissileHE per `audit_missile_role_family`).
+`D2K_Rocket_Fremen` collapsed free via its parent. Found a systemic class:
+25 weapons are defined in BOTH a ContentPack file and a legacy file and the
+merge combines them (`d2k25mm`, `d2kFlameTurret` fixed in both; `mtank_pri`,
+`BikeRockets`, `d2k_tyrant`, ~20 more need a canonical-file ruling — details
+in the fleet report). W5 328(-15), drift flat. Both boot-gates PASS.
+
 Co-Authored-By: Devin AI <devin@cognition.ai>
 
 ## Codex - PR 328 current-upstream integration and scoped review (2026-09-06)
