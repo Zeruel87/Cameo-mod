@@ -17,6 +17,14 @@ self-consistent. Only an EXTERNAL baseline can see it.
   D1 INFLATED  a weapon deals MORE than it shipped
   D2 WEAKENED  a weapon deals LESS than it shipped
   D3 EXTREME   |ratio| >= 3x either way - the ones a player will feel immediately
+  D4 UNMATCHED a weapon in the baseline that no longer exists under that name
+
+⛔ D4 is the hole that makes the other three lie. This audit can only compare weapons it
+can still FIND, so renaming a weapon silently removes it from the comparison - a naming
+sweep could take a 7x weapon out of D1 without changing a single damage value. D4 counts
+them so the corpus can never shrink unnoticed. Renames are legitimate; a RISE in D4 means
+the gate is now blind to more weapons than it was, and the new ids have to be checked by
+hand before the ratchet is lowered.
 
 The baseline is a committed snapshot (docs/reference/release_baseline_*.json),
 so this audit needs no worktree and no network. Regenerate it only when a NEW
@@ -48,6 +56,7 @@ from report import h1, h2, table
 D1_BASELINE = 164
 D2_BASELINE = 74
 D3_BASELINE = 42
+D4_BASELINE = 335
 
 BASELINE_DIR = "docs/reference"
 
@@ -74,9 +83,11 @@ def main():
     now = snapshot(repo)
 
     rows = []
+    unmatched = []
     for name, was in base.items():
         if name not in now:
-            continue                      # deleted since the release - not this audit's business
+            unmatched.append(name)        # renamed or deleted: INVISIBLE to D1-D3, so count it
+            continue
         old, new = was["flat"], now[name]["flat"]
         if old <= 0:
             continue
@@ -100,6 +111,7 @@ def main():
         ["D1", "INFLATED - deals more than it shipped", len(inflated), D1_BASELINE],
         ["D2", "WEAKENED - deals less than it shipped", len(weakened), D2_BASELINE],
         ["D3", f"EXTREME - {args.min_ratio:g}x or worse, either way", len(extreme), D3_BASELINE],
+        ["D4", "UNMATCHED - in the release, gone under that name", len(unmatched), D4_BASELINE],
     ]
     print(table(["code", "check", "count", "ratchet", ""],
                 [[c, d, str(n), str(b), "PASS" if n <= b else "FAIL"] for c, d, n, b in checks]))
@@ -118,11 +130,16 @@ def main():
                      for r, n, o, om, w, nm in rows]))
         print()
 
+    if args.list and unmatched:
+        print(h2(f"D4 UNMATCHED - {len(unmatched)} weapon(s) the gate can no longer see"))
+        print(chr(10).join("- `" + n + "`" for n in sorted(unmatched)[:400]))
+        print()
+
     over = [c for c, _d, n, b in checks if n > b]
     if over:
         print(f"\n**FAIL: {', '.join(over)} above ratchet.** A rise means a weapon moved "
-              "FURTHER from the shipped build. Lower a baseline as the repair lands; "
-              "never raise one.\n")
+              "FURTHER from the shipped build, or that the gate went BLIND to more of them. "
+              "Lower a baseline as the repair lands; never raise one.\n")
         return 1
     print("\n_within ratchet_ — but every row above is still a weapon that does not "
           "deal what it shipped.\n")
