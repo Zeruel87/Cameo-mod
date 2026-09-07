@@ -510,6 +510,35 @@ The `^D2KRocket` archetype inherits `^Projectile_Missile_Heavy`, which does **no
 - `tools/balance/apply_balance.py` and `tools/balance/extract_stats.py` now convert between the ledger fraction (`0.89`) and the YAML integer (`89`) automatically.
 - `tools/audit/audit_multiplier_modifiers.py` flags any non-integer `*Multiplier Modifier` value.
 
+### A tool that sums correctly still ships the wrong number if its input is already wrong
+
+`consolidate_reviewed_weapon_roots.py` computes `total = sum(...)` across a weapon's mains
+and writes exactly that. It is correct. It still helped put **195 weapons** off the damage
+they shipped with, because the values it summed had already been multiplied by
+`04de392b3` (2026-07-22, "WIP: balance, weapon-class, and audit fixes") — 70 `Damage:` lines
+changed with the main counts left alone. `RAVulcan` went 4,000 -> 16,000 in July with two
+mains intact; September collapsed it to one main and faithfully carried the 16,000 across.
+
+Three wrong hypotheses were spent before that landed:
+
+1. *"the templates supply the damage"* — every `^Warhead_*` template carries a `Damage: 2000`
+   placeholder and the weapons override it locally. Disproved by reading the templates.
+2. *"a uniform regrid multiplied everything"* — the multipliers are 4x, 6x, 8x, 15x, 25x, and
+   **85% of shared weapons never moved at all**. Disproved by measuring the population.
+3. *"the consolidation series wrote the numbers"* — `git blame` pointed at ContentPack SPLIT
+   commits, which is a blame artifact: blame follows file creation, not the edit. Disproved by
+   walking the resolved value across history instead of trusting blame.
+
+**The lesson is the method, not the culprit.** To find when a value changed, resolve it at
+sampled commits and watch the number move. Do not blame a line in a tree that has been
+reorganised, and do not reason from what a tool's code does — a correct tool with a corrupted
+input produces a confidently wrong result that every self-referential gate will pass.
+
+⛔ **Corollary, now enforced:** a gate that compares the tree to itself cannot see this class
+of defect at all. `tools/audit/audit_release_drift.py` compares against a committed snapshot
+of a SHIPPED release (`docs/reference/release_baseline_*.json`) and is the only gate in the
+tree with an external reference. Run it after every collapse.
+
 ### Balance tooling discipline
 
 - **Always syntax-check a script before running it** — `python -m py_compile <script>` catches typos that would otherwise leave the pipeline half-finished.
