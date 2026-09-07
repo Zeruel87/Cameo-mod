@@ -776,7 +776,31 @@ SpeedMultiplier@myupgrade:
 
 ### Engine update pipeline and Smart App Control findings (2026-07-30, updated with deep research)
 
-#### The canonical engine update pipeline (binding, uniform process)
+#### The boot gate is not multi-agent safe — isolate the support directory
+
+**2026-09-07.** Every worktree's `launch-game.cmd` writes to the SAME
+`%APPDATA%\OpenRA\Logs`. With two agents gating at once (Claude-Local in
+`claude-naming`, Nova in `nova-lane2`) the consequences are:
+
+* `perf.log` is **locked by the other instance**, so it cannot be deleted before the run and
+  its contents belong to whichever process wrote last;
+* `exception-*.log` from ANY worktree lands in the same folder, so **another agent's crash
+  reads as your failure** — and your own crash can be attributed to them.
+
+The gate's own evidence is therefore shared state. Isolate it — `launch-game.cmd` forwards
+`"%*"` to `OpenRA.exe`, so the support directory can be redirected per run:
+
+```
+Start-Process -FilePath .\launch-game.cmd -ArgumentList "Engine.SupportDir=C:	mp\gate_<name>"
+```
+
+Then read `C:	mp\gate_<name>\Logs\perf.log` for
+`MenuPostProcessEffect.PostWorldLoaded` and check that directory — and only it — for
+`exception-*.log`. Kill only YOUR OpenRA process afterwards; match on
+`(Get-Process OpenRA).Path` against your own worktree, because another agent's gate may be
+mid-run and a live instance locks the next build.
+
+## The canonical engine update pipeline (binding, uniform process)
 
 The engine lives in TWO places that must stay in sync. Follow these steps IN ORDER for every engine change:
 
