@@ -85,11 +85,13 @@ the fog sequencing.
   a synced controller trait, because bot logic may not touch synced state.
 - [ ] **M** Per-enemy pairwise damage ledger (`PlayerStatistics` is aggregate and
   cannot attribute losses to a specific opponent).
-- [ ] **M** JSONL match logging: match / decision / outcome records, the episode
-  as the unit of learning. Record-only, no behaviour change - this is the
-  proof-of-concept deliverable.
-- [ ] **M** Offline aggregation tool: personality and composition performance per
-  faction matchup, with a minimum sample threshold.
+  - [x] **M** Record-only AI match logging: [`AI_MATCH_LOG.md`](AI_MATCH_LOG.md),
+    [`AiMatchLogRecorder.cs`](../../OpenRA.Mods.Cameo/Traits/AiMatchLogRecorder.cs),
+    [`AiMatchLogWriter.cs`](../../OpenRA.Mods.Cameo/Traits/AiMatchLogWriter.cs), and
+    [`aggregate_ai_matches.py`](../../tools/ai/aggregate_ai_matches.py). Schema version 1;
+    host-only JSONL writes with no gameplay effect and no read-back.
+  - [ ] **M** Offline aggregation extensions: personality and composition performance per
+    faction matchup, with a minimum sample threshold.
 - [ ] **L** Bandit-style (UCB1/Thompson) personality priors per matchup, fitted
   offline and committed as reviewed data.
 - [ ] **L** Headless AI-vs-AI batch harness to produce the data volume.

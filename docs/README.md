@@ -74,6 +74,7 @@ Crashes and player-visible regressions always jump the queue.
 | [`design/EMP_INTEGRITY_SYSTEM.md`](design/EMP_INTEGRITY_SYSTEM.md) | EMP / Integrity auto-scaling |
 | [`design/UPSTREAM_MODS.md`](design/UPSTREAM_MODS.md) | absorbing the other OpenRA mods — CA, Crystallized Nexus, Romanov's Vengeance, Shattered Paradise: the engine lineage, why the engine must NOT move to `ca-engine`, and the phased adoption plan |
 | [`design/AI_ARCHITECTURE.md`](design/AI_ARCHITECTURE.md) | bot modules, per-ContentPack AI splitting, the dynamic personality manager, the master AI module, and the match-logging / offline-learning loop |
+| [`design/AI_MATCH_LOG.md`](design/AI_MATCH_LOG.md) | versioned JSONL schema and write rules for record-only AI match logging |
 
 ### Factions and content — 5 documents
 
