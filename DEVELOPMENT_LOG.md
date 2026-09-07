@@ -40,6 +40,15 @@ caught the same class in `ChemRocketsExplosion`/`GrenadeExplode_EMP`, fixed in
 the same commit.) Drift: D2 60(-2), D5 41(-2); W5 365(-12). Boot PASS under
 Nova's BOOT.lock protocol.
 
+Batch 4 (`22a88fc52`): 8 collapses — Laboratory_Bioball, autogun_tank (its
+child autogun_tank_small collapsed free via inheritance), d2k_air_drone_guns +
+_upgrade, IxianCombatTankCannon, LaserObeliskBurning (SUM 120k, Inferno),
+eye_bomberguy, BCYamatoCannon (SHIPPED 144k). W5 356(-9), D1 130(-1). Boot
+PASS. New deferral: `ordos_airmine` (no Chemical main exists — a conversion,
+not a collapse). Gotcha logged in the fleet report: a weapon can carry TWO
+overrides of the same warhead key in its own block — later wins; dump the full
+resolved block before editing.
+
 Co-Authored-By: Devin AI <devin@cognition.ai>
 
 ## Codex - PR 328 current-upstream integration and scoped review (2026-09-06)
