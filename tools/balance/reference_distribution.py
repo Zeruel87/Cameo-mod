@@ -617,6 +617,79 @@ def cameo_weapon_ladders(weapon_name):
     return {k: sum(v) / len(v) / 100.0 for k, v in hits.items() if v}
 
 
+def is_upgrade_gated(arm):
+    """True when this armament only fires once an UPGRADE or rank is granted.
+
+    The ledger records the armament's condition in `requires`, and it has three shapes:
+      None            always active
+      `!upgrade_x`    active only WITHOUT the upgrade -- this IS the baseline form
+      `upgrade_x`     active only WITH it -- an upgraded form, and not what we price
+
+    A compound is gated unless every clause is a negation.
+    """
+    req = str(arm.get("requires") or "").strip()
+    if not req:
+        return False
+    parts = [p for p in req.replace("&", " ").replace(",", " ").replace("|", " ").split() if p]
+    return any(not p.startswith("!") for p in parts)
+
+
+def baseline_armaments(arms):
+    """The armaments a unit fires AT ONCE with no upgrades and no rank.
+
+    ⛔ `max()` WAS WRONG AND THE MAINTAINER CAUGHT IT (2026-09-08): *"What if there are two weapons
+    that are fired at the same time? Like the GDI battle tank with cannon + rocket or the Sheridan
+    that even has 3 parallel weapons all active at the same time!"* Measured on exactly those:
+
+        td_gdi_battletank             cannon 8000 (!highvelocitycannons)
+                                    + missiles 8000 (!advancedmissiletargeting)   = 16000, max gave 8000
+        ra1_allies_sheridanassaulttank  16000 + 16000 + 4000, all `!cryomissiles`  = 36000, max gave 16000
+
+    So simultaneous armaments SUM. What must never be summed is the alternatives: an upgraded
+    barrel, an elite rank, or `ra2_allies_ifv`'s 39 passenger weapons, which are mutually exclusive
+    at runtime. `requires` separates the two exactly, and the baseline set is also the right
+    comparison for the references, which record un-upgraded weapons.
+    """
+    live = [a for a in arms if not is_upgrade_gated(a)]
+    if live:
+        return live
+    # ⛔ EVERY ARMAMENT IS CONDITIONAL — so fall back to the STRONGEST ONE, never to the sum.
+    # `ra2_soviets_siegechopper` is the case: it has no unconditional armament at all, because
+    # each is gated on a MODE and a doctrine and a rank at once
+    # (`!rank-elite && !doctrine_nuclearmunitions && ... && deployed`). Returning the whole set
+    # summed 10 mutually-exclusive barrels into 986,818 damage for a unit that fires one. A
+    # fallback that is too PERMISSIVE is as wrong as a guard that is too restrictive; when the
+    # data cannot say which armament is live, the honest answer is the single best one.
+    return [max(arms, key=_armament_damage)]
+
+
+def armament_profile(arms, anum):
+    """(w_range, w_damage, w_burst, w_reload, w_dps, debt, primary) over the BASELINE set."""
+    live = baseline_armaments(arms)
+    dps_total, dmg_total, debt = 0.0, 0.0, False
+    for a in live:
+        mains = [wh for wh in (a.get("damage_warheads") or [])
+                 if (anum(wh.get("damage")) or 0) > 0]
+        if len(mains) > 1:
+            debt = True          # §0a structure debt: `K` moves under W24
+        dmg = sum(anum(wh.get("damage")) or 0 for wh in mains)
+        rel = anum(a.get("reloaddelay"))
+        burst = anum(a.get("burst")) or 1
+        cycle = (rel or 0) + (burst - 1) * 5
+        if dmg and cycle:
+            dps_total += (dmg * burst) / cycle
+        dmg_total += dmg
+    primary = max(live, key=lambda a: sum(anum(wh.get("damage")) or 0
+                                          for wh in (a.get("damage_warheads") or [])
+                                          if (anum(wh.get("damage")) or 0) > 0))
+    ranges = [anum(a.get("range")) for a in live if anum(a.get("range"))]
+    return {"w_range": max(ranges) if ranges else None,
+            "w_damage": dmg_total or None,
+            "w_burst": anum(primary.get("burst")) or 1,
+            "w_reload": anum(primary.get("reloaddelay")),
+            "w_dps": dps_total or None}, debt, primary
+
+
 def _armament_damage(arm):
     """Total damage over an armament's POSITIVE main warheads."""
     total = 0.0
@@ -746,21 +819,8 @@ def cameo_rows():
 
                 w, debt = {}, False
                 if arms:
-                    a = primary_armament(arms)
-                    mains = [wh for wh in (a.get("damage_warheads") or [])
-                             if (anum(wh.get("damage")) or 0) > 0]
-                    # §0a STRUCTURE DEBT: a weapon still firing 2+ damage mains has a `K` that is
-                    # scheduled to move under W24, so its weapon numbers are not a stable target
-                    # yet. The flag rides along on the signature so a later pricing pass can
-                    # refuse to trust them, rather than silently pricing an input about to change.
-                    debt = len(mains) > 1
-                    dmg = sum(anum(wh.get("damage")) or 0 for wh in mains)
-                    rel = anum(a.get("reloaddelay"))
-                    burst = anum(a.get("burst")) or 1
-                    cycle = (rel or 0) + (burst - 1) * 5
-                    dps = ((dmg * burst) / cycle) if (dmg and cycle) else None
-                    w = {"w_range": anum(a.get("range")), "w_damage": dmg or None,
-                         "w_burst": burst, "w_reload": rel, "w_dps": dps}
+                    w, debt, a = armament_profile(arms, anum)
+                    dps = w["w_dps"]
                     tpl = a.get("versus_templates") or []
                     wname = a.get("weapon") or (tpl[-1] if tpl else None)
                     if dps and wname:
@@ -986,17 +1046,8 @@ def cameo_hero_rows():
                         return None
                 w, debt = {}, False
                 if arms:
-                    a = arms[0]
-                    mains = [wh for wh in (a.get("damage_warheads") or [])
-                             if (anum(wh.get("damage")) or 0) > 0]
-                    debt = len(mains) > 1
-                    dmg = sum(anum(wh.get("damage")) or 0 for wh in mains)
-                    rel = anum(a.get("reloaddelay"))
-                    burst = anum(a.get("burst")) or 1
-                    cycle = (rel or 0) + (burst - 1) * 5
-                    dps = ((dmg * burst) / cycle) if (dmg and cycle) else None
-                    w = {"w_range": anum(a.get("range")), "w_damage": dmg or None,
-                         "w_burst": burst, "w_reload": rel, "w_dps": dps}
+                    w, debt, a = armament_profile(arms, anum)
+                    dps = w["w_dps"]
                     tpl = a.get("versus_templates") or []
                     wname = a.get("weapon") or (tpl[-1] if tpl else None)
                     if dps and wname:
