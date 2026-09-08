@@ -243,6 +243,7 @@ def _actor_owner(actor: str, a: dict | None, countries: set, side_map: dict | No
 
 def _resolve_owner(actor: str, ini: dict, countries: set, all_actors: set,
                    side_map: dict | None = None,
+                   generic_prereqs: dict[str, list[str]] | None = None,
                    depth: int = 0, seen: set | None = None) -> set | None:
     """Resolve an actor's faction by walking `Prerequisite` up to depth 2.
 
@@ -250,7 +251,12 @@ def _resolve_owner(actor: str, ini: dict, countries: set, all_actors: set,
     `Prerequisite=GAPILE` is Allied because `GAPILE`'s own `Prerequisite=GACNST`
     and `GACNST` is owned by the Allied countries. Ares adds `FactoryOwners` so
     buildings like `GATECH` can be Allied even when `Owner` is set to all.
+
+    Some mods define `[GenericPrerequisites]` to map a virtual label (e.g.
+    `SOVWEAP`) to several concrete actors (`NAWEAP,NAWEAPB,NAFIST`). The label
+    means "any one of these" so the owner set is the union of the concrete actors.
     """
+    generic_prereqs = generic_prereqs or {}
     if actor not in all_actors or depth > 2:
         return None
     seen = seen or set()
@@ -269,9 +275,22 @@ def _resolve_owner(actor: str, ini: dict, countries: set, all_actors: set,
         p = p.strip()
         if not p or p == actor:
             continue
-        s = _resolve_owner(p, ini, countries, all_actors, side_map, depth + 1, seen.copy())
-        if s:
-            sets.append(s)
+        if p in all_actors:
+            s = _resolve_owner(p, ini, countries, all_actors, side_map, generic_prereqs, depth + 1, seen.copy())
+            if s:
+                sets.append(s)
+        elif p in generic_prereqs:
+            # Generic label: any of the listed concrete actors, so the owner set is the union.
+            union: set = set()
+            for ga in generic_prereqs[p]:
+                ga = ga.strip()
+                if not ga or ga == actor:
+                    continue
+                gs = _resolve_owner(ga, ini, countries, all_actors, side_map, generic_prereqs, depth + 1, seen.copy())
+                if gs:
+                    union |= gs
+            if union:
+                sets.append(union)
     if not sets:
         return None
     inter = set(sets[0])
@@ -308,6 +327,10 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
     for list_sec in TYPE_LISTS:
         all_actors.update(listed(ini, list_sec))
     side_map = _side_map(ini, countries)
+    generic_prereqs: dict[str, list[str]] = {
+        k: [a.strip() for a in v.split(",") if a.strip()]
+        for k, v in ini.get("GenericPrerequisites", {}).items()
+    }
     rows: list[dict] = []
     for list_sec, utype in TYPE_LISTS.items():
         for actor in listed(ini, list_sec):
@@ -359,7 +382,7 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
             direct = _clean_owner_set(raw_owner, countries, side_map)
             if direct:
                 direct = _apply_houses_filter(direct, a, countries, side_map)
-            resolved = _resolve_owner(actor, ini, countries, all_actors, side_map)
+            resolved = _resolve_owner(actor, ini, countries, all_actors, side_map, generic_prereqs)
             playable = countries - GENERIC_FACTIONS
             if resolved and resolved != playable and resolved != countries:
                 if not direct or resolved < (direct or playable):
