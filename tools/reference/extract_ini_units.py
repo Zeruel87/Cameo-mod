@@ -378,6 +378,28 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
                 req = _clean_owner_set(a.get("RequiredHouses"), countries, side_map)
                 own_list = sorted(req) if req else []
             owners = own_list
+
+            # ⭐ Buildability: TechLevel and Selectable are necessary but not sufficient. A row
+            # also needs at least one production claim (cost, owner, prerequisite, or required
+            # houses) to be buildable. Decorative map props and empty template actors have none
+            # of these and would otherwise pollute the buildable population. Explicit Buildable=no
+            # or disabling prerequisites (~disabled, notbuildable, unavailable) gate it off.
+            _has_cost = num(a.get("Cost")) is not None
+            _has_owner = bool((a.get("FactoryOwners") or a.get("Owner") or "").strip())
+            _has_prereq = bool((a.get("Prerequisite") or "").strip())
+            _has_req = bool((a.get("RequiredHouses") or "").strip())
+            _buildable_field = (a.get("Buildable") or "").strip().lower()
+            _disabling_prereq = _has_prereq and any(
+                t.strip().lstrip("~!").lower() in ("disabled", "disable", "notbuildable", "unavailable", "unbuildable")
+                for t in (a.get("Prerequisite") or "").split(","))
+            _is_buildable = not (
+                (num(a.get("TechLevel")) is not None and num(a.get("TechLevel")) < 0)
+                or (a.get("Selectable") or "").strip().lower() == "no"
+                or (a.get("IsSelectableCombatant") or "").strip().lower() == "no"
+                or _buildable_field == "no"
+                or (not _has_cost and not _has_owner and not _has_prereq and not _has_req)
+                or _disabling_prereq)
+
             rows.append({
                 "source": label,
                 "engine": engine,
@@ -422,10 +444,7 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
                 # RA2 0XX 9,999 -> 3,000, MO 6,000 -> 2,500. DTA's `civilian` roster goes to zero,
                 # which is the right answer. The rows are KEPT and FLAGGED rather than dropped —
                 # R6 says collect everything; the population rule belongs to the consumer.
-                "buildable": not (
-                    (num(a.get("TechLevel")) is not None and num(a.get("TechLevel")) < 0)
-                    or (a.get("Selectable") or "").strip().lower() == "no"
-                    or (a.get("IsSelectableCombatant") or "").strip().lower() == "no"),
+                "buildable": _is_buildable,
                 **wep,
             })
     for r in rows:
