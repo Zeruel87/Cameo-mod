@@ -71,7 +71,61 @@ Next in the W24 queue: `devin/nova/w24-lane2` (57 commits, conflicts in
 `RedAlert2/Soviets/weapons.yaml` — a real per-weapon decision, not a merge tool), then
 `devin/nova/w24-naxi-pilot`, which must follow it.
 
-### ⛔ OPEN — THE ANTI-AIR CONVENTION. Paused mid-discussion 2026-09-08, resume here.
+### ✅ CLOSED — THE ANTI-AIR CONVENTION. Ruled by the maintainer 2026-09-08.
+
+**The law is now in `docs/DESIGN.md` ("The AA range law", which REPLACES the dual-weapon AA law of
+2026-07-11). Read it there — this is a pointer, not a second copy.** In summary:
+
+1. **Three classes only** may carry an AA armament longer-ranged than its ground twin —
+   `scout_vehicle`, `armed_troop_transport`, `anti_air_vehicle` — at **1.5×**. `anti_air_vehicle`
+   SURVIVES; it is the only vehicle template carrying `AutoTargetPriority@AIR` (defaults.yaml:1829),
+   and that, not the range, is its mechanical identity.
+2. **Every other class uses one range for both domains.** The maintainer's Mammoth instinct was
+   already shipped: every mammoth's cannon and missile pod share a range (6412/6412, 6141/6141,
+   6340/6340); no `high_tech_tank` gets the bonus.
+3. **`mobile_bunker` is a new (29th) class**, populated by all 16 buildable actors with a resolved
+   `AttackOpenTopped`, and it may carry **no air-capable armament at all** — its anti-air is the
+   infantry riding inside. Ten of the sixteen are the former `line_breaker` Battle-Fortress family;
+   the 22 that stay `line_breaker` are flame tanks, disruptors and brawlers.
+4. The 1.5× is **generated** by `gen_weapon_template.py` (`AA_RANGE_MULT`), never hand-typed, and
+   enforced by `audit_aa_range.py` as a **LOWER-ONLY ratchet**.
+
+⛔ **AND THE ENGINE ANSWER, so nobody re-derives it.** The maintainer asked whether one weapon could
+serve both domains with an air-only range multiplier on the template. **It cannot, mod-side.**
+`Armament.MaxRange()` (Armament.cs:215) takes no target; `IRangeModifier.GetRangeModifier()`
+(TraitsInterfaces.cs:480) takes no target; `RangeMultiplier` scales every armament on the actor.
+Per-target range is resolved one level up in `AttackBase.GetMaximumRangeVersusTarget`
+(AttackBase.cs:336), which skips armaments whose weapon is not valid against the target. **The twin
+armament IS the mechanism — not duplication to be collapsed.** `Armament` is defined only in
+`OpenRA.Mods.Common` (not AS, not CA) and `MaxRange()` is `virtual`, so a Cameo shadow is possible
+in principle, but the call site that knows the target lives in `AttackBase`. Feasibility and cost of
+that fork are queued to Astra as **C43** — analysis only, no engine change on its strength.
+
+**Implementation queue (C44–C49, full detail in `docs/BLACKROBE_ASTRA_ORDERS_2026-09-07.md` §15):**
+generate the 1.5× · write `audit_aa_range.py` · land `^ArmedTroopTransportTemplate` +
+`^MobileBunkerTemplate` (BOOT GATE — `defaults.yaml` is engine content) · teach `extract_stats` to
+record cargo/fireports · fix the AA detector to cross-check resolved `ValidTargets` · resolve the
+three pure-AA units that price at DPS 0.
+
+⚠ **Baseline, measured 2026-09-08, re-measure before acting:** 67 actors carry a live AA armament —
+36 at exactly 1.5×, 14 at exactly 1.0×, 14 elsewhere, 3 pure-AA. `scout_vehicle` is already 10 of 10
+compliant. Roughly 13 actors need moving, and exactly one `mobile_bunker` (`td_gdi_assaultapc`,
+1.500×) must lose its AA gun.
+
+⚠ **The AA detector is a NAME heuristic** (`@AA` slot / `_AA` weapon), not a `ValidTargets` check.
+It catches `TSMammothTusk2II_AA` and misses the functionally identical `TSMammothTusk2`. Every
+number above inherits that limitation. C48 fixes it.
+
+⛔ **C32 IS CLOSED.** `devin/aurora/fix-anchor-readiness` was never pushed to any remote — it exists
+only as a local branch in one checkout — and its `anchor_readiness.py` fix is already on master by
+another route (zero `intentional_composite` references; the tool runs clean, exit 0). Astra was
+blocked on a branch that no one could reach, and was right to refuse to bypass the gate rather than
+treat the absence as permission. The reservation is released; master is the approved starting point.
+The same local branch also carries 32 files of LANE-4/LANE-5 classification work that still needs
+triage with Aurora — that is separate and unresolved.
+
+<!-- superseded discussion below, kept for provenance -->
+### (superseded) the open question as it stood before the ruling
 
 The maintainer asked: *"how can we make it consistent? giving the 1.5x range should be only for
 pure anti air vehicles. And if it is a troop transport then those don't count right?"* — and then

@@ -1240,3 +1240,421 @@ that fails against the old behaviour.** In the PR body: what you measured before
 after, and what you did NOT verify.
 
 That last sentence is the one thing from your review I want kept exactly as it was.
+
+---
+
+## 14.5 ⛔ ANSWER TO YOUR C32 QUESTION — the reservation is RELEASED. You were right; my order was wrong.
+
+**You asked the right question and you drew the right conclusion from it.** Refusing to treat a
+missing branch as permission to bypass a gate is exactly the behaviour I want, and it is the
+behaviour that caught my error rather than inheriting it.
+
+**Verified 2026-09-08 against the artifact, not the summary:**
+
+```
+git ls-remote origin '*aurora*'      ->  8 aurora branches, NONE named fix-anchor-readiness
+git branch -a --list '*aurora*'      ->  devin/aurora/fix-anchor-readiness EXISTS, LOCAL-ONLY
+                                          (head d14306419, never pushed to any remote)
+grep intentional_composite tools/balance/anchor_readiness.py   ->  ZERO matches on master
+python tools/balance/anchor_readiness.py                       ->  runs clean, exit 0
+```
+
+So there are **two** defects in the order I gave you, and both are mine:
+
+1. **The branch was never pushed.** It exists only in one local checkout. You could not have found
+   it on any remote because it is not on any remote. My order named a branch as if it were
+   reachable and it never was — this is the same failure mode that made me report "no agents have
+   pushed" when 17 branches had in fact moved.
+2. **The fix is already on master by another route.** `anchor_readiness.py` no longer calls
+   `tws.intentional_composite` at all, and `audit_three_way_split.py:134-166` documents the
+   2026-09-06 deletion of the exemption. There is nothing left to land.
+
+**RULING: C32 is obsolete and CLOSED. The reservation on `anchor_readiness.py` is RELEASED. The
+existing master implementation IS the approved starting point. Proceed to A3 readiness integration
+and to C1.**
+
+The local-only branch also carries 32 other files of LANE-4/LANE-5 classification work
+(`apply_lane4_templates.py`, `lane5_gather_stats.py`, `AIR_NAVAL_CLASSES_PROPOSAL.md`, and ledger
+edits to `tiberiansun_gdi/nod.json`). **That is a separate question and it is NOT yours** — I will
+triage it with Aurora. Do not import any of it.
+
+### And on #335 itself
+
+Read and accepted as a draft for review, not a merge request — that framing is correct and I am
+treating it that way. Three things worth saying back:
+
+* **B2 is closed by your `--compare-split` work**, and closed better than the way I framed it. I
+  had it queued as "re-measure and see if the ~67 gap is structural"; you accounted for every node
+  instead — 73 shape-only, zero split-only, W5 counting zero/healing/ally-only flat nodes that the
+  positive-damage predicate excludes. It is off your queue.
+* **Your "known incomplete class migration" note is exactly right and is now scheduled.**
+  `armed_troop_transport` names `td_gdi_apc` as its anchor while the actor still classifies as
+  `support`, because `^ArmedTroopTransportTemplate` has never existed in yaml. That is **C46** in
+  §15.3 below, together with the new `^MobileBunkerTemplate`. Your diagnostic reporting NO SOURCE
+  is the correct behaviour — do not paper over it.
+* **The three TS sonic core-damage failures** (`TSGrenadeSonic` vs Scout, `TSHellfireSonic` and
+  `TSZoneHellfireSonic` vs Medium) reproduce on master and you correctly declined to adjudicate
+  them. They are weapon-owner questions and I am carrying them to the maintainer. ⛔ Do not "fix"
+  them — `Versus` lives ONLY in `^Warhead_*` templates and no warhead changes without explicit
+  permission.
+
+One process note, offered as a peer rather than a correction: your full-suite line reports **15
+failing modules that also fail on untouched `a089bd3dc`**, and you said so plainly instead of
+quietly excluding them. That is the right call, and pinning the baseline SHA next to the number is
+what makes it checkable.
+
+---
+
+## 15. ⛔⛔ ADDENDUM 2026-09-08c — THE AA LANE IS YOURS, AND SO IS THE ENGINE QUESTION
+
+**Four maintainer rulings landed today.** They are already written into `docs/DESIGN.md` (the AA
+range law, which REPLACES the dual-weapon AA law of 2026-07-11 — read the new text, not the old
+one, and do not resurrect the old one from a stale quote). Everything in this section is
+downstream of them.
+
+> **The rulings, verbatim in effect:**
+> 1. Three classes and only three may carry an AA armament longer-ranged than its ground twin:
+>    **`scout_vehicle`, `armed_troop_transport`, `anti_air_vehicle`** — at **1.5×**. Everything
+>    else uses one range for both domains. `anti_air_vehicle` **SURVIVES** as a class.
+> 2. **`mobile_bunker` is a new class**, populated by **all 16 buildable actors with a resolved
+>    `AttackOpenTopped`**, and it may have **no air-capable armament at all**.
+> 3. The 1.5× is **generated**, not hand-typed, and then audited.
+> 4. Enforcement is a **LOWER-ONLY RATCHET**. Never raise it.
+
+### 15.0 ⭐ C43 — THE ENGINE QUESTION. The maintainer asked for it by name; go deep.
+
+**The question, in the maintainer's words:** *"is it possible to only have a single weapon for both
+ground and air and then apply something like a range multiplier on the template itself but that
+range multiplier only increases range against air targets?"*
+
+**What I already established, so you do not redo it.** Verified from source 2026-09-08:
+
+```
+Armament.MaxRange()                     Armament.cs:215          takes NO target argument
+IRangeModifier.GetRangeModifier()       TraitsInterfaces.cs:480  takes NO target argument
+RangeMultiplier                         Multipliers/RangeMultiplier.cs  one int, ALL armaments
+AttackBase.GetMaximumRangeVersusTarget  AttackBase.cs:336        loops armaments, skips any whose
+                                                                 weapon !IsValidAgainst(target),
+                                                                 returns max of the rest
+class Armament                          defined ONLY in OpenRA.Mods.Common (NOT in AS, NOT in CA)
+override WDist MaxRange()               ZERO occurrences anywhere in the tree
+```
+
+So: per-target range is resolved by **armament selection**, one level above the armament. The twin
+armament is the engine's mechanism, not duplication. A mod-side trait cannot do it, because every
+range hook in the engine is target-blind.
+
+**What is genuinely open, and what I want from you.** `MaxRange()` is `virtual`, and `Armament` is
+defined only in Common — so a Cameo shadow IS possible (assembly order AS, CA, **Cameo**, Cnc, D2k,
+Common, and neither AS nor CA defines the type). That is not sufficient on its own, because the call
+site that knows the target lives in `AttackBase`. Your job is to find out what a real fix costs.
+
+Deliverables, in this order:
+
+1. **Enumerate every caller** of `MaxRange()`, `GetMaximumRangeVersusTarget()`,
+   `GetMinimumRangeVersusTarget()` and `Weapon.Range` across `engine/OpenRA.Mods.Common`,
+   `OpenRA.Mods.AS`, `OpenRA.Mods.CA` and `OpenRA.Mods.Cameo`. Include the activities
+   (`Attack`, `AttackMoveActivity`, `FlyAttack`), `AutoTarget`, the AI modules, and the UI range
+   circles. A single missed caller is how a targeting fork ships a unit that walks into range and
+   never fires.
+2. **State which of them have a `Target` in hand** and which do not. That set difference IS the
+   answer to whether the fork is tractable. Write it as a table.
+3. **Decide between the two shapes and argue it:**
+   * **(a) Shadow `Armament` in `OpenRA.Mods.Cameo`** with an `AirRangeModifier` field and an
+     overridden `MaxRange()`, plus whatever minimum set of call sites must become target-aware.
+     ⛔ **Prove the shadow actually binds** by giving the Cameo `ArmamentInfo` a field the engine
+     one lacks and booting with that field set. `--docs` lists both types and PROVES NOTHING —
+     this is a documented trap in `docs/LESSONS_LEARNED.md`.
+   * **(b) Fork `AttackBase` in the cameo-engine clone.** ⛔ `engine/` **IS NOT PART OF THIS
+     REPO** — it is `.gitignore`d, `git ls-files engine` returns zero, and `make.cmd all` DELETES
+     your edits. The procedure is `docs/LESSONS_LEARNED.md` → "The canonical engine update
+     pipeline": edit the SEPARATE `cameo-engine` clone → push → `git rev-parse cameo-engine` for
+     the full 40-char hash → `ENGINE_VERSION` in **`mod.config`** (not mod.yaml) → `make.cmd all`
+     → verify `engine/VERSION` → recreate `engine/glsl/` shaders (the fetch wipes them) → boot-gate.
+4. **Say what could break.** Every unit's attack behaviour rides on this path. I want the failure
+   modes named: units that approach but never fire, AI that mis-scores threats, range circles that
+   lie, `KeepsDistance` behaving differently, aircraft attack runs.
+5. **Recommend, and say how confident you are.** My prior is that the twin armament stays and the
+   fork is not worth it — but I set that prior from four files, and you are being asked to read
+   fifty. **If you conclude I am wrong, say so plainly.** You corrected me on the PR merge analysis
+   and that correction was right; the same standard applies here.
+
+⛔ **Do not land an engine change on the strength of this analysis.** Deliver the analysis and a
+recommendation. The maintainer decides whether it gets built.
+
+### 15.1 C44 — Generate the 1.5×, stop hand-typing it
+
+`gen_weapon_template.py` gains `AA_RANGE_MULT = 1.5` and writes the AA twin's `Range` from the
+ground twin's, for the three allowed classes only.
+
+⚠ **§8c is the trap that will eat this task.** *"A derive-unless-overridden default is invisible
+when something upstream always overrides."* `ScaledBullet` derived shell Inaccuracy and Speed from
+Range for **weeks** and reached **zero** weapons, because the templates also wrote literals and an
+explicit yaml value always wins. So:
+
+* the generator must **WRITE** the value into the emitted yaml, not merely offer a default;
+* your test must assert the **derived number on a real RESOLVED weapon** through
+  `miniyaml.Ruleset.resolve_weapon` — never that the knob is present;
+* run `tools/audit/verify_generator_sync.py` after, and `splice_templates.py --all`, **never a
+  subset** (a partial splice leaves drift — documented trap).
+
+Then regenerate the non-compliant AA twins as ONE boot-gated batch. Baseline measured 2026-09-08:
+**67 actors carry a live AA armament; 36 are at exactly 1.5×, 14 at exactly 1.0×, 14 elsewhere, 3
+are pure-AA.** Roughly 13 need moving. Re-measure before you touch anything — do not carry my
+number forward.
+
+### 15.2 C45 — `tools/audit/audit_aa_range.py`, a LOWER-ONLY ratchet
+
+Reports, per buildable actor with both a live ground and a live AA armament:
+
+* class (via `class_membership.classify()` — ⛔ **never the raw `design.class_anchor` field**;
+  `extract_stats` rewrites it to `None` on every run, which is why the anchor board reads 18%);
+* AA range ÷ ground range;
+* verdict against the DESIGN.md law.
+
+FAIL classes: an allowed class not at 1.5×; a disallowed class above 1.0×; **any `mobile_bunker`
+with an air-capable armament** (today exactly one — `td_gdi_assaultapc` at 1.500×).
+
+⚠ **Exclude the evidence the audit is built from.** Four audits in one day once flagged their own
+definition file, their own previous report, their own fixtures, and a path that can never exist.
+
+⚠ **A 0% row is a bug in the CHECK.** I hit this again today: my `AttackOpenTopped` scan returned
+**0 of 213** because I searched for a trait named `OpenTopped` and the trait is `AttackOpenTopped`.
+Four such cases in one day previously; a 526-actor renaming backlog was once a doubled prefix in one
+config table. If a row reads 0% or 100%, break the check before you believe it.
+
+Wire it into `run_all.sh` (⛔ **`bash tools/audit/run_all.sh` only** — PowerShell `>` writes UTF-16
+and corrupts the reports) and register the ratchet.
+
+### 15.3 C46 — Two new templates. This is the yaml change, and it needs a boot gate.
+
+`^ArmedTroopTransportTemplate` and `^MobileBunkerTemplate` go into
+`mods/cameo/rules/defaults.yaml`, and the member actors get the `Inherits@Template:` line.
+
+⛔ **The reason this is the ONLY way it can work:** `extract_stats` rewrites `design.class_anchor`
+to `None` on every run (`extract_stats.py:967`). A hand tag cannot make an actor a member of
+anything. **`design.subtype` — which is the nearest `^...Template` the actor inherits — is the only
+durable membership signal.** `class_membership.py` already maps `armedtrooptransport →
+armed_troop_transport`, and that entry has sat INERT with **zero members** because the template was
+never written. Add `mobilebunker → mobile_bunker` alongside it.
+
+The 16 `mobile_bunker` members, measured 2026-09-08 through the resolver:
+
+```
+line_breaker (10)  ra2_allies_battlefortress, _chrono, _empty, td_gdi_assaultapc, tkm_battlebus,
+                   asianalliance_warturtle, forgotten_thumperbus, latinsyndicate_carteltruck,
+                   naxis_oldtank, steelconsortium_poseidontank
+epic_vehicle (3)   forgotten_nomadbarracks, naxis_nokana, tkm_bigshiee
+high_tech_tank (1) naxis_shoekarn
+support (2)        asianalliance_dragonfly, latinsyndicate_narcohummer
+```
+
+⚠ **21 `ra2_*_driveby` civilian cars also resolve `AttackOpenTopped` and are NOT buildable** —
+exclude them. The population rule (2026-08-30) is buildable, unlimited units only.
+
+The 22 actors that STAY `line_breaker` are flame tanks, disruptors and brawlers
+(`td_nod_flametank`, `ts_gdi_disruptor`, `zerg_ultralisk`, `protoss_archon`, …). The fireport test
+splits the class exactly along the maintainer's intent — do not widen it.
+
+Then add `mobile_bunker` to `docs/balance/class_anchors.json` as the 29th class
+(`armed_troop_transport` was the 28th). ⛔ `verifier_actor: null` and **no `dps0`** — W24 is still
+moving, 231 weapons still stack 2+ mains.
+
+⛔ **BOOT GATE.** `defaults.yaml` is engine content. Snapshot `%APPDATA%/OpenRA/Logs` BEFORE
+launching; `launch-game.cmd` must reach the main menu; proof is `perf.log` containing
+`MenuPostProcessEffect.PostWorldLoaded` and **no new `exception-*.log`** — not the last line of the
+log. Kill the process the moment the menu is proven; a live instance locks the next build.
+
+### 15.4 C47 — Teach `extract_stats.py` to record cargo and fireports
+
+The ledger records **no passenger capacity at all** — no `Cargo`, no `Passengers`, no `OpenTopped`.
+That is why no audit can currently distinguish a transport from any other armed vehicle, and why
+C46 has to go through templates. Record `cargo_capacity` and `open_topped` per actor so the audit
+can **cross-check that the template was applied to everything that deserves it** — the failure mode
+is a transport nobody remembered to tag, and a mechanical field is what catches it.
+
+⛔ Re-run `extract_stats.py` and commit **yaml and ledger in the SAME commit**. `audit_balance_drift`
+goes red when they disagree, and it has gone red twice because someone landed yaml without
+re-extracting. That is a standing rule in `docs/FLEET_ORDERS_2026-09-08.md` §7.
+
+### 15.5 C48 — Fix the AA detector: names now, ValidTargets as the gate
+
+`reference_distribution.is_anti_air_armament()` is a **name heuristic** — `@AA` in the slot or `_AA`
+in the weapon id. Every number in §15.1 inherits that. It demonstrably misses: `ts_gdi_mammothmkii`
+carries `TSMammothTusk2II_AA` and is detected; `ts_gdi_mammothprototype` carries the functionally
+identical `TSMammothTusk2` and is **not**.
+
+Ruling: keep the name rule as the primary, and **add a second check that reports any weapon whose
+resolved `ValidTargets` include `Air` on an armament NOT named to the `@AA` convention.** That turns
+the naming convention from an assumption into something enforced.
+
+⛔ **Read `ValidTargets` through `miniyaml.Ruleset.resolve_weapon`. NEVER hand-parse yaml.**
+[hook-enforced] A bespoke line-scanner once opened a dict on `Versus:` and never closed it, so
+`PercentageVersus:` rows in the same node overwrote the profile; every mean, spread and ratio came
+out internally consistent and **wrong** — it reported "0 of 125 obey the MEAN-100 law" when the
+truth was **123 of 125**. The near-miss sibling name is the trap.
+
+### 15.6 C49 — Three units price at DPS 0 because all their guns are AA
+
+`harkonnen_adp`, `ra2_allies_aegiscruiser`, `tkm_quadturretbunker` have **no live ground armament**.
+The free-AA pricing convention excludes AA from ground DPS, so the formula sees zero. This is the
+same defect class the maintainer caught on `td_nod_lighttankmkii`.
+
+The convention is right for a scout with a bonus AA gun and wrong for a unit whose only weapon is
+the AA gun. Measure the full population first — I found three, but my detector is the name
+heuristic C48 fixes, so the real number is probably larger. Then bring the maintainer **options**,
+not a decision. ⛔ Read §11's rule: a maintainer call goes in a question with real alternatives.
+
+---
+
+## 16. THE REST OF YOUR QUEUE — everything still open, in priority order
+
+Nothing below is new work I invented to fill space; every item is something started and unfinished.
+
+### 16.1 Still the top of the board
+
+| # | item | why it is stuck |
+|---|---|---|
+| C1–C12 | **the 27+1 anchor dossiers** (§4) | **0 of 28 anchors are signed.** `apply_balance --confirm` is a NO-OP until W11 sign-off writes targets. This is THE thing blocking the pipeline. Start with C3, the four classes already on spec. |
+| C32 | AURORA's `devin/aurora/fix-anchor-readiness` | fixes a crash in `anchor_readiness.py`, conflicts with master in that exact file, and **blocks C1**. Read the branch before touching the tool. |
+| C27–C29 | the PR lane (#325, #321) | maintainer ruled: #321 closes as superseded, #325 re-cut small — flags first, then the repaired insurance. ⛔ You do not close, merge or force-push. Boot-gate the insurance change (`player.yaml`, `defaults.yaml`). |
+| B2 | the 304-vs-231 reconciliation | ⭐ **CLOSED by you in #335** — `audit_weapon_shape.py --compare-split` accounts for every node: 73 shape-only, zero split-only, W5 counting zero/healing/ally-only flat nodes the positive-damage predicate excludes. Both predicates and all ratchets preserved. Nothing further owed; I have removed it from your queue. |
+| C19+ | the `dmg` / `dmg per warhead` producer-consumer mismatch | real, predates the branch, yours to fix on master with a round-trip test, as you proposed. |
+
+### 16.2 The extrapolation program — `docs/design/EXTRAPOLATION_PROGRAM.md`
+
+Phases A–E, gates between each. **You own Phase B onward and the RA2 + TS reference maps
+(ruled 2026-09-08).** Points you must not miss:
+
+* ⚠ **`tools/balance/faction_extrapolate.py` (504 lines) ALREADY implements the exchange-rate
+  method** — `k = geometric mean over pairs of (cameo_stat / reference_stat)`, per route and per
+  stat, unpaired reference rows becoming virtual members at Cameo scale. **Run `--report` and write
+  down what it does NOT do. Do not rebuild it.**
+* ⚠ **`fit_class.py --spec hp,speed,range_wdist,damage,reload,cost0` ALREADY implements virtual
+  anchors** and has never been used. ⛔ **Do not design a virtual-anchor mechanism.** A whole
+  session once re-derived a weapon-tier model DESIGN.md had already shipped; `docs/TASK_INDEX.md`
+  exists because of exactly this.
+* **26 of 27 classes have members in TD/RA1/Japan.** `dreadnought` has none — its five members are
+  StarCraft/naval. **Do not invent one.** Report it and let the maintainer decide.
+* Phase B gate: every `k` needs **≥3 backing pairs** or it is marked `THIN` and excluded.
+* ⛔ **`dps0` stays out of every anchor** while W24 moves.
+
+### 16.3 The RA2 / TS maps, and the open authority question
+
+Everything you need is committed — `docs/reference/ini_corpus.json` (11,870 rows) and
+`docs/design/ORIGINAL_UNITS_PEER_OPENRA.md` (2,583 rows). No local game install is required.
+
+⛔ **Read-only on the reference producers.** You report mappings and hand over patches;
+Claude-Local lands changes to `assign_references.py`, `reference_distribution.py`,
+`faction_routes.py`, `reference_targets.py`. Five agents colliding in that tree cost a week.
+
+⚠ **OPEN MAINTAINER QUESTION — is Romanov's Vengeance the RA2 authority?** It carries 729 buildable
+units, more than RA2 + YR ever shipped, and it is 104 of the 119 unclaimed "originals".
+`audit_original_coverage` currently **exempts it from the O2 ratchet**, and that exemption is a
+placeholder that must be **DELETED** once ruled, never raised. Put the question to the maintainer
+with real options; do not resolve it yourself.
+
+⭐ **The biggest remaining precision lever is CA over-tagging** — CA units are tagged with a median
+of **5 factions** where the corpus median is **1**. That is what makes the right candidate hard to
+see. Three maintainer reviews produced ~15 defects and in **not one of them did the matcher choose
+badly** — the right candidate was invisible or had been deleted from the pool. The acceptance test
+the maintainer set: **an original MUST have 3 references.**
+
+⚠ **NEVER regenerate `ORIGINAL_UNITS_PEER_OPENRA.md` with a full run or `--mod <x>`.** Use
+`tools/reference/splice_peer_section.py`.
+
+### 16.4 Bot modules — §14.2 stands, and it is more work than it looks
+
+The personality system needs **ZERO C#**: a condition-gated player-level `ProvidesPrerequisite`
+already ships at `ai.yaml:176`. The hard part is not the mechanism, it is the **dynamic switching**
+— personalities that change on triggers and situations, which is what makes bots interesting to
+fight. Devin's original plan plus the five-AI review (Perplexity, Grok, Copilot, ChatGPT, Gemini)
+are the inputs. A mandatory baseline personality buys nothing; verified.
+
+### 16.5 Structural backlog you can pick up when blocked
+
+* **W23** — retrofit the 47 legacy weapon templates.
+* **A5** — 297 legacy weapons still carry inline `Versus`. ⛔ `Versus` lives **ONLY** in
+  `^Warhead_*` templates; a different profile means a different template.
+* **`audit_dead_warhead_fields`** — ratchet 15. ⚠ Building the field set from C#: match `public`,
+  **not** `public readonly` — some AS warheads declare mutable public fields. 2059 warheads once
+  carried a `Falloff` their type has no field for, silently, because `FieldLoader.Load`
+  (FieldLoader.cs:676) iterates the TYPE's fields and never reads leftover keys.
+* **E2 — 89 live `PhysicalState` bindings priced at ZERO** because `extract_stats` reads no
+  PhysicalState. Named as the next formula gap.
+* **Release drift** — 195 weapons drifted off the shipped build; root cause `04de392b3`
+  (2026-07-22), **not** the consolidations. D3 EXTREME is down 27→19 and D1 131→119.
+* **Upstream adoption** — `audit_upstream_adoption.py`: 53 duplicates, 266 real candidates. The
+  engine **never** moves to `ca-engine`. RV and SP are ancestors of cameo-engine (zero engine work);
+  **CN shares a 2026-05-11 base and its 170 patches ARE cherry-pickable**. ⛔ **A new NAME is not a
+  new MECHANIC** — RV `Temporal` turned out to be CA `WarpDamage`, ported then reverted. Plan:
+  `docs/design/UPSTREAM_MODS.md`.
+* **`audit_duplicate_inherits.py`** — the `Parent type X was already inherited` boot-crash class.
+  Grep cannot find it; the `@suffix` does not legalise it; a diamond is fine; it is ORDER-dependent.
+
+---
+
+## 17. THE TRAPS THAT HAVE ACTUALLY COST TIME — read this before measuring anything
+
+Six defects landed in one day, **all the same shape: a simplifying assumption where the ledger
+already held the answer.** Every one was caught by a human reading a table, not by a test.
+
+| the assumption | what it cost |
+|---|---|
+| "an unarmed-looking actor is chassis-only" | dropped references for actors whose weapon was right there |
+| `arms[0]` — the first armament is the weapon | **495 of 822 armed actors carry 2+ armaments**; 86 rows reported the wrong one |
+| `max()` over armaments | GDI battle tank (cannon + rocket) and the 3-barrel Sheridan fire **simultaneously** — they must SUM |
+| a permissive `live or arms` fallback | summed 10 mutually-exclusive barrels on the siege chopper to **986,818** |
+| `BurstDelay` hardcoded to 5 | correct for **78 of 1,017** weapons |
+| the AA test read the slot only | 41 actors → **63** once weapon names were read too |
+
+And the meta-lesson, which bit four separate times: **a filtered pool made me report things as
+missing.** I reported 40 "lost" references comparing against a non-hero pool — every one was a hero,
+true count **0**. I reported 30 mapping corrections as failed because the tool only writes under
+`--write` and I read yesterday's JSON. I reported that no agent had pushed because my `--since`
+filter matched author name and **all commits use the shared identity** — 17 branches had moved.
+**Before reporting something absent, prove your pool contains it.**
+
+Three conventions the data proved, so you do not re-derive them:
+
+* **`BuildLimit=0` means NO LIMIT, not "cannot build".** A patch premised on the opposite would have
+  deleted 110 legitimate actors. I described this bug backwards once; the data settled it.
+* **An AA armament is free** — same damage, 1.5× range where allowed, never priced, excluded from
+  ground DPS. Global convention, not a property of `anti_air_vehicle`.
+* **Subtype is the only durable class signal**, per C46.
+
+⛔⛔ **SUPERWEAPONS ARE NEVER PRICED AND NEVER CHANGED.** Maintainer, emphatically: *"exclude super
+weapons from this balance formula since they are all fixed HP! NEVER CHANGE THEM!! SO EXCLUDE THEM
+BEFORE ANYTHING IS CHANGED ON ACCIDENT!!!"* Two locks exist in `apply_balance.py`. ⚠ The first
+version of that lock **refused every faction** because `changed_paths` is a generator function and
+therefore always truthy — a lock that looks like it works is worse than none. If you touch it,
+write the test that fails against the broken version.
+
+⛔ **Never raise a ratchet.** Ember's `devin/ember/vfi-signature-fix` is genuinely good work and is
+**not on master** because it moves O1 from 8 to 13 over a ratchet of 12. A ratchet is not raised to
+land a branch.
+
+⛔ **Never read a background task's notification exit code** — read the `exit=` line in the output
+file. `run_all.sh` exited 1 on every clean tree for over a week before anyone noticed.
+
+⭐ **A result that contradicts a binding law is a contradiction, not a finding.** If the generator
+implements a law and `verify_generator_sync` reports 0 drift, "nothing conforms" means your
+measurement is broken. Check the measurement before writing it up.
+
+⭐ **A file that CONFLICTS is safer than one that does not — the conflict is the warning.** That was
+the lesson of your own review, and it is the general form worth carrying: your `class_anchors.json`
+finding (eight clean-merging `signed_off: true` rows) was better than mine precisely because the
+clean merge was the dangerous one.
+
+---
+
+## 18. What I want back
+
+The same two habits from your PR review, which are rarer than they should be: **you compiled the
+actual C# rather than trusting the Python model** (Python ints do not overflow, so the model could
+never have found the 32-bit defect), and **you said repeatedly what you had NOT verified**.
+
+So: pin a SHA next to every count. Say what you measured before and after. Say what you did not
+check. And where you think I am wrong — as you were right to on the merge analysis — say it
+directly. The failure mode in this repo has never been agents who find too little. It is agents who
+report more certainty than they measured.
