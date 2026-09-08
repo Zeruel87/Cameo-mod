@@ -745,6 +745,44 @@ def cameo_rows():
     return out
 
 
+def is_one_off(limit):
+    """A HERO is a limit of exactly one. A cap of 2+ is a scarce unit, not a one-off.
+
+    Maintainer's ruling 2026-09-08: build-limited rows all become visible to the assignment,
+    TAGGED — heroes (limit 1) match only Cameo heroes, while a capped unit matches normally.
+    DTA's `A10` A-10 Warthog is capped at 3 and is an ordinary GDI aircraft; its `XO` X-O Power
+    Suit is capped at 1 and is a one-off. Both were invisible before, which is why the maintainer
+    had to point out twice that they exist.
+
+    ⚠ Neither ever enters a pricing DISTRIBUTION — `ini_rows`/`peer_rows` still drop every
+    build-limited row, so the population rule is untouched and the 3,000,000 HP epic cannot
+    distort a ceiling. This flag governs MATCHING only.
+    """
+    try:
+        return limit is not None and float(limit) == 1
+    except (TypeError, ValueError):
+        return False
+
+
+def is_hero_limit(limit):
+    """A one-off is `BuildLimit` PRESENT AND GREATER THAN ZERO. Zero is not a limit.
+
+    ⛔ MEASURED 2026-09-08, and it is the difference between a hero lane and deleting 110 units.
+    125 corpus rows carry `build_limit == 0`: Mental Omega's Flame Tower (400cr), Instant Shelter
+    (500cr) and Deployed Grumble (2000cr), DTA's `RAAGUN_AI`, and Twisted Insurrection's deployed
+    forms. Ordinary buildable units at ordinary prices — `BuildLimit=0` means NO LIMIT in Westwood
+    INI, not "one only".
+
+    A proposed fix read the falsy-zero as a bug and changed `ini_rows`' test to `is not None`,
+    which would have dropped all 110 costed, buildable ones out of every distribution. The truthy
+    test was right. Heroes are `> 0`, and this function is the only place that decides it.
+    """
+    try:
+        return limit is not None and float(limit) > 0
+    except (TypeError, ValueError):
+        return False
+
+
 def peer_hero_rows():
     """Hero/epic peer rows that peer_rows() drops, with a `hero` flag.
 
@@ -784,7 +822,7 @@ def peer_hero_rows():
             except ValueError:
                 return None
         limit = num("limit")
-        if not limit:                     # ONLY heroes -- the rows peer_rows() drops
+        if not is_hero_limit(limit):      # ONLY heroes -- the rows peer_rows() drops
             continue
         if source in LINEAGE_MEMBERS:
             continue
@@ -805,7 +843,7 @@ def peer_hero_rows():
                      "turreted": (d.get("turret", "").lower() == "y"),
                      "hp": hp, "speed": spd, "turn_speed": turn,
                      "turn_ratio": (spd / turn) if (spd and turn) else None,
-                     "cost": cost, "hero": True, **wep})
+                     "cost": cost, "hero": is_one_off(limit), **wep})
     # INI heroes: rows with build_limit present (ini_rows drops at line 366)
     if INI_CORPUS.exists():
         armor = _ini_armor_index()
@@ -817,7 +855,7 @@ def peer_hero_rows():
             if kind is None:
                 continue
             bl = r.get("build_limit")
-            if bl is None:                  # ONLY heroes -- the rows ini_rows() drops
+            if not is_hero_limit(bl):       # ONLY heroes -- the rows ini_rows() drops
                 continue
             if not r.get("cost") or not r.get("buildable", True):
                 continue
@@ -833,7 +871,7 @@ def peer_hero_rows():
                    "hp": r.get("hp"), "speed": spd,
                    "turn_speed": turn,
                    "turn_ratio": (spd / turn) if (spd and turn) else None,
-                   "cost": r.get("cost"), "hero": True,
+                   "cost": r.get("cost"), "hero": is_one_off(bl),
                    "w_range": r.get("w_range"), "w_damage": r.get("w_damage"),
                    "w_burst": r.get("w_burst"), "w_reload": r.get("w_reload"),
                    "w_dps": dps}
@@ -883,7 +921,9 @@ def cameo_hero_rows():
                     continue
                 if is_superweapon(rec):
                     continue
-                if rec.get("build_limit") is None:   # ONLY heroes -- cameo_rows() drops these
+                if not is_hero_limit((rec.get("build_limit") or {}).get("v")
+                                     if isinstance(rec.get("build_limit"), dict)
+                                     else rec.get("build_limit")):   # ONLY heroes
                     continue
                 def val(field):
                     slot = rec.get(field)

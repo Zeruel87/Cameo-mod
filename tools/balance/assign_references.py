@@ -722,6 +722,22 @@ def assign(only_class=None, routing=True):
                                            "home": bool(s[2]), "raw_name": s[6], "confidence": conf}
         assign.hero_count = sum(1 for k in result if any(c.get("hero") for c in hero_cameo if c["id"] == k))
 
+    # ⛔ THE HERO PASS RUNS AFTER `apply_overrides` AND `drop_unbacked_shape`, so on its own it
+    # bypasses BOTH. Measured when the lane first landed: 12 SHAPE rows came back into a map that
+    # had been 100% name-backed for a day, and the maintainer's own overrides for DTA's `A10` and
+    # `XO` could not resolve because the hero rows were absent from the override index. Both rules
+    # are re-applied here over the combined pool. A rule that the last pass in a pipeline skips is
+    # not a rule.
+    hero_by_source = collections.defaultdict(list)
+    for p in (hero_peers or ()):
+        hero_by_source[p["source"]].append(p)
+    combined = collections.defaultdict(list)
+    for src, rows_ in list(by_source.items()) + list(hero_by_source.items()):
+        combined[src].extend(rows_)
+    result = apply_overrides(result, combined, routed_pool, routing)
+    result, hero_dropped = drop_unbacked_shape(result)
+    assign.shape_only = {**getattr(assign, "shape_only", {}), **hero_dropped}
+
     return result, skipped, len(scope)
 
 
@@ -828,6 +844,17 @@ REFERENCE_OVERRIDES = {
     ("ra1_soviets_nuclearv2launcher", "Combined Arms"): "NUKC", # Nuke Cannon
     ("ra1_soviets_hiptransport", "Combined Arms"): "HALO",
     ("ra1_soviets_su57attackbomber", "Combined Arms"): "SUK",   # Sukhoi Attack Plane
+
+    # ── Round five, 2026-09-08. The maintainer named five rows I had reported as non-existent.
+    # They all existed; they were invisible because the pool dropped every build-limited row.
+    # `A10` is capped at 3 and `XO` at 1 — a cap is not a one-off, and only the second is a hero.
+    ("td_gdi_firehawk", "DTA Enhanced"): "A10",       # A-10 Warthog, GDI, BuildLimit 3
+    ("td_gdi_exosuit", "DTA Enhanced"): "XO",         # X-O Power Suit, GDI, BuildLimit 1
+    ("td_gdi_empgrenadier", "DTA Enhanced"): "GRENL", # "Grenade Launcher", GDI
+    ("td_nod_buggymkii", "DTA Enhanced"): "RAIDER",   # "Heavy Raider", Nod
+    # MFLAK frees SHILKA for the Soviet gatling tank, so both get a real row and the
+    # one-row-one-actor rule holds. The maintainer named this one; it is not a workaround.
+    ("ra1_allies_alliedheavyaatank", "DTA Enhanced"): "MFLAK",   # "Anti-Aircraft Truck", Allies
 }
 
 
