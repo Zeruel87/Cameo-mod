@@ -407,15 +407,31 @@ def declared_factions(rules):
 # risks attaching a faction through a building both sides can build.
 PREREQ_DEPTH = 2
 
+# Mods sometimes use a DIFFERENT name for a faction in their rules than the
+# one they declare on World. Roman's Vengeance declares random-psicorps
+# (-> known faction psicorps) but gates units on ~infantry.yuri -- yuri is
+# the RA2/YR legacy name the mod kept in its rules while renaming the faction
+# in the declaration. The prefix match in _faction_tokens cannot reconcile
+# yuri and psicorps (no shared prefix), so the alias is explicit per-mod.
+# moon -> psimoon is the same pattern (RV queue suffix vs declared name).
+FACTION_ALIASES = {
+    "rv": {"yuri": "psicorps", "moon": "psimoon"},
+}
 
-def _faction_tokens(text, known):
+
+def _faction_tokens(text, known, mod_id=None):
     """The faction tokens inside one comma-separated Queue/Prerequisites string."""
+    aliases = FACTION_ALIASES.get(mod_id, {}) if mod_id else {}
     found = set()
     for chunk in (text or "").split(","):
         tok = chunk.strip().lstrip("~!").strip().lower()
         # `Infantry.Allies` -> allies · `~infantry.england` -> england · bare `yuri` -> yuri
         for part in (tok.split(".")[-1], tok):
             if not part or part.isdigit():
+                continue
+            # Check explicit alias first (e.g. RV yuri -> psicorps).
+            if part in aliases:
+                found.add(aliases[part])
                 continue
             if part in known:
                 found.add(part)
@@ -436,7 +452,7 @@ def _buildable(node):
                  if c.key == "Buildable" or c.key.startswith("Buildable@")), None)
 
 
-def prerequisite_providers(rules, known):
+def prerequisite_providers(rules, known, mod_id=None):
     """{provided token: set(declared factions)} — the INVERTED direction of faction gating.
 
     ⚠ Some mods gate a unit's faction from the PROVIDER side, not the consumer side.
@@ -468,7 +484,7 @@ def prerequisite_providers(rules, known):
             continue
         if node is None:
             continue
-        own_factions = set(factions_of(node, known, rules))
+        own_factions = set(factions_of(node, known, rules, mod_id=mod_id))
         actor_scope = set()
         for c in node.children:
             if c.key.split("@")[0] == "ValidFactions":
@@ -497,7 +513,7 @@ def prerequisite_providers(rules, known):
     return prov
 
 
-def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=None):
+def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=None, mod_id=None):
     """The faction tokens an actor is gated on, filtered by what the mod actually declares.
 
     ⛔ THE FACTION IS OFTEN ONE HOP AWAY, IN THE PREREQUISITE BUILDING. OpenRA gates most infantry
@@ -540,8 +556,10 @@ def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=No
     if queue_gate:
         return sorted(queue_gate)
     found = set()
-    for field in ("Queue", "Prerequisites"):
-        found |= _faction_tokens(b.get(field), known)
+    # ForceFaction is a direct faction assignment (used by RV per-faction
+    # construction yards) -- authoritative, treated like a queue/prereq token.
+    for field in ("Queue", "Prerequisites", "ForceFaction"):
+        found |= _faction_tokens(b.get(field), known, mod_id)
     # A VALIDATED-FACTION GRANT IS A DIRECT CLAIM, not an inherited one: the mod names the
     # factions explicitly next to the token this actor is gated on. Consulted before the
     # prerequisite hop, and filtered by what the mod declares, like every other path here.
@@ -566,7 +584,7 @@ def factions_of(node, known, rules=None, _depth=PREREQ_DEPTH, _seen=None, vfi=No
             parent = rules.resolve(key)
         except Exception:                       # a prerequisite that does not resolve is not fatal
             continue
-        found |= set(factions_of(parent, known, rules, _depth - 1, _seen, vfi))
+        found |= set(factions_of(parent, known, rules, _depth - 1, _seen, vfi, mod_id))
     return sorted(found)
 
 
@@ -584,7 +602,7 @@ def extract(mod_id):
     # last resort — see factions_of. Their version is the broader read: it takes every
     # `ProvidesPrerequisite*` trait and falls back to the PROVIDING actor's `ValidFactions`,
     # which a `ValidatedFaction`-only reader misses.
-    vfi = prerequisite_providers(rules, known_factions)
+    vfi = prerequisite_providers(rules, known_factions, mod_id=mod_id)
 
     key = rules._actor_ci.get(rifle_id.lower())
     if not key:
@@ -625,6 +643,20 @@ def extract(mod_id):
         prereq = (({k.key: k.value for k in b.children}).get("Prerequisites") or "") if b is not None else ""
         if any(c.strip().lstrip("~!").lower() == "disabled" for c in prereq.split(",")):
             continue
+        # A .Civilian / .Tech / .Debug / .Unused queue means the actor is a neutral
+        # map element, not a faction production unit. Roman's Vengeance files 450
+        # of its 725 buildable actors in a Civilian queue (361 buildings, 43
+        # vehicles, 30 infantry, 14 support, 2 ships) -- all map props and
+        # civilian structures, none of which any faction builds in a match.
+        # Including them left 64% of RV untagged because "Civilian" matches no
+        # declared faction, and they are not references for any Cameo unit.
+        # .Tech = capturable neutral structures; .Debug and .Unused are
+        # self-explanatory. This is the QUEUE's own statement, not a name
+        # blocklist -- the same data-derived principle as ~disabled.
+        queue = (({k.key: k.value for k in b.children}).get("Queue") or "") if b is not None else ""
+        if any(q.strip().lower().endswith((".civilian", ".tech", ".debug", ".unused"))
+               for q in queue.split(",")):
+            continue
         hp = trait(node, T["health"], "HP")
         if not hp:
             continue
@@ -642,7 +674,7 @@ def extract(mod_id):
             # ⭐ THE FACTION COLUMN (maintainer 2026-09-04). Reference routing needs it: an Asian
             # Alliance unit may only draw on Mental Omega China, which is what stops
             # "Animal Alligator" from ever being a candidate.
-            "faction": "/".join(factions_of(node, known_factions, rules, vfi=vfi)) or "",
+            "faction": "/".join(factions_of(node, known_factions, rules, vfi=vfi, mod_id=mod_id)) or "",
             "limit": int(limit) if (limit and str(limit).strip().isdigit()) else None,
             **wep,
             "hp": int(hp), "cost": int(cost) if cost else None,
