@@ -71,6 +71,85 @@ Next in the W24 queue: `devin/nova/w24-lane2` (57 commits, conflicts in
 `RedAlert2/Soviets/weapons.yaml` — a real per-weapon decision, not a merge tool), then
 `devin/nova/w24-naxi-pilot`, which must follow it.
 
+### ⛔ OPEN — THE ANTI-AIR CONVENTION. Paused mid-discussion 2026-09-08, resume here.
+
+The maintainer asked: *"how can we make it consistent? giving the 1.5x range should be only for
+pure anti air vehicles. And if it is a troop transport then those don't count right?"* — and then
+paused it deliberately for a clearer head. **Nothing is blocked by it.** Measured state:
+
+```
+PURE AA (every armament anti-air):  3 actors        <- the category is nearly empty
+Ground gun AND a free AA gun:      63 actors across nine classes
+  support 15 (1.50x)  scout_vehicle 10 (1.50x)  anti_air_vehicle 10 (1.50x)
+  unclassified 19 (1.00x)  light_tank 2  epic_vehicle 2  line_breaker 1  flying_infantry 1
+41 of the 63 sit at EXACTLY 1.50x range; median damage ratio is 1.00
+```
+
+**The finding that decides it: 10 of the 11 `anti_air_vehicle` units also carry a ground gun.** A
+rule reserving 1.5x for "pure AA vehicles" would apply to ONE actor and strip the bonus from the AA
+class itself.
+
+**Two questions were tangled together, and only one mattered:**
+
+* **PRICING — settled and shipped.** An AA armament is free for all 63, excluded from the ground
+  DPS everywhere, exactly as the `anti_air_vehicle` anchor already ruled ("priced only on the
+  ground weapon"). The anchors derive from ground weapons alone. The pipeline is not waiting.
+* **DESIGN — open, and optional.** Whether a troop transport *should* have AA at all is a roster
+  feel question. It changes yaml, not the formula.
+
+⚠ The real inconsistency is not the transports: it is the **19 unclassified actors at 1.00x** —
+an AA gun with no range bonus. They fall inside the unclassified sweep the maintainer already
+deferred until TD/RA1 and Japan are done.
+
+Claude-Local's recommendation on the table: change nothing; record the convention as a GLOBAL rule
+(an AA armament is free, same damage, 1.5x range, never priced — it is not a class property), and
+revisit the 19 outliers with the unclassified sweep.
+
+### ⭐ 2026-09-08 — SIX MEASUREMENT DEFECTS, ALL THE SAME SHAPE
+
+Every one was a simplifying assumption where the ledger already held the answer. Found by the
+maintainer reading the published table, one after another:
+
+| defect | was | is |
+|---|---|---|
+| `exempt()` asked the CLASS question before the WEAPON question | armed APCs and the Vulcan "chassis-only" | armed is never chassis-only |
+| `cameo_rows` took `arms[0]` — yaml order, not importance | `td_nod_lighttankmkii` DPS 0 (its point-defense laser) | 495 of 822 armed actors carry 2+ armaments; 86 reported the wrong one |
+| `max()` over armaments | Sheridan 16,000 | simultaneous baseline armaments SUM |
+| `live or arms` fallback | siege chopper summed 10 mutually-exclusive barrels to 986,818 | falls back to the strongest single armament |
+| `BurstDelay` hardcoded to 5 | right for 78 of 1,017 burst weapons | reads `burstdelays` (3:256, 2:172, 4:160...) |
+| the AA test read the SLOT only | `td_gdi_apc`'s `Armament@SECONDARY` firing `APCGun_AA` was invisible | reads slot AND weapon; 41 -> 63 actors |
+
+⛔ And the meta-lesson, because it repeated four times in one day: **a filtered pool made me report
+things as missing.** The A10 and X-O "did not exist" (build-limited rows were dropped), 40
+references were "lost" (I compared against the non-hero pool), and `assign_references.py` writes
+only under `--write` — I read the previous evening's file and reported 30 corrections as failed
+when every one had applied. **Check the mtime; check which pool.**
+
+### ⭐ Landed 2026-09-08
+
+* **W24: 322 -> 231 stacks.** EMBER's lane 1 (22 weapons) and DAWN's lane 3 (69) merged and
+  boot-gated. Lane 3 arrived with `audit_balance_drift` red across 10 ledgers — yaml changed, no
+  re-extract — fixed with `extract_stats.py`. **Yaml and ledger in the SAME commit** is now a
+  standing fleet rule.
+* **The hero lane** (AURORA), with the `BuildLimit=0` reading corrected: zero is NOT a limit,
+  125 corpus rows carry it, and the proposed "fix" would have deleted 110 legitimate actors.
+  `td_gdi_commando` claims `RMBO`; `ra1_allies_tanya` claims `E7`/`TANYA`/`E7`.
+* **`armed_troop_transport`**, a 28th class. Anchor 50000/100/6000/1200, dps0 400 — four APCs
+  across four packs on the same number. ⚠ INERT until `^ArmedTroopTransportTemplate` exists:
+  `extract_stats` rewrites `design.class_anchor` to None every run, so SUBTYPE is the only durable
+  membership signal.
+* **Map: 261 references, O1 8 (ratchet 12), STRONG 756 / FAIR 148 / SHAPE 0 / WEAK 0.**
+
+### ⛔ NOT landed, and why
+
+* `devin/ember/vfi-signature-fix` — good work (references 904 -> 956, and Romanov's Vengeance cut
+  730 -> 200 rows costing ZERO live references) but it pushed **O1 from 8 to 13, over the ratchet
+  of 12**, stranding `minelayer`, `phasetransport`, `nukedemotruck`, `sovietoretruck` and two more.
+  Back to EMBER with the list. **Never raise a ratchet to land a branch.**
+* `devin/aurora/ini-pool-hygiene` — the `BuildLimit=0` change above. Rejected with evidence.
+* `devin/nova/w24-lane2` — 57 commits, rotted from 5 conflicts to **36** while NOVA stayed silent.
+  It is the only agent that has not pushed since 2026-09-07.
+
 ### ⭐⭐ 2026-09-08 — THE EXTRAPOLATION PROGRAM IS THE PLAN NOW
 
 `docs/design/EXTRAPOLATION_PROGRAM.md` — the maintainer's method, written down with the two
