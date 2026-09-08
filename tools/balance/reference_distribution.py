@@ -617,6 +617,40 @@ def cameo_weapon_ladders(weapon_name):
     return {k: sum(v) / len(v) / 100.0 for k, v in hits.items() if v}
 
 
+def _armament_damage(arm):
+    """Total damage over an armament's POSITIVE main warheads."""
+    total = 0.0
+    for wh in (arm.get("damage_warheads") or []):
+        try:
+            d = float(str(wh.get("damage")))
+        except (TypeError, ValueError):
+            continue
+        if d > 0:
+            total += d
+    return total
+
+
+def primary_armament(arms):
+    """The armament that represents this actor's firepower: the HARDEST-HITTING one.
+
+    ⛔ THIS USED TO BE `arms[0]` AND THAT IS YAML ORDER, NOT IMPORTANCE. Found by the maintainer
+    2026-09-08 on `td_nod_lighttankmkii`, whose reported DPS was 0: its first priced armament is
+    `Armament@pointdefense` firing `PDLaserLTNK2` for **1** damage, while the actual gun
+    (`LightTank2Cannon`) and missiles (`LightTank2Missiles`) each deal 8,000. The table was showing
+    a point-defense laser as the tank's weapon.
+
+    Measured across the tree: 822 buildable actors carry a priced armament, **495 of them carry
+    more than one**, and on **86** the first armament deals under half what the best one does. So
+    this was never one unit — it is a sixth of every armed actor reporting the wrong weapon.
+
+    ⚠ MAX, NEVER SUM. `ra2_allies_ifv` has THIRTY-NINE priced armaments — one per passenger type,
+    mutually exclusive at runtime. Summing them would claim 200,000+ damage for a transport that
+    can only ever fire one. The maintainer's own framing is the rule: the conditional armaments
+    exist, but only one of them is the unit's weapon at any moment.
+    """
+    return max(arms, key=_armament_damage)
+
+
 # ⛔⛔ SUPERWEAPONS ARE NEVER PRICED, NEVER RESTATTED, NEVER TOUCHED (maintainer, 2026-09-07):
 #
 #     "exclude super weapons from this balance formula since they are all fixed HP!
@@ -712,7 +746,7 @@ def cameo_rows():
 
                 w, debt = {}, False
                 if arms:
-                    a = arms[0]
+                    a = primary_armament(arms)
                     mains = [wh for wh in (a.get("damage_warheads") or [])
                              if (anum(wh.get("damage")) or 0) > 0]
                     # §0a STRUCTURE DEBT: a weapon still firing 2+ damage mains has a `K` that is

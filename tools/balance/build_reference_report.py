@@ -92,7 +92,19 @@ def is_original(srcs):
                for s, d in (srcs or {}).items())
 
 
-def emit(body, members, crows, assignment, attached, chassis_only, dist, cdist, counts, klass):
+def arm_note(actor, led_arms):
+    """`x3` beside a DPS the actor could fire from more than one armament.
+
+    The DPS shown is the HARDEST-HITTING armament, never the sum — 495 of 822 armed actors carry
+    several, and `ra2_allies_ifv` carries 39 mutually-exclusive ones. Without this marker the
+    reader cannot tell a single-gun tank from one whose other weapons are conditional, which is
+    exactly the question the maintainer asked about `td_nod_lighttankmkii`.
+    """
+    n = led_arms.get(actor, 0)
+    return f'<span class="muted" title="{n} priced armaments; DPS shown is the strongest">&#215;{n}</span>' if n > 1 else ""
+
+
+def emit(body, members, crows, assignment, attached, chassis_only, dist, cdist, counts, klass, led_arms):
     for kind, title in SECTIONS:
         group = [a for a in members if crows[a]["type"] == kind]
         if not group:
@@ -164,7 +176,8 @@ def emit(body, members, crows, assignment, attached, chassis_only, dist, cdist, 
                 f'<td class="n">{num(c.get("hp"))}</td><td class="n t">{num(tgt["hp"])}</td>'
                 f'<td class="n">{num(c.get("speed"))}</td><td class="n t">{num(tgt["speed"])}</td>'
                 f'<td class="n">{num(c.get("w_range"))}</td><td class="n t">{num(tgt["w_range"])}</td>'
-                f'<td class="n">{num(c.get("w_dps"))}</td><td class="n t">{num(tgt["w_dps"])}</td>'
+                f'<td class="n">{num(c.get("w_dps"))}{arm_note(a, led_arms)}</td>'
+                f'<td class="n t">{num(tgt["w_dps"])}</td>'
                 f'<td class="n">{num(c.get("cost"))}</td><td class="n t">{num(tgt["cost"])}</td>'
                 f'<td>{chips or empty}</td></tr>')
         body.append("</tbody></table>")
@@ -190,6 +203,21 @@ def main() -> int:
     # field: membership is DERIVED from `subtype` when no explicit tag exists, so reading the tag
     # alone reports `commando` as empty when it has 30 members.
     import class_membership as cm
+    led_arms = {}
+    for _p in sorted((ROOT / "docs" / "balance").glob("*.json")):
+        if "class_anchors" in _p.name:
+            continue
+        try:
+            _d = json.loads(_p.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        for _sec in (_d.get("sections") or {}).values():
+            if not isinstance(_sec, dict):
+                continue
+            for _n, _r in _sec.items():
+                if isinstance(_r, dict):
+                    led_arms[_n] = sum(1 for x in (_r.get("armaments") or [])
+                                       if isinstance(x, dict) and x.get("pricing"))
     klass = {}
     for actor, design in cm.ledger_rows():
         c, _why = cm.classify(design)
@@ -222,7 +250,7 @@ def main() -> int:
             body.append(f'<h2 class="band">{label} '
                         f'<span class="muted">· {len(band)}</span></h2>'
                         f'<p class="lede">{note}</p>')
-            emit(body, band, crows, assignment, attached, chassis_only, dist, cdist, counts, klass)
+            emit(body, band, crows, assignment, attached, chassis_only, dist, cdist, counts, klass, led_arms)
 
     summary = (f'{counts["orig"]} originals · {counts["exp"]} expanded · '
                f'{counts["refs"]} references · {counts["none"]} priced by formula · '
