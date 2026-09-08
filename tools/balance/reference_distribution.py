@@ -745,6 +745,196 @@ def cameo_rows():
     return out
 
 
+def peer_hero_rows():
+    """Hero/epic peer rows that peer_rows() drops, with a `hero` flag.
+
+    The population rule excludes heroes from distributions (a 3,000,000 HP epic
+    must never re-enter the vehicle ceiling), but the ASSIGNMENT may see them so
+    a Cameo hero matches a peer hero. This returns the rows peer_rows() drops
+    -- Doc 5 rows with `limit`, INI rows with `build_limit` -- flagged `hero: True`.
+
+    These rows are for assign_references ONLY. Distributions still call
+    peer_rows(), which excludes them. Wiring them into distributions would
+    re-enter the epic into the vehicle ceiling.
+    """
+    rows = []
+    # Doc 5 heroes: rows with `limit` present (peer_rows drops at line 508)
+    source, header = None, None
+    text = (ROOT / "docs/design/ORIGINAL_UNITS_PEER_OPENRA.md").read_text(encoding="utf-8")
+    for line in text.splitlines():
+        if line.startswith("## "):
+            source = line[3:].split("(")[0].strip()
+            header = None
+            continue
+        if not source or not line.startswith("|"):
+            continue
+        cells = [c.strip().strip("`") for c in line.split("|")[1:-1]]
+        if not cells:
+            continue
+        if cells[0].lower() == "id":
+            header = [c.lower() for c in cells]
+            continue
+        if not header or len(cells) != len(header) or set("".join(cells)) <= set("-: "):
+            continue
+        d = dict(zip(header, cells))
+        def num(key):
+            v = (d.get(key) or "").replace(",", "")
+            try:
+                return float(v)
+            except ValueError:
+                return None
+        limit = num("limit")
+        if not limit:                     # ONLY heroes -- the rows peer_rows() drops
+            continue
+        if source in LINEAGE_MEMBERS:
+            continue
+        hp, spd, turn = num("hp"), num("speed"), num("turn")
+        cost = num("cost")
+        wep = {k: num(c) for k, c in (("w_range", "range"), ("w_damage", "dmg"),
+                                      ("w_burst", "burst"), ("w_reload", "reload"),
+                                      ("w_dps", "dps"))}
+        for lad in LADDERS:
+            frac = num(f"vs{lad.lower()}")
+            wep[f"dps_vs_{lad}"] = (wep["w_dps"] * frac) if (wep.get("w_dps") and frac) else None
+        if d.get("type", "").strip().lower() == "building" and wep.get("w_damage"):
+            d["type"] = "defense"
+        rows.append({"source": source, "raw_source": source,
+                     "id": d.get("id", ""), "name": d.get("unit", ""),
+                     "type": d.get("type", "other"),
+                     "faction": d.get("faction", ""),
+                     "turreted": (d.get("turret", "").lower() == "y"),
+                     "hp": hp, "speed": spd, "turn_speed": turn,
+                     "turn_ratio": (spd / turn) if (spd and turn) else None,
+                     "cost": cost, "hero": True, **wep})
+    # INI heroes: rows with build_limit present (ini_rows drops at line 366)
+    if INI_CORPUS.exists():
+        armor = _ini_armor_index()
+        for line in INI_CORPUS.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            r = json.loads(line)
+            kind = INI_TYPE.get(r.get("type"))
+            if kind is None:
+                continue
+            bl = r.get("build_limit")
+            if bl is None:                  # ONLY heroes -- the rows ini_rows() drops
+                continue
+            if not r.get("cost") or not r.get("buildable", True):
+                continue
+            if r["source"] in LINEAGE_MEMBERS:
+                continue
+            spd, turn = r.get("speed"), r.get("turn_speed")
+            dps = r.get("w_dps")
+            row = {"source": r["source"], "raw_source": r["source"],
+                   "id": r.get("id", ""), "name": r.get("name", ""),
+                   "type": kind,
+                   "faction": r.get("faction", ""),
+                   "turreted": r.get("turreted"),
+                   "hp": r.get("hp"), "speed": spd,
+                   "turn_speed": turn,
+                   "turn_ratio": (spd / turn) if (spd and turn) else None,
+                   "cost": r.get("cost"), "hero": True,
+                   "w_range": r.get("w_range"), "w_damage": r.get("w_damage"),
+                   "w_burst": r.get("w_burst"), "w_reload": r.get("w_reload"),
+                   "w_dps": dps}
+            vs = armor.get((r["source"], r.get("id"))) or {}
+            for lad in LADDERS:
+                frac = vs.get(lad)
+                row[f"dps_vs_{lad}"] = (dps * frac) if (dps and frac) else None
+            rows.append(row)
+    # Apply the same AI-only filter as peer_rows()
+    by_src = collections.defaultdict(set)
+    for r in rows:
+        rid = (r.get("id") or "").strip().upper()
+        if rid:
+            by_src[r["source"]].add(rid)
+    rows = [r for r in rows if not is_ai_only(r, by_src)]
+    return rows
+
+
+def cameo_hero_rows():
+    """Hero/epic Cameo rows that cameo_rows() drops, with a `hero` flag.
+
+    cameo_rows() drops every actor with `build_limit` (line 677) -- the 83 hero/epic
+    combat rows the maintainer ruled are balanced separately. This returns them
+    flagged `hero: True` so assign_references can match hero-to-hero only.
+
+    NO EXCLUDE_CLASSES FILTER: the hero lane is specifically for heroes and epics,
+    which `epic_vehicle` class_anchor marks. cameo_rows() excludes them from the
+    normal population; the hero lane includes them so a Cameo epic can match a
+    peer epic.
+    """
+    out = []
+    for path in sorted((ROOT / "docs/balance").glob("*.json")):
+        if "class_anchors" in path.name:
+            continue
+        try:
+            doc = json.loads(path.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        for section, units in (doc.get("sections") or {}).items():
+            kind = CAMEO_SECTION_TYPE.get(section)
+            if (kind is None and section != "buildings") or not isinstance(units, dict):
+                continue
+            for name, rec in units.items():
+                if not isinstance(rec, dict):
+                    continue
+                if rec.get("buildable") is not True:
+                    continue
+                if is_superweapon(rec):
+                    continue
+                if rec.get("build_limit") is None:   # ONLY heroes -- cameo_rows() drops these
+                    continue
+                def val(field):
+                    slot = rec.get(field)
+                    if isinstance(slot, dict):
+                        slot = slot.get("v")
+                    try:
+                        return float(str(slot))
+                    except (TypeError, ValueError):
+                        return None
+                hp = val("hp")
+                spd = val("speed") or val("speed_air")
+                turn = val("turn_speed") or val("turn_speed_air")
+                if hp is None:
+                    continue
+                arms = [a for a in (rec.get("armaments") or [])
+                        if isinstance(a, dict) and a.get("pricing")]
+                row_kind = kind
+                if row_kind is None:
+                    if not arms:
+                        continue
+                    row_kind = "defense"
+                def anum(v):
+                    try:
+                        return float(str(v))
+                    except (TypeError, ValueError):
+                        return None
+                w, debt = {}, False
+                if arms:
+                    a = arms[0]
+                    mains = [wh for wh in (a.get("damage_warheads") or [])
+                             if (anum(wh.get("damage")) or 0) > 0]
+                    debt = len(mains) > 1
+                    dmg = sum(anum(wh.get("damage")) or 0 for wh in mains)
+                    rel = anum(a.get("reloaddelay"))
+                    burst = anum(a.get("burst")) or 1
+                    cycle = (rel or 0) + (burst - 1) * 5
+                    dps = ((dmg * burst) / cycle) if (dmg and cycle) else None
+                    w = {"w_range": anum(a.get("range")), "w_damage": dmg or None,
+                         "w_burst": burst, "w_reload": rel, "w_dps": dps}
+                    tpl = a.get("versus_templates") or []
+                    wname = a.get("weapon") or (tpl[-1] if tpl else None)
+                    if dps and wname:
+                        for lad, frac in cameo_weapon_ladders(wname).items():
+                            w[f"dps_vs_{lad}"] = dps * frac
+                out.append({"source": "Cameo", "id": name, "name": name, "type": row_kind,
+                            "hp": hp, "speed": spd, "turn_speed": turn, "cost": val("cost"),
+                            "structure_debt": debt, "hero": True,
+                            "turn_ratio": (spd / turn) if (spd and turn) else None, **w})
+    return out
+
+
 def build_distributions(rows):
     """{source: {population: {stat: aggregates}}}, population = a type, or 'overall'."""
     by_source = collections.defaultdict(list)

@@ -327,6 +327,15 @@ def score(cam, rec, peer, cam_cost_pct, peer_cost_pct, home, cam_shape=None, pee
     rather than silently satisfied. It sits in the tuple as a constant so the cascade's SHAPE stays
     honest and the step can be filled the day the data exists.
     """
+    # HERO-TO-HERO ONLY (maintainer ruling, 2026-09-07). Heroes and epics are balanced
+    # separately, so a hero may ONLY match a hero and a non-hero may ONLY match a
+    # non-hero. Without this, the 3,000,000 HP epic would match a normal vehicle on
+    # shape alone and a normal unit would claim a hero's peer. The flag is carried
+    # on the row, never a drop.
+    cam_hero = cam.get("hero", False)
+    peer_hero = peer.get("hero", False)
+    if cam_hero != peer_hero:
+        return None
     if cam["type"] != peer["type"]:
         return None                                   # cross-type is refused (§9 cross-type ruling)
     # ⛔ CLAUSE 5, AND *MISSING* DAMAGE COUNTS AS UNARMED. The old guard read
@@ -405,6 +414,18 @@ def assign(only_class=None, routing=True):
     behaviour the maintainer rejected; do not generate a review sheet with it.
     """
     peers, cameo = rd.peer_rows(), rd.cameo_rows()
+    # HERO LANE (maintainer, 2026-09-07). Heroes stay OUT of distributions (peer_rows()
+    # and cameo_rows() still exclude them), but the ASSIGNMENT may see them so a Cameo
+    # hero matches a peer hero. The hero-to-hero-only rule in score() prevents a hero
+    # from matching a non-hero and vice versa. 83 Cameo heroes + 424 peer heroes in scope.
+    #
+    # ⛔ TWO-PASS DESIGN. The hero lane runs as a SEPARATE pass after the non-hero
+    # assignment is complete. Mixing hero and non-hero rows in the same greedy pool
+    # changed 9 non-hero mappings (the hero cameos shifted the sort order and stole
+    # peers from non-hero cameos). The two-pass approach guarantees "no non-hero
+    # mapping changes at all" — the acceptance criterion from FLEET_ORDERS_2026-09-08.
+    hero_peers = rd.peer_hero_rows()
+    hero_cameo = rd.cameo_hero_rows()
     # The id-suffix claim (R15 in its second form) stays INACTIVE until the corpus is
     # registered, so it can never fire on a source whose ids nobody has enumerated.
     fr.register_source_ids(peers)
@@ -499,6 +520,11 @@ def assign(only_class=None, routing=True):
     # than another heuristic competing with the others.
     originals = original_actors(scope, by_source, routed_pool, routing)
     assign.originals = originals
+
+    # ⛔ HERO PEERS DO NOT JOIN THE NON-HERO GREEDY. The two-pass design runs the
+    # hero lane separately after this function returns, so hero peers never enter
+    # `by_source` or `routed_pool` here. This is the guarantee that no non-hero
+    # mapping changes when the hero lane is enabled.
 
     result = collections.defaultdict(dict)
     for source, plist in sorted(by_source.items()):
@@ -600,6 +626,102 @@ def assign(only_class=None, routing=True):
     result = apply_overrides(result, by_source, routed_pool, routing)
     result, shape_only = drop_unbacked_shape(result)
     assign.shape_only = shape_only
+
+    # ── HERO PASS (maintainer ruling 2026-09-07) ──────────────────────────────
+    # A separate greedy for hero/epic cameos against hero/epic peers only. This
+    # runs AFTER the non-hero assignment is complete, so it cannot change any
+    # non-hero mapping. The hero-to-hero-only rule in score() prevents a hero
+    # from matching a non-hero and vice versa, and this pass only sees heroes
+    # on both sides, so every match is hero-to-hero by construction.
+    if hero_cameo and hero_peers:
+        hero_led = {c["id"]: led[c["id"]] for c in hero_cameo if c["id"] in led}
+        hero_scope = [c for c in hero_cameo if c["id"] in hero_led
+                      and (not only_class or cm.classify(hero_led[c["id"]].get("design") or {})[0] == only_class)]
+        # Skip exempted hero cameos (same exempt() as non-hero pass)
+        hero_scope = [c for c in hero_scope if not exempt(c["id"], hero_led[c["id"]])]
+        # Route hero cameos
+        if routing:
+            hero_scope = [c for c in hero_scope
+                          if fr.faction_of(c["id"]) and fr.routes_for(fr.faction_of(c["id"]))]
+        # Build hero peer pool
+        hero_by_source = collections.defaultdict(list)
+        for p in hero_peers:
+            hero_by_source[p["source"]].append(p)
+        hero_routed_pool = {}
+        if routing:
+            for fac in {fr.faction_of(c["id"]) for c in hero_scope}:
+                for src, _toks in fr.routes_for(fac):
+                    hero_routed_pool[(fac, src)] = [p for p in hero_by_source.get(src, ())
+                                                    if fr.allows(fac, p)]
+        # Hero shape vectors
+        hero_pools = collections.defaultdict(list)
+        for p in hero_peers:
+            for f in SHAPE_FIELDS:
+                if p.get(f):
+                    hero_pools[(p["source"], p["type"], f)].append(p[f])
+        for c in hero_scope:
+            for f in SHAPE_FIELDS:
+                if c.get(f):
+                    hero_pools[("Cameo", c["type"], f)].append(c[f])
+        hero_cam_shapes = {c["id"]: shape_vector(c, hero_pools, "Cameo") for c in hero_scope}
+        hero_peer_shapes = {id(p): shape_vector(p, hero_pools, p["source"]) for p in hero_peers}
+        # Hero costs
+        hero_cam_costs = collections.defaultdict(list)
+        for c in hero_scope:
+            v = (hero_led[c["id"]].get("cost") or {})
+            v = v.get("v") if isinstance(v, dict) else v
+            try:
+                hero_cam_costs[c["type"]].append(float(v))
+            except (TypeError, ValueError):
+                pass
+        hero_peer_costs = collections.defaultdict(list)
+        for p in hero_peers:
+            if p.get("cost"):
+                hero_peer_costs[(p["source"], p["type"])].append(p["cost"])
+        # Hero greedy
+        for source, plist in sorted(hero_by_source.items()):
+            cands = []
+            for c in hero_scope:
+                rec = hero_led[c["id"]]
+                raw = (rec.get("cost") or {})
+                raw = raw.get("v") if isinstance(raw, dict) else raw
+                try:
+                    ccost = float(raw)
+                except (TypeError, ValueError):
+                    ccost = None
+                cpct = pct_rank(ccost, hero_cam_costs.get(c["type"], []))
+                home = source in eu.HOME.get(eu.family_of(c["id"]) or "", [])
+                visible = (hero_routed_pool.get((fr.faction_of(c["id"]), source), ()) if routing
+                           else plist)
+                for p in visible:
+                    s = score(c, rec, p, cpct,
+                              pct_rank(p.get("cost"), hero_peer_costs.get((source, p["type"]), [])), home,
+                              hero_cam_shapes.get(c["id"]), hero_peer_shapes.get(id(p)))
+                    if s:
+                        cands.append((s, c["id"], p))
+            cands.sort(key=lambda t: (t[0], t[1]), reverse=True)
+            used_cam, used_peer = set(), set()
+            for s, cid, p in cands:
+                key = (fr.faction_of(cid), p["source"], syn.norm(p.get("name", "")), p.get("id", ""))
+                if cid in used_cam or key in used_peer:
+                    continue
+                used_cam.add(cid)
+                used_peer.add(key)
+                bucket, role_score = s[0], s[4]
+                if bucket >= 3 or (bucket >= 1 and role_score >= 0.75):
+                    conf = "STRONG"
+                elif bucket >= 1:
+                    conf = "FAIR"
+                elif role_score >= 0.75:
+                    conf = "SHAPE"
+                else:
+                    conf = "WEAK"
+                if bucket >= 1 or role_score >= 0.75:
+                    result.setdefault(cid, {})[source] = {"name": p.get("name"), "id": p.get("id"), "score": s,
+                                           "hp": p.get("hp"), "cost": p.get("cost"),
+                                           "home": bool(s[2]), "raw_name": s[6], "confidence": conf}
+        assign.hero_count = sum(1 for k in result if any(c.get("hero") for c in hero_cameo if c["id"] == k))
+
     return result, skipped, len(scope)
 
 
