@@ -313,6 +313,15 @@ def score(cam, rec, peer, cam_cost_pct, peer_cost_pct, home, cam_shape=None, pee
     rather than silently satisfied. It sits in the tuple as a constant so the cascade's SHAPE stays
     honest and the step can be filled the day the data exists.
     """
+    # HERO-TO-HERO ONLY (maintainer ruling, 2026-09-07). Heroes and epics are balanced
+    # separately, so a hero may ONLY match a hero and a non-hero may ONLY match a
+    # non-hero. Without this, the 3,000,000 HP epic would match a normal vehicle on
+    # shape alone and a normal unit would claim a hero's peer. The flag is carried
+    # on the row, never a drop.
+    cam_hero = cam.get("hero", False)
+    peer_hero = peer.get("hero", False)
+    if cam_hero != peer_hero:
+        return None
     if cam["type"] != peer["type"]:
         return None                                   # cross-type is refused (§9 cross-type ruling)
     # ⛔ CLAUSE 5, AND *MISSING* DAMAGE COUNTS AS UNARMED. The old guard read
@@ -391,6 +400,12 @@ def assign(only_class=None, routing=True):
     behaviour the maintainer rejected; do not generate a review sheet with it.
     """
     peers, cameo = rd.peer_rows(), rd.cameo_rows()
+    # HERO LANE (maintainer, 2026-09-07). Heroes stay OUT of distributions (peer_rows()
+    # and cameo_rows() still exclude them), but the ASSIGNMENT may see them so a Cameo
+    # hero matches a peer hero. The hero-to-hero-only rule in score() prevents a hero
+    # from matching a non-hero and vice versa. 83 Cameo heroes + 424 peer heroes in scope.
+    peers = peers + rd.peer_hero_rows()
+    cameo = cameo + rd.cameo_hero_rows()
     # The id-suffix claim (R15 in its second form) stays INACTIVE until the corpus is
     # registered, so it can never fire on a source whose ids nobody has enumerated.
     fr.register_source_ids(peers)
