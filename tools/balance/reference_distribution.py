@@ -363,7 +363,7 @@ def ini_rows():
         # said so. The corpus carries `build_limit`, so the epic/hero exclusion is exact here.
         # `buildable` is the extractor's TechLevel/Selectable verdict — see its comment. Without
         # it a costed 10,000,000 HP dummy sits in the arithmetic mean of a 443-unit population.
-        if not r.get("cost") or r.get("build_limit") or not r.get("buildable", True):
+        if not r.get("cost") or r.get("build_limit") is not None or not r.get("buildable", True):
             continue
         spd, turn = r.get("speed"), r.get("turn_speed")
         dps = r.get("w_dps")
