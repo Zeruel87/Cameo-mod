@@ -14,9 +14,10 @@ binding order of operations).
 > work, ordered. Do not start §8 before §4 is signed. **§9 is the maintainer's two open pull
 > requests and should be done EARLY — one finding there is time-sensitive.** §10 is everything the
 > fleet has started and cannot land on its own; it is analysis and reconciliation, never conversion.
-> 42 numbered tasks, C1–C42. **⭐ §13 is a 2026-09-08 addendum: read it FIRST — it records what
-> your PR review changed in this document, the maintainer's decision on the PRs, and your order of
-> work from here.**
+> 42 numbered tasks, C1–C42. **⛔⛔ §14 (2026-09-08b) OVERRIDES the deliverable of every task here: a task is DONE when CODE
+> lands on master, boot-gated, with a test. Read §14 and §13 FIRST. §13 records what
+> your PR review changed in this document; §14 is the priority order, the balance-pipeline code, the
+> bot modules, and the RA2/TS maps.** — (§13 also — the maintainer's decision on the PRs and your order of work from here.)
 >
 > Every number below was measured on master `545ff414a` on 2026-09-07 with the command shown
 > beside it. Re-measure before you rely on any of them — that is the house rule, not a courtesy.
@@ -938,3 +939,282 @@ You wrote "this is not a claim that every generated row was validated" more than
 sentence is worth more to me than a confident summary would have been, because it tells me exactly
 where to look next. The failure mode in this repo is not agents who find too little — it is agents
 who report more certainty than they measured.
+
+---
+
+## 14. ⛔⛔ ADDENDUM 2026-09-08b — SHIP CODE. Documents are no longer a deliverable.
+
+**Maintainer, verbatim:**
+
+> *"Can you also make Astra produce actual code and not just review and document? We need to make
+> some serious progress now but from what I've seen he was just documenting... make sure you include
+> that!"*
+
+That is the whole of this section's premise, and it is fair. Your review work was genuinely good —
+§13 says so and means it. But across #328, the review, and the development log, the ratio of code to
+prose is wrong, and the pipeline has not moved a single number.
+
+**New rule, and it overrides the deliverable of every task above: a task is DONE when code lands on
+master, boot-gated, with a test. A document describing what should be done is not done.** Where a
+task below says "report", that report is a paragraph in the PR body, not a file in `docs/`.
+
+⛔ You may write at most **one** new `docs/` file per landed code PR, and only if the PR needs it.
+`ASTRA_REVIEW.md` was 46 KB; the fix for its first finding is about twelve lines.
+
+### 14.0 Priority, settled by the maintainer
+
+1. **The balance pipeline** — everything in §14.1. This is number one and it is not close.
+2. **The bot modules** — §14.2. Secondary, but larger than it looks, and one maintainer decision
+   just unblocked the hardest part.
+3. **RA2 + TS reference maps** — §14.3. Yours now.
+
+---
+
+## 14.1 BALANCE PIPELINE — the code that has to exist
+
+Read `docs/design/EXTRAPOLATION_PROGRAM.md` first. It is the maintainer's method, written down,
+with the two measurements that prove it works. The short version: **the 27 class anchors stop being
+real actors and become virtual ones derived from the reference-mapped originals.**
+
+### ⛔ A1 — READ THIS BEFORE WRITING ANYTHING
+
+```
+tools/balance/fit_class.py --class <name> --spec hp,speed,range_wdist,damage,reload,cost0
+    "virtual anchor ... a round-number model unit that need not exist in game"
+```
+
+**The virtual-anchor mechanism already exists and nothing uses it.** Do not design one, do not
+build one, do not propose one. `tools/balance/faction_extrapolate.py` (504 lines) likewise already
+implements the exchange-rate method. What is missing is the INPUTS and the WIRING, which is A2–A5.
+
+This is the third time in this repo that an existing mechanism was nearly rebuilt. Run
+`fit_class.py --class mbt --spec 240000,95,5500,600,20,800` before you write a line, and see what
+it already gives you.
+
+### A2 — `tools/balance/derive_virtual_anchor.py` — NEW CODE, this is the centrepiece
+
+Read-only against yaml; writes nothing to `mods/`; never sets `signed_off`.
+
+```
+python tools/balance/derive_virtual_anchor.py --class mbt [--factions td_gdi,td_nod,ra1_allies,ra1_soviets,japan]
+python tools/balance/derive_virtual_anchor.py --all --out docs/balance/anchors/
+```
+
+For one class it must:
+
+1. Collect the class's members via **`class_membership.classify()`** — ⛔ NOT the raw
+   `design.class_anchor` field. Membership is DERIVED from `subtype` when no explicit tag exists;
+   reading the tag alone reports `commando: 0` for a class with 30 members. Two of my own
+   measurements returned all-zeros this way before I read the module. `classify()` returns
+   `(class, why)` and `ledger_rows()` yields `(actor, design)` — the design block itself, not the
+   unit.
+2. Restrict to members in the anchor factions (default: the four originals + japan).
+3. For each of `hp`, `speed`, `range_wdist`, `cost`, compute the anchor value from those members,
+   **preferring reference-backed ones** (`docs/balance/derived/reference_assignment.json`,
+   confidence STRONG or FAIR — SHAPE and WEAK do not exist any more and must never be readmitted).
+4. Round onto the nice-number grid (`docs/DESIGN.md`, the nice-number law; damage on the **100**
+   grid — `formula.DAMAGE_STEP`, and ⚠ NOT the 2,000 grid that older docs teach, which W15/W17
+   retired along with `FirepowerMultiplier` as a pricing knob).
+5. **Assert `o0 = p0 = q0 = cost0` holds.** It is a virtual unit: if the identity fails, the spec is
+   wrong. Today 0 of 27 real anchors satisfy it. A virtual one that does not is a bug in your
+   derivation — raise, do not round away.
+6. Emit the verifier at **2× hp, 2× dps, 2.5× cost**, and assert baseline and verifier share the
+   TechTier bucket AND `K`. If they cannot, say so and emit no verifier rather than a broken one.
+7. ⛔ Emit **no `dps0`**. W24 is still moving (231 weapons stack 2+ mains). `damage,reload` in the
+   spec string are the model unit's own, not a target for any real weapon.
+8. Print the `fit_class --spec` command line for the class, and the residual distribution of the
+   class's real members against it.
+
+**Bias check, and it is not optional (EXTRAPOLATION_PROGRAM §6.1):** for every class, compare the
+TD/RA1/Japan member stats against the class's FULL membership. If the anchor factions sit in one
+tail, the virtual anchor is biased and the class must be emitted as `BIASED — do not sign` with the
+percentiles shown. A class quietly anchored off a tail is the failure that would poison everything
+downstream.
+
+⛔ `dreadnought` has **zero** members in TD/RA1/Japan (its five are StarCraft/naval). Emit
+`NO SOURCE` and stop. Do not invent one; do not borrow from another class.
+
+**Tests:** a fixture class with known members and a known reference consensus, asserting the derived
+spec, the identity, the verifier ratios, the bias flag, and the `NO SOURCE` path.
+
+### A3 — Wire the derivation into `anchor_readiness.py`
+
+It already reports `anchor actor OFF its ruled spec: 23 of 27` and
+`satisfying o0=p0=q0=cost0: 0 of 27`. Add a column: what the VIRTUAL anchor would be, and how far
+the current real anchor sits from it. That single table is what the maintainer signs from.
+
+⛔ AURORA has an unmerged crash fix for `anchor_readiness.py` on `devin/aurora/fix-anchor-readiness`,
+and it conflicts with master in that exact file. **Read and land-or-reject that branch through
+Claude-Local before you touch the file.** This is task C32 and it now blocks A3.
+
+### A4 — Make the report-to-ledger path actually work (your own finding, now yours to fix)
+
+You found it and you were right that it predates the branch: the consumer at
+`_patch_ledgers_from_reports.py:57` asks for a `dmg` column, the producer writes something else, and
+**60 rows parse with zero damage targets** while every other target applies. Fix it on master:
+
+* one shared column contract between producer and consumer, defined in one place;
+* the writer **refuses the whole operation** when a required target is missing, rather than silently
+  skipping the damage branch;
+* a producer→consumer **round-trip test**, not tests of either end alone. That is the test that
+  would have caught this.
+
+### A5 — Every refusal you own gets a passing test too
+
+You have my example: my superweapon lock tested a generator object, was always truthy, and refused
+every faction on a clean tree. Sweep `apply_balance.py` for every `problems.append(...)` and confirm
+each has a test asserting **both** that it fires on the positive case and that it does **not** fire
+on the negative one. Report the ✓/✗ list in the PR body, then write the missing ones.
+
+### A6 — The three other real defects you reproduced, as landed fixes
+
+Not as findings. Each is small and each has your reproduction already:
+
+* `splice_templates.py:217` writes canonical templates before validating the compatibility copies,
+  so a refusal leaves a half-written file. **Compute the whole candidate in memory, validate, then
+  write; preserve original bytes on any refusal.**
+* `tools/art/generate_chrome_scales.py:347` refuses a padded source only under `--emit`; `--write`
+  resizes it anyway. Fix both paths and add a behavioural test asserting **zero resize calls** — the
+  existing tests check strings, which is exactly why this survived.
+* `tools/hooks/read_first_guard.py:92` classifies command PREFIXES, so `sed -i`, `git branch -D` and
+  `cat a > b` are all "read-only". Narrow allowlist of read OPERATIONS, handle redirection and
+  flags — or relabel the hook as advisory. Do not leave it claiming a guarantee it does not give.
+
+### A7 — Then the anchors themselves
+
+With A2 landed, §4's dossiers stop being prose and become generated output plus a judgement line.
+Run `--all`, produce the 26 signable specs plus `dreadnought: NO SOURCE`, and hand the maintainer a
+table. ⛔ You still never set `signed_off`, and you never run `apply_balance --confirm`.
+
+---
+
+## 14.2 BOT MODULES — and the maintainer just unblocked the hard part
+
+`docs/design/AI_ARCHITECTURE.md` is the plan (1,158 lines, §11 reconciles the five-agent research
+round from Perplexity, Grok, Copilot, ChatGPT and Gemini). Read §0, §3, §4, §5, §10 — those are the
+sections that describe what you are building. **It is a plan, not code. Almost none of it exists.**
+
+What exists today: `AiMatchLogWriter.cs` + `AiMatchLogRecorder.cs` (record-only, landed, JSON bug
+fixed and tested), `tools/ai/aggregate_ai_matches.py` (no consumer), `BotGlobalUnitBudget.cs`,
+`BotInsurance.cs`, and ten difficulty tiers of `BotLimits` in `mods/cameo/ai/ai.yaml`.
+
+### ⭐ B1 — FOGGED OBSERVATION. Ruled YES by the maintainer, 2026-09-08. Build it first.
+
+§9 open decision #1 was "Maintainer's call" and is now answered: **the bot's observation model gets
+fogged.**
+
+The problem, as §0.2 states it: the squad manager scans `World.Actors` and filters only through
+`IVisibilityModifier` — cloak and submersion — **never through the player's shroud**
+(`SquadManagerBotModuleCA.cs:226-253,331-345`). A bot knows where every enemy unit and building is
+from tick zero, including inside unexplored map. Only the capture and crate modules expose a
+visibility option at all.
+
+This is the single most important piece of the whole AI program, and §0 says why: *"a detector that
+reads the true world state cannot be wrong and therefore cannot be beaten by deception."* Without
+it, scouting, feints and hidden tech mean nothing, personalities are cosmetic, and every claim that
+Cameo's bots win without cheating is false.
+
+**Build:**
+
+1. A `BotObservationModel` — one authority per decision (§10.1) — holding what this bot has actually
+   SEEN: last-known position, type and time-stamp per enemy actor, decaying rather than deleted, so
+   the bot can be *wrong* about a unit that moved. Being wrong is the feature.
+2. Every consumer reads the model, not `World.Actors`. Start with the squad manager; the ones that
+   already have a visibility option keep it.
+3. ⛔ **This is a Cameo SHADOW, not an engine edit.** `ObjectCreator.FindType` takes the first
+   assembly in `mod.yaml`'s list (AS, CA, **Cameo**, Cnc, D2k, Common), so an `OpenRA.Mods.Cameo`
+   type of the same name wins with zero yaml changes. ⚠ But a Cameo shadow **cannot** beat an **AS**
+   trait — AS is first. `SquadManagerBotModuleCA` is CA, so a Cameo shadow of it works; check the
+   assembly of anything else you shadow before you plan around it. `engine/` is NOT part of this
+   repo — it is gitignored, has zero tracked files, and the next `make all` deletes anything you
+   write there.
+4. Determinism: the observation model is per-player bot state. Keep it on the synced side or the
+   unsynced side deliberately and say which (§6.1) — an OOS from bot memory is a nightmare to debug.
+5. Expect bots to get **weaker** at first. That is correct and expected; do not compensate by
+   giving anything back.
+
+### B2 — The personality manager (§4)
+
+Five personalities, plus the open question of whether Guerrilla is a sixth or a mode of Rush (§9 #2,
+leaning sixth — raise it, do not decide it).
+
+⭐ **The compositions need ZERO C#.** A condition-gated player-level `ProvidesPrerequisite` already
+ships at `mods/cameo/ai/ai.yaml:176`, and the ten difficulty tiers already use exactly that pattern
+(`:179-209`). Personality-tagged production lists are yaml. **Do not write C# for something yaml
+already does** — that is the mistake that produced a duplicate match logger.
+
+The C# is the **switching**: which personality, when, and with what hold time. Ship CN's hysteresis
+constants as the starting point (§9 #11) and re-fit from phase-2 logs.
+
+### B3 — The master module (§5), and the decisions you must surface rather than settle
+
+Open decisions that are the maintainer's, not yours — surface each with a recommendation and the
+evidence, in the PR body:
+
+* **#6** — do all ten difficulty tiers get the personality manager, or is dynamic switching itself a
+  high-difficulty feature? (Making it difficulty-gated is a cheap, honest difficulty axis.)
+* **#8** — who owns contact memory: the master, or the squad manager's own scan? One authority per
+  decision says pick one. ⚠ B1 probably answers this: the observation model IS contact memory.
+* **#10** — may an emergency override change the personality, or only target and urgency? CN switches
+  straight to Turtle on a danger spike; the review reply argues an emergency must never rewrite the
+  strategic posture. This one is unresolved in the document and decides whether §4.5's fast path
+  needs its own hold time.
+
+### B4 — Give the match log a consumer
+
+`tools/ai/aggregate_ai_matches.py` aggregates and nothing reads it. With B1 and B2 landed it becomes
+the evidence for the hysteresis re-fit. Wire it to something that answers one question:
+*did switching personality at that moment help?*
+
+### B5 — Boot-gate everything here
+
+`mods/cameo/ai/ai.yaml`, `player.yaml`, `defaults.yaml` and anything in `OpenRA.Mods.Cameo/` are
+engine content. Rebuild C# before booting
+(`DOTNET_ROLL_FORWARD=LatestMajor dotnet build -c Release --nologo -p:TargetPlatform=win-x64`) — a
+stale DLL crashes the boot with `Cannot locate type: …Info`. The build output the game LOADS is
+`engine/bin`; the tracked `mods/cameo/OpenRA.Mods.Cameo.dll` does NOT auto-update.
+
+---
+
+## 14.3 RA2 + TS REFERENCE MAPS — yours, ruled 2026-09-08
+
+You can do this without any local game install: every input is committed —
+`docs/reference/ini_corpus.json` (11,870 rows) and `docs/design/ORIGINAL_UNITS_PEER_OPENRA.md`
+(2,583 rows). Nothing in the TD/RA1 process touched a local folder.
+
+Run the same pipeline — `assign_references.py` → `reference_targets.py` →
+`build_reference_report.py` — for `ra2_allies`, `ra2_soviets`, `ts_gdi`, `ts_nod`. Produce ONE
+report per faction, originals and expansions split, for the maintainer to approve faction by faction
+(EXTRAPOLATION_PROGRAM §5's ledger).
+
+⛔ **Read-only on the producers.** `assign_references.py`, `reference_distribution.py`,
+`faction_routes.py`, `reference_targets.py`, `tools/reference/**` belong to the fleet. Report
+mappings and hand over patches; Claude-Local lands the code. Five agents in that tree cost a week.
+
+⚠ **Open maintainer question, do not assume an answer:** is Romanov's Vengeance the RA2 authority?
+It carries 729 buildable units — more than RA2 + YR ever shipped — and it is 104 of the 119 unclaimed
+"originals". `audit_original_coverage` currently exempts it from the O2 ratchet; that exemption is a
+placeholder to be DELETED when ruled, never raised.
+
+Traps that cost the TD/RA1 map three review rounds, so you do not pay for them again:
+
+* **SHAPE and WEAK are not evidence.** Of ten mappings the maintainer called junk: 8 SHAPE, 2 WEAK,
+  **zero STRONG**. An actor with no name-backed match gets NO reference and falls through to the
+  formula.
+* **Originals must claim before expansions.** `firerocketsoldier` scores 0.867 against "Rocket
+  Soldier" and the real `sovietrocketsoldier` 0.850 — the expansion is literally the closer string.
+  No scorer tuning fixes it.
+* **Read ids, not only names.** CA ships `1TNK` as "Scout Tank"; DTA prefixes RA-era actors with
+  `RA` (`RAPBOX`, `RAAGUN`); CA states ownership in a dot suffix (`STNK.Nod`).
+* **CA is admissible to a median of FIVE Cameo factions** where every other source's median is one.
+  Until EMBER fixes it, expect CA to offer you the wrong faction's unit and check every CA match.
+
+---
+
+## 14.4 How I will judge this section
+
+Every task above lands as **code on master, boot-gated where it touches engine content, with a test
+that fails against the old behaviour.** In the PR body: what you measured before, what you measured
+after, and what you did NOT verify.
+
+That last sentence is the one thing from your review I want kept exactly as it was.

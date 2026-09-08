@@ -71,6 +71,33 @@ Next in the W24 queue: `devin/nova/w24-lane2` (57 commits, conflicts in
 `RedAlert2/Soviets/weapons.yaml` — a real per-weapon decision, not a merge tool), then
 `devin/nova/w24-naxi-pilot`, which must follow it.
 
+### ⭐⭐ 2026-09-08 — THE EXTRAPOLATION PROGRAM IS THE PLAN NOW
+
+`docs/design/EXTRAPOLATION_PROGRAM.md` — the maintainer's method, written down with the two
+measurements that prove it works. Anchors stop being real actors and become VIRTUAL ones derived
+from the reference-mapped originals of TD, RA1 and Japan.
+
+Two findings that settle it:
+
+* **26 of 27 classes have members in TD/RA1/Japan.** Only `dreadnought` has none (its five members
+  are StarCraft/naval). Measured through `class_membership.classify()` over 700 classified rows.
+  ⚠ Two earlier attempts returned all-zeros and 8-zeros — both bugs in the CHECK, because membership
+  is DERIVED from `design.subtype` when no explicit tag exists.
+* **The virtual-anchor mechanism ALREADY EXISTS and nothing uses it**: `fit_class.py --spec
+  hp,speed,range_wdist,damage,reload,cost0`, *"a round-number model unit that need not exist in
+  game"*. `faction_extrapolate.py` (504 lines) likewise already implements the exchange rate. What
+  is missing is the INPUTS, not the mechanism.
+
+Why it is right, not a workaround: 23 of 27 real anchors are off their ruled spec, 0 of 27 satisfy
+`o0=p0=q0=cost0`, and restatting one actor silently reprices its whole class. A virtual anchor
+cannot drift. Phases A–E, owners and gates are in the program document; the approval ledger is §5.
+
+Maintainer rulings, 2026-09-08:
+* **Fogged bot observation SHIPS** (AI §9 decision #1, open since the document was written).
+* **Astra owns the RA2 + TS reference maps** — every input is committed, no game install needed.
+* **Originals are approved faction by faction**, and extrapolation starts per faction on approval.
+* **Astra ships CODE.** `docs/BLACKROBE_ASTRA_ORDERS_2026-09-07.md` §14.
+
 ### Priority queue
 
 1. **CA over-tagging** (EMBER) — unblocks ~8 known-wrong mappings at once.
