@@ -384,21 +384,32 @@ def extract(label: str, spec: dict) -> tuple[list[dict], list[str]]:
             # houses) to be buildable. Decorative map props and empty template actors have none
             # of these and would otherwise pollute the buildable population. Explicit Buildable=no
             # or disabling prerequisites (~disabled, notbuildable, unavailable) gate it off.
-            _has_cost = num(a.get("Cost")) is not None
-            _has_owner = bool((a.get("FactoryOwners") or a.get("Owner") or "").strip())
+            # A unit is buildable only if it has a real production claim. The extractor's
+            # owner resolution already distills Owner, FactoryOwners, RequiredHouses and
+            # ForbiddenHouses into the `owners` list; for prerequisites, the raw token is kept
+            # because mods use virtual prerequisite labels (e.g. MO's `SOVWEAP` in
+            # [GenericPrerequisites]) that do not resolve to a single actor but are still valid
+            # production gates. Cost is NOT a buildability test. Negative TechLevel,
+            # Selectable=no, explicit Buildable=no, or a disabling prerequisite gates it off.
+            _has_owner = bool(owners)
             _has_prereq = bool((a.get("Prerequisite") or "").strip())
             _has_req = bool((a.get("RequiredHouses") or "").strip())
             _buildable_field = (a.get("Buildable") or "").strip().lower()
             _disabling_prereq = _has_prereq and any(
                 t.strip().lstrip("~!").lower() in ("disabled", "disable", "notbuildable", "unavailable", "unbuildable")
                 for t in (a.get("Prerequisite") or "").split(","))
+            _tech = num(a.get("TechLevel"))
             _is_buildable = not (
-                (num(a.get("TechLevel")) is not None and num(a.get("TechLevel")) < 0)
+                (_tech is not None and _tech < 0)
                 or (a.get("Selectable") or "").strip().lower() == "no"
                 or (a.get("IsSelectableCombatant") or "").strip().lower() == "no"
                 or _buildable_field == "no"
-                or (not _has_cost and not _has_owner and not _has_prereq and not _has_req)
                 or _disabling_prereq)
+            _is_buildable = _is_buildable and (
+                _buildable_field == "yes"
+                or _has_owner
+                or _has_prereq
+                or _has_req)
 
             rows.append({
                 "source": label,
