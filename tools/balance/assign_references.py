@@ -828,7 +828,13 @@ REFERENCE_OVERRIDES = {
     ("ra1_allies_alliedapc", "OpenRA Red Alert"): "APC",
     ("ra1_allies_reconranger", "Combined Arms"): "PBUL",      # Pitbull — a jeep that shoots rockets
     ("ra1_allies_sheridanassaulttank", "Combined Arms"): "RTNK",   # Mirage Tank
-    ("ra1_allies_alliedtigerheavytank", "Combined Arms"): "2TNK",  # CA ships exactly one 2TNK
+    # ⛔ NOT ("ra1_allies_alliedtigerheavytank", "Combined Arms"): "2TNK".
+    # The maintainer asked which other 2TNK variants CA ships. The answer is NONE — there is
+    # exactly one `2TNK`, and it is the Allied MEDIUM tank. Binding it to the Tiger took the
+    # medium tank's own reference, which then took `1TNK` from the light tank, and BOTH fell out
+    # of O1 while `1TNK` ended up assigned to nobody. One override, three units worse off.
+    # The Tiger is a Cameo expansion with no CA counterpart, so it gets none: an empty slot is a
+    # question, a stolen row is a wrong answer that also breaks two correct mappings.
     ("ra1_allies_bastionartillerybunker", "Combined Arms"): "HTUR",  # Grand Cannon
     ("ra1_allies_alliedheavyaatank", "DTA Enhanced"): "SHILKA",      # Quad Tank
     # Red Alert, Soviets:
