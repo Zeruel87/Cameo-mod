@@ -114,7 +114,7 @@ def emit(body, members, crows, assignment, attached, chassis_only, dist, cdist, 
         # the virtual anchor will be derived from (EXTRAPOLATION_PROGRAM.md), so a row whose class
         # looks wrong is a finding BEFORE any anchor is signed — and range/DPS were the two stats
         # a reference actually moves that the table never showed.
-        body.append('<table><thead><tr><th>Cameo actor</th><th>class</th><th class="n">refs</th>'
+        body.append('<table><thead><tr><th>Cameo actor</th><th>class &nbsp;today → after C46</th><th class="n">refs</th>'
                     '<th class="n">HP now</th><th class="n">HP →</th>'
                     '<th class="n">speed now</th><th class="n">speed →</th>'
                     '<th class="n">range now</th><th class="n">range →</th>'
@@ -187,6 +187,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--faction", nargs="+", required=True)
     ap.add_argument("--out", default="report_td_ra1.html")
+    ap.add_argument("--pending", help="JSON map actor -> PENDING class (C46). Renders the class "
+                                      "cell as 'today -> after'. A trailing '?' marks a "
+                                      "reclassification that OVERRIDES an existing combat class "
+                                      "and is not yet ruled.")
     args = ap.parse_args()
 
     peers, cameo = rd.peer_rows(), rd.cameo_rows()
@@ -223,6 +227,16 @@ def main() -> int:
         c, _why = cm.classify(design)
         if c:
             klass[actor] = c
+
+    # ⚠ PENDING classes are NOT in the ledger and cannot be: `^ArmedTroopTransportTemplate` and
+    # `^MobileBunkerTemplate` do not exist in yaml yet (C46), and `extract_stats` rewrites
+    # `design.class_anchor` to None on every run, so subtype — i.e. the inherited template — is the
+    # only durable membership signal. This overlay exists so the maintainer can review the
+    # reclassification BEFORE any yaml lands, not to assert it has happened.
+    if args.pending:
+        pend = json.loads(pathlib.Path(args.pending).read_text(encoding="utf-8"))
+        for actor, new_class in pend.items():
+            klass[actor] = f"{klass.get(actor) or '—'} → {new_class}"
 
     body = []
     counts = {"actors": 0, "refs": 0, "thin": 0, "none": 0, "orig": 0, "exp": 0}

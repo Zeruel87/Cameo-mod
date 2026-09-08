@@ -300,3 +300,327 @@ Any change that moves `O1` up, or reintroduces a SHAPE or WEAK row, is a regress
 also carries each actor's **class**, and its **range** and **DPS** now/target — the class column
 matters because `docs/design/EXTRAPOLATION_PROGRAM.md` derives the virtual anchors from it, so a
 wrong class is a finding BEFORE any anchor is signed.
+
+---
+
+## 10. ⛔⛔ STANDING PROTOCOL 2026-09-08 — IDENTITY FIRST, THEN ONE BRANCH YOU OWN
+
+**Maintainer ruling, 2026-09-08.** Agents in this fleet keep losing track of who they are between
+sessions, and every expensive failure this week traces back to it:
+
+* `devin/nova/w24-lane2` — **57 commits**, last pushed 22 hours ago, now unmergeable.
+* `devin/aurora/fix-anchor-readiness` — **never pushed to any remote**. It existed only in one local
+  checkout, an order named it as if it were reachable, and it **blocked Astra for a day** on a
+  branch nobody could see. The fix turned out to already be on master by another route.
+* Four contradicting rosters in circulation, and a commit-author filter that matched nothing because
+  every agent commits under the same shared identity.
+
+So the protocol below is not bureaucracy. It is the fix for the single defect that has cost this
+fleet the most time. **Sections 10.1 and 10.2 come before any other work, every session.**
+
+---
+
+### 10.1 STEP ONE — identify yourself. Before any other action, including reading the queue.
+
+1. `cat .agent-id` in your worktree root.
+2. **If it has a name, that name IS you for this entire session.** Do not pick a new one, do not
+   "improve" it, do not adopt a name you saw in a document or a commit message.
+3. **If it is missing or empty**, choose ONE unclaimed name from **EMBER · NOVA · AURORA · DAWN ·
+   ECHO**. Find what is already taken with:
+   ```
+   git ls-remote origin 'refs/heads/devin/*'
+   ```
+   Names appearing there in the last 48 hours are in use. Pick one that is not.
+4. Write it down so the next session inherits it:
+   ```
+   echo "<YOURNAME>" > .agent-id        # untracked, per-worktree, never committed
+   ```
+5. **State your name in the first line of every PR body**, in this exact form:
+   `Agent: <YOURNAME> · worktree: <path> · branch: <branch>`
+
+⛔ **You may never change your name mid-session, and never adopt another agent's name.** If two
+agents believe they are the same one, both sets of work become unattributable and neither can be
+reviewed. If you genuinely cannot tell who you are, say so in your PR and take a name that appears
+nowhere in `git ls-remote`.
+
+⛔ Your commit trailer is `Co-Authored-By: Devin AI <devin@cognition.ai>`. **Never sign as Claude.**
+The git author is a shared repo identity, so the trailer is the only provenance signal there is, and
+a wrong one pollutes history permanently.
+
+---
+
+### 10.2 STEP TWO — claim a lane by pushing a branch. First push wins.
+
+Branch name, exactly: **`devin/<yourname>/lane<N>_<slug>`** — e.g. `devin/ember/lane2_aa_range_gen`.
+
+```
+git switch -c devin/<yourname>/lane<N>_<slug>      # in YOUR OWN worktree only
+git commit --allow-empty -m "claim: lane<N> (<YOURNAME>)"
+git push -u origin HEAD                            # <-- THIS is the claim
+```
+
+**Push the claim commit before you write a single line of code.** Git makes the claim atomic: if
+your push succeeds, the lane is yours; if someone beat you to that branch name, pick the next
+unclaimed lane and move on without arguing. There is no registry file to edit, because a registry
+file is itself a merge conflict waiting to happen.
+
+⛔ **A branch that is not pushed does not exist.** That is the whole lesson of
+`devin/aurora/fix-anchor-readiness`. Push early, push often, and never describe local work to
+another agent as though they can reach it.
+
+---
+
+### 10.3 THE BRANCH OWNERSHIP LAW — absolute
+
+* You may **write** only on branches whose name contains **your own** agent name.
+* You may **read** any branch, and you are **expected** to review other agents' branches (§10.5).
+* You may **never** commit, push, force-push, rebase, amend or delete a branch belonging to another
+  agent — not to help, not to fix an obvious typo, not because they seem inactive.
+* If another agent's branch needs a change, **say so in your review**. Do not make it.
+* ⛔ Never `git switch`, `git checkout <branch>`, `git reset --hard`, or `git stash` in the **shared
+  main checkout**. Several humans and agents have live uncommitted WIP there. Work in your own
+  worktree.
+* ⛔ Never `git add -A`, `git add .`, or `git add --all`. Scoped `git add <files>` only, and
+  `git commit -- <explicit paths>` so a stray staged file cannot ride along.
+* ⛔ Never `git checkout -- .`
+
+---
+
+### 10.4 THE FIVE LANES
+
+Chosen so that **no two lanes write the same file.** The "must not touch" list in each lane is what
+makes that guarantee real — respect it and you cannot conflict with another agent by construction.
+
+⛔ **Common to every lane:** `tools/balance/reference_distribution.py`,
+`tools/balance/assign_references.py`, `tools/balance/faction_routes.py` and
+`tools/balance/reference_targets.py` are **Claude-Local's, read-only to all five of you.** Five
+agents colliding in that tree already cost a week.
+
+#### LANE 1 — the two class templates (C46). **Highest value: it unblocks three other people.**
+
+The classes `armed_troop_transport` and `mobile_bunker` are defined in `class_membership.py` and
+`class_anchors.json` but have **zero members**, because the yaml templates do not exist. Astra's
+anchor tooling reports `NO SOURCE` because of it, and the AA audit in Lane 3 cannot classify
+anything until it is fixed.
+
+⛔ **The reason a hand tag cannot substitute:** `extract_stats.py:967` rewrites
+`design.class_anchor` to `None` on **every run**. `design.subtype` — the nearest `^...Template` the
+actor inherits — is the **only durable membership signal**. Members are made by inheritance, not by
+being listed anywhere.
+
+**You own:** `mods/cameo/rules/defaults.yaml`, the member actors' rules files,
+`tools/balance/class_membership.py`, `docs/balance/class_anchors.json`.
+**Do not touch:** `extract_stats.py` (Lane 4), `gen_weapon_template.py` (Lane 2), anything in
+`tools/audit/` (Lane 3).
+
+1. Add `^ArmedTroopTransportTemplate` and `^MobileBunkerTemplate` to `defaults.yaml`, modelled on
+   `^SupportVehicleTemplate` (line ~1595) and `^AntiAirVehicleTemplate` (line ~1820). Give each a
+   `TooltipExtras` description and a sensible `Armor`/`RevealsShroud`, and give `^MobileBunkerTemplate`
+   the `^OpenToppedVehicle` cargo behaviour the members already have.
+2. Add `Inherits@Template:` to the members. **The 16 `mobile_bunker` members**, measured through the
+   resolver on 2026-09-08 (buildable, `AttackOpenTopped`, ground vehicles only):
+   `ra2_allies_battlefortress` `_chrono` `_empty` · `td_gdi_assaultapc` · `tkm_battlebus` ·
+   `asianalliance_warturtle` · `forgotten_thumperbus` · `latinsyndicate_carteltruck` ·
+   `naxis_oldtank` · `steelconsortium_poseidontank` · `forgotten_nomadbarracks` · `naxis_nokana` ·
+   `tkm_bigshiee` · `naxis_shoekarn` · `asianalliance_dragonfly` · `latinsyndicate_narcohummer`.
+   ⚠ **26 actors resolve `AttackOpenTopped`, not 16.** Ten of them are **3 aircraft**
+   (`terran_pythean`, `ts_gdi_hammerhead`, `zerg_behemoth`) and **7 immobile bunkers/defenses**
+   (`naxis_naxibunker`, `ra2_soviets_battlebunker`, `terran_bunker`, `tkm_bunker`,
+   `latinsyndicate_bunkertower`, `latinsyndicate_combatbarracks`, `latinsyndicate_defensebureau`).
+   **Exclude them.** A further 21 `ra2_*_driveby` civilian cars are open-topped and not buildable.
+3. **`armed_troop_transport` members: land ONLY the 18 whose current class is `support` or `None`.**
+   ⛔ **17 more actors pass the mechanical test but already carry a real combat class** — the six
+   `ra2_allies_ifv*` variants, `ra1_soviets_flaktruck`, `ra2_soviets_flaktrack`,
+   `td_gdi_humveemkii`, `td_nod_buggymkii`, `futuretech_salamanderifv`, `ixian_shockraider`,
+   `ixian_stormraider`, `ordos_stealthraider`, `japan_armoredcar`, `naxis_kubelwagen`,
+   `tkm_sandmarine`. **These are NOT yours to rule on. Leave them alone and list them in your PR.**
+   The maintainer is reviewing them in the reference map right now.
+4. Add `"mobilebunker": "mobile_bunker"` to the map in `class_membership.py`, and add
+   `mobile_bunker` to `class_anchors.json` as the 29th class. ⛔ `verifier_actor: null` and **no
+   `dps0`** — W24 is still moving (231 weapons still stack 2+ mains).
+5. ⛔ **BOOT GATE.** `defaults.yaml` is engine content. Snapshot `%APPDATA%/OpenRA/Logs` **before**
+   launching. `launch-game.cmd` must reach the main menu; proof is `perf.log` **containing**
+   `MenuPostProcessEffect.PostWorldLoaded` and **no new `exception-*.log`** — not the last line of
+   the log. Kill the process the moment the menu is proven; a live instance locks the next build.
+   Launch via PowerShell `Start-Process`, never the Bash tool.
+6. ⛔ Run `python tools/audit/audit_duplicate_inherits.py`. Adding a template to actors that already
+   inherit one is exactly how the `Parent type X was already inherited` boot crash happens, it is
+   ORDER-dependent, an `@suffix` does **not** legalise it, and grep cannot find it.
+
+**Done when:** the game boots, `class_membership.py` reports non-zero members for both classes,
+`audit_duplicate_inherits` is clean, and your PR lists the 17 contested actors you did not touch.
+
+#### LANE 2 — generate the AA range (C44)
+
+DESIGN.md's new **AA range law** (2026-09-08) says the 1.5× AA range bonus belongs to exactly three
+classes — `scout_vehicle`, `armed_troop_transport`, `anti_air_vehicle` — and that the number is
+**generated, never hand-typed**.
+
+**You own:** `tools/balance/gen_weapon_template.py`, `tools/balance/splice_templates.py`, and the
+generated weapon yaml.
+**Do not touch:** `defaults.yaml` (Lane 1), `tools/audit/**` (Lane 3), `extract_stats.py` (Lane 4).
+
+1. Add `AA_RANGE_MULT = 1.5` and make the generator **write** the AA twin's `Range` from its ground
+   twin's.
+2. ⚠ **§8c is the trap that will eat this lane.** *"A derive-unless-overridden default is invisible
+   when something upstream always overrides."* `ScaledBullet` derived shell Inaccuracy and Speed
+   from Range **for weeks and reached zero weapons**, because the templates also wrote literals and
+   an explicit yaml value always wins. Your test must assert the **derived number on a real
+   RESOLVED weapon** via `miniyaml.Ruleset.resolve_weapon` — never that the knob exists.
+3. Always `splice_templates.py --all`, **never a subset** — a partial splice leaves drift.
+4. Run `tools/audit/verify_generator_sync.py`; then `tools/audit/find_empty_warhead.py` **must print
+   0** (deleting or regenerating a warhead orphans child bare overrides into an abstract warhead and
+   the game NREs at boot; `--check-yaml` does not catch that class).
+5. ⛔ **BOOT GATE**, same procedure as Lane 1.
+
+⚠ Baseline measured 2026-09-08 — **re-measure, do not carry it forward:** 67 actors carry a live AA
+armament; 36 at exactly 1.5×, 14 at exactly 1.0×, 14 elsewhere, 3 pure-AA. `scout_vehicle` is
+already 10 of 10 compliant.
+
+⛔ **You may not change any warhead, `Burst` or `BurstDelays` without explicit permission**, and
+`Versus` lives **ONLY** in `^Warhead_*` templates. Range is not a warhead field; stay on range.
+
+**Done when:** the game boots, `find_empty_warhead` prints 0, `verify_generator_sync` reports no
+drift, and a test proves the derived range on a resolved weapon.
+
+#### LANE 3 — `tools/audit/audit_aa_range.py` (C45)
+
+**You own:** the new file, plus its one-line registration in `tools/audit/run_all.sh`.
+**Do not touch:** anything else. This lane is deliberately the smallest blast radius in the fleet.
+
+Report, per buildable actor with both a live ground and a live AA armament: its class, its
+AA÷ground range ratio, and the verdict under the DESIGN.md law. **FAIL** when an allowed class is
+not at 1.5×, when a disallowed class is above 1.0×, or when **any `mobile_bunker` carries an
+air-capable armament** (today exactly one: `td_gdi_assaultapc` at 1.500×).
+
+* Get the class from `class_membership.classify()`. ⛔ **Never** the raw `design.class_anchor` field.
+* ⛔ **Never hand-parse yaml.** Read through `miniyaml.Ruleset.resolve_weapon`. A bespoke
+  line-scanner once opened a dict on `Versus:` and never closed it, so `PercentageVersus:` rows in
+  the same node overwrote the profile — every mean, spread and ratio came out internally consistent
+  and **wrong**: it reported "0 of 125 obey the MEAN-100 law" when the truth was **123 of 125**.
+* Register the count as a **LOWER-ONLY RATCHET**. ⛔ **Never raise a ratchet.** Ember's
+  `vfi-signature-fix` is good work sitting unmerged precisely because it moves O1 from 8 to 13 over
+  a ratchet of 12.
+* ⚠ **Exclude the evidence the audit is built from** — four audits in one day once flagged their own
+  definition file, their own previous report, their own fixtures, and a path that can never exist.
+* ⚠ **A 0% or 100% row is a bug in the CHECK.** Claude-Local hit this again on 2026-09-08: an
+  `AttackOpenTopped` scan returned **0 of 213** because it searched for a trait named `OpenTopped`
+  and the trait is `AttackOpenTopped`. Break your check before you believe an extreme number.
+* ⛔ Regenerate reports with **`bash tools/audit/run_all.sh` only** — PowerShell `>` writes UTF-16 —
+  and only from a complete tree. Never read a background task's **notification** exit code; read the
+  `exit=` line in the output file.
+
+⚠ This lane's numbers only become fully correct after Lane 1 lands. **That is fine — build it now,
+report the pre-Lane-1 numbers, and re-run after.** Do not wait, and do not do Lane 1's work.
+
+**Done when:** the audit runs clean from `run_all.sh`, the ratchet is registered, and your PR shows
+the before/after counts with a pinned SHA. Docs/tools-only — **no boot gate needed**.
+
+#### LANE 4 — teach the extractor about cargo and fireports (C47)
+
+The ledger records **no passenger capacity at all** — no `Cargo`, no `Passengers`, no `OpenTopped`.
+That is why no audit can distinguish a transport from any other armed vehicle today.
+
+**You own:** `tools/balance/extract_stats.py`.
+**Do not touch:** the 33 ledger JSONs (see below), `class_membership.py` (Lane 1),
+`gen_weapon_template.py` (Lane 2), `tools/audit/**` (Lane 3).
+
+1. Record `cargo_capacity` and `open_topped` per actor, resolved through `miniyaml`.
+2. ⛔ **DO NOT re-extract the ledgers in this lane.** A re-extract rewrites all 33 JSONs and would
+   collide head-on with Lane 1's class changes. Implement, unit-test against fixtures, and **say in
+   your PR that the re-extract is deferred to after Lane 1 lands.** Whoever runs it afterwards
+   commits **yaml and ledger in the SAME commit** — `audit_balance_drift` goes red when they
+   disagree, and it has gone red twice because someone landed yaml without re-extracting.
+3. ⚠ **Do not "fix" `design.class_anchor` being reset to `None`.** That is deliberate. Subtype is
+   the membership signal.
+
+**Done when:** the new fields extract correctly for a handful of known actors (`td_gdi_apc`,
+`td_gdi_assaultapc`, `ra1_allies_alliedapc`, `ra2_allies_battlefortress`), tests pass, and no ledger
+file is modified. Tools-only — **no boot gate needed**.
+
+#### LANE 5 — the merge backlog. Unglamorous, and the tree is rotting without it.
+
+**14 branches are unmerged.** They rot a little more every day and several already conflict.
+
+**You own:** only branches carrying **your own** agent name. **Do not touch:** anyone else's.
+
+1. `git ls-remote origin 'refs/heads/devin/*'`, then for each of **your** branches:
+   `git rev-list --count origin/master..<branch>`.
+2. Rebase each onto current master, re-run the audits it touches, boot-gate if it touches engine
+   content, and push. If a branch is superseded, **say so and propose deleting it** — do not delete
+   another agent's branch yourself.
+3. **`devin/nova/w24-lane2` is the big one: 57 commits.** ⛔ **Only NOVA may touch it.** If you are
+   NOVA, this is your whole lane and it is worth more than any new task: it is W24 work, and W24 is
+   the blocker under the anchors. If you are not NOVA, leave it entirely alone and pick another lane.
+4. ⚠ **Ember's `devin/ember/vfi-signature-fix` must NOT be landed as-is** — it breaches ratchet O1
+   (8 → 13, ceiling 12). Good work, wrong shape. It needs the regression fixed, not the ratchet
+   raised.
+
+**Done when:** every branch carrying your name is either rebased and green, or explicitly declared
+superseded with a reason.
+
+---
+
+### 10.5 PEER REVIEW — you review each other. Do not wait for Claude-Local.
+
+Round robin: **Lane 1 is reviewed by Lane 2's owner, 2 by 3, 3 by 4, 4 by 5, and 5 by Lane 1's.**
+Every lane gets exactly one reviewer and every agent reviews exactly one lane, so nobody is a
+bottleneck and nobody is unreviewed.
+
+A review must state, in this order:
+
+1. **what you ran** — the exact commands, with a pinned SHA next to every count, so a reader can
+   tell a moving target from a disagreement;
+2. **what you measured** — before and after;
+3. **what you did NOT verify** — this is the most valuable line in any review and it is the one
+   most often missing;
+4. **one thing you think is wrong, risky, or under-tested.** If you genuinely cannot find one, say
+   what you looked for and why you are confident.
+
+⛔ **"Looks good to me" is not a review** and will be rejected. ⛔ **A review is read-only** — you
+never push a fix to the branch you are reviewing (§10.3); you describe it and the owner applies it.
+
+⭐ Two habits worth copying from Astra's review of PR #325: **they compiled the actual C# instead of
+trusting the Python model** (Python ints do not overflow, so the model could never have found the
+32-bit defect), and **they repeatedly said what they had not verified.** Both are rarer than they
+should be.
+
+⭐ **A file that CONFLICTS is safer than one that does not — the conflict is the warning.** Astra's
+best finding on that PR was eight `signed_off: true` rows in `class_anchors.json` that merged
+*cleanly* and would have silently signed anchors nobody approved.
+
+---
+
+### 10.6 Rules that apply in every lane, without exception
+
+* ⛔⛔ **SUPERWEAPONS ARE NEVER PRICED AND NEVER CHANGED.** Maintainer, emphatically: *"exclude super
+  weapons from this balance formula since they are all fixed HP! NEVER CHANGE THEM!!"*
+* ⛔ **Never hand-edit a balance number.** `extract_stats` → ledger → `apply_balance --confirm`, and
+  `--confirm` requires a maintainer order nobody in this fleet has.
+* ⛔ **`Versus` lives ONLY in `^Warhead_*` templates.** No warhead / `Burst` / `BurstDelays` change
+  without explicit permission.
+* ⛔ **Never hand-parse yaml.** `miniyaml.Ruleset.resolve_weapon` / `.resolve`, always.
+* ⛔ **Never raise a ratchet.** Lower only.
+* ⛔ **Boot-gate every commit touching engine content.** Docs and tools are exempt.
+* ⛔ **`engine/` IS NOT PART OF THIS REPO.** It is gitignored, `git ls-files engine` returns zero,
+  and `make.cmd all` deletes anything you write there. Never edit it.
+* ⛔ **Underscore-only naming.** No hyphens in ids, files or fluent keys.
+* ⛔ **A result that contradicts a binding law is a contradiction, not a finding.** If the generator
+  implements a law and `verify_generator_sync` reports 0 drift, "nothing conforms" means your
+  measurement is broken. Check the measurement before writing it up.
+* ⛔ **Before reporting something absent, prove your pool contains it.** This exact mistake produced
+  four false reports in one day: 40 "lost" references that were all heroes filtered out of the pool
+  (true count 0), 30 corrections reported as failed because the tool only writes under `--write`,
+  and "no agents have pushed" when 17 branches had moved.
+
+---
+
+### 10.7 When you are blocked, do not stop and do not invent
+
+1. Write the blocker on your PR: what you needed, what you tried, what you measured.
+2. **Take the next unclaimed lane** and push its claim branch. Do not sit idle waiting for an answer.
+3. If the blocker is a **decision** rather than a fact, put it to the maintainer as a question with
+   **2–4 real options and a recommendation** — never as a bullet in a summary, and never resolve it
+   yourself. They cannot read everything; a forced choice is what gets a considered answer.
+4. **Do not treat a missing branch, a missing file or an unreachable reference as permission to
+   proceed anyway.** Astra got this exactly right and it is the standard for everyone here.
