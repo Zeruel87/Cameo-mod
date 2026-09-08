@@ -83,6 +83,13 @@ SUBTYPE_TO_CLASS: dict[str, str] = {
     # inflated that population by 40 units in the workbook and the range tool.
     "linebreaker": "line_breaker",              # 30/31 -- was wrongly `mbt`
     "supportvehicle": "support",                # 1/1; support is ability-priced (FORMULA_V2 §6b)
+    # ⛔ INERT UNTIL THE TEMPLATE EXISTS, AND THAT IS THE POINT. `extract_stats` rewrites
+    # `design.class_anchor` to None on every run (extract_stats.py:967), so a hand tag cannot make
+    # an actor a member of anything — SUBTYPE is the only durable membership signal, and subtype
+    # comes from the nearest `^...Template` the actor inherits. So the 16 armed transports become
+    # members by inheriting `^ArmedTroopTransportTemplate`, not by being listed anywhere.
+    # The maintainer asked for exactly this ("maybe they need a new TroopTransport Template?").
+    "armedtrooptransport": "armed_troop_transport",
 
     # --- infantry -----------------------------------------------------------------------------
     "scoutinfantry": "scout",
