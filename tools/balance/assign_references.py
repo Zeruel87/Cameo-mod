@@ -115,14 +115,28 @@ def has_any_armament(rec):
 
 
 def exempt(actor, rec):
+    """Chassis-only actors need HP and speed alone, so they take a weaker reference test.
+
+    ⛔ AN ARMED ACTOR IS NEVER CHASSIS-ONLY, whatever class it lands in. This guard used to ask the
+    class question first, and `class_membership` files armed transports and the GDI Vulcan under
+    `support` — so `td_gdi_boxer`, `td_gdi_apc`, `ra1_allies_alliedapc` and `ra1_soviets_btr80` were
+    all reported chassis-only while carrying live weapons. The maintainer put it plainly on
+    2026-09-08: *"td_gdi_boxer chassis-only but in fact the referenced vulcan does have a weapon!
+    ... no they are not chassis only! Also review the other APCs as well since all APCs come with
+    weapons!"*
+
+    The weapon is the test, and it comes FIRST. A real support unit — engineer, harvester, MCV —
+    carries no armament at all, so it still falls through to the class and word rules below.
+    `has_any_armament` rather than `is_armed` for the same reason it is used everywhere else: a
+    guard that is wrong in the RESTRICTIVE direction deletes correct candidates.
+    """
+    if has_any_armament(rec):
+        return None
     if cm.classify(rec.get("design") or {})[0] in EXEMPT_CLASSES:
         return "support-class"
     tail = actor.split("_")[-1]
     for word in EXEMPT_WORDS:
         if word in tail:
-            # the APC carve-out: a carrier that shoots is not exempt
-            if word in ("transport", "carryall", "chinook", "dropship", "hovercraft") and is_armed(rec):
-                return None
             return f"role-identical ({word})"
     return None
 
@@ -650,6 +664,48 @@ REFERENCE_OVERRIDES = {
     # uses, so id agreement gives it to the Allied gun and frees `CRAM` for GDI's Skyshield.
     ("td_gdi_skyshield", "Combined Arms"): "CRAM",
     ("ra1_allies_alliedaagun", "Combined Arms"): "AGUN",
+
+    # ── Maintainer review round FOUR, 2026-09-08. Every id below was verified present in the
+    # routed pool before it was written here; `apply_overrides` now WARNS on one that is not,
+    # because a typo used to vanish silently and read as "the matcher chose badly".
+    #
+    # Regressions first — mappings that existed and were lost:
+    ("td_gdi_rocketsoldier", "DTA Enhanced"): "E3",        # DTA calls it "Bazooka"; no shared word
+    ("td_nod_rocketsoldier", "DTA Enhanced"): "E3N",       # the Nod-side row of the same pair
+    ("td_nod_apacheattackhelicopter", "OpenRA Tiberian Dawn"): "HELI",   # named "Apache Longbow"
+    ("ra1_soviets_actordogname", "Combined Arms"): "DOG",
+    ("ra1_soviets_actordogname", "OpenRA Red Alert"): "DOG",
+    ("ra1_soviets_actordogname", "DTA Enhanced"): "DOG",
+    # Tiberian Dawn:
+    ("td_gdi_archerartillery", "DTA Enhanced"): "DISCARTY",   # "Disc Launcher", GDI
+    ("td_gdi_archerartillery", "Combined Arms"): "THWK",      # Tomahawk Launcher
+    ("td_gdi_exosuit", "Combined Arms"): "XO",                # X-O Powersuit
+    ("td_gdi_predatortank", "Combined Arms"): "MTNK.Laser",   # the GDI Battle Tank replacement
+    ("td_gdi_firehawk", "Combined Arms"): "AURO",             # Aurora; A10 joins via FAMILY_EXTRA
+    ("td_nod_venom", "Combined Arms"): "VENM",
+    # Red Alert, Allies:
+    ("ra1_allies_rapierjumpjet", "Combined Arms"): "BEAG",    # Black Eagle — NOT the Blackhawk
+    ("ra1_allies_alliedapc", "Combined Arms"): "APC",         # the Allied APC, not GDI's APC2
+    ("ra1_allies_alliedapc", "DTA Enhanced"): "RAAPC",        # DTA prefixes RA-era actors with RA
+    ("ra1_allies_alliedapc", "OpenRA Red Alert"): "APC",
+    ("ra1_allies_reconranger", "Combined Arms"): "PBUL",      # Pitbull — a jeep that shoots rockets
+    ("ra1_allies_sheridanassaulttank", "Combined Arms"): "RTNK",   # Mirage Tank
+    ("ra1_allies_alliedtigerheavytank", "Combined Arms"): "2TNK",  # CA ships exactly one 2TNK
+    ("ra1_allies_bastionartillerybunker", "Combined Arms"): "HTUR",  # Grand Cannon
+    ("ra1_allies_alliedheavyaatank", "DTA Enhanced"): "SHILKA",      # Quad Tank
+    # Red Alert, Soviets:
+    # ⚠ CA ships TWO rows named "SAM Site" with identical faction lists — `NSAM` (Nod's) and `SAM`
+    # (the Soviet one). The NAME cannot separate them and the id can, exactly like the AA Gun pair.
+    ("ra1_soviets_sovietsamsite", "Combined Arms"): "SAM",
+    ("td_nod_samsite", "Combined Arms"): "NSAM",
+    ("ra1_soviets_zapper", "Combined Arms"): "TTRP",         # Tesla Trooper
+    ("ra1_soviets_btr80", "Combined Arms"): "BTR",           # see the note below on flaktruck
+    ("ra1_soviets_gatlingtank", "Combined Arms"): "BTR.YURI",   # the Gattling BTR
+    ("ra1_soviets_gorynychtank", "Combined Arms"): "HFTK",      # Heavy Flame Tank
+    ("ra1_soviets_hammertank", "Combined Arms"): "3TNK.RHINO",  # Rhino, not a flame tank
+    ("ra1_soviets_nuclearv2launcher", "Combined Arms"): "NUKC", # Nuke Cannon
+    ("ra1_soviets_hiptransport", "Combined Arms"): "HALO",
+    ("ra1_soviets_su57attackbomber", "Combined Arms"): "SUK",   # Sukhoi Attack Plane
 }
 
 
@@ -659,9 +715,16 @@ def apply_overrides(result, by_source, routed_pool, routing):
     for src, plist in by_source.items():
         for p in plist:
             index[(src, (p.get("id") or "").upper())] = p
+    apply_overrides.missing = missing = []
     for (cid, src), pid in REFERENCE_OVERRIDES.items():
         p = index.get((src, pid.upper()))
         if p is None:
+            # ⛔ NEVER SILENT. A maintainer-ruled pairing whose peer id is absent from the routed
+            # pool used to `continue` without a word, so a typo — or a row the routing refuses —
+            # looked exactly like the matcher having chosen badly. Every override in the table was
+            # verified present when written; if one stops resolving, that is a finding about the
+            # POOL and it has to surface.
+            missing.append((cid, src, pid))
             continue
         for other, srcs in result.items():
             d = srcs.get(src)
@@ -925,6 +988,8 @@ def main():
         n = sum(1 for v in result.values()
                 if sum(1 for m in v.values() if m["confidence"] in tiers) >= 2)
         print(f"⭐ actors with >=2 {label} references: {n}")
+    for cid, src, pid in getattr(apply_overrides, "missing", ()):
+        print(f"⛔ OVERRIDE UNRESOLVED  {cid:38s} {src:24s} {pid}  — not in the routed pool")
 
     if args.cls:
         print(f"\n── {args.cls} — every member and its one reference per source ──")

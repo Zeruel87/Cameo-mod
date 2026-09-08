@@ -35,6 +35,7 @@ SECTIONS = (("infantry", "Infantry"), ("vehicle", "Vehicles"), ("aircraft", "Air
 CONF_ORDER = {"STRONG": 0, "FAIR": 1, "SHAPE": 2, "WEAK": 3}
 
 STYLE = """
+.cls{font-size:11px;color:var(--muted);white-space:nowrap}
 :root{--bg:#f7f6f3;--fg:#1b1a17;--mut:#6f6a60;--line:#ddd8cd;--card:#fffefb;--accent:#8a5a2b;
 --strong:#1f6b4a;--fair:#7a6320;--shape:#4a5a78;--weak:#8a4a3c;--bad:#a3312a;--tgt:#2e5c8a;}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#161513;--fg:#eae6dd;
@@ -91,15 +92,21 @@ def is_original(srcs):
                for s, d in (srcs or {}).items())
 
 
-def emit(body, members, crows, assignment, attached, chassis_only, dist, cdist, counts):
+def emit(body, members, crows, assignment, attached, chassis_only, dist, cdist, counts, klass):
     for kind, title in SECTIONS:
         group = [a for a in members if crows[a]["type"] == kind]
         if not group:
             continue
         body.append(f'<h3>{title} <span class="muted">· {len(group)}</span></h3>')
-        body.append('<table><thead><tr><th>Cameo actor</th><th class="n">refs</th>'
+        # ⭐ CLASS, RANGE and DPS added 2026-09-08 at the maintainer's request. The class is what
+        # the virtual anchor will be derived from (EXTRAPOLATION_PROGRAM.md), so a row whose class
+        # looks wrong is a finding BEFORE any anchor is signed — and range/DPS were the two stats
+        # a reference actually moves that the table never showed.
+        body.append('<table><thead><tr><th>Cameo actor</th><th>class</th><th class="n">refs</th>'
                     '<th class="n">HP now</th><th class="n">HP →</th>'
                     '<th class="n">speed now</th><th class="n">speed →</th>'
+                    '<th class="n">range now</th><th class="n">range →</th>'
+                    '<th class="n">DPS now</th><th class="n">DPS →</th>'
                     '<th class="n">cost now</th><th class="n">cost →</th>'
                     '<th>reference units chosen</th></tr></thead><tbody>')
         for a in group:
@@ -137,15 +144,27 @@ def emit(body, members, crows, assignment, attached, chassis_only, dist, cdist, 
                     if str(r.get("id")) not in {str((d or {}).get("id")) for d in chosen.values()}))
                 chips += (f'<span class="chip fam">+{extra} variant'
                           f'{"s" if extra != 1 else ""}: {html.escape(fam[:90])}</span>')
-            tgt = {s: (rt.target_for(rows, c, s, dist, cdist)[1] if rows else None)
-                   for s in ("hp", "speed", "cost")}
+            def _t(stat):
+                if not rows:
+                    return None
+                try:
+                    return rt.target_for(rows, c, stat, dist, cdist)[1]
+                except (KeyError, TypeError, ValueError, ZeroDivisionError):
+                    # A stat the distribution does not carry is a BLANK CELL, never a crash and
+                    # never a zero — a zero would read as "the reference says this unit deals no
+                    # damage", which is a different and much worse claim than "not measured".
+                    return None
+            tgt = {stat: _t(stat) for stat in ("hp", "speed", "cost", "w_range", "w_dps")}
             note = ' <span class="tag">chassis-only</span>' if a in chassis_only else ""
             empty = '<span class="muted">—</span>'
             body.append(
                 f'<tr><td><code>{html.escape(a)}</code>{note}{flag}</td>'
+                f'<td class="cls">{html.escape(klass.get(a) or "—")}</td>'
                 f'<td class="n">{len(srcs)}</td>'
                 f'<td class="n">{num(c.get("hp"))}</td><td class="n t">{num(tgt["hp"])}</td>'
                 f'<td class="n">{num(c.get("speed"))}</td><td class="n t">{num(tgt["speed"])}</td>'
+                f'<td class="n">{num(c.get("w_range"))}</td><td class="n t">{num(tgt["w_range"])}</td>'
+                f'<td class="n">{num(c.get("w_dps"))}</td><td class="n t">{num(tgt["w_dps"])}</td>'
                 f'<td class="n">{num(c.get("cost"))}</td><td class="n t">{num(tgt["cost"])}</td>'
                 f'<td>{chips or empty}</td></tr>')
         body.append("</tbody></table>")
@@ -167,6 +186,15 @@ def main() -> int:
     assignment, chassis_only = doc["assignment"], doc.get("chassis_only", {})
     attached = rt.expand_families(rt.attach(assignment, rt.peer_index(peers)), peers)
     crows = {c["id"]: c for c in cameo}
+    # The class comes from `class_membership.classify`, NEVER from the raw `design.class_anchor`
+    # field: membership is DERIVED from `subtype` when no explicit tag exists, so reading the tag
+    # alone reports `commando` as empty when it has 30 members.
+    import class_membership as cm
+    klass = {}
+    for actor, design in cm.ledger_rows():
+        c, _why = cm.classify(design)
+        if c:
+            klass[actor] = c
 
     body = []
     counts = {"actors": 0, "refs": 0, "thin": 0, "none": 0, "orig": 0, "exp": 0}
@@ -194,7 +222,7 @@ def main() -> int:
             body.append(f'<h2 class="band">{label} '
                         f'<span class="muted">· {len(band)}</span></h2>'
                         f'<p class="lede">{note}</p>')
-            emit(body, band, crows, assignment, attached, chassis_only, dist, cdist, counts)
+            emit(body, band, crows, assignment, attached, chassis_only, dist, cdist, counts, klass)
 
     summary = (f'{counts["orig"]} originals · {counts["exp"]} expanded · '
                f'{counts["refs"]} references · {counts["none"]} priced by formula · '
