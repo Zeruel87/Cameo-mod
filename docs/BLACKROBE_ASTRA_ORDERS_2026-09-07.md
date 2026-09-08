@@ -1211,6 +1211,28 @@ Traps that cost the TD/RA1 map three review rounds, so you do not pay for them a
 
 ---
 
+
+### ⭐ 14.3b — round-four traps, added 2026-09-08b. These WILL hit your RA2/TS pass.
+
+Read `docs/FLEET_ORDERS_2026-09-08.md` §9 in full; the four that matter most for you:
+
+1. **`assign_references.py` writes the JSON only under `--write`.** I lost a verification round to
+   this — ran it without the flag, read yesterday's file, and reported 30 corrections as failed when
+   they had all applied. Check the mtime of anything you draw a conclusion from.
+2. **Two rows, one name.** CA ships `NSAM` and `SAM` both named "SAM Site" with identical faction
+   lists, two "AA Gun" rows, two "Mammoth Tank" rows. Compare IDS, never names alone. RA2 sources
+   are worse for this than TD/RA1 — Romanov's Vengeance alone carries 729 buildable rows.
+3. **A guard wrong in the restrictive direction deletes correct candidates.** `exempt()` marked
+   armed APCs and the GDI Vulcan chassis-only because it asked the class question before the weapon
+   question. When two tests disagree, the one that lets the actor through wins.
+4. **Never `continue` past a rule that did not fire.** A silent override skip read as bad judgement
+   for a month. If a table says X and X does not happen, surface it.
+
+⚠ And one open rule that affects how you report: **one peer row currently serves one Cameo actor.**
+The maintainer has asked for a shared row in three places, so the rule is under review. Report a
+mapping you believe is right even if another actor already holds that row — flag the collision
+rather than silently picking one.
+
 ## 14.4 How I will judge this section
 
 Every task above lands as **code on master, boot-gated where it touches engine content, with a test

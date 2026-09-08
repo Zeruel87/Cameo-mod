@@ -237,3 +237,66 @@ RISK:   RedAlert2/Soviets/weapons.yaml overlapped lane1; resolved in favour of m
 
 If a gate is red, say so and say why — a red gate reported honestly costs an hour; a red gate
 discovered after landing costs a day.
+
+---
+
+## 9. ⭐ ROUND-FOUR LEARNINGS — 2026-09-08b. Read these before touching the reference tree.
+
+The maintainer reviewed the map a fourth time and named ~30 defects. Two were STRUCTURAL and they
+explain most of the rest. Both are fixed on master (`f21225b6a`); the lessons are yours.
+
+### 9.1 A guard asked the CLASS question before the WEAPON question
+
+`exempt()` marked an actor chassis-only if `class_membership` put it in `support` — and it files
+armed transports and the GDI Vulcan there. So `td_gdi_boxer`, `td_gdi_apc`, `ra1_allies_alliedapc`
+and `ra1_soviets_btr80` were reported chassis-only **while carrying live weapons**, and were
+therefore never given a real reference.
+
+⛔ **The weapon is the test, and it comes first.** A real support unit carries no armament at all,
+so engineers, harvesters and MCVs still fall through the class rule underneath. This is the third
+time a guard wrong in the RESTRICTIVE direction has deleted correct candidates — the V3 lost five
+sources the same way. **When two tests disagree, the one that lets the actor through wins.**
+
+### 9.2 A silent no-op read as bad judgement for a month
+
+`apply_overrides` skipped a maintainer-ruled pairing whose peer id was absent from the routed pool
+**without printing anything**. A typo, or a row that routing refuses, was indistinguishable from the
+matcher choosing badly. It prints `OVERRIDE UNRESOLVED` now.
+
+⛔ **Generalise it: never `continue` past a rule that did not fire.** If a table says X and X does
+not happen, that is a finding about the DATA and it has to surface. Audit your own lane for this
+shape — it is everywhere.
+
+### 9.3 And one process failure that cost a whole verification round — mine
+
+`assign_references.py` writes the JSON only under `--write`. I ran it without the flag, read the
+committed file, and reported that all 30 corrections had failed to apply. They had applied
+perfectly; **I was reading a file from the previous evening.** Check the mtime of any artifact you
+are about to draw a conclusion from. `ls -l` costs nothing; a wrong conclusion costs an hour.
+
+### 9.4 Three traps that keep producing "the matcher chose badly"
+
+* **Two rows, one name.** CA ships `NSAM` and `SAM`, both named "SAM Site", with identical faction
+  lists. It ships two "AA Gun" rows and two "Mammoth Tank" rows the same way. The NAME cannot
+  separate them; the ID can. Always store and compare the id.
+* **A source renames things wholesale.** DTA calls its rocket soldier "Bazooka", its disc artillery
+  `DISCARTY`, and prefixes every RA-era actor with `RA` (`RAAPC`, `RASAM`, `RAPBOX`). No scorer
+  finds those; only an alias or an override does. **ECHO owns the alias table and O1 is now 8.**
+* **One peer row currently serves one Cameo actor.** That is why `BTR` cannot back both
+  `flaktruck` and `btr80`, and why `VULC` cannot back both `boxer` and `alliedheavyaatank`. The
+  maintainer has asked for exactly that in three places, so **the rule itself is under review** —
+  do not work around it, and do not assume it will stay.
+
+### 9.5 What the map looks like now, so you can tell if you break it
+
+```
+actors assigned       337      references          256
+originals             66       expanded             74
+originals under 3      3       priced by formula    23
+O1 (audit ratchet 12)  8       confidence   STRONG 720 / FAIR 142 / SHAPE 0 / WEAK 0
+```
+
+Any change that moves `O1` up, or reintroduces a SHAPE or WEAK row, is a regression. The report now
+also carries each actor's **class**, and its **range** and **DPS** now/target — the class column
+matters because `docs/design/EXTRAPOLATION_PROGRAM.md` derives the virtual anchors from it, so a
+wrong class is a finding BEFORE any anchor is signed.
