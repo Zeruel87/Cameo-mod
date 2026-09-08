@@ -572,7 +572,38 @@ duplicate — say so first, before any line-level comment.
 **2. They are 405 commits behind master and diverged at `4deaee086` ("Add archon merging").** The
 diff is measured against that ancient merge base, which is why it looks enormous.
 
-**3. ⛔⛔ MERGING EITHER ONE AS-IS WOULD DELETE THE SUPERWEAPON LOCK.** Measured:
+**3. ⚠ CORRECTED 2026-09-08 — ASTRA WAS RIGHT AND THIS SECTION WAS TOO STRONG.**
+
+What this document originally said: *"merging either one as-is would DELETE the superweapon lock."*
+That is overstated, and Astra caught it. Re-measured against the same SHAs:
+
+```
+git merge-tree --write-tree --name-only 4328e6818 e42eb9914   ->  exit 1, 72 conflicting paths
+  tools/balance/reference_distribution.py   CONFLICT (add/add)   <- it CONFLICTS, it does not
+                                                                    silently take the branch side
+  docs/balance/class_anchors.json           Auto-merging         <- CLEAN
+```
+
+`reference_distribution.py` conflicts, so a merge stops and a human resolves it. **A correct
+resolution keeps the superweapon exclusion.** The real risk is blanket branch-side conflict
+resolution, not the merge itself. Branch age is not by itself proof of a regression. The rest of
+the table below is still accurate and still the reason a wholesale copy is dangerous:
+
+**3b. ⛔⛔ AND THE ACTUAL SILENT REGRESSION IS THE ONE THAT MERGES CLEANLY.** Astra found it and it
+is a better finding than mine: `docs/balance/class_anchors.json` **auto-merges with no conflict**,
+and the merged result carries **eight `signed_off: true`** where master has zero —
+
+```
+archer · closecombat · flying_infantry · grenadier · heavy_sniper · missile_vehicle · mortar · special_forces
+```
+
+Verified independently: `git cat-file -p <merge-tree>:docs/balance/class_anchors.json` returns
+exactly those eight. §3 of this document forbids you to set a single one of them, and a clean
+merge would set eight without a conflict marker to warn anyone. **A file that conflicts is safer
+than a file that does not** — the conflict is the warning. That inversion is the finding worth
+carrying out of this review.
+
+The line-count table below stands, and is why no file here may be taken wholesale:
 
 | marker | on the PR branch | on master |
 |---|--:|--:|
