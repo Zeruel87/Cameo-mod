@@ -46,6 +46,31 @@ Allied IFV for a GDI APC, and `allows("td_gdi", TITN)` returning **False** — C
 walker. **EMBER owns this.** Until it is fixed, `REFERENCE_OVERRIDES` and `FAMILY_EXTRA` in
 `tools/balance/` are papering over it with named rows.
 
+### ⭐ 2026-09-08 — the fleet stopped writing and started landing
+
+`docs/FLEET_ORDERS_2026-09-08.md` is the live fleet order set; Codex/Astra's is
+`docs/BLACKROBE_ASTRA_ORDERS_2026-09-07.md` (read its §13 addendum first).
+
+The measurement that drove it: **39 unmerged agent branches, ~200 unmerged commits, and zero
+merged to master by the fleet.** Four branches were byte-identical duplicates; two agents wrote
+competing proposals for the same 268 units and neither shipped.
+
+Landed today, both boot-gated:
+
+| | |
+|---|---|
+| `devin/ember/w24-lane1` | 22 weapons collapsed to one main |
+| `devin/dawn/w24-lane3` | 69 more, ledgers re-extracted on landing |
+| **`audit_three_way_split`** | **322 → 231** |
+
+⚠ Lane 3 arrived having changed 10 weapon files and no ledgers, so `audit_balance_drift` went red
+across 10 of them. Fixed by `extract_stats.py`, never by hand. **Yaml and ledger in the SAME
+commit** is now a standing fleet rule.
+
+Next in the W24 queue: `devin/nova/w24-lane2` (57 commits, conflicts in
+`RedAlert2/Soviets/weapons.yaml` — a real per-weapon decision, not a merge tool), then
+`devin/nova/w24-naxi-pilot`, which must follow it.
+
 ### Priority queue
 
 1. **CA over-tagging** (EMBER) — unblocks ~8 known-wrong mappings at once.

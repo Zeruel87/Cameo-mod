@@ -14,7 +14,9 @@ binding order of operations).
 > work, ordered. Do not start §8 before §4 is signed. **§9 is the maintainer's two open pull
 > requests and should be done EARLY — one finding there is time-sensitive.** §10 is everything the
 > fleet has started and cannot land on its own; it is analysis and reconciliation, never conversion.
-> 42 numbered tasks, C1–C42.
+> 42 numbered tasks, C1–C42. **⭐ §13 is a 2026-09-08 addendum: read it FIRST — it records what
+> your PR review changed in this document, the maintainer's decision on the PRs, and your order of
+> work from here.**
 >
 > Every number below was measured on master `545ff414a` on 2026-09-07 with the command shown
 > beside it. Re-measure before you rely on any of them — that is the house rule, not a courtesy.
@@ -850,3 +852,89 @@ left out and why. Scaling the work down is the maintainer's call, not yours.
 **And if you disagree with an order in this document, say so in one paragraph and then do it.** I
 would rather be told I am wrong than have it silently worked around — that is how the reference map
 ended up rejected twice.
+---
+
+## 13. ⭐ ADDENDUM 2026-09-08 — your review landed, and here is what comes next
+
+**Your PR review was good work, and it corrected me.** I verified before accepting it, which is what
+you should expect from anyone reading your findings:
+
+```
+git merge-tree --write-tree --name-only 4328e6818 e42eb9914  ->  exit 1, 72 conflicting paths
+  tools/balance/reference_distribution.py   CONFLICT (add/add)
+  docs/balance/class_anchors.json           Auto-merging  (CLEAN)
+```
+
+Your 72 is exact. §9's claim that merging "would delete the superweapon lock" was too strong and has
+been rewritten — that file conflicts, a merge stops there, and a correct resolution keeps the
+exclusion. You were right that branch age alone is not proof of a regression.
+
+**And your `class_anchors.json` finding is better than mine.** I confirmed the eight
+`signed_off: true` off the merge tree independently. The general form is now recorded in §9 as the
+lesson of this review: **a file that conflicts is safer than a file that does not — the conflict is
+the warning.** Carry that into everything below.
+
+Two things I especially want repeated: you compiled the actual C# rather than trusting the Python
+model (Python ints do not overflow, so the model could never have found the 32-bit defect), and you
+said repeatedly what you had NOT verified. Both are rarer than they should be. Keep doing both.
+
+### Your order of work from here
+
+**A. Finish the PR lane (C27–C29), because the maintainer has now decided.**
+Maintainer's call, 2026-09-08: follow your plan. #321 closes as superseded; #325 gets closed and
+re-cut as small PRs, flags first, then the repaired insurance. ⛔ You still do not close, merge or
+force-push anything — those are the maintainer's PRs and they will do it. What you produce is:
+
+1. the **flags-only** change, re-cut against current master, with the padded-write bypass in
+   `generate_chrome_scales.py` fixed and a behavioural test asserting **zero** resize calls on a
+   padded source (your existing refusal tests check strings, which is what let it through);
+2. the **insurance** change, separately, with the dead zone and both `1000 *` signed-32-bit
+   overflows fixed, and your reproductions turned into real C# boundary tests rather than notes;
+3. a one-line note per remaining salvage group saying "carried / dropped / needs the owner".
+
+⚠ Neither of these is a docs commit. Boot-gate the insurance one — it touches `player.yaml` and
+`defaults.yaml`, which is engine content.
+
+**B. Then the anchor dossiers (§4), which is still the lane that unblocks the pipeline.**
+Nothing about C1–C12 has changed except that it is now more urgent: W24 moved today for the first
+time in a week (see D below), so the inputs your dossiers depend on are starting to settle. Start
+with C3, the four classes whose anchor is already on spec.
+
+⛔ Note one thing before you touch `anchor_readiness.py`: AURORA has an unmerged fix for a crash in
+it on `devin/aurora/fix-anchor-readiness`, and that branch conflicts with master in that exact file.
+That is task C32 and it now blocks C1 — read the branch first.
+
+**C. B2 (the 322-vs-389 reconciliation) has partly resolved itself, and that is a lesson.**
+Both numbers moved today because two W24 lanes landed. `audit_three_way_split` now reports **231**.
+Re-measure both before doing anything: if the gap between the two audits is still ~67, the mismatch
+is structural and worth a day; if it changed with the corpus, one of them is counting something
+lane-dependent and that is a different, easier finding. **Do not carry my number forward — measure.**
+
+**D. What landed while you were reviewing, so you rebase onto the right thing**
+
+```
+06ef3c4f3  Merge W24 lane 3 (DAWN): 69 weapons collapsed, ledgers re-extracted
+34663bbfe  Merge W24 lane 1 (EMBER): 22 weapons collapsed
+           audit_three_way_split:  322 -> 231
+```
+
+Both boot-gated. Lane 3 arrived with `audit_balance_drift` red across 10 ledgers because it changed
+yaml without re-extracting; I ran `extract_stats.py` to land it. That is now a standing rule in
+`docs/FLEET_ORDERS_2026-09-08.md` §7 and it applies to you too: **yaml and ledger in the same
+commit.**
+
+### Two corrections to your review, small but worth having
+
+* Your report says **406** commits behind; it was 405 when I measured and 406 when you did, because
+  master moved between us. Neither is wrong — but pin the SHA next to the count, as you did for the
+  heads, so a reader can tell a moving target from a disagreement.
+* The `dmg` / `dmg/wh` producer-consumer mismatch you found is real and predates the branch, which
+  you said clearly. It is now C19's neighbour in this document's §7 and it is **yours to fix on
+  master**, independently of the PR — a round-trip test from producer to consumer, as you proposed.
+
+### And one thing to keep doing
+
+You wrote "this is not a claim that every generated row was validated" more than once. That
+sentence is worth more to me than a confident summary would have been, because it tells me exactly
+where to look next. The failure mode in this repo is not agents who find too little — it is agents
+who report more certainty than they measured.
