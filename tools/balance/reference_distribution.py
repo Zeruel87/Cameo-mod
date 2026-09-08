@@ -633,11 +633,19 @@ def is_anti_air_armament(arm):
     the ground weapon." Pricing on the ground weapon is the ruling; this makes the measurement obey
     it. 63 of 2,245 priced armaments are affected.
 
+    ⛔ AND THE TEST MUST READ THE WEAPON, NOT ONLY THE SLOT. The first version matched the slot
+    alone and missed `td_gdi_apc`, whose AA gun sits in a slot called `Armament@SECONDARY` while
+    the WEAPON is `APCGun_AA` — range 8,502 against the primary's 5,668, which is 1.500 exactly.
+    The maintainer spotted it immediately: *"I'm pretty sure they have Anti Air and also the +50%
+    range against air right?"* They do. Matching the slot name alone is the same name-blocklist
+    mistake this file warns about elsewhere; `_AA` on the weapon is the normalised convention here.
+
     ⚠ A unit whose armaments are ALL anti-air keeps them — that is its weapon, not a bonus. Exactly
     one actor is in that state today (`tkm_quadturretbunker`), and a dedicated AA unit reporting
     zero DPS would be the same class of error this whole sequence has been about.
     """
-    return bool(AA_SLOT.search(str(arm.get("slot") or "")))
+    return bool(AA_SLOT.search(str(arm.get("slot") or ""))
+                or AA_SLOT.search(str(arm.get("weapon") or "")))
 
 
 def burst_cycle(arm, anum):
