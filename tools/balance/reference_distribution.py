@@ -617,6 +617,52 @@ def cameo_weapon_ladders(weapon_name):
     return {k: sum(v) / len(v) / 100.0 for k, v in hits.items() if v}
 
 
+AA_SLOT = re.compile(r"(^|[@_.])aa($|[0-9_.])", re.I)
+
+
+def is_anti_air_armament(arm):
+    """An `@AA` armament engages a different DOMAIN and must not be summed with the ground gun.
+
+    ⛔ FOUND ON `ra1_soviets_btr80` (maintainer, 2026-09-08). Its two unconditional armaments are
+    `Armament` (ground) and `Armament@AA`, each 4,000 x burst 4 = 16,000, and summing them reported
+    32,000 for a transport whose ground gun delivers 16,000. They can never fire at the same
+    target: one shoots aircraft, the other cannot.
+
+    ⭐ THIS IS NOT A NEW RULE, it is one DESIGN.md already made. The `anti_air_vehicle` anchor
+    reads: "Dedicated AA; keeps a SEPARATE FREE air weapon (+50% range/+100% dmg) priced only on
+    the ground weapon." Pricing on the ground weapon is the ruling; this makes the measurement obey
+    it. 63 of 2,245 priced armaments are affected.
+
+    ⚠ A unit whose armaments are ALL anti-air keeps them — that is its weapon, not a bonus. Exactly
+    one actor is in that state today (`tkm_quadturretbunker`), and a dedicated AA unit reporting
+    zero DPS would be the same class of error this whole sequence has been about.
+    """
+    return bool(AA_SLOT.search(str(arm.get("slot") or "")))
+
+
+def burst_cycle(arm, anum):
+    """Ticks between the START of one burst and the next: ReloadDelay + (Burst-1) x BurstDelay.
+
+    ⛔ `BurstDelay` WAS HARDCODED TO 5 AND THE LEDGER CARRIES IT. Measured 2026-09-08 after the
+    maintainer said the Sheridan number "has to do with our burst values": 1,017 priced armaments
+    declare a burst, and their `burstdelays` are 3 (256 of them), 2 (172), 4 (160), 5 (78), 1 (62),
+    0 (55), 8 (36)... so the hardcoded 5 was right for 78 weapons and wrong for the rest. A burst
+    of 4 at delay 2 finishes in 6 ticks, not 15, and the DPS was understated by the difference.
+
+    DESIGN.md's burst rule is the authority: "sheet ReloadDelay = weapon ReloadDelay + (bursts - 1)
+    x BurstDelay". OpenRA cycles through several delays when several are given, so their mean is
+    the honest single number.
+    """
+    rel = anum(arm.get("reloaddelay")) or 0
+    burst = anum(arm.get("burst")) or 1
+    if burst <= 1:
+        return rel or None
+    raw = str(arm.get("burstdelays") or "").replace(",", " ").split()
+    delays = [d for d in (anum(x) for x in raw) if d is not None]
+    delay = (sum(delays) / len(delays)) if delays else 5.0   # OpenRA's own default
+    return rel + (burst - 1) * delay
+
+
 def is_upgrade_gated(arm):
     """True when this armament only fires once an UPGRADE or rank is granted.
 
@@ -651,8 +697,11 @@ def baseline_armaments(arms):
     comparison for the references, which record un-upgraded weapons.
     """
     live = [a for a in arms if not is_upgrade_gated(a)]
+    ground = [a for a in live if not is_anti_air_armament(a)]
+    if ground:
+        return ground            # price on the ground weapon (DESIGN, anti_air_vehicle anchor)
     if live:
-        return live
+        return live              # a dedicated AA unit keeps its only weapon
     # ⛔ EVERY ARMAMENT IS CONDITIONAL — so fall back to the STRONGEST ONE, never to the sum.
     # `ra2_soviets_siegechopper` is the case: it has no unconditional armament at all, because
     # each is gated on a MODE and a doctrine and a rank at once
@@ -672,13 +721,18 @@ def armament_profile(arms, anum):
                  if (anum(wh.get("damage")) or 0) > 0]
         if len(mains) > 1:
             debt = True          # §0a structure debt: `K` moves under W24
+        # ⛔ DAMAGE IS PER SHOT; A BURST FIRES SEVERAL. DESIGN.md's burst rule is explicit —
+        # "sheet Damage = single-burst damage x bursts" — and this used to apply the burst to the
+        # DPS but not to the damage column, so a 4-shot machine gun reported a quarter of what it
+        # delivers. The Sheridan read 36,000 (16,000 + 16,000 + 4,000) when its MG alone puts out
+        # 4,000 x 4.
         dmg = sum(anum(wh.get("damage")) or 0 for wh in mains)
-        rel = anum(a.get("reloaddelay"))
         burst = anum(a.get("burst")) or 1
-        cycle = (rel or 0) + (burst - 1) * 5
-        if dmg and cycle:
-            dps_total += (dmg * burst) / cycle
-        dmg_total += dmg
+        cycle = burst_cycle(a, anum)
+        per_cycle = dmg * burst
+        if per_cycle and cycle:
+            dps_total += per_cycle / cycle
+        dmg_total += per_cycle
     primary = max(live, key=lambda a: sum(anum(wh.get("damage")) or 0
                                           for wh in (a.get("damage_warheads") or [])
                                           if (anum(wh.get("damage")) or 0) > 0))
