@@ -223,6 +223,24 @@ def rows_for(corpus_family: str, level: str) -> list[dict]:
     return [r for r in sp.survey(corpus_family) if r["platform"] in wanted]
 
 
+def source_balanced_buckets(rows: list[dict]) -> dict[str, list[float]]:
+    """One median per source/armor, so roster size does not weight a source twice.
+
+    Source identifiers are not proof of independent balance lineages. Resolve
+    lineage membership upstream; preserve missing armor axes as missing here.
+    """
+    sources = collections.defaultdict(lambda: collections.defaultdict(list))
+    for row in rows:
+        mapped, _ = ag.to_cameo(row["versus"])
+        for armor, value in mapped.items():
+            sources[row["source"]][armor].append(value)
+    buckets = collections.defaultdict(list)
+    for axes in sources.values():
+        for armor, values in axes.items():
+            buckets[armor].append(statistics.median(values))
+    return dict(buckets)
+
+
 def profile_for(family: str, level: str, cache: dict,
                 spread: bool = False) -> tuple[dict, int, int] | None:
     corpus_family, direction = FAMILY_SOURCE[family]
@@ -248,18 +266,11 @@ def profile_for(family: str, level: str, cache: dict,
     # magnitude information without arguing for either direction.
     matching = [r for r in rows
                 if sp.direction(r["versus"]) in (DIRECTION_WORD[direction], "flat")]
-    if len(matching) >= MIN_ROWS:
-        rows = matching
-    elif matching:
-        rows = matching                       # thin, but still the right role
+    rows = matching  # No matching role is missing evidence, not permission to invert it.
     if not rows:
         return None
 
-    buckets: dict[str, list[float]] = collections.defaultdict(list)
-    for row in rows:
-        mapped, _ = ag.to_cameo(row["versus"])
-        for armor, value in mapped.items():
-            buckets[armor].append(value)
+    buckets = source_balanced_buckets(rows)
     # Three aggregations, so the choice is the maintainer's and not buried in code.
     # `median` is robust to one weird mod; `mean` lets every source pull
     # proportionally; `gmean` is the correct average for MULTIPLIERS (averaging x2
@@ -354,6 +365,7 @@ def frozen_profiles(cache: dict | None = None) -> dict:
     return {
         "_generated_by": "tools/reference/propose_family_profiles.py --json",
         "_aggregation": AGGREGATION,
+        "_source_weighting": "median per source/armor, then one value per source; lineage independence requires upstream selection",
         "_normalisation": (
             "each source profile normalised so its MEDIAN is 100; values above 100 "
             f"are legal up to {ag.NORMALISE_CEILING:g} (K prices the profile, so a "

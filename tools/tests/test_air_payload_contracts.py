@@ -28,8 +28,8 @@ class AirPayloadContractTests(unittest.TestCase):
             "TSFiendShardUP",
             "TSFiendShardBlue",
             "TSFiendShardBlueUP",
-            "VenomLaserInferno",
-            "VenomLaserBurning",
+            "td_nod_venom_venomlaserinferno",
+            "td_nod_venom_laser_burning",
             "CabalOverkillCharge",
             "PsionicShockwave",
         }
@@ -109,11 +109,12 @@ class AirPayloadContractTests(unittest.TestCase):
             self.assertTrue(formulas.targets_air(weapon), name)
             self.assertTrue(formulas.is_point_defense(weapon), name)
 
-    def test_missing_warhead_targets_keep_engine_all_target_default(self):
+    def test_point_defense_damage_mask_excludes_ordinary_air(self):
         weapon = self.rules.resolve_weapon("PDLaserBike")
         damage = weapon.child("Warhead@1Dam")
-        self.assertIsNone(damage.get("ValidTargets"))
-        self.assertTrue(formulas.targets_air(damage, default_all=True))
+        self.assertEqual("Ground, Missile, BulletAS, BallisticMissile",
+                         damage.get("ValidTargets"))
+        self.assertFalse(formulas.targets_air(damage, default_all=True))
 
 
 if __name__ == "__main__":

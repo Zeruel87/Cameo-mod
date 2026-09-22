@@ -94,11 +94,11 @@ SOURCE_TOTAL_OVERRIDES = {"TSBombSonic": 10000}
 
 CLEANUP_NAMES = set(SELECTED) | {
     "NaxGrilleArty", "NaxSturmArty", "SkyHawkCannon",
-    "SkyHawkPlasmaCannon", "GrenadeRA", "LightTank2Missiles",
+    "SkyHawkPlasmaCannon", "ra1_soviets_grenadier_grenade", "td_nod_lighttankmkii_lighttank2missiles",
     "TSChem120mmx", "facedancer_grenade", "TS120mmx",
-    "SteelVulcan", "SandmarineTuskFire", "GradRockets",
+    "SteelVulcan", "SandmarineTuskFire", "ra1_soviets_grad_rocket",
     "Future_Cryocopter_Rocket", "GLBarrelExplode", "GuardianShoot",
-    "Tentacle", "v1rockets", "TSAegisMissile", "RA2Terrorist",
+    "Tentacle", "ra1_soviets_v1rockettruck_v1rockets", "TSAegisMissile", "RA2Terrorist",
 }
 
 
@@ -199,7 +199,7 @@ def cleanup_removed_local_nodes(rs: Ruleset) -> None:
 
     # These descendants should inherit the newly consolidated parent verbatim.
     for name, keys in {
-        "GradHeavyRockets": {"MissileHE_Heavy", "Concussion_Medium"},
+        "ra1_soviets_grad_rocket_heavy": {"MissileHE_Heavy", "Concussion_Medium"},
         "tkmtechnicalmgap": {"Bullet_Light", "Demolition_Light"},
     }.items():
         local = rs.weapon(name)
@@ -296,7 +296,7 @@ def main() -> int:
         print("Authorized remaining profiles are pending; rerun with --apply.")
         return 1
     cleanup_removed_local_nodes(rs)
-    cleanup_stale_removals(CLEANUP_NAMES | {"GradHeavyRockets", "tkmtechnicalmgap"})
+    cleanup_stale_removals(CLEANUP_NAMES | {"ra1_soviets_grad_rocket_heavy", "tkmtechnicalmgap"})
     rs = Ruleset(ROOT)
     apply(rs, rows)
     if not inspect(Ruleset(ROOT)):

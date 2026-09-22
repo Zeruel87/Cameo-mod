@@ -1,6 +1,18 @@
 # tools/tests — unit tests for the Python tooling
 
-Stdlib `unittest` only (no pip dependency, so CI and a fresh clone can run it).
+The original suite uses stdlib `unittest`, but several newer model/audit tests are pytest-style
+and are not collected by `unittest discover` — the documented command does NOT run the whole suite.
+Install pytest in the test environment and run
+both runners when those files are present:
+
+```sh
+python -m pytest -q tools/tests
+```
+
+Current pytest-style modules include `test_bot_insurance_model`, `test_audit_bot_insurance`,
+`test_generate_chrome_scales`, and `test_band_law`; additional modules may be added later.
+
+The stdlib suite remains dependency-free for the older tests. Run it from the repo root:
 Run from the repo root:
 
 ```sh

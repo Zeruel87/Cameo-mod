@@ -21,7 +21,7 @@ ROOTS = {
     "TSChemRuinerMissile": ("MissileChem_Medium", 54000, 4, "Corrosion", "33"),
     "TSFiendShardBlue": ("Chemical_Medium", 24000, 4, "Corrosion", "100"),
     "TSFiendShardBlueUP": ("Chemical_Heavy", 36000, 6, "Corrosion", "100"),
-    "YakNapalm": ("Flame_Heavy", 40000, 4, "Temperature", "100"),
+    "ra1_soviets_yakscoutplane_napalm_bomb": ("Flame_Heavy", 40000, 4, "Temperature", "100"),
 }
 
 RETIRED = {

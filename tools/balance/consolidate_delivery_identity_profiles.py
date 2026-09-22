@@ -27,16 +27,23 @@ from consolidate_reviewed_weapon_roots import (  # noqa: E402
 from miniyaml import Ruleset  # noqa: E402
 
 
+RETIRED_MESSAGE = (
+    "this one-shot delivery-identity migration has already landed and its compatibility "
+    "identifiers were retired by R12; the writer is retained only for historical inspection "
+    "and regression fixtures"
+)
+
+
 # Each choice is backed by the already-resolved projectile/effect identity:
 # lightning/Tesla, flak, and chaingun bullets respectively.
 ROOTS = {
-    "BTRTeslaMachineGun": (
+    "ra1_soviets_btr80_machinegun_tesla": (
         "Tesla_Heavy",
         {"MissileAP_Light", "Tesla_Heavy"},
         {
-            "BTRTeslaMachineGunArc", "BTRTeslaMachineGunArcFragment1",
-            "BTRTeslaMachineGunArcFragment1AA", "BTRTeslaMachineGunArc_AA",
-            "BTRTeslaMachineGun_AA",
+            "ra1_soviets_btr80_machinegun_tesla_arc", "ra1_soviets_btr80_btrteslamachinegunarcfragment1",
+            "ra1_soviets_btr80_btrteslamachinegunarcfragment1aa", "ra1_soviets_btr80_machinegun_tesla_arc_AA",
+            "ra1_soviets_btr80_machinegun_tesla_AA",
         },
     ),
     "JapaneseHovercraftFlak": (
@@ -149,26 +156,8 @@ def validate_result() -> None:
         raise RuntimeError("delivery-identity cohort remains unconsolidated")
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--apply", action="store_true")
-    args = parser.parse_args()
-
-    rules = Ruleset(ROOT)
-    selected = selections(rules)
-    plans, already = inspect(rules, selected)
-    if already:
-        if args.apply:
-            removed = cleanup_stale_removals(set(selected))
-            validate_result()
-            print(f"Removed {removed} stale descendant removals")
-        print(f"Already consolidated {len(selected)} concrete definitions")
-        return 0
-    print(f"{len(ROOTS)} roots; {len(selected)} concrete definitions")
-    if not args.apply:
-        print("Dry run: closure, routing, state, and arithmetic guards pass")
-        return 0
-
+def apply_changes(rules: Ruleset, selected, plans) -> None:
+    """Retained historical writer implementation; the retired CLI never invokes this."""
     changed: dict[pathlib.Path, list[str]] = {}
     add_compatibility_templates(
         changed, rules, {destination for destination, _pair, _root in selected.values()})
@@ -187,8 +176,7 @@ def main() -> int:
             path = pathlib.Path(node.file)
             selected_destination = selected[name][0]
             if name in ROUTE_ROOTS:
-                ensure_template_inherit(
-                    changed, path, name, ROUTE_ROOTS[name])
+                ensure_template_inherit(changed, path, name, ROUTE_ROOTS[name])
             apply_compatibility_block(
                 changed, path, name, selected_destination, pair,
                 plan["total"], plan["targets"],
@@ -201,8 +189,14 @@ def main() -> int:
         path.write_text("".join(lines), encoding="utf-8", newline="\n")
     cleanup_stale_removals(set(selected))
     validate_result()
-    print(f"Applied and validated {len(changed)} files")
-    return 0
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--apply", action="store_true")
+    parser.parse_args(argv)
+    print(f"REFUSED: {RETIRED_MESSAGE}", file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":

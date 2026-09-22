@@ -5,7 +5,8 @@
  *
  * Cameo changes: namespace OpenRA.Mods.Common.Widgets -> OpenRA.Mods.Cameo.Widgets,
  * which costs an explicit `using OpenRA.Mods.Common.Widgets;` for WidgetUtils and
- * ButtonWidget. The drawing and scrolling logic is verbatim.
+ * ButtonWidget. Original scrolling is retained; signed ranges, the zero line,
+ * sample cadence labels and label bounds are Cameo drawing adaptations.
  *
  * Why this exists at all: stock LineGraphWidget divides the panel width by the
  * number of samples, so a long game squeezes every sample into a couple of pixels
@@ -221,13 +222,14 @@ namespace OpenRA.Mods.Cameo.Widgets
 			var graphBottomOffset = Padding * 2 + xAxisLabelSize.Y + xAxisPointLabelHeight + ScrollbarHeight;
 			var height = rect.Height - (graphBottomOffset + Padding * 4);
 
-			var maxValue = series.Select(p => p.Points).SelectMany(d => d).Concat(new[] { 0f }).Max();
+			var (scaledMinValue, scaledMaxValue) = GetScaledRange(series);
 			var longestName = series.Select(s => s.Key).OrderByDescending(s => s.Length).FirstOrDefault() ?? "";
+			var scale = height / (scaledMaxValue - scaledMinValue);
+			var zeroOffset = -scaledMinValue * scale;
 
-			var scaledMaxValue = Math.Max((float)Math.Ceiling(maxValue / 1000) * 1000, 5000f);
-			var scale = height / scaledMaxValue;
-
-			var widthMaxValue = labelFont.Measure(GetYAxisValueFormat().FormatCurrent(scaledMaxValue)).X;
+			var widthMaxValue = Math.Max(
+				labelFont.Measure(GetYAxisValueFormat().FormatCurrent(scaledMaxValue)).X,
+				labelFont.Measure(GetYAxisValueFormat().FormatCurrent(scaledMinValue)).X);
 			var widthLongestName = labelFont.Measure(longestName).X;
 
 			// y axis label
@@ -263,6 +265,9 @@ namespace OpenRA.Mods.Cameo.Widgets
 			var graphClipRect = new Rectangle((int)graphOrigin.X, (int)(graphOrigin.Y - height), width, height);
 			Game.Renderer.EnableScissor(graphClipRect);
 
+			if (scaledMinValue < 0)
+				cr.DrawLine(graphOrigin + new float2(0, -zeroOffset), graphOrigin + new float2(width, -zeroOffset), 1, Color.FromArgb(140, 255, 255, 255));
+
 			foreach (var s in series)
 			{
 				var key = s.Key;
@@ -274,7 +279,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 					for (var i = visibleStart; i < Math.Min(visibleEnd, points.Length); i++)
 					{
 						var screenX = i * xStep + horizontalOffset;
-						var screenY = -points[i] * scale;
+						var screenY = -(zeroOffset + points[i] * scale);
 						visiblePoints.Add(graphOrigin + new float3(screenX, screenY, 0));
 					}
 
@@ -299,7 +304,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 					for (var i = visibleStart; i < Math.Min(visibleEnd, points.Length); i++)
 					{
 						var screenX = i * xStep + horizontalOffset;
-						var screenY = -points[i] * scale;
+						var screenY = -(zeroOffset + points[i] * scale);
 
 						if (screenX >= -xStep && screenX <= width + xStep)
 						{
@@ -439,7 +444,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 
 			for (var y = GetDisplayFirstYAxisValue() ? 0 : yStep; y <= height; y += yStep)
 			{
-				var yValue = y / scale;
+				var yValue = scaledMinValue + y / scale;
 				cr.DrawLine(graphOrigin + new float2(0, -y), graphOrigin + new float2(5, -y), 1, Color.White);
 				var text = GetYAxisValueFormat().FormatCurrent(yValue);
 
@@ -457,6 +462,35 @@ namespace OpenRA.Mods.Cameo.Widgets
 
 			// Left line
 			cr.DrawLine(graphOrigin, graphOrigin + new float2(0, -height), 1, Color.White);
+		}
+
+		public static (float Min, float Max) GetScaledRange(IEnumerable<ScrollableLineGraphSeries> series)
+		{
+			var points = series.SelectMany(s => s.Points).ToArray();
+			var max = points.Concat(new[] { 0f }).Max();
+			var min = points.Concat(new[] { 0f }).Min();
+
+			var scaledMax = (float)Math.Ceiling(max / 1000) * 1000;
+			var scaledMin = -(float)Math.Ceiling(-min / 1000) * 1000;
+
+			// Preserve the historical 5000 minimum span. An all-positive graph grows only upwards,
+			// which reproduces the old Math.Max(..., 5000f) exactly; a signed graph splits the
+			// deficit between the two sides in proportion to their extent.
+			var deficit = 5000f - (scaledMax - scaledMin);
+			if (deficit > 0)
+			{
+				if (scaledMin == 0f)
+					scaledMax += deficit;
+				else
+				{
+					var total = scaledMax - scaledMin;
+					var maxShare = total > 0 ? scaledMax / total : 0.5f;
+					scaledMax += deficit * maxShare;
+					scaledMin -= deficit * (1 - maxShare);
+				}
+			}
+
+			return (scaledMin, scaledMax);
 		}
 
 		public override Widget Clone()
@@ -510,11 +544,12 @@ namespace OpenRA.Mods.Cameo.Widgets
 					var labelFont = Game.Renderer.Fonts[font];
 					var axisFont = Game.Renderer.Fonts[GetAxisFont()];
 
-					var maxValue = series.Select(p => p.Points).SelectMany(d => d).Concat(new[] { 0f }).Max();
+					var (scaledMinValue, scaledMaxValue) = GetScaledRange(series);
 					var longestName = series.Select(s => s.Key).OrderByDescending(s => s.Length).FirstOrDefault() ?? "";
-					var scaledMaxValue = Math.Max((float)Math.Ceiling(maxValue / 1000) * 1000, 5000f);
 
-					var widthMaxValue = labelFont.Measure(GetYAxisValueFormat().FormatCurrent(scaledMaxValue)).X;
+					var widthMaxValue = Math.Max(
+						labelFont.Measure(GetYAxisValueFormat().FormatCurrent(scaledMaxValue)).X,
+						labelFont.Measure(GetYAxisValueFormat().FormatCurrent(scaledMinValue)).X);
 					var widthLongestName = labelFont.Measure(longestName).X;
 					var yAxisLabel = GetYAxisLabel();
 					var yAxisLabelSize = axisFont.Measure(yAxisLabel);

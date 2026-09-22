@@ -1,6 +1,6 @@
 # W11 — K comparison for class `mbt`
 
-Anchor `tiger.nax`, cost0 800. Every member priced twice: on RAW
+Anchor `naxis_tiger`, cost0 800. Every member priced twice: on RAW
 damage/reload, and on K-adjusted `effective_dps` from the derived sidecar
 (accuracy, spread, falloff, range, dead zone, reachable targets).
 
@@ -29,7 +29,7 @@ consistent; only the SHAPE of the class changes between them.
 | `ixian_kodatank` | 800 | 713 | 545 | -11% | -32% | -24% ⚠ |
 | `oldqtnk.steel` | 2400 | 3180 | 2666 | +33% | +11% | -16% ⚠ |
 | `latinsyndicate_smokertank` | 1800 | 1832 | 1580 | +2% | -12% | -14% ⚠ |
-| `assault.nax` | 900 | 4036 | 4518 | +348% | +402% | +12% ⚠ |
+| `naxis_assault` | 900 | 4036 | 4518 | +348% | +402% | +12% ⚠ |
 | `schwarzermond_lunartiger` | 950 | 770 | 861 | -19% | -9% | +12% ⚠ |
 | `combat_tank.atreides` | 600 | 836 | 763 | +39% | +27% | -9% |
 | `ra1_soviets_hammertank` | 1500 | 1651 | 1791 | +10% | +19% | +9% |
@@ -54,7 +54,7 @@ consistent; only the SHAPE of the class changes between them.
 | `ra2_allies_grizzlytank` | 750 | 1004 | 1007 | +34% | +34% | +0% |
 | `naxis_kingtigerheavytank` | 2000 | 2000 | 1998 | +0% | -0% | -0% |
 | `forgotten_rattytank` | 600 | 636 | 636 | +6% | +6% | +0% |
-| `tiger.nax` | 800 | 800 | 800 | +0% | +0% | +0% |
+| `naxis_tiger` | 800 | 800 | 800 | +0% | +0% | +0% |
 
 ## What the switch would do
 

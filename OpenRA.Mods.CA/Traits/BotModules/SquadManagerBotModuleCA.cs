@@ -315,7 +315,25 @@ namespace OpenRA.Mods.CA.Traits
 			assignRolesTicks = World.LocalRandom.Next(0, Info.AssignRolesInterval);
 			attackForceTicks = World.LocalRandom.Next(0, Info.AttackForceInterval);
 			protectionForceTicks = World.LocalRandom.Next(0, Info.ProtectInterval);
-			minAttackForceDelayTicks = World.LocalRandom.Next(0, Info.MinimumAttackForceDelay) + initialAttackDelay;
+			minAttackForceDelayTicks = World.LocalRandom.Next(0, Info.MinimumAttackForceDelay) +
+				RemainingInitialAttackDelay(initialAttackDelay, World.WorldTick);
+		}
+
+		protected override void TraitDisabled(Actor self)
+		{
+			foreach (var squad in Squads)
+				DismissSquad(squad);
+
+			Squads.Clear();
+			activeUnits.Clear();
+			unitsHangingAroundTheBase.Clear();
+			foreach (var n in notifyIdleBaseUnits)
+				n.UpdatedIdleBaseUnits(unitsHangingAroundTheBase);
+		}
+
+		public static int RemainingInitialAttackDelay(int initialAttackDelay, int worldTick)
+		{
+			return Math.Max(0, initialAttackDelay - worldTick);
 		}
 
 		void IBotEnabled.BotEnabled(IBot bot)

@@ -62,6 +62,7 @@ options-observer-stats =
     .economy-damage = Economy Damage
     .earnings-graph = Earnings (graph)
     .army-graph = Army (graph)
+    .combat-effectiveness-graph = Combat Value (graph)
     .team-army-graph = Team Army (graph)
     .team-earnings-graph = Team Earnings (graph)
 

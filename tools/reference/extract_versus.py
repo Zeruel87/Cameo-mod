@@ -161,6 +161,38 @@ def parse_ini(path: pathlib.Path, engine: str) -> list[dict]:
     return rows
 
 
+def parse_dta_overlay(rules: pathlib.Path, overlay: pathlib.Path | None = None) -> list[dict]:
+    """Named DTA fields after section/key overlay merging.
+
+    Already generated DTA files retain BaseSection after copying parent keys.
+    Audit that closure; do not re-inherit after overlay merging or certify runtime.
+    """
+    from extract_ini_units import read_ini, merge_overlay
+    from dta_preprocessing import audit
+    data = read_ini(rules)
+    inherited = audit(rules)['inherited']
+    if overlay is not None:
+        data = merge_overlay(data, read_ini(overlay))
+        inherited.update(audit(overlay)['inherited'])
+    rows = []
+    for name, section in data.items():
+        fields = {k.split('.', 1)[1].lower(): v for k, v in section.items()
+                  if k.lower().startswith('modifier.')}
+        if not fields:
+            continue
+        values = {armor: _pct(value) for armor, value in fields.items()}
+        row = {"warhead": name, "arity": len(values)}
+        if all(v is not None for v in values.values()):
+            row["versus"] = values
+        else:
+            row["undecoded"] = [f"{k}={v}" for k, v in fields.items()]
+        if section.get('BaseSection'):
+            row["base_section"] = section['BaseSection']
+            row["inheritance_status"] = inherited.get(name, {}).get('status', 'not resolved')
+        rows.append(row)
+    return rows
+
+
 def parse_openra(root: pathlib.Path) -> list[dict]:
     """`Versus:` blocks from a foreign OpenRA tree.
 
@@ -208,9 +240,21 @@ def collect() -> dict:
         if not path.exists():
             missing.append((sid, str(path)))
             continue
-        rows = parse_ini(path, engine) if kind == "ini" else parse_openra(path)
+        if sid == "dta_enhanced":
+            base = path.with_name("Rules.ini")
+            if not base.exists():
+                missing.append((sid, str(base)))
+                continue
+            rows = parse_dta_overlay(base, path)
+        elif sid == "dta_classic":
+            rows = parse_dta_overlay(path)
+        else:
+            rows = parse_ini(path, engine) if kind == "ini" else parse_openra(path)
         dataset[sid] = {"lineage": lineage, "kind": kind, "path": str(path),
                         "rows": rows}
+        if sid == "dta_enhanced":
+            dataset[sid]["base_path"] = str(base)
+            dataset[sid]["overlay_merged"] = True
     return {"sources": dataset, "missing": missing}
 
 

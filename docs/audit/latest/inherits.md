@@ -1,14 +1,14 @@
 # audit_inherits — §10.3 invariant violations (B2)
 
-Actors+templates scanned: **3973**
+Actors+templates scanned: **4132**
 
 | violation | meaning | count |
 |---|---|---|
 | V1 | concrete actor inherits from concrete actor | 277 |
 | V2 | inherit crosses faction ownership | 0 |
 | V3 | dangling inherit target (BLOCKING) | 0 |
-| V4 | chain depth > 3 | 1862 |
-| V5 | > 2 -Trait removals (warning) | 95 |
+| V4 | chain depth > 3 | 1985 |
+| V5 | > 2 -Trait removals (warning) | 102 |
 
 
 ## V3 — dangling inherit targets (blocking)
@@ -81,8 +81,6 @@ _none found_
 | ambiance_ocean_waves | ambiance_wind | ? | ? | mods/cameo/rules/misc.yaml |
 | ambiance_rumbling | ambiance_wind | ? | ? | mods/cameo/rules/misc.yaml |
 | asianalliance_heavyrailguntank | asianalliance_railguntank | redalert2mod/asianalliance | redalert2mod/asianalliance | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/vehicles.yaml |
-| bbomb2_husk.nax2 | bbomb_husk.nax2 | redalert2mod/schwarzermond | redalert2mod/schwarzermond | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
-| bbomb3_husk.nax2 | bbomb_husk.nax2 | redalert2mod/schwarzermond | redalert2mod/schwarzermond | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
 | bomber_husk.asian | BADR.Husk | redalert2mod/asianalliance | ? | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/aircraft.yaml |
 | bomber_minebomb2.asian | bomber_minebomb.asian | redalert2mod/asianalliance | redalert2mod/asianalliance | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/aircraft.yaml |
 | cabal_artilleryspider_backup | cabal_artilleryspider | tiberiansun/cabal | tiberiansun/cabal | mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/husks.yaml |
@@ -101,7 +99,6 @@ _none found_
 | camera.spysat | camera.scan | ? | ? | mods/cameo/rules/misc.yaml |
 | carryall | carryall.reinforce | d2k/shared | d2k/shared | mods/cameo/ContentPacks/D2k/Shared/yaml/aircraft.yaml |
 | carryall.paradrop | carryall.reinforce | d2k/shared | d2k/shared | mods/cameo/ContentPacks/D2k/Shared/yaml/aircraft.yaml |
-| corpse_big.nax | corpse.nax | redalert2mod/naxis | redalert2mod/naxis | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | deathcash.latin | RACAMERA | redalert2mod/syndicate | ? | mods/cameo/ContentPacks/RedAlert2Mod/Syndicate/yaml/upgrades.yaml |
 | deathcash_small.latin | RACAMERA | redalert2mod/syndicate | ? | mods/cameo/ContentPacks/RedAlert2Mod/Syndicate/yaml/upgrades.yaml |
 | forgotten_engineer | TSENGINEER | tiberiansun/forgotten | ? | mods/cameo/ContentPacks/TiberianSun/Forgotten/yaml/infantry.yaml |
@@ -117,7 +114,6 @@ _none found_
 | forgotten_tiberianfiend_wild | forgotten_tiberianfiend | tiberiansun/forgotten | tiberiansun/forgotten | mods/cameo/ContentPacks/TiberianSun/Forgotten/yaml/infantry.yaml |
 | forgotten_tiberiumspike | OILB.TS | tiberiansun/forgotten | ? | mods/cameo/ContentPacks/TiberianSun/Forgotten/yaml/buildings.yaml |
 | frigate.paradrop | frigate | d2k/shared | d2k/shared | mods/cameo/ContentPacks/D2k/Shared/yaml/aircraft.yaml |
-| hole_small.nax2 | hole.nax2 | redalert2mod/schwarzermond | redalert2mod/schwarzermond | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/infantry.yaml |
 | japan_archermaiden | japan_tankbuster | redalert/japan | redalert/japan | mods/cameo/ContentPacks/RedAlert/Japan/yaml/infantry.yaml |
 | japan_badger | ra1_badger | redalert/shared | redalert/shared | mods/cameo/ContentPacks/RedAlert/Shared/yaml/aircraft.yaml |
 | japan_coreairfield | japan_corewarfactory | redalert/japan | redalert/japan | mods/cameo/ContentPacks/RedAlert/Japan/yaml/vehicles.yaml |
@@ -134,6 +130,7 @@ _none found_
 | modbomber.Husk | YAK.Husk | ? | ? | mods/cameo/rules/husks.yaml |
 | modkami.Husk | YAK.Husk | ? | ? | mods/cameo/rules/husks.yaml |
 | modkamimini.Husk | YAK.Husk | ? | ? | mods/cameo/rules/husks.yaml |
+| naxis_corpse_big | naxis_corpse | redalert2mod/naxis | redalert2mod/naxis | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | ordos_stealthraider | ordos_raider | d2k/ordos | d2k/ordos | mods/cameo/ContentPacks/D2k/Ordos/yaml/vehicles.yaml |
 | ra1_allies_badger | ra1_badger | redalert/shared | redalert/shared | mods/cameo/ContentPacks/RedAlert/Shared/yaml/aircraft.yaml |
 | ra1_allies_cargoplanebomber | ra1_badger_bomber | redalert/shared | redalert/shared | mods/cameo/ContentPacks/RedAlert/Shared/yaml/aircraft.yaml |
@@ -273,6 +270,9 @@ _none found_
 | ra2ctnewy26 | ra2ctchig01 | redalert2/shared | redalert2/shared | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/misc.yaml |
 | ra2v3rocketelite | ra2v3rocket | redalert2/shared | redalert2/shared | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/misc.yaml |
 | scadept.shade | protoss_adept | ? | starcraft/protoss | mods/cameo/rules/starcraft.yaml |
+| schwarzermond_bbomb2_husk | schwarzermond_bbomb_husk | redalert2mod/schwarzermond | redalert2mod/schwarzermond | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
+| schwarzermond_bbomb3_husk | schwarzermond_bbomb_husk | redalert2mod/schwarzermond | redalert2mod/schwarzermond | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
+| schwarzermond_hole_small | schwarzermond_hole | redalert2mod/schwarzermond | redalert2mod/schwarzermond | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/infantry.yaml |
 | sonar | camera.spyplane | ? | ? | mods/cameo/rules/misc.yaml |
 | td_gdi_humveemkii | td_gdi_humvee | tiberiandawn/gdi | tiberiandawn/gdi | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/vehicles.yaml |
 | td_nod_buggymkii | td_nod_buggy | tiberiandawn/nod | tiberiandawn/nod | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/vehicles.yaml |
@@ -334,11 +334,7 @@ _none found_
 | C8 | 5 | mods/cameo/rules/civilian.yaml |
 | C9 | 5 | mods/cameo/rules/civilian.yaml |
 | CHAN | 5 | mods/cameo/rules/civilian.yaml |
-| CNCCA | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/naval.yaml |
-| CNCPT | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/naval.yaml |
-| CNCRSS | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/naval.yaml |
 | CNCSPEN | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/buildings.yaml |
-| CNCSS | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/naval.yaml |
 | CNCSYRD | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/buildings.yaml |
 | CTFLAG | 4 | mods/cameo/rules/misc.yaml |
 | E1 | 7 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/infantry.yaml |
@@ -392,7 +388,6 @@ _none found_
 | INVISIBLEPLANE | 4 | mods/cameo/rules/tiberiansun.yaml |
 | JHIND.Husk | 4 | mods/cameo/rules/husks.yaml |
 | LHUS | 4 | mods/cameo/rules/trees.yaml |
-| LST | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/naval.yaml |
 | MAMMOTHBUNKER | 4 | mods/cameo/rules/tech.yaml |
 | MISS | 5 | mods/cameo/rules/tech.yaml |
 | MISS.Husk | 5 | mods/cameo/rules/tech.yaml |
@@ -517,7 +512,6 @@ _none found_
 | WINDMILL | 4 | mods/cameo/rules/trees.yaml |
 | YRDISK.Husk | 4 | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/misc.yaml |
 | YRSLAV | 5 | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/misc.yaml |
-| alien.nax | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | apparition.ixian | 5 | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
 | asianalliance_advancedcommunicationcenter | 5 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/buildings.yaml |
 | asianalliance_alligator | 5 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/infantry.yaml |
@@ -568,12 +562,36 @@ _none found_
 | asianalliance_veteranarcher | 5 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/infantry.yaml |
 | asianalliance_viper | 5 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/vehicles.yaml |
 | asianalliance_warturtle | 5 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/vehicles.yaml |
-| assault.nax | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
+| atreides_apc | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| atreides_barracks | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_combattank | 6 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
 | atreides_constructionyard | 6 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_engineer | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/infantry.yaml |
+| atreides_fremen | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/infantry.yaml |
+| atreides_gunturret | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
 | atreides_heavyfactory | 6 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_hightechfactory | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_ixresearchcenter | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_lightfactory | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_lightinfantry | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/infantry.yaml |
+| atreides_minotaurus | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| atreides_missiletank | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
 | atreides_mobileconstructionvehicle | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
-| bbomb2_husk.nax2 | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
-| bbomb3_husk.nax2 | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
+| atreides_mongoose | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| atreides_outpost | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_palace | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_refinery | 6 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_repairpad | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_repairtank | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| atreides_rockettrooper | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/infantry.yaml |
+| atreides_rocketturret | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_sandbike | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| atreides_siegetank | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| atreides_sonictank | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| atreides_spiceharvester | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| atreides_starport | 5 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_storagesilo | 6 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| atreides_windtrap | 6 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
 | bio | 4 | mods/cameo/rules/tech.yaml |
 | bio.Husk | 5 | mods/cameo/rules/tech.yaml |
 | bomber_husk.asian | 4 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/aircraft.yaml |
@@ -642,21 +660,49 @@ _none found_
 | cabal_tiberiumharvester | 5 | mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/vehicles.yaml |
 | cabal_widow | 5 | mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/vehicles.yaml |
 | cabal_widow_backup | 6 | mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/husks.yaml |
-| car.nax | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | carryall | 4 | mods/cameo/ContentPacks/D2k/Shared/yaml/aircraft.yaml |
 | carryall.paradrop | 4 | mods/cameo/ContentPacks/D2k/Shared/yaml/aircraft.yaml |
 | cgpnch.asian | 6 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/buildings.yaml |
 | cgyard.asian | 5 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/buildings.yaml |
 | cgyard.latin | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Syndicate/yaml/buildings.yaml |
 | cobra.steel | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/vehicles.yaml |
-| combat_tank.atreides | 6 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
 | combat_tank.harkonnen | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/vehicles.yaml |
-| conehead2.nax | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
+| combat_tank_husk.atreides | 4 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| corrino_apc | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
+| corrino_barracks | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_bmp | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
+| corrino_buggy | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
+| corrino_combattank | 6 | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
+| corrino_constructionyard | 6 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_engineer | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/infantry.yaml |
+| corrino_gunturret | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_heavyfactory | 6 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_hightechfactory | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_ixresearchcenter | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_lightfactory | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_lightinfantry | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/infantry.yaml |
+| corrino_missiletank | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
+| corrino_mobileconstructionvehicle | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
+| corrino_outpost | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_palace | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_refinery | 6 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_repairpad | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_rocketturret | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_sardaukar_bazooka | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/infantry.yaml |
+| corrino_sardaukar_berserker | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/infantry.yaml |
+| corrino_sardaukar_javelin | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/infantry.yaml |
+| corrino_sardaukar_laser | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/infantry.yaml |
+| corrino_sardaukar_sword | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/infantry.yaml |
+| corrino_siegetank | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
+| corrino_spiceharvester | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
+| corrino_starport | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_storagesilo | 6 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
+| corrino_trooper | 5 | mods/cameo/ContentPacks/D2k/Corrino/yaml/infantry.yaml |
+| corrino_windtrap | 6 | mods/cameo/ContentPacks/D2k/Corrino/yaml/buildings.yaml |
 | cougar.steel | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/vehicles.yaml |
 | cruiser_f.steel | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/aircraft.yaml |
-| d2k_silo.atreides | 6 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
 | devastator | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/vehicles.yaml |
-| dieglocke_husk.nax2 | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
+| devastator.husk | 4 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/vehicles.yaml |
 | drone_husk.ixian | 4 | mods/cameo/ContentPacks/D2k/Ixian/yaml/aircraft.yaml |
 | duelist_tank.ixian | 5 | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
 | engineer | 5 | mods/cameo/ContentPacks/D2k/Shared/yaml/infantry.yaml |
@@ -734,7 +780,6 @@ _none found_
 | forgotten_warriortank | 5 | mods/cameo/ContentPacks/TiberianSun/Forgotten/yaml/vehicles.yaml |
 | forgotten_wasp | 4 | mods/cameo/ContentPacks/TiberianSun/Forgotten/yaml/aircraft.yaml |
 | forgotten_zombiemutant | 5 | mods/cameo/ContentPacks/TiberianSun/Forgotten/yaml/infantry.yaml |
-| frank.nax | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | fremen_creep | 5 | mods/cameo/ContentPacks/D2k/Shared/yaml/infantry.yaml |
 | frigate.paradrop | 4 | mods/cameo/ContentPacks/D2k/Shared/yaml/aircraft.yaml |
 | futuretech_athenacannon | 5 | mods/cameo/ContentPacks/RedAlert2Mod/FutureTech/yaml/vehicles.yaml |
@@ -778,32 +823,39 @@ _none found_
 | futuretech_troopgate | 5 | mods/cameo/ContentPacks/RedAlert2Mod/FutureTech/yaml/buildings.yaml |
 | futuretech_twister | 4 | mods/cameo/ContentPacks/RedAlert2Mod/FutureTech/yaml/aircraft.yaml |
 | futuretech_warpgate | 6 | mods/cameo/ContentPacks/RedAlert2Mod/FutureTech/yaml/buildings.yaml |
-| gdicarrier | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/naval.yaml |
 | gdirigdrone | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/aircraft.yaml |
 | gunb.asian | 4 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/naval.yaml |
+| harkonnen_adp | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/vehicles.yaml |
 | harkonnen_autogunturret | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
 | harkonnen_barracks | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
+| harkonnen_buzzsaw | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/vehicles.yaml |
 | harkonnen_constructionyard | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
+| harkonnen_devastatormech | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/vehicles.yaml |
+| harkonnen_devastatorturret | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
+| harkonnen_engineer | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/infantry.yaml |
+| harkonnen_flametank | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/vehicles.yaml |
 | harkonnen_flameturret | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
 | harkonnen_heavyfactory | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
 | harkonnen_hightechfactory | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
+| harkonnen_inkvine | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/vehicles.yaml |
 | harkonnen_ixresearchcenter | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
 | harkonnen_lightfactory | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
+| harkonnen_lightinfantry | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/infantry.yaml |
 | harkonnen_mobileconstructionvehicle | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/vehicles.yaml |
 | harkonnen_outpost | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
 | harkonnen_palace | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
 | harkonnen_refinery | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
 | harkonnen_repairpad | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
+| harkonnen_rockettrooper | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/infantry.yaml |
 | harkonnen_rocketturret | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
+| harkonnen_sardaukar | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/infantry.yaml |
+| harkonnen_spiceharvester | 5 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/vehicles.yaml |
 | harkonnen_starport | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
 | harkonnen_storagesilo | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
 | harkonnen_windtrap | 6 | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/buildings.yaml |
-| haunebu2_husk.nax2 | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
-| haunebu_husk.nax2 | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
 | heavy_inf.ixian | 5 | mods/cameo/ContentPacks/D2k/Ixian/yaml/infantry.yaml |
 | heavy_rocket_raider.ixian | 4 | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
 | heavydrone_husk.ixian | 4 | mods/cameo/ContentPacks/D2k/Ixian/yaml/aircraft.yaml |
-| hole_small.nax2 | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/infantry.yaml |
 | hummer.steel | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/vehicles.yaml |
 | ixian_advancedheavyfactory | 6 | mods/cameo/ContentPacks/D2k/Ixian/yaml/buildings.yaml |
 | ixian_airdrone | 4 | mods/cameo/ContentPacks/D2k/Ixian/yaml/aircraft.yaml |
@@ -957,22 +1009,25 @@ _none found_
 | modbomber.Husk | 4 | mods/cameo/rules/husks.yaml |
 | modkami.Husk | 4 | mods/cameo/rules/husks.yaml |
 | modkamimini.Husk | 4 | mods/cameo/rules/husks.yaml |
-| muboat.nax | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/naval.yaml |
-| naval.nax | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
 | nax_bitsmark | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/naval.yaml |
 | naxis_academy | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
 | naxis_airfield | 6 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
+| naxis_alien | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | naxis_antitankcannon | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
+| naxis_assault | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_barracks | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
 | naxis_beerfactory | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
 | naxis_bf109 | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/aircraft.yaml |
 | naxis_bmwbike | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | naxis_brummbar | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
+| naxis_car | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
+| naxis_conehead2 | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | naxis_coneheadsknights | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | naxis_constructionyard | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
 | naxis_donnerschlag | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_engineeringtruck | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_flak88 | 6 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
+| naxis_frank | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | naxis_grille | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_halftrack | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_hetzer | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
@@ -983,6 +1038,8 @@ _none found_
 | naxis_kubelwagen | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_maus | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_me262 | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/aircraft.yaml |
+| naxis_muboat | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/naval.yaml |
+| naxis_naval | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
 | naxis_naxibunker | 6 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
 | naxis_naxiflamer | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | naxis_naximachinegunners | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
@@ -996,6 +1053,7 @@ _none found_
 | naxis_nop03sarubia | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_oldtank | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_orerefinery | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
+| naxis_panzer | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_panzerfausttrooper | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | naxis_panzerschreck | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | naxis_portableflak | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
@@ -1010,9 +1068,12 @@ _none found_
 | naxis_sssoldier | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | naxis_sturmtiger | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_techcenter | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
+| naxis_tiger | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | naxis_transportzeppelin | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/aircraft.yaml |
+| naxis_tuboat | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/naval.yaml |
+| naxis_undead | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | naxis_warfactory | 6 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/buildings.yaml |
-| nodlasercorvette | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/naval.yaml |
+| naxis_wirbelwind | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | nodvenom.husk | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/aircraft.yaml |
 | oldqtnk.steel | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/vehicles.yaml |
 | ordos_airmine | 4 | mods/cameo/ContentPacks/D2k/Ordos/yaml/aircraft.yaml |
@@ -1023,6 +1084,7 @@ _none found_
 | ordos_banshee | 4 | mods/cameo/ContentPacks/D2k/Ordos/yaml/aircraft.yaml |
 | ordos_barracks | 5 | mods/cameo/ContentPacks/D2k/Ordos/yaml/buildings.yaml |
 | ordos_chemicaltrooper | 5 | mods/cameo/ContentPacks/D2k/Ordos/yaml/infantry.yaml |
+| ordos_chemturret | 6 | mods/cameo/ContentPacks/D2k/Ordos/yaml/buildings.yaml |
 | ordos_cobratank | 5 | mods/cameo/ContentPacks/D2k/Ordos/yaml/vehicles.yaml |
 | ordos_combatautoguntank | 5 | mods/cameo/ContentPacks/D2k/Ordos/yaml/vehicles.yaml |
 | ordos_combattank | 5 | mods/cameo/ContentPacks/D2k/Ordos/yaml/vehicles.yaml |
@@ -1040,6 +1102,7 @@ _none found_
 | ordos_ixresearchcenter | 6 | mods/cameo/ContentPacks/D2k/Ordos/yaml/buildings.yaml |
 | ordos_laboratorycrawler | 5 | mods/cameo/ContentPacks/D2k/Ordos/yaml/vehicles.yaml |
 | ordos_lasertank | 5 | mods/cameo/ContentPacks/D2k/Ordos/yaml/vehicles.yaml |
+| ordos_laserturret | 6 | mods/cameo/ContentPacks/D2k/Ordos/yaml/buildings.yaml |
 | ordos_leech | 5 | mods/cameo/ContentPacks/D2k/Ordos/yaml/infantry.yaml |
 | ordos_lightfactory | 6 | mods/cameo/ContentPacks/D2k/Ordos/yaml/buildings.yaml |
 | ordos_lightinfantry | 5 | mods/cameo/ContentPacks/D2k/Ordos/yaml/infantry.yaml |
@@ -1062,7 +1125,6 @@ _none found_
 | ordos_windtrap | 6 | mods/cameo/ContentPacks/D2k/Ordos/yaml/buildings.yaml |
 | ordos_wraith | 4 | mods/cameo/ContentPacks/D2k/Ordos/yaml/aircraft.yaml |
 | panth.asian | 4 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/naval.yaml |
-| panzer.nax | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | protoss_adept | 5 | mods/cameo/ContentPacks/StarCraft/Protoss/yaml/infantry.yaml |
 | protoss_amaranth | 5 | mods/cameo/ContentPacks/StarCraft/Protoss/yaml/infantry.yaml |
 | protoss_analogue | 6 | mods/cameo/ContentPacks/StarCraft/Protoss/yaml/vehicles.yaml |
@@ -1176,13 +1238,13 @@ _none found_
 | ra1_soviets_airfield | 4 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/buildings.yaml |
 | ra1_soviets_ak47conscript | 5 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets_armoredyak | 4 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/aircraft.yaml |
-| ra1_soviets_attackdog | 5 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets_badger | 4 | mods/cameo/ContentPacks/RedAlert/Shared/yaml/aircraft.yaml |
 | ra1_soviets_barracks | 4 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/buildings.yaml |
 | ra1_soviets_btr80 | 4 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/vehicles.yaml |
 | ra1_soviets_commissar | 5 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets_constructionyard | 5 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/buildings.yaml |
 | ra1_soviets_cyberdog | 5 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
+| ra1_soviets_dog | 5 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets_dragunovantimaterialsniper | 5 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets_firerocketsoldier | 6 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets_flaktruck | 4 | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/vehicles.yaml |
@@ -1254,7 +1316,6 @@ _none found_
 | ra2_allies_alliedpowerplant | 5 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/buildings.yaml |
 | ra2_allies_alliedservicedepot | 5 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/buildings.yaml |
 | ra2_allies_alliedwarfactory | 6 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/buildings.yaml |
-| ra2_allies_attackdog | 5 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/infantry.yaml |
 | ra2_allies_battlefortress | 5 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/vehicles.yaml |
 | ra2_allies_battlefortress_chrono | 6 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/vehicles.yaml |
 | ra2_allies_battlefortress_empty | 6 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/vehicles.yaml |
@@ -1262,6 +1323,7 @@ _none found_
 | ra2_allies_chronolegionnaire | 5 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/infantry.yaml |
 | ra2_allies_chronominer | 4 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/vehicles.yaml |
 | ra2_allies_chronosphere | 5 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/defenses.yaml |
+| ra2_allies_dog | 5 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/infantry.yaml |
 | ra2_allies_engineer | 5 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/infantry.yaml |
 | ra2_allies_gapgenerator | 6 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/defenses.yaml |
 | ra2_allies_gi | 5 | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/infantry.yaml |
@@ -1424,7 +1486,6 @@ _none found_
 | ra2_ptruck_driveby | 5 | mods/cameo/ContentPacks/RedAlert2/Shared/yaml/misc.yaml |
 | ra2_soviets_airfield | 5 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/buildings.yaml |
 | ra2_soviets_apocalypsetank | 5 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/vehicles.yaml |
-| ra2_soviets_attackdog | 5 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/infantry.yaml |
 | ra2_soviets_barracks | 5 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/buildings.yaml |
 | ra2_soviets_battlebunker | 6 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/defenses.yaml |
 | ra2_soviets_battlelab | 5 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/buildings.yaml |
@@ -1433,6 +1494,7 @@ _none found_
 | ra2_soviets_constructionyard | 5 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/buildings.yaml |
 | ra2_soviets_crazyivan | 5 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/infantry.yaml |
 | ra2_soviets_desolator | 5 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/infantry.yaml |
+| ra2_soviets_dog | 5 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/infantry.yaml |
 | ra2_soviets_engineer | 5 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/infantry.yaml |
 | ra2_soviets_flakcannon | 6 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/defenses.yaml |
 | ra2_soviets_flaktrack | 4 | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/vehicles.yaml |
@@ -1579,7 +1641,6 @@ _none found_
 | rafact.colorpicker | 4 | mods/cameo/rules/misc.yaml |
 | rafactj.colorpicker | 4 | mods/cameo/rules/misc.yaml |
 | rammax.latin | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Syndicate/yaml/naval.yaml |
-| refinery.atreides | 6 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
 | resonance_drone_husk.ixian | 4 | mods/cameo/ContentPacks/D2k/Ixian/yaml/aircraft.yaml |
 | rocket_raider.ixian | 4 | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
 | sc_zerg_larva | 5 | mods/cameo/rules/starcraft.yaml |
@@ -1589,18 +1650,24 @@ _none found_
 | scalpelQuantumCannon.steel | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/aircraft.yaml |
 | schwarzermond_airfield | 6 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/buildings.yaml |
 | schwarzermond_barracks | 5 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/buildings.yaml |
+| schwarzermond_bbomb2_husk | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
+| schwarzermond_bbomb3_husk | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
 | schwarzermond_blackbomb | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
 | schwarzermond_constructionyard | 5 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/buildings.yaml |
 | schwarzermond_corruptorpiercer | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
 | schwarzermond_crystaltank | 5 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/vehicles.yaml |
 | schwarzermond_dalek | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/vehicles.yaml |
 | schwarzermond_dieglocke | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
+| schwarzermond_dieglocke_husk | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
 | schwarzermond_drone | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
 | schwarzermond_engineeringarmor | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/infantry.yaml |
 | schwarzermond_gravitycore | 5 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/buildings.yaml |
 | schwarzermond_gravitycoretank | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/vehicles.yaml |
+| schwarzermond_haunebu2_husk | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
+| schwarzermond_haunebu_husk | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
 | schwarzermond_haunebuii | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
 | schwarzermond_haunebuiii | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
+| schwarzermond_hole_small | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/infantry.yaml |
 | schwarzermond_hydrogenplant | 5 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/buildings.yaml |
 | schwarzermond_komet | 4 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/vehicles.yaml |
 | schwarzermond_korruptesbiest | 5 | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/vehicles.yaml |
@@ -1634,9 +1701,11 @@ _none found_
 | scrapcar_demo.latin | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Syndicate/yaml/vehicles.yaml |
 | scrapcar_driveby.latin | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Syndicate/yaml/vehicles.yaml |
 | siege_tank | 5 | mods/cameo/ContentPacks/D2k/Shared/yaml/vehicles.yaml |
+| siege_tank_husk.atreides | 4 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| siege_tank_husk.corrino | 4 | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
 | sietch_creep | 5 | mods/cameo/ContentPacks/D2k/Shared/yaml/buildings.yaml |
 | sietch_creep_disabled | 5 | mods/cameo/ContentPacks/D2k/Shared/yaml/buildings.yaml |
-| ssmsub | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/naval.yaml |
+| sonic_tank_husk.atreides | 4 | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
 | steelconsortium_antiairquantummissileturret | 6 | mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/buildings.yaml |
 | steelconsortium_barracuda | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/vehicles.yaml |
 | steelconsortium_bfg10000 | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/buildings.yaml |
@@ -1701,25 +1770,31 @@ _none found_
 | td_gdi_helipad | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/buildings.yaml |
 | td_gdi_humvee | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/vehicles.yaml |
 | td_gdi_humveemkii | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/vehicles.yaml |
+| td_gdi_landingcraft | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/naval.yaml |
 | td_gdi_mammothtank | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/vehicles.yaml |
 | td_gdi_mammothtankmkiii | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/vehicles.yaml |
 | td_gdi_minigunner | 6 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/infantry.yaml |
+| td_gdi_missileboat | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/naval.yaml |
 | td_gdi_mlrs | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/vehicles.yaml |
 | td_gdi_mobileconstructionvehicle | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/vehicles.yaml |
 | td_gdi_officer | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/infantry.yaml |
 | td_gdi_orca | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/aircraft.yaml |
 | td_gdi_predatortank | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/vehicles.yaml |
+| td_gdi_railgunbattleship | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/naval.yaml |
 | td_gdi_repairfacility | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/buildings.yaml |
 | td_gdi_rocketsoldier | 6 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/infantry.yaml |
 | td_gdi_shotgunner | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/infantry.yaml |
 | td_gdi_skyshield | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/buildings.yaml |
 | td_gdi_sonicmissilesoldier | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/infantry.yaml |
+| td_gdi_supercarrier | 4 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/naval.yaml |
 | td_gdi_tiberiumharvester | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/vehicles.yaml |
 | td_gdi_tiberiumrefinery | 6 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/buildings.yaml |
 | td_gdi_weaponsfactory | 5 | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/buildings.yaml |
 | td_nod_airstrip | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/buildings.yaml |
 | td_nod_apacheattackhelicopter | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/aircraft.yaml |
 | td_nod_artillery | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/vehicles.yaml |
+| td_nod_attacksubmarine | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/naval.yaml |
+| td_nod_ballisticmissilesubmarine | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/naval.yaml |
 | td_nod_blackhandflamer | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/infantry.yaml |
 | td_nod_buggy | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/vehicles.yaml |
 | td_nod_buggymkii | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/vehicles.yaml |
@@ -1739,6 +1814,7 @@ _none found_
 | td_nod_handofnod | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/buildings.yaml |
 | td_nod_helipad | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/buildings.yaml |
 | td_nod_lasercommando | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/infantry.yaml |
+| td_nod_lasercorvette | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/naval.yaml |
 | td_nod_lasertrooper | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/infantry.yaml |
 | td_nod_laserturret | 6 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/buildings.yaml |
 | td_nod_lighttank | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/vehicles.yaml |
@@ -1759,6 +1835,7 @@ _none found_
 | td_nod_templeprime | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/buildings.yaml |
 | td_nod_tiberiumharvester | 5 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/vehicles.yaml |
 | td_nod_tiberiumrefinery | 6 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/buildings.yaml |
+| td_nod_transportsubmarine | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/naval.yaml |
 | td_nod_venom | 4 | mods/cameo/ContentPacks/TiberianDawn/Nod/yaml/aircraft.yaml |
 | techcementffact | 4 | mods/cameo/rules/tech.yaml |
 | techmetalffact | 4 | mods/cameo/rules/tech.yaml |
@@ -1824,7 +1901,6 @@ _none found_
 | terran_weaponsfactory | 4 | mods/cameo/ContentPacks/StarCraft/Terran/yaml/buildings.yaml |
 | terran_wraith | 4 | mods/cameo/ContentPacks/StarCraft/Terran/yaml/aircraft.yaml |
 | terran_wyvern | 4 | mods/cameo/ContentPacks/StarCraft/Terran/yaml/aircraft.yaml |
-| tiger.nax | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | tkm_abrams | 5 | mods/cameo/ContentPacks/RedAlert2Mod/TKM/yaml/vehicles.yaml |
 | tkm_airpad | 4 | mods/cameo/ContentPacks/RedAlert2Mod/TKM/yaml/buildings.yaml |
 | tkm_as42 | 4 | mods/cameo/ContentPacks/RedAlert2Mod/TKM/yaml/vehicles.yaml |
@@ -1979,6 +2055,49 @@ _none found_
 | ts_nod_toxintrooper | 5 | mods/cameo/ContentPacks/TiberianSun/Nod/yaml/infantry.yaml |
 | ts_nod_warfactory | 4 | mods/cameo/ContentPacks/TiberianSun/Nod/yaml/buildings.yaml |
 | tsaegis | 4 | mods/cameo/rules/tiberiansun.yaml |
+| tscity01 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity02 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity03 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity04 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity05 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity06 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity07 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity08 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity09 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity10 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity11 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity12 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity13 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity14 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity15 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity16 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity17 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity18 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity19 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity20 | 4 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity21 | 4 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tscity22 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0001 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0002 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0003 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0004 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0005 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0006 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0007 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0008 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0009 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0010 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0011 | 4 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0012 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0013 | 4 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0014 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0015 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0016 | 5 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0017 | 4 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0018 | 4 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0019 | 4 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0020 | 4 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
+| tsct0021 | 4 | mods/cameo/ContentPacks/TiberianSun/Shared/yaml/misc.yaml |
 | tsctarmr | 4 | mods/cameo/rules/tiberiansun.yaml |
 | tsfloater | 4 | mods/cameo/rules/tiberiansun.yaml |
 | tsfsmoker.bomber | 4 | mods/cameo/rules/tiberiansun.yaml |
@@ -1987,8 +2106,6 @@ _none found_
 | tsun.asian | 4 | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/naval.yaml |
 | tsvislrg | 4 | mods/cameo/rules/tiberiansun.yaml |
 | tsvissml | 4 | mods/cameo/rules/tiberiansun.yaml |
-| tuboat.nax | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/naval.yaml |
-| undead.nax | 5 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/infantry.yaml |
 | wc2_critter_boar | 7 | mods/cameo/rules/warcraft2.yaml |
 | wc2_critter_helboar | 7 | mods/cameo/rules/warcraft2.yaml |
 | wc2_critter_seal | 7 | mods/cameo/rules/warcraft2.yaml |
@@ -2002,12 +2119,16 @@ _none found_
 | wc2_human_oil_tanker | 5 | mods/cameo/rules/warcraft2.yaml |
 | wc2_human_shipyard | 5 | mods/cameo/rules/warcraft2.yaml |
 | wc2_human_transport | 5 | mods/cameo/rules/warcraft2.yaml |
+| wc2_humans_alleria | 6 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
+| wc2_humans_alleria_elite | 6 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
 | wc2_humans_archmage | 6 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
 | wc2_humans_ballista | 5 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/vehicles.yaml |
 | wc2_humans_barracks | 5 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/buildings.yaml |
 | wc2_humans_blacksmith | 5 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/buildings.yaml |
 | wc2_humans_cannontower | 6 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/defenses.yaml |
 | wc2_humans_church | 5 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/buildings.yaml |
+| wc2_humans_danath | 6 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
+| wc2_humans_danath_elite | 6 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
 | wc2_humans_demolitionsquad | 6 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/vehicles.yaml |
 | wc2_humans_dwarvenrifleman | 6 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
 | wc2_humans_elvenarcher | 6 | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
@@ -2067,6 +2188,8 @@ _none found_
 | wc2_orcs_greathall | 4 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/buildings.yaml |
 | wc2_orcs_grunt | 6 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
 | wc2_orcs_guardtower | 6 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/defenses.yaml |
+| wc2_orcs_hellscream | 6 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
+| wc2_orcs_hellscream_elite | 6 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
 | wc2_orcs_kodobeast | 4 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
 | wc2_orcs_mobileconstructionvehicleorc | 5 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/vehicles.yaml |
 | wc2_orcs_ogre | 5 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
@@ -2084,8 +2207,8 @@ _none found_
 | wc2_orcs_trollheadhunter | 6 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
 | wc2_orcs_trolllumbermill | 5 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/buildings.yaml |
 | wc2_orcs_warcraft3grunt | 6 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
-| wind_trap.atreides | 6 | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
-| wirbelwind.nax | 4 | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
+| wc2_orcs_zuljin | 6 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
+| wc2_orcs_zuljin_elite | 6 | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
 | wraith_husk.ordos | 4 | mods/cameo/ContentPacks/D2k/Ordos/yaml/aircraft.yaml |
 | yakarmored.Husk | 4 | mods/cameo/rules/husks.yaml |
 | yaktesla.Husk | 4 | mods/cameo/rules/husks.yaml |
@@ -2181,6 +2304,9 @@ _none found_
 | BRL3 | 11 | -Selectable, -ShakeOnDeath, -SoundOnDamageTransition, -Demolishable, -CaptureManager, -Capturable | mods/cameo/rules/tech.yaml |
 | SCCOMMANDCENTERM | 4 | -AttackAircraft, -SpawnActorOnDeath, -Hovers@CRUISING, -Voiced | mods/cameo/rules/starcraft.yaml |
 | SILO | 3 | -GivesBuildableArea, -WithSpriteBody, -AcceptsDeliveredCash | mods/cameo/ContentPacks/TiberianDawn/Shared/yaml/buildings.yaml |
+| atreides_advancedcarryall | 4 | -SpawnActorOnDeath, -WithFacingSpriteBody, -WithDeathAnimation, -RevealsShroud@lockon | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |
+| atreides_airdrone | 3 | -SpawnActorOnDeath, -WithDeathAnimation, -RevealsShroud@lockon | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |
+| atreides_ornithopter | 3 | -WithDeathAnimation, -RevealsShroud@lockon, -MustBeDestroyed | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |
 | cabal_ascended | 3 | -DamagedByTerrain, -SpawnActorOnDeath, -TakeCover | mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/infantry.yaml |
 | cabal_berserker | 3 | -DamagedByTerrain, -SpawnActorOnDeath, -TakeCover | mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/vehicles.yaml |
 | cabal_cyborgcommando | 3 | -DamagedByTerrain, -SpawnActorOnDeath, -TakeCover | mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/infantry.yaml |
@@ -2194,6 +2320,8 @@ _none found_
 | cabal_orbdrone_slave | 3 | -UpdatesPlayerStatistics, -ActorLostNotification, -MapEditorData | mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/aircraft.yaml |
 | cabal_plasmaturret | 3 | -WithVoxelBody, -Cloak@TDcloak, -ActorStatValues | mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/defenses.yaml |
 | cabal_rocketcyborg | 3 | -DamagedByTerrain, -SpawnActorOnDeath, -TakeCover | mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/infantry.yaml |
+| corrino_advancedcarryall | 4 | -SpawnActorOnDeath, -WithFacingSpriteBody, -WithDeathAnimation, -RevealsShroud@lockon | mods/cameo/ContentPacks/D2k/Corrino/yaml/aircraft.yaml |
+| corrino_gunship | 3 | -SpawnActorOnDeath, -WithDeathAnimation, -RevealsShroud@lockon | mods/cameo/ContentPacks/D2k/Corrino/yaml/aircraft.yaml |
 | cruiser_f.steel | 5 | -Selectable, -UpdatesPlayerStatistics, -ActorLostNotification, -WithShadow, -MapEditorData | mods/cameo/ContentPacks/RedAlert2Mod/Consortium/yaml/aircraft.yaml |
 | farasha_drone_ixian | 3 | -ActorLostNotification, -UpdatesPlayerStatistics, -MapEditorData | mods/cameo/ContentPacks/D2k/Ixian/yaml/aircraft.yaml |
 | forgotten_apache_husk | 3 | -WithShadow, -Cloak@TDcloak, -Cloak@TScloak | mods/cameo/ContentPacks/TiberianSun/Forgotten/yaml/husks.yaml |
@@ -2204,7 +2332,8 @@ _none found_
 | fremen_creep | 3 | -MustBeDestroyed, -RevealsShroud@base-reve, -GrantConditionOnPrerequ | mods/cameo/ContentPacks/D2k/Shared/yaml/infantry.yaml |
 | futuretech_spyfutu | 3 | -Guard, -WithInfantryBody, -AttackFrontal | mods/cameo/ContentPacks/RedAlert2Mod/FutureTech/yaml/infantry.yaml |
 | gdirigdrone | 5 | -Targetable@SpecialRepai, -SpawnActorOnDeath, -ActorLostNotification, -UpdatesPlayerStatistics, -MapEditorData | mods/cameo/ContentPacks/TiberianDawn/GDI/yaml/aircraft.yaml |
-| hole.nax2 | 3 | -UpdatesPlayerStatistics, -ActorLostNotification, -MapEditorData | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/infantry.yaml |
+| harkonnen_advancedcarryall | 4 | -SpawnActorOnDeath, -WithFacingSpriteBody, -WithDeathAnimation, -RevealsShroud@lockon | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/aircraft.yaml |
+| harkonnen_gunship | 3 | -SpawnActorOnDeath, -WithDeathAnimation, -RevealsShroud@lockon | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/aircraft.yaml |
 | ixian_stormlasher | 3 | -WithDeathAnimation, -WithWallSpriteBody, -WithSpriteTurret | mods/cameo/ContentPacks/D2k/Ixian/yaml/buildings.yaml |
 | japan_zerofighter_slave | 4 | -UpdatesPlayerStatistics, -ActorLostNotification, -WithShadow, -MapEditorData | mods/cameo/ContentPacks/RedAlert/Shared/yaml/naval.yaml |
 | kami.asian | 4 | -UpdatesPlayerStatistics, -ActorLostNotification, -MapEditorData, -Voiced | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/aircraft.yaml |
@@ -2237,6 +2366,7 @@ _none found_
 | sc_zerg_larva | 9 | -DeathSounds@NORMAL, -SpawnActorOnDeath@zerg_, -WithDeathAnimation, -DamagedByTerrain, -Crushable, -TakeCover | mods/cameo/rules/starcraft.yaml |
 | scadept.shade | 11 | -UpdatesPlayerStatistics, -MapEditorData, -ActorLostNotification, -GrantTimedConditionOnDe, -ShadeMaster, -Passenger | mods/cameo/rules/starcraft.yaml |
 | schwarzermond_drone | 4 | -UpdatesPlayerStatistics, -ActorLostNotification, -MapEditorData, -Voiced | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/aircraft.yaml |
+| schwarzermond_hole | 3 | -UpdatesPlayerStatistics, -ActorLostNotification, -MapEditorData | mods/cameo/ContentPacks/RedAlert2Mod/SchwarzerMond/yaml/infantry.yaml |
 | sietch_creep | 10 | -RevealsShroud@base-reve, -GrantConditionOnPrerequ, -DamagedByTerrain, -GivesBuildableArea, -Sellable, -RepairableBuilding | mods/cameo/ContentPacks/D2k/Shared/yaml/buildings.yaml |
 | sietch_creep_disabled | 11 | -Targetable, -Selectable, -Targetable@ivan, -Targetable@trappable, -Targetable@chrono, -RevealsShroud@base-reve | mods/cameo/ContentPacks/D2k/Shared/yaml/buildings.yaml |
 | terran_battlecruiser | 4 | -ReloadAmmoDelayMultipli, -ReloadAmmoDelayMultipli, -ReloadAmmoDelayMultipli, -ReloadAmmoDelayMultipli | mods/cameo/ContentPacks/StarCraft/Terran/yaml/aircraft.yaml |

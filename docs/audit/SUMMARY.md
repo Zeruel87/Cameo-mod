@@ -76,19 +76,20 @@ shares.
 | B3 | upgrade direction | 594 items · 103 inverted · **0** dead · 19 dead tokens · 568 without an intent entry | `upgrades.md` |
 | B4 | upgrade coverage | 23 tagged upgrades · 21 uncovered unit slots | `upgrade_coverage.md` |
 | B5 | AI wiring | 1801 refs · **0** defined nowhere · **0** unloaded · **0** unwired pool factions | `ai.md` |
-| B6 | art/sequence refs | 2 missing images · **0** missing sequences · 595 unreferenced images | `sequences.md` |
+| B6 | art/sequence refs | **0** missing images · **0** missing sequences · 594 unreferenced images | `sequences.md` |
 | B7 | metadata rot | 32 duplicate-tooltip groups · **0** missing tooltip names | `metadata.md` |
 | B9 | numeric drift | 176 robust outliers · **0** bounds over the 5×5 max | `outliers.md` |
 | B10 | dead content | 374 orphan weapons · **0** dangling refs · 15 dead conditions | `orphans.md` |
 | B11 | asset norms | 148 / 2006 PNGs over budget · 1817 / 4390 WAVs off-norm | `assets.md` |
-| B12 | localization | 1 unresolved fluent ref · 526 orphaned `actor-*` messages | `fluent.md` |
+| B12 | localization | **0** unresolved fluent refs · 526 orphaned `actor-*` messages | `fluent.md` |
+| B13 | basebuilder crate coverage | **29/29** factions covered · 0 missing | `basebuilder_crates.md` |
 | R2 | stacked multipliers | 790 units over the 2.0× power budget | `power_budget.md` |
 | W | weapon uniqueness (§10) | 34 same-faction · 34 cross-faction · 95 carrier-only | `weapon_uniqueness.md` |
-| G | garrison weapons (§11) | **6 G1** · 0 G2 · 0 G3 | `garrison_weapons.md` |
+| G | garrison weapons (§11) | **0 G1** · 0 G2 · 0 G3 | `garrison_weapons.md` |
 | F | house stat formulas | 615 violations across 1910 roster actors | `stat_formulas.md` |
 | E | elite / rank wiring | 197 missing elite armaments · 21 ungated ELITE blocks · 52 decoration issues | `missing_elite.md`, `elite_gating.md`, `rank_decoration.md` |
-| Q | build order | prerequisite-order violations across 841 buildables | `buildable_order.md` |
-| D | duplicate keys | **88 D1 dropped inherits** · 439 D2 merged duplicates | `duplicate_keys.md` |
+| Q | build order | **0** prerequisite-order · 1012 build-palette-order violations across 841 buildables | `buildable_order.md` |
+| D | duplicate keys | **6 D1 dropped inherits** · 439 D2 merged duplicates | `duplicate_keys.md` |
 
 ## Green — and must stay green
 
@@ -107,8 +108,8 @@ regenerate).
 | check | state | what to do |
 |---|---|---|
 | **level ladder** | **WARN — 9 broken, at ratchet 9** (7 inverted, 2 flat) | no longer failing: `a9f31258` fixed `Demolition`. Still blocked on a maintainer ruling. Full measured table + the diagnosis: [`../design/ROADMAP.md`](../design/ROADMAP.md) "BROKEN LADDERS". These are balance numbers: pipeline only, and **never raise the ratchet**. |
-| duplicate keys D1 | 88 dropped inherits | each one silently drops a template — same family as the `Parent type X was already inherited` boot crash |
-| warhead-split ratchet | at baseline | pre-existing W24 debt, not a regression; lower the baseline as W24 lands |
+| duplicate keys D1 | 6 dropped inherits | each one silently drops a template — same family as the `Parent type X was already inherited` boot crash |
+| warhead-split ratchet | 921 vs baseline 921 | pre-existing W24 debt, not a regression; lower the baseline as W24 lands |
 
 Cleared since the last edition of this page: **doc claims** (was 4 of 19 drifted, now 19 of 19
 matching) and **generator sync** (was non-zero, now 0).
@@ -140,7 +141,8 @@ so they cannot rot in prose again.
 3. **B2b duplicate inherit paths / D1 dropped inherits** — the class that produces
    `Parent type X was already inherited` boot crashes and silently-dropped templates. Only the
    boot and `audit_duplicate_inherits` can see it.
-4. **G1 garrison weapons (6)** and **B6 missing images (2)** — small, bounded, player-visible.
+4. **G1 garrison weapons (0)**, **B6 missing images (0)**, **B12 fluent (0)**,
+   and **B13 basebuilder crate coverage (29/29)** — small, bounded, player-visible.
 5. **B1 cross-faction leaks (435 L1)** — the count grew because the audit's faction coverage
    grew, not only because the tree got worse. Triage before treating it as 435 bugs.
 6. **B3/B4 upgrade direction and coverage**, plus transcribing the remaining 568

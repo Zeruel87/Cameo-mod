@@ -43,6 +43,15 @@ import re
 import subprocess
 import sys
 
+# ⛔ THIS AUDIT WAS FAILING ON ITS OWN OUTPUT. Windows gives Python a cp1252 stdout, and
+# `main()` printed a finding containing `→` — so the run died with UnicodeEncodeError at
+# the D3 section, never printed D3 or D7, and exited 1. That 1 was read as "documentation is
+# unhealthy" when it meant "the reporter crashed": the audit could not report a finding whose
+# text contained an arrow, in a repository whose docs are full of arrows. Same class as the
+# other guards that failed on the evidence they were built from.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 # Documents that legitimately contain mojibake because they document the bug class.
@@ -197,8 +206,15 @@ def main() -> int:
     for f in tracked("*.md", "*.py", "*.json", "*.yaml", "*.sh"):
         rel = str(f).replace("\\", "/")
         # history keeps its own period-correct references on purpose, and this
-        # script's own GONE table names every old path by definition.
-        if rel.startswith("docs/history/") or rel == "tools/audit/audit_doc_health.py":
+        # script's own GONE table names every old path by definition. Generated
+        # audit reports are the same case: `docs/audit/latest/recent_changes.md`
+        # REPORTS on commits, so it quotes the paths those commits touched —
+        # naming a since-moved file there is a factual record, not a stale
+        # pointer. A guard must not fail on the evidence it is built from.
+        if (rel.startswith("docs/history/")
+                or rel.startswith("docs/audit/latest/")
+                or rel.startswith("docs/audit/degraded/")
+                or rel == "tools/audit/audit_doc_health.py"):
             continue
         text = read(f)
         if text is None:

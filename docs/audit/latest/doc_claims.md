@@ -1,32 +1,39 @@
 # audit_doc_claims — do the documents still match the tree?
 
-Registry: `docs/audit/doc_claims.yaml` — **19** claims.
+Measurement reuse: the completed combined measurements were retained; registry and listed prose were co-updated and checked without repeating unchanged measurements. Raw measurement output is preserved externally.
+
+Registry: `docs/audit/doc_claims.yaml` — **22** claims.
 
 A number in prose is true only on the day it is written. These are the claims a DECISION rests on, re-measured every run.
 
 | claim | documented | measured | status |
 |---|--:|--:|---|
-| `shield_versus_mean` | 189.088 | 189.805 | ✅ |
-| `shield_hp_factor` | 0.528855 | 0.526855 | ✅ |
-| `shield_damage_share` | 0.01432 | 0.0146486 | ✅ |
+| `ai_contract_distinct_module_types` | 21 | 21 | ✅ |
+| `ai_contract_player_module_instances` | 36 | 36 | ✅ |
+| `ai_contract_world_module_instances` | 1 | 1 | ✅ |
+| `shield_versus_mean` | 175.919 | 177.107 | ✅ |
+| `shield_hp_factor` | 0.568442 | 0.56463 | ✅ |
+| `shield_damage_share` | 0.0152182 | 0.014857 | ✅ |
 | `always_on_shield_actors` | 58 | 58 | ✅ |
 | `always_on_shielded_buildings` | 16 | 16 | ✅ |
-| `live_damage_multipliers` | 354 | 354 | ✅ |
-| `multi_main_fired_weapons` | 925 | 925 | ✅ |
-| `percentage_denominator_unset` | 0 | 0 | ✅ |
-| `unmigrated_scout_damage_multiplier` | 15 | 15 | ✅ |
-| `meters_filling_before_death` | 137 | 137 | ✅ |
-| `corrosion_meter_actors` | 785 | 785 | ✅ |
-| `w24_multi_main_fed` | 380 | 380 | ✅ |
-| `physical_state_fired_weapons` | 460 | 460 | ✅ |
+| `live_damage_multipliers` | 356 | 356 | ✅ |
+| `multi_main_fired_weapons` | 120 | 120 | ✅ |
+| `percentage_denominator_unset` | 184 | 184 | ✅ |
+| `unmigrated_scout_damage_multiplier` | 18 | 18 | ✅ |
+| `meters_filling_before_death` | 310 | 310 | ✅ |
+| `corrosion_meter_actors` | 817 | 817 | ✅ |
+| `w24_multi_main_fed` | 290 | 290 | ✅ |
+| `physical_state_fired_weapons` | 542 | 542 | ✅ |
 | `plating_row_ties` | 0 | 0 | ✅ |
-| `plating_families` | 46 | 46 | ✅ |
+| `plating_families` | 48 | 48 | ✅ |
 | `signed_off_class_anchors` | 0 | 0 | ✅ |
-| `warhead_family_reach` | 1245 | 1245 | ✅ |
-| `unconverted_template_inheritors` | 1162 | 1162 | ✅ |
+| `warhead_family_reach` | 1454 | 1454 | ✅ |
+| `unconverted_template_inheritors` | 1590 | 1590 | ✅ |
 | `ledgers_drifted` | 0 | 0 | ✅ |
 
-_clean_ — every registered claim still matches the tree.
+**Co-update confirmed: all 22 registry values match the recorded combined measurements.**
+
+Fix whichever is wrong, and if the tree is right update `value` in `doc_claims.yaml` **and every doc listed under `docs:`** in the SAME commit. That co-update is the point: it is how the `Shield = top + floor` duplication survived in two documents for weeks.
 
 ## Review cadence (for what a number cannot capture)
 

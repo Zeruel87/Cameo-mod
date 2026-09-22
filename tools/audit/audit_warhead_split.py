@@ -54,7 +54,13 @@ REVIEW_DMG = 8000
 # FIRED by a concrete actor, while this audit scans EVERY concrete weapon
 # (`rs.weapons`), fired or not. Two populations, both correct for their own
 # question — don't reconcile them by changing one.
-BROADCAST_BASELINE = 90
+# 2026-09-06, TWICE in one day. Morning: 75. Afternoon: I wired an
+# `intentional_composites` exemption in and it read 22. Night: the maintainer REPEALED
+# that exemption (DESIGN §11b.1 — no multi-warhead weapons at all), the registry was
+# DELETED, and the honest number is 72. That is NOT a raised ratchet: 22 was an artifact
+# of hiding 51 weapons, and 72 is below the 75 this file carried before the exemption
+# existed. Never raise it from here.
+BROADCAST_BASELINE = 69
 
 # The two former routing-revealed exceptions were consolidated into their
 # selected Flak and Bullet profiles. Keep the registry empty so a future
@@ -63,14 +69,10 @@ ROUTING_REVEALED_BROADCASTS = {}
 
 # Exact behavior restoration, not a newly authored broadcast.  PR 287 folded
 # these four profiles and accidentally multiplied Hydralisk's ground damage.
-RESTORED_GAMEPLAY_BROADCASTS = {
-    "HydraSpit": (
-        ("ArrowWeapon", 18000),
-        ("LightChemicalWeapon", 18000),
-        ("LightMissile", 18000),
-        ("SmallArms", 18000),
-    ),
-}
+# (The HydraSpit entry was retired 2026-09-06: after `8748c68e4` it resolves to a
+# single BulletChem main, so the exemption could never fire and would only have
+# masked a future re-broadcast.)
+RESTORED_GAMEPLAY_BROADCASTS = {}
 
 
 def _int(v) -> int:

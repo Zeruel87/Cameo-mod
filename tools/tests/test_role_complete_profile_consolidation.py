@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 import consolidate_role_complete_profiles as cohort
-from audit_three_way_split import SPLIT_BASELINE, main_warheads
+from audit_three_way_split import RAW_SPLIT_BASELINE, main_warheads
 from audit_warhead_split import BROADCAST_BASELINE
 from miniyaml import Ruleset
 
@@ -29,17 +29,35 @@ class RoleCompleteProfileConsolidationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rules = Ruleset(ROOT)
+        # Preserve the historical report's selection. Ruling 10(a), e76fb585c0,
+        # deliberately made ordos_airmine self-contained; never reattach it.
+        cls.historical_selection = {
+            name: spec[0] for root, spec in cohort.ROOTS.items()
+            for name in {root, *spec[2]}
+        }
+        cls.historical_selection.update(dict.fromkeys(cohort.MANTA_AG, "Bullet_Medium"))
+        cls.historical_selection.update(dict.fromkeys(cohort.MANTA_AA, "Flak_Medium"))
         cls.report = json.loads(REPORT.read_text(encoding="utf-8"))
         cls.by_kind = collections.defaultdict(dict)
         for weapon, changes in cls.report["changed"].items():
             for change in changes:
                 cls.by_kind[change[0]][weapon] = change[1:]
 
-    def test_converter_is_fully_applied(self):
-        cohort.validate_result()
+    def test_historical_converter_rejects_changed_closure_but_live_profiles_hold(self):
+        with self.assertRaisesRegex(RuntimeError, "ixian_airdrone: closure changed"):
+            cohort.validate_result()
+        plans, already = cohort.inspect(self.rules, self.historical_selection)
+        self.assertTrue(already)
+        self.assertEqual(set(self.historical_selection), set(plans))
+        self.assertTrue(all(value is None for value in plans.values()))
+        for root, spec in cohort.ROOTS.items():
+            expected = set() if root == "ixian_airdrone" else spec[2]
+            self.assertEqual(expected, cohort.descendants(self.rules, root), root)
+        self.assertEqual((cohort.MANTA_AG | cohort.MANTA_AA) - {cohort.MANTA_ROOT},
+                         cohort.descendants(self.rules, cohort.MANTA_ROOT))
 
     def test_report_covers_exactly_the_selected_definitions(self):
-        selected = set(cohort.selections(self.rules))
+        selected = set(self.historical_selection)
         self.assertEqual(20, len(selected))
         self.assertEqual(selected, set(self.report["changed"]))
         self.assertEqual([], self.report["added"])
@@ -76,7 +94,7 @@ class RoleCompleteProfileConsolidationTests(unittest.TestCase):
             if damage_types:
                 for weapon in {root, *children}:
                     expected[weapon] = (destination, damage_types)
-        selected = cohort.selections(self.rules)
+        selected = self.historical_selection
         self.assertEqual(8, len(expected))
         for weapon, (destination, damage_types) in expected.items():
             self.assertEqual(destination, selected[weapon])
@@ -86,13 +104,15 @@ class RoleCompleteProfileConsolidationTests(unittest.TestCase):
             self.assertEqual(damage_types, str(node.get("DamageTypes")), weapon)
 
     def test_air_mine_keeps_its_distinct_air_only_damage(self):
+        self.assertNotIn("ordos_airmine", cohort.descendants(self.rules, "ixian_airdrone"))
         self.assertEqual(
             {"MissileAP_HeavyFlatCompatibility", "1Dam"},
             set(main_warheads(self.rules.resolve_weapon("ordos_airmine"))))
 
     def test_ratchets_match_the_live_reduction(self):
-        self.assertEqual(114, SPLIT_BASELINE)
-        self.assertEqual(90, BROADCAST_BASELINE)
+        # Upstream retired exemptions: enforce the raw ceiling, never subtract reviewed stacks.
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
+        self.assertLessEqual(BROADCAST_BASELINE, 69)
 
 
 if __name__ == "__main__":

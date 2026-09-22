@@ -32,8 +32,8 @@ HEALTH_VALUES = active_health_values(ROOT)
 
 # Root closures are explicit so a newly inherited variant fails closed.
 ROOTS = {
-    "APCGun": ("Flak_Medium", {"APCGun_AA"}),
-    "APCGunAllies": ("Flak_Medium", {"APCGunAllies_AA"}),
+    "APCGun": ("Flak_Medium", {"td_gdi_apc_apcgun_AA"}),
+    "ra1_allies_alliedapc_gun": ("Flak_Medium", {"ra1_allies_alliedapc_gun_AA"}),
     "NaxHaenebuQuadCannon": ("Flak_Medium", {"NaxHaenebuQuadCannon_elite"}),
     "TKMQuadCannonAG": ("Flak_Medium", {"TKMQuadCannonAA"}),
     "TKMZazaCannonAG": ("Flak_Medium", {"TKMZazaCannonAA"}),
@@ -71,6 +71,7 @@ COMPATIBILITY_NESTED = {"DeviatorMissile_Artillery", "wc2highArrowFire"}
 
 
 def descendants(rs: Ruleset, root: str) -> set[str]:
+    from owned_weapon_wrappers import is_reviewed_owner_wrapper
     direct: dict[str, set[str]] = {}
     for name, node in rs.weapons.items():
         for _, parent in rs.inherits_of(node):
@@ -84,7 +85,7 @@ def descendants(rs: Ruleset, root: str) -> set[str]:
             continue
         seen.add(name)
         stack.extend(direct.get(name, set()))
-    return {name for name in seen if not name.startswith("^")}
+    return {name for name in seen if not name.startswith("^") and not is_reviewed_owner_wrapper(rs, name)}
 
 
 def selections(rs: Ruleset) -> dict[str, str]:

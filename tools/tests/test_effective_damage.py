@@ -20,10 +20,15 @@ import formula as balance_formula  # noqa: E402
 
 
 class Node:
-    """Minimal stand-in for a resolved yaml node (only `get` is used)."""
+    """Minimal stand-in for a resolved yaml node: `get` plus the warhead TYPE
+    (`value`), which heaviness-sensitive geometry reads to decide whether the
+    field even belongs. Defaults to a typed AreaDamage — the only warhead type
+    that owns `Heaviness` — so geometric fixtures exercise the real branch.
+    """
 
-    def __init__(self, fields):
+    def __init__(self, fields, value="AreaDamage"):
         self.fields = fields
+        self.value = value
 
     def get(self, key):
         return self.fields.get(key)
@@ -68,6 +73,32 @@ class GeometryTest(unittest.TestCase):
         self.assertTrue(live)
         self.assertEqual(fo, [100, 37, 14, 5, 0])
         self.assertEqual(radii, [0, 43, 86, 129, 172])
+
+    def test_heaviness_is_not_applied_to_a_warhead_type_that_does_not_own_it(self):
+        # SpreadDamage has NO Heaviness field in the engine (FieldLoader drops it),
+        # so an authored Heaviness on one is dead yaml — the geometry must stay
+        # VERBATIMly authored, scaled by nothing, typed explicitly here.
+        spread = Node({"Spread": "600", "Falloff": "100, 0", "Heaviness": "1000"},
+                      value="SpreadDamage")
+        fo, radii, live = ed.falloff_and_radii(spread)
+        self.assertTrue(live)
+        self.assertEqual(radii, [0, 600])
+        samples = ed.area_geometry_samples(
+            Node({"Spread": "600", "Falloff": "100, 0",
+                  "MinRadius": "50", "MaxRadius": "400", "Ticks": "2",
+                  "Heaviness": "2000"}, value="SpreadDamage"),
+            fo, radii, 0)
+        self.assertEqual(len(samples), 2)
+        # Shockwave endpoints UNSCALED: tick rings interpolate the AUTHORED
+        # Min/Max (50 and 400), so ring 0 cuts at 225 and ring 1 at 400, and the
+        # ring footprint is the falloff-weighted disc of that cutoff.
+        self.assertEqual(samples[1][2],
+                         ed.footprint_cells2(fo, radii, cutoff=400))
+        self.assertEqual(samples[0][2],
+                         ed.footprint_cells2(fo, radii, cutoff=225))
+        self.assertGreater(samples[1][2], samples[0][2])   # rings expand
+        # A weighted disc is strictly less than the flat full disc at 400.
+        self.assertLess(samples[1][2], math.pi * (400 / 1024) ** 2)
 
     def test_explicit_spread_below_100_is_not_clamped(self):
         fo, radii, live = ed.falloff_and_radii(
@@ -186,6 +217,7 @@ class ReliabilityTest(unittest.TestCase):
 class ProjectileRuntimeDefaultTest(unittest.TestCase):
     class ProjectileNode:
         def __init__(self, projectile_type, weapon_range, fields=None):
+            self.children = []  # Projectile-only fixture has no warhead channels.
             self.projectile = Node(fields or {})
             self.projectile.value = projectile_type
             self.weapon_range = weapon_range

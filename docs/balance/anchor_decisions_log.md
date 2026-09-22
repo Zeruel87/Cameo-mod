@@ -2,7 +2,7 @@
 
 _Running record of the collaborative baseline+verifier definition (started 2026-07-25). Each class
 is LOCKED here once the maintainer confirms; then `fit_class` + sign-off + `defaults.yaml` template
-work follow. Fixed MBT anchor pivot: **Tiger `tiger.nax` = 100000 HP / 100 spd / **5500 rng** / 10000
+work follow. Fixed MBT anchor pivot: **Tiger `naxis_tiger` = 100000 HP / 100 spd / **5500 rng** / 10000
 dmg @ 50 reload / cost0 800** (DPS 200). (Range bumped 5000→5500 on 2026-07-26 to complete the range
 ladder — see the RANGE LADDER section.)_
 
@@ -115,7 +115,7 @@ spread, NOT a copy of the baseline ratios. `fit_class` then prices each synthesi
 | Artillery | 50,000 | 70 | 500 | 15,000 | 500 | 100 | 1.00 | Light | `ra1_allies_alliedartillery` | `naxis_brummbar` (T2, NOT V2 which is T3) |
 | TankDestroyer | 150,000 | 55 | 600 | 7,500 | 600 | 250 | 1.00 | Heavy | `naxis_hetzer` | `ra2_allies_tankdestroyer` |
 | ArtilleryTank | 140,000 | 85 | 525 | 12,000 | 700 | 200 | 0.75 | Medium | `ixian_ixcombatsiege` | `schwarzermond_lunargrille` |
-| MBT | 220,000 | 100 | 480 | 5,500 | 800 | 275 | 0.60 | Heavy | `tiger.nax` | `naxis_kingtigerheavytank` (T1/T1, K1.0, 800→2000 exact 2.5×) |
+| MBT | 220,000 | 100 | 480 | 5,500 | 800 | 275 | 0.60 | Heavy | `naxis_tiger` | `naxis_kingtigerheavytank` (T1/T1, K1.0, 800→2000 exact 2.5×) |
 | AntiAir | 125,000 | 130 | 1,250 | 6,000 | 1,000 | 125 | 1.25 | Medium | `latinsyndicate_diablo` | `steelconsortium_barracuda` |
 | **MissileVehicle** | 120,000 | 110 | 1,200 | 8,000 | 1,200 | 100 | 1.00 | Light | `ts_gdi_hovermlrs` | `terran_cyclone` (T1/1.0) |
 | FireSupport | 105,000 | 90 | 2,100 | 10,000 | 1,400 | 75 | 1.50 | Light | `latinsyndicate_missiletruck` | **TBD at FS membership curation** (pure-ground T1/T2 K1.0; pool: forgotten_warriortank/protoss_reaver/eden_thorshammer) |
@@ -326,7 +326,7 @@ _FINAL numbers (maintainer 2026-07-27, second pass — HP + DPS bumped to bake o
 | TankDestroyer | `naxis_hetzer` | 150000 | 60 | 7000 | **500** | 600 | Heavy |
 | AntiAir | `latinsyndicate_diablo` | 80000 | 125 | 6000 | **800** | 600 | Medium |
 | Artillery | `ra1_allies_alliedartillery` | 50000 | **70** | 15000 | **500** | 600 | Light |
-| MBT | `tiger.nax` | 200000 | 100 | 5500 | **400** | 800 | Heavy |
+| MBT | `naxis_tiger` | 200000 | 100 | 5500 | **400** | 800 | Heavy |
 | FireSupport | `td_gdi_mlrs` | 75000 | **90** | 10000 | **600** | 1000 | Light |
 | ArtilleryTank | `ixian_ixcombatsiege` | 125000 | 80 | 12000 | **160** | 1200 | Medium |
 | LineBreaker | `td_nod_flametank` | 300000 | 80 | 2500 | **1000** | 1200 | Superheavy |
@@ -370,7 +370,7 @@ waits for it; structural/template work proceeds now.
 each is intentional). From the live membership snapshot:
 - **→ new `^AntiAirVehicleTemplate`** (from Support/Scout): `latinsyndicate_diablo` (baseline!),
   `steelconsortium_barracuda` (verifier!), `ra1_allies_alliedheavyaatank`, `ra1_soviets_flaktruck`,
-  `ra1_soviets_gatlingtank`, `ra2_soviets_flaktrack`, `tkm_flakbus`, `wirbelwind.nax`,
+  `ra1_soviets_gatlingtank`, `ra2_soviets_flaktrack`, `tkm_flakbus`, `naxis_wirbelwind`,
   `yuri_gatlingtank`, `forgotten_m113adats`, `japan_armoredcar`, `asianalliance_pulverizer`,
   the two Nod bikes (`td_nod_reconbike`/`td_nod_chemicalattackbike` + TS `ts_nod_attackcycle`).
 - **→ new `^LightTankTemplate`** (from MBT): `ra1_allies_alliedlighttank` (baseline!),
@@ -549,7 +549,7 @@ current Speed, Range, Cost, ReloadDelay, Burst, BurstDelays** where possible. Re
 stats.
 
 **Members (maintainer-confirmed):** latinsyndicate_rushertank, yuri_lashertank, ra1_allies_sheridan
-assaultta, schwarzermond lunar panzer, japan_shrineminitank, panzer.nax (Naxis Panzer III — HP comes
+assaultta, schwarzermond lunar panzer, japan_shrineminitank, naxis_panzer (Naxis Panzer III — HP comes
 DOWN into band), futuretech_robottank. **Tick Tank DROPPED** (slow/deploys — doesn't fit).
 
 **Members (my additions — CONFIRMED, templates already exist in yaml per maintainer):**
@@ -1175,7 +1175,7 @@ umlaut vs actor id) found **only two ids that DROPPED the umlaut instead of tran
 - `naxis_brummbr` → **`naxis_brummbar`** (Brummbär)
 - `naxis_kbelwagen` → **`naxis_kubelwagen`** (Kübelwagen)
 
-`schwarzermond_ubermensch` (Übermensch) is already correct (Ü→u); `frank.nax` is a codename (not
+`schwarzermond_ubermensch` (Übermensch) is already correct (Ü→u); `naxis_frank` is a codename (not
 name-derived). **To fix via `tools/rename/safe_rename.py` + a `rename_map` (touches rules/sequences/weapons/
-cameos/AI/fluent), then BOOT-GATE.** (Also the `frank.nax` display name "Übermutant" shows a mojibake
+cameos/AI/fluent), then BOOT-GATE.** (Also the `naxis_frank` display name "Übermutant" shows a mojibake
 `�` — check the source file encoding separately.)

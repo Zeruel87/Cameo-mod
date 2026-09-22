@@ -9,6 +9,7 @@ REPORT = ROOT / "docs/audit/latest/rule_driven_energy_ordnance_manifest.json"
 sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 import consolidate_rule_driven_energy_ordnance as cohort
+from owned_weapon_history import historical_weapon_names
 
 
 class RuleDrivenEnergyOrdnanceTests(unittest.TestCase):
@@ -23,7 +24,11 @@ class RuleDrivenEnergyOrdnanceTests(unittest.TestCase):
         expected = set(cohort.SELECTED) | {
             "NaxTorpTube", "NaxiJadgDestroyerCorrosion",
         }
-        self.assertEqual(expected, set(self.report["changed"]))
+        before = json.loads((ROOT / 'tools/tests/fixtures/ifv_owned_names_20260910.json').read_text(encoding='utf-8'))
+        historical = {new: old for route in before['routes'].values() for old, new in route.items()}
+        td = json.loads((ROOT / 'tools/tests/fixtures/td_owned_names_20260910.json').read_text(encoding='utf-8'))
+        historical.update({new: old for route in td['routes'].values() for old, new in route.items()})
+        self.assertEqual(historical_weapon_names({historical.get(name, name) for name in expected}), set(self.report["changed"]))
         self.assertEqual([], self.report["added"])
         self.assertEqual([], self.report["removed"])
 

@@ -38,7 +38,7 @@ end
 ---@param transportUnload cpos Cell at which passengers unload.
 ---@param rallypoint? cpos Cell to which unloaded passengers will move.
 ReinforceWithLandingCraft = function(player, units, transportStart, transportUnload, rallypoint)
-	local transport = Actor.Create("lst", true, { Owner = player, Facing = Angle.North, Location = transportStart })
+	local transport = Actor.Create("td_gdi_landingcraft", true, { Owner = player, Facing = Angle.North, Location = transportStart })
 	local subcell = 1
 
 	if #units == 1 then

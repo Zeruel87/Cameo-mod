@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """audit_tier_weapon_class.py — does every weapon obey the Tier<->WeaponClass law?
 
+CURRENT AUTHORITY: DESIGN section11b.1 supersedes this historical multi-main
+budget with one main. This audit retains its diagnostic ratchet, but does not
+authorize mixed mains. Continuous profiles have no discrete level suffix and
+are reported separately, not mislabeled as unconverted legacy weapons.
+
     python tools/audit/audit_tier_weapon_class.py
 
 Maintainer law (2026-08-03, `docs/balance/weapon_classes.yaml` header, memory
@@ -49,7 +54,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from miniyaml import Ruleset  # noqa: E402
 
 # Structural budget violations when this was written (2026-08-22). LOWER ONLY.
-TIER_BASELINE = 218
+TIER_BASELINE = 48
 
 MAIN_DAMAGE_TYPES = {"AreaDamage", "SpreadDamage", "HealthPercentageDamage", "TargetDamage"}
 COMPANION_MARKERS = ("Percentage", "ExtraDamage", "ExtraRepair", "Concrete")
@@ -92,11 +97,28 @@ def adjacent(levels: set[str]) -> bool:
     return len(idx) == 2 and idx[1] - idx[0] == 1
 
 
+def continuous_only(resolved, mains: list[str]) -> bool:
+    """Recognize explicit active shared profiles; do not infer a discrete tier."""
+    if not mains:
+        return False
+    for tag in mains:
+        node = resolved.child('Warhead@' + tag)
+        if node is None or node.get('HeavinessMode') != 'SharedVersus':
+            return False
+        try:
+            if not 0 <= int(node.get('Heaviness')) <= 2000:
+                return False
+        except (TypeError, ValueError):
+            return False
+    return True
+
+
 def main() -> int:
     rs = Ruleset(pathlib.Path("."))
     legal = collections.Counter()
     bad: list[tuple[str, str, list[str]]] = []
     legacy = 0
+    continuous = []
     shapes = collections.Counter()
 
     for name in sorted(rs.weapons):
@@ -110,7 +132,10 @@ def main() -> int:
             continue
         parts = [parse(w) for w in mains]
         if any(p is None for p in parts):
-            legacy += 1
+            if continuous_only(resolved, mains):
+                continuous.append(name)
+            else:
+                legacy += 1
             continue
 
         types = {p[0] for p in parts}
@@ -140,11 +165,16 @@ def main() -> int:
     total = sum(legal.values()) + len(bad)
     print(f"# audit_tier_weapon_class — {len(bad)} of {total} classifiable weapons break the "
           f"TYPES x LEVELS budget\n")
-    print("LEGAL shapes:")
+    print("Historical budget diagnostic only; DESIGN section11b.1 one-main law takes precedence.\n")
+    print("Historical budget shapes (not one-main compliance):")
     for k, v in legal.most_common():
         print(f"  {v:5d}  {k}")
-    print(f"\n  {legacy:5d}  weapons skipped — at least one LEGACY-named main warhead "
-          f"(no Family_Level), so the budget cannot be judged until they are 3-way split")
+    print(f"\n  {legacy:5d}  weapons unclassified — at least one main lacks a recognized "
+          "Family_Level; this is not a balance or structural pass")
+    print(f"  {len(continuous):5d}  continuous-profile weapons — discrete tier unclassified; "
+          "runtime heaviness is checked separately")
+    if continuous:
+        print("  Continuous identities: " + ", ".join(continuous))
 
     print(f"\nVIOLATIONS by shape:")
     for k, v in shapes.most_common():
@@ -160,8 +190,9 @@ def main() -> int:
     over = len(bad) > TIER_BASELINE
     print(f"\n{'FAIL' if over else 'WARN'} {len(bad)} budget violations (ratchet {TIER_BASELINE})")
     if over:
-        print("**A weapon just broke the TYPES x LEVELS budget.** Give it one level, or two "
-              "ADJACENT levels if the unit is genuinely between tiers — do not raise the ratchet.")
+        print("**The historical TYPES x LEVELS diagnostic exceeded its ratchet.** "
+              "Follow DESIGN section11b.1: one main plus permitted companions. "
+              "Adjacency is not permission to retain multiple mains; do not raise the ratchet.")
     else:
         print("Lower `TIER_BASELINE` as weapons are brought onto the law; never raise it.")
     return 1 if over else 0

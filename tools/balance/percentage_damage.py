@@ -27,6 +27,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from formula import parse_int32
+import effective_heaviness as eh
 
 
 PCT_FOLDED = "pct_folded"
@@ -41,6 +42,12 @@ STANDALONE_DEFAULT_DENOMINATOR = 100
 DEFAULT_PERCENTAGE_SPREAD = 50
 INT32_MIN = -(2 ** 31)
 INT32_MAX = 2 ** 31 - 1
+# THE SHARED PROFILE: one combined fraction
+# Damage x PercentageScale x Heaviness / (200000 x 2000) — half-up in ONE step,
+# with the h/2 heaviness factor inside the fraction (never a legacy rounding
+# then a multiply). Mirrors the C# SharedFoldedPercentageUnits.
+SHARED_SCALE_DENOMINATOR = 200_000 * 2000
+SHARED_ROUNDING_BIAS = SHARED_SCALE_DENOMINATOR // 2
 
 
 def _truncate_div(numerator: int, denominator: int) -> int:
@@ -77,11 +84,25 @@ def folded_units(damage: int, scale: int) -> tuple[float, int]:
     using an Int64 intermediate and integer division. The
     continuous wide value is kept separately because it is the scalable design
     coefficient; the difference to the runtime value is a quantisation residual.
+    Kept unchanged for the LEGACY mode and its tests.
     """
     continuous = damage * scale / FOLDED_SCALE_DENOMINATOR
     numerator = damage * scale + FOLDED_ROUNDING_BIAS
     rounded = _runtime_int32(
         _truncate_div(numerator, FOLDED_SCALE_DENOMINATOR))
+    return continuous, rounded
+
+
+def shared_folded_units(damage: int, scale: int, heaviness: int) -> tuple[float, int]:
+    """THE SHARED-PROFILE conversion: ONE rounded combined fraction
+    ``Damage x PercentageScale x h / (200000 x 2000)`` — half-up over the
+    nonnegative input, everything in ONE step (the h/2 factor lives inside the
+    fraction). Python ints are arbitrary precision, mirroring the C# Int128
+    intermediates; the result must fit Int32 exactly like the engine's field."""
+    continuous = damage * scale * heaviness / SHARED_SCALE_DENOMINATOR
+    numerator = damage * scale * heaviness + SHARED_ROUNDING_BIAS
+    rounded = _runtime_int32(
+        _truncate_div(numerator, SHARED_SCALE_DENOMINATOR))
     return continuous, rounded
 
 
@@ -107,9 +128,22 @@ def percentage_applications(resolved, reference_hp: float) -> list[dict]:
         tag = node.key.split("@", 1)[1] if "@" in node.key else node.key
 
         if node.value == "AreaDamage":
+            # Heaviness / mode / anchor validation mirrors the C# RulesetLoaded
+            # throws: they fire regardless of Damage or PercentageScale.
+            light_versus = versus_table(node, "PercentageVersusLight")
+            heavy_versus = versus_table(node, "PercentageVersusHeavy")
+            pct_versus = versus_table(node, "PercentageVersus")
+            mode, heaviness = eh.heaviness_profile_config(
+                node, light_versus, pct_versus, heavy_versus)
             damage = parse_int32(node.get("Damage"), f"{tag}.Damage")
             scale = parse_int32(
                 node.get("PercentageScale"), f"{tag}.PercentageScale", 0)
+            # THE SHARED PROFILE's nonnegative contract + load-time overflow
+            # gate, mirrored from the C# RulesetLoaded block (review items 2–3).
+            # Fires even at h = 0 and regardless of PercentageScale==0 (legacy
+            # disabled/config-invalid paths are untouched).
+            eh.validate_shared_numeric(
+                mode, heaviness, versus_table(node), damage, scale)
             denominator = parse_int32(
                 node.get("PercentageDenominator"),
                 f"{tag}.PercentageDenominator", FOLDED_DEFAULT_DENOMINATOR)
@@ -124,12 +158,24 @@ def percentage_applications(resolved, reference_hp: float) -> list[dict]:
             if damage is None or damage <= 0 or scale <= 0:
                 continue
 
-            continuous_units, runtime_units = folded_units(damage, scale)
+            shared = mode == eh.MODE_SHARED
+            if shared:
+                continuous_units, runtime_units = shared_folded_units(
+                    damage, scale, heaviness)
+                # The percentage half reads the SAME post-bell table as the
+                # flat half (Shield row already scaled once) — never a second
+                # transform.
+                effective_pct = eh.shared_versus_profile(
+                    versus_table(node), heaviness)
+            else:
+                continuous_units, runtime_units = folded_units(damage, scale)
+                effective_pct = eh.percentage_profile(
+                    versus_table(node), pct_versus, light_versus, heavy_versus,
+                    heaviness)
             if runtime_units <= 0 and continuous_units <= 0:
                 continue
             continuous_hp = reference_hp * continuous_units / denominator
             runtime_hp = runtime_percentage_hp(reference_hp, runtime_units, denominator)
-            pct_versus = versus_table(node, "PercentageVersus")
             out.append({
                 "kind": PCT_FOLDED,
                 "tag": tag,
@@ -137,12 +183,14 @@ def percentage_applications(resolved, reference_hp: float) -> list[dict]:
                 "damage": damage,
                 "scale": scale,
                 "denominator": denominator,
+                "heaviness": heaviness,
+                "mode": mode,
                 "continuous_units": continuous_units,
                 "runtime_units": runtime_units,
                 "continuous_hp": continuous_hp,
                 "runtime_hp": runtime_hp,
                 "rounding_hp": runtime_hp - continuous_hp,
-                "versus": pct_versus or versus_table(node),
+                "versus": effective_pct,
                 "percentage_spread": percentage_spread,
             })
             continue
@@ -172,6 +220,20 @@ def percentage_applications(resolved, reference_hp: float) -> list[dict]:
             # runtime divisor is always 100, so a foreign inherited key must
             # not alter the analysis.
             denominator = STANDALONE_DEFAULT_DENOMINATOR
+        if node.value == "AreaDamagePercentage":
+            # The subclass INHERITS Heaviness and HeavinessMode (fields are
+            # loaded, not dropped): its Versus is belled and its geometry scales
+            # under active h, but the folded-half endpoints and the SHARED mode
+            # are REJECTED (subclass ValidateFields — until explicitly supported).
+            light = versus_table(node, "PercentageVersusLight")
+            heavy = versus_table(node, "PercentageVersusHeavy")
+            _mode, heaviness = eh.heaviness_profile_config(
+                node, light, versus_table(node, "PercentageVersus"), heavy,
+                subclass_twin=True)
+            mode = eh.MODE_LEGACY  # the subclass cannot carry SharedVersus (rejected above)
+        else:
+            heaviness = eh.DISABLED
+            mode = eh.MODE_LEGACY
         damage = parse_int32(node.get("Damage"), f"{tag}.Damage")
         if damage is None or damage <= 0:
             continue
@@ -183,12 +245,16 @@ def percentage_applications(resolved, reference_hp: float) -> list[dict]:
             "node": node,
             "damage": damage,
             "denominator": denominator,
+            "heaviness": heaviness,
+            "mode": mode,
             "continuous_units": float(damage),
             "runtime_units": damage,
             "continuous_hp": hp_equiv,
             "runtime_hp": runtime_hp,
             "rounding_hp": runtime_hp - hp_equiv,
-            "versus": versus_table(node),
+            "versus": (eh.versus_profile(versus_table(node), heaviness)
+                       if node.value == "AreaDamagePercentage"
+                       else versus_table(node)),
             "percentage_spread": None,
         })
     return out

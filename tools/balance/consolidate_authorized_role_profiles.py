@@ -46,8 +46,8 @@ ROOTS = {
         "Demolition_Heavy", set(), 20000, None),
     "TSBusMortar": (
         "Concussion_Medium", set(), 64000, None),
-    "ConscriptMolotov": (
-        "Flame_Light", {"ConscriptMolotovExplode"}, 16000, 50),
+    "ra1_soviets_molotovconscript_conscriptmolotov": (
+        "Flame_Light", {"ra1_soviets_molotovconscript_conscriptmolotovexplode"}, 16000, 50),
     "tkm_trooper_gp25": (
         "Demolition_Light", set(), 12000, 50),
     "NaxiAntiTankCannon": (
@@ -69,7 +69,7 @@ ROOTS = {
 BASELINE_MAINS = {
     "ASDFKamikazeExplosion": {"Concussion_Medium", "Demolition_Heavy"},
     "TSBusMortar": {"Concussion_Medium", "Demolition_Heavy"},
-    "ConscriptMolotov": {"Demolition_Light", "Flame_Light"},
+    "ra1_soviets_molotovconscript_conscriptmolotov": {"Demolition_Light", "Flame_Light"},
     "tkm_trooper_gp25": {"Demolition_Light", "Flame_Light"},
     "NaxiAntiTankCannon": {"CannonAP_Light", "CannonHE_Medium"},
     "NaxiAntiTankCannonCorrosion": {"CannonAP_Light", "CannonHE_Medium"},
@@ -84,7 +84,7 @@ BASELINE_MAINS = {
 DESTINATIONS = {
     "ASDFKamikazeExplosion": "Demolition_Heavy",
     "TSBusMortar": "Concussion_Medium",
-    "ConscriptMolotov": "Flame_Light",
+    "ra1_soviets_molotovconscript_conscriptmolotov": "Flame_Light",
     "tkm_trooper_gp25": "Demolition_Light",
     "NaxiAntiTankCannon": "CannonAP_Light",
     "NaxiAntiTankCannonCorrosion": "CannonAP_Light",
@@ -100,7 +100,7 @@ TOTALS = {
     name: ROOTS[root][2]
     for root in ROOTS
     for name in {root, *ROOTS[root][1]}
-    if name != "ConscriptMolotovExplode"
+    if name != "ra1_soviets_molotovconscript_conscriptmolotovexplode"
 }
 
 RUNTIME_UNITS = {
@@ -113,8 +113,8 @@ RUNTIME_UNITS = {
 PRESERVED_HASHES = {
     "ASDFKamikazeExplosion": "15d7a5a6997ace2a0f2eae69e3a12b1fed9b7b569e7b34d9663a482f0f3deb02",
     "TSBusMortar": "a0d944d2dba35617d5b299744c511e38ac9bdf1f6055e3a26af088f7f764c3eb",
-    "ConscriptMolotov": "f9dd87dfe31f6abf73eadb45cb6a83f8e83a36f3cd056405177941834abb0777",
-    "ConscriptMolotovExplode": "d4c4546e3152e1a81f2243a632e84b1970f99597af017bdbb0806cd59e09509c",
+    "ra1_soviets_molotovconscript_conscriptmolotov": "f9dd87dfe31f6abf73eadb45cb6a83f8e83a36f3cd056405177941834abb0777",
+    "ra1_soviets_molotovconscript_conscriptmolotovexplode": "d4c4546e3152e1a81f2243a632e84b1970f99597af017bdbb0806cd59e09509c",
     "tkm_trooper_gp25": "8ef419ef385162319312d8fef6c9dbc5f4bf093442d523eec3a0b120d48cd93c",
     "NaxiAntiTankCannon": "c12968710c555f7c6afb7940fa68023a9e3fd093a0542f9883eb2a6a1cf3f57b",
     "NaxiAntiTankCannonCorrosion": "7ef73a271469d8a6e533f63e0d03c74d75a2f72f17fcfdc0cb3983f38f46dbf4",
@@ -158,7 +158,7 @@ EXPECTED_MAIN_HASHES = {
         },
         True: {"CannonHE_Heavy": "f00128ebcbe008b7216e9a08553908dbe2bcb141d573b33d19ce42c0af9cd49e"},
     },
-    "ConscriptMolotov": {
+    "ra1_soviets_molotovconscript_conscriptmolotov": {
         False: {
             "Demolition_Light": "34aa4b8058d40e27c268a4bcf5ed70867c657a78ddf1d1efba119ad0461a3457",
             "Flame_Light": "9fd6bbeb93a6195bac87a6df75939d92c45e717beb9cf672f0bf7d4249c9d651",
@@ -224,7 +224,7 @@ def node_hash(node) -> str:
 
 def resolved_hash(rs: Ruleset, name: str) -> str:
     excluded_keys = BASELINE_MAINS.get(name, set()) | {DESTINATIONS.get(name, "")}
-    if name == "ConscriptMolotovExplode":
+    if name == "ra1_soviets_molotovconscript_conscriptmolotovexplode":
         excluded_keys |= {"Flame_LightFlatCompatibility"}
     excluded = {f"Warhead@{key}" for key in excluded_keys if key}
     payload = [
@@ -322,7 +322,7 @@ def inspect(rs: Ruleset, print_hashes: bool = False) -> bool:
             for key, node in nodes.items()
             if node.get("PhysicalStateName") or node.get("PhysicalStateScale")
         }
-        if name in {"ConscriptMolotov", "tkm_trooper_gp25"}:
+        if name in {"ra1_soviets_molotovconscript_conscriptmolotov", "tkm_trooper_gp25"}:
             expected_state = (
                 {"Flame_Light": ("Temperature", "100")}
                 if before else {destination: ("Temperature", "50")}
@@ -335,11 +335,11 @@ def inspect(rs: Ruleset, print_hashes: bool = False) -> bool:
         if resolved_hash(rs, name) != PRESERVED_HASHES[name]:
             raise RuntimeError(f"{name}: non-selected behavior hash changed")
 
-    death = rs.resolve_weapon("ConscriptMolotovExplode")
+    death = rs.resolve_weapon("ra1_soviets_molotovconscript_conscriptmolotovexplode")
     if set(main_warheads(death)) != {"Flame_LightFlatCompatibility"}:
         raise RuntimeError("ConscriptMolotovExplode: death payload changed")
-    if resolved_hash(rs, "ConscriptMolotovExplode") != PRESERVED_HASHES[
-            "ConscriptMolotovExplode"]:
+    if resolved_hash(rs, "ra1_soviets_molotovconscript_conscriptmolotovexplode") != PRESERVED_HASHES[
+            "ra1_soviets_molotovconscript_conscriptmolotovexplode"]:
         raise RuntimeError("ConscriptMolotovExplode: non-main behavior changed")
 
     if len(states) != 1:

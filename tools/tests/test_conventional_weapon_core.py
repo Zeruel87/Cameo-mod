@@ -14,7 +14,6 @@ sys.path[:0] = [str(ROOT / "tools/audit")]
 
 from audit_three_way_split import (  # noqa: E402
     RAW_SPLIT_BASELINE,
-    SPLIT_BASELINE,
     main_warhead_nodes,
     main_warheads,
 )
@@ -98,9 +97,9 @@ class ConventionalWeaponCoreTests(unittest.TestCase):
         }, self.report["percentage_rounding"])
 
     def test_ratchets_match_the_live_structural_reduction(self):
-        self.assertEqual(340, RAW_SPLIT_BASELINE)
-        self.assertEqual(114, SPLIT_BASELINE)
-        self.assertEqual(90, BROADCAST_BASELINE)
+        # The exemption was repealed upstream; a future reduction stays valid.
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
+        self.assertLessEqual(BROADCAST_BASELINE, 69)
 
 
 if __name__ == "__main__":

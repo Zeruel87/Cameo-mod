@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the YAML-only AI personality wiring.
+"""Validate the AI personality wiring.
 
 The five squad-manager instances intentionally duplicate their shared fields.
 This audit compares every non-tuning field byte-for-byte and verifies that the
@@ -16,6 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 AI_PATH = ROOT / "mods" / "cameo" / "ai" / "ai.yaml"
+CONTROLLER_PATH = ROOT / "OpenRA.Mods.Cameo" / "Traits" / "BotPersonalityController.cs"
 PERSONALITIES = ("rush", "turtle", "tech", "expansion", "steamroller")
 CONDITIONS = {f"personality-{name}" for name in PERSONALITIES}
 TUNING_FIELDS = {
@@ -88,6 +89,18 @@ def condition_values(block: list[str]) -> set[str]:
     return set()
 
 
+def controller_conditions() -> list[str]:
+    source = CONTROLLER_PATH.read_text(encoding="utf-8")
+    match = re.search(
+        r"public readonly string\[\] Conditions\s*=\s*\{(?P<body>.*?)\};",
+        source,
+        re.DOTALL,
+    )
+    if match is None:
+        return []
+    return re.findall(r'"([^"]+)"', match.group("body"))
+
+
 def notification_blocks(block: list[str]) -> tuple[dict[str, list[str]], set[str]]:
     blocks: dict[str, list[str]] = {}
     duplicates: set[str] = set()
@@ -115,9 +128,15 @@ def main() -> int:
         failures.append("Player does not inherit ^AIDifficulties")
 
     selector = lines_for_block(lines, "GrantRandomCondition@personality")
-    granted = condition_values(selector)
-    if granted != CONDITIONS:
-        failures.append(f"selector conditions {sorted(granted)} != {sorted(CONDITIONS)}")
+    controller = lines_for_block(player, "BotPersonalityController")
+    source_conditions = controller_conditions()
+    granted = condition_values(selector) if selector else set(source_conditions)
+    if selector:
+        failures.append("legacy GrantRandomCondition@personality remains")
+    if not controller:
+        failures.append("Player does not wire BotPersonalityController")
+    if not source_conditions or len(source_conditions) != len(set(source_conditions)) or set(source_conditions) != CONDITIONS:
+        failures.append(f"controller conditions {sorted(set(source_conditions))} != {sorted(CONDITIONS)}")
 
     blocks = {
         name: lines_for_block(lines, f"SquadManagerBotModuleCA@{name}")
@@ -168,8 +187,8 @@ def main() -> int:
         if dead:
             failures.append(f"{name} retains dead fields: {', '.join(sorted(dead))}")
 
-    if consumed != CONDITIONS:
-        failures.append(f"consumed conditions {sorted(consumed)} != {sorted(CONDITIONS)}")
+    if consumed != set(source_conditions):
+        failures.append(f"consumed conditions {sorted(consumed)} != {sorted(set(source_conditions))}")
 
     if parsed_fields:
         reference_name = PERSONALITIES[0]
@@ -200,7 +219,7 @@ def main() -> int:
         return 1
     print("## PASS")
     print("- Shared non-tuning fields are byte-identical across all five instances.")
-    print("- GrantRandomCondition and squad-manager condition sets match exactly.")
+    print("- BotPersonalityController and squad-manager condition sets match exactly.")
     print("- Personality conditions have exactly one matching notification block each.")
     print("- No dead RushInterval/RushAttackScanRadius keys remain.")
     return 0

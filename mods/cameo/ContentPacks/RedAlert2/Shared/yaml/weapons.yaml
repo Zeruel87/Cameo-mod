@@ -921,23 +921,33 @@ RA2105mm_elite:
 	BurstDelays: 3
 
 RA2sabot:
-	Inherits: ^RA2TankDestroyerCannon
+	# PILOT (Aedis 2026-09-10 02:10/02:14, scoped): repointed onto the live
+	# ^Warhead_CannonAP continuous base. ONLY the warhead template moves; Damage,
+	# ReloadDelay, Range, projectile, effect and resolved firing operation stay
+	# exactly as before. Heaviness 0 is the ACTIVE h=0 (thousandths), NOT the
+	# disabled sentinel - it reproduces the old Light geometry (Spread 120 x 2/3
+	# = 80) and carries the provisional role profile on purpose (K counterfactual
+	# Light +0.4%; Wood/Heroic shifts are the intended migration).
+	Inherits: ^Warhead_CannonAP
+	Inherits@projectile: ^Projectile_Shell_Light
+	Inherits@effect: ^Effect_Explosion_Small_RA2
 	Report: cannon1.aud
 	ReloadDelay: 160
 	Range: 7040
 	Projectile: Bullet
 		Speed: 1408
-	Warhead@CannonAP_Light:
+	Warhead@CannonAP:
+		Heaviness: 0
 		Damage: 80000
 RA2sabot_elite:
 	Inherits: RA2sabot
 	Inherits@Elite: ^RA2EliteEffects
 	Report: cannon1.aud
 	Range: 8040
-	Warhead@CannonAP_Light:
+	Warhead@CannonAP:
 		Damage: 160000
 RA2MirageGun:
-	Inherits@roleflat: ^Compatibility_CannonAP_LightFlat
+	Inherits@roleflat: ^Warhead_CannonAP_Light_Flat
 	Inherits: ^RailgunWeapon
 	Inherits@2: ^MediumChemicalWeapon
 	Inherits@wh: ^Warhead_CannonAP_Light
@@ -959,28 +969,24 @@ RA2MirageGun:
 		FriendlyFireSpread: 50
 		Damage: 8000
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@MediumChemicalWeaponPercentage: AreaDamagePercentage
 		Damage: 4
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@CannonAP_Light:
 		Damage: 8000
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath
 	-Warhead@MediumChemicalWeapon:
 	-Warhead@RailgunExtraDamage:
 	-Warhead@RailgunWeapon:
-	Warhead@CannonAP_LightFlatCompatibility:
+	Warhead@CannonAP_Light_Flat:
 		ValidTargets: Ground, Water
 		Damage: 25000
 		PercentageScale: 3196
 		DamageTypes: Prone75Percent, TriggerProne, FireDeath
 	-Warhead@CannonAP_Light:
 RA2HoverMissile:
-	Inherits@finalmain: ^Compatibility_MissileAP_LightFlat
-	Inherits: ^Warhead_Arrow_Light
+	Inherits@missilerole: ^Warhead_MissileHE_Light
+	Inherits@finalmain: ^Warhead_MissileAP_Light_Flat
 	Inherits@2: ^RA2LightMissile
 	Inherits@fx: ^Effect_Grey_Explosion_Small_RA2
 	Range: 5760
@@ -1001,10 +1007,17 @@ RA2HoverMissile:
 		-ImpactSounds:
 	-Warhead@Arrow_Light:
 	-Warhead@MissileAP_Light:
-	Warhead@MissileAP_LightFlatCompatibility:
+	-Warhead@MissileAP_Light_Flat:
+	Warhead@MissileHE_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
 		ValidTargets: Ground, Water, Air
 		Damage: 12000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9992
+		PercentageSpread: 50
+		InvalidTargets: Air
 
 RA2HoverMissile_elite:
 	Inherits: RA2HoverMissile
@@ -1016,41 +1029,73 @@ RA2HoverMissile_elite:
 		Shadow: true
 		TrailImage: red_smokey
 		ContrailStartColor: e60000
-	Warhead@MissileAP_LightFlatCompatibility:
+	Warhead@MissileHE_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
 		ValidTargets: Ground, Water, Air
 		Damage: 12000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9992
+		PercentageSpread: 50
+		InvalidTargets: Air
 
 RA2HoverMissile_AA:
-	Inherits@finalmain: ^Compatibility_MissileAA_LightFlat
+	Inherits@missilerole: ^Warhead_MissileAA_Light
+	Inherits@finalmain: ^Warhead_MissileAA_Light_Flat
 	Inherits: RA2HoverMissile
 	ValidTargets: Air
 	Range: 8640
-	-Warhead@MissileAP_LightFlatCompatibility:
-	Warhead@MissileAA_LightFlatCompatibility:
-		ValidTargets: Ground, Water, Air
+	Projectile: Missile
+		VerticalRateOfTurn: 20
+	-Warhead@MissileAA_Light_Flat:
+	Warhead@MissileAA_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Air
 		Damage: 12000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9992
+		PercentageSpread: 50
+		Versus:
+			HAZMAT: 87
+			COMPOSITE: 67
+			BLAST: 56
+	-Warhead@MissileHE_Light:
 
 RA2HoverMissile_AA_elite:
-	Inherits@finalmain: ^Compatibility_MissileAA_LightFlat
+	Inherits@missilerole: ^Warhead_MissileAA_Light
+	Inherits@finalmain: ^Warhead_MissileAA_Light_Flat
 	Inherits: RA2HoverMissile_elite
 	ValidTargets: Air
 	Range: 9640
-	-Warhead@MissileAP_LightFlatCompatibility:
-	Warhead@MissileAA_LightFlatCompatibility:
-		ValidTargets: Ground, Water, Air
+	Projectile: Missile
+		VerticalRateOfTurn: 20
+	-Warhead@MissileAA_Light_Flat:
+	Warhead@MissileAA_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Air
 		Damage: 12000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9992
+		PercentageSpread: 50
+		Versus:
+			HAZMAT: 87
+			COMPOSITE: 67
+			BLAST: 56
+	-Warhead@MissileHE_Light:
 
 RA2ThunderboltMissile:
-	Inherits@roleflat: ^Compatibility_MissileHE_LightFlat
-	Inherits@wh: ^Warhead_MissileHE_Heavy
-	Inherits@wh2: ^Warhead_MissileHE_Light
+	Inherits@missilerole: ^Warhead_MissileAP_Light
+	Inherits@roleflat: ^Warhead_MissileHE_Light_Flat
 	Inherits@proj: ^Projectile_Missile_Light
 	Inherits@fx: ^Effect_MissileHE_Light
 	Report: bazook1.aud
 	Projectile: Missile
+		VerticalRateOfTurn: 20
 		Speed: 800
 		Arm: 2
 		Inaccuracy: 400
@@ -1065,12 +1110,16 @@ RA2ThunderboltMissile:
 		Acceleration: 10
 		ContrailStartColor: EEEE00
 		ContrailEndColor: FFFFFF
-	-Warhead@MissileHE_Heavy:
-	-Warhead@MissileHE_Light:
-	Warhead@MissileHE_LightFlatCompatibility:
+	-Warhead@MissileHE_Light_Flat:
+	Warhead@MissileAP_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
 		ValidTargets: Ground, Water, Air
 		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9975
+		PercentageSpread: 50
 
 RA2ThunderboltMissile_elite:
 	Inherits: RA2ThunderboltMissile
@@ -1079,27 +1128,62 @@ RA2ThunderboltMissile_elite:
 	Range: 6760
 	Burst: 4
 	Projectile: Missile
+		VerticalRateOfTurn: 20
 		Image: red_dragon
 		Shadow: true
 		TrailImage: red_smokey
 		ContrailStartColor: e60000
+	Warhead@MissileAP_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water, Air
+		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 9975
+		PercentageSpread: 50
 
 RA2ThunderboltMissile_AA:
+	Inherits@missilerole: ^Warhead_MissileAA_Light
 	Inherits: RA2ThunderboltMissile
 	Report: bazook1.aud
 	ValidTargets: Air
 	Range: 8640
+	Projectile: Missile
+		VerticalRateOfTurn: 20
+	Warhead@MissileAA_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Air
+		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 9975
+		PercentageSpread: 50
+	-Warhead@MissileAP_Light:
 
 RA2ThunderboltMissile_AA_elite:
+	Inherits@missilerole: ^Warhead_MissileAA_Light
 	Inherits: RA2ThunderboltMissile_elite
 	Report: bazook1.aud
 	ValidTargets: Air
 	Range: 9640
+	Projectile: Missile
+		VerticalRateOfTurn: 20
+	Warhead@MissileAA_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Air
+		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 9975
+		PercentageSpread: 50
+	-Warhead@MissileAP_Light:
 
 RA2MultiHoverMissile:
-	Inherits@finalmain: ^Compatibility_MissileHE_LightFlat
-	Inherits@wh: ^Warhead_CannonHE_Medium
-	Inherits@wh2: ^Warhead_MissileHE_Light
+	Inherits@missilerole: ^Warhead_MissileAP_Light
+	Inherits@finalmain: ^Warhead_MissileHE_Light_Flat
 	Inherits@proj: ^Projectile_Missile_Light
 	Inherits@fx: ^Effect_MissileHE_Light
 	Range: 6170
@@ -1108,7 +1192,7 @@ RA2MultiHoverMissile:
 	Report: vifvatta.wav
 	Projectile: Missile
 		HorizontalRateOfTurn: 24
-		VerticalRateOfTurn: 24
+		VerticalRateOfTurn: 12
 		Speed: 384
 		Image: DRAGON
 		ContrailLenght: 16
@@ -1118,12 +1202,16 @@ RA2MultiHoverMissile:
 		MaximumLaunchSpeed: 64
 		MinimumLaunchSpeed: 128
 		Acceleration: 16
-	-Warhead@CannonHE_Medium:
-	-Warhead@MissileHE_Light:
-	Warhead@MissileHE_LightFlatCompatibility:
+	-Warhead@MissileHE_Light_Flat:
+	Warhead@MissileAP_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
 		ValidTargets: Ground, Water, Air
 		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9975
+		PercentageSpread: 50
 
 RA2MultiHoverMissile_elite:
 	Inherits: RA2MultiHoverMissile
@@ -1131,51 +1219,83 @@ RA2MultiHoverMissile_elite:
 	Range: 7170
 	Burst: 4
 	Projectile: Missile
+		VerticalRateOfTurn: 12
 		Image: red_dragon
 		Shadow: true
 		TrailImage: red_smokey
 		ContrailStartColor: e60000
-	Warhead@MissileHE_LightFlatCompatibility:
+	Warhead@MissileAP_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
 		ValidTargets: Ground, Water, Air
 		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9975
+		PercentageSpread: 50
 
 RA2MultiHoverMissile_AA:
-	Inherits@finalmain: ^Compatibility_MissileAA_LightFlat
+	Inherits@missilerole: ^Warhead_MissileAA_Light
+	Inherits@finalmain: ^Warhead_MissileAA_Light_Flat
 	Inherits: RA2MultiHoverMissile
 	ValidTargets: Air
 	Range: 9255
 	Warhead@CannonHE_Medium:
 		ValidTargets: Air
 	-Warhead@CannonHE_Medium:
-	-Warhead@MissileHE_LightFlatCompatibility:
-	Warhead@MissileAA_LightFlatCompatibility:
-		ValidTargets: Ground, Water, Air
+	Projectile: Missile
+		VerticalRateOfTurn: 12
+	-Warhead@MissileAA_Light_Flat:
+	Warhead@MissileAA_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Air
 		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9975
+		PercentageSpread: 50
+		Versus:
+			HAZMAT: 87
+			COMPOSITE: 67
+			BLAST: 56
+	-Warhead@MissileAP_Light:
 
 RA2MultiHoverMissile_AA_elite:
-	Inherits@finalmain: ^Compatibility_MissileAA_LightFlat
+	Inherits@missilerole: ^Warhead_MissileAA_Light
+	Inherits@finalmain: ^Warhead_MissileAA_Light_Flat
 	Inherits: RA2MultiHoverMissile_elite
 	ValidTargets: Air
 	Range: 10255
 	Warhead@CannonHE_Medium:
 		ValidTargets: Air
 	-Warhead@CannonHE_Medium:
-	-Warhead@MissileHE_LightFlatCompatibility:
-	Warhead@MissileAA_LightFlatCompatibility:
-		ValidTargets: Ground, Water, Air
+	Projectile: Missile
+		VerticalRateOfTurn: 12
+	-Warhead@MissileAA_Light_Flat:
+	Warhead@MissileAA_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Air
 		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9975
+		PercentageSpread: 50
+		Versus:
+			HAZMAT: 87
+			COMPOSITE: 67
+			BLAST: 56
+	-Warhead@MissileAP_Light:
 
 RA2MultiThunderboltMissile:
-	Inherits@roleflat: ^Compatibility_MissileHE_LightFlat
-	Inherits@wh: ^Warhead_MissileHE_Heavy
-	Inherits@wh2: ^Warhead_MissileHE_Light
+	Inherits@missilerole: ^Warhead_MissileAP_Light
+	Inherits@roleflat: ^Warhead_MissileHE_Light_Flat
 	Inherits@proj: ^Projectile_Missile_Light
 	Inherits@fx: ^Effect_MissileHE_Light
 	Report: bazook1.aud
 	Projectile: Missile
+		VerticalRateOfTurn: 20
 		Speed: 800
 		Arm: 2
 		Inaccuracy: 400
@@ -1190,12 +1310,16 @@ RA2MultiThunderboltMissile:
 		Acceleration: 10
 		ContrailStartColor: EEEE00
 		ContrailEndColor: FFFFFF
-	-Warhead@MissileHE_Heavy:
-	-Warhead@MissileHE_Light:
-	Warhead@MissileHE_LightFlatCompatibility:
+	-Warhead@MissileHE_Light_Flat:
+	Warhead@MissileAP_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
 		ValidTargets: Ground, Water, Air
 		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9975
+		PercentageSpread: 50
 
 RA2MultiThunderboltMissile_elite:
 	Inherits: RA2MultiThunderboltMissile
@@ -1204,22 +1328,58 @@ RA2MultiThunderboltMissile_elite:
 	Range: 7170
 	Burst: 4
 	Projectile: Missile
+		VerticalRateOfTurn: 20
 		Image: red_dragon
 		Shadow: true
 		TrailImage: red_smokey
 		ContrailStartColor: e60000
+	Warhead@MissileAP_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water, Air
+		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 9975
+		PercentageSpread: 50
 
 RA2MultiThunderboltMissile_AA:
+	Inherits@missilerole: ^Warhead_MissileAA_Light
 	Inherits: RA2MultiThunderboltMissile
 	Report: bazook1.aud
 	ValidTargets: Air
 	Range: 9255
+	Projectile: Missile
+		VerticalRateOfTurn: 20
+	Warhead@MissileAA_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Air
+		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 9975
+		PercentageSpread: 50
+	-Warhead@MissileAP_Light:
 
 RA2MultiThunderboltMissile_AA_elite:
+	Inherits@missilerole: ^Warhead_MissileAA_Light
 	Inherits: RA2MultiThunderboltMissile_elite
 	Report: bazook1.aud
 	ValidTargets: Air
 	Range: 10255
+	Projectile: Missile
+		VerticalRateOfTurn: 20
+	Warhead@MissileAA_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Air
+		Damage: 4000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 9975
+		PercentageSpread: 50
+	-Warhead@MissileAP_Light:
 
 RA2DepthCharge:
 	Inherits: DepthCharge
@@ -1603,18 +1763,10 @@ SonicZap:
 	Warhead@Magic_Heavy:
 		Range: 0, 32
 		Falloff: 100, 50
-		Damage: 2000
+		Damage: 3000
 		AffectsParent: false
 		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		ValidTargets: Water, Underwater
-	Warhead@ExtraSquidDamage: SpreadDamage
-		Range: 0, 32
-		Falloff: 100, 50
-		Damage: 1000
-		AffectsParent: false
-		ValidRelationships: Neutral, Enemy
-		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
-		ValidTargets: Squid
 
 SonicZapFriendly:
 	ReloadDelay: 60
@@ -2049,7 +2201,7 @@ RA2PSIAtomicDamage:
 ####################################################################################################
 
 RA2HornetMissile:
-	Inherits@finalmain: ^Compatibility_MissileAP_MediumFlat
+	Inherits@finalmain: ^Warhead_MissileAP_Medium_Flat
 	Inherits@wh: ^Warhead_Demolition_Light
 	Inherits@wh2: ^Warhead_Demolition_Heavy
 	Inherits@proj: ^Projectile_Grenade_Light
@@ -2061,17 +2213,15 @@ RA2HornetMissile:
 	MinRange: 1000
 	Report: vospatta.wav
 	Projectile: Missile
+		VerticalRateOfTurn: 16
 		Speed: 500
 		Arm: 2
 		HorizontalRateOfTurn: 32
 		ContrailLength: 25
 		ContrailStartWidth: 25
 		ContrailEndWidth: 1
-	Warhead@Demolition_Light:
-		ValidTargets: Ground, Water, Air
-		Damage: 2000
 	Warhead@Demolition_Heavy:
-		Damage: 2000
+		Damage: 4000
 		ValidTargets: Ground, Water, Air
 	Warhead@MissileAP_Medium:
 		Damage: 2000
@@ -2079,7 +2229,7 @@ RA2HornetMissile:
 	-Warhead@Demolition_Heavy:
 	-Warhead@Demolition_Light:
 	-Warhead@MissileAP_Medium:
-	Warhead@MissileAP_MediumFlatCompatibility:
+	Warhead@MissileAP_Medium_Flat:
 		ValidTargets: Ground, Water, Air
 		Damage: 6000
 		PercentageScale: 9984
@@ -2099,7 +2249,7 @@ MigMissiles:
 	Inherits@2: ^HeavyAAWeapon
 	Inherits@3: ^FlakWeapon
 	Inherits@4: ^RA2MediumMissile
-	Inherits@compat: ^Compatibility_MissileAP_Medium_GroundShip
+	Inherits@compat: ^Warhead_MissileAP_Medium_GroundShip
 	Inherits@fx: ^Effect_Explosion_Large_RA2
 	ReloadDelay: 50
 	Burst: 4
@@ -2108,6 +2258,7 @@ MigMissiles:
 	Report: vmigatta.wav
 	ValidTargets: Ground, Water
 	Projectile: Missile
+		VerticalRateOfTurn: 16
 		Speed: 400
 		Arm: 2
 		Inaccuracy: 1000
@@ -2115,7 +2266,7 @@ MigMissiles:
 		Image: d2k_missile2
 		Palette: d2keffect
 		TrailImage: large_trail
-		MinimumLaunchAngle: 25
+		MinimumLaunchAngle: -128
 		MaximumLaunchAngle: 125
 		MaximumLaunchSpeed: 384
 		MinimumLaunchSpeed: 384
@@ -2124,20 +2275,85 @@ MigMissiles:
 		ContrailEndColor: FFFFFF
 	-Warhead@HeavyBomb:
 	Warhead@HeavyBombPercentage: AreaDamagePercentage
+		InvalidTargets: Air
+		ValidTargets: Ground, Ship
 		Damage: 4
 	-Warhead@HeavyAAWeapon:
 	Warhead@HeavyAAWeaponPercentage: AreaDamagePercentage
+		InvalidTargets: Air
+		ValidTargets: Ground, Water, Air
 		Damage: 4
 	-Warhead@FlakWeapon:
 	Warhead@FlakWeaponPercentage: AreaDamagePercentage
+		InvalidTargets: Air
+		ValidTargets: Ground, Water, Air
 		Damage: 4
 	Warhead@MissileAP_Medium:
-		Damage: 24000
+		InvalidTargets: Air
+		ValidTargets: Ground, Water, Air
+		Damage: 32000
 		PercentageScale: 3333
 		PercentageDenominator: 10000
 	Warhead@MissileAP_Medium_GroundShipExtraDamage:
+		InvalidTargets: Air
+		ValidTargets: Ground, Ship
 		Damage: 8000
 	-Warhead@Effect1:
+	-Warhead@MissileAP_Medium:
+	Warhead@MissileHE_Medium: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water, Air
+		Spread: 150
+		Damage: 24000
+		Falloff: 100, 45, 15, 0
+		Versus:
+			HAZMAT: 76
+			COMPOSITE: 89
+			BLAST: 45
+			REFLECTOR: 69
+			ARMOR: 70
+			Shield: 148
+			Wood: 157
+			Scout: 143
+			Light: 136
+			Medium: 135
+			Steel: 113
+			Heavy: 112
+			Fighter: 110
+			None: 99
+			Bomber: 97
+			Concrete: 93
+			Superheavy: 88
+			Helicopter: 86
+			Spaceship: 70
+			Flak: 69
+			Plate: 48
+			Heroic: 43
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 3333
+		PercentageSpread: 50
+		PercentageVersus:
+			Shield: 25
+			Scout: 20
+			Wood: 19
+			Light: 18
+			Steel: 17
+			Medium: 16
+			Concrete: 15
+			Heavy: 14
+			Superheavy: 13
+			Fighter: 12
+			Bomber: 11
+			Helicopter: 10
+			Spaceship: 9
+			None: 8
+			Flak: 7
+			Plate: 6
+			Heroic: 5
+		InvalidTargets: Air
+		PercentageDenominator: 10000
 
 MigMissiles_rad:
 	Inherits@wh: ^Warhead_Chemical_Medium
@@ -2146,13 +2362,17 @@ MigMissiles_rad:
 	Inherits@3: MigMissiles
 	Inherits@rad: ^RA2RadShell
 	Projectile: Missile
+		VerticalRateOfTurn: 16
+		MinimumLaunchAngle: -128
 		TrailImage: green_smokey
 		TrailPalette: effect
 		ContrailStartColor: 00EE00
 		ContrailEndColorUsePlayerColor: true
 		ContrailEndColor: FFFFFF
 	Warhead@Chemical_Medium:
-		Damage: 4000
+		ValidTargets: Ground, Water
+		InvalidTargets: Air
+		Damage: 28000
 	Warhead@Radiation: CreateTintedCells
 		Falloff: 100, 75, 66, 50, 33, 25, 20, 10
 		Spread: 200
@@ -2162,10 +2382,35 @@ MigMissiles_rad:
 		ExplosionPalette: ra2effect
 		ImpactSounds: snukexpl.wav
 
+	Warhead@HeavyBombPercentage:
+		ValidTargets: Ground, Ship
+		InvalidTargets: Air
+	Warhead@HeavyAAWeaponPercentage:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@FlakWeaponPercentage:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@MissileAP_Medium:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@MissileAP_Medium_GroundShipExtraDamage:
+		ValidTargets: Ground, Ship
+		InvalidTargets: Air
+	-Warhead@MissileAP_Medium:
+	Warhead@MissileHE_Medium: AreaDamage
+		Damage: 24000
+		PercentageScale: 3333
+		InvalidTargets: Air
+		PercentageDenominator: 10000
+	-Warhead@MissileHE_Medium:
+
 MigMissiles_fire:
 	Inherits: MigMissiles
 	Inherits@fx: ^Effect_Terrorist_Explosion_RA2
 	Projectile: Missile
+		VerticalRateOfTurn: 16
+		MinimumLaunchAngle: -128
 		TrailImage: red_smokey
 		TrailPalette: effect
 		ContrailStartColor: EE0000
@@ -2177,10 +2422,34 @@ MigMissiles_fire:
 		AimChance: 50
 		AimTargetStances: Enemy, Neutral
 
+	Warhead@HeavyBombPercentage:
+		ValidTargets: Ground, Ship
+		InvalidTargets: Air
+	Warhead@HeavyAAWeaponPercentage:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@FlakWeaponPercentage:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@MissileAP_Medium:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@MissileAP_Medium_GroundShipExtraDamage:
+		ValidTargets: Ground, Ship
+		InvalidTargets: Air
+	-Warhead@MissileAP_Medium:
+	Warhead@MissileHE_Medium: AreaDamage
+		Damage: 24000
+		PercentageScale: 3333
+		InvalidTargets: Air
+		PercentageDenominator: 10000
+
 MigMissiles_tesla:
 	Inherits: MigMissiles
 	Inherits@fx: ^Effect_Kirov_Tesla_RA2
 	Projectile: Missile
+		VerticalRateOfTurn: 16
+		MinimumLaunchAngle: -128
 		TrailImage: blue_smokey
 		TrailPalette: effect
 		ContrailStartColor: 0000EE
@@ -2192,11 +2461,35 @@ MigMissiles_tesla:
 		AimChance: 100
 		AimTargetStances: Enemy, Neutral
 
+	Warhead@HeavyBombPercentage:
+		ValidTargets: Ground, Ship
+		InvalidTargets: Air
+	Warhead@HeavyAAWeaponPercentage:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@FlakWeaponPercentage:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@MissileAP_Medium:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@MissileAP_Medium_GroundShipExtraDamage:
+		ValidTargets: Ground, Ship
+		InvalidTargets: Air
+	-Warhead@MissileAP_Medium:
+	Warhead@MissileHE_Medium: AreaDamage
+		Damage: 24000
+		PercentageScale: 3333
+		InvalidTargets: Air
+		PercentageDenominator: 10000
+
 MigMissiles_elite:
 	Inherits: MigMissiles
 	Range: 8600
 	Burst: 8
 	Projectile: Missile
+		VerticalRateOfTurn: 16
+		MinimumLaunchAngle: -128
 		Image: red_dragon
 		TrailImage: red_smokey
 		ContrailColor: e60000
@@ -2204,48 +2497,162 @@ MigMissiles_elite:
 		ContrailEndColorUsePlayerColor: true
 		ContrailEndColor: FFFFFF
 
+	Warhead@HeavyBombPercentage:
+		InvalidTargets: Air
+		ValidTargets: Ground, Ship
+	Warhead@HeavyAAWeaponPercentage:
+		InvalidTargets: Air
+		ValidTargets: Ground, Water, Air
+	Warhead@FlakWeaponPercentage:
+		InvalidTargets: Air
+		ValidTargets: Ground, Water, Air
+	Warhead@MissileAP_Medium:
+		InvalidTargets: Air
+		ValidTargets: Ground, Water, Air
+	Warhead@MissileAP_Medium_GroundShipExtraDamage:
+		InvalidTargets: Air
+		ValidTargets: Ground, Ship
+	-Warhead@MissileAP_Medium:
+	Warhead@MissileHE_Medium: AreaDamage
+		Damage: 24000
+		PercentageScale: 3333
+		InvalidTargets: Air
+		PercentageDenominator: 10000
+
 MigMissiles_rad_elite:
 	Inherits: MigMissiles_rad
 	Range: 8600
 	Burst: 8
+	Warhead@Chemical_Medium:
+		Damage: 28000
+
+	Projectile: Missile
+		VerticalRateOfTurn: 16
+		MinimumLaunchAngle: -128
+
+	Warhead@Chemical_Medium:
+		ValidTargets: Ground, Water
+		InvalidTargets: Air
+	Warhead@ShieldHit:
+		InvalidTargets: Air
+	Warhead@HeavyBombPercentage:
+		ValidTargets: Ground, Ship
+		InvalidTargets: Air
+	Warhead@HeavyAAWeaponPercentage:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@FlakWeaponPercentage:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@MissileAP_Medium:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@MissileAP_Medium_GroundShipExtraDamage:
+		ValidTargets: Ground, Ship
+		InvalidTargets: Air
+	-Warhead@MissileAP_Medium:
+	Warhead@MissileHE_Medium: AreaDamage
+		Damage: 24000
+		PercentageScale: 3333
+		InvalidTargets: Air
+		PercentageDenominator: 10000
+	-Warhead@MissileHE_Medium:
 
 MigMissiles_fire_elite:
 	Inherits: MigMissiles_fire
 	Range: 8600
 	Burst: 8
 
+	Projectile: Missile
+		VerticalRateOfTurn: 16
+		MinimumLaunchAngle: -128
+
+	Warhead@HeavyBombPercentage:
+		ValidTargets: Ground, Ship
+		InvalidTargets: Air
+	Warhead@ShieldHit:
+		InvalidTargets: Air
+	Warhead@HeavyAAWeaponPercentage:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@FlakWeaponPercentage:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@MissileAP_Medium:
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Air
+	Warhead@MissileAP_Medium_GroundShipExtraDamage:
+		ValidTargets: Ground, Ship
+		InvalidTargets: Air
+	-Warhead@MissileAP_Medium:
+	Warhead@MissileHE_Medium: AreaDamage
+		Damage: 24000
+		PercentageScale: 3333
+		InvalidTargets: Air
+		PercentageDenominator: 10000
+
 MigMissiles_AA:
+	Inherits@heldmissilerole: ^Warhead_MissileAA_Medium
 	Inherits: MigMissiles
 	ValidTargets: Air
 	Projectile: Missile
+		VerticalRateOfTurn: 30
+		MinimumLaunchAngle: 25
 		Speed: 500
 		Inaccuracy: 250
 	Warhead@HeavyBombPercentage: AreaDamagePercentage
+		-InvalidTargets:
 		ValidTargets: Air
 	Warhead@HeavyAAWeaponPercentage: AreaDamagePercentage
+		-InvalidTargets:
 		ValidTargets: Air
 	Warhead@FlakWeaponPercentage: AreaDamagePercentage
+		-InvalidTargets:
 		ValidTargets: Air
 	Warhead@MissileAP_Medium:
 		ValidTargets: Air
 	Warhead@MissileAP_Medium_GroundShipExtraDamage:
+		-InvalidTargets:
 		ValidTargets: Air
+	-Warhead@MissileAP_Medium:
+	Warhead@MissileAA_Medium: AreaDamage
+		ValidTargets: Air
+		Damage: 24000
+		PercentageScale: 3333
+		PercentageDenominator: 10000
+	-Warhead@MissileHE_Medium:
+
 MigMissiles_AA_elite:
+	Inherits@heldmissilerole: ^Warhead_MissileAA_Medium
 	Inherits: MigMissiles_elite
 	ValidTargets: Air
 	Projectile: Missile
+		VerticalRateOfTurn: 30
+		MinimumLaunchAngle: 25
 		Speed: 500
 		Inaccuracy: 250
 	Warhead@HeavyBombPercentage: AreaDamagePercentage
+		-InvalidTargets:
 		ValidTargets: Air
 	Warhead@HeavyAAWeaponPercentage: AreaDamagePercentage
+		-InvalidTargets:
 		ValidTargets: Air
 	Warhead@FlakWeaponPercentage: AreaDamagePercentage
+		-InvalidTargets:
 		ValidTargets: Air
 	Warhead@MissileAP_Medium:
 		ValidTargets: Air
 	Warhead@MissileAP_Medium_GroundShipExtraDamage:
+		-InvalidTargets:
 		ValidTargets: Air
+	-Warhead@MissileAP_Medium:
+	Warhead@MissileAA_Medium: AreaDamage
+		ValidTargets: Air
+		Damage: 24000
+		PercentageScale: 3333
+		PercentageDenominator: 10000
+	-Warhead@MissileHE_Medium:
+
 V3Launch:
 	ReloadDelay: 50
 	Range: 15000
@@ -2337,7 +2744,7 @@ RA2SCUD:
 		ValidTargets: Ground, Air
 
 RA2SCUD_rad:
-	Inherits@roleflat: ^Compatibility_MissileChem_HeavyFlat
+	Inherits@roleflat: ^Warhead_MissileChem_Heavy
 	Inherits: ^LightChemicalWeapon
 	Inherits@2: ^MediumChemicalWeapon
 	Inherits@3: ^HeavyChemicalWeapon
@@ -2348,34 +2755,22 @@ RA2SCUD_rad:
 		FriendlyFireDamage: 50
 		FriendlyFireSpread: 50
 		Damage: 18000
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@LightChemicalWeaponPercentage: AreaDamagePercentage
 		Damage: 9
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@MediumChemicalWeapon: AreaDamage
 		ValidRelationships: Ally, Neutral, Enemy
 		FriendlyFireDamage: 50
 		FriendlyFireSpread: 50
 		Damage: 18000
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@MediumChemicalWeaponPercentage: AreaDamagePercentage
 		Damage: 9
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@HeavyChemicalWeapon: AreaDamage
 		ValidRelationships: Ally, Neutral, Enemy
 		FriendlyFireDamage: 50
 		FriendlyFireSpread: 50
 		Damage: 18000
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@HeavyChemicalWeaponPercentage: AreaDamagePercentage
 		Damage: 9
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
 	Warhead@MediumFlameWeaponPercentage: AreaDamagePercentage
 		Damage: 9
 		PhysicalStateName: Temperature
@@ -2393,7 +2788,7 @@ RA2SCUD_rad:
 	-Warhead@HeavyChemicalWeapon:
 	-Warhead@LightChemicalWeapon:
 	-Warhead@MediumChemicalWeapon:
-	Warhead@MissileChem_HeavyFlatCompatibility:
+	Warhead@MissileChem_Heavy:
 		ValidTargets: Ground, Water
 		Damage: 54000
 		PercentageScale: 0
@@ -2422,7 +2817,7 @@ RA2SCUDELITE:
 	Range: 24000
 	Warhead@Nuclear_Super:
 		ValidTargets: Ground, Water, Air
-		Damage: 30000
+		Damage: 120000
 	Warhead@Nuclear_Super_Percentage: AreaDamagePercentage
 		ValidTargets: Ground, Water, Air
 		Damage: 15
@@ -2431,6 +2826,9 @@ RA2SCUDELITE:
 		Spread: 600
 		Level: 600
 		LayerName: ra2radiation
+	-Warhead@Demolition_Light:
+	-Warhead@RA2SCUDMissileAP_Heavy_NoWall:
+	-Warhead@MissileAP_Heavy:
 
 V3Explode:
 	Inherits: RA2SCUD
@@ -2451,7 +2849,7 @@ DredMissile:
 		ImpactActors: false
 
 YRBoomerSCUD:
-	Inherits@finalmain: ^Compatibility_MissileAP_HeavyFlat
+	Inherits@finalmain: ^Warhead_MissileAP_Heavy_Flat
 	Inherits: ^RA2Grenade
 	Inherits@2: ^RA2HeavyMissile
 	Inherits@fx: ^Effect_Watersplash_Large_RA2
@@ -2473,13 +2871,13 @@ YRBoomerSCUD:
 		ImpactActors: false
 	-Warhead@Demolition_Light:
 	-Warhead@MissileAP_Heavy:
-	Warhead@MissileAP_HeavyFlatCompatibility:
+	Warhead@MissileAP_Heavy_Flat:
 		ValidTargets: Ground, Water, Air
 		Damage: 40000
 		PercentageScale: 9998
 
 RA2TorpTube:
-	Inherits@finalmain: ^Compatibility_MissileAP_HeavyFlat
+	Inherits@finalmain: ^Warhead_MissileAP_Heavy_Flat
 	Inherits: ^RA2Grenade
 	Inherits@2: ^RA2HeavyMissile
 	Inherits@fx: ^Effect_Watersplash_Large_RA2
@@ -2516,7 +2914,7 @@ RA2TorpTube:
 	-Warhead@EffectAir:
 	-Warhead@Demolition_Light:
 	-Warhead@MissileAP_Heavy:
-	Warhead@MissileAP_HeavyFlatCompatibility:
+	Warhead@MissileAP_Heavy_Flat:
 		ValidTargets: Water, Underwater, Bridge, Structure
 		Damage: 36000
 		PercentageScale: 9998
@@ -2530,7 +2928,7 @@ RA2TorpTube_elite:
 ####################################################################################################
 #		Machineguns
 ####################################################################################################
-	Warhead@MissileAP_HeavyFlatCompatibility:
+	Warhead@MissileAP_Heavy_Flat:
 		ValidTargets: Water, Underwater, Bridge, Structure
 		Damage: 36000
 		PercentageScale: 9998
@@ -2564,8 +2962,12 @@ RA2vulcan3:
 	ReloadDelay: 50
 	Report: baocatta.wav, baocattb.wav, baocattc.wav
 
+	Warhead@Bullet_Medium_Flat:
+		InvalidTargets: Air
+	Warhead@ShieldHit:
+		InvalidTargets: Air
 BlackHawkCannon:
-	Inherits@roleflat: ^Compatibility_Bullet_MediumFlat
+	Inherits@roleflat: ^Warhead_Bullet_Medium_Flat
 	Inherits: ^RA2SmallArms
 	Inherits@2: ^RA2Chaingun
 	ReloadDelay: 3
@@ -2581,15 +2983,12 @@ BlackHawkCannon:
 		ContrailLength: 8
 		Speed: 10000
 		Width: 100
-	Warhead@Bullet_Light:
-		ValidTargets: Ground, Air, Water
-		Damage: 2000
 	Warhead@Bullet_Medium:
 		ValidTargets: Ground, Air, Water
 		Damage: 2000
 	-Warhead@Bullet_Light:
 	-Warhead@Bullet_Medium:
-	Warhead@Bullet_MediumFlatCompatibility:
+	Warhead@Bullet_Medium_Flat:
 		ValidTargets: Ground, Air, Water
 		Damage: 4000
 		PercentageScale: 9975
@@ -2628,7 +3027,7 @@ RA2SKELETON:
 		DamageTypes: DefaultDeath
 
 RA2CRM60:
-	Inherits@finalmain: ^Compatibility_Bullet_MediumFlat
+	Inherits@finalmain: ^Warhead_Bullet_Medium_Flat
 	Inherits: ^RA2SmallArms
 	Inherits@2: ^RA2Chaingun
 	ValidTargets: Ground, Water
@@ -2637,20 +3036,17 @@ RA2CRM60:
 	BurstDelays: 2
 	Range: 5660
 	Report: vifvat2a.wav, vifvat2b.wav, vifvat2c.wav
-	Warhead@Bullet_Light:
-		ValidTargets: Ground, Water
-		Damage: 2000
 	Warhead@Bullet_Medium:
 		ValidTargets: Ground, Water
 		Damage: 2000
 	-Warhead@Bullet_Light:
 	-Warhead@Bullet_Medium:
-	Warhead@Bullet_MediumFlatCompatibility:
+	Warhead@Bullet_Medium_Flat:
 		ValidTargets: Ground, Water
 		Damage: 4000
 		PercentageScale: 9975
 RA2CRM60H:
-	Inherits@collapseflat: ^Compatibility_Bullet_MediumFlat
+	Inherits@collapseflat: ^Warhead_Bullet_Medium_Flat
 	Inherits: ^Warhead_CannonHE_Heavy
 	Inherits@2: ^Projectile_Shell_Heavy
 	Inherits@3: ^Effect_CannonHE_Heavy
@@ -2687,7 +3083,7 @@ RA2CRM60H:
 		ValidTargets: Ground, Water, Air
 		Damage: 1
 	-Warhead@SniperWeapon:
-	Warhead@Bullet_MediumFlatCompatibility:
+	Warhead@Bullet_Medium_Flat:
 		ValidTargets: Ground, Water, Air
 		Damage: 6000
 		PercentageScale: 6650
@@ -2797,7 +3193,7 @@ RA2AWP:
 		Falloff: 100, 0
 
 RA2GattlingMG1:
-	Inherits@roleflat: ^Compatibility_Bullet_MediumFlat
+	Inherits@roleflat: ^Warhead_Bullet_Medium_Flat
 	Inherits: ^Warhead_Bullet_Light
 	Inherits@2: ^RA2Chaingun
 	Report: vgatlo2a.wav, vgatlo2b.wav, vgatlo2c.wav
@@ -2813,15 +3209,12 @@ RA2GattlingMG1:
 		ContrailLength: 8
 		Speed: 10000
 		Width: 100
-	Warhead@Bullet_Light:
-		ValidTargets: Ground, Water
-		Damage: 2000
 	Warhead@Bullet_Medium:
 		ValidTargets: Ground, Water
 		Damage: 2000
 	-Warhead@Bullet_Light:
 	-Warhead@Bullet_Medium:
-	Warhead@Bullet_MediumFlatCompatibility:
+	Warhead@Bullet_Medium_Flat:
 		ValidTargets: Ground, Water
 		Damage: 4000
 		PercentageScale: 9975
@@ -2829,15 +3222,11 @@ RA2GattlingMG1_AA:
 	Inherits: RA2GattlingMG1
 	Range: 6750
 	ValidTargets: Air
-	Warhead@Bullet_Light: AreaDamage
-		ValidTargets: Air
-		Damage: 4000
 	Warhead@Bullet_Medium:
 		ValidTargets: Air
 		Damage: 4000
-	-Warhead@Bullet_Light:
 	-Warhead@Bullet_Medium:
-	Warhead@Bullet_MediumFlatCompatibility:
+	Warhead@Bullet_Medium_Flat:
 		ValidTargets: Air
 		Damage: 8000
 		PercentageScale: 9988
@@ -2851,15 +3240,11 @@ RA2GattlingMG2_AA:
 	Inherits: RA2GattlingMG2
 	Range: 7500
 	ValidTargets: Air
-	Warhead@Bullet_Light: AreaDamage
-		ValidTargets: Air
-		Damage: 4000
 	Warhead@Bullet_Medium:
 		ValidTargets: Air
 		Damage: 4000
-	-Warhead@Bullet_Light:
 	-Warhead@Bullet_Medium:
-	Warhead@Bullet_MediumFlatCompatibility:
+	Warhead@Bullet_Medium_Flat:
 		ValidTargets: Air
 		Damage: 8000
 		PercentageScale: 9988
@@ -2908,25 +3293,22 @@ RA2VirusExplode:
 		InvalidTargets: Water
 
 RA220mmrapid:
-	Inherits@finalmain: ^Compatibility_Bullet_MediumFlat
+	Inherits@finalmain: ^Warhead_Bullet_Medium_Flat
 	Inherits: ^RA2SmallArms
 	Inherits@2: ^RA2Chaingun
 	ValidTargets: Ground, Water
 	ReloadDelay: 15
 	Range: 5000
 	Report: vwaratta.wav, vwarattb.wav
-	Warhead@Bullet_Light:
-		ValidTargets: Ground, Air, Water
-		Damage: 4000
 	Warhead@Bullet_Medium:
-		ValidTargets: Ground, Water
-		Damage: 4000
+		ValidTargets: Ground, Air, Water
+		Damage: 8000
 ####################################################################################################
 #		SuperWeapons
 ####################################################################################################
 	-Warhead@Bullet_Light:
 	-Warhead@Bullet_Medium:
-	Warhead@Bullet_MediumFlatCompatibility:
+	Warhead@Bullet_Medium_Flat:
 		ValidTargets: Ground, Water
 		Damage: 8000
 		PercentageScale: 9988
@@ -3009,11 +3391,11 @@ RA2DemoBomb:
 		Damage: 50000
 
 RA2Terrorist:
-	Inherits@roleflat: ^Compatibility_Demolition_HeavyFlat
+	Inherits@roleflat: ^Warhead_Demolition_Heavy_Flat
 	Inherits: ^RA2TerroristLegacy
 	-Warhead@Demolition_Heavy:
 	-Warhead@Concussion_Medium:
-	Warhead@Demolition_HeavyFlatCompatibility:
+	Warhead@Demolition_Heavy_Flat:
 		ValidTargets: Ground, Water
 		Damage: 100000
 		PercentageScale: 9999
@@ -3237,19 +3619,17 @@ IvanAttach:
 	Warhead@2: TargetDamage
 
 IvanBomb:
-	Inherits@finalmain: ^Compatibility_Demolition_HeavyFlat
+	Inherits@finalmain: ^Warhead_Demolition_Heavy_Flat
 	Inherits@wh: ^Warhead_Demolition_Light
 	Inherits@wh2: ^Warhead_Demolition_Heavy
 	Inherits@wh3: ^Warhead_Concussion_Medium
 	Inherits@proj: ^Projectile_Grenade_Light
 	Inherits@fx: ^Effect_Demolition_Heavy
 	Report: M203.aud
-	Warhead@Demolition_Light:
-		Damage: 30000
 	Warhead@Concussion_Medium:
 		Damage: 30000
 	Warhead@Demolition_Heavy:
-		Damage: 30000
+		Damage: 60000
 	Warhead@Effect: CreateEffect
 		Explosions: ivan_explosion
 		ExplosionPalette: ra2effect
@@ -3263,7 +3643,7 @@ IvanBomb:
 	-Warhead@Concussion_Medium:
 	-Warhead@Demolition_Heavy:
 	-Warhead@Demolition_Light:
-	Warhead@Demolition_HeavyFlatCompatibility:
+	Warhead@Demolition_Heavy_Flat:
 		ValidTargets: Ground, Water
 		Damage: 90000
 		PercentageScale: 9999
@@ -3283,20 +3663,16 @@ TanyaAttach:
 TanyaBomb:
 	Inherits: IvanBomb
 	Inherits@wh: ^Warhead_CannonHE_Heavy
-	Inherits@wh2: ^Warhead_CannonHE_Medium
-	Inherits@wh3: ^Warhead_CannonAP_Light
+	Inherits@wh2: ^Warhead_CannonAP_Light
 	Inherits@proj: ^Projectile_Shell_Heavy
 	Inherits@fx: ^Effect_CannonHE_Heavy
 	Report: tnkfire6.aud
-	Warhead@Demolition_Light:
-		ValidTargets: Ground, Air, Water, Underwater
-		Damage: 100000
 	Warhead@Concussion_Medium:
 		ValidTargets: Ground, Air, Water, Underwater
 		Damage: 100000
 	Warhead@Demolition_Heavy:
 		ValidTargets: Ground, Air, Water, Underwater
-		Damage: 100000
+		Damage: 200000
 	Warhead@Effect: CreateEffect
 		Explosions: self_destruct
 		ExplosionPalette: effect
@@ -3304,10 +3680,7 @@ TanyaBomb:
 
 	Warhead@CannonHE_Heavy:
 		ValidTargets: Ground, Air, Water, Underwater
-		Damage: 100000
-	Warhead@CannonHE_Medium:
-		ValidTargets: Ground, Air, Water, Underwater
-		Damage: 100000
+		Damage: 200000
 	Warhead@CannonAP_Light:
 		ValidTargets: Ground, Air, Water, Underwater
 		Damage: 100000
@@ -3481,11 +3854,9 @@ TanyaBomb:
 		Range: 0, 233, 466
 	-Warhead@CannonAP_Light:
 	-Warhead@CannonHE_Heavy:
-	-Warhead@CannonHE_Medium:
 	-Warhead@Concussion_Medium:
 	-Warhead@Demolition_Heavy:
-	-Warhead@Demolition_Light:
-	Warhead@Demolition_HeavyFlatCompatibility:
+	Warhead@Demolition_Heavy_Flat:
 		ValidTargets: Ground, Air, Water, Underwater
 		Damage: 600000
 		PercentageScale: 0
@@ -3501,12 +3872,8 @@ SealBomb:
 	Report: tnkfire6.aud
 	Warhead@CannonAP_Light: AreaDamage
 		Damage: 20000
-	Warhead@CannonHE_Medium: AreaDamage
-		Damage: 20000
 	Warhead@CannonHE_Heavy: AreaDamage
-		Damage: 20000
-	Warhead@Demolition_Light:
-		Damage: 20000
+		Damage: 40000
 	Warhead@Concussion_Medium:
 		Damage: 20000
 	Warhead@Demolition_Heavy:
@@ -3519,17 +3886,15 @@ SealBomb:
 	-Warhead@CollapsedTanyaBombDemolition_LightPercentage:
 	-Warhead@CannonAP_Light:
 	-Warhead@CannonHE_Heavy:
-	-Warhead@CannonHE_Medium:
 	-Warhead@Concussion_Medium:
 	-Warhead@Demolition_Heavy:
-	-Warhead@Demolition_Light:
-	Warhead@Demolition_HeavyFlatCompatibility:
+	Warhead@Demolition_Heavy_Flat:
 		ValidTargets: Ground, Air, Water, Underwater
 		Damage: 120000
 		PercentageScale: 10000
 
 BorisAKM:
-	Inherits@finalmain: ^Compatibility_Bullet_MediumFlat
+	Inherits@finalmain: ^Warhead_Bullet_Medium_Flat
 	Inherits: ^RA2SmallArms
 	Inherits@2: ^RA2Chaingun
 	Report: iboratta.wav, iborattb.wav
@@ -3547,7 +3912,7 @@ BorisAKM:
 		Damage: 4000
 	-Warhead@Bullet_Light:
 	-Warhead@Bullet_Medium:
-	Warhead@Bullet_MediumFlatCompatibility:
+	Warhead@Bullet_Medium_Flat:
 		ValidTargets: Ground, Water
 		Damage: 8000
 		PercentageScale: 9988

@@ -8,6 +8,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -35,6 +36,21 @@ namespace OpenRA.Mods.Cameo.Warheads
 		Average,
 		Lowest,
 		Highest,
+	}
+
+	[Desc("How a warhead's CONTINUOUS-HEAVINESS scalar (Heaviness) parameterises its armor",
+		"profiles. Legacy (default, today's behaviour): the folded percentage half keeps its",
+		"own PercentageVersus / PercentageVersusLight/Heavy anchor tables. SharedVersus",
+		"(the approved §12.0i shared profile, Aedis 2026-09-10 03:17): BOTH halves share",
+		"the flat Versus's belled table — percentage tables and endpoints must be absent,",
+		"the percentage magnitude follows Damage x PercentageScale x h with h/2, and the",
+		"Shield row's coefficient scales once by (2000 + h) / 2000 (100% at h=0, 200% at",
+		"h=2) while h = 0 keeps the flat profile with a ZERO percentage half. Requires an",
+		"active Heaviness (0..2000).")]
+	public enum HeavinessMode
+	{
+		Legacy,
+		SharedVersus,
 	}
 
 	public class AreaDamageWarhead : DamageWarhead, IRulesetLoaded<WeaponInfo>
@@ -118,6 +134,36 @@ namespace OpenRA.Mods.Cameo.Warheads
 			"steps), which is what PercentageScale is expressed in.")]
 		public readonly int PercentageDenominator = 10000;
 
+		[Desc("Continuous heaviness scalar h, in THOUSANDTHS (-1 or omitted = disabled / today's",
+			"behaviour, 0 = active h = 0.0, 1000 = h = 1.0, 2000 = h = 2.0). When disabled the",
+			"warhead uses its authored Versus, Spread and Range verbatim; when active the profile",
+			"is passed through the §12.0i bell at runtime once. Spread, explicit Range and",
+			"MinRadius/MaxRadius scale linearly 2/3 -> 1 -> 4/3 as h goes 0 -> 1 -> 2 (Light/",
+			"Medium/Heavy); Super and Trace are outside the currently ruled h range and are not",
+			"yet reproduced.")]
+		public readonly int Heaviness = -1;
+
+		[Desc("How Heaviness parameterises the armor profiles. Legacy (default): the",
+			"percentage half keeps its own anchored Endpoint tables. SharedVersus: the",
+			"opt-in shared profile — the percentage half follows the SAME belled table",
+			"as the flat half (percentage tables/endpoints must be absent), its",
+			"magnitude is heavy-scaled by h/2 (h=0 -> 0x, h=2 -> 1x), and the flat",
+			"Shield row's coefficient scales ONCE by (2000 + h) / 2000 while the",
+			"percentage half still reads zero at h = 0. Requires an active Heaviness;")]
+		public readonly HeavinessMode HeavinessMode = HeavinessMode.Legacy;
+
+		[Desc("The percentage half's armor table at the h = 0 (Light) endpoint. Optional; when",
+			"BOTH this and PercentageVersusHeavy are authored, each must carry exactly the key set",
+			"of the explicit PercentageVersus (which is the h = 1 medium anchor), and the half's",
+			"per-armor magnitude is interpolated piecewise L->M for h in [0,1] and M->H for h in",
+			"[1,2] (round ties-even) BEFORE the bell runs once over the result. Requires an active",
+			"Heaviness; endpoints on a disabled warhead are rejected.")]
+		public readonly Dictionary<string, int> PercentageVersusLight = new();
+
+		[Desc("The percentage half's armor table at the h = 2 (Heavy) endpoint. See",
+			"PercentageVersusLight for the activation and key-set rules.")]
+		public readonly Dictionary<string, int> PercentageVersusHeavy = new();
+
 		[Desc("The percentage half's own armor table. EMPTY falls back to Versus, which is the",
 			"common case; a family whose percentage half should favour different armor states",
 			"its own here.")]
@@ -158,13 +204,167 @@ namespace OpenRA.Mods.Cameo.Warheads
 			"and hits hard, later rings are larger and weaker. An INCREASING profile builds up instead.")]
 		public readonly ImmutableArray<int> TickDamage = default;
 
+		WDist effectiveSpread;
+		WDist effectiveMinRadius;
+		WDist effectiveMaxRadius;
 		ImmutableArray<WDist> effectiveRange;
 		int tickDamageTotal;
+
+		IReadOnlyDictionary<string, int> effectiveVersus;
+		IReadOnlyDictionary<string, int> effectivePercentageVersus;
+
+		// Whether this warhead's PRIMARY hit may use the folded-in percentage half. The
+		// AreaDamagePercentage subclass is ITSELF a percentage weapon: it forbids the extra
+		// folded hit, so the PercentageVersusLight/Heavy endpoints (which parameterise that
+		// folded half) are meaningless on it and are rejected in its own validation hook.
+		protected virtual bool SupportsPercentageBands => true;
+
+		bool sharedMode;
 
 		void IRulesetLoaded<WeaponInfo>.RulesetLoaded(Ruleset rules, WeaponInfo info)
 		{
 			if (PercentageDenominator <= 0)
 				throw new YamlException("PercentageDenominator must be positive.");
+
+			if (Heaviness < -1 || Heaviness > 2000)
+				throw new YamlException(
+					$"Heaviness must be -1 (disabled) or 0..2000 (thousandths of h), got {Heaviness}.");
+
+			// THE SHARED-PROFILE MODE (approved Aedis 2026-09-10 03:17; independent
+			// review follow-up 2026-09-10). Explicit opt-in; everything the mode
+			// cannot express fails clear HERE, at rules load — not first on impact.
+			// Item 1 (review): a numeric or otherwise undefined member parses through
+			// FieldLoader/Enum, so the IsDefined check is the real rejection gate.
+			if (!Enum.IsDefined(typeof(HeavinessMode), HeavinessMode))
+				throw new YamlException(
+					$"Unknown HeavinessMode '{HeavinessMode}': must be one of " +
+					$"{HeavinessMode.Legacy} or {HeavinessMode.SharedVersus}.");
+			sharedMode = HeavinessMode == HeavinessMode.SharedVersus;
+			if (sharedMode)
+			{
+				if (Heaviness < 0)
+					throw new YamlException(
+						"HeavinessMode SharedVersus requires an active Heaviness (0..2000); " +
+						"omitting Heaviness disables heaviness entirely.");
+				if (PercentageVersus.Count > 0 || PercentageVersusLight.Count > 0 ||
+					PercentageVersusHeavy.Count > 0)
+					throw new YamlException(
+						"HeavinessMode SharedVersus rejects PercentageVersus and the " +
+						"PercentageVersusLight/Heavy endpoints: the percentage half follows " +
+						"the SAME belled table as the flat half.");
+
+				// Item 3 (review): the approved half-up formula is nonnegative —
+				// a negative Damage, PercentageScale or Shield coefficient is a
+				// configuration error even at h = 0 (where the percentage units
+				// happen to be zero). All legacy paths are untouched.
+				if (Damage < 0)
+					throw new YamlException(
+						$"HeavinessMode SharedVersus rejects a negative Damage ({Damage}); " +
+						"the approved conversion is nonnegative.");
+				if (PercentageScale < 0)
+					throw new YamlException(
+						$"HeavinessMode SharedVersus rejects a negative PercentageScale " +
+						$"({PercentageScale}); the approved conversion is nonnegative.");
+				if (Versus.TryGetValue("Shield", out var shield) && shield < 0)
+					throw new YamlException(
+						"HeavinessMode SharedVersus rejects a negative Shield coefficient " +
+						$"({shield}); the approved (2000 + h) / 2000 scaling is nonnegative.");
+
+				// Item 2 (review): the shared percentage conversion is computed and
+				// validated AT RULES LOAD — an Int32-bound overflow must fail clear
+				// here, not first on impact. h = 0 passes (zero units IS the approved
+				// value), so no magnitude gate on the number itself.
+				try
+				{
+					SharedFoldedPercentageUnits(Damage, PercentageScale, Heaviness);
+				}
+				catch (OverflowException)
+				{
+					throw new YamlException(
+						"HeavinessMode SharedVersus: percentage units Damage " +
+						$"{Damage} x PercentageScale {PercentageScale} x Heaviness " +
+						$"{Heaviness} overflow Int32.");
+				}
+			}
+
+			var bands = PercentageVersusLight.Count > 0 || PercentageVersusHeavy.Count > 0;
+			if (Heaviness < 0 && bands)
+				throw new YamlException(
+					"PercentageVersusLight/Heavy endpoints require an active Heaviness (0..2000); " +
+					"omitting Heaviness disables heaviness entirely.");
+
+			// §12.0i — continuous heaviness. Heaviness = -1 (or omitted) keeps authored values verbatim.
+			if (Heaviness >= 0)
+			{
+				var h = Heaviness / 1000.0;
+
+				// Radius scale: linear interpolation of the existing LEVEL_RADIUS_SCALE points
+				// Light h=0 -> 2/3, Medium h=1 -> 1, Heavy h=2 -> 4/3. Applied consistently to
+				// Spread, explicit Range and MinRadius/MaxRadius via the bounded helper.
+				// Super/Trace are outside the currently ruled h range and stay unhandled
+				// until the maintainer rules them.
+				effectiveSpread = new WDist(ScaledRadiusLength(Spread.Length, Heaviness));
+				effectiveMinRadius = new WDist(ScaledRadiusLength(MinRadius.Length, Heaviness));
+				effectiveMaxRadius = new WDist(ScaledRadiusLength(MaxRadius.Length, Heaviness));
+
+				effectiveVersus = HeavinessBell.Transform(Versus, h);
+
+				// THE SHARED-PROFILE BRANCH: the bell ran ONCE above over the flat
+				// Versus; the Shield row's coefficient is then scaled ONCE by
+				// (2000 + h) / 2000. The percentage half reads that SAME resulting
+				// table by reference — never a second bell, never a second Shield
+				// scaling, and no percentage tables of its own.
+				if (sharedMode)
+				{
+					effectiveVersus = ScaleShieldCoefficient(effectiveVersus, Heaviness);
+					effectivePercentageVersus = effectiveVersus;
+				}
+				// The percentage half's ADDITIVE PER-ARMOR BANDS: interpolate between the
+				// authored anchor tables piecewise (L->M on h in [0,1], M->H on h in (1,2]),
+				// round ties-even per armor, then pass the interpolated table through the
+				// bell ONCE. PercentageScale itself stays the scalar dial it always was.
+				// Gated on SupportsPercentageBands: the AreaDamagePercentage subclass carries
+				// these FIELDS by inheritance but forbids the folded half it applies to, so
+				// its branch must never compute with them (it rejects the endpoints in its
+				// own ValidateFields).
+				if (bands && SupportsPercentageBands)
+				{
+					if (PercentageVersusLight.Count == 0 || PercentageVersusHeavy.Count == 0)
+						throw new YamlException(
+							"PercentageVersusLight and PercentageVersusHeavy must both be set.");
+					if (PercentageVersus.Count == 0)
+						throw new YamlException(
+							"PercentageVersusLight/Heavy require an explicit PercentageVersus " +
+							"(the h=1 medium anchor).");
+					if (!SameKeys(PercentageVersusLight, PercentageVersus) ||
+						!SameKeys(PercentageVersusHeavy, PercentageVersus))
+						throw new YamlException(
+							"PercentageVersusLight/Heavy keys must match PercentageVersus exactly.");
+					if (PercentageVersus.Any(kv => kv.Value < 0) ||
+						PercentageVersusLight.Any(kv => kv.Value < 0) ||
+						PercentageVersusHeavy.Any(kv => kv.Value < 0))
+						throw new YamlException(
+							"PercentageVersus anchor values must be non-negative.");
+
+					var interpolated = InterpolatePercentageBands(
+						PercentageVersusLight, PercentageVersus, PercentageVersusHeavy, Heaviness);
+					effectivePercentageVersus = HeavinessBell.Transform(interpolated, h);
+				}
+				else
+				{
+					effectivePercentageVersus = PercentageVersus.Count > 0
+						? HeavinessBell.Transform(PercentageVersus, h)
+						: effectiveVersus;
+				}
+			}
+			else
+			{
+				effectiveSpread = Spread;
+				effectiveMinRadius = MinRadius;
+				effectiveMaxRadius = MaxRadius;
+				effectiveVersus = Versus;
+				effectivePercentageVersus = PercentageVersus.Count > 0 ? PercentageVersus : Versus;
+			}
 
 			if (Range != null)
 			{
@@ -175,10 +375,33 @@ namespace OpenRA.Mods.Cameo.Warheads
 					if (Range[i] > Range[i + 1])
 						throw new YamlException("Range values must be specified in an increasing order.");
 
-				effectiveRange = Range;
+				effectiveRange = Range
+					.Select(r => new WDist(ScaledRadiusLength(r.Length, Heaviness)))
+					.ToImmutableArray();
+
+				// ⚠ CONTROL-FLOW VERIFIED (review 2026-09-10): GetDamageFalloff USES a
+				// duplicate segment only when it is the FIRST segment — the loop enters
+				// segment i with span `outer - inner`; for i >= 2 entering implies
+				// distance >= Range[i-1] while the segment is used only when
+				// distance < Range[i], impossible for a duplicate, so later duplicates
+				// are dynamically SKIPPED and harmless. Segment i = 1 is entered only
+				// when `outer > distance`; a front at ZERO (0 == 0) never satisfies
+				// `outer > distance` for any distance >= 0, so a zero front (e.g.
+				// authored 0,1 truncating to 0,0) is HARMLESS and must NOT be rejected.
+				// Reject only a POSITIVE collapsed front — authored strictly-increasing
+				// positive radii truncating to an equal positive pair — which calls
+				// int2.Lerp with span 0 for every in-range victim. Fail clear at load;
+				// an already-collapsing authored Range keeps today's behaviour.
+				if (Heaviness >= 0 && Range.Length >= 2 &&
+					Range[0] < Range[1] &&
+					effectiveRange[0] == effectiveRange[1] && effectiveRange[0].Length > 0)
+					throw new YamlException(
+						"Scaled Range front collapsed to a positive duplicate " +
+						$"(authored {Range[0].Length} / {Range[1].Length}, scaled " +
+						$"{effectiveRange[0].Length} / {effectiveRange[1].Length}).");
 			}
 			else
-				effectiveRange = Exts.MakeArray(Falloff.Length, i => i * Spread).ToImmutableArray();
+				effectiveRange = Exts.MakeArray(Falloff.Length, i => i * effectiveSpread).ToImmutableArray();
 
 			if (TickDamage != null)
 			{
@@ -235,7 +458,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 
 		protected override int DamageVersus(Actor victim, HitShape shape, WarheadArgs args)
 		{
-			return VersusFrom(Versus, victim, shape);
+			return VersusFrom(effectiveVersus, victim, shape);
 		}
 
 		/// <summary>
@@ -334,7 +557,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 
 			// Versus has no Concrete row on most families; 100 then means "full damage", the same
 			// default every other armor lookup uses.
-			var slab = Versus.TryGetValue("Concrete", out var v) ? Damage * v / 100 : Damage;
+			var slab = effectiveVersus.TryGetValue("Concrete", out var v) ? Damage * v / 100 : Damage;
 			if (slab > 0)
 				layer.HitTile(world.Map.CellContaining(pos), slab);
 		}
@@ -343,9 +566,13 @@ namespace OpenRA.Mods.Cameo.Warheads
 		{
 			// Expanding shockwave: grow the damaged radius from MinRadius to MaxRadius across the ticks.
 			// Static DoT cloud (MaxRadius == 0): every tick covers the full Falloff range.
+			// The BRANCH decision reads the AUTHORED MaxRadius: a tiny positive radius that
+			// scales/truncates to zero must stay a shockwave (rings at zero), not degrade
+			// into a static cloud. The interpolated endpoints are the effective radii.
 			var outer = effectiveRange[^1];
 			if (MaxRadius.Length > 0 && Ticks > 1)
-				outer = new WDist(MinRadius.Length + (MaxRadius.Length - MinRadius.Length) * (tick + 1) / Ticks);
+				outer = new WDist(effectiveMinRadius.Length +
+					(effectiveMaxRadius.Length - effectiveMinRadius.Length) * (tick + 1) / Ticks);
 
 			// The authored Damage is the TOTAL across all ticks. Split it by the per-tick weights
 			// (TickDamage) when given, otherwise evenly. Normalised so the ticks always sum to Damage.
@@ -446,7 +673,14 @@ namespace OpenRA.Mods.Cameo.Warheads
 			// factor of 100 is the hundredths granularity — see PercentageScale's [Desc].
 			// ROUND, do not truncate: integer division biases every weapon DOWNWARD by up to
 			// one basis point, which showed up as a systematic 0.99% where 1.00% was meant.
-			var basisPoints = FoldedPercentageUnits(Damage, PercentageScale);
+			// THE SHARED MODE: the percentage magnitude is heavy-scaled by h/2
+			// (h=0 -> 0x, h=2 -> 1x of the base Scale) — ONE rounded combined fraction
+			// (SharedFoldedPercentageUnits), never a legacy rounding then a multiply.
+			// h = 0 yields ZERO units: the percentage half stays zero at h=0 even though
+			// the flat Shield coefficient floor is (2000 + h) / 2000 there.
+			var basisPoints = sharedMode
+				? SharedFoldedPercentageUnits(Damage, PercentageScale, Heaviness)
+				: FoldedPercentageUnits(Damage, PercentageScale);
 			if (basisPoints <= 0)
 				return;
 
@@ -473,7 +707,7 @@ namespace OpenRA.Mods.Cameo.Warheads
 		/// <summary>The percentage half's armor lookup: its own table, or Versus when it has none.</summary>
 		int PercentageDamageVersus(Actor victim, HitShape shape, WarheadArgs args)
 		{
-			return VersusFrom(PercentageVersus, victim, shape);
+			return VersusFrom(effectivePercentageVersus, victim, shape);
 		}
 
 
@@ -555,6 +789,133 @@ namespace OpenRA.Mods.Cameo.Warheads
 		internal static int FoldedPercentageUnits(int damage, int percentageScale)
 		{
 			return checked((int)(((long)damage * percentageScale + 100000L) / 200000L));
+		}
+
+		/// <summary>
+		/// THE SHARED-PROFILE percentage conversion (HeavinessMode SharedVersus):
+		/// ONE rounded combined fraction
+		/// <c>Damage * PercentageScale * Heaviness / (200000 * 2000)</c> — the h/2
+		/// heaviness factor is INSIDE the fraction, so the legacy-unit rounding is
+		/// not performed first and then multiplied by h (that would compound two
+		/// quantisations). Int128 (net8) intermediates keep the full product
+		/// (an Int32 Damage x Int32 Scale x h already exceeds Int64's range),
+		/// and the result is rounded HALF-UP over the (nonnegative) input and must
+		/// fit Int32 — checked cast fails clear instead of wrapping.
+		/// </summary>
+		internal static int SharedFoldedPercentageUnits(int damage, int percentageScale, int heaviness)
+		{
+			checked
+			{
+				Int128 numerator = (Int128)damage * percentageScale * heaviness;
+				Int128 denominator = (Int128)200000L * 2000L;
+				Int128 rounded = (numerator + denominator / 2) / denominator;
+				return (int)rounded;
+			}
+		}
+
+		/// <summary>
+		/// THE SHARED-PROFILE Shield scaling: the Shield row's coefficient scales
+		/// ONCE by <c>(2000 + h) / 2000</c> — 100% at h=0, 200% at h=2 — with a
+		/// defined HALF-UP rounding over the nonnegative belled value. Every OTHER
+		/// row is returned verbatim; the percentage half reuses this exact table
+		/// (no second scaling — see the shared branch in RulesetLoaded).
+		/// </summary>
+		internal static IReadOnlyDictionary<string, int> ScaleShieldCoefficient(
+			IReadOnlyDictionary<string, int> table, int heaviness)
+		{
+			return table.ToDictionary(
+				kv => kv.Key,
+				kv => kv.Key == "Shield"
+					? checked((int)((kv.Value * (2000L + heaviness) + 1000L) / 2000L))
+					: kv.Value);
+		}
+
+		/// <summary>
+		/// One bounded radius scale shared by C# and Python (effective_heaviness.scale_length):
+		/// <c>length * (h + 2) / 3</c> must fit Int32 BEFORE the cast. Both bounds are
+		/// checked (review 2026-09-10): a NEGATIVE authored WDist scales MORE negative, so
+		/// h=2' 4/3 can UNDERFLOW below Int32.MinValue exactly like h=0 can overflow above
+		/// Int32.MaxValue — an unchecked cast would wrap silently. Fail clear on either
+		/// bound, ACTIVE heaviness only.
+		/// ⚠ DISABLED EARLY RETURN (P1, review 2026-09-10): a disabled warhead (-1/omitted)
+		/// must keep its AUTHORED length — without this guard the negative sentinel fell
+		/// into the formula and scaled every inactive Explicit-Range coordinate to about
+		/// 2/3 of authored (h = -0.001 gives (h + 2) / 3 = 0.666333), breaking the
+		/// byte-equivalence the disabled path promises; disabled NEGATIVE radii stay
+		/// legacy-verbatim too. The Python mirror always had it. Callers on the active
+		/// path guarantee Heaviness >= 0 already; the Explicit-Range block runs in BOTH
+		/// branches, so the guard lives HERE.
+		/// </summary>
+		internal static int ScaledRadiusLength(int length, int heaviness)
+		{
+			if (heaviness < 0)
+				return length;
+			var h = heaviness / 1000.0;
+			var scale = (h + 2.0) / 3.0;
+			var scaled = (double)length * scale;
+			if (scaled > int.MaxValue || scaled < int.MinValue)
+				throw new YamlException(
+					$"Scaled radius {scaled:F0} (authored {length} x {scale:F3} at " +
+					$"h={h}) overflows Int32.");
+			return (int)scaled;
+		}
+
+		/// <summary>
+		/// Integer numerator/denominator rounded HALF-TO-EVEN (ties-even), truncating toward
+		/// zero on non-ties. The single rounding rule shared by the percentage-band
+		/// interpolation and its Python mirror (tools/balance/effective_heaviness.py), so both
+		/// runtimes land on the same armor table.
+		/// </summary>
+		internal static int RoundHalfEven(long numerator, long denominator)
+		{
+			if (denominator == 0)
+				throw new DivideByZeroException();
+			var negative = (numerator < 0) != (denominator < 0);
+			var n = Math.Abs(numerator);
+			var d = Math.Abs(denominator);
+			var q = n / d;
+			var twice = 2 * (n % d);
+			if (twice > d || (twice == d && (q & 1) != 0))
+				q++;
+			return checked((int)(negative ? -q : q));
+		}
+
+		/// <summary>
+		/// Piecewise per-armor interpolation between the three authored anchor tables:
+		/// L->M for h in [0,1] and M->H for h in (1,2], h in thousandths. Exact integer
+		/// arithmetic, ties-even per armor (RoundHalfEven). Anchors share one key set
+		/// (validated at RulesetLoaded), so `medium` drives the iteration order.
+		/// </summary>
+		internal static IReadOnlyDictionary<string, int> InterpolatePercentageBands(
+			IReadOnlyDictionary<string, int> light,
+			IReadOnlyDictionary<string, int> medium,
+			IReadOnlyDictionary<string, int> heavy,
+			int heaviness)
+		{
+			var interpolated = new Dictionary<string, int>();
+			foreach (var (armor, mediumValue) in medium)
+			{
+				long product;
+				if (heaviness <= 1000)
+				{
+					var lightValue = light[armor];
+					product = (long)lightValue * (1000 - heaviness) + (long)mediumValue * heaviness;
+				}
+				else
+				{
+					var heavyValue = heavy[armor];
+					product = (long)mediumValue * (2000 - heaviness) + (long)heavyValue * (heaviness - 1000);
+				}
+
+				interpolated[armor] = RoundHalfEven(product, 1000);
+			}
+
+			return interpolated;
+		}
+
+		static bool SameKeys(IReadOnlyDictionary<string, int> a, IReadOnlyDictionary<string, int> b)
+		{
+			return a.Count == b.Count && a.Keys.All(b.ContainsKey);
 		}
 
 		internal static int ApplyPercentageDenominator(int damage, int denominator)

@@ -15,6 +15,8 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 
 from audit_three_way_split import main_warhead_nodes, main_warheads
 from miniyaml import Ruleset
+from reviewed_weapon_history import historical_copy
+from owned_weapon_history import historical_weapon_names
 
 
 CONSOLIDATED = {
@@ -24,12 +26,37 @@ CONSOLIDATED = {
     "TSInfantryMortar": ("Concussion_Medium", 32000),
 }
 
+# ⛔ RE-PINNED 2026-09-13, ON THE MAINTAINER'S EXPLICIT APPROVAL AND NOT BEFORE.
+#
+# Three of the five moved when R4 retired the 27 `^Warhead_*_Flat` shims. Re-pinning a
+# byte-stability guard is exactly what that guard exists to prevent, so the change was held for a
+# ruling and the FULL resolved diff was measured against a clean `origin/master` worktree first.
+# It is 28 lines across the three weapons, and nothing else:
+#
+#   ra1_soviets_grenadier_grenaderaexplode
+#       Warhead@Flame_LightFlatCompatibility -> Warhead@Flame_Light_Flat   RENAME ONLY, no values
+#   ra1_soviets_grenadier_grenadethermobaric  and  ...thermobaricexplode  (they share one warhead)
+#       Warhead@Thermobaric_LightFlatCompatibility -> Warhead@Thermobaric_Light
+#       COMPOSITE  92 -> 93
+#       Shield    179 -> 180
+#
+# ⭐ AND THE TWO VALUES THAT MOVED CANNOT BREAK §12.0h MEAN-100 BY CONSTRUCTION. The maintainer
+# asked the right question — *"make sure the sum of all versus values is the same across all
+# warheads, right?"* — and the answer is yes, over the SIXTEEN canonical armor rows, which sum to
+# 1602 (mean 100.125) on this warhead. `audit_versus_profile.NON_ARMOR` excludes exactly
+# `ARMOR, BLAST, COMPOSITE, HAZMAT, REFLECTOR, Shield` from that sum, so COMPOSITE and Shield are
+# precisely the two rows sitting OUTSIDE it. `audit_versus_profile` reports 0 unexpected mean
+# violations, and §12.0c gives Shield its own compressed ladder in any case.
+#
+# ⚠ THE TEST STOPS AT THE FIRST MISMATCH, which hid two of the three from the first report — it
+# named only `...thermobaric`. When re-pinning, compute ALL of them and diff the resolved weapons;
+# never trust the single name a failure happens to print.
 PRESERVED_HASHES = {
     "TS155mm_bluenuke": "97a6765afdf585adf92ece0bbdfec067da014575966671eada8a4ca54f46817f",
     "GrenadeRA": "19d10234019c95012015db30a27922075fb2f736510b9141b467425504839afe",
-    "GrenadeRAExplode": "463b5914bb50ab37d1d25754249953ddca938838709fb3626fecae3696d26b68",
-    "GrenadeThermobaric": "0c9a10e9feacf943e2d83ee9eeb48adec2a564ad13f2aa7795711af3bc386760",
-    "GrenadeThermobaricExplode": "d30dee2e543667518a319226aac7da2f8b7142a9da0bb3256fb5da613643946b",
+    "ra1_soviets_grenadier_grenaderaexplode": "741d9c8aff8cfc6d3344cf9eb42789f0ded5c4f7868db31057d87b16c269775c",
+    "ra1_soviets_grenadier_grenadethermobaric": "c7c62b007109b0fca33b5f7447b71082a6aec4250f8d3a8c63bff2a68e8faa4f",
+    "ra1_soviets_grenadier_grenadethermobaricexplode": "d0abb1db0186c3e65afd822bfdce93c6499dfe059f5f41438904cf4528445ee8",
 }
 
 EXPECTED_PERCENTAGE_DELTAS = {
@@ -88,16 +115,32 @@ class ClosureIsolationConsolidationTests(unittest.TestCase):
 
     def test_excluded_descendants_are_byte_stable_after_isolation(self):
         for name, expected in PRESERVED_HASHES.items():
-            self.assertEqual(expected, resolved_hash(self.rules.resolve_weapon(name)), name)
+            current = "ra1_soviets_grenadier_grenade" if name == "GrenadeRA" else name
+            node = self.rules.resolve_weapon(current).deep_copy()
+            node.key = next(iter(historical_weapon_names([name])))
+            self.assertEqual(expected, resolved_hash(historical_copy(self, node)), name)
         self.assertEqual({"TSAux155mm"}, descendants(self.rules, "TS155mm"))
         self.assertEqual(set(), descendants(self.rules, "TSInfantryMortar"))
-        self.assertEqual(set(), descendants(self.rules, "GrenadeRA"))
+        self.assertEqual(set(), descendants(self.rules, "ra1_soviets_grenadier_grenade"))
+
+    def test_grenade_historical_coupling_guard_remains_strict(self):
+        current = self.rules.resolve_weapon("ra1_soviets_grenadier_grenade")
+        node = current.deep_copy()
+        node.key = "GrenadeRA"
+        self.assertEqual("102", node.child("Warhead@Demolition_Light").child("Versus").get("COMPOSITE"))
+        past = historical_copy(self, node)
+        self.assertEqual("101", past.child("Warhead@Demolition_Light").child("Versus").get("COMPOSITE"))
+        node.child("Warhead@Demolition_Light").child("Versus").child("COMPOSITE").value = "103"
+        with self.assertRaises(AssertionError):
+            historical_copy(self, node)
+        self.assertEqual("ra1_soviets_grenadier_grenade", current.key)
+        self.assertEqual("102", current.child("Warhead@Demolition_Light").child("Versus").get("COMPOSITE"))
 
     def test_kirov_uses_the_pinned_canonicalized_splash_payload(self):
         alias = self.rules.resolve_weapon("RA2KirovHowitzerSplash")
         self.assertEqual(
             "b77525d04f7bd02e15f288318bbd3e027f1232d9d4e1c2d1c522cb900b491bf0",
-            children_hash(alias),
+            children_hash(historical_copy(self, alias)),
         )
         kirov = self.rules.resolve_weapon("RA2KirovBomb_fire")
         trigger = next(child for child in kirov.children if child.key == "Warhead@2Fire")

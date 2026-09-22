@@ -49,7 +49,7 @@ GROUPS = {
         "SteelCruiserArtillery", "SteelCruiserArtillery_elite",
     },
     "Concussion_Medium": {
-        "ArtilleryShell", "SpecterArtilleryShell", "D2K_155mm3",
+        "ArtilleryShell", "td_nod_specterartillery_specterartilleryshell", "D2K_155mm3",
         "Dune_SiegeMortar", "RA160mm", "RA160mmE_elite",
         "RA160mmE_fire_elite", "RA160mmE_tesla_elite", "RA160mm_fire",
         "RA160mm_tesla",
@@ -68,7 +68,7 @@ GROUPS = {
     },
     "MissileAP_Heavy": {"YRBoomerSCUD"},
     "MissileHE_Heavy": {
-        "BigShieeTusk", "Hellfire", "MonsterTankTusk", "SandmarineTusk",
+        "BigShieeTusk", "ra1_allies_longbow_missile", "ra1_soviets_monstertank_missile", "SandmarineTusk",
         "SandmarineTuskCryo", "CabalHeavyReaperMissiles_AA",
     },
     "MissileHE_Medium": {
@@ -81,11 +81,11 @@ GROUPS = {
         "TSScoopDualChem",
     },
     "Chemical_Heavy": {"TS120mmxChem"},
-    "Flame_Medium": {"105mmThermobaric"},
+    "Flame_Medium": {"ra1_soviets_heavytank_105mmthermobaric"},
     "Flame_Heavy": {"Napalm"},
     "Thermobaric_Heavy": {
         "ra120mmThermobaric", "ra120mmThermobaricTargetingComputer",
-        "ra120mm2Thermobaric", "ra120mm2ThermobaricTargetingComputer",
+        "ra1_soviets_siegemammothtank_ra120mm2thermobaric", "ra1_soviets_siegemammothtank_ra120mm2thermobarictargetingcomputer",
     },
     "CannonAP_Light": {
         "120mm_cobra", "120mm_cobra_deploy", "120mm_python", "120mm_python_deploy",
@@ -121,8 +121,8 @@ SOURCE_OVERRIDES = {
     "SandmarineTuskCryo": "MissileHE_Heavy",
     "ra120mmThermobaric": "Flame_Heavy",
     "ra120mmThermobaricTargetingComputer": "Flame_Heavy",
-    "ra120mm2Thermobaric": "Flame_Heavy",
-    "ra120mm2ThermobaricTargetingComputer": "Flame_Heavy",
+    "ra1_soviets_siegemammothtank_ra120mm2thermobaric": "Flame_Heavy",
+    "ra1_soviets_siegemammothtank_ra120mm2thermobarictargetingcomputer": "Flame_Heavy",
 }
 SELECTED = {
     name: DESTINATION_OVERRIDES.get(name, destination)
@@ -148,8 +148,8 @@ ISOLATIONS = {
     "RA160mm_rad": ("^RA160mmRadLegacy", {"RA160mmE_rad_elite"}),
     "SandmarineTusk": (
         "^SandmarineTuskLegacy", {"SandmarineTuskFire", "SandmarineTuskTwin"}),
-    "SpecterArtilleryShell": (
-        "^SpecterArtilleryShellLegacy", {"SpecterArtilleryShellUpgrade"}),
+    "td_nod_specterartillery_specterartilleryshell": (
+        "^SpecterArtilleryShellLegacy", {"td_nod_specterartillery_specterartilleryshellupgrade"}),
 }
 
 

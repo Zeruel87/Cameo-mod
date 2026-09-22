@@ -26,6 +26,7 @@ from __future__ import annotations
 import pathlib
 import sys
 import unittest
+from types import SimpleNamespace
 
 import _bootstrap  # noqa: F401 — sys.path side effect
 
@@ -35,6 +36,7 @@ sys.path.insert(0, str(ROOT / "tools" / "balance"))
 import formula  # noqa: E402
 import physical_state_price as psp  # noqa: E402
 from cameo_model import Model  # noqa: E402
+from miniyaml import Node  # noqa: E402
 
 
 _MODEL = None
@@ -239,11 +241,43 @@ class FedDamageShare(unittest.TestCase):
     def test_t17_damage_split_matches_weapon_bindings_exclusions(self):
         # Friendly-fire twins and Percentage warheads must be excluded on BOTH sides or the
         # share is computed against a denominator the binding census never saw.
-        rs = model().rs
-        total, fed = psp.damage_split(rs, "ChemRockets")
-        self.assertGreater(total, 0)
-        self.assertGreater(total, fed, "this weapon is the reported multi-main case")
-        self.assertLess(fed / total, 0.75)
+        def warhead(tag, damage, *, meter=False, relationship=None):
+            children = [Node('Damage', str(damage), [])]
+            if meter:
+                children += [Node('PhysicalStateName', 'Corrosion', []),
+                             Node('PhysicalStateScale', '100', [])]
+            if relationship:
+                children.append(Node('ValidRelationships', relationship, []))
+            return Node('Warhead@' + tag, 'AreaDamagePercentage' if 'Percentage' in tag else 'AreaDamage', children)
+        weapon = Node('Fixture', '', [warhead('Meter', 100, meter=True), warhead('OtherMain', 200),
+                      warhead('FriendlyFire', 10000, meter=True, relationship='Ally'),
+                      warhead('Percentage', 5000, meter=True)])
+        rs = SimpleNamespace(resolve_weapon=lambda name: weapon)
+        self.assertEqual(psp.damage_split(rs, 'Fixture'), (300, 100))
+        self.assertEqual(psp.weapon_bindings(rs, 'Fixture')[0], 300)
+
+    def test_t17b_current_chemrockets_collapse_is_not_the_historical_three_main_fixture(self):
+        # The live weapon was deliberately collapsed; it is no longer the old
+        # multi-main example used by T17. Keep that change distinct from the
+        # synthetic exclusion regression rather than requiring old gameplay.
+        from audit_three_way_split import main_warhead_nodes
+        mains = main_warhead_nodes(model().rs.resolve_weapon('td_nod_chemicalrocketsoldier_chemrockets'))
+        self.assertEqual([(node.key, node.get('Damage')) for node in mains],
+                         [('Warhead@Chemical_Light', '36000')])
+        # DamagesConcrete:100 is still present but is not target health damage.
+        self.assertEqual(psp.damage_split(model().rs, 'td_nod_chemicalrocketsoldier_chemrockets'), (36000, 36000))
+        self.assertEqual(psp.weapon_bindings(model().rs, 'td_nod_chemicalrocketsoldier_chemrockets')[0], 36000)
+
+    def test_t17c_runtime_type_controls_flat_health_damage_not_the_instance_name(self):
+        for kind in ('AreaDamagePercentage', 'HealthPercentageDamage', 'DamagesConcrete',
+                     'AffectsIntegrity', 'OpenToppedDamage', 'UnknownDamage'):
+            excluded = Node('Warhead@ordinary_name', kind, [Node('Damage', '9000', [])])
+            flat = Node('Warhead@PercentageLookingName', 'AreaDamage', [Node('Damage', '100', []),
+                        Node('PhysicalStateName', 'Corrosion', []), Node('PhysicalStateScale', '100', [])])
+            rs = SimpleNamespace(resolve_weapon=lambda name: Node('Fixture', '', [excluded, flat]))
+            with self.subTest(kind=kind):
+                self.assertEqual(psp.damage_split(rs, 'Fixture'), (100, 100))
+                self.assertEqual(psp.weapon_bindings(rs, 'Fixture')[0], 100)
 
     def test_t18_the_single_warhead_cancellation_still_holds_where_it_applies(self):
         # T3 asserts HP and damage cancel. That is TRUE — but only at fed_share == 1.0, which

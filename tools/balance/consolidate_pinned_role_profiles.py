@@ -40,7 +40,7 @@ ROOTS = {
     "SteelDaggerCannon": ("CannonHE_Heavy", {"SteelDaggerCannon_elite"}, 8000, 4988),
     "LatinSmokerCannon": ("CannonHE_Medium", {"LatinSmokerCannon_elite"}, 13000, 3070),
     "RA2LarsRocket": ("MissileAP_Heavy", set(), 10000, 3990),
-    "SpecterArtilleryShellUpgrade": ("CannonHE_Heavy", set(), 32000, 2497),
+    "td_nod_specterartillery_specterartilleryshellupgrade": ("CannonHE_Heavy", set(), 32000, 2497),
     "LatinAADefenderCannon": ("MissileAP_Medium", set(), 4000, 9975),
     "WyvernRockets": ("MissileAP_Heavy", set(), 16000, 2494),
 }
@@ -55,7 +55,7 @@ BASELINE_MAINS = {
     "LatinSmokerCannon": {"CannonHE_Heavy", "CannonHE_Medium"},
     "LatinSmokerCannon_elite": {"CannonHE_Heavy", "CannonHE_Medium"},
     "RA2LarsRocket": {"MissileAP_Heavy", "MissileAP_Medium"},
-    "SpecterArtilleryShellUpgrade": {"CannonHE_HeavyFlatCompatibility", "Concussion_Medium", "Demolition_Light"},
+    "td_nod_specterartillery_specterartilleryshellupgrade": {"CannonHE_HeavyFlatCompatibility", "Concussion_Medium", "Demolition_Light"},
     "LatinAADefenderCannon": {"Flak_Medium", "MissileAP_Medium"},
     "WyvernRockets": {"CannonHE_Heavy", "MissileAP_Heavy"},
 }
@@ -64,7 +64,7 @@ GROUND_ONLY = {
     "CannonAttackRobotGun", "CannonAttackRobotGun_elite",
     "SteelDaggerCannon", "SteelDaggerCannon_elite",
     "LatinSmokerCannon", "LatinSmokerCannon_elite",
-    "SpecterArtilleryShellUpgrade",
+    "td_nod_specterartillery_specterartilleryshellupgrade",
 }
 
 # Filled from the guarded baseline; selected main nodes are deliberately omitted.
@@ -77,7 +77,7 @@ PRESERVED_HASHES = {
     "RA2GrenadePack": "a1348707ab51ddc8de8bcd6f209ebac6efc96d9fdfaf50b72d584ff3bb007a0f",
     "RA2GrenadePack_elite": "9e1e86c6b01fd66a11324779ab86721904b7a0bf4a58c0fd5c33fbea8aaab623",
     "RA2LarsRocket": "35d0329ad7e978f7568c01bd19a09563fd925d30b1ad5a8e3576ffed459d7584",
-    "SpecterArtilleryShellUpgrade": "19081d076ca2ade415be2adbe1286fd1c1aec53f8867271501ed9790c790e0c2",
+    "td_nod_specterartillery_specterartilleryshellupgrade": "19081d076ca2ade415be2adbe1286fd1c1aec53f8867271501ed9790c790e0c2",
     "SteelDaggerCannon": "e0f5ce303cb7f4b74aa278fdaf5068471ac732c273ae2fc81e094fe9d0a7a27e",
     "SteelDaggerCannon_elite": "4f4749bbf619b1ee6374507fb903a3d7acae62d10e1e585777403640a32418c5",
     "WyvernRockets": "f9a06db96c28a5b1f71ee481e4a128569dbd80d639a0d33cdc65d3bb909f22dd",

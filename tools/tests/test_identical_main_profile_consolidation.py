@@ -17,6 +17,7 @@ from consolidate_identical_main_profiles import (
 )
 import consolidate_freedom_rocket_base as freedom
 from miniyaml import Ruleset
+from reviewed_weapon_history import HistoricalView, restore_freedom_elite, restore_later_profile
 
 
 class IdenticalMainProfileConsolidationTests(unittest.TestCase):
@@ -33,8 +34,7 @@ class IdenticalMainProfileConsolidationTests(unittest.TestCase):
                 "MissileAP_Medium": ("180000", "3333"),
             },
             "RA2FreedomRocket_elite": {
-                "MissileAP_MediumFlatCompatibility": ("240000", "0"),
-                "MissileAP_Medium": ("120000", "10000"),
+                "MissileAP_Medium": ("360000", "0"),
             },
         }
         for name, expected in freedom_expected.items():
@@ -48,11 +48,18 @@ class IdenticalMainProfileConsolidationTests(unittest.TestCase):
                 self.assertEqual(scale, nodes[key].get("PercentageScale"))
 
         self.assertEqual(
-            freedom.ELITE_MAIN_ORDER,
+            [freedom.CANONICAL],
             main_warheads(self.rules.resolve_weapon("RA2FreedomRocket_elite")),
         )
 
-        self.assertTrue(freedom.inspect(self.rules))
+        # b905d7679 regenerated canonical coupling armor; frozen compatibility
+        # keeps its old table. The historical equality guard must reject replay.
+        elite = restore_freedom_elite(self, self.rules.resolve_weapon("RA2FreedomRocket_elite"))
+        self.assertEqual("44", elite.child("Warhead@MissileAP_MediumFlatCompatibility").child("Versus").get("COMPOSITE"))
+        self.assertEqual("45", elite.child("Warhead@MissileAP_Medium").child("Versus").get("COMPOSITE"))
+        with self.assertRaisesRegex(RuntimeError, "must retain both mains"):
+            freedom.inspect(self.rules)
+        self.assertTrue(freedom.inspect(HistoricalView(self, self.rules)))
 
     def test_freedom_rocket_whole_tree_comparison_is_structural_only(self):
         report = json.loads(FREEDOM_REPORT.read_text(encoding="utf-8"))
@@ -91,7 +98,7 @@ class IdenticalMainProfileConsolidationTests(unittest.TestCase):
 
     def test_lockdown_descendants_keep_their_original_routes(self):
         for name, (flak_damage, chaingun_damage) in LOCKDOWN_PINS.items():
-            resolved = self.rules.resolve_weapon(name)
+            resolved = restore_later_profile(self, self.rules.resolve_weapon(name))
             flak = resolved.child("Warhead@SniperFlak")
             chaingun = resolved.child("Warhead@SniperChaingun")
             self.assertEqual("AreaDamage", flak.value)

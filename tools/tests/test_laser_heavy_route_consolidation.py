@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 import consolidate_laser_heavy_routes as cohort
-from audit_three_way_split import SPLIT_BASELINE, main_warheads
+from audit_three_way_split import RAW_SPLIT_BASELINE, main_warheads
 from audit_warhead_split import BROADCAST_BASELINE
 from miniyaml import Ruleset
 
@@ -119,8 +119,9 @@ class LaserHeavyRouteConsolidationTests(unittest.TestCase):
                 self.assertEqual(before[target], after[target], (name, target))
 
     def test_ratchets_match_live_reduction(self):
-        self.assertEqual(114, SPLIT_BASELINE)
-        self.assertEqual(90, BROADCAST_BASELINE)
+        # Upstream retired exemptions: enforce the raw ceiling, never subtract reviewed stacks.
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
+        self.assertLessEqual(BROADCAST_BASELINE, 69)
 
 
 if __name__ == "__main__":

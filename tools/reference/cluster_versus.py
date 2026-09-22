@@ -32,6 +32,7 @@ import json
 import pathlib
 import statistics
 import sys
+from warhead_source_selection import selected_sources
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CORPUS = ROOT / "docs" / "reference" / "versus_raw.json"
@@ -131,7 +132,7 @@ def classify(row: dict) -> dict | None:
 def load() -> list[dict]:
     data = json.loads(CORPUS.read_text(encoding="utf-8"))
     out = []
-    for sid, entry in data["sources"].items():
+    for sid, entry in selected_sources(data["sources"]).items():
         for row in entry["rows"]:
             c = classify(row)
             if c:
@@ -152,15 +153,22 @@ def profile_of(members: list[dict]) -> dict:
     """The archetype's target profile: the MEDIAN per macro type across the mods
     that ship this archetype (rule 4 — median within the cluster, never a global
     average), plus how many distinct sources back it."""
-    per_macro: dict[str, list[float]] = collections.defaultdict(list)
+    per_source = collections.defaultdict(lambda: collections.defaultdict(list))
+    source_spans = collections.defaultdict(list)
     for m in members:
         for macro, value in m["means"].items():
-            per_macro[macro].append(value)
+            per_source[m["source"]][macro].append(value)
+        source_spans[m["source"]].append(m["span"])
+    per_macro: dict[str, list[float]] = collections.defaultdict(list)
+    for values in per_source.values():
+        for macro, samples in values.items():
+            per_macro[macro].append(statistics.median(samples))
     return {
         "n": len(members),
         "sources": len({m["source"] for m in members}),
-        "median_span": statistics.median([m["span"] for m in members]),
+        "median_span": statistics.median([statistics.median(v) for v in source_spans.values()]),
         "macro": {k: round(statistics.median(v), 1) for k, v in sorted(per_macro.items())},
+        "weighting": "median within each source, then equal-source median; source lineage independence not implied",
     }
 
 

@@ -36,8 +36,8 @@ class AaWeaponRoutingTests(unittest.TestCase):
 
     def test_flak_23_ground_and_air_routes_match_their_armaments(self):
         mains = {"Flak_MediumFlatCompatibility": "4000"}
-        self.assert_main_warheads_target("FLAK-23-AG", "Ground, Water", mains)
-        self.assert_main_warheads_target("FLAK-23-AA", "Air", mains)
+        self.assert_main_warheads_target("ra1_soviets_flaktruck_flak_cannon", "Ground, Water", mains)
+        self.assert_main_warheads_target("ra1_soviets_flaktruck_flak_cannon_AA", "Air", mains)
 
     def test_manifold_ground_and_air_routes_match_their_armaments(self):
         mains = {"Bullet_MediumFlatCompatibility": "6000"}

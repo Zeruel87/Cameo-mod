@@ -24,6 +24,7 @@ Exported helpers:
 from __future__ import annotations
 
 import json
+import math
 import pathlib
 import sys
 from collections.abc import Iterable
@@ -34,6 +35,95 @@ sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 from cameo_model import Model
 from formula import TIER_B, TIER_S, tier_multiplier
+
+PILOT_PROMOTION_FACTIONS = (
+    "ra1_allies", "ra1_soviets", "td_gdi", "td_nod",
+)
+PROMOTION_VIRTUAL_COST_PER_TIER = 1500.0
+
+
+def promotion_price_context(chain_cost, promotion_tokens, token_depths,
+                            per_tier=PROMOTION_VIRTUAL_COST_PER_TIER):
+    """Return an explicit pricing-only chain adjustment for one actor."""
+    try:
+        actual = float(chain_cost)
+        rate = float(per_tier)
+    except (TypeError, ValueError, OverflowError):
+        return {"status": "UNRESOLVED", "reason": "non_numeric_cost_or_rate",
+                "chain_cost": chain_cost, "pricing_chain_cost": None}
+    if (isinstance(chain_cost, bool) or isinstance(per_tier, bool)
+            or not math.isfinite(actual) or actual < 0
+            or not math.isfinite(rate) or rate <= 0):
+        return {"status": "UNRESOLVED", "reason": "invalid_cost_or_rate",
+                "chain_cost": None, "pricing_chain_cost": None}
+    tokens = sorted(set(promotion_tokens))
+    unknown = [token for token in tokens
+               if "_promotion_" in token and token not in token_depths]
+    if unknown:
+        return {"status": "UNRESOLVED", "reason": "unknown_promotion_tokens",
+                "promotion_tokens": unknown, "chain_cost": actual,
+                "pricing_chain_cost": None}
+    matched = [token for token in tokens if token in token_depths]
+    if not matched:
+        return {
+            "status": "NOT_APPLICABLE",
+            "chain_cost": actual,
+            "promotion_tokens": [],
+            "promotion_tier": None,
+            "virtual_promotion_cost": 0.0,
+            "pricing_chain_cost": actual,
+        }
+    if len(matched) != 1:
+        return {
+            "status": "UNRESOLVED",
+            "reason": "multiple_promotion_tokens",
+            "chain_cost": actual,
+            "promotion_tokens": matched,
+            "promotion_tier": None,
+            "virtual_promotion_cost": None,
+            "pricing_chain_cost": None,
+        }
+    token = matched[0]
+    tier = token_depths[token]
+    if isinstance(tier, bool) or not isinstance(tier, int) or tier < 1:
+        return {"status": "UNRESOLVED", "reason": "promotion_depth_unresolved",
+                "chain_cost": actual, "promotion_tokens": matched,
+                "promotion_tier": None, "virtual_promotion_cost": None,
+                "pricing_chain_cost": None}
+    virtual = rate * tier
+    if not math.isfinite(virtual) or not math.isfinite(actual + virtual):
+        return {"status": "UNRESOLVED", "reason": "pricing_cost_overflow",
+                "chain_cost": actual, "pricing_chain_cost": None}
+    return {
+        "status": "RESOLVED",
+        "chain_cost": actual,
+        "promotion_tokens": [token],
+        "promotion_tier": tier,
+        "virtual_promotion_cost": virtual,
+        "pricing_chain_cost": actual + virtual,
+    }
+
+
+def resolve_promotion_depths(parents):
+    """Depth of each token, withholding cycles and missing promotion parents."""
+    depths = {}
+
+    def depth(token, stack=()):
+        if token in depths:
+            return depths[token]
+        if token in stack or token not in parents:
+            return None
+        values = [depth(parent, stack + (token,))
+                  for parent in parents[token]
+                  if parent in parents or "_promotion_" in parent]
+        depths[token] = (None if any(value is None for value in values)
+                         else 1 + max(values, default=0))
+        return depths[token]
+
+    for token in sorted(parents):
+        depth(token)
+    return depths
+
 
 def effective_tier(design_value, derived_value, default: float = 1.0) -> float:
     """Return the tier multiplier to use, honouring manual overrides.
@@ -62,6 +152,7 @@ class TierChain:
         self._provider_index: dict[str, list[tuple[str, float, tuple[str, str]]]] = {}
         self._closure_cache: dict[tuple[frozenset, str], frozenset[str]] = {}
         self._visiting: set[str] = set()
+        self._promotion_depth_cache: dict[str, int | None] | None = None
         self._build_index()
 
     # ------------------------------------------------------------------ #
@@ -233,6 +324,45 @@ class TierChain:
         if buildable_actors is None:
             buildable_actors = [a for a in self.model.rs.actors if not a.startswith("^")]
         return {a: self.chain_cost(a) for a in buildable_actors}
+
+    def promotion_depths(self) -> dict[str, int | None]:
+        """Return provided pilot promotion token to authored column depth."""
+        if self._promotion_depth_cache is not None:
+            return dict(self._promotion_depth_cache)
+        parents = {}
+        for actor in self.model.rs.actors:
+            if not any(actor.startswith(faction + "_promotion_")
+                       for faction in PILOT_PROMOTION_FACTIONS):
+                continue
+            resolved = self.model.rs.resolve(actor)
+            if resolved is None:
+                continue
+            provided = [
+                (child.get("Prerequisite") or actor).strip().lower()
+                for child in resolved.children_named("ProvidesPrerequisite")
+            ] or [actor.lower()]
+            positive = self.model.positive_prereqs(resolved)
+            for token in provided:
+                parents[token] = positive
+
+        depths = resolve_promotion_depths(parents)
+        self._promotion_depth_cache = depths
+        return dict(depths)
+
+    def promotion_pricing_context(self, actor_name: str,
+                                  per_tier=PROMOTION_VIRTUAL_COST_PER_TIER):
+        """Return actual and pricing-only chain costs without changing tech."""
+        actual = self.chain_cost(actor_name)
+        resolved = self.model.rs.resolve(actor_name)
+        if actual is None or resolved is None:
+            return {"status": "UNRESOLVED", "reason": "actor_or_chain_unresolved",
+                    "chain_cost": actual, "pricing_chain_cost": None}
+        return promotion_price_context(
+            actual,
+            self.model.positive_prereqs(resolved),
+            self.promotion_depths(),
+            per_tier,
+        )
 
     def tier_for_actor(self, design_tech_tier, derived_multiplier, default: float = 1.0) -> float:
         return effective_tier(design_tech_tier, derived_multiplier, default)

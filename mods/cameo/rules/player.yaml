@@ -215,6 +215,8 @@ Player:
 	ProvidesRadar:
 		RequiresCondition: freeminimap
 	PlayerStatistics:
+	CombatEffectivenessStatistics:
+	AiMatchLogRecorder:
 	FrozenActorLayer:
 	PlaceBeacon:
 	ProvidesTechPrerequisite@none:
@@ -240,6 +242,9 @@ Player:
 	RangedGpsWatcher:
 	TeleportNetworkManager:
 		Type: nydus
+	# One bot-insurance state machine per player. Humans are ignored by the trait;
+	# the legacy construction-yard ladder remains removed from ^AIConyardCash.
+	DynamicBotInsurance:
 	GrantConditionOnPrerequisite@enable-secondaryinsurance:
 		Condition: nobase
 		Prerequisites: !conyard
@@ -251,7 +256,9 @@ Player:
 		Interval: 1
 		Amount: 1
 		ShowTicks: False
-		RequiresCondition: secondaryinsurance && nobase
+		# DynamicBotInsurance already follows supported bots after their last conyard is lost.
+		# Keep this legacy fallback only for humans and bot types outside its difficulty list.
+		RequiresCondition: secondaryinsurance && nobase && !genericbot
 	GrantConditionOnPlayerTotalCash:
 		Condition: nocomeback
 		Threshold: 999
@@ -318,7 +325,6 @@ Player:
 		SpeedUp: True
 		InfiniteBuildLimit: 10
 	ClassicProductionQueue@DEFENCE:
-		Inherits@BuildTime: ^StandardBuildTimeSpeedReduction
 		Type: RADefence
 		DisplayOrder: 1
 		Group: Defence
@@ -333,7 +339,6 @@ Player:
 		SpeedUp: True
 		InfiniteBuildLimit: 10
 	ClassicProductionQueue@INFANTRY:
-		Inherits@BuildTime: ^StandardBuildTimeSpeedReduction
 		Type: RAInfantry
 		DisplayOrder: 2
 		Group: Infantry
@@ -347,7 +352,6 @@ Player:
 		SpeedUp: True
 		InfiniteBuildLimit: 10
 	ClassicProductionQueue@VEHICLE:
-		Inherits@BuildTime: ^StandardBuildTimeSpeedReduction
 		Type: RAVehicle
 		DisplayOrder: 3
 		Group: Vehicle
@@ -361,7 +365,6 @@ Player:
 		SpeedUp: True
 		InfiniteBuildLimit: 10
 	ClassicProductionQueue@AIRCRAFT:
-		Inherits@BuildTime: ^StandardBuildTimeSpeedReduction
 		Type: RAAircraft
 		DisplayOrder: 4
 		Group: Aircraft
@@ -375,7 +378,6 @@ Player:
 		SpeedUp: True
 		InfiniteBuildLimit: 10
 	ClassicProductionQueue@NAVAL:
-		Inherits@BuildTime: ^StandardBuildTimeSpeedReduction
 		Type: RANaval
 		DisplayOrder: 5
 		Group: Ship
@@ -404,7 +406,6 @@ Player:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 	ClassicProductionQueue@BuildingAddons:
-		Inherits@BuildTime: ^StandardBuildTimeSpeedReduction
 		Type: BuildingAddons
 		DisplayOrder: 11
 		Group: Addon
@@ -417,7 +418,6 @@ Player:
 		CancelledAudio: Cancelled
 	ClassicProductionQueue@UPGRADES:
 		Inherits@AlwaysShow: ^AlwaysShowForFactionsList
-		Inherits@BuildTime: ^StandardBuildTimeSpeedReduction
 		Type: Upgrades
 		DisplayOrder: 11
 		Group: Upgrade
@@ -429,8 +429,6 @@ Player:
 		OnHoldAudio: OnHold
 		CancelledAudio: Cancelled
 	ClassicProductionQueue@RESEARCH:
-		Inherits@AlwaysShow: ^AlwaysShowForFactionsList
-		Inherits@BuildTime: ^StandardBuildTimeSpeedReduction
 		Type: Research
 		DisplayOrder: 12
 		Group: Upgrade

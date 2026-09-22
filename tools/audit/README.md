@@ -46,7 +46,8 @@ suite can gate CI.
 | `audit_weapon_uniqueness.py` | §10 | actors sharing the same weapon (violates per-actor weapon ownership) |
 | `audit_garrison_weapons.py` | §11 | garrisonable actors missing garrison weapon overrides |
 | `audit_asset_files.py` | §1, §8 | asset filenames not matching actor id convention |
-| `audit_promotion_gating.py` | §15 | promotion units not strictly stronger than base |
+| `audit_promotion_gating.py` | §15 | promotion prerequisite wiring and construction-yard gates |
+| `audit_promotion_superiority.py` | §15 | authored replacement-pair inventory and static superiority comparison |
 | `audit_min_range.py` | §3 | weapons with range below minimum threshold |
 | `audit_basebuilder_crates.py` | B5 | crate action references to nonexistent actors |
 | `audit_buildable_order.py` | §5 | build palette ordering and tech tier inference |

@@ -43,10 +43,10 @@ import effective_damage as ed  # noqa: E402
 
 GROUPS = {
     "Tesla_Heavy": {
-        "KamovTesla", "KamovTeslaArc", "KamovTeslaArcFragment1",
-        "KamovTeslaArcFragment2", "YakTeslaGun", "YakTeslaGunArc",
-        "YakTeslaArcFragment1", "YakTeslaArcFragment2", "TeslaMaverick",
-        "TeslaMaverickFragment1", "TeslaMaverickFragment2",
+        "ra1_soviets_kamovattackhelicopter_kamovtesla", "ra1_soviets_kamovattackhelicopter_kamovteslaarc", "ra1_soviets_kamovattackhelicopter_kamovteslaarcfragment1",
+        "ra1_soviets_kamovattackhelicopter_kamovteslaarcfragment2", "ra1_soviets_teslayak_yakteslagun", "ra1_soviets_teslayak_yakteslagunarc",
+        "ra1_soviets_teslayak_yakteslaarcfragment1", "ra1_soviets_teslayak_yakteslaarcfragment2", "ra1_soviets_migattackbomber_teslamaverick",
+        "ra1_soviets_migattackbomber_teslamaverickfragment1", "ra1_soviets_migattackbomber_teslamaverickfragment2",
     },
     "Railgun_Heavy": {
         "OrionRailgun", "OrionRailgun_elite", "TS120mmRail", "TS120mmTalRail",
@@ -78,17 +78,17 @@ GROUPS = {
     },
     "MissileHE_Medium": {
         "CabalRocketCyborgRockets", "CabalRocketCyborgRocketsUpgraded",
-        "TSBikeMissile", "CommandoRocketLauncher", "RocketsRA",
+        "TSBikeMissile", "td_gdi_havoc_rocket", "RocketsRA",
     },
     "MissileAP_Heavy": {
-        "RocketsHumvee2AMT", "RocketsHumvee2AMT_AA", "NaxPlaneRockets_elite",
+        "td_gdi_humveemkii_rocketshumvee2amt", "td_gdi_humveemkii_rocketshumvee2amt_AA", "NaxPlaneRockets_elite",
         "NaxInterceptorRockets", "D2K_Rocket_Trooper", "AsianPelicanMissile",
         "AsianPelicanMissile_elite", "AsianSmallTorpedo", "FutureMicrotorpedos",
         "RA2TorpTube", "RA2TorpTube_elite", "YRBoomerTorpedo",
     },
     "CannonAP_Light": {"NaxiJadgDestroyer", "NaxiJadgDestroyer_elite"},
     "CannonHE_Heavy": {
-        "NaxBrummbarArty", "NaxBrummbarArty_elite", "RATurretGun",
+        "NaxBrummbarArty", "NaxBrummbarArty_elite", "ra1_allies_alliedgunturret_cannon",
         "TSRPGTower", "tkmtrenchcannon", "tkmtrenchdepcannon",
     },
     "Bullet_Medium": {
@@ -103,7 +103,7 @@ DESTINATION_OVERRIDES = {
     "RA2HoverMissile_AA_elite": "MissileAA_Light",
     "RA2MultiHoverMissile_AA": "MissileAA_Light",
     "RA2MultiHoverMissile_AA_elite": "MissileAA_Light",
-    "RocketsHumvee2AMT_AA": "MissileAA_Heavy",
+    "td_gdi_humveemkii_rocketshumvee2amt_AA": "MissileAA_Heavy",
 }
 SOURCE_OVERRIDES = {
     "D2K_APC_Rocket_AA": "MissileAP_Medium",
@@ -112,7 +112,7 @@ SOURCE_OVERRIDES = {
     "RA2HoverMissile_AA_elite": "MissileAP_Light",
     "RA2MultiHoverMissile_AA": "MissileHE_Light",
     "RA2MultiHoverMissile_AA_elite": "MissileHE_Light",
-    "RocketsHumvee2AMT_AA": "MissileAP_Heavy",
+    "td_gdi_humveemkii_rocketshumvee2amt_AA": "MissileAP_Heavy",
 }
 SELECTED = {
     name: DESTINATION_OVERRIDES.get(name, destination)

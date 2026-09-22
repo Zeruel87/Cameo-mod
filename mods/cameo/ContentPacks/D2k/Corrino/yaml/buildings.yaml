@@ -1,0 +1,306 @@
+corrino_constructionyard:
+	Inherits: ^ConstructionYard
+	Tooltip:
+		Name: Corrino Construction Yard
+	Transforms:
+		IntoActor: corrino_mobileconstructionvehicle
+		Offset: 1,1
+		Facing: 432
+	RenderSprites:
+		Image: conyard.harkonnen
+
+corrino_windtrap:
+	Inherits: ^WindTrap
+	Buildable:
+		Prerequisites: ~corrino_constructionyard
+		Description: Provides power to the base.
+	RenderSprites:
+		Image: power.harkonnen
+
+corrino_barracks:
+	Inherits: ^D2KBuilding
+	Inherits@UPGRADEABLE: ^D2kUpgradeable
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@ra1_soviets_barracks: ^IsBarrack
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Prerequisites: ~corrino_constructionyard, corrino_windtrap
+		Description: Trains infantry units.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Corrino Barracks
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 352,576,0
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 512,480,0
+		ExitCell: 1,2
+	RenderSprites:
+		Image: barracks.harkonnen
+	ProvidesPrerequisite@d2kbarracks:
+		Prerequisite: d2k_barracks
+	ProvidesPrerequisite@barracks:
+		Prerequisite: barracks
+	ProvidesPrerequisite@factionbarracks:
+		Prerequisite: corrino_barracks
+	-WithDeathAnimation:
+	SpawnActorOnDeath@death1:
+		Actor: light_inf
+	SpawnActorOnDeath@death2:
+		Actor: light_inf
+	FireProjectilesOnDeath:
+		Weapons: Debris2, Debris3
+		Pieces: 1, 2
+		Range: 1c512, 2c768
+
+corrino_refinery:
+	Inherits: ^D2KRefinery
+	Tooltip:
+		Name: Refinery
+	Buildable:
+		Prerequisites: ~corrino_constructionyard, corrino_windtrap
+		Description: Processes spice into credits.
+	FreeActor:
+		Actor: corrino_spiceharvester
+		SpawnOffset: 0,2
+		Facing: 160
+	FreeActorWithDelivery@1:
+		Actor: corrino_spiceharvester
+		DeliveryOffset: 2,2
+		DeliveringActor: carryall.reinforce
+		Facing: 160
+	RenderSprites:
+		Image: refinery.harkonnen
+
+corrino_storagesilo:
+	Inherits: ^D2KSilo
+	Buildable:
+		Prerequisites: ~corrino_constructionyard, corrino_refinery
+		Description: Stores excess spice.
+	RenderSprites:
+		Image: silo.harkonnen
+
+corrino_heavyfactory:
+	Inherits: ^HeavyFactory
+	Tooltip:
+		Name: Corrino Heavy Factory
+	RenderSprites:
+		Image: heavy.harkonnen
+	Buildable:
+		Prerequisites: ~corrino_constructionyard, corrino_refinery
+		Description: Produces heavy vehicles.
+		IconPalette: d2kunit
+	ProvidesPrerequisite@vehicle_production:
+		Prerequisite: corrino_vehicle_production
+	ProvidesPrerequisite@corrino_combat:
+		Prerequisite: heavy.corrino_combat
+	ProvidesPrerequisite@missile_tank:
+		Prerequisite: heavy.missile_tank
+	ProvidesPrerequisite@mcv_production:
+		Prerequisite: corrino_mcv_production
+
+corrino_lightfactory:
+	Inherits: ^D2KBuilding
+	Inherits@UPGRADEABLE: ^D2kUpgradeable
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^2x2Shape
+	Inherits@td_gdi_weaponsfactory: ^IsWeaponFactory
+	Buildable:
+		Prerequisites: ~corrino_constructionyard, corrino_refinery
+		Description: Produces light vehicles.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Corrino Light Factory
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RallyPoint:
+	Exit@1:
+		SpawnOffset: 352,576,0
+		ExitCell: 0,2
+	Exit@2:
+		SpawnOffset: 512,480,0
+		ExitCell: 1,2
+	RenderSprites:
+		Image: light.harkonnen
+	ProvidesPrerequisite@vehicle_production:
+		Prerequisite: corrino_light_vehicle_production
+	ProvidesPrerequisite@light:
+		Prerequisite: light.corrino
+	ProvidesPrerequisite@factionlight:
+		Prerequisite: corrino_lightfactory
+
+corrino_repairpad:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Prerequisites: ~corrino_heavyfactory
+		Description: Repairs vehicles.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Corrino Repair Pad
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: repair_pad.harkonnen
+	RepairsUnits:
+		FinishRepairingNotification: Repaired
+		StartRepairingNotification: Repairing
+	RallyPoint:
+
+corrino_outpost:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Prerequisites: ~corrino_constructionyard, corrino_refinery, corrino_barracks
+		Description: Provides radar and reveals terrain.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Corrino Outpost
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: outpost.harkonnen
+	ProvidesPrerequisite@outpost:
+		Prerequisite: outpost
+	DetectCloaked:
+		Range: 5c0
+	RevealsShroud:
+		Range: 8c0
+
+corrino_hightechfactory:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^3x2Shape
+	Buildable:
+		Prerequisites: ~corrino_heavyfactory
+		Description: Produces aircraft and provides tech upgrades.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Corrino High Tech Factory
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: hightech.harkonnen
+	ProvidesPrerequisite@hightech:
+		Prerequisite: hightech.corrino
+
+corrino_ixresearchcenter:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Prerequisites: ~corrino_heavyfactory
+		Description: Unlocks advanced technology.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Corrino Research Centre
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: research.harkonnen
+	ProvidesPrerequisite@research:
+		Prerequisite: research_centre
+
+corrino_starport:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^3x2Shape
+	Buildable:
+		Prerequisites: ~hightech.corrino, ~research_centre
+		Description: Orders units from orbit.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Corrino Starport
+	Building:
+		Footprint: xxx xxx ===
+		Dimensions: 3,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: starport.harkonnen
+	ProvidesPrerequisite@starport:
+		Prerequisite: starport.corrino
+
+corrino_palace:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^2x2Shape
+	Buildable:
+		Prerequisites: ~hightech.corrino, ~research_centre
+		Description: Unlocks superweapons and elite units.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Corrino Palace
+	Building:
+		Footprint: xx xx ==
+		Dimensions: 2,3
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: palace.harkonnen
+	ProvidesPrerequisite@palace:
+		Prerequisite: palace
+
+corrino_gunturret:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^1x1Shape
+	Buildable:
+		Prerequisites: ~corrino_constructionyard, corrino_barracks
+		Description: Anti-infantry defense turret.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Corrino Gun Turret
+	Building:
+		Footprint: x =
+		Dimensions: 1,2
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: gun_turret.harkonnen
+	Armament:
+		Weapon: 110mm_Gun
+	AttackTurreted:
+		FacingTolerance: 0
+	Turreted:
+		TurnSpeed: 80
+	WithSpriteTurret:
+
+corrino_rocketturret:
+	Inherits: ^D2KBuilding
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@shape: ^1x1Shape
+	Buildable:
+		Prerequisites: ~corrino_constructionyard, corrino_barracks
+		Description: Anti-vehicle rocket turret.
+		IconPalette: d2kunit
+	Tooltip:
+		Name: Corrino Rocket Turret
+	Building:
+		Footprint: x =
+		Dimensions: 1,2
+		LocalCenterOffset: 0,-512,0
+	RenderSprites:
+		Image: rocket_turret.harkonnen
+	Armament:
+		Weapon: D2K_TowerMissile
+	AttackTurreted:
+		FacingTolerance: 0
+	Turreted:
+		TurnSpeed: 80
+	WithSpriteTurret:
+

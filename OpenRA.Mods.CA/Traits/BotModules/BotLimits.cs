@@ -32,6 +32,8 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Prioritize the first barracks before the first refinery for configured factions.")]
 		public readonly bool PrioritizeBarracksBeforeRefinery = false;
 
+		public readonly bool AllowPersonalitySwitching = false;
+
 		public override object Create(ActorInitializer init) { return new BotLimits(init.Self, this); }
 	}
 

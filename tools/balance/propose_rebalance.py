@@ -19,6 +19,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/balance"))
 import formula  # noqa: E402
+from firepower import armament_firepower, priced_by_default
 
 LEDGER = ROOT / "docs/balance"
 
@@ -37,10 +38,8 @@ def unit_row(u):
     speed = fnum((u.get("speed") or {}).get("v") or (u.get("speed_air") or {}).get("v"))
     cost = fnum((u.get("cost") or {}).get("v"))
     d = u.get("design") or {}
-    fp_pct = fnum((u.get("firepower_multiplier") or {}).get("v"))
-    fp = (fp_pct / 100.0) if fp_pct is not None else 1.0
     total_dps, best_range = 0.0, 0.0
-    arms = [a for a in u.get("armaments", []) if a.get("pricing", True)]
+    arms = [a for a in u.get("armaments", []) if priced_by_default(a)]
     # Use the primary armament for pricing; fall back to the first pricing armament.
     primary = next((a for a in arms if a.get("slot") == "Armament@PRIMARY"), arms[0] if arms else None)
     if primary is not None:
@@ -49,20 +48,11 @@ def unit_row(u):
         best_range = formula.wdist_value(primary.get("range"), 0.0)
         if reload_:
             # Sum the main damage warheads; ignore chip ExtraDamage and Percentage warheads.
-            damage = 0.0
-            for w in primary.get("warheads", []):
-                if w.get("type") != "SpreadDamage":
-                    continue
-                tag = w.get("tag", "")
-                if tag.endswith("ExtraDamage") or tag.endswith("Percentage"):
-                    continue
-                dmg = fnum(w.get("damage"))
-                if dmg is not None:
-                    damage += dmg
+            damage = formula.spread_damage_sum(primary.get("damage_warheads", []))
             if damage:
                 total_dps = formula.dps(damage, reload_, burst,
                                         primary.get("burstdelays"),
-                                        firepower_multiplier=fp)
+                                        firepower_multiplier=armament_firepower(u, primary))
     return hp, speed, best_range, total_dps, cost, d
 
 

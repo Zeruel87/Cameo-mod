@@ -14,15 +14,15 @@ from miniyaml import Ruleset
 
 ROOTS = {
     "CabalAscendedRockets": ("MissileHE_Heavy", 30000, 6),
-    "CommandoGrenadeLauncher": ("Concussion_Medium", 40000, 2),
-    "MachineGunBuggy2": ("Bullet_Medium", 6000, 3),
+    "td_gdi_havoc_grenade": ("Concussion_Medium", 40000, 2),
+    "td_nod_buggymkii_machinegunbuggy2": ("Bullet_Medium", 6000, 3),
     "NanoArtilleryAG": ("Concussion_Heavy", 23331, 3),
     "155mm": ("Concussion_Heavy", 30000, 3),
-    "ChronoTusk": ("MissileHE_Heavy", 20000, 5),
-    "GDIRigPhalanx": ("Bullet_Medium", 24000, 6),
+    "ra1_allies_chronotank_missile": ("MissileHE_Heavy", 20000, 5),
+    "td_gdi_defenserig_gdirigphalanx": ("Bullet_Medium", 24000, 6),
     "HMG_Duelist": ("Bullet_Medium", 12000, 6),
     "HermitShoot": ("Concussion_Medium", 12000, 6),
-    "Nike": ("MissileHE_Heavy", 16000, 4),
+    "ra1_soviets_samsite_missile_AA": ("MissileHE_Heavy", 16000, 4),
     "PatriarchShoot": ("Concussion_Medium", 12000, 6),
     "SpithidSpit": ("Bullet_Light", 6000, 3),
     "ra120mm": ("CannonHE_Heavy", 24000, 4),
@@ -36,9 +36,9 @@ RETIRED = {
 }
 
 CLOSURE = tuple(ROOTS) + (
-    "155mmBastion", "155mmBastionCryo", "155mmCryo", "ArtilleryExplode",
-    "ChronoTuskCryo", "GDIRigPhalanxTower", "HermitShoot1", "HermitShoot2",
-    "HermitShoot3", "HermitShoot4", "MachineGunBuggy2_AA", "PatriarchShoot1",
+    "ra1_allies_bastionartillerybunker_155mmbastion", "ra1_allies_bastionartillerybunker_155mmbastioncryo", "155mmCryo", "ArtilleryExplode",
+    "ra1_allies_chronotank_missile_cryo", "td_gdi_defenserig_gdirigphalanxtower", "HermitShoot1", "HermitShoot2",
+    "HermitShoot3", "HermitShoot4", "td_nod_buggymkii_machinegunbuggy2_AA", "PatriarchShoot1",
     "PatriarchShoot2", "PatriarchShoot3", "PatriarchShoot4", "DT120mm",
     "DT120mm1", "ra120mmTargetingComputer", "ra120mmirak", "ragal120mm",
 )
@@ -74,13 +74,13 @@ class ProjectileRoleBulkProfileTests(unittest.TestCase):
             self.assertFalse(flats & RETIRED, f"{name}: {flats & RETIRED}")
 
     def test_commando_keeps_integrity_damage_separate(self):
-        weapon = self.rules.resolve_weapon("CommandoGrenadeLauncher")
+        weapon = self.rules.resolve_weapon("td_gdi_havoc_grenade")
         emp = child(weapon, "Warhead@EMPUnit")
         self.assertEqual("AffectsIntegrity", emp.value)
         self.assertEqual("20000", child(emp, "Damage").value)
 
     def test_nike_damage_is_air_only(self):
-        weapon = self.rules.resolve_weapon("Nike")
+        weapon = self.rules.resolve_weapon("ra1_soviets_samsite_missile_AA")
         main = child(weapon, "Warhead@MissileHE_Heavy")
         self.assertEqual("Air", child(main, "ValidTargets").value)
 
@@ -93,7 +93,7 @@ class ProjectileRoleBulkProfileTests(unittest.TestCase):
         self.assertEqual("6000", child(bonus, "Damage").value)
 
     def test_buggy_aa_child_has_functional_air_damage(self):
-        weapon = self.rules.resolve_weapon("MachineGunBuggy2_AA")
+        weapon = self.rules.resolve_weapon("td_nod_buggymkii_machinegunbuggy2_AA")
         main = child(weapon, "Warhead@Bullet_Medium")
         self.assertEqual("Air", child(main, "ValidTargets").value)
         self.assertEqual("6000", child(main, "Damage").value)

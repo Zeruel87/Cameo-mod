@@ -30,7 +30,7 @@ class WorkbookRoundTripTest(unittest.TestCase):
             "speed": {"v": "75"},
             "armor": {"v": "Heavy"},
             "cost": {"v": "900"},
-            "firepower_multiplier": {"v": "125"},
+            "firepower_multiplier": {"v": "1.25"},
             "design": {
                 "subtype": "MainBattleTank", "tech_tier": None,
                 "unit_class": 1.5, "special": 0.9,

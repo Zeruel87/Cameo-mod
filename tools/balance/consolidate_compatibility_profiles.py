@@ -33,9 +33,9 @@ from review_batch_diff import active_health_values  # noqa: E402
 # weapon: compatibility key, canonical key, old canonical damage,
 # old compatibility damage, folded damage
 SPECS = {
-    'TurretGunBlackMarket': ('Concussion_MediumFlatCompatibility', 'Concussion_Medium', 19000, 12000, 31000),
-    'ra120mm2': ('CannonHE_HeavyFlatCompatibility', 'CannonHE_Heavy', 16000, 32000, 48000),
-    'ReconRangerRecoillessGun': ('MissileAP_HeavyFlatCompatibility', 'MissileAP_Heavy', 4000, 29000, 33000),
+    'td_nod_gunturret_turretgunblackmarket': ('Concussion_MediumFlatCompatibility', 'Concussion_Medium', 19000, 12000, 31000),
+    'ra1_soviets_siegemammothtank_ra120mm2': ('CannonHE_HeavyFlatCompatibility', 'CannonHE_Heavy', 16000, 32000, 48000),
+    'ra1_allies_reconranger_recoillessgun': ('MissileAP_HeavyFlatCompatibility', 'MissileAP_Heavy', 4000, 29000, 33000),
     '25mm': ('CannonHE_MediumFlatCompatibility', 'CannonHE_Medium', 2000, 10000, 12000),
     'KodiakCannon': ('CannonHE_HeavyFlatCompatibility', 'CannonHE_Heavy', 8000, 32000, 40000),
     'TS70mmTurChem': ('CannonHE_MediumFlatCompatibility', 'CannonHE_Medium', 4000, 8000, 12000),
@@ -76,9 +76,9 @@ SPECS = {
 # preserves the now-live percentage result within one HP across all active health
 # values because of integer quantisation.
 PERCENTAGE_SCALES = {
-    'TurretGunBlackMarket': 0,
-    'ra120mm2': 3332,
-    'ReconRangerRecoillessGun': 1210,
+    'td_nod_gunturret_turretgunblackmarket': 0,
+    'ra1_soviets_siegemammothtank_ra120mm2': 3332,
+    'ra1_allies_reconranger_recoillessgun': 1210,
     '25mm': 1659,
     'KodiakCannon': 1998,
     'TS70mmTurChem': 3325,

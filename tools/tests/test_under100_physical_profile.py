@@ -10,43 +10,46 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools" / "audit"))
 
-import classify_remaining_weapons as classifier
+try:
+    import classify_remaining_weapons as classifier
+except ImportError:
+    classifier = None
 from miniyaml import Ruleset
 
 
 ROOTS = {
     "120mm_td", "25mm", "AsianLynxTankCannon", "CabalArtilleryWalkerShell",
-    "DiabloCannon", "FutureMechGatling", "LightTank2Cannon",
+    "DiabloCannon", "FutureMechGatling", "td_nod_lighttankmkii_lighttank2cannon",
     "MortarTeamArtilleryShell", "RA2APCFlakCannon", "RA2LasherCannon",
-    "ReconRangerRecoillessGun", "SteelCruiserCannons", "SteelTwisterMissiles",
-    "TS70mmTurChem", "TSScoopDualTurChem", "WhiteRabbitGatling", "ra120mm2",
+    "ra1_allies_reconranger_recoillessgun", "SteelCruiserCannons", "SteelTwisterMissiles",
+    "TS70mmTurChem", "TSScoopDualTurChem", "WhiteRabbitGatling", "ra1_soviets_siegemammothtank_ra120mm2",
     "CabalCommandoPlasma", "CabalCommandoPlasmaMk2", "CabalSubmarinePlasma",
-    "HeavyAATankCannontkm", "PlasmaFlamer", "SkyshieldCannon",
+    "HeavyAATankCannontkm", "PlasmaFlamer", "td_gdi_skyshield_skyshieldcannon",
     "TSDestroyerMissiles", "TSHoverMissile", "TSSAPCMissiles",
-    "ChemicalHonestJohn", "JapanSuperBomb", "MammothTusk2Thermobaric",
-    "MammothTuskThermobaric", "MonsterTankTuskThermobaric", "OrcaMissiles",
-    "TowerMissile", "TSBikeTibMissile", "TSHellfireTwin",
+    "td_nod_chemicalssmlauncher_chemicalhonestjohn", "JapanSuperBomb", "ra1_soviets_siegemammothtank_mammothtusk2thermobaric",
+    "MammothTuskThermobaric", "ra1_soviets_monstertank_missile_thermobaric", "td_gdi_orca_orcamissiles",
+    "td_gdi_advancedguardtower_towermissile", "TSBikeTibMissile", "TSHellfireTwin",
     "wc2mageBlizzard_Projectile",
-    "APTusk", "MammothTusk2", "MissileSoldierWeapon", "Naxis_Komet",
+    "ra1_allies_phasetransport_missile", "ra1_soviets_siegemammothtank_mammothtusk2", "td_gdi_sonicmissilesoldier_missilesoldierweapon", "Naxis_Komet",
     "Spore_AA", "wc2_tower_arrow",
-    "HindMissilesNuclear", "NaxiMeteor", "RA2TOPOLCuba",
-    "BehemothShoot", "DreadshroudSpore", "FirehawkBomb", "MutFlamerChem",
+    "ra1_soviets_hindattackhelicopter_hindmissilesnuclear", "NaxiMeteor", "RA2TOPOLCuba",
+    "BehemothShoot", "DreadshroudSpore", "td_gdi_firehawk_firehawkbomb", "MutFlamerChem",
     "MutHFlamerChem", "ShtoraLaser", "TS30mmRail",
     "TSCABALEnlightedLaser", "TSCABALObeliskLaserFire", "TSProton",
     "TankBusterBeamCannon",
     "AsianHarbingerPlasma", "AsianPulverizerMechaGatling", "AtreusMG",
     "CannonAttackRobotGun", "DeviatorMissile", "DeviatorMissile_Artillery",
     "EpigraphMG", "FutureMechPlasma", "GoliathMk2MG", "HMG_Duelist_upgrade",
-    "HindMissilesThermobaric", "IxRailgunDroneBullet", "KodiakCannon",
+    "ra1_soviets_hindattackhelicopter_hindmissilesthermobaric", "IxRailgunDroneBullet", "KodiakCannon",
     "Laboratory_Bioball", "MarauderMissiles", "NaxiInterceptorGun",
     "PhobosLaser", "RA2LarsRocket", "RA2PsychicJab", "RA2RBurritoRocket",
     "SCTyr", "ScarabLaunch", "SteelDaggerCannon", "SteelFighterRailgun",
-    "TSStankTibTusk", "ThermobaricMaverick", "WyvernRockets", "autogun_tank",
+    "TSStankTibTusk", "ra1_soviets_migattackbomber_thermobaricmaverick", "WyvernRockets", "autogun_tank",
     "facedancer_grenade", "ixian_airdrone", "wc2arrowFire",
     "wc2highArrowFire",
-    "ArcherArtilleryShell", "ArtilleryShellUpgrade", "BallistaMultiShot",
-    "BikeRockets", "D2K_155mm2", "SwarmlingShoot", "eye_bomberguy",
-    "v1rocketsThermobaric", "wc2_dwarf_Rifle", "wc2catapultFire",
+    "td_gdi_archerartillery_archerartilleryshell", "td_nod_artillery_artilleryshellupgrade", "BallistaMultiShot",
+    "td_nod_reconbike_rocket", "D2K_155mm2", "SwarmlingShoot", "eye_bomberguy",
+    "ra1_soviets_v1rockettruck_v1rocketsthermobaric", "wc2_dwarf_Rifle", "wc2catapultFire",
 }
 
 ALLOWED_COMPARATOR_FINDINGS = {
@@ -61,6 +64,8 @@ def child(node, key):
     return next((item for item in node.children if item.key == key), None)
 
 
+@unittest.skipIf(classifier is None,
+                 "classify_remaining_weapons.py was deleted 2026-09-06")
 class Under100PhysicalProfileTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -112,8 +117,8 @@ class Under100PhysicalProfileTests(unittest.TestCase):
 
     def test_missile_consolidations_follow_the_weapon_roles(self):
         expected = {
-            "HindMissilesThermobaric": "Thermobaric_MediumFlatCompatibility",
-            "ThermobaricMaverick": "Thermobaric_HeavyFlatCompatibility",
+            "ra1_soviets_hindattackhelicopter_hindmissilesthermobaric": "Thermobaric_MediumFlatCompatibility",
+            "ra1_soviets_migattackbomber_thermobaricmaverick": "Thermobaric_HeavyFlatCompatibility",
             "MarauderMissiles": "MissileAP_MediumFlatCompatibility",
             "RA2RBurritoRocket": "CannonHE_HeavyFlatCompatibility",
             "TSStankTibTusk": "MissileAP_MediumFlatCompatibility",

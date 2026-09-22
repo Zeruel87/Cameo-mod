@@ -27,6 +27,9 @@ GLOW_TIERS = {
 # Root effects whose impact art is intentionally explosive or emissive.
 # Descendant effect templates inherit the same classification.
 EMISSIVE_EFFECT_ROOTS = {
+	# Explicit faction compositions preserve the authored Apocalypse explosion.
+	"^Effect_Apoc_AP_RA2",
+	"^Effect_Apoc_Chem_RA2",
 	"^Effect_CannonAP_Light",
 	"^Effect_CannonAP_Medium",
 	"^Effect_CannonAP_Heavy",

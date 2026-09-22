@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "source": "Combined Arms",
+  "source_commit": "ab9e477c3db818e91946d4cfdc86e71012966141",
+  "source_path": "OpenRA.Mods.CA/Warheads/HealthPercentageSpreadDamageWarhead.cs",
+  "git_blob": "c337d6ef8e9d723628b978dda6f1cf63af1b932c",
+  "scope": "Reviewed authored max-HP clamp semantics for a future piecewise curve adapter; not implemented in the current affine-only consumer.",
+  "semantics": [
+    "The class inherits SpreadDamageWarhead and overrides InflictDamage.",
+    "It starts from HealthInfo.HP, caps at MaxReferenceHp when that value is positive, then floors at MinReferenceHp when that value is positive.",
+    "The clamped HP is multiplied by damage modifiers, authored Damage percent and inherited DamageVersus.",
+    "The source uses integer percentage application. Continuous coefficients describe nominal arithmetic only; actual hit truncation and splash modifiers remain separate."
+  ],
+  "retained_example": {
+    "cameo_actor": "td_gdi_empgrenadier",
+    "reference_weapon": "MarauderDiscs",
+    "damage_percent": 100,
+    "min_reference_hp": 30000,
+    "max_reference_hp": 60000,
+    "continuous_base_expression": "max(30000, min(H, 60000))",
+    "samples_before_armor_and_other_modifiers": [
+      {"target_max_hp": 10000, "damage": 30000},
+      {"target_max_hp": 45000, "damage": 45000},
+      {"target_max_hp": 100000, "damage": 60000}
+    ]
+  },
+  "next_implementation_constraint": "Do not mislabel this as one global A+B*H curve. Preserve a separate clamped-HP component or emit explicit piecewise intervals, and retain any other selected channels."
+}

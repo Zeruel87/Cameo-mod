@@ -9,6 +9,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
@@ -37,6 +38,9 @@ namespace OpenRA.Mods.CA.Traits
 
 		[Desc("Number of shots that can be fired after charging.")]
 		public readonly int ShotsPerCharge = 1;
+
+		[Desc("Armaments whose shots consume this turreted attack's charge. Omit this field for all armaments.")]
+		public readonly string[] ChargeConsumingArmaments = default;
 
 		[Desc("Charging sounds.")]
 		public readonly string[] ChargingSounds = null;
@@ -147,6 +151,9 @@ namespace OpenRA.Mods.CA.Traits
 		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
 		{
 			if (IsTraitDisabled || IsTraitPaused)
+				return;
+
+			if (Info.ChargeConsumingArmaments != null && !Info.ChargeConsumingArmaments.Contains(a.Info.Name))
 				return;
 
 			shotsFired++;

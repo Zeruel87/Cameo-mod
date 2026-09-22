@@ -26,6 +26,7 @@ Usage:  gen_weapon_template.py [family ...] | --list | --orders
 """
 from __future__ import annotations
 import json
+import os
 import math
 import pathlib
 import statistics
@@ -265,7 +266,7 @@ PHYSICS_RANK = {
     # blended energy — part field-coupling, part thermal
     "Waveforce": 0.70, "Plasma": 0.68,
     # exotic / field-adjacent
-    "Sonic": 0.60, "Magic": 0.58, "Inferno": 0.57, "Nuclear": 0.56, "MissileQuantum": 0.57, "MissileTesla": 0.66,
+    "Sonic": 0.60, "Magic": 0.58, "Inferno": 0.57, "Nuclear": 0.56, "MissileQuantum": 0.57, "MissileTesla": 0.66, "CannonTesla": 0.66,
     # Inferno = Flame×Prism heatray: thermo-led but still some field-coupling.
     # thermal / chemical — a shield stops heat and reagents well; little field coupling
     "CannonFire": 0.52, "MissileFire": 0.52, "Flame": 0.50, "CannonChem": 0.50, "CannonNuke": 0.45, "MissileNuke": 0.44,
@@ -278,6 +279,10 @@ PHYSICS_RANK = {
     # blend in this table. A bullet couples to a shield poorly (0.34), so each blend lands just
     # above Bullet by however much its payload couples.
     "BulletFire": 0.42, "BulletThermobaric": 0.39, "BulletHE": 0.35, "BulletTesla": 0.67,
+    "BulletSonic": (0.34 + 0.60) / 2,
+    "MissileSonic": (0.32 + 0.60) / 2,
+    "CannonSonic": (0.33 + 0.60) / 2,
+    "BlastSonic": (0.35 + 0.36 + 0.60) / 3,
     # physical contact — the canonical thing a shield stops
     "Arrow": 0.24, "Melee": 0.22,
 }
@@ -719,6 +724,32 @@ def table(order16, step, top, floor, shield):
     return rows
 
 
+def _untilted_main(name, order16, level, profile_family=None):
+    """The PRE-TILT main construction `family()` and the continuous-heaviness preview
+    share: the measured profile where the corpus has one, else the even ramp.
+
+    Extracted verbatim from `family()`'s standard branch — the continuous preview
+    reuses it so a base template cannot drift from how the levelled templates are
+    built. Nothing here may apply a tilt: `level_tilt` runs on TOP of this.
+    """
+    step, mfloor, _ptop = LEVELS[level]
+    return (reference_main(profile_family or name, order16, level)
+            or table(order16, step, 100, mfloor, 100 + mfloor))
+
+
+def _pct_table(order16, level):
+    """The percentage half's un-tilted 1-step ladder at `level` (see `family()`).
+
+    Its window is only 16 wide (`ptop` down to `ptop-15`), so 16 armors that must all
+    differ can only be the even ramp — PercentageScale supplies the magnitude. The
+    continuous preview emits this SAME formula at Light/Medium/Heavy as the L/M/H
+    percentage anchors the C# interpolates between.
+    """
+    _step, _mfloor, ptop = LEVELS[level]
+    pfloor = ptop - 15
+    return table(order16, 1, ptop, pfloor, ptop + pfloor)
+
+
 # --------------------------------------------------------------------------- #
 # W13 — MEASURED Versus profiles (the reference corpus), replacing the even ramp
 # --------------------------------------------------------------------------- #
@@ -966,6 +997,128 @@ def class_tilt(rows, level):
         if name in out and first in out and second in out and peak > 0:
             out[name] = out[first] * out[second] / peak
     return [(a, out[a]) for a, _ in rows]
+
+
+# --------------------------------------------------------------------------- #
+# §12.0i — THE CONTINUOUS-HEAVINESS BELL (maintainer 2026-08-23/24)
+# --------------------------------------------------------------------------- #
+# The continuous successor to `class_tilt` above. DESIGN §12.0i is binding and holds the
+# derivation; this is the implementation, and it is OFF until the maintainer authorises the
+# regeneration (rule 4 — a warhead's Versus may not change without explicit permission).
+#
+#     x(armor)      = ONE GLOBAL 13-slot scale, 0..2, step 1/6
+#     mu(family, h) = ( h + centre_of_mass(base_profile) ) / 2
+#     curve(x)      = BELL_LO + (1 - BELL_LO) * exp( -(x - mu)^2 / (2 * BELL_SIGMA^2) )
+#     out(a)        = base(a) * curve(x(a))   then renormalised, then RANK-RESTORED per ladder
+#
+# ⭐ EVERY LADDER IS CENTRED EXACTLY ON 1.000 — VEH width 2.000, INF 1.667, AIR 1.333,
+# BLD 0.667 — so h = 0 / 1 / 2 is the lightest / middle / heaviest rung of every ladder at
+# once, which is what makes this a drop-in successor to `tilt_exponent`'s ramp/tent.
+#
+# ⛔ THE THREE-WAY TIE AT 1.0 IS DELIBERATE AND IS THE ONLY TIE. Flak, Medium and Steel sit
+# in three DIFFERENT ladders, and the rank restore is per-ladder, so they are never in
+# competition: de-tying them moves no row by more than 0.89%. A tie WITHIN one ladder stays
+# forbidden — that was the retired bucket axis, where Bomber and Helicopter shared a
+# coordinate and heaviness could not tell them apart at all.
+BELL_AXIS_ORDER = [["Scout"], ["None"], ["Fighter"], ["Light"], ["Wood"], ["Bomber"],
+                   ["Medium", "Flak", "Steel"],
+                   ["Helicopter"], ["Concrete"], ["Heavy"], ["Spaceship"], ["Plate"],
+                   ["Superheavy"]]
+BELL_AXIS = {a: i * 2.0 / (len(BELL_AXIS_ORDER) - 1)
+             for i, slot in enumerate(BELL_AXIS_ORDER) for a in slot}
+# `LO` = 1/TILT_RATIO on purpose: the bell must span the SAME 1.5x the discrete tilt already
+# spans, or collapsing three templates into one flattens the game. 0.80 was ruled on
+# 2026-08-23 against a peak that moved only 0.25 and was re-ruled on 2026-08-24.
+BELL_LO = 1.0 / TILT_RATIO
+BELL_SIGMA = 0.75
+# Which `h` each discrete level maps to, so the bell can reproduce today's templates.
+# `Trace` tilts with Light exactly as `tilt_exponent` has it. ⚠ `Super` is NOT a point on the
+# bell: §12.0d makes it the FLAT generalist, which no value of `h` produces — it keeps
+# `class_tilt`'s SUPER_RATIO compression instead.
+BELL_H = {"Light": 0.0, "Trace": 0.0, "Medium": 1.0, "Heavy": 2.0}
+
+
+def bell_centre_of_mass(vals):
+    """Where on the 0..2 axis a profile's strength sits, weighted by its own Versus."""
+    pairs = [(BELL_AXIS[a], v) for a, v in vals.items() if a in BELL_AXIS and v > 0]
+    total = sum(v for _x, v in pairs)
+    return sum(x * v for x, v in pairs) / total if total else None
+
+
+def heaviness_bell(rows, level):
+    """`class_tilt`'s continuous successor. Same signature, same guarantees.
+
+    Identical in every structural respect: the derived armors are excluded, `Super` is
+    flattened rather than tilted, each ladder's rank is restored afterwards, and `Heroic` /
+    `Airborne` are re-derived LAST from the finished profile.
+    """
+    vals = dict(rows)
+    live = [v for a, v in rows if a not in NON_ARMOR_ROWS]
+    if not live or max(live) <= min(live):
+        return rows          # Sonic / Magic are flat BY DESIGN; a bell would destroy that
+    out = dict(vals)
+
+    h = BELL_H.get(level)
+    if h is not None:
+        tiltable = {a: v for a, v in vals.items()
+                    if a in BELL_AXIS and a not in DERIVED_ARMORS}
+        com = bell_centre_of_mass(tiltable)
+        if com is not None:
+            mu = (h + com) / 2.0
+            belled = {a: v * (BELL_LO + (1 - BELL_LO)
+                              * math.exp(-((BELL_AXIS[a] - mu) ** 2) / (2 * BELL_SIGMA ** 2)))
+                      for a, v in tiltable.items()}
+            # Renormalise so heaviness redistributes and never inflates (§12.0i law 2). The
+            # mean is re-pinned by `mean_normalise` later, but doing it here keeps the
+            # rank-restore step reading comparable magnitudes.
+            before = statistics.fmean(tiltable.values())
+            after = statistics.fmean(belled.values())
+            if after > 0:
+                belled = {a: v * before / after for a, v in belled.items()}
+            # ⛔ THE RANK RESTORE (§12.0d, §12.0i law 5) — give each armor back the rank it
+            # held. Without it the bell changes a ladder's internal order in 127 cases across
+            # 60 family/ladder pairs; with it, zero. It permutes values inside one ladder, so
+            # the multiset and therefore the mean are untouched.
+            for ladder in LADDERS.values():
+                rungs = [a for a in ladder if a in belled]
+                if len(rungs) < 2:
+                    continue
+                order = sorted(range(len(rungs)), key=lambda i: (-vals[rungs[i]], i))
+                ranked = sorted((belled[a] for a in rungs), reverse=True)
+                for slot, i in enumerate(order):
+                    out[rungs[i]] = ranked[slot]
+
+    if level == "Super":
+        # The generalist: compress toward the band's flat end about the geometric mean.
+        # Unchanged from `class_tilt` — no `h` makes a bell flat.
+        body = [v for a, v in out.items() if a not in NON_ARMOR_ROWS and v > 0]
+        lo, hi = min(body), max(body)
+        if lo > 0 and hi / lo > SUPER_RATIO:
+            g = statistics.geometric_mean(body)
+            alpha = math.log(SUPER_RATIO) / math.log(hi / lo)
+            out = {a: (v if a in NON_ARMOR_ROWS else g * (max(v, 1.0) / g) ** alpha)
+                   for a, v in out.items()}
+
+    # Re-derive the products LAST, from the finished profile (§12.0b).
+    peak = max(v for a, v in out.items()
+               if a not in NON_ARMOR_ROWS and a not in DERIVED_ARMORS)
+    for name, (first, second) in (("Heroic", ("Plate", "Scout")),
+                                  ("Airborne", ("Helicopter", "Scout"))):
+        if name in out and first in out and second in out and peak > 0:
+            out[name] = out[first] * out[second] / peak
+    return [(a, out[a]) for a, _ in rows]
+
+
+# ⚠ OFF BY DEFAULT, and it must stay off until the maintainer authorises the regeneration:
+# switching it rewrites the `Versus` of every `^Warhead_*` template, which CLAUDE.md rule 4
+# forbids without explicit permission. `tools/balance/preview_bell.py` measures exactly what
+# would change without writing a byte of yaml.
+USE_BELL = os.environ.get("CAMEO_HEAVINESS_BELL") == "1"
+
+
+def level_tilt(rows, level):
+    """The single call site's entry point: the ruled bell, or today's discrete tilt."""
+    return heaviness_bell(rows, level) if USE_BELL else class_tilt(rows, level)
 
 
 def _powerlaw(vals, alpha):
@@ -1295,6 +1448,76 @@ def valid_targets(hits_air, ground_only=False):
     return "Ground" if ground_only else "Ground, Water"
 
 
+def emit_main_warhead(tag, vt, main, *, damage, falloff, spread, damage_types,
+                      reload, rng, invalid=None, pre_fold=(), pct_bands=(),
+                      heaviness=None, percent_scale=10000, heaviness_mode="Legacy"):
+    """The MAIN-warhead node lines, shared by `family()` and the continuous-heaviness
+    preview so the preview cannot drift from the legacy scaffold.
+
+    `pct_bands` is [(field name, rows)]: `family()` passes the single folded
+    PercentageVersus; the LEGACY continuous preview appends the
+    PercentageVersusLight/Heavy endpoint tables after it (the C# rejects anchors
+    whose key set differs, and rejects ANY anchors when Heaviness is disabled —
+    so the table is always emitted together with an active `Heaviness: h * 1000`).
+    `pre_fold` carries the PhysicalStates / IntegrityScale lines `family()` computes;
+    they sit between DamageTypes and the percentage fold, where they always sat.
+    `heaviness=None` (the legacy levelled templates) omits the scalar — omitted
+    MEANS the disabled sentinel in AreaDamageWarhead.cs, so absence stays legal.
+    `heaviness_mode="SharedVersus"` implements continuous heaviness (§12.0i), with
+    the shared Versus extension approved by Aedis (2026-09-10 03:17):
+    the percentage half follows the SAME belled table as the
+    flat half, so `pct_bands` MUST be empty there (the C# rejects any
+    PercentageVersus* table in that mode) and `percent_scale` carries the family's
+    magnitude dial (CannonAP ships 2000 — Damage 100 -> 0.01% max HP before h/2
+    and armor).
+    """
+    inv_weapon = [f"\tInvalidTargets: {invalid}"] if invalid else []
+    inv_warhead = [f"\t\tInvalidTargets: {invalid}"] if invalid else []
+    main_wh = [f"^Warhead_{tag}:",
+         f"\tValidTargets: {vt}",
+         *inv_weapon,
+         f"\tReloadDelay: {reload}",
+         f"\tRange: {rng}",
+         f"\tTargetActorCenter: true",
+         f"\tWarhead@{tag}: AreaDamage",
+         f"\t\tValidRelationships: Ally, Neutral, Enemy",
+         f"\t\tFriendlyFireDamage: 50",
+         f"\t\tFriendlyFireSpread: 50",
+         f"\t\tValidTargets: {vt}",
+         *inv_warhead,
+         f"\t\tSpread: {spread}",
+         f"\t\tDamage: {damage}",
+         f"\t\tFalloff: {falloff}"]
+    if heaviness is not None:
+        main_wh.append(f"\t\tHeaviness: {heaviness}")
+        if heaviness_mode != "Legacy":
+            main_wh.append(f"\t\tHeavinessMode: {heaviness_mode}")
+    main_wh += [f"\t\tVersus:",
+         emit_versus(main),
+         f"\t\tDamageTypes: {damage_types}",
+         *pre_fold]
+    # ⭐ THE FOLD (UNIFIED_AREADAMAGE_WARHEAD.md). The percentage half is no longer a second
+    # warhead — it is four fields on the main one, so an inline weapon carries ONE Damage
+    # number and the percentage follows from it instead of being hand-typed alongside and
+    # drifting. Measured before the change: 2287 of 2469 twins were already exactly
+    # `main // 100`, and the 182 that were not drifted by clean fractions (x0.5, x0.25,
+    # x0.2, x2) — i.e. deliberate per-weapon dials, which is what PercentageScale is.
+    #
+    # ⚠ NO x5 on these Versus values. W18 multiplied the standalone twin's band by 5 to pair
+    # with `Damage = flat // 100`; the fold derives its own basis points as
+    # `Damage x PercentageScale / 200000`, which already carries that factor. (D/100)x5V is
+    # (D/20)xV, so PercentageVersus stays in the natural band.
+    #
+    # IntegrityScale, PhysicalStateName/Scale and PhysicalStates already sit on the main
+    # warhead and AreaDamageWarhead.InflictPercentage applies them to the percentage hit
+    # too, so the twin's copies of all three are simply no longer needed.
+    main_wh += [f"\t\tPercentageScale: {percent_scale}",
+                "\t\tPercentageSpread: 50"]
+    for key, rows in pct_bands:
+        main_wh += [f"\t\t{key}:", emit_versus(rows)]
+    return main_wh
+
+
 # Damage falloff profiles (maintainer 2026-08-11): 6-wide, ALL end in 0 so damage reaches 0 at the
 # outer ring. One profile per level (Light/Medium/Heavy/Super); higher tiers fall off STEEPER (more
 # concentrated). Radius = (len-1) x Spread; damage LERPs between points. Per-family overrides below.
@@ -1336,26 +1559,23 @@ def family(name, order16, vt, levels, *, mode=None, damage=2000,
             pct = [("Shield", pv)] + [(a, pv) for a in allr]
             hz = None
         else:                                    # standard sloped profile
-            step, mfloor, ptop = LEVELS[level]
-            pfloor = ptop - 15
             # Measured profile if the corpus has one, otherwise the even ramp.
             # `profile_family` lets an INHERITING family (Cryo, Inferno) read its
             # PARENT's measured profile — the whole premise of those families is
             # that they reuse the parent's ladder and only add a PhysicalState, so
             # looking the profile up under their own name silently fell through to
             # the even ramp and split them off from the parent they inherit.
-            main = (reference_main(profile_family or name, order16, level)
-                    or table(order16, step, 100, mfloor, 100 + mfloor))
+            main = _untilted_main(name, order16, level, profile_family)
             # PercentageVersus stays the 1-step ladder, deliberately. Its window is only
             # 16 wide (`ptop` down to `ptop-15`), so 16 armors that must all differ
             # can only be the even ramp — there is no room left for a second shape.
             # PercentageScale supplies the magnitude; this table carries the armor order.
-            pct = table(order16, 1, ptop, pfloor, ptop + pfloor)
+            pct = _pct_table(order16, level)
             hz = overlays
         # W25 S2 — the class tilt, BEFORE the mean is pinned: the tilt moves output between
         # armors and would otherwise leave the mean off 100. Order-preserving by
         # construction (see class_tilt), so the two-level ordering law is untouched.
-        main = class_tilt(main, level)
+        main = level_tilt(main, level)
         # DESIGN 12.0 rule 5 — the 2x band floor, applied to EVERY family and AFTER the tilt.
         # See fit_band_floor: the blend-only copy inside finish_blend missed CannonAP entirely
         # and let the tilt undo it for Cryo.
@@ -1398,60 +1618,28 @@ def family(name, order16, vt, levels, *, mode=None, damage=2000,
         main_spread = at(spreads, li) if spreads else ENERGY_THIN_SPREAD_LEVEL.get(
             (name, level), ENERGY_THIN_SPREAD.get(name, 400))
         invalid = FAMILY_INVALID_TARGETS.get(name)
-        inv_weapon = [f"\tInvalidTargets: {invalid}"] if invalid else []
-        inv_warhead = [f"\t\tInvalidTargets: {invalid}"] if invalid else []
-        main_wh = [f"^Warhead_{tag}:",
-             f"\tValidTargets: {vt}",
-             *inv_weapon,
-             f"\tReloadDelay: {reload}",
-             f"\tRange: {rng}",
-             f"\tTargetActorCenter: true",
-             f"\tWarhead@{tag}: AreaDamage",
-             f"\t\tValidRelationships: Ally, Neutral, Enemy",
-             f"\t\tFriendlyFireDamage: 50",
-             f"\t\tFriendlyFireSpread: 50",
-             f"\t\tValidTargets: {vt}",
-             *inv_warhead,
-             f"\t\tSpread: {main_spread}",
-             f"\t\tDamage: {damage}",
-             f"\t\tFalloff: {at(falloffs, li)}",
-             f"\t\tVersus:",
-             emit_versus(main),
-             f"\t\tDamageTypes: {damage_types}"]
+        # The meter / integrity lines are computed exactly where they used to be appended —
+        # `emit_main_warhead` inserts them between DamageTypes and the percentage fold.
+        pre_fold: list[str] = []
         if name in FAMILY_PHYSICAL_STATE:  # heat/cold/corrosion meter, scaled by main damage
             ps = FAMILY_PHYSICAL_STATE[name]
             if isinstance(ps, dict):
-                main_wh.append("\t\tPhysicalStates:")
-                main_wh += [f"\t\t\t{k}: {v}" for k, v in _physical_states_for_level(ps, level).items()]
+                pre_fold.append("\t\tPhysicalStates:")
+                pre_fold += [f"\t\t\t{k}: {v}" for k, v in _physical_states_for_level(ps, level).items()]
             else:
                 psn, pss = ps
-                main_wh += [f"\t\tPhysicalStateName: {psn}", f"\t\tPhysicalStateScale: {pss}"]
+                pre_fold += [f"\t\tPhysicalStateName: {psn}", f"\t\tPhysicalStateScale: {pss}"]
         if physical_states:  # multi-state blend (e.g. Plasma: Temperature 50 + Corrosion 50)
             resolved = _physical_states_for_level(physical_states, level)
-            main_wh.append("\t\tPhysicalStates:")
-            main_wh += [f"\t\t\t{k}: {v}" for k, v in resolved.items()]
+            pre_fold.append("\t\tPhysicalStates:")
+            pre_fold += [f"\t\t\t{k}: {v}" for k, v in resolved.items()]
         integ = FAMILY_INTEGRITY_SCALE.get(name)  # ELECTRONICS (EMP) auto-drain — NOT a shield
         if integ:
-            main_wh.append(f"\t\tIntegrityScale: {integ}")
-        # ⭐ THE FOLD (UNIFIED_AREADAMAGE_WARHEAD.md). The percentage half is no longer a second
-        # warhead — it is four fields on the main one, so an inline weapon carries ONE Damage
-        # number and the percentage follows from it instead of being hand-typed alongside and
-        # drifting. Measured before the change: 2287 of 2469 twins were already exactly
-        # `main // 100`, and the 182 that were not drifted by clean fractions (x0.5, x0.25,
-        # x0.2, x2) — i.e. deliberate per-weapon dials, which is what PercentageScale is.
-        #
-        # ⚠ NO x5 on these Versus values. W18 multiplied the standalone twin's band by 5 to pair
-        # with `Damage = flat // 100`; the fold derives its own basis points as
-        # `Damage x PercentageScale / 200000`, which already carries that factor. (D/100)x5V is
-        # (D/20)xV, so PercentageVersus stays in the natural band.
-        #
-        # IntegrityScale, PhysicalStateName/Scale and PhysicalStates already sit on the main
-        # warhead and AreaDamageWarhead.InflictPercentage applies them to the percentage hit
-        # too, so the twin's copies of all three are simply no longer needed.
-        main_wh += [f"		PercentageScale: 10000",
-                    f"		PercentageSpread: 50",
-                    f"		PercentageVersus:",
-                    emit_versus(pct)]
+            pre_fold.append(f"\t\tIntegrityScale: {integ}")
+        main_wh = emit_main_warhead(
+            tag, vt, main, damage=damage, falloff=at(falloffs, li), spread=main_spread,
+            damage_types=damage_types, reload=reload, rng=rng, invalid=invalid,
+            pre_fold=pre_fold, pct_bands=[("PercentageVersus", pct)])
         parts = main_wh
         if name in CHIPS:  # paid-for ExtraDamage chip (energy families only)
             parts.append(emit_chip(tag, name, damage, vt, level=level))
@@ -1728,6 +1916,7 @@ FAMILY_INTEGRITY_SCALE = {
     "Storm": 50,                          # Tesla+Magic -> 1/2
     "Quantum": 33,                        # Railgun+Laser+Tesla -> 1/3
     "MissileTesla": 50,                   # Tesla + MissileAP -> 1/2
+    "CannonTesla": 50,                    # Tesla + CannonAP -> 1/2
     "BulletTesla": 50,                    # Tesla + Bullet -> 1/2
     "MissileQuantum": 17,                 # (Railgun+Laser+Tesla) + 3xMissileAP -> 1/6 Tesla
     # ⚠ `Waveforce: 20` DELETED 2026-08-16 (maintainer order) — it could never fire.
@@ -1762,6 +1951,7 @@ FAMILY_DAMAGE_TYPES = {
     "CannonFire":    "Prone75Percent, TriggerProne, FireDeath, Incendiary",
     "MissileFire":    "Prone75Percent, TriggerProne, FireDeath, Incendiary",
     "MissileTesla":   "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
+    "CannonTesla":   "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
     "BulletFire":     "Prone75Percent, TriggerProne, FireDeath, Incendiary",
     "BulletThermobaric": "Prone75Percent, TriggerProne, FireDeath, Incendiary",
     "BulletTesla":    "Prone75Percent, TriggerProne, ElectricityDeath, Tesla",
@@ -1769,6 +1959,7 @@ FAMILY_DAMAGE_TYPES = {
     "MissileThermobaric": "Prone75Percent, TriggerProne, FireDeath, Incendiary",
     "CannonChem": "Prone75Percent, TriggerProne, TiberiumDeath",
     "MissileChem":"Prone75Percent, TriggerProne, TiberiumDeath",
+    "BulletChem": "Prone75Percent, TriggerProne, TiberiumDeath",
     # Storm is handled at its own call site (Prone100Percent + Tesla).
 }
 
@@ -1782,6 +1973,10 @@ FAMILY_DAMAGE_TYPES = {
 # {family: (condition, duration_x_reload, range_x_spread)}
 FAMILY_CONDITION = {
     "Sonic": ("SonicDebuff", 2, 2),
+    "BulletSonic": ("SonicDebuff", 2, 2),
+    "MissileSonic": ("SonicDebuff", 2, 2),
+    "CannonSonic": ("SonicDebuff", 2, 2),
+    "BlastSonic": ("SonicDebuff", 2, 2),
 }
 
 # Per-family InvalidTargets, emitted on the weapon AND its damaging warheads.
@@ -1827,6 +2022,13 @@ def emit_inherit_family(name, parent, psn, pss, levels):
 # multi-state. Plasma = Flame x Chemical Versus + Temperature 150 + Corrosion 150 ("as close as possible
 # to the flame + chemical combo"). {name: (parents, {StateName: Scale}, levels)}.
 BLEND_FAMILIES = {
+    # Aedis 2026-09-10: delivery-specific Sonic combinations. Status remains
+    # additional to direct damage; it is not a PhysicalState meter to average.
+    "BulletSonic": (["Bullet", "Sonic"], None, L3),
+    "MissileSonic": (["MissileAP", "Sonic"], None, L3),
+    "CannonSonic": (["CannonHE", "Sonic"], None, L3),
+    # Aedis 17:38 resolves grenade delivery explicitly, like CryoBlast.
+    "BlastSonic": (["Demolition", "Concussion", "Sonic"], None, L3),
     "Plasma": (["Flame", "Chemical"], {"Temperature": _m(0.50), "Corrosion": _m(0.50)}, L3),
     # Thermobaric = fuel-air incendiary blast: the per-armor AVERAGE of Demolition + Concussion +
     # Flame ("demolition + concussion + fire"). Heat = Flame 300 / 3 parents = 100 (per-parent-average
@@ -1875,6 +2077,21 @@ BLEND_FAMILIES = {
     "BulletThermobaric": (["Bullet", "Bullet", "Bullet", "Demolition", "Concussion", "Flame"],
                           {"Temperature": _m(1 / 6)}, L3),
     "BulletTesla": (["Bullet", "Tesla"],      None, L3),
+    # BulletChem = Bullet x Chemical (maintainer 2026-09-02, for the Hydralisk W24 collapse):
+    # "a new BulletChem that is like Bullet x Chemical so it's more similar to what it was
+    # before but more damage against infantry and aircraft with a little bit damage against
+    # tanks from the chemical side". It is the BULLET delivery member of the element+delivery
+    # Chem set, alongside CannonChem and MissileChem, and it exists because HydraSpit stacked
+    # ^SmallArms (Bullet) + ^LightChemicalWeapon + ^LightMissile + ^ArrowWeapon: no single
+    # existing family reproduces a corrosive small-arms round, so collapsing it to plain
+    # Chemical moved every ground matchup (see docs/design/W24_COLLAPSE_REVIEW.md).
+    # Corrosion follows the CHEM convention, not the Bullet-blend one. CannonChem and
+    # MissileChem ramp {Light 20, Medium 33, Heavy 50}; the Bullet blends use the flat
+    # per-parent average _m(0.50) = 50. The two AGREE at Heavy (Chemical 100 over 2
+    # parents), so the ramp is the same rule with a level curve, and being the third member
+    # of the Chem set outranks being the fifth member of the Bullet set.
+    "BulletChem":  (["Bullet", "Chemical"],
+                    {"Corrosion": {"Light": 20, "Medium": 33, "Heavy": 50}}, L3),
     "Waveforce": (["Flame", "Chemical", "Railgun", "Laser", "Tesla"],
                   {"Temperature": _m(0.35), "Corrosion": _m(0.20)}, L3),
     # PhotonCannon = the maintainer's 3-way — Waveforce 25% / CannonHE 25% / MissileAA 50% — and
@@ -1915,6 +2132,7 @@ BLEND_FAMILIES = {
     "MissileNuke":  (["Nuclear", "MissileAP"], {}, L3),
     # Tesla/Quantum thermobaric missile blends (A1b). Expanded to primitives for the generator.
     "MissileTesla":   (["Tesla", "MissileAP"], {}, L3),
+    "CannonTesla":    (["Tesla", "CannonAP"], {}, L3),
     "MissileQuantum": (["Railgun", "Laser", "Tesla"] + ["MissileAP"] * 3, {"Temperature": _m(0.125)}, L3),
     "MissileThermobaric": (["Demolition", "Concussion", "Flame"] + ["MissileHE"] * 3, {"Temperature": _m(0.17)}, L3),
     "Cryo": (["Laser", "Prism"], {}, L3),
@@ -1984,7 +2202,7 @@ BLEND_FAMILIES = {
     # Carries the cryo weapons whose delivery IS the explosion — `RapierBombsCryo` (a pure
     # `Demolition_Heavy` today), and the `155mmBastionCryo` / `155mmCryo` artillery shells.
     # Meter: Cryo's -200 over 3 top-level halves = -67, the Thermobaric derivation exactly.
-    "CryoBlast": (["Laser", "Prism", "Demolition", "Demolition", "Concussion", "Concussion"],
+    "BlastCryo": (["Laser", "Prism", "Demolition", "Demolition", "Concussion", "Concussion"],
                   {"Temperature": _m(-2 / 3)}, L3),
 }
 # Fixed emission order for a blend (it has no single light/heavy direction).
@@ -2000,17 +2218,22 @@ def _family_main_pct(pname, level):
     parents' REAL profiles and cannot drift from what the parents themselves emit.
     """
     bl, d, air, lv = WEAPONS[pname]
+    # Sonic has no ordered armor ladder: build_order("FLAT", ...) is invalid.
+    # Use the same pre-finalization constants as family(mode="flat"). The
+    # blend's normal finalization still owns ordering, normalization and shield.
+    if pname == "Sonic":
+        keys = ["Shield"] + sorted(CANON16)
+        return ({a: FLAT_VALUES[level] for a in keys},
+                {a: FLAT_PCT[level] for a in keys})
     order = build_order(bl, d)
-    step, mfloor, ptop = LEVELS[level]
-    pfloor = ptop - 15
-    main = reference_main(pname, order, level) or table(order, step, 100, mfloor, 100 + mfloor)
+    main = _untilted_main(pname, order, level)
     # Blends average their PARENTS' profiles, and averaging their parents' Shield rows would
     # average the physics too — a Plasma (Flame+Chemical) would inherit a kinetic Shield.
     # Recompute from the blend's OWN rank instead, same single source as everything else.
     sv = shield_for(pname, level, main)
     if sv is not None:
         main = [("Shield", sv)] + [(a, v) for a, v in main if a != "Shield"]
-    return (dict(main), dict(table(order, 1, ptop, pfloor, ptop + pfloor)))
+    return (dict(main), dict(_pct_table(order, level)))
 
 
 def blend_versus(parents):
@@ -2042,6 +2265,197 @@ def storm_versus(level):
             [(a, int(base_pct[a] * f)) for a in keys])
 
 
+# --------------------------------------------------------------------------- #
+# §12.0i CONTINUOUS-FAMILY BASE (live — levelled twins stay as duplicates)
+# --------------------------------------------------------------------------- #
+# The DEFAULT output now ends with ONE level-less `^Warhead_<Name>` base for every
+# family in `CONTINUOUS_PREVIEW_FAMILIES` (currently only CannonAP), appended after
+# the normal finalized legacy output. The legacy portion — headers, sidecar lines and
+# every levelled `^Warhead_*_<Level>` block — stays BYTE-IDENTICAL (guard tests pin
+# it), so the levelled templates remain as raw, visible TEMPORARY COMPATIBILITY
+# DUPLICATES: Aedis 2026-09-10 02:10 (acknowledged 02:14) sanctioned Shield
+# uniqueness between NEW bases and the fast W24 migration; nothing is re-ranked and
+# no audit ratchet or exception list is edited to hide the duplicates.
+#
+# ⚠ RESTRICTED to `CONTINUOUS_PREVIEW_FAMILIES` (CannonAP only). The shared scaffold is
+# exact for CannonAP, but other standard families carry extras the base does not
+# emit — Flame's PhysicalState meter, the energy families' paid ExtraDamage chips, the
+# Tesla blends' IntegrityScale — and `emit_main_warhead` would silently DROP every one
+# of them. A family is admitted only together with the plumbing that carries its extras.
+#
+# What the base is, and is not:
+#   * built from `family()`'s PRE-TILT <Medium> main construction — a PROVISIONAL
+#     BASELINE, not a unique canonical fact — plus the shared band floor, mean-100
+#     and plating finalization. No level tilt runs here: the C# bell
+#     (HeavinessBell.cs, DESIGN §12.0i) applies the tilt at runtime, and tilting in
+#     Python too would be the double bell.
+#   * `Heaviness: h * 1000` explicitly authored (1000 = h 1.0). Omitting the scalar
+#     means the disabled sentinel (-1) in AreaDamageWarhead.cs, and the
+#     SHARED-PROFILE mode (`HeavinessMode: SharedVersus`) REJECTS a disabled
+#     scalar — so the mode is always emitted together with an active scalar,
+#     never alone.
+#   * the SHARED PROFILE (HeavinessMode SharedVersus, Aedis 2026-09-10 03:17):
+#     NO percentage tables — the percentage half follows the SAME belled table
+#     as the flat half, scaled by h/2; PercentageScale 2000 puts Damage 100 at
+#     0.01% max HP before heaviness and armor. The flat Shield row's coefficient
+#     scales once by (2000 + h) / 2000 at runtime.
+#   * the Shield row carries the FINAL phase-2 value the existing
+#     `^Warhead_<Name>_Medium` template ships — the Aedis-sanctioned carry-over for
+#     new bases while the coexistence rollout runs.
+#   * Heroic / Airborne are NOT re-derived here — §12.0b says a derived cell is
+#     computed LAST from the finished profile, and here the "finished profile" is the
+#     one the C# bell produces at runtime; it re-derives both rows itself.
+#   * pilot heritages set only what h owns: `Warhead@CannonAP: Heaviness:` per
+#     weapon (0 stays ACTIVE h=0 in AreaDamageWarhead.cs); weapon-level
+#     Range/ReloadDelay/Burst are NOT scaled by the C# and pass through untouched.
+CONTINUOUS_PREVIEW_LEVEL = "Medium"   # the provisional baseline level the base is built from
+CONTINUOUS_HEAVINESS = 1000           # h = 1.0 in thousandths (AreaDamageWarhead.cs: h * 1000)
+CONTINUOUS_FLAG = "--continuous-family"
+# The ONE family this preview may build (see the RESTRICTED note above). A tuple so the
+# day another family gains its extras plumbing, admitting it is an append, not a rewrite.
+CONTINUOUS_PREVIEW_FAMILIES = ("CannonAP",)
+
+
+def parse_continuous_families(argv):
+    """Family names after `--continuous-family`, up to the next `--flag`.
+
+    Purely syntactic — validation lives in `_validated_continuous`, so every call
+    site (the `wanted` subtraction in `_generate` AND the preview append in
+    `__main__`) fails clear on a bad request instead of KeyError-ing later.
+
+    Opt-in only: the DEFAULT run never consumes the flag, so `wanted` (the legacy
+    family filter) must not see the flag's arguments either — they are subtracted
+    from it in `_generate`, or a preview request would silently filter the whole
+    legacy output down to one family.
+    """
+    fams = []
+    i = 0
+    while i < len(argv):
+        if argv[i] == CONTINUOUS_FLAG:
+            i += 1
+            while i < len(argv) and not argv[i].startswith("--"):
+                fams.append(argv[i])
+                i += 1
+        else:
+            i += 1
+    return fams
+
+
+def _validated_continuous(argv):
+    """`parse_continuous_families` + the gate, runnable from BOTH call sites.
+
+    Raises SystemExit (clear message, empty stdout) for a bare flag with no family
+    name and for any name outside `CONTINUOUS_PREVIEW_FAMILIES`. `__main__` calls
+    this BEFORE the shield map is built or indexed, so an unknown/missing name can
+    never reach the `_final[(family, level)]` lookup as a KeyError.
+    """
+    fams = parse_continuous_families(argv)
+    if CONTINUOUS_FLAG in argv and not fams:
+        raise SystemExit(f"{CONTINUOUS_FLAG}: a family name is required "
+                         f"(allowed: {', '.join(CONTINUOUS_PREVIEW_FAMILIES)})")
+    for nm in fams:
+        if nm not in CONTINUOUS_PREVIEW_FAMILIES:
+            raise SystemExit(
+                f"{CONTINUOUS_FLAG}: this preview is restricted to "
+                f"{', '.join(CONTINUOUS_PREVIEW_FAMILIES)}; got {nm!r}. Other standard "
+                f"families carry PhysicalState / ExtraDamage-chip / IntegrityScale "
+                f"extras the preview does not emit, so admitting one would ship an "
+                f"incomplete base.")
+    return fams
+
+
+def shield_final_map(phase1_text, lo, hi):
+    """(family, level) -> final Shield, the mapping `shield_uniqueness.apply` assigns.
+
+    Reuses the phase-2 module's own records — the SAME find_main_shields / compress /
+    assign chain `apply` runs — so the preview needs no bespoke yaml parser and cannot
+    disagree with the legacy pass about any value. The preview base then reads its
+    (family, Medium) entry instead of recomputing a second Shield.
+    """
+    import shield_uniqueness
+    found = shield_uniqueness.find_main_shields(phase1_text.split("\n"))
+    if not found:
+        raise ValueError("continuous preview: no phase-1 Shield rows to reuse")
+    scaled = shield_uniqueness.compress([float(v) for *_h, v in found], lo, hi)
+    found = [(i, fam, lv, int(round(v))) for (i, fam, lv, _), v in zip(found, scaled)]
+    return shield_uniqueness.assign(found, lo, hi)
+
+
+def continuous_family_preview(name, shield_final):
+    """The opt-in `^Warhead_<Name>` continuous base as text lines, prefixed by its
+    compatibility-preview notes. `shield_final` is the FINAL phase-2 Shield the
+    existing <Medium> template ships (see the block comment above for why).
+
+    Guarded by the same allowlist the CLI validator enforces, so a DIRECT call (not
+    through `__main__`) fails clear too. The gate is not the hand-tuned/FLAT/PCT
+    check it replaced: even ordinary standard families must stay out until their
+    extras plumbing (PhysicalState / chip / IntegrityScale) exists here.
+    """
+    if name not in CONTINUOUS_PREVIEW_FAMILIES:
+        raise SystemExit(
+            f"{CONTINUOUS_FLAG}: this preview is restricted to "
+            f"{', '.join(CONTINUOUS_PREVIEW_FAMILIES)}; got {name!r}. Other standard "
+            f"families carry PhysicalState / ExtraDamage-chip / IntegrityScale extras "
+            f"the preview does not emit, so admitting one would ship an incomplete base.")
+    bl, d, air, _lv = WEAPONS[name]
+    order16 = build_order(bl, d)
+    vt = valid_targets(air, ground_only=(name == "Melee"))
+    physics = shape_for(name)
+    li = list(LEVELS).index(CONTINUOUS_PREVIEW_LEVEL)
+    spreads = FAMILY_SPREADS.get(name) or (physics[0] if physics else (400, 600, 800, 1000))
+    falloffs = FAMILY_FALLOFFS.get(name) or (physics[1] if physics else DEFAULT_FALLOFFS)
+    # The provisional baseline: the pre-tilt <Medium> main construction, then the SAME
+    # shared finalization `family()` applies (band floor, mean-100) — minus the tilt,
+    # which the C# bell owns (no double bell).
+    main = fit_band_floor(_untilted_main(name, order16, CONTINUOUS_PREVIEW_LEVEL))
+    main = mean_normalise(main)
+    # COMPATIBILITY PREVIEW Shield: the final value the existing <Medium> template ships,
+    # not a recomputed one — approved Shield coexistence (Aedis 2026-09-10 02:10).
+    main = [("Shield", shield_final)] + [(a, v) for a, v in main if a != "Shield"]
+    # The OVERLAY armors, derived from the family's composition — same as `family()`.
+    main = [r for r in main if r[0] not in PLATING_CYCLE]
+    main = plating_rows(name) + main
+    # SHARED-PROFILE BASE (Aedis 2026-09-10 03:17 approved): the percentage half
+    # follows the SAME belled table as the flat half (HeavinessMode SharedVersus),
+    # so the L/M/H anchor tables are NOT emitted; Scale 2000 puts the base at
+    # Damage 100 -> 0.01% max HP BEFORE the h/2 heaviness scaling and armor.
+    pct_bands = []
+    dt = FAMILY_DAMAGE_TYPES.get(name) or "Prone75Percent, TriggerProne, ExplosionDeath"
+    notes = "\n".join([
+        f"###### {name}: CONTINUOUS-HEAVINESS BASE (live; levelled twins are temporary) ######",
+        "# LIVE CONTINUOUS BASE (Aedis 2026-09-10 02:10, acknowledged 02:14): Shield",
+        "# uniqueness between NEW bases as recommended; the levelled",
+        f"# ^Warhead_{name}_<Level> templates stay as TEMPORARY COMPATIBILITY DUPLICATES",
+        "# until the W24 migration retires them — visible as-is, never hidden by",
+        "# ratchet or exception-list edits.",
+        f"# Sidecar WeaponClass: {name}: 1.0 (design-only, the Medium base scale).",
+        f"# Base = `family()`'s pre-tilt {CONTINUOUS_PREVIEW_LEVEL} main construction",
+        "# (a PROVISIONAL BASELINE, not a unique canonical fact) + the shared band floor,",
+        "# mean-100 and plating finalization. NO level tilt here - the C# bell",
+        "# (HeavinessBell.cs, DESIGN 12.0i) applies the tilt at runtime; tilting in",
+        "# Python too would be the double bell. Heroic/Airborne are re-derived by the",
+        "# bell's last step, not authored here (12.0b: derived cells are computed last).",
+        f"# Shield = the FINAL phase-2 value the existing ^Warhead_{name}_{CONTINUOUS_PREVIEW_LEVEL}",
+        "# template ships, carried over for compatibility while the coexistence",
+        "# rollout runs (Aedis-sanctioned scheme for NEW bases).",
+        "# Heaviness is h * 1000 (AreaDamageWarhead.cs): 1000 = h 1.0. Omitted/-1 is the",
+        "# disabled sentinel, which REJECTS the SharedVersus mode - so the mode is",
+        "# always emitted together with the active scalar. SHARED PROFILE: the C#",
+        "# bells the flat Versus ONCE and scales the Shield row by (2000 + h) / 2000;",
+        "# the percentage half reads that SAME table, scaled by h/2 (h = 0 -> 0x).",
+        "# Pilot heritages scale only what h owns: Spread 120 -> 80 at h 0 (= the old",
+        "# Light Spread), 120 at h 1000; weapon Range/ReloadDelay/Burst are untouched.",
+    ])
+    return notes + "\n" + "\n".join(emit_main_warhead(
+        name, vt, main, damage=2000, falloff=at(falloffs, li),
+        spread=at(spreads, li) if spreads else ENERGY_THIN_SPREAD_LEVEL.get(
+            (name, CONTINUOUS_PREVIEW_LEVEL), ENERGY_THIN_SPREAD.get(name, 400)),
+        damage_types=dt, reload=25, rng=5120,
+        invalid=FAMILY_INVALID_TARGETS.get(name),
+        heaviness=CONTINUOUS_HEAVINESS, pct_bands=pct_bands,
+        percent_scale=2000, heaviness_mode="SharedVersus"))
+
+
 def _generate():
     argv = sys.argv[1:]
     if "--list" in argv:
@@ -2059,7 +2473,8 @@ def _generate():
             print(f"\n{nm:11s} [{macro_summary(bl)}] dir={d} air={air}")
             print("   " + " > ".join(order))
         sys.exit(0)
-    wanted = {a.lower() for a in argv if not a.startswith("--")}
+    wanted = {a.lower() for a in argv if not a.startswith("--")} \
+        - {f.lower() for f in _validated_continuous(argv)}
     print("# GENERATED by gen_weapon_template.py (two-level ordering law). DO NOT hand-edit rows.")
     print("# Sidecar WeaponClass entries for docs/balance/weapon_classes.yaml:")
     for nm, (bl, d, air, lv) in WEAPONS.items():
@@ -2159,5 +2574,18 @@ if __name__ == "__main__":
     _buf = io.StringIO()
     with redirect_stdout(_buf):
         _generate()
-    sys.stdout.write(shield_uniqueness.apply(
-        _buf.getvalue(), SHIELD_FLOOR_TARGET, SHIELD_CEIL_TARGET))
+    _out = shield_uniqueness.apply(
+        _buf.getvalue(), SHIELD_FLOOR_TARGET, SHIELD_CEIL_TARGET)
+    # The LIVE CONTINUOUS-FAMILY BASES (§12.0i): ONE level-less base per family in
+    # CONTINUOUS_PREVIEW_FAMILIES, APPENDED after the normal finalized legacy output —
+    # the legacy portion stays byte-identical (guard tests pin HEAD). An explicit
+    # --continuous-family request is validated but adds nothing: the base is already
+    # in the default output, and a re-request must not emit it twice.
+    # ⚠ Prevalidation happens BEFORE the shield map is built or indexed, so an
+    # unknown/missing name fails with a clear message, never as a KeyError.
+    _validated_continuous(sys.argv[1:])
+    _final = shield_final_map(_buf.getvalue(), SHIELD_FLOOR_TARGET, SHIELD_CEIL_TARGET)
+    for _nm in CONTINUOUS_PREVIEW_FAMILIES:
+        _out += "\n\n" + continuous_family_preview(
+            _nm, _final[(_nm, CONTINUOUS_PREVIEW_LEVEL)])
+    sys.stdout.write(_out)

@@ -30,8 +30,8 @@ class UpgradeDirectionContractTests(unittest.TestCase):
                     recipients[actor] = int(trait.get("Modifier"))
 
         self.assertEqual({
-            "nodlasercorvette": 115,
             "td_nod_lasercommando": 115,
+            "td_nod_lasercorvette": 115,
             "td_nod_lasertrooper": 115,
             "td_nod_laserturret": 115,
             "td_nod_lighttankmkii": 115,

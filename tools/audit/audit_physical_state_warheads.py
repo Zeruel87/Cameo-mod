@@ -2,12 +2,14 @@
 """Physical-state meters: check the FOLDED warhead, and reject double-application.
 
 The Formula V2 Flame and Chemical families raise Temperature/Corrosion in proportion to actual
-damage. Two checks:
+damage. Checks:
 
   1. Each `^Warhead_{Flame,Chemical}_{Light,Medium,Heavy}` main warhead carries its meter AND a
      non-zero `PercentageScale`, so the percentage component reaches the same meter.
   2. No resolved weapon combines a damage-scaled meter with a legacy fixed `ApplyPhysicalState`
-     for that same meter — that is a double-application and it fills the bar twice as fast.
+     for that same meter — both routes apply; their combined effect depends on the authored amounts.
+  3. No AreaDamage/AreaDamagePercentage node binds the same enabled state twice.
+     Runtime executes both routes and rounds each application separately.
 
 ⛔ CHECK (1) USED TO LOOK FOR A SEPARATE `Warhead@<tag>_Percentage` TWIN, AND THAT WAS STALE.
 The AreaDamage fold put flat damage, the percentage component and friendly fire into ONE warhead:
@@ -44,30 +46,42 @@ LEVELS = ("Light", "Medium", "Heavy")
 PERCENTAGE_KEY = re.compile(r"Warhead@(Flame|Chemical)_(Light|Medium|Heavy)_Percentage$")
 
 
-def scaled_states(warhead):
-	states = set()
-	state = warhead.get("PhysicalStateName")
-	if state:
-		states.add(state)
-
+def state_bindings(warhead):
+	"""Keep both runtime applications; zero scales do not apply a state."""
+	bindings = []
+	name = warhead.get("PhysicalStateName")
+	scale = int(warhead.get("PhysicalStateScale") or "0")
+	if name and scale:
+		bindings.append((name, scale))
 	multiple = warhead.child("PhysicalStates")
 	if multiple:
-		states.update(child.key for child in multiple.children)
+		for child in multiple.children:
+			scale = int(child.value or "0")
+			if scale:
+				bindings.append((child.key, scale))
+	return bindings
 
-	return states
+
+def duplicate_state_problems(warhead):
+	if warhead.value not in {"AreaDamage", "AreaDamagePercentage"}:
+		return []
+	by_state = {}
+	for name, scale in state_bindings(warhead):
+		by_state.setdefault(name, []).append(scale)
+	return [
+		f"{warhead.key}: applies {name} through multiple bindings {scales} "
+		f"(combined nominal scale {sum(scales)}; runtime rounds each separately)"
+		for name, scales in sorted(by_state.items()) if len(scales) > 1
+	]
+
+
+def scaled_states(warhead):
+	return {name for name, _scale in state_bindings(warhead)}
 
 
 def state_scale(warhead, state):
-	if warhead.get("PhysicalStateName") == state:
-		return warhead.get("PhysicalStateScale")
-
-	multiple = warhead.child("PhysicalStates")
-	if multiple:
-		child = multiple.child(state)
-		if child:
-			return child.value
-
-	return None
+	values = [scale for name, scale in state_bindings(warhead) if name == state]
+	return str(sum(values)) if values else None
 
 
 def main() -> int:
@@ -115,6 +129,9 @@ def main() -> int:
 		damage_scaled = set()
 		fixed = set()
 		for warhead in weapon.children:
+			problems.extend(
+				f"{weapon_name}: {problem}"
+				for problem in duplicate_state_problems(warhead))
 			match = PERCENTAGE_KEY.fullmatch(warhead.key)
 			if match:
 				family = match.group(1)

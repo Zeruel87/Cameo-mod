@@ -35,8 +35,8 @@ import percentage_damage as pd  # noqa: E402
 
 # name: destination, flat total, folded PercentageScale
 SPECS = {
-    "ConscriptMolotovExplode": ("Flame_Light", 8000, 9988),
-    "GrenadeRAExplode": ("Flame_Light", 8000, 9988),
+    "ra1_soviets_molotovconscript_conscriptmolotovexplode": ("Flame_Light", 8000, 9988),
+    "ra1_soviets_grenadier_grenaderaexplode": ("Flame_Light", 8000, 9988),
     "IncendiaryM1Carbine": ("Flame_Light", 4000, 9975),
     "ra1_soviets_rifleinfantry_carbine_incendiary": ("Flame_Light", 4000, 9975),
     "HeavyPlasmaFlamer": ("Flame_Heavy", 4000, 9975),
@@ -47,7 +47,7 @@ SPECS = {
     "LMG_ordos_upgrade": ("Laser_Heavy", 6000, 9984),
     "light_inf_lmg_ordos_upgrade": ("Laser_Heavy", 6000, 9984),
     "SteelFighterRailgun": ("Laser_Heavy", 10000, 5990),
-    "ThermobaricMaverick": ("Thermobaric_Heavy", 48000, 2498),
+    "ra1_soviets_migattackbomber_thermobaricmaverick": ("Thermobaric_Heavy", 48000, 2498),
     "AsianChemicalBombs": ("Chemical_Heavy", 4000, 9975),
     "TSSAPCCoreMissiles": ("Chemical_Light", 24000, 3330),
     "FutureMechPlasma": ("Plasma_Heavy", 30000, 3330),
@@ -56,8 +56,8 @@ SPECS = {
 }
 
 BASELINE_MAINS = {
-    "ConscriptMolotovExplode": {"Demolition_Light", "Flame_Light"},
-    "GrenadeRAExplode": {"Demolition_Light", "Flame_Light"},
+    "ra1_soviets_molotovconscript_conscriptmolotovexplode": {"Demolition_Light", "Flame_Light"},
+    "ra1_soviets_grenadier_grenaderaexplode": {"Demolition_Light", "Flame_Light"},
     "IncendiaryM1Carbine": {"Bullet_Light", "Flame_Light"},
     "ra1_soviets_rifleinfantry_carbine_incendiary": {"Bullet_Light", "Flame_Light"},
     "HeavyPlasmaFlamer": {"Chemical_Heavy", "Flame_Heavy"},
@@ -68,7 +68,7 @@ BASELINE_MAINS = {
     "LMG_ordos_upgrade": {"Bullet_Light", "Bullet_Medium", "Laser_Heavy"},
     "light_inf_lmg_ordos_upgrade": {"Bullet_LightFlatCompatibility", "Laser_Heavy"},
     "SteelFighterRailgun": {"CannonHE_Medium", "Laser_Heavy", "MissileAP_Light", "Railgun_Heavy"},
-    "ThermobaricMaverick": {"MissileAP_Medium", "Thermobaric_Heavy"},
+    "ra1_soviets_migattackbomber_thermobaricmaverick": {"MissileAP_Medium", "Thermobaric_Heavy"},
     "AsianChemicalBombs": {"CannonHE_Medium", "Chemical_Heavy"},
     "TSSAPCCoreMissiles": {"Chemical_Light", "MissileHE_Medium"},
     "FutureMechPlasma": {"CannonHE_Heavy", "Plasma_Heavy"},
@@ -79,8 +79,8 @@ BASELINE_MAINS = {
 # destination flat damage before -> complete flat total, and destination
 # percentage runtime units before -> complete selected-family runtime units.
 STATE_EXPANSION = {
-    "ConscriptMolotovExplode": (4000, 8000, 200, 400),
-    "GrenadeRAExplode": (4000, 8000, 200, 400),
+    "ra1_soviets_molotovconscript_conscriptmolotovexplode": (4000, 8000, 200, 400),
+    "ra1_soviets_grenadier_grenaderaexplode": (4000, 8000, 200, 400),
     "IncendiaryM1Carbine": (2000, 4000, 100, 200),
     "ra1_soviets_rifleinfantry_carbine_incendiary": (2000, 4000, 100, 200),
     "HeavyPlasmaFlamer": (2000, 4000, 100, 200),
@@ -91,7 +91,7 @@ STATE_EXPANSION = {
     "LMG_ordos_upgrade": (2000, 6000, 100, 300),
     "light_inf_lmg_ordos_upgrade": (2000, 6000, 100, 300),
     "SteelFighterRailgun": (4000, 10000, 0, 300),
-    "ThermobaricMaverick": (36000, 48000, 0, 600),
+    "ra1_soviets_migattackbomber_thermobaricmaverick": (36000, 48000, 0, 600),
     "AsianChemicalBombs": (2000, 4000, 100, 200),
     "TSSAPCCoreMissiles": (8000, 24000, 400, 400),
     "FutureMechPlasma": (20000, 30000, 0, 500),
@@ -100,14 +100,14 @@ STATE_EXPANSION = {
 }
 
 ROOT_CLOSURES = {
-    "ConscriptMolotovExplode": set(),
-    "GrenadeRAExplode": set(),
+    "ra1_soviets_molotovconscript_conscriptmolotovexplode": set(),
+    "ra1_soviets_grenadier_grenaderaexplode": set(),
     "IncendiaryM1Carbine": set(),
     "ra1_soviets_rifleinfantry_carbine_incendiary": set(),
     "HeavyPlasmaFlamer": set(), "OIPlasmaFlamer": set(), "PhobosLaser": set(),
     "d2kCarryallChainGun_upgrade": set(), "d2kChainGun_upgrade": set(),
     "LMG_ordos_upgrade": set(), "light_inf_lmg_ordos_upgrade": set(),
-    "SteelFighterRailgun": set(), "ThermobaricMaverick": set(),
+    "SteelFighterRailgun": set(), "ra1_soviets_migattackbomber_thermobaricmaverick": set(),
     "AsianChemicalBombs": set(), "TSSAPCCoreMissiles": set(),
     "FutureMechPlasma": {"FutureMechPlasma_elite"},
     "BuggyPlasmaGrenade": set(),
@@ -118,7 +118,7 @@ PINNED_DESCENDANTS = {
     "FutureMechPlasma_elite", "PositronBounce1", "PositronBounce2",
 }
 GROUND_ONLY = {
-    "ConscriptMolotovExplode", "GrenadeRAExplode",
+    "ra1_soviets_molotovconscript_conscriptmolotovexplode", "ra1_soviets_grenadier_grenaderaexplode",
     "ra1_soviets_rifleinfantry_carbine_incendiary", "HeavyPlasmaFlamer",
     "OIPlasmaFlamer", "AsianChemicalBombs", "FutureMechPlasma",
     "BuggyPlasmaGrenade", "PositronGrenade",
@@ -129,9 +129,9 @@ POSITRON_PINS = {"PositronBounce1", "PositronBounce2"}
 PRESERVED_HASHES = {
     "AsianChemicalBombs": "5caeae4cdaa0404694653f053ffd91890ba8abd37cd44bc115b4ba1d0bdb5180",
     "BuggyPlasmaGrenade": "5447c1230af20032bbffa5de119b6e5aee994a57f22c2861e46a877ebb276077",
-    "ConscriptMolotovExplode": "d4c4546e3152e1a81f2243a632e84b1970f99597af017bdbb0806cd59e09509c",
+    "ra1_soviets_molotovconscript_conscriptmolotovexplode": "d4c4546e3152e1a81f2243a632e84b1970f99597af017bdbb0806cd59e09509c",
     "FutureMechPlasma": "c5d3bcaf0ee2b463d5aaa0ed80bb28e539623d95ebed1bed345d77bb2949ef15",
-    "GrenadeRAExplode": "e24763f460ed219842d640d9708eeeb73e7cf2324970915ac21fd435c5793425",
+    "ra1_soviets_grenadier_grenaderaexplode": "e24763f460ed219842d640d9708eeeb73e7cf2324970915ac21fd435c5793425",
     "HeavyPlasmaFlamer": "c8917cb19a691b7bc58b3f337e413d325a9eb605efbad3c6eff206620a7b0a3f",
     "IncendiaryM1Carbine": "6549fff9de9d2ad25086c30ddf7291edb89611c20c19a973b7e8bd0e6c4fe922",
     "LMG_ordos_upgrade": "fd36eafafe34cc0d3ac4c2d5716378a693fb5701c46d1d1b611891646949e95d",
@@ -143,7 +143,7 @@ PRESERVED_HASHES = {
     "PositronGrenade": "89b3f2143344a842e7adb6dedd34cd186bfb7e90f368de3db8a75da03d4b660d",
     "SteelFighterRailgun": "71aa63ef108d45d550c487c086a88be818a9a32a478ff2d79eae628ef66dccc6",
     "TSSAPCCoreMissiles": "6e4b926c328333cd479869ac75abecdebbbf325fe794bde9167bcf046f0821d7",
-    "ThermobaricMaverick": "cc52a17470681be4808d97b207a4021582c511bef3a1f20bf3dba5b1f6c275cc",
+    "ra1_soviets_migattackbomber_thermobaricmaverick": "cc52a17470681be4808d97b207a4021582c511bef3a1f20bf3dba5b1f6c275cc",
     "d2kCarryallChainGun_upgrade": "0fe6cf68bdb311e71346a75ea41233077f28d03238299ddcb6a1afebb47754ab",
     "d2kChainGun_upgrade": "827fb592aeaa7712f4ec000dc77d0e2b3e49a4cab004a7e9f40d3bd5784c83d7",
     "light_inf_lmg_ordos_upgrade": "0261ecb21aaff41c54671e1a2d0270f11967dcd2dd8aaa47ffc62da05537dc3b",

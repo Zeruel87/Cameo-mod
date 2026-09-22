@@ -17,15 +17,15 @@ from percentage_damage import percentage_applications
 
 ROOT_SNIPERS = (
     "AsianSniper", "GhostSniper", "SpecterSniper", "VonSniper",
-    "GDISniperRifle", "CommandoSniper",
+    "td_gdi_heavysniper_rifle", "td_gdi_havoc_sniper",
 )
 RESOLVED_SNIPERS = (
     "AsianSniper", "AsianSniperAP", "AsianSniperLockdown",
     "GhostSniper", "GhostSniperBunker", "GhostSniperLockdown",
     "SpecterSniper", "SpecterSniperLockdown",
     "VonSniper", "VonSniperAP", "VonSniperLockdown",
-    "GDISniperRifle", "CommandoSniper", "DragunovSniper",
-    "LightSniper", "CryoLightSniper", "RA2AWP", "RA2AWP_elite",
+    "td_gdi_heavysniper_rifle", "td_gdi_havoc_sniper", "DragunovSniper",
+    "LightSniper", "ra1_allies_alliedsniper_cryolightsniper", "RA2AWP", "RA2AWP_elite",
     "NaxiSniper", "NaxiSniper_elite", "tkmawp", "VanSniper",
     "TSSniper", "td_gdi_commando_sniper", "td_gdi_commando_sniper_elite",
     "RA2Virusgun", "RA2Virusgun2", "RA2Virusgun3", "RA2Virusgun_elite",
@@ -41,11 +41,11 @@ SNIPER_ACTORS = {
     "VonSniper": "tkm_von",
 }
 RETIRED_FOLLOWUP_WARHEADS = {
-    "GDISniperRifle": {
+    "td_gdi_heavysniper_rifle": {
         "Warhead@SmallArms", "Warhead@Grenade", "Warhead@GrenadeFriendlyFire",
         "Warhead@FlakWeapon", "Warhead@Chaingun",
     },
-    "CommandoSniper": {"Warhead@SniperWeapon", "Warhead@SniperWeaponExtraDamage", "Warhead@Chaingun"},
+    "td_gdi_havoc_sniper": {"Warhead@SniperWeapon", "Warhead@SniperWeaponExtraDamage", "Warhead@Chaingun"},
     "DragunovSniper": {
         "Warhead@TankDestroyerCannon", "Warhead@RailgunWeapon",
         "Warhead@RailgunExtraDamage", "Warhead@LightMissile",
@@ -144,6 +144,7 @@ class SniperDamageProfileTests(unittest.TestCase):
 
     def test_regular_snipers_lose_a_static_duel_to_baseline_mammoth(self):
         mammoth = self.rules.resolve("ra1_soviets_mammothtank")
+        self.assertIsNotNone(mammoth, "live Soviet Mammoth baseline")
         mammoth_armor, mammoth_hp = armor_and_hp(mammoth)
         tusk = self.rules.resolve_weapon("MammothTusk")
 
@@ -167,6 +168,7 @@ class SniperDamageProfileTests(unittest.TestCase):
         self.assertGreater(versus["Superheavy"], versus["Flak"])
 
         mammoth = self.rules.resolve("ra1_soviets_mammothtank")
+        self.assertIsNotNone(mammoth, "live Soviet Mammoth baseline")
         mammoth_armor, mammoth_hp = armor_and_hp(mammoth)
         dragunov = self.rules.resolve("ra1_soviets_dragunovantimaterialsniper")
         dragunov_armor, dragunov_hp = armor_and_hp(dragunov)

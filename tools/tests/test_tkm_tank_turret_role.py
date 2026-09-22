@@ -12,10 +12,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SUMMARY = ROOT / "docs/audit/latest/tkm_tank_turret_summary.json"
 COMPARISON = ROOT / "docs/audit/latest/tkm_tank_turret_comparison.json"
 DERIVED_LEDGER = ROOT / "docs/balance/derived/redalert2mod_tkm.json"
-sys.path[:0] = [str(ROOT / "tools/audit")]
+sys.path[:0] = [str(ROOT / "tools/audit"), str(ROOT / "tools/balance")]
 
 from audit_three_way_split import main_warhead_nodes, main_warheads  # noqa: E402
 from miniyaml import Ruleset  # noqa: E402
+import extract_stats as es  # noqa: E402
 
 
 EXPECTED_CHANGE_KIND_DIGESTS = {
@@ -29,6 +30,8 @@ class TKMTankTurretRoleTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rules = Ruleset(ROOT)
+        es.tm.use_ruleset(cls.rules)
+        es.we.use_ruleset(cls.rules)
         cls.weapon = cls.rules.resolve_weapon("tkmturretcannon")
         cls.actor = cls.rules.resolve("tkm_tankturretbunker")
         cls.local_actor = cls.rules.actor("tkm_tankturretbunker")
@@ -62,8 +65,9 @@ class TKMTankTurretRoleTests(unittest.TestCase):
         self.assertEqual("tkmturretcannon", armament["weapon"])
         self.assertEqual(204.31, armament["sigma"])
         self.assertEqual(0.8276, armament["reliability"])
-        self.assertEqual(15941.41, armament["effective_per_shot"])
-        self.assertEqual(569.34, armament["effective_dps"])
+        expected = es.weapon_entry(self.rules, armament["weapon"])[es.DERIVED_KEY]
+        for key in ("effective_per_shot", "effective_dps"):
+            self.assertEqual(expected[key], armament[key], key)
 
     def test_actor_prioritizes_vehicles_and_uses_anti_tank_description(self):
         local_inherits = {

@@ -23,14 +23,14 @@ ROOTS = {
     "HarakanF": ("Flame_Heavy", 4000, 2, "Temperature", "100"),
     "MutHFlamer": ("Flame_Heavy", 40000, 2, "Temperature", "100"),
     "TSChemAdatsMissile": ("MissileChem_Light", 12000, 3, "Corrosion", "20"),
-    "ChemicalBikeRockets": ("MissileChem_Medium", 32000, 4, "Corrosion", "33"),
-    "ChemicalStealthTankMissiles": ("MissileChem_Medium", 30000, 3, "Corrosion", "33"),
+    "td_nod_chemicalattackbike_chemicalbikerockets": ("MissileChem_Medium", 32000, 4, "Corrosion", "33"),
+    "td_nod_chemicalstealthtank_chemicalstealthtankmissiles": ("MissileChem_Medium", 30000, 3, "Corrosion", "33"),
     "TSMammothTuskChem": ("MissileChem_Heavy", 40000, 2, "Corrosion", "50"),
 }
 
 RESOLVED = tuple(ROOTS) + (
-    "ChemicalBikeRocketsExplosion",
-    "ChemicalStealthTankExplosion",
+    "td_nod_chemicalattackbike_chemicalbikerocketsexplosion",
+    "td_nod_chemicalstealthtank_chemicalstealthtankexplosion",
 )
 
 RETIRED = {

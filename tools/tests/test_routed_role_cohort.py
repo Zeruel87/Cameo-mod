@@ -10,9 +10,10 @@ REPORT = ROOT / "docs/audit/latest/routed_role_cohort_comparison.json"
 sys.path[:0] = [str(ROOT / "tools/audit"), str(ROOT / "tools/balance")]
 
 import consolidate_routed_role_cohort as cohort
-from audit_three_way_split import SPLIT_BASELINE, main_warheads
+from audit_three_way_split import RAW_SPLIT_BASELINE, main_warheads
 from audit_warhead_split import BROADCAST_BASELINE
 from miniyaml import Ruleset
+from owned_weapon_history import historical_weapon_names
 
 ACCEPTED = {
     "percentage_damage": (15, "4d1f2855e2b7a7fbdee701c82590842369e57c63cd9d18f57b65899e33b6cc3d"),
@@ -39,7 +40,7 @@ class RoutedRoleCohortTests(unittest.TestCase):
     def test_exactly_nineteen_definitions_change(self):
         expected = set(cohort.selections(self.rules)) - set(cohort.PINS)
         self.assertEqual(19, len(expected))
-        self.assertEqual(expected, set(self.report["changed"]))
+        self.assertEqual(historical_weapon_names(expected), set(self.report["changed"]))
         self.assertEqual([], self.report["added"])
         self.assertEqual([], self.report["removed"])
 
@@ -71,8 +72,9 @@ class RoutedRoleCohortTests(unittest.TestCase):
         )
 
     def test_ratchets_match_live_reduction(self):
-        self.assertEqual(114, SPLIT_BASELINE)
-        self.assertEqual(90, BROADCAST_BASELINE)
+        # Upstream retired exemptions: enforce the raw ceiling, never subtract reviewed stacks.
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
+        self.assertLessEqual(BROADCAST_BASELINE, 69)
 
 
 if __name__ == "__main__":

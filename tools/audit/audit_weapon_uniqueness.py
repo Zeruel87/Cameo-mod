@@ -33,7 +33,7 @@ from report import h1, h2, table
 # systemic mechanics every faction shares by design
 UTILITY_WEAPONS = {
     "genericc4", "defusekit", "leechdisinfect", "repair", "heal",
-    "healextra", "medikit", "dogjaw",
+    "healextra", "medikit",
 }
 
 # structural variant suffixes from DESIGN.md §1 + legacy paradrop twins

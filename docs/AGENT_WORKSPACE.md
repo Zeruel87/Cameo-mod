@@ -24,6 +24,40 @@ This repository is the shared source of truth for maintainers and every AI agent
 | External-agent historical evidence | `docs/history/LEGACY_DEVIN_CABAL.md` | Historical register only. No external output is current until rerun in this repository. |
 | Archived handoffs | `docs/history/handoffs/` | Dated session records. Provenance only — **never** resume work from one. |
 
+## Live agent roster — WHO IS ON WHAT (update your own row before you start)
+
+⛔ **This table is the shared identity board. Add or update YOUR OWN row and never rewrite
+someone else's.** Agents forget their own names between sessions, which is why the local fleet
+also keeps a `.agent-id` file on disk; this table is the repository-side copy so the maintainer
+and every other agent can see the same picture without asking. If your row is stale, fix it.
+
+| Agent | Model / host | Branch | File-set it owns | Status |
+|---|---|---|---|---|
+| **Claude-Local** | Opus 5, local CLI | `claude/weapon_inherit_audit_and_map` | the REFERENCE pipeline: `tools/balance/{assign_references,reference_targets,reference_distribution,reference_coverage,build_reference_report,faction_routes}.py`, `tools/reference/variant_pool.py` | ACTIVE 2026-09-13 |
+| **Codex (Astra)** | GPT-6, Blackrobe's host | `codex/recovery-pr345-merge-20260912`, `codex/overnight-integration-20260910` | INI/DTA extraction, evidence gates, the four-faction review pipeline, `tools/tests/` | ACTIVE 2026-09-13 |
+| Devin — Aurora | Devin AI | `devin/aurora/lane*` | AA range/audit lanes, extractor cargo | idle since 2026-09-08 |
+| Devin — Ember | Devin AI | `devin/ember/consortium-*` | Steel Consortium W24 stacks, class templates | idle since 2026-09-08 |
+| Devin — Nova | Devin AI | `devin/nova/*` | naming sweeps, AreaDamage class-2d, dead-field scales | idle since 2026-09-06 |
+
+**Signing rule (restating `CLAUDE.md` rule 10 because it keeps being got wrong):** sign with your
+OWN identity and your REAL model name. Claude Opus 5 signs `Co-Authored-By: Claude Opus 5
+<noreply@anthropic.com>`; Devin signs `Co-Authored-By: Devin AI <devin@cognition.ai>`; Codex signs
+as itself. Never copy a trailer from a previous commit — a version pinned anywhere goes stale the
+moment the model changes, and copying it makes a newer model misreport itself as an older one.
+
+### Branch hygiene, measured 2026-09-13
+
+⚠ **Ahead-count is not work-count, and reading it as one wastes a day.** `master` took PR #345 as
+a SQUASH (`b235c6980`), so every branch that contributed to it now shows its own commits as
+"ahead" even though the CONTENT landed. Verify by content, never by `git merge-base`:
+
+    git show origin/master:<file> | grep -c "<the thing you added>"
+
+Four `claude/*` branches from 2026-09-11 are in exactly that state — `refmap_damage_tick_fix`,
+`fix_peer_armament_selection`, `playtest_baseline`, `cl01_target_payload_review`. Their content IS
+in master (`sources used` present, DTA `$Inherits` present) and `is_upgrade_gated` is correctly
+ABSENT because its own author reverted it. **They are landed and can be closed.**
+
 ## Required operating sequence
 
 1. Read in this order before touching rules or assets: `docs/LESSONS_LEARNED.md` → this file → `docs/HANDOFF.md` → `docs/DESIGN.md` (the sections your change touches) → `docs/design/ROADMAP.md` → `docs/audit/SUMMARY.md`, then the relevant section of `docs/Cameo_Knowledge_Base_Manual.md`. **`docs/README.md` defines that order and wins over any copy of it, including this one.**

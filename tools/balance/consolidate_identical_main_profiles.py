@@ -50,15 +50,15 @@ SELECTED = {
     "FutureEnforcerShotgunDeployed": [("ShotgunShrapnelEnemy", {"ShotgunGrenadeEnemy", "ShotgunShrapnelEnemy"})],
     "FutureEnforcerShotgunDeployed_elite": [("ShotgunShrapnelEnemy", {"ShotgunGrenadeEnemy", "ShotgunShrapnelEnemy"})],
     "FutureEnforcerShotgun_elite": [("ShotgunShrapnelEnemy", {"ShotgunGrenadeEnemy", "ShotgunShrapnelEnemy"})],
-    "GDISniperRifle": [("SniperChaingun", {"SniperFlak", "SniperChaingun"})],
+    "td_gdi_heavysniper_rifle": [("SniperChaingun", {"SniperFlak", "SniperChaingun"})],
     "GhostSniper": [("SniperChaingun", {"SniperMediumMissile", "SniperFlak", "SniperChaingun"})],
     "GhostSniperLockdown": [
         ("SniperFlak", {"SniperMediumMissile", "SniperFlak"}),
         ("Bullet_Medium", {"Bullet_Light", "Bullet_Medium"}),
     ],
     "GladiusCannon": [("CannonHE_Heavy", {"CannonAP_Light", "CannonHE_Medium", "CannonHE_Heavy"})],
-    "KamovTeslaArcFragment1": [("TeslaWeapon", {"LightMissile", "TeslaWeapon"})],
-    "KamovTeslaArcFragment2": [("TeslaWeapon", {"LightMissile", "TeslaWeapon"})],
+    "ra1_soviets_kamovattackhelicopter_kamovteslaarcfragment1": [("TeslaWeapon", {"LightMissile", "TeslaWeapon"})],
+    "ra1_soviets_kamovattackhelicopter_kamovteslaarcfragment2": [("TeslaWeapon", {"LightMissile", "TeslaWeapon"})],
     "NaxCorrosionRocketTrooper_elite": [("PreservedFlat_HeavyMissile", {"PreservedFlat_Grenade", "PreservedFlat_HeavyMissile"})],
     "PositronBounce1": [("CannonAP_Light", {"Bullet_Light", "CannonAP_Light"})],
     "PositronBounce2": [("CannonAP_Light", {"Bullet_Light", "CannonAP_Light"})],
@@ -85,8 +85,8 @@ SELECTED = {
         ("Bullet_Medium", {"Bullet_Light", "Bullet_Medium"}),
     ],
     "WaveTurretImpact": [("RailgunWeapon", {"TeslaWeapon", "RailgunWeapon"})],
-    "YakTeslaArcFragment1": [("TeslaWeapon", {"LightMissile", "TeslaWeapon"})],
-    "YakTeslaArcFragment2": [("TeslaWeapon", {"LightMissile", "TeslaWeapon"})],
+    "ra1_soviets_teslayak_yakteslaarcfragment1": [("TeslaWeapon", {"LightMissile", "TeslaWeapon"})],
+    "ra1_soviets_teslayak_yakteslaarcfragment2": [("TeslaWeapon", {"LightMissile", "TeslaWeapon"})],
 }
 
 # Parent sniper folds change the inherited Chaingun amount.  Lockdown variants

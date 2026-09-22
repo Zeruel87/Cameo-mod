@@ -1,16 +1,40 @@
-# Remaining weapon redesign recommendations
+# Weapon redesign research and current review boundary
 
 Status: **proposal only — no gameplay authority is implied by this document.**
 
-The active reachable queue contains **75 definitions in 56 inheritance families**.
-Three independent reviews found no mechanically exact fold among them. The companion
-[decision bundle](../audit/latest/weapon_decision_bundle.md) names every active faction,
-unit, delivery chain, and resolved main profile.
+## Current upstream-master review boundary
 
-Two evidence-backed state composites were removed from the open queue without changing
-gameplay: Devastator `ExplosiveDebris` remains a weak wide blast plus a close burning
-payload, and `SyndicateFireballLauncherExplode` retains all nine independently applied
-Temperature-bearing nodes.
+After PR #320, the active reachable queue is **14 definitions in 12 inheritance
+families**. Every remaining family needs a player-facing role, progression, or
+state-delivery decision; none has a mechanically exact fold. The generated
+[decision bundle](../audit/latest/weapon_decision_bundle.md) is the authoritative
+current grouping because it resolves the active include graph and records every
+consumer and delivery chain.
+
+| review group | definitions | maintainer decision needed |
+|---|---:|---|
+| Tactical missile payloads | 2 | Choose one role for the shared silo/crate missile closure before changing either chemical or conventional delivery. |
+| Ixian Air Drone base and paid gun | 2 | Define a monotonic base-to-Tungsten progression across its four distinct damage profiles. |
+| Allied vehicle closures | 4 | Choose the Tank Destroyer, Tiger, and Sheridan cannon/missile roles together with their paid replacements. |
+| Specialist multi-consumer roles | 2 | Confirm Rapier AA and the Raynor/Pythean shared-gun role before any profile becomes canonical. |
+| TS progression and state routes | 2 | Choose the Cannon Tug progression and Disruptor's Magic/Tesla state-delivery contract. |
+| Japan Chi-Ha base/plasma closure | 2 | Define the coordinated vehicle/plasma progression without silently dropping its electrical state route. |
+
+These are holds, not conversion candidates. Preserve their resolved profiles and
+active closures until a maintainer makes the relevant role call. HydraSpit is not
+part of this queue: it remains a reviewed raw structural exception with four
+separate 18,000-damage profiles.
+
+## Historical pre-PR #320 research snapshot
+
+The analysis below records the broader pre-PR #320 planning queue. Most entries
+were resolved, reclassified, or superseded by the merged pipeline; it is useful
+as research history only and must not be treated as the live conversion queue.
+
+Two evidence-backed state composites were removed from that historical open queue
+without changing gameplay: Devastator `ExplosiveDebris` remains a weak wide blast
+plus a close burning payload, and `SyndicateFireballLauncherExplode` retains all
+nine independently applied Temperature-bearing nodes.
 
 ## Proposed redesign contract
 

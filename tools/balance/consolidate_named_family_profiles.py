@@ -36,10 +36,10 @@ import percentage_damage as pd  # noqa: E402
 ROOTS = {
     "IncendiaryYakChainGun": ("Flame_Light", {"IncendiaryArmoredYakChainGun"}, 8000, 9988),
     "IncendiaryChainGun": ("Flame_Light", set(), 4000, 9975),
-    "IncendiaryRAGatlingTankCannon": ("Flame_Light", {"IncendiaryRAGatlingTankCannon_AA"}, 4000, 9975),
+    "ra1_soviets_gatlingtank_incendiaryragatlingtankcannon": ("Flame_Light", {"ra1_soviets_gatlingtank_incendiaryragatlingtankcannon_AA"}, 4000, 9975),
     "NapalmA10Carrier": ("Flame_Heavy", set(), 8000, 9988),
-    "GrenadeThermobaric": ("Thermobaric_Light", {"GrenadeThermobaricExplode"}, 16000, 4994),
-    "HindMissilesThermobaric": ("Thermobaric_Medium", set(), 10000, 1990),
+    "ra1_soviets_grenadier_grenadethermobaric": ("Thermobaric_Light", {"ra1_soviets_grenadier_grenadethermobaricexplode"}, 16000, 4994),
+    "ra1_soviets_hindattackhelicopter_hindmissilesthermobaric": ("Thermobaric_Medium", set(), 10000, 1990),
     "AsianChemical": ("Chemical_Medium", {"AsianChemical_elite"}, 24000, 1663),
     "CabalOverkillDroneLaser": ("Laser_Heavy", set(), 8000, 9988),
     "RA2CosmonautLaser": ("Laser_Light", set(), 13600, 1464),
@@ -58,12 +58,12 @@ BASELINE_MAINS = {
     "IncendiaryYakChainGun": {"Bullet_Medium", "Flame_Light"},
     "IncendiaryArmoredYakChainGun": {"Bullet_Medium", "Flame_Light"},
     "IncendiaryChainGun": {"Bullet_Medium", "Flame_Light"},
-    "IncendiaryRAGatlingTankCannon": {"Bullet_Medium", "Flame_Light"},
-    "IncendiaryRAGatlingTankCannon_AA": {"Bullet_Medium", "Flame_Light"},
+    "ra1_soviets_gatlingtank_incendiaryragatlingtankcannon": {"Bullet_Medium", "Flame_Light"},
+    "ra1_soviets_gatlingtank_incendiaryragatlingtankcannon_AA": {"Bullet_Medium", "Flame_Light"},
     "NapalmA10Carrier": {"Demolition_Heavy", "Flame_Heavy"},
-    "GrenadeThermobaric": {"Demolition_Light", "Flame_Light", "Thermobaric_LightFlatCompatibility"},
-    "GrenadeThermobaricExplode": {"Demolition_Light", "Flame_Light", "Grenade", "LightFlameWeapon", "Thermobaric_LightFlatCompatibility"},
-    "HindMissilesThermobaric": {"CannonHE_Heavy", "Thermobaric_Medium"},
+    "ra1_soviets_grenadier_grenadethermobaric": {"Demolition_Light", "Flame_Light", "Thermobaric_LightFlatCompatibility"},
+    "ra1_soviets_grenadier_grenadethermobaricexplode": {"Demolition_Light", "Flame_Light", "Grenade", "LightFlameWeapon", "Thermobaric_LightFlatCompatibility"},
+    "ra1_soviets_hindattackhelicopter_hindmissilesthermobaric": {"CannonHE_Heavy", "Thermobaric_Medium"},
     "AsianChemical": {"Chemical_MediumFlatCompatibility", "Demolition_Light"},
     "AsianChemical_elite": {"Chemical_MediumFlatCompatibility", "Demolition_Light"},
     "CabalOverkillDroneLaser": {"Bullet_Light", "Laser_Heavy"},
@@ -82,15 +82,15 @@ BASELINE_MAINS = {
 }
 
 EXPECTED_ROUTES = {
-    "IncendiaryRAGatlingTankCannon": ("Ground", "Water"),
-    "IncendiaryRAGatlingTankCannon_AA": ("Air",),
+    "ra1_soviets_gatlingtank_incendiaryragatlingtankcannon": ("Ground", "Water"),
+    "ra1_soviets_gatlingtank_incendiaryragatlingtankcannon_AA": ("Air",),
     "TSLaserHarpyClaw": ("Air", "Ground"),
     "TSLaserHarpyAOEClaw": ("Air", "Ground"),
     "TSLaserHarpyMultiClaw": ("Air", "Ground"),
 }
 EXACT_PLUS_ONE = {
-    "IncendiaryChainGun", "IncendiaryRAGatlingTankCannon",
-    "IncendiaryRAGatlingTankCannon_AA", "TSLasergun",
+    "IncendiaryChainGun", "ra1_soviets_gatlingtank_incendiaryragatlingtankcannon",
+    "ra1_soviets_gatlingtank_incendiaryragatlingtankcannon_AA", "TSLasergun",
     "AsianHarbingerPlasma", "TSAssaultCannonSonic", "TSVulcanGunSonic",
 }
 
@@ -101,14 +101,14 @@ PRESERVED_HASHES = {
     "AsianHarbingerPlasma": "a2226f62246753fb32b9d7fae6091ed5f647cdca2e95b13aeb3126f2bdd51196",
     "CabalOverkillDroneLaser": "b8e3ab18dcdb387de5353419fa7c861589300a3e55172172e98938427074c56c",
     "FutureMechPlasma_elite": "5377c85750d8713299fc3fb8d953424720672993966745977134877a92d07335",
-    "GrenadeThermobaric": "68427c34d198d3c4600a23c36c6060e850116005badd8267fd22930c49e72a21",
-    "GrenadeThermobaricExplode": "8fe5998a7db0e20abba7063c9347630609367cb6c2ebd9a461c98283574e64c0",
-    "HindMissilesThermobaric": "d366836a8300a153b89b8fa43ad42a89262ef0a6e7364d9aefafbacddd5d1c8c",
+    "ra1_soviets_grenadier_grenadethermobaric": "68427c34d198d3c4600a23c36c6060e850116005badd8267fd22930c49e72a21",
+    "ra1_soviets_grenadier_grenadethermobaricexplode": "8fe5998a7db0e20abba7063c9347630609367cb6c2ebd9a461c98283574e64c0",
+    "ra1_soviets_hindattackhelicopter_hindmissilesthermobaric": "d366836a8300a153b89b8fa43ad42a89262ef0a6e7364d9aefafbacddd5d1c8c",
     "HovercraftPlasmaCannon": "6bc2e618c616ace9ba4e7e2201d318f67df40efaa7f9e96ee24ae7945f1351fd",
     "IncendiaryArmoredYakChainGun": "1fb00ddcb2528c2cd2c12eb74b906b161eb12a5f51f8b0ed0aaf23aa0a72872a",
     "IncendiaryChainGun": "afbc3a13dd609f6493c8de768bffdb8330b10b13e446e709bad95ae1e3a0148f",
-    "IncendiaryRAGatlingTankCannon": "2f8b34a65480f2222db704afd9dd4ccb371b5433e52ba884dcfb2abeb82ca523",
-    "IncendiaryRAGatlingTankCannon_AA": "65567caab895b40a7d9d91c75a425d203ab9b69aab15268d3efa0c75e642de6d",
+    "ra1_soviets_gatlingtank_incendiaryragatlingtankcannon": "2f8b34a65480f2222db704afd9dd4ccb371b5433e52ba884dcfb2abeb82ca523",
+    "ra1_soviets_gatlingtank_incendiaryragatlingtankcannon_AA": "65567caab895b40a7d9d91c75a425d203ab9b69aab15268d3efa0c75e642de6d",
     "IncendiaryYakChainGun": "41c173cf4287292c5f8b45970053de5c609067d9a92e5dda586772cdc2e2d870",
     "NapalmA10Carrier": "681759d81958c17756b909aada1c0d24669ad2a12560795ad018aba701183f7e",
     "RA2CosmonautLaser": "95be178ac49664713f083712f15c5e7110c7e5b26856f3a04c5d580317f8f557",
@@ -125,7 +125,27 @@ PRESERVED_HASHES = {
 }
 
 
+# Identity-only ownership split, 2026-09-10. Reuse the original guarded hashes;
+# the current roots are independent compositions, not descendants of another actor.
+YAK_OWNED_SOURCES = {
+    'ra1_soviets_yakscoutplane_chaingun_incendiary': 'IncendiaryYakChainGun',
+    'ra1_soviets_teslayak_chaingun_incendiary': 'IncendiaryYakChainGun',
+    'ra1_soviets_nuclearyak_chaingun_incendiary': 'IncendiaryYakChainGun',
+    'ra1_soviets_su57attackbomber_chaingun_incendiary': 'IncendiaryYakChainGun',
+    'ra1_soviets_armoredyak_chaingun_incendiary': 'IncendiaryArmoredYakChainGun',
+}
+for _owned, _original in YAK_OWNED_SOURCES.items():
+    ROOTS[_owned] = ('Flame_Light', set(), 8000, 9988)
+    BASELINE_MAINS[_owned] = BASELINE_MAINS[_original].copy()
+    PRESERVED_HASHES[_owned] = PRESERVED_HASHES[_original]
+for _original in set(YAK_OWNED_SOURCES.values()):
+    ROOTS.pop(_original, None)
+    BASELINE_MAINS.pop(_original)
+    PRESERVED_HASHES.pop(_original)
+
+
 def descendants(rs: Ruleset, root: str) -> set[str]:
+    from owned_weapon_wrappers import is_reviewed_owner_wrapper
     direct: dict[str, set[str]] = collections.defaultdict(set)
     for name, node in rs.weapons.items():
         for _, parent in rs.inherits_of(node):
@@ -138,7 +158,7 @@ def descendants(rs: Ruleset, root: str) -> set[str]:
             continue
         seen.add(name)
         stack.extend(direct[name])
-    return {name for name in seen if not name.startswith("^")}
+    return {name for name in seen if not name.startswith("^") and not is_reviewed_owner_wrapper(rs, name)}
 
 
 def selections(rs: Ruleset) -> dict[str, tuple[str, int, int]]:
@@ -153,8 +173,8 @@ def selections(rs: Ruleset) -> dict[str, tuple[str, int, int]]:
             member_total = 4000 if name == "TSLaserHarpyMultiClaw" else total
             member_scale = 9975 if name == "TSLaserHarpyMultiClaw" else scale
             selected[name] = (destination, member_total, member_scale)
-    if len(selected) != 24:
-        raise RuntimeError(f"expected 24 closure members, found {len(selected)}")
+    if len(selected) != 27:
+        raise RuntimeError(f"expected 27 current closure members, found {len(selected)}")
     return selected
 
 
@@ -290,8 +310,8 @@ def apply_changes(rs: Ruleset) -> None:
                        BASELINE_MAINS[root] - {compatibility})
 
     # Route/shape descendants with local main overrides need explicit local pins.
-    convert_member(rs, changed, "IncendiaryRAGatlingTankCannon_AA", "Flame_Light", 4000, 9975, {"Flame_Light"}, False)
-    convert_member(rs, changed, "GrenadeThermobaricExplode", "Thermobaric_Light", 16000, 4994,
+    convert_member(rs, changed, "ra1_soviets_gatlingtank_incendiaryragatlingtankcannon_AA", "Flame_Light", 4000, 9975, {"Flame_Light"}, False)
+    convert_member(rs, changed, "ra1_soviets_grenadier_grenadethermobaricexplode", "Thermobaric_Light", 16000, 4994,
                    {"Grenade", "LightFlameWeapon"}, False)
     convert_member(rs, changed, "TSLaserHarpyAOEClaw", "Laser_Heavy", 8000, 9988,
                    {"Bullet_Medium"}, False)
@@ -320,9 +340,9 @@ def main() -> int:
         return 0
     already = inspect(rs)
     if already:
-        print("Already consolidated 24 closure members (23 former multi-main definitions)")
+        print(f"Already consolidated {len(selections(rs))} current closure members (ownership splits included)")
         return 0
-    print("18 roots; 24 closure members; 23 multi-main conversions")
+    print(f"{len(ROOTS)} roots; {len(selections(rs))} current closure members (ownership splits included)")
     if not args.apply:
         print("Dry run: closures, routes, totals, rounding, overflow, and hashes pass")
         return 0

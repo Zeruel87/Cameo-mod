@@ -18,6 +18,16 @@ def write(tmp: str, name: str, text: str) -> pathlib.Path:
 
 
 class LoadTest(unittest.TestCase):
+    def test_archive_text_uses_same_parser_and_preserves_source(self):
+        text = "\ufeffactor:\r\n\tTrait@one:\r\n\t\tField: 5 # note\r\n"
+        parsed = miniyaml.load_text(text, "fixture.oramap/rules.yaml")
+        with tempfile.TemporaryDirectory() as tmp:
+            loaded = miniyaml.load(write(tmp, "rules.yaml", text))
+        self.assertEqual(parsed[0].get("Trait@one", "Field"),
+                         loaded[0].get("Trait@one", "Field"))
+        self.assertEqual(parsed[0].children[0].children[0].line, 3)
+        self.assertEqual(parsed[0].file, "fixture.oramap/rules.yaml")
+
     def test_parses_nesting_values_and_line_numbers(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = write(tmp, "a.yaml",

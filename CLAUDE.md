@@ -7,7 +7,14 @@ check the artifact itself — grep the data, `ls` the file (incl. `~/Downloads`)
 boot-gate the tree. When a summary (ROADMAP line, handoff, memory, status table) disagrees with
 the artifact, **the artifact wins — then fix the stale summary.**
 
-**Must-read, in order:** this file → `docs/LESSONS_LEARNED.md` → `docs/AGENT_WORKSPACE.md` →
+**⛔ BEFORE STARTING ANY TASK: open `docs/TASK_INDEX.md` and find your task's row.** It names
+the document AND SECTION to read first, and the tools that ALREADY EXIST for that task. It is
+the standing defence against duplicate work — a spec was written for a resolver check that
+exists twice, a virtual-anchor mechanism was re-designed when `fit_class.py --spec` already
+implements it, and a whole session once re-derived a weapon-tier model DESIGN.md had shipped.
+Guarded by `tools/audit/audit_task_index.py`.
+
+**Must-read, in order:** this file → `docs/TASK_INDEX.md` → `docs/LESSONS_LEARNED.md` → `docs/AGENT_WORKSPACE.md` →
 **`docs/HANDOFF.md`** (the entry point: verified current state + the priority-ordered queue;
 it supersedes every dated handoff) → `docs/DESIGN.md` → `docs/design/ROADMAP.md` →
 `docs/audit/SUMMARY.md`. `docs/README.md` is the canonical definition of that order — if any
@@ -92,6 +99,25 @@ never for status.
    the level scales the radius only, and blends cross their parents' shapes via `blend_shape()`.
    Radius = **(N-1) x Spread**, not N x Spread. Always `splice_templates.py --all`, never a subset:
    adding a family re-ranks the shield-coupling ladder and a partial splice leaves drift.
+8g. **AN OVERRIDE IS A CANCELLATION — never judge it by the node it sits in.**
+   `-Key@X:` in a child CANCELS what an ANCESTOR defines, so it looks dead *precisely
+   because* the node it sits in does not define X. On 2026-09-06 `d818aec40` deleted
+   **2248 `-Warhead@*` nodes as "stale"** and resurrected every cancelled warhead:
+   weapons with more than one MAIN warhead went **461 → 1103**, and 14 deleted
+   `-Warhead@shrapnel:` terminators turned the mutalisk's 3-bounce spore into an
+   **infinite loop** the maintainer found in play. ⛔ **Nothing crashed** — a boot gate
+   proves the rules PARSE, never that they are RIGHT. Resolve the chain and keep the
+   node unless **no ancestor defines that key**; verify with
+   `tools/audit/review_resolve_diff.py`, and note that a bulk delete is the wrong
+   SHAPE for this cleanup — it must be per-node. Guarded by **`bash_guard.py` rule 4**
+   (a staged yaml diff deleting a `-Key@...` needs `RESOLVE-VERIFIED` in the message)
+   and by **`audit_shrapnel_chains.py`** (S1a multi-node cycles, ratchet 0). The same
+   trap wears other clothes: a child's `Modifier: 100` is usually a cancellation of an
+   inherited multiplier, not a no-op.
+8h. **A RENAME BREAKS MAPS, and the boot gate cannot see it.** A `.oramap` lists placed
+   actors; if a rename moves a type the map still asks for the old one, and the failure
+   happens when that map is STARTED, not at boot. `1e30a1cb9` repaired seven maps by
+   hand. Run **`audit_map_actors.py`** (M1 ratchet 0) after every rename batch.
 9. **Underscore-only naming** — no hyphens in ids / files / fluent keys.
 10. **Attribute the ACTUAL author in the commit trailer — never impersonate another agent.**
     Sign with **your own** identity, including your real model name:
@@ -219,7 +245,11 @@ someone LOOKS: it has gone red twice now because yaml commits landed without a
 re-extract. Re-extract before every commit that moves a balance number, not at the
 end of a session.
 
-**The damage grid is 100, not 2000.** `formula.DAMAGE_STEP = 100` (W15), and
+**The damage grid is 10.** `formula.DAMAGE_STEP = 10` — the maintainer regridded it
+2000 -> 200 -> 100 (W15, 2026-08-11) and then **100 -> 10 on 2026-09-11**, landed in
+`b235c6980`. Five documents still teach 100; the constant is the artifact and it wins. The
+percentage twin did NOT move with it: 100 flat is still 0.01% HP, so a finer 0.001%
+increment needs an explicit 100000 denominator. And
 `FirepowerMultiplier` is retired as a pricing/fine-tuning knob (W17): `apply_balance`
 cannot write it, and `propose_class_rebalance.decompose_dps` always solves at
 `fp = 1.0`. Older documents that teach the 2000-step grid plus an FP fine-tune are

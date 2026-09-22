@@ -49,6 +49,7 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 sys.path.insert(0, str(ROOT / "tools" / "balance"))
 from miniyaml import Ruleset            # noqa: E402
 import weapon_efficiency as we          # noqa: E402
+from effective_heaviness import heaviness_of as validated_heaviness
 
 # Measured 2026-08-22 through the resolver. LOWER ONLY.
 MEAN_OFFENDERS_BASELINE = 2      # Nuclear_Super + Sniper_Light, both HAND_TUNED
@@ -77,16 +78,35 @@ MEAN_LO, MEAN_HI = 95.0, 105.0
 SPREAD_LO, SPREAD_HI = 2.0, 8.0
 
 
+BASE_KEY = "Base"      # a level-less continuous-heaviness `^Warhead_<Family>` base
+
+
+def split_name(tail):
+    """(^Warhead_ stripped) -> (family, level) legacy, (family, None) for a level-less
+    base, None for a variant — the same census the old rpartition parse produced."""
+    family, sep, level = tail.rpartition("_")
+    if not sep:
+        return (level, None)
+    return (family, level) if level in LEVELS else None
+
+
+def heaviness_active(wh) -> bool:
+    """A NEW base is active only with an explicit non-disabled Heaviness scalar (>= 0)."""
+    return wh.child("Heaviness") is not None and validated_heaviness(wh) >= 0
+
+
 def profiles() -> dict[tuple[str, str], dict[str, float]]:
-    """{(family, level): {armor: versus}} for every `^Warhead_<Family>_<Level>` MAIN warhead."""
+    """{(family, level|Base): {armor: versus}} for every `^Warhead_<Family>_<Level>` MAIN
+    warhead plus every ACTIVE level-less base."""
     rs = Ruleset(ROOT)
     out: dict[tuple[str, str], dict[str, float]] = {}
-    for name in rs.weapons:
+    for name in sorted(rs.weapons):
         if not name.startswith("^Warhead_"):
             continue
-        family, _, level = name[len("^Warhead_"):].rpartition("_")
-        if level not in LEVELS or not family:
+        kind = split_name(name[len("^Warhead_"):])
+        if kind is None:
             continue
+        family, level = kind
         resolved = rs.resolve_weapon(name)
         if resolved is None:
             continue
@@ -95,7 +115,10 @@ def profiles() -> dict[tuple[str, str], dict[str, float]]:
                 continue
             versus = we.versus_of(wh)      # ⭐ the project's reader, not a hand parser
             if versus:
-                out[(family, level)] = versus
+                key = (family, BASE_KEY) if level is None else (family, level)
+                if level is None and not heaviness_active(wh):
+                    break                  # a disabled sentinel is not an active base
+                out[key] = versus
             break
     return out
 
@@ -131,12 +154,15 @@ def main() -> int:
             mean_bad.append((key, mean, key in HAND_TUNED))
 
     for family in families:
-        level = next((l for l in LEVELS if (family, l) in data), None)
+        # A NEW base carries the profile the C# bell actually anchors, so when one
+        # exists the band is measured on IT; otherwise the legacy first level.
+        level = (BASE_KEY if (family, BASE_KEY) in data
+                 else next((l for l in LEVELS if (family, l) in data), None))
         if level is None or family in FLAT_BY_DESIGN:
             continue
         # HAND_TUNED profiles are authored by hand and never generated, so the
-        # generated laws do not apply to them.
-        if (family, level) in HAND_TUNED:
+        # generated laws do not apply to them — at ANY of their profiles.
+        if any((family, l) in HAND_TUNED for l in list(LEVELS) + [BASE_KEY]):
             continue
         rows = [v for v in armor_rows(data[(family, level)]).values() if v > 0]
         if not rows:
@@ -146,12 +172,16 @@ def main() -> int:
             spread_bad.append((family, spread))
 
         levels = [l for l in LEVELS if (family, l) in data]
+        if (family, BASE_KEY) in data:
+            levels.append(BASE_KEY)
         for ladder_name, rungs in LADDERS.items():
             dirs = {d for d in (ladder_direction(data[(family, l)], rungs) for l in levels) if d}
             if len(dirs) > 1:
                 flips.append((family, ladder_name, sorted(dirs)))
 
-    print(f"# audit_versus_profile — {len(data)} MAIN profiles across {len(families)} families\n")
+    n_base = sum(1 for f, l in data if l == BASE_KEY)
+    print(f"# audit_versus_profile — {len(data)} MAIN profiles across {len(families)} families "
+          f"({len(data) - n_base} legacy level + {n_base} level-less base)\n")
 
     print(f"## §12.0h MEAN-100 — {len(data) - len(mean_bad)} of {len(data)} conform\n")
     for key, mean, hand in mean_bad:

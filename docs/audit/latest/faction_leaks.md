@@ -1,6 +1,6 @@
 # audit_faction_leaks — cross-faction leaks (B1)
 
-Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20**, shared/unattributed buildables: **91**
+Factions checked: **31** — L1 leaks: **453**, L3 concrete-inherit leaks: **20**, shared/unattributed buildables: **91**
 
 
 ## L1 — buildable in faction X but owned by faction Y
@@ -72,7 +72,6 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | ra1_soviets | ra1_soviets_airfield | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/buildings.yaml |
 | ra1_soviets | ra1_soviets_ak47conscript | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets | ra1_soviets_armoredyak | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/aircraft.yaml |
-| ra1_soviets | ra1_soviets_attackdog | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets | ra1_soviets_barracks | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/buildings.yaml |
 | ra1_soviets | ra1_soviets_btr80 | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/vehicles.yaml |
 | ra1_soviets | ra1_soviets_commissar | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
@@ -84,6 +83,7 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | ra1_soviets | ra1_soviets_doctrine_inferno | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_doctrine_nuclearwar | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_doctrine_teslaandexperimentaltech | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
+| ra1_soviets | ra1_soviets_dog | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets | ra1_soviets_dragunovantimaterialsniper | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets | ra1_soviets_firerocketsoldier | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/infantry.yaml |
 | ra1_soviets | ra1_soviets_flaktruck | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/vehicles.yaml |
@@ -151,7 +151,6 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | ra1_soviets | ra1_soviets_upgrade_hazmatsuits | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_upgrade_heatraytank | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_upgrade_heavyteslatank | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
-| ra1_soviets | ra1_soviets_upgrade_highexplosiverockets | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_upgrade_incendiarybullets | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_upgrade_kotinnucleartank | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_upgrade_massproduction | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
@@ -165,6 +164,7 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | ra1_soviets | ra1_soviets_upgrade_teslaarcing | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_upgrade_teslarockets | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_upgrade_teslayak | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
+| ra1_soviets | ra1_soviets_upgrade_thermobaricrockets | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_upgrade_thermonuclearrockets | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_upgrade_unstableisotopes | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
 | ra1_soviets | ra1_soviets_upgrade_vengeance | redalert/soviets | mods/cameo/ContentPacks/RedAlert/Soviets/yaml/upgrades.yaml |
@@ -187,7 +187,6 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | ra2_allies | ra2_allies_alliedpowerplant | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/buildings.yaml |
 | ra2_allies | ra2_allies_alliedservicedepot | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/buildings.yaml |
 | ra2_allies | ra2_allies_alliedwarfactory | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/buildings.yaml |
-| ra2_allies | ra2_allies_attackdog | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/infantry.yaml |
 | ra2_allies | ra2_allies_battlefortress | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/vehicles.yaml |
 | ra2_allies | ra2_allies_battlefortress_chrono | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/vehicles.yaml |
 | ra2_allies | ra2_allies_battlefortress_empty | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/vehicles.yaml |
@@ -196,6 +195,7 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | ra2_allies | ra2_allies_chronominer | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/vehicles.yaml |
 | ra2_allies | ra2_allies_chronosphere | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/defenses.yaml |
 | ra2_allies | ra2_allies_concretebarrier | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/defenses.yaml |
+| ra2_allies | ra2_allies_dog | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/infantry.yaml |
 | ra2_allies | ra2_allies_engineer | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/infantry.yaml |
 | ra2_allies | ra2_allies_gapgenerator | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/defenses.yaml |
 | ra2_allies | ra2_allies_gi | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/infantry.yaml |
@@ -245,7 +245,6 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | ra2_allies | ra2_allies_weathercontrolcenter | redalert2/allies | mods/cameo/ContentPacks/RedAlert2/Allies/yaml/defenses.yaml |
 | ra2_soviets | ra2_soviets_airfield | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/buildings.yaml |
 | ra2_soviets | ra2_soviets_apocalypsetank | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/vehicles.yaml |
-| ra2_soviets | ra2_soviets_attackdog | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/infantry.yaml |
 | ra2_soviets | ra2_soviets_barracks | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/buildings.yaml |
 | ra2_soviets | ra2_soviets_battlebunker | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/defenses.yaml |
 | ra2_soviets | ra2_soviets_battlelab | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/buildings.yaml |
@@ -264,6 +263,7 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | ra2_soviets | ra2_soviets_doctrine_shocktroopertraining | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/upgrades.yaml |
 | ra2_soviets | ra2_soviets_doctrine_tesladischargearmor | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/upgrades.yaml |
 | ra2_soviets | ra2_soviets_doctrine_teslamunitions | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/upgrades.yaml |
+| ra2_soviets | ra2_soviets_dog | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/infantry.yaml |
 | ra2_soviets | ra2_soviets_engineer | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/infantry.yaml |
 | ra2_soviets | ra2_soviets_flakcannon | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/defenses.yaml |
 | ra2_soviets | ra2_soviets_flaktrack | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/vehicles.yaml |
@@ -299,20 +299,32 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | ra2_soviets | ra2_soviets_v3rocketlauncher | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/vehicles.yaml |
 | ra2_soviets | ra2_soviets_warfactory | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/buildings.yaml |
 | ra2_soviets | ra2_soviets_warminer | redalert2/soviets | mods/cameo/ContentPacks/RedAlert2/Soviets/yaml/vehicles.yaml |
+| latinsyndicate | naxis_tiger | redalert2mod/naxis | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
+| latinsyndicate | naxis_wirbelwind | redalert2mod/naxis | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
 | latinsyndicate | ptnk.asian | redalert2mod/asianalliance | mods/cameo/ContentPacks/RedAlert2Mod/AsianAlliance/yaml/vehicles.yaml |
-| latinsyndicate | tiger.nax | redalert2mod/naxis | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
-| latinsyndicate | wirbelwind.nax | redalert2mod/naxis | mods/cameo/ContentPacks/RedAlert2Mod/Naxis/yaml/vehicles.yaml |
-| ordos | duelist_tank.ixian | d2k/ixian | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
-| ordos | heavy_inf.ixian | d2k/ixian | mods/cameo/ContentPacks/D2k/Ixian/yaml/infantry.yaml |
-| ordos | heavy_rocket_raider.ixian | d2k/ixian | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
-| ordos | ixian_kodatank | d2k/ixian | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
-| ordos | rocket_raider.ixian | d2k/ixian | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
-| harkonnen | duelist_tank.ixian | d2k/ixian | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
-| harkonnen | heavy_inf.ixian | d2k/ixian | mods/cameo/ContentPacks/D2k/Ixian/yaml/infantry.yaml |
-| harkonnen | heavy_rocket_raider.ixian | d2k/ixian | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
-| harkonnen | ixian_kodatank | d2k/ixian | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
+| ordos | atreides_advancedcarryall | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |
+| ordos | atreides_fremen | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/infantry.yaml |
+| ordos | atreides_ornithopter | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |
+| ordos | atreides_palace | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| ordos | harkonnen_advancedcarryall | d2k/harkonnen | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/aircraft.yaml |
+| ordos | harkonnen_gunship | d2k/harkonnen | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/aircraft.yaml |
+| ixian | atreides_advancedcarryall | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |
+| ixian | atreides_fremen | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/infantry.yaml |
+| ixian | atreides_missiletank | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| ixian | atreides_ornithopter | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |
+| ixian | atreides_palace | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| ixian | corrino_missiletank | d2k/corrino | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
+| ixian | harkonnen_advancedcarryall | d2k/harkonnen | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/aircraft.yaml |
+| ixian | harkonnen_gunship | d2k/harkonnen | mods/cameo/ContentPacks/D2k/Harkonnen/yaml/aircraft.yaml |
+| harkonnen | atreides_advancedcarryall | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |
+| harkonnen | atreides_fremen | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/infantry.yaml |
+| harkonnen | atreides_missiletank | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/vehicles.yaml |
+| harkonnen | atreides_ornithopter | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/aircraft.yaml |
+| harkonnen | atreides_palace | d2k/atreides | mods/cameo/ContentPacks/D2k/Atreides/yaml/buildings.yaml |
+| harkonnen | corrino_missiletank | d2k/corrino | mods/cameo/ContentPacks/D2k/Corrino/yaml/vehicles.yaml |
 | harkonnen | ordos_upgrade_lightfactory | d2k/ordos | mods/cameo/ContentPacks/D2k/Ordos/yaml/upgrades.yaml |
-| harkonnen | rocket_raider.ixian | d2k/ixian | mods/cameo/ContentPacks/D2k/Ixian/yaml/vehicles.yaml |
+| wc2_humans | wc2_humans_alleria | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
+| wc2_humans | wc2_humans_alleria_elite | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
 | wc2_humans | wc2_humans_archmage | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
 | wc2_humans | wc2_humans_ballista | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/vehicles.yaml |
 | wc2_humans | wc2_humans_barracks | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/buildings.yaml |
@@ -321,6 +333,8 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | wc2_humans | wc2_humans_cannontower_plug | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/buildings.yaml |
 | wc2_humans | wc2_humans_castle | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/buildings.yaml |
 | wc2_humans | wc2_humans_church | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/buildings.yaml |
+| wc2_humans | wc2_humans_danath | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
+| wc2_humans | wc2_humans_danath_elite | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
 | wc2_humans | wc2_humans_demolitionsquad | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/vehicles.yaml |
 | wc2_humans | wc2_humans_dwarvenrifleman | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
 | wc2_humans | wc2_humans_elvenarcher | warcraft2/humans | mods/cameo/ContentPacks/Warcraft2/Humans/yaml/infantry.yaml |
@@ -399,6 +413,8 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | wc2_orcs | wc2_orcs_grunt | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
 | wc2_orcs | wc2_orcs_guardtower | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/defenses.yaml |
 | wc2_orcs | wc2_orcs_guardtower_plug | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/buildings.yaml |
+| wc2_orcs | wc2_orcs_hellscream | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
+| wc2_orcs | wc2_orcs_hellscream_elite | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
 | wc2_orcs | wc2_orcs_kodobeast | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
 | wc2_orcs | wc2_orcs_mobileconstructionvehicleorc | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/vehicles.yaml |
 | wc2_orcs | wc2_orcs_ogre | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
@@ -442,6 +458,8 @@ Factions checked: **29** — L1 leaks: **435**, L3 concrete-inherit leaks: **20*
 | wc2_orcs | wc2_orcs_upgrade_warcraft3grunt | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/upgrades.yaml |
 | wc2_orcs | wc2_orcs_wall | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/defenses.yaml |
 | wc2_orcs | wc2_orcs_warcraft3grunt | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
+| wc2_orcs | wc2_orcs_zuljin | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
+| wc2_orcs | wc2_orcs_zuljin_elite | warcraft2/orcs | mods/cameo/ContentPacks/Warcraft2/Orcs/yaml/infantry.yaml |
 
 
 ## L3 — buildable inherits concrete actor owned by another faction

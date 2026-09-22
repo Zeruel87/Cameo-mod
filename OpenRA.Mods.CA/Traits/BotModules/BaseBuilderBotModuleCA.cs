@@ -841,6 +841,14 @@ namespace OpenRA.Mods.CA.Traits
 
 			for (var i = 0; i < refineries.Length; i++)
 			{
+				// StarCraft and Warcraft headquarters also accept resources. Keep them
+				// in the refinery count, but never sell them as redundant drop-off sites.
+				if (Info.ConstructionYardTypes.Contains(refineries[i].Info.Name))
+				{
+					AIUtils.BotDebug("AI ({0}): Preserving headquarters during refinery cleanup: {1}", player.ClientIndex, refineries[i]);
+					continue;
+				}
+
 				for (var j = i + 1; j < refineries.Length; j++)
 				{
 					if ((refineries[i].Location - refineries[j].Location).LengthSquared <= Info.SellRefineryTooCloseCellDistance * Info.SellRefineryTooCloseCellDistance)

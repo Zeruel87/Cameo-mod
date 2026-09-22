@@ -1,6 +1,9 @@
+import contextlib
+import io
 import pathlib
 import sys
 import unittest
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -8,6 +11,7 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 from audit_three_way_split import main_warhead_nodes, main_warheads
+import consolidate_corroborated_role_profiles as converter
 from consolidate_corroborated_role_profiles import (
     BASELINE,
     ROOTS,
@@ -17,9 +21,25 @@ from consolidate_corroborated_role_profiles import (
     set_state_scale,
 )
 from miniyaml import Ruleset
+from reviewed_weapon_history import restore_later_profile, HistoricalView
 from percentage_damage import runtime_percentage_hp
 from survey_weapon_structure import weapon_reference_sets
 
+
+CURRENT_MAIN_OVERRIDES = {
+    "RA2CosmonautLaser": "Laser_Light",
+    "NaxisBlackBombSmaller": "Demolition_Medium",
+    "AsianMLRS": "MissileAP_Medium",
+    "AsianSpitfireRockets": "MissileAP_Medium",
+    "NaxiShrek": "MissileHE_Medium",
+    "NaxiShrek_elite": "MissileHE_Medium",
+    "NaxiShrekCons": "MissileHE_Medium",
+    "NaxiShrekCons_elite": "MissileHE_Medium",
+}
+HISTORICAL_CANONICAL_MAINS = {
+    "RA2CosmonautLaser": "Laser_Light",
+    "NaxisBlackBombSmaller": "Demolition_Medium",
+}
 
 class CorroboratedRoleProfileConsolidationTests(unittest.TestCase):
     @classmethod
@@ -29,12 +49,18 @@ class CorroboratedRoleProfileConsolidationTests(unittest.TestCase):
 
     def test_selected_profiles_resolve_to_one_pinned_main(self):
         self.assertEqual(50, len(self.selected))
+        historical = HistoricalView(self, self.rules)
         for name, destination in self.selected.items():
-            nodes = main_warhead_nodes(self.rules.resolve_weapon(name))
+            current = main_warhead_nodes(self.rules.resolve_weapon(name))
+            self.assertEqual(1, len(current), name)
+            expected_current = CURRENT_MAIN_OVERRIDES.get(name, f"{destination}_Flat")
+            self.assertEqual(f"Warhead@{expected_current}", current[0].key, name)
+            nodes = main_warhead_nodes(historical.resolve_weapon(name))
             self.assertEqual(1, len(nodes), name)
             node = nodes[0]
-            self.assertEqual(
-                f"Warhead@{destination}FlatCompatibility", node.key, name)
+            expected_historical = HISTORICAL_CANONICAL_MAINS.get(
+                name, f"{destination}FlatCompatibility")
+            self.assertEqual(f"Warhead@{expected_historical}", node.key, name)
             _keys, damage, scale = BASELINE[name]
             self.assertEqual(str(damage), node.get("Damage"), name)
             self.assertEqual(str(scale), node.get("PercentageScale"), name)
@@ -50,7 +76,7 @@ class CorroboratedRoleProfileConsolidationTests(unittest.TestCase):
         excluded = {
             "AtreusMG", "EpigraphMG", "GoliathMG", "GoliathMk2MG",
             "HMG_Duelist_upgrade", "autogun_tank",
-            "TSRPGTowerRail", "VolkovMagneticWeapon",
+            "TSRPGTowerRail", "ra1_soviets_volkov_volkovmagneticweapon",
             "BCLaser", "BCYamatoCannon",
             "edenMobileLaserTiger",
             "JimRaynorMachineGun",
@@ -58,7 +84,7 @@ class CorroboratedRoleProfileConsolidationTests(unittest.TestCase):
         self.assertTrue(excluded.isdisjoint(self.selected))
         for name in excluded:
             self.assertGreaterEqual(
-                len(main_warheads(self.rules.resolve_weapon(name))), 2, name)
+                len(main_warheads(restore_later_profile(self, self.rules.resolve_weapon(name)))), 2, name)
         for name in ("tkmjuggap", "tkmtechnicalmgap"):
             self.assertEqual(1, len(main_warheads(self.rules.resolve_weapon(name))), name)
 
@@ -98,7 +124,7 @@ class CorroboratedRoleProfileConsolidationTests(unittest.TestCase):
             self.assertEqual("1500", node.get("Damage"), name)
 
     def test_pulverizer_child_does_not_reinherit_parent_template(self):
-        template = "^Compatibility_Bullet_MediumFlat"
+        template = "^Warhead_Bullet_Medium_Flat"
         parent = self.rules.weapon("AsianPulverizerGatling")
         child_weapon = self.rules.weapon("AsianPulverizerMechaGatling")
         parent_inherits = {
@@ -111,6 +137,18 @@ class CorroboratedRoleProfileConsolidationTests(unittest.TestCase):
         }
         self.assertIn(template, parent_inherits)
         self.assertNotIn(template, child_inherits)
+
+    def test_retired_cli_refuses_before_loading_or_writing_rules(self):
+        for argv in ([], ["--apply"]):
+            stderr = io.StringIO()
+            with (
+                    mock.patch.object(converter, "Ruleset") as ruleset,
+                    mock.patch.object(converter, "apply_changes") as apply_changes,
+                    contextlib.redirect_stderr(stderr)):
+                self.assertEqual(1, converter.main(argv))
+            ruleset.assert_not_called()
+            apply_changes.assert_not_called()
+            self.assertIn("one-shot corroborated-role migration has already landed", stderr.getvalue())
 
     def test_latin_molotov_keeps_temperature_and_fire_payloads(self):
         for name in (
@@ -159,11 +197,14 @@ class CorroboratedRoleProfileConsolidationTests(unittest.TestCase):
                     - applications * runtime_percentage_hp(hp, 100, 10000)
                 for hp in health_values
             }
-            self.assertEqual(
-                {160: 1, 250: 1},
-                {hp: delta for hp, delta in differences.items() if delta},
-                applications,
-            )
+            # New actors may add rounding cases without a runtime regression.
+            # 1250 HP is now present on devastator.husk; retain known edge cases
+            # and check the quantization bound over the entire current roster.
+            for hp in (160, 250, 1250):
+                self.assertEqual(1, differences[hp], (applications, hp))
+            for hp, delta in differences.items():
+                self.assertGreaterEqual(delta, 0, (applications, hp))
+                self.assertLessEqual(delta, applications - 1, (applications, hp))
 
 
 if __name__ == "__main__":

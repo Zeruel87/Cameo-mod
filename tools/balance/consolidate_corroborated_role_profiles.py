@@ -42,11 +42,18 @@ from consolidate_reviewed_weapon_roots import (  # noqa: E402
 from miniyaml import Ruleset  # noqa: E402
 
 
+RETIRED_MESSAGE = (
+    "this one-shot corroborated-role migration has already landed and its compatibility "
+    "identifiers were retired by R12; the writer is retained only for imported helpers and "
+    "historical regression fixtures"
+)
+
+
 # root: (destination profile, exact concrete descendant closure, evidence)
 ROOTS = {
     "AsianPelicanMG": ("Bullet_Medium", {"AsianPelicanMG_elite"}, "name"),
     "light_inf_lmg_upgrade": ("Bullet_Medium", set(), "name"),
-    "FLAK-23-AG": ("Flak_Medium", {"FLAK-23-AA"}, "name"),
+    "ra1_soviets_flaktruck_flak_cannon": ("Flak_Medium", {"ra1_soviets_flaktruck_flak_cannon_AA"}, "name"),
     "NaxQuadCannon_AA": (
         "Flak_Medium",
         {
@@ -116,8 +123,8 @@ BASELINE = {
         {"Bullet_Light", "Bullet_Medium", "CannonHE_Heavy"}, 6000, 9984),
     "light_inf_lmg_upgrade": (
         {"Bullet_Light", "Bullet_Medium", "CannonHE_Heavy"}, 6000, 9984),
-    "FLAK-23-AG": ({"Bullet_Medium", "Flak_Medium"}, 4000, 9975),
-    "FLAK-23-AA": ({"Bullet_Medium", "Flak_Medium"}, 4000, 9975),
+    "ra1_soviets_flaktruck_flak_cannon": ({"Bullet_Medium", "Flak_Medium"}, 4000, 9975),
+    "ra1_soviets_flaktruck_flak_cannon_AA": ({"Bullet_Medium", "Flak_Medium"}, 4000, 9975),
     "NaxFlakAA": ({"Flak_Medium", "NaxFlakGroundWater"}, 7000, 2843),
     "NaxQuadCannon_AA": (
         {"Flak_Medium", "NaxFlakGroundWater"}, 7000, 2843),
@@ -219,8 +226,8 @@ TARGETS = {
     "AsianPelicanMG": "Ground, Water, Air",
     "AsianPelicanMG_elite": "Ground, Water, Air",
     "light_inf_lmg_upgrade": "Ground, Water, Air",
-    "FLAK-23-AG": "Ground, Water",
-    "FLAK-23-AA": "Air",
+    "ra1_soviets_flaktruck_flak_cannon": "Ground, Water",
+    "ra1_soviets_flaktruck_flak_cannon_AA": "Air",
     "NaxFlakAA": "Air",
     "NaxQuadCannon_AA": "Air",
     "NaxQuadCannon_AA_elite": "Air",
@@ -329,7 +336,7 @@ def selections(rs: Ruleset) -> dict[str, str]:
                     f"{root}: expected sole canonical family {destination}; "
                     f"found {sorted(canonical)}")
         elif evidence == "existing-roleflat":
-            compatibility = f"^Compatibility_{destination}Flat"
+            compatibility = f"^Warhead_{destination}_Flat"
             if not any(str(child.value).strip() == compatibility
                        for child in rs.weapon(root).children
                        if child.key == "Inherits" or child.key.startswith("Inherits@")):
@@ -665,24 +672,12 @@ def apply_changes(rs: Ruleset, selected: dict[str, str], plans) -> None:
     cleanup_duplicate_template_inherits(set(selected))
 
 
-def main() -> int:
+def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--apply", action="store_true")
-    args = parser.parse_args()
-    rules = Ruleset(ROOT)
-    selected = selections(rules)
-    plans, applied = inspect(rules, selected)
-    if applied:
-        print(f"Already consolidated {len(selected)} concrete definitions")
-        return 0
-    print(f"{len(ROOTS)} roots; {len(selected)} concrete definitions")
-    if not args.apply:
-        print("Dry run: closures, routes, states, and percentage arithmetic pass")
-        return 0
-    apply_changes(rules, selected, plans)
-    validate_result()
-    print(f"Applied and validated {len(selected)} concrete definitions")
-    return 0
+    parser.parse_args(argv)
+    print(f"REFUSED: {RETIRED_MESSAGE}", file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":

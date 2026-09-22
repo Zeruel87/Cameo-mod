@@ -408,6 +408,20 @@ def fired_weapons(rs) -> set[str]:
     return out
 
 
+def flat_health_damage(wh) -> float:
+    """Nominal positive flat health damage, never slab/integrity/percentage damage.
+
+    The runtime types define the units, not the arbitrary Warhead instance tag.
+    Keep this denominator shared by the binding census and meter-fed split.
+    """
+    if (wh.value or '').strip() not in {'AreaDamage', 'SpreadDamage', 'TargetDamage'}:
+        return 0.0
+    relationships = {x.strip() for x in (wh.get('ValidRelationships') or '').split(',')}
+    if 'Ally' in relationships and 'Enemy' not in relationships:
+        return 0.0
+    return max(0.0, _float(wh.get('Damage')))
+
+
 def weapon_bindings(rs, weapon: str) -> tuple[float, list[tuple[str, str, float]]]:
     """(total flat damage, [(meter, kind, signed magnitude)]) for one resolved weapon.
 
@@ -425,9 +439,7 @@ def weapon_bindings(rs, weapon: str) -> tuple[float, list[tuple[str, str, float]
         rel = (wh.get("ValidRelationships") or "").strip()
         if "Ally" in rel and "Enemy" not in rel:      # friendly-fire twin
             continue
-        d = _float(wh.get("Damage"))
-        if d > 0 and "Percentage" not in wh.key:
-            damage += d
+        damage += flat_health_damage(wh)
         name = (wh.get("PhysicalStateName") or "").strip()
         if name:
             if (wh.value or "").strip() == "ApplyPhysicalState":
@@ -451,8 +463,8 @@ def _float(v, default=0.0) -> float:
 def damage_split(rs, weapon: str) -> tuple[float, float]:
     """(total main damage, damage carried by warheads that ALSO feed a meter).
 
-    Friendly-fire twins and `Percentage` warheads are excluded on both sides, matching
-    `weapon_bindings`. The ratio of the two is `fed_share` — see `fill_ratio`.
+    Friendly-fire twins and non-flat-health types are excluded on both sides,
+    matching `weapon_bindings`. The ratio is `fed_share` — see `fill_ratio`.
     """
     node = rs.resolve_weapon(weapon)
     if node is None:
@@ -464,8 +476,8 @@ def damage_split(rs, weapon: str) -> tuple[float, float]:
         rel = (wh.get("ValidRelationships") or "").strip()
         if "Ally" in rel and "Enemy" not in rel:
             continue
-        d = _float(wh.get("Damage"))
-        if not (d > 0 and "Percentage" not in wh.key):
+        d = flat_health_damage(wh)
+        if d <= 0:
             continue
         total += d
         named = (wh.get("PhysicalStateName") or "").strip()

@@ -1,0 +1,188 @@
+World:
+	LuaScript:
+		Scripts: test.lua
+	-CrateSpawner:
+	-SpawnStartingUnits:
+	-MapStartingLocations:
+	MapOptions:
+		ShortGameEnabled: False
+
+Player:
+	-ConquestVictoryConditions:
+	Shroud:
+		FogCheckboxEnabled: False
+		ExploredMapCheckboxEnabled: True
+	PlayerResources:
+		DefaultCash: 0
+
+probe_target_ground:
+	Immobile:
+	HiddenUnderShroud:
+		AlwaysVisibleRelationships: Ally, Neutral, Enemy
+	BodyOrientation:
+		QuantizedFacings: 0
+	ScriptTriggers:
+	Health:
+		HP: 10000000
+	Armor:
+		Type: Heavy
+	Targetable:
+		TargetTypes: Ground
+	HitShape:
+		Type: Circle
+			Radius: 512
+
+probe_target_air:
+	Inherits: probe_target_ground
+	Targetable:
+		TargetTypes: Air
+
+probe_a10_gun:
+	Inherits: A10Carrier
+	-CarrierSlave:
+	-HasParent:
+	-RejectsOrders:
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	-ReloadAmmoPool:
+	-Armament@BOMBS:
+	-Armament@AA:
+	Armament@GUNS:
+		Weapon: ProbeBurstTenGround
+	AmmoPool@probe:
+		Name: probe
+		Armaments: primary
+		Ammo: 1000
+
+probe_a10_reload:
+	Inherits: A10Carrier
+	-CarrierSlave:
+	-HasParent:
+	-RejectsOrders:
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	ExternalCondition@probe_pause:
+		Condition: probe_pause
+	ReloadAmmoPool:
+		PauseOnCondition: probe_pause
+
+probe_a10_bomb:
+	Inherits: A10Carrier
+	-CarrierSlave:
+	-HasParent:
+	-RejectsOrders:
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	-ReloadAmmoPool:
+	-Armament@GUNS:
+	-Armament@AA:
+	Armament@BOMBS:
+		Weapon: ProbeSingleGround
+	AmmoPool@probe:
+		Name: probe
+		Armaments: secondary
+		Ammo: 1000
+
+probe_a10_aa:
+	Inherits: A10Carrier
+	-CarrierSlave:
+	-HasParent:
+	-RejectsOrders:
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	-ReloadAmmoPool:
+	-Armament@GUNS:
+	-Armament@BOMBS:
+	Armament@AA:
+		Weapon: ProbeBurstTwoAir
+	AmmoPool@probe:
+		Name: probe
+		Armaments: secondary
+		Ammo: 1000
+
+probe_interceptor:
+	Inherits: SCINTERCEPTOR
+	-CarrierSlave:
+	-HasParent:
+	-RejectsOrders:
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	-ReloadAmmoPool:
+	Armament@PRIMARY:
+		Weapon: ProbeBurstFourGround
+	AmmoPool@probe:
+		Name: probe
+		Armaments: primary
+		Ammo: 1000
+	RenderSprites:
+		Image: SCINTERCEPTOR
+
+probe_usage12_contract:
+	Immobile:
+	BodyOrientation:
+		QuantizedFacings: 0
+	AttackOmni:
+	Armament@PROBE:
+		Name: primary
+		AmmoUsage: 12
+		PauseOnCondition: ammo < 12
+		Weapon: ProbeSingleGround
+	AmmoPool:
+		Ammo: 36
+		AmmoCondition: ammo
+	AmmoPool@probe:
+		Name: probe
+		Armaments: primary
+		Ammo: 1000
+
+probe_interceptor_reload:
+	Inherits: SCINTERCEPTOR
+	-CarrierSlave:
+	-HasParent:
+	-RejectsOrders:
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+	RenderSprites:
+		Image: SCINTERCEPTOR
+
+probe_japan_reload:
+	Inherits: japan_zerofighter_slave
+	-CarrierSlave:
+	-HasParent:
+	-RejectsOrders:
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: HoldFire
+
+probe_real_a10:
+	Inherits: A10Carrier
+	-ReloadAmmoPool:
+	-Armament@BOMBS:
+	-Armament@AA:
+	Armament@GUNS:
+		Weapon: ProbeBurstTenGround
+	AmmoPool@reentry_probe:
+		Name: reentry_probe
+		Armaments: unused
+		Ammo: 7
+
+probe_supercarrier:
+	Inherits: td_gdi_supercarrier
+	Mobile:
+		Locomotor: wheeled
+	CarrierMaster:
+		Actors: probe_real_a10
+		RearmTicks: 125
+		RespawnTicks: 250
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Armament@PRIMARY:
+		Weapon: ProbeCarrierTarget
+		ReloadDelay: 125

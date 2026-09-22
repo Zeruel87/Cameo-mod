@@ -1,0 +1,90 @@
+# docs/balance/name_map.yaml — legacy workbook keys -> ledger actor id.
+#
+# ⚠ IDENTITY ALIASES ONLY. Each row tells seed_design.py WHICH actor a legacy
+# workbook row corresponds to. It is NOT approval to import legacy numbers
+# (hp/cost/dps still flow through the balance pipeline and maintainer rulings)
+# and NOT approval to retire docs/design/cameo_armor_system.xlsx.
+#
+# Two key kinds:
+#   - DISPLAY-NAME keys: match the legacy type tabs' column B (Infantry/
+#     Tanks/Vehicles/Aircraft/Defenses) against the ledger display names;
+#   - ACTOR-ID keys: match the legacy CABAL tab's column C, and are consulted
+#     ONLY when that exact actor id is MISSING from the ledger — an existing
+#     id is always kept and never redirected by this file.
+#
+# Parsed by seed_design.load_name_map:
+#   - full-line "#" comments and blank lines are skipped;
+#   - keys go through seed_design.norm() (parentheses stripped, lowercased,
+#     non-alphanumerics dropped), so key case/punctuation is irrelevant —
+#     normalized keys must stay unique across BOTH key kinds;
+#   - the value is taken VERBATIM after the first colon — an inline " #"
+#     comment on an entry line would corrupt the actor id, so citations sit
+#     on the full-line comment directly above each entry;
+#   - a value of "-" marks a TYPE-TAB DISPLAY-NAME row as deliberately
+#     ignored. On the CABAL actor-ID path "-" has NO ignore authority: a
+#     CABAL id mapped to "-" stays unresolved (missing actor ID).
+#
+# Display aliases — verified 2026-09-09: a read-only pass over the five legacy
+# type tabs (Infantry/Tanks/Vehicles/Aircraft/Defenses) using seed_design.norm
+# found exactly one row per key, no collisions. All targets exist in the
+# committed ledger and in the active rules.
+
+# Infantry!B62 — legacy "Terran Marine"; current ledger display is "Marine"
+# (starcraft_terran.json, section infantry), so the auto name-match misses.
+Terran Marine: terran_marine
+
+# Vehicles!B139 — legacy "Ordos Tank Destroyer"; current ledger display is
+# "Tank Destroyer" (d2k_ordos.json, section vehicles), so the auto match misses.
+Ordos Tank Destroyer: ordos_tankdestroyer
+
+# Defenses!B15 — legacy "Ixian Gun Turret"; current ledger display is
+# "Gun Turret" (d2k_ixian.json, section buildings), so the auto match misses.
+Ixian Gun Turret: ixian_gunturret
+
+# FutureTech display aliases — identity chain: the legacy ids
+# future_robot_cannon / future_robot_missiles / future_mech_plasma / futu_wheel
+# became robot_cannon.futu / robot_missiles.futu / mech_plasma.futu /
+# wheel.futu in migration 6dbba3eaa007fcd3d612a37f013fe4854f87de6b, then
+# literal header renames in db913a5abcb80cbf7489728ed3213e6cf18e96b7 landed the
+# current ids. The old names survive under the exact old ids in
+# fd58e3f93^:mods/cameo/rules/redalert2mod.yaml and still key the legacy
+# workbook rows below. ⚠ The migration did NOT rename tooltips — its parent
+# already used the new droid names; the dormant monolith's old names are
+# legacy-name association only. IDENTITY aliases, not approved current legacy
+# judgments: values flow only through the existing fill-only seed logic, and
+# code comments + a --dry-run review are required before any write run.
+
+# Tanks!B47 — legacy "Cannon Attack Robot"; current ledger display is
+# "Cannon Droid" (redalert2mod_futuretech.json, section vehicles), so the auto
+# name-match misses.
+Cannon Attack Robot: futuretech_cannondroid
+
+# Vehicles!B162 — legacy "Missile Attack Robot"; current ledger display is
+# "Missile Droid" (redalert2mod_futuretech.json, section vehicles), so the
+# auto name-match misses.
+Missile Attack Robot: futuretech_missiledroid
+
+# Tanks!B96 — legacy "Plasma Super Mech"; current ledger display is
+# "Plasma Strider" (redalert2mod_futuretech.json, section vehicles), so the
+# auto name-match misses.
+Plasma Super Mech: futuretech_plasmastrider
+
+# Vehicles!B35 — legacy "Scout Robot"; current ledger display is "Scout Droid"
+# (redalert2mod_futuretech.json, section vehicles), so the auto name-match
+# misses.
+Scout Robot: futuretech_scoutdroid
+
+# Actor-ID aliases — provenance: ancestor commit
+# 86eee6bcadb5cbe567ec1f470eb5617d5bb9c713 ("merge internal underscores") made
+# literal header renames in
+# mods/cameo/ContentPacks/TiberianSun/CABAL/yaml/aircraft.yaml: the old
+# definition was removed and replaced under the underscore-free id. All six
+# targets are active and present in tiberiansun_cabal.json. The legacy CABAL
+# column C still carries the OLD id; seed_design consults these entries only
+# when the original id is absent from the ledger.
+cabal_overkill_gunship: cabal_overkillgunship
+cabal_hunter_drone_carrier: cabal_hunterdronecarrier
+cabal_hunter_drone: cabal_hunterdrone
+cabal_orb_drone: cabal_orbdrone
+cabal_cyborg_assassin: cabal_cyborgassassin
+cabal_repair_drone: cabal_repairdrone
