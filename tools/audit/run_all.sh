@@ -58,7 +58,7 @@ export PYTHONIOENCODING=utf-8
 # its counts are moving targets while W24 collapses and the fold are in flight.
 # Wire it in once that work settles; see docs/HANDOFF.md and the audit header.
 for a in inherits duplicate_inherits faction_leaks upgrades upgrade_coverage ai ai_personalities sequences \
-         metadata outliers orphans assets fluent power_budget stat_formulas \
+         metadata outliers orphans orphan_cancels assets fluent power_budget stat_formulas \
          weapon_uniqueness garrison_weapons asset_files promotion_gating min_range \
          basebuilder_crates buildable_order display_text rename_safety naming_damage \
          map_actors \
