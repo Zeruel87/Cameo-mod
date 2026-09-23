@@ -1,3 +1,30 @@
+## Devin-DAWN (A4) — W23 legacy-template retrofit: SC/Terran + TD/GDI done, branch re-cut onto post-#438 master (2026-09-23)
+
+**Branch:** `devin/dawn/w23` — re-cut onto `origin/master` `8330a1834` after #438's
+squash-merge (`rebase --onto`, zero conflicts). Overflow claim per
+`ORDERS_2026-09-22_claude_lanes.md` §4 item 2.
+
+- 5 commits: `bde180dba` TS/Forgotten pilot (2), `38b20a7f3` SC snipers (2),
+  `67bf4708c` SC batch (7), `67f2403d7` SC final (5), `b6b7ec025` TD/GDI (14).
+  Every converted weapon + resolved child **IDENTICAL** to base modulo provably-dead
+  missile fields dropped on `Bullet` nodes (verified vs `BulletInfo`'s field list).
+- Method: strip legacy full-stack inherits + their dead declare/cancel pairs →
+  `gen_pins.py` emits insertable yaml for every drifted field → splice → deep-diff.
+  Trap that kept recurring: `*Percentage`/`*FriendlyFire` twins inherit
+  `Spread`/`Falloff`/`Versus`/`DamageTypes` from the stripped parents' same-named
+  nodes — pinning must restore the whole profile, not just the local override.
+- **New crash class found by boot-gate:** orphan `-Key:` cancels throw in engine
+  `ResolveInherits` but are silently skipped by `miniyaml._merge_into` — the
+  resolver cannot see them. 12 orphans removed (child cancels of stripped parent
+  nodes + nested `-LaunchAngle:` inside `Projectile:`). New permanent audit
+  `tools/audit/audit_orphan_cancels.py` wired into `run_all.sh`; LESSONS_LEARNED
+  severity corrected (boot crash, not hygiene).
+- Gates per batch: deep-diff clean, empty_warhead=0, Bug B=0, dup_inherits=1956
+  baseline, boot PASS PID-verified. W6 ratchet 692→704 documented (fidelity pins
+  pending the pin-vs-canonical-snap ruling).
+- Open: pin-vs-snap ruling; `td_nod_lasercorvette` held for Codex arbitration.
+- Next: TiberianDawn/Nod (57 edges), then TiberianSun (163), D2k (69), outpost2 (31).
+
 ## Devin-DAWN (A4) — W24 lane-3: the last 27 non-RA multi-main weapons folded (2026-09-22)
 
 **Branch:** `devin/dawn/w24-rest`. Orders: `ORDERS_2026-09-22_claude_lanes.md` §L3.
