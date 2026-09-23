@@ -93,8 +93,8 @@ W2_BASELINE = 177   # dual ^Warhead_ inherit; 226 -> 177 by the dead-inherit sli
 W3_BASELINE = 12    # dual ^Projectile_ inherit (21->12: same collapse)
 W4_BASELINE = 51    # dual ^Effect_ inherit; Apocalypse effect composition owns its overrides
 W5_BASELINE = 389   # more than one resolved MAIN warhead; merge-payload repairs
-W6_BASELINE = 696   # weapons declaring an effect warhead locally;
-                    # 694 -> 696: W23 fidelity pins on SC/Terran +
+W6_BASELINE = 698   # weapons declaring an effect warhead locally;
+                    # 694 -> 698: W23 fidelity pins on SC/Terran +
                     # TS/Forgotten preserve legacy extra effect nodes as
                     # local typed declarations pending the
                     # pin-vs-canonical-snap ruling
