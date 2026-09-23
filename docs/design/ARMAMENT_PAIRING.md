@@ -35,16 +35,16 @@ A ten-fold range gap inside one row. Measured over the whole tree (2026-09-13):
 | | |
 |---|---|
 | priced actors | **940** |
-| **actors whose unconditional armaments span more than one role** | **106** |
-| …of those, still multi-role after `baseline_armaments` has run | 47 |
-| air-role armaments the existing `_AA` NAME test cannot see | **50** |
+| **actors whose unconditional armaments span more than one role** | **105** |
+| …of those, still multi-role after `baseline_armaments` has run | 42 |
+| air-role armaments the existing `_AA` NAME test cannot see | **41** |
 | assigned actors whose reference row is contaminated by the fold | **39** |
 
-⚠ **106 and 47 are different facts and an earlier draft of this document quoted the 47 as the
+⚠ **105 and 42 are different facts and an earlier draft of this document quoted the then-47 as the
 scope, understating it by more than half.** `reference_distribution.baseline_armaments` already
-drops **59** of the 106 before anything downstream sees them — but it drops them by matching
-`@AA` / `_AA` in the slot or weapon NAME, which is the guard §3b shows cannot see 50 real air
-weapons. So 106 is the population the ruling covers, 47 is merely what survives a name test that
+drops **63** of the 105 before anything downstream sees them — but it drops them by matching
+`@AA` / `_AA` in the slot or weapon NAME, which is the guard §3b shows cannot see 41 real air
+weapons. So 105 is the population the ruling covers, 42 is merely what survives a name test that
 is itself unreliable. Registered as `armament_multi_role_actors` in `docs/audit/doc_claims.yaml`.
 
 ⛔ **THIS FIGURE WAS FIRST PUBLISHED AS 108 AND THAT WAS WRONG.** `audit_doc_claims` measured 106

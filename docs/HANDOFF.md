@@ -1458,8 +1458,9 @@ someone else is mid-way through.**
 
 ## 2026-09-10 — source PR340 warhead-family reach measurement
 
-`warhead_family_reach` measures **1,454 distinct fired weapon identities** whose
+`warhead_family_reach` measures **1,529 distinct fired weapon identities** whose
 transitive inheritance reaches a `^Warhead_*` family in the current PR340 source.
+(2026-09-22 resync on the same tree: `unconverted_template_inheritors` = **1163**.)
 The registry's previous value was 1,415; it is updated upward to this measured
 count with the same predicate and zero tolerance. Ownership wrappers can expose
 more distinct fired identities for existing family payloads: this increase does

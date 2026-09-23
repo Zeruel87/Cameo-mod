@@ -536,7 +536,7 @@ the unit cannot shoot into.
 
 | | pairs | |
 |---|--:|---|
-| compliant | **36** | identical apart from a 1.5x maximum range |
+| compliant | **39** | identical apart from a 1.5x maximum range |
 | **value violations** | **21** | the halves are not the same weapon at all |
 | range-ratio violations | 6 | same weapon, reach is not 1.5x |
 
@@ -601,8 +601,8 @@ AA half carries +100% damage; the answer depends on whose job anti-air is:
 > don't forget we also have the anti air ship template like for the sea scorpion, aegis cruiser
 > etc, they should get the same bonus as the anti air vehicle class."*
 
-⚠ **THE MEASUREMENT THAT SHAPED THIS.** Of 63 pairs, **36** comply with identical damage and
-only **2** with double; 46 carry identical damage today. A blanket +100% would have made 36
+⚠ **THE MEASUREMENT THAT SHAPED THIS.** Of 63 pairs, **39** comply with identical damage and
+only **2** with double; 46 carry identical damage today. A blanket +100% would have made 39
 correct pairs wrong, required editing 61 of 63, and INVERTED the rise-only
 `aa_split_pairs_compliant` ratchet. Scoping it by class keeps the common case intact and gives
 the dedicated AA classes something the others do not have - which is the point, because a free
@@ -3264,7 +3264,7 @@ all 43 Protoss shields (`InitialPercentageStrength: 100`, `RequiresCondition: !d
 report a shield-free roster. Only a POSITIVE token gates.
 
 **The weapon side gets its own weight, not a rung.** `armor_weights()` carries a 17th `Shield`
-row at the measured baseline damage share (**1.432%**), taken OUT of the 16 class rows so the
+row at the measured baseline damage share (**1.444%**), taken OUT of the 16 class rows so the
 weights still sum to 1.0; `weighted_versus` iterates the weights, never `ARMORS`. Effect:
 +0.65% (Bullet) to +3.47% (Tesla). `effective_density` deliberately stays on `ARMORS` — it
 counts BODIES, and a shield sits on a body the class row already counted.

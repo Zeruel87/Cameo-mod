@@ -1613,11 +1613,10 @@ DESIGN formulas instead of silently "fixing".
 Maintainer picked the scout class first; proposed anchor 20000 HP /
 50 Speed / 5.0 Range / 4000 Damage / 50 Reload / Cost 100 with the
 2x-health bake replacing the ScoutInfantryBuff damage reduction.
-⚠ **The bake is HALF APPLIED (measured 2026-08-17): 19 of 35 scouts
-cancel the template's `DamageMultiplier@ScoutInfantryBuff: 50` with a
-local `Modifier: 100`; 16 still resolve to 50 and are therefore twice
-as durable as their price. Finishing this class means finishing that
-migration, not just setting the anchor** — W26 / FORMULA_V2.md.
+⚠ **The bake WAS half applied (measured 2026-08-17): 19 of 35 scouts
+cancelled the template's `DamageMultiplier@ScoutInfantryBuff: 50` with a
+local `Modifier: 100` — re-measured 2026-09-22: 0 still resolve,
+migration complete.** — W26 / FORMULA_V2.md.
 Assessment + simulation: docs/balance/formula_v2_classes.md — anchor
 structure confirmed, speed 60 recommended over 50, bake endorsed;
 BLOCKED ON: (1) garrisoned/pricing armament flag in the extractor,

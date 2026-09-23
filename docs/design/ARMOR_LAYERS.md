@@ -1,6 +1,6 @@
 # The layered defence stack — shields, Integrity, plating, and how damage lands
 
-> **Numeric evidence refresh — 2026-09-10, combined `839cdced4` plus reopened tooling.** `meters_filling_before_death` = **310**; `physical_state_fired_weapons` = **542**. Measured on this combined tree; predicates and tolerances are unchanged. The flat-health denominator correction changes diagnostics, not live weapons or prices. Earlier branch-specific snapshots remain historical.
+> **Numeric evidence refresh — 2026-09-10, combined `839cdced4` plus reopened tooling.** `meters_filling_before_death` = **321**; `physical_state_fired_weapons` = **538**. Measured on this combined tree; predicates and tolerances are unchanged. The flat-health denominator correction changes diagnostics, not live weapons or prices. Earlier branch-specific snapshots remain historical.
 
 **One document for the whole defence stack.** It replaces five separate analyses that each
 covered one slice and repeated the others' premises. `BALANCE_PROGRAM_PLAN.md` had already
@@ -662,7 +662,7 @@ Measured against `formula.py`, `weapon_efficiency.py` and `target_model.py`.
 
 | # | gap | why it matters | severity |
 |---|---|---|---|
-| **E1** | ✅ **FIXED 2026-08-17 (both halves).** Weapon side: `armor_weights()` now carries a 17th `Shield` row at its measured damage share, and `weighted_versus` iterates the weights instead of `ARMORS`. Unit side: `extract_stats.survivability()` publishes `effective_hp` for actors that SPAWN with a pool. | ⚠ **The "51% of the roster" figure was wrong** — it counted the 1592 actors carrying `Shielded`, but 1318 of those hold an EMPTY capacity behind `shieldgen >= 1`. Only **58** spawn with a pool, so baseline Shield exposure is **1.432%**, and the weapon-side correction is +0.65% (Bullet) to +3.47% (Tesla), not a repricing. The real hole is the unit side: those 58 carry **+57.8% effective HP at zero cost**. Report: `audit_survivability_pricing.py`. | ~~high~~ **done** |
+| **E1** | ✅ **FIXED 2026-08-17 (both halves).** Weapon side: `armor_weights()` now carries a 17th `Shield` row at its measured damage share, and `weighted_versus` iterates the weights instead of `ARMORS`. Unit side: `extract_stats.survivability()` publishes `effective_hp` for actors that SPAWN with a pool. | ⚠ **The "51% of the roster" figure was wrong** — it counted the 1592 actors carrying `Shielded`, but 1318 of those hold an EMPTY capacity behind `shieldgen >= 1`. Only **58** spawn with a pool, so baseline Shield exposure is **1.444%**, and the weapon-side correction is +0.65% (Bullet) to +3.47% (Tesla), not a repricing. The real hole is the unit side: those 58 carry **+57.8% effective HP at zero cost**. Report: `audit_survivability_pricing.py`. | ~~high~~ **done** |
 | **E2** | `PhysicalState` (heat / cold / corrosion) is priced at zero — `extract_stats` contains **0** references to it. | ⚠ **"~89 live bindings" was wrong by 8×. Measured 2026-08-18: 722 bindings on 453 weapons, of which 367 are actually FIRED, carried by 578 armaments** — roughly a quarter of the damaging roster delivers a status meter for free. It is also TWO mechanisms, not one (see below), and the earlier count saw only part of one. Design work exists, the extractor does not. | **high** |
 | **E3** | `IntegrityScale` is priced at zero. | 1233 actors carry the pool; a disable at 50% HP is worth real money. | medium |
 | **E4** | ✅ **CORRECTED 2026-08-25 — percentage damage has two shapes.** Standalone percentage warheads are absolute at the reference HP; folded `PercentageScale` damage derives from the main Damage and is scalable. The first E4 fix recognized only specially named standalone twins and missed most standalone nodes plus every folded hit. | The model now discovers percentage applications by warhead type. `k_flat_context` includes flat, chip and folded damage; `pct_absolute_context`/`dps_floor` contain standalone damage only; folded basis-point rounding is a separate current-shot residual. Full burst cadence also includes every inter-shot delay and the engine default. Guard: `audit_k_linearity.py`; fixtures: `test_percentage_damage_model.py`. | ~~high~~ **done** |
@@ -837,7 +837,7 @@ basis points. Folded `AreaDamage.PercentageScale` defaults to denominator 10000 
 the engine's rounded derived units. The shared evaluator reads each form directly; no tag
 spelling or global denominator guess is allowed.
 
-Authored-field inventory, 2026-09-10: **184** raw `PercentageDenominator`
+Authored-field inventory, 2026-09-22: **401** raw `PercentageDenominator`
 occurrences in active weapon files, up from the 2026-09-05 snapshot of 183.
 The added Freedom elite explicit companion preserves its prior percentage route.
 The registry's historical `percentage_denominator_unset` name does not mean
@@ -1481,7 +1481,7 @@ though they are in the same kinetic family right? But you need to use your best 
 reasoning for this to get it right!"* … *"I want all weapon families to be a bit more unique so
 don't put 3 energy weapons exactly on the same versus value but slightly different"*
 
-**STATUS: DONE** — shipped in `e7fa2d57b`. **48 emitted families** (`plating_families`, re-measured 2026-09-05). ⚠ The matrix below still lists 37 rows — the families added since (the Cryo cells among them) have no row yet; `audit_doc_claims` holds this red until the table is regenerated. Four groups
+**STATUS: DONE** — shipped in `e7fa2d57b`. **52 emitted families** (`plating_families`, re-measured 2026-09-22). ⚠ The matrix below still lists 37 rows — the families added since (the Cryo cells among them) have no row yet; `audit_doc_claims` holds this red until the table is regenerated. Four groups
 of ties are gone: `Laser/Prism/Tesla`, `Chemical/Cryo/Flame/Toxic`, `Concussion/Demolition`, and
 `Arrow/Bullet/CannonAP/Melee`. Pinned by `tools/tests/test_plating_composition.py`.
 

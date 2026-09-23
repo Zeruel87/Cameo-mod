@@ -81,9 +81,9 @@ C₀ = cost). With ratios h,s,r,d (and r carrying the Special factor K):
   This stat grid does not itself migrate regeneration: the ticks-to-full design
   and staged runtime conversion remain separate work. (The
   2×-health bake replaced the ScoutInfantryBuff 50% damage reduction —
-  ⚠ **for 19 of 35 scouts. Measured 2026-08-17: 16 still resolve to
-  `DamageMultiplier@ScoutInfantryBuff: 50`**, i.e. double effective HP
-  that the price does not see. `^ScoutInfantryTemplate` still carries the
+  ⚠ **at the time for 19 of 35 scouts; measured 2026-09-22: 0 still resolve
+  `DamageMultiplier@ScoutInfantryBuff: 50` — migration complete.**
+  (Historical trap, kept for the lesson: `^ScoutInfantryTemplate` still carries the
   50; the migrated actors CANCEL it with a local `Modifier: 100`, which
   is why those overrides look like deletable no-ops and are not — see
   BALANCE_PROGRAM_PLAN §W26. Claim: `unmigrated_scout_damage_multiplier`.)

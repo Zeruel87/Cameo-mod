@@ -137,9 +137,9 @@ the axes:
 | meter | actors | share of the 1609 priced (Health + Valued) actors |
 |---|--:|--:|
 | `Temperature` | 1592 | **98.6%** |
-| `Corrosion` | 724 | **45.0%** |
+| `Corrosion` | 840 | **52.2%** |
 
-A corrosion weapon does nothing at all to 51.3% of the roster. Claim: `corrosion_meter_actors`.
+A corrosion weapon does nothing at all to 47.8% of priced actors. Claims: `corrosion_meter_actors` = **840** and `meters_filling_before_death` = **321**, both re-measured 2026-09-22.
 
 ### E2 pricing — the rule as built
 

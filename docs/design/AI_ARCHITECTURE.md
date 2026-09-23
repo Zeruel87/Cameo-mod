@@ -749,7 +749,7 @@ this incrementally shippable — each phase in 10.6 is a complete, playable stat
 Verified on 2026-09-07 from the active `mods/cameo/mod.yaml` manifest and resolved
 `Player` / `World`, against upstream base `291052380`. Scope here is the decision modules,
 their explicit coordination adapter, and the three data/limit providers named below:
-**21 distinct trait types, 36 Player instances plus one World instance**. Conditional instances
+**22 distinct trait types, 37 Player instances plus one World instance**. Conditional instances
 are loaded, not necessarily enabled simultaneously. This replaces the old unqualified
 "20 loaded modules" claim. The scope does not count `ModularBot` dispatchers,
 `GrantConditionOnBotOwner`, `BotInsurance`, generic condition/prerequisite traits, or observers;
