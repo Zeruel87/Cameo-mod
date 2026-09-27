@@ -140,8 +140,14 @@ build, boot and `tools/tests/ai_squad_gate.py`.
 **For pack authors:** a new faction's AI rows go in **its own**
 `yaml/ai.yaml`, under the same trait instance names as the central file
 (e.g. `UnitBuilderBotModuleCA@generic: UnitsToBuild:`), and the file must be
-listed in the pack's `content.yaml` `Rules:`. Never add a faction id to
-`mods/cameo/ai/ai.yaml`.
+listed in the pack's `content.yaml` `Rules:`. Never add a faction id to a
+**dictionary row** in `mods/cameo/ai/ai.yaml` — dictionaries merge from packs,
+so a central copy is only a second place to drift. **List fields are the
+exception until §2.8 `Apply:` lands:** a pack cannot extend a list the
+central file sets, so a faction's actor ids must still be appended to the
+central `*Types` rows at rollout (missing ids = inert bots; fixed on
+`devin/ember/ai-faction-wiring`, lesson 2026-09-28). `Apply:` unions with the
+written list, so interim appends dedupe when the role mechanism takes over.
 
 ## The per-faction pipeline (proven, verified, repeatable)
 

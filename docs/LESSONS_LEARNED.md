@@ -174,6 +174,7 @@ win — **unless the artifact says otherwise, and then the artifact wins and you
 - [⛔ Cameo's CA code is a HAND COPY — unused means check what CA uses it for, never dead (2026-09-27)](#-cameos-ca-code-is-a-hand-copy--unused-means-check-what-ca-uses-it-for-never-dead-2026-09-27)
 - [The AI runtime gate never forms an army — it cannot see squad-code bugs (2026-09-27)](#the-ai-runtime-gate-never-forms-an-army--it-cannot-see-squad-code-bugs-2026-09-27)
 - [⛔ git stash is SHARED by every worktree — never stash in this repo (2026-09-27)](#-git-stash-is-shared-by-every-worktree--never-stash-in-this-repo-2026-09-27)
+- [A faction rollout is not AI-complete until the central `*Types` lists carry its ids (2026-09-28)](#a-faction-rollout-is-not-ai-complete-until-the-central-types-lists-carry-its-ids-2026-09-28)
 
 ---
 
@@ -2840,3 +2841,42 @@ flag — a belled table is meaningless without saying WHICH side of rule 4 it is
 - A Python-vs-C# mirror mismatch on GENERATED data is a bug in the mirror or
   the engine — never "fix" it by editing expectations until you know which
   side violates the spec.
+
+## A faction rollout is not AI-complete until the central `*Types` lists carry its ids (2026-09-28)
+
+Five factions (`atreides`, `harkonnen`, `corrino`, `EDEN`, `PLYMOUTH`) shipped
+buildable conyards, refineries, factories and units — and their bots never
+produced a single actor. The mechanism is name-keyed, not trait-keyed:
+`BaseBuilderQueueManagerCA.GetProducibleBuilding` filters
+`queue.BuildableItems()` against the `PowerTypes`/`RefineryTypes`/
+`BarracksTypes`/`ProductionTypes`/`SiloTypes` lists in `mods/cameo/ai/ai.yaml`,
+and `HasMinimalRefineryCount()` counts only actors whose ids are in
+`RefineryTypes` — an unlisted refinery is invisible, so
+`PauseUnitProduction` stayed true forever. Roughly 60 more list fields gate
+the same way (harvester/MCV/scout/engineer/squad/resource-map), so the bots
+were inert end-to-end. AI_ARCHITECTURE §2.8's report-only `BotRoleSets` table
+had already predicted the gap ("would add: the D2k spice harvesters,
+refineries, convecs").
+
+Why it survived: every runtime gate exercised `td_gdi`/`td_nod`, factions the
+lists already covered — green tests measured factions that were never broken.
+And a rename-era cleanup (`10b8f5915`) deleted the houses' dictionary rows as
+"stale" after `d2k_*` ids died, so the failure looked like the split working
+as designed.
+
+Rules:
+
+- After a faction rollout OR rename, census every `*Types`-shaped field in
+  `mods/cameo/ai/ai.yaml` for the new ids — the list cannot live in a pack
+  (MiniYaml scalars override; §2.8 derives it properly once `Apply:` rolls
+  out). Appending ids is additive and unions cleanly with `Apply:` later.
+- A "stale id" cleanup must verify nothing real replaced the dead spelling;
+  deleting the last central reference to a faction's buildings is a
+  functional removal wearing a hygiene costume.
+- Gates must cover a faction from the NEWEST content pack, not only the
+  oldest: `tools/tests/ai_d2k_production_gate.py` runs an Atreides HardBot
+  from one construction yard and asserts the owned-actor count grows —
+  negative control (lists spliced out) fails at 2 actors forever.
+- `AiMatchLogWriter`/situation records buffer until every bot's `WinState`
+  resolves — a timed-out or killed match writes NOTHING. For gates, print
+  progress from map lua (`Actor` counts, tick heartbeats) instead.

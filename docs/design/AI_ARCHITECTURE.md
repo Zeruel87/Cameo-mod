@@ -399,6 +399,13 @@ the judgment lists (`HighValueTargetTypes`, `BigAirThreats`, `ExcludeFromSquadsT
 then emptied in the central file. Progress metric: actor ids in the central `ai.yaml`, lower-only,
 **7,151 → 0**.
 
+**Interim repair (2026-09-28, EMBER, `devin/ember/ai-faction-wiring`):** the "would add" set was
+a live bug — the five newest factions were inert because their ids were in no central list. The
+ids were hand-appended (119 ids across 66 rows, all verified defined) until `Apply:` drains them;
+`Apply` unions into set types so the enumeration dedupe-composes with the role mechanism. The
+table's "written" column therefore now includes these ids — do not re-review them as pending
+additions.
+
 ---
 
 ## 3. Reading the enemy: the observation model

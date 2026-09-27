@@ -1,3 +1,48 @@
+# 2026-09-28 — EMBER: D2k/Outpost2 bots inert — the central `*Types` lists never gained their ids
+
+Branch `devin/ember/ai-faction-wiring`. Root cause of "bots stopped producing
+buildings and units": the five newest factions (`atreides`, `harkonnen`,
+`corrino`, `EDEN`, `PLYMOUTH`) were absent from every production-gating
+`*Types` list in `mods/cameo/ai/ai.yaml`. `BaseBuilderQueueManagerCA` filters
+`BuildableItems()` through `PowerTypes`/`RefineryTypes`/`BarracksTypes`/
+`ProductionTypes`/`SiloTypes`, and `HasMinimalRefineryCount()` counts only
+`RefineryTypes` members — so those bots sat with `PauseUnitProduction` set and
+an empty pick list forever. `10b8f5915` ("AI wiring cleanup: remove stale Dune
+BuildingFractions") had also deleted the houses' dictionary rows after the
+R18 rename made the old `d2k_*` keys dead, and the new ids were never re-added.
+The existing gates stayed green because they only exercise `td_gdi`/`td_nod`.
+
+Fix, respecting the pack architecture (dicts merge from packs; lists cannot —
+AI_ARCHITECTURE §1.2/§2.8):
+
+- `mods/cameo/ai/ai.yaml`: appended the missing actor ids to 66 list rows
+  (harvester/refinery/conyard/MCV/power/barracks/factory/silo/defense/scout/
+  engineer/squad/capture/crate/resource-map fields). 119 ids, all verified
+  against actor definitions; every edit is a strict append, zero values lost.
+- `ContentPacks/D2k/{Atreides,Harkonnen,Corrino}/yaml/ai.yaml`: added the
+  `BaseBuilderBotModuleCA@generic` dictionaries (`BuildingFractions`,
+  `Intervals`, `Delays`, `Limits`), `AirSquadTargetTypes` for all five
+  personalities, `UnitDelays`/`UnitIntervals`, and the missing
+  `spiceharvester` row in `UnitsToBuild` — modeled on the Ixian/Ordos packs.
+- `ContentPacks/Outpost2/yaml/ai.yaml`: replaced the placeholder with
+  Eden/Plymouth bootstrap dictionaries (they drive the standard
+  Building/Defence/Vehicle queues).
+- New gate: `mods/cameo/maps/ai_d2k_production_gate_20260928/` +
+  `tools/tests/ai_d2k_production_gate.py`. Atreides HardBot starts with one
+  construction yard; lua prints `AI_D2K_GATE_TICK`/`AI_D2K_GATE_ACTORS`
+  heartbeats (the situation-log writer buffers until match end, so a killed
+  benchmark writes nothing — heartbeats read the live count instead).
+
+Verification: gate PASS (`bot_actors=15` from 1 conyard); negative control
+(unapply the central splice) FAILS at 2 actors forever — the lists are the
+fix, not coincidence; `ai_bot_player_gate` and `ai_squad_gate` still PASS;
+boot-gate PASS (menu, no new exceptions). `--check-yaml` runs the new map
+cleanly; its only findings are the pre-existing tree-wide debt.
+
+Composes with Claude's §2.8 `BotRoleSets` `Apply:` rollout: `Apply` unions
+into a set type, so these hand-appended ids dedupe and the role mechanism can
+still drain the lists later. The pack-dict rows are faction-owned and stay.
+
 # 2026-09-28 — NOVA: H1 human-likeness producer (`HumanPaceBotModule`/`IBotActionBudget`)
 
 The unassigned H1 item from `ORDERS_2026-09-27_ai_next_lanes.md` (AI_SYNTHESIS

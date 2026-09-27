@@ -1,5 +1,33 @@
 # Cameo — THE HANDOFF
 
+## 2026-09-28 — EMBER: un-inerted the D2k/Outpost2 bots on devin/ember/ai-faction-wiring
+
+`Agent: EMBER · lane: AI execute/sense + gate tooling · branch devin/ember/ai-faction-wiring · based on master 035ce964b`
+
+"Why are bots not building anything" is answered: the central `*Types` lists in
+`mods/cameo/ai/ai.yaml` never gained the `atreides`/`harkonnen`/`corrino`/`EDEN`/
+`PLYMOUTH` ids, so every production-gating filter (`PowerTypes`, `RefineryTypes`,
+`ProductionTypes`, `HasMinimalRefineryCount` -> `PauseUnitProduction`, ~60 fields
+total) saw nothing for those factions. AI_ARCHITECTURE section 2.8's report-only
+`BotRoleSets` table had flagged exactly this set as "would add".
+
+- Central fix: 119 actor ids appended across 66 list rows - strict appends, zero
+  values removed, zero undefined ids. Pack dicts (fractions/limits/intervals/
+  delays, `UnitsToBuild`, `AirSquadTargetTypes`) added to the three house packs;
+  Outpost2 pack bootstrapped for Eden/Plymouth.
+- New gate `tools/tests/ai_d2k_production_gate.py` (+ map
+  `ai_d2k_production_gate_20260928`): Atreides bot grows 1 -> 15 actors; with the
+  central splice removed it fails at 2 - the regression is now testable.
+- Verified: new gate PASS, negative control FAIL as designed, bot-player and
+  squad gates PASS, boot-gate PASS.
+- For the section 2.8 `Apply:` rollout (Claude's lane): `Apply` unions into set
+  types, so these appended ids dedupe - this commit is the interim enumeration,
+  not a competing mechanism. The MIGRATION.md "never add a faction id" line is
+  scoped to dictionary rows (packs can't carry lists); clarified in the same
+  commit.
+- Heads-up: "lists stay central until section 2.8" is the binding contract for
+  any new faction - census the central `*Types` lists after every rollout/rename.
+
 ## 2026-09-27 — NOVA: AI phase 7a — missions on devin/nova/ai-missions-7a
 
 `Agent: NOVA · lane: AI architecture / assign layer · branch devin/nova/ai-missions-7a · based on master e9d500212`
