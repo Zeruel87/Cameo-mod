@@ -1,5 +1,29 @@
 # Cameo — THE HANDOFF
 
+## 2026-09-28 — DAWN: Fransbot Route-A compiles + boots on `devin/dawn/fransbot-route-a`
+
+`Agent: DAWN (Devin CLI) · lane: Fransbot side-by-side port (fleet ORDERS 2026-09-27) · NOT MERGED — branch worktree C:/tmp/dawn-ai`
+
+* 27 modules vendored into `OpenRA.Mods.Fransbot/` (+csproj in `CameoMod.sln`,
+  assembly LAST in `mod.yaml` Assemblies). Dedicated `fransbot` bot type in new
+  `mods/cameo/ai/fransbot.yaml` (`enable-fransbot` condition; zero overlap with
+  `genericbot` modules). Fluent `bot_ai.fransbot` = "Fransbot (Experimental)".
+* Port deltas vs upstream V1.29.23: engine-API drift (IsCloseEnoughToBase /
+  IsCellBuildable / GetFirepowerModifier armament name), `IsConyardRelocationPending`
+  shim (returns false — Frans owns its own conyard tracking), ~75 RA-name
+  `[ActorReference]` defaults emptied, required-nonempty validators relaxed to
+  empty=off, three `= null` FrozenDictionaries → `Empty` (one NRE'd the boot).
+* Fog audit done and FIXED: `FransDefenseCommander` + `FransBaseBuilder`
+  `RespondToAttack` read hidden-attackers' type/position — now gated on
+  `CanBeViewedByPlayer` with victim-cell fallback. MCV-expansion `AllActors`
+  path-blocker scan reviewed + kept (mirrors real `BlockedByActor` physics).
+* Gates: build 0/0, boot-gate PASS, `--check-yaml` zero Fransbot findings,
+  `audit_ai_personalities`/`audit_ai_frankenstein`/`ai_bot_player_gate` PASS.
+* Next in lane: per-faction `fransbot.yaml` content lists (Claude owns pack AI
+  rows — coordinate), ~17 RA-id logic sites → trait classification, and the
+  Fransbot-vs-Cameo comparison match once personalities have units to build.
+  Empty lists = modules idle safely today.
+
 ## 2026-09-27 — EMBER: AI phase 6f part 1 — artillery attach on `devin/ember/ai-waves-6f`
 
 `Agent: EMBER (Devin CLI) · lane: AI bot modules · branch devin/ember/ai-waves-6f · stacked on the 6e merge`

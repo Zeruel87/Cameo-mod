@@ -1,3 +1,50 @@
+## 2026-09-28 — DAWN: Fransbot Route-A side-by-side port compiles + boots (branch `devin/dawn/fransbot-route-a`)
+
+`Agent: DAWN (Devin CLI) · lane: Fransbot side-by-side port per fleet ORDERS 2026-09-27 · worktree C:/tmp/dawn-ai`
+
+- Vendored 27 Fransbot modules (V1.29.23 tag) into `OpenRA.Mods.Fransbot/` with its own
+  csproj registered in `CameoMod.sln`; assembly appended LAST in `mod.yaml` `Assemblies` so
+  `ObjectCreator.FindType` never shadows an existing type.
+- New `mods/cameo/ai/fransbot.yaml` wires a dedicated `fransbot` bot type:
+  `ModularBot@Fransbot` + `GrantConditionOnBotOwner@fransbot` (`enable-fransbot`); all Frans
+  modules hang off that condition so genericbot and fransbot never dual-tick. Fluent name
+  `bot_ai.fransbot` added to `en.ftl`.
+- Engine-API drift fixed (vendored source predates cameo-engine): `IsCloseEnoughToBase`
+  gained a `producer` param (~11 sites, `null` where safe = conservative base-proximity),
+  `IsCellBuildable` arg order, `IFirepowerModifier.GetFirepowerModifier` now takes the
+  armament name (moved inside the armament loops in CommanderCore).
+- `IBotBaseExpansion.IsConyardRelocationPending` implemented on `FransMcvExpansionManager`
+  returning `false`: Fransbot tracks MCV/conyard lifecycle via its own `activeConyard` +
+  `GrantBaseBuilderLock`; the only consumer (CA `BaseBuilder`'s `RelocationHoldConyard`)
+  belongs to a different bot type, so the shim is inert either way.
+- ~75 `[ActorReference]` RA-name defaults emptied (ContentPack world has no globally-loaded
+  actor; validation is per-ruleset). Validators that *required* non-empty lists relaxed to
+  accept empty = feature off; the three `FrozenDictionary` fields upstream defaults to
+  `null` (`UnitsToBuild`/`UnitLimits`/`UnitDelays`) now default to `Empty` — the null dict
+  NRE'd the boot at `FransUnitBuilder..ctor:307` (`ActorIndex.OwnerAndNames` on `.Keys`).
+- Fog-of-war audit of all nine `IBotRespondToAttack` handlers + world scans: two real
+  leaks fixed — `FransDefenseCommander` and `FransBaseBuilder` read a possibly-hidden
+  attacker's `Info.Name`/`Location`; now gate on `CanBeViewedByPlayer` and fall back to the
+  victim's own cell (Fransbot's own Minelayer convention). `FransMcvExpansion`'s
+  `ActorMap.AllActors` path-blocker scan reviewed and KEPT: it mirrors what
+  `BlockedByActor` physically does when the move executes.
+- `BotGlobalUnitBudget` verified safe for fransbot: it is `IBotRequestPauseUnitProduction`
+  (not `IBotTick`), consumed by `FransUnitBuilder.requestPause` — the global FPS cap binds
+  fransbot bots too. Left ungated on purpose.
+- Gates: Fransbot + full solution build 0/0; boot-gate PASS (`PostWorldLoaded`, no new
+  exceptions — the earlier NRE was this lane's own pre-fix run); `--check-yaml` has ZERO
+  Fransbot findings (remaining ~pre-existing master noise unchanged); `audit_ai_personalities`
+  PASS; `audit_ai_frankenstein` PASS (140 symbols); `ai_bot_player_gate` PASS.
+- Caveat: `engine/bin` is junctioned and SHARED across worktrees — EMBER's and my builds/
+  `--check-yaml` zombies interleave in it. Fransbot dll verified fresh before the boot; the
+  yaml lint result is still valid because zero findings named any Frans type.
+
+**Still open in lane:** per-faction content lists (the port runs on empty sets = modules
+mostly idle until ContentPack ai rows land — Claude owns pack AI rows, coordinate for the
+`fransbot` personality file), the ~17 RA-id logic sites (air commander's `"harv"`/`"mcv"`
+preferences → trait-based classification), upstream sync cadence, and a real Fransbot-vs-
+Cameo match once personalities exist.
+
 ## 2026-09-28 — AI match log schema 2: composition + episode telemetry (NOVA)
 
 ROADMAP item "Offline aggregation extensions" (AI queue):
