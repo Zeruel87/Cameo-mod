@@ -16530,3 +16530,29 @@ Maintainer's garrison + endless-expansion asks are implemented but switch-gated
 pending A/B. Remaining open asks: formation/multi-angle assault, base spacing,
 army-first production, harvester spread, coalition fold impl (BB-BE).
 
+
+## 2026-10-02 (nova) — AF-1/UF-1/SP-1/HV-1: the maintainer's five failures -> four switches
+
+Remaining maintainer asks after GC-1/EX-4 landed, implemented as switch-gated changes
+(AI_ARCHITECTURE §12.20, switches AD-AG):
+- AF-1 `AG_assault_fanout`: GroundUnitsAssaultFanoutStateCA + AssaultFormationPlanner +
+  AssaultFormationBotModule (IBotAssaultFormation settings seam) — Rush squads spread
+  onto a far-side arc around the target and commit together. Kills the single-file
+  "line of death". Stage->fanout and band-trigger transitions only; orders stay in states.
+- UF-1 `AD_units_first`: UnitsFirstFillAllQueues fills every idle factory per category
+  per pass (issuedThisPass set because orders resolve post-BotTick); Maximise reserve
+  stops throttling units. 4xqueue-count pass cap.
+- SP-1 `AE_base_spacing`: MinimumStructureSpacingCells=1 runs Fransbot's
+  StructureClearance in findPos — first cell with the gap, else widest-gap cell.
+  Building/Fragile/BaseCrawl only; refineries hug fields, defenses keep advisor cells.
+- HV-1 `AF_harvester_spread`: SpreadHarvestFields drops saturated-field cells from the
+  idle-harvester search (per-call occupancy snapshot); RebalanceMaxPerScan=3 + real
+  surplus pick makes the CN rebalance actually move harvesters (was <=1/scan forever).
+
+Classic isolation: all three shared-instance features gate on bot.Info.Type != "classic"
+(spacingGate per Tick / unitsFirst / lazy IsClassicBot) — the A/B control is untouched.
+28 new unit tests pass (BaseSpacing/HarvesterSpread/UnitsFirst/AssaultFormationPlanner).
+
+Open: verification match on _ra_a-nuclear-winter (armed vs ctrl); TC-3 coalition fold
+(§12.18 BB-BE) still design-only; bridge demo showed huts re-ordered repeatedly
+(engineer reachability follow-up).

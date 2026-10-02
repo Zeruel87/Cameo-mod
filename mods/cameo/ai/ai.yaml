@@ -74,6 +74,12 @@
 	GrantConditionOnBotOwner@garrisoncontest:
 		Condition: garrison_contest
 		Bots: fransbot
+	# AF-1 (the line-of-death fix): Rush assault squads fan out onto a target-centred arc before the
+	# commit, so the wave arrives from several bearings and fires together. The arm flips this to the
+	# genericbot tier list in the increment A/B; default fransbot-only - inert on master.
+	GrantConditionOnBotOwner@assaultfanout:
+		Condition: assault_fanout
+		Bots: fransbot
 	# DIFFICULTY SCALE (DESIGN §19.1, maintainer 2026-09-28): every number below lies on ONE straight line
 	# from easiest to cameogod, in EQUAL steps; an integer that cannot split evenly is the rounded line.
 	# Every field is written in every tier, so no tier silently falls back to a C# default.
@@ -3476,6 +3482,22 @@ Player:
 	# increment A/B arms it (switch group AB).
 	GarrisonContestBotModule:
 		RequiresCondition: genericbot && garrison_contest
+	# AF-1 (the line-of-death fix): Rush assault squads fan out onto a target-centred arc
+	# before the commit - one slot per member on the far-side ring (AssaultFormationPlanner),
+	# so the wave arrives from several bearings and fires together instead of walking
+	# single-file into the guns. This module is the IBotAssaultFormation provider: settings
+	# plus the per-squad same-target refanout cooldown; orders stay with the squad states.
+	# `genericbot && assault_fanout`: off on master until the increment A/B arms it.
+	AssaultFormationBotModule:
+		RequiresCondition: genericbot && assault_fanout
+		MinSquadSize: 4
+		FanoutRadiusCells: 8
+		ArcDegrees: 180
+		AssemblePercent: 60
+		StageDeadlineTicks: 500
+		FanoutTriggerCells: 12
+		SlotReachCells: 2
+		RefanoutCooldownTicks: 750
 	# CN3 (crystallized-nexus DeployBotModule port): unified deploy driving for GrantConditionOnDeploy units -
 	# artillery move-into-range/deploy/retreat-from-dead-zone, stat-deployers entrench when idle+threatened,
 	# support deploys near allies, ability deploys fire once and pack. Squad-held units are skipped entirely

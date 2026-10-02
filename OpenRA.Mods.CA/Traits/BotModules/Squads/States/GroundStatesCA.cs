@@ -222,9 +222,12 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			var assembled = owner.Units.Count(u =>
 				(u.Actor.CenterPosition - rally).LengthSquared <= radiusSquared);
 
+			// AF-1: a staged Rush squad commits through the fan-out — the state
+			// falls back to the plain attack-move itself when no
+			// IBotAssaultFormation provider is armed.
 			if (assembled * 100 >= owner.Units.Count * owner.SquadManager.Info.StageAssemblePercent ||
 				owner.World.WorldTick >= stageDeadlineTick)
-				owner.FuzzyStateMachine.ChangeState(owner, new GroundUnitsAttackMoveStateCA(), false);
+				owner.FuzzyStateMachine.ChangeState(owner, new GroundUnitsAssaultFanoutStateCA(), false);
 		}
 
 		public void Deactivate(SquadCA owner) { }
@@ -372,6 +375,28 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 					if ((owner.World.Map.CellContaining(leader.Actor.CenterPosition) - standOffCell).LengthSquared > 4)
 						foreach (var u in owner.Units)
 							owner.Bot.QueueOrder(new Order("Move", u.Actor, Target.FromCell(owner.World, standOffCell), false));
+					return;
+				}
+			}
+
+			// AF-1 (line-of-death fix): a Rush squad whose leader has entered the
+			// fan-out band — inside the trigger radius but still outside the arc —
+			// spreads onto the assault ring before the commit. Runs only when the
+			// enemy scan above found nothing (the fan must form pre-contact) and
+			// after the siege consult so a stand-off hold still wins. The band's
+			// inner edge plus the provider's same-target cooldown keep a squad
+			// already on the ring from re-fanning forever.
+			if (owner.Type == SquadCAType.Rush && owner.IsTargetValid && leader.Actor != null
+				&& GroundUnitsAssaultFanoutStateCA.TryGetSettings(owner,
+					owner.World.Map.CellContaining(owner.Target.CenterPosition), out var fanout)
+				&& owner.Units.Count >= fanout.MinSquadSize)
+			{
+				var leaderDistSquared = (leader.Actor.CenterPosition - owner.Target.CenterPosition).HorizontalLengthSquared;
+				var triggerSquared = (long)WDist.FromCells(fanout.FanoutTriggerCells).LengthSquared;
+				var ringSquared = (long)WDist.FromCells(fanout.FanoutRadiusCells).LengthSquared;
+				if (leaderDistSquared <= triggerSquared && leaderDistSquared > ringSquared)
+				{
+					owner.FuzzyStateMachine.ChangeState(owner, new GroundUnitsAssaultFanoutStateCA(), false);
 					return;
 				}
 			}

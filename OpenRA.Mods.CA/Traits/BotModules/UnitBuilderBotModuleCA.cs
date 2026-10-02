@@ -54,6 +54,13 @@ namespace OpenRA.Mods.CA.Traits
 			"BotLimits.MaximiseProductionCashRequirement overrides this per difficulty (DESIGN §19.1).")]
 		public readonly int MaximiseProductionCashRequirement = 10000;
 
+		[Desc("UF-1 'army first' increment switch (default off): a production pass fills EVERY idle",
+			"factory of each queue category in turn while cash stays above",
+			"ProductionMinCashRequirement — the army soaks available cash, so the",
+			"MaximiseProductionCashRequirement reserve no longer throttles the fill.",
+			"Off keeps the classic one-factory-per-category cadence bit-identical.")]
+		public readonly bool UnitsFirstFillAllQueues = false;
+
 		[Desc("Ticks between samples of the enemy army for adaptive counter-production (BotLimits.AdaptiveCounterWeight).")]
 		public readonly int AdaptiveObservationInterval = 250;
 
@@ -270,21 +277,54 @@ namespace OpenRA.Mods.CA.Traits
 				// toward spending sooner — at target (or leads off) the multiplier
 				// is 1 and the floors are unchanged.
 				var cashLean = BotPersonalityLeads.Lean(leadProviders, "steamroller");
+				var scaledMinCash = BotPersonalityLeads.Scaled(Info.ProductionMinCashRequirement, cashLean);
 
 				// Don't produce if we don't have enough cash
-				if (playerResources.Cash + playerResources.Resources < BotPersonalityLeads.Scaled(Info.ProductionMinCashRequirement, cashLean))
+				if (playerResources.Cash + playerResources.Resources < scaledMinCash)
 					return;
+
+				// UF-1: per-pass bound on issues so a fill that never lands cannot spin the tick.
+				var fillIssuesRemaining = UnitsFirstFillIssueCap(Info.UnitQueues.Length);
+
+				// UF-1: bot orders resolve after BotTick, so neither AllQueued() nor AvailableSlots
+				// can see a queue issued this pass — the fill marks them itself. Null when the
+				// switch is off: the classic path allocates nothing.
+				// The shared @generic instance also serves classicbot: arm the fill for genericbot
+				// only so the A/B keeps classic as the untouched reference.
+				var unitsFirst = Info.UnitsFirstFillAllQueues && bot.Info.Type != "classic";
+				var issuedThisPass = unitsFirst ? new HashSet<ProductionQueue>() : null;
 
 				for (var i = 0; i < Info.UnitQueues.Length; i++)
 				{
 					if (++currentQueueIndex >= Info.UnitQueues.Length)
 						currentQueueIndex = 0;
 
-					if (AIUtils.FindQueues(player, Info.UnitQueues[currentQueueIndex]).Any())
+					var category = Info.UnitQueues[currentQueueIndex];
+					if (!AIUtils.FindQueues(player, category).Any())
+						continue;
+
+					var buildRandom = idleUnitCount < Info.IdleBaseUnitsMaximum;
+
+					if (unitsFirst)
+					{
+						// Army first: fill every idle factory of this category now, then keep going
+						// category-by-category while the same min-cash floor holds — the army soaks
+						// available cash, so MaximiseProductionCash does not gate the fill.
+						while (UnitsFirstContinueFill(fillIssuesRemaining, playerResources.Cash + playerResources.Resources,
+							scaledMinCash, AIUtils.FindQueues(player, category).Any(q => IssuableThisPass(q, issuedThisPass))))
+						{
+							BuildUnit(bot, category, buildRandom, false, issuedThisPass);
+							fillIssuesRemaining--;
+						}
+
+						if (fillIssuesRemaining <= 0 || playerResources.Cash + playerResources.Resources < scaledMinCash)
+							break;
+					}
+					else
 					{
 						// PERF: We tick only one type of valid queue at a time
 						// if AI gets enough cash, it can fill all of its queues with enough ticks
-						BuildUnit(bot, Info.UnitQueues[currentQueueIndex], idleUnitCount < Info.IdleBaseUnitsMaximum, false);
+						BuildUnit(bot, category, buildRandom, false);
 
 						if (playerResources.Cash + playerResources.Resources < BotPersonalityLeads.Scaled(MaximiseProductionCash, cashLean))
 							break;
@@ -329,19 +369,44 @@ namespace OpenRA.Mods.CA.Traits
 			return queuedBuildRequests.Count(r => r == requestedActor);
 		}
 
-		void BuildUnit(IBot bot, string category, bool buildRandom, bool excludeLimited)
+		// A queue that can take a production order right now: queues that support parallel
+		// production (e.g. Zerg hatchery) only need a free slot; standard queues must be
+		// completely empty.
+		static bool QueueHasFreeSlot(ProductionQueue q)
 		{
-			// For queues that support parallel production (e.g. Zerg hatchery), find one with a free slot.
-			// For standard queues, require the queue to be completely empty.
-			var queue = AIUtils.FindQueues(player, category).FirstOrDefault(q =>
-			{
-				if (q is IHasParallelQueueSlots p)
-					return p.AvailableSlots > 0;
-				return !q.AllQueued().Any();
-			});
+			if (q is IHasParallelQueueSlots p)
+				return p.AvailableSlots > 0;
+			return !q.AllQueued().Any();
+		}
+
+		// UF-1: bot orders resolve after BotTick, so AllQueued()/AvailableSlots cannot see a
+		// queue issued this pass — issuedThisPass marks it so the fill spreads across every
+		// idle factory instead of re-issuing to the same one. Null set = classic behaviour.
+		static bool IssuableThisPass(ProductionQueue q, HashSet<ProductionQueue> issuedThisPass)
+		{
+			return QueueHasFreeSlot(q) && (issuedThisPass == null || !issuedThisPass.Contains(q));
+		}
+
+		/// <summary>UF-1 (UnitsFirstFillAllQueues): per-pass issue budget — at most this many issues per configured queue category, so a fill that never lands cannot spin the tick.</summary>
+		public static int UnitsFirstFillIssueCap(int queueCount)
+		{
+			return queueCount * 4;
+		}
+
+		/// <summary>UF-1 pure seam for the fill loop: keep issuing while the pass budget lasts, cash covers the (lead-scaled) ProductionMinCashRequirement floor and a queue of the category can still take an order.</summary>
+		public static bool UnitsFirstContinueFill(int issuesRemaining, int cashAndResources, int scaledMinCashRequirement, bool anyQueueIssuable)
+		{
+			return issuesRemaining > 0 && cashAndResources >= scaledMinCashRequirement && anyQueueIssuable;
+		}
+
+		void BuildUnit(IBot bot, string category, bool buildRandom, bool excludeLimited, HashSet<ProductionQueue> issuedThisPass = null)
+		{
+			var queue = AIUtils.FindQueues(player, category).FirstOrDefault(q => IssuableThisPass(q, issuedThisPass));
 
 			if (queue == null)
 				return;
+
+			issuedThisPass?.Add(queue);
 
 			// Fill all available parallel slots in one pass so that every larva stays occupied.
 			var slotsToFill = (queue is IHasParallelQueueSlots parallelQueue)
@@ -367,7 +432,7 @@ namespace OpenRA.Mods.CA.Traits
 				if (!ShouldBuild(name, false, queue.Info.Type))
 				{
 					if (!excludeLimited)
-						BuildUnit(bot, category, buildRandom, true);
+						BuildUnit(bot, category, buildRandom, true, issuedThisPass);
 
 					return;
 				}

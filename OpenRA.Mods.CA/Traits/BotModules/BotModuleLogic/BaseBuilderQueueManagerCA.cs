@@ -31,8 +31,13 @@ namespace OpenRA.Mods.CA.Traits
 		readonly PlayerResources playerResources;
 		readonly IResourceLayer resourceLayer;
 
-		Actor[] playerBuildings;
+		Actor[] playerBuildings = [];
 		int failCount;
+
+		// Cameo: effective spacing request for this tick. The shared @generic instance also serves
+		// classicbot, and the A/B keeps classic as the untouched reference — spacing only applies to
+		// genericbot bots. Resolved in Tick; 0 disables the findPos clearance check.
+		int spacingGate;
 		int failRetryTicks;
 		string lastFailedBuilding;
 		int checkForBasesTicks;
@@ -99,6 +104,8 @@ namespace OpenRA.Mods.CA.Traits
 
 		public void Tick(IBot bot)
 		{
+			spacingGate = bot.Info.Type == "classic" ? 0 : baseBuilder.Info.MinimumStructureSpacingCells;
+
 			foreach (KeyValuePair<string, int> i in activeBuildingIntervals.ToList())
 			{
 				activeBuildingIntervals[i.Key]--;
@@ -615,8 +622,32 @@ namespace OpenRA.Mods.CA.Traits
 			return null;
 		}
 
+		// Smallest rectangular gap, in empty cells, between the candidate footprint at `cell` and every
+		// standing own building (playerBuildings, refreshed each Tick) — 0 means touching. Ported from
+		// Fransbot's StructureClearance; a candidate on an empty base counts as meeting the request.
+		int StructureClearance(CPos cell, BuildingInfo candidateInfo, int minSpacing)
+		{
+			var minimum = int.MaxValue;
+			foreach (var existing in playerBuildings)
+			{
+				if (existing == null || existing.IsDead || !existing.IsInWorld)
+					continue;
+
+				var info = existing.Info.TraitInfoOrDefault<BuildingInfo>();
+				if (info == null)
+					continue;
+
+				minimum = Math.Min(minimum,
+					BaseBuilderBotModuleCA.FootprintGap(cell, candidateInfo.Dimensions, existing.Location, info.Dimensions));
+				if (minimum == 0)
+					break;
+			}
+
+			return minimum == int.MaxValue ? minSpacing : minimum;
+		}
+
 		// Find the buildable cell that is closest to pos and centered around center
-		(CPos? Location, CPos Center, int Variant) findPos(string actorType, bool distanceToBaseIsImportant, Actor producer, CPos center, CPos target, int minRange, int maxRange, int distanceRequirement = 0, bool sortMax = false)
+		(CPos? Location, CPos Center, int Variant) findPos(string actorType, bool distanceToBaseIsImportant, Actor producer, CPos center, CPos target, int minRange, int maxRange, int distanceRequirement = 0, bool sortMax = false, int minSpacing = 0)
 		{
 			var actorInfo = world.Map.Rules.Actors[actorType];
 			var actorVariant = 0;
@@ -677,6 +708,13 @@ namespace OpenRA.Mods.CA.Traits
 				bi = actorInfo.TraitInfoOrDefault<BuildingInfo>();
 			}
 
+			// Cameo (MinimumStructureSpacingCells): the gap is an ideal, not a hard rule. Keep the first
+			// legal cell meeting it; otherwise remember the legal cell with the widest gap and return it
+			// after the scan — a soft preference, never a placement failure. Ties keep the first cell in
+			// enumeration order (the existing distance/shuffle ordering), so no new randomness.
+			CPos? widestFallback = null;
+			var widestClearance = -1;
+
 			foreach (var cell in cells)
 			{
 				if (!world.CanPlaceBuilding(cell, actorInfo, bi, null))
@@ -688,8 +726,26 @@ namespace OpenRA.Mods.CA.Traits
 				if (distanceRequirement > 0 && (cell - target).LengthSquared > distanceRequirement * distanceRequirement)
 					continue;
 
+				if (minSpacing > 0)
+				{
+					var clearance = StructureClearance(cell, bi, minSpacing);
+					if (clearance >= minSpacing)
+						return (cell, center, actorVariant);
+
+					if (clearance > widestClearance)
+					{
+						widestClearance = clearance;
+						widestFallback = cell;
+					}
+
+					continue;
+				}
+
 				return (cell, center, actorVariant);
 			}
+
+			if (widestFallback != null)
+				return (widestFallback, center, actorVariant);
 
 			return (null, center, 0);
 		}
@@ -730,7 +786,8 @@ namespace OpenRA.Mods.CA.Traits
 					// Build away from where enemy last attacked
 					var fragileDefenseCenter = baseBuilder.DefenseCenter ?? baseCenter;
 					return findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, fragileDefenseCenter, baseBuilder.Info.MinBaseRadius,
-						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange, sortMax: true);
+						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange, sortMax: true,
+						minSpacing: spacingGate);
 
 				case BuildingType.Refinery:
 
@@ -837,7 +894,8 @@ namespace OpenRA.Mods.CA.Traits
 					if (expansionTarget != null)
 					{
 						var toward = findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, expansionTarget.Value,
-							baseBuilder.Info.MinBaseRadius, baseBuilder.Info.BaseCrawlRadius);
+							baseBuilder.Info.MinBaseRadius, baseBuilder.Info.BaseCrawlRadius,
+							minSpacing: spacingGate);
 						if (toward.Location != null)
 						{
 							Log.Write("debug", $"AI ({player.ClientIndex}): EX-1 BaseCrawl {actorType} at {toward.Location.Value} toward field {expansionTarget.Value} at tick {world.WorldTick}");
@@ -854,7 +912,8 @@ namespace OpenRA.Mods.CA.Traits
 
 						foreach (var r in nearbyResources)
 						{
-							var found = findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, r, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius);
+							var found = findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, r, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius,
+								minSpacing: spacingGate);
 							if (found.Location != null)
 								return found;
 						}
@@ -867,11 +926,13 @@ namespace OpenRA.Mods.CA.Traits
 						.ClosestToIgnoringPath(world.Map.CenterOfCell(crawlDefenseCenter));
 
 					targetCell = closestEnemy != null ? closestEnemy.Location : baseCenter;
-					return findPos(actorType, distanceToBaseIsImportant, producer, crawlDefenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius);
+					return findPos(actorType, distanceToBaseIsImportant, producer, crawlDefenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius,
+						minSpacing: spacingGate);
 
 				case BuildingType.Building:
 					return findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, baseCenter, baseBuilder.Info.MinBaseRadius,
-						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange);
+						distanceToBaseIsImportant ? baseBuilder.Info.MaxBaseRadius : world.Map.Grid.MaximumTileSearchRange,
+						minSpacing: spacingGate);
 			}
 
 			// Can't find a build location

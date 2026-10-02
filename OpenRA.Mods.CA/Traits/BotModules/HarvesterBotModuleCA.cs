@@ -64,6 +64,16 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("How many harvester should player owned at least.")]
 		public readonly int InitialHarvesters = 4;
 
+		[Desc("Prefer resource cells on fields that can still absorb a harvester (own harvesters below",
+			"ResourceCellsCount / ResourceCellsPerHarvester, minimum 1) when an idle harvester picks a new patch.",
+			"Needs ResourceMapBotModule; default off keeps the nearest-cell search untouched.")]
+		public readonly bool SpreadHarvestFields = false;
+
+		[Desc("Maximum harvesters the low-effect scan relocates per scan. Values above 1 also pick the source field",
+			"by real surplus (own harvesters - ResourceCellsCount / ResourceCellsPerHarvester) instead of the first",
+			"overstaffed field. 1 preserves the original single-relocation scan; 0 disables relocation orders.")]
+		public readonly int RebalanceMaxPerScan = 1;
+
 		public override object Create(ActorInitializer init) { return new HarvesterBotModuleCA(init.Self, this); }
 	}
 
@@ -111,6 +121,13 @@ namespace OpenRA.Mods.CA.Traits
 
 		BotLimits botLimits;
 		int harvesterLimit;
+
+		// Cameo: the shared @generic instance also serves classicbot — armed spread/rebalance behaviour
+		// applies to genericbot only so the A/B keeps classic untouched. Resolved lazily from the bot's
+		// ModularBot info (IBot.Info.Type); null-safe before the bot trait answers.
+		bool? isClassicBot;
+		bool IsClassicBot => isClassicBot ??= player.PlayerActor.TraitsImplementing<IBot>()
+			.FirstOrDefault()?.Info.Type == "classic";
 
 		public HarvesterBotModuleCA(Actor self, HarvesterBotModuleCAInfo info)
 			: base(info)
@@ -259,7 +276,15 @@ namespace OpenRA.Mods.CA.Traits
 			CPos? worstEffectIndice = null;
 			var worstEffectHarvesterCount = int.MaxValue;
 
-			var lackHarvesterIndices = new List<(int Attraction, int LackHarvs, CPos ResoueceCenter)>();
+			// Cameo (harvester spread): RebalanceMaxPerScan > 1 switches the source-field pick from the
+			// binary lackHarvs < 0 test — which flattens every overstaffed field to -1, so at most one
+			// harvester moves per scan — to the field with the biggest real surplus, and lets a scan
+			// relocate up to that many harvesters. The default 1 keeps the original behaviour verbatim.
+			var multiRelocate = Info.RebalanceMaxPerScan > 1 && !IsClassicBot;
+			var maxSurplus = 0;
+			var worstEffectIndex = -1;
+
+			var lackHarvesterIndices = new List<(int Attraction, int LackHarvs, CPos ResoueceCenter, int Index)>();
 
 			/*
 			 * indiceSideLengthSquare (which is equal to indiceSideLength * indiceSideLength) is used as the basic unit to calculate the attraction of a candidate,
@@ -301,9 +326,20 @@ namespace OpenRA.Mods.CA.Traits
 					attraction += indiceSideLengthSquare;
 
 				if (baseIndice.ResourceCellsCount > 0 && attraction > 0 && lackHarvs > 0)
-					lackHarvesterIndices.Add((attraction, lackHarvs, baseIndice.ResourceCellsCenter));
+					lackHarvesterIndices.Add((attraction, lackHarvs, baseIndice.ResourceCellsCenter, i));
 
-				if (lackHarvs < worstEffectHarvesterCount && lackHarvs < 0)
+				if (multiRelocate)
+				{
+					// Real surplus: own harvesters beyond the field's capacity — a magnitude, not a flag.
+					var surplus = baseIndice.PlayerHarvetserCount - baseIndice.ResourceCellsCount / Info.ResourceCellsPerHarvester;
+					if (surplus > maxSurplus)
+					{
+						maxSurplus = surplus;
+						worstEffectIndex = i;
+						worstEffectIndice = baseIndice.IndiceCenter;
+					}
+				}
+				else if (lackHarvs < worstEffectHarvesterCount && lackHarvs < 0)
 				{
 					worstEffectHarvesterCount = lackHarvs;
 					worstEffectIndice = baseIndice.IndiceCenter;
@@ -313,7 +349,11 @@ namespace OpenRA.Mods.CA.Traits
 			if (worstEffectIndice == null)
 				return;
 
-			var harvestersCanAssign = -worstEffectHarvesterCount;
+			// Armed: bounded by the source field's real surplus and the configured per-scan cap.
+			// Flag-off: -worstEffectHarvesterCount is always 1 and RebalanceMaxPerScan defaults to 1,
+			// so this reproduces the original value exactly; 0 disables relocation orders.
+			var harvestersCanAssign = Math.Min(
+				multiRelocate ? maxSurplus : -worstEffectHarvesterCount, Info.RebalanceMaxPerScan);
 
 			// Try to find a new resource patch for the worst effect harvester
 			var searchRadius = resourceMapModule.GetIndiceScanRadius();
@@ -321,17 +361,28 @@ namespace OpenRA.Mods.CA.Traits
 			var harvesters = world.FindActorsInCircle(world.Map.CenterOfCell(worstEffectIndice.Value), WDist.FromCells(searchRadius))
 				.Where(a => a.Owner == player && !a.IsDead && a.IsInWorld && resourceMapModule.Info.HarvesterTypes.Contains(a.Info.Name)).ToList();
 
+			// Armed only: the lease registry (harvesters are normally unleased, but a claimed one is
+			// mid-job elsewhere — e.g. a mission or transport run). Resolved per use, never cached.
+			var leases = multiRelocate ? BotUnitLeases.Of(player) : null;
+
 			var pathDistanceSquareFactor = resourceMapModule.GetIndiceRowCount() * resourceMapModule.GetIndiceRowCount()
 					+ resourceMapModule.GetIndiceColumnCount() * resourceMapModule.GetIndiceColumnCount();
 
 			harvestersCanAssign = Math.Min(harvestersCanAssign, harvesters.Count - 1);
 			if (harvestersCanAssign > 0)
 			{
-				foreach (var (_, lackHarvs, resourceCenter) in
+				foreach (var (_, lackHarvs, resourceCenter, index) in
 					lackHarvesterIndices.OrderByDescending(d => d.Attraction - (harvesters[0].Location - d.ResoueceCenter).LengthSquared / pathDistanceSquareFactor))
 				{
 					if (harvestersCanAssign <= 0)
 						break;
+
+					// Armed: never "relocate" a harvester onto the field it is leaving — under the
+					// real-surplus metric a field can be both the most overstaffed source and still
+					// attractive enough to enter the destination list, which the binary flag-off
+					// test could never produce (lackHarvs < 0 fields never enter this list).
+					if (multiRelocate && index == worstEffectIndex)
+						continue;
 
 					var needHarvs = lackHarvs;
 					var nearbyResources = world.Map.FindTilesInAnnulus(resourceCenter, 0, resourceMapModule.GetIndiceScanRadius())
@@ -346,6 +397,15 @@ namespace OpenRA.Mods.CA.Traits
 					{
 						if (needHarvs <= 0 || harvestersCanAssign <= 0)
 							break;
+
+						// Armed: only idle-equivalent harvesters are fair game — idle or running the
+						// normal harvest loop (FindAndDeliverResources covers travel/harvest/dock),
+						// and never a unit another module holds a lease on. Flag-off keeps the
+						// original unconditional orders.
+						if (multiRelocate &&
+							((!harv.IsIdle && harv.CurrentActivity is not FindAndDeliverResources)
+								|| BotUnitLeases.IsClaimedByOther(leases, harv, nameof(HarvesterBotModuleCA))))
+							continue;
 
 						var parach = harv.TraitOrDefault<Parachutable>();
 						if (parach != null && parach.IsInAir)
@@ -432,6 +492,27 @@ namespace OpenRA.Mods.CA.Traits
 					claimLayer.CanClaimCell(actor, kvp.Key))
 				.Select(kvp => kvp.Key);
 
+			// Cameo (harvester spread): drop cells of fields already at capacity so idle harvesters
+			// scatter to fields that can still absorb one. Snapshot per-field occupancy ONCE per
+			// call — ResourceMapBotModule.FindClosestIndiceFromCPos is O(indices) and must not run
+			// per cell. Default off: targets untouched.
+			if (Info.SpreadHarvestFields && !IsClassicBot && resourceMapModule != null)
+			{
+				var fieldCount = resourceMapModule.GetIndicesLength();
+				if (fieldCount > 0)
+				{
+					var fields = new List<(CPos Center, int ResourceCells, int Harvesters)>(fieldCount);
+					for (var i = 0; i < fieldCount; i++)
+					{
+						var indice = resourceMapModule.GetIndice(i);
+						if (indice != null)
+							fields.Add((indice.IndiceCenter, indice.ResourceCellsCount, indice.PlayerHarvetserCount));
+					}
+
+					targets = FilterUnsaturatedFields(targets, fields, Info.ResourceCellsPerHarvester);
+				}
+			}
+
 			var avoidanceCostForBin = new Dictionary<int2, int>();
 			var cellRadius = Info.HarvesterEnemyAvoidanceRadius.Length / 1024;
 			var minCellCost = harv.Mobile.Locomotor.Info.TerrainSpeeds.Values.Min(ti => ti.Cost);
@@ -481,6 +562,46 @@ namespace OpenRA.Mods.CA.Traits
 				return Target.Invalid;
 
 			return Target.FromCell(world, path[0]);
+		}
+
+		/// <summary>
+		/// Keeps only the candidate cells whose nearest resource field can still absorb a harvester —
+		/// a field is saturated once its own-harvester count reaches ResourceCells / cellsPerHarvester
+		/// (clamped to a minimum capacity of 1). Each cell belongs to the field whose centre is nearest
+		/// (strictly smaller distance wins; the first field takes ties — the same rule
+		/// ResourceMapBotModule.FindClosestIndiceFromCPos uses). Falls back to the full candidate list
+		/// when every field is saturated or <paramref name="fields"/> is empty, so the caller's
+		/// pathfind always sees a usable target set.
+		/// </summary>
+		public static IEnumerable<CPos> FilterUnsaturatedFields(IEnumerable<CPos> candidates,
+			IReadOnlyList<(CPos Center, int ResourceCells, int Harvesters)> fields, int cellsPerHarvester)
+		{
+			var list = candidates as IReadOnlyList<CPos> ?? candidates.ToList();
+			if (list.Count == 0 || fields.Count == 0)
+				return list;
+
+			var perHarvester = Math.Max(1, cellsPerHarvester);
+			var unsaturated = new List<CPos>(list.Count);
+			foreach (var cell in list)
+			{
+				var bestDist = int.MaxValue;
+				var bestField = 0;
+				for (var i = 0; i < fields.Count; i++)
+				{
+					var dist = (fields[i].Center - cell).LengthSquared;
+					if (dist < bestDist)
+					{
+						bestDist = dist;
+						bestField = i;
+					}
+				}
+
+				var field = fields[bestField];
+				if (field.Harvesters < Math.Max(1, field.ResourceCells / perHarvester))
+					unsaturated.Add(cell);
+			}
+
+			return unsaturated.Count > 0 ? unsaturated : list;
 		}
 
 		void INotifyActorDisposing.Disposing(Actor self)

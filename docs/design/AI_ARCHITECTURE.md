@@ -2736,3 +2736,61 @@ never *aimed* at it.
 - *Downstream growth:* `BuildingLimits` carries almost no production caps, so each new
   yard's local base builder fills factories/production/refineries (`RefineriesPerBase`,
   `MaxExtraRefineries` are per-base, not global) — bases grow as they land.
+
+### 12.20 AF-1 + UF-1 + SP-1 + HV-1 — fan-out assaults, army-first, spacing, harvester spread (NOVA, 2026-10-02)
+
+Four maintainer-observed stack failures, each one a *local-optimum* bug: every actor did the
+nearest/shortest thing and the aggregate was pathological. All behind increment switches
+`AD`-`AG`; default-off keeps master bit-identical.
+
+**AF-1 — the line-of-death fix** (`AssaultFormationBotModule`, switch `AG_assault_fanout`,
+`genericbot && assault_fanout`). Before: a committed Rush squad attack-moved every member
+to one shared target point — the column fed the guns one at a time. Now: the state machine
+gains `GroundUnitsAssaultFanoutStateCA` between the rally/`AttackMove` approach and the
+commit. In the trigger band (`FanoutTriggerCells` > leader distance > `FanoutRadiusCells`)
+or after `GroundUnitsStageStateCA` assembly, `AssaultFormationPlanner` lays one slot per
+member on an arc (`ArcDegrees` 180 default) centred on the *far side* of the target from
+the approach bearing — the wave wraps the objective and arrives from several bearings at
+once. Members walk per-unit `AttackMove` slot orders (micro-action budget honoured),
+commit together on `AssemblePercent`/deadline — or instantly on enemy contact, so nobody
+fights alone. Deterministic: integer WAngle-LUT math, sorted-bearing assignment, ActorID
+tiebreak; unusable/overflow slots fold honestly onto the target cell (the old behaviour).
+`RefanoutCooldownTicks` stops same-ground re-orbits. Orders stay with the squad states;
+the Cameo module is a settings-only `IBotAssaultFormation` provider, same shape as
+`IBotSiegeAdvisor`.
+
+**UF-1 — army first** (`UnitBuilderBotModuleCA.UnitsFirstFillAllQueues`, switch
+`AD_units_first`). Before: one `BuildUnit` per category per 30-tick pass, and the whole
+pass stopped at `MaximiseProductionCash` — cash piled up and spilled into buildings while
+factories idled. Now: each pass fills *every* idle factory of the category (parallel-slot
+queues respected), category by category, while cash covers the lead-scaled
+`ProductionMinCashRequirement`; `issuedThisPass` marks queues because orders resolve only
+after `BotTick`. Per-pass issue cap = 4×queue-count. The `requestPause` veto seam and the
+min-cash floor are unchanged.
+
+**SP-1 — base spacing** (`BaseBuilderBotModuleCA.MinimumStructureSpacingCells`, switch
+`AE_base_spacing` = 1). Before: `findPos` returned the first legal cell — with
+`RequiresBuildableArea.Adjacent: 3` every legal cell sits next to something, so the base
+compacted into a pathfinding jam. Now: the Fransbot-proven `StructureClearance` semantics
+run in the placement funnel — first legal cell with a ≥1-cell empty gap wins; otherwise
+the widest-gap legal cell (soft preference, never a placement failure). Applied to
+Building/Fragile/BaseCrawl call sites only: refineries still hug fields, defenses still
+follow the coverage advisor.
+
+**HV-1 — harvester field spread** (`HarvesterBotModuleCA.SpreadHarvestFields` +
+`RebalanceMaxPerScan`, switch `AF_harvester_spread`). Before: idle harvesters picked the
+nearest resource cell — every harvester stacked onto the home field — and the vendored CN
+rebalance could move at most one harvester per scan. Now: `FilterUnsaturatedFields` drops
+cells of saturated fields (own harvesters ≥ cells/`ResourceCellsPerHarvester`, floor 1)
+with a full-set fallback, snapshotted once per call (the O(indices) lookup stays out of
+the per-cell loop); and the low-effect scan picks the most-*surplus* field (real
+harvester-count minus capacity, not the flattened binary flag) relocating up to 3 idle/
+in-loop harvesters per scan, never onto the field they're leaving, never onto leased units.
+
+**Classic-stack isolation (new convention):** `UnitBuilderBotModuleCA@generic`,
+`BaseBuilderBotModuleCA@generic`, `HarvesterBotModuleCA` are single instances shared
+`genericbot || classicbot` — the switch `skip` list cannot split them. The three armed
+paths therefore gate in code on `bot.Info.Type != "classic"` (spacing resolves a
+`spacingGate` int per Tick; harvester resolves a lazy `IsClassicBot` off the PlayerActor's
+`IBot`), so an armed increment worktree still leaves the classic reference bit-identical.
+Same-class precedent for future shared-instance flags.

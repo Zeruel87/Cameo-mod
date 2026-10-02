@@ -125,6 +125,8 @@ decision do so through a provider seam; the owner emits the order.
 | Bridge repair | BridgeRepairBotModule (X) | remembers defended sites, leases repairers |
 | What a held region is for | RegionRolesBotModule (AA) | `IBotZoneTopology` belief + zone terrain facts |
 | Siege window | SiegeEvaluatorBotModule | remembered defences, failure memory |
+| Assault formation | AssaultFormationBotModule (AG) | `IBotAssaultFormation` settings; squad states remain the only order issuer |
+| Assault approach shape | `GroundUnitsAssaultFanoutStateCA` (AF-1) | `AssaultFormationPlanner` arc slots, provider cooldown |
 | Scout routes | ScoutBotModule | threat regions, influence layers, leads |
 | Resource-field memory | BotFogMemory / ResourceMapBotModule | zone topology (TacticalMapBotModule) |
 | Team posture | BotSituation broadcast | allied claims, role split (TC-2d), defend requests, TC-3 coalition fold (§12.18, planned) |

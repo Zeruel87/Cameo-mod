@@ -73,6 +73,12 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Radius in cells around the center of the base to expand.")]
 		public readonly int MaxBaseRadius = 20;
 
+		[Desc("Cameo: preferred empty-cell gap between a new ordinary structure and existing own buildings.",
+			"The first legal cell keeping the gap is used; when none can, the legal cell with the widest gap",
+			"is used instead of packing against the base. Not applied to refineries or defenses.",
+			"0 disables the check. The instance is shared genericbot||classicbot: a nonzero value reaches both.")]
+		public readonly int MinimumStructureSpacingCells = 0;
+
 		[Desc("Maximum number of extra refineries to build (in addition to RefineriesPerBase per construction yard).")]
 		public readonly int MaxExtraRefineries = 1;
 
@@ -351,6 +357,33 @@ namespace OpenRA.Mods.CA.Traits
 				return ownRefineryCells.All(r => (r - center).LengthSquared > radiusSquared);
 			}).ToList();
 			return unserved.Count > 0 ? unserved : list;
+		}
+
+		/// <summary>
+		/// Rectangular gap, in empty cells, between a candidate footprint (top-left cell
+		/// <paramref name="cell"/>, size <paramref name="candidateDimensions"/>) and an existing footprint
+		/// (top-left <paramref name="existingTopLeft"/>, size <paramref name="existingDimensions"/>): the
+		/// larger of the horizontal and vertical empty-cell counts between the two rectangles.
+		/// 0 means the footprints touch or overlap on at least one axis. Pure math, no World, so tests
+		/// can drive it directly (BaseSpacingTest). Ported from Fransbot's StructureClearance.
+		/// </summary>
+		public static int FootprintGap(CPos cell, CVec candidateDimensions, CPos existingTopLeft, CVec existingDimensions)
+		{
+			var candidateMinX = cell.X;
+			var candidateMinY = cell.Y;
+			var candidateMaxX = candidateMinX + candidateDimensions.X - 1;
+			var candidateMaxY = candidateMinY + candidateDimensions.Y - 1;
+			var existingMinX = existingTopLeft.X;
+			var existingMinY = existingTopLeft.Y;
+			var existingMaxX = existingMinX + existingDimensions.X - 1;
+			var existingMaxY = existingMinY + existingDimensions.Y - 1;
+
+			var gapX = candidateMaxX < existingMinX ? existingMinX - candidateMaxX - 1
+				: existingMaxX < candidateMinX ? candidateMinX - existingMaxX - 1 : 0;
+			var gapY = candidateMaxY < existingMinY ? existingMinY - candidateMaxY - 1
+				: existingMaxY < candidateMinY ? candidateMinY - existingMaxY - 1 : 0;
+
+			return Math.Max(gapX, gapY);
 		}
 
 		public Dictionary<Actor, (CPos ConyardLoc, CPos ResourceLoc)> RequestedRefineries = [];
